@@ -1,7 +1,7 @@
-# STM32F4 Drivers
+# STM32F413 Drivers
 ### (and FreeRTOS)
 
-This repository contains drivers for various STM32F4 peripherals.
+This repository contains drivers for various STM32F413 peripherals.
 
 It also contains the FreeRTOS source, since all boards must depend on it.
 
