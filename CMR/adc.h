@@ -27,11 +27,11 @@ typedef struct {
     uint32_t samples[CMR_ADC_CHANNELS];     /**< @brief Latest samples. */
 } cmr_adc_t;
 
-int cmr_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance);
+void cmr_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance);
 
-int cmr_adcAddChannel(cmr_adc_t *adc, size_t index,
-                      uint32_t channel, uint32_t samplingTime,
-                      GPIO_TypeDef *port, uint16_t pin);
+void cmr_adcAddChannel(cmr_adc_t *adc, size_t index,
+                       uint32_t channel, uint32_t samplingTime,
+                       GPIO_TypeDef *port, uint16_t pin);
 
 void cmr_adcSample(cmr_adc_t *adc);
 
