@@ -30,9 +30,20 @@ void cmr_canInit(
     GPIO_TypeDef *txPort, uint16_t txPin
 );
 
+/**
+ * @brief Represents a CAN filter's configuration.
+ */
+typedef struct {
+    /**
+     * @brief The CAN receive FIFO to configure (one of `CAN_RX_FIFOx` from
+     * `stm32f4xx_hal_can.h`).
+     */
+    uint32_t rxFIFO;
+    uint16_t ids[4];    /**< @brief The IDs to whitelist. */
+} cmr_canFilterBank_t;
+
 void cmr_canFilter(
-    cmr_can_t *can, uint32_t filterBank, uint32_t rxFIFO,
-    uint16_t canID1, uint16_t canID2, uint16_t canID3, uint16_t canID4
+    cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen
 );
 
 #endif /* HAL_CAN_MODULE_ENABLED */
