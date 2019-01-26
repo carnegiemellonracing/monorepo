@@ -26,9 +26,11 @@ static const uint32_t CMR_CAN_FILTERBANKS = 14;
  * @param txPort Transmitting GPIO port.
  * @param txPin Transmitting GPIO pin.
  */
-void cmr_canInit(cmr_can_t *can, CAN_TypeDef *instance,
-                 GPIO_TypeDef *rxPort, uint16_t rxPin,
-                 GPIO_TypeDef *txPort, uint16_t txPin) {
+void cmr_canInit(
+    cmr_can_t *can, CAN_TypeDef *instance,
+    GPIO_TypeDef *rxPort, uint16_t rxPin,
+    GPIO_TypeDef *txPort, uint16_t txPin
+) {
     *can = (cmr_can_t) {
         .handle = {
             .Instance = instance,
@@ -88,9 +90,10 @@ void cmr_canInit(cmr_can_t *can, CAN_TypeDef *instance,
  * @param canID3 Filter ID #3.
  * @param canID4 Filter ID #4.
  */
-void cmr_canFilter(cmr_can_t *can, uint32_t filterBank, uint32_t rxFIFO,
-                   uint16_t canID1, uint16_t canID2,
-                   uint16_t canID3, uint16_t canID4) {
+void cmr_canFilter(
+    cmr_can_t *can, uint32_t filterBank, uint32_t rxFIFO,
+    uint16_t canID1, uint16_t canID2, uint16_t canID3, uint16_t canID4
+) {
     if (filterBank >= CMR_CAN_FILTERBANKS) {
         panic("Invalid filter bank!");
     }

@@ -66,16 +66,18 @@ void cmr_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance) {
  *
  * @param adc The ADC to configure.
  * @param channel The ADC channel to configure (`ADC_CHANNEL_x`, 0 <= x <= 15).
- * @param samplingTime Sampling time for ADC channel
- * (`ADC_SAMPLE_TIME_xCYCLES`, from `stm32f4xx_hal_adc.h`).
  * @param port Channel's GPIO port (`GPIOx` from `stm32f413xx.h`).
  * @param pin Channel's GPIO pin (`GPIO_PIN_x` from `stm32f4xx_hal_gpio.h`).
+ * @param samplingTime Sampling time for ADC channel
+ * (`ADC_SAMPLE_TIME_xCYCLES`, from `stm32f4xx_hal_adc.h`).
  *
  * @returns A reference to the configured channel.
  */
-const cmr_adcChannel_t *cmr_adcAddChannel(cmr_adc_t *adc, uint32_t channel,
-                                          uint32_t samplingTime,
-                                          GPIO_TypeDef *port, uint16_t pin) {
+const cmr_adcChannel_t *cmr_adcAddChannel(
+    cmr_adc_t *adc, uint32_t channel,
+    GPIO_TypeDef *port, uint16_t pin,
+    uint32_t samplingTime
+) {
     if (channel > ADC_CHANNEL_15) {
         return -1;  // Invalid ADC channel.
     }

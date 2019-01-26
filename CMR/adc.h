@@ -41,9 +41,11 @@ typedef struct {
 
 void cmr_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance);
 
-const cmr_adcChannel_t *cmr_adcAddChannel(cmr_adc_t *adc, uint32_t channel,
-                                          uint32_t samplingTime,
-                                          GPIO_TypeDef *port, uint16_t pin);
+const cmr_adcChannel_t *cmr_adcAddChannel(
+    cmr_adc_t *adc, uint32_t channel,
+    GPIO_TypeDef *port, uint16_t pin,
+    uint32_t samplingTime
+);
 
 void cmr_adcSample(cmr_adc_t *adc);
 
