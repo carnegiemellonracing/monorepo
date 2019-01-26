@@ -16,6 +16,13 @@
 #define CMR_ADC_CHANNELS 16
 
 /**
+ * Represents an ADC channel.
+ */
+typedef struct {
+    volatile uint32_t value;    /**< @brief The most recently-sampled value. */
+} cmr_adcChannel_t;
+
+/**
  * @brief Represents an ADC.
  *
  * @note The contents of this struct are opaque to the library consumer.
@@ -24,18 +31,17 @@ typedef struct {
     ADC_HandleTypeDef handle;   /**< @brief HAL ADC handle. */
     size_t channelsUsed;        /**< @brief Number of configured channels. */
 
-    uint32_t samples[CMR_ADC_CHANNELS];     /**< @brief Latest samples. */
+    /** @brief Channels. */
+    cmr_adcChannel_t channels[CMR_ADC_CHANNELS];
 } cmr_adc_t;
 
 void cmr_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance);
 
-void cmr_adcAddChannel(cmr_adc_t *adc, size_t index,
-                       uint32_t channel, uint32_t samplingTime,
-                       GPIO_TypeDef *port, uint16_t pin);
+const cmr_adcChannel_t *cmr_adcAddChannel(cmr_adc_t *adc, uint32_t channel,
+                                          uint32_t samplingTime,
+                                          GPIO_TypeDef *port, uint16_t pin);
 
 void cmr_adcSample(cmr_adc_t *adc);
-
-uint32_t cmr_adcGet(const cmr_adc_t *adc, size_t index);
 
 #endif /* CMR_ADC_H */
 

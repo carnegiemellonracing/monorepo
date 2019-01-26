@@ -63,16 +63,17 @@ void cmr_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance) {
  * OR channel more than once!
  *
  * @param adc The ADC to configure.
- * @param index The sampling index.
  * @param channel The ADC channel to configure (`ADC_CHANNEL_x`, 0 <= x <= 15).
  * @param samplingTime Sampling time for ADC channel
  * (`ADC_SAMPLE_TIME_xCYCLES`, from `stm32f4xx_hal_adc.h`).
  * @param port Channel's GPIO port (`GPIOx` from `stm32f413xx.h`).
  * @param pin Channel's GPIO pin (`GPIO_PIN_x` from `stm32f4xx_hal_gpio.h`).
+ *
+ * @returns A reference to the configured channel.
  */
-void cmr_adcAddChannel(cmr_adc_t *adc, size_t index,
-                      uint32_t channel, uint32_t samplingTime,
-                      GPIO_TypeDef *port, uint16_t pin) {
+const cmr_adcChannel_t *cmr_adcAddChannel(cmr_adc_t *adc, uint32_t channel,
+                                          uint32_t samplingTime,
+                                          GPIO_TypeDef *port, uint16_t pin) {
     if (channel > ADC_CHANNEL_15) {
         return -1;  // Invalid ADC channel.
     }
@@ -104,7 +105,10 @@ void cmr_adcAddChannel(cmr_adc_t *adc, size_t index,
     };
     HAL_GPIO_Init(port, &pinConfig);
 
+    const cmr_adcChannel_t *chan = &adc->channels[adc->channelsUsed];
     adc->channelsUsed++;
+
+    return chan;
 }
 
 /**
@@ -118,19 +122,7 @@ void cmr_adcSample(cmr_adc_t *adc) {
     for (uint32_t i = 0; i < adc->channelsUsed; i++) {
         HAL_ADC_Start(&adc->handle);
         HAL_ADC_PollForConversion(&adc->handle, CMR_ADC_TIMEOUT_MS);
-        adc->samples[i] = HAL_ADC_GetValue(&adc->handle);
+        adc->channels[i].value = HAL_ADC_GetValue(&adc->handle);
     }
-}
-
-/**
- * @brief Gets the latest value from the specified ADC channel.
- *
- * @param adc The ADC to access.
- * @param index The channel's index.
- *
- * @return The latest sampled value.
- */
-uint32_t cmr_adcGet(const cmr_adc_t *adc, size_t index) {
-    return adc->samples[index];
 }
 
