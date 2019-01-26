@@ -15,6 +15,9 @@
  * @author Carnegie Mellon Racing
  */
 
+#ifndef CMR_PANIC_H
+#define CMR_PANIC_H
+
 void cmr_panicSetup(void);
 
 void cmr_panic(const char *fmt, ...)
@@ -22,4 +25,6 @@ void cmr_panic(const char *fmt, ...)
     __attribute__((noreturn))
 #endif
     ;
+
+#endif /* CMR_PANIC_H */
 

@@ -32,7 +32,7 @@ void cmr_panicSetup(void) __attribute__((weak));
 void cmr_panic(const char *fmt, ...) {
     (void) fmt;
 
-    cmr_panic_setup();
+    cmr_panicSetup();
 
     while (1) {
         continue;

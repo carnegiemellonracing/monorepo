@@ -6,9 +6,11 @@
  */
 
 #include "adc.h"    // Interface to implement
-#include "panic.h"  // cmr_panic()
 
 #ifdef HAL_ADC_MODULE_ENABLED
+
+#include "rcc.h"    // cmr_rccADCClockEnable(), cmr_rccGPIOClockEnable()
+#include "panic.h"  // cmr_panic()
 
 /** @brief Timeout (in ms) for each ADC channel sample poll. */
 static const uint32_t CMR_ADC_TIMEOUT_MS = 1;
@@ -39,14 +41,14 @@ void cmr_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance) {
                 .ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE,
                 .ExternalTrigConv = ADC_SOFTWARE_START,
                 .DataAlign = ADC_DATAALIGN_RIGHT,
-                .NbrOfConversion = NUM_ADC_CHANNELS,
+                .NbrOfConversion = CMR_ADC_CHANNELS,
                 .DMAContinuousRequests = DISABLE,
                 .EOCSelection = ADC_EOC_SINGLE_CONV
             }
         },
 
-        channelsUsed = 0,
-        samples = { 0 }
+        .channelsUsed = 0,
+        .channels = { { 0 } }
     };
 
     cmr_rccADCClockEnable(instance);
@@ -69,7 +71,7 @@ void cmr_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance) {
  * @param port Channel's GPIO port (`GPIOx` from `stm32f413xx.h`).
  * @param pin Channel's GPIO pin (`GPIO_PIN_x` from `stm32f4xx_hal_gpio.h`).
  * @param samplingTime Sampling time for ADC channel
- * (`ADC_SAMPLE_TIME_xCYCLES`, from `stm32f4xx_hal_adc.h`).
+ * (`ADC_SAMPLETIME_xCYCLES`, from `stm32f4xx_hal_adc.h`).
  *
  * @returns A reference to the configured channel.
  */
@@ -79,11 +81,12 @@ const cmr_adcChannel_t *cmr_adcAddChannel(
     uint32_t samplingTime
 ) {
     if (channel > ADC_CHANNEL_15) {
-        return -1;  // Invalid ADC channel.
+        cmr_panic("Invalid ADC channel!");
     }
 
-    if (adc->channelsUsed >= CMR_ADC_CHANNELS) {
-        return -1;  // Too many channels.
+    size_t index = adc->channelsUsed;
+    if (index >= CMR_ADC_CHANNELS) {
+        cmr_panic("Too many ADC channels!");
     }
 
     ADC_ChannelConfTypeDef channelConfig = {
@@ -93,7 +96,7 @@ const cmr_adcChannel_t *cmr_adcAddChannel(
         .Offset = 0     // reserved, set to 0
     };
 
-    if (HAL_ADC_ConfigChannel(&adcHandle, &channelConfig) != HAL_OK) {
+    if (HAL_ADC_ConfigChannel(&adc->handle, &channelConfig) != HAL_OK) {
         cmr_panic("HAL_ADC_ConfigChannel() failed!");
     }
 
@@ -109,10 +112,8 @@ const cmr_adcChannel_t *cmr_adcAddChannel(
     };
     HAL_GPIO_Init(port, &pinConfig);
 
-    const cmr_adcChannel_t *chan = &adc->channels[adc->channelsUsed];
     adc->channelsUsed++;
-
-    return chan;
+    return &adc->channels[index];
 }
 
 /**

@@ -6,9 +6,11 @@
  */
 
 #include "can.h"    // Interface to implement
-#include "panic.h"  // cmr_panic()
 
 #ifdef HAL_CAN_MODULE_ENABLED
+
+#include "rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
+#include "panic.h"  // cmr_panic()
 
 /** @brief Number of CAN filter banks allocated for each interface. */
 static const uint32_t CMR_CAN_FILTERBANKS = 14;
@@ -100,20 +102,19 @@ void cmr_canFilter(
     cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen
 ) {
     if (filtersLen >= CMR_CAN_FILTERBANKS) {
-        panic("Too many filter banks!");
+        cmr_panic("Too many filter banks!");
     }
 
     uint32_t bank = 0;
 
-    switch (can->handle.Instance) {
-        case CAN2:
-            // CAN2 uses banks 14-27.
-            bank += CMR_CAN_FILTERBANKS;
-            break;
+    CAN_TypeDef *instance = can->handle.Instance;
+    if (instance == CAN2) {
+        // CAN2 uses banks 14-27.
+        bank += CMR_CAN_FILTERBANKS;
     }
 
     while (bank < filtersLen) {
-        const cmr_canFilter_t *filter = filters[bank];
+        const cmr_canFilter_t *filter = filters + bank;
 
         // In 16 bit ID list mode, FilterIdHigh, FilterIdLow, FilterMaskIdHigh,
         // and FilterMaskIdLow all serve as a whitelist of left-aligned 11-bit
@@ -125,7 +126,7 @@ void cmr_canFilter(
             .FilterIdLow            = filter->ids[1] << CMR_CAN_ID_FILTER_SHIFT,
             .FilterMaskIdHigh       = filter->ids[2] << CMR_CAN_ID_FILTER_SHIFT,
             .FilterMaskIdLow        = filter->ids[3] << CMR_CAN_ID_FILTER_SHIFT,
-            .FilterFIFOAssignment   = fifo,
+            .FilterFIFOAssignment   = filter->rxFIFO,
             .FilterBank             = bank,
             .FilterMode             = CAN_FILTERMODE_IDLIST,
             .FilterScale            = CAN_FILTERSCALE_16BIT,
@@ -134,7 +135,7 @@ void cmr_canFilter(
         };
 
         if (HAL_CAN_ConfigFilter(&can->handle, &config) != HAL_OK) {
-            panic("HAL_CAN_ConfigFilter() failed!");
+            cmr_panic("HAL_CAN_ConfigFilter() failed!");
         }
     }
 }

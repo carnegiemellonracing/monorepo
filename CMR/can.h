@@ -42,7 +42,7 @@ typedef struct {
      */
     uint32_t rxFIFO;
     uint16_t ids[4];    /**< @brief The IDs to whitelist. */
-} cmr_canFilterBank_t;
+} cmr_canFilter_t;
 
 void cmr_canFilter(
     cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen
