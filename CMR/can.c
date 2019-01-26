@@ -8,6 +8,9 @@
 #include "can.h"    // Interface to implement
 #include "panic.h"  // cmr_panic()
 
+/** @brief Number of CAN filter banks allocated for each interface. */
+static const uint32_t CMR_CAN_FILTERBANKS = 14;
+
 /**
  * @brief Initializes a CAN interface.
  *
@@ -70,4 +73,43 @@ void cmr_canInit(cmr_can_t *can, CAN_TypeDef *instance,
     }
 }
 
+/**
+ * @brief Configures a filter bank with 4 CAN IDs to filter.
+ *
+ */
+void cmr_canFilter(cmr_can_t *can, uint32_t filterBank, uint32_t fifo,
+                   uint16_t canID1, uint16_t canID2,
+                   uint16_t canID3, uint16_t canID4) {
+    if (filterBank >= CMR_CAN_FILTERBANKS) {
+        panic("Invalid filter bank!");
+    }
+
+    switch (can->handle.Instance) {
+        case CAN2:
+            // CAN2 uses banks 14-27.
+            bank += CMR_CAN_FILTERBANKS;
+            break;
+    }
+
+    // In 16 bit ID list mode, FilterIdHigh, FilterIdLow, FilterMaskIdHigh, and
+    // FilterMaskIdLow all serve as a whitelist of left-aligned 11 bit CAN IDs.
+    // See RM0430 32.7.4 Fig. 387.
+    const uint16_t CMR_CAN_ID_FILTER_SHIFT = 5;
+    CAN_FilterTypeDef filter = {
+        .FilterIdHigh           = canID1 << CMR_CAN_ID_FILTER_SHIFT,
+        .FilterIdLow            = canID2 << CMR_CAN_ID_FILTER_SHIFT,
+        .FilterMaskIdHigh       = canID3 << CMR_CAN_ID_FILTER_SHIFT,
+        .FilterMaskIdLow        = canID4 << CMR_CAN_ID_FILTER_SHIFT,
+        .FilterFIFOAssignment   = fifo,
+        .FilterBank             = filterBank,
+        .FilterMode             = CAN_FILTERMODE_IDLIST,
+        .FilterScale            = CAN_FILTERSCALE_16BIT,
+        .FilterActivation       = ENABLE,
+        .SlaveStartFilterBank   = can2StartFilterBank,
+    };
+
+    if (HAL_CAN_ConfigFilter(&can2Handle, &filter) != HAL_OK) {
+        panic("HAL_CAN_ConfigFilter() failed!");
+    }
+}
 
