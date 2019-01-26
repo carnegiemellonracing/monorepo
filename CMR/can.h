@@ -30,6 +30,8 @@ void cmr_canInit(
     GPIO_TypeDef *txPort, uint16_t txPin
 );
 
+CAN_HandleTypeDef *cmr_canHandle(cmr_can_t *can);
+
 /**
  * @brief Represents a CAN filter's configuration.
  */

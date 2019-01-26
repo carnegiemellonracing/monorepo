@@ -78,6 +78,17 @@ void cmr_canInit(
 }
 
 /**
+ * @brief Gets the underlying HAL CAN handle for the given interface.
+ *
+ * @param can The CAN interface.
+ *
+ * @return The underlying HAL CAN handle.
+ */
+CAN_HandleTypeDef *cmr_canHandle(cmr_can_t *can) {
+    return &can->handle;
+}
+
+/**
  * @brief Configures a filter bank with 4 CAN IDs to filter.
  *
  * @param can The CAN interface to configure.
