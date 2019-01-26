@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>STM32 FreeRTOS Template</name>
+	<name>stm32f413-template</name>
 	<comment></comment>
 	<projects>
 	</projects>
