@@ -13,6 +13,8 @@
 
 #include <stm32f4xx_hal.h>  // GPIO_TypeDef, ADC_TypeDef
 
+void cmr_rccSystemClockEnable(void);
+
 void cmr_rccGPIOClockEnable(GPIO_TypeDef *port);
 void cmr_rccADCClockEnable(ADC_TypeDef *instance);
 void cmr_rccCANClockEnable(CAN_TypeDef *instance);
