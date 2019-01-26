@@ -7,6 +7,8 @@
 
 #include "bsrr.h"   // interface to implement
 
+#ifdef HAL_GPIO_MODULE_ENABLED
+
 /**
  * @brief Sets and resets the specified pins on the given port.
  *
@@ -17,4 +19,6 @@
 void cmr_bsrr(GPIO_TypeDef *port, uint16_t set, uint16_t reset) {
     port->BSRR = (((uint32_t) reset) << 16) | (uint32_t) set;
 }
+
+#endif /* HAL_GPIO_MODULE_ENABLED */
 

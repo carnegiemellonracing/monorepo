@@ -8,6 +8,8 @@
 #include "can.h"    // Interface to implement
 #include "panic.h"  // cmr_panic()
 
+#ifdef HAL_CAN_MODULE_ENABLED
+
 /** @brief Number of CAN filter banks allocated for each interface. */
 static const uint32_t CMR_CAN_FILTERBANKS = 14;
 
@@ -76,8 +78,17 @@ void cmr_canInit(cmr_can_t *can, CAN_TypeDef *instance,
 /**
  * @brief Configures a filter bank with 4 CAN IDs to filter.
  *
+ * @param can The CAN interface to configure.
+ * @param filterBank The filter bank number to configure. Must be less than
+ * `CMR_CAN_FILTERBANKS`.
+ * @param rxFIFO The CAN receive FIFO to configure (one of `CAN_RX_FIFOx` from
+ * `stm32f4xx_hal_can.h`).
+ * @param canID1 Filter ID #1.
+ * @param canID2 Filter ID #2.
+ * @param canID3 Filter ID #3.
+ * @param canID4 Filter ID #4.
  */
-void cmr_canFilter(cmr_can_t *can, uint32_t filterBank, uint32_t fifo,
+void cmr_canFilter(cmr_can_t *can, uint32_t filterBank, uint32_t rxFIFO,
                    uint16_t canID1, uint16_t canID2,
                    uint16_t canID3, uint16_t canID4) {
     if (filterBank >= CMR_CAN_FILTERBANKS) {
@@ -112,4 +123,6 @@ void cmr_canFilter(cmr_can_t *can, uint32_t filterBank, uint32_t fifo,
         panic("HAL_CAN_ConfigFilter() failed!");
     }
 }
+
+#endif /* HAL_CAN_MODULE_ENABLED */
 

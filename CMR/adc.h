@@ -8,9 +8,13 @@
 #ifndef CMR_ADC_H
 #define CMR_ADC_H
 
+#include <stm32f4xx_hal.h>  // HAL_ADC_MODULE_ENABLED, ADC_HandleTypeDef,
+                            // ADC_TypeDef, GPIO_TypeDef
+
+#ifdef HAL_ADC_MODULE_ENABLED
+
 #include <stddef.h>     // size_t
 #include <stdint.h>     // uint32_t
-#include <stm32f4xx_hal.h>  // ADC_HandleTypeDef, ADC_TypeDef, GPIO_TypeDef
 
 /** @brief Number of channels per ADC. */
 #define CMR_ADC_CHANNELS 16
@@ -42,6 +46,8 @@ const cmr_adcChannel_t *cmr_adcAddChannel(cmr_adc_t *adc, uint32_t channel,
                                           GPIO_TypeDef *port, uint16_t pin);
 
 void cmr_adcSample(cmr_adc_t *adc);
+
+#endif /* HAL_ADC_MODULE_ENABLED */
 
 #endif /* CMR_ADC_H */
 

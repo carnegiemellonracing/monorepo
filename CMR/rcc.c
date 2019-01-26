@@ -8,6 +8,8 @@
 #include "rcc.h"    // Interface to implement
 #include "panic.h"  // cmr_panic()
 
+#ifdef HAL_RCC_MODULE_ENABLED
+
 /**
  * @brief Configures the system and peripheral clocks.
  *
@@ -50,7 +52,7 @@ void cmr_rccSystemClockEnable(void)  {
     }
 }
 
-
+#ifdef HAL_GPIO_MODULE_ENABLED
 /**
  * @brief Enables the specified GPIO port's clock.
  *
@@ -84,7 +86,9 @@ void cmr_rccGPIOClockEnable(GPIO_TypeDef *port) {
             break;
     }
 }
+#endif /* HAL_GPIO_MODULE_ENABLED */
 
+#ifdef HAL_ADC_MODULE_ENABLED
 /**
  * @brief Enables the specified ADC's clock.
  *
@@ -97,7 +101,9 @@ void cmr_rccADCClockEnable(ADC_TypeDef *instance) {
             break;
     }
 }
+#endif /* HAL_ADC_MODULE_ENABLED */
 
+#ifdef HAL_CAN_MODULE_ENABLED
 /**
  * @brief Enables the specified CAN interface's clock.
  *
@@ -116,4 +122,7 @@ void cmr_rccCANClockEnable(CAN_TypeDef *instance) {
             break;
     }
 }
+#endif /* HAL_CAN_MODULE_ENABLED */
+
+#endif /* HAL_RCC_MODULE_ENABLED */
 

@@ -11,13 +11,27 @@
 #ifndef CMR_RCC_H
 #define CMR_RCC_H
 
-#include <stm32f4xx_hal.h>  // GPIO_TypeDef, ADC_TypeDef
+#include <stm32f4xx_hal.h>  // HAL_RCC_MODULE_ENABLED, HAL_GPIO_MODULE_ENABLED,
+                            // HAL_ADC_MODULE_ENABLED, HAL_CAN_MODULE_ENABLED,
+                            // GPIO_TypeDef, ADC_TypeDef
+
+#ifdef HAL_RCC_MODULE_ENABLED
 
 void cmr_rccSystemClockEnable(void);
 
+#ifdef HAL_GPIO_MODULE_ENABLED
 void cmr_rccGPIOClockEnable(GPIO_TypeDef *port);
+#endif /* HAL_GPIO_MODULE_ENABLED */
+
+#ifdef HAL_ADC_MODULE_ENABLED
 void cmr_rccADCClockEnable(ADC_TypeDef *instance);
+#endif /* HAL_ADC_MODULE_ENABLED */
+
+#ifdef HAL_CAN_MODULE_ENABLED
 void cmr_rccCANClockEnable(CAN_TypeDef *instance);
+#endif /* HAL_CAN_MODULE_ENABLED */
+
+#endif /* HAL_RCC_MODULE_ENABLED */
 
 #endif /* CMR_RCC_H */
 
