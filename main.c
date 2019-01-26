@@ -15,8 +15,34 @@
 #include <CMR/can.h>    // CAN interface
 #include <CMR/adc.h>    // ADC interface
 
+#include "gpio.h"   // Board-specific GPIO interface
 #include "can.h"    // Board-specific CAN interface
 #include "adc.h"    // Board-specific ADC interface
+
+/** @brief Status LED priority. */
+const uint32_t statusLEDPriority = 2;
+
+/** @brief Status LED period (milliseconds). */
+static const TickType_t statusLEDPeriod_ms = 250;
+
+/**
+ * @brief Task for toggling the status LED.
+ *
+ * @param pvParameters Ignored.
+ *
+ * @return Does not return.
+ */
+static void statusLEDTask(void *pvParameters) {
+    gpioWrite(GPIO_LED_STATUS, 0);
+
+    for (
+        TickType_t lastWakeTime = xTaskGetTickCount();
+        1;
+        vTaskDelayUntil(&lastWakeTime, statusLEDPeriod_ms)
+    ) {
+        gpioToggle(GPIO_LED_ERROR);
+    }
+}
 
 /**
  * @brief Firmware entry point.
@@ -31,14 +57,16 @@ int main(void) {
     cmr_rccSystemClockEnable();
 
     // Peripheral configuration.
+    gpioInit();
     canInit();
     adcInit();
 
     // Node tasks.
-    /* TODO
-    xTaskCreate(mcuStatusLED_task, "LED", configMINIMAL_STACK_SIZE, NULL,
-                mcuStatusLEDTaskPriority, NULL);
-                */
+    xTaskCreate(
+        statusLEDTask, "statusLED",
+        configMINIMAL_STACK_SIZE, NULL,
+        statusLEDPriority, NULL
+    );
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");
