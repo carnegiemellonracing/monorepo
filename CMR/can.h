@@ -46,6 +46,9 @@ void cmr_canFilter(
     cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen
 );
 
+void cmr_canFieldEnable(uint8_t *field, const void *value, size_t len);
+void cmr_canFieldDisable(uint8_t *field, const void *value, size_t len);
+
 #endif /* HAL_CAN_MODULE_ENABLED */
 
 #endif /* CMR_CAN_H */

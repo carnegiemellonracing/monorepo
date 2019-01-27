@@ -128,5 +128,39 @@ void cmr_canFilter(
     }
 }
 
+/**
+ * @brief Enables (sets) bit(s) in a CAN field.
+ *
+ * @note This is used for multi-byte bitfields that may need to be misaligned in
+ * a CAN message struct.
+ *
+ * @param field The field to modify.
+ * @param value The value; each byte will be bitwise-OR'd with the corresponding
+ * byte in the field.
+ * @param len The length of the field/value, in bytes.
+ */
+void cmr_canFieldEnable(uint8_t *field, const void *value, size_t len) {
+    for (size_t i = 0; i < len; i++) {
+        field[i] |= ((const uint8_t *) value)[i];
+    }
+}
+
+/**
+ * @brief Disables (clears) bit(s) in a CAN field.
+ *
+ * @note This is used for multi-byte bitfields that may need to be misaligned in
+ * a CAN message struct.
+ *
+ * @param field The field to modify.
+ * @param value The value; each byte will be bitwise-negated, then bitwise-AND'd
+ * with the corresponding byte in the field.
+ * @param len The length of the field/value, in bytes.
+ */
+void cmr_canFieldDisable(uint8_t *field, const void *value, size_t len) {
+    for (size_t i = 0; i < len; i++) {
+        field[i] &= ~((const uint8_t *) value)[i];
+    }
+}
+
 #endif /* HAL_CAN_MODULE_ENABLED */
 
