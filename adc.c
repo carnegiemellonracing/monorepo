@@ -33,12 +33,11 @@ static const TickType_t adcSamplePeriod_ms = 10;
  * @return Does not return.
  */
 static void adcSampleTask(void *pvParameters) {
-    for (
-        TickType_t lastWakeTime = xTaskGetTickCount();
-        1;
-        vTaskDelayUntil(&lastWakeTime, adcSamplePeriod_ms)
-    ) {
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
         cmr_adcSample(&adc);
+
+        vTaskDelayUntil(&lastWakeTime, adcSamplePeriod_ms);
     }
 }
 

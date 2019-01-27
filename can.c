@@ -38,6 +38,9 @@ static const TickType_t canRXPeriod_ms = 1;
 static void canTXTask(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
+    // TODO The HAL internals of a CAN transmission really should be
+    // encapsulated in the CMR CAN wrapper library/driver.
+
     CAN_HandleTypeDef *canHandle = cmr_canHandle(&can);
 
     // XXX Temporary header and data.
@@ -50,11 +53,8 @@ static void canTXTask(void *pvParameters) {
         .TransmitGlobalTime = DISABLE
     };
 
-    for (
-        TickType_t lastWakeTime = xTaskGetTickCount();
-        1;
-        vTaskDelayUntil(&lastWakeTime, canTXPeriod_ms)
-    ) {
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
         uint32_t txMailbox;
         uint8_t cdcHeartbeat[3] = {
             1,  // TODO junk
@@ -65,11 +65,16 @@ static void canTXTask(void *pvParameters) {
         HAL_CAN_AddTxMessage(
             canHandle, &cdcHeartbeatHeader, cdcHeartbeat, &txMailbox
         );
+
+        vTaskDelayUntil(&lastWakeTime, canTXPeriod_ms);
     }
 }
 
 /**
  * @brief Task for receiving CAN messages (polling RX FIFOs).
+ *
+ * TODO The CAN receive task should be part of the CMR CAN library, and
+ * receiving should populate CAN structs automatically.
  *
  * @param pvParameters Ignored.
  *
@@ -80,11 +85,8 @@ static void canRXTask(void *pvParameters) {
 
     CAN_HandleTypeDef *canHandle = cmr_canHandle(&can);
 
-    for (
-        TickType_t lastWakeTime = xTaskGetTickCount();
-        1;
-        vTaskDelayUntil(&lastWakeTime, canRXPeriod_ms)
-    ) {
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
         CAN_RxHeaderTypeDef rxHeader = { 0 };
         uint8_t rxData[8];
 
@@ -99,6 +101,8 @@ static void canRXTask(void *pvParameters) {
             HAL_CAN_GetRxMessage(canHandle, CAN_RX_FIFO1, &rxHeader, rxData);
             // TODO Copy from rxData to struct based on ID
         }
+
+        vTaskDelayUntil(&lastWakeTime, canRXPeriod_ms);
     }
 }
 

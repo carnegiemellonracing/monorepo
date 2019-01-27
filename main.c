@@ -35,12 +35,11 @@ static const TickType_t statusLEDPeriod_ms = 250;
 static void statusLEDTask(void *pvParameters) {
     gpioWrite(GPIO_LED_STATUS, 0);
 
-    for (
-        TickType_t lastWakeTime = xTaskGetTickCount();
-        1;
-        vTaskDelayUntil(&lastWakeTime, statusLEDPeriod_ms)
-    ) {
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
         gpioToggle(GPIO_LED_STATUS);
+
+        vTaskDelayUntil(&lastWakeTime, statusLEDPeriod_ms);
     }
 }
 
