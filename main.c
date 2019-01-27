@@ -40,7 +40,7 @@ static void statusLEDTask(void *pvParameters) {
         1;
         vTaskDelayUntil(&lastWakeTime, statusLEDPeriod_ms)
     ) {
-        gpioToggle(GPIO_LED_ERROR);
+        gpioToggle(GPIO_LED_STATUS);
     }
 }
 

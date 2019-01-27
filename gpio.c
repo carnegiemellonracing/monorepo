@@ -60,7 +60,7 @@ void gpioWrite(gpio_t pin, int value) {
 
     HAL_GPIO_WritePin(
         pinConfig->port, pinConfig->init.Pin,
-        value ? GPIO_PIN_RESET : GPIO_PIN_SET
+        value ? GPIO_PIN_SET : GPIO_PIN_RESET
     );
 }
 
