@@ -11,6 +11,8 @@
  */
 
 #include <stm32f4xx_hal.h>  // HAL_IncTick()
+#include <FreeRTOS.h>   // FreeRTOS interface
+#include <task.h>       // xTaskGetSchedulerState()
 
 /**
  * @brief Port-specific system tick handler; provided by FreeRTOS.
@@ -24,6 +26,11 @@ extern void xPortSysTickHandler(void);
  */
 void SysTick_Handler(void) {
     HAL_IncTick();  // Report tick to HAL.
+
+    if (xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED) {
+        return;
+    }
+
     xPortSysTickHandler();  // Invoke FreeRTOS tick handler.
 }
 

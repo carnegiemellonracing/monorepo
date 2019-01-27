@@ -52,10 +52,6 @@ void cmr_canInit(
         }
     };
 
-    if (HAL_CAN_Init(&can->handle) != HAL_OK) {
-        cmr_panic("HAL_CAN_Init() failed!");
-    }
-
     cmr_rccCANClockEnable(instance);
     cmr_rccGPIOClockEnable(rxPort);
     cmr_rccGPIOClockEnable(txPort);
@@ -73,6 +69,10 @@ void cmr_canInit(
     // Configure CAN TX pin.
     pinConfig.Pin = txPin;
     HAL_GPIO_Init(txPort, &pinConfig);
+
+    while (HAL_CAN_Init(&can->handle) != HAL_OK) {
+        cmr_panic("HAL_CAN_Init() failed!");
+    }
 
     if (HAL_CAN_Start(&can->handle) != HAL_OK) {
         cmr_panic("HAL_CAN_Start() failed!");
