@@ -30,6 +30,8 @@ void cmr_canInit(
     GPIO_TypeDef *txPort, uint16_t txPin
 );
 
+CAN_HandleTypeDef *cmr_canHandle(cmr_can_t *can);
+
 /**
  * @brief Represents a CAN filter's configuration.
  */
@@ -40,7 +42,7 @@ typedef struct {
      */
     uint32_t rxFIFO;
     uint16_t ids[4];    /**< @brief The IDs to whitelist. */
-} cmr_canFilterBank_t;
+} cmr_canFilter_t;
 
 void cmr_canFilter(
     cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen
