@@ -147,16 +147,16 @@ void cmr_canFilter(
         cmr_panic("Too many filter banks!");
     }
 
-    uint32_t bank = 0;
-
     CAN_TypeDef *instance = can->handle.Instance;
-    if (instance == CAN2) {
-        // CAN2 uses banks 14-27.
-        bank += CMR_CAN_FILTERBANKS;
-    }
 
-    while (bank < filtersLen) {
-        const cmr_canFilter_t *filter = filters + bank;
+    for (size_t i = 0; i < filtersLen; i++) {
+        const cmr_canFilter_t *filter = filters + i;
+
+        uint32_t bank = i;
+        if (instance == CAN2) {
+            // CAN2 uses banks 14-27.
+            bank += CMR_CAN_FILTERBANKS;
+        }
 
         // In 16 bit ID list mode, FilterIdHigh, FilterIdLow, FilterMaskIdHigh,
         // and FilterMaskIdLow all serve as a whitelist of left-aligned 11-bit
