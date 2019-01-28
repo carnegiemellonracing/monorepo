@@ -9,19 +9,21 @@
 #include <task.h>           // xTaskCreate()
 
 #include <CMR/can.h>        // CAN interface
+#include <CMR/can_ids.h>    // CMR CAN IDs
 #include <CMR/can_types.h>  // CMR CAN types
 
 #include "can.h"    // Interface to implement
 #include "adc.h"    // adcVSense
+#include "gpio.h"   // XXX
 
 /** @brief Primary CAN interface. */
 static cmr_can_t can;
 
 /** @brief CAN TX priority. */
-static const uint32_t canTXPriority  = 5;
+static const uint32_t canTXPriority = 5;
 
 /** @brief CAN TX period (milliseconds). */
-static const TickType_t canTXPeriod_ms = 10;
+static const TickType_t canTXPeriod_ms = 100;
 
 /**
  * @brief Callback for receiving CAN messages.
@@ -31,8 +33,16 @@ static const TickType_t canTXPeriod_ms = 10;
  * @param len The received data's length.
  */
 static void canRXCallback(uint16_t id, const void *data, size_t len) {
+    const struct {
+        uint8_t pin;
+    } *test = data;
+
     switch (id) {
         // TODO
+        // XXX
+        case 0x200:
+            gpioToggle(test->pin);
+            break;
     }
 }
 
@@ -48,13 +58,16 @@ static void canTXTask(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        uint8_t cdcHeartbeat[3] = {
-            1,  // TODO junk
-            // TODO Overflow; we will go to reporting mV in a uint16_t soon.
-            (uint8_t) (adcVSense->value * 15 / 113),
-            3   // TODO junk
+        // XXX
+        cmr_canDIMPowerDiagnostics_t msg = {
+            .busVoltage_mV = adcVSense->value,
+            .busCurrent_mA = adcISense->value
         };
-        cmr_canTX(&can, 0x201, cdcHeartbeat, sizeof(cdcHeartbeat));
+
+        cmr_canTX(
+            &can, CMR_CANID_DIM_POWER_DIAGNOSTICS,
+            &msg, sizeof(msg)
+        );
 
         vTaskDelayUntil(&lastWakeTime, canTXPeriod_ms);
     }
@@ -76,10 +89,7 @@ void canInit(void) {
     const cmr_canFilter_t canFilters[] = {
         {
             .rxFIFO = CAN_RX_FIFO0,
-            .ids = { 0x281, 0x281, 0x281, 0x281 }   // TODO: use ID constants
-        }, {
-            .rxFIFO = CAN_RX_FIFO1,
-            .ids = { 0x4A7, 0x4A7, 0x4A7, 0x4A7 }   // TODO: use ID constants
+            .ids = { 0x200, 0x200, 0x200, 0x200 }   // TODO: use ID constants
         }
     };
     cmr_canFilter(
