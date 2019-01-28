@@ -16,21 +16,33 @@
 #include <stdint.h>
 
 /**
+ * @brief Callback for received messages.
+ *
+ * Called with the received message's CAN ID, the received data, and its length
+ * in bytes.
+ */
+typedef void (*cmr_canRXCallback_t)(
+    uint16_t id, const void *data, size_t len
+);
+
+/**
  * @brief Represents a CAN interface.
  *
  * @note The contents of this struct are opaque to the library consumer.
  */
 typedef struct {
     CAN_HandleTypeDef handle;   /**< @brief HAL CAN handle. */
+
+    /** @brief Callback for received messages. */
+    cmr_canRXCallback_t rxCallback;
 } cmr_can_t;
 
 void cmr_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
+    cmr_canRXCallback_t rxCallback, const char *rxTaskName,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
     GPIO_TypeDef *txPort, uint16_t txPin
 );
-
-CAN_HandleTypeDef *cmr_canHandle(cmr_can_t *can);
 
 /**
  * @brief Represents a CAN filter's configuration.
@@ -46,6 +58,10 @@ typedef struct {
 
 void cmr_canFilter(
     cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen
+);
+
+int cmr_canTX(
+    cmr_can_t *can, uint16_t id, const void *data, size_t len
 );
 
 void cmr_canFieldEnable(uint8_t *field, const void *value, size_t len);

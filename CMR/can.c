@@ -9,11 +9,52 @@
 
 #ifdef HAL_CAN_MODULE_ENABLED
 
+#include <FreeRTOS.h>   // FreeRTOS interface
+#include <task.h>       // Task interface
+
 #include "rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
 #include "panic.h"  // cmr_panic()
 
 /** @brief Number of CAN filter banks allocated for each interface. */
 static const uint32_t CMR_CAN_FILTERBANKS = 14;
+
+/** @brief CAN RX priority. */
+static const uint32_t cmr_canRXPriority  = 7;
+
+/** @brief CAN RX period (milliseconds). */
+static const TickType_t cmr_canRXPeriod_ms = 1;
+
+/**
+ * @brief Task for receiving CAN messages (polling RX FIFOs).
+ *
+ * @param pvParameters The associated CAN interface.
+ *
+ * @return Does not return.
+ */
+static void cmr_canRXTask(void *pvParameters) {
+    cmr_can_t *can = pvParameters;
+    CAN_HandleTypeDef *canHandle = &can->handle;
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
+        CAN_RxHeaderTypeDef rxHeader = { 0 };
+        uint8_t rxData[8];
+
+        // Receive on FIFO 0.
+        while (HAL_CAN_GetRxFifoFillLevel(canHandle, CAN_RX_FIFO0) > 0) {
+            HAL_CAN_GetRxMessage(canHandle, CAN_RX_FIFO0, &rxHeader, rxData);
+            can->rxCallback((uint16_t) rxHeader.StdId, rxData, rxHeader.DLC);
+        }
+
+        // Receive on FIFO 1.
+        while (HAL_CAN_GetRxFifoFillLevel(canHandle, CAN_RX_FIFO1) > 0) {
+            HAL_CAN_GetRxMessage(canHandle, CAN_RX_FIFO1, &rxHeader, rxData);
+            can->rxCallback((uint16_t) rxHeader.StdId, rxData, rxHeader.DLC);
+        }
+
+        vTaskDelayUntil(&lastWakeTime, cmr_canRXPeriod_ms);
+    }
+}
 
 /**
  * @brief Initializes a CAN interface.
@@ -23,6 +64,8 @@ static const uint32_t CMR_CAN_FILTERBANKS = 14;
  *
  * @param can The interface to initialize.
  * @param instance The HAL CAN instance (`CANx` from `stm32f413xx.h`).
+ * @param rxCallback Callback for received messages on this interface.
+ * @param rxTaskName Receive task name for this interface.
  * @param rxPort Receiving GPIO port (`GPIOx` from `stm32f413xx.h`).
  * @param rxPin Receiving GPIO pin (`GPIO_PIN_x` from `stm32f4xx_hal_gpio.h`).
  * @param txPort Transmitting GPIO port.
@@ -30,6 +73,7 @@ static const uint32_t CMR_CAN_FILTERBANKS = 14;
  */
 void cmr_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
+    cmr_canRXCallback_t rxCallback, const char *rxTaskName,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
     GPIO_TypeDef *txPort, uint16_t txPin
 ) {
@@ -49,7 +93,9 @@ void cmr_canInit(
                 .ReceiveFifoLocked = DISABLE,
                 .TransmitFifoPriority = DISABLE
             }
-        }
+        },
+
+        .rxCallback = rxCallback
     };
 
     cmr_rccCANClockEnable(instance);
@@ -77,17 +123,13 @@ void cmr_canInit(
     if (HAL_CAN_Start(&can->handle) != HAL_OK) {
         cmr_panic("HAL_CAN_Start() failed!");
     }
-}
 
-/**
- * @brief Gets the underlying HAL CAN handle for the given interface.
- *
- * @param can The CAN interface.
- *
- * @return The underlying HAL CAN handle.
- */
-CAN_HandleTypeDef *cmr_canHandle(cmr_can_t *can) {
-    return &can->handle;
+    // Create receive task.
+    xTaskCreate(
+        cmr_canRXTask, rxTaskName,
+        configMINIMAL_STACK_SIZE, can,
+        cmr_canRXPriority, NULL
+    );
 }
 
 /**
@@ -138,6 +180,41 @@ void cmr_canFilter(
             cmr_panic("HAL_CAN_ConfigFilter() failed!");
         }
     }
+}
+
+/**
+ * @brief Queues a CAN message for transmission.
+ *
+ * @param can The CAN interface to send on.
+ * @param id The message's CAN ID.
+ * @param data The data to send.
+ * @param len The data's length, in bytes.
+ *
+ * @return 0 on success, or a negative error code.
+ */
+int cmr_canTX(
+    cmr_can_t *can, uint16_t id, const void *data, size_t len
+) {
+    CAN_TxHeaderTypeDef txHeader = {
+        .StdId = id,
+        .ExtId = 0,
+        .IDE = CAN_ID_STD,
+        .RTR = CAN_RTR_DATA,
+        .DLC = len,
+        .TransmitGlobalTime = DISABLE
+    };
+
+    // Even though the interface for HAL_CAN_AddTxMessage() does not specify the
+    // data as `const`, it does not touch the data. Oh well.
+    uint32_t txMailbox;
+    HAL_StatusTypeDef status = HAL_CAN_AddTxMessage(
+        &can->handle, &txHeader, (void *) data, &txMailbox
+    );
+    if (status != HAL_OK) {
+        return -1;
+    }
+
+    return 0;
 }
 
 /**
