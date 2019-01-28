@@ -100,7 +100,7 @@ typedef struct {
 typedef struct {
     uint8_t requestedState;     /**< @brief Requested state. */
     uint8_t requestedGear;      /**< @brief Requested gear. */
-} cmr_canDIMR84equest_t;
+} cmr_canDIMRequest_t;
 
 /** @brief Driver Interface Module power diagnostics. */
 typedef struct {
