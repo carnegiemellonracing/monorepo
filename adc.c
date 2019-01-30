@@ -45,7 +45,7 @@ static void adcSampleTask(void *pvParameters) {
  * @brief Initializes the ADC interface.
  */
 void adcInit(void) {
-    // ADC initialization and channel configuraiton.
+    // ADC initialization and channel configuration.
     cmr_adcInit(&adc, ADC1);
     adcVSense = cmr_adcAddChannel(
         &adc, ADC_CHANNEL_0,
