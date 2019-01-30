@@ -14,6 +14,7 @@
 #include <CMR/rcc.h>    // RCC interface
 #include <CMR/can.h>    // CAN interface
 #include <CMR/adc.h>    // ADC interface
+#include <CMR/gpio.h>   // cmr_gpioToggle
 
 #include "gpio.h"   // Board-specific GPIO interface
 #include "can.h"    // Board-specific CAN interface
@@ -33,11 +34,11 @@ static const TickType_t statusLEDPeriod_ms = 250;
  * @return Does not return.
  */
 static void statusLEDTask(void *pvParameters) {
-    gpioWrite(GPIO_LED_STATUS, 0);
+    cmr_gpioWrite(GPIO_LED_STATUS, 0);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        gpioToggle(GPIO_LED_STATUS);
+        cmr_gpioToggle(GPIO_LED_STATUS);
 
         vTaskDelayUntil(&lastWakeTime, statusLEDPeriod_ms);
     }

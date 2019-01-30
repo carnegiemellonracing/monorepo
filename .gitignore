@@ -1,4 +1,5 @@
 Release/
+Debug/
 .settings/
 *.ld
-/Debug/
+.vscode/

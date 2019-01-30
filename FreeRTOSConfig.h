@@ -153,12 +153,17 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 /* Normal assert() semantics without relying on the provision of an assert.h
 header file. */
 /* USER CODE BEGIN 1 */
+#ifdef configASSERT
+#undef configASSERT
 #include <CMR/panic.h>
 #define configASSERT(x) do { \
     if (!(x)) { \
         cmr_panic("Assertion failed: " __FILE__ ":%d: " #x, __LINE__); \
     } \
 } while (0)
+#else
+#define configASSERT(x)
+#endif /* configASSERT */
 
 /* USER CODE END 1 */
 

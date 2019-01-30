@@ -11,6 +11,7 @@
 #include <CMR/can.h>        // CAN interface
 #include <CMR/can_ids.h>    // CMR CAN IDs
 #include <CMR/can_types.h>  // CMR CAN types
+#include <CMR/gpio.h>
 
 #include "can.h"    // Interface to implement
 #include "adc.h"    // adcVSense
@@ -41,7 +42,7 @@ static void canRXCallback(uint16_t id, const void *data, size_t len) {
         // TODO
         // XXX
         case 0x200:
-            gpioToggle(test->pin);
+            cmr_gpioToggle(test->pin);
             break;
     }
 }
