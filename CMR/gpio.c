@@ -10,7 +10,7 @@
 #include "rcc.h"    // cmr_rccGPIOClockEnable()
 #include "FreeRTOSConfig.h" // configASSERT
 
-static cmr_gpioPinConfig_t *gpioPinConfigs;
+static const cmr_gpioPinConfig_t *gpioPinConfigs;
 static size_t gpioPinConfigsLen;
 
 /**
@@ -20,8 +20,8 @@ static size_t gpioPinConfigsLen;
  * @param pinConfigsLen The number of pin configurations.
  */
 void cmr_gpioPinInit(const cmr_gpioPinConfig_t *pinConfigs, const size_t pinConfigsLen) {
-    gpioPinConfigs = (cmr_gpioPinConfig_t *)(pinConfigs);
-    gpioPinConfigsLen = (size_t)(pinConfigsLen);
+    gpioPinConfigs = pinConfigs;
+    gpioPinConfigsLen = pinConfigsLen;
 
     for (size_t i = 0; i < gpioPinConfigsLen; i++) {
         const cmr_gpioPinConfig_t *pinConfig = &gpioPinConfigs[i];
@@ -95,7 +95,7 @@ int cmr_gpioRead(size_t pin) {
 
 /**
  * @brief Atomically sets and resets the specified pins on the given port.
- * 
+ *
  * @note See STM32F413 RM0430 7.4.7 for more implementation details.
  *
  * @param port GPIO port to modify (i.e. `GPIOx` from `stm32f413xx.h`);
