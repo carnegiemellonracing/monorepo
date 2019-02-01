@@ -9,7 +9,6 @@
 
 #ifdef HAL_CAN_MODULE_ENABLED
 
-#include <FreeRTOS.h>   // FreeRTOS interface
 #include <task.h>       // Task interface
 
 #include "rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
@@ -97,6 +96,9 @@ void cmr_canInit(
 
         .rxCallback = rxCallback
     };
+
+    can->txMutex = xSemaphoreCreateMutexStatic(&can->txMutexBuf);
+    configASSERT(can->txMutex != NULL);
 
     cmr_rccCANClockEnable(instance);
     cmr_rccGPIOClockEnable(rxPort);
@@ -204,6 +206,11 @@ int cmr_canTX(
         .TransmitGlobalTime = DISABLE
     };
 
+    BaseType_t result = xSemaphoreTake(can->txMutex, portMAX_DELAY);
+    if (result != pdTRUE) {
+        cmr_panic("cmr_canTX() xSemaphoreTake() timed out!");
+    }
+
     // Even though the interface for HAL_CAN_AddTxMessage() does not specify the
     // data as `const`, it does not touch the data. Oh well.
     uint32_t txMailbox;
@@ -213,6 +220,8 @@ int cmr_canTX(
     if (status != HAL_OK) {
         return -1;
     }
+
+    xSemaphoreGive(can->txMutex);
 
     return 0;
 }

@@ -13,6 +13,9 @@
 
 #ifdef HAL_CAN_MODULE_ENABLED
 
+#include <FreeRTOS.h>   // FreeRTOS interface
+#include <semphr.h>     // Semaphore interface
+
 #include <stdint.h>
 
 /**
@@ -33,7 +36,8 @@ typedef void (*cmr_canRXCallback_t)(
 typedef struct {
     CAN_HandleTypeDef handle;   /**< @brief HAL CAN handle. */
 
-    // TODO we need a lock for TX here
+    SemaphoreHandle_t txMutex;      /**< @brief Transmit mutex. */
+    StaticSemaphore_t txMutexBuf;   /**< @brief Transmit mutex buffer. */
 
     /** @brief Callback for received messages. */
     cmr_canRXCallback_t rxCallback;
