@@ -2,29 +2,35 @@
  * @file can.c
  * @brief Board-specific CAN implementation.
  *
+ * Adding a new CAN RX struct:
+ *
+ * 1. Declare a `static` CAN struct for the data (suffix it _data).
+ *      - The struct should likely have an initializer.
+ * 2. Declare a `volatile const` pointer to that struct.
+ * 3. Expose the pointer as an `extern volatile const` in `can.h`.
+ *
  * @author Carnegie Mellon Racing
  */
 
-#include <FreeRTOS.h>       // FreeRTOS interface
-#include <task.h>           // xTaskCreate()
+#include <string.h>     // memcpy()
 
-#include <CMR/can.h>        // CAN interface
-#include <CMR/can_ids.h>    // CMR CAN IDs
-#include <CMR/can_types.h>  // CMR CAN types
-#include <CMR/gpio.h>
+#include <FreeRTOS.h>   // FreeRTOS interface
+#include <task.h>       // xTaskCreate()
+
+#include <CMR/can.h>    // CAN interface
 
 #include "can.h"    // Interface to implement
-#include "adc.h"    // adcVSense
-#include "gpio.h"   // XXX
+#include "adc.h"    // adcVSense, adcISense
 
-/** @brief Primary CAN interface. */
-static cmr_can_t can;
+/** @brief VSM heartbeat data. */
+static cmr_canHeartbeat_t canHeartbeatVSM_data = {
+    .state = CMR_CAN_UNKNOWN,
+    .error = { 0 },
+    .warning = { 0 }
+};
 
-/** @brief CAN TX priority. */
-static const uint32_t canTXPriority = 5;
-
-/** @brief CAN TX period (milliseconds). */
-static const TickType_t canTXPeriod_ms = 100;
+/** @brief VSM heartbeat. */
+volatile const cmr_canHeartbeat_t *canHeartbeatVSM = &canHeartbeatVSM_data;
 
 /**
  * @brief Callback for receiving CAN messages.
@@ -34,43 +40,86 @@ static const TickType_t canTXPeriod_ms = 100;
  * @param len The received data's length.
  */
 static void canRXCallback(uint16_t id, const void *data, size_t len) {
-    const struct {
-        uint8_t pin;
-    } *test = data;
+    void *dest = NULL;
+    size_t destLen = 0;
 
     switch (id) {
-        // TODO
-        // XXX
-        case 0x200:
-            cmr_gpioToggle(test->pin);
+        case CMR_CANID_HEARTBEAT_VSM:
+            dest = &canHeartbeatVSM_data;
+            destLen = sizeof(canHeartbeatVSM_data);
             break;
     }
+
+    if (dest == NULL || len != destLen) {
+        return;     // Unknown ID/length.
+    }
+
+    memcpy(dest, data, len);
 }
 
+/** @brief Primary CAN interface. */
+static cmr_can_t can;
+
+/** @brief CAN 10 Hz TX priority. */
+static const uint32_t canTX10HzPriority = 3;
+
+/** @brief CAN 10 Hz TX period (milliseconds). */
+static const TickType_t canTX10HzPeriod_ms = 100;
+
 /**
- * @brief Task for sending CAN messages.
+ * @brief Task for sending CAN messages at 10 Hz.
  *
  * @param pvParameters Ignored.
  *
  * @return Does not return.
  */
-static void canTXTask(void *pvParameters) {
+static void canTX10HzTask(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // XXX
+        // XXX Replace with an appropriate message.
         cmr_canDIMPowerDiagnostics_t msg = {
             .busVoltage_mV = adcVSense->value,
             .busCurrent_mA = adcISense->value
         };
 
-        cmr_canTX(
-            &can, CMR_CANID_DIM_POWER_DIAGNOSTICS,
-            &msg, sizeof(msg)
-        );
+        // XXX Replace with an appropriate ID.
+        canTX(CMR_CANID_DIM_POWER_DIAGNOSTICS, &msg, sizeof(msg));
 
-        vTaskDelayUntil(&lastWakeTime, canTXPeriod_ms);
+        vTaskDelayUntil(&lastWakeTime, canTX10HzPeriod_ms);
+    }
+}
+
+/** @brief CAN 100 Hz TX priority. */
+static const uint32_t canTX100HzPriority = 5;
+
+/** @brief CAN 100 Hz TX period (milliseconds). */
+static const TickType_t canTX100HzPeriod_ms = 10;
+
+/**
+ * @brief Task for sending CAN messages at 100 Hz.
+ *
+ * @param pvParameters Ignored.
+ *
+ * @return Does not return.
+ */
+static void canTX100HzTask(void *pvParameters) {
+    (void) pvParameters;    // Placate compiler.
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
+        // XXX Update these fields correctly.
+        cmr_canHeartbeat_t heartbeat = {
+            .state = canHeartbeatVSM->state,
+            .error = { 0 },
+            .warning = { 0 }
+        };
+
+        // XXX Replace with an appropriate ID.
+        canTX(CMR_CANID_HEARTBEAT_DIM, &heartbeat, sizeof(heartbeat));
+
+        vTaskDelayUntil(&lastWakeTime, canTX100HzPeriod_ms);
     }
 }
 
@@ -87,10 +136,16 @@ void canInit(void) {
     );
 
     // CAN2 filters.
+    // XXX Change these to whitelist the appropriate IDs.
     const cmr_canFilter_t canFilters[] = {
         {
             .rxFIFO = CAN_RX_FIFO0,
-            .ids = { 0x200, 0x200, 0x200, 0x200 }   // TODO: use ID constants
+            .ids = {
+                CMR_CANID_HEARTBEAT_VSM,
+                CMR_CANID_HEARTBEAT_VSM,
+                CMR_CANID_HEARTBEAT_VSM,
+                CMR_CANID_HEARTBEAT_VSM
+            }
         }
     };
     cmr_canFilter(
@@ -99,8 +154,23 @@ void canInit(void) {
 
     // Task creation.
     xTaskCreate(
-        canTXTask, "canTX",
-        configMINIMAL_STACK_SIZE, NULL, canTXPriority, NULL
+        canTX10HzTask, "canTX10Hz",
+        configMINIMAL_STACK_SIZE, NULL, canTX10HzPriority, NULL
     );
+    xTaskCreate(
+        canTX100HzTask, "canTX100Hz",
+        configMINIMAL_STACK_SIZE, NULL, canTX100HzPriority, NULL
+    );
+}
+
+/**
+ * @brief Sends a CAN message with the given ID.
+ *
+ * @param id The ID for the message.
+ * @param data The data to send.
+ * @param len The data's length, in bytes.
+ */
+void canTX(cmr_canID_t id, const void *data, size_t len) {
+    cmr_canTX(&can, id, data, len);
 }
 
