@@ -116,7 +116,7 @@ void cmr_canInit(
     pinConfig.Pin = txPin;
     HAL_GPIO_Init(txPort, &pinConfig);
 
-    while (HAL_CAN_Init(&can->handle) != HAL_OK) {
+    if (HAL_CAN_Init(&can->handle) != HAL_OK) {
         cmr_panic("HAL_CAN_Init() failed!");
     }
 

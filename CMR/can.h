@@ -33,6 +33,8 @@ typedef void (*cmr_canRXCallback_t)(
 typedef struct {
     CAN_HandleTypeDef handle;   /**< @brief HAL CAN handle. */
 
+    // TODO we need a lock for TX here
+
     /** @brief Callback for received messages. */
     cmr_canRXCallback_t rxCallback;
 } cmr_can_t;
