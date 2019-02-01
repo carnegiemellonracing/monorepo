@@ -740,6 +740,12 @@ static void vPortEnableVFP( void )
 			http://www.freertos.org/RTOS-Cortex-M3-M4.html
 			http://www.freertos.org/FAQHelp.html */
 			configASSERT( ucCurrentPriority >= ucMaxSysCallPriority );
+
+            /*
+             * 2019-02-01 szz: fix compiler complaining about unused variable
+             * when configASSERT is a no-op
+             */
+            (void) ucCurrentPriority;
 		}
 
 		/* Priority grouping:  The interrupt controller (NVIC) allows the bits
