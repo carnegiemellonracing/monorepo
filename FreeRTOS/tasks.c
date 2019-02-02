@@ -67,8 +67,6 @@
     1 tab == 4 spaces!
 */
 
-#include <CMR/tasks.h>
-
 /* Standard includes. */
 #include <stdlib.h>
 #include <string.h>

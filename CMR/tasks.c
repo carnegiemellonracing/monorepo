@@ -5,7 +5,8 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "tasks.h"  // Interface to implement
+#include <FreeRTOS.h>   // FreeRTOS interface
+#include <task.h>       // StaticTask_t, StackType_t
 
 #if (configSUPPORT_STATIC_ALLOCATION)
 

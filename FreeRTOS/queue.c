@@ -353,11 +353,6 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 			the real queue and semaphore structures. */
 			volatile size_t xSize = sizeof( StaticQueue_t );
 			configASSERT( xSize == sizeof( Queue_t ) );
-
-			/* Feb 1 2019: Fix compiler complaining about unused variable
-			 * when configASSERT is a no-op
-			 */
-			(void) xSize;
 		}
 		#endif /* configASSERT_DEFINED */
 
