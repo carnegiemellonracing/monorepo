@@ -31,7 +31,7 @@ void vApplicationGetIdleTaskMemory(
 
     *task = &taskBuf;
     *stack = stackBuf;
-    *stackLen = sizeof(stack) / sizeof(stack[0]);
+    *stackLen = sizeof(stackBuf) / sizeof(stackBuf[0]);
 }
 
 #if (configUSE_TIMERS)
@@ -58,7 +58,7 @@ void vApplicationGetTimerTaskMemory(
 
     *task = &taskBuf;
     *stack = stackBuf;
-    *stackLen = sizeof(stack) / sizeof(stack[0]);
+    *stackLen = sizeof(stackBuf) / sizeof(stackBuf[0]);
 }
 
 #endif /* configUSE_TIMERS */
