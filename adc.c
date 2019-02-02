@@ -46,6 +46,7 @@ static void adcSampleTask(void *pvParameters) {
  */
 void adcInit(void) {
     // ADC initialization and channel configuration.
+	// XXX edit me to match your pin configuration
     cmr_adcInit(&adc, ADC1);
     adcVSense = cmr_adcAddChannel(
         &adc, ADC_CHANNEL_0,

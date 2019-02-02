@@ -21,7 +21,7 @@
 #include "adc.h"    // Board-specific ADC interface
 
 /** @brief Status LED priority. */
-const uint32_t statusLEDPriority = 2;
+const const uint32_t statusLEDPriority = 2;
 
 /** @brief Status LED period (milliseconds). */
 static const TickType_t statusLEDPeriod_ms = 250;
