@@ -97,7 +97,7 @@ void cmr_canInit(
         .rxCallback = rxCallback
     };
 
-    can->txMutex = xSemaphoreCreateMutexStatic(&can->txMutexBuf);
+    can->txMutex = xSemaphoreCreateMutex();
     configASSERT(can->txMutex != NULL);
 
     cmr_rccCANClockEnable(instance);

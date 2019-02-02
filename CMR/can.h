@@ -34,10 +34,11 @@ typedef void (*cmr_canRXCallback_t)(
  * @note The contents of this struct are opaque to the library consumer.
  */
 typedef struct {
-    CAN_HandleTypeDef handle;   /**< @brief HAL CAN handle. */
+    /**< @brief HAL CAN handle. */
+    CAN_HandleTypeDef handle;
 
-    SemaphoreHandle_t txMutex;      /**< @brief Transmit mutex. */
-    StaticSemaphore_t txMutexBuf;   /**< @brief Transmit mutex buffer. */
+    /**< @brief Transmit mutex. */
+    SemaphoreHandle_t txMutex;
 
     /** @brief Callback for received messages. */
     cmr_canRXCallback_t rxCallback;
