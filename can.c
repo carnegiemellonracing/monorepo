@@ -32,31 +32,6 @@ static cmr_canHeartbeat_t canHeartbeatVSM_data = {
 /** @brief VSM heartbeat. */
 volatile const cmr_canHeartbeat_t *canHeartbeatVSM = &canHeartbeatVSM_data;
 
-/**
- * @brief Callback for receiving CAN messages.
- *
- * @param id The received message's CAN ID.
- * @param data The received data.
- * @param len The received data's length.
- */
-static void canRXCallback(uint16_t id, const void *data, size_t len) {
-    void *dest = NULL;
-    size_t destLen = 0;
-
-    switch (id) {
-        case CMR_CANID_HEARTBEAT_VSM:
-            dest = &canHeartbeatVSM_data;
-            destLen = sizeof(canHeartbeatVSM_data);
-            break;
-    }
-
-    if (dest == NULL || len != destLen) {
-        return;     // Unknown ID/length.
-    }
-
-    memcpy(dest, data, len);
-}
-
 /** @brief Primary CAN interface. */
 static cmr_can_t can;
 
@@ -130,7 +105,7 @@ void canInit(void) {
     // CAN2 initialization.
     cmr_canInit(
         &can, CAN2,
-        canRXCallback, "canRX",
+        "canRX",
         GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
         GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
     );
