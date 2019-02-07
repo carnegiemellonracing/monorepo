@@ -36,7 +36,7 @@ static const TickType_t cmr_canRXPeriod_ms = 1;
 static int cmr_canTimeout(
     TickType_t lastReceived_ms, TickType_t threshold_ms, TickType_t now_ms
 ) {
-    TickType_t release_ms = now_ms + threshold_ms;
+    TickType_t release_ms = lastReceived_ms + threshold_ms;
 
     if (now_ms < lastReceived_ms && release_ms <= lastReceived_ms) {
         // Current time overflowed; release did not. Timeout!
