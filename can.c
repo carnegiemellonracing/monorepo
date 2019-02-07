@@ -2,12 +2,11 @@
  * @file can.c
  * @brief Board-specific CAN implementation.
  *
- * Adding a new CAN RX struct:
+ * Adding a new periodic message struct:
  *
- * 1. Declare a `volatile const` pointer to the struct's type.
- * 2. Add a configuration entry in `canRXMeta`, providing the struct pointer as
- *    the `payloadRef`.
- * 3. Expose the pointer as an `extern volatile const` in `can.h`.
+ * 1. Add the corresponding index to the `canRX_t` enum in `can.h`.
+ * 2. Add a configuration entry in `canRXMeta` at that index.
+ * 3. Access the message using `canRXMeta[index]`.
  *
  * @author Carnegie Mellon Racing
  */
@@ -17,19 +16,18 @@
 #include <FreeRTOS.h>   // FreeRTOS interface
 #include <task.h>       // xTaskCreate()
 
-#include <CMR/can.h>    // CAN interface
-
 #include "can.h"    // Interface to implement
 #include "adc.h"    // adcVSense, adcISense
 
-/** @brief VSM heartbeat. */
-volatile const cmr_canHeartbeat_t *canHeartbeatVSM;
-
-/** @brief CAN periodic message receive metadata. */
-static cmr_canRXMeta_t canRXMeta[] = {
-    {
+/**
+ * @brief CAN periodic message receive metadata
+ *
+ * @note Indexed by `canRX_t`.
+ */
+cmr_canRXMeta_t canRXMeta[] = {
+    // XXX Edit this to include the appropriate periodic messages.
+    [CANRX_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
-        .payloadRef = (volatile void **) &canHeartbeatVSM,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     }
@@ -85,11 +83,15 @@ static const TickType_t canTX100HzPeriod_ms = 10;
 static void canTX100HzTask(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
+    // XXX Example message retrieval.
+    volatile cmr_canHeartbeat_t *heartbeatVSM =
+        (void *) &canRXMeta[CANRX_HEARTBEAT_VSM].payload;
+
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         // XXX Update these fields correctly.
         cmr_canHeartbeat_t heartbeat = {
-            .state = canHeartbeatVSM->state,
+            .state = heartbeatVSM->state,
             .error = { 0 },
             .warning = { 0 }
         };
