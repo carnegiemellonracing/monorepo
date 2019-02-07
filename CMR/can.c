@@ -125,7 +125,7 @@ static void cmr_canRXData(
         return;
     }
 
-    memcpy(meta->payload, data, dataLen);
+    memcpy((void *) meta->payload, data, dataLen);
     meta->lastReceived_ms = xTaskGetTickCount();
 }
 
