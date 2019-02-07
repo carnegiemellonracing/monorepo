@@ -9,22 +9,14 @@
 
 #ifdef HAL_CAN_MODULE_ENABLED
 
-#include <task.h>       // Task interface
+#include <task.h>   // Task interface
+#include <string.h> // memcpy()
 
 #include "rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
 #include "panic.h"  // cmr_panic()
 
 /** @brief Number of CAN filter banks allocated for each interface. */
 static const uint32_t CMR_CAN_FILTERBANKS = 14;
-
-/** @brief The metadata for possible structs to receive over CAN. */
-static cmr_rxMetadata_t *cmr_rxMetadataArray;
-
-/** @brief The number of possible structs to receive over CAN. */
-static size_t cmr_rxMetadataArrayLength;
-
-/** @brief The index representing no payload corresponding to the provided CAN ID. */
-static const size_t NO_PAYLOAD = SIZE_MAX;
 
 /** @brief CAN RX priority. */
 static const uint32_t cmr_canRXPriority  = 7;
@@ -33,13 +25,118 @@ static const uint32_t cmr_canRXPriority  = 7;
 static const TickType_t cmr_canRXPeriod_ms = 1;
 
 /**
+ * @brief Checks if a timeout has occurred.
+ *
+ * @param lastReceived_ms Last receive timestamp, in milliseconds.
+ * @param threshold_ms Threshold period, in milliseconds.
+ * @param now_ms Current timestamp, in milliseconds.
+ *
+ * @return A negative value if a timeout has occurred; otherwise 0.
+ */
+static int cmr_canTimeout(
+    TickType_t lastReceived_ms, TickType_t threshold_ms, TickType_t now_ms
+) {
+    TickType_t release_ms = now_ms + threshold_ms;
+
+    if (now_ms < lastReceived_ms && release_ms <= lastReceived_ms) {
+        // Current time overflowed; release did not. Timeout!
+        return -1;
+    }
+
+    if (lastReceived_ms <= now_ms && release_ms < lastReceived_ms) {
+        // Current time did not overflow; release time did. No timeout.
+        return 0;
+    }
+
+    // Neither current nor release overflowed, or both have.
+    // In either case, release less than current indicates timeout.
+    if (release_ms < now_ms) {
+        return -1;
+    }
+
+    return 0;
+}
+
+/**
+ * @brief Checks if the given periodic message has a timeout warning.
+ *
+ * @param meta The periodic message's reception metadata.
+ * @param now_ms Current timestamp, in milliseconds.
+ *
+ * @return A negative value if a timeout warning has occurred; otherwise 0.
+ */
+int cmr_canRXMetaTimeoutWarn(const cmr_canRXMeta_t *meta, TickType_t now_ms) {
+    return cmr_canTimeout(
+        meta->lastReceived_ms, meta->timeoutWarn_ms, now_ms
+    );
+}
+
+/**
+ * @brief Checks if the given periodic message has a timeout error.
+ *
+ * @param meta The periodic message's reception metadata.
+ * @param now_ms Current timestamp, in milliseconds.
+ *
+ * @return A negative value if a timeout error has occurred; otherwise 0.
+ */
+int cmr_canRXMetaTimeoutError(const cmr_canRXMeta_t *meta, TickType_t now_ms) {
+    return cmr_canTimeout(
+        meta->lastReceived_ms, meta->timeoutError_ms, now_ms
+    );
+}
+
+/**
+ * @brief Searches for the receive metadata associated with the given CAN ID.
+ *
+ * @param can The interface.
+ * @param canID The CAN ID to search for.
+ *
+ * @return The associated receive metadata, or `NULL` if not found.
+ */
+static cmr_canRXMeta_t *cmr_canRXMetaFind(cmr_can_t *can, uint16_t canID) {
+    for (size_t i = 0; i < can->rxMetaLen; i++) {
+        cmr_canRXMeta_t *meta = can->rxMeta + i;
+        if (meta->canID == canID) {
+            return meta;
+        }
+    }
+
+    return NULL;    // No matching metadata.
+}
+
+/**
+ * @brief Callback for reading CAN data into structs.
+ *
+ * @param can The interface.
+ * @param canID The received message's CAN ID.
+ * @param data The received data.
+ * @param dataLen The received data's length.
+ */
+static void cmr_canRXData(
+    cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen
+) {
+    cmr_canRXMeta_t *meta = cmr_canRXMetaFind(can, canID);
+    if (meta == NULL) {
+        // Not a configured message; attempt to use the callback.
+        if (can->rxCallback) {
+            can->rxCallback(can, canID, data, dataLen);
+        }
+
+        return;
+    }
+
+    memcpy(meta->payload, data, dataLen);
+    meta->lastReceived_ms = xTaskGetTickCount();
+}
+
+/**
  * @brief Task for receiving CAN messages (polling RX FIFOs).
  *
- * @param pvParameters The associated CAN interface.
+ * @param pvParameters (cmr_can_t *) The associated CAN interface.
  *
  * @return Does not return.
  */
-static void cmr_canRX_task(void *pvParameters) {
+static void cmr_canRXTask(void *pvParameters) {
     cmr_can_t *can = pvParameters;
     CAN_HandleTypeDef *canHandle = &can->handle;
 
@@ -51,48 +148,21 @@ static void cmr_canRX_task(void *pvParameters) {
         // Receive on FIFO 0.
         while (HAL_CAN_GetRxFifoFillLevel(canHandle, CAN_RX_FIFO0) > 0) {
             HAL_CAN_GetRxMessage(canHandle, CAN_RX_FIFO0, &rxHeader, rxData);
-            cmr_readRXData((uint16_t) rxHeader.StdId, rxData, rxHeader.DLC);
+            cmr_canRXData(
+                can, (uint16_t) rxHeader.StdId, rxData, rxHeader.DLC
+            );
         }
 
         // Receive on FIFO 1.
         while (HAL_CAN_GetRxFifoFillLevel(canHandle, CAN_RX_FIFO1) > 0) {
             HAL_CAN_GetRxMessage(canHandle, CAN_RX_FIFO1, &rxHeader, rxData);
-            cmr_readRXData((uint16_t) rxHeader.StdId, rxData, rxHeader.DLC);
+            cmr_canRXData(
+                can, (uint16_t) rxHeader.StdId, rxData, rxHeader.DLC
+            );
         }
 
         vTaskDelayUntil(&lastWakeTime, cmr_canRXPeriod_ms);
     }
-}
-
-/**
- * @brief Callback for reading CAN data into structs.
- *
- * @param id The received message's CAN ID.
- * @param data The received data.
- * @param len The received data's length.
- */
-static void cmr_readRXData(uint16_t id, const void *data, size_t len) {
-    size_t payloadIndex = cmr_getPayloadIndex(id);
-
-    if (payloadIndex == NO_PAYLOAD) {
-        // No payload found to receive this message, toss it
-        return;
-    }
-
-    // Payload was found for this message ID, process it
-    void *payloadAddress = cmr_getPayloadStructAddress(payloadIndex);
-    size_t payloadSize = cmr_getPayloadStructSize(payloadIndex);
-
-    if (payloadSize != len) {
-        // Packet data length did not match expected payload size
-        return;
-    }
-
-    // Copy packet data into payload struct
-    memcpy(payloadAddress, data, payloadSize);
-
-    // Reset the timeout for this payload
-    cmr_resetTimeout(payloadIndex);
 }
 
 /**
@@ -103,9 +173,10 @@ static void cmr_readRXData(uint16_t id, const void *data, size_t len) {
  *
  * @param can The interface to initialize.
  * @param instance The HAL CAN instance (`CANx` from `stm32f413xx.h`).
+ * @param rxMeta Metadata for periodic messages to receive.
+ * @param rxMetaLen Number of periodic receive messages.
+ * @param rxCallback Callback for other messages received, or `NULL` to ignore.
  * @param rxTaskName Receive task name for this interface.
- * @param rxMetadataArray The metadata for structs received over CAN.
- * @param rxMetadataArrayLength The number of possible structs to receive over CAN
  * @param rxPort Receiving GPIO port (`GPIOx` from `stm32f413xx.h`).
  * @param rxPin Receiving GPIO pin (`GPIO_PIN_x` from `stm32f4xx_hal_gpio.h`).
  * @param txPort Transmitting GPIO port.
@@ -113,14 +184,11 @@ static void cmr_readRXData(uint16_t id, const void *data, size_t len) {
  */
 void cmr_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
-    const char *rxTaskName,
-	const cmr_rxMetadata_t *rxMetadataArray,
-	size_t rxMetadataArrayLength,
+    cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
+    cmr_canRXCallback_t rxCallback, const char *rxTaskName,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
     GPIO_TypeDef *txPort, uint16_t txPin
 ) {
-	cmr_rxMetadataArray = rxMetadataArray;
-	cmr_rxMetadataArrayLength = rxMetadataArrayLength;
     *can = (cmr_can_t) {
         .handle = {
             .Instance = instance,
@@ -137,7 +205,11 @@ void cmr_canInit(
                 .ReceiveFifoLocked = DISABLE,
                 .TransmitFifoPriority = DISABLE
             }
-        }
+        },
+
+        .rxMeta = rxMeta,
+        .rxMetaLen = rxMetaLen,
+        .rxCallback = rxCallback
     };
 
     can->txMutex = xSemaphoreCreateMutex();
@@ -171,10 +243,42 @@ void cmr_canInit(
 
     // Create receive task.
     xTaskCreate(
-        cmr_canRX_task, rxTaskName,
+        cmr_canRXTask, rxTaskName,
         configMINIMAL_STACK_SIZE, can,
         cmr_canRXPriority, NULL
     );
+
+    // Configure payload references.
+    for (size_t i = 0; i < rxMetaLen; i++) {
+        cmr_canRXMeta_t *meta = rxMeta + i;
+        *meta->payloadRef = meta->payload;
+    }
+}
+
+/**
+ * @brief Checks for message receive timeout errors.
+ *
+ * @param can The CAN interface to check.
+ * @param minTimeoutSeverity The minimum timeout severity to consider.
+ * @param now_ms Current timestamp, in milliseconds.
+ *
+ * @return A negative value if a timeout warning has occurred; otherwise 0.
+ */
+int cmr_canRXTimeoutErrors(
+    cmr_can_t *can, cmr_canSeverity_t timeoutSeverity, TickType_t now_ms
+) {
+    for (size_t i = 0; i < can->rxMetaLen; i++) {
+        cmr_canRXMeta_t *meta = can->rxMeta + i;
+        if (meta->timeoutSeverity < timeoutSeverity) {
+            continue;
+        }
+
+        if (cmr_canRXMetaTimeoutError(meta, now_ms) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
 }
 
 /**
@@ -301,204 +405,6 @@ void cmr_canFieldDisable(uint8_t *field, const void *value, size_t len) {
     for (size_t i = 0; i < len; i++) {
         field[i] &= ~((const uint8_t *) value)[i];
     }
-}
-
-/**
- * @brief Returns the index in cmr_rxMetadataArray corresponding to the given CAN ID.
- *
- * @param canID The CAN ID to return the corresponding index for.
- * @return The index of the given CAN ID in cmr_rxMetadataArray if it exists, else NO_PAYLOAD.
- */
-static size_t cmr_getPayloadIndex(uint16_t canID) {
-
-    // Search for a payload with the desired CAN ID
-    for (size_t i = 0; i < cmr_rxMetadataArrayLength; i++) {
-        if (cmr_rxMetadataArray[i].canID == canID) {
-            return i;
-        }
-    }
-
-    // No matching payload found
-    return NO_PAYLOAD;
-}
-
-/**
- * @brief Returns the payload struct of the given payload index.
- *
- * @param payloadIndex the payload index to get the struct address of.
- * @return The pointer to the struct for the given payloadIndex.
- */
-void *cmr_getPayloadStructAddress(size_t payloadIndex) {
-    if (payloadIndex >= cmr_rxMetadataArrayLength) {
-        return NULL;
-    }
-
-    return cmr_rxMetadataArray[payloadIndex].payloadStruct;
-}
-
-/**
- * @brief Returns the payload struct size of the given payload index.
- *
- * @param payloadIndex The payload index to get the struct size of.
- * @return The size of the struct for the given payloadIndex.
- */
-size_t cmr_getPayloadStructSize(size_t payloadIndex) {
-    if (payloadIndex >= cmr_rxMetadataArrayLength) {
-        return NO_PAYLOAD;
-    }
-
-    return cmr_rxMetadataArray[payloadIndex].payloadSize;
-}
-
-/**
- * @brief Resets the timeout of the given payload index.
- *
- * @param payloadIndex The payload index to reset the timeout for.
- * @return The status of the payload of the payload index, or
- * CAN_PAYLOAD_STATUS_NO_PAYLOAD if the payloadIndex is not valid.
- */
-cmr_canPayloadStatus_t cmr_resetTimeout(size_t payloadIndex) {
-
-    if (payloadIndex >= cmr_rxMetadataArrayLength) {
-        return CAN_PAYLOAD_STATUS_NO_PAYLOAD;
-    }
-
-    // Set message timestamp to current time
-    cmr_rxMetadataArray[payloadIndex].lastReceived_ms = xTaskGetTickCount();
-
-    return CAN_PAYLOAD_STATUS_OK;
-}
-
-/**
- * @brief Check whether or not a specific CAN message has reached the
- * timeout warning threshold.
- * @param payloadIndex The payload index to check the timeout warn status of.
- * @return CAN_PAYLOAD_STATUS_NO_TIMEOUT if the message has not reached its
- * timeout warn threshold, CAN_PAYLOAD_STATUS_TIMEOUT if it has, or
- * CAN_PAYLOAD_STATUS_NO_PAYLOAD if the payloadIndex is not valid.
- */
-cmr_canPayloadStatus_t cmr_checkMessageTimeoutWarn(size_t payloadIndex) {
-    if (payloadIndex >= cmr_rxMetadataArrayLength) {
-        return CAN_PAYLOAD_STATUS_NO_PAYLOAD;
-    }
-
-    return checkTimeoutExpiry(cmr_rxMetadataArray[payloadIndex].lastReceived_ms,
-    						 cmr_rxMetadataArray[payloadIndex].timeoutWarnThreshold_ms);
-}
-
-/**
- * @brief Check whether or not a specific CAN message has reached its timeout
- * error threshold.
- * @param payloadIndex The payload index to check the timeout error status of.
- * @return CAN_PAYLOAD_STATUS_NO_TIMEOUT if the message has not reached its
- * timeout error threshold, CAN_PAYLOAD_STATUS_TIMEOUT if it has, or
- * CAN_PAYLOAD_STATUS_NO_PAYLOAD if the payloadIndex is not valid.
- */
-cmr_canPayloadStatus_t cmr_checkMessageTimeoutError(size_t payloadIndex) {
-    if (payloadIndex >= cmr_rxMetadataArrayLength) {
-        return CAN_PAYLOAD_STATUS_NO_PAYLOAD;
-    }
-
-    return checkTimeoutExpiry(cmr_rxMetadataArray[payloadIndex].lastReceived_ms,
-    						 cmr_rxMetadataArray[payloadIndex].timeoutErrorThreshold_ms);
-}
-
-/**
- * @brief Check whether messages above or equal to a certain severity have
- * passed their error time out thresholds.
- * @param minTimeoutSeverity The minimum timeout severity to check for.
- * @return CAN_PAYLOAD_STATUS_NO_TIMEOUT to indicate no timeout,
- * CAN_PAYLOAD_STATUS_TIMEOUT if a timeout has occurred, or
- * CAN_PAYLOAD_STATUS_NO_PAYLOAD if the payloadIndex is not valid.
- */
-cmr_canPayloadStatus_t cmr_checkSeverityTimeouts(uint8_t minTimeoutSeverity) {
-    cmr_canPayloadStatus_t retv;
-    // Search all payloads for timeouts above or equal to the specified severity
-    for (size_t i = 0; i < cmr_rxMetadataArrayLength; i++) {
-        if (cmr_rxMetadataArray[i].timeoutSeverity >= minTimeoutSeverity) {
-            retv = canPayloads_checkMessageTimeout(i);
-            if (retv == CAN_PAYLOAD_STATUS_TIMEOUT) {
-                return CAN_PAYLOAD_STATUS_TIMEOUT;
-            }
-        }
-    }
-
-    return CAN_PAYLOAD_STATUS_NO_TIMEOUT;
-}
-
-/**
- * @brief Check to see if the timeout threshold has been passed.
- * @note Assumes multiple over flows will not occur since last run time.
- * @note Adapted from xTaskCheckForTimeOut but does not modify inputs.
- * @param lastReceived_ms The last time a message reset the timeout
- * @param timeoutThreshold_ms The threshold for a timeout.
- * @return CAN_PAYLOAD_STATUS_NO_TIMEOUT to indicate no timeout threshold
- * has been passed or CAN_PAYLOAD_STATUS_TIMEOUT otherwise.
- */
-static cmr_canPayloadStatus_t cmr_checkTimeoutExpiry(TickType_t lastReceived_ms, TickType_t timeoutThreshold_ms) {
-    cmr_canPayloadStatus_t retv;
-
-    TickType_t currentTime_ms = xTaskGetTickCount();
-    TickType_t releaseTime_ms = lastReceived_ms + timeoutThreshold_ms;
-
-    if((currentTime_ms < lastReceived_ms) && !(releaseTime_ms < lastReceived_ms)) {
-        // Current time has overflown but release time has not
-        // Current time has thus exceed release time and timeout threshold has been passed.
-        retv = CAN_PAYLOAD_STATUS_TIMEOUT;
-    } else if(!(currentTime_ms < lastReceived_ms) &&  (releaseTime_ms < lastReceived_ms)) {
-        // Current time has not overflown but release time has
-        // Release time then still exceeds current time and no timeout has occurred
-        retv = CAN_PAYLOAD_STATUS_NO_TIMEOUT;
-    } else if (currentTime_ms > releaseTime_ms) {
-        // Neither time has overflow or both have
-        // In either case, current being greater than release indicates timeout threshold has been passed.
-        retv = CAN_PAYLOAD_STATUS_TIMEOUT;
-    } else {
-        // Neither time has overflow or both have
-        // In either case, current being less than release indicates no timeout threshold has been passed.
-        retv = CAN_PAYLOAD_STATUS_NO_TIMEOUT;
-    }
-
-    return retv;
-}
-
-/**
- * @brief Sets the timeout severity of the given payload index.
- * @param payloadIndex The payload index to set the timeout severity of.
- * @param timeoutSeverity The new timeoutSeverity.
- */
-void cmr_setTimeoutSeverity(size_t payloadIndex, cmr_timeoutSeverity_t timeoutSeverity) {
-    if (payloadIndex >= cmr_rxMetadataArrayLength) {
-        return;
-    }
-
-	cmr_rxMetadataArray[payloadIndex].timeoutSeverity = timeoutSeverity;
-}
-
-/**
- * @brief Sets the timeout warn threshold of the given payload index.
- * @param payloadIndex The payload index to set the warn threshold of.
- * @param warnThreshold_ms The new warnThreshold.
- */
-void cmr_setTimeoutWarnThreshold(size_t payloadIndex, TickType_t warnThreshold_ms) {
-    if (payloadIndex >= cmr_rxMetadataArrayLength) {
-        return;
-    }
-
-	cmr_rxMetadataArray[payloadIndex].timeoutWarnThreshold_ms = warnThreshold_ms;
-}
-
-/**
- * @brief Sets the timeout error threshold of the given payload index.
- * @param payloadIndex The payload index to set the error threshold of.
- * @param errorThreshold_ms The new errorThreshold.
- */
-void cmr_setTimeoutErrorThreshold(size_t payloadIndex, TickType_t errorThreshold_ms) {
-    if (payloadIndex >= cmr_rxMetadataArrayLength) {
-        return;
-    }
-
-	cmr_rxMetadataArray[payloadIndex].timeoutErrorThreshold_ms = errorThreshold_ms;
 }
 
 #endif /* HAL_CAN_MODULE_ENABLED */

@@ -18,52 +18,76 @@
 
 #include <stdint.h>
 
+/** @brief Issue severity levels. */
+typedef enum {
+    CMR_CAN_SEVERITY_NONE = 0,  /**< @brief No issues. */
+    CMR_CAN_SEVERITY_LOW,       /**< @brief Low-severity issue. */
+    CMR_CAN_SEVERITY_MEDIUM,    /**< @brief Medium-severity issue. */
+    CMR_CAN_SEVERITY_HIGH,      /**< @brief High-severity issue. */
+    CMR_CAN_SEVERITY_LEN        /**< @brief Total number of severity levels. */
+} cmr_canSeverity_t;
+
+/** @brief Periodic message reception metadata. */
+typedef struct {
+    const uint16_t canID;       /**< @brief Associated CAN ID. */
+
+    /** @brief Payload reference output location. */
+    volatile void **const payloadRef;
+
+    /** @brief Timeout severity. */
+    const cmr_canSeverity_t timeoutSeverity;
+
+    /** @brief Threshold period for timeout warning, in milliseconds. */
+    const TickType_t timeoutWarn_ms;
+
+    /** @brief Threshold period for timeout error, in milliseconds. */
+    const TickType_t timeoutError_ms;
+
+    /** @brief Last receive timestamp, in milliseconds. */
+    volatile TickType_t lastReceived_ms;
+
+    /** @brief Raw message payload. */
+    volatile uint8_t payload[8];
+} cmr_canRXMeta_t;
+
+int cmr_canRXMetaTimeoutWarn(const cmr_canRXMeta_t *meta, TickType_t now_ms);
+int cmr_canRXMetaTimeoutError(const cmr_canRXMeta_t *meta, TickType_t now_ms);
+
 /**
  * @brief Represents a CAN interface.
  *
  * @note The contents of this struct are opaque to the library consumer.
  */
-typedef struct {
-    /**< @brief HAL CAN handle. */
-    CAN_HandleTypeDef handle;
+typedef struct cmr_can cmr_can_t;
 
-    /**< @brief Transmit mutex. */
-    SemaphoreHandle_t txMutex;
-} cmr_can_t;
+typedef void (*cmr_canRXCallback_t)(
+    cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen
+);
 
-typedef enum {
-	CAN_PAYLOAD_STATUS_OK,
-    CAN_PAYLOAD_STATUS_TIMEOUT,
-    CAN_PAYLOAD_STATUS_NO_TIMEOUT,
-    CAN_PAYLOAD_STATUS_NO_PAYLOAD,
-	CAN_PAYLOAD_STATUS_LEN
-} cmr_canPayloadStatus_t;
+struct cmr_can {
+    CAN_HandleTypeDef handle;   /**< @brief HAL CAN handle. */
+    SemaphoreHandle_t txMutex;  /**< @brief Transmit mutex. */
 
-typedef enum {
-	TIMEOUT_SEVERITY_LOW,
-	TIMEOUT_SEVERITY_MEDIUM,
-	TIMEOUT_SEVERITY_HIGH,
-	TIMEOUT_SEVERITY_LEN
-} cmr_timeoutSeverity_t;
+    /** @brief Metadata for periodic messages to receive. */
+    cmr_canRXMeta_t *rxMeta;
 
-// Reception payload and metadata
-typedef struct {
-    uint16_t canID;
-    void *payloadStruct;
-    size_t payloadSize;
-    cmr_timeoutSeverity_t timeoutSeverity;
-    TickType_t lastReceived_ms;
-    TickType_t timeoutWarnThreshold_ms;
-    TickType_t timeoutErrorThreshold_ms;
-} cmr_rxMetadata_t;
+    /** @brief Number of periodic receive messages. */
+    size_t rxMetaLen;
+
+    /** @brief Callback for other messages received, or `NULL` to ignore. */
+    cmr_canRXCallback_t rxCallback;
+};
 
 void cmr_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
-    const char *rxTaskName,
-	const cmr_rxMetadata_t *rxMetadataArray,
-	size_t rxMetadataArrayLength,
+    cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
+    cmr_canRXCallback_t rxCallback, const char *rxTaskName,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
     GPIO_TypeDef *txPort, uint16_t txPin
+);
+
+int cmr_canRXTimeoutErrors(
+    cmr_can_t *can, cmr_canSeverity_t minTimeoutSeverity, TickType_t now_ms
 );
 
 /**
@@ -85,16 +109,6 @@ void cmr_canFilter(
 int cmr_canTX(
     cmr_can_t *can, uint16_t id, const void *data, size_t len
 );
-
-void *cmr_getPayloadStructAddress(size_t payloadIndex);
-size_t cmr_getPayloadStructSize(size_t payloadIndex);
-cmr_canPayloadStatus_t cmr_resetTimeout(size_t payloadIndex);
-cmr_canPayloadStatus_t cmr_checkMessageTimeoutWarn(size_t payloadIndex);
-cmr_canPayloadStatus_t cmr_checkMessageTimeoutError(size_t payloadIndex);
-cmr_canPayloadStatus_t cmr_checkSeverityTimeouts(uint8_t minTimeoutSeverity);
-void cmr_setTimeoutSeverity(size_t payloadIndex, cmr_timeoutSeverity_t timeoutSeverity);
-void cmr_setTimeoutWarnThreshold(size_t payloadIndex, TickType_t warnThreshold_ms);
-void cmr_setTimeoutErrorThreshold(size_t payloadIndex, TickType_t errorThreshold_ms);
 
 void cmr_canFieldEnable(uint8_t *field, const void *value, size_t len);
 void cmr_canFieldDisable(uint8_t *field, const void *value, size_t len);
