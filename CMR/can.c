@@ -247,12 +247,6 @@ void cmr_canInit(
         configMINIMAL_STACK_SIZE, can,
         cmr_canRXPriority, NULL
     );
-
-    // Configure payload references.
-    for (size_t i = 0; i < rxMetaLen; i++) {
-        cmr_canRXMeta_t *meta = rxMeta + i;
-        *meta->payloadRef = meta->payload;
-    }
 }
 
 /**

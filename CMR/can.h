@@ -31,9 +31,6 @@ typedef enum {
 typedef struct {
     const uint16_t canID;       /**< @brief Associated CAN ID. */
 
-    /** @brief Payload reference output location. */
-    volatile void **const payloadRef;
-
     /** @brief Timeout severity. */
     const cmr_canSeverity_t timeoutSeverity;
 
