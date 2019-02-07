@@ -84,17 +84,28 @@ static void canTX100HzTask(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     // XXX Example message retrieval.
+    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
     volatile cmr_canHeartbeat_t *heartbeatVSM =
-        (void *) &canRXMeta[CANRX_HEARTBEAT_VSM].payload;
+        (void *) heartbeatVSMMeta->payload;
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         // XXX Update these fields correctly.
         cmr_canHeartbeat_t heartbeat = {
-            .state = heartbeatVSM->state,
-            .error = { 0 },
-            .warning = { 0 }
+            .state = heartbeatVSM->state
         };
+
+        uint16_t error = CMR_CAN_ERROR_NONE;
+        if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
+            error |= CMR_CAN_ERROR_VSM_TIMEOUT;
+        }
+        memcpy(&heartbeat.error, &error, sizeof(error));
+
+        uint16_t warning = CMR_CAN_WARN_NONE;
+        if (cmr_canRXMetaTimeoutWarn(heartbeatVSMMeta, lastWakeTime) < 0) {
+            warning |= CMR_CAN_WARN_VSM_TIMEOUT;
+        }
+        memcpy(&heartbeat.warning, &warning, sizeof(warning));
 
         // XXX Replace with an appropriate ID.
         canTX(CMR_CANID_HEARTBEAT_DIM, &heartbeat, sizeof(heartbeat));
