@@ -4,9 +4,9 @@
  *
  * Adding a new CAN RX struct:
  *
- * 1. Declare a `static` CAN struct for the data (suffix it _data).
- *      - The struct should likely have an initializer.
- * 2. Declare a `volatile const` pointer to that struct.
+ * 1. Declare a `volatile const` pointer to the struct's type.
+ * 2. Add a configuration entry in `canRXMeta`, providing the struct pointer as
+ *    the `payloadRef`.
  * 3. Expose the pointer as an `extern volatile const` in `can.h`.
  *
  * @author Carnegie Mellon Racing
@@ -22,15 +22,18 @@
 #include "can.h"    // Interface to implement
 #include "adc.h"    // adcVSense, adcISense
 
-/** @brief VSM heartbeat data. */
-static cmr_canHeartbeat_t canHeartbeatVSM_data = {
-    .state = CMR_CAN_UNKNOWN,
-    .error = { 0 },
-    .warning = { 0 }
-};
-
 /** @brief VSM heartbeat. */
-volatile const cmr_canHeartbeat_t *canHeartbeatVSM = &canHeartbeatVSM_data;
+volatile const cmr_canHeartbeat_t *canHeartbeatVSM;
+
+/** @brief CAN periodic message receive metadata. */
+static cmr_canRXMeta_t canRXMeta[] = {
+    {
+        .canID = CMR_CANID_HEARTBEAT_VSM,
+        .payloadRef = (volatile void **) &canHeartbeatVSM,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    }
+};
 
 /** @brief Primary CAN interface. */
 static cmr_can_t can;
@@ -105,7 +108,8 @@ void canInit(void) {
     // CAN2 initialization.
     cmr_canInit(
         &can, CAN2,
-        "canRX",
+        canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
+        NULL, "canRX",
         GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
         GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
     );
