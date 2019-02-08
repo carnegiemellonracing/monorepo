@@ -10,11 +10,11 @@
 
 #include "adc.h"    // Interface to implement
 
-/** @brief Voltage sense ADC channel. */
-const cmr_adcChannel_t *adcVSense;
 
-/** @brief Current sense ADC channel. */
-const cmr_adcChannel_t *adcISense;
+const cmr_adcChannel_t *adcChannels[ADC_LEN] = {
+	[ADC_VSENSE] = NULL,
+	[ADC_ISENSE] = NULL,
+};
 
 /** @brief Primary ADC. */
 static cmr_adc_t adc;
@@ -48,12 +48,12 @@ void adcInit(void) {
     // ADC initialization and channel configuration.
 	// XXX edit me to match your pin configuration
     cmr_adcInit(&adc, ADC1);
-    adcVSense = cmr_adcAddChannel(
+    adcChannels[ADC_VSENSE] = cmr_adcAddChannel(
         &adc, ADC_CHANNEL_0,
         GPIOA, GPIO_PIN_0,
         ADC_SAMPLETIME_15CYCLES
     );
-    adcISense = cmr_adcAddChannel(
+    adcChannels[ADC_ISENSE] = cmr_adcAddChannel(
         &adc, ADC_CHANNEL_1,
         GPIOA, GPIO_PIN_1,
         ADC_SAMPLETIME_15CYCLES

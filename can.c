@@ -80,8 +80,8 @@ static void canTX10HzTask(void *pvParameters) {
     while (1) {
         // XXX Replace with an appropriate message.
         cmr_canDIMPowerDiagnostics_t msg = {
-            .busVoltage_mV = adcVSense->value,
-            .busCurrent_mA = adcISense->value
+            .busVoltage_mV = adcChannels[ADC_VSENSE]->value,
+            .busCurrent_mA = adcChannels[ADC_ISENSE]->value
         };
 
         // XXX Replace with an appropriate ID.

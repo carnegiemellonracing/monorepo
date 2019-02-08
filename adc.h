@@ -10,8 +10,13 @@
 
 #include <CMR/adc.h>    // ADC interface
 
-extern const cmr_adcChannel_t *adcVSense;
-extern const cmr_adcChannel_t *adcISense;
+typedef enum {
+	ADC_VSENSE = 0,
+	ADC_ISENSE,
+	ADC_LEN
+} adcChannels_t;
+
+extern const cmr_adcChannel_t *adcChannels[ADC_LEN];
 
 void adcInit(void);
 
