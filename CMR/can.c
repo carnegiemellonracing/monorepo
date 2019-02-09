@@ -19,10 +19,10 @@
 static const uint32_t CMR_CAN_FILTERBANKS = 14;
 
 /** @brief CAN RX priority. */
-static const uint32_t cmr_canRXPriority  = 7;
+static const uint32_t cmr_canRX_priority  = 7;
 
 /** @brief CAN RX period (milliseconds). */
-static const TickType_t cmr_canRXPeriod_ms = 1;
+static const TickType_t cmr_canRX_period_ms = 1;
 
 /**
  * @brief Checks if a timeout has occurred.
@@ -136,7 +136,7 @@ static void cmr_canRXData(
  *
  * @return Does not return.
  */
-static void cmr_canRXTask(void *pvParameters) {
+static void cmr_canRX_task(void *pvParameters) {
     cmr_can_t *can = pvParameters;
     CAN_HandleTypeDef *canHandle = &can->handle;
 
@@ -161,7 +161,7 @@ static void cmr_canRXTask(void *pvParameters) {
             );
         }
 
-        vTaskDelayUntil(&lastWakeTime, cmr_canRXPeriod_ms);
+        vTaskDelayUntil(&lastWakeTime, cmr_canRX_period_ms);
     }
 }
 
@@ -243,9 +243,9 @@ void cmr_canInit(
 
     // Create receive task.
     xTaskCreate(
-        cmr_canRXTask, rxTaskName,
+        cmr_canRX_task, rxTaskName,
         configMINIMAL_STACK_SIZE, can,
-        cmr_canRXPriority, NULL
+        cmr_canRX_priority, NULL
     );
 }
 
