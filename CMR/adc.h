@@ -54,8 +54,6 @@ typedef struct {
 void cmr_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance, cmr_adcChannel_t *channels,
                  const size_t channelsLen);
 
-void cmr_adcSample(cmr_adc_t *adc);
-
 #endif /* HAL_ADC_MODULE_ENABLED */
 
 #endif /* CMR_ADC_H */
