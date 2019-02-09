@@ -18,21 +18,9 @@
 
 #include <stdint.h>
 
-/** @brief Issue severity levels. */
-typedef enum {
-    CMR_CAN_SEVERITY_NONE = 0,  /**< @brief No issues. */
-    CMR_CAN_SEVERITY_LOW,       /**< @brief Low-severity issue. */
-    CMR_CAN_SEVERITY_MEDIUM,    /**< @brief Medium-severity issue. */
-    CMR_CAN_SEVERITY_HIGH,      /**< @brief High-severity issue. */
-    CMR_CAN_SEVERITY_LEN        /**< @brief Total number of severity levels. */
-} cmr_canSeverity_t;
-
 /** @brief Periodic message reception metadata. */
 typedef struct {
     const uint16_t canID;       /**< @brief Associated CAN ID. */
-
-    /** @brief Timeout severity. */
-    const cmr_canSeverity_t timeoutSeverity;
 
     /** @brief Threshold period for timeout warning, in milliseconds. */
     const TickType_t timeoutWarn_ms;
@@ -81,10 +69,6 @@ void cmr_canInit(
     cmr_canRXCallback_t rxCallback, const char *rxTaskName,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
     GPIO_TypeDef *txPort, uint16_t txPin
-);
-
-int cmr_canRXTimeoutErrors(
-    cmr_can_t *can, cmr_canSeverity_t minTimeoutSeverity, TickType_t now_ms
 );
 
 /**

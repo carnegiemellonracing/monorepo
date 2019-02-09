@@ -250,32 +250,6 @@ void cmr_canInit(
 }
 
 /**
- * @brief Checks for message receive timeout errors.
- *
- * @param can The CAN interface to check.
- * @param minTimeoutSeverity The minimum timeout severity to consider.
- * @param now_ms Current timestamp, in milliseconds.
- *
- * @return A negative value if a timeout warning has occurred; otherwise 0.
- */
-int cmr_canRXTimeoutErrors(
-    cmr_can_t *can, cmr_canSeverity_t timeoutSeverity, TickType_t now_ms
-) {
-    for (size_t i = 0; i < can->rxMetaLen; i++) {
-        cmr_canRXMeta_t *meta = can->rxMeta + i;
-        if (meta->timeoutSeverity < timeoutSeverity) {
-            continue;
-        }
-
-        if (cmr_canRXMetaTimeoutError(meta, now_ms) < 0) {
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-/**
  * @brief Configures a filter bank with 4 CAN IDs to filter.
  *
  * @param can The CAN interface to configure.
