@@ -10,21 +10,30 @@
 
 #include "adc.h"    // Interface to implement
 
+/**
+ * @brief Board-specific ADC channel configuration.
+ *
+ * Replace/add more ADC channel configurations here as appropriate. Each
+ * enumeration value of `adcChannel_t` should get a configuration.
+ *
+ * @see `CMR/adc.h` for various initialization values.
+ */
 cmr_adcChannel_t adcChannels[ADC_LEN] = {
-	[ADC_VSENSE] = {
+	// XXX edit me to match your pin configuration
+    [ADC_VSENSE] = {
         .channel = ADC_CHANNEL_0,
         .port = GPIOA,
         .pin = GPIO_PIN_0,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
-	},
-	[ADC_ISENSE] = {
+    },
+    [ADC_ISENSE] = {
         .channel = ADC_CHANNEL_1,
         .port = GPIOA,
         .pin = GPIO_PIN_1,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
-	}
+    }
 };
 
 /** @brief Primary ADC. */
@@ -35,7 +44,10 @@ static cmr_adc_t adc;
  */
 void adcInit(void) {
     // ADC initialization and channel configuration.
-	// XXX edit me to match your pin configuration
-    cmr_adcInit(&adc, ADC1, adcChannels, ADC_LEN);
+    // XXX edit me to match your pin configuration
+    cmr_adcInit(
+        &adc, ADC1,
+        adcChannels, sizeof(adcChannels) / sizeof(adcChannels[0])
+    );
 }
 
