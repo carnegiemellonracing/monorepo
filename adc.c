@@ -10,10 +10,21 @@
 
 #include "adc.h"    // Interface to implement
 
-
-const cmr_adcChannel_t *adcChannels[ADC_LEN] = {
-	[ADC_VSENSE] = NULL,
-	[ADC_ISENSE] = NULL,
+cmr_adcChannel_t adcChannels[ADC_LEN] = {
+	[ADC_VSENSE] = {
+        .channel = ADC_CHANNEL_0,
+        .port = GPIOA,
+        .pin = GPIO_PIN_0,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+	},
+	[ADC_ISENSE] = {
+        .channel = ADC_CHANNEL_1,
+        .port = GPIOA,
+        .pin = GPIO_PIN_1,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+	}
 };
 
 /** @brief Primary ADC. */
@@ -32,7 +43,7 @@ static const TickType_t adcSamplePeriod_ms = 10;
  *
  * @return Does not return.
  */
-static void adcSampleTask(void *pvParameters) {
+static void adcSample_task(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         cmr_adcSample(&adc);
@@ -47,21 +58,11 @@ static void adcSampleTask(void *pvParameters) {
 void adcInit(void) {
     // ADC initialization and channel configuration.
 	// XXX edit me to match your pin configuration
-    cmr_adcInit(&adc, ADC1);
-    adcChannels[ADC_VSENSE] = cmr_adcAddChannel(
-        &adc, ADC_CHANNEL_0,
-        GPIOA, GPIO_PIN_0,
-        ADC_SAMPLETIME_15CYCLES
-    );
-    adcChannels[ADC_ISENSE] = cmr_adcAddChannel(
-        &adc, ADC_CHANNEL_1,
-        GPIOA, GPIO_PIN_1,
-        ADC_SAMPLETIME_15CYCLES
-    );
+    cmr_adcInit(&adc, ADC1, adcChannels, ADC_LEN);
 
     // Task creation.
     xTaskCreate(
-        adcSampleTask, "adcSample",
+        adcSample_task, "adcSample",
         configMINIMAL_STACK_SIZE, NULL, adcSamplePriority, NULL
     );
 }

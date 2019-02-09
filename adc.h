@@ -16,7 +16,7 @@ typedef enum {
 	ADC_LEN
 } adcChannels_t;
 
-extern const cmr_adcChannel_t *adcChannels[ADC_LEN];
+cmr_adcChannel_t adcChannels[ADC_LEN];
 
 void adcInit(void);
 

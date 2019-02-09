@@ -80,8 +80,8 @@ static void canTX10HzTask(void *pvParameters) {
     while (1) {
         // XXX Replace with an appropriate message.
         cmr_canDIMPowerDiagnostics_t msg = {
-            .busVoltage_mV = adcChannels[ADC_VSENSE]->value,
-            .busCurrent_mA = adcChannels[ADC_ISENSE]->value
+            .busVoltage_mV = adcChannels[ADC_VSENSE].value,
+            .busCurrent_mA = adcChannels[ADC_ISENSE].value
         };
 
         // XXX Replace with an appropriate ID.
@@ -117,7 +117,7 @@ static void canTX100HzTask(void *pvParameters) {
         };
 
         // XXX Replace with an appropriate ID.
-        canTX(CMR_CANID_HEARTBEAT_DIM, &heartbeat, sizeof(heartbeat));
+        canTX(CMR_CANID_HEARTBEAT_AFC0, &heartbeat, sizeof(heartbeat));
 
         vTaskDelayUntil(&lastWakeTime, canTX100HzPeriod_ms);
     }
