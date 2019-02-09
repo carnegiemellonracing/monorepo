@@ -13,7 +13,9 @@
 
 #include <stm32f4xx_hal.h>  // HAL_RCC_MODULE_ENABLED, HAL_GPIO_MODULE_ENABLED,
                             // HAL_ADC_MODULE_ENABLED, HAL_CAN_MODULE_ENABLED,
-                            // GPIO_TypeDef, ADC_TypeDef
+                            // HAL_SPI_MODULE_ENABLED,
+                            // GPIO_TypeDef, ADC_TypeDef, CAN_TypeDef,
+                            // SPI_TypeDef
 
 #ifdef HAL_RCC_MODULE_ENABLED
 
@@ -30,6 +32,10 @@ void cmr_rccADCClockEnable(ADC_TypeDef *instance);
 #ifdef HAL_CAN_MODULE_ENABLED
 void cmr_rccCANClockEnable(CAN_TypeDef *instance);
 #endif /* HAL_CAN_MODULE_ENABLED */
+
+#ifdef HAL_SPI_MODULE_ENABLED
+void cmr_rccSPIClockEnable(SPI_TypeDef *instance);
+#endif /* HAL_SPI_MODULE_ENABLED */
 
 #endif /* HAL_RCC_MODULE_ENABLED */
 
