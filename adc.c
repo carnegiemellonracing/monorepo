@@ -10,59 +10,44 @@
 
 #include "adc.h"    // Interface to implement
 
-/** @brief Voltage sense ADC channel. */
-const cmr_adcChannel_t *adcVSense;
-
-/** @brief Current sense ADC channel. */
-const cmr_adcChannel_t *adcISense;
+/**
+ * @brief Board-specific ADC channel configuration.
+ *
+ * Replace/add more ADC channel configurations here as appropriate. Each
+ * enumeration value of `adcChannel_t` should get a configuration.
+ *
+ * @see `CMR/adc.h` for various initialization values.
+ */
+cmr_adcChannel_t adcChannels[ADC_LEN] = {
+	// XXX edit me to match your pin configuration
+    [ADC_VSENSE] = {
+        .channel = ADC_CHANNEL_0,
+        .port = GPIOA,
+        .pin = GPIO_PIN_0,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
+    [ADC_ISENSE] = {
+        .channel = ADC_CHANNEL_1,
+        .port = GPIOA,
+        .pin = GPIO_PIN_1,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    }
+};
 
 /** @brief Primary ADC. */
 static cmr_adc_t adc;
-
-/** @brief ADC sampling priority. */
-static const uint32_t adcSamplePriority = 5;
-
-/** @brief ADC sampling period (milliseconds). */
-static const TickType_t adcSamplePeriod_ms = 10;
-
-/**
- * @brief Task for sampling the ADC.
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void adcSampleTask(void *pvParameters) {
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        cmr_adcSample(&adc);
-
-        vTaskDelayUntil(&lastWakeTime, adcSamplePeriod_ms);
-    }
-}
 
 /**
  * @brief Initializes the ADC interface.
  */
 void adcInit(void) {
     // ADC initialization and channel configuration.
-	// XXX edit me to match your pin configuration
-    cmr_adcInit(&adc, ADC1);
-    adcVSense = cmr_adcAddChannel(
-        &adc, ADC_CHANNEL_0,
-        GPIOA, GPIO_PIN_0,
-        ADC_SAMPLETIME_15CYCLES
-    );
-    adcISense = cmr_adcAddChannel(
-        &adc, ADC_CHANNEL_1,
-        GPIOA, GPIO_PIN_1,
-        ADC_SAMPLETIME_15CYCLES
-    );
-
-    // Task creation.
-    xTaskCreate(
-        adcSampleTask, "adcSample",
-        configMINIMAL_STACK_SIZE, NULL, adcSamplePriority, NULL
+    // XXX edit me to match your pin configuration
+    cmr_adcInit(
+        &adc, ADC1,
+        adcChannels, sizeof(adcChannels) / sizeof(adcChannels[0])
     );
 }
 

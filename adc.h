@@ -10,8 +10,18 @@
 
 #include <CMR/adc.h>    // ADC interface
 
-extern const cmr_adcChannel_t *adcVSense;
-extern const cmr_adcChannel_t *adcISense;
+/**
+ * @brief Represents an ADC channel.
+ *
+ * @warning New channels MUST be added before `ADC_LEN`.
+ */
+typedef enum {
+	ADC_VSENSE = 0,     /**< @brief Board voltage sense. */
+	ADC_ISENSE,         /**< @brief Board current sense. */
+	ADC_LEN     /**< @brief Total ADC channels. */
+} adcChannels_t;
+
+extern cmr_adcChannel_t adcChannels[ADC_LEN];
 
 void adcInit(void);
 
