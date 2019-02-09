@@ -2,12 +2,11 @@
  * @file can.c
  * @brief Board-specific CAN implementation.
  *
- * Adding a new CAN RX struct:
+ * Adding a new periodic message struct:
  *
- * 1. Declare a `static` CAN struct for the data (suffix it _data).
- *      - The struct should likely have an initializer.
- * 2. Declare a `volatile const` pointer to that struct.
- * 3. Expose the pointer as an `extern volatile const` in `can.h`.
+ * 1. Add the corresponding index to the `canRX_t` enum in `can.h`.
+ * 2. Add a configuration entry in `canRXMeta` at that index.
+ * 3. Access the message using `canRXMeta[index]`.
  *
  * @author Carnegie Mellon Racing
  */
@@ -17,45 +16,22 @@
 #include <FreeRTOS.h>   // FreeRTOS interface
 #include <task.h>       // xTaskCreate()
 
-#include <CMR/can.h>    // CAN interface
-
 #include "can.h"    // Interface to implement
 #include "adc.h"    // adcVSense, adcISense
 
-/** @brief VSM heartbeat data. */
-static cmr_canHeartbeat_t canHeartbeatVSM_data = {
-    .state = CMR_CAN_UNKNOWN,
-    .error = { 0 },
-    .warning = { 0 }
-};
-
-/** @brief VSM heartbeat. */
-volatile const cmr_canHeartbeat_t *canHeartbeatVSM = &canHeartbeatVSM_data;
-
 /**
- * @brief Callback for receiving CAN messages.
+ * @brief CAN periodic message receive metadata
  *
- * @param id The received message's CAN ID.
- * @param data The received data.
- * @param len The received data's length.
+ * @note Indexed by `canRX_t`.
  */
-static void canRXCallback(uint16_t id, const void *data, size_t len) {
-    void *dest = NULL;
-    size_t destLen = 0;
-
-    switch (id) {
-        case CMR_CANID_HEARTBEAT_VSM:
-            dest = &canHeartbeatVSM_data;
-            destLen = sizeof(canHeartbeatVSM_data);
-            break;
+cmr_canRXMeta_t canRXMeta[] = {
+    // XXX Edit this to include the appropriate periodic messages.
+    [CANRX_HEARTBEAT_VSM] = {
+        .canID = CMR_CANID_HEARTBEAT_VSM,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
     }
-
-    if (dest == NULL || len != destLen) {
-        return;     // Unknown ID/length.
-    }
-
-    memcpy(dest, data, len);
-}
+};
 
 /** @brief Primary CAN interface. */
 static cmr_can_t can;
@@ -107,14 +83,29 @@ static const TickType_t canTX100HzPeriod_ms = 10;
 static void canTX100HzTask(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
+    // XXX Example message retrieval.
+    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
+    volatile cmr_canHeartbeat_t *heartbeatVSM =
+        (void *) heartbeatVSMMeta->payload;
+
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         // XXX Update these fields correctly.
         cmr_canHeartbeat_t heartbeat = {
-            .state = canHeartbeatVSM->state,
-            .error = { 0 },
-            .warning = { 0 }
+            .state = heartbeatVSM->state
         };
+
+        uint16_t error = CMR_CAN_ERROR_NONE;
+        if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
+            error |= CMR_CAN_ERROR_VSM_TIMEOUT;
+        }
+        memcpy(&heartbeat.error, &error, sizeof(error));
+
+        uint16_t warning = CMR_CAN_WARN_NONE;
+        if (cmr_canRXMetaTimeoutWarn(heartbeatVSMMeta, lastWakeTime) < 0) {
+            warning |= CMR_CAN_WARN_VSM_TIMEOUT;
+        }
+        memcpy(&heartbeat.warning, &warning, sizeof(warning));
 
         // XXX Replace with an appropriate ID.
         canTX(CMR_CANID_HEARTBEAT_DIM, &heartbeat, sizeof(heartbeat));
@@ -130,7 +121,8 @@ void canInit(void) {
     // CAN2 initialization.
     cmr_canInit(
         &can, CAN2,
-        canRXCallback, "canRX",
+        canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
+        NULL, "canRX",
         GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
         GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
     );
