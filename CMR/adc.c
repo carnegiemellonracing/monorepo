@@ -15,6 +15,15 @@
 /** @brief Timeout (in ms) for each ADC channel sample poll. */
 static const uint32_t CMR_ADC_TIMEOUT_MS = 1;
 
+/** @brief Array of adcChannel structs */
+static cmr_adcChannel_t *adcChannels = NULL;
+
+/** @brief Length of adcChannels array */
+static size_t adcChannelsLen = 0;
+
+/** Forward declaration */
+static void cmr_adcConfigChannels(cmr_adc_t *adc);
+
 /**
  * @brief Initializes the ADC.
  *
@@ -23,8 +32,18 @@ static const uint32_t CMR_ADC_TIMEOUT_MS = 1;
  *
  * @param adc The ADC to initialize.
  * @param instance The HAL ADC instance (`ADCx` from `stm32f413xx.h`).
+ * @param channels Array of adcChannel structs.
+ * @param channelsLen Length of channels array.
  */
-void cmr_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance) {
+void cmr_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance, cmr_adcChannel_t *channels,
+                 const size_t channelsLen) {
+    if (channelsLen > CMR_ADC_CHANNELS) {
+        cmr_panic("Too many channels");
+    }
+
+    adcChannels = channels;
+    adcChannelsLen = channelsLen;
+
     *adc = (cmr_adc_t) {
         .handle = {
             .Instance = instance,
@@ -45,10 +64,7 @@ void cmr_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance) {
                 .DMAContinuousRequests = DISABLE,
                 .EOCSelection = ADC_EOC_SINGLE_CONV
             }
-        },
-
-        .channelsUsed = 0,
-        .channels = { { 0 } }
+        }
     };
 
     cmr_rccADCClockEnable(instance);
@@ -56,64 +72,49 @@ void cmr_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance) {
     if (HAL_ADC_Init(&adc->handle) != HAL_OK) {
         cmr_panic("HAL_ADC_Init() failed!");
     }
+
+    cmr_adcConfigChannels(adc);
 }
 
 /**
- * @brief Adds a channel to sample.
- *
- * @note See RM0430 13.7 for minimum sample times.
- *
- * @warning It is undefined behavior to call this function with the same index
- * OR channel more than once!
+ * @brief Initializes ADC channel sequence.
  *
  * @param adc The ADC to configure.
- * @param channel The ADC channel to configure (`ADC_CHANNEL_x`, 0 <= x <= 15).
- * @param port Channel's GPIO port (`GPIOx` from `stm32f413xx.h`).
- * @param pin Channel's GPIO pin (`GPIO_PIN_x` from `stm32f4xx_hal_gpio.h`).
- * @param samplingTime Sampling time for ADC channel
- * (`ADC_SAMPLETIME_xCYCLES`, from `stm32f4xx_hal_adc.h`).
- *
- * @returns A reference to the configured channel.
  */
-const cmr_adcChannel_t *cmr_adcAddChannel(
-    cmr_adc_t *adc, uint32_t channel,
-    GPIO_TypeDef *port, uint16_t pin,
-    uint32_t samplingTime
-) {
-    if (channel > ADC_CHANNEL_15) {
-        cmr_panic("Invalid ADC channel!");
+static void cmr_adcConfigChannels(cmr_adc_t *adc) {
+    if (adcChannels == NULL || adcChannelsLen == 0) {
+        cmr_panic("Array not configured");
     }
 
-    size_t index = adc->channelsUsed;
-    if (index >= CMR_ADC_CHANNELS) {
-        cmr_panic("Too many ADC channels!");
+    for (size_t i = 0; i < adcChannelsLen; i++) {
+        if (adcChannels[i].channel > ADC_CHANNEL_15) {
+            cmr_panic("Invalid ADC channel!");
+        }
+
+        ADC_ChannelConfTypeDef channelConfig = {
+            .Channel = adcChannels[i].channel,
+            .Rank = i + 1,  // HAL needs Rank to be from 1 to 16
+            .SamplingTime = adcChannels[i].samplingTime,
+            .Offset = 0     // reserved, set to 0
+        };
+
+        if (HAL_ADC_ConfigChannel(&adc->handle, &channelConfig) != HAL_OK) {
+            cmr_panic("HAL_ADC_ConfigChannel() failed!");
+        }
+
+        // Configure the pin for analog use.
+        cmr_rccGPIOClockEnable(adcChannels[i].port);
+
+        GPIO_InitTypeDef pinConfig = {
+            .Pin = adcChannels[i].pin,
+            .Mode = GPIO_MODE_ANALOG,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW,
+            .Alternate = 0
+        };
+
+        HAL_GPIO_Init(adcChannels[i].port, &pinConfig);
     }
-
-    ADC_ChannelConfTypeDef channelConfig = {
-        .Channel = channel,
-        .Rank = index + 1,  // HAL needs Rank to be from 1 to 16
-        .SamplingTime = samplingTime,
-        .Offset = 0     // reserved, set to 0
-    };
-
-    if (HAL_ADC_ConfigChannel(&adc->handle, &channelConfig) != HAL_OK) {
-        cmr_panic("HAL_ADC_ConfigChannel() failed!");
-    }
-
-    cmr_rccGPIOClockEnable(port);
-
-    // Configure the pin for analog use.
-    GPIO_InitTypeDef pinConfig = {
-        .Pin = pin,
-        .Mode = GPIO_MODE_ANALOG,
-        .Pull = GPIO_NOPULL,
-        .Speed = GPIO_SPEED_FREQ_LOW,
-        .Alternate = 0
-    };
-    HAL_GPIO_Init(port, &pinConfig);
-
-    adc->channelsUsed++;
-    return &adc->channels[index];
 }
 
 /**
@@ -124,10 +125,10 @@ const cmr_adcChannel_t *cmr_adcAddChannel(
 void cmr_adcSample(cmr_adc_t *adc) {
     // ADC set up in discontinuous scan mode.
     // Each `HAL_ADC_Start()` call converts the next-highest-rank channel.
-    for (uint32_t i = 0; i < adc->channelsUsed; i++) {
+    for (size_t i = 0; i < adcChannelsLen; i++) {
         HAL_ADC_Start(&adc->handle);
         HAL_ADC_PollForConversion(&adc->handle, CMR_ADC_TIMEOUT_MS);
-        adc->channels[i].value = HAL_ADC_GetValue(&adc->handle);
+        adcChannels[i].value = HAL_ADC_GetValue(&adc->handle);
     }
 }
 
