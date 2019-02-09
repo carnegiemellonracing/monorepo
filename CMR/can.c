@@ -9,7 +9,8 @@
 
 #ifdef HAL_CAN_MODULE_ENABLED
 
-#include <task.h>       // Task interface
+#include <task.h>   // Task interface
+#include <string.h> // memcpy()
 
 #include "rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
 #include "panic.h"  // cmr_panic()
@@ -18,19 +19,124 @@
 static const uint32_t CMR_CAN_FILTERBANKS = 14;
 
 /** @brief CAN RX priority. */
-static const uint32_t cmr_canRXPriority  = 7;
+static const uint32_t cmr_canRX_priority  = 7;
 
 /** @brief CAN RX period (milliseconds). */
-static const TickType_t cmr_canRXPeriod_ms = 1;
+static const TickType_t cmr_canRX_period_ms = 1;
+
+/**
+ * @brief Checks if a timeout has occurred.
+ *
+ * @param lastReceived_ms Last receive timestamp, in milliseconds.
+ * @param threshold_ms Threshold period, in milliseconds.
+ * @param now_ms Current timestamp, in milliseconds.
+ *
+ * @return A negative value if a timeout has occurred; otherwise 0.
+ */
+static int cmr_canTimeout(
+    TickType_t lastReceived_ms, TickType_t threshold_ms, TickType_t now_ms
+) {
+    TickType_t release_ms = lastReceived_ms + threshold_ms;
+
+    if (now_ms < lastReceived_ms && release_ms <= lastReceived_ms) {
+        // Current time overflowed; release did not. Timeout!
+        return -1;
+    }
+
+    if (lastReceived_ms <= now_ms && release_ms < lastReceived_ms) {
+        // Current time did not overflow; release time did. No timeout.
+        return 0;
+    }
+
+    // Neither current nor release overflowed, or both have.
+    // In either case, release less than current indicates timeout.
+    if (release_ms < now_ms) {
+        return -1;
+    }
+
+    return 0;
+}
+
+/**
+ * @brief Checks if the given periodic message has a timeout warning.
+ *
+ * @param meta The periodic message's reception metadata.
+ * @param now_ms Current timestamp, in milliseconds.
+ *
+ * @return A negative value if a timeout warning has occurred; otherwise 0.
+ */
+int cmr_canRXMetaTimeoutWarn(const cmr_canRXMeta_t *meta, TickType_t now_ms) {
+    return cmr_canTimeout(
+        meta->lastReceived_ms, meta->timeoutWarn_ms, now_ms
+    );
+}
+
+/**
+ * @brief Checks if the given periodic message has a timeout error.
+ *
+ * @param meta The periodic message's reception metadata.
+ * @param now_ms Current timestamp, in milliseconds.
+ *
+ * @return A negative value if a timeout error has occurred; otherwise 0.
+ */
+int cmr_canRXMetaTimeoutError(const cmr_canRXMeta_t *meta, TickType_t now_ms) {
+    return cmr_canTimeout(
+        meta->lastReceived_ms, meta->timeoutError_ms, now_ms
+    );
+}
+
+/**
+ * @brief Searches for the receive metadata associated with the given CAN ID.
+ *
+ * @param can The interface.
+ * @param canID The CAN ID to search for.
+ *
+ * @return The associated receive metadata, or `NULL` if not found.
+ */
+static cmr_canRXMeta_t *cmr_canRXMetaFind(cmr_can_t *can, uint16_t canID) {
+    for (size_t i = 0; i < can->rxMetaLen; i++) {
+        cmr_canRXMeta_t *meta = can->rxMeta + i;
+        if (meta->canID == canID) {
+            return meta;
+        }
+    }
+
+    return NULL;    // No matching metadata.
+}
+
+/**
+ * @brief Callback for reading CAN data into structs.
+ *
+ * @param can The interface.
+ * @param canID The received message's CAN ID.
+ * @param data The received data.
+ * @param dataLen The received data's length.
+ */
+static void cmr_canRXData(
+    cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen
+) {
+    cmr_canRXMeta_t *meta = cmr_canRXMetaFind(can, canID);
+    if (meta == NULL) {
+        // Not a configured message; attempt to use the callback.
+        if (can->rxCallback) {
+            can->rxCallback(can, canID, data, dataLen);
+        }
+
+        return;
+    }
+
+    memcpy((void *) meta->payload, data, dataLen);
+    meta->lastReceived_ms = xTaskGetTickCount();
+}
 
 /**
  * @brief Task for receiving CAN messages (polling RX FIFOs).
  *
- * @param pvParameters The associated CAN interface.
+ * @param pvParameters (cmr_can_t *) The associated CAN interface.
  *
  * @return Does not return.
  */
-static void cmr_canRXTask(void *pvParameters) {
+static void cmr_canRX_task(void *pvParameters) {
     cmr_can_t *can = pvParameters;
     CAN_HandleTypeDef *canHandle = &can->handle;
 
@@ -42,16 +148,20 @@ static void cmr_canRXTask(void *pvParameters) {
         // Receive on FIFO 0.
         while (HAL_CAN_GetRxFifoFillLevel(canHandle, CAN_RX_FIFO0) > 0) {
             HAL_CAN_GetRxMessage(canHandle, CAN_RX_FIFO0, &rxHeader, rxData);
-            can->rxCallback((uint16_t) rxHeader.StdId, rxData, rxHeader.DLC);
+            cmr_canRXData(
+                can, (uint16_t) rxHeader.StdId, rxData, rxHeader.DLC
+            );
         }
 
         // Receive on FIFO 1.
         while (HAL_CAN_GetRxFifoFillLevel(canHandle, CAN_RX_FIFO1) > 0) {
             HAL_CAN_GetRxMessage(canHandle, CAN_RX_FIFO1, &rxHeader, rxData);
-            can->rxCallback((uint16_t) rxHeader.StdId, rxData, rxHeader.DLC);
+            cmr_canRXData(
+                can, (uint16_t) rxHeader.StdId, rxData, rxHeader.DLC
+            );
         }
 
-        vTaskDelayUntil(&lastWakeTime, cmr_canRXPeriod_ms);
+        vTaskDelayUntil(&lastWakeTime, cmr_canRX_period_ms);
     }
 }
 
@@ -63,7 +173,9 @@ static void cmr_canRXTask(void *pvParameters) {
  *
  * @param can The interface to initialize.
  * @param instance The HAL CAN instance (`CANx` from `stm32f413xx.h`).
- * @param rxCallback Callback for received messages on this interface.
+ * @param rxMeta Metadata for periodic messages to receive.
+ * @param rxMetaLen Number of periodic receive messages.
+ * @param rxCallback Callback for other messages received, or `NULL` to ignore.
  * @param rxTaskName Receive task name for this interface.
  * @param rxPort Receiving GPIO port (`GPIOx` from `stm32f413xx.h`).
  * @param rxPin Receiving GPIO pin (`GPIO_PIN_x` from `stm32f4xx_hal_gpio.h`).
@@ -72,6 +184,7 @@ static void cmr_canRXTask(void *pvParameters) {
  */
 void cmr_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
+    cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
     cmr_canRXCallback_t rxCallback, const char *rxTaskName,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
     GPIO_TypeDef *txPort, uint16_t txPin
@@ -94,6 +207,8 @@ void cmr_canInit(
             }
         },
 
+        .rxMeta = rxMeta,
+        .rxMetaLen = rxMetaLen,
         .rxCallback = rxCallback
     };
 
@@ -128,9 +243,9 @@ void cmr_canInit(
 
     // Create receive task.
     xTaskCreate(
-        cmr_canRXTask, rxTaskName,
+        cmr_canRX_task, rxTaskName,
         configMINIMAL_STACK_SIZE, can,
-        cmr_canRXPriority, NULL
+        cmr_canRX_priority, NULL
     );
 }
 

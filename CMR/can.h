@@ -18,34 +18,54 @@
 
 #include <stdint.h>
 
-/**
- * @brief Callback for received messages.
- *
- * Called with the received message's CAN ID, the received data, and its length
- * in bytes.
- */
-typedef void (*cmr_canRXCallback_t)(
-    uint16_t id, const void *data, size_t len
-);
+/** @brief Periodic message reception metadata. */
+typedef struct {
+    const uint16_t canID;       /**< @brief Associated CAN ID. */
+
+    /** @brief Threshold period for timeout warning, in milliseconds. */
+    const TickType_t timeoutWarn_ms;
+
+    /** @brief Threshold period for timeout error, in milliseconds. */
+    const TickType_t timeoutError_ms;
+
+    /** @brief Last receive timestamp, in milliseconds. */
+    volatile TickType_t lastReceived_ms;
+
+    /** @brief Raw message payload. */
+    volatile uint8_t payload[8];
+} cmr_canRXMeta_t;
+
+int cmr_canRXMetaTimeoutWarn(const cmr_canRXMeta_t *meta, TickType_t now_ms);
+int cmr_canRXMetaTimeoutError(const cmr_canRXMeta_t *meta, TickType_t now_ms);
 
 /**
  * @brief Represents a CAN interface.
  *
  * @note The contents of this struct are opaque to the library consumer.
  */
-typedef struct {
-    /**< @brief HAL CAN handle. */
-    CAN_HandleTypeDef handle;
+typedef struct cmr_can cmr_can_t;
 
-    /**< @brief Transmit mutex. */
-    SemaphoreHandle_t txMutex;
+typedef void (*cmr_canRXCallback_t)(
+    cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen
+);
 
-    /** @brief Callback for received messages. */
+struct cmr_can {
+    CAN_HandleTypeDef handle;   /**< @brief HAL CAN handle. */
+    SemaphoreHandle_t txMutex;  /**< @brief Transmit mutex. */
+
+    /** @brief Metadata for periodic messages to receive. */
+    cmr_canRXMeta_t *rxMeta;
+
+    /** @brief Number of periodic receive messages. */
+    size_t rxMetaLen;
+
+    /** @brief Callback for other messages received, or `NULL` to ignore. */
     cmr_canRXCallback_t rxCallback;
-} cmr_can_t;
+};
 
 void cmr_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
+    cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
     cmr_canRXCallback_t rxCallback, const char *rxTaskName,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
     GPIO_TypeDef *txPort, uint16_t txPin
