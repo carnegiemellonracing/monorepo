@@ -40,18 +40,29 @@ typedef struct {
  *
  * @note The contents of this struct are opaque to the library consumer.
  */
-typedef struct {
+typedef struct cmr_spi cmr_spi_t;
+
+typedef void (*cmr_spiCallback_t)(cmr_spi_t *spi);
+
+struct cmr_spi {
     SPI_HandleTypeDef handle;   /**< @brief HAL SPI handle. */
     DMA_HandleTypeDef rxDMA;    /**< @brief Receiving HAL DMA handle. */
     DMA_HandleTypeDef txDMA;    /**< @brief Transmitting HAL DMA handle. */
-    SemaphoreHandle_t mutex;    /**< @brief Operation mutex. */
-} cmr_spi_t;
+
+    /** @brief Callback called when a transaction has finished. */
+    cmr_spiCallback_t doneCallback;
+}
 
 void cmr_spiInit(
     cmr_spi_t *spi, SPI_TypeDef *instance, const SPI_InitTypeDef *init,
     const cmr_spiPinConfig_t *pins,
     DMA_Stream_TypeDef *rxDMA, uint32_t rxDMAChannel,
-    DMA_Stream_TypeDef *txDMA, uint32_t txDMAChannel
+    DMA_Stream_TypeDef *txDMA, uint32_t txDMAChannel,
+    cmr_spiCallback_t doneCallback
+);
+
+int cmr_spiTXRX(
+    cmr_spi_t *spi, void *txData, const void *rxData, size_t len
 );
 
 #endif /* HAL_DMA_MODULE_ENABLED */
