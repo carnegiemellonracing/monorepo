@@ -8,10 +8,15 @@
 #ifndef CMR_SPI_H
 #define CMR_SPI_H
 
-#include <stm32f4xx_hal.h>  // HAL_SPI_MODULE_ENABLED,
-                            // SPI_HandleTypeDef, SPI_TypeDef, SPI_InitTypeDef
+#include <stm32f4xx_hal.h>  // HAL_SPI_MODULE_ENABLED, HAL_DMA_MODULE_ENABLED
+                            // SPI_HandleTypeDef, SPI_TypeDef, SPI_InitTypeDef,
+                            // DMA_HandleTypeDef, DMA_Stream_TypeDef
 
 #ifdef HAL_SPI_MODULE_ENABLED
+#ifdef HAL_DMA_MODULE_ENABLED
+
+#include <FreeRTOS.h>   // FreeRTOS interface
+#include <semphr.h>     // Semaphore interface
 
 /** @brief Represents a single SPI pin. */
 typedef struct {
@@ -37,13 +42,19 @@ typedef struct {
  */
 typedef struct {
     SPI_HandleTypeDef handle;   /**< @brief HAL SPI handle. */
+    DMA_HandleTypeDef rxDMA;    /**< @brief Receiving HAL DMA handle. */
+    DMA_HandleTypeDef txDMA;    /**< @brief Transmitting HAL DMA handle. */
+    SemaphoreHandle_t mutex;    /**< @brief Operation mutex. */
 } cmr_spi_t;
 
 void cmr_spiInit(
     cmr_spi_t *spi, SPI_TypeDef *instance, const SPI_InitTypeDef *init,
-    const cmr_spiPinConfig_t *pins
+    const cmr_spiPinConfig_t *pins,
+    DMA_Stream_TypeDef *rxDMA, uint32_t rxDMAChannel,
+    DMA_Stream_TypeDef *txDMA, uint32_t txDMAChannel
 );
 
+#endif /* HAL_DMA_MODULE_ENABLED */
 #endif /* HAL_SPI_MODULE_ENABLED */
 
 #endif /* CMR_SPI_H */

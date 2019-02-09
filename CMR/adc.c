@@ -5,12 +5,12 @@
  * @author Carnegie Mellon Racing
  */
 
-#include <FreeRTOS.h>       // FreeRTOS interface
-#include <task.h>           // xTaskCreate()
-
 #include "adc.h"    // Interface to implement
 
 #ifdef HAL_ADC_MODULE_ENABLED
+
+#include <FreeRTOS.h>       // FreeRTOS interface
+#include <task.h>           // xTaskCreate()
 
 #include "rcc.h"    // cmr_rccADCClockEnable(), cmr_rccGPIOClockEnable()
 #include "panic.h"  // cmr_panic()
