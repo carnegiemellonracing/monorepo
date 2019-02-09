@@ -10,8 +10,8 @@
 #include "rcc.h"    // cmr_rccGPIOClockEnable()
 #include "FreeRTOSConfig.h" // configASSERT
 
-static const cmr_gpioPinConfig_t *gpioPinConfigs;
-static size_t gpioPinConfigsLen;
+static const cmr_gpioPinConfig_t *cmr_gpioPinConfigs;
+static size_t cmr_gpioPinConfigsLen;
 
 /**
  * @brief Configures the specified GPIO pin(s).
@@ -20,11 +20,11 @@ static size_t gpioPinConfigsLen;
  * @param pinConfigsLen The number of pin configurations.
  */
 void cmr_gpioPinInit(const cmr_gpioPinConfig_t *pinConfigs, const size_t pinConfigsLen) {
-    gpioPinConfigs = pinConfigs;
-    gpioPinConfigsLen = pinConfigsLen;
+    cmr_gpioPinConfigs = pinConfigs;
+    cmr_gpioPinConfigsLen = pinConfigsLen;
 
-    for (size_t i = 0; i < gpioPinConfigsLen; i++) {
-        const cmr_gpioPinConfig_t *pinConfig = &gpioPinConfigs[i];
+    for (size_t i = 0; i < cmr_gpioPinConfigsLen; i++) {
+        const cmr_gpioPinConfig_t *pinConfig = &cmr_gpioPinConfigs[i];
         cmr_rccGPIOClockEnable(pinConfig->port);
 
         // The HAL GPIO driver doesn't actually declare the initialization
@@ -43,9 +43,9 @@ void cmr_gpioPinInit(const cmr_gpioPinConfig_t *pinConfigs, const size_t pinConf
  * @param value The value to write (zero for off; non-zero for on).
  */
 void cmr_gpioWrite(size_t pin, int value) {
-    configASSERT(pin < gpioPinConfigsLen);
+    configASSERT(pin < cmr_gpioPinConfigsLen);
 
-    const cmr_gpioPinConfig_t *pinConfig = &gpioPinConfigs[pin];
+    const cmr_gpioPinConfig_t *pinConfig = &cmr_gpioPinConfigs[pin];
     configASSERT(
         (pinConfig->init.Mode == GPIO_MODE_OUTPUT_PP) ||
         (pinConfig->init.Mode == GPIO_MODE_OUTPUT_OD)
@@ -63,9 +63,9 @@ void cmr_gpioWrite(size_t pin, int value) {
  * @param pin The pin to toggle.
  */
 void cmr_gpioToggle(size_t pin) {
-    configASSERT(pin < gpioPinConfigsLen);
+    configASSERT(pin < cmr_gpioPinConfigsLen);
 
-    const cmr_gpioPinConfig_t *pinConfig = &gpioPinConfigs[pin];
+    const cmr_gpioPinConfig_t *pinConfig = &cmr_gpioPinConfigs[pin];
     configASSERT(
         (pinConfig->init.Mode == GPIO_MODE_OUTPUT_PP) ||
         (pinConfig->init.Mode == GPIO_MODE_OUTPUT_OD)
@@ -80,9 +80,9 @@ void cmr_gpioToggle(size_t pin) {
  * @return 0 if the pin was off; otherwise 1.
  */
 int cmr_gpioRead(size_t pin) {
-    configASSERT(pin < gpioPinConfigsLen);
+    configASSERT(pin < cmr_gpioPinConfigsLen);
 
-    const cmr_gpioPinConfig_t *pinConfig = &gpioPinConfigs[pin];
+    const cmr_gpioPinConfig_t *pinConfig = &cmr_gpioPinConfigs[pin];
     GPIO_PinState state = HAL_GPIO_ReadPin(
         pinConfig->port, pinConfig->init.Pin
     );
