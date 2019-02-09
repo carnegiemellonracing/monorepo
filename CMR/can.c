@@ -220,12 +220,19 @@ void cmr_canInit(
     cmr_rccGPIOClockEnable(txPort);
 
     // Configure CAN RX pin.
+    uint32_t alternate;
+    if (instance == CAN3) {
+        alternate = GPIO_AF11_CAN3;     // CAN3 uses AF11.
+    } else {
+        configASSERT(instance == CAN1 || instance == CAN2);
+        alternate = GPIO_AF9_CAN2;      // Both CAN1 and CAN2 use AF9.
+    }
     GPIO_InitTypeDef pinConfig = {
         .Pin = rxPin,
         .Mode = GPIO_MODE_AF_PP,
         .Pull = GPIO_NOPULL,
         .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
-        .Alternate = GPIO_AF9_CAN2,
+        .Alternate = alternate,
     };
     HAL_GPIO_Init(rxPort, &pinConfig);
 
