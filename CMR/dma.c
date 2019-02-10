@@ -61,13 +61,23 @@ static cmr_dmaInterrupt_t cmr_dmaInterrupts[2][8];
     f(2, 7)
 
 /**
+ * @brief Creates a HAL/CMSIS DMA stream name.
+ *
+ * @param ctrl The DMA controller number.
+ * @param stream The stream number.
+ * @param suffix The suffix to append, if any.
+ */
+#define DMA_STREAM_NAME(ctrl, stream, suffix) \
+    DMA ## ctrl ## _Stream ## stream ## suffix
+
+/**
  * @brief Defines the IRQ handler for each DMA stream.
  *
  * @param ctrl The DMA controller number.
  * @param stream The stream number.
  */
 #define DMA_IRQ_HANDLER(ctrl, stream) \
-    void DMA##ctrl##_Stream##stream##_IRQHandler(void) { \
+    void DMA_STREAM_NAME(ctrl, stream, _IRQHandler)(void) { \
         HAL_DMA_IRQHandler(cmr_dmaInterrupts[ctrl - 1][stream].handle); \
     }
 DMA_STREAM_FOREACH(DMA_IRQ_HANDLER)
@@ -87,10 +97,10 @@ void cmr_dmaInit(DMA_HandleTypeDef *handle) {
     // Configure interrupts.
     switch ((uintptr_t) handle->Instance) {
 #define DMA_INTERRUPT_CONFIG(ctrl, stream) \
-        case DMA##ctrl##_Stream##stream##_BASE: \
+        case DMA_STREAM_NAME(ctrl, stream, _BASE): \
             ctrlIndex = ctrl - 1; \
             streamIndex = stream; \
-            irqNum = DMA##ctrl##_Stream##stream##_IRQn; \
+            irqNum = DMA_STREAM_NAME(ctrl, stream, _IRQn); \
             break;
 DMA_STREAM_FOREACH(DMA_INTERRUPT_CONFIG)
 #undef DMA_INTERRUPT_CONFIG
