@@ -24,7 +24,7 @@ typedef struct {
     GPIO_TypeDef *port;
 
     /** @brief Channel's GPIO pin (`GPIO_PIN_x` from `stm32f4xx_hal_gpio.h`). */
-    const uint16_t pin;
+    uint16_t pin;
 } cmr_spiPin_t;
 
 /** @brief Represents a SPI port's pins. */
@@ -48,6 +48,7 @@ struct cmr_spi {
     SPI_HandleTypeDef handle;   /**< @brief HAL SPI handle. */
     DMA_HandleTypeDef rxDMA;    /**< @brief Receiving HAL DMA handle. */
     DMA_HandleTypeDef txDMA;    /**< @brief Transmitting HAL DMA handle. */
+    cmr_spiPin_t nssPin;   /**< @brief Slave select pin. */
 
     /** @brief Callback called when a transaction has finished. */
     cmr_spiCallback_t doneCallback;
