@@ -51,7 +51,7 @@ struct cmr_spi {
 
     /** @brief Callback called when a transaction has finished. */
     cmr_spiCallback_t doneCallback;
-}
+};
 
 void cmr_spiInit(
     cmr_spi_t *spi, SPI_TypeDef *instance, const SPI_InitTypeDef *init,
@@ -62,7 +62,7 @@ void cmr_spiInit(
 );
 
 int cmr_spiTXRX(
-    cmr_spi_t *spi, void *txData, const void *rxData, size_t len
+    cmr_spi_t *spi, const void *txData, void *rxData, size_t len
 );
 
 #endif /* HAL_DMA_MODULE_ENABLED */

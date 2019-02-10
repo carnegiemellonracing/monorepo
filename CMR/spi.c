@@ -16,6 +16,7 @@
 #ifdef HAL_DMA_MODULE_ENABLED
 
 #include "rcc.h"    // cmr_rccSPIClockEnable(), cmr_rccGPIOClockEnable()
+#include "dma.h"    // cmr_dmaInit()
 #include "panic.h"  // cmr_panic()
 
 /**
@@ -151,8 +152,8 @@ void cmr_spiInit(
     // Configure DMA.
     cmr_dmaInit(&spi->rxDMA);
     cmr_dmaInit(&spi->txDMA);
-    __HAL_LINKDMA(&spi->handle, hdmarx, &spi->rxDMA);
-    __HAL_LINKDMA(&spi->handle, hdmatx, &spi->txDMA);
+    __HAL_LINKDMA(&spi->handle, hdmarx, spi->rxDMA);
+    __HAL_LINKDMA(&spi->handle, hdmatx, spi->txDMA);
 
     if (HAL_SPI_Init(&spi->handle) != HAL_OK) {
         cmr_panic("HAL_SPI_Init() failed!");
@@ -175,7 +176,7 @@ void cmr_spiInit(
  * @return 0 on success, or a negative error code if the port is busy.
  */
 int cmr_spiTXRX(
-    cmr_spi_t *spi, void *txData, const void *rxData, size_t len
+    cmr_spi_t *spi, const void *txData, void *rxData, size_t len
 ) {
     HAL_StatusTypeDef status;
     if (txData == NULL) {
@@ -185,9 +186,11 @@ int cmr_spiTXRX(
 
         status = HAL_SPI_Receive_DMA(&spi->handle, rxData, len);
     } else if (rxData == NULL) {
-        status = HAL_SPI_Transmit_DMA(&spi->handle, txData, len);
+        status = HAL_SPI_Transmit_DMA(&spi->handle, (void *) txData, len);
     } else {
-        status = HAL_SPI_TransmitReceive_DMA(&spi->handle, txData, rxData, len);
+        status = HAL_SPI_TransmitReceive_DMA(
+            &spi->handle, (void *) txData, rxData, len
+        );
     }
 
     switch (status) {
