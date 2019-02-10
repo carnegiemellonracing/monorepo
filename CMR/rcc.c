@@ -131,5 +131,35 @@ void cmr_rccCANClockEnable(CAN_TypeDef *instance) {
 }
 #endif /* HAL_CAN_MODULE_ENABLED */
 
+#ifdef HAL_SPI_MODULE_ENABLED
+/**
+ * @brief Enables the specified SPI port's clock.
+ *
+ * @param instance The HAL SPI instance.
+ */
+void cmr_rccSPIClockEnable(SPI_TypeDef *instance) {
+    if (instance == SPI1) {
+        __HAL_RCC_SPI1_CLK_ENABLE();
+        return;
+    }
+    if (instance == SPI2) {
+        __HAL_RCC_SPI2_CLK_ENABLE();
+        return;
+    }
+    if (instance == SPI3) {
+        __HAL_RCC_SPI3_CLK_ENABLE();
+        return;
+    }
+    if (instance == SPI4) {
+        __HAL_RCC_SPI4_CLK_ENABLE();
+        return;
+    }
+    if (instance == SPI5) {
+        __HAL_RCC_SPI5_CLK_ENABLE();
+        return;
+    }
+}
+#endif /* HAL_SPI_MODULE_ENABLED */
+
 #endif /* HAL_RCC_MODULE_ENABLED */
 
