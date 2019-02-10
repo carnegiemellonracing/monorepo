@@ -74,6 +74,9 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *handle) {
 /**
  * @brief Initializes the SPI port.
  *
+ * The SPI will always be configured to use software NSS, with the pin specified
+ * set as a GPIO output and managed automatically during transmit/receive.
+ *
  * @warning It is undefined behavior to initialize the same HAL SPI or DMA
  * stream instances more than once!
  *
@@ -136,6 +139,9 @@ void cmr_spiInit(
         .nssPin = pins->nss,
         .doneCallback = doneCallback
     };
+
+    // Always use software NSS.
+    spi.handle.Init.NSS = SPI_NSS_SOFT;
 
     cmr_rccSPIClockEnable(instance);
 
