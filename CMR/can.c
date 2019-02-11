@@ -15,9 +15,6 @@
 #include "rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
 #include "panic.h"  // cmr_panic()
 
-/** @brief Number of CAN filter banks allocated for each interface. */
-static const uint32_t CMR_CAN_FILTERBANKS = 14;
-
 /** @brief CAN RX priority. */
 static const uint32_t cmr_canRX_priority  = 7;
 

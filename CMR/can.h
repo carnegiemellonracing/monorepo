@@ -18,6 +18,9 @@
 
 #include <stdint.h>
 
+/** @brief Number of CAN filter banks allocated for each interface. */
+#define CMR_CAN_FILTERBANKS 14
+
 /** @brief Periodic message reception metadata. */
 typedef struct {
     const uint16_t canID;       /**< @brief Associated CAN ID. */
