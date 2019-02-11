@@ -2,14 +2,14 @@
 
 This repository contains a template project for STM32F413-based CMR boards.
 
-[comment]: <> (XXX Edit the title and section description for your board!)
+<!-- XXX Edit the title and section description for your board! -->
 
 ## Using the template
 
 1. Fork this repository.
     - Please select an appropriate fork name specific to your board!
 2. Clone the forked repository to your workstation.
-3. `grep -Hn 'XXX' *` will provide a list of locations that should be edited.
+3. `grep -Hn 'XXX' .* *` will provide a list of locations that should be edited.
     - For each location, please do the right thing for your board.
     - Much of this is peripheral configuration (e.g. pin setup, IDs, etc.).
     - Some of these are RTOS tasks that should get more fleshed-out behavior.
@@ -21,7 +21,7 @@ This repository contains a template project for STM32F413-based CMR boards.
         - What do they do, and why?
     - Update the file manifest below with more files/directories as necessary!
 
-[comment]: <> (XXX Edit this section as described above!)
+<!-- XXX Edit this section as described above! -->
 
 ## File manifest
 
