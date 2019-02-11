@@ -1,6 +1,13 @@
 /**
  * @file gpio.c
  * @brief General purpose input/output wrapper implementation.
+ *
+ * The interrupt handler definitions override the default handlers for each
+ * interrupt, which spins forever.
+ *
+ * The default handlers are (weakly) defined in `CMSIS/startup_stm32f413xx.s`.
+ *
+ * @author Carnegie Mellon Racing
  */
 
 #include "gpio.h"   // Interface to implement
@@ -12,6 +19,32 @@
 
 static const cmr_gpioPinConfig_t *cmr_gpioPinConfigs;
 static size_t cmr_gpioPinConfigsLen;
+
+/**
+ * @brief Defines the EXTI IRQ handler for the given name and pins.
+ *
+ * @param name The EXTI name.
+ * @param pins The relevant GPIO pins.
+ */
+#define EXTI_IRQHandler(name, pins) \
+    void EXTI##name##_IRQHandler(void) { \
+        HAL_GPIO_EXTI_IRQHandler(pins); \
+    }
+EXTI_IRQHandler(0, GPIO_PIN_0)
+EXTI_IRQHandler(1, GPIO_PIN_1)
+EXTI_IRQHandler(2, GPIO_PIN_2)
+EXTI_IRQHandler(3, GPIO_PIN_3)
+EXTI_IRQHandler(4, GPIO_PIN_4)
+EXTI_IRQHandler(
+    9_5,
+    GPIO_PIN_9 | GPIO_PIN_8 | GPIO_PIN_7 | GPIO_PIN_6 | GPIO_PIN_5
+)
+EXTI_IRQHandler(
+    15_10,
+    GPIO_PIN_15 | GPIO_PIN_14 | GPIO_PIN_13 |
+    GPIO_PIN_12 | GPIO_PIN_11 | GPIO_PIN_10
+)
+#undef EXTI_IRQHandler
 
 /**
  * @brief Configures the specified GPIO pin(s).
