@@ -1,8 +1,14 @@
 # STM32F413 firmware template
 
+**NOTE**: This project uses [Git submodules][submodules].
+- When cloning this repository for the first time `git clone <url> --recursive`
+- When updating an existing clone: `git submodule update --init --recursive`
+
 This repository contains a template project for STM32F413-based CMR boards.
 
 <!-- XXX Edit the title and section description for your board! -->
+
+[submodules]: https://git-scm.com/book/en/v2/Git-Tools-Submodules
 
 ## Using the template
 
@@ -18,11 +24,13 @@ This repository contains a template project for STM32F413-based CMR boards.
     - `git remote add template git@github.com:carnegiemellonracing/stm32f413-template.git`
     - `git pull template master`
     - `git push -u origin master`
-4. `grep -Hn 'XXX' .* *` will provide a list of locations that should be edited.
+4. Clone all submodules:
+    - `git submodule update --init --recursive`
+5. `grep -Hn 'XXX' .* *` will provide a list of locations that should be edited.
     - For each location, please do the right thing for your board.
     - Much of this is peripheral configuration (e.g. pin setup, IDs, etc.).
     - Some of these are RTOS tasks that should get more fleshed-out behavior.
-5. **Replace this README section** with something specific to your board! Ideas:
+6. **Replace this README section** with something specific to your board! Ideas:
     - What modules do you use, and why?
     - Catalog of device and pin configurations
         - What settings did you choose, and why?
