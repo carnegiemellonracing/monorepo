@@ -141,7 +141,7 @@ void cmr_spiInit(
     };
 
     // Always use software NSS.
-    spi.handle.Init.NSS = SPI_NSS_SOFT;
+    spi->handle.Init.NSS = SPI_NSS_SOFT;
 
     cmr_rccSPIClockEnable(instance);
 
