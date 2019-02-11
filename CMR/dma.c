@@ -104,6 +104,8 @@ void cmr_dmaInit(DMA_HandleTypeDef *handle) {
             break;
 DMA_STREAM_FOREACH(DMA_INTERRUPT_CONFIG)
 #undef DMA_INTERRUPT_CONFIG
+        default:
+            cmr_panic("Unknown DMA stream!");
     }
     cmr_dmaInterrupts[ctrlIndex][streamIndex] = (cmr_dmaInterrupt_t) {
         .handle = handle
