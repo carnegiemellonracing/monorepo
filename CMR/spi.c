@@ -39,12 +39,24 @@ void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *handle) {
 }
 
 /**
+ * @brief Gets the SPI port from its handle.
+ *
+ * @warning The handle must have been configured through this library!
+ *
+ * @param handle The HAL SPI handle.
+ */
+static cmr_spi_t *cmr_spiFromHandle(SPI_HandleTypeDef *handle) {
+    char *addr = (void *) handle;
+    return (void *) (addr - offsetof(cmr_spi_t, handle));
+}
+
+/**
  * @brief HAL SPI transmit completion handler.
  *
  * @param handle The HAL SPI handle.
  */
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *handle) {
-    cmr_spi_t *spi = (cmr_spi_t *) handle;
+    cmr_spi_t *spi = cmr_spiFromHandle(handle);
     HAL_GPIO_WritePin(spi->nssPin.port, spi->nssPin.pin, GPIO_PIN_SET);
     spi->doneCallback(spi);
 }
@@ -55,7 +67,7 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *handle) {
  * @param handle The HAL SPI handle.
  */
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *handle) {
-    cmr_spi_t *spi = (cmr_spi_t *) handle;
+    cmr_spi_t *spi = cmr_spiFromHandle(handle);
     HAL_GPIO_WritePin(spi->nssPin.port, spi->nssPin.pin, GPIO_PIN_SET);
     spi->doneCallback(spi);
 }
@@ -66,7 +78,7 @@ void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *handle) {
  * @param handle The HAL SPI handle.
  */
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *handle) {
-    cmr_spi_t *spi = (cmr_spi_t *) handle;
+    cmr_spi_t *spi = cmr_spiFromHandle(handle);
     HAL_GPIO_WritePin(spi->nssPin.port, spi->nssPin.pin, GPIO_PIN_SET);
     spi->doneCallback(spi);
 }
