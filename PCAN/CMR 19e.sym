@@ -1,0 +1,46 @@
+FormatVersion=5.0 // Do not edit this line!
+UniqueVariables=True
+Title="FSM_Heartbeat"
+
+{ENUMS}
+enum State(0="GLV_ON",
+		   1="HV_EN",
+		   2="RTD",
+		   3="ERROR",
+		   4="CLEAR_ERROR",
+		   5="UNKNOWN")
+
+{SENDRECEIVE}
+
+[FSM_Heartbeat]
+ID=103h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=FSMState unsigned 0,8 /e:State
+Var=ERR_VSMTimeout unsigned 8,1
+Var=WRN_VoltageOOR unsigned 25,1
+Var=WRN_VSMTimeout unsigned 24,1
+Var=WRN_CurrentOOR unsigned 26,1
+Var=WRN_SteeringOOR unsigned 34,1
+Var=WRN_BrakePressureOOR unsigned 35,1
+Var=WRN_LeftTPosOOR unsigned 36,1
+Var=WRN_RightTPosOOR unsigned 37,1
+Var=WRN_BPPFault unsigned 38,1
+Var=WRN_TPosImplausible unsigned 39,1
+
+[FSM_PowerDiagnostic]
+ID=553h
+DLC=4
+CycleTime=100
+Timeout=1000
+Var=busVoltage unsigned 0,16 /u:mV
+Var=busCurrent unsigned 16,16 /u:mA
+
+[VSM_Heartbeat]
+ID=100h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=VSMState unsigned 0,8 /e:State
+
