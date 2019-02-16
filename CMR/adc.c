@@ -132,7 +132,7 @@ void cmr_adcInit(
                 .ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE,
                 .ExternalTrigConv = ADC_SOFTWARE_START,
                 .DataAlign = ADC_DATAALIGN_RIGHT,
-                .NbrOfConversion = CMR_ADC_CHANNELS,
+                .NbrOfConversion = channelsLen,
                 .DMAContinuousRequests = DISABLE,
                 .EOCSelection = ADC_EOC_SINGLE_CONV
             }
