@@ -21,9 +21,17 @@
  * @see `stm32f4xx_hal_gpio.h` for various initialization values.
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
-	// XXX edit me to match your pin configuration
     [GPIO_LED_STATUS] = {
-        .port = GPIOB,
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_8,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_BRAKELIGHT] = {
+        .port = GPIOA,
         .init = {
             .Pin = GPIO_PIN_6,
             .Mode = GPIO_MODE_OUTPUT_PP,

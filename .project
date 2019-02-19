@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-    <!-- XXX Change the project name to match the chosen repository name. -->
-	<name>stm32f413-template</name>
+	<name>PTC</name>
 	<comment></comment>
 	<projects>
 	</projects>
