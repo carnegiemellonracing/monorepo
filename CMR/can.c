@@ -134,11 +134,14 @@ void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *handle) {
 
     uint32_t error = handle->ErrorCode;
     if (error & (
+            HAL_CAN_ERROR_TX_ALST0 |
+            HAL_CAN_ERROR_TX_ALST1 |
+            HAL_CAN_ERROR_TX_ALST2 |
             HAL_CAN_ERROR_TX_TERR0 |
             HAL_CAN_ERROR_TX_TERR1 |
             HAL_CAN_ERROR_TX_TERR2
     )) {
-        // Indicate completion.
+        // Transmit error; drop semaphore.
         BaseType_t higherWoken;
         if (xSemaphoreGiveFromISR(can->txSem, &higherWoken) != pdTRUE) {
             cmr_panic("TX semaphore released too many times!");
