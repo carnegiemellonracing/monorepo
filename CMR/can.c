@@ -15,8 +15,11 @@
 #include "rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
 #include "panic.h"  // cmr_panic()
 
+/** @brief Total number of hardware TX mailboxes. */
+static const size_t CAN_TX_MAILBOXES = 3;
+
 /** @brief CAN RX priority. */
-static const uint32_t cmr_canRX_priority  = 7;
+static const uint32_t cmr_canRX_priority = 7;
 
 /** @brief CAN RX period (milliseconds). */
 static const TickType_t cmr_canRX_period_ms = 1;
@@ -209,8 +212,10 @@ void cmr_canInit(
         .rxCallback = rxCallback
     };
 
-    can->txMutex = xSemaphoreCreateMutex();
-    configASSERT(can->txMutex != NULL);
+    can->txSem = xSemaphoreCreateCountingStatic(
+        CAN_TX_MAILBOXES, CAN_TX_MAILBOXES, &can->txSemBuf
+    );
+    configASSERT(can->txSem != NULL);
 
     cmr_rccCANClockEnable(instance);
     cmr_rccGPIOClockEnable(rxPort);
@@ -310,11 +315,14 @@ void cmr_canFilter(
  * @param id The message's CAN ID.
  * @param data The data to send.
  * @param len The data's length, in bytes.
+ * @param timeout The timeout.
  *
- * @return 0 on success, or a negative error code.
+ * @return 0 on success, or a negative error code on timeout.
  */
 int cmr_canTX(
-    cmr_can_t *can, uint16_t id, const void *data, size_t len
+    cmr_can_t *can,
+    uint16_t id, const void *data, size_t len,
+    TickType_t timeout
 ) {
     CAN_TxHeaderTypeDef txHeader = {
         .StdId = id,
@@ -325,9 +333,10 @@ int cmr_canTX(
         .TransmitGlobalTime = DISABLE
     };
 
-    BaseType_t result = xSemaphoreTake(can->txMutex, portMAX_DELAY);
+    // Attempt to reserve a mailbox.
+    BaseType_t result = xSemaphoreTake(can->txSem, timeout);
     if (result != pdTRUE) {
-        cmr_panic("cmr_canTX() xSemaphoreTake() timed out!");
+        return -1;
     }
 
     // Even though the interface for HAL_CAN_AddTxMessage() does not specify the
@@ -337,13 +346,50 @@ int cmr_canTX(
         &can->handle, &txHeader, (void *) data, &txMailbox
     );
     if (status != HAL_OK) {
-        return -1;
+        cmr_panic("Semaphore was available, but no mailboxes were found!");
     }
-
-    xSemaphoreGive(can->txMutex);
 
     return 0;
 }
+
+/**
+ * @brief Callback for CAN transmit mailbox completion.
+ *
+ * @warning Called from an interrupt handler!
+ * @warning The handle must have been configured through this library!
+ *
+ * @param handle The HAL CAN handle.
+ * @param mailbox The completed mailbox.
+ */
+static void cmr_canTXCpltCallback(CAN_HandleTypeDef *handle, size_t mailbox) {
+    (void) mailbox;     // Placate compiler.
+
+    char *addr = (void *) handle;
+    cmr_can_t *can = (void *) (addr - offsetof(cmr_can_t, handle));
+
+    // Indicate completion.
+    BaseType_t higherWoken;
+    if (xSemaphoreGiveFromISR(can->txSem, &higherWoken) != pdTRUE) {
+        cmr_panic("TX semaphore released too many times!");
+    }
+    portYIELD_FROM_ISR(higherWoken);
+}
+
+/**
+ * @brief Defines the completion callback for the given CAN TX mailbox.
+ *
+ * @param mailbox The mailbox number.
+ */
+#define CAN_TX_MAILBOX_CPLT(mailbox) \
+    void HAL_CAN_TxMailbox ## mailbox ## CompleteCallback( \
+        CAN_HandleTypeDef *handle \
+    ) { \
+        cmr_canTXCpltCallback(handle, mailbox); \
+    }
+CAN_TX_MAILBOX_CPLT(0)
+CAN_TX_MAILBOX_CPLT(1)
+CAN_TX_MAILBOX_CPLT(2)
+#undef CAN_TX_MAILBOX_CPLT
 
 /**
  * @brief Enables (sets) bit(s) in a CAN field.
