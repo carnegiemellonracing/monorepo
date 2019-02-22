@@ -73,6 +73,20 @@ CAN_FOREACH(CAN_IRQ_HANDLERS)
 #undef CAN_IRQ_HANDLERS
 
 /**
+ * @brief Gets the corresponding CAN interface from the HAL handle.
+ *
+ * @warning The handle must have been configured through this library!
+ *
+ * @param handle The handle.
+ *
+ * @return The interface.
+ */
+static cmr_can_t *cmr_canFromHandle(CAN_HandleTypeDef *handle) {
+    char *addr = (void *) handle;
+    return (void *) (addr - offsetof(cmr_can_t, handle));
+}
+
+/**
  * @brief Callback for CAN transmit mailbox completion.
  *
  * @warning Called from an interrupt handler!
@@ -83,9 +97,7 @@ CAN_FOREACH(CAN_IRQ_HANDLERS)
  */
 static void cmr_canTXCpltCallback(CAN_HandleTypeDef *handle, size_t mailbox) {
     (void) mailbox;     // Placate compiler.
-
-    char *addr = (void *) handle;
-    cmr_can_t *can = (void *) (addr - offsetof(cmr_can_t, handle));
+    cmr_can_t *can = cmr_canFromHandle(handle);
 
     // Indicate completion.
     BaseType_t higherWoken;
@@ -110,6 +122,34 @@ CAN_TX_MAILBOX_CPLT(0)
 CAN_TX_MAILBOX_CPLT(1)
 CAN_TX_MAILBOX_CPLT(2)
 #undef CAN_TX_MAILBOX_CPLT
+
+/**
+ * @brief HAL CAN error callback.
+ *
+ * @warning Called from an interrupt handler!
+ * @warning The handle must have been configured through this library!
+ */
+void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *handle) {
+    cmr_can_t *can = cmr_canFromHandle(handle);
+
+    uint32_t error = handle->ErrorCode;
+    if (error & (
+            HAL_CAN_ERROR_TX_TERR0 |
+            HAL_CAN_ERROR_TX_TERR1 |
+            HAL_CAN_ERROR_TX_TERR2
+    )) {
+        // Indicate completion.
+        BaseType_t higherWoken;
+        if (xSemaphoreGiveFromISR(can->txSem, &higherWoken) != pdTRUE) {
+            cmr_panic("TX semaphore released too many times!");
+        }
+        portYIELD_FROM_ISR(higherWoken);
+    } else {
+        cmr_panic("Unknown CAN error ocurred!");
+    }
+
+    handle->ErrorCode = 0;
+}
 
 /**
  * @brief Checks if a timeout has occurred.
