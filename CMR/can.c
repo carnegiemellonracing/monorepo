@@ -24,6 +24,93 @@ static const uint32_t cmr_canRX_priority = 7;
 /** @brief CAN RX period (milliseconds). */
 static const TickType_t cmr_canRX_period_ms = 1;
 
+/** @brief CAN interrupt configuration. */
+typedef struct {
+    CAN_HandleTypeDef *handle;  /**< @brief The handle. */
+} cmr_canInterrupt_t;
+
+/**
+ * @brief All CAN interrupt configurations, indexed by port.
+ *
+ * There are 3 CAN controllers on the STM32F413 (CAN1, CAN2, CAN3).
+ *
+ * @note This array maps CAN1 to index 0, CAN2 to 1, etc.
+ */
+static cmr_canInterrupt_t cmr_canInterrupts[3];
+
+/**
+ * @brief Instantiates the macro for each CAN interface.
+ *
+ * @param f The macro to instantiate.
+ */
+#define CAN_FOREACH(f) \
+    f(1) \
+    f(2) \
+    f(3)
+
+/**
+ * @brief Defines interrupt handlers for each CAN interface.
+ *
+ * @param can The CAN interface number.
+ */
+#define CAN_IRQ_HANDLERS(can) \
+    void CAN ## can ## _TX_IRQHandler(void) { \
+        HAL_CAN_IRQHandler(cmr_canInterrupts[can - 1].handle); \
+    } \
+    \
+    void CAN ## can ## _RX0_IRQHandler(void) { \
+        HAL_CAN_IRQHandler(cmr_canInterrupts[can - 1].handle); \
+    } \
+    \
+    void CAN ## can ## _RX1_IRQHandler(void) { \
+        HAL_CAN_IRQHandler(cmr_canInterrupts[can - 1].handle); \
+    } \
+    \
+    void CAN ## can ## _SCE_IRQHandler(void) { \
+        HAL_CAN_IRQHandler(cmr_canInterrupts[can - 1].handle); \
+    }
+CAN_FOREACH(CAN_IRQ_HANDLERS)
+#undef CAN_IRQ_HANDLERS
+
+/**
+ * @brief Callback for CAN transmit mailbox completion.
+ *
+ * @warning Called from an interrupt handler!
+ * @warning The handle must have been configured through this library!
+ *
+ * @param handle The HAL CAN handle.
+ * @param mailbox The completed mailbox.
+ */
+static void cmr_canTXCpltCallback(CAN_HandleTypeDef *handle, size_t mailbox) {
+    (void) mailbox;     // Placate compiler.
+
+    char *addr = (void *) handle;
+    cmr_can_t *can = (void *) (addr - offsetof(cmr_can_t, handle));
+
+    // Indicate completion.
+    BaseType_t higherWoken;
+    if (xSemaphoreGiveFromISR(can->txSem, &higherWoken) != pdTRUE) {
+        cmr_panic("TX semaphore released too many times!");
+    }
+    portYIELD_FROM_ISR(higherWoken);
+}
+
+/**
+ * @brief Defines the completion callback for the given CAN TX mailbox.
+ *
+ * @param mailbox The mailbox number.
+ */
+#define CAN_TX_MAILBOX_CPLT(mailbox) \
+    void HAL_CAN_TxMailbox ## mailbox ## CompleteCallback( \
+        CAN_HandleTypeDef *handle \
+    ) { \
+        cmr_canTXCpltCallback(handle, mailbox); \
+    }
+CAN_TX_MAILBOX_CPLT(0)
+CAN_TX_MAILBOX_CPLT(1)
+CAN_TX_MAILBOX_CPLT(2)
+#undef CAN_TX_MAILBOX_CPLT
+
 /**
  * @brief Checks if a timeout has occurred.
  *
@@ -217,6 +304,39 @@ void cmr_canInit(
     );
     configASSERT(can->txSem != NULL);
 
+    // Configure interrupts.
+    size_t canIdx;
+    IRQn_Type irqTX;
+    IRQn_Type irqRX0;
+    IRQn_Type irqRX1;
+    IRQn_Type irqSCE;
+    switch ((uintptr_t) instance) {
+#define CAN_INTERRUPT_CONFIG(num) \
+        case CAN ## num ## _BASE: \
+            canIdx = num - 1; \
+            irqTX = CAN ## num ## _TX_IRQn; \
+            irqRX0 = CAN ## num ## _RX0_IRQn; \
+            irqRX1 = CAN ## num ## _RX1_IRQn; \
+            irqSCE = CAN ## num ## _SCE_IRQn; \
+            break;
+CAN_FOREACH(CAN_INTERRUPT_CONFIG)
+#undef CAN_INTERRUPT_CONFIG
+        default:
+            cmr_panic("Unknown CAN instance!");
+    }
+
+    cmr_canInterrupts[canIdx] = (cmr_canInterrupt_t) {
+        .handle = &can->handle
+    };
+    HAL_NVIC_SetPriority(irqTX, 5, 0);
+    HAL_NVIC_SetPriority(irqRX0, 5, 0);
+    HAL_NVIC_SetPriority(irqRX1, 5, 0);
+    HAL_NVIC_SetPriority(irqSCE, 5, 0);
+    HAL_NVIC_EnableIRQ(irqTX);
+    HAL_NVIC_EnableIRQ(irqRX0);
+    HAL_NVIC_EnableIRQ(irqRX1);
+    HAL_NVIC_EnableIRQ(irqSCE);
+
     cmr_rccCANClockEnable(instance);
     cmr_rccGPIOClockEnable(rxPort);
     cmr_rccGPIOClockEnable(txPort);
@@ -248,6 +368,10 @@ void cmr_canInit(
 
     if (HAL_CAN_Start(&can->handle) != HAL_OK) {
         cmr_panic("HAL_CAN_Start() failed!");
+    }
+
+    if (HAL_CAN_ActivateNotification(&can->handle, CAN_IT_TX_MAILBOX_EMPTY)) {
+        cmr_panic("HAL_CAN_ActivateNotification() failed!");
     }
 
     // Create receive task.
@@ -351,45 +475,6 @@ int cmr_canTX(
 
     return 0;
 }
-
-/**
- * @brief Callback for CAN transmit mailbox completion.
- *
- * @warning Called from an interrupt handler!
- * @warning The handle must have been configured through this library!
- *
- * @param handle The HAL CAN handle.
- * @param mailbox The completed mailbox.
- */
-static void cmr_canTXCpltCallback(CAN_HandleTypeDef *handle, size_t mailbox) {
-    (void) mailbox;     // Placate compiler.
-
-    char *addr = (void *) handle;
-    cmr_can_t *can = (void *) (addr - offsetof(cmr_can_t, handle));
-
-    // Indicate completion.
-    BaseType_t higherWoken;
-    if (xSemaphoreGiveFromISR(can->txSem, &higherWoken) != pdTRUE) {
-        cmr_panic("TX semaphore released too many times!");
-    }
-    portYIELD_FROM_ISR(higherWoken);
-}
-
-/**
- * @brief Defines the completion callback for the given CAN TX mailbox.
- *
- * @param mailbox The mailbox number.
- */
-#define CAN_TX_MAILBOX_CPLT(mailbox) \
-    void HAL_CAN_TxMailbox ## mailbox ## CompleteCallback( \
-        CAN_HandleTypeDef *handle \
-    ) { \
-        cmr_canTXCpltCallback(handle, mailbox); \
-    }
-CAN_TX_MAILBOX_CPLT(0)
-CAN_TX_MAILBOX_CPLT(1)
-CAN_TX_MAILBOX_CPLT(2)
-#undef CAN_TX_MAILBOX_CPLT
 
 /**
  * @brief Enables (sets) bit(s) in a CAN field.
