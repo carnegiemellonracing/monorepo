@@ -19,6 +19,9 @@
 /** @brief Number of channels per ADC. */
 #define CMR_ADC_CHANNELS 16
 
+/** @brief Maximum 12-bit ADC value. */
+#define CMR_ADC_MAX (uint32_t)((1 << 12) - 1)
+
 /** @brief Represents an ADC channel.  */
 typedef struct {
     /**

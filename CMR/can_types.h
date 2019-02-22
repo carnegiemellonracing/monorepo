@@ -81,10 +81,12 @@ typedef enum {
     CMR_CAN_WARN_FSM_TPOS_R = (1 << 13),
     /** @brief FSM left throttle position out-of-range. */
     CMR_CAN_WARN_FSM_TPOS_L = (1 << 12),
+    /** @brief FSM brake pedal position out-of-range. */
+    CMR_CAN_WARN_FSM_BPOS = (1 << 11),
     /** @brief FSM brake pressure sensor out-of-range. */
-    CMR_CAN_WARN_FSM_BPRES = (1 << 11),
+    CMR_CAN_WARN_FSM_BPRES = (1 << 10),
     /** @brief FSM steering wheel angle out-of-range. */
-    CMR_CAN_WARN_FSM_SWANGLE = (1 << 10)
+    CMR_CAN_WARN_FSM_SWANGLE = (1 << 9)
 } cmr_canWarn_t;
 
 /** @brief Accumulator Fan Controller fan status. */
@@ -120,10 +122,10 @@ typedef struct {
 
 /** @brief Front Sensor Module data. */
 typedef struct {
-    uint8_t torqueRequested;    /**< @brief Torque requested (0-100). */
-    uint8_t throttlePosition;   /**< @brief Throttle position (0-100). */
-    uint8_t brakePressureFront;     /**< @brief Front brake pressure. */
-    uint8_t brakePedalPosition;     /**< @brief Brake pedal position (0-100). */
+    uint8_t torqueRequested_pcnt;    /**< @brief Torque requested (0-100). */
+    uint8_t throttlePosition_pcnt;   /**< @brief Throttle position (0-100). */
+    uint8_t brakePressureFront_PSI;  /**< @brief Front brake pressure. */
+    uint8_t brakePedalPosition_pcnt; /**< @brief Brake pedal position (0-100). */
 
     /** @brief Steering wheel angle (-180 to 180 degrees). */
     int16_t steeringWheelAngle_deg;
