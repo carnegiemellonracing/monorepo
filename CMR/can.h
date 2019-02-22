@@ -53,8 +53,9 @@ typedef void (*cmr_canRXCallback_t)(
 );
 
 struct cmr_can {
-    CAN_HandleTypeDef handle;   /**< @brief HAL CAN handle. */
-    SemaphoreHandle_t txMutex;  /**< @brief Transmit mutex. */
+    CAN_HandleTypeDef handle;       /**< @brief HAL CAN handle. */
+    SemaphoreHandle_t txSem;        /**< @brief Transmit counting semaphore. */
+    StaticSemaphore_t txSemBuf;     /**< @brief Transmit semaphore buffer. */
 
     /** @brief Metadata for periodic messages to receive. */
     cmr_canRXMeta_t *rxMeta;
@@ -91,7 +92,9 @@ void cmr_canFilter(
 );
 
 int cmr_canTX(
-    cmr_can_t *can, uint16_t id, const void *data, size_t len
+    cmr_can_t *can,
+    uint16_t id, const void *data, size_t len,
+    TickType_t timeout
 );
 
 void cmr_canFieldEnable(uint8_t *field, const void *value, size_t len);
