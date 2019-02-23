@@ -1,9 +1,10 @@
-/*
- * i2c.h
+/**
+ * @file i2c.h
+ * @brief I2C interface.
  *
- *  Created on: Feb 22, 2019
- *      Author: jason
+ * @author Carnegie Mellon Racing
  */
+
 #ifndef CMR_I2C_H_
 #define CMR_I2C_H_
 
@@ -14,14 +15,14 @@
 
 
 typedef struct {
-	I2C_HandleTypeDef handle;     /**< @brief HAL I2C Handle.*/
-	uint16_t *addresses;           /**< @brief Configured I2C devices.*/
-	size_t addressLen;            /**< @brief Number of I2C devices.*/
+	I2C_HandleTypeDef handle;      /**< @brief HAL I2C Handle.*/
+	uint16_t *devAddr;           /**< @brief Configured I2C devices.*/
+	size_t addrLen;             /**< @brief Number of I2C devices.*/
 }cmr_i2c_t;
 
 void cmr_i2cInit(
     cmr_i2c_t *i2c, I2C_TypeDef *instance,
-    uint16_t *addresses, const size_t addressLen
+    uint16_t *devAddr, const size_t addrLen
 );
 
 #endif /* CMR_I2C_H_ */
