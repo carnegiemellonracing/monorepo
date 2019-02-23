@@ -60,8 +60,13 @@ static void canTX10HzTask(void *pvParameters) {
             .busCurrent_mA = adcChannels[ADC_ISENSE].value
         };
 
-        // XXX Replace with an appropriate ID.
-        canTX(CMR_CANID_DIM_POWER_DIAGNOSTICS, &msg, sizeof(msg));
+        // XXX Replace with an appropriate ID and timeout.
+        canTX(
+            CMR_CANID_DIM_POWER_DIAGNOSTICS,
+            &msg,
+            sizeof(msg),
+            canTX10HzPeriod_ms
+        );
 
         vTaskDelayUntil(&lastWakeTime, canTX10HzPeriod_ms);
     }
@@ -107,8 +112,13 @@ static void canTX100HzTask(void *pvParameters) {
         }
         memcpy(&heartbeat.warning, &warning, sizeof(warning));
 
-        // XXX Replace with an appropriate ID.
-        canTX(CMR_CANID_HEARTBEAT_AFC0, &heartbeat, sizeof(heartbeat));
+        // XXX Replace with an appropriate ID and timeout.
+        canTX(
+            CMR_CANID_HEARTBEAT_AFC0,
+            &heartbeat,
+            sizeof(heartbeat),
+            canTX100HzPeriod_ms
+        );
 
         vTaskDelayUntil(&lastWakeTime, canTX100HzPeriod_ms);
     }
@@ -161,8 +171,11 @@ void canInit(void) {
  * @param id The ID for the message.
  * @param data The data to send.
  * @param len The data's length, in bytes.
+ * @param timeout The timeout, in ticks.
+ *
+ * @return 0 on success, or a negative error code on timeout.
  */
-void canTX(cmr_canID_t id, const void *data, size_t len) {
-    cmr_canTX(&can, id, data, len);
+int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
+    return cmr_canTX(&can, id, data, len, timeout);
 }
 
