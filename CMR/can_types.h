@@ -142,7 +142,6 @@ typedef struct {
 typedef struct {
     uint16_t brakePressureFrontADC;     /**< @brief Raw brake pressure value. */
     uint16_t steeringWheelAngleADC;     /**< @brief Raw steering wheel value. */
-    uint16_t auxiliaryADC;              /**< @brief Auxiliary value. */
 } cmr_canFSMSensorsADC_t;
 
 /** @brief Front Sensor Module power diagnostics. */
