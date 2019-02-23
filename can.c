@@ -42,6 +42,9 @@ static const uint32_t canTX10HzPriority = 3;
 /** @brief CAN 10 Hz TX period (milliseconds). */
 static const TickType_t canTX10HzPeriod_ms = 100;
 
+static cmr_canFanState_t fanStatePTC = CMR_CAN_FAN_OFF;
+static uint8_t pumpStatePTC = 0;
+
 /**
  * @brief Task for sending CAN messages at 10 Hz.
  *
@@ -54,14 +57,27 @@ static void canTX10HzTask(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // XXX Replace with an appropriate message.
-        cmr_canDIMPowerDiagnostics_t msg = {
-            .busVoltage_mV = adcChannels[ADC_VSENSE].value,
-            .busCurrent_mA = adcChannels[ADC_ISENSE].value
+        cmr_canPTCCoolingStatus_t coolMsg = {
+            .fanState = fanStatePTC,
+            .pumpState = pumpStatePTC,
+            .preRadiatorTemp_C = adcChannels[ADC_RAD_THERM_1].value,
+            .postRadiatorTemp_C = adcChannels[ADC_RAD_THERM_2].value
         };
 
-        // XXX Replace with an appropriate ID.
-        canTX(CMR_CANID_DIM_POWER_DIAGNOSTICS, &msg, sizeof(msg));
+        cmr_canPTCVoltageDiagnostics_t voltMsg = {
+            .logicVoltage_mV = adcChannels[ADC_LOGIC_VSENSE].value,
+            .loadVoltage_mV = adcChannels[ADC_POWER_VSENSE].value
+        };
+
+        cmr_canPTCCurrentDiagnostics_t ampMsg = {
+            .logicCurrent_mA = adcChannels[ADC_LOGIC_ISENSE].value,
+            .loadCurrent_mA = adcChannels[ADC_POWER_ISENSE].value,
+            .fanCurrent_mA = adcChannels[ADC_FAN_ISENSE].value
+        };
+
+        canTX(CMR_CANID_PTC_COOLING_STATUS, &coolMsg, sizeof(coolMsg));
+        canTX(CMR_CANID_PTC_VOLTAGE_DIAGNOSTICS, &voltMsg, sizeof(voltMsg));
+        canTX(CMR_CANID_PTC_CURRENT_DIAGNOSTICS, &ampMsg, sizeof(ampMsg));
 
         vTaskDelayUntil(&lastWakeTime, canTX10HzPeriod_ms);
     }
@@ -83,14 +99,11 @@ static const TickType_t canTX100HzPeriod_ms = 10;
 static void canTX100HzTask(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-    // XXX Example message retrieval.
     cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-    volatile cmr_canHeartbeat_t *heartbeatVSM =
-        (void *) heartbeatVSMMeta->payload;
+    volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // XXX Update these fields correctly.
         cmr_canHeartbeat_t heartbeat = {
             .state = heartbeatVSM->state
         };
@@ -107,8 +120,7 @@ static void canTX100HzTask(void *pvParameters) {
         }
         memcpy(&heartbeat.warning, &warning, sizeof(warning));
 
-        // XXX Replace with an appropriate ID.
-        canTX(CMR_CANID_HEARTBEAT_AFC0, &heartbeat, sizeof(heartbeat));
+        canTX(CMR_CANID_HEARTBEAT_PTC, &heartbeat, sizeof(heartbeat));
 
         vTaskDelayUntil(&lastWakeTime, canTX100HzPeriod_ms);
     }
@@ -136,7 +148,7 @@ void canInit(void) {
                 CMR_CANID_HEARTBEAT_VSM,
                 CMR_CANID_HEARTBEAT_VSM,
                 CMR_CANID_HEARTBEAT_VSM,
-                CMR_CANID_HEARTBEAT_VSM
+                CMR_CANID_FSM_DATA
             }
         }
     };
