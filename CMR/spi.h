@@ -50,16 +50,15 @@ struct cmr_spi {
     DMA_HandleTypeDef txDMA;    /**< @brief Transmitting HAL DMA handle. */
     cmr_spiPin_t nssPin;   /**< @brief Slave select pin. */
 
-    /** @brief Callback called when a transaction has finished. */
-    cmr_spiCallback_t doneCallback;
+    SemaphoreHandle_t doneSem;     /**< @brief Done binary semaphore. */
+    StaticSemaphore_t doneSemBuf;  /**< @brief Done semaphore storage. */
 };
 
 void cmr_spiInit(
     cmr_spi_t *spi, SPI_TypeDef *instance, const SPI_InitTypeDef *init,
     const cmr_spiPinConfig_t *pins,
     DMA_Stream_TypeDef *rxDMA, uint32_t rxDMAChannel,
-    DMA_Stream_TypeDef *txDMA, uint32_t txDMAChannel,
-    cmr_spiCallback_t doneCallback
+    DMA_Stream_TypeDef *txDMA, uint32_t txDMAChannel
 );
 
 int cmr_spiTXRX(
