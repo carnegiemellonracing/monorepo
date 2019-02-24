@@ -19,6 +19,9 @@
 /** @brief Number of channels per ADC. */
 #define CMR_ADC_CHANNELS 16
 
+/** @brief Maximum 12-bit ADC value. */
+#define CMR_ADC_MAX (uint32_t)((1 << 12) - 1)
+
 /** @brief Represents an ADC channel.  */
 typedef struct {
     /**
@@ -61,6 +64,8 @@ void cmr_adcInit(
     cmr_adc_t *adc, ADC_TypeDef *instance,
     cmr_adcChannel_t *channels, const size_t channelsLen
 );
+
+uint32_t cmr_adcRead(cmr_adc_t *adc, size_t channel);
 
 #endif /* HAL_ADC_MODULE_ENABLED */
 

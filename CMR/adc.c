@@ -1,6 +1,6 @@
 /**
  * @file adc.c
- * @brief Analog-to-digtal converter wrapper implementation.
+ * @brief Analog-to-digital converter wrapper implementation.
  *
  * @author Carnegie Mellon Racing
  */
@@ -25,23 +25,6 @@ static const uint32_t cmr_adcSample_priority = 5;
 static const TickType_t cmr_adcSample_period_ms = 10;
 
 /**
- * @brief Samples new values from the ADC.
- *
- * @param adc The ADC to sample.
- */
-static void cmr_adcSample(cmr_adc_t *adc) {
-    // ADC set up in discontinuous scan mode.
-    // Each `HAL_ADC_Start()` call converts the next-highest-rank channel.
-    for (size_t i = 0; i < adc->channelsLen; i++) {
-        cmr_adcChannel_t *channel = adc->channels + i;
-
-        HAL_ADC_Start(&adc->handle);
-        HAL_ADC_PollForConversion(&adc->handle, CMR_ADC_TIMEOUT_MS);
-        channel->value = HAL_ADC_GetValue(&adc->handle);
-    }
-}
-
-/**
  * @brief Task for sampling the ADC.
  *
  * @param pvParameters (cmr_adc_t *) The ADC.
@@ -53,7 +36,15 @@ static void cmr_adcSample_task(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        cmr_adcSample(adc);
+        // ADC set up in discontinuous scan mode.
+        // Each `HAL_ADC_Start()` call converts the next-highest-rank channel.
+        for (size_t i = 0; i < adc->channelsLen; i++) {
+            cmr_adcChannel_t *channel = &(adc->channels[i]);
+
+            HAL_ADC_Start(&adc->handle);
+            HAL_ADC_PollForConversion(&adc->handle, CMR_ADC_TIMEOUT_MS);
+            channel->value = HAL_ADC_GetValue(&adc->handle);
+        }
 
         vTaskDelayUntil(&lastWakeTime, cmr_adcSample_period_ms);
     }
@@ -154,6 +145,18 @@ void cmr_adcInit(
         cmr_adcSample_task, "adcSample",
         configMINIMAL_STACK_SIZE, adc, cmr_adcSample_priority, NULL
     );
+}
+
+/**
+ * @brief Reads the specified ADC channel.
+ *
+ * @param adc The ADC to read from.
+ * @param channel The channel's index.
+ *
+ * @return The most recent sample for that channel.
+ */
+uint32_t cmr_adcRead(cmr_adc_t *adc, size_t channel) {
+    return adc->channels[channel].value;
 }
 
 #endif /* HAL_ADC_MODULE_ENABLED */

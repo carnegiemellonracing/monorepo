@@ -29,6 +29,34 @@ Var=WRN_RightTPosOOR unsigned 37,1
 Var=WRN_BPPFault unsigned 38,1
 Var=WRN_TPosImplausible unsigned 39,1
 
+[FSM_Data]
+ID=133h
+DLC=6
+CycleTime=10
+Timeout=100
+Var=torqueReq unsigned 0,8 /u:%
+Var=throttlePos unsigned 8,8 /u:%
+Var=brakePressureFront unsigned 16,8 /u:PSI
+Var=brakePedalPos unsigned 24,8 /u:%
+Var=steeringWheelAngle signed 32,16 /u:deg
+
+[FSM_PedalsADC]
+ID=533h
+DLC=6
+Cycletime=100
+Timeout=1000
+Var=throttlePosLeft unsigned 0,16
+Var=throttlePosRight unsigned 16,16
+Var=brakePos unsigned 32,16
+
+[FSM_SensorsADC]
+ID=543h
+DLC=4
+Cycletime=100
+Timeout=1000
+Var=brakePressureFrontADC unsigned 0,16
+Var=steeringWheelAngleADC unsigned 16,16
+
 [FSM_PowerDiagnostic]
 ID=553h
 DLC=4

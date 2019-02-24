@@ -13,9 +13,11 @@
 
 #ifdef HAL_CAN_MODULE_ENABLED
 
+
 #include <FreeRTOS.h>   // FreeRTOS interface
 #include <semphr.h>     // Semaphore interface
 
+#include <stdbool.h>
 #include <stdint.h>
 
 /** @brief Number of CAN filter banks allocated for each interface. */
@@ -53,8 +55,9 @@ typedef void (*cmr_canRXCallback_t)(
 );
 
 struct cmr_can {
-    CAN_HandleTypeDef handle;   /**< @brief HAL CAN handle. */
-    SemaphoreHandle_t txMutex;  /**< @brief Transmit mutex. */
+    CAN_HandleTypeDef handle;       /**< @brief HAL CAN handle. */
+    SemaphoreHandle_t txSem;        /**< @brief Transmit counting semaphore. */
+    StaticSemaphore_t txSemBuf;     /**< @brief Transmit semaphore buffer. */
 
     /** @brief Metadata for periodic messages to receive. */
     cmr_canRXMeta_t *rxMeta;
@@ -78,12 +81,34 @@ void cmr_canInit(
  * @brief Represents a CAN filter's configuration.
  */
 typedef struct {
+    bool isMask;        /**< @brief `true` to mask; `false` to whitelist. */
+
     /**
      * @brief The CAN receive FIFO to configure (one of `CAN_RX_FIFOx` from
      * `stm32f4xx_hal_can.h`).
      */
     uint32_t rxFIFO;
-    uint16_t ids[4];    /**< @brief The IDs to whitelist. */
+
+    /**
+     * @brief The associated IDs.
+     *
+     * When `isMask` is `false`, this is a list of IDs to whitelist. A message
+     * with an ID equal to at least one of the IDs will be accepted into the
+     * specified FIFO; otherwise, it is ignored.
+     *
+     * Otherwise, when `isMask` is `true`, the first half of this array are IDs,
+     * and the second half selects bits from the ID to match (set means "match";
+     * clear means "don't care").
+     *
+     * Thus, an incoming message with ID "msg_id" is checked against each mask:
+     *
+     *      (msg_id & ids[2] == ids[0] & ids[2]) ||
+     *      (msg_id & ids[3] == ids[1] & ids[3])
+     *
+     * If the above condition is true, the message is accepted into the
+     * specified FIFO; otherwise, it is ignored.
+     */
+    uint16_t ids[4];
 } cmr_canFilter_t;
 
 void cmr_canFilter(
@@ -91,7 +116,9 @@ void cmr_canFilter(
 );
 
 int cmr_canTX(
-    cmr_can_t *can, uint16_t id, const void *data, size_t len
+    cmr_can_t *can,
+    uint16_t id, const void *data, size_t len,
+    TickType_t timeout
 );
 
 void cmr_canFieldEnable(uint8_t *field, const void *value, size_t len);

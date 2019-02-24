@@ -20,15 +20,6 @@
 #include "panic.h"  // cmr_panic()
 
 /**
- * @brief Default transaction completion callback.
- *
- * @param spi The SPI port.
- */
-static void cmr_spiDoneCallbackDefault(cmr_spi_t *spi) {
-    (void) spi;
-}
-
-/**
  * @brief HAL SPI error handler.
  *
  * @param handle The HAL SPI handle.
@@ -39,15 +30,25 @@ void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *handle) {
 }
 
 /**
- * @brief Gets the SPI port from its handle.
+ * @brief Handles SPI completion for the given port.
  *
  * @warning The handle must have been configured through this library!
  *
  * @param handle The HAL SPI handle.
  */
-static cmr_spi_t *cmr_spiFromHandle(SPI_HandleTypeDef *handle) {
+static void cmr_spiDoneCallback(SPI_HandleTypeDef *handle) {
     char *addr = (void *) handle;
-    return (void *) (addr - offsetof(cmr_spi_t, handle));
+    cmr_spi_t *spi = (void *) (addr - offsetof(cmr_spi_t, handle));
+
+    // Disable slave select.
+    HAL_GPIO_WritePin(spi->nssPin.port, spi->nssPin.pin, GPIO_PIN_SET);
+
+    // Indicate completion.
+    BaseType_t higherWoken;
+    if (xSemaphoreGiveFromISR(spi->doneSem, &higherWoken) != pdTRUE) {
+        cmr_panic("SPI done semaphore released more than once!");
+    }
+    portYIELD_FROM_ISR(higherWoken);
 }
 
 /**
@@ -56,9 +57,7 @@ static cmr_spi_t *cmr_spiFromHandle(SPI_HandleTypeDef *handle) {
  * @param handle The HAL SPI handle.
  */
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *handle) {
-    cmr_spi_t *spi = cmr_spiFromHandle(handle);
-    HAL_GPIO_WritePin(spi->nssPin.port, spi->nssPin.pin, GPIO_PIN_SET);
-    spi->doneCallback(spi);
+    cmr_spiDoneCallback(handle);
 }
 
 /**
@@ -67,9 +66,7 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *handle) {
  * @param handle The HAL SPI handle.
  */
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *handle) {
-    cmr_spi_t *spi = cmr_spiFromHandle(handle);
-    HAL_GPIO_WritePin(spi->nssPin.port, spi->nssPin.pin, GPIO_PIN_SET);
-    spi->doneCallback(spi);
+    cmr_spiDoneCallback(handle);
 }
 
 /**
@@ -78,9 +75,7 @@ void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *handle) {
  * @param handle The HAL SPI handle.
  */
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *handle) {
-    cmr_spi_t *spi = cmr_spiFromHandle(handle);
-    HAL_GPIO_WritePin(spi->nssPin.port, spi->nssPin.pin, GPIO_PIN_SET);
-    spi->doneCallback(spi);
+    cmr_spiDoneCallback(handle);
 }
 
 /**
@@ -102,19 +97,13 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *handle) {
  * `stm32f4xx_hal_dma.h`).
  * @param txDMA HAL DMA stream instance for transmitting data.
  * @param txDMAChannel HAL DMA channel for transmitting data.
- * @param doneCallback Transaction completion callback (or `NULL` to ignore).
  */
 void cmr_spiInit(
     cmr_spi_t *spi, SPI_TypeDef *instance, const SPI_InitTypeDef *init,
     const cmr_spiPinConfig_t *pins,
     DMA_Stream_TypeDef *rxDMA, uint32_t rxDMAChannel,
-    DMA_Stream_TypeDef *txDMA, uint32_t txDMAChannel,
-    cmr_spiCallback_t doneCallback
+    DMA_Stream_TypeDef *txDMA, uint32_t txDMAChannel
 ) {
-    if (doneCallback == NULL) {
-        doneCallback = cmr_spiDoneCallbackDefault;
-    }
-
     *spi = (cmr_spi_t) {
         .handle = {
             .Instance = instance,
@@ -149,11 +138,16 @@ void cmr_spiInit(
             }
         },
         .nssPin = pins->nss,
-        .doneCallback = doneCallback
     };
 
     // Always use software NSS.
     spi->handle.Init.NSS = SPI_NSS_SOFT;
+
+    spi->doneSem = xSemaphoreCreateBinaryStatic(&spi->doneSemBuf);
+    configASSERT(spi->doneSem != NULL);
+    if (xSemaphoreGive(spi->doneSem) != pdTRUE) {
+        cmr_panic("SPI done semaphore initialization failed!");
+    }
 
     cmr_rccSPIClockEnable(instance);
 
@@ -192,12 +186,10 @@ void cmr_spiInit(
 }
 
 /**
- * @brief Initiates a transaction over the given SPI port.
+ * @brief Performs a transaction over the given SPI port.
  *
- * @note This function does NOT block. Upon success, the registered callbacks
- * will be called via an ISR.
- *
- * @warning This function is NOT synchronized!
+ * @note Blocks until the transaction actually completes.
+ * @note Does NOT block if the port is currently busy.
  *
  * @param spi The SPI port.
  * @param txData The data to send, or `NULL` to not send any data.
@@ -214,7 +206,9 @@ int cmr_spiTXRX(
         return 0;   // Nothing to do.
     }
 
+    // Enable slave select.
     HAL_GPIO_WritePin(spi->nssPin.port, spi->nssPin.pin, GPIO_PIN_RESET);
+
     if (txData == NULL) {
         status = HAL_SPI_Receive_DMA(&spi->handle, rxData, len);
     } else if (rxData == NULL) {
@@ -227,12 +221,19 @@ int cmr_spiTXRX(
 
     switch (status) {
         case HAL_OK:
-            return 0;
+            break;
         case HAL_BUSY:
             return -1;
         default:
             cmr_panic("HAL SPI transaction failed!");
     }
+
+    // Wait for transaction to complete.
+    if (xSemaphoreTake(spi->doneSem, portMAX_DELAY) != pdTRUE) {
+        cmr_panic("Acquiring SPI port done semaphore timed out!");
+    }
+
+    return 0;
 }
 
 #endif /* HAL_DMA_MODULE_ENABLED */
