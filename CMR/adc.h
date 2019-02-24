@@ -65,6 +65,8 @@ void cmr_adcInit(
     cmr_adcChannel_t *channels, const size_t channelsLen
 );
 
+uint32_t cmr_adcRead(cmr_adc_t *adc, size_t channel);
+
 #endif /* HAL_ADC_MODULE_ENABLED */
 
 #endif /* CMR_ADC_H */

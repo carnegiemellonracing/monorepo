@@ -147,5 +147,17 @@ void cmr_adcInit(
     );
 }
 
+/**
+ * @brief Reads the specified ADC channel.
+ *
+ * @param adc The ADC to read from.
+ * @param channel The channel's index.
+ *
+ * @return The most recent sample for that channel.
+ */
+uint32_t cmr_adcRead(cmr_adc_t *adc, size_t channel) {
+    return adc->channels[channel].value;
+}
+
 #endif /* HAL_ADC_MODULE_ENABLED */
 
