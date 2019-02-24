@@ -144,8 +144,8 @@ void cmr_spiInit(
     spi->handle.Init.NSS = SPI_NSS_SOFT;
 
     spi->doneSem = xSemaphoreCreateBinaryStatic(&spi->doneSemBuf);
-    configASSERT(spi->doneSem == NULL);
-    if (xSemaphoreGive(&spi->doneSem) != pdTRUE) {
+    configASSERT(spi->doneSem != NULL);
+    if (xSemaphoreGive(spi->doneSem) != pdTRUE) {
         cmr_panic("SPI done semaphore initialization failed!");
     }
 
