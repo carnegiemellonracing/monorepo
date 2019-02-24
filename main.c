@@ -26,11 +26,11 @@ static const uint32_t statusLEDPriority = 2;
 static const TickType_t statusLEDPeriod_ms = 250;
 static const uint32_t coolingControlPriority = 4;
 static const TickType_t coolingControlPeriod_ms = 50;
-static const uint32_t brakelightPriority = 5;
+static const uint32_t brakelightPriority = 4;
 static const TickType_t brakelightPeriod_ms = 50;
-static const uint32_t brakeDisconnectPriority = 6;
-static const TickType_t brakeDisconnectPeriod_ms = 20;
-static const uint32_t sensorsPriority = 3;
+static const uint32_t brakeDisconnectPriority = 5;
+static const TickType_t brakeDisconnectPeriod_ms = 10;
+static const uint32_t sensorsPriority = 2;
 static const TickType_t sensorsPeriod_ms = 500;
 
 /**
@@ -175,7 +175,7 @@ static void brakeDisconnectTask(void *pvParameters) {
 static void sensorsTask(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // Read ADC values and publish over CAN
+        // publish sensors over CAN
         
 
         vTaskDelayUntil(&lastWakeTime, statusLEDPeriod_ms);
@@ -198,6 +198,7 @@ int main(void) {
     gpioInit();
     canInit();
     adcInit();
+    sensorInit();
 
     // Node tasks.
     xTaskCreate(

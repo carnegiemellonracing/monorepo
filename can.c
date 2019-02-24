@@ -30,6 +30,11 @@ cmr_canRXMeta_t canRXMeta[] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
+    },
+    [CANRX_FSM_DATA] = {
+        .canID = CMR_CANID_FSM_DATA,
+        .timeoutError_ms = 1000,
+        .timeoutWarn_ms = 500
     }
 };
 
