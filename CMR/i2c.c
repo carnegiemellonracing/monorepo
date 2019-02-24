@@ -5,10 +5,14 @@
  * @author Carnegie Mellon Racing
  */
 #include "i2c.h"    //interface
+
+#ifdef HAL_I2C_MODULE_ENABLED
+
 #include "panic.h"  //cmr_panic()
-#include "rcc.h"    //cmr_rccGPIOClockEnable()
-extern const I2C_CLOCK_LOW;
-extern const I2C_CLOCK_HI;
+#include "rcc.h"    //cmr_rccGPIOClockEnable(), cmr_rccI2CClockEnable()
+
+const uint32_t I2C_CLOCK_LOW = 100000;
+const uint32_t I2C_CLOCK_HI = 400000;
 
 /**
   * @brief I2C Transmission Function
@@ -41,7 +45,8 @@ void cmr_i2cInit(
     cmr_i2c_t *i2c, I2C_Typedef *instance,
     uint32_t clockSpeed, uint32_t ownAddr,
     uint16_t *devAddr, const size_t addrLen,
-    GPIO_Typedef *i2cPort, uint32_t i2cPin
+    GPIO_Typedef *i2cClkPort, uint32_t i2cClkPin,
+    GPIO_Typedef *i2cDataPort, uint32_t i2cDataPin
 ) {
 	//TODO: error messages for what could go wrong here
     *i2c = (cmr_i2c_t) {
@@ -67,18 +72,23 @@ void cmr_i2cInit(
         cmr_panic("HAL_I2C_Init() failed!");
   }
   
-  cmr_rccGPIOClockEnable(i2cPort);
+  cmr_rccGPIOClockEnable(i2cClkPort);
+  cmr_rccGPIOClockEnable(i2cDataPort);
 
-  // Format copied from can.c, data copied from stm32-bringups
+  // updated with data from ioc file
   GPIO_InitTypeDef pinConfig = {
-    .Pin = i2cPin,
-    .Mode = GPIO_MODE_OUTPUT_PP,
-    .Pull = GPIO_NOPULL,
-    .Speed = GPIO_SPEED_FREQ_LOW
+    .Pin = i2cClkPin;
+    .Mode = GPIO_MODE_AF_OD;
+    .Pull = GPIO_PULLUP;
+    .Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    .Alternate = GPIO_AF4_I2C1;
   };
 
-   HAL_GPIO_Init(i2cPin, &pinConfig);
+  HAL_GPIO_Init(i2cClkPin, &pinConfig);
 
+  pinConfig.Pin = i2cDataPin;
+
+  HAL_GPIO_Init(i2cDataPin, &pinConfig)
 }
 
-
+#endif /*HAL_I2C_MODULE_ENABLED*/

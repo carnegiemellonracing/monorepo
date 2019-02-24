@@ -12,10 +12,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-//is this how defining constants works?
-static const uint32_t I2C_CLOCK_LOW = 100000
-static const uint32_t I2C_CLOCK_HI = 400000
-
+extern const I2C_CLOCK_LOW;
+extern const I2C_CLOCK_HI;
 
 typedef struct {
 	I2C_HandleTypeDef handle;      /**< @brief HAL I2C Handle.*/
