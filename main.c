@@ -30,8 +30,6 @@ static const uint32_t brakelightPriority = 4;
 static const TickType_t brakelightPeriod_ms = 50;
 static const uint32_t brakeDisconnectPriority = 5;
 static const TickType_t brakeDisconnectPeriod_ms = 10;
-static const uint32_t sensorsPriority = 2;
-static const TickType_t sensorsPeriod_ms = 500;
 
 /**
  * @brief Task for toggling the status LED.
@@ -151,7 +149,7 @@ static void brakeDisconnectTask(void *pvParameters) {
         switch (heartbeat.state){
             case CMR_CAN_RTD:
                 // Check that the dash is requesting this mode of operation
-                if (~dashmessage~) {
+                if (0) { // TODO Dash/TOM should publish a driver setting for enabling software braking
                     cmr_gpioWrite(GPIO_BRAKE_DISCON, 1);
                 } else {
                     cmr_gpioWrite(GPIO_BRAKE_DISCON, 0);
@@ -160,23 +158,6 @@ static void brakeDisconnectTask(void *pvParameters) {
             default:
                 cmr_gpioWrite(GPIO_BRAKE_DISCON, 0);
         }
-
-        vTaskDelayUntil(&lastWakeTime, statusLEDPeriod_ms);
-    }
-}
-
-/**
- * @brief Task for reading the on-board and radiator thermistors.
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void sensorsTask(void *pvParameters) {
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        // publish sensors over CAN
-        
 
         vTaskDelayUntil(&lastWakeTime, statusLEDPeriod_ms);
     }
@@ -220,11 +201,6 @@ int main(void) {
         coolingControlTask, "coolingControl",
         configMINIMAL_STACK_SIZE, NULL,
         coolingControlPriority, NULL
-    );
-    xTaskCreate(
-        sensorsTask, "sensors",
-        configMINIMAL_STACK_SIZE, NULL,
-        sensorsPriority, NULL
     );
 
     vTaskStartScheduler();

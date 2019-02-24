@@ -52,7 +52,47 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .warnThres_pcnt = 10,
         .error = SENSOR_ERR_NONE,
         .value = 20
-    }
+    },
+    [SENSOR_CH_FAN_CURRENT_MA] = {
+        .adcToValue = &adcToBusCurrent_mA,
+        .minADC = 250,  // 10 mA
+        .maxADC = 2500, // 100 mA
+        .warnThres_pcnt = 10,
+        .error = SENSOR_ERR_NONE,
+        .value = 20
+    },
+    [SENSOR_CH_BOARD_THERM_1] = {
+        .adcToValue = &adcToBusCurrent_mA,
+        .minADC = 250,  // 10 mA
+        .maxADC = 2500, // 100 mA
+        .warnThres_pcnt = 10,
+        .error = SENSOR_ERR_NONE,
+        .value = 20
+    },
+    [SENSOR_CH_BOARD_THERM_2] = {
+        .adcToValue = &adcToBusCurrent_mA,
+        .minADC = 250,  // 10 mA
+        .maxADC = 2500, // 100 mA
+        .warnThres_pcnt = 10,
+        .error = SENSOR_ERR_NONE,
+        .value = 20
+    },
+    [SENSOR_CH_PRE_RAD_THERM] = {
+        .adcToValue = &adcToBusCurrent_mA,
+        .minADC = 250,  // 10 mA
+        .maxADC = 2500, // 100 mA
+        .warnThres_pcnt = 10,
+        .error = SENSOR_ERR_NONE,
+        .value = 20
+    },
+    [SENSOR_CH_POST_RAD_THERM] = {
+        .adcToValue = &adcToBusCurrent_mA,
+        .minADC = 250,  // 10 mA
+        .maxADC = 2500, // 100 mA
+        .warnThres_pcnt = 10,
+        .error = SENSOR_ERR_NONE,
+        .value = 20
+    },
 };
 
 // TODO Set channels correctly based on wiring
@@ -60,7 +100,12 @@ adcChannels_t sensorADCChannels[SENSOR_CH_LEN] = {
     [SENSOR_CH_LOGIC_VOLTAGE_MV]  = ADC_LOGIC_VSENSE,
     [SENSOR_CH_LOGIC_CURRENT_MA]  = ADC_LOGIC_ISENSE,
     [SENSOR_CH_LOAD_VOLTAGE_MV]  = ADC_POWER_VSENSE,
-    [SENSOR_CH_LOAD_CURRENT_MA]  = ADC_POWER_ISENSE
+    [SENSOR_CH_LOAD_CURRENT_MA]  = ADC_POWER_ISENSE,
+    [SENSOR_CH_FAN_CURRENT_MA]  = ADC_FAN_ISENSE,
+    [SENSOR_CH_BOARD_THERM_1]  = ADC_BOARD_THERM_1,
+    [SENSOR_CH_BOARD_THERM_2]  = ADC_BOARD_THERM_2,
+    [SENSOR_CH_PRE_RAD_THERM]  = ADC_RAD_THERM_1,
+    [SENSOR_CH_POST_RAD_THERM]  = ADC_RAD_THERM_2
 };
 
 /** @brief Sensor update priority. */
@@ -82,6 +127,49 @@ static void sensorUpdate_task(void *pvParameters) {
 
         vTaskDelayUntil(&lastWakeTime, sensorUpdate_period_ms);
     }
+}
+
+/**
+ * @brief Conversion functions for ADC measurements
+ */
+// TODO Calibrate!
+static int32_t adcConv_LogicVoltageMV(cmr_sensor_t *s){
+    return adcFractionalConvert(s, 88, 10, 0);
+}
+
+static int32_t adcConv_LogicCurrentMA(cmr_sensor_t *s){
+    return adcFractionalConvert(s, 8, 200, 0);
+}
+
+static int32_t adcConv_LoadVoltageMV(cmr_sensor_t *s){
+    return adcFractionalConvert(s, 88, 10, 0);
+}
+
+static int32_t adcConv_LoadCurrentMA(cmr_sensor_t *s){
+    return adcFractionalConvert(s, 8, 200, 0);
+}
+
+static int32_t adcConv_FanCurrentMA(cmr_sensor_t *s){
+    return adcFractionalConvert(s, 8, 200, 0);
+}
+
+static int32_t adcConv_BoardTherm(cmr_sensor_t *s){
+    return adcFractionalConvert(s, 1, 1, 0);
+}
+
+static int32_t adcConv_RadTherm(cmr_sensor_t *s){
+    return adcFractionalConvert(s, 1, 1, 0);
+}
+
+/**
+ * @brief Reads the value of the sensor channel.
+ *
+ * @param ch The channel to be read.
+ *
+ * @return Sensor value.
+ */
+static int32_t sensorRead(sensorChannel_t ch){
+    return sensors[ch].value;
 }
 
 /**
@@ -136,43 +224,21 @@ static int32_t adcToPcnt(cmr_sensor_t *sensor) {
 }
 
 /**
- * @brief Converts a raw ADC value into a low-voltage bus voltage.
+ * @brief Scales a raw ADC value from a sensor
  *
  * @param sensor The sensor to read.
  *
- * @return Voltage in mV. Sets channel.error field in case of error.
+ * @return Scaled value. Sets channel.error field in case of error.
  */
-static int32_t adcToBusVoltage_mV(cmr_sensor_t *sensor) {
+static int32_t adcFractionalConvert(cmr_sensor_t *sensor, int32_t numerator, int32_t divisor, int32_t offset){
     adcChannels_t adcChannel = sensorToADCChannel(sensor);
     uint32_t adcVal = adcChannels[adcChannel].value;
 
     checkSensor(sensor);
 
-    // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
-    uint32_t busVoltage_mV = adcVal * 8 * 11 / 10;
+    uint32_t conv = (adcVal + offset) * numerator / divisor;
 
-    return (int32_t) busVoltage_mV;
-}
-
-/**
- * @brief Converts a raw ADC value into a low-voltage bus current.
- *
- * @param sensor The sensor to read.
- *
- * @return Current in mA. Sets channel.error field in case of error.
- */
-static int32_t adcToBusCurrent_mA(cmr_sensor_t *sensor) {
-    adcChannels_t adcChannel = sensorToADCChannel(sensor);
-    uint32_t adcVal = adcChannels[adcChannel].value;
-
-    checkSensor(sensor);
-
-    /* value * 0.8 (mV per bit) / 20 (gain of current shunt monitor)
-     * http://www.ti.com/lit/ds/symlink/ina196.pdf
-     * page 3 section 5 for INA196 */
-    int32_t busCurrent_mA = adcVal * 8 / 10 / 20;
-
-    return (int32_t) busCurrent_mA;
+    return (int32_t) conv;
 }
 
 /**

@@ -18,11 +18,17 @@ typedef enum {
     SENSOR_CH_LOGIC_CURRENT_MA,
     SENSOR_CH_LOAD_VOLTAGE_MV,
     SENSOR_CH_LOAD_CURRENT_MA,
+    SENSOR_CH_FAN_CURRENT_MA,
+    SENSOR_CH_BOARD_THERM_1,
+    SENSOR_CH_BOARD_THERM_2,
+    SENSOR_CH_PRE_RAD_THERM,
+    SENSOR_CH_POST_RAD_THERM,
     SENSOR_CH_LEN
 } sensorChannel_t;
 
 extern cmr_sensor_t sensors[SENSOR_CH_LEN];
 
 void sensorInit(void);
+static int32_t sensorRead(sensorChannel_t ch);
 
 #endif /* SENSORS_H */

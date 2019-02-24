@@ -18,6 +18,7 @@
 
 #include "can.h"    // Interface to implement
 #include "adc.h"    // adcVSense, adcISense
+#include "sensors.h"
 
 /**
  * @brief CAN periodic message receive metadata
@@ -65,19 +66,19 @@ static void canTX10HzTask(void *pvParameters) {
         cmr_canPTCCoolingStatus_t coolMsg = {
             .fanState = fanStatePTC,
             .pumpState = pumpStatePTC,
-            .preRadiatorTemp_C = adcChannels[ADC_RAD_THERM_1].value,
-            .postRadiatorTemp_C = adcChannels[ADC_RAD_THERM_2].value
+            .preRadiatorTemp_C = sensorRead(SENSOR_CH_PRE_RAD_THERM),
+            .postRadiatorTemp_C = sensorRead(SENSOR_CH_POST_RAD_THERM)
         };
 
         cmr_canPTCVoltageDiagnostics_t voltMsg = {
-            .logicVoltage_mV = adcChannels[ADC_LOGIC_VSENSE].value,
-            .loadVoltage_mV = adcChannels[ADC_POWER_VSENSE].value
+            .logicVoltage_mV = sensorRead(SENSOR_CH_LOGIC_VOLTAGE_MV)
+            .loadVoltage_mV = sensorRead(SENSOR_CH_LOAD_VOLTAGE_MV)
         };
 
         cmr_canPTCCurrentDiagnostics_t ampMsg = {
-            .logicCurrent_mA = adcChannels[ADC_LOGIC_ISENSE].value,
-            .loadCurrent_mA = adcChannels[ADC_POWER_ISENSE].value,
-            .fanCurrent_mA = adcChannels[ADC_FAN_ISENSE].value
+            .logicCurrent_mA = sensorRead(SENSOR_CH_LOGIC_CURRENT_MA)
+            .loadCurrent_mA = sensorRead(SENSOR_CH_LOAD_CURRENT_MA),
+            .fanCurrent_mA = sensorRead(SENSOR_CH_FAN_CURRENT_MA)
         };
 
         canTX(CMR_CANID_PTC_COOLING_STATUS, &coolMsg, sizeof(coolMsg));
