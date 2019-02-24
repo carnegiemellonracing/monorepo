@@ -13,9 +13,11 @@
 
 #ifdef HAL_CAN_MODULE_ENABLED
 
+
 #include <FreeRTOS.h>   // FreeRTOS interface
 #include <semphr.h>     // Semaphore interface
 
+#include <stdbool.h>
 #include <stdint.h>
 
 /** @brief Number of CAN filter banks allocated for each interface. */
@@ -79,12 +81,24 @@ void cmr_canInit(
  * @brief Represents a CAN filter's configuration.
  */
 typedef struct {
+    bool isMask;        /**< @brief `true` to mask; `false` to whitelist. */
+
     /**
      * @brief The CAN receive FIFO to configure (one of `CAN_RX_FIFOx` from
      * `stm32f4xx_hal_can.h`).
      */
     uint32_t rxFIFO;
-    uint16_t ids[4];    /**< @brief The IDs to whitelist. */
+
+    /**
+     * @brief The associated IDs.
+     *
+     * When `isMask` is `false`, this is a list of IDs to whitelist.
+     *
+     * Otherwise, the first half of this array are IDs, and the second half are
+     * masks, where a set bit indicates "must match" and a clear bit indicates
+     * "don't care".
+     */
+    uint16_t ids[4];
 } cmr_canFilter_t;
 
 void cmr_canFilter(

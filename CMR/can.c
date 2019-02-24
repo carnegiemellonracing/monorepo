@@ -451,6 +451,10 @@ void cmr_canFilter(
             bank += CMR_CAN_FILTERBANKS;
         }
 
+        uint32_t filterMode = filter->isMask
+            ? CAN_FILTERMODE_IDMASK
+            : CAN_FILTERMODE_IDLIST;
+
         // In 16 bit ID list mode, FilterIdHigh, FilterIdLow, FilterMaskIdHigh,
         // and FilterMaskIdLow all serve as a whitelist of left-aligned 11-bit
         // CAN IDs.
@@ -463,7 +467,7 @@ void cmr_canFilter(
             .FilterMaskIdLow        = filter->ids[3] << CMR_CAN_ID_FILTER_SHIFT,
             .FilterFIFOAssignment   = filter->rxFIFO,
             .FilterBank             = bank,
-            .FilterMode             = CAN_FILTERMODE_IDLIST,
+            .FilterMode             = filterMode,
             .FilterScale            = CAN_FILTERSCALE_16BIT,
             .FilterActivation       = ENABLE,
             .SlaveStartFilterBank   = CMR_CAN_FILTERBANKS
