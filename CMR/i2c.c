@@ -69,11 +69,6 @@ void cmr_i2cInit(
   
   cmr_rccGPIOClockEnable(i2cPort);
 
-  /*Configure GPIO pin Output Level */
-  // ^^original annotations, not sure what this means exactly
-  HAL_GPIO_WritePin(GPIOB, i2cPin, GPIO_PIN_RESET);
-
-
   // Format copied from can.c, data copied from stm32-bringups
   GPIO_InitTypeDef pinConfig = {
     .Pin = i2cPin,
