@@ -92,11 +92,21 @@ typedef struct {
     /**
      * @brief The associated IDs.
      *
-     * When `isMask` is `false`, this is a list of IDs to whitelist.
+     * When `isMask` is `false`, this is a list of IDs to whitelist. A message
+     * with an ID equal to at least one of the IDs will be accepted into the
+     * specified FIFO; otherwise, it is ignored.
      *
-     * Otherwise, the first half of this array are IDs, and the second half are
-     * masks, where a set bit indicates "must match" and a clear bit indicates
-     * "don't care".
+     * Otherwise, when `isMask` is `true`, the first half of this array are IDs,
+     * and the second half selects bits from the ID to match (set means "match";
+     * clear means "don't care").
+     *
+     * Thus, an incoming message with ID "msg_id" is checked against each mask:
+     *
+     *      (msg_id & ids[2] == ids[0] & ids[2]) ||
+     *      (msg_id & ids[3] == ids[1] & ids[3])
+     *
+     * If the above condition is true, the message is accepted into the
+     * specified FIFO; otherwise, it is ignored.
      */
     uint16_t ids[4];
 } cmr_canFilter_t;
