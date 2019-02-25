@@ -89,6 +89,19 @@ typedef enum {
     CMR_CAN_WARN_FSM_SWANGLE = (1 << 9)
 } cmr_canWarn_t;
 
+typedef enum {
+    GEAR_UNKNOWN = 0,   /**< @brief Unknown Gear State */
+    GEAR_REVERSE,       /**< @brief Reverse mode */
+    GEAR_SLOW,          /**< @brief Slow mode */
+    GEAR_FAST,          /**< @brief Fast simple mode */
+    GEAR_ENDURANCE,     /**< @brief Endurance-event mode */
+    GEAR_AUTOX,         /**< @brief Autocross-event mode */
+    GEAR_SKIDPAD,       /**< @brief Skidpad-event mode */
+    GEAR_ACCEL,         /**< @brief Acceleration-event mode */
+    GEAR_TEST,          /**< @brief Test mode (for experimentation) */
+    GEAR_LEN
+} cmr_canGear_t;
+
 /** @brief Accumulator Fan Controller fan status. */
 typedef struct {
     uint8_t acFanState[6];    /**< @brief Accumulator fan states. */
