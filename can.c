@@ -71,12 +71,12 @@ static void canTX10HzTask(void *pvParameters) {
         };
 
         cmr_canPTCVoltageDiagnostics_t voltMsg = {
-            .logicVoltage_mV = sensorRead(SENSOR_CH_LOGIC_VOLTAGE_MV)
+            .logicVoltage_mV = sensorRead(SENSOR_CH_LOGIC_VOLTAGE_MV),
             .loadVoltage_mV = sensorRead(SENSOR_CH_LOAD_VOLTAGE_MV)
         };
 
         cmr_canPTCCurrentDiagnostics_t ampMsg = {
-            .logicCurrent_mA = sensorRead(SENSOR_CH_LOGIC_CURRENT_MA)
+            .logicCurrent_mA = sensorRead(SENSOR_CH_LOGIC_CURRENT_MA),
             .loadCurrent_mA = sensorRead(SENSOR_CH_LOAD_CURRENT_MA),
             .fanCurrent_mA = sensorRead(SENSOR_CH_FAN_CURRENT_MA)
         };

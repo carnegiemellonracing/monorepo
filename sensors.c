@@ -15,9 +15,15 @@
 // Forward declarations
 static void sensorUpdate_task(void *pvParameters);
 static adcChannels_t sensorToADCChannel(cmr_sensor_t *sensor);
-static int32_t adcToBusVoltage_mV(cmr_sensor_t *sensor);
-static int32_t adcToBusCurrent_mA(cmr_sensor_t *sensor);
+static int32_t sensorRead(sensorChannel_t ch);
 static void checkSensor(cmr_sensor_t *sensor);
+static int32_t adcConv_LogicVoltageMV(cmr_sensor_t *s);
+static int32_t adcConv_LogicCurrentMA(cmr_sensor_t *s);
+static int32_t adcConv_LoadVoltageMV(cmr_sensor_t *s);
+static int32_t adcConv_LoadCurrentMA(cmr_sensor_t *s);
+static int32_t adcConv_FanCurrentMA(cmr_sensor_t *s);
+static int32_t adcConv_BoardTherm(cmr_sensor_t *s);
+static int32_t adcConv_RadTherm(cmr_sensor_t *s);
 
 // TODO calibrate all of these min/max values
 cmr_sensor_t sensors[SENSOR_CH_LEN] = {
