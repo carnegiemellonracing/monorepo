@@ -111,11 +111,7 @@ static void brakelightTask(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        cmr_canFSMData_t data = {
-            .brakePressureFront = dataFSM->brakePressureFront
-        };
-
-        if (data.brakePressureFront > ~threshold~) {
+        if (dataFSM->brakePressureFront > ~threshold~) {
             cmr_gpioWrite(GPIO_BRAKELIGHT, 1);
         } else {
             cmr_gpioWrite(GPIO_BRAKELIGHT, 0);
@@ -142,11 +138,7 @@ static void brakeDisconnectTask(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        cmr_canHeartbeat_t heartbeat = {
-            .state = heartbeatVSM->state
-        };
-
-        switch (heartbeat.state){
+        switch (heartbeatVSM->state){
             case CMR_CAN_RTD:
                 // Check that the dash is requesting this mode of operation
                 if (0) { // TODO Dash/TOM should publish a driver setting for enabling software braking
