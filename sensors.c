@@ -22,7 +22,7 @@ static void checkSensor(cmr_sensor_t *sensor);
 // TODO calibrate all of these min/max values
 cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     [SENSOR_CH_LOGIC_VOLTAGE_MV] = {
-        .adcToValue = &adcToBusVoltage_mV,
+        .adcToValue = &adcConv_LogicVoltageMV,
         .minADC = 2256, // 20 Volts
         .maxADC = 2933, // 26 Volts
         .warnThres_pcnt = 10,
@@ -30,7 +30,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .value = 24000
     },
     [SENSOR_CH_LOGIC_CURRENT_MA] = {
-        .adcToValue = &adcToBusCurrent_mA,
+        .adcToValue = &adcConv_LogicCurrentMA,
         .minADC = 250,  // 10 mA
         .maxADC = 2500, // 100 mA
         .warnThres_pcnt = 10,
@@ -38,7 +38,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .value = 20
     }
     [SENSOR_CH_LOAD_VOLTAGE_MV] = {
-        .adcToValue = &adcToBusVoltage_mV,
+        .adcToValue = &adcConv_LoadVoltageMV,
         .minADC = 2256, // 20 Volts
         .maxADC = 2933, // 26 Volts
         .warnThres_pcnt = 10,
@@ -46,7 +46,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .value = 24000
     },
     [SENSOR_CH_LOAD_CURRENT_MA] = {
-        .adcToValue = &adcToBusCurrent_mA,
+        .adcToValue = &adcConv_LoadCurrentMA,
         .minADC = 250,  // 10 mA
         .maxADC = 2500, // 100 mA
         .warnThres_pcnt = 10,
@@ -54,7 +54,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .value = 20
     },
     [SENSOR_CH_FAN_CURRENT_MA] = {
-        .adcToValue = &adcToBusCurrent_mA,
+        .adcToValue = &adcConv_FanCurrentMA,
         .minADC = 250,  // 10 mA
         .maxADC = 2500, // 100 mA
         .warnThres_pcnt = 10,
@@ -62,7 +62,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .value = 20
     },
     [SENSOR_CH_BOARD_THERM_1] = {
-        .adcToValue = &adcToBusCurrent_mA,
+        .adcToValue = &adcConv_BoardTherm,
         .minADC = 250,  // 10 mA
         .maxADC = 2500, // 100 mA
         .warnThres_pcnt = 10,
@@ -70,7 +70,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .value = 20
     },
     [SENSOR_CH_BOARD_THERM_2] = {
-        .adcToValue = &adcToBusCurrent_mA,
+        .adcToValue = &adcConv_BoardTherm,
         .minADC = 250,  // 10 mA
         .maxADC = 2500, // 100 mA
         .warnThres_pcnt = 10,
@@ -78,7 +78,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .value = 20
     },
     [SENSOR_CH_PRE_RAD_THERM] = {
-        .adcToValue = &adcToBusCurrent_mA,
+        .adcToValue = &adcConv_RadTherm,
         .minADC = 250,  // 10 mA
         .maxADC = 2500, // 100 mA
         .warnThres_pcnt = 10,
@@ -86,7 +86,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .value = 20
     },
     [SENSOR_CH_POST_RAD_THERM] = {
-        .adcToValue = &adcToBusCurrent_mA,
+        .adcToValue = &adcConv_RadTherm,
         .minADC = 250,  // 10 mA
         .maxADC = 2500, // 100 mA
         .warnThres_pcnt = 10,
