@@ -8,6 +8,8 @@
 #ifndef GPIO_H
 #define GPIO_H
 
+#include <stdbool.h>    // bool
+
 /**
  * @brief Represents a GPIO pin.
  *
@@ -16,8 +18,19 @@
  */
 typedef enum {
     GPIO_LED_STATUS = 0,    /**< @brief Status LED. */
+    GPIO_BUTTON_0,  /**< @brief Button 0. */
+    GPIO_BUTTON_1,  /**< @brief Button 1. */
+    GPIO_BUTTON_2,  /**< @brief Button 2. */
+    GPIO_BUTTON_3,  /**< @brief Button 3. */
+    GPIO_BUTTON_4,  /**< @brief Button 4. */
+    GPIO_BEEPER,    /**< @brief Beeper. */
     GPIO_LEN    /**< @brief Total GPIO pins. */
 } gpio_t;
+
+typedef struct {
+    gpio_t pin;     /**< @brief The triggering pin. */
+    bool pressed;   /**< @brief `true` for pressed; `false` for released. */
+} buttonEvent_t;
 
 void gpioInit(void);
 
