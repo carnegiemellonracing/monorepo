@@ -56,8 +56,8 @@ static void canTX10HzTask(void *pvParameters) {
     while (1) {
         // XXX Replace with an appropriate message.
         cmr_canDIMPowerDiagnostics_t msg = {
-            .busVoltage_mV = adcChannels[ADC_VSENSE].value,
-            .busCurrent_mA = adcChannels[ADC_ISENSE].value
+            .busVoltage_mV = adcRead(ADC_VSENSE),
+            .busCurrent_mA = adcRead(ADC_ISENSE)
         };
 
         // XXX Replace with an appropriate ID and timeout.

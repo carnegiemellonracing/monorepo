@@ -18,12 +18,14 @@
 typedef enum {
 	ADC_VSENSE = 0,     /**< @brief Board voltage sense. */
 	ADC_ISENSE,         /**< @brief Board current sense. */
+    ADC_JOY_X,          /**< @brief Joystick X position. */
+    ADC_JOY_Y,          /**< @brief Joystick Y position. */
 	ADC_LEN     /**< @brief Total ADC channels. */
 } adcChannels_t;
 
-extern cmr_adcChannel_t adcChannels[ADC_LEN];
-
 void adcInit(void);
+
+uint16_t adcRead(adcChannels_t channel);
 
 #endif /* ADC_H */
 
