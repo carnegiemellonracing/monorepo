@@ -57,6 +57,8 @@ static void statusLEDTask(void *pvParameters) {
  * @return Does not return.
  */
 static void coolingControlTask(void *pvParameters) {
+	cmr_gpioToggle(GPIO_FAN_ENABLE); // Turn the fan driver on
+	
     // Get reference to VSM Heartbeat
     cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
     volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
