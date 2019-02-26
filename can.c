@@ -48,8 +48,8 @@ static const uint32_t canTX10HzPriority = 3;
 /** @brief CAN 10 Hz TX period (milliseconds). */
 static const TickType_t canTX10HzPeriod_ms = 100;
 
-static cmr_canFanState_t fanStatePTC = CMR_CAN_FAN_OFF;
-static uint8_t pumpStatePTC = 0;
+cmr_canFanState_t fanStatePTC = CMR_CAN_FAN_OFF;
+uint8_t pumpStatePTC = 0;
 
 /**
  * @brief Task for sending CAN messages at 10 Hz.
@@ -81,9 +81,9 @@ static void canTX10HzTask(void *pvParameters) {
             .fanCurrent_mA = sensorRead(SENSOR_CH_FAN_CURRENT_MA)
         };
 
-        canTX(CMR_CANID_PTC_COOLING_STATUS, &coolMsg, sizeof(coolMsg));
-        canTX(CMR_CANID_PTC_VOLTAGE_DIAGNOSTICS, &voltMsg, sizeof(voltMsg));
-        canTX(CMR_CANID_PTC_CURRENT_DIAGNOSTICS, &ampMsg, sizeof(ampMsg));
+        canTX(CMR_CANID_PTC_COOLING_STATUS, &coolMsg, sizeof(coolMsg), canTX10HzPeriod_ms);
+        canTX(CMR_CANID_PTC_VOLTAGE_DIAGNOSTICS, &voltMsg, sizeof(voltMsg), canTX10HzPeriod_ms);
+        canTX(CMR_CANID_PTC_CURRENT_DIAGNOSTICS, &ampMsg, sizeof(ampMsg), canTX10HzPeriod_ms);
 
         vTaskDelayUntil(&lastWakeTime, canTX10HzPeriod_ms);
     }
@@ -126,7 +126,7 @@ static void canTX100HzTask(void *pvParameters) {
         }
         memcpy(&heartbeat.warning, &warning, sizeof(warning));
 
-        canTX(CMR_CANID_HEARTBEAT_PTC, &heartbeat, sizeof(heartbeat));
+        canTX(CMR_CANID_HEARTBEAT_PTC, &heartbeat, sizeof(heartbeat), canTX100HzPeriod_ms);
 
         vTaskDelayUntil(&lastWakeTime, canTX100HzPeriod_ms);
     }
@@ -179,8 +179,11 @@ void canInit(void) {
  * @param id The ID for the message.
  * @param data The data to send.
  * @param len The data's length, in bytes.
+ * @param timeout The timeout, in ticks.
+ *
+ * @return 0 on success, or a negative error code on timeout.
  */
-void canTX(cmr_canID_t id, const void *data, size_t len) {
-    cmr_canTX(&can, id, data, len);
+int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
+    return cmr_canTX(&can, id, data, len, timeout);
 }
 

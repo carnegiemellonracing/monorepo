@@ -15,7 +15,6 @@
 // Forward declarations
 static void sensorUpdate_task(void *pvParameters);
 static adcChannels_t sensorToADCChannel(cmr_sensor_t *sensor);
-static int32_t sensorRead(sensorChannel_t ch);
 static void checkSensor(cmr_sensor_t *sensor);
 static int32_t adcConv_LogicVoltageMV(cmr_sensor_t *s);
 static int32_t adcConv_LogicCurrentMA(cmr_sensor_t *s);
@@ -24,6 +23,7 @@ static int32_t adcConv_LoadCurrentMA(cmr_sensor_t *s);
 static int32_t adcConv_FanCurrentMA(cmr_sensor_t *s);
 static int32_t adcConv_BoardTherm(cmr_sensor_t *s);
 static int32_t adcConv_RadTherm(cmr_sensor_t *s);
+static int32_t adcFractionalConvert(cmr_sensor_t *sensor, int32_t numerator, int32_t divisor, int32_t offset);
 
 // TODO calibrate all of these min/max values
 cmr_sensor_t sensors[SENSOR_CH_LEN] = {
@@ -42,7 +42,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .warnThres_pcnt = 10,
         .error = SENSOR_ERR_NONE,
         .value = 20
-    }
+    },
     [SENSOR_CH_LOAD_VOLTAGE_MV] = {
         .adcToValue = &adcConv_LoadVoltageMV,
         .minADC = 2256, // 20 Volts
@@ -98,7 +98,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .warnThres_pcnt = 10,
         .error = SENSOR_ERR_NONE,
         .value = 20
-    },
+    }
 };
 
 // TODO Set channels correctly based on wiring
@@ -174,7 +174,7 @@ static int32_t adcConv_RadTherm(cmr_sensor_t *s){
  *
  * @return Sensor value.
  */
-static int32_t sensorRead(sensorChannel_t ch){
+int32_t sensorRead(sensorChannel_t ch){
     return sensors[ch].value;
 }
 

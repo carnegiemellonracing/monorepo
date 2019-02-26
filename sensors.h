@@ -29,6 +29,6 @@ typedef enum {
 extern cmr_sensor_t sensors[SENSOR_CH_LEN];
 
 void sensorInit(void);
-static int32_t sensorRead(sensorChannel_t ch);
+int32_t sensorRead(sensorChannel_t ch);
 
 #endif /* SENSORS_H */

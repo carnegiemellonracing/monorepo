@@ -111,13 +111,13 @@ static void brakelightTask(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        if (dataFSM->brakePressureFront > ~threshold~) {
+        if (dataFSM->brakePressureFront_PSI > 0) {
             cmr_gpioWrite(GPIO_BRAKELIGHT, 1);
         } else {
             cmr_gpioWrite(GPIO_BRAKELIGHT, 0);
         }
 
-        vTaskDelayUntil(&lastWakeTime, brakeLightPeriod_ms);
+        vTaskDelayUntil(&lastWakeTime, brakelightPeriod_ms);
     }
 }
 
