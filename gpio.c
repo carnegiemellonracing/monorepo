@@ -10,8 +10,7 @@
 #include <task.h>       // Task interface
 #include <queue.h>      // Queue interface
 
-#include <CMR/gpio.h>   // GPIO interface
-
+#include "state.h"  // state handling stuff
 #include "gpio.h"   // Interface to implement
 
 /** @brief Maximum number of button events in the queue. */
@@ -30,6 +29,33 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         .port = GPIOB,
         .init = {
             .Pin = GPIO_PIN_6,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_LED_IMD] = {
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_13,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_LED_AMS] = {
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_14,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_LED_BSPD] = {
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_15,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
@@ -115,6 +141,7 @@ static const TickType_t buttonsInput_period = 10;
  *
  * @param pvParameters Ignored.
  */
+
 static void buttonsInput_task(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
@@ -127,16 +154,24 @@ static void buttonsInput_task(void *pvParameters) {
         while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
             switch (event.pin) {
                 case GPIO_BUTTON_0:
-                    DIM_requested_state += 1;
+                    state_up_button(event.pressed);
                     break;
                 case GPIO_BUTTON_1:
-                    DIM_requested_state -= 1;
+                    state_down_button(event.pressed);
                     break;
                 case GPIO_BUTTON_2:
                     break;
                 case GPIO_BUTTON_3:
                     break;
                 case GPIO_BUTTON_4:
+                    break;
+                // placate compiler in a jank way im sorry
+                case GPIO_LED_STATUS:
+                case GPIO_LED_IMD:
+                case GPIO_LED_AMS:
+                case GPIO_LED_BSPD:
+                case GPIO_BEEPER:
+                case GPIO_LEN:
                     break;
             }
         }

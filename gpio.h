@@ -9,6 +9,7 @@
 #define GPIO_H
 
 #include <stdbool.h>    // bool
+#include <CMR/gpio.h>   // GPIO interface
 #include "main.h"   // DIM-specific definitions
 
 /**
@@ -19,6 +20,9 @@
  */
 typedef enum {
     GPIO_LED_STATUS = 0,    /**< @brief Status LED. */
+    GPIO_LED_IMD,   /**< @brief IMD Error LED. */
+    GPIO_LED_AMS,   /**< @brief AMD Error LED. */
+    GPIO_LED_BSPD,  /**< @brief BSPD Error LED. */
     GPIO_BUTTON_0,  /**< @brief Button 0. */
     GPIO_BUTTON_1,  /**< @brief Button 1. */
     GPIO_BUTTON_2,  /**< @brief Button 2. */
