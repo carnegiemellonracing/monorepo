@@ -172,6 +172,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t gpioPin) {
     /** @brief Represents a button's state. */
     typedef struct {
         const gpio_t pin;   /**< @brief Associated GPIO pin. */
+        uint32_t lastTick;  /**< @brief Last HAL tick for the interrupt. */
         bool value;         /**< @brief Last read value. */
     } buttonState_t;
 
@@ -186,12 +187,19 @@ void HAL_GPIO_EXTI_Callback(uint16_t gpioPin) {
 
     (void) gpioPin;
 
+    uint32_t now = HAL_GetTick();
+
     for (size_t i = 0; i < sizeof(states) / sizeof(states[0]); i++) {
         buttonState_t *state = states + i;
         bool value = cmr_gpioRead(state->pin);
         if (value == state->value) {
             continue;   // Button did not change; move on.
         }
+
+        if (now < state->lastTick + 1) {
+            continue;   // "Software debounce" by ignoring too-recent interrupt.
+        }
+        state->lastTick = now;
 
         state->value = value;   // Update button value.
 
