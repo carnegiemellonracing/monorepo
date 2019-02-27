@@ -19,6 +19,7 @@
 #include "can.h"    // Interface to implement
 #include "adc.h"    // adcVSense, adcISense
 
+
 /**
  * @brief CAN periodic message receive metadata
  *
@@ -68,6 +69,19 @@ static void canTX10HzTask(void *pvParameters) {
             canTX10HzPeriod_ms
         );
 
+        if (DIM_requested_state != VSM_state) {
+            cmr_canDIMRequest_t dim_request_msg = {
+                .requestedState = DIM_requested_state,
+                .requestedGear = 0
+            };
+            canTX(
+                CMR_CANID_DIM_REQUEST,
+                &dim_request_msg,
+                sizeof(dim_request_msg),
+                canTX10HzPeriod_ms
+            );
+        }
+
         vTaskDelayUntil(&lastWakeTime, canTX10HzPeriod_ms);
     }
 }
@@ -100,6 +114,8 @@ static void canTX100HzTask(void *pvParameters) {
             .state = heartbeatVSM->state
         };
 
+        VSM_state = heartbeatVSM->state;
+
         uint16_t error = CMR_CAN_ERROR_NONE;
         if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
             error |= CMR_CAN_ERROR_VSM_TIMEOUT;
@@ -114,7 +130,7 @@ static void canTX100HzTask(void *pvParameters) {
 
         // XXX Replace with an appropriate ID and timeout.
         canTX(
-            CMR_CANID_HEARTBEAT_AFC0,
+            CMR_CANID_HEARTBEAT_DIM,
             &heartbeat,
             sizeof(heartbeat),
             canTX100HzPeriod_ms
@@ -179,4 +195,3 @@ void canInit(void) {
 int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
     return cmr_canTX(&can, id, data, len, timeout);
 }
-

@@ -19,12 +19,17 @@
 #include "gpio.h"   // Board-specific GPIO interface
 #include "can.h"    // Board-specific CAN interface
 #include "adc.h"    // Board-specific ADC interface
+#include "main.h"   // DIM-specific definitions
+
 
 /** @brief Status LED priority. */
 static const uint32_t statusLEDPriority = 2;
 
 /** @brief Status LED period (milliseconds). */
 static const TickType_t statusLEDPeriod_ms = 250;
+
+volatile cmr_canState_t VSM_state = CMR_CAN_UNKNOWN;
+volatile cmr_canState_t DIM_requested_state = CMR_CAN_GLV_ON;
 
 /**
  * @brief Task for toggling the status LED.
@@ -71,4 +76,3 @@ int main(void) {
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");
 }
-

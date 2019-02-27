@@ -9,6 +9,7 @@
 #define GPIO_H
 
 #include <stdbool.h>    // bool
+#include "main.h"   // DIM-specific definitions
 
 /**
  * @brief Represents a GPIO pin.
@@ -35,4 +36,3 @@ typedef struct {
 void gpioInit(void);
 
 #endif /* GPIO_H */
-

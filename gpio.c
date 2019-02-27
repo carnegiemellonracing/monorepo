@@ -125,8 +125,19 @@ static void buttonsInput_task(void *pvParameters) {
 
         buttonEvent_t event;
         while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
-            if (event.pressed) {
-                cmr_gpioToggle(GPIO_BEEPER);
+            switch (event.pin) {
+                case GPIO_BUTTON_0:
+                    DIM_requested_state += 1;
+                    break;
+                case GPIO_BUTTON_1:
+                    DIM_requested_state -= 1;
+                    break;
+                case GPIO_BUTTON_2:
+                    break;
+                case GPIO_BUTTON_3:
+                    break;
+                case GPIO_BUTTON_4:
+                    break;
             }
         }
 
@@ -214,4 +225,3 @@ void HAL_GPIO_EXTI_Callback(uint16_t gpioPin) {
         portYIELD_FROM_ISR(higherWoken);
     }
 }
-
