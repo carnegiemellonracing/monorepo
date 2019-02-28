@@ -5,8 +5,68 @@
  * @author Carnegie Mellon Racing
  */
 
-#include <FreeRTOS.h>   // FreeRTOS interface
-#include <task.h>       // StaticTask_t, StackType_t
+#include "tasks.h"  // Interface to implement
+
+/**
+ * @brief Initializes a task.
+ *
+ * @param task The task to initialize.
+ * @param name The task's name (a human-readable string describing the task).
+ * @param priority The task's priority (larger is higher-priority).
+ * @param func The task's entry point function.
+ * @param arg The argument passed to the entry point function.
+ */
+void cmr_taskInit(
+    cmr_task_t *task,
+    const char *name,
+    UBaseType_t priority,
+    TaskFunction_t func,
+    void *arg
+) {
+#if (configSUPPORT_STATIC_ALLOCATION)
+    task->handle = xTaskCreateStatic(
+        func,
+        name,
+        sizeof(task->stackBuf) / sizeof(task->stackBuf[0]),
+        arg,
+        priority,
+        task->stackBuf,
+        &task->taskBuf
+    );
+#elif (configSUPPORT_DYNAMIC_ALLOCATION)
+    task->handle = xTaskCreate(
+        func,
+        name,
+        configMINIMAL_STACK_SIZE
+        arg,
+        priority
+    );
+#else
+#error "At least one of configSUPPORT_{STATIC,DYNAMIC}_ALLOCATION must be 1!"
+#endif
+
+    configASSERT(task->handle != NULL);
+}
+
+/**
+ * @brief Destroys a task.
+ *
+ * @param task The task.
+ */
+void cmr_taskDestroy(cmr_task_t *task) {
+    vTaskDelete(task->handle);
+}
+
+/**
+ * @brief Gets a task's handle.
+ *
+ * @param task The task.
+ *
+ * @return The task's handle.
+ */
+TaskHandle_t cmr_taskHandle(const cmr_task_t *task) {
+    return task->handle;
+}
 
 #if (configSUPPORT_STATIC_ALLOCATION)
 

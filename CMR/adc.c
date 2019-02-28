@@ -9,9 +9,6 @@
 
 #ifdef HAL_ADC_MODULE_ENABLED
 
-#include <FreeRTOS.h>       // FreeRTOS interface
-#include <task.h>           // xTaskCreate()
-
 #include "rcc.h"    // cmr_rccADCClockEnable(), cmr_rccGPIOClockEnable()
 #include "panic.h"  // cmr_panic()
 
@@ -31,7 +28,7 @@ static const TickType_t cmr_adcSample_period_ms = 10;
  *
  * @return Does not return.
  */
-static void cmr_adcSample_task(void *pvParameters) {
+static void cmr_adcSample(void *pvParameters) {
     cmr_adc_t *adc = (cmr_adc_t *) pvParameters;
 
     TickType_t lastWakeTime = xTaskGetTickCount();
@@ -140,10 +137,12 @@ void cmr_adcInit(
 
     cmr_adcConfigChannels(adc);
 
-    // Task creation.
-    xTaskCreate(
-        cmr_adcSample_task, "adcSample",
-        configMINIMAL_STACK_SIZE, adc, cmr_adcSample_priority, NULL
+    cmr_taskInit(
+        &adc->sampleTask,
+        "ADC sample",
+        cmr_adcSample_priority,
+        cmr_adcSample,
+        adc
     );
 }
 

@@ -13,6 +13,8 @@
 
 #ifdef HAL_ADC_MODULE_ENABLED
 
+#include "tasks.h"      // Task interface
+
 #include <stddef.h>     // size_t
 #include <stdint.h>     // uint32_t
 
@@ -58,6 +60,7 @@ typedef struct {
     ADC_HandleTypeDef handle;       /**< @brief HAL ADC handle. */
     cmr_adcChannel_t *channels;     /**< @brief Configured ADC channels. */
     size_t channelsLen;             /**< @brief Number of ADC channels. */
+    cmr_task_t sampleTask;          /**< @brief Task for sampling. */
 } cmr_adc_t;
 
 void cmr_adcInit(
