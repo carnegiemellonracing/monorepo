@@ -13,8 +13,7 @@
 
 #include <string.h>     // memcpy()
 
-#include <FreeRTOS.h>   // FreeRTOS interface
-#include <task.h>       // xTaskCreate()
+#include <CMR/tasks.h>  // Task interface
 
 #include "can.h"    // Interface to implement
 #include "adc.h"    // adcVSense, adcISense
@@ -38,10 +37,13 @@ cmr_canRXMeta_t canRXMeta[] = {
 static cmr_can_t can;
 
 /** @brief CAN 10 Hz TX priority. */
-static const uint32_t canTX10HzPriority = 3;
+static const uint32_t canTX10Hz_priority = 3;
 
 /** @brief CAN 10 Hz TX period (milliseconds). */
-static const TickType_t canTX10HzPeriod_ms = 100;
+static const TickType_t canTX10Hz_period_ms = 100;
+
+/** @brief CAN 10 Hz TX task. */
+static cmr_task_t canTX10Hz_task;
 
 /**
  * @brief Task for sending CAN messages at 10 Hz.
@@ -50,7 +52,7 @@ static const TickType_t canTX10HzPeriod_ms = 100;
  *
  * @return Does not return.
  */
-static void canTX10HzTask(void *pvParameters) {
+static void canTX10Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     TickType_t lastWakeTime = xTaskGetTickCount();
@@ -66,7 +68,7 @@ static void canTX10HzTask(void *pvParameters) {
             CMR_CANID_DIM_POWER_DIAGNOSTICS,
             &msg,
             sizeof(msg),
-            canTX10HzPeriod_ms
+            canTX10Hz_period_ms
         );
 
         if (DIM_requested_state != VSM_state) {
@@ -78,19 +80,22 @@ static void canTX10HzTask(void *pvParameters) {
                 CMR_CANID_DIM_REQUEST,
                 &dim_request_msg,
                 sizeof(dim_request_msg),
-                canTX10HzPeriod_ms
+                canTX10Hz_period_ms
             );
         }
 
-        vTaskDelayUntil(&lastWakeTime, canTX10HzPeriod_ms);
+        vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
 }
 
 /** @brief CAN 100 Hz TX priority. */
-static const uint32_t canTX100HzPriority = 5;
+static const uint32_t canTX100Hz_priority = 5;
 
 /** @brief CAN 100 Hz TX period (milliseconds). */
-static const TickType_t canTX100HzPeriod_ms = 10;
+static const TickType_t canTX100Hz_period_ms = 10;
+
+/** @brief CAN 100 Hz TX task. */
+static cmr_task_t canTX100Hz_task;
 
 /**
  * @brief Task for sending CAN messages at 100 Hz.
@@ -99,7 +104,7 @@ static const TickType_t canTX100HzPeriod_ms = 10;
  *
  * @return Does not return.
  */
-static void canTX100HzTask(void *pvParameters) {
+static void canTX100Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     // XXX Example message retrieval.
@@ -133,10 +138,10 @@ static void canTX100HzTask(void *pvParameters) {
             CMR_CANID_HEARTBEAT_DIM,
             &heartbeat,
             sizeof(heartbeat),
-            canTX100HzPeriod_ms
+            canTX100Hz_period_ms
         );
 
-        vTaskDelayUntil(&lastWakeTime, canTX100HzPeriod_ms);
+        vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
 }
 
@@ -171,14 +176,20 @@ void canInit(void) {
         &can, canFilters, sizeof(canFilters) / sizeof(canFilters[0])
     );
 
-    // Task creation.
-    xTaskCreate(
-        canTX10HzTask, "canTX10Hz",
-        configMINIMAL_STACK_SIZE, NULL, canTX10HzPriority, NULL
+    // Task initialization.
+    cmr_taskInit(
+        &canTX10Hz_task,
+        "CAN TX 10Hz",
+        canTX10Hz_priority,
+        canTX10Hz,
+        NULL
     );
-    xTaskCreate(
-        canTX100HzTask, "canTX100Hz",
-        configMINIMAL_STACK_SIZE, NULL, canTX100HzPriority, NULL
+    cmr_taskInit(
+        &canTX100Hz_task,
+        "CAN TX 100Hz",
+        canTX100Hz_priority,
+        canTX100Hz,
+        NULL
     );
 }
 
