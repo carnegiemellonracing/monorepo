@@ -9,6 +9,7 @@
 #define CMR_SENSORS_H
 
 #include <stdint.h>
+#include <CMR/can_types.h>
 
 typedef enum {
     SENSOR_ERR_NONE = 0,
@@ -29,6 +30,7 @@ struct cmr_sensor {
     uint32_t minADC;                   /**< @brief Minimum expected ADC value. */
     uint32_t maxADC;                   /**< @brief Maximum expected ADC value. */
     uint32_t warnThres_pcnt;           /**< @brief Out-of-range error threshold percentage. */
+    cmr_canWarn_t flag;                /**< @brief Heartbeat flag to set when out of range. */
     volatile cmr_sensorError_t error;  /**< @brief Sensor error status. */
     volatile int32_t value;            /**< @brief Current value in proper units. */
 };
