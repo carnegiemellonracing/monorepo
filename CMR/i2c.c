@@ -105,6 +105,7 @@ void cmr_i2cInit(
         cmr_panic("HAL_I2C_Init() failed!");
     }
 
+    cmr_rccI2CClockEnable(instance);
     cmr_rccGPIOClockEnable(i2cClkPort);
     cmr_rccGPIOClockEnable(i2cDataPort);
 
