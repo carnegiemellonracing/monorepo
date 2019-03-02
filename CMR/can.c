@@ -266,7 +266,7 @@ static void cmr_canRXData(
  *
  * @return Does not return.
  */
-static void cmr_canRX_task(void *pvParameters) {
+static void cmr_canRX(void *pvParameters) {
     cmr_can_t *can = pvParameters;
     CAN_HandleTypeDef *canHandle = &can->handle;
 
@@ -417,11 +417,12 @@ CAN_FOREACH(CAN_INTERRUPT_CONFIG)
         cmr_panic("HAL_CAN_ActivateNotification() failed!");
     }
 
-    // Create receive task.
-    xTaskCreate(
-        cmr_canRX_task, rxTaskName,
-        configMINIMAL_STACK_SIZE, can,
-        cmr_canRX_priority, NULL
+    cmr_taskInit(
+        &can->rxTask,
+        rxTaskName,
+        cmr_canRX_priority,
+        cmr_canRX,
+        can
     );
 }
 

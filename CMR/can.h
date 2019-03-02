@@ -13,12 +13,13 @@
 
 #ifdef HAL_CAN_MODULE_ENABLED
 
+#include <stdbool.h>
+#include <stdint.h>
 
 #include <FreeRTOS.h>   // FreeRTOS interface
 #include <semphr.h>     // Semaphore interface
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "tasks.h"      // Task interface
 
 /** @brief Number of CAN filter banks allocated for each interface. */
 #define CMR_CAN_FILTERBANKS 14
@@ -67,6 +68,9 @@ struct cmr_can {
 
     /** @brief Callback for other messages received, or `NULL` to ignore. */
     cmr_canRXCallback_t rxCallback;
+
+    /** @brief Receive task. */
+    cmr_task_t rxTask;
 };
 
 void cmr_canInit(
