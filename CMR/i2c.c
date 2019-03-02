@@ -23,8 +23,21 @@ const uint32_t I2C_CLOCK_HI = 400000;
   */
 int cmr_i2cTX(uint16_t devAddr, uint8_t *data, int dataLength){
 	//Shift the address by 1 per HAL library suggestion
-	HAL_I2C_Master_Transmit(&hi2c1, devAddr << 1, new_data, dataLength, 0xFFFF);
+	HAL_I2C_Master_Transmit(&hi2c1, devAddr << 1, data, dataLength, 0xFFFF);
 	return 0;
+}
+
+/**
+  * @brief I2C Reception Function
+  * @param devAddr Target device address
+  * @param data The data to receive
+  * @param dataLength The length of the data
+  * @retval int
+  */
+int cmr_i2cRX(uint16_t devAddr, uint8_t *data, int dataLength){
+  //Shift the address by 1 per HAL library suggestion
+  HAL_I2C_Master_Receive(&hi2c1, devAddr << 1, data, dataLength, 0xFFFF);
+  return 0;
 }
 
 
@@ -33,10 +46,8 @@ int cmr_i2cTX(uint16_t devAddr, uint8_t *data, int dataLength){
   * @param i2c The I2C to initialize
   * @param instance The HAL I2C instance
   * @param clockSpeed The clock speed to initialize to 
-  *         (either I2C_CLOCK_LOW or HI)
+  *         (either I2C_CLOCK_LOW or I2C_CLOCK_HI)
   * @param ownAddr User-defined own address
-  * @param devAddr The array of device addresses
-  * @param addrLen Length of device address array
   * @param i2cPort The I2C GPIO port
   * @param i2cPin The I2C GPIO pin
   * @retval None
@@ -44,7 +55,6 @@ int cmr_i2cTX(uint16_t devAddr, uint8_t *data, int dataLength){
 void cmr_i2cInit(
     cmr_i2c_t *i2c, I2C_Typedef *instance,
     uint32_t clockSpeed, uint32_t ownAddr,
-    uint16_t *devAddr, const size_t addrLen,
     GPIO_Typedef *i2cClkPort, uint32_t i2cClkPin,
     GPIO_Typedef *i2cDataPort, uint32_t i2cDataPin
 ) {
@@ -63,9 +73,7 @@ void cmr_i2cInit(
             	.GeneralCallMode = I2C_GENERALCALL_DISABLE,
             	.NoStretchMode = I2C_NOSTRETCH_DISABLE
             }
-        },
-        .devAddr = devAddr,
-        .addrLen = addrLen
+        }
     };
 
   if (HAL_I2C_Init(&i2c->handle) != HAL_OK) {
@@ -88,7 +96,7 @@ void cmr_i2cInit(
 
   pinConfig.Pin = i2cDataPin;
 
-  HAL_GPIO_Init(i2cDataPin, &pinConfig)
+  HAL_GPIO_Init(i2cDataPin, &pinConfig);
 }
 
 #endif /*HAL_I2C_MODULE_ENABLED*/
