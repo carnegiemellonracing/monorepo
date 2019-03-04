@@ -101,15 +101,15 @@ void cmr_i2cInit(
         }
     };
 
-    if (HAL_I2C_Init(&i2c->handle) != HAL_OK) {
-        cmr_panic("HAL_I2C_Init() failed!");
-    }
-
     cmr_rccI2CClockEnable(instance);
     cmr_rccGPIOClockEnable(i2cClkPort);
     cmr_rccGPIOClockEnable(i2cDataPort);
 
-    // TODO: Convert to using CMR drivers instead of HAL
+    if (HAL_I2C_Init(&(i2c->handle)) != HAL_OK) {
+        cmr_panic("HAL_I2C_Init() failed!");
+    }
+
+    // TODO: Init GPIO with CMR drivers instead of HAL
     GPIO_InitTypeDef pinConfig = {
         .Pin = i2cClkPin,
         .Mode = GPIO_MODE_AF_OD,
@@ -119,9 +119,7 @@ void cmr_i2cInit(
     };
 
     HAL_GPIO_Init(i2cClkPort, &pinConfig);
-
     pinConfig.Pin = i2cDataPin;
-
     HAL_GPIO_Init(i2cDataPort, &pinConfig);
 }
 
