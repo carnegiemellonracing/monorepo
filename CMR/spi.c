@@ -145,9 +145,6 @@ void cmr_spiInit(
 
     spi->doneSem = xSemaphoreCreateBinaryStatic(&spi->doneSemBuf);
     configASSERT(spi->doneSem != NULL);
-    if (xSemaphoreGive(spi->doneSem) != pdTRUE) {
-        cmr_panic("SPI done semaphore initialization failed!");
-    }
 
     cmr_rccSPIClockEnable(instance);
 
