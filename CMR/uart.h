@@ -55,6 +55,9 @@ void cmr_uartInit(
     DMA_Stream_TypeDef *txDMA, uint32_t txDMAChannel
 );
 
+int cmr_uartTX(cmr_uart_t *uart, const void *data, size_t len);
+int cmr_uartRX(cmr_uart_t *uart, void *data, size_t *len);
+
 #endif /* HAL_DMA_MODULE_ENABLED */
 #endif /* HAL_UART_MODULE_ENABLED */
 #endif /* HAL_USART_MODULE_ENABLED */

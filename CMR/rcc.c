@@ -169,6 +169,12 @@ void cmr_rccSPIClockEnable(SPI_TypeDef *instance) {
  */
 void cmr_rccUSARTClockEnable(USART_TypeDef *instance) {
     switch ((uintptr_t) instance) {
+        case USART1_BASE:
+            __HAL_RCC_USART1_CLK_ENABLE();
+            return;
+        case USART2_BASE:
+            __HAL_RCC_USART2_CLK_ENABLE();
+            return;
         case USART3_BASE:
             __HAL_RCC_USART3_CLK_ENABLE();
             return;
@@ -177,6 +183,9 @@ void cmr_rccUSARTClockEnable(USART_TypeDef *instance) {
             return;
         case UART5_BASE:
             __HAL_RCC_UART5_CLK_ENABLE();
+            return;
+        case USART6_BASE:
+            __HAL_RCC_USART6_CLK_ENABLE();
             return;
         case UART7_BASE:
             __HAL_RCC_UART7_CLK_ENABLE();
