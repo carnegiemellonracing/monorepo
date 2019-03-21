@@ -108,8 +108,9 @@ UART_FOREACH(UART_DEVICE)
         \
         /* Check if line became idle. */ \
         if (__HAL_UART_GET_FLAG(handle, UART_FLAG_IDLE)) { \
-            /* Disable idle line detection and abort receive. */ \
+            /* Disable idle interrupt, clear flag, and abort receive. */ \
             __HAL_UART_DISABLE_IT(handle, UART_IT_IDLE); \
+            __HAL_UART_CLEAR_IDLEFLAG(handle); \
             HAL_StatusTypeDef status = HAL_UART_AbortReceive_IT(handle); \
             configASSERT(status == HAL_OK); \
         } \
@@ -183,21 +184,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *handle) {
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *handle) {
     // Treat errors as receive completion, since errors in DMA mode will
     // terminate receive DMA.
-    HAL_UART_RxCpltCallback(handle);
-}
-
-/**
- * @brief HAL UART receive abort completion handler.
- *
- * @warning Called from an interrupt handler!
- * @warning The handle must have been configured through this library!
- *
- * @param handle The HAL UART handle.
- */
-void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *handle) {
-    // Receive was aborted by an idle line; clear flag and handle as complete.
-    configASSERT(__HAL_UART_GET_FLAG(handle, UART_FLAG_IDLE));
-    __HAL_UART_CLEAR_IDLEFLAG(handle);
     HAL_UART_RxCpltCallback(handle);
 }
 
