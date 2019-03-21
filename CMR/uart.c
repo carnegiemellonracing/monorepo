@@ -174,6 +174,19 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *handle) {
 }
 
 /**
+ * @brief HAL UART receive abort completion handler.
+ *
+ * @warning Called from an interrupt handler!
+ * @warning The handle must have been configured through this library!
+ *
+ * @param handle The HAL UART handle.
+ */
+void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *handle) {
+    // Receive aborted; treat as completion.
+    HAL_UART_RxCpltCallback(handle);
+}
+
+/**
  * @brief HAL UART error handler.
  *
  * @warning Called from an interrupt handler!
