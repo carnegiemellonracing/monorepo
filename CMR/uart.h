@@ -36,6 +36,9 @@ typedef struct {
 
         SemaphoreHandle_t doneSem;     /**< @brief Done binary semaphore. */
         StaticSemaphore_t doneSemBuf;  /**< @brief Done semaphore storage. */
+
+        /** @brief Remaining unreceived bytes in latest transfer. */
+        size_t remLen;
     } rx;
 
     /** @brief Transmit state. */
@@ -56,7 +59,7 @@ void cmr_uartInit(
 );
 
 int cmr_uartTX(cmr_uart_t *uart, const void *data, size_t len);
-int cmr_uartRX(cmr_uart_t *uart, void *data, size_t *len);
+int cmr_uartRX(cmr_uart_t *uart, void *data, size_t *lenp);
 
 #endif /* HAL_DMA_MODULE_ENABLED */
 #endif /* HAL_UART_MODULE_ENABLED */

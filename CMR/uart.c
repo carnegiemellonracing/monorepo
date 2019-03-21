@@ -103,7 +103,16 @@ UART_FOREACH(UART_DEVICE)
  */
 #define UART_IRQ_HANDLERS(uart, pref, ...) \
     void pref ## uart ## _IRQHandler(void) { \
-        HAL_UART_IRQHandler(cmr_uartDevices[uart - 1].handle); \
+        UART_HandleTypeDef *handle = cmr_uartDevices[uart - 1].handle; \
+        HAL_UART_IRQHandler(handle); \
+        \
+        /* Check if line became idle. */ \
+        if (__HAL_UART_GET_FLAG(handle, UART_FLAG_IDLE)) { \
+            /* Disable idle line detection and abort receive. */ \
+            __HAL_UART_DISABLE_IT(handle, UART_IT_IDLE); \
+            HAL_StatusTypeDef status = HAL_UART_AbortReceive_IT(handle); \
+            configASSERT(status == HAL_OK); \
+        } \
     }
 UART_FOREACH(UART_IRQ_HANDLERS)
 #undef UART_IRQ_HANDLERS
@@ -152,6 +161,9 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *handle) {
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *handle) {
     cmr_uart_t *uart = cmr_uartFromHandle(handle);
 
+    // Record remaining bytes in DMA transfer.
+    uart->rx.remLen = __HAL_DMA_GET_COUNTER(&uart->rx.dma);
+
     // Indicate completion.
     BaseType_t higherWoken;
     if (xSemaphoreGiveFromISR(uart->rx.doneSem, &higherWoken) != pdTRUE) {
@@ -171,6 +183,21 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *handle) {
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *handle) {
     // Treat errors as receive completion, since errors in DMA mode will
     // terminate receive DMA.
+    HAL_UART_RxCpltCallback(handle);
+}
+
+/**
+ * @brief HAL UART receive abort completion handler.
+ *
+ * @warning Called from an interrupt handler!
+ * @warning The handle must have been configured through this library!
+ *
+ * @param handle The HAL UART handle.
+ */
+void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *handle) {
+    // Receive was aborted by an idle line; clear flag and handle as complete.
+    configASSERT(__HAL_UART_GET_FLAG(handle, UART_FLAG_IDLE));
+    __HAL_UART_CLEAR_IDLEFLAG(handle);
     HAL_UART_RxCpltCallback(handle);
 }
 
@@ -322,17 +349,44 @@ int cmr_uartTX(cmr_uart_t *uart, const void *data, size_t len) {
  * @note Does NOT block if the port is currently busy.
  *
  * @param uart The UART interface.
- * @param data The data to send, or `NULL` to not send any data.
- * @param len The number of bytes to transmit.
+ * @param data The buffer for receiving, or `NULL` to not receive any data.
+ * @param lenp Points to the receive buffer's size in bytes. Upon successful
+ * return, the number of bytes actually received is placed here.
  *
  * @return 0 on success, or a negative error code if the port is busy.
  */
-int cmr_uartRX(cmr_uart_t *uart, void *data, size_t *len) {
-    // TODO
-    (void) uart;
-    (void) data;
-    (void) len;
-    return -1;
+int cmr_uartRX(cmr_uart_t *uart, void *data, size_t *lenp) {
+    size_t bufLen = *lenp;
+    if (data == NULL || bufLen == 0) {
+        return 0;   // Nothing to do.
+    }
+
+    HAL_StatusTypeDef status = HAL_UART_Receive_DMA(
+        &uart->handle, data, bufLen
+    );
+    switch (status) {
+        case HAL_OK:
+            break;
+        case HAL_BUSY:
+            return -1;
+        default:
+            cmr_panic("HAL UART RX failed!");
+    }
+
+    // Enable idle line detection.
+    __HAL_UART_ENABLE_IT(&uart->handle, UART_IT_IDLE);
+
+    // Wait for transmission to complete.
+    if (xSemaphoreTake(uart->rx.doneSem, portMAX_DELAY) != pdTRUE) {
+        cmr_panic("Acquiring UART port done semaphore timed out!");
+    }
+
+    // Calculate number of bytes actually received.
+    size_t remLen = uart->rx.remLen;
+    configASSERT(remLen <= bufLen);
+    *lenp = bufLen - remLen;
+
+    return 0;
 }
 
 #endif /* HAL_DMA_MODULE_ENABLED */
