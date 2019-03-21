@@ -50,6 +50,20 @@ typedef struct {
     } tx;
 } cmr_uart_t;
 
+/** @brief UART receive options. */
+typedef enum {
+    /** @brief No options specified. */
+    CMR_UART_RXOPTS_NONE = 0,
+
+    /**
+     * @brief Abort receive when line becomes idle.
+     *
+     * The line is considered idle when no data is received for 1 "character
+     * time"; see RM0430 p. 888.
+     */
+    CMR_UART_RXOPTS_IDLEABORT = (1 << 0)
+} cmr_uartRXOpts_t;
+
 void cmr_uartInit(
     cmr_uart_t *uart, USART_TypeDef *instance, const UART_InitTypeDef *init,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
@@ -59,7 +73,10 @@ void cmr_uartInit(
 );
 
 int cmr_uartTX(cmr_uart_t *uart, const void *data, size_t len);
-int cmr_uartRX(cmr_uart_t *uart, void *data, size_t *lenp);
+
+int cmr_uartRX(
+    cmr_uart_t *uart, void *data, size_t *lenp, cmr_uartRXOpts_t opts
+);
 
 #endif /* HAL_DMA_MODULE_ENABLED */
 #endif /* HAL_UART_MODULE_ENABLED */

@@ -106,8 +106,8 @@ UART_FOREACH(UART_DEVICE)
         UART_HandleTypeDef *handle = cmr_uartDevices[uart - 1].handle; \
         HAL_UART_IRQHandler(handle); \
         \
-        /* Check if line became idle. */ \
-        if (__HAL_UART_GET_FLAG(handle, UART_FLAG_IDLE)) { \
+        /* Handle idle interrupt, if present. */ \
+        if (__HAL_UART_GET_IT_SOURCE(handle, UART_IT_IDLE)) { \
             /* Disable idle interrupt, clear flag, and abort receive. */ \
             __HAL_UART_DISABLE_IT(handle, UART_IT_IDLE); \
             __HAL_UART_CLEAR_IDLEFLAG(handle); \
@@ -347,14 +347,19 @@ int cmr_uartTX(cmr_uart_t *uart, const void *data, size_t len) {
  * @note Blocks until the reception actually completes.
  * @note Does NOT block if the port is currently busy.
  *
+ * @note When the UART line becomes idle,
+ *
  * @param uart The UART interface.
  * @param data The buffer for receiving, or `NULL` to not receive any data.
  * @param lenp Points to the receive buffer's size in bytes. Upon successful
  * return, the number of bytes actually received is placed here.
+ * @param opts Receive options.
  *
  * @return 0 on success, or a negative error code if the port is busy.
  */
-int cmr_uartRX(cmr_uart_t *uart, void *data, size_t *lenp) {
+int cmr_uartRX(
+    cmr_uart_t *uart, void *data, size_t *lenp, cmr_uartRXOpts_t opts
+) {
     size_t bufLen = *lenp;
     if (data == NULL || bufLen == 0) {
         return 0;   // Nothing to do.
@@ -372,8 +377,10 @@ int cmr_uartRX(cmr_uart_t *uart, void *data, size_t *lenp) {
             cmr_panic("HAL UART RX failed!");
     }
 
-    // Enable idle line detection.
-    __HAL_UART_ENABLE_IT(&uart->handle, UART_IT_IDLE);
+    if (opts & CMR_UART_RXOPTS_IDLEABORT) {
+        // Enable idle line detection.
+        __HAL_UART_ENABLE_IT(&uart->handle, UART_IT_IDLE);
+    }
 
     // Wait for transmission to complete.
     if (xSemaphoreTake(uart->rx.doneSem, portMAX_DELAY) != pdTRUE) {
