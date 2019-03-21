@@ -12,12 +12,12 @@
 
 /** @brief Node states. */
 typedef enum {
+    CMR_CAN_UNKNOWN = 0,    /**< @brief Current state unknown. */
     CMR_CAN_GLV_ON,         /**< @brief Grounded low voltage on. */
     CMR_CAN_HV_EN,          /**< @brief High voltage enabled. */
     CMR_CAN_RTD,            /**< @brief Ready to drive. */
     CMR_CAN_ERROR,          /**< @brief Error has occurred. */
-    CMR_CAN_CLEAR_ERROR,    /**< @brief Request to clear error. */
-    CMR_CAN_UNKNOWN         /**< @brief Current state unknown. */
+    CMR_CAN_CLEAR_ERROR     /**< @brief Request to clear error. */
 } cmr_canState_t;
 
 /** @brief Fan states. */

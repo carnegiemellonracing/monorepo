@@ -3,14 +3,14 @@ UniqueVariables=True
 Title="FSM_Heartbeat"
 
 {ENUMS}
-enum State(0="GLV_ON",
-		   1="HV_EN",
-		   2="RTD",
-		   3="ERROR",
-		   4="CLEAR_ERROR",
-		   5="UNKNOWN")
-		   
-		   
+enum State(0="UNKNOWN",
+		   1="GLV_ON",
+		   2="HV_EN",
+		   3="RTD",
+		   4="ERROR",
+		   5="CLEAR_ERROR")
+
+
 enum Gear(0="SLOW",
 		   1="AUTO-X",
 		   2="ENDURANCE",
