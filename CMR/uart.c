@@ -273,12 +273,12 @@ void cmr_uartInit(
         .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
         .Alternate = pinAlternate
     };
-    HAL_GPIO_Init(rxPort, &pinConfig);
     cmr_rccGPIOClockEnable(rxPort);
+    HAL_GPIO_Init(rxPort, &pinConfig);
 
     pinConfig.Pin = txPin;
-    HAL_GPIO_Init(txPort, &pinConfig);
     cmr_rccGPIOClockEnable(txPort);
+    HAL_GPIO_Init(txPort, &pinConfig);
 
     // Configure DMA.
     cmr_dmaInit(&uart->rx.dma);
