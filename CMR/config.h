@@ -8,6 +8,10 @@
 #ifndef CMR_CONFIG_H
 #define CMR_CONFIG_H
 
+#include <stm32f4xx_hal.h> // HAL_FLASH_MODULE_ENABLED
+
+#ifdef HAL_FLASH_MODULE_ENABLED
+
 #include <stdint.h>
 #include <stddef.h>
 
@@ -17,12 +21,11 @@
  */
 #define CMR_CONFIG_CANID_TOM 0x500
 
-// XXX: Consider adding a "command" field so that the config message
-//      can request "read, cantx, uarttx, etc"
+
 typedef struct {
-    size_t addr;
+    size_t addr; 
     uint32_t data;
-} cmr_config_t;
+} cmr_canConfigMsg_t;
 
 void cmr_configInit();
 
@@ -36,4 +39,8 @@ void cmr_configPull();
 
 void cmr_configCommit();
 
+#endif /** HAL_FLASH_MODULE_ENABLED */
+
 #endif /** CMR_CONFIG_H */
+
+
