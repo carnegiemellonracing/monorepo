@@ -10,7 +10,7 @@
 #include <stm32f4xx_hal.h>
 
 #define CONFIG_END_ADDR 1024
-#define FLASH_START_ADDR 0x08040000
+#define FLASH_START_ADDR 0x080E0000
 #define FLASH_END_ADDR (FLASH_START_ADDR + CONFIG_END_ADDR)
 
 #define ADDR_FLASH_SECTOR_0     ((uint32_t)0x08000000) 
@@ -30,7 +30,9 @@
 #define ADDR_FLASH_SECTOR_14    ((uint32_t)0x08140000) 
 #define ADDR_FLASH_SECTOR_15    ((uint32_t)0x08160000) 
 
-static const volatile uint32_t *flash = (const volatile uint32_t *) FLASH_START_ADDR;
+// static const volatile uint32_t *flash = (const volatile uint32_t *) FLASH_START_ADDR;
+__attribute__((__section__(".user_data"))) const uint32_t flash[64];
+
 static volatile uint32_t configBuf[CONFIG_END_ADDR];
 
 void HAL_FLASH_EndOfOperationCallback(uint32_t returnValue) {
@@ -88,19 +90,21 @@ void cmr_configCommit() {
    
     FLASH_EraseInitTypeDef eraseInit = {
         .TypeErase = FLASH_TYPEERASE_SECTORS,
-        .Sector = FLASH_SECTOR_6,
+        .Sector = FLASH_SECTOR_11,
         .NbSectors = 1,
         .VoltageRange = VOLTAGE_RANGE_3,
     };
 
     uint32_t error;
     if (HAL_FLASHEx_Erase(&eraseInit, &error) != HAL_OK) {
+        HAL_FLASH_Unlock();
         cmr_panic("Flash erase failed!");
     }
 
     size_t idx = 0;
     for (size_t addr = FLASH_START_ADDR; addr < FLASH_END_ADDR; addr += sizeof(uint32_t)) {
         if (HAL_FLASH_Program(TYPEPROGRAM_WORD, addr, configBuf[idx]) != HAL_OK) {
+            HAL_FLASH_Unlock();
             cmr_panic("Flash programming timed out!");
         }
         idx++;
