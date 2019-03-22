@@ -156,10 +156,15 @@ void cmr_spiInit(
         .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
         .Alternate = GPIO_AF5_SPI1,     // All SPI ports on AF5.
     };
+    cmr_rccGPIOClockEnable(pins->mosi.port);
     HAL_GPIO_Init(pins->mosi.port, &pinConfig);
+
     pinConfig.Pin = pins->miso.pin;
+    cmr_rccGPIOClockEnable(pins->miso.port);
     HAL_GPIO_Init(pins->miso.port, &pinConfig);
+
     pinConfig.Pin = pins->sck.pin;
+    cmr_rccGPIOClockEnable(pins->sck.port);
     HAL_GPIO_Init(pins->sck.port, &pinConfig);
 
     pinConfig = (GPIO_InitTypeDef) {
@@ -168,6 +173,7 @@ void cmr_spiInit(
         .Pull = GPIO_NOPULL,
         .Speed = GPIO_SPEED_FREQ_VERY_HIGH
     };
+    cmr_rccGPIOClockEnable(spi->nssPin.port);
     HAL_GPIO_Init(spi->nssPin.port, &pinConfig);
     HAL_GPIO_WritePin(spi->nssPin.port, spi->nssPin.pin, GPIO_PIN_SET);
 
