@@ -1,18 +1,23 @@
 /**
  * @file config.c
- * @brief Flash configuration system.
+ * @brief Flash configuration system implementation.
+ *
+ * The HAL flash program implementations (both polling mode, as used here,
+ * and interrupt mode) wait for prior operations to finish for a timeout 
+ * defined by HAL. 
  *
  * @author Carnegie Mellon Racing
  */
 
-#include "config.h"
-#include "panic.h"
-#include <stm32f4xx_hal.h>
+#include "config.h" // Interface to implement
 
-#define CONFIG_END_ADDR 1024
-#define FLASH_START_ADDR 0x080E0000
-#define FLASH_END_ADDR (FLASH_START_ADDR + CONFIG_END_ADDR)
+#ifdef HAL_FLASH_MODULE_ENABLED
 
+#include "panic.h"  // cmr_panic()
+
+/**
+ * @brief The base addresses of each flash sector.
+ */
 #define ADDR_FLASH_SECTOR_0     ((uint32_t)0x08000000) 
 #define ADDR_FLASH_SECTOR_1     ((uint32_t)0x08004000) 
 #define ADDR_FLASH_SECTOR_2     ((uint32_t)0x08008000) 
@@ -28,58 +33,172 @@
 #define ADDR_FLASH_SECTOR_12    ((uint32_t)0x08100000) 
 #define ADDR_FLASH_SECTOR_13    ((uint32_t)0x08120000) 
 #define ADDR_FLASH_SECTOR_14    ((uint32_t)0x08140000) 
-#define ADDR_FLASH_SECTOR_15    ((uint32_t)0x08160000) 
+#define ADDR_FLASH_SECTOR_15    ((uint32_t)0x08160000)
+#define ADDR_FLASH_SECTOR_16    ((uint32_t)0x08180000) 
 
-// static const volatile uint32_t *flash = (const volatile uint32_t *) FLASH_START_ADDR;
-__attribute__((__section__(".user_data"))) const uint32_t flash[64];
+/**
+ * @brief The configuration storage size in words.
+ */
+#define CONFIG_LEN 1024
 
-static volatile uint32_t configBuf[CONFIG_END_ADDR];
+/**
+ * @brief The configuration cache. It is updated by calling cmr_configCommit() and
+ * cmr_configPull().
+ */
+static volatile uint32_t configBuf[CONFIG_LEN];
 
-void HAL_FLASH_EndOfOperationCallback(uint32_t returnValue) {
+/**
+ * @brief The configuration base address. It is initialized by cmr_configInit().
+ */
+static size_t configBaseAddr;
 
+/**
+ * @brief Instantiates the macro for each flash sector.
+ *
+ * @param f The macro to instantiate.
+ */
+#define SECTOR_FOREACH(f) \
+    f(0) \
+    f(1) \
+    f(2) \
+    f(3) \
+    f(4) \
+    f(5) \
+    f(6) \
+    f(7) \
+    f(8) \
+    f(9) \
+    f(10) \
+    f(11) \
+    f(12) \
+    f(13) \
+    f(14) \
+    f(15)
 
+/**
+ * @brief Gets the sector corresponding to an address. The address
+ * must be within sectors 0 through 15.
+ *
+ * @param addr An address to get the corresponding sector of.
+ *
+ * @return The corresponding sector.
+ */
+static uint32_t getSector(size_t addr) {
+#define FLASH_SECTOR(num) \
+    if ((addr >= ADDR_FLASH_SECTOR_ ## num) && (addr < ADDR_FLASH_SECTOR_ ## num)) { \
+        return FLASH_SECTOR_ ## num; \
+    }
+SECTOR_FOREACH(FLASH_SECTOR) 
+#undef FLASH_SECTOR
+
+    cmr_panic("Invalid sector!");
+    
 }
 
-void HAL_FLASH_OperationErrorCallback(uint32_t returnValue) {
+/**
+ * @brief Gets the base address corresponding to a sector. The sector
+ * must be within 0 and 15.
+ *
+ * @param sector A sector to get the corresponding base address of.
+ *
+ * @return The corresponding base address.
+ */
+static uint32_t getSectorAddr(uint32_t sector) {
+#define FLASH_SECTOR_ADDR(sec) \
+    if (sector == FLASH_SECTOR_ ## sec) { \
+        return ADDR_FLASH_SECTOR_ ## sec; \
+    }
 
+SECTOR_FOREACH(FLASH_SECTOR_ADDR)
+#undef FLASH_SECTOR_ADDR
+
+    cmr_panic("Invalid sector!");
 }
 
-void cmr_configInit() {
+/**
+ * @brief Gets the number of sectors required corresponding to a base address.
+ * Consider the case when the base address is near the end of a sector.
+ *
+ * @param addr The config base address.
+ *
+ * @returns The number of sectors.
+ */
+static size_t getNumberSectors(size_t addr) {
+    if (getSector(addr+CONFIG_LEN) != getSector(addr)) {
+        return 2;
+    }
+
+    return 1;
+}
+
+/**
+ * @brief Initializes the configuration system with a base address.
+ *
+ * @param addr A base address.
+ */
+void cmr_configInit(size_t addr) {
+    configBaseAddr = addr;
     cmr_configPull();
 }
 
-void cmr_configSetCAN(const uint8_t *data, size_t dataLen) {
-    if (dataLen != sizeof(cmr_canConfigMsg_t)) {
+/**
+ * @brief Sets a configuration from a buffer.
+ *
+ * @param data A buffer.
+ * @param dataLen The buffers length.
+ */
+void cmr_configBufSet(const uint8_t *data, size_t dataLen) {
+    if (dataLen != sizeof(cmr_bufConfigMsg_t)) {
         return;
     }
 
-    cmr_canConfigMsg_t conf = *(cmr_canConfigMsg_t *)data;
+    cmr_bufConfigMsg_t conf = *(cmr_bufConfigMsg_t *)data;
 
     cmr_configSet(conf.addr, conf.data);
 }
 
+/**
+ * @brief Sets a configuration setting.
+ *
+ * @param addr An address to write to.
+ * @param data A datum to write.
+ */
 void cmr_configSet(size_t addr, uint32_t data) {
-    if (addr >= CONFIG_END_ADDR) {
+    if (addr >= CONFIG_LEN) {
         cmr_panic("cmr_configSet(): Address too big!");
     }
 
     configBuf[addr] = data;
 }
 
+/**
+ * @brief Gets a configuration setting.
+ *
+ * @param addr An address to read from.
+ * @return The data at the address.
+ */
 uint32_t cmr_configGet(size_t addr) {
-    if (addr >= CONFIG_END_ADDR) {
+    if (addr >= CONFIG_LEN) {
         cmr_panic("cmr_configSet(): Address too big!");
     }
 
     return configBuf[addr];
 }
 
+/**
+ * @brief Pulls the config from flash into the local config cache.
+ */
 void cmr_configPull() {
-    for (size_t idx = 0; idx < CONFIG_END_ADDR; idx++) {
+   __IO uint32_t *flash = (__IO uint32_t *) configBaseAddr;
+ 
+    for (size_t idx = 0; idx < CONFIG_LEN; idx++) {
         configBuf[idx] = flash[idx];
     } 
 }
 
+/**
+ * @brief Commits the local config cache to flash.
+ */
 void cmr_configCommit() {
     if (HAL_FLASH_Unlock() != HAL_OK) {
         return;
@@ -87,33 +206,34 @@ void cmr_configCommit() {
 
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | \
             FLASH_FLAG_PGAERR | FLASH_FLAG_PGSERR);
-   
+  
+    uint32_t sector = getSector(configBaseAddr);
+    
     FLASH_EraseInitTypeDef eraseInit = {
         .TypeErase = FLASH_TYPEERASE_SECTORS,
-        .Sector = FLASH_SECTOR_11,
-        .NbSectors = 1,
+        .Sector = sector,
+        .NbSectors = getNumberSectors(sector),
         .VoltageRange = VOLTAGE_RANGE_3,
     };
 
     uint32_t error;
     if (HAL_FLASHEx_Erase(&eraseInit, &error) != HAL_OK) {
-        HAL_FLASH_Unlock();
         cmr_panic("Flash erase failed!");
     }
 
     size_t idx = 0;
-    for (size_t addr = FLASH_START_ADDR; addr < FLASH_END_ADDR; addr += sizeof(uint32_t)) {
-        if (HAL_FLASH_Program(TYPEPROGRAM_WORD, addr, configBuf[idx]) != HAL_OK) {
-            HAL_FLASH_Unlock();
-            cmr_panic("Flash programming timed out!");
+    size_t addr = configBaseAddr;
+    while (addr < configBaseAddr + CONFIG_LEN) {
+        if (HAL_FLASH_Program(TYPEPROGRAM_WORD, addr, configBuf[idx]) == HAL_OK) {
+            idx++;
+            addr += sizeof(uint32_t);
         }
-        idx++;
-    } 
+    }
 
     HAL_FLASH_Lock();
 }
 
-
+#endif /** HAL_FLASH_MODULE_ENABLED */
 
 
 

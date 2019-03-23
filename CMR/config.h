@@ -21,15 +21,17 @@
  */
 #define CMR_CONFIG_CANID_TOM 0x500
 
-
+/**
+ * @brief Represents a config message sent over CAN.
+ */
 typedef struct {
     size_t addr; 
     uint32_t data;
-} cmr_canConfigMsg_t;
+} cmr_bufConfigMsg_t;
 
 void cmr_configInit();
 
-void cmr_configSetCAN(const uint8_t *data, size_t dataLen);
+void cmr_configBufSet(const uint8_t *data, size_t dataLen);
 
 void cmr_configSet(size_t addr, uint32_t data);
 
