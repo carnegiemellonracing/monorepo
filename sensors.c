@@ -257,6 +257,8 @@ static void checkSensor(cmr_sensor_t *sensor) {
     uint32_t adcVal = adcChannels[adcChannel].value;
     uint32_t adcRange = sensor->maxADC - sensor->minADC;
 
+    sensor->error = SENSOR_ERR_NONE;
+
     // Return if sensor is too far above expected range
     // accounting for overflow
     uint32_t upperThres = sensor->maxADC + (adcRange * sensor->warnThres_pcnt / 100);
@@ -270,8 +272,6 @@ static void checkSensor(cmr_sensor_t *sensor) {
     if (lowerThres <= sensor->minADC && adcVal < lowerThres) {
         sensor->error = SENSOR_ERR_OUT_OF_RANGE;
     }
-
-    sensor->error = SENSOR_ERR_NONE;
 }
 
 
