@@ -131,6 +131,29 @@ void cmr_rccCANClockEnable(CAN_TypeDef *instance) {
 }
 #endif /* HAL_CAN_MODULE_ENABLED */
 
+#ifdef HAL_I2C_MODULE_ENABLED
+/**
+ * @brief Enables the specified I2C port's clock.
+ *
+ * @param instance The HAL I2C instance.
+ */
+void cmr_rccI2CClockEnable(I2C_TypeDef *instance) {
+    if (instance == I2C1) {
+        __HAL_RCC_I2C1_CLK_ENABLE();
+        return;
+    }
+    if (instance == I2C2) {
+        __HAL_RCC_I2C2_CLK_ENABLE();
+        return;
+    }
+    if (instance == I2C3) {
+        __HAL_RCC_I2C3_CLK_ENABLE();
+        return;
+    }
+    //not sure how many more instances there needs to be
+}
+#endif /* HAL_I2C_MODULE_ENABLED */
+
 #ifdef HAL_SPI_MODULE_ENABLED
 /**
  * @brief Enables the specified SPI port's clock.
