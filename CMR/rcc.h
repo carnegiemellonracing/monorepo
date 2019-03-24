@@ -41,6 +41,10 @@ void cmr_rccI2CClockEnable(I2C_TypeDef *instance);
 void cmr_rccSPIClockEnable(SPI_TypeDef *instance);
 #endif /* HAL_SPI_MODULE_ENABLED */
 
+#ifdef HAL_USART_MODULE_ENABLED
+void cmr_rccUSARTClockEnable(USART_TypeDef *instance);
+#endif /* HAL_USART_MODULE_ENABLED */
+
 #endif /* HAL_RCC_MODULE_ENABLED */
 
 #endif /* CMR_RCC_H */

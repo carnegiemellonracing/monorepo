@@ -184,5 +184,47 @@ void cmr_rccSPIClockEnable(SPI_TypeDef *instance) {
 }
 #endif /* HAL_SPI_MODULE_ENABLED */
 
+#ifdef HAL_USART_MODULE_ENABLED
+/**
+ * @brief Enables the specified USART interface's clock.
+ *
+ * @param instance The HAL USART instance.
+ */
+void cmr_rccUSARTClockEnable(USART_TypeDef *instance) {
+    switch ((uintptr_t) instance) {
+        case USART1_BASE:
+            __HAL_RCC_USART1_CLK_ENABLE();
+            return;
+        case USART2_BASE:
+            __HAL_RCC_USART2_CLK_ENABLE();
+            return;
+        case USART3_BASE:
+            __HAL_RCC_USART3_CLK_ENABLE();
+            return;
+        case UART4_BASE:
+            __HAL_RCC_UART4_CLK_ENABLE();
+            return;
+        case UART5_BASE:
+            __HAL_RCC_UART5_CLK_ENABLE();
+            return;
+        case USART6_BASE:
+            __HAL_RCC_USART6_CLK_ENABLE();
+            return;
+        case UART7_BASE:
+            __HAL_RCC_UART7_CLK_ENABLE();
+            return;
+        case UART8_BASE:
+            __HAL_RCC_UART8_CLK_ENABLE();
+            return;
+        case UART9_BASE:
+            __HAL_RCC_UART9_CLK_ENABLE();
+            return;
+        case UART10_BASE:
+            __HAL_RCC_UART10_CLK_ENABLE();
+            return;
+    }
+}
+#endif /* HAL_USART_MODULE_ENABLED */
+
 #endif /* HAL_RCC_MODULE_ENABLED */
 
