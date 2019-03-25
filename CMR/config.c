@@ -142,6 +142,62 @@ void cmr_configInit(size_t addr) {
 }
 
 /**
+ * @brief Tests the configuration system with a base address.
+ *
+ * @param addr A base address.
+ */
+void cmr_configTest(uint32_t sector) {
+    if (HAL_FLASH_Unlock() != HAL_OK) {
+        return;
+    }
+
+    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | \
+            FLASH_FLAG_PGAERR | FLASH_FLAG_PGSERR);
+  
+    size_t startAddr = getSectorAddr(sector);
+    size_t endAddr = getSectorAddr(sector+1)-1;
+    uint32_t byte = (*(uint32_t *) startAddr) + 1;
+    
+    FLASH_EraseInitTypeDef eraseInit = {
+        .TypeErase = FLASH_TYPEERASE_SECTORS,
+        .Sector = sector,
+        .NbSectors = 1,
+        .VoltageRange = VOLTAGE_RANGE_3,
+    };
+
+    uint32_t error;
+    if (HAL_FLASHEx_Erase(&eraseInit, &error) != HAL_OK) {
+        cmr_panic("Flash erase failed!");
+    }
+
+    HAL_FLASH_Lock();
+    HAL_FLASH_Unlock();
+
+    size_t addr = startAddr;
+    while (addr < endAddr) {
+        if (HAL_FLASH_Program(TYPEPROGRAM_WORD, addr, byte) != HAL_OK) {
+            cmr_panic("Failed programming word!");
+        }
+        addr += sizeof(uint32_t);
+    }
+
+    HAL_FLASH_Lock();
+
+    addr = startAddr;
+    size_t errors = 0;
+    while (addr < endAddr) {
+        if ((*(uint32_t *) addr) != byte) {
+            errors += 1;
+        }
+        addr += sizeof(uint32_t);
+    }
+
+    if (errors != 0) {
+        cmr_panic("The write was unsuccessful!");
+    }
+}
+
+/**
  * @brief Sets a configuration from a buffer.
  *
  * @param data A buffer.
@@ -220,6 +276,10 @@ void cmr_configCommit() {
     if (HAL_FLASHEx_Erase(&eraseInit, &error) != HAL_OK) {
         cmr_panic("Flash erase failed!");
     }
+
+    HAL_FLASH_Lock();
+
+    HAL_FLASH_Unlock();
 
     size_t idx = 0;
     size_t addr = configBaseAddr;

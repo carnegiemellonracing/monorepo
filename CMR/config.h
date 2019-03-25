@@ -31,6 +31,8 @@ typedef struct {
 
 void cmr_configInit();
 
+void cmr_configTest(uint32_t sector);
+
 void cmr_configBufSet(const uint8_t *data, size_t dataLen);
 
 void cmr_configSet(size_t addr, uint32_t data);
