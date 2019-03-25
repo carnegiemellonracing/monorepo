@@ -10,6 +10,11 @@
 #ifndef CMR_CAN_IDS_H
 #define CMR_CAN_IDS_H
 
+/** @brief The RMS motor controller allows a configurable offset for
+ *  all CAN message addresses. Ours is set to this value.
+ */
+#define CMR_CANID_RMS_OFFSET    0x3A0
+
 /** @brief CAN IDs. */
 typedef enum {
     CMR_CANID_HEARTBEAT_VSM = 0x100,    /**< @brief VSM heartbeat. */
@@ -49,15 +54,15 @@ typedef enum {
     /** @brief AFC #1 power diagnostics. */
     CMR_CANID_AFC1_POWER_DIAGNOSTICS = 0x547,
 
-    CMR_CANID_RMS_TEMPA = 0x0A0,        /**< @brief RMS temp set A. */
-    CMR_CANID_RMS_TEMPA = 0x0A1,        /**< @brief RMS temp set B. */
-    CMR_CANID_RMS_TEMPA = 0x0A2,        /**< @brief RMS temp set C. */
-    CMR_CANID_RMS_MOTOR_POS = 0x0A5,    /**< @brief RMS motor position. */
-    CMR_CANID_RMS_FAULTS = 0x0AB,       /**< @brief RMS faults (pg 23). */
-    CMR_CANID_RMS_TORQUE_DIAG = 0x0AC,  /**< @brief RMS torque diagnostic data. */
-    CMR_CANID_RMS_CURRENT_INFO = 0x0A6, /**< @brief RMS current info. */
-    CMR_CANID_RMS_VOLTAGE_INFO = 0x0A7, /**< @brief RMS voltage info. */
-    CMR_CANID_RMS_COMMAND = 0x0C0,      /**< @brief RMS command. */
+    CMR_CANID_RMS_TEMPA = 0x000 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set A. */
+    CMR_CANID_RMS_TEMPA = 0x001 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set B. */
+    CMR_CANID_RMS_TEMPA = 0x002 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set C. */
+    CMR_CANID_RMS_MOTOR_POS = 0x005 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS motor position. */
+    CMR_CANID_RMS_FAULTS = 0x00B + CMR_CANID_RMS_OFFSET,        /**< @brief RMS faults (pg 23). */
+    CMR_CANID_RMS_TORQUE_DIAG = 0x00C + CMR_CANID_RMS_OFFSET,   /**< @brief RMS torque diagnostic data. */
+    CMR_CANID_RMS_CURRENT_INFO = 0x006 + CMR_CANID_RMS_OFFSET,  /**< @brief RMS current info. */
+    CMR_CANID_RMS_VOLTAGE_INFO = 0x007 + CMR_CANID_RMS_OFFSET,  /**< @brief RMS voltage info. */
+    CMR_CANID_RMS_COMMAND = 0x020 + CMR_CANID_RMS_OFFSET,       /**< @brief RMS command. */
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
