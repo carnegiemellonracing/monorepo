@@ -42,6 +42,12 @@ cmr_canRXMeta_t canRXMeta[] = {
 /** @brief Primary CAN interface. */
 static cmr_can_t can;
 
+/** @brief Forward declarations. */
+static void sendCoolStatus(void);
+static void sendVoltDiagnostics(void);
+static void sendCurrDiagnostics(void);
+static void sendHeartbeat(void);
+
 /** @brief CAN 10 Hz TX priority. */
 static const uint32_t canTX10HzPriority = 3;
 
@@ -63,27 +69,10 @@ static void canTX10HzTask(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        cmr_canPTCCoolingStatus_t coolMsg = {
-            .fanState = fanStatePTC,
-            .pumpState = pumpStatePTC,
-            .preRadiatorTemp_C = sensorRead(SENSOR_CH_PRE_RAD_THERM),
-            .postRadiatorTemp_C = sensorRead(SENSOR_CH_POST_RAD_THERM)
-        };
 
-        cmr_canPTCVoltageDiagnostics_t voltMsg = {
-            .logicVoltage_mV = sensorRead(SENSOR_CH_LOGIC_VOLTAGE_MV),
-            .loadVoltage_mV = sensorRead(SENSOR_CH_LOAD_VOLTAGE_MV)
-        };
-
-        cmr_canPTCCurrentDiagnostics_t ampMsg = {
-            .logicCurrent_mA = sensorRead(SENSOR_CH_LOGIC_CURRENT_MA),
-            .loadCurrent_mA = sensorRead(SENSOR_CH_LOAD_CURRENT_MA),
-            .fanCurrent_mA = sensorRead(SENSOR_CH_FAN_CURRENT_MA)
-        };
-
-        canTX(CMR_CANID_PTC_COOLING_STATUS, &coolMsg, sizeof(coolMsg), canTX10HzPeriod_ms);
-        canTX(CMR_CANID_PTC_VOLTAGE_DIAGNOSTICS, &voltMsg, sizeof(voltMsg), canTX10HzPeriod_ms);
-        canTX(CMR_CANID_PTC_CURRENT_DIAGNOSTICS, &ampMsg, sizeof(ampMsg), canTX10HzPeriod_ms);
+    	sendCoolStatus();
+    	sendVoltDiagnostics();
+    	sendCurrDiagnostics();
 
         vTaskDelayUntil(&lastWakeTime, canTX10HzPeriod_ms);
     }
@@ -110,25 +99,10 @@ static void canTX100HzTask(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        cmr_canHeartbeat_t heartbeat = {
-            .state = heartbeatVSM->state
-        };
 
-        uint16_t error = CMR_CAN_ERROR_NONE;
-        if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
-            error |= CMR_CAN_ERROR_VSM_TIMEOUT;
-        }
-        memcpy(&heartbeat.error, &error, sizeof(error));
+    	sendHeartbeat();
 
-        uint16_t warning = CMR_CAN_WARN_NONE;
-        if (cmr_canRXMetaTimeoutWarn(heartbeatVSMMeta, lastWakeTime) < 0) {
-            warning |= CMR_CAN_WARN_VSM_TIMEOUT;
-        }
-        memcpy(&heartbeat.warning, &warning, sizeof(warning));
-
-        canTX(CMR_CANID_HEARTBEAT_PTC, &heartbeat, sizeof(heartbeat), canTX100HzPeriod_ms);
-
-        vTaskDelayUntil(&lastWakeTime, canTX100HzPeriod_ms);
+    	vTaskDelayUntil(&lastWakeTime, canTX100HzPeriod_ms);
     }
 }
 
@@ -187,3 +161,55 @@ int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
     return cmr_canTX(&can, id, data, len, timeout);
 }
 
+/**
+ * @brief Sets up PTC heartbeat, checks for errors, then sends it
+ */
+static void sendHeartbeat(void) {
+	cmr_canHeartbeat_t heartbeat = {
+		.state = heartbeatVSM->state
+	};
+
+	uint16_t error = CMR_CAN_ERROR_NONE;
+	if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
+		error |= CMR_CAN_ERROR_VSM_TIMEOUT;
+	}
+	memcpy(&heartbeat.error, &error, sizeof(error));
+
+	uint16_t warning = CMR_CAN_WARN_NONE;
+	if (cmr_canRXMetaTimeoutWarn(heartbeatVSMMeta, lastWakeTime) < 0) {
+		warning |= CMR_CAN_WARN_VSM_TIMEOUT;
+	}
+	memcpy(&heartbeat.warning, &warning, sizeof(warning));
+
+	canTX(CMR_CANID_HEARTBEAT_PTC, &heartbeat, sizeof(heartbeat), canTX100HzPeriod_ms);
+}
+
+static void sendCoolStatus(void) {
+	cmr_canPTCCoolingStatus_t coolMsg = {
+		.fanState = fanStatePTC,
+		.pumpState = pumpStatePTC,
+		.preRadiatorTemp_C = sensorRead(SENSOR_CH_PRE_RAD_THERM),
+		.postRadiatorTemp_C = sensorRead(SENSOR_CH_POST_RAD_THERM)
+	};
+
+	canTX(CMR_CANID_PTC_COOLING_STATUS, &coolMsg, sizeof(coolMsg), canTX10HzPeriod_ms);
+}
+
+static void sendVoltDiagnostics(void) {
+	cmr_canPTCVoltageDiagnostics_t voltMsg = {
+		.logicVoltage_mV = sensorRead(SENSOR_CH_LOGIC_VOLTAGE_MV),
+		.loadVoltage_mV = sensorRead(SENSOR_CH_LOAD_VOLTAGE_MV)
+	};
+
+	canTX(CMR_CANID_PTC_VOLTAGE_DIAGNOSTICS, &voltMsg, sizeof(voltMsg), canTX10HzPeriod_ms);
+}
+
+static void sendCurrDiagnostics(void) {
+	cmr_canPTCCurrentDiagnostics_t ampMsg = {
+		.logicCurrent_mA = sensorRead(SENSOR_CH_LOGIC_CURRENT_MA),
+		.loadCurrent_mA = sensorRead(SENSOR_CH_LOAD_CURRENT_MA),
+		.fanCurrent_mA = sensorRead(SENSOR_CH_FAN_CURRENT_MA)
+	};
+
+	canTX(CMR_CANID_PTC_CURRENT_DIAGNOSTICS, &ampMsg, sizeof(ampMsg), canTX10HzPeriod_ms);
+}
