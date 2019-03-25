@@ -188,5 +188,86 @@ typedef struct {
     uint16_t fanCurrent_mA;     /**< @brief Fan current (mA). */
 } cmr_canPTCCurrentDiagnostics_t;
 
+/********************************************************************/
+/*              Rinehart Motor Controller Definitions               */
+/********************************************************************/
+
+/** @brief Drive motor with parameters. */
+typedef struct {
+    int16_t torqueCommand; /**< @brief Torque in N.m. times 10. */
+    int16_t speedCommand; /**< @brief Angular velocity in RPM. */
+    /** @brief 0 -> CW, 1 -> CCW viewed looking at shaft side. */
+    uint8_t directionCommand; 
+    /** @brief bit 0 = inverter enable, bit 1 = discharge enable. */	
+    uint8_t inverterEnableDischargeSpeedMode;	
+    /** @brief Set 0 for no limit override (torque in N.m. times 10). */
+    uint16_t torqueLimitCommand; 
+} rinehart_canMotorControllerCommand_t;
+
+/** @brief Faults report from motor controller (see pg 23). */
+typedef struct {
+    uint16_t postFaultLo;
+    uint16_t postFaultHi;
+    uint16_t runFaultLo;
+    uint16_t runFaultHi;
+} rinehart_canMotorControllerFaults_t;
+
+/** @brief Motor controller temperatures (set A). Temp in degC times 10. */
+typedef struct {
+    int16_t moduleATemp;
+    int16_t moduleBTemp;
+    int16_t moduleCTemp;
+    int16_t gateDriverBoardTemp;
+} rinehart_canMotorControllerTempA_t;
+
+/** @brief Motor controller temperatures (set B). Temp in degC times 10. */
+typedef struct {
+    int16_t controlBoardTemp;
+    int16_t RTD1Temp;
+    int16_t RTD2Temp;
+    int16_t RTD3Temp;
+} rinehart_canMotorControllerTempB_t;
+
+/** @brief Motor controller temperatures (set C). Temp in degC times 10. */
+typedef struct {
+    int16_t RTD4Temp;
+    int16_t RTD5Temp;
+    int16_t motorTemp;
+    int16_t torqueShudder; /**< @brief Torque in N.m. times 10. */
+} rinehart_canMotorControllerTempC_t;
+
+/** @brief Motor position information. */
+typedef struct {
+    int16_t angle; /**< @brief Angle (deg times 10) of motor as read by resolver. */
+    int16_t speed; /**< @brief Speed (RPM) of motor. */
+    int16_t frequency; /**< @brief Inverter frequency (Hz times 10). */
+    int16_t resolverAngle; /**< @brief Resolver angle for calibration. */
+} rinehart_canMotorControllerMotorPosition_t;
+
+/** @brief Motor controller measured currents. Current in amps times 10.*/
+typedef struct {
+    int16_t phaseA;
+    int16_t phaseB;
+    int16_t phaseC;
+    int16_t bus; /**< @brief DC bus current. */
+} rinehart_canMotorControllerCurrents_t;
+
+/** @brief Motor controller measured voltages. Voltage in volts times 10.*/
+typedef struct {
+    int16_t bus; /**< @brief DC bus voltage. */
+    int16_t output; /**< @brief Output voltage as peak line-neutral volts. */
+    int16_t phaseAB; /**< @brief Vab when disabled, Vd when enabled. */
+    int16_t phaseBC; /**< @brief Vbc when disabled, Vq when enabled. */
+} rinehart_canMotorControllerVoltages_t;
+
+/** @brief Motor controller torque diagnostics. */
+typedef struct {
+    /** @brief Setpoint torque (torque in N.m. times 10). */
+    int16_t commandedTorque; 
+    /** @brief Measured torque produced (torque in N.m. times 10). */
+    int16_t torqueFeedback; 
+    uint32_t powerOnTimer;
+} rinehart_canMotorControllerTorqueDiag_t;
+
 #endif /* CMR_CAN_TYPES_H */
 

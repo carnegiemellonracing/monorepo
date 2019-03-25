@@ -47,7 +47,17 @@ typedef enum {
     CMR_CANID_AFC1_FAN_STATUS = 0x237,      /**< @brief AFC #1 fan status. */
     CMR_CANID_AFC1_DRIVER_TEMPS = 0x537,    /**< @brief AFC #1 temperatures. */
     /** @brief AFC #1 power diagnostics. */
-    CMR_CANID_AFC1_POWER_DIAGNOSTICS = 0x547
+    CMR_CANID_AFC1_POWER_DIAGNOSTICS = 0x547,
+
+    CMR_CANID_RMS_TEMPA = 0x0A0,        /**< @brief RMS temp set A. */
+    CMR_CANID_RMS_TEMPA = 0x0A1,        /**< @brief RMS temp set B. */
+    CMR_CANID_RMS_TEMPA = 0x0A2,        /**< @brief RMS temp set C. */
+    CMR_CANID_RMS_MOTOR_POS = 0x0A5,    /**< @brief RMS motor position. */
+    CMR_CANID_RMS_FAULTS = 0x0AB,       /**< @brief RMS faults (pg 23). */
+    CMR_CANID_RMS_TORQUE_DIAG = 0x0AC,  /**< @brief RMS torque diagnostic data. */
+    CMR_CANID_RMS_CURRENT_INFO = 0x0A6, /**< @brief RMS current info. */
+    CMR_CANID_RMS_VOLTAGE_INFO = 0x0A7, /**< @brief RMS voltage info. */
+    CMR_CANID_RMS_COMMAND = 0x0C0,      /**< @brief RMS command. */
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
