@@ -188,9 +188,9 @@ typedef struct {
     uint16_t fanCurrent_mA;     /**< @brief Fan current (mA). */
 } cmr_canPTCCurrentDiagnostics_t;
 
-/********************************************************************/
-/*              Rinehart Motor Controller Definitions               */
-/********************************************************************/
+//
+// Rinehart Motor Controller Definitions
+//
 
 /** @brief Drive motor with parameters. */
 typedef struct {
@@ -202,39 +202,39 @@ typedef struct {
     uint8_t inverterEnableDischargeSpeedMode;	
     /** @brief Set 0 for no limit override (torque in N.m. times 10). */
     uint16_t torqueLimitCommand; 
-} rinehart_canMotorControllerCommand_t;
+} cmr_canRMSCommand_t;
 
 /** @brief Faults report from motor controller (see pg 23). */
 typedef struct {
-    uint16_t postFaultLo;
-    uint16_t postFaultHi;
-    uint16_t runFaultLo;
-    uint16_t runFaultHi;
-} rinehart_canMotorControllerFaults_t;
+    uint16_t postFaultLo; /**< @brief See "RMS CAN Protocol" pg 23. */
+    uint16_t postFaultHi; /**< @brief See "RMS CAN Protocol" pg 23. */
+    uint16_t runFaultLo; /**< @brief See "RMS CAN Protocol" pg 23. */
+    uint16_t runFaultHi; /**< @brief See "RMS CAN Protocol" pg 23. */
+} cmr_canRMSFaults_t;
 
 /** @brief Motor controller temperatures (set A). Temp in degC times 10. */
 typedef struct {
-    int16_t moduleATemp;
-    int16_t moduleBTemp;
-    int16_t moduleCTemp;
-    int16_t gateDriverBoardTemp;
-} rinehart_canMotorControllerTempA_t;
+    int16_t moduleATemp; /**< @brief Temp in internal module A (degC times 10). */
+    int16_t moduleBTemp; /**< @brief Temp in internal module B (degC times 10). */
+    int16_t moduleCTemp; /**< @brief Temp in internal module C (degC times 10). */
+    int16_t gateDriverBoardTemp; /**< @brief Temp of gate driver (degC times 10). */
+} cmr_canRMSTempA_t;
 
 /** @brief Motor controller temperatures (set B). Temp in degC times 10. */
 typedef struct {
-    int16_t controlBoardTemp;
-    int16_t RTD1Temp;
-    int16_t RTD2Temp;
-    int16_t RTD3Temp;
-} rinehart_canMotorControllerTempB_t;
+    int16_t controlBoardTemp; /**< @brief Control board temp (degC times 10). */
+    int16_t RTD1Temp; /**< @brief RTD input 1 temp (degC times 10). */
+    int16_t RTD2Temp; /**< @brief RTD input 2 temp (degC times 10). */
+    int16_t RTD3Temp; /**< @brief RTD input 3 temp (degC times 10). */
+} cmr_canRMSTempB_t;
 
 /** @brief Motor controller temperatures (set C). Temp in degC times 10. */
 typedef struct {
-    int16_t RTD4Temp;
-    int16_t RTD5Temp;
-    int16_t motorTemp;
-    int16_t torqueShudder; /**< @brief Torque in N.m. times 10. */
-} rinehart_canMotorControllerTempC_t;
+    int16_t RTD4Temp; /**< @brief RTD input 4 temp (degC times 10). */
+    int16_t RTD5Temp; /**< @brief RTD input 5 temp (degC times 10). */
+    int16_t motorTemp; /**< @brief Motor temp (degC times 10). */
+    int16_t torqueShudder; /**< @brief Torque (N.m. times 10). */
+} cmr_canRMSTempC_t;
 
 /** @brief Motor position information. */
 typedef struct {
@@ -242,15 +242,15 @@ typedef struct {
     int16_t speed; /**< @brief Speed (RPM) of motor. */
     int16_t frequency; /**< @brief Inverter frequency (Hz times 10). */
     int16_t resolverAngle; /**< @brief Resolver angle for calibration. */
-} rinehart_canMotorControllerMotorPosition_t;
+} cmr_canRMSMotorPosition_t;
 
 /** @brief Motor controller measured currents. Current in amps times 10.*/
 typedef struct {
-    int16_t phaseA;
-    int16_t phaseB;
-    int16_t phaseC;
+    int16_t phaseA; /**< @brief Current in phase A cable. */
+    int16_t phaseB; /**< @brief Current in phase B cable. */
+    int16_t phaseC; /**< @brief Current in phase C cable. */
     int16_t bus; /**< @brief DC bus current. */
-} rinehart_canMotorControllerCurrents_t;
+} cmr_canRMSCurrents_t;
 
 /** @brief Motor controller measured voltages. Voltage in volts times 10.*/
 typedef struct {
@@ -258,7 +258,7 @@ typedef struct {
     int16_t output; /**< @brief Output voltage as peak line-neutral volts. */
     int16_t phaseAB; /**< @brief Vab when disabled, Vd when enabled. */
     int16_t phaseBC; /**< @brief Vbc when disabled, Vq when enabled. */
-} rinehart_canMotorControllerVoltages_t;
+} cmr_canRMSVoltages_t;
 
 /** @brief Motor controller torque diagnostics. */
 typedef struct {
@@ -267,7 +267,7 @@ typedef struct {
     /** @brief Measured torque produced (torque in N.m. times 10). */
     int16_t torqueFeedback; 
     uint32_t powerOnTimer;
-} rinehart_canMotorControllerTorqueDiag_t;
+} cmr_canRMSTorqueDiag_t;
 
 #endif /* CMR_CAN_TYPES_H */
 
