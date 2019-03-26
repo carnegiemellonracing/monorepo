@@ -1,6 +1,6 @@
 /**
  * @file config.h
- * @brief Flash configuration system.
+ * @brief Configuration system with flash persistence.
  *
  * @author Carnegie Mellon Racing
  */
@@ -15,17 +15,11 @@
 #include <stdint.h>
 #include <stddef.h>
 
-/** @brief Each PCB has its own config CAN ID. The IDs are defined here rather 
- *         than in each of the client codes to prevent collisions. Fill in
- *         as necessary.
- */
-#define CMR_CONFIG_CANID_TOM 0x500
-
 /**
  * @brief Represents a config message sent over CAN.
  */
 typedef struct {
-    size_t addr; 
+    uint32_t addr; 
     uint32_t data;
 } cmr_bufConfigMsg_t;
 
@@ -43,8 +37,8 @@ void cmr_configPull();
 
 void cmr_configCommit();
 
-#endif /** HAL_FLASH_MODULE_ENABLED */
+#endif /* HAL_FLASH_MODULE_ENABLED */
 
-#endif /** CMR_CONFIG_H */
+#endif /* CMR_CONFIG_H */
 
 

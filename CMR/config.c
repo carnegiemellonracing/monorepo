@@ -1,10 +1,14 @@
 /**
  * @file config.c
- * @brief Flash configuration system implementation.
+ * @brief Configuration system implementation.
  *
  * The HAL flash program implementations (both polling mode, as used here,
  * and interrupt mode) wait for prior operations to finish for a timeout 
  * defined by HAL. 
+ *
+ * @bug After erase/writing flash, the board can no longer be programmed
+ * without performing a full chip erase via ST-Link Utility. A fix is
+ * in progress.
  *
  * @author Carnegie Mellon Racing
  */
@@ -16,7 +20,8 @@
 #include "panic.h"  // cmr_panic()
 
 /**
- * @brief The base addresses of each flash sector.
+ * @brief The base addresses of each flash sector. See  the HAL
+ * documentation @ref FLASHEx_Sectors.
  */
 #define ADDR_FLASH_SECTOR_0     ((size_t) 0x08000000) 
 #define ADDR_FLASH_SECTOR_1     ((size_t) 0x08004000) 
@@ -153,6 +158,7 @@ void cmr_configTest(uint32_t sector) {
         return;
     }
 
+    // Clears all the error bits. See the HAL documentation @ref FLASH_Flag_definition.
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | \
             FLASH_FLAG_PGAERR | FLASH_FLAG_PGSERR);
   
@@ -171,9 +177,6 @@ void cmr_configTest(uint32_t sector) {
     if (HAL_FLASHEx_Erase(&eraseInit, &error) != HAL_OK) {
         cmr_panic("Flash erase failed!");
     }
-
-    HAL_FLASH_Lock();
-    HAL_FLASH_Unlock();
 
     size_t addr = startAddr;
     while (addr < endAddr) {
@@ -218,7 +221,7 @@ void cmr_configBufSet(const uint8_t *data, size_t dataLen) {
 /**
  * @brief Sets a configuration setting.
  *
- * @param addr An address to write to.
+ * @param addr A word address to write to (0 to CONFIG_LEN).
  * @param data A datum to write.
  */
 void cmr_configSet(size_t addr, uint32_t data) {
@@ -232,7 +235,7 @@ void cmr_configSet(size_t addr, uint32_t data) {
 /**
  * @brief Gets a configuration setting.
  *
- * @param addr An address to read from.
+ * @param addr A word address to read from (0 to CONFIG_LEN).
  * @return The data at the address.
  */
 uint32_t cmr_configGet(size_t addr) {
@@ -262,6 +265,7 @@ void cmr_configCommit() {
         return;
     }
 
+    // Clears all the error bits. See the HAL documentation @ref FLASH_Flag_definition.
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | \
             FLASH_FLAG_PGAERR | FLASH_FLAG_PGSERR);
   
@@ -279,10 +283,6 @@ void cmr_configCommit() {
         cmr_panic("Flash erase failed!");
     }
 
-    HAL_FLASH_Lock();
-
-    HAL_FLASH_Unlock();
-
     size_t idx = 0;
     size_t addr = startAddr;
     while (addr < startAddr + CONFIG_LEN) {
@@ -295,4 +295,4 @@ void cmr_configCommit() {
     HAL_FLASH_Lock();
 }
 
-#endif /** HAL_FLASH_MODULE_ENABLED */
+#endif /* HAL_FLASH_MODULE_ENABLED */
