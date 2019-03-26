@@ -18,28 +18,28 @@
 /**
  * @brief The base addresses of each flash sector.
  */
-#define ADDR_FLASH_SECTOR_0     ((uint32_t)0x08000000) 
-#define ADDR_FLASH_SECTOR_1     ((uint32_t)0x08004000) 
-#define ADDR_FLASH_SECTOR_2     ((uint32_t)0x08008000) 
-#define ADDR_FLASH_SECTOR_3     ((uint32_t)0x0800C000) 
-#define ADDR_FLASH_SECTOR_4     ((uint32_t)0x08010000) 
-#define ADDR_FLASH_SECTOR_5     ((uint32_t)0x08020000) 
-#define ADDR_FLASH_SECTOR_6     ((uint32_t)0x08040000) 
-#define ADDR_FLASH_SECTOR_7     ((uint32_t)0x08060000) 
-#define ADDR_FLASH_SECTOR_8     ((uint32_t)0x08080000) 
-#define ADDR_FLASH_SECTOR_9     ((uint32_t)0x080A0000) 
-#define ADDR_FLASH_SECTOR_10    ((uint32_t)0x080C0000) 
-#define ADDR_FLASH_SECTOR_11    ((uint32_t)0x080E0000) 
-#define ADDR_FLASH_SECTOR_12    ((uint32_t)0x08100000) 
-#define ADDR_FLASH_SECTOR_13    ((uint32_t)0x08120000) 
-#define ADDR_FLASH_SECTOR_14    ((uint32_t)0x08140000) 
-#define ADDR_FLASH_SECTOR_15    ((uint32_t)0x08160000)
-#define ADDR_FLASH_SECTOR_16    ((uint32_t)0x08180000) 
+#define ADDR_FLASH_SECTOR_0     ((size_t) 0x08000000) 
+#define ADDR_FLASH_SECTOR_1     ((size_t) 0x08004000) 
+#define ADDR_FLASH_SECTOR_2     ((size_t) 0x08008000) 
+#define ADDR_FLASH_SECTOR_3     ((size_t) 0x0800C000) 
+#define ADDR_FLASH_SECTOR_4     ((size_t) 0x08010000) 
+#define ADDR_FLASH_SECTOR_5     ((size_t) 0x08020000) 
+#define ADDR_FLASH_SECTOR_6     ((size_t) 0x08040000) 
+#define ADDR_FLASH_SECTOR_7     ((size_t) 0x08060000) 
+#define ADDR_FLASH_SECTOR_8     ((size_t) 0x08080000) 
+#define ADDR_FLASH_SECTOR_9     ((size_t) 0x080A0000) 
+#define ADDR_FLASH_SECTOR_10    ((size_t) 0x080C0000) 
+#define ADDR_FLASH_SECTOR_11    ((size_t) 0x080E0000) 
+#define ADDR_FLASH_SECTOR_12    ((size_t) 0x08100000) 
+#define ADDR_FLASH_SECTOR_13    ((size_t) 0x08120000) 
+#define ADDR_FLASH_SECTOR_14    ((size_t) 0x08140000) 
+#define ADDR_FLASH_SECTOR_15    ((size_t) 0x08160000)
+#define ADDR_FLASH_SECTOR_16    ((size_t) 0x08180000) 
 
 /**
  * @brief The configuration storage size in words.
  */
-#define CONFIG_LEN 1024
+#define CONFIG_LEN ((size_t) 1024)
 
 /**
  * @brief The configuration cache. It is updated by calling cmr_configCommit() and
@@ -50,30 +50,33 @@ static volatile uint32_t configBuf[CONFIG_LEN];
 /**
  * @brief The configuration base address. It is initialized by cmr_configInit().
  */
-static size_t configBaseAddr;
+static size_t startAddr;
 
 /**
  * @brief Instantiates the macro for each flash sector.
  *
+ * @note Is there a better way to macro num+1? Maybe just stick
+ * the ADDR_FLASH_SECTOR_* in an array?
+ *
  * @param f The macro to instantiate.
  */
 #define SECTOR_FOREACH(f) \
-    f(0) \
-    f(1) \
-    f(2) \
-    f(3) \
-    f(4) \
-    f(5) \
-    f(6) \
-    f(7) \
-    f(8) \
-    f(9) \
-    f(10) \
-    f(11) \
-    f(12) \
-    f(13) \
-    f(14) \
-    f(15)
+    f(0, 1) \
+    f(1, 2) \
+    f(2, 3) \
+    f(3, 4) \
+    f(4, 5) \
+    f(5, 6) \
+    f(6, 7) \
+    f(7, 8) \
+    f(8, 9) \
+    f(9, 10) \
+    f(10, 11) \
+    f(11, 12) \
+    f(12, 13) \
+    f(13, 14) \
+    f(14, 15) \
+    f(15, 16)
 
 /**
  * @brief Gets the sector corresponding to an address. The address
@@ -84,15 +87,14 @@ static size_t configBaseAddr;
  * @return The corresponding sector.
  */
 static uint32_t getSector(size_t addr) {
-#define FLASH_SECTOR(num) \
-    if ((addr >= ADDR_FLASH_SECTOR_ ## num) && (addr < ADDR_FLASH_SECTOR_ ## num)) { \
+#define FLASH_SECTOR(num, next) \
+    if ((addr >= ADDR_FLASH_SECTOR_ ## num) && (addr < ADDR_FLASH_SECTOR_ ## next)) { \
         return FLASH_SECTOR_ ## num; \
     }
 SECTOR_FOREACH(FLASH_SECTOR) 
 #undef FLASH_SECTOR
 
     cmr_panic("Invalid sector!");
-    
 }
 
 /**
@@ -104,7 +106,7 @@ SECTOR_FOREACH(FLASH_SECTOR)
  * @return The corresponding base address.
  */
 static uint32_t getSectorAddr(uint32_t sector) {
-#define FLASH_SECTOR_ADDR(sec) \
+#define FLASH_SECTOR_ADDR(sec, ...) \
     if (sector == FLASH_SECTOR_ ## sec) { \
         return ADDR_FLASH_SECTOR_ ## sec; \
     }
@@ -137,7 +139,7 @@ static size_t getNumberSectors(size_t addr) {
  * @param addr A base address.
  */
 void cmr_configInit(size_t addr) {
-    configBaseAddr = addr;
+    startAddr = addr;
     cmr_configPull();
 }
 
@@ -245,7 +247,7 @@ uint32_t cmr_configGet(size_t addr) {
  * @brief Pulls the config from flash into the local config cache.
  */
 void cmr_configPull() {
-   __IO uint32_t *flash = (__IO uint32_t *) configBaseAddr;
+   __IO uint32_t *flash = (__IO uint32_t *) startAddr;
  
     for (size_t idx = 0; idx < CONFIG_LEN; idx++) {
         configBuf[idx] = flash[idx];
@@ -263,12 +265,12 @@ void cmr_configCommit() {
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | \
             FLASH_FLAG_PGAERR | FLASH_FLAG_PGSERR);
   
-    uint32_t sector = getSector(configBaseAddr);
+    uint32_t sector = getSector(startAddr);
     
     FLASH_EraseInitTypeDef eraseInit = {
         .TypeErase = FLASH_TYPEERASE_SECTORS,
         .Sector = sector,
-        .NbSectors = getNumberSectors(sector),
+        .NbSectors = getNumberSectors(startAddr),
         .VoltageRange = VOLTAGE_RANGE_3,
     };
 
@@ -282,8 +284,8 @@ void cmr_configCommit() {
     HAL_FLASH_Unlock();
 
     size_t idx = 0;
-    size_t addr = configBaseAddr;
-    while (addr < configBaseAddr + CONFIG_LEN) {
+    size_t addr = startAddr;
+    while (addr < startAddr + CONFIG_LEN) {
         if (HAL_FLASH_Program(TYPEPROGRAM_WORD, addr, configBuf[idx]) == HAL_OK) {
             idx++;
             addr += sizeof(uint32_t);
