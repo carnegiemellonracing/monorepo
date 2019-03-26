@@ -33,10 +33,6 @@ void cmr_rccADCClockEnable(ADC_TypeDef *instance);
 void cmr_rccCANClockEnable(CAN_TypeDef *instance);
 #endif /* HAL_CAN_MODULE_ENABLED */
 
-#ifdef HAL_I2C_MODULE_ENABLED
-void cmr_rccI2CClockEnable(I2C_TypeDef *instance);
-#endif /* HAL_I2C_MODULE_ENABLED */
-
 #ifdef HAL_SPI_MODULE_ENABLED
 void cmr_rccSPIClockEnable(SPI_TypeDef *instance);
 #endif /* HAL_SPI_MODULE_ENABLED */

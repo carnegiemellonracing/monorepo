@@ -1,5 +1,0 @@
-Project: stm32f413-drivers
-Converter: IARProjectParser
-Date: 20190222
-
-Failed to parse IAR project format file, if possible please send the Project.ewp file together with the workspace log file to Atollic support.
