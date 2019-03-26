@@ -296,12 +296,3 @@ void cmr_configCommit() {
 }
 
 #endif /** HAL_FLASH_MODULE_ENABLED */
-
-
-
-
-
-
-
-
-
