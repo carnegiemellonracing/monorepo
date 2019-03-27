@@ -55,8 +55,8 @@ typedef enum {
     CMR_CANID_AFC1_POWER_DIAGNOSTICS = 0x547,
 
     CMR_CANID_RMS_TEMPA = 0x000 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set A. */
-    CMR_CANID_RMS_TEMPA = 0x001 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set B. */
-    CMR_CANID_RMS_TEMPA = 0x002 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set C. */
+    CMR_CANID_RMS_TEMPB = 0x001 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set B. */
+    CMR_CANID_RMS_TEMPC = 0x002 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set C. */
     CMR_CANID_RMS_MOTOR_POS = 0x005 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS motor position. */
     CMR_CANID_RMS_FAULTS = 0x00B + CMR_CANID_RMS_OFFSET,        /**< @brief RMS faults (pg 23). */
     CMR_CANID_RMS_TORQUE_DIAG = 0x00C + CMR_CANID_RMS_OFFSET,   /**< @brief RMS torque diagnostic data. */
