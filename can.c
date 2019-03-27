@@ -47,7 +47,7 @@ static void sendCoolStatus(void);
 static void sendVoltDiagnostics(void);
 static void sendCurrDiagnostics(void);
 
-static void sendHeartbeat(void);
+static void sendHeartbeat(TickType_t lastWakeTime);
 
 /** @brief CAN 10 Hz TX priority. */
 static const uint32_t canTX10HzPriority = 3;
@@ -95,12 +95,9 @@ static const TickType_t canTX100HzPeriod_ms = 10;
 static void canTX100HzTask(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-    volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
-
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-    	sendHeartbeat();
+    	sendHeartbeat(lastWakeTime);
 
     	vTaskDelayUntil(&lastWakeTime, canTX100HzPeriod_ms);
     }
@@ -163,16 +160,23 @@ int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
 
 /**
  * @brief Sets up PTC heartbeat, checks for errors, then sends it
+ *
+ * @param lastWakeTime Pass in from canTX100Hz. Used to determine VSM timeout.
  */
-static void sendHeartbeat(void) {
+static void sendHeartbeat(TickType_t lastWakeTime) {
+    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
+    volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
+
 	cmr_canHeartbeat_t heartbeat = {
 		.state = heartbeatVSM->state
 	};
 
 	uint16_t error = CMR_CAN_ERROR_NONE;
+
 	if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
 		error |= CMR_CAN_ERROR_VSM_TIMEOUT;
 	}
+
 	if (error != CMR_CAN_ERROR_NONE) {
 		heartbeat.state = CMR_CAN_ERROR;
 	}
