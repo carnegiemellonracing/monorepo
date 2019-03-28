@@ -15,23 +15,13 @@
 #include <stdint.h>
 #include <stddef.h>
 
-/**
- * @brief Represents a config message sent over CAN.
- */
-typedef struct {
-    uint32_t addr; 
-    uint32_t data;
-} cmr_bufConfigMsg_t;
-
-void cmr_configInit();
+void cmr_configInit(void *addr);
 
 void cmr_configTest(uint32_t sector);
 
-void cmr_configBufSet(const uint8_t *data, size_t dataLen);
+int cmr_configSet(size_t addr, uint32_t data);
 
-void cmr_configSet(size_t addr, uint32_t data);
-
-uint32_t cmr_configGet(size_t addr);
+int cmr_configGet(size_t addr, uint32_t *dest);
 
 void cmr_configPull();
 
