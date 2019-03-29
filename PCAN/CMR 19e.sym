@@ -54,6 +54,13 @@ Timeout=100
 Var=HVC_state unsigned 0,8 /e:State
 Var=HVC_ERR_VSMTimeout unsigned 8,1
 
+[CDC_Heartbeat]
+ID=102h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=FSM_state unsigned 0,8 /e:State
+
 [FSM_Heartbeat]
 ID=103h
 DLC=5
