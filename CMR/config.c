@@ -73,7 +73,7 @@ static volatile uint32_t *configFlashStart;
  *
  * @param addr An address to get the corresponding sector of.
  *
- * @return The corresponding sector.
+ * @return The corresponding sector defined in HAL @ref FLASHEx_Sectors.
  */
 static uint32_t getSector(void *addr) {
 #define FLASH_SECTOR(num, base, size) \
@@ -87,10 +87,10 @@ SECTOR_FOREACH(FLASH_SECTOR)
 }
 
 /**
- * @brief Gets the base address corresponding to a sector.
+ * @brief Gets the base address of a given sector.
  *
- * @param sector A sector to get the corresponding base address of. It must be
- *               one of the values defined in HAL @ref FLASHEx_Sectors.
+ * @param sector A sector to get the corresponding base address of, defined
+ *               in HAL @ref FLASHEx_Sectors.
  *
  * @return The corresponding base address.
  */
@@ -106,6 +106,12 @@ SECTOR_FOREACH(FLASH_SECTOR_ADDR)
     cmr_panic("Invalid sector!");
 }
 
+/**
+ * @brief Gets the size of a given sector.
+ *
+ * @param sector A sector to get the corresponding size of, defined in
+ *               HAL @ref FLASHEx_Sectors.
+ */
 static size_t getSectorSize(uint32_t sector) {
 #define FLASH_SECTOR_SIZE(num, addr, size) \
     if (sector == FLASH_SECTOR_ ## num) { \
@@ -247,6 +253,7 @@ void cmr_configCommit() {
     };
 
     uint32_t error;
+    // Use HAL_FLASHEx_Erase instead of HAL_FLASH_Erase, as it clears the FLASH control register.
     if (HAL_FLASHEx_Erase(&eraseInit, &error) != HAL_OK) {
         cmr_panic("Flash erase failed!");
     }
