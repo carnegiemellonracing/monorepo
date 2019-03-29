@@ -59,7 +59,7 @@ ID=102h
 DLC=5
 CycleTime=10
 Timeout=100
-Var=FSM_state unsigned 0,8 /e:State
+Var=CDC_state unsigned 0,8 /e:State
 
 [FSM_Heartbeat]
 ID=103h
