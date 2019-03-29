@@ -104,7 +104,7 @@ typedef enum {
 
 /** @brief Accumulator Fan Controller fan status. */
 typedef struct {
-    uint8_t acFanState[6];    /**< @brief Accumulator fan states. */
+    uint8_t acFanState;    /**< @brief Accumulator fan states. */
     uint8_t dcdcFanState;   /**< @brief DCDC fan state. */
 } cmr_canAFCFanStatus_t;
 
@@ -187,6 +187,11 @@ typedef struct {
     uint16_t loadCurrent_mA;    /**< @brief Load current (mA). */
     uint16_t fanCurrent_mA;     /**< @brief Fan current (mA). */
 } cmr_canPTCCurrentDiagnostics_t;
+
+typedef struct {
+    uint8_t acFansDrive;    /**< @brief Accumulator fan drive signal. */
+    uint8_t dcdcFanDrive;   /**< @brief DCDC fan drive signal. */
+} cmr_canPTCAFCControl_t;
 
 //
 // Rinehart Motor Controller Definitions

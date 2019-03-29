@@ -102,3 +102,16 @@ Timeout=1000
 Var=DIMRequestState unsigned 0,8 /e:State
 Var=DIMRequestGear unsigned 8,8 /e:Gear
 
+[AFC0_Heartbeat]
+ID=106h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=AFC0State unsigned 0,8 /e:State
+
+[AFC1_Heartbeat]
+ID=107h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=AFC1State unsigned 0,8 /e:State

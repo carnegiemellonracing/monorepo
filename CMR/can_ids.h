@@ -40,6 +40,8 @@ typedef enum {
     /** @brief PTC current diagnostics. */
     CMR_CANID_PTC_CURRENT_DIAGNOSTICS = 0x544,
 
+    CMR_CANID_PTC_AFC_CONTROL = 0x254, /**< @brief VSM AFC control message. */
+
     CMR_CANID_DIM_REQUEST = 0x235,  /**< @brief DIM state/gear request. */
     /** @brief DIM power diagnostics. */
     CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x535,
