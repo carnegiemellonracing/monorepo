@@ -5,7 +5,7 @@ Title="CMR 19e"
 {ENUMS}
 enum State(0="UNKNOWN", 1="GLV_ON", 2="HV_EN", 3="RTD", 4="ERROR", 
   5="CLEAR_ERROR")
-enum Gear(0="SLOW", 1="REVERSE", 2="SLOW", 3="FAST", 4="ENDURANCE", 5="AUTO-X", 
+enum Gear(0="UNKNOWN", 1="REVERSE", 2="SLOW", 3="FAST", 4="ENDURANCE", 5="AUTO-X", 
   6="SKIDPAD", 7="ACCEL", 8="TEST")
 enum CoolingState(0="OFF", 1="LOW", 2="HIGH")
 
