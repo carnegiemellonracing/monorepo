@@ -5,15 +5,14 @@
  * @author Carnegie Mellon Racing
  */
 
-#include <FreeRTOS.h>   // FreeRTOS interface
-#include <task.h>       // xTaskCreate()
+#include <CMR/tasks.h>  // Task interface
 
 #include "sensors.h"    // Interface to implement
 #include "adc.h"        // adcChannels_t, adcChannels
 #include <CMR/adc.h>    // ADC_MAX
 
 // Forward declarations
-static void sensorUpdate_task(void *pvParameters);
+static void sensorUpdate(void *pvParameters);
 static adcChannels_t sensorToADCChannel(cmr_sensor_t *sensor);
 static void checkSensor(cmr_sensor_t *sensor);
 static int32_t adcConv_LogicVoltageMV(cmr_sensor_t *s);
@@ -120,7 +119,10 @@ static const uint32_t sensorUpdate_priority = 5;
 /** @brief Sensor update period (milliseconds). */
 static const TickType_t sensorUpdate_period_ms = 10;
 
-static void sensorUpdate_task(void *pvParameters) {
+/** @brief Sensor update task. */
+static cmr_task_t sensorUpdate_task;
+
+static void sensorUpdate(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     TickType_t lastWakeTime = xTaskGetTickCount();
@@ -280,8 +282,11 @@ static void checkSensor(cmr_sensor_t *sensor) {
  */
 void sensorInit(void) {
     // Task creation.
-    xTaskCreate(
-        sensorUpdate_task, "sensorUpdate",
-        configMINIMAL_STACK_SIZE, NULL, sensorUpdate_priority, NULL
+    cmr_taskInit(
+        &sensorUpdate_task,
+        "sensorUpdate",
+        sensorUpdate_priority,
+        sensorUpdate,
+        NULL
     );
 }

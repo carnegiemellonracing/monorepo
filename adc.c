@@ -5,9 +5,6 @@
  * @author Carnegie Mellon Racing
  */
 
-#include <FreeRTOS.h>       // FreeRTOS interface
-#include <task.h>           // xTaskCreate()
-
 #include "adc.h"    // Interface to implement
 
 /**

@@ -7,29 +7,35 @@
 
 #include <stm32f4xx_hal.h>  // HAL interface
 
-#include <FreeRTOS.h>       // FreeRTOS interface
-#include <task.h>           // xTaskCreate(), vTaskStartScheduler()
-
-#include <CMR/panic.h>      // cmr_panic()
-#include <CMR/rcc.h>        // RCC interface
-#include <CMR/can.h>        // CAN interface
-#include <CMR/adc.h>        // ADC interface
-#include <CMR/gpio.h>       // cmr_gpioToggle
-#include <CMR/can_types.h>  // CMR can
+#include <CMR/panic.h>  // cmr_panic()
+#include <CMR/rcc.h>    // RCC interface
+#include <CMR/can.h>    // CAN interface
+#include <CMR/adc.h>    // ADC interface
+#include <CMR/gpio.h>   // GPIO interface
+#include <CMR/tasks.h>  // Task interface
+#include <CMR/can_types.h>  // CMR CAN types
 
 #include "gpio.h"   // Board-specific GPIO interface
 #include "can.h"    // Board-specific CAN interface
 #include "adc.h"    // Board-specific ADC interface
+#include "sensors.h"    // Board-specific sensors interface
 
 /** Task priorities and periods. */
-static const uint32_t statusLEDPriority = 2;
-static const TickType_t statusLEDPeriod_ms = 250;
-static const uint32_t coolingControlPriority = 4;
-static const TickType_t coolingControlPeriod_ms = 50;
-static const uint32_t brakelightPriority = 4;
-static const TickType_t brakelightPeriod_ms = 50;
-static const uint32_t brakeDisconnectPriority = 5;
-static const TickType_t brakeDisconnectPeriod_ms = 10;
+static const uint32_t statusLED_priority = 2;
+static const TickType_t statusLED_period_ms = 250;
+static cmr_task_t statusLED_task;
+
+static const uint32_t coolingControl_priority = 4;
+static const TickType_t coolingControl_period_ms = 50;
+static cmr_task_t coolingControl_task;
+
+static const uint32_t brakelight_priority = 4;
+static const TickType_t brakelight_period_ms = 50;
+static cmr_task_t brakelight_task;
+
+static const uint32_t brakeDisconnect_priority = 5;
+static const TickType_t brakeDisconnect_period_ms = 10;
+static cmr_task_t brakeDisconnect_task;
 
 /**
  * @brief Task for toggling the status LED.
@@ -38,14 +44,16 @@ static const TickType_t brakeDisconnectPeriod_ms = 10;
  *
  * @return Does not return.
  */
-static void statusLEDTask(void *pvParameters) {
+static void statusLED(void *pvParameters) {
+    (void) pvParameters;
+
     cmr_gpioWrite(GPIO_LED_STATUS, 0);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         cmr_gpioToggle(GPIO_LED_STATUS);
 
-        vTaskDelayUntil(&lastWakeTime, statusLEDPeriod_ms);
+        vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
     }
 }
 
@@ -56,9 +64,11 @@ static void statusLEDTask(void *pvParameters) {
  *
  * @return Does not return.
  */
-static void coolingControlTask(void *pvParameters) {
+static void coolingControl(void *pvParameters) {
+    (void) pvParameters;
+
 	cmr_gpioToggle(GPIO_FAN_ENABLE); // Turn the fan driver on
-	
+
     // Get reference to VSM Heartbeat
     cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
     volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
@@ -95,7 +105,7 @@ static void coolingControlTask(void *pvParameters) {
                 cmr_gpioWrite(GPIO_PUMP, 0);
         }
 
-        vTaskDelayUntil(&lastWakeTime, coolingControlPeriod_ms);
+        vTaskDelayUntil(&lastWakeTime, coolingControl_period_ms);
     }
 }
 
@@ -106,7 +116,9 @@ static void coolingControlTask(void *pvParameters) {
  *
  * @return Does not return.
  */
-static void brakelightTask(void *pvParameters) {
+static void brakelight(void *pvParameters) {
+    (void) pvParameters;
+
     // Get reference to VSM Heartbeat
     cmr_canRXMeta_t *dataFSMMeta = canRXMeta + CANRX_FSM_DATA;
     volatile cmr_canFSMData_t *dataFSM = (void *) dataFSMMeta->payload;
@@ -119,7 +131,7 @@ static void brakelightTask(void *pvParameters) {
             cmr_gpioWrite(GPIO_BRAKELIGHT, 0);
         }
 
-        vTaskDelayUntil(&lastWakeTime, brakelightPeriod_ms);
+        vTaskDelayUntil(&lastWakeTime, brakelight_period_ms);
     }
 }
 
@@ -133,7 +145,9 @@ static void brakelightTask(void *pvParameters) {
  *
  * @return Does not return.
  */
-static void brakeDisconnectTask(void *pvParameters) {
+static void brakeDisconnect(void *pvParameters) {
+    (void) pvParameters;
+
     // Get reference to VSM Heartbeat
     cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
     volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
@@ -153,7 +167,7 @@ static void brakeDisconnectTask(void *pvParameters) {
                 cmr_gpioWrite(GPIO_BRAKE_DISCON, 0);
         }
 
-        vTaskDelayUntil(&lastWakeTime, statusLEDPeriod_ms);
+        vTaskDelayUntil(&lastWakeTime, brakeDisconnect_period_ms);
     }
 }
 
@@ -175,26 +189,33 @@ int main(void) {
     adcInit();
     sensorInit();
 
-    // Node tasks.
-    xTaskCreate(
-        statusLEDTask, "statusLED",
-        configMINIMAL_STACK_SIZE, NULL,
-        statusLEDPriority, NULL
+    cmr_taskInit(
+        &statusLED_task,
+        "statusLED",
+        statusLED_priority,
+        statusLED,
+        NULL
     );
-    xTaskCreate(
-        brakelightTask, "brakelight",
-        configMINIMAL_STACK_SIZE, NULL,
-        brakelightPriority, NULL
+    cmr_taskInit(
+        &brakelight_task,
+        "brakelight",
+        brakelight_priority,
+        brakelight,
+        NULL
     );
-    xTaskCreate(
-        brakeDisconnectTask, "brakeDisconnect",
-        configMINIMAL_STACK_SIZE, NULL,
-        brakeDisconnectPriority, NULL
+    cmr_taskInit(
+        &brakeDisconnect_task,
+        "brakeDisconnect",
+        brakeDisconnect_priority,
+        brakeDisconnect,
+        NULL
     );
-    xTaskCreate(
-        coolingControlTask, "coolingControl",
-        configMINIMAL_STACK_SIZE, NULL,
-        coolingControlPriority, NULL
+    cmr_taskInit(
+        &coolingControl_task,
+        "coolingControl",
+        coolingControl_priority,
+        coolingControl,
+        NULL
     );
 
     vTaskStartScheduler();

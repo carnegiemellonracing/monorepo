@@ -13,8 +13,7 @@
 
 #include <string.h>     // memcpy()
 
-#include <FreeRTOS.h>   // FreeRTOS interface
-#include <task.h>       // xTaskCreate()
+#include <CMR/tasks.h>  // Task interface
 
 #include "can.h"    // Interface to implement
 #include "adc.h"    // adcVSense, adcISense
@@ -50,10 +49,13 @@ static void sendCurrDiagnostics(void);
 static void sendHeartbeat(TickType_t lastWakeTime);
 
 /** @brief CAN 10 Hz TX priority. */
-static const uint32_t canTX10HzPriority = 3;
+static const uint32_t canTX10Hz_priority = 3;
 
 /** @brief CAN 10 Hz TX period (milliseconds). */
-static const TickType_t canTX10HzPeriod_ms = 100;
+static const TickType_t canTX10Hz_period_ms = 100;
+
+/** @brief CAN 10 Hz TX task. */
+static cmr_task_t canTX10Hz_task;
 
 cmr_canFanState_t fanStatePTC = CMR_CAN_FAN_OFF;
 uint8_t pumpStatePTC = 0;
@@ -65,25 +67,27 @@ uint8_t pumpStatePTC = 0;
  *
  * @return Does not return.
  */
-static void canTX10HzTask(void *pvParameters) {
+static void canTX10Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
+        sendCoolStatus();
+        sendVoltDiagnostics();
+        sendCurrDiagnostics();
 
-    	sendCoolStatus();
-    	sendVoltDiagnostics();
-    	sendCurrDiagnostics();
-
-        vTaskDelayUntil(&lastWakeTime, canTX10HzPeriod_ms);
+        vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
 }
 
 /** @brief CAN 100 Hz TX priority. */
-static const uint32_t canTX100HzPriority = 5;
+static const uint32_t canTX100Hz_priority = 5;
 
 /** @brief CAN 100 Hz TX period (milliseconds). */
-static const TickType_t canTX100HzPeriod_ms = 10;
+static const TickType_t canTX100Hz_period_ms = 10;
+
+/** @brief CAN 100 Hz TX task. */
+static cmr_task_t canTX100Hz_task;
 
 /**
  * @brief Task for sending CAN messages at 100 Hz.
@@ -92,14 +96,14 @@ static const TickType_t canTX100HzPeriod_ms = 10;
  *
  * @return Does not return.
  */
-static void canTX100HzTask(void *pvParameters) {
+static void canTX100Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-    	sendHeartbeat(lastWakeTime);
+        sendHeartbeat(lastWakeTime);
 
-    	vTaskDelayUntil(&lastWakeTime, canTX100HzPeriod_ms);
+        vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
 }
 
@@ -120,6 +124,7 @@ void canInit(void) {
     // XXX Change these to whitelist the appropriate IDs.
     const cmr_canFilter_t canFilters[] = {
         {
+            .isMask = false,
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_HEARTBEAT_VSM,
@@ -133,14 +138,20 @@ void canInit(void) {
         &can, canFilters, sizeof(canFilters) / sizeof(canFilters[0])
     );
 
-    // Task creation.
-    xTaskCreate(
-        canTX10HzTask, "canTX10Hz",
-        configMINIMAL_STACK_SIZE, NULL, canTX10HzPriority, NULL
+    // Task initialization.
+    cmr_taskInit(
+        &canTX10Hz_task,
+        "CAN TX 10Hz",
+        canTX10Hz_priority,
+        canTX10Hz,
+        NULL
     );
-    xTaskCreate(
-        canTX100HzTask, "canTX100Hz",
-        configMINIMAL_STACK_SIZE, NULL, canTX100HzPriority, NULL
+    cmr_taskInit(
+        &canTX100Hz_task,
+        "CAN TX 100Hz",
+        canTX100Hz_priority,
+        canTX100Hz,
+        NULL
     );
 }
 
@@ -167,65 +178,65 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
     volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
 
-	cmr_canHeartbeat_t heartbeat = {
-		.state = heartbeatVSM->state
-	};
+    cmr_canHeartbeat_t heartbeat = {
+        .state = heartbeatVSM->state
+    };
 
-	uint16_t error = CMR_CAN_ERROR_NONE;
+    uint16_t error = CMR_CAN_ERROR_NONE;
 
-	if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
-		error |= CMR_CAN_ERROR_VSM_TIMEOUT;
-	}
+    if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
+        error |= CMR_CAN_ERROR_VSM_TIMEOUT;
+    }
 
-	if (error != CMR_CAN_ERROR_NONE) {
-		heartbeat.state = CMR_CAN_ERROR;
-	}
-	memcpy(&heartbeat.error, &error, sizeof(error));
+    if (error != CMR_CAN_ERROR_NONE) {
+        heartbeat.state = CMR_CAN_ERROR;
+    }
+    memcpy(&heartbeat.error, &error, sizeof(error));
 
-	uint16_t warning = CMR_CAN_WARN_NONE;
-	if (cmr_canRXMetaTimeoutWarn(heartbeatVSMMeta, lastWakeTime) < 0) {
-		warning |= CMR_CAN_WARN_VSM_TIMEOUT;
-	}
-	memcpy(&heartbeat.warning, &warning, sizeof(warning));
+    uint16_t warning = CMR_CAN_WARN_NONE;
+    if (cmr_canRXMetaTimeoutWarn(heartbeatVSMMeta, lastWakeTime) < 0) {
+        warning |= CMR_CAN_WARN_VSM_TIMEOUT;
+    }
+    memcpy(&heartbeat.warning, &warning, sizeof(warning));
 
-	canTX(CMR_CANID_HEARTBEAT_PTC, &heartbeat, sizeof(heartbeat), canTX100HzPeriod_ms);
+    canTX(CMR_CANID_HEARTBEAT_PTC, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
 }
 
 /**
  * @brief Send cooling system status on CAN bus.
  */
 static void sendCoolStatus(void) {
-	cmr_canPTCCoolingStatus_t coolMsg = {
-		.fanState = fanStatePTC,
-		.pumpState = pumpStatePTC,
-		.preRadiatorTemp_C = sensorRead(SENSOR_CH_PRE_RAD_THERM),
-		.postRadiatorTemp_C = sensorRead(SENSOR_CH_POST_RAD_THERM)
-	};
+    cmr_canPTCCoolingStatus_t coolMsg = {
+        .fanState = fanStatePTC,
+        .pumpState = pumpStatePTC,
+        .preRadiatorTemp_C = sensorRead(SENSOR_CH_PRE_RAD_THERM),
+        .postRadiatorTemp_C = sensorRead(SENSOR_CH_POST_RAD_THERM)
+    };
 
-	canTX(CMR_CANID_PTC_COOLING_STATUS, &coolMsg, sizeof(coolMsg), canTX10HzPeriod_ms);
+    canTX(CMR_CANID_PTC_COOLING_STATUS, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
 }
 
 /**
  * @brief Send voltage diagnostic information.
  */
 static void sendVoltDiagnostics(void) {
-	cmr_canPTCVoltageDiagnostics_t voltMsg = {
-		.logicVoltage_mV = sensorRead(SENSOR_CH_LOGIC_VOLTAGE_MV),
-		.loadVoltage_mV = sensorRead(SENSOR_CH_LOAD_VOLTAGE_MV)
-	};
+    cmr_canPTCVoltageDiagnostics_t voltMsg = {
+        .logicVoltage_mV = sensorRead(SENSOR_CH_LOGIC_VOLTAGE_MV),
+        .loadVoltage_mV = sensorRead(SENSOR_CH_LOAD_VOLTAGE_MV)
+    };
 
-	canTX(CMR_CANID_PTC_VOLTAGE_DIAGNOSTICS, &voltMsg, sizeof(voltMsg), canTX10HzPeriod_ms);
+    canTX(CMR_CANID_PTC_VOLTAGE_DIAGNOSTICS, &voltMsg, sizeof(voltMsg), canTX10Hz_period_ms);
 }
 /**
  * @brief Send current diagnostic information.
  */
 static void sendCurrDiagnostics(void) {
-	cmr_canPTCCurrentDiagnostics_t ampMsg = {
-		.logicCurrent_mA = sensorRead(SENSOR_CH_LOGIC_CURRENT_MA),
-		.loadCurrent_mA = sensorRead(SENSOR_CH_LOAD_CURRENT_MA),
-		.fanCurrent_mA = sensorRead(SENSOR_CH_FAN_CURRENT_MA)
-	};
+    cmr_canPTCCurrentDiagnostics_t ampMsg = {
+        .logicCurrent_mA = sensorRead(SENSOR_CH_LOGIC_CURRENT_MA),
+        .loadCurrent_mA = sensorRead(SENSOR_CH_LOAD_CURRENT_MA),
+        .fanCurrent_mA = sensorRead(SENSOR_CH_FAN_CURRENT_MA)
+    };
 
-	canTX(CMR_CANID_PTC_CURRENT_DIAGNOSTICS, &ampMsg, sizeof(ampMsg), canTX10HzPeriod_ms);
+    canTX(CMR_CANID_PTC_CURRENT_DIAGNOSTICS, &ampMsg, sizeof(ampMsg), canTX10Hz_period_ms);
 }
 
