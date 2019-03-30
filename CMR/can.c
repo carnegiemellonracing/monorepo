@@ -73,6 +73,35 @@ CAN_FOREACH(CAN_IRQ_HANDLERS)
 #undef CAN_IRQ_HANDLERS
 
 /**
+ * @brief Determines the GPIO alternate function for the given CAN interface.
+ *
+ * @param can The CAN interface.
+ * @param port The GPIO port.
+ *
+ * @return The GPIO alternate function.
+ */
+static uint32_t cmr_canGPIOAF(CAN_TypeDef *instance, GPIO_TypeDef *port) {
+    switch ((uintptr_t) instance) {
+        case CAN1_BASE:
+            switch ((uintptr_t) port) {
+                case GPIOA_BASE:
+                case GPIOD_BASE:
+                    return GPIO_AF9_CAN1;
+                case GPIOB_BASE:
+                    return GPIO_AF8_CAN1;
+                default:
+                    cmr_panic("Unknown/unspported GPIO port!");
+            }
+        case CAN2_BASE:
+            return GPIO_AF9_CAN2;
+        case CAN3_BASE:
+            return GPIO_AF11_CAN3;
+        default:
+            cmr_panic("Unknown CAN instance!");
+    }
+}
+
+/**
  * @brief Gets the corresponding CAN interface from the HAL handle.
  *
  * @warning The handle must have been configured through this library!
@@ -385,24 +414,18 @@ CAN_FOREACH(CAN_INTERRUPT_CONFIG)
     cmr_rccGPIOClockEnable(txPort);
 
     // Configure CAN RX pin.
-    uint32_t alternate;
-    if (instance == CAN3) {
-        alternate = GPIO_AF11_CAN3;     // CAN3 uses AF11.
-    } else {
-        configASSERT(instance == CAN1 || instance == CAN2);
-        alternate = GPIO_AF9_CAN2;      // Both CAN1 and CAN2 use AF9.
-    }
     GPIO_InitTypeDef pinConfig = {
         .Pin = rxPin,
         .Mode = GPIO_MODE_AF_PP,
         .Pull = GPIO_NOPULL,
         .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
-        .Alternate = alternate,
+        .Alternate = cmr_canGPIOAF(instance, rxPort)
     };
     HAL_GPIO_Init(rxPort, &pinConfig);
 
     // Configure CAN TX pin.
     pinConfig.Pin = txPin;
+    pinConfig.Alternate = cmr_canGPIOAF(instance, rxPort);
     HAL_GPIO_Init(txPort, &pinConfig);
 
     if (HAL_CAN_Init(&can->handle) != HAL_OK) {
