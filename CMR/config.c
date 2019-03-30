@@ -136,7 +136,7 @@ int cmr_configGet(size_t addr, uint32_t *dest) {
  * @brief Pulls the config from flash into the local config cache.
  */
 void cmr_configPull() {
-    memcpy((uint32_t *) configCache, (uint32_t *) configFlashStart, CONFIG_LEN);
+    memcpy((uint32_t *) configCache, (uint32_t *) configFlashStart, sizeof(configCache));
 }
 
 /**
@@ -177,11 +177,6 @@ void cmr_configCommit() {
     }
 
     HAL_FLASH_Lock();
-  
-#ifdef DEBUG 
-    int res = memcmp((uint32_t *) configCache, (uint32_t *) configFlashStart, CONFIG_LEN);
-    configASSERT(res == 0);
-#endif
 }
 
 #endif /* HAL_FLASH_MODULE_ENABLED */
