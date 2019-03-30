@@ -27,7 +27,7 @@
  * concurrent flash configuration systems with configurable size. I imagine each 
  * PCB will have different configuration size requirements...
  */
-#define CONFIG_LEN 1024
+#define CONFIG_LEN 2048
 
 /**
  * @brief The configuration cache. It is updated by calling cmr_configCommit() and
@@ -87,44 +87,6 @@ SECTOR_FOREACH(FLASH_SECTOR)
 }
 
 /**
- * @brief Gets the base address of a given sector.
- *
- * @param sector A sector to get the corresponding base address of, defined
- *               in HAL @ref FLASHEx_Sectors.
- *
- * @return The corresponding base address.
- */
-static void *getSectorAddr(uint32_t sector) {
-#define FLASH_SECTOR_ADDR(num, addr, ...) \
-    if (sector == FLASH_SECTOR_ ## num) { \
-        return (void *) addr; \
-    } 
-
-SECTOR_FOREACH(FLASH_SECTOR_ADDR)
-#undef FLASH_SECTOR_ADDR
-
-    cmr_panic("Invalid sector!");
-}
-
-/**
- * @brief Gets the size of a given sector.
- *
- * @param sector A sector to get the corresponding size of, defined in
- *               HAL @ref FLASHEx_Sectors.
- */
-static size_t getSectorSize(uint32_t sector) {
-#define FLASH_SECTOR_SIZE(num, addr, size) \
-    if (sector == FLASH_SECTOR_ ## num) { \
-        return size; \
-    }
-
-SECTOR_FOREACH(FLASH_SECTOR_SIZE)
-#undef FLASH_SECTOR_SIZE
-
-    cmr_panic("Invalid sector!");
-}
-
-/**
  * @brief Initializes the configuration system with a base address.
  *
  * @param addr A base address.
@@ -136,60 +98,6 @@ void cmr_configInit(void *addr) {
 
     configFlashStart = (volatile uint32_t *) addr;
     cmr_configPull();
-}
-
-/**
- * @brief Tests the configuration system with a base address.
- *
- * @param sector A sector to test.
- */
-void cmr_configTest(uint32_t sector) {
-    if (HAL_FLASH_Unlock() != HAL_OK) {
-        return;
-    }
-
-    // Clears all the error bits. See the HAL documentation @ref FLASH_Flag_definition.
-    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | \
-            FLASH_FLAG_PGAERR | FLASH_FLAG_PGSERR);
-  
-    uint32_t *flashStart = getSectorAddr(sector);
-    uint32_t *flashEnd = flashStart + getSectorSize(sector) / sizeof(uint32_t);
-    uint32_t byte = *flashStart + 1;
-    
-    FLASH_EraseInitTypeDef eraseInit = {
-        .TypeErase = FLASH_TYPEERASE_SECTORS,
-        .Sector = sector,
-        .NbSectors = 1,
-        .VoltageRange = VOLTAGE_RANGE_3,
-    };
-
-    uint32_t error;
-    if (HAL_FLASHEx_Erase(&eraseInit, &error) != HAL_OK) {
-        cmr_panic("Flash erase failed!");
-    }
-
-    uint32_t *addr = flashStart;
-    while (addr < flashEnd) {
-        if (HAL_FLASH_Program(TYPEPROGRAM_WORD, (uint32_t) addr, byte) != HAL_OK) {
-            cmr_panic("Failed programming word!");
-        }
-        addr += 1;
-    }
-
-    HAL_FLASH_Lock();
-
-    addr = flashStart;
-    size_t errors = 0;
-    while (addr < flashEnd) {
-        if (*addr != byte) {
-            errors += 1;
-        }
-        addr += 1;
-    }
-
-    if (errors != 0) {
-        cmr_panic("The write was unsuccessful!");
-    }
 }
 
 /**
@@ -240,8 +148,11 @@ void cmr_configCommit() {
     }
 
     // Clears all the error bits. See the HAL documentation @ref FLASH_Flag_definition.
-    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | \
-            FLASH_FLAG_PGAERR | FLASH_FLAG_PGSERR);
+    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | 
+            FLASH_FLAG_OPERR | 
+            FLASH_FLAG_WRPERR |
+            FLASH_FLAG_PGAERR | 
+            FLASH_FLAG_PGSERR);
   
     uint32_t sector = getSector((void *) configFlashStart);
     
@@ -260,12 +171,17 @@ void cmr_configCommit() {
 
     size_t idx = 0;
     while (idx < CONFIG_LEN) {
-        if (HAL_FLASH_Program(TYPEPROGRAM_WORD, (uint32_t) configFlashStart + idx, configCache[idx]) == HAL_OK) {
+        if (HAL_FLASH_Program(TYPEPROGRAM_WORD, (uint32_t) (configFlashStart + idx), configCache[idx]) == HAL_OK) {
             idx++;
         }
     }
 
     HAL_FLASH_Lock();
+  
+#ifdef DEBUG 
+    int res = memcmp((uint32_t *) configCache, (uint32_t *) configFlashStart, CONFIG_LEN);
+    configASSERT(res == 0);
+#endif
 }
 
 #endif /* HAL_FLASH_MODULE_ENABLED */
