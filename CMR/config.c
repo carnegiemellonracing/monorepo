@@ -21,24 +21,19 @@
 #include "panic.h"  // cmr_panic()
 
 /**
- * @brief The configuration storage size in words. 
- *
- * It may be wise to parameterize this into a cmr_config_t, thus allowing multiple
- * concurrent flash configuration systems with configurable size. I imagine each 
- * PCB will have different configuration size requirements...
+ * @brief The configuration storage size in words. This is the maximum
+ *        flash sector size (0x20000 / 4).
  */
-#define CONFIG_LEN 2048
+#define CONFIG_WLEN 4096
 
-/**
- * @brief The configuration cache. It is updated by calling cmr_configCommit() and
- * cmr_configPull().
- */
-static volatile uint32_t configCache[CONFIG_LEN];
+typedef struct {
+    volatile uint32_t cache[CONFIG_WLEN];
+    uint32_t flashSector;
+    volatile uint32_t *flashStart;
+    volatile size_t flashLen;
+} cmr_config_t;
 
-/**
- * @brief The configuration base address. It is initialized by cmr_configInit().
- */
-static volatile uint32_t *configFlashStart;
+static cmr_config_t config;
 
 /**
  * @brief Instantiates the macro for each flash sector.
@@ -50,38 +45,41 @@ static volatile uint32_t *configFlashStart;
  * @param f The macro to instantiate.
  */
 #define SECTOR_FOREACH(f) \
-    f(0,  0x08000000, 0x4000) \
-    f(1,  0x08004000, 0x4000) \
-    f(2,  0x08008000, 0x4000) \
-    f(3,  0x0800C000, 0x4000) \
-    f(4,  0x08010000, 0x10000) \
-    f(5,  0x08020000, 0x20000) \
-    f(6,  0x08040000, 0x20000) \
-    f(7,  0x08060000, 0x20000) \
-    f(8,  0x08080000, 0x20000) \
-    f(9,  0x080A0000, 0x20000) \
-    f(10, 0x080C0000, 0x20000) \
-    f(11, 0x080E0000, 0x20000) \
-    f(12, 0x08100000, 0x20000) \
-    f(13, 0x08120000, 0x20000) \
-    f(14, 0x08140000, 0x20000) \
-    f(15, 0x08160000, 0x20000)
+    f(FLASH_SECTOR_0, 0x08000000, 0x4000) \
+    f(FLASH_SECTOR_1, 0x08004000, 0x4000) \
+    f(FLASH_SECTOR_2, 0x08008000, 0x4000) \
+    f(FLASH_SECTOR_3, 0x0800C000, 0x4000) \
+    f(FLASH_SECTOR_4, 0x08010000, 0x10000) \
+    f(FLASH_SECTOR_5, 0x08020000, 0x20000) \
+    f(FLASH_SECTOR_6, 0x08040000, 0x20000) \
+    f(FLASH_SECTOR_7, 0x08060000, 0x20000) \
+    f(FLASH_SECTOR_8, 0x08080000, 0x20000) \
+    f(FLASH_SECTOR_9, 0x080A0000, 0x20000) \
+    f(FLASH_SECTOR_10, 0x080C0000, 0x20000) \
+    f(FLASH_SECTOR_11, 0x080E0000, 0x20000) \
+    f(FLASH_SECTOR_12, 0x08100000, 0x20000) \
+    f(FLASH_SECTOR_13, 0x08120000, 0x20000) \
+    f(FLASH_SECTOR_14, 0x08140000, 0x20000) \
+    f(FLASH_SECTOR_15, 0x08160000, 0x20000)
 
-/**
- * @brief Gets the sector corresponding to an address. The address
- * must be within sectors 0 through 15.
- *
- * @param addr An address to get the corresponding sector of.
- *
- * @return The corresponding sector defined in HAL @ref FLASHEx_Sectors.
- */
-static uint32_t getSector(void *addr) {
-#define FLASH_SECTOR(num, base, size) \
-    if ((addr >= (void *) base) && (addr < (void *) (base + size))) { \
-        return FLASH_SECTOR_ ## num; \
-    } 
-SECTOR_FOREACH(FLASH_SECTOR) 
-#undef FLASH_SECTOR
+static void *getSectorBase(uint32_t sector) {
+#define GET_ADDR(sec, base, ...) \
+    if (sector == sec) { \
+        return (void *) base; \
+    }
+SECTOR_FOREACH(GET_ADDR)
+#undef GET_ADDR
+
+    cmr_panic("Invalid sector!");
+}
+
+static size_t getSectorSize(uint32_t sector) {
+#define GET_SIZE(sec, base, size) \
+    if (sector == sec) { \
+        return size; \
+    }
+SECTOR_FOREACH(GET_SIZE)
+#undef GET_SIZE
 
     cmr_panic("Invalid sector!");
 }
@@ -91,27 +89,30 @@ SECTOR_FOREACH(FLASH_SECTOR)
  *
  * @param addr A base address.
  */
-void cmr_configInit(void *addr) {
-    if (getSector(addr) != getSector(addr + CONFIG_LEN)) {
-        cmr_panic("The address is too close to the end of a sector!");   
+void cmr_configInit(uint32_t sector) {
+    config.flashSector = sector;
+    config.flashStart = (volatile uint32_t *) getSectorBase(sector);
+    config.flashLen = getSectorSize(sector);
+
+    if ((config.flashLen/sizeof(uint32_t)) > CONFIG_WLEN) {
+        cmr_panic("The flash sectors are misconfigured!");
     }
 
-    configFlashStart = (volatile uint32_t *) addr;
     cmr_configPull();
 }
 
 /**
  * @brief Sets a configuration setting.
  *
- * @param addr A word address to write to (0 to CONFIG_LEN).
+ * @param addr A word address to write to (0 to CONFIG_WLEN).
  * @param data A datum to write.
  */
 int cmr_configSet(size_t addr, uint32_t data) {
-    if (addr >= CONFIG_LEN) {
+    if (addr >= CONFIG_WLEN || addr >= (config.flashLen/sizeof(uint32_t))) {
         return -1;
     }
 
-    configCache[addr] = data;
+    config.cache[addr] = data;
 
     return 0;
 }
@@ -119,15 +120,15 @@ int cmr_configSet(size_t addr, uint32_t data) {
 /**
  * @brief Gets a configuration setting.
  *
- * @param addr A word address to read from (0 to CONFIG_LEN).
+ * @param addr A word address to read from (0 to CONFIG_WLEN).
  * @return The data at the address.
  */
 int cmr_configGet(size_t addr, uint32_t *dest) {
-    if (addr >= CONFIG_LEN || dest == NULL) {
+    if (addr >= CONFIG_WLEN || addr >= (config.flashLen/sizeof(uint32_t)) || dest == NULL) {
         return -1; 
     }
 
-    *dest = configCache[addr];
+    *dest = config.cache[addr];
 
     return 0;
 }
@@ -136,7 +137,7 @@ int cmr_configGet(size_t addr, uint32_t *dest) {
  * @brief Pulls the config from flash into the local config cache.
  */
 void cmr_configPull() {
-    memcpy((uint32_t *) configCache, (uint32_t *) configFlashStart, sizeof(configCache));
+    memcpy((uint32_t *) config.cache, (uint32_t *) config.flashStart, sizeof(config.cache));
 }
 
 /**
@@ -154,24 +155,22 @@ void cmr_configCommit() {
             FLASH_FLAG_PGAERR | 
             FLASH_FLAG_PGSERR);
   
-    uint32_t sector = getSector((void *) configFlashStart);
-    
     FLASH_EraseInitTypeDef eraseInit = {
         .TypeErase = FLASH_TYPEERASE_SECTORS,
-        .Sector = sector,
+        .Sector = config.flashSector,
         .NbSectors = 1,
         .VoltageRange = VOLTAGE_RANGE_3,
     };
 
-    uint32_t error;
     // Use HAL_FLASHEx_Erase instead of HAL_FLASH_Erase, as it clears the FLASH control register.
+    uint32_t error;
     if (HAL_FLASHEx_Erase(&eraseInit, &error) != HAL_OK) {
         cmr_panic("Flash erase failed!");
     }
 
     size_t idx = 0;
-    while (idx < CONFIG_LEN) {
-        if (HAL_FLASH_Program(TYPEPROGRAM_WORD, (uint32_t) (configFlashStart + idx), configCache[idx]) == HAL_OK) {
+    while (idx < CONFIG_WLEN) {
+        if (HAL_FLASH_Program(TYPEPROGRAM_WORD, (uint32_t) (config.flashStart + idx), config.cache[idx]) == HAL_OK) {
             idx++;
         }
     }

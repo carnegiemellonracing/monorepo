@@ -15,9 +15,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-void cmr_configInit(void *addr);
-
-void cmr_configTest(uint32_t sector);
+void cmr_configInit(uint32_t sector);
 
 int cmr_configSet(size_t addr, uint32_t data);
 
