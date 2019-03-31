@@ -52,8 +52,6 @@ cmr_canPTCPumpState_t pumpState = CMR_CAN_PTC_PUMP_STATE_OFF;
 static const uint32_t canTX10Hz_priority = 3;
 /** @brief CAN 10 Hz TX period (milliseconds). */
 static const TickType_t canTX10Hz_period_ms = 100;
-/** @brief CAN 10 HZ TX task initialization delay. Prevents CAN collisions at power-on. */
-static const TickType_t canTX10HzInitDelay_ms = CMR_CANID_HEARTBEAT_PTC & 0xF;
 
 /** @brief CAN 100 Hz TX priority. */
 static const uint32_t canTX100Hz_priority = 5;
@@ -83,8 +81,6 @@ static void sendHeartbeat(TickType_t lastWakeTime);
  */
 static void canTX10Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
-
-    vTaskDelay(canTX10HzInitDelay_ms);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
