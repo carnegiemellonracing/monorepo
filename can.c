@@ -25,40 +25,54 @@
  * @note Indexed by `canRX_t`.
  */
 cmr_canRXMeta_t canRXMeta[] = {
-    // XXX Edit this to include the appropriate periodic messages.
     [CANRX_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
+    [CANRX_VSM_STATUS] = {
+        .canID = CMR_CANID_VSM_STATUS,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
-        .timeoutError_ms = 1000,
-        .timeoutWarn_ms = 500
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 50
     }
 };
+
+/** @brief Radiator fan state. */
+cmr_canFanState_t fanState = CMR_CAN_FAN_OFF;
+
+/** @brief Water cooling pump state. */
+cmr_canPTCPumpState_t pumpState = CMR_CAN_PTC_PUMP_STATE_OFF;
+
+/** @brief CAN 10 Hz TX priority. */
+static const uint32_t canTX10Hz_priority = 3;
+/** @brief CAN 10 Hz TX period (milliseconds). */
+static const TickType_t canTX10Hz_period_ms = 100;
+/** @brief CAN 10 HZ TX task initialization delay. Prevents CAN collisions at power-on. */
+static const TickType_t canTX10HzInitDelay_ms = CMR_CANID_HEARTBEAT_PTC & 0xF;
+
+/** @brief CAN 100 Hz TX priority. */
+static const uint32_t canTX100Hz_priority = 5;
+/** @brief CAN 100 Hz TX period (milliseconds). */
+static const TickType_t canTX100Hz_period_ms = 10;
+
+/** @brief CAN 10 Hz TX task. */
+static cmr_task_t canTX10Hz_task;
+/** @brief CAN 100 Hz TX task. */
+static cmr_task_t canTX100Hz_task;
 
 /** @brief Primary CAN interface. */
 static cmr_can_t can;
 
-/** @brief Forward declarations. */
+// Forward declarations
 static void sendCoolStatus(void);
 static void sendVoltDiagnostics(void);
 static void sendCurrDiagnostics(void);
-
 static void sendHeartbeat(TickType_t lastWakeTime);
-
-/** @brief CAN 10 Hz TX priority. */
-static const uint32_t canTX10Hz_priority = 3;
-
-/** @brief CAN 10 Hz TX period (milliseconds). */
-static const TickType_t canTX10Hz_period_ms = 100;
-
-/** @brief CAN 10 Hz TX task. */
-static cmr_task_t canTX10Hz_task;
-
-cmr_canFanState_t fanStatePTC = CMR_CAN_FAN_OFF;
-uint8_t pumpStatePTC = 0;
 
 /**
  * @brief Task for sending CAN messages at 10 Hz.
@@ -70,6 +84,8 @@ uint8_t pumpStatePTC = 0;
 static void canTX10Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
+    vTaskDelay(canTX10HzInitDelay_ms);
+
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendCoolStatus();
@@ -79,15 +95,6 @@ static void canTX10Hz(void *pvParameters) {
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
 }
-
-/** @brief CAN 100 Hz TX priority. */
-static const uint32_t canTX100Hz_priority = 5;
-
-/** @brief CAN 100 Hz TX period (milliseconds). */
-static const TickType_t canTX100Hz_period_ms = 10;
-
-/** @brief CAN 100 Hz TX task. */
-static cmr_task_t canTX100Hz_task;
 
 /**
  * @brief Task for sending CAN messages at 100 Hz.
@@ -121,7 +128,6 @@ void canInit(void) {
     );
 
     // CAN2 filters.
-    // XXX Change these to whitelist the appropriate IDs.
     const cmr_canFilter_t canFilters[] = {
         {
             .isMask = false,
@@ -131,6 +137,16 @@ void canInit(void) {
                 CMR_CANID_HEARTBEAT_VSM,
                 CMR_CANID_HEARTBEAT_VSM,
                 CMR_CANID_FSM_DATA
+            }
+        },
+        {
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO1,
+            .ids = {
+                CMR_CANID_VSM_STATUS,
+                CMR_CANID_VSM_STATUS,
+                CMR_CANID_VSM_STATUS,
+                CMR_CANID_VSM_STATUS,
             }
         }
     };
@@ -207,8 +223,8 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
  */
 static void sendCoolStatus(void) {
     cmr_canPTCCoolingStatus_t coolMsg = {
-        .fanState = fanStatePTC,
-        .pumpState = pumpStatePTC,
+        .fanState = fanState,
+        .pumpState = pumpState,
         .preRadiatorTemp_C = sensorRead(SENSOR_CH_PRE_RAD_THERM),
         .postRadiatorTemp_C = sensorRead(SENSOR_CH_POST_RAD_THERM)
     };

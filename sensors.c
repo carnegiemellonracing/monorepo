@@ -30,7 +30,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .adcToValue = &adcConv_LogicVoltageMV,
         .minADC = 2256, // 20 Volts
         .maxADC = 2933, // 26 Volts
-        .warnThres_pcnt = 10,
+        .oorThres_pcnt = 10,
         .error = SENSOR_ERR_NONE,
         .value = 24000
     },
@@ -38,7 +38,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .adcToValue = &adcConv_LogicCurrentMA,
         .minADC = 250,  // 10 mA
         .maxADC = 2500, // 100 mA
-        .warnThres_pcnt = 10,
+        .oorThres_pcnt = 10,
         .error = SENSOR_ERR_NONE,
         .value = 20
     },
@@ -46,7 +46,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .adcToValue = &adcConv_LoadVoltageMV,
         .minADC = 2256, // 20 Volts
         .maxADC = 2933, // 26 Volts
-        .warnThres_pcnt = 10,
+        .oorThres_pcnt = 10,
         .error = SENSOR_ERR_NONE,
         .value = 24000
     },
@@ -54,7 +54,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .adcToValue = &adcConv_LoadCurrentMA,
         .minADC = 250,  // 10 mA
         .maxADC = 2500, // 100 mA
-        .warnThres_pcnt = 10,
+        .oorThres_pcnt = 10,
         .error = SENSOR_ERR_NONE,
         .value = 20
     },
@@ -62,7 +62,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .adcToValue = &adcConv_FanCurrentMA,
         .minADC = 250,  // 10 mA
         .maxADC = 2500, // 100 mA
-        .warnThres_pcnt = 10,
+        .oorThres_pcnt = 10,
         .error = SENSOR_ERR_NONE,
         .value = 20
     },
@@ -70,7 +70,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .adcToValue = &adcConv_BoardTherm,
         .minADC = 250,  // 10 mA
         .maxADC = 2500, // 100 mA
-        .warnThres_pcnt = 10,
+        .oorThres_pcnt = 10,
         .error = SENSOR_ERR_NONE,
         .value = 20
     },
@@ -78,7 +78,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .adcToValue = &adcConv_BoardTherm,
         .minADC = 250,  // 10 mA
         .maxADC = 2500, // 100 mA
-        .warnThres_pcnt = 10,
+        .oorThres_pcnt = 10,
         .error = SENSOR_ERR_NONE,
         .value = 20
     },
@@ -86,7 +86,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .adcToValue = &adcConv_RadTherm,
         .minADC = 250,  // 10 mA
         .maxADC = 2500, // 100 mA
-        .warnThres_pcnt = 10,
+        .oorThres_pcnt = 10,
         .error = SENSOR_ERR_NONE,
         .value = 20
     },
@@ -94,7 +94,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .adcToValue = &adcConv_RadTherm,
         .minADC = 250,  // 10 mA
         .maxADC = 2500, // 100 mA
-        .warnThres_pcnt = 10,
+        .oorThres_pcnt = 10,
         .error = SENSOR_ERR_NONE,
         .value = 20
     }
@@ -263,14 +263,14 @@ static void checkSensor(cmr_sensor_t *sensor) {
 
     // Return if sensor is too far above expected range
     // accounting for overflow
-    uint32_t upperThres = sensor->maxADC + (adcRange * sensor->warnThres_pcnt / 100);
+    uint32_t upperThres = sensor->maxADC + (adcRange * sensor->oorThres_pcnt / 100);
     if (upperThres >= sensor->maxADC && adcVal > upperThres) {
         sensor->error = SENSOR_ERR_OUT_OF_RANGE;
     }
 
     // Return if sensor is too far below expected range
     // accounting for underflow
-    uint32_t lowerThres = sensor->minADC - (adcRange * sensor->warnThres_pcnt / 100);
+    uint32_t lowerThres = sensor->minADC - (adcRange * sensor->oorThres_pcnt / 100);
     if (lowerThres <= sensor->minADC && adcVal < lowerThres) {
         sensor->error = SENSOR_ERR_OUT_OF_RANGE;
     }

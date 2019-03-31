@@ -18,14 +18,15 @@
  * @warning New messages MUST be added before `CANRX_LEN`.
  */
 typedef enum {
-    CANRX_HEARTBEAT_VSM = 0,  /**< @brief VSM heartbeat. */
-    CANRX_FSM_DATA,
+    CANRX_HEARTBEAT_VSM = 0,    /**< @brief VSM heartbeat. */
+    CANRX_VSM_STATUS,           /**< @brief VSM status. */
+    CANRX_FSM_DATA,             /**< @brief FSM data. */
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 
 extern cmr_canRXMeta_t canRXMeta[];
-extern cmr_canFanState_t fanStatePTC;
-extern uint8_t pumpStatePTC;
+extern cmr_canFanState_t fanState;
+extern cmr_canPTCPumpState_t pumpState;
 
 void canInit(void);
 

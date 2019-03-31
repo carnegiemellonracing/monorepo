@@ -20,21 +20,32 @@
 #include "adc.h"    // Board-specific ADC interface
 #include "sensors.h"    // Board-specific sensors interface
 
-/** Task priorities and periods. */
+/** @brief Status LED task priority. */
 static const uint32_t statusLED_priority = 2;
+/** @brief Status LED task period. */
 static const TickType_t statusLED_period_ms = 250;
+/** @brief Status LED task. */
 static cmr_task_t statusLED_task;
 
+/** @brief Cooling control task priority. */
 static const uint32_t coolingControl_priority = 4;
+/** @brief Cooling control task period. */
 static const TickType_t coolingControl_period_ms = 50;
+/** @brief Cooling control task. */
 static cmr_task_t coolingControl_task;
 
+/** @brief Brake light control task priority. */
 static const uint32_t brakelight_priority = 4;
+/** @brief Brake light control task period. */
 static const TickType_t brakelight_period_ms = 50;
+/** @brief Brake light control task. */
 static cmr_task_t brakelight_task;
 
+/** @brief Brake disconnection solenoid task priority. */
 static const uint32_t brakeDisconnect_priority = 5;
+/** @brief Brake disconnection solenoid task period. */
 static const TickType_t brakeDisconnect_period_ms = 10;
+/** @brief Brake disconnection solenoid task. */
 static cmr_task_t brakeDisconnect_task;
 
 /**
@@ -67,42 +78,40 @@ static void statusLED(void *pvParameters) {
 static void coolingControl(void *pvParameters) {
     (void) pvParameters;
 
-	cmr_gpioToggle(GPIO_FAN_ENABLE); // Turn the fan driver on
+    cmr_gpioWrite(GPIO_FAN_ENABLE, 1); // Turn the fan driver on
 
     // Get reference to VSM Heartbeat
-    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-    volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
+    cmr_canRXMeta_t *vsmHeartbeatMeta = &(canRXMeta[CANRX_HEARTBEAT_VSM]);
+    volatile cmr_canHeartbeat_t *vsmHeartbeat = (void *)(&vsmHeartbeatMeta->payload);
+
+    cmr_canRXMeta_t *vsmStatusMeta = &(canRXMeta[CANRX_VSM_STATUS]);
+    volatile cmr_canVSMStatus_t *vsmStatus = (void *)(&vsmStatusMeta->payload);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        cmr_canHeartbeat_t heartbeat = {
-            .state = heartbeatVSM->state
-        };
+        // RTD or transitioning into RTD
+        if ((vsmHeartbeat->state == CMR_CAN_RTD)
+         || ((vsmHeartbeat->state == CMR_CAN_HV_EN)
+          && (vsmStatus->internalState == CMR_CAN_VSM_STATE_RAMP_COOLING))) {
 
-        switch (heartbeat.state){
-            case CMR_CAN_HV_EN:
-                fanStatePTC = CMR_CAN_FAN_LOW;
-                pumpStatePTC = 1;
-                // Fan Low
-                cmr_gpioToggle(GPIO_FAN); // 50% duty cycle :)
-                // Pump on
-                cmr_gpioWrite(GPIO_PUMP, 1);
-                break;
-            case CMR_CAN_RTD:
-                fanStatePTC = CMR_CAN_FAN_HIGH;
-                pumpStatePTC = 1;
-                // Fan Full
-                cmr_gpioWrite(GPIO_FAN, 1);
-                // Pump on
-                cmr_gpioWrite(GPIO_PUMP, 1);
-                break;
-            default:
-                fanStatePTC = CMR_CAN_FAN_OFF;
-                pumpStatePTC = 0;
-                // Fan Off
-                cmr_gpioWrite(GPIO_FAN, 0);
-                // Pump off
-                cmr_gpioWrite(GPIO_PUMP, 0);
+            fanState = CMR_CAN_FAN_HIGH;
+            pumpState = CMR_CAN_PTC_PUMP_STATE_ON;
+            cmr_gpioWrite(GPIO_FAN, 1);     // Fan full on
+            cmr_gpioWrite(GPIO_PUMP, 1);    // Pump on
+        }
+
+        else if (vsmHeartbeat->state == CMR_CAN_HV_EN) {
+            fanState = CMR_CAN_FAN_LOW;
+            pumpState = CMR_CAN_PTC_PUMP_STATE_ON;
+            cmr_gpioToggle(GPIO_FAN);       // 50% duty cycle :)
+            cmr_gpioWrite(GPIO_PUMP, 1);    // Pump on
+        }
+
+        else {
+            fanState = CMR_CAN_FAN_OFF;
+            pumpState = CMR_CAN_PTC_PUMP_STATE_OFF;
+            cmr_gpioWrite(GPIO_FAN, 0);     // Fan off
+            cmr_gpioWrite(GPIO_PUMP, 0);    // Pump off
         }
 
         vTaskDelayUntil(&lastWakeTime, coolingControl_period_ms);
@@ -120,12 +129,12 @@ static void brakelight(void *pvParameters) {
     (void) pvParameters;
 
     // Get reference to VSM Heartbeat
-    cmr_canRXMeta_t *dataFSMMeta = canRXMeta + CANRX_FSM_DATA;
-    volatile cmr_canFSMData_t *dataFSM = (void *) dataFSMMeta->payload;
+    cmr_canRXMeta_t *fsmDataMeta = &(canRXMeta[CANRX_FSM_DATA]);
+    volatile cmr_canFSMData_t *fsmData = (void *) fsmDataMeta->payload;
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        if (dataFSM->brakePressureFront_PSI > 0) {
+        if (fsmData->brakePressureFront_PSI > 0) {
             cmr_gpioWrite(GPIO_BRAKELIGHT, 1);
         } else {
             cmr_gpioWrite(GPIO_BRAKELIGHT, 0);
@@ -159,12 +168,16 @@ static void brakeDisconnect(void *pvParameters) {
                 // Check that the dash is requesting this mode of operation
                 if (0) { // TODO Dash/TOM should publish a driver setting for enabling software braking
                     cmr_gpioWrite(GPIO_BRAKE_DISCON, 1);
-                } else {
+                }
+                else {
                     cmr_gpioWrite(GPIO_BRAKE_DISCON, 0);
                 }
+
                 break;
+
             default:
                 cmr_gpioWrite(GPIO_BRAKE_DISCON, 0);
+                break;
         }
 
         vTaskDelayUntil(&lastWakeTime, brakeDisconnect_period_ms);
