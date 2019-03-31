@@ -360,7 +360,7 @@ void cmr_canInit(
                 .TimeTriggeredMode = DISABLE,
                 .AutoBusOff = DISABLE,
                 .AutoWakeUp = DISABLE,
-                .AutoRetransmission = DISABLE,
+                .AutoRetransmission = ENABLE,
                 .ReceiveFifoLocked = DISABLE,
                 .TransmitFifoPriority = DISABLE
             }
