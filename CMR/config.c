@@ -24,13 +24,13 @@
  * @brief The configuration storage size in words. This is the maximum
  *        flash sector size (0x20000 / 4).
  */
-#define CONFIG_WLEN 4096
+#define CONFIG_CACHE_LEN 4096
 
 typedef struct {
-    volatile uint32_t cache[CONFIG_WLEN];
+    volatile uint32_t cache[CONFIG_CACHE_LEN];
     uint32_t flashSector;
     volatile uint32_t *flashStart;
-    volatile size_t flashLen;
+    volatile size_t flashSize;
 } cmr_config_t;
 
 static cmr_config_t config;
@@ -92,9 +92,9 @@ SECTOR_FOREACH(GET_SIZE)
 void cmr_configInit(uint32_t sector) {
     config.flashSector = sector;
     config.flashStart = (volatile uint32_t *) getSectorBase(sector);
-    config.flashLen = getSectorSize(sector);
+    config.flashSize = getSectorSize(sector);
 
-    if ((config.flashLen/sizeof(uint32_t)) > CONFIG_WLEN) {
+    if ((config.flashSize/sizeof(uint32_t)) > CONFIG_CACHE_LEN) {
         cmr_panic("The flash sectors are misconfigured!");
     }
 
@@ -104,11 +104,11 @@ void cmr_configInit(uint32_t sector) {
 /**
  * @brief Sets a configuration setting.
  *
- * @param addr A word address to write to (0 to CONFIG_WLEN).
+ * @param addr A word address to write to (0 to CONFIG_CACHE_LEN).
  * @param data A datum to write.
  */
 int cmr_configSet(size_t addr, uint32_t data) {
-    if (addr >= CONFIG_WLEN || addr >= (config.flashLen/sizeof(uint32_t))) {
+    if (addr >= CONFIG_CACHE_LEN || addr >= (config.flashSize/sizeof(uint32_t))) {
         return -1;
     }
 
@@ -120,11 +120,11 @@ int cmr_configSet(size_t addr, uint32_t data) {
 /**
  * @brief Gets a configuration setting.
  *
- * @param addr A word address to read from (0 to CONFIG_WLEN).
+ * @param addr A word address to read from (0 to CONFIG_CACHE_LEN).
  * @return The data at the address.
  */
 int cmr_configGet(size_t addr, uint32_t *dest) {
-    if (addr >= CONFIG_WLEN || addr >= (config.flashLen/sizeof(uint32_t)) || dest == NULL) {
+    if (addr >= CONFIG_CACHE_LEN || addr >= (config.flashSize/sizeof(uint32_t)) || dest == NULL) {
         return -1; 
     }
 
@@ -169,8 +169,9 @@ void cmr_configCommit() {
     }
 
     size_t idx = 0;
-    while (idx < CONFIG_WLEN) {
-        if (HAL_FLASH_Program(TYPEPROGRAM_WORD, (uint32_t) (config.flashStart + idx), config.cache[idx]) == HAL_OK) {
+    while (idx < CONFIG_CACHE_LEN) {
+        if (HAL_FLASH_Program(TYPEPROGRAM_WORD, (uint32_t) (config.flashStart + idx), 
+                config.cache[idx]) == HAL_OK) {
             idx++;
         }
     }
