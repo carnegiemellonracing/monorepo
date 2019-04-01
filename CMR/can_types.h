@@ -121,6 +121,14 @@ typedef struct {
     uint16_t fansCurrent_mA;    /**< @brief Total fans current (mA). */
 } cmr_canAFCPowerDiagnostics_t;
 
+/** @brief Central Dynamics Controller wheel speeds. */
+typedef struct {
+    uint16_t frontLeft;     /**< @brief Front left wheel speed (RPM). */
+    uint16_t frontRight;    /**< @brief Front right wheel speed (RPM). */
+    uint16_t backLeft;      /**< @brief Back left wheel speed (RPM). */
+    uint16_t backRight;     /**< @brief Back right wheel speed (RPM). */
+} cmr_canCDCWheelSpeeds_t;
+
 /** @brief Driver Interface Module state/gear request. */
 typedef struct {
     uint8_t requestedState;     /**< @brief Requested state. */
@@ -202,11 +210,11 @@ typedef struct {
     int16_t torqueCommand; /**< @brief Torque in N.m. times 10. */
     int16_t speedCommand; /**< @brief Angular velocity in RPM. */
     /** @brief 0 -> CW, 1 -> CCW viewed looking at shaft side. */
-    uint8_t directionCommand; 
-    /** @brief bit 0 = inverter enable, bit 1 = discharge enable. */	
-    uint8_t inverterEnableDischargeSpeedMode;	
+    uint8_t directionCommand;
+    /** @brief bit 0 = inverter enable, bit 1 = discharge enable. */
+    uint8_t inverterEnableDischargeSpeedMode;
     /** @brief Set 0 for no limit override (torque in N.m. times 10). */
-    uint16_t torqueLimitCommand; 
+    uint16_t torqueLimitCommand;
 } cmr_canRMSCommand_t;
 
 /** @brief Faults report from motor controller (see pg 23). */
@@ -268,9 +276,9 @@ typedef struct {
 /** @brief Motor controller torque diagnostics. */
 typedef struct {
     /** @brief Setpoint torque (torque in N.m. times 10). */
-    int16_t commandedTorque; 
+    int16_t commandedTorque;
     /** @brief Measured torque produced (torque in N.m. times 10). */
-    int16_t torqueFeedback; 
+    int16_t torqueFeedback;
     uint32_t powerOnTimer;
 } cmr_canRMSTorqueDiag_t;
 
