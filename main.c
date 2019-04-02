@@ -84,34 +84,30 @@ static void coolingControl(void *pvParameters) {
     cmr_canRXMeta_t *vsmHeartbeatMeta = &(canRXMeta[CANRX_HEARTBEAT_VSM]);
     volatile cmr_canHeartbeat_t *vsmHeartbeat = (void *)(&vsmHeartbeatMeta->payload);
 
-    cmr_canRXMeta_t *vsmStatusMeta = &(canRXMeta[CANRX_VSM_STATUS]);
-    volatile cmr_canVSMStatus_t *vsmStatus = (void *)(&vsmStatusMeta->payload);
-
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // RTD or transitioning into RTD
-        if ((vsmHeartbeat->state == CMR_CAN_RTD)
-         || ((vsmHeartbeat->state == CMR_CAN_HV_EN)
-          && (vsmStatus->internalState == CMR_CAN_VSM_STATE_RAMP_COOLING))) {
+        switch (vsmHeartbeat->state) {
+            case CMR_CAN_RTD:
+                fanState = CMR_CAN_FAN_HIGH;
+                pumpState = CMR_CAN_PTC_PUMP_STATE_ON;
+                cmr_gpioWrite(GPIO_FAN, 1);     // Fan full on
+                cmr_gpioWrite(GPIO_PUMP, 1);    // Pump on
 
-            fanState = CMR_CAN_FAN_HIGH;
-            pumpState = CMR_CAN_PTC_PUMP_STATE_ON;
-            cmr_gpioWrite(GPIO_FAN, 1);     // Fan full on
-            cmr_gpioWrite(GPIO_PUMP, 1);    // Pump on
-        }
+                break;
+            case CMR_CAN_HV_EN:
+                fanState = CMR_CAN_FAN_LOW;
+                pumpState = CMR_CAN_PTC_PUMP_STATE_ON;
+                cmr_gpioToggle(GPIO_FAN);       // 50% duty cycle :)
+                cmr_gpioWrite(GPIO_PUMP, 1);    // Pump on
 
-        else if (vsmHeartbeat->state == CMR_CAN_HV_EN) {
-            fanState = CMR_CAN_FAN_LOW;
-            pumpState = CMR_CAN_PTC_PUMP_STATE_ON;
-            cmr_gpioToggle(GPIO_FAN);       // 50% duty cycle :)
-            cmr_gpioWrite(GPIO_PUMP, 1);    // Pump on
-        }
+                break;
+            default:
+                fanState = CMR_CAN_FAN_OFF;
+                pumpState = CMR_CAN_PTC_PUMP_STATE_OFF;
+                cmr_gpioWrite(GPIO_FAN, 0);     // Fan off
+                cmr_gpioWrite(GPIO_PUMP, 0);    // Pump off
 
-        else {
-            fanState = CMR_CAN_FAN_OFF;
-            pumpState = CMR_CAN_PTC_PUMP_STATE_OFF;
-            cmr_gpioWrite(GPIO_FAN, 0);     // Fan off
-            cmr_gpioWrite(GPIO_PUMP, 0);    // Pump off
+                break;
         }
 
         vTaskDelayUntil(&lastWakeTime, coolingControl_period_ms);

@@ -26,6 +26,11 @@ typedef enum {
     SENSOR_CH_LEN
 } sensorChannel_t;
 
+typedef struct {
+    uint32_t resistance_Ohm;
+    int32_t temp_C;
+} thermistorTempConversion_t;
+
 extern cmr_sensor_t sensors[SENSOR_CH_LEN];
 
 void sensorInit(void);
