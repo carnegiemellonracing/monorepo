@@ -21,7 +21,7 @@
 #include "panic.h"  // cmr_panic()
 
 /**
- * @brief The configuration storage size in words. This is the maximum
+ * @brief The configuration storage len in words. This is the maximum
  *        flash sector size (0x20000 / 4).
  */
 #define CONFIG_CACHE_LEN 4096
@@ -94,8 +94,8 @@ void cmr_configInit(uint32_t sector) {
     config.flashStart = (volatile uint32_t *) getSectorBase(sector);
     config.flashSize = getSectorSize(sector);
 
-    if ((config.flashSize/sizeof(uint32_t)) > CONFIG_CACHE_LEN) {
-        cmr_panic("The flash sectors are misconfigured!");
+    if (sizeof(config.cache) > config.flashSize) {
+        cmr_panic("The flash sector is not large enough!");
     }
 
     cmr_configPull();
@@ -108,7 +108,7 @@ void cmr_configInit(uint32_t sector) {
  * @param data A datum to write.
  */
 int cmr_configSet(size_t addr, uint32_t data) {
-    if (addr >= CONFIG_CACHE_LEN || addr >= (config.flashSize/sizeof(uint32_t))) {
+    if (addr >= CONFIG_CACHE_LEN) {
         return -1;
     }
 
@@ -124,7 +124,7 @@ int cmr_configSet(size_t addr, uint32_t data) {
  * @return The data at the address.
  */
 int cmr_configGet(size_t addr, uint32_t *dest) {
-    if (addr >= CONFIG_CACHE_LEN || addr >= (config.flashSize/sizeof(uint32_t)) || dest == NULL) {
+    if (addr >= CONFIG_CACHE_LEN || dest == NULL) {
         return -1; 
     }
 
@@ -137,7 +137,7 @@ int cmr_configGet(size_t addr, uint32_t *dest) {
  * @brief Pulls the config from flash into the local config cache.
  */
 void cmr_configPull() {
-    memcpy((uint32_t *) config.cache, (uint32_t *) config.flashStart, sizeof(config.cache));
+    memcpy((void *) config.cache, (void *) config.flashStart, sizeof(config.cache));
 }
 
 /**
