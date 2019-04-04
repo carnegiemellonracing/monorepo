@@ -20,7 +20,7 @@ typedef enum {
 
 typedef struct cmr_sensor cmr_sensor_t;
 
-/** 
+/**
  * @brief Function pointer typedef for converting sensor's raw data
  * value to a real value.
  */

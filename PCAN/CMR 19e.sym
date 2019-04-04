@@ -3,11 +3,80 @@ UniqueVariables=True
 Title="CMR 19e"
 
 {ENUMS}
-enum State(0="UNKNOWN", 1="GLV_ON", 2="HV_EN", 3="RTD", 4="ERROR",
-  5="CLEAR_ERROR")
-enum Gear(0="UNKNOWN", 1="REVERSE", 2="SLOW", 3="FAST", 4="ENDURANCE", 5="AUTO-X",
-  6="SKIDPAD", 7="ACCEL", 8="TEST")
-enum CoolingState(0="OFF", 1="LOW", 2="HIGH")
+enum State(
+    0 = "UNKNOWN",
+    1 = "GLV_ON",
+    2 = "HV_EN",
+    3 = "RTD",
+    4 = "ERROR",
+    5 = "CLEAR_ERROR"
+)
+
+enum Gear(
+    0 = "UNKNOWN",
+    1 = "REVERSE",
+    2 = "SLOW",
+    3 = "FAST",
+    4 = "ENDURANCE",
+    5 = "AUTO-X",
+    6 = "SKIDPAD",
+    7 = "ACCEL",
+    8 = "TEST"
+)
+
+enum VSMState (
+    0 = "ERROR",
+    1 = "CLEAR_ERROR",
+    2 = "GLV_ON",
+    3 = "REQ_PRECHARGE",
+    4 = "RUN_BMS",
+    5 = "DCDC_EN",
+    6 = "HV_EN",
+    7 = "RTD",
+    8 = "COOLING_OFF",
+    9 = "DCDC_OFF"
+)
+
+enum HVCMode(
+    0 = "ERROR",
+    1 = "IDLE",
+    2 = "START",
+    4 = "RUN",
+    8 = "CHARGE"
+)
+
+enum HVCState (
+    0 = "ERROR",
+    1 = "DISCHARGE",
+    2 = "STANDBY",
+    3 = "DRIVE_PRECHARGE",
+    4 = "DRIVE_PRECHARGE_COMPLETE",
+    5 = "DRIVE",
+    6 = "CHARGE_PRECHARGE",
+    7 = "CHARGE_PRECHARGE_COMPLETE",
+    8 = "CHARGE_TRICKLE",
+    9 = "CHARGE_CONSTANT_CURRENT",
+    10 = "CHARGE_CONSTANT_VOLTAGE",
+    11 = "CLEAR_ERROR",
+    12 = "UNKNOWN"
+)
+
+enum FanState (
+    0 = "OFF",
+    1 = "LOW",
+    2 = "HIGH"
+)
+
+enum PumpState (
+    0 = "OFF",
+    1 = "ON"
+)
+
+enum CoolingState (
+    0 = "OFF",
+    1 = "LOW",
+    2 = "HIGH"
+)
 
 {SENDRECEIVE}
 
@@ -17,16 +86,12 @@ DLC=5
 CycleTime=10
 Timeout=100
 Var=VSM_state unsigned 0,8 /e:State
-Var=VSM_ERR_HVCTimeout bit 23,1
-Var=VSM_ERR_CDCTimeout bit 22,1
-Var=VSM_ERR_PTCTimeout bit 20,1
-Var=VSM_ERR_FSMTimeout bit 21,1
-Var=VSM_ERR_DIMTimeout bit 19,1
-Var=VSM_ERR_AFC0Timeout bit 18,1
-Var=VSM_ERR_AFC1Timeout bit 17,1
-Var=VSM_ERR_APCTimeout bit 16,1
-Var=VSM_ERR_hallEffectOOR bit 15,1
-Var=VSM_ERR_brakePresOOR bit 14,1
+Var=VSM_ERR_moduleTimeout bit 23,1
+Var=VSM_ERR_moduleState bit 22,1
+Var=VSM_ERR_latchedError bit 21,1
+Var=VSM_ERR_DCDCFault bit 20,1
+Var=VSM_ERR_hallEffectOOR bit 19,1
+Var=VSM_ERR_brakePresOOR bit 18,1
 Var=VSM_WRN_HVCTimeout bit 39,1
 Var=VSM_WRN_CDCTimeout bit 38,1
 Var=VSM_WRN_FSMTimeout bit 37,1
@@ -37,6 +102,36 @@ Var=VSM_WRN_AFC1Timeout bit 33,1
 Var=VSM_WRN_APCTimeout bit 32,1
 Var=VSM_WRN_VoltageOOR bit 25,1
 Var=VSM_WRN_CurrentOOR bit 26,1
+
+[VSM_Status]
+ID=110h
+DLC=4
+CycleTime=10
+Timeout=100
+Var=VSM_internalState unsigned 0,8 /e:VSMState
+// Timeout matrix
+Var=VSM_ERR_HVCTimeout bit 15,1
+Var=VSM_ERR_CDCTimeout bit 14,1
+Var=VSM_ERR_FSMTimeout bit 13,1
+Var=VSM_ERR_PTCTimeout bit 12,1
+Var=VSM_ERR_DIMTimeout bit 11,1
+Var=VSM_ERR_AFC0Timeout bit 10,1
+Var=VSM_ERR_AFC1Timeout bit 9,1
+Var=VSM_ERR_APCTimeout bit 8,1
+// Bad state matrix
+Var=VSM_ERR_HVCState bit 23,1
+Var=VSM_ERR_CDCState bit 22,1
+Var=VSM_ERR_FSMState bit 21,1
+Var=VSM_ERR_PTCState bit 20,1
+Var=VSM_ERR_DIMState bit 19,1
+Var=VSM_ERR_AFC0State bit 18,1
+Var=VSM_ERR_AFC1State bit 17,1
+Var=VSM_ERR_APCState bit 16,1
+// Latched error matrix
+Var=VSM_ERR_latchSoftware bit 26,1
+Var=VSM_ERR_latchAMS bit 26,1
+Var=VSM_ERR_latchIMD bit 25,1
+Var=VSM_ERR_latchBSPD bit 24,1
 
 [VSM_PowerDiagnostic]
 ID=530h
@@ -51,8 +146,37 @@ ID=101h
 DLC=5
 CycleTime=10
 Timeout=100
-Var=HVC_state unsigned 0,8 /e:State
-Var=HVC_ERR_VSMTimeout unsigned 8,1
+Var=HVC_Mode unsigned 16,8 /e:HVCMode
+Var=HVC_State unsigned 24,8 /e:HVCState
+var=HVC_Uptime unsigned 40,8 /u:s
+// Error vector
+Var=HVC_ERR_PACK_UNDERVOLT bit 0,1
+Var=HVC_ERR_PACK_OVERVOLT bit 1,1
+Var=HVC_ERR_PACK_OVERCURRENT bit 3,1
+Var=HVC_ERR_CELL_UNDERVOLT bit 4,1
+Var=HVC_ERR_CELL_OVERVOLT bit 5,1
+Var=HVC_ERR_CELL_OVERTEMP bit 6,1
+Var=HVC_ERR_BMB_FAULT bit 7,1
+Var=HVC_ERR_BMB_TIMEOUT bit 8,1
+Var=HVC_ERR_CAN_TIMEOUT bit 9,1
+Var=HVC_ERR_RELAY bit 12,1
+Var=HVC_ERR_LV_UNDERVOLT bit 13,1
+// Contactor status vector
+Var=HVC_dischargeClosed unsigned 32,1
+Var=HVC_prechargeClosed unsigned 33,1
+Var=HVC_negAIRClosed unsigned 34,1
+Var=HVC_posAIRClosed unsigned 35,1
+Var=HVC_dischargeError unsigned 36,1
+Var=HVC_prechargeError unsigned 37,1
+Var=HVC_negAIRError unsigned 38,1
+Var=HVC_posAIRError unsigned 39,1
+
+[HVC_Command]
+ID=130h
+DLC=1
+CycleTime=10
+Var=HVC_modeRequest unsigned 0,8 /e:HVCMode
+
 
 [CDC_Heartbeat]
 ID=102h
@@ -184,29 +308,19 @@ Var=AFC1_WRN_CurrentOOR bit 26,1
 
 [AFC0_FanStatus]
 ID=236h
-DLC=7
+DLC=2
 CycleTime=100
 Timeout=1000
-Var=AFC0_fan0 unsigned 0,8 /e:CoolingState
-Var=AFC0_fan1 unsigned 8,8 /e:CoolingState
-Var=AFC0_fan2 unsigned 16,8 /e:CoolingState
-Var=AFC0_fan3 unsigned 24,8 /e:CoolingState
-Var=AFC0_fan4 unsigned 32,8 /e:CoolingState
-Var=AFC0_fan5 unsigned 40,8 /e:CoolingState
-Var=AFC0_DCDCFan unsigned 48,8 /e:CoolingState
+Var=AFC0_ACFans unsigned 0,8 /e:FanState
+Var=AFC0_DCDCFan unsigned 8,8 /e:PumpState
 
 [AFC1_FanStatus]
 ID=237h
-DLC=7
+DLC=2
 CycleTime=100
 Timeout=1000
-Var=AFC1_fan0 unsigned 0,8 /e:CoolingState
-Var=AFC1_fan1 unsigned 8,8 /e:CoolingState
-Var=AFC1_fan2 unsigned 16,8 /e:CoolingState
-Var=AFC1_fan3 unsigned 24,8 /e:CoolingState
-Var=AFC1_fan4 unsigned 32,8 /e:CoolingState
-Var=AFC1_fan5 unsigned 40,8 /e:CoolingState
-Var=AFC1_DCDCFan unsigned 48,8 /e:CoolingState
+Var=AFC1_ACFans unsigned 0,8 /e:FanState
+Var=AFC1_DCDCFan unsigned 8,8 /e:PumpState
 
 [AFC0_DriverTemps]
 ID=536h
@@ -267,8 +381,8 @@ ID=234h
 DLC=6
 CycleTime=100
 Timeout=1000
-Var=PTC_fanState unsigned 0,8 /e:CoolingState
-Var=PTC_pumpState unsigned 8,8 /e:CoolingState
+Var=PTC_fanState unsigned 0,8 /e:FanState
+Var=PTC_pumpState unsigned 8,8 /e:PumpState
 Var=PTC_preRadiatorTemp unsigned 16,16 /u:C
 Var=PTC_postRadiatorTemp unsigned 32,16 /u:C
 

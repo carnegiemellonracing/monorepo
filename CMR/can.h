@@ -21,6 +21,8 @@
 
 #include "tasks.h"      // Task interface
 
+#include <CMR/can_types.h>  // cmr_canError_t, cmr_canWarn_t
+
 /** @brief Number of CAN filter banks allocated for each interface. */
 #define CMR_CAN_FILTERBANKS 14
 
@@ -31,8 +33,14 @@ typedef struct {
     /** @brief Threshold period for timeout warning, in milliseconds. */
     const TickType_t timeoutWarn_ms;
 
+    /** @brief Heartbeat flag to set upon exceeding timeout warning threshold. */
+    const cmr_canWarn_t warnFlag;
+
     /** @brief Threshold period for timeout error, in milliseconds. */
     const TickType_t timeoutError_ms;
+
+    /** @brief Heartbeat flag to set upon exceeding timeout error threshold. */
+    const cmr_canError_t errorFlag;
 
     /** @brief Last receive timestamp, in milliseconds. */
     volatile TickType_t lastReceived_ms;
