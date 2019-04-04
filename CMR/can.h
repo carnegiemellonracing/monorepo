@@ -68,15 +68,12 @@ struct cmr_can {
 
     /** @brief Callback for other messages received, or `NULL` to ignore. */
     cmr_canRXCallback_t rxCallback;
-
-    /** @brief Receive task. */
-    cmr_task_t rxTask;
 };
 
 void cmr_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
-    cmr_canRXCallback_t rxCallback, const char *rxTaskName,
+    cmr_canRXCallback_t rxCallback,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
     GPIO_TypeDef *txPort, uint16_t txPin
 );
