@@ -118,7 +118,7 @@ void canInit(void) {
     cmr_canInit(
         &can, CAN2,
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
-        NULL, "canRX",
+        NULL,
         GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
         GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
     );
@@ -221,8 +221,8 @@ static void sendCoolStatus(void) {
     cmr_canPTCCoolingStatus_t coolMsg = {
         .fanState = fanState,
         .pumpState = pumpState,
-        .preRadiatorTemp_C = sensorRead(SENSOR_CH_PRE_RAD_THERM),
-        .postRadiatorTemp_C = sensorRead(SENSOR_CH_POST_RAD_THERM)
+        .preRadiatorTemp_C = sensors[SENSOR_CH_PRE_RAD_THERM].value,
+        .postRadiatorTemp_C = sensors[SENSOR_CH_POST_RAD_THERM].value
     };
 
     canTX(CMR_CANID_PTC_COOLING_STATUS, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
@@ -233,8 +233,8 @@ static void sendCoolStatus(void) {
  */
 static void sendVoltDiagnostics(void) {
     cmr_canPTCVoltageDiagnostics_t voltMsg = {
-        .logicVoltage_mV = sensorRead(SENSOR_CH_LOGIC_VOLTAGE_MV),
-        .loadVoltage_mV = sensorRead(SENSOR_CH_LOAD_VOLTAGE_MV)
+        .logicVoltage_mV = sensors[SENSOR_CH_LOGIC_VOLTAGE_MV].value,
+        .loadVoltage_mV = sensors[SENSOR_CH_LOAD_VOLTAGE_MV].value
     };
 
     canTX(CMR_CANID_PTC_VOLTAGE_DIAGNOSTICS, &voltMsg, sizeof(voltMsg), canTX10Hz_period_ms);
@@ -244,9 +244,9 @@ static void sendVoltDiagnostics(void) {
  */
 static void sendCurrDiagnostics(void) {
     cmr_canPTCCurrentDiagnostics_t ampMsg = {
-        .logicCurrent_mA = sensorRead(SENSOR_CH_LOGIC_CURRENT_MA),
-        .loadCurrent_mA = sensorRead(SENSOR_CH_LOAD_CURRENT_MA),
-        .fanCurrent_mA = sensorRead(SENSOR_CH_FAN_CURRENT_MA)
+        .logicCurrent_mA = sensors[SENSOR_CH_LOGIC_CURRENT_MA].value,
+        .loadCurrent_mA = sensors[SENSOR_CH_LOAD_CURRENT_MA].value,
+        .fanCurrent_mA = sensors[SENSOR_CH_FAN_CURRENT_MA].value
     };
 
     canTX(CMR_CANID_PTC_CURRENT_DIAGNOSTICS, &ampMsg, sizeof(ampMsg), canTX10Hz_period_ms);

@@ -26,11 +26,10 @@ typedef enum {
 	ADC_RAD_THERM_2,		/**< @brief Post-radiator thermistor.	*/
 	ADC_FAN_ISENSE,			/**< @brief	Isense from fan driver		*/
 	ADC_LEN     /**< @brief Total ADC channels. */
-} adcChannels_t;
-
-extern cmr_adcChannel_t adcChannels[ADC_LEN];
+} adcChannel_t;
 
 void adcInit(void);
+uint32_t adcRead(adcChannel_t channel);
 
 #endif /* ADC_H */
 

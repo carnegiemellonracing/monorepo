@@ -8,9 +8,7 @@
 #ifndef SENSORS_H
 #define SENSORS_H
 
-#include <CMR/sensors.h>
-
-extern const uint32_t TPOS_IMPLAUS_THRES_MS;
+#include <CMR/sensor.h>
 
 /** @brief Array indexes for sensor value calibration array. */
 typedef enum {
@@ -26,14 +24,9 @@ typedef enum {
     SENSOR_CH_LEN
 } sensorChannel_t;
 
-typedef struct {
-    uint32_t resistance_Ohm;
-    int32_t temp_C;
-} thermistorTempConversion_t;
-
 extern cmr_sensor_t sensors[SENSOR_CH_LEN];
 
-void sensorInit(void);
-int32_t sensorRead(sensorChannel_t ch);
+void sensorsInit(void);
 
 #endif /* SENSORS_H */
+

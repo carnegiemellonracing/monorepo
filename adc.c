@@ -15,7 +15,7 @@
  *
  * @see `CMR/adc.h` for various initialization values.
  */
-cmr_adcChannel_t adcChannels[ADC_LEN] = {
+static cmr_adcChannel_t adcChannels[ADC_LEN] = {
 	// XXX edit me to match your pin configuration
     [ADC_POWER_VSENSE] = {
         .channel = ADC_CHANNEL_0,
@@ -95,5 +95,16 @@ void adcInit(void) {
         &adc, ADC1,
         adcChannels, sizeof(adcChannels) / sizeof(adcChannels[0])
     );
+}
+
+/**
+ * @brief Reads the given ADC channel's latest value.
+ *
+ * @param channel The channel.
+ *
+ * @return The read value.
+ */
+uint32_t adcRead(adcChannel_t channel) {
+    return cmr_adcRead(&adc, channel);
 }
 
