@@ -128,7 +128,7 @@ static int32_t adcFractionalConvert(
  *
  * @return Logic voltage in mV.
  */
-static int32_t adcConv_LogicVoltage_mV(const cmr_sensor_t *s, uint32_t r) {
+static int32_t adcConvLogicVoltage_mV(const cmr_sensor_t *s, uint32_t r) {
     // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
     return adcFractionalConvert(s, r, 88, 10, 0);
 }
@@ -141,7 +141,7 @@ static int32_t adcConv_LogicVoltage_mV(const cmr_sensor_t *s, uint32_t r) {
  *
  * @return Logic current in mA.
  */
-static int32_t adcConv_LogicCurrent_mA(const cmr_sensor_t *s, uint32_t r) {
+static int32_t adcConvLogicCurrent_mA(const cmr_sensor_t *s, uint32_t r) {
     // mA * 1.5 Ohm * 20 V/V = mV = adcVal * 0.8 mV/bit
     // solve for mA = adcVal * 8 / 300
     return adcFractionalConvert(s, r, 8, 300, 0);
@@ -155,7 +155,7 @@ static int32_t adcConv_LogicCurrent_mA(const cmr_sensor_t *s, uint32_t r) {
  *
  * @return load voltage in mV.
  */
-static int32_t adcConv_LoadVoltage_mV(const cmr_sensor_t *s, uint32_t r) {
+static int32_t adcConvLoadVoltage_mV(const cmr_sensor_t *s, uint32_t r) {
     // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
     return adcFractionalConvert(s, r, 88, 10, 0);
 }
@@ -168,7 +168,7 @@ static int32_t adcConv_LoadVoltage_mV(const cmr_sensor_t *s, uint32_t r) {
  *
  * @return Load current in mA.
  */
-static int32_t adcConv_LoadCurrent_mA(const cmr_sensor_t *s, uint32_t r) {
+static int32_t adcConvLoadCurrent_mA(const cmr_sensor_t *s, uint32_t r) {
     // mA * 0.015 Ohm * 20 V/V = mV = adcVal * 0.8 mV/bit
     // Solve for mA = adcVal * 24 / 100
     return adcFractionalConvert(s, r, 24, 100, 0);
@@ -182,7 +182,7 @@ static int32_t adcConv_LoadCurrent_mA(const cmr_sensor_t *s, uint32_t r) {
  *
  * @return Fan current in mA.
  */
-static int32_t adcConv_FanCurrent_mA(const cmr_sensor_t *s, uint32_t r) {
+static int32_t adcConvFanCurrent_mA(const cmr_sensor_t *s, uint32_t r) {
     // TODO this is wrong
     return adcFractionalConvert(s, r, 8, 200, 0);
 }
@@ -195,7 +195,7 @@ static int32_t adcConv_FanCurrent_mA(const cmr_sensor_t *s, uint32_t r) {
  *
  * @return Switch temperature in degrees C.
  */
-static int32_t adcConv_SwitchTemp_C(const cmr_sensor_t *s, uint32_t adcVal) {
+static int32_t adcConvSwitchTemp_C(const cmr_sensor_t *s, uint32_t adcVal) {
     (void) s;   // Placate compiler.
 
     // adcVal * 0.8 mV/bit = 3300 mV * (10 kOhm / (10 kOhm + Rth))
@@ -234,7 +234,7 @@ static int32_t adcConv_RadTherm(const cmr_sensor_t *s, uint32_t r) {
 cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     [SENSOR_CH_LOGIC_VOLTAGE_MV] = {
         .sample = sampleADCSensor,
-        .conv = adcConv_LogicVoltage_mV,
+        .conv = adcConvLogicVoltage_mV,
         .readingMin = 2256, // 20 Volts
         .readingMax = 2933, // 26 Volts
         .outOfRange_pcnt = 10,
@@ -242,7 +242,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     },
     [SENSOR_CH_LOGIC_CURRENT_MA] = {
         .sample = sampleADCSensor,
-        .conv = adcConv_LogicCurrent_mA,
+        .conv = adcConvLogicCurrent_mA,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10,
@@ -250,7 +250,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     },
     [SENSOR_CH_LOAD_VOLTAGE_MV] = {
         .sample = sampleADCSensor,
-        .conv = adcConv_LoadVoltage_mV,
+        .conv = adcConvLoadVoltage_mV,
         .readingMin = 2256, // 20 Volts
         .readingMax = 2933, // 26 Volts
         .outOfRange_pcnt = 10,
@@ -258,7 +258,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     },
     [SENSOR_CH_LOAD_CURRENT_MA] = {
         .sample = sampleADCSensor,
-        .conv = adcConv_LoadCurrent_mA,
+        .conv = adcConvLoadCurrent_mA,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10,
@@ -266,7 +266,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     },
     [SENSOR_CH_FAN_CURRENT_MA] = {
         .sample = sampleADCSensor,
-        .conv = adcConv_FanCurrent_mA,
+        .conv = adcConvFanCurrent_mA,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10,
@@ -274,7 +274,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     },
     [SENSOR_CH_BOARD_THERM_1] = {
         .sample = sampleADCSensor,
-        .conv = adcConv_SwitchTemp_C,
+        .conv = adcConvSwitchTemp_C,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10,
@@ -282,7 +282,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     },
     [SENSOR_CH_BOARD_THERM_2] = {
         .sample = sampleADCSensor,
-        .conv = adcConv_SwitchTemp_C,
+        .conv = adcConvSwitchTemp_C,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10,
@@ -290,7 +290,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     },
     [SENSOR_CH_PRE_RAD_THERM] = {
         .sample = sampleADCSensor,
-        .conv = adcConv_RadTherm,
+        .conv = adcConvRadTherm,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10,
@@ -298,7 +298,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     },
     [SENSOR_CH_POST_RAD_THERM] = {
         .sample = sampleADCSensor,
-        .conv = adcConv_RadTherm,
+        .conv = adcConvRadTherm,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10,
