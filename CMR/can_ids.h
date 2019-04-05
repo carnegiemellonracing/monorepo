@@ -33,6 +33,7 @@ typedef enum {
     CMR_CANID_VSM_POWER_DIAGNOSTICS = 0x530,    /**< @brief VSM power diagnostics. */
 
     CMR_CANID_CDC_WHEEL_SPEEDS = 0x132,         /**< @brief CDC wheel speeds. */
+    CMR_CANID_CDC_SOLENOID_PTC = 0x142,         /**< @brief CDC brake solenoid command. */
 
     CMR_CANID_HVC_COMMAND = 0x130,              /**< @brief HVC command, sent by VSM. */
 

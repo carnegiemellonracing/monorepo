@@ -352,6 +352,11 @@ typedef struct {
     uint16_t backRight;     /**< @brief Back right wheel speed (RPM). */
 } cmr_canCDCWheelSpeeds_t;
 
+/** @brief Central Dynamics Controller PTC brake solenoid command. */
+typedef struct {
+    uint8_t solenoidEnable;     /**< @brief Enable the solenoid (disable the brakes). */
+} cmr_canCDCSolenoidPTC_t;
+
 // ------------------------------------------------------------------------------------------------
 // Driver Interface Module
 
