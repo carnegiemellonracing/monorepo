@@ -11,6 +11,9 @@
 #include "adc.h"        // adcChannels_t, adcChannels
 #include <CMR/adc.h>    // ADC_MAX
 
+// Forward declaration of sensor state.
+static cmr_sensor_t sensors[SENSOR_CH_LEN];
+
 /** @brief Mapping of ADC channels to sensors. */
 static const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
     [SENSOR_CH_LOGIC_VOLTAGE_MV]  = ADC_LOGIC_VSENSE,
@@ -225,86 +228,84 @@ static int32_t adcConvSwitchTemp_C(const cmr_sensor_t *s, uint32_t adcVal) {
  *
  * @return Radiator temperature in degrees C.
  */
-static int32_t adcConv_RadTherm(const cmr_sensor_t *s, uint32_t r) {
+static int32_t adcConvRadTherm(const cmr_sensor_t *s, uint32_t r) {
     // TODO
     return adcFractionalConvert(s, r, 1, 1, 0);
 }
 
-// TODO calibrate all of these min/max values
-cmr_sensor_t sensors[SENSOR_CH_LEN] = {
+/**
+ * @brief Sensor state.
+ *
+ * TODO calibrate all of these min/max values
+ */
+static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     [SENSOR_CH_LOGIC_VOLTAGE_MV] = {
         .sample = sampleADCSensor,
         .conv = adcConvLogicVoltage_mV,
         .readingMin = 2256, // 20 Volts
         .readingMax = 2933, // 26 Volts
-        .outOfRange_pcnt = 10,
-        .value = 24000
+        .outOfRange_pcnt = 10
     },
     [SENSOR_CH_LOGIC_CURRENT_MA] = {
         .sample = sampleADCSensor,
         .conv = adcConvLogicCurrent_mA,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10,
-        .value = 20
+        .outOfRange_pcnt = 10
     },
     [SENSOR_CH_LOAD_VOLTAGE_MV] = {
         .sample = sampleADCSensor,
         .conv = adcConvLoadVoltage_mV,
         .readingMin = 2256, // 20 Volts
         .readingMax = 2933, // 26 Volts
-        .outOfRange_pcnt = 10,
-        .value = 24000
+        .outOfRange_pcnt = 10
     },
     [SENSOR_CH_LOAD_CURRENT_MA] = {
         .sample = sampleADCSensor,
         .conv = adcConvLoadCurrent_mA,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10,
-        .value = 20
+        .outOfRange_pcnt = 10
     },
     [SENSOR_CH_FAN_CURRENT_MA] = {
         .sample = sampleADCSensor,
         .conv = adcConvFanCurrent_mA,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10,
-        .value = 20
+        .outOfRange_pcnt = 10
     },
     [SENSOR_CH_BOARD_THERM_1] = {
         .sample = sampleADCSensor,
         .conv = adcConvSwitchTemp_C,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10,
-        .value = 20
+        .outOfRange_pcnt = 10
     },
     [SENSOR_CH_BOARD_THERM_2] = {
         .sample = sampleADCSensor,
         .conv = adcConvSwitchTemp_C,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10,
-        .value = 20
+        .outOfRange_pcnt = 10
     },
     [SENSOR_CH_PRE_RAD_THERM] = {
         .sample = sampleADCSensor,
         .conv = adcConvRadTherm,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10,
-        .value = 20
+        .outOfRange_pcnt = 10
     },
     [SENSOR_CH_POST_RAD_THERM] = {
         .sample = sampleADCSensor,
         .conv = adcConvRadTherm,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10,
-        .value = 20
+        .outOfRange_pcnt = 10
     }
 };
+
+/** @brief The sensors list. */
+cmr_sensorList_t sensorList;
 
 /** @brief Sensors update priority. */
 static const uint32_t sensorsUpdate_priority = 5;
@@ -327,9 +328,7 @@ static void sensorsUpdate(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        for (size_t i = 0; i < SENSOR_CH_LEN; i++) {
-            cmr_sensorRead(sensors + i);
-        }
+        cmr_sensorListUpdate(&sensorList);
 
         vTaskDelayUntil(&lastWakeTime, sensorsUpdate_period_ms);
     }
@@ -339,10 +338,10 @@ static void sensorsUpdate(void *pvParameters) {
  * @brief Initializes the sensor interface.
  */
 void sensorsInit(void) {
-    // Initialize each sensor.
-    for (size_t i = 0; i < SENSOR_CH_LEN; i++) {
-        cmr_sensorInit(sensors + i);
-    }
+    cmr_sensorListInit(
+        &sensorList,
+        sensors, sizeof(sensors) / sizeof(sensors[0])
+    );
 
     // Task creation.
     cmr_taskInit(

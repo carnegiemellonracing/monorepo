@@ -15,9 +15,8 @@
 
 #include <CMR/tasks.h>  // Task interface
 
-#include "can.h"    // Interface to implement
-#include "adc.h"    // adcVSense, adcISense
-#include "sensors.h"
+#include "can.h"        // Interface to implement
+#include "sensors.h"    // Sensors interface.
 
 /**
  * @brief CAN periodic message receive metadata
@@ -218,11 +217,16 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
  * @brief Send cooling system status on CAN bus.
  */
 static void sendCoolStatus(void) {
+    int32_t preRadiatorTemp_C =
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_PRE_RAD_THERM);
+    int32_t postRadiatorTemp_C =
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_POST_RAD_THERM);
+
     cmr_canPTCCoolingStatus_t coolMsg = {
         .fanState = fanState,
         .pumpState = pumpState,
-        .preRadiatorTemp_C = sensors[SENSOR_CH_PRE_RAD_THERM].value,
-        .postRadiatorTemp_C = sensors[SENSOR_CH_POST_RAD_THERM].value
+        .preRadiatorTemp_C = preRadiatorTemp_C,
+        .postRadiatorTemp_C = postRadiatorTemp_C
     };
 
     canTX(CMR_CANID_PTC_COOLING_STATUS, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
@@ -232,9 +236,14 @@ static void sendCoolStatus(void) {
  * @brief Send voltage diagnostic information.
  */
 static void sendVoltDiagnostics(void) {
+    int32_t logicVoltage_mV =
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_LOGIC_VOLTAGE_MV);
+    int32_t loadVoltage_mV =
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_LOAD_VOLTAGE_MV);
+
     cmr_canPTCVoltageDiagnostics_t voltMsg = {
-        .logicVoltage_mV = sensors[SENSOR_CH_LOGIC_VOLTAGE_MV].value,
-        .loadVoltage_mV = sensors[SENSOR_CH_LOAD_VOLTAGE_MV].value
+        .logicVoltage_mV = logicVoltage_mV,
+        .loadVoltage_mV = loadVoltage_mV
     };
 
     canTX(CMR_CANID_PTC_VOLTAGE_DIAGNOSTICS, &voltMsg, sizeof(voltMsg), canTX10Hz_period_ms);
@@ -243,10 +252,17 @@ static void sendVoltDiagnostics(void) {
  * @brief Send current diagnostic information.
  */
 static void sendCurrDiagnostics(void) {
+    int32_t logicCurrent_mA =
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_LOGIC_CURRENT_MA);
+    int32_t loadCurrent_mA =
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_LOAD_CURRENT_MA);
+    int32_t fanCurrent_mA =
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_FAN_CURRENT_MA);
+
     cmr_canPTCCurrentDiagnostics_t ampMsg = {
-        .logicCurrent_mA = sensors[SENSOR_CH_LOGIC_CURRENT_MA].value,
-        .loadCurrent_mA = sensors[SENSOR_CH_LOAD_CURRENT_MA].value,
-        .fanCurrent_mA = sensors[SENSOR_CH_FAN_CURRENT_MA].value
+        .logicCurrent_mA = logicCurrent_mA,
+        .loadCurrent_mA = loadCurrent_mA,
+        .fanCurrent_mA = fanCurrent_mA
     };
 
     canTX(CMR_CANID_PTC_CURRENT_DIAGNOSTICS, &ampMsg, sizeof(ampMsg), canTX10Hz_period_ms);
