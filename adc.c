@@ -16,7 +16,7 @@
  * @see `CMR/adc.h` for various initialization values.
  */
 static cmr_adcChannel_t adcChannels[ADC_LEN] = {
-	// XXX edit me to match your pin configuration
+    // XXX edit me to match your pin configuration
     [ADC_POWER_VSENSE] = {
         .channel = ADC_CHANNEL_0,
         .port = GPIOA,
