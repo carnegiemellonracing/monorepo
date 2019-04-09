@@ -179,6 +179,40 @@ static float get_motor_regen_capacity(float wheelspeed_radps) {
     return -maxTorque_continuous_stall_Nm;
 }
 
+// For sensor validation.
+static void set_slow_motor_speed(float speed_mps, bool rear_only) {
+    speed_mps = fmaxf(speed_mps, 0.0f);
+    speed_mps = fminf(speed_mps, 7.5f);
+    float target_rpm = speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
+    cmr_torqueDistributionNm_t torquesPos_Nm;
+    if(rear_only) {
+        setVelocityInt16(MOTOR_FL, 0);
+        setVelocityInt16(MOTOR_FR, 0);
+        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
+        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
+        torquesPos_Nm.fl = 0.0f;
+        torquesPos_Nm.fr = 0.0f;
+        torquesPos_Nm.rl = maxSlowTorque_Nm;
+        torquesPos_Nm.rr = maxSlowTorque_Nm;
+    } else {
+        setVelocityInt16(MOTOR_FL, (int16_t) target_rpm);
+        setVelocityInt16(MOTOR_FR, (int16_t) target_rpm);
+        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
+        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
+        torquesPos_Nm.fl = maxSlowTorque_Nm;
+        torquesPos_Nm.fr = maxSlowTorque_Nm;
+        torquesPos_Nm.rl = maxSlowTorque_Nm;
+        torquesPos_Nm.rr = maxSlowTorque_Nm;
+    }
+	cmr_torqueDistributionNm_t torquesNeg_Nm = {
+        .fl = 0.0f,
+        .fr = 0.0f,
+        .rl = 0.0f,
+        .rr = 0.0f,
+    };
+    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
+}
+
 static inline void set_motor_speed_and_torque(
     motorLocation_t motor,
     float val,
@@ -359,6 +393,27 @@ static void set_optimal_control(
     }
 }
 
+static void set_optimal_control_with_regen(
+	int throttlePos_u8,
+	int32_t swAngle_millideg
+) {
+    uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
+
+    uint8_t paddle_regen_strength_raw = 100;
+    getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
+    float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
+
+    float paddle_request = 0.0f;
+    if (paddle_pressure > paddle_pressure_start) {
+        paddle_request = ((float)(paddle_pressure - paddle_pressure_start)) / (UINT8_MAX - paddle_pressure_start);
+        paddle_request *= paddle_regen_strength; // [0, 1].
+    }
+
+    float throttle = (float)throttlePos_u8 / UINT8_MAX;
+    float combined_request = throttle - paddle_request; // [0, 1].
+    set_optimal_control(combined_request, swAngle_millideg, true);
+}
+
 /**
  * @brief Runs control loops and sets motor torque limits and velocity targets accordingly.
  *
@@ -449,22 +504,10 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_TEST: {
-
-            uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
-
-            uint8_t paddle_regen_strength_raw = 100;
-            getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
-            float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
-
-            float paddle_request = 0.0f;
-            if (paddle_pressure > paddle_pressure_start) {
-                paddle_request = ((float)(paddle_pressure - paddle_pressure_start)) / (UINT8_MAX - paddle_pressure_start);
-                paddle_request *= paddle_regen_strength; // [0, 1].
-            }
-
-            float throttle = (float)throttlePos_u8 / UINT8_MAX;
-            float combined_request = throttle - paddle_request; // [0, 1].
-            set_optimal_control(combined_request, swAngle_millideg_FL, swAngle_millideg_FR, true);
+            // set_optimal_control_with_regen(throttlePos_u8, swAngle_millideg);
+            float target_speed_mps = 5.0f;
+            getProcessedValue(&target_speed_mps, FFLAUNCH_FEEDBACK_INDEX, float_1_decimal);
+            set_slow_motor_speed(target_speed_mps, true);
             break;
         }
 
@@ -721,10 +764,12 @@ static float getFFScheduleVelocity(float t_sec) {
     float tMax = 6.4f; // limit time for safety reasons
     float scheduleVelocity_mps = 0.0f;
 
+    float scheduleVelocity_mps2 = 11.29;
+    getProcessedValue(&scheduleVelocity_mps2, K_EFF_INDEX, float_1_decimal);
+
     if (t_sec < 0.0f) {
         scheduleVelocity_mps = 0.0f;
     } else if(t_sec < tMax) {
-        float scheduleVelocity_mps2 = 11.29;
         float startingVel_mps = 0.0;
         scheduleVelocity_mps = (scheduleVelocity_mps2 * t_sec) + startingVel_mps;
         // 2023 Michigan EV fastest accel - 3.645s -> 11.29m/s^2 linear accel
@@ -1266,8 +1311,8 @@ void setEnduranceTorque (
     const bool regen_button_pressed = (((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->buttons) & BUTTON_SCRN ;
 
     uint8_t pedal_regen_strength = 0;
-    getProcessedValue(&pedal_regen_strength, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
     const float regentPcnt_f = ((float)pedal_regen_strength) * 1e-2; // convert a coefficient between 0 and 1
+    getProcessedValue(&pedal_regen_strength, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
 
     int32_t pedal_request = (int32_t)throttlePos_u8;
     if (regen_button_pressed) {

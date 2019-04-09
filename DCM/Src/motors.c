@@ -182,6 +182,9 @@ static void motorsCommand (
 
         uint32_t throttle;
 
+        float target_speed_mps = 5.0f;
+        getProcessedValue(&target_speed_mps, FFLAUNCH_FEEDBACK_INDEX, float_1_decimal);    
+
         //transmit Coulombs using HVI sense
         integrateCurrent();
 
