@@ -17,7 +17,7 @@
  void state_up_button(bool pressed) {
      if (pressed) {
          cmr_canState_t newState = DIM_requested_state + 1;
-         if (is_valid_state_request(newState)) {
+         if (is_valid_state_request(VSM_state, newState)) {
              DIM_requested_state = newState;
          }
      }
@@ -31,7 +31,7 @@
  void state_down_button(bool pressed) {
      if (pressed) {
          cmr_canState_t newState = DIM_requested_state - 1;
-         if (is_valid_state_request(newState)) {
+         if (is_valid_state_request(VSM_state, newState)) {
              DIM_requested_state = newState;
          }
      }
@@ -39,32 +39,29 @@
 
  bool is_valid_state_request(cmr_canState_t curr_state, cmr_canState_t new_state) {
      switch (curr_state) {
-         CMR_CAN_UNKNOWN :
+         case CMR_CAN_UNKNOWN :
              return (new_state == CMR_CAN_GLV_ON);
              break;
-         CMR_CAN_GLV_ON :
+         case CMR_CAN_GLV_ON :
              return (new_state == CMR_CAN_GLV_ON) ||
                     (new_state == CMR_CAN_HV_EN);
              break;
-         CMR_CAN_HV_EN :
+         case CMR_CAN_HV_EN :
              return (new_state == CMR_CAN_GLV_ON) ||
                     (new_state == CMR_CAN_HV_EN) ||
                     (new_state == CMR_CAN_RTD);
              break;
-         CMR_CAN_RTD :
+         case CMR_CAN_RTD :
              return (new_state == CMR_CAN_HV_EN) ||
                     (new_state == CMR_CAN_RTD);
              break;
-         CMR_CAN_ERROR :
+         case CMR_CAN_ERROR :
              return (new_state == CMR_CAN_GLV_ON);
              break;
-         CMR_CAN_CLEAR_ERROR :
+         case CMR_CAN_CLEAR_ERROR :
              return (new_state == CMR_CAN_GLV_ON);
              break;
          default :
              return 0;
      }
-     return (curr_state == CMR_CAN_UNKNOWN) & (new_state == CMR)) ||
-             curr_state == CMR_CAN_HV_EN ||
-             curr_state == CMR_CAN_RTD);
  }
