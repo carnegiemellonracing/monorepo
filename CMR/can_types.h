@@ -319,6 +319,12 @@ typedef struct {
     uint8_t modeRequest;    /**< @brief HVC operating mode request. See cmr_canHVCMode_t. */
 } cmr_canHVCCommand_t;
 
+/** @brief High Voltage Controller. */
+typedef struct {
+    int32_t battVoltage;    /**< @brief voltage measured across battery. */
+    int32_t hvVoltage;      /**< @brief voltage outside accumulator. */
+} cmr_canHVCPackVoltage_t;
+
 // ------------------------------------------------------------------------------------------------
 // Accumulator Fan Controller
 
