@@ -109,6 +109,15 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_VERY_HIGH
         }
+    },
+    [GPIO_PD_N] = {
+    	.port = GPIOC,
+		.init = {
+			.Pin = GPIO_PIN_3,
+			.Mode = GPIO_MODE_OUTPUT_PP,
+			.Pull = GPIO_NOPULL,
+			.Speed = GPIO_SPEED_FREQ_LOW
+		}
     }
 };
 
@@ -154,14 +163,14 @@ static void buttonsInput_task(void *pvParameters) {
         while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
             switch (event.pin) {
                 case GPIO_BUTTON_0:
-                    state_up_button(event.pressed);
                     break;
                 case GPIO_BUTTON_1:
-                    state_down_button(event.pressed);
+                	state_down_button(event.pressed);
                     break;
                 case GPIO_BUTTON_2:
                     break;
                 case GPIO_BUTTON_3:
+                	state_up_button(event.pressed);
                     break;
                 case GPIO_BUTTON_4:
                     break;
@@ -171,6 +180,7 @@ static void buttonsInput_task(void *pvParameters) {
                 case GPIO_LED_AMS:
                 case GPIO_LED_BSPD:
                 case GPIO_BEEPER:
+                case GPIO_PD_N:
                 case GPIO_LEN:
                     break;
             }

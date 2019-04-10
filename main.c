@@ -13,24 +13,35 @@
 #include <CMR/adc.h>    // ADC interface
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
+#include <CMR/i2c.h>  // Segment interface
+#include <string.h>
+#include <stdio.h>
 
 #include "gpio.h"   // Board-specific GPIO interface
 #include "can.h"    // Board-specific CAN interface
 #include "adc.h"    // Board-specific ADC interface
 #include "main.h"   // DIM-specific definitions
+#include "segments.h"
 
-
+/**======================================**/
+/**              STATUS LED              **/
+/**======================================**/
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
 
 /** @brief Status LED period (milliseconds). */
 static const TickType_t statusLED_period_ms = 250;
 
+static const uint32_t display_len = 8;
+
 /** @brief Status LED task. */
 static cmr_task_t statusLED_task;
 
-volatile cmr_canState_t VSM_state = CMR_CAN_UNKNOWN;
-volatile cmr_canState_t DIM_requested_state = CMR_CAN_GLV_ON;
+static cmr_i2c_t i2c1;
+
+volatile cmr_canState_t VSM_state = CMR_CAN_HV_EN;
+volatile cmr_canState_t DIM_requested_state = CMR_CAN_UNKNOWN;
+volatile int32_t HVC_pack_voltage = 0;
 
 /**
  * @brief Task for toggling the status LED.
@@ -45,9 +56,35 @@ static void statusLED(void *pvParameters) {
     cmr_gpioWrite(GPIO_LED_STATUS, 0);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        cmr_gpioToggle(GPIO_LED_STATUS);
 
+    //static const uint32_t pack_voltage  = 447;
+
+    uint8_t *text[] = {
+    		"?",
+    		"GLVON   ",
+			"HVEN %.3u",
+			"RTD  %.3u",
+			"ERROR",
+			"ERROR",
+    };
+    while (1) {
+    	uint8_t display_str[display_len];
+    	uint32_t ret_len = 0;
+    	switch(VSM_state) {
+    		case CMR_CAN_UNKNOWN :
+    		case CMR_CAN_GLV_ON :
+    		case CMR_CAN_HV_EN :
+    		case CMR_CAN_RTD :
+    		case CMR_CAN_ERROR :
+    		case CMR_CAN_CLEAR_ERROR :
+    			ret_len = snprintf(display_str, display_len, text[VSM_state], HVC_pack_voltage);
+    			break;
+    		default:
+    			ret_len = snprintf(display_str, display_len, text[0], HVC_pack_voltage);
+    			break;
+    	}
+    	writeSegmentText(display_str, ret_len);
+        cmr_gpioToggle(GPIO_LED_STATUS);
         vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
     }
 }
@@ -68,7 +105,8 @@ int main(void) {
     gpioInit();
     canInit();
     adcInit();
-
+    cmr_i2cInit(&i2c1, I2C1, 100000, 0, GPIOB, GPIO_PIN_8, GPIOB, GPIO_PIN_7);
+    initSegmentDisplays(&i2c1);
     cmr_taskInit(
         &statusLED_task,
         "statusLED",

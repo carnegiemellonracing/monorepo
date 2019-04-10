@@ -30,6 +30,11 @@ cmr_canRXMeta_t canRXMeta[] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
+    },
+    [CANRX_HVC_PACK_VOLTAGE] = {
+    	.canID = CMR_CANID_HVC_PACK_VOLTAGE,
+		.timeoutError_ms = 50,
+		.timeoutWarn_ms = 25
     }
 };
 
@@ -112,6 +117,10 @@ static void canTX100Hz(void *pvParameters) {
     volatile cmr_canHeartbeat_t *heartbeatVSM =
         (void *) heartbeatVSMMeta->payload;
 
+    cmr_canRXMeta_t *packvoltageHVCMeta = canRXMeta + CANRX_HVC_PACK_VOLTAGE;
+    volatile cmr_canHVCPackVoltage_t *packvoltageHVC =
+    	(void *) packvoltageHVCMeta->payload;
+
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         // XXX Update these fields correctly.
@@ -133,6 +142,11 @@ static void canTX100Hz(void *pvParameters) {
         }
         memcpy(&heartbeat.warning, &warning, sizeof(warning));
 
+
+        // pack voltage
+        HVC_pack_voltage = packvoltageHVC->battVoltage;
+
+
         // XXX Replace with an appropriate ID and timeout.
         canTX(
             CMR_CANID_HEARTBEAT_DIM,
@@ -153,7 +167,7 @@ void canInit(void) {
     cmr_canInit(
         &can, CAN2,
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
-        NULL, "canRX",
+        NULL,
         GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
         GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
     );

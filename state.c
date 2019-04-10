@@ -20,7 +20,6 @@
          if (is_valid_state_request(newState)) {
              DIM_requested_state = newState;
          }
-         cmr_gpioToggle(GPIO_LED_BSPD);
      }
  }
 
@@ -35,7 +34,6 @@
          if (is_valid_state_request(newState)) {
              DIM_requested_state = newState;
          }
-         cmr_gpioToggle(GPIO_LED_AMS);
      }
  }
 
