@@ -37,8 +37,34 @@
      }
  }
 
- bool is_valid_state_request(cmr_canState_t state) {
-     return (state == CMR_CAN_GLV_ON ||
-             state == CMR_CAN_HV_EN ||
-             state == CMR_CAN_RTD);
+ bool is_valid_state_request(cmr_canState_t curr_state, cmr_canState_t new_state) {
+     switch (curr_state) {
+         CMR_CAN_UNKNOWN :
+             return (new_state == CMR_CAN_GLV_ON);
+             break;
+         CMR_CAN_GLV_ON :
+             return (new_state == CMR_CAN_GLV_ON) ||
+                    (new_state == CMR_CAN_HV_EN);
+             break;
+         CMR_CAN_HV_EN :
+             return (new_state == CMR_CAN_GLV_ON) ||
+                    (new_state == CMR_CAN_HV_EN) ||
+                    (new_state == CMR_CAN_RTD);
+             break;
+         CMR_CAN_RTD :
+             return (new_state == CMR_CAN_HV_EN) ||
+                    (new_state == CMR_CAN_RTD);
+             break;
+         CMR_CAN_ERROR :
+             return (new_state == CMR_CAN_GLV_ON);
+             break;
+         CMR_CAN_CLEAR_ERROR :
+             return (new_state == CMR_CAN_GLV_ON);
+             break;
+         default :
+             return 0;
+     }
+     return (curr_state == CMR_CAN_UNKNOWN) & (new_state == CMR)) ||
+             curr_state == CMR_CAN_HV_EN ||
+             curr_state == CMR_CAN_RTD);
  }
