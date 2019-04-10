@@ -157,31 +157,33 @@ static void brakeDisconnect(void *pvParameters) {
     // Currently used to switch dcdc relay by observing VSM internal state
     cmr_canRXMeta_t *VSM_statusMeta = canRXMeta + CANRX_VSM_STATUS;
     volatile cmr_canVSMStatus_t *VSM_status = (void *) VSM_statusMeta->payload;
-    cmr_canVSMState_t lastObservedState = CMR_CAN_VSM_STATE_ERROR;
     TickType_t lastWakeTime = xTaskGetTickCount();
+
+    bool enable = false;
+    TickType_t enableTime = 0;
+
     while (1) {
-        switch (lastObservedState){
-        	case CMR_CAN_VSM_STATE_RUN_BMS:
-                // Check for transition into dcdc enable from VSM
-            	// Start a timer from this point forwards, on wakeup close the relay
-            	// Will be opened when leaving GLV_ON
-            	if (VSM_status->internalState == CMR_CAN_VSM_STATE_DCDC_EN) {
-            		vTaskDelayUntil(&lastWakeTime, dcdc_preapply_period_ms);
-            	}
-                break;
-            // In higher states, the PTC should continue to close the dcdc output relay
+        switch (VSM_status->internalState) {
         	case CMR_CAN_VSM_STATE_DCDC_EN:
-        		//Know that we stalled during the transition to this state, so we can close the relay
         	case CMR_CAN_VSM_STATE_HV_EN:
         	case CMR_CAN_VSM_STATE_RTD:
-        		cmr_gpioWrite(GPIO_BRAKE_DISCON, 1);
+                if (!enable) {
+                    enable = true;
+                    enableTime = lastWakeTime;
+                }
         		break;
         	// dcdc relay should stay open with respect to any other observed VSM states
             default:
-                cmr_gpioWrite(GPIO_BRAKE_DISCON, 0);
+                enable = false;
                 break;
         }
-        lastObservedState = VSM_status->internalState;
+
+        if (enable && (lastWakeTime - enableTime > dcdc_preapply_period_ms)) {
+            cmr_gpioWrite(GPIO_BRAKE_DISCON, 1);
+        } else {
+            cmr_gpioWrite(GPIO_BRAKE_DISCON, 0);
+        }
+
         vTaskDelayUntil(&lastWakeTime, brakeDisconnect_period_ms);
     }
 }
