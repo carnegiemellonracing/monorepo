@@ -39,8 +39,8 @@ static cmr_task_t statusLED_task;
 
 static cmr_i2c_t i2c1;
 
-volatile cmr_canState_t VSM_state = CMR_CAN_HV_EN;
-volatile cmr_canState_t DIM_requested_state = CMR_CAN_UNKNOWN;
+volatile cmr_canState_t VSM_state = CMR_CAN_UNKNOWN;
+volatile cmr_canState_t DIM_requested_state = CMR_CAN_GLV_ON;
 volatile int32_t HVC_pack_voltage = 0;
 
 /**
@@ -61,11 +61,11 @@ static void statusLED(void *pvParameters) {
 
     uint8_t *text[] = {
     		"?",
-    		"GLVON   ",
+    		"GLV ON   ",
 			"HVEN %.3u",
 			"RTD  %.3u",
 			"ERROR",
-			"ERROR",
+			"C_ERROR",
     };
     while (1) {
     	uint8_t display_str[display_len];

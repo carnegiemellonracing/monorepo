@@ -16,6 +16,10 @@
   */
  void state_up_button(bool pressed) {
      if (pressed) {
+         if (VSM_state == CMR_CAN_ERROR) {
+             DIM_requested_state = CMR_CAN_GLV_ON;
+             return;
+         }
          cmr_canState_t newState = DIM_requested_state + 1;
          if (is_valid_state_request(VSM_state, newState)) {
              DIM_requested_state = newState;

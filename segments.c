@@ -77,16 +77,16 @@ uint8_t addrBySegno(uint8_t segno) {
 			seg_addr = 0x23;
 			break;
 		case 4:
-			seg_addr = 0x26;
-			break;
-		case 5:
-			seg_addr = 0x27;
-			break;
-		case 6:
 			seg_addr = 0x24;
 			break;
-		case 7:
+		case 5:
 			seg_addr = 0x25;
+			break;
+		case 6:
+			seg_addr = 0x26;
+			break;
+		case 7:
+			seg_addr = 0x27;
 			break;
 		default:
 			return  -1;

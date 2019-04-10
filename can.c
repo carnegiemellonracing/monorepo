@@ -128,6 +128,10 @@ static void canTX100Hz(void *pvParameters) {
             .state = heartbeatVSM->state
         };
 
+        if (VSM_state != heartbeatVSM->state) {
+            // vsm has updated, reset our request
+            DIM_requested_state = heartbeatVSM->state;
+        }
         VSM_state = heartbeatVSM->state;
 
         uint16_t error = CMR_CAN_ERROR_NONE;
@@ -144,7 +148,7 @@ static void canTX100Hz(void *pvParameters) {
 
 
         // pack voltage
-        HVC_pack_voltage = packvoltageHVC->battVoltage;
+        HVC_pack_voltage = packvoltageHVC->hvVoltage;
 
 
         // XXX Replace with an appropriate ID and timeout.
@@ -180,7 +184,7 @@ void canInit(void) {
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_HEARTBEAT_VSM,
-                CMR_CANID_HEARTBEAT_VSM,
+                CMR_CANID_HVC_PACK_VOLTAGE,
                 CMR_CANID_HEARTBEAT_VSM,
                 CMR_CANID_HEARTBEAT_VSM
             }
