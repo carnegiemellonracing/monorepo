@@ -78,6 +78,35 @@ enum CoolingState (
     2 = "HIGH"
 )
 
+enum RMSInternalState (
+    0 = "RMS_VSM_START",
+    1 = "RMS_PRECHARGE_INIT",
+    2 = "RMS_PRECHARGE_ACTIVE",
+    3 = "RMS_PRECHARGE_COMPLETE",
+    4 = "RMS_VSM_WAIT",
+    5 = "RMS_VSM_READY",
+    6 = "RMS_MOTOR_RUNNING",
+    7 = "RMS_BLINK_FAULT_CODE",
+    14 = "RMS_SHUTDOWN_IN_PROCESS",
+    15 = "RMS_RECYCLE_POWER"
+)
+
+enum RMSInverterState (
+    0 = "RMS_INV_POWER_ON",
+    1 = "RMS_INV_STOP",
+    2 = "RMS_INV_OPEN_LOOP",
+    3 = "RMS_INV_CLOSED_LOOP",
+    4 = "RMS_INV_WAIT",
+    5 = "RMS_INV_RESV_0",
+    6 = "RMS_INV_RESV_1",
+    7 = "RMS_INV_RESV_2",
+    8 = "RMS_INV_IDLE_RUN",
+    9 = "RMS_INV_IDLE_STOP",
+    10 = "RMS_INV_RESV_3",
+    11 = "RMS_INV_RESV_4",
+    12 = "RMS_INV_RESV_5"
+)
+
 {SENDRECEIVE}
 
 [VSM_Heartbeat]
@@ -422,6 +451,20 @@ Var=RMS_directionCommand unsigned 32,8
 Var=RMS_invEnDischargeEn unsigned 40,8
 Var=RMS_torqueLimitCommand unsigned 48,16 /u:Nm /f:0.1
 
+[RMS_ParamRequest]
+ID=3C1h
+DLC=8
+Var=RMS_paramReqAddr unsigned 0,16
+Var=RMS_paramReqWrite unsigned 16,8
+Var=RMS_paramReqData unsigned 32,16
+
+[RMS_ParamResponse]
+ID=3C2h
+DLC=8
+Var=RMS_paramResAddr unsigned 0,16
+Var=RMS_paramResWriteSuccess unsigned 16,8
+Var=RMS_paramResData unsigned 32,16
+
 [RMS_TempA]
 ID=3A0h
 DLC=8
@@ -458,7 +501,7 @@ DLC=8
 CycleTime=100
 Timeout=1000
 Var=RMS_angle signed 0,16 /u:deg /f:0.1
-Var=RMS_speed signed 16,16 /u:RPM
+Var=RMS_speed signed 16,16 /u:RPM /f:-1
 Var=RMS_frequency signed 32,16 /u:Hz /f:0.1
 Var=RMS_resolver signed 48,16 /u:deg /f:0.1
 
@@ -481,6 +524,23 @@ Var=RMS_voltageBus signed 0,16 /u:V /f:0.1
 Var=RMS_voltageOutput signed 16,16 /u:V /f:0.1
 Var=RMS_voltagePhaseAB signed 32,16 /u:V /f:0.1
 Var=RMS_voltagePhaseBC signed 48,16 /u:V /f:0.1
+
+[RMS_InternalStates]
+ID=3AAh
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=RMS_VSMState unsigned 0,16 /e:RMSInternalState
+Var=RMS_InvState unsigned 16,8 /e:RMSInverterState
+Var=RMS_RelayState unsigned 24,8
+Var=RMS_InvRunMode unsigned 32,1
+Var=RMS_InvDischargeState unsigned 37,3
+Var=RMS_InvCmdMode unsigned 40,8
+Var=RMS_InvEnable unsigned 48,1
+Var=RMS_InvEnableLockout unsigned 55,1
+Var=RMS_DirCmd unsigned 56,1
+Var=RMS_BMSActive unsigned 57,1
+Var=RMS_BMSLimitingTorque unsigned 58,1
 
 [RMS_TorqueDiag]
 ID=3ACh
