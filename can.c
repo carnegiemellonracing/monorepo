@@ -76,10 +76,10 @@ static void canTX10Hz(void *pvParameters) {
             canTX10Hz_period_ms
         );
 
-        if (DIM_requested_state != VSM_state) {
+        if ((DIM_requested_state != VSM_state) || (DIM_gear != DIM_oldGear)) {
             cmr_canDIMRequest_t dim_request_msg = {
                 .requestedState = DIM_requested_state,
-                .requestedGear = 0
+                .requestedGear = DIM_gear
             };
             canTX(
                 CMR_CANID_DIM_REQUEST,
@@ -87,6 +87,8 @@ static void canTX10Hz(void *pvParameters) {
                 sizeof(dim_request_msg),
                 canTX10Hz_period_ms
             );
+
+            DIM_oldGear = DIM_gear;
         }
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);

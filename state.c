@@ -41,6 +41,57 @@
      }
  }
 
+ /**
+   * @brief Handler for the gear change button presses.
+   *
+   * @param pressed whether the button is depressed.
+   */
+void change_gear(bool pressed) {
+    if (pressed) {
+        switch (DIM_gear) {
+            case GEAR_UNKNOWN :
+                DIM_newGear = GEAR_REVERSE;
+                break;
+            case GEAR_REVERSE :
+                DIM_newGear = GEAR_SLOW;
+                break;
+            case GEAR_SLOW :
+                DIM_newGear = GEAR_FAST;
+                break;
+            case GEAR_FAST :
+                DIM_newGear = GEAR_ENDURANCE;
+                break;
+            case GEAR_ENDURANCE :
+                DIM_newGear = GEAR_AUTOX;
+                break;
+            case GEAR_AUTOX :
+                DIM_newGear = GEAR_SKIDPAD;
+                break;
+            case GEAR_SKIDPAD :
+                DIM_newGear = GEAR_ACCEL;
+                break;
+            case GEAR_ACCEL :
+                DIM_newGear = GEAR_TEST;
+                break;
+            case GEAR_TEST :
+                DIM_newGear = GEAR_REVERSE;
+                break;
+            default :
+                DIM_newGear = GEAR_SLOW;
+            }
+        if(is_valid_gear(DIM_gear, DIM_newGear, VSM_state)) {
+            DIM_oldGear = DIM_gear;
+            DIM_gear = DIM_newGear;
+        }
+    }
+}
+
+bool is_valid_gear(cmr_canGear_t gear, cmr_canGear_t newGear, cmr_canState_t curr_state){
+    if (curr_state != CMR_CAN_HV_EN)
+        return 0;
+    return 1;
+}
+
  bool is_valid_state_request(cmr_canState_t curr_state, cmr_canState_t new_state) {
      switch (curr_state) {
          case CMR_CAN_UNKNOWN :

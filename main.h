@@ -13,5 +13,8 @@
 extern volatile cmr_canState_t VSM_state;
 extern volatile cmr_canState_t DIM_requested_state;
 extern volatile int32_t HVC_pack_voltage;
+extern volatile cmr_canGear_t DIM_gear;
+extern volatile cmr_canGear_t DIM_newGear;
+extern volatile cmr_canGear_t DIM_oldGear;
 
 #endif /* MAIN_H */
