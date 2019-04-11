@@ -125,17 +125,18 @@ typedef enum {
     CMR_CAN_WARN_FSM_SWANGLE = (1 << 9)
 } cmr_canWarn_t;
 
+/** @brief Represents the car's current driving mode (gear). */
 typedef enum {
-    GEAR_UNKNOWN = 0,   /**< @brief Unknown Gear State */
-    GEAR_REVERSE,       /**< @brief Reverse mode */
-    GEAR_SLOW,          /**< @brief Slow mode */
-    GEAR_FAST,          /**< @brief Fast simple mode */
-    GEAR_ENDURANCE,     /**< @brief Endurance-event mode */
-    GEAR_AUTOX,         /**< @brief Autocross-event mode */
-    GEAR_SKIDPAD,       /**< @brief Skidpad-event mode */
-    GEAR_ACCEL,         /**< @brief Acceleration-event mode */
-    GEAR_TEST,          /**< @brief Test mode (for experimentation) */
-    GEAR_LEN
+    CMR_CAN_GEAR_UNKNOWN = 0,   /**< @brief Unknown Gear State */
+    CMR_CAN_GEAR_REVERSE,       /**< @brief Reverse mode */
+    CMR_CAN_GEAR_SLOW,          /**< @brief Slow mode */
+    CMR_CAN_GEAR_FAST,          /**< @brief Fast simple mode */
+    CMR_CAN_GEAR_ENDURANCE,     /**< @brief Endurance-event mode */
+    CMR_CAN_GEAR_AUTOX,         /**< @brief Autocross-event mode */
+    CMR_CAN_GEAR_SKIDPAD,       /**< @brief Skidpad-event mode */
+    CMR_CAN_GEAR_ACCEL,         /**< @brief Acceleration-event mode */
+    CMR_CAN_GEAR_TEST,          /**< @brief Test mode (for experimentation) */
+    CMR_CAN_GEAR_LEN
 } cmr_canGear_t;
 
 // ------------------------------------------------------------------------------------------------
