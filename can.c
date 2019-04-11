@@ -230,6 +230,13 @@ static void sendCoolStatus(void) {
     };
 
     canTX(CMR_CANID_PTC_COOLING_STATUS, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
+
+    cmr_canPTCAFCControl_t afcCtrlMsg = {
+        .acFansDrive = (fanState >= CMR_CAN_FAN_HIGH),
+        .dcdcFanDrive = (fanState >= CMR_CAN_FAN_HIGH)
+    };
+
+    canTX(CMR_CANID_PTC_AFC_CONTROL, &afcCtrlMsg, sizeof(afcCtrlMsg), canTX10Hz_period_ms);
 }
 
 /**
