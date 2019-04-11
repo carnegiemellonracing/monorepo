@@ -23,6 +23,9 @@
 #include "main.h"   // DIM-specific definitions
 #include "segments.h"
 
+/** @brief Display length. */
+#define DISPLAY_LEN 8
+
 /**======================================**/
 /**              STATUS LED              **/
 /**======================================**/
@@ -32,8 +35,6 @@ static const uint32_t statusLED_priority = 2;
 /** @brief Status LED period (milliseconds). */
 static const TickType_t statusLED_period_ms = 250;
 
-static const uint32_t display_len = 8;
-
 /** @brief Status LED task. */
 static cmr_task_t statusLED_task;
 
@@ -41,11 +42,20 @@ static cmr_i2c_t i2c1;
 
 volatile cmr_canState_t VSM_state = CMR_CAN_UNKNOWN;
 volatile cmr_canState_t DIM_requested_state = CMR_CAN_GLV_ON;
-volatile cmr_canGear_t DIM_gear = GEAR_FAST;
-volatile cmr_canGear_t DIM_newGear = GEAR_FAST;
-volatile cmr_canGear_t DIM_oldGear = GEAR_FAST;
+volatile cmr_canGear_t DIM_gear = CMR_CAN_GEAR_FAST;
+volatile cmr_canGear_t DIM_newGear = CMR_CAN_GEAR_FAST;
+volatile cmr_canGear_t DIM_oldGear = CMR_CAN_GEAR_FAST;
 
 volatile int32_t HVC_pack_voltage = 0;
+
+static const char *segmentText[] = {
+    "????????",
+    "GLV ON  ",
+    "HV %c %.3u",
+    "RD %c %.3u",
+    "ERROR   ",
+    "C_ERROR ",
+};
 
 /**
  * @brief Task for toggling the status LED.
@@ -55,6 +65,19 @@ volatile int32_t HVC_pack_voltage = 0;
  * @return Does not return.
  */
 static void statusLED(void *pvParameters) {
+    /** @brief Characters for each gear. */
+    static const char gearChars[CMR_CAN_GEAR_LEN] = {
+        [CMR_CAN_GEAR_UNKNOWN] = '-',
+        [CMR_CAN_GEAR_REVERSE] = 'R',
+        [CMR_CAN_GEAR_SLOW] = 'S',
+        [CMR_CAN_GEAR_FAST] = 'F',
+        [CMR_CAN_GEAR_ENDURANCE] = 'E',
+        [CMR_CAN_GEAR_AUTOX] = 'X',
+        [CMR_CAN_GEAR_SKIDPAD] = '8',
+        [CMR_CAN_GEAR_ACCEL] = 'A',
+        [CMR_CAN_GEAR_TEST] = 'T'
+    };
+
     (void) pvParameters;
 
     cmr_gpioWrite(GPIO_LED_STATUS, 0);
@@ -63,77 +86,27 @@ static void statusLED(void *pvParameters) {
 
     //static const uint32_t pack_voltage  = 447;
 
-    uint8_t *text[] = {
-    		"?",
-    		"GLV ON   ",
-			"HV %c %.3u",
-			"RD %c %.3u",
-			"ERROR",
-			"C_ERROR",
-    };
-
-/*
-    GEAR_UNKNOWN = 0,   /**< @brief Unknown Gear State
-    GEAR_REVERSE,       /**< @brief Reverse mode
-    GEAR_SLOW,          /**< @brief Slow mode
-    GEAR_FAST,          /**< @brief Fast simple mode
-    GEAR_ENDURANCE,     /**< @brief Endurance-event mode
-    GEAR_AUTOX,         /**< @brief Autocross-event mode
-    GEAR_SKIDPAD,       /**< @brief Skidpad-event mode
-    GEAR_ACCEL,         /**< @brief Acceleration-event mode
-    GEAR_TEST,          /**< @brief Test mode (for experimentation)
-*/
-
     while (1) {
-        uint8_t gear;
-            switch(DIM_gear) {
-                case GEAR_UNKNOWN :
-                    gear = '-';
-                    break;
-                case GEAR_REVERSE :
-                    gear = 'R';
-                    break;
-                case GEAR_SLOW :
-                    gear = 'S';
-                    break;
-                case GEAR_FAST :
-                    gear = 'F';
-                    break;
-                case GEAR_ENDURANCE :
-                    gear = 'E';
-                    break;
-                case GEAR_AUTOX :
-                    gear = 'X';
-                    break;
-                case GEAR_SKIDPAD :
-                    gear = '8';
-                    break;
-                case GEAR_ACCEL :
-                    gear = 'A';
-                    break;
-                case GEAR_TEST :
-                    gear = 'T';
-                    break;
-                default :
-                    gear = '-';
-            }
+        uint8_t gearChar = (DIM_gear < CMR_CAN_GEAR_LEN)
+            ? gearChars[DIM_gear]
+            : gearChars[CMR_CAN_GEAR_UNKNOWN];
 
-    	uint8_t display_str[display_len];
-    	uint32_t ret_len = 0;
-    	switch(VSM_state) {
-    		case CMR_CAN_UNKNOWN :
-    		case CMR_CAN_GLV_ON :
-    		case CMR_CAN_HV_EN :
-    		case CMR_CAN_RTD :
-    		case CMR_CAN_ERROR :
-    		case CMR_CAN_CLEAR_ERROR :
-    			ret_len = snprintf(display_str, display_len, text[VSM_state], gear, HVC_pack_voltage);
+        // Need space for NUL-terminator from snprintf().
+    	char disp[DISPLAY_LEN + 1];
+    	switch (VSM_state) {
+    		case CMR_CAN_UNKNOWN:
+    		case CMR_CAN_GLV_ON:
+    		case CMR_CAN_HV_EN:
+    		case CMR_CAN_RTD:
+    		case CMR_CAN_ERROR:
+    		case CMR_CAN_CLEAR_ERROR:
+    			snprintf(disp, sizeof(disp), segmentText[VSM_state], gearChar, HVC_pack_voltage);
     			break;
     		default:
-    			ret_len = snprintf(display_str, display_len, text[0], HVC_pack_voltage);
+    			snprintf(disp, sizeof(disp), segmentText[0], gearChar, HVC_pack_voltage);
     			break;
     	}
-    	writeSegmentText(display_str, ret_len);
+    	writeSegmentText((uint8_t *) disp, DISPLAY_LEN);
         cmr_gpioToggle(GPIO_LED_STATUS);
         vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
     }

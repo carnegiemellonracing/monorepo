@@ -49,35 +49,35 @@
 void change_gear(bool pressed) {
     if (pressed) {
         switch (DIM_gear) {
-            case GEAR_UNKNOWN :
-                DIM_newGear = GEAR_REVERSE;
+            case CMR_CAN_GEAR_UNKNOWN :
+                DIM_newGear = CMR_CAN_GEAR_REVERSE;
                 break;
-            case GEAR_REVERSE :
-                DIM_newGear = GEAR_SLOW;
+            case CMR_CAN_GEAR_REVERSE :
+                DIM_newGear = CMR_CAN_GEAR_SLOW;
                 break;
-            case GEAR_SLOW :
-                DIM_newGear = GEAR_FAST;
+            case CMR_CAN_GEAR_SLOW :
+                DIM_newGear = CMR_CAN_GEAR_FAST;
                 break;
-            case GEAR_FAST :
-                DIM_newGear = GEAR_ENDURANCE;
+            case CMR_CAN_GEAR_FAST :
+                DIM_newGear = CMR_CAN_GEAR_ENDURANCE;
                 break;
-            case GEAR_ENDURANCE :
-                DIM_newGear = GEAR_AUTOX;
+            case CMR_CAN_GEAR_ENDURANCE :
+                DIM_newGear = CMR_CAN_GEAR_AUTOX;
                 break;
-            case GEAR_AUTOX :
-                DIM_newGear = GEAR_SKIDPAD;
+            case CMR_CAN_GEAR_AUTOX :
+                DIM_newGear = CMR_CAN_GEAR_SKIDPAD;
                 break;
-            case GEAR_SKIDPAD :
-                DIM_newGear = GEAR_ACCEL;
+            case CMR_CAN_GEAR_SKIDPAD :
+                DIM_newGear = CMR_CAN_GEAR_ACCEL;
                 break;
-            case GEAR_ACCEL :
-                DIM_newGear = GEAR_TEST;
+            case CMR_CAN_GEAR_ACCEL :
+                DIM_newGear = CMR_CAN_GEAR_TEST;
                 break;
-            case GEAR_TEST :
-                DIM_newGear = GEAR_REVERSE;
+            case CMR_CAN_GEAR_TEST :
+                DIM_newGear = CMR_CAN_GEAR_REVERSE;
                 break;
             default :
-                DIM_newGear = GEAR_SLOW;
+                DIM_newGear = CMR_CAN_GEAR_SLOW;
             }
         if(is_valid_gear(DIM_gear, DIM_newGear, VSM_state)) {
             DIM_oldGear = DIM_gear;
