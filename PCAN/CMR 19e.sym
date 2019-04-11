@@ -438,6 +438,20 @@ Var=RMS_directionCommand unsigned 32,8
 Var=RMS_invEnDischargeEn unsigned 40,8
 Var=RMS_torqueLimitCommand unsigned 48,16 /u:Nm /f:0.1
 
+[RMS_ParamRequest]
+ID=3C1h
+DLC=8
+Var=RMS_paramReqAddr unsigned 0,16
+Var=RMS_paramReqWrite unsigned 16,8
+Var=RMS_paramReqData unsigned 32,16
+
+[RMS_ParamResponse]
+ID=3C2h
+DLC=8
+Var=RMS_paramResAddr unsigned 0,16
+Var=RMS_paramResWriteSuccess unsigned 16,8
+Var=RMS_paramResData unsigned 32,16
+
 [RMS_TempA]
 ID=3A0h
 DLC=8
@@ -799,20 +813,4 @@ Var=Command_out_of_range unsigned 36,1
 Var=Ctrl_msg_inactive unsigned 35,1
 Var=LED_driver_defect unsigned 33,1
 Var=Save_charging_mode unsigned 32,1
-
-[AFC_Heartbeat]
-ID=205h
-DLC=8
-CycleTime=10
-Timeout=100
-Var=AFC_State State 0,8
-Var=AFC_VBatt unsigned 8,8 /u:V /f:0.066666
-Var=Fan_1_Current unsigned 24,8 /u:A
-Var=Fan_2_Current unsigned 40,8 /u:A
-Var=AFC_PCB_Temp unsigned 56,8 /u:degC /f:0.5
-Var=Fan_3_State Fan_State 48,8
-Var=Fan_2_State Fan_State 32,8
-Var=Fan_1_State Fan_State 16,8
-
-
 

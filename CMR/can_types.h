@@ -462,6 +462,24 @@ typedef struct {
     uint16_t torqueLimitCommand;
 } cmr_canRMSCommand_t;
 
+/** @brief Configuration parameter/register read/write request. */
+typedef struct {
+    uint16_t address;       /**< @brief Address to access. */
+    uint8_t writeEnable;    /**< @brief 1 to enable write; 0 to read. */
+    uint8_t pad0;           /**< @brief Ignored. */
+    uint16_t data;          /**< @brief Data to write, if any. */
+    uint16_t pad1;          /**< @brief Ignored. */
+} cmr_canRMSParamReq_t;
+
+/** @brief Configuration parameter/register read/write response. */
+typedef struct {
+    uint16_t address;       /**< @brief Address that was accessed. */
+    uint8_t writeSuccess;   /**< @brief 1 if write successful, if any. */
+    uint8_t pad0;           /**< @brief Ignored. */
+    uint16_t data;          /**< @brief Data that was read/written. */
+    uint16_t pad1;          /**< @brief Ignored. */
+} cmr_canRMSParamRes_t;
+
 /** @brief Faults report from motor controller (see pg 23). */
 typedef struct {
     uint16_t postFaultLo; /**< @brief See "RMS CAN Protocol" pg 23. */

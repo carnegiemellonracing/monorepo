@@ -67,7 +67,9 @@ typedef enum {
     CMR_CANID_RMS_TORQUE_DIAG = 0x00C + CMR_CANID_RMS_OFFSET,   /**< @brief RMS torque diagnostic data. */
     CMR_CANID_RMS_CURRENT_INFO = 0x006 + CMR_CANID_RMS_OFFSET,  /**< @brief RMS current info. */
     CMR_CANID_RMS_VOLTAGE_INFO = 0x007 + CMR_CANID_RMS_OFFSET,  /**< @brief RMS voltage info. */
-    CMR_CANID_RMS_COMMAND = 0x020 + CMR_CANID_RMS_OFFSET        /**< @brief RMS command. */
+    CMR_CANID_RMS_COMMAND = 0x020 + CMR_CANID_RMS_OFFSET,       /**< @brief RMS command. */
+    CMR_CANID_RMS_PARAM_REQ = 0x021 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS parameter request. */
+    CMR_CANID_RMS_PARAM_RES = 0x022 + CMR_CANID_RMS_OFFSET      /**< @brief RMS parameter response. */
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
