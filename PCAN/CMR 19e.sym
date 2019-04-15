@@ -211,6 +211,25 @@ Var=CDC_wheelFrontRight unsigned 16,16 /u:RPM /f:0.1
 Var=CDC_wheelBackLeft unsigned 32,16 /u:RPM /f:0.1
 Var=CDC_wheelBackRight unsigned 48,16 /u:RPM /f:0.1
 
+[CDC_MotorData]
+ID=152h
+DLC=8
+CycleTime=10
+Timeout=100
+Var=CDC_motorTorque signed 0,16 /u:Nm /f:-0.1
+Var=CDC_motorSpeed signed 16,16 /u:RPM /f:-1
+Var=CDC_motorCurrent signed 32,16 /u:A /f:0.1
+Var=CDC_motorVoltage signed 48,16 /u:V /f:0.1
+
+[CDC_MotorFaults]
+ID=502h
+DLC=8
+CycleTime=1000
+Timeout=2000
+Var=CDC_motorFaultsPOST unsigned 0,32
+Var=CDC_motorFaultsRUN unsigned 32,32
+
+
 [FSM_Heartbeat]
 ID=103h
 DLC=5

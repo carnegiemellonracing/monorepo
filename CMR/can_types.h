@@ -364,6 +364,20 @@ typedef struct {
     uint8_t solenoidEnable;     /**< @brief Enable the solenoid (disable the brakes). */
 } cmr_canCDCSolenoidPTC_t;
 
+/** @brief Central Dynamics Controller motor data. */
+typedef struct {
+    int16_t torque_dNm;     /**< @brief Commanded torque (deci-Newton-meters). */
+    int16_t speed_rpm;      /**< @brief Motor speed (RPM). */
+    int16_t current_dA;     /**< @brief DC bus current (deci-Amps). */
+    int16_t voltage_dV;     /**< @brief DC bus voltage (deci-Volts). */
+} cmr_canCDCMotorData_t;
+
+/** @brief Central Dynamics Controller motor faults. */
+typedef struct {
+    uint32_t post;  /**< @brief Power-on-self-test faults. */
+    uint32_t run;   /**< @brief Run faults. */
+} cmr_canCDCMotorFaults_t;
+
 // ------------------------------------------------------------------------------------------------
 // Driver Interface Module
 
