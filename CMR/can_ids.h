@@ -34,8 +34,11 @@ typedef enum {
 
     CMR_CANID_CDC_WHEEL_SPEEDS = 0x132,         /**< @brief CDC wheel speeds. */
     CMR_CANID_CDC_SOLENOID_PTC = 0x142,         /**< @brief CDC brake solenoid command. */
+    CMR_CANID_CDC_MOTOR_DATA = 0x152,           /**< @brief CDC motor data. */
+    CMR_CANID_CDC_MOTOR_FAULTS = 0x502,         /**< @brief CDC motor faults. */
 
     CMR_CANID_HVC_COMMAND = 0x130,              /**< @brief HVC command, sent by VSM. */
+    CMR_CANID_HVC_PACK_VOLTAGE = 0x301,         /**< @brief HVC pack voltage. */
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
     CMR_CANID_FSM_PEDALS_ADC = 0x533,           /**< @brief FSM raw pedal positions. */
@@ -66,7 +69,9 @@ typedef enum {
     CMR_CANID_RMS_TORQUE_DIAG = 0x00C + CMR_CANID_RMS_OFFSET,   /**< @brief RMS torque diagnostic data. */
     CMR_CANID_RMS_CURRENT_INFO = 0x006 + CMR_CANID_RMS_OFFSET,  /**< @brief RMS current info. */
     CMR_CANID_RMS_VOLTAGE_INFO = 0x007 + CMR_CANID_RMS_OFFSET,  /**< @brief RMS voltage info. */
-    CMR_CANID_RMS_COMMAND = 0x020 + CMR_CANID_RMS_OFFSET        /**< @brief RMS command. */
+    CMR_CANID_RMS_COMMAND = 0x020 + CMR_CANID_RMS_OFFSET,       /**< @brief RMS command. */
+    CMR_CANID_RMS_PARAM_REQ = 0x021 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS parameter request. */
+    CMR_CANID_RMS_PARAM_RES = 0x022 + CMR_CANID_RMS_OFFSET      /**< @brief RMS parameter response. */
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */

@@ -130,20 +130,27 @@ static void cmr_canTXCpltCallback(CAN_HandleTypeDef *handle, size_t mailbox) {
 }
 
 /**
- * @brief Defines the completion callback for the given CAN TX mailbox.
+ * @brief Defines callbacks for the given CAN TX mailbox.
  *
  * @param mailbox The mailbox number.
  */
-#define CAN_TX_MAILBOX_CPLT(mailbox) \
+#define CAN_TX_MAILBOX_CALLBACK(mailbox) \
     void HAL_CAN_TxMailbox ## mailbox ## CompleteCallback( \
         CAN_HandleTypeDef *handle \
     ) { \
         cmr_canTXCpltCallback(handle, mailbox); \
+    } \
+    \
+    void HAL_CAN_TxMailbox ## mailbox ## AbortCallback( \
+        CAN_HandleTypeDef *handle \
+    ) { \
+        /* Treat abort as complete. */ \
+        cmr_canTXCpltCallback(handle, mailbox); \
     }
-CAN_TX_MAILBOX_CPLT(0)
-CAN_TX_MAILBOX_CPLT(1)
-CAN_TX_MAILBOX_CPLT(2)
-#undef CAN_TX_MAILBOX_CPLT
+CAN_TX_MAILBOX_CALLBACK(0)
+CAN_TX_MAILBOX_CALLBACK(1)
+CAN_TX_MAILBOX_CALLBACK(2)
+#undef CAN_TX_MAILBOX_CALLBACK
 
 /**
  * @brief HAL CAN error callback.
@@ -169,10 +176,9 @@ void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *handle) {
             cmr_panic("TX semaphore released too many times!");
         }
         portYIELD_FROM_ISR(higherWoken);
-    } else {
-        cmr_panic("Unknown CAN error ocurred!");
     }
 
+    // Clear errors.
     handle->ErrorCode = 0;
 }
 
@@ -353,7 +359,7 @@ void cmr_canInit(
                 .TimeSeg1 = CAN_BS1_6TQ,
                 .TimeSeg2 = CAN_BS2_1TQ,
                 .TimeTriggeredMode = DISABLE,
-                .AutoBusOff = DISABLE,
+                .AutoBusOff = ENABLE,
                 .AutoWakeUp = DISABLE,
                 .AutoRetransmission = ENABLE,
                 .ReceiveFifoLocked = DISABLE,
@@ -435,7 +441,12 @@ CAN_FOREACH(CAN_INTERRUPT_CONFIG)
             &can->handle,
             CAN_IT_TX_MAILBOX_EMPTY |
             CAN_IT_RX_FIFO0_MSG_PENDING |
-            CAN_IT_RX_FIFO1_MSG_PENDING
+            CAN_IT_RX_FIFO1_MSG_PENDING |
+            CAN_IT_ERROR_WARNING |
+            CAN_IT_ERROR_PASSIVE |
+            CAN_IT_BUSOFF |
+            CAN_IT_LAST_ERROR_CODE |
+            CAN_IT_ERROR
     )) {
         cmr_panic("HAL_CAN_ActivateNotification() failed!");
     }

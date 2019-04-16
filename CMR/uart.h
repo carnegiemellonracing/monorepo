@@ -22,6 +22,26 @@
 #include <FreeRTOS.h>   // FreeRTOS interface
 #include <semphr.h>     // Semaphore interface
 
+/** @brief Maximum number of pending UART messages. */
+#define CMR_UART_MSGS_MAX 16
+
+/**
+ * @brief Represents a UART message.
+ *
+ * @note The contents of this struct are opaque to the library consumer.
+ */
+typedef struct {
+    SemaphoreHandle_t doneSem;     /**< @brief Done binary semaphore. */
+    StaticSemaphore_t doneSemBuf;  /**< @brief Done semaphore storage. */
+
+    int opts;       /**< @brief Options. */
+    size_t len;     /**< @brief Length of data, in bytes. */
+    void *data;     /**< @brief Data buffer. */
+} cmr_uartMsg_t;
+
+void cmr_uartMsgInit(cmr_uartMsg_t *msg);
+size_t cmr_uartMsgWait(cmr_uartMsg_t *msg);
+
 /**
  * @brief Represents a UART interface.
  *
@@ -34,19 +54,28 @@ typedef struct {
     struct {
         DMA_HandleTypeDef dma;  /**< @brief HAL DMA handle. */
 
-        SemaphoreHandle_t doneSem;     /**< @brief Done binary semaphore. */
-        StaticSemaphore_t doneSemBuf;  /**< @brief Done semaphore storage. */
+        SemaphoreHandle_t dmaSem;       /**< @brief DMA binary semaphore. */
+        StaticSemaphore_t dmaSemBuf;    /**< @brief DMA semaphore storage. */
 
-        /** @brief Remaining unreceived bytes in latest transfer. */
-        size_t remLen;
+        QueueHandle_t q;        /**< @brief Message queue. */
+        StaticQueue_t qBuf;     /**< @brief Queue storage. */
+
+        /** @brief Queue item storage. */
+        cmr_uartMsg_t *qItemBuf[CMR_UART_MSGS_MAX];
     } rx;
 
     /** @brief Transmit state. */
     struct {
         DMA_HandleTypeDef dma;  /**< @brief HAL DMA handle. */
 
-        SemaphoreHandle_t doneSem;     /**< @brief Done binary semaphore. */
-        StaticSemaphore_t doneSemBuf;  /**< @brief Done semaphore storage. */
+        SemaphoreHandle_t dmaSem;       /**< @brief DMA binary semaphore. */
+        StaticSemaphore_t dmaSemBuf;    /**< @brief DMA semaphore storage. */
+
+        QueueHandle_t q;        /**< @brief Message queue. */
+        StaticQueue_t qBuf;     /**< @brief Queue storage. */
+
+        /** @brief Queue item storage. */
+        cmr_uartMsg_t *qItemBuf[CMR_UART_MSGS_MAX];
     } tx;
 } cmr_uart_t;
 
@@ -72,10 +101,13 @@ void cmr_uartInit(
     DMA_Stream_TypeDef *txDMA, uint32_t txDMAChannel
 );
 
-int cmr_uartTX(cmr_uart_t *uart, const void *data, size_t len);
+void cmr_uartTX(
+    cmr_uart_t *uart, cmr_uartMsg_t *msg, const void *data, size_t len
+);
 
-int cmr_uartRX(
-    cmr_uart_t *uart, void *data, size_t *lenp, cmr_uartRXOpts_t opts
+void cmr_uartRX(
+    cmr_uart_t *uart, cmr_uartMsg_t *msg,
+    void *data, size_t len, cmr_uartRXOpts_t opts
 );
 
 #endif /* HAL_DMA_MODULE_ENABLED */
