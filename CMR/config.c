@@ -20,12 +20,6 @@
 #include <string.h> // memcpy()
 #include "panic.h"  // cmr_panic()
 
-/**
- * @brief The configuration storage len in words. This is the maximum
- *        flash sector size (0x20000 / 4).
- */
-#define CONFIG_CACHE_LEN 4096
-
 typedef struct {
     volatile uint32_t cache[CONFIG_CACHE_LEN];
     uint32_t flashSector;
