@@ -107,7 +107,7 @@ UART_FOREACH(UART_DEVICE)
         HAL_UART_IRQHandler(handle); \
         \
         /* Handle idle interrupt, if present. */ \
-        if (__HAL_UART_GET_IT_SOURCE(handle, UART_IT_IDLE)) { \
+        if (__HAL_UART_GET_FLAG(handle, UART_FLAG_IDLE)) { \
             /* Disable idle interrupt, clear flag, and abort receive. */ \
             __HAL_UART_DISABLE_IT(handle, UART_IT_IDLE); \
             __HAL_UART_CLEAR_IDLEFLAG(handle); \
@@ -143,12 +143,35 @@ static cmr_uart_t *cmr_uartFromHandle(UART_HandleTypeDef *handle) {
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *handle) {
     cmr_uart_t *uart = cmr_uartFromHandle(handle);
 
-    // Indicate completion.
     BaseType_t higherWoken;
-    if (xSemaphoreGiveFromISR(uart->tx.doneSem, &higherWoken) != pdTRUE) {
-        cmr_panic("UART TX done semaphore released more than once!");
+    cmr_uartMsg_t *msg;
+    if (xQueueReceiveFromISR(uart->tx.q, &msg, &higherWoken) != pdTRUE) {
+        cmr_panic("HAL UART TX completion handler called with empty queue!");
     }
     portYIELD_FROM_ISR(higherWoken);
+
+    // Signal message as done.
+    if (xSemaphoreGiveFromISR(msg->doneSem, &higherWoken) != pdTRUE) {
+        cmr_panic("HAL UART TX completion handler failed to signal message!");
+    }
+    portYIELD_FROM_ISR(higherWoken);
+
+    if (xQueuePeekFromISR(uart->tx.q, &msg) != pdTRUE) {
+        // No more messages pending; release DMA semaphore.
+        if (xSemaphoreGiveFromISR(uart->tx.dmaSem, &higherWoken) != pdTRUE) {
+            cmr_panic("HAL UART TX completion handler failed to release DMA!");
+        }
+        portYIELD_FROM_ISR(higherWoken);
+        return;
+    }
+
+    // Message pending; start DMA.
+    HAL_StatusTypeDef status = HAL_UART_Transmit_DMA(
+        &uart->handle, msg->data, msg->len
+    );
+    if (status != HAL_OK) {
+        cmr_panic("HAL UART TX failed!");
+    }
 }
 
 /**
@@ -162,15 +185,45 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *handle) {
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *handle) {
     cmr_uart_t *uart = cmr_uartFromHandle(handle);
 
-    // Record remaining bytes in DMA transfer.
-    uart->rx.remLen = __HAL_DMA_GET_COUNTER(&uart->rx.dma);
-
-    // Indicate completion.
     BaseType_t higherWoken;
-    if (xSemaphoreGiveFromISR(uart->rx.doneSem, &higherWoken) != pdTRUE) {
-        cmr_panic("UART RX done semaphore released more than once!");
+    cmr_uartMsg_t *msg;
+    if (xQueueReceiveFromISR(uart->rx.q, &msg, &higherWoken) != pdTRUE) {
+        cmr_panic("HAL UART RX completion handler called with empty queue!");
     }
     portYIELD_FROM_ISR(higherWoken);
+
+    // Record actual number of bytes received.
+    size_t remLen = __HAL_DMA_GET_COUNTER(&uart->rx.dma);
+    configASSERT(remLen <= msg->len);
+    msg->len -= remLen;
+
+    // Signal message as done.
+    if (xSemaphoreGiveFromISR(msg->doneSem, &higherWoken) != pdTRUE) {
+        cmr_panic("HAL UART RX completion handler failed to signal message!");
+    }
+    portYIELD_FROM_ISR(higherWoken);
+
+    if (xQueuePeekFromISR(uart->rx.q, &msg) != pdTRUE) {
+        // No more messages pending; release DMA semaphore.
+        if (xSemaphoreGiveFromISR(uart->rx.dmaSem, &higherWoken) != pdTRUE) {
+            cmr_panic("HAL UART RX completion handler failed to release DMA!");
+        }
+        portYIELD_FROM_ISR(higherWoken);
+        return;
+    }
+
+    // Message pending; start DMA.
+    HAL_StatusTypeDef status = HAL_UART_Receive_DMA(
+        &uart->handle, msg->data, msg->len
+    );
+    if (status != HAL_OK) {
+        cmr_panic("HAL UART RX failed!");
+    }
+
+    if (msg->opts & CMR_UART_RXOPTS_IDLEABORT) {
+        // Enable idle line detection.
+        __HAL_UART_ENABLE_IT(&uart->handle, UART_IT_IDLE);
+    }
 }
 
 /**
@@ -183,20 +236,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *handle) {
  */
 void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *handle) {
     // Receive aborted; treat as completion.
-    HAL_UART_RxCpltCallback(handle);
-}
-
-/**
- * @brief HAL UART error handler.
- *
- * @warning Called from an interrupt handler!
- * @warning The handle must have been configured through this library!
- *
- * @param handle The HAL UART handle.
- */
-void HAL_UART_ErrorCallback(UART_HandleTypeDef *handle) {
-    // Treat errors as receive completion, since errors in DMA mode will
-    // terminate receive DMA.
     HAL_UART_RxCpltCallback(handle);
 }
 
@@ -266,11 +305,31 @@ void cmr_uartInit(
         }
     };
 
-    uart->rx.doneSem = xSemaphoreCreateBinaryStatic(&uart->rx.doneSemBuf);
-    configASSERT(uart->rx.doneSem != NULL);
+    uart->rx.dmaSem = xSemaphoreCreateBinaryStatic(&uart->rx.dmaSemBuf);
+    configASSERT(uart->rx.dmaSem != NULL);
+    if (xSemaphoreGive(uart->rx.dmaSem) != pdTRUE) {
+        cmr_panic("UART RX DMA semaphore initialization failed!");
+    }
 
-    uart->tx.doneSem = xSemaphoreCreateBinaryStatic(&uart->tx.doneSemBuf);
-    configASSERT(uart->tx.doneSem != NULL);
+    uart->rx.q = xQueueCreateStatic(
+        sizeof(uart->rx.qItemBuf) / sizeof(uart->rx.qItemBuf[0]),
+        sizeof(uart->rx.qItemBuf[0]),
+        (void *) uart->rx.qItemBuf,
+        &uart->rx.qBuf
+    );
+
+    uart->tx.dmaSem = xSemaphoreCreateBinaryStatic(&uart->tx.dmaSemBuf);
+    configASSERT(uart->tx.dmaSem != NULL);
+    if (xSemaphoreGive(uart->tx.dmaSem) != pdTRUE) {
+        cmr_panic("UART TX DMA semaphore initialization failed!");
+    }
+
+    uart->tx.q = xQueueCreateStatic(
+        sizeof(uart->tx.qItemBuf) / sizeof(uart->tx.qItemBuf[0]),
+        sizeof(uart->tx.qItemBuf[0]),
+        (void *) uart->tx.qItemBuf,
+        &uart->tx.qBuf
+    );
 
     cmr_rccUSARTClockEnable(instance);
 
@@ -305,94 +364,134 @@ void cmr_uartInit(
 }
 
 /**
- * @brief Transmits data over the given UART interface.
+ * @brief Enqueues message for transmission over the given UART interface.
  *
- * @note Blocks until the transmission actually completes.
- * @note Does NOT block if the port is currently busy.
+ * @note Does not block; use `cmr_uartMsgWait()` on the provided message to wait
+ * for the transmission to complete.
  *
  * @param uart The UART interface.
+ * @param msg The message to use.
  * @param data The data to send, or `NULL` to not send any data.
  * @param len The number of bytes to transmit.
- *
- * @return 0 on success, or a negative error code if the port is busy.
  */
-int cmr_uartTX(cmr_uart_t *uart, const void *data, size_t len) {
+void cmr_uartTX(
+    cmr_uart_t *uart, cmr_uartMsg_t *msg, const void *data, size_t len
+) {
     if (data == NULL || len == 0) {
-        return 0;   // Nothing to do.
+        return;     // Nothing to do.
     }
 
+    msg->data = (void *) data;
+    msg->len = len;
+
+    // Mark message as not done yet.
+    // Ignore return value; pdFALSE just means the message was already marked.
+    xSemaphoreTake(msg->doneSem, 0);
+
+    if (xQueueSend(uart->tx.q, &msg, portMAX_DELAY) != pdTRUE) {
+        cmr_panic("UART TX queue send timed out!");
+    }
+
+    if (xSemaphoreTake(uart->tx.dmaSem, 0) != pdTRUE) {
+        // DMA already active; the completion handler will handle our request.
+        return;
+    }
+
+    // Start DMA.
     HAL_StatusTypeDef status = HAL_UART_Transmit_DMA(
-        &uart->handle, (void *) data, len
+        &uart->handle, msg->data, msg->len
     );
-    switch (status) {
-        case HAL_OK:
-            break;
-        case HAL_BUSY:
-            return -1;
-        default:
-            cmr_panic("HAL UART TX failed!");
+    if (status != HAL_OK) {
+        cmr_panic("HAL UART TX failed!");
     }
-
-    // Wait for transmission to complete.
-    if (xSemaphoreTake(uart->tx.doneSem, portMAX_DELAY) != pdTRUE) {
-        cmr_panic("Acquiring UART port done semaphore timed out!");
-    }
-
-    return 0;
 }
 
 /**
  * @brief Receives data over the given UART interface.
  *
- * @note Blocks until the reception actually completes.
- * @note Does NOT block if the port is currently busy.
- *
- * @note When the UART line becomes idle,
+ * @note Does not block; use `cmr_uartMsgWait()` on the provided message to wait
+ * for the transmission to complete.
  *
  * @param uart The UART interface.
+ * @param msg The message to use.
  * @param data The buffer for receiving, or `NULL` to not receive any data.
- * @param lenp Points to the receive buffer's size in bytes. Upon successful
- * return, the number of bytes actually received is placed here.
+ * @param len The number of bytes to transmit.
  * @param opts Receive options.
- *
- * @return 0 on success, or a negative error code if the port is busy.
  */
-int cmr_uartRX(
-    cmr_uart_t *uart, void *data, size_t *lenp, cmr_uartRXOpts_t opts
+void cmr_uartRX(
+    cmr_uart_t *uart, cmr_uartMsg_t *msg,
+    void *data, size_t len, cmr_uartRXOpts_t opts
 ) {
-    size_t bufLen = *lenp;
-    if (data == NULL || bufLen == 0) {
-        return 0;   // Nothing to do.
+    if (data == NULL || len == 0) {
+        return;     // Nothing to do.
     }
 
+    msg->opts = opts;
+    msg->data = (void *) data;
+    msg->len = len;
+
+    // Mark message as not done yet.
+    // Ignore return value; pdFALSE just means the message was already marked.
+    xSemaphoreTake(msg->doneSem, 0);
+
+    if (xQueueSend(uart->rx.q, &msg, portMAX_DELAY) != pdTRUE) {
+        cmr_panic("UART RX queue send timed out!");
+    }
+
+    if (xSemaphoreTake(uart->rx.dmaSem, 0) != pdTRUE) {
+        // DMA already active; the completion handler will handle our request.
+        return;
+    }
+
+    // Start DMA.
     HAL_StatusTypeDef status = HAL_UART_Receive_DMA(
-        &uart->handle, data, bufLen
+        &uart->handle, msg->data, msg->len
     );
-    switch (status) {
-        case HAL_OK:
-            break;
-        case HAL_BUSY:
-            return -1;
-        default:
-            cmr_panic("HAL UART RX failed!");
+    if (status != HAL_OK) {
+        cmr_panic("HAL UART RX failed!");
     }
 
-    if (opts & CMR_UART_RXOPTS_IDLEABORT) {
+    if (msg->opts & CMR_UART_RXOPTS_IDLEABORT) {
         // Enable idle line detection.
         __HAL_UART_ENABLE_IT(&uart->handle, UART_IT_IDLE);
     }
 
-    // Wait for transmission to complete.
-    if (xSemaphoreTake(uart->rx.doneSem, portMAX_DELAY) != pdTRUE) {
-        cmr_panic("Acquiring UART port done semaphore timed out!");
+    return;
+}
+
+/**
+ * @brief Initializes a UART message.
+ *
+ * @param msg The message to initialize.
+ */
+void cmr_uartMsgInit(cmr_uartMsg_t *msg) {
+    msg->data = NULL;
+    msg->len = 0;
+
+    msg->doneSem = xSemaphoreCreateBinaryStatic(&msg->doneSemBuf);
+    configASSERT(msg->doneSem != NULL);
+    if (xSemaphoreGive(msg->doneSem) != pdTRUE) {
+        cmr_panic("UART message done semaphore initialization failed!");
+    }
+}
+
+/**
+ * @brief Blocks until the message transmit/receive completes.
+ *
+ * @warning The message MUST have been enqueued for transmit/receive via
+ * `cmr_uartTX()`/`cmr_uartRX()`, or freshly initialized.
+ *
+ * @param msg The message.
+ *
+ * @returns The message's length. For transmit, this is the number of bytes
+ * transmitted; for receive, this is the number of bytes received.
+ */
+size_t cmr_uartMsgWait(cmr_uartMsg_t *msg) {
+    if (xSemaphoreTake(msg->doneSem, portMAX_DELAY) != pdTRUE) {
+        cmr_panic("UART message wait timed out!");
     }
 
-    // Calculate number of bytes actually received.
-    size_t remLen = uart->rx.remLen;
-    configASSERT(remLen <= bufLen);
-    *lenp = bufLen - remLen;
-
-    return 0;
+    return msg->len;
 }
 
 #endif /* HAL_DMA_MODULE_ENABLED */
