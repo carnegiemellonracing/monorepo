@@ -40,6 +40,7 @@ typedef struct {
 } cmr_uartMsg_t;
 
 void cmr_uartMsgInit(cmr_uartMsg_t *msg);
+void cmr_uartMsgDestroy(cmr_uartMsg_t *msg);
 size_t cmr_uartMsgWait(cmr_uartMsg_t *msg);
 
 /**

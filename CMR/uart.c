@@ -476,6 +476,15 @@ void cmr_uartMsgInit(cmr_uartMsg_t *msg) {
 }
 
 /**
+ * @brief Destroys a UART message.
+ *
+ * @param msg The message to destroy.
+ */
+void cmr_uartMsgDestroy(cmr_uartMsg_t *msg) {
+    vSemaphoreDelete(msg->doneSem);
+}
+
+/**
  * @brief Blocks until the message transmit/receive completes.
  *
  * @warning The message MUST have been enqueued for transmit/receive via
