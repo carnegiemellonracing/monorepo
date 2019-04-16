@@ -9,7 +9,6 @@
 
 #ifdef HAL_CAN_MODULE_ENABLED
 
-#include <task.h>   // Task interface
 #include <string.h> // memcpy()
 
 #include "rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
@@ -17,12 +16,6 @@
 
 /** @brief Total number of hardware TX mailboxes. */
 static const size_t CAN_TX_MAILBOXES = 3;
-
-/** @brief CAN RX priority. */
-static const uint32_t cmr_canRX_priority = 7;
-
-/** @brief CAN RX period (milliseconds). */
-static const TickType_t cmr_canRX_period_ms = 1;
 
 /** @brief CAN interrupt configuration. */
 typedef struct {
@@ -71,6 +64,35 @@ static cmr_canInterrupt_t cmr_canInterrupts[3];
     }
 CAN_FOREACH(CAN_IRQ_HANDLERS)
 #undef CAN_IRQ_HANDLERS
+
+/**
+ * @brief Determines the GPIO alternate function for the given CAN interface.
+ *
+ * @param can The CAN interface.
+ * @param port The GPIO port.
+ *
+ * @return The GPIO alternate function.
+ */
+static uint32_t cmr_canGPIOAF(CAN_TypeDef *instance, GPIO_TypeDef *port) {
+    switch ((uintptr_t) instance) {
+        case CAN1_BASE:
+            switch ((uintptr_t) port) {
+                case GPIOA_BASE:
+                case GPIOD_BASE:
+                    return GPIO_AF9_CAN1;
+                case GPIOB_BASE:
+                    return GPIO_AF8_CAN1;
+                default:
+                    cmr_panic("Unknown/unspported GPIO port!");
+            }
+        case CAN2_BASE:
+            return GPIO_AF9_CAN2;
+        case CAN3_BASE:
+            return GPIO_AF11_CAN3;
+        default:
+            cmr_panic("Unknown CAN instance!");
+    }
+}
 
 /**
  * @brief Gets the corresponding CAN interface from the HAL handle.
@@ -218,6 +240,8 @@ int cmr_canRXMetaTimeoutError(const cmr_canRXMeta_t *meta, TickType_t now_ms) {
 /**
  * @brief Searches for the receive metadata associated with the given CAN ID.
  *
+ * @warning May be called from an interrupt handler!
+ *
  * @param can The interface.
  * @param canID The CAN ID to search for.
  *
@@ -236,6 +260,8 @@ static cmr_canRXMeta_t *cmr_canRXMetaFind(cmr_can_t *can, uint16_t canID) {
 
 /**
  * @brief Callback for reading CAN data into structs.
+ *
+ * @warning Called from an interrupt handler!
  *
  * @param can The interface.
  * @param canID The received message's CAN ID.
@@ -256,44 +282,43 @@ static void cmr_canRXData(
     }
 
     memcpy((void *) meta->payload, data, dataLen);
-    meta->lastReceived_ms = xTaskGetTickCount();
+    meta->lastReceived_ms = xTaskGetTickCountFromISR();
 }
 
 /**
- * @brief Task for receiving CAN messages (polling RX FIFOs).
+ * @brief Callback for CAN receive FIFO message pending.
  *
- * @param pvParameters (cmr_can_t *) The associated CAN interface.
+ * @warning Called from an interrupt handler!
+ * @warning The handle must have been configured through this library!
  *
- * @return Does not return.
+ * @param handle The HAL CAN handle.
+ * @param fifo The pending FIFO.
  */
-static void cmr_canRX(void *pvParameters) {
-    cmr_can_t *can = pvParameters;
-    CAN_HandleTypeDef *canHandle = &can->handle;
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        CAN_RxHeaderTypeDef rxHeader = { 0 };
-        uint8_t rxData[8];
-
-        // Receive on FIFO 0.
-        while (HAL_CAN_GetRxFifoFillLevel(canHandle, CAN_RX_FIFO0) > 0) {
-            HAL_CAN_GetRxMessage(canHandle, CAN_RX_FIFO0, &rxHeader, rxData);
-            cmr_canRXData(
-                can, (uint16_t) rxHeader.StdId, rxData, rxHeader.DLC
-            );
-        }
-
-        // Receive on FIFO 1.
-        while (HAL_CAN_GetRxFifoFillLevel(canHandle, CAN_RX_FIFO1) > 0) {
-            HAL_CAN_GetRxMessage(canHandle, CAN_RX_FIFO1, &rxHeader, rxData);
-            cmr_canRXData(
-                can, (uint16_t) rxHeader.StdId, rxData, rxHeader.DLC
-            );
-        }
-
-        vTaskDelayUntil(&lastWakeTime, cmr_canRX_period_ms);
+static void cmr_canRXPendingCallback(CAN_HandleTypeDef *handle, uint32_t fifo) {
+    CAN_RxHeaderTypeDef msg;
+    uint8_t data[8];
+    if (HAL_CAN_GetRxMessage(handle, fifo, &msg, data) != HAL_OK) {
+        return;
     }
+
+    cmr_can_t *can = cmr_canFromHandle(handle);
+    cmr_canRXData(can, msg.StdId, data, msg.DLC);
 }
+
+/**
+ * @brief Defines the message pending callback for the given receive FIFO.
+ *
+ * @param fifo The fifo number.
+ */
+#define CAN_RX_FIFO_PENDING(fifo) \
+    void HAL_CAN_RxFifo ## fifo ## MsgPendingCallback( \
+        CAN_HandleTypeDef *handle \
+    ) { \
+        cmr_canRXPendingCallback(handle, CAN_RX_FIFO ## fifo); \
+    }
+CAN_RX_FIFO_PENDING(0)
+CAN_RX_FIFO_PENDING(1)
+#undef CAN_RX_FIFO_PENDING
 
 /**
  * @brief Initializes a CAN interface.
@@ -306,7 +331,6 @@ static void cmr_canRX(void *pvParameters) {
  * @param rxMeta Metadata for periodic messages to receive.
  * @param rxMetaLen Number of periodic receive messages.
  * @param rxCallback Callback for other messages received, or `NULL` to ignore.
- * @param rxTaskName Receive task name for this interface.
  * @param rxPort Receiving GPIO port (`GPIOx` from `stm32f413xx.h`).
  * @param rxPin Receiving GPIO pin (`GPIO_PIN_x` from `stm32f4xx_hal_gpio.h`).
  * @param txPort Transmitting GPIO port.
@@ -315,7 +339,7 @@ static void cmr_canRX(void *pvParameters) {
 void cmr_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
-    cmr_canRXCallback_t rxCallback, const char *rxTaskName,
+    cmr_canRXCallback_t rxCallback,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
     GPIO_TypeDef *txPort, uint16_t txPin
 ) {
@@ -331,7 +355,7 @@ void cmr_canInit(
                 .TimeTriggeredMode = DISABLE,
                 .AutoBusOff = DISABLE,
                 .AutoWakeUp = DISABLE,
-                .AutoRetransmission = DISABLE,
+                .AutoRetransmission = ENABLE,
                 .ReceiveFifoLocked = DISABLE,
                 .TransmitFifoPriority = DISABLE
             }
@@ -385,24 +409,18 @@ CAN_FOREACH(CAN_INTERRUPT_CONFIG)
     cmr_rccGPIOClockEnable(txPort);
 
     // Configure CAN RX pin.
-    uint32_t alternate;
-    if (instance == CAN3) {
-        alternate = GPIO_AF11_CAN3;     // CAN3 uses AF11.
-    } else {
-        configASSERT(instance == CAN1 || instance == CAN2);
-        alternate = GPIO_AF9_CAN2;      // Both CAN1 and CAN2 use AF9.
-    }
     GPIO_InitTypeDef pinConfig = {
         .Pin = rxPin,
         .Mode = GPIO_MODE_AF_PP,
         .Pull = GPIO_NOPULL,
         .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
-        .Alternate = alternate,
+        .Alternate = cmr_canGPIOAF(instance, rxPort)
     };
     HAL_GPIO_Init(rxPort, &pinConfig);
 
     // Configure CAN TX pin.
     pinConfig.Pin = txPin;
+    pinConfig.Alternate = cmr_canGPIOAF(instance, rxPort);
     HAL_GPIO_Init(txPort, &pinConfig);
 
     if (HAL_CAN_Init(&can->handle) != HAL_OK) {
@@ -413,17 +431,14 @@ CAN_FOREACH(CAN_INTERRUPT_CONFIG)
         cmr_panic("HAL_CAN_Start() failed!");
     }
 
-    if (HAL_CAN_ActivateNotification(&can->handle, CAN_IT_TX_MAILBOX_EMPTY)) {
+    if (HAL_CAN_ActivateNotification(
+            &can->handle,
+            CAN_IT_TX_MAILBOX_EMPTY |
+            CAN_IT_RX_FIFO0_MSG_PENDING |
+            CAN_IT_RX_FIFO1_MSG_PENDING
+    )) {
         cmr_panic("HAL_CAN_ActivateNotification() failed!");
     }
-
-    cmr_taskInit(
-        &can->rxTask,
-        rxTaskName,
-        cmr_canRX_priority,
-        cmr_canRX,
-        can
-    );
 }
 
 /**

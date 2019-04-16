@@ -27,16 +27,16 @@ const uint32_t I2C_CLOCK_HI = 400000;
   */
 int cmr_i2cTX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
               size_t dataLength, uint32_t timeout_ms) {
-	// Shift the address by 1 per HAL library suggestion
-	HAL_StatusTypeDef txStatus = HAL_I2C_Master_Transmit(
+    // Shift the address by 1 per HAL library suggestion
+    HAL_StatusTypeDef txStatus = HAL_I2C_Master_Transmit(
         &(i2c->handle), devAddr << 1, data, dataLength, timeout_ms
     );
 
-	if (txStatus != HAL_OK) {
-	    return -1;
-	}
+    if (txStatus != HAL_OK) {
+        return -1;
+    }
 
-	return 0;
+    return 0;
 }
 
 /**
@@ -71,7 +71,7 @@ int cmr_i2cRX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
   *
   * @param i2c The I2C to initialize
   * @param instance The HAL I2C instance
-  * @param clockSpeed The clock speed to initialize to 
+  * @param clockSpeed The clock speed to initialize to
   *         (either I2C_CLOCK_LOW or I2C_CLOCK_HI)
   * @param ownAddr User-defined own address
   * @param i2cPort The I2C GPIO port
@@ -89,14 +89,14 @@ void cmr_i2cInit(
         .handle = {
             .Instance = instance,
             .Init = {
-            	.ClockSpeed = clockSpeed,
-            	.DutyCycle = I2C_DUTYCYCLE_2,
-            	.OwnAddress1 = ownAddr,
-            	.AddressingMode = I2C_ADDRESSINGMODE_7BIT,
-            	.DualAddressMode = I2C_DUALADDRESS_DISABLE,
-            	.OwnAddress2 = 0,
-            	.GeneralCallMode = I2C_GENERALCALL_DISABLE,
-            	.NoStretchMode = I2C_NOSTRETCH_DISABLE
+                .ClockSpeed = clockSpeed,
+                .DutyCycle = I2C_DUTYCYCLE_2,
+                .OwnAddress1 = ownAddr,
+                .AddressingMode = I2C_ADDRESSINGMODE_7BIT,
+                .DualAddressMode = I2C_DUALADDRESS_DISABLE,
+                .OwnAddress2 = 0,
+                .GeneralCallMode = I2C_GENERALCALL_DISABLE,
+                .NoStretchMode = I2C_NOSTRETCH_DISABLE
             }
         }
     };
@@ -123,4 +123,5 @@ void cmr_i2cInit(
     HAL_GPIO_Init(i2cDataPort, &pinConfig);
 }
 
-#endif /*HAL_I2C_MODULE_ENABLED*/
+#endif /* HAL_I2C_MODULE_ENABLED */
+

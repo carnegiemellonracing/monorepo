@@ -10,6 +10,9 @@
 
 #include <stdint.h>
 
+// ------------------------------------------------------------------------------------------------
+// Common enums and structs
+
 /** @brief Node states. */
 typedef enum {
     CMR_CAN_UNKNOWN = 0,    /**< @brief Current state unknown. */
@@ -22,9 +25,9 @@ typedef enum {
 
 /** @brief Fan states. */
 typedef enum {
-    CMR_CAN_FAN_OFF,
-    CMR_CAN_FAN_LOW,
-    CMR_CAN_FAN_HIGH
+    CMR_CAN_FAN_OFF,    /**< @brief Fan turned off. */
+    CMR_CAN_FAN_LOW,    /**< @brief Fan at low speed. */
+    CMR_CAN_FAN_HIGH    /**< @brief Fan at high speed. */
 } cmr_canFanState_t;
 
 /** @brief Standard CAN heartbeat. */
@@ -40,6 +43,22 @@ typedef enum {
 
     /** @brief No VSM heartbeat received for 50 ms. */
     CMR_CAN_ERROR_VSM_TIMEOUT = (1 << 0),
+
+    /**
+     * @brief Reception period for at least one message from another module
+     * has surpassed its error threshold.
+     */
+    CMR_CAN_ERROR_VSM_MODULE_TIMEOUT = (1 << 15),
+    /** @brief At least one module is in the wrong state. */
+    CMR_CAN_ERROR_VSM_MODULE_STATE = (1 << 14),
+    /** @brief At least one of the error latches is active. */
+    CMR_CAN_ERROR_VSM_LATCHED_ERROR = (1 << 13),
+    /** @brief VSM DCDC fault signal. */
+    CMR_CAN_ERROR_VSM_DCDC_FAULT = (1 << 12),
+    /** @brief VSM hall effect sensor out-of-range. */
+    CMR_CAN_ERROR_VSM_HALL_EFFECT = (1 << 11),
+    /** @brief VSM brake pressure sensor out-of-range. */
+    CMR_CAN_ERROR_VSM_BPRES = (1 << 10),
 
     /** @brief AFC fan current out-of-range. */
     CMR_CAN_ERROR_AFC_FANS_CURRENT = (1 << 15),
@@ -73,6 +92,23 @@ typedef enum {
     /** @brief Low-voltage bus current out-of-range. */
     CMR_CAN_WARN_BUS_CURRENT = (1 << 2),
 
+    /** @brief VSM hasn't received HVC heartbeat for 25 ms. */
+    CMR_CAN_WARN_VSM_HVC_TIMEOUT = (1 << 15),
+    /** @brief VSM hasn't received CDC heartbeat for 25 ms. */
+    CMR_CAN_WARN_VSM_CDC_TIMEOUT = (1 << 14),
+    /** @brief VSM hasn't received FSM heartbeat for 25 ms. */
+    CMR_CAN_WARN_VSM_FSM_TIMEOUT = (1 << 13),
+    /** @brief VSM hasn't received PTC heartbeat for 25 ms. */
+    CMR_CAN_WARN_VSM_PTC_TIMEOUT = (1 << 12),
+    /** @brief VSM hasn't received DIM heartbeat for 25 ms. */
+    CMR_CAN_WARN_VSM_DIM_TIMEOUT = (1 << 11),
+    /** @brief VSM hasn't received AFC 0 heartbeat for 25 ms. */
+    CMR_CAN_WARN_VSM_AFC0_TIMEOUT = (1 << 10),
+    /** @brief VSM hasn't received AFC 1 heartbeat for 25 ms. */
+    CMR_CAN_WARN_VSM_AFC1_TIMEOUT = (1 << 9),
+    /** @brief VSM hasn't received APC heartbeat for 25 ms. */
+    CMR_CAN_WARN_VSM_APC_TIMEOUT = (1 << 8),
+
     /** @brief FSM throttle position implausibility (L/R difference > 10%). */
     CMR_CAN_WARN_FSM_TPOS_IMPLAUSIBLE = (1 << 15),
     /** @brief FSM brake pedal plausibility fault. */
@@ -102,9 +138,193 @@ typedef enum {
     GEAR_LEN
 } cmr_canGear_t;
 
+// ------------------------------------------------------------------------------------------------
+// Vehicle Safety Module
+
+/** @brief Vehicle Safety Module internal states. */
+typedef enum {
+    CMR_CAN_VSM_STATE_ERROR = 0,        /**< @brief Error state. */
+    CMR_CAN_VSM_STATE_CLEAR_ERROR,      /**< @brief Clear error state. */
+    CMR_CAN_VSM_STATE_GLV_ON,           /**< @brief Grounded Low Voltage system on. */
+    CMR_CAN_VSM_STATE_REQ_PRECHARGE,    /**< @brief Request accumulator isolation relay precharge. */
+    CMR_CAN_VSM_STATE_RUN_BMS,          /**< @brief Run Battery Management System. */
+    CMR_CAN_VSM_STATE_DCDC_EN,          /**< @brief Enable DCDC converters. */
+    CMR_CAN_VSM_STATE_HV_EN,            /**< @brief Enable high voltage system. */
+    CMR_CAN_VSM_STATE_RTD,              /**< @brief Ready to drive. */
+    CMR_CAN_VSM_STATE_COOLING_OFF,      /**< @brief Disable powertrain cooling system. */
+    CMR_CAN_VSM_STATE_DCDC_OFF,         /**< @brief Disable DCDC converters. */
+    CMR_CAN_VSM_STATE_LEN               /**< @brief Number of VSM states. */
+} cmr_canVSMState_t;
+
+/** @brief Bit definitions for timeoutMatrix and badStateMatrix in cmr_canVSMErrors_t. */
+typedef enum {
+    /** @brief No modules have timed out. */
+    CMR_CAN_VSM_ERROR_SOURCE_NONE = 0,
+    /** @brief At least one High Voltage Controller message has timed out. */
+    CMR_CAN_VSM_ERROR_SOURCE_HVC = (1 << 7),
+    /** @brief At least one Central Dynamics Controller message has timed out. */
+    CMR_CAN_VSM_ERROR_SOURCE_CDC = (1 << 6),
+    /** @brief At least one Front Sensor Module message has timed out. */
+    CMR_CAN_VSM_ERROR_SOURCE_FSM = (1 << 5),
+    /** @brief At least one Powertrain Thermal Controller message has timed out. */
+    CMR_CAN_VSM_ERROR_SOURCE_PTC = (1 << 4),
+    /** @brief At least one Driver Interface Module message has timed out. */
+    CMR_CAN_VSM_ERROR_SOURCE_DIM = (1 << 3),
+    /** @brief At least one Accumulator Fan Controller 0 message has timed out. */
+    CMR_CAN_VSM_ERROR_SOURCE_AFC0 = (1 << 2),
+    /** @brief At least one Accumulator Fan Controller 1 message has timed out. */
+    CMR_CAN_VSM_ERROR_SOURCE_AFC1 = (1 << 1),
+    /** @brief At least one Auxiliary Power Controller message has timed out. */
+    CMR_CAN_VSM_ERROR_SOURCE_APC = (1 << 0)
+} cmr_canVSMErrorSource_t;
+
+/** @brief Bit definitions for latchMatrix in cmr_canVSMErrors_t. */
+typedef enum {
+    /** @brief No error latches are active. */
+    CMR_CAN_VSM_LATCH_NONE = 0,
+    /** @brief Software error latch is active. */
+    CMR_CAN_VSM_LATCH_SOFTWARE = (1 << 2),
+    /** @brief AMS errors use software error latch. */
+    CMR_CAN_VSM_LATCH_AMS = CMR_CAN_VSM_LATCH_SOFTWARE,
+    /** @brief IMD error latch is active. */
+    CMR_CAN_VSM_LATCH_IMD = (1 << 1),
+    /** @brief BSPD error latch is active. */
+    CMR_CAN_VSM_LATCH_BSPD = (1 << 0),
+} cmr_canVSMLatch_t;
+
+/** @brief Vehicle Safety Module state and error status. */
+typedef struct {
+    uint8_t internalState;  /**< @brief VSM internal state. See cmr_canVSMState_t. */
+    /**
+     * @brief Matrix of modules for which at least one message exceeded its error timeout.
+     * Bits defined by cmr_canVSMErrorSource_t.
+     */
+    uint8_t moduleTimeoutMatrix;
+    /**
+     * @brief Matrix of modules that are in the wrong state.
+     * Bits defined by cmr_canVSMErrorSource_t.
+     */
+    uint8_t badStateMatrix;
+    /** @brief Matrix of active error latches. Bits defined by cmr_canVSMLatch_t. */
+    uint8_t latchMatrix;
+} cmr_canVSMStatus_t;
+
+/** @brief Vehicle Safety Module power diagnostics. */
+typedef struct {
+    uint16_t busVoltage_mV;     /**< @brief Low-voltage bus voltage (mV). */
+    uint16_t busCurrent_mA;     /**< @brief Low-voltage bus current (mA). */
+} cmr_canVSMPowerDiagnostics_t;
+
+// ------------------------------------------------------------------------------------------------
+// High Voltage Controller
+
+/** @brief CMR High Voltage Controller modes. */
+typedef enum {
+    CMR_CAN_HVC_MODE_ERROR  = 0,        /**< @brief Error mode. */
+    CMR_CAN_HVC_MODE_IDLE   = (1 << 0), /**< @brief Idle mode. */
+    CMR_CAN_HVC_MODE_START  = (1 << 1), /**< @brief Start mode to go into run or charge. */
+    CMR_CAN_HVC_MODE_RUN    = (1 << 2), /**< @brief Run mode for driving. */
+    CMR_CAN_HVC_MODE_CHARGE = (1 << 3)  /**< @brief Charge mode. */
+} cmr_canHVCMode_t;
+
+/** @brief CMR High Voltage Controller internal states. */
+typedef enum {
+
+    // Error states
+
+    /** @brief Error state. */
+    CMR_CAN_HVC_STATE_ERROR = 0x00,
+    /** @brief State for clearing errors. */
+    CMR_CAN_HVC_STATE_CLEAR_ERROR = 0x0B,
+    /** @brief Unknown state. */
+    CMR_CAN_HVC_STATE_UNKNOWN = 0x0C,
+
+    // General states
+
+    /** @brief High voltage rails discharging after opening AIRs. */
+    CMR_CAN_HVC_STATE_DISCHARGE = 0x01,
+    /** @brief AIRs open, vehicle idle in GLV_ON state. */
+    CMR_CAN_HVC_STATE_STANDBY = 0x02,
+
+    // Drive states
+
+    /** @brief Precharge high voltage rails in preparation for driving. */
+    CMR_CAN_HVC_STATE_DRIVE_PRECHARGE = 0x03,
+    /** @brief AIRs closed, ready to go to drive state upon VSM requesting run mode. */
+    CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE = 0x04,
+    /** @brief AIRs closed and vehicle ready to drive. */
+    CMR_CAN_HVC_STATE_DRIVE = 0x05,
+
+    // Charge states
+
+    /** @brief Precharge high voltage rails in preparation for charging. */
+    CMR_CAN_HVC_STATE_CHARGE_PRECHARGE = 0x06,
+    /** @brief AIRs closed, ready to go to proper charge state upon requesting charge mode. */
+    CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE = 0x07,
+    /** @brief Trickle charge for severely depleted cells. */
+    CMR_CAN_HVC_STATE_CHARGE_TRICKLE = 0x08,
+    /** @brief Constant current for majority of charging. */
+    CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT = 0x09,
+    /** @brief Constant voltage for topping off charge. */
+    CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE = 0x0A
+} cmr_canHVCState_t;
+
+/** @brief High Voltage Controller error bit vector definitions. */
+typedef enum {
+    CMR_CAN_HVC_ERROR_NONE = 0x0000,    /**< @brief No errors detected. */
+
+    // Pack errors
+    CMR_CAN_HVC_ERROR_PACK_UNDERVOLT   = 0x0001,    /**< @brief Pack voltage too low. */
+    CMR_CAN_HVC_ERROR_PACK_OVERVOLT    = 0x0002,    /**< @brief Pack voltage too high. */
+    CMR_CAN_HVC_ERROR_PACK_OVERCURRENT = 0x0008,    /**< @brief Pack current too high. */
+
+    // Cell errors
+    CMR_CAN_HVC_ERROR_CELL_UNDERVOLT = 0x0010,  /**< @brief At least one cell is undervoltage. */
+    CMR_CAN_HVC_ERROR_CELL_OVERVOLT  = 0x0020,  /**< @brief At least one cell is overvoltage. */
+    CMR_CAN_HVC_ERROR_CELL_OVERTEMP  = 0x0040,  /**< @brief At least one cell has overheated. */
+    CMR_CAN_HVC_ERROR_BMB_FAULT      = 0x0080,  /**< @brief At least one BMB has faulted. */
+
+    // Communication errors
+    CMR_CAN_HVC_ERROR_BMB_TIMEOUT = 0x0100, /**< @brief BMB has timed out. */
+    CMR_CAN_HVC_ERROR_CAN_TIMEOUT = 0x0200, /**< @brief HVC command timed out. */
+
+    // Other errors
+    CMR_CAN_HVC_ERROR_RELAY        = 0x1000,    /**< @brief Fault with AIRs. */
+    CMR_CAN_HVC_ERROR_LV_UNDERVOLT = 0x2000,    /**< @brief Shutdown circuit/AIR voltage too low. */
+} cmr_canHVCError_t;
+
+/** @brief High Voltage Controller relay status bit vector definitions. */
+typedef enum {
+    CMR_CAN_HVC_RELAY_STATUS_DISCHARGE_CLOSED   = (1 << 0), /**<@ brief Discharge relay closed. */
+    CMR_CAN_HVC_RELAY_STATUS_PRECHARGE_CLOSED   = (1 << 1), /**<@ brief Precharge relay closed. */
+    CMR_CAN_HVC_RELAY_STATUS_AIR_NEG_CLOSED     = (1 << 2), /**<@ brief Negative AIR closed. */
+    CMR_CAN_HVC_RELAY_STATUS_AIR_POS_CLOSED     = (1 << 3), /**<@ brief Positive AIR closed. */
+    CMR_CAN_HVC_RELAY_STATUS_DISCHARGE_ERROR    = (1 << 4), /**<@ brief Discharge error. */
+    CMR_CAN_HVC_RELAY_STATUS_PRECHARGE_ERROR    = (1 << 5), /**<@ brief Precharge error. */
+    CMR_CAN_HVC_RELAY_STATUS_AIR_NEG_ERROR      = (1 << 6), /**<@ brief Negative AIR error. */
+    CMR_CAN_HVC_RELAY_STATUS_AIR_POS_ERROR      = (1 << 7), /**<@ brief Positive AIR error. */
+} cmr_canHVCRelayStatus_t;
+
+/** @brief High Voltage Controller heartbeat (does not follow universal structure). */
+typedef struct {
+    uint16_t errorStatus;   /**< @brief Current HVC errors. See cmr_canHVCError_t. */
+    uint8_t hvcMode;        /**< @brief Current HVC operating mode. See cmr_canHVCMode_t. */
+    uint8_t hvcState;       /**< @brief Current internal HVC state. See cmr_canHVCState_t. */
+    uint8_t relayStatus;    /**< @brief Status of AIRs. See cmr_canHVCRelayStatus_t. */
+    uint8_t uptime_s;       /**< @brief HVC uptime in seconds. */
+} cmr_canHVCHeartbeat_t;
+
+/** @brief High Voltage Controller command. */
+typedef struct {
+    uint8_t modeRequest;    /**< @brief HVC operating mode request. See cmr_canHVCMode_t. */
+} cmr_canHVCCommand_t;
+
+// ------------------------------------------------------------------------------------------------
+// Accumulator Fan Controller
+
 /** @brief Accumulator Fan Controller fan status. */
 typedef struct {
-    uint8_t acFanState[6];    /**< @brief Accumulator fan states. */
+    uint8_t acFanState;    /**< @brief Accumulator fan states. */
     uint8_t dcdcFanState;   /**< @brief DCDC fan state. */
 } cmr_canAFCFanStatus_t;
 
@@ -121,6 +341,25 @@ typedef struct {
     uint16_t fansCurrent_mA;    /**< @brief Total fans current (mA). */
 } cmr_canAFCPowerDiagnostics_t;
 
+// ------------------------------------------------------------------------------------------------
+// Central Dynamics Controller
+
+/** @brief Central Dynamics Controller wheel speeds. */
+typedef struct {
+    uint16_t frontLeft;     /**< @brief Front left wheel speed (RPM). */
+    uint16_t frontRight;    /**< @brief Front right wheel speed (RPM). */
+    uint16_t backLeft;      /**< @brief Back left wheel speed (RPM). */
+    uint16_t backRight;     /**< @brief Back right wheel speed (RPM). */
+} cmr_canCDCWheelSpeeds_t;
+
+/** @brief Central Dynamics Controller PTC brake solenoid command. */
+typedef struct {
+    uint8_t solenoidEnable;     /**< @brief Enable the solenoid (disable the brakes). */
+} cmr_canCDCSolenoidPTC_t;
+
+// ------------------------------------------------------------------------------------------------
+// Driver Interface Module
+
 /** @brief Driver Interface Module state/gear request. */
 typedef struct {
     uint8_t requestedState;     /**< @brief Requested state. */
@@ -132,6 +371,9 @@ typedef struct {
     uint16_t busVoltage_mV;     /**< @brief Low-voltage bus voltage (mV). */
     uint16_t busCurrent_mA;     /**< @brief Low-voltage bus current (mA). */
 } cmr_canDIMPowerDiagnostics_t;
+
+// ------------------------------------------------------------------------------------------------
+// Front Sensor Module
 
 /** @brief Front Sensor Module data. */
 typedef struct {
@@ -163,16 +405,21 @@ typedef struct {
     uint16_t busCurrent_mA;     /**< @brief Low-voltage bus current (mA). */
 } cmr_canFSMPowerDiagnostics_t;
 
+// ------------------------------------------------------------------------------------------------
+// Powertrain Thermal Controller
+
+/** @brief Water cooling pump state enumeration. */
+typedef enum {
+    CMR_CAN_PTC_PUMP_STATE_OFF = 0, /**< @brief Pump disabled. */
+    CMR_CAN_PTC_PUMP_STATE_ON       /**< @brief Pump enabled. */
+} cmr_canPTCPumpState_t;
+
 /** @brief Powertrain Thermal Controller cooling status. */
 typedef struct {
-    uint8_t fanState;   /**< @brief Radiator fan state. */
-    uint8_t pumpState;  /**< @brief Radiator water pump state. */
-
-    /** @brief Pre-radiator water temperature (C). */
-    uint16_t preRadiatorTemp_C;
-
-    /**< @brief Post-radiator water temperature (C). */
-    uint16_t postRadiatorTemp_C;
+    uint8_t fanState;            /**< @brief Radiator fan state. */
+    uint8_t pumpState;           /**< @brief Radiator water pump state. */
+    uint16_t preRadiatorTemp_C;  /**< @brief Pre-radiator water temperature (C). */
+    uint16_t postRadiatorTemp_C; /**< @brief Post-radiator water temperature (C). */
 } cmr_canPTCCoolingStatus_t;
 
 /** @brief Powertrain Thermal Controller voltage diagnostics. */
@@ -187,6 +434,91 @@ typedef struct {
     uint16_t loadCurrent_mA;    /**< @brief Load current (mA). */
     uint16_t fanCurrent_mA;     /**< @brief Fan current (mA). */
 } cmr_canPTCCurrentDiagnostics_t;
+
+typedef struct {
+    uint8_t acFansDrive;    /**< @brief Accumulator fan drive signal. */
+    uint8_t dcdcFanDrive;   /**< @brief DCDC fan drive signal. */
+} cmr_canPTCAFCControl_t;
+
+// ------------------------------------------------------------------------------------------------
+// Rinehart Motor Controller Definitions
+
+/** @brief Drive motor with parameters. */
+typedef struct {
+    int16_t torqueCommand; /**< @brief Torque in N.m. times 10. */
+    int16_t speedCommand; /**< @brief Angular velocity in RPM. */
+    /** @brief 0 -> CW, 1 -> CCW viewed looking at shaft side. */
+    uint8_t directionCommand;
+    /** @brief bit 0 = inverter enable, bit 1 = discharge enable. */
+    uint8_t inverterEnableDischargeSpeedMode;
+    /** @brief Set 0 for no limit override (torque in N.m. times 10). */
+    uint16_t torqueLimitCommand;
+} cmr_canRMSCommand_t;
+
+/** @brief Faults report from motor controller (see pg 23). */
+typedef struct {
+    uint16_t postFaultLo; /**< @brief See "RMS CAN Protocol" pg 23. */
+    uint16_t postFaultHi; /**< @brief See "RMS CAN Protocol" pg 23. */
+    uint16_t runFaultLo; /**< @brief See "RMS CAN Protocol" pg 23. */
+    uint16_t runFaultHi; /**< @brief See "RMS CAN Protocol" pg 23. */
+} cmr_canRMSFaults_t;
+
+/** @brief Motor controller temperatures (set A). Temp in degC times 10. */
+typedef struct {
+    int16_t moduleATemp; /**< @brief Temp in internal module A (degC times 10). */
+    int16_t moduleBTemp; /**< @brief Temp in internal module B (degC times 10). */
+    int16_t moduleCTemp; /**< @brief Temp in internal module C (degC times 10). */
+    int16_t gateDriverBoardTemp; /**< @brief Temp of gate driver (degC times 10). */
+} cmr_canRMSTempA_t;
+
+/** @brief Motor controller temperatures (set B). Temp in degC times 10. */
+typedef struct {
+    int16_t controlBoardTemp; /**< @brief Control board temp (degC times 10). */
+    int16_t RTD1Temp; /**< @brief RTD input 1 temp (degC times 10). */
+    int16_t RTD2Temp; /**< @brief RTD input 2 temp (degC times 10). */
+    int16_t RTD3Temp; /**< @brief RTD input 3 temp (degC times 10). */
+} cmr_canRMSTempB_t;
+
+/** @brief Motor controller temperatures (set C). Temp in degC times 10. */
+typedef struct {
+    int16_t RTD4Temp; /**< @brief RTD input 4 temp (degC times 10). */
+    int16_t RTD5Temp; /**< @brief RTD input 5 temp (degC times 10). */
+    int16_t motorTemp; /**< @brief Motor temp (degC times 10). */
+    int16_t torqueShudder; /**< @brief Torque (N.m. times 10). */
+} cmr_canRMSTempC_t;
+
+/** @brief Motor position information. */
+typedef struct {
+    int16_t angle; /**< @brief Angle (deg times 10) of motor as read by resolver. */
+    int16_t speed; /**< @brief Speed (RPM) of motor. */
+    int16_t frequency; /**< @brief Inverter frequency (Hz times 10). */
+    int16_t resolverAngle; /**< @brief Resolver angle for calibration. */
+} cmr_canRMSMotorPosition_t;
+
+/** @brief Motor controller measured currents. Current in amps times 10.*/
+typedef struct {
+    int16_t phaseA; /**< @brief Current in phase A cable. */
+    int16_t phaseB; /**< @brief Current in phase B cable. */
+    int16_t phaseC; /**< @brief Current in phase C cable. */
+    int16_t bus; /**< @brief DC bus current. */
+} cmr_canRMSCurrents_t;
+
+/** @brief Motor controller measured voltages. Voltage in volts times 10.*/
+typedef struct {
+    int16_t bus; /**< @brief DC bus voltage. */
+    int16_t output; /**< @brief Output voltage as peak line-neutral volts. */
+    int16_t phaseAB; /**< @brief Vab when disabled, Vd when enabled. */
+    int16_t phaseBC; /**< @brief Vbc when disabled, Vq when enabled. */
+} cmr_canRMSVoltages_t;
+
+/** @brief Motor controller torque diagnostics. */
+typedef struct {
+    /** @brief Setpoint torque (torque in N.m. times 10). */
+    int16_t commandedTorque;
+    /** @brief Measured torque produced (torque in N.m. times 10). */
+    int16_t torqueFeedback;
+    uint32_t powerOnTimer;
+} cmr_canRMSTorqueDiag_t;
 
 #endif /* CMR_CAN_TYPES_H */
 

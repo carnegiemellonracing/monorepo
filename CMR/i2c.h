@@ -37,3 +37,4 @@ void cmr_i2cInit(
 #endif /* HAL_I2C_MODULE_ENABLED */
 
 #endif /* CMR_I2C_H */
+

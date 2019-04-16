@@ -21,6 +21,8 @@
 
 #include "tasks.h"      // Task interface
 
+#include <CMR/can_types.h>  // cmr_canError_t, cmr_canWarn_t
+
 /** @brief Number of CAN filter banks allocated for each interface. */
 #define CMR_CAN_FILTERBANKS 14
 
@@ -31,8 +33,14 @@ typedef struct {
     /** @brief Threshold period for timeout warning, in milliseconds. */
     const TickType_t timeoutWarn_ms;
 
+    /** @brief Heartbeat flag to set upon exceeding timeout warning threshold. */
+    const cmr_canWarn_t warnFlag;
+
     /** @brief Threshold period for timeout error, in milliseconds. */
     const TickType_t timeoutError_ms;
+
+    /** @brief Heartbeat flag to set upon exceeding timeout error threshold. */
+    const cmr_canError_t errorFlag;
 
     /** @brief Last receive timestamp, in milliseconds. */
     volatile TickType_t lastReceived_ms;
@@ -68,15 +76,12 @@ struct cmr_can {
 
     /** @brief Callback for other messages received, or `NULL` to ignore. */
     cmr_canRXCallback_t rxCallback;
-
-    /** @brief Receive task. */
-    cmr_task_t rxTask;
 };
 
 void cmr_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
-    cmr_canRXCallback_t rxCallback, const char *rxTaskName,
+    cmr_canRXCallback_t rxCallback,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
     GPIO_TypeDef *txPort, uint16_t txPin
 );
