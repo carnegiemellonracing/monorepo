@@ -1,0 +1,87 @@
+{
+    "content": [
+        {
+            "converter": "Raw",
+            "dataCompressed": true,
+            "dataStorage": "Embedded",
+            "destName": "content/RobotoMono-Bold_72_L4",
+            "memoryAddress": 1000,
+            "memoryLoaded": true,
+            "rawLength": 44192,
+            "rawStart": 0,
+            "sourcePath": "fonts/RobotoMono-Bold_72/L4/RobotoMono-Bold_72_L4.raw"
+        },
+        {
+            "converter": "Raw",
+            "dataCompressed": true,
+            "dataStorage": "Embedded",
+            "destName": "content/RobotoMono-Bold_40_L4",
+            "memoryAddress": 45192,
+            "memoryLoaded": true,
+            "rawLength": 13252,
+            "rawStart": 0,
+            "sourcePath": "fonts/RobotoMono-Bold_40/L4/RobotoMono-Bold_40_L4.raw"
+        }
+    ],
+    "coprocessor": [
+        "CLEAR(1, 1, 1)",
+        "CMD_SETFONT2(31, 1000, 32)",
+        "CMD_SETFONT2(30, 45192, 32)",
+        "COLOR_RGB(150, 150, 150)",
+        "CMD_TEXT(160, 80, 27, OPT_CENTER, \"MPH\")",
+        "CMD_TEXT(40, 225, 27, OPT_CENTER, \"VOLTS\")",
+        "CMD_TEXT(280, 225, 27, OPT_CENTER, \"kW\")",
+        "CMD_TEXT(140, 115, 27, OPT_CENTERY | OPT_RIGHTX, \"AC\")",
+        "CMD_TEXT(140, 150, 27, OPT_CENTERY | OPT_RIGHTX, \"DCDC\")",
+        "CMD_TEXT(140, 185, 27, OPT_CENTERY | OPT_RIGHTX, \"Mot\")",
+        "CMD_TEXT(140, 220, 27, OPT_CENTERY | OPT_RIGHTX, \"MC\")",
+        "CMD_TEXT(195, 115, 27, OPT_CENTERY, \"C\")",
+        "CMD_TEXT(195, 150, 27, OPT_CENTERY, \"C\")",
+        "CMD_TEXT(195, 185, 27, OPT_CENTERY, \"C\")",
+        "CMD_TEXT(195, 220, 27, OPT_CENTERY, \"C\")",
+        "COLOR_RGB(95, 255, 67)",
+        "CMD_TEXT(160, 30, 31, OPT_CENTER, \"52\")",
+        "COLOR_RGB(255, 255, 0)",
+        "BEGIN(RECTS)",
+        "VERTEX2II(10, 10, 0, 0)",
+        "VERTEX2II(70, 170, 0, 0)",
+        "END()",
+        "CMD_TEXT(40, 190, 30, OPT_CENTER, \"352\")",
+        "COLOR_RGB(255, 153, 0)",
+        "BEGIN(RECTS)",
+        "VERTEX2II(250, 10, 0, 0)",
+        "VERTEX2II(310, 170, 0, 0)",
+        "END()",
+        "CMD_TEXT(280, 190, 30, OPT_CENTER, \" 5\")",
+        "COLOR_RGB(0, 0, 0)",
+        "BEGIN(RECTS)",
+        "VERTEX2II(12, 12, 0, 0)",
+        "VERTEX2II(68, 80, 0, 0)",
+        "END()",
+        "BEGIN(RECTS)",
+        "VERTEX2II(252, 12, 0, 0)",
+        "VERTEX2II(308, 140, 0, 0)",
+        "END()",
+        "COLOR_RGB(0, 255, 255)",
+        "CMD_TEXT(170, 105, 30, OPT_CENTER, \"27\")",
+        "COLOR_RGB(255, 0, 255)",
+        "CMD_TEXT(170, 140, 30, OPT_CENTER, \"29\")",
+        "COLOR_RGB(74, 134, 232)",
+        "CMD_TEXT(170, 175, 30, OPT_CENTER, \"32\")",
+        "COLOR_RGB(153, 0, 255)",
+        "CMD_TEXT(170, 210, 30, OPT_CENTER, \"35\")"
+    ],
+    "displayList": [
+        ""
+    ],
+    "project": {
+        "device": 2066
+    },
+    "registers": {
+        "hSize": 320,
+        "macro": [
+            ""
+        ],
+        "vSize": 240
+    }
+}
