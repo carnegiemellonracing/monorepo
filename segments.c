@@ -76,6 +76,28 @@ static uint8_t segmentsAddrForSeg(size_t segNum) {
     return segNum + SEGMENTS_CMD_SEGMENT_DATA_BASE;
 }
 
+/**
+ * @brief Write text on the segment display.
+ *
+ * @param data Array of data to write.
+ * @param len Length of data array
+ */
+static void segmentsWrite(char *data, size_t len) {
+    if (len > SEGMENTS_LEN) {
+        len = SEGMENTS_LEN;     // Data too long; truncate.
+    }
+
+    // Right-align text.
+    for (size_t i = 0; i < len; i++) {
+        uint8_t addr = segmentsAddrForSeg(SEGMENTS_LEN - len + i);
+        segmentsCmd(addr, data[i]);
+    }
+    for (size_t i = 0; i < SEGMENTS_LEN - len; i++) {
+        uint8_t addr = segmentsAddrForSeg(i);
+        segmentsCmd(addr, ' ');
+    }
+}
+
 /** @brief Segment display update priority. */
 static const uint32_t segmentsUpdate_priority = 3;
 
@@ -186,27 +208,10 @@ void segmentsInit(void) {
     segmentsCmd(SEGMENTS_CMD_CONFIGURATION, 0x01);
     segmentsCmd(SEGMENTS_CMD_SEGMENT_CONFIG, 0xFF);
     segmentsCmd(SEGMENTS_CMD_MAX_BRIGHTNESS, 0xF);
-}
 
-/**
- * @brief Write text on the segment display.
- *
- * @param data Array of data to write.
- * @param len Length of data array
- */
-void segmentsWrite(char *data, size_t len) {
-    if (len > SEGMENTS_LEN) {
-        len = SEGMENTS_LEN;     // Data too long; truncate.
-    }
-
-    // Right-align text.
-    for (size_t i = 0; i < len; i++) {
-        uint8_t addr = segmentsAddrForSeg(SEGMENTS_LEN - len + i);
-        segmentsCmd(addr, data[i]);
-    }
-    for (size_t i = 0; i < SEGMENTS_LEN - len; i++) {
-        uint8_t addr = segmentsAddrForSeg(i);
-        segmentsCmd(addr, ' ');
-    }
+    cmr_taskInit(
+        &segmentsUpdate_task, "segmentsUpdate",
+        segmentsUpdate_priority, segmentsUpdate, NULL
+    );
 }
 
