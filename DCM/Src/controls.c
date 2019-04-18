@@ -458,6 +458,49 @@ static void set_optimal_control_with_regen(
     set_optimal_control(combined_request, swAngle_millideg_FL, swAngle_millideg_FR, true);
 }
 
+static void set_regen(uint8_t throttlePos_u8) {
+    uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
+
+    uint8_t paddle_regen_strength_raw = 100;
+    // getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
+    float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
+
+    float paddle_request = 0.0f;
+    if (paddle_pressure > paddle_pressure_start) {
+        paddle_request = ((float)(paddle_pressure - paddle_pressure_start)) / (UINT8_MAX - paddle_pressure_start);
+        paddle_request *= paddle_regen_strength; // [0, 1].
+    }
+
+    float throttle = (float)throttlePos_u8 / UINT8_MAX;
+    float combined_request = throttle - paddle_request; // [0, 1].
+
+    static cmr_torqueDistributionNm_t torquesPos_Nm;
+	static cmr_torqueDistributionNm_t torquesNeg_Nm;
+
+    float torque_request_Nm = combined_request * maxFastTorque_Nm;
+    float torque_request_fl_Nm;
+    float torque_request_fr_Nm;
+    float torque_request_rl_Nm;
+    float torque_request_rr_Nm;
+    if(torque_request_Nm < 0) {
+        torque_request_fl_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FL)), torque_request_Nm);
+        torque_request_fr_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FR)), torque_request_Nm);
+        torque_request_rl_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RL)), torque_request_Nm);
+        torque_request_rr_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RR)), torque_request_Nm);
+    } else {
+        torque_request_fl_Nm = torque_request_Nm;
+        torque_request_fr_Nm = torque_request_Nm;
+        torque_request_rl_Nm = torque_request_Nm;
+        torque_request_rr_Nm = torque_request_Nm;
+    }
+
+    set_motor_speed_and_torque(MOTOR_FL, torque_request_fl_Nm, &torquesPos_Nm, &torquesNeg_Nm);
+    set_motor_speed_and_torque(MOTOR_FR, torque_request_fr_Nm, &torquesPos_Nm, &torquesNeg_Nm);
+    set_motor_speed_and_torque(MOTOR_RL, torque_request_rl_Nm, &torquesPos_Nm, &torquesNeg_Nm);
+    set_motor_speed_and_torque(MOTOR_RR, torque_request_rr_Nm, &torquesPos_Nm, &torquesNeg_Nm);
+    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
+}
+
 /**
  * @brief Runs control loops and sets motor torque limits and velocity targets accordingly.
  *
@@ -519,8 +562,15 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_ENDURANCE: {
-            set_optimal_control_with_regen(throttlePos_u8, swAngle_millideg_FL, swAngle_millideg_FR);
+            // set_optimal_control_with_regen(throttlePos_u8, swAngle_millideg_FL, swAngle_millideg_FR);
             // setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
+            // set_regen(throttlePos_u8);
+            float avgMotorSpeed_RPM = getTotalMotorSpeed_rpm()* 0.25f;
+            uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
+            uint8_t paddle_regen_strength_raw = 100;
+            float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
+            uint8_t throttlePos_u8_temp = throttlePos_u8;
+            setPaddleRegen(&throttlePos_u8_temp, brakePressurePsi_u8, avgMotorSpeed_RPM, paddle_pressure, paddle_regen_strength);
             break;
         }
         case CMR_CAN_GEAR_AUTOX: {
@@ -694,23 +744,7 @@ void setFastTorque (
 void setFastTorqueWithParallelRegen(uint16_t brakePressurePsi_u8, uint8_t throttlePos_u8)
 {
     if (brakePressurePsi_u8 >= braking_threshold_psi) {
-        bool activateParallelRegen = false;
-
-        volatile cmr_canRXMeta_t *timeoutMsg = canVehicleGetMeta(CANRX_VEH_DIM_ACTION_BUTTON);
-        if(cmr_canRXMetaTimeoutError(timeoutMsg, xTaskGetTickCount()) != (-1)) {
-
-            volatile cmr_canDIMActions_t *actions = (cmr_canDIMActions_t*)(timeoutMsg->payload);
-
-            uint8_t switches = actions->switchValues;
-            if(switches % 2 == 0) {
-                activateParallelRegen = true;
-            } else {
-                activateParallelRegen = false;
-            }
-        }
-
-        if (activateParallelRegen)
-            setParallelRegen(throttlePos_u8, brakePressurePsi_u8, 0);
+        setParallelRegen(throttlePos_u8, brakePressurePsi_u8, 0);
     }
     else {
         const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
