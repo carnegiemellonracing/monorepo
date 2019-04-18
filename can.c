@@ -32,9 +32,9 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 25
     },
     [CANRX_HVC_PACK_VOLTAGE] = {
-    	.canID = CMR_CANID_HVC_PACK_VOLTAGE,
-		.timeoutError_ms = 50,
-		.timeoutWarn_ms = 25
+        .canID = CMR_CANID_HVC_PACK_VOLTAGE,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
     }
 };
 
@@ -121,7 +121,7 @@ static void canTX100Hz(void *pvParameters) {
 
     cmr_canRXMeta_t *packvoltageHVCMeta = canRXMeta + CANRX_HVC_PACK_VOLTAGE;
     volatile cmr_canHVCPackVoltage_t *packvoltageHVC =
-    	(void *) packvoltageHVCMeta->payload;
+        (void *) packvoltageHVCMeta->payload;
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {

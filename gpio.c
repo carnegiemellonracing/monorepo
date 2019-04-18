@@ -94,13 +94,13 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         }
     },
     [GPIO_PD_N] = {
-    	.port = GPIOC,
-		.init = {
-			.Pin = GPIO_PIN_3,
-			.Mode = GPIO_MODE_OUTPUT_PP,
-			.Pull = GPIO_NOPULL,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_3,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
     }
 };
 
@@ -149,13 +149,13 @@ static void buttonsInput_task(void *pvParameters) {
                     change_gear(event.pressed);
                     break;
                 case GPIO_BUTTON_1:
-                	state_down_button(event.pressed);
+                    state_down_button(event.pressed);
                     break;
                 case GPIO_BUTTON_2:
                     change_gear(event.pressed);
                     break;
                 case GPIO_BUTTON_3:
-                	state_up_button(event.pressed);
+                    state_up_button(event.pressed);
                     break;
                 case GPIO_BUTTON_4:
                     break;

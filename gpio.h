@@ -29,7 +29,7 @@ typedef enum {
     GPIO_BUTTON_3,  /**< @brief Button 3. */
     GPIO_BUTTON_4,  /**< @brief Button 4. */
     GPIO_BEEPER,    /**< @brief Beeper. */
-	GPIO_PD_N,		/**< @brief Screen Power Down. */
+    GPIO_PD_N,      /**< @brief Screen Power Down. */
     GPIO_LEN    /**< @brief Total GPIO pins. */
 } gpio_t;
 
