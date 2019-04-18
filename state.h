@@ -1,6 +1,6 @@
 /**
- * @file gpio.h
- * @brief DIM state request handling logic.interface
+ * @file state.h
+ * @brief DIM state interface.
  *
  * @author Carnegie Mellon Racing
  */
@@ -9,10 +9,20 @@
 #define STATE_H
 
 #include <stdbool.h>    // bool
-#include "can.h"    // Interface to implement
 
-bool is_valid_state_request(cmr_canState_t state);
-void state_up_button(bool pressed);
-void state_down_button(bool pressed);
+#include "can.h"        // Board-specific CAN interface
+
+cmr_canState_t stateGetVSM(void);
+cmr_canState_t stateGetVSMReq(void);
+
+cmr_canGear_t stateGetGear(void);
+cmr_canGear_t stateGetGearReq(void);
+
+void stateVSMUpButton(bool pressed);
+void stateVSMDownButton(bool pressed);
+
+void stateGearButton(bool pressed);
+void stateGearUpdate(void);
 
 #endif /* STATE_H */
+

@@ -12,9 +12,6 @@
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/can_ids.h>    // CMR CAN IDs
 
-#include "main.h"   // DIM-specific definitions
-
-
 /**
  * @brief CAN receive metadata indices.
  *
@@ -22,6 +19,7 @@
  */
 typedef enum {
     CANRX_HEARTBEAT_VSM = 0,  /**< @brief VSM heartbeat. */
+    CANRX_HVC_PACK_VOLTAGE = 1, /**< @bried BMS pack voltage. */
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 

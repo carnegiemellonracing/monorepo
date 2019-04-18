@@ -6,9 +6,9 @@
  */
 
 #include <stm32f4xx_hal.h>  // HAL interface
-#include <FreeRTOS.h>   // FreeRTOS API
-#include <task.h>       // Task interface
-#include <queue.h>      // Queue interface
+#include <FreeRTOS.h>       // FreeRTOS API
+#include <task.h>           // Task interface
+#include <queue.h>          // Queue interface
 
 #include "state.h"  // state handling stuff
 #include "gpio.h"   // Interface to implement
@@ -93,21 +93,13 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pull = GPIO_NOPULL
         }
     },
-    [GPIO_BUTTON_4] = {
-        .port = GPIOA,
+    [GPIO_PD_N] = {
+        .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_8,
-            .Mode = GPIO_MODE_IT_RISING_FALLING,
-            .Pull = GPIO_NOPULL
-        }
-    },
-    [GPIO_BEEPER] = {
-        .port = GPIOB,
-        .init = {
-            .Pin = GPIO_PIN_5,
+            .Pin = GPIO_PIN_3,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_VERY_HIGH
+            .Speed = GPIO_SPEED_FREQ_LOW
         }
     }
 };
@@ -154,24 +146,18 @@ static void buttonsInput_task(void *pvParameters) {
         while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
             switch (event.pin) {
                 case GPIO_BUTTON_0:
-                    state_up_button(event.pressed);
+                    stateGearButton(event.pressed);
                     break;
                 case GPIO_BUTTON_1:
-                    state_down_button(event.pressed);
+                    stateVSMDownButton(event.pressed);
                     break;
                 case GPIO_BUTTON_2:
+                    stateGearButton(event.pressed);
                     break;
                 case GPIO_BUTTON_3:
+                    stateVSMUpButton(event.pressed);
                     break;
-                case GPIO_BUTTON_4:
-                    break;
-                // placate compiler in a jank way im sorry
-                case GPIO_LED_STATUS:
-                case GPIO_LED_IMD:
-                case GPIO_LED_AMS:
-                case GPIO_LED_BSPD:
-                case GPIO_BEEPER:
-                case GPIO_LEN:
+                default:
                     break;
             }
         }
@@ -260,3 +246,4 @@ void HAL_GPIO_EXTI_Callback(uint16_t gpioPin) {
         portYIELD_FROM_ISR(higherWoken);
     }
 }
+

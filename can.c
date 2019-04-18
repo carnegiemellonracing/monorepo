@@ -17,7 +17,7 @@
 
 #include "can.h"    // Interface to implement
 #include "adc.h"    // adcVSense, adcISense
-
+#include "state.h"  // State interface
 
 /**
  * @brief CAN periodic message receive metadata
@@ -25,9 +25,13 @@
  * @note Indexed by `canRX_t`.
  */
 cmr_canRXMeta_t canRXMeta[] = {
-    // XXX Edit this to include the appropriate periodic messages.
     [CANRX_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_HVC_PACK_VOLTAGE] = {
+        .canID = CMR_CANID_HVC_PACK_VOLTAGE,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     }
@@ -57,31 +61,36 @@ static void canTX10Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // XXX Replace with an appropriate message.
-        cmr_canDIMPowerDiagnostics_t msg = {
+        cmr_canDIMPowerDiagnostics_t powerDiagnostics = {
             .busVoltage_mV = adcRead(ADC_VSENSE),
             .busCurrent_mA = adcRead(ADC_ISENSE)
         };
 
-        // XXX Replace with an appropriate ID and timeout.
         canTX(
             CMR_CANID_DIM_POWER_DIAGNOSTICS,
-            &msg,
-            sizeof(msg),
+            &powerDiagnostics, sizeof(powerDiagnostics),
             canTX10Hz_period_ms
         );
 
-        if (DIM_requested_state != VSM_state) {
-            cmr_canDIMRequest_t dim_request_msg = {
-                .requestedState = DIM_requested_state,
-                .requestedGear = 0
+        cmr_canState_t stateVSM = stateGetVSM();
+        cmr_canState_t stateVSMReq = stateGetVSMReq();
+        cmr_canGear_t gear = stateGetGear();
+        cmr_canGear_t gearReq = stateGetGearReq();
+        if (
+            (stateVSM != stateVSMReq) ||
+            (gear != gearReq)
+        ) {
+            cmr_canDIMRequest_t request = {
+                .requestedState = stateVSMReq,
+                .requestedGear = gearReq
             };
             canTX(
                 CMR_CANID_DIM_REQUEST,
-                &dim_request_msg,
-                sizeof(dim_request_msg),
+                &request, sizeof(request),
                 canTX10Hz_period_ms
             );
+
+            stateGearUpdate();
         }
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
@@ -107,19 +116,14 @@ static cmr_task_t canTX100Hz_task;
 static void canTX100Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-    // XXX Example message retrieval.
     cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-    volatile cmr_canHeartbeat_t *heartbeatVSM =
-        (void *) heartbeatVSMMeta->payload;
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // XXX Update these fields correctly.
+        cmr_canState_t vsmState = stateGetVSM();
         cmr_canHeartbeat_t heartbeat = {
-            .state = heartbeatVSM->state
+            .state = vsmState
         };
-
-        VSM_state = heartbeatVSM->state;
 
         uint16_t error = CMR_CAN_ERROR_NONE;
         if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
@@ -133,7 +137,6 @@ static void canTX100Hz(void *pvParameters) {
         }
         memcpy(&heartbeat.warning, &warning, sizeof(warning));
 
-        // XXX Replace with an appropriate ID and timeout.
         canTX(
             CMR_CANID_HEARTBEAT_DIM,
             &heartbeat,
@@ -153,20 +156,19 @@ void canInit(void) {
     cmr_canInit(
         &can, CAN2,
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
-        NULL, "canRX",
+        NULL,
         GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
         GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
     );
 
     // CAN2 filters.
-    // XXX Change these to whitelist the appropriate IDs.
     const cmr_canFilter_t canFilters[] = {
         {
             .isMask = false,
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_HEARTBEAT_VSM,
-                CMR_CANID_HEARTBEAT_VSM,
+                CMR_CANID_HVC_PACK_VOLTAGE,
                 CMR_CANID_HEARTBEAT_VSM,
                 CMR_CANID_HEARTBEAT_VSM
             }
@@ -206,3 +208,4 @@ void canInit(void) {
 int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
     return cmr_canTX(&can, id, data, len, timeout);
 }
+

@@ -12,13 +12,11 @@
 #include <CMR/can.h>    // CAN interface
 #include <CMR/adc.h>    // ADC interface
 #include <CMR/gpio.h>   // GPIO interface
-#include <CMR/tasks.h>  // Task interface
 
-#include "gpio.h"   // Board-specific GPIO interface
-#include "can.h"    // Board-specific CAN interface
-#include "adc.h"    // Board-specific ADC interface
-#include "main.h"   // DIM-specific definitions
-
+#include "gpio.h"       // Board-specific GPIO interface
+#include "can.h"        // Board-specific CAN interface
+#include "adc.h"        // Board-specific ADC interface
+#include "segments.h"   // Segment display interface
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -28,9 +26,6 @@ static const TickType_t statusLED_period_ms = 250;
 
 /** @brief Status LED task. */
 static cmr_task_t statusLED_task;
-
-volatile cmr_canState_t VSM_state = CMR_CAN_UNKNOWN;
-volatile cmr_canState_t DIM_requested_state = CMR_CAN_GLV_ON;
 
 /**
  * @brief Task for toggling the status LED.
@@ -44,11 +39,12 @@ static void statusLED(void *pvParameters) {
 
     cmr_gpioWrite(GPIO_LED_STATUS, 0);
 
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
+    for (
+        TickType_t lastWakeTime = xTaskGetTickCount();
+        1;
+        vTaskDelayUntil(&lastWakeTime, statusLED_period_ms)
+    ) {
         cmr_gpioToggle(GPIO_LED_STATUS);
-
-        vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
     }
 }
 
@@ -68,6 +64,7 @@ int main(void) {
     gpioInit();
     canInit();
     adcInit();
+    segmentsInit();
 
     cmr_taskInit(
         &statusLED_task,
@@ -80,3 +77,4 @@ int main(void) {
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");
 }
+
