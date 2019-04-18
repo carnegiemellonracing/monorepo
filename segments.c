@@ -6,11 +6,15 @@
  */
 
 #include <stdint.h>
+#include <stdio.h>      // snprintf()
 #include <FreeRTOS.h>   // configASSERT()
 
 #include <CMR/i2c.h>    // I2C interface.
+#include <CMR/tasks.h>  // Task interface.
 
 #include "segments.h"   // Interface to implement.
+#include "state.h"      // State interface
+#include "can.h"        // Board-specific CAN interface
 
 /** @brief Number of segments in the display. */
 #define SEGMENTS_LEN 8
@@ -70,6 +74,101 @@ static void segmentsCmd(uint8_t cmd, uint8_t value){
 static uint8_t segmentsAddrForSeg(size_t segNum) {
     configASSERT(segNum <= SEGMENTS_LEN);
     return segNum + SEGMENTS_CMD_SEGMENT_DATA_BASE;
+}
+
+/** @brief Segment display update priority. */
+static const uint32_t segmentsUpdate_priority = 3;
+
+/** @brief Segment display update period (milliseconds). */
+static const TickType_t segmentsUpdate_period_ms = 100;
+
+/** @brief Segment display update task. */
+static cmr_task_t segmentsUpdate_task;
+
+/**
+ * @brief Task for updating the segment display.
+ *
+ * @param pvParameters Ignored.
+ *
+ * @return Does not return.
+ */
+static void segmentsUpdate(void *pvParameters) {
+    /** @brief Segment text formats for each state. */
+    static const char *stateFmt[] = {
+        [CMR_CAN_UNKNOWN] = "????????",
+        [CMR_CAN_GLV_ON] = "GLV ON  ",
+        [CMR_CAN_HV_EN] = "HV %c %.3u",
+        [CMR_CAN_RTD] = "RD %c %.3u",
+        [CMR_CAN_ERROR] = "ERROR   ",
+        [CMR_CAN_CLEAR_ERROR] = "C_ERROR ",
+    };
+
+    /** @brief Characters for each gear. */
+    static const char gearChars[CMR_CAN_GEAR_LEN] = {
+        [CMR_CAN_GEAR_UNKNOWN] = '-',
+        [CMR_CAN_GEAR_REVERSE] = 'R',
+        [CMR_CAN_GEAR_SLOW] = 'S',
+        [CMR_CAN_GEAR_FAST] = 'F',
+        [CMR_CAN_GEAR_ENDURANCE] = 'E',
+        [CMR_CAN_GEAR_AUTOX] = 'X',
+        [CMR_CAN_GEAR_SKIDPAD] = '8',
+        [CMR_CAN_GEAR_ACCEL] = 'A',
+        [CMR_CAN_GEAR_TEST] = 'T'
+    };
+
+    (void) pvParameters;
+
+    cmr_canRXMeta_t *metaHVCPackVoltage = canRXMeta + CANRX_HVC_PACK_VOLTAGE;
+    volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage =
+        (void *) metaHVCPackVoltage->payload;
+
+    for (
+        TickType_t lastWakeTime = xTaskGetTickCount();
+        1;
+        vTaskDelayUntil(&lastWakeTime, segmentsUpdate_period_ms)
+    ) {
+        cmr_canState_t stateVSM = stateGetVSM();
+        cmr_canState_t stateVSMReq = stateGetVSMReq();
+        cmr_canGear_t gear = stateGetGear();
+
+        uint8_t gearChar = (gear < CMR_CAN_GEAR_LEN)
+            ? gearChars[gear]
+            : gearChars[CMR_CAN_GEAR_UNKNOWN];
+
+        const char *dispFmt = stateFmt[0];
+        switch (stateVSM) {
+            case CMR_CAN_UNKNOWN:
+            case CMR_CAN_GLV_ON:
+            case CMR_CAN_HV_EN:
+            case CMR_CAN_RTD:
+            case CMR_CAN_ERROR:
+            case CMR_CAN_CLEAR_ERROR:
+                dispFmt = stateFmt[stateVSM];
+                break;
+            default:
+                break;
+        }
+
+        // Need space for NUL-terminator from snprintf().
+        char disp[SEGMENTS_LEN + 1];
+        snprintf(
+            disp, sizeof(disp), dispFmt,
+            gearChar, canHVCPackVoltage->hvVoltage
+        );
+
+        // Indicate state request (using "decimal points"), if any.
+        if (stateVSMReq < stateVSM) {
+            for (size_t i = 0; i < SEGMENTS_LEN / 2; i++) {
+                disp[i] |= '\x80';
+            }
+        } else if (stateVSMReq > stateVSM) {
+            for (size_t i = SEGMENTS_LEN / 2; i < SEGMENTS_LEN; i++) {
+                disp[i] |= '\x80';
+            }
+        }
+
+        segmentsWrite(disp, SEGMENTS_LEN);
+    }
 }
 
 /**
