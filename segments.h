@@ -1,17 +1,17 @@
-#include <stdint.h>
-#include <CMR/i2c.h>
+/**
+ * @file segments.h
+ * @brief Segment display interface.
+ *
+ * @author Carnegie Mellon Racing
+ */
 
 #ifndef SEGMENTS_H
 #define SEGMENTS_H
 
-int sendSegmentLEDsMessage(uint8_t *data, size_t dataLength);
+#include <stddef.h>     // size_t
 
-int sendSegmentLEDsCommand(uint8_t commandAddr, uint8_t aByte);
+void segmentsInit(void);
+void segmentsWrite(char *data, size_t len);
 
-void initSegmentDisplays(cmr_i2c_t *i2c);
+#endif /* SEGMENTS_H */
 
-uint8_t addrBySegno(uint8_t segno);
-
-void writeSegmentText(uint8_t *data, uint32_t len);
-
-#endif /*SEGMENTS_H*/
