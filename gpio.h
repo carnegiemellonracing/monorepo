@@ -10,7 +10,6 @@
 
 #include <stdbool.h>    // bool
 #include <CMR/gpio.h>   // GPIO interface
-#include "main.h"   // DIM-specific definitions
 
 /**
  * @brief Represents a GPIO pin.

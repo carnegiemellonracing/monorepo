@@ -1,122 +1,169 @@
 /**
- * @file gpio.h
- * @brief DIM state request handling logic
+ * @file state.c
+ * @brief DIM state implementation.
  *
  * @author Carnegie Mellon Racing
  */
 
 #include "state.h"  // interface to implement
-#include "main.h"   // shared DIM specific stuff
-#include "gpio.h"   // for debugging purposes right now
 
- /**
-  * @brief Handler for the state up button presses.
-  *
-  * @param pressed whether the button is depressed.
-  */
- void state_up_button(bool pressed) {
-     if (pressed) {
-         if (VSM_state == CMR_CAN_ERROR) {
-             DIM_requested_state = CMR_CAN_GLV_ON;
-             return;
-         }
-         cmr_canState_t newState = DIM_requested_state + 1;
-         if (is_valid_state_request(VSM_state, newState)) {
-             DIM_requested_state = newState;
-         }
-     }
- }
+/** @brief DIM state. */
+static volatile struct {
+    cmr_canState_t vsmReq;      /**< @brief Requested VSM state. */
 
- /**
-  * @brief Handler for the state down button presses.
-  *
-  * @param pressed whether the button is depressed.
-  */
- void state_down_button(bool pressed) {
-     if (pressed) {
-         cmr_canState_t newState = DIM_requested_state - 1;
-         if (is_valid_state_request(VSM_state, newState)) {
-             DIM_requested_state = newState;
-         }
-     }
- }
+    cmr_canGear_t gear;         /**< @brief Current gear. */
+    cmr_canGear_t gearReq;      /**< @brief Requested gear. */
+} state = {
+    .vsmReq = CMR_CAN_GLV_ON,
 
- /**
-   * @brief Handler for the gear change button presses.
-   *
-   * @param pressed whether the button is depressed.
-   */
-void change_gear(bool pressed) {
-    if (pressed) {
-        switch (DIM_gear) {
-            case CMR_CAN_GEAR_UNKNOWN :
-                DIM_newGear = CMR_CAN_GEAR_REVERSE;
-                break;
-            case CMR_CAN_GEAR_REVERSE :
-                DIM_newGear = CMR_CAN_GEAR_SLOW;
-                break;
-            case CMR_CAN_GEAR_SLOW :
-                DIM_newGear = CMR_CAN_GEAR_FAST;
-                break;
-            case CMR_CAN_GEAR_FAST :
-                DIM_newGear = CMR_CAN_GEAR_ENDURANCE;
-                break;
-            case CMR_CAN_GEAR_ENDURANCE :
-                DIM_newGear = CMR_CAN_GEAR_AUTOX;
-                break;
-            case CMR_CAN_GEAR_AUTOX :
-                DIM_newGear = CMR_CAN_GEAR_SKIDPAD;
-                break;
-            case CMR_CAN_GEAR_SKIDPAD :
-                DIM_newGear = CMR_CAN_GEAR_ACCEL;
-                break;
-            case CMR_CAN_GEAR_ACCEL :
-                DIM_newGear = CMR_CAN_GEAR_TEST;
-                break;
-            case CMR_CAN_GEAR_TEST :
-                DIM_newGear = CMR_CAN_GEAR_REVERSE;
-                break;
-            default :
-                DIM_newGear = CMR_CAN_GEAR_SLOW;
-            }
-        if(is_valid_gear(DIM_gear, DIM_newGear, VSM_state)) {
-            DIM_oldGear = DIM_gear;
-            DIM_gear = DIM_newGear;
-        }
+    .gear = CMR_CAN_GEAR_FAST,
+    .gearReq = CMR_CAN_GEAR_FAST
+};
+
+/**
+ * @brief Gets the VSM state.
+ *
+ * @note VSM state is maintained in the received CAN heartbeat.
+ *
+ * @return The VSM state.
+ */
+cmr_canState_t stateGetVSM(void) {
+    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
+    volatile cmr_canHeartbeat_t *heartbeatVSM =
+        (void *) heartbeatVSMMeta->payload;
+
+    return heartbeatVSM->state;
+}
+
+/**
+ * @brief Gets the requested VSM state.
+ *
+ * @return The requested VSM state.
+ */
+cmr_canState_t stateGetVSMReq(void) {
+    return state.vsmReq;
+}
+
+/**
+ * @brief Gets the current gear.
+ *
+ * @return The current gear.
+ */
+cmr_canGear_t stateGetGear(void) {
+    return state.gear;
+}
+
+/**
+ * @brief Gets the requested gear.
+ *
+ * @return The requested gear.
+ */
+cmr_canGear_t stateGetGearReq(void) {
+    return state.gearReq;
+}
+
+/**
+ * @brief Checks if the requested VSM state is allowed.
+ *
+ * @param vsm The current VSM state.
+ * @param vsmReq The requested VSM state.
+ */
+static bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
+    switch (vsm) {
+        case CMR_CAN_UNKNOWN:
+            return (vsmReq == CMR_CAN_GLV_ON);
+        case CMR_CAN_GLV_ON:
+            return (vsmReq == CMR_CAN_GLV_ON) ||
+                   (vsmReq == CMR_CAN_HV_EN);
+        case CMR_CAN_HV_EN:
+            return (vsmReq == CMR_CAN_GLV_ON) ||
+                   (vsmReq == CMR_CAN_HV_EN) ||
+                   (vsmReq == CMR_CAN_RTD);
+        case CMR_CAN_RTD:
+            return (vsmReq == CMR_CAN_HV_EN) ||
+                   (vsmReq == CMR_CAN_RTD);
+        case CMR_CAN_ERROR:
+            return (vsmReq == CMR_CAN_GLV_ON);
+        case CMR_CAN_CLEAR_ERROR:
+            return (vsmReq == CMR_CAN_GLV_ON);
+        default:
+            break;
     }
+
+    return false;
 }
 
-bool is_valid_gear(cmr_canGear_t gear, cmr_canGear_t newGear, cmr_canState_t curr_state){
-    if (curr_state != CMR_CAN_HV_EN)
-        return 0;
-    return 1;
+/**
+ * @brief Handles VSM state up button presses.
+ *
+ * @param pressed `true` if button is currently pressed.
+ */
+void stateVSMUpButton(bool pressed) {
+    if (!pressed) {
+        return;
+    }
+
+    cmr_canState_t vsm = stateGetVSM();
+    cmr_canState_t vsmReq = (vsm == CMR_CAN_UNKNOWN)
+        ? (CMR_CAN_GLV_ON)  // Unknown state; request GLV_ON.
+        : (vsm + 1);        // Increment state.
+    if (!stateVSMReqIsValid(vsm, vsmReq)) {
+        return;     // Invalid requested state.
+    }
+
+    state.vsmReq = vsmReq;
 }
 
- bool is_valid_state_request(cmr_canState_t curr_state, cmr_canState_t new_state) {
-     switch (curr_state) {
-         case CMR_CAN_UNKNOWN :
-             return (new_state == CMR_CAN_GLV_ON);
-             break;
-         case CMR_CAN_GLV_ON :
-             return (new_state == CMR_CAN_GLV_ON) ||
-                    (new_state == CMR_CAN_HV_EN);
-             break;
-         case CMR_CAN_HV_EN :
-             return (new_state == CMR_CAN_GLV_ON) ||
-                    (new_state == CMR_CAN_HV_EN) ||
-                    (new_state == CMR_CAN_RTD);
-             break;
-         case CMR_CAN_RTD :
-             return (new_state == CMR_CAN_HV_EN) ||
-                    (new_state == CMR_CAN_RTD);
-             break;
-         case CMR_CAN_ERROR :
-             return (new_state == CMR_CAN_GLV_ON);
-             break;
-         case CMR_CAN_CLEAR_ERROR :
-             return (new_state == CMR_CAN_GLV_ON);
-             break;
-         default :
-             return 0;
-     }
- }
+/**
+ * @brief Handles VSM state down button presses.
+ *
+ * @param pressed `true` if button is currently pressed.
+ */
+void stateVSMDownButton(bool pressed) {
+    if (!pressed) {
+        return;
+    }
+
+    cmr_canState_t vsm = stateGetVSM();
+    cmr_canState_t vsmReq = vsm - 1;   // Decrement state.
+    if (!stateVSMReqIsValid(vsm, vsmReq)) {
+        return;     // Invalid requested state.
+    }
+
+    state.vsmReq = vsmReq;
+}
+
+/**
+ * @brief Handles gear change button presses.
+ *
+ * @param pressed `true` if button is currently pressed.
+ */
+void stateGearButton(bool pressed) {
+    if (!pressed) {
+        return;
+    }
+
+    if (stateGetVSM() != CMR_CAN_HV_EN) {
+        return;     // Can only change gears in HV_EN.
+    }
+
+    cmr_canGear_t gear = state.gear;
+    if (gear != state.gearReq) {
+        return;     // Previous gear request not satisfied yet.
+    }
+
+    cmr_canGear_t gearReq = gear + 1;
+    if (gearReq >= CMR_CAN_GEAR_LEN) {
+        gearReq = CMR_CAN_GEAR_REVERSE;     // Wrap around; skip `GEAR_UNKNOWN`.
+    }
+
+    state.gearReq = gearReq;
+}
+
+/**
+ * @brief Updates the gear to be the requested gear.
+ */
+void stateGearUpdate(void) {
+    state.gear = state.gearReq;
+}
+

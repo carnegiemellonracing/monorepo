@@ -19,15 +19,12 @@
 #include "gpio.h"       // Board-specific GPIO interface
 #include "can.h"        // Board-specific CAN interface
 #include "adc.h"        // Board-specific ADC interface
-#include "main.h"       // DIM-specific definitions
 #include "segments.h"   // Segment display interface
+#include "state.h"      // State interface
 
 /** @brief Display length. */
 #define DISPLAY_LEN 8
 
-/**======================================**/
-/**              STATUS LED              **/
-/**======================================**/
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
 
@@ -37,23 +34,6 @@ static const TickType_t statusLED_period_ms = 250;
 /** @brief Status LED task. */
 static cmr_task_t statusLED_task;
 
-volatile cmr_canState_t VSM_state = CMR_CAN_UNKNOWN;
-volatile cmr_canState_t DIM_requested_state = CMR_CAN_GLV_ON;
-volatile cmr_canGear_t DIM_gear = CMR_CAN_GEAR_FAST;
-volatile cmr_canGear_t DIM_newGear = CMR_CAN_GEAR_FAST;
-volatile cmr_canGear_t DIM_oldGear = CMR_CAN_GEAR_FAST;
-
-volatile int32_t HVC_pack_voltage = 0;
-
-static const char *segmentText[] = {
-    "????????",
-    "GLV ON  ",
-    "HV %c %.3u",
-    "RD %c %.3u",
-    "ERROR   ",
-    "C_ERROR ",
-};
-
 /**
  * @brief Task for toggling the status LED.
  *
@@ -62,6 +42,16 @@ static const char *segmentText[] = {
  * @return Does not return.
  */
 static void statusLED(void *pvParameters) {
+    /** @brief Segment text formats for each state. */
+    static const char *stateFmt[] = {
+        [CMR_CAN_UNKNOWN] = "????????",
+        [CMR_CAN_GLV_ON] = "GLV ON  ",
+        [CMR_CAN_HV_EN] = "HV %c %.3u",
+        [CMR_CAN_RTD] = "RD %c %.3u",
+        [CMR_CAN_ERROR] = "ERROR   ",
+        [CMR_CAN_CLEAR_ERROR] = "C_ERROR ",
+    };
+
     /** @brief Characters for each gear. */
     static const char gearChars[CMR_CAN_GEAR_LEN] = {
         [CMR_CAN_GEAR_UNKNOWN] = '-',
@@ -79,33 +69,45 @@ static void statusLED(void *pvParameters) {
 
     cmr_gpioWrite(GPIO_LED_STATUS, 0);
 
-    TickType_t lastWakeTime = xTaskGetTickCount();
+    cmr_canRXMeta_t *metaHVCPackVoltage = canRXMeta + CANRX_HVC_PACK_VOLTAGE;
+    volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage =
+        (void *) metaHVCPackVoltage->payload;
 
-    //static const uint32_t pack_voltage  = 447;
+    for (
+        TickType_t lastWakeTime = xTaskGetTickCount();
+        1;
+        vTaskDelayUntil(&lastWakeTime, statusLED_period_ms)
+    ) {
+        cmr_canState_t stateVSM = stateGetVSM();
+        cmr_canGear_t gear = stateGetGear();
 
-    while (1) {
-        uint8_t gearChar = (DIM_gear < CMR_CAN_GEAR_LEN)
-            ? gearChars[DIM_gear]
+        uint8_t gearChar = (gear < CMR_CAN_GEAR_LEN)
+            ? gearChars[gear]
             : gearChars[CMR_CAN_GEAR_UNKNOWN];
 
-        // Need space for NUL-terminator from snprintf().
-        char disp[DISPLAY_LEN + 1];
-        switch (VSM_state) {
+        const char *dispFmt = stateFmt[0];
+        switch (stateVSM) {
             case CMR_CAN_UNKNOWN:
             case CMR_CAN_GLV_ON:
             case CMR_CAN_HV_EN:
             case CMR_CAN_RTD:
             case CMR_CAN_ERROR:
             case CMR_CAN_CLEAR_ERROR:
-                snprintf(disp, sizeof(disp), segmentText[VSM_state], gearChar, HVC_pack_voltage);
+                dispFmt = stateFmt[stateVSM];
                 break;
             default:
-                snprintf(disp, sizeof(disp), segmentText[0], gearChar, HVC_pack_voltage);
                 break;
         }
+
+        // Need space for NUL-terminator from snprintf().
+        char disp[DISPLAY_LEN + 1];
+        snprintf(
+            disp, sizeof(disp), dispFmt,
+            gearChar, canHVCPackVoltage->hvVoltage
+        );
+
         segmentsWrite(disp, DISPLAY_LEN);
         cmr_gpioToggle(GPIO_LED_STATUS);
-        vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
     }
 }
 
