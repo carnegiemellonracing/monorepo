@@ -8,9 +8,10 @@
 #include <CMR/qspi.h>   // QuadSPI interface
 #include <CMR/tasks.h>  // Task interface
 
-#include "tft.h"    // Interface to implement
-#include "tftDL.h"  // Display lists
-#include "gpio.h"   // Board-specific GPIO interface
+#include "tft.h"            // Interface to implement
+#include "tftContent.h"     // Content
+#include "tftDL.h"          // Display lists
+#include "gpio.h"           // Board-specific GPIO interface
 
 /** @brief Expected chip ID. */
 #define TFT_CHIP_ID 0x00011208
@@ -178,6 +179,19 @@ static void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data) {
 }
 
 /**
+ * @brief Sets up content in graphics memory.
+ *
+ * @param tft The display.
+ * @param tftContent The content.
+ */
+static void tftContent(tft_t *tft, const tftContent_t *tftContent) {
+    tftWrite(
+        tft, TFT_ADDR_RAM_G + tftContent->addr,
+        tftContent->len, tftContent->data
+    );
+}
+
+/**
  * @brief Displays a display list.
  *
  * @param tft The display.
@@ -268,6 +282,10 @@ void tftUpdate(void *pvParameters) {
 
     tftDisplay(tft, &tftDLStartup);
     vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
+
+    // Load data into graphics RAM.
+    tftContent(tft, &tftContent_RobotoMono_Bold_72_L4);
+    tftContent(tft, &tftContent_RobotoMono_Bold_40_L4);
 
     while (
         vTaskDelayUntil(&lastWakeTime, tftUpdate_period_ms), 1
