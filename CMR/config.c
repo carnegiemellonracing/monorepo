@@ -71,8 +71,11 @@ SECTOR_FOREACH(GET_SIZE)
 
 /**
  * @brief Initializes the configuration system with a base address.
- *
- * @param addr A base address.
+ * 
+ * @param config The interface to initalize.
+ * @param cache The config cache to use.
+ * @param cacheLen The size of the config cache to use.
+ * @param sector The flash sector to use. See the HAL documentation @ref FLASHEx_Sectors.
  */
 void cmr_configInit(cmr_config_t *config, volatile uint32_t *cache, size_t cacheLen, uint32_t sector) {
     config->cache = cache;
@@ -91,8 +94,11 @@ void cmr_configInit(cmr_config_t *config, volatile uint32_t *cache, size_t cache
 /**
  * @brief Sets a configuration setting.
  *
- * @param addr A word address to write to.
- * @param data A datum to write.
+ * @param config The interface to use.
+ * @param addr The word address to write to.
+ * @param data The datum to write.
+ *
+ * @return -1 if addr out of config->cache bounds, 0 otherwise.
  */
 int cmr_configSet(cmr_config_t *config, size_t addr, uint32_t data) {
     if (addr >= config->cacheLen) {
@@ -107,8 +113,10 @@ int cmr_configSet(cmr_config_t *config, size_t addr, uint32_t data) {
 /**
  * @brief Gets a configuration setting.
  *
- * @param addr A word address to read from (0 to CONFIG_CACHE_LEN).
- * @return The data at the address.
+ * @param config The interface to use.
+ * @param addr The word address to read from (0 to CONFIG_CACHE_LEN).
+ * @param dest The destination to write the data to.
+ * @return -1 if addr out of config->cache bounds, 0 otherwise.
  */
 int cmr_configGet(cmr_config_t *config, size_t addr, uint32_t *dest) {
     if (addr >= config->cacheLen || dest == NULL) {
@@ -122,6 +130,8 @@ int cmr_configGet(cmr_config_t *config, size_t addr, uint32_t *dest) {
 
 /**
  * @brief Pulls the config from flash into the local config cache.
+ *
+ * @param config The interface to use.
  */
 void cmr_configPull(cmr_config_t *config) {
     memcpy((void *) config->cache, (void *) config->flashStart, config->cacheLen * sizeof(config->cache[0]));
@@ -129,6 +139,8 @@ void cmr_configPull(cmr_config_t *config) {
 
 /**
  * @brief Commits the local config cache to flash.
+ *
+ * @param config The interface to use.
  */
 void cmr_configCommit(cmr_config_t *config) {
     if (HAL_FLASH_Unlock() != HAL_OK) {
