@@ -15,21 +15,23 @@
 #include <stdint.h>
 #include <stddef.h>
 
-/**
- * @brief the configuration storage len in words. this is the maximum
- *        flash sector size (0x20000 / 4).
- */
-#define CONFIG_CACHE_LEN 4096
+typedef struct {
+    volatile uint32_t *cache;
+    size_t cacheLen;
+    uint32_t flashSector;
+    volatile uint32_t *flashStart;
+    volatile size_t flashSize;
+} cmr_config_t;
 
-void cmr_configInit(uint32_t sector);
+void cmr_configInit(cmr_config_t *config, volatile uint32_t *cache, size_t cacheLen, uint32_t sector);
 
-int cmr_configSet(size_t addr, uint32_t data);
+int cmr_configSet(cmr_config_t *config, size_t addr, uint32_t data);
 
-int cmr_configGet(size_t addr, uint32_t *dest);
+int cmr_configGet(cmr_config_t *config, size_t addr, uint32_t *dest);
 
-void cmr_configPull();
+void cmr_configPull(cmr_config_t *config);
 
-void cmr_configCommit();
+void cmr_configCommit(cmr_config_t *config);
 
 #endif /* HAL_FLASH_MODULE_ENABLED */
 
