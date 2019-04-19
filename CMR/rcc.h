@@ -15,7 +15,7 @@
                             // HAL_ADC_MODULE_ENABLED, HAL_CAN_MODULE_ENABLED,
                             // HAL_SPI_MODULE_ENABLED,
                             // GPIO_TypeDef, ADC_TypeDef, CAN_TypeDef,
-                            // SPI_TypeDef
+                            // SPI_TypeDef, QUADSPI_TypeDef
 
 #ifdef HAL_RCC_MODULE_ENABLED
 
@@ -40,6 +40,10 @@ void cmr_rccI2CClockEnable(I2C_TypeDef *instance);
 #ifdef HAL_SPI_MODULE_ENABLED
 void cmr_rccSPIClockEnable(SPI_TypeDef *instance);
 #endif /* HAL_SPI_MODULE_ENABLED */
+
+#ifdef HAL_QSPI_MODULE_ENABLED
+void cmr_rccQSPIClockEnable(QUADSPI_TypeDef *instance);
+#endif /* HAL_QSPI_MODULE_ENABLED */
 
 #ifdef HAL_USART_MODULE_ENABLED
 void cmr_rccUSARTClockEnable(USART_TypeDef *instance);

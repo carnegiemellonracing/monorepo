@@ -184,6 +184,19 @@ void cmr_rccSPIClockEnable(SPI_TypeDef *instance) {
 }
 #endif /* HAL_SPI_MODULE_ENABLED */
 
+#ifdef HAL_QSPI_MODULE_ENABLED
+/**
+ * @brief Enables the specified QuadSPI port's clock.
+ *
+ * @param instance The HAL QUADSPI instance.
+ */
+void cmr_rccQSPIClockEnable(QUADSPI_TypeDef *instance) {
+    if (instance == QUADSPI) {
+        __HAL_RCC_QSPI_CLK_ENABLE();
+    }
+}
+#endif /* HAL_QSPI_MODULE_ENABLED */
+
 #ifdef HAL_USART_MODULE_ENABLED
 /**
  * @brief Enables the specified USART interface's clock.
