@@ -1,8 +1,5 @@
-content/
-fonts/**/*.c
-fonts/**/*.json
-fonts/**/*.rawh
-fonts/**/*.rtf
-fonts/**/*.JPG
-fonts/**/*.PNG
+content/*
+!content/*.rawh
+fonts/**/*
+!fonts/**/*.raw
 
