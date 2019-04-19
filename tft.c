@@ -9,6 +9,7 @@
 #include <CMR/tasks.h>  // Task interface
 
 #include "tft.h"    // Interface to implement
+#include "tftDL.h"  // Display lists
 #include "gpio.h"   // Board-specific GPIO interface
 
 /** @brief Expected chip ID. */
@@ -17,8 +18,11 @@
 /** @brief Display reset time, in milliseconds. */
 #define TFT_RESET_MS 50
 
-/** @brief Display startup time, in milliseconds. */
+/** @brief Display initialization time, in milliseconds. */
 #define TFT_INIT_MS 400
+
+/** @brief Display startup time, in milliseconds. */
+#define TFT_STARTUP_MS 1000
 
 /** @brief Flag for indicating a write to the display. */
 #define TFT_WRITE_FLAG (1 << 23)
@@ -38,6 +42,7 @@
 /** @brief Represents a TFT display. */
 typedef struct {
     cmr_qspi_t qspi;    /**< @brief The display's QuadSPI port. */
+    uint16_t cmdWrite;  /**< @brief Command write address. */
 } tft_t;
 
 /** @brief Represents a display command. */
@@ -172,6 +177,26 @@ static void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data) {
     cmr_qspiRX(&tft->qspi, &cmd, data);
 }
 
+/**
+ * @brief Displays a display list.
+ *
+ * @param tft The display.
+ * @param tftDL The display list.
+ */
+static void tftDisplay(tft_t *tft, const tftDL_t *tftDL) {
+    size_t len = tftDL->len;
+
+    // Write the display list.
+    tftWrite(tft, TFT_ADDR_RAM_CMD + tft->cmdWrite, len, tftDL->data);
+
+    // Update the command write address.
+    tft->cmdWrite += len;
+    if (tft->cmdWrite > TFT_RAM_CMD_SIZE) {
+        tft->cmdWrite -= TFT_RAM_CMD_SIZE;
+    }
+    tftWrite(tft, TFT_ADDR_CMD_WRITE, sizeof(tft->cmdWrite), &tft->cmdWrite);
+}
+
 /** @brief Display update priority. */
 uint32_t tftUpdate_priority = 4;
 
@@ -241,30 +266,13 @@ void tftUpdate(void *pvParameters) {
         tftWrite(tft, init->addr, sizeof(init->val), &init->val);
     }
 
-    // TODO
-    // Setting the coprocessor display list
-    uint32_t coDispList[] = {
-        0xFFFFFF00,     // Start new display list
-	    0x02C12D27,     // Set clear color to #C1272D
-        0x26000007,     // Clear using color
-        0x04FFFFFF,     // Set text color to #FFFFFF
-        0xFFFFFF0C,     // Draw text
-        (120 << 16) | (160),    // Set Y and X to center of screen
-        (30) | (((1 << 9) | (1 << 10)) << 16),    // Set font #30, center horizontal and vertical
-        ('C') | ('M' << 8) | ('R' << 16) | ('\0' << 24),
-        0x00000000,     // End display list
-        0xFFFFFF01      // Swap display list
-    };
-    tftWrite(tft, TFT_ADDR_RAM_CMD, sizeof(coDispList), coDispList);
-
-    // Indicate command write address.
-    uint16_t coCmdWrite = sizeof(coDispList);
-    tftWrite(tft, TFT_ADDR_CMD_WRITE, sizeof(coCmdWrite), &coCmdWrite);
+    tftDisplay(tft, &tftDLStartup);
+    vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
 
     while (
         vTaskDelayUntil(&lastWakeTime, tftUpdate_period_ms), 1
     ) {
-        continue;
+        tftDisplay(tft, &tftDLRTD);
     }
 }
 
