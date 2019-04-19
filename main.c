@@ -16,6 +16,7 @@
 #include "gpio.h"       // Board-specific GPIO interface
 #include "can.h"        // Board-specific CAN interface
 #include "adc.h"        // Board-specific ADC interface
+#include "tft.h"        // TFT display interface.
 #include "segments.h"   // Segment display interface
 
 /** @brief Status LED priority. */
@@ -64,6 +65,7 @@ int main(void) {
     gpioInit();
     canInit();
     adcInit();
+    tftInit();
     segmentsInit();
 
     cmr_taskInit(
