@@ -1,7 +1,7 @@
 /**
  * @file pwm.c
  * @brief Pulse Width Modulation port wrapper implementation.
- * 
+ *
  * @author Carnegie Mellon Racing
  */
 
@@ -58,65 +58,56 @@ static uint32_t timerToAltFunc(TIM_TypeDef *timer) {
  *
  * @param pwmPin The pin to initialize.
  * @param pwmChannel A PWM channel struct to use.
- * @param timer The timer used for the given pin. Must be a value of`TIMx` from stm32f413xx.h.
- * @param channel The capture-compare channel used for the given pin.
- *                Must be a value of `TIM_CHANNEL_x` from stm32f4xx_hal_tim.h.
- * @param presc How much to divide the timer's peripheral clock by. Maximum 65536 (2^16).
- * @param period_ticks PWM period in timer ticks (after clock division). Maximum 65536 (2^16).
- * 
- * @note pwmFreq_Hz = 96 MHz / (presc * period_ticks)
+ *
+ * @note pwmFreq_Hz = 96 MHz / (pwmPinConfig->presc * pwmPinConfig->period_ticks)
  */
-void cmr_pwmInit(const cmr_pwmPin_t *pwmPin,
-                 cmr_pwmChannel_t *pwmChannel,
-                 TIM_TypeDef *timer,
-                 const uint32_t channel,
-                 const uint16_t presc,
-                 const uint16_t period_ticks) {
+void cmr_pwmInit(const cmr_pwmPinConfig_t *pwmPinConfig,
+                 cmr_pwmChannel_t *pwmChannel) {
 
-    configASSERT(pwmPin != NULL);
-    configASSERT(pwmChannel != NULL);
-    configASSERT(timer != NULL);
-    configASSERT(channel == TIM_CHANNEL_1);
-    configASSERT(channel == TIM_CHANNEL_2);
-    configASSERT(channel == TIM_CHANNEL_3);
-    configASSERT(channel == TIM_CHANNEL_4);
-    configASSERT(presc <= UINT16_MAX + 1);
-    configASSERT(period_ticks <= UINT16_MAX + 1);
+    configASSERT(pwmPinConfig != NULL);
+    configASSERT(pwmPinConfig->timer != NULL);
+    configASSERT(pwmPinConfig->channel == TIM_CHANNEL_1 ||
+                 pwmPinConfig->channel == TIM_CHANNEL_2 ||
+                 pwmPinConfig->channel == TIM_CHANNEL_3 ||
+                 pwmPinConfig->channel == TIM_CHANNEL_4);
 
-    cmr_rccTIMClockEnable(timer);
+    configASSERT(pwmPinConfig->presc <= UINT16_MAX + 1);
+    configASSERT(pwmPinConfig->period_ticks <= UINT16_MAX + 1);
 
-    uint32_t altFunc = timerToAltFunc(timer);
+    cmr_rccTIMClockEnable(pwmPinConfig->timer);
+
+    uint32_t altFunc = timerToAltFunc(pwmPinConfig->timer);
 
     GPIO_InitTypeDef pinConfig = {
-        .Pin = pwmPin->pin,
+        .Pin = pwmPinConfig->pin,
         .Mode = GPIO_MODE_AF_PP,
         .Pull = GPIO_NOPULL,
         .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
         .Alternate = altFunc
     };
-    cmr_rccGPIOClockEnable(pwmPin->port);
-    HAL_GPIO_Init(pwmPin->port, &pinConfig);
+    cmr_rccGPIOClockEnable(pwmPinConfig->port);
+    HAL_GPIO_Init(pwmPinConfig->port, &pinConfig);
 
     *pwmChannel = (cmr_pwmChannel_t) {
         .handle = {
-            .Instance = timer,
+            .Instance = pwmPinConfig->timer,
             .Init = {
-                .Prescaler = presc - 1,
+                .Prescaler = pwmPinConfig->presc - 1,
                 .CounterMode = TIM_COUNTERMODE_UP,
-                .Period = period_ticks - 1,
+                .Period = pwmPinConfig->period_ticks - 1,
                 .ClockDivision = TIM_CLOCKDIVISION_DIV1,
                 .RepetitionCounter = 0,
                 .AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE
             }
         },
-        .channel = channel
+        .channel = pwmPinConfig->channel
     };
 
     // if (HAL_TIM_Base_Init(&pwmChannel->handle) != HAL_OK) {
     //     return;
     // }
 
-    TIM_ClockConfigTypeDef clockSrcConfig = { 
+    TIM_ClockConfigTypeDef clockSrcConfig = {
         .ClockSource = TIM_CLOCKSOURCE_INTERNAL
     };
     if (HAL_TIM_ConfigClockSource(&pwmChannel->handle, &clockSrcConfig) != HAL_OK) {
@@ -128,7 +119,7 @@ void cmr_pwmInit(const cmr_pwmPin_t *pwmPin,
     }
 
     // Disable fancy master/slave stuff if applicable
-    if (IS_TIM_MASTER_INSTANCE(timer)) {
+    if (IS_TIM_MASTER_INSTANCE(pwmPinConfig->timer)) {
         TIM_MasterConfigTypeDef masterConfig = {
             .MasterOutputTrigger = TIM_TRGO_RESET,
             .MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE
@@ -140,21 +131,10 @@ void cmr_pwmInit(const cmr_pwmPin_t *pwmPin,
     }
 
     // Begin with 0% duty cycle
-    TIM_OC_InitTypeDef outputCompareConfig = {
-        .OCMode = TIM_OCMODE_PWM1,
-        .Pulse = 0,
-        .OCPolarity = TIM_OCPOLARITY_HIGH,
-        .OCNPolarity = TIM_OCNPOLARITY_HIGH,
-        .OCFastMode = TIM_OCFAST_DISABLE,
-        .OCIdleState = TIM_OCIDLESTATE_RESET,
-        .OCNIdleState = TIM_OCNIDLESTATE_RESET
-    };
-    if (HAL_TIM_PWM_ConfigChannel(&pwmChannel->handle, &outputCompareConfig, pwmChannel->channel) != HAL_OK) {
-        return;
-    }
+    cmr_pwmSetDutyCycle(pwmChannel, 0);
 
     // Disable fancy break/dead time stuff if applicable
-    if (IS_TIM_BREAK_INSTANCE(timer)) {
+    if (IS_TIM_BREAK_INSTANCE(pwmPinConfig->timer)) {
         TIM_BreakDeadTimeConfigTypeDef breakDeadConfig = {
             .OffStateRunMode = TIM_OSSR_DISABLE,
             .OffStateIDLEMode = TIM_OSSI_DISABLE,
@@ -170,16 +150,38 @@ void cmr_pwmInit(const cmr_pwmPin_t *pwmPin,
         }
     }
 
-    HAL_TIM_PWM_Start(&pwmChannel->handle, channel);
+    HAL_TIM_PWM_Start(&pwmChannel->handle, pwmPinConfig->channel);
+}
+
+/**
+ * @brief Sets the period of a PWM channel.
+ *
+ * @param pwmChannel The PWM channel to set the duty cycle of.
+ * @param period_ticks How much to divide the timer's peripheral clock by. Maximum 65536 (2^16).
+ * @param presc PWM period in timer ticks (after clock division). Maximum 65536 (2^16).
+ *
+ * @note pwmFreq_Hz = 96 MHz / (presc * period_ticks)
+ */
+void cmr_pwmSetPeriod(cmr_pwmChannel_t *pwmChannel, uint32_t period_ticks, uint32_t presc) {
+    configASSERT(pwmChannel != NULL);
+    configASSERT(presc <= UINT16_MAX + 1);
+    configASSERT(period_ticks <= UINT16_MAX + 1);
+
+    pwmChannel->handle.Init.Prescaler = presc - 1;
+    pwmChannel->handle.Init.Period = period_ticks - 1;
+
+    HAL_TIM_PWM_Init(&pwmChannel->handle);
 }
 
 /**
  * @brief Sets the duty cycle of a PWM channel.
- * 
+ *
  * @param pwmChannel The PWM channel to set the duty cycle of.
- * @param dutyCycle_pcnt The duty cycle, in percent, to set pwmChannel to.
+ * @param dutyCycle_pcnt The duty cycle, in percent no greater than 100, to set pwmChannel to.
  */
 void cmr_pwmSetDutyCycle(cmr_pwmChannel_t *pwmChannel, uint32_t dutyCycle_pcnt) {
+    configASSERT(dutyCycle_pcnt <= 100);
+
     static TIM_OC_InitTypeDef outputCompareConfig = {
         .OCMode = TIM_OCMODE_PWM1,
         .Pulse = 0,
@@ -192,7 +194,11 @@ void cmr_pwmSetDutyCycle(cmr_pwmChannel_t *pwmChannel, uint32_t dutyCycle_pcnt) 
 
     uint32_t period_ticks = pwmChannel->handle.Init.Period + 1;
 
-    outputCompareConfig.Pulse = period_ticks * dutyCycle_pcnt / 100;
+    if (UINT32_MAX / period_ticks < dutyCycle_pcnt) {
+        outputCompareConfig.Pulse = period_ticks / 100 * dutyCycle_pcnt;
+    } else {
+        outputCompareConfig.Pulse = period_ticks * dutyCycle_pcnt / 100;
+    }
 
     HAL_TIM_PWM_ConfigChannel(&pwmChannel->handle, &outputCompareConfig, pwmChannel->channel);
 }
