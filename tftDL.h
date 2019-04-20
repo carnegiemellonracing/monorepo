@@ -11,13 +11,16 @@
 #include <stddef.h>     // size_t
 #include <stdint.h>     // uint32_t
 
-typedef struct {
-    size_t len;             /**< @brief Length of the display list, in bytes. */
-    const uint32_t *data;   /**< @brief The display list data. */
-} tftDL_t;
+#include "tftPrivate.h"     // Private interface
+
+/** @brief Represents a display list. */
+typedef struct tftDL tftDL_t;
 
 extern const tftDL_t tftDLStartup;
 extern const tftDL_t tftDLRTD;
+
+void tftDLContentLoad(tft_t *tft, const tftDL_t *tftDL);
+void tftDLWrite(tft_t *tft, const tftDL_t *tftDL);
 
 #endif /* TFTDL_H */
 

@@ -5,90 +5,13 @@
  * @author Carnegie Mellon Racing
  */
 
-#include <CMR/qspi.h>   // QuadSPI interface
 #include <CMR/tasks.h>  // Task interface
 
 #include "tft.h"            // Interface to implement
-#include "tftContent.h"     // Content
-#include "tftDL.h"          // Display lists
+#include "tftPrivate.h"     // Private interface
+#include "tftContent.h"     // Content interface
+#include "tftDL.h"          // Display list interface
 #include "gpio.h"           // Board-specific GPIO interface
-
-/** @brief Expected chip ID. */
-#define TFT_CHIP_ID 0x00011208
-
-/** @brief Display reset time, in milliseconds. */
-#define TFT_RESET_MS 50
-
-/** @brief Display initialization time, in milliseconds. */
-#define TFT_INIT_MS 400
-
-/** @brief Display startup time, in milliseconds. */
-#define TFT_STARTUP_MS 1000
-
-/** @brief Flag for indicating a write to the display. */
-#define TFT_WRITE_FLAG (1 << 23)
-
-/** @brief Dummy cycles for reading data from the display. */
-#define TFT_READ_DUMMY_CYCLES 8
-
-/** @brief General purpose graphics RAM size, in bytes. */
-#define TFT_RAM_G_SIZE (1024 * 1024)
-
-/** @brief Display list RAM size, in bytes. */
-#define TFT_RAM_DL_SIZE (8 * 1024)
-
-/** @brief Coprocessor command buffer RAM size, in bytes. */
-#define TFT_RAM_CMD_SIZE (4 * 1024)
-
-/** @brief Represents a TFT display. */
-typedef struct {
-    cmr_qspi_t qspi;    /**< @brief The display's QuadSPI port. */
-    uint16_t cmdWrite;  /**< @brief Command write address. */
-} tft_t;
-
-/** @brief Represents a display command. */
-typedef enum {
-    TFT_CMD_ACTIVE = 0x00,  /**< @brief Enter "ACTIVE" mode (send twice). */
-    TFT_CMD_CLKEXT = 0x44   /**< @brief Use external clock. */
-} tftCmd_t;
-
-/** @brief Represents a display address. */
-typedef enum {
-    // Diagnostics.
-    TFT_ADDR_CHIP_ID = 0x0C0000,    /**< @brief Chip identifier. */
-
-    // Video parameters.
-    TFT_ADDR_HCYCLE = 0x30202C,     /**< @brief Horizontal cycle time. */
-    TFT_ADDR_HOFFSET = 0x302030,    /**< @brief Horizontal offset time. */
-    TFT_ADDR_HSYNC0 = 0x302038,     /**< @brief Horizontal sync time 0. */
-    TFT_ADDR_HSYNC1 = 0x30203C,     /**< @brief Horizontal sync time 1. */
-    TFT_ADDR_VCYCLE = 0x302040,     /**< @brief Vertical cycle time. */
-    TFT_ADDR_VOFFSET = 0x302044,    /**< @brief Vertical offset time. */
-    TFT_ADDR_VSYNC0 = 0x30204C,     /**< @brief Vertical sync time 0. */
-    TFT_ADDR_VSYNC1 = 0x302050,     /**< @brief Vertical sync time 1. */
-    TFT_ADDR_SWIZZLE = 0x302064,    /**< @brief RGB signal swizzle. */
-    TFT_ADDR_CSPREAD = 0x302068,    /**< @brief Clock spreading enable. */
-    TFT_ADDR_HSIZE = 0x302034,      /**< @brief Horizontal pixel count. */
-    TFT_ADDR_VSIZE = 0x302048,      /**< @brief Vertical pixel count. */
-
-    // GPIO.
-    TFT_ADDR_GPIOX_DIR = 0x302098,  /**< @brief GPIO directions. */
-    TFT_ADDR_GPIOX = 0x30209C,      /**< @brief GPIO values. */
-
-    // Clock configuration.
-    TFT_ADDR_PCLK_POL = 0x30206C,   /**< @brief PCLK polarity. */
-    TFT_ADDR_PCLK = 0x302070,       /**< @brief PCLK frequency divider. */
-
-    // Coprocessor registers.
-    TFT_ADDR_CMD_READ = 0x3020F8,   /**< @brief Coprocessor read pointer. */
-    TFT_ADDR_CMD_WRITE = 0x3020FC,  /**< @brief Coprocessor write pointer. */
-    TFT_ADDR_CMD_DL = 0x302100,     /**< @brief Coprocessor DL RAM offset. */
-
-    // RAM areas.
-    TFT_ADDR_RAM_G = 0x000000,      /**< @brief General purpose graphics RAM. */
-    TFT_ADDR_RAM_DL = 0x300000,     /**< @brief Display list RAM. */
-    TFT_ADDR_RAM_CMD = 0x308000     /**< @brief Coprocessor command buffer. */
-} tftAddr_t;
 
 /**
  * @brief Sends a command to the display.
@@ -97,7 +20,7 @@ typedef enum {
  * @param cmd The command.
  * @param param The command's parameter.
  */
-static void tftCmd(tft_t *tft, tftCmd_t cmd, uint8_t param) {
+void tftCmd(tft_t *tft, tftCmd_t cmd, uint8_t param) {
     uint32_t addr = (cmd << 16) | (param << 8);
 
     const QSPI_CommandTypeDef qspiCmd = {
@@ -128,7 +51,7 @@ static void tftCmd(tft_t *tft, tftCmd_t cmd, uint8_t param) {
  * @param len The length of the data.
  * @param data The data to write.
  */
-static void tftWrite(tft_t *tft, tftAddr_t addr, size_t len, const void *data) {
+void tftWrite(tft_t *tft, tftAddr_t addr, size_t len, const void *data) {
     const QSPI_CommandTypeDef cmd = {
         .Instruction = 0,
         .Address = addr | TFT_WRITE_FLAG,
@@ -157,7 +80,7 @@ static void tftWrite(tft_t *tft, tftAddr_t addr, size_t len, const void *data) {
  * @param len The length of the data.
  * @param data The buffer for received data.
  */
-static void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data) {
+void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data) {
     const QSPI_CommandTypeDef cmd = {
         .Instruction = 0,
         .Address = addr,
@@ -179,46 +102,112 @@ static void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data) {
 }
 
 /**
- * @brief Sets up content in graphics memory.
+ * @brief Gets the number of available bytes in the coprocessor command buffer.
+ *
+ * @note Also updates the coprocessor read address.
  *
  * @param tft The display.
- * @param tftContent The content.
+ *
+ * @return The number of available bytes.
  */
-static void tftContent(tft_t *tft, const tftContent_t *tftContent) {
-    tftWrite(
-        tft, TFT_ADDR_RAM_G + tftContent->addr,
-        tftContent->len, tftContent->data
-    );
+static size_t tftCoCmdRemLen(tft_t *tft) {
+    tftRead(tft, TFT_ADDR_CMD_READ, sizeof(tft->coCmdRd), &tft->coCmdRd);
+
+    size_t used = (tft->coCmdWr - tft->coCmdRd);
+    if (used >= TFT_RAM_CMD_SIZE) {
+        used -= TFT_RAM_CMD_SIZE;
+    }
+
+    // Maintain 1-word separation.
+    return (TFT_RAM_CMD_SIZE - sizeof(uint32_t)) - used;
 }
 
 /**
- * @brief Displays a display list.
+ * @brief Writes coprocessor commands to the display.
+ *
+ * @warning When `wait` is `false`, `len` MUST be less than `TFT_RAM_CMD_SIZE`!
  *
  * @param tft The display.
- * @param tftDL The display list.
+ * @param len The length of the command.
+ * @param data The command's data.
+ * @param wait `true` to wait for partial writes to finish; `false` to wait for
+ * enough space at the beginning.
  */
-static void tftDisplay(tft_t *tft, const tftDL_t *tftDL) {
-    size_t len = tftDL->len;
+void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait) {
+    configASSERT(wait || len < TFT_RAM_CMD_SIZE);
 
-    // Write the display list.
-    tftWrite(tft, TFT_ADDR_RAM_CMD + tft->cmdWrite, len, tftDL->data);
+    const uint8_t *dataBuf = data;
+    size_t written = 0;
 
-    // Update the command write address.
-    tft->cmdWrite += len;
-    if (tft->cmdWrite > TFT_RAM_CMD_SIZE) {
-        tft->cmdWrite -= TFT_RAM_CMD_SIZE;
+    while (written < len) {
+        // Calculate length to write.
+        size_t wrLen = len - written;
+
+        if (!wait) {
+            // Wait for free space to write the entire command.
+            size_t remLen;
+            do {
+                remLen = tftCoCmdRemLen(tft);
+            } while (remLen < wrLen);
+        } else {
+            // Write as much as possible.
+            size_t remLen = tftCoCmdRemLen(tft);
+            if (remLen == 0) {
+                continue;   // No space yet.
+            }
+            if (wrLen > remLen) {
+                wrLen = remLen;
+            }
+        }
+
+        tftWrite(
+            tft, TFT_ADDR_RAM_CMD + tft->coCmdWr,
+            wrLen, dataBuf + written
+        );
+        if (wrLen % sizeof(uint32_t) != 0) {
+            // Round-up to word-aligned length.
+            wrLen /= sizeof(uint32_t);
+            wrLen++;
+            wrLen *= sizeof(uint32_t);
+        }
+
+        written += wrLen;
+
+        // Update the command write address.
+        uint16_t coCmdWr = tft->coCmdWr + wrLen;
+        if (coCmdWr > TFT_RAM_CMD_SIZE) {
+            coCmdWr -= TFT_RAM_CMD_SIZE;
+        }
+        tftWrite(tft, TFT_ADDR_CMD_WRITE, sizeof(coCmdWr), &coCmdWr);
+        tft->coCmdWr = coCmdWr;
+
+        if (!wait) {
+            // No waiting; we must have written the whole buffer.
+            configASSERT(written == wrLen);
+            break;
+        }
+
+        // Wait for the command to finish.
+        while (
+            tftRead(
+                tft, TFT_ADDR_CMD_READ,
+                sizeof(tft->coCmdRd), &tft->coCmdRd
+            ),
+            tft->coCmdRd != coCmdWr
+        ) {
+            continue;
+        }
     }
-    tftWrite(tft, TFT_ADDR_CMD_WRITE, sizeof(tft->cmdWrite), &tft->cmdWrite);
 }
 
 /** @brief Display update priority. */
-uint32_t tftUpdate_priority = 4;
+static const uint32_t tftUpdate_priority = 4;
 
 /** @brief Display update period. */
-TickType_t tftUpdate_period_ms = 16;
+static const TickType_t tftUpdate_period_ms = 16;
 
 /** @brief Display update task. */
-cmr_task_t tftUpdate_task;
+static cmr_task_t tftUpdate_task;
 
 /**
  * @brief Task for updating the display.
@@ -227,7 +216,7 @@ cmr_task_t tftUpdate_task;
  *
  * @return Does not return.
  */
-void tftUpdate(void *pvParameters) {
+static void tftUpdate(void *pvParameters) {
     /** @brief Represents a display initialization value. */
     typedef struct {
         tftAddr_t addr;     /**< @brief Address to initialize. */
@@ -280,17 +269,16 @@ void tftUpdate(void *pvParameters) {
         tftWrite(tft, init->addr, sizeof(init->val), &init->val);
     }
 
-    tftDisplay(tft, &tftDLStartup);
+    tftDLContentLoad(tft, &tftDLStartup);
+    tftDLWrite(tft, &tftDLStartup);
     vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
 
-    // Load data into graphics RAM.
-    tftContent(tft, &tftContent_RobotoMono_Bold_72_L4);
-    tftContent(tft, &tftContent_RobotoMono_Bold_40_L4);
+    tftDLContentLoad(tft, &tftDLRTD);
 
     while (
         vTaskDelayUntil(&lastWakeTime, tftUpdate_period_ms), 1
     ) {
-        tftDisplay(tft, &tftDLRTD);
+        tftDLWrite(tft, &tftDLRTD);
     }
 }
 

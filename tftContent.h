@@ -8,12 +8,15 @@
 #include <stddef.h>     // size_t
 #include <stdint.h>     // uint8_t
 
-typedef struct {
-    size_t len;             /**< @brief The content's length, in bytes. */
-    size_t addr;            /**< @brief The content's address in `RAM_G`. */
-    const uint8_t *data;    /**< @brief The content. */
-} tftContent_t;
+#include "tftPrivate.h"     // Private interface
+
+typedef struct tftContent tftContent_t;
+
+extern const tftContent_t tftContent_startup_lut;
+extern const tftContent_t tftContent_startup;
 
 extern const tftContent_t tftContent_RobotoMono_Bold_72_L4;
 extern const tftContent_t tftContent_RobotoMono_Bold_40_L4;
+
+void tftContentLoad(tft_t *tft, const tftContent_t *tftContent);
 
