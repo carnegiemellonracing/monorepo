@@ -34,7 +34,7 @@ static const uint8_t tftContent_startup_data[] = {
 /** @brief Startup image. */
 const tftContent_t tftContent_startup = {
     .len = sizeof(tftContent_startup_data),
-    .addr = 512,
+    .addr = 1024,
     .data = tftContent_startup_data
 };
 
