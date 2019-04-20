@@ -16,8 +16,15 @@
 /** @brief Represents a display list. */
 typedef struct tftDL tftDL_t;
 
-extern const tftDL_t tftDLStartup;
-extern const tftDL_t tftDLRTD;
+extern const tftDL_t tftDL_startup;
+
+extern const tftDL_t tftDL_RTD;
+
+void tftDL_RTDUpdate(
+    uint32_t speed_mph,
+    int32_t hvVoltage,
+    int32_t power_kW
+);
 
 void tftDLContentLoad(tft_t *tft, const tftDL_t *tftDL);
 void tftDLWrite(tft_t *tft, const tftDL_t *tftDL);

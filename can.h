@@ -18,8 +18,10 @@
  * @warning New messages MUST be added before `CANRX_LEN`.
  */
 typedef enum {
-    CANRX_HEARTBEAT_VSM = 0,  /**< @brief VSM heartbeat. */
-    CANRX_HVC_PACK_VOLTAGE = 1, /**< @bried BMS pack voltage. */
+    CANRX_HEARTBEAT_VSM = 0,    /**< @brief VSM heartbeat. */
+    CANRX_HVC_PACK_VOLTAGE,     /**< @brief BMS pack voltage. */
+    CANRX_CDC_WHEEL_SPEEDS,     /**< @brief CDC wheel speeds. */
+    CANRX_CDC_MOTOR_DATA,       /**< @brief CDC motor data. */
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 

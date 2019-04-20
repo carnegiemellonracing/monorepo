@@ -34,6 +34,16 @@ cmr_canRXMeta_t canRXMeta[] = {
         .canID = CMR_CANID_HVC_PACK_VOLTAGE,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
+    },
+    [CANRX_CDC_WHEEL_SPEEDS] = {
+        .canID = CMR_CANID_CDC_WHEEL_SPEEDS,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_CDC_MOTOR_DATA] = {
+        .canID = CMR_CANID_CDC_MOTOR_DATA,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
     }
 };
 
@@ -169,8 +179,8 @@ void canInit(void) {
             .ids = {
                 CMR_CANID_HEARTBEAT_VSM,
                 CMR_CANID_HVC_PACK_VOLTAGE,
-                CMR_CANID_HEARTBEAT_VSM,
-                CMR_CANID_HEARTBEAT_VSM
+                CMR_CANID_CDC_WHEEL_SPEEDS,
+                CMR_CANID_CDC_MOTOR_DATA
             }
         }
     };

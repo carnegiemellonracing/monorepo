@@ -12,6 +12,7 @@
 #include "tftContent.h"     // Content interface
 #include "tftDL.h"          // Display list interface
 #include "gpio.h"           // Board-specific GPIO interface
+#include "can.h"            // Board-specific CAN interface
 
 /**
  * @brief Sends a command to the display.
@@ -175,7 +176,7 @@ void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait) {
 
         // Update the command write address.
         uint16_t coCmdWr = tft->coCmdWr + wrLen;
-        if (coCmdWr > TFT_RAM_CMD_SIZE) {
+        if (coCmdWr >= TFT_RAM_CMD_SIZE) {
             coCmdWr -= TFT_RAM_CMD_SIZE;
         }
         tftWrite(tft, TFT_ADDR_CMD_WRITE, sizeof(coCmdWr), &coCmdWr);
@@ -269,16 +270,43 @@ static void tftUpdate(void *pvParameters) {
         tftWrite(tft, init->addr, sizeof(init->val), &init->val);
     }
 
-    tftDLContentLoad(tft, &tftDLStartup);
-    tftDLWrite(tft, &tftDLStartup);
+    tftDLContentLoad(tft, &tftDL_startup);
+    tftDLWrite(tft, &tftDL_startup);
     vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
 
-    tftDLContentLoad(tft, &tftDLRTD);
+    tftDLContentLoad(tft, &tftDL_RTD);
+
+    cmr_canRXMeta_t *metaHVCPackVoltage = canRXMeta + CANRX_HVC_PACK_VOLTAGE;
+    volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage =
+        (void *) metaHVCPackVoltage->payload;
+
+    cmr_canRXMeta_t *metaCDCWheelSpeeds = canRXMeta + CANRX_CDC_WHEEL_SPEEDS;
+    volatile cmr_canCDCWheelSpeeds_t *canCDCWheelSpeeds =
+        (void *) metaCDCWheelSpeeds->payload;
+
+    cmr_canRXMeta_t *metaCDCMotorData = canRXMeta + CANRX_CDC_MOTOR_DATA;
+    volatile cmr_canCDCMotorData_t *canCDCMotorData =
+        (void *) metaCDCMotorData->payload;
 
     while (
         vTaskDelayUntil(&lastWakeTime, tftUpdate_period_ms), 1
     ) {
-        tftDLWrite(tft, &tftDLRTD);
+        uint32_t wheelSpeed_drpm = (
+            ((uint32_t) canCDCWheelSpeeds->frontLeft) +
+            ((uint32_t) canCDCWheelSpeeds->frontRight)
+        ) / 2;
+
+        // 0.00535 =
+        //     (1 rpm / 10 drpm) *
+        //     (18" * PI) * (1' / 12") * (60min / 1hr) * (1 mi / 5280')
+        uint32_t speed_mph = (wheelSpeed_drpm * 535) / 100000;
+        int32_t hvVoltage = canHVCPackVoltage->hvVoltage;
+        int32_t power_kW =
+            (canCDCMotorData->current_dA * canCDCMotorData->voltage_dV) /
+            100000;
+
+        tftDL_RTDUpdate(speed_mph, hvVoltage, power_kW);
+        tftDLWrite(tft, &tftDL_RTD);
     }
 }
 
