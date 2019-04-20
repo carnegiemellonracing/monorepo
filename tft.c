@@ -14,6 +14,30 @@
 #include "gpio.h"           // Board-specific GPIO interface
 #include "can.h"            // Board-specific CAN interface
 
+/** @brief Expected chip ID. */
+#define TFT_CHIP_ID 0x00011208
+
+/** @brief Display reset time, in milliseconds. */
+#define TFT_RESET_MS 50
+
+/** @brief Display initialization QuadSPI prescaler. */
+#define TFT_INIT_QSPI_PRESCALER 32
+
+/** @brief Display initialization time, in milliseconds. */
+#define TFT_INIT_MS 400
+
+/** @brief Display QuadSPI prescaler */
+#define TFT_QSPI_PRESCALER 2
+
+/** @brief Display startup time, in milliseconds. */
+#define TFT_STARTUP_MS 3000
+
+/** @brief Flag for indicating a write to the display. */
+#define TFT_WRITE_FLAG (1 << 23)
+
+/** @brief Dummy cycles for reading data from the display. */
+#define TFT_READ_DUMMY_CYCLES 8
+
 /**
  * @brief Sends a command to the display.
  *
@@ -270,6 +294,11 @@ static void tftUpdate(void *pvParameters) {
         tftWrite(tft, init->addr, sizeof(init->val), &init->val);
     }
 
+    tft->inited = true;
+
+    // Enable faster clock rate.
+    cmr_qspiSetPrescaler(&tft->qspi, TFT_QSPI_PRESCALER);
+
     tftDLContentLoad(tft, &tftDL_startup);
     tftDLWrite(tft, &tftDL_startup);
     vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
@@ -318,7 +347,7 @@ static tft_t tft;
  */
 void tftInit(void) {
     const QSPI_InitTypeDef qspiInit = {
-        .ClockPrescaler = 32,
+        .ClockPrescaler = TFT_INIT_QSPI_PRESCALER,
         .FifoThreshold = 4,
         .SampleShifting = QSPI_SAMPLE_SHIFTING_HALFCYCLE,
         .FlashSize = 23,
@@ -343,6 +372,8 @@ void tftInit(void) {
         &tft.qspi, QUADSPI, &qspiInit, &pins,
         DMA2_Stream7, DMA_CHANNEL_3
     );
+
+    tft.inited = false;
 
     cmr_taskInit(
         &tftUpdate_task, "tftUpdate", tftUpdate_priority,

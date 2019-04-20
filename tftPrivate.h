@@ -12,24 +12,6 @@
 
 #include <CMR/qspi.h>   // QuadSPI interface
 
-/** @brief Expected chip ID. */
-#define TFT_CHIP_ID 0x00011208
-
-/** @brief Display reset time, in milliseconds. */
-#define TFT_RESET_MS 50
-
-/** @brief Display initialization time, in milliseconds. */
-#define TFT_INIT_MS 400
-
-/** @brief Display startup time, in milliseconds. */
-#define TFT_STARTUP_MS 3000
-
-/** @brief Flag for indicating a write to the display. */
-#define TFT_WRITE_FLAG (1 << 23)
-
-/** @brief Dummy cycles for reading data from the display. */
-#define TFT_READ_DUMMY_CYCLES 8
-
 /** @brief General purpose graphics RAM size, in bytes. */
 #define TFT_RAM_G_SIZE (1024 * 1024)
 
@@ -68,6 +50,13 @@ typedef enum {
     TFT_ADDR_GPIOX_DIR = 0x302098,  /**< @brief GPIO directions. */
     TFT_ADDR_GPIOX = 0x30209C,      /**< @brief GPIO values. */
 
+    /**
+     * @brief SPI width.
+     *
+     * `0` = 1-bit; `1` = 2-bit; `2` = 4-bit.
+     */
+    TFT_ADDR_SPI_WIDTH = 0x302188,
+
     // Clock configuration.
     TFT_ADDR_PCLK_POL = 0x30206C,   /**< @brief PCLK polarity. */
     TFT_ADDR_PCLK = 0x302070,       /**< @brief PCLK frequency divider. */
@@ -85,9 +74,10 @@ typedef enum {
 
 /** @brief Represents a TFT display.  */
 typedef struct {
-    cmr_qspi_t qspi;        /**< @brief The display's QuadSPI port. */
-    uint16_t coCmdRd;       /**< @brief Coprocessor command read address. */
-    uint16_t coCmdWr;       /**< @brief Coprocessor command write address. */
+    cmr_qspi_t qspi;    /**< @brief The display's QuadSPI port. */
+    bool inited;        /**< @brief `true` if the init sequence is done. */
+    uint16_t coCmdRd;   /**< @brief Coprocessor command read address. */
+    uint16_t coCmdWr;   /**< @brief Coprocessor command write address. */
 } tft_t;
 
 void tftCmd(tft_t *tft, tftCmd_t cmd, uint8_t param);
