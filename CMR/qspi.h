@@ -52,6 +52,8 @@ void cmr_qspiInit(
     DMA_Stream_TypeDef *dma, uint32_t dmaChannel
 );
 
+void cmr_qspiSetPrescaler(cmr_qspi_t *qspi, uint32_t prescaler);
+
 void cmr_qspiCmd(cmr_qspi_t *qspi, const QSPI_CommandTypeDef *cmd);
 void cmr_qspiTX(
     cmr_qspi_t *qspi, const QSPI_CommandTypeDef *cmd, const void *data

@@ -11,6 +11,9 @@
  */
 
 #include "qspi.h"   // Interface to implement
+
+#ifdef HAL_QSPI_MODULE_ENABLED
+
 #include "dma.h"    // DMA interface
 #include "rcc.h"    // cmr_rccQSPIClockEnable(), cmr_rccGPIOClockEnable()
 
@@ -164,6 +167,17 @@ void cmr_qspiInit(
 }
 
 /**
+ * @brief Sets the clock prescaler.
+ *
+ * @param qspi The QuadSPI port.
+ * @param prescaler The new prescaler.
+ */
+void cmr_qspiSetPrescaler(cmr_qspi_t *qspi, uint32_t prescaler) {
+    uint32_t qspiCR = (qspi->handle.Instance->CR) & ((1 << 24) - 1);
+    qspi->handle.Instance->CR = qspiCR | (prescaler << 24);
+}
+
+/**
  * @brief Sends a command that has no data.
  *
  * @note Blocks until the transaction actually completes.
@@ -265,4 +279,6 @@ void cmr_qspiRX(
         cmr_panic("Acquiring QuadSPI port done semaphore timed out!");
     }
 }
+
+#endif /* HAL_QSPI_MODULE_ENABLED */
 
