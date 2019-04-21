@@ -49,8 +49,6 @@ void cmr_pwmInit(const cmr_pwmPinConfig_t *pinConfig,
 
 void cmr_pwmSetDutyCycle(cmr_pwmChannel_t *pwmChannel, uint32_t dutyCycle_pcnt);
 
-void cmr_pwmSetPeriod(cmr_pwmChannel_t *pwmChannel, uint32_t presc, uint32_t period_ticks);
-
 #endif /* HAL_TIM_MODULE_ENABLED */
 
 #endif /* CMR_PWM_H */

@@ -176,61 +176,6 @@ void cmr_pwmInit(const cmr_pwmPinConfig_t *pwmPinConfig,
 }
 
 /**
- * @brief Sets the period of a PWM channel.
- *
- * @param pwmChannel The PWM channel to set the duty cycle of.
- * @param period_ticks How much to divide the timer's peripheral clock by. Maximum 65536 (2^16).
- * @param presc PWM period in timer ticks (after clock division). Maximum 65536 (2^16).
- *
- * @note pwmFreq_Hz = 96 MHz / (presc * period_ticks)
- */
-void cmr_pwmSetPeriod(cmr_pwmChannel_t *pwmChannel, uint32_t presc, uint32_t period_ticks) {
-    configASSERT(pwmChannel != NULL);
-    configASSERT(presc <= UINT16_MAX + 1);
-    configASSERT(period_ticks <= UINT16_MAX + 1);
-
-    // Find current duty cycle
-    uint32_t ccrVal_ticks = 0;
-    TIM_TypeDef *timer = pwmChannel->handle.Instance;
-    switch (pwmChannel->channel) {
-        case TIM_CHANNEL_1:
-            ccrVal_ticks = timer->CCR1;
-            break;
-        case TIM_CHANNEL_2:
-            ccrVal_ticks = timer->CCR2;
-            break;
-        case TIM_CHANNEL_3:
-            ccrVal_ticks = timer->CCR3;
-            break;
-        case TIM_CHANNEL_4:
-            ccrVal_ticks = timer->CCR4;
-            break;
-    }
-
-    uint32_t currentPeriod_ticks = pwmChannel->handle.Init.Period + 1;
-    uint32_t dutyCycle_pcnt = ccrVal_ticks / currentPeriod_ticks;
-
-    pwmChannel->handle.Init.Prescaler = presc - 1;
-    pwmChannel->handle.Init.Period = period_ticks - 1;
-
-    if (HAL_TIM_PWM_Stop(&pwmChannel->handle, pwmChannel->channel) != HAL_OK) {
-        cmr_panic("pwmSetPeriod HAL_TIM_PWM_Stop failed!");
-    }
-
-    // Maintain duty cycle with new period
-    cmr_pwmSetDutyCycle(pwmChannel, dutyCycle_pcnt);
-
-    // Commit new period to timer
-    if (HAL_TIM_PWM_Init(&pwmChannel->handle) != HAL_OK) {
-        cmr_panic("pwmSetPeriod cmr_pwmSetPeriod failed!");
-    }
-
-    if (HAL_TIM_PWM_Start(&pwmChannel->handle, pwmChannel->channel) != HAL_OK) {
-        cmr_panic("pwmSetPeriod HAL_TIM_PWM_Start failed!");
-    }
-}
-
-/**
  * @brief Sets the duty cycle of a PWM channel.
  *
  * @param pwmChannel The PWM channel to set the duty cycle of.
