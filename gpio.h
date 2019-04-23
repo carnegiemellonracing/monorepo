@@ -17,8 +17,11 @@
 typedef enum {
     GPIO_LED_STATUS = 0,    /**< @brief Status LED. */
     GPIO_BRAKELIGHT,        /**< @brief Brake light enable. */
-    GPIO_FAN_ENABLE,
-    GPIO_LEN    /**< @brief Total GPIO pins. */
+    GPIO_FAN,               /**< @brief Fan drive. */
+    GPIO_FAN_ENABLE,        /**< @brief Fan drive. */
+    GPIO_PUMP,              /**< @brief Pump drive. */
+    GPIO_BRAKE_DISCON,      /**< @brief Brake solenoid */
+    GPIO_LEN                /**< @brief Total GPIO pins. */
 } gpio_t;
 
 void gpioInit(void);
