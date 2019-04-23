@@ -398,10 +398,10 @@ typedef struct {
 
 /** @brief Front Sensor Module data. */
 typedef struct {
-    uint8_t torqueRequested_pcnt;    /**< @brief Torque requested (0-100). */
-    uint8_t throttlePosition_pcnt;   /**< @brief Throttle position (0-100). */
-    uint8_t brakePressureFront_PSI;  /**< @brief Front brake pressure. */
-    uint8_t brakePedalPosition_pcnt; /**< @brief Brake pedal position (0-100). */
+    uint8_t torqueRequested;            /**< @brief Torque requested (0-255). */
+    uint8_t throttlePosition;           /**< @brief Throttle position (0-255). */
+    uint8_t brakePressureFront_PSI;     /**< @brief Front brake pressure. */
+    uint8_t brakePedalPosition_pcnt;    /**< @brief Brake pedal position (0-100). */
 
     /** @brief Steering wheel angle (-180 to 180 degrees). */
     int16_t steeringWheelAngle_deg;

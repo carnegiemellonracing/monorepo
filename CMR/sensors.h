@@ -1,6 +1,6 @@
 /**
  * @file sensors.h
- * @brief Sensor reading interface.
+ * @brief Sensor reading and conversion interface.
  *
  * @author Carnegie Mellon Racing
  */
@@ -8,51 +8,87 @@
 #ifndef CMR_SENSORS_H
 #define CMR_SENSORS_H
 
-#include <stdint.h>
-#include <CMR/can_types.h>
-#include <stdbool.h>
+#include <stdint.h>     // int32_t, uint32_t
+#include <stddef.h>     // size_t
+
+#include "can_types.h"  // cmr_canWarn_t, cmr_canError_t
 
 /** @brief Sensor errors. */
 typedef enum {
-    SENSOR_ERR_NONE = 0,        /**< @brief No errors. */
-    SENSOR_ERR_OUT_OF_RANGE,    /**< @brief Sensor out of range. */
-    SENSOR_ERR_LEN              /**< @brief Number of sensor errors. */
+    CMR_SENSOR_ERR_NONE = 0,        /**< @brief No errors. */
+    CMR_SENSOR_ERR_OUT_OF_RANGE,    /**< @brief Sensor out of range. */
+    CMR_SENSOR_ERR_LEN              /**< @brief Number of sensor errors. */
 } cmr_sensorError_t;
 
 /** @brief Represents a sensor. */
 typedef struct cmr_sensor cmr_sensor_t;
 
 /**
- * @brief Function pointer typedef for converting sensor's raw data
- * value to a real value.
+ * @brief Callback for getting a raw sensor data sample.
+ *
+ * @param sensor The sensor being sampled.
+ *
+ * @return The raw sample.
  */
-typedef int32_t (*cmr_readingToValue_t) (cmr_sensor_t *, uint32_t);
+typedef uint32_t (*cmr_sensorSampleFn_t) (const cmr_sensor_t *sensor);
 
 /**
- * @brief Function pointer typedef for getting a raw reading from a sensor.
+ * @brief Callback for converting raw sensor readings to normalized values
+ *
+ * @param sensor The sensor being converted.
+ * @param reading The raw sensor reading to convert.
+ *
+ * @return The converted value.
  */
-typedef uint32_t (*cmr_sampleSensor_t) (cmr_sensor_t *);
-
-/**
- * @brief Function pointer typedef for initializing a sensor.
- */
-typedef void (*cmr_initSensor_t) (cmr_sensor_t *);
+typedef int32_t (*cmr_sensorConvFn_t) (const cmr_sensor_t *sensor, uint32_t reading);
 
 struct cmr_sensor {
-    const cmr_readingToValue_t readingToValue; /**< @brief Function pointer for sensor reading to value. */
-    const cmr_sampleSensor_t sampleSensor;     /**< @brief Function pointer for Sensor reading to value conversion . */
+    const cmr_sensorSampleFn_t sample;  /**< @brief Sample callback. */
+    const cmr_sensorConvFn_t conv;      /**< @brief Conversion callback, or NULL for the identity function. */
 
-    uint32_t minReading;                       /**< @brief Minimum expected sensor reading. */
-    uint32_t maxReading;                       /**< @brief Maximum expected sensor reading. */
-    uint32_t warnThres_pcnt;                   /**< @brief Out-of-range error threshold percentage. */
-    cmr_canWarn_t warnFlag;                    /**< @brief Heartbeat warning flag to set when out of range. */
-    cmr_canError_t errorFlag;                  /**< @brief Heartbeat error flag to set when out of range. */
+    const uint32_t readingMin;          /**< @brief Minimum expected sensor reading. */
+    const uint32_t readingMax;          /**< @brief Maximum expected sensor reading. Must be at least `readingMin`. */
+    const uint32_t outOfRange_pcnt;     /**< @brief Out-of-range threshold, in percent. */
 
-    volatile cmr_sensorError_t error;          /**< @brief Sensor error status. */
-    volatile int32_t value;                    /**< @brief Current value in proper units. */
+    const cmr_canWarn_t warnFlag;       /**< @brief Heartbeat warning flag to set when out of range. */
+    const cmr_canError_t errorFlag;     /**< @brief Heartbeat error flag to set when out of range. */
+
+    /** @brief Private fields; this struct is opaque to the library consumer. */
+    struct cmr_sensor_private {
+        uint32_t readingUpper;      /**< @brief Upper reading threshold. */
+        uint32_t readingLower;      /**< @brief Lower reading threshold. */
+
+        volatile int32_t value;             /**< @brief Current value in proper units. */
+        volatile cmr_sensorError_t error;   /**< @brief Sensor error status. */
+    } _;
 };
 
-void cmr_getSensorValue(cmr_sensor_t *);
+/**
+ * @brief Represents a collection of sensors.
+ *
+ * @note The contents of this struct are opaque to the library consumer.
+ */
+typedef struct {
+    cmr_sensor_t *sensors;  /**< @brief Array of sensors. */
+    size_t sensorsLen;      /**< @brief Total number of sensors. */
+} cmr_sensorList_t;
+
+void cmr_sensorListInit(
+    cmr_sensorList_t *list, cmr_sensor_t *sensors, size_t sensorsLen
+);
+
+void cmr_sensorListUpdate(cmr_sensorList_t *list);
+void cmr_sensorListGetFlags(
+    cmr_sensorList_t *list,
+    cmr_canWarn_t *warnp, cmr_canError_t *errorp
+);
+
+int32_t cmr_sensorListGetValue(
+    cmr_sensorList_t *list, size_t channel
+);
+cmr_sensorError_t cmr_sensorListGetError(
+    cmr_sensorList_t *list, size_t channel
+);
 
 #endif /* CMR_SENSORS_H */
 
