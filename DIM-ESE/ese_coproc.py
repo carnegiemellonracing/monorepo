@@ -111,12 +111,14 @@ class FT81x(object):
         return [data]
 
     # 4.28 (126)
+    # The guide specifies (R, B, G) in the encoding, but (R, G, B) is apparently
+    # correct from testing.
     def COLOR_RGB(self, red, green, blue):
         red = int(red)
         green = int(green)
         blue = int(blue)
 
-        data = (0x4 << 24) | (red << 16) | (blue << 8) | (green << 0)
+        data = (0x4 << 24) | (red << 16) | (green << 8) | (blue << 0)
         return [data]
 
     # 4.30 (128)
@@ -148,7 +150,7 @@ class FT81x(object):
         handle = int(handle)
         cell = int(cell)
 
-        data = (0x2 << 24) | (x << 21) | (y << 12) | (handle << 7) | (cell << 0)
+        data = (0x2 << 30) | (x << 21) | (y << 12) | (handle << 7) | (cell << 0)
         return [data]
 
 
@@ -195,7 +197,7 @@ class FT81x(object):
         for option in options.split('|'):
             opts |= FT81x.OPTIONS[option.strip()]
 
-        data = [0xffffff0c, (y << 16) | (x << 0), (opts << 16) | (x << 0)]
+        data = [0xffffff0c, (y << 16) | (x << 0), (opts << 16) | (font << 0)]
 
         # Encode string into 4-byte word groups
         for i in range(0, len(s), 4):
