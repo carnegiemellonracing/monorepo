@@ -137,7 +137,7 @@ void canInit(void) {
     cmr_canInit(
         &can, CAN2,
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
-        NULL, "canRX",
+        NULL,
         GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
         GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
     );
