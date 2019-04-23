@@ -13,19 +13,40 @@
 #include <CMR/adc.h>    // ADC interface
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
+#include <CMR/can_types.h>  // CMR CAN types
 
 #include "gpio.h"   // Board-specific GPIO interface
 #include "can.h"    // Board-specific CAN interface
 #include "adc.h"    // Board-specific ADC interface
+#include "sensors.h"    // Board-specific sensors interface
 
-/** @brief Status LED priority. */
+/** @brief Status LED task priority. */
 static const uint32_t statusLED_priority = 2;
-
-/** @brief Status LED period (milliseconds). */
+/** @brief Status LED task period. */
 static const TickType_t statusLED_period_ms = 250;
-
 /** @brief Status LED task. */
 static cmr_task_t statusLED_task;
+
+/** @brief Cooling control task priority. */
+static const uint32_t coolingControl_priority = 4;
+/** @brief Cooling control task period. */
+static const TickType_t coolingControl_period_ms = 50;
+/** @brief Cooling control task. */
+static cmr_task_t coolingControl_task;
+
+/** @brief Brake light control task priority. */
+static const uint32_t brakelight_priority = 4;
+/** @brief Brake light control task period. */
+static const TickType_t brakelight_period_ms = 50;
+/** @brief Brake light control task. */
+static cmr_task_t brakelight_task;
+
+/** @brief Brake disconnection solenoid task priority. */
+static const uint32_t brakeDisconnect_priority = 5;
+/** @brief Brake disconnection solenoid task period. */
+static const TickType_t brakeDisconnect_period_ms = 10;
+/** @brief Brake disconnection solenoid task. */
+static cmr_task_t brakeDisconnect_task;
 
 /**
  * @brief Task for toggling the status LED.
@@ -48,6 +69,118 @@ static void statusLED(void *pvParameters) {
 }
 
 /**
+ * @brief Task for controlling the radiator fan and pump.
+ *
+ * @param pvParameters Ignored.
+ *
+ * @return Does not return.
+ */
+static void coolingControl(void *pvParameters) {
+    (void) pvParameters;
+
+    cmr_gpioWrite(GPIO_FAN_ENABLE, 1); // Turn the fan driver on
+
+    // Get reference to VSM Heartbeat
+    cmr_canRXMeta_t *vsmHeartbeatMeta = &(canRXMeta[CANRX_HEARTBEAT_VSM]);
+    volatile cmr_canHeartbeat_t *vsmHeartbeat = (void *)(&vsmHeartbeatMeta->payload);
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
+        switch (vsmHeartbeat->state) {
+            case CMR_CAN_RTD:
+                fanState = CMR_CAN_FAN_HIGH;
+                pumpState = CMR_CAN_PTC_PUMP_STATE_ON;
+                cmr_gpioWrite(GPIO_FAN, 1);     // Fan full on
+                cmr_gpioWrite(GPIO_PUMP, 1);    // Pump on
+
+                break;
+            case CMR_CAN_HV_EN:
+                fanState = CMR_CAN_FAN_LOW;
+                pumpState = CMR_CAN_PTC_PUMP_STATE_ON;
+                cmr_gpioToggle(GPIO_FAN);       // 50% duty cycle :)
+                cmr_gpioWrite(GPIO_PUMP, 1);    // Pump on
+
+                break;
+            default:
+                fanState = CMR_CAN_FAN_OFF;
+                pumpState = CMR_CAN_PTC_PUMP_STATE_OFF;
+                cmr_gpioWrite(GPIO_FAN, 0);     // Fan off
+                cmr_gpioWrite(GPIO_PUMP, 0);    // Pump off
+
+                break;
+        }
+
+        vTaskDelayUntil(&lastWakeTime, coolingControl_period_ms);
+    }
+}
+
+/**
+ * @brief Task for controlling the brakelight.
+ *
+ * @param pvParameters Ignored.
+ *
+ * @return Does not return.
+ */
+static void brakelight(void *pvParameters) {
+    (void) pvParameters;
+
+    // Get reference to VSM Heartbeat
+    cmr_canRXMeta_t *fsmDataMeta = &(canRXMeta[CANRX_FSM_DATA]);
+    volatile cmr_canFSMData_t *fsmData = (void *) fsmDataMeta->payload;
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
+        if (fsmData->brakePressureFront_PSI > 0) {
+            cmr_gpioWrite(GPIO_BRAKELIGHT, 1);
+        } else {
+            cmr_gpioWrite(GPIO_BRAKELIGHT, 0);
+        }
+
+        vTaskDelayUntil(&lastWakeTime, brakelight_period_ms);
+    }
+}
+
+/**
+ * @brief Task for controlling the brake solenoid, which
+ * disconnects the rear brakes from the brake pedal. Simultaneously,
+ * the CDC should begin using the brake pressure to command
+ * regen torque on the rears.
+ *
+ * @param pvParameters Ignored.
+ *
+ * @return Does not return.
+ */
+static void brakeDisconnect(void *pvParameters) {
+    (void) pvParameters;
+
+    // Get reference to VSM Heartbeat
+    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
+    volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
+        switch (heartbeatVSM->state){
+            case CMR_CAN_RTD:
+                // Check that the dash is requesting this mode of operation
+                if (0) { // TODO Dash/TOM should publish a driver setting for enabling software braking
+                    cmr_gpioWrite(GPIO_BRAKE_DISCON, 1);
+                }
+                else {
+                    cmr_gpioWrite(GPIO_BRAKE_DISCON, 0);
+                }
+
+                break;
+
+            default:
+                cmr_gpioWrite(GPIO_BRAKE_DISCON, 0);
+                break;
+        }
+
+        vTaskDelayUntil(&lastWakeTime, brakeDisconnect_period_ms);
+    }
+}
+
+/**
  * @brief Firmware entry point.
  *
  * Device configuration and task initialization should be performed here.
@@ -63,12 +196,34 @@ int main(void) {
     gpioInit();
     canInit();
     adcInit();
+    sensorsInit();
 
     cmr_taskInit(
         &statusLED_task,
         "statusLED",
         statusLED_priority,
         statusLED,
+        NULL
+    );
+    cmr_taskInit(
+        &brakelight_task,
+        "brakelight",
+        brakelight_priority,
+        brakelight,
+        NULL
+    );
+    cmr_taskInit(
+        &brakeDisconnect_task,
+        "brakeDisconnect",
+        brakeDisconnect_priority,
+        brakeDisconnect,
+        NULL
+    );
+    cmr_taskInit(
+        &coolingControl_task,
+        "coolingControl",
+        coolingControl_priority,
+        coolingControl,
         NULL
     );
 
