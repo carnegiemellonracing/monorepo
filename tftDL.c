@@ -95,46 +95,49 @@ void tftDL_RTDUpdate(
     int32_t hvVoltage,
     int32_t power_kW
 ) {
-    static char *speed_mph_10 = (char *) (tftDL_RTDData + 112);
-    static char *speed_mph_1 = (char *) (tftDL_RTDData + 114);
+    static struct {
+        char buf[3];
+    } *const speed_mph_str = (void *) (tftDL_RTDData + 72);
 
-    static char *hvVoltage_100 = (char *) (tftDL_RTDData + 136);
-    static char *hvVoltage_10 = (char *) (tftDL_RTDData + 137);
-    static char *hvVoltage_1 = (char *) (tftDL_RTDData + 138);
+    static struct {
+        char buf[4];
+    } *const hvVoltage_str = (void *) (tftDL_RTDData + 91);
 
     static const tftDL_bar_t hvVoltage_bar = {
-        .addr = tftDL_RTDData + 129,
+        .addr = tftDL_RTDData + 85,
         .topY = 12,
         .botY = 168,
         .maxVal = 400000,
         .minVal = 270000
     };
 
-    static char *power_kW_10 = (char *) (tftDL_RTDData + 164);
-    static char *power_kW_1 = (char *) (tftDL_RTDData + 165);
+    static struct {
+        char buf[3];
+    } *const power_kW_str = (void *) (tftDL_RTDData + 115);
 
     static const tftDL_bar_t power_kW_bar = {
-        .addr = tftDL_RTDData + 157,
+        .addr = tftDL_RTDData + 109,
         .topY = 12,
         .botY = 168,
         .maxVal = 85,
         .minVal = 0
     };
 
-    char buf[4];
-    snprintf(buf, sizeof(buf), "%2lu", speed_mph);
-    *speed_mph_10 = buf[0];
-    *speed_mph_1 = buf[1];
+    snprintf(
+        speed_mph_str->buf, sizeof(speed_mph_str->buf),
+        "%2lu", speed_mph
+    );
 
-    snprintf(buf, sizeof(buf), "%3ld", hvVoltage / 1000);
-    *hvVoltage_100 = buf[0];
-    *hvVoltage_10 = buf[1];
-    *hvVoltage_1 = buf[2];
+    snprintf(
+        hvVoltage_str->buf, sizeof(hvVoltage_str->buf),
+        "%3ld", hvVoltage / 1000
+    );
     tftDL_barSetY(&hvVoltage_bar, hvVoltage);
 
-    snprintf(buf, sizeof(buf), "%2ld", power_kW);
-    *power_kW_10 = buf[0];
-    *power_kW_1 = buf[1];
+    snprintf(
+        power_kW_str->buf, sizeof(power_kW_str->buf),
+        "%2ld", power_kW
+    );
     tftDL_barSetY(&power_kW_bar, power_kW);
 }
 
