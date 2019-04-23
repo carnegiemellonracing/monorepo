@@ -119,11 +119,26 @@ class FT81x(object):
         data = (0x4 << 24) | (red << 16) | (blue << 8) | (green << 0)
         return [data]
 
+    # 4.30 (128)
+    def END(self, _):
+        data = (0x21 << 24)
+        return [data]
+
     # 4.35 (132)
     def PALETTE_SOURCE(self, addr):
         addr = int(addr)
 
         data = (0x2A << 24) | (addr << 0)
+        return [data]
+
+    # 4.37 (134)
+    def RESTORE_CONTEXT(self, _):
+        data = (0x23 << 24)
+        return [data]
+
+    # 4.39 (136)
+    def SAVE_CONTEXT(self, _):
+        data = (0x22 << 24)
         return [data]
 
     # 4.48 (146)
@@ -215,7 +230,7 @@ if len(sys.argv) < 2:
     print('Usage: %s <ESE project file>' % (sys.argv[0]), file=sys.stderr)
     sys.exit(1)
 
-command_pattern = re.compile(r'(.+)\((.+)\)')
+command_pattern = re.compile(r'(.+)\((.*)\)')
 
 with open(sys.argv[1], 'r') as ese_project_file:
     ese_project = json.load(ese_project_file)
@@ -243,6 +258,7 @@ with open(sys.argv[1], 'r') as ese_project_file:
                 (' // %s' % (command)) if i == 0 else ''
                 ))
 
-# Write display list swap command.
+# Write display and swap commands.
+print('0x00000000, // DISPLAY()')
 print('0xffffff01, // CMD_DLSWAP()')
 
