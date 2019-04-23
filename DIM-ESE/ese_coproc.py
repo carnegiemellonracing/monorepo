@@ -47,6 +47,50 @@ class FT81x(object):
         data = (0x1f << 24) | prim
         return [data]
 
+    # 4.6 (96)
+    def BITMAP_HANDLE(self, handle):
+        handle = int(handle)
+
+        data = (0x5 << 24) | (handle << 0)
+        return [data]
+
+    # 4.7 (97)
+    BITMAP_FORMATS = {
+            'ARGB1555': 0,
+            'L1': 1,
+            'L4': 2,
+            'L8': 3,
+            'RGB332': 4,
+            'ARGB2': 5,
+            'ARGB4': 6,
+            'RGB565': 7,
+            'TEXT8X8': 9,
+            'TEXTVGA': 10,
+            'BARGRAPH': 11,
+            'PALETTED565': 14,
+            'PALETTED4444': 15,
+            'PALETTED8': 16,
+            'L2': 17
+            }
+
+    # 4.18 (114)
+    BLEND_FUNCS = {
+            'ZERO': 0,
+            'ONE': 1,
+            'SRC_ALPHA': 2,
+            'DST_ALPHA': 3,
+            'ONE_MINUS_SRC_ALPHA': 4,
+            'ONE_MINUS_DST_ALPHA': 5
+            }
+
+    # 4.18 (114)
+    def BLEND_FUNC(self, src, dst):
+        src = FT81x.BLEND_FUNCS[src]
+        dst = FT81x.BLEND_FUNCS[dst]
+
+        data = (0xB << 24) | (src << 3) | (dst << 0)
+        return [data]
+
     # 4.21 (118)
     def CLEAR(self, color, stencil, tag):
         color = int(color)
@@ -56,6 +100,16 @@ class FT81x(object):
         data = (0x26 << 24) | (color << 2) | (stencil << 1) | (tag << 0)
         return [data]
 
+    # 4.27 (125)
+    def COLOR_MASK(self, r, g, b, a):
+        r = int(r)
+        g = int(g)
+        b = int(b)
+        a = int(a)
+
+        data = (0x20 << 24) | (r << 3) | (g << 2) | (b << 1) | (a << 0)
+        return [data]
+
     # 4.28 (126)
     def COLOR_RGB(self, red, green, blue):
         red = int(red)
@@ -63,6 +117,13 @@ class FT81x(object):
         blue = int(blue)
 
         data = (0x4 << 24) | (red << 16) | (blue << 8) | (green << 0)
+        return [data]
+
+    # 4.35 (132)
+    def PALETTE_SOURCE(self, addr):
+        addr = int(addr)
+
+        data = (0x2A << 24) | (addr << 0)
         return [data]
 
     # 4.48 (146)
@@ -139,6 +200,15 @@ class FT81x(object):
 
         return [0xffffff3b, font, ptr, firstchar]
 
+    # 5.65 (248-249)
+    def CMD_SETBITMAP(self, addr, fmt, width, height):
+        addr = int(addr)
+        fmt = FT81x.BITMAP_FORMATS[fmt]
+        width = int(width)
+        height = int(height)
+
+        return [0xffffff43, addr, (width << 16) | (fmt << 0), height]
+
 ft81x = FT81x()
 
 if len(sys.argv) < 2:
@@ -165,6 +235,7 @@ with open(sys.argv[1], 'r') as ese_project_file:
             method = getattr(ft81x, name)
         except AttributeError:
             print('UNIMPLEMENTED: %s' % command)
+            continue
 
         for i, word in enumerate(method(*args)):
             print('0x%s,%s' % (
