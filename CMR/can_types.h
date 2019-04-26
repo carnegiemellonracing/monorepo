@@ -456,9 +456,10 @@ typedef struct {
     uint16_t fanCurrent_mA;     /**< @brief Fan current (mA). */
 } cmr_canPTCCurrentDiagnostics_t;
 
+/** @brief Powertrain Thermal Controller accumulator fan duty cycles. */
 typedef struct {
-    uint8_t acFansDrive;    /**< @brief Accumulator fan drive signal. */
-    uint8_t dcdcFanDrive;   /**< @brief DCDC fan drive signal. */
+    uint8_t acFansDuty_pcnt;    /**< @brief Accumulator fan duty cycle. */
+    uint8_t dcdcFanDuty_pcnt;   /**< @brief DCDC fan duty cycle. */
 } cmr_canPTCAFCControl_t;
 
 // ------------------------------------------------------------------------------------------------
