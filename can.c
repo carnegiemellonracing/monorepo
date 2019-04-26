@@ -233,6 +233,8 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
  * @brief Send cooling system status on CAN bus.
  */
 static void sendCoolStatus(void) {
+    static bool lastAFCMaxCoolingEnabled = false;
+
     cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
     volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
 
@@ -260,6 +262,21 @@ static void sendCoolStatus(void) {
 
         canTX(CMR_CANID_PTC_AFC_CONTROL, &afcCtrlMsg, sizeof(afcCtrlMsg), canTX10Hz_period_ms);
     }
+    // We just turned off cooling in coolingControl task, transmit a fans off message
+    else if (lastAFCMaxCoolingEnabled && !afcMaxCoolingEnabled) {
+        cmr_canPTCAFCControl_t afcCtrlMsg = {
+            .acFansDuty_pcnt = 0,
+            .dcdcFanDuty_pcnt = 0
+        };
+
+        if ((heartbeatVSM->state == CMR_CAN_HV_EN) || (heartbeatVSM->state == CMR_CAN_RTD)) {
+            afcCtrlMsg.dcdcFanDuty_pcnt = 100;
+        }
+
+        canTX(CMR_CANID_PTC_AFC_CONTROL, &afcCtrlMsg, sizeof(afcCtrlMsg), canTX10Hz_period_ms);
+    }
+
+    lastAFCMaxCoolingEnabled = afcMaxCoolingEnabled;
 }
 
 /**
