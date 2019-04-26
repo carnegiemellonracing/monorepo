@@ -23,10 +23,16 @@
 
 static cmr_pwm_t fanPWM;
 
+typedef struct {
+    uint16_t min;
+    uint16_t maxCellTemp_dC;
+    uint32_t rest;
+} cmr_canHVCPackMinMaxCellTemps_t;
+
 /** @brief Cell temperature at which PTC begins commanding AFC max cooling. */
-static const uint32_t maxCoolingEnableTemp_C = 55;
+static const uint32_t maxCoolingEnableTemp_C = 35; //55
 /** @brief Cell temperature at which PTC stops commanding AFC max cooling. */
-static const uint32_t minCoolingDisableTemp_C = 52;
+static const uint32_t minCoolingDisableTemp_C = 32; //52
 
 /** @brief Status LED task priority. */
 static const uint32_t statusLED_priority = 2;
