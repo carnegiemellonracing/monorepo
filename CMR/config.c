@@ -21,21 +21,6 @@
 #include "panic.h"  // cmr_panic()
 
 /**
- * @brief The configuration storage len in words. This is the maximum
- *        flash sector size (0x20000 / 4).
- */
-#define CONFIG_CACHE_LEN 4096
-
-typedef struct {
-    volatile uint32_t cache[CONFIG_CACHE_LEN];
-    uint32_t flashSector;
-    volatile uint32_t *flashStart;
-    volatile size_t flashSize;
-} cmr_config_t;
-
-static cmr_config_t config;
-
-/**
  * @brief Instantiates the macro for each flash sector.
  *
  * The parameter are, in order: sector number, corresponding base address, and cooresponding size.
@@ -86,33 +71,41 @@ SECTOR_FOREACH(GET_SIZE)
 
 /**
  * @brief Initializes the configuration system with a base address.
- *
- * @param addr A base address.
+ * 
+ * @param config The interface to initalize.
+ * @param cache The config cache to use.
+ * @param cacheLen The size of the config cache to use.
+ * @param sector The flash sector to use. See the HAL documentation @ref FLASHEx_Sectors.
  */
-void cmr_configInit(uint32_t sector) {
-    config.flashSector = sector;
-    config.flashStart = (volatile uint32_t *) getSectorBase(sector);
-    config.flashSize = getSectorSize(sector);
+void cmr_configInit(cmr_config_t *config, volatile uint32_t *cache, size_t cacheLen, uint32_t sector) {
+    config->cache = cache;
+    config->cacheLen = cacheLen;
+    config->flashSector = sector;
+    config->flashStart = (volatile uint32_t *) getSectorBase(sector);
+    config->flashSize = getSectorSize(sector);
 
-    if (sizeof(config.cache) > config.flashSize) {
-        cmr_panic("The flash sector is not large enough!");
+    if (config->cacheLen > config->flashSize) {
+        cmr_panic("Config cache is larger than sector!");
     }
 
-    cmr_configPull();
+    cmr_configPull(config);
 }
 
 /**
  * @brief Sets a configuration setting.
  *
- * @param addr A word address to write to (0 to CONFIG_CACHE_LEN).
- * @param data A datum to write.
+ * @param config The interface to use.
+ * @param addr The word address to write to.
+ * @param data The datum to write.
+ *
+ * @return -1 if addr out of config->cache bounds, 0 otherwise.
  */
-int cmr_configSet(size_t addr, uint32_t data) {
-    if (addr >= CONFIG_CACHE_LEN) {
+int cmr_configSet(cmr_config_t *config, size_t addr, uint32_t data) {
+    if (addr >= config->cacheLen) {
         return -1;
     }
 
-    config.cache[addr] = data;
+    config->cache[addr] = data;
 
     return 0;
 }
@@ -120,30 +113,36 @@ int cmr_configSet(size_t addr, uint32_t data) {
 /**
  * @brief Gets a configuration setting.
  *
- * @param addr A word address to read from (0 to CONFIG_CACHE_LEN).
- * @return The data at the address.
+ * @param config The interface to use.
+ * @param addr The word address to read from (0 to CONFIG_CACHE_LEN).
+ * @param dest The destination to write the data to.
+ * @return -1 if addr out of config->cache bounds, 0 otherwise.
  */
-int cmr_configGet(size_t addr, uint32_t *dest) {
-    if (addr >= CONFIG_CACHE_LEN || dest == NULL) {
-        return -1; 
+int cmr_configGet(cmr_config_t *config, size_t addr, uint32_t *dest) {
+    if (addr >= config->cacheLen || dest == NULL) {
+        return -1;
     }
 
-    *dest = config.cache[addr];
+    *dest = config->cache[addr];
 
     return 0;
 }
 
 /**
  * @brief Pulls the config from flash into the local config cache.
+ *
+ * @param config The interface to use.
  */
-void cmr_configPull() {
-    memcpy((void *) config.cache, (void *) config.flashStart, sizeof(config.cache));
+void cmr_configPull(cmr_config_t *config) {
+    memcpy((void *) config->cache, (void *) config->flashStart, config->cacheLen * sizeof(config->cache[0]));
 }
 
 /**
  * @brief Commits the local config cache to flash.
+ *
+ * @param config The interface to use.
  */
-void cmr_configCommit() {
+void cmr_configCommit(cmr_config_t *config) {
     if (HAL_FLASH_Unlock() != HAL_OK) {
         return;
     }
@@ -157,7 +156,7 @@ void cmr_configCommit() {
   
     FLASH_EraseInitTypeDef eraseInit = {
         .TypeErase = FLASH_TYPEERASE_SECTORS,
-        .Sector = config.flashSector,
+        .Sector = config->flashSector,
         .NbSectors = 1,
         .VoltageRange = VOLTAGE_RANGE_3,
     };
@@ -169,9 +168,9 @@ void cmr_configCommit() {
     }
 
     size_t idx = 0;
-    while (idx < CONFIG_CACHE_LEN) {
-        if (HAL_FLASH_Program(TYPEPROGRAM_WORD, (uint32_t) (config.flashStart + idx), 
-                config.cache[idx]) == HAL_OK) {
+    while (idx < config->cacheLen) {
+        if (HAL_FLASH_Program(TYPEPROGRAM_WORD, (uint32_t) (config->flashStart + idx), 
+                config->cache[idx]) == HAL_OK) {
             idx++;
         }
     }

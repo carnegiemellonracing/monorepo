@@ -18,7 +18,7 @@ extern const uint32_t I2C_CLOCK_LOW;
 extern const uint32_t I2C_CLOCK_HI;
 
 typedef struct {
-	I2C_HandleTypeDef handle;      /**< @brief HAL I2C Handle.*/
+    I2C_HandleTypeDef handle;      /**< @brief HAL I2C Handle.*/
 } cmr_i2c_t;
 
 int cmr_i2cTX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,

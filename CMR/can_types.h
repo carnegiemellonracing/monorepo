@@ -125,17 +125,18 @@ typedef enum {
     CMR_CAN_WARN_FSM_SWANGLE = (1 << 9)
 } cmr_canWarn_t;
 
+/** @brief Represents the car's current driving mode (gear). */
 typedef enum {
-    GEAR_UNKNOWN = 0,   /**< @brief Unknown Gear State */
-    GEAR_REVERSE,       /**< @brief Reverse mode */
-    GEAR_SLOW,          /**< @brief Slow mode */
-    GEAR_FAST,          /**< @brief Fast simple mode */
-    GEAR_ENDURANCE,     /**< @brief Endurance-event mode */
-    GEAR_AUTOX,         /**< @brief Autocross-event mode */
-    GEAR_SKIDPAD,       /**< @brief Skidpad-event mode */
-    GEAR_ACCEL,         /**< @brief Acceleration-event mode */
-    GEAR_TEST,          /**< @brief Test mode (for experimentation) */
-    GEAR_LEN
+    CMR_CAN_GEAR_UNKNOWN = 0,   /**< @brief Unknown Gear State */
+    CMR_CAN_GEAR_REVERSE,       /**< @brief Reverse mode */
+    CMR_CAN_GEAR_SLOW,          /**< @brief Slow mode */
+    CMR_CAN_GEAR_FAST,          /**< @brief Fast simple mode */
+    CMR_CAN_GEAR_ENDURANCE,     /**< @brief Endurance-event mode */
+    CMR_CAN_GEAR_AUTOX,         /**< @brief Autocross-event mode */
+    CMR_CAN_GEAR_SKIDPAD,       /**< @brief Skidpad-event mode */
+    CMR_CAN_GEAR_ACCEL,         /**< @brief Acceleration-event mode */
+    CMR_CAN_GEAR_TEST,          /**< @brief Test mode (for experimentation) */
+    CMR_CAN_GEAR_LEN
 } cmr_canGear_t;
 
 // ------------------------------------------------------------------------------------------------
@@ -319,6 +320,12 @@ typedef struct {
     uint8_t modeRequest;    /**< @brief HVC operating mode request. See cmr_canHVCMode_t. */
 } cmr_canHVCCommand_t;
 
+/** @brief High Voltage Controller. */
+typedef struct {
+    int32_t battVoltage;    /**< @brief voltage measured across battery. */
+    int32_t hvVoltage;      /**< @brief voltage outside accumulator. */
+} cmr_canHVCPackVoltage_t;
+
 // ------------------------------------------------------------------------------------------------
 // Accumulator Fan Controller
 
@@ -357,6 +364,20 @@ typedef struct {
     uint8_t solenoidEnable;     /**< @brief Enable the solenoid (disable the brakes). */
 } cmr_canCDCSolenoidPTC_t;
 
+/** @brief Central Dynamics Controller motor data. */
+typedef struct {
+    int16_t torque_dNm;     /**< @brief Commanded torque (deci-Newton-meters). */
+    int16_t speed_rpm;      /**< @brief Motor speed (RPM). */
+    int16_t current_dA;     /**< @brief DC bus current (deci-Amps). */
+    int16_t voltage_dV;     /**< @brief DC bus voltage (deci-Volts). */
+} cmr_canCDCMotorData_t;
+
+/** @brief Central Dynamics Controller motor faults. */
+typedef struct {
+    uint32_t post;  /**< @brief Power-on-self-test faults. */
+    uint32_t run;   /**< @brief Run faults. */
+} cmr_canCDCMotorFaults_t;
+
 // ------------------------------------------------------------------------------------------------
 // Driver Interface Module
 
@@ -377,10 +398,10 @@ typedef struct {
 
 /** @brief Front Sensor Module data. */
 typedef struct {
-    uint8_t torqueRequested_pcnt;    /**< @brief Torque requested (0-100). */
-    uint8_t throttlePosition_pcnt;   /**< @brief Throttle position (0-100). */
-    uint8_t brakePressureFront_PSI;  /**< @brief Front brake pressure. */
-    uint8_t brakePedalPosition_pcnt; /**< @brief Brake pedal position (0-100). */
+    uint8_t torqueRequested;            /**< @brief Torque requested (0-255). */
+    uint8_t throttlePosition;           /**< @brief Throttle position (0-255). */
+    uint8_t brakePressureFront_PSI;     /**< @brief Front brake pressure. */
+    uint8_t brakePedalPosition_pcnt;    /**< @brief Brake pedal position (0-100). */
 
     /** @brief Steering wheel angle (-180 to 180 degrees). */
     int16_t steeringWheelAngle_deg;
@@ -435,9 +456,10 @@ typedef struct {
     uint16_t fanCurrent_mA;     /**< @brief Fan current (mA). */
 } cmr_canPTCCurrentDiagnostics_t;
 
+/** @brief Powertrain Thermal Controller accumulator fan duty cycles. */
 typedef struct {
-    uint8_t acFansDrive;    /**< @brief Accumulator fan drive signal. */
-    uint8_t dcdcFanDrive;   /**< @brief DCDC fan drive signal. */
+    uint8_t acFansDuty_pcnt;    /**< @brief Accumulator fan duty cycle. */
+    uint8_t dcdcFanDuty_pcnt;   /**< @brief DCDC fan duty cycle. */
 } cmr_canPTCAFCControl_t;
 
 // ------------------------------------------------------------------------------------------------
@@ -454,6 +476,24 @@ typedef struct {
     /** @brief Set 0 for no limit override (torque in N.m. times 10). */
     uint16_t torqueLimitCommand;
 } cmr_canRMSCommand_t;
+
+/** @brief Configuration parameter/register read/write request. */
+typedef struct {
+    uint16_t address;       /**< @brief Address to access. */
+    uint8_t writeEnable;    /**< @brief 1 to enable write; 0 to read. */
+    uint8_t pad0;           /**< @brief Ignored. */
+    uint16_t data;          /**< @brief Data to write, if any. */
+    uint16_t pad1;          /**< @brief Ignored. */
+} cmr_canRMSParamReq_t;
+
+/** @brief Configuration parameter/register read/write response. */
+typedef struct {
+    uint16_t address;       /**< @brief Address that was accessed. */
+    uint8_t writeSuccess;   /**< @brief 1 if write successful, if any. */
+    uint8_t pad0;           /**< @brief Ignored. */
+    uint16_t data;          /**< @brief Data that was read/written. */
+    uint16_t pad1;          /**< @brief Ignored. */
+} cmr_canRMSParamRes_t;
 
 /** @brief Faults report from motor controller (see pg 23). */
 typedef struct {
