@@ -421,6 +421,14 @@ Var=PTC_pumpState unsigned 8,8 /e:PumpState
 Var=PTC_preRadiatorTemp unsigned 16,16 /u:C
 Var=PTC_postRadiatorTemp unsigned 32,16 /u:C
 
+[PTC_AFCControl]
+ID=254h
+DLC=2
+CycleTime=100
+Timeout=1000
+Var=PTC_acFansDuty unsigned 0,8 /u:%
+Var=PTC_dcdcFanDuty unsigned 8,8 /u:%
+
 [PTC_VoltageDiagnostic]
 ID=534h
 DLC=4

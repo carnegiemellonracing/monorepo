@@ -12,7 +12,11 @@
 
 #ifdef HAL_TIM_MODULE_ENABLED
 
-/** @brief Represents a single PWM pin. */
+/**
+ * @brief Represents a single PWM pin.
+ *
+ * @note pwmFreq_Hz = 96 MHz / (presc * period_ticks)
+ */
 typedef struct {
     /** @brief Pin's GPIO port (`GPIOx` from `stm32f413xx.h`). */
     GPIO_TypeDef *port;
@@ -42,12 +46,12 @@ typedef struct {
 typedef struct {
     TIM_HandleTypeDef handle;   /**< @brief HAL TIM handle. */
     uint32_t channel;           /**< @brief HAL TIM output compare channel. */
-} cmr_pwmChannel_t;
+} cmr_pwm_t;
 
-void cmr_pwmInit(const cmr_pwmPinConfig_t *pinConfig,
-                 cmr_pwmChannel_t *pwmChannel);
+void cmr_pwmInit(cmr_pwm_t *pwmChannel,
+                 const cmr_pwmPinConfig_t *pwmPinConfig);
 
-void cmr_pwmSetDutyCycle(cmr_pwmChannel_t *pwmChannel, uint32_t dutyCycle_pcnt);
+void cmr_pwmSetDutyCycle(cmr_pwm_t *pwmChannel, uint32_t dutyCycle_pcnt);
 
 #endif /* HAL_TIM_MODULE_ENABLED */
 

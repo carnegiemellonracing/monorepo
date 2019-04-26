@@ -13,42 +13,32 @@
 #include <FreeRTOS.h>
 #include "rcc.h"
 
-static uint32_t timerToAltFunc(TIM_TypeDef *timer) {
-    if (timer == TIM1) {
-        return GPIO_AF1_TIM1;
-    }
-    if (timer == TIM2) {
-        return GPIO_AF1_TIM2;
-    }
-    if (timer == TIM3) {
-        return GPIO_AF2_TIM3;
-    }
-    if (timer == TIM4) {
-        return GPIO_AF2_TIM4;
-    }
-    if (timer == TIM5) {
-        return GPIO_AF2_TIM5;
-    }
-    if (timer == TIM8) {
-        return GPIO_AF3_TIM8;
-    }
-    if (timer == TIM9) {
-        return GPIO_AF3_TIM9;
-    }
-    if (timer == TIM10) {
-        return GPIO_AF3_TIM10;
-    }
-    if (timer == TIM11) {
-        return GPIO_AF3_TIM11;
-    }
-    if (timer == TIM12) {
-        return GPIO_AF9_TIM12;
-    }
-    if (timer == TIM13) {
-        return GPIO_AF9_TIM13;
-    }
-    if (timer == TIM14) {
-        return GPIO_AF9_TIM14;
+static uint32_t cmr_timerToAltFunc(TIM_TypeDef *timer) {
+    switch ((uintptr_t) timer) {
+        case TIM1_BASE:
+            return GPIO_AF1_TIM1;
+        case TIM2_BASE:
+            return GPIO_AF1_TIM2;
+        case TIM3_BASE:
+            return GPIO_AF2_TIM3;
+        case TIM4_BASE:
+            return GPIO_AF2_TIM4;
+        case TIM5_BASE:
+            return GPIO_AF2_TIM5;
+        case TIM8_BASE:
+            return GPIO_AF3_TIM8;
+        case TIM9_BASE:
+            return GPIO_AF3_TIM9;
+        case TIM10_BASE:
+            return GPIO_AF3_TIM10;
+        case TIM11_BASE:
+            return GPIO_AF3_TIM11;
+        case TIM12_BASE:
+            return GPIO_AF9_TIM12;
+        case TIM13_BASE:
+            return GPIO_AF9_TIM13;
+        case TIM14_BASE:
+            return GPIO_AF9_TIM14;
     }
 
     return (uint32_t) -1;
@@ -57,27 +47,21 @@ static uint32_t timerToAltFunc(TIM_TypeDef *timer) {
 /**
  * @brief Initializes PWM for the specified pin.
  *
- * @param pwmPin The pin to initialize.
  * @param pwmChannel A PWM channel struct to use.
- *
- * @note pwmFreq_Hz = 96 MHz / (pwmPinConfig->presc * pwmPinConfig->period_ticks)
+ * @param pwmPinConfig The pin to initialize.
  */
-void cmr_pwmInit(const cmr_pwmPinConfig_t *pwmPinConfig,
-                 cmr_pwmChannel_t *pwmChannel) {
+void cmr_pwmInit(cmr_pwm_t *pwmChannel,
+                 const cmr_pwmPinConfig_t *pwmPinConfig) {
 
     configASSERT(pwmPinConfig != NULL);
     configASSERT(pwmPinConfig->timer != NULL);
-    configASSERT(pwmPinConfig->channel == TIM_CHANNEL_1 ||
-                 pwmPinConfig->channel == TIM_CHANNEL_2 ||
-                 pwmPinConfig->channel == TIM_CHANNEL_3 ||
-                 pwmPinConfig->channel == TIM_CHANNEL_4);
 
-    configASSERT(pwmPinConfig->presc <= UINT16_MAX + 1);
-    configASSERT(pwmPinConfig->period_ticks <= UINT16_MAX + 1);
+    configASSERT(pwmPinConfig->presc > 0 && pwmPinConfig->presc <= UINT16_MAX + 1);
+    configASSERT(pwmPinConfig->period_ticks > 0 && pwmPinConfig->period_ticks <= UINT16_MAX + 1);
 
     cmr_rccGPIOClockEnable(pwmPinConfig->port);
 
-    *pwmChannel = (cmr_pwmChannel_t) {
+    *pwmChannel = (cmr_pwm_t) {
         .handle = {
             .Instance = pwmPinConfig->timer,
             .Init = {
@@ -112,7 +96,8 @@ void cmr_pwmInit(const cmr_pwmPinConfig_t *pwmPinConfig,
         return;
     }
 
-    // Disable fancy master/slave stuff if applicable
+    // Disable fancy master/slave stuff if applicable since we won't use it.
+    // Based on Cube-generated code.
     if (IS_TIM_MASTER_INSTANCE(pwmPinConfig->timer)) {
         TIM_MasterConfigTypeDef masterConfig = {
             .MasterOutputTrigger = TIM_TRGO_RESET,
@@ -142,7 +127,8 @@ void cmr_pwmInit(const cmr_pwmPinConfig_t *pwmPinConfig,
         cmr_panic("pwmInit cmr_pwmSetDutyCycle failed!");
     }
 
-    // Disable fancy break/dead time stuff if applicable
+    // Disable fancy break/dead time stuff if applicable since we won't use it.
+    // Based on Cube-generated code.
     if (IS_TIM_BREAK_INSTANCE(pwmPinConfig->timer)) {
         TIM_BreakDeadTimeConfigTypeDef breakDeadConfig = {
             .OffStateRunMode = TIM_OSSR_DISABLE,
@@ -160,13 +146,12 @@ void cmr_pwmInit(const cmr_pwmPinConfig_t *pwmPinConfig,
         }
     }
 
-    uint32_t altFunc = timerToAltFunc(pwmPinConfig->timer);
     GPIO_InitTypeDef pinConfig = {
         .Pin = pwmPinConfig->pin,
         .Mode = GPIO_MODE_AF_PP,
         .Pull = GPIO_NOPULL,
         .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
-        .Alternate = altFunc
+        .Alternate = cmr_timerToAltFunc(pwmPinConfig->timer)
     };
     HAL_GPIO_Init(pwmPinConfig->port, &pinConfig);
 
@@ -181,7 +166,7 @@ void cmr_pwmInit(const cmr_pwmPinConfig_t *pwmPinConfig,
  * @param pwmChannel The PWM channel to set the duty cycle of.
  * @param dutyCycle_pcnt The duty cycle, in percent no greater than 100, to set pwmChannel to.
  */
-void cmr_pwmSetDutyCycle(cmr_pwmChannel_t *pwmChannel, uint32_t dutyCycle_pcnt) {
+void cmr_pwmSetDutyCycle(cmr_pwm_t *pwmChannel, uint32_t dutyCycle_pcnt) {
     configASSERT(pwmChannel != NULL);
     configASSERT(dutyCycle_pcnt <= 100);
 

@@ -59,37 +59,31 @@ void cmr_rccSystemClockEnable(void)  {
  * @param port The GPIO port.
  */
 void cmr_rccGPIOClockEnable(GPIO_TypeDef *port) {
-    if (port == GPIOA) {
-        __HAL_RCC_GPIOA_CLK_ENABLE();
-        return;
-    }
-    if (port == GPIOB) {
-        __HAL_RCC_GPIOB_CLK_ENABLE();
-        return;
-    }
-    if (port == GPIOC) {
-        __HAL_RCC_GPIOC_CLK_ENABLE();
-        return;
-    }
-    if (port == GPIOD) {
-        __HAL_RCC_GPIOD_CLK_ENABLE();
-        return;
-    }
-    if (port == GPIOE) {
-        __HAL_RCC_GPIOE_CLK_ENABLE();
-        return;
-    }
-    if (port == GPIOF) {
-        __HAL_RCC_GPIOF_CLK_ENABLE();
-        return;
-    }
-    if (port == GPIOG) {
-        __HAL_RCC_GPIOG_CLK_ENABLE();
-        return;
-    }
-    if (port == GPIOH) {
-        __HAL_RCC_GPIOH_CLK_ENABLE();
-        return;
+    switch ((uintptr_t) port) {
+        case GPIOA_BASE:
+            __HAL_RCC_GPIOA_CLK_ENABLE();
+            break;
+        case GPIOB_BASE:
+            __HAL_RCC_GPIOB_CLK_ENABLE();
+            break;
+        case GPIOC_BASE:
+            __HAL_RCC_GPIOC_CLK_ENABLE();
+            break;
+        case GPIOD_BASE:
+            __HAL_RCC_GPIOD_CLK_ENABLE();
+            break;
+        case GPIOE_BASE:
+            __HAL_RCC_GPIOE_CLK_ENABLE();
+            break;
+        case GPIOF_BASE:
+            __HAL_RCC_GPIOF_CLK_ENABLE();
+            break;
+        case GPIOG_BASE:
+            __HAL_RCC_GPIOG_CLK_ENABLE();
+            break;
+        case GPIOH_BASE:
+            __HAL_RCC_GPIOH_CLK_ENABLE();
+            break;
     }
 }
 #endif /* HAL_GPIO_MODULE_ENABLED */
@@ -101,9 +95,10 @@ void cmr_rccGPIOClockEnable(GPIO_TypeDef *port) {
  * @param instance The HAL ADC instance.
  */
 void cmr_rccADCClockEnable(ADC_TypeDef *instance) {
-    if (instance == ADC1) {
-        __HAL_RCC_ADC1_CLK_ENABLE();
-        return;
+    switch ((uintptr_t) instance) {
+        case ADC1_BASE:
+            __HAL_RCC_ADC1_CLK_ENABLE();
+            break;
     }
 }
 #endif /* HAL_ADC_MODULE_ENABLED */
@@ -115,18 +110,17 @@ void cmr_rccADCClockEnable(ADC_TypeDef *instance) {
  * @param instance The HAL CAN instance.
  */
 void cmr_rccCANClockEnable(CAN_TypeDef *instance) {
-    if (instance == CAN3) {
-        __HAL_RCC_CAN3_CLK_ENABLE();
-        return;
-    }
-    if (instance == CAN2) {
-        __HAL_RCC_CAN2_CLK_ENABLE();
-        __HAL_RCC_CAN1_CLK_ENABLE();    // CAN2 also needs CAN1 clock.
-        return;
-    }
-    if (instance == CAN1) {
-        __HAL_RCC_CAN1_CLK_ENABLE();
-        return;
+    switch ((uintptr_t) instance) {
+        case CAN1_BASE:
+            __HAL_RCC_CAN1_CLK_ENABLE();
+            break;
+        case CAN2_BASE:
+            __HAL_RCC_CAN2_CLK_ENABLE();
+            __HAL_RCC_CAN1_CLK_ENABLE();    // CAN2 also needs CAN1 clock.    
+            break;
+        case CAN3_BASE:
+            __HAL_RCC_CAN3_CLK_ENABLE();
+            break;
     }
 }
 #endif /* HAL_CAN_MODULE_ENABLED */
@@ -138,19 +132,17 @@ void cmr_rccCANClockEnable(CAN_TypeDef *instance) {
  * @param instance The HAL I2C instance.
  */
 void cmr_rccI2CClockEnable(I2C_TypeDef *instance) {
-    if (instance == I2C1) {
-        __HAL_RCC_I2C1_CLK_ENABLE();
-        return;
-    }
-    if (instance == I2C2) {
-        __HAL_RCC_I2C2_CLK_ENABLE();
-        return;
-    }
-    if (instance == I2C3) {
-        __HAL_RCC_I2C3_CLK_ENABLE();
-        return;
-    }
-    //not sure how many more instances there needs to be
+    switch ((uintptr_t) instance) {
+        case I2C1_BASE:
+            __HAL_RCC_I2C1_CLK_ENABLE();
+            break;
+        case I2C2_BASE:
+            __HAL_RCC_I2C2_CLK_ENABLE();
+            break;
+        case I2C3_BASE:
+            __HAL_RCC_I2C3_CLK_ENABLE();
+            break;
+    }    
 }
 #endif /* HAL_I2C_MODULE_ENABLED */
 
@@ -161,25 +153,22 @@ void cmr_rccI2CClockEnable(I2C_TypeDef *instance) {
  * @param instance The HAL SPI instance.
  */
 void cmr_rccSPIClockEnable(SPI_TypeDef *instance) {
-    if (instance == SPI1) {
-        __HAL_RCC_SPI1_CLK_ENABLE();
-        return;
-    }
-    if (instance == SPI2) {
-        __HAL_RCC_SPI2_CLK_ENABLE();
-        return;
-    }
-    if (instance == SPI3) {
-        __HAL_RCC_SPI3_CLK_ENABLE();
-        return;
-    }
-    if (instance == SPI4) {
-        __HAL_RCC_SPI4_CLK_ENABLE();
-        return;
-    }
-    if (instance == SPI5) {
-        __HAL_RCC_SPI5_CLK_ENABLE();
-        return;
+    switch ((uintptr_t) instance) {
+        case SPI1_BASE:
+            __HAL_RCC_SPI1_CLK_ENABLE();
+            break;
+        case SPI2_BASE:
+            __HAL_RCC_SPI2_CLK_ENABLE();
+            break;
+        case SPI3_BASE:
+            __HAL_RCC_SPI3_CLK_ENABLE();
+            break;
+        case SPI4_BASE:
+            __HAL_RCC_SPI4_CLK_ENABLE();
+            break;
+        case SPI5_BASE:
+            __HAL_RCC_SPI5_CLK_ENABLE();
+            break;
     }
 }
 #endif /* HAL_SPI_MODULE_ENABLED */
@@ -191,8 +180,10 @@ void cmr_rccSPIClockEnable(SPI_TypeDef *instance) {
  * @param instance The HAL QUADSPI instance.
  */
 void cmr_rccQSPIClockEnable(QUADSPI_TypeDef *instance) {
-    if (instance == QUADSPI) {
-        __HAL_RCC_QSPI_CLK_ENABLE();
+    switch ((uintptr_t) instance) {
+        case QUADSPI_BASE:
+            __HAL_RCC_QSPI_CLK_ENABLE();
+            break;
     }
 }
 #endif /* HAL_QSPI_MODULE_ENABLED */
@@ -241,61 +232,49 @@ void cmr_rccUSARTClockEnable(USART_TypeDef *instance) {
 
 #ifdef HAL_TIM_MODULE_ENABLED
 void cmr_rccTIMClockEnable(TIM_TypeDef *instance) {
-    if (instance == TIM1) {
-        __HAL_RCC_TIM1_CLK_ENABLE();
-        return;
-    }
-    if (instance == TIM2) {
-        __HAL_RCC_TIM2_CLK_ENABLE();
-        return;
-    }
-    if (instance == TIM3) {
-        __HAL_RCC_TIM3_CLK_ENABLE();
-        return;
-    }
-    if (instance == TIM4) {
-        __HAL_RCC_TIM4_CLK_ENABLE();
-        return;
-    }
-    if (instance == TIM5) {
-        __HAL_RCC_TIM5_CLK_ENABLE();
-        return;
-    }
-    if (instance == TIM6) {
-        __HAL_RCC_TIM6_CLK_ENABLE();
-        return;
-    }
-    if (instance == TIM7) {
-        __HAL_RCC_TIM7_CLK_ENABLE();
-        return;
-    }
-    if (instance == TIM8) {
-        __HAL_RCC_TIM8_CLK_ENABLE();
-        return;
-    }
-    if (instance == TIM9) {
-        __HAL_RCC_TIM9_CLK_ENABLE();
-        return;
-    }
-    if (instance == TIM10) {
-        __HAL_RCC_TIM10_CLK_ENABLE();
-        return;
-    }
-    if (instance == TIM11) {
-        __HAL_RCC_TIM11_CLK_ENABLE();
-        return;
-    }
-    if (instance == TIM12) {
-        __HAL_RCC_TIM12_CLK_ENABLE();
-        return;
-    }
-    if (instance == TIM13) {
-        __HAL_RCC_TIM13_CLK_ENABLE();
-        return;
-    }
-    if (instance == TIM14) {
-        __HAL_RCC_TIM14_CLK_ENABLE();
-        return;
+    switch ((uintptr_t) instance) {
+        case TIM1_BASE:
+            __HAL_RCC_TIM1_CLK_ENABLE();
+            break;
+        case TIM2_BASE:
+            __HAL_RCC_TIM2_CLK_ENABLE();
+            break;
+        case TIM3_BASE:
+            __HAL_RCC_TIM3_CLK_ENABLE();
+            break;
+        case TIM4_BASE:
+            __HAL_RCC_TIM4_CLK_ENABLE();
+            break;
+        case TIM5_BASE:
+            __HAL_RCC_TIM5_CLK_ENABLE();
+            break;
+        case TIM6_BASE:
+            __HAL_RCC_TIM6_CLK_ENABLE();
+            break;
+        case TIM7_BASE:
+            __HAL_RCC_TIM7_CLK_ENABLE();
+            break;
+        case TIM8_BASE:
+            __HAL_RCC_TIM8_CLK_ENABLE();
+            break;
+        case TIM9_BASE:
+            __HAL_RCC_TIM9_CLK_ENABLE();
+            break;
+        case TIM10_BASE:
+            __HAL_RCC_TIM10_CLK_ENABLE();
+            break;
+        case TIM11_BASE:
+            __HAL_RCC_TIM11_CLK_ENABLE();
+            break;
+        case TIM12_BASE:
+            __HAL_RCC_TIM12_CLK_ENABLE();
+            break;
+        case TIM13_BASE:
+            __HAL_RCC_TIM13_CLK_ENABLE();
+            break;
+        case TIM14_BASE:
+            __HAL_RCC_TIM14_CLK_ENABLE();
+            break;
     }
 }
 #endif /* HAL_TIM_MODULE_ENABLED */
