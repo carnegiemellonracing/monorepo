@@ -7,21 +7,26 @@
 
 #include <stm32f4xx_hal.h>  // HAL interface
 
-#include <CMR/panic.h>  // cmr_panic()
-#include <CMR/rcc.h>    // RCC interface
-#include <CMR/can.h>    // CAN interface
-#include <CMR/adc.h>    // ADC interface
-#include <CMR/gpio.h>   // GPIO interface
-#include <CMR/tasks.h>  // Task interface
-#include <CMR/pwm.h>    // PWM interface
+#include <CMR/panic.h>      // cmr_panic()
+#include <CMR/rcc.h>        // RCC interface
+#include <CMR/can.h>        // CAN interface
+#include <CMR/adc.h>        // ADC interface
+#include <CMR/gpio.h>       // GPIO interface
+#include <CMR/tasks.h>      // Task interface
+#include <CMR/pwm.h>        // PWM interface
 #include <CMR/can_types.h>  // CMR CAN types
 
-#include "gpio.h"   // Board-specific GPIO interface
-#include "can.h"    // Board-specific CAN interface
-#include "adc.h"    // Board-specific ADC interface
+#include "gpio.h"       // Board-specific GPIO interface
+#include "can.h"        // Board-specific CAN interface
+#include "adc.h"        // Board-specific ADC interface
 #include "sensors.h"    // Board-specific sensors interface
 
-static cmr_pwmChannel_t pwmChannel;
+static cmr_pwm_t fanPWM;
+
+/** @brief Cell temperature at which PTC begins commanding AFC max cooling. */
+static const uint32_t maxCoolingEnableTemp_C = 55;
+/** @brief Cell temperature at which PTC stops commanding AFC max cooling. */
+static const uint32_t minCoolingDisableTemp_C = 52;
 
 /** @brief Status LED task priority. */
 static const uint32_t statusLED_priority = 2;
@@ -75,10 +80,10 @@ static void statusLED(void *pvParameters) {
 //            cmr_pwmSetPeriod(&pwmChannel, 40000, 48);
         }
         else if (lastWakeTime > 5000) {
-            cmr_pwmSetDutyCycle(&pwmChannel, 100);
+            cmr_pwmSetDutyCycle(&fanPWM, 100);
         }
         else {
-            cmr_pwmSetDutyCycle(&pwmChannel, 0);
+            cmr_pwmSetDutyCycle(&fanPWM, 0);
         }
 
 
@@ -102,28 +107,52 @@ static void coolingControl(void *pvParameters) {
     cmr_canRXMeta_t *vsmHeartbeatMeta = &(canRXMeta[CANRX_HEARTBEAT_VSM]);
     volatile cmr_canHeartbeat_t *vsmHeartbeat = (void *)(&vsmHeartbeatMeta->payload);
 
+    // Get reference to accumulator min/max cell temperatures
+    cmr_canRXMeta_t *minMaxTempsMeta = canRXMeta + CANRX_HVC_MINMAX_TEMPS;
+    volatile cmr_canHVCPackMinMaxCellTemps_t *minMaxTemps = (void *) minMaxTempsMeta->payload;
+
+    // Initialize fan PWM
+    const cmr_pwmPinConfig_t pwmPinConfig = {
+        .port = GPIOA,
+        .pin = GPIO_PIN_8,
+        .channel = TIM_CHANNEL_1,
+        .presc = 24,
+        .period_ticks = 40000,  // 96 MHz / (24 * 40000) = 100 Hz
+        .timer = TIM1
+    };
+    cmr_pwmInit(&fanPWM, &pwmPinConfig);
+
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
+        // Simple hysteresis for accumulator cooling
+        uint32_t maxCellTemp_C = minMaxTemps->maxCellTemp_dC / 10;
+        if (maxCellTemp_C >= maxCoolingEnableTemp_C) {
+            afcMaxCoolingEnabled = true;
+        }
+        else if (maxCellTemp_C <= minCoolingDisableTemp_C) {
+            afcMaxCoolingEnabled = false;
+        }
+
         switch (vsmHeartbeat->state) {
             case CMR_CAN_RTD:
                 fanState = CMR_CAN_FAN_HIGH;
                 pumpState = CMR_CAN_PTC_PUMP_STATE_ON;
-                cmr_gpioWrite(GPIO_FAN, 1);     // Fan full on
-                cmr_gpioWrite(GPIO_PUMP, 1);    // Pump on
+                cmr_pwmSetDutyCycle(&fanPWM, 100);  // Fan full on
+                cmr_gpioWrite(GPIO_PUMP, 1);        // Pump on
 
                 break;
             case CMR_CAN_HV_EN:
                 fanState = CMR_CAN_FAN_LOW;
                 pumpState = CMR_CAN_PTC_PUMP_STATE_ON;
-                cmr_gpioToggle(GPIO_FAN);       // 50% duty cycle :)
-                cmr_gpioWrite(GPIO_PUMP, 1);    // Pump on
+                cmr_pwmSetDutyCycle(&fanPWM, 50);   // 50% duty cycle
+                cmr_gpioWrite(GPIO_PUMP, 1);        // Pump on
 
                 break;
             default:
                 fanState = CMR_CAN_FAN_OFF;
                 pumpState = CMR_CAN_PTC_PUMP_STATE_OFF;
-                cmr_gpioWrite(GPIO_FAN, 0);     // Fan off
-                cmr_gpioWrite(GPIO_PUMP, 0);    // Pump off
+                cmr_pwmSetDutyCycle(&fanPWM, 0);    // Fan off
+                cmr_gpioWrite(GPIO_PUMP, 0);        // Pump off
 
                 break;
         }
@@ -220,17 +249,6 @@ int main(void) {
     canInit();
     adcInit();
     sensorsInit();
-
-    const cmr_pwmPinConfig_t pwmPinConfig = {
-        .port = GPIOA,
-        .pin = GPIO_PIN_8,
-        .channel = TIM_CHANNEL_1,
-        .presc = 24,
-        .period_ticks = 40000,  // 96 MHz / (24 * 40000) = 100 Hz
-        .timer = TIM1
-    };
-
-    cmr_pwmInit(&pwmPinConfig, &pwmChannel);
 
     cmr_taskInit(
         &statusLED_task,

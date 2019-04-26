@@ -48,15 +48,6 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_FAN] = {
-        .port = GPIOA,
-        .init = {
-            .Pin = GPIO_PIN_8,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
     [GPIO_FAN_ENABLE] = {
         .port = GPIOA,
         .init = {

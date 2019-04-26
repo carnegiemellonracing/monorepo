@@ -27,19 +27,35 @@ cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
         .timeoutError_ms = 50,
-        .timeoutWarn_ms = 25
+        .timeoutWarn_ms = 25,
+        .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
     },
     [CANRX_VSM_STATUS] = {
         .canID = CMR_CANID_VSM_STATUS,
         .timeoutError_ms = 50,
-        .timeoutWarn_ms = 25
+        .timeoutWarn_ms = 25,
+        .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
     },
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
         .timeoutError_ms = 100,
-        .timeoutWarn_ms = 50
+        .timeoutWarn_ms = 50,
+        .errorFlag = CMR_CAN_ERROR_NONE,
+        .warnFlag = CMR_CAN_WARN_NONE
+    },
+    [CANRX_HVC_MINMAX_TEMPS] = {
+        .canID = CMR_CANID_HVC_MINMAX_CELL_TEMPS,
+        .timeoutError_ms = 5000,
+        .timeoutWarn_ms = 2500,
+        .errorFlag = CMR_CAN_ERROR_NONE,
+        .warnFlag = CMR_CAN_WARN_NONE
     }
 };
+
+/** @brief AFC max cooling enable flag. */
+bool afcMaxCoolingEnabled = false;
 
 /** @brief Radiator fan state. */
 cmr_canFanState_t fanState = CMR_CAN_FAN_OFF;
@@ -139,9 +155,9 @@ void canInit(void) {
             .rxFIFO = CAN_RX_FIFO1,
             .ids = {
                 CMR_CANID_VSM_STATUS,
-                CMR_CANID_VSM_STATUS,
-                CMR_CANID_VSM_STATUS,
-                CMR_CANID_VSM_STATUS,
+                CMR_CANID_HVC_MINMAX_CELL_TEMPS,
+                CMR_CANID_HVC_MINMAX_CELL_TEMPS,
+                CMR_CANID_HVC_MINMAX_CELL_TEMPS                                                                                 ,
             }
         }
     };
@@ -217,6 +233,9 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
  * @brief Send cooling system status on CAN bus.
  */
 static void sendCoolStatus(void) {
+    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
+    volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
+
     int32_t preRadiatorTemp_C =
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_PRE_RAD_THERM);
     int32_t postRadiatorTemp_C =
@@ -231,12 +250,16 @@ static void sendCoolStatus(void) {
 
     canTX(CMR_CANID_PTC_COOLING_STATUS, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
 
-    cmr_canPTCAFCControl_t afcCtrlMsg = {
-        .acFansDrive = (fanState >= CMR_CAN_FAN_HIGH),
-        .dcdcFanDrive = (fanState >= CMR_CAN_FAN_HIGH)
-    };
+    if (((heartbeatVSM->state == CMR_CAN_HV_EN) || (heartbeatVSM->state == CMR_CAN_RTD))
+     && afcMaxCoolingEnabled) {
 
-    canTX(CMR_CANID_PTC_AFC_CONTROL, &afcCtrlMsg, sizeof(afcCtrlMsg), canTX10Hz_period_ms);
+        cmr_canPTCAFCControl_t afcCtrlMsg = {
+            .acFansDuty_pcnt = 100,
+            .dcdcFanDuty_pcnt = 100
+        };
+
+        canTX(CMR_CANID_PTC_AFC_CONTROL, &afcCtrlMsg, sizeof(afcCtrlMsg), canTX10Hz_period_ms);
+    }
 }
 
 /**
