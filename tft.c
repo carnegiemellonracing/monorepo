@@ -317,6 +317,11 @@ static void tftUpdate(void *pvParameters) {
     volatile cmr_canCDCMotorData_t *canCDCMotorData =
         (void *) metaCDCMotorData->payload;
 
+    cmr_canRXMeta_t *metaHVCPackTemps = canRXMeta + CANRX_HVC_PACK_TEMPS;
+    volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps =
+        (void *) metaHVCPackTemps->payload;
+
+
     while (
         vTaskDelayUntil(&lastWakeTime, tftUpdate_period_ms), 1
     ) {
@@ -334,7 +339,11 @@ static void tftUpdate(void *pvParameters) {
             (canCDCMotorData->current_dA * canCDCMotorData->voltage_dV) /
             100000;
 
-        tftDL_RTDUpdate(speed_mph, hvVoltage, power_kW);
+        int32_t num = 0;
+
+        int32_t acTemp = (int32_t) canHVCPackTemps->Pack_Max_Cell_Temp;
+
+        tftDL_RTDUpdate(speed_mph, hvVoltage, power_kW, num, num, acTemp, num);
         tftDLWrite(tft, &tftDL_RTD);
     }
 }

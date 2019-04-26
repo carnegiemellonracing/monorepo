@@ -93,7 +93,11 @@ static void tftDL_barSetY(const tftDL_bar_t *bar, int32_t val) {
 void tftDL_RTDUpdate(
     uint32_t speed_mph,
     int32_t hvVoltage,
-    int32_t power_kW
+    int32_t power_kW,
+    int32_t dcdcTemp,
+    int32_t motorTemp,
+    int32_t acTemp,
+    int32_t mcTemp
 ) {
     static struct {
         char buf[3];
@@ -102,6 +106,22 @@ void tftDL_RTDUpdate(
     static struct {
         char buf[4];
     } *const hvVoltage_str = (void *) (tftDL_RTDData + 91);
+
+    static struct {
+        char buf[3];
+    } *const dcdcTemp_str = (void *) (tftDL_RTDData + 125);
+
+    static struct {
+        char buf[3];
+    } *const motorTemp_str = (void *) (tftDL_RTDData + 130);
+
+    static struct {
+        char buf[3];
+    } *const acTemp_str = (void *) (tftDL_RTDData + 120);
+
+    static struct {
+        char buf[3];
+    } *const mcTemp_str = (void *) (tftDL_RTDData + 135);
 
     static const tftDL_bar_t hvVoltage_bar = {
         .addr = tftDL_RTDData + 85,
@@ -132,6 +152,27 @@ void tftDL_RTDUpdate(
         hvVoltage_str->buf, sizeof(hvVoltage_str->buf),
         "%3ld", hvVoltage / 1000
     );
+
+    snprintf(
+        dcdcTemp_str->buf, sizeof(dcdcTemp_str->buf),
+        "%2ld", dcdcTemp
+    );
+
+    snprintf(
+        motorTemp_str->buf, sizeof(motorTemp_str->buf),
+        "%2ld", motorTemp
+    );
+
+    snprintf(
+        acTemp_str->buf, sizeof(acTemp_str->buf),
+        "%2ld", acTemp
+    );
+
+    snprintf(
+        mcTemp_str->buf, sizeof(mcTemp_str->buf),
+        "%2ld", mcTemp
+    );
+
     tftDL_barSetY(&hvVoltage_bar, hvVoltage);
 
     snprintf(
