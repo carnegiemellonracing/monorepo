@@ -125,7 +125,7 @@ class FT81x(object):
     def COLOR_RGB(self, red, green, blue):
         red = int(red)
         green = int(green)
-        blue = int(blfue)
+        blue = int(blue)
 
         data = (0x4 << 24) | (red << 16) | (green << 8) | (blue << 0)
         return [data]
@@ -177,7 +177,7 @@ class FT81x(object):
 
     # 5.8 (158-159)
     
-    = {
+    OPTIONS  = {
             'OPT_3D': 0,
             'OPT_RGB565': 0,
             'OPT_MONO': 1,
