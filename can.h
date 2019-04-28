@@ -23,6 +23,7 @@ typedef enum {
     CANRX_CDC_WHEEL_SPEEDS,     /**< @brief CDC wheel speeds. */
     CANRX_CDC_MOTOR_DATA,       /**< @brief CDC motor data. */
     CANRX_HVC_PACK_TEMPS,       /**< @brief HVC cell temps. */
+    CANRX_VSM_STATUS,           /**< @brief VSM status */
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 

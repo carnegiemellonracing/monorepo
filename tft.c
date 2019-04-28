@@ -226,10 +226,10 @@ void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait) {
 }
 
 /** @brief Display update priority. */
-static const uint32_t tftUpdate_priority = 4;
+static const uint32_t tftUpdate_priority = 1;
 
 /** @brief Display update period. */
-static const TickType_t tftUpdate_period_ms = 16;
+static const TickType_t tftUpdate_period_ms = 1000;
 
 /** @brief Display update task. */
 static cmr_task_t tftUpdate_task;
@@ -341,10 +341,13 @@ static void tftUpdate(void *pvParameters) {
 
         int32_t num = 0;
 
-        int32_t acTemp = (int32_t) canHVCPackTemps->Pack_Max_Cell_Temp;
+        int32_t acTemp = (canHVCPackTemps->Pack_Max_Cell_Temp);
 
         tftDL_RTDUpdate(speed_mph, hvVoltage, power_kW, num, num, acTemp, num);
+        TickType_t before = xTaskGetTickCount();
         tftDLWrite(tft, &tftDL_RTD);
+        TickType_t after = xTaskGetTickCount();
+        (void) after;
     }
 }
 

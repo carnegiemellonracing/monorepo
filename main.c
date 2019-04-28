@@ -28,6 +28,16 @@ static const TickType_t statusLED_period_ms = 250;
 /** @brief Status LED task. */
 static cmr_task_t statusLED_task;
 
+/** @brief Status LED priority. */
+static const uint32_t errorLEDs_priority = 2;
+
+/** @brief Status LED period (milliseconds). */
+static const TickType_t errorLEDs_period_ms = 250;
+
+
+/** @brief Error LED task. */
+static cmr_task_t errorLEDs_task;
+
 /**
  * @brief Task for toggling the status LED.
  *
@@ -50,6 +60,48 @@ static void statusLED(void *pvParameters) {
 }
 
 /**
+ * @brief Gets the VSM latch matrix.
+ *
+ * @note VSM latch matrix is maintained in the received CAN status.
+ *
+ * @return The VSM latch matrix.
+ */
+uint8_t getVSMlatchMatrix(void) {
+    cmr_canRXMeta_t *statusVSMMeta = canRXMeta + CANRX_VSM_STATUS;
+    volatile cmr_canVSMStatus_t *statusVSM =
+        (void *) statusVSMMeta->payload;
+
+    return statusVSM->latchMatrix;
+}
+
+/**
+ * @brief Task for error indication over LEDs.
+ *
+ * @param pvParameters Ignored.
+ *
+ * @return Does not return.
+ */
+static void errorLEDs(void *pvParameters) {
+    (void) pvParameters;
+
+    cmr_gpioWrite(GPIO_LED_IMD, 0);
+    cmr_gpioWrite(GPIO_LED_AMS, 0);
+    cmr_gpioWrite(GPIO_LED_BSPD, 0);
+
+    uint8_t latch = getVSMlatchMatrix();
+    for (
+        TickType_t lastWakeTime = xTaskGetTickCount();
+        1;
+        vTaskDelayUntil(&lastWakeTime, errorLEDs_period_ms)
+    ) {
+        latch = getVSMlatchMatrix();
+        cmr_gpioWrite(GPIO_LED_IMD, latch & CMR_CAN_VSM_LATCH_IMD);
+        cmr_gpioWrite(GPIO_LED_AMS, latch & CMR_CAN_VSM_LATCH_AMS);
+        cmr_gpioWrite(GPIO_LED_BSPD, latch & CMR_CAN_VSM_LATCH_BSPD);
+    }
+}
+
+/**
  * @brief Firmware entry point.
  *
  * Device configuration and task initialization should be performed here.
@@ -65,7 +117,7 @@ int main(void) {
     gpioInit();
     canInit();
     adcInit();
-    tftInit();
+    //tftInit();
     segmentsInit();
 
     cmr_taskInit(
@@ -73,6 +125,14 @@ int main(void) {
         "statusLED",
         statusLED_priority,
         statusLED,
+        NULL
+    );
+
+    cmr_taskInit(
+        &errorLEDs_task,
+        "errorLEDs",
+        errorLEDs_priority,
+        errorLEDs,
         NULL
     );
 

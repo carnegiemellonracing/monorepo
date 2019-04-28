@@ -10,12 +10,10 @@
 /** @brief DIM state. */
 static volatile struct {
     cmr_canState_t vsmReq;      /**< @brief Requested VSM state. */
-
     cmr_canGear_t gear;         /**< @brief Current gear. */
     cmr_canGear_t gearReq;      /**< @brief Requested gear. */
 } state = {
     .vsmReq = CMR_CAN_GLV_ON,
-
     .gear = CMR_CAN_GEAR_FAST,
     .gearReq = CMR_CAN_GEAR_FAST
 };

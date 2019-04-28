@@ -49,23 +49,12 @@ cmr_canRXMeta_t canRXMeta[] = {
         .canID = CMR_CANID_HVC_PACK_MINMAX_CELL_TEMPS,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
+    },
+    [CANRX_VSM_STATUS] = {
+        .canID = CMR_CANID_VSM_STATUS,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
     }
-    /*
-    [] = {
-        .canID = ;
-        .timeoutError_ms = 50;
-        .timeoutWarn_ms = 25;
-    }
-    [] = {
-        .canID = ,
-        .timeoutError_ms = 50;
-        .timeoutWarn_ms = 25;
-        },
-    [] = {
-        .canID = ;
-        .timeoutError_ms = 50;
-        .timeoutWarn_ms = 25;
-    }*/
 };
 
 /** @brief Primary CAN interface. */
@@ -201,9 +190,17 @@ void canInit(void) {
                 CMR_CANID_HEARTBEAT_VSM,
                 CMR_CANID_HVC_PACK_VOLTAGE,
                 CMR_CANID_CDC_WHEEL_SPEEDS,
-                CMR_CANID_CDC_MOTOR_DATA,
+                CMR_CANID_CDC_MOTOR_DATA
+            }
+        },
+        {
+            .isMask = false,
+            .rxFIFO= CAN_RX_FIFO1,
+            .ids = {
                 CMR_CANID_AFC1_DRIVER_TEMPS,
-                CMR_CANID_RMS_TEMPC
+                CMR_CANID_RMS_TEMPC,
+                CMR_CANID_VSM_STATUS,
+                CMR_CANID_VSM_STATUS
             }
         }
     };
