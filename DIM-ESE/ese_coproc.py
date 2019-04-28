@@ -116,7 +116,7 @@ class FT81x(object):
     def COLOR_RGB(self, red, green, blue):
         red = int(red)
         green = int(green)
-        blue = int(blue)
+        blue = int(blfue)
 
         data = (0x4 << 24) | (red << 16) | (green << 8) | (blue << 0)
         return [data]
@@ -161,7 +161,8 @@ class FT81x(object):
     string_pattern = re.compile(r'"(.*)"')
 
     # 5.8 (158-159)
-    OPTIONS = {
+    
+    = {
             'OPT_3D': 0,
             'OPT_RGB565': 0,
             'OPT_MONO': 1,
@@ -194,7 +195,7 @@ class FT81x(object):
 
         # Parse option flags
         opts = 0
-        for option in options.split('|'):
+        for option in options.split('|'): # delete
             opts |= FT81x.OPTIONS[option.strip()]
 
         data = [0xffffff0c, (y << 16) | (x << 0), (opts << 16) | (font << 0)]
@@ -234,6 +235,8 @@ if len(sys.argv) < 2:
 
 command_pattern = re.compile(r'(.+)\((.*)\)')
 
+unimplemented_cmds = 0
+
 with open(sys.argv[1], 'r') as ese_project_file:
     ese_project = json.load(ese_project_file)
 
@@ -252,6 +255,7 @@ with open(sys.argv[1], 'r') as ese_project_file:
             method = getattr(ft81x, name)
         except AttributeError:
             print('UNIMPLEMENTED: %s' % command)
+            unimplemented_cmds += 1
             continue
 
         for i, word in enumerate(method(*args)):
@@ -263,4 +267,7 @@ with open(sys.argv[1], 'r') as ese_project_file:
 # Write display and swap commands.
 print('0x00000000, // DISPLAY()')
 print('0xffffff01, // CMD_DLSWAP()')
+
+if unimplemented_cmds != 0:
+    print(str(unimplemented_cmds) + ' unimplemented commands!')
 
