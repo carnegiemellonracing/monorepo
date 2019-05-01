@@ -101,17 +101,17 @@ void stateVSMUpButton(bool pressed) {
         return;
     }
 
-    cmr_canState_t vsm = stateGetVSM();
-    if (state.vsmReq < vsm) {
+    cmr_canState_t vsmState = stateGetVSM();
+    if (state.vsmReq < vsmState) {
         // Cancel state-down request.
-        state.vsmReq = vsm;
+        state.vsmReq = vsmState;
         return;
     }
 
-    cmr_canState_t vsmReq = (vsm == CMR_CAN_UNKNOWN)
+    cmr_canState_t vsmReq = ((vsmState == CMR_CAN_UNKNOWN) || (vsmState == CMR_CAN_ERROR))
         ? (CMR_CAN_GLV_ON)  // Unknown state; request GLV_ON.
-        : (vsm + 1);        // Increment state.
-    if (!stateVSMReqIsValid(vsm, vsmReq)) {
+        : (vsmState + 1);        // Increment state.
+    if (!stateVSMReqIsValid(vsmState, vsmReq)) {
         return;     // Invalid requested state.
     }
 
@@ -128,15 +128,15 @@ void stateVSMDownButton(bool pressed) {
         return;
     }
 
-    cmr_canState_t vsm = stateGetVSM();
-    if (state.vsmReq > vsm) {
+    cmr_canState_t vsmState = stateGetVSM();
+    if (state.vsmReq > vsmState) {
         // Cancel state-up request.
-        state.vsmReq = vsm;
+        state.vsmReq = vsmState;
         return;
     }
 
-    cmr_canState_t vsmReq = vsm - 1;   // Decrement state.
-    if (!stateVSMReqIsValid(vsm, vsmReq)) {
+    cmr_canState_t vsmReq = vsmState - 1;   // Decrement state.
+    if (!stateVSMReqIsValid(vsmState, vsmReq)) {
         return;     // Invalid requested state.
     }
 
