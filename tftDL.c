@@ -92,12 +92,12 @@ static void tftDL_barSetY(const tftDL_bar_t *bar, int32_t val) {
  */
 void tftDL_RTDUpdate(
     uint32_t speed_mph,
-    int32_t hvVoltage,
+    int32_t hvVoltage_mV,
     int32_t power_kW,
-    int32_t dcdcTemp,
-    int32_t motorTemp,
-    int32_t acTemp,
-    int32_t mcTemp
+    int32_t dcdcTemp_C,
+    int32_t motorTemp_C,
+    int32_t acTemp_C,
+    int32_t mcTemp_C
 ) {
     static struct {
         char buf[3];
@@ -105,25 +105,25 @@ void tftDL_RTDUpdate(
 
     static struct {
         char buf[4];
-    } *const hvVoltage_str = (void *) (tftDL_RTDData + 91);
+    } *const hvVoltage_mV_str = (void *) (tftDL_RTDData + 91);
 
     static struct {
         char buf[3];
-    } *const dcdcTemp_str = (void *) (tftDL_RTDData + 125);
+    } *const dcdcTemp_C_str = (void *) (tftDL_RTDData + 125);
 
     static struct {
         char buf[3];
-    } *const motorTemp_str = (void *) (tftDL_RTDData + 130);
+    } *const motorTemp_C_str = (void *) (tftDL_RTDData + 130);
 
     static struct {
         char buf[3];
-    } *const acTemp_str = (void *) (tftDL_RTDData + 120);
+    } *const acTemp_C_str = (void *) (tftDL_RTDData + 120);
 
     static struct {
         char buf[3];
-    } *const mcTemp_str = (void *) (tftDL_RTDData + 135);
+    } *const mcTemp_C_str = (void *) (tftDL_RTDData + 135);
 
-    static const tftDL_bar_t hvVoltage_bar = {
+    static const tftDL_bar_t hvVoltage_mV_bar = {
         .addr = tftDL_RTDData + 85,
         .topY = 12,
         .botY = 168,
@@ -143,44 +143,46 @@ void tftDL_RTDUpdate(
         .minVal = 0
     };
 
+    /* Voltage Bar */
     snprintf(
-        speed_mph_str->buf, sizeof(speed_mph_str->buf),
-        "%2lu", speed_mph
+            hvVoltage_mV_str->buf, sizeof(hvVoltage_mV_str->buf),
+            "%3ld", hvVoltage_mV / 1000
+    );
+    tftDL_barSetY(&hvVoltage_mV_bar, hvVoltage_mV);
+
+    /* Power Bar */
+    snprintf(
+            power_kW_str->buf, sizeof(power_kW_str->buf),
+            "%2ld", power_kW
     );
 
+    /* Speed */
     snprintf(
-        hvVoltage_str->buf, sizeof(hvVoltage_str->buf),
-        "%3ld", hvVoltage / 1000
+            speed_mph_str->buf, sizeof(speed_mph_str->buf),
+            "%2lu", speed_mph
     );
-
-    snprintf(
-        dcdcTemp_str->buf, sizeof(dcdcTemp_str->buf),
-        "%2ld", dcdcTemp
-    );
-
-    snprintf(
-        motorTemp_str->buf, sizeof(motorTemp_str->buf),
-        "%2ld", motorTemp
-    );
-
-    snprintf(
-        acTemp_str->buf, sizeof(acTemp_str->buf),
-        "%2ld", acTemp
-    );
-
-    snprintf(
-        mcTemp_str->buf, sizeof(mcTemp_str->buf),
-        "%2ld", mcTemp
-    );
-
-    snprintf(
-        power_kW_str->buf, sizeof(power_kW_str->buf),
-        "%2ld", power_kW
-    );
-
-    tftDL_barSetY(&hvVoltage_bar, hvVoltage);
-
     tftDL_barSetY(&power_kW_bar, power_kW);
+
+    /* Temperatures */
+    snprintf(
+        dcdcTemp_C_str->buf, sizeof(dcdcTemp_C_str->buf),
+        "%2ld", dcdcTemp_C
+    );
+
+    snprintf(
+        motorTemp_C_str->buf, sizeof(motorTemp_C_str->buf),
+        "%2ld", motorTemp_C
+    );
+
+    snprintf(
+        acTemp_C_str->buf, sizeof(acTemp_C_str->buf),
+        "%2ld", acTemp_C
+    );
+
+    snprintf(
+        mcTemp_C_str->buf, sizeof(mcTemp_C_str->buf),
+        "%2ld", mcTemp_C
+    );
 }
 
 /**

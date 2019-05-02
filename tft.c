@@ -270,25 +270,27 @@ static void tftUpdate(void *pvParameters) {
 
     tft_t *tft = pvParameters;
 
+    /* Restarting the Display. */
     TickType_t lastWakeTime = xTaskGetTickCount();
     cmr_gpioWrite(GPIO_PD_N, 0);
     vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
     cmr_gpioWrite(GPIO_PD_N, 1);
     vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
 
-    // Initialize the display.
+    /* Initialize the display. */
     tftCmd(tft, TFT_CMD_CLKEXT, 0x00);
     tftCmd(tft, TFT_CMD_ACTIVE, 0x00);
     tftCmd(tft, TFT_CMD_ACTIVE, 0x00);
 
-    // Wait for display to initialize.
+    /* Wait for display to initialize. */
     vTaskDelayUntil(&lastWakeTime, TFT_INIT_MS);
 
+    /* Ensure that Chip ID is read correctly */
     uint32_t chipID;
     tftRead(tft, TFT_ADDR_CHIP_ID, sizeof(chipID), &chipID);
     configASSERT(chipID == TFT_CHIP_ID);
 
-    // Initialize registers.
+    /* Initialize Video Registers. */
     for (size_t i = 0; i < sizeof(tftInits) / sizeof(tftInits[0]); i++) {
         const tftInit_t *init = tftInits + i;
         tftWrite(tft, init->addr, sizeof(init->val), &init->val);
@@ -296,15 +298,18 @@ static void tftUpdate(void *pvParameters) {
 
     tft->inited = true;
 
-    // Enable faster clock rate.
+    /* Enable Faster Clock Rate now that initialization is complete */
     cmr_qspiSetPrescaler(&tft->qspi, TFT_QSPI_PRESCALER);
 
+    /* Display Startup Screen for fixed time */
     tftDLContentLoad(tft, &tftDL_startup);
     tftDLWrite(tft, &tftDL_startup);
     vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
 
+    /* Display RTD Screen */
     tftDLContentLoad(tft, &tftDL_RTD);
 
+    /* Setup the Required CAN info for Display */
     cmr_canRXMeta_t *metaHVCPackVoltage = canRXMeta + CANRX_HVC_PACK_VOLTAGE;
     volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage =
         (void *) metaHVCPackVoltage->payload;
@@ -321,29 +326,49 @@ static void tftUpdate(void *pvParameters) {
     volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps =
         (void *) metaHVCPackTemps->payload;
 
+    cmr_canRXMeta_t *metaCDCMotorTemps = canRXMeta + CANRX_CDC_MOTOR_TEMPS;
+    volatile cmr_canCDCMotorTemps_t *canCDCMotorTemps =
+        (void *) metaCDCMotorTemps->payload;
 
+    /* Update Screen Info from CAN Indefinitely */
     while (
         vTaskDelayUntil(&lastWakeTime, tftUpdate_period_ms), 1
     ) {
-        uint32_t wheelSpeed_drpm = (
-            ((uint32_t) canCDCWheelSpeeds->frontLeft) +
-            ((uint32_t) canCDCWheelSpeeds->frontRight)
-        ) / 2;
+        /* Pack Voltage */
+        int32_t hvVoltage_mV = canHVCPackVoltage->hvVoltage;
 
-        // 0.00535 =
-        //     (1 rpm / 10 drpm) *
-        //     (18" * PI) * (1' / 12") * (60min / 1hr) * (1 mi / 5280')
-        uint32_t speed_mph = (wheelSpeed_drpm * 535) / 100000;
-        int32_t hvVoltage = canHVCPackVoltage->hvVoltage;
+        /* Motor Power Draw*/
         int32_t power_kW =
             (canCDCMotorData->current_dA * canCDCMotorData->voltage_dV) /
             100000;
 
+        /* Wheel Speed */
+            /* Wheel Speed to Vehicle Speed Conversion
+             *      Avg Front Wheel Speed * (1 rpm / 10 drpm) *
+             *      (18" * PI) * (1' / 12") * (60min / 1hr) * (1 mi / 5280')
+             *      = AvgWheelSpeed * 0.00535                                   */
+            uint32_t wheelSpeed_drpm = (
+                ((uint32_t) canCDCWheelSpeeds->frontLeft) +
+                ((uint32_t) canCDCWheelSpeeds->frontRight)
+            ) / 2;
+            uint32_t speed_mph = (wheelSpeed_drpm * 535) / 100000;
+
+        /* Accumulator Temperature */
+        int32_t acTemp_C = (canHVCPackTemps->Pack_Max_Cell_Temp);
+
+        /* DCDC Temperature */
         int32_t num = 0;
 
-        int32_t acTemp = (canHVCPackTemps->Pack_Max_Cell_Temp);
+        /* Motor Controller Temperature */
+        int32_t mcTemp_C = (canCDCMotorTemps->mcMaxInternalTemp_dC) / 10;
 
-        tftDL_RTDUpdate(speed_mph, hvVoltage, power_kW, num, num, acTemp, num);
+        /* Motor Temperature */
+        int32_t motorTemp_C = (canCDCMotorTemps->motorTemp_dC) / 10;
+
+        /* Update Display List*/
+        tftDL_RTDUpdate(speed_mph, hvVoltage_mV, power_kW, num, motorTemp_C, acTemp_C, mcTemp_C);
+
+        /* Write Display List to Screen */
         tftDLWrite(tft, &tftDL_RTD);
 
     }
