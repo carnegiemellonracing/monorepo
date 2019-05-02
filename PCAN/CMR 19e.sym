@@ -252,10 +252,11 @@ Var=CDC_motorVoltage signed 48,16 /u:V /f:0.1
 
 [CDC_MotorTemps]
 ID=512h
-DLC=2
+DLC=4
 CycleTime=1000
 Timeout=10000
 Var=CDC_motorTemp signed 0,16 /u:C /f:0.1
+Var=CDC_mcMaxInternalTemp signed 16,16 /u:C /f:0.1
 
 [CDC_MotorFaults]
 ID=502h
