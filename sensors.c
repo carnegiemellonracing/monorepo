@@ -11,6 +11,12 @@
 #include "adc.h"        // adcChannels_t, adcChannels
 #include <CMR/adc.h>    // ADC_MAX
 
+/** @brief Value of resistor divider for rad thermistors. */
+#define SENSORS_RAD_TEMP_DIV_RES    5600
+
+/** @brief Numerator for rad calc, 3300 for 3.3v supply. */
+#define SENSORS_RAD_TEMP_MULT       SENSORS_RAD_TEMP_DIV_RES * 3300
+
 // Forward declaration of sensor state.
 static cmr_sensor_t sensors[SENSOR_CH_LEN];
 
@@ -221,6 +227,49 @@ static int32_t adcConvSwitchTemp_C(const cmr_sensor_t *s, uint32_t adcVal) {
 }
 
 /**
+ * @brief Conversions from rad thermistor (USP10978) resistance to temperature.
+ *
+ * @warning MUST be sorted in descending order of resistance!
+ */
+static thermistorTempConversion_t radThermTempConvs[] = {{
+    .resistance_Ohm = 32650,
+    .temp_C = 0
+}, {
+    .resistance_Ohm = 19901,
+    .temp_C = 10,
+}, {
+    .resistance_Ohm = 12493,
+    .temp_C = 20
+}, {
+    .resistance_Ohm = 8057,
+    .temp_C = 30
+}, {
+    .resistance_Ohm = 5326,
+    .temp_C = 40
+}, {
+    .resistance_Ohm = 3602,
+    .temp_C = 50
+}, {
+    .resistance_Ohm = 2488,
+    .temp_C = 60
+}, {
+    .resistance_Ohm = 1752,
+    .temp_C = 70
+}, {
+    .resistance_Ohm = 1255,
+    .temp_C = 80
+}, {
+    .resistance_Ohm = 915,
+    .temp_C = 90
+}, {
+    .resistance_Ohm = 678,
+    .temp_C = 100
+}, {
+    .resistance_Ohm = 300,
+    .temp_C = 110
+}};
+
+/**
  * @brief Conversion function for ADC to radiator temperature.
  *
  * @param s The sensor.
@@ -228,9 +277,31 @@ static int32_t adcConvSwitchTemp_C(const cmr_sensor_t *s, uint32_t adcVal) {
  *
  * @return Radiator temperature in degrees C.
  */
-static int32_t adcConvRadTherm(const cmr_sensor_t *s, uint32_t r) {
-    // TODO
-    return adcFractionalConvert(s, r, 1, 1, 0);
+static int32_t adcConvRadTherm(const cmr_sensor_t *s, uint32_t adcVal) {
+    uint32_t thermistorResistance_Ohm =
+        (SENSORS_RAD_TEMP_MULT * 10) / (adcVal * 8) - SENSORS_RAD_TEMP_DIV_RES;
+
+    size_t tableLen = sizeof(radThermTempConvs) / sizeof(radThermTempConvs[0]);
+
+    if (thermistorResistance_Ohm >= radThermTempConvs[0].resistance_Ohm)
+        return radThermTempConvs[0].temp_C;
+
+    for (size_t i = 0; i < tableLen - 1; i++) {
+        if (thermistorResistance_Ohm < radThermTempConvs[i].resistance_Ohm) {
+            uint32_t aboveRes = radThermTempConvs[i].resistance_Ohm - thermistorResistance_Ohm;
+            uint32_t diffRes = radThermTempConvs[i].resistance_Ohm - radThermTempConvs[i+1].resistance_Ohm;
+
+            uint32_t pcntOffsetRes = aboveRes * 1024 / diffRes;
+
+            uint32_t diffTemp = radThermTempConvs[i+1].temp_C - radThermTempConvs[i].temp_C;
+
+            uint32_t offsetTemp = pcntOffsetRes * diffTemp / 1024;
+
+            return radThermTempConvs[i].temp_C + offsetTemp;
+        }
+    }
+
+    return radThermTempConvs[tableLen - 1].temp_C;
 }
 
 /**
