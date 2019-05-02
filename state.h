@@ -24,5 +24,9 @@ void stateVSMDownButton(bool pressed);
 void stateGearButton(bool pressed);
 void stateGearUpdate(void);
 
+bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq);
+
+void updateReq(void);
+
 #endif /* STATE_H */
 

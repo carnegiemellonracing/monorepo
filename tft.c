@@ -354,7 +354,7 @@ static void tftUpdate(void *pvParameters) {
             uint32_t speed_mph = (wheelSpeed_drpm * 535) / 100000;
 
         /* Accumulator Temperature */
-        int32_t acTemp_C = (canHVCPackTemps->Pack_Max_Cell_Temp);
+        int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC)/10;
 
         /* DCDC Temperature */
         int32_t num = 0;

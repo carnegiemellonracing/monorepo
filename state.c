@@ -66,7 +66,7 @@ cmr_canGear_t stateGetGearReq(void) {
  * @param vsm The current VSM state.
  * @param vsmReq The requested VSM state.
  */
-static bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
+bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
     switch (vsm) {
         case CMR_CAN_UNKNOWN:
             return (vsmReq == CMR_CAN_GLV_ON);
@@ -168,6 +168,15 @@ void stateGearButton(bool pressed) {
     }
 
     state.gearReq = gearReq;
+}
+
+/**
+ * @brief Updates state request to be consistent with VSM state.
+ *
+ * @param none.
+ */
+void updateReq(void) {
+    state.vsmReq = stateGetVSM();
 }
 
 /**

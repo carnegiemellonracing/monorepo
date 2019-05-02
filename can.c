@@ -46,7 +46,7 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 25
     },
     [CANRX_HVC_PACK_TEMPS] = {
-        .canID = CMR_CANID_HVC_PACK_MINMAX_CELL_TEMPS,
+        .canID = CMR_CANID_HVC_MINMAX_CELL_TEMPS,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
@@ -101,6 +101,9 @@ static void canTX10Hz(void *pvParameters) {
         cmr_canState_t stateVSMReq = stateGetVSMReq();
         cmr_canGear_t gear = stateGetGear();
         cmr_canGear_t gearReq = stateGetGearReq();
+
+        /* if DIM is requesting a state/gear change
+         * send this request to VSM */
         if (
             (stateVSM != stateVSMReq) ||
             (gear != gearReq)
@@ -203,7 +206,7 @@ void canInit(void) {
             .rxFIFO= CAN_RX_FIFO1,
             .ids = {
                 CMR_CANID_AFC1_DRIVER_TEMPS,
-                CMR_CANID_HVC_PACK_MINMAX_CELL_TEMPS,
+                CMR_CANID_HVC_MINMAX_CELL_TEMPS,
                 CMR_CANID_VSM_STATUS,
                 CMR_CANID_VSM_STATUS
             }

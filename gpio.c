@@ -142,6 +142,11 @@ static void buttonsInput_task(void *pvParameters) {
         volatile int value = cmr_gpioRead(GPIO_BUTTON_0);
         (void) value;
 
+        if(!stateVSMReqIsValid(stateGetVSM(), stateGetVSMReq()))
+        {
+            updateReq();
+        }
+
         buttonEvent_t event;
         while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
             switch (event.pin) {
