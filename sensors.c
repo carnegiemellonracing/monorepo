@@ -287,7 +287,8 @@ static int32_t adcConvRadTherm(const cmr_sensor_t *s, uint32_t adcVal) {
         return radThermTempConvs[0].temp_C;
 
     for (size_t i = 0; i < tableLen - 1; i++) {
-        if (thermistorResistance_Ohm < radThermTempConvs[i].resistance_Ohm) {
+        if (thermistorResistance_Ohm <  radThermTempConvs[i].resistance_Ohm &&
+            thermistorResistance_Ohm >= radThermTempConvs[i+1].resistance_Ohm) {
             uint32_t aboveRes = radThermTempConvs[i].resistance_Ohm - thermistorResistance_Ohm;
             uint32_t diffRes = radThermTempConvs[i].resistance_Ohm - radThermTempConvs[i+1].resistance_Ohm;
 
