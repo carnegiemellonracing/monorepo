@@ -149,6 +149,35 @@ Var=VSM_ERR_latchAMS bit 26,1
 Var=VSM_ERR_latchIMD bit 25,1
 Var=VSM_ERR_latchBSPD bit 24,1
 
+[VSM_LatchedStatus]
+ID=510h
+DLC=3
+CycleTime=10000
+Timeout=20000
+// Timeout matrix
+Var=VSM_latched_ERR_HVCTimeout bit 7,1
+Var=VSM_latched_ERR_CDCTimeout bit 6,1
+Var=VSM_latched_ERR_FSMTimeout bit 5,1
+Var=VSM_latched_ERR_PTCTimeout bit 4,1
+Var=VSM_latched_ERR_DIMTimeout bit 3,1
+Var=VSM_latched_ERR_AFC0Timeout bit 2,1
+Var=VSM_latched_ERR_AFC1Timeout bit 1,1
+Var=VSM_latched_ERR_APCTimeout bit 0,1
+// Bad state matrix
+Var=VSM_latched_ERR_HVCState bit 15,1
+Var=VSM_latched_ERR_CDCState bit 14,1
+Var=VSM_latched_ERR_FSMState bit 13,1
+Var=VSM_latched_ERR_PTCState bit 12,1
+Var=VSM_latched_ERR_DIMState bit 11,1
+Var=VSM_latched_ERR_AFC0State bit 10,1
+Var=VSM_latched_ERR_AFC1State bit 9,1
+Var=VSM_latched_ERR_APCState bit 8,1
+// Latched error matrix
+Var=VSM_latched_ERR_latchSoftware bit 18,1
+Var=VSM_latched_ERR_latchAMS bit 18,1
+Var=VSM_latched_ERR_latchIMD bit 17,1
+Var=VSM_latched_ERR_latchBSPD bit 16,1
+
 [VSM_PowerDiagnostic]
 ID=530h
 DLC=4
