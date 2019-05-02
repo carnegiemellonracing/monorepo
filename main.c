@@ -208,15 +208,15 @@ static void brakeDisconnect(void *pvParameters) {
 
     while (1) {
         switch (VSM_status->internalState) {
-        	case CMR_CAN_VSM_STATE_DCDC_EN:
-        	case CMR_CAN_VSM_STATE_HV_EN:
-        	case CMR_CAN_VSM_STATE_RTD:
+            case CMR_CAN_VSM_STATE_DCDC_EN:
+            case CMR_CAN_VSM_STATE_HV_EN:
+            case CMR_CAN_VSM_STATE_RTD:
                 if (!enable) {
                     enable = true;
                     enableTime = lastWakeTime;
                 }
-        		break;
-        	// dcdc relay should stay open with respect to any other observed VSM states
+                break;
+            // dcdc relay should stay open with respect to any other observed VSM states
             default:
                 enable = false;
                 break;
