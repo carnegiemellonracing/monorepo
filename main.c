@@ -117,7 +117,7 @@ int main(void) {
     gpioInit();
     canInit();
     adcInit();
-    //tftInit();
+    tftInit();
     segmentsInit();
 
     cmr_taskInit(

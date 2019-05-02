@@ -198,7 +198,7 @@ void canInit(void) {
             .rxFIFO= CAN_RX_FIFO1,
             .ids = {
                 CMR_CANID_AFC1_DRIVER_TEMPS,
-                CMR_CANID_RMS_TEMPC,
+                CMR_CANID_HVC_PACK_MINMAX_CELL_TEMPS,
                 CMR_CANID_VSM_STATUS,
                 CMR_CANID_VSM_STATUS
             }

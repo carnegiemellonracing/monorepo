@@ -173,12 +173,13 @@ void tftDL_RTDUpdate(
         "%2ld", mcTemp
     );
 
-    tftDL_barSetY(&hvVoltage_bar, hvVoltage);
-
     snprintf(
         power_kW_str->buf, sizeof(power_kW_str->buf),
         "%2ld", power_kW
     );
+
+    tftDL_barSetY(&hvVoltage_bar, hvVoltage);
+
     tftDL_barSetY(&power_kW_bar, power_kW);
 }
 
