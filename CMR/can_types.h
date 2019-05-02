@@ -400,7 +400,8 @@ typedef struct {
 
 /** @brief Central Dynamics Controller motor temperatures. */
 typedef struct {
-    int16_t motorTemp_dC;    /**< @brief Motor temperature (deci-Celsius). */
+    int16_t motorTemp_dC;           /**< @brief Motor temperature (deci-Celsius). */
+    int16_t mcMaxInternalTemp_dC;   /**< @brief Max measured internal MC temperature (deci-Celsius). */
 } cmr_canCDCMotorTemps_t;
 
 /** @brief Central Dynamics Controller motor faults. */
