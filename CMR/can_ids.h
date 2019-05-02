@@ -38,8 +38,9 @@ typedef enum {
     CMR_CANID_CDC_MOTOR_DATA = 0x152,           /**< @brief CDC motor data. */
     CMR_CANID_CDC_MOTOR_FAULTS = 0x502,         /**< @brief CDC motor faults. */
 
-    CMR_CANID_HVC_COMMAND = 0x130,              /**< @brief HVC command, sent by VSM. */
-    CMR_CANID_HVC_PACK_VOLTAGE = 0x301,         /**< @brief HVC pack voltage. */
+    CMR_CANID_HVC_COMMAND = 0x130,                      /**< @brief HVC command, sent by VSM. */
+    CMR_CANID_HVC_PACK_VOLTAGE = 0x301,                 /**< @brief HVC pack voltage. */
+    CMR_CANID_HVC_PACK_MINMAX_CELL_TEMPS = 0x311,       /**< @brief HVC pack temps. */
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
     CMR_CANID_FSM_PEDALS_ADC = 0x533,           /**< @brief FSM raw pedal positions. */

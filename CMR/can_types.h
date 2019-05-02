@@ -342,6 +342,16 @@ typedef struct {
     int32_t hvVoltage;      /**< @brief voltage outside accumulator. */
 } cmr_canHVCPackVoltage_t;
 
+/** @brief High Voltage Controller Pack Minimum/Maximum Cell Temperatures. */
+typedef struct {
+    uint16_t Pack_Min_Cell_Temp;    /**< @brief Min Cell Temp */
+    uint16_t Pack_Max_Cell_Temp;    /**< @brief Max Cell Temp */
+    uint8_t Min_Cell_Temp_BMB;      /**< @brief Min Cell Temp BMB */
+    uint8_t Min_Cell_Temp_Index;    /**< @brief Min Cell Temp Index */
+    uint8_t Max_Cell_Temp_BMB;      /**< @brief Max Cell Temp BMB */
+    uint8_t Max_Cell_Temp_Index;    /**< @brief Max Cell Temp Index */
+} cmr_canHVCPackMinMaxCellTemps_t;
+
 // ------------------------------------------------------------------------------------------------
 // Accumulator Fan Controller
 
