@@ -180,11 +180,7 @@ void cmr_rccSPIClockEnable(SPI_TypeDef *instance) {
  * @param instance The HAL QUADSPI instance.
  */
 void cmr_rccQSPIClockEnable(QUADSPI_TypeDef *instance) {
-    switch ((uintptr_t) instance) {
-        case QUADSPI_BASE:
-            __HAL_RCC_QSPI_CLK_ENABLE();
-            break;
-    }
+    __HAL_RCC_QSPI_CLK_ENABLE();
 }
 #endif /* HAL_QSPI_MODULE_ENABLED */
 

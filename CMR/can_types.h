@@ -210,6 +210,22 @@ typedef struct {
     uint8_t latchMatrix;
 } cmr_canVSMStatus_t;
 
+/** @brief Vehicle Safety Module latched error status. */
+typedef struct {
+    /**
+     * @brief Matrix of modules for which at least one message exceeded its error timeout.
+     * Bits defined by cmr_canVSMErrorSource_t.
+     */
+    uint8_t moduleTimeoutMatrix;
+    /**
+     * @brief Matrix of modules that are in the wrong state.
+     * Bits defined by cmr_canVSMErrorSource_t.
+     */
+    uint8_t badStateMatrix;
+    /** @brief Matrix of active error latches. Bits defined by cmr_canVSMLatch_t. */
+    uint8_t latchMatrix;
+} cmr_canVSMLatchedStatus_t;
+
 /** @brief Vehicle Safety Module power diagnostics. */
 typedef struct {
     uint16_t busVoltage_mV;     /**< @brief Low-voltage bus voltage (mV). */
@@ -381,6 +397,12 @@ typedef struct {
     int16_t current_dA;     /**< @brief DC bus current (deci-Amps). */
     int16_t voltage_dV;     /**< @brief DC bus voltage (deci-Volts). */
 } cmr_canCDCMotorData_t;
+
+/** @brief Central Dynamics Controller motor temperatures. */
+typedef struct {
+    int16_t motorTemp_dC;           /**< @brief Motor temperature (deci-Celsius). */
+    int16_t mcMaxInternalTemp_dC;   /**< @brief Max measured internal MC temperature (deci-Celsius). */
+} cmr_canCDCMotorTemps_t;
 
 /** @brief Central Dynamics Controller motor faults. */
 typedef struct {
