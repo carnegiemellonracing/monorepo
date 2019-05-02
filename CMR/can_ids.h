@@ -37,6 +37,7 @@ typedef enum {
     CMR_CANID_CDC_SOLENOID_PTC = 0x142,         /**< @brief CDC brake solenoid command. */
     CMR_CANID_CDC_MOTOR_DATA = 0x152,           /**< @brief CDC motor data. */
     CMR_CANID_CDC_MOTOR_FAULTS = 0x502,         /**< @brief CDC motor faults. */
+    CMR_CANID_CDC_MOTOR_TEMPS = 0x512,          /**< @brief CDC motor temperatures. */
 
     CMR_CANID_HVC_COMMAND = 0x130,                      /**< @brief HVC command, sent by VSM. */
     CMR_CANID_HVC_PACK_VOLTAGE = 0x301,                 /**< @brief HVC pack voltage. */

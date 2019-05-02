@@ -245,10 +245,17 @@ ID=152h
 DLC=8
 CycleTime=10
 Timeout=100
-Var=CDC_motorTorque signed 0,16 /u:Nm /f:-0.1
+Var=CDC_motorTorque signed 0,16 /u:Nm /f:0.1
 Var=CDC_motorSpeed signed 16,16 /u:RPM /f:-1
 Var=CDC_motorCurrent signed 32,16 /u:A /f:0.1
 Var=CDC_motorVoltage signed 48,16 /u:V /f:0.1
+
+[CDC_MotorTemps]
+ID=512h
+DLC=2
+CycleTime=1000
+Timeout=10000
+Var=CDC_motorTemp signed 0,16 /u:C /f:0.1
 
 [CDC_MotorFaults]
 ID=502h

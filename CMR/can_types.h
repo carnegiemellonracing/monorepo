@@ -398,6 +398,11 @@ typedef struct {
     int16_t voltage_dV;     /**< @brief DC bus voltage (deci-Volts). */
 } cmr_canCDCMotorData_t;
 
+/** @brief Central Dynamics Controller motor temperatures. */
+typedef struct {
+    int16_t motorTemp_dC;    /**< @brief Motor temperature (deci-Celsius). */
+} cmr_canCDCMotorTemps_t;
+
 /** @brief Central Dynamics Controller motor faults. */
 typedef struct {
     uint32_t post;  /**< @brief Power-on-self-test faults. */
