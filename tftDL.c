@@ -128,7 +128,7 @@ void tftDL_RTDUpdate(
         .topY = 12,
         .botY = 168,
         .maxVal = 400000,
-        .minVal = 270000
+        .minVal = 300000
     };
 
     static struct {
