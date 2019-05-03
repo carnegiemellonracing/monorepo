@@ -19,6 +19,7 @@ struct tftDL {
     const tftContent_t **content;   /**< @brief Associated content. */
 };
 
+/* Startup Screen */
 static uint32_t tftDL_startupData[] = {
 #include "ESE/startup.rawh"
 };
@@ -36,6 +37,25 @@ const tftDL_t tftDL_startup = {
     .content = tftDL_startupContent
 };
 
+/* GLV Screen */
+static uint32_t tftDL_errorData[] = {
+#include "ESE/error.rawh"
+};
+
+static const tftContent_t *tftDL_errorContent[] = {
+    &tftContent_RobotoMono_Bold_72_L4,
+    &tftContent_RobotoMono_Bold_40_L4,
+};
+
+const tftDL_t tftDL_error = {
+    .len = sizeof(tftDL_errorData),
+    .data = tftDL_errorData,
+
+    .contentLen = sizeof(tftDL_errorContent) / sizeof(tftDL_errorContent[0]),
+    .content = tftDL_errorContent
+};
+
+/* RTD Screen */
 static uint32_t tftDL_RTDData[] = {
 #include "ESE/RTD.rawh"
 };
@@ -183,6 +203,93 @@ void tftDL_RTDUpdate(
         mcTemp_C_str->buf, sizeof(mcTemp_C_str->buf),
         "%2ld", mcTemp_C
     );
+}
+
+static void tftDL_setColor(uint32_t *addr, uint32_t val) {
+    *addr = val;
+}
+
+/**
+ * @brief Updates the ready-to-drive screen.
+ *
+ * @param speed_mph Current speed (miles per hour).
+ * @param hvVoltage High-voltage bus voltage (Volts).
+ * @param power_kW Power (kiloWatts).
+ */
+void tftDL_errorUpdate(
+    tft_errors_t *err
+) {
+    uint32_t color_err = 0x04ff0a0a;
+    uint32_t color_none = 0x04303030;
+
+    uint32_t *fsm_color = (void *) (tftDL_errorData + 36);
+    uint32_t fsm_color_cmd  = (err->fsmTimeout) ? color_err : color_none;
+
+    uint32_t *cdc_color = (void *) (tftDL_errorData + 53);
+    uint32_t cdc_color_cmd  = (err->cdcTimeout) ? color_err : color_none;
+
+    uint32_t *ptc_color = (void *) (tftDL_errorData + 70);
+    uint32_t ptc_color_cmd  = (err->ptcTimeout) ? color_err : color_none;
+
+    uint32_t *vsm_color = (void *) (tftDL_errorData + 87);
+    uint32_t vsm_color_cmd  = (err->vsmTimeout) ? color_err : color_none;
+
+    uint32_t *afc1_color = (void *) (tftDL_errorData + 104);
+    uint32_t afc1_color_cmd  = (err->afc1Timeout) ? color_err : color_none;
+
+    uint32_t *afc2_color = (void *) (tftDL_errorData + 122);
+    uint32_t afc2_color_cmd  = (err->afc2Timeout) ? color_err : color_none;
+
+    uint32_t *overVolt_color = (void *) (tftDL_errorData + 169);
+    uint32_t overVolt_color_cmd  = (err->overVolt) ? color_err : color_none;
+
+    uint32_t *underVolt_color = (void *) (tftDL_errorData + 187);
+    uint32_t underVolt_color_cmd  = (err->underVolt) ? color_err : color_none;
+
+    uint32_t *hvcoverTemp_color = (void *) (tftDL_errorData + 206);
+    uint32_t hvcoverTemp_color_cmd  = (err->hvcoverTemp) ? color_err : color_none;
+
+    uint32_t *hvcError_color = (void *) (tftDL_errorData + 221);
+    uint32_t hvcError_color_cmd  = (err->hvc_Error) ? color_err : color_none;
+
+    uint32_t *overSpeed_color = (void *) (tftDL_errorData + 257);
+    uint32_t overSpeed_color_cmd  = (err->overSpeed) ? color_err : color_none;
+
+    uint32_t *mcoverTemp_color = (void *) (tftDL_errorData + 272);
+    uint32_t mcoverTemp_color_cmd  = (err->mcoverTemp) ? color_err : color_none;
+
+    uint32_t *overCurrent_color = (void *) (tftDL_errorData + 286);
+    uint32_t overCurrent_color_cmd  = (err->overCurrent) ? color_err : color_none;
+
+    uint32_t *mcError_color = (void *) (tftDL_errorData + 303);
+    uint32_t mcError_color_cmd  = (err->mcError) ? color_err : color_none;
+
+    uint32_t *imdError_color = (void *) (tftDL_errorData + 316);
+    uint32_t imdError_color_cmd  = (err->imdError) ? color_err : color_none;
+
+    uint32_t *amsError_color = (void *) (tftDL_errorData + 325);
+    uint32_t amsError_color_cmd  = (err->amsError) ? color_err : color_none;
+
+    uint32_t *bspdError_color = (void *) (tftDL_errorData + 334);
+    uint32_t bspdError_color_cmd  = (err->bspdError) ? color_err : color_none;
+
+    tftDL_setColor(fsm_color, fsm_color_cmd);
+    tftDL_setColor(cdc_color, cdc_color_cmd);
+    tftDL_setColor(ptc_color, ptc_color_cmd);
+    tftDL_setColor(vsm_color, vsm_color_cmd);
+    tftDL_setColor(afc1_color, afc1_color_cmd);
+    tftDL_setColor(afc2_color, afc2_color_cmd);
+    tftDL_setColor(overVolt_color, overVolt_color_cmd);
+    tftDL_setColor(underVolt_color, underVolt_color_cmd);
+    tftDL_setColor(hvcoverTemp_color, hvcoverTemp_color_cmd);
+    tftDL_setColor(hvcError_color, hvcError_color_cmd);
+    tftDL_setColor(overSpeed_color, overSpeed_color_cmd);
+    tftDL_setColor(mcoverTemp_color, mcoverTemp_color_cmd);
+    tftDL_setColor(overCurrent_color, overCurrent_color_cmd);
+    tftDL_setColor(mcError_color, mcError_color_cmd);
+    tftDL_setColor(imdError_color, imdError_color_cmd);
+    tftDL_setColor(amsError_color, amsError_color_cmd);
+    tftDL_setColor(bspdError_color, bspdError_color_cmd);
 }
 
 /**

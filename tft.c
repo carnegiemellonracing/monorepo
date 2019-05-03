@@ -7,12 +7,15 @@
 
 #include <CMR/tasks.h>  // Task interface
 
+#include <stdbool.h>     // bool
+
 #include "tft.h"            // Interface to implement
 #include "tftPrivate.h"     // Private interface
 #include "tftContent.h"     // Content interface
 #include "tftDL.h"          // Display list interface
 #include "gpio.h"           // Board-specific GPIO interface
 #include "can.h"            // Board-specific CAN interface
+#include "state.h"          // State interface
 
 /** @brief Expected chip ID. */
 #define TFT_CHIP_ID 0x00011208
@@ -37,6 +40,12 @@
 
 /** @brief Dummy cycles for reading data from the display. */
 #define TFT_READ_DUMMY_CYCLES 8
+
+/** @brief The display. */
+static tft_t tft;
+
+static void drawErrorScreen(void);
+static void drawRTDScreen(void);
 
 /**
  * @brief Sends a command to the display.
@@ -306,9 +315,82 @@ static void tftUpdate(void *pvParameters) {
     tftDLWrite(tft, &tftDL_startup);
     vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
 
-    /* Display RTD Screen */
-    tftDLContentLoad(tft, &tftDL_RTD);
+    /* Update Screen Info from CAN Indefinitely */
+    while (
+        vTaskDelayUntil(&lastWakeTime, tftUpdate_period_ms), 1
+    ) {
+        if(stateGetVSM() == CMR_CAN_ERROR){
+            drawErrorScreen();
+        } else {
+            drawRTDScreen();
+        }
+    }
+}
 
+/**
+ * @brief Draws the Display Updated List to the Screen
+ *
+ * @param none
+ *
+ * @return none
+ */
+static void drawErrorScreen(void) {
+    cmr_canRXMeta_t *metaVSMStatus = canRXMeta + CANRX_VSM_STATUS;
+    volatile cmr_canVSMStatus_t *canVSMStatus =
+        (void *) metaVSMStatus->payload;
+
+    cmr_canRXMeta_t *metaHVCHeartbeat = canRXMeta + CANRX_HVC_HEARTBEAT;
+    volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat =
+        (void *) metaHVCHeartbeat->payload;
+
+    cmr_canRXMeta_t *metaCDCMotorFaults = canRXMeta + CANRX_CDC_MOTOR_FAULTS;
+    volatile cmr_canCDCMotorFaults_t *canCDCMotorFaults =
+        (void *) metaCDCMotorFaults->payload;
+
+    tftDLContentLoad(&tft, &tftDL_error);
+
+    tft_errors_t err;
+
+    /* Timeouts */
+    err.fsmTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_FSM);
+    err.cdcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_CDC);
+    err.ptcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_PTC);
+    err.vsmTimeout = 0;
+    err.afc1Timeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_AFC0);
+    err.afc2Timeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_AFC1);
+
+    /* Latched Errors */
+    err.imdError = (canVSMStatus->latchMatrix & CMR_CAN_VSM_LATCH_IMD);
+    err.amsError = (canVSMStatus->latchMatrix & CMR_CAN_VSM_LATCH_AMS);
+    err.bspdError = (canVSMStatus->latchMatrix & CMR_CAN_VSM_LATCH_BSPD);
+
+    /* HVC Errors */
+    err.overVolt = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERVOLT);
+    err.underVolt = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_UNDERVOLT);
+    err.hvcoverTemp = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERTEMP);
+    err.hvc_Error = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_FAULT);
+
+    /* CDC Motor Faults */
+    err.overSpeed = (canCDCMotorFaults->run & 1);
+    err.mcoverTemp = (canCDCMotorFaults->run & (0x7f << 17));
+    err.overCurrent = (canCDCMotorFaults->run & 2);
+    err.mcError = (canCDCMotorFaults->run);
+
+    /* Update Display List*/
+    tftDL_errorUpdate(&err);
+
+    /* Write Display List to Screen */
+    tftDLWrite(&tft, &tftDL_error);
+}
+
+/**
+ * @brief Draws the Display Updated List to the Screen
+ *
+ * @param none
+ *
+ * @return none
+ */
+static void drawRTDScreen(void) {
     /* Setup the Required CAN info for Display */
     cmr_canRXMeta_t *metaHVCPackVoltage = canRXMeta + CANRX_HVC_PACK_VOLTAGE;
     volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage =
@@ -334,51 +416,44 @@ static void tftUpdate(void *pvParameters) {
     volatile cmr_canPTCCoolingStatus_t *canPTCCoolingStatus =
         (void *) metaPTCCoolingStatus->payload;
 
-    /* Update Screen Info from CAN Indefinitely */
-    while (
-        vTaskDelayUntil(&lastWakeTime, tftUpdate_period_ms), 1
-    ) {
-        /* Pack Voltage */
-        int32_t hvVoltage_mV = canHVCPackVoltage->hvVoltage;
+    tftDLContentLoad(&tft, &tftDL_RTD);
 
-        /* Motor Power Draw*/
-        int32_t power_kW =
-            (canCDCMotorData->current_dA * canCDCMotorData->voltage_dV) /
-            100000;
+    /* Pack Voltage */
+    int32_t hvVoltage_mV = canHVCPackVoltage->hvVoltage;
 
-        /* Wheel Speed */
-            /* Wheel Speed to Vehicle Speed Conversion
-             *      Avg Front Wheel Speed * (1 rpm / 10 drpm) *
-             *      (18" * PI) * (1' / 12") * (60min / 1hr) * (1 mi / 5280')
-             *      = AvgWheelSpeed * 0.00535                                   */
-            uint32_t wheelSpeed_drpm = (
-                ((uint32_t) canCDCWheelSpeeds->frontLeft) +
-                ((uint32_t) canCDCWheelSpeeds->frontRight)
-            ) / 2;
-            uint32_t speed_mph = (wheelSpeed_drpm * 535) / 100000;
+    /* Motor Power Draw*/
+    int32_t power_kW =
+        (canCDCMotorData->current_dA * canCDCMotorData->voltage_dV) /
+        100000;
 
-        /* Accumulator Temperature */
-        int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC)/10;
+    /* Wheel Speed */
+        /* Wheel Speed to Vehicle Speed Conversion
+         *      Avg Front Wheel Speed * (1 rpm / 10 drpm) *
+         *      (18" * PI) * (1' / 12") * (60min / 1hr) * (1 mi / 5280')
+         *      = AvgWheelSpeed * 0.00535                                   */
+        uint32_t wheelSpeed_drpm = (
+            ((uint32_t) canCDCWheelSpeeds->frontLeft) +
+            ((uint32_t) canCDCWheelSpeeds->frontRight)
+        ) / 2;
+        uint32_t speed_mph = (wheelSpeed_drpm * 535) / 100000;
 
-        /* DCDC Temperature */
-        int32_t num = 0;
+    /* Accumulator Temperature */
+    int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC)/10;
 
-        /* Motor Controller Temperature */
-        int32_t mcTemp_C = (canPTCCoolingStatus->preRadiatorTemp_C);
-        /* Motor Temperature */
-        int32_t motorTemp_C = (canCDCMotorTemps->motorTemp_dC) / 10;
+    /* DCDC Temperature */
+    int32_t num = 0;
 
-        /* Update Display List*/
-        tftDL_RTDUpdate(speed_mph, hvVoltage_mV, power_kW, num, motorTemp_C, acTemp_C, mcTemp_C);
+    /* Motor Controller Temperature */
+    int32_t mcTemp_C = (canPTCCoolingStatus->preRadiatorTemp_C);
+    /* Motor Temperature */
+    int32_t motorTemp_C = (canCDCMotorTemps->motorTemp_dC) / 10;
 
-        /* Write Display List to Screen */
-        tftDLWrite(tft, &tftDL_RTD);
+    /* Update Display List*/
+    tftDL_RTDUpdate(speed_mph, hvVoltage_mV, power_kW, num, motorTemp_C, acTemp_C, mcTemp_C);
 
-    }
+    /* Write Display List to Screen */
+    tftDLWrite(&tft, &tftDL_RTD);
 }
-
-/** @brief The display. */
-static tft_t tft;
 
 /**
  * @brief Initializes the display.

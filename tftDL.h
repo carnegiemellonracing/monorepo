@@ -12,6 +12,7 @@
 #include <stdint.h>     // uint32_t
 
 #include "tftPrivate.h"     // Private interface
+#include "tft.h"            // tft interface
 
 /** @brief Represents a display list. */
 typedef struct tftDL tftDL_t;
@@ -19,6 +20,8 @@ typedef struct tftDL tftDL_t;
 extern const tftDL_t tftDL_startup;
 
 extern const tftDL_t tftDL_RTD;
+
+extern const tftDL_t tftDL_error;
 
 void tftDL_RTDUpdate(
     uint32_t speed_mph,
@@ -28,6 +31,10 @@ void tftDL_RTDUpdate(
     int32_t motorTemp,
     int32_t acTemp,
     int32_t mcTemp
+);
+
+void tftDL_errorUpdate(
+    tft_errors_t *err
 );
 
 void tftDLContentLoad(tft_t *tft, const tftDL_t *tftDL);

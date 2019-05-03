@@ -64,6 +64,16 @@ cmr_canRXMeta_t canRXMeta[] = {
         .canID = CMR_CANID_PTC_COOLING_STATUS,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
+    },
+    [CANRX_HVC_HEARTBEAT] = {
+        .canID = CMR_CANID_HEARTBEAT_HVC,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_CDC_MOTOR_FAULTS] = {
+        .canID = CMR_CANID_CDC_MOTOR_FAULTS,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
     }
 };
 
@@ -222,8 +232,8 @@ void canInit(void) {
             .ids = {
                 CMR_CANID_CDC_MOTOR_TEMPS,
                 CMR_CANID_PTC_COOLING_STATUS,
-                CMR_CANID_PTC_COOLING_STATUS,
-                CMR_CANID_PTC_COOLING_STATUS
+                CMR_CANID_HEARTBEAT_HVC,
+                CMR_CANID_CDC_MOTOR_FAULTS
             }
         }
     };
