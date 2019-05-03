@@ -142,6 +142,8 @@ static void buttonsInput_task(void *pvParameters) {
         volatile int value = cmr_gpioRead(GPIO_BUTTON_0);
         (void) value;
 
+        /* if vsm has changed state unexpectedly we
+         * need to adjust out req to still be valid */
         if(!stateVSMReqIsValid(stateGetVSM(), stateGetVSMReq()))
         {
             updateReq();

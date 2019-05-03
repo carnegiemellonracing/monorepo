@@ -59,6 +59,11 @@ cmr_canRXMeta_t canRXMeta[] = {
         .canID = CMR_CANID_CDC_MOTOR_TEMPS,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
+    },
+    [CANRX_PTC_COOLING_STATUS] = {
+        .canID = CMR_CANID_PTC_COOLING_STATUS,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
     }
 };
 
@@ -216,9 +221,9 @@ void canInit(void) {
             .rxFIFO= CAN_RX_FIFO1,
             .ids = {
                 CMR_CANID_CDC_MOTOR_TEMPS,
-                CMR_CANID_CDC_MOTOR_TEMPS,
-                CMR_CANID_CDC_MOTOR_TEMPS,
-                CMR_CANID_CDC_MOTOR_TEMPS
+                CMR_CANID_PTC_COOLING_STATUS,
+                CMR_CANID_PTC_COOLING_STATUS,
+                CMR_CANID_PTC_COOLING_STATUS
             }
         }
     };

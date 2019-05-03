@@ -330,6 +330,10 @@ static void tftUpdate(void *pvParameters) {
     volatile cmr_canCDCMotorTemps_t *canCDCMotorTemps =
         (void *) metaCDCMotorTemps->payload;
 
+    cmr_canRXMeta_t *metaPTCCoolingStatus = canRXMeta + CANRX_PTC_COOLING_STATUS;
+    volatile cmr_canPTCCoolingStatus_t *canPTCCoolingStatus =
+        (void *) metaPTCCoolingStatus->payload;
+
     /* Update Screen Info from CAN Indefinitely */
     while (
         vTaskDelayUntil(&lastWakeTime, tftUpdate_period_ms), 1
@@ -360,8 +364,7 @@ static void tftUpdate(void *pvParameters) {
         int32_t num = 0;
 
         /* Motor Controller Temperature */
-        int32_t mcTemp_C = (canCDCMotorTemps->mcMaxInternalTemp_dC) / 10;
-
+        int32_t mcTemp_C = (canPTCCoolingStatus->preRadiatorTemp_C);
         /* Motor Temperature */
         int32_t motorTemp_C = (canCDCMotorTemps->motorTemp_dC) / 10;
 
