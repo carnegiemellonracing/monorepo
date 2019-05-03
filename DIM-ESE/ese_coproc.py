@@ -100,6 +100,15 @@ class FT81x(object):
         data = (0x26 << 24) | (color << 2) | (stencil << 1) | (tag << 0)
         return [data]
 
+    # 4.23 (121)
+    def CLEAR_COLOR_RGB(self, red, green, blue):
+        red = int(red)
+        green = int(green)
+        blue = int(blue)
+
+        data = (0x02 << 24) | (red << 16) | (blue << 8) | green
+        return [data]
+
     # 4.27 (125)
     def COLOR_MASK(self, r, g, b, a):
         r = int(r)
@@ -129,7 +138,6 @@ class FT81x(object):
     # 4.35 (132)
     def PALETTE_SOURCE(self, addr):
         addr = int(addr)
-
         data = (0x2A << 24) | (addr << 0)
         return [data]
 
@@ -157,11 +165,19 @@ class FT81x(object):
     #
     # Coprocessor commands (chapter 5).
     #
+    
+    def get_options(self, options):
+        # Parse option flags
+        opts = 0
+        for option in options.split('|'):
+            opts |= FT81x.OPTIONS[option.strip()]
+        return opts
 
     string_pattern = re.compile(r'"(.*)"')
 
     # 5.8 (158-159)
-    OPTIONS = {
+    
+    OPTIONS  = {
             'OPT_3D': 0,
             'OPT_RGB565': 0,
             'OPT_MONO': 1,
@@ -184,6 +200,57 @@ class FT81x(object):
             'OPT_SOUND': 32
             }
 
+    # 5.19 (169)
+    def CMD_LOADIMAGE(self, ptr, options):
+        ptr = int(ptr)
+        options = int(options)
+        opts = get_options(options)
+
+        return [0xffffff24, ptr, opts]
+        
+    # 5.30 (183)
+    def CMD_FGCOLOR(self, c):
+        c = int(c)
+        return [0xffffff0a, c]
+
+    # 5.31 (184)
+    def CMD_BGCOLOR(self):
+        c = int(c)
+        return [0xffffff09, c]
+
+    # 5.33 (187)
+    def CMD_GAUGE(self, x, y, r, options, major, minor, val, gauge_range): 
+       #range is a keyword in Python
+       x = int(x) 
+       y = int(y) 
+       r = int(r) 
+       options = int(options) 
+       major = int(major) 
+       minor = int(minor) 
+       val = int(val) 
+       gauge_range = int(gauge_range) 
+
+       data = [0xffffff13, ((x << 16) | (y << 0)), ((r << 16) | (options << 0)), \
+             ((major << 16) | (minor << 0)), ((value << 16) | (gauge_range))] 
+       return data
+
+    # 5.36 (200)
+    def CMD_PROGRESS(self, x, y, w, h, options, val, progress_range):
+       #range is a keyword in Python
+       x = int(x) 
+       y = int(y) 
+       r = int(r) 
+       options = int(options) 
+       major = int(major) 
+       minor = int(minor) 
+       val = int(val) 
+       progress_range = int(progress_range) 
+    
+       data = [0xffffff0f, ((x << 16) | (y << 0)), ((w << 16) | (h << 0)), \
+              ((options << 16) | (val << 0)), progress_range]
+
+       return data
+
     # 5.41 (213)
     def CMD_TEXT(self, x, y, font, options, s):
         x = int(x)
@@ -192,10 +259,7 @@ class FT81x(object):
         s = bytearray(FT81x.string_pattern.match(s).group(1), 'utf8')
         s.append(0)     # NUL-terminate
 
-        # Parse option flags
-        opts = 0
-        for option in options.split('|'):
-            opts |= FT81x.OPTIONS[option.strip()]
+        opts = self.get_options(options)
 
         data = [0xffffff0c, (y << 16) | (x << 0), (opts << 16) | (font << 0)]
 
@@ -234,6 +298,8 @@ if len(sys.argv) < 2:
 
 command_pattern = re.compile(r'(.+)\((.*)\)')
 
+unimplemented_cmds = 0
+
 with open(sys.argv[1], 'r') as ese_project_file:
     ese_project = json.load(ese_project_file)
 
@@ -252,6 +318,7 @@ with open(sys.argv[1], 'r') as ese_project_file:
             method = getattr(ft81x, name)
         except AttributeError:
             print('UNIMPLEMENTED: %s' % command)
+            unimplemented_cmds += 1
             continue
 
         for i, word in enumerate(method(*args)):
@@ -263,4 +330,7 @@ with open(sys.argv[1], 'r') as ese_project_file:
 # Write display and swap commands.
 print('0x00000000, // DISPLAY()')
 print('0xffffff01, // CMD_DLSWAP()')
+
+if unimplemented_cmds != 0:
+    print(str(unimplemented_cmds) + ' unimplemented commands!')
 
