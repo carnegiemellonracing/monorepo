@@ -149,6 +149,16 @@ Var=VSM_ERR_latchAMS bit 26,1
 Var=VSM_ERR_latchIMD bit 25,1
 Var=VSM_ERR_latchBSPD bit 24,1
 
+[VSM_Sensors]
+ID=200h
+DLC=6
+CycleTime=100
+Timeout=1000
+Var=VSM_brakePressureRear unsigned 0,16 /u:PSI
+Var=VSM_hallEffect signed 16,16 /u:A
+Var=VSM_safetyIn unsigned 32,8 /u:V /f:0.1
+Var=VSM_safetyOut unsigned 40,8 /u:V /f:0.1
+
 [VSM_LatchedStatus]
 ID=510h
 DLC=3
