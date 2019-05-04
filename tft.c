@@ -365,16 +365,18 @@ static void drawErrorScreen(void) {
     err.bspdError = (canVSMStatus->latchMatrix & CMR_CAN_VSM_LATCH_BSPD);
 
     /* HVC Errors */
-    err.overVolt = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERVOLT);
-    err.underVolt = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_UNDERVOLT);
+    err.overVolt = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_PACK_OVERVOLT);
+    err.underVolt = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_PACK_UNDERVOLT);
     err.hvcoverTemp = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERTEMP);
     err.hvc_Error = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_FAULT);
+    err.hvcErrorNum = (canHVCHeartbeat->errorStatus);
 
     /* CDC Motor Faults */
     err.overSpeed = (canCDCMotorFaults->run & 1);
     err.mcoverTemp = (canCDCMotorFaults->run & (0x7f << 17));
     err.overCurrent = (canCDCMotorFaults->run & 2);
     err.mcError = (canCDCMotorFaults->run);
+    err.mcErrorNum = (canCDCMotorFaults->run);
 
     /* Update Display List*/
     tftDL_errorUpdate(&err);

@@ -28,6 +28,8 @@ typedef struct {
     bool mcoverTemp;
     bool overCurrent;
     bool mcError;
+    uint16_t hvcErrorNum;
+    unsigned int mcErrorNum;
 } tft_errors_t;
 
 #endif /* TFT_H */
