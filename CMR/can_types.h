@@ -108,6 +108,8 @@ typedef enum {
     CMR_CAN_WARN_VSM_AFC1_TIMEOUT = (1 << 9),
     /** @brief VSM hasn't received APC heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_APC_TIMEOUT = (1 << 8),
+    /** @brief VSM is rejecting DIM state request. */
+    CMR_CAN_WARN_VSM_DIM_REQ_NAK = (1 << 7),
 
     /** @brief FSM throttle position implausibility (L/R difference > 10%). */
     CMR_CAN_WARN_FSM_TPOS_IMPLAUSIBLE = (1 << 15),

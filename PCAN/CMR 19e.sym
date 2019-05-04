@@ -115,6 +115,7 @@ Var=VSM_WRN_DIMTimeout bit 35,1
 Var=VSM_WRN_AFC0Timeout bit 34,1
 Var=VSM_WRN_AFC1Timeout bit 33,1
 Var=VSM_WRN_APCTimeout bit 32,1
+Var=VSM_WRN_DIMReqNAK bit 31,1
 Var=VSM_WRN_VoltageOOR bit 25,1
 Var=VSM_WRN_CurrentOOR bit 26,1
 
