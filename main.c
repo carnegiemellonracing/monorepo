@@ -42,6 +42,9 @@ static const TickType_t coolingControl_period_ms = 50;
 /** @brief Cooling control task. */
 static cmr_task_t coolingControl_task;
 
+/** @brief Brake light threshold (pounds-per-square-inch). */
+static const uint16_t brakeLightThreshold_PSI = 20;
+
 /** @brief Brake light control task priority. */
 static const uint32_t brakelight_priority = 4;
 /** @brief Brake light control task period. */
@@ -171,13 +174,13 @@ static void coolingControl(void *pvParameters) {
 static void brakelight(void *pvParameters) {
     (void) pvParameters;
 
-    // Get reference to VSM Heartbeat
-    cmr_canRXMeta_t *fsmDataMeta = &(canRXMeta[CANRX_FSM_DATA]);
-    volatile cmr_canFSMData_t *fsmData = (void *) fsmDataMeta->payload;
+    cmr_canRXMeta_t *vsmSensorsMeta = canRXMeta + CANRX_VSM_SENSORS;
+    volatile cmr_canVSMSensors_t *vsmSensors = (void *) vsmSensorsMeta->payload;
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        if (fsmData->brakePressureFront_PSI > 0) {
+        // TODO Switch to front brake pressure.
+        if (vsmSensors->brakePressureRear_PSI > brakeLightThreshold_PSI) {
             cmr_gpioWrite(GPIO_BRAKELIGHT, 1);
         } else {
             cmr_gpioWrite(GPIO_BRAKELIGHT, 0);
