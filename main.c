@@ -52,9 +52,6 @@ static const TickType_t brakelight_period_ms = 50;
 /** @brief Brake light control task. */
 static cmr_task_t brakelight_task;
 
-/** @brief DCDC 5V input preapplication time. */
-static const uint32_t dcdc_preapply_period_ms = 500;
-
 /** @brief Brake disconnection solenoid task priority. */
 static const uint32_t brakeDisconnect_priority = 5;
 /** @brief Brake disconnection solenoid task period. */
@@ -191,9 +188,9 @@ static void brakelight(void *pvParameters) {
 }
 
 /**
- * @brief Task for closing the dcdc output relay in response to VSM internal state
- * changes. Task is not renamed because it uses existing brake solenoid infrastructure
- * and will be reverted later
+ * @brief Task for controlling the brake solenoid, which disconnects the rear
+ * brakes from the brake pedal. Simultaneously, the CDC should begin using the
+ * brake pressure to command regen torque on the rears.
  *
  * @param pvParameters Ignored.
  *
@@ -201,35 +198,13 @@ static void brakelight(void *pvParameters) {
  */
 static void brakeDisconnect(void *pvParameters) {
     (void) pvParameters;
-    // Currently used to switch dcdc relay by observing VSM internal state
-    cmr_canRXMeta_t *VSM_statusMeta = canRXMeta + CANRX_VSM_STATUS;
-    volatile cmr_canVSMStatus_t *VSM_status = (void *) VSM_statusMeta->payload;
+
+    cmr_canRXMeta_t *cdcSolenoidPTCMeta = canRXMeta + CANRX_CDC_SOLENOID_PTC;
+    volatile cmr_canCDCSolenoidPTC_t *cdcSolenoidPTC = (void *) cdcSolenoidPTCMeta->payload;
+
     TickType_t lastWakeTime = xTaskGetTickCount();
-
-    bool enable = false;
-    TickType_t enableTime = 0;
-
     while (1) {
-        switch (VSM_status->internalState) {
-            case CMR_CAN_VSM_STATE_DCDC_EN:
-            case CMR_CAN_VSM_STATE_HV_EN:
-            case CMR_CAN_VSM_STATE_RTD:
-                if (!enable) {
-                    enable = true;
-                    enableTime = lastWakeTime;
-                }
-                break;
-            // dcdc relay should stay open with respect to any other observed VSM states
-            default:
-                enable = false;
-                break;
-        }
-
-        if (enable && (lastWakeTime - enableTime > dcdc_preapply_period_ms)) {
-            cmr_gpioWrite(GPIO_BRAKE_DISCON, 1);
-        } else {
-            cmr_gpioWrite(GPIO_BRAKE_DISCON, 0);
-        }
+        cmr_gpioWrite(GPIO_BRAKE_DISCON, cdcSolenoidPTC->solenoidEnable);
 
         vTaskDelayUntil(&lastWakeTime, brakeDisconnect_period_ms);
     }

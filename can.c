@@ -45,6 +45,11 @@ cmr_canRXMeta_t canRXMeta[] = {
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
     },
+    [CANRX_CDC_SOLENOID_PTC] = {
+        .canID = CMR_CANID_CDC_SOLENOID_PTC,
+        .timeoutError_ms = 500,
+        .timeoutWarn_ms = 250,
+    },
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
         .timeoutError_ms = 100,
@@ -163,7 +168,7 @@ void canInit(void) {
             .ids = {
                 CMR_CANID_VSM_STATUS,
                 CMR_CANID_VSM_SENSORS,
-                CMR_CANID_HVC_MINMAX_CELL_TEMPS,
+                CMR_CANID_CDC_SOLENOID_PTC,
                 CMR_CANID_HVC_MINMAX_CELL_TEMPS                                                                                 ,
             }
         }
