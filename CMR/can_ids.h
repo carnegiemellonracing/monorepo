@@ -41,8 +41,8 @@ typedef enum {
     CMR_CANID_CDC_WHEEL_SPEEDS = 0x132,         /**< @brief CDC wheel speeds. */
     CMR_CANID_CDC_SOLENOID_PTC = 0x142,         /**< @brief CDC brake solenoid command. */
     CMR_CANID_CDC_MOTOR_DATA = 0x152,           /**< @brief CDC motor data. */
-    CMR_CANID_CDC_MOTOR_PHASES = 0x154,         /**< @brief CDC motor phase currents. */
-    CMR_CANID_CDC_IMU_ACCEL = 0x153,            /**< @brief CDC IMU accelerations. */
+    CMR_CANID_CDC_MOTOR_PHASES = 0x172,         /**< @brief CDC motor phase currents. */
+    CMR_CANID_CDC_IMU_ACCEL = 0x162,            /**< @brief CDC IMU accelerations. */
     CMR_CANID_CDC_MOTOR_FAULTS = 0x502,         /**< @brief CDC motor faults. */
     CMR_CANID_CDC_MOTOR_TEMPS = 0x512,          /**< @brief CDC motor temperatures. */
 
