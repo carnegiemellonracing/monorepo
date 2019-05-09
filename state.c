@@ -6,6 +6,7 @@
  */
 
 #include "state.h"  // interface to implement
+#include "gpio.h"   // GPIO interface
 
 /** @brief DIM state. */
 static volatile struct {
@@ -132,6 +133,14 @@ void stateVSMDownButton(bool pressed) {
     if (state.vsmReq > vsmState) {
         // Cancel state-up request.
         state.vsmReq = vsmState;
+        return;
+    }
+
+    if (
+        state.vsmReq == CMR_CAN_RTD &&
+        cmr_gpioRead(GPIO_BUTTON_3)  // Active low.
+    ) {
+        // Only exit RTD when both state down and up buttons are pressed.
         return;
     }
 
