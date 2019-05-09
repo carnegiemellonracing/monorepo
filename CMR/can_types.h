@@ -420,6 +420,20 @@ typedef struct {
     uint32_t run;   /**< @brief Run faults. */
 } cmr_canCDCMotorFaults_t;
 
+/** @brief Central Dynamics Controller motor phase currents. */
+typedef struct {
+    int16_t phaseA; /**< @brief Current in the phase A cable (Amps * 10). */
+    int16_t phaseB; /**< @brief Current in the phase B cable (Amps * 10). */
+    int16_t phaseC; /**< @brief Current in the phase C cable (Amps * 10). */
+} cmr_canCDCMotorPhaseCurrents_t;
+
+/** @brief Central Dynamics Controller IMU accelerations. */
+typedef struct {
+    int16_t longitudinal;   /**< @brief Longitudinal Acceleration where full scale is +/- 2g (positive Forward). */
+    int16_t lateral;        /**< @brief Lateral Acceleration where full scale is +/- 2g (positive Left). */
+    int16_t vertical;       /**< @brief Vertical Acceleration where full scale is +/- 2g (positive Down). */
+} cmr_canCDCIMUAcceleration_t;
+
 // ------------------------------------------------------------------------------------------------
 // Driver Interface Module
 
