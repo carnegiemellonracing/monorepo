@@ -70,22 +70,10 @@ static void statusLED(void *pvParameters) {
     (void) pvParameters;
 
     cmr_gpioWrite(GPIO_LED_STATUS, 0);
-    cmr_gpioWrite(GPIO_FAN_ENABLE, 1); // Turn the fan driver on
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         cmr_gpioToggle(GPIO_LED_STATUS);
-
-        if (lastWakeTime > 10000) {
-//            cmr_pwmSetPeriod(&pwmChannel, 40000, 48);
-        }
-        else if (lastWakeTime > 5000) {
-            cmr_pwmSetDutyCycle(&fanPWM, 100);
-        }
-        else {
-            cmr_pwmSetDutyCycle(&fanPWM, 0);
-        }
-
 
         vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
     }
@@ -133,6 +121,11 @@ static void coolingControl(void *pvParameters) {
             afcMaxCoolingEnabled = false;
         }
 
+        // Turn off accumulator cooling when only low voltage power is available
+        if ((vsmHeartbeat->state != CMR_CAN_HV_EN) && (vsmHeartbeat->state != CMR_CAN_RTD)) {
+            afcMaxCoolingEnabled = false;
+        }
+
         switch (vsmHeartbeat->state) {
             case CMR_CAN_RTD:
                 fanState = CMR_CAN_FAN_HIGH;
@@ -176,7 +169,6 @@ static void brakelight(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // TODO Switch to front brake pressure.
         if (vsmSensors->brakePressureRear_PSI > brakeLightThreshold_PSI) {
             cmr_gpioWrite(GPIO_BRAKELIGHT, 1);
         } else {

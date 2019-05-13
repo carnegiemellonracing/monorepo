@@ -95,6 +95,7 @@ static cmr_can_t can;
 
 // Forward declarations
 static void sendCoolStatus(void);
+static void sendAFCControl(void);
 static void sendVoltDiagnostics(void);
 static void sendCurrDiagnostics(void);
 static void sendHeartbeat(TickType_t lastWakeTime);
@@ -112,6 +113,7 @@ static void canTX10Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendCoolStatus();
+        sendAFCControl();
         sendVoltDiagnostics();
         sendCurrDiagnostics();
 
@@ -245,11 +247,6 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
  * @brief Send cooling system status on CAN bus.
  */
 static void sendCoolStatus(void) {
-    static bool lastAFCMaxCoolingEnabled = false;
-
-    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-    volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
-
     int32_t preRadiatorTemp_C =
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_PRE_RAD_THERM);
     int32_t postRadiatorTemp_C =
@@ -263,6 +260,16 @@ static void sendCoolStatus(void) {
     };
 
     canTX(CMR_CANID_PTC_COOLING_STATUS, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
+}
+
+/**
+ * @btief Send AFC control message.
+ */
+static void sendAFCControl(void) {
+    static bool lastAFCMaxCoolingEnabled = false;
+
+    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
+    volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
 
     if (((heartbeatVSM->state == CMR_CAN_HV_EN) || (heartbeatVSM->state == CMR_CAN_RTD))
      && afcMaxCoolingEnabled) {
@@ -282,7 +289,7 @@ static void sendCoolStatus(void) {
         };
 
         if ((heartbeatVSM->state == CMR_CAN_HV_EN) || (heartbeatVSM->state == CMR_CAN_RTD)) {
-            afcCtrlMsg.dcdcFanDuty_pcnt = 100;
+            afcCtrlMsg.dcdcFanDuty_pcnt = 50;
         }
 
         canTX(CMR_CANID_PTC_AFC_CONTROL, &afcCtrlMsg, sizeof(afcCtrlMsg), canTX10Hz_period_ms);
