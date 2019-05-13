@@ -253,8 +253,8 @@ Var=CDC_wheelBackRight unsigned 48,16 /u:RPM /f:0.1
 [CDC_SolenoidPTC]
 ID=142h
 DLC=1
-CycleTime=10
-Timeout=100
+CycleTime=1
+Timeout=10
 Var=CDC_solenoidEnable unsigned 0,8
 
 [CDC_MotorData]
