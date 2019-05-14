@@ -47,8 +47,8 @@ cmr_canRXMeta_t canRXMeta[] = {
     },
     [CANRX_CDC_SOLENOID_PTC] = {
         .canID = CMR_CANID_CDC_SOLENOID_PTC,
-        .timeoutError_ms = 500,
-        .timeoutWarn_ms = 250,
+        .timeoutError_ms = 10,
+        .timeoutWarn_ms = 5,
     },
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
