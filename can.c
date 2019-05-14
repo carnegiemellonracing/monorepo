@@ -281,35 +281,31 @@ static void sendCoolStatus(void) {
  * @btief Send AFC control message.
  */
 static void sendAFCControl(void) {
-    static bool lastAFCMaxCoolingEnabled = false;
-
     volatile cmr_canHeartbeat_t *heartbeatVSM = canGetPayload(CANRX_HEARTBEAT_VSM);
 
-    if (((heartbeatVSM->state == CMR_CAN_HV_EN) || (heartbeatVSM->state == CMR_CAN_RTD))
-     && afcMaxCoolingEnabled) {
+    cmr_canPTCAFCControl_t afcCtrlMsg = {
+        .acFansDuty_pcnt = 0,
+        .dcdcFanDuty_pcnt = 0
+    };
 
-        cmr_canPTCAFCControl_t afcCtrlMsg = {
-            .acFansDuty_pcnt = 100,
-            .dcdcFanDuty_pcnt = 100
-        };
-
-        canTX(CMR_CANID_PTC_AFC_CONTROL, &afcCtrlMsg, sizeof(afcCtrlMsg), canTX10Hz_period_ms);
-    }
-    // We just turned off cooling in coolingControl task, transmit a fans off message
-    else if (lastAFCMaxCoolingEnabled && !afcMaxCoolingEnabled) {
-        cmr_canPTCAFCControl_t afcCtrlMsg = {
-            .acFansDuty_pcnt = 0,
-            .dcdcFanDuty_pcnt = 0
-        };
-
-        if ((heartbeatVSM->state == CMR_CAN_HV_EN) || (heartbeatVSM->state == CMR_CAN_RTD)) {
-            afcCtrlMsg.dcdcFanDuty_pcnt = 50;
-        }
-
-        canTX(CMR_CANID_PTC_AFC_CONTROL, &afcCtrlMsg, sizeof(afcCtrlMsg), canTX10Hz_period_ms);
+    switch (heartbeatVSM->state) {
+        case CMR_CAN_HV_EN:
+        case CMR_CAN_RTD:
+            if (afcMaxCoolingEnabled) {
+                // Fully enable fans.
+                afcCtrlMsg.acFansDuty_pcnt = 100;
+                afcCtrlMsg.dcdcFanDuty_pcnt = 100;
+            } else {
+                // In these states, the DCDC is on; keep its fan on too.
+                afcCtrlMsg.dcdcFanDuty_pcnt = 50;
+            }
+            break;
+        default:
+            // Fans are off.
+            break;
     }
 
-    lastAFCMaxCoolingEnabled = afcMaxCoolingEnabled;
+    canTX(CMR_CANID_PTC_AFC_CONTROL, &afcCtrlMsg, sizeof(afcCtrlMsg), canTX10Hz_period_ms);
 }
 
 /**
