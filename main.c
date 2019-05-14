@@ -67,25 +67,13 @@ static cmr_task_t brakeDisconnect_task;
  * @return Does not return.
  */
 static void statusLED(void *pvParameters) {
-    (void) pvParameters;
+    (void) pvParameters;    // Placate compiler.
 
     cmr_gpioWrite(GPIO_LED_STATUS, 0);
-    cmr_gpioWrite(GPIO_FAN_ENABLE, 1); // Turn the fan driver on
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         cmr_gpioToggle(GPIO_LED_STATUS);
-
-        if (lastWakeTime > 10000) {
-//            cmr_pwmSetPeriod(&pwmChannel, 40000, 48);
-        }
-        else if (lastWakeTime > 5000) {
-            cmr_pwmSetDutyCycle(&fanPWM, 100);
-        }
-        else {
-            cmr_pwmSetDutyCycle(&fanPWM, 0);
-        }
-
 
         vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
     }
@@ -99,17 +87,13 @@ static void statusLED(void *pvParameters) {
  * @return Does not return.
  */
 static void coolingControl(void *pvParameters) {
-    (void) pvParameters;
+    (void) pvParameters;    // Placate compiler.
 
     cmr_gpioWrite(GPIO_FAN_ENABLE, 1); // Turn the fan driver on
 
-    // Get reference to VSM Heartbeat
-    cmr_canRXMeta_t *vsmHeartbeatMeta = &(canRXMeta[CANRX_HEARTBEAT_VSM]);
-    volatile cmr_canHeartbeat_t *vsmHeartbeat = (void *)(&vsmHeartbeatMeta->payload);
-
-    // Get reference to accumulator min/max cell temperatures
-    cmr_canRXMeta_t *minMaxTempsMeta = canRXMeta + CANRX_HVC_MINMAX_TEMPS;
-    volatile cmr_canHVCPackMinMaxCellTemps_t *minMaxTemps = (void *) minMaxTempsMeta->payload;
+    // Get reference to VSM Heartbeat and accumulator min/max cell temperatures
+    volatile cmr_canHeartbeat_t *vsmHeartbeat = canGetPayload(CANRX_HEARTBEAT_VSM);
+    volatile cmr_canHVCPackMinMaxCellTemps_t *minMaxTemps = canGetPayload(CANRX_HVC_MINMAX_TEMPS);
 
     // Initialize fan PWM
     const cmr_pwmPinConfig_t pwmPinConfig = {
@@ -154,6 +138,9 @@ static void coolingControl(void *pvParameters) {
                 cmr_pwmSetDutyCycle(&fanPWM, 0);    // Fan off
                 cmr_gpioWrite(GPIO_PUMP, 0);        // Pump off
 
+                // Turn off accumulator cooling when only low voltage power is available
+                afcMaxCoolingEnabled = false;
+
                 break;
         }
 
@@ -169,14 +156,12 @@ static void coolingControl(void *pvParameters) {
  * @return Does not return.
  */
 static void brakelight(void *pvParameters) {
-    (void) pvParameters;
+    (void) pvParameters;    // Placate compiler.
 
-    cmr_canRXMeta_t *vsmSensorsMeta = canRXMeta + CANRX_VSM_SENSORS;
-    volatile cmr_canVSMSensors_t *vsmSensors = (void *) vsmSensorsMeta->payload;
+    volatile cmr_canVSMSensors_t *vsmSensors = canGetPayload(CANRX_VSM_SENSORS);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // TODO Switch to front brake pressure.
         if (vsmSensors->brakePressureRear_PSI > brakeLightThreshold_PSI) {
             cmr_gpioWrite(GPIO_BRAKELIGHT, 1);
         } else {
@@ -197,10 +182,9 @@ static void brakelight(void *pvParameters) {
  * @return Does not return.
  */
 static void brakeDisconnect(void *pvParameters) {
-    (void) pvParameters;
+    (void) pvParameters;    // Placate compiler.
 
-    cmr_canRXMeta_t *cdcSolenoidPTCMeta = canRXMeta + CANRX_CDC_SOLENOID_PTC;
-    volatile cmr_canCDCSolenoidPTC_t *cdcSolenoidPTC = (void *) cdcSolenoidPTCMeta->payload;
+    volatile cmr_canCDCSolenoidPTC_t *cdcSolenoidPTC = canGetPayload(CANRX_CDC_SOLENOID_PTC);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {

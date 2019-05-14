@@ -47,8 +47,8 @@ cmr_canRXMeta_t canRXMeta[] = {
     },
     [CANRX_CDC_SOLENOID_PTC] = {
         .canID = CMR_CANID_CDC_SOLENOID_PTC,
-        .timeoutError_ms = 500,
-        .timeoutWarn_ms = 250,
+        .timeoutError_ms = 10,
+        .timeoutWarn_ms = 5,
     },
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
@@ -67,7 +67,7 @@ cmr_canRXMeta_t canRXMeta[] = {
 };
 
 /** @brief AFC max cooling enable flag. */
-bool afcMaxCoolingEnabled = false;
+volatile bool afcMaxCoolingEnabled = false;
 
 /** @brief Radiator fan state. */
 cmr_canFanState_t fanState = CMR_CAN_FAN_OFF;
@@ -95,6 +95,7 @@ static cmr_can_t can;
 
 // Forward declarations
 static void sendCoolStatus(void);
+static void sendAFCControl(void);
 static void sendVoltDiagnostics(void);
 static void sendCurrDiagnostics(void);
 static void sendHeartbeat(TickType_t lastWakeTime);
@@ -112,6 +113,7 @@ static void canTX10Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendCoolStatus();
+        sendAFCControl();
         sendVoltDiagnostics();
         sendCurrDiagnostics();
 
@@ -209,13 +211,28 @@ int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
 }
 
 /**
+ * @brief Gets a pointer to the payload of a received CAN message.
+ *
+ * @param rxMsg The message to get the payload of.
+ *
+ * @return Pointer to payload, or NULL if rxMsg is invalid.
+ */
+void *canGetPayload(canRX_t rxMsg) {
+    configASSERT(rxMsg < CANRX_LEN);
+
+    cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
+
+    return (void *)(&rxMeta->payload);
+}
+
+/**
  * @brief Sets up PTC heartbeat, checks for errors, then sends it
  *
  * @param lastWakeTime Pass in from canTX100Hz. Used to determine VSM timeout.
  */
 static void sendHeartbeat(TickType_t lastWakeTime) {
     cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-    volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
+    volatile cmr_canHeartbeat_t *heartbeatVSM = canGetPayload(CANRX_HEARTBEAT_VSM);
 
     cmr_canHeartbeat_t heartbeat = {
         .state = heartbeatVSM->state
@@ -245,11 +262,6 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
  * @brief Send cooling system status on CAN bus.
  */
 static void sendCoolStatus(void) {
-    static bool lastAFCMaxCoolingEnabled = false;
-
-    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-    volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
-
     int32_t preRadiatorTemp_C =
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_PRE_RAD_THERM);
     int32_t postRadiatorTemp_C =
@@ -263,32 +275,37 @@ static void sendCoolStatus(void) {
     };
 
     canTX(CMR_CANID_PTC_COOLING_STATUS, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
+}
 
-    if (((heartbeatVSM->state == CMR_CAN_HV_EN) || (heartbeatVSM->state == CMR_CAN_RTD))
-     && afcMaxCoolingEnabled) {
+/**
+ * @btief Send AFC control message.
+ */
+static void sendAFCControl(void) {
+    volatile cmr_canHeartbeat_t *heartbeatVSM = canGetPayload(CANRX_HEARTBEAT_VSM);
 
-        cmr_canPTCAFCControl_t afcCtrlMsg = {
-            .acFansDuty_pcnt = 100,
-            .dcdcFanDuty_pcnt = 100
-        };
+    cmr_canPTCAFCControl_t afcCtrlMsg = {
+        .acFansDuty_pcnt = 0,
+        .dcdcFanDuty_pcnt = 0
+    };
 
-        canTX(CMR_CANID_PTC_AFC_CONTROL, &afcCtrlMsg, sizeof(afcCtrlMsg), canTX10Hz_period_ms);
+    switch (heartbeatVSM->state) {
+        case CMR_CAN_HV_EN:
+        case CMR_CAN_RTD:
+            if (afcMaxCoolingEnabled) {
+                // Fully enable fans.
+                afcCtrlMsg.acFansDuty_pcnt = 100;
+                afcCtrlMsg.dcdcFanDuty_pcnt = 100;
+            } else {
+                // In these states, the DCDC is on; keep its fan on too.
+                afcCtrlMsg.dcdcFanDuty_pcnt = 50;
+            }
+            break;
+        default:
+            // Fans are off.
+            break;
     }
-    // We just turned off cooling in coolingControl task, transmit a fans off message
-    else if (lastAFCMaxCoolingEnabled && !afcMaxCoolingEnabled) {
-        cmr_canPTCAFCControl_t afcCtrlMsg = {
-            .acFansDuty_pcnt = 0,
-            .dcdcFanDuty_pcnt = 0
-        };
 
-        if ((heartbeatVSM->state == CMR_CAN_HV_EN) || (heartbeatVSM->state == CMR_CAN_RTD)) {
-            afcCtrlMsg.dcdcFanDuty_pcnt = 100;
-        }
-
-        canTX(CMR_CANID_PTC_AFC_CONTROL, &afcCtrlMsg, sizeof(afcCtrlMsg), canTX10Hz_period_ms);
-    }
-
-    lastAFCMaxCoolingEnabled = afcMaxCoolingEnabled;
+    canTX(CMR_CANID_PTC_AFC_CONTROL, &afcCtrlMsg, sizeof(afcCtrlMsg), canTX10Hz_period_ms);
 }
 
 /**

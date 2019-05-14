@@ -30,13 +30,14 @@ typedef enum {
 } canRX_t;
 
 extern cmr_canRXMeta_t canRXMeta[];
-extern bool afcMaxCoolingEnabled;
+extern volatile bool afcMaxCoolingEnabled;
 extern cmr_canFanState_t fanState;
 extern cmr_canPTCPumpState_t pumpState;
 
 void canInit(void);
 
 int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
+void *canGetPayload(canRX_t rxMsg);
 
 #endif /* CAN_H */
 
