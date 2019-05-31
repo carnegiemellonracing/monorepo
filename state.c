@@ -136,11 +136,15 @@ void stateVSMDownButton(bool pressed) {
         return;
     }
 
+    cmr_canRXMeta_t *cdcMotorDataMeta = canRXMeta + CANRX_CDC_MOTOR_DATA;
+    volatile cmr_canCDCMotorData_t *cdcMotorData =
+        (void *) cdcMotorDataMeta->payload;
+
     if (
         state.vsmReq == CMR_CAN_RTD &&
-        cmr_gpioRead(GPIO_BUTTON_3)  // Active low.
+        cdcMotorData->speed_rpm > 5
     ) {
-        // Only exit RTD when both state down and up buttons are pressed.
+        // Only exit RTD when motor is basically stopped.
         return;
     }
 
@@ -172,8 +176,8 @@ void stateGearButton(bool pressed) {
     }
 
     cmr_canGear_t gearReq = gear + 1;
-    if (gearReq >= CMR_CAN_GEAR_LEN) {
-        gearReq = CMR_CAN_GEAR_REVERSE;     // Wrap around; skip `GEAR_UNKNOWN`.
+    if (gearReq < CMR_CAN_GEAR_SLOW || gearReq >= CMR_CAN_GEAR_LEN) {
+        gearReq = CMR_CAN_GEAR_SLOW;     // Wrap around; skip `GEAR_UNKNOWN` and `GEAR_REVERSE`.
     }
 
     state.gearReq = gearReq;
