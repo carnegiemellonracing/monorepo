@@ -3,6 +3,7 @@
     ],
     "coprocessor": [
         "CLEAR_COLOR_RGB(0, 0, 0)",
+        "CLEAR(1, 1, 1)",
         "CMD_TEXT(32, 9, 27, OPT_CENTER, \"GLV ON\")",
         "BEGIN(LINES)",
         "VERTEX2II(320, 20, 0, 0)",
