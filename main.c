@@ -21,6 +21,7 @@
 #include "adc.h"        // Board-specific ADC interface
 #include "sensors.h"    // Board-specific sensors interface
 
+/** @brief PWM driver state. */
 static cmr_pwm_t fanPWM;
 
 /** @brief Cell temperature at which PTC begins commanding AFC max cooling. */
