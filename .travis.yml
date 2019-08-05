@@ -1,0 +1,44 @@
+# This will run on Travis' 'new' container-based infrastructure
+sudo: false
+
+# Blacklist
+branches:
+  except:
+    - autodocs
+
+# Environment variables
+env:
+  global:
+    - GH_REPO_NAME: DIM
+    - DOXYFILE: $TRAVIS_BUILD_DIR/doxygen.conf
+    - GH_REPO_REF: github.com:carnegiemellonracing/DIM.git
+    - DEPLOY_SITE: 13.64.197.197
+    - DEPLOY_USER: cmr
+    - DEPLOY_LOCATION: /var/www/html
+language:
+  generic
+
+# Install dependencies
+addons:
+  apt:
+    packages:
+
+before_install:
+  - git clone https://github.com/doxygen/doxygen.git
+  - cd doxygen
+  - git checkout 7f0ea786de3153f535ca20280d6b8660ffefd2e6
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
+  - doxygen_new="$PWD/bin/doxygen"
+  - export doxygen_new
+
+# Generate and deploy documentation
+script:
+  - cd $TRAVIS_BUILD_DIR
+  - chmod +x generateDocumentationAndDeploy.sh
+  - ./generateDocumentationAndDeploy.sh
+
+after_success:
+  echo 'YAY!'

@@ -10,6 +10,7 @@
 
 #include "tftPrivate.h"     // Private interface
 
+/** @brief Forward declare exported content type. */
 typedef struct tftContent tftContent_t;
 
 extern const tftContent_t tftContent_startup_lut;

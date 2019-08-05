@@ -185,8 +185,6 @@ void stateGearButton(bool pressed) {
 
 /**
  * @brief Updates state request to be consistent with VSM state.
- *
- * @param none.
  */
 void updateReq(void) {
     state.vsmReq = stateGetVSM();

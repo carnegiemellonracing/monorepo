@@ -19,16 +19,20 @@ struct tftDL {
     const tftContent_t **content;   /**< @brief Associated content. */
 };
 
-/* Startup Screen */
+/** @brief Raw startup screen */
 static uint32_t tftDL_startupData[] = {
 #include "ESE/startup.rawh"
 };
 
+/** @brief Packets to send to the DL on startup.
+ * See datasheet */
 static const tftContent_t *tftDL_startupContent[] = {
     &tftContent_startup_lut,
     &tftContent_startup
 };
 
+/** @brief Complete data required to draw the startup screen.
+ * Exposed to interface consumers. */
 const tftDL_t tftDL_startup = {
     .len = sizeof(tftDL_startupData),
     .data = tftDL_startupData,
@@ -37,16 +41,20 @@ const tftDL_t tftDL_startup = {
     .content = tftDL_startupContent
 };
 
-/* GLV Screen */
+/** @brief GLV Screen */
 static uint32_t tftDL_errorData[] = {
 #include "ESE/errors.rawh"
 };
 
+/** @brief Packets to send to the DL on error.
+ * See datasheet */
 static const tftContent_t *tftDL_errorContent[] = {
     &tftContent_RobotoMono_Bold_72_L4,
     &tftContent_RobotoMono_Bold_40_L4,
 };
 
+/** @brief Complete data required to draw the error screen.
+ * Exposed to interface consumers. */
 const tftDL_t tftDL_error = {
     .len = sizeof(tftDL_errorData),
     .data = tftDL_errorData,
@@ -55,17 +63,22 @@ const tftDL_t tftDL_error = {
     .content = tftDL_errorContent
 };
 
-/* RTD Screen */
+/** @brief RTD Screen */
 static uint32_t tftDL_RTDData[] = {
 #include "ESE/RTD.rawh"
 };
 
+/** @brief Complete data required to draw the
+ * ready-to-drive screen.
+ * Exposed to interface consumers. */
 static const tftContent_t *tftDL_RTDContent[] = {
     &tftContent_RobotoMono_Bold_72_L4,
     &tftContent_RobotoMono_Bold_40_L4,
 };
 
-/** @brief Ready-to-drive screen. */
+/** @brief Complete data required to draw the
+ * Ready-to-drive screen.
+ * Exposed to interface consumers. */
 const tftDL_t tftDL_RTD = {
     .len = sizeof(tftDL_RTDData),
     .data = tftDL_RTDData,
@@ -74,16 +87,26 @@ const tftDL_t tftDL_RTD = {
     .content = tftDL_RTDContent
 };
 
+/** @brief How to draw a single bar dynamically. */
 typedef struct {
-    uint32_t *addr;
-    uint8_t topY;
-    uint8_t botY;
-    int32_t maxVal;
-    int32_t minVal;
+    uint32_t *addr;  /**< @brief Top-left vertex addr */
+    uint8_t topY;    /**< @brief Top edge Y coord. */
+    uint8_t botY;    /**< @brief Bot edge Y coord. */
+    int32_t maxVal;  /**< @brief Logical value
+    * corresponding to bottom edge */
+    int32_t minVal;  /**< @brief Logical value
+    * corresponding to top edge */
 } tftDL_bar_t;
 
+/** @brief Bitposition of Y-coordinate byte in vertices */
 #define TFT_DL_VERTEX_Y_BIT 12
 
+/**
+ * @brief Reflect logical value into bar plot for drawing.
+ *
+ * @param bar The bar to update.
+ * @param val The logical value to draw.
+ */
 static void tftDL_barSetY(const tftDL_bar_t *bar, int32_t val) {
     uint8_t y;
     if (val < bar->minVal) {
@@ -98,7 +121,7 @@ static void tftDL_barSetY(const tftDL_bar_t *bar, int32_t val) {
     }
 
     uint32_t vertex = *bar->addr;
-    vertex &= ~(((1 << 8) - 1) << TFT_DL_VERTEX_Y_BIT);
+    vertex &= ~(((1 << 8) - 1) << TFT_DL_VERTEX_Y_BIT); //TODO: This is dumb
     vertex |= y << TFT_DL_VERTEX_Y_BIT;
     *bar->addr = vertex;
 }
@@ -106,9 +129,18 @@ static void tftDL_barSetY(const tftDL_bar_t *bar, int32_t val) {
 /**
  * @brief Updates the ready-to-drive screen.
  *
- * @param speed_mph Current speed (miles per hour).
- * @param hvVoltage High-voltage bus voltage (Volts).
- * @param power_kW Power (kiloWatts).
+ * @param speed_mph Speed (from CDC)
+ * @param hvVoltage_mV Pack Voltage (from HVC)
+ * @param power_kW Electrical power dissipation
+ * (inferred from CDC)
+ * @param dcdcTemp_C DCDC Thermistor temp.
+ * Unused.
+ * @param motorTemp_C Motor termperature.
+ * Referred from RMS via CDC. Deg. C.
+ * @param acTemp_C AC temp (from HVC).
+ * Currently Max cell temp. Deg. C.
+ * @param mcTemp_C MC internal temp.
+ * Referred from RMS via CDC. Deg. C.
  */
 void tftDL_RTDUpdate(
     uint32_t speed_mph,
@@ -205,16 +237,20 @@ void tftDL_RTDUpdate(
     );
 }
 
+/**
+ * @brief Set the color pointed to by addr.
+ *
+ * @param addr A raw pointer to a DL color.
+ * @param val A raw value.
+ */
 static void tftDL_setColor(uint32_t *addr, uint32_t val) {
-    *addr = val;
+    *addr = val; // TODO: This is dumb
 }
 
 /**
- * @brief Updates the ready-to-drive screen.
+ * @brief Updates the ready-to-drive screen to the error screen.
  *
- * @param speed_mph Current speed (miles per hour).
- * @param hvVoltage High-voltage bus voltage (Volts).
- * @param power_kW Power (kiloWatts).
+ * @param err Error statuses to display.
  */
 void tftDL_errorUpdate(
     tft_errors_t *err
@@ -273,7 +309,6 @@ void tftDL_errorUpdate(
     uint32_t *bspdError_color = (void *) (tftDL_errorData + 148);
     uint32_t bspdError_color_cmd  = (err->bspdError) ? color_err : color_none;
 
-    #include <string.h>
     static struct {
         char buf[11];
     } *const hvc_error_num_str = (void *) (tftDL_errorData + 104);

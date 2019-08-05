@@ -330,9 +330,6 @@ static void tftUpdate(void *pvParameters) {
 /**
  * @brief Draws the Display Updated List to the Screen
  *
- * @param none
- *
- * @return none
  */
 static void drawErrorScreen(void) {
     cmr_canRXMeta_t *metaVSMStatus = canRXMeta + CANRX_VSM_STATUS;
@@ -388,9 +385,6 @@ static void drawErrorScreen(void) {
 /**
  * @brief Draws the Display Updated List to the Screen
  *
- * @param none
- *
- * @return none
  */
 static void drawRTDScreen(void) {
     /* Setup the Required CAN info for Display */
