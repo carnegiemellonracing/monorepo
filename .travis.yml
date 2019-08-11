@@ -1,4 +1,3 @@
-# This will run on Travis' 'new' container-based infrastructure
 sudo: false
 
 # Blacklist
@@ -6,39 +5,45 @@ branches:
   except:
     - autodocs
 
+# Travis settings
+dist: xenial
+services:
+  - xvfb
+
 # Environment variables
 env:
   global:
-    - GH_REPO_NAME: DIM
     - DOXYFILE: $TRAVIS_BUILD_DIR/doxygen.conf
-    - GH_REPO_REF: github.com:carnegiemellonracing/DIM.git
-    - DEPLOY_SITE: 13.64.197.197
-    - DEPLOY_USER: cmr
-    - DEPLOY_LOCATION: /var/www/html
+    - GH_REPO_REF: github.com:$TRAVIS_REPO_SLUG.git
+    - INSTALL_DIR: $TRAVIS_BUILD_DIR/..
+    - SCRIPTS_DIR: $TRAVIS_BUILD_DIR/ci-scripts
+    - TRUESTUDIO_TEMP_DIR: $INSTALL_DIR/truestudio
+    - DOXYGEN_DIR: $INSTALL_DIR/doxygen
 language:
   generic
-
 # Install dependencies
 addons:
   apt:
     packages:
+      - libwebkitgtk-3.0-0
+      - libncurses5
+      - libusb-0.1-4
+      - libc6-i386
+      - at-spi2-core
+# Cache downloaded sources, build binaries at runtime
+
+cache:
+  directories:
+    - $DOXYGEN_DIR
+    - $TRUESTUDIO_TEMP_DIR
 
 before_install:
-  - git clone https://github.com/doxygen/doxygen.git
-  - cd doxygen
-  - git checkout 7f0ea786de3153f535ca20280d6b8660ffefd2e6
-  - mkdir build
-  - cd build
-  - cmake ..
-  - make
-  - doxygen_new="$PWD/bin/doxygen"
+  - export GH_REPO_NAME=$(echo "$TRAVIS_REPO_SLUG" | sed -r 's@.*/(.*)@\1@g')
+  - doxygen_new="$DOXYGEN_DIR/build/bin/doxygen"
   - export doxygen_new
 
 # Generate and deploy documentation
 script:
-  - cd $TRAVIS_BUILD_DIR
-  - chmod +x generateDocumentationAndDeploy.sh
-  - ./generateDocumentationAndDeploy.sh
-
-after_success:
-  echo 'YAY!'
+  - $SCRIPTS_DIR/doxygen.sh
+  - sudo $SCRIPTS_DIR/truestudio.sh
+  - $SCRIPTS_DIR/generateDocumentationAndDeploy.sh

@@ -4,3 +4,6 @@
 [submodule "ESE"]
 	path = ESE
 	url = git@github.com:carnegiemellonracing/DIM-ESE
+[submodule "ci-scripts"]
+	path = ci-scripts
+	url = git@github.com:carnegiemellonracing/ci-scripts.git
