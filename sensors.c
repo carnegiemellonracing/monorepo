@@ -273,7 +273,7 @@ static thermistorTempConversion_t radThermTempConvs[] = {{
  * @brief Conversion function for ADC to radiator temperature.
  *
  * @param s The sensor.
- * @param r The raw reading.
+ * @param adcVal The raw reading.
  *
  * @return Radiator temperature in degrees C.
  */

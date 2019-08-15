@@ -24,7 +24,9 @@ typedef enum {
     SENSOR_CH_LEN
 } sensorChannel_t;
 
-cmr_sensorList_t sensorList;
+/** @brief Exported sensorlist for interface consumers.
+ * Populated automatically. */
+extern cmr_sensorList_t sensorList;
 
 void sensorsInit(void);
 

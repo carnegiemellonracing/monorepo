@@ -278,7 +278,7 @@ static void sendCoolStatus(void) {
 }
 
 /**
- * @btief Send AFC control message.
+ * @brief Send AFC control message.
  */
 static void sendAFCControl(void) {
     volatile cmr_canHeartbeat_t *heartbeatVSM = canGetPayload(CANRX_HEARTBEAT_VSM);
