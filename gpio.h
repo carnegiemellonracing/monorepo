@@ -32,6 +32,7 @@ typedef enum {
     GPIO_LEN    /**< @brief Total GPIO pins. */
 } gpio_t;
 
+/** @brief Data required to processes a button press. */
 typedef struct {
     gpio_t pin;     /**< @brief The triggering pin. */
     bool pressed;   /**< @brief `true` for pressed; `false` for released. */

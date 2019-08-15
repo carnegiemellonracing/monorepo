@@ -17,10 +17,14 @@
 /** @brief Represents a display list. */
 typedef struct tftDL tftDL_t;
 
+/** @brief Exported startup screen definition for interface consumers. */
 extern const tftDL_t tftDL_startup;
 
+/** @brief Exported ready-to-drive screen definition
+ * for interface consumers. */
 extern const tftDL_t tftDL_RTD;
 
+/** @brief Exported error screen definition for interface consumers. */
 extern const tftDL_t tftDL_error;
 
 void tftDL_RTDUpdate(

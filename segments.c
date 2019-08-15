@@ -47,6 +47,7 @@ typedef struct {
     cmr_i2c_t i2c;  /**< @brief I2C port. */
 } segments_t;
 
+/** @brief I2C port on which to command segments. */
 static segments_t segments;
 
 /**
