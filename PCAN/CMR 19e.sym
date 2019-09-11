@@ -1239,3 +1239,9 @@ Var=Ctrl_msg_inactive unsigned 35,1
 Var=LED_driver_defect unsigned 33,1
 Var=Save_charging_mode unsigned 32,1
 
+[Memorator_Broadcast]
+ID=605h
+DLC=1
+CycleTime=1000
+Timeout=10000
+Var=Memorator_status unsigned 0,8
