@@ -897,6 +897,318 @@ Var=Min_Cell_Temp_Index unsigned 40,8
 Var=Max_Cell_Temp_BMB unsigned 48,8
 Var=Max_Cell_Temp_Index unsigned 56,8
 
+[Memorator_Broadcast]
+ID=605h
+DLC=1
+CycleTime=1000
+Timeout=10000
+Var=Memorator_status unsigned 0,8
+
+[DILONG_Charger_Status]
+ID=18FF50E5h
+DLC=8
+Var=Output_Voltage unsigned 0,16 -m /u:V /f:0.1
+Var=Output_Current unsigned 16,16 -m /u:A /f:0.1
+Var=DILONG_ERR bit 32,1
+Var=DILONG_OVERTEMP bit 33,1
+Var=DILONG_INPUT_OVERVOLT bit 34,1
+Var=DILONG_START_STATE_N bit 35,1
+Var=DILONG_COMM_TIMEOUT bit 36,1
+
+[DILONG_Charger_Control]
+ID=1806E5F4h
+DLC=8
+Var=Max_Voltage unsigned 0,16 -m /u:V /f:0.1
+Var=Max_Current unsigned 16,16 -m /u:A /f:0.1
+Var=DILONG_Enable_N unsigned 32, 8
+Var=DILONG_Battery_Mode_N unsigned 40, 8
+
+[ELLIPSE_IMU_General_Status_1]
+ID=700h
+DLC=8
+Var=Time_Stamp_GS1 unsigned 0,32 /u:us
+Var=General_Status unsigned 32,16
+Var=Clock_Status unsigned 48,16
+
+[ELLIPSE_IMU_General_Status_2]
+ID=701h
+DLC=8
+Var=Com_Status unsigned 0,32
+Var=Aiding_Status unsigned 32,32
+
+[ELLIPSE_IMU_General_Status_3]
+ID=702h
+DLC=6
+Var=Solution_Status unsigned 0,32
+Var=Heave_Status_GENERAL3 unsigned 32,16
+
+[ELLIPSE_IMU_UTC_0]
+ID=703h
+DLC=8
+Var=Time_Stamp_UTC0 unsigned 0,32 /u:us
+Var=Gps_Tow_UTC0 unsigned 32,32 /u:ms
+
+[ELLIPSE_IMU_UTC_1]
+ID=704h
+DLC=8
+Var=Year unsigned 0,8 /u:year
+Var=Month unsigned 8,8 /u:month
+Var=Day unsigned 16,8 /u:d
+Var=Hour unsigned 24,8 /u:h
+Var=Min unsigned 32,8 /u:min
+Var=Sec unsigned 40,8 /u:s
+Var=Tenthms unsigned 48,16 /u:s
+
+[ELLIPSE_IMU_INFO]
+ID=710h
+DLC=8
+Var=Time_Stamp_IMU unsigned 0,32 /u:us
+Var=Imu_Status unsigned 32,16
+Var=Temperature signed 48,16 /u:°C
+
+[ELLIPSE_IMU_ACCEL]
+ID=711h
+DLC=6
+Var=Accel_X signed 0,16 /u:m.s-2
+Var=Accel_Y signed 16,16 /u:m.s-2
+Var=Accel_Z signed 32,16 /u:m.s-2
+
+[ELLIPSE_IMU_GYRO]
+ID=712h
+DLC=6
+Var=Gyro_X signed 0,16 /u:rad.s-1
+Var=Gyro_Y signed 16,16 /u:rad.s-1
+Var=Gyro_Z signed 32,16 /u:rad.s-1
+
+[ELLIPSE_IMU_DELTA_VEL]
+ID=713h
+DLC=6
+Var=Delta_Vel_X signed 0,16 /u:m.s-2
+Var=Delta_Vel_Y signed 16,16 /u:m.s-2
+Var=Delta_Vel_Z signed 32,16 /u:m.s-2
+
+[ELLIPSE_IMU_DELTA_ANGLE]
+ID=714h
+DLC=6
+Var=Delta_Angle_X signed 0,16 /u:rad.s-1
+Var=Delta_Angle_Y signed 16,16 /u:rad.s-1
+Var=Delta_Angle_Z signed 32,16 /u:rad.s-1
+
+[ELLIPSE_IMU_EKF_INFO]
+ID=720h
+DLC=4
+Var=Time_Stamp_EKF unsigned 0,32 /u:us
+
+[ELLIPSE_IMU_EKF_QUAT]
+ID=721h
+DLC=8
+Var=Q0 signed 0,16
+Var=Q1 signed 16,16
+Var=Q2 signed 32,16
+Var=Q3 signed 48,16
+
+
+[ELLIPSE_IMU_EKF_EULER]
+ID=722h
+DLC=6
+Var=Roll signed 0,16 /u:rad
+Var=Pitch signed 16,16 /u:rad
+Var=Yaw signed 32,16 /u:rad
+
+[ELLIPSE_IMU_EKF_ORIENT_ACC]
+ID=723h
+DLC=6
+Var=Roll_Acc unsigned 0,16 /u:rad
+Var=Pitch_Acc unsigned 16,16 /u:rad
+Var=Yaw_Acc unsigned 32,16 /u:rad
+
+[ELLIPSE_IMU_EKF_POS]
+ID=724h
+DLC=8
+Var=Latitude signed 0,32 /u:°
+Var=Longitude signed 32,32 /u:°
+
+[ELLIPSE_IMU_EKF_ALTITUDE]
+ID=725h
+DLC=6
+Var=Altitude signed 0,32 /u:m
+Var=Undulation signed 32,16 /u:m
+
+[ELLIPSE_IMU_EKF_POS_ACC]
+ID=726h
+DLC=6
+Var=Latitude_Acc unsigned 0,16 /u:m
+Var=Longitude_Acc unsigned 16,16 /u:m
+Var=Altitude_Acc unsigned 32,16 /u:m
+
+[ELLIPSE_IMU_EKF_VEL]
+ID=727h
+DLC=6
+Var=Velocity_N signed 0,16 /u:m.s-1
+Var=Velocity_E signed 16,16 /u:m.s-1
+Var=Velocity_D signed 32,16 /u:m.s-1
+
+[ELLIPSE_IMU_EKF_VEL_ACC]
+ID=728h
+DLC=6
+Var=Velocity_Acc_N unsigned 0,16 /u:m.s-1
+Var=Velocity_Acc_E unsigned 16,16 /u:m.s-1
+Var=Velocity_Acc_D unsigned 32,16 /u:m.s-1
+
+[ELLIPSE_IMU_SHIP_MOTION_INFO]
+ID=730h
+DLC=8
+Var=Time_Stamp_SHIP_MOTION unsigned 0,32 /u:us
+Var=Period_SHIP_MOTION unsigned 32,16 /u:s
+Var=Heave_Status_SHIP_MOTION unsigned 48,16
+
+[ELLIPSE_IMU_SHIP_MOTION_0]
+ID=731h
+DLC=6
+Var=Surge_SHIP_MOTION signed 0,16 /u:m
+Var=Sway_SHIP_MOTION signed 16,16 /u:m
+Var=Heave_SHIP_MOTION signed 32,16 /u:m
+
+[ELLIPSE_IMU_SHIP_MOTION_1]
+ID=732h
+DLC=6
+Var=Accel_X_SHIP_MOTION_1 signed 0,16 /u:m.s-2
+Var=Accel_Y_SHIP_MOTION_1 signed 16,16 /u:m.s-2
+Var=Accel_Z_SHIP_MOTION_1 signed 32,16 /u:m.s-2
+
+[ELLIPSE_IMU_SHIP_MOTION_2]
+ID=733h
+DLC=6
+Var=Vel_X_SHIP_MOTION_2 signed 0,16 /u:m.s-1
+Var=Vel_Y_SHIP_MOTION_2 signed 16,16 /u:m.s-1
+Var=Vel_Z_SHIP_MOTION_2 signed 32,16 /u:m.s-1
+
+[ELLIPSE_IMU_MAG_0]
+ID=740h
+DLC=6
+Var=Time_Stamp_MAG0 unsigned 0,32 /u:us
+Var=Mag_Status_MAG0 unsigned 32,16
+
+[ELLIPSE_IMU_MAG_1]
+ID=741h
+DLC=6
+Var=Mag_X_MAG1 signed 0,16 /u:a.u.
+Var=Mag_Y_MAG2 signed 16,16 /u:a.u.
+Var=Mag_Z_MAG2 signed 32,16 /u:a.u.
+
+[ELLIPSE_IMU_MAG_2]
+ID=742h
+DLC=6
+Var=Acc_X_MAG2 signed 0,16 /u:m.s-2
+Var=Acc_Y_MAG2 signed 16,16 /u:m.s-2
+Var=Acc_Z_MAG2 signed 32,16 /u:m.s-2
+
+[ELLIPSE_IMU_ODO_INFO]
+ID=743h
+DLC=6
+Var=Time_Stamp_ODO unsigned 0,32 /u:us
+Var=Odo_Status unsigned 32,16
+
+[ELLIPSE_IMU_ODO_VELOCITY]
+ID=744h
+DLC=4
+Var=Velocity_ODO float 0,32 /u:m.s-1
+
+[ELLIPSE_IMU_PRESSURE_INFO]
+ID=745h
+DLC=5
+Var=Time_Stamp_PRESSURE unsigned 0,32
+Var=Pressure_Status unsigned 32,8
+
+[ELLIPSE_IMU_PRESSURE_ALTITUDE]
+ID=746h
+DLC=8
+Var=Pressure_IMU float 0,32 /u:1
+Var=Altitude_IMU float 32,32 /u:1
+
+[ELLIPSE_IMU_GPS1_VEL_INFO]
+ID=750h
+DLC=8
+Var=Time_Stamp_GPS1_VEL unsigned 0,32 /u:us
+Var=Gps_Vel_Status unsigned 32,32
+
+[ELLIPSE_IMU_GPS1_VEL]
+ID=751h
+DLC=6
+Var=Vel_N signed 0,16 /u:m.s-1
+Var=Vel_E signed 16,16 /u:m.s-1
+Var=Vel_D signed 32,16 /u:m.s-1
+
+[ELLIPSE_IMU_GPS1_VEL_ACC]
+ID=752h
+DLC=6
+Var=Vel_Acc_N unsigned 0,16 /u:m.s-1
+Var=Vel_Acc_E unsigned 16,16 /u:m.s-1
+Var=Vel_Acc_D unsigned 32,16 /u:m.s-1
+
+[ELLIPSE_IMU_GPS1_COURSE]
+ID=753h
+DLC=4
+Var=Course unsigned 0,16 /u:°
+Var=Course_Acc unsigned 16,16 /u:°
+
+[ELLIPSE_IMU_GPS1_POS_INFO]
+ID=754h
+DLC=8
+Var=Time_Stamp_GPS1_POS unsigned 0,32 /u:us
+Var=Gps_Pos_Status unsigned 32,32
+
+[ELLIPSE_IMU_GPS1_POS]
+ID=755h
+DLC=8
+Var=Latitude_GPS1 signed 0,32 /u:°
+Var=Longitude_GPS1 signed 32,32 /u:°
+
+[ELLIPSE_IMU_GPS1_ALT]
+ID=756h
+DLC=8
+Var=Altitude_GPS1 signed 0,32 /u:m
+Var=Undulation_GPS1 signed 32,16 /u:m
+Var=Num_Sv_GPS1 unsigned 48,8
+Var=Diff_Corr_Age_GPS1 unsigned 56,8 /u:s
+
+[ELLIPSE_IMU_GPS1_POS_ACC]
+ID=757h
+DLC=8
+Var=Lat_Acc_GPS1 unsigned 0,16 /u:m
+Var=Long_Acc_GPS1 unsigned 16,16 /u:m
+Var=Alt_Acc_GPS1 unsigned 32,16 /u:m
+Var=Base_Station_Id_GPS1 unsigned 48,16
+
+[ELLIPSE_IMU_GPS1_HOT_INFO]
+ID=758h
+DLC=6
+Var=Time_Stamp_GPS1_HOT unsigned 0,32 /u:us
+Var=Gps_Hdt_Status unsigned 32,16
+
+[ELLIPSE_IMU_GPS1_HOT]
+ID=759h
+DLC=8
+Var=True_Heading_GPS1 unsigned 0,16 /u:°
+Var=True_Heading_Acc_GPS1 unsigned 16,16 /u:°
+Var=Pitch_GPS1 signed 32,16 /u:°
+Var=Pitch_Acc_GPS1 unsigned 48,16 /u:°
+
+[ELLIPSE_IMU_EVENT_INFO_A]
+ID=760h
+DLC=6
+Var=Time_Stamp_EVENTA unsigned 0,32 /u:us
+Var=Event_Status unsigned 32,16
+
+[ELLIPSE_IMU_EVENT_TIME_A]
+ID=761h
+DLC=8
+Var=Time_Offset_0 unsigned 0,16 /u:us
+Var=Time_Offset_1 unsigned 16,16 /u:us
+Var=Time_Offset_2 unsigned 32,16 /u:us
+Var=Time_Offset_3 unsigned 48,16 /u:us
+
+
 [BRUSA_Charger_Control]
 ID=528h
 DLC=7
