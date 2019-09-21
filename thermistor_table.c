@@ -366,8 +366,8 @@ const thermistorTempConversion_t radThermTempConvs[] = {{
 }};
 
 
-size_t radThermTempConvs_len = sizeof(radThermTempConvs) / sizeof(radThermTempConvs[0]);
-size_t switchThermTempConvs_len = sizeof(switchThermTempConvs) / sizeof(switchThermTempConvs[0]);
+const size_t radThermTempConvs_len = sizeof(radThermTempConvs) / sizeof(radThermTempConvs[0]);
+const size_t switchThermTempConvs_len = sizeof(switchThermTempConvs) / sizeof(switchThermTempConvs[0]);
 
 
 
