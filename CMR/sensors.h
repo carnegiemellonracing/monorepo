@@ -42,6 +42,9 @@ typedef uint32_t (*cmr_sensorSampleFn_t) (const cmr_sensor_t *sensor);
  */
 typedef int32_t (*cmr_sensorConvFn_t) (const cmr_sensor_t *sensor, uint32_t reading);
 
+/**
+ * @brief Represents a sensor
+ */
 struct cmr_sensor {
     const cmr_sensorSampleFn_t sample;  /**< @brief Sample callback. */
     const cmr_sensorConvFn_t conv;      /**< @brief Conversion callback, or NULL for the identity function. */
@@ -53,14 +56,17 @@ struct cmr_sensor {
     const cmr_canWarn_t warnFlag;       /**< @brief Heartbeat warning flag to set when out of range. */
     const cmr_canError_t errorFlag;     /**< @brief Heartbeat error flag to set when out of range. */
 
-    /** @brief Private fields; this struct is opaque to the library consumer. */
+    /** @struct cmr_sensor_private
+     *  Private fields; this struct is opaque to the library consumer
+     *
+     */
     struct cmr_sensor_private {
         uint32_t readingUpper;      /**< @brief Upper reading threshold. */
         uint32_t readingLower;      /**< @brief Lower reading threshold. */
 
         volatile int32_t value;             /**< @brief Current value in proper units. */
         volatile cmr_sensorError_t error;   /**< @brief Sensor error status. */
-    } _;
+    } _;								/**< @brief Private fields; this struct is opaque to the library consumer. */
 };
 
 /**

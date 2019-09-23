@@ -613,6 +613,7 @@ typedef struct {
     int16_t commandedTorque;
     /** @brief Measured torque produced (torque in N.m. times 10). */
     int16_t torqueFeedback;
+    /** @brief Time since power on, increments every .003 sec (time in .003s) */
     uint32_t powerOnTimer;
 } cmr_canRMSTorqueDiag_t;
 
