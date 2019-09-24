@@ -66,7 +66,7 @@ struct cmr_sensor {
 
         volatile int32_t value;             /**< @brief Current value in proper units. */
         volatile cmr_sensorError_t error;   /**< @brief Sensor error status. */
-    } _;								/**< @brief Private fields; this struct is opaque to the library consumer. */
+    } _;                               /**< @brief Private fields; this struct is opaque to the library consumer. */
 };
 
 /**
