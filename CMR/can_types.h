@@ -493,8 +493,8 @@ typedef enum {
 
 /** @brief Powertrain Thermal Controller cooling status. */
 typedef struct {
-    uint8_t fanState;            /**< @brief Radiator fan state. */
-    uint8_t pumpState;           /**< @brief Radiator water pump state. */
+    uint8_t fanState;             /**< @brief Radiator fan state. */
+    uint8_t pumpState;            /**< @brief Radiator water pump state. */
     uint16_t preRadiatorTemp_dC;  /**< @brief Pre-radiator water temperature (.1 C). */
     uint16_t postRadiatorTemp_dC; /**< @brief Post-radiator water temperature (.1 C). */
 } cmr_canPTCCoolingStatus_t;
