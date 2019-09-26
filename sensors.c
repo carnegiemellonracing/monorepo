@@ -172,7 +172,7 @@ static int32_t adcConvSwitchTemp_dC(const cmr_sensor_t *s, uint32_t adcVal) {
  *
  * @return Radiator temperature in 10th of degrees C.
  */
-static int32_t adcConvRadTherm(const cmr_sensor_t *s, uint32_t adcVal) {
+static int32_t adcConvRadTherm_dC(const cmr_sensor_t *s, uint32_t adcVal) {
     uint32_t thermistorResistance_Ohm =
         (SENSORS_RAD_TEMP_MULT * 10) / (adcVal * 8) - SENSORS_RAD_TEMP_DIV_RES;
 
@@ -186,11 +186,11 @@ static int32_t adcConvRadTherm(const cmr_sensor_t *s, uint32_t adcVal) {
             uint32_t aboveRes_Ohm = radThermTempConvs[i].resistance_Ohm - thermistorResistance_Ohm;
             uint32_t diffRes_Ohm = radThermTempConvs[i].resistance_Ohm - radThermTempConvs[i+1].resistance_Ohm;
 
-            uint32_t pcntOffsetRes = aboveRes_Ohm * 1024 / diffRes_Ohm;
+            uint32_t offsetRes_pcnt = aboveRes_Ohm * 1024 / diffRes_Ohm;
 
-            uint32_t diffTemp = radThermTempConvs[i+1].temp_dC - radThermTempConvs[i].temp_dC;
+            uint32_t diffTemp_dC = radThermTempConvs[i+1].temp_dC - radThermTempConvs[i].temp_dC;
 
-            uint32_t offsetTemp = pcntOffsetRes * diffTemp / 1024;
+            uint32_t offsetTemp = offsetRes_pcnt * diffTemp_dC / 1024;
 
             return radThermTempConvs[i].temp_dC + offsetTemp;
         }
@@ -256,14 +256,14 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     },
     [SENSOR_CH_PRE_RAD_THERM] = {
         .sample = sampleADCSensor,
-        .conv = adcConvRadTherm,
+        .conv = adcConvRadTherm_dC,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10
     },
     [SENSOR_CH_POST_RAD_THERM] = {
         .sample = sampleADCSensor,
-        .conv = adcConvRadTherm,
+        .conv = adcConvRadTherm_dC,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10
