@@ -10,6 +10,7 @@
 #ifdef HAL_CAN_MODULE_ENABLED
 
 #include <string.h> // memcpy()
+//#include <stdbool.h> // bool
 
 #include "rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
 #include "panic.h"  // cmr_panic()
@@ -341,19 +342,21 @@ CAN_RX_FIFO_PENDING(1)
  * @param rxPin Receiving GPIO pin (`GPIO_PIN_x` from `stm32f4xx_hal_gpio.h`).
  * @param txPort Transmitting GPIO port.
  * @param txPin Transmitting GPIO pin.
+ * @param has_hse_clock if 96Mhz external clock is used instead of 16Mhz internal clock.
  */
 void cmr_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
     cmr_canRXCallback_t rxCallback,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
+    GPIO_TypeDef *txPort, uint16_t txPin,
+	bool has_hse_clock
 ) {
     *can = (cmr_can_t) {
         .handle = {
             .Instance = instance,
             .Init = {
-                .Prescaler = 12,
+                .Prescaler = has_hse_clock ? 12 : 2,
                 .Mode = CAN_MODE_NORMAL,
                 .SyncJumpWidth = CAN_SJW_2TQ,
                 .TimeSeg1 = CAN_BS1_6TQ,
