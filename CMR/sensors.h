@@ -56,9 +56,10 @@ struct cmr_sensor {
     const cmr_canWarn_t warnFlag;       /**< @brief Heartbeat warning flag to set when out of range. */
     const cmr_canError_t errorFlag;     /**< @brief Heartbeat error flag to set when out of range. */
 
-    /** @struct cmr_sensor_private
-     *  Private fields; this struct is opaque to the library consumer
+    /**
+     * @brief Private fields.
      *
+     * This struct is opaque to the library consumer.
      */
     struct cmr_sensor_private {
         uint32_t readingUpper;      /**< @brief Upper reading threshold. */
@@ -66,7 +67,7 @@ struct cmr_sensor {
 
         volatile int32_t value;             /**< @brief Current value in proper units. */
         volatile cmr_sensorError_t error;   /**< @brief Sensor error status. */
-    } _;                               /**< @brief Private fields; this struct is opaque to the library consumer. */
+    } _;                                /**< @brief Private fields; this struct is opaque to the library consumer. */
 };
 
 /**
