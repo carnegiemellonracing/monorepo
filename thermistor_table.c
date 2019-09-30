@@ -1,5 +1,5 @@
 /**
- * @file thermistor_table.h
+ * @file thermistor_table.c
  * @brief thermistor resistance to temperature tables.
  *
  * @author carnegie mellon racing
