@@ -1,8 +1,8 @@
 /**
  * @file sensors.c
- * @brief Board-specific sensors implementation.
+ * @brief board-specific sensors implementation.
  *
- * @author Carnegie Mellon Racing
+ * @author carnegie mellon racing
  */
 
 #include <CMR/tasks.h>  // Task interface
@@ -176,27 +176,27 @@ static int32_t adcConvRadTherm_dC(const cmr_sensor_t *s, uint32_t adcVal) {
     uint32_t thermistorResistance_Ohm =
         (SENSORS_RAD_TEMP_MULT * 10) / (adcVal * 8) - SENSORS_RAD_TEMP_DIV_RES;
 
-    if (thermistorResistance_Ohm >= radThermTempConvs[0].resistance_Ohm) {
-        return radThermTempConvs[0].temp_dC;
+    if (thermistorResistance_Ohm >= thermTempConvsRadiator[0].resistance_Ohm) {
+        return thermTempConvsRadiator[0].temp_dC;
     }
 
     for (size_t i = 0; i < radThermTempConvs_len - 1; i++) {
-        if (thermistorResistance_Ohm <  radThermTempConvs[i].resistance_Ohm &&
-            thermistorResistance_Ohm >= radThermTempConvs[i+1].resistance_Ohm) {
-            uint32_t aboveRes_Ohm = radThermTempConvs[i].resistance_Ohm - thermistorResistance_Ohm;
-            uint32_t diffRes_Ohm = radThermTempConvs[i].resistance_Ohm - radThermTempConvs[i+1].resistance_Ohm;
+        if (thermistorResistance_Ohm <  thermTempConvsRadiator[i].resistance_Ohm &&
+            thermistorResistance_Ohm >= thermTempConvsRadiator[i+1].resistance_Ohm) {
+            uint32_t aboveRes_Ohm = thermTempConvsRadiator[i].resistance_Ohm - thermistorResistance_Ohm;
+            uint32_t diffRes_Ohm = thermTempConvsRadiator[i].resistance_Ohm - thermTempConvsRadiator[i+1].resistance_Ohm;
 
             uint32_t offsetRes_pcnt = aboveRes_Ohm * 1024 / diffRes_Ohm;
 
-            uint32_t diffTemp_dC = radThermTempConvs[i+1].temp_dC - radThermTempConvs[i].temp_dC;
+            uint32_t diffTemp_dC = thermTempConvsRadiator[i+1].temp_dC - thermTempConvsRadiator[i].temp_dC;
 
             uint32_t offsetTemp = offsetRes_pcnt * diffTemp_dC / 1024;
 
-            return radThermTempConvs[i].temp_dC + offsetTemp;
+            return thermTempConvsRadiator[i].temp_dC + offsetTemp;
         }
     }
 
-    return radThermTempConvs[radThermTempConvs_len - 1].temp_dC;
+    return thermTempConvsRadiator[radThermTempConvs_len - 1].temp_dC;
 }
 
 /**

@@ -1,3 +1,10 @@
+/**
+ * @file thermistor_table.h
+ * @brief thermistor resistance to temperature tables.
+ *
+ * @author carnegie mellon racing
+ */
+
 #include "thermistor_table.h"
 
 /**
@@ -5,7 +12,7 @@
  *
  * @warning MUST be sorted in descending order of resistance!
  */
-const thermistorTempConversion_t switchThermTempConvs[] = {{
+const thermistorTempConversion_t thermTempConvsSwitch[] = {{
     .resistance_Ohm = 27280,
     .temp_dC = 0
 }, {
@@ -60,7 +67,7 @@ const thermistorTempConversion_t switchThermTempConvs[] = {{
  *
  * @warning MUST be sorted in descending order of resistance!
  */
-const thermistorTempConversion_t radThermTempConvs[] = {{
+const thermistorTempConversion_t thermTempConvsRadiator[] = {{
     .resistance_Ohm = 32650,
     .temp_dC = 0
 }, {
@@ -366,7 +373,7 @@ const thermistorTempConversion_t radThermTempConvs[] = {{
 }};
 
 
-const size_t radThermTempConvs_len = sizeof(radThermTempConvs) / sizeof(radThermTempConvs[0]);
+const size_t radThermTempConvs_len = sizeof(thermTempConvsRadiator) / sizeof(thermTempConvsRadiator[0]);
 const size_t switchThermTempConvs_len = sizeof(switchThermTempConvs) / sizeof(switchThermTempConvs[0]);
 
 

@@ -1,11 +1,12 @@
+/**
+ * @file thermistor_table.h
+ * @brief header for thermistor resistance to temperature tables.
+ *
+ * @author carnegie mellon racing
+ */
+
 #include <stdint.h>
 #include <stddef.h>
-
-/*
- * thermistor_table.h
- *
- *  Created on: Sep 21, 2019
- */
 
 #ifndef THERMISTOR_TABLE_H_
 #define THERMISTOR_TABLE_H_
@@ -17,7 +18,7 @@ typedef struct {
 } thermistorTempConversion_t;
 
 extern const thermistorTempConversion_t switchThermTempConvs[];
-extern const thermistorTempConversion_t radThermTempConvs[];
+extern const thermistorTempConversion_t thermTempConvsRadiator[];
 
 const extern size_t radThermTempConvs_len;
 const extern size_t switchThermTempConvs_len;
