@@ -518,6 +518,18 @@ typedef struct {
     uint8_t dcdcFanDuty_pcnt;   /**< @brief DCDC fan duty cycle. */
 } cmr_canPTCAFCControl_t;
 
+
+// ------------------------------------------------------------------------------------------------
+// Data Acquisition
+
+/** @brief Sensor valuese. */
+typedef struct {
+    uint32_t sensor1;       /**< @brief Raw sensor 1 value. */
+    uint32_t sensor2;       /**< @brief Raw sensor 2 value. */
+    uint32_t sensor3;       /**< @brief Raw sensor 3 value. */
+    uint32_t sensor4;       /**< @brief Raw sensor 4 value. */
+} cmr_canDAQSensorsADC_t;
+
 // ------------------------------------------------------------------------------------------------
 // Rinehart Motor Controller Definitions
 
