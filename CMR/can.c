@@ -350,7 +350,7 @@ void cmr_canInit(
     cmr_canRXCallback_t rxCallback,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
     GPIO_TypeDef *txPort, uint16_t txPin,
-	bool has_hse_clock
+    bool has_hse_clock
 ) {
     *can = (cmr_can_t) {
         .handle = {
