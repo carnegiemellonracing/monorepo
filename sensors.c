@@ -1,8 +1,8 @@
 /**
  * @file sensors.c
- * @brief board-specific sensors implementation.
+ * @brief Board-specific sensors implementation.
  *
- * @author carnegie mellon racing
+ * @author Carnegie Mellon Racing
  */
 
 #include <CMR/tasks.h>  // Task interface
@@ -155,13 +155,13 @@ static int32_t adcConvSwitchTemp_dC(const cmr_sensor_t *s, uint32_t adcVal) {
     // Rth = (330,000,000 / (adcVal * 8)) - 10000
     uint32_t thermistorResistance_Ohm = (330000000 / (adcVal * 8)) - 10000;
 
-    for (size_t i = 0; i < switchThermTempConvs_len; i++) {
-        if (thermistorResistance_Ohm >= switchThermTempConvs[i].resistance_Ohm) {
-            return switchThermTempConvs[i].temp_dC;
+    for (size_t i = 0; i < thermTempConvsSwitch_len; i++) {
+        if (thermistorResistance_Ohm >= thermTempConvsSwitch[i].resistance_Ohm) {
+            return thermTempConvsSwitch[i].temp_dC;
         }
     }
 
-    return switchThermTempConvs[switchThermTempConvs_len - 1].temp_dC;
+    return thermTempConvsSwitch[thermTempConvsSwitch_len - 1].temp_dC;
 }
 
 /**
@@ -180,7 +180,7 @@ static int32_t adcConvRadTherm_dC(const cmr_sensor_t *s, uint32_t adcVal) {
         return thermTempConvsRadiator[0].temp_dC;
     }
 
-    for (size_t i = 0; i < radThermTempConvs_len - 1; i++) {
+    for (size_t i = 0; i < thermTempConvsRadiator_len - 1; i++) {
         if (thermistorResistance_Ohm <  thermTempConvsRadiator[i].resistance_Ohm &&
             thermistorResistance_Ohm >= thermTempConvsRadiator[i+1].resistance_Ohm) {
             uint32_t aboveRes_Ohm = thermTempConvsRadiator[i].resistance_Ohm - thermistorResistance_Ohm;
@@ -196,7 +196,7 @@ static int32_t adcConvRadTherm_dC(const cmr_sensor_t *s, uint32_t adcVal) {
         }
     }
 
-    return thermTempConvsRadiator[radThermTempConvs_len - 1].temp_dC;
+    return thermTempConvsRadiator[thermTempConvsRadiator_len - 1].temp_dC;
 }
 
 /**

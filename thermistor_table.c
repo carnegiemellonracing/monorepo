@@ -2,7 +2,7 @@
  * @file thermistor_table.c
  * @brief thermistor resistance to temperature tables.
  *
- * @author carnegie mellon racing
+ * @author Carnegie Mellon Racing
  */
 
 #include "thermistor_table.h"
@@ -373,8 +373,6 @@ const thermistorTempConversion_t thermTempConvsRadiator[] = {{
 }};
 
 
-const size_t radThermTempConvs_len = sizeof(thermTempConvsRadiator) / sizeof(thermTempConvsRadiator[0]);
-const size_t switchThermTempConvs_len = sizeof(switchThermTempConvs) / sizeof(switchThermTempConvs[0]);
-
-
+const size_t thermTempConvsRadiator_len = sizeof(thermTempConvsRadiator) / sizeof(thermTempConvsRadiator[0]);
+const size_t thermTempConvsSwitch_len = sizeof(thermTempConvsSwitch) / sizeof(thermTempConvsSwitch[0]);
 

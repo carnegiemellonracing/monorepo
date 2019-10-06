@@ -2,7 +2,7 @@
  * @file thermistor_table.h
  * @brief header for thermistor resistance to temperature tables.
  *
- * @author carnegie mellon racing
+ * @author Carnegie Mellon Racing
  */
 
 #include <stdint.h>
@@ -17,10 +17,10 @@ typedef struct {
     int32_t temp_dC;             /**< @brief Temperature (10th degrees Celsius). */
 } thermistorTempConversion_t;
 
-extern const thermistorTempConversion_t switchThermTempConvs[];
+extern const thermistorTempConversion_t thermTempConvsSwitch[];
 extern const thermistorTempConversion_t thermTempConvsRadiator[];
 
-const extern size_t radThermTempConvs_len;
-const extern size_t switchThermTempConvs_len;
+const extern size_t thermTempConvsRadiator_len;
+const extern size_t thermTempConvsSwitch_len;
 
 #endif /* THERMISTOR_TABLE_H_ */
