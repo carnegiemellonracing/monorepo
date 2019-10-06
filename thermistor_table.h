@@ -20,7 +20,10 @@ typedef struct {
 extern const thermistorTempConversion_t thermTempConvsSwitch[];
 extern const thermistorTempConversion_t thermTempConvsRadiator[];
 
+/** @brief Table length of thermTempConvsRadiator. */
 const extern size_t thermTempConvsRadiator_len;
+
+/** @brief Table length of thermTempConvsSwitch. */
 const extern size_t thermTempConvsSwitch_len;
 
 #endif /* THERMISTOR_TABLE_H_ */
