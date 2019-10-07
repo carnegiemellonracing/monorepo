@@ -1,8 +1,13 @@
 # `DIM-ESE`
 ## Driver Interface Module EVE Screen Editor Project
 
-This repository contains [EVE Screen Editor (ESE)][ESE] screens for the Driver
-Interface Module's display.
+This repository contains screens for the Driver Interface Module's (DIM) display.
+
+## Screen Creation Workflow
+
+1. Create or edit a screen using the [EVE Screen Editor (ESE)][ESE].
+2. Use the script ese_coproc.py to convert the resulting .ese file. Copy the script output into an appropriately named .rawh file.
+3. The .rawh file can now be included in DIM code. See DIM/tftDL.c to see how other .rawh files are included.
 
 ## Fonts workaround
 
