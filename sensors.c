@@ -7,6 +7,7 @@
 
 #include <CMR/tasks.h>  // Task interface
 
+#include "thermistor_table.h" // switchThermTempConvs, radThermTempConvs
 #include "sensors.h"    // Interface to implement
 #include "adc.h"        // adcChannels_t, adcChannels
 #include <CMR/adc.h>    // ADC_MAX
@@ -48,67 +49,6 @@ static uint32_t sampleADCSensor(const cmr_sensor_t *sensor) {
     configASSERT(sensorChannel < SENSOR_CH_LEN);
     return adcRead(sensorsADCChannels[sensorChannel]);
 }
-
-/** @brief Represents a thermistor temperature conversion. */
-typedef struct {
-    uint32_t resistance_Ohm;    /**< @brief Resistance (Ohms). */
-    int32_t temp_C;             /**< @brief Temperature (degrees Celsius). */
-} thermistorTempConversion_t;
-
-/**
- * @brief Conversions from thermistor resistance to temperature.
- *
- * @warning MUST be sorted in descending order of resistance!
- */
-static thermistorTempConversion_t thermTempConvs[] = {{
-    .resistance_Ohm = 27280,
-    .temp_C = 0
-}, {
-    .resistance_Ohm = 17960,
-    .temp_C = 10,
-}, {
-    .resistance_Ohm = 12090,
-    .temp_C = 20
-}, {
-    .resistance_Ohm = 8310,
-    .temp_C = 30
-}, {
-    .resistance_Ohm = 5826,
-    .temp_C = 40
-}, {
-    .resistance_Ohm = 4158,
-    .temp_C = 50
-}, {
-    .resistance_Ohm = 3019,
-    .temp_C = 60
-}, {
-    .resistance_Ohm = 2227,
-    .temp_C = 70
-}, {
-    .resistance_Ohm = 1668,
-    .temp_C = 80
-}, {
-    .resistance_Ohm = 1267,
-    .temp_C = 90
-}, {
-    .resistance_Ohm = 975,
-    .temp_C = 100
-}, {
-    .resistance_Ohm = 760,
-    .temp_C = 110
-}, {
-    .resistance_Ohm = 599,
-    .temp_C = 120
-}, {
-    .resistance_Ohm = 478,
-    .temp_C = 130
-}, {
-    .resistance_Ohm = 385,
-    .temp_C = 140
-}, {
-    .resistance_Ohm = 313,
-    .temp_C = 150
-}};
 
 /**
  * @brief Scales a raw ADC reading from a sensor.
@@ -202,9 +142,9 @@ static int32_t adcConvFanCurrent_mA(const cmr_sensor_t *s, uint32_t r) {
  * @param s The sensor.
  * @param adcVal The raw reading.
  *
- * @return Switch temperature in degrees C.
+ * @return Switch temperature in 10th of degrees C.
  */
-static int32_t adcConvSwitchTemp_C(const cmr_sensor_t *s, uint32_t adcVal) {
+static int32_t adcConvSwitchTemp_dC(const cmr_sensor_t *s, uint32_t adcVal) {
     (void) s;   // Placate compiler.
 
     // adcVal * 0.8 mV/bit = 3300 mV * (10 kOhm / (10 kOhm + Rth))
@@ -215,59 +155,14 @@ static int32_t adcConvSwitchTemp_C(const cmr_sensor_t *s, uint32_t adcVal) {
     // Rth = (330,000,000 / (adcVal * 8)) - 10000
     uint32_t thermistorResistance_Ohm = (330000000 / (adcVal * 8)) - 10000;
 
-    size_t tableLen = sizeof(thermTempConvs) / sizeof(thermTempConvs[0]);
-
-    for (size_t i = 0; i < tableLen; i++) {
-        if (thermistorResistance_Ohm >= thermTempConvs[i].resistance_Ohm) {
-            return thermTempConvs[i].temp_C;
+    for (size_t i = 0; i < thermTempConvsSwitch_len; i++) {
+        if (thermistorResistance_Ohm >= thermTempConvsSwitch[i].resistance_Ohm) {
+            return thermTempConvsSwitch[i].temp_dC;
         }
     }
 
-    return thermTempConvs[tableLen - 1].temp_C;
+    return thermTempConvsSwitch[thermTempConvsSwitch_len - 1].temp_dC;
 }
-
-/**
- * @brief Conversions from rad thermistor (USP10978) resistance to temperature.
- *
- * @warning MUST be sorted in descending order of resistance!
- */
-static thermistorTempConversion_t radThermTempConvs[] = {{
-    .resistance_Ohm = 32650,
-    .temp_C = 0
-}, {
-    .resistance_Ohm = 19901,
-    .temp_C = 10,
-}, {
-    .resistance_Ohm = 12493,
-    .temp_C = 20
-}, {
-    .resistance_Ohm = 8057,
-    .temp_C = 30
-}, {
-    .resistance_Ohm = 5326,
-    .temp_C = 40
-}, {
-    .resistance_Ohm = 3602,
-    .temp_C = 50
-}, {
-    .resistance_Ohm = 2488,
-    .temp_C = 60
-}, {
-    .resistance_Ohm = 1752,
-    .temp_C = 70
-}, {
-    .resistance_Ohm = 1255,
-    .temp_C = 80
-}, {
-    .resistance_Ohm = 915,
-    .temp_C = 90
-}, {
-    .resistance_Ohm = 678,
-    .temp_C = 100
-}, {
-    .resistance_Ohm = 300,
-    .temp_C = 110
-}};
 
 /**
  * @brief Conversion function for ADC to radiator temperature.
@@ -275,34 +170,33 @@ static thermistorTempConversion_t radThermTempConvs[] = {{
  * @param s The sensor.
  * @param adcVal The raw reading.
  *
- * @return Radiator temperature in degrees C.
+ * @return Radiator temperature in 10th of degrees C.
  */
-static int32_t adcConvRadTherm(const cmr_sensor_t *s, uint32_t adcVal) {
+static int32_t adcConvRadTherm_dC(const cmr_sensor_t *s, uint32_t adcVal) {
     uint32_t thermistorResistance_Ohm =
         (SENSORS_RAD_TEMP_MULT * 10) / (adcVal * 8) - SENSORS_RAD_TEMP_DIV_RES;
 
-    size_t tableLen = sizeof(radThermTempConvs) / sizeof(radThermTempConvs[0]);
+    if (thermistorResistance_Ohm >= thermTempConvsRadiator[0].resistance_Ohm) {
+        return thermTempConvsRadiator[0].temp_dC;
+    }
 
-    if (thermistorResistance_Ohm >= radThermTempConvs[0].resistance_Ohm)
-        return radThermTempConvs[0].temp_C;
+    for (size_t i = 0; i < thermTempConvsRadiator_len - 1; i++) {
+        if (thermistorResistance_Ohm <  thermTempConvsRadiator[i].resistance_Ohm &&
+            thermistorResistance_Ohm >= thermTempConvsRadiator[i+1].resistance_Ohm) {
+            uint32_t aboveRes_Ohm = thermTempConvsRadiator[i].resistance_Ohm - thermistorResistance_Ohm;
+            uint32_t diffRes_Ohm = thermTempConvsRadiator[i].resistance_Ohm - thermTempConvsRadiator[i+1].resistance_Ohm;
 
-    for (size_t i = 0; i < tableLen - 1; i++) {
-        if (thermistorResistance_Ohm <  radThermTempConvs[i].resistance_Ohm &&
-            thermistorResistance_Ohm >= radThermTempConvs[i+1].resistance_Ohm) {
-            uint32_t aboveRes = radThermTempConvs[i].resistance_Ohm - thermistorResistance_Ohm;
-            uint32_t diffRes = radThermTempConvs[i].resistance_Ohm - radThermTempConvs[i+1].resistance_Ohm;
+            uint32_t offsetRes_pcnt = aboveRes_Ohm * 1024 / diffRes_Ohm;
 
-            uint32_t pcntOffsetRes = aboveRes * 1024 / diffRes;
+            uint32_t diffTemp_dC = thermTempConvsRadiator[i+1].temp_dC - thermTempConvsRadiator[i].temp_dC;
 
-            uint32_t diffTemp = radThermTempConvs[i+1].temp_C - radThermTempConvs[i].temp_C;
+            uint32_t offsetTemp = offsetRes_pcnt * diffTemp_dC / 1024;
 
-            uint32_t offsetTemp = pcntOffsetRes * diffTemp / 1024;
-
-            return radThermTempConvs[i].temp_C + offsetTemp;
+            return thermTempConvsRadiator[i].temp_dC + offsetTemp;
         }
     }
 
-    return radThermTempConvs[tableLen - 1].temp_C;
+    return thermTempConvsRadiator[thermTempConvsRadiator_len - 1].temp_dC;
 }
 
 /**
@@ -348,28 +242,28 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     },
     [SENSOR_CH_BOARD_THERM_1] = {
         .sample = sampleADCSensor,
-        .conv = adcConvSwitchTemp_C,
+        .conv = adcConvSwitchTemp_dC,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10
     },
     [SENSOR_CH_BOARD_THERM_2] = {
         .sample = sampleADCSensor,
-        .conv = adcConvSwitchTemp_C,
+        .conv = adcConvSwitchTemp_dC,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10
     },
     [SENSOR_CH_PRE_RAD_THERM] = {
         .sample = sampleADCSensor,
-        .conv = adcConvRadTherm,
+        .conv = adcConvRadTherm_dC,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10
     },
     [SENSOR_CH_POST_RAD_THERM] = {
         .sample = sampleADCSensor,
-        .conv = adcConvRadTherm,
+        .conv = adcConvRadTherm_dC,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10

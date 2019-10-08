@@ -262,16 +262,16 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
  * @brief Send cooling system status on CAN bus.
  */
 static void sendCoolStatus(void) {
-    int32_t preRadiatorTemp_C =
+    int32_t preRadiatorTemp_dC =
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_PRE_RAD_THERM);
-    int32_t postRadiatorTemp_C =
+    int32_t postRadiatorTemp_dC =
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_POST_RAD_THERM);
 
     cmr_canPTCCoolingStatus_t coolMsg = {
         .fanState = fanState,
         .pumpState = pumpState,
-        .preRadiatorTemp_C = preRadiatorTemp_C,
-        .postRadiatorTemp_C = postRadiatorTemp_C
+        .preRadiatorTemp_dC = preRadiatorTemp_dC,
+        .postRadiatorTemp_dC = postRadiatorTemp_dC
     };
 
     canTX(CMR_CANID_PTC_COOLING_STATUS, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
