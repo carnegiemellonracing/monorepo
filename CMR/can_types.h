@@ -493,10 +493,10 @@ typedef enum {
 
 /** @brief Powertrain Thermal Controller cooling status. */
 typedef struct {
-    uint8_t fanState;            /**< @brief Radiator fan state. */
-    uint8_t pumpState;           /**< @brief Radiator water pump state. */
-    uint16_t preRadiatorTemp_C;  /**< @brief Pre-radiator water temperature (C). */
-    uint16_t postRadiatorTemp_C; /**< @brief Post-radiator water temperature (C). */
+    uint8_t fanState;             /**< @brief Radiator fan state. */
+    uint8_t pumpState;            /**< @brief Radiator water pump state. */
+    uint16_t preRadiatorTemp_dC;  /**< @brief Pre-radiator water temperature (.1 C). */
+    uint16_t postRadiatorTemp_dC; /**< @brief Post-radiator water temperature (.1 C). */
 } cmr_canPTCCoolingStatus_t;
 
 /** @brief Powertrain Thermal Controller voltage diagnostics. */
@@ -613,6 +613,7 @@ typedef struct {
     int16_t commandedTorque;
     /** @brief Measured torque produced (torque in N.m. times 10). */
     int16_t torqueFeedback;
+    /** @brief Time since power on, increments every .003 sec (time in .003s) */
     uint32_t powerOnTimer;
 } cmr_canRMSTorqueDiag_t;
 

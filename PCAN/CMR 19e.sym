@@ -542,8 +542,8 @@ CycleTime=100
 Timeout=1000
 Var=PTC_fanState unsigned 0,8 /e:FanState
 Var=PTC_pumpState unsigned 8,8 /e:PumpState
-Var=PTC_preRadiatorTemp unsigned 16,16 /u:C
-Var=PTC_postRadiatorTemp unsigned 32,16 /u:C
+Var=PTC_preRadiatorTemp unsigned 16,16 /u:dC
+Var=PTC_postRadiatorTemp unsigned 32,16 /u:dC
 
 [PTC_AFCControl]
 ID=254h
