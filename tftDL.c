@@ -151,8 +151,8 @@ void tftDL_RTDUpdate(
     int32_t dcdcTemp_C,
     int32_t motorTemp_C,
     int32_t acTemp_C,
-    int32_t mcTemp_C)
-{
+    int32_t mcTemp_C
+) {
     uint32_t *bg_color = (void *) (tftDL_RTDData + 1);
     uint32_t bg_color_cmd = (memorator_present) ? 0x02000000 : 0x02969600;
 
