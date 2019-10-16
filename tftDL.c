@@ -153,30 +153,30 @@ void tftDL_RTDUpdate(
 ) {
     static struct {
         char buf[3];
-    } *const speed_mph_str = (void *) (tftDL_RTDData + 72);
+    } *const speed_mph_str = (void *) (tftDL_RTDData + 73);
 
     static struct {
         char buf[4];
-    } *const hvVoltage_mV_str = (void *) (tftDL_RTDData + 91);
+    } *const hvVoltage_mV_str = (void *) (tftDL_RTDData + 92);
 
     static struct {
         char buf[3];
-    } *const dcdcTemp_C_str = (void *) (tftDL_RTDData + 125);
+    } *const dcdcTemp_C_str = (void *) (tftDL_RTDData + 126);
 
     static struct {
         char buf[3];
-    } *const motorTemp_C_str = (void *) (tftDL_RTDData + 130);
+    } *const motorTemp_C_str = (void *) (tftDL_RTDData + 131);
 
     static struct {
         char buf[3];
-    } *const acTemp_C_str = (void *) (tftDL_RTDData + 120);
+    } *const acTemp_C_str = (void *) (tftDL_RTDData + 121);
 
     static struct {
         char buf[3];
-    } *const mcTemp_C_str = (void *) (tftDL_RTDData + 135);
+    } *const mcTemp_C_str = (void *) (tftDL_RTDData + 136);
 
     static const tftDL_bar_t hvVoltage_mV_bar = {
-        .addr = tftDL_RTDData + 85,
+        .addr = tftDL_RTDData + 86,
         .topY = 12,
         .botY = 168,
         .maxVal = 400000,
@@ -185,10 +185,10 @@ void tftDL_RTDUpdate(
 
     static struct {
         char buf[3];
-    } *const power_kW_str = (void *) (tftDL_RTDData + 115);
+    } *const power_kW_str = (void *) (tftDL_RTDData + 116);
 
     static const tftDL_bar_t power_kW_bar = {
-        .addr = tftDL_RTDData + 109,
+        .addr = tftDL_RTDData + 110,
         .topY = 12,
         .botY = 168,
         .maxVal = 85,
