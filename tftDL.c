@@ -129,6 +129,7 @@ static void tftDL_barSetY(const tftDL_bar_t *bar, int32_t val) {
 /**
  * @brief Updates the ready-to-drive screen.
  *
+ * @param memorator_present Memorator present (based on heartbeat)
  * @param speed_mph Speed (from CDC)
  * @param hvVoltage_mV Pack Voltage (from HVC)
  * @param power_kW Electrical power dissipation
@@ -143,14 +144,18 @@ static void tftDL_barSetY(const tftDL_bar_t *bar, int32_t val) {
  * Referred from RMS via CDC. Deg. C.
  */
 void tftDL_RTDUpdate(
+    bool memorator_present,
     uint32_t speed_mph,
     int32_t hvVoltage_mV,
     int32_t power_kW,
     int32_t dcdcTemp_C,
     int32_t motorTemp_C,
     int32_t acTemp_C,
-    int32_t mcTemp_C
-) {
+    int32_t mcTemp_C)
+{
+    uint32_t *bg_color = (void *) (tftDL_RTDData + 1);
+    uint32_t bg_color_cmd = (memorator_present) ? 0x02000000 : 0x02969600;
+
     static struct {
         char buf[3];
     } *const speed_mph_str = (void *) (tftDL_RTDData + 73);
@@ -194,6 +199,10 @@ void tftDL_RTDUpdate(
         .maxVal = 85,
         .minVal = 0
     };
+
+    /* Background color */
+    // TODO: Can I use tftDL_setColor?
+    *bg_color = bg_color_cmd;
 
     /* Voltage Bar */
     snprintf(

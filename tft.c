@@ -388,6 +388,8 @@ static void drawErrorScreen(void) {
  */
 static void drawRTDScreen(void) {
     /* Setup the Required CAN info for Display */
+    cmr_canRXMeta_t *metaCDLHeartbeat = canRXMeta + CANRX_HEARTBEAT_CDL;
+
     cmr_canRXMeta_t *metaHVCPackVoltage = canRXMeta + CANRX_HVC_PACK_VOLTAGE;
     volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage =
         (void *) metaHVCPackVoltage->payload;
@@ -413,6 +415,9 @@ static void drawRTDScreen(void) {
         (void *) metaPTCCoolingStatus->payload;
 
     tftDLContentLoad(&tft, &tftDL_RTD);
+
+    /* Memorator present? */
+    bool memorator_present = (cmr_canRXMetaTimeoutWarn(metaCDLHeartbeat, xTaskGetTickCount())) ? false : true;
 
     /* Pack Voltage */
     int32_t hvVoltage_mV = canHVCPackVoltage->hvVoltage;
@@ -445,7 +450,7 @@ static void drawRTDScreen(void) {
     int32_t motorTemp_C = (canCDCMotorTemps->motorTemp_dC) / 10;
 
     /* Update Display List*/
-    tftDL_RTDUpdate(speed_mph, hvVoltage_mV, power_kW, num, motorTemp_C, acTemp_C, mcTemp_C);
+    tftDL_RTDUpdate(memorator_present, speed_mph, hvVoltage_mV, power_kW, num, motorTemp_C, acTemp_C, mcTemp_C);
 
     /* Write Display List to Screen */
     tftDLWrite(&tft, &tftDL_RTD);
