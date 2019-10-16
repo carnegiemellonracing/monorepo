@@ -74,7 +74,12 @@ cmr_canRXMeta_t canRXMeta[] = {
         .canID = CMR_CANID_CDC_MOTOR_FAULTS,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
-    }
+    },
+    [CANRX_HEARTBEAT_CDL] = {
+        .canID = CMR_CANID_HEARTBEAT_CDL,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25,
+    },
 };
 
 /** @brief Primary CAN interface. */
