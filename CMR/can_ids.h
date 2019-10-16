@@ -28,6 +28,7 @@ typedef enum {
     CMR_CANID_HEARTBEAT_APC = 0x108,    /**< @brief APC heartbeat. */
     CMR_CANID_HEARTBEAT_TOM = 0x109,    /**< @brief TOM heartbeat. */
     CMR_CANID_HEARTBEAT_COM = 0x10A,    /**< @brief COM heartbeat. */
+    CMR_CANID_HEARTBEAT_CDL = 0x10B,    /**< @brief CDL heartbeat. */
 
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
     CMR_CANID_VSM_SENSORS = 0x200,              /**< @brief VSM sensor data. */
