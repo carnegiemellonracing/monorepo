@@ -445,7 +445,7 @@ static void drawRTDScreen(void) {
     int32_t num = 0;
 
     /* Motor Controller Temperature */
-    int32_t mcTemp_C = (canPTCCoolingStatus->preRadiatorTemp_C);
+    int32_t mcTemp_C = (canPTCCoolingStatus->preRadiatorTemp_dC);
     /* Motor Temperature */
     int32_t motorTemp_C = (canCDCMotorTemps->motorTemp_dC) / 10;
 
