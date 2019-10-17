@@ -77,8 +77,8 @@ cmr_canRXMeta_t canRXMeta[] = {
     },
     [CANRX_HEARTBEAT_CDL] = {
         .canID = CMR_CANID_HEARTBEAT_CDL,
-        .timeoutError_ms = 50,
-        .timeoutWarn_ms = 25,
+        .timeoutError_ms = 180000,
+        .timeoutWarn_ms = 180000,
     },
 };
 
