@@ -417,7 +417,7 @@ static void drawRTDScreen(void) {
     tftDLContentLoad(&tft, &tftDL_RTD);
 
     /* Memorator present? */
-    bool memorator_present = (cmr_canRXMetaTimeoutWarn(metaCDLHeartbeat, xTaskGetTickCount())) ? false : true;
+    bool memorator_present = (cmr_canRXMetaTimeoutWarn(metaCDLHeartbeat, xTaskGetTickCount()) < 0) ? false : true;
 
     /* Pack Voltage */
     int32_t hvVoltage_mV = canHVCPackVoltage->hvVoltage;
