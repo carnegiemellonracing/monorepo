@@ -154,7 +154,7 @@ void tftDL_RTDUpdate(
     int32_t mcTemp_C
 ) {
     uint32_t *bg_color = (void *) (tftDL_RTDData + 1);
-    uint32_t bg_color_cmd = (memorator_present) ? 0x02000000 : 0x02969600;
+    uint32_t bg_color_cmd = (memorator_present) ? 0x02000000 : 0x02820000;
 
     static struct {
         char buf[3];
