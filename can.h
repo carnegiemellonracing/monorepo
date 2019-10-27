@@ -28,7 +28,7 @@ typedef enum {
     CANRX_PTC_COOLING_STATUS,   /**< @brief PTC cooling status. */
     CANRX_HVC_HEARTBEAT,        /**< @brief HVC Error. */
     CANRX_CDC_MOTOR_FAULTS,     /**< @brief CDC Motor Faults */
-    CANRX_HEARTBEAT_CDL,        /**< @brief CDL hearbeat */
+	CANRX_CDL_BROADCAST,        /**< @brief CDL broadcast. */
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 

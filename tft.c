@@ -388,7 +388,7 @@ static void drawErrorScreen(void) {
  */
 static void drawRTDScreen(void) {
     /* Setup the Required CAN info for Display */
-    cmr_canRXMeta_t *metaCDLHeartbeat = canRXMeta + CANRX_HEARTBEAT_CDL;
+    cmr_canRXMeta_t *metaCDLBroadcast = canRXMeta + CANRX_CDL_BROADCAST;
 
     cmr_canRXMeta_t *metaHVCPackVoltage = canRXMeta + CANRX_HVC_PACK_VOLTAGE;
     volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage =
@@ -417,7 +417,7 @@ static void drawRTDScreen(void) {
     tftDLContentLoad(&tft, &tftDL_RTD);
 
     /* Memorator present? */
-    bool memorator_present = (cmr_canRXMetaTimeoutWarn(metaCDLHeartbeat, xTaskGetTickCount()) < 0) ? false : true;
+    bool memorator_present = (cmr_canRXMetaTimeoutWarn(metaCDLBroadcast, xTaskGetTickCount()) < 0) ? false : true;
 
     /* Pack Voltage */
     int32_t hvVoltage_mV = canHVCPackVoltage->hvVoltage;
