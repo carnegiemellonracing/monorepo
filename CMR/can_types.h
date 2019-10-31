@@ -524,10 +524,10 @@ typedef struct {
 
 /** @brief Sensor valuese. */
 typedef struct {
-    uint32_t sensor1;       /**< @brief Raw sensor 1 value. */
-    uint32_t sensor2;       /**< @brief Raw sensor 2 value. */
-    uint32_t sensor3;       /**< @brief Raw sensor 3 value. */
-    uint32_t sensor4;       /**< @brief Raw sensor 4 value. */
+    uint16_t sensor1;       /**< @brief Raw sensor 1 value. */
+    uint16_t sensor2;       /**< @brief Raw sensor 2 value. */
+    uint16_t sensor3;       /**< @brief Raw sensor 3 value. */
+    uint16_t sensor4;       /**< @brief Raw sensor 4 value. */
 } cmr_canDAQSensorsADC_t;
 
 // ------------------------------------------------------------------------------------------------

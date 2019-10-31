@@ -356,11 +356,11 @@ void cmr_canInit(
         .handle = {
             .Instance = instance,
             .Init = {
-                .Prescaler = has_hse_clock ? 12 : 2,
+                .Prescaler = 2,//has_hse_clock ? 12 : 2,
                 .Mode = CAN_MODE_NORMAL,
-                .SyncJumpWidth = CAN_SJW_2TQ,
-                .TimeSeg1 = CAN_BS1_6TQ,
-                .TimeSeg2 = CAN_BS2_1TQ,
+                .SyncJumpWidth = CAN_SJW_1TQ,
+                .TimeSeg1 = CAN_BS1_13TQ,
+                .TimeSeg2 = CAN_BS2_2TQ,
                 .TimeTriggeredMode = DISABLE,
                 .AutoBusOff = ENABLE,
                 .AutoWakeUp = DISABLE,
