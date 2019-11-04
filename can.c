@@ -228,7 +228,7 @@ void canInit(void) {
                 CMR_CANID_AFC1_DRIVER_TEMPS,
                 CMR_CANID_HVC_MINMAX_CELL_TEMPS,
                 CMR_CANID_VSM_STATUS,
-				CMR_CANID_CDL_BROADCAST
+                CMR_CANID_CDL_BROADCAST
             }
         },
         {

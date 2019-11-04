@@ -129,7 +129,7 @@ static void tftDL_barSetY(const tftDL_bar_t *bar, int32_t val) {
 /**
  * @brief Updates the ready-to-drive screen.
  *
- * @param memorator_present Memorator present (based on heartbeat)
+ * @param memoratorPresent Memorator present (based on heartbeat)
  * @param speed_mph Speed (from CDC)
  * @param hvVoltage_mV Pack Voltage (from HVC)
  * @param power_kW Electrical power dissipation
@@ -144,7 +144,7 @@ static void tftDL_barSetY(const tftDL_bar_t *bar, int32_t val) {
  * Referred from RMS via CDC. Deg. C.
  */
 void tftDL_RTDUpdate(
-    bool memorator_present,
+    bool memoratorPresent,
     uint32_t speed_mph,
     int32_t hvVoltage_mV,
     int32_t power_kW,
@@ -154,7 +154,7 @@ void tftDL_RTDUpdate(
     int32_t mcTemp_C
 ) {
     uint32_t *bg_color = (void *) (tftDL_RTDData + 1);
-    uint32_t bg_color_cmd = (memorator_present) ? 0x02000000 : 0x02820000;
+    uint32_t bg_color_cmd = (memoratorPresent) ? 0x02000000 : 0x02820000;
 
     static struct {
         char buf[3];
