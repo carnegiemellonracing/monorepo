@@ -24,6 +24,7 @@
         }
     ],
     "coprocessor": [
+        "CLEAR_COLOR_RGB(0, 0, 0)",
         "CLEAR(1, 1, 1)",
         "CMD_SETFONT2(31, 1000, 32)",
         "CMD_SETFONT2(30, 45192, 32)",
