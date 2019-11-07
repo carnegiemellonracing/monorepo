@@ -201,7 +201,6 @@ void tftDL_RTDUpdate(
     };
 
     /* Background color */
-    // TODO: Can I use tftDL_setColor?
     *bg_color = bg_color_cmd;
 
     /* Voltage Bar */
