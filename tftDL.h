@@ -28,6 +28,7 @@ extern const tftDL_t tftDL_RTD;
 extern const tftDL_t tftDL_error;
 
 void tftDL_RTDUpdate(
+    bool memoratorPresent,
     uint32_t speed_mph,
     int32_t hvVoltage,
     int32_t power_kW,

@@ -74,7 +74,12 @@ cmr_canRXMeta_t canRXMeta[] = {
         .canID = CMR_CANID_CDC_MOTOR_FAULTS,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
-    }
+    },
+    [CANRX_CDL_BROADCAST] = {
+        .canID = CMR_CANID_CDL_BROADCAST,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25,
+    },
 };
 
 /** @brief Primary CAN interface. */
@@ -223,7 +228,7 @@ void canInit(void) {
                 CMR_CANID_AFC1_DRIVER_TEMPS,
                 CMR_CANID_HVC_MINMAX_CELL_TEMPS,
                 CMR_CANID_VSM_STATUS,
-                CMR_CANID_VSM_STATUS
+                CMR_CANID_CDL_BROADCAST
             }
         },
         {

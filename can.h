@@ -27,7 +27,8 @@ typedef enum {
     CANRX_CDC_MOTOR_TEMPS,      /**< @brief CDC motor temps */
     CANRX_PTC_COOLING_STATUS,   /**< @brief PTC cooling status. */
     CANRX_HVC_HEARTBEAT,        /**< @brief HVC Error. */
-    CANRX_CDC_MOTOR_FAULTS,      /**< @brief CDC Motor Faults */
+    CANRX_CDC_MOTOR_FAULTS,     /**< @brief CDC Motor Faults */
+    CANRX_CDL_BROADCAST,        /**< @brief CDL broadcast. */
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 
