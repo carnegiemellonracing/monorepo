@@ -29,6 +29,8 @@ typedef enum {
     CMR_CANID_HEARTBEAT_TOM = 0x109,    /**< @brief TOM heartbeat. */
     CMR_CANID_HEARTBEAT_COM = 0x10A,    /**< @brief COM heartbeat. */
 
+    CMR_CANID_CDL_BROADCAST = 0x605,    /**< @brief CDL broadcast. */
+
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
     CMR_CANID_VSM_SENSORS = 0x200,              /**< @brief VSM sensor data. */
     CMR_CANID_VSM_LATCHED_STATUS = 0x510,       /**< @brief VSM latched status. */
