@@ -297,8 +297,6 @@ class FT81x(object):
         }
 
     def get_variable_offset(self, command):
-        # Purposely not using get or try/except because we want this to terminate
-        # if it's not found.
         try:
             return self.VARIABLE_OFFSETS[command]
         except KeyError:
