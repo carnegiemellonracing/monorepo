@@ -10,7 +10,7 @@
 #ifdef HAL_CAN_MODULE_ENABLED
 
 #include <string.h> // memcpy()
-//#include <stdbool.h> // bool
+#include <stdbool.h> // bool
 
 #include "rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
 #include "panic.h"  // cmr_panic()
@@ -356,11 +356,15 @@ void cmr_canInit(
         .handle = {
             .Instance = instance,
             .Init = {
-                .Prescaler = 2,//has_hse_clock ? 12 : 2,
+                .Prescaler =
+                    has_hse_clock ? 12 : 2,
                 .Mode = CAN_MODE_NORMAL,
-                .SyncJumpWidth = CAN_SJW_1TQ,
-                .TimeSeg1 = CAN_BS1_13TQ,
-                .TimeSeg2 = CAN_BS2_2TQ,
+                .SyncJumpWidth =
+                    has_hse_clock ? CAN_SJW_2TQ : CAN_SJW_1TQ,
+                .TimeSeg1 =
+                    has_hse_clock ? CAN_BS1_6TQ : CAN_BS1_13TQ,
+                .TimeSeg2 =
+                    has_hse_clock ? CAN_BS2_1TQ: CAN_BS2_2TQ,
                 .TimeTriggeredMode = DISABLE,
                 .AutoBusOff = ENABLE,
                 .AutoWakeUp = DISABLE,
