@@ -338,7 +338,7 @@ with open(sys.argv[1], 'r') as ese_project_file:
 
         if matches.group(4) is not None:
             if ft81x.get_variable_offset(name) is not -1:
-                print(f"#define {matches.group(4)} {lines_written + ft81x.get_variable_offset(name) + 1}")
+                print(f"#define {matches.group(4)} {lines_written + ft81x.get_variable_offset(name)}")
 
         for i, word in enumerate(method(*args)):
             print('0x%s,%s' % (

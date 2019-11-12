@@ -51,7 +51,7 @@
         "CMD_TEXT(210, 181, 27, OPT_CENTERY, \"C\")",
         "CMD_TEXT(210, 217, 27, OPT_CENTERY, \"C\")",
         "COLOR_RGB(95, 255, 67)",
-        "CMD_TEXT(160, 25, 31, OPT_CENTER, \"52\")",
+        "CMD_TEXT(160, 25, 31, OPT_CENTER, \"52\") @variable SPEED_STR",
         "COLOR_RGB(255, 255, 255)",
         " BEGIN(RECTS)",
         "VERTEX2II(10, 10, 0, 0)",
