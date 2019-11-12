@@ -311,6 +311,8 @@ if len(sys.argv) < 2:
 
 command_pattern = re.compile(r'(.+)\((.*)\)([ ]+@variable[ ]+([a-zA-Z0-9_]*))?')
 
+variables = []
+
 unimplemented_cmds = 0
 
 with open(sys.argv[1], 'r') as ese_project_file:
@@ -338,7 +340,7 @@ with open(sys.argv[1], 'r') as ese_project_file:
 
         if matches.group(4) is not None:
             if ft81x.get_variable_offset(name) is not -1:
-                print(f"#define {matches.group(4)} {lines_written + ft81x.get_variable_offset(name)}")
+                variables.append(f"#define {matches.group(4)} {lines_written + ft81x.get_variable_offset(name)}")
 
         for i, word in enumerate(method(*args)):
             print('0x%s,%s' % (
@@ -350,6 +352,9 @@ with open(sys.argv[1], 'r') as ese_project_file:
 # Write display and swap commands.
 print('0x00000000, // DISPLAY()')
 print('0xffffff01, // CMD_DLSWAP()')
+
+for variable in variables:
+    print(variable)
 
 if unimplemented_cmds != 0:
     print(str(unimplemented_cmds) + ' unimplemented commands!')
