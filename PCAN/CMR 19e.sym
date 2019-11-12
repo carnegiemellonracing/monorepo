@@ -354,6 +354,22 @@ Var=RUN_ERROR_CurrSensFault bit 57,1
 Var=RUN_ERROR_ResolverDisconnected bit 62,1
 Var=RUN_ERROR_InvtrDischargeActive bit 63,1
 
+[DAQ_Sensors_0]
+ID=2ACh
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=DAQ_sensor1 unsigned 0,32
+Var=DAQ_sensor2 unsigned 32,32
+
+[DAQ_Sensors_1]
+ID=2BCh
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=DAQ_sensor1 unsigned 0,32
+Var=DAQ_sensor2 unsigned 32,32
+
 [FSM_Heartbeat]
 ID=103h
 DLC=5

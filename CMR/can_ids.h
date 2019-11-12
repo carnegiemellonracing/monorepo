@@ -59,7 +59,8 @@ typedef enum {
     CMR_CANID_PTC_VOLTAGE_DIAGNOSTICS = 0x534,  /**< @brief PTC voltage diagnostics. */
     CMR_CANID_PTC_CURRENT_DIAGNOSTICS = 0x544,  /**< @brief PTC current diagnostics. */
 
-    CMR_CANID_DAQ_SENSORS_ADC = 0x2AC,          /**< @brief DAQ sensor data. */
+    CMR_CANID_DAQ_SENSORS0_ADC = 0x2AC,          /**< @brief DAQ sensor data 0. */
+    CMR_CANID_DAQ_SENSORS1_ADC = 0x2BC,          /**< @brief DAQ sensor data 1. */
 
     CMR_CANID_DIM_REQUEST = 0x235,              /**< @brief DIM state/gear request. */
     CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x535,    /**< @brief DIM power diagnostics. */
