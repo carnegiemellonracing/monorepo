@@ -158,30 +158,30 @@ void tftDL_RTDUpdate(
 
     static struct {
         char buf[3];
-    } *const speed_mph_str = (void *) (tftDL_RTDData + 73);
+    } *const speed_mph_str = (void *) (tftDL_RTDData + SPEED_STR);
 
     static struct {
         char buf[4];
-    } *const hvVoltage_mV_str = (void *) (tftDL_RTDData + 92);
+    } *const hvVoltage_mV_str = (void *) (tftDL_RTDData + HV_VOLTAGE_STR);
 
     static struct {
         char buf[3];
-    } *const dcdcTemp_C_str = (void *) (tftDL_RTDData + 126);
+    } *const dcdcTemp_C_str = (void *) (tftDL_RTDData + DCDC_TEMP_STR);
 
     static struct {
         char buf[3];
-    } *const motorTemp_C_str = (void *) (tftDL_RTDData + 131);
+    } *const motorTemp_C_str = (void *) (tftDL_RTDData + MOTOR_TEMP_STR);
 
     static struct {
         char buf[3];
-    } *const acTemp_C_str = (void *) (tftDL_RTDData + 121);
+    } *const acTemp_C_str = (void *) (tftDL_RTDData + AC_TEMP_STR);
 
     static struct {
         char buf[3];
-    } *const mcTemp_C_str = (void *) (tftDL_RTDData + 136);
+    } *const mcTemp_C_str = (void *) (tftDL_RTDData + MC_TEMP_STR);
 
     static const tftDL_bar_t hvVoltage_mV_bar = {
-        .addr = tftDL_RTDData + 86,
+        .addr = tftDL_RTDData + HV_VOLTAGE_BAR,
         .topY = 12,
         .botY = 168,
         .maxVal = 400000,
@@ -190,10 +190,10 @@ void tftDL_RTDUpdate(
 
     static struct {
         char buf[3];
-    } *const power_kW_str = (void *) (tftDL_RTDData + 116);
+    } *const power_kW_str = (void *) (tftDL_RTDData + POWER_STR);
 
     static const tftDL_bar_t power_kW_bar = {
-        .addr = tftDL_RTDData + 110,
+        .addr = tftDL_RTDData + POWER_KW_BAR,
         .topY = 12,
         .botY = 168,
         .maxVal = 85,
@@ -266,60 +266,60 @@ void tftDL_errorUpdate(
     uint32_t color_err = 0x04ff0a0a;
     uint32_t color_none = 0x04303030;
 
-    uint32_t *fsm_color = (void *) (tftDL_errorData + 18);
+    uint32_t *fsm_color = (void *) (tftDL_errorData + FSM_COLOR);
     uint32_t fsm_color_cmd  = (err->fsmTimeout) ? color_err : color_none;
 
-    uint32_t *cdc_color = (void *) (tftDL_errorData + 25);
+    uint32_t *cdc_color = (void *) (tftDL_errorData + CDC_COLOR);
     uint32_t cdc_color_cmd  = (err->cdcTimeout) ? color_err : color_none;
 
-    uint32_t *ptc_color = (void *) (tftDL_errorData + 32);
+    uint32_t *ptc_color = (void *) (tftDL_errorData + PTC_COLOR);
     uint32_t ptc_color_cmd  = (err->ptcTimeout) ? color_err : color_none;
 
-    uint32_t *vsm_color = (void *) (tftDL_errorData + 39);
+    uint32_t *vsm_color = (void *) (tftDL_errorData + VSM_COLOR);
     uint32_t vsm_color_cmd  = (err->vsmTimeout) ? color_err : color_none;
 
-    uint32_t *afc1_color = (void *) (tftDL_errorData + 46);
+    uint32_t *afc1_color = (void *) (tftDL_errorData + AFC1_COLOR);
     uint32_t afc1_color_cmd  = (err->afc1Timeout) ? color_err : color_none;
 
-    uint32_t *afc2_color = (void *) (tftDL_errorData + 54);
+    uint32_t *afc2_color = (void *) (tftDL_errorData + AFC2_COLOR);
     uint32_t afc2_color_cmd  = (err->afc2Timeout) ? color_err : color_none;
 
-    uint32_t *overVolt_color = (void *) (tftDL_errorData + 72);
+    uint32_t *overVolt_color = (void *) (tftDL_errorData + OVERVOLT_COLOR);
     uint32_t overVolt_color_cmd  = (err->overVolt) ? color_err : color_none;
 
-    uint32_t *underVolt_color = (void *) (tftDL_errorData + 80);
+    uint32_t *underVolt_color = (void *) (tftDL_errorData + UNDERVOLT_COLOR);
     uint32_t underVolt_color_cmd  = (err->underVolt) ? color_err : color_none;
 
-    uint32_t *hvcoverTemp_color = (void *) (tftDL_errorData + 88);
+    uint32_t *hvcoverTemp_color = (void *) (tftDL_errorData + HVC_OVERTEMP_COLOR);
     uint32_t hvcoverTemp_color_cmd  = (err->hvcoverTemp) ? color_err : color_none;
 
-    uint32_t *hvcError_color = (void *) (tftDL_errorData + 95);
+    uint32_t *hvcError_color = (void *) (tftDL_errorData + HVC_ERROR_COLOR);
     uint32_t hvcError_color_cmd  = (err->hvc_Error) ? color_err : color_none;
 
-    uint32_t *overSpeed_color = (void *) (tftDL_errorData + 115);
+    uint32_t *overSpeed_color = (void *) (tftDL_errorData + OVERSPEED_COLOR);
     uint32_t overSpeed_color_cmd  = (err->overSpeed) ? color_err : color_none;
 
-    uint32_t *mcoverTemp_color = (void *) (tftDL_errorData + 122);
+    uint32_t *mcoverTemp_color = (void *) (tftDL_errorData + MC_OVERTEMP_COLOR);
     uint32_t mcoverTemp_color_cmd  = (err->mcoverTemp) ? color_err : color_none;
 
-    uint32_t *overCurrent_color = (void *) (tftDL_errorData + 129);
+    uint32_t *overCurrent_color = (void *) (tftDL_errorData + OVERCURRENT_COLOR);
     uint32_t overCurrent_color_cmd  = (err->overCurrent) ? color_err : color_none;
 
-    uint32_t *mcError_color = (void *) (tftDL_errorData + 136);
+    uint32_t *mcError_color = (void *) (tftDL_errorData + MC_ERROR_COLOR);
     uint32_t mcError_color_cmd  = (err->mcError) ? color_err : color_none;
 
-    uint32_t *imdError_color = (void *) (tftDL_errorData + 159);
+    uint32_t *imdError_color = (void *) (tftDL_errorData + IMD_COLOR);
     uint32_t imdError_color_cmd  = (err->imdError) ? color_err : color_none;
 
-    uint32_t *amsError_color = (void *) (tftDL_errorData + 154);
+    uint32_t *amsError_color = (void *) (tftDL_errorData + AMS_COLOR);
     uint32_t amsError_color_cmd  = (err->amsError) ? color_err : color_none;
 
-    uint32_t *bspdError_color = (void *) (tftDL_errorData + 148);
+    uint32_t *bspdError_color = (void *) (tftDL_errorData + BSPD_COLOR);
     uint32_t bspdError_color_cmd  = (err->bspdError) ? color_err : color_none;
 
     static struct {
         char buf[11];
-    } *const hvc_error_num_str = (void *) (tftDL_errorData + 104);
+    } *const hvc_error_num_str = (void *) (tftDL_errorData + HVC_ERROR_NUM_STR);
 
     snprintf(
         hvc_error_num_str->buf, sizeof(hvc_error_num_str->buf),
@@ -328,7 +328,7 @@ void tftDL_errorUpdate(
 
     static struct {
         char buf[15];
-    } *const mc_error_num_str = (void *) (tftDL_errorData + 145);
+    } *const mc_error_num_str = (void *) (tftDL_errorData + MC_ERROR_NUM_STR);
 
     snprintf(
         mc_error_num_str->buf, sizeof(mc_error_num_str->buf),
