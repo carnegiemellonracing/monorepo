@@ -291,8 +291,10 @@ class FT81x(object):
         return [0xffffff43, addr, (width << 16) | (fmt << 0), height]
 
     VARIABLE_OFFSETS = {
+            # Please keep alphabetized
             'CLEAR_COLOR_RGB': 0,
             'CMD_TEXT': 3,
+            'COLOR_RGB': 0,
             'VERTEX2II': 0,
         }
 
