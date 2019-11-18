@@ -356,6 +356,10 @@ void cmr_canInit(
         .handle = {
             .Instance = instance,
             .Init = {
+                /*
+                 * These values can be calculated using "tools" -> "nets config" -> "advanced"
+                 * in PCAN Explorer
+                 */
                 .Prescaler =
                     has_hse_clock ? 12 : 2,
                 .Mode = CAN_MODE_NORMAL,
