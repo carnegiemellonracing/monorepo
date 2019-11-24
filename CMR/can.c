@@ -38,9 +38,7 @@ static cmr_canInterrupt_t cmr_canInterrupts[3];
  * @param f The macro to instantiate.
  */
 #define CAN_FOREACH(f) \
-    f(1) \
-    f(2) \
-    f(3)
+    f(1)
 
 /**
  * @brief Defines interrupt handlers for each CAN interface.
@@ -81,15 +79,9 @@ static uint32_t cmr_canGPIOAF(CAN_TypeDef *instance, GPIO_TypeDef *port) {
                 case GPIOA_BASE:
                 case GPIOD_BASE:
                     return GPIO_AF9_CAN1;
-                case GPIOB_BASE:
-                    return GPIO_AF8_CAN1;
                 default:
                     cmr_panic("Unknown/unspported GPIO port!");
             }
-        case CAN2_BASE:
-            return GPIO_AF9_CAN2;
-        case CAN3_BASE:
-            return GPIO_AF11_CAN3;
         default:
             cmr_panic("Unknown CAN instance!");
     }
@@ -478,16 +470,16 @@ void cmr_canFilter(
         cmr_panic("Too many filter banks!");
     }
 
-    CAN_TypeDef *instance = can->handle.Instance;
+//    CAN_TypeDef *instance = can->handle.Instance;
 
     for (size_t i = 0; i < filtersLen; i++) {
         const cmr_canFilter_t *filter = filters + i;
 
         uint32_t bank = i;
-        if (instance == CAN2) {
-            // CAN2 uses banks 14-27.
-            bank += CMR_CAN_FILTERBANKS;
-        }
+//        if (instance == CAN2) {
+//            // CAN2 uses banks 14-27.
+//            bank += CMR_CAN_FILTERBANKS;
+//        }
 
         uint32_t filterMode = filter->isMask
             ? CAN_FILTERMODE_IDMASK

@@ -10,7 +10,7 @@
  * @author Carnegie Mellon Racing
  */
 
-#include <stm32f4xx_hal.h>  // HAL_IncTick()
+#include <stm32l4xx_hal.h>  // HAL_IncTick()
 #include <FreeRTOS.h>   // FreeRTOS interface
 #include <task.h>       // xTaskGetSchedulerState()
 

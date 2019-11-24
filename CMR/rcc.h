@@ -11,7 +11,7 @@
 #ifndef CMR_RCC_H
 #define CMR_RCC_H
 
-#include <stm32f4xx_hal.h>  // HAL_RCC_MODULE_ENABLED, HAL_GPIO_MODULE_ENABLED,
+#include <stm32l4xx_hal.h>  // HAL_RCC_MODULE_ENABLED, HAL_GPIO_MODULE_ENABLED,
                             // HAL_ADC_MODULE_ENABLED, HAL_CAN_MODULE_ENABLED,
                             // HAL_SPI_MODULE_ENABLED,
                             // GPIO_TypeDef, ADC_TypeDef, CAN_TypeDef,
