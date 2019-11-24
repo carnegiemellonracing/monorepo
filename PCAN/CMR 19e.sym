@@ -367,8 +367,8 @@ ID=2BCh
 DLC=8
 CycleTime=100
 Timeout=1000
-Var=DAQ_sensor1 unsigned 0,32
-Var=DAQ_sensor2 unsigned 32,32
+Var=DAQ_sensor3 unsigned 0,32
+Var=DAQ_sensor4 unsigned 32,32
 
 [FSM_Heartbeat]
 ID=103h

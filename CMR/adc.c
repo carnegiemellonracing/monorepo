@@ -13,7 +13,7 @@
 #include "panic.h"  // cmr_panic()
 
 /** @brief Timeout (in ms) for each ADC channel sample poll. */
-static const uint32_t CMR_ADC_TIMEOUT_MS = 1;
+static const uint32_t CMR_ADC_TIMEOUT_MS = 5;
 
 /** @brief ADC sampling priority. */
 static const uint32_t cmr_adcSample_priority = 5;
@@ -63,7 +63,9 @@ static void cmr_adcConfigChannels(cmr_adc_t *adc) {
             .Channel = channel->channel,
             .Rank = i + 1,  // HAL needs Rank to be from 1 to 16
             .SamplingTime = channel->samplingTime,
-            .Offset = 0     // reserved, set to 0
+            .Offset = 0,     // reserved, set to 0,
+			.SingleDiff = ADC_SINGLE_ENDED,
+			.OffsetNumber = ADC_OFFSET_NONE,
         };
 
         if (HAL_ADC_ConfigChannel(&adc->handle, &channelConfig) != HAL_OK) {
@@ -75,7 +77,7 @@ static void cmr_adcConfigChannels(cmr_adc_t *adc) {
 
         GPIO_InitTypeDef pinConfig = {
             .Pin = channel->pin,
-            .Mode = GPIO_MODE_ANALOG,
+            .Mode = GPIO_MODE_ANALOG_ADC_CONTROL,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW,
             .Alternate = 0
@@ -122,7 +124,9 @@ void cmr_adcInit(
                 .DataAlign = ADC_DATAALIGN_RIGHT,
                 .NbrOfConversion = channelsLen,
                 .DMAContinuousRequests = DISABLE,
-                .EOCSelection = ADC_EOC_SINGLE_CONV
+                .EOCSelection = ADC_EOC_SINGLE_CONV,
+				.Overrun = ADC_OVR_DATA_PRESERVED,
+				.OversamplingMode = DISABLE
             }
         },
         .channels = channels,
