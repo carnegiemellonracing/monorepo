@@ -323,7 +323,7 @@ with open(sys.argv[1], 'r') as ese_project_file:
     # Write display list start command.
     print("0xffffff00, // CMD_DLSTART()")
 
-    lines_written = 1
+    data_offset = 1
 
     for command in ese_project['coprocessor']:
         command = command.strip()
@@ -342,14 +342,14 @@ with open(sys.argv[1], 'r') as ese_project_file:
 
         if matches.group(4) is not None:
             if ft81x.get_variable_offset(name) is not -1:
-                variables.append(f"#define ESE_{matches.group(4)} {lines_written + ft81x.get_variable_offset(name)}")
+                variables.append(f"#define ESE_{matches.group(4)} {data_offset + ft81x.get_variable_offset(name)}")
 
         for i, word in enumerate(method(*args)):
             print('0x%s,%s' % (
                 format(word, '08x'),
                 (' // %s' % (command)) if i == 0 else ''
                 ))
-            lines_written = lines_written + 1
+            data_offset = data_offset + 1
 
 # Write display and swap commands.
 print('0x00000000, // DISPLAY()')
