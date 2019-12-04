@@ -299,7 +299,7 @@ class FT81x(object):
         }
 
     def get_variable_offset(self, command):
-        if command in self.VARIABLE_OFFSETS
+        if command in self.VARIABLE_OFFSETS:
             return self.VARIABLE_OFFSETS[command]
         else:
             print(f"Unsupported use of @variable with command {command}!")
