@@ -290,13 +290,30 @@ class FT81x(object):
 
         return [0xffffff43, addr, (width << 16) | (fmt << 0), height]
 
+    VARIABLE_OFFSETS = {
+            # Please keep alphabetized
+            'CLEAR_COLOR_RGB': 0,
+            'CMD_TEXT': 3,
+            'COLOR_RGB': 0,
+            'VERTEX2II': 0,
+        }
+
+    def get_variable_offset(self, command):
+        if command in self.VARIABLE_OFFSETS:
+            return self.VARIABLE_OFFSETS[command]
+        else:
+            print(f"Unsupported use of @variable with command {command}!")
+            return -1
+
 ft81x = FT81x()
 
 if len(sys.argv) < 2:
     print('Usage: %s <ESE project file>' % (sys.argv[0]), file=sys.stderr)
     sys.exit(1)
 
-command_pattern = re.compile(r'(.+)\((.*)\)')
+command_pattern = re.compile(r'(.+)\((.*)\)( +@variable +(\w+))?')
+
+variables = []
 
 unimplemented_cmds = 0
 
@@ -305,6 +322,8 @@ with open(sys.argv[1], 'r') as ese_project_file:
 
     # Write display list start command.
     print("0xffffff00, // CMD_DLSTART()")
+
+    data_offset = 1
 
     for command in ese_project['coprocessor']:
         command = command.strip()
@@ -321,16 +340,23 @@ with open(sys.argv[1], 'r') as ese_project_file:
             unimplemented_cmds += 1
             continue
 
+        if matches.group(4) is not None:
+            if ft81x.get_variable_offset(name) is not -1:
+                variables.append(f"#define ESE_{matches.group(4)} {data_offset + ft81x.get_variable_offset(name)}")
+
         for i, word in enumerate(method(*args)):
             print('0x%s,%s' % (
                 format(word, '08x'),
                 (' // %s' % (command)) if i == 0 else ''
                 ))
+            data_offset = data_offset + 1
 
 # Write display and swap commands.
 print('0x00000000, // DISPLAY()')
 print('0xffffff01, // CMD_DLSWAP()')
 
+for variable in variables:
+    print(variable)
+
 if unimplemented_cmds != 0:
     print(str(unimplemented_cmds) + ' unimplemented commands!')
-
