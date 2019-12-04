@@ -299,10 +299,10 @@ class FT81x(object):
         }
 
     def get_variable_offset(self, command):
-        try:
+        if command in self.VARIABLE_OFFSETS
             return self.VARIABLE_OFFSETS[command]
-        except KeyError:
-            print(f"// Unsupported use of @variable with command {command}, omitted")
+        else:
+            print(f"Unsupported use of @variable with command {command}!")
             return -1
 
 ft81x = FT81x()
@@ -311,7 +311,7 @@ if len(sys.argv) < 2:
     print('Usage: %s <ESE project file>' % (sys.argv[0]), file=sys.stderr)
     sys.exit(1)
 
-command_pattern = re.compile(r'(.+)\((.*)\)([ ]+@variable[ ]+([a-zA-Z0-9_]*))?')
+command_pattern = re.compile(r'(.+)\((.*)\)( +@variable +(\w+))?')
 
 variables = []
 
@@ -342,7 +342,7 @@ with open(sys.argv[1], 'r') as ese_project_file:
 
         if matches.group(4) is not None:
             if ft81x.get_variable_offset(name) is not -1:
-                variables.append(f"#define {matches.group(4)} {lines_written + ft81x.get_variable_offset(name)}")
+                variables.append(f"#define ESE_{matches.group(4)} {lines_written + ft81x.get_variable_offset(name)}")
 
         for i, word in enumerate(method(*args)):
             print('0x%s,%s' % (
@@ -360,4 +360,3 @@ for variable in variables:
 
 if unimplemented_cmds != 0:
     print(str(unimplemented_cmds) + ' unimplemented commands!')
-
