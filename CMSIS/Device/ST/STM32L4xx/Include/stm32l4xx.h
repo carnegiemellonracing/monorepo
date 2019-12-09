@@ -53,6 +53,9 @@
 #define STM32L4
 #endif /* STM32L4 */
 
+// Define Cortex-M4 used for math libraries
+#define ARM_MATH_CM4
+
 /* Uncomment the line below according to the target STM32L4 device used in your
    application
   */

@@ -352,15 +352,11 @@ void cmr_canInit(
                  * These values can be calculated using "tools" -> "nets config" -> "advanced"
                  * in PCAN Explorer
                  */
-                .Prescaler =
-                    has_hse_clock ? 12 : 2,
+                .Prescaler = 5,
                 .Mode = CAN_MODE_NORMAL,
-                .SyncJumpWidth =
-                    has_hse_clock ? CAN_SJW_2TQ : CAN_SJW_1TQ,
-                .TimeSeg1 =
-                    has_hse_clock ? CAN_BS1_6TQ : CAN_BS1_13TQ,
-                .TimeSeg2 =
-                    has_hse_clock ? CAN_BS2_1TQ: CAN_BS2_2TQ,
+                .SyncJumpWidth = CAN_SJW_1TQ,
+                .TimeSeg1 = CAN_BS1_13TQ,
+                .TimeSeg2 = CAN_BS2_2TQ,
                 .TimeTriggeredMode = DISABLE,
                 .AutoBusOff = ENABLE,
                 .AutoWakeUp = DISABLE,
