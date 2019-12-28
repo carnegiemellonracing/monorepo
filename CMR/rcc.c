@@ -18,45 +18,45 @@
  * Peripheral Clocks at 48 MHz (APB1 Timer Clocks are still 96 MHz).
  */
 void cmr_rccSystemClockEnable(void)  {
-	  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-	  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-	  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
+      RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+      RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+      RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
-	  /** Initializes the CPU, AHB and APB busses clocks
-	  */
-	  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-	  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-	  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-	  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
-	  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-	  {
-		  cmr_panic("HAL_RCC_OscConfig() failed!");
-	  }
-	  /** Initializes the CPU, AHB and APB busses clocks
-	  */
-	  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-	                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-	  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
-	  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-	  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-	  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+      /** Initializes the CPU, AHB and APB busses clocks
+      */
+      RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+      RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+      RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+      RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+      if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+      {
+          cmr_panic("HAL_RCC_OscConfig() failed!");
+      }
+      /** Initializes the CPU, AHB and APB busses clocks
+      */
+      RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                                  |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+      RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+      RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+      RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+      RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-	  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
-	  {
-		  cmr_panic("HAL_RCC_OscConfig() failed!");
-	  }
-	  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
-	  PeriphClkInit.AdcClockSelection = RCC_ADCCLKSOURCE_SYSCLK;
-	  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
-	  {
-		  cmr_panic("HAL_RCC_OscConfig() failed!");
-	  }
-	  /** Configure the main internal regulator output voltage
-	  */
-	  if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK)
-	  {
-		  cmr_panic("HAL_RCC_OscConfig() failed!");
-	  }
+      if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+      {
+          cmr_panic("HAL_RCC_OscConfig() failed!");
+      }
+      PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
+      PeriphClkInit.AdcClockSelection = RCC_ADCCLKSOURCE_SYSCLK;
+      if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+      {
+          cmr_panic("HAL_RCC_OscConfig() failed!");
+      }
+      /** Configure the main internal regulator output voltage
+      */
+      if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK)
+      {
+          cmr_panic("HAL_RCC_OscConfig() failed!");
+      }
 }
 
 /**
@@ -111,14 +111,14 @@ void cmr_rccSystemInternalClockEnable(void)  {
     PeriphClkInit.PLLSAI1.PLLSAI1ClockOut = RCC_PLLSAI1_ADC1CLK;
     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
     {
-    	cmr_panic("HAL_RCC_PeriphCLKConfig() failed!");
+        cmr_panic("HAL_RCC_PeriphCLKConfig() failed!");
     }
 
     /** Configure the main internal regulator output voltage
     */
     if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK)
     {
-    	cmr_panic("HAL_RCC_ControlVoltageScaling() failed!");
+        cmr_panic("HAL_RCC_ControlVoltageScaling() failed!");
     }
 }
 
@@ -199,7 +199,7 @@ void cmr_rccI2CClockEnable(I2C_TypeDef *instance) {
         case I2C3_BASE:
             __HAL_RCC_I2C3_CLK_ENABLE();
             break;
-    }    
+    }
 }
 #endif /* HAL_I2C_MODULE_ENABLED */
 
