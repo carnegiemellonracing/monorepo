@@ -8,7 +8,7 @@
 #ifndef CMR_CONFIG_H
 #define CMR_CONFIG_H
 
-#include <stm32l4xx_hal.h> // HAL_FLASH_MODULE_ENABLED
+#include "platform.h"      // HAL_FLASH_MODULE_ENABLED
 
 #ifdef HAL_FLASH_MODULE_ENABLED
 

@@ -8,7 +8,7 @@
 #ifndef CMR_DSP_H
 #define CMR_DSP_H
 
-#include <stm32l4xx_hal.h>
+#include "platform.h"
 #include "arm_math.h"
 
 #define CMR_DSP_FILTER_NUM_STAGES	4
