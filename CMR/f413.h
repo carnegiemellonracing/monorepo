@@ -1,5 +1,5 @@
-#ifndef CMR_L431_H
-#define CMR_L431_H
+#ifndef CMR_F413_H
+#define CMR_F413_H
 
 #include "can.h"      // can types
 #include <string.h>   // memcpy()
@@ -41,4 +41,4 @@ void _platform_rccCANClockEnable(CAN_TypeDef *instance);
 
 #endif /* HAL_RCC_MODULE_ENABLED */
 
-#endif /* CMR_L431_H */
+#endif /* CMR_F413_H */

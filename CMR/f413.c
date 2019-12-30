@@ -1,11 +1,11 @@
 #include "l431.h"      // Interface to implement
 
-#ifdef L431
+#ifdef F413
 
 #ifdef HAL_CAN_MODULE_ENABLED
 
 /** @brief Total number of hardware TX mailboxes. */
-static const size_t CAN_TX_MAILBOXES = 1;
+static const size_t CAN_TX_MAILBOXES = 3;
 
 /** @brief CAN interrupt configuration. */
 typedef struct {
@@ -15,9 +15,11 @@ typedef struct {
 /**
  * @brief All CAN interrupt configurations, indexed by port.
  *
- * This design is a hold-over from the F413, which has multiple CAN ports.
+ * There are 3 CAN controllers on the STM32F413 (CAN1, CAN2, CAN3).
+ *
+ * @note This array maps CAN1 to index 0, CAN2 to 1, etc.
  */
-static cmr_canInterrupt_t cmr_canInterrupts[1];
+static cmr_canInterrupt_t cmr_canInterrupts[3];
 
 /**
  * @brief Instantiates the macro for each CAN interface.
@@ -25,7 +27,9 @@ static cmr_canInterrupt_t cmr_canInterrupts[1];
  * @param f The macro to instantiate.
  */
 #define CAN_FOREACH(f) \
-    f(1)
+    f(1) \
+    f(2) \
+    f(3)
 
 /**
  * @brief Defines interrupt handlers for each CAN interface.
@@ -66,9 +70,15 @@ uint32_t _platform_canGPIOAF(CAN_TypeDef *instance, GPIO_TypeDef *port) {
                 case GPIOA_BASE:
                 case GPIOD_BASE:
                     return GPIO_AF9_CAN1;
+                case GPIOB_BASE:
+                    return GPIO_AF8_CAN1;
                 default:
                     cmr_panic("Unknown/unspported GPIO port!");
             }
+        case CAN2_BASE:
+            return GPIO_AF9_CAN2;
+        case CAN3_BASE:
+            return GPIO_AF11_CAN3;
         default:
             cmr_panic("Unknown CAN instance!");
     }
@@ -105,11 +115,15 @@ void _platform_canInit(
                  * These values can be calculated using "tools" -> "nets config" -> "advanced"
                  * in PCAN Explorer
                  */
-                .Prescaler = 5,
+                .Prescaler =
+                    has_hse_clock ? 12 : 2,
                 .Mode = CAN_MODE_NORMAL,
-                .SyncJumpWidth = CAN_SJW_1TQ,
-                .TimeSeg1 = CAN_BS1_13TQ,
-                .TimeSeg2 = CAN_BS2_2TQ,
+                .SyncJumpWidth =
+                    has_hse_clock ? CAN_SJW_2TQ : CAN_SJW_1TQ,
+                .TimeSeg1 =
+                    has_hse_clock ? CAN_BS1_6TQ : CAN_BS1_13TQ,
+                .TimeSeg2 =
+                    has_hse_clock ? CAN_BS2_1TQ: CAN_BS2_2TQ,
                 .TimeTriggeredMode = DISABLE,
                 .AutoBusOff = ENABLE,
                 .AutoWakeUp = DISABLE,
@@ -161,6 +175,47 @@ CAN_FOREACH(CAN_INTERRUPT_CONFIG)
     HAL_NVIC_EnableIRQ(irqRX0);
     HAL_NVIC_EnableIRQ(irqRX1);
     HAL_NVIC_EnableIRQ(irqSCE);
+
+    cmr_rccCANClockEnable(instance);
+    cmr_rccGPIOClockEnable(rxPort);
+    cmr_rccGPIOClockEnable(txPort);
+
+    // Configure CAN RX pin.
+    GPIO_InitTypeDef pinConfig = {
+        .Pin = rxPin,
+        .Mode = GPIO_MODE_AF_PP,
+        .Pull = GPIO_NOPULL,
+        .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
+        .Alternate = cmr_canGPIOAF(instance, rxPort)
+    };
+    HAL_GPIO_Init(rxPort, &pinConfig);
+
+    // Configure CAN TX pin.
+    pinConfig.Pin = txPin;
+    pinConfig.Alternate = cmr_canGPIOAF(instance, rxPort);
+    HAL_GPIO_Init(txPort, &pinConfig);
+
+    if (HAL_CAN_Init(&can->handle) != HAL_OK) {
+        cmr_panic("HAL_CAN_Init() failed!");
+    }
+
+    if (HAL_CAN_Start(&can->handle) != HAL_OK) {
+        cmr_panic("HAL_CAN_Start() failed!");
+    }
+
+    if (HAL_CAN_ActivateNotification(
+            &can->handle,
+            CAN_IT_TX_MAILBOX_EMPTY |
+            CAN_IT_RX_FIFO0_MSG_PENDING |
+            CAN_IT_RX_FIFO1_MSG_PENDING |
+            CAN_IT_ERROR_WARNING |
+            CAN_IT_ERROR_PASSIVE |
+            CAN_IT_BUSOFF |
+            CAN_IT_LAST_ERROR_CODE |
+            CAN_IT_ERROR
+    )) {
+        cmr_panic("HAL_CAN_ActivateNotification() failed!");
+    }
 }
 
 /**
@@ -178,10 +233,16 @@ void _platform_canFilter(
         cmr_panic("Too many filter banks!");
     }
 
+    CAN_TypeDef *instance = can->handle.Instance;
+
     for (size_t i = 0; i < filtersLen; i++) {
         const cmr_canFilter_t *filter = filters + i;
 
         uint32_t bank = i;
+        if (instance == CAN2) {
+            // CAN2 uses banks 14-27.
+            bank += CMR_CAN_FILTERBANKS;
+        }
 
         uint32_t filterMode = filter->isMask
             ? CAN_FILTERMODE_IDMASK
@@ -223,12 +284,14 @@ void _platform_canFilter(
  * Peripheral Clocks at 48 MHz (APB1 Timer Clocks are still 96 MHz).
  */
 void _platform_rccSystemClockEnable(void)  {
-    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-    RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
+    RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
 
-    /** Initializes the CPU, AHB and APB busses clocks
-     */
+    // Configure the main internal regulator output voltage
+    __HAL_RCC_PWR_CLK_ENABLE();
+    __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+    // Initializes the CPU, AHB and APB busses clocks
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
     RCC_OscInitStruct.HSIState = RCC_HSI_ON;
     RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -236,8 +299,8 @@ void _platform_rccSystemClockEnable(void)  {
     if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
         cmr_panic("HAL_RCC_OscConfig() failed!");
     }
-    /** Initializes the CPU, AHB and APB busses clocks
-     */
+
+    // Initializes the CPU, AHB and APB busses clocks
     RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                                 |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
     RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
@@ -246,16 +309,6 @@ void _platform_rccSystemClockEnable(void)  {
     RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
     if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK) {
-        cmr_panic("HAL_RCC_OscConfig() failed!");
-    }
-    PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
-    PeriphClkInit.AdcClockSelection = RCC_ADCCLKSOURCE_SYSCLK;
-    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK) {
-        cmr_panic("HAL_RCC_OscConfig() failed!");
-    }
-    /** Configure the main internal regulator output voltage
-     */
-    if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK) {
         cmr_panic("HAL_RCC_OscConfig() failed!");
     }
 }
@@ -345,6 +398,12 @@ void _platform_rccGPIOClockEnable(GPIO_TypeDef *port) {
         case GPIOE_BASE:
             __HAL_RCC_GPIOE_CLK_ENABLE();
             break;
+        case GPIOF_BASE:
+            __HAL_RCC_GPIOF_CLK_ENABLE();
+            break;
+        case GPIOG_BASE:
+            __HAL_RCC_GPIOG_CLK_ENABLE();
+            break;
         case GPIOH_BASE:
             __HAL_RCC_GPIOH_CLK_ENABLE();
             break;
@@ -362,7 +421,7 @@ void _platform_rccGPIOClockEnable(GPIO_TypeDef *port) {
 void _platform_rccADCClockEnable(ADC_TypeDef *instance) {
     switch ((uintptr_t) instance) {
         case ADC1_BASE:
-            __HAL_RCC_ADC_CLK_ENABLE();
+            __HAL_RCC_ADC1_CLK_ENABLE();
             break;
     }
 }
@@ -379,10 +438,17 @@ void _platform_rccCANClockEnable(CAN_TypeDef *instance) {
         case CAN1_BASE:
             __HAL_RCC_CAN1_CLK_ENABLE();
             break;
+        case CAN2_BASE:
+            __HAL_RCC_CAN2_CLK_ENABLE();
+            __HAL_RCC_CAN1_CLK_ENABLE();    // CAN2 also needs CAN1 clock.
+            break;
+        case CAN3_BASE:
+            __HAL_RCC_CAN3_CLK_ENABLE();
+            break;
     }
 }
 #endif /* HAL_CAN_MODULE_ENABLED */
 
 #endif /* HAL_RCC_MODULE_ENABLED */
 
-#endif /* L413 */
+#endif /* F413 */

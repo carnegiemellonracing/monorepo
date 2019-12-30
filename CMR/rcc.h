@@ -63,11 +63,11 @@ extern void _platform_rccGPIOClockEnable(GPIO_TypeDef *port);
 #endif /* HAL_GPIO_MODULE_ENABLED */
 
 #ifdef HAL_ADC_MODULE_ENABLED
-void _platform_rccADCClockEnable(ADC_TypeDef *instance);
+extern void _platform_rccADCClockEnable(ADC_TypeDef *instance);
 #endif /* HAL_ADC_MODULE_ENABLED */
 
 #ifdef HAL_CAN_MODULE_ENABLED
-void _platform_rccCANClockEnable(CAN_TypeDef *instance);
+extern void _platform_rccCANClockEnable(CAN_TypeDef *instance);
 #endif /* HAL_CAN_MODULE_ENABLED */
 
 #endif /* HAL_RCC_MODULE_ENABLED */
