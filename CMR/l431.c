@@ -271,10 +271,6 @@ void _platform_rccSystemInternalClockEnable(void)  {
     RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
     RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
-    // Configure the main internal regulator output voltage
-    //__HAL_RCC_PWR_CLK_ENABLE();
-    //__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-
     // Initializes the CPU, AHB and APB busses clocks
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
     RCC_OscInitStruct.HSIState = RCC_HSI_ON;
@@ -384,5 +380,72 @@ void _platform_rccCANClockEnable(CAN_TypeDef *instance) {
 #endif /* HAL_CAN_MODULE_ENABLED */
 
 #endif /* HAL_RCC_MODULE_ENABLED */
+
+#ifdef HAL_FLASH_MODULE_ENABLED
+
+/**
+ * @brief Initializes the configuration system with a base address.
+ *
+ * @param config The interface to initalize.
+ * @param cache The config cache to use.
+ * @param cacheLen The size of the config cache to use.
+ * @param sector The flash sector to use. See the HAL documentation @ref FLASHEx_Sectors.
+ */
+void _platform_configInit(cmr_config_t *config, volatile uint32_t *cache, size_t cacheLen, uint32_t sector) {
+    config->cache = cache;
+    config->cacheLen = cacheLen;
+    config->flashSector = sector;
+    config->flashStart = (volatile uint32_t *) 0x08000000 + FLASH_PAGE_SIZE * sector; /* Hack for now, there is only one sector on L431 */
+    config->flashSize = FLASH_PAGE_SIZE;
+
+    if (config->cacheLen > config->flashSize) {
+        cmr_panic("Config cache is larger than sector!");
+    }
+
+    cmr_configPull(config);
+}
+
+/**
+ * @brief Commits the local config cache to flash.
+ *
+ * @param config The interface to use.
+ */
+void _platform_configCommit(cmr_config_t *config) {
+    if (HAL_FLASH_Unlock() != HAL_OK) {
+        return;
+    }
+
+    // Clears all the error bits. See the HAL documentation @ref FLASH_Flag_definition.
+    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP |
+            FLASH_FLAG_OPERR |
+            FLASH_FLAG_WRPERR |
+            FLASH_FLAG_PGAERR |
+            FLASH_FLAG_PGSERR);
+
+    FLASH_EraseInitTypeDef eraseInit = {
+        .TypeErase = FLASH_TYPEERASE_PAGES,
+        .Banks = FLASH_BANK_1,
+        .Page = config->flashSector,
+        .NbPages = 1,
+    };
+
+    // // Use HAL_FLASHEx_Erase instead of HAL_FLASH_Erase, as it clears the FLASH control register.
+    uint32_t error;
+    if (HAL_FLASHEx_Erase(&eraseInit, &error) != HAL_OK) {
+        cmr_panic("Flash erase failed!");
+    }
+
+    size_t idx = 0;
+    while (idx < config->cacheLen) {
+        if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, (uint32_t) (config->flashStart + idx),
+                config->cache[idx]) == HAL_OK) {
+            idx+=2;
+        }
+    }
+
+    HAL_FLASH_Lock();
+}
+
+#endif /* HAL_FLASH_MODULE_ENABLED */
 
 #endif /* L413 */

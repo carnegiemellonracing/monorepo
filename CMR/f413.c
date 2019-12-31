@@ -451,4 +451,120 @@ void _platform_rccCANClockEnable(CAN_TypeDef *instance) {
 
 #endif /* HAL_RCC_MODULE_ENABLED */
 
+#ifdef HAL_FLASH_MODULE_ENABLED
+
+/**
+ * @brief Instantiates the macro for each flash sector.
+ *
+ * The parameter are, in order: sector number, corresponding base address, and cooresponding size.
+ * The sectors are defined at HAL @ref FLASHEx_Sectors.
+ * The sector addresses and sizes are defined in the STM32F413 reference manual.
+ *
+ * @param f The macro to instantiate.
+ */
+#define SECTOR_FOREACH(f) \
+    f(FLASH_SECTOR_0, 0x08000000, 0x4000) \
+    f(FLASH_SECTOR_1, 0x08004000, 0x4000) \
+    f(FLASH_SECTOR_2, 0x08008000, 0x4000) \
+    f(FLASH_SECTOR_3, 0x0800C000, 0x4000) \
+    f(FLASH_SECTOR_4, 0x08010000, 0x10000) \
+    f(FLASH_SECTOR_5, 0x08020000, 0x20000) \
+    f(FLASH_SECTOR_6, 0x08040000, 0x20000) \
+    f(FLASH_SECTOR_7, 0x08060000, 0x20000) \
+    f(FLASH_SECTOR_8, 0x08080000, 0x20000) \
+    f(FLASH_SECTOR_9, 0x080A0000, 0x20000) \
+    f(FLASH_SECTOR_10, 0x080C0000, 0x20000) \
+    f(FLASH_SECTOR_11, 0x080E0000, 0x20000) \
+    f(FLASH_SECTOR_12, 0x08100000, 0x20000) \
+    f(FLASH_SECTOR_13, 0x08120000, 0x20000) \
+    f(FLASH_SECTOR_14, 0x08140000, 0x20000) \
+    f(FLASH_SECTOR_15, 0x08160000, 0x20000)
+
+static void *getSectorBase(uint32_t sector) {
+#define GET_ADDR(sec, base, ...) \
+    if (sector == sec) { \
+        return (void *) base; \
+    }
+SECTOR_FOREACH(GET_ADDR)
+#undef GET_ADDR
+
+    cmr_panic("Invalid sector!");
+}
+
+static size_t getSectorSize(uint32_t sector) {
+#define GET_SIZE(sec, base, size) \
+    if (sector == sec) { \
+        return size; \
+    }
+SECTOR_FOREACH(GET_SIZE)
+#undef GET_SIZE
+
+    cmr_panic("Invalid sector!");
+}
+
+/**
+ * @brief Initializes the configuration system with a base address.
+ *
+ * @param config The interface to initalize.
+ * @param cache The config cache to use.
+ * @param cacheLen The size of the config cache to use.
+ * @param sector The flash sector to use. See the HAL documentation @ref FLASHEx_Sectors.
+ */
+void _platform_configInit(cmr_config_t *config, volatile uint32_t *cache, size_t cacheLen, uint32_t sector) {
+    config->cache = cache;
+    config->cacheLen = cacheLen;
+    config->flashSector = sector;
+    config->flashStart = (volatile uint32_t *) getSectorBase(sector);
+    config->flashSize = getSectorSize(sector);
+
+    if (config->cacheLen > config->flashSize) {
+        cmr_panic("Config cache is larger than sector!");
+    }
+
+    cmr_configPull(config);
+}
+
+/**
+ * @brief Commits the local config cache to flash.
+ *
+ * @param config The interface to use.
+ */
+void _platform_configCommit(cmr_config_t *config) {
+    if (HAL_FLASH_Unlock() != HAL_OK) {
+        return;
+    }
+
+    // Clears all the error bits. See the HAL documentation @ref FLASH_Flag_definition.
+    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP |
+            FLASH_FLAG_OPERR |
+            FLASH_FLAG_WRPERR |
+            FLASH_FLAG_PGAERR |
+            FLASH_FLAG_PGSERR);
+
+    FLASH_EraseInitTypeDef eraseInit = {
+        .TypeErase = FLASH_TYPEERASE_SECTORS,
+        .Sector = config->flashSector,
+        .NbSectors = 1,
+        .VoltageRange = VOLTAGE_RANGE_3,
+    };
+
+    // Use HAL_FLASHEx_Erase instead of HAL_FLASH_Erase, as it clears the FLASH control register.
+    uint32_t error;
+    if (HAL_FLASHEx_Erase(&eraseInit, &error) != HAL_OK) {
+        cmr_panic("Flash erase failed!");
+    }
+
+    size_t idx = 0;
+    while (idx < config->cacheLen) {
+        if (HAL_FLASH_Program(TYPEPROGRAM_WORD, (uint32_t) (config->flashStart + idx),
+                config->cache[idx]) == HAL_OK) {
+            idx++;
+        }
+    }
+
+    HAL_FLASH_Lock();
+}
+
+#endif /* HAL_FLASH_MODULE_ENABLED */
+
 #endif /* F413 */

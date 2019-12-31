@@ -1,11 +1,12 @@
 #ifndef CMR_L431_H
 #define CMR_L431_H
 
-#include "can.h"      // can types
 #include <string.h>   // memcpy()
 #include <stdbool.h>  // bool
 
+#include "can.h"      // can types
 #include "rcc.h"      // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
+#include "config.h"   // config types
 #include "panic.h"    // cmr_panic()
 
 #ifdef HAL_CAN_MODULE_ENABLED
@@ -40,5 +41,10 @@ void _platform_rccCANClockEnable(CAN_TypeDef *instance);
 #endif /* HAL_CAN_MODULE_ENABLED */
 
 #endif /* HAL_RCC_MODULE_ENABLED */
+
+#ifdef HAL_FLASH_MODULE_ENABLED
+void _platform_configInit(cmr_config_t *config, volatile uint32_t *cache, size_t cacheLen, uint32_t sector);
+void _platform_configCommit(cmr_config_t *config);
+#endif /* HAL_FLASH_MODULE_ENABLED */
 
 #endif /* CMR_L431_H */
