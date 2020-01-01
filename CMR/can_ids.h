@@ -60,6 +60,7 @@ typedef enum {
 
     CMR_CANID_DAQ_SENSORS0_ADC = 0x2AC,          /**< @brief DAQ sensor data 0. */
     CMR_CANID_DAQ_SENSORS1_ADC = 0x2BC,          /**< @brief DAQ sensor data 1. */
+    CMR_CANID_DAQ_POST = 0x2BD,                  /**< @brief DAQ startup message */
 
     CMR_CANID_DIM_REQUEST = 0x235,              /**< @brief DIM state/gear request. */
     CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x535,    /**< @brief DIM power diagnostics. */

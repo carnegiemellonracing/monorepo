@@ -370,6 +370,11 @@ Timeout=1000
 Var=DAQ_sensor3 unsigned 0,32
 Var=DAQ_sensor4 unsigned 32,32
 
+[DAQ_Startup]
+ID=2ADh
+DLC=8
+Var=Serial_Number unsigned 0,64
+
 [FSM_Heartbeat]
 ID=103h
 DLC=5
