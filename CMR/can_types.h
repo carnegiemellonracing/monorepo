@@ -528,6 +528,30 @@ typedef struct {
     uint32_t sensor2;       /**< @brief Raw sensor 2 value. */
 } cmr_canDAQSensorsADC_t;
 
+/** @brief Generic frequency enum, used for filtering and sending */
+typedef enum {
+    CMR_DAQ_1HZ = 0,     /**< @brief 1Hz */
+    CMR_DAQ_5HZ,         /**< @brief 5Hz */
+    CMR_DAQ_10HZ,        /**< @brief 10Hz */
+    CMR_DAQ_25HZ,        /**< @brief 25Hz */
+    CMR_DAQ_100HZ,       /**< @brief 100Hz */
+    CMR_DAQ_250HZ,       /**< @brief 250Hz */
+    CMR_DAQ_500HZ,       /**< @brief 500Hz */
+    CMR_DAQ_1000HZ,      /**< @brief 1000Hz */
+    CMR_DAQ_NUM_FREQS    /**< @brief Number of frequencies */
+} cmr_canDAQFreq_t;
+
+typedef struct {
+    uint32_t serial[2];  /**< As much identifier data as can fit in a message */
+} cmr_canDAQPOST_t;
+
+typedef struct {
+    uint16_t send_canID;     /**< @brief Uses ID and ID + 1 to send on */
+    uint8_t  send_freq[2];   /**< @brief Send frequency per 2 messages (repacked enum) */
+    uint16_t psuedo_sn;      /**< @brief 2 bytes of (unique, configurable) serial number */
+    uint8_t  lpf_cutoffs[2]; /**< @brief Frequency cutoffs per 4 readings (repacked enum) */
+} cmr_canDAQConfig_t;
+
 // ------------------------------------------------------------------------------------------------
 // Rinehart Motor Controller Definitions
 

@@ -20,7 +20,7 @@ typedef enum {
     CMR_DSP_FILTER_100HZ,       /**< @brief Low pass filter with corner @ 100Hz */
     CMR_DSP_FILTER_250HZ,       /**< @brief Low pass filter with corner @ 250Hz */
     CMR_DSP_FILTER_500HZ,       /**< @brief Low pass filter with corner @ 500Hz */
-    CMR_DSP_FILTER_1000HZ,      /**< @brief Low pass filter with corner @ 100Hz */
+    CMR_DSP_FILTER_1000HZ,      /**< @brief Low pass filter with corner @ 1000Hz */
     CMR_DSP_FILTER_NUM          /**< @brief Number of filter frequencies */
 } cmr_dspFilterSelection_t;
 
