@@ -519,103 +519,33 @@ typedef struct {
 } cmr_canPTCAFCControl_t;
 
 // ------------------------------------------------------------------------------------------------
-// Rinehart Motor Controller Definitions
+// AMK Motor controller definitions.
 
-/** @brief Drive motor with parameters. */
+/** @brief AMK motor controller status and velocity. */
 typedef struct {
-    int16_t torqueCommand; /**< @brief Torque in N.m. times 10. */
-    int16_t speedCommand; /**< @brief Angular velocity in RPM. */
-    /** @brief 0 -> CW, 1 -> CCW viewed looking at shaft side. */
-    uint8_t directionCommand;
-    /** @brief bit 0 = inverter enable, bit 1 = discharge enable. */
-    uint8_t inverterEnableDischargeSpeedMode;
-    /** @brief Set 0 for no limit override (torque in N.m. times 10). */
-    uint16_t torqueLimitCommand;
-} cmr_canRMSCommand_t;
+    uint8_t reserved;           /**< @brief Reserved by AMK. Do not use. */
+    uint8_t status_bv;          /**< @brief Status bit vector. */
+    int16_t velocity_rpm;       /**< @brief Motor velocity (RPM). */
+    int16_t torqueCurrent_raw;  /**< @brief Raw value for torque producing current. */
+    int16_t magCurrent_raw;     /**< @brief Raw value for magnetizing current. */
+} cmr_canAMKActualValues1_t;
 
-/** @brief Configuration parameter/register read/write request. */
+/** @brief AMK motor controller temperatures and error code. */
 typedef struct {
-    uint16_t address;       /**< @brief Address to access. */
-    uint8_t writeEnable;    /**< @brief 1 to enable write; 0 to read. */
-    uint8_t pad0;           /**< @brief Ignored. */
-    uint16_t data;          /**< @brief Data to write, if any. */
-    uint16_t pad1;          /**< @brief Ignored. */
-} cmr_canRMSParamReq_t;
+    int16_t motorTemp_dC;       /**< @brief Motor temperature in dC (0.1 C). */
+    int16_t coldPlateTemp_dC;   /**< @brief Cold plate temperature in dC (0.1 C). */
+    uint16_t errorCode;         /**< @brief Inverter error code. */
+    int16_t igbtTemp_dC;        /**< @brief IGBT temperature in dC (0.1 C). */
+} cmr_canAMKActualValues2_t;
 
-/** @brief Configuration parameter/register read/write response. */
+/** @brief AMK motor controller command message. */
 typedef struct {
-    uint16_t address;       /**< @brief Address that was accessed. */
-    uint8_t writeSuccess;   /**< @brief 1 if write successful, if any. */
-    uint8_t pad0;           /**< @brief Ignored. */
-    uint16_t data;          /**< @brief Data that was read/written. */
-    uint16_t pad1;          /**< @brief Ignored. */
-} cmr_canRMSParamRes_t;
-
-/** @brief Faults report from motor controller (see pg 23). */
-typedef struct {
-    uint16_t postFaultLo; /**< @brief See "RMS CAN Protocol" pg 23. */
-    uint16_t postFaultHi; /**< @brief See "RMS CAN Protocol" pg 23. */
-    uint16_t runFaultLo; /**< @brief See "RMS CAN Protocol" pg 23. */
-    uint16_t runFaultHi; /**< @brief See "RMS CAN Protocol" pg 23. */
-} cmr_canRMSFaults_t;
-
-/** @brief Motor controller temperatures (set A). Temp in degC times 10. */
-typedef struct {
-    int16_t moduleATemp; /**< @brief Temp in internal module A (degC times 10). */
-    int16_t moduleBTemp; /**< @brief Temp in internal module B (degC times 10). */
-    int16_t moduleCTemp; /**< @brief Temp in internal module C (degC times 10). */
-    int16_t gateDriverBoardTemp; /**< @brief Temp of gate driver (degC times 10). */
-} cmr_canRMSTempA_t;
-
-/** @brief Motor controller temperatures (set B). Temp in degC times 10. */
-typedef struct {
-    int16_t controlBoardTemp; /**< @brief Control board temp (degC times 10). */
-    int16_t RTD1Temp; /**< @brief RTD input 1 temp (degC times 10). */
-    int16_t RTD2Temp; /**< @brief RTD input 2 temp (degC times 10). */
-    int16_t RTD3Temp; /**< @brief RTD input 3 temp (degC times 10). */
-} cmr_canRMSTempB_t;
-
-/** @brief Motor controller temperatures (set C). Temp in degC times 10. */
-typedef struct {
-    int16_t RTD4Temp; /**< @brief RTD input 4 temp (degC times 10). */
-    int16_t RTD5Temp; /**< @brief RTD input 5 temp (degC times 10). */
-    int16_t motorTemp; /**< @brief Motor temp (degC times 10). */
-    int16_t torqueShudder; /**< @brief Torque (N.m. times 10). */
-} cmr_canRMSTempC_t;
-
-/** @brief Motor position information. */
-typedef struct {
-    int16_t angle; /**< @brief Angle (deg times 10) of motor as read by resolver. */
-    int16_t speed; /**< @brief Speed (RPM) of motor. */
-    int16_t frequency; /**< @brief Inverter frequency (Hz times 10). */
-    int16_t resolverAngle; /**< @brief Resolver angle for calibration. */
-} cmr_canRMSMotorPosition_t;
-
-/** @brief Motor controller measured currents. Current in amps times 10.*/
-typedef struct {
-    int16_t phaseA; /**< @brief Current in phase A cable. */
-    int16_t phaseB; /**< @brief Current in phase B cable. */
-    int16_t phaseC; /**< @brief Current in phase C cable. */
-    int16_t bus; /**< @brief DC bus current. */
-} cmr_canRMSCurrents_t;
-
-/** @brief Motor controller measured voltages. Voltage in volts times 10.*/
-typedef struct {
-    int16_t bus; /**< @brief DC bus voltage. */
-    int16_t output; /**< @brief Output voltage as peak line-neutral volts. */
-    int16_t phaseAB; /**< @brief Vab when disabled, Vd when enabled. */
-    int16_t phaseBC; /**< @brief Vbc when disabled, Vq when enabled. */
-} cmr_canRMSVoltages_t;
-
-/** @brief Motor controller torque diagnostics. */
-typedef struct {
-    /** @brief Setpoint torque (torque in N.m. times 10). */
-    int16_t commandedTorque;
-    /** @brief Measured torque produced (torque in N.m. times 10). */
-    int16_t torqueFeedback;
-    /** @brief Time since power on, increments every .003 sec (time in .003s) */
-    uint32_t powerOnTimer;
-} cmr_canRMSTorqueDiag_t;
+    uint8_t reserved;           /**< @brief Reserved by AMK. Do not use. */
+    uint8_t control_bv;         /**< @brief Control bit vector. */
+    int16_t velocity_rpm;       /**< @brief Velocity setpoint (RPM). */
+    int16_t torqueLimPos_dpcnt; /**< @brief Positive torque limit in 0.1% of 9.8 Nm (nominal torque). */
+    int16_t torqueLimNeg_dpcnt; /**< @brief Negative torque limit in 0.1% of 9.8 Nm (nominal torque). */
+} cmr_canAMKSetpoints_t;
 
 #endif /* CMR_CAN_TYPES_H */
 
