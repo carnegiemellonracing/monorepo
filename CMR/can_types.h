@@ -521,10 +521,29 @@ typedef struct {
 // ------------------------------------------------------------------------------------------------
 // AMK Motor controller definitions.
 
+/** @brief AMK motor controller status bits. */
+typedef enum {
+    CMR_CAN_AMK_STATUS_SYSTEM_READY = (1 << 8), /**< @brief System ready. */
+    CMR_CAN_AMK_STATUS_ERROR = (1 << 9),        /**< @brief Error is present. */
+    CMR_CAN_AMK_STATUS_WARNING = (1 << 10),     /**< @brief Warning is present. */
+    CMR_CAN_AMK_STATUS_HV_EN_ACK = (1 << 11),   /**< @brief HV enabled acknowledgement. */
+    CMR_CAN_AMK_STATUS_HV_EN = (1 << 12),       /**< @brief HV enabled. */
+    CMR_CAN_AMK_STATUS_INV_EN_ACK = (1 << 13),  /**< @brief Inverter enabled acknowledgement. */
+    CMR_CAN_AMK_STATUS_INV_EN = (1 << 14),      /**< @brief Inverter enabled. */
+    CMR_CAN_AMK_STATUS_DERATING_EN = (1 << 15)  /**< @brief Protective torque derating enabled. */
+} cmr_canAMKStatus_t;
+
+/** @brief AMK motor controller control bits. */
+typedef enum {
+    CMR_CAN_AMK_CTRL_INV_ON = (1 << 8),     /**< @brief Inverter on command. */
+    CMR_CAN_AMK_CTRL_HV_EN = (1 << 9),      /**< @brief HV enable command. */
+    CMR_CAN_AMK_CTRL_INV_EN = (1 << 10),    /**< @brief Inverter enable command. */
+    CMR_CAN_AMK_CTRL_ERR_RESET = (1 << 11)  /**< @brief Inverter error reset command. */
+} cmr_canAMKControl_t;
+
 /** @brief AMK motor controller status and velocity. */
 typedef struct {
-    uint8_t reserved;           /**< @brief Reserved by AMK. Do not use. */
-    uint8_t status_bv;          /**< @brief Status bit vector. */
+    uint16_t status_bv;         /**< @brief Status bit vector. See cmr_canAMKStatus_t. */
     int16_t velocity_rpm;       /**< @brief Motor velocity (RPM). */
     int16_t torqueCurrent_raw;  /**< @brief Raw value for torque producing current. */
     int16_t magCurrent_raw;     /**< @brief Raw value for magnetizing current. */
@@ -540,8 +559,7 @@ typedef struct {
 
 /** @brief AMK motor controller command message. */
 typedef struct {
-    uint8_t reserved;           /**< @brief Reserved by AMK. Do not use. */
-    uint8_t control_bv;         /**< @brief Control bit vector. */
+    uint16_t control_bv;        /**< @brief Control bit vector. See cmr_canAMKControl_t. */
     int16_t velocity_rpm;       /**< @brief Velocity setpoint (RPM). */
     int16_t torqueLimPos_dpcnt; /**< @brief Positive torque limit in 0.1% of 9.8 Nm (nominal torque). */
     int16_t torqueLimNeg_dpcnt; /**< @brief Negative torque limit in 0.1% of 9.8 Nm (nominal torque). */
