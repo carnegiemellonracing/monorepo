@@ -18,68 +18,96 @@
 static cmr_adcChannel_t adcChannels[ADC_LEN] = {
     // XXX edit me to match your pin configuration
     [ADC_POWER_VSENSE] = {
-        .channel = ADC_CHANNEL_0,
-        .port = GPIOA,
-        .pin = GPIO_PIN_0,
-        .samplingTime = ADC_SAMPLETIME_15CYCLES,
-        .value = 0
-    },
-    [ADC_LOGIC_ISENSE] = {
-        .channel = ADC_CHANNEL_1,
-        .port = GPIOA,
-        .pin = GPIO_PIN_1,
-        .samplingTime = ADC_SAMPLETIME_15CYCLES,
-        .value = 0
-    },
-    [ADC_POWER_ISENSE] = {
-        .channel = ADC_CHANNEL_2,
-        .port = GPIOA,
-        .pin = GPIO_PIN_2,
-        .samplingTime = ADC_SAMPLETIME_15CYCLES,
-        .value = 0
-    },
-    [ADC_RAD_THERM_2] = {
-        .channel = ADC_CHANNEL_3,
-        .port = GPIOA,
+        .channel = ADC_CHANNEL_12,
+        .port = GPIOC,
         .pin = GPIO_PIN_3,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
-    [ADC_BOARD_THERM_2] = {
-        .channel = ADC_CHANNEL_4,
-        .port = GPIOA,
-        .pin = GPIO_PIN_4,
+    [ADC_POWER_ISENSE] = {
+        .channel = ADC_CHANNEL_13,
+        .port = GPIOC,
+        .pin = GPIO_PIN_2,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_LOGIC_VSENSE] = {
-        .channel = ADC_CHANNEL_5,
-        .port = GPIOA,
-        .pin = GPIO_PIN_5,
-        .samplingTime = ADC_SAMPLETIME_15CYCLES,
-        .value = 0
-    },
-    [ADC_BOARD_THERM_1] = {
         .channel = ADC_CHANNEL_10,
         .port = GPIOC,
         .pin = GPIO_PIN_0,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
-    [ADC_FAN_ISENSE] = {
-        .channel = ADC_CHANNEL_11,
-        .port = GPIOC,
+    [ADC_BOARD_THERM_1] = {
+        .channel = ADC_CHANNEL_8,
+        .port = GPIOB,
+        .pin = GPIO_PIN_0,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
+    [ADC_BOARD_THERM_2] = {
+        .channel = ADC_CHANNEL_9,
+        .port = GPIOB,
         .pin = GPIO_PIN_1,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
-    [ADC_RAD_THERM_1] = {
-        .channel = ADC_CHANNEL_13,
-        .port = GPIOC,
+    [ADC_THERM_1] = {
+        .channel = ADC_CHANNEL_7,
+        .port = GPIOA,
+        .pin = GPIO_PIN_7,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
+    [ADC_THERM_2] = {
+        .channel = ADC_CHANNEL_6,
+        .port = GPIOA,
+        .pin = GPIO_PIN_6,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
+    [ADC_THERM_3] = {
+        .channel = ADC_CHANNEL_5,
+        .port = GPIOA,
+        .pin = GPIO_PIN_5,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
+    [ADC_THERM_4] = {
+        .channel = ADC_CHANNEL_4,
+        .port = GPIOA,
+        .pin = GPIO_PIN_4,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
+    [ADC_THERM_5] = {
+        .channel = ADC_CHANNEL_3,
+        .port = GPIOA,
         .pin = GPIO_PIN_3,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
-    }
+    },
+    [ADC_THERM_6] = {
+        .channel = ADC_CHANNEL_2,
+        .port = GPIOA,
+        .pin = GPIO_PIN_2,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
+    [ADC_THERM_7] = {
+        .channel = ADC_CHANNEL_1,
+        .port = GPIOA,
+        .pin = GPIO_PIN_1,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
+    [ADC_THERM_8] = {
+        .channel = ADC_CHANNEL_0,
+        .port = GPIOA,
+        .pin = GPIO_PIN_0,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
 };
 
 /** @brief Primary ADC. */

@@ -22,7 +22,9 @@
 #include "sensors.h"    // Board-specific sensors interface
 
 /** @brief PWM driver state. */
-static cmr_pwm_t fanPWM;
+static cmr_pwm_t fanPWM1;
+static cmr_pwm_t fanPWM2;
+static cmr_pwm_t fanPWM3;
 
 /** @brief Cell temperature at which PTC begins commanding AFC max cooling. */
 static const uint32_t maxCoolingEnableTemp_C = 55;
@@ -52,13 +54,6 @@ static const uint32_t brakelight_priority = 4;
 static const TickType_t brakelight_period_ms = 50;
 /** @brief Brake light control task. */
 static cmr_task_t brakelight_task;
-
-/** @brief Brake disconnection solenoid task priority. */
-static const uint32_t brakeDisconnect_priority = 5;
-/** @brief Brake disconnection solenoid task period. */
-static const TickType_t brakeDisconnect_period_ms = 10;
-/** @brief Brake disconnection solenoid task. */
-static cmr_task_t brakeDisconnect_task;
 
 /**
  * @brief Task for toggling the status LED.
@@ -90,58 +85,68 @@ static void statusLED(void *pvParameters) {
 static void coolingControl(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-    cmr_gpioWrite(GPIO_FAN_ENABLE, 1); // Turn the fan driver on
+    cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1); // Turn the fan driver on
 
     // Get reference to VSM Heartbeat and accumulator min/max cell temperatures
     volatile cmr_canHeartbeat_t *vsmHeartbeat = canGetPayload(CANRX_HEARTBEAT_VSM);
     volatile cmr_canHVCPackMinMaxCellTemps_t *minMaxTemps = canGetPayload(CANRX_HVC_MINMAX_TEMPS);
 
-    // Initialize fan PWM
-    const cmr_pwmPinConfig_t pwmPinConfig = {
-        .port = GPIOA,
-        .pin = GPIO_PIN_8,
-        .channel = TIM_CHANNEL_1,
+    // Initialize PWM channels
+    const cmr_pwmPinConfig_t pwmPinConfig1 = {
+        .port = GPIOB,
+        .pin = GPIO_PIN_5,
+        .channel = TIM_CHANNEL_2,
         .presc = 24,
-        .period_ticks = 40000,  // 96 MHz / (24 * 40000) = 100 Hz
-        .timer = TIM1
+        .period_ticks = 160,  // 96 MHz / (24 * 40000) = 100 Hz
+        .timer = TIM3
     };
-    cmr_pwmInit(&fanPWM, &pwmPinConfig);
+    const cmr_pwmPinConfig_t pwmPinConfig2 = {
+        .port = GPIOB,
+        .pin = GPIO_PIN_7,
+        .channel = TIM_CHANNEL_2,
+        .presc = 24,
+        .period_ticks = 160,  // 96 MHz / (24 * 40000) = 100 Hz
+        .timer = TIM4
+    };
+    const cmr_pwmPinConfig_t pwmPinConfig3 = {
+        .port = GPIOB,
+        .pin = GPIO_PIN_8,
+        .channel = TIM_CHANNEL_3,
+        .presc = 24,
+        .period_ticks = 160,  // 96 MHz / (24 * 40000) = 100 Hz
+        .timer = TIM4
+    };
+    cmr_pwmInit(&fanPWM1, &pwmPinConfig1);
+    cmr_pwmInit(&fanPWM2, &pwmPinConfig2);
+    cmr_pwmInit(&fanPWM3, &pwmPinConfig3);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // Simple hysteresis for accumulator cooling
-        uint32_t maxCellTemp_C = minMaxTemps->maxCellTemp_dC / 10;
-        if (maxCellTemp_C >= maxCoolingEnableTemp_C) {
-            afcMaxCoolingEnabled = true;
-        }
-        else if (maxCellTemp_C <= minCoolingDisableTemp_C) {
-            afcMaxCoolingEnabled = false;
-        }
 
         switch (vsmHeartbeat->state) {
             case CMR_CAN_RTD:
-                fanState = CMR_CAN_FAN_HIGH;
-                pumpState = CMR_CAN_PTC_PUMP_STATE_ON;
-                cmr_pwmSetDutyCycle(&fanPWM, 100);  // Fan full on
-                cmr_gpioWrite(GPIO_PUMP, 1);        // Pump on
-
+                cmr_pwmSetDutyCycle(&fanPWM1, 100);  // Fan full on
+                cmr_pwmSetDutyCycle(&fanPWM2, 100);  // Fan full on
+                cmr_pwmSetDutyCycle(&fanPWM3, 100);  // Fan full on
+                cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
+                cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
+                cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
                 break;
             case CMR_CAN_HV_EN:
-                fanState = CMR_CAN_FAN_LOW;
-                pumpState = CMR_CAN_PTC_PUMP_STATE_ON;
-                cmr_pwmSetDutyCycle(&fanPWM, 50);   // 50% duty cycle
-                cmr_gpioWrite(GPIO_PUMP, 1);        // Pump on
-
+                cmr_pwmSetDutyCycle(&fanPWM1, 50);  // Fan full on
+                cmr_pwmSetDutyCycle(&fanPWM2, 50);  // Fan full on
+                cmr_pwmSetDutyCycle(&fanPWM3, 50);  // Fan full on
+                cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
+                cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
+                cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
                 break;
             default:
-                fanState = CMR_CAN_FAN_OFF;
-                pumpState = CMR_CAN_PTC_PUMP_STATE_OFF;
-                cmr_pwmSetDutyCycle(&fanPWM, 0);    // Fan off
-                cmr_gpioWrite(GPIO_PUMP, 0);        // Pump off
-
-                // Turn off accumulator cooling when only low voltage power is available
-                afcMaxCoolingEnabled = false;
-
+                cmr_pwmSetDutyCycle(&fanPWM1, 0);    // Fan off
+                cmr_pwmSetDutyCycle(&fanPWM2, 0);    // Fan off
+                cmr_pwmSetDutyCycle(&fanPWM3, 0);    // Fan off
+                cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);        // Pump off
+                cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 0);        // Pump off
+                cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 0);        // Pump off
                 break;
         }
 
@@ -164,34 +169,12 @@ static void brakelight(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         if (vsmSensors->brakePressureRear_PSI > brakeLightThreshold_PSI) {
-            cmr_gpioWrite(GPIO_BRAKELIGHT, 1);
+            cmr_gpioWrite(GPIO_BRKLT_ENABLE, 1);
         } else {
-            cmr_gpioWrite(GPIO_BRAKELIGHT, 0);
+            cmr_gpioWrite(GPIO_BRKLT_ENABLE, 0);
         }
 
         vTaskDelayUntil(&lastWakeTime, brakelight_period_ms);
-    }
-}
-
-/**
- * @brief Task for controlling the brake solenoid, which disconnects the rear
- * brakes from the brake pedal. Simultaneously, the CDC should begin using the
- * brake pressure to command regen torque on the rears.
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void brakeDisconnect(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
-
-    volatile cmr_canCDCSolenoidPTC_t *cdcSolenoidPTC = canGetPayload(CANRX_CDC_SOLENOID_PTC);
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        cmr_gpioWrite(GPIO_BRAKE_DISCON, cdcSolenoidPTC->solenoidEnable);
-
-        vTaskDelayUntil(&lastWakeTime, brakeDisconnect_period_ms);
     }
 }
 
@@ -211,7 +194,7 @@ int main(void) {
     gpioInit();
     canInit();
     adcInit();
-    sensorsInit();
+    //sensorsInit();
 
     cmr_taskInit(
         &statusLED_task,
@@ -225,13 +208,6 @@ int main(void) {
         "brakelight",
         brakelight_priority,
         brakelight,
-        NULL
-    );
-    cmr_taskInit(
-        &brakeDisconnect_task,
-        "brakeDisconnect",
-        brakeDisconnect_priority,
-        brakeDisconnect,
         NULL
     );
     cmr_taskInit(

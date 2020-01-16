@@ -45,11 +45,6 @@ cmr_canRXMeta_t canRXMeta[] = {
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
     },
-    [CANRX_CDC_SOLENOID_PTC] = {
-        .canID = CMR_CANID_CDC_SOLENOID_PTC,
-        .timeoutError_ms = 10,
-        .timeoutWarn_ms = 5,
-    },
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
         .timeoutError_ms = 100,
@@ -65,15 +60,6 @@ cmr_canRXMeta_t canRXMeta[] = {
         .warnFlag = CMR_CAN_WARN_NONE
     }
 };
-
-/** @brief AFC max cooling enable flag. */
-volatile bool afcMaxCoolingEnabled = false;
-
-/** @brief Radiator fan state. */
-cmr_canFanState_t fanState = CMR_CAN_FAN_OFF;
-
-/** @brief Water cooling pump state. */
-cmr_canPTCPumpState_t pumpState = CMR_CAN_PTC_PUMP_STATE_OFF;
 
 /** @brief CAN 10 Hz TX priority. */
 static const uint32_t canTX10Hz_priority = 3;
@@ -94,8 +80,7 @@ static cmr_task_t canTX100Hz_task;
 static cmr_can_t can;
 
 // Forward declarations
-static void sendCoolStatus(void);
-static void sendAFCControl(void);
+static void sendCoolLoopTempStatus(void);
 static void sendVoltDiagnostics(void);
 static void sendCurrDiagnostics(void);
 static void sendHeartbeat(TickType_t lastWakeTime);
@@ -112,8 +97,8 @@ static void canTX10Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        sendCoolStatus();
-        sendAFCControl();
+        //sendFanPumpFETsStatus();
+        sendCoolLoopTempStatus();
         sendVoltDiagnostics();
         sendCurrDiagnostics();
 
@@ -145,11 +130,11 @@ static void canTX100Hz(void *pvParameters) {
 void canInit(void) {
     // CAN2 initialization.
     cmr_canInit(
-        &can, CAN2,
+        &can, CAN1,
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
         NULL,
-        GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
-        GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
+        GPIOA, GPIO_PIN_11,     // CAN2 RX port/pin.
+        GPIOA, GPIO_PIN_12      // CAN2 TX port/pin.
     );
 
     // CAN2 filters.
@@ -169,8 +154,8 @@ void canInit(void) {
             .rxFIFO = CAN_RX_FIFO1,
             .ids = {
                 CMR_CANID_VSM_STATUS,
+                CMR_CANID_VSM_STATUS,
                 CMR_CANID_VSM_SENSORS,
-                CMR_CANID_CDC_SOLENOID_PTC,
                 CMR_CANID_HVC_MINMAX_CELL_TEMPS                                                                                 ,
             }
         }
@@ -261,51 +246,36 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 /**
  * @brief Send cooling system status on CAN bus.
  */
-static void sendCoolStatus(void) {
-    int32_t preRadiatorTemp_dC =
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_PRE_RAD_THERM);
-    int32_t postRadiatorTemp_dC =
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_POST_RAD_THERM);
+static void sendCoolLoopTempStatus(void) {
+    int32_t Temp_1_dC =
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_1);
+    int32_t Temp_2_dC =
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_2);
+    int32_t Temp_3_dC =
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_3);
+    int32_t Temp_4_dC =
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_4);
+    int32_t Temp_5_dC =
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_5);
+    int32_t Temp_6_dC =
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_6);
+    int32_t Temp_7_dC =
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_7);
+    int32_t Temp_8_dC =
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_8);
 
-    cmr_canPTCCoolingStatus_t coolMsg = {
-        .fanState = fanState,
-        .pumpState = pumpState,
-        .preRadiatorTemp_dC = preRadiatorTemp_dC,
-        .postRadiatorTemp_dC = postRadiatorTemp_dC
+    cmr_canPTCCoolingLoopTempStatus_t coolMsg = {
+        .loopTemp1_dC = Temp_1_dC,
+        .loopTemp2_dC = Temp_2_dC,
+        .loopTemp3_dC = Temp_3_dC,
+        .loopTemp4_dC = Temp_4_dC,
+        .loopTemp5_dC = Temp_5_dC,
+        .loopTemp6_dC = Temp_6_dC,
+        .loopTemp7_dC = Temp_7_dC,
+        .loopTemp8_dC = Temp_8_dC,
     };
 
     canTX(CMR_CANID_PTC_COOLING_STATUS, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
-}
-
-/**
- * @brief Send AFC control message.
- */
-static void sendAFCControl(void) {
-    volatile cmr_canHeartbeat_t *heartbeatVSM = canGetPayload(CANRX_HEARTBEAT_VSM);
-
-    cmr_canPTCAFCControl_t afcCtrlMsg = {
-        .acFansDuty_pcnt = 0,
-        .dcdcFanDuty_pcnt = 0
-    };
-
-    switch (heartbeatVSM->state) {
-        case CMR_CAN_HV_EN:
-        case CMR_CAN_RTD:
-            if (afcMaxCoolingEnabled) {
-                // Fully enable fans.
-                afcCtrlMsg.acFansDuty_pcnt = 100;
-                afcCtrlMsg.dcdcFanDuty_pcnt = 100;
-            } else {
-                // In these states, the DCDC is on; keep its fan on too.
-                afcCtrlMsg.dcdcFanDuty_pcnt = 50;
-            }
-            break;
-        default:
-            // Fans are off.
-            break;
-    }
-
-    canTX(CMR_CANID_PTC_AFC_CONTROL, &afcCtrlMsg, sizeof(afcCtrlMsg), canTX10Hz_period_ms);
 }
 
 /**
@@ -328,17 +298,10 @@ static void sendVoltDiagnostics(void) {
  * @brief Send current diagnostic information.
  */
 static void sendCurrDiagnostics(void) {
-    int32_t logicCurrent_mA =
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_LOGIC_CURRENT_MA);
     int32_t loadCurrent_mA =
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_LOAD_CURRENT_MA);
-    int32_t fanCurrent_mA =
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_FAN_CURRENT_MA);
-
     cmr_canPTCCurrentDiagnostics_t ampMsg = {
-        .logicCurrent_mA = logicCurrent_mA,
         .loadCurrent_mA = loadCurrent_mA,
-        .fanCurrent_mA = fanCurrent_mA
     };
 
     canTX(CMR_CANID_PTC_CURRENT_DIAGNOSTICS, &ampMsg, sizeof(ampMsg), canTX10Hz_period_ms);

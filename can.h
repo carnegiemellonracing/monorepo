@@ -23,16 +23,15 @@ typedef enum {
     CANRX_HEARTBEAT_VSM = 0,    /**< @brief VSM heartbeat. */
     CANRX_VSM_STATUS,           /**< @brief VSM status. */
     CANRX_VSM_SENSORS,          /**< @brief VSM sensors. */
-    CANRX_CDC_SOLENOID_PTC,     /**< @brief CDC brake solenoid command. */
     CANRX_FSM_DATA,             /**< @brief FSM data. */
     CANRX_HVC_MINMAX_TEMPS,     /**< @brief HVC min/max cell temps. */
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 
 extern cmr_canRXMeta_t canRXMeta[];
-extern volatile bool afcMaxCoolingEnabled;
-extern cmr_canFanState_t fanState;
-extern cmr_canPTCPumpState_t pumpState;
+extern uint16_t channel_1_State;
+extern uint16_t channel_2_State;
+extern uint16_t channel_3_State;
 
 void canInit(void);
 

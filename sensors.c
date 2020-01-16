@@ -23,15 +23,19 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN];
 
 /** @brief Mapping of ADC channels to sensors. */
 static const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
-    [SENSOR_CH_LOGIC_VOLTAGE_MV]  = ADC_LOGIC_VSENSE,
-    [SENSOR_CH_LOGIC_CURRENT_MA]  = ADC_LOGIC_ISENSE,
     [SENSOR_CH_LOAD_VOLTAGE_MV]  = ADC_POWER_VSENSE,
     [SENSOR_CH_LOAD_CURRENT_MA]  = ADC_POWER_ISENSE,
-    [SENSOR_CH_FAN_CURRENT_MA]  = ADC_FAN_ISENSE,
+    [SENSOR_CH_LOGIC_VOLTAGE_MV]  = ADC_LOGIC_VSENSE,
     [SENSOR_CH_BOARD_THERM_1]  = ADC_BOARD_THERM_1,
     [SENSOR_CH_BOARD_THERM_2]  = ADC_BOARD_THERM_2,
-    [SENSOR_CH_PRE_RAD_THERM]  = ADC_RAD_THERM_1,
-    [SENSOR_CH_POST_RAD_THERM]  = ADC_RAD_THERM_2
+    [SENSOR_CH_THERM_1]  = ADC_THERM_1,
+    [SENSOR_CH_THERM_2]  = ADC_THERM_2,
+    [SENSOR_CH_THERM_3]  = ADC_THERM_3,
+    [SENSOR_CH_THERM_4]  = ADC_THERM_4,
+    [SENSOR_CH_THERM_5]  = ADC_THERM_5,
+    [SENSOR_CH_THERM_6]  = ADC_THERM_6,
+    [SENSOR_CH_THERM_7]  = ADC_THERM_7,
+    [SENSOR_CH_THERM_8]  = ADC_THERM_8
 };
 
 /**
@@ -205,20 +209,6 @@ static int32_t adcConvRadTherm_dC(const cmr_sensor_t *s, uint32_t adcVal) {
  * TODO calibrate all of these min/max values
  */
 static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
-    [SENSOR_CH_LOGIC_VOLTAGE_MV] = {
-        .sample = sampleADCSensor,
-        .conv = adcConvLogicVoltage_mV,
-        .readingMin = 2256, // 20 Volts
-        .readingMax = 2933, // 26 Volts
-        .outOfRange_pcnt = 10
-    },
-    [SENSOR_CH_LOGIC_CURRENT_MA] = {
-        .sample = sampleADCSensor,
-        .conv = adcConvLogicCurrent_mA,
-        .readingMin = 0,
-        .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10
-    },
     [SENSOR_CH_LOAD_VOLTAGE_MV] = {
         .sample = sampleADCSensor,
         .conv = adcConvLoadVoltage_mV,
@@ -233,11 +223,11 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10
     },
-    [SENSOR_CH_FAN_CURRENT_MA] = {
+    [SENSOR_CH_LOGIC_VOLTAGE_MV] = {
         .sample = sampleADCSensor,
-        .conv = adcConvFanCurrent_mA,
-        .readingMin = 0,
-        .readingMax = CMR_ADC_MAX,
+        .conv = adcConvLogicVoltage_mV,
+        .readingMin = 2256, // 20 Volts
+        .readingMax = 2933, // 26 Volts
         .outOfRange_pcnt = 10
     },
     [SENSOR_CH_BOARD_THERM_1] = {
@@ -254,14 +244,56 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10
     },
-    [SENSOR_CH_PRE_RAD_THERM] = {
+    [SENSOR_CH_THERM_1] = {
         .sample = sampleADCSensor,
         .conv = adcConvRadTherm_dC,
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10
     },
-    [SENSOR_CH_POST_RAD_THERM] = {
+    [SENSOR_CH_THERM_2] = {
+        .sample = sampleADCSensor,
+        .conv = adcConvRadTherm_dC,
+        .readingMin = 0,
+        .readingMax = CMR_ADC_MAX,
+        .outOfRange_pcnt = 10
+    },
+    [SENSOR_CH_THERM_3] = {
+        .sample = sampleADCSensor,
+        .conv = adcConvRadTherm_dC,
+        .readingMin = 0,
+        .readingMax = CMR_ADC_MAX,
+        .outOfRange_pcnt = 10
+    },
+    [SENSOR_CH_THERM_4] = {
+        .sample = sampleADCSensor,
+        .conv = adcConvRadTherm_dC,
+        .readingMin = 0,
+        .readingMax = CMR_ADC_MAX,
+        .outOfRange_pcnt = 10
+    },
+    [SENSOR_CH_THERM_5] = {
+        .sample = sampleADCSensor,
+        .conv = adcConvRadTherm_dC,
+        .readingMin = 0,
+        .readingMax = CMR_ADC_MAX,
+        .outOfRange_pcnt = 10
+    },
+    [SENSOR_CH_THERM_6] = {
+        .sample = sampleADCSensor,
+        .conv = adcConvRadTherm_dC,
+        .readingMin = 0,
+        .readingMax = CMR_ADC_MAX,
+        .outOfRange_pcnt = 10
+    },
+    [SENSOR_CH_THERM_7] = {
+        .sample = sampleADCSensor,
+        .conv = adcConvRadTherm_dC,
+        .readingMin = 0,
+        .readingMax = CMR_ADC_MAX,
+        .outOfRange_pcnt = 10
+    },
+    [SENSOR_CH_THERM_8] = {
         .sample = sampleADCSensor,
         .conv = adcConvRadTherm_dC,
         .readingMin = 0,

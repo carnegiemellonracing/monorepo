@@ -22,6 +22,33 @@
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_LED_STATUS] = {
+        .port = GPIOB,
+        .init = {
+            .Pin = GPIO_PIN_12,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_BRKLT_ENABLE] = {
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_12,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_CHANNEL_1_ENABLE] = {
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_7,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_CHANNEL_2_ENABLE] = {
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_8,
@@ -30,26 +57,8 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_BRAKELIGHT] = {
-        .port = GPIOA,
-        .init = {
-            .Pin = GPIO_PIN_6,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_PUMP] = {
+    [GPIO_CHANNEL_3_ENABLE] = {
         .port = GPIOC,
-        .init = {
-            .Pin = GPIO_PIN_5,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_FAN_ENABLE] = {
-        .port = GPIOA,
         .init = {
             .Pin = GPIO_PIN_9,
             .Mode = GPIO_MODE_OUTPUT_PP,
@@ -57,15 +66,24 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_BRAKE_DISCON] = {
-        .port = GPIOA,
+    [GPIO_MTR_CTRL_ENABLE] = {
+        .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_10,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
-    }
+    },
+    [GPIO_MC_EFUSE_AUTO] = {
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_11,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
 };
 
 /**
