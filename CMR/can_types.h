@@ -485,19 +485,24 @@ typedef struct {
 // ------------------------------------------------------------------------------------------------
 // Powertrain Thermal Controller
 
-/** @brief Water cooling pump state enumeration. */
-typedef enum {
-    CMR_CAN_PTC_PUMP_STATE_OFF = 0, /**< @brief Pump disabled. */
-    CMR_CAN_PTC_PUMP_STATE_ON       /**< @brief Pump enabled. */
-} cmr_canPTCPumpState_t;
-
-/** @brief Powertrain Thermal Controller cooling status. */
+/** @brief Powertrain Thermal Controller fan/pump FET status. */
 typedef struct {
-    uint8_t fanState;             /**< @brief Radiator fan state. */
-    uint8_t pumpState;            /**< @brief Radiator water pump state. */
-    uint16_t preRadiatorTemp_dC;  /**< @brief Pre-radiator water temperature (.1 C). */
-    uint16_t postRadiatorTemp_dC; /**< @brief Post-radiator water temperature (.1 C). */
-} cmr_canPTCCoolingStatus_t;
+    uint8_t FET1DutyCycle_pcnt;             /**< @brief Fan/Pump FET 1 state. */
+    uint8_t FET2DutyCycle_pcnt;             /**< @brief Fan/Pump FET 2 state. */
+    uint8_t FET3DutyCycle_pcnt;             /**< @brief Fan/Pump FET 3 state. */
+} cmr_canPTCFanPumpFETsStatus_t;
+
+/** @brief Powertrain Thermal Controller cooling loop temperature status. */
+typedef struct {
+    uint8_t loopTemp1_dC;            /**< @brief Temp 1 state. */
+    uint8_t loopTemp2_dC;            /**< @brief Temp 1 state. */
+    uint8_t loopTemp3_dC;            /**< @brief Temp 1 state. */
+    uint8_t loopTemp4_dC;            /**< @brief Temp 1 state. */
+    uint8_t loopTemp5_dC;            /**< @brief Temp 1 state. */
+    uint8_t loopTemp6_dC;            /**< @brief Temp 1 state. */
+    uint8_t loopTemp7_dC;            /**< @brief Temp 1 state. */
+    uint8_t loopTemp8_dC;            /**< @brief Temp 1 state. */
+} cmr_canPTCCoolingLoopTempStatus_t;
 
 /** @brief Powertrain Thermal Controller voltage diagnostics. */
 typedef struct {
@@ -507,16 +512,10 @@ typedef struct {
 
 /** @brief Powertrain Thermal Controller current diagnostics. */
 typedef struct {
-    uint16_t logicCurrent_mA;   /**< @brief Logic current (mA). */
     uint16_t loadCurrent_mA;    /**< @brief Load current (mA). */
-    uint16_t fanCurrent_mA;     /**< @brief Fan current (mA). */
 } cmr_canPTCCurrentDiagnostics_t;
 
 /** @brief Powertrain Thermal Controller accumulator fan duty cycles. */
-typedef struct {
-    uint8_t acFansDuty_pcnt;    /**< @brief Accumulator fan duty cycle. */
-    uint8_t dcdcFanDuty_pcnt;   /**< @brief DCDC fan duty cycle. */
-} cmr_canPTCAFCControl_t;
 
 // ------------------------------------------------------------------------------------------------
 // Rinehart Motor Controller Definitions
