@@ -38,6 +38,13 @@ static const TickType_t statusLED_period_ms = 250;
 /** @brief Status LED task. */
 static cmr_task_t statusLED_task;
 
+/** @brief Motor Controller Power Control task priority. */
+static const uint32_t mcPowerControl_priority = 2;
+/** @brief Motor Controller Power Control task period. */
+static const TickType_t mcPowerControl_period_ms = 1000;
+/** @brief Motor Controller Power Control task. */
+static cmr_task_t mcPowerControl_task;
+
 /** @brief Cooling control task priority. */
 static const uint32_t coolingControl_priority = 4;
 /** @brief Cooling control task period. */
@@ -76,6 +83,29 @@ static void statusLED(void *pvParameters) {
 }
 
 /**
+ * @brief Task for controller power to motor controller.
+ *
+ * @param pvParameters Ignored.
+ *
+ * @return Does not return.
+ */
+static void mcPowerControl(void *pvParameters) {
+    (void) pvParameters;    // Placate compiler.
+
+    cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 1);
+    cmr_gpioWrite(GPIO_MC_EFUSE_AUTO, 0);
+
+    /*
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
+        cmr_gpioToggle(GPIO_MTR_CTRL_ENABLE);
+
+        vTaskDelayUntil(&lastWakeTime, mcPowerControl_period_ms);
+    }
+    */
+}
+
+/**
  * @brief Task for controlling the radiator fan and pump.
  *
  * @param pvParameters Ignored.
@@ -85,7 +115,9 @@ static void statusLED(void *pvParameters) {
 static void coolingControl(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-    cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1); // Turn the fan driver on
+    cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1); // Turn the fet on
+    cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1); // Turn the fet on
+    cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1); // Turn the fet on
 
     // Get reference to VSM Heartbeat and accumulator min/max cell temperatures
     volatile cmr_canHeartbeat_t *vsmHeartbeat = canGetPayload(CANRX_HEARTBEAT_VSM);
@@ -97,7 +129,7 @@ static void coolingControl(void *pvParameters) {
         .pin = GPIO_PIN_5,
         .channel = TIM_CHANNEL_2,
         .presc = 24,
-        .period_ticks = 160,  // 96 MHz / (24 * 40000) = 100 Hz
+        .period_ticks = 40000,  // 96 MHz / (24 * 40000) = 100 Hz
         .timer = TIM3
     };
     const cmr_pwmPinConfig_t pwmPinConfig2 = {
@@ -105,7 +137,7 @@ static void coolingControl(void *pvParameters) {
         .pin = GPIO_PIN_7,
         .channel = TIM_CHANNEL_2,
         .presc = 24,
-        .period_ticks = 160,  // 96 MHz / (24 * 40000) = 100 Hz
+        .period_ticks = 40000,  // 96 MHz / (24 * 40000) = 100 Hz
         .timer = TIM4
     };
     const cmr_pwmPinConfig_t pwmPinConfig3 = {
@@ -113,7 +145,7 @@ static void coolingControl(void *pvParameters) {
         .pin = GPIO_PIN_8,
         .channel = TIM_CHANNEL_3,
         .presc = 24,
-        .period_ticks = 160,  // 96 MHz / (24 * 40000) = 100 Hz
+        .period_ticks = 40000,  // 96 MHz / (24 * 40000) = 100 Hz
         .timer = TIM4
     };
     cmr_pwmInit(&fanPWM1, &pwmPinConfig1);
@@ -130,23 +162,23 @@ static void coolingControl(void *pvParameters) {
                 cmr_pwmSetDutyCycle(&fanPWM3, 100);  // Fan full on
                 cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
                 cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
-                cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
+                cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 0);
                 break;
             case CMR_CAN_HV_EN:
-                cmr_pwmSetDutyCycle(&fanPWM1, 50);  // Fan full on
-                cmr_pwmSetDutyCycle(&fanPWM2, 50);  // Fan full on
-                cmr_pwmSetDutyCycle(&fanPWM3, 50);  // Fan full on
+                cmr_pwmSetDutyCycle(&fanPWM1, 100);  // Fan half on
+                cmr_pwmSetDutyCycle(&fanPWM2, 100);  // Fan half on
+                cmr_pwmSetDutyCycle(&fanPWM3, 100);  // Fan half on
                 cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
                 cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
-                cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
+                cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 0);
                 break;
             default:
                 cmr_pwmSetDutyCycle(&fanPWM1, 0);    // Fan off
                 cmr_pwmSetDutyCycle(&fanPWM2, 0);    // Fan off
                 cmr_pwmSetDutyCycle(&fanPWM3, 0);    // Fan off
-                cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);        // Pump off
-                cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 0);        // Pump off
-                cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 0);        // Pump off
+                cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);        // Set to 1 for fan, 0 for pump
+                cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);        // Set to 1 for fan, 0 for pump
+                cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 0);        // Set to 1 for fan, 0 for pump
                 break;
         }
 
@@ -201,6 +233,13 @@ int main(void) {
         "statusLED",
         statusLED_priority,
         statusLED,
+        NULL
+    );
+    cmr_taskInit(
+        &mcPowerControl_task,
+        "mcPowerControl",
+        mcPowerControl_priority,
+        mcPowerControl,
         NULL
     );
     cmr_taskInit(

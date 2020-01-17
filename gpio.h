@@ -21,7 +21,8 @@ typedef enum {
     GPIO_CHANNEL_2_ENABLE,         /**< @brief Fan/Pump Channel 2 Enable. */
     GPIO_CHANNEL_3_ENABLE,         /**< @brief Fan/Pump Channel 3 Enable. */
     GPIO_MTR_CTRL_ENABLE,   /**< @brief Motor Controller Power Enable */
-    GPIO_MC_EFUSE_AUTO,     /**< @brief Motor Controller eFuse Auto Reset Toggle */
+    GPIO_MC_EFUSE_AUTO,     /**< @brief Motor Controller eFuse Auto Reset
+                                             (high=latching, low=autoreset*/
     GPIO_LEN                /**< @brief Total GPIO pins. */
 } gpio_t;
 
