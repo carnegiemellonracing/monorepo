@@ -524,8 +524,10 @@ typedef struct {
 
 /** @brief Sensor values. */
 typedef struct {
-    uint32_t sensor1;       /**< @brief Raw sensor 1 value. */
-    uint32_t sensor2;       /**< @brief Raw sensor 2 value. */
+    uint16_t sensor1;       /**< @brief Raw sensor 1 value. */
+    uint16_t sensor2;       /**< @brief Raw sensor 2 value. */
+    uint16_t sensor3;       /**< @brief Raw sensor 3 value. */
+    uint16_t sensor4;       /**< @brief Raw sensor 4 value. */
 } cmr_canDAQSensorsADC_t;
 
 /** @brief Generic frequency enum, used for filtering and sending */
@@ -546,8 +548,8 @@ typedef struct {
 } cmr_canDAQPOST_t;
 
 typedef struct {
-    uint16_t send_canID;     /**< @brief Uses ID and ID + 1 to send on */
-    uint8_t  send_freq[2];   /**< @brief Send frequency per 2 messages (repacked enum) */
+    uint16_t send_canID;     /**< @brief New ID to send on for POST/sensor updates */
+    uint16_t cfg_recv_ID;    /**< @brief New ID to listen on for further cfg msgs */
     uint16_t psuedo_sn;      /**< @brief 2 bytes of (unique, configurable) serial number */
     uint8_t  lpf_cutoffs[2]; /**< @brief Frequency cutoffs per 4 readings (repacked enum) */
 } cmr_canDAQConfig_t;

@@ -395,7 +395,8 @@ void _platform_configInit(cmr_config_t *config, volatile uint32_t *cache, size_t
     config->cache = cache;
     config->cacheLen = cacheLen;
     config->flashSector = sector;
-    config->flashStart = (volatile uint32_t *) 0x08000000 + FLASH_PAGE_SIZE * sector; /* Hack for now, there is only one sector on L431 */
+    sector = 0x08000000U + FLASH_PAGE_SIZE * sector;
+    config->flashStart = (volatile uint32_t *) (void *) sector; /* Hack for now, there is only one sector on L431 */
     config->flashSize = FLASH_PAGE_SIZE;
 
     if (config->cacheLen > config->flashSize) {
@@ -438,7 +439,7 @@ void _platform_configCommit(cmr_config_t *config) {
     size_t idx = 0;
     while (idx < config->cacheLen) {
         if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, (uint32_t) (config->flashStart + idx),
-                config->cache[idx]) == HAL_OK) {
+                *(volatile uint64_t *) (&config->cache[idx])) == HAL_OK) {
             idx+=2;
         }
     }
