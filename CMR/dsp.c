@@ -8,9 +8,6 @@
 #include <stdlib.h>
 #include "dsp.h"
 
-/** @brief Signals voodoo, just trust it */
-#define CMR_DSP_FILTER_NUM_STAGES	4
-
 /** @brief Filter coefficients for each desired corner.
  * We could add the matlab code to generate these in the documentation,
  * but probably wouldn't be of significant use.
@@ -106,9 +103,6 @@ static const float32_t cmr_dspFilterCoeffs[CMR_DSP_FILTER_NUM][5*CMR_DSP_FILTER_
 
 };
 
-/** @brief Internal buffer used by CMSIS */
-static float32_t cmr_dspFilterState[2 * CMR_DSP_FILTER_NUM_STAGES];
-
 /**
  * @brief Initialize a preset filter
  *
@@ -117,10 +111,10 @@ static float32_t cmr_dspFilterState[2 * CMR_DSP_FILTER_NUM_STAGES];
  */
 void cmr_dspFilterInit(cmr_dspFilter_t *filter, cmr_dspFilterSelection_t sel) {
     filter->_instance.numStages = CMR_DSP_FILTER_NUM_STAGES;
-    filter->_instance.pState = cmr_dspFilterState;
+    filter->_instance.pState = filter->_buf;
     filter->_instance.pCoeffs = (float32_t*) &cmr_dspFilterCoeffs[sel];
 
-    memset(cmr_dspFilterState, 0, sizeof(cmr_dspFilterState));
+    memset(filter->_buf, 0, sizeof(filter->_buf));
 }
 
 /**

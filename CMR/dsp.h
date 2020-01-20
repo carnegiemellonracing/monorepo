@@ -11,6 +11,9 @@
 #include "platform.h"
 #include "arm_math.h"
 
+/** @brief Signals voodoo, just trust it */
+#define CMR_DSP_FILTER_NUM_STAGES	4
+
 /** @brief Predefined filter modes */
 typedef enum {
     CMR_DSP_FILTER_1HZ = 0,     /**< @brief Low pass filter with corner @ 1Hz */
@@ -24,10 +27,13 @@ typedef enum {
     CMR_DSP_FILTER_NUM          /**< @brief Number of filter frequencies */
 } cmr_dspFilterSelection_t;
 
+typedef float32_t cmr_dsp_cmsis_buffer_t[2 * CMR_DSP_FILTER_NUM_STAGES];
+
 /** @brief Wrapper for cmsis types */
 typedef struct {
     /** @brief Not important, this is private anyways */
     arm_biquad_cascade_df2T_instance_f32 _instance;
+    cmr_dsp_cmsis_buffer_t _buf;
 } cmr_dspFilter_t;
 
 void cmr_dspFilterInit(cmr_dspFilter_t *filter, cmr_dspFilterSelection_t sel);
