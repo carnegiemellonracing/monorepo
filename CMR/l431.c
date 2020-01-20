@@ -362,6 +362,65 @@ void _platform_rccADCClockEnable(ADC_TypeDef *instance) {
             break;
     }
 }
+
+ADC_ChannelConfTypeDef _platform_adcChannelConfig(const cmr_adcChannel_t *channel, uint32_t rank) {
+    ADC_ChannelConfTypeDef channelConfig = {
+        .Channel = channel->channel,
+        .Rank = rank,  // HAL needs Rank to be from 1 to 16
+        .SamplingTime = channel->samplingTime,
+        .Offset = 0,     // reserved, set to 0
+        .SingleDiff = ADC_SINGLE_ENDED,
+        .OffsetNumber = ADC_OFFSET_NONE
+    };
+
+    return channelConfig;
+}
+
+GPIO_InitTypeDef _platform_adcPinConfig(const cmr_adcChannel_t *channel) {
+    GPIO_InitTypeDef pinConfig = {
+        .Pin = channel->pin,
+        .Mode = GPIO_MODE_ANALOG_ADC_CONTROL,
+        .Pull = GPIO_NOPULL,
+        .Speed = GPIO_SPEED_FREQ_LOW,
+        .Alternate = 0
+    };
+
+    return pinConfig;
+}
+
+/**
+ * @brief Platform-specifc adc initialization
+ *
+ *  @param adc The ADC to initialize.
+ */
+void _platform_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance, cmr_adcChannel_t *channels, const size_t channelsLen) {
+    *adc =  (cmr_adc_t) {
+        .handle = {
+            .Instance = instance,
+
+            // Configure ADC in discontinuous scan mode.
+            // This will allow conversion of a series of channels one at a time.
+            .Init = {
+                .ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4,
+                .Resolution = ADC_RESOLUTION_12B,
+                .ScanConvMode = ENABLE,
+                .ContinuousConvMode = DISABLE,
+                .DiscontinuousConvMode = ENABLE,
+                .NbrOfDiscConversion = 1,
+                .ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE,
+                .ExternalTrigConv = ADC_SOFTWARE_START,
+                .DataAlign = ADC_DATAALIGN_RIGHT,
+                .NbrOfConversion = channelsLen,
+                .DMAContinuousRequests = DISABLE,
+                .EOCSelection = ADC_EOC_SINGLE_CONV,
+                .Overrun = ADC_OVR_DATA_PRESERVED,
+                .OversamplingMode = DISABLE
+            }
+        },
+        .channels = channels,
+        .channelsLen = channelsLen
+    };
+}
 #endif /* HAL_ADC_MODULE_ENABLED */
 
 #ifdef HAL_CAN_MODULE_ENABLED
