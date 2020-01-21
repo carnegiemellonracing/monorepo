@@ -226,7 +226,7 @@ int main(void) {
     gpioInit();
     canInit();
     adcInit();
-    //sensorsInit();
+    sensorsInit();
 
     cmr_taskInit(
         &statusLED_task,

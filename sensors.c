@@ -168,6 +168,15 @@ static int32_t adcConvSwitchTemp_dC(const cmr_sensor_t *s, uint32_t adcVal) {
     return thermTempConvsSwitch[thermTempConvsSwitch_len - 1].temp_dC;
 }
 
+// returns in degrees C
+// takes the B value, the resistance at given tmep, that temp, the resistor in the divider, the sensed voltage, and the bias voltage
+// assumes thermistor is on the high side
+float thermistorCalc(float B, float r1, float rTemp, float biasR, float vSense, float vBias) {
+    float r2 = biasR * ((vBias / vSense) - 1);
+    float temp = (B * (rTemp + 273.15f)) / (B - ((rTemp + 273.15f) * log(r1/r2)));
+    return temp - 273.15f;
+}
+
 /**
  * @brief Conversion function for ADC to radiator temperature.
  *
@@ -177,6 +186,12 @@ static int32_t adcConvSwitchTemp_dC(const cmr_sensor_t *s, uint32_t adcVal) {
  * @return Radiator temperature in 10th of degrees C.
  */
 static int32_t adcConvRadTherm_dC(const cmr_sensor_t *s, uint32_t adcVal) {
+    float sensed_ratio = adcVal / ((float) 4095);
+    float sensed_voltage = sensed_ratio * ((float) 3.3);
+
+    //3435
+    float sensed_temp = thermistorCalc(3435.f, 10000.f, 25.f, 5.6e3, sensed_voltage, 2.6f);
+    /*
     uint32_t thermistorResistance_Ohm =
         (SENSORS_RAD_TEMP_MULT * 10) / (adcVal * 8) - SENSORS_RAD_TEMP_DIV_RES;
 
@@ -201,6 +216,7 @@ static int32_t adcConvRadTherm_dC(const cmr_sensor_t *s, uint32_t adcVal) {
     }
 
     return thermTempConvsRadiator[thermTempConvsRadiator_len - 1].temp_dC;
+    */
 }
 
 /**
