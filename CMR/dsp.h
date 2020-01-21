@@ -27,12 +27,15 @@ typedef enum {
     CMR_DSP_FILTER_NUM          /**< @brief Number of filter frequencies */
 } cmr_dspFilterSelection_t;
 
+/** @brief Type for CMSIS land, don't worry about this
+ * (needs to be allocated along with cmr_dspFilter_t) */
 typedef float32_t cmr_dsp_cmsis_buffer_t[2 * CMR_DSP_FILTER_NUM_STAGES];
 
 /** @brief Wrapper for cmsis types */
 typedef struct {
     /** @brief Not important, this is private anyways */
     arm_biquad_cascade_df2T_instance_f32 _instance;
+    /** @brief Also not important */
     cmr_dsp_cmsis_buffer_t _buf;
 } cmr_dspFilter_t;
 
