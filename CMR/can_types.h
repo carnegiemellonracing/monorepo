@@ -78,7 +78,10 @@ typedef enum {
     /** @brief PTC fan/pump driver IC temperature out-of-range. */
     CMR_CAN_ERROR_PTC_DRIVERS_TEMP = (1 << 14),
     /** @brief PTC water temperature out-of-range. */
-    CMR_CAN_ERROR_PTC_WATER_TEMP = (1 << 13)
+    CMR_CAN_ERROR_PTC_WATER_TEMP = (1 << 13),
+
+    /** @brief CDC All motor controllers have errored or timed out. */
+    CMR_CAN_ERROR_CDC_AMK_ALL = (1 << 15)
 } cmr_canError_t;
 
 /** @brief Heartbeat warning matrix bit fields. */
@@ -124,7 +127,20 @@ typedef enum {
     /** @brief FSM brake pressure sensor out-of-range. */
     CMR_CAN_WARN_FSM_BPRES = (1 << 10),
     /** @brief FSM steering wheel angle out-of-range. */
-    CMR_CAN_WARN_FSM_SWANGLE = (1 << 9)
+    CMR_CAN_WARN_FSM_SWANGLE = (1 << 9),
+
+    /** @brief CDC Front left motor controller is warning source. */
+    CMR_CAN_WARN_CDC_AMK_FL = (1 << 15),
+    /** @brief CDC Front right motor controller is warning source. */
+    CMR_CAN_WARN_CDC_AMK_FR = (1 << 14),
+    /** @brief CDC Rear left motor controller is warning source. */
+    CMR_CAN_WARN_CDC_AMK_RL = (1 << 13),
+    /** @brief CDC Rear right motor controller is warning source. */
+    CMR_CAN_WARN_CDC_AMK_RR = (1 << 12),
+    /** @brief CDC Motor controller has an error. */
+    CMR_CAN_WARN_CDC_AMK_ERROR = (1 << 11),
+    /** @brief CDC Motor controller has timed out. */
+    CMR_CAN_WARN_CDC_AMK_TIMEOUT = (1 << 10)
 } cmr_canWarn_t;
 
 /** @brief Represents the car's current driving mode (gear). */
