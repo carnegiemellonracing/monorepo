@@ -80,9 +80,9 @@ static cmr_task_t canTX100Hz_task;
 static cmr_can_t can;
 
 // Forward declarations
-static void sendCoolLoopTempStatus(void);
-static void sendVoltDiagnostics(void);
-static void sendCurrDiagnostics(void);
+static void sendCoolingLoopTemps(void);
+static void sendPowerDiagnostics(void);
+static void sendDriverStatus(void);
 static void sendHeartbeat(TickType_t lastWakeTime);
 
 /**
@@ -97,11 +97,10 @@ static void canTX10Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        //sendFanPumpFETsStatus();
-        sendCoolLoopTempStatus();
-        sendVoltDiagnostics();
-        sendCurrDiagnostics();
-
+        sendCoolingLoopTemps();
+        sendPowerDiagnostics();
+        sendDriverStatus();
+        
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
 }
@@ -240,13 +239,27 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     }
     memcpy(&heartbeat.warning, &warning, sizeof(warning));
 
-    canTX(CMR_CANID_HEARTBEAT_PTC, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
+#ifndef CMR_PTC_ID
+#error "No PTC ID defined!"
+#elif (CMR_PTC_ID == 0) /* Pump Control Board */
+
+    canTX(CMR_CANID_HEARTBEAT_PTCp, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
+
+#elif (CMR_PTC_ID == 1) /* Fan Control Board */
+    
+    canTX(CMR_CANID_HEARTBEAT_PTCf, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
+
+#else
+
+    #pragma warning "CMR_PTC_ID is not a valid value!"
+
+#endif
 }
 
 /**
  * @brief Send cooling system status on CAN bus.
  */
-static void sendCoolLoopTempStatus(void) {
+static void sendCoolingLoopTemps(void) {
     int32_t Temp_1_dC =
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_1);
     int32_t Temp_2_dC =
@@ -264,11 +277,13 @@ static void sendCoolLoopTempStatus(void) {
     int32_t Temp_8_dC =
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_8);
 
+    /* coolMsg is defined twice here because the names of temps will probably become something more relevant */
+
 #ifndef CMR_PTC_ID
 #error "No PTC ID defined!"
 #elif (CMR_PTC_ID == 0) /* Pump Control Board */
 
-    cmr_canPTC0TempStatus_t coolMsg = {
+    cmr_canPTCpLoopTemp_t coolMsg = {
         .temp1_dC = Temp_1_dC,
         .temp2_dC = Temp_2_dC,
         .temp3_dC = Temp_3_dC,
@@ -279,11 +294,11 @@ static void sendCoolLoopTempStatus(void) {
         .temp8_dC = Temp_8_dC,
     };
 
-    canTX(CMR_CANID_PTC_COOLING_STATUS_0, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
+    canTX(CMR_CANID_PTCf_LOOP_TEMPS, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
 
 #elif (CMR_PTC_ID == 1) /* Fan Control Board */
 
-    cmr_canPTC1TempStatus_t coolMsg = {
+    cmr_canPTCfLoopTemp_t coolMsg = {
         .temp1_dC = Temp_1_dC,
         .temp2_dC = Temp_2_dC,
         .temp3_dC = Temp_3_dC,
@@ -294,7 +309,7 @@ static void sendCoolLoopTempStatus(void) {
         .temp8_dC = Temp_8_dC,
     };
 
-    canTX(CMR_CANID_PTC_COOLING_STATUS_1, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
+    canTX(CMR_CANID_PTCp_LOOP_TEMPS, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
 
 #else
 
@@ -304,31 +319,67 @@ static void sendCoolLoopTempStatus(void) {
 }
 
 /**
- * @brief Send voltage diagnostic information.
+ * @brief Send Fan or Pump status information.
  */
-static void sendVoltDiagnostics(void) {
+static void sendDriverStatus(void) {
+    uint8_t Channel1_Duty_Cycle_pcnt = 0; ///////////////////////PLACEHOLDERS
+    uint8_t Channel2_Duty_Cycle_pcnt = 0;
+    uint8_t Channel3_Duty_Cycle_pcnt = 0;
+
+    cmr_canPTCDriverStatus_t driverStatusMsg = {
+        .channel1DutyCycle_pcnt = Channel1_Duty_Cycle_pcnt,
+        .channel2DutyCycle_pcnt = Channel2_Duty_Cycle_pcnt,
+        .channel3DutyCycle_pcnt = Channel3_Duty_Cycle_pcnt
+    };
+
+#ifndef CMR_PTC_ID
+#error "No PTC ID defined!"
+#elif (CMR_PTC_ID == 0) /* Pump Control Board */
+
+    canTX(CMR_CANID_PTCp_PUMPS_STATUS, &driverStatusMsg, sizeof(driverStatusMsg), canTX10Hz_period_ms);
+
+#elif (CMR_PTC_ID == 1) /* Fan Control Board */
+
+    canTX(CMR_CANID_PTCf_FANS_STATUS, &driverStatusMsg, sizeof(driverStatusMsg), canTX10Hz_period_ms);
+
+#else
+
+    #pragma warning "CMR_PTC_ID is not a valid value!"
+
+#endif
+}
+
+/**
+ * @brief Send power diagnostic information.
+ */
+static void sendPowerDiagnostics(void) {
     int32_t logicVoltage_mV =
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_LOGIC_VOLTAGE_MV);
     int32_t loadVoltage_mV =
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_LOAD_VOLTAGE_MV);
-
-    cmr_canPTCVoltageDiagnostics_t voltMsg = {
-        .logicVoltage_mV = logicVoltage_mV,
-        .loadVoltage_mV = loadVoltage_mV
-    };
-
-    canTX(CMR_CANID_PTC_VOLTAGE_DIAGNOSTICS, &voltMsg, sizeof(voltMsg), canTX10Hz_period_ms);
-}
-/**
- * @brief Send current diagnostic information.
- */
-static void sendCurrDiagnostics(void) {
     int32_t loadCurrent_mA =
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_LOAD_CURRENT_MA);
-    cmr_canPTCCurrentDiagnostics_t ampMsg = {
-        .loadCurrent_mA = loadCurrent_mA,
+
+    cmr_canPTCPowerDiagnostics_t powerMsg = {
+        .logicVoltage_mV = logicVoltage_mV,
+        .loadVoltage_mV = loadVoltage_mV,
+        .loadCurrent_mA = loadCurrent_mA
     };
 
-    canTX(CMR_CANID_PTC_CURRENT_DIAGNOSTICS, &ampMsg, sizeof(ampMsg), canTX10Hz_period_ms);
+#ifndef CMR_PTC_ID
+#error "No PTC ID defined!"
+#elif (CMR_PTC_ID == 0) /* Pump Control Board */
+
+    canTX(CMR_CANID_PTCp_POWER_DIAGNOSTICS, &powerMsg, sizeof(powerMsg), canTX10Hz_period_ms); 
+
+#elif (CMR_PTC_ID == 1) /* Fan Control Board */
+    
+    canTX(CMR_CANID_PTCf_POWER_DIAGNOSTICS, &powerMsg, sizeof(powerMsg), canTX10Hz_period_ms); 
+
+#else
+
+    #pragma warning "CMR_PTC_ID is not a valid value!"
+
+#endif
 }
 
