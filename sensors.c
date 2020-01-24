@@ -7,10 +7,11 @@
 
 #include <CMR/tasks.h>  // Task interface
 
-#include "thermistor_table.h" // switchThermTempConvs, radThermTempConvs
-#include "sensors.h"    // Interface to implement
-#include "adc.h"        // adcChannels_t, adcChannels
-#include <CMR/adc.h>    // ADC_MAX
+#include "thermistor_table.h"   // switchThermTempConvs, radThermTempConvs
+#include "sensors.h"            // Interface to implement
+#include "adc.h"                // adcChannels_t, adcChannels
+#include <CMR/adc.h>            // ADC_MAX
+#include <math.h>               // math.h
 
 /** @brief Value of resistor divider for rad thermistors. */
 #define SENSORS_RAD_TEMP_DIV_RES    5600
@@ -164,7 +165,7 @@ static int32_t adcConvRadTherm_dC(const cmr_sensor_t *s, uint32_t adcVal) {
 
     //3435
     float sensed_temp = thermistorCalc(3435.f, 10000.f, 25.f, 5.6e3, sensed_voltage, 2.6f);
-
+    return sensed_temp;
 }
 
 /**
