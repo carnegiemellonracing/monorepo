@@ -179,24 +179,24 @@ static void fanControl(void *pvParameters) {
                 cmr_pwmSetDutyCycle(&channel_1_PWM, 100);
                 cmr_pwmSetDutyCycle(&channel_2_PWM, 100);
                 cmr_pwmSetDutyCycle(&channel_3_PWM, 100);
-                cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 0);
-                cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 0);
+                cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
+                cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
                 cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
                 break;
             case CMR_CAN_HV_EN:
                 cmr_pwmSetDutyCycle(&channel_1_PWM, 50);
                 cmr_pwmSetDutyCycle(&channel_2_PWM, 50);
                 cmr_pwmSetDutyCycle(&channel_3_PWM, 50);
-                cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 0);
-                cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 0);
+                cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
+                cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
                 cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
                 break;
             default:
                 cmr_pwmSetDutyCycle(&channel_1_PWM, 0);
                 cmr_pwmSetDutyCycle(&channel_2_PWM, 0);
                 cmr_pwmSetDutyCycle(&channel_3_PWM, 0);
-                cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 0);
-                cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 0);
+                cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
+                cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
                 cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
                 break;
         }
