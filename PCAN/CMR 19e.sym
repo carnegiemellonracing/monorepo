@@ -431,98 +431,8 @@ Timeout=1000
 Var=DIM_requestState unsigned 0,8 /e:State
 Var=DIM_requestGear unsigned 8,8 /e:Gear
 
-[AFC0_Heartbeat]
+[PTCf_Heartbeat]
 ID=106h
-DLC=5
-CycleTime=10
-Timeout=100
-Var=AFC0_state unsigned 0,8 /e:State
-Var=AFC0_ERR_VSMTimeout unsigned 8,1
-Var=AFC0_ERR_DCDCTemp1OOR bit 18,1
-Var=AFC0_ERR_DCDCTemp0OOR bit 19,1
-Var=AFC0_ERR_driver2TempOOR bit 20,1
-Var=AFC0_ERR_driver1TempOOR bit 21,1
-Var=AFC0_ERR_driver0TempOOR bit 22,1
-Var=AFC0_ERR_fansCurrentOOR bit 23,1
-Var=AFC0_WRN_VSMTimeout bit 24,1
-Var=AFC0_WRN_VoltageOOR bit 25,1
-Var=AFC0_WRN_CurrentOOR bit 26,1
-
-[AFC1_Heartbeat]
-ID=107h
-DLC=5
-CycleTime=10
-Timeout=100
-Var=AFC1_state unsigned 0,8 /e:State
-Var=AFC1_ERR_VSMTimeout unsigned 8,1
-Var=AFC1_ERR_DCDCTemp1OOR bit 18,1
-Var=AFC1_ERR_DCDCTemp0OOR bit 19,1
-Var=AFC1_ERR_driver2TempOOR bit 20,1
-Var=AFC1_ERR_driver1TempOOR bit 21,1
-Var=AFC1_ERR_driver0TempOOR bit 22,1
-Var=AFC1_ERR_fansCurrentOOR bit 23,1
-Var=AFC1_WRN_VSMTimeout bit 24,1
-Var=AFC1_WRN_VoltageOOR bit 25,1
-Var=AFC1_WRN_CurrentOOR bit 26,1
-
-[AFC0_FanStatus]
-ID=236h
-DLC=2
-CycleTime=100
-Timeout=1000
-Var=AFC0_ACFans unsigned 0,8 /e:FanState
-Var=AFC0_DCDCFan unsigned 8,8 /e:PumpState
-
-[AFC1_FanStatus]
-ID=237h
-DLC=2
-CycleTime=100
-Timeout=1000
-Var=AFC1_ACFans unsigned 0,8 /e:FanState
-Var=AFC1_DCDCFan unsigned 8,8 /e:PumpState
-
-[AFC0_DriverTemps]
-ID=536h
-DLC=5
-CycleTime=100
-Timeout=1000
-Var=AFC0_driverTemp0 unsigned 0,8 /u:C
-Var=AFC0_driverTemp1 unsigned 8,8 /u:C
-Var=AFC0_driverTemp2 unsigned 16,8 /u:C
-Var=AFC0_DCDCTemp0 unsigned 24,8 /u:C
-Var=AFC0_DCDCTemp1 unsigned 32,8 /u:C
-
-[AFC1_DriverTemps]
-ID=537h
-DLC=5
-CycleTime=100
-Timeout=1000
-Var=AFC1_driverTemp0 unsigned 0,8 /u:C
-Var=AFC1_driverTemp1 unsigned 8,8 /u:C
-Var=AFC1_driverTemp2 unsigned 16,8 /u:C
-Var=AFC1_DCDCTemp0 unsigned 24,8 /u:C
-Var=AFC1_DCDCTemp1 unsigned 32,8 /u:C
-
-[AFC0_PowerDiagnostic]
-ID=546h
-DLC=6
-CycleTime=100
-Timeout=1000
-Var=AFC0_busVoltage unsigned 0,16 /u:mV
-Var=AFC0_busCurrent unsigned 16,16 /u:mA
-Var=AFC0_fansCurrent unsigned 32,16 /u:mA
-
-[AFC1_PowerDiagnostic]
-ID=547h
-DLC=6
-CycleTime=100
-Timeout=1000
-Var=AFC1_busVoltage unsigned 0,16 /u:mV
-Var=AFC1_busCurrent unsigned 16,16 /u:mA
-Var=AFC1_fansCurrent unsigned 32,16 /u:mA
-
-[PTC_Heartbeat]
-ID=104h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -530,45 +440,86 @@ Var=PTC_state unsigned 0,8 /e:State
 Var=PTC_ERR_VSMTimeout unsigned 8,1
 Var=PTC_ERR_waterTempOOR bit 21,1
 Var=PTC_ERR_driversTempOOR bit 22,1
-Var=PTC_ERR_fanCurrentOOR bit 23,1
 Var=PTC_WRN_VSMTimeout bit 24,1
 Var=PTC_WRN_VoltageOOR bit 25,1
 Var=PTC_WRN_CurrentOOR bit 26,1
 
-[PTC_CoolingStatus]
+[PTCp_Heartbeat]
+ID=107h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=PTC_state unsigned 0,8 /e:State
+Var=PTC_ERR_VSMTimeout unsigned 8,1
+Var=PTC_ERR_waterTempOOR bit 21,1
+Var=PTC_ERR_driversTempOOR bit 22,1
+Var=PTC_WRN_VSMTimeout bit 24,1
+Var=PTC_WRN_VoltageOOR bit 25,1
+Var=PTC_WRN_CurrentOOR bit 26,1
+
+[PTCf_LoopTemps]
+ID=224h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=PTC_Temp1 unsigned 0,8 /u:dC
+Var=PTC_Temp2 unsigned 8,8 /u:dC
+Var=PTC_Temp3 unsigned 16,8 /u:dC
+Var=PTC_Temp4 unsigned 24,8 /u:dC
+Var=PTC_Temp5 unsigned 32,8 /u:dC
+Var=PTC_Temp6 unsigned 40,8 /u:dC
+Var=PTC_Temp7 unsigned 48,8 /u:dC
+Var=PTC_Temp8 unsigned 56,8 /u:dC
+
+[PTCp_LoopTemps]
 ID=234h
-DLC=6
+DLC=8
 CycleTime=100
 Timeout=1000
-Var=PTC_fanState unsigned 0,8 /e:FanState
-Var=PTC_pumpState unsigned 8,8 /e:PumpState
-Var=PTC_preRadiatorTemp unsigned 16,16 /u:dC
-Var=PTC_postRadiatorTemp unsigned 32,16 /u:dC
+Var=PTC_Temp1 unsigned 0,8 /u:dC
+Var=PTC_Temp2 unsigned 8,8 /u:dC
+Var=PTC_Temp3 unsigned 16,8 /u:dC
+Var=PTC_Temp4 unsigned 24,8 /u:dC
+Var=PTC_Temp5 unsigned 32,8 /u:dC
+Var=PTC_Temp6 unsigned 40,8 /u:dC
+Var=PTC_Temp7 unsigned 48,8 /u:dC
+Var=PTC_Temp8 unsigned 56,8 /u:dC
 
-[PTC_AFCControl]
-ID=254h
-DLC=2
+[PTCf_FansStatus]
+ID=314h
+DLC=3
 CycleTime=100
 Timeout=1000
-Var=PTC_acFansDuty unsigned 0,8 /u:%
-Var=PTC_dcdcFanDuty unsigned 8,8 /u:%
+Var=PTC_channel1State unsigned 0,8 /u:percent
+Var=PTC_channel2State unsigned 8,8 /u:percent
+Var=PTC_channel3State unsigned 16,8 /u:percent
 
-[PTC_VoltageDiagnostic]
+[PTCp_PumpsStatus]
+ID=324h
+DLC=3
+CycleTime=100
+Timeout=1000
+Var=PTC_channel1State unsigned 0,8 /u:percent
+Var=PTC_channel2State unsigned 8,8 /u:percent
+Var=PTC_channel3State unsigned 16,8 /u:percent
+
+[PTCf_PowerDiagnostic]
 ID=534h
 DLC=4
 CycleTime=100
 Timeout=1000
 Var=PTC_logicVoltage unsigned 0,16 /u:mV
 Var=PTC_loadVoltage unsigned 16,16 /u:mV
+Var=PTC_loadCurrent unsigned 32,16 /u:mA
 
-[PTC_CurrentDiagnostic]
+[PTCp_PowerDiagnostic]
 ID=544h
-DLC=6
+DLC=4
 CycleTime=100
 Timeout=1000
-Var=PTC_logicCurrent unsigned 0,16 /u:mA
-Var=PTC_loadCurrent unsigned 16,16 /u:mA
-Var=PTC_fanCurrent unsigned 32,16 /u:mA
+Var=PTC_logicVoltage unsigned 0,16 /u:mV
+Var=PTC_loadVoltage unsigned 16,16 /u:mV
+Var=PTC_loadCurrent unsigned 32,16 /u:mA
 
 [APC_Heartbeat]
 ID=108h

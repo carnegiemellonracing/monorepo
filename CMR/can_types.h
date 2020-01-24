@@ -490,45 +490,39 @@ typedef struct {
     uint8_t channel1DutyCycle_pcnt;             /**< @brief Fan/Pump channel 1 state. */
     uint8_t channel2DutyCycle_pcnt;             /**< @brief Fan/Pump channel 2 state. */
     uint8_t channel3DutyCycle_pcnt;             /**< @brief Fan/Pump channel 3 state. */
-} cmr_canPTCFanPumpStatus_t;
+} cmr_canPTCDriverStatus_t;
 
-/** @brief Powertrain Thermal Controller (Board 0) cooling loop temperature status. */
+/** @brief Powertrain Thermal Controller (fan board) cooling loop temperature status. */
 typedef struct {
-    uint8_t temp1_dC;            /**< @brief Temp 1 state. */
-    uint8_t temp2_dC;            /**< @brief Temp 1 state. */
-    uint8_t temp3_dC;            /**< @brief Temp 1 state. */
-    uint8_t temp4_dC;            /**< @brief Temp 1 state. */
-    uint8_t temp5_dC;            /**< @brief Temp 1 state. */
-    uint8_t temp6_dC;            /**< @brief Temp 1 state. */
-    uint8_t temp7_dC;            /**< @brief Temp 1 state. */
-    uint8_t temp8_dC;            /**< @brief Temp 1 state. */
-} cmr_canPTC0TempStatus_t;
+    uint8_t temp1_dC;            /**< @brief Temp 1 */
+    uint8_t temp2_dC;            /**< @brief Temp 2 */
+    uint8_t temp3_dC;            /**< @brief Temp 3 */
+    uint8_t temp4_dC;            /**< @brief Temp 4 */  //These are placeholders for more useful names
+    uint8_t temp5_dC;            /**< @brief Temp 5 */
+    uint8_t temp6_dC;            /**< @brief Temp 6 */
+    uint8_t temp7_dC;            /**< @brief Temp 7 */
+    uint8_t temp8_dC;            /**< @brief Temp 8 */
+} cmr_canPTCfLoopTemp_t;
 
-/** @brief Powertrain Thermal Controller (Board 1) cooling loop temperature status. */
+/** @brief Powertrain Thermal Controller (pump board) cooling loop temperature status. */
 typedef struct {
-    uint8_t temp1_dC;            /**< @brief Temp 1 state. */
-    uint8_t temp2_dC;            /**< @brief Temp 1 state. */
-    uint8_t temp3_dC;            /**< @brief Temp 1 state. */
-    uint8_t temp4_dC;            /**< @brief Temp 1 state. */
-    uint8_t temp5_dC;            /**< @brief Temp 1 state. */
-    uint8_t temp6_dC;            /**< @brief Temp 1 state. */
-    uint8_t temp7_dC;            /**< @brief Temp 1 state. */
-    uint8_t temp8_dC;            /**< @brief Temp 1 state. */
-} cmr_canPTC1TempStatus_t;
+    uint8_t temp1_dC;            /**< @brief Temp 1 */
+    uint8_t temp2_dC;            /**< @brief Temp 2 */
+    uint8_t temp3_dC;            /**< @brief Temp 3 */
+    uint8_t temp4_dC;            /**< @brief Temp 4 */  //These are placeholders for more useful names
+    uint8_t temp5_dC;            /**< @brief Temp 5 */
+    uint8_t temp6_dC;            /**< @brief Temp 6 */
+    uint8_t temp7_dC;            /**< @brief Temp 7 */
+    uint8_t temp8_dC;            /**< @brief Temp 8 */
+} cmr_canPTCpLoopTemp_t;
 
 
 /** @brief Powertrain Thermal Controller voltage diagnostics. */
 typedef struct {
     uint16_t logicVoltage_mV;   /**< @brief Logic voltage (mV). */
     uint16_t loadVoltage_mV;    /**< @brief Load voltage (mV). */
-} cmr_canPTCVoltageDiagnostics_t;
-
-/** @brief Powertrain Thermal Controller current diagnostics. */
-typedef struct {
-    uint16_t loadCurrent_mA;    /**< @brief Load current (mA). */
-} cmr_canPTCCurrentDiagnostics_t;
-
-/** @brief Powertrain Thermal Controller accumulator fan duty cycles. */
+    uint16_t loadCurrent_mA;    /**< @brief Load current (ma). */
+} cmr_canPTCPowerDiagnostics_t;
 
 // ------------------------------------------------------------------------------------------------
 // Rinehart Motor Controller Definitions
