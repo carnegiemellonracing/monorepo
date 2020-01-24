@@ -55,7 +55,6 @@ typedef enum {
 
     CMR_CANID_PTC_COOLING_STATUS_0 = 0x233,     /**< @brief PTC 0 cooling status. */
     CMR_CANID_PTC_COOLING_STATUS_1 = 0x234,     /**< @brief PTC 1 cooling status */
-    CMR_CANID_PTC_AFC_CONTROL = 0x254,          /**< @brief VSM AFC control message. */
     CMR_CANID_PTC_VOLTAGE_DIAGNOSTICS = 0x534,  /**< @brief PTC voltage diagnostics. */
     CMR_CANID_PTC_CURRENT_DIAGNOSTICS = 0x544,  /**< @brief PTC current diagnostics. */
 

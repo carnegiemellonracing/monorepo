@@ -485,12 +485,12 @@ typedef struct {
 // ------------------------------------------------------------------------------------------------
 // Powertrain Thermal Controller
 
-/** @brief Powertrain Thermal Controller fan/pump FET status. */
+/** @brief Powertrain Thermal Controller fan/pump status. */
 typedef struct {
-    uint8_t FET1DutyCycle_pcnt;             /**< @brief Fan/Pump FET 1 state. */
-    uint8_t FET2DutyCycle_pcnt;             /**< @brief Fan/Pump FET 2 state. */
-    uint8_t FET3DutyCycle_pcnt;             /**< @brief Fan/Pump FET 3 state. */
-} cmr_canPTCFanPumpFETsStatus_t;
+    uint8_t channel1DutyCycle_pcnt;             /**< @brief Fan/Pump channel 1 state. */
+    uint8_t channel2DutyCycle_pcnt;             /**< @brief Fan/Pump channel 2 state. */
+    uint8_t channel3DutyCycle_pcnt;             /**< @brief Fan/Pump channel 3 state. */
+} cmr_canPTCFanPumpStatus_t;
 
 /** @brief Powertrain Thermal Controller (Board 0) cooling loop temperature status. */
 typedef struct {
