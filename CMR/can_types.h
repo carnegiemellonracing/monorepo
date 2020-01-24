@@ -492,17 +492,30 @@ typedef struct {
     uint8_t FET3DutyCycle_pcnt;             /**< @brief Fan/Pump FET 3 state. */
 } cmr_canPTCFanPumpFETsStatus_t;
 
-/** @brief Powertrain Thermal Controller cooling loop temperature status. */
+/** @brief Powertrain Thermal Controller (Board 0) cooling loop temperature status. */
 typedef struct {
-    uint8_t loopTemp1_dC;            /**< @brief Temp 1 state. */
-    uint8_t loopTemp2_dC;            /**< @brief Temp 1 state. */
-    uint8_t loopTemp3_dC;            /**< @brief Temp 1 state. */
-    uint8_t loopTemp4_dC;            /**< @brief Temp 1 state. */
-    uint8_t loopTemp5_dC;            /**< @brief Temp 1 state. */
-    uint8_t loopTemp6_dC;            /**< @brief Temp 1 state. */
-    uint8_t loopTemp7_dC;            /**< @brief Temp 1 state. */
-    uint8_t loopTemp8_dC;            /**< @brief Temp 1 state. */
-} cmr_canPTCCoolingLoopTempStatus_t;
+    uint8_t temp1_dC;            /**< @brief Temp 1 state. */
+    uint8_t temp2_dC;            /**< @brief Temp 1 state. */
+    uint8_t temp3_dC;            /**< @brief Temp 1 state. */
+    uint8_t temp4_dC;            /**< @brief Temp 1 state. */
+    uint8_t temp5_dC;            /**< @brief Temp 1 state. */
+    uint8_t temp6_dC;            /**< @brief Temp 1 state. */
+    uint8_t temp7_dC;            /**< @brief Temp 1 state. */
+    uint8_t temp8_dC;            /**< @brief Temp 1 state. */
+} cmr_canPTC0TempStatus_t;
+
+/** @brief Powertrain Thermal Controller (Board 1) cooling loop temperature status. */
+typedef struct {
+    uint8_t temp1_dC;            /**< @brief Temp 1 state. */
+    uint8_t temp2_dC;            /**< @brief Temp 1 state. */
+    uint8_t temp3_dC;            /**< @brief Temp 1 state. */
+    uint8_t temp4_dC;            /**< @brief Temp 1 state. */
+    uint8_t temp5_dC;            /**< @brief Temp 1 state. */
+    uint8_t temp6_dC;            /**< @brief Temp 1 state. */
+    uint8_t temp7_dC;            /**< @brief Temp 1 state. */
+    uint8_t temp8_dC;            /**< @brief Temp 1 state. */
+} cmr_canPTC1TempStatus_t;
+
 
 /** @brief Powertrain Thermal Controller voltage diagnostics. */
 typedef struct {

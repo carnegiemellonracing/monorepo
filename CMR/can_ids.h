@@ -53,7 +53,8 @@ typedef enum {
     CMR_CANID_FSM_SENSORS_ADC = 0x543,          /**< @brief FSM raw sensors. */
     CMR_CANID_FSM_POWER_DIAGNOSTICS = 0x553,    /**< @brief FSM power diagnostics. */
 
-    CMR_CANID_PTC_COOLING_STATUS = 0x234,       /**< @brief PTC cooling status. */
+    CMR_CANID_PTC_COOLING_STATUS_0 = 0x233,     /**< @brief PTC 0 cooling status. */
+    CMR_CANID_PTC_COOLING_STATUS_1 = 0x234,     /**< @brief PTC 1 cooling status */
     CMR_CANID_PTC_AFC_CONTROL = 0x254,          /**< @brief VSM AFC control message. */
     CMR_CANID_PTC_VOLTAGE_DIAGNOSTICS = 0x534,  /**< @brief PTC voltage diagnostics. */
     CMR_CANID_PTC_CURRENT_DIAGNOSTICS = 0x544,  /**< @brief PTC current diagnostics. */
