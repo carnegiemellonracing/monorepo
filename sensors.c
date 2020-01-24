@@ -87,20 +87,6 @@ static int32_t adcConvLogicVoltage_mV(const cmr_sensor_t *s, uint32_t r) {
 }
 
 /**
- * @brief Conversion function for ADC to logic current.
- *
- * @param s The sensor.
- * @param r The raw reading.
- *
- * @return Logic current in mA.
- */
-static int32_t adcConvLogicCurrent_mA(const cmr_sensor_t *s, uint32_t r) {
-    // mA * 1.5 Ohm * 20 V/V = mV = adcVal * 0.8 mV/bit
-    // solve for mA = adcVal * 8 / 300
-    return adcFractionalConvert(s, r, 8, 300, 0);
-}
-
-/**
  * @brief Conversion function for ADC to load voltage.
  *
  * @param s The sensor.
@@ -122,22 +108,9 @@ static int32_t adcConvLoadVoltage_mV(const cmr_sensor_t *s, uint32_t r) {
  * @return Load current in mA.
  */
 static int32_t adcConvLoadCurrent_mA(const cmr_sensor_t *s, uint32_t r) {
-    // mA * 0.015 Ohm * 20 V/V = mV = adcVal * 0.8 mV/bit
+    // mA * 0.010 Ohm * 20 V/V = mV = adcVal * 0.8 mV/bit
     // Solve for mA = adcVal * 24 / 100
-    return adcFractionalConvert(s, r, 24, 100, 0);
-}
-
-/**
- * @brief Conversion function for ADC to fan current.
- *
- * @param s The sensor.
- * @param r The raw reading.
- *
- * @return Fan current in mA.
- */
-static int32_t adcConvFanCurrent_mA(const cmr_sensor_t *s, uint32_t r) {
-    // TODO this is wrong
-    return adcFractionalConvert(s, r, 8, 200, 0);
+    return adcFractionalConvert(s, r, 4, 1, 0);
 }
 
 /**
@@ -191,32 +164,7 @@ static int32_t adcConvRadTherm_dC(const cmr_sensor_t *s, uint32_t adcVal) {
 
     //3435
     float sensed_temp = thermistorCalc(3435.f, 10000.f, 25.f, 5.6e3, sensed_voltage, 2.6f);
-    /*
-    uint32_t thermistorResistance_Ohm =
-        (SENSORS_RAD_TEMP_MULT * 10) / (adcVal * 8) - SENSORS_RAD_TEMP_DIV_RES;
 
-    if (thermistorResistance_Ohm >= thermTempConvsRadiator[0].resistance_Ohm) {
-        return thermTempConvsRadiator[0].temp_dC;
-    }
-
-    for (size_t i = 0; i < thermTempConvsRadiator_len - 1; i++) {
-        if (thermistorResistance_Ohm <  thermTempConvsRadiator[i].resistance_Ohm &&
-            thermistorResistance_Ohm >= thermTempConvsRadiator[i+1].resistance_Ohm) {
-            uint32_t aboveRes_Ohm = thermTempConvsRadiator[i].resistance_Ohm - thermistorResistance_Ohm;
-            uint32_t diffRes_Ohm = thermTempConvsRadiator[i].resistance_Ohm - thermTempConvsRadiator[i+1].resistance_Ohm;
-
-            uint32_t offsetRes_pcnt = aboveRes_Ohm * 1024 / diffRes_Ohm;
-
-            uint32_t diffTemp_dC = thermTempConvsRadiator[i+1].temp_dC - thermTempConvsRadiator[i].temp_dC;
-
-            uint32_t offsetTemp = offsetRes_pcnt * diffTemp_dC / 1024;
-
-            return thermTempConvsRadiator[i].temp_dC + offsetTemp;
-        }
-    }
-
-    return thermTempConvsRadiator[thermTempConvsRadiator_len - 1].temp_dC;
-    */
 }
 
 /**

@@ -264,18 +264,43 @@ static void sendCoolLoopTempStatus(void) {
     int32_t Temp_8_dC =
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_8);
 
-    cmr_canPTCCoolingLoopTempStatus_t coolMsg = {
-        .loopTemp1_dC = Temp_1_dC,
-        .loopTemp2_dC = Temp_2_dC,
-        .loopTemp3_dC = Temp_3_dC,
-        .loopTemp4_dC = Temp_4_dC,
-        .loopTemp5_dC = Temp_5_dC,
-        .loopTemp6_dC = Temp_6_dC,
-        .loopTemp7_dC = Temp_7_dC,
-        .loopTemp8_dC = Temp_8_dC,
+#ifndef CMR_PTC_ID
+#error "No PTC ID defined!"
+#elif (CMR_PTC_ID == 0) /* Pump Control Board */
+
+    cmr_canPTC0TempStatus_t coolMsg = {
+        .temp1_dC = Temp_1_dC,
+        .temp2_dC = Temp_2_dC,
+        .temp3_dC = Temp_3_dC,
+        .temp4_dC = Temp_4_dC,
+        .temp5_dC = Temp_5_dC,
+        .temp6_dC = Temp_6_dC,
+        .temp7_dC = Temp_7_dC,
+        .temp8_dC = Temp_8_dC,
     };
 
-    canTX(CMR_CANID_PTC_COOLING_STATUS, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
+    canTX(CMR_CANID_PTC_COOLING_STATUS_0, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
+
+#elif (CMR_PTC_ID == 1) /* Fan Control Board */
+
+    cmr_canPTC1TempStatus_t coolMsg = {
+        .temp1_dC = Temp_1_dC,
+        .temp2_dC = Temp_2_dC,
+        .temp3_dC = Temp_3_dC,
+        .temp4_dC = Temp_4_dC,
+        .temp5_dC = Temp_5_dC,
+        .temp6_dC = Temp_6_dC,
+        .temp7_dC = Temp_7_dC,
+        .temp8_dC = Temp_8_dC,
+    };
+
+    canTX(CMR_CANID_PTC_COOLING_STATUS_1, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
+
+#else
+
+    #pragma warning "CMR_PTC_ID is not a valid value!"
+
+#endif
 }
 
 /**
