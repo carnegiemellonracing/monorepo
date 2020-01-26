@@ -176,25 +176,34 @@ static void fanControl(void *pvParameters) {
 
         switch (vsmHeartbeat->state) {
             case CMR_CAN_RTD:
-                cmr_pwmSetDutyCycle(&channel_1_PWM, 100);
-                cmr_pwmSetDutyCycle(&channel_2_PWM, 100);
-                cmr_pwmSetDutyCycle(&channel_3_PWM, 100);
+                channel_1_State = 100;
+                channel_2_State = 100;
+                channel_3_State = 100;
+                cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State);
+                cmr_pwmSetDutyCycle(&channel_2_PWM, channel_2_State);
+                cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
                 cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
                 cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
                 cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
                 break;
             case CMR_CAN_HV_EN:
-                cmr_pwmSetDutyCycle(&channel_1_PWM, 50);
-                cmr_pwmSetDutyCycle(&channel_2_PWM, 50);
-                cmr_pwmSetDutyCycle(&channel_3_PWM, 50);
+                channel_1_State = 50;
+                channel_2_State = 50;
+                channel_3_State = 50;
+                cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State);
+                cmr_pwmSetDutyCycle(&channel_2_PWM, channel_2_State);
+                cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
                 cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
                 cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
                 cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
                 break;
             default:
-                cmr_pwmSetDutyCycle(&channel_1_PWM, 0);
-                cmr_pwmSetDutyCycle(&channel_2_PWM, 0);
-                cmr_pwmSetDutyCycle(&channel_3_PWM, 0);
+                channel_1_State = 0;
+                channel_2_State = 0;
+                channel_3_State = 0;
+                cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State);
+                cmr_pwmSetDutyCycle(&channel_2_PWM, channel_2_State);
+                cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
                 cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
                 cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
                 cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
@@ -258,25 +267,34 @@ static void pumpControl(void *pvParameters) {
 
             switch (vsmHeartbeat->state) {
                 case CMR_CAN_RTD:
-                    cmr_pwmSetDutyCycle(&channel_1_PWM, 100);
-                    cmr_pwmSetDutyCycle(&channel_2_PWM, 100);
-                    cmr_pwmSetDutyCycle(&channel_3_PWM, 100);
+                    channel_1_State = 100;
+                    channel_2_State = 100;
+                    channel_3_State = 100;
+                    cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State);
+                    cmr_pwmSetDutyCycle(&channel_2_PWM, channel_2_State);
+                    cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
                     cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
                     cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
                     cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 0);
                     break;
                 case CMR_CAN_HV_EN:
-                    cmr_pwmSetDutyCycle(&channel_1_PWM, 100);
-                    cmr_pwmSetDutyCycle(&channel_2_PWM, 100);
-                    cmr_pwmSetDutyCycle(&channel_3_PWM, 100);
+                    channel_1_State = 100;
+                    channel_2_State = 100;
+                    channel_3_State = 100;
+                    cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State);
+                    cmr_pwmSetDutyCycle(&channel_2_PWM, channel_2_State);
+                    cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
                     cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
                     cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
                     cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 0);
                     break;
                 default:
-                    cmr_pwmSetDutyCycle(&channel_1_PWM, 0);
-                    cmr_pwmSetDutyCycle(&channel_2_PWM, 0);
-                    cmr_pwmSetDutyCycle(&channel_3_PWM, 0);
+                    channel_1_State = 0;
+                    channel_2_State = 0;
+                    channel_3_State = 0;
+                    cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State);
+                    cmr_pwmSetDutyCycle(&channel_2_PWM, channel_2_State);
+                    cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
                     cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
                     cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
                     cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 0);

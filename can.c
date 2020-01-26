@@ -61,6 +61,11 @@ cmr_canRXMeta_t canRXMeta[] = {
     }
 };
 
+/** @brief Fan/Pump channel states. */
+uint16_t channel_1_State;
+uint16_t channel_2_State;
+uint16_t channel_3_State;
+
 /** @brief CAN 10 Hz TX priority. */
 static const uint32_t canTX10Hz_priority = 3;
 /** @brief CAN 10 Hz TX period (milliseconds). */
@@ -283,33 +288,41 @@ static void sendCoolingLoopTemps(void) {
 #error "No PTC ID defined!"
 #elif (CMR_PTC_ID == 0) /* Pump Control Board */
 
-    cmr_canPTCpLoopTemp_t coolMsg = {
+    cmr_canPTCpLoopTemp_A_t coolMsg1 = {
         .temp1_dC = Temp_1_dC,
         .temp2_dC = Temp_2_dC,
         .temp3_dC = Temp_3_dC,
-        .temp4_dC = Temp_4_dC,
+        .temp4_dC = Temp_4_dC
+    };
+
+    cmr_canPTCpLoopTemp_B_t coolMsg2 = {
         .temp5_dC = Temp_5_dC,
         .temp6_dC = Temp_6_dC,
         .temp7_dC = Temp_7_dC,
-        .temp8_dC = Temp_8_dC,
+        .temp8_dC = Temp_8_dC
     };
 
-    canTX(CMR_CANID_PTCf_LOOP_TEMPS, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
+    canTX(CMR_CANID_PTCp_LOOP_TEMPS_A, &coolMsg1, sizeof(coolMsg1), canTX10Hz_period_ms);
+    canTX(CMR_CANID_PTCp_LOOP_TEMPS_B, &coolMsg2, sizeof(coolMsg2), canTX10Hz_period_ms);
 
 #elif (CMR_PTC_ID == 1) /* Fan Control Board */
 
-    cmr_canPTCfLoopTemp_t coolMsg = {
+    cmr_canPTCpLoopTemp_A_t coolMsg1 = {
         .temp1_dC = Temp_1_dC,
         .temp2_dC = Temp_2_dC,
         .temp3_dC = Temp_3_dC,
-        .temp4_dC = Temp_4_dC,
+        .temp4_dC = Temp_4_dC
+    };
+
+    cmr_canPTCpLoopTemp_B_t coolMsg2 = {
         .temp5_dC = Temp_5_dC,
         .temp6_dC = Temp_6_dC,
         .temp7_dC = Temp_7_dC,
-        .temp8_dC = Temp_8_dC,
+        .temp8_dC = Temp_8_dC
     };
 
-    canTX(CMR_CANID_PTCp_LOOP_TEMPS, &coolMsg, sizeof(coolMsg), canTX10Hz_period_ms);
+    canTX(CMR_CANID_PTCf_LOOP_TEMPS_A, &coolMsg1, sizeof(coolMsg1), canTX10Hz_period_ms);
+    canTX(CMR_CANID_PTCf_LOOP_TEMPS_B, &coolMsg2, sizeof(coolMsg2), canTX10Hz_period_ms);
 
 #else
 
@@ -322,9 +335,9 @@ static void sendCoolingLoopTemps(void) {
  * @brief Send Fan or Pump status information.
  */
 static void sendDriverStatus(void) {
-    uint8_t Channel1_Duty_Cycle_pcnt = 0; ///////////////////////PLACEHOLDERS
-    uint8_t Channel2_Duty_Cycle_pcnt = 0;
-    uint8_t Channel3_Duty_Cycle_pcnt = 0;
+    uint8_t Channel1_Duty_Cycle_pcnt = channel_1_State;
+    uint8_t Channel2_Duty_Cycle_pcnt = channel_2_State;
+    uint8_t Channel3_Duty_Cycle_pcnt = channel_3_State;
 
     cmr_canPTCDriverStatus_t driverStatusMsg = {
         .channel1DutyCycle_pcnt = Channel1_Duty_Cycle_pcnt,

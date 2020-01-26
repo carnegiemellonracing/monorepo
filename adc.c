@@ -18,14 +18,14 @@
 static cmr_adcChannel_t adcChannels[ADC_LEN] = {
     // XXX edit me to match your pin configuration
     [ADC_POWER_VSENSE] = {
-        .channel = ADC_CHANNEL_12,
+        .channel = ADC_CHANNEL_13,
         .port = GPIOC,
         .pin = GPIO_PIN_3,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_POWER_ISENSE] = {
-        .channel = ADC_CHANNEL_13,
+        .channel = ADC_CHANNEL_12,
         .port = GPIOC,
         .pin = GPIO_PIN_2,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
