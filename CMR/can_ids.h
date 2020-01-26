@@ -52,8 +52,10 @@ typedef enum {
     CMR_CANID_FSM_SENSORS_ADC = 0x543,          /**< @brief FSM raw sensors. */
     CMR_CANID_FSM_POWER_DIAGNOSTICS = 0x553,    /**< @brief FSM power diagnostics. */
 
-    CMR_CANID_PTCf_LOOP_TEMPS = 0x224,          /**< @brief PTC (fan board) cooling loop temps. */
-    CMR_CANID_PTCp_LOOP_TEMPS = 0x234,          /**< @brief PTC (pump board) cooling loop temps */
+    CMR_CANID_PTCf_LOOP_TEMPS_A = 0x224,        /**< @brief PTC (fan board) cooling loop temps. */
+    CMR_CANID_PTCf_LOOP_TEMPS_B = 0x234,        /**< @brief PTC (fan board) cooling loop temps. */
+    CMR_CANID_PTCp_LOOP_TEMPS_A = 0x244,        /**< @brief PTC (pump board) cooling loop temps */
+    CMR_CANID_PTCp_LOOP_TEMPS_B = 0x254,        /**< @brief PTC (pump board) cooling loop temps */
     CMR_CANID_PTCf_FANS_STATUS = 0x314,         /**< @brief PTC (fan board) fans status */
     CMR_CANID_PTCp_PUMPS_STATUS = 0x324,        /**< @brief PTC (pump board) pumps status */
     CMR_CANID_PTCf_POWER_DIAGNOSTICS = 0x534,   /**< @brief PTC (fan board) power diagnostics. */
