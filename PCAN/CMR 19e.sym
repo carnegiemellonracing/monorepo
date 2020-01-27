@@ -239,6 +239,15 @@ DLC=5
 CycleTime=10
 Timeout=100
 Var=CDC_state unsigned 0,8 /e:State
+Var=CDC_ERR_VSMTimeout unsigned 8,1
+Var=CDC_ERR_amkAllError bit 23,1
+Var=CDC_WRN_VSMTimeout bit 24,1
+Var=CDC_WRN_amkSrcFrontLeft bit 39,1
+Var=CDC_WRN_amkSrcFrontRight bit 38,1
+Var=CDC_WRN_amkSrcRearLeft bit 37,1
+Var=CDC_WRN_amkSrcRearRight bit 36,1
+Var=CDC_WRN_amkError bit 35,1
+Var=CDC_WRN_amkTimeout bit 34,1
 
 [CDC_WheelSpeeds]
 ID=132h
@@ -360,7 +369,7 @@ DLC=5
 CycleTime=10
 Timeout=100
 Var=FSM_state unsigned 0,8 /e:State
-Var=FSM_ERR_VSMTimeout unsigned 8,1
+Var=FSM_ERR_VSMTimeout bit 8,1
 Var=FSM_WRN_VSMTimeout bit 24,1
 Var=FSM_WRN_VoltageOOR bit 25,1
 Var=FSM_WRN_CurrentOOR bit 26,1
@@ -1280,6 +1289,7 @@ Var=Save_charging_mode unsigned 32,1
 [AMK_Inverter1_Actual_Values_1]
 ID=283h
 DLC=8
+CycleTime=5
 Var=AMK_Inverter1_Status_Reserved       unsigned 0 ,8
 // System ready (SBM)
 Var=AMK_Inverter1_Status_SystemReady    bit      8 ,1
@@ -1304,6 +1314,7 @@ Var=AMK_Inverter1_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
 [AMK_Inverter1_Actual_Values_2]
 ID=285h
 DLC=8
+CycleTime=5
 Var=AMK_Inverter1_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
 Var=AMK_Inverter1_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
 Var=AMK_Inverter1_ErrorInfo             unsigned 32,16
@@ -1312,6 +1323,7 @@ Var=AMK_Inverter1_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
 [AMK_Inverter1_Setpoints_1]
 ID=184h
 DLC=8
+CycleTime=1
 Var=AMK_Inverter1_Control_Reserved1     unsigned 0 ,8
 // Controller enable
 Var=AMK_Inverter1_Control_InverterOn    bit      8 ,1
@@ -1330,6 +1342,7 @@ Var=AMK_Inverter1_TorqueLimitNegativ     signed   48,16 /u:"% Mn" /f:0.1 /p:4
 [AMK_Inverter2_Actual_Values_1]
 ID=284h
 DLC=8
+CycleTime=5
 Var=AMK_Inverter2_Status_Reserved       unsigned 0 ,8
 // System ready (SBM)
 Var=AMK_Inverter2_Status_SystemReady    bit      8 ,1
@@ -1354,6 +1367,7 @@ Var=AMK_Inverter2_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
 [AMK_Inverter2_Actual_Values_2]
 ID=286h
 DLC=8
+CycleTime=5
 Var=AMK_Inverter2_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
 Var=AMK_Inverter2_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
 Var=AMK_Inverter2_ErrorInfo             unsigned 32,16
@@ -1362,6 +1376,7 @@ Var=AMK_Inverter2_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
 [AMK_Inverter2_Setpoints_1]
 ID=185h
 DLC=8
+CycleTime=1
 Var=AMK_Inverter2_Control_Reserved1     unsigned 0 ,8
 // Controller enable
 Var=AMK_Inverter2_Control_InverterOn    bit      8 ,1
@@ -1380,6 +1395,7 @@ Var=AMK_Inverter2_TorqueLimitNegativ     signed   48,16 /u:"% Mn" /f:0.1 /p:4
 [AMK_Inverter3_Actual_Values_1]
 ID=287h
 DLC=8
+CycleTime=5
 Var=AMK_Inverter3_Status_Reserved       unsigned 0 ,8
 // System ready (SBM)
 Var=AMK_Inverter3_Status_SystemReady    bit      8 ,1
@@ -1404,6 +1420,7 @@ Var=AMK_Inverter3_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
 [AMK_Inverter3_Actual_Values_2]
 ID=289h
 DLC=8
+CycleTime=5
 Var=AMK_Inverter3_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
 Var=AMK_Inverter3_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
 Var=AMK_Inverter3_ErrorInfo             unsigned 32,16
@@ -1412,6 +1429,7 @@ Var=AMK_Inverter3_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
 [AMK_Inverter3_Setpoints_1]
 ID=188h
 DLC=8
+CycleTime=1
 Var=AMK_Inverter3_Control_Reserved1     unsigned 0 ,8
 // Controller enable
 Var=AMK_Inverter3_Control_InverterOn    bit      8 ,1
@@ -1430,6 +1448,7 @@ Var=AMK_Inverter3_TorqueLimitNegativ     signed   48,16 /u:"% Mn" /f:0.1 /p:4
 [AMK_Inverter4_Actual_Values_1]
 ID=288h
 DLC=8
+CycleTime=5
 Var=AMK_Inverter4_Status_Reserved       unsigned 0 ,8
 // System ready (SBM)
 Var=AMK_Inverter4_Status_SystemReady    bit      8 ,1
@@ -1454,6 +1473,7 @@ Var=AMK_Inverter4_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
 [AMK_Inverter4_Actual_Values_2]
 ID=28Ah
 DLC=8
+CycleTime=5
 Var=AMK_Inverter4_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
 Var=AMK_Inverter4_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
 Var=AMK_Inverter4_ErrorInfo             unsigned 32,16
@@ -1462,6 +1482,7 @@ Var=AMK_Inverter4_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
 [AMK_Inverter4_Setpoints_1]
 ID=189h
 DLC=8
+CycleTime=1
 Var=AMK_Inverter4_Control_Reserved1     unsigned 0 ,8
 // Controller enable
 Var=AMK_Inverter4_Control_InverterOn    bit      8 ,1
