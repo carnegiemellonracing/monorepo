@@ -4,7 +4,6 @@ Title="CMR 20e"
 
 {ENUMS}
 
-
 enum Fan_State(
     0 = "FAN_OFF",
     1 = "FAN_LOW",
@@ -235,10 +234,10 @@ Var=CDC_state unsigned 0,8 /e:State
 Var=CDC_ERR_VSMTimeout unsigned 8,1
 Var=CDC_ERR_amkAllError bit 23,1
 Var=CDC_WRN_VSMTimeout bit 24,1
-Var=CDC_WRN_amkSrcFrontLeft bit 39,1
-Var=CDC_WRN_amkSrcFrontRight bit 38,1
-Var=CDC_WRN_amkSrcRearLeft bit 37,1
-Var=CDC_WRN_amkSrcRearRight bit 36,1
+Var=CDC_WRN_amkSrcFL bit 39,1
+Var=CDC_WRN_amkSrcFR bit 38,1
+Var=CDC_WRN_amkSrcRL bit 37,1
+Var=CDC_WRN_amkSrcRR bit 36,1
 Var=CDC_WRN_amkError bit 35,1
 Var=CDC_WRN_amkTimeout bit 34,1
 
@@ -579,110 +578,6 @@ CycleTime=10
 Timeout=100
 Var=APC_state unsigned 0,8 /e:State
 Var=APC_ERR_VSMTimeout unsigned 8,1
-
-[RMS_Command]
-ID=3C0h
-DLC=8
-CycleTime=1
-Timeout=25
-Var=RMS_torqueCommand signed 0,16 /u:Nm /f:0.1
-Var=RMS_speedCommand signed 16,16 /u:RPM
-Var=RMS_directionCommand unsigned 32,8
-Var=RMS_invEnDischargeEn unsigned 40,8
-Var=RMS_torqueLimitCommand unsigned 48,16 /u:Nm /f:0.1
-
-[RMS_ParamRequest]
-ID=3C1h
-DLC=8
-Var=RMS_paramReqAddr unsigned 0,16
-Var=RMS_paramReqWrite unsigned 16,8
-Var=RMS_paramReqData unsigned 32,16
-
-[RMS_ParamResponse]
-ID=3C2h
-DLC=8
-Var=RMS_paramResAddr unsigned 0,16
-Var=RMS_paramResWriteSuccess unsigned 16,8
-Var=RMS_paramResData unsigned 32,16
-
-[RMS_TempA]
-ID=3A0h
-DLC=8
-CycleTime=100
-Timeout=1000
-Var=RMS_moduleA signed 0,16 /u:C /f:0.1
-Var=RMS_moduleB signed 16,16 /u:C /f:0.1
-Var=RMS_moduleC signed 32,16 /u:C /f:0.1
-Var=RMS_gateDriver signed 48,16 /u:C /f:0.1
-
-[RMS_TempB]
-ID=3A1h
-DLC=8
-CycleTime=100
-Timeout=1000
-Var=RMS_controlBoard signed 0,16 /u:C /f:0.1
-Var=RMS_RTD1 signed 16,16 /u:C /f:0.1
-Var=RMS_RTD2 signed 32,16 /u:C /f:0.1
-Var=RMS_RTD3 signed 48,16 /u:C /f:0.1
-
-[RMS_TempC]
-ID=3A2h
-DLC=8
-CycleTime=100
-Timeout=1000
-Var=RMS_RTD4 signed 0,16 /u:C /f:0.1
-Var=RMS_RTD5 signed 16,16 /u:C /f:0.1
-Var=RMS_motorTemp signed 32,16 /u:C /f:0.1
-Var=RMS_torqueShudder signed 48,16 /u:Nm /f:0.1
-
-[RMS_MotorPosition]
-ID=3A5h
-DLC=8
-CycleTime=100
-Timeout=1000
-Var=RMS_angle signed 0,16 /u:deg /f:0.1
-Var=RMS_speed signed 16,16 /u:RPM
-Var=RMS_frequency signed 32,16 /u:Hz /f:0.1
-Var=RMS_resolver signed 48,16 /u:deg /f:0.1
-
-[RMS_Currents]
-ID=3A6h
-DLC=8
-CycleTime=100
-Timeout=1000
-Var=RMS_currentPhaseA signed 0,16 /u:A /f:0.1
-Var=RMS_currentPhaseB signed 16,16 /u:A /f:0.1
-Var=RMS_currentPhaseC signed 32,16 /u:A /f:0.1
-Var=RMS_currentBus signed 48,16 /u:A /f:0.1
-
-[RMS_Voltages]
-ID=3A7h
-DLC=8
-CycleTime=100
-Timeout=1000
-Var=RMS_voltageBus signed 0,16 /u:V /f:0.1
-Var=RMS_voltageOutput signed 16,16 /u:V /f:0.1
-Var=RMS_voltagePhaseAB signed 32,16 /u:V /f:0.1
-Var=RMS_voltagePhaseBC signed 48,16 /u:V /f:0.1
-
-[RMS_TorqueDiag]
-ID=3ACh
-DLC=8
-CycleTime=100
-Timeout=1000
-Var=RMS_commandedTorque signed 0,16 /u:Nm /f:0.1
-Var=RMS_torqueFeedback signed 16,16 /u:Nm /f:0.1
-Var=RMS_powerOnTime signed 32,32
-
-[RMS_Faults]
-ID=3ABh
-DLC=8
-CycleTime=100
-Timeout=1000
-Var=RMS_postFaultLo unsigned 0,16 /u:C
-Var=RMS_postFaultHi unsigned 16,16 /u:C
-Var=RMS_runFaultLo unsigned 32,16 /u:C
-Var=RMS_runFaultHi unsigned 48,16 /u:C
 
 [BMS_Heartbeat]
 ID=500h
@@ -1279,214 +1174,226 @@ Var=Save_charging_mode unsigned 32,1
 
 // AMK Inverter Signals
 
-[AMK_Inverter1_Actual_Values_1]
+[AMK_FL_Actual_Values_1]
+// Set ID based on wiring
 ID=283h
 DLC=8
 CycleTime=5
-Var=AMK_Inverter1_Status_Reserved       unsigned 0 ,8
+Var=AMK_FL_Status_Reserved       unsigned 0 ,8
 // System ready (SBM)
-Var=AMK_Inverter1_Status_SystemReady    bit      8 ,1
+Var=AMK_FL_Status_SystemReady    bit      8 ,1
 // Error
-Var=AMK_Inverter1_Status_Error          bit      9 ,1
+Var=AMK_FL_Status_Error          bit      9 ,1
 // Warning
-Var=AMK_Inverter1_Status_Warn           bit      10,1
+Var=AMK_FL_Status_Warn           bit      10,1
 // HV activation acknowledgment
-Var=AMK_Inverter1_Status_QuitDcOn       bit      11,1
+Var=AMK_FL_Status_QuitDcOn       bit      11,1
 // HV activation level
-Var=AMK_Inverter1_Status_DcOn           bit      12,1
+Var=AMK_FL_Status_DcOn           bit      12,1
 // Controller enable acknowledgment
-Var=AMK_Inverter1_Status_QuitInvOn      bit      13,1
+Var=AMK_FL_Status_QuitInvOn      bit      13,1
 // Controller enable level
-Var=AMK_Inverter1_Status_InverterOn     bit      14,1
+Var=AMK_FL_Status_InverterOn     bit      14,1
 // Derating (torque limitation active)
-Var=AMK_Inverter1_Status_Derating       bit      15,1
-Var=AMK_Inverter1_ActualVelocity        signed   16,16 /u:rpm /p:4
-Var=AMK_Inverter1_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
-Var=AMK_Inverter1_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
+Var=AMK_FL_Status_Derating       bit      15,1
+Var=AMK_FL_ActualVelocity        signed   16,16 /u:rpm /p:4
+Var=AMK_FL_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
+Var=AMK_FL_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
 
-[AMK_Inverter1_Actual_Values_2]
+[AMK_FL_Actual_Values_2]
+// Set ID based on wiring
 ID=285h
 DLC=8
 CycleTime=5
-Var=AMK_Inverter1_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
-Var=AMK_Inverter1_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
-Var=AMK_Inverter1_ErrorInfo             unsigned 32,16
-Var=AMK_Inverter1_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
+Var=AMK_FL_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
+Var=AMK_FL_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
+Var=AMK_FL_ErrorInfo             unsigned 32,16
+Var=AMK_FL_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
 
-[AMK_Inverter1_Setpoints_1]
+[AMK_FL_Setpoints_1]
+// Set ID based on wiring
 ID=184h
 DLC=8
 CycleTime=1
-Var=AMK_Inverter1_Control_Reserved1     unsigned 0 ,8
+Var=AMK_FL_Control_Reserved1     unsigned 0 ,8
 // Controller enable
-Var=AMK_Inverter1_Control_InverterOn    bit      8 ,1
+Var=AMK_FL_Control_InverterOn    bit      8 ,1
 // HV active
-Var=AMK_Inverter1_Control_DcOn          bit      9 ,1
+Var=AMK_FL_Control_DcOn          bit      9 ,1
 // Driver Enable
-Var=AMK_Inverter1_Control_Enable        bit      10,1
+Var=AMK_FL_Control_Enable        bit      10,1
 // Remove Error
 // Setpoints must have the value 0, as otherwise the 'Remove error' command will not be executed
-Var=AMK_Inverter1_Control_ErrorReset    bit      11,1
-Var=AMK_Inverter1_Control_Reserved2     unsigned 12,4
-Var=AMK_Inverter1_TargetVelocity        signed   16,16 /u:rpm /p:2
-Var=AMK_Inverter1_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
-Var=AMK_Inverter1_TorqueLimitNegativ     signed   48,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_FL_Control_ErrorReset    bit      11,1
+Var=AMK_FL_Control_Reserved2     unsigned 12,4
+Var=AMK_FL_TargetVelocity        signed   16,16 /u:rpm /p:2
+Var=AMK_FL_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_FL_TorqueLimitNegativ     signed   48,16 /u:"% Mn" /f:0.1 /p:4
 
-[AMK_Inverter2_Actual_Values_1]
+[AMK_FR_Actual_Values_1]
+// Set ID based on wiring
 ID=284h
 DLC=8
 CycleTime=5
-Var=AMK_Inverter2_Status_Reserved       unsigned 0 ,8
+Var=AMK_FR_Status_Reserved       unsigned 0 ,8
 // System ready (SBM)
-Var=AMK_Inverter2_Status_SystemReady    bit      8 ,1
+Var=AMK_FR_Status_SystemReady    bit      8 ,1
 // Error
-Var=AMK_Inverter2_Status_Error          bit      9 ,1
+Var=AMK_FR_Status_Error          bit      9 ,1
 // Warning
-Var=AMK_Inverter2_Status_Warn           bit      10,1
+Var=AMK_FR_Status_Warn           bit      10,1
 // HV activation acknowledgment
-Var=AMK_Inverter2_Status_QuitDcOn       bit      11,1
+Var=AMK_FR_Status_QuitDcOn       bit      11,1
 // HV activation level
-Var=AMK_Inverter2_Status_DcOn           bit      12,1
+Var=AMK_FR_Status_DcOn           bit      12,1
 // Controller enable acknowledgment
-Var=AMK_Inverter2_Status_QuitInvOn      bit      13,1
+Var=AMK_FR_Status_QuitInvOn      bit      13,1
 // Controller enable level
-Var=AMK_Inverter2_Status_InverterOn     bit      14,1
+Var=AMK_FR_Status_InverterOn     bit      14,1
 // Derating (torque limitation active)
-Var=AMK_Inverter2_Status_Derating       bit      15,1
-Var=AMK_Inverter2_ActualVelocity        signed   16,16 /u:rpm /p:4
-Var=AMK_Inverter2_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
-Var=AMK_Inverter2_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
+Var=AMK_FR_Status_Derating       bit      15,1
+Var=AMK_FR_ActualVelocity        signed   16,16 /u:rpm /p:4
+Var=AMK_FR_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
+Var=AMK_FR_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
 
-[AMK_Inverter2_Actual_Values_2]
+[AMK_FR_Actual_Values_2]
+// Set ID based on wiring
 ID=286h
 DLC=8
 CycleTime=5
-Var=AMK_Inverter2_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
-Var=AMK_Inverter2_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
-Var=AMK_Inverter2_ErrorInfo             unsigned 32,16
-Var=AMK_Inverter2_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
+Var=AMK_FR_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
+Var=AMK_FR_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
+Var=AMK_FR_ErrorInfo             unsigned 32,16
+Var=AMK_FR_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
 
-[AMK_Inverter2_Setpoints_1]
+[AMK_FR_Setpoints_1]
+// Set ID based on wiring
 ID=185h
 DLC=8
 CycleTime=1
-Var=AMK_Inverter2_Control_Reserved1     unsigned 0 ,8
+Var=AMK_FR_Control_Reserved1     unsigned 0 ,8
 // Controller enable
-Var=AMK_Inverter2_Control_InverterOn    bit      8 ,1
+Var=AMK_FR_Control_InverterOn    bit      8 ,1
 // HV active
-Var=AMK_Inverter2_Control_DcOn          bit      9 ,1
+Var=AMK_FR_Control_DcOn          bit      9 ,1
 // Driver Enable
-Var=AMK_Inverter2_Control_Enable        bit      10,1
+Var=AMK_FR_Control_Enable        bit      10,1
 // Remove Error
 // Setpoints must have the value 0, as otherwise the 'Remove error' command will not be executed
-Var=AMK_Inverter2_Control_ErrorReset    bit      11,1
-Var=AMK_Inverter2_Control_Reserved2     unsigned 12,4
-Var=AMK_Inverter2_TargetVelocity        signed   16,16 /u:rpm /p:2
-Var=AMK_Inverter2_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
-Var=AMK_Inverter2_TorqueLimitNegativ     signed   48,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_FR_Control_ErrorReset    bit      11,1
+Var=AMK_FR_Control_Reserved2     unsigned 12,4
+Var=AMK_FR_TargetVelocity        signed   16,16 /u:rpm /p:2
+Var=AMK_FR_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_FR_TorqueLimitNegativ     signed   48,16 /u:"% Mn" /f:0.1 /p:4
 
-[AMK_Inverter3_Actual_Values_1]
+[AMK_RL_Actual_Values_1]
+// Set ID based on wiring
 ID=287h
 DLC=8
 CycleTime=5
-Var=AMK_Inverter3_Status_Reserved       unsigned 0 ,8
+Var=AMK_RL_Status_Reserved       unsigned 0 ,8
 // System ready (SBM)
-Var=AMK_Inverter3_Status_SystemReady    bit      8 ,1
+Var=AMK_RL_Status_SystemReady    bit      8 ,1
 // Error
-Var=AMK_Inverter3_Status_Error          bit      9 ,1
+Var=AMK_RL_Status_Error          bit      9 ,1
 // Warning
-Var=AMK_Inverter3_Status_Warn           bit      10,1
+Var=AMK_RL_Status_Warn           bit      10,1
 // HV activation acknowledgment
-Var=AMK_Inverter3_Status_QuitDcOn       bit      11,1
+Var=AMK_RL_Status_QuitDcOn       bit      11,1
 // HV activation level
-Var=AMK_Inverter3_Status_DcOn           bit      12,1
+Var=AMK_RL_Status_DcOn           bit      12,1
 // Controller enable acknowledgment
-Var=AMK_Inverter3_Status_QuitInvOn      bit      13,1
+Var=AMK_RL_Status_QuitInvOn      bit      13,1
 // Controller enable level
-Var=AMK_Inverter3_Status_InverterOn     bit      14,1
+Var=AMK_RL_Status_InverterOn     bit      14,1
 // Derating (torque limitation active)
-Var=AMK_Inverter3_Status_Derating       bit      15,1
-Var=AMK_Inverter3_ActualVelocity        signed   16,16 /u:rpm /p:4
-Var=AMK_Inverter3_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
-Var=AMK_Inverter3_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
+Var=AMK_RL_Status_Derating       bit      15,1
+Var=AMK_RL_ActualVelocity        signed   16,16 /u:rpm /p:4
+Var=AMK_RL_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
+Var=AMK_RL_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
 
-[AMK_Inverter3_Actual_Values_2]
+[AMK_RL_Actual_Values_2]
+// Set ID based on wiring
 ID=289h
 DLC=8
 CycleTime=5
-Var=AMK_Inverter3_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
-Var=AMK_Inverter3_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
-Var=AMK_Inverter3_ErrorInfo             unsigned 32,16
-Var=AMK_Inverter3_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
+Var=AMK_RL_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
+Var=AMK_RL_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
+Var=AMK_RL_ErrorInfo             unsigned 32,16
+Var=AMK_RL_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
 
-[AMK_Inverter3_Setpoints_1]
+[AMK_RL_Setpoints_1]
+// Set ID based on wiring
 ID=188h
 DLC=8
 CycleTime=1
-Var=AMK_Inverter3_Control_Reserved1     unsigned 0 ,8
+Var=AMK_RL_Control_Reserved1     unsigned 0 ,8
 // Controller enable
-Var=AMK_Inverter3_Control_InverterOn    bit      8 ,1
+Var=AMK_RL_Control_InverterOn    bit      8 ,1
 // HV active
-Var=AMK_Inverter3_Control_DcOn          bit      9 ,1
+Var=AMK_RL_Control_DcOn          bit      9 ,1
 // Driver Enable
-Var=AMK_Inverter3_Control_Enable        bit      10,1
+Var=AMK_RL_Control_Enable        bit      10,1
 // Remove Error
 // Setpoints must have the value 0, as otherwise the 'Remove error' command will not be executed
-Var=AMK_Inverter3_Control_ErrorReset    bit      11,1
-Var=AMK_Inverter3_Control_Reserved2     unsigned 12,4
-Var=AMK_Inverter3_TargetVelocity        signed   16,16 /u:rpm /p:2
-Var=AMK_Inverter3_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
-Var=AMK_Inverter3_TorqueLimitNegativ     signed   48,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_RL_Control_ErrorReset    bit      11,1
+Var=AMK_RL_Control_Reserved2     unsigned 12,4
+Var=AMK_RL_TargetVelocity        signed   16,16 /u:rpm /p:2
+Var=AMK_RL_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_RL_TorqueLimitNegativ     signed   48,16 /u:"% Mn" /f:0.1 /p:4
 
-[AMK_Inverter4_Actual_Values_1]
+[AMK_RR_Actual_Values_1]
+// Set ID based on wiring
 ID=288h
 DLC=8
 CycleTime=5
-Var=AMK_Inverter4_Status_Reserved       unsigned 0 ,8
+Var=AMK_RR_Status_Reserved       unsigned 0 ,8
 // System ready (SBM)
-Var=AMK_Inverter4_Status_SystemReady    bit      8 ,1
+Var=AMK_RR_Status_SystemReady    bit      8 ,1
 // Error
-Var=AMK_Inverter4_Status_Error          bit      9 ,1
+Var=AMK_RR_Status_Error          bit      9 ,1
 // Warning
-Var=AMK_Inverter4_Status_Warn           bit      10,1
+Var=AMK_RR_Status_Warn           bit      10,1
 // HV activation acknowledgment
-Var=AMK_Inverter4_Status_QuitDcOn       bit      11,1
+Var=AMK_RR_Status_QuitDcOn       bit      11,1
 // HV activation level
-Var=AMK_Inverter4_Status_DcOn           bit      12,1
+Var=AMK_RR_Status_DcOn           bit      12,1
 // Controller enable acknowledgment
-Var=AMK_Inverter4_Status_QuitInvOn      bit      13,1
+Var=AMK_RR_Status_QuitInvOn      bit      13,1
 // Controller enable level
-Var=AMK_Inverter4_Status_InverterOn     bit      14,1
+Var=AMK_RR_Status_InverterOn     bit      14,1
 // Derating (torque limitation active)
-Var=AMK_Inverter4_Status_Derating       bit      15,1
-Var=AMK_Inverter4_ActualVelocity        signed   16,16 /u:rpm /p:4
-Var=AMK_Inverter4_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
-Var=AMK_Inverter4_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
+Var=AMK_RR_Status_Derating       bit      15,1
+Var=AMK_RR_ActualVelocity        signed   16,16 /u:rpm /p:4
+Var=AMK_RR_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
+Var=AMK_RR_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
 
-[AMK_Inverter4_Actual_Values_2]
+[AMK_RR_Actual_Values_2]
+// Set ID based on wiring
 ID=28Ah
 DLC=8
 CycleTime=5
-Var=AMK_Inverter4_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
-Var=AMK_Inverter4_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
-Var=AMK_Inverter4_ErrorInfo             unsigned 32,16
-Var=AMK_Inverter4_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
+Var=AMK_RR_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
+Var=AMK_RR_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
+Var=AMK_RR_ErrorInfo             unsigned 32,16
+Var=AMK_RR_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
 
-[AMK_Inverter4_Setpoints_1]
+[AMK_RR_Setpoints_1]
+// Set ID based on wiring
 ID=189h
 DLC=8
 CycleTime=1
-Var=AMK_Inverter4_Control_Reserved1     unsigned 0 ,8
+Var=AMK_RR_Control_Reserved1     unsigned 0 ,8
 // Controller enable
-Var=AMK_Inverter4_Control_InverterOn    bit      8 ,1
+Var=AMK_RR_Control_InverterOn    bit      8 ,1
 // HV active
-Var=AMK_Inverter4_Control_DcOn          bit      9 ,1
+Var=AMK_RR_Control_DcOn          bit      9 ,1
 // Driver Enable
-Var=AMK_Inverter4_Control_Enable        bit      10,1
+Var=AMK_RR_Control_Enable        bit      10,1
 // Remove Error
 // Setpoints must have the value 0, as otherwise the 'Remove error' command will not be executed
-Var=AMK_Inverter4_Control_ErrorReset    bit      11,1
-Var=AMK_Inverter4_Control_Reserved2     unsigned 12,4
-Var=AMK_Inverter4_TargetVelocity        signed   16,16 /u:rpm /p:2
-Var=AMK_Inverter4_TorqueLimitPositiv    signed   32,16 /u:"% Mn"
-Var=AMK_Inverter4_TorqueLimitNegativ    signed   48,16 /u:"% Mn"
+Var=AMK_RR_Control_ErrorReset    bit      11,1
+Var=AMK_RR_Control_Reserved2     unsigned 12,4
+Var=AMK_RR_TargetVelocity        signed   16,16 /u:rpm /p:2
+Var=AMK_RR_TorqueLimitPositiv    signed   32,16 /u:"% Mn"
+Var=AMK_RR_TorqueLimitNegativ    signed   48,16 /u:"% Mn"
