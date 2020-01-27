@@ -21,10 +21,9 @@ typedef enum {
     CMR_CANID_HEARTBEAT_HVC = 0x101,    /**< @brief HVC heartbeat. */
     CMR_CANID_HEARTBEAT_CDC = 0x102,    /**< @brief CDC heartbeat. */
     CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
-    CMR_CANID_HEARTBEAT_PTC = 0x104,    /**< @brief PTC heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x105,    /**< @brief DIM heartbeat. */
-    CMR_CANID_HEARTBEAT_AFC0 = 0x106,   /**< @brief AFC0 heartbeat. */
-    CMR_CANID_HEARTBEAT_AFC1 = 0x107,   /**< @brief AFC1 heartbeat. */
+    CMR_CANID_HEARTBEAT_PTCf= 0x106,    /**< @brief PTCf heatbeart.*/
+    CMR_CANID_HEARTBEAT_PTCp= 0x107,    /**< @brief PTCp heatbeart.*/
     CMR_CANID_HEARTBEAT_APC = 0x108,    /**< @brief APC heartbeat. */
     CMR_CANID_HEARTBEAT_TOM = 0x109,    /**< @brief TOM heartbeat. */
     CMR_CANID_HEARTBEAT_COM = 0x10A,    /**< @brief COM heartbeat. */
@@ -53,21 +52,17 @@ typedef enum {
     CMR_CANID_FSM_SENSORS_ADC = 0x543,          /**< @brief FSM raw sensors. */
     CMR_CANID_FSM_POWER_DIAGNOSTICS = 0x553,    /**< @brief FSM power diagnostics. */
 
-    CMR_CANID_PTC_COOLING_STATUS = 0x234,       /**< @brief PTC cooling status. */
-    CMR_CANID_PTC_AFC_CONTROL = 0x254,          /**< @brief VSM AFC control message. */
-    CMR_CANID_PTC_VOLTAGE_DIAGNOSTICS = 0x534,  /**< @brief PTC voltage diagnostics. */
-    CMR_CANID_PTC_CURRENT_DIAGNOSTICS = 0x544,  /**< @brief PTC current diagnostics. */
+    CMR_CANID_PTCf_LOOP_TEMPS_A = 0x224,        /**< @brief PTC (fan board) cooling loop temps. */
+    CMR_CANID_PTCf_LOOP_TEMPS_B = 0x234,        /**< @brief PTC (fan board) cooling loop temps. */
+    CMR_CANID_PTCp_LOOP_TEMPS_A = 0x244,        /**< @brief PTC (pump board) cooling loop temps */
+    CMR_CANID_PTCp_LOOP_TEMPS_B = 0x254,        /**< @brief PTC (pump board) cooling loop temps */
+    CMR_CANID_PTCf_FANS_STATUS = 0x314,         /**< @brief PTC (fan board) fans status */
+    CMR_CANID_PTCp_PUMPS_STATUS = 0x324,        /**< @brief PTC (pump board) pumps status */
+    CMR_CANID_PTCf_POWER_DIAGNOSTICS = 0x534,   /**< @brief PTC (fan board) power diagnostics. */
+    CMR_CANID_PTCp_POWER_DIAGNOSTICS = 0x544,   /**< @brief PTC (pump board) power diagnostics. */
 
     CMR_CANID_DIM_REQUEST = 0x235,              /**< @brief DIM state/gear request. */
     CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x535,    /**< @brief DIM power diagnostics. */
-
-    CMR_CANID_AFC0_FAN_STATUS = 0x236,          /**< @brief AFC 0 fan status. */
-    CMR_CANID_AFC0_DRIVER_TEMPS = 0x536,        /**< @brief AFC 0 temperatures. */
-    CMR_CANID_AFC0_POWER_DIAGNOSTICS = 0x546,   /**< @brief AFC 0 power diagnostics. */
-
-    CMR_CANID_AFC1_FAN_STATUS = 0x237,          /**< @brief AFC 1 fan status. */
-    CMR_CANID_AFC1_DRIVER_TEMPS = 0x537,        /**< @brief AFC 1 temperatures. */
-    CMR_CANID_AFC1_POWER_DIAGNOSTICS = 0x547,   /**< @brief AFC 1 power diagnostics. */
 
     CMR_CANID_RMS_TEMPA = 0x000 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set A. */
     CMR_CANID_RMS_TEMPB = 0x001 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set B. */
