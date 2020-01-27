@@ -248,10 +248,12 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 #error "No PTC ID defined!"
 #elif (CMR_PTC_ID == 0) /* Pump Control Board */
 
+    /* PTCp indicates the pump control board */
     canTX(CMR_CANID_HEARTBEAT_PTCp, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
 
 #elif (CMR_PTC_ID == 1) /* Fan Control Board */
     
+    /* PTCf indicates the fan control board */
     canTX(CMR_CANID_HEARTBEAT_PTCf, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
 
 #else
@@ -262,7 +264,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 }
 
 /**
- * @brief Send cooling system status on CAN bus.
+ * @brief Send cooling system temps on CAN bus.
  */
 static void sendCoolingLoopTemps(void) {
     int32_t Temp_1_dC =
@@ -288,6 +290,8 @@ static void sendCoolingLoopTemps(void) {
 #error "No PTC ID defined!"
 #elif (CMR_PTC_ID == 0) /* Pump Control Board */
 
+    /* PTCp indicates the pump control board */
+    /* Separate A and B messages are due to can packet size limits */
     cmr_canPTCpLoopTemp_A_t coolMsg1 = {
         .temp1_dC = Temp_1_dC,
         .temp2_dC = Temp_2_dC,
@@ -307,6 +311,8 @@ static void sendCoolingLoopTemps(void) {
 
 #elif (CMR_PTC_ID == 1) /* Fan Control Board */
 
+    /* PTCf indicates the fan control board */
+    /* Separate A and B messages are due to can packet size limits */
     cmr_canPTCpLoopTemp_A_t coolMsg1 = {
         .temp1_dC = Temp_1_dC,
         .temp2_dC = Temp_2_dC,
@@ -349,10 +355,12 @@ static void sendDriverStatus(void) {
 #error "No PTC ID defined!"
 #elif (CMR_PTC_ID == 0) /* Pump Control Board */
 
+    /* PTCp indicates the pump control board */
     canTX(CMR_CANID_PTCp_PUMPS_STATUS, &driverStatusMsg, sizeof(driverStatusMsg), canTX10Hz_period_ms);
 
 #elif (CMR_PTC_ID == 1) /* Fan Control Board */
 
+    /* PTCf indicates the fan control board */
     canTX(CMR_CANID_PTCf_FANS_STATUS, &driverStatusMsg, sizeof(driverStatusMsg), canTX10Hz_period_ms);
 
 #else
@@ -383,10 +391,12 @@ static void sendPowerDiagnostics(void) {
 #error "No PTC ID defined!"
 #elif (CMR_PTC_ID == 0) /* Pump Control Board */
 
+    /* PTCp indicates the pump control board */
     canTX(CMR_CANID_PTCp_POWER_DIAGNOSTICS, &powerMsg, sizeof(powerMsg), canTX10Hz_period_ms); 
 
 #elif (CMR_PTC_ID == 1) /* Fan Control Board */
     
+    /* PTCf indicates the fan control board */
     canTX(CMR_CANID_PTCf_POWER_DIAGNOSTICS, &powerMsg, sizeof(powerMsg), canTX10Hz_period_ms); 
 
 #else
