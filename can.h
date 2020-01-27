@@ -14,18 +14,6 @@
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/can_ids.h>    // CMR CAN IDs
 
-/* ==========================================================
- *
- * CMR_PTC_ID is used to select between PTCp and PTCf code.
- *
- *      0 - indicates the use of the Pump Control Board
- *      1 - indicates the use of the Fan Control Board
- *
- * ==========================================================
- */
-
-#define CMR_PTC_ID 1
-
 /**
  * @brief CAN receive metadata indices.
  *

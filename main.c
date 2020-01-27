@@ -19,8 +19,8 @@
  * There is a PTCp (pump control board) dedicated to driving
  * the pumps on the vehicle.
  *
- * Selection of either PTCp or PTCf firmware occurs in the
- * can.h file with "CMR_PTC_ID"
+ * Selection of either PTCp or PTCf firmware occurs in the build
+ * configuration selection dialogue.
  *
  * As such, it is important that you are aware of which
  * board you are working with when attempting to flash code.
@@ -107,7 +107,6 @@ int main(void) {
         NULL
     );
 
-    // CMR_PTC_ID is defined in can.h
 #ifndef CMR_PTC_ID
 #error "No PTC ID defined!"
 #elif (CMR_PTC_ID == 0) /* Pump Control Board */
