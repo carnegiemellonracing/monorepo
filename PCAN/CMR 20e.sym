@@ -1395,5 +1395,5 @@ Var=AMK_RR_Control_Enable        bit      10,1
 Var=AMK_RR_Control_ErrorReset    bit      11,1
 Var=AMK_RR_Control_Reserved2     unsigned 12,4
 Var=AMK_RR_TargetVelocity        signed   16,16 /u:rpm /p:2
-Var=AMK_RR_TorqueLimitPositiv    signed   32,16 /u:"% Mn"
-Var=AMK_RR_TorqueLimitNegativ    signed   48,16 /u:"% Mn"
+Var=AMK_RR_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_RR_TorqueLimitNegativ    signed   48,16 /u:"% Mn" /f:0.1 /p:4
