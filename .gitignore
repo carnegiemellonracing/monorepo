@@ -1,0 +1,8 @@
+Release/
+Debug/
+.settings/
+*.ld
+*.launch
+.vscode/
+html/
+*.warn
