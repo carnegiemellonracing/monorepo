@@ -331,9 +331,11 @@ CAN_RX_FIFO_PENDING(1)
  *
  * @warning It is undefined behavior to initialize the same HAL CAN instance
  * more than once!
+ * @warning This driver assumes a 48 MHz APB1 peripheral clock frequency!
  *
  * @param can The interface to initialize.
  * @param instance The HAL CAN instance (`CANx` from `stm32f413xx.h`).
+ * @param bitRate The CAN bit rate to use.
  * @param rxMeta Metadata for periodic messages to receive.
  * @param rxMetaLen Number of periodic receive messages.
  * @param rxCallback Callback for other messages received, or `NULL` to ignore.
@@ -344,6 +346,7 @@ CAN_RX_FIFO_PENDING(1)
  */
 void cmr_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
+    cmr_canBitRate_t bitRate,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
     cmr_canRXCallback_t rxCallback,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
@@ -353,7 +356,7 @@ void cmr_canInit(
         .handle = {
             .Instance = instance,
             .Init = {
-                .Prescaler = 12,
+                .Prescaler = 0,
                 .Mode = CAN_MODE_NORMAL,
                 .SyncJumpWidth = CAN_SJW_2TQ,
                 .TimeSeg1 = CAN_BS1_6TQ,
@@ -371,6 +374,20 @@ void cmr_canInit(
         .rxMetaLen = rxMetaLen,
         .rxCallback = rxCallback
     };
+
+    // These numbers assume 48 MHz ABP1 peripheral clock frequency
+    // 48 MHz / (6 + 1 + 1 time quanta) / Prescaler = bitRate
+    switch (bitRate) {
+        case CMR_CAN_BITRATE_250K:
+            can->handle.Init.Prescaler = 24;
+            break;
+        case CMR_CAN_BITRATE_500K:
+            can->handle.Init.Prescaler = 12;
+            break;
+        case CMR_CAN_BITRATE_1M:
+            can->handle.Init.Prescaler = 6;
+            break;
+    }
 
     can->txSem = xSemaphoreCreateCountingStatic(
         CAN_TX_MAILBOXES, CAN_TX_MAILBOXES, &can->txSemBuf

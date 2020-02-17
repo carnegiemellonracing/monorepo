@@ -64,6 +64,30 @@ typedef enum {
     CMR_CANID_DIM_REQUEST = 0x235,              /**< @brief DIM state/gear request. */
     CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x535,    /**< @brief DIM power diagnostics. */
 
+    CMR_CANID_AFC0_FAN_STATUS = 0x236,          /**< @brief AFC 0 fan status. */
+    CMR_CANID_AFC0_DRIVER_TEMPS = 0x536,        /**< @brief AFC 0 temperatures. */
+    CMR_CANID_AFC0_POWER_DIAGNOSTICS = 0x546,   /**< @brief AFC 0 power diagnostics. */
+
+    CMR_CANID_AFC1_FAN_STATUS = 0x237,          /**< @brief AFC 1 fan status. */
+    CMR_CANID_AFC1_DRIVER_TEMPS = 0x537,        /**< @brief AFC 1 temperatures. */
+    CMR_CANID_AFC1_POWER_DIAGNOSTICS = 0x547,   /**< @brief AFC 1 power diagnostics. */
+
+    CMR_CANID_AMK_1_ACT_1 = 0x283,              /**< @brief AMK Inverter 1 actual values 1.*/
+    CMR_CANID_AMK_1_ACT_2 = 0x285,              /**< @brief AMK Inverter 1 actual values 2.*/
+    CMR_CANID_AMK_1_SETPOINTS = 0x184,          /**< @brief AMK Inverter 1 setpoints.*/
+
+    CMR_CANID_AMK_2_ACT_1 = 0x284,              /**< @brief AMK Inverter 2 actual values 1.*/
+    CMR_CANID_AMK_2_ACT_2 = 0x286,              /**< @brief AMK Inverter 2 actual values 2.*/
+    CMR_CANID_AMK_2_SETPOINTS = 0x185,          /**< @brief AMK Inverter 2 setpoints.*/
+
+    CMR_CANID_AMK_3_ACT_1 = 0x287,              /**< @brief AMK Inverter 3 actual values 1.*/
+    CMR_CANID_AMK_3_ACT_2 = 0x289,              /**< @brief AMK Inverter 3 actual values 2.*/
+    CMR_CANID_AMK_3_SETPOINTS = 0x188,          /**< @brief AMK Inverter 3 setpoints.*/
+
+    CMR_CANID_AMK_4_ACT_1 = 0x288,              /**< @brief AMK Inverter 4 actual values 1.*/
+    CMR_CANID_AMK_4_ACT_2 = 0x28A,              /**< @brief AMK Inverter 4 actual values 2.*/
+    CMR_CANID_AMK_4_SETPOINTS = 0x189,          /**< @brief AMK Inverter 4 setpoints.*/
+
     CMR_CANID_RMS_TEMPA = 0x000 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set A. */
     CMR_CANID_RMS_TEMPB = 0x001 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set B. */
     CMR_CANID_RMS_TEMPC = 0x002 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set C. */
