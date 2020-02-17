@@ -10,14 +10,13 @@
 #include <CMR/panic.h>  // cmr_panic()
 #include <CMR/rcc.h>    // RCC interface
 #include <CMR/can.h>    // CAN interface
-#include <CMR/adc.h>    // ADC interface
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
 
+#include "parser.h" // JSON configuration
 #include "gpio.h"   // Board-specific GPIO interface
 #include "can.h"    // Board-specific CAN interface
-#include "adc.h"    // Board-specific ADC interface
-#include "sensors.h" // Board-specific sensor interface
+#include "uart.h"   // Board-specific UART interface
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -61,10 +60,12 @@ int main(void) {
     cmr_rccSystemClockEnable();
 
     // Peripheral configuration.
+    uartInit();
     gpioInit();
     canInit();
-    adcInit();
-    sensorsInit();
+
+    // Load in JSON configuration
+    parserInit();
 
     cmr_taskInit(
         &statusLED_task,

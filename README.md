@@ -1,10 +1,9 @@
-# FSM
+# RAM
 
-This repository holds the firmware for use on the Front Sensor Module.
-It supports the use of 5 ADC channels: See adc.c for their pinouts.
-The primary point of configuration for this module is via CAN heartbeat.
-Its internal heirarchy is derived from the STM32 template repository.
-See: https://github.com/carnegiemellonracing/stm32f413-template
+This repository implements firmware for the Remote Access Module.
+It does some wonky things to stream data slices at low bandwidth off
+of the car. It is not totally dissimilar to the TOM firmware in this way,
+but it is by design less general purpose.
 
 [submodules]: https://git-scm.com/book/en/v2/Git-Tools-Submodules
 

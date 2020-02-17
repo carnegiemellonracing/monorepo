@@ -22,9 +22,9 @@
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_LED_STATUS] = {
-        .port = GPIOA,
+        .port = GPIOB,
         .init = {
-            .Pin = GPIO_PIN_5,
+            .Pin = GPIO_PIN_15,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW

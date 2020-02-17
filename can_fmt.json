@@ -1,0 +1,508 @@
+{
+    "name": "can_fmt",
+    "description": "JSON specification for CBOR serialization/transmission",
+    "data_types": {
+        "i64": {
+            "description": "64-bit signed int",
+            "bytes": 8
+        },
+        "f32": {
+            "description": "32-bit floating point",
+            "bytes": 4
+        },
+        "i32": {
+            "description": "32-bit signed int",
+            "bytes": 4
+        },
+        "u32": {
+            "description": "32-bit unsigned int",
+            "bytes": 4
+        },
+        "f16": {
+            "description": "16-bit floating point",
+            "bytes": 2
+        },
+        "u16": {
+            "description": "16-bit unsigned int",
+            "bytes": 2
+        },
+        "u8": {
+            "description": "8-bit unsigned int",
+            "bytes": 1
+        }
+    },
+    "signals": [
+        {
+            "id": 1328,
+            "offset": 0,
+            "Source": "VSM",
+            "name": "GLV Voltage",
+            "short": "GLV (V)",
+            "unit": "volts",
+            "unit_short": "V",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 769,
+            "offset": 4,
+            "Source": "HVC",
+            "name": "HV Voltage",
+            "short": "HV",
+            "unit": "volts",
+            "unit_short": "V",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "HV Current",
+            "short": "HV",
+            "unit": "amps",
+            "unit_short": "A",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 1811,
+            "Source": "SBG",
+            "name": "Longitudinal Velocity",
+            "short": "Long. Vel.",
+            "unit": "meters/second",
+            "unit_short": "m/s",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 1809,
+            "Source": "SBG",
+            "name": "Longitudinal Acceleration",
+            "short": "Long. Acc.",
+            "unit": "meters/second^2",
+            "unit_short": "m/s2",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 1881,
+            "Source": "SBG",
+            "name": "Heading",
+            "short": "Heading",
+            "unit": "degrees from north",
+            "unit_short": "deg",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 1877,
+            "Source": "SBG",
+            "name": "Latitude Position",
+            "short": "Lat.",
+            "unit": "degrees",
+            "unit_short": "deg",
+            "length": 4,
+            "type": "i32"
+        },
+        {
+            "id": 1877,
+            "Source": "SBG",
+            "name": "Longitude Position",
+            "short": "Long.",
+            "unit": "degrees",
+            "unit_short": "deg",
+            "length": 4,
+            "type": "i32"
+        },
+        {
+            "id": 307,
+            "offset": 6,
+            "Source": "FSM",
+            "name": "Steering Angle",
+            "short": "Swangle",
+            "unit": "degrees",
+            "unit_short": "deg",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 307,
+            "offset": 1,
+            "Source": "FSM",
+            "name": "Throttle Position",
+            "short": "Throttle Pos.",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 307,
+            "offset": 3,
+            "Source": "FSM",
+            "name": "Brake Position",
+            "short": "Brake Pos.",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 548,
+            "offset": 0,
+            "Source": "PTCf",
+            "name": "Pre-Radiator (A) Temperature",
+            "short": "Pre-Rad(A) Temp",
+            "unit": "degrees C",
+            "unit_short": "deg C",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 580,
+            "offset": 0,
+            "Source": "PTCp",
+            "name": "Pre-Radiator (B) Temperature",
+            "short": "Pre-Rad(B) Temp",
+            "unit": "degrees C",
+            "unit_short": "deg C",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 548,
+            "offset": 1,
+            "Source": "PTCf",
+            "name": "Post-Radiator (A) Temperature",
+            "short": "Post-Rad(A) Temp",
+            "unit": "degrees C",
+            "unit_short": "deg C",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 580,
+            "offset": 1,
+            "Source": "PTCp",
+            "name": "Post-Radiator (B) Temperature",
+            "short": "Post-Rad(B) Temp",
+            "unit": "degrees C",
+            "unit_short": "deg C",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 785,
+            "offset": 2,
+            "Source": "HVC",
+            "name": "Max Accumulator Temperature",
+            "short": "Max. AC Temp",
+            "unit": "degrees C",
+            "unit_short": "deg C",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Average Accumulator Temperature",
+            "short": "Avg. AC Temp",
+            "unit": "degrees C",
+            "unit_short": "deg C",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Fan/Pump Status Vector",
+            "short": "Fan/Pump Status Vector",
+            "vector": [
+                {
+                    "name": "Accumulator Loop Pump Enable",
+                    "short": "AC Pump En",
+                    "state": ["Off", "On"]
+                },
+                {
+                    "name": "Motor Loop Pump Enable",
+                    "short": "Mot Pump En",
+                    "state": ["Off", "On"]
+                },
+                {
+                    "name": "Accumulator Loop Fan Enable",
+                    "short": "AC Fan En",
+                    "state": ["Off", "On"]
+                },
+                {
+                    "name": "Motor Loop Fan Enable",
+                    "short": "Mot Fan En",
+                    "state": ["Off", "On"]
+                }
+            ],
+            "length": 1,
+            "type": "u8"
+        },
+        {
+            "id": 256,
+            "offset": 0,
+            "Source": "VSM",
+            "name": "Car State",
+            "short": "Car State",
+            "enum": [
+                {
+                    "name": "Error"
+                },
+                {
+                    "name": "GLV"
+                },
+                {
+                    "name": "HV"
+                },
+                {
+                    "name": "RTD"
+                }
+            ],
+            "length": 1,
+            "type": "u8"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Car Mode",
+            "short": "Car Mode",
+            "enum": [
+                {
+                    "name": "Acceleration"
+                },
+                {
+                    "name": "Skid-Pad"
+                },
+                {
+                    "name": "Endurance"
+                },
+                {
+                    "name": "Autocross"
+                },
+                {
+                    "name": "Slow"
+                },
+                {
+                    "name": "Direct"
+                },
+                {
+                    "name": "Reverse"
+                }
+            ],
+            "length": 1,
+            "type": "u8"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Time since Epoch",
+            "short": "Time",
+            "unit": "milliseconds",
+            "unit_short": "ms",
+            "length": 8,
+            "type": "i64"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Front-Left Wheel Velocity",
+            "short": "(FL) Speed",
+            "unit": "Rotations per Minute",
+            "unit_short": "rpm",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Front-Right Wheel Velocity",
+            "short": "(FR) Speed",
+            "unit": "Rotations per Minute",
+            "unit_short": "rpm",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Back-Left Wheel Velocity",
+            "short": "(BL) Speed",
+            "unit": "Rotations per Minute",
+            "unit_short": "rpm",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Rack-Right Wheel Velocity",
+            "short": "(BR) Speed",
+            "unit": "Rotations per Minute",
+            "unit_short": "rpm",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Front-Left Torque Feedback",
+            "short": "(FL) Torque",
+            "unit": "Newton-Meters",
+            "unit_short": "Nm",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Front-Right Torque Feedback",
+            "short": "(FR) Torque",
+            "unit": "Newton-Meters",
+            "unit_short": "Nm",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Back-Left Torque Feedback",
+            "short": "(BL) Torque",
+            "unit": "Newton-Meters",
+            "unit_short": "Nm",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Rack-Right Torque Feedback",
+            "short": "(BR) Torque",
+            "unit": "Newton-Meters",
+            "unit_short": "Nm",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Front-Left Torque Command",
+            "short": "(FL) Torque Cmd",
+            "unit": "Newton-Meters",
+            "unit_short": "Nm",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Front-Right Torque Command",
+            "short": "(FR) Torque Cmd",
+            "unit": "Newton-Meters",
+            "unit_short": "Nm",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Back-Left Torque Command",
+            "short": "(BL) Torque Cmd",
+            "unit": "Newton-Meters",
+            "unit_short": "Nm",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Rack-Right Torque Command",
+            "short": "(BR) Torque Cmd",
+            "unit": "Newton-Meters",
+            "unit_short": "Nm",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Front-Left Velocity Command",
+            "short": "(FL) Vel Cmd",
+            "unit": "Rotations per Minute",
+            "unit_short": "rpm",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Front-Right Velocity Command",
+            "short": "(FR) Vel Cmd",
+            "unit": "Rotations per Minute",
+            "unit_short": "rpm",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Back-Left Velocity Command",
+            "short": "(BL) Vel Cmd",
+            "unit": "Rotations per Minute",
+            "unit_short": "rpm",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Rack-Right Velocity Command",
+            "short": "(BR) Vel Cmd",
+            "unit": "Rotations per Minute",
+            "unit_short": "rpm",
+            "length": 2,
+            "type": "f16"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Front-Left Motor/Inverter Status",
+            "short": "(FL) Status",
+            "length": 1,
+            "type": "u8"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Front-Right Motor/Inverter Status",
+            "short": "(FR) Status",
+            "length": 1,
+            "type": "u8"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Back-Left Motor/Inverter Status",
+            "short": "(BL) Status",
+            "length": 1,
+            "type": "u8"
+        },
+        {
+            "id": 0,
+            "Source": "Undefined",
+            "name": "Back-Right Motor/Inverter Status",
+            "short": "(BR) Status",
+            "length": 1,
+            "type": "u8"
+        },
+        {
+            "id": 256,
+            "offset": 1,
+            "Source": "VSM",
+            "name": "Car Error Vector",
+            "short": "Car Errors",
+            "length": 4,
+            "type": "u32"
+        }
+    ]
+}
+

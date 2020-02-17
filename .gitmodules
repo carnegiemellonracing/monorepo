@@ -4,3 +4,9 @@
 [submodule "stm32f413-drivers"]
 	path = stm32f413-drivers
 	url = git@github.com:carnegiemellonracing/stm32f413-drivers.git
+[submodule "cJSON"]
+	path = cJSON
+	url = git@github.com:repmop/cJSON.git
+[submodule "cn-cbor"]
+	path = cn-cbor
+	url = git@github.com:repmop/cn-cbor.git

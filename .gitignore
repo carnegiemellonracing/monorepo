@@ -1,7 +1,9 @@
 Release/
+parser
 Debug/
 .settings/
 *.ld
+*.rawh
 *.launch
 .vscode/
 html/
