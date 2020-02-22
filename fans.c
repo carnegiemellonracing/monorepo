@@ -42,6 +42,8 @@ static void fanControl(void *pvParameters) {
     volatile cmr_canHeartbeat_t *vsmHeartbeat = canGetPayload(CANRX_HEARTBEAT_VSM);
     //volatile cmr_canHVCPackMinMaxCellTemps_t *minMaxTemps = canGetPayload(CANRX_HVC_MINMAX_TEMPS);
 
+    //cmr_canHeartbeat_t *heartbeat = &heartbeat;
+
     /* Initialize PWM channels to 25kHz for fan control lines */
     /* 96Mhz / (24 * 160) = 25kHz */
     const cmr_pwmPinConfig_t pwmPinConfig1 = {
@@ -75,7 +77,7 @@ static void fanControl(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
 
-        switch (vsmHeartbeat->state) {
+        switch (heartbeat.state) {
             case CMR_CAN_RTD:
                 channel_1_State = 100;
                 channel_2_State = 100;

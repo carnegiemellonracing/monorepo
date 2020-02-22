@@ -82,6 +82,8 @@ cmr_canRXMeta_t canRXMeta[] = {
     }
 };
 
+cmr_canHeartbeat_t heartbeat;
+
 /** @brief Fan/Pump channel states. */
 uint16_t channel_1_State;
 uint16_t channel_2_State;
@@ -244,9 +246,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
     volatile cmr_canHeartbeat_t *heartbeatVSM = canGetPayload(CANRX_HEARTBEAT_VSM);
 
-    cmr_canHeartbeat_t heartbeat = {
-        .state = heartbeatVSM->state
-    };
+    heartbeat.state = heartbeatVSM->state;
 
     uint16_t error = CMR_CAN_ERROR_NONE;
 

@@ -29,6 +29,9 @@ typedef enum {
 } canRX_t;
 
 extern cmr_canRXMeta_t canRXMeta[];
+
+extern cmr_canHeartbeat_t heartbeat;
+
 extern uint16_t channel_1_State;
 extern uint16_t channel_2_State;
 extern uint16_t channel_3_State;

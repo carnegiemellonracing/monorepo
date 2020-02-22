@@ -17,6 +17,8 @@ static const TickType_t mcPowerControl_period_ms = 50;
 /** @brief Motor Controller Power Control task. */
 static cmr_task_t mcPowerControl_task;
 
+//volatile cmr_canHeartbeat_t *heartbeatPTC = &heartbeat;
+
 /**
  * @brief Task for controller power to motor controller.
  *
@@ -35,7 +37,7 @@ static void mcPowerControl(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        switch (vsmHeartbeat->state) {
+        switch (heartbeat.state) {
             case CMR_CAN_RTD:
                 cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 1);
                 break;
