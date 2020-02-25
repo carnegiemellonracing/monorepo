@@ -25,12 +25,13 @@ void cmr_rccSystemClockEnable(void)  {
     __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
     // Initializes the CPU, AHB and APB busses clocks
-    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-    RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+    RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+    RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-    RCC_OscInitStruct.PLL.PLLM = 25;
-    RCC_OscInitStruct.PLL.PLLN = 192;
+    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+    RCC_OscInitStruct.PLL.PLLM = 8;
+    RCC_OscInitStruct.PLL.PLLN = 96;
     RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
     RCC_OscInitStruct.PLL.PLLQ = 2;
     RCC_OscInitStruct.PLL.PLLR = 2;
@@ -151,7 +152,7 @@ void cmr_rccCANClockEnable(CAN_TypeDef *instance) {
             break;
         case CAN2_BASE:
             __HAL_RCC_CAN2_CLK_ENABLE();
-            __HAL_RCC_CAN1_CLK_ENABLE();    // CAN2 also needs CAN1 clock.    
+            __HAL_RCC_CAN1_CLK_ENABLE();    // CAN2 also needs CAN1 clock.
             break;
         case CAN3_BASE:
             __HAL_RCC_CAN3_CLK_ENABLE();
@@ -177,7 +178,7 @@ void cmr_rccI2CClockEnable(I2C_TypeDef *instance) {
         case I2C3_BASE:
             __HAL_RCC_I2C3_CLK_ENABLE();
             break;
-    }    
+    }
 }
 #endif /* HAL_I2C_MODULE_ENABLED */
 

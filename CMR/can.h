@@ -26,6 +26,13 @@
 /** @brief Number of CAN filter banks allocated for each interface. */
 #define CMR_CAN_FILTERBANKS 14
 
+/** @brief CAN bit rate enumeration. */
+typedef enum {
+    CMR_CAN_BITRATE_250K = 0,   /**< @brief 250 kbit/s. */
+    CMR_CAN_BITRATE_500K,       /**< @brief 500 kbit/s. */
+    CMR_CAN_BITRATE_1M          /**< @brief 1 Mbit/s. */
+} cmr_canBitRate_t;
+
 /** @brief Periodic message reception metadata. */
 typedef struct {
     const uint16_t canID;       /**< @brief Associated CAN ID. */
@@ -80,6 +87,7 @@ struct cmr_can {
 
 void cmr_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
+    cmr_canBitRate_t bitRate,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
     cmr_canRXCallback_t rxCallback,
     GPIO_TypeDef *rxPort, uint16_t rxPin,

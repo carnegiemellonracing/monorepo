@@ -78,7 +78,10 @@ typedef enum {
     /** @brief PTC fan/pump driver IC temperature out-of-range. */
     CMR_CAN_ERROR_PTC_DRIVERS_TEMP = (1 << 14),
     /** @brief PTC water temperature out-of-range. */
-    CMR_CAN_ERROR_PTC_WATER_TEMP = (1 << 13)
+    CMR_CAN_ERROR_PTC_WATER_TEMP = (1 << 13),
+
+    /** @brief CDC All motor controllers have errored or timed out. */
+    CMR_CAN_ERROR_CDC_AMK_ALL = (1 << 15)
 } cmr_canError_t;
 
 /** @brief Heartbeat warning matrix bit fields. */
@@ -124,7 +127,20 @@ typedef enum {
     /** @brief FSM brake pressure sensor out-of-range. */
     CMR_CAN_WARN_FSM_BPRES = (1 << 10),
     /** @brief FSM steering wheel angle out-of-range. */
-    CMR_CAN_WARN_FSM_SWANGLE = (1 << 9)
+    CMR_CAN_WARN_FSM_SWANGLE = (1 << 9),
+
+    /** @brief CDC Front left motor controller is warning source. */
+    CMR_CAN_WARN_CDC_AMK_FL = (1 << 15),
+    /** @brief CDC Front right motor controller is warning source. */
+    CMR_CAN_WARN_CDC_AMK_FR = (1 << 14),
+    /** @brief CDC Rear left motor controller is warning source. */
+    CMR_CAN_WARN_CDC_AMK_RL = (1 << 13),
+    /** @brief CDC Rear right motor controller is warning source. */
+    CMR_CAN_WARN_CDC_AMK_RR = (1 << 12),
+    /** @brief CDC Motor controller has an error. */
+    CMR_CAN_WARN_CDC_AMK_ERROR = (1 << 11),
+    /** @brief CDC Motor controller has timed out. */
+    CMR_CAN_WARN_CDC_AMK_TIMEOUT = (1 << 10)
 } cmr_canWarn_t;
 
 /** @brief Represents the car's current driving mode (gear). */
@@ -485,136 +501,95 @@ typedef struct {
 // ------------------------------------------------------------------------------------------------
 // Powertrain Thermal Controller
 
-/** @brief Water cooling pump state enumeration. */
-typedef enum {
-    CMR_CAN_PTC_PUMP_STATE_OFF = 0, /**< @brief Pump disabled. */
-    CMR_CAN_PTC_PUMP_STATE_ON       /**< @brief Pump enabled. */
-} cmr_canPTCPumpState_t;
-
-/** @brief Powertrain Thermal Controller cooling status. */
+/** @brief Powertrain Thermal Controller fan/pump status. */
 typedef struct {
-    uint8_t fanState;            /**< @brief Radiator fan state. */
-    uint8_t pumpState;           /**< @brief Radiator water pump state. */
-    uint16_t preRadiatorTemp_C;  /**< @brief Pre-radiator water temperature (C). */
-    uint16_t postRadiatorTemp_C; /**< @brief Post-radiator water temperature (C). */
-} cmr_canPTCCoolingStatus_t;
+    uint8_t channel1DutyCycle_pcnt;             /**< @brief Fan/Pump channel 1 state. */
+    uint8_t channel2DutyCycle_pcnt;             /**< @brief Fan/Pump channel 2 state. */
+    uint8_t channel3DutyCycle_pcnt;             /**< @brief Fan/Pump channel 3 state. */
+} cmr_canPTCDriverStatus_t;
+
+/** @brief Powertrain Thermal Controller (fan board) cooling loop temperature status. */
+typedef struct {
+    uint16_t temp1_dC;            /**< @brief Temp 1 */
+    uint16_t temp2_dC;            /**< @brief Temp 2 */
+    uint16_t temp3_dC;            /**< @brief Temp 3 */
+    uint16_t temp4_dC;            /**< @brief Temp 4 */  //These are placeholders for more useful names
+} cmr_canPTCfLoopTemp_A_t;
+typedef struct {
+    uint16_t temp5_dC;            /**< @brief Temp 5 */
+    uint16_t temp6_dC;            /**< @brief Temp 6 */
+    uint16_t temp7_dC;            /**< @brief Temp 7 */
+    uint16_t temp8_dC;            /**< @brief Temp 8 */
+} cmr_canPTCfLoopTemp_B_t;
+
+/** @brief Powertrain Thermal Controller (pump board) cooling loop temperature status. */
+typedef struct {
+    uint16_t temp1_dC;            /**< @brief Temp 1 */
+    uint16_t temp2_dC;            /**< @brief Temp 2 */
+    uint16_t temp3_dC;            /**< @brief Temp 3 */
+    uint16_t temp4_dC;            /**< @brief Temp 4 */  //These are placeholders for more useful names
+} cmr_canPTCpLoopTemp_A_t;
+typedef struct {
+    uint16_t temp5_dC;            /**< @brief Temp 5 */
+    uint16_t temp6_dC;            /**< @brief Temp 6 */
+    uint16_t temp7_dC;            /**< @brief Temp 7 */
+    uint16_t temp8_dC;            /**< @brief Temp 8 */
+} cmr_canPTCpLoopTemp_B_t;
+
 
 /** @brief Powertrain Thermal Controller voltage diagnostics. */
 typedef struct {
     uint16_t logicVoltage_mV;   /**< @brief Logic voltage (mV). */
     uint16_t loadVoltage_mV;    /**< @brief Load voltage (mV). */
-} cmr_canPTCVoltageDiagnostics_t;
-
-/** @brief Powertrain Thermal Controller current diagnostics. */
-typedef struct {
-    uint16_t logicCurrent_mA;   /**< @brief Logic current (mA). */
-    uint16_t loadCurrent_mA;    /**< @brief Load current (mA). */
-    uint16_t fanCurrent_mA;     /**< @brief Fan current (mA). */
-} cmr_canPTCCurrentDiagnostics_t;
-
-/** @brief Powertrain Thermal Controller accumulator fan duty cycles. */
-typedef struct {
-    uint8_t acFansDuty_pcnt;    /**< @brief Accumulator fan duty cycle. */
-    uint8_t dcdcFanDuty_pcnt;   /**< @brief DCDC fan duty cycle. */
-} cmr_canPTCAFCControl_t;
+    uint16_t loadCurrent_mA;    /**< @brief Load current (ma). */
+} cmr_canPTCPowerDiagnostics_t;
 
 // ------------------------------------------------------------------------------------------------
-// Rinehart Motor Controller Definitions
+// AMK Motor controller definitions.
 
-/** @brief Drive motor with parameters. */
-typedef struct {
-    int16_t torqueCommand; /**< @brief Torque in N.m. times 10. */
-    int16_t speedCommand; /**< @brief Angular velocity in RPM. */
-    /** @brief 0 -> CW, 1 -> CCW viewed looking at shaft side. */
-    uint8_t directionCommand;
-    /** @brief bit 0 = inverter enable, bit 1 = discharge enable. */
-    uint8_t inverterEnableDischargeSpeedMode;
-    /** @brief Set 0 for no limit override (torque in N.m. times 10). */
-    uint16_t torqueLimitCommand;
-} cmr_canRMSCommand_t;
+/** @brief AMK motor controller status bits. */
+typedef enum {
+    CMR_CAN_AMK_STATUS_SYSTEM_READY = (1 << 8),     /**< @brief System ready. */
+    CMR_CAN_AMK_STATUS_ERROR        = (1 << 9),     /**< @brief Error is present. */
+    CMR_CAN_AMK_STATUS_WARNING      = (1 << 10),    /**< @brief Warning is present. */
+    CMR_CAN_AMK_STATUS_HV_EN_ACK    = (1 << 11),    /**< @brief HV enabled acknowledgement. */
+    CMR_CAN_AMK_STATUS_HV_EN        = (1 << 12),    /**< @brief HV enabled. */
+    CMR_CAN_AMK_STATUS_INV_EN_ACK   = (1 << 13),    /**< @brief Inverter enabled acknowledgement. */
+    CMR_CAN_AMK_STATUS_INV_EN       = (1 << 14),    /**< @brief Inverter enabled. */
+    CMR_CAN_AMK_STATUS_DERATING_EN  = (1 << 15)     /**< @brief Protective torque derating enabled. */
+} cmr_canAMKStatus_t;
 
-/** @brief Configuration parameter/register read/write request. */
-typedef struct {
-    uint16_t address;       /**< @brief Address to access. */
-    uint8_t writeEnable;    /**< @brief 1 to enable write; 0 to read. */
-    uint8_t pad0;           /**< @brief Ignored. */
-    uint16_t data;          /**< @brief Data to write, if any. */
-    uint16_t pad1;          /**< @brief Ignored. */
-} cmr_canRMSParamReq_t;
+/** @brief AMK motor controller control bits. */
+typedef enum {
+    CMR_CAN_AMK_CTRL_INV_ON     = (1 << 8),     /**< @brief Inverter on command. */
+    CMR_CAN_AMK_CTRL_HV_EN      = (1 << 9),     /**< @brief HV enable command. */
+    CMR_CAN_AMK_CTRL_INV_EN     = (1 << 10),    /**< @brief Inverter enable command. */
+    CMR_CAN_AMK_CTRL_ERR_RESET  = (1 << 11)     /**< @brief Inverter error reset command. */
+} cmr_canAMKControl_t;
 
-/** @brief Configuration parameter/register read/write response. */
+/** @brief AMK motor controller status and velocity. */
 typedef struct {
-    uint16_t address;       /**< @brief Address that was accessed. */
-    uint8_t writeSuccess;   /**< @brief 1 if write successful, if any. */
-    uint8_t pad0;           /**< @brief Ignored. */
-    uint16_t data;          /**< @brief Data that was read/written. */
-    uint16_t pad1;          /**< @brief Ignored. */
-} cmr_canRMSParamRes_t;
+    uint16_t status_bv;         /**< @brief Status bit vector. See cmr_canAMKStatus_t. */
+    int16_t velocity_rpm;       /**< @brief Motor velocity (RPM). */
+    int16_t torqueCurrent_raw;  /**< @brief Raw value for torque producing current. */
+    int16_t magCurrent_raw;     /**< @brief Raw value for magnetizing current. */
+} cmr_canAMKActualValues1_t;
 
-/** @brief Faults report from motor controller (see pg 23). */
+/** @brief AMK motor controller temperatures and error code. */
 typedef struct {
-    uint16_t postFaultLo; /**< @brief See "RMS CAN Protocol" pg 23. */
-    uint16_t postFaultHi; /**< @brief See "RMS CAN Protocol" pg 23. */
-    uint16_t runFaultLo; /**< @brief See "RMS CAN Protocol" pg 23. */
-    uint16_t runFaultHi; /**< @brief See "RMS CAN Protocol" pg 23. */
-} cmr_canRMSFaults_t;
+    int16_t motorTemp_dC;       /**< @brief Motor temperature in dC (0.1 C). */
+    int16_t coldPlateTemp_dC;   /**< @brief Cold plate temperature in dC (0.1 C). */
+    uint16_t errorCode;         /**< @brief Inverter error code. */
+    int16_t igbtTemp_dC;        /**< @brief IGBT temperature in dC (0.1 C). */
+} cmr_canAMKActualValues2_t;
 
-/** @brief Motor controller temperatures (set A). Temp in degC times 10. */
+/** @brief AMK motor controller command message. */
 typedef struct {
-    int16_t moduleATemp; /**< @brief Temp in internal module A (degC times 10). */
-    int16_t moduleBTemp; /**< @brief Temp in internal module B (degC times 10). */
-    int16_t moduleCTemp; /**< @brief Temp in internal module C (degC times 10). */
-    int16_t gateDriverBoardTemp; /**< @brief Temp of gate driver (degC times 10). */
-} cmr_canRMSTempA_t;
-
-/** @brief Motor controller temperatures (set B). Temp in degC times 10. */
-typedef struct {
-    int16_t controlBoardTemp; /**< @brief Control board temp (degC times 10). */
-    int16_t RTD1Temp; /**< @brief RTD input 1 temp (degC times 10). */
-    int16_t RTD2Temp; /**< @brief RTD input 2 temp (degC times 10). */
-    int16_t RTD3Temp; /**< @brief RTD input 3 temp (degC times 10). */
-} cmr_canRMSTempB_t;
-
-/** @brief Motor controller temperatures (set C). Temp in degC times 10. */
-typedef struct {
-    int16_t RTD4Temp; /**< @brief RTD input 4 temp (degC times 10). */
-    int16_t RTD5Temp; /**< @brief RTD input 5 temp (degC times 10). */
-    int16_t motorTemp; /**< @brief Motor temp (degC times 10). */
-    int16_t torqueShudder; /**< @brief Torque (N.m. times 10). */
-} cmr_canRMSTempC_t;
-
-/** @brief Motor position information. */
-typedef struct {
-    int16_t angle; /**< @brief Angle (deg times 10) of motor as read by resolver. */
-    int16_t speed; /**< @brief Speed (RPM) of motor. */
-    int16_t frequency; /**< @brief Inverter frequency (Hz times 10). */
-    int16_t resolverAngle; /**< @brief Resolver angle for calibration. */
-} cmr_canRMSMotorPosition_t;
-
-/** @brief Motor controller measured currents. Current in amps times 10.*/
-typedef struct {
-    int16_t phaseA; /**< @brief Current in phase A cable. */
-    int16_t phaseB; /**< @brief Current in phase B cable. */
-    int16_t phaseC; /**< @brief Current in phase C cable. */
-    int16_t bus; /**< @brief DC bus current. */
-} cmr_canRMSCurrents_t;
-
-/** @brief Motor controller measured voltages. Voltage in volts times 10.*/
-typedef struct {
-    int16_t bus; /**< @brief DC bus voltage. */
-    int16_t output; /**< @brief Output voltage as peak line-neutral volts. */
-    int16_t phaseAB; /**< @brief Vab when disabled, Vd when enabled. */
-    int16_t phaseBC; /**< @brief Vbc when disabled, Vq when enabled. */
-} cmr_canRMSVoltages_t;
-
-/** @brief Motor controller torque diagnostics. */
-typedef struct {
-    /** @brief Setpoint torque (torque in N.m. times 10). */
-    int16_t commandedTorque;
-    /** @brief Measured torque produced (torque in N.m. times 10). */
-    int16_t torqueFeedback;
-    uint32_t powerOnTimer;
-} cmr_canRMSTorqueDiag_t;
+    uint16_t control_bv;        /**< @brief Control bit vector. See cmr_canAMKControl_t. */
+    int16_t velocity_rpm;       /**< @brief Velocity setpoint (RPM). */
+    int16_t torqueLimPos_dpcnt; /**< @brief Positive torque limit in 0.1% of 9.8 Nm (nominal torque). */
+    int16_t torqueLimNeg_dpcnt; /**< @brief Negative torque limit in 0.1% of 9.8 Nm (nominal torque). */
+} cmr_canAMKSetpoints_t;
 
 #endif /* CMR_CAN_TYPES_H */
 

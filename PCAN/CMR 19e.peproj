@@ -2,21 +2,18 @@
 <PCANExplorerProject Version="5.0" Name="CMR 19e">
     <Connections AutoReset="0" IgnoreRTRLength="0" ProcessRTR="1">
         <Connection Bus="1" Enabled="1" Protocol="0" CalcBusLoad="1" SymbolsFileName="CMR 19e.sym" BitRate="28" Connection="CMR_CAN@pcan_usb" Name="CMR_CAN"/>
+        <Connection Bus="2" Enabled="1" Protocol="0" CalcBusLoad="1" SymbolsFileName="CMR 19e.sym" BitRate="28" Connection="CTRL_CAN@pcan_usb" Name="CTRL_CAN"/>
     </Connections>
     <MessageFilters/>
     <TransmitList>
-        <TransmitListItem Bus="1" CanId="257" Type="0" DLC="5" Data="" CycleTime="10" IsPaused="1" Creator="User"/>
-        <TransmitListItem Bus="1" CanId="260" Type="0" DLC="5" Data="" CycleTime="10" IsPaused="1" Creator="User"/>
-        <TransmitListItem Bus="1" CanId="261" Type="0" DLC="5" Data="" CycleTime="10" IsPaused="1" Creator="User"/>
-        <TransmitListItem Bus="1" CanId="262" Type="0" DLC="5" Data="" CycleTime="10" IsPaused="1" Creator="User"/>
-        <TransmitListItem Bus="1" CanId="263" Type="0" DLC="5" Data="" CycleTime="10" IsPaused="1" Creator="User"/>
-        <TransmitListItem Bus="1" CanId="264" Type="0" DLC="5" Data="" CycleTime="10" IsPaused="1" Creator="User"/>
-        <TransmitListItem Bus="1" CanId="565" Type="0" DLC="2" Data="" CycleTime="100" IsPaused="1" Creator="User"/>
-        <TransmitListItem Bus="1" CanId="564" Type="0" DLC="6" Data="" CycleTime="100" IsPaused="1" Creator="User"/>
-        <TransmitListItem Bus="1" CanId="566" Type="0" DLC="7" Data="" CycleTime="100" IsPaused="1" Creator="User"/>
-        <TransmitListItem Bus="1" CanId="567" Type="0" DLC="7" Data="" CycleTime="100" IsPaused="1" Creator="User"/>
-        <TransmitListItem Bus="1" CanId="259" Type="0" DLC="5" Data="" CycleTime="10" IsPaused="1" Creator="User"/>
-        <TransmitListItem Bus="1" CanId="307" Type="0" DLC="6" Data="" CycleTime="10" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="1" CanId="256" Type="0" DLC="5" Data="01" CycleTime="10" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="2" CanId="643" Type="0" DLC="8" Data="" CycleTime="5" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="2" CanId="645" Type="0" DLC="8" Data="" CycleTime="5" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="2" CanId="644" Type="0" DLC="8" Data="" CycleTime="5" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="2" CanId="646" Type="0" DLC="8" Data="" CycleTime="5" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="2" CanId="647" Type="0" DLC="8" Data="" CycleTime="5" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="2" CanId="649" Type="0" DLC="8" Data="" CycleTime="5" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="2" CanId="648" Type="0" DLC="8" Data="" CycleTime="5" IsPaused="1" Creator="User"/>
     </TransmitList>
     <Files>
         <File RelativePath="CMR 19e.sym"/>

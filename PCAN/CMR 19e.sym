@@ -239,6 +239,7 @@ DLC=5
 CycleTime=10
 Timeout=100
 Var=CDC_state unsigned 0,8 /e:State
+Var=CDC_ERR_VSMTimeout unsigned 8,1
 
 [CDC_WheelSpeeds]
 ID=132h
@@ -360,7 +361,7 @@ DLC=5
 CycleTime=10
 Timeout=100
 Var=FSM_state unsigned 0,8 /e:State
-Var=FSM_ERR_VSMTimeout unsigned 8,1
+Var=FSM_ERR_VSMTimeout bit 8,1
 Var=FSM_WRN_VSMTimeout bit 24,1
 Var=FSM_WRN_VoltageOOR bit 25,1
 Var=FSM_WRN_CurrentOOR bit 26,1
@@ -431,144 +432,107 @@ Timeout=1000
 Var=DIM_requestState unsigned 0,8 /e:State
 Var=DIM_requestGear unsigned 8,8 /e:Gear
 
-[AFC0_Heartbeat]
+[PTCf_Heartbeat]
 ID=106h
 DLC=5
 CycleTime=10
 Timeout=100
-Var=AFC0_state unsigned 0,8 /e:State
-Var=AFC0_ERR_VSMTimeout unsigned 8,1
-Var=AFC0_ERR_DCDCTemp1OOR bit 18,1
-Var=AFC0_ERR_DCDCTemp0OOR bit 19,1
-Var=AFC0_ERR_driver2TempOOR bit 20,1
-Var=AFC0_ERR_driver1TempOOR bit 21,1
-Var=AFC0_ERR_driver0TempOOR bit 22,1
-Var=AFC0_ERR_fansCurrentOOR bit 23,1
-Var=AFC0_WRN_VSMTimeout bit 24,1
-Var=AFC0_WRN_VoltageOOR bit 25,1
-Var=AFC0_WRN_CurrentOOR bit 26,1
+Var=PTCf_state unsigned 0,8 /e:State
+Var=PTCf_ERR_VSMTimeout unsigned 8,1
+Var=PTCf_ERR_waterTempOOR bit 21,1
+Var=PTCf_ERR_driversTempOOR bit 22,1
+Var=PTCf_WRN_VSMTimeout bit 24,1
+Var=PTCf_WRN_VoltageOOR bit 25,1
+Var=PTCf_WRN_CurrentOOR bit 26,1
 
-[AFC1_Heartbeat]
+[PTCp_Heartbeat]
 ID=107h
 DLC=5
 CycleTime=10
 Timeout=100
-Var=AFC1_state unsigned 0,8 /e:State
-Var=AFC1_ERR_VSMTimeout unsigned 8,1
-Var=AFC1_ERR_DCDCTemp1OOR bit 18,1
-Var=AFC1_ERR_DCDCTemp0OOR bit 19,1
-Var=AFC1_ERR_driver2TempOOR bit 20,1
-Var=AFC1_ERR_driver1TempOOR bit 21,1
-Var=AFC1_ERR_driver0TempOOR bit 22,1
-Var=AFC1_ERR_fansCurrentOOR bit 23,1
-Var=AFC1_WRN_VSMTimeout bit 24,1
-Var=AFC1_WRN_VoltageOOR bit 25,1
-Var=AFC1_WRN_CurrentOOR bit 26,1
+Var=PTCp_state unsigned 0,8 /e:State
+Var=PTCp_ERR_VSMTimeout unsigned 8,1
+Var=PTCp_ERR_waterTempOOR bit 21,1
+Var=PTCp_ERR_driversTempOOR bit 22,1
+Var=PTCp_WRN_VSMTimeout bit 24,1
+Var=PTCp_WRN_VoltageOOR bit 25,1
+Var=PTCp_WRN_CurrentOOR bit 26,1
 
-[AFC0_FanStatus]
-ID=236h
-DLC=2
+[PTCf_LoopTemps_A]
+ID=224h
+DLC=8
 CycleTime=100
 Timeout=1000
-Var=AFC0_ACFans unsigned 0,8 /e:FanState
-Var=AFC0_DCDCFan unsigned 8,8 /e:PumpState
+Var=PTCf_Temp1 unsigned 0,16 /u:dC
+Var=PTCf_Temp2 unsigned 16,16 /u:dC
+Var=PTCf_Temp3 unsigned 32,16 /u:dC
+Var=PTCf_Temp4 unsigned 48,16 /u:dC
 
-[AFC1_FanStatus]
-ID=237h
-DLC=2
-CycleTime=100
-Timeout=1000
-Var=AFC1_ACFans unsigned 0,8 /e:FanState
-Var=AFC1_DCDCFan unsigned 8,8 /e:PumpState
-
-[AFC0_DriverTemps]
-ID=536h
-DLC=5
-CycleTime=100
-Timeout=1000
-Var=AFC0_driverTemp0 unsigned 0,8 /u:C
-Var=AFC0_driverTemp1 unsigned 8,8 /u:C
-Var=AFC0_driverTemp2 unsigned 16,8 /u:C
-Var=AFC0_DCDCTemp0 unsigned 24,8 /u:C
-Var=AFC0_DCDCTemp1 unsigned 32,8 /u:C
-
-[AFC1_DriverTemps]
-ID=537h
-DLC=5
-CycleTime=100
-Timeout=1000
-Var=AFC1_driverTemp0 unsigned 0,8 /u:C
-Var=AFC1_driverTemp1 unsigned 8,8 /u:C
-Var=AFC1_driverTemp2 unsigned 16,8 /u:C
-Var=AFC1_DCDCTemp0 unsigned 24,8 /u:C
-Var=AFC1_DCDCTemp1 unsigned 32,8 /u:C
-
-[AFC0_PowerDiagnostic]
-ID=546h
-DLC=6
-CycleTime=100
-Timeout=1000
-Var=AFC0_busVoltage unsigned 0,16 /u:mV
-Var=AFC0_busCurrent unsigned 16,16 /u:mA
-Var=AFC0_fansCurrent unsigned 32,16 /u:mA
-
-[AFC1_PowerDiagnostic]
-ID=547h
-DLC=6
-CycleTime=100
-Timeout=1000
-Var=AFC1_busVoltage unsigned 0,16 /u:mV
-Var=AFC1_busCurrent unsigned 16,16 /u:mA
-Var=AFC1_fansCurrent unsigned 32,16 /u:mA
-
-[PTC_Heartbeat]
-ID=104h
-DLC=5
-CycleTime=10
-Timeout=100
-Var=PTC_state unsigned 0,8 /e:State
-Var=PTC_ERR_VSMTimeout unsigned 8,1
-Var=PTC_ERR_waterTempOOR bit 21,1
-Var=PTC_ERR_driversTempOOR bit 22,1
-Var=PTC_ERR_fanCurrentOOR bit 23,1
-Var=PTC_WRN_VSMTimeout bit 24,1
-Var=PTC_WRN_VoltageOOR bit 25,1
-Var=PTC_WRN_CurrentOOR bit 26,1
-
-[PTC_CoolingStatus]
+[PTCf_LoopTemps_B]
 ID=234h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=PTCf_Temp5 unsigned 0,16 /u:dC
+Var=PTCf_Temp6 unsigned 16,16 /u:dC
+Var=PTCf_Temp7 unsigned 32,16 /u:dC
+Var=PTCf_Temp8 unsigned 48,16 /u:dC
+
+[PTCp_LoopTemps_A]
+ID=244h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=PTCp_Temp1 unsigned 0,16 /u:dC
+Var=PTCp_Temp2 unsigned 16,16 /u:dC
+Var=PTCp_Temp3 unsigned 32,16 /u:dC
+Var=PTCp_Temp4 unsigned 48,16 /u:dC
+
+[PTCp_LoopTemps_B]
+ID=245h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=PTCp_Temp5 unsigned 0,16 /u:dC
+Var=PTCp_Temp6 unsigned 16,16 /u:dC
+Var=PTCp_Temp7 unsigned 32,16 /u:dC
+Var=PTCp_Temp8 unsigned 48,16 /u:dC
+
+[PTCf_FansStatus]
+ID=314h
+DLC=3
+CycleTime=100
+Timeout=1000
+Var=PTCf_channel1State unsigned 0,8 /u:percent
+Var=PTCf_channel2State unsigned 8,8 /u:percent
+Var=PTCf_channel3State unsigned 16,8 /u:percent
+
+[PTCp_PumpsStatus]
+ID=324h
+DLC=3
+CycleTime=100
+Timeout=1000
+Var=PTCp_channel1State unsigned 0,8 /u:percent
+Var=PTCp_channel2State unsigned 8,8 /u:percent
+Var=PTCp_channel3State unsigned 16,8 /u:percent
+
+[PTCf_PowerDiagnostic]
+ID=534h
 DLC=6
 CycleTime=100
 Timeout=1000
-Var=PTC_fanState unsigned 0,8 /e:FanState
-Var=PTC_pumpState unsigned 8,8 /e:PumpState
-Var=PTC_preRadiatorTemp unsigned 16,16 /u:C
-Var=PTC_postRadiatorTemp unsigned 32,16 /u:C
+Var=PTCf_logicVoltage unsigned 0,16 /u:mV
+Var=PTCf_loadVoltage unsigned 16,16 /u:mV
+Var=PTCf_loadCurrent unsigned 32,16 /u:mA
 
-[PTC_AFCControl]
-ID=254h
-DLC=2
-CycleTime=100
-Timeout=1000
-Var=PTC_acFansDuty unsigned 0,8 /u:%
-Var=PTC_dcdcFanDuty unsigned 8,8 /u:%
-
-[PTC_VoltageDiagnostic]
-ID=534h
-DLC=4
-CycleTime=100
-Timeout=1000
-Var=PTC_logicVoltage unsigned 0,16 /u:mV
-Var=PTC_loadVoltage unsigned 16,16 /u:mV
-
-[PTC_CurrentDiagnostic]
+[PTCp_PowerDiagnostic]
 ID=544h
 DLC=6
 CycleTime=100
 Timeout=1000
-Var=PTC_logicCurrent unsigned 0,16 /u:mA
-Var=PTC_loadCurrent unsigned 16,16 /u:mA
-Var=PTC_fanCurrent unsigned 32,16 /u:mA
+Var=PTCp_logicVoltage unsigned 0,16 /u:mV
+Var=PTCp_loadVoltage unsigned 16,16 /u:mV
+Var=PTCp_loadCurrent unsigned 32,16 /u:mA
 
 [APC_Heartbeat]
 ID=108h
@@ -926,7 +890,7 @@ Var=DILONG_Battery_Mode_N unsigned 40, 8
 [ELLIPSE_IMU_General_Status_1]
 ID=700h
 DLC=8
-Var=Time_Stamp_GS1 unsigned 0,32 /u:us
+Var=Time_Stamp_GS1 unsigned 0,32 /u:s /f:0.000001 /p:3
 Var=General_Status unsigned 32,16
 Var=Clock_Status unsigned 48,16
 
@@ -945,8 +909,8 @@ Var=Heave_Status_GENERAL3 unsigned 32,16
 [ELLIPSE_IMU_UTC_0]
 ID=703h
 DLC=8
-Var=Time_Stamp_UTC0 unsigned 0,32 /u:us
-Var=Gps_Tow_UTC0 unsigned 32,32 /u:ms
+Var=Time_Stamp_UTC0 unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=Gps_Tow_UTC0 unsigned 32,32 /u:s /f:0.001 /p:3
 
 [ELLIPSE_IMU_UTC_1]
 ID=704h
@@ -957,47 +921,47 @@ Var=Day unsigned 16,8 /u:d
 Var=Hour unsigned 24,8 /u:h
 Var=Min unsigned 32,8 /u:min
 Var=Sec unsigned 40,8 /u:s
-Var=Tenthms unsigned 48,16 /u:s
+Var=Tenthms unsigned 48,16 /u:s /f:0.0001 /p:3
 
 [ELLIPSE_IMU_INFO]
 ID=710h
 DLC=8
-Var=Time_Stamp_IMU unsigned 0,32 /u:us
+Var=Time_Stamp_IMU unsigned 0,32 /u:s /f:0.000001 /p:3
 Var=Imu_Status unsigned 32,16
-Var=Temperature signed 48,16 /u:°C
+Var=Temperature signed 48,16 /u:'C /f:0.01 /p:2
 
 [ELLIPSE_IMU_ACCEL]
 ID=711h
 DLC=6
-Var=Accel_X signed 0,16 /u:m.s-2
-Var=Accel_Y signed 16,16 /u:m.s-2
-Var=Accel_Z signed 32,16 /u:m.s-2
+Var=Accel_X signed 0,16 /u:m.s-2 /f:0.01 /p:4
+Var=Accel_Y signed 16,16 /u:m.s-2 /f:0.01 /p:4
+Var=Accel_Z signed 32,16 /u:m.s-2 /f:0.01 /p:4
 
 [ELLIPSE_IMU_GYRO]
 ID=712h
 DLC=6
-Var=Gyro_X signed 0,16 /u:rad.s-1
-Var=Gyro_Y signed 16,16 /u:rad.s-1
-Var=Gyro_Z signed 32,16 /u:rad.s-1
+Var=Gyro_X signed 0,16 /u:rad.s-1 /f:0.001 /p:4
+Var=Gyro_Y signed 16,16 /u:rad.s-1 /f:0.001 /p:4
+Var=Gyro_Z signed 32,16 /u:rad.s-1 /f:0.001 /p:4
 
 [ELLIPSE_IMU_DELTA_VEL]
 ID=713h
 DLC=6
-Var=Delta_Vel_X signed 0,16 /u:m.s-2
-Var=Delta_Vel_Y signed 16,16 /u:m.s-2
-Var=Delta_Vel_Z signed 32,16 /u:m.s-2
+Var=Delta_Vel_X signed 0,16 /u:m.s-2 /u:m.s-2 /f:0.01 /p:4
+Var=Delta_Vel_Y signed 16,16 /u:m.s-2 /u:m.s-2 /f:0.01 /p:4
+Var=Delta_Vel_Z signed 32,16 /u:m.s-2 /u:m.s-2 /f:0.01 /p:4
 
 [ELLIPSE_IMU_DELTA_ANGLE]
 ID=714h
 DLC=6
-Var=Delta_Angle_X signed 0,16 /u:rad.s-1
-Var=Delta_Angle_Y signed 16,16 /u:rad.s-1
-Var=Delta_Angle_Z signed 32,16 /u:rad.s-1
+Var=Delta_Angle_X signed 0,16 /u:rad.s-1 /f:0.001 /p:4
+Var=Delta_Angle_Y signed 16,16 /u:rad.s-1 /f:0.001 /p:4
+Var=Delta_Angle_Z signed 32,16 /u:rad.s-1 /f:0.001 /p:4
 
 [ELLIPSE_IMU_EKF_INFO]
 ID=720h
 DLC=4
-Var=Time_Stamp_EKF unsigned 0,32 /u:us
+Var=Time_Stamp_EKF unsigned 0,32 /u:s /f:0.000001 /p:3
 
 [ELLIPSE_IMU_EKF_QUAT]
 ID=721h
@@ -1011,102 +975,102 @@ Var=Q3 signed 48,16
 [ELLIPSE_IMU_EKF_EULER]
 ID=722h
 DLC=6
-Var=Roll signed 0,16 /u:rad
-Var=Pitch signed 16,16 /u:rad
-Var=Yaw signed 32,16 /u:rad
+Var=Roll signed 0,16 /u:' /f:0.0057295779 /p:4
+Var=Pitch signed 16,16 /u:' /f:0.0057295779 /p:4
+Var=Yaw signed 32,16 /u:' /f:0.0057295779 /p:4
 
 [ELLIPSE_IMU_EKF_ORIENT_ACC]
 ID=723h
 DLC=6
-Var=Roll_Acc unsigned 0,16 /u:rad
-Var=Pitch_Acc unsigned 16,16 /u:rad
-Var=Yaw_Acc unsigned 32,16 /u:rad
+Var=Roll_Acc unsigned 0,16 /u:' /f:0.0057295779 /p:4
+Var=Pitch_Acc unsigned 16,16 /u:' /f:0.0057295779 /p:4
+Var=Yaw_Acc unsigned 32,16 /u:' /f:0.0057295779 /p:4
 
 [ELLIPSE_IMU_EKF_POS]
 ID=724h
 DLC=8
-Var=Latitude signed 0,32 /u:°
-Var=Longitude signed 32,32 /u:°
+Var=Latitude signed 0,32 /u:' /f:0.0000001 /p:2
+Var=Longitude signed 32,32 /u:' /f:0.0000001 /p:2
 
 [ELLIPSE_IMU_EKF_ALTITUDE]
 ID=725h
 DLC=6
-Var=Altitude signed 0,32 /u:m
-Var=Undulation signed 32,16 /u:m
+Var=Altitude signed 0,32 /u:m /f:0.001 /p:2
+Var=Undulation signed 32,16 /u:m /f:0.005 /p:2
 
 [ELLIPSE_IMU_EKF_POS_ACC]
 ID=726h
 DLC=6
-Var=Latitude_Acc unsigned 0,16 /u:m
-Var=Longitude_Acc unsigned 16,16 /u:m
-Var=Altitude_Acc unsigned 32,16 /u:m
+Var=Latitude_Acc unsigned 0,16 /u:m /f:0.01 /p:2
+Var=Longitude_Acc unsigned 16,16 /u:m /f:0.01 /p:2
+Var=Altitude_Acc unsigned 32,16 /u:m /f:0.01 /p:2
 
 [ELLIPSE_IMU_EKF_VEL]
 ID=727h
 DLC=6
-Var=Velocity_N signed 0,16 /u:m.s-1
-Var=Velocity_E signed 16,16 /u:m.s-1
-Var=Velocity_D signed 32,16 /u:m.s-1
+Var=Velocity_N signed 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=Velocity_E signed 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=Velocity_D signed 32,16 /u:m.s-1 /f:0.01 /p:2
 
 [ELLIPSE_IMU_EKF_VEL_ACC]
 ID=728h
 DLC=6
-Var=Velocity_Acc_N unsigned 0,16 /u:m.s-1
-Var=Velocity_Acc_E unsigned 16,16 /u:m.s-1
-Var=Velocity_Acc_D unsigned 32,16 /u:m.s-1
+Var=Velocity_Acc_N unsigned 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=Velocity_Acc_E unsigned 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=Velocity_Acc_D unsigned 32,16 /u:m.s-1 /f:0.01 /p:2
 
 [ELLIPSE_IMU_SHIP_MOTION_INFO]
 ID=730h
 DLC=8
-Var=Time_Stamp_SHIP_MOTION unsigned 0,32 /u:us
-Var=Period_SHIP_MOTION unsigned 32,16 /u:s
+Var=Time_Stamp_SHIP_MOTION unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=Period_SHIP_MOTION unsigned 32,16 /u:s /f:0.01 /p:2
 Var=Heave_Status_SHIP_MOTION unsigned 48,16
 
 [ELLIPSE_IMU_SHIP_MOTION_0]
 ID=731h
 DLC=6
-Var=Surge_SHIP_MOTION signed 0,16 /u:m
-Var=Sway_SHIP_MOTION signed 16,16 /u:m
-Var=Heave_SHIP_MOTION signed 32,16 /u:m
+Var=Surge_SHIP_MOTION signed 0,16 /u:m /f:0.001 /p:2
+Var=Sway_SHIP_MOTION signed 16,16 /u:m /f:0.001 /p:2
+Var=Heave_SHIP_MOTION signed 32,16 /u:m /f:0.001 /p:2
 
 [ELLIPSE_IMU_SHIP_MOTION_1]
 ID=732h
 DLC=6
-Var=Accel_X_SHIP_MOTION_1 signed 0,16 /u:m.s-2
-Var=Accel_Y_SHIP_MOTION_1 signed 16,16 /u:m.s-2
-Var=Accel_Z_SHIP_MOTION_1 signed 32,16 /u:m.s-2
+Var=Accel_X_SHIP_MOTION_1 signed 0,16 /u:m.s-2 /f:0.01 /p:2
+Var=Accel_Y_SHIP_MOTION_1 signed 16,16 /u:m.s-2 /f:0.01 /p:2
+Var=Accel_Z_SHIP_MOTION_1 signed 32,16 /u:m.s-2 /f:0.01 /p:2
 
 [ELLIPSE_IMU_SHIP_MOTION_2]
 ID=733h
 DLC=6
-Var=Vel_X_SHIP_MOTION_2 signed 0,16 /u:m.s-1
-Var=Vel_Y_SHIP_MOTION_2 signed 16,16 /u:m.s-1
-Var=Vel_Z_SHIP_MOTION_2 signed 32,16 /u:m.s-1
+Var=Vel_X_SHIP_MOTION_2 signed 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=Vel_Y_SHIP_MOTION_2 signed 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=Vel_Z_SHIP_MOTION_2 signed 32,16 /u:m.s-1 /f:0.01 /p:2
 
 [ELLIPSE_IMU_MAG_0]
 ID=740h
 DLC=6
-Var=Time_Stamp_MAG0 unsigned 0,32 /u:us
+Var=Time_Stamp_MAG0 unsigned 0,32 /u:s /f:0.000001 /p:3
 Var=Mag_Status_MAG0 unsigned 32,16
 
 [ELLIPSE_IMU_MAG_1]
 ID=741h
 DLC=6
-Var=Mag_X_MAG1 signed 0,16 /u:a.u.
-Var=Mag_Y_MAG2 signed 16,16 /u:a.u.
-Var=Mag_Z_MAG2 signed 32,16 /u:a.u.
+Var=Mag_X_MAG1 signed 0,16 /u:a.u. /f:0.001 /p:2
+Var=Mag_Y_MAG2 signed 16,16 /u:a.u. /f:0.001 /p:2
+Var=Mag_Z_MAG2 signed 32,16 /u:a.u. /f:0.001 /p:2
 
 [ELLIPSE_IMU_MAG_2]
 ID=742h
 DLC=6
-Var=Acc_X_MAG2 signed 0,16 /u:m.s-2
-Var=Acc_Y_MAG2 signed 16,16 /u:m.s-2
-Var=Acc_Z_MAG2 signed 32,16 /u:m.s-2
+Var=Acc_X_MAG2 signed 0,16 /u:m.s-2 /f:0.01 /p:2
+Var=Acc_Y_MAG2 signed 16,16 /u:m.s-2 /f:0.01 /p:2
+Var=Acc_Z_MAG2 signed 32,16 /u:m.s-2 /f:0.01 /p:2
 
 [ELLIPSE_IMU_ODO_INFO]
 ID=743h
 DLC=6
-Var=Time_Stamp_ODO unsigned 0,32 /u:us
+Var=Time_Stamp_ODO unsigned 0,32 /u:s /f:0.000001 /p:3
 Var=Odo_Status unsigned 32,16
 
 [ELLIPSE_IMU_ODO_VELOCITY]
@@ -1129,46 +1093,46 @@ Var=Altitude_IMU float 32,32 /u:1
 [ELLIPSE_IMU_GPS1_VEL_INFO]
 ID=750h
 DLC=8
-Var=Time_Stamp_GPS1_VEL unsigned 0,32 /u:us
+Var=Time_Stamp_GPS1_VEL unsigned 0,32 /u:s /f:0.000001 /p:3
 Var=Gps_Vel_Status unsigned 32,32
 
 [ELLIPSE_IMU_GPS1_VEL]
 ID=751h
 DLC=6
-Var=Vel_N signed 0,16 /u:m.s-1
-Var=Vel_E signed 16,16 /u:m.s-1
-Var=Vel_D signed 32,16 /u:m.s-1
+Var=Vel_N signed 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=Vel_E signed 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=Vel_D signed 32,16 /u:m.s-1 /f:0.01 /p:2
 
 [ELLIPSE_IMU_GPS1_VEL_ACC]
 ID=752h
 DLC=6
-Var=Vel_Acc_N unsigned 0,16 /u:m.s-1
-Var=Vel_Acc_E unsigned 16,16 /u:m.s-1
-Var=Vel_Acc_D unsigned 32,16 /u:m.s-1
+Var=Vel_Acc_N unsigned 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=Vel_Acc_E unsigned 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=Vel_Acc_D unsigned 32,16 /u:m.s-1 /f:0.01 /p:2
 
 [ELLIPSE_IMU_GPS1_COURSE]
 ID=753h
 DLC=4
-Var=Course unsigned 0,16 /u:°
-Var=Course_Acc unsigned 16,16 /u:°
+Var=Course unsigned 0,16 /u:' /f:0.01 /p:2
+Var=Course_Acc unsigned 16,16 /u:' /f:0.01 /p:2
 
 [ELLIPSE_IMU_GPS1_POS_INFO]
 ID=754h
 DLC=8
-Var=Time_Stamp_GPS1_POS unsigned 0,32 /u:us
+Var=Time_Stamp_GPS1_POS unsigned 0,32 /u:s /f:0.000001 /p:3
 Var=Gps_Pos_Status unsigned 32,32
 
 [ELLIPSE_IMU_GPS1_POS]
 ID=755h
 DLC=8
-Var=Latitude_GPS1 signed 0,32 /u:°
-Var=Longitude_GPS1 signed 32,32 /u:°
+Var=Latitude_GPS1 signed 0,32 /u:' /f:0.0000001 /p:5
+Var=Longitude_GPS1 signed 32,32 /u:' /f:0.0000001 /p:5
 
 [ELLIPSE_IMU_GPS1_ALT]
 ID=756h
 DLC=8
-Var=Altitude_GPS1 signed 0,32 /u:m
-Var=Undulation_GPS1 signed 32,16 /u:m
+Var=Altitude_GPS1 signed 0,32 /u:m /f:0.001 /p:2
+Var=Undulation_GPS1 signed 32,16 /u:m /f:0.005 /p:2
 Var=Num_Sv_GPS1 unsigned 48,8
 Var=Diff_Corr_Age_GPS1 unsigned 56,8 /u:s
 
@@ -1183,30 +1147,30 @@ Var=Base_Station_Id_GPS1 unsigned 48,16
 [ELLIPSE_IMU_GPS1_HOT_INFO]
 ID=758h
 DLC=6
-Var=Time_Stamp_GPS1_HOT unsigned 0,32 /u:us
+Var=Time_Stamp_GPS1_HOT unsigned 0,32 /u:s /f:0.000001 /p:3
 Var=Gps_Hdt_Status unsigned 32,16
 
 [ELLIPSE_IMU_GPS1_HOT]
 ID=759h
 DLC=8
-Var=True_Heading_GPS1 unsigned 0,16 /u:°
-Var=True_Heading_Acc_GPS1 unsigned 16,16 /u:°
-Var=Pitch_GPS1 signed 32,16 /u:°
-Var=Pitch_Acc_GPS1 unsigned 48,16 /u:°
+Var=True_Heading_GPS1 unsigned 0,16 /u:'
+Var=True_Heading_Acc_GPS1 unsigned 16,16 /u:'
+Var=Pitch_GPS1 signed 32,16 /u:'
+Var=Pitch_Acc_GPS1 unsigned 48,16 /u:'
 
 [ELLIPSE_IMU_EVENT_INFO_A]
 ID=760h
 DLC=6
-Var=Time_Stamp_EVENTA unsigned 0,32 /u:us
+Var=Time_Stamp_EVENTA unsigned 0,32 /u:s /f:0.000001 /p:3
 Var=Event_Status unsigned 32,16
 
 [ELLIPSE_IMU_EVENT_TIME_A]
 ID=761h
 DLC=8
-Var=Time_Offset_0 unsigned 0,16 /u:us
-Var=Time_Offset_1 unsigned 16,16 /u:us
-Var=Time_Offset_2 unsigned 32,16 /u:us
-Var=Time_Offset_3 unsigned 48,16 /u:us
+Var=Time_Offset_0 unsigned 0,16 /u:s /f:0.000001 /p:3
+Var=Time_Offset_1 unsigned 16,16 /u:s /f:0.000001 /p:3
+Var=Time_Offset_2 unsigned 32,16 /u:s /f:0.000001 /p:3
+Var=Time_Offset_3 unsigned 48,16 /u:s /f:0.000001 /p:3
 
 
 [BRUSA_Charger_Control]
@@ -1274,3 +1238,4 @@ Var=Command_out_of_range unsigned 36,1
 Var=Ctrl_msg_inactive unsigned 35,1
 Var=LED_driver_defect unsigned 33,1
 Var=Save_charging_mode unsigned 32,1
+
