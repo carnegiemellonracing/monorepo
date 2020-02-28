@@ -91,8 +91,7 @@ void cmr_canInit(
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
     cmr_canRXCallback_t rxCallback,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin,
-	bool has_hse_clock
+    GPIO_TypeDef *txPort, uint16_t txPin
 );
 
 /**

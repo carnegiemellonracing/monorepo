@@ -344,7 +344,6 @@ CAN_RX_FIFO_PENDING(1)
  * @param rxPin Receiving GPIO pin (`GPIO_PIN_x` from `stm32f4xx_hal_gpio.h`).
  * @param txPort Transmitting GPIO port.
  * @param txPin Transmitting GPIO pin.
- * @param has_hse_clock if 96Mhz external clock is used instead of 16Mhz internal clock.
  */
 void cmr_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
@@ -352,8 +351,7 @@ void cmr_canInit(
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
     cmr_canRXCallback_t rxCallback,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin,
-	bool has_hse_clock
+    GPIO_TypeDef *txPort, uint16_t txPin
 ) {
     *can = (cmr_can_t) {
         .handle = {
