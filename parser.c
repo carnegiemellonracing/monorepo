@@ -59,7 +59,7 @@ enum data_type {
 /**
  * @brief Parsed signal information.
  */
-typedef struct signal {
+struct signal {
     uint32_t id;                        /**< @brief Backing can ID */
     size_t offset;                      /**< @brief Backing offset within
                                          * the relevant message */
@@ -72,7 +72,7 @@ typedef struct signal {
     uint32_t kind;                      /**< @brief Index in the configured
                                          * signal vector, unique among
                                          * all signals parsed. */
-} json_signal_t;
+};
 
 /**
  * @brief Number of signals configured in the parsed vector.

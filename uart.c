@@ -31,11 +31,11 @@ struct uart {
 /** @brief Primary UART interface. */
 static uart_t uart;
 
-/** @brief Boron TX period (milliseconds). */
-static const TickType_t boron_tx_period_ms = 1500;
-
 /** @brief Buffer to send via UART DMA */
 static uint8_t send_buf[MAX_MESSAGE_LEN];
+
+/** @brief Boron TX period (milliseconds). (Shared with sample.c) */
+const TickType_t boron_tx_period_ms = 1000;
 
 /**
  * @brief UART TX
