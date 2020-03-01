@@ -125,7 +125,9 @@ static void canTX10Hz(void *pvParameters) {
 static void canRX(
     cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen
 ) {
-    (void) parseData(canID, data, dataLen);
+    int ret = parseData(canID, data, dataLen);
+    configASSERT(ret);
+    (void) ret;
 }
 
 /**

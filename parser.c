@@ -1,71 +1,102 @@
-#include "parser.h"
-#include <cJSON.h>
-#include <CMR/can_types.h>
-#include <CMR/can_ids.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <float.h>
-#include <string.h>
-#include <cn-cbor/cn-cbor.h>
-#include <assert.h>
+/**
+ * @file parser.c
+ * @brief Extracts relevant samples from incoming can messages and
+ * queues them for sending offboard.
+ *
+ * Reads in can_fmt.rawh from project folder to describe
+ * configuration. Run marshall.py to generate from JSON data.
+ * JSON data follows format discussed here:
+ * http://cmr.red/jira/browse/EN-131
+ *
+ * @author Carnegie Mellon Racing
+ */
 
-enum data_type {
-    DT_INT8,
-    DT_INT16,
-    DT_INT32,
-    DT_INT64,
-    DT_UINT8,
-    DT_UINT16,
-    DT_UINT32,
-    DT_UINT64,
-    DT_FLOAT16,
-    DT_FLOAT32,
-    DT_FLOAT64,
-    DT_UNK,
-    DT_NUM
-};
+#include "parser.h"                         /* Interface */
+#include "sample.h"                         /* Sample queuing */
+#include <cJSON.h>                          /* JSON parsing */
+#include <stdlib.h>                         /* NULL */
+#include <stdint.h>                         /* Usual suspects */
+#include <string.h>                         /* strncmp */
 
-union sample_value {
-    // __fp16 fp16;
-    int32_t i32;
-    // float32_t f32;
-    uint32_t u32;
-    uint16_t u16;
-    int64_t i64;
-    int64_t u64;
-    int16_t i16;
-    uint8_t u8;
-    uint8_t i8;
-};
+#ifndef NFLOAT /* Define this to disable floating point support */
+#include <arm_neon.h>                       /* Floating types
+                                             * (define NFLOAT for
+                                             * local testing) */
+#endif
 
+/**
+ * @brief Maximum length of a signal name in bytes.
+ * @note Name is silently truncated on overrun.
+ */
 #define MAX_SIGNAL_NAME 30
 
-typedef struct signal {
-    uint32_t id;
-    size_t offset;
-    size_t len;
-    char name[MAX_SIGNAL_NAME];
-    enum data_type dt;
-    uint32_t kind;
-} json_signal_t;
+/**
+ * @brief Data type names are <= 9 bytes
+ */
+#define DT_NAME_MAX 10
 
-#define MAX_VAL_PER_SIG 8
-
-struct sample {
-    struct signal sig[MAX_VAL_PER_SIG];
-    union sample_value v[MAX_VAL_PER_SIG];
-    int values_parsed;
+/**
+ * @brief Data type encapsulation for re-interpretation
+ * (e.g. you specify f16 in the JSON config, but the incoming
+ * signal sends as a u32).
+ */
+enum data_type {
+    DT_INT8,            /**< @brief i8 datatype */
+    DT_INT16,           /**< @brief i16 datatype */
+    DT_INT32,           /**< @brief i32 datatype */
+    DT_INT64,           /**< @brief i64 datatype */
+    DT_UINT8,           /**< @brief u8 datatype */
+    DT_UINT16,          /**< @brief u16 datatype */
+    DT_UINT32,          /**< @brief u32 datatype */
+    DT_UINT64,          /**< @brief u64 datatype */
+    DT_FLOAT16,         /**< @brief f16 datatype */
+    DT_FLOAT32,         /**< @brief f32 datatype */
+    DT_FLOAT64,         /**< @brief f64 datatype */
+    DT_UNK,             /**< @brief If you see this, something is wrong.*/
+    DT_NUM              /**< @brief Number of data types. */
 };
 
+/**
+ * @brief Parsed signal information.
+ */
+typedef struct signal {
+    uint32_t id;                        /**< @brief Backing can ID */
+    size_t offset;                      /**< @brief Backing offset within
+                                         * the relevant message */
+    size_t len;                         /**< @brief Length of each sample
+                                         * (in bytes) */
+    char name[MAX_SIGNAL_NAME];         /**< @brief Signal name
+                                         * (mostly useful for debugging
+                                         * right now, but we have it anyways) */
+    enum data_type dt;                  /**< @brief Type to reinterpret data */
+    uint32_t kind;                      /**< @brief Index in the configured
+                                         * signal vector, unique among
+                                         * all signals parsed. */
+} json_signal_t;
+
+/**
+ * @brief Number of signals configured in the parsed vector.
+ */
+static int signals_parsed = 0;
+
+/**
+ * @brief Metadata on each signal in the vector (filled during parsing)
+ */
+static struct signal signal_map[MAX_SIGNALS];
+
+/**
+ * @brief How we read in the configuration file (use marshall.py to update).
+ */
 static const char JSON_STRING[] = {
   #include "can_fmt.rawh"
 };
 
-
-/* Data type names are <= 9 bytes  */
-#define DT_NAME_MAX 10
-static const char dtNameMap[][DT_NAME_MAX] = {
+/**
+ * @brief What each datatype is called in the configuration file.
+ * @warning If a signal has a type not resident here,
+ * we will never boot successfully.
+ */
+static const char dtNameMap[DT_NUM][DT_NAME_MAX] = {
     [DT_INT16]   = "i16",
     [DT_INT32]   = "i32",
     [DT_INT64]   = "i64",
@@ -77,6 +108,11 @@ static const char dtNameMap[][DT_NAME_MAX] = {
     [DT_FLOAT32] = "f32",
 };
 
+/**
+ * @brief According to the configured signal type, find the representing enum
+ * @param s The type name
+ * @return enum data_type Datatype representing this.
+ */
 enum data_type dtLookupStr(const char *s) {
     for (int i = 0; i < DT_NUM; i++) {
         if (!strncmp(dtNameMap[i], s, DT_NAME_MAX)) {
@@ -86,88 +122,37 @@ enum data_type dtLookupStr(const char *s) {
     return DT_UNK;
 }
 
-#define MAX_SAMPLES 50
-#define MAX_SAMPLEVEC_LEN 400
-#define MAX_MESSAGE_LEN 2000
-static int samples_parsed = 0;
-static struct signal sample_map[MAX_SAMPLES];
-
-struct sample_data{
-    uint8_t count;
-    uint8_t len;
-    uint8_t values[MAX_SAMPLEVEC_LEN];
-} raw_sample_data[MAX_SAMPLES];
-
-uint8_t raw_msg[MAX_MESSAGE_LEN];
-
-static cn_cbor *msg;
-static cn_cbor_errback err;
-
-void parserClearMsg(void) {
-    memset(raw_sample_data, 0, sizeof(raw_sample_data));
-    memset(raw_msg, 0, sizeof(raw_msg));
-}
-
-ssize_t parserFmtMsg(void) {
-    for (size_t i = 0; i < MAX_SAMPLES; i++) {
-        if (raw_sample_data[i].count) {
-            cn_cbor *data = cn_cbor_data_create(
-                raw_sample_data[i].values,
-                raw_sample_data[i].count * raw_sample_data[i].len,
-                &err
-            );
-            assert(data != NULL);
-            int64_t kind = (int64_t) i;
-
-            /* Key is unique by virtue of monotonicity of i */
-            bool ret = cn_cbor_mapput_int(msg, kind, data, &err);
-            assert(ret);
-        }
-    }
-
-    ssize_t ret = cn_cbor_encoder_write(
-        raw_msg, 0,
-        sizeof(raw_msg) / sizeof(raw_msg[0]),
-        msg
-    );
-    cn_cbor_free(msg);
-    msg = cn_cbor_map_create(&err);
-    return ret;
-}
-
-static void add_sample(struct sample *s) {
-    for (int i = 0; i < s->values_parsed; i++) {
-        struct sample_data *store = &raw_sample_data[s->sig[i].kind];
-        if (store->count >= MAX_SAMPLEVEC_LEN / s->sig[i].len) {
-            /* Uh oh */
-            return;
-        }
-        store->len = s->sig[i].len;
-        void *data_fill_pt = &store->values[store->count * store->len];
-        memcpy(data_fill_pt, &s->v[i], s->sig[i].len);
-        store->count++;
-
-    }
-}
-
-int parseData(uint16_t id, uint8_t msg[], size_t len) {
+/**
+ * @brief Parse a CAN message and enqueue it to be sent out later.
+ * @param id The ID the message came in on.
+ * @param msg The message data
+ * @param len The received data length (in bytes)
+ * @return int
+ */
+int parseData(uint16_t id, const uint8_t msg[], size_t len) {
     struct sample sample;
     struct sample *s = &sample;
 
     struct signal *sigv[MAX_VAL_PER_SIG];
     int relevant_sigs = 0;
-    for (int i = 0; i < samples_parsed; i++) {
-        if (relevant_sigs >= MAX_VAL_PER_SIG) {
-            /* Uh oh */
-            return -1;
+    for (int i = 0; i < signals_parsed; i++) {
+        if (signal_map[i].id == id) {
+            sigv[relevant_sigs++] = &signal_map[i];
         }
-        if (sample_map[i].id == id) {
-            sigv[relevant_sigs++] = &sample_map[i];
+
+        if (relevant_sigs >= MAX_VAL_PER_SIG - 1) {
+            /* There are more subscribing signals on this message
+             * That we can handle.
+             * This will never happen if the configuration
+             * is valid, but I would still rather continue execution here
+             * by dropping the rest of the (desired) samples. */
+            break;
         }
     }
+
     if (!relevant_sigs) {
-        /* Uh oh */
-        return -1;
+        /* No sample parsed, but that's ok */
+        return 0;
     }
 
     for (size_t i = 0; i < relevant_sigs; i++) {
@@ -178,7 +163,7 @@ int parseData(uint16_t id, uint8_t msg[], size_t len) {
             return -1;
         }
 
-        void *v_pt = msg + sig->offset;
+        const void *v_pt = msg + sig->offset;
         switch(sig->dt) {
         case DT_INT8:
             s->v[i].i8 = *(int8_t *) v_pt;
@@ -204,32 +189,38 @@ int parseData(uint16_t id, uint8_t msg[], size_t len) {
         case DT_UINT64:
             s->v[i].u64 = *(uint64_t *) v_pt;
             break;
+#ifndef NFLOAT /* Define this to disable floating point support */
         case DT_FLOAT16:
-            /* Uh oh */
-            return -1;
+            s->v[i].f16 = *(float16_t *) v_pt;
+            break;
         case DT_FLOAT32:
-            /* This should be a float32_t */
-            // s->v[i].f32 = *(float *) v_pt;
-            return -1;
+            s->v[i].f32 = *(float32_t *) v_pt;
+            break;
         case DT_FLOAT64:
-            /* Uh oh */
-            return -1;
+            s->v[i].f64 = *(double *) v_pt;
+            break;
+#endif
         default:
             /* Not entirely sure what the best course of action is here. */
             return -1;
         }
-        s->sig[i] = *sig;
+
+        s->sig[i] = (struct sample_info) {
+            .kind = sig->kind,
+            .len = sig->len,
+        };
     }
 
     s->values_parsed = relevant_sigs;
-    add_sample(s);
+    addSample(s);
     return 0;
 }
 
-int parserInit(void) {
-    /* CBOR things */
-    msg = cn_cbor_map_create(&err);
-
+/**
+ * @brief Read in the configuration file for subsequent message parsing.
+ * @return int
+ */
+void parserInit(void) {
     cJSON *json = cJSON_Parse(JSON_STRING);
 
     const cJSON *name_pt = cJSON_GetObjectItemCaseSensitive(json, "signals");
@@ -272,11 +263,10 @@ int parserInit(void) {
                 s.dt = dtLookupStr(type->valuestring);
             }
 
-            sample_map[samples_parsed++] = s;
+            signal_map[signals_parsed++] = s;
         }
     }
 
+    /* Don't need this any more */
     cJSON_Delete(json);
-
-    return 0;
 }

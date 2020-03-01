@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "sample.h"
 #include <CMR/can_types.h>
 #include <CMR/can_ids.h>
 #include <stdio.h>
@@ -11,7 +12,8 @@ static cn_cbor *msg;
 static cn_cbor_errback err;
 
 int main() {
-    (void) parserInit();
+    parserInit();
+    sampleInit();
 
     /* Attempt to parse a sequence of messages */
     cmr_canHeartbeat_t vsm_msg = {
@@ -33,7 +35,7 @@ int main() {
         }
     }
 
-    ssize_t msg_len = parserFmtMsg();
+    ssize_t msg_len = sampleFmtMsg();
     if (msg_len <= 0) {
         printf("Parser formatting failed\n");
         exit(-1);

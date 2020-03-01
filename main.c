@@ -14,6 +14,7 @@
 #include <CMR/tasks.h>  // Task interface
 
 #include "parser.h" // JSON configuration
+#include "sample.h" // CBOR encoding
 #include "gpio.h"   // Board-specific GPIO interface
 #include "can.h"    // Board-specific CAN interface
 #include "uart.h"   // Board-specific UART interface
@@ -66,6 +67,8 @@ int main(void) {
 
     // Load in JSON configuration
     parserInit();
+    // Set up CBOR encoder
+    sampleInit();
 
     cmr_taskInit(
         &statusLED_task,

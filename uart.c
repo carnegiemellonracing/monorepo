@@ -15,7 +15,7 @@
 #include <CMR/panic.h>      // bad things
 
 #include "uart.h"       // Interface to implement
-#include "parser.h"     // Incoming samples
+#include "sample.h"     // Sample formatting
 #include "can.h"        // Can interface
 
 /** @brief Represents a UART interface. */
@@ -49,7 +49,7 @@ static void uartTX_Task(void *pvParameters) {
         vPortEnterCritical();
             /* Formatting must be atomic w.r.t. CAN stream
              * TODO modify to drop messages during this instead */
-           ssize_t msg_len = parserFmtMsg();
+           ssize_t msg_len = sampleFmtMsg();
 
            if (msg_len < 0) {
                cmr_panic("The CBOR parser exploded");
@@ -59,7 +59,7 @@ static void uartTX_Task(void *pvParameters) {
             cmr_uartMsgInit(&txMsg);
             memcpy(send_buf, raw_msg, msg_len);
             cmr_uartTX(&uart.port, &txMsg, send_buf, msg_len);
-            parserClearMsg();
+            sampleClearMsg();
         vPortExitCritical();
 
         vTaskDelayUntil(&last_wake, boron_tx_period_ms);
