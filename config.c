@@ -51,7 +51,7 @@ void set_default_settings(void) {
 
         .signal_cfg = {
             [0 ... MAX_SIGNALS - 1] = {
-                .sample_cutoff_freq = SAMPLE_5HZ,
+                .sample_cutoff_freq = SAMPLE_100HZ,
                 .conversion_scale   = 1.f,
                 .conversion_bias    = 0.f,
             }

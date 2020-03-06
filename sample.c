@@ -15,6 +15,7 @@
 #include <stdlib.h>                         /* NULL */
 #include <stdint.h>                         /* Usual suspects */
 #include <string.h>                         /* memory calls */
+#include <math.h>                           /* round() */
 #include <cn-cbor/cn-cbor.h>                /* CBOR encoding */
 #include "FreeRTOSConfig.h"                 /* configASSERT */
 
@@ -204,24 +205,45 @@ void downsample(void) {
             continue;
         }
 
-        int keep_every_x = (sample->count + count_allowance - 1) / count_allowance;
-        configASSERT(keep_every_x > 0);
+        /* To actually downsample to the desired frequency, Count along the
+         * vector and throw out floating point indices. For example, If we have
+         * 210 samples and are targeting 50Hz @ 1Hz transmit frequency, we would
+         * keep index 0, increment to index 210/50, round this to get the index
+         * to actually keep, and continue. At the end, we'll end up with very
+         * close to (but never more than) 50 samples. */
+        float float_increment = ((float) sample->count) / ((float) count_allowance);
+
+        /* If our allowance was too generous, use real_index~~float_index */
+        if (float_increment < 1.f) {
+            float_increment = 1.f;
+        }
 
         /* Time to actually cull samples. Outputs are in the reduced
          * sample->count's */
         /* Could memmove as we go, but I think this is simpler to understand. */
         uint8_t temp_samplevec[MAX_SAMPLEVEC_LEN];
         int new_samplevec_len = 0;
-        for (size_t j = 0; j < sample->count; j++) {
-            if (j % keep_every_x == 0) {
-                /* Copy this sample value over to save it */
-                memcpy(
-                    &temp_samplevec[sample->len * new_samplevec_len],
-                    &sample->values[sample->len * j],
-                    sample->len
-                );
-                new_samplevec_len++;
+        for (
+            float fidx = 0.f;
+            ;
+            fidx += float_increment
+        ) {
+            /* Get the adjusted floating value. */
+            int real_idx = (int) round(fidx);
+
+            /* We may or may not have exactly the right number of samples,
+             * But we'll a) be pretty close, and b) certainly not go over. */
+            if (real_idx >= sample->count) {
+                break;
             }
+
+            /* Copy this sample value over to save it */
+            memcpy(
+                &temp_samplevec[sample->len * new_samplevec_len],
+                &sample->values[sample->len * real_idx],
+                sample->len
+            );
+            new_samplevec_len++;
         }
 
         /* Update the backing sample */

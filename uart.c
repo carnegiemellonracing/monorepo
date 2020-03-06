@@ -51,16 +51,17 @@ static void uartTX_Task(void *pvParameters) {
              * TODO modify to drop messages during this instead */
            ssize_t msg_len = sampleFmtMsg();
 
-           if (msg_len < 0) {
+           if (msg_len <= 0) {
                cmr_panic("The CBOR parser exploded");
            }
 
             cmr_uartMsg_t txMsg;
             cmr_uartMsgInit(&txMsg);
             memcpy(send_buf, raw_msg, msg_len);
-            cmr_uartTX(&uart.port, &txMsg, send_buf, msg_len);
             sampleClearMsg();
         vPortExitCritical();
+        cmr_uartTX(&uart.port, &txMsg, send_buf, msg_len);
+        cmr_uartMsgWait(&txMsg);
 
         vTaskDelayUntil(&last_wake, boron_tx_period_ms);
     }
