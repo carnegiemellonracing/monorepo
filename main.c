@@ -15,6 +15,7 @@
 
 #include "parser.h" // JSON configuration
 #include "sample.h" // CBOR encoding
+#include "config.h" // Previous flash configuration
 #include "gpio.h"   // Board-specific GPIO interface
 #include "can.h"    // Board-specific CAN interface
 #include "uart.h"   // Board-specific UART interface
@@ -69,6 +70,8 @@ int main(void) {
     parserInit();
     // Set up CBOR encoder
     sampleInit();
+    // Pull in previous configuration
+    configInit();
 
     cmr_taskInit(
         &statusLED_task,

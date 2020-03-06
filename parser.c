@@ -127,7 +127,7 @@ enum data_type dtLookupStr(const char *s) {
  * @param id The ID the message came in on.
  * @param msg The message data
  * @param len The received data length (in bytes)
- * @return int
+ * @return int 0 on success, -1 on failure.
  */
 int parseData(uint16_t id, const uint8_t msg[], size_t len) {
     struct sample sample;

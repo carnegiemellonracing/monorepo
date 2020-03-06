@@ -26,9 +26,8 @@
 /**@brief flash driver wrapping the settings */
 static cmr_config_t cfg;
 
-/**@brief Index of the page to use
- * @note  On a target with 128KB of flash, this is the last page. */
-static const uint32_t settings_page_id = 0x3F;
+/**@brief Index of the sector. to use */
+static const uint32_t sector_id = FLASH_SECTOR_14;
 
 /**@brief mcache of current settings
  *
@@ -37,7 +36,6 @@ static const uint32_t settings_page_id = 0x3F;
  * @note no effort is made to make this concurrency-safe (here)
  */
 cfg_settings_t current_settings;
-
 /**
  * @brief Set the default settings during
  * reset or first-time-boot.
@@ -53,7 +51,7 @@ void set_default_settings(void) {
 
         .signal_cfg = {
             [0 ... MAX_SIGNALS - 1] = {
-                .sample_cutoff_freq = SAMPLE_100HZ,
+                .sample_cutoff_freq = SAMPLE_5HZ,
                 .conversion_scale   = 1.f,
                 .conversion_bias    = 0.f,
             }
@@ -95,13 +93,16 @@ void commit_settings(void) {
 void configInit(void) {
     cmr_configInit(
         &cfg,
-        (volatile uint32_t *) &current_settings, sizeof(current_settings),
-        settings_page_id
+        (volatile uint32_t *) &current_settings,
+        sizeof(current_settings) / sizeof(uint32_t),    /* Flash driver expects
+                                                         * a size in words,
+                                                         * sadly */
+        sector_id
     );
 
     /* Do a vaguely sketchy uninitialized flash check to
      * set defaults on the first boot */
-    if (memcmp(current_settings.canary, CANARY, sizeof(current_settings.mcu_serial))) {
+    if (memcmp(current_settings.canary, CANARY, sizeof(current_settings.canary))) {
         set_default_settings();
     }
 }

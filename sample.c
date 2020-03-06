@@ -30,6 +30,21 @@
 #define MAX_SAMPLEVEC_LEN 500
 
 /**
+ *  @brief Look up table for the maximum send counts on each signal according to
+ *  the enumerated config. Unfortunately depends implictly on the transfer
+ *  frequency
+ *
+ */
+const int count_freq_map[SAMPLE_NUM_FREQS] = {
+    [SAMPLE_0HZ] = 0,
+    [SAMPLE_1HZ] = 1,
+    [SAMPLE_5HZ] = 5,
+    [SAMPLE_10HZ] = 10,
+    [SAMPLE_50HZ] = 50,
+    [SAMPLE_100HZ] = 100,
+};
+
+/**
  * @brief All of the tracked sample data. Fill between transmit periods,
  * empty at the end of one.
  */
@@ -63,6 +78,42 @@ static ssize_t pack_msg(void) {
     );
 }
 
+size_t worst_case_length(enum signal_sample_freq *allowance) {
+    size_t byte_string_overhead = 3; /* This is the case for CBOR
+                                      * byte maps with keys <= 255
+                                      * (probably always
+                                      * going to be the case). */
+   size_t packed_len = 2;           /* CBOR starts with a
+                                     * 2-header byte sequence */
+   for (int i = 0; i < MAX_SIGNALS; i++) {
+        /* For our message structure, we send  */
+        size_t availible_length = \
+            raw_sample_data[i].count * raw_sample_data[i].len;
+        size_t capped_length = count_freq_map[allowance[i]] * \
+            raw_sample_data[i].len;
+
+        if (availible_length == 0) {
+            /* Don't need to pay overhead for 0 byte vectors */
+            continue;
+        }
+
+        /* There is a hard limit imposed on this signal's representation in the
+         * sample vector, but we might not yet meet that; Use whichever is
+         * smaller to calculate the length thus far. */
+        if (availible_length <= capped_length) {
+            packed_len += availible_length;
+        } else {
+            packed_len += capped_length;
+        }
+
+        /* Factor in the overhead for a given integer key:bytestring value
+         * pair. */
+        packed_len += byte_string_overhead;
+   }
+
+    return packed_len;
+}
+
 /**
  * @brief Downsample received messages according to configured cutoff
  * frequencies. The JSON configuration dictates the maximum receive frequency
@@ -83,19 +134,8 @@ static ssize_t pack_msg(void) {
  *
  * @warning If you update signal_sample_freq, this will need to change
  * accordingly.
- *
- * @return The length of the packed message. -1 on error.
  */
-static ssize_t downsample(void) {
-    const int count_freq_map[SAMPLE_NUM_FREQS] = {
-        [SAMPLE_0HZ] = 0,
-        [SAMPLE_1HZ] = 1,
-        [SAMPLE_5HZ] = 5,
-        [SAMPLE_10HZ] = 10,
-        [SAMPLE_50HZ] = 50,
-        [SAMPLE_100HZ] = 100,
-    };
-
+void downsample(void) {
     /* Assume we clear the send buffer at this frequency */
     const int tx_freq_dhz = 10000 / boron_tx_period_ms;
     /* Can't have this spilling 0 */
@@ -111,18 +151,20 @@ static ssize_t downsample(void) {
         sample_freq_allowance[i] = sig_cutoff;
     }
 
+    /* Try to propose a fair allowance of samples within the message
+     * until we can fit them all into this outgoing message. */
     /* Start at the highest frequency we can ingest at.
      * @warning this does not automatically reflect its true value,
      * MAX_SAMPLEVEC_LEN/MIN_SAMPLE_LENGTH/tx_freq_dhz */
-    enum signal_sample_freq current_level = SAMPLE_100HZ;
-    ssize_t packing_len;
     for (
-        packing_len = pack_msg();   /* Repack and test if we fit */
-        packing_len >= MAX_MESSAGE_LEN;
-        packing_len = pack_msg()            /* Repack and test if we fit */
+        enum signal_sample_freq current_level = SAMPLE_100HZ;
+        current_level > SAMPLE_0HZ;
+        current_level--
     ) {
         for (size_t i = 0; i < MAX_SIGNALS; i++) {
-            if (sample_freq_allowance[i] == SAMPLE_0HZ) {
+            if (worst_case_length(sample_freq_allowance) < MAX_MESSAGE_LEN) {
+                break;
+            } else if (sample_freq_allowance[i] == SAMPLE_0HZ) {
                 /* No use drawing blood from a stone */
                 continue;
             }
@@ -150,13 +192,28 @@ static ssize_t downsample(void) {
 
     /* We can now pack everything down according to sample_freq_allowance */
     for (size_t i = 0; i < MAX_SIGNALS; i++) {
-        int cull_every_x = count_freq_map[sample_freq_allowance[i]];
         struct sample_data *sample = &raw_sample_data[i];
+
+        /* If we have 9 samples and we're downsampling to 5 samples,
+         * should throw away every other sample. Need to take the ceiling
+         * of the real ratio, not the floor */
+        int count_allowance = count_freq_map[sample_freq_allowance[i]];
+        if (count_allowance == 0 || sample->count == 0) {
+            /* Throw them all out now, no need to do anything fancy. */
+            sample->count = 0;
+            continue;
+        }
+
+        int keep_every_x = (sample->count + count_allowance - 1) / count_allowance;
+        configASSERT(keep_every_x > 0);
+
+        /* Time to actually cull samples. Outputs are in the reduced
+         * sample->count's */
         /* Could memmove as we go, but I think this is simpler to understand. */
         uint8_t temp_samplevec[MAX_SAMPLEVEC_LEN];
         int new_samplevec_len = 0;
         for (size_t j = 0; j < sample->count; j++) {
-            if (j % cull_every_x != 0) {
+            if (j % keep_every_x == 0) {
                 /* Copy this sample value over to save it */
                 memcpy(
                     &temp_samplevec[sample->len * new_samplevec_len],
@@ -171,8 +228,6 @@ static ssize_t downsample(void) {
         sample->count = new_samplevec_len;
         memcpy(sample->values, temp_samplevec, sample->len * new_samplevec_len);
     }
-
-    return packing_len;
 }
 
 /**
@@ -189,6 +244,7 @@ void sampleClearMsg(void) {
  * @return ssize_t The (new) length of raw_msg
  */
 ssize_t sampleFmtMsg(void) {
+   downsample();
 
     for (size_t i = 0; i < MAX_SIGNALS; i++) {
         if (raw_sample_data[i].count) {
@@ -210,14 +266,13 @@ ssize_t sampleFmtMsg(void) {
         }
     }
 
-    downsample();
-
     ssize_t ret = pack_msg();
 
     /* Map is now useless, free all of the data points we mapped in
      * and realloc it. */
     cn_cbor_free(msg);
     msg = cn_cbor_map_create(&err);
+    configASSERT(msg != NULL);
     return ret;
 }
 
@@ -233,9 +288,9 @@ void addSample(struct sample *s) {
             return;
         }
 
-        store->len = s->sig[i].len;
-        void *data_fill_pt = &store->values[store->count * store->len];
+        void *data_fill_pt = &store->values[store->count * s->sig[i].len];
         memcpy(data_fill_pt, &s->v[i], s->sig[i].len);
+        store->len = s->sig[i].len;
         store->count++;
     }
 }
@@ -245,4 +300,5 @@ void addSample(struct sample *s) {
  */
 void sampleInit(void) {
     msg = cn_cbor_map_create(&err);
+    configASSERT(msg != NULL);
 }

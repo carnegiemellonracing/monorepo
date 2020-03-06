@@ -126,7 +126,7 @@ static void canRX(
     cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen
 ) {
     int ret = parseData(canID, data, dataLen);
-    configASSERT(ret);
+    configASSERT(ret == 0);
     (void) ret;
 }
 
