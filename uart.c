@@ -74,7 +74,7 @@ static void uartTX_Task(void *pvParameters) {
 void uartInit(void) {
     // UART interface initialization.
     const UART_InitTypeDef uartInit = {
-        .BaudRate = 115200,
+        .BaudRate = 9600,
 		.WordLength = UART_WORDLENGTH_8B,
 		.StopBits = UART_STOPBITS_1,
 		.Parity = UART_PARITY_NONE,
