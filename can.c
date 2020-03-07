@@ -147,23 +147,22 @@ void canInit(void) {
     // CAN2 filters.
     const cmr_canFilter_t canFilters[] = {
         {
-            .isMask = false,
+            .isMask = true,
             .rxFIFO = CAN_RX_FIFO0,
+
+            // Match all even IDs (bottom bit 0, all others don't care).
             .ids = {
-                CMR_CANID_HEARTBEAT_VSM,
-                CMR_CANID_VSM_STATUS,
-                CMR_CANID_HVC_PACK_VOLTAGE,
-                CMR_CANID_HVC_MINMAX_CELL_TEMPS
+                0x000, 0x000,
+                0x001, 0x001
             }
-        },
-        {
-            .isMask = false,
+        }, {
+            .isMask = true,
             .rxFIFO = CAN_RX_FIFO1,
+
+            // Match all odd IDs (bottom bit 1, all others don't care).
             .ids = {
-                CMR_CANID_PTCf_LOOP_TEMPS_A,
-                CMR_CANID_PTCf_LOOP_TEMPS_A,
-                CMR_CANID_PTCp_LOOP_TEMPS_A,
-                CMR_CANID_PTCp_LOOP_TEMPS_A
+                0x001, 0x001,
+                0x001, 0x001
             }
         }
     };

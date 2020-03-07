@@ -74,7 +74,7 @@ static cn_cbor_errback err;
 static ssize_t pack_msg(void) {
     return cn_cbor_encoder_write(
         raw_msg, 0,
-        sizeof(raw_msg) / sizeof(raw_msg[0]),
+        sizeof(raw_msg),
         msg
     );
 }
@@ -181,7 +181,7 @@ void downsample(void) {
             }
 
             int sample_freq_hz = raw_sample_data[i].count * tx_freq_dhz / 10;
-            if (sample_freq_hz >= count_freq_map[sig_cutoff]) {
+            if (sample_freq_hz >= count_freq_map[current_level]) {
                 /* Found a candidate for downsampling.
                  * Knock this signal down a cutoff level and continue
                  * search. */
