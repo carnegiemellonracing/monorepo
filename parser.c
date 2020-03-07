@@ -17,12 +17,7 @@
 #include <stdlib.h>                         /* NULL */
 #include <stdint.h>                         /* Usual suspects */
 #include <string.h>                         /* strncmp */
-
-#ifndef NFLOAT /* Define this to disable floating point support */
-#include <arm_neon.h>                       /* Floating types
-                                             * (define NFLOAT for
-                                             * local testing) */
-#endif
+#include <arm_neon.h>                       /* Floating types */
 
 /**
  * @brief Maximum length of a signal name in bytes.
@@ -197,7 +192,6 @@ int parseData(uint16_t id, const uint8_t msg[], size_t len) {
         float32_t f32  = 0.f;
         float32_t f64  = 0.;
 
-#ifndef NFLOAT /* Define this to disable floating point support */
 #define DT_FOREACH(f)                                                          \
     f(DT_INT8,    i8,  i8, int8_t)                                             \
     f(DT_INT16,   i16, i16, int16_t)                                           \
@@ -210,17 +204,6 @@ int parseData(uint16_t id, const uint8_t msg[], size_t len) {
     f(DT_FLOAT16, f16, f16, float16_t)                                         \
     f(DT_FLOAT32, f32, f32, float32_t)                                         \
     f(DT_FLOAT64, f64, f64, double)
-#else
-#define DT_FOREACH(f)                                                          \
-    f(DT_INT8,    i8,  i8, int8_t)                                             \
-    f(DT_INT16,   i16, i16, int16_t)                                           \
-    f(DT_INT32,   i32, i32, int32_t)                                           \
-    f(DT_INT64,   i64, i64, int64_t)                                           \
-    f(DT_UINT8,   u8,  u8,  uint8_t)                                           \
-    f(DT_UINT16,  u16, u16, uint16_t)                                          \
-    f(DT_UINT32,  u32, u32, uint32_t)                                          \
-    f(DT_UINT64,  u64, u64, uint64_t)
-#endif
 
 #define REINTERP_IN(dt_name, field, var, type)                                 \
         case dt_name:                                                          \

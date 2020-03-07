@@ -19,10 +19,7 @@
 
 #include <stdint.h>         /* usual suspects */
 #include <unistd.h>         /* ssize_t */
-
-#ifndef NFLOAT /* Define this to disable floating point support */
 #include <arm_neon.h>       /* floating types */
-#endif
 
 /**
  * @brief Maximum number of signals subscribing to a given can message.
@@ -36,19 +33,17 @@
  * @brief Real sample values.
  */
 union sample_value {
-#ifndef NFLOAT  /* Enable this to remove support for floats */
 	float16_t f16;      /**< @brief Sample value. */
     float32_t f32;      /**< @brief Sample value. */
     float32_t f64;      /**< @brief Sample value. */
-#endif
-    int32_t i32;        /**< @brief Sample value. */
-    uint32_t u32;       /**< @brief Sample value. */
-    uint16_t u16;       /**< @brief Sample value. */
-    int64_t i64;        /**< @brief Sample value. */
-    int64_t u64;        /**< @brief Sample value. */
-    int16_t i16;        /**< @brief Sample value. */
-    uint8_t u8;         /**< @brief Sample value. */
-    uint8_t i8;         /**< @brief Sample value. */
+    int32_t   i32;      /**< @brief Sample value. */
+    uint32_t  u32;      /**< @brief Sample value. */
+    uint16_t  u16;      /**< @brief Sample value. */
+    int64_t   i64;      /**< @brief Sample value. */
+    int64_t   u64;      /**< @brief Sample value. */
+    int16_t   i16;      /**< @brief Sample value. */
+    uint8_t   u8;       /**< @brief Sample value. */
+    uint8_t   i8;       /**< @brief Sample value. */
 };
 
 /**
