@@ -40,8 +40,8 @@
             "short": "GLV (V)",
             "unit": "volts",
             "unit_short": "V",
-            "length": 2,
-            "type": "f16"
+            "in_type": "u16",
+            "out_type": "f16"
         },
         {
             "id": 769,
@@ -51,8 +51,8 @@
             "short": "HV",
             "unit": "volts",
             "unit_short": "V",
-            "length": 2,
-            "type": "f16"
+            "in_type": "i32",
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -61,69 +61,69 @@
             "short": "HV",
             "unit": "amps",
             "unit_short": "A",
-            "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
-            "id": 1811,
-            "Source": "SBG",
+            "id": 0,
+            "Source": "SBG (Calculated)",
             "name": "Longitudinal Velocity",
             "short": "Long. Vel.",
             "unit": "meters/second",
             "unit_short": "m/s",
-            "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
-            "id": 1809,
-            "Source": "SBG",
+            "id": 0,
+            "Source": "SBG (Calculated)",
             "name": "Longitudinal Acceleration",
             "short": "Long. Acc.",
             "unit": "meters/second^2",
             "unit_short": "m/s2",
-            "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
-            "id": 1881,
-            "Source": "SBG",
+            "id": 0,
+            "Source": "SBG (Calculated)",
             "name": "Heading",
             "short": "Heading",
             "unit": "degrees from north",
             "unit_short": "deg",
-            "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
-            "id": 1877,
+            "id": 1828,
+            "offset": 0,
             "Source": "SBG",
             "name": "Latitude Position",
             "short": "Lat.",
             "unit": "degrees",
             "unit_short": "deg",
-            "length": 4,
-            "type": "i32"
+            "in_type": "i32",
+            "factor": 0.0000001,
+            "out_type": "f16"
         },
         {
-            "id": 1877,
+            "id": 1828,
+            "offset": 4,
             "Source": "SBG",
             "name": "Longitude Position",
             "short": "Long.",
             "unit": "degrees",
             "unit_short": "deg",
-            "length": 4,
-            "type": "i32"
+            "in_type": "i32",
+            "factor": 0.0000001,
+            "out_type": "i32"
         },
         {
             "id": 307,
-            "offset": 6,
+            "offset": 4,
             "Source": "FSM",
             "name": "Steering Angle",
             "short": "Swangle",
             "unit": "degrees",
             "unit_short": "deg",
-            "length": 2,
-            "type": "f16"
+            "in_type": "i16",
+            "out_type": "f16"
         },
         {
             "id": 307,
@@ -131,8 +131,8 @@
             "Source": "FSM",
             "name": "Throttle Position",
             "short": "Throttle Pos.",
-            "length": 2,
-            "type": "f16"
+            "in_type": "u8",
+            "out_type": "f16"
         },
         {
             "id": 307,
@@ -140,8 +140,8 @@
             "Source": "FSM",
             "name": "Brake Position",
             "short": "Brake Pos.",
-            "length": 2,
-            "type": "f16"
+            "in_type": "u8",
+            "out_type": "f16"
         },
         {
             "id": 548,
@@ -151,8 +151,8 @@
             "short": "Pre-Rad(A) Temp",
             "unit": "degrees C",
             "unit_short": "deg C",
-            "length": 2,
-            "type": "f16"
+            "in_type": "u16",
+            "out_type": "f16"
         },
         {
             "id": 580,
@@ -162,8 +162,8 @@
             "short": "Pre-Rad(B) Temp",
             "unit": "degrees C",
             "unit_short": "deg C",
-            "length": 2,
-            "type": "f16"
+            "in_type": "u16",
+            "out_type": "f16"
         },
         {
             "id": 548,
@@ -173,8 +173,8 @@
             "short": "Post-Rad(A) Temp",
             "unit": "degrees C",
             "unit_short": "deg C",
-            "length": 2,
-            "type": "f16"
+            "in_type": "u16",
+            "out_type": "f16"
         },
         {
             "id": 580,
@@ -184,8 +184,8 @@
             "short": "Post-Rad(B) Temp",
             "unit": "degrees C",
             "unit_short": "deg C",
-            "length": 2,
-            "type": "f16"
+            "in_type": "u16",
+            "out_type": "f16"
         },
         {
             "id": 785,
@@ -195,8 +195,8 @@
             "short": "Max. AC Temp",
             "unit": "degrees C",
             "unit_short": "deg C",
-            "length": 2,
-            "type": "f16"
+            "in_type": "u16",
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -205,8 +205,7 @@
             "short": "Avg. AC Temp",
             "unit": "degrees C",
             "unit_short": "deg C",
-            "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -235,8 +234,8 @@
                     "state": ["Off", "On"]
                 }
             ],
-            "length": 1,
-            "type": "u8"
+            "in_type": "u8",
+            "out_type": "u8"
         },
         {
             "id": 256,
@@ -258,39 +257,46 @@
                     "name": "RTD"
                 }
             ],
-            "length": 1,
-            "type": "u8"
+            "in_type": "u8",
+            "out_type": "u8"
         },
         {
-            "id": 0,
-            "Source": "Undefined",
+            "id": 565,
+            "offset": 1,
+            "Source": "DIM",
             "name": "Car Mode",
             "short": "Car Mode",
             "enum": [
                 {
-                    "name": "Acceleration"
+                    "name": "Unknown"
                 },
                 {
-                    "name": "Skid-Pad"
-                },
-                {
-                    "name": "Endurance"
-                },
-                {
-                    "name": "Autocross"
+                    "name": "Reverse"
                 },
                 {
                     "name": "Slow"
                 },
                 {
-                    "name": "Direct"
+                    "name": "Fast"
                 },
                 {
-                    "name": "Reverse"
+                    "name": "Endurance"
+                },
+                {
+                    "name": "Auto-X"
+                },
+                {
+                    "name": "Skidpad"
+                },
+                {
+                    "name": "Accel"
+                },
+                {
+                    "name": "Test"
                 }
             ],
-            "length": 1,
-            "type": "u8"
+            "in_type": "u8",
+            "out_type": "u8"
         },
         {
             "id": 0,
@@ -299,8 +305,8 @@
             "short": "Time",
             "unit": "milliseconds",
             "unit_short": "ms",
-            "length": 8,
-            "type": "i64"
+            "in_type": "i64",
+            "out_type": "i64"
         },
         {
             "id": 0,
@@ -310,7 +316,7 @@
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
             "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -320,7 +326,7 @@
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
             "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -330,7 +336,7 @@
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
             "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -340,7 +346,7 @@
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
             "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -350,7 +356,7 @@
             "unit": "Newton-Meters",
             "unit_short": "Nm",
             "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -360,7 +366,7 @@
             "unit": "Newton-Meters",
             "unit_short": "Nm",
             "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -370,7 +376,7 @@
             "unit": "Newton-Meters",
             "unit_short": "Nm",
             "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -380,7 +386,7 @@
             "unit": "Newton-Meters",
             "unit_short": "Nm",
             "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -390,7 +396,7 @@
             "unit": "Newton-Meters",
             "unit_short": "Nm",
             "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -400,7 +406,7 @@
             "unit": "Newton-Meters",
             "unit_short": "Nm",
             "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -410,7 +416,7 @@
             "unit": "Newton-Meters",
             "unit_short": "Nm",
             "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -420,7 +426,7 @@
             "unit": "Newton-Meters",
             "unit_short": "Nm",
             "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -430,7 +436,7 @@
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
             "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -440,7 +446,7 @@
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
             "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -450,7 +456,7 @@
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
             "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -460,7 +466,7 @@
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
             "length": 2,
-            "type": "f16"
+            "out_type": "f16"
         },
         {
             "id": 0,
@@ -468,7 +474,7 @@
             "name": "Front-Left Motor/Inverter Status",
             "short": "(FL) Status",
             "length": 1,
-            "type": "u8"
+            "out_type": "u8"
         },
         {
             "id": 0,
@@ -476,7 +482,7 @@
             "name": "Front-Right Motor/Inverter Status",
             "short": "(FR) Status",
             "length": 1,
-            "type": "u8"
+            "out_type": "u8"
         },
         {
             "id": 0,
@@ -484,7 +490,7 @@
             "name": "Back-Left Motor/Inverter Status",
             "short": "(BL) Status",
             "length": 1,
-            "type": "u8"
+            "out_type": "u8"
         },
         {
             "id": 0,
@@ -492,7 +498,7 @@
             "name": "Back-Right Motor/Inverter Status",
             "short": "(BR) Status",
             "length": 1,
-            "type": "u8"
+            "out_type": "u8"
         },
         {
             "id": 256,
@@ -500,9 +506,8 @@
             "Source": "VSM",
             "name": "Car Error Vector",
             "short": "Car Errors",
-            "length": 4,
-            "type": "u32"
+            "in_type": "u32",
+            "out_type": "u32"
         }
     ]
 }
-

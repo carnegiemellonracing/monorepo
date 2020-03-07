@@ -65,10 +65,14 @@ struct signal {
                                          * the relevant message */
     size_t len;                         /**< @brief Length of each sample
                                          * (in bytes) */
+    size_t in_len;                      /**< @brief Length raw received data. */
     char name[MAX_SIGNAL_NAME];         /**< @brief Signal name
                                          * (mostly useful for debugging
                                          * right now, but we have it anyways) */
-    enum data_type dt;                  /**< @brief Type to reinterpret data */
+    enum data_type dt_in;               /**< @brief Type to reinterpret
+                                         * input data */
+    enum data_type dt_out;              /**< @brief Type to reinterpret
+                                         * output data */
     uint32_t kind;                      /**< @brief Index in the configured
                                          * signal vector, unique among
                                          * all signals parsed. */
@@ -106,6 +110,23 @@ static const char dtNameMap[DT_NUM][DT_NAME_MAX] = {
     [DT_UINT64]  = "u64",
     [DT_FLOAT16] = "f16",
     [DT_FLOAT32] = "f32",
+};
+
+/**
+ * @brief How large each type is in the configuration file.
+ * @warning If a signal has a type not resident here,
+ * we will never boot successfully.
+ */
+static const size_t dtSizeMap[DT_NUM] = {
+    [DT_INT16]   = 2,
+    [DT_INT32]   = 4,
+    [DT_INT64]   = 8,
+    [DT_UINT8]   = 1,
+    [DT_UINT16]  = 2,
+    [DT_UINT32]  = 4,
+    [DT_UINT64]  = 8,
+    [DT_FLOAT16] = 2,
+    [DT_FLOAT32] = 4,
 };
 
 /**
@@ -158,52 +179,97 @@ int parseData(uint16_t id, const uint8_t msg[], size_t len) {
     for (size_t i = 0; i < relevant_sigs; i++) {
         struct signal *sig = sigv[i];
 
-        if (sig->offset + sig->len > len) {
+        if (sig->offset + sig->in_len > len) {
             /* Uh oh */
             return -1;
         }
 
         const void *v_pt = msg + sig->offset;
-        switch(sig->dt) {
-        case DT_INT8:
-            s->v[i].i8 = *(int8_t *) v_pt;
-            break;
-        case DT_INT16:
-            s->v[i].i16 = *(int16_t *) v_pt;
-            break;
-        case DT_INT32:
-            s->v[i].i32 = *(int32_t *) v_pt;
-            break;
-        case DT_INT64:
-            s->v[i].i64 = *(int64_t *) v_pt;
-            break;
-        case DT_UINT8:
-            s->v[i].u8 = *(uint8_t *) v_pt;
-            break;
-        case DT_UINT16:
-            s->v[i].u16 = *(uint16_t *) v_pt;
-            break;
-        case DT_UINT32:
-            s->v[i].u32 = *(uint32_t *) v_pt;
-            break;
-        case DT_UINT64:
-            s->v[i].u64 = *(uint64_t *) v_pt;
-            break;
+        uint8_t   u8   = 0U;
+        uint16_t  u16  = 0U;
+        uint32_t  u32  = 0U;
+        uint64_t  u64  = 0ULL;
+        int8_t    i8   = 0;
+        int16_t   i16  = 0;
+        int32_t   i32  = 0;
+        int64_t   i64  = 0LL;
+        float16_t f16  = 0.f;
+        float32_t f32  = 0.f;
+        float32_t f64  = 0.;
+
 #ifndef NFLOAT /* Define this to disable floating point support */
-        case DT_FLOAT16:
-            s->v[i].f16 = *(float16_t *) v_pt;
-            break;
-        case DT_FLOAT32:
-            s->v[i].f32 = *(float32_t *) v_pt;
-            break;
-        case DT_FLOAT64:
-            s->v[i].f64 = *(double *) v_pt;
-            break;
+#define DT_FOREACH(f)                                                          \
+    f(DT_INT8,    i8,  i8, int8_t)                                             \
+    f(DT_INT16,   i16, i16, int16_t)                                           \
+    f(DT_INT32,   i32, i32, int32_t)                                           \
+    f(DT_INT64,   i64, i64, int64_t)                                           \
+    f(DT_UINT8,   u8,  u8,  uint8_t)                                           \
+    f(DT_UINT16,  u16, u16, uint16_t)                                          \
+    f(DT_UINT32,  u32, u32, uint32_t)                                          \
+    f(DT_UINT64,  u64, u64, uint64_t)                                          \
+    f(DT_FLOAT16, f16, f16, float16_t)                                         \
+    f(DT_FLOAT32, f32, f32, float32_t)                                         \
+    f(DT_FLOAT64, f64, f64, double)
+#else
+#define DT_FOREACH(f)                                                          \
+    f(DT_INT8,    i8,  i8, int8_t)                                             \
+    f(DT_INT16,   i16, i16, int16_t)                                           \
+    f(DT_INT32,   i32, i32, int32_t)                                           \
+    f(DT_INT64,   i64, i64, int64_t)                                           \
+    f(DT_UINT8,   u8,  u8,  uint8_t)                                           \
+    f(DT_UINT16,  u16, u16, uint16_t)                                          \
+    f(DT_UINT32,  u32, u32, uint32_t)                                          \
+    f(DT_UINT64,  u64, u64, uint64_t)
 #endif
+
+#define REINTERP_IN(dt_name, field, var, type)                                 \
+        case dt_name:                                                          \
+            memcpy(&var, v_pt, sizeof(var));                                   \
+            break;
+
+        switch(sig->dt_in) {
+
+        DT_FOREACH(REINTERP_IN)
+
         default:
             /* Not entirely sure what the best course of action is here. */
             return -1;
         }
+
+#undef REINTERP_IN
+#define REINTERP_IN(dt_name, field, var, type)                                 \
+        case dt_name:                                                          \
+            s->v[i].field = (type) var;                                        \
+            break;
+
+#define REINTERP_OUT(dt_name, field_out, var, type_out)                        \
+        case dt_name:                                                          \
+            switch(sig->dt_in) {                                               \
+            REINTERP_IN(DT_INT8,    field_out,  i8, type_out)                  \
+            REINTERP_IN(DT_INT16,   field_out, i16, type_out)                  \
+            REINTERP_IN(DT_INT32,   field_out, i32, type_out)                  \
+            REINTERP_IN(DT_INT64,   field_out, i64, type_out)                  \
+            REINTERP_IN(DT_UINT8,   field_out,  u8, type_out)                  \
+            REINTERP_IN(DT_UINT16,  field_out, u16, type_out)                  \
+            REINTERP_IN(DT_UINT32,  field_out, u32, type_out)                  \
+            REINTERP_IN(DT_UINT64,  field_out, u64, type_out)                  \
+            REINTERP_IN(DT_FLOAT16, field_out, f16, type_out)                  \
+            REINTERP_IN(DT_FLOAT32, field_out, f32, type_out)                  \
+            REINTERP_IN(DT_FLOAT64, field_out, f64, type_out)                  \
+            default:                                                           \
+                return -1;                                                     \
+            }                                                                  \
+            break;
+
+
+        switch (sig->dt_out) {
+        DT_FOREACH(REINTERP_OUT)
+        default:
+            return -1;
+        }
+#undef REINTERP_OUT
+#undef REINTERP_IN
+#undef DT_FOREACH
 
         s->sig[i] = (struct sample_info) {
             .kind = sig->kind,
@@ -231,24 +297,22 @@ void parserInit(void) {
         struct signal s = {
             .id     = 0,
             .len    = 0,
+            .in_len = 0,
             .name   = "UNKNOWN_SIGNAL",
-            .dt     = DT_UNK,
+            .dt_in  = DT_UNK,
+            .dt_out = DT_UNK,
             .offset = 0,
             s.kind  = kind_count++,
         };
         if (cJSON_IsObject(cur)) {
-            struct cJSON *id, *len, *name, *type, *offset;
-            id   = cJSON_GetObjectItem(cur, "id");
-            len  = cJSON_GetObjectItem(cur, "length");
-            name = cJSON_GetObjectItem(cur, "name");
-            type = cJSON_GetObjectItem(cur, "type");
-            offset = cJSON_GetObjectItem(cur, "offset");
+            struct cJSON *id, *name, *intype, *outtype, *offset;
+            id      = cJSON_GetObjectItem(cur, "id");
+            name    = cJSON_GetObjectItem(cur, "name");
+            intype  = cJSON_GetObjectItem(cur, "in_type");
+            outtype = cJSON_GetObjectItem(cur, "out_type");
+            offset  = cJSON_GetObjectItem(cur, "offset");
             if (cJSON_IsNumber(id)) {
                 s.id = id->valueint;
-            }
-
-            if (cJSON_IsNumber(len)) {
-                s.len = len->valueint;
             }
 
             if (cJSON_IsNumber(offset)) {
@@ -259,8 +323,14 @@ void parserInit(void) {
                 strncpy(s.name, name->valuestring, sizeof(s.name));
             }
 
-            if (cJSON_IsString(type) && (type->valuestring != NULL)) {
-                s.dt = dtLookupStr(type->valuestring);
+            if (cJSON_IsString(intype) && (intype->valuestring != NULL)) {
+                s.dt_in  = dtLookupStr(intype->valuestring);
+                s.in_len = dtSizeMap[s.dt_in];
+            }
+
+            if (cJSON_IsString(outtype) && (outtype->valuestring != NULL)) {
+                s.dt_out = dtLookupStr(outtype->valuestring);
+                s.len    = dtSizeMap[s.dt_out];
             }
 
             signal_map[signals_parsed++] = s;
