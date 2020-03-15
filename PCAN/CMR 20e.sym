@@ -4,6 +4,9 @@ Title="CMR 20e"
 
 {ENUMS}
 
+// This is for the EMD
+enum VtSig_Gain(0="x1", 1="x2", 2="x4", 3="x8", 4="x16", 5="x32")
+
 enum Fan_State(
     0 = "FAN_OFF",
     1 = "FAN_LOW",
@@ -1355,8 +1358,34 @@ Var=AMK_BR_Control_DcOn          bit      9 ,1
 Var=AMK_BR_Control_Enable        bit      10,1
 // Remove Error
 // Setpoints must have the value 0, as otherwise the 'Remove error' command will not be executed
-Var=AMK_BR_Control_ErrorReset    bit      11,1
-Var=AMK_BR_Control_Reserved2     unsigned 12,4
-Var=AMK_BR_TargetVelocity        signed   16,16 /u:rpm /p:2
-Var=AMK_BR_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
-Var=AMK_BR_TorqueLimitNegativ    signed   48,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_RR_Control_ErrorReset    bit      11,1
+Var=AMK_RR_Control_Reserved2     unsigned 12,4
+Var=AMK_RR_TargetVelocity        signed   16,16 /u:rpm /p:2
+Var=AMK_RR_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_RR_TorqueLimitNegativ    signed   48,16 /u:"% Mn" /f:0.1 /p:4
+
+//These are signals off of the EMD. We should migrate these to the DAQ bus
+//symbol file once it exists (assuming the EMD winds up on said bus)
+//[Measurement]
+//ID=100h
+//DLC=8
+//Var=Current signed 0,32 -m /u:A /f:1.5258789063E-005
+//Var=Voltage signed 32,32 -m /u:V /f:1.5258789063E-005
+
+//[Status]
+//ID=400h
+//DLC=4
+//Var=VoltageGain unsigned 4,4 -m /u:VtSig_Gain
+//Var=CurrentGain unsigned 0,4 -m /e:VtSig_Gain
+//Var=OverVoltage bit 15,1 -m /u:bool
+//Var=OverPower bit 14,1 -m /u:bool
+//Var=Logging bit 13,1 -m /e:bool
+
+
+//[Reserved1]
+//ID=7E7h	// This CAN id is used for communication between the energy meter and the download tool.
+//DLC=8
+
+//[Reserved2]
+//ID=7EFh	// This CAN id is used for communication between the energy meter and the download tool.
+//DLC=8
