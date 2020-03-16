@@ -29,12 +29,6 @@ struct uart {
     cmr_task_t txTask;  /**< @brief Receive task. */
 };
 
-struct rx_packet {
-    uint8_t header;
-    uint8_t signal_kind;
-    uint8_t signal_cutoff_enum;
-};
-
 /** @brief Primary UART interface. */
 static uart_t uart;
 
@@ -43,7 +37,21 @@ static uint8_t send_buf[MAX_MESSAGE_LEN];
 
 /** @brief Boron TX period (milliseconds). (Shared with sample.c) */
 const TickType_t boron_tx_period_ms = 1000;
+
+/** @brief Boron RX period (milliseconds). (Shared with sample.c) */
 const TickType_t boron_rx_period_ms = 1000;
+
+/** @brief Width of N-way UART receive buffering (e.g. 2 for double buffereing) */
+static const num_rx_buffers = 2;
+
+/**
+ * @brief This is required by cbor, but we don't care about it
+ * (outside of debugging)
+ */
+static cn_cbor_errback err;
+
+static void handle_command(cn_cbor *command);
+
 /**
  * @brief UART TX
  *
@@ -58,9 +66,9 @@ static void uartTX_Task(void *pvParameters) {
              * TODO modify to drop messages during this instead */
            ssize_t msg_len = sampleFmtMsg();
 
-           if (msg_len <= 0) {
-               cmr_panic("The CBOR parser exploded");
-           }
+            if (msg_len <= 0) {
+                cmr_panic("The CBOR parser exploded");
+            }
 
             cmr_uartMsg_t txMsg;
             cmr_uartMsgInit(&txMsg);
@@ -83,43 +91,117 @@ static void uartTX_Task(void *pvParameters) {
 static void uartRX_Task(void *pvParameters) {
     (void) pvParameters;
     TickType_t last_wake = xTaskGetTickCount();
+    struct {
+        cmr_uartMsg_t msg;
+        char buf[100];
+        size_t bytes_present;
+    } rx[num_rx_buffers] = {
+        [0 ... num_rx_buffers - 1] = {
+            .bytes_present = 0,
+        },
+    };
+
     while(1) {
-        struct {
-            cmr_uartMsg_t msg;
-            char buf[100];
-        } rx[2];
-
-
         for (size_t i = 0; i < sizeof(rx) / sizeof(rx[0]); i++) {
+            size_t space_left = sizeof(rx[i].buf) - rx[i].bytes_present;
             cmr_uartMsgInit(&rx[i].msg);
             cmr_uartRX(
                 &uart.port, &rx[i].msg,
-                rx[i].buf, sizeof(rx[i].buf), CMR_UART_RXOPTS_IDLEABORT
+                rx[i].buf + rx[i].bytes_present, space_left,
+                CMR_UART_RXOPTS_IDLEABORT
             );
             size_t rxLen = cmr_uartMsgWait(&rx[i].msg);
-            if (rxLen != sizeof(struct rx_packet)) {
-                /* Uh oh */
+            rx[i].bytes_present += rxLen;
+
+            /* Try to parse out a cbor structure from the received data.
+             * We may have been sent back-to-back, so assume the worst. */
+            cn_cbor *command = NULL;
+            size_t bytes_parsed;
+            for (size_t buflen = 1; buflen <= rx[i].bytes_present; buflen++) {
+                command = cn_cbor_decode(rx[i].buf, buflen, &err);
+                if (command != NULL) {
+                    bytes_parsed = buflen;
+                    break;
+                }
+            }
+
+            if (command == NULL && rx[i].bytes_present == sizeof(rx[i].buf)) {
+                /* If we didn't parse a command out, and our buffer is full,
+                 * drop the buffer and continue on with our lives */
+                rx[i].bytes_present = 0;
+                continue;
+            } else if (command == NULL) {
+                /* We have space left, and we haven't gotten a full command yet,
+                 * so continue on until we do have one */
                 continue;
             }
 
-            struct rx_packet *rx_packet = (struct rx_packet *) &rx[i].buf;
+            /* We have a valid command after parsing some number of bytes.
+             * Consume that number of bytes, and make use of the command. */
+            memmove(
+                rx[i].buf,
+                rx[i].buf + bytes_parsed,
+                rx[i].bytes_present - bytes_parsed
+            );
+            rx[i].bytes_present -= bytes_parsed;
 
-            if (
-                rx_packet->signal_cutoff_enum >= SAMPLE_NUM_FREQS ||
-                rx_packet->signal_kind        >= MAX_SIGNALS
-            ) {
-                /* Received a questionable packet from the boron,
-                 * ignore and continue */
-                continue;
-            }
-
-            /* Received a packet with which to reconfigure a singal's
-             * Cutoff frequency */
-
-            current_settings.signal_cfg[rx_packet->signal_kind].sample_cutoff_freq = rx_packet->signal_cutoff_enum;
+            handle_command(command);
         }
 
         vTaskDelayUntil(&last_wake, boron_rx_period_ms);
+    }
+}
+
+/**
+ *  @brief Handle some CBOR command from the outside world
+ *
+ *  @param command The command to handle
+ */
+static void handle_command(cn_cbor *command) {
+    cn_cbor *msg, *params, *id, *data, *kind, *cutoff;
+    msg = cn_cbor_mapget_string(command, "msg");
+    params = cn_cbor_mapget_string(command, "params");
+
+    if (msg != NULL) {
+        /* Have a message to transmit */
+        id   = cn_cbor_mapget_string(msg, "id");
+        data = cn_cbor_mapget_string(msg, "data");
+        if (
+            (id != NULL &&
+                (id->type == CN_CBOR_INT || id->type == CN_CBOR_UINT)) &&
+            (data != NULL && data->type == CN_CBOR_BYTES)
+        ) {
+            canTX((uint16_t) id->v.uint, data->bytes, data->length);
+        }
+    }
+
+    struct param_pair {
+        uint8_t kind;
+        uint8_t cutoff_enum;
+    };
+
+    if (
+        params != NULL && params->type == CN_CBOR_BYTES &&
+        params->length >= sizeof(struct param_pair)
+    ) {
+        /* Have some parameters to update */
+        /* Expects an byte-string of 2-byte values, each byte pairs with form
+         * kind:cutoff */
+        int len = params->length;
+        for (size_t i = 0; i < len; i += sizeof(struct param_pair)) {
+            struct param_pair *pair = params->v.bytes + i;
+
+            if (
+                pair->kind < MAX_SIGNALS &&
+                pair->cutoff_enum < SAMPLE_NUM_FREQS
+            ) {
+                /* Questionable update parameters, just move on */
+                continue;
+            }
+
+            struct signal_cfg cfg = &current_settings.signal_cfg[pair->kind];
+            cfg->sample_cutoff_freq = pair->cutoff_enum;
+        }
     }
 }
 
