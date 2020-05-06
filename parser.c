@@ -58,7 +58,7 @@ struct signal {
     uint32_t id;                        /**< @brief Backing can ID */
     size_t offset;                      /**< @brief Backing offset within
                                          * the relevant message */
-    size_t len;                         /**< @brief Length of each sample
+    size_t out_len;                     /**< @brief Length of each sample
                                          * (in bytes) */
     size_t in_len;                      /**< @brief Length raw received data. */
     char name[MAX_SIGNAL_NAME];         /**< @brief Signal name
@@ -71,6 +71,10 @@ struct signal {
     uint32_t kind;                      /**< @brief Index in the configured
                                          * signal vector, unique among
                                          * all signals parsed. */
+    double factor;                      /**< @brief Parsed conversion term.
+                                         * 1. If not found. */
+    double bias;                        /**< @brief Parsed term term.
+                                         * 0. If not found. */
 };
 
 /**
@@ -105,7 +109,12 @@ static const char dtNameMap[DT_NUM][DT_NAME_MAX] = {
     [DT_UINT64]  = "u64",
     [DT_FLOAT16] = "f16",
     [DT_FLOAT32] = "f32",
+    [DT_FLOAT64] = "f64",
 };
+
+/** @brief Some type on which we can apply any conversion gain/bias.
+ * It would probably be prudent to make this a floating type. */
+typedef double sig_intermediary_val_t;
 
 /**
  * @brief How large each type is in the configuration file.
@@ -113,15 +122,16 @@ static const char dtNameMap[DT_NUM][DT_NAME_MAX] = {
  * we will never boot successfully.
  */
 static const size_t dtSizeMap[DT_NUM] = {
-    [DT_INT16]   = 2,
-    [DT_INT32]   = 4,
-    [DT_INT64]   = 8,
-    [DT_UINT8]   = 1,
-    [DT_UINT16]  = 2,
-    [DT_UINT32]  = 4,
-    [DT_UINT64]  = 8,
-    [DT_FLOAT16] = 2,
-    [DT_FLOAT32] = 4,
+    [DT_INT16]   = sizeof(int16_t),
+    [DT_INT32]   = sizeof(int32_t),
+    [DT_INT64]   = sizeof(int64_t),
+    [DT_UINT8]   = sizeof(uint8_t),
+    [DT_UINT16]  = sizeof(uint16_t),
+    [DT_UINT32]  = sizeof(uint32_t),
+    [DT_UINT64]  = sizeof(uint64_t),
+    [DT_FLOAT16] = sizeof(float16_t),
+    [DT_FLOAT32] = sizeof(float32_t),
+    [DT_FLOAT64] = sizeof(double),
 };
 
 /**
@@ -129,13 +139,25 @@ static const size_t dtSizeMap[DT_NUM] = {
  * @param s The type name
  * @return enum data_type Datatype representing this.
  */
-enum data_type dtLookupStr(const char *s) {
+static enum data_type dtLookupStr(const char *s) {
     for (int i = 0; i < DT_NUM; i++) {
         if (!strncmp(dtNameMap[i], s, DT_NAME_MAX)) {
             return (enum data_type) i;
         }
     }
     return DT_UNK;
+}
+
+/**
+ *  @brief Apply a signal conversion to an intermediary type.
+ *
+ *  @param s The signal to base conversion off of
+ *  @param val The value to convert
+ *  @return sig_intermediary_val_t The converted value
+ */
+static sig_intermediary_val_t signal_apply_conversion(
+    struct signal *s, sig_intermediary_val_t val) {
+    return (s->factor * val) + s->bias;
 }
 
 /**
@@ -190,7 +212,7 @@ int parseData(uint16_t id, const uint8_t msg[], size_t len) {
         int64_t   i64  = 0LL;
         float16_t f16  = 0.f;
         float32_t f32  = 0.f;
-        float32_t f64  = 0.;
+        double    f64  = 0.;
 
 #define DT_FOREACH(f)                                                          \
     f(DT_INT8,    i8,  i8, int8_t)                                             \
@@ -207,7 +229,19 @@ int parseData(uint16_t id, const uint8_t msg[], size_t len) {
 
 #define REINTERP_IN(dt_name, field, var, type)                                 \
         case dt_name:                                                          \
-            memcpy(&var, v_pt, sizeof(var));                                   \
+            /* Fill in var with the raw value */                               \
+            var = *(type *) v_pt;                                              \
+            /* Apply any conversion. We'll do this by casting                  \
+             * To the intermediary type, running the conversion,               \
+             * then casting back. */                                           \
+            /* Note that it is more polite to do this here than in out the     \
+             * output switch, as that is a O(N^2) case explosion               \
+             * whereas this need only be O(N) */                               \
+            var = (type) signal_apply_conversion(                              \
+                sig,                                                           \
+                (sig_intermediary_val_t) var                                   \
+            );                                                                 \
+                                                                               \
             break;
 
         switch(sig->dt_in) {
@@ -256,7 +290,7 @@ int parseData(uint16_t id, const uint8_t msg[], size_t len) {
 
         s->sig[i] = (struct sample_info) {
             .kind = sig->kind,
-            .len = sig->len,
+            .len  = sig->out_len,
         };
     }
 
@@ -278,22 +312,26 @@ void parserInit(void) {
     struct cJSON *cur;
     cJSON_ArrayForEach(cur, name_pt) {
         struct signal s = {
-            .id     = 0,
-            .len    = 0,
-            .in_len = 0,
-            .name   = "UNKNOWN_SIGNAL",
-            .dt_in  = DT_UNK,
-            .dt_out = DT_UNK,
-            .offset = 0,
-            s.kind  = kind_count++,
+            .id      = 0,
+            .out_len = 0,
+            .in_len  = 0,
+            .name    = "UNKNOWN_SIGNAL",
+            .dt_in   = DT_UNK,
+            .dt_out  = DT_UNK,
+            .offset  = 0,
+            .factor  = 1.,
+            .bias    = 0.,
+            .kind   = kind_count++,
         };
         if (cJSON_IsObject(cur)) {
-            struct cJSON *id, *name, *intype, *outtype, *offset;
+            struct cJSON *id, *name, *intype, *outtype, *offset, *factor, *bias;
             id      = cJSON_GetObjectItem(cur, "id");
             name    = cJSON_GetObjectItem(cur, "name");
             intype  = cJSON_GetObjectItem(cur, "in_type");
             outtype = cJSON_GetObjectItem(cur, "out_type");
             offset  = cJSON_GetObjectItem(cur, "offset");
+            factor  = cJSON_GetObjectItem(cur, "factor");
+            bias    = cJSON_GetObjectItem(cur, "bias");
             if (cJSON_IsNumber(id)) {
                 s.id = id->valueint;
             }
@@ -302,18 +340,26 @@ void parserInit(void) {
                 s.offset = offset->valueint;
             }
 
+            if (cJSON_IsNumber(factor)) {
+                s.factor = factor->valuedouble;
+            }
+
+            if (cJSON_IsNumber(bias)) {
+                s.bias   = bias->valuedouble;
+            }
+
             if (cJSON_IsString(name) && (name->valuestring != NULL)) {
                 strncpy(s.name, name->valuestring, sizeof(s.name));
             }
 
             if (cJSON_IsString(intype) && (intype->valuestring != NULL)) {
-                s.dt_in  = dtLookupStr(intype->valuestring);
-                s.in_len = dtSizeMap[s.dt_in];
+                s.dt_in   = dtLookupStr(intype->valuestring);
+                s.in_len  = dtSizeMap[s.dt_in];
             }
 
             if (cJSON_IsString(outtype) && (outtype->valuestring != NULL)) {
-                s.dt_out = dtLookupStr(outtype->valuestring);
-                s.len    = dtSizeMap[s.dt_out];
+                s.dt_out  = dtLookupStr(outtype->valuestring);
+                s.out_len = dtSizeMap[s.dt_out];
             }
 
             signal_map[signals_parsed++] = s;
