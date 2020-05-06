@@ -203,6 +203,10 @@ static void handle_command(cn_cbor *command) {
             struct signal_cfg *cfg = &current_settings.signal_cfg[pair->kind];
             cfg->sample_cutoff_freq = pair->cutoff_enum;
         }
+
+        /* Commit any modified settings. We could put a flag in for the
+         * no-update-detected case, but it's fiiine. */
+        commit_settings();
     }
 }
 
