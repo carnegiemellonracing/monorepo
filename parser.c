@@ -51,6 +51,23 @@ enum data_type {
     DT_NUM              /**< @brief Number of data types. */
 };
 
+/** @brief Call f on each internal datatype, with args: dt enum, abv. type name,
+ *  real/compiler-facing type name. Note that this won't hit DT_UNK, as that's
+ *  considered a 'bad' value (just a named one).
+ */
+#define DT_FOREACH(f)                                                          \
+    f(DT_INT8,    i8,  int8_t)                                                 \
+    f(DT_INT16,   i16, int16_t)                                                \
+    f(DT_INT32,   i32, int32_t)                                                \
+    f(DT_INT64,   i64, int64_t)                                                \
+    f(DT_UINT8,   u8,  uint8_t)                                                \
+    f(DT_UINT16,  u16, uint16_t)                                               \
+    f(DT_UINT32,  u32, uint32_t)                                               \
+    f(DT_UINT64,  u64, uint64_t)                                               \
+    f(DT_FLOAT16, f16, float16_t)                                              \
+    f(DT_FLOAT32, f32, float32_t)                                              \
+    f(DT_FLOAT64, f64, double)
+
 /**
  * @brief Parsed signal information.
  */
@@ -96,42 +113,34 @@ static const char JSON_STRING[] = {
 
 /**
  * @brief What each datatype is called in the configuration file.
- * @warning If a signal has a type not resident here,
- * we will never boot successfully.
+ * @warning If a signal has a type not resident here, we will never boot
+ * successfully.
  */
 static const char dtNameMap[DT_NUM][DT_NAME_MAX] = {
-    [DT_INT16]   = "i16",
-    [DT_INT32]   = "i32",
-    [DT_INT64]   = "i64",
-    [DT_UINT8]   = "u8",
-    [DT_UINT16]  = "u16",
-    [DT_UINT32]  = "u32",
-    [DT_UINT64]  = "u64",
-    [DT_FLOAT16] = "f16",
-    [DT_FLOAT32] = "f32",
-    [DT_FLOAT64] = "f64",
+#define INST_DT_NAME(dt_name, abv_name, type)   \
+    [dt_name] = #abv_name,
+
+    /* Each dt name in the JSON cfg is given by e.g. "f32" */
+    DT_FOREACH(INST_DT_NAME)
+#undef INST_DT_NAME
 };
 
-/** @brief Some type on which we can apply any conversion gain/bias.
- * It would probably be prudent to make this a floating type. */
+/** @brief Some type on which we can apply any conversion gain/bias. It would
+ * probably be prudent to make this a floating type. */
 typedef double sig_intermediary_val_t;
 
 /**
  * @brief How large each type is in the configuration file.
- * @warning If a signal has a type not resident here,
- * we will never boot successfully.
+ * @warning If a signal has a type not resident here, we will never boot
+ * successfully.
  */
 static const size_t dtSizeMap[DT_NUM] = {
-    [DT_INT16]   = sizeof(int16_t),
-    [DT_INT32]   = sizeof(int32_t),
-    [DT_INT64]   = sizeof(int64_t),
-    [DT_UINT8]   = sizeof(uint8_t),
-    [DT_UINT16]  = sizeof(uint16_t),
-    [DT_UINT32]  = sizeof(uint32_t),
-    [DT_UINT64]  = sizeof(uint64_t),
-    [DT_FLOAT16] = sizeof(float16_t),
-    [DT_FLOAT32] = sizeof(float32_t),
-    [DT_FLOAT64] = sizeof(double),
+#define INST_DT_SIZE(dt_name, abv_name, type)   \
+    [dt_name] = sizeof(type),
+
+    /* Each dt size is given by sizeof(type) */
+    DT_FOREACH(INST_DT_SIZE)
+#undef INST_DT_SIZE
 };
 
 /**
@@ -179,11 +188,10 @@ int parseData(uint16_t id, const uint8_t msg[], size_t len) {
         }
 
         if (relevant_sigs >= MAX_VAL_PER_SIG - 1) {
-            /* There are more subscribing signals on this message
-             * That we can handle.
-             * This will never happen if the configuration
-             * is valid, but I would still rather continue execution here
-             * by dropping the rest of the (desired) samples. */
+            /* There are more subscribing signals on this message That we can
+             * handle. This will never happen if the configuration is valid, but
+             * I would still rather continue execution here by dropping the rest
+             * of the (desired) samples. */
             break;
         }
     }
@@ -202,77 +210,68 @@ int parseData(uint16_t id, const uint8_t msg[], size_t len) {
         }
 
         const void *v_pt = msg + sig->offset;
-        uint8_t   u8   = 0U;
-        uint16_t  u16  = 0U;
-        uint32_t  u32  = 0U;
-        uint64_t  u64  = 0ULL;
-        int8_t    i8   = 0;
-        int16_t   i16  = 0;
-        int32_t   i32  = 0;
-        int64_t   i64  = 0LL;
-        float16_t f16  = 0.f;
-        float32_t f32  = 0.f;
-        double    f64  = 0.;
 
-#define DT_FOREACH(f)                                                          \
-    f(DT_INT8,    i8,  i8, int8_t)                                             \
-    f(DT_INT16,   i16, i16, int16_t)                                           \
-    f(DT_INT32,   i32, i32, int32_t)                                           \
-    f(DT_INT64,   i64, i64, int64_t)                                           \
-    f(DT_UINT8,   u8,  u8,  uint8_t)                                           \
-    f(DT_UINT16,  u16, u16, uint16_t)                                          \
-    f(DT_UINT32,  u32, u32, uint32_t)                                          \
-    f(DT_UINT64,  u64, u64, uint64_t)                                          \
-    f(DT_FLOAT16, f16, f16, float16_t)                                         \
-    f(DT_FLOAT32, f32, f32, float32_t)                                         \
-    f(DT_FLOAT64, f64, f64, double)
+        /* Generate a bunch of locals as holding variables before shunting into
+         * the union. This isn't strictly necessary to do, but some types might
+         * have *strange* conversion rules, so casting in/out of memory is safer
+         * in my mind than a mem-mem copy. */
+#define INST_LOCAL(dt_name, abv_name, type)   \
+        type abv_name = 0;
 
-#define REINTERP_IN(dt_name, field, var, type)                                 \
+        /* Each local is e.g. float32_t f32 = 0 */
+        DT_FOREACH(INST_LOCAL)
+#undef INST_LOCAL
+
+
+        switch(sig->dt_in) {
+
+#define REINTERP_IN(dt_name, abv_name, type)                                   \
         case dt_name:                                                          \
-            /* Fill in var with the raw value */                               \
-            var = *(type *) v_pt;                                              \
-            /* Apply any conversion. We'll do this by casting                  \
-             * To the intermediary type, running the conversion,               \
-             * then casting back. */                                           \
-            /* Note that it is more polite to do this here than in out the     \
-             * output switch, as that is a O(N^2) case explosion               \
-             * whereas this need only be O(N) */                               \
-            var = (type) signal_apply_conversion(                              \
+            /* Fill in abv_name with the raw value */                          \
+            abv_name = *(type *) v_pt;                                         \
+            /* Apply any conversion. We'll do this by casting To the           \
+             * intermediary type, running the conversion, then casting back. */\
+            /* Note that it is more polite to do this here than in the         \
+             * output switch, as that is a O(N^2) case explosion whereas this  \
+             * need only be O(N) */                                            \
+            abv_name = (type) signal_apply_conversion(                         \
                 sig,                                                           \
-                (sig_intermediary_val_t) var                                   \
+                (sig_intermediary_val_t) abv_name                              \
             );                                                                 \
                                                                                \
             break;
 
-        switch(sig->dt_in) {
 
         DT_FOREACH(REINTERP_IN)
 
         default:
             /* Not entirely sure what the best course of action is here. */
+            /* Note that this will get hit on DT_UNK as well. */
             return -1;
         }
 
 #undef REINTERP_IN
-#define REINTERP_IN(dt_name, field, var, type)                                 \
+
+    /* Each local is named abv_name, e.g. float32_t f32 */
+#define REINTERP_IN(dt_name, abv_name, type)                                   \
         case dt_name:                                                          \
-            s->v[i].field = (type) var;                                        \
+            s->v[i].abv_name = (type) abv_name;                                \
             break;
 
-#define REINTERP_OUT(dt_name, field_out, var, type_out)                        \
+#define REINTERP_OUT(dt_name, abv_name, type_out)                              \
         case dt_name:                                                          \
             switch(sig->dt_in) {                                               \
-            REINTERP_IN(DT_INT8,    field_out,  i8, type_out)                  \
-            REINTERP_IN(DT_INT16,   field_out, i16, type_out)                  \
-            REINTERP_IN(DT_INT32,   field_out, i32, type_out)                  \
-            REINTERP_IN(DT_INT64,   field_out, i64, type_out)                  \
-            REINTERP_IN(DT_UINT8,   field_out,  u8, type_out)                  \
-            REINTERP_IN(DT_UINT16,  field_out, u16, type_out)                  \
-            REINTERP_IN(DT_UINT32,  field_out, u32, type_out)                  \
-            REINTERP_IN(DT_UINT64,  field_out, u64, type_out)                  \
-            REINTERP_IN(DT_FLOAT16, field_out, f16, type_out)                  \
-            REINTERP_IN(DT_FLOAT32, field_out, f32, type_out)                  \
-            REINTERP_IN(DT_FLOAT64, field_out, f64, type_out)                  \
+            REINTERP_IN(DT_INT8,    abv_name, type_out)                        \
+            REINTERP_IN(DT_INT16,   abv_name, type_out)                        \
+            REINTERP_IN(DT_INT32,   abv_name, type_out)                        \
+            REINTERP_IN(DT_INT64,   abv_name, type_out)                        \
+            REINTERP_IN(DT_UINT8,   abv_name, type_out)                        \
+            REINTERP_IN(DT_UINT16,  abv_name, type_out)                        \
+            REINTERP_IN(DT_UINT32,  abv_name, type_out)                        \
+            REINTERP_IN(DT_UINT64,  abv_name, type_out)                        \
+            REINTERP_IN(DT_FLOAT16, abv_name, type_out)                        \
+            REINTERP_IN(DT_FLOAT32, abv_name, type_out)                        \
+            REINTERP_IN(DT_FLOAT64, abv_name, type_out)                        \
             default:                                                           \
                 return -1;                                                     \
             }                                                                  \
@@ -301,7 +300,6 @@ int parseData(uint16_t id, const uint8_t msg[], size_t len) {
 
 /**
  * @brief Read in the configuration file for subsequent message parsing.
- * @return int
  */
 void parserInit(void) {
     cJSON *json = cJSON_Parse(JSON_STRING);
