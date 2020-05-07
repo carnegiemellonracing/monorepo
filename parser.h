@@ -19,4 +19,6 @@ void parserInit(void);
  */
 #define MAX_SIGNALS 80
 
+extern int signals_parsed;
+
 #endif  /* _PARSER_H_ */

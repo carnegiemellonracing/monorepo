@@ -97,7 +97,7 @@ struct signal {
 /**
  * @brief Number of signals configured in the parsed vector.
  */
-static int signals_parsed = 0;
+int signals_parsed = 0;
 
 /**
  * @brief Metadata on each signal in the vector (filled during parsing)
