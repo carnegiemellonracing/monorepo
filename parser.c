@@ -76,7 +76,8 @@ typedef double sig_intermediary_val_t;
  * @brief Parsed signal information.
  */
 struct signal {
-    uint32_t id;                        /**< @brief Backing can ID */
+    uint32_t id;                        /**< @brief Backing can message ID */
+    uint32_t bus;                       /**< @brief Backing bus ID */
     size_t offset;                      /**< @brief Backing offset within
                                          * the relevant message */
     size_t out_len;                     /**< @brief Length of each sample
@@ -173,19 +174,20 @@ static sig_intermediary_val_t signal_apply_conversion(
 
 /**
  * @brief Parse a CAN message and enqueue it to be sent out later.
+ * @param bus The ID of the bus the message came in on.
  * @param id The ID the message came in on.
  * @param msg The message data
  * @param len The received data length (in bytes)
  * @return int 0 on success, -1 on failure.
  */
-int parseData(uint16_t id, const uint8_t msg[], size_t len) {
+int parseData(uint32_t bus, uint16_t id, const uint8_t msg[], size_t len) {
     struct sample sample;
     struct sample *s = &sample;
 
     struct signal *sigv[MAX_VAL_PER_SIG];
     int relevant_sigs = 0;
     for (int i = 0; i < signals_parsed; i++) {
-        if (signal_map[i].id == id) {
+        if (signal_map[i].id == id && signal_map[i].bus == bus) {
             sigv[relevant_sigs++] = &signal_map[i];
         }
 
@@ -304,6 +306,7 @@ void parserInit(void) {
     struct cJSON *cur;
     cJSON_ArrayForEach(cur, name_pt) {
         struct signal s = {
+            .bus     = 0,   /* Assumed 0 if not specified */
             .id      = 0,
             .out_len = 0,
             .in_len  = 0,
@@ -317,6 +320,8 @@ void parserInit(void) {
         };
         if (cJSON_IsObject(cur)) {
             struct cJSON *id, *name, *intype, *outtype, *offset, *factor, *bias;
+            struct cJSON *bus;
+            bus     = cJSON_GetObjectItem(cur, "bus");
             id      = cJSON_GetObjectItem(cur, "id");
             name    = cJSON_GetObjectItem(cur, "name");
             intype  = cJSON_GetObjectItem(cur, "in_type");
@@ -324,6 +329,11 @@ void parserInit(void) {
             offset  = cJSON_GetObjectItem(cur, "offset");
             factor  = cJSON_GetObjectItem(cur, "factor");
             bias    = cJSON_GetObjectItem(cur, "bias");
+
+            if (cJSON_IsNumber(bus)) {
+                s.bus = bus->valueint;
+            }
+
             if (cJSON_IsNumber(id)) {
                 s.id = id->valueint;
             }

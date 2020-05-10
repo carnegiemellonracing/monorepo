@@ -162,7 +162,7 @@ static void uartRX_Task(void *pvParameters) {
  *  @param command The command to handle
  */
 static void handle_command(cn_cbor *command) {
-    cn_cbor *msg, *params, *pull, *id, *data;
+    cn_cbor *msg, *params, *pull, *id, *data, *bus;
     msg    = cn_cbor_mapget_string(command, "msg");
     params = cn_cbor_mapget_string(command, "params");
     pull   = cn_cbor_mapget_string(command, "pull");
@@ -171,12 +171,20 @@ static void handle_command(cn_cbor *command) {
         /* Have a message to transmit */
         id   = cn_cbor_mapget_string(msg, "id");
         data = cn_cbor_mapget_string(msg, "data");
+        bus  = cn_cbor_mapget_string(msg, "bus");
         if (
             (id != NULL &&
                 (id->type == CN_CBOR_INT || id->type == CN_CBOR_UINT)) &&
+            (bus != NULL &&
+                (bus->type == CN_CBOR_INT || bus->type == CN_CBOR_UINT) &&
+                (bus->v.uint < CMR_CAN_BUS_NUM)) &&
             (data != NULL && data->type == CN_CBOR_BYTES)
         ) {
-            canTX((uint16_t) id->v.uint, data->v.bytes, data->length, portMAX_DELAY);
+            canTX(
+                (cmr_canBusID_t) bus->v.uint, (uint16_t) id->v.uint,
+                data->v.bytes, data->length,
+                portMAX_DELAY
+            );
         }
     }
 

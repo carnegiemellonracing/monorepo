@@ -71,61 +71,15 @@ cmr_canRXMeta_t canRXMeta[CANRX_LEN] = {
     },
 };
 
-
-/** @brief CAN 100 Hz TX priority. */
-static const uint32_t canTX100Hz_priority = 5;
-/** @brief CAN 100 Hz TX period (milliseconds). */
-static const TickType_t canTX100Hz_period_ms = 10;
-
-/** @brief CAN 10 Hz TX priority. */
-static const uint32_t canTX10Hz_priority = 3;
-/** @brief CAN 10 Hz TX period (milliseconds). */
-static const TickType_t canTX10Hz_period_ms = 100;
-
-/** @brief CAN 100 Hz TX task. */
-static cmr_task_t canTX100Hz_task;
-/** @brief CAN 10 Hz TX task. */
-static cmr_task_t canTX10Hz_task;
-
-/** @brief Primary CAN interface. */
-static cmr_can_t can;
-
-/**
- * @brief Task for sending CAN messages at 100 Hz.
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void canTX100Hz(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
-    }
-}
-
-/**
- * @brief Task for sending CAN messages at 10 Hz.
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void canTX10Hz(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
-    }
-}
+/** @brief CAN interfaces */
+static cmr_can_t can[CMR_CAN_BUS_NUM];
 
 static void canRX(
-    cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen
+    cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t dataLen
 ) {
-    int ret = parseData(canID, data, dataLen);
+    size_t iface_idx = (canb_rx - can);
+    configASSERT(iface_idx < CMR_CAN_BUS_NUM);
+    int ret = parseData((uint32_t) iface_idx, canID, data, dataLen);
     configASSERT(ret == 0);
     (void) ret;
 }
@@ -134,17 +88,27 @@ static void canRX(
  * @brief Initializes the CAN interface.
  */
 void canInit(void) {
-    // CAN2 initialization.
+    // VEH-CAN (CAN3) initialization.
     cmr_canInit(
-        &can, CAN3,
+        &can[CMR_CAN_BUS_VEH], CAN3,
         CMR_CAN_BITRATE_500K,
         NULL, 0,
         canRX,
-        GPIOA, GPIO_PIN_8,     // CAN2 RX port/pin.
-        GPIOB, GPIO_PIN_4      // CAN2 TX port/pin.
+        GPIOA, GPIO_PIN_8,     // CAN3 RX port/pin.
+        GPIOB, GPIO_PIN_4      // CAN3 TX port/pin.
     );
 
-    // CAN2 filters.
+    // DAQ-CAN (CAN2) initialization.
+    cmr_canInit(
+        &can[CMR_CAN_BUS_DAQ], CAN2,
+        CMR_CAN_BITRATE_1M,
+        NULL, 0,
+        canRX,
+        GPIOB, GPIO_PIN_12,    // CAN2 RX port/pin.
+        GPIOB, GPIO_PIN_13     // CAN2 TX port/pin.
+    );
+
+    // filters.
     const cmr_canFilter_t canFilters[] = {
         {
             .isMask = true,
@@ -166,30 +130,20 @@ void canInit(void) {
             }
         }
     };
+
     cmr_canFilter(
-        &can, canFilters, sizeof(canFilters) / sizeof(canFilters[0])
+        &can[CMR_CAN_BUS_VEH], canFilters, sizeof(canFilters) / sizeof(canFilters[0])
     );
 
-    // Task initialization.
-    cmr_taskInit(
-        &canTX10Hz_task,
-        "CAN TX 10Hz",
-        canTX10Hz_priority,
-        canTX10Hz,
-        NULL
-    );
-    cmr_taskInit(
-        &canTX100Hz_task,
-        "CAN TX 100Hz",
-        canTX100Hz_priority,
-        canTX100Hz,
-        NULL
+    cmr_canFilter(
+        &can[CMR_CAN_BUS_DAQ], canFilters, sizeof(canFilters) / sizeof(canFilters[0])
     );
 }
 
 /**
  * @brief Sends a CAN message with the given ID.
  *
+ * @param id The bus to send on.
  * @param id The ID for the message.
  * @param data The data to send.
  * @param len The data's length, in bytes.
@@ -197,8 +151,13 @@ void canInit(void) {
  *
  * @return 0 on success, or a negative error code on timeout.
  */
-int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout_ms) {
-    return cmr_canTX(&can, id, data, len, timeout_ms);
+int canTX(
+    cmr_canBusID_t bus_id, cmr_canID_t id,
+    const void *data, size_t len,
+    TickType_t timeout_ms
+) {
+    configASSERT(bus_id < CMR_CAN_BUS_NUM);
+    return cmr_canTX(&can[bus_id], id, data, len, timeout_ms);
 }
 
 /**

@@ -35,6 +35,7 @@
         {
             "id": 1328,
             "offset": 0,
+            "bus": 0,
             "Source": "VSM",
             "name": "GLV Voltage",
             "short": "GLV (V)",
@@ -46,6 +47,7 @@
         {
             "id": 769,
             "offset": 4,
+            "bus": 0,
             "Source": "HVC",
             "name": "HV Voltage",
             "short": "HV",
@@ -93,6 +95,7 @@
         {
             "id": 1828,
             "offset": 0,
+            "bus": 1,
             "Source": "SBG",
             "name": "Latitude Position",
             "short": "Lat.",
@@ -100,11 +103,12 @@
             "unit_short": "deg",
             "in_type": "i32",
             "factor": 0.0000001,
-            "out_type": "f16"
+            "out_type": "i32"
         },
         {
             "id": 1828,
             "offset": 4,
+            "bus": 1,
             "Source": "SBG",
             "name": "Longitude Position",
             "short": "Long.",
@@ -117,6 +121,7 @@
         {
             "id": 307,
             "offset": 4,
+            "bus": 0,
             "Source": "FSM",
             "name": "Steering Angle",
             "short": "Swangle",
@@ -128,6 +133,7 @@
         {
             "id": 307,
             "offset": 1,
+            "bus": 0,
             "Source": "FSM",
             "name": "Throttle Position",
             "short": "Throttle Pos.",
@@ -137,6 +143,7 @@
         {
             "id": 307,
             "offset": 3,
+            "bus": 0,
             "Source": "FSM",
             "name": "Brake Position",
             "short": "Brake Pos.",
@@ -146,6 +153,7 @@
         {
             "id": 548,
             "offset": 0,
+            "bus": 0,
             "Source": "PTCf",
             "name": "Pre-Radiator (A) Temperature",
             "short": "Pre-Rad(A) Temp",
@@ -157,6 +165,7 @@
         {
             "id": 580,
             "offset": 0,
+            "bus": 0,
             "Source": "PTCp",
             "name": "Pre-Radiator (B) Temperature",
             "short": "Pre-Rad(B) Temp",
@@ -168,6 +177,7 @@
         {
             "id": 548,
             "offset": 1,
+            "bus": 0,
             "Source": "PTCf",
             "name": "Post-Radiator (A) Temperature",
             "short": "Post-Rad(A) Temp",
@@ -179,6 +189,7 @@
         {
             "id": 580,
             "offset": 1,
+            "bus": 0,
             "Source": "PTCp",
             "name": "Post-Radiator (B) Temperature",
             "short": "Post-Rad(B) Temp",
@@ -190,6 +201,7 @@
         {
             "id": 785,
             "offset": 2,
+            "bus": 0,
             "Source": "HVC",
             "name": "Max Accumulator Temperature",
             "short": "Max. AC Temp",
@@ -240,6 +252,7 @@
         {
             "id": 256,
             "offset": 0,
+            "bus": 0,
             "Source": "VSM",
             "name": "Car State",
             "short": "Car State",
@@ -263,6 +276,7 @@
         {
             "id": 565,
             "offset": 1,
+            "bus": 0,
             "Source": "DIM",
             "name": "Car Mode",
             "short": "Car Mode",
@@ -503,6 +517,7 @@
         {
             "id": 256,
             "offset": 1,
+            "bus": 0,
             "Source": "VSM",
             "name": "Car Error Vector",
             "short": "Car Errors",

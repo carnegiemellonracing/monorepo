@@ -10,7 +10,7 @@
 #include <stdint.h>     /* integer types */
 #include <stdlib.h>     /* size_t */
 
-int parseData(uint16_t id, const uint8_t msg[], size_t len);
+int parseData(uint32_t bus, uint16_t id, const uint8_t msg[], size_t len);
 void parserInit(void);
 
 /**
