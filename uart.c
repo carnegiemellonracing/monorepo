@@ -198,7 +198,9 @@ static void handle_command(cn_cbor *command) {
 
 
     if (
-        params != NULL && params->type == CN_CBOR_BYTES &&
+        params != NULL &&
+        /* Apparently the CBOR javascript lib is going to send as text. */
+        (params->type == CN_CBOR_BYTES || params->type == CN_CBOR_TEXT)  &&
         params->length >= sizeof(struct param_pair)
     ) {
         /* Have some parameters to update */
@@ -209,8 +211,8 @@ static void handle_command(cn_cbor *command) {
             struct param_pair *pair = (struct param_pair *) (params->v.bytes + i);
 
             if (
-                pair->kind < MAX_SIGNALS &&
-                pair->cutoff_enum < SAMPLE_NUM_FREQS
+                pair->kind >= MAX_SIGNALS ||
+                pair->cutoff_enum >= SAMPLE_NUM_FREQS
             ) {
                 /* Questionable update parameters, just move on */
                 continue;

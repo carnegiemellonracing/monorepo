@@ -68,6 +68,10 @@ enum data_type {
     f(DT_FLOAT32, f32, float32_t)                                              \
     f(DT_FLOAT64, f64, double)
 
+/** @brief Some type on which we can apply any conversion gain/bias. It would
+ * probably be prudent to make this a floating type. */
+typedef double sig_intermediary_val_t;
+
 /**
  * @brief Parsed signal information.
  */
@@ -88,9 +92,9 @@ struct signal {
     uint32_t kind;                      /**< @brief Index in the configured
                                          * signal vector, unique among
                                          * all signals parsed. */
-    double factor;                      /**< @brief Parsed conversion term.
+    sig_intermediary_val_t factor;      /**< @brief Parsed conversion term.
                                          * 1. If not found. */
-    double bias;                        /**< @brief Parsed term term.
+    sig_intermediary_val_t bias;        /**< @brief Parsed term term.
                                          * 0. If not found. */
 };
 
@@ -124,10 +128,6 @@ static const char dtNameMap[DT_NUM][DT_NAME_MAX] = {
     DT_FOREACH(INST_DT_NAME)
 #undef INST_DT_NAME
 };
-
-/** @brief Some type on which we can apply any conversion gain/bias. It would
- * probably be prudent to make this a floating type. */
-typedef double sig_intermediary_val_t;
 
 /**
  * @brief How large each type is in the configuration file.
@@ -165,8 +165,10 @@ static enum data_type dtLookupStr(const char *s) {
  *  @return sig_intermediary_val_t The converted value
  */
 static sig_intermediary_val_t signal_apply_conversion(
-    struct signal *s, sig_intermediary_val_t val) {
-    return (s->factor * val) + s->bias;
+    struct signal *s, sig_intermediary_val_t val
+) {
+    sig_intermediary_val_t ret = (s->factor * val) + s->bias;
+    return ret;
 }
 
 /**
@@ -219,9 +221,8 @@ int parseData(uint16_t id, const uint8_t msg[], size_t len) {
         type abv_name = 0;
 
         /* Each local is e.g. float32_t f32 = 0 */
-        DT_FOREACH(INST_LOCAL)
+       DT_FOREACH(INST_LOCAL)
 #undef INST_LOCAL
-
 
         switch(sig->dt_in) {
 
@@ -229,16 +230,6 @@ int parseData(uint16_t id, const uint8_t msg[], size_t len) {
         case dt_name:                                                          \
             /* Fill in abv_name with the raw value */                          \
             abv_name = *(type *) v_pt;                                         \
-            /* Apply any conversion. We'll do this by casting To the           \
-             * intermediary type, running the conversion, then casting back. */\
-            /* Note that it is more polite to do this here than in the         \
-             * output switch, as that is a O(N^2) case explosion whereas this  \
-             * need only be O(N) */                                            \
-            abv_name = (type) signal_apply_conversion(                         \
-                sig,                                                           \
-                (sig_intermediary_val_t) abv_name                              \
-            );                                                                 \
-                                                                               \
             break;
 
 
@@ -253,25 +244,28 @@ int parseData(uint16_t id, const uint8_t msg[], size_t len) {
 #undef REINTERP_IN
 
     /* Each local is named abv_name, e.g. float32_t f32 */
-#define REINTERP_IN(dt_name, abv_name, type)                                   \
+#define REINTERP_IN(dt_name, field, var, type)                                 \
         case dt_name:                                                          \
-            s->v[i].abv_name = (type) abv_name;                                \
+            s->v[i].field = (type) signal_apply_conversion(                    \
+                sig,                                                           \
+                (sig_intermediary_val_t) var                                   \
+            );                                                                 \
             break;
 
 #define REINTERP_OUT(dt_name, abv_name, type_out)                              \
         case dt_name:                                                          \
             switch(sig->dt_in) {                                               \
-            REINTERP_IN(DT_INT8,    abv_name, type_out)                        \
-            REINTERP_IN(DT_INT16,   abv_name, type_out)                        \
-            REINTERP_IN(DT_INT32,   abv_name, type_out)                        \
-            REINTERP_IN(DT_INT64,   abv_name, type_out)                        \
-            REINTERP_IN(DT_UINT8,   abv_name, type_out)                        \
-            REINTERP_IN(DT_UINT16,  abv_name, type_out)                        \
-            REINTERP_IN(DT_UINT32,  abv_name, type_out)                        \
-            REINTERP_IN(DT_UINT64,  abv_name, type_out)                        \
-            REINTERP_IN(DT_FLOAT16, abv_name, type_out)                        \
-            REINTERP_IN(DT_FLOAT32, abv_name, type_out)                        \
-            REINTERP_IN(DT_FLOAT64, abv_name, type_out)                        \
+            REINTERP_IN(DT_INT8,    abv_name,  i8, type_out)                   \
+            REINTERP_IN(DT_INT16,   abv_name, i16, type_out)                   \
+            REINTERP_IN(DT_INT32,   abv_name, i32, type_out)                   \
+            REINTERP_IN(DT_INT64,   abv_name, i64, type_out)                   \
+            REINTERP_IN(DT_UINT8,   abv_name,  u8, type_out)                   \
+            REINTERP_IN(DT_UINT16,  abv_name, u16, type_out)                   \
+            REINTERP_IN(DT_UINT32,  abv_name, u32, type_out)                   \
+            REINTERP_IN(DT_UINT64,  abv_name, u64, type_out)                   \
+            REINTERP_IN(DT_FLOAT16, abv_name, f16, type_out)                   \
+            REINTERP_IN(DT_FLOAT32, abv_name, f32, type_out)                   \
+            REINTERP_IN(DT_FLOAT64, abv_name, f64, type_out)                   \
             default:                                                           \
                 return -1;                                                     \
             }                                                                  \

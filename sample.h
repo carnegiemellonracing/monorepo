@@ -35,7 +35,7 @@
 union sample_value {
 	float16_t f16;      /**< @brief Sample value. */
     float32_t f32;      /**< @brief Sample value. */
-    float32_t f64;      /**< @brief Sample value. */
+    double    f64;      /**< @brief Sample value. */
     int32_t   i32;      /**< @brief Sample value. */
     uint32_t  u32;      /**< @brief Sample value. */
     uint16_t  u16;      /**< @brief Sample value. */
@@ -43,7 +43,7 @@ union sample_value {
     int64_t   u64;      /**< @brief Sample value. */
     int16_t   i16;      /**< @brief Sample value. */
     uint8_t   u8;       /**< @brief Sample value. */
-    uint8_t   i8;       /**< @brief Sample value. */
+    int8_t    i8;       /**< @brief Sample value. */
 };
 
 /**
