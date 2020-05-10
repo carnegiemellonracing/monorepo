@@ -79,11 +79,11 @@ static void validate_settings() {
  * we don't lose track of it over resets
  */
 void commit_settings(void) {
-    xSemaphoreTake(&cfg_lock, portMAX_DELAY);
+    xSemaphoreTake(cfg_lock, portMAX_DELAY);
     memcpy(current_settings.canary, CANARY, sizeof(current_settings.canary));
     validate_settings();
     cmr_configCommit(&cfg);
-    xSemaphoreGive(&cfg_lock);
+    xSemaphoreGive(cfg_lock);
 }
 
 /**
@@ -101,12 +101,13 @@ void configInit(void) {
         sector_id
     );
 
+    cfg_lock = xSemaphoreCreateBinaryStatic(&_cfg_lock_buf);
+    xSemaphoreGive(cfg_lock);
+    configASSERT(cfg_lock);
+
     /* Do a vaguely sketchy uninitialized flash check to
      * set defaults on the first boot */
     if (memcmp(current_settings.canary, CANARY, sizeof(current_settings.canary))) {
         set_default_settings();
     }
-
-    cfg_lock = xSemaphoreCreateBinaryStatic(&_cfg_lock_buf);
-    configASSERT(cfg_lock);
 }
