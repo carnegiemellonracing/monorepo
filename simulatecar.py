@@ -22,7 +22,7 @@ def loopReceive():
         client = sseclient.SSEClient(r)
         for event in client.events():
 
-            if str(event.event) != "sim-web-to-car": continue
+            if str(event.event) != "web-to-car": continue
 
             resp = json.loads(event.data)
             datastr = resp['data']
