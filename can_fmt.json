@@ -108,12 +108,14 @@
             "out_type": "f16"
         },
         {
-            "id": 0,
-            "Source": "SBG (Calculated)",
+            "id": 1826,
+            "Source": "SBG",
             "name": "Heading",
             "short": "Heading",
             "unit": "degrees from north",
             "unit_short": "deg",
+            "in_type": "i16",
+            "factor": 0.0001,
             "out_type": "f16"
         },
         {
