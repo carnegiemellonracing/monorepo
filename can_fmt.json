@@ -126,7 +126,7 @@
             "unit_short": "deg",
             "in_type": "i32",
             "factor": 0.0000001,
-            "out_type": "f16"
+            "out_type": "f32"
         },
         {
             "id": 1828,
@@ -138,7 +138,7 @@
             "unit_short": "deg",
             "in_type": "i32",
             "factor": 0.0000001,
-            "out_type": "i32"
+            "out_type": "f32"
         },
         {
             "id": 307,
