@@ -63,7 +63,7 @@
             "offset": 0,
             "Source": "VSM",
             "name": "GLV Voltage",
-            "short": "GLV (V)",
+            "short": "GLV",
             "unit": "volts",
             "unit_short": "V",
             "in_type": "u16",
