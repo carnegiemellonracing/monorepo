@@ -13,9 +13,9 @@ config = json.loads(cfile.read())
 cfile.close()
 
 class SignalGenerator:
-    def __init__(self, freq, samp, dtype=np.float16, scale=1.0, noise=0):
+    def __init__(self, freq=1, rate=0, dtype=np.float16, scale=1.0, noise=0):
         self.freq = freq
-        self.samp = samp
+        self.samp = rate
         self.dtype = dtype
         self.noise = noise
         self.scale = scale
@@ -37,6 +37,53 @@ class SignalGenerator:
 
     def setFreq(self, freq):
         self.freq = freq
+
+class EnumGenerator:
+    def __init__(self, rate=0, init=0, proto=None, byname=None):
+        self.samp = rate
+        self.val = init
+        if proto: 
+            self.info = config['signals'][proto]['enum']
+            self.map = [x['name'] for x in self.info]
+            self.val = self.map.index(byname)
+        else:
+            self.map = []
+
+    def setRate(self, rate):
+        self.samp = rate
+
+    def setVal(self, val):
+        if self.map:
+            self.val = self.map.index(val)
+        else:
+            self.val = val
+
+    def get(self, t=0):
+        if self.samp == 0: return np.array([])
+        return np.array([self.val]*self.samp, dtype=np.uint8).tobytes()
+
+class VectorGenerator:
+    def __init__(self, rate=0, init=0, proto=None, bylist=None):
+        self.samp = rate
+        self.val = init
+        if proto: self.info = config['signals'][proto]['vector']
+        if bylist:
+            self.setVal(bylist)
+
+    def setRate(self, rate):
+        self.samp = rate
+
+    def setVal(self, vlist):
+        b = 0
+        mult = 1
+        for x in vlist:
+            b += x*mult
+            mult *= 2
+        self.val = b
+
+    def get(self, t=0):
+        if self.samp == 0: return np.array([])
+        return np.array([self.val]*self.samp, dtype=np.uint8).tobytes()
 
 class ParticleTransmit:
     def __init__(self):
@@ -82,6 +129,7 @@ class ParticleReceive:
 class RAM:
     def __init__(self, cfg=dict(), sigs=dict()):
         self.rates = {0: 0, 1: 1, 2: 5, 3: 10, 4: 50, 5: 100}
+        self.types = {'i64': np.double, 'f32': np.float32, 'i32': np.int32, 'u32': np.uint32, 'f16': np.float16, 'u16': np.uint16, 'u8': np.uint8}
         self.cfg = self.generateStore(cfg)
         self.sigs = self.generateSignals(sigs)
         self.ptx = ParticleTransmit()
@@ -102,7 +150,10 @@ class RAM:
     def generateSignals(self, ovr):
         s = dict()
         for i,x in enumerate(config['signals']):
-            s[i] = SignalGenerator(1, self.rates[self.cfg[i]])
+            if x.has_key('enum'): s[i] = EnumGenerator(rate=self.rates[self.cfg[i]])
+            elif x.has_key('vector'): s[i] = VectorGenerator(rate=self.rates[self.cfg[i]])
+            else: s[i] = SignalGenerator(rate=self.rates[self.cfg[i]], dtype=self.types[x['out_type']])
+
             if ovr.has_key(i):
                 s[i] = ovr[i]
                 s[i].setRate(self.rates[self.cfg[i]])
