@@ -180,7 +180,7 @@ class RAM:
         if 'params' in obj:
             # Updating parameters with the spec'd values
             string = obj['params']
-            for i in range(len(string)/2):
+            for i in range(int(len(string)/2)):
                 ind = ord(string[i*2])
                 val = ord(string[i*2+1])
 
