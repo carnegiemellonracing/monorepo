@@ -202,7 +202,8 @@ class RAM:
                     packet[key] = b
             self.ptx.send(packet)
 
-            time.sleep(1 - (time.time() - t))
+            waitTime = 1 - (time.time() - t)
+            time.sleep(waitTime if waitTime > 0 else 0)
             inc +=  1
             
 ram = RAM()
