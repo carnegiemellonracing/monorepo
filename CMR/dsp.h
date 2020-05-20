@@ -14,16 +14,16 @@
 /** @brief Signals voodoo, just trust it */
 #define CMR_DSP_FILTER_NUM_STAGES	4
 
-/** @brief Predefined filter modes */
+/** @brief Predefined filter modes, Hz indicates output sample rate */
 typedef enum {
-    CMR_DSP_FILTER_1HZ = 0,     /**< @brief Low pass filter with corner @ 1Hz */
-    CMR_DSP_FILTER_5HZ,         /**< @brief Low pass filter with corner @ 5Hz */
-    CMR_DSP_FILTER_10HZ,        /**< @brief Low pass filter with corner @ 10Hz */
-    CMR_DSP_FILTER_25HZ,        /**< @brief Low pass filter with corner @ 25Hz */
-    CMR_DSP_FILTER_100HZ,       /**< @brief Low pass filter with corner @ 100Hz */
-    CMR_DSP_FILTER_250HZ,       /**< @brief Low pass filter with corner @ 250Hz */
-    CMR_DSP_FILTER_500HZ,       /**< @brief Low pass filter with corner @ 500Hz */
-    CMR_DSP_FILTER_1000HZ,      /**< @brief Low pass filter with corner @ 1000Hz */
+    CMR_DSP_FILTER_1HZ = 0,     /**< @brief Low pass filter with corner @ 0.4Hz */
+    CMR_DSP_FILTER_5HZ,         /**< @brief Low pass filter with corner @ 2Hz */
+    CMR_DSP_FILTER_10HZ,        /**< @brief Low pass filter with corner @ 4Hz */
+    CMR_DSP_FILTER_25HZ,        /**< @brief Low pass filter with corner @ 10Hz */
+    CMR_DSP_FILTER_100HZ,       /**< @brief Low pass filter with corner @ 40Hz */
+    CMR_DSP_FILTER_250HZ,       /**< @brief Low pass filter with corner @ 100Hz */
+    CMR_DSP_FILTER_500HZ,       /**< @brief Low pass filter with corner @ 200Hz */
+    CMR_DSP_FILTER_1000HZ,      /**< @brief Low pass filter with corner @ 400Hz */
     CMR_DSP_FILTER_NUM          /**< @brief Number of filter frequencies */
 } cmr_dspFilterSelection_t;
 
