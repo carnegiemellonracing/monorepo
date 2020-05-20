@@ -143,24 +143,24 @@ class RAM:
         s = dict()
         for i,x in enumerate(config['signals']):
             s[i] = 0
-            if ovr.has_key(i):
+            if i in ovr:
                 s[i] = ovr[i]
         return s
 
     def generateSignals(self, ovr):
         s = dict()
         for i,x in enumerate(config['signals']):
-            if x.has_key('enum'): s[i] = EnumGenerator(rate=self.rates[self.cfg[i]])
-            elif x.has_key('vector'): s[i] = VectorGenerator(rate=self.rates[self.cfg[i]])
+            if 'enum' in x: s[i] = EnumGenerator(rate=self.rates[self.cfg[i]])
+            elif 'vector' in x: s[i] = VectorGenerator(rate=self.rates[self.cfg[i]])
             else: s[i] = SignalGenerator(rate=self.rates[self.cfg[i]], dtype=self.types[x['out_type']])
 
-            if ovr.has_key(i):
+            if i in ovr:
                 s[i] = ovr[i]
                 s[i].setRate(self.rates[self.cfg[i]])
         return s
 
     def processRx(self, obj):
-        if obj.has_key("msg"):
+        if 'msg' in obj:
             # Requesting send an arbitrary CAN message
             m = obj['msg']
             print("\n--- Arbitrary CAN TX Requested ---")
@@ -168,7 +168,7 @@ class RAM:
             print("BUS: %d" % m['bus'])
             print("DATA: %r" % m['data'])
             print("")
-        if obj.has_key("pull"):
+        if "pull" in obj:
             # Requesting a full settings dump
             a = []
             for key in self.cfg:
@@ -177,7 +177,7 @@ class RAM:
 
             string = np.array(a, dtype=np.uint8).tobytes()
             self.ptx.send({'params': string})
-        if obj.has_key("params"):
+        if 'params' in obj:
             # Updating parameters with the spec'd values
             string = obj['params']
             for i in range(len(string)/2):
