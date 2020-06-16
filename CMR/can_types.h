@@ -593,3 +593,78 @@ typedef struct {
 
 #endif /* CMR_CAN_TYPES_H */
 
+// ------------------------------------------------------------------------------------------------
+// Battery Management System
+
+typedef struct {
+    uint16_t errorStatus;     /**< @brief BMS Error status. */
+    uint8_t mode;             /**< @brief BMS mode. */
+    uint8_t state;            /**< @brief BMS state. */
+    uint8_t contactorStatus;  /**< @brief Contactor status. */
+    uint8_t padding;          /**< @brief BMS padding. */
+} cmr_canBMSHeartbeat_t;
+
+typedef struct {
+    uint8_t modeRequested;    /**< @brief Mode requested. */
+} cmr_canBMSCommand_t;
+
+typedef struct {
+    int32_t battVoltage_mV;   /**< @brief Battery voltage (mV). */
+    int32_t HVVoltage_mV;     /**< @brief HV voltage (mV). */
+} cmr_canBMSPackVoltage_t;
+
+typedef struct {
+    int32_t instantCurrent_mA; /**< @brief Instant Current (mA). */
+    int32_t averageCurrent_mA; /**< @brief Average Current (mA). */
+} cmr_canBMSPackCurrent_t;
+
+/* Might modify these for future use.
+typedef struct __attribute__((__packed__)) BMSCalc1_t {
+    int32_t openCircuitVoltageMV;
+    uint16_t stateOfChargeMAH;
+} BMSCalc1_t;
+
+typedef struct BMSCalc2_t {
+    uint32_t internalResistanceUO;
+    int32_t maxCurrentDrawMAH;
+} BMSCalc2_t;
+*/
+
+typedef struct {
+	uint8_t maxVoltIndex;        /**< @brief Max BMB cell voltage index. */
+    uint8_t minVoltIndex;        /**< @brief Min BMB cell voltage index. */
+    uint16_t maxCellVoltage_mV;  /**< @brief Max BMB cell voltage (mV). */
+    uint16_t minCellVoltage_mV;  /**< @brief Min BMB cell voltage (mV). */
+} cmr_canBMSBMBStatusVoltage_t;
+
+typedef struct {
+	uint8_t maxTempIndex;        /**< @brief Max BMB cell temp index. */
+	uint8_t minTempIndex;        /**< @brief Min BMB cell temp index. */
+    int16_t maxCellTemp_C;       /**< @brief Max BMB cell temp (C). */
+    int16_t minCellTemp_C;       /**< @brief Min BMB cell temp (C). */  
+} cmr_canBMSBMBStatusTemp_t;
+
+typedef struct {
+	uint16_t minCellVoltage_mV;  /**< @brief Min pack cell voltage (mV). */
+	uint16_t maxCellVoltage_mV;  /**< @brief Max pack cell voltage (mV). */
+	uint8_t minVoltageBMBNum;    /**< @brief Min pack cell voltage BMB number. */
+	uint8_t minVoltageCellNum;   /**< @brief Min pack cell voltage cell number. */
+	uint8_t maxVoltageBMBNum;    /**< @brief Max pack cell voltage BMB number. */
+	uint8_t maxVoltageCellNum;   /**< @brief Max pack cell voltage cell number. */
+} cmr_canBMSMinMaxCellVoltage_t;
+
+typedef struct {
+    uint16_t minCellTemp_C;      /**< @brief Min pack cell temp (C). */
+    uint16_t maxCellTemp_C;      /**< @brief Max pack cell temp (C). */
+    uint8_t minTempBMBNum;       /**< @brief Min pack cell temp BMB number. */
+    uint8_t minTempCellNum;      /**< @brief Min pack cell temp cell number. */
+    uint8_t maxTempBMBNum;       /**< @brief Max pack cell temp BMB number. */
+    uint8_t maxTempCellNum;      /**< @brief Max pack cell temp cell number. */
+} cmr_canBMSMinMaxCellTemperature_t;
+
+typedef struct {
+    uint8_t vbatt_mV;       /**< @brief LV battery voltage (mV). */
+    uint8_t vAIR_mV;        /**< @brief AIR voltage (mV). */
+    uint8_t ibatt_mA;       /**< @brief LV battery current (mA). */
+	uint8_t iDCDC_mA;       /**< @brief DCDC current (mA). */
+} cmr_canBMSLowVoltage_t;
