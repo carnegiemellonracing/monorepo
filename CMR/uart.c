@@ -104,16 +104,16 @@ UART_FOREACH(UART_DEVICE)
 #define UART_IRQ_HANDLERS(uart, pref, ...) \
     void pref ## uart ## _IRQHandler(void) { \
         UART_HandleTypeDef *handle = cmr_uartDevices[uart - 1].handle; \
-        HAL_UART_IRQHandler(handle); \
         \
         /* Handle idle interrupt, if present. */ \
-        if (__HAL_UART_GET_FLAG(handle, UART_FLAG_IDLE)) { \
+        if (__HAL_UART_GET_IT_SOURCE(handle, UART_IT_IDLE)) { \
             /* Disable idle interrupt, clear flag, and abort receive. */ \
             __HAL_UART_DISABLE_IT(handle, UART_IT_IDLE); \
             __HAL_UART_CLEAR_IDLEFLAG(handle); \
             HAL_StatusTypeDef status = HAL_UART_AbortReceive_IT(handle); \
             configASSERT(status == HAL_OK); \
         } \
+        HAL_UART_IRQHandler(handle); \
     }
 UART_FOREACH(UART_IRQ_HANDLERS)
 #undef UART_IRQ_HANDLERS
@@ -361,6 +361,10 @@ void cmr_uartInit(
     if (HAL_UART_Init(&uart->handle) != HAL_OK) {
         cmr_panic("HAL_UART_Init() failed!");
     }
+    
+    // Disable idle interrupt and clear the flag.
+    __HAL_UART_DISABLE_IT(&uart->handle, UART_IT_IDLE);
+    __HAL_UART_CLEAR_IDLEFLAG(&uart->handle);
 }
 
 /**
