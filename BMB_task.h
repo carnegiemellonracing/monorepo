@@ -10,10 +10,7 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
-#include "can_types.h"
-
-#define BMB_WAKE_PIN 85
-#define BMB_POWER_PIN 109
+#include "stm32f413-drivers/CMR/can_types.h"
 
 #define BMB_GPIO_MUX_PIN 0b000000
 #define BMB_GPIO_LED_PIN 0b111111
@@ -44,8 +41,8 @@ uint16_t getPackMinCellVoltage();
 uint16_t getPackMaxCellVoltage();
 uint16_t getPackMinCellTemp();
 uint16_t getPackMaxCellTemp();
-void getBMSMinMaxCellVoltage(BMSMinMaxCellVoltage_t *BMSMinMaxCellVoltage);
-void getBMSMinMaxCellTemperature(BMSMinMaxCellTemperature_t *BMSMinMaxCellTemp);
+void getBMSMinMaxCellVoltage(cmr_canBMSMinMaxCellVoltage_t *BMSMinMaxCellVoltage);
+void getBMSMinMaxCellTemperature(cmr_canBMSMinMaxCellTemperature_t *BMSMinMaxCellTemp);
 BMB_Data_t* getBMBData (uint8_t bmb_index);
 
 

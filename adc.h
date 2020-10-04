@@ -16,15 +16,15 @@
  * @warning New channels MUST be added before `ADC_LEN`.
  */
 typedef enum {
-	V24V       = 0,     
-	HV_PLUS    = 1,
-	HV_MINUS   = 2,
-	BATT_PLUS  = 3,
-    BATT_MINUS = 4,
-	SHUNT_LV   = 5,
-	AIR_POWER  = 6,
-	DCDC_CURR  = 7,
-	LV_CURR    = 8,
+	ADC_V24V       = 0,     
+	ADC_HV_PLUS    = 1,
+	ADC_HV_MINUS   = 2,
+	ADC_BATT_PLUS  = 3,
+    ADC_BATT_MINUS = 4,
+	ADC_SHUNT_LV   = 5,
+	ADC_AIR_POWER  = 6,
+	ADC_DCDC_CURR  = 7,
+	ADC_LV_CURR    = 8,
 	ADC_LEN     /**< @brief Total ADC channels. */
 } adcChannels_t;
 
