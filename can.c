@@ -212,44 +212,44 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 
     switch (currentState) {
         case CMR_CAN_HVC_STATE_DISCHARGE: // S1
-            HVCHeartbeat.mode = CMR_CAN_HVC_MODE_IDLE;
+            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_IDLE;
             break;
         case CMR_CAN_HVC_STATE_STANDBY: // S2
-            HVCHeartbeat.mode = CMR_CAN_HVC_MODE_IDLE;
+            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_IDLE;
             break;
         case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE: // S3
-            HVCHeartbeat.mode = CMR_CAN_HVC_MODE_START;
+            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_START;
             break;
         case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE: // S4
-            HVCHeartbeat.mode = CMR_CAN_HVC_MODE_START;
+            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_START;
             break;
         case CMR_CAN_HVC_STATE_DRIVE: // S5
-            HVCHeartbeat.mode = CMR_CAN_HVC_MODE_RUN;
+            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_RUN;
             break;
         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE: // S6
-            HVCHeartbeat.mode = CMR_CAN_HVC_MODE_CHARGE;
+            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
             break;
         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE: // S7
-            HVCHeartbeat.mode = CMR_CAN_HVC_MODE_CHARGE;
+            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
             break;
         case CMR_CAN_HVC_STATE_CHARGE_TRICKLE: // S8
-            HVCHeartbeat.mode = CMR_CAN_HVC_MODE_CHARGE;
+            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
             break;
         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT: // S9
-            HVCHeartbeat.mode = CMR_CAN_HVC_MODE_CHARGE;
+            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
             break;
         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE: // S10
-            HVCHeartbeat.mode = CMR_CAN_HVC_MODE_CHARGE;
+            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
             break;
         case CMR_CAN_HVC_STATE_ERROR: // S0
-            HVCHeartbeat.mode = CMR_CAN_HVC_MODE_ERROR;
+            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_ERROR;
             break;
         case CMR_CAN_HVC_STATE_CLEAR_ERROR: // S11
-            HVCHeartbeat.mode = CMR_CAN_HVC_MODE_ERROR;
+            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_ERROR;
             break;
         case CMR_CAN_HVC_STATE_UNKNOWN:
         default:
-            HVCHeartbeat.mode = CMR_CAN_HVC_MODE_ERROR;
+            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_ERROR;
             break;
     }
 
@@ -377,19 +377,20 @@ static void sendBMSPackCurrent(void) {
 
     cmr_canBMSPackCurrent_t BMSPackCurrent = {
         .instantCurrent_mA = instantCurrent,
-        .avgCurrent_mA = avgCurrent,
+        .averageCurrent_mA = avgCurrent,
     };
 
     canTX(CMR_CANID_HVC_PACK_CURRENT, &BMSPackCurrent, sizeof(BMSPackCurrent), canTX100Hz_period_ms);
 }
 
 static void sendBMSBMBStatusVoltage(uint8_t bmb_index) {
+    // NEEDS WORK
     uint8_t maxIndex = getBMBMaxVoltIndex(bmb_index);
     uint8_t minIndex = getBMBMinVoltIndex(bmb_index);
-    uint16_t maxVoltage = 
+    uint16_t maxVoltage = 0;
 
     cmr_canBMSBMBStatusVoltage_t BMSBMBStatusVoltage = {
-        .maxVoltIndex = getBMBMaxVoltIndex(bmb_index);
-        .minVoltIndex = 
-    }
+        .maxVoltIndex = getBMBMaxVoltIndex(bmb_index),
+        .minVoltIndex = 0,
+    };
 }
