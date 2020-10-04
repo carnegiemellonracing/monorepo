@@ -98,7 +98,17 @@ typedef enum {
     CMR_CANID_RMS_VOLTAGE_INFO = 0x007 + CMR_CANID_RMS_OFFSET,  /**< @brief RMS voltage info. */
     CMR_CANID_RMS_COMMAND = 0x020 + CMR_CANID_RMS_OFFSET,       /**< @brief RMS command. */
     CMR_CANID_RMS_PARAM_REQ = 0x021 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS parameter request. */
-    CMR_CANID_RMS_PARAM_RES = 0x022 + CMR_CANID_RMS_OFFSET      /**< @brief RMS parameter response. */
+    CMR_CANID_RMS_PARAM_RES = 0x022 + CMR_CANID_RMS_OFFSET,      /**< @brief RMS parameter response. */
+
+    // BMS CAN Structs
+    CMR_CANID_HVC_PACK_CURRENT = 0x531,                          /**< @brief HVC Pack Current. */
+    CMR_CANID_HVC_BMB_STATUS_VOLTAGE = 0x541,                    /**< @brief HVC BMBs Voltage. */
+    CMR_CANID_HVC_BMB_STATUS_TEMP = 0x551,                       /**< @brief HVC BMBs Temperature. */
+    CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE = 0x561,                  /**< @brief HVC Max/Min Cell Voltage. */
+    CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE = 0x571,              /**< @brief HVC Max/Min Cell Temperature. */
+    CMR_CANID_HVC_LOW_VOLTAGE = 0x581,                           /**< @brief HVC Low Voltage. */
+    CMR_CANID_HVC_BRUSA_MSG = 0x591,                             /**< @brief HVC Brusa message. */
+
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
