@@ -559,8 +559,6 @@ typedef struct {
     uint32_t powerOnTimer;
 } cmr_canRMSTorqueDiag_t;
 
-#endif /* CMR_CAN_TYPES_H */
-
 // ------------------------------------------------------------------------------------------------
 // Battery Management System
 
@@ -628,3 +626,5 @@ typedef struct __attribute__((__packed__)) {
     uint16_t requestedVoltage;
     uint16_t requestedCurrent;
 } cmr_canBRUSAChargerControl_t;
+
+#endif /* CMR_CAN_TYPES_H */
