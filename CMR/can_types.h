@@ -591,8 +591,6 @@ typedef struct {
     int16_t torqueLimNeg_dpcnt; /**< @brief Negative torque limit in 0.1% of 9.8 Nm (nominal torque). */
 } cmr_canAMKSetpoints_t;
 
-#endif /* CMR_CAN_TYPES_H */
-
 // ------------------------------------------------------------------------------------------------
 // Battery Management System
 
@@ -660,3 +658,5 @@ typedef struct __attribute__((__packed__)) {
     uint16_t requestedVoltage;
     uint16_t requestedCurrent;
 } cmr_canBRUSAChargerControl_t;
+
+#endif /* CMR_CAN_TYPES_H */
