@@ -565,23 +565,6 @@ typedef struct {
 // Battery Management System
 
 typedef struct {
-    uint16_t errorStatus;     /**< @brief BMS Error status. */
-    uint8_t mode;             /**< @brief BMS mode. */
-    uint8_t state;            /**< @brief BMS state. */
-    uint8_t contactorStatus;  /**< @brief Contactor status. */
-    uint8_t padding;          /**< @brief BMS padding. */
-} cmr_canBMSHeartbeat_t;
-
-typedef struct {
-    uint8_t modeRequested;    /**< @brief Mode requested. */
-} cmr_canBMSCommand_t;
-
-typedef struct {
-    int32_t battVoltage_mV;   /**< @brief Battery voltage (mV). */
-    int32_t HVVoltage_mV;     /**< @brief HV voltage (mV). */
-} cmr_canBMSPackVoltage_t;
-
-typedef struct {
     int32_t instantCurrent_mA; /**< @brief Instant Current (mA). */
     int32_t averageCurrent_mA; /**< @brief Average Current (mA). */
 } cmr_canBMSPackCurrent_t;
@@ -636,3 +619,12 @@ typedef struct {
     uint8_t ibatt_mA;       /**< @brief LV battery current (mA). */
 	uint8_t iDCDC_mA;       /**< @brief DCDC current (mA). */
 } cmr_canBMSLowVoltage_t;
+
+// BRUSA Charger Structs
+// packed because BRUSA charger expects 7 bytes DLC
+typedef struct __attribute__((__packed__)) {
+    uint8_t enableVector;
+    uint16_t maxMainsCurrent;
+    uint16_t requestedVoltage;
+    uint16_t requestedCurrent;
+} cmr_canBRUSAChargerControl_t;
