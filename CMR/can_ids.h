@@ -102,12 +102,35 @@ typedef enum {
 
     // BMS CAN Structs
     CMR_CANID_HVC_PACK_CURRENT = 0x531,                          /**< @brief HVC Pack Current. */
-    CMR_CANID_HVC_BMB_STATUS_VOLTAGE = 0x541,                    /**< @brief HVC BMBs Voltage. */
-    CMR_CANID_HVC_BMB_STATUS_TEMP = 0x551,                       /**< @brief HVC BMBs Temperature. */
-    CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE = 0x561,                  /**< @brief HVC Max/Min Cell Voltage. */
-    CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE = 0x571,              /**< @brief HVC Max/Min Cell Temperature. */
-    CMR_CANID_HVC_LOW_VOLTAGE = 0x581,                           /**< @brief HVC Low Voltage. */
-    CMR_CANID_HVC_BRUSA_MSG = 0x591,                             /**< @brief HVC Brusa message. */
+    CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE = 0x541,                  /**< @brief HVC Max/Min Cell Voltage. */
+    CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE = 0x551,              /**< @brief HVC Max/Min Cell Temperature. */
+    CMR_CANID_HVC_LOW_VOLTAGE = 0x561,                           /**< @brief HVC Low Voltage. */
+    CMR_CANID_HVC_BRUSA_MSG = 0x571,                             /**< @brief HVC Brusa message. */
+
+    CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE = 0x631,                    /**< @brief HVC BMB Voltage: Message ID is BMB number + 3 */
+    CMR_CANID_HVC_BMB_1_STATUS_VOLTAGE = 0x641,
+    CMR_CANID_HVC_BMB_2_STATUS_VOLTAGE = 0x651,
+    CMR_CANID_HVC_BMB_3_STATUS_VOLTAGE = 0x661,
+    CMR_CANID_HVC_BMB_4_STATUS_VOLTAGE = 0x671,
+    CMR_CANID_HVC_BMB_5_STATUS_VOLTAGE = 0x681,
+    CMR_CANID_HVC_BMB_6_STATUS_VOLTAGE = 0x691,
+    CMR_CANID_HVC_BMB_7_STATUS_VOLTAGE = 0x6A1,
+    CMR_CANID_HVC_BMB_8_STATUS_VOLTAGE = 0x6B1,
+    CMR_CANID_HVC_BMB_9_STATUS_VOLTAGE = 0x6C1,
+    CMR_CANID_HVC_BMB_10_STATUS_VOLTAGE = 0x6D1,
+    CMR_CANID_HVC_BMB_11_STATUS_VOLTAGE = 0x6E1,
+    CMR_CANID_HVC_BMB_0_STATUS_TEMP = 0x631,                       /**< @brief HVC BMB Temperature: Message ID is BMB number */
+    CMR_CANID_HVC_BMB_1_STATUS_TEMP = 0x641,
+    CMR_CANID_HVC_BMB_2_STATUS_TEMP = 0x651,
+    CMR_CANID_HVC_BMB_3_STATUS_TEMP = 0x661,
+    CMR_CANID_HVC_BMB_4_STATUS_TEMP = 0x671,
+    CMR_CANID_HVC_BMB_5_STATUS_TEMP = 0x681,
+    CMR_CANID_HVC_BMB_6_STATUS_TEMP = 0x691,
+    CMR_CANID_HVC_BMB_7_STATUS_TEMP = 0x6A1,
+    CMR_CANID_HVC_BMB_8_STATUS_TEMP = 0x6B1,
+    CMR_CANID_HVC_BMB_9_STATUS_TEMP = 0x6C1,
+    CMR_CANID_HVC_BMB_10_STATUS_TEMP = 0x6D1,
+    CMR_CANID_HVC_BMB_11_STATUS_TEMP = 0x5E1,
 
 } cmr_canID_t;
 
