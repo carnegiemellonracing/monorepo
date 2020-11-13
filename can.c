@@ -41,15 +41,6 @@ cmr_canRXMeta_t canRXMeta[] = {
 /** @brief Primary CAN interface. */
 static cmr_can_t can;
 
-/** @brief CAN 10 Hz TX priority. */
-static const uint32_t canTX10Hz_priority = 3;
-
-/** @brief CAN 10 Hz TX period (milliseconds). */
-static const TickType_t canTX10Hz_period_ms = 100;
-
-/** @brief CAN 10 Hz TX task. */
-static cmr_task_t canTX10Hz_task;
-
 // Forward declarations
 static void sendHeartbeat(TickType_t lastWakeTime);
 static void sendBRUSAChargerControl(void);
@@ -60,6 +51,46 @@ static void sendBMSBMBStatusTemp(uint8_t bmb_index);
 static void sendBMSMinMaxCellVoltage(void);
 static void sendBMSMinMaxCellTemp(void);
 static void sendBMSLowVoltage(void);
+
+/** @brief CAN 1 Hz TX priority. */
+static const uint32_t canTX1Hz_priority = 3;
+
+/** @brief CAN 10 Hz TX period (milliseconds). */
+static const TickType_t canTX1Hz_period_ms = 1000;
+
+/** @brief CAN 10 Hz TX task. */
+static cmr_task_t canTX1Hz_task;
+
+/**
+ * @brief Task for sending CAN messages at 10 Hz.
+ *
+ * @param pvParameters Ignored.
+ *
+ * @return Does not return.
+ */
+static void canTX1Hz(void *pvParameters) {
+    (void) pvParameters;    // Placate compiler.
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
+
+        // BMB Temperature Status 
+        for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
+            sendBMSBMBStatusTemp(bmb_index);
+        }
+
+        vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
+    }
+}
+
+/** @brief CAN 10 Hz TX priority. */
+static const uint32_t canTX10Hz_priority = 3;
+
+/** @brief CAN 10 Hz TX period (milliseconds). */
+static const TickType_t canTX10Hz_period_ms = 100;
+
+/** @brief CAN 10 Hz TX task. */
+static cmr_task_t canTX10Hz_task;
 
 /**
  * @brief Task for sending CAN messages at 10 Hz.
@@ -73,8 +104,13 @@ static void canTX10Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // XXX Replace with an appropriate message.
+        // BRUSA Charger decided by state machine 
         sendBRUSAChargerControl();
+
+        // BMB Voltage Status 
+        for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
+            sendBMSBMBStatusVoltage(bmb_index);
+        }
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -147,6 +183,13 @@ void canInit(void) {
     );
 
     // Task initialization.
+    cmr_taskInit(
+        &canTX1Hz_task,
+        "CAN TX 1Hz",
+        canTX1Hz_priority,
+        canTX1Hz,
+        NULL
+    );
     cmr_taskInit(
         &canTX10Hz_task,
         "CAN TX 10Hz",
@@ -371,7 +414,7 @@ static void sendHVCPackVoltage(void) {
 }
 
 static void sendBMSPackCurrent(void) {
-    // NEEDS CHANGES
+    // NEEDS CHANGES AFTER ADC SWITCH
     int32_t instantCurrent = 0;
     int32_t avgCurrent = 0;
 
@@ -384,13 +427,125 @@ static void sendBMSPackCurrent(void) {
 }
 
 static void sendBMSBMBStatusVoltage(uint8_t bmb_index) {
-    // NEEDS WORK
     uint8_t maxIndex = getBMBMaxVoltIndex(bmb_index);
     uint8_t minIndex = getBMBMinVoltIndex(bmb_index);
-    uint16_t maxVoltage = 0;
+    uint16_t maxVoltage = getBMBVoltage(bmb_index, maxIndex);
+    uint16_t minVoltage = getBMBVoltage(bmb_index, minIndex);
 
     cmr_canBMSBMBStatusVoltage_t BMSBMBStatusVoltage = {
-        .maxVoltIndex = getBMBMaxVoltIndex(bmb_index),
-        .minVoltIndex = 0,
+        .maxVoltIndex = maxIndex,
+        .minVoltIndex = minIndex,
+        .maxCellVoltage_mV = maxVoltage,
+        .minCellVoltage_mV = minVoltage,
+    };
+
+    canTX(CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE + (bmb_index << 4), &BMSBMBStatusVoltage, sizeof(BMSBMBStatusVoltage), canTX10Hz_period_ms);
+}
+
+static void sendBMSBMBStatusTemp(uint8_t bmb_index) {
+    uint8_t maxIndex = getBMBMaxTempIndex(bmb_index);
+    uint8_t minIndex = getBMBMinTempIndex(bmb_index);
+    int16_t maxTemp = getBMBTemp(bmb_index, maxIndex);
+    int16_t minTemp = getBMBTemp(bmb_index, minIndex);
+
+    cmr_canBMSBMBStatusTemp_t BMSBMBStatusTemp = {
+        .maxTempIndex = maxIndex,
+        .minTempIndex = minIndex,
+        .maxCellTemp_C = maxTemp,
+        .minCellTemp_C = minTemp,
+    };
+
+    canTX(CMR_CANID_HVC_BMB_0_STATUS_TEMP + (bmb_index << 4), &BMSBMBStatusTemp, sizeof(BMSBMBStatusTemp), canTX1Hz_period_ms);
+}
+
+static void sendBMSMinMaxCellVoltage(void) {
+    uint16_t minCellVoltage = UINT16_MAX;
+    uint16_t maxCellVoltage = 0;
+
+    uint8_t minCellVoltageBMBNum;
+	uint8_t maxCellVoltageBMBNum;
+	
+	uint8_t minCellVoltageIndex;
+	uint8_t maxCellVoltageIndex;
+
+    for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
+        uint8_t maxIndex = getBMBMaxVoltIndex(bmb_index);
+        uint8_t minIndex = getBMBMinVoltIndex(bmb_index);
+        uint16_t maxVoltage = getBMBVoltage(bmb_index, maxIndex);
+        uint16_t minVoltage = getBMBVoltage(bmb_index, minIndex);
+
+        if (maxVoltage > maxCellVoltage) {
+            maxCellVoltage = maxVoltage;
+            maxCellVoltageBMBNum = bmb_index;
+            maxCellVoltageIndex = maxIndex;
+        }
+
+        if (minVoltage < minCellVoltage) {
+            minCellVoltage = minVoltage;
+            minCellVoltageBMBNum = bmb_index;
+            minCellVoltageIndex = minIndex;
+        }
+    }
+
+    cmr_canBMSMinMaxCellVoltage_t BMSBMBMinMaxVoltage = {
+        .minCellVoltage_mV = minCellVoltage,
+        .maxCellVoltage_mV = maxCellVoltage,
+        .minVoltageBMBNum = minCellVoltageBMBNum,
+        .maxVoltageBMBNum = maxCellVoltageBMBNum,
+        .minVoltageCellNum = minCellVoltageIndex,
+        .maxVoltageCellNum = maxCellVoltageIndex,
+    };
+
+    canTX(CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE, &BMSBMBMinMaxVoltage, sizeof(BMSBMBMinMaxVoltage), canTX10Hz_period_ms);
+}
+
+static void sendBMSMinMaxCellTemp(void) {
+    uint16_t minCellTemp = UINT16_MAX;
+    uint16_t maxCellTemp = 0;
+
+    uint8_t minCellTempBMBNum;
+	uint8_t maxCellTempBMBNum;
+	
+	uint8_t minCellTempIndex;
+	uint8_t maxCellTempIndex;
+
+    for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
+        uint8_t maxIndex = getBMBMaxTempIndex(bmb_index);
+        uint8_t minIndex = getBMBMinTempIndex(bmb_index);
+        uint16_t maxTemp = getBMBTemp(bmb_index, maxIndex);
+        uint16_t minTemp = getBMBTemp(bmb_index, minIndex);
+
+        if (maxTemp > maxCellTemp) {
+            maxCellTemp = maxTemp;
+            maxCellTempBMBNum = bmb_index;
+            maxCellTempIndex = maxIndex;
+        }
+
+        if (minTemp < minCellTemp) {
+            minCellTemp = minTemp;
+            minCellTempBMBNum = bmb_index;
+            minCellTempIndex = minIndex;
+        }
+    }
+
+    cmr_canBMSMinMaxCellTemperature_t BMSBMBMinMaxTemperature = {
+        .minCellTemp_C = minCellTemp,
+        .maxCellTemp_C = maxCellTemp,
+        .minTempBMBNum = minCellTempBMBNum,
+        .maxTempBMBNum = maxCellTempBMBNum,
+        .minTempCellNum = minCellTempIndex,
+        .maxTempCellNum = maxCellTempIndex,
+    };
+
+    canTX(CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE, &BMSBMBMinMaxTemperature, sizeof(BMSBMBMinMaxTemperature), canTX10Hz_period_ms);
+}
+
+static void sendBMSLowVoltage(void) {
+    // NEEDS CHANGES AFTER ADC SWITCH
+    cmr_canBMSLowVoltage_t BMSLowVoltage = {
+        .ibatt_mA =0,
+        .iDCDC_mA =0,
+        .vAIR_mV =0,
+        .vbatt_mV=0,
     };
 }

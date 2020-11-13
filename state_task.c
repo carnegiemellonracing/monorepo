@@ -330,10 +330,10 @@ void vSetStateTask(void *pvParameters) {
 
 	// Previous wake time pointer, initialized to current tick count.
 	// This gets updated by vTaskDelayUntil every time it is called
-	portTickType xLastWakeTime = xTaskGetTickCount();
+	TickType_t xLastWakeTime = xTaskGetTickCount();
 
 	// Period
-	const portTickType xPeriod = 10;		// In ticks (ms)
+	const TickType_t xPeriod = 10;		// In ticks (ms)
 	
 	cmr_canHVCState_t nextState;
     cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
@@ -341,15 +341,15 @@ void vSetStateTask(void *pvParameters) {
 	// Executes infinitely with defined period using vTaskDelayUntil
 	for (;;) {
 
-        /* Ask Deepak ab getting rid of this
+        // Ask Deepak ab getting rid of this
         //Critical block so that the contents of the heartbeat are consistent
         taskENTER_CRITICAL();
         setStateOutput();
-        HVCHeartbeat->errorStatus = Swap16(currentError);
-        HVCHeartbeat->state = currentState;
-        HVCHeartbeat->contactorStatus = getRelayStatus();
+        // HVCHeartbeat->errorStatus = Swap16(currentError);
+        // HVCHeartbeat->state = currentState;
+        // HVCHeartbeat->contactorStatus = getRelayStatus();
         taskEXIT_CRITICAL();
-        */
+        
 
         currentError = checkErrors(currentState);
         nextState = getNextState(currentError);

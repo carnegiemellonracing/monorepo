@@ -7,7 +7,7 @@
 
 #include "bms_error.h"
 
-static bool checkCommandTimeout();
+//static bool checkCommandTimeout();
 
 // Persistent value for storing the error type. Will be useful if
 // error checking becomes its own task
