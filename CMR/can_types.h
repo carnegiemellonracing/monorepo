@@ -407,6 +407,30 @@ typedef struct {
 } cmr_canAFCPowerDiagnostics_t;
 
 // ------------------------------------------------------------------------------------------------
+// Auxiliary Power Controller
+
+/** @brief Auxiliary Power Controller battery status. */
+typedef struct {
+    uint16_t bat1Voltage_mV;    /**< @brief Voltage across battery 1. */
+    uint16_t bat2Voltage_mV;    /**< @brief Voltage across battery 2. */
+    uint16_t bat3Voltage_mV;    /**< @brief Voltage across battery 3. */
+    uint16_t bat4Voltage_mV;    /**< @brief Voltage across battery 4. */
+    uint16_t bat5Voltage_mV;    /**< @brief Voltage across battery 5. */
+    uint16_t bat6Voltage_mV;    /**< @brief Voltage across battery 6. */
+} cmr_canAPCBatteryStatus_t;
+
+/** @brief Auxiliary Power Controller temperatures. */
+typedef struct {
+    uint8_t batTemp_C[3];    /**< @brief Battery temperatures (C). */
+} cmr_canAPCBatteryTemps_t;
+
+/** @brief Auxiliary Power Controller power diagnostics. */
+typedef struct {
+    int32_t batCurrent_mA;     /**< @brief Battery current draw (mA). */
+} cmr_canAPCBatteryDiagnostics_t;
+
+
+// ------------------------------------------------------------------------------------------------
 // Central Dynamics Controller
 
 /** @brief Central Dynamics Controller wheel speeds. */
