@@ -364,8 +364,8 @@ typedef struct {
 
 /** @brief High Voltage Controller pack voltages. */
 typedef struct {
-    int32_t battVoltage;    /**< @brief voltage measured across battery. */
-    int32_t hvVoltage;      /**< @brief voltage outside accumulator. */
+    int32_t battVoltage_mV;    /**< @brief Voltage measured across battery. */
+    int32_t hvVoltage_mV;      /**< @brief Voltage outside accumulator. */
 } cmr_canHVCPackVoltage_t;
 
 /** @brief High Voltage Controller pack overall min and max cell temperatures. */
@@ -377,6 +377,12 @@ typedef struct {
     uint8_t maxTempBMBIndex;    /**< @brief BMB index of hottest cell. */
     uint8_t maxTempCellIndex;   /**< @brief Index of hottest cell. */
 } cmr_canHVCPackMinMaxCellTemps_t;
+
+/** @brief High Voltage Controller pack currents. */
+typedef struct {
+    int32_t instantCurrent_mA;  /**< @brief Instantaneous current measurement. */
+    int32_t avgCurrent_mA;      /**< @brief (Not working) rolling average of current. */
+} cmr_canHVCPackCurrent_t;
 
 // ------------------------------------------------------------------------------------------------
 // Accumulator Fan Controller
