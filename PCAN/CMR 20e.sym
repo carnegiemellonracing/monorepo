@@ -4,6 +4,9 @@ Title="CMR 20e"
 
 {ENUMS}
 
+// This is for the EMD
+enum VtSig_Gain(0="x1", 1="x2", 2="x4", 3="x8", 4="x16", 5="x32")
+
 enum Fan_State(
     0 = "FAN_OFF",
     1 = "FAN_LOW",
@@ -104,8 +107,8 @@ Var=VSM_WRN_CDCTimeout bit 38,1
 Var=VSM_WRN_FSMTimeout bit 37,1
 Var=VSM_WRN_PTCTimeout bit 36,1
 Var=VSM_WRN_DIMTimeout bit 35,1
-Var=VSM_WRN_AFC0Timeout bit 34,1
-Var=VSM_WRN_AFC1Timeout bit 33,1
+Var=VSM_WRN_PTCfTimeout bit 34,1
+Var=VSM_WRN_PTCpTimeout bit 33,1
 Var=VSM_WRN_APCTimeout bit 32,1
 Var=VSM_WRN_DIMReqNAK bit 31,1
 Var=VSM_WRN_VoltageOOR bit 25,1
@@ -123,8 +126,8 @@ Var=VSM_ERR_CDCTimeout bit 14,1
 Var=VSM_ERR_FSMTimeout bit 13,1
 Var=VSM_ERR_PTCTimeout bit 12,1
 Var=VSM_ERR_DIMTimeout bit 11,1
-Var=VSM_ERR_AFC0Timeout bit 10,1
-Var=VSM_ERR_AFC1Timeout bit 9,1
+Var=VSM_ERR_PTCfTimeout bit 10,1
+Var=VSM_ERR_PTCpTimeout bit 9,1
 Var=VSM_ERR_APCTimeout bit 8,1
 // Bad state matrix
 Var=VSM_ERR_HVCState bit 23,1
@@ -132,8 +135,8 @@ Var=VSM_ERR_CDCState bit 22,1
 Var=VSM_ERR_FSMState bit 21,1
 Var=VSM_ERR_PTCState bit 20,1
 Var=VSM_ERR_DIMState bit 19,1
-Var=VSM_ERR_AFC0State bit 18,1
-Var=VSM_ERR_AFC1State bit 17,1
+Var=VSM_ERR_PTCfState bit 18,1
+Var=VSM_ERR_PTCpState bit 17,1
 Var=VSM_ERR_APCState bit 16,1
 // Latched error matrix
 Var=VSM_ERR_latchSoftware bit 26,1
@@ -162,8 +165,8 @@ Var=VSM_latched_ERR_CDCTimeout bit 6,1
 Var=VSM_latched_ERR_FSMTimeout bit 5,1
 Var=VSM_latched_ERR_PTCTimeout bit 4,1
 Var=VSM_latched_ERR_DIMTimeout bit 3,1
-Var=VSM_latched_ERR_AFC0Timeout bit 2,1
-Var=VSM_latched_ERR_AFC1Timeout bit 1,1
+Var=VSM_latched_ERR_PTCfTimeout bit 2,1
+Var=VSM_latched_ERR_PTCpTimeout bit 1,1
 Var=VSM_latched_ERR_APCTimeout bit 0,1
 // Bad state matrix
 Var=VSM_latched_ERR_HVCState bit 15,1
@@ -171,8 +174,8 @@ Var=VSM_latched_ERR_CDCState bit 14,1
 Var=VSM_latched_ERR_FSMState bit 13,1
 Var=VSM_latched_ERR_PTCState bit 12,1
 Var=VSM_latched_ERR_DIMState bit 11,1
-Var=VSM_latched_ERR_AFC0State bit 10,1
-Var=VSM_latched_ERR_AFC1State bit 9,1
+Var=VSM_latched_ERR_PTCfState bit 10,1
+Var=VSM_latched_ERR_PTCpState bit 9,1
 Var=VSM_latched_ERR_APCState bit 8,1
 // Latched error matrix
 Var=VSM_latched_ERR_latchSoftware bit 18,1
@@ -432,137 +435,100 @@ Timeout=1000
 Var=DIM_requestState unsigned 0,8 /e:State
 Var=DIM_requestGear unsigned 8,8 /e:Gear
 
-[AFC0_Heartbeat]
+[PTCf_Heartbeat]
 ID=106h
 DLC=5
 CycleTime=10
 Timeout=100
-Var=AFC0_state unsigned 0,8 /e:State
-Var=AFC0_ERR_VSMTimeout unsigned 8,1
-Var=AFC0_ERR_DCDCTemp1OOR bit 18,1
-Var=AFC0_ERR_DCDCTemp0OOR bit 19,1
-Var=AFC0_ERR_driver2TempOOR bit 20,1
-Var=AFC0_ERR_driver1TempOOR bit 21,1
-Var=AFC0_ERR_driver0TempOOR bit 22,1
-Var=AFC0_ERR_fansCurrentOOR bit 23,1
-Var=AFC0_WRN_VSMTimeout bit 24,1
-Var=AFC0_WRN_VoltageOOR bit 25,1
-Var=AFC0_WRN_CurrentOOR bit 26,1
+Var=PTCf_state unsigned 0,8 /e:State
+Var=PTCf_ERR_VSMTimeout unsigned 8,1
+Var=PTCf_ERR_waterTempOOR bit 21,1
+Var=PTCf_ERR_driversTempOOR bit 22,1
+Var=PTCf_WRN_VSMTimeout bit 24,1
+Var=PTCf_WRN_VoltageOOR bit 25,1
+Var=PTCf_WRN_CurrentOOR bit 26,1
 
-[AFC1_Heartbeat]
+[PTCp_Heartbeat]
 ID=107h
 DLC=5
 CycleTime=10
 Timeout=100
-Var=AFC1_state unsigned 0,8 /e:State
-Var=AFC1_ERR_VSMTimeout unsigned 8,1
-Var=AFC1_ERR_DCDCTemp1OOR bit 18,1
-Var=AFC1_ERR_DCDCTemp0OOR bit 19,1
-Var=AFC1_ERR_driver2TempOOR bit 20,1
-Var=AFC1_ERR_driver1TempOOR bit 21,1
-Var=AFC1_ERR_driver0TempOOR bit 22,1
-Var=AFC1_ERR_fansCurrentOOR bit 23,1
-Var=AFC1_WRN_VSMTimeout bit 24,1
-Var=AFC1_WRN_VoltageOOR bit 25,1
-Var=AFC1_WRN_CurrentOOR bit 26,1
+Var=PTCp_state unsigned 0,8 /e:State
+Var=PTCp_ERR_VSMTimeout unsigned 8,1
+Var=PTCp_ERR_waterTempOOR bit 21,1
+Var=PTCp_ERR_driversTempOOR bit 22,1
+Var=PTCp_WRN_VSMTimeout bit 24,1
+Var=PTCp_WRN_VoltageOOR bit 25,1
+Var=PTCp_WRN_CurrentOOR bit 26,1
 
-[AFC0_FanStatus]
-ID=236h
-DLC=2
+[PTCf_LoopTemps_A]
+ID=224h
+DLC=8
 CycleTime=100
 Timeout=1000
-Var=AFC0_ACFans unsigned 0,8 /e:FanState
-Var=AFC0_DCDCFan unsigned 8,8 /e:PumpState
+Var=PTCf_Temp1 unsigned 0,16 /u:dC
+Var=PTCf_Temp2 unsigned 16,16 /u:dC
+Var=PTCf_Temp3 unsigned 32,16 /u:dC
+Var=PTCf_Temp4 unsigned 48,16 /u:dC
 
-[AFC1_FanStatus]
-ID=237h
-DLC=2
-CycleTime=100
-Timeout=1000
-Var=AFC1_ACFans unsigned 0,8 /e:FanState
-Var=AFC1_DCDCFan unsigned 8,8 /e:PumpState
-
-[AFC0_DriverTemps]
-ID=536h
-DLC=5
-CycleTime=100
-Timeout=1000
-Var=AFC0_driverTemp0 unsigned 0,8 /u:C
-Var=AFC0_driverTemp1 unsigned 8,8 /u:C
-Var=AFC0_driverTemp2 unsigned 16,8 /u:C
-Var=AFC0_DCDCTemp0 unsigned 24,8 /u:C
-Var=AFC0_DCDCTemp1 unsigned 32,8 /u:C
-
-[AFC1_DriverTemps]
-ID=537h
-DLC=5
-CycleTime=100
-Timeout=1000
-Var=AFC1_driverTemp0 unsigned 0,8 /u:C
-Var=AFC1_driverTemp1 unsigned 8,8 /u:C
-Var=AFC1_driverTemp2 unsigned 16,8 /u:C
-Var=AFC1_DCDCTemp0 unsigned 24,8 /u:C
-Var=AFC1_DCDCTemp1 unsigned 32,8 /u:C
-
-[AFC0_PowerDiagnostic]
-ID=546h
-DLC=6
-CycleTime=100
-Timeout=1000
-Var=AFC0_busVoltage unsigned 0,16 /u:mV
-Var=AFC0_busCurrent unsigned 16,16 /u:mA
-Var=AFC0_fansCurrent unsigned 32,16 /u:mA
-
-[AFC1_PowerDiagnostic]
-ID=547h
-DLC=6
-CycleTime=100
-Timeout=1000
-Var=AFC1_busVoltage unsigned 0,16 /u:mV
-Var=AFC1_busCurrent unsigned 16,16 /u:mA
-Var=AFC1_fansCurrent unsigned 32,16 /u:mA
-
-[PTC_Heartbeat]
-ID=104h
-DLC=5
-CycleTime=10
-Timeout=100
-Var=PTC_state unsigned 0,8 /e:State
-Var=PTC_ERR_VSMTimeout unsigned 8,1
-Var=PTC_ERR_waterTempOOR bit 21,1
-Var=PTC_ERR_driversTempOOR bit 22,1
-Var=PTC_ERR_fanCurrentOOR bit 23,1
-Var=PTC_WRN_VSMTimeout bit 24,1
-Var=PTC_WRN_VoltageOOR bit 25,1
-Var=PTC_WRN_CurrentOOR bit 26,1
-
-[PTC_CoolingStatus]
+[PTCf_LoopTemps_B]
 ID=234h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=PTCf_Temp5 unsigned 0,16 /u:dC
+Var=PTCf_Temp6 unsigned 16,16 /u:dC
+Var=PTCf_Temp7 unsigned 32,16 /u:dC
+Var=PTCf_Temp8 unsigned 48,16 /u:dC
+
+[PTCp_LoopTemps_A]
+ID=244h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=PTCp_Temp1 unsigned 0,16 /u:dC
+Var=PTCp_Temp2 unsigned 16,16 /u:dC
+Var=PTCp_Temp3 unsigned 32,16 /u:dC
+Var=PTCp_Temp4 unsigned 48,16 /u:dC
+
+[PTCp_LoopTemps_B]
+ID=245h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=PTCp_Temp5 unsigned 0,16 /u:dC
+Var=PTCp_Temp6 unsigned 16,16 /u:dC
+Var=PTCp_Temp7 unsigned 32,16 /u:dC
+Var=PTCp_Temp8 unsigned 48,16 /u:dC
+
+[PTCf_FansStatus]
+ID=314h
+DLC=3
+CycleTime=100
+Timeout=1000
+Var=PTCf_channel1State unsigned 0,8 /u:percent
+Var=PTCf_channel2State unsigned 8,8 /u:percent
+Var=PTCf_channel3State unsigned 16,8 /u:percent
+
+[PTCp_PumpsStatus]
+ID=324h
+DLC=3
+CycleTime=100
+Timeout=1000
+Var=PTCp_channel1State unsigned 0,8 /u:percent
+Var=PTCp_channel2State unsigned 8,8 /u:percent
+Var=PTCp_channel3State unsigned 16,8 /u:percent
+
+[PTCf_PowerDiagnostic]
+ID=534h
 DLC=6
 CycleTime=100
 Timeout=1000
-Var=PTC_fanState unsigned 0,8 /e:FanState
-Var=PTC_pumpState unsigned 8,8 /e:PumpState
-Var=PTC_preRadiatorTemp unsigned 16,16 /u:dC
-Var=PTC_postRadiatorTemp unsigned 32,16 /u:dC
+Var=PTCf_logicVoltage unsigned 0,16 /u:mV
+Var=PTCf_loadVoltage unsigned 16,16 /u:mV
+Var=PTCf_loadCurrent unsigned 32,16 /u:mA
 
-[PTC_AFCControl]
-ID=254h
-DLC=2
-CycleTime=100
-Timeout=1000
-Var=PTC_acFansDuty unsigned 0,8 /u:%
-Var=PTC_dcdcFanDuty unsigned 8,8 /u:%
-
-[PTC_VoltageDiagnostic]
-ID=534h
-DLC=4
-CycleTime=100
-Timeout=1000
-Var=PTC_logicVoltage unsigned 0,16 /u:mV
-Var=PTC_loadVoltage unsigned 16,16 /u:mV
-
-[PTC_CurrentDiagnostic]
+[PTCp_PowerDiagnostic]
 ID=544h
 DLC=6
 CycleTime=100
@@ -1174,65 +1140,9 @@ Var=Save_charging_mode unsigned 32,1
 
 // AMK Inverter Signals
 
-[AMK_FL_Actual_Values_1]
-// Set ID based on wiring
-ID=283h
-DLC=8
-CycleTime=5
-Var=AMK_FL_Status_Reserved       unsigned 0 ,8
-// System ready (SBM)
-Var=AMK_FL_Status_SystemReady    bit      8 ,1
-// Error
-Var=AMK_FL_Status_Error          bit      9 ,1
-// Warning
-Var=AMK_FL_Status_Warn           bit      10,1
-// HV activation acknowledgment
-Var=AMK_FL_Status_QuitDcOn       bit      11,1
-// HV activation level
-Var=AMK_FL_Status_DcOn           bit      12,1
-// Controller enable acknowledgment
-Var=AMK_FL_Status_QuitInvOn      bit      13,1
-// Controller enable level
-Var=AMK_FL_Status_InverterOn     bit      14,1
-// Derating (torque limitation active)
-Var=AMK_FL_Status_Derating       bit      15,1
-Var=AMK_FL_ActualVelocity        signed   16,16 /u:rpm /p:4
-Var=AMK_FL_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
-Var=AMK_FL_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
-
-[AMK_FL_Actual_Values_2]
-// Set ID based on wiring
-ID=285h
-DLC=8
-CycleTime=5
-Var=AMK_FL_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
-Var=AMK_FL_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
-Var=AMK_FL_ErrorInfo             unsigned 32,16
-Var=AMK_FL_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
-
-[AMK_FL_Setpoints_1]
-// Set ID based on wiring
-ID=184h
-DLC=8
-CycleTime=1
-Var=AMK_FL_Control_Reserved1     unsigned 0 ,8
-// Controller enable
-Var=AMK_FL_Control_InverterOn    bit      8 ,1
-// HV active
-Var=AMK_FL_Control_DcOn          bit      9 ,1
-// Driver Enable
-Var=AMK_FL_Control_Enable        bit      10,1
-// Remove Error
-// Setpoints must have the value 0, as otherwise the 'Remove error' command will not be executed
-Var=AMK_FL_Control_ErrorReset    bit      11,1
-Var=AMK_FL_Control_Reserved2     unsigned 12,4
-Var=AMK_FL_TargetVelocity        signed   16,16 /u:rpm /p:2
-Var=AMK_FL_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
-Var=AMK_FL_TorqueLimitNegativ     signed   48,16 /u:"% Mn" /f:0.1 /p:4
-
 [AMK_FR_Actual_Values_1]
 // Set ID based on wiring
-ID=284h
+ID=283h
 DLC=8
 CycleTime=5
 Var=AMK_FR_Status_Reserved       unsigned 0 ,8
@@ -1258,7 +1168,7 @@ Var=AMK_FR_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
 
 [AMK_FR_Actual_Values_2]
 // Set ID based on wiring
-ID=286h
+ID=285h
 DLC=8
 CycleTime=5
 Var=AMK_FR_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
@@ -1268,7 +1178,7 @@ Var=AMK_FR_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
 
 [AMK_FR_Setpoints_1]
 // Set ID based on wiring
-ID=185h
+ID=184h
 DLC=8
 CycleTime=1
 Var=AMK_FR_Control_Reserved1     unsigned 0 ,8
@@ -1286,110 +1196,166 @@ Var=AMK_FR_TargetVelocity        signed   16,16 /u:rpm /p:2
 Var=AMK_FR_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_FR_TorqueLimitNegativ     signed   48,16 /u:"% Mn" /f:0.1 /p:4
 
-[AMK_RL_Actual_Values_1]
+[AMK_FL_Actual_Values_1]
+// Set ID based on wiring
+ID=284h
+DLC=8
+CycleTime=5
+Var=AMK_FL_Status_Reserved       unsigned 0 ,8
+// System ready (SBM)
+Var=AMK_FL_Status_SystemReady    bit      8 ,1
+// Error
+Var=AMK_FL_Status_Error          bit      9 ,1
+// Warning
+Var=AMK_FL_Status_Warn           bit      10,1
+// HV activation acknowledgment
+Var=AMK_FL_Status_QuitDcOn       bit      11,1
+// HV activation level
+Var=AMK_FL_Status_DcOn           bit      12,1
+// Controller enable acknowledgment
+Var=AMK_FL_Status_QuitInvOn      bit      13,1
+// Controller enable level
+Var=AMK_FL_Status_InverterOn     bit      14,1
+// Derating (torque limitation active)
+Var=AMK_FL_Status_Derating       bit      15,1
+Var=AMK_FL_ActualVelocity        signed   16,16 /u:rpm /p:4
+Var=AMK_FL_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
+Var=AMK_FL_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
+
+[AMK_FL_Actual_Values_2]
+// Set ID based on wiring
+ID=286h
+DLC=8
+CycleTime=5
+Var=AMK_FL_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
+Var=AMK_FL_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
+Var=AMK_FL_ErrorInfo             unsigned 32,16
+Var=AMK_FL_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
+
+[AMK_FL_Setpoints_1]
+// Set ID based on wiring
+ID=185h
+DLC=8
+CycleTime=1
+Var=AMK_FL_Control_Reserved1     unsigned 0 ,8
+// Controller enable
+Var=AMK_FL_Control_InverterOn    bit      8 ,1
+// HV active
+Var=AMK_FL_Control_DcOn          bit      9 ,1
+// Driver Enable
+Var=AMK_FL_Control_Enable        bit      10,1
+// Remove Error
+// Setpoints must have the value 0, as otherwise the 'Remove error' command will not be executed
+Var=AMK_FL_Control_ErrorReset    bit      11,1
+Var=AMK_FL_Control_Reserved2     unsigned 12,4
+Var=AMK_FL_TargetVelocity        signed   16,16 /u:rpm /p:2
+Var=AMK_FL_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_FL_TorqueLimitNegativ     signed   48,16 /u:"% Mn" /f:0.1 /p:4
+
+[AMK_BL_Actual_Values_1]
 // Set ID based on wiring
 ID=287h
 DLC=8
 CycleTime=5
-Var=AMK_RL_Status_Reserved       unsigned 0 ,8
+Var=AMK_BL_Status_Reserved       unsigned 0 ,8
 // System ready (SBM)
-Var=AMK_RL_Status_SystemReady    bit      8 ,1
+Var=AMK_BL_Status_SystemReady    bit      8 ,1
 // Error
-Var=AMK_RL_Status_Error          bit      9 ,1
+Var=AMK_BL_Status_Error          bit      9 ,1
 // Warning
-Var=AMK_RL_Status_Warn           bit      10,1
+Var=AMK_BL_Status_Warn           bit      10,1
 // HV activation acknowledgment
-Var=AMK_RL_Status_QuitDcOn       bit      11,1
+Var=AMK_BL_Status_QuitDcOn       bit      11,1
 // HV activation level
-Var=AMK_RL_Status_DcOn           bit      12,1
+Var=AMK_BL_Status_DcOn           bit      12,1
 // Controller enable acknowledgment
-Var=AMK_RL_Status_QuitInvOn      bit      13,1
+Var=AMK_BL_Status_QuitInvOn      bit      13,1
 // Controller enable level
-Var=AMK_RL_Status_InverterOn     bit      14,1
+Var=AMK_BL_Status_InverterOn     bit      14,1
 // Derating (torque limitation active)
-Var=AMK_RL_Status_Derating       bit      15,1
-Var=AMK_RL_ActualVelocity        signed   16,16 /u:rpm /p:4
-Var=AMK_RL_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
-Var=AMK_RL_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
+Var=AMK_BL_Status_Derating       bit      15,1
+Var=AMK_BL_ActualVelocity        signed   16,16 /u:rpm /p:4
+Var=AMK_BL_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
+Var=AMK_BL_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
 
-[AMK_RL_Actual_Values_2]
+[AMK_BL_Actual_Values_2]
 // Set ID based on wiring
 ID=289h
 DLC=8
 CycleTime=5
-Var=AMK_RL_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
-Var=AMK_RL_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
-Var=AMK_RL_ErrorInfo             unsigned 32,16
-Var=AMK_RL_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
+Var=AMK_BL_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
+Var=AMK_BL_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
+Var=AMK_BL_ErrorInfo             unsigned 32,16
+Var=AMK_BL_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
 
-[AMK_RL_Setpoints_1]
+[AMK_BL_Setpoints_1]
 // Set ID based on wiring
 ID=188h
 DLC=8
 CycleTime=1
-Var=AMK_RL_Control_Reserved1     unsigned 0 ,8
+Var=AMK_BL_Control_Reserved1     unsigned 0 ,8
 // Controller enable
-Var=AMK_RL_Control_InverterOn    bit      8 ,1
+Var=AMK_BL_Control_InverterOn    bit      8 ,1
 // HV active
-Var=AMK_RL_Control_DcOn          bit      9 ,1
+Var=AMK_BL_Control_DcOn          bit      9 ,1
 // Driver Enable
-Var=AMK_RL_Control_Enable        bit      10,1
+Var=AMK_BL_Control_Enable        bit      10,1
 // Remove Error
 // Setpoints must have the value 0, as otherwise the 'Remove error' command will not be executed
-Var=AMK_RL_Control_ErrorReset    bit      11,1
-Var=AMK_RL_Control_Reserved2     unsigned 12,4
-Var=AMK_RL_TargetVelocity        signed   16,16 /u:rpm /p:2
-Var=AMK_RL_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
-Var=AMK_RL_TorqueLimitNegativ     signed   48,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_BL_Control_ErrorReset    bit      11,1
+Var=AMK_BL_Control_Reserved2     unsigned 12,4
+Var=AMK_BL_TargetVelocity        signed   16,16 /u:rpm /p:2
+Var=AMK_BL_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_BL_TorqueLimitNegativ    signed   48,16 /u:"% Mn" /f:0.1 /p:4
 
-[AMK_RR_Actual_Values_1]
+[AMK_BR_Actual_Values_1]
 // Set ID based on wiring
 ID=288h
 DLC=8
 CycleTime=5
-Var=AMK_RR_Status_Reserved       unsigned 0 ,8
+Var=AMK_BR_Status_Reserved       unsigned 0 ,8
 // System ready (SBM)
-Var=AMK_RR_Status_SystemReady    bit      8 ,1
+Var=AMK_BR_Status_SystemReady    bit      8 ,1
 // Error
-Var=AMK_RR_Status_Error          bit      9 ,1
+Var=AMK_BR_Status_Error          bit      9 ,1
 // Warning
-Var=AMK_RR_Status_Warn           bit      10,1
+Var=AMK_BR_Status_Warn           bit      10,1
 // HV activation acknowledgment
-Var=AMK_RR_Status_QuitDcOn       bit      11,1
+Var=AMK_BR_Status_QuitDcOn       bit      11,1
 // HV activation level
-Var=AMK_RR_Status_DcOn           bit      12,1
+Var=AMK_BR_Status_DcOn           bit      12,1
 // Controller enable acknowledgment
-Var=AMK_RR_Status_QuitInvOn      bit      13,1
+Var=AMK_BR_Status_QuitInvOn      bit      13,1
 // Controller enable level
-Var=AMK_RR_Status_InverterOn     bit      14,1
+Var=AMK_BR_Status_InverterOn     bit      14,1
 // Derating (torque limitation active)
-Var=AMK_RR_Status_Derating       bit      15,1
-Var=AMK_RR_ActualVelocity        signed   16,16 /u:rpm /p:4
-Var=AMK_RR_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
-Var=AMK_RR_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
+Var=AMK_BR_Status_Derating       bit      15,1
+Var=AMK_BR_ActualVelocity        signed   16,16 /u:rpm /p:4
+Var=AMK_BR_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
+Var=AMK_BR_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
 
-[AMK_RR_Actual_Values_2]
+[AMK_BR_Actual_Values_2]
 // Set ID based on wiring
 ID=28Ah
 DLC=8
 CycleTime=5
-Var=AMK_RR_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
-Var=AMK_RR_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
-Var=AMK_RR_ErrorInfo             unsigned 32,16
-Var=AMK_RR_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
+Var=AMK_BR_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
+Var=AMK_BR_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
+Var=AMK_BR_ErrorInfo             unsigned 32,16
+Var=AMK_BR_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
 
-[AMK_RR_Setpoints_1]
+[AMK_BR_Setpoints_1]
 // Set ID based on wiring
 ID=189h
 DLC=8
 CycleTime=1
-Var=AMK_RR_Control_Reserved1     unsigned 0 ,8
+Var=AMK_BR_Control_Reserved1     unsigned 0 ,8
 // Controller enable
-Var=AMK_RR_Control_InverterOn    bit      8 ,1
+Var=AMK_BR_Control_InverterOn    bit      8 ,1
 // HV active
-Var=AMK_RR_Control_DcOn          bit      9 ,1
+Var=AMK_BR_Control_DcOn          bit      9 ,1
 // Driver Enable
-Var=AMK_RR_Control_Enable        bit      10,1
+Var=AMK_BR_Control_Enable        bit      10,1
 // Remove Error
 // Setpoints must have the value 0, as otherwise the 'Remove error' command will not be executed
 Var=AMK_RR_Control_ErrorReset    bit      11,1
@@ -1397,3 +1363,29 @@ Var=AMK_RR_Control_Reserved2     unsigned 12,4
 Var=AMK_RR_TargetVelocity        signed   16,16 /u:rpm /p:2
 Var=AMK_RR_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_RR_TorqueLimitNegativ    signed   48,16 /u:"% Mn" /f:0.1 /p:4
+
+//These are signals off of the EMD. We should migrate these to the DAQ bus
+//symbol file once it exists (assuming the EMD winds up on said bus)
+//[Measurement]
+//ID=100h
+//DLC=8
+//Var=Current signed 0,32 -m /u:A /f:1.5258789063E-005
+//Var=Voltage signed 32,32 -m /u:V /f:1.5258789063E-005
+
+//[Status]
+//ID=400h
+//DLC=4
+//Var=VoltageGain unsigned 4,4 -m /u:VtSig_Gain
+//Var=CurrentGain unsigned 0,4 -m /e:VtSig_Gain
+//Var=OverVoltage bit 15,1 -m /u:bool
+//Var=OverPower bit 14,1 -m /u:bool
+//Var=Logging bit 13,1 -m /e:bool
+
+
+//[Reserved1]
+//ID=7E7h	// This CAN id is used for communication between the energy meter and the download tool.
+//DLC=8
+
+//[Reserved2]
+//ID=7EFh	// This CAN id is used for communication between the energy meter and the download tool.
+//DLC=8
