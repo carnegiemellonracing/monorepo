@@ -1185,13 +1185,6 @@ Var=Requested_Current unsigned 40,16 -m /u:A /f:0.1
 ID=520h
 DLC=8
 
-[Memorator_Broadcast]
-ID=605h
-DLC=1
-CycleTime=1000
-Timeout=10000
-Var=Memorator_status unsigned 0, 8
-
 [BRUSA_Charger_Act_I]
 ID=521h
 DLC=8
@@ -1245,3 +1238,4 @@ Var=Command_out_of_range unsigned 36,1
 Var=Ctrl_msg_inactive unsigned 35,1
 Var=LED_driver_defect unsigned 33,1
 Var=Save_charging_mode unsigned 32,1
+
