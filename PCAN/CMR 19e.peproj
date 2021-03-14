@@ -5,7 +5,18 @@
     </Connections>
     <MessageFilters/>
     <TransmitList>
-        <TransmitListItem Bus="1" CanId="304" Type="0" DLC="1" Data="08" CycleTime="10" IsPaused="0" Creator="User"/>
+        <TransmitListItem Bus="1" CanId="257" Type="0" DLC="5" Data="" CycleTime="10" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="1" CanId="260" Type="0" DLC="5" Data="" CycleTime="10" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="1" CanId="261" Type="0" DLC="5" Data="" CycleTime="10" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="1" CanId="262" Type="0" DLC="5" Data="" CycleTime="10" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="1" CanId="263" Type="0" DLC="5" Data="" CycleTime="10" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="1" CanId="264" Type="0" DLC="5" Data="" CycleTime="10" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="1" CanId="565" Type="0" DLC="2" Data="" CycleTime="100" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="1" CanId="564" Type="0" DLC="6" Data="" CycleTime="100" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="1" CanId="566" Type="0" DLC="7" Data="" CycleTime="100" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="1" CanId="567" Type="0" DLC="7" Data="" CycleTime="100" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="1" CanId="259" Type="0" DLC="5" Data="" CycleTime="10" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="1" CanId="307" Type="0" DLC="6" Data="" CycleTime="10" IsPaused="1" Creator="User"/>
     </TransmitList>
     <Files>
         <File RelativePath="CMR 19e.sym"/>
