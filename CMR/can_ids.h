@@ -15,6 +15,12 @@
  */
 #define CMR_CANID_RMS_OFFSET    0x3A0
 
+
+/** @brief The SBG Systems INS allows a configurable offset for
+ *  all CAN message addresses. Ours is set to this value.
+ */
+#define CMR_CANID_SBG_OFFSET    0x000
+
 /** @brief CAN IDs. */
 typedef enum {
     CMR_CANID_HEARTBEAT_VSM = 0x100,    /**< @brief VSM heartbeat. */
@@ -99,7 +105,14 @@ typedef enum {
     CMR_CANID_RMS_VOLTAGE_INFO = 0x007 + CMR_CANID_RMS_OFFSET,  /**< @brief RMS voltage info. */
     CMR_CANID_RMS_COMMAND = 0x020 + CMR_CANID_RMS_OFFSET,       /**< @brief RMS command. */
     CMR_CANID_RMS_PARAM_REQ = 0x021 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS parameter request. */
-    CMR_CANID_RMS_PARAM_RES = 0x022 + CMR_CANID_RMS_OFFSET      /**< @brief RMS parameter response. */
+    CMR_CANID_RMS_PARAM_RES = 0x022 + CMR_CANID_RMS_OFFSET,      /**< @brief RMS parameter response. */
+
+    CMR_CANID_SBG_STATUS_1 = 0x100 + CMR_CANID_SBG_OFFSET,		        /**< @brief SBG_ECAN_LOG_STATUS_01 */
+    CMR_CANID_SBG_STATUS_2 = 0x101 + CMR_CANID_SBG_OFFSET,		        /**< @brief SBG_ECAN_LOG_STATUS_02 */
+    CMR_CANID_SBG_STATUS_3 = 0x102 + CMR_CANID_SBG_OFFSET,		        /**< @brief SBG_ECAN_LOG_STATUS_03 */
+    CMR_CANID_SBG_EKF_ORIENT = 0x132 + CMR_CANID_SBG_OFFSET,		    /**< @brief SBG_ECAN_LOG_EKF_EULER */
+    CMR_CANID_SBG_EKF_POS = 0x134 + CMR_CANID_SBG_OFFSET,		        /**< @brief SBG_ECAN_LOG_EKF_POS */
+    CMR_CANID_SBG_EKF_VEL = 0x137 + CMR_CANID_SBG_OFFSET,		        /**< @brief SBG_ECAN_LOG_EKF_VEL */
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
