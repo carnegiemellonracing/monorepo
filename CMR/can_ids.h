@@ -99,7 +99,14 @@ typedef enum {
     CMR_CANID_RMS_VOLTAGE_INFO = 0x007 + CMR_CANID_RMS_OFFSET,  /**< @brief RMS voltage info. */
     CMR_CANID_RMS_COMMAND = 0x020 + CMR_CANID_RMS_OFFSET,       /**< @brief RMS command. */
     CMR_CANID_RMS_PARAM_REQ = 0x021 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS parameter request. */
-    CMR_CANID_RMS_PARAM_RES = 0x022 + CMR_CANID_RMS_OFFSET      /**< @brief RMS parameter response. */
+    CMR_CANID_RMS_PARAM_RES = 0x022 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS parameter response. */
+
+    CMR_CANID_SBG_STATUS_1 = 0x700,             /**< @brief SBG_ECAN_LOG_STATUS_01 */
+    CMR_CANID_SBG_STATUS_2 = 0x701,             /**< @brief SBG_ECAN_LOG_STATUS_02 */
+    CMR_CANID_SBG_STATUS_3 = 0x702,             /**< @brief SBG_ECAN_LOG_STATUS_03 */
+    CMR_CANID_SBG_EKF_ORIENT = 0x722,           /**< @brief SBG_ECAN_LOG_EKF_EULER */
+    CMR_CANID_SBG_EKF_POS = 0x724,              /**< @brief SBG_ECAN_LOG_EKF_POS */
+    CMR_CANID_SBG_EKF_VEL = 0x727,              /**< @brief SBG_ECAN_LOG_EKF_VEL */
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */

@@ -621,5 +621,94 @@ typedef struct {
     int16_t torqueLimNeg_dpcnt; /**< @brief Negative torque limit in 0.1% of 9.8 Nm (nominal torque). */
 } cmr_canAMKSetpoints_t;
 
+// ------------------------------------------------------------------------------------------------
+// SBG Systems INS definitions.
+
+/** @brief SBG INS 'GENERAL_STATUS' bits. */
+typedef enum {
+    CMR_CAN_SBG_GENERAL_MAIN_POWER_OK   = (1 << 0),    /**< @brief Main power supply is OK. */
+    CMR_CAN_SBG_GENERAL_IMU_POWER_OK    = (1 << 1),    /**< @brief IMU power supply is OK. */
+    CMR_CAN_SBG_GENERAL_GPS_POWER_OK    = (1 << 2),    /**< @brief GPS power supply is OK. */
+    CMR_CAN_SBG_GENERAL_SETTINGS_OK     = (1 << 3),    /**< @brief Settings were correctly loaded */
+    CMR_CAN_SBG_GENERAL_TEMPERATURE_OK  = (1 << 4),    /**< @brief Temperature is within specified limits. */
+    CMR_CAN_SBG_GENERAL_DATALOGGER_OK   = (1 << 5),    /**< @brief Data-logger is working correctly. */
+    CMR_CAN_SBG_GENERAL_CPU_OK          = (1 << 6),    /**< @brief CPU headroom is good. */
+} cmr_canSBGGeneralStatus_t;
+
+/** @brief SBG INS 'SOLUTION_STATUS' bits. */
+typedef enum {
+    CMR_CAN_SBG_SOL_ATTITUDE_VALID  = (1 << 4),    /**< @brief Attitude data is reliable (Roll/Pitch error < 0.5°). */
+    CMR_CAN_SBG_SOL_HEADING_VALID   = (1 << 5),    /**< @brief Heading data is reliable (Heading error < 1°). */
+    CMR_CAN_SBG_SOL_VELOCITY_VALID  = (1 << 6),    /**< @brief Velocity data is reliable (velocity error < 1.5 m/s). */
+    CMR_CAN_SBG_SOL_POSITION_VALID  = (1 << 7),    /**< @brief Position data is reliable (Position error < 10m). */
+    CMR_CAN_SBG_SOL_VERT_REF_USED   = (1 << 8),    /**< @brief Vertical reference is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_MAG_REF_USED    = (1 << 9),    /**< @brief Magnetometer is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_GPS1_VEL_USED   = (1 << 10),   /**< @brief GPS velocity is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_GPS1_POS_USED   = (1 << 11),   /**< @brief GPS Position is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_GPS1_HDT_USED   = (1 << 13),   /**< @brief GPS True Heading is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_GPS2_VEL_USED   = (1 << 14),   /**< @brief GPS2 velocity is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_GPS2_POS_USED   = (1 << 15),   /**< @brief GPS2 Position is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_GPS2_HDT_USED   = (1 << 17),   /**< @brief GPS2 True Heading is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_ODO_USED        = (1 << 18),   /**< @brief Odometer is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_DVL_BT_USED     = (1 << 19),   /**< @brief DVL Bottom Tracking is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_DVL_WT_USED     = (1 << 20),   /**< @brief DVL Water Layer is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_USBL_USED       = (1 << 24),   /**< @brief USBL / LBL is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_PRESSURE_USED   = (1 << 25),   /**< @brief Pressure is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_ZUPT_USED       = (1 << 26),   /**< @brief ZUPT is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_ALIGN_VALID     = (1 << 27),   /**< @brief Sensor alignment and calibration parameters are valid. */
+} cmr_canSBGSolutionStatus_t;
+
+/** @brief SBG INS 'SOLUTION_STATUS' solution mode (first 4 bits) values. */
+typedef enum {
+    CMR_CAN_SBG_SOL_MODE_UNINITIALIZED = 0,     /**< @brief The Kalman filter is not initialized and the returned data are all invalid. */
+    CMR_CAN_SBG_SOL_MODE_VERTICAL_GYRO = 1,     /**< @brief The Kalman filter only rely on a vertical reference to compute roll and 
+                                                            pitch angles. Heading and navigation data drift freely. */
+    CMR_CAN_SBG_SOL_MODE_AHRS          = 2,     /**< @brief A heading reference is available, the Kalman filter provides full orientation  
+                                                            but navigation data drift freely. */
+    CMR_CAN_SBG_SOL_MODE_NAV_VELOCITY  = 3,     /**< @brief The Kalman filter computes orientation and velocity. Position is freely 
+                                                            integrated from velocity estimation. */
+    CMR_CAN_SBG_SOL_MODE_NAV_POSITION  = 4,     /**< @brief Nominal mode, the Kalman filter computes all parameters
+                                                            (attitude, velocity, position). Absolute position is provided. */
+} cmr_canSBGSolutionStatusMode_t;
+
+/** @brief SBG Systems Status (part 1). */
+typedef struct {
+    uint32_t timestamp;         /**< @brief Timestamp in microseconds. */
+    uint16_t general_status;    /**< @brief General status bit vector. */
+    uint16_t clock_status;      /**< @brief Clock status bit vector. */
+} cmr_canSBGStatus1_t;
+
+/** @brief SBG Systems Status (part 2). */
+typedef struct {
+    uint32_t com_status;        /**< @brief Com status bit vector. */
+    uint32_t aiding_status;     /**< @brief Aiding status bit vector. */
+} cmr_canSBGStatus2_t;
+
+/** @brief SBG Systems Status (part 3). */
+typedef struct {
+    uint32_t solution_status;   /**< @brief Solution status bit vector. */
+    uint16_t heave_status;      /**< @brief Heave status bit vector. */
+} cmr_canSBGStatus3_t;
+
+/** @brief SBG Systems EKF Position. */
+typedef struct {
+    int32_t latitude;           /**< @brief Latitude (Degrees times 10^7). */
+    int32_t longitude;          /**< @brief Longitude (Degrees times 10^7). */
+} cmr_canSBGEKFPosition_t;
+
+/** @brief SBG Systems EKF Euler Orientation. */
+typedef struct {
+    int16_t roll;               /**< @brief Roll (radians times 10^4). */
+    int16_t pitch;              /**< @brief Pitch (radians times 10^4). */
+    int16_t yaw;                /**< @brief Yaw (radians times 10^4). */
+} cmr_canSBGEKFOrient_t;
+
+/** @brief SBG Systems EKF Velocity. */
+typedef struct {
+    int16_t velocity_n;         /**< @brief Velocity in North Direction (m/s times 100). */
+    int16_t velocity_e;         /**< @brief Velocity in East Direction (m/s times 100). */
+    int16_t velocity_d;         /**< @brief Velocity in Down Direction (m/s times 100). */
+} cmr_canSBGEKFVelocity_t;
+
 #endif /* CMR_CAN_TYPES_H */
 
