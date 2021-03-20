@@ -31,7 +31,7 @@ static void mcPowerControl(void *pvParameters) {
 
     /* Get reference to VSM Heartbeat */
     volatile cmr_canHeartbeat_t *vsmHeartbeat = canGetPayload(CANRX_HEARTBEAT_VSM);
-    volatile cmr_canVSMStatus_t *vsmState = canGetPayload(CMR_CANID_VSM_STATUS);
+    volatile cmr_canVSMStatus_t *vsmState = canGetPayload(CANRX_VSM_STATUS);
 
     cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 0);
     cmr_gpioWrite(GPIO_MC_EFUSE_AUTO, 0);
