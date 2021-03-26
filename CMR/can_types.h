@@ -168,6 +168,7 @@ typedef enum {
     CMR_CAN_VSM_STATE_REQ_PRECHARGE,    /**< @brief Request accumulator isolation relay precharge. */
     CMR_CAN_VSM_STATE_RUN_BMS,          /**< @brief Run Battery Management System. */
     CMR_CAN_VSM_STATE_DCDC_EN,          /**< @brief Enable DCDC converters. */
+    CMR_CAN_VSM_STATE_INVERTER_EN,      /**< #brief Enable inverter logic power. */
     CMR_CAN_VSM_STATE_HV_EN,            /**< @brief Enable high voltage system. */
     CMR_CAN_VSM_STATE_RTD,              /**< @brief Ready to drive. */
     CMR_CAN_VSM_STATE_COOLING_OFF,      /**< @brief Disable powertrain cooling system. */
