@@ -492,7 +492,7 @@ Var=PTCp_Temp3 unsigned 32,16 /u:dC
 Var=PTCp_Temp4 unsigned 48,16 /u:dC
 
 [PTCp_LoopTemps_B]
-ID=245h
+ID=254h
 DLC=8
 CycleTime=100
 Timeout=1000
