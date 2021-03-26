@@ -492,7 +492,7 @@ Var=PTCp_Temp3 unsigned 32,16 /u:dC
 Var=PTCp_Temp4 unsigned 48,16 /u:dC
 
 [PTCp_LoopTemps_B]
-ID=245h
+ID=254h
 DLC=8
 CycleTime=100
 Timeout=1000
@@ -533,9 +533,9 @@ ID=544h
 DLC=6
 CycleTime=100
 Timeout=1000
-Var=PTC_logicCurrent unsigned 0,16 /u:mA
-Var=PTC_loadCurrent unsigned 16,16 /u:mA
-Var=PTC_fanCurrent unsigned 32,16 /u:mA
+Var=PTCp_logicVoltage unsigned 0,16 /u:mV
+Var=PTCp_loadVoltage unsigned 16,16 /u:mV
+Var=PTCp_loadCurrent unsigned 32,16 /u:mA
 
 [APC_Heartbeat]
 ID=108h
