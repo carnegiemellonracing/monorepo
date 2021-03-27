@@ -41,10 +41,11 @@ enum VSMState (
     3 = "REQ_PRECHARGE",
     4 = "RUN_BMS",
     5 = "DCDC_EN",
-    6 = "HV_EN",
-    7 = "RTD",
-    8 = "COOLING_OFF",
-    9 = "DCDC_OFF"
+    6 = "INVERTER_EN",
+    7 = "HV_EN",
+    8 = "RTD",
+    9 = "COOLING_OFF",
+    10 = "DCDC_OFF"
 )
 
 enum HVCMode(
