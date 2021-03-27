@@ -96,19 +96,17 @@ typedef enum {
     CMR_CAN_WARN_BUS_CURRENT = (1 << 2),
 
     /** @brief VSM hasn't received HVC heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_HVC_TIMEOUT = (1 << 15),
+    CMR_CAN_WARN_VSM_HVC_TIMEOUT = (1 << 14),
     /** @brief VSM hasn't received CDC heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_CDC_TIMEOUT = (1 << 14),
+    CMR_CAN_WARN_VSM_CDC_TIMEOUT = (1 << 13),
     /** @brief VSM hasn't received FSM heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_FSM_TIMEOUT = (1 << 13),
-    /** @brief VSM hasn't received PTC heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_PTC_TIMEOUT = (1 << 12),
+    CMR_CAN_WARN_VSM_FSM_TIMEOUT = (1 << 12),
     /** @brief VSM hasn't received DIM heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_DIM_TIMEOUT = (1 << 11),
-    /** @brief VSM hasn't received AFC 0 heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_AFC0_TIMEOUT = (1 << 10),
-    /** @brief VSM hasn't received AFC 1 heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_AFC1_TIMEOUT = (1 << 9),
+    /** @brief VSM hasn't received PTCf heartbeat for 25 ms. */
+    CMR_CAN_WARN_VSM_PTCf_TIMEOUT = (1 << 10),
+    /** @brief VSM hasn't received PTCp heartbeat for 25 ms. */
+    CMR_CAN_WARN_VSM_PTCp_TIMEOUT = (1 << 9),
     /** @brief VSM hasn't received APC heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_APC_TIMEOUT = (1 << 8),
     /** @brief VSM is rejecting DIM state request. */
@@ -181,19 +179,17 @@ typedef enum {
     /** @brief No modules have timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_NONE = 0,
     /** @brief At least one High Voltage Controller message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_HVC = (1 << 7),
+    CMR_CAN_VSM_ERROR_SOURCE_HVC = (1 << 6),
     /** @brief At least one Central Dynamics Controller message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_CDC = (1 << 6),
+    CMR_CAN_VSM_ERROR_SOURCE_CDC = (1 << 5),
     /** @brief At least one Front Sensor Module message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_FSM = (1 << 5),
-    /** @brief At least one Powertrain Thermal Controller message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_PTC = (1 << 4),
+    CMR_CAN_VSM_ERROR_SOURCE_FSM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_DIM = (1 << 3),
-    /** @brief At least one Accumulator Fan Controller 0 message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_AFC0 = (1 << 2),
-    /** @brief At least one Accumulator Fan Controller 1 message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_AFC1 = (1 << 1),
+    /** @brief At least one PTCf message has timed out. */
+    CMR_CAN_VSM_ERROR_SOURCE_PTCf = (1 << 2),
+    /** @brief At least one PTCp message has timed out. */
+    CMR_CAN_VSM_ERROR_SOURCE_PTCp = (1 << 1),
     /** @brief At least one Auxiliary Power Controller message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_APC = (1 << 0)
 } cmr_canVSMErrorSource_t;
