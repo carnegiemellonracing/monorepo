@@ -492,6 +492,15 @@ typedef struct {
     uint16_t busCurrent_mA;     /**< @brief Low-voltage bus current (mA). */
 } cmr_canDIMPowerDiagnostics_t;
 
+/** @brief Driver Interface Module text write command. This is
+ *  used in conjunction with the RAM to facilite remote text
+ *  writing to the driver's display.
+*/
+typedef struct {
+    uint8_t address;            /**< @brief Buffer index for text. */
+    uint8_t data[4];            /**< @brief Data to write. */
+} cmr_canDIMTextWrite_t;
+
 // ------------------------------------------------------------------------------------------------
 // Front Sensor Module
 
