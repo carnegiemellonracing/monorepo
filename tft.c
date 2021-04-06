@@ -5,9 +5,9 @@
  * @author Carnegie Mellon Racing
  */
 
-#include <CMR/tasks.h>  // Task interface
+#include <CMR/tasks.h>      // Task interface
 
-#include <stdbool.h>     // bool
+#include <stdbool.h>        // bool
 
 #include "tft.h"            // Interface to implement
 #include "tftPrivate.h"     // Private interface
@@ -16,6 +16,7 @@
 #include "gpio.h"           // Board-specific GPIO interface
 #include "can.h"            // Board-specific CAN interface
 #include "state.h"          // State interface
+#include "adc.h"
 
 /** @brief Expected chip ID. */
 #define TFT_CHIP_ID 0x00011208
@@ -348,13 +349,19 @@ static void drawErrorScreen(void) {
 
     tft_errors_t err;
 
+    /* Low Voltage */
+    unsigned int voltage_mV = adcRead(ADC_VSENSE) * 8 * 11 / 10;
+    err.glvVoltage_V =  voltage_mV / 1000;
+    err.glvLowVolt = voltage_mV < 20*1000;
+
     /* Timeouts */
     err.fsmTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_FSM);
     err.cdcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_CDC);
-    err.ptcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_PTC);
+    err.ptcfTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_PTCf);
+    err.ptcpTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_PTCp);
+    err.apcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_APC);
+    err.hvcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_HVC);
     err.vsmTimeout = 0;
-    err.afc1Timeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_AFC0);
-    err.afc2Timeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_AFC1);
 
     /* Latched Errors */
     err.imdError = (canVSMStatus->latchMatrix & CMR_CAN_VSM_LATCH_IMD);
@@ -380,6 +387,23 @@ static void drawErrorScreen(void) {
 
     /* Write Display List to Screen */
     tftDLWrite(&tft, &tftDL_error);
+}
+
+/**
+ * @brief computes max of 4 numbers
+ */
+uint32_t findMax(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
+    uint32_t maximum = a;
+    if (b > maximum) {
+        maximum = b;
+    }
+    if (c > maximum) {
+        maximum = c;
+    }
+    if (d > maximum) {
+        maximum = d;
+    }
+    return maximum;
 }
 
 /**
@@ -410,17 +434,50 @@ static void drawRTDScreen(void) {
     volatile cmr_canCDCMotorTemps_t *canCDCMotorTemps =
         (void *) metaCDCMotorTemps->payload;
 
-    cmr_canRXMeta_t *metaPTCCoolingStatus = canRXMeta + CANRX_PTC_COOLING_STATUS;
-    volatile cmr_canPTCCoolingStatus_t *canPTCCoolingStatus =
-        (void *) metaPTCCoolingStatus->payload;
+    // PTC Temps
+    cmr_canRXMeta_t *metaPTCfLoopA = canRXMeta + CANRX_PTCf_LOOP_A_TEMPS;
+    volatile cmr_canPTCfLoopTemp_A_t *canPTCfLoopTemp_A = (void *) metaPTCfLoopA->payload;
+    
+    cmr_canRXMeta_t *metaPTCfLoopB = canRXMeta + CANRX_PTCf_LOOP_B_TEMPS;
+    volatile cmr_canPTCfLoopTemp_B_t *canPTCfLoopTemp_B = (void *) metaPTCfLoopB->payload;
+    
+    cmr_canRXMeta_t *metaPTCpLoopA = canRXMeta + CANRX_PTCp_LOOP_A_TEMPS;
+    volatile cmr_canPTCpLoopTemp_A_t *canPTCpLoopTemp_A = (void *) metaPTCpLoopA->payload;
+    
+    cmr_canRXMeta_t *metaPTCpLoopB = canRXMeta + CANRX_PTCp_LOOP_B_TEMPS;
+    volatile cmr_canPTCpLoopTemp_B_t *canPTCpLoopTemp_B = (void *) metaPTCpLoopB->payload;
 
     tftDLContentLoad(&tft, &tftDL_RTD);
 
     /* Memorator present? */
-    bool memoratorPresent = cmr_canRXMetaTimeoutWarn(metaCDLBroadcast, xTaskGetTickCount()) < 0;
+    // Wait to update if hasn't seen in 2 sec (2000 ms)
+    bool memoratorPresent = cmr_canRXMetaTimeoutWarn(metaCDLBroadcast, xTaskGetTickCount()) == 0;
+
+    /* GPS present? */
+    // Checks broadcast from CDC to see status of SBG
+    cmr_canRXMeta_t *metaSBGStatus = canRXMeta + CANRX_SBG_STATUS_3;
+    // Check timeout
+    bool sbgConnected = cmr_canRXMetaTimeoutWarn(metaSBGStatus, xTaskGetTickCount()) == 0;
+    volatile cmr_canSBGStatus3_t *sbgPayload = (void *) metaSBGStatus->payload;
+    SBG_status_t sbgStatus = SBG_STATUS_NOT_CONNECTED;
+    if (sbgConnected) {
+        sbgStatus = SBG_STATUS_WORKING_NO_POS_FOUND;
+        uint32_t solutionStatus = sbgPayload->solution_status;
+        // solution mode is first 4 bits of solution status
+        uint32_t solutionStatusMode = solutionStatus & 0xF;
+        // Get bits 4 through 7
+        solutionStatus = solutionStatus & 0xF0;
+        uint32_t solutionMask = CMR_CAN_SBG_SOL_ATTITUDE_VALID | CMR_CAN_SBG_SOL_HEADING_VALID | CMR_CAN_SBG_SOL_VELOCITY_VALID | CMR_CAN_SBG_SOL_POSITION_VALID;
+        if (solutionStatusMode == CMR_CAN_SBG_SOL_MODE_NAV_POSITION && solutionStatus == solutionMask) {
+            // Got fix on position
+            sbgStatus = SBG_STATUS_WORKING_POS_FOUND;
+        }
+    }
 
     /* Pack Voltage */
-    int32_t hvVoltage_mV = canHVCPackVoltage->hvVoltage;
+    int32_t hvVoltage_mV = canHVCPackVoltage->hvVoltage_mV;
+
+    int32_t glvVoltage = adcRead(ADC_VSENSE) * 8 * 11 / 10 / 1000; // TODO: figure out where 8, 10 come from
 
     /* Motor Power Draw*/
     int32_t power_kW =
@@ -441,16 +498,30 @@ static void drawRTDScreen(void) {
     /* Accumulator Temperature */
     int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC)/10;
 
-    /* DCDC Temperature */
-    int32_t num = 0;
-
     /* Motor Controller Temperature */
-    int32_t mcTemp_C = (canPTCCoolingStatus->preRadiatorTemp_dC);
+    int32_t maxPTCfATemp_dc = findMax(canPTCfLoopTemp_A->temp1_dC, canPTCfLoopTemp_A->temp2_dC,
+                                    canPTCfLoopTemp_A->temp3_dC, canPTCfLoopTemp_A->temp4_dC);
+    int32_t maxPTCfBTemp_dc = findMax(canPTCfLoopTemp_B->temp5_dC, canPTCfLoopTemp_B->temp6_dC,
+                                    canPTCfLoopTemp_B->temp7_dC, canPTCfLoopTemp_B->temp8_dC);
+    int32_t maxPTCpATemp_dc = findMax(canPTCpLoopTemp_A->temp1_dC, canPTCpLoopTemp_A->temp2_dC,
+                                    canPTCpLoopTemp_A->temp3_dC, canPTCpLoopTemp_A->temp4_dC);
+    int32_t maxPTCpBTemp_dc = findMax(canPTCpLoopTemp_B->temp5_dC, canPTCpLoopTemp_B->temp6_dC,
+                                    canPTCpLoopTemp_B->temp7_dC, canPTCpLoopTemp_B->temp8_dC);
+    int32_t mcTemp_C = findMax(maxPTCfATemp_dc, maxPTCfBTemp_dc, maxPTCpATemp_dc, maxPTCpBTemp_dc) / 10;
+
     /* Motor Temperature */
     int32_t motorTemp_C = (canCDCMotorTemps->motorTemp_dC) / 10;
 
+    /* Temperature warnings */
+    bool motorTemp_yellow = motorTemp_C >= MOTOR_YELLOW_THRESHOLD;
+    bool motorTemp_red = motorTemp_C >= MOTOR_RED_THRESHOLD;
+    bool acTemp_yellow = acTemp_C >= AC_YELLOW_THRESHOLD;
+    bool acTemp_red = acTemp_C >= AC_RED_THRESHOLD;
+    bool mcTemp_yellow = mcTemp_C >= MC_YELLOW_THRESHOLD;
+    bool mcTemp_red = mcTemp_C >= MC_RED_THRESHOLD;
+
     /* Update Display List*/
-    tftDL_RTDUpdate(memoratorPresent, speed_mph, hvVoltage_mV, power_kW, num, motorTemp_C, acTemp_C, mcTemp_C);
+    tftDL_RTDUpdate(memoratorPresent, sbgStatus, speed_mph, hvVoltage_mV, power_kW, motorTemp_yellow, motorTemp_red, acTemp_yellow, acTemp_red, mcTemp_yellow, mcTemp_red, motorTemp_C, acTemp_C, mcTemp_C, glvVoltage);
 
     /* Write Display List to Screen */
     tftDLWrite(&tft, &tftDL_RTD);
@@ -475,7 +546,7 @@ void tftInit(void) {
         .io = {
             { .port = GPIOA, .pin = GPIO_PIN_6 },
             { .port = GPIOA, .pin = GPIO_PIN_7 },
-            { .port = GPIOC, .pin = GPIO_PIN_5 },
+            { .port = GPIOC, .pin = GPIO_PIN_4 },
             { .port = GPIOC, .pin = GPIO_PIN_5 }
         },
         .sck = { .port = GPIOB, .pin = GPIO_PIN_1 },

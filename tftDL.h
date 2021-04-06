@@ -27,20 +27,43 @@ extern const tftDL_t tftDL_RTD;
 /** @brief Exported error screen definition for interface consumers. */
 extern const tftDL_t tftDL_error;
 
+/** @brief Text buffer for messages from RAM */
+extern char RAMBUF[];
+
+// Sizes for displaying to screen
+#define GEARDISPLAYLEN 5
+#define STATEDISPLAYLEN 5
+#define RAMDISPLAYLEN 20
+#define NOTEDISPLAYLEN 12
+
+// Indices for accessing RAM Buffer
+#define NOTE1_INDEX 40
+#define NOTE2_INDEX 60
+#define NOTE3_INDEX 80
+
 void tftDL_RTDUpdate(
     bool memoratorPresent,
+    SBG_status_t sbgStatus,
     uint32_t speed_mph,
-    int32_t hvVoltage,
+    int32_t hvVoltage_mV,
     int32_t power_kW,
-    int32_t dcdcTemp,
-    int32_t motorTemp,
-    int32_t acTemp,
-    int32_t mcTemp
+    bool motorTemp_yellow,
+    bool motorTemp_red,
+    bool acTemp_yellow,
+    bool acTemp_red,
+    bool mcTemp_yellow,
+    bool mcTemp_red,
+    int32_t motorTemp_C,
+    int32_t acTemp_C,
+    int32_t mcTemp_C,
+    int32_t glvVoltage_V
 );
 
 void tftDL_errorUpdate(
     tft_errors_t *err
 );
+
+void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yellow, bool temp_red);
 
 void tftDLContentLoad(tft_t *tft, const tftDL_t *tftDL);
 void tftDLWrite(tft_t *tft, const tftDL_t *tftDL);

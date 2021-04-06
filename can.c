@@ -18,6 +18,7 @@
 #include "can.h"    // Interface to implement
 #include "adc.h"    // adcVSense, adcISense
 #include "state.h"  // State interface
+#include "tftDL.h"  // For RAM buffer indices
 
 /**
  * @brief CAN periodic message receive metadata
@@ -60,8 +61,23 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
-    [CANRX_PTC_COOLING_STATUS] = {
-        .canID = CMR_CANID_PTC_COOLING_STATUS,
+    [CANRX_PTCf_LOOP_A_TEMPS] = {
+        .canID = CMR_CANID_PTCf_LOOP_TEMPS_A,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_PTCf_LOOP_B_TEMPS] = {
+        .canID = CMR_CANID_PTCf_LOOP_TEMPS_B,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_PTCp_LOOP_A_TEMPS] = {
+        .canID = CMR_CANID_PTCp_LOOP_TEMPS_A,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_PTCp_LOOP_B_TEMPS] = {
+        .canID = CMR_CANID_PTCp_LOOP_TEMPS_B,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
@@ -77,9 +93,14 @@ cmr_canRXMeta_t canRXMeta[] = {
     },
     [CANRX_CDL_BROADCAST] = {
         .canID = CMR_CANID_CDL_BROADCAST,
-        .timeoutError_ms = 50,
-        .timeoutWarn_ms = 25,
+        .timeoutError_ms = 4000,
+        .timeoutWarn_ms = 2000
     },
+    [CANRX_SBG_STATUS_3] = {
+        .canID = CMR_CANID_SBG_STATUS_3,
+        .timeoutError_ms = 800,
+        .timeoutWarn_ms = 400
+    }
 };
 
 /** @brief Primary CAN interface. */
@@ -107,8 +128,8 @@ static void canTX10Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         cmr_canDIMPowerDiagnostics_t powerDiagnostics = {
-            .busVoltage_mV = adcRead(ADC_VSENSE),
-            .busCurrent_mA = adcRead(ADC_ISENSE)
+            .busVoltage_mV = adcRead(ADC_VSENSE) * 8 * 11 / 10, // TODO: figure out where 8, 10 come from
+            .busCurrent_mA = adcRead(ADC_ISENSE) * 8 / 20 / 10 // TODO: figure out where 8, 10 come from
         };
 
         canTX(
@@ -197,17 +218,63 @@ static void canTX100Hz(void *pvParameters) {
 }
 
 /**
+ * @brief Callback for the RAM messages to the DIM to write to the screen
+ * 
+ * For displaying from the RAM buffer, character indices 0-20 inclusive are for the
+ * message at the top. This corresponds to text->address 0, 1, 2, 3, and 4.
+ * Character indices 40-52 inclusive are for the first note on the right side of the screen.
+ * This corresponds to text->address 0x0A, 0x0B, and 0x0C.
+ * Character indices 60-72 inclusive are for the second note on the right side of the screen.
+ * This corresponds to text->address 0x0F, 0x10, and 0x11.
+ * Character indices 80-92 inclusive are for the third note on the right side of the screen.
+ * This corresponds to text->address 0x14, 0x15, and 0x16.
+ */
+void ramRxCallback (cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen) {
+    if (canID == CMR_CANID_DIM_TEXT_WRITE) {
+        cmr_canDIMTextWrite_t *text = (cmr_canDIMTextWrite_t *)data;
+        if (dataLen == sizeof(cmr_canDIMTextWrite_t)) {
+            uint16_t index = ((uint16_t)text->address) << 2;
+            if (index < RAMBUFLEN) {
+                memcpy(RAMBUF + index, &(text->data), 4);
+                
+                /* 
+                 * Replace all null terminators with spaces - otherwise screen
+                 * doesn't display any characters after a null terminator is found
+                 * clearing is so that if found null terminator within in section of text,
+                 * all characters after null terminator will also be cleared
+                 */
+                bool clearing = false;
+                for(uint16_t i = 0; i < RAMBUFLEN; i++) {
+                    if (i == NOTE1_INDEX || i == NOTE2_INDEX || i == NOTE3_INDEX) {
+                        clearing = false;
+                    }
+                    if (RAMBUF[i] == '\0' || clearing) {
+                        clearing = true;
+                        RAMBUF[i] = ' ';
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
  * @brief Initializes the CAN interface.
  */
 void canInit(void) {
     // CAN2 initialization.
     cmr_canInit(
-        &can, CAN2,
+        &can, CAN2, CMR_CAN_BITRATE_500K,
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
-        NULL,
+        &ramRxCallback,
         GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
         GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
     );
+
+    // Clear RAM Buf - Set all to Spaces
+    for(uint16_t i = 0; i < RAMBUFLEN; i++) {
+        RAMBUF[i] = ' ';
+    }
 
     // CAN2 filters.
     const cmr_canFilter_t canFilters[] = {
@@ -219,6 +286,16 @@ void canInit(void) {
                 CMR_CANID_HVC_PACK_VOLTAGE,
                 CMR_CANID_CDC_WHEEL_SPEEDS,
                 CMR_CANID_CDC_MOTOR_DATA
+            }
+        },
+        {
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO1,
+            .ids = {
+                CMR_CANID_SBG_STATUS_3,
+                CMR_CANID_DIM_TEXT_WRITE,
+                CMR_CANID_PTCf_LOOP_TEMPS_B,
+                CMR_CANID_PTCp_LOOP_TEMPS_A
             }
         },
         {
@@ -236,9 +313,19 @@ void canInit(void) {
             .rxFIFO= CAN_RX_FIFO1,
             .ids = {
                 CMR_CANID_CDC_MOTOR_TEMPS,
-                CMR_CANID_PTC_COOLING_STATUS,
+                CMR_CANID_PTCf_LOOP_TEMPS_A,
                 CMR_CANID_HEARTBEAT_HVC,
                 CMR_CANID_CDC_MOTOR_FAULTS
+            }
+        },
+        {
+            .isMask = false,
+            .rxFIFO= CAN_RX_FIFO1,
+            .ids = {
+                CMR_CANID_PTCp_LOOP_TEMPS_B,
+                CMR_CANID_PTCp_LOOP_TEMPS_B,
+                CMR_CANID_PTCp_LOOP_TEMPS_B,
+                CMR_CANID_PTCp_LOOP_TEMPS_B
             }
         }
     };
@@ -276,4 +363,3 @@ void canInit(void) {
 int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
     return cmr_canTX(&can, id, data, len, timeout);
 }
-

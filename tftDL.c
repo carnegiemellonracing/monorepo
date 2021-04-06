@@ -5,10 +5,14 @@
  * @author Carnegie Mellon Racing
  */
 
-#include <stdio.h>      // snprintf()
+#include <stdio.h>        // snprintf
+#include <string.h>        // memcpy()
 
 #include "tftDL.h"          // Interface to implement
 #include "tftContent.h"     // Content interface
+#include "adc.h"            // GLV voltage
+#include "state.h"          // State interface
+#include "can.h"            // Board-specific CAN interface
 
 /** @brief Represents a display list. */
 struct tftDL {
@@ -101,35 +105,146 @@ typedef struct {
 /** @brief Bitposition of Y-coordinate byte in vertices */
 #define TFT_DL_VERTEX_Y_BIT 12
 
-/**
- * @brief Reflect logical value into bar plot for drawing.
- *
- * @param bar The bar to update.
- * @param val The logical value to draw.
- */
-static void tftDL_barSetY(const tftDL_bar_t *bar, int32_t val) {
-    uint8_t y;
-    if (val < bar->minVal) {
-        y = bar->botY;
-    } else if (val > bar->maxVal) {
-        y = bar->topY;
-    } else {
-        int32_t len = (
-            (val - bar->minVal) * (int32_t) (bar->botY - bar->topY)
-        ) / (bar->maxVal - bar->minVal);
-        y = bar->botY - (uint8_t) len;
-    }
+/** @brief Color green to be displayed */
+#define green 0x0400FF00
 
-    uint32_t vertex = *bar->addr;
-    vertex &= ~(((1 << 8) - 1) << TFT_DL_VERTEX_Y_BIT); //TODO: This is dumb
-    vertex |= y << TFT_DL_VERTEX_Y_BIT;
-    *bar->addr = vertex;
+/** @brief Color red to be displayed*/
+#define red 0x04FF0000
+
+/** @brief Color blue to be displayed*/
+#define blue 0x040000FF
+
+/** @brief Color dark red to be displayed*/
+#define dark_red 0x04C80000
+
+/** @brief Color black to be displayed*/
+#define black 0x04000000
+
+/** @brief Color black to be displayed*/
+#define white 0x04FFFFFF
+
+/** @brief Color yellow to be displayed*/
+#define yellow 0x04FFFF00
+
+/*
+ * @brief Writes an int via some format string to a location in RTD.
+ *
+ * @param location the location to write to in RTD.
+ * @param length the maximum number of chars to write.
+ * @param formatString the format string to write the int using.
+ * @param number the number to write.
+ */
+static void tftDL_RTDwriteInt(uint32_t location, uint32_t length,  char* formatString, uint32_t number) {
+    char *print_location = (void *) (tftDL_RTDData + location);
+    snprintf(print_location, length, formatString, number);
+}
+
+/*
+ * @brief Writes the current VSM state and gear to the RTD screen.
+ */
+static void tftDL_showGear() {
+    /** @brief Characters for each state. */
+    size_t stateCharsLen = 6;
+    static const char *stateChars[] = {
+        [CMR_CAN_UNKNOWN] =      "?????",
+        [CMR_CAN_GLV_ON] =       "  GLV",
+        [CMR_CAN_HV_EN] =        " HVEN",
+        [CMR_CAN_RTD] =          "  RTD",
+        [CMR_CAN_ERROR] =        "ERROR",
+        [CMR_CAN_CLEAR_ERROR] =  "CLEAR",
+    };
+
+    /** @brief Characters for each gear. */
+    static const char* gearChars[CMR_CAN_GEAR_LEN] = {
+        [CMR_CAN_GEAR_UNKNOWN] =   "?????",
+        [CMR_CAN_GEAR_REVERSE] =   "  Rev",
+        [CMR_CAN_GEAR_SLOW] =      " Slow",
+        [CMR_CAN_GEAR_FAST] =      " Fast",
+        [CMR_CAN_GEAR_ENDURANCE] = "Endur",
+        [CMR_CAN_GEAR_AUTOX] =     "AutoX",
+        [CMR_CAN_GEAR_SKIDPAD] =   " Skid",
+        [CMR_CAN_GEAR_ACCEL] =     "Accel",
+        [CMR_CAN_GEAR_TEST] =      " Test"
+    };
+    cmr_canState_t stateVSM = stateGetVSM();
+    cmr_canGear_t gear = stateGetGear();
+    cmr_canState_t stateVSMReq = stateGetVSMReq();
+
+    const char* stateChar = (stateVSM < stateCharsLen)
+        ? stateChars[stateVSM]
+        : stateChars[CMR_CAN_UNKNOWN];
+
+    const char* gearChar = (gear < CMR_CAN_GEAR_LEN)
+        ? gearChars[gear]
+        : gearChars[CMR_CAN_GEAR_UNKNOWN];
+
+    const char* stateReqChar = (stateVSMReq < stateCharsLen)
+            ? stateChars[stateVSMReq]
+            : stateChars[CMR_CAN_UNKNOWN];
+
+    static struct {
+        char buf[STATEDISPLAYLEN];
+    } *const vsmState_str = (void *) (tftDL_RTDData + ESE_VSM_STATE_STR);
+
+    memcpy((void *) vsmState_str->buf, (void *) stateChar, STATEDISPLAYLEN);
+
+    static struct {
+        char buf[GEARDISPLAYLEN];
+    } *const gearState_str = (void *) (tftDL_RTDData + ESE_GEAR_STR);
+
+    memcpy((void *) gearState_str->buf, (void *) gearChar, GEARDISPLAYLEN);
+
+    static struct {
+            char buf[STATEDISPLAYLEN];
+        } *const reqState_str = (void *) (tftDL_RTDData + ESE_REQ_STATE_STR);
+
+        memcpy((void *) reqState_str->buf, (void *) stateReqChar, STATEDISPLAYLEN);
+}
+
+/**
+ * @brief sets the display message from the RAM
+ * Sets at top and 3 notes on right side
+ */
+void tftDL_showRAMMsg() {
+    static struct {
+            char buf[RAMDISPLAYLEN];
+        } *const ramMsg_str = (void *) (tftDL_RTDData + ESE_RAM_MSG_STR);
+        memcpy((void *) ramMsg_str->buf, (void *) RAMBUF, RAMDISPLAYLEN);
+    static struct {
+            char buf[NOTEDISPLAYLEN];
+        } *const note1_str = (void *) (tftDL_RTDData + ESE_NOTE_1_STR);
+        memcpy((void *) note1_str->buf, (void *) &(RAMBUF[NOTE1_INDEX]), NOTEDISPLAYLEN);
+    static struct {
+            char buf[NOTEDISPLAYLEN];
+        } *const note2_str = (void *) (tftDL_RTDData + ESE_NOTE_2_STR);
+        memcpy((void *) note2_str->buf, (void *) &(RAMBUF[NOTE2_INDEX]), NOTEDISPLAYLEN);
+    static struct {
+            char buf[NOTEDISPLAYLEN];
+        } *const note3_str = (void *) (tftDL_RTDData + ESE_NOTE_3_STR);
+        memcpy((void *) note3_str->buf, (void *) &(RAMBUF[NOTE3_INDEX]), NOTEDISPLAYLEN);
+}
+
+/**
+ * @brief sets the color in tftDL_RTDData corresponding to index
+ *
+ * @param background_index Index into the tftDL_RTDData to add the background color
+ * @param text_index Index into the tftDL_RTDData to add the text color
+ * @param temp_yellow if the temperature is slightly too high
+ * @param temp_red If the temperature is too high
+ *
+ */
+void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yellow, bool temp_red) {
+    uint32_t* background_p = (void *) (tftDL_RTDData + background_index);
+    *background_p = temp_red ? dark_red : (temp_yellow ? yellow : black);
+    uint32_t* text_p = (void *) (tftDL_RTDData + text_index);
+    *text_p = (temp_yellow && !temp_red) ? black : white;
 }
 
 /**
  * @brief Updates the ready-to-drive screen.
  *
  * @param memoratorPresent Memorator present (based on heartbeat)
+ * @param sbgStatus SBG INS Status
  * @param speed_mph Speed (from CDC)
  * @param hvVoltage_mV Pack Voltage (from HVC)
  * @param power_kW Electrical power dissipation
@@ -142,184 +257,124 @@ static void tftDL_barSetY(const tftDL_bar_t *bar, int32_t val) {
  * Currently Max cell temp. Deg. C.
  * @param mcTemp_C MC internal temp.
  * Referred from RMS via CDC. Deg. C.
+ * @param glvVoltage Voltage from GLV
  */
 void tftDL_RTDUpdate(
     bool memoratorPresent,
+    SBG_status_t sbgStatus,
     uint32_t speed_mph,
     int32_t hvVoltage_mV,
     int32_t power_kW,
-    int32_t dcdcTemp_C,
+    bool motorTemp_yellow,
+    bool motorTemp_red,
+    bool acTemp_yellow,
+    bool acTemp_red,
+    bool mcTemp_yellow,
+    bool mcTemp_red,
     int32_t motorTemp_C,
     int32_t acTemp_C,
-    int32_t mcTemp_C
+    int32_t mcTemp_C,
+    int32_t glvVoltage_V
 ) {
-    uint32_t *bg_color = (void *) (tftDL_RTDData + 1);
-    uint32_t bg_color_cmd = (memoratorPresent) ? 0x02000000 : 0x02820000;
+    tftDL_RTDwriteInt(ESE_HV_VOLTAGE_STR, 4, "%3ld", hvVoltage_mV / 1000);
+    tftDL_RTDwriteInt(ESE_MOTOR_TEMP_STR, 3, "%2ld", motorTemp_C);
+    tftDL_RTDwriteInt(ESE_AC_TEMP_STR, 3, "%2ld", acTemp_C);
+    tftDL_RTDwriteInt(ESE_MC_TEMP_STR, 3, "%2ld", mcTemp_C);
+    tftDL_RTDwriteInt(ESE_RTD_GLV_STR, 3, "%2d", glvVoltage_V);
+    tftDL_RTDwriteInt(ESE_POWER_STR, 3, "%2ld", power_kW);
 
-    static struct {
-        char buf[3];
-    } *const speed_mph_str = (void *) (tftDL_RTDData + SPEED_STR);
 
-    static struct {
-        char buf[4];
-    } *const hvVoltage_mV_str = (void *) (tftDL_RTDData + HV_VOLTAGE_STR);
+    /* Memorator color */
+    uint32_t *memorator_color = (void *) (tftDL_RTDData + ESE_MEMO_TEXT_COLOR);
+    uint32_t memorator_color_cmd = memoratorPresent ? green : red;
+    *memorator_color = memorator_color_cmd;
 
-    static struct {
-        char buf[3];
-    } *const dcdcTemp_C_str = (void *) (tftDL_RTDData + DCDC_TEMP_STR);
+    /* GPS color */
+    uint32_t *gps_color = (void *) (tftDL_RTDData + ESE_GPS_TEXT_COLOR);
+    uint32_t gps_color_cmd;
+    switch (sbgStatus) {
+    case SBG_STATUS_WORKING_POS_FOUND:
+        // GPS working and position found
+        gps_color_cmd = green;
+        break;
+    case SBG_STATUS_WORKING_NO_POS_FOUND:
+        // GPS connected, not working
+        gps_color_cmd = yellow;
+        break;
+    case SBG_STATUS_NOT_CONNECTED:
+    default:
+        // GPS not connected
+        gps_color_cmd = red;
+    }
+    *gps_color = gps_color_cmd;
 
-    static struct {
-        char buf[3];
-    } *const motorTemp_C_str = (void *) (tftDL_RTDData + MOTOR_TEMP_STR);
+    /* Temperature backgrounds */
+    setTempColor(ESE_MOTOR_TEMP_BG_COLOR, ESE_MOTOR_TEMP_COLOR, motorTemp_yellow, motorTemp_red);
+    setTempColor(ESE_AC_TEMP_BG_COLOR, ESE_AC_TEMP_COLOR, acTemp_yellow, acTemp_red);
+    setTempColor(ESE_MC_TEMP_BG_COLOR, ESE_MC_TEMP_COLOR, mcTemp_yellow, mcTemp_red);
 
-    static struct {
-        char buf[3];
-    } *const acTemp_C_str = (void *) (tftDL_RTDData + AC_TEMP_STR);
-
-    static struct {
-        char buf[3];
-    } *const mcTemp_C_str = (void *) (tftDL_RTDData + MC_TEMP_STR);
-
-    static const tftDL_bar_t hvVoltage_mV_bar = {
-        .addr = tftDL_RTDData + HV_VOLTAGE_BAR,
-        .topY = 12,
-        .botY = 168,
-        .maxVal = 400000,
-        .minVal = 300000
-    };
-
-    static struct {
-        char buf[3];
-    } *const power_kW_str = (void *) (tftDL_RTDData + POWER_STR);
-
-    static const tftDL_bar_t power_kW_bar = {
-        .addr = tftDL_RTDData + POWER_KW_BAR,
-        .topY = 12,
-        .botY = 168,
-        .maxVal = 85,
-        .minVal = 0
-    };
-
-    /* Background color */
-    *bg_color = bg_color_cmd;
-
-    /* Voltage Bar */
-    snprintf(
-            hvVoltage_mV_str->buf, sizeof(hvVoltage_mV_str->buf),
-            "%3ld", hvVoltage_mV / 1000
-    );
-    tftDL_barSetY(&hvVoltage_mV_bar, hvVoltage_mV);
-
-    /* Power Bar */
-    snprintf(
-            power_kW_str->buf, sizeof(power_kW_str->buf),
-            "%2ld", power_kW
-    );
-
-    /* Speed */
-    snprintf(
-            speed_mph_str->buf, sizeof(speed_mph_str->buf),
-            "%2lu", speed_mph
-    );
-    tftDL_barSetY(&power_kW_bar, power_kW);
-
-    /* Temperatures */
-    snprintf(
-        dcdcTemp_C_str->buf, sizeof(dcdcTemp_C_str->buf),
-        "%2ld", dcdcTemp_C
-    );
-
-    snprintf(
-        motorTemp_C_str->buf, sizeof(motorTemp_C_str->buf),
-        "%2ld", motorTemp_C
-    );
-
-    snprintf(
-        acTemp_C_str->buf, sizeof(acTemp_C_str->buf),
-        "%2ld", acTemp_C
-    );
-
-    snprintf(
-        mcTemp_C_str->buf, sizeof(mcTemp_C_str->buf),
-        "%2ld", mcTemp_C
-    );
+    tftDL_showGear();
+    tftDL_showRAMMsg();
 }
 
+
 /**
- * @brief Set the color pointed to by addr.
+ * @brief Set the text color of an error depending on whether it is active.
  *
- * @param addr A raw pointer to a DL color.
- * @param val A raw value.
+ * @param addr location the location of the text color to change.
+ * @param val condition boolean value of whether the error is active.
  */
-static void tftDL_setColor(uint32_t *addr, uint32_t val) {
-    *addr = val; // TODO: This is dumb
+static void tftDL_showErrorState(uint32_t location, bool condition) {
+    uint32_t color_err = 0x04ff0a0a;
+    uint32_t color_none = 0x04303030;
+    uint32_t *color_location = (void *) (tftDL_errorData + location);
+    *color_location = condition ? color_err : color_none;
 }
 
 /**
- * @brief Updates the ready-to-drive screen to the error screen.
+ * @brief Updates the error screen.
  *
  * @param err Error statuses to display.
  */
 void tftDL_errorUpdate(
     tft_errors_t *err
 ) {
-    uint32_t color_err = 0x04ff0a0a;
-    uint32_t color_none = 0x04303030;
 
-    uint32_t *fsm_color = (void *) (tftDL_errorData + FSM_COLOR);
-    uint32_t fsm_color_cmd  = (err->fsmTimeout) ? color_err : color_none;
+    static struct {
+        char buf[4];
+    } *const glvVoltage_V_str = (void *) (tftDL_errorData + ESE_ERR_GLV_STR);
 
-    uint32_t *cdc_color = (void *) (tftDL_errorData + CDC_COLOR);
-    uint32_t cdc_color_cmd  = (err->cdcTimeout) ? color_err : color_none;
+    snprintf(
+        glvVoltage_V_str->buf, sizeof(glvVoltage_V_str->buf),
+        "%2dV", err->glvVoltage_V
+    );
 
-    uint32_t *ptc_color = (void *) (tftDL_errorData + PTC_COLOR);
-    uint32_t ptc_color_cmd  = (err->ptcTimeout) ? color_err : color_none;
 
-    uint32_t *vsm_color = (void *) (tftDL_errorData + VSM_COLOR);
-    uint32_t vsm_color_cmd  = (err->vsmTimeout) ? color_err : color_none;
-
-    uint32_t *afc1_color = (void *) (tftDL_errorData + AFC1_COLOR);
-    uint32_t afc1_color_cmd  = (err->afc1Timeout) ? color_err : color_none;
-
-    uint32_t *afc2_color = (void *) (tftDL_errorData + AFC2_COLOR);
-    uint32_t afc2_color_cmd  = (err->afc2Timeout) ? color_err : color_none;
-
-    uint32_t *overVolt_color = (void *) (tftDL_errorData + OVERVOLT_COLOR);
-    uint32_t overVolt_color_cmd  = (err->overVolt) ? color_err : color_none;
-
-    uint32_t *underVolt_color = (void *) (tftDL_errorData + UNDERVOLT_COLOR);
-    uint32_t underVolt_color_cmd  = (err->underVolt) ? color_err : color_none;
-
-    uint32_t *hvcoverTemp_color = (void *) (tftDL_errorData + HVC_OVERTEMP_COLOR);
-    uint32_t hvcoverTemp_color_cmd  = (err->hvcoverTemp) ? color_err : color_none;
-
-    uint32_t *hvcError_color = (void *) (tftDL_errorData + HVC_ERROR_COLOR);
-    uint32_t hvcError_color_cmd  = (err->hvc_Error) ? color_err : color_none;
-
-    uint32_t *overSpeed_color = (void *) (tftDL_errorData + OVERSPEED_COLOR);
-    uint32_t overSpeed_color_cmd  = (err->overSpeed) ? color_err : color_none;
-
-    uint32_t *mcoverTemp_color = (void *) (tftDL_errorData + MC_OVERTEMP_COLOR);
-    uint32_t mcoverTemp_color_cmd  = (err->mcoverTemp) ? color_err : color_none;
-
-    uint32_t *overCurrent_color = (void *) (tftDL_errorData + OVERCURRENT_COLOR);
-    uint32_t overCurrent_color_cmd  = (err->overCurrent) ? color_err : color_none;
-
-    uint32_t *mcError_color = (void *) (tftDL_errorData + MC_ERROR_COLOR);
-    uint32_t mcError_color_cmd  = (err->mcError) ? color_err : color_none;
-
-    uint32_t *imdError_color = (void *) (tftDL_errorData + IMD_COLOR);
-    uint32_t imdError_color_cmd  = (err->imdError) ? color_err : color_none;
-
-    uint32_t *amsError_color = (void *) (tftDL_errorData + AMS_COLOR);
-    uint32_t amsError_color_cmd  = (err->amsError) ? color_err : color_none;
-
-    uint32_t *bspdError_color = (void *) (tftDL_errorData + BSPD_COLOR);
-    uint32_t bspdError_color_cmd  = (err->bspdError) ? color_err : color_none;
+    tftDL_showErrorState(ESE_FSM_COLOR, err->fsmTimeout);
+    tftDL_showErrorState(ESE_CDC_COLOR, err->cdcTimeout);
+    tftDL_showErrorState(ESE_PTCf_COLOR, err->ptcfTimeout);
+    tftDL_showErrorState(ESE_PTCp_COLOR, err->ptcpTimeout);
+    tftDL_showErrorState(ESE_APC_COLOR, err->apcTimeout);
+    tftDL_showErrorState(ESE_HVC_COLOR, err->hvcTimeout);
+    tftDL_showErrorState(ESE_VSM_COLOR, err->vsmTimeout);
+    tftDL_showErrorState(ESE_VSM_COLOR, err->vsmTimeout);
+    tftDL_showErrorState(ESE_VSM_COLOR, err->vsmTimeout);
+    tftDL_showErrorState(ESE_OVERVOLT_COLOR, err->overVolt);
+    tftDL_showErrorState(ESE_UNDERVOLT_COLOR, err->underVolt);
+    tftDL_showErrorState(ESE_HVC_OVERTEMP_COLOR, err->hvcoverTemp);
+    tftDL_showErrorState(ESE_HVC_ERROR_COLOR, err->hvc_Error);
+    tftDL_showErrorState(ESE_OVERSPEED_COLOR, err->overSpeed);
+    tftDL_showErrorState(ESE_MC_OVERTEMP_COLOR, err->mcoverTemp);
+    tftDL_showErrorState(ESE_OVERCURRENT_COLOR, err->overCurrent);
+    tftDL_showErrorState(ESE_MC_ERROR_COLOR, err->mcError);
+    tftDL_showErrorState(ESE_IMD_COLOR, err->imdError);
+    tftDL_showErrorState(ESE_AMS_COLOR, err->amsError);
+    tftDL_showErrorState(ESE_BSPD_COLOR, err->bspdError);
+    tftDL_showErrorState(ESE_GLV_COLOR, err->glvLowVolt);
 
     static struct {
         char buf[11];
-    } *const hvc_error_num_str = (void *) (tftDL_errorData + HVC_ERROR_NUM_STR);
+    } *const hvc_error_num_str = (void *) (tftDL_errorData + ESE_HVC_ERROR_NUM_STR);
 
     snprintf(
         hvc_error_num_str->buf, sizeof(hvc_error_num_str->buf),
@@ -328,30 +383,13 @@ void tftDL_errorUpdate(
 
     static struct {
         char buf[15];
-    } *const mc_error_num_str = (void *) (tftDL_errorData + MC_ERROR_NUM_STR);
+    } *const mc_error_num_str = (void *) (tftDL_errorData + ESE_MC_ERROR_NUM_STR);
 
     snprintf(
         mc_error_num_str->buf, sizeof(mc_error_num_str->buf),
         "%08x", err->mcErrorNum
     );
 
-    tftDL_setColor(fsm_color, fsm_color_cmd);
-    tftDL_setColor(cdc_color, cdc_color_cmd);
-    tftDL_setColor(ptc_color, ptc_color_cmd);
-    tftDL_setColor(vsm_color, vsm_color_cmd);
-    tftDL_setColor(afc1_color, afc1_color_cmd);
-    tftDL_setColor(afc2_color, afc2_color_cmd);
-    tftDL_setColor(overVolt_color, overVolt_color_cmd);
-    tftDL_setColor(underVolt_color, underVolt_color_cmd);
-    tftDL_setColor(hvcoverTemp_color, hvcoverTemp_color_cmd);
-    tftDL_setColor(hvcError_color, hvcError_color_cmd);
-    tftDL_setColor(overSpeed_color, overSpeed_color_cmd);
-    tftDL_setColor(mcoverTemp_color, mcoverTemp_color_cmd);
-    tftDL_setColor(overCurrent_color, overCurrent_color_cmd);
-    tftDL_setColor(mcError_color, mcError_color_cmd);
-    tftDL_setColor(imdError_color, imdError_color_cmd);
-    tftDL_setColor(amsError_color, amsError_color_cmd);
-    tftDL_setColor(bspdError_color, bspdError_color_cmd);
 }
 
 /**

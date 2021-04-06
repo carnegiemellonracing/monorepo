@@ -25,21 +25,7 @@ static cmr_adcChannel_t adcChannels[ADC_LEN] = {
     },
     [ADC_ISENSE] = {
         .channel = ADC_CHANNEL_1,
-        .port = GPIOA,
-        .pin = GPIO_PIN_1,
-        .samplingTime = ADC_SAMPLETIME_15CYCLES,
-        .value = 0
-    },
-    [ADC_JOY_X] = {
-        .channel = ADC_CHANNEL_11,
-        .port = GPIOC,
-        .pin = GPIO_PIN_1,
-        .samplingTime = ADC_SAMPLETIME_15CYCLES,
-        .value = 0
-    },
-    [ADC_JOY_Y] = {
-        .channel = ADC_CHANNEL_10,
-        .port = GPIOC,
+        .port = GPIOB,
         .pin = GPIO_PIN_0,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0

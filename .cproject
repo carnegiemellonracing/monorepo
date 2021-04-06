@@ -110,7 +110,7 @@
 								<option id="com.atollic.truestudio.common_options.target.fpucore.1695774721" name="FPU" superClass="com.atollic.truestudio.common_options.target.fpucore" value="com.atollic.truestudio.common_options.target.fpucore.fpv4-sp-d16" valueType="enumerated"/>
 								<option id="com.atollic.truestudio.common_options.target.fpu.1268523142" name="Floating point" superClass="com.atollic.truestudio.common_options.target.fpu" value="com.atollic.truestudio.common_options.target.fpu.hard" valueType="enumerated"/>
 								<option id="com.atollic.truestudio.ldcc.optimization.do_garbage.2137393389" name="Dead code removal" superClass="com.atollic.truestudio.ldcc.optimization.do_garbage" value="true" valueType="boolean"/>
-								<option id="com.atollic.truestudio.ldcc.general.scriptfile.736864150" name="Linker script" superClass="com.atollic.truestudio.ldcc.general.scriptfile" value="../STM32F413RG_FLASH.ld" valueType="string"/>
+								<option id="com.atollic.truestudio.ldcc.general.scriptfile.736864150" name="Linker script" superClass="com.atollic.truestudio.ldcc.general.scriptfile" value="../Debug_STM32F413RG_FLASH.ld" valueType="string"/>
 								<option id="com.atollic.truestudio.ldcc.misc.genmapfile.1570538385" name="Create map file" superClass="com.atollic.truestudio.ldcc.misc.genmapfile"/>
 								<option id="com.atollic.truestudio.common_options.target.interwork.1382198716" name="Mix ARM/Thumb" superClass="com.atollic.truestudio.common_options.target.interwork"/>
 							</tool>
@@ -197,7 +197,7 @@
 								<option id="com.atollic.truestudio.common_options.target.instr_set.2123581320" name="Instruction set" superClass="com.atollic.truestudio.common_options.target.instr_set" useByScannerDiscovery="false" value="com.atollic.truestudio.common_options.target.instr_set.thumb2" valueType="enumerated"/>
 								<option id="com.atollic.truestudio.common_options.target.fpucore.1831187189" name="FPU" superClass="com.atollic.truestudio.common_options.target.fpucore" useByScannerDiscovery="false" value="com.atollic.truestudio.common_options.target.fpucore.fpv4-sp-d16" valueType="enumerated"/>
 								<option id="com.atollic.truestudio.common_options.target.fpu.362357108" name="Floating point" superClass="com.atollic.truestudio.common_options.target.fpu" useByScannerDiscovery="false" value="com.atollic.truestudio.common_options.target.fpu.hard" valueType="enumerated"/>
-								<option id="com.atollic.truestudio.ld.general.scriptfile.1421925128" name="Linker script" superClass="com.atollic.truestudio.ld.general.scriptfile" useByScannerDiscovery="false" value="..\STM32F413RG_FLASH.ld" valueType="string"/>
+								<option id="com.atollic.truestudio.ld.general.scriptfile.1421925128" name="Linker script" superClass="com.atollic.truestudio.ld.general.scriptfile" useByScannerDiscovery="false" value="../STM32F413RG_FLASH.ld" valueType="string"/>
 								<option id="com.atollic.truestudio.ld.optimization.do_garbage.894994143" name="Dead code removal " superClass="com.atollic.truestudio.ld.optimization.do_garbage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="com.atollic.truestudio.ld.misc.genmapfile.1049683402" name="Create map file" superClass="com.atollic.truestudio.ld.misc.genmapfile" useByScannerDiscovery="false"/>
 								<option id="com.atollic.truestudio.common_options.target.interwork.1962847164" name="Mix ARM/Thumb" superClass="com.atollic.truestudio.common_options.target.interwork" useByScannerDiscovery="false"/>
@@ -234,7 +234,7 @@
 								<option id="com.atollic.truestudio.common_options.target.fpucore.43968807" name="FPU" superClass="com.atollic.truestudio.common_options.target.fpucore" value="com.atollic.truestudio.common_options.target.fpucore.fpv4-sp-d16" valueType="enumerated"/>
 								<option id="com.atollic.truestudio.common_options.target.fpu.1654669850" name="Floating point" superClass="com.atollic.truestudio.common_options.target.fpu" value="com.atollic.truestudio.common_options.target.fpu.hard" valueType="enumerated"/>
 								<option id="com.atollic.truestudio.ldcc.optimization.do_garbage.1629651906" name="Dead code removal" superClass="com.atollic.truestudio.ldcc.optimization.do_garbage" value="true" valueType="boolean"/>
-								<option id="com.atollic.truestudio.ldcc.general.scriptfile.1921675751" name="Linker script" superClass="com.atollic.truestudio.ldcc.general.scriptfile" value="../Release_STM32F413RG_FLASH.ld" valueType="string"/>
+								<option id="com.atollic.truestudio.ldcc.general.scriptfile.1921675751" name="Linker script" superClass="com.atollic.truestudio.ldcc.general.scriptfile" value="../STM32F413RG_FLASH.ld" valueType="string"/>
 								<option id="com.atollic.truestudio.ldcc.misc.genmapfile.610300998" name="Create map file" superClass="com.atollic.truestudio.ldcc.misc.genmapfile"/>
 								<option id="com.atollic.truestudio.common_options.target.interwork.1711351112" name="Mix ARM/Thumb" superClass="com.atollic.truestudio.common_options.target.interwork"/>
 							</tool>

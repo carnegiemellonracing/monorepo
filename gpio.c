@@ -26,18 +26,18 @@
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_LED_STATUS] = {
-        .port = GPIOB,
+        .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_6,
+            .Pin = GPIO_PIN_0,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
     [GPIO_LED_IMD] = {
-        .port = GPIOC,
+        .port = GPIOB,
         .init = {
-            .Pin = GPIO_PIN_13,
+            .Pin = GPIO_PIN_9,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
@@ -46,7 +46,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_LED_AMS] = {
         .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_14,
+            .Pin = GPIO_PIN_12,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
@@ -55,16 +55,16 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_LED_BSPD] = {
         .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_15,
+            .Pin = GPIO_PIN_10,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
     [GPIO_BUTTON_0] = {
-        .port = GPIOC,
+        .port = GPIOA,
         .init = {
-            .Pin = GPIO_PIN_6,
+            .Pin = GPIO_PIN_8,
             .Mode = GPIO_MODE_IT_RISING_FALLING,
             .Pull = GPIO_NOPULL
         }
@@ -72,7 +72,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_BUTTON_1] = {
         .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_7,
+            .Pin = GPIO_PIN_9,
             .Mode = GPIO_MODE_IT_RISING_FALLING,
             .Pull = GPIO_NOPULL
         }
@@ -88,11 +88,19 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_BUTTON_3] = {
         .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_9,
+            .Pin = GPIO_PIN_7,
             .Mode = GPIO_MODE_IT_RISING_FALLING,
             .Pull = GPIO_NOPULL
         }
     },
+    [GPIO_BUTTON_4] = {
+            .port = GPIOC,
+            .init = {
+                .Pin = GPIO_PIN_6,
+                .Mode = GPIO_MODE_IT_RISING_FALLING,
+                .Pull = GPIO_NOPULL
+            }
+        },
     [GPIO_PD_N] = {
         .port = GPIOC,
         .init = {
@@ -152,17 +160,17 @@ static void buttonsInput_task(void *pvParameters) {
         buttonEvent_t event;
         while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
             switch (event.pin) {
-                case GPIO_BUTTON_0:
-                    stateGearButton(event.pressed);
-                    break;
                 case GPIO_BUTTON_1:
                     stateVSMDownButton(event.pressed);
                     break;
                 case GPIO_BUTTON_2:
-                    stateGearButton(event.pressed);
+                    stateVSMUpButton(event.pressed);
                     break;
                 case GPIO_BUTTON_3:
-                    stateVSMUpButton(event.pressed);
+                    stateGearButton(event.pressed);
+                    break;
+                case GPIO_BUTTON_4:
+                    stateGearButton(event.pressed);
                     break;
                 default:
                     break;

@@ -17,7 +17,6 @@
 #include "can.h"        // Board-specific CAN interface
 #include "adc.h"        // Board-specific ADC interface
 #include "tft.h"        // TFT display interface.
-#include "segments.h"   // Segment display interface
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -118,7 +117,6 @@ int main(void) {
     canInit();
     adcInit();
     tftInit();
-    segmentsInit();
 
     cmr_taskInit(
         &statusLED_task,
