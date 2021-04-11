@@ -31,23 +31,25 @@ static void mcPowerControl(void *pvParameters) {
 
     /* Get reference to VSM Heartbeat */
     volatile cmr_canHeartbeat_t *vsmHeartbeat = canGetPayload(CANRX_HEARTBEAT_VSM);
+    volatile cmr_canVSMStatus_t *vsmState = canGetPayload(CANRX_VSM_STATUS);
 
     cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 0);
     cmr_gpioWrite(GPIO_MC_EFUSE_AUTO, 0);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        switch (heartbeat.state) {
-            case CMR_CAN_RTD:
-                cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 1);
-                break;
-            case CMR_CAN_HV_EN:
-                cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 1);         // This code is subject to change, giving mc 600V before logic voltage is spooky.
-                break;                                          // Proposed solution:
-            default:                                            // VSM sends ping to PTC to turn on mc logic voltage
-                cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 0);         // after VSM sees MC can data via CDC it does precharge
-                break;
+        // Inverter should be powered if the car is in HV_EN, RTD, or the
+        // VSM is attempting to boot the inverter in it's internal state
+        if (vsmHeartbeat->state == CMR_CAN_HV_EN ||
+            vsmHeartbeat->state == CMR_CAN_RTD || 
+            vsmState->internalState == CMR_CAN_VSM_STATE_INVERTER_EN ||
+            vsmState->internalState == CMR_CAN_VSM_STATE_HV_EN) 
+        {
+            cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 1);
+        } else {
+            cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 0);
         }
+
         vTaskDelayUntil(&lastWakeTime, mcPowerControl_period_ms);
     }
 }
