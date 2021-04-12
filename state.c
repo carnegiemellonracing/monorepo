@@ -78,15 +78,15 @@ int32_t getAverageWheelRPM(void) {
             (void *) metaAMK_FL_Act1->payload;
     // Front Right
     cmr_canRXMeta_t *metaAMK_FR_Act1 = canRXMeta + CANRX_AMK_FR_ACT_1;
-        volatile cmr_canAMKActualValues2_t *canAMK_FR_Act1 =
+        volatile cmr_canAMKActualValues1_t *canAMK_FR_Act1 =
             (void *) metaAMK_FR_Act1->payload;
     // Rear Left
     cmr_canRXMeta_t *metaAMK_RL_Act1 = canRXMeta + CANRX_AMK_RL_ACT_1;
-        volatile cmr_canAMKActualValues3_t *canAMK_RL_Act1 =
+        volatile cmr_canAMKActualValues1_t *canAMK_RL_Act1 =
             (void *) metaAMK_RL_Act1->payload;
     // Rear Right
     cmr_canRXMeta_t *metaAMK_RR_Act1 = canRXMeta + CANRX_AMK_RR_ACT_1;
-        volatile cmr_canAMKActualValues4_t *canAMK_RR_Act1 =
+        volatile cmr_canAMKActualValues1_t *canAMK_RR_Act1 =
             (void *) metaAMK_RR_Act1->payload;
 
     /* Extract wheel speeds */
@@ -198,13 +198,9 @@ void stateVSMDownButton(bool pressed) {
         return;
     }
 
-    cmr_canRXMeta_t *cdcMotorDataMeta = canRXMeta + CANRX_CDC_MOTOR_DATA;
-    volatile cmr_canCDCMotorData_t *cdcMotorData =
-        (void *) cdcMotorDataMeta->payload;
-
     if (
         state.vsmReq == CMR_CAN_RTD &&
-        cdcMotorData->speed_rpm > 5
+        getAverageWheelRPM() > 5
     ) {
         // Only exit RTD when motor is basically stopped.
         return;

@@ -418,21 +418,9 @@ static void drawRTDScreen(void) {
     volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage =
         (void *) metaHVCPackVoltage->payload;
 
-    cmr_canRXMeta_t *metaCDCWheelSpeeds = canRXMeta + CANRX_CDC_WHEEL_SPEEDS;
-    volatile cmr_canCDCWheelSpeeds_t *canCDCWheelSpeeds =
-        (void *) metaCDCWheelSpeeds->payload;
-
-    cmr_canRXMeta_t *metaCDCMotorData = canRXMeta + CANRX_CDC_MOTOR_DATA;
-    volatile cmr_canCDCMotorData_t *canCDCMotorData =
-        (void *) metaCDCMotorData->payload;
-
     cmr_canRXMeta_t *metaHVCPackTemps = canRXMeta + CANRX_HVC_PACK_TEMPS;
     volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps =
         (void *) metaHVCPackTemps->payload;
-
-    cmr_canRXMeta_t *metaCDCMotorTemps = canRXMeta + CANRX_CDC_MOTOR_TEMPS;
-    volatile cmr_canCDCMotorTemps_t *canCDCMotorTemps =
-        (void *) metaCDCMotorTemps->payload;
 
     // PTC Temps
     cmr_canRXMeta_t *metaPTCfLoopA = canRXMeta + CANRX_PTCf_LOOP_A_TEMPS;
@@ -480,25 +468,24 @@ static void drawRTDScreen(void) {
     int32_t glvVoltage = adcRead(ADC_VSENSE) * 8 * 11 / 10 / 1000; // TODO: figure out where 8, 10 come from
 
     /* Motor Power Draw*/
-    int32_t power_kW =
-        (canCDCMotorData->current_dA * canCDCMotorData->voltage_dV) /
-        100000;
+    // TODO: Figure out how to calculate Motor Power draw
+    int32_t power_kW = 0;
+        // (canCDCMotorData->current_dA * canCDCMotorData->voltage_dV) /
+        // 100000;
 
     /* Wheel Speed */
         /* Wheel Speed to Vehicle Speed Conversion
-         *      Avg Front Wheel Speed * (1 rpm / 10 drpm) *
+         *      Avg Wheel Speed *
          *      (18" * PI) * (1' / 12") * (60min / 1hr) * (1 mi / 5280')
-         *      = AvgWheelSpeed * 0.00535                                   */
-        uint32_t wheelSpeed_drpm = (
-            ((uint32_t) canCDCWheelSpeeds->frontLeft) +
-            ((uint32_t) canCDCWheelSpeeds->frontRight)
-        ) / 2;
-        uint32_t speed_mph = (wheelSpeed_drpm * 535) / 100000;
+         *      = AvgWheelSpeed * 0.05355                                   */
+        uint32_t wheelSpeed_rpm = getAverageWheelRPM();
+        uint32_t speed_mph = (wheelSpeed_rpm * 5355) / 100000;
 
     /* Accumulator Temperature */
     int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC)/10;
 
     /* Motor Controller Temperature */
+    // TODO: Use AMK temperatures instead of PTC
     int32_t maxPTCfATemp_dc = findMax(canPTCfLoopTemp_A->temp1_dC, canPTCfLoopTemp_A->temp2_dC,
                                     canPTCfLoopTemp_A->temp3_dC, canPTCfLoopTemp_A->temp4_dC);
     int32_t maxPTCfBTemp_dc = findMax(canPTCfLoopTemp_B->temp5_dC, canPTCfLoopTemp_B->temp6_dC,
@@ -510,7 +497,8 @@ static void drawRTDScreen(void) {
     int32_t mcTemp_C = findMax(maxPTCfATemp_dc, maxPTCfBTemp_dc, maxPTCpATemp_dc, maxPTCpBTemp_dc) / 10;
 
     /* Motor Temperature */
-    int32_t motorTemp_C = (canCDCMotorTemps->motorTemp_dC) / 10;
+    // TODO: USe AMK temperatures
+    int32_t motorTemp_C = 0;//(canCDCMotorTemps->motorTemp_dC) / 10;
 
     /* Temperature warnings */
     bool motorTemp_yellow = motorTemp_C >= MOTOR_YELLOW_THRESHOLD;

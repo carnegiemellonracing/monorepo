@@ -66,11 +66,6 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
-    [CANRX_CDC_MOTOR_TEMPS] = {
-        .canID = CMR_CANID_CDC_MOTOR_TEMPS,
-        .timeoutError_ms = 50,
-        .timeoutWarn_ms = 25
-    },
     [CANRX_PTCf_LOOP_A_TEMPS] = {
         .canID = CMR_CANID_PTCf_LOOP_TEMPS_A,
         .timeoutError_ms = 50,
@@ -294,8 +289,8 @@ void canInit(void) {
             .ids = {
                 CMR_CANID_HEARTBEAT_VSM,
                 CMR_CANID_HVC_PACK_VOLTAGE,
-                CMR_CANID_CDC_WHEEL_SPEEDS,
-                CMR_CANID_CDC_MOTOR_DATA
+                CMR_CANID_CDC_MOTOR_FAULTS,
+                CMR_CANID_HEARTBEAT_HVC
             }
         },
         {
@@ -303,9 +298,9 @@ void canInit(void) {
             .rxFIFO = CAN_RX_FIFO1,
             .ids = {
                 CMR_CANID_SBG_STATUS_3,
+                CMR_CANID_SBG_STATUS_3,
                 CMR_CANID_DIM_TEXT_WRITE,
-                CMR_CANID_PTCf_LOOP_TEMPS_B,
-                CMR_CANID_PTCp_LOOP_TEMPS_A
+                CMR_CANID_DIM_TEXT_WRITE
             }
         },
         {
@@ -322,20 +317,20 @@ void canInit(void) {
             .isMask = false,
             .rxFIFO= CAN_RX_FIFO1,
             .ids = {
-                CMR_CANID_CDC_MOTOR_TEMPS,
                 CMR_CANID_PTCf_LOOP_TEMPS_A,
-                CMR_CANID_HEARTBEAT_HVC,
-                CMR_CANID_CDC_MOTOR_FAULTS
+                CMR_CANID_PTCf_LOOP_TEMPS_B,
+                CMR_CANID_PTCp_LOOP_TEMPS_A,
+                CMR_CANID_PTCp_LOOP_TEMPS_B
             }
         },
         {
             .isMask = false,
             .rxFIFO= CAN_RX_FIFO1,
             .ids = {
-                CMR_CANID_PTCp_LOOP_TEMPS_B,
-                CMR_CANID_PTCp_LOOP_TEMPS_B,
-                CMR_CANID_PTCp_LOOP_TEMPS_B,
-                CMR_CANID_PTCp_LOOP_TEMPS_B
+                CMR_CANID_AMK_1_ACT_1,
+                CMR_CANID_AMK_2_ACT_1,
+                CMR_CANID_AMK_3_ACT_1,
+                CMR_CANID_AMK_4_ACT_1
             }
         }
     };
