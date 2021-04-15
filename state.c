@@ -74,20 +74,20 @@ int32_t getAverageWheelRPM(void) {
     /* Get CAN data */
     // Front Left
     cmr_canRXMeta_t *metaAMK_FL_Act1 = canRXMeta + CANRX_AMK_FL_ACT_1;
-        volatile cmr_canAMKActualValues1_t *canAMK_FL_Act1 =
-            (void *) metaAMK_FL_Act1->payload;
+    volatile cmr_canAMKActualValues1_t *canAMK_FL_Act1 =
+        (void *) metaAMK_FL_Act1->payload;
     // Front Right
     cmr_canRXMeta_t *metaAMK_FR_Act1 = canRXMeta + CANRX_AMK_FR_ACT_1;
-        volatile cmr_canAMKActualValues1_t *canAMK_FR_Act1 =
-            (void *) metaAMK_FR_Act1->payload;
+    volatile cmr_canAMKActualValues1_t *canAMK_FR_Act1 =
+        (void *) metaAMK_FR_Act1->payload;
     // Rear Left
     cmr_canRXMeta_t *metaAMK_RL_Act1 = canRXMeta + CANRX_AMK_RL_ACT_1;
-        volatile cmr_canAMKActualValues1_t *canAMK_RL_Act1 =
-            (void *) metaAMK_RL_Act1->payload;
+    volatile cmr_canAMKActualValues1_t *canAMK_RL_Act1 =
+        (void *) metaAMK_RL_Act1->payload;
     // Rear Right
     cmr_canRXMeta_t *metaAMK_RR_Act1 = canRXMeta + CANRX_AMK_RR_ACT_1;
-        volatile cmr_canAMKActualValues1_t *canAMK_RR_Act1 =
-            (void *) metaAMK_RR_Act1->payload;
+    volatile cmr_canAMKActualValues1_t *canAMK_RR_Act1 =
+        (void *) metaAMK_RR_Act1->payload;
 
     /* Extract wheel speeds */
     int32_t frontLeftRPM = -1*(canAMK_FL_Act1->velocity_rpm); // Motor direction reversed on left side

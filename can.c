@@ -56,6 +56,26 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
+    [CANRX_AMK_FL_ACT_2] = {
+        .canID = CMR_CANID_AMK_1_ACT_2,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_AMK_FR_ACT_2] = {
+        .canID = CMR_CANID_AMK_2_ACT_2,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_AMK_RL_ACT_2] = {
+        .canID = CMR_CANID_AMK_3_ACT_2,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_AMK_RR_ACT_2] = {
+        .canID = CMR_CANID_AMK_4_ACT_2,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
     [CANRX_HVC_PACK_TEMPS] = {
         .canID = CMR_CANID_HVC_MINMAX_CELL_TEMPS,
         .timeoutError_ms = 50,
@@ -103,8 +123,8 @@ cmr_canRXMeta_t canRXMeta[] = {
     },
     [CANRX_SBG_STATUS_3] = {
         .canID = CMR_CANID_SBG_STATUS_3,
-        .timeoutError_ms = 800,
-        .timeoutWarn_ms = 400
+        .timeoutError_ms = 4000,
+        .timeoutWarn_ms = 2000
     }
 };
 
@@ -331,6 +351,16 @@ void canInit(void) {
                 CMR_CANID_AMK_2_ACT_1,
                 CMR_CANID_AMK_3_ACT_1,
                 CMR_CANID_AMK_4_ACT_1
+            }
+        },
+        {
+            .isMask = false,
+            .rxFIFO= CAN_RX_FIFO1,
+            .ids = {
+                CMR_CANID_AMK_1_ACT_2,
+                CMR_CANID_AMK_2_ACT_2,
+                CMR_CANID_AMK_3_ACT_2,
+                CMR_CANID_AMK_4_ACT_2
             }
         }
     };
