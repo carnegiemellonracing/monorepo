@@ -26,11 +26,16 @@ char RAMBUF[RAMBUFLEN];
 typedef enum {
     CANRX_HEARTBEAT_VSM = 0,    /**< @brief VSM heartbeat. */
     CANRX_HVC_PACK_VOLTAGE,     /**< @brief BMS pack voltage. */
-    CANRX_CDC_WHEEL_SPEEDS,     /**< @brief CDC wheel speeds. */
-    CANRX_CDC_MOTOR_DATA,       /**< @brief CDC motor data. */
+    CANRX_AMK_FL_ACT_1,         /**< @brief AMK FL status*/
+    CANRX_AMK_FR_ACT_1,         /**< @brief AMK FR status*/
+    CANRX_AMK_RL_ACT_1,         /**< @brief AMK BL status*/
+    CANRX_AMK_RR_ACT_1,         /**< @brief AMK BR status*/
+    CANRX_AMK_FL_ACT_2,         /**< @brief AMK FL Temps*/
+    CANRX_AMK_FR_ACT_2,         /**< @brief AMK FR Temps*/
+    CANRX_AMK_RL_ACT_2,         /**< @brief AMK BL Temps*/
+    CANRX_AMK_RR_ACT_2,         /**< @brief AMK BR Temps*/
     CANRX_HVC_PACK_TEMPS,       /**< @brief HVC cell temps. */
     CANRX_VSM_STATUS,           /**< @brief VSM status */
-    CANRX_CDC_MOTOR_TEMPS,      /**< @brief CDC motor temps */
     CANRX_PTCf_LOOP_A_TEMPS,    /**< @brief PTCf Loop A temps */
     CANRX_PTCf_LOOP_B_TEMPS,    /**< @brief PTCf Loop B temps */
     CANRX_PTCp_LOOP_A_TEMPS,    /**< @brief PTCp Loop A temps */

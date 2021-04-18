@@ -36,13 +36,43 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
-    [CANRX_CDC_WHEEL_SPEEDS] = {
-        .canID = CMR_CANID_CDC_WHEEL_SPEEDS,
+    [CANRX_AMK_FL_ACT_1] = {
+        .canID = CMR_CANID_AMK_1_ACT_1,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
-    [CANRX_CDC_MOTOR_DATA] = {
-        .canID = CMR_CANID_CDC_MOTOR_DATA,
+    [CANRX_AMK_FR_ACT_1] = {
+        .canID = CMR_CANID_AMK_2_ACT_1,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_AMK_RL_ACT_1] = {
+        .canID = CMR_CANID_AMK_3_ACT_1,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_AMK_RR_ACT_1] = {
+        .canID = CMR_CANID_AMK_4_ACT_1,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_AMK_FL_ACT_2] = {
+        .canID = CMR_CANID_AMK_1_ACT_2,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_AMK_FR_ACT_2] = {
+        .canID = CMR_CANID_AMK_2_ACT_2,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_AMK_RL_ACT_2] = {
+        .canID = CMR_CANID_AMK_3_ACT_2,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_AMK_RR_ACT_2] = {
+        .canID = CMR_CANID_AMK_4_ACT_2,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
@@ -53,11 +83,6 @@ cmr_canRXMeta_t canRXMeta[] = {
     },
     [CANRX_VSM_STATUS] = {
         .canID = CMR_CANID_VSM_STATUS,
-        .timeoutError_ms = 50,
-        .timeoutWarn_ms = 25
-    },
-    [CANRX_CDC_MOTOR_TEMPS] = {
-        .canID = CMR_CANID_CDC_MOTOR_TEMPS,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
@@ -98,8 +123,8 @@ cmr_canRXMeta_t canRXMeta[] = {
     },
     [CANRX_SBG_STATUS_3] = {
         .canID = CMR_CANID_SBG_STATUS_3,
-        .timeoutError_ms = 800,
-        .timeoutWarn_ms = 400
+        .timeoutError_ms = 4000,
+        .timeoutWarn_ms = 2000
     }
 };
 
@@ -284,8 +309,8 @@ void canInit(void) {
             .ids = {
                 CMR_CANID_HEARTBEAT_VSM,
                 CMR_CANID_HVC_PACK_VOLTAGE,
-                CMR_CANID_CDC_WHEEL_SPEEDS,
-                CMR_CANID_CDC_MOTOR_DATA
+                CMR_CANID_CDC_MOTOR_FAULTS,
+                CMR_CANID_HEARTBEAT_HVC
             }
         },
         {
@@ -293,9 +318,9 @@ void canInit(void) {
             .rxFIFO = CAN_RX_FIFO1,
             .ids = {
                 CMR_CANID_SBG_STATUS_3,
+                CMR_CANID_SBG_STATUS_3,
                 CMR_CANID_DIM_TEXT_WRITE,
-                CMR_CANID_PTCf_LOOP_TEMPS_B,
-                CMR_CANID_PTCp_LOOP_TEMPS_A
+                CMR_CANID_DIM_TEXT_WRITE
             }
         },
         {
@@ -312,20 +337,30 @@ void canInit(void) {
             .isMask = false,
             .rxFIFO= CAN_RX_FIFO1,
             .ids = {
-                CMR_CANID_CDC_MOTOR_TEMPS,
                 CMR_CANID_PTCf_LOOP_TEMPS_A,
-                CMR_CANID_HEARTBEAT_HVC,
-                CMR_CANID_CDC_MOTOR_FAULTS
+                CMR_CANID_PTCf_LOOP_TEMPS_B,
+                CMR_CANID_PTCp_LOOP_TEMPS_A,
+                CMR_CANID_PTCp_LOOP_TEMPS_B
             }
         },
         {
             .isMask = false,
             .rxFIFO= CAN_RX_FIFO1,
             .ids = {
-                CMR_CANID_PTCp_LOOP_TEMPS_B,
-                CMR_CANID_PTCp_LOOP_TEMPS_B,
-                CMR_CANID_PTCp_LOOP_TEMPS_B,
-                CMR_CANID_PTCp_LOOP_TEMPS_B
+                CMR_CANID_AMK_1_ACT_1,
+                CMR_CANID_AMK_2_ACT_1,
+                CMR_CANID_AMK_3_ACT_1,
+                CMR_CANID_AMK_4_ACT_1
+            }
+        },
+        {
+            .isMask = false,
+            .rxFIFO= CAN_RX_FIFO1,
+            .ids = {
+                CMR_CANID_AMK_1_ACT_2,
+                CMR_CANID_AMK_2_ACT_2,
+                CMR_CANID_AMK_3_ACT_2,
+                CMR_CANID_AMK_4_ACT_2
             }
         }
     };

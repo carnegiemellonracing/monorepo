@@ -7,6 +7,8 @@
 
 #include "state.h"  // interface to implement
 #include "gpio.h"   // GPIO interface
+#include "can.h"    // can interface
+#include "stdlib.h"
 
 /** @brief DIM state. */
 static volatile struct {
@@ -62,6 +64,66 @@ cmr_canGear_t stateGetGearReq(void) {
 }
 
 /**
+ * @brief Gets the average wheel speed reported by the inverters.
+ *
+ * @param none
+ *
+ * @return average wheel speed
+ */
+int32_t getAverageWheelRPM(void) {
+    /* Get CAN data */
+    // Front Left
+    cmr_canRXMeta_t *metaAMK_FL_Act1 = canRXMeta + CANRX_AMK_FL_ACT_1;
+    volatile cmr_canAMKActualValues1_t *canAMK_FL_Act1 =
+        (void *) metaAMK_FL_Act1->payload;
+    // Front Right
+    cmr_canRXMeta_t *metaAMK_FR_Act1 = canRXMeta + CANRX_AMK_FR_ACT_1;
+    volatile cmr_canAMKActualValues1_t *canAMK_FR_Act1 =
+        (void *) metaAMK_FR_Act1->payload;
+    // Rear Left
+    cmr_canRXMeta_t *metaAMK_RL_Act1 = canRXMeta + CANRX_AMK_RL_ACT_1;
+    volatile cmr_canAMKActualValues1_t *canAMK_RL_Act1 =
+        (void *) metaAMK_RL_Act1->payload;
+    // Rear Right
+    cmr_canRXMeta_t *metaAMK_RR_Act1 = canRXMeta + CANRX_AMK_RR_ACT_1;
+    volatile cmr_canAMKActualValues1_t *canAMK_RR_Act1 =
+        (void *) metaAMK_RR_Act1->payload;
+
+    /* Extract wheel speeds */
+    int32_t frontLeftRPM = -1*(canAMK_FL_Act1->velocity_rpm); // Motor direction reversed on left side
+    int32_t frontRightRPM = canAMK_FR_Act1->velocity_rpm;
+    int32_t rearLeftRPM = -1*(canAMK_RL_Act1->velocity_rpm); // Motor direction reversed on left side
+    int32_t rearRightRPM = canAMK_RR_Act1->velocity_rpm;
+
+    /* Compute average */
+    int32_t average = (frontLeftRPM + frontRightRPM + rearLeftRPM + rearRightRPM)/4;
+
+    return average;
+}
+
+/**
+ * @brief Checks if vehicle is slow enough to request state down during RTD.
+ *        This intends to stop accidental state down requests during driving.
+ *
+ * @param none
+ *
+ * @return If the car is slow enough to state down from rtd
+ */
+bool slowEnough(void) {
+    int32_t avgWheelRPM = getAverageWheelRPM();
+
+    uint16_t cutoff = 3; //mph
+
+    /* Wheel Speed to Vehicle Speed Conversion
+     *      (x rotations / 1min) * (18" * PI) * (1' / 12") * 
+     *      (60min / 1hr) * (1 mi / 5280')
+     *      = x * 0.0535                                   */
+    uint16_t vehicleSpeed = avgWheelRPM * 0.0535;
+
+    return abs(vehicleSpeed) < cutoff;
+}
+
+/**
  * @brief Checks if the requested VSM state is allowed.
  *
  * @param vsm The current VSM state.
@@ -79,7 +141,7 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
                    (vsmReq == CMR_CAN_HV_EN) ||
                    (vsmReq == CMR_CAN_RTD);
         case CMR_CAN_RTD:
-            return (vsmReq == CMR_CAN_HV_EN) ||
+            return ((vsmReq == CMR_CAN_HV_EN) & slowEnough()) ||
                    (vsmReq == CMR_CAN_RTD);
         case CMR_CAN_ERROR:
             return (vsmReq == CMR_CAN_GLV_ON);
@@ -136,13 +198,9 @@ void stateVSMDownButton(bool pressed) {
         return;
     }
 
-    cmr_canRXMeta_t *cdcMotorDataMeta = canRXMeta + CANRX_CDC_MOTOR_DATA;
-    volatile cmr_canCDCMotorData_t *cdcMotorData =
-        (void *) cdcMotorDataMeta->payload;
-
     if (
         state.vsmReq == CMR_CAN_RTD &&
-        cdcMotorData->speed_rpm > 5
+        getAverageWheelRPM() > 5
     ) {
         // Only exit RTD when motor is basically stopped.
         return;

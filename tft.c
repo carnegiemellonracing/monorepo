@@ -8,6 +8,7 @@
 #include <CMR/tasks.h>      // Task interface
 
 #include <stdbool.h>        // bool
+#include <math.h>           // sqrt
 
 #include "tft.h"            // Interface to implement
 #include "tftPrivate.h"     // Private interface
@@ -392,8 +393,8 @@ static void drawErrorScreen(void) {
 /**
  * @brief computes max of 4 numbers
  */
-uint32_t findMax(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
-    uint32_t maximum = a;
+int16_t findMax(int16_t a, int16_t b, int16_t c, int16_t d) {
+    int16_t maximum = a;
     if (b > maximum) {
         maximum = b;
     }
@@ -404,6 +405,17 @@ uint32_t findMax(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
         maximum = d;
     }
     return maximum;
+}
+
+/**
+ * @brief Computes the total current of a motor
+ * https://drive.google.com/file/d/1dyoIuW85M110q4x2OXapvWxm-WnFBys2/view pg76
+ */
+uint32_t computeCurrent_A(volatile cmr_canAMKActualValues1_t *canAMK_Act1) {
+    int32_t Iq_A = (int32_t) canAMK_Act1->torqueCurrent_raw;
+    int32_t Id_A = (int32_t) canAMK_Act1->magCurrent_raw;
+    uint32_t Is_A = sqrt(Iq_A*Iq_A + Id_A*Id_A);
+    return Is_A;
 }
 
 /**
@@ -418,24 +430,12 @@ static void drawRTDScreen(void) {
     volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage =
         (void *) metaHVCPackVoltage->payload;
 
-    cmr_canRXMeta_t *metaCDCWheelSpeeds = canRXMeta + CANRX_CDC_WHEEL_SPEEDS;
-    volatile cmr_canCDCWheelSpeeds_t *canCDCWheelSpeeds =
-        (void *) metaCDCWheelSpeeds->payload;
-
-    cmr_canRXMeta_t *metaCDCMotorData = canRXMeta + CANRX_CDC_MOTOR_DATA;
-    volatile cmr_canCDCMotorData_t *canCDCMotorData =
-        (void *) metaCDCMotorData->payload;
-
     cmr_canRXMeta_t *metaHVCPackTemps = canRXMeta + CANRX_HVC_PACK_TEMPS;
     volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps =
         (void *) metaHVCPackTemps->payload;
 
-    cmr_canRXMeta_t *metaCDCMotorTemps = canRXMeta + CANRX_CDC_MOTOR_TEMPS;
-    volatile cmr_canCDCMotorTemps_t *canCDCMotorTemps =
-        (void *) metaCDCMotorTemps->payload;
-
     // PTC Temps
-    cmr_canRXMeta_t *metaPTCfLoopA = canRXMeta + CANRX_PTCf_LOOP_A_TEMPS;
+    /* cmr_canRXMeta_t *metaPTCfLoopA = canRXMeta + CANRX_PTCf_LOOP_A_TEMPS;
     volatile cmr_canPTCfLoopTemp_A_t *canPTCfLoopTemp_A = (void *) metaPTCfLoopA->payload;
     
     cmr_canRXMeta_t *metaPTCfLoopB = canRXMeta + CANRX_PTCf_LOOP_B_TEMPS;
@@ -445,7 +445,37 @@ static void drawRTDScreen(void) {
     volatile cmr_canPTCpLoopTemp_A_t *canPTCpLoopTemp_A = (void *) metaPTCpLoopA->payload;
     
     cmr_canRXMeta_t *metaPTCpLoopB = canRXMeta + CANRX_PTCp_LOOP_B_TEMPS;
-    volatile cmr_canPTCpLoopTemp_B_t *canPTCpLoopTemp_B = (void *) metaPTCpLoopB->payload;
+    volatile cmr_canPTCpLoopTemp_B_t *canPTCpLoopTemp_B = (void *) metaPTCpLoopB->payload;*/
+
+    // AMK Inverter
+    // Front Left
+    cmr_canRXMeta_t *metaAMK_FL_Act1 = canRXMeta + CANRX_AMK_FL_ACT_1;
+    volatile cmr_canAMKActualValues1_t *canAMK_FL_Act1 =
+        (void *) metaAMK_FL_Act1->payload;
+    cmr_canRXMeta_t *metaAMK_FL_Act2 = canRXMeta + CANRX_AMK_FL_ACT_2;
+    volatile cmr_canAMKActualValues2_t *canAMK_FL_Act2 =
+        (void *) metaAMK_FL_Act2->payload;
+    // Front Right
+    cmr_canRXMeta_t *metaAMK_FR_Act1 = canRXMeta + CANRX_AMK_FR_ACT_1;
+    volatile cmr_canAMKActualValues1_t *canAMK_FR_Act1 =
+        (void *) metaAMK_FR_Act1->payload;
+    cmr_canRXMeta_t *metaAMK_FR_Act2 = canRXMeta + CANRX_AMK_FR_ACT_2;
+    volatile cmr_canAMKActualValues2_t *canAMK_FR_Act2 =
+        (void *) metaAMK_FR_Act2->payload;
+    // Rear Left
+    cmr_canRXMeta_t *metaAMK_RL_Act1 = canRXMeta + CANRX_AMK_RL_ACT_1;
+    volatile cmr_canAMKActualValues1_t *canAMK_RL_Act1 =
+        (void *) metaAMK_RL_Act1->payload;
+    cmr_canRXMeta_t *metaAMK_RL_Act2 = canRXMeta + CANRX_AMK_RL_ACT_2;
+        volatile cmr_canAMKActualValues2_t *canAMK_RL_Act2 =
+            (void *) metaAMK_RL_Act2->payload;
+    // Rear Right
+    cmr_canRXMeta_t *metaAMK_RR_Act1 = canRXMeta + CANRX_AMK_RR_ACT_1;
+        volatile cmr_canAMKActualValues1_t *canAMK_RR_Act1 =
+            (void *) metaAMK_RR_Act1->payload;
+    cmr_canRXMeta_t *metaAMK_RR_Act2 = canRXMeta + CANRX_AMK_RR_ACT_2;
+        volatile cmr_canAMKActualValues2_t *canAMK_RR_Act2 =
+            (void *) metaAMK_RR_Act2->payload;
 
     tftDLContentLoad(&tft, &tftDL_RTD);
 
@@ -480,37 +510,34 @@ static void drawRTDScreen(void) {
     int32_t glvVoltage = adcRead(ADC_VSENSE) * 8 * 11 / 10 / 1000; // TODO: figure out where 8, 10 come from
 
     /* Motor Power Draw*/
-    int32_t power_kW =
-        (canCDCMotorData->current_dA * canCDCMotorData->voltage_dV) /
-        100000;
+    int32_t current_A = computeCurrent_A(canAMK_FL_Act1) +
+                        computeCurrent_A(canAMK_FR_Act1) + 
+                        computeCurrent_A(canAMK_RL_Act1) + 
+                        computeCurrent_A(canAMK_RR_Act1);
+    int32_t power_kW = current_A * hvVoltage_mV / 1000000;
 
     /* Wheel Speed */
         /* Wheel Speed to Vehicle Speed Conversion
-         *      Avg Front Wheel Speed * (1 rpm / 10 drpm) *
+         *      Avg Wheel Speed *
          *      (18" * PI) * (1' / 12") * (60min / 1hr) * (1 mi / 5280')
-         *      = AvgWheelSpeed * 0.00535                                   */
-        uint32_t wheelSpeed_drpm = (
-            ((uint32_t) canCDCWheelSpeeds->frontLeft) +
-            ((uint32_t) canCDCWheelSpeeds->frontRight)
-        ) / 2;
-        uint32_t speed_mph = (wheelSpeed_drpm * 535) / 100000;
+         *      = AvgWheelSpeed * 0.05355                                   */
+        uint32_t wheelSpeed_rpm = getAverageWheelRPM();
+        uint32_t speed_mph = (wheelSpeed_rpm * 5355) / 100000;
 
     /* Accumulator Temperature */
     int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC)/10;
 
     /* Motor Controller Temperature */
-    int32_t maxPTCfATemp_dc = findMax(canPTCfLoopTemp_A->temp1_dC, canPTCfLoopTemp_A->temp2_dC,
-                                    canPTCfLoopTemp_A->temp3_dC, canPTCfLoopTemp_A->temp4_dC);
-    int32_t maxPTCfBTemp_dc = findMax(canPTCfLoopTemp_B->temp5_dC, canPTCfLoopTemp_B->temp6_dC,
-                                    canPTCfLoopTemp_B->temp7_dC, canPTCfLoopTemp_B->temp8_dC);
-    int32_t maxPTCpATemp_dc = findMax(canPTCpLoopTemp_A->temp1_dC, canPTCpLoopTemp_A->temp2_dC,
-                                    canPTCpLoopTemp_A->temp3_dC, canPTCpLoopTemp_A->temp4_dC);
-    int32_t maxPTCpBTemp_dc = findMax(canPTCpLoopTemp_B->temp5_dC, canPTCpLoopTemp_B->temp6_dC,
-                                    canPTCpLoopTemp_B->temp7_dC, canPTCpLoopTemp_B->temp8_dC);
-    int32_t mcTemp_C = findMax(maxPTCfATemp_dc, maxPTCfBTemp_dc, maxPTCpATemp_dc, maxPTCpBTemp_dc) / 10;
+    int32_t mcTemp_C = findMax(canAMK_FL_Act2->coldPlateTemp_dC,
+                               canAMK_FR_Act2->coldPlateTemp_dC,
+                               canAMK_RL_Act2->coldPlateTemp_dC,
+                               canAMK_RR_Act2->coldPlateTemp_dC) / 10;
 
     /* Motor Temperature */
-    int32_t motorTemp_C = (canCDCMotorTemps->motorTemp_dC) / 10;
+    int32_t motorTemp_C = findMax(canAMK_FL_Act2->motorTemp_dC,
+                                  canAMK_FR_Act2->motorTemp_dC,
+                                  canAMK_RL_Act2->motorTemp_dC,
+                                  canAMK_RR_Act2->motorTemp_dC) / 10;
 
     /* Temperature warnings */
     bool motorTemp_yellow = motorTemp_C >= MOTOR_YELLOW_THRESHOLD;

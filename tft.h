@@ -10,11 +10,11 @@
 
 /** @brief setting the thresholds for the backgrounds to turn yellow and red*/
 #define AC_YELLOW_THRESHOLD 55
-#define AC_RED_THRESHOLD 60
-#define MOTOR_YELLOW_THRESHOLD 100
-#define MOTOR_RED_THRESHOLD 110
-#define MC_YELLOW_THRESHOLD 55
-#define MC_RED_THRESHOLD 60
+#define AC_RED_THRESHOLD 57
+#define MOTOR_YELLOW_THRESHOLD 60
+#define MOTOR_RED_THRESHOLD 70
+#define MC_YELLOW_THRESHOLD 35
+#define MC_RED_THRESHOLD 40
 
 void tftInit(void);
 
