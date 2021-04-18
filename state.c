@@ -215,11 +215,38 @@ void stateVSMDownButton(bool pressed) {
 }
 
 /**
- * @brief Handles gear change button presses.
+ * @brief Handles gear down button presses.
  *
  * @param pressed `true` if button is currently pressed.
  */
-void stateGearButton(bool pressed) {
+void stateGearDownButton(bool pressed) {
+    if (!pressed) {
+        return;
+    }
+
+    if (stateGetVSM() != CMR_CAN_HV_EN) {
+        return;     // Can only change gears in HV_EN.
+    }
+
+    cmr_canGear_t gear = state.gear;
+    if (gear != state.gearReq) {
+        return;     // Previous gear request not satisfied yet.
+    }
+
+    cmr_canGear_t gearReq = gear - 1;
+    if (gearReq < CMR_CAN_GEAR_REVERSE) {
+        gearReq = CMR_CAN_GEAR_TEST;     // Wrap around; skip `GEAR_UNKNOWN` and `GEAR_REVERSE`.
+    }
+
+    state.gearReq = gearReq;
+}
+
+/**
+ * @brief Handles gear up button presses.
+ *
+ * @param pressed `true` if button is currently pressed.
+ */
+void stateGearUpButton(bool pressed) {
     if (!pressed) {
         return;
     }
@@ -234,8 +261,8 @@ void stateGearButton(bool pressed) {
     }
 
     cmr_canGear_t gearReq = gear + 1;
-    if (gearReq < CMR_CAN_GEAR_SLOW || gearReq >= CMR_CAN_GEAR_LEN) {
-        gearReq = CMR_CAN_GEAR_SLOW;     // Wrap around; skip `GEAR_UNKNOWN` and `GEAR_REVERSE`.
+    if (gearReq >= CMR_CAN_GEAR_LEN) {
+        gearReq = CMR_CAN_GEAR_REVERSE;     // Wrap around; skip `GEAR_UNKNOWN` and `GEAR_REVERSE`.
     }
 
     state.gearReq = gearReq;

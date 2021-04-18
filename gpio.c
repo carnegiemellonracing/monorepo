@@ -161,16 +161,16 @@ static void buttonsInput_task(void *pvParameters) {
         while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
             switch (event.pin) {
                 case GPIO_BUTTON_1:
-                    stateVSMDownButton(event.pressed);
-                    break;
-                case GPIO_BUTTON_2:
                     stateVSMUpButton(event.pressed);
                     break;
+                case GPIO_BUTTON_2:
+                    stateVSMDownButton(event.pressed);
+                    break;
                 case GPIO_BUTTON_3:
-                    stateGearButton(event.pressed);
+                    stateGearUpButton(event.pressed);
                     break;
                 case GPIO_BUTTON_4:
-                    stateGearButton(event.pressed);
+                    stateGearDownButton(event.pressed);
                     break;
                 default:
                     break;

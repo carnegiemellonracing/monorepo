@@ -21,7 +21,8 @@ cmr_canGear_t stateGetGearReq(void);
 void stateVSMUpButton(bool pressed);
 void stateVSMDownButton(bool pressed);
 
-void stateGearButton(bool pressed);
+void stateGearUpButton(bool pressed);
+void stateGearDownButton(bool pressed);
 void stateGearUpdate(void);
 
 int32_t getAverageWheelRPM(void);
