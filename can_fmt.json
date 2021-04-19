@@ -31,6 +31,32 @@
             "bytes": 1
         }
     },
+    "actions": [
+        {
+            "name": "Go to HV",
+            "id": 565,
+            "bus": 0,
+            "data": "02 00 00 00 00 00 00 00"
+        },
+        {
+            "name": "Go to GLV",
+            "id": 565,
+            "bus": 0,
+            "data": "01 00 00 00 00 00 00 00"
+        },
+        {
+            "name": "Go to RTD",
+            "id": 565,
+            "bus": 0,
+            "data": "03 00 00 00 00 00 00 00"
+        },
+        {
+            "name": "Go to Clear Error",
+            "id": 565,
+            "bus": 0,
+            "data": "05 00 00 00 00 00 00 00"
+        }
+    ],
     "signals": [
         {
             "id": 1328,
@@ -38,11 +64,13 @@
             "bus": 0,
             "Source": "VSM",
             "name": "GLV Voltage",
-            "short": "GLV (V)",
+            "short": "GLV",
             "unit": "volts",
             "unit_short": "V",
             "in_type": "u16",
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 48,
+            "min": 0
         },
         {
             "id": 769,
@@ -54,7 +82,9 @@
             "unit": "volts",
             "unit_short": "V",
             "in_type": "i32",
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 700,
+            "min": -100
         },
         {
             "id": 0,
@@ -63,7 +93,9 @@
             "short": "HV",
             "unit": "amps",
             "unit_short": "A",
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 500,
+            "min": -500
         },
         {
             "id": 0,
@@ -72,7 +104,9 @@
             "short": "Long. Vel.",
             "unit": "meters/second",
             "unit_short": "m/s",
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 40,
+            "min": -10
         },
         {
             "id": 0,
@@ -81,16 +115,22 @@
             "short": "Long. Acc.",
             "unit": "meters/second^2",
             "unit_short": "m/s2",
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 20,
+            "min": -20
         },
         {
-            "id": 0,
-            "Source": "SBG (Calculated)",
+            "id": 1826,
+            "Source": "SBG",
             "name": "Heading",
             "short": "Heading",
             "unit": "degrees from north",
             "unit_short": "deg",
-            "out_type": "f16"
+            "in_type": "i16",
+            "factor": 0.0001,
+            "out_type": "f16",
+            "max": 360,
+            "min": 0
         },
         {
             "id": 1828,
@@ -103,7 +143,9 @@
             "unit_short": "deg",
             "in_type": "i32",
             "factor": 0.0000001,
-            "out_type": "i32"
+            "out_type": "f32",
+            "max": 90,
+            "min": -90
         },
         {
             "id": 1828,
@@ -116,7 +158,9 @@
             "unit_short": "deg",
             "in_type": "i32",
             "factor": 0.0000001,
-            "out_type": "i32"
+            "out_type": "f32",
+            "max": 180,
+            "min": -180
         },
         {
             "id": 307,
@@ -128,7 +172,9 @@
             "unit": "degrees",
             "unit_short": "deg",
             "in_type": "i16",
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 180,
+            "min": -180
         },
         {
             "id": 307,
@@ -138,7 +184,9 @@
             "name": "Throttle Position",
             "short": "Throttle Pos.",
             "in_type": "u8",
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 100,
+            "min": 0
         },
         {
             "id": 307,
@@ -148,7 +196,9 @@
             "name": "Brake Position",
             "short": "Brake Pos.",
             "in_type": "u8",
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 100,
+            "min": 0
         },
         {
             "id": 548,
@@ -160,7 +210,9 @@
             "unit": "degrees C",
             "unit_short": "deg C",
             "in_type": "u16",
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 100,
+            "min": -20
         },
         {
             "id": 580,
@@ -172,7 +224,9 @@
             "unit": "degrees C",
             "unit_short": "deg C",
             "in_type": "u16",
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 100,
+            "min": -20
         },
         {
             "id": 548,
@@ -184,7 +238,9 @@
             "unit": "degrees C",
             "unit_short": "deg C",
             "in_type": "u16",
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 100,
+            "min": -20
         },
         {
             "id": 580,
@@ -196,7 +252,9 @@
             "unit": "degrees C",
             "unit_short": "deg C",
             "in_type": "u16",
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 100,
+            "min": -20
         },
         {
             "id": 785,
@@ -208,7 +266,9 @@
             "unit": "degrees C",
             "unit_short": "deg C",
             "in_type": "u16",
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 100,
+            "min": -20
         },
         {
             "id": 0,
@@ -217,7 +277,9 @@
             "short": "Avg. AC Temp",
             "unit": "degrees C",
             "unit_short": "deg C",
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 100,
+            "min": -20
         },
         {
             "id": 0,
@@ -330,7 +392,9 @@
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
             "length": 2,
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 2000,
+            "min": -2000
         },
         {
             "id": 0,
@@ -340,7 +404,9 @@
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
             "length": 2,
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 2000,
+            "min": -2000
         },
         {
             "id": 0,
@@ -350,7 +416,9 @@
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
             "length": 2,
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 2000,
+            "min": -2000
         },
         {
             "id": 0,
@@ -360,7 +428,9 @@
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
             "length": 2,
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 2000,
+            "min": -2000
         },
         {
             "id": 0,
@@ -370,7 +440,9 @@
             "unit": "Newton-Meters",
             "unit_short": "Nm",
             "length": 2,
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 200,
+            "min": -200
         },
         {
             "id": 0,
@@ -380,7 +452,9 @@
             "unit": "Newton-Meters",
             "unit_short": "Nm",
             "length": 2,
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 200,
+            "min": -200
         },
         {
             "id": 0,
@@ -390,7 +464,9 @@
             "unit": "Newton-Meters",
             "unit_short": "Nm",
             "length": 2,
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 200,
+            "min": -200
         },
         {
             "id": 0,
@@ -400,7 +476,9 @@
             "unit": "Newton-Meters",
             "unit_short": "Nm",
             "length": 2,
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 200,
+            "min": -200
         },
         {
             "id": 0,
@@ -410,7 +488,9 @@
             "unit": "Newton-Meters",
             "unit_short": "Nm",
             "length": 2,
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 200,
+            "min": -200
         },
         {
             "id": 0,
@@ -420,7 +500,9 @@
             "unit": "Newton-Meters",
             "unit_short": "Nm",
             "length": 2,
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 200,
+            "min": -200
         },
         {
             "id": 0,
@@ -430,7 +512,9 @@
             "unit": "Newton-Meters",
             "unit_short": "Nm",
             "length": 2,
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 200,
+            "min": -200
         },
         {
             "id": 0,
@@ -440,7 +524,9 @@
             "unit": "Newton-Meters",
             "unit_short": "Nm",
             "length": 2,
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 200,
+            "min": -200
         },
         {
             "id": 0,
@@ -450,7 +536,9 @@
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
             "length": 2,
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 2000,
+            "min": -2000
         },
         {
             "id": 0,
@@ -460,7 +548,9 @@
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
             "length": 2,
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 2000,
+            "min": -2000
         },
         {
             "id": 0,
@@ -470,7 +560,9 @@
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
             "length": 2,
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 2000,
+            "min": -2000
         },
         {
             "id": 0,
@@ -480,7 +572,9 @@
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
             "length": 2,
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 2000,
+            "min": -2000
         },
         {
             "id": 0,
