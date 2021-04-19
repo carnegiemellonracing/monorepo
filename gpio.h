@@ -22,12 +22,11 @@ typedef enum {
     GPIO_LED_IMD,   /**< @brief IMD Error LED. */
     GPIO_LED_AMS,   /**< @brief AMD Error LED. */
     GPIO_LED_BSPD,  /**< @brief BSPD Error LED. */
-    GPIO_BUTTON_0,  /**< @brief Button 0. */
-    GPIO_BUTTON_1,  /**< @brief Button 1. */
-    GPIO_BUTTON_2,  /**< @brief Button 2. */
-    GPIO_BUTTON_3,  /**< @brief Button 3. */
-    GPIO_BUTTON_4,  /**< @brief Button 4. */
-    GPIO_BEEPER,    /**< @brief Beeper. */
+    GPIO_BUTTON_0,  /**< @brief Action Button. */
+    GPIO_BUTTON_1,  /**< @brief State Up Button. */
+    GPIO_BUTTON_2,  /**< @brief State Down Button. */
+    GPIO_BUTTON_3,  /**< @brief Gear Up Button. */
+    GPIO_BUTTON_4,  /**< @brief Gear Down Button. */
     GPIO_PD_N,      /**< @brief Screen Power Down. */
     GPIO_LEN    /**< @brief Total GPIO pins. */
 } gpio_t;

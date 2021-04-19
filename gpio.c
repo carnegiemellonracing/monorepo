@@ -151,7 +151,7 @@ static void buttonsInput_task(void *pvParameters) {
         (void) value;
 
         /* if vsm has changed state unexpectedly we
-         * need to adjust out req to still be valid */
+         * need to adjust our req to still be valid */
         if(!stateVSMReqIsValid(stateGetVSM(), stateGetVSMReq()))
         {
             updateReq();
@@ -160,17 +160,19 @@ static void buttonsInput_task(void *pvParameters) {
         buttonEvent_t event;
         while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
             switch (event.pin) {
+                case GPIO_BUTTON_0:
+                    break;
                 case GPIO_BUTTON_1:
-                    stateVSMDownButton(event.pressed);
+                	stateGearDownButton(event.pressed);
                     break;
                 case GPIO_BUTTON_2:
-                    stateVSMUpButton(event.pressed);
+                    stateGearUpButton(event.pressed);
                     break;
                 case GPIO_BUTTON_3:
-                    stateGearButton(event.pressed);
+                    stateVSMDownButton(event.pressed);
                     break;
                 case GPIO_BUTTON_4:
-                    stateGearButton(event.pressed);
+                    stateVSMUpButton(event.pressed);
                     break;
                 default:
                     break;
