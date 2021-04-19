@@ -163,16 +163,16 @@ static void buttonsInput_task(void *pvParameters) {
                 case GPIO_BUTTON_0:
                     break;
                 case GPIO_BUTTON_1:
-                	stateVSMUpButton(event.pressed);
+                	stateGearDownButton(event.pressed);
                     break;
                 case GPIO_BUTTON_2:
-                    stateVSMDownButton(event.pressed);
-                    break;
-                case GPIO_BUTTON_3:
                     stateGearUpButton(event.pressed);
                     break;
+                case GPIO_BUTTON_3:
+                    stateVSMDownButton(event.pressed);
+                    break;
                 case GPIO_BUTTON_4:
-                    stateGearDownButton(event.pressed);
+                    stateVSMUpButton(event.pressed);
                     break;
                 default:
                     break;
