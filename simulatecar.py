@@ -12,46 +12,208 @@ cfile = open("can_fmt.json", mode='r')
 config = json.loads(cfile.read())
 cfile.close()
 
-rxurl = "https://api.particle.io/v1/devices/events?access_token=f18cc8fdcc2678cb8f9b94aa307cf22e5f87c8b3"
-url = "https://api.particle.io/v1/devices/events"
-fields = {'name':'sim-car-to-web', 'private':'true', 'data':None,
-        'access_token':'f18cc8fdcc2678cb8f9b94aa307cf22e5f87c8b3'}
+class SignalGenerator:
+    def __init__(self, freq=1, rate=0, dtype=np.float16, scale=1.0, noise=0):
+        self.freq = freq
+        self.samp = rate
+        self.dtype = dtype
+        self.noise = noise
+        self.scale = scale
 
-def loopReceive():
-    with requests.get(rxurl, stream=True) as r:
-        client = sseclient.SSEClient(r)
-        for event in client.events():
+    def get(self, t=0, rate=None):
+        if not rate: rate = self.samp
 
-            if str(event.event) != "sim-web-to-car": continue
+        if rate == 0: return np.array([])
 
-            resp = json.loads(event.data)
-            datastr = resp['data']
-            obj = cbor2.loads(base64.b64decode(str(datastr)))
-            print("\n--- Received Input from Live ---")
-            pprint.pprint(obj)
+        sig = np.sin(np.linspace(t*rate, t*rate + rate - 1, rate) *
+            2*np.pi*float(self.freq) / float(rate) )
+        sig *= self.scale
+        if self.noise > 0: sig += np.random.normal(scale=self.noise, size=len(sig))
+
+        return np.array(sig, dtype=self.dtype).tobytes()
+
+    def setRate(self, rate):
+        self.samp = rate
+
+    def setFreq(self, freq):
+        self.freq = freq
+
+class EnumGenerator:
+    def __init__(self, rate=0, init=0, proto=None, byname=None):
+        self.samp = rate
+        self.val = init
+        if proto: 
+            self.info = config['signals'][proto]['enum']
+            self.map = [x['name'] for x in self.info]
+            self.val = self.map.index(byname)
+        else:
+            self.map = []
+
+    def setRate(self, rate):
+        self.samp = rate
+
+    def setVal(self, val):
+        if self.map:
+            self.val = self.map.index(val)
+        else:
+            self.val = val
+
+    def get(self, t=0):
+        if self.samp == 0: return np.array([])
+        return np.array([self.val]*self.samp, dtype=np.uint8).tobytes()
+
+class VectorGenerator:
+    def __init__(self, rate=0, init=0, proto=None, bylist=None):
+        self.samp = rate
+        self.val = init
+        if proto: self.info = config['signals'][proto]['vector']
+        if bylist:
+            self.setVal(bylist)
+
+    def setRate(self, rate):
+        self.samp = rate
+
+    def setVal(self, vlist):
+        b = 0
+        mult = 1
+        for x in vlist:
+            b += x*mult
+            mult *= 2
+        self.val = b
+
+    def get(self, t=0):
+        if self.samp == 0: return np.array([])
+        return np.array([self.val]*self.samp, dtype=np.uint8).tobytes()
+
+class ParticleTransmit:
+    def __init__(self):
+        self.url = "https://api.particle.io/v1/devices/events"
+        self.fields = {'name':'sim-car-to-web', 'private':'true', 'data':None,
+            'access_token':'f18cc8fdcc2678cb8f9b94aa307cf22e5f87c8b3'}
+        
+    def send(self, data):
+        b = cbor2.dumps(data)
+        enc = base64.b64encode(b)
+        packet = self.fields.copy()
+        packet['data'] = enc
+        requests.post(self.url, packet)
+
+        print("\n--- Sent Data to Live ---")
+        pprint.pprint(data)
+        print("")
+
+class ParticleReceive:
+    def __init__(self, callback):
+        self.callback = callback
+        self.url = "https://api.particle.io/v1/devices/events?access_token=f18cc8fdcc2678cb8f9b94aa307cf22e5f87c8b3"
+
+        self.rxthread = threading.Thread(target=self.receive)
+        self.rxthread.daemon = True
+        self.rxthread.start()
+
+    def receive(self):
+        with requests.get(self.url, stream=True) as r:
+            client = sseclient.SSEClient(r)
+            for event in client.events():
+                if str(event.event) != "web-to-car": continue
+
+                resp = json.loads(event.data)
+                datastr = resp['data']
+                obj = cbor2.loads(base64.b64decode(str(datastr)))
+
+                self.callback(obj)
+                print("\n--- Received Input from Live ---")
+                pprint.pprint(obj)
+                print("")
+
+class RAM:
+    def __init__(self, cfg=dict(), sigs=dict()):
+        self.rates = {0: 0, 1: 1, 2: 5, 3: 10, 4: 50, 5: 100}
+        self.types = {'i64': np.double, 'f32': np.float32, 'i32': np.int32, 'u32': np.uint32, 'f16': np.float16, 'u16': np.uint16, 'u8': np.uint8}
+        self.cfg = self.generateStore(cfg)
+        self.sigs = self.generateSignals(sigs)
+        self.ptx = ParticleTransmit()
+        self.prx = ParticleReceive(self.processRx)
+
+        self.txthread = threading.Thread(target=self.transmitPeriodic)
+        self.txthread.daemon = True
+        self.txthread.start()
+
+    def generateStore(self, ovr):
+        s = dict()
+        for i,x in enumerate(config['signals']):
+            s[i] = 0
+            if i in ovr:
+                s[i] = ovr[i]
+        return s
+
+    def generateSignals(self, ovr):
+        s = dict()
+        for i,x in enumerate(config['signals']):
+            if 'enum' in x: s[i] = EnumGenerator(rate=self.rates[self.cfg[i]])
+            elif 'vector' in x: s[i] = VectorGenerator(rate=self.rates[self.cfg[i]])
+            else: s[i] = SignalGenerator(rate=self.rates[self.cfg[i]], dtype=self.types[x['out_type']])
+
+            if i in ovr:
+                s[i] = ovr[i]
+                s[i].setRate(self.rates[self.cfg[i]])
+        return s
+
+    def processRx(self, obj):
+        if 'msg' in obj:
+            # Requesting send an arbitrary CAN message
+            m = obj['msg']
+            print("\n--- Arbitrary CAN TX Requested ---")
+            print("ID: %03xh" % m['id'])
+            print("BUS: %d" % m['bus'])
+            print("DATA: %r" % m['data'])
             print("")
+        if "pull" in obj:
+            # Requesting a full settings dump
+            a = []
+            for key in self.cfg:
+                a.append(key)
+                a.append(self.cfg[key])
 
+            string = np.array(a, dtype=np.uint8).tobytes()
+            self.ptx.send({'params': string})
+        if 'params' in obj:
+            # Updating parameters with the spec'd values
+            string = obj['params']
+            for i in range(int(len(string)/2)):
+                ind = ord(string[i*2])
+                val = ord(string[i*2+1])
+
+                self.cfg[ind] = val
+                self.sigs[ind].setRate(self.rates[val])
+            
+            # Respond with same values to confirm update
+            self.ptx.send(obj)
+
+    def transmitPeriodic(self):
+        inc = 0
+        while True:
+            t = time.time()
+
+            packet = dict()
+            for key in self.sigs:
+                b = self.sigs[key].get(t=inc)
+                if len(b) > 0:
+                    packet[key] = b
+            self.ptx.send(packet)
+
+            waitTime = 1 - (time.time() - t)
+            time.sleep(waitTime if waitTime > 0 else 0)
+            inc +=  1
+            
+ram = RAM()
+while True:
+    time.sleep(1)
 
 def findSigIndex(name):
     for i,x in enumerate(config['signals']):
         if x['name'] == name:
             return i
-
-def genSine(freq, samp_rate, scale=1, off=0):
-    off *= samp_rate
-    data = scale * np.sin(np.linspace(off, off + samp_rate - 1, samp_rate)*
-            2*np.pi*float(freq)/float(samp_rate))
-    return np.array(data, dtype='float16').tobytes()
-
-def sendPacket(dat):
-    b = cbor2.dumps(dat)
-    enc = base64.b64encode(b)
-    fields['data'] = enc
-    requests.post(url, fields)
-
-    print("\n--- Sent Data to Live ---")
-    pprint.pprint(dat)
-    print("")
 
 def nameToEnum(signame, enumname, amnt=1):
     ind = findSigIndex(signame)
@@ -61,18 +223,3 @@ def nameToEnum(signame, enumname, amnt=1):
             enumval = i
 
     return np.array([enumval]*amnt, dtype='uint8').tobytes()
-
-rxthread = threading.Thread(target=loopReceive)
-rxthread.daemon = True
-rxthread.start()
-
-i = 0
-while True:
-    sendPacket({findSigIndex('HV Voltage'): genSine(1.1, 10, off=i),
-        findSigIndex('Car Mode'): nameToEnum('Car Mode','Reverse'),
-        findSigIndex('Car State'): nameToEnum('Car State','RTD'),
-        4: b'\x00\x01\x02\x03'})
-
-    i += 1
-    time.sleep(1)
-

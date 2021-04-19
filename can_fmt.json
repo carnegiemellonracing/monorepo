@@ -31,6 +31,32 @@
             "bytes": 1
         }
     },
+    "actions": [
+        {
+            "name": "Go to HV",
+            "id": 565,
+            "bus": 0,
+            "data": "02 00 00 00 00 00 00 00"
+        },
+        {
+            "name": "Go to GLV",
+            "id": 565,
+            "bus": 0,
+            "data": "01 00 00 00 00 00 00 00"
+        },
+        {
+            "name": "Go to RTD",
+            "id": 565,
+            "bus": 0,
+            "data": "03 00 00 00 00 00 00 00"
+        },
+        {
+            "name": "Go to Clear Error",
+            "id": 565,
+            "bus": 0,
+            "data": "05 00 00 00 00 00 00 00"
+        }
+    ],
     "signals": [
         {
             "id": 1328,
@@ -38,7 +64,7 @@
             "bus": 0,
             "Source": "VSM",
             "name": "GLV Voltage",
-            "short": "GLV (V)",
+            "short": "GLV",
             "unit": "volts",
             "unit_short": "V",
             "in_type": "u16",
@@ -259,7 +285,9 @@
             "unit_short": "V",
             "factor": 0.001,
             "in_type": "i32",
-            "out_type": "f16"
+            "out_type": "f16",
+            "max": 700,
+            "min": -100
         },
         {
             "id": 770,
