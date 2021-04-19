@@ -224,8 +224,8 @@ void stateGearDownButton(bool pressed) {
         return;
     }
 
-    if (stateGetVSM() != CMR_CAN_HV_EN) {
-        return;     // Can only change gears in HV_EN.
+    if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
+        return;     // Can only change gears in HV_ENand GLV_ON.
     }
 
     cmr_canGear_t gear = state.gear;
@@ -235,7 +235,7 @@ void stateGearDownButton(bool pressed) {
 
     cmr_canGear_t gearReq = gear - 1;
     if (gearReq < CMR_CAN_GEAR_REVERSE) {
-        gearReq = CMR_CAN_GEAR_TEST;     // Wrap around; skip `GEAR_UNKNOWN` and `GEAR_REVERSE`.
+        gearReq = CMR_CAN_GEAR_TEST;     // Wrap around; skip `GEAR_UNKNOWN`.
     }
 
     state.gearReq = gearReq;
@@ -251,8 +251,8 @@ void stateGearUpButton(bool pressed) {
         return;
     }
 
-    if (stateGetVSM() != CMR_CAN_HV_EN) {
-        return;     // Can only change gears in HV_EN.
+    if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
+        return;     // Can only change gears in HV_EN and GLV_ON.
     }
 
     cmr_canGear_t gear = state.gear;
@@ -262,7 +262,7 @@ void stateGearUpButton(bool pressed) {
 
     cmr_canGear_t gearReq = gear + 1;
     if (gearReq >= CMR_CAN_GEAR_LEN) {
-        gearReq = CMR_CAN_GEAR_REVERSE;     // Wrap around; skip `GEAR_UNKNOWN` and `GEAR_REVERSE`.
+        gearReq = CMR_CAN_GEAR_REVERSE;     // Wrap around; skip `GEAR_UNKNOWN`.
     }
 
     state.gearReq = gearReq;
