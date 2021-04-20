@@ -146,6 +146,8 @@ static void buttonsInput_task(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     TickType_t lastWakeTime = xTaskGetTickCount();
+    TickType_t last_button_press = xTaskGetTickCount();
+    TickType_t current_time;
     while (1) {
         volatile int value = cmr_gpioRead(GPIO_BUTTON_0);
         (void) value;
@@ -156,6 +158,8 @@ static void buttonsInput_task(void *pvParameters) {
         {
             updateReq();
         }
+        
+        current_time = xTaskGetTickCount();
 
         buttonEvent_t event;
         while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
@@ -169,7 +173,11 @@ static void buttonsInput_task(void *pvParameters) {
                     stateGearUpButton(event.pressed);
                     break;
                 case GPIO_BUTTON_3:
-                    stateVSMDownButton(event.pressed);
+                    /* Avoid accidental double clicks on state down button
+                    (the transition back into hv_en takes a while) */
+                    if((current_time - last_button_press) > 1000) {
+                        stateVSMDownButton(event.pressed);
+                    }
                     break;
                 case GPIO_BUTTON_4:
                     stateVSMUpButton(event.pressed);
@@ -177,6 +185,9 @@ static void buttonsInput_task(void *pvParameters) {
                 default:
                     break;
             }
+            
+            // Record the time of the last button press
+            last_button_press = xTaskGetTickCount();
         }
 
         vTaskDelayUntil(&lastWakeTime, buttonsInput_period);
