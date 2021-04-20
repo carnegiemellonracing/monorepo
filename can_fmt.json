@@ -22,6 +22,10 @@
             "description": "16-bit floating point",
             "bytes": 2
         },
+        "i16": {
+            "description": "16-bit signed int",
+            "bytes": 2
+        },
         "u16": {
             "description": "16-bit unsigned int",
             "bytes": 2
