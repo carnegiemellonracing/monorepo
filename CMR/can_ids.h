@@ -40,13 +40,22 @@ typedef enum {
     CMR_CANID_HVC_MINMAX_CELL_TEMPS = 0x311,    /**< @brief HVC pack min and max cell temps. */
     CMR_CANID_HVC_PACK_CURRENT = 0x321,         /**< @brief HVC pack current. */
 
-    CMR_CANID_CDC_WHEEL_SPEEDS = 0x132,         /**< @brief CDC wheel speeds. */
-    CMR_CANID_CDC_SOLENOID_PTC = 0x142,         /**< @brief CDC brake solenoid command. */
-    CMR_CANID_CDC_MOTOR_DATA = 0x152,           /**< @brief CDC motor data. */
-    CMR_CANID_CDC_MOTOR_PHASES = 0x172,         /**< @brief CDC motor phase currents. */
-    CMR_CANID_CDC_IMU_ACCEL = 0x162,            /**< @brief CDC IMU accelerations. */
-    CMR_CANID_CDC_MOTOR_FAULTS = 0x502,         /**< @brief CDC motor faults. */
-    CMR_CANID_CDC_MOTOR_TEMPS = 0x512,          /**< @brief CDC motor temperatures. */
+    CMR_CANID_CDC_WHEEL_SPEEDS = 0x132,         /**< @brief CDC (19e) wheel speeds. */
+    CMR_CANID_CDC_SOLENOID_PTC = 0x142,         /**< @brief CDC (19e) brake solenoid command. */
+    CMR_CANID_CDC_MOTOR_DATA = 0x152,           /**< @brief CDC (19e) motor data. */
+    CMR_CANID_CDC_MOTOR_PHASES = 0x172,         /**< @brief CDC (19e) motor phase currents. */
+    CMR_CANID_CDC_IMU_ACCEL = 0x162,            /**< @brief CDC (19e) IMU accelerations. */
+    CMR_CANID_CDC_MOTOR_FAULTS = 0x502,         /**< @brief CDC (19e) motor faults. */
+    CMR_CANID_CDC_MOTOR_TEMPS = 0x512,          /**< @brief CDC (19e) motor temperatures. */
+
+    CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK = 0x132,     /**< @brief CDC (20e) actual wheel speeds. */
+    CMR_CANID_CDC_WHEEL_SPEED_SETPOINT = 0x152,     /**< @brief CDC (20e) setpoint wheel speeds. */
+    CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK = 0x162,    /**< @brief CDC (20e) actual wheel torques. */
+    CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT = 0x172,    /**< @brief CDC (20e) setpoint wheel torques. */
+    CMR_CANID_CDC_POSE_POSITION = 0x182,            /**< @brief CDC (20e) lat/lon real car position. */
+    CMR_CANID_CDC_POSE_ORIENTATION = 0x192,         /**< @brief CDC (20e) roll/pitch/yaw real car position. */
+    CMR_CANID_CDC_POSE_VELOCITY = 0x1A2,            /**< @brief CDC (20e) real car velocity. */
+    CMR_CANID_CDC_POSE_ACCELERATION = 0x1B2,        /**< @brief CDC (20e) real car acceleration. */
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
     CMR_CANID_FSM_PEDALS_ADC = 0x533,           /**< @brief FSM raw pedal positions. */
