@@ -480,6 +480,12 @@ typedef struct {
 // ------------------------------------------------------------------------------------------------
 // Central Dynamics Controller (20e)
 
+typedef enum {
+    CMR_CAN_CDC_POSE_ERROR = 0,
+    CMR_CAN_CDC_POSE_VALID = 1,
+    CMR_CAN_CDC_POSE_INVALID = 2
+} cmr_canCDCPoseIndicator_t;
+
 /** @brief CDC wheel speeds (used for setpoint and actual). */
 typedef struct {
     int16_t frontLeft_rpm;  /**< @brief Wheel speed on 20e (rpm * 10). */
@@ -504,18 +510,26 @@ typedef struct {
     int16_t roll_deg;       /**< @brief Roll of the car (deg * 10). */
     int16_t pitch_deg;      /**< @brief Pitch of the car (deg * 10). */
     int16_t yaw_deg;        /**< @brief Yaw of the car (deg * 10). */
+     
+    /** @brief Indicator for if the pose information 
+     * about the car should be trusted (see cmr_canCDCPoseIndicator_t). */
+    uint8_t pose_valid;    
 } cmr_canCDCPoseOrientation_t;
 
 typedef struct {
     int16_t longitudinalVel_mps;    /**< @brief Velocity of the car in the forward direction (m/s * 100). */
     int16_t lateralVel_mps;         /**< @brief Velocity of the car in the right direction (m/s * 100). */
     int16_t verticalVel_mps;        /**< @brief Velocity of the car in the down direction (m/s * 100). */
+
+    /** @brief Indicator for if the pose information 
+     * about the car should be trusted (see cmr_canCDCPoseIndicator_t). */
+    uint8_t pose_valid;    
 } cmr_canCDCPoseVelocity_t;
 
 typedef struct {
     int16_t longitudinalAccel_mps2;    /**< @brief Acceleration of the car in the forward direction (m/s^2 * 100). */
     int16_t lateralAccel_mps2;         /**< @brief Acceleration of the car in the right direction (m/s^2 * 100). */
-    int16_t verticalAccel_mps2;        /**< @brief Acceleration of the car in the down direction (m/s^2 * 100). */
+    int16_t verticalAccel_mps2;        /**< @brief Acceleration of the car in the down direction (m/s^2 * 100). */   
 } cmr_canCDCPoseAcceleration_t;
 
 // ------------------------------------------------------------------------------------------------
@@ -756,6 +770,20 @@ typedef struct {
     int16_t velocity_e;         /**< @brief Velocity in East Direction (m/s times 100). */
     int16_t velocity_d;         /**< @brief Velocity in Down Direction (m/s times 100). */
 } cmr_canSBGEKFVelocity_t;
+
+/** @brief SBG Systems IMU Acceleration. */
+typedef struct {
+    int16_t accel_x_mps2;         /**< @brief Acceleration in device's X direction (m/s^2 times 100). */
+    int16_t accel_y_mps2;         /**< @brief Acceleration in device's Y direction (m/s^2 times 100). */
+    int16_t accel_z_mps2;         /**< @brief Acceleration in device's Z direction (m/s^2 times 100). */
+} cmr_canSBGIMUAcceleration_t;
+
+/** @brief SBG Systems IMU Gyro. */
+typedef struct {
+    int16_t gyro_x_rads;        /**< @brief Roll rate around the device's X direction (rad/s times 1000). */
+    int16_t gyro_y_rads;        /**< @brief Roll rate around the device's Y direction (rad/s times 1000). */
+    int16_t gyro_z_rads;        /**< @brief Roll rate around the device's Z direction (rad/s times 1000). */
+} cmr_canSBGIMUGyro_t;
 
 #endif /* CMR_CAN_TYPES_H */
 

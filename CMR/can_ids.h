@@ -48,14 +48,14 @@ typedef enum {
     CMR_CANID_CDC_MOTOR_FAULTS = 0x502,         /**< @brief CDC (19e) motor faults. */
     CMR_CANID_CDC_MOTOR_TEMPS = 0x512,          /**< @brief CDC (19e) motor temperatures. */
 
-    CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK = 0x132,     /**< @brief CDC (20e) actual wheel speeds. */
-    CMR_CANID_CDC_WHEEL_SPEED_SETPOINT = 0x152,     /**< @brief CDC (20e) setpoint wheel speeds. */
-    CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK = 0x162,    /**< @brief CDC (20e) actual wheel torques. */
-    CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT = 0x172,    /**< @brief CDC (20e) setpoint wheel torques. */
-    CMR_CANID_CDC_POSE_POSITION = 0x182,            /**< @brief CDC (20e) lat/lon real car position. */
-    CMR_CANID_CDC_POSE_ORIENTATION = 0x192,         /**< @brief CDC (20e) roll/pitch/yaw real car position. */
-    CMR_CANID_CDC_POSE_VELOCITY = 0x1A2,            /**< @brief CDC (20e) real car velocity. */
-    CMR_CANID_CDC_POSE_ACCELERATION = 0x1B2,        /**< @brief CDC (20e) real car acceleration. */
+    CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK = 0x232,     /**< @brief CDC (20e) actual wheel speeds. */
+    CMR_CANID_CDC_WHEEL_SPEED_SETPOINT = 0x252,     /**< @brief CDC (20e) setpoint wheel speeds. */
+    CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK = 0x262,    /**< @brief CDC (20e) actual wheel torques. */
+    CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT = 0x272,    /**< @brief CDC (20e) setpoint wheel torques. */
+    CMR_CANID_CDC_POSE_POSITION = 0x282,            /**< @brief CDC (20e) lat/lon real car position. */
+    CMR_CANID_CDC_POSE_ORIENTATION = 0x292,         /**< @brief CDC (20e) roll/pitch/yaw real car position. */
+    CMR_CANID_CDC_POSE_VELOCITY = 0x2A2,            /**< @brief CDC (20e) real car velocity. */
+    CMR_CANID_CDC_POSE_ACCELERATION = 0x2B2,        /**< @brief CDC (20e) real car acceleration. */
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
     CMR_CANID_FSM_PEDALS_ADC = 0x533,           /**< @brief FSM raw pedal positions. */
@@ -117,6 +117,8 @@ typedef enum {
     CMR_CANID_SBG_EKF_ORIENT = 0x722,           /**< @brief SBG_ECAN_LOG_EKF_EULER */
     CMR_CANID_SBG_EKF_POS = 0x724,              /**< @brief SBG_ECAN_LOG_EKF_POS */
     CMR_CANID_SBG_EKF_VEL = 0x727,              /**< @brief SBG_ECAN_LOG_EKF_VEL */
+    CMR_CANID_SBG_IMU_ACCEL = 0x711,            /**< @brief SBG_ECAN_LOG_IMU_ACCEL */
+    CMR_CANID_SBG_IMU_GYRO = 0x712,             /**< @brief SBG_ECAN_LOG_IMU_GYRO */
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
