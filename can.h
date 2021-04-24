@@ -30,6 +30,14 @@ typedef enum {
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 
+/** @brief CAN bus-id enumeration.
+ *  @note 0 can be assumed to be the default bus where unspecified. */
+typedef enum {
+    CMR_CAN_BUS_VEH = 0,        /**< @brief Index of the VEH bus */
+    CMR_CAN_BUS_DAQ,            /**< @brief Index of the DAQ bus */
+    CMR_CAN_BUS_NUM,            /**< @brief Number of busses in use */
+} cmr_canBusID_t;
+
 /** @brief Number of bits in a CAN ID. */
 #define CAN_ID_BITS 11
 
@@ -42,7 +50,12 @@ typedef struct {
 extern cmr_canRXMeta_t canRXMeta[];
 
 void canInit(void);
-int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout_ms);
+int canTX(
+    cmr_canBusID_t bus_id, cmr_canID_t id,
+    const void *data, size_t len,
+    TickType_t timeout_ms
+);
+
 void *getPayload(canRX_t rxMsg);
 uint8_t throttleGetPos(void);
 

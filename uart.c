@@ -18,6 +18,7 @@
 #include "sample.h"     // Sample formatting
 #include "can.h"        // Can interface
 #include "config.h"     // Config interface
+#include <cn-cbor/cn-cbor.h>                /* CBOR decoding */
 
 /** @brief Represents a UART interface. */
 typedef struct uart uart_t;
@@ -42,7 +43,7 @@ const TickType_t boron_tx_period_ms = 1000;
 const TickType_t boron_rx_period_ms = 1000;
 
 /** @brief Width of N-way UART receive buffering (e.g. 2 for double buffereing) */
-static const num_rx_buffers = 2;
+#define NUM_RX_BUFFERS 2
 
 /**
  * @brief This is required by cbor, but we don't care about it
@@ -93,10 +94,10 @@ static void uartRX_Task(void *pvParameters) {
     TickType_t last_wake = xTaskGetTickCount();
     struct {
         cmr_uartMsg_t msg;
-        char buf[100];
+        uint8_t buf[100];
         size_t bytes_present;
-    } rx[num_rx_buffers] = {
-        [0 ... num_rx_buffers - 1] = {
+    } rx[NUM_RX_BUFFERS] = {
+        [0 ... NUM_RX_BUFFERS - 1] = {
             .bytes_present = 0,
         },
     };
@@ -146,6 +147,9 @@ static void uartRX_Task(void *pvParameters) {
             rx[i].bytes_present -= bytes_parsed;
 
             handle_command(command);
+
+            /* Don't forget to free this */
+            cn_cbor_free(command);
         }
 
         vTaskDelayUntil(&last_wake, boron_rx_period_ms);
@@ -158,20 +162,29 @@ static void uartRX_Task(void *pvParameters) {
  *  @param command The command to handle
  */
 static void handle_command(cn_cbor *command) {
-    cn_cbor *msg, *params, *id, *data, *kind, *cutoff;
-    msg = cn_cbor_mapget_string(command, "msg");
+    cn_cbor *msg, *params, *pull, *id, *data, *bus;
+    msg    = cn_cbor_mapget_string(command, "msg");
     params = cn_cbor_mapget_string(command, "params");
+    pull   = cn_cbor_mapget_string(command, "pull");
 
     if (msg != NULL) {
         /* Have a message to transmit */
         id   = cn_cbor_mapget_string(msg, "id");
         data = cn_cbor_mapget_string(msg, "data");
+        bus  = cn_cbor_mapget_string(msg, "bus");
         if (
             (id != NULL &&
                 (id->type == CN_CBOR_INT || id->type == CN_CBOR_UINT)) &&
+            (bus != NULL &&
+                (bus->type == CN_CBOR_INT || bus->type == CN_CBOR_UINT) &&
+                (bus->v.uint < CMR_CAN_BUS_NUM)) &&
             (data != NULL && data->type == CN_CBOR_BYTES)
         ) {
-            canTX((uint16_t) id->v.uint, data->bytes, data->length);
+            canTX(
+                (cmr_canBusID_t) bus->v.uint, (uint16_t) id->v.uint,
+                data->v.bytes, data->length,
+                portMAX_DELAY
+            );
         }
     }
 
@@ -180,8 +193,22 @@ static void handle_command(cn_cbor *command) {
         uint8_t cutoff_enum;
     };
 
+    /* For updating params and pulling we'll need a response packet */
+    /* We'll also keep the state to buffer the encoded packet here. */
+    static uint8_t response_buffer[MAX_MESSAGE_LEN];
+
+    cn_cbor *response_packet = cn_cbor_map_create(&err);
+    int response_num_pairs = 0;
+    struct param_pair response_data[MAX_SIGNALS];
+    if (response_packet == NULL) {
+        return;
+    }
+
+
     if (
-        params != NULL && params->type == CN_CBOR_BYTES &&
+        params != NULL &&
+        /* Apparently the CBOR javascript lib is going to send as text. */
+        (params->type == CN_CBOR_BYTES || params->type == CN_CBOR_TEXT)  &&
         params->length >= sizeof(struct param_pair)
     ) {
         /* Have some parameters to update */
@@ -189,20 +216,86 @@ static void handle_command(cn_cbor *command) {
          * kind:cutoff */
         int len = params->length;
         for (size_t i = 0; i < len; i += sizeof(struct param_pair)) {
-            struct param_pair *pair = params->v.bytes + i;
+            struct param_pair *pair = (struct param_pair *) (params->v.bytes + i);
 
             if (
-                pair->kind < MAX_SIGNALS &&
-                pair->cutoff_enum < SAMPLE_NUM_FREQS
+                pair->kind >= MAX_SIGNALS ||
+                pair->cutoff_enum >= SAMPLE_NUM_FREQS
             ) {
                 /* Questionable update parameters, just move on */
                 continue;
             }
 
-            struct signal_cfg cfg = &current_settings.signal_cfg[pair->kind];
+            response_data[response_num_pairs++] = (struct param_pair) {
+                .kind        = pair->kind,
+                .cutoff_enum = pair->cutoff_enum,
+            };
+
+            /* If we run out of memory later, we'll not be able to notify
+             * the server, but that's low risk. */
+            struct signal_cfg *cfg = &current_settings.signal_cfg[pair->kind];
             cfg->sample_cutoff_freq = pair->cutoff_enum;
         }
+
+        /* Commit any modified settings. We could put a flag in for the
+         * no-update-detected case, but it's fiiine. */
+        commit_settings();
+    } else if (
+        pull != NULL
+    ) {
+        /* We were requested a dump of the current settings.
+         * Note that this must be exclusive with the parameter update path.
+         * (which has priority). */
+        /* We could encode this as a diff to save on bandwidth,
+         * but realistically this will basically never happen.*/
+
+        /* Gather the settings up. We don't need to transmit -all- of the
+         * settings, as most will probably be unused; The parser
+         * can inform us how many are in use. */
+        for (int i = 0; i < signals_parsed; i++) {
+            response_data[response_num_pairs++] = (struct param_pair) {
+                .kind        = i,
+                .cutoff_enum = current_settings.signal_cfg[i].sample_cutoff_freq,
+            };
+        }
     }
+
+
+    if (response_num_pairs) {
+        /* We have a response to send out */
+        cn_cbor *formatted_response_data = cn_cbor_data_create(
+            (uint8_t *) response_data,
+            response_num_pairs * sizeof(struct param_pair),
+            &err
+        );
+
+        if (formatted_response_data) {
+            /* If this fails, tough, you're getting an empty map */
+            (void) cn_cbor_mapput_string(
+                response_packet,
+                "params",
+                formatted_response_data, &err
+            );
+
+        }
+
+        ssize_t ret = cn_cbor_encoder_write(
+            response_buffer, 0, sizeof(response_buffer),
+            response_packet
+        );
+
+        if (ret > 0) {
+            /* Finally ready to send the dang thing */
+            cmr_uartMsg_t txMsg;
+            cmr_uartMsgInit(&txMsg);
+            cmr_uartTX(&uart.port, &txMsg, response_buffer, ret);
+            cmr_uartMsgWait(&txMsg);
+        }
+    }
+
+
+    /* Free the response packet */
+    cn_cbor_free(response_packet);
 }
 
 /**

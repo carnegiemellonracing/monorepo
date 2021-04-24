@@ -32,10 +32,11 @@ static const uint32_t sector_id = FLASH_SECTOR_14;
 /**@brief mcache of current settings
  *
  * @note Updates to this alias into the flash driver's cache automatically
- *
- * @note no effort is made to make this concurrency-safe (here)
  */
 cfg_settings_t current_settings;
+
+static SemaphoreHandle_t cfg_lock;
+static StaticSemaphore_t _cfg_lock_buf;
 /**
  * @brief Set the default settings during
  * reset or first-time-boot.
@@ -52,8 +53,6 @@ void set_default_settings(void) {
         .signal_cfg = {
             [0 ... MAX_SIGNALS - 1] = {
                 .sample_cutoff_freq = SAMPLE_100HZ,
-                .conversion_scale   = 1.f,
-                .conversion_bias    = 0.f,
             }
         },
 
@@ -80,9 +79,11 @@ static void validate_settings() {
  * we don't lose track of it over resets
  */
 void commit_settings(void) {
+    xSemaphoreTake(cfg_lock, portMAX_DELAY);
     memcpy(current_settings.canary, CANARY, sizeof(current_settings.canary));
     validate_settings();
     cmr_configCommit(&cfg);
+    xSemaphoreGive(cfg_lock);
 }
 
 /**
@@ -99,6 +100,10 @@ void configInit(void) {
                                                          * sadly */
         sector_id
     );
+
+    cfg_lock = xSemaphoreCreateBinaryStatic(&_cfg_lock_buf);
+    xSemaphoreGive(cfg_lock);
+    configASSERT(cfg_lock);
 
     /* Do a vaguely sketchy uninitialized flash check to
      * set defaults on the first boot */

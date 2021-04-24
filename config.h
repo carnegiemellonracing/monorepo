@@ -30,9 +30,6 @@ enum signal_sample_freq {
  */
 struct signal_cfg {
     uint8_t sample_cutoff_freq;     /**< @brief Enum of type signal_sample_freq */
-    float32_t conversion_scale;     /**< @brief Multiply by this, then */
-    float32_t conversion_bias;      /**< @brief Add this to get converted
-                                     * sample value. */
 };
 
 /** @brief List of exposed settings stored in flash */
