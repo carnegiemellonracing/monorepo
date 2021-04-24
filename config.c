@@ -21,7 +21,7 @@
 /**@brief 12-byte unique product ID */
 #define UID_PTR ((uint32_t *) UID_BASE)
 /**@brief Some string to distinguish first-time-boots */
-#define CANARY "\xbd\xa6\x27\x59\xe2\xcf\x25\x88\x95\x24\xed\xec"
+#define CANARY "\xbd\xa6\x27\x59\xe2\xcf\x25\x88\x95\x24\xed\xee"
 
 /**@brief flash driver wrapping the settings */
 static cmr_config_t cfg;
@@ -52,7 +52,7 @@ void set_default_settings(void) {
 
         .signal_cfg = {
             [0 ... MAX_SIGNALS - 1] = {
-                .sample_cutoff_freq = SAMPLE_100HZ,
+                .sample_cutoff_freq = SAMPLE_0HZ,
             }
         },
 
