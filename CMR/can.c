@@ -10,6 +10,7 @@
 #ifdef HAL_CAN_MODULE_ENABLED
 
 #include <string.h> // memcpy()
+//#include <stdbool.h> // bool
 
 #include "rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
 #include "panic.h"  // cmr_panic()
