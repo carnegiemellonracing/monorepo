@@ -501,9 +501,9 @@
             "short": "(FL) Vel.",
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
-            "factor": 0.1,
             "in_type": "i16",
-            "out_type": "i16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 562,
@@ -514,9 +514,9 @@
             "short": "(FR) Vel.",
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
-            "factor": 0.1,
             "in_type": "i16",
-            "out_type": "i16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 562,
@@ -527,9 +527,9 @@
             "short": "(RL) Vel.",
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
-            "factor": 0.1,
             "in_type": "i16",
-            "out_type": "i16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 562,
@@ -540,9 +540,9 @@
             "short": "(RR) Vel.",
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
-            "factor": 0.1,
             "in_type": "i16",
-            "out_type": "i16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 610,
@@ -553,9 +553,9 @@
             "short": "(FL) Torque",
             "unit": "Newton meters",
             "unit_short": "Nm",
-            "factor": 0.1,
             "in_type": "i16",
-            "out_type": "i16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 610,
@@ -566,9 +566,9 @@
             "short": "(FR) Torque",
             "unit": "Newton meters",
             "unit_short": "Nm",
-            "factor": 0.1,
             "in_type": "i16",
-            "out_type": "i16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 610,
@@ -579,9 +579,9 @@
             "short": "(RL) Torque",
             "unit": "Newton meters",
             "unit_short": "Nm",
-            "factor": 0.1,
             "in_type": "i16",
-            "out_type": "i16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 610,
@@ -592,9 +592,9 @@
             "short": "(RR) Torque",
             "unit": "Newton meters",
             "unit_short": "Nm",
-            "factor": 0.1,
             "in_type": "i16",
-            "out_type": "i16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 594,
@@ -605,9 +605,9 @@
             "short": "(FL) Vel. Sp.",
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
-            "factor": 0.1,
             "in_type": "i16",
-            "out_type": "i16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 594,
@@ -618,9 +618,9 @@
             "short": "(FR) Vel. Sp.",
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
-            "factor": 0.1,
             "in_type": "i16",
-            "out_type": "i16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 594,
@@ -631,9 +631,9 @@
             "short": "(RL) Vel. Sp.",
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
-            "factor": 0.1,
             "in_type": "i16",
-            "out_type": "i16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 594,
@@ -644,9 +644,9 @@
             "short": "(RR) Vel. Sp.",
             "unit": "Rotations per Minute",
             "unit_short": "rpm",
-            "factor": 0.1,
             "in_type": "i16",
-            "out_type": "i16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 626,
@@ -657,9 +657,9 @@
             "short": "(FL) Torque Sp.",
             "unit": "Newton meters",
             "unit_short": "Nm",
-            "factor": 0.1,
             "in_type": "i16",
-            "out_type": "i16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 626,
@@ -670,9 +670,9 @@
             "short": "(FR) Torque Sp.",
             "unit": "Newton meters",
             "unit_short": "Nm",
-            "factor": 0.1,
             "in_type": "i16",
-            "out_type": "i16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 626,
@@ -683,9 +683,9 @@
             "short": "(RL) Torque Sp.",
             "unit": "Newton meters",
             "unit_short": "Nm",
-            "factor": 0.1,
             "in_type": "i16",
-            "out_type": "i16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 626,
@@ -696,9 +696,9 @@
             "short": "(RR) Torque Sp.",
             "unit": "Newton meters",
             "unit_short": "Nm",
-            "factor": 0.1,
             "in_type": "i16",
-            "out_type": "i16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 642,
@@ -734,8 +734,8 @@
             "unit": "degrees",
             "unit_short": "deg",
             "in_type": "i16",
-            "factor": 0.1,
-            "out_type": "f16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 658,
@@ -747,8 +747,8 @@
             "unit": "degrees",
             "unit_short": "deg",
             "in_type": "i16",
-            "factor": 0.1,
-            "out_type": "f16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 658,
@@ -760,8 +760,8 @@
             "unit": "degrees",
             "unit_short": "deg",
             "in_type": "i16",
-            "factor": 0.1,
-            "out_type": "f16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 674,
@@ -773,8 +773,8 @@
             "unit": "meters/second",
             "unit_short": "m/s",
             "in_type": "i16",
-            "factor": 0.1,
-            "out_type": "f16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 674,
@@ -786,8 +786,8 @@
             "unit": "meters/second",
             "unit_short": "m/s",
             "in_type": "i16",
-            "factor": 0.1,
-            "out_type": "f16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 674,
@@ -799,8 +799,8 @@
             "unit": "meters/second",
             "unit_short": "m/s",
             "in_type": "i16",
-            "factor": 0.1,
-            "out_type": "f16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 690,
@@ -812,8 +812,8 @@
             "unit": "meters/second^2",
             "unit_short": "m/s2",
             "in_type": "i16",
-            "factor": 0.1,
-            "out_type": "f16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 690,
@@ -825,8 +825,8 @@
             "unit": "meters/second^2",
             "unit_short": "m/s2",
             "in_type": "i16",
-            "factor": 0.1,
-            "out_type": "f16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 690,
@@ -838,8 +838,8 @@
             "unit": "meters/second^2",
             "unit_short": "m/s2",
             "in_type": "i16",
-            "factor": 0.1,
-            "out_type": "f16"
+            "out_type": "i16",
+            "post_factor": 0.1
         },
         {
             "id": 1794,
