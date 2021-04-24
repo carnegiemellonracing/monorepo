@@ -480,12 +480,6 @@ typedef struct {
 // ------------------------------------------------------------------------------------------------
 // Central Dynamics Controller (20e)
 
-typedef enum {
-    CMR_CAN_CDC_POSE_ERROR = 0,
-    CMR_CAN_CDC_POSE_VALID = 1,
-    CMR_CAN_CDC_POSE_INVALID = 2
-} cmr_canCDCPoseIndicator_t;
-
 /** @brief CDC wheel speeds (used for setpoint and actual). */
 typedef struct {
     int16_t frontLeft_rpm;  /**< @brief Wheel speed on 20e (rpm * 10). */
@@ -509,21 +503,13 @@ typedef struct {
 typedef struct {
     int16_t roll_deg;       /**< @brief Roll of the car (deg * 10). */
     int16_t pitch_deg;      /**< @brief Pitch of the car (deg * 10). */
-    int16_t yaw_deg;        /**< @brief Yaw of the car (deg * 10). */
-     
-    /** @brief Indicator for if the pose information 
-     * about the car should be trusted (see cmr_canCDCPoseIndicator_t). */
-    uint8_t pose_valid;    
+    int16_t yaw_deg;        /**< @brief Yaw of the car (deg * 10). */ 
 } cmr_canCDCPoseOrientation_t;
 
 typedef struct {
     int16_t longitudinalVel_mps;    /**< @brief Velocity of the car in the forward direction (m/s * 100). */
     int16_t lateralVel_mps;         /**< @brief Velocity of the car in the right direction (m/s * 100). */
     int16_t verticalVel_mps;        /**< @brief Velocity of the car in the down direction (m/s * 100). */
-
-    /** @brief Indicator for if the pose information 
-     * about the car should be trusted (see cmr_canCDCPoseIndicator_t). */
-    uint8_t pose_valid;    
 } cmr_canCDCPoseVelocity_t;
 
 typedef struct {

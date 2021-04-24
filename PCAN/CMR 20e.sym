@@ -89,12 +89,6 @@ enum CoolingState (
     2 = "HIGH"
 )
 
-enum CDCPoseValid (
-    0 = "ERROR",
-    1 = "VALID",
-    2 = "INVALID"
-)
-
 {SENDRECEIVE}
 
 [VSM_Heartbeat]
@@ -418,7 +412,6 @@ Timeout=200
 Var=CDC_Roll signed 0,16 /f:0.1 /u:deg
 Var=CDC_Pitch signed 16,16 /f:0.1 /u:deg
 Var=CDC_Yaw signed 32,16 /f:0.1 /u:deg
-Var=CDC_PoseValid_Orientation unsigned 48,8 /e:CDCPoseValid
 
 [CDC_PoseVelocity]
 ID=2A2h
@@ -428,7 +421,6 @@ Timeout=200
 Var=CDC_LongitudinalVelocity signed 0,16 /f:0.01 /u:mps
 Var=CDC_LateralVelocity signed 16,16 /f:0.01 /u:mps
 Var=CDC_VerticalVelocity signed 32,16 /f:0.01 /u:mps
-Var=CDC_PoseValid_Vel unsigned 48,8 /e:CDCPoseValid
 
 [CDC_PoseAcceleration]
 ID=2B2h
