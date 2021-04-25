@@ -19,6 +19,7 @@
 #include "adc.h"    // adcVSense, adcISense
 #include "state.h"  // State interface
 #include "tftDL.h"  // For RAM buffer indices
+#include "gpio.h"   // For actionButtonPressed status
 
 /**
  * @brief CAN periodic message receive metadata
@@ -152,6 +153,7 @@ static void canTX10Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
+        /* Transmit Power Diagnostics */
         cmr_canDIMPowerDiagnostics_t powerDiagnostics = {
             .busVoltage_mV = adcRead(ADC_VSENSE) * 8 * 11 / 10, // TODO: figure out where 8, 10 come from
             .busCurrent_mA = adcRead(ADC_ISENSE) * 8 / 20 / 10 // TODO: figure out where 8, 10 come from
@@ -163,13 +165,13 @@ static void canTX10Hz(void *pvParameters) {
             canTX10Hz_period_ms
         );
 
+        /* if DIM is requesting a state/gear change
+         * send this request to VSM */
         cmr_canState_t stateVSM = stateGetVSM();
         cmr_canState_t stateVSMReq = stateGetVSMReq();
         cmr_canGear_t gear = stateGetGear();
         cmr_canGear_t gearReq = stateGetGearReq();
 
-        /* if DIM is requesting a state/gear change
-         * send this request to VSM */
         if (
             (stateVSM != stateVSMReq) ||
             (gear != gearReq)
@@ -214,6 +216,7 @@ static void canTX100Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
+        /* Transmit DIM heartbeat */
         cmr_canState_t vsmState = stateGetVSM();
         cmr_canHeartbeat_t heartbeat = {
             .state = vsmState
@@ -235,6 +238,16 @@ static void canTX100Hz(void *pvParameters) {
             CMR_CANID_HEARTBEAT_DIM,
             &heartbeat,
             sizeof(heartbeat),
+            canTX100Hz_period_ms
+        );
+
+        /* Transmit action button status */
+        cmr_canDIMActionButton_t actionButton = {
+            .actionButtonPressed = actionButtonPressed
+        };
+        canTX(
+            CMR_CANID_DIM_ACTION_BUTTON,
+            &actionButton, sizeof(actionButton),
             canTX100Hz_period_ms
         );
 
