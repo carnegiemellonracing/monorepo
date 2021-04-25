@@ -504,6 +504,7 @@ typedef struct {
     int16_t roll_deg;       /**< @brief Roll of the car (deg * 10). */
     int16_t pitch_deg;      /**< @brief Pitch of the car (deg * 10). */
     int16_t yaw_deg;        /**< @brief Yaw of the car (deg * 10). */ 
+    int16_t velocity_deg;   /**< @brief Velocity vector of the car (deg * 10). */
 } cmr_canCDCPoseOrientation_t;
 
 typedef struct {
