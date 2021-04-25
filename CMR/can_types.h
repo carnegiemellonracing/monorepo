@@ -745,9 +745,9 @@ typedef struct {
 
 /** @brief SBG Systems EKF Euler Orientation. */
 typedef struct {
-    int16_t roll;               /**< @brief Roll (radians times 10^4). */
-    int16_t pitch;              /**< @brief Pitch (radians times 10^4). */
-    int16_t yaw;                /**< @brief Yaw (radians times 10^4). */
+    int16_t roll;               /**< @brief Car Roll (radians times 10^4). */
+    int16_t pitch;              /**< @brief Car Pitch (radians times 10^4). */
+    int16_t yaw;                /**< @brief Car Yaw (radians times 10^4). */
 } cmr_canSBGEKFOrient_t;
 
 /** @brief SBG Systems EKF Velocity. */
@@ -757,18 +757,25 @@ typedef struct {
     int16_t velocity_d;         /**< @brief Velocity in Down Direction (m/s times 100). */
 } cmr_canSBGEKFVelocity_t;
 
+/** @brief SBG Systems Body Velocity. */
+typedef struct {
+    int16_t velocity_x;         /**< @brief Velocity in Car Forward Direction (m/s times 100). */
+    int16_t velocity_y;         /**< @brief Velocity in Car Right Direction (m/s times 100). */
+    int16_t velocity_z;         /**< @brief Velocity in Car Down Direction (m/s times 100). */
+} cmr_canSBGEKFVelocity_t;
+
 /** @brief SBG Systems IMU Acceleration. */
 typedef struct {
-    int16_t accel_x_mps2;         /**< @brief Acceleration in device's X direction (m/s^2 times 100). */
-    int16_t accel_y_mps2;         /**< @brief Acceleration in device's Y direction (m/s^2 times 100). */
-    int16_t accel_z_mps2;         /**< @brief Acceleration in device's Z direction (m/s^2 times 100). */
+    int16_t accel_x_mps2;         /**< @brief Acceleration in Car Forward Direction (m/s^2 times 100). */
+    int16_t accel_y_mps2;         /**< @brief Acceleration in Car Right Direction (m/s^2 times 100). */
+    int16_t accel_z_mps2;         /**< @brief Acceleration in Car Down Direction (m/s^2 times 100). */
 } cmr_canSBGIMUAcceleration_t;
 
 /** @brief SBG Systems IMU Gyro. */
 typedef struct {
-    int16_t gyro_x_rads;        /**< @brief Roll rate around the device's X direction (rad/s times 1000). */
-    int16_t gyro_y_rads;        /**< @brief Roll rate around the device's Y direction (rad/s times 1000). */
-    int16_t gyro_z_rads;        /**< @brief Roll rate around the device's Z direction (rad/s times 1000). */
+    int16_t gyro_x_rads;        /**< @brief Roll rate around the Car Forward Direction (rad/s times 1000). */
+    int16_t gyro_y_rads;        /**< @brief Roll rate around the Car Right Direction (rad/s times 1000). */
+    int16_t gyro_z_rads;        /**< @brief Roll rate around the Car Down Direction (rad/s times 1000). */
 } cmr_canSBGIMUGyro_t;
 
 #endif /* CMR_CAN_TYPES_H */

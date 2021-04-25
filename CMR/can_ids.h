@@ -119,6 +119,7 @@ typedef enum {
     CMR_CANID_SBG_EKF_VEL = 0x727,              /**< @brief SBG_ECAN_LOG_EKF_VEL */
     CMR_CANID_SBG_IMU_ACCEL = 0x711,            /**< @brief SBG_ECAN_LOG_IMU_ACCEL */
     CMR_CANID_SBG_IMU_GYRO = 0x712,             /**< @brief SBG_ECAN_LOG_IMU_GYRO */
+    CMR_CANID_SBG_BODY_VEL = 0x729,             /**< @brief SBG_ECAN_MSG_EKF_VEL_BODY */
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
