@@ -984,6 +984,13 @@ Var=Velocity_N signed 0,16 /u:m.s-1 /f:0.01 /p:2
 Var=Velocity_E signed 16,16 /u:m.s-1 /f:0.01 /p:2
 Var=Velocity_D signed 32,16 /u:m.s-1 /f:0.01 /p:2
 
+[ELLIPSE_IMU_BODY_VEL]
+ID=729h
+DLC=6
+Var=Velocity_Forward signed 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=Velocity_Right signed 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=Velocity_Down signed 32,16 /u:m.s-1 /f:0.01 /p:2
+
 [ELLIPSE_IMU_EKF_VEL_ACC]
 ID=728h
 DLC=6

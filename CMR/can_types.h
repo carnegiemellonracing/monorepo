@@ -759,10 +759,10 @@ typedef struct {
 
 /** @brief SBG Systems Body Velocity. */
 typedef struct {
-    int16_t velocity_x;         /**< @brief Velocity in Car Forward Direction (m/s times 100). */
-    int16_t velocity_y;         /**< @brief Velocity in Car Right Direction (m/s times 100). */
-    int16_t velocity_z;         /**< @brief Velocity in Car Down Direction (m/s times 100). */
-} cmr_canSBGEKFVelocity_t;
+    int16_t velocity_forward;     /**< @brief Velocity in Car Forward Direction (m/s times 100). */
+    int16_t velocity_right;       /**< @brief Velocity in Car Right Direction (m/s times 100). */
+    int16_t velocity_down;        /**< @brief Velocity in Car Down Direction (m/s times 100). */
+} cmr_canSBGBodyVelocity_t;
 
 /** @brief SBG Systems IMU Acceleration. */
 typedef struct {
