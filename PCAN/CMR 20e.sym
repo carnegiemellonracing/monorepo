@@ -406,7 +406,7 @@ Var=CDC_Longitude float 32,32 /u:deg
 
 [CDC_PoseOrientation]
 ID=292h
-DLC=7
+DLC=8
 CycleTime=100
 Timeout=200
 Var=CDC_Roll signed 0,16 /f:0.1 /u:deg
@@ -416,7 +416,7 @@ Var=CDC_Velocity_Angle signed 48,16 /f:0.1 /u:deg
 
 [CDC_PoseVelocity]
 ID=2A2h
-DLC=7
+DLC=6
 CycleTime=100
 Timeout=200
 Var=CDC_LongitudinalVelocity signed 0,16 /f:0.01 /u:mps
