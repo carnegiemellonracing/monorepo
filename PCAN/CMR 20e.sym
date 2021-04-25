@@ -433,6 +433,13 @@ Timeout=1000
 Var=DIM_requestState unsigned 0,8 /e:State
 Var=DIM_requestGear unsigned 8,8 /e:Gear
 
+[DIM_Action_Button]
+ID=515h
+DLC=1
+CycleTime=100
+Timeout=1000
+Var=DIM_actionButtonPressed unsigned 0,8
+
 [PTCf_Heartbeat]
 ID=106h
 DLC=5
