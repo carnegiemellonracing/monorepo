@@ -428,7 +428,7 @@ typedef struct {
 
 
 // ------------------------------------------------------------------------------------------------
-// Central Dynamics Controller
+// Central Dynamics Controller (19e)
 
 /** @brief Central Dynamics Controller wheel speeds. */
 typedef struct {
@@ -476,6 +476,48 @@ typedef struct {
     int16_t lateral;        /**< @brief Lateral Acceleration where full scale is +/- 2g (positive Left). */
     int16_t vertical;       /**< @brief Vertical Acceleration where full scale is +/- 2g (positive Down). */
 } cmr_canCDCIMUAcceleration_t;
+
+// ------------------------------------------------------------------------------------------------
+// Central Dynamics Controller (20e)
+
+/** @brief CDC wheel speeds (used for setpoint and actual). */
+typedef struct {
+    int16_t frontLeft_rpm;  /**< @brief Wheel speed on 20e (rpm * 10). */
+    int16_t frontRight_rpm; /**< @brief Wheel speed on 20e (rpm * 10). */
+    int16_t rearLeft_rpm;   /**< @brief Wheel speed on 20e (rpm * 10). */
+    int16_t rearRight_rpm;  /**< @brief Wheel speed on 20e (rpm * 10). */
+} cmr_canCDCWheelVelocity_t;
+
+typedef struct {
+    int16_t frontLeft_Nm;   /**< @brief Wheel torque on 20e (Nm * 10). */
+    int16_t frontRight_Nm;  /**< @brief Wheel speed on 20e (Nm * 10). */
+    int16_t rearLeft_Nm;    /**< @brief Wheel speed on 20e (Nm * 10). */
+    int16_t rearRight_Nm;   /**< @brief Wheel speed on 20e (Nm * 10). */
+} cmr_canCDCWheelTorque_t;
+
+typedef struct {
+    float latitude_deg;     /**< @brief Position of car on earth. */
+    float longitude_deg;    /**< @brief Position of car on earth. */
+} cmr_canCDCPosePosition_t;
+
+typedef struct {
+    int16_t roll_deg;       /**< @brief Roll of the car (deg * 10). */
+    int16_t pitch_deg;      /**< @brief Pitch of the car (deg * 10). */
+    int16_t yaw_deg;        /**< @brief Yaw of the car (deg * 10). */ 
+    int16_t velocity_deg;   /**< @brief Velocity vector of the car (deg * 10). */
+} cmr_canCDCPoseOrientation_t;
+
+typedef struct {
+    int16_t longitudinalVel_mps;    /**< @brief Velocity of the car in the forward direction (m/s * 100). */
+    int16_t lateralVel_mps;         /**< @brief Velocity of the car in the right direction (m/s * 100). */
+    int16_t verticalVel_mps;        /**< @brief Velocity of the car in the down direction (m/s * 100). */
+} cmr_canCDCPoseVelocity_t;
+
+typedef struct {
+    int16_t longitudinalAccel_mps2;    /**< @brief Acceleration of the car in the forward direction (m/s^2 * 100). */
+    int16_t lateralAccel_mps2;         /**< @brief Acceleration of the car in the right direction (m/s^2 * 100). */
+    int16_t verticalAccel_mps2;        /**< @brief Acceleration of the car in the down direction (m/s^2 * 100). */   
+} cmr_canCDCPoseAcceleration_t;
 
 // ------------------------------------------------------------------------------------------------
 // Driver Interface Module
@@ -704,9 +746,9 @@ typedef struct {
 
 /** @brief SBG Systems EKF Euler Orientation. */
 typedef struct {
-    int16_t roll;               /**< @brief Roll (radians times 10^4). */
-    int16_t pitch;              /**< @brief Pitch (radians times 10^4). */
-    int16_t yaw;                /**< @brief Yaw (radians times 10^4). */
+    int16_t roll;               /**< @brief Car Roll (radians times 10^4). */
+    int16_t pitch;              /**< @brief Car Pitch (radians times 10^4). */
+    int16_t yaw;                /**< @brief Car Yaw (radians times 10^4). */
 } cmr_canSBGEKFOrient_t;
 
 /** @brief SBG Systems EKF Velocity. */
@@ -715,6 +757,27 @@ typedef struct {
     int16_t velocity_e;         /**< @brief Velocity in East Direction (m/s times 100). */
     int16_t velocity_d;         /**< @brief Velocity in Down Direction (m/s times 100). */
 } cmr_canSBGEKFVelocity_t;
+
+/** @brief SBG Systems Body Velocity. */
+typedef struct {
+    int16_t velocity_forward;     /**< @brief Velocity in Car Forward Direction (m/s times 100). */
+    int16_t velocity_right;       /**< @brief Velocity in Car Right Direction (m/s times 100). */
+    int16_t velocity_down;        /**< @brief Velocity in Car Down Direction (m/s times 100). */
+} cmr_canSBGBodyVelocity_t;
+
+/** @brief SBG Systems IMU Acceleration. */
+typedef struct {
+    int16_t accel_x_mps2;         /**< @brief Acceleration in Car Forward Direction (m/s^2 times 100). */
+    int16_t accel_y_mps2;         /**< @brief Acceleration in Car Right Direction (m/s^2 times 100). */
+    int16_t accel_z_mps2;         /**< @brief Acceleration in Car Down Direction (m/s^2 times 100). */
+} cmr_canSBGIMUAcceleration_t;
+
+/** @brief SBG Systems IMU Gyro. */
+typedef struct {
+    int16_t gyro_x_rads;        /**< @brief Roll rate around the Car Forward Direction (rad/s times 1000). */
+    int16_t gyro_y_rads;        /**< @brief Roll rate around the Car Right Direction (rad/s times 1000). */
+    int16_t gyro_z_rads;        /**< @brief Roll rate around the Car Down Direction (rad/s times 1000). */
+} cmr_canSBGIMUGyro_t;
 
 #endif /* CMR_CAN_TYPES_H */
 

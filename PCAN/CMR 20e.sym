@@ -356,6 +356,82 @@ Var=RUN_ERROR_CurrSensFault bit 57,1
 Var=RUN_ERROR_ResolverDisconnected bit 62,1
 Var=RUN_ERROR_InvtrDischargeActive bit 63,1
 
+[CDC_WheelVelocityFeedback]
+ID=232h
+DLC=8
+CycleTime=100
+Timeout=200
+Var=CDC_FLWheel_Vel_Feedback signed 0,16 /f:0.1 /u:rpm
+Var=CDC_FRWheel_Vel_Feedback signed 16,16 /f:0.1 /u:rpm
+Var=CDC_RLWheel_Vel_Feedback signed 32,16 /f:0.1 /u:rpm
+Var=CDC_RRWheel_Vel_Feedback signed 48,16 /f:0.1 /u:rpm
+
+[CDC_WheelVelocitySetpoint]
+ID=252h
+DLC=8
+CycleTime=100
+Timeout=200
+Var=CDC_FLWheel_Vel_Setpoint signed 0,16 /f:0.1 /u:rpm
+Var=CDC_FRWheel_Vel_Setpoint signed 16,16 /f:0.1 /u:rpm
+Var=CDC_RLWheel_Vel_Setpoint signed 32,16 /f:0.1 /u:rpm
+Var=CDC_RRWheel_Vel_Setpoint signed 48,16 /f:0.1 /u:rpm
+
+[CDC_WheelTorqueFeedback]
+ID=262h
+DLC=8
+CycleTime=100
+Timeout=200
+Var=CDC_FLWheel_Torque_Feedback signed 0,16 /f:0.1 /u:Nm
+Var=CDC_FRWheel_Torque_Feedback signed 16,16 /f:0.1 /u:Nm
+Var=CDC_RLWheel_Torque_Feedback signed 32,16 /f:0.1 /u:Nm
+Var=CDC_RRWheel_Torque_Feedback signed 48,16 /f:0.1 /u:Nm
+
+[CDC_WheelTorqueSetpoint]
+ID=272h
+DLC=8
+CycleTime=100
+Timeout=200
+Var=CDC_FLWheel_Torque_Setpoint signed 0,16 /f:0.1 /u:Nm
+Var=CDC_FRWheel_Torque_Setpoint signed 16,16 /f:0.1 /u:Nm
+Var=CDC_RLWheel_Torque_Setpoint signed 32,16 /f:0.1 /u:Nm
+Var=CDC_RRWheel_Torque_Setpoint signed 48,16 /f:0.1 /u:Nm
+
+[CDC_PosePosition]
+ID=282h
+DLC=8
+CycleTime=100
+Timeout=200
+Var=CDC_Latitude float 0,32 /u:deg
+Var=CDC_Longitude float 32,32 /u:deg
+
+[CDC_PoseOrientation]
+ID=292h
+DLC=8
+CycleTime=100
+Timeout=200
+Var=CDC_Roll signed 0,16 /f:0.1 /u:deg
+Var=CDC_Pitch signed 16,16 /f:0.1 /u:deg
+Var=CDC_Yaw signed 32,16 /f:0.1 /u:deg
+Var=CDC_Velocity_Angle signed 48,16 /f:0.1 /u:deg
+
+[CDC_PoseVelocity]
+ID=2A2h
+DLC=6
+CycleTime=100
+Timeout=200
+Var=CDC_LongitudinalVelocity signed 0,16 /f:0.01 /u:mps
+Var=CDC_LateralVelocity signed 16,16 /f:0.01 /u:mps
+Var=CDC_VerticalVelocity signed 32,16 /f:0.01 /u:mps
+
+[CDC_PoseAcceleration]
+ID=2B2h
+DLC=6
+CycleTime=100
+Timeout=200
+Var=CDC_LongitudinalAcceleration signed 0,16 /f:0.01 /u:mps2
+Var=CDC_LateralAcceleration signed 16,16 /f:0.01 /u:mps2
+Var=CDC_VerticalAcceleration signed 32,16 /f:0.01 /u:mps2
+
 [FSM_Heartbeat]
 ID=103h
 DLC=5
@@ -908,6 +984,13 @@ DLC=6
 Var=Velocity_N signed 0,16 /u:m.s-1 /f:0.01 /p:2
 Var=Velocity_E signed 16,16 /u:m.s-1 /f:0.01 /p:2
 Var=Velocity_D signed 32,16 /u:m.s-1 /f:0.01 /p:2
+
+[ELLIPSE_IMU_BODY_VEL]
+ID=729h
+DLC=6
+Var=Velocity_Forward signed 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=Velocity_Right signed 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=Velocity_Down signed 32,16 /u:m.s-1 /f:0.01 /p:2
 
 [ELLIPSE_IMU_EKF_VEL_ACC]
 ID=728h
