@@ -150,7 +150,7 @@ static void buttonsInput_task(void *pvParameters) {
     TickType_t currentTime;
     while (1) {
         volatile int value = cmr_gpioRead(GPIO_BUTTON_0);
-        (void) value;
+        actionButtonPressed = value;
 
         /* if vsm has changed state unexpectedly we
          * need to adjust our req to still be valid */
@@ -164,8 +164,6 @@ static void buttonsInput_task(void *pvParameters) {
         buttonEvent_t event;
         while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
             switch (event.pin) {
-                case GPIO_BUTTON_0:
-                    break;
                 case GPIO_BUTTON_1:
                 	stateGearDownButton(event.pressed);
                     break;

@@ -39,4 +39,7 @@ typedef struct {
 
 void gpioInit(void);
 
+/** @brief Action button value */
+bool actionButtonPressed;
+
 #endif /* GPIO_H */
