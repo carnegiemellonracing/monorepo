@@ -543,6 +543,10 @@ typedef struct {
     uint8_t data[4];            /**< @brief Data to write. */
 } cmr_canDIMTextWrite_t;
 
+typedef struct {
+    uint8_t actionButtonPressed;    /**< @brief Status of the action button (Active Low). */
+} cmr_canDIMActionButton_t;
+
 // ------------------------------------------------------------------------------------------------
 // Front Sensor Module
 
