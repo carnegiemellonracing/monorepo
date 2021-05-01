@@ -821,6 +821,78 @@ Var=BMS_BMB_7_Min_Temp_Index unsigned 8,8
 Var=BMS_BMB_7_Max_Temp signed 16,16
 Var=BMS_BMB_7_Min_Temp signed 32,16
 
+[BMS_BMB_8_Voltages]
+ID=390h
+DLC=6
+CycleTime=100
+Var=BMS_BMB_8_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_8_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_8_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_8_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_8_Temps]
+ID=391h
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_8_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_8_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_8_Max_Temp signed 16,16
+Var=BMS_BMB_8_Min_Temp signed 32,16
+
+[BMS_BMB_9_Voltages]
+ID=392h
+DLC=6
+CycleTime=100
+Var=BMS_BMB_9_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_9_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_9_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_9_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_9_Temps]
+ID=393h
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_9_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_9_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_9_Max_Temp signed 16,16
+Var=BMS_BMB_9_Min_Temp signed 32,16
+
+[BMS_BMB_10_Voltages]
+ID=394h
+DLC=6
+CycleTime=100
+Var=BMS_BMB_10_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_10_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_10_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_10_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_10_Temps]
+ID=395h
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_10_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_10_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_10_Max_Temp signed 16,16
+Var=BMS_BMB_10_Min_Temp signed 32,16
+
+[BMS_BMB_11_Voltages]
+ID=396h
+DLC=6
+CycleTime=100
+Var=BMS_BMB_11_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_11_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_11_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_11_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_11_Temps]
+ID=397h
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_11_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_11_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_11_Max_Temp signed 16,16
+Var=BMS_BMB_11_Min_Temp signed 32,16
+
 [BMS_Pack_MinMax_Cell_Voltages]
 ID=310h
 DLC=8

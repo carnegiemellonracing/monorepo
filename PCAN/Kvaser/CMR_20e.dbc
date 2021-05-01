@@ -559,6 +559,62 @@ SG_ BMS_BMB_7_Max_Temp : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
 SG_ BMS_BMB_7_Min_Temp : 32|16@1- (1,0) [-32768|32767] "" Vector__XXX
 
 
+BO_ 912 BMS_BMB_8_Voltages: 6 Vector__XXX
+SG_ BMS_BMB_8_Max_Voltage_Index : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ BMS_BMB_8_Min_Voltage_Index : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ BMS_BMB_8_Max_Voltage : 16|16@1+ (1,0) [0|65535] "mV" Vector__XXX
+SG_ BMS_BMB_8_Min_Voltage : 32|16@1+ (1,0) [0|65535] "mV" Vector__XXX
+
+
+BO_ 913 BMS_BMB_8_Temps: 6 Vector__XXX
+SG_ BMS_BMB_8_Max_Temp_Index : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ BMS_BMB_8_Min_Temp_Index : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ BMS_BMB_8_Max_Temp : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
+SG_ BMS_BMB_8_Min_Temp : 32|16@1- (1,0) [-32768|32767] "" Vector__XXX
+
+
+BO_ 914 BMS_BMB_9_Voltages: 6 Vector__XXX
+SG_ BMS_BMB_9_Max_Voltage_Index : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ BMS_BMB_9_Min_Voltage_Index : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ BMS_BMB_9_Max_Voltage : 16|16@1+ (1,0) [0|65535] "mV" Vector__XXX
+SG_ BMS_BMB_9_Min_Voltage : 32|16@1+ (1,0) [0|65535] "mV" Vector__XXX
+
+
+BO_ 915 BMS_BMB_9_Temps: 6 Vector__XXX
+SG_ BMS_BMB_9_Max_Temp_Index : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ BMS_BMB_9_Min_Temp_Index : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ BMS_BMB_9_Max_Temp : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
+SG_ BMS_BMB_9_Min_Temp : 32|16@1- (1,0) [-32768|32767] "" Vector__XXX
+
+
+BO_ 916 BMS_BMB_10_Voltages: 6 Vector__XXX
+SG_ BMS_BMB_10_Max_Voltage_Index : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ BMS_BMB_10_Min_Voltage_Index : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ BMS_BMB_10_Max_Voltage : 16|16@1+ (1,0) [0|65535] "mV" Vector__XXX
+SG_ BMS_BMB_10_Min_Voltage : 32|16@1+ (1,0) [0|65535] "mV" Vector__XXX
+
+
+BO_ 917 BMS_BMB_10_Temps: 6 Vector__XXX
+SG_ BMS_BMB_10_Max_Temp_Index : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ BMS_BMB_10_Min_Temp_Index : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ BMS_BMB_10_Max_Temp : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
+SG_ BMS_BMB_10_Min_Temp : 32|16@1- (1,0) [-32768|32767] "" Vector__XXX
+
+
+BO_ 918 BMS_BMB_11_Voltages: 6 Vector__XXX
+SG_ BMS_BMB_11_Max_Voltage_Index : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ BMS_BMB_11_Min_Voltage_Index : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ BMS_BMB_11_Max_Voltage : 16|16@1+ (1,0) [0|65535] "mV" Vector__XXX
+SG_ BMS_BMB_11_Min_Voltage : 32|16@1+ (1,0) [0|65535] "mV" Vector__XXX
+
+
+BO_ 919 BMS_BMB_11_Temps: 6 Vector__XXX
+SG_ BMS_BMB_11_Max_Temp_Index : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ BMS_BMB_11_Min_Temp_Index : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ BMS_BMB_11_Max_Temp : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
+SG_ BMS_BMB_11_Min_Temp : 32|16@1- (1,0) [-32768|32767] "" Vector__XXX
+
+
 BO_ 784 BMS_Pack_MinMax_Cell_Voltages: 8 Vector__XXX
 SG_ Pack_Min_Cell_Voltage : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
 SG_ Pack_Max_Cell_Voltage : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
@@ -1130,6 +1186,14 @@ BA_ "GenMsgCycleTime" BO_ 908 100;
 BA_ "GenMsgCycleTime" BO_ 909 1000;
 BA_ "GenMsgCycleTime" BO_ 910 100;
 BA_ "GenMsgCycleTime" BO_ 911 1000;
+BA_ "GenMsgCycleTime" BO_ 912 100;
+BA_ "GenMsgCycleTime" BO_ 913 1000;
+BA_ "GenMsgCycleTime" BO_ 914 100;
+BA_ "GenMsgCycleTime" BO_ 915 1000;
+BA_ "GenMsgCycleTime" BO_ 916 100;
+BA_ "GenMsgCycleTime" BO_ 917 1000;
+BA_ "GenMsgCycleTime" BO_ 918 100;
+BA_ "GenMsgCycleTime" BO_ 919 1000;
 BA_ "GenMsgCycleTime" BO_ 1541 1000;
 BA_ "GenMsgCycleTime" BO_ 643 5;
 BA_ "GenMsgCycleTime" BO_ 645 5;
@@ -1507,6 +1571,38 @@ BA_ "GenSigStartValue" SG_ 911 BMS_BMB_7_Max_Temp_Index 0;
 BA_ "GenSigStartValue" SG_ 911 BMS_BMB_7_Min_Temp_Index 0;
 BA_ "GenSigStartValue" SG_ 911 BMS_BMB_7_Max_Temp 0;
 BA_ "GenSigStartValue" SG_ 911 BMS_BMB_7_Min_Temp 0;
+BA_ "GenSigStartValue" SG_ 912 BMS_BMB_8_Max_Voltage_Index 0;
+BA_ "GenSigStartValue" SG_ 912 BMS_BMB_8_Min_Voltage_Index 0;
+BA_ "GenSigStartValue" SG_ 912 BMS_BMB_8_Max_Voltage 0;
+BA_ "GenSigStartValue" SG_ 912 BMS_BMB_8_Min_Voltage 0;
+BA_ "GenSigStartValue" SG_ 913 BMS_BMB_8_Max_Temp_Index 0;
+BA_ "GenSigStartValue" SG_ 913 BMS_BMB_8_Min_Temp_Index 0;
+BA_ "GenSigStartValue" SG_ 913 BMS_BMB_8_Max_Temp 0;
+BA_ "GenSigStartValue" SG_ 913 BMS_BMB_8_Min_Temp 0;
+BA_ "GenSigStartValue" SG_ 914 BMS_BMB_9_Max_Voltage_Index 0;
+BA_ "GenSigStartValue" SG_ 914 BMS_BMB_9_Min_Voltage_Index 0;
+BA_ "GenSigStartValue" SG_ 914 BMS_BMB_9_Max_Voltage 0;
+BA_ "GenSigStartValue" SG_ 914 BMS_BMB_9_Min_Voltage 0;
+BA_ "GenSigStartValue" SG_ 915 BMS_BMB_9_Max_Temp_Index 0;
+BA_ "GenSigStartValue" SG_ 915 BMS_BMB_9_Min_Temp_Index 0;
+BA_ "GenSigStartValue" SG_ 915 BMS_BMB_9_Max_Temp 0;
+BA_ "GenSigStartValue" SG_ 915 BMS_BMB_9_Min_Temp 0;
+BA_ "GenSigStartValue" SG_ 916 BMS_BMB_10_Max_Voltage_Index 0;
+BA_ "GenSigStartValue" SG_ 916 BMS_BMB_10_Min_Voltage_Index 0;
+BA_ "GenSigStartValue" SG_ 916 BMS_BMB_10_Max_Voltage 0;
+BA_ "GenSigStartValue" SG_ 916 BMS_BMB_10_Min_Voltage 0;
+BA_ "GenSigStartValue" SG_ 917 BMS_BMB_10_Max_Temp_Index 0;
+BA_ "GenSigStartValue" SG_ 917 BMS_BMB_10_Min_Temp_Index 0;
+BA_ "GenSigStartValue" SG_ 917 BMS_BMB_10_Max_Temp 0;
+BA_ "GenSigStartValue" SG_ 917 BMS_BMB_10_Min_Temp 0;
+BA_ "GenSigStartValue" SG_ 918 BMS_BMB_11_Max_Voltage_Index 0;
+BA_ "GenSigStartValue" SG_ 918 BMS_BMB_11_Min_Voltage_Index 0;
+BA_ "GenSigStartValue" SG_ 918 BMS_BMB_11_Max_Voltage 0;
+BA_ "GenSigStartValue" SG_ 918 BMS_BMB_11_Min_Voltage 0;
+BA_ "GenSigStartValue" SG_ 919 BMS_BMB_11_Max_Temp_Index 0;
+BA_ "GenSigStartValue" SG_ 919 BMS_BMB_11_Min_Temp_Index 0;
+BA_ "GenSigStartValue" SG_ 919 BMS_BMB_11_Max_Temp 0;
+BA_ "GenSigStartValue" SG_ 919 BMS_BMB_11_Min_Temp 0;
 BA_ "GenSigStartValue" SG_ 784 Pack_Min_Cell_Voltage 0;
 BA_ "GenSigStartValue" SG_ 784 Pack_Max_Cell_Voltage 0;
 BA_ "GenSigStartValue" SG_ 784 Min_Cell_Volt_BMB 0;
