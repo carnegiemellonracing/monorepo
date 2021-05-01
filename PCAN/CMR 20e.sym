@@ -821,6 +821,78 @@ Var=BMS_BMB_7_Min_Temp_Index unsigned 8,8
 Var=BMS_BMB_7_Max_Temp signed 16,16
 Var=BMS_BMB_7_Min_Temp signed 32,16
 
+[BMS_BMB_8_Voltages]
+ID=390h
+DLC=6
+CycleTime=100
+Var=BMS_BMB_8_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_8_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_8_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_8_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_8_Temps]
+ID=391h
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_8_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_8_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_8_Max_Temp signed 16,16
+Var=BMS_BMB_8_Min_Temp signed 32,16
+
+[BMS_BMB_9_Voltages]
+ID=392h
+DLC=6
+CycleTime=100
+Var=BMS_BMB_9_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_9_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_9_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_9_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_9_Temps]
+ID=393h
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_9_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_9_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_9_Max_Temp signed 16,16
+Var=BMS_BMB_9_Min_Temp signed 32,16
+
+[BMS_BMB_10_Voltages]
+ID=394h
+DLC=6
+CycleTime=100
+Var=BMS_BMB_10_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_10_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_10_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_10_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_10_Temps]
+ID=395h
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_10_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_10_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_10_Max_Temp signed 16,16
+Var=BMS_BMB_10_Min_Temp signed 32,16
+
+[BMS_BMB_11_Voltages]
+ID=396h
+DLC=6
+CycleTime=100
+Var=BMS_BMB_11_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_11_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_11_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_11_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_11_Temps]
+ID=397h
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_11_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_11_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_11_Max_Temp signed 16,16
+Var=BMS_BMB_11_Min_Temp signed 32,16
+
 [BMS_Pack_MinMax_Cell_Voltages]
 ID=310h
 DLC=8
@@ -1212,8 +1284,8 @@ Var=Internal_watchdog_timeout unsigned 19,1
 Var=Initialization_error unsigned 18,1
 Var=CAN_timeout_300ms unsigned 17,1
 Var=CAN_off unsigned 16,1
-Var=CAN_tx_buf>127 unsigned 31,1
-Var=CAN_rx_buf>127 unsigned 30,1
+Var=CAN_tx_buf_more_than_127 unsigned 31,1
+Var=CAN_rx_buf_more_than_127 unsigned 30,1
 Var=Batt_temp_exceeded unsigned 29,1
 Var=Batt_volt_exceeded unsigned 28,1
 Var=Amp_hours_exceeded unsigned 27,1
