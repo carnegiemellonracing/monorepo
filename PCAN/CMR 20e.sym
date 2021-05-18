@@ -7,6 +7,14 @@ Title="CMR 20e"
 // This is for the EMD
 enum VtSig_Gain(0="x1", 1="x2", 2="x4", 3="x8", 4="x16", 5="x32")
 
+enum SBG_Solution_Status_Mode(
+    0 = "Uninitialized",
+    1 = "Vertical_Gyro_Only",
+    2 = "Orientation_Only",
+    3 = "Nav_Velocity",
+    4 = "Full_Nav"
+)
+
 enum Fan_State(
     0 = "FAN_OFF",
     1 = "FAN_LOW",
@@ -955,7 +963,26 @@ Var=SBG_Aiding_Status unsigned 32,32
 [ELLIPSE_IMU_General_Status_3]
 ID=702h
 DLC=6
-Var=SBG_Solution_Status unsigned 0,32
+Var=SBG_Solution_Mode unsigned 0,4 /e:SBG_Solution_Status_Mode
+Var=SBG_Sol_Attitude_Valid bit 4,1
+Var=SBG_Sol_Heading_Valid bit 5,1
+Var=SBG_Sol_Velocity_Valid bit 6,1
+Var=SBG_Sol_Position_Valid bit 7,1
+Var=SBG_Sol_Vert_Ref_Used bit 8,1
+Var=SBG_Sol_Mag_Ref_Used bit 9,1
+Var=SBG_Sol_GPS1_Vel_Used bit 10,1
+Var=SBG_Sol_GPS1_Pos_Used bit 11,1
+Var=SBG_Sol_GPS1_Hdt_Used bit 13,1
+Var=SBG_Sol_GPS2_Vel_Used bit 14,1
+Var=SBG_Sol_GPS2_Pos_Used bit 15,1
+Var=SBG_Sol_GPS2_Hdt_Used bit 17,1
+Var=SBG_Sol_Odo_Used bit 18,1
+Var=SBG_Sol_Dvl_Bt_Used bit 19,1
+Var=SBG_Sol_Dvl_Wt_Used bit 20,1
+Var=SBG_Sol_Usbl_Used bit 24,1
+Var=SBG_Sol_Pressure_Used bit 25,1
+Var=SBG_Sol_Zupt_Used bit 26,1
+Var=SBG_Sol_Align_Valid bit 27,1
 Var=SBG_Heave_Status_GENERAL3 unsigned 32,16
 
 [ELLIPSE_IMU_UTC_0]
