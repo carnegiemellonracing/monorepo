@@ -1232,7 +1232,7 @@ Var=SBG_Time_Offset_2 unsigned 32,16 /u:s /f:0.000001 /p:3
 Var=SBG_Time_Offset_3 unsigned 48,16 /u:s /f:0.000001 /p:3
 
 [ELLIPSE_AUTOMOTIVE_DATA]
-ID=761h
+ID=72Ah
 DLC=7
 Var=SBG_Auto_Angle_Track signed 0,16 /u:rad /f:0.0001 /p:3
 Var=SBG_Auto_Angle_Slip signed 16,16 /u:rad /f:0.0001 /p:3
