@@ -783,5 +783,13 @@ typedef struct {
     int16_t gyro_z_rads;        /**< @brief Roll rate around the Car Down Direction (rad/s times 1000). */
 } cmr_canSBGIMUGyro_t;
 
+// ------------------------------------------------------------------------------------------------
+// SAE Provided EMD definitions
+
+typedef struct {
+    int32_t current;    /**< @brief Current (amps * 2^16). */
+    int32_t voltage;    /**< @brief Voltage (volts * 2^16). */
+} cmr_canEMDMeasurements_t;
+
 #endif /* CMR_CAN_TYPES_H */
 

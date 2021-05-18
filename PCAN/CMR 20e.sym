@@ -1524,28 +1524,26 @@ Var=AMK_RR_TargetVelocity        signed   16,16 /u:rpm /p:2
 Var=AMK_RR_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_RR_TorqueLimitNegativ    signed   48,16 /u:"% Mn" /f:0.1 /p:4
 
-//These are signals off of the EMD. We should migrate these to the DAQ bus
-//symbol file once it exists (assuming the EMD winds up on said bus)
-//[Measurement]
-//ID=100h
-//DLC=8
-//Var=Current signed 0,32 -m /u:A /f:1.5258789063E-005
-//Var=Voltage signed 32,32 -m /u:V /f:1.5258789063E-005
+[EMD_Measurement]
+ID=7EEh // This is NOT the real CANID for the EMD. It is 100h, but that conflicts with the VSM_Heartbeat
+DLC=8
+Var=EMD_Current signed 0,32 -m /u:A /f:1.5258789063E-005
+Var=EMD_Voltage signed 32,32 -m /u:V /f:1.5258789063E-005
 
-//[Status]
-//ID=400h
-//DLC=4
-//Var=VoltageGain unsigned 4,4 -m /u:VtSig_Gain
-//Var=CurrentGain unsigned 0,4 -m /e:VtSig_Gain
-//Var=OverVoltage bit 15,1 -m /u:bool
-//Var=OverPower bit 14,1 -m /u:bool
-//Var=Logging bit 13,1 -m /e:bool
+[EMD_Status]
+ID=400h
+DLC=4
+Var=EMD_VoltageGain unsigned 4,4 -m /e:VtSig_Gain
+Var=EMD_CurrentGain unsigned 0,4 -m /e:VtSig_Gain
+Var=EMD_OverVoltage bit 15,1 -m /u:bool
+Var=EMD_OverPower bit 14,1 -m /u:bool
+Var=EMD_Logging bit 13,1 -m /u:bool
 
 
-//[Reserved1]
-//ID=7E7h	// This CAN id is used for communication between the energy meter and the download tool.
-//DLC=8
+[EMD_Reserved1]
+ID=7E7h	// This CAN id is used for communication between the energy meter and the download tool.
+DLC=8
 
-//[Reserved2]
-//ID=7EFh	// This CAN id is used for communication between the energy meter and the download tool.
-//DLC=8
+[EMD_Reserved2]
+ID=7EFh	// This CAN id is used for communication between the energy meter and the download tool.
+DLC=8
