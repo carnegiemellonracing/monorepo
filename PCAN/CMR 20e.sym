@@ -7,6 +7,14 @@ Title="CMR 20e"
 // This is for the EMD
 enum VtSig_Gain(0="x1", 1="x2", 2="x4", 3="x8", 4="x16", 5="x32")
 
+enum SBG_Solution_Status_Mode(
+    0 = "Uninitialized",
+    1 = "Vertical_Gyro_Only",
+    2 = "Orientation_Only",
+    3 = "Nav_Velocity",
+    4 = "Full_Nav"
+)
+
 enum Fan_State(
     0 = "FAN_OFF",
     1 = "FAN_LOW",
@@ -942,295 +950,323 @@ Var=DILONG_Battery_Mode_N unsigned 40, 8
 [ELLIPSE_IMU_General_Status_1]
 ID=700h
 DLC=8
-Var=Time_Stamp_GS1 unsigned 0,32 /u:s /f:0.000001 /p:3
-Var=General_Status unsigned 32,16
-Var=Clock_Status unsigned 48,16
+Var=SBG_Time_Stamp_GS1 unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=SBG_General_Status unsigned 32,16
+Var=SBG_Clock_Status unsigned 48,16
 
 [ELLIPSE_IMU_General_Status_2]
 ID=701h
 DLC=8
-Var=Com_Status unsigned 0,32
-Var=Aiding_Status unsigned 32,32
+Var=SBG_Com_Status unsigned 0,32
+Var=SBG_Aiding_Status unsigned 32,32
 
 [ELLIPSE_IMU_General_Status_3]
 ID=702h
 DLC=6
-Var=Solution_Status unsigned 0,32
-Var=Heave_Status_GENERAL3 unsigned 32,16
+Var=SBG_Solution_Mode unsigned 0,4 /e:SBG_Solution_Status_Mode
+Var=SBG_Sol_Attitude_Valid bit 4,1
+Var=SBG_Sol_Heading_Valid bit 5,1
+Var=SBG_Sol_Velocity_Valid bit 6,1
+Var=SBG_Sol_Position_Valid bit 7,1
+Var=SBG_Sol_Vert_Ref_Used bit 8,1
+Var=SBG_Sol_Mag_Ref_Used bit 9,1
+Var=SBG_Sol_GPS1_Vel_Used bit 10,1
+Var=SBG_Sol_GPS1_Pos_Used bit 11,1
+Var=SBG_Sol_GPS1_Hdt_Used bit 13,1
+Var=SBG_Sol_GPS2_Vel_Used bit 14,1
+Var=SBG_Sol_GPS2_Pos_Used bit 15,1
+Var=SBG_Sol_GPS2_Hdt_Used bit 17,1
+Var=SBG_Sol_Odo_Used bit 18,1
+Var=SBG_Sol_Dvl_Bt_Used bit 19,1
+Var=SBG_Sol_Dvl_Wt_Used bit 20,1
+Var=SBG_Sol_Usbl_Used bit 24,1
+Var=SBG_Sol_Pressure_Used bit 25,1
+Var=SBG_Sol_Zupt_Used bit 26,1
+Var=SBG_Sol_Align_Valid bit 27,1
+Var=SBG_Heave_Status_GENERAL3 unsigned 32,16
 
 [ELLIPSE_IMU_UTC_0]
 ID=703h
 DLC=8
-Var=Time_Stamp_UTC0 unsigned 0,32 /u:s /f:0.000001 /p:3
-Var=Gps_Tow_UTC0 unsigned 32,32 /u:s /f:0.001 /p:3
+Var=SBG_Time_Stamp_UTC0 unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=SBG_Gps_Tow_UTC0 unsigned 32,32 /u:s /f:0.001 /p:3
 
 [ELLIPSE_IMU_UTC_1]
 ID=704h
 DLC=8
-Var=Year unsigned 0,8 /u:year
-Var=Month unsigned 8,8 /u:month
-Var=Day unsigned 16,8 /u:d
-Var=Hour unsigned 24,8 /u:h
-Var=Min unsigned 32,8 /u:min
-Var=Sec unsigned 40,8 /u:s
-Var=Tenthms unsigned 48,16 /u:s /f:0.0001 /p:3
+Var=SBG_Year unsigned 0,8 /u:year
+Var=SBG_Month unsigned 8,8 /u:month
+Var=SBG_Day unsigned 16,8 /u:d
+Var=SBG_Hour unsigned 24,8 /u:h
+Var=SBG_Min unsigned 32,8 /u:min
+Var=SBG_Sec unsigned 40,8 /u:s
+Var=SBG_Tenthms unsigned 48,16 /u:s /f:0.0001 /p:3
 
 [ELLIPSE_IMU_INFO]
 ID=710h
 DLC=8
-Var=Time_Stamp_IMU unsigned 0,32 /u:s /f:0.000001 /p:3
-Var=Imu_Status unsigned 32,16
-Var=Temperature signed 48,16 /u:'C /f:0.01 /p:2
+Var=SBG_Time_Stamp_IMU unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=SBG_Imu_Status unsigned 32,16
+Var=SBG_Temperature signed 48,16 /u:'C /f:0.01 /p:2
 
 [ELLIPSE_IMU_ACCEL]
 ID=711h
 DLC=6
-Var=Accel_X signed 0,16 /u:m.s-2 /f:0.01 /p:4
-Var=Accel_Y signed 16,16 /u:m.s-2 /f:0.01 /p:4
-Var=Accel_Z signed 32,16 /u:m.s-2 /f:0.01 /p:4
+Var=SBG_Accel_X signed 0,16 /u:m.s-2 /f:0.01 /p:4
+Var=SBG_Accel_Y signed 16,16 /u:m.s-2 /f:0.01 /p:4
+Var=SBG_Accel_Z signed 32,16 /u:m.s-2 /f:0.01 /p:4
 
 [ELLIPSE_IMU_GYRO]
 ID=712h
 DLC=6
-Var=Gyro_X signed 0,16 /u:rad.s-1 /f:0.001 /p:4
-Var=Gyro_Y signed 16,16 /u:rad.s-1 /f:0.001 /p:4
-Var=Gyro_Z signed 32,16 /u:rad.s-1 /f:0.001 /p:4
+Var=SBG_Gyro_X signed 0,16 /u:rad.s-1 /f:0.001 /p:4
+Var=SBG_Gyro_Y signed 16,16 /u:rad.s-1 /f:0.001 /p:4
+Var=SBG_Gyro_Z signed 32,16 /u:rad.s-1 /f:0.001 /p:4
 
 [ELLIPSE_IMU_DELTA_VEL]
 ID=713h
 DLC=6
-Var=Delta_Vel_X signed 0,16 /u:m.s-2 /u:m.s-2 /f:0.01 /p:4
-Var=Delta_Vel_Y signed 16,16 /u:m.s-2 /u:m.s-2 /f:0.01 /p:4
-Var=Delta_Vel_Z signed 32,16 /u:m.s-2 /u:m.s-2 /f:0.01 /p:4
+Var=SBG_Delta_Vel_X signed 0,16 /u:m.s-2 /u:m.s-2 /f:0.01 /p:4
+Var=SBG_Delta_Vel_Y signed 16,16 /u:m.s-2 /u:m.s-2 /f:0.01 /p:4
+Var=SBG_Delta_Vel_Z signed 32,16 /u:m.s-2 /u:m.s-2 /f:0.01 /p:4
 
 [ELLIPSE_IMU_DELTA_ANGLE]
 ID=714h
 DLC=6
-Var=Delta_Angle_X signed 0,16 /u:rad.s-1 /f:0.001 /p:4
-Var=Delta_Angle_Y signed 16,16 /u:rad.s-1 /f:0.001 /p:4
-Var=Delta_Angle_Z signed 32,16 /u:rad.s-1 /f:0.001 /p:4
+Var=SBG_Delta_Angle_X signed 0,16 /u:rad.s-1 /f:0.001 /p:4
+Var=SBG_Delta_Angle_Y signed 16,16 /u:rad.s-1 /f:0.001 /p:4
+Var=SBG_Delta_Angle_Z signed 32,16 /u:rad.s-1 /f:0.001 /p:4
 
 [ELLIPSE_IMU_EKF_INFO]
 ID=720h
 DLC=4
-Var=Time_Stamp_EKF unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=SBG_Time_Stamp_EKF unsigned 0,32 /u:s /f:0.000001 /p:3
 
 [ELLIPSE_IMU_EKF_QUAT]
 ID=721h
 DLC=8
-Var=Q0 signed 0,16
-Var=Q1 signed 16,16
-Var=Q2 signed 32,16
-Var=Q3 signed 48,16
+Var=SBG_Q0 signed 0,16
+Var=SBG_Q1 signed 16,16
+Var=SBG_Q2 signed 32,16
+Var=SBG_Q3 signed 48,16
 
 
 [ELLIPSE_IMU_EKF_EULER]
 ID=722h
 DLC=6
-Var=Roll signed 0,16 /u:' /f:0.0057295779 /p:4
-Var=Pitch signed 16,16 /u:' /f:0.0057295779 /p:4
-Var=Yaw signed 32,16 /u:' /f:0.0057295779 /p:4
+Var=SBG_Roll signed 0,16 /u:' /f:0.0057295779 /p:4
+Var=SBG_Pitch signed 16,16 /u:' /f:0.0057295779 /p:4
+Var=SBG_Yaw signed 32,16 /u:' /f:0.0057295779 /p:4
 
 [ELLIPSE_IMU_EKF_ORIENT_ACC]
 ID=723h
 DLC=6
-Var=Roll_Acc unsigned 0,16 /u:' /f:0.0057295779 /p:4
-Var=Pitch_Acc unsigned 16,16 /u:' /f:0.0057295779 /p:4
-Var=Yaw_Acc unsigned 32,16 /u:' /f:0.0057295779 /p:4
+Var=SBG_Roll_Acc unsigned 0,16 /u:' /f:0.0057295779 /p:4
+Var=SBG_Pitch_Acc unsigned 16,16 /u:' /f:0.0057295779 /p:4
+Var=SBG_Yaw_Acc unsigned 32,16 /u:' /f:0.0057295779 /p:4
 
 [ELLIPSE_IMU_EKF_POS]
 ID=724h
 DLC=8
-Var=Latitude signed 0,32 /u:' /f:0.0000001 /p:2
-Var=Longitude signed 32,32 /u:' /f:0.0000001 /p:2
+Var=SBG_Latitude signed 0,32 /u:' /f:0.0000001 /p:2
+Var=SBG_Longitude signed 32,32 /u:' /f:0.0000001 /p:2
 
 [ELLIPSE_IMU_EKF_ALTITUDE]
 ID=725h
 DLC=6
-Var=Altitude signed 0,32 /u:m /f:0.001 /p:2
-Var=Undulation signed 32,16 /u:m /f:0.005 /p:2
+Var=SBG_Altitude signed 0,32 /u:m /f:0.001 /p:2
+Var=SBG_Undulation signed 32,16 /u:m /f:0.005 /p:2
 
 [ELLIPSE_IMU_EKF_POS_ACC]
 ID=726h
 DLC=6
-Var=Latitude_Acc unsigned 0,16 /u:m /f:0.01 /p:2
-Var=Longitude_Acc unsigned 16,16 /u:m /f:0.01 /p:2
-Var=Altitude_Acc unsigned 32,16 /u:m /f:0.01 /p:2
+Var=SBG_Latitude_Acc unsigned 0,16 /u:m /f:0.01 /p:2
+Var=SBG_Longitude_Acc unsigned 16,16 /u:m /f:0.01 /p:2
+Var=SBG_Altitude_Acc unsigned 32,16 /u:m /f:0.01 /p:2
 
 [ELLIPSE_IMU_EKF_VEL]
 ID=727h
 DLC=6
-Var=Velocity_N signed 0,16 /u:m.s-1 /f:0.01 /p:2
-Var=Velocity_E signed 16,16 /u:m.s-1 /f:0.01 /p:2
-Var=Velocity_D signed 32,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Velocity_N signed 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Velocity_E signed 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Velocity_D signed 32,16 /u:m.s-1 /f:0.01 /p:2
 
 [ELLIPSE_IMU_BODY_VEL]
 ID=729h
 DLC=6
-Var=Velocity_Forward signed 0,16 /u:m.s-1 /f:0.01 /p:2
-Var=Velocity_Right signed 16,16 /u:m.s-1 /f:0.01 /p:2
-Var=Velocity_Down signed 32,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Velocity_Forward signed 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Velocity_Right signed 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Velocity_Down signed 32,16 /u:m.s-1 /f:0.01 /p:2
 
 [ELLIPSE_IMU_EKF_VEL_ACC]
 ID=728h
 DLC=6
-Var=Velocity_Acc_N unsigned 0,16 /u:m.s-1 /f:0.01 /p:2
-Var=Velocity_Acc_E unsigned 16,16 /u:m.s-1 /f:0.01 /p:2
-Var=Velocity_Acc_D unsigned 32,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Velocity_Acc_N unsigned 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Velocity_Acc_E unsigned 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Velocity_Acc_D unsigned 32,16 /u:m.s-1 /f:0.01 /p:2
 
 [ELLIPSE_IMU_SHIP_MOTION_INFO]
 ID=730h
 DLC=8
-Var=Time_Stamp_SHIP_MOTION unsigned 0,32 /u:s /f:0.000001 /p:3
-Var=Period_SHIP_MOTION unsigned 32,16 /u:s /f:0.01 /p:2
-Var=Heave_Status_SHIP_MOTION unsigned 48,16
+Var=SBG_Time_Stamp_SHIP_MOTION unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=SBG_Period_SHIP_MOTION unsigned 32,16 /u:s /f:0.01 /p:2
+Var=SBG_Heave_Status_SHIP_MOTION unsigned 48,16
 
 [ELLIPSE_IMU_SHIP_MOTION_0]
 ID=731h
 DLC=6
-Var=Surge_SHIP_MOTION signed 0,16 /u:m /f:0.001 /p:2
-Var=Sway_SHIP_MOTION signed 16,16 /u:m /f:0.001 /p:2
-Var=Heave_SHIP_MOTION signed 32,16 /u:m /f:0.001 /p:2
+Var=SBG_Surge_SHIP_MOTION signed 0,16 /u:m /f:0.001 /p:2
+Var=SBG_Sway_SHIP_MOTION signed 16,16 /u:m /f:0.001 /p:2
+Var=SBG_Heave_SHIP_MOTION signed 32,16 /u:m /f:0.001 /p:2
 
 [ELLIPSE_IMU_SHIP_MOTION_1]
 ID=732h
 DLC=6
-Var=Accel_X_SHIP_MOTION_1 signed 0,16 /u:m.s-2 /f:0.01 /p:2
-Var=Accel_Y_SHIP_MOTION_1 signed 16,16 /u:m.s-2 /f:0.01 /p:2
-Var=Accel_Z_SHIP_MOTION_1 signed 32,16 /u:m.s-2 /f:0.01 /p:2
+Var=SBG_Accel_X_SHIP_MOTION_1 signed 0,16 /u:m.s-2 /f:0.01 /p:2
+Var=SBG_Accel_Y_SHIP_MOTION_1 signed 16,16 /u:m.s-2 /f:0.01 /p:2
+Var=SBG_Accel_Z_SHIP_MOTION_1 signed 32,16 /u:m.s-2 /f:0.01 /p:2
 
 [ELLIPSE_IMU_SHIP_MOTION_2]
 ID=733h
 DLC=6
-Var=Vel_X_SHIP_MOTION_2 signed 0,16 /u:m.s-1 /f:0.01 /p:2
-Var=Vel_Y_SHIP_MOTION_2 signed 16,16 /u:m.s-1 /f:0.01 /p:2
-Var=Vel_Z_SHIP_MOTION_2 signed 32,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Vel_X_SHIP_MOTION_2 signed 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Vel_Y_SHIP_MOTION_2 signed 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Vel_Z_SHIP_MOTION_2 signed 32,16 /u:m.s-1 /f:0.01 /p:2
 
 [ELLIPSE_IMU_MAG_0]
 ID=740h
 DLC=6
-Var=Time_Stamp_MAG0 unsigned 0,32 /u:s /f:0.000001 /p:3
-Var=Mag_Status_MAG0 unsigned 32,16
+Var=SBG_Time_Stamp_MAG0 unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=SBG_Mag_Status_MAG0 unsigned 32,16
 
 [ELLIPSE_IMU_MAG_1]
 ID=741h
 DLC=6
-Var=Mag_X_MAG1 signed 0,16 /u:a.u. /f:0.001 /p:2
-Var=Mag_Y_MAG2 signed 16,16 /u:a.u. /f:0.001 /p:2
-Var=Mag_Z_MAG2 signed 32,16 /u:a.u. /f:0.001 /p:2
+Var=SBG_Mag_X_MAG1 signed 0,16 /u:a.u. /f:0.001 /p:2
+Var=SBG_Mag_Y_MAG2 signed 16,16 /u:a.u. /f:0.001 /p:2
+Var=SBG_Mag_Z_MAG2 signed 32,16 /u:a.u. /f:0.001 /p:2
 
 [ELLIPSE_IMU_MAG_2]
 ID=742h
 DLC=6
-Var=Acc_X_MAG2 signed 0,16 /u:m.s-2 /f:0.01 /p:2
-Var=Acc_Y_MAG2 signed 16,16 /u:m.s-2 /f:0.01 /p:2
-Var=Acc_Z_MAG2 signed 32,16 /u:m.s-2 /f:0.01 /p:2
+Var=SBG_Acc_X_MAG2 signed 0,16 /u:m.s-2 /f:0.01 /p:2
+Var=SBG_Acc_Y_MAG2 signed 16,16 /u:m.s-2 /f:0.01 /p:2
+Var=SBG_Acc_Z_MAG2 signed 32,16 /u:m.s-2 /f:0.01 /p:2
 
 [ELLIPSE_IMU_ODO_INFO]
 ID=743h
 DLC=6
-Var=Time_Stamp_ODO unsigned 0,32 /u:s /f:0.000001 /p:3
-Var=Odo_Status unsigned 32,16
+Var=SBG_Time_Stamp_ODO unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=SBG_Odo_Status unsigned 32,16
 
 [ELLIPSE_IMU_ODO_VELOCITY]
 ID=744h
 DLC=4
-Var=Velocity_ODO float 0,32 /u:m.s-1
+Var=SBG_Velocity_ODO float 0,32 /u:m.s-1
 
 [ELLIPSE_IMU_PRESSURE_INFO]
 ID=745h
 DLC=5
-Var=Time_Stamp_PRESSURE unsigned 0,32
-Var=Pressure_Status unsigned 32,8
+Var=SBG_Time_Stamp_PRESSURE unsigned 0,32
+Var=SBG_Pressure_Status unsigned 32,8
 
 [ELLIPSE_IMU_PRESSURE_ALTITUDE]
 ID=746h
 DLC=8
-Var=Pressure_IMU float 0,32 /u:1
-Var=Altitude_IMU float 32,32 /u:1
+Var=SBG_Pressure_IMU float 0,32 /u:1
+Var=SBG_Altitude_IMU float 32,32 /u:1
 
 [ELLIPSE_IMU_GPS1_VEL_INFO]
 ID=750h
 DLC=8
-Var=Time_Stamp_GPS1_VEL unsigned 0,32 /u:s /f:0.000001 /p:3
-Var=Gps_Vel_Status unsigned 32,32
+Var=SBG_Time_Stamp_GPS1_VEL unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=SBG_Gps_Vel_Status unsigned 32,32
 
 [ELLIPSE_IMU_GPS1_VEL]
 ID=751h
 DLC=6
-Var=Vel_N signed 0,16 /u:m.s-1 /f:0.01 /p:2
-Var=Vel_E signed 16,16 /u:m.s-1 /f:0.01 /p:2
-Var=Vel_D signed 32,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Vel_N signed 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Vel_E signed 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Vel_D signed 32,16 /u:m.s-1 /f:0.01 /p:2
 
 [ELLIPSE_IMU_GPS1_VEL_ACC]
 ID=752h
 DLC=6
-Var=Vel_Acc_N unsigned 0,16 /u:m.s-1 /f:0.01 /p:2
-Var=Vel_Acc_E unsigned 16,16 /u:m.s-1 /f:0.01 /p:2
-Var=Vel_Acc_D unsigned 32,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Vel_Acc_N unsigned 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Vel_Acc_E unsigned 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Vel_Acc_D unsigned 32,16 /u:m.s-1 /f:0.01 /p:2
 
 [ELLIPSE_IMU_GPS1_COURSE]
 ID=753h
 DLC=4
-Var=Course unsigned 0,16 /u:' /f:0.01 /p:2
-Var=Course_Acc unsigned 16,16 /u:' /f:0.01 /p:2
+Var=SBG_Course unsigned 0,16 /u:' /f:0.01 /p:2
+Var=SBG_Course_Acc unsigned 16,16 /u:' /f:0.01 /p:2
 
 [ELLIPSE_IMU_GPS1_POS_INFO]
 ID=754h
 DLC=8
-Var=Time_Stamp_GPS1_POS unsigned 0,32 /u:s /f:0.000001 /p:3
-Var=Gps_Pos_Status unsigned 32,32
+Var=SBG_Time_Stamp_GPS1_POS unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=SBG_Gps_Pos_Status unsigned 32,32
 
 [ELLIPSE_IMU_GPS1_POS]
 ID=755h
 DLC=8
-Var=Latitude_GPS1 signed 0,32 /u:' /f:0.0000001 /p:5
-Var=Longitude_GPS1 signed 32,32 /u:' /f:0.0000001 /p:5
+Var=SBG_Latitude_GPS1 signed 0,32 /u:' /f:0.0000001 /p:5
+Var=SBG_Longitude_GPS1 signed 32,32 /u:' /f:0.0000001 /p:5
 
 [ELLIPSE_IMU_GPS1_ALT]
 ID=756h
 DLC=8
-Var=Altitude_GPS1 signed 0,32 /u:m /f:0.001 /p:2
-Var=Undulation_GPS1 signed 32,16 /u:m /f:0.005 /p:2
-Var=Num_Sv_GPS1 unsigned 48,8
-Var=Diff_Corr_Age_GPS1 unsigned 56,8 /u:s
+Var=SBG_Altitude_GPS1 signed 0,32 /u:m /f:0.001 /p:2
+Var=SBG_Undulation_GPS1 signed 32,16 /u:m /f:0.005 /p:2
+Var=SBG_Num_Sv_GPS1 unsigned 48,8
+Var=SBG_Diff_Corr_Age_GPS1 unsigned 56,8 /u:s
 
 [ELLIPSE_IMU_GPS1_POS_ACC]
 ID=757h
 DLC=8
-Var=Lat_Acc_GPS1 unsigned 0,16 /u:m
-Var=Long_Acc_GPS1 unsigned 16,16 /u:m
-Var=Alt_Acc_GPS1 unsigned 32,16 /u:m
-Var=Base_Station_Id_GPS1 unsigned 48,16
+Var=SBG_Lat_Acc_GPS1 unsigned 0,16 /u:m
+Var=SBG_Long_Acc_GPS1 unsigned 16,16 /u:m
+Var=SBG_Alt_Acc_GPS1 unsigned 32,16 /u:m
+Var=SBG_Base_Station_Id_GPS1 unsigned 48,16
 
 [ELLIPSE_IMU_GPS1_HOT_INFO]
 ID=758h
 DLC=6
-Var=Time_Stamp_GPS1_HOT unsigned 0,32 /u:s /f:0.000001 /p:3
-Var=Gps_Hdt_Status unsigned 32,16
+Var=SBG_Time_Stamp_GPS1_HOT unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=SBG_Gps_Hdt_Status unsigned 32,16
 
 [ELLIPSE_IMU_GPS1_HOT]
 ID=759h
 DLC=8
-Var=True_Heading_GPS1 unsigned 0,16 /u:'
-Var=True_Heading_Acc_GPS1 unsigned 16,16 /u:'
-Var=Pitch_GPS1 signed 32,16 /u:'
-Var=Pitch_Acc_GPS1 unsigned 48,16 /u:'
+Var=SBG_True_Heading_GPS1 unsigned 0,16 /u:'
+Var=SBG_True_Heading_Acc_GPS1 unsigned 16,16 /u:'
+Var=SBG_Pitch_GPS1 signed 32,16 /u:'
+Var=SBG_Pitch_Acc_GPS1 unsigned 48,16 /u:'
 
 [ELLIPSE_IMU_EVENT_INFO_A]
 ID=760h
 DLC=6
-Var=Time_Stamp_EVENTA unsigned 0,32 /u:s /f:0.000001 /p:3
-Var=Event_Status unsigned 32,16
+Var=SBG_Time_Stamp_EVENTA unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=SBG_Event_Status unsigned 32,16
 
 [ELLIPSE_IMU_EVENT_TIME_A]
 ID=761h
 DLC=8
-Var=Time_Offset_0 unsigned 0,16 /u:s /f:0.000001 /p:3
-Var=Time_Offset_1 unsigned 16,16 /u:s /f:0.000001 /p:3
-Var=Time_Offset_2 unsigned 32,16 /u:s /f:0.000001 /p:3
-Var=Time_Offset_3 unsigned 48,16 /u:s /f:0.000001 /p:3
+Var=SBG_Time_Offset_0 unsigned 0,16 /u:s /f:0.000001 /p:3
+Var=SBG_Time_Offset_1 unsigned 16,16 /u:s /f:0.000001 /p:3
+Var=SBG_Time_Offset_2 unsigned 32,16 /u:s /f:0.000001 /p:3
+Var=SBG_Time_Offset_3 unsigned 48,16 /u:s /f:0.000001 /p:3
 
+[ELLIPSE_AUTOMOTIVE_DATA]
+ID=72Ah
+DLC=7
+Var=SBG_Auto_Angle_Track signed 0,16 /u:rad /f:0.0001 /p:3
+Var=SBG_Auto_Angle_Slip signed 16,16 /u:rad /f:0.0001 /p:3
+Var=SBG_Auto_Curvature_Radius unsigned 32,16 /u:m /f:0.01 /p:2
+Var=SBG_Auto_Track_Valid bit 48,1
+Var=SBG_Auto_Slip_Valid bit 48,1
+Var=SBG_Auto_Curvature_Valid bit 48,1
 
 [BRUSA_Charger_Control]
 ID=528h
@@ -1524,28 +1560,26 @@ Var=AMK_RR_TargetVelocity        signed   16,16 /u:rpm /p:2
 Var=AMK_RR_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_RR_TorqueLimitNegativ    signed   48,16 /u:"% Mn" /f:0.1 /p:4
 
-//These are signals off of the EMD. We should migrate these to the DAQ bus
-//symbol file once it exists (assuming the EMD winds up on said bus)
-//[Measurement]
-//ID=100h
-//DLC=8
-//Var=Current signed 0,32 -m /u:A /f:1.5258789063E-005
-//Var=Voltage signed 32,32 -m /u:V /f:1.5258789063E-005
+[EMD_Measurement]
+ID=401h // This is NOT the real CANID for the EMD. It is 100h, but that conflicts with the VSM_Heartbeat, so we retransmit it on 401h via the CDC.
+DLC=8
+Var=EMD_Current signed 0,32 -m /u:A /f:1.5258789063E-005
+Var=EMD_Voltage signed 32,32 -m /u:V /f:1.5258789063E-005
 
-//[Status]
-//ID=400h
-//DLC=4
-//Var=VoltageGain unsigned 4,4 -m /u:VtSig_Gain
-//Var=CurrentGain unsigned 0,4 -m /e:VtSig_Gain
-//Var=OverVoltage bit 15,1 -m /u:bool
-//Var=OverPower bit 14,1 -m /u:bool
-//Var=Logging bit 13,1 -m /e:bool
+[EMD_Status]
+ID=400h
+DLC=4
+Var=EMD_VoltageGain unsigned 4,4 -m /e:VtSig_Gain
+Var=EMD_CurrentGain unsigned 0,4 -m /e:VtSig_Gain
+Var=EMD_OverVoltage bit 15,1 -m /u:bool
+Var=EMD_OverPower bit 14,1 -m /u:bool
+Var=EMD_Logging bit 13,1 -m /u:bool
 
 
-//[Reserved1]
-//ID=7E7h	// This CAN id is used for communication between the energy meter and the download tool.
-//DLC=8
+[EMD_Reserved1]
+ID=7E7h	// This CAN id is used for communication between the energy meter and the download tool.
+DLC=8
 
-//[Reserved2]
-//ID=7EFh	// This CAN id is used for communication between the energy meter and the download tool.
-//DLC=8
+[EMD_Reserved2]
+ID=7EFh	// This CAN id is used for communication between the energy meter and the download tool.
+DLC=8
