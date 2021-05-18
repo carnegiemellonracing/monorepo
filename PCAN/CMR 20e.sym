@@ -1525,7 +1525,7 @@ Var=AMK_RR_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_RR_TorqueLimitNegativ    signed   48,16 /u:"% Mn" /f:0.1 /p:4
 
 [EMD_Measurement]
-ID=7EEh // This is NOT the real CANID for the EMD. It is 100h, but that conflicts with the VSM_Heartbeat
+ID=401h // This is NOT the real CANID for the EMD. It is 100h, but that conflicts with the VSM_Heartbeat, so we retransmit it on 401h via the CDC.
 DLC=8
 Var=EMD_Current signed 0,32 -m /u:A /f:1.5258789063E-005
 Var=EMD_Voltage signed 32,32 -m /u:V /f:1.5258789063E-005

@@ -123,6 +123,7 @@ typedef enum {
     CMR_CANID_SBG_BODY_VEL = 0x729,             /**< @brief SBG_ECAN_MSG_EKF_VEL_BODY */
 
     CMR_CANID_EMD_MEASUREMENT = 0x100,          /**< @brief EMD measurement for HV voltage/current. */
+    CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */
     CMR_CANID_EMD_STATUS = 0x400,               /**< @brief EMD status. */
 } cmr_canID_t;
 
