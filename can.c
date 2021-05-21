@@ -101,7 +101,7 @@ void canInit(void) {
     // DAQ-CAN (CAN2) initialization.
     cmr_canInit(
         &can[CMR_CAN_BUS_DAQ], CAN2,
-        CMR_CAN_BITRATE_1M,
+        CMR_CAN_BITRATE_500K,
         NULL, 0,
         canRX,
         GPIOB, GPIO_PIN_12,    // CAN2 RX port/pin.

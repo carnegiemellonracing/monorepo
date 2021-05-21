@@ -337,7 +337,7 @@
             "unit": "degC",
             "unit_short": "C",
             "factor": 0.1,
-            "in_type": "i32",
+            "in_type": "i16",
             "out_type": "f16",
             "min": 0,
             "max": 150
@@ -352,7 +352,7 @@
             "unit": "degC",
             "unit_short": "C",
             "factor": 0.1,
-            "in_type": "i32",
+            "in_type": "i16",
             "out_type": "f16",
             "min": 0,
             "max": 150
