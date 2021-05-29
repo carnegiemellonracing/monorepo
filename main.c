@@ -59,7 +59,7 @@ static void statusLED(void *pvParameters) {
 int main(void) {
     // System initialization.
     HAL_Init();
-    cmr_rccSystemClockEnable();
+    cmr_rccSystemInternalClockEnable();
 
     // Peripheral configuration.
     uartInit();

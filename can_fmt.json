@@ -22,6 +22,10 @@
             "description": "16-bit floating point",
             "bytes": 2
         },
+        "i16": {
+            "description": "16-bit signed int",
+            "bytes": 2
+        },
         "u16": {
             "description": "16-bit unsigned int",
             "bytes": 2
@@ -36,25 +40,25 @@
             "name": "Go to HV",
             "id": 565,
             "bus": 0,
-            "data": "02 00 00 00 00 00 00 00"
+            "data": "02 00"
         },
         {
             "name": "Go to GLV",
             "id": 565,
             "bus": 0,
-            "data": "01 00 00 00 00 00 00 00"
+            "data": "01 00"
         },
         {
             "name": "Go to RTD",
             "id": 565,
             "bus": 0,
-            "data": "03 00 00 00 00 00 00 00"
+            "data": "03 00"
         },
         {
             "name": "Go to Clear Error",
             "id": 565,
             "bus": 0,
-            "data": "05 00 00 00 00 00 00 00"
+            "data": "05 00"
         }
     ],
     "signals": [
@@ -68,99 +72,379 @@
             "unit": "volts",
             "unit_short": "V",
             "in_type": "u16",
+            "factor": 0.001,
             "out_type": "f16",
-            "max": 48,
-            "min": 0
+            "min": 0,
+            "max": 30
         },
         {
+            "id": 256,
+            "offset": 0,
+            "bus": 0,
+            "Source": "VSM",
+            "name": "Car State",
+            "short": "Car State",
+            "enum": [
+                {
+                    "name": "Unknown"
+                },
+                {
+                    "name": "GLV"
+                },
+                {
+                    "name": "HV"
+                },
+                {
+                    "name": "RTD"
+                },
+                {
+                    "name": "Error"
+                },
+                {
+                    "name": "Clear Error"
+                }
+            ],
+            "in_type": "u8",
+            "out_type": "u8"
+        },
+        {
+            "id": 272,
+            "offset": 0,
+            "bus": 0,
+            "Source": "VSM",
+            "name": "Internal State",
+            "short": "Internal State",
+            "enum": [
+                {
+                    "name": "Error"
+                },
+                {
+                    "name": "Clear Error"
+                },
+                {
+                    "name": "GLV On"
+                },
+                {
+                    "name": "Request Precharge"
+                },
+                {
+                    "name": "Run BMS"
+                },
+                {
+                    "name": "DCDC Enable"
+                },
+                {
+                    "name": "Inverter Enable"
+                },
+                {
+                    "name": "HV Enable"
+                },
+                {
+                    "name": "RTD"
+                },
+                {
+                    "name": "Cooling Off"
+                },
+                {
+                    "name": "DCDC Off"
+                }
+            ],
+            "in_type": "u8",
+            "out_type": "u8"
+        },
+        {
+            "id": 256,
+            "offset": 1,
+            "bus": 0,
+            "Source": "VSM",
+            "name": "Car Error Vector",
+            "short": "Car Errors",
+            "in_type": "u32",
+            "out_type": "u32"
+        },
+        {
+            "id": 257,
+            "offset": 3,
+            "bus": 0,
+            "Source": "HVC",
+            "name": "Internal State",
+            "short": "Internal State",
+            "enum": [
+                {
+                    "name": "Error"
+                },
+                {
+                    "name": "Discharge"
+                },
+                {
+                    "name": "Standby"
+                },
+                {
+                    "name": "Drive/Precharge"
+                },
+                {
+                    "name": "Drive/Precharge Complete"
+                },
+                {
+                    "name": "Drive"
+                },
+                {
+                    "name": "Charge/Precharge"
+                },
+                {
+                    "name": "Charge/Precharge Complete"
+                },
+                {
+                    "name": "Charge/Trickle"
+                },
+                {
+                    "name": "Charge/Constant Current"
+                },
+                {
+                    "name": "Charge/Constant Voltage"
+                },
+                {
+                    "name": "Clear Error"
+                },
+                {
+                    "name": "Unknown"
+                }
+            ],
+            "in_type": "u8",
+            "out_type": "u8"
+        },
+        {
+            "id": 257,
+            "offset": 2,
+            "bus": 0,
+            "Source": "HVC",
+            "name": "Internal Mode",
+            "short": "Internal Mode",
+            "enum": [
+                {
+                    "name": "Error"
+                },
+                {
+                    "name": "Idle"
+                },
+                {
+                    "name": "Start"
+                },
+                {
+                    "name": "Run"
+                },
+                {
+                    "name": "Charge"
+                }
+            ],
+            "in_type": "u8",
+            "out_type": "u8"
+        },
+        {
+            "id": 304,
+            "offset": 0,
+            "bus": 0,
+            "Source": "VSM",
+            "name": "HVC Command",
+            "short": "HVC Command",
+            "enum": [
+                {
+                    "name": "Error"
+                },
+                {
+                    "name": "Idle"
+                },
+                {
+                    "name": "Start"
+                },
+                {
+                    "name": "Run"
+                },
+                {
+                    "name": "Charge"
+                }
+            ],
+            "in_type": "u8",
+            "out_type": "u8"
+        },
+       {
             "id": 769,
             "offset": 4,
             "bus": 0,
             "Source": "HVC",
-            "name": "HV Voltage",
-            "short": "HV",
+            "name": "Pack Voltage",
+            "short": "Pack+",
             "unit": "volts",
             "unit_short": "V",
+            "factor": 0.001,
+            "in_type": "i32",
+            "out_type": "f16",
+            "min": 0,
+            "max": 700
+        }, 
+        {
+            "id": 769,
+            "offset": 0,
+            "bus": 0,
+            "Source": "HVC",
+            "name": "HV Voltage",
+            "short": "HV+",
+            "unit": "volts",
+            "unit_short": "V",
+            "factor": 0.001,
             "in_type": "i32",
             "out_type": "f16",
             "max": 700,
-            "min": -100
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "HV Current",
-            "short": "HV",
-            "unit": "amps",
-            "unit_short": "A",
-            "out_type": "f16",
-            "max": 500,
-            "min": -500
-        },
-        {
-            "id": 0,
-            "Source": "SBG (Calculated)",
-            "name": "Longitudinal Velocity",
-            "short": "Long. Vel.",
-            "unit": "meters/second",
-            "unit_short": "m/s",
-            "out_type": "f16",
-            "max": 40,
-            "min": -10
-        },
-        {
-            "id": 0,
-            "Source": "SBG (Calculated)",
-            "name": "Longitudinal Acceleration",
-            "short": "Long. Acc.",
-            "unit": "meters/second^2",
-            "unit_short": "m/s2",
-            "out_type": "f16",
-            "max": 20,
-            "min": -20
-        },
-        {
-            "id": 1826,
-            "Source": "SBG",
-            "name": "Heading",
-            "short": "Heading",
-            "unit": "degrees from north",
-            "unit_short": "deg",
-            "in_type": "i16",
-            "factor": 0.0001,
-            "out_type": "f16",
-            "max": 360,
             "min": 0
         },
         {
-            "id": 1828,
+            "id": 770,
             "offset": 0,
-            "bus": 1,
-            "Source": "SBG",
-            "name": "Latitude Position",
-            "short": "Lat.",
-            "unit": "degrees",
-            "unit_short": "deg",
+            "bus": 0,
+            "Source": "HVC",
+            "name": "Instant Pack Current",
+            "short": "HV Current",
+            "unit": "amps",
+            "unit_short": "A",
+            "factor": 0.001,
             "in_type": "i32",
-            "factor": 0.0000001,
-            "out_type": "f32",
-            "max": 90,
-            "min": -90
+            "out_type": "f16",
+            "min": -300,
+            "max": 300
         },
         {
-            "id": 1828,
+            "id": 770,
             "offset": 4,
-            "bus": 1,
-            "Source": "SBG",
-            "name": "Longitude Position",
-            "short": "Long.",
-            "unit": "degrees",
-            "unit_short": "deg",
+            "bus": 0,
+            "Source": "HVC",
+            "name": "Average Pack Current",
+            "short": "HV Current (avg)",
+            "unit": "amps",
+            "unit_short": "A",
+            "factor": 0.001,
             "in_type": "i32",
-            "factor": 0.0000001,
-            "out_type": "f32",
-            "max": 180,
-            "min": -180
+            "out_type": "f16",
+            "min": -300,
+            "max": 300
+        },
+        {
+            "id": 785,
+            "offset": 2,
+            "bus": 0,
+            "Source": "HVC",
+            "name": "Max Cell Temperature",
+            "short": "Max Cell Temp",
+            "unit": "degC",
+            "unit_short": "C",
+            "factor": 0.1,
+            "in_type": "i16",
+            "out_type": "f16",
+            "min": 0,
+            "max": 150
+        },
+        {
+            "id": 785,
+            "offset": 0,
+            "bus": 0,
+            "Source": "HVC",
+            "name": "Min Cell Temperature",
+            "short": "Min Cell Temp",
+            "unit": "degC",
+            "unit_short": "C",
+            "factor": 0.1,
+            "in_type": "i16",
+            "out_type": "f16",
+            "min": 0,
+            "max": 150
+        },
+        {
+            "id": 784,
+            "offset": 0,
+            "bus": 0,
+            "Source": "HVC",
+            "name": "Min Cell Voltage",
+            "short": "Min Cell V",
+            "unit": "volts",
+            "unit_short": "V",
+            "factor": 0.001,
+            "in_type": "i32",
+            "out_type": "f16",
+            "min": 0,
+            "max": 5
+        },
+        {
+            "id": 784,
+            "offset": 2,
+            "bus": 0,
+            "Source": "HVC",
+            "name": "Max Cell Voltage",
+            "short": "Max Cell V",
+            "unit": "volts",
+            "unit_short": "V",
+            "factor": 0.001,
+            "in_type": "i32",
+            "out_type": "f16",
+            "min": 0,
+            "max": 5
+        },
+        {
+            "id": 307,
+            "offset": 1,
+            "bus": 0,
+            "Source": "FSM",
+            "name": "Throttle Position",
+            "short": "Throttle Pos.",
+            "unit": "%",
+            "unit_short": "%",
+            "in_type": "u8",
+            "out_type": "u8",
+            "post_factor": 0.3921568627,
+            "min": 0,
+            "max": 255
+        },
+        {
+            "id": 307,
+            "offset": 1,
+            "bus": 0,
+            "Source": "FSM",
+            "name": "Throttle Request",
+            "short": "Throttle Req.",
+            "unit": "%",
+            "unit_short": "%",
+            "in_type": "u8",
+            "out_type": "u8",
+            "post_factor": 0.3921568627,
+            "min": 0,
+            "max": 255
+        },
+        {
+            "id": 307,
+            "offset": 2,
+            "bus": 0,
+            "Source": "FSM",
+            "name": "Front Brake Pressure",
+            "short": "Fnt Brake Pres",
+            "unit": "PSI",
+            "unit_short": "PSI",
+            "in_type": "u8",
+            "out_type": "u8",
+            "min": 0,
+            "max": 255
+        },
+        {
+            "id": 307,
+            "offset": 3,
+            "bus": 0,
+            "Source": "FSM",
+            "name": "Brake Position",
+            "short": "Brake Pos.",
+            "unit": "%",
+            "unit_short": "%",
+            "in_type": "u8",
+            "out_type": "u8",
+            "post_factor": 0.3921568627,
+            "min": 0,
+            "max": 255
         },
         {
             "id": 307,
@@ -172,176 +456,17 @@
             "unit": "degrees",
             "unit_short": "deg",
             "in_type": "i16",
-            "out_type": "f16",
-            "max": 180,
-            "min": -180
-        },
-        {
-            "id": 307,
-            "offset": 1,
-            "bus": 0,
-            "Source": "FSM",
-            "name": "Throttle Position",
-            "short": "Throttle Pos.",
-            "in_type": "u8",
-            "out_type": "f16",
-            "max": 100,
-            "min": 0
-        },
-        {
-            "id": 307,
-            "offset": 3,
-            "bus": 0,
-            "Source": "FSM",
-            "name": "Brake Position",
-            "short": "Brake Pos.",
-            "in_type": "u8",
-            "out_type": "f16",
-            "max": 100,
-            "min": 0
-        },
-        {
-            "id": 548,
-            "offset": 0,
-            "bus": 0,
-            "Source": "PTCf",
-            "name": "Pre-Radiator (A) Temperature",
-            "short": "Pre-Rad(A) Temp",
-            "unit": "degrees C",
-            "unit_short": "deg C",
-            "in_type": "u16",
-            "out_type": "f16",
-            "max": 100,
-            "min": -20
-        },
-        {
-            "id": 580,
-            "offset": 0,
-            "bus": 0,
-            "Source": "PTCp",
-            "name": "Pre-Radiator (B) Temperature",
-            "short": "Pre-Rad(B) Temp",
-            "unit": "degrees C",
-            "unit_short": "deg C",
-            "in_type": "u16",
-            "out_type": "f16",
-            "max": 100,
-            "min": -20
-        },
-        {
-            "id": 548,
-            "offset": 1,
-            "bus": 0,
-            "Source": "PTCf",
-            "name": "Post-Radiator (A) Temperature",
-            "short": "Post-Rad(A) Temp",
-            "unit": "degrees C",
-            "unit_short": "deg C",
-            "in_type": "u16",
-            "out_type": "f16",
-            "max": 100,
-            "min": -20
-        },
-        {
-            "id": 580,
-            "offset": 1,
-            "bus": 0,
-            "Source": "PTCp",
-            "name": "Post-Radiator (B) Temperature",
-            "short": "Post-Rad(B) Temp",
-            "unit": "degrees C",
-            "unit_short": "deg C",
-            "in_type": "u16",
-            "out_type": "f16",
-            "max": 100,
-            "min": -20
-        },
-        {
-            "id": 785,
-            "offset": 2,
-            "bus": 0,
-            "Source": "HVC",
-            "name": "Max Accumulator Temperature",
-            "short": "Max. AC Temp",
-            "unit": "degrees C",
-            "unit_short": "deg C",
-            "in_type": "u16",
-            "out_type": "f16",
-            "max": 100,
-            "min": -20
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Average Accumulator Temperature",
-            "short": "Avg. AC Temp",
-            "unit": "degrees C",
-            "unit_short": "deg C",
-            "out_type": "f16",
-            "max": 100,
-            "min": -20
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Fan/Pump Status Vector",
-            "short": "Fan/Pump Status Vector",
-            "vector": [
-                {
-                    "name": "Accumulator Loop Pump Enable",
-                    "short": "AC Pump En",
-                    "state": ["Off", "On"]
-                },
-                {
-                    "name": "Motor Loop Pump Enable",
-                    "short": "Mot Pump En",
-                    "state": ["Off", "On"]
-                },
-                {
-                    "name": "Accumulator Loop Fan Enable",
-                    "short": "AC Fan En",
-                    "state": ["Off", "On"]
-                },
-                {
-                    "name": "Motor Loop Fan Enable",
-                    "short": "Mot Fan En",
-                    "state": ["Off", "On"]
-                }
-            ],
-            "in_type": "u8",
-            "out_type": "u8"
-        },
-        {
-            "id": 256,
-            "offset": 0,
-            "bus": 0,
-            "Source": "VSM",
-            "name": "Car State",
-            "short": "Car State",
-            "enum": [
-                {
-                    "name": "Error"
-                },
-                {
-                    "name": "GLV"
-                },
-                {
-                    "name": "HV"
-                },
-                {
-                    "name": "RTD"
-                }
-            ],
-            "in_type": "u8",
-            "out_type": "u8"
+            "out_type": "i16",
+            "min": 0,
+            "max": 360
         },
         {
             "id": 565,
             "offset": 1,
             "bus": 0,
             "Source": "DIM",
-            "name": "Car Mode",
-            "short": "Car Mode",
+            "name": "Request Gear",
+            "short": "Req. Gear",
             "enum": [
                 {
                     "name": "Unknown"
@@ -375,246 +500,635 @@
             "out_type": "u8"
         },
         {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Time since Epoch",
-            "short": "Time",
-            "unit": "milliseconds",
-            "unit_short": "ms",
-            "in_type": "i64",
-            "out_type": "i64"
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Front-Left Wheel Velocity",
-            "short": "(FL) Speed",
-            "unit": "Rotations per Minute",
-            "unit_short": "rpm",
-            "length": 2,
-            "out_type": "f16",
-            "max": 2000,
-            "min": -2000
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Front-Right Wheel Velocity",
-            "short": "(FR) Speed",
-            "unit": "Rotations per Minute",
-            "unit_short": "rpm",
-            "length": 2,
-            "out_type": "f16",
-            "max": 2000,
-            "min": -2000
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Back-Left Wheel Velocity",
-            "short": "(BL) Speed",
-            "unit": "Rotations per Minute",
-            "unit_short": "rpm",
-            "length": 2,
-            "out_type": "f16",
-            "max": 2000,
-            "min": -2000
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Rack-Right Wheel Velocity",
-            "short": "(BR) Speed",
-            "unit": "Rotations per Minute",
-            "unit_short": "rpm",
-            "length": 2,
-            "out_type": "f16",
-            "max": 2000,
-            "min": -2000
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Front-Left Torque Feedback",
-            "short": "(FL) Torque",
-            "unit": "Newton-Meters",
-            "unit_short": "Nm",
-            "length": 2,
-            "out_type": "f16",
-            "max": 200,
-            "min": -200
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Front-Right Torque Feedback",
-            "short": "(FR) Torque",
-            "unit": "Newton-Meters",
-            "unit_short": "Nm",
-            "length": 2,
-            "out_type": "f16",
-            "max": 200,
-            "min": -200
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Back-Left Torque Feedback",
-            "short": "(BL) Torque",
-            "unit": "Newton-Meters",
-            "unit_short": "Nm",
-            "length": 2,
-            "out_type": "f16",
-            "max": 200,
-            "min": -200
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Rack-Right Torque Feedback",
-            "short": "(BR) Torque",
-            "unit": "Newton-Meters",
-            "unit_short": "Nm",
-            "length": 2,
-            "out_type": "f16",
-            "max": 200,
-            "min": -200
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Front-Left Torque Command",
-            "short": "(FL) Torque Cmd",
-            "unit": "Newton-Meters",
-            "unit_short": "Nm",
-            "length": 2,
-            "out_type": "f16",
-            "max": 200,
-            "min": -200
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Front-Right Torque Command",
-            "short": "(FR) Torque Cmd",
-            "unit": "Newton-Meters",
-            "unit_short": "Nm",
-            "length": 2,
-            "out_type": "f16",
-            "max": 200,
-            "min": -200
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Back-Left Torque Command",
-            "short": "(BL) Torque Cmd",
-            "unit": "Newton-Meters",
-            "unit_short": "Nm",
-            "length": 2,
-            "out_type": "f16",
-            "max": 200,
-            "min": -200
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Rack-Right Torque Command",
-            "short": "(BR) Torque Cmd",
-            "unit": "Newton-Meters",
-            "unit_short": "Nm",
-            "length": 2,
-            "out_type": "f16",
-            "max": 200,
-            "min": -200
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Front-Left Velocity Command",
-            "short": "(FL) Vel Cmd",
-            "unit": "Rotations per Minute",
-            "unit_short": "rpm",
-            "length": 2,
-            "out_type": "f16",
-            "max": 2000,
-            "min": -2000
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Front-Right Velocity Command",
-            "short": "(FR) Vel Cmd",
-            "unit": "Rotations per Minute",
-            "unit_short": "rpm",
-            "length": 2,
-            "out_type": "f16",
-            "max": 2000,
-            "min": -2000
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Back-Left Velocity Command",
-            "short": "(BL) Vel Cmd",
-            "unit": "Rotations per Minute",
-            "unit_short": "rpm",
-            "length": 2,
-            "out_type": "f16",
-            "max": 2000,
-            "min": -2000
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Rack-Right Velocity Command",
-            "short": "(BR) Vel Cmd",
-            "unit": "Rotations per Minute",
-            "unit_short": "rpm",
-            "length": 2,
-            "out_type": "f16",
-            "max": 2000,
-            "min": -2000
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Front-Left Motor/Inverter Status",
-            "short": "(FL) Status",
-            "length": 1,
-            "out_type": "u8"
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Front-Right Motor/Inverter Status",
-            "short": "(FR) Status",
-            "length": 1,
-            "out_type": "u8"
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Back-Left Motor/Inverter Status",
-            "short": "(BL) Status",
-            "length": 1,
-            "out_type": "u8"
-        },
-        {
-            "id": 0,
-            "Source": "Undefined",
-            "name": "Back-Right Motor/Inverter Status",
-            "short": "(BR) Status",
-            "length": 1,
-            "out_type": "u8"
-        },
-        {
-            "id": 256,
-            "offset": 1,
+            "id": 565,
+            "offset": 0,
             "bus": 0,
-            "Source": "VSM",
-            "name": "Car Error Vector",
-            "short": "Car Errors",
+            "Source": "DIM",
+            "name": "Request Car State",
+            "short": "Req. Car State",
+            "enum": [
+                {
+                    "name": "Unknown"
+                },
+                {
+                    "name": "GLV"
+                },
+                {
+                    "name": "HV"
+                },
+                {
+                    "name": "RTD"
+                },
+                {
+                    "name": "Error"
+                },
+                {
+                    "name": "Clear Error"
+                }
+            ],
+            "in_type": "u8",
+            "out_type": "u8"
+        },
+        {
+            "id": 562,
+            "offset": 0,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Front-Left Wheel Velocity",
+            "short": "(FL) Vel.",
+            "unit": "Rotations per Minute",
+            "unit_short": "rpm",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -1500,
+            "max": 1500
+        },
+        {
+            "id": 562,
+            "offset": 2,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Front-Right Wheel Velocity",
+            "short": "(FR) Vel.",
+            "unit": "Rotations per Minute",
+            "unit_short": "rpm",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -1500,
+            "max": 1500
+        },
+        {
+            "id": 562,
+            "offset": 4,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Rear-Left Wheel Velocity",
+            "short": "(RL) Vel.",
+            "unit": "Rotations per Minute",
+            "unit_short": "rpm",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -1500,
+            "max": 1500
+        },
+        {
+            "id": 562,
+            "offset": 6,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Rear-Right Wheel Velocity",
+            "short": "(RR) Vel.",
+            "unit": "Rotations per Minute",
+            "unit_short": "rpm",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -1500,
+            "max": 1500
+        },
+        {
+            "id": 610,
+            "offset": 0,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Front-Left Wheel Torque",
+            "short": "(FL) Torque",
+            "unit": "Newton meters",
+            "unit_short": "Nm",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -400,
+            "max": 400
+        },
+        {
+            "id": 610,
+            "offset": 2,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Front-Right Wheel Torque",
+            "short": "(FR) Torque",
+            "unit": "Newton meters",
+            "unit_short": "Nm",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -400,
+            "max": 400
+        },
+        {
+            "id": 610,
+            "offset": 4,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Rear-Left Wheel Torque",
+            "short": "(RL) Torque",
+            "unit": "Newton meters",
+            "unit_short": "Nm",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -400,
+            "max": 400
+        },
+        {
+            "id": 610,
+            "offset": 6,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Rear-Right Wheel Torque",
+            "short": "(RR) Torque",
+            "unit": "Newton meters",
+            "unit_short": "Nm",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -400,
+            "max": 400
+        },
+        {
+            "id": 594,
+            "offset": 0,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Front-Left Wheel Velocity Setpoint",
+            "short": "(FL) Vel. Sp.",
+            "unit": "Rotations per Minute",
+            "unit_short": "rpm",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -1500,
+            "max": 1500
+        },
+        {
+            "id": 594,
+            "offset": 2,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Front-Right Wheel Velocity Setpoint",
+            "short": "(FR) Vel. Sp.",
+            "unit": "Rotations per Minute",
+            "unit_short": "rpm",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -1500,
+            "max": 1500
+        },
+        {
+            "id": 594,
+            "offset": 4,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Rear-Left Wheel Velocity Setpoint",
+            "short": "(RL) Vel. Sp.",
+            "unit": "Rotations per Minute",
+            "unit_short": "rpm",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -1500,
+            "max": 1500
+        },
+        {
+            "id": 594,
+            "offset": 6,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Rear-Right Wheel Velocity Setpoint",
+            "short": "(RR) Vel. Sp.",
+            "unit": "Rotations per Minute",
+            "unit_short": "rpm",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -1500,
+            "max": 1500
+        },
+        {
+            "id": 626,
+            "offset": 0,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Front-Left Wheel Torque Setpoint",
+            "short": "(FL) Torque Sp.",
+            "unit": "Newton meters",
+            "unit_short": "Nm",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -400,
+            "max": 400
+        },
+        {
+            "id": 626,
+            "offset": 2,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Front-Right Wheel Torque Setpoint",
+            "short": "(FR) Torque Sp.",
+            "unit": "Newton meters",
+            "unit_short": "Nm",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -400,
+            "max": 400
+        },
+        {
+            "id": 626,
+            "offset": 4,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Rear-Left Wheel Torque Setpoint",
+            "short": "(RL) Torque Sp.",
+            "unit": "Newton meters",
+            "unit_short": "Nm",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -400,
+            "max": 400
+        },
+        {
+            "id": 626,
+            "offset": 6,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Rear-Right Wheel Torque Setpoint",
+            "short": "(RR) Torque Sp.",
+            "unit": "Newton meters",
+            "unit_short": "Nm",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -400,
+            "max": 400
+        },
+        {
+            "id": 645,
+            "offset": 0,
+            "bus": 0,
+            "Source": "AMK",
+            "name": "Front-Left Motor Temperature",
+            "short": "(FL) Motor Temp.",
+            "unit": "degrees C",
+            "unit_short": "degC",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -20,
+            "max": 150
+        },
+        {
+            "id": 646,
+            "offset": 0,
+            "bus": 0,
+            "Source": "AMK",
+            "name": "Front-Right Motor Temperature",
+            "short": "(FR) Motor Temp.",
+            "unit": "degrees C",
+            "unit_short": "degC",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -20,
+            "max": 150
+        },
+        {
+            "id": 649,
+            "offset": 0,
+            "bus": 0,
+            "Source": "AMK",
+            "name": "Rear-Left Motor Temperature",
+            "short": "(RL) Motor Temp.",
+            "unit": "degrees C",
+            "unit_short": "degC",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -20,
+            "max": 150
+        },
+        {
+            "id": 650,
+            "offset": 0,
+            "bus": 0,
+            "Source": "AMK",
+            "name": "Rear-Right Motor Temperature",
+            "short": "(RR) Motor Temp.",
+            "unit": "degrees C",
+            "unit_short": "degC",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -20,
+            "max": 150
+        },
+        {
+            "id": 645,
+            "offset": 6,
+            "bus": 0,
+            "Source": "AMK",
+            "name": "Front-Left IBGT Temperature",
+            "short": "(FL) IGBT Temp.",
+            "unit": "degrees C",
+            "unit_short": "degC",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -20,
+            "max": 150
+        },
+        {
+            "id": 646,
+            "offset": 6,
+            "bus": 0,
+            "Source": "AMK",
+            "name": "Front-Right IGBT Temperature",
+            "short": "(FR) IGBT Temp.",
+            "unit": "degrees C",
+            "unit_short": "degC",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -20,
+            "max": 150
+        },
+        {
+            "id": 649,
+            "offset": 6,
+            "bus": 0,
+            "Source": "AMK",
+            "name": "Rear-Left IGBT Temperature",
+            "short": "(RL) IGBT Temp.",
+            "unit": "degrees C",
+            "unit_short": "degC",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -20,
+            "max": 150
+        },
+        {
+            "id": 650,
+            "offset": 6,
+            "bus": 0,
+            "Source": "AMK",
+            "name": "Rear-Right IGBT Temperature",
+            "short": "(RR) IGBT Temp.",
+            "unit": "degrees C",
+            "unit_short": "degC",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -20,
+            "max": 150
+        },
+        {
+            "id": 645,
+            "offset": 4,
+            "bus": 0,
+            "Source": "AMK",
+            "name": "Front-Left Motor Error Code",
+            "short": "(FL) Error",
+            "in_type": "u16",
+            "out_type": "u16",
+            "min": 0,
+            "max": 65536
+        },
+        {
+            "id": 646,
+            "offset": 4,
+            "bus": 0,
+            "Source": "AMK",
+            "name": "Front-Right Motor Error Code",
+            "short": "(FR) Error",
+            "in_type": "u16",
+            "out_type": "u16",
+            "min": 0,
+            "max": 65536
+        },
+        {
+            "id": 649,
+            "offset": 4,
+            "bus": 0,
+            "Source": "AMK",
+            "name": "Rear-Left Motor Error Code",
+            "short": "(RL) Error",
+            "in_type": "u16",
+            "out_type": "u16",
+            "min": 0,
+            "max": 65536
+        },
+        {
+            "id": 650,
+            "offset": 4,
+            "bus": 0,
+            "Source": "AMK",
+            "name": "Rear-Right Motor Error Code",
+            "short": "(RR) Error",
+            "in_type": "u16",
+            "out_type": "u16",
+            "min": 0,
+            "max": 65536
+        },
+        {
+            "id": 642,
+            "offset": 0,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Latitude Position",
+            "short": "Lat.",
+            "unit": "degrees",
+            "unit_short": "deg",
+            "in_type": "f32",
+            "out_type": "f32",
+            "min": -90,
+            "max": 90
+        },
+        {
+            "id": 642,
+            "offset": 4,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Longitude Position",
+            "short": "Long.",
+            "unit": "degrees",
+            "unit_short": "deg",
+            "in_type": "f32",
+            "out_type": "f32",
+            "min": -180,
+            "max": 180
+        },
+        {
+            "id": 658,
+            "offset": 0,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Roll Orientation",
+            "short": "Roll",
+            "unit": "degrees",
+            "unit_short": "deg",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -180,
+            "max": 180
+        },
+        {
+            "id": 658,
+            "offset": 2,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Pitch Orientation",
+            "short": "Pitch",
+            "unit": "degrees",
+            "unit_short": "deg",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -180,
+            "max": 180
+        },
+        {
+            "id": 658,
+            "offset": 4,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Heading",
+            "short": "Heading",
+            "unit": "degrees",
+            "unit_short": "deg",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -180,
+            "max": 180
+        },
+        {
+            "id": 674,
+            "offset": 0,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Longitudinal (Forward) Velocity",
+            "short": "Fwd. Vel.",
+            "unit": "meters/second",
+            "unit_short": "m/s",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -50,
+            "max": 50
+        },
+        {
+            "id": 674,
+            "offset": 2,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Lateral (Right) Velocity",
+            "short": "Right Vel.",
+            "unit": "meters/second",
+            "unit_short": "m/s",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -20,
+            "max": 20
+        },
+        {
+            "id": 674,
+            "offset": 4,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Vertical (Down) Velocity",
+            "short": "Down Vel.",
+            "unit": "meters/second",
+            "unit_short": "m/s",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -10,
+            "max": 10
+        },
+        {
+            "id": 690,
+            "offset": 0,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Longitudinal (Forward) Acceleration",
+            "short": "Fwd. Accel.",
+            "unit": "meters/second^2",
+            "unit_short": "m/s2",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -30,
+            "max": 30
+        },
+        {
+            "id": 690,
+            "offset": 2,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Lateral (Right) Acceleration",
+            "short": "Right Accel.",
+            "unit": "meters/second^2",
+            "unit_short": "m/s2",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -30,
+            "max": 30
+        },
+        {
+            "id": 690,
+            "offset": 4,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Vertical (Down) Acceleration",
+            "short": "Down Accel.",
+            "unit": "meters/second^2",
+            "unit_short": "m/s2",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -30,
+            "max": 30
+        },
+        {
+            "id": 1794,
+            "offset": 0,
+            "bus": 1,
+            "Source": "SBG",
+            "name": "Solution Status",
+            "short": "Sol. Status",
+            "vector": [
+                {
+                    "name": "EKF Roll/Pitch Status",
+                    "short": "Att. Status",
+                    "state": ["Invalid", "Valid"]
+                },
+                {
+                    "name": "EKF Yaw Status",
+                    "short": "Yaw Status",
+                    "state": ["Invalid", "Valid"]
+                },
+                {
+                    "name": "EKF Velocity Status",
+                    "short": "Vel. Status",
+                    "state": ["Invalid", "Valid"]
+                },
+                {
+                    "name": "EKF Position Status",
+                    "short": "Pos. Status",
+                    "state": ["Invalid", "Valid"]
+                }
+            ],
             "in_type": "u32",
             "out_type": "u32"
         }
