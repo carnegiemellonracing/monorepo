@@ -1131,6 +1131,36 @@
             ],
             "in_type": "u32",
             "out_type": "u32"
+        },
+        {
+            "id": 256,
+            "offset": 0,
+            "bus": 1,
+            "Source": "EMD",
+            "name": "EMD Currrent",
+            "short": "EMD Curr.",
+            "unit": "Amps",
+            "unit_short": "A",
+            "in_type": "i32",
+            "out_type": "i32",
+            "post_factor": 0.000015258789063,
+            "min": -300,
+            "max": 300
+        }, 
+        {
+            "id": 256,
+            "offset": 4,
+            "bus": 1,
+            "Source": "EMD",
+            "name": "EMD Voltage",
+            "short": "EMD Volts",
+            "unit": "volts",
+            "unit_short": "V",
+            "in_type": "i32",
+            "out_type": "i32",
+            "post_factor": 0.000015258789063,
+            "max": 700,
+            "min": 200
         }
     ]
 }
