@@ -402,8 +402,8 @@ static void sendBRUSAChargerControl(void) {
 }
 
 static void sendHVCPackVoltage(void) {
-    int32_t bVolt = ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BATT_PLUS)) - ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BATT_MINUS));
-    int32_t hvVolt = ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV_PLUS)) - ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV_MINUS));
+    int32_t bVolt = getBattMillivolts();
+    int32_t hvVolt = getHVmillivolts();
 
     cmr_canHVCPackVoltage_t HVCPackVoltage = {
         .battVoltage = bVolt,
@@ -414,9 +414,8 @@ static void sendHVCPackVoltage(void) {
 }
 
 static void sendBMSPackCurrent(void) {
-    // NEEDS CHANGES AFTER ADC SWITCH
-    int32_t instantCurrent = 0;
-    int32_t avgCurrent = 0;
+    int32_t instantCurrent = getCurrentInstant();
+    int32_t avgCurrent = getCurrentAverage();
 
     cmr_canBMSPackCurrent_t BMSPackCurrent = {
         .instantCurrent_mA = instantCurrent,
@@ -543,9 +542,9 @@ static void sendBMSMinMaxCellTemp(void) {
 static void sendBMSLowVoltage(void) {
     // NEEDS CHANGES AFTER ADC SWITCH
     cmr_canBMSLowVoltage_t BMSLowVoltage = {
-        .ibatt_mA =0,
+        .ibatt_mA = getLVmilliamps(), // Convert mA to 2/15th mA
         .iDCDC_mA =0,
-        .vAIR_mV =0,
-        .vbatt_mV=0,
+        .vAIR_mV = (getAIRmillivolts()*15)/2000, // Convert mV to 2/15th V
+        .vbatt_mV= (getLVmillivolts()*15)/2000) // Convert mV to 2/15th V
     };
 }

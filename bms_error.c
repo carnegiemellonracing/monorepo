@@ -13,6 +13,21 @@
 // error checking becomes its own task
 static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_STATE_ERROR;
 
+// Don't know how this fits in yet
+// void errorSetup(){
+//     //Overcurrent_Fault IO
+//     gpio_enable_gpio_pin(OVERCURRENT_FAULT_PIN);
+//     gpio_configure_pin(OVERCURRENT_FAULT_PIN, GPIO_DIR_OUTPUT);
+
+//     //Clear_Fault_L IO
+//     gpio_enable_gpio_pin(CLEAR_ERROR_PIN);
+//     gpio_configure_pin(CLEAR_ERROR_PIN, GPIO_DIR_OUTPUT);
+
+//     // BMB_Fault_L IO
+//     gpio_enable_gpio_pin(BMB_FAULT_L_PIN);
+//     gpio_configure_pin(BMB_FAULT_L_PIN, GPIO_DIR_INPUT);
+// }
+
 cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
     cmr_canHVCError_t errorFlags = CMR_CAN_HVC_ERROR_NONE;
     if(checkCommandTimeout()) {
@@ -36,15 +51,15 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         // TODO E5 create structures for cell voltage data and stats (min/max)
         errorFlags |= CMR_CAN_HVC_ERROR_CELL_UNDERVOLT;
     }
-    if((((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BATT_PLUS)) - ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BATT_MINUS))) > maxPackVoltageMV) {
+    if((getBattMillivolts()) > maxPackVoltageMV) {
         // E6
         errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERVOLT;
     }
-    if((((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BATT_PLUS)) - ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BATT_MINUS))) < minPackVoltageMV) {
+    if((getBattMillivolts()) < minPackVoltageMV) {
         // E7
         errorFlags |= CMR_CAN_HVC_ERROR_PACK_UNDERVOLT;
     }
-    if(((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_SHUNT_LV)) > maxPackCurrentInstantMA) {
+    if(getCurrentInstant() > maxPackCurrentInstantMA) {
         // E8
         errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
     }
@@ -66,7 +81,7 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         currentState == CMR_CAN_HVC_STATE_CHARGE_TRICKLE ||
         currentState == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT ||
         currentState == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE) &&
-       (((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_AIR_POWER)) < minShutdownCiruitVoltageMV)) {
+       (getAIRmillivolts() < minShutdownCiruitVoltageMV)) {
         // E11
         // If SC voltage is below 8v while we're trying to drive relays, throw an error.
         errorFlags |= CMR_CAN_HVC_ERROR_LV_UNDERVOLT;
@@ -102,10 +117,10 @@ void setOvercurrentFault(bool assertFault) {
     // Set GPIO pin high (asserted) if
     // assertClear, low (deasserted) otherwise
     if (assertFault) {
-        //cmr_gpioWrite(GPIO_OVERCURRENT_FAULT_PIN, 1);
+        cmr_gpioWrite(GPIO_OVERCURRENT_FAULT_PIN, 1);
 
     } else {
-        //cmr_gpioWrite(GPIO_OVERCURRENT_FAULT_PIN, 0);
+        cmr_gpioWrite(GPIO_OVERCURRENT_FAULT_PIN, 0);
     }
 }
 

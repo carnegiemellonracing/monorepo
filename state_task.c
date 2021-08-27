@@ -39,7 +39,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
     
     switch (currentState) {
         case CMR_CAN_HVC_STATE_DISCHARGE: // S1
-            if ((((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV_PLUS)) - ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV_MINUS))) < 5000) {
+            if ((getHVmillivolts()) < 5000) {
                 //T5: HV < 5V
                 nextState = CMR_CAN_HVC_STATE_STANDBY;
             } else {
@@ -62,9 +62,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                   HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN)) {
                 //T6: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if ((abs((((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BATT_PLUS)) - ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BATT_MINUS))) - 
-                       (((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV_PLUS)) - ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV_MINUS)))) < 15000) &&
-                       ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV_PLUS)) - ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV_MINUS)) > 10000) {
+            } else if (abs(getBattMillivolts() - getHVmillivolts()) < 15000 && getHVmillivolts() > 10000) {
                 //T2: HV rails are precharged to within 10000mV
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE;
             } else {
@@ -77,8 +75,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                 //T7: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
             } else if ((HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN) &&
-                        (abs(((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BATT_PLUS)) - ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV_PLUS))) < 3000) &&
-                        (abs(((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BATT_MINUS)) - ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV_MINUS))) < 3000)) {
+                        abs(getBattMillivolts() - getHVmillivolts()) < 5000) {
                 // T3: Contactors are closed and RUN mode is requested
                 nextState = CMR_CAN_HVC_STATE_DRIVE;
             } else {
@@ -97,8 +94,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 //T18: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if ((abs((((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BATT_PLUS)) - ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BATT_MINUS))) - 
-                            (((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV_PLUS)) - ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV_MINUS)))) < 15000)) {
+            } else if (abs(getBattMillivolts() - getHVmillivolts())  < 15000) {
                 //T10: HV rails are precharged
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE;
             } else {
@@ -109,8 +105,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 // T17: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if ((abs(((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BATT_PLUS)) - ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV_PLUS))) < 1000) && 
-                       (abs(((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BATT_MINUS)) - ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV_MINUS))) < 1000)) {
+            } else if (abs(getBattMillivolts() - getHVmillivolts()) < 5000) {
                 // T11: Contactors are closed
                 nextState = CMR_CAN_HVC_STATE_CHARGE_TRICKLE;
             } else {
@@ -167,7 +162,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             break;  
         case CMR_CAN_HVC_STATE_CLEAR_ERROR: // S11
             if ((HVCCommand->modeRequest == CMR_CAN_HVC_MODE_IDLE) &&
-                (((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV_PLUS)) - ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV_MINUS))) < 5000) {
+                (getHVmillivolts()) < 5000) {
                 //T4: GLV requesting idle and rails discharged
                 nextState = CMR_CAN_HVC_STATE_STANDBY;
             } else {
