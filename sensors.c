@@ -163,8 +163,7 @@ static int32_t adcConvRadTherm_dC(const cmr_sensor_t *s, uint32_t adcVal) {
     float sensed_ratio = adcVal / ((float) 4095);
     float sensed_voltage = sensed_ratio * ((float) 3.3);
 
-    //3435
-    float sensed_temp = thermistorCalc(3435.f, 10000.f, 25.f, 5.6e3, sensed_voltage, 2.6f);
+    float sensed_temp = thermistorCalc(3892.f, 10000.f, 25.f, 5.6e3, sensed_voltage, 2.6f);
     return sensed_temp * 10; //to report dC units
 }
 
