@@ -35,16 +35,13 @@ void vBMBSampleTask(void *pvParameters) {
 
     // Period
     const TickType_t xPeriod = 1000 / BMB_SAMPLE_TASK_RATE;		// In ticks (ms)
-
-    //Initialize GPIO Pins
-    //gpioInit();
     
     //Enable BMB power init high as it is an active low signal
-    cmr_gpioWrite(GPIO_BMB_POWER_PIN, 1);
+    cmr_gpioWrite(GPIO_BMB_POWER_ENABLE_L, 1);
     cmr_gpioWrite(GPIO_BMB_WAKE_PIN, 0);
     
     // Enable BMB IO power (active low)
-    cmr_gpioWrite(GPIO_BMB_POWER_PIN, 0);
+    cmr_gpioWrite(GPIO_BMB_POWER_ENABLE_L, 0);
 
     // Wake BMB0
     // NOTE: This MUST happen immediately after power on

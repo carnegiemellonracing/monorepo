@@ -20,10 +20,28 @@
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 	// XXX edit me to match your pin configuration
-    [GPIO_LED_STATUS] = {
+    [GPIO_MCU_LED] = {
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_10,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_HV_ACTIVE_TSAL_LIGHT] = {
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_5,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_BMB_POWER_ENABLE_L] = {
+        .port = GPIOB,
+        .init = {
+            .Pin = GPIO_PIN_9,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
@@ -38,8 +56,17 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_BMB_POWER_PIN] = {
+    [GPIO_BMB_FAULT_L] = {
         .port = GPIOB,
+        .init = {
+            .Pin = GPIO_PIN_10,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_CLEAR_FAULT_L] = {
+        .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_9,
             .Mode = GPIO_MODE_OUTPUT_PP,
@@ -47,43 +74,25 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_RELAY_PIN_AIR_POS] = {
-        .port = GPIOC,
-        .init = {
-            .Pin = GPIO_PIN_7,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_RELAY_PIN_AIR_NEG] = {
-        .port = GPIOC,
-        .init = {
-            .Pin = GPIO_PIN_6,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_RELAY_PIN_PRECHARGE] = {
+    [GPIO_DCDC_COIL_EN] = {
         .port = GPIOA,
         .init = {
-            .Pin = GPIO_PIN_8,
+            .Pin = GPIO_PIN_9,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_RELAY_PIN_DISCHARGE] = {
-        .port = GPIOC,
+    [GPIO_GP_24V_EN] = {
+        .port = GPIOA,
         .init = {
-            .Pin = GPIO_PIN_8,
+            .Pin = GPIO_PIN_10,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_RELAY_PIN_POWER_FAULT_L] = {
+    [GPIO_AIR_FAULT_L] = {
         .port = GPIOB,
         .init = {
             .Pin = GPIO_PIN_15,
@@ -92,39 +101,37 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_DCDC_ENABLE_PIN] = {
-        .port = GPIOA,
-        .init = {
-            .Pin = GPIO_PIN_9,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_CLEAR_ERROR_PIN] = {
+    [GPIO_DISCHARGE_EN] = {
         .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_9,
+            .Pin = GPIO_PIN_8,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    /*
-    [GPIO_OVERCURRENT_FAULT_PIN] = {
-        .port = ,
+    [GPIO_PRECHARGE_EN] = {
+        .port = GPIOA,
+        .init = {
+            .Pin = GPIO_PIN_8,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_AIR_POSITIVE_EN] = {
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_7,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_AIR_NEGATIVE_EN] = {
+        .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_6,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    */
-    [GPIO_BMB_FAULT_L_PIN] = {
-        .port = GPIOB,
-        .init = {
-            .Pin = GPIO_PIN_10,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW

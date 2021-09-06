@@ -36,13 +36,7 @@ static volatile int32_t currentInstant = 0;
 static const adcChannels_t sensorsADCCHANNELS[SENSOR_CH_LEN] = {
     [SENSOR_CH_V24V]       = ADC_V24V,     
 	[SENSOR_CH_AIR_POWER]  = ADC_AIR_POWER,
-	[SENSOR_CH_SAFETY]     = ADC_SAFETY,
-	[SENSOR_CH_HV]         = ADC_HV,
-    [SENSOR_CH_BATT]       = ADC_BATT,
-	[SENSOR_CH_SHUNT_P]    = ADC_SHUNT_P,
-	[SENSOR_CH_SHUNT_N]    = ADC_SHUNT_N,
-	[SENSOR_CH_LV_CURR]    = ADC_LV_CURR,
-	[SENSOR_CH_REF1V65]    = ADC_REF1V65
+	[SENSOR_CH_SAFETY]     = ADC_SAFETY
 };
 
 /** @brief forward declaration */
@@ -186,54 +180,6 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		//.readingMax = ?,
 		.outOfRange_pcnt = 10,
 		//.warnFlag = What errors to use?
-	},
-	[SENSOR_CH_HV] = {
-		.conv = ADCtoMV_HVSense,
-		.sample = sampleADCSensor,
-		//.readingMin = 0,
-		//.readingMax = 24000,
-		.outOfRange_pcnt = 10,
-		//.warnFlag = What errors to use?
-	},
-	[SENSOR_CH_BATT] = {
-		.conv = adcToMV_HVSense,
-		.sample = sampleADCSensor,
-		//.readingMin = 0,
-		//.readingMax = 24000,
-		.outOfRange_pcnt = 10,
-		//.warnFlag = What errors to use?
-	},
-	[SENSOR_CH_SHUNT_P] = {
-		.conv = ADCtoMA_shunt,
-		.sample = sampleADCSensor,
-		//.readingMin = 0,
-		//.readingMax = 24000,
-		.outOfRange_pcnt = 10,
-		//.warnFlag = What errors to use?
-	},
-	[SENSOR_CH_SHUNT_N] = {
-		.conv = ADCtoMA_shunt,
-		.sample = sampleADCSensor,
-		//.readingMin = 0,
-		//.readingMax = 24000,
-		.outOfRange_pcnt = 10,
-		//.warnFlag = What errors to use?
-	},
-	[SENSOR_CH_LV_CURR] = {
-		.conv = ADCtoMA_24v,
-		.sample = sampleADCSensor,
-		//.readingMin = 0,
-		//.readingMax = 24000,
-		.outOfRange_pcnt = 10,
-		//.warnFlag = What errors to use?
-	},
-	[SENSOR_CH_REF1V65] = {
-		.conv = ,
-		.sample = sampleADCSensor,
-		//.readingMin = 0,
-		//.readingMax = 24000,
-		.outOfRange_pcnt = 10,
-		//.warnFlag = What errors to use?
 	}
 };
 
@@ -298,7 +244,7 @@ int32_t getLVmillivolts(){
 }
 
 int32_t getLVmilliamps(){
-	return (int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_LV_CURR);
+	return (int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_LV_CURR); // This is IBATT-Filtered we need to change
 }
 
 int32_t getAIRmillivolts(){

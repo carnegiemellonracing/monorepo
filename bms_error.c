@@ -13,21 +13,6 @@
 // error checking becomes its own task
 static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_STATE_ERROR;
 
-// Don't know how this fits in yet
-// void errorSetup(){
-//     //Overcurrent_Fault IO
-//     gpio_enable_gpio_pin(OVERCURRENT_FAULT_PIN);
-//     gpio_configure_pin(OVERCURRENT_FAULT_PIN, GPIO_DIR_OUTPUT);
-
-//     //Clear_Fault_L IO
-//     gpio_enable_gpio_pin(CLEAR_ERROR_PIN);
-//     gpio_configure_pin(CLEAR_ERROR_PIN, GPIO_DIR_OUTPUT);
-
-//     // BMB_Fault_L IO
-//     gpio_enable_gpio_pin(BMB_FAULT_L_PIN);
-//     gpio_configure_pin(BMB_FAULT_L_PIN, GPIO_DIR_INPUT);
-// }
-
 cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
     cmr_canHVCError_t errorFlags = CMR_CAN_HVC_ERROR_NONE;
     if(checkCommandTimeout()) {
@@ -87,7 +72,7 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         errorFlags |= CMR_CAN_HVC_ERROR_LV_UNDERVOLT;
     }
 
-    if(cmr_gpioRead(GPIO_BMB_FAULT_L_PIN) == false) {
+    if(cmr_gpioRead(GPIO_BMB_FAULT_L) == false) {
         // E2
         // BMB fault pin is asserted (low), could indicate BMB disconnected
         // or hardware UV/OV condition.
@@ -107,20 +92,9 @@ void clearHardwareFault(bool assertClear) {
     // Set GPIO pin low (asserted) if
     // assertClear, high (deasserted) otherwise
     if (assertClear) {
-        cmr_gpioWrite(GPIO_CLEAR_ERROR_PIN, 0);
+        cmr_gpioWrite(GPIO_CLEAR_FAULT_L, 0);
     } else {
-        cmr_gpioWrite(GPIO_CLEAR_ERROR_PIN, 1);
-    }
-}
-
-void setOvercurrentFault(bool assertFault) {
-    // Set GPIO pin high (asserted) if
-    // assertClear, low (deasserted) otherwise
-    if (assertFault) {
-        cmr_gpioWrite(GPIO_OVERCURRENT_FAULT_PIN, 1);
-
-    } else {
-        cmr_gpioWrite(GPIO_OVERCURRENT_FAULT_PIN, 0);
+        cmr_gpioWrite(GPIO_CLEAR_FAULT_L, 1);
     }
 }
 
