@@ -459,3 +459,15 @@ void getBMSMinMaxCellTemperature(cmr_canBMSMinMaxCellTemperature_t *BMSMinMaxCel
 BMB_Data_t* getBMBData(uint8_t bmb_index) {
     return &(BMBData[bmb_index]);
 }
+
+int32_t getBattMillivolts() {
+    int32_t totalPackCellVoltage = 0;
+
+    for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
+        for (uint8_t i = 0; i < VSENSE_CHANNELS_PER_BMB; i++) {
+            totalPackCellVoltage += BMBData[bmb_index].cellVoltages[VSENSE_CHANNELS_PER_BMB];
+        }
+    }
+
+    return totalPackCellVoltage;
+}

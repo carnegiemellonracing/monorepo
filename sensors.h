@@ -15,9 +15,10 @@
 
 /** @brief Array indexes for sensor value calibration array. */
 typedef enum {
-	SENSOR_CH_V24V       = 0,
-	SENSOR_CH_AIR_POWER  = 1,
-	SENSOR_CH_SAFETY     = 2,
+	SENSOR_CH_V24V           = 0,
+	SENSOR_CH_AIR_POWER      = 1,
+	SENSOR_CH_SAFETY         = 2,
+	SENSOR_CH_IBATT_FILTERED = 3,
 	SENSOR_CH_LEN     /**< @brief Total ADC channels. */
 } sensorChannel_t;
 
@@ -28,9 +29,11 @@ void sensorsInit(void);
 int32_t getLVmillivolts();
 int32_t getLVmilliamps();
 int32_t getAIRmillivolts();
+/*
 int32_t getHVmillivolts();
 int32_t getBattMillivolts();
 int32_t getCurrentInstant();
 int32_t getCurrentAverage();
+*/
 
 #endif /* SENSORS_H_ */

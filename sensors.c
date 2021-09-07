@@ -21,14 +21,6 @@ static const int16_t senseOffsetVoltage = 1100;
 
 static const int16_t ADC_HALF = 2048;
 
-// Current average sample count = rate(Hz) * time(s)
-static const int16_t numSamplesInstant = 20;//100 * 2;
-static const int16_t numSamplesAverage = 3000;//100 * 30;
-#define NUM_SAMPLES_AVERAGE 3000
-
-static volatile int32_t currentSingleSample = 0;
-static volatile int32_t currentAvg = 0;
-static volatile int32_t currentInstant = 0;
 
 /**
  * @brief Mapping of sensor channels to ADC channels.
@@ -180,6 +172,14 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		//.readingMax = ?,
 		.outOfRange_pcnt = 10,
 		//.warnFlag = What errors to use?
+	},
+    [SENSOR_CH_IBATT_FILTERED] = {
+		.conv = ,
+		.sample = sampleADCSensor,
+		//.readingMin = ?,
+		//.readingMax = ?,
+		.outOfRange_pcnt = 10,
+		//.warnFlag = What errors to use?
 	}
 };
 
@@ -205,13 +205,6 @@ static void sensorsUpdate(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         cmr_sensorListUpdate(&sensorList);
-
-		currentSingleSample = (int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_SHUNT_N);
-
-		// Rolling average
-        // A single sample is too noisy for an "instant" measurement so do a small average
-        currentInstant = (currentInstant*(numSamplesInstant-1) + currentSingleSample) / numSamplesInstant;
-        currentAvg = (currentAvg*(numSamplesAverage-1) + currentSingleSample) / numSamplesAverage;
 
         vTaskDelayUntil(&lastWakeTime, sensorsUpdate_period_ms);
     }

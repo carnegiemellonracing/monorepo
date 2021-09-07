@@ -45,5 +45,6 @@ void getBMSMinMaxCellVoltage(cmr_canBMSMinMaxCellVoltage_t *BMSMinMaxCellVoltage
 void getBMSMinMaxCellTemperature(cmr_canBMSMinMaxCellTemperature_t *BMSMinMaxCellTemp);
 BMB_Data_t* getBMBData (uint8_t bmb_index);
 
+int32_t getBattMillivolts();
 
 #endif /* BMB_TASK_H_ */
