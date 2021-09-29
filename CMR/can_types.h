@@ -784,6 +784,51 @@ typedef struct {
 } cmr_canSBGIMUGyro_t;
 
 // ------------------------------------------------------------------------------------------------
+// IZZIE Racing sensors
+
+/** @brief IZZIE Racing loadcell sensors. Big Endian*/
+typedef struct {
+    int16_t delta_voltage;        /**< @brief differential voltage in the wheatstone bridge */
+    int16_t calibrated_output_f;  /**< @brief force output from the loadcell. */
+    int16_t internal_temp;        /**< @brief amp's internal temp */
+    int16_t external_temp;        /**< @brief amp's external temp */
+} cmr_canIzzie_loadcell_raw;
+
+
+/** @brief IZZIE Racing loadcell sensors. */
+typedef struct {
+    int16_t delta_voltage;        /**< @brief differential voltage in the wheatstone bridge */
+    int16_t calibrated_output_f;  /**< @brief force output from the loadcell. */
+    int16_t internal_temp;        /**< @brief amp's internal temp */
+    int16_t external_temp;        /**< @brief amp's external temp */
+} cmr_canIzzie_loadcell_calibrated;
+
+// ------------------------------------------------------------------------------------------------
+// Controls algo debugging struct
+
+typedef struct {
+    float controls_target_slip;
+    float controls_current_slip_FR;
+    float controls_current_slip_FL;
+    float controls_current_slip_RR;
+    float controls_current_slip_RL;
+    bool controls_slip_correction_active_FR;
+    bool controls_slip_correction_active_FL;
+    bool controls_slip_correction_active_RR;
+    bool controls_slip_correction_active_RL;
+    int16_t controls_wheel_speed_mps_target_FR;
+    int16_t controls_wheel_speed_mps_target_FL;
+    int16_t controls_wheel_speed_mps_target_RR;
+    int16_t controls_wheel_speed_mps_target_RL;
+    int16_t controls_wheel_speed_mps_actual_FR;
+    int16_t controls_wheel_speed_mps_actual_FL;
+    int16_t controls_wheel_speed_mps_actual_RR;
+    int16_t controls_wheel_speed_mps_actual_RL;
+    int16_t controls_sbg_speed_mps;
+} cmr_can_controls_debug;
+
+
+// ------------------------------------------------------------------------------------------------
 // SAE Provided EMD definitions
 
 typedef struct {
