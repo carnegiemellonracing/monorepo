@@ -9,6 +9,7 @@
 #define CMR_CAN_TYPES_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 // ------------------------------------------------------------------------------------------------
 // Common enums and structs
@@ -820,10 +821,10 @@ typedef struct {
     float controls_current_slip_FL;
     float controls_current_slip_RR;
     float controls_current_slip_RL;
-    bool controls_slip_correction_active_FR;
-    bool controls_slip_correction_active_FL;
-    bool controls_slip_correction_active_RR;
-    bool controls_slip_correction_active_RL;
+    uint8_t controls_slip_correction_active_FR;
+    uint8_t controls_slip_correction_active_FL;
+    uint8_t controls_slip_correction_active_RR;
+    uint8_t controls_slip_correction_active_RL;
     int16_t controls_wheel_speed_mps_target_FR;
     int16_t controls_wheel_speed_mps_target_FL;
     int16_t controls_wheel_speed_mps_target_RR;
