@@ -126,6 +126,9 @@ typedef enum {
     CMR_CANID_EMD_MEASUREMENT = 0x100,          /**< @brief EMD measurement for HV voltage/current. */
     CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */
     CMR_CANID_EMD_STATUS = 0x400,               /**< @brief EMD status. */
+
+    CMR_IZZIE_LOADCELL = 0x7F0,                 /**< @brief IZZIE Amp load data. */
+    CMR_CANID_CONTROLS_DEBUG = 0x7E2,           /**< @brief control algo testing data. */
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
