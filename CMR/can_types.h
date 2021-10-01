@@ -9,6 +9,7 @@
 #define CMR_CAN_TYPES_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 // ------------------------------------------------------------------------------------------------
 // Common enums and structs
@@ -782,6 +783,14 @@ typedef struct {
     int16_t gyro_y_rads;        /**< @brief Roll rate around the Car Right Direction (rad/s times 1000). */
     int16_t gyro_z_rads;        /**< @brief Roll rate around the Car Down Direction (rad/s times 1000). */
 } cmr_canSBGIMUGyro_t;
+
+/** @brief SBG Systems automotive data. */
+typedef struct {
+    int16_t angle_track_rad;        /**< @brief Track course angle/direction of travel (rad times 10^4). */
+    int16_t angle_slip_rad;         /**< @brief Vehicle slip angle (rad times 10^4). */
+    uint16_t curvature_radius_m;    /**< @brief Curvature radius based on down rotation rate (meters times 10^2). */
+    uint8_t status;                 /**< @brief Status bitmasks as AUTO_STATUS definition. */
+} cmr_canSBGAutomotive_t;
 
 // ------------------------------------------------------------------------------------------------
 // IZZIE Racing sensors
