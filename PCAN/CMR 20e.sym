@@ -1560,6 +1560,19 @@ Var=AMK_RR_TargetVelocity        signed   16,16 /u:rpm /p:2
 Var=AMK_RR_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_RR_TorqueLimitNegativ    signed   48,16 /u:"% Mn" /f:0.1 /p:4
 
+[controls_debug_global]
+ID=7e0h 
+DLC=8
+CycleTime=100
+Var=target_slip signed 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=sbg_speed_mps signed 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=target_velocity signed 32,16 -m /u:V /f:1.5258789063E-005
+Var=target_accel signed 48,16 -m /u:V /f:1.5258789063E-005
+
+Var=SBG_Vel_N signed 0,16 
+Var=SBG_Vel_E signed 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Vel_D signed 32,16 /u:m.s-1 /f:0.01 /p:2
+
 [EMD_Measurement]
 ID=401h // This is NOT the real CANID for the EMD. It is 100h, but that conflicts with the VSM_Heartbeat, so we retransmit it on 401h via the CDC.
 DLC=8
