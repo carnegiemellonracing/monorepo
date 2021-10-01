@@ -127,7 +127,11 @@ typedef enum {
     CMR_CANID_EMD_STATUS = 0x400,               /**< @brief EMD status. */
 
     CMR_IZZIE_LOADCELL = 0x7F0,                 /**< @brief IZZIE Amp load data. */
-    CMR_CANID_CONTROLS_DEBUG = 0x7E2,           /**< @brief control algo testing data. */
+    CMR_CANID_CONTROLS_DEBUG_GLOBAl = 0x7E0,    /**< @brief control algo testing data. */
+    CMR_CANID_CONTROLS_DEBUG_FR = 0x7E1,        /**< @brief control algo testing data. */
+    CMR_CANID_CONTROLS_DEBUG_FL = 0x7E2,        /**< @brief control algo testing data. */
+    CMR_CANID_CONTROLS_DEBUG_RR = 0x7E3,        /**< @brief control algo testing data. */
+    CMR_CANID_CONTROLS_DEBUG_RL = 0x7E4,        /**< @brief control algo testing data. */
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
