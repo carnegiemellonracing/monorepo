@@ -10,18 +10,6 @@
 #include "sensors.h"
 #include "adc.h"
 
-// ADC reference voltage in millivolts, should be measured from ADCVREFP and ADCVREFN
-static const int16_t mvVRef = 2600;
-
-// Current shunt calibrations from measurement
-static const int16_t shuntOffsetVoltage = 0;
-static const int32_t shuntOffsetCurrent = 0;
-
-static const int16_t senseOffsetVoltage = 1100;
-
-static const int16_t ADC_HALF = 2048;
-
-
 /**
  * @brief Mapping of sensor channels to ADC channels.
  */
@@ -50,7 +38,7 @@ cmr_sensorList_t sensorList;
 static uint32_t sampleADCSensor(const cmr_sensor_t *sensor) {
     sensorChannel_t sensorChannel = sensor - sensors;
     configASSERT(sensorChannel < SENSOR_CH_LEN);
-    return adcRead(sensorsADCCHANNELS[sensorChannel]) * ADCChannelPolarity[ch];
+    return adcRead(sensorsADCCHANNELS[sensorChannel]); //* ADCChannelPolarity[ch]; Figure adc polarity
 }
 
 /**
@@ -77,34 +65,6 @@ static inline int32_t ADCtoMV_24v(const cmr_sensor_t *sensor, int16_t reading) {
 }
 
 /**
- * @brief Converts a raw ADC value into a shunt current value.
- *
- * @param sensor The sensor to read.
- *
- * @param reading The ADC value to convert.
- *
- * @return Current in mA.
- */
-// Voltage output on shunt_n will be between 0.415 - 2.465 which corresponds to 500 A to -500 A.
-// ADC measurement on shunt_n measures does differential with 1.65V as P and shunt_n as N
-//     This is inverted, so the adc measuement reports shunt_n - 1.65V. We're doing this the
-//         the hacky way though, so we don't want that. Uninvert here.
-//     At resting, shunt_n is 1.44V. The ADC therefore measures 0.21v at zero shunt current.
-//         Subtract that 0.21v offset
-//     Shunt_n goes more negative with more current. Therefore, the diff measurement goes more positive.
-// (3.3 V / 4096 adc counts) * (500 sensor mV / 2.05 V) *  (2000 mA / 1 sensor mV) = 393.007 mA / adc counts
-// Shunt_n is centered at 1.44V -> add [(1.65V - 1.44V) * (2048 adc counts / 1.65V)] = 260.6545 adc counts to measurement
-// Perform (adc_input * (393.007mA / adc count)) + (260.6545 counts * (393.007mA / adc count))
-// Measured offset when shunt voltages are equal. Add this offset.
-static const int32_t SHUNT_MA_OFFSET = 6250;
-static inline int32_t ADCtoMA_shunt(const cmr_sensor_t *sensor, int16_t reading){
-    (void) sensor;
-
-	adc_input *= -1;
-    return (((int32_t) reading) * 393) - 102439 - SHUNT_MA_OFFSET;
-}
-
-/**
  * @brief Converts a raw ADC value into a low voltage current value.
  *
  * @param sensor The sensor to read.
@@ -121,31 +81,6 @@ static uint32_t adcToMA_24v(const cmr_sensor_t *sensor, int16_t reading) {
 	(void) sensor;
 	
 	return (((int32_t) reading) << 11) / 205;
-}
-
-/**
- * @brief Converts a raw ADC value into an HV value.
- *
- * @param sensor The sensor to read.
- *
- * @param reading The ADC value to convert.
- *
- * @return Voltage in V.
- */
-// Voltage divider (28.7k / (28.7k + 6M)
-// (3.3 V / 4096 adc count) * (60287 real volts /287 adc volts) * (1000 mV / V)  = 169.237 mV / adc count
-// This value is measured differentially in the ADC compared to a 1.65V reference. 
-//     The measurement code also inverts this, so the input to this function represents (Vsense - 1.65V)
-//     Further, the Vsense amp is refrenced to 0.3V, so Vsense will be shifted up by 0.3V, therefore
-//         we need to shift vsense up by 1.35V to get the true measurement
-//     This translates to an offset of (1350 adc mv * (60287 real volts /287 adc volts) * 256 = 72,576,000)
-// to get better resolution multiply by 256 
-// (169.237 * 256) = 43324.7
-// divide back by 256
-static const int32_t HV_V_OFFSET_MV_x256 = 51200;
-static inline int32_t ADCtoMV_HVSense(const cmr_sensor_t *sensor, int16_t reading){
-    int32_t volt = ((((int32_t) adc_input) * 43324 + 72576000 + HV_V_OFFSET_MV_x256) >> 8);
-    return volt;
 }
 
 static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
@@ -166,7 +101,7 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		//.warnFlag = What errors to use?
 	},
 	[SENSOR_CH_SAFETY] = {
-		.conv = ,
+		.conv = ADCtoMV_24v,
 		.sample = sampleADCSensor,
 		//.readingMin = ?,
 		//.readingMax = ?,
@@ -174,7 +109,7 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		//.warnFlag = What errors to use?
 	},
     [SENSOR_CH_IBATT_FILTERED] = {
-		.conv = ,
+		.conv = adcToMA_24v,
 		.sample = sampleADCSensor,
 		//.readingMin = ?,
 		//.readingMax = ?,
@@ -228,7 +163,6 @@ void sensorsInit(void) {
         NULL
     );
 }
-(int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BATT_PLUS)
 
 // Accessor functions used in the state machine. These casts should be safe because all the feasible values
 // for any of these variables should be less than INT_MAX, so the value will be preserved on the cast.
@@ -237,25 +171,9 @@ int32_t getLVmillivolts(){
 }
 
 int32_t getLVmilliamps(){
-	return (int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_LV_CURR); // This is IBATT-Filtered we need to change
+	return (int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_IBATT_FILTERED);
 }
 
 int32_t getAIRmillivolts(){
     return (int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_AIR_POWER);
-}
-
-int32_t getHVmillivolts(){
-    return (int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV);
-}
-
-int32_t getBattMillivolts(){
-    return (int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BATT);
-}
-
-int32_t getCurrentInstant(){
-    return currentInstant;
-}
-
-int32_t getCurrentAverage(){
-    return currentAvg;
 }

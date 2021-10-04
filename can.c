@@ -545,6 +545,6 @@ static void sendBMSLowVoltage(void) {
         .ibatt_mA = getLVmilliamps(), // Convert mA to 2/15th mA
         .iDCDC_mA =0,
         .vAIR_mV = (getAIRmillivolts()*15)/2000, // Convert mV to 2/15th V
-        .vbatt_mV= (getLVmillivolts()*15)/2000) // Convert mV to 2/15th V
+        .vbatt_mV= (getLVmillivolts()*15/2000), // Convert mV to 2/15th V
     };
 }

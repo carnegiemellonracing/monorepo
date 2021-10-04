@@ -23,9 +23,9 @@ static const SPI_InitTypeDef HVCSpiInit = {
 	.Direction = SPI_DIRECTION_2LINES,
 	.DataSize = SPI_DATASIZE_8BIT,
 	.CLKPolarity = SPI_POLARITY_HIGH,
-	.CLKPhase = SPI_PHASE_2EDGE,
+	.CLKPhase = SPI_PHASE_1EDGE,
 	.NSS = SPI_NSS_HARD_OUTPUT,
-	.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32, // Need to verify this is an ok prescaler
+	.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4, // Need to verify this is an ok prescaler
 	.FirstBit = SPI_FIRSTBIT_MSB,
 	.TIMode = SPI_TIMODE_DISABLE,
 	.CRCCalculation = SPI_CRCCALCULATION_DISABLE,
@@ -33,7 +33,7 @@ static const SPI_InitTypeDef HVCSpiInit = {
 };
 
 
-/** @brief SPI pins for the IMU. */
+/** @brief SPI pins for the ADC. */
 static const cmr_spiPinConfig_t HVCSpiPins = {
     .mosi = { .port = GPIOA, .pin = GPIO_PIN_7 },
     .miso = { .port = GPIOA, .pin = GPIO_PIN_6 },
@@ -48,7 +48,7 @@ static const uint8_t CURRENT_TX_BYTE = 0x00;
 static const uint8_t CURRENT_RX_LEN  = 0x03;
 
 // Current average sample count = rate(Hz) * time(s)
-static const int16_t numSamplesInstant = 20;//100 * 2;
+static const int16_t numSamplesInstant = 20;//10 * 2;
 static const int16_t numSamplesAverage = 3000;//100 * 30;
 #define NUM_SAMPLES_AVERAGE 3000
 
@@ -88,10 +88,6 @@ static void HVCSpiUpdate(void *pvParameters) {
     }
 }
 
-int cmr_spiTXRX(
-    cmr_spi_t *spi, const void *txData, void *rxData, size_t len
-);
-
 /**
  * @brief Initializes the HVC SPI interface.
  */
@@ -114,16 +110,21 @@ void spiInit(void) {
 
 // Accessor/Transfer Functions
 
-// TO-DO: NEED TO CREATE transfer math
+// Voltage divider into the input of V1P is 680ohm/(680ohm + 820kohm)
+// Inverse of this value is 1206.88 (round to 1207)
+// We also need to reverse the polarity of this measurement
 int32_t getHVmillivolts() {
-    return HighVoltage;
+    return (int32_t)(HighVoltage * -1207);
 }
 
+// V=IR 
+// Measure current across shunt resistor (166.6 uohm)
+// 1/166.6u = 6002
 int32_t getCurrentInstant() {
-     return currentInstant;
+     return (int32_t)(currentInstant * 6002);
 }
  
 int32_t getCurrentAverage() {
-    return currentAvg;
+    return (int32_t)(currentAvg * 6002);
 }
 

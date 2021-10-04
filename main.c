@@ -37,7 +37,7 @@ static cmr_task_t statusLED_task;
 static void statusLED(void *pvParameters) {
     (void) pvParameters;
 
-    cmr_gpioWrite(GPIO_LED_STATUS, 0);
+    cmr_gpioWrite(GPIO_MCU_LED, 0);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
