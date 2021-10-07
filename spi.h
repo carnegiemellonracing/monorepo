@@ -9,6 +9,7 @@
 #define SPI_H_
 
 #include <CMR/spi.h>
+#include <CMR/tasks.h>
 
 int32_t getHVmillivolts();
 int32_t getCurrentInstant();

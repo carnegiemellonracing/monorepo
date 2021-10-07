@@ -158,6 +158,7 @@ void canInit(void) {
     // CAN2 initialization.
     cmr_canInit(
         &can, CAN2,
+		CMR_CAN_BITRATE_500K,
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
         NULL,
         GPIOB, GPIO_PIN_5,     // CAN2 RX port/pin.
