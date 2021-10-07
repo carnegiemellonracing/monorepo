@@ -25,7 +25,6 @@
  * @note Indexed by `canRX_t`.
  */
 cmr_canRXMeta_t canRXMeta[] = {
-    // XXX Edit this to include the appropriate periodic messages.
     [CANRX_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
         .timeoutError_ms = 50,
@@ -135,14 +134,12 @@ static cmr_task_t canTX100Hz_task;
 static void canTX100Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-    // XXX Example message retrieval.
-    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-    volatile cmr_canHeartbeat_t *heartbeatVSM =
-        (void *) heartbeatVSMMeta->payload;
+//    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
+//    volatile cmr_canHeartbeat_t *heartbeatVSM =
+//        (void *) heartbeatVSMMeta->payload;
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // XXX Update these fields correctly.
         sendHeartbeat(lastWakeTime);
         sendHVCPackVoltage();
         sendBMSPackCurrent();
@@ -166,7 +163,6 @@ void canInit(void) {
     );
 
     // CAN2 filters.
-    // XXX Change these to whitelist the appropriate IDs.
     const cmr_canFilter_t canFilters[] = {
         {
             .isMask = false,
@@ -548,4 +544,6 @@ static void sendBMSLowVoltage(void) {
         .vAIR_mV = (getAIRmillivolts()*15)/2000, // Convert mV to 2/15th V
         .vbatt_mV= (getLVmillivolts()*15/2000), // Convert mV to 2/15th V
     };
+    (void) BMSLowVoltage;
+    // TODO: Actually send the message
 }

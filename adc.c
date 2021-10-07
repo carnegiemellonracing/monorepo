@@ -16,7 +16,6 @@
  * @see `CMR/adc.h` for various initialization values.
  */
 cmr_adcChannel_t adcChannels[ADC_LEN] = {
-	// XXX edit me to match your pin configuration
     [ADC_V24V] = {
         .channel = ADC_CHANNEL_13,
         .port = GPIOC,
@@ -55,7 +54,6 @@ static cmr_adc_t adc;
  */
 void adcInit(void) {
     // ADC initialization and channel configuration.
-    // XXX edit me to match your pin configuration
     cmr_adcInit(
         &adc, ADC1,
         adcChannels, sizeof(adcChannels) / sizeof(adcChannels[0])

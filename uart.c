@@ -259,7 +259,7 @@ static uart_result_t uart_getChar(volatile uart_t *uart, uint8_t *c) {
   
   cmr_uartMsg_t rx;
   cmr_uartMsgInit(&rx);
-  cmr_uartRX(&uart->port, &rx, c, sizeof(c), CMR_UART_RXOPTS_IDLEABORT);
+  cmr_uartRX(&(uart->port), &rx, c, sizeof(c), CMR_UART_RXOPTS_IDLEABORT);
   size_t len = cmr_uartMsgWait(&rx);
   *c = *c & 0x000000FF;
   if (len != 1)
@@ -282,7 +282,7 @@ static uart_result_t uart_sendMessage(volatile uart_t *uart, Byte message[], uin
   
   cmr_uartMsg_t tx;
   cmr_uartMsgInit(&tx);
-  cmr_uartTX(&uart->port, &tx, message, messageLength);
+  cmr_uartTX(&(uart->port), &tx, message, messageLength);
   size_t len = cmr_uartMsgWait(&tx);
   if (len != messageLength)
   {
