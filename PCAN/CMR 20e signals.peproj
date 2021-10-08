@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PCANExplorerProject Version="5.0" Name="CMR 20e signals">
+    <Connections AutoReset="0" IgnoreRTRLength="0" ProcessRTR="1">
+        <Connection Bus="1" Enabled="1" Protocol="0" CalcBusLoad="1" SymbolsFileName="CMR 20e.sym" BitRate="28" Connection="VEH_CAN@pcan_usb" Name="VEH_CAN"/>
+        <Connection Bus="2" Enabled="0" Protocol="0" CalcBusLoad="1" SymbolsFileName="CMR 20e.sym" BitRate="28" Connection="TRAC_CAN@pcan_usb" Name="TRAC_CAN"/>
+        <Connection Bus="3" Enabled="0" Protocol="0" ErrorFrames="1" SymbolsFileName="CMR 20e.sym" BitRate="28" Connection="DAQ_CAN@pcan_usb" Name="DAQ_CAN"/>
+    </Connections>
+    <MessageFilters/>
+    <Files>
+        <File RelativePath="CMR 20e.sym"/>
+    </Files>
+</PCANExplorerProject>
