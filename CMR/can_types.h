@@ -816,10 +816,10 @@ typedef struct {
 // Controls algo debugging struct
 
 typedef struct {
-    int16_t controls_target_slip;
+    int16_t controls_elapsed_time;
     int16_t controls_sbg_speed_mps;
-    int16_t target_velocity;
-    int16_t target_accel;
+    int16_t controls_target_velocity;
+    int16_t controls_target_accel;
 } cmr_can_controls_debug_global_t;
 
 typedef struct {
