@@ -1128,7 +1128,7 @@ SG_ AMK_RR_TorqueLimitNegativ : 48|16@1- (0.1,0) [-3276.8|3276.7] "% Mn" Vector_
 
 
 BO_ 2016 controls_debug_global: 8 Vector__XXX
-SG_ controls_target_slip : 0|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
+SG_ controls_elapsed_time : 0|16@1- (1,0) [-32768|32767] "" Vector__XXX
 SG_ controls_sbg_speed_mps : 16|16@1- (1,0) [-32768|32767] "m.s-1" Vector__XXX
 SG_ controls_target_velocity : 32|16@1- (1,0) [-32768|32767] "m.s-1" Vector__XXX
 SG_ controls_target_accel : 48|16@1- (0.1,0) [-3276.8|3276.7] "m.s-2" Vector__XXX
@@ -2015,7 +2015,7 @@ BA_ "GenSigStartValue" SG_ 393 AMK_RR_Control_Reserved2 0;
 BA_ "GenSigStartValue" SG_ 393 AMK_RR_TargetVelocity 0;
 BA_ "GenSigStartValue" SG_ 393 AMK_RR_TorqueLimitPositiv 0;
 BA_ "GenSigStartValue" SG_ 393 AMK_RR_TorqueLimitNegativ 0;
-BA_ "GenSigStartValue" SG_ 2016 controls_target_slip 0;
+BA_ "GenSigStartValue" SG_ 2016 controls_elapsed_time 0;
 BA_ "GenSigStartValue" SG_ 2016 controls_sbg_speed_mps 0;
 BA_ "GenSigStartValue" SG_ 2016 controls_target_velocity 0;
 BA_ "GenSigStartValue" SG_ 2016 controls_target_accel 0;

@@ -1416,7 +1416,7 @@ Var=AMK_RR_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 [controls_debug_global]
 ID=7E0h
 CycleTime=100
-Var=controls_target_slip signed 0,16 /f:0.01 /p:2
+Var=controls_elapsed_time signed 0,16 /p:2
 Var=controls_sbg_speed_mps signed 16,16 /u:m.s-1 /p:2
 Var=controls_target_velocity signed 32,16 /u:m.s-1 /p:2
 Var=controls_target_accel signed 48,16 /u:m.s-2 /f:0.1 /p:2
