@@ -156,6 +156,23 @@ typedef enum {
     CMR_CAN_GEAR_LEN
 } cmr_canGear_t;
 
+/** @brief Safety Circuit status states. */
+typedef enum {
+    CMR_CAN_SS_STATE_CLEAR = 0,   /**< @brief Not tripped state. */
+    CMR_CAN_SS_STATE_MODULE,      /**< @brief Module tripped state. */
+    CMR_CAN_SS_STATE_COCKPIT,     /**< @brief Cockpit tripped state. */
+    CMR_CAN_SS_STATE_FRHUB,       /**< @brief FRHub tripped state. */
+    CMR_CAN_SS_STATE_INERTIA,     /**< @brief Inertia tripped state. */
+    CMR_CAN_SS_STATE_FLHUB,       /**< @brief FLHub tripped state. */
+    CMR_CAN_SS_STATE_BOTS,        /**< @brief Bots tripped state. */
+    CMR_CAN_SS_STATE_LEN          /**< @brief Number of VSM states. */
+} cmr_canSSState_t;
+
+/** @brief Safety circuit state. */
+typedef struct {
+    uint8_t state;  /**< @brief SS state. See cmr_canSSState_t. */
+} cmr_canSSStatus_t;
+
 // ------------------------------------------------------------------------------------------------
 // Vehicle Safety Module
 
