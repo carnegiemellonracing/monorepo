@@ -195,10 +195,10 @@ static void tftDL_showGear() {
     memcpy((void *) gearState_str->buf, (void *) gearChar, GEARDISPLAYLEN);
 
     static struct {
-            char buf[STATEDISPLAYLEN];
-        } *const reqState_str = (void *) (tftDL_RTDData + ESE_REQ_STATE_STR);
+        char buf[STATEDISPLAYLEN];
+    } *const reqState_str = (void *) (tftDL_RTDData + ESE_REQ_STATE_STR);
 
-        memcpy((void *) reqState_str->buf, (void *) stateReqChar, STATEDISPLAYLEN);
+    memcpy((void *) reqState_str->buf, (void *) stateReqChar, STATEDISPLAYLEN);
 }
 
 /**

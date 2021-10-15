@@ -17,8 +17,8 @@ static volatile struct {
     cmr_canGear_t gearReq;      /**< @brief Requested gear. */
 } state = {
     .vsmReq = CMR_CAN_GLV_ON,
-    .gear = CMR_CAN_GEAR_FAST,
-    .gearReq = CMR_CAN_GEAR_FAST
+    .gear = CMR_CAN_GEAR_SLOW,
+    .gearReq = CMR_CAN_GEAR_SLOW
 };
 
 /**
