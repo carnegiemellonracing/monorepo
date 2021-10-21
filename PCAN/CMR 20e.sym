@@ -1484,3 +1484,13 @@ DLC=8
 ID=7EFh	// This CAN id is used for communication between the energy meter and the download tool.
 DLC=8
 
+[IZZIE_Loadcell_config]
+ID=770h
+DLC=8
+Var="Programming Constant (0x7530)" unsigned 0,16 -h -m /d:30000
+Var="New Can ID" unsigned 16,16 -m /d:2019
+Var="Update Rate" unsigned 32,8 -m /u:hz /d:1
+Var="Temp Comp" unsigned 40,8 -m /d:1
+Var="Temp Sensor (int vs ext)" unsigned 48,8 -m /d:1
+Var="Bit rate" unsigned 56,8 -m /d:2
+
