@@ -1485,12 +1485,31 @@ ID=7EFh	// This CAN id is used for communication between the energy meter and th
 DLC=8
 
 [IZZIE_Loadcell_config]
-ID=770h
+ID=7f0h
+Type=Extended
 DLC=8
 Var="Programming Constant (0x7530)" unsigned 0,16 -h -m /d:30000
-Var="New Can ID" unsigned 16,16 -m /d:2019
+Var="New Can ID" unsigned 16,16 -m /d:2033
 Var="Update Rate" unsigned 32,8 -m /u:hz /d:1
 Var="Temp Comp" unsigned 40,8 -m /d:1
 Var="Temp Sensor (int vs ext)" unsigned 48,8 -m /d:1
 Var="Bit rate" unsigned 56,8 -m /d:2
+
+[IZZIE_Loadcell_calibration]
+ID=800h
+Type=Extended
+DLC=8
+Var="Programming Constant (0x4E20)" unsigned 0,16 -h -m /d:20000
+Var="Gain coefficient m_m" signed 16,16 -m /d:5772
+Var="Gain, Exponent n_m" signed 32,8 -m /d:-4
+Var="Offset, Coefficient m_c" signed 40,16 -m /d:12178
+Var="Offset, Exponent n_c" signed 56,8 -m /d:-2
+
+[IZZIE_Loadcell_data]
+ID=801h
+DLC=8
+Var="Differential Voltage" signed 0,16 -h -m /u:uV
+Var="Calibrated Output" signed 16,16 -m /u:kg /f:0.1
+Var="Internal Temp" signed 32,16 -m /u:c /f:0.1
+Var="Opt External Temp" signed 48,16 -m /u:c /f:0.1
 
