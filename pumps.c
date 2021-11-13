@@ -78,6 +78,13 @@ static void pumpControl(void *pvParameters) {
 
             switch (heartbeat.state) {
                 case CMR_CAN_RTD:
+                /*
+                    battTemp = sensor[SENSOR_CH_BOARD_THERM_1].value;
+                    if (battTemp) > 60
+                        pwmDutyCycle = 100
+                    else
+                        pwmDutyCycle = 30
+                */
                     channel_1_State = 100;
                     channel_2_State = 100;
                     channel_3_State = 100;

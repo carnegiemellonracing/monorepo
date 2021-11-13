@@ -50,8 +50,9 @@ static const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
  * @return The new value from the ADC.
  */
 static uint32_t sampleADCSensor(const cmr_sensor_t *sensor) {
-    sensorChannel_t sensorChannel = sensor - sensors;
+    sensorChannel_t sensorChannel = sensor - sensors;//Sensor index
     configASSERT(sensorChannel < SENSOR_CH_LEN);
+    // sensorsADCChannels[sensorChannel] is ADC channel
     return adcRead(sensorsADCChannels[sensorChannel]);
 }
 
