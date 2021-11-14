@@ -21,7 +21,7 @@
  * @see `stm32f4xx_hal_gpio.h` for various initialization values.
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
-    [GPIO_LED_STATUS] = {
+    [GPIO_LED_STATUS] = { //same as IND BLUE on schematic (no change)
         .port = GPIOB,
         .init = {
             .Pin = GPIO_PIN_12,
@@ -39,7 +39,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_CHANNEL_1_ENABLE] = {
+    [GPIO_CHANNEL_1_ENABLE] = { // AUXILIARY ENABLE
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_7,
@@ -48,7 +48,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_CHANNEL_2_ENABLE] = {
+    [GPIO_CHANNEL_2_ENABLE] = { // PUMP ON
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_8,
@@ -57,7 +57,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_CHANNEL_3_ENABLE] = {
+    [GPIO_CHANNEL_3_ENABLE] = { // FAN ON
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_9,
@@ -66,7 +66,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_MTR_CTRL_ENABLE] = {
+    [GPIO_MTR_CTRL_ENABLE] = { 
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_10,

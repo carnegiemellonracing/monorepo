@@ -36,7 +36,8 @@ static const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
     [SENSOR_CH_THERM_5]  = ADC_THERM_5,
     [SENSOR_CH_THERM_6]  = ADC_THERM_6,
     [SENSOR_CH_THERM_7]  = ADC_THERM_7,
-    [SENSOR_CH_THERM_8]  = ADC_THERM_8
+    [SENSOR_CH_THERM_8]  = ADC_THERM_8,
+    [SENSOR_CH_THERM_9]  = ADC_THERM_9
 };
 
 /**
@@ -259,6 +260,13 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .outOfRange_pcnt = 10
     },
     [SENSOR_CH_THERM_8] = {
+        .sample = sampleADCSensor,
+        .conv = adcConvRadTherm_dC,
+        .readingMin = 0,
+        .readingMax = CMR_ADC_MAX,
+        .outOfRange_pcnt = 10
+    }
+    [SENSOR_CH_THERM_9] = {
         .sample = sampleADCSensor,
         .conv = adcConvRadTherm_dC,
         .readingMin = 0,

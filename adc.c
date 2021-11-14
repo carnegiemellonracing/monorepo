@@ -108,6 +108,13 @@ static cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
+    [ADC_THERM_9] = { // This is new to 22e
+        .channel = ADC_CHANNEL_0,
+        .port = GPIOC,
+        .pin = GPIO_PIN_1,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
 };
 
 /** @brief Primary ADC. */

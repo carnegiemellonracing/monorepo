@@ -48,7 +48,7 @@ static void fanControl(void *pvParameters) {
     /* 96Mhz / (24 * 160) = 25kHz */
     const cmr_pwmPinConfig_t pwmPinConfig1 = {
         .port = GPIOB,
-        .pin = GPIO_PIN_5,
+        .pin = GPIO_PIN_4,
         .channel = TIM_CHANNEL_2,
         .presc = 24,
         .period_ticks = 160,
@@ -56,12 +56,13 @@ static void fanControl(void *pvParameters) {
     };
     const cmr_pwmPinConfig_t pwmPinConfig2 = {
         .port = GPIOB,
-        .pin = GPIO_PIN_7,
+        .pin = GPIO_PIN_5,
         .channel = TIM_CHANNEL_2,
         .presc = 24,
         .period_ticks = 160,
         .timer = TIM4
     };
+    /*
     const cmr_pwmPinConfig_t pwmPinConfig3 = {
         .port = GPIOB,
         .pin = GPIO_PIN_8,
@@ -70,9 +71,11 @@ static void fanControl(void *pvParameters) {
         .period_ticks = 160,
         .timer = TIM4
     };
+    */
+
     cmr_pwmInit(&channel_1_PWM, &pwmPinConfig1);
     cmr_pwmInit(&channel_2_PWM, &pwmPinConfig2);
-    cmr_pwmInit(&channel_3_PWM, &pwmPinConfig3);
+    // cmr_pwmInit(&channel_3_PWM, &pwmPinConfig3);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
@@ -81,35 +84,35 @@ static void fanControl(void *pvParameters) {
             case CMR_CAN_RTD:
                 channel_1_State = 100;
                 channel_2_State = 100;
-                channel_3_State = 100;
+                // channel_3_State = 100;
                 cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State);
                 cmr_pwmSetDutyCycle(&channel_2_PWM, channel_2_State);
-                cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
+                // cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
                 cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
                 cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
-                cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
+                // cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
                 break;
             case CMR_CAN_HV_EN:
                 channel_1_State = 50;
                 channel_2_State = 50;
-                channel_3_State = 50;
+                // channel_3_State = 50;
                 cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State);
                 cmr_pwmSetDutyCycle(&channel_2_PWM, channel_2_State);
-                cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
+                // cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
                 cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
                 cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
-                cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
+                // cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
                 break;
             default:
                 channel_1_State = 0;
                 channel_2_State = 0;
-                channel_3_State = 0;
+                // channel_3_State = 0;
                 cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State);
                 cmr_pwmSetDutyCycle(&channel_2_PWM, channel_2_State);
-                cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
+                // cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
                 cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
                 cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
-                cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
+                // cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
                 break;
         }
 
