@@ -61,14 +61,6 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_BUTTON_0] = {
-        .port = GPIOA,
-        .init = {
-            .Pin = GPIO_PIN_8,
-            .Mode = GPIO_MODE_IT_RISING_FALLING,
-            .Pull = GPIO_NOPULL
-        }
-    },
     [GPIO_BUTTON_1] = {
         .port = GPIOC,
         .init = {
@@ -78,9 +70,9 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         }
     },
     [GPIO_BUTTON_2] = {
-        .port = GPIOC,
+        .port = GPIOA,
         .init = {
-            .Pin = GPIO_PIN_8,
+            .Pin = GPIO_PIN_11,
             .Mode = GPIO_MODE_IT_RISING_FALLING,
             .Pull = GPIO_NOPULL
         }
@@ -88,19 +80,59 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_BUTTON_3] = {
         .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_7,
+            .Pin = GPIO_PIN_8,
             .Mode = GPIO_MODE_IT_RISING_FALLING,
             .Pull = GPIO_NOPULL
         }
     },
     [GPIO_BUTTON_4] = {
-            .port = GPIOC,
-            .init = {
-                .Pin = GPIO_PIN_6,
-                .Mode = GPIO_MODE_IT_RISING_FALLING,
-                .Pull = GPIO_NOPULL
-            }
-        },
+        .port = GPIOA,
+        .init = {
+            .Pin = GPIO_PIN_10,
+            .Mode = GPIO_MODE_IT_RISING_FALLING,
+            .Pull = GPIO_NOPULL
+        }
+    },
+    [GPIO_BUTTON_5] = {
+        .port = GPIOA,
+        .init = {
+            .Pin = GPIO_PIN_12,
+            .Mode = GPIO_MODE_IT_RISING_FALLING,
+            .Pull = GPIO_NOPULL
+        }
+    },
+    [GPIO_BUTTON_6] = {
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_7,
+            .Mode = GPIO_MODE_IT_RISING_FALLING,
+            .Pull = GPIO_NOPULL
+        }
+    },
+    [GPIO_BUTTON_7] = {
+        .port = GPIOA,
+        .init = {
+            .Pin = GPIO_PIN_9,
+            .Mode = GPIO_MODE_IT_RISING_FALLING,
+            .Pull = GPIO_NOPULL
+        }
+    },
+    [GPIO_BUTTON_8] = {
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_6,
+            .Mode = GPIO_MODE_IT_RISING_FALLING,
+            .Pull = GPIO_NOPULL
+        }
+    },
+    [GPIO_BUTTON_9] = {
+        .port = GPIOA,
+        .init = {
+            .Pin = GPIO_PIN_8,
+            .Mode = GPIO_MODE_IT_RISING_FALLING,
+            .Pull = GPIO_NOPULL
+        }
+    },
     [GPIO_PD_N] = {
         .port = GPIOC,
         .init = {
@@ -149,7 +181,8 @@ static void buttonsInput_task(void *pvParameters) {
     TickType_t lastButtonPress = xTaskGetTickCount();
     TickType_t currentTime;
     while (1) {
-        volatile int value = cmr_gpioRead(GPIO_BUTTON_0);
+        // TODO: fix button mappings
+        volatile int value = cmr_gpioRead(GPIO_BUTTON_9);
         actionButtonPressed = value;
 
         /* if vsm has changed state unexpectedly we
@@ -236,11 +269,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t gpioPin) {
 
     /** @brief Button states. */
     static buttonState_t states[] = {
-        { .pin = GPIO_BUTTON_0 },
         { .pin = GPIO_BUTTON_1 },
         { .pin = GPIO_BUTTON_2 },
         { .pin = GPIO_BUTTON_3 },
-        { .pin = GPIO_BUTTON_4 }
+        { .pin = GPIO_BUTTON_4 },
+        { .pin = GPIO_BUTTON_5 },
+        { .pin = GPIO_BUTTON_6 },
+        { .pin = GPIO_BUTTON_7 },
+        { .pin = GPIO_BUTTON_8 },
+        { .pin = GPIO_BUTTON_9 }
     };
 
     (void) gpioPin;
