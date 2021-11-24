@@ -87,8 +87,25 @@ static void pumpControl(void *pvParameters) {
                     else
                         pwmDutyCycle = 30
                 */
-                    channel_1_State = 100;
-                    channel_2_State = 100;
+                    
+                    int accum_temp = sensors[TODO].sample; //TODO: how to get value
+                    
+                    if (accum_temp >= 55) // AC should be below 60C
+                        channel_1_State = 100; // channel_1 is for AC                        
+                    else
+                        channel_1_State = 30; //TODO: what's a good low speed?
+                    
+                    int inverter_temp = sensors[].sample; //TODO
+
+                    if (inverter_temp >= 45)
+                        channel_2_State = 100; // channel_2 is for motor inverter?
+                    else
+                        channel_2_State = 30; // TODO: what's a good low speed?
+
+
+                    //channel_1_State = 100;
+                    //channel_2_State = 100;
+                    
                     // channel_3_State = 100;
                     cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State);
                     cmr_pwmSetDutyCycle(&channel_2_PWM, channel_2_State);
