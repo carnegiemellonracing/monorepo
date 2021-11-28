@@ -376,6 +376,16 @@ typedef struct {
     uint8_t maxTempCellIndex;   /**< @brief Index of hottest cell. */
 } cmr_canHVCPackMinMaxCellTemps_t;
 
+/** @brief High Voltage Controller pack overall min and max cell voltages. */
+typedef struct {
+    uint16_t minCellVoltage_mV; /**< @brief Min BMB cell voltage (mV). */
+    uint16_t maxCellVoltage_mV; /**< @brief Max BMB cell voltage (mV). */
+    uint8_t minCellVoltBMB;     /**< @brief */ 
+    uint8_t minVoltIndex;       /**< @brief Min BMB cell voltage index. */
+    uint8_t maxCellVoltBMB;     /**< @brief */ 
+    uint8_t maxVoltIndex;       /**< @brief Max BMB cell voltage index. */
+} cmr_canHVCPackMinMaxCellVolages_t;
+
 /** @brief High Voltage Controller pack currents. */
 typedef struct {
     int32_t instantCurrent_mA;  /**< @brief Instantaneous current measurement. */

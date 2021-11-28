@@ -1188,6 +1188,30 @@ BO_ 2023 EMD_Reserved1: 8 Vector__XXX
 BO_ 2031 EMD_Reserved2: 8 Vector__XXX
 
 
+BO_ 2147485697 IZZIE_Loadcell_config: 8 Vector__XXX
+SG_ Programming_Constant_config : 7|16@0+ (1,0) [0|65535] "" Vector__XXX
+SG_ New_Can_ID : 23|16@0+ (1,0) [0|65535] "" Vector__XXX
+SG_ Update_Rate : 39|8@0+ (1,0) [0|255] "hz" Vector__XXX
+SG_ Temp_Comp : 47|8@0+ (1,0) [0|255] "" Vector__XXX
+SG_ Temp_Sensor : 55|8@0+ (1,0) [0|255] "" Vector__XXX
+SG_ Bit_rate : 63|8@0+ (1,0) [0|255] "" Vector__XXX
+
+
+BO_ 2147485696 IZZIE_Loadcell_calibration: 8 Vector__XXX
+SG_ Programming_Constant_calibration : 7|16@0+ (1,0) [0|65535] "" Vector__XXX
+SG_ Gain_coefficient_m_m : 23|16@0- (1,0) [-32768|32767] "" Vector__XXX
+SG_ Gain_Exponent_n_m : 39|8@0- (1,0) [-128|127] "" Vector__XXX
+SG_ Offset_Coefficient_m_c : 47|16@0- (1,0) [-32768|32767] "" Vector__XXX
+SG_ Offset_Exponent_n_c : 63|8@0- (1,0) [-128|127] "" Vector__XXX
+
+
+BO_ 2032 IZZIE_Loadcell_data: 8 Vector__XXX
+SG_ Differential_Voltage : 7|16@0- (1,0) [-32768|32767] "uV" Vector__XXX
+SG_ Calibrated_Output : 23|16@0- (0.1,0) [-3276.8|3276.7] "N" Vector__XXX
+SG_ Internal_Temp : 39|16@0- (0.1,0) [-3276.8|3276.7] "c" Vector__XXX
+SG_ Opt_External_Temp : 55|16@0- (0.1,0) [-3276.8|3276.7] "c" Vector__XXX
+
+
 CM_ BO_ 1296 "Timeout matrix";
 CM_ BO_ 643 "Set ID based on wiring";
 CM_ BO_ 645 "Set ID based on wiring";
@@ -2046,6 +2070,21 @@ BA_ "GenSigStartValue" SG_ 1024 EMD_CurrentGain 0;
 BA_ "GenSigStartValue" SG_ 1024 EMD_OverVoltage 0;
 BA_ "GenSigStartValue" SG_ 1024 EMD_OverPower 0;
 BA_ "GenSigStartValue" SG_ 1024 EMD_Logging 0;
+BA_ "GenSigStartValue" SG_ 2147485697 Programming_Constant_config 30000;
+BA_ "GenSigStartValue" SG_ 2147485697 New_Can_ID 2033;
+BA_ "GenSigStartValue" SG_ 2147485697 Update_Rate 1;
+BA_ "GenSigStartValue" SG_ 2147485697 Temp_Comp 1;
+BA_ "GenSigStartValue" SG_ 2147485697 Temp_Sensor 1;
+BA_ "GenSigStartValue" SG_ 2147485697 Bit_rate 2;
+BA_ "GenSigStartValue" SG_ 2147485696 Programming_Constant_calibration 20000;
+BA_ "GenSigStartValue" SG_ 2147485696 Gain_coefficient_m_m 5772;
+BA_ "GenSigStartValue" SG_ 2147485696 Gain_Exponent_n_m -4;
+BA_ "GenSigStartValue" SG_ 2147485696 Offset_Coefficient_m_c 12178;
+BA_ "GenSigStartValue" SG_ 2147485696 Offset_Exponent_n_c -2;
+BA_ "GenSigStartValue" SG_ 2032 Differential_Voltage 0;
+BA_ "GenSigStartValue" SG_ 2032 Calibrated_Output 0;
+BA_ "GenSigStartValue" SG_ 2032 Internal_Temp 0;
+BA_ "GenSigStartValue" SG_ 2032 Opt_External_Temp 0;
 
 
 VAL_ 256 VSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
