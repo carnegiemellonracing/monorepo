@@ -84,7 +84,7 @@ static void fanControl(void *pvParameters) {
             case CMR_CAN_RTD:
 
                 //copied from pumps.c
-                int accum_temp = sensors[TODO].sample; //TODO: how to get value
+                int accum_temp = cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_1); //TODO: how to get value
                 
                 if (accum_temp >= 55) // AC should be below 60C
                     channel_1_State = 100; // channel_1 is for AC                        

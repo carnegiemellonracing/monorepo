@@ -183,7 +183,7 @@ void canInit(void) {
                 CMR_CANID_VSM_STATUS,
                 CMR_CANID_VSM_STATUS,
                 CMR_CANID_VSM_SENSORS,
-                CMR_CANID_HVC_MINMAX_CELL_TEMPS                                                                                 ,
+                CMR_CANID_HVC_MINMAX_CELL_TEMPS
             }
         }
     };
