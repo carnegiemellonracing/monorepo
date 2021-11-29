@@ -39,7 +39,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_CHANNEL_1_ENABLE] = { // AUXILIARY ENABLE
+    [GPIO_CHANNEL_1_ENABLE] = { // AUXILIARY ENABLE //TODO Change to FAN 1, FAN 2, PUMP 1, PUMP 2
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_7,
@@ -66,6 +66,9 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
+
+    //TODO: same as above TODO - add another element
+
     [GPIO_MTR_CTRL_ENABLE] = { 
         .port = GPIOC,
         .init = {

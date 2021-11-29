@@ -107,10 +107,10 @@ static void pumpControl(void *pvParameters) {
                     //channel_2_State = 100;
                     
                     // channel_3_State = 100;
-                    cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State);
+                    cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State); // Omkar: sets registers
                     cmr_pwmSetDutyCycle(&channel_2_PWM, channel_2_State);
                     // cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
-                    cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
+                    cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1); // Omkar: Actually outputs
                     cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
                     // cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
                     break;
