@@ -10,8 +10,9 @@
 #include <task.h>           // Task interface
 #include <queue.h>          // Queue interface
 
-#include "state.h"  // state handling stuff
-#include "gpio.h"   // Interface to implement
+#include "state.h"      // state handling stuff
+#include "gpio.h"       // Interface to implement
+#include "ledStrip.h"   // LED strip interface
 
 /** @brief Maximum number of button events in the queue. */
 #define BUTTON_EVENTS_MAX 64
@@ -157,6 +158,7 @@ void regenUpButton(bool pressed) {
     if (regenStep < REGEN_STEP_NUM) {
         regenStep++;
     }
+    setNumLeds(regenStep);
 }
 /**
  * @brief Handles regen down button presses.
@@ -171,6 +173,7 @@ void regenDownButton(bool pressed) {
     if (regenStep > 0) {
         regenStep--;
     }
+    setNumLeds(regenStep);
 }
 
 /** @brief Button state. */
