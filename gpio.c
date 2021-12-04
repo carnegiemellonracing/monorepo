@@ -145,6 +145,30 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     }
 };
 
+/** @brief Button state. */
+static struct {
+    /** @brief Event queue. */
+    struct {
+        QueueHandle_t q;        /**< @brief Message queue. */
+        StaticQueue_t qBuf;     /**< @brief Queue storage. */
+        /** @brief Queue item storage. */
+        buttonEvent_t qItemBuf[BUTTON_EVENTS_MAX];
+    } events;
+
+    /** @brief Input task. */
+    struct {
+        /** @brief Stack buffer. */
+        StackType_t stackBuf[configMINIMAL_STACK_SIZE];
+        StaticTask_t taskBuf;   /**< @brief Task buffer. */
+    } taskInput;
+} buttons;
+
+/** @brief Button input task priority. */
+static const uint32_t buttonsInput_priority = 4;
+
+/** @brief Button input task period (milliseconds). */
+static const TickType_t buttonsInput_period = 10;
+
 /**
  * @brief Handles regen up button presses.
  *
@@ -175,30 +199,6 @@ void regenDownButton(bool pressed) {
     }
     setNumLeds(regenStep);
 }
-
-/** @brief Button state. */
-static struct {
-    /** @brief Event queue. */
-    struct {
-        QueueHandle_t q;        /**< @brief Message queue. */
-        StaticQueue_t qBuf;     /**< @brief Queue storage. */
-        /** @brief Queue item storage. */
-        buttonEvent_t qItemBuf[BUTTON_EVENTS_MAX];
-    } events;
-
-    /** @brief Input task. */
-    struct {
-        /** @brief Stack buffer. */
-        StackType_t stackBuf[configMINIMAL_STACK_SIZE];
-        StaticTask_t taskBuf;   /**< @brief Task buffer. */
-    } taskInput;
-} buttons;
-
-/** @brief Button input task priority. */
-static const uint32_t buttonsInput_priority = 4;
-
-/** @brief Button input task period (milliseconds). */
-static const TickType_t buttonsInput_period = 10;
 
 /**
  * @brief Handles button events.
