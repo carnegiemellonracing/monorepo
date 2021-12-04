@@ -241,13 +241,19 @@ static void canTX100Hz(void *pvParameters) {
             canTX100Hz_period_ms
         );
 
+        // Calculate integer regenPercent from regenStep
+        uint8_t regenPercent = (uint8_t) ((REGEN_MIN + REGEN_STEP * regenStep) * 100);
+
         /* Transmit action button status */
-        cmr_canDIMActionButton_t actionButton = {
-            .actionButtonPressed = actionButtonPressed
+        cmr_canDIMActions_t actions = {
+            .drsButtonPressed = drsButtonPressed,
+            .action1ButtonPressed = action1ButtonPressed,
+            .action2ButtonPressed = action2ButtonPressed,
+            .regenPercent = regenPercent,
         };
         canTX(
-            CMR_CANID_DIM_ACTION_BUTTON,
-            &actionButton, sizeof(actionButton),
+            CMR_CANID_DIM_ACTIONS,
+            &actions, sizeof(actions),
             canTX100Hz_period_ms
         );
 

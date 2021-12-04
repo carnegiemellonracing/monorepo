@@ -144,6 +144,35 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     }
 };
 
+/**
+ * @brief Handles regen up button presses.
+ *
+ * @param pressed `true` if button is currently pressed.
+ */
+void regenUpButton(bool pressed) {
+    if (!pressed) {
+        return;
+    }
+
+    if (regenStep < REGEN_STEP_NUM) {
+        regenStep++;
+    }
+}
+/**
+ * @brief Handles regen down button presses.
+ *
+ * @param pressed `true` if button is currently pressed.
+ */
+void regenDownButton(bool pressed) {
+    if (!pressed) {
+        return;
+    }
+
+    if (regenStep > 0) {
+        regenStep--;
+    }
+}
+
 /** @brief Button state. */
 static struct {
     /** @brief Event queue. */
@@ -182,8 +211,12 @@ static void buttonsInput_task(void *pvParameters) {
     TickType_t currentTime;
     while (1) {
         // TODO: fix button mappings
-        volatile int value = cmr_gpioRead(GPIO_BUTTON_9);
-        actionButtonPressed = value;
+        volatile int value = cmr_gpioRead(GPIO_BUTTON_1);
+        drsButtonPressed = value;
+        value = cmr_gpioRead(GPIO_BUTTON_2);
+        action1ButtonPressed = value;
+        value = cmr_gpioRead(GPIO_BUTTON_3);
+        action2ButtonPressed = value;
 
         /* if vsm has changed state unexpectedly we
          * need to adjust our req to still be valid */
@@ -197,21 +230,27 @@ static void buttonsInput_task(void *pvParameters) {
         buttonEvent_t event;
         while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
             switch (event.pin) {
-                case GPIO_BUTTON_1:
-                	stateGearDownButton(event.pressed);
+                case GPIO_BUTTON_4:
+                    regenUpButton(event.pressed);
                     break;
-                case GPIO_BUTTON_2:
-                    stateGearUpButton(event.pressed);
+                case GPIO_BUTTON_5:
+                    regenDownButton(event.pressed);
                     break;
-                case GPIO_BUTTON_3:
+                case GPIO_BUTTON_6:
+                    stateVSMUpButton(event.pressed);
+                    break;
+                case GPIO_BUTTON_7:
                     /* Avoid accidental double clicks on state down button
                     (the transition back into hv_en takes a while) */
                     if((currentTime - lastButtonPress) > 1000) {
                         stateVSMDownButton(event.pressed);
                     }
                     break;
-                case GPIO_BUTTON_4:
-                    stateVSMUpButton(event.pressed);
+                case GPIO_BUTTON_8:
+                    stateGearUpButton(event.pressed);
+                    break;
+                case GPIO_BUTTON_9:
+                	stateGearDownButton(event.pressed);
                     break;
                 default:
                     break;
@@ -240,6 +279,8 @@ void gpioInit(void) {
         &buttons.events.qBuf
     );
     configASSERT(buttons.events.q != NULL);
+
+    regenStep = 0;
 
     xTaskCreateStatic(
         buttonsInput_task,
