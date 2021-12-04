@@ -555,8 +555,11 @@ typedef struct {
 } cmr_canDIMTextWrite_t;
 
 typedef struct {
-    uint8_t actionButtonPressed;    /**< @brief Status of the action button (Active Low). */
-} cmr_canDIMActionButton_t;
+    uint8_t action1ButtonPressed;    /**< @brief Status of the action 1 button (Active Low). */
+    uint8_t action2ButtonPressed;    /**< @brief Status of the action 2 button (Active Low). */
+    uint8_t drsButtonPressed;        /**< @brief Status of the AE/DRS button (Active Low). */
+    uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
+} cmr_canDIMActions_t;
 
 // ------------------------------------------------------------------------------------------------
 // Front Sensor Module
