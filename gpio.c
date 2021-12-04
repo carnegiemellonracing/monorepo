@@ -39,8 +39,26 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_CHANNEL_1_ENABLE] = { // AUXILIARY ENABLE
-        .port = GPIOC,
+    [GPIO_FAN_1_ENABLE] = { // FAN 1
+        .port = GPIOB,
+        .init = {
+            .Pin = GPIO_PIN_4,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_FAN_2_ENABLE] = { // FAN 2
+        .port = GPIOB,
+        .init = {
+            .Pin = GPIO_PIN_5,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_PUMP_1_ENABLE] = { // PUMP 1
+        .port = GPIOB,
         .init = {
             .Pin = GPIO_PIN_7,
             .Mode = GPIO_MODE_OUTPUT_PP,
@@ -48,8 +66,8 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_CHANNEL_2_ENABLE] = { // PUMP ON
-        .port = GPIOC,
+    [GPIO_PUMP_2_ENABLE] = { // PUMP 2
+        .port = GPIOB,
         .init = {
             .Pin = GPIO_PIN_8,
             .Mode = GPIO_MODE_OUTPUT_PP,
@@ -57,10 +75,10 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_CHANNEL_3_ENABLE] = { // FAN ON
+    [GPIO_AUXILIARY_ENABLE] = { // AUXILIARY ENABLE
         .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_9,
+            .Pin = GPIO_PIN_7,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW

@@ -265,7 +265,7 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .readingMin = 0,
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10
-    }
+    },
     [SENSOR_CH_THERM_9] = {
         .sample = sampleADCSensor,
         .conv = adcConvRadTherm_dC,

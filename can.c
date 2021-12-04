@@ -85,9 +85,10 @@ cmr_canRXMeta_t canRXMeta[] = {
 cmr_canHeartbeat_t heartbeat;
 
 /** @brief Fan/Pump channel states. */
-uint16_t channel_1_State;
-uint16_t channel_2_State;
-uint16_t channel_3_State;
+uint16_t fan_1_State;
+uint16_t fan_2_State;
+uint16_t pump_1_State;
+uint16_t pump_2_State;
 
 /** @brief CAN 10 Hz TX priority. */
 static const uint32_t canTX10Hz_priority = 3;
@@ -250,16 +251,17 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 
     uint16_t error = CMR_CAN_ERROR_NONE;
 
-    //or the water over heating bit 
+    //or the water overheating bit 
 
     if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
         error |= CMR_CAN_ERROR_VSM_TIMEOUT;
     }
 
+    // If error exists, update heartbeat to error state (i.e. update its fields). See can_types.h for the fields.
     if (error != CMR_CAN_ERROR_NONE) {
-        heartbeat.state = CMR_CAN_ERROR;
+        heartbeat.state = CMR_CAN_ERROR; //Field 1 update
     }
-    memcpy(&heartbeat.error, &error, sizeof(error));
+    memcpy(&heartbeat.error, &error, sizeof(error)); //Field 2 update
 
     uint16_t warning = CMR_CAN_WARN_NONE;
     if (cmr_canRXMetaTimeoutWarn(heartbeatVSMMeta, lastWakeTime) < 0) {

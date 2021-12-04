@@ -12,9 +12,8 @@
 #include <CMR/gpio.h>       // GPIO interface
 
 /** @brief PWM driver state. */
-static cmr_pwm_t channel_1_PWM;
-static cmr_pwm_t channel_2_PWM;
-static cmr_pwm_t channel_3_PWM;
+static cmr_pwm_t fan_1_PWM;
+static cmr_pwm_t fan_2_PWM;
 
 /** @brief Fan control task priority. */
 static const uint32_t fanControl_priority = 4;
@@ -22,6 +21,23 @@ static const uint32_t fanControl_priority = 4;
 static const TickType_t fanControl_period_ms = 50;
 /** @brief Fan control task. */
 static cmr_task_t fanControl_task;
+
+#define INVERTER_SCALE  (3.5)
+#define INVERTER_OFFSET (-57.5)
+#define ACCUM_SCALE     (2.3) //Doesn't get to 100 fan speed. Tune this value during testing. TODO
+#define ACCUM_OFFSET    (-28.3) // And this one. TODO
+
+
+//TODO: 
+/*
+    add error checking 
+    fix h files
+    fix gpio pins
+    
+    tune values of linear function?
+    check implmentation of thermistor read values to celsius? do we hve to worry about that?
+    can ?? hasn't been decided on
+*/
 
 /**
  * @brief Task for controlling the fans.
@@ -34,9 +50,9 @@ static void fanControl(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     /* Enable the half bridges so that output isn't floating */
-    cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
-    cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
-    cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
+    cmr_gpioWrite(GPIO_FAN_1_ENABLE, 1);
+    cmr_gpioWrite(GPIO_FAN_2_ENABLE, 1);
+   
 
     /* Get reference to VSM Heartbeat and accumulator min/max cell temperatures */
     volatile cmr_canHeartbeat_t *vsmHeartbeat = canGetPayload(CANRX_HEARTBEAT_VSM);
@@ -62,78 +78,52 @@ static void fanControl(void *pvParameters) {
         .period_ticks = 160,
         .timer = TIM3
     };
-    /*
-    const cmr_pwmPinConfig_t pwmPinConfig3 = {
-        .port = GPIOB,
-        .pin = GPIO_PIN_8,
-        .channel = TIM_CHANNEL_3,
-        .presc = 24,
-        .period_ticks = 160,
-        .timer = TIM4
-    };
-    */
 
-    cmr_pwmInit(&channel_1_PWM, &pwmPinConfig1);
-    cmr_pwmInit(&channel_2_PWM, &pwmPinConfig2);
-    // cmr_pwmInit(&channel_3_PWM, &pwmPinConfig3);
+    cmr_pwmInit(&fan_1_PWM, &pwmPinConfig1);
+    cmr_pwmInit(&fan_2_PWM, &pwmPinConfig2);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
 
         switch (heartbeat.state) {
+            case CMR_CAN_HV_EN: // hv pump enable same as rtd pump enable
             case CMR_CAN_RTD:
+                int accum_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_1) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_2)) / 2; //TODO: how to get value
+                //55C assumed high temperature, 25C assumed low temperature
+                //30 min speed, 100 max speed
+                //a(accum_temp) + b = fan_speed
+                fan_1_State = (accum_temp * ACCUM_SCALE) + ACCUM_OFFSET;
+               
+                int inverter_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_3) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_4)) / 2;
+                // 45C assumed high temperature (50C inverter starts to derate), 25C assumed low temperature
+                // 30 min speed, 100 max speed 
+                // a(inverter_temp) + b = fan speed 
+                fan_2_State = (inverter_temp*INVERTER_SCALE) + INVERTER_OFFSET;
 
-                //copied from pumps.c
-                int accum_temp = cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_1); //TODO: how to get value
-                
-                //create a linear function
-                if (accum_temp >= 55) // AC should be below 60C
-                    channel_1_State = 100; // channel_1 is for AC                        
-                else
-                    channel_1_State = 30; //TODO: what's a good low speed?
-                
-                int inverter_temp = sensors[].sample; //TODO
-
-                if (inverter_temp >= 45)
-                    channel_2_State = 100; // channel_2 is for motor inverter?
-                else
-                    channel_2_State = 30; // TODO: what's a good low speed?
-
-                //channel_1_State = 100;
-                //channel_2_State = 100;
-
-                // channel_3_State = 100;
-                cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State);
-                cmr_pwmSetDutyCycle(&channel_2_PWM, channel_2_State);
-                // cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
-                cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
-                cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
-                // cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
+                cmr_pwmSetDutyCycle(&fan_1_PWM, fan_1_State);
+                cmr_pwmSetDutyCycle(&fan_2_PWM, fan_2_State);
+                cmr_gpioWrite(GPIO_FAN_1_ENABLE, 1);
+                cmr_gpioWrite(GPIO_FAN_2_ENABLE, 1);
                 break;
-            case CMR_CAN_HV_EN:
-                //we need to change this also 
 
+            // case CMR_CAN_HV_EN:
+            //     //we need to change this also 
 
-                channel_1_State = 50;
-                channel_2_State = 50;
-                // channel_3_State = 50;
-                cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State);
-                cmr_pwmSetDutyCycle(&channel_2_PWM, channel_2_State);
-                // cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
-                cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
-                cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
-                // cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
-                break;
+            //     fan_1_State = 50;
+            //     fan_2_State = 50;
+            //     cmr_pwmSetDutyCycle(&fan_1_PWM, fan_1_State);
+            //     cmr_pwmSetDutyCycle(&fan_2_PWM, fan_2_State);
+            //     cmr_gpioWrite(GPIO_FAN_1_ENABLE, 1);
+            //     cmr_gpioWrite(GPIO_FAN_2_ENABLE, 1);
+            //     break;
+
             default:
-                channel_1_State = 0;
-                channel_2_State = 0;
-                // channel_3_State = 0;
-                cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State);
-                cmr_pwmSetDutyCycle(&channel_2_PWM, channel_2_State);
-                // cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
-                cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
-                cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
-                // cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
+                fan_1_State = 0;
+                fan_2_State = 0;
+                cmr_pwmSetDutyCycle(&fan_1_PWM, fan_1_State);
+                cmr_pwmSetDutyCycle(&fan_2_PWM, fan_2_State);
+                cmr_gpioWrite(GPIO_FAN_1_ENABLE, 1);
+                cmr_gpioWrite(GPIO_FAN_2_ENABLE, 1);
                 break;
         }
 

@@ -12,9 +12,8 @@
 #include <CMR/gpio.h>       // GPIO interface
 
 /** @brief PWM driver state. */
-static cmr_pwm_t channel_1_PWM;
-static cmr_pwm_t channel_2_PWM;
-static cmr_pwm_t channel_3_PWM;
+static cmr_pwm_t pump_1_PWM;
+static cmr_pwm_t pump_2_PWM;
 
 /** @brief Pump control task priority. */
 static const uint32_t pumpControl_priority = 4;
@@ -22,6 +21,11 @@ static const uint32_t pumpControl_priority = 4;
 static const TickType_t pumpControl_period_ms = 50;
 /** @brief Pump control task. */
 static cmr_task_t pumpControl_task;
+
+#define INVERTER_SCALE  (3.5)
+#define INVERTER_OFFSET (-57.5)
+#define ACCUM_SCALE     (2.3) //Doesn't get to 100 fan speed. Tune this value during testing. TODO
+#define ACCUM_OFFSET    (-28.3) // And this one. TODO
 
 /**
  * @brief Task for controlling the pumps.
@@ -34,9 +38,8 @@ static void pumpControl(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     /* Enable the half bridges so that output isn't floating */
-        cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
-        cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
-        cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
+        cmr_gpioWrite(GPIO_PUMP_1_ENABLE, 1);
+        cmr_gpioWrite(GPIO_PUMP_2_ENABLE, 1);
 
         /* Get reference to VSM Heartbeat */
         volatile cmr_canHeartbeat_t *vsmHeartbeat = canGetPayload(CANRX_HEARTBEAT_VSM);
@@ -71,70 +74,50 @@ static void pumpControl(void *pvParameters) {
             .period_ticks = 40000,
             .timer = TIM4
         };
-        cmr_pwmInit(&channel_1_PWM, &pwmPinConfig1);
-        cmr_pwmInit(&channel_2_PWM, &pwmPinConfig2);
+        cmr_pwmInit(&pump_1_PWM, &pwmPinConfig1);
+        cmr_pwmInit(&pump_2_PWM, &pwmPinConfig2);
         // cmr_pwmInit(&channel_3_PWM, &pwmPinConfig3);
 
         TickType_t lastWakeTime = xTaskGetTickCount();
         while (1) {
 
             switch (heartbeat.state) {
+                case CMR_CAN_HV_EN: // hv pump enable same as rtd pump enable
                 case CMR_CAN_RTD:
-                /*
-                    battTemp = sensor[SENSOR_CH_BOARD_THERM_1].value;
-                    if (battTemp) > 60
-                        pwmDutyCycle = 100
-                    else
-                        pwmDutyCycle = 30
-                */
-                    
-                    int accum_temp = sensors[TODO].sample; //TODO: how to get value
-                    
-                    if (accum_temp >= 55) // AC should be below 60C
-                        channel_1_State = 100; // channel_1 is for AC                        
-                    else
-                        channel_1_State = 30; //TODO: what's a good low speed?
-                    
-                    int inverter_temp = sensors[].sample; //TODO
+                   
+                    int accum_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_5) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_6)) / 2; //TODO: how to get value
+                    //55C assumed high temperature, 25C assumed low temperature
+                    //30 min speed, 100 max speed
+                    //a(accum_temp) + b = fan_speed
+                    pump_1_State = (accum_temp * ACCUM_SCALE) + ACCUM_OFFSET;
 
-                    if (inverter_temp >= 45)
-                        channel_2_State = 100; // channel_2 is for motor inverter?
-                    else
-                        channel_2_State = 30; // TODO: what's a good low speed?
+                    int inverter_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_7) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_8)) / 2;
+                    // 45C assumed high temperature (50C inverter starts to derate), 25C assumed low temperature
+                    // 30 min speed, 100 max speed 
+                    // a(inverter_temp) + b = fan speed 
+                    pump_2_State = (inverter_temp*INVERTER_SCALE) + INVERTER_OFFSET;
 
-
-                    //channel_1_State = 100;
-                    //channel_2_State = 100;
+                    cmr_pwmSetDutyCycle(&pump_1_PWM, pump_1_State);
+                    cmr_pwmSetDutyCycle(&pump_2_PWM, pump_2_State);
                     
-                    // channel_3_State = 100;
-                    cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State);
-                    cmr_pwmSetDutyCycle(&channel_2_PWM, channel_2_State);
-                    // cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
-                    cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
-                    cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
-                    // cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
+                    cmr_gpioWrite(GPIO_PUMP_1_ENABLE, 1);
+                    cmr_gpioWrite(GPIO_PUMP_2_ENABLE, 1);
                     break;
-                case CMR_CAN_HV_EN:
-                    channel_1_State = 100;
-                    channel_2_State = 100;
-                    // channel_3_State = 100;
-                    cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State);
-                    cmr_pwmSetDutyCycle(&channel_2_PWM, channel_2_State);
-                    // cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
-                    cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
-                    cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
-                    // cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
-                    break;
+                // case CMR_CAN_HV_EN:
+                //     pump_1_State = 100;
+                //     pump_2_State = 100;
+                //     cmr_pwmSetDutyCycle(&pump_1_PWM, pump_1_State);
+                //     cmr_pwmSetDutyCycle(&pump_2_PWM, pump_2_State);
+                //     cmr_gpioWrite(GPIO_PUMP_1_ENABLE, 1);
+                //     cmr_gpioWrite(GPIO_PUMP_2_ENABLE, 1);
+                //     break;
                 default:
-                    channel_1_State = 0;
-                    channel_2_State = 0;
-                    // channel_3_State = 0;
-                    cmr_pwmSetDutyCycle(&channel_1_PWM, channel_1_State);
-                    cmr_pwmSetDutyCycle(&channel_2_PWM, channel_2_State);
-                    // cmr_pwmSetDutyCycle(&channel_3_PWM, channel_3_State);
-                    cmr_gpioWrite(GPIO_CHANNEL_1_ENABLE, 1);
-                    cmr_gpioWrite(GPIO_CHANNEL_2_ENABLE, 1);
-                    // cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
+                    pump_1_State = 0;
+                    pump_2_State = 0;
+                    cmr_pwmSetDutyCycle(&pump_1_PWM, pump_1_State);
+                    cmr_pwmSetDutyCycle(&pump_2_PWM, pump_2_State);
+                    cmr_gpioWrite(GPIO_PUMP_1_ENABLE, 1);
+                    cmr_gpioWrite(GPIO_PUMP_2_ENABLE, 1);
                     break;
             }
 
