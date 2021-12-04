@@ -1,5 +1,5 @@
 Release/
-Debug/
+PTC_Debug/
 .settings/
 *.ld
 *.launch

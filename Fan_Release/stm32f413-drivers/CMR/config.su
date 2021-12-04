@@ -1,5 +1,0 @@
-config.c:80:6:cmr_configInit	8	static
-config.c:103:5:cmr_configSet	0	static
-config.c:121:5:cmr_configGet	0	static
-config.c:136:6:cmr_configPull	0	static
-config.c:145:6:cmr_configCommit	40	static

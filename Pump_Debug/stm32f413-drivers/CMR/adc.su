@@ -1,4 +1,0 @@
-adc.c:31:13:cmr_adcSample	32	static
-adc.c:55:13:cmr_adcConfigChannels	64	static
-adc.c:99:6:cmr_adcInit	32	static
-adc.c:157:10:cmr_adcRead	16	static

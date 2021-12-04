@@ -1,3 +1,0 @@
-interrupts.c:27:6:SysTick_Handler	8	static
-interrupts.c:40:6:NMI_Handler	0	static
-interrupts.c:47:6:DebugMon_Handler	0	static

@@ -1,3 +1,0 @@
-pwm.c:16:17:cmr_timerToAltFunc	16	static
-pwm.c:53:6:cmr_pwmInit	144	static
-pwm.c:169:6:cmr_pwmSetDutyCycle	24	static

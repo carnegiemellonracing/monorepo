@@ -1,4 +1,0 @@
-tasks.c:19:6:cmr_taskInit	40	static
-tasks.c:56:6:cmr_taskDestroy	16	static
-tasks.c:67:14:cmr_taskHandle	16	static
-tasks.c:82:6:vApplicationGetIdleTaskMemory	24	static
