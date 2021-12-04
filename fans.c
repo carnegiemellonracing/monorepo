@@ -10,6 +10,9 @@
 #include "fans.h"        // Interface to implement
 #include <CMR/pwm.h>        // PWM interface
 #include <CMR/gpio.h>       // GPIO interface
+#include <CMR/sensors.h>       // Sensors interface
+#include "sensors.h"
+
 
 /** @brief PWM driver state. */
 static cmr_pwm_t fan_1_PWM;
@@ -27,12 +30,35 @@ static cmr_task_t fanControl_task;
 #define ACCUM_SCALE     (2.3) //Doesn't get to 100 fan speed. Tune this value during testing. TODO
 #define ACCUM_OFFSET    (-28.3) // And this one. TODO
 
+extern static cmr_sensor_t sensors;
 
 //TODO: 
 /*
-    add error checking 
-    fix h files
-    fix gpio pins
+
+    // power errors(shunt resistor), water over heating errors, oil overheatin errors
+    // no oil overheating errors cuz going into uprights
+    // temperature 
+    // pump always on 35 c  
+    // pump turn on at 53 start turning on and 56 turning at 100
+    // fan turn on at 56 starting 58 turn it to max
+    change the values from looking at the loop
+    2 loops -> 1 for motor inverter pump fan radiat, 1 for accumulator
+    There are two loops
+        one for motor inverter  -> radiator, pump, fan
+        one accumulator -> radiator, pump, fan
+    2 thermistors surrounding each radiator
+    2 thermistors surrounding the inverter
+
+        // pump turn on at 53 start turning on and 56 turning at 100
+    // fan turn on at 56 starting 58 turn it to max
+
+    First, we should try to read the temperature data from the amk's for inverter and accumulator to turn on the pumps and the fans. 
+    If it doesn't work, then just use the avg the temperatures surrounding the inverter and accumulator loops. 
+    Don't send errors. Send warnings. 
+
+    1. fix the temperature readings, from amk to turn on the pumps and fans
+    2. add warning checking 
+    3. fix the 53, 56 values
     
     tune values of linear function?
     check implmentation of thermistor read values to celsius? do we hve to worry about that?

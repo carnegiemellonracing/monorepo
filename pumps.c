@@ -10,6 +10,8 @@
 #include "fans.h"        // Interface to implement
 #include <CMR/pwm.h>        // PWM interface
 #include <CMR/gpio.h>       // GPIO interface
+#include <CMR/sensors.h>       // Sensors interface
+#include "sensors.h"
 
 /** @brief PWM driver state. */
 static cmr_pwm_t pump_1_PWM;
@@ -26,6 +28,8 @@ static cmr_task_t pumpControl_task;
 #define INVERTER_OFFSET (-57.5)
 #define ACCUM_SCALE     (2.3) //Doesn't get to 100 fan speed. Tune this value during testing. TODO
 #define ACCUM_OFFSET    (-28.3) // And this one. TODO
+
+extern static cmr_sensor_t sensors;
 
 /**
  * @brief Task for controlling the pumps.

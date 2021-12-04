@@ -316,14 +316,17 @@ static void sendCoolingLoopTemps(void) {
  * @brief Send Fan or Pump status information.
  */
 static void sendDriverStatus(void) {
-    uint8_t Channel1_Duty_Cycle_pcnt = channel_1_State;
-    uint8_t Channel2_Duty_Cycle_pcnt = channel_2_State;
-    uint8_t Channel3_Duty_Cycle_pcnt = channel_3_State;
+    uint8_t Fan1_Duty_Cycle_pcnt = fan_1_State;
+    uint8_t Fan2_Duty_Cycle_pcnt = fan_2_State;
+    uint8_t Pump1_Duty_Cycle_pcnt = pump_1_State;
+    uint8_t Pump2_Duty_Cycle_pcnt = pump_2_State;
+
 
     cmr_canPTCDriverStatus_t driverStatusMsg = {
-        .channel1DutyCycle_pcnt = Channel1_Duty_Cycle_pcnt,
-        .channel2DutyCycle_pcnt = Channel2_Duty_Cycle_pcnt,
-        .channel3DutyCycle_pcnt = Channel3_Duty_Cycle_pcnt
+        .fan1DutyCycle_pcnt = Fan1_Duty_Cycle_pcnt,
+        .fan2DutyCycle_pcnt = Fan2_Duty_Cycle_pcnt,
+        .pump1DutyCycle_pcnt = Pump1_Duty_Cycle_pcnt,
+        .pump2DutyCycle_pcnt = Pump2_Duty_Cycle_pcnt
     };
 
     canTX(CMR_CANID_STATUS_PTCx, &driverStatusMsg, sizeof(driverStatusMsg), canTX10Hz_period_ms);
