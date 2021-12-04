@@ -1,0 +1,2 @@
+panic.c:16:6:cmr_panicSetup	0	static
+panic.c:32:6:cmr_panic	8	static

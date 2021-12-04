@@ -1,0 +1,9 @@
+can.c:123:13:canTX10Hz	24	static
+can.c:143:13:canTX100Hz	24	static
+can.c:157:6:canInit	72	static
+can.c:222:5:canTX	32	static
+can.c:233:7:canGetPayload	24	static
+can.c:246:13:sendHeartbeat	32	static
+can.c:275:13:sendCoolingLoopTemps	56	static
+can.c:315:13:sendDriverStatus	16	static
+can.c:332:13:sendPowerDiagnostics	32	static

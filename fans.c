@@ -49,7 +49,7 @@ static void fanControl(void *pvParameters) {
     const cmr_pwmPinConfig_t pwmPinConfig1 = {
         .port = GPIOB,
         .pin = GPIO_PIN_4,
-        .channel = TIM_CHANNEL_2,
+        .channel = TIM_CHANNEL_1,
         .presc = 24,
         .period_ticks = 160,
         .timer = TIM3
@@ -60,7 +60,7 @@ static void fanControl(void *pvParameters) {
         .channel = TIM_CHANNEL_2,
         .presc = 24,
         .period_ticks = 160,
-        .timer = TIM4
+        .timer = TIM3
     };
     /*
     const cmr_pwmPinConfig_t pwmPinConfig3 = {
@@ -86,6 +86,7 @@ static void fanControl(void *pvParameters) {
                 //copied from pumps.c
                 int accum_temp = cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_1); //TODO: how to get value
                 
+                //create a linear function
                 if (accum_temp >= 55) // AC should be below 60C
                     channel_1_State = 100; // channel_1 is for AC                        
                 else
@@ -110,6 +111,9 @@ static void fanControl(void *pvParameters) {
                 // cmr_gpioWrite(GPIO_CHANNEL_3_ENABLE, 1);
                 break;
             case CMR_CAN_HV_EN:
+                //we need to change this also 
+
+
                 channel_1_State = 50;
                 channel_2_State = 50;
                 // channel_3_State = 50;

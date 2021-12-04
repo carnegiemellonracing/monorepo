@@ -1,0 +1,7 @@
+config.c:50:14:getSectorBase	16	static
+config.c:61:15:getSectorSize	16	static
+config.c:80:6:cmr_configInit	24	static
+config.c:103:5:cmr_configSet	24	static
+config.c:121:5:cmr_configGet	24	static
+config.c:136:6:cmr_configPull	16	static
+config.c:145:6:cmr_configCommit	56	static

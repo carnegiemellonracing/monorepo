@@ -1,0 +1,9 @@
+sensors.c:98:16:adcConvLoadVoltage_mV	0	static
+sensors.c:111:16:adcConvLoadCurrent_mA	0	static
+sensors.c:125:16:adcConvSwitchTemp_dC	8	static
+sensors.c:162:16:adcConvRadTherm_dC	8	static
+sensors.c:289:13:sensorsUpdate	16	static
+sensors.c:52:17:sampleADCSensor	0	static
+sensors.c:85:16:adcConvLogicVoltage_mV	0	static
+sensors.c:148:7:thermistorCalc	48	static
+sensors.c:303:6:sensorsInit	16	static

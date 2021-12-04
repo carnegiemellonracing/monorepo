@@ -107,23 +107,10 @@ int main(void) {
         NULL
     );
 
-#ifndef CMR_PTC_ID
-#error "No PTC ID defined!"
-#elif (CMR_PTC_ID == 0) /* Pump Control Board */
-
     mcPowerInit();
     brakelightInit();
     pumpInit();
-
-#elif (CMR_PTC_ID == 1) /* Fan Control Board */
-
     fanInit();
-
-#else
-
-    #pragma warning "CMR_PTC_ID is not a valid value!"
-
-#endif
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

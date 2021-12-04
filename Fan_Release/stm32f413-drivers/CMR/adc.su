@@ -1,0 +1,3 @@
+adc.c:31:13:cmr_adcSample	32	static
+adc.c:99:6:cmr_adcInit	80	static
+adc.c:157:10:cmr_adcRead	0	static

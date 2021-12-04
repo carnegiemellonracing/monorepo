@@ -250,6 +250,8 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 
     uint16_t error = CMR_CAN_ERROR_NONE;
 
+    //or the water over heating bit 
+
     if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
         error |= CMR_CAN_ERROR_VSM_TIMEOUT;
     }

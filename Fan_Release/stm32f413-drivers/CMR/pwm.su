@@ -1,0 +1,2 @@
+pwm.c:53:6:cmr_pwmInit	112	static
+pwm.c:169:6:cmr_pwmSetDutyCycle	16	static

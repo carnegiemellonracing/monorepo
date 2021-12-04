@@ -1,0 +1,5 @@
+can.c:123:13:canTX10Hz	64	static
+can.c:143:13:canTX100Hz	32	static
+can.c:157:6:canInit	80	static
+can.c:222:5:canTX	16	static
+can.c:233:7:canGetPayload	0	static

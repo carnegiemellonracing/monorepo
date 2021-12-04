@@ -1,0 +1,5 @@
+sensors.c:83:6:cmr_sensorListInit	48	static
+sensors.c:100:6:cmr_sensorListUpdate	32	static
+sensors.c:115:6:cmr_sensorListGetFlags	16	static
+sensors.c:152:9:cmr_sensorListGetValue	0	static
+sensors.c:167:19:cmr_sensorListGetError	0	static
