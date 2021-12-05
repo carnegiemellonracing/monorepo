@@ -155,8 +155,10 @@ static void canTX10Hz(void *pvParameters) {
     while (1) {
         /* Transmit Power Diagnostics */
         cmr_canDIMPowerDiagnostics_t powerDiagnostics = {
-            .busVoltage_mV = adcRead(ADC_VSENSE) * 8 * 11 / 10, // TODO: figure out where 8, 10 come from
-            .busCurrent_mA = adcRead(ADC_ISENSE) * 8 / 20 / 10 // TODO: figure out where 8, 10 come from
+            // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
+            .busVoltage_mV = adcRead(ADC_VSENSE) * 8 * 11 / 10,
+            // value * 0.8 (mV per bit) / 20 (gain of current shunt monitor)
+            .busCurrent_mA = adcRead(ADC_ISENSE) * 8 / 20 / 10
         };
 
         canTX(
@@ -242,7 +244,7 @@ static void canTX100Hz(void *pvParameters) {
         );
 
         // Calculate integer regenPercent from regenStep
-        uint8_t regenPercent = (uint8_t) ((REGEN_MIN + REGEN_STEP * regenStep) * 100);
+        uint8_t regenPercent = (uint8_t) (REGEN_MIN + REGEN_STEP * regenStep);
 
         /* Transmit action button status */
         cmr_canDIMActions_t actions = {

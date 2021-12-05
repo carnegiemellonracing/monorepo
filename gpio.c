@@ -169,6 +169,16 @@ static const uint32_t buttonsInput_priority = 4;
 /** @brief Button input task period (milliseconds). */
 static const TickType_t buttonsInput_period = 10;
 
+/** @brief AE/DRS button value */
+bool drsButtonPressed;
+/** @brief Action 1 button value */
+bool action1ButtonPressed;
+/** @brief Action 2 button value */
+bool action2ButtonPressed;
+
+/** @brief Current regen step */
+unsigned int regenStep = 0;
+
 /**
  * @brief Handles regen up button presses.
  *
@@ -213,7 +223,6 @@ static void buttonsInput_task(void *pvParameters) {
     TickType_t lastButtonPress = xTaskGetTickCount();
     TickType_t currentTime;
     while (1) {
-        // TODO: fix button mappings
         volatile int value = cmr_gpioRead(GPIO_BUTTON_1);
         drsButtonPressed = value;
         value = cmr_gpioRead(GPIO_BUTTON_2);
@@ -282,8 +291,6 @@ void gpioInit(void) {
         &buttons.events.qBuf
     );
     configASSERT(buttons.events.q != NULL);
-
-    regenStep = 0;
 
     xTaskCreateStatic(
         buttonsInput_task,

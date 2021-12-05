@@ -12,8 +12,8 @@
 #include <CMR/gpio.h>   // GPIO interface
 
 /** @brief Macros for regen */
-#define REGEN_MAX 1.0
-#define REGEN_MIN 0.0
+#define REGEN_MAX 100
+#define REGEN_MIN 0
 #define REGEN_STEP_NUM 10
 #define REGEN_STEP ((REGEN_MAX - REGEN_MIN) / REGEN_STEP_NUM)
 
@@ -50,14 +50,13 @@ typedef struct {
 void gpioInit(void);
 
 /** @brief AE/DRS button value */
-bool drsButtonPressed;
+extern bool drsButtonPressed;
 /** @brief Action 1 button value */
-bool action1ButtonPressed;
+extern bool action1ButtonPressed;
 /** @brief Action 2 button value */
-bool action2ButtonPressed;
+extern bool action2ButtonPressed;
 
 /** @brief Current regen step */
-// TODO: Need to initialize?
-unsigned int regenStep;
+extern unsigned int regenStep;
 
 #endif /* GPIO_H */
