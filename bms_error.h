@@ -37,7 +37,6 @@ void clearErrorReg(void);
 
 // Error output signals
 void clearHardwareFault(bool assertClear);
-void setOvercurrentFault(bool assertFault);
 
 void setErrorReg(cmr_canHVCError_t errorCode);
 cmr_canHVCError_t getErrorReg(void);

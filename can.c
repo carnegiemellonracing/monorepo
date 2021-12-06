@@ -146,6 +146,7 @@ static void canTX100Hz(void *pvParameters) {
         sendHeartbeat(lastWakeTime);
         sendHVCPackVoltage();
         sendBMSPackCurrent();
+        sendBMSLowVoltage();
 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
@@ -550,5 +551,6 @@ static void sendBMSLowVoltage(void) {
         .vbatt_mV= (getLVmillivolts()*15/2000), // Convert mV to 2/15th V
     };
     (void) BMSLowVoltage;
-    // TODO: Actually send the message
+
+    canTX(CMR_CANID_HVC_LOW_VOLTAGE, &BMSLowVoltage, sizeof(BMSLowVoltage), canTX100Hz_period_ms);
 }
