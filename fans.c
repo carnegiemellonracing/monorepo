@@ -27,10 +27,15 @@ static cmr_task_t fanControl_task;
 
 #define INVERTER_SCALE  (3.5)
 #define INVERTER_OFFSET (-57.5)
-#define ACCUM_SCALE     (2.3) //Doesn't get to 100 fan speed. Tune this value during testing. TODO
-#define ACCUM_OFFSET    (-28.3) // And this one. TODO
+//#define ACCUM_SCALE     (2.3) //Doesn't get to 100 fan speed. Tune this value during testing. TODO
+#define ACCUM_OFFSET    (-1930) // And this one. TODO
 
 extern static cmr_sensor_t sensors;
+
+uint16_t accum_temp;
+uint16_t inverter_temp;
+
+
 
 //TODO: 
 /*
@@ -59,7 +64,7 @@ extern static cmr_sensor_t sensors;
     1. fix the temperature readings, from amk to turn on the pumps and fans
     2. add warning checking 
     3. fix the 53, 56 values
-    
+
     tune values of linear function?
     check implmentation of thermistor read values to celsius? do we hve to worry about that?
     can ?? hasn't been decided on
@@ -82,7 +87,7 @@ static void fanControl(void *pvParameters) {
 
     /* Get reference to VSM Heartbeat and accumulator min/max cell temperatures */
     volatile cmr_canHeartbeat_t *vsmHeartbeat = canGetPayload(CANRX_HEARTBEAT_VSM);
-    //volatile cmr_canHVCPackMinMaxCellTemps_t *minMaxTemps = canGetPayload(CANRX_HVC_MINMAX_TEMPS);
+    // volatile cmr_canHVCPackMinMaxCellTemps_t *minMaxTemps = canGetPayload(CANRX_HVC_MINMAX_TEMPS);
 
     //cmr_canHeartbeat_t *heartbeat = &heartbeat;
 
@@ -114,11 +119,19 @@ static void fanControl(void *pvParameters) {
         switch (heartbeat.state) {
             case CMR_CAN_HV_EN: // hv pump enable same as rtd pump enable
             case CMR_CAN_RTD:
-                int accum_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_1) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_2)) / 2; //TODO: how to get value
+                //int accum_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_1) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_2)) / 2;
+                // Below: revision - using CAN to get data from HVC
+                //Next line's citation: from what nsaizan wrote in this file above
+                cmr_canHVCPackMinMaxCellTemps_t *minMaxTemps = canGetPayload(CANRX_HVC_MINMAX_TEMPS);
+                // Use the temperature of the hottest cell as the AC's temperature
+                uint16_t accum_temp = minMaxTemps->maxCellTemp_dC;
+
+
                 //55C assumed high temperature, 25C assumed low temperature
+                // ^ in dC: 550 dC and 250 dC
                 //30 min speed, 100 max speed
                 //a(accum_temp) + b = fan_speed
-                fan_1_State = (accum_temp * ACCUM_SCALE) + ACCUM_OFFSET;
+                fan_1_State = (accum_temp * 7 / 2) + ACCUM_OFFSET;
                
                 int inverter_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_3) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_4)) / 2;
                 // 45C assumed high temperature (50C inverter starts to derate), 25C assumed low temperature
@@ -126,8 +139,8 @@ static void fanControl(void *pvParameters) {
                 // a(inverter_temp) + b = fan speed 
                 fan_2_State = (inverter_temp*INVERTER_SCALE) + INVERTER_OFFSET;
 
-                cmr_pwmSetDutyCycle(&fan_1_PWM, fan_1_State);
-                cmr_pwmSetDutyCycle(&fan_2_PWM, fan_2_State);
+                cmr_pwmSetDutyCycle(&fan_1_PWM, (uint32_t) fan_1_State);
+                cmr_pwmSetDutyCycle(&fan_2_PWM, (uint32_t) fan_2_State);
                 cmr_gpioWrite(GPIO_FAN_1_ENABLE, 1);
                 cmr_gpioWrite(GPIO_FAN_2_ENABLE, 1);
                 break;

@@ -26,10 +26,13 @@ static cmr_task_t pumpControl_task;
 
 #define INVERTER_SCALE  (3.5)
 #define INVERTER_OFFSET (-57.5)
-#define ACCUM_SCALE     (2.3) //Doesn't get to 100 fan speed. Tune this value during testing. TODO
+//#define ACCUM_SCALE     (2.3) //Doesn't get to 100 fan speed. Tune this value during testing. TODO
 #define ACCUM_OFFSET    (-28.3) // And this one. TODO
 
 extern static cmr_sensor_t sensors;
+
+uint16_t accum_temp;
+uint16_t inverter_temp;
 
 /**
  * @brief Task for controlling the pumps.
@@ -89,20 +92,27 @@ static void pumpControl(void *pvParameters) {
                 case CMR_CAN_HV_EN: // hv pump enable same as rtd pump enable
                 case CMR_CAN_RTD:
                    
-                    int accum_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_5) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_6)) / 2; //TODO: how to get value
+                    //int accum_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_5) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_6)) / 2; //TODO: how to get value
+                    // Below: revision - using CAN to get data from HVC
+                    //Next line's citation: from what nsaizan wrote in this file above
+                    cmr_canHVCPackMinMaxCellTemps_t *minMaxTemps = canGetPayload(CANRX_HVC_MINMAX_TEMPS);
+                    // Use the temperature of the hottest cell as the AC's temperature
+                    uint16_t accum_temp = minMaxTemps->maxCellTemp_dC;
+                    
+                    
                     //55C assumed high temperature, 25C assumed low temperature
                     //30 min speed, 100 max speed
                     //a(accum_temp) + b = fan_speed
-                    pump_1_State = (accum_temp * ACCUM_SCALE) + ACCUM_OFFSET;
+                    pump_1_State = (accum_temp * 7 /3) - (3620 / 3);
 
-                    int inverter_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_7) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_8)) / 2;
+                    uint16_t inverter_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_7) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_8)) / 2;
                     // 45C assumed high temperature (50C inverter starts to derate), 25C assumed low temperature
                     // 30 min speed, 100 max speed 
                     // a(inverter_temp) + b = fan speed 
                     pump_2_State = (inverter_temp*INVERTER_SCALE) + INVERTER_OFFSET;
 
-                    cmr_pwmSetDutyCycle(&pump_1_PWM, pump_1_State);
-                    cmr_pwmSetDutyCycle(&pump_2_PWM, pump_2_State);
+                    cmr_pwmSetDutyCycle(&pump_1_PWM, (uint32_t) pump_1_State);
+                    cmr_pwmSetDutyCycle(&pump_2_PWM, (uint32_t) pump_2_State);
                     
                     cmr_gpioWrite(GPIO_PUMP_1_ENABLE, 1);
                     cmr_gpioWrite(GPIO_PUMP_2_ENABLE, 1);
