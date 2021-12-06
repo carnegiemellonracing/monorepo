@@ -16,7 +16,7 @@ static const int16_t THERM_MAX_TEMP = 850;
 // Min valid thermistor temp, beyond which it is considered open
 static const int16_t THERM_MIN_TEMP = -10;
 
-static int16_t linearTemp(uint16_t ADC);
+static int16_t linearTemp(uint16_t ADC_lt);
 
 //Fill in data to this array
 static BMB_Data_t BMBData[NUM_BMBS];
@@ -24,7 +24,7 @@ static BMB_Data_t BMBData[NUM_BMBS];
 // Returns temperature in 1/10th degC given ADC
 // using LUT interpolation from the transfer function.
 // See drive doc "18e CMR BMS Temperature Math" for LUT
-static int16_t lutTemp(uint16_t ADC) {
+static int16_t lutTemp(uint16_t ADC_lt) {
     const uint8_t LUT_SIZE = 18;
     const uint16_t lut[18][2] = {
         {8802, 850},
@@ -49,19 +49,19 @@ static int16_t lutTemp(uint16_t ADC) {
 
     // Check if input is out of LUT bounds
     // If so, return the boundary values
-    if (ADC < lut[0][0]) {
+    if (ADC_lt < lut[0][0]) {
         return lut[0][1];
     }
-    if (ADC > lut[LUT_SIZE-1][0]) {
+    if (ADC_lt > lut[LUT_SIZE-1][0]) {
         return lut[LUT_SIZE-1][1];
     }
 
     // Modified LUT linear interpolation code from stack overflow
     uint8_t i;
     for(i = 0; i < LUT_SIZE-1; ++i){
-        if (lut[i][0] <= ADC && lut[i+1][0] >= ADC){
+        if (lut[i][0] <= ADC_lt && lut[i+1][0] >= ADC_lt){
             // Target value is between two LUT points
-            uint16_t diffADC = ADC - lut[i][0];
+            uint16_t diffADC = ADC_lt - lut[i][0];
             uint16_t diffLUT = lut[i+1][0] - lut[i][0];
 
             return lut[i][1] + ((lut[i+1][1] - lut[i][1]) * diffADC) / diffLUT;
@@ -244,8 +244,8 @@ void vBMBSampleTask(void *pvParameters) {
 // Returns temperature in 1/10th degC given ADC
 // using a linear best fit of the transfer function.
 // See drive doc "18e CMR BMS Temperature Math"
-static int16_t linearTemp(uint16_t ADC) {
-    return (int16_t)((-2*((int32_t)(uint32_t)ADC))/117 + 860);
+static int16_t linearTemp(uint16_t ADC_lt) {
+    return (int16_t)((-2*((int32_t)(uint32_t)ADC_lt))/117 + 860);
 }
 
 // Lookup functions

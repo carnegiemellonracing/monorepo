@@ -194,7 +194,7 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(PRECHARGE_RELAY, OPEN);
             setRelay(DISCHARGE_RELAY, CLOSED);
             clearHardwareFault(false);
-            setOvercurrentFault(false);
+            //setOvercurrentFault(false);
 			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_STANDBY: // S2
@@ -203,7 +203,7 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(PRECHARGE_RELAY, OPEN);
             setRelay(DISCHARGE_RELAY, OPEN);
             clearHardwareFault(false);
-            setOvercurrentFault(false);
+            //setOvercurrentFault(false);
 			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE: // S3
@@ -212,7 +212,7 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_NEG_RELAY, CLOSED);
             setRelay(PRECHARGE_RELAY, CLOSED);
             clearHardwareFault(false);
-            setOvercurrentFault(false);
+            //setOvercurrentFault(false);
 			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE: // S4
@@ -221,7 +221,7 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_NEG_RELAY, CLOSED);
             setRelay(PRECHARGE_RELAY, CLOSED);
             clearHardwareFault(false);
-            setOvercurrentFault(false);
+            //setOvercurrentFault(false);
 			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_DRIVE: // S5
@@ -230,7 +230,7 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_POS_RELAY, CLOSED);
             setRelay(AIR_NEG_RELAY, CLOSED);
             clearHardwareFault(false);
-            setOvercurrentFault(false);
+            //setOvercurrentFault(false);
 			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 1);
             break;
         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE: // S6
@@ -239,7 +239,7 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_NEG_RELAY, CLOSED);
             setRelay(PRECHARGE_RELAY, CLOSED);
             clearHardwareFault(false);
-            setOvercurrentFault(false);
+            //setOvercurrentFault(false);
 			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE: // S7
@@ -248,7 +248,7 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_NEG_RELAY, CLOSED);
             setRelay(PRECHARGE_RELAY, CLOSED);
             clearHardwareFault(false);
-            setOvercurrentFault(false);
+            //setOvercurrentFault(false);
 			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_CHARGE_TRICKLE: // S8
@@ -257,7 +257,7 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_POS_RELAY, CLOSED);
             setRelay(AIR_NEG_RELAY, CLOSED);
             clearHardwareFault(false);
-            setOvercurrentFault(false);
+            //setOvercurrentFault(false);
 			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT: // S9
@@ -266,7 +266,7 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_POS_RELAY, CLOSED);
             setRelay(AIR_NEG_RELAY, CLOSED);
             clearHardwareFault(false);
-            setOvercurrentFault(false);
+            //setOvercurrentFault(false);
 			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE: // S10
@@ -275,7 +275,7 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_POS_RELAY, CLOSED);
             setRelay(AIR_NEG_RELAY, CLOSED);
             clearHardwareFault(false);
-            setOvercurrentFault(false);
+            //setOvercurrentFault(false);
 			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_ERROR: // S0
@@ -299,7 +299,7 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(DISCHARGE_RELAY, CLOSED);
             clearErrorReg();
             clearHardwareFault(true);
-            setOvercurrentFault(false);
+            //setOvercurrentFault(false);
 			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_UNKNOWN:

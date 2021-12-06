@@ -88,7 +88,7 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
 
     // Cut relay power if we have an error
     if (errorFlags != CMR_CAN_HVC_ERROR_NONE) {
-        setOvercurrentFault(true);
+        //setOvercurrentFault(true); TODO
     }
     errorRegister = errorFlags;
     
