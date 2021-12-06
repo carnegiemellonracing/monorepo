@@ -323,8 +323,11 @@ SG_ DIM_requestState : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_requestGear : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1301 DIM_Action_Button: 1 Vector__XXX
-SG_ DIM_actionButtonPressed : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+BO_ 1301 DIM_Actions: 4 Vector__XXX
+SG_ DIM_action1ButtonPressed : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ DIM_action2ButtonPressed : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ DIM_drsButtonPressed : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ DIM_regenPercent : 24|8@1+ (1,0) [0|255] "Percent" Vector__XXX
 
 
 BO_ 262 PTCf_Heartbeat: 5 Vector__XXX
@@ -1553,7 +1556,10 @@ BA_ "GenSigStartValue" SG_ 1333 DIM_busVoltage 0;
 BA_ "GenSigStartValue" SG_ 1333 DIM_busCurrent 0;
 BA_ "GenSigStartValue" SG_ 565 DIM_requestState 0;
 BA_ "GenSigStartValue" SG_ 565 DIM_requestGear 0;
-BA_ "GenSigStartValue" SG_ 1301 DIM_actionButtonPressed 0;
+BA_ "GenSigStartValue" SG_ 1301 DIM_action1ButtonPressed 0;
+BA_ "GenSigStartValue" SG_ 1301 DIM_action2ButtonPressed 0;
+BA_ "GenSigStartValue" SG_ 1301 DIM_drsButtonPressed 0;
+BA_ "GenSigStartValue" SG_ 1301 DIM_regenPercent 0;
 BA_ "GenSigStartValue" SG_ 262 PTCf_state 0;
 BA_ "GenSigStartValue" SG_ 262 PTCf_ERR_VSMTimeout 0;
 BA_ "GenSigStartValue" SG_ 262 PTCf_ERR_waterTempOOR 0;
