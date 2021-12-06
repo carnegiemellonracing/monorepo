@@ -19,6 +19,9 @@
 #include "adc.h"      // adcVSense, adcISense
 #include "sensors.h"  // HVC Values
 
+/** @brief Struct to identify stale commands. */
+extern ReceiveMeta_t BMSCommandReceiveMeta;
+
 /**
  * @brief CAN periodic message receive metadata
  *
@@ -228,6 +231,8 @@ void *getPayload(canRX_t rxMsg) {
     configASSERT(rxMsg < CANRX_LEN);
 
     cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
+    // Set stale flag off
+    BMSCommandReceiveMeta.staleFlag = 0;
 
     return (void *)(&rxMeta->payload);
 }

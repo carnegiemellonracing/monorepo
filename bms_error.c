@@ -7,7 +7,13 @@
 
 #include "bms_error.h"
 
-//static bool checkCommandTimeout();
+// Heartbeat timeout	
+#define HEARTBEAT_TIMEOUT	50		// Periods of 10ms
+
+static bool checkCommandTimeout();
+
+// Metadata for receive messages
+ReceiveMeta_t BMSCommandReceiveMeta;
 
 // Persistent value for storing the error type. Will be useful if
 // error checking becomes its own task
@@ -25,6 +31,7 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
 ;
     }
     if(getPackMaxCellTemp() > 590) { // Temp limit of 59C
+        // TODO: #Define with 590
         // TODO E3 create structures for cell temp data and stats (min/max)
         errorFlags |= CMR_CAN_HVC_ERROR_CELL_OVERTEMP;
     }
@@ -111,15 +118,13 @@ cmr_canHVCError_t getErrorReg(){
     return errorRegister;
 }
 
-/*
-
 static bool checkCommandTimeout() {
     //This function must be run in a task with a 100Hz rate.
 
 	bool inError = false;
 
 	// Command Message Stale Check
-	if(BMSCommandReceiveMeta->staleFlag && !BMSCommandReceiveMeta.timeoutFlag) {
+	if(BMSCommandReceiveMeta.staleFlag && !BMSCommandReceiveMeta.timeoutFlag) {
 		// Only increment miss count if stale and not timed out
 		BMSCommandReceiveMeta.missCount++;
 		} else if (!BMSCommandReceiveMeta.staleFlag) {
@@ -142,5 +147,3 @@ static bool checkCommandTimeout() {
 
 	return inError;
 }
-
-*/

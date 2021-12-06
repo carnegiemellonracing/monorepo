@@ -17,11 +17,60 @@ static const int16_t THERM_MAX_TEMP = 850;
 static const int16_t THERM_MIN_TEMP = -10;
 
 static int16_t linearTemp(uint16_t ADC);
-static int16_t lutTemp(uint16_t ADC);
-
 
 //Fill in data to this array
 static BMB_Data_t BMBData[NUM_BMBS];
+
+// Returns temperature in 1/10th degC given ADC
+// using LUT interpolation from the transfer function.
+// See drive doc "18e CMR BMS Temperature Math" for LUT
+static int16_t lutTemp(uint16_t ADC) {
+    const uint8_t LUT_SIZE = 18;
+    const uint16_t lut[18][2] = {
+        {8802, 850},
+        {9930, 800},
+        {11208, 750},
+        {12657, 700},
+        {14281, 650},
+        {16112, 600},
+        {18146, 550},
+        {20408, 500},
+        {22879, 450},
+        {25575, 400},
+        {28459, 350},
+        {31533, 300},
+        {34744, 250},
+        {38019, 200},
+        {41331, 150},
+        {44621, 100},
+        {47792, 50},
+        {50833, 0},
+    };
+
+    // Check if input is out of LUT bounds
+    // If so, return the boundary values
+    if (ADC < lut[0][0]) {
+        return lut[0][1];
+    }
+    if (ADC > lut[LUT_SIZE-1][0]) {
+        return lut[LUT_SIZE-1][1];
+    }
+
+    // Modified LUT linear interpolation code from stack overflow
+    uint8_t i;
+    for(i = 0; i < LUT_SIZE-1; ++i){
+        if (lut[i][0] <= ADC && lut[i+1][0] >= ADC){
+            // Target value is between two LUT points
+            uint16_t diffADC = ADC - lut[i][0];
+            uint16_t diffLUT = lut[i+1][0] - lut[i][0];
+
+            return lut[i][1] + ((lut[i+1][1] - lut[i][1]) * diffADC) / diffLUT;
+        }
+    }
+
+    // Something went wrong, return max temp
+    return 850;
+}
 
 void vBMBSampleTask(void *pvParameters) {
 
@@ -148,7 +197,7 @@ void vBMBSampleTask(void *pvParameters) {
                 uint8_t logicalThermIndex = (BMBActivityLEDEnable) ? tChannel : tChannel;
                 
                 //This is backwards for some reason.
-                BMBData[BMBIndex].cellTemperatures[TSENSE_CHANNELS_PER_MESSAGE - logicalThermIndex- 1] = lutTemp(readAdcValue);
+                BMBData[BMBIndex].cellTemperatures[TSENSE_CHANNELS_PER_MESSAGE - logicalThermIndex- 1] = lutTemp((uint16_t)readAdcValue);
                 // TODO set error conditions for bad temps
             }
         }
@@ -198,58 +247,6 @@ void vBMBSampleTask(void *pvParameters) {
 static int16_t linearTemp(uint16_t ADC) {
     return (int16_t)((-2*((int32_t)(uint32_t)ADC))/117 + 860);
 }
-
-// Returns temperature in 1/10th degC given ADC
-// using LUT interpolation from the transfer function.
-// See drive doc "18e CMR BMS Temperature Math" for LUT
-static int16_t lutTemp(uint16_t ADC) {
-    const uint8_t LUT_SIZE = 18;
-    const uint16_t lut[18][2] = {
-        {8802, 850},
-        {9930, 800},
-        {11208, 750},
-        {12657, 700},
-        {14281, 650},
-        {16112, 600},
-        {18146, 550},
-        {20408, 500},
-        {22879, 450},
-        {25575, 400},
-        {28459, 350},
-        {31533, 300},
-        {34744, 250},
-        {38019, 200},
-        {41331, 150},
-        {44621, 100},
-        {47792, 50},
-        {50833, 0},
-    };
-
-    // Check if input is out of LUT bounds
-    // If so, return the boundary values
-    if (ADC < lut[0][0]) {
-        return lut[0][1];
-    }
-    if (ADC > lut[LUT_SIZE-1][0]) {
-        return lut[LUT_SIZE-1][1];
-    }
-
-    // Modified LUT linear interpolation code from stack overflow
-    uint8_t i;
-    for(i = 0; i < LUT_SIZE-1; ++i){
-        if (lut[i][0] <= ADC && lut[i+1][0] >= ADC){
-            // Target value is between two LUT points
-            uint16_t diffADC = ADC - lut[i][0];
-            uint16_t diffLUT = lut[i+1][0] - lut[i][0];
-
-            return lut[i][1] + ((lut[i+1][1] - lut[i][1]) * diffADC) / diffLUT;
-        }
-    }
-
-    // Something went wrong, return max temp
-    return 850;
-}
-
 
 // Lookup functions
 uint8_t getBMBMaxTempIndex (uint8_t bmb_index){
@@ -403,7 +400,7 @@ void getBMSMinMaxCellVoltage(cmr_canBMSMinMaxCellVoltage_t *BMSMinMaxCellVoltage
 		
 		// update struct if needed
 		if (minCellVoltage < BMSMinMaxCellVoltage->minCellVoltage_mV) {
-			BMSMinMaxCellVoltage->minCellVoltage_mV = Swap16(minCellVoltage);
+			BMSMinMaxCellVoltage->minCellVoltage_mV = __REVSH(minCellVoltage);
 			BMSMinMaxCellVoltage->minVoltageBMBNum = bmb_index;
 			BMSMinMaxCellVoltage->minVoltageCellNum = minCellVoltageIndex;
 		}
@@ -414,7 +411,7 @@ void getBMSMinMaxCellVoltage(cmr_canBMSMinMaxCellVoltage_t *BMSMinMaxCellVoltage
 		
 		// update struct if needed
 		if (maxCellVoltage > BMSMinMaxCellVoltage->maxCellVoltage_mV) {
-			BMSMinMaxCellVoltage->maxCellVoltage_mV = Swap16(maxCellVoltage);
+			BMSMinMaxCellVoltage->maxCellVoltage_mV = __REVSH(maxCellVoltage);
 			BMSMinMaxCellVoltage->maxVoltageBMBNum = bmb_index;
 			BMSMinMaxCellVoltage->maxVoltageCellNum = maxCellVoltageIndex;
 		}
@@ -438,7 +435,7 @@ void getBMSMinMaxCellTemperature(cmr_canBMSMinMaxCellTemperature_t *BMSMinMaxCel
 
         // update struct if needed
         if (minCellTemp < BMSMinMaxCellTemp->minCellTemp_C) {
-            BMSMinMaxCellTemp->minCellTemp_C = Swap16(minCellTemp);
+            BMSMinMaxCellTemp->minCellTemp_C = __REVSH(minCellTemp);
             BMSMinMaxCellTemp->minTempBMBNum = bmb_index;
             BMSMinMaxCellTemp->minTempCellNum = minCellTempIndex;
         }
@@ -449,7 +446,7 @@ void getBMSMinMaxCellTemperature(cmr_canBMSMinMaxCellTemperature_t *BMSMinMaxCel
 
         // update struct if needed
         if (maxCellTemp > BMSMinMaxCellTemp->maxCellTemp_C) {
-            BMSMinMaxCellTemp->maxCellTemp_C = Swap16(maxCellTemp);
+            BMSMinMaxCellTemp->maxCellTemp_C = __REVSH(maxCellTemp);
             BMSMinMaxCellTemp->maxTempBMBNum = bmb_index;
             BMSMinMaxCellTemp->maxTempCellNum = maxCellTempIndex;
         }

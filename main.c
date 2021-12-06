@@ -17,6 +17,10 @@
 #include "gpio.h"   // Board-specific GPIO interface
 #include "can.h"    // Board-specific CAN interface
 #include "adc.h"    // Board-specific ADC interface
+#include "bms_error.h"
+
+/** @brief Struct to identify stale commands. */
+extern ReceiveMeta_t BMSCommandReceiveMeta;
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -55,6 +59,13 @@ static void statusLED(void *pvParameters) {
  * @return Does not return.
  */
 int main(void) {
+
+    BMSCommandReceiveMeta.missCount = 0;
+    BMSCommandReceiveMeta.timeoutFlag = 0;
+    BMSCommandReceiveMeta.staleFlag = 1;
+    BMSCommandReceiveMeta.differentStateCount = 0;
+    BMSCommandReceiveMeta.wrongStateFlag = 0;
+
     // System initialization.
     HAL_Init();
     cmr_rccSystemClockEnable();

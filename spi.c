@@ -79,7 +79,7 @@ static void HVCSpiUpdate(void *pvParameters) {
         HighVoltage = (int32_t) ((rxVoltage[2] << 16) | (rxVoltage[1] << 8) | rxVoltage[0]);
 
         uint8_t rxCurrent[3] = {0,0,0};
-        cmr_spiTXRX(&spi, &VOLTAGE_TX_BYTE, &rxCurrent, VOLTAGE_RX_LEN);
+        cmr_spiTXRX(&spi, &CURRENT_TX_BYTE, &rxCurrent, CURRENT_RX_LEN);
         currentSingleSample = (int32_t) ((rxCurrent[2] << 16) | (rxCurrent[1] << 8) | rxCurrent[0]);
 
 		// Rolling average

@@ -16,7 +16,9 @@
 static const adcChannels_t sensorsADCCHANNELS[SENSOR_CH_LEN] = {
     [SENSOR_CH_V24V]       = ADC_V24V,     
 	[SENSOR_CH_AIR_POWER]  = ADC_AIR_POWER,
-	[SENSOR_CH_SAFETY]     = ADC_SAFETY
+	[SENSOR_CH_SAFETY]     = ADC_SAFETY,
+	[SENSOR_CH_IBATT_FILTERED] = ADC_IBATT_FILTERED
+	// TODO add Ibatt Filter
 };
 
 /** @brief forward declaration */
@@ -89,6 +91,8 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		.sample = sampleADCSensor,
 		.readingMin = 0,
 		.readingMax = 24000,
+		// TODO change to unoverted values
+		// TODO check adc bits
 		.outOfRange_pcnt = 10,
 		//.warnFlag = What errors to use?
 	},

@@ -5,6 +5,7 @@
  *      Author: vamsi
  */
 #include "state_task.h"
+#include <stdlib.h>
 
 static cmr_canHVCState_t currentState = CMR_CAN_HVC_STATE_ERROR;
 
@@ -40,6 +41,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
     switch (currentState) {
         case CMR_CAN_HVC_STATE_DISCHARGE: // S1
             if ((getHVmillivolts()) < 5000) {
+                // TODO change constant to #define
                 //T5: HV < 5V
                 nextState = CMR_CAN_HVC_STATE_STANDBY;
             } else {
@@ -340,7 +342,7 @@ void vSetStateTask(void *pvParameters) {
         //Critical block so that the contents of the heartbeat are consistent
         taskENTER_CRITICAL();
         setStateOutput();
-        // HVCHeartbeat->errorStatus = Swap16(currentError);
+        // HVCHeartbeat->errorStatus = __REVSH(currentError);
         // HVCHeartbeat->state = currentState;
         // HVCHeartbeat->contactorStatus = getRelayStatus();
         taskEXIT_CRITICAL();

@@ -60,3 +60,10 @@ void adcInit(void) {
     );
 }
 
+/**
+ * @brief Returns the current value of an ADC channel.
+ */
+uint32_t adcRead(adcChannels_t ch) {
+    return adcChannels[ch].value;
+}
+

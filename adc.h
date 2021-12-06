@@ -23,11 +23,14 @@ typedef enum {
 	ADC_LEN     /**< @brief Total ADC channels. */
 } adcChannels_t;
 
-static int16_t ADCChannelPolarity[ADC_LEN] = {1, 1, 1}; // Need to ask
+// TODO
+//static int16_t ADCChannelPolarity[ADC_LEN] = {1, 1, 1}; // Need to ask
 
 extern cmr_adcChannel_t adcChannels[ADC_LEN];
 
 void adcInit(void);
+
+uint32_t adcRead(adcChannels_t ch);
 
 #endif /* ADC_H */
 

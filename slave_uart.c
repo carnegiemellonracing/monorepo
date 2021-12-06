@@ -16,12 +16,12 @@
 //-----------------------------------------------------------------------------
 
 // FRAME INITIALIZATION CONSTANTS
-static const frame_init_t CMD_BCAST_RESP_RADDR16_DATA2 = {
-  .frameType = COMMAND,
-  .requestType = BROADCAST_WRITE_WITH_RESPONSE,
-  .addressSize = REGISTER_ADDRESS_16_BIT,
-  .dataSize = DATA_SIZE_2_BYTE,
-};
+// static const frame_init_t CMD_BCAST_RESP_RADDR16_DATA2 = {
+//   .frameType = COMMAND,
+//   .requestType = BROADCAST_WRITE_WITH_RESPONSE,
+//   .addressSize = REGISTER_ADDRESS_16_BIT,
+//   .dataSize = DATA_SIZE_2_BYTE,
+// };
 static const frame_init_t CMD_BCAST_NRESP_RADDR8_DATA1 = {
   .frameType = COMMAND,
   .requestType = BROADCAST_WRITE_WITHOUT_RESPONSE,
@@ -65,12 +65,12 @@ static const frame_init_t CMD_BCAST_NRESP_RADDR8_DATA4 = {
   .dataSize = DATA_SIZE_4_BYTE
 };
 
-static const frame_init_t CMD_SINGLE_RESP_RADDR8_DATA2 = {
-  .frameType = COMMAND,
-  .requestType = SINGLE_WRITE_WITH_RESPONSE,
-  .addressSize = REGISTER_ADDRESS_8_BIT,
-  .dataSize = DATA_SIZE_2_BYTE,
-};
+// static const frame_init_t CMD_SINGLE_RESP_RADDR8_DATA2 = {
+//   .frameType = COMMAND,
+//   .requestType = SINGLE_WRITE_WITH_RESPONSE,
+//   .addressSize = REGISTER_ADDRESS_8_BIT,
+//   .dataSize = DATA_SIZE_2_BYTE,
+// };
 
 //-----------------------------------------------------------------------------
 // STATIC HELPER FUNCTION PROTOTYPES                                          |

@@ -175,7 +175,7 @@ static uint16_t uart_packCommand(const uart_command_t *command, Byte message[]) 
       break;
     case REGISTER_ADDRESS_16_BIT:
       addressSize = 2;
-      registerAddress[0] = (command->registerAddress) & 0xFF00;
+      registerAddress[0] = ((command->registerAddress) & 0xFF00) >> 8;
       registerAddress[1] = (command->registerAddress) & 0x00FF;
       break;
     default:
@@ -259,9 +259,10 @@ static uart_result_t uart_getChar(volatile uart_t *uart, uint8_t *c) {
   
   cmr_uartMsg_t rx;
   cmr_uartMsgInit(&rx);
-  cmr_uartRX(&(uart->port), &rx, c, sizeof(c), CMR_UART_RXOPTS_IDLEABORT);
+  cmr_uartRX(&(uart->port), &rx, c, sizeof(*c), CMR_UART_RXOPTS_IDLEABORT);
+  // TODO: look into size
   size_t len = cmr_uartMsgWait(&rx);
-  *c = *c & 0x000000FF;
+  // *c = *c & 0x000000FF;
   if (len != 1)
   {
     return UART_FAILURE;
