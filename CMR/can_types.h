@@ -408,6 +408,16 @@ typedef struct {
     uint8_t maxTempCellIndex;   /**< @brief Index of hottest cell. */
 } cmr_canHVCPackMinMaxCellTemps_t;
 
+/** @brief High Voltage Controller pack overall min and max cell voltages. */
+typedef struct {
+    uint16_t minCellVoltage_mV; /**< @brief Min BMB cell voltage (mV). */
+    uint16_t maxCellVoltage_mV; /**< @brief Max BMB cell voltage (mV). */
+    uint8_t minCellVoltBMB;     /**< @brief */ 
+    uint8_t minVoltIndex;       /**< @brief Min BMB cell voltage index. */
+    uint8_t maxCellVoltBMB;     /**< @brief */ 
+    uint8_t maxVoltIndex;       /**< @brief Max BMB cell voltage index. */
+} cmr_canHVCPackMinMaxCellVolages_t;
+
 /** @brief High Voltage Controller pack currents. */
 typedef struct {
     int32_t instantCurrent_mA;  /**< @brief Instantaneous current measurement. */
@@ -577,8 +587,11 @@ typedef struct {
 } cmr_canDIMTextWrite_t;
 
 typedef struct {
-    uint8_t actionButtonPressed;    /**< @brief Status of the action button (Active Low). */
-} cmr_canDIMActionButton_t;
+    uint8_t action1ButtonPressed;    /**< @brief Status of the action 1 button (Active Low). */
+    uint8_t action2ButtonPressed;    /**< @brief Status of the action 2 button (Active Low). */
+    uint8_t drsButtonPressed;        /**< @brief Status of the AE/DRS button (Active Low). */
+    uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
+} cmr_canDIMActions_t;
 
 // ------------------------------------------------------------------------------------------------
 // Front Sensor Module

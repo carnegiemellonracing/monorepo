@@ -11,6 +11,7 @@
  */
 
 #include "qspi.h"   // Interface to implement
+#include "panic.h"
 
 #ifdef HAL_QSPI_MODULE_ENABLED
 

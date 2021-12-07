@@ -37,6 +37,7 @@ typedef enum {
 
     CMR_CANID_HVC_COMMAND = 0x130,              /**< @brief HVC command, sent by VSM. */
     CMR_CANID_HVC_PACK_VOLTAGE = 0x301,         /**< @brief HVC pack voltage. */
+    CMR_CANID_HVC_MINMAX_CELL_VOLTAGE = 0x310,  /**< @brief HVC pack min and max cell voltages*/
     CMR_CANID_HVC_MINMAX_CELL_TEMPS = 0x311,    /**< @brief HVC pack min and max cell temps. */
     CMR_CANID_HVC_PACK_CURRENT = 0x321,         /**< @brief HVC pack current. */
 
@@ -75,7 +76,7 @@ typedef enum {
     CMR_CANID_DIM_REQUEST = 0x235,              /**< @brief DIM state/gear request. */
     CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x535,    /**< @brief DIM power diagnostics. */
     CMR_CANID_DIM_TEXT_WRITE = 0x525,           /**< @brief DIM write command for sending text. */
-    CMR_CANID_DIM_ACTION_BUTTON = 0x515,        /**< @brief DIM action button pressed status. */
+    CMR_CANID_DIM_ACTIONS = 0x515,              /**< @brief DIM action buttons pressed status and regen percentage. */
 
     CMR_CANID_AFC0_FAN_STATUS = 0x236,          /**< @brief AFC 0 fan status. */
     CMR_CANID_AFC0_DRIVER_TEMPS = 0x536,        /**< @brief AFC 0 temperatures. */

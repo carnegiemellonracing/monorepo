@@ -435,12 +435,15 @@ Timeout=1000
 Var=DIM_requestState unsigned 0,8 /e:State
 Var=DIM_requestGear unsigned 8,8 /e:Gear
 
-[DIM_Action_Button]
+[DIM_Actions]
 ID=515h
-DLC=1
+DLC=4
 CycleTime=100
 Timeout=1000
-Var=DIM_actionButtonPressed unsigned 0,8
+Var=DIM_action1ButtonPressed unsigned 0,8
+Var=DIM_action2ButtonPressed unsigned 8,8
+Var=DIM_drsButtonPressed unsigned 16,8
+Var=DIM_regenPercent unsigned 24,8 /u:percent
 
 [PTCf_Heartbeat]
 ID=106h
@@ -1483,4 +1486,33 @@ DLC=8
 [EMD_Reserved2]
 ID=7EFh	// This CAN id is used for communication between the energy meter and the download tool.
 DLC=8
+
+[IZZIE_Loadcell_config]
+ID=801h
+Type=Extended
+DLC=8
+Var="Programming_Constant_config" unsigned 0,16 -h -m /d:30000
+Var="New_Can_ID" unsigned 16,16 -m /d:2033
+Var="Update_Rate" unsigned 32,8 -m /u:hz /d:1
+Var="Temp_Comp" unsigned 40,8 -m /d:1
+Var="Temp_Sensor" unsigned 48,8 -m /d:1
+Var="Bit_rate" unsigned 56,8 -m /d:2
+
+[IZZIE_Loadcell_calibration]
+ID=800h
+Type=Extended
+DLC=8
+Var="Programming_Constant_calibration" unsigned 0,16 -h -m /d:20000
+Var="Gain_coefficient_m_m" signed 16,16 -m /d:5772
+Var="Gain_Exponent_n_m" signed 32,8 -m /d:-4
+Var="Offset_Coefficient_m_c" signed 40,16 -m /d:12178
+Var="Offset_Exponent_n_c" signed 56,8 -m /d:-2
+
+[IZZIE_Loadcell_data]
+ID=7F0h
+DLC=8
+Var="Differential_Voltage" signed 0,16 -h -m /u:uV
+Var="Calibrated_Output" signed 16,16 -m /u:N /f:0.1
+Var="Internal_Temp" signed 32,16 -m /u:c /f:0.1
+Var="Opt_External_Temp" signed 48,16 -m /u:c /f:0.1
 
