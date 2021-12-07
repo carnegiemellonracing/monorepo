@@ -29,7 +29,7 @@ static cmr_task_t pumpControl_task;
 //#define ACCUM_SCALE     (2.3) //Doesn't get to 100 fan speed. Tune this value during testing. TODO
 #define ACCUM_OFFSET    (-28.3) // And this one. TODO
 
-extern static cmr_sensor_t sensors;
+//extern cmr_sensor_t *sensors;
 
 uint16_t accum_temp;
 uint16_t inverter_temp;
@@ -49,7 +49,7 @@ static void pumpControl(void *pvParameters) {
         cmr_gpioWrite(GPIO_PUMP_2_ENABLE, 1);
 
         /* Get reference to VSM Heartbeat */
-        volatile cmr_canHeartbeat_t *vsmHeartbeat = canGetPayload(CANRX_HEARTBEAT_VSM);
+        // volatile cmr_canHeartbeat_t *vsmHeartbeat = canGetPayload(CANRX_HEARTBEAT_VSM);
 
         //cmr_canHeartbeat_t *heartbeat = &heartbeat;
 
@@ -91,7 +91,7 @@ static void pumpControl(void *pvParameters) {
             switch (heartbeat.state) {
                 case CMR_CAN_HV_EN: // hv pump enable same as rtd pump enable
                 case CMR_CAN_RTD:
-                   
+                {
                     //int accum_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_5) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_6)) / 2; //TODO: how to get value
                     // Below: revision - using CAN to get data from HVC
                     //Next line's citation: from what nsaizan wrote in this file above
@@ -105,7 +105,7 @@ static void pumpControl(void *pvParameters) {
                     //a(accum_temp) + b = fan_speed
                     pump_1_State = (accum_temp * 7 /3) - (3620 / 3);
 
-                    uint16_t inverter_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_7) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_8)) / 2;
+                    uint16_t inverter_temp = (cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_7) + cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_8)) / 2;
                     // 45C assumed high temperature (50C inverter starts to derate), 25C assumed low temperature
                     // 30 min speed, 100 max speed 
                     // a(inverter_temp) + b = fan speed 
@@ -125,6 +125,7 @@ static void pumpControl(void *pvParameters) {
                 //     cmr_gpioWrite(GPIO_PUMP_1_ENABLE, 1);
                 //     cmr_gpioWrite(GPIO_PUMP_2_ENABLE, 1);
                 //     break;
+                }
                 default:
                     pump_1_State = 0;
                     pump_2_State = 0;

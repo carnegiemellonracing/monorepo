@@ -30,7 +30,7 @@ static cmr_task_t fanControl_task;
 //#define ACCUM_SCALE     (2.3) //Doesn't get to 100 fan speed. Tune this value during testing. TODO
 #define ACCUM_OFFSET    (-1930) // And this one. TODO
 
-extern static cmr_sensor_t sensors;
+//extern cmr_sensor_t *sensors;
 
 uint16_t accum_temp;
 uint16_t inverter_temp;
@@ -86,7 +86,7 @@ static void fanControl(void *pvParameters) {
    
 
     /* Get reference to VSM Heartbeat and accumulator min/max cell temperatures */
-    volatile cmr_canHeartbeat_t *vsmHeartbeat = canGetPayload(CANRX_HEARTBEAT_VSM);
+    // volatile cmr_canHeartbeat_t *vsmHeartbeat = canGetPayload(CANRX_HEARTBEAT_VSM);
     // volatile cmr_canHVCPackMinMaxCellTemps_t *minMaxTemps = canGetPayload(CANRX_HVC_MINMAX_TEMPS);
 
     //cmr_canHeartbeat_t *heartbeat = &heartbeat;
@@ -119,7 +119,8 @@ static void fanControl(void *pvParameters) {
         switch (heartbeat.state) {
             case CMR_CAN_HV_EN: // hv pump enable same as rtd pump enable
             case CMR_CAN_RTD:
-                //int accum_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_1) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_2)) / 2;
+            {
+            	//int accum_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_1) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_2)) / 2;
                 // Below: revision - using CAN to get data from HVC
                 //Next line's citation: from what nsaizan wrote in this file above
                 cmr_canHVCPackMinMaxCellTemps_t *minMaxTemps = canGetPayload(CANRX_HVC_MINMAX_TEMPS);
@@ -133,7 +134,7 @@ static void fanControl(void *pvParameters) {
                 //a(accum_temp) + b = fan_speed
                 fan_1_State = (accum_temp * 7 / 2) + ACCUM_OFFSET;
                
-                int inverter_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_3) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_4)) / 2;
+                int inverter_temp = (cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_3) + cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_4)) / 2;
                 // 45C assumed high temperature (50C inverter starts to derate), 25C assumed low temperature
                 // 30 min speed, 100 max speed 
                 // a(inverter_temp) + b = fan speed 
@@ -155,7 +156,7 @@ static void fanControl(void *pvParameters) {
             //     cmr_gpioWrite(GPIO_FAN_1_ENABLE, 1);
             //     cmr_gpioWrite(GPIO_FAN_2_ENABLE, 1);
             //     break;
-
+        	}
             default:
                 fan_1_State = 0;
                 fan_2_State = 0;
