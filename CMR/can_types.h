@@ -80,6 +80,12 @@ typedef enum {
     CMR_CAN_ERROR_PTC_DRIVERS_TEMP = (1 << 14),
     /** @brief PTC water temperature out-of-range. */
     CMR_CAN_ERROR_PTC_WATER_TEMP = (1 << 13),
+    //power errors(shunt resistor), water over heating errors, oil overheatin errors
+    //no oil overheating errors cuz going into uprights
+    // temperature 
+    // pump always on 35 c  
+    // pump turn on at 53 start turning on and 56 turning at 100
+    // fan turn on at 56 starting 58 turn it to max
 
     /** @brief CDC All motor controllers have errored or timed out. */
     CMR_CAN_ERROR_CDC_AMK_ALL = (1 << 15)
@@ -599,9 +605,10 @@ typedef struct {
 
 /** @brief Powertrain Thermal Controller fan/pump status. */
 typedef struct {
-    uint8_t channel1DutyCycle_pcnt;             /**< @brief Fan/Pump channel 1 state. */
-    uint8_t channel2DutyCycle_pcnt;             /**< @brief Fan/Pump channel 2 state. */
-    uint8_t channel3DutyCycle_pcnt;             /**< @brief Fan/Pump channel 3 state. */
+    uint8_t fan1DutyCycle_pcnt;              /**< @brief Fan 1 state. */
+    uint8_t fan2DutyCycle_pcnt;              /**< @brief Fan 2 state. */
+    uint8_t pump1DutyCycle_pcnt;             /**< @brief Pump 1 state. */
+    uint8_t pump2DutyCycle_pcnt;             /**< @brief Pump 2 state. */
 } cmr_canPTCDriverStatus_t;
 
 /** @brief Powertrain Thermal Controller (fan board) cooling loop temperature status. */
