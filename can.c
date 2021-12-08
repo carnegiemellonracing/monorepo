@@ -18,27 +18,6 @@
 #include "can.h"        // Interface to implement
 #include "sensors.h"    // Sensors interface.
 
-#ifndef CMR_PTC_ID
-#error "No PTC ID defined!"
-#elif (CMR_PTC_ID == 0) /* Pump Control Board */
-
-#define CMR_CANID_HEARTBEAT_PTCx CMR_CANID_HEARTBEAT_PTCp
-#define CMR_CANID_LOOP_TEMPS_A_PTCx CMR_CANID_PTCp_LOOP_TEMPS_A
-#define CMR_CANID_LOOP_TEMPS_B_PTCx CMR_CANID_PTCp_LOOP_TEMPS_B
-#define CMR_CANID_STATUS_PTCx CMR_CANID_PTCp_PUMPS_STATUS
-#define CMR_CANID_POWER_DIAGNOSTICS_PTCx CMR_CANID_PTCp_POWER_DIAGNOSTICS
-
-#elif (CMR_PTC_ID == 1) /* Fan Control Board */
-
-#define CMR_CANID_HEARTBEAT_PTCx CMR_CANID_HEARTBEAT_PTCf
-#define CMR_CANID_LOOP_TEMPS_A_PTCx CMR_CANID_PTCf_LOOP_TEMPS_A
-#define CMR_CANID_LOOP_TEMPS_B_PTCx CMR_CANID_PTCf_LOOP_TEMPS_B
-#define CMR_CANID_STATUS_PTCx CMR_CANID_PTCf_FANS_STATUS
-#define CMR_CANID_POWER_DIAGNOSTICS_PTCx CMR_CANID_PTCf_POWER_DIAGNOSTICS
-
-#else
-#endif
-
 /**
  * @brief CAN periodic message receive metadata
  *
@@ -159,7 +138,7 @@ void canInit(void) {
     // CAN2 initialization.
     cmr_canInit(
         &can, CAN1,
-		CMR_CAN_BITRATE_500K,
+        CMR_CAN_BITRATE_500K,
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
         NULL,
         GPIOA, GPIO_PIN_11,     // CAN2 RX port/pin.
@@ -270,7 +249,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     }
     memcpy(&heartbeat.warning, &warning, sizeof(warning));
 
-    canTX(CMR_CANID_HEARTBEAT_PTCx, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
+    canTX(CMR_CANID_HEARTBEAT_PTC, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
 }
 
 /**
@@ -309,8 +288,8 @@ static void sendCoolingLoopTemps(void) {
         .temp8_dC = Temp_8_dC
     };
 
-    canTX(CMR_CANID_LOOP_TEMPS_A_PTCx, &coolMsg1, sizeof(coolMsg1), canTX10Hz_period_ms);
-    canTX(CMR_CANID_LOOP_TEMPS_B_PTCx, &coolMsg2, sizeof(coolMsg2), canTX10Hz_period_ms);
+    canTX(CMR_CANID_PTC_LOOP_TEMPS_A, &coolMsg1, sizeof(coolMsg1), canTX10Hz_period_ms);
+    canTX(CMR_CANID_PTC_LOOP_TEMPS_B, &coolMsg2, sizeof(coolMsg2), canTX10Hz_period_ms);
 }
 
 /**
@@ -330,7 +309,7 @@ static void sendDriverStatus(void) {
         .pump2DutyCycle_pcnt = Pump2_Duty_Cycle_pcnt
     };
 
-    canTX(CMR_CANID_STATUS_PTCx, &driverStatusMsg, sizeof(driverStatusMsg), canTX10Hz_period_ms);
+    canTX(CMR_CANID_PTC_FANS_PUMPS_STATUS, &driverStatusMsg, sizeof(driverStatusMsg), canTX10Hz_period_ms);
 }
 
 /**
@@ -350,6 +329,6 @@ static void sendPowerDiagnostics(void) {
         .loadCurrent_mA = loadCurrent_mA
     };
 
-    canTX(CMR_CANID_POWER_DIAGNOSTICS_PTCx, &powerMsg, sizeof(powerMsg), canTX10Hz_period_ms);
+    canTX(CMR_CANID_PTC_POWER_DIAGNOSTICS, &powerMsg, sizeof(powerMsg), canTX10Hz_period_ms);
 }
 
