@@ -611,33 +611,19 @@ typedef struct {
     uint8_t pump2DutyCycle_pcnt;             /**< @brief Pump 2 state. */
 } cmr_canPTCDriverStatus_t;
 
-/** @brief Powertrain Thermal Controller (fan board) cooling loop temperature status. */
+/** @brief Powertrain Thermal Controller cooling loop temperature status. */
 typedef struct {
     uint16_t temp1_dC;            /**< @brief Temp 1 */
     uint16_t temp2_dC;            /**< @brief Temp 2 */
     uint16_t temp3_dC;            /**< @brief Temp 3 */
     uint16_t temp4_dC;            /**< @brief Temp 4 */  //These are placeholders for more useful names
-} cmr_canPTCfLoopTemp_A_t;
+} cmr_canPTCLoopTemp_A_t;
 typedef struct {
     uint16_t temp5_dC;            /**< @brief Temp 5 */
     uint16_t temp6_dC;            /**< @brief Temp 6 */
     uint16_t temp7_dC;            /**< @brief Temp 7 */
     uint16_t temp8_dC;            /**< @brief Temp 8 */
-} cmr_canPTCfLoopTemp_B_t;
-
-/** @brief Powertrain Thermal Controller (pump board) cooling loop temperature status. */
-typedef struct {
-    uint16_t temp1_dC;            /**< @brief Temp 1 */
-    uint16_t temp2_dC;            /**< @brief Temp 2 */
-    uint16_t temp3_dC;            /**< @brief Temp 3 */
-    uint16_t temp4_dC;            /**< @brief Temp 4 */  //These are placeholders for more useful names
-} cmr_canPTCpLoopTemp_A_t;
-typedef struct {
-    uint16_t temp5_dC;            /**< @brief Temp 5 */
-    uint16_t temp6_dC;            /**< @brief Temp 6 */
-    uint16_t temp7_dC;            /**< @brief Temp 7 */
-    uint16_t temp8_dC;            /**< @brief Temp 8 */
-} cmr_canPTCpLoopTemp_B_t;
+} cmr_canPTCLoopTemp_B_t;
 
 
 /** @brief Powertrain Thermal Controller voltage diagnostics. */
