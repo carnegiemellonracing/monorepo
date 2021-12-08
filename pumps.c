@@ -24,10 +24,12 @@ static const TickType_t pumpControl_period_ms = 50;
 /** @brief Pump control task. */
 static cmr_task_t pumpControl_task;
 
-#define INVERTER_SCALE  (3.5)
-#define INVERTER_OFFSET (-57.5)
-//#define ACCUM_SCALE     (2.3) //Doesn't get to 100 fan speed. Tune this value during testing. TODO
-#define ACCUM_OFFSET    (-28.3) // And this one. TODO
+
+#define PUMP_TEMP_LOW_dC 530
+#define PUMP_TEMP_HIGH_dC 560
+#define PUMP_STATE_LOW 30
+#define PUMP_STATE_HIGH 100
+
 
 //extern cmr_sensor_t *sensors;
 
@@ -92,24 +94,51 @@ static void pumpControl(void *pvParameters) {
                 case CMR_CAN_HV_EN: // hv pump enable same as rtd pump enable
                 case CMR_CAN_RTD:
                 {
-                    //int accum_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_5) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_6)) / 2; //TODO: how to get value
+                        //int accum_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_1) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_2)) / 2;
                     // Below: revision - using CAN to get data from HVC
                     //Next line's citation: from what nsaizan wrote in this file above
-                    cmr_canHVCPackMinMaxCellTemps_t *minMaxTemps = canGetPayload(CANRX_HVC_MINMAX_TEMPS);
+                    cmr_canHVCPackMinMaxCellTemps_t *minMaxTemps = (cmr_canHVCPackMinMaxCellTemps_t *) canGetPayload(CANRX_HVC_MINMAX_TEMPS);
                     // Use the temperature of the hottest cell as the AC's temperature
                     uint16_t accum_temp = minMaxTemps->maxCellTemp_dC;
-                    
-                    
-                    //55C assumed high temperature, 25C assumed low temperature
-                    //30 min speed, 100 max speed
-                    //a(accum_temp) + b = fan_speed
-                    pump_1_State = (accum_temp * 7 /3) - (3620 / 3);
+                    // if accumtemp < 56 remain at low speed
+                    // if accumtemp > 58 remain at high speed
+                    // linear in between                
 
-                    uint16_t inverter_temp = (cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_7) + cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_8)) / 2;
-                    // 45C assumed high temperature (50C inverter starts to derate), 25C assumed low temperature
-                    // 30 min speed, 100 max speed 
-                    // a(inverter_temp) + b = fan speed 
-                    pump_2_State = (inverter_temp*INVERTER_SCALE) + INVERTER_OFFSET;
+                    if (accum_temp < PUMP_TEMP_LOW_dC) 
+                        pump_1_State = 30;
+                    else if (accum_temp > PUMP_TEMP_HIGH_dC)
+                        pump_1_State = 100;
+                    else {
+                        int16_t a = ((PUMP_STATE_HIGH - PUMP_STATE_LOW) / (PUMP_TEMP_HIGH_dC - PUMP_TEMP_LOW_dC)); // 58-56 = 2 / 100-30 = 70
+                        int16_t b = (PUMP_STATE_LOW) - a * (PUMP_TEMP_LOW_dC); //y = ax + b b = y - ax
+                        pump_1_State = a * accum_temp + b;
+                    }
+
+                    // Get igbt temperatures for each inverter.
+                    cmr_canAMKActualValues2_t *inv1_temps = (cmr_canAMKActualValues2_t *) canGetPayload(CANRX_INV1_STATUS);
+                    int16_t inv1IgbtTemp_dC = inv1_temps->igbtTemp_dC;
+                    cmr_canAMKActualValues2_t *inv2_temps = (cmr_canAMKActualValues2_t *) canGetPayload(CANRX_INV2_STATUS);
+                    int16_t inv2IgbtTemp_dC = inv2_temps->igbtTemp_dC;
+                    cmr_canAMKActualValues2_t *inv3_temps = (cmr_canAMKActualValues2_t *) canGetPayload(CANRX_INV3_STATUS);
+                    int16_t inv3IgbtTemp_dC = inv3_temps->igbtTemp_dC;
+                    cmr_canAMKActualValues2_t *inv4_temps = (cmr_canAMKActualValues2_t *) canGetPayload(CANRX_INV4_STATUS);
+                    int16_t inv4IgbtTemp_dC = inv4_temps->igbtTemp_dC;
+
+                    // Use average igbt temperature
+                    int16_t inverter_temp = (inv1IgbtTemp_dC + inv2IgbtTemp_dC + inv3IgbtTemp_dC + inv4IgbtTemp_dC) / 4;
+                    // if inverter_temp < 56 remain at low speed
+                    // if inverter_temp > 58 remain at high speed
+                    // linear in between                
+
+                    if (inverter_temp < PUMP_TEMP_LOW_dC) 
+                        pump_2_State = 30;
+                    else if (inverter_temp > PUMP_TEMP_HIGH_dC)
+                        pump_2_State = 100;
+                    else {
+                        int16_t a = ((PUMP_STATE_HIGH - PUMP_STATE_LOW) / (PUMP_TEMP_HIGH_dC - PUMP_TEMP_LOW_dC));  // 58-56 = 2 / 100-30 = 70
+                        int16_t b = (PUMP_STATE_LOW) - a * (PUMP_TEMP_LOW_dC); //y = ax + b b = y - ax
+                        pump_2_State = a * inverter_temp + b;
+                    }
 
                     cmr_pwmSetDutyCycle(&pump_1_PWM, (uint32_t) pump_1_State);
                     cmr_pwmSetDutyCycle(&pump_2_PWM, (uint32_t) pump_2_State);

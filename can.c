@@ -38,6 +38,27 @@ cmr_canRXMeta_t canRXMeta[] = {
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
     },
+    [CANRX_INV1_STATUS] = {
+        .canID = CMR_CANID_AMK_1_ACT_2,
+        .timeoutError_ms = 800, // Send error if data not received within 4 cycles, or 800 ms
+        .timeoutWarn_ms = 400, // Send warning if data not received within 2 cycles, or 400 ms
+        // CAN transmitting frequency = 5 Hz, so ? s = 1 / 5 Hz = 0.2 s = 200ms
+    },
+    [CANRX_INV2_STATUS] = {
+        .canID = CMR_CANID_AMK_2_ACT_2,
+        .timeoutError_ms = 800,
+        .timeoutWarn_ms = 400,
+    },
+    [CANRX_INV3_STATUS] = {
+        .canID = CMR_CANID_AMK_3_ACT_2,
+        .timeoutError_ms = 800,
+        .timeoutWarn_ms = 400,
+    },
+    [CANRX_INV4_STATUS] = {
+        .canID = CMR_CANID_AMK_4_ACT_2,
+        .timeoutError_ms = 800,
+        .timeoutWarn_ms = 400,
+    },
     [CANRX_VSM_SENSORS] = {
         .canID = CMR_CANID_VSM_SENSORS,
         .timeoutError_ms = 500,
@@ -284,14 +305,14 @@ static void sendCoolingLoopTemps(void) {
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_8);
 
     /* Separate A and B messages are due to can packet size limits */
-    cmr_canPTCpLoopTemp_A_t coolMsg1 = {
+    cmr_canPTCLoopTemp_A_t coolMsg1 = {
         .temp1_dC = Temp_1_dC,
         .temp2_dC = Temp_2_dC,
         .temp3_dC = Temp_3_dC,
         .temp4_dC = Temp_4_dC
     };
 
-    cmr_canPTCpLoopTemp_B_t coolMsg2 = {
+    cmr_canPTCLoopTemp_B_t coolMsg2 = {
         .temp5_dC = Temp_5_dC,
         .temp6_dC = Temp_6_dC,
         .temp7_dC = Temp_7_dC,
