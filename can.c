@@ -166,6 +166,16 @@ void canInit(void) {
                 CMR_CANID_VSM_SENSORS,
                 CMR_CANID_HVC_MINMAX_CELL_TEMPS
             }
+        },
+        {
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO1,
+            .ids = {
+                CMR_CANID_AMK_1_ACT_2,
+                CMR_CANID_AMK_2_ACT_2,
+                CMR_CANID_AMK_3_ACT_2,
+                CMR_CANID_AMK_4_ACT_2
+            }
         }
     };
     cmr_canFilter(
