@@ -26,11 +26,14 @@ static const TickType_t fanControl_period_ms = 50;
 static cmr_task_t fanControl_task;
 
 
-#define FAN_TEMP_LOW_dC 560
-#define FAN_TEMP_HIGH_dC 580
-#define FAN_STATE_LOW 30
-#define FAN_STATE_HIGH 100
-
+#define FAN_AC_TEMP_LOW_dC 560
+#define FAN_AC_TEMP_HIGH_dC 580
+#define FAN_AC_STATE_LOW 30
+#define FAN_AC_STATE_HIGH 100
+#define FAN_INVERTER_TEMP_LOW_dC 560
+#define FAN_INVERTER_TEMP_HIGH_dC 580
+#define FAN_INVERTER_STATE_LOW 30
+#define FAN_INVERTER_STATE_HIGH 100
 
 //extern cmr_sensor_t *sensors;
 
@@ -56,7 +59,7 @@ uint16_t inverter_temp;
     2 thermistors surrounding each radiator
     2 thermistors surrounding the inverter
 
-        // pump turn on at 53 start turning on and 56 turning at 100
+    // pump turn on at 53 start turning on and 56 turning at 100
     // fan turn on at 56 starting 58 turn it to max
 
     First, we should try to read the temperature data from the amk's for inverter and accumulator to turn on the pumps and the fans. 
@@ -82,17 +85,7 @@ uint16_t inverter_temp;
 static void fanControl(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-    /* Enable the half bridges so that output isn't floating */
-    cmr_gpioWrite(GPIO_FAN_1_ENABLE, 1);
-    cmr_gpioWrite(GPIO_FAN_2_ENABLE, 1);
-   
-
-    /* Get reference to VSM Heartbeat and accumulator min/max cell temperatures */
-    // volatile cmr_canHeartbeat_t *vsmHeartbeat = canGetPayload(CANRX_HEARTBEAT_VSM);
-    // volatile cmr_canHVCPackMinMaxCellTemps_t *minMaxTemps = canGetPayload(CANRX_HVC_MINMAX_TEMPS);
-
-    //cmr_canHeartbeat_t *heartbeat = &heartbeat;
-
+    // TODO: Fix based on Datasheet
     /* Initialize PWM channels to 25kHz for fan control lines */
     /* 96Mhz / (24 * 160) = 25kHz */
     const cmr_pwmPinConfig_t pwmPinConfig1 = {
@@ -132,15 +125,14 @@ static void fanControl(void *pvParameters) {
                 // if accumtemp > 58 remain at high speed
                 // linear in between                
 
-                if (accum_temp < FAN_TEMP_LOW_dC) 
+                if (accum_temp < FAN_AC_TEMP_LOW_dC) 
                     fan_1_State = 30;
-                else if (accum_temp > FAN_TEMP_HIGH_dC)
+                else if (accum_temp > FAN_AC_TEMP_HIGH_dC)
                     fan_1_State = 100;
                 else {
-                    int16_t a = ((FAN_STATE_HIGH - FAN_STATE_LOW) / (FAN_TEMP_HIGH_dC - FAN_TEMP_LOW_dC));  // 58-56 = 2 / 100-30 = 70
-                    int16_t b = (FAN_STATE_LOW) - a * (FAN_TEMP_LOW_dC); //y = ax + b b = y - ax
-                    fan_1_State = a * accum_temp + b;
+                    fan_1_State = (FAN_AC_STATE_HIGH - FAN_AC_STATE_LOW) * (accum_temp - FAN_AC_TEMP_LOW_dC) / (FAN_AC_TEMP_HIGH_dC - FAN_AC_TEMP_LOW_dC) + FAN_AC_STATE_LOW;
                 }
+                fan_1_State = (fan_1_State > 100) ? 100 : fan_1_State;
 
                 // Get igbt temperatures for each inverter.
                 cmr_canAMKActualValues2_t *inv1_temps = (cmr_canAMKActualValues2_t *) canGetPayload(CANRX_INV1_STATUS);
@@ -158,40 +150,31 @@ static void fanControl(void *pvParameters) {
                 // if inverter_temp > 58 remain at high speed
                 // linear in between                
 
-                if (inverter_temp < FAN_TEMP_LOW_dC) 
+                if (inverter_temp < FAN_INVERTER_TEMP_LOW_dC) 
                     fan_2_State = 30;
-                else if (inverter_temp > FAN_TEMP_HIGH_dC)
+                else if (inverter_temp > FAN_INVERTER_TEMP_HIGH_dC)
                     fan_2_State = 100;
                 else {
-                    int16_t a = ((FAN_STATE_HIGH - FAN_STATE_LOW) / (FAN_TEMP_HIGH_dC - FAN_TEMP_LOW_dC));  // 58-56 = 2 / 100-30 = 70
-                    int16_t b = (FAN_STATE_LOW) - a * (FAN_TEMP_LOW_dC); //y = ax + b b = y - ax
-                    fan_2_State = a * inverter_temp + b;
+                    fan_2_State = (FAN_INVERTER_STATE_HIGH - FAN_INVERTER_STATE_LOW) * (inverter_temp - FAN_INVERTER_TEMP_LOW_dC) / (FAN_INVERTER_TEMP_HIGH_dC - FAN_INVERTER_TEMP_LOW_dC) + FAN_INVERTER_STATE_LOW;
                 }
+                fan_2_State = (fan_2_State > 100) ? 100 : fan_2_State;
 
                 cmr_pwmSetDutyCycle(&fan_1_PWM, (uint32_t) fan_1_State);
                 cmr_pwmSetDutyCycle(&fan_2_PWM, (uint32_t) fan_2_State);
-                cmr_gpioWrite(GPIO_FAN_1_ENABLE, 1);
-                cmr_gpioWrite(GPIO_FAN_2_ENABLE, 1);
+                
+                if (fan_1_State >= 50 || fan_2_State >= 50) {
+                    cmr_gpioWrite(GPIO_FAN_ON, 1);
+                } else {
+                    cmr_gpioWrite(GPIO_FAN_ON, 0);
+                }
                 break;
-
-            // case CMR_CAN_HV_EN:
-            //     //we need to change this also 
-
-            //     fan_1_State = 50;
-            //     fan_2_State = 50;
-            //     cmr_pwmSetDutyCycle(&fan_1_PWM, fan_1_State);
-            //     cmr_pwmSetDutyCycle(&fan_2_PWM, fan_2_State);
-            //     cmr_gpioWrite(GPIO_FAN_1_ENABLE, 1);
-            //     cmr_gpioWrite(GPIO_FAN_2_ENABLE, 1);
-            //     break;
         	}
             default:
                 fan_1_State = 0;
                 fan_2_State = 0;
                 cmr_pwmSetDutyCycle(&fan_1_PWM, fan_1_State);
                 cmr_pwmSetDutyCycle(&fan_2_PWM, fan_2_State);
-                cmr_gpioWrite(GPIO_FAN_1_ENABLE, 1);
-                cmr_gpioWrite(GPIO_FAN_2_ENABLE, 1);
+                cmr_gpioWrite(GPIO_FAN_ON, 0);
                 break;
         }
 

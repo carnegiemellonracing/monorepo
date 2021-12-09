@@ -17,10 +17,8 @@
 typedef enum {
     GPIO_LED_STATUS = 0,    /**< @brief Status LED. */
     GPIO_BRKLT_ENABLE,      /**< @brief Brakelight Enable. */
-    GPIO_FAN_1_ENABLE,         /**< @brief Fan/Pump FAN 1 Enable. */
-    GPIO_FAN_2_ENABLE,         /**< @brief Fan/Pump FAN 2 Enable. */
-    GPIO_PUMP_1_ENABLE,         /**< @brief Fan/Pump PUMP 1 Enable. */
-    GPIO_PUMP_2_ENABLE,         /**< @brief Fan/Pump PUMP 2 Enable. */
+    GPIO_FAN_ON,            /**< @brief Fan On LED. */
+    GPIO_PUMP_ON,           /**< @brief Pump On LED. */
     GPIO_AUXILIARY_ENABLE,  /**< @brief Auxiliary Enable. */
     GPIO_MTR_CTRL_ENABLE,   /**< @brief Motor Controller Power Enable */
     GPIO_MC_EFUSE_AUTO,     /**< @brief Motor Controller eFuse Auto Reset

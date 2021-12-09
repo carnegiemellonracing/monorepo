@@ -287,6 +287,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
  * @brief Send cooling system temps on CAN bus.
  */
 static void sendCoolingLoopTemps(void) {
+    // TODO: Send Thermistor 9 also
     int32_t Temp_1_dC =
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_1);
     int32_t Temp_2_dC =

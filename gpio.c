@@ -39,35 +39,17 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_FAN_1_ENABLE] = { // FAN 1
-        .port = GPIOB,
+    [GPIO_FAN_ON] = {
+        .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_4,
+            .Pin = GPIO_PIN_9,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_FAN_2_ENABLE] = { // FAN 2
-        .port = GPIOB,
-        .init = {
-            .Pin = GPIO_PIN_5,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_PUMP_1_ENABLE] = { // PUMP 1
-        .port = GPIOB,
-        .init = {
-            .Pin = GPIO_PIN_7,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_PUMP_2_ENABLE] = { // PUMP 2
-        .port = GPIOB,
+    [GPIO_PUMP_ON] = {
+        .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_8,
             .Mode = GPIO_MODE_OUTPUT_PP,
