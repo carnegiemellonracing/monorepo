@@ -17,6 +17,7 @@
 #include "gpio.h"   // Board-specific GPIO interface
 #include "can.h"    // Board-specific CAN interface
 #include "adc.h"    // Board-specific ADC interface
+#include "uart.h"   // Board-specific UART interface
 #include "bms_error.h"
 
 /** @brief Struct to identify stale commands. */
@@ -85,9 +86,10 @@ int main(void) {
     // Peripheral configuration.
     gpioInit();
     canInit();
-    adcInit();
-    sensorsInit();
-    spiInit();
+    uartInit();
+//    adcInit();
+//    sensorsInit();
+//    spiInit();
 
     cmr_taskInit(
         &statusLED_task,
@@ -98,22 +100,22 @@ int main(void) {
     );
 
     // BMB_task
-    cmr_taskInit(
-        &bmbSample_task,
-        "BMB Sample Task",
-        bmbSample_priority,
-        vBMBSampleTask,
-        NULL
-    );
-
-    // State Task
-    cmr_taskInit(
-        &setState_task,
-        "Set State Task",
-        setState_priority,
-        vSetStateTask,
-        NULL
-    );
+//    cmr_taskInit(
+//        &bmbSample_task,
+//        "BMB Sample Task",
+//        bmbSample_priority,
+//        vBMBSampleTask,
+//        NULL
+//    );
+//
+//    // State Task
+//    cmr_taskInit(
+//        &setState_task,
+//        "Set State Task",
+//        setState_priority,
+//        vSetStateTask,
+//        NULL
+//    );
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

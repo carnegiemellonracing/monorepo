@@ -58,11 +58,11 @@ void uartInit(void) {
     };
 
     cmr_uartInit(
-        &uart.port, USART1, &uartInit,
-        GPIOA, GPIO_PIN_10,     /* rx */ //needs changes
-        GPIOA, GPIO_PIN_9,      /* tx */ //needs changes
-        DMA2_Stream2, DMA_CHANNEL_4,    /* See reference manual */  //needs changes
-        DMA2_Stream7, DMA_CHANNEL_4  //needs changes
+        &uart.port, UART5, &uartInit,
+        GPIOB, GPIO_PIN_12,     /* rx */
+        GPIOB, GPIO_PIN_13,     /* tx */
+        DMA1_Stream0, DMA_CHANNEL_4,    /* rx dma */
+        DMA1_Stream7, DMA_CHANNEL_8     /* tx dma */
     );
 
     crcInit();
