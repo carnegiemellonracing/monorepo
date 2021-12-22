@@ -10,6 +10,12 @@
 #include "can.h"    // can interface
 #include "stdlib.h"
 
+
+/** @brief declaration of config screen variables */
+bool config_increment_requested = false;
+/** @brief declaration of config screen variables */
+bool config_scroll_requested = true;
+
 /** @brief DIM state. */
 static volatile struct {
     cmr_canState_t vsmReq;      /**< @brief Requested VSM state. */
@@ -164,6 +170,8 @@ void stateVSMUpButton(bool pressed) {
         return;
     }
 
+    // TODO: modifiy only if in config screen
+
     cmr_canState_t vsmState = stateGetVSM();
     if (state.vsmReq < vsmState) {
         // Cancel state-down request.
@@ -190,6 +198,8 @@ void stateVSMDownButton(bool pressed) {
     if (!pressed) {
         return;
     }
+
+    // TODO: modifiy only if in config screen
 
     cmr_canState_t vsmState = stateGetVSM();
     if (state.vsmReq > vsmState) {
@@ -224,6 +234,9 @@ void stateGearDownButton(bool pressed) {
         return;
     }
 
+    // TODO: modifiy only if in config screen
+    config_scroll_requested = true;
+
     if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
         return;     // Can only change gears in HV_ENand GLV_ON.
     }
@@ -250,6 +263,9 @@ void stateGearUpButton(bool pressed) {
     if (!pressed) {
         return;
     }
+
+    // TODO: modifiy only if in config screen
+    config_scroll_requested = true;
 
     if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
         return;     // Can only change gears in HV_EN and GLV_ON.

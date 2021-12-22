@@ -31,6 +31,11 @@ typedef enum {
     GPIO_LEN    /**< @brief Total GPIO pins. */
 } gpio_t;
 
+// TODO: Add documentation
+extern bool config_increment_requested;
+extern bool config_scroll_requested;
+
+
 /** @brief Data required to processes a button press. */
 typedef struct {
     gpio_t pin;     /**< @brief The triggering pin. */

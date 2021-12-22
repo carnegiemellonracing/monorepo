@@ -27,6 +27,9 @@ extern const tftDL_t tftDL_RTD;
 /** @brief Exported error screen definition for interface consumers. */
 extern const tftDL_t tftDL_error;
 
+/** @brief Exported error screen definition for interface consumers. */
+extern const tftDL_t tftDL_config;
+
 /** @brief Text buffer for messages from RAM */
 extern char RAMBUF[];
 
@@ -62,6 +65,8 @@ void tftDL_RTDUpdate(
 void tftDL_errorUpdate(
     tft_errors_t *err
 );
+
+void tftDL_configUpdate();
 
 void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yellow, bool temp_red);
 

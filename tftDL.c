@@ -13,6 +13,8 @@
 #include "adc.h"            // GLV voltage
 #include "state.h"          // State interface
 #include "can.h"            // Board-specific CAN interface
+#include "gpio.h"            // Board-specific CAN interface
+#include "config_screen_helper.h" // Config screen helper
 
 /** @brief Represents a display list. */
 struct tftDL {
@@ -65,6 +67,28 @@ const tftDL_t tftDL_error = {
 
     .contentLen = sizeof(tftDL_errorContent) / sizeof(tftDL_errorContent[0]),
     .content = tftDL_errorContent
+};
+
+/** @brief Config Screen */
+static uint32_t tftDL_configData[] = {
+#include "ESE/config.rawh"
+};
+
+/** @brief Packets to send to the DL on error.
+ * See datasheet */
+static const tftContent_t *tftDL_configContent[] = {
+    &tftContent_RobotoMono_Bold_72_L4,
+    &tftContent_RobotoMono_Bold_40_L4,
+};
+
+/** @brief Complete data required to draw the error screen.
+ * Exposed to interface consumers. */
+const tftDL_t tftDL_config = {
+    .len = sizeof(tftDL_configData),
+    .data = tftDL_configData,
+
+    .contentLen = sizeof(tftDL_configContent) / sizeof(tftDL_configContent[0]),
+    .content = tftDL_configContent
 };
 
 /** @brief RTD Screen */
@@ -350,9 +374,7 @@ void tftDL_errorUpdate(
     );
 
 
-    tftDL_showErrorState(ESE_FSM_COLOR, err->fsmTimeout);
-    tftDL_showErrorState(ESE_CDC_COLOR, err->cdcTimeout);
-    tftDL_showErrorState(ESE_PTCf_COLOR, err->ptcfTimeout);
+
     tftDL_showErrorState(ESE_PTCp_COLOR, err->ptcpTimeout);
     tftDL_showErrorState(ESE_APC_COLOR, err->apcTimeout);
     tftDL_showErrorState(ESE_HVC_COLOR, err->hvcTimeout);
@@ -415,3 +437,57 @@ void tftDLWrite(tft_t *tft, const tftDL_t *tftDL) {
     tftCoCmd(tft, tftDL->len, tftDL->data, true);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void setConfigSelectionColor(uint8_t scroll_index) {
+    // index who's color to restore
+    uint8_t restore_index = scroll_index - 1; // underflow is expected :)
+    
+    // calculate the varoius addresses to modify 
+    uint32_t background_address_offset = config_menu_main_array[scroll_index].ESE_background_color_variable;
+    uint32_t *background_item_pointer = (void *) (tftDL_configData + background_address_offset);
+
+    uint32_t restore_background_address_offset = config_menu_main_array[restore_index].ESE_background_color_variable;
+    uint32_t *restore_background_item_pointer = (void *) (tftDL_configData + restore_background_address_offset);
+
+    // modify the actual addresses 
+    *background_item_pointer = (void*) SELECTED_MENU_COLOR;
+   *restore_background_item_pointer = (void*) NOT_SELECTED_MENU_COLOR;
+
+    return;
+}
+
+// TODO: Document
+void tftDL_configUpdate(){
+    static uint8_t current_scroll_index = 0;
+    
+    // update scroll and clear selection values
+    if (config_scroll_requested) {
+        current_scroll_index++;
+        current_scroll_index = current_scroll_index % MAX_MENU_ITEMS;
+
+        if (current_scroll_index > 17){
+            int a = 0;
+        }
+
+        // clear the selection value just in case no one accidently presses both buttons at the same time
+        config_scroll_requested = false;
+
+        // call the background color updater
+        setConfigSelectionColor(current_scroll_index);
+        // TODO: If the selection is the driver, change all other values too
+        // update the selected item's colors and context text
+    }
+
+    // if there are no scroll values, then check/implement selection values
+    else{
+        // // update selection value
+        // if (config_selection_value != 0) {
+        //     current_scroll_index += config_selection_value;
+        //     current_scroll_index = current_scroll_index % MAX_CONFIG_ITEMS;
+        // }
+    }
+
+    return;
+    
+}

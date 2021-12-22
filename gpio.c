@@ -16,6 +16,7 @@
 /** @brief Maximum number of button events in the queue. */
 #define BUTTON_EVENTS_MAX 64
 
+
 /**
  * @brief Board-specific pin configuration.
  *

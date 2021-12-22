@@ -48,6 +48,7 @@ static tft_t tft;
 
 static void drawErrorScreen(void);
 static void drawRTDScreen(void);
+static void drawConfigScreen(void);
 
 /**
  * @brief Sends a command to the display.
@@ -321,12 +322,24 @@ static void tftUpdate(void *pvParameters) {
     while (
         vTaskDelayUntil(&lastWakeTime, tftUpdate_period_ms), 1
     ) {
-        if(stateGetVSM() == CMR_CAN_ERROR){
-            drawErrorScreen();
-        } else {
-            drawRTDScreen();
-        }
+        drawConfigScreen();
+
+        // if(stateGetVSM() == CMR_CAN_ERROR){
+        //     drawErrorScreen();
+        // } else {
+        //     drawRTDScreen();
+        // }
     }
+}
+
+/**
+ * @brief Draws the Display Updated List to the Screen
+ *
+ */
+static void drawConfigScreen(void) {
+    tftDLContentLoad(&tft, &tftDL_config);
+    tftDL_configUpdate();
+    tftDLWrite(&tft, &tftDL_config);
 }
 
 /**
