@@ -438,10 +438,97 @@ void tftDLWrite(tft_t *tft, const tftDL_t *tftDL) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
+void setConfigContextString(int8_t scroll_index) {
+    char* context_string = config_menu_main_array[scroll_index].ESE_context_text_variable;
+    uint32_t context_string_address_offset = ESE_CONTEXT_VALUE;
+    uint32_t *context_string_pointer = (void *) (tftDL_configData + context_string_address_offset);
+    sprintf(context_string_pointer, context_string);
 
-void setConfigSelectionColor(uint8_t scroll_index) {
+}
+
+// implements wraparound. Can't use modulo since it's min is not always 0. Could do (val % max-min) + min but that's less readable
+uint8_t configValueIncrementer(uint8_t value, uint8_t value_min, uint8_t value_max, bool up_requested, bool down_requested) {
+    uint8_t new_value = value;
+    if(up_requested){
+        if (value + 1 > value_max)
+            new_value = value_min;
+        else
+            new_value++;
+    }
+    if(down_requested){
+        if (value - 1 < value_min)
+            new_value = value_max;
+        else
+            new_value--;
+    }
+    return new_value;
+}
+
+void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_requested) {
+    // calculate the varoius addresses to modify 
+    uint32_t value_address_offset = config_menu_main_array[scroll_index].ESE_value_variable;
+    uint32_t *value_address_pointer = (void *) (tftDL_configData + value_address_offset);
+
+    // lut for custom enum
+    char** custom_enum_lut = config_menu_main_array[scroll_index].ESE_value_string_lut;
+    
+    // type of value being modified
+    cmr_config_t value_type = config_menu_main_array[scroll_index].value.type;
+    // current value of the item
+    uint8_t value = config_menu_main_array[scroll_index].value.value;
+    uint8_t value_min = config_menu_main_array[scroll_index].min;
+    uint8_t value_max = config_menu_main_array[scroll_index].max;
+    
+    // unsigned_integer,
+    // custom_enum
+
+    char buffer[5];
+
+    switch(value_type){
+        case unsigned_integer: 
+            // treat it like an integer
+        case integer:
+            value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested); 
+            snprintf(value_address_pointer, 4, "%3d", value);
+            break;
+        case boolean:
+            if(up_requested || down_requested){
+            	value = !value;
+                sprintf(value_address_pointer, config_boolean_string_lut[value]);
+            }
+            break;
+        case float_1_decimal:
+            value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested); 
+            snprintf(buffer, 5, "%4d", value);
+            buffer[0] = buffer[1];
+            buffer[1] = buffer[2];
+            buffer[2] = '.';
+            sprintf(value_address_pointer, buffer);
+            break;
+        case float_2_decimal:
+            value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested); 
+            snprintf(buffer, 5, "%4d", value);
+            buffer[0] = buffer[1];
+            buffer[1] = '.';
+            sprintf(value_address_pointer, buffer);
+            break;
+        case custom_enum:
+        	// -1 since index off of 0
+            value = configValueIncrementer(value, value_min, value_max - 1, up_requested, down_requested);
+            sprintf(value_address_pointer, custom_enum_lut[value]);
+    };
+
+    //Flush the modified value
+    config_menu_main_array[scroll_index].value.value = value;
+}
+
+void setConfigSelectionColor(int8_t scroll_index) {
     // index who's color to restore
     uint8_t restore_index = scroll_index - 1; // underflow is expected :)
+	if (scroll_index == 0){
+		restore_index = MAX_MENU_ITEMS;
+		restore_index--; // issues with this not working in one line since MAX_MENU_ITEMS is a #define hence 2 lines
+	}
     
     // calculate the varoius addresses to modify 
     uint32_t background_address_offset = config_menu_main_array[scroll_index].ESE_background_color_variable;
@@ -451,36 +538,41 @@ void setConfigSelectionColor(uint8_t scroll_index) {
     uint32_t *restore_background_item_pointer = (void *) (tftDL_configData + restore_background_address_offset);
 
     // modify the actual addresses 
-    *background_item_pointer = (void*) SELECTED_MENU_COLOR;
-   *restore_background_item_pointer = (void*) NOT_SELECTED_MENU_COLOR;
+    *background_item_pointer = (uint32_t) SELECTED_MENU_COLOR;
+    *restore_background_item_pointer = (uint32_t) NOT_SELECTED_MENU_COLOR;
 
     return;
 }
 
 // TODO: Document
 void tftDL_configUpdate(){
-    static uint8_t current_scroll_index = 0;
+    static int8_t current_scroll_index = -1; // start with a value of -1 to enter driver config first
     
     // update scroll and clear selection values
     if (config_scroll_requested) {
-        current_scroll_index++;
+    	current_scroll_index++;
         current_scroll_index = current_scroll_index % MAX_MENU_ITEMS;
 
-        if (current_scroll_index > 17){
-            int a = 0;
-        }
 
         // clear the selection value just in case no one accidently presses both buttons at the same time
         config_scroll_requested = false;
 
         // call the background color updater
         setConfigSelectionColor(current_scroll_index);
-        // TODO: If the selection is the driver, change all other values too
-        // update the selected item's colors and context text
+        setConfigContextString(current_scroll_index);
+        
+        config_increment_up_requested = false;
+        config_increment_down_requested = false;
     }
 
     // if there are no scroll values, then check/implement selection values
-    else{
+    else if (config_increment_up_requested || config_increment_down_requested) {
+        if (config_increment_down_requested && config_increment_up_requested)
+            return; // both are an error
+        
+        setConfigIncrementValue(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
+        config_increment_up_requested = false;
+        config_increment_down_requested = false;
         // // update selection value
         // if (config_selection_value != 0) {
         //     current_scroll_index += config_selection_value;

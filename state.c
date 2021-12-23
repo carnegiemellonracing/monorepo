@@ -12,9 +12,11 @@
 
 
 /** @brief declaration of config screen variables */
-bool config_increment_requested = false;
+bool config_increment_up_requested = false;
 /** @brief declaration of config screen variables */
-bool config_scroll_requested = true;
+bool config_increment_down_requested = false;
+/** @brief declaration of config screen variables */
+bool config_scroll_requested = false;
 
 /** @brief DIM state. */
 static volatile struct {
@@ -171,6 +173,7 @@ void stateVSMUpButton(bool pressed) {
     }
 
     // TODO: modifiy only if in config screen
+    config_increment_up_requested = true;
 
     cmr_canState_t vsmState = stateGetVSM();
     if (state.vsmReq < vsmState) {
@@ -200,6 +203,7 @@ void stateVSMDownButton(bool pressed) {
     }
 
     // TODO: modifiy only if in config screen
+    config_increment_down_requested = true;
 
     cmr_canState_t vsmState = stateGetVSM();
     if (state.vsmReq > vsmState) {

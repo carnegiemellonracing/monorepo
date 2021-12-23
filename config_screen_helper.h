@@ -2,32 +2,14 @@
 #include <stdio.h>        // snprintf
 #include <string.h>        // memcpy()
 
-static uint32_t this_stops_the_compiler_from_complaining[] = {
+__attribute__((unused)) static uint32_t this_stops_the_compiler_from_complaining[] = {
 #include "ESE/config.rawh"
 };
+
 
 #define NOT_SELECTED_MENU_COLOR 0x04000000
 #define SELECTED_MENU_COLOR 0x04AA0000 
 #define MAX_MENU_ITEMS 17;
-
-enum config_menu_items{
-    ACCL_TGT, 
-    SLIP_RATIO_ACCEL,
-    BURNOUT,
-    TRQ_BIAS,
-    MAX_RGN,
-    MAX_PSSR,
-    ONE_PDL,
-    RGN_BIAS,
-    TRAC_CTL,
-    SLIP_RATIO_DRIVE,
-    TRQ_VEC,
-    TV_GAIN,
-    MAX_TRQ,
-    MAX_SPD,
-    DRS,
-    WET
-};
 
 typedef enum{
     float_1_decimal,
@@ -37,6 +19,46 @@ typedef enum{
     unsigned_integer,
     custom_enum,
 } cmr_config_t;
+
+// TODO: Move this to the stm32 drivers
+typedef enum{
+    drs_dynamic,
+    drs_off,
+    drs_slippery,
+    drs_airbrake,
+    num_values_drs_enum,
+} cmr_drs_policy_t;
+
+// TODO: Move this to the stm32 drivers
+typedef enum{
+    regen_off,
+    regen_parallel,
+    regen_one_pedal,
+    regen_parallel_one_pedal,
+    num_values_regen_enum,
+} cmr_regen_policy_t;
+
+// TODO: Move this to the stm32 drivers
+typedef enum{
+    Saral,
+    Pravir,
+    Gabe,
+    Test1,
+    Test2,
+    Test3,
+    Test4,
+    Test5,
+    num_values_driver_enum
+} cmr_driver_profile_t;
+
+
+/*************** Various on screen string luts ***************/
+char* config_boolean_string_lut[2] = {"Off", "On"};
+char* config_driver_string_lut[8] = {"Saral", "Pravir", "Gabe", "Test1", "Test2", "Test3", "Test4", "Test5"};
+char* config_drs_string_lut[5] = {"Dynmk", "Off", "Slpry", "Ar brk", ""};
+char* config_regen_string_lut[5] = {"Off", "Prll", "One P", "Hybr", ""};
+/************************************************************/
+
 
 /**
  * @brief the value struct for the config menu
@@ -59,6 +81,7 @@ typedef struct {
     int32_t ESE_value_color_variable;
     int32_t ESE_value_variable;
     char *ESE_context_text_variable;
+    char** ESE_value_string_lut;
     cmr_config_value_t value;
     uint8_t min; // these will have to be converted at the time of initing
     uint8_t max; // these will have to be converted at the time of initing;
@@ -73,12 +96,13 @@ config_menu_item_t config_menu_main_array[17] = {
         .ESE_value_color_variable = ESE_DRIVER_COLOR, 
         .ESE_value_variable = ESE_DRIVER_VAL,
         .ESE_context_text_variable = "The driver profile",
+        .ESE_value_string_lut = config_driver_string_lut,
         .value = {
-            .type = float_1_decimal,
+            .type = custom_enum,
             .value = 0
         },
-        .min = 10, // scaled by 10 bc 1 decimal point 'float'
-        .max = 200, // scaled by 10 bc 1 decimal point 'float'
+        .min = 0, // scaled by 10 bc 1 decimal point 'float'
+        .max = num_values_driver_enum, // scaled by 10 bc 1 decimal point 'float'
     },
     {
         .name = "Accl Tgt",
@@ -98,7 +122,7 @@ config_menu_item_t config_menu_main_array[17] = {
         .ESE_background_color_variable = ESE_SLIP_RATIO_ACCEL_BOX,
         .ESE_value_color_variable = ESE_SLIP_RATIO_ACCEL_COLOR,
         .ESE_value_variable = ESE_SLIP_RATIO_ACCEL_VAL,
-        .ESE_context_text_variable = "FB correction solely for lnc ctl",
+        .ESE_context_text_variable = "FB correction for lnc ctl",
         .value = {
             .type = float_1_decimal,
             .value = 0
@@ -135,9 +159,9 @@ config_menu_item_t config_menu_main_array[17] = {
     {
         .name = "Max Regen Force",
         .ESE_background_color_variable = ESE_MAX_RGN_BOX,
-        .ESE_value_color_variable = ESE_BURNOUT_COLOR,
-        .ESE_value_variable = ESE_BURNOUT_VAL,
-        .ESE_context_text_variable = "Max regen force at Max Pressure",
+        .ESE_value_color_variable = ESE_MAX_RGN_COLOR,
+        .ESE_value_variable = ESE_MAX_RGN_VAL,
+        .ESE_context_text_variable = "Max regen force at Max Pssr",
         .value = {
             .type = integer,
             .value = 0
@@ -150,9 +174,9 @@ config_menu_item_t config_menu_main_array[17] = {
         .ESE_background_color_variable = ESE_MAX_PSSR_BOX,
         .ESE_value_color_variable = ESE_MAX_PSSR_COLOR, 
         .ESE_value_variable = ESE_MAX_PSSR_VAL,
-        .ESE_context_text_variable = "Brake pssr when max regen is applied",
+        .ESE_context_text_variable = "When max regen is applied",
         .value = {
-            .type = float_1_decimal,
+            .type = integer,
             .value = 0
         },
         .min = 0,
@@ -164,19 +188,20 @@ config_menu_item_t config_menu_main_array[17] = {
         .ESE_value_color_variable = ESE_REGEN_COLOR, 
         .ESE_value_variable = ESE_REGEN_VAL,
         .ESE_context_text_variable = "Enable various regen modes",
+        .ESE_value_string_lut = config_regen_string_lut,
         .value = {
             .type = custom_enum,
             .value = 0
         },
         .min = 0,
-        .max = 3,
+        .max = num_values_regen_enum,
     },
     {
         .name = "Regen Bias",
         .ESE_background_color_variable = ESE_RGN_BIAS_BOX,
         .ESE_value_color_variable = ESE_RGN_BIAS_COLOR,
         .ESE_value_variable = ESE_RGN_BIAS_VAL,
-        .ESE_context_text_variable = "All mode regen bias. 0 is FWBrake",
+        .ESE_context_text_variable = "RegenBrake bias. 0 is FWBrake",
         .value = {
             .type = integer,
             .value = 0
@@ -189,7 +214,7 @@ config_menu_item_t config_menu_main_array[17] = {
         .ESE_background_color_variable = ESE_TRAC_CTL_BOX,
         .ESE_value_color_variable = ESE_TRAC_CTL_COLOR, 
         .ESE_value_variable = ESE_TRAC_CTL_VAL,
-        .ESE_context_text_variable = "Enable or disable traction control",
+        .ESE_context_text_variable = "Enable traction control",
         .value = {
             .type = boolean,
             .value = 0
@@ -198,11 +223,24 @@ config_menu_item_t config_menu_main_array[17] = {
         .max = 1,
     },
     {
+        .name = "Slip Ratio traction control",
+        .ESE_background_color_variable = ESE_SLIP_RATIO_DRV_BOX,
+        .ESE_value_color_variable = ESE_SLIP_RATIO_DRV_COLOR, 
+        .ESE_value_variable = ESE_SLIP_RATIO_DRV_VAL,
+        .ESE_context_text_variable = "Max SR before traction Ctl",
+        .value = {
+            .type = float_1_decimal,
+            .value = 0
+        },
+        .min = 10,
+        .max = 30, //TODO: annotate this
+    },
+    {
         .name = "Torque Vectoring",
         .ESE_background_color_variable = ESE_TRQ_VEC_BOX,
         .ESE_value_color_variable = ESE_MAX_TRQ_COLOR,
         .ESE_value_variable = ESE_TRQ_VEC_VAL,
-        .ESE_context_text_variable = "Enable or disable torque vectoring",
+        .ESE_context_text_variable = "Enable torque vectoring",
         .value = {
             .type = boolean,
             .value = 0
@@ -215,7 +253,7 @@ config_menu_item_t config_menu_main_array[17] = {
         .ESE_background_color_variable = ESE_TV_GAIN_BOX,
         .ESE_value_color_variable = ESE_TV_GAIN_COLOR,
         .ESE_value_variable = ESE_TV_GAIN_VAL,
-        .ESE_context_text_variable = "Aggressiveness of torque vectoring",
+        .ESE_context_text_variable = "Torque vectoring gain",
         .value = {
             .type = integer,
             .value = 0
@@ -228,7 +266,7 @@ config_menu_item_t config_menu_main_array[17] = {
         .ESE_background_color_variable = ESE_MAX_TRQ_BOX,
         .ESE_value_color_variable = ESE_MAX_TRQ_COLOR, 
         .ESE_value_variable = ESE_MAX_TRQ_VAL,
-        .ESE_context_text_variable = "Max available torque for all modes",
+        .ESE_context_text_variable = "Max torque, all modes",
         .value = {
             .type = integer,
             .value = 0
@@ -241,7 +279,7 @@ config_menu_item_t config_menu_main_array[17] = {
         .ESE_background_color_variable = ESE_MAX_SPD_BOX,
         .ESE_value_color_variable = ESE_MAX_SPD_COLOR, 
         .ESE_value_variable = ESE_MAX_SPD_VAL,
-        .ESE_context_text_variable = "Max speed for all modes",
+        .ESE_context_text_variable = "Max speed, all modes",
         .value = {
             .type = integer,
             .value = 0
@@ -254,20 +292,21 @@ config_menu_item_t config_menu_main_array[17] = {
         .ESE_background_color_variable = ESE_DRS_BOX,
         .ESE_value_color_variable = ESE_DRS_COLOR,
         .ESE_value_variable = ESE_DRS_VAL,
-        .ESE_context_text_variable = "DRS Control policy in all modes", 
+        .ESE_context_text_variable = "DRS Control policy, all modes", 
+        .ESE_value_string_lut = config_drs_string_lut,
         .value = {
-            .type = boolean,
+            .type = custom_enum,
             .value = 0
         },
         .min = 0,
-        .max = 1,
+        .max = num_values_drs_enum,
     },
     {
         .name = "Wet",
         .ESE_background_color_variable = ESE_WET_BOX,
         .ESE_value_color_variable = ESE_WET_COLOR,
         .ESE_value_variable = ESE_WET_VAL,
-        .ESE_context_text_variable = "Wet mode, aggressive TC & capped TRQ",
+        .ESE_context_text_variable = "High TC & capped torque",
         .value = {
             .type = boolean,
             .value = 0
@@ -276,3 +315,12 @@ config_menu_item_t config_menu_main_array[17] = {
         .max = 1,
     }
 };
+
+
+
+// burnout value breaks everything (potentially s?)
+// max pressure also breaks everything (probs psi?)
+
+
+// ese screen editor
+// drs value at value not label
