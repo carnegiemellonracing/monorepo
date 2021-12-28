@@ -73,16 +73,15 @@ static void statusLED(void *pvParameters) {
  */
 int main(void) {
 
+    // System initialization.
+    HAL_Init();
+    cmr_rccSystemClockEnable();
+
     BMSCommandReceiveMeta.missCount = 0;
     BMSCommandReceiveMeta.timeoutFlag = 0;
     BMSCommandReceiveMeta.staleFlag = 1;
     BMSCommandReceiveMeta.differentStateCount = 0;
     BMSCommandReceiveMeta.wrongStateFlag = 0;
-
-    // System initialization.
-    HAL_Init();
-    cmr_rccSystemClockEnable();
-
     // Peripheral configuration.
     gpioInit();
     canInit();
@@ -100,13 +99,13 @@ int main(void) {
     );
 
     // BMB_task
-//    cmr_taskInit(
-//        &bmbSample_task,
-//        "BMB Sample Task",
-//        bmbSample_priority,
-//        vBMBSampleTask,
-//        NULL
-//    );
+   cmr_taskInit(
+       &bmbSample_task,
+       "BMB Sample Task",
+       bmbSample_priority,
+       vBMBSampleTask,
+       NULL
+   );
 //
 //    // State Task
 //    cmr_taskInit(

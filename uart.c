@@ -48,13 +48,13 @@ static uart_result_t uart_sendMessage(volatile uart_t *uart, Byte message[], uin
  */
 void uartInit(void) {
     const UART_InitTypeDef uartInit = {
-        .BaudRate = 250000,
-		    .WordLength = UART_WORDLENGTH_8B,
-		    .StopBits = UART_STOPBITS_1,
-		    .Parity = UART_PARITY_NONE,
-		    .HwFlowCtl = UART_HWCONTROL_NONE,
-		    .Mode = UART_MODE_TX_RX,
-		    .OverSampling = UART_OVERSAMPLING_16
+      .BaudRate = 250000,
+      .WordLength = UART_WORDLENGTH_8B,
+      .StopBits = UART_STOPBITS_1,
+      .Parity = UART_PARITY_NONE,
+      .HwFlowCtl = UART_HWCONTROL_NONE,
+      .Mode = UART_MODE_TX_RX,
+      .OverSampling = UART_OVERSAMPLING_16
     };
 
     cmr_uartInit(
@@ -66,6 +66,13 @@ void uartInit(void) {
     );
 
     crcInit();
+
+
+    uint8_t buf[1] = {0x39};
+    cmr_uartMsg_t txMsg;
+    cmr_uartMsgInit(&txMsg);
+    cmr_uartTX(&uart.port, &txMsg, buf, 1);
+    cmr_uartMsgWait(&txMsg);
 
     return;
 }
