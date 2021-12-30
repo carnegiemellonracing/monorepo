@@ -37,15 +37,26 @@ typedef enum {
 
     CMR_CANID_HVC_COMMAND = 0x130,              /**< @brief HVC command, sent by VSM. */
     CMR_CANID_HVC_PACK_VOLTAGE = 0x301,         /**< @brief HVC pack voltage. */
+    CMR_CANID_HVC_MINMAX_CELL_VOLTAGE = 0x310,  /**< @brief HVC pack min and max cell voltages*/
     CMR_CANID_HVC_MINMAX_CELL_TEMPS = 0x311,    /**< @brief HVC pack min and max cell temps. */
+    CMR_CANID_HVC_PACK_CURRENT = 0x321,         /**< @brief HVC pack current. */
 
-    CMR_CANID_CDC_WHEEL_SPEEDS = 0x132,         /**< @brief CDC wheel speeds. */
-    CMR_CANID_CDC_SOLENOID_PTC = 0x142,         /**< @brief CDC brake solenoid command. */
-    CMR_CANID_CDC_MOTOR_DATA = 0x152,           /**< @brief CDC motor data. */
-    CMR_CANID_CDC_MOTOR_PHASES = 0x172,         /**< @brief CDC motor phase currents. */
-    CMR_CANID_CDC_IMU_ACCEL = 0x162,            /**< @brief CDC IMU accelerations. */
-    CMR_CANID_CDC_MOTOR_FAULTS = 0x502,         /**< @brief CDC motor faults. */
-    CMR_CANID_CDC_MOTOR_TEMPS = 0x512,          /**< @brief CDC motor temperatures. */
+    CMR_CANID_CDC_WHEEL_SPEEDS = 0x132,         /**< @brief CDC (19e) wheel speeds. */
+    CMR_CANID_CDC_SOLENOID_PTC = 0x142,         /**< @brief CDC (19e) brake solenoid command. */
+    CMR_CANID_CDC_MOTOR_DATA = 0x152,           /**< @brief CDC (19e) motor data. */
+    CMR_CANID_CDC_MOTOR_PHASES = 0x172,         /**< @brief CDC (19e) motor phase currents. */
+    CMR_CANID_CDC_IMU_ACCEL = 0x162,            /**< @brief CDC (19e) IMU accelerations. */
+    CMR_CANID_CDC_MOTOR_FAULTS = 0x502,         /**< @brief CDC (19e) motor faults. */
+    CMR_CANID_CDC_MOTOR_TEMPS = 0x512,          /**< @brief CDC (19e) motor temperatures. */
+
+    CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK = 0x232,     /**< @brief CDC (20e) actual wheel speeds. */
+    CMR_CANID_CDC_WHEEL_SPEED_SETPOINT = 0x252,     /**< @brief CDC (20e) setpoint wheel speeds. */
+    CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK = 0x262,    /**< @brief CDC (20e) actual wheel torques. */
+    CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT = 0x272,    /**< @brief CDC (20e) setpoint wheel torques. */
+    CMR_CANID_CDC_POSE_POSITION = 0x282,            /**< @brief CDC (20e) lat/lon real car position. */
+    CMR_CANID_CDC_POSE_ORIENTATION = 0x292,         /**< @brief CDC (20e) roll/pitch/yaw real car position. */
+    CMR_CANID_CDC_POSE_VELOCITY = 0x2A2,            /**< @brief CDC (20e) real car velocity. */
+    CMR_CANID_CDC_POSE_ACCELERATION = 0x2B2,        /**< @brief CDC (20e) real car acceleration. */
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
     CMR_CANID_FSM_PEDALS_ADC = 0x533,           /**< @brief FSM raw pedal positions. */
@@ -63,6 +74,8 @@ typedef enum {
 
     CMR_CANID_DIM_REQUEST = 0x235,              /**< @brief DIM state/gear request. */
     CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x535,    /**< @brief DIM power diagnostics. */
+    CMR_CANID_DIM_TEXT_WRITE = 0x525,           /**< @brief DIM write command for sending text. */
+    CMR_CANID_DIM_ACTION_BUTTON = 0x515,        /**< @brief DIM action button pressed status. */
 
     CMR_CANID_AFC0_FAN_STATUS = 0x236,          /**< @brief AFC 0 fan status. */
     CMR_CANID_AFC0_DRIVER_TEMPS = 0x536,        /**< @brief AFC 0 temperatures. */
@@ -98,7 +111,8 @@ typedef enum {
     CMR_CANID_RMS_VOLTAGE_INFO = 0x007 + CMR_CANID_RMS_OFFSET,  /**< @brief RMS voltage info. */
     CMR_CANID_RMS_COMMAND = 0x020 + CMR_CANID_RMS_OFFSET,       /**< @brief RMS command. */
     CMR_CANID_RMS_PARAM_REQ = 0x021 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS parameter request. */
-    CMR_CANID_RMS_PARAM_RES = 0x022 + CMR_CANID_RMS_OFFSET,      /**< @brief RMS parameter response. */
+    CMR_CANID_RMS_PARAM_RES = 0x022 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS parameter response. */
+
 
     // BMS CAN Structs
     CMR_CANID_HVC_PACK_CURRENT = 0x531,                          /**< @brief HVC Pack Current. */
@@ -132,6 +146,28 @@ typedef enum {
     CMR_CANID_HVC_BMB_10_STATUS_TEMP = 0x7D1,
     CMR_CANID_HVC_BMB_11_STATUS_TEMP = 0x7E1,
 
+    CMR_CANID_SBG_STATUS_1 = 0x700,             /**< @brief SBG_ECAN_LOG_STATUS_01 */
+    CMR_CANID_SBG_STATUS_2 = 0x701,             /**< @brief SBG_ECAN_LOG_STATUS_02 */
+    CMR_CANID_SBG_STATUS_3 = 0x702,             /**< @brief SBG_ECAN_LOG_STATUS_03 */
+    CMR_CANID_SBG_EKF_ORIENT = 0x722,           /**< @brief SBG_ECAN_LOG_EKF_EULER */
+    CMR_CANID_SBG_EKF_POS = 0x724,              /**< @brief SBG_ECAN_LOG_EKF_POS */
+    CMR_CANID_SBG_EKF_VEL = 0x727,              /**< @brief SBG_ECAN_LOG_EKF_VEL */
+    CMR_CANID_SBG_IMU_ACCEL = 0x711,            /**< @brief SBG_ECAN_LOG_IMU_ACCEL */
+    CMR_CANID_SBG_IMU_GYRO = 0x712,             /**< @brief SBG_ECAN_LOG_IMU_GYRO */
+    CMR_CANID_SBG_BODY_VEL = 0x729,             /**< @brief SBG_ECAN_MSG_EKF_VEL_BODY */
+    CMR_CANID_SBG_AUTOMOTIVE = 0x72A,           /**< @brief SBG_ECAN_MSG_AUTO_TRACK_SLIP_CURV */
+
+    CMR_CANID_EMD_MEASUREMENT = 0x100,          /**< @brief EMD measurement for HV voltage/current. */
+    CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */
+    CMR_CANID_EMD_STATUS = 0x400,               /**< @brief EMD status. */
+
+    CMR_IZZIE_LOADCELL = 0x7F0,                 /**< @brief IZZIE Amp load data. */
+    CMR_CANID_CONTROLS_DEBUG_GLOBAl = 0x7E0,    /**< @brief control algo testing data. */
+    CMR_CANID_CONTROLS_DEBUG_FR = 0x7E1,        /**< @brief control algo testing data. */
+    CMR_CANID_CONTROLS_DEBUG_FL = 0x7E2,        /**< @brief control algo testing data. */
+    CMR_CANID_CONTROLS_DEBUG_RR = 0x7E3,        /**< @brief control algo testing data. */
+    CMR_CANID_CONTROLS_DEBUG_RL = 0x7E4,        /**< @brief control algo testing data. */
+    CMR_CANID_CONTROLS_PID = 0x7E5,        /**< @brief control algo testing data. */
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
