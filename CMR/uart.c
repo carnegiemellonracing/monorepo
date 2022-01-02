@@ -116,8 +116,21 @@ UART_FOREACH(UART_DEVICE)
         } \
         HAL_UART_IRQHandler(handle); \
     }
-UART_FOREACH(UART_IRQ_HANDLERS)
+// UART_FOREACH(UART_IRQ_HANDLERS)
 #undef UART_IRQ_HANDLERS
+
+void UART5_IRQHandler(void) {
+    UART_HandleTypeDef *handle = cmr_uartDevices[4].handle;
+    /* Handle idle interrupt, if present. */
+    if (__HAL_UART_GET_IT_SOURCE(handle, UART_IT_IDLE)) {
+        /* Disable idle interrupt, clear flag, and abort receive. */
+        __HAL_UART_DISABLE_IT(handle, UART_IT_IDLE);
+        __HAL_UART_CLEAR_IDLEFLAG(handle);
+        HAL_StatusTypeDef status = HAL_UART_AbortReceive_IT(handle);
+        configASSERT(status == HAL_OK);
+    }
+    HAL_UART_IRQHandler(handle);
+}
 
 /**
  * @brief Gets the corresponding UART interface from the HAL handle.

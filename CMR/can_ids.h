@@ -115,7 +115,7 @@ typedef enum {
 
 
     // BMS CAN Structs
-    CMR_CANID_HVC_PACK_CURRENT = 0x531,                          /**< @brief HVC Pack Current. */
+    // TODO: Fix this
     CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE = 0x541,                  /**< @brief HVC Max/Min Cell Voltage. */
     CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE = 0x551,              /**< @brief HVC Max/Min Cell Temperature. */
     CMR_CANID_HVC_LOW_VOLTAGE = 0x561,                           /**< @brief HVC Low Voltage. */
