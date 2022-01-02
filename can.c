@@ -409,8 +409,8 @@ static void sendHVCPackVoltage(void) {
     int32_t hvVolt = getHVmillivolts();
 
     cmr_canHVCPackVoltage_t HVCPackVoltage = {
-        .battVoltage = bVolt,
-        .hvVoltage = hvVolt,
+        .battVoltage_mV = bVolt,
+        .hvVoltage_mV = hvVolt,
     };
 
     canTX(CMR_CANID_HVC_PACK_VOLTAGE, &HVCPackVoltage, sizeof(HVCPackVoltage), canTX100Hz_period_ms);

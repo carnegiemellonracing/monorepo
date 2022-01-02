@@ -271,7 +271,7 @@ typedef enum {
 //-----------------------------------------------------------------------------
 // GLOBAL INTERFACE FUNCTION PROTOTYPES                                       |
 //-----------------------------------------------------------------------------
-void uart_init(void);
+void uartInit(void);
 uart_result_t uart_sendCommand(const uart_command_t *command);
 uart_result_t uart_receiveResponse(uart_response_t *response);
 
