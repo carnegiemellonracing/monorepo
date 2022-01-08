@@ -104,7 +104,7 @@ void vBMBSampleTask(void *pvParameters) {
 
     // Initialize the slave UART interface
     taskENTER_CRITICAL();
-    uart_result_t retv = slave_uart_autoAddress();
+    cmr_uart_result_t retv = slave_uart_autoAddress();
     taskEXIT_CRITICAL();
 
     if(retv != UART_SUCCESS) {
@@ -146,7 +146,7 @@ void vBMBSampleTask(void *pvParameters) {
 
     for(;;) {
         uart_response_t channelResponse = {0};
-        uart_result_t uartRetv = UART_SUCCESS;
+        cmr_uart_result_t uartRetv = UART_SUCCESS;
 
 
         // Sampling method #2: BQ Protocol p12

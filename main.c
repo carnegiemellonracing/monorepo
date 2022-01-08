@@ -84,19 +84,19 @@ int main(void) {
     BMSCommandReceiveMeta.wrongStateFlag = 0;
     // Peripheral configuration.
     gpioInit();
-    canInit();
+    // canInit();
     uartInit();
-//    adcInit();
-//    sensorsInit();
-//    spiInit();
+    // adcInit();
+    // sensorsInit();
+    // spiInit();
 
-    cmr_taskInit(
-        &statusLED_task,
-        "statusLED",
-        statusLED_priority,
-        statusLED,
-        NULL
-    );
+    // cmr_taskInit(
+    //     &statusLED_task,
+    //     "statusLED",
+    //     statusLED_priority,
+    //     statusLED,
+    //     NULL
+    // );
 
     // BMB_task
    cmr_taskInit(
@@ -106,15 +106,15 @@ int main(void) {
        vBMBSampleTask,
        NULL
    );
-//
-//    // State Task
-//    cmr_taskInit(
-//        &setState_task,
-//        "Set State Task",
-//        setState_priority,
-//        vSetStateTask,
-//        NULL
-//    );
+
+    // // State Task
+    // cmr_taskInit(
+    //     &setState_task,
+    //     "Set State Task",
+    //     setState_priority,
+    //     vSetStateTask,
+    //     NULL
+    // );
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

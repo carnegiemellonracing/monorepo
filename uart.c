@@ -37,8 +37,8 @@ static uart_t uart;
 //-----------------------------------------------------------------------------
 static uint16_t uart_packCommand(const uart_command_t *command, Byte message[]);
 static uint16_t uart_unpackResponse(uint8_t frameInitByte, uart_response_t *response);
-static uart_result_t uart_getChar(volatile uart_t *uart, uint8_t *c);
-static uart_result_t uart_sendMessage(volatile uart_t *uart, Byte message[], uint16_t messageLength);
+static cmr_uart_result_t uart_getChar(volatile uart_t *uart, uint8_t *c);
+static cmr_uart_result_t uart_sendMessage(volatile uart_t *uart, Byte message[], uint16_t messageLength);
 
 //-----------------------------------------------------------------------------
 // GLOBAL INTERFACE FUNCTIONS                                                 |
@@ -57,22 +57,13 @@ void uartInit(void) {
       .OverSampling = UART_OVERSAMPLING_16
     };
 
-    cmr_uartInit(
+    cmr_uart_polling_init(
         &uart.port, UART5, &uartInit,
         GPIOB, GPIO_PIN_12,     /* rx */
-        GPIOB, GPIO_PIN_13,     /* tx */
-        DMA1_Stream0, DMA_CHANNEL_4,    /* rx dma */
-        DMA1_Stream7, DMA_CHANNEL_8     /* tx dma */
+        GPIOB, GPIO_PIN_13      /* tx */
     );
 
     crcInit();
-
-
-    uint8_t buf[1] = {0x39};
-    cmr_uartMsg_t txMsg;
-    cmr_uartMsgInit(&txMsg);
-    cmr_uartTX(&uart.port, &txMsg, buf, 1);
-    cmr_uartMsgWait(&txMsg);
 
     return;
 }
@@ -86,14 +77,14 @@ void uartInit(void) {
  * @param responseLength The location for where to store the result length
  * @return The status of the UART result (success or failure)
  */
-uart_result_t uart_sendCommand(const uart_command_t *command) {
+cmr_uart_result_t uart_sendCommand(const uart_command_t *command) {
   
   // Open the command to pack the message and gather response information
-  Byte message[MAX_COMMAND_LENGTH];
+  Byte message[MAX_COMMAND_LENGTH] = { 0 };
   uint16_t messageLength = uart_packCommand(command, message);
   
   // Send the message
-  uart_result_t retv = uart_sendMessage(&uart, message, messageLength);
+  cmr_uart_result_t retv = uart_sendMessage(&uart, message, messageLength);
   
   return retv;
 }
@@ -106,10 +97,10 @@ uart_result_t uart_sendCommand(const uart_command_t *command) {
  * @param messageLength The number of bytes to read
  * @return The status of the UART result (success or failure)
  */
-uart_result_t uart_receiveResponse(uart_response_t *response) {
+cmr_uart_result_t uart_receiveResponse(uart_response_t *response) {
 
-  uart_result_t retvTotal = UART_SUCCESS;
-  uart_result_t retv = UART_SUCCESS;
+  cmr_uart_result_t retvTotal = UART_SUCCESS;
+  cmr_uart_result_t retv = UART_SUCCESS;
 
   uint8_t receivedBytes[128] = {0};
   retv = uart_getChar(&uart, &receivedBytes[0]);
@@ -262,19 +253,8 @@ static uint16_t uart_unpackResponse(uint8_t frameInitByte, uart_response_t *resp
  * @param c A reference to the location we want to store the read character
  * @return The status of the UART result (success or failure)
  */
-static uart_result_t uart_getChar(volatile uart_t *uart, uint8_t *c) {
-  
-  cmr_uartMsg_t rx;
-  cmr_uartMsgInit(&rx);
-  cmr_uartRX(&(uart->port), &rx, c, sizeof(*c), CMR_UART_RXOPTS_IDLEABORT);
-  // TODO: look into size
-  size_t len = cmr_uartMsgWait(&rx);
-  // *c = *c & 0x000000FF;
-  if (len != 1)
-  {
-    return UART_FAILURE;
-  }
-  return UART_SUCCESS;  
+static cmr_uart_result_t uart_getChar(volatile uart_t *uart, uint8_t *c) {
+  return cmr_uart_pollingRX(&(uart->port), c, 1);
 }
 
 /** UART Send Message
@@ -286,15 +266,6 @@ static uart_result_t uart_getChar(volatile uart_t *uart, uint8_t *c) {
  * @param messageLength The number of bytes from message to send
  * @return The status of the UART result (success or failure)
  */
-static uart_result_t uart_sendMessage(volatile uart_t *uart, Byte message[], uint16_t messageLength) {
-  
-  cmr_uartMsg_t tx;
-  cmr_uartMsgInit(&tx);
-  cmr_uartTX(&(uart->port), &tx, message, messageLength);
-  size_t len = cmr_uartMsgWait(&tx);
-  if (len != messageLength)
-  {
-    return UART_FAILURE;
-  }
-  return UART_SUCCESS;
+static cmr_uart_result_t uart_sendMessage(volatile uart_t *uart, Byte message[], uint16_t messageLength) {
+  return cmr_uart_pollingTX(&(uart->port), message, messageLength);
 }

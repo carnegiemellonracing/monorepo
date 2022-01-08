@@ -74,7 +74,7 @@ static const frame_init_t CMD_SINGLE_RESP_RADDR8_DATA2 = {
 //-----------------------------------------------------------------------------
 // STATIC HELPER FUNCTION PROTOTYPES                                          |
 //-----------------------------------------------------------------------------
-static uart_result_t slave_uart_clearFaultFlags(uint8_t boardNum);
+static cmr_uart_result_t slave_uart_clearFaultFlags(uint8_t boardNum);
 
 //-----------------------------------------------------------------------------
 // GLOBAL INTERFACE FUNCTIONS                                                 |
@@ -85,11 +85,11 @@ static uart_result_t slave_uart_clearFaultFlags(uint8_t boardNum);
  * boards. The steps begin on page 2 of the datasheet.
  * @return The status of the UART result (success or failure)
  */
-uart_result_t slave_uart_autoAddress() {
+cmr_uart_result_t slave_uart_autoAddress() {
   
 // Wake up and configure slave boards
-  uart_result_t retvTotal = UART_SUCCESS;
-  uart_result_t retv = UART_SUCCESS;
+  cmr_uart_result_t retvTotal = UART_SUCCESS;
+  cmr_uart_result_t retv = UART_SUCCESS;
   
   /* From page 2 of BQ76PL455A-Q1 protocol datasheet 1.2.1
   * Enable the default communication params:
@@ -194,15 +194,15 @@ uart_result_t slave_uart_autoAddress() {
   
   // From page 6 of BQ76PL455A-Q1 protocol datasheet 1.2.7
   // Clear all existing faults on the boards, starting at top board
-  uart_command_t clearDeviceFault = {
+  static uart_command_t clearDeviceFault = {
     .frameInit = &CMD_SINGLE_NRESP_RADDR8_DATA2,
     .deviceAddress = TOP_SLAVE_BOARD,
     .registerAddress = SLAVE_REG_FAULT_SUM0,
     .data = {0xFF, 0xC0},
   };
-  for(int8_t boardNum = TOP_SLAVE_BOARD; boardNum >= 0; --boardNum) {
+  for(int8_t boardNum = TOP_SLAVE_BOARD; boardNum >= BOT_SLAVE_BOARD; --boardNum) {
     clearDeviceFault.deviceAddress = boardNum;
-    retv = uart_sendCommand(&clearDeviceFault);
+    retv = uart_sendCommand(&clearDeviceFault);//Precise Error (bus fault) Here (address 0x2e690800)
     if (retv != UART_SUCCESS) {
       retvTotal = UART_FAILURE;
     }
@@ -218,10 +218,10 @@ uart_result_t slave_uart_autoAddress() {
  * @param boardNum The number of the board in the BMS slave stack [0,N-1]
  * @return The status of the UART result (success or failure)
  */
-uart_result_t slave_uart_configureSampling(uint8_t boardNum) {
+cmr_uart_result_t slave_uart_configureSampling(uint8_t boardNum) {
   
-  uart_result_t retvTotal = UART_SUCCESS;
-  uart_result_t retv = UART_SUCCESS;
+  cmr_uart_result_t retvTotal = UART_SUCCESS;
+  cmr_uart_result_t retv = UART_SUCCESS;
     
   // From page 7 of BQ76PL455A-Q1 protocol datasheet 2.2.1
   // Configure initial sampling delay
@@ -272,7 +272,7 @@ uart_result_t slave_uart_configureSampling(uint8_t boardNum) {
     retvTotal = UART_FAILURE;
   }
     
-  uart_command_t checkUnderVoltageFault = {
+  static const uart_command_t checkUnderVoltageFault = {
     .frameInit = &CMD_SINGLE_RESP_RADDR8_DATA1,
     .deviceAddress = 0x00,
     .registerAddress = SLAVE_REG_FAULT_UV0,
@@ -282,7 +282,7 @@ uart_result_t slave_uart_configureSampling(uint8_t boardNum) {
   if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
-  uart_response_t undervoltageRegisterCheckResponse = {0};
+  static const uart_response_t undervoltageRegisterCheckResponse = {0};
   retv = uart_receiveResponse(&undervoltageRegisterCheckResponse);
   if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
@@ -291,10 +291,10 @@ uart_result_t slave_uart_configureSampling(uint8_t boardNum) {
   return retvTotal;
 }
 
-uart_result_t slave_uart_configureChannels() {
+cmr_uart_result_t slave_uart_configureChannels() {
   
-  uart_result_t retvTotal;
-  uart_result_t retv;
+  cmr_uart_result_t retvTotal;
+  cmr_uart_result_t retv;
   
   static const uart_command_t selectNumberOfChannels = {
     .frameInit = &CMD_BCAST_NRESP_RADDR8_DATA1,
@@ -366,10 +366,10 @@ uart_result_t slave_uart_configureChannels() {
   return retvTotal;
 }
 
-uart_result_t slave_uart_sampleAllChannels(uart_response_t response[NUM_BMS_SLAVE_BOARDS]) {
+cmr_uart_result_t slave_uart_sampleAllChannels(uart_response_t response[NUM_BMS_SLAVE_BOARDS]) {
 
-	uart_result_t retvTotal = UART_SUCCESS;
-	uart_result_t retv = UART_SUCCESS;
+	cmr_uart_result_t retvTotal = UART_SUCCESS;
+	cmr_uart_result_t retv = UART_SUCCESS;
 
   static const uart_command_t sampleAllChannels = {
     .frameInit = &CMD_BCAST_RESP_RADDR8_DATA1,
@@ -392,9 +392,9 @@ uart_result_t slave_uart_sampleAllChannels(uart_response_t response[NUM_BMS_SLAV
 	return retvTotal;
 }
 
-uart_result_t slave_uart_broadcast_sampleAndStore() {
+cmr_uart_result_t slave_uart_broadcast_sampleAndStore() {
 
-  uart_result_t retv = UART_SUCCESS;
+  cmr_uart_result_t retv = UART_SUCCESS;
 
   static const uart_command_t sampleAndStore = {
     .frameInit = &CMD_BCAST_NRESP_RADDR8_DATA1,
@@ -407,10 +407,10 @@ uart_result_t slave_uart_broadcast_sampleAndStore() {
   return retv;
 }
 
-uart_result_t slave_uart_sampleDeviceChannels(uint8_t deviceAddress, uart_response_t *response) {
+cmr_uart_result_t slave_uart_sampleDeviceChannels(uint8_t deviceAddress, uart_response_t *response) {
 
-    uart_result_t retvTotal = UART_SUCCESS;
-    uart_result_t retv = UART_SUCCESS;
+    cmr_uart_result_t retvTotal = UART_SUCCESS;
+    cmr_uart_result_t retv = UART_SUCCESS;
 
     // Command to sample all channels on a single BMB
     // BQ Protocol p13
@@ -435,9 +435,9 @@ uart_result_t slave_uart_sampleDeviceChannels(uint8_t deviceAddress, uart_respon
     return retvTotal;
 }
 
-uart_result_t slave_uart_configureGPIODirection(uint8_t DDRVector, uint8_t deviceAddress) {
+cmr_uart_result_t slave_uart_configureGPIODirection(uint8_t DDRVector, uint8_t deviceAddress) {
 
-    uart_result_t retv = UART_SUCCESS;
+    cmr_uart_result_t retv = UART_SUCCESS;
 
     // Command to configure GPIO data direction
     // BQ Protocol p21
@@ -453,9 +453,9 @@ uart_result_t slave_uart_configureGPIODirection(uint8_t DDRVector, uint8_t devic
     return retv;
 }
 
-uart_result_t slave_uart_setGPIO(uint8_t data, uint8_t deviceAddress) {
+cmr_uart_result_t slave_uart_setGPIO(uint8_t data, uint8_t deviceAddress) {
 
-    uart_result_t retv = UART_SUCCESS;
+    cmr_uart_result_t retv = UART_SUCCESS;
 
     // Command to configure GPIO data direction
     // BQ Protocol p21
@@ -471,9 +471,9 @@ uart_result_t slave_uart_setGPIO(uint8_t data, uint8_t deviceAddress) {
     return retv;
 }
 
-uart_result_t slave_uart_broadcast_setBMBTimeout() {
+cmr_uart_result_t slave_uart_broadcast_setBMBTimeout() {
 
-    uart_result_t retv = UART_SUCCESS;
+    cmr_uart_result_t retv = UART_SUCCESS;
 
     // Command to configure communications timeout
     // BQ Datasheet p80
@@ -494,8 +494,8 @@ uart_result_t slave_uart_broadcast_setBMBTimeout() {
 
 // "cells" is a bit vector containing the cells to be balanced.
 // For example, cells = 0x0305 will balance cells 9, 8, 2, and 0.
-uart_result_t slave_uart_sendBalanceCmd(uint16_t cells, uint8_t deviceAddress) {
-	uart_result_t retv = UART_SUCCESS;
+cmr_uart_result_t slave_uart_sendBalanceCmd(uint16_t cells, uint8_t deviceAddress) {
+	cmr_uart_result_t retv = UART_SUCCESS;
 
 	// Clear top 4 bits, since our segments are 12 cells each
 	cells &= 0x0FFF;
@@ -520,10 +520,10 @@ uart_result_t slave_uart_sendBalanceCmd(uint16_t cells, uint8_t deviceAddress) {
 // STATIC HELPER FUNCTIONS                                                    |
 //-----------------------------------------------------------------------------
 
-static uart_result_t slave_uart_clearFaultFlags(uint8_t boardNum) {
+static cmr_uart_result_t slave_uart_clearFaultFlags(uint8_t boardNum) {
  
-  uart_result_t retvTotal = UART_SUCCESS;
-  uart_result_t retv = UART_SUCCESS;
+  cmr_uart_result_t retvTotal = UART_SUCCESS;
+  cmr_uart_result_t retv = UART_SUCCESS;
  
   // From page 8 of BQ76PL455A-Q1 protocol datasheet 2.2.4
   // Clear all fault flags on BMS slave board
