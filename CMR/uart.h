@@ -111,6 +111,22 @@ void cmr_uartRX(
     void *data, size_t len, cmr_uartRXOpts_t opts
 );
 
+/** @brief Maximum number of UART polling retries. */
+#define CMR_UART_DEFAULT_TIMEOUT 10000
+
+/** @brief Uart polling result */
+typedef enum {
+  UART_FAILURE = 0,
+  UART_SUCCESS = 1,
+} cmr_uart_result_t;
+
+
+void cmr_uart_polling_init(cmr_uart_t *uart, USART_TypeDef *instance, const UART_InitTypeDef *init,
+    GPIO_TypeDef *rxPort, uint16_t rxPin,
+    GPIO_TypeDef *txPort, uint16_t txPin);
+cmr_uart_result_t cmr_uart_pollingTX(cmr_uart_t *uart, uint8_t *data, uint16_t length);
+cmr_uart_result_t cmr_uart_pollingRX(cmr_uart_t *uart, uint8_t *data, uint16_t length);
+
 #endif /* HAL_DMA_MODULE_ENABLED */
 #endif /* HAL_UART_MODULE_ENABLED */
 #endif /* HAL_USART_MODULE_ENABLED */

@@ -116,21 +116,8 @@ UART_FOREACH(UART_DEVICE)
         } \
         HAL_UART_IRQHandler(handle); \
     }
-// UART_FOREACH(UART_IRQ_HANDLERS)
+UART_FOREACH(UART_IRQ_HANDLERS)
 #undef UART_IRQ_HANDLERS
-
-void UART5_IRQHandler(void) {
-    UART_HandleTypeDef *handle = cmr_uartDevices[4].handle;
-    /* Handle idle interrupt, if present. */
-    if (__HAL_UART_GET_IT_SOURCE(handle, UART_IT_IDLE)) {
-        /* Disable idle interrupt, clear flag, and abort receive. */
-        __HAL_UART_DISABLE_IT(handle, UART_IT_IDLE);
-        __HAL_UART_CLEAR_IDLEFLAG(handle);
-        HAL_StatusTypeDef status = HAL_UART_AbortReceive_IT(handle);
-        configASSERT(status == HAL_OK);
-    }
-    HAL_UART_IRQHandler(handle);
-}
 
 /**
  * @brief Gets the corresponding UART interface from the HAL handle.
@@ -519,6 +506,88 @@ size_t cmr_uartMsgWait(cmr_uartMsg_t *msg) {
     }
 
     return msg->len;
+}
+
+
+/**
+ * @brief initializes polling UART
+ *
+ * @param
+ */
+void cmr_uart_polling_init(cmr_uart_t *uart, USART_TypeDef *instance, const UART_InitTypeDef *init,
+    GPIO_TypeDef *rxPort, uint16_t rxPin,
+    GPIO_TypeDef *txPort, uint16_t txPin) {
+
+    *uart = (cmr_uart_t) {
+        .handle = {
+            .Instance = instance,
+            .Init = *init
+        }
+    };
+
+    // Enable UART Clock
+    cmr_rccUSARTClockEnable(instance);
+
+    // Configure UART device.
+    uint8_t pinAlternate;
+    cmr_uartDeviceInit(instance, &uart->handle, &pinAlternate);
+
+    // Configure pins.
+    GPIO_InitTypeDef pinConfig = {
+        .Pin = rxPin,
+        .Mode = GPIO_MODE_AF_PP,
+        .Pull = GPIO_PULLUP,
+        .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
+        .Alternate = pinAlternate
+    };
+    cmr_rccGPIOClockEnable(rxPort);
+    HAL_GPIO_Init(rxPort, &pinConfig);
+
+    pinConfig.Pin = txPin;
+    cmr_rccGPIOClockEnable(txPort);
+    HAL_GPIO_Init(txPort, &pinConfig);
+
+    if (HAL_UART_Init(&uart->handle) != HAL_OK) {
+        cmr_panic("HAL_UART_Init() failed!");
+    }
+
+    return;
+}
+
+/**
+* @brief transmits a byte over UART
+*
+* @param
+*/
+cmr_uart_result_t cmr_uart_pollingTX(cmr_uart_t *uart, uint8_t *data, uint16_t length) {
+    if (uart == NULL || data == NULL) {
+        return UART_FAILURE;
+    }
+
+    HAL_StatusTypeDef status = HAL_UART_Transmit(
+        &(uart->handle), data, length, CMR_UART_DEFAULT_TIMEOUT);
+
+    if (status != HAL_OK) {
+        return UART_FAILURE;
+    }
+    return UART_SUCCESS;
+}
+
+/**
+* @brief receives a byte over UART
+*/
+cmr_uart_result_t cmr_uart_pollingRX(cmr_uart_t *uart, uint8_t *data, uint16_t length) {
+    if (uart == NULL || data == NULL) {
+        return UART_FAILURE;
+    }
+
+    HAL_StatusTypeDef status = HAL_UART_Receive(
+        &(uart->handle), data, length, CMR_UART_DEFAULT_TIMEOUT);
+
+    if (status != HAL_OK) {
+        return UART_FAILURE;
+    }
+    return UART_SUCCESS;
 }
 
 #endif /* HAL_DMA_MODULE_ENABLED */
