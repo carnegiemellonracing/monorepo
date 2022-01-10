@@ -582,7 +582,7 @@ cmr_uart_result_t cmr_uart_pollingRX(cmr_uart_t *uart, uint8_t *data, uint16_t l
     }
 
     HAL_StatusTypeDef status = HAL_UART_Receive(
-        &(uart->handle), data, length, CMR_UART_DEFAULT_TIMEOUT);
+        &(uart->handle), data, length, CMR_UART_DEFAULT_TIMEOUT);//TODO: Decrease TIMEOUT
 
     if (status != HAL_OK) {
         return UART_FAILURE;
