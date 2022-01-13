@@ -564,8 +564,15 @@ cmr_uart_result_t cmr_uart_pollingTX(cmr_uart_t *uart, uint8_t *data, uint16_t l
         return UART_FAILURE;
     }
 
-    HAL_StatusTypeDef status = HAL_UART_Transmit(
-        &(uart->handle), data, length, CMR_UART_DEFAULT_TIMEOUT);
+    int timeout = CMR_UART_DEFAULT_TIMEOUT;
+    HAL_StatusTypeDef status = HAL_ERROR;
+
+    while (timeout > 0 && status != HAL_OK) {
+        // May still hang within task critical sections
+        status = HAL_UART_Transmit(
+            &(uart->handle), data, length, 1);
+        timeout--;
+    }
 
     if (status != HAL_OK) {
         return UART_FAILURE;
@@ -581,8 +588,15 @@ cmr_uart_result_t cmr_uart_pollingRX(cmr_uart_t *uart, uint8_t *data, uint16_t l
         return UART_FAILURE;
     }
 
-    HAL_StatusTypeDef status = HAL_UART_Receive(
-        &(uart->handle), data, length, CMR_UART_DEFAULT_TIMEOUT);//TODO: Decrease TIMEOUT
+    int timeout = CMR_UART_DEFAULT_TIMEOUT;
+    HAL_StatusTypeDef status = HAL_ERROR;
+
+    while (timeout > 0 && status != HAL_OK) {
+        // May still hang within task critical sections
+        status = HAL_UART_Receive(
+            &(uart->handle), data, length, 1);
+        timeout--;
+    }
 
     if (status != HAL_OK) {
         return UART_FAILURE;

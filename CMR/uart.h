@@ -112,7 +112,7 @@ void cmr_uartRX(
 );
 
 /** @brief Maximum number of UART polling retries. */
-#define CMR_UART_DEFAULT_TIMEOUT 10000
+#define CMR_UART_DEFAULT_TIMEOUT 1000
 
 /** @brief Uart polling result */
 typedef enum {
