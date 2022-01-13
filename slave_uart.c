@@ -107,19 +107,19 @@ cmr_uart_result_t slave_uart_autoAddress() {
   };
   
   retv = uart_sendCommand(&enableDefaultCommunicationParams);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
   // Disable the user checksum for the boards
-  uart_command_t disableUserChecksum = {
+  static const uart_command_t disableUserChecksum = {
     .frameInit = &CMD_BCAST_NRESP_RADDR8_DATA2,
     .registerAddress = SLAVE_REG_MASK_DEV0,
     .data = {0x80, 0x00},
   };
  
   retv = uart_sendCommand(&disableUserChecksum);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -141,11 +141,11 @@ cmr_uart_result_t slave_uart_autoAddress() {
   };
   
   retv = uart_sendCommand(&selectAutoAddressMode);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   retv = uart_sendCommand(&enterAutoAddressMode);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -159,7 +159,7 @@ cmr_uart_result_t slave_uart_autoAddress() {
   for(uint8_t boardNum = 0; boardNum < NUM_BMS_SLAVE_BOARDS; ++boardNum) {
     setDeviceAddress.data[0] = boardNum;
     retv = uart_sendCommand(&setDeviceAddress);
-    if (retv != UART_SUCCESS) {
+    while (retv != UART_SUCCESS) {
       retvTotal = UART_FAILURE;
     }
   }
@@ -168,14 +168,14 @@ cmr_uart_result_t slave_uart_autoAddress() {
   
   // From page 5 of BQ76PL455A-Q1 protocol datasheet 1.2.5/1.2.6
   // Receiver/Transmitter for Top/Bottom boards
-  static const uart_command_t disableHighSideReceiverTopBoard = {
+  static uart_command_t disableHighSideReceiverTopBoard = {
     .frameInit = &CMD_SINGLE_NRESP_RADDR8_DATA2,
     .deviceAddress = TOP_SLAVE_BOARD,
     .registerAddress = SLAVE_REG_COMCONFIG0,
     // Enable only CommL and FaultL
     .data = {0x10, 0x28},
   };
-  static const uart_command_t disableLowSideTransmitterBotBoard = {
+  static uart_command_t disableLowSideTransmitterBotBoard = {
     .frameInit = &CMD_SINGLE_NRESP_RADDR8_DATA2,
     .deviceAddress = BOT_SLAVE_BOARD,
     .registerAddress = SLAVE_REG_COMCONFIG0,
@@ -184,17 +184,17 @@ cmr_uart_result_t slave_uart_autoAddress() {
   };
   
   retv = uart_sendCommand(&disableHighSideReceiverTopBoard);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   retv = uart_sendCommand(&disableLowSideTransmitterBotBoard);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
   // From page 6 of BQ76PL455A-Q1 protocol datasheet 1.2.7
   // Clear all existing faults on the boards, starting at top board
-  static uart_command_t clearDeviceFault = {
+  uart_command_t clearDeviceFault = {
     .frameInit = &CMD_SINGLE_NRESP_RADDR8_DATA2,
     .deviceAddress = TOP_SLAVE_BOARD,
     .registerAddress = SLAVE_REG_FAULT_SUM0,
@@ -202,8 +202,8 @@ cmr_uart_result_t slave_uart_autoAddress() {
   };
   for(int8_t boardNum = TOP_SLAVE_BOARD; boardNum >= BOT_SLAVE_BOARD; --boardNum) {
     clearDeviceFault.deviceAddress = boardNum;
-    retv = uart_sendCommand(&clearDeviceFault);//Precise Error (bus fault) Here (address 0x2e690800)
-    if (retv != UART_SUCCESS) {
+    retv = uart_sendCommand(&clearDeviceFault);
+    while (retv != UART_SUCCESS) {
       retvTotal = UART_FAILURE;
     }
   }
@@ -233,7 +233,7 @@ cmr_uart_result_t slave_uart_configureSampling(uint8_t boardNum) {
   };
   
   retv = uart_sendCommand(&configureInitialSamplingDelay);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -247,7 +247,7 @@ cmr_uart_result_t slave_uart_configureSampling(uint8_t boardNum) {
   };
     
   retv = uart_sendCommand(&configureVoltageSamplePeriod);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -261,30 +261,30 @@ cmr_uart_result_t slave_uart_configureSampling(uint8_t boardNum) {
   };
   
   retv = uart_sendCommand(&configureOversamplingRate);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
   // From page 8 of BQ76PL455A-Q1 protocol datasheet 2.2.4
   // Clear all fault flags on BMS slave board
   retv = slave_uart_clearFaultFlags(boardNum);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
     
-  static const uart_command_t checkUnderVoltageFault = {
+  uart_command_t checkUnderVoltageFault = {
     .frameInit = &CMD_SINGLE_RESP_RADDR8_DATA1,
     .deviceAddress = 0x00,
     .registerAddress = SLAVE_REG_FAULT_UV0,
     .data = {0x01}
   };
   retv = uart_sendCommand(&checkUnderVoltageFault);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
-  static const uart_response_t undervoltageRegisterCheckResponse = {0};
+  uart_response_t undervoltageRegisterCheckResponse = {0};
   retv = uart_receiveResponse(&undervoltageRegisterCheckResponse);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -293,30 +293,30 @@ cmr_uart_result_t slave_uart_configureSampling(uint8_t boardNum) {
 
 cmr_uart_result_t slave_uart_configureChannels() {
   
-  cmr_uart_result_t retvTotal;
-  cmr_uart_result_t retv;
+  cmr_uart_result_t retvTotal = UART_SUCCESS;
+  cmr_uart_result_t retv = UART_SUCCESS;
   
-  static const uart_command_t selectNumberOfChannels = {
+  static uart_command_t selectNumberOfChannels = {
     .frameInit = &CMD_BCAST_NRESP_RADDR8_DATA1,
     .registerAddress = SLAVE_REG_NCHAN,
     .data = {0x0C},
   };
   retv = uart_sendCommand(&selectNumberOfChannels);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
-  static const uart_command_t selectChannelsOnModule = {
+  static uart_command_t selectChannelsOnModule = {
     .frameInit = &CMD_BCAST_NRESP_RADDR8_DATA4,
     .registerAddress = SLAVE_REG_CHANNELS0,
     .data = {0x0F, 0xFF, 0xFF, 0x00},
   };
   retv = uart_sendCommand(&selectChannelsOnModule);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
-  static const uart_command_t setOvervoltageThresholds = {
+  static uart_command_t setOvervoltageThresholds = {
     .frameInit = &CMD_BCAST_NRESP_RADDR8_DATA2,
     .registerAddress = SLAVE_REG_CELL_OV0,
     // Cell over-voltage set to 4.2v, max spec'ed for the cell. Cells won't be charged above
@@ -324,7 +324,7 @@ cmr_uart_result_t slave_uart_configureChannels() {
     // BQ Datasheet p93
     .data = {0xD7, 0x08},
   };
-  static const uart_command_t setUndervoltageThresholds = {
+  static uart_command_t setUndervoltageThresholds = {
     .frameInit = &CMD_BCAST_NRESP_RADDR8_DATA2,
     .registerAddress = SLAVE_REG_CELL_UV0,
     // Cell under-voltage set to 2.5V, which will only be reached during a large droop while
@@ -334,11 +334,11 @@ cmr_uart_result_t slave_uart_configureChannels() {
   };
   
   retv = uart_sendCommand(&setOvervoltageThresholds);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   retv = uart_sendCommand(&setUndervoltageThresholds);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
 
@@ -354,7 +354,7 @@ cmr_uart_result_t slave_uart_configureChannels() {
   };
   
   retv = uart_sendCommand(&setComparatorUndervoltageThresholds);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
 */
@@ -371,20 +371,20 @@ cmr_uart_result_t slave_uart_sampleAllChannels(uart_response_t response[NUM_BMS_
 	cmr_uart_result_t retvTotal = UART_SUCCESS;
 	cmr_uart_result_t retv = UART_SUCCESS;
 
-  static const uart_command_t sampleAllChannels = {
+  static uart_command_t sampleAllChannels = {
     .frameInit = &CMD_BCAST_RESP_RADDR8_DATA1,
     .registerAddress = SLAVE_REG_CMD,
     .data = {TOP_SLAVE_BOARD},
   };
 
 	retv = uart_sendCommand(&sampleAllChannels);
-	if(retv != UART_SUCCESS) {
+	while (retv != UART_SUCCESS) {
 		retvTotal = UART_FAILURE;
 	}
 
 	for(int8_t i = TOP_SLAVE_BOARD; i >= 0; --i) {
 		retv = uart_receiveResponse(&response[i]);
-		if(retv != UART_SUCCESS) {
+		while (retv != UART_SUCCESS) {
 			retvTotal = UART_FAILURE;
 		}
 	}
@@ -396,7 +396,7 @@ cmr_uart_result_t slave_uart_broadcast_sampleAndStore() {
 
   cmr_uart_result_t retv = UART_SUCCESS;
 
-  static const uart_command_t sampleAndStore = {
+  static uart_command_t sampleAndStore = {
     .frameInit = &CMD_BCAST_NRESP_RADDR8_DATA1,
     .registerAddress = SLAVE_REG_CMD,
     .data = {0x00}, //SYNC SAMPLE command: BQ Protocol p12
@@ -423,12 +423,12 @@ cmr_uart_result_t slave_uart_sampleDeviceChannels(uint8_t deviceAddress, uart_re
 
     retv = uart_sendCommand(&sampleDeviceChannels);
 
-    if(retv != UART_SUCCESS) {
+    while (retv != UART_SUCCESS) {
         retvTotal = UART_FAILURE;
     }
 
     retv = uart_receiveResponse(response);
-    if(retv != UART_SUCCESS) {
+    while (retv != UART_SUCCESS) {
         retvTotal = UART_FAILURE;
     }
 
@@ -534,7 +534,7 @@ static cmr_uart_result_t slave_uart_clearFaultFlags(uint8_t boardNum) {
     .data = {0x38},
   };
   retv = uart_sendCommand(&clearFaultFlags);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -545,7 +545,7 @@ static cmr_uart_result_t slave_uart_clearFaultFlags(uint8_t boardNum) {
     .data = {0xFF, 0xC0},
   };
   retv = uart_sendCommand(&clearFaultSummaryFlags);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -560,18 +560,18 @@ static cmr_uart_result_t slave_uart_clearFaultFlags(uint8_t boardNum) {
     .data = {0x00},
   };
   retv = uart_sendCommand(&checkSystemStatusRegister);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   frame_init_t statusRegisterCheckResponseFrameInit = {0};
   uart_response_t statusRegisterCheckResponse = {0};
   statusRegisterCheckResponse.frameInit = &statusRegisterCheckResponseFrameInit;
   retv = uart_receiveResponse(&statusRegisterCheckResponse);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   uint8_t statusRegisterData = statusRegisterCheckResponse.data[0];
-  if(statusRegisterData != 0x00) {
+  while (statusRegisterData != 0x00) {
     // ERROR CASE: We still saw faults in the status register after clearing them
     retvTotal = UART_FAILURE;
   }
@@ -587,19 +587,19 @@ static cmr_uart_result_t slave_uart_clearFaultFlags(uint8_t boardNum) {
     .data = {0x01},
   };
   retv = uart_sendCommand(&checkFaultSummaryRegister);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   frame_init_t faultSummaryRegisterCheckResponseFrameInit = {0};
   uart_response_t faultSummaryRegisterCheckResponse = {0};
   faultSummaryRegisterCheckResponse.frameInit = &faultSummaryRegisterCheckResponseFrameInit;
   retv = uart_receiveResponse(&faultSummaryRegisterCheckResponse);
-  if (retv != UART_SUCCESS) {
+  while (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   uint16_t faultSumaryRegisterData = ((uint16_t)faultSummaryRegisterCheckResponse.data[0] << 8) |
   (uint16_t)faultSummaryRegisterCheckResponse.data[1];
-  if(faultSumaryRegisterData != 0x0000) {
+  while (faultSumaryRegisterData != 0x0000) {
     // ERROR CASE: We still saw faults in the fault summary register after clearing them
     retvTotal = UART_FAILURE;
   }

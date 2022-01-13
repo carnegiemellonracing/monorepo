@@ -21,24 +21,15 @@
 // STATIC VARIABLE DEFINITIONS                                                |
 //-----------------------------------------------------------------------------
 
-typedef struct uart uart_t;
-
-struct uart {
-    cmr_uart_t port;    /**< @brief The underlying UART port. */
-
-    cmr_task_t rxTask;  /**< @brief Receive task. */
-    cmr_task_t txTask;  /**< @brief Receive task. */
-};
-
-static uart_t uart;
+static cmr_uart_t uart;
 
 //-----------------------------------------------------------------------------
 // STATIC HELPER FUNCTION PROTOTYPES                                          |
 //-----------------------------------------------------------------------------
 static uint16_t uart_packCommand(const uart_command_t *command, Byte message[]);
 static uint16_t uart_unpackResponse(uint8_t frameInitByte, uart_response_t *response);
-static cmr_uart_result_t uart_getChar(volatile uart_t *uart, uint8_t *c);
-static cmr_uart_result_t uart_sendMessage(volatile uart_t *uart, Byte message[], uint16_t messageLength);
+static cmr_uart_result_t uart_getChar(cmr_uart_t *uart, uint8_t *c);
+static cmr_uart_result_t uart_sendMessage(cmr_uart_t *uart, Byte message[], uint16_t messageLength);
 
 //-----------------------------------------------------------------------------
 // GLOBAL INTERFACE FUNCTIONS                                                 |
@@ -58,7 +49,7 @@ void uartInit(void) {
     };
 
     cmr_uart_polling_init(
-        &uart.port, UART5, &uartInit,
+        &uart, UART5, &uartInit,
         GPIOB, GPIO_PIN_12,     /* rx */
         GPIOB, GPIO_PIN_13      /* tx */
     );
@@ -93,7 +84,7 @@ cmr_uart_result_t uart_sendCommand(const uart_command_t *command) {
  * This helper function will receive a response and store the result
  * in the input uart_response_t object using the given USART
  * @param usart A pointer to the USART object we are receiving from
- * @param message The array to store the received message
+
  * @param messageLength The number of bytes to read
  * @return The status of the UART result (success or failure)
  */
@@ -235,7 +226,7 @@ static uint16_t uart_packCommand(const uart_command_t *command, Byte message[]) 
 static uint16_t uart_unpackResponse(uint8_t frameInitByte, uart_response_t *response) {
   
   frame_type_t frameType = (frameInitByte >> 7) & 0x01;
-  if(frameType != RESPONSE) {
+  while(frameType != RESPONSE) {
     // ERROR CASE: We received a response that did not have the response type
   }
   uint8_t responseBytes = frameInitByte & 0x7F;
@@ -253,8 +244,8 @@ static uint16_t uart_unpackResponse(uint8_t frameInitByte, uart_response_t *resp
  * @param c A reference to the location we want to store the read character
  * @return The status of the UART result (success or failure)
  */
-static cmr_uart_result_t uart_getChar(volatile uart_t *uart, uint8_t *c) {
-  return cmr_uart_pollingRX(&(uart->port), c, 1);
+static cmr_uart_result_t uart_getChar(cmr_uart_t *uart, uint8_t *c) {
+  return cmr_uart_pollingRX(uart, c, 1);
 }
 
 /** UART Send Message
@@ -266,6 +257,6 @@ static cmr_uart_result_t uart_getChar(volatile uart_t *uart, uint8_t *c) {
  * @param messageLength The number of bytes from message to send
  * @return The status of the UART result (success or failure)
  */
-static cmr_uart_result_t uart_sendMessage(volatile uart_t *uart, Byte message[], uint16_t messageLength) {
-  return cmr_uart_pollingTX(&(uart->port), message, messageLength);
+static cmr_uart_result_t uart_sendMessage(cmr_uart_t *uart, Byte message[], uint16_t messageLength) {
+  return cmr_uart_pollingTX(uart, message, messageLength);
 }

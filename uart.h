@@ -247,13 +247,18 @@ typedef struct {
 } frame_init_t;
 
 typedef struct {
-  frame_init_t *frameInit;
+  const frame_init_t *frameInit;
   uint8_t deviceAddress;
   slave_reg_t registerAddress;
   uint8_t data[MAX_RESPONSE_LENGTH];
 } uart_command_t;
 
-typedef uart_command_t uart_response_t;
+typedef struct {
+  frame_init_t *frameInit;
+  uint8_t deviceAddress;
+  slave_reg_t registerAddress;
+  uint8_t data[MAX_RESPONSE_LENGTH];
+} uart_response_t;
 
 //-----------------------------------------------------------------------------
 // STATIC VARIABLE DEFINITIONS                                                |
