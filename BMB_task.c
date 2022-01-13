@@ -461,6 +461,7 @@ int32_t getBattMillivolts() {
 
     for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
         for (uint8_t i = 0; i < VSENSE_CHANNELS_PER_BMB; i++) {
+            // TODO: Double check this still works
             totalPackCellVoltage += BMBData[bmb_index].cellVoltages[VSENSE_CHANNELS_PER_BMB];
         }
     }

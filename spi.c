@@ -6,6 +6,9 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
+#include <CMR/gpio.h>
+#include "gpio.h"
 #include "spi.h"
 
 /** @brief Voltage/Current Hz TX priority. */
@@ -45,10 +48,8 @@ static const cmr_spiPinConfig_t HVCSpiPins = {
 };
 
 // These need to be updated
-static const uint8_t VOLTAGE_TX_BYTE = 0x00;
-static const uint8_t VOLTAGE_RX_LEN  = 0x03;
-static const uint8_t CURRENT_TX_BYTE = 0x00;
-static const uint8_t CURRENT_RX_LEN  = 0x03;
+#define VOLTAGE_RX_LEN 0x03
+#define CURRENT_RX_LEN 0x03
 
 // Current average sample count = rate(Hz) * time(s)
 static const int16_t numSamplesInstant = 20;//10 * 2;
@@ -61,6 +62,53 @@ static volatile int32_t currentInstant = 0;
 
 static volatile int32_t HighVoltage = 0;
 
+#define ADDR_OFFSET 3
+#define READ_OFFSET 2
+
+typedef enum {
+    SPI_READ = 0x1,
+    SPI_WRITE = 0x0
+} spiReadWrite_t;
+
+/**
+ * @brief Returns header byte for transmission
+ *
+ * @param address Register Address within device
+ * @param read If want data back from HV Sense
+ * @param rxLen Number of bytes to receive
+ */
+static uint8_t getSPIHeaderByte(hvSenseRegister_t address, spiReadWrite_t read) {
+    return ( (address << ADDR_OFFSET) | (read << READ_OFFSET) );
+}
+
+/**
+ * @brief Reads from the HV Sense
+ *
+ * @param address Register Address within device
+ * @param rxData Pointer to where to write receive data
+ * @param rxLen Number of bytes to receive
+ */
+static void HVSenseRead(hvSenseRegister_t address, uint8_t* rxData, size_t rxLen) {
+    uint8_t header = getSPIHeaderByte(address, SPI_READ);
+    // Not sure about length so splitting up - TODO check if this works
+    cmr_spiTXRX(&spi, &header, NULL, 1);
+    cmr_spiTXRX(&spi, NULL, rxData, rxLen);
+}
+
+/**
+ * @brief Writes to HV Sense
+ *
+ * @param address Register Address within device
+ * @param txData Payload to transmit
+ * @param txLen Number of bytes to transmit
+ */
+static void HVSenseWrite(hvSenseRegister_t address, uint8_t* txData, size_t txLen) {
+    uint8_t data[txLen + 1];
+    data[0] = getSPIHeaderByte(address, SPI_WRITE);
+    memcpy(&(data[1]), txData, txLen);
+    cmr_spiTXRX(&spi, &data, NULL, txLen + 1);
+}
+
 /**
  * @brief Task for updating the Voltage and Current
  *
@@ -71,15 +119,39 @@ static volatile int32_t HighVoltage = 0;
 static void HVCSpiUpdate(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
+    // https://www.analog.com/media/en/technical-documentation/data-sheets/ade7912_7913.pdf
+    // Read the STATUS0 register until Bit 0 (RESET_ON) is cleared to 0
+    uint8_t underReset = 1;
+    while (underReset) {
+        uint8_t status;
+        HVSenseRead(STATUS0, &status, 1);
+
+        underReset = (status & STATUS0_RESET_ON);
+    }
+
+    // Initialize the CONFIG register
+    uint8_t configuration = ADC_FREQ_1kHz;
+    HVSenseWrite(CONFIG, &configuration, 1);
+
+    // Initialize the EMI_CTRL register
+    uint8_t emi_config = EMI_CONFIG;
+    HVSenseWrite(EMI_CTRL, &emi_config, 1);
+
+    // Set the lock register to 0xCA to protect the user accessible and internal configuration registers.
+    uint8_t lock = LOCK_KEY_EN;
+    HVSenseWrite(LOCK, &lock, 1);
+
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        uint8_t rxVoltage[3] = {0,0,0};
 
-        cmr_spiTXRX(&spi, &VOLTAGE_TX_BYTE, &rxVoltage, VOLTAGE_RX_LEN);
+        // Sample HV Bus Voltage
+        uint8_t rxVoltage[VOLTAGE_RX_LEN] = {0,0,0};
+        HVSenseRead(V1WV, rxVoltage, VOLTAGE_RX_LEN);
         HighVoltage = (int32_t) ((rxVoltage[2] << 16) | (rxVoltage[1] << 8) | rxVoltage[0]);
 
+        // Sample HV Current
         uint8_t rxCurrent[3] = {0,0,0};
-        cmr_spiTXRX(&spi, &CURRENT_TX_BYTE, &rxCurrent, CURRENT_RX_LEN);
+        HVSenseRead(IWV, rxCurrent, CURRENT_RX_LEN);
         currentSingleSample = (int32_t) ((rxCurrent[2] << 16) | (rxCurrent[1] << 8) | rxCurrent[0]);
 
 		// Rolling average

@@ -59,7 +59,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {//TODO: Check to ma
         .port = GPIOB,
         .init = {
             .Pin = GPIO_PIN_10,
-            .Mode = GPIO_MODE_OUTPUT_PP,//TODO: should be input
+            .Mode = GPIO_MODE_INPUT,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
@@ -132,6 +132,15 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {//TODO: Check to ma
         .init = {
             .Pin = GPIO_PIN_6,
             .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_HVSENSE_DRDY_L] = {
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_4,
+            .Mode = GPIO_MODE_INPUT,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
