@@ -86,8 +86,8 @@ void vBMBSampleTask(void *pvParameters) {
     const TickType_t xPeriod = 1000 / BMB_SAMPLE_TASK_RATE;		// In ticks (ms)
     
     //Enable BMB power init high as it is an active low signal
-    cmr_gpioWrite(GPIO_BMB_POWER_ENABLE_L, 1);
-    cmr_gpioWrite(GPIO_BMB_WAKE_PIN, 0);
+    // cmr_gpioWrite(GPIO_BMB_POWER_ENABLE_L, 1);
+    // cmr_gpioWrite(GPIO_BMB_WAKE_PIN, 0);
     
     // Enable BMB IO power (active low)
     cmr_gpioWrite(GPIO_BMB_POWER_ENABLE_L, 0);
@@ -104,23 +104,23 @@ void vBMBSampleTask(void *pvParameters) {
 
     // Initialize the slave UART interface
     taskENTER_CRITICAL();
-    uart_result_t retv = slave_uart_autoAddress();
+    cmr_uart_result_t retv = slave_uart_autoAddress();
     taskEXIT_CRITICAL();
 
-    if(retv != UART_SUCCESS) {
+    while(retv != UART_SUCCESS) {
         // ERROR CASE: Could not auto address the slave boards
     }
 
     vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
     retv = slave_uart_configureChannels();
-    if(retv != UART_SUCCESS) {
+    while(retv != UART_SUCCESS) {
       // ERROR CASE: The slaves were not able to configure their channels and OV/UV thresholds
     }
 
     // Set communications timeout
     retv = slave_uart_broadcast_setBMBTimeout();
-    if(retv != UART_SUCCESS) {
+    while(retv != UART_SUCCESS) {
       // ERROR CASE: The slaves were not able to configure their channels and OV/UV thresholds
     }
 
@@ -130,7 +130,7 @@ void vBMBSampleTask(void *pvParameters) {
     for(int8_t boardNum = TOP_SLAVE_BOARD; boardNum >= 0; --boardNum) {
         taskENTER_CRITICAL();
         retv = slave_uart_configureSampling(boardNum);
-        if(retv != UART_SUCCESS) {
+        while(retv != UART_SUCCESS) {
           // ERROR CASE: Could not configure sampling for slave boards
         }
 
@@ -138,7 +138,7 @@ void vBMBSampleTask(void *pvParameters) {
         retv = slave_uart_configureGPIODirection(BMB_GPIO_MUX_PIN | BMB_GPIO_LED_PIN, boardNum);
         taskEXIT_CRITICAL();
 
-        if(retv != UART_SUCCESS) {
+        while(retv != UART_SUCCESS) {
             // ERROR CASE: The slaves were not able to configure the AFE
         }
         vTaskDelayUntil(&xLastWakeTime, xPeriod);
@@ -146,7 +146,7 @@ void vBMBSampleTask(void *pvParameters) {
 
     for(;;) {
         uart_response_t channelResponse = {0};
-        uart_result_t uartRetv = UART_SUCCESS;
+        cmr_uart_result_t uartRetv = UART_SUCCESS;
 
 
         // Sampling method #2: BQ Protocol p12
@@ -156,14 +156,14 @@ void vBMBSampleTask(void *pvParameters) {
         // Set the analog mux to sample the relevant half of the thermistors and set the status LED
         uint8_t BMBGPIOValues = (BMBActivityLEDEnable) ? (BMB_GPIO_MUX_PIN | BMB_GPIO_LED_PIN) : 0;
         uartRetv = slave_uart_setGPIO(BMBGPIOValues, BMBIndex);
-        if(uartRetv != UART_SUCCESS) {
+        while(uartRetv != UART_SUCCESS) {
             // ERROR CASE: We could not send the set GPIO command
         }
 
         // Sample all analog channels
         uartRetv = slave_uart_broadcast_sampleAndStore();
 
-        if(uartRetv != UART_SUCCESS) {
+        while(uartRetv != UART_SUCCESS) {
             // ERROR CASE: We could not send the sample command
         }
         taskEXIT_CRITICAL();
@@ -171,11 +171,10 @@ void vBMBSampleTask(void *pvParameters) {
         // Retrieve the channel data from the device in question
         taskENTER_CRITICAL();
         uartRetv = slave_uart_sampleDeviceChannels(BMBIndex, &channelResponse);
-
         taskEXIT_CRITICAL();
 
         if(uartRetv != UART_SUCCESS ||
-           (channelResponse.frameInit->responseBytes+1 !=
+           (channelResponse.frameInit->responseBytes+1 <
            2*(VSENSE_CHANNELS_PER_BMB+TSENSE_CHANNELS_PER_MESSAGE))) {
             // ERROR CASE: We could not sample the BMB's channels correctly
             // or the response did not include the expect number of channels

@@ -247,33 +247,33 @@ typedef struct {
 } frame_init_t;
 
 typedef struct {
-  frame_init_t *frameInit;
+  const frame_init_t *frameInit;
   uint8_t deviceAddress;
   slave_reg_t registerAddress;
   uint8_t data[MAX_RESPONSE_LENGTH];
 } uart_command_t;
 
-typedef uart_command_t uart_response_t;
+typedef struct {
+  frame_init_t *frameInit;
+  uint8_t deviceAddress;
+  slave_reg_t registerAddress;
+  uint8_t data[MAX_RESPONSE_LENGTH];
+} uart_response_t;
 
 //-----------------------------------------------------------------------------
 // STATIC VARIABLE DEFINITIONS                                                |
 //-----------------------------------------------------------------------------
-static const uint32_t MAX_COMMAND_LENGTH          = 14;  // 1 Frame Init, 1 Device Address, 2 Register Address, 8 Data, 2 CRC
-static const uint32_t MAX_RESPONSE_FRAME_LENGTH   = 1;   // Frame initialization is 1 byte
-static const uint32_t MAX_REGISTER_ADDRESS_LENGTH = 2;   // Most registers are 1 byte, some are 2 bytes
+#define MAX_COMMAND_LENGTH                          14  // 1 Frame Init, 1 Device Address, 2 Register Address, 8 Data, 2 CRC
+#define MAX_RESPONSE_FRAME_LENGTH                   1   // Frame initialization is 1 byte
+#define MAX_REGISTER_ADDRESS_LENGTH                 2   // Most registers are 1 byte, some are 2 bytes
 //static const uint32_t GPIO_UART_OUTPUT_ENABLE_PIN = 80;
-
-typedef enum {
-  UART_FAILURE = 0,
-  UART_SUCCESS = 1,
-} uart_result_t;
 
 //-----------------------------------------------------------------------------
 // GLOBAL INTERFACE FUNCTION PROTOTYPES                                       |
 //-----------------------------------------------------------------------------
 void uartInit(void);
-uart_result_t uart_sendCommand(const uart_command_t *command);
-uart_result_t uart_receiveResponse(uart_response_t *response);
+cmr_uart_result_t uart_sendCommand(const uart_command_t *command);
+cmr_uart_result_t uart_receiveResponse(uart_response_t *response);
 
 
 #endif /* UART_H_ */
