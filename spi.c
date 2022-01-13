@@ -90,9 +90,8 @@ static uint8_t getSPIHeaderByte(hvSenseRegister_t address, spiReadWrite_t read) 
  */
 static void HVSenseRead(hvSenseRegister_t address, uint8_t* rxData, size_t rxLen) {
     uint8_t header = getSPIHeaderByte(address, SPI_READ);
-    // Not sure about length so splitting up - TODO check if this works
-    cmr_spiTXRX(&spi, &header, NULL, 1);
-    cmr_spiTXRX(&spi, NULL, rxData, rxLen);
+    // TODO check if this works - not sure about length
+    cmr_spiTXRX(&spi, &header, rxData, rxLen);
 }
 
 /**
