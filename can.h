@@ -25,6 +25,10 @@ typedef enum {
     CANRX_VSM_SENSORS,          /**< @brief VSM sensors. */
     CANRX_FSM_DATA,             /**< @brief FSM data. */
     CANRX_HVC_MINMAX_TEMPS,     /**< @brief HVC min/max cell temps. */
+    CANRX_INV1_STATUS,          /**< @brief Inverter 1 temp. */
+    CANRX_INV2_STATUS,          /**< @brief Inverter 2 temp. */
+    CANRX_INV3_STATUS,          /**< @brief Inverter 3 temp. */
+    CANRX_INV4_STATUS,          /**< @brief Inverter 4 temp. */
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 
@@ -32,9 +36,12 @@ extern cmr_canRXMeta_t canRXMeta[];
 
 extern cmr_canHeartbeat_t heartbeat;
 
-extern uint16_t channel_1_State;
-extern uint16_t channel_2_State;
-extern uint16_t channel_3_State;
+extern uint16_t fan_1_State;
+extern uint16_t fan_2_State;
+extern uint16_t pump_1_State;
+extern uint16_t pump_2_State;
+
+
 
 void canInit(void);
 

@@ -1,5 +1,5 @@
 Release/
-Debug/
+PTC_Debug/
 .settings/
 *.ld
 *.launch
@@ -8,3 +8,6 @@ html/
 *.warn
 /Pump_Release/
 /Fan_Debug/
+
+Pump_Debug/*
+Fan_Debug/*

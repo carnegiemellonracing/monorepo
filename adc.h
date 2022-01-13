@@ -30,6 +30,7 @@ typedef enum {
     ADC_THERM_6,        /**< @brief cooling loop thermistor 6.   */
     ADC_THERM_7,        /**< @brief cooling loop thermistor 7.   */
     ADC_THERM_8,        /**< @brief cooling loop thermistor 8.   */
+    ADC_THERM_9,        /**< @brief cooling loop thermistor 9.   */
     ADC_LEN     /**< @brief Total ADC channels. */
 } adcChannel_t;
 

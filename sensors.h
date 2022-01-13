@@ -25,6 +25,7 @@ typedef enum {
     SENSOR_CH_THERM_6,
     SENSOR_CH_THERM_7,
     SENSOR_CH_THERM_8,
+    SENSOR_CH_THERM_9,
     SENSOR_CH_LEN
 } sensorChannel_t;
 

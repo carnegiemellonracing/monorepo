@@ -18,27 +18,6 @@
 #include "can.h"        // Interface to implement
 #include "sensors.h"    // Sensors interface.
 
-#ifndef CMR_PTC_ID
-#error "No PTC ID defined!"
-#elif (CMR_PTC_ID == 0) /* Pump Control Board */
-
-#define CMR_CANID_HEARTBEAT_PTCx CMR_CANID_HEARTBEAT_PTCp
-#define CMR_CANID_LOOP_TEMPS_A_PTCx CMR_CANID_PTCp_LOOP_TEMPS_A
-#define CMR_CANID_LOOP_TEMPS_B_PTCx CMR_CANID_PTCp_LOOP_TEMPS_B
-#define CMR_CANID_STATUS_PTCx CMR_CANID_PTCp_PUMPS_STATUS
-#define CMR_CANID_POWER_DIAGNOSTICS_PTCx CMR_CANID_PTCp_POWER_DIAGNOSTICS
-
-#elif (CMR_PTC_ID == 1) /* Fan Control Board */
-
-#define CMR_CANID_HEARTBEAT_PTCx CMR_CANID_HEARTBEAT_PTCf
-#define CMR_CANID_LOOP_TEMPS_A_PTCx CMR_CANID_PTCf_LOOP_TEMPS_A
-#define CMR_CANID_LOOP_TEMPS_B_PTCx CMR_CANID_PTCf_LOOP_TEMPS_B
-#define CMR_CANID_STATUS_PTCx CMR_CANID_PTCf_FANS_STATUS
-#define CMR_CANID_POWER_DIAGNOSTICS_PTCx CMR_CANID_PTCf_POWER_DIAGNOSTICS
-
-#else
-#endif
-
 /**
  * @brief CAN periodic message receive metadata
  *
@@ -58,6 +37,27 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
+    },
+    [CANRX_INV1_STATUS] = {
+        .canID = CMR_CANID_AMK_1_ACT_2,
+        .timeoutError_ms = 800, // Send error if data not received within 4 cycles, or 800 ms
+        .timeoutWarn_ms = 400, // Send warning if data not received within 2 cycles, or 400 ms
+        // CAN transmitting frequency = 5 Hz, so ? s = 1 / 5 Hz = 0.2 s = 200ms
+    },
+    [CANRX_INV2_STATUS] = {
+        .canID = CMR_CANID_AMK_2_ACT_2,
+        .timeoutError_ms = 800,
+        .timeoutWarn_ms = 400,
+    },
+    [CANRX_INV3_STATUS] = {
+        .canID = CMR_CANID_AMK_3_ACT_2,
+        .timeoutError_ms = 800,
+        .timeoutWarn_ms = 400,
+    },
+    [CANRX_INV4_STATUS] = {
+        .canID = CMR_CANID_AMK_4_ACT_2,
+        .timeoutError_ms = 800,
+        .timeoutWarn_ms = 400,
     },
     [CANRX_VSM_SENSORS] = {
         .canID = CMR_CANID_VSM_SENSORS,
@@ -85,9 +85,10 @@ cmr_canRXMeta_t canRXMeta[] = {
 cmr_canHeartbeat_t heartbeat;
 
 /** @brief Fan/Pump channel states. */
-uint16_t channel_1_State;
-uint16_t channel_2_State;
-uint16_t channel_3_State;
+uint16_t fan_1_State;
+uint16_t fan_2_State;
+uint16_t pump_1_State;
+uint16_t pump_2_State;
 
 /** @brief CAN 10 Hz TX priority. */
 static const uint32_t canTX10Hz_priority = 3;
@@ -158,6 +159,7 @@ void canInit(void) {
     // CAN2 initialization.
     cmr_canInit(
         &can, CAN1,
+        CMR_CAN_BITRATE_500K,
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
         NULL,
         GPIOA, GPIO_PIN_11,     // CAN2 RX port/pin.
@@ -183,7 +185,17 @@ void canInit(void) {
                 CMR_CANID_VSM_STATUS,
                 CMR_CANID_VSM_STATUS,
                 CMR_CANID_VSM_SENSORS,
-                CMR_CANID_HVC_MINMAX_CELL_TEMPS                                                                                 ,
+                CMR_CANID_HVC_MINMAX_CELL_TEMPS
+            }
+        },
+        {
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO1,
+            .ids = {
+                CMR_CANID_AMK_1_ACT_2,
+                CMR_CANID_AMK_2_ACT_2,
+                CMR_CANID_AMK_3_ACT_2,
+                CMR_CANID_AMK_4_ACT_2
             }
         }
     };
@@ -250,14 +262,17 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 
     uint16_t error = CMR_CAN_ERROR_NONE;
 
+    //or the water overheating bit 
+
     if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
         error |= CMR_CAN_ERROR_VSM_TIMEOUT;
     }
 
+    // If error exists, update heartbeat to error state (i.e. update its fields). See can_types.h for the fields.
     if (error != CMR_CAN_ERROR_NONE) {
-        heartbeat.state = CMR_CAN_ERROR;
+        heartbeat.state = CMR_CAN_ERROR; //Field 1 update
     }
-    memcpy(&heartbeat.error, &error, sizeof(error));
+    memcpy(&heartbeat.error, &error, sizeof(error)); //Field 2 update
 
     uint16_t warning = CMR_CAN_WARN_NONE;
     if (cmr_canRXMetaTimeoutWarn(heartbeatVSMMeta, lastWakeTime) < 0) {
@@ -265,13 +280,14 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     }
     memcpy(&heartbeat.warning, &warning, sizeof(warning));
 
-    canTX(CMR_CANID_HEARTBEAT_PTCx, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
+    canTX(CMR_CANID_HEARTBEAT_PTC, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
 }
 
 /**
  * @brief Send cooling system temps on CAN bus.
  */
 static void sendCoolingLoopTemps(void) {
+    // TODO: Send Thermistor 9 also
     int32_t Temp_1_dC =
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_1);
     int32_t Temp_2_dC =
@@ -290,39 +306,42 @@ static void sendCoolingLoopTemps(void) {
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_8);
 
     /* Separate A and B messages are due to can packet size limits */
-    cmr_canPTCpLoopTemp_A_t coolMsg1 = {
+    cmr_canPTCLoopTemp_A_t coolMsg1 = {
         .temp1_dC = Temp_1_dC,
         .temp2_dC = Temp_2_dC,
         .temp3_dC = Temp_3_dC,
         .temp4_dC = Temp_4_dC
     };
 
-    cmr_canPTCpLoopTemp_B_t coolMsg2 = {
+    cmr_canPTCLoopTemp_B_t coolMsg2 = {
         .temp5_dC = Temp_5_dC,
         .temp6_dC = Temp_6_dC,
         .temp7_dC = Temp_7_dC,
         .temp8_dC = Temp_8_dC
     };
 
-    canTX(CMR_CANID_LOOP_TEMPS_A_PTCx, &coolMsg1, sizeof(coolMsg1), canTX10Hz_period_ms);
-    canTX(CMR_CANID_LOOP_TEMPS_B_PTCx, &coolMsg2, sizeof(coolMsg2), canTX10Hz_period_ms);
+    canTX(CMR_CANID_PTC_LOOP_TEMPS_A, &coolMsg1, sizeof(coolMsg1), canTX10Hz_period_ms);
+    canTX(CMR_CANID_PTC_LOOP_TEMPS_B, &coolMsg2, sizeof(coolMsg2), canTX10Hz_period_ms);
 }
 
 /**
  * @brief Send Fan or Pump status information.
  */
 static void sendDriverStatus(void) {
-    uint8_t Channel1_Duty_Cycle_pcnt = channel_1_State;
-    uint8_t Channel2_Duty_Cycle_pcnt = channel_2_State;
-    uint8_t Channel3_Duty_Cycle_pcnt = channel_3_State;
+    uint8_t Fan1_Duty_Cycle_pcnt = fan_1_State;
+    uint8_t Fan2_Duty_Cycle_pcnt = fan_2_State;
+    uint8_t Pump1_Duty_Cycle_pcnt = pump_1_State;
+    uint8_t Pump2_Duty_Cycle_pcnt = pump_2_State;
+
 
     cmr_canPTCDriverStatus_t driverStatusMsg = {
-        .channel1DutyCycle_pcnt = Channel1_Duty_Cycle_pcnt,
-        .channel2DutyCycle_pcnt = Channel2_Duty_Cycle_pcnt,
-        .channel3DutyCycle_pcnt = Channel3_Duty_Cycle_pcnt
+        .fan1DutyCycle_pcnt = Fan1_Duty_Cycle_pcnt,
+        .fan2DutyCycle_pcnt = Fan2_Duty_Cycle_pcnt,
+        .pump1DutyCycle_pcnt = Pump1_Duty_Cycle_pcnt,
+        .pump2DutyCycle_pcnt = Pump2_Duty_Cycle_pcnt
     };
 
-    canTX(CMR_CANID_STATUS_PTCx, &driverStatusMsg, sizeof(driverStatusMsg), canTX10Hz_period_ms);
+    canTX(CMR_CANID_PTC_FANS_PUMPS_STATUS, &driverStatusMsg, sizeof(driverStatusMsg), canTX10Hz_period_ms);
 }
 
 /**
@@ -342,6 +361,6 @@ static void sendPowerDiagnostics(void) {
         .loadCurrent_mA = loadCurrent_mA
     };
 
-    canTX(CMR_CANID_POWER_DIAGNOSTICS_PTCx, &powerMsg, sizeof(powerMsg), canTX10Hz_period_ms);
+    canTX(CMR_CANID_PTC_POWER_DIAGNOSTICS, &powerMsg, sizeof(powerMsg), canTX10Hz_period_ms);
 }
 
