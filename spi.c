@@ -25,17 +25,17 @@ static cmr_spi_t spi;
 
 /** @brief SPI bus parameters for the HVC (see datasheet ADE7912/ADE7913). */
 static const SPI_InitTypeDef HVCSpiInit = {
-	.Mode = SPI_MODE_MASTER,
-	.Direction = SPI_DIRECTION_2LINES,
-	.DataSize = SPI_DATASIZE_8BIT,
-	.CLKPolarity = SPI_POLARITY_HIGH,
-	.CLKPhase = SPI_PHASE_1EDGE,
-	.NSS = SPI_NSS_HARD_OUTPUT,
-	.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4, // Need to verify this is an ok prescaler
-	.FirstBit = SPI_FIRSTBIT_MSB,
-	.TIMode = SPI_TIMODE_DISABLE,
-	.CRCCalculation = SPI_CRCCALCULATION_DISABLE,
-	.CRCPolynomial = 10
+    .Mode = SPI_MODE_MASTER,
+    .Direction = SPI_DIRECTION_2LINES,
+    .DataSize = SPI_DATASIZE_8BIT,
+    .CLKPolarity = SPI_POLARITY_HIGH,
+    .CLKPhase = SPI_PHASE_2EDGE,
+    .NSS = SPI_NSS_HARD_OUTPUT,
+    .BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16, // Need to verify this is an ok prescaler
+    .FirstBit = SPI_FIRSTBIT_MSB,
+    .TIMode = SPI_TIMODE_DISABLE,
+    .CRCCalculation = SPI_CRCCALCULATION_DISABLE,
+    .CRCPolynomial = 10
 };
 
 
@@ -48,8 +48,9 @@ static const cmr_spiPinConfig_t HVCSpiPins = {
 };
 
 // These need to be updated
-#define VOLTAGE_RX_LEN 0x03
-#define CURRENT_RX_LEN 0x03
+#define VOLTAGE_RX_LEN  0x03
+#define CURRENT_RX_LEN  0x03
+#define BURST_RX_LEN    20
 
 // Current average sample count = rate(Hz) * time(s)
 static const int16_t numSamplesInstant = 20;//10 * 2;
@@ -91,7 +92,9 @@ static uint8_t getSPIHeaderByte(hvSenseRegister_t address, spiReadWrite_t read) 
 static void HVSenseRead(hvSenseRegister_t address, uint8_t* rxData, size_t rxLen) {
     uint8_t header = getSPIHeaderByte(address, SPI_READ);
     // TODO check if this works - not sure about length
-    cmr_spiTXRX(&spi, &header, rxData, rxLen);
+    uint8_t data[rxLen + 1];
+    cmr_spiTXRX(&spi, &header, data, rxLen + 1);
+    memcpy(rxData, &(data[1]), rxLen);
 }
 
 /**
@@ -122,7 +125,7 @@ static void HVCSpiUpdate(void *pvParameters) {
     // Read the STATUS0 register until Bit 0 (RESET_ON) is cleared to 0
     uint8_t underReset = 1;
     while (underReset) {
-        uint8_t status;
+        uint8_t status = 1;
         HVSenseRead(STATUS0, &status, 1);
 
         underReset = (status & STATUS0_RESET_ON);
@@ -131,17 +134,33 @@ static void HVCSpiUpdate(void *pvParameters) {
     // Initialize the CONFIG register
     uint8_t configuration = ADC_FREQ_1kHz;
     HVSenseWrite(CONFIG, &configuration, 1);
+    uint8_t temp = 1;
+    HVSenseRead(EMI_CTRL, &temp, 1);
+    HVSenseRead(CONFIG, &temp, 1);
 
     // Initialize the EMI_CTRL register
     uint8_t emi_config = EMI_CONFIG;
     HVSenseWrite(EMI_CTRL, &emi_config, 1);
+    HVSenseRead(EMI_CTRL, &temp, 1);
 
     // Set the lock register to 0xCA to protect the user accessible and internal configuration registers.
     uint8_t lock = LOCK_KEY_EN;
     HVSenseWrite(LOCK, &lock, 1);
+    HVSenseRead(LOCK, &temp, 1);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
+        
+        // Wait until data is ready
+        int dataReady_L = cmr_gpioRead(GPIO_HVSENSE_DRDY_L);
+        while (dataReady_L) {
+        	dataReady_L = cmr_gpioRead(GPIO_HVSENSE_DRDY_L);
+        }
+
+        // Sample everything in burstmode
+        uint8_t rxBurst[BURST_RX_LEN] = {0};
+        HVSenseRead(V1WV, rxBurst, BURST_RX_LEN);
+
 
         // Sample HV Bus Voltage
         uint8_t rxVoltage[VOLTAGE_RX_LEN] = {0,0,0};
