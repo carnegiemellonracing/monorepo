@@ -156,7 +156,7 @@ cmr_uart_result_t slave_uart_autoAddress() {
     .registerAddress = SLAVE_REG_ADDR,
     .data = {0x00},
   };
-  for(uint8_t boardNum = 0; boardNum < NUM_BMS_SLAVE_BOARDS; ++boardNum) {
+  for(uint8_t boardNum = 0; boardNum < NUM_BMBS; ++boardNum) {
     setDeviceAddress.data[0] = boardNum;
     retv = uart_sendCommand(&setDeviceAddress);
     while (retv != UART_SUCCESS) {
@@ -366,7 +366,7 @@ cmr_uart_result_t slave_uart_configureChannels() {
   return retvTotal;
 }
 
-cmr_uart_result_t slave_uart_sampleAllChannels(uart_response_t response[NUM_BMS_SLAVE_BOARDS]) {
+cmr_uart_result_t slave_uart_sampleAllChannels(uart_response_t response[NUM_BMBS]) {
 
 	cmr_uart_result_t retvTotal = UART_SUCCESS;
 	cmr_uart_result_t retv = UART_SUCCESS;

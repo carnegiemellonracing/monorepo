@@ -88,7 +88,7 @@ int main(void) {
     uartInit();
     // adcInit();
     // sensorsInit();
-    spiInit();
+    // spiInit();
 
     cmr_taskInit(
         &statusLED_task,

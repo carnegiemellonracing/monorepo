@@ -22,12 +22,12 @@
 //-----------------------------------------------------------------------------
 // STATIC VARIABLE DEFINITIONS                                                |
 //-----------------------------------------------------------------------------
+
+#define NUM_BMBS 12
 typedef enum {
-	TOP_SLAVE_BOARD = 0x0B,
+	TOP_SLAVE_BOARD = (NUM_BMBS - 1),
 	BOT_SLAVE_BOARD = 0x00,
 } slave_board_t;
-
-static const uint8_t NUM_BMS_SLAVE_BOARDS = TOP_SLAVE_BOARD - BOT_SLAVE_BOARD + 1;
 
 
 //-----------------------------------------------------------------------------
@@ -36,7 +36,7 @@ static const uint8_t NUM_BMS_SLAVE_BOARDS = TOP_SLAVE_BOARD - BOT_SLAVE_BOARD + 
 cmr_uart_result_t slave_uart_autoAddress(void);
 cmr_uart_result_t slave_uart_configureSampling(uint8_t boardNum);
 cmr_uart_result_t slave_uart_configureChannels(void);
-cmr_uart_result_t slave_uart_sampleAllChannels(uart_response_t response[NUM_BMS_SLAVE_BOARDS]);
+cmr_uart_result_t slave_uart_sampleAllChannels(uart_response_t response[NUM_BMBS]);
 cmr_uart_result_t slave_uart_sampleDeviceChannels(uint8_t deviceAddress, uart_response_t *response);
 cmr_uart_result_t slave_uart_broadcast_sampleAndStore();
 cmr_uart_result_t slave_uart_configureGPIODirection(uint8_t DDRVector, uint8_t deviceAddress);

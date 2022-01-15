@@ -5,7 +5,6 @@
  *      Author: vamsi
  */
 
-#include "slave_uart.h"
 #include "BMB_task.h"
 #include "gpio.h"
 #include "state_task.h"
@@ -226,7 +225,7 @@ void vBMBSampleTask(void *pvParameters) {
         taskEXIT_CRITICAL();
 
 
-        if (BMBIndex >= NUM_BMS_SLAVE_BOARDS-1) {
+        if (BMBIndex >= NUM_BMBS-1) {
             BMBIndex = 0;
             BMBActivityLEDEnable = !BMBActivityLEDEnable;
             // TODO send GPIO command to change ADC Mux on BMBs
@@ -461,7 +460,7 @@ int32_t getBattMillivolts() {
 
     for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
         for (uint8_t i = 0; i < VSENSE_CHANNELS_PER_BMB; i++) {
-            // TODO: Double check this still works
+            // TODO: Figure out why this doesn't work
             totalPackCellVoltage += BMBData[bmb_index].cellVoltages[VSENSE_CHANNELS_PER_BMB];
         }
     }

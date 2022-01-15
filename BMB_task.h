@@ -9,6 +9,7 @@
 #define BMB_TASK_H_
 
 #include "FreeRTOS.h"
+#include "slave_uart.h"
 #include "task.h"
 #include "stm32f413-drivers/CMR/can_types.h"
 
@@ -19,7 +20,6 @@
 #define VSENSE_CHANNELS_PER_BMB 12
 #define TSENSE_CHANNELS_PER_BMB 8
 #define TSENSE_CHANNELS_PER_MESSAGE 8
-#define NUM_BMBS 12
 
 #define BMB_SAMPLE_TASK_RATE 10
 
