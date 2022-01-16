@@ -154,7 +154,6 @@ static void canTX10Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         /* Transmit Power Diagnostics */
-        // TODO: Fix for 22e
         cmr_canDIMPowerDiagnostics_t powerDiagnostics = {
             // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
             .busVoltage_mV = adcRead(ADC_VSENSE) * 8 * 11 / 10,
