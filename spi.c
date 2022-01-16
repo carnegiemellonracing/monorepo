@@ -29,9 +29,9 @@ static const SPI_InitTypeDef HVCSpiInit = {
     .Direction = SPI_DIRECTION_2LINES,
     .DataSize = SPI_DATASIZE_8BIT,
     .CLKPolarity = SPI_POLARITY_HIGH,
-    .CLKPhase = SPI_PHASE_2EDGE,
+    .CLKPhase = SPI_PHASE_1EDGE,
     .NSS = SPI_NSS_HARD_OUTPUT,
-    .BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16, // Need to verify this is an ok prescaler
+    .BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8, // Need to verify this is an ok prescaler
     .FirstBit = SPI_FIRSTBIT_MSB,
     .TIMode = SPI_TIMODE_DISABLE,
     .CRCCalculation = SPI_CRCCALCULATION_DISABLE,
@@ -122,6 +122,9 @@ static void HVCSpiUpdate(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     // https://www.analog.com/media/en/technical-documentation/data-sheets/ade7912_7913.pdf
+    uint8_t temp = 1;
+    HVSenseRead(EMI_CTRL, &temp, 1);
+
     // Read the STATUS0 register until Bit 0 (RESET_ON) is cleared to 0
     uint8_t underReset = 1;
     while (underReset) {
@@ -134,8 +137,6 @@ static void HVCSpiUpdate(void *pvParameters) {
     // Initialize the CONFIG register
     uint8_t configuration = ADC_FREQ_1kHz;
     HVSenseWrite(CONFIG, &configuration, 1);
-    uint8_t temp = 1;
-    HVSenseRead(EMI_CTRL, &temp, 1);
     HVSenseRead(CONFIG, &temp, 1);
 
     // Initialize the EMI_CTRL register
