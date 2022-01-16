@@ -9,7 +9,7 @@
 
 #include "ledStrip.h"   // Interface to implement
 
-uint8_t ledOutputRegisters[] = {
+static const uint8_t ledOutputRegisters[] = {
     0x00, // 0x00 = 0b00000000, no LEDs on
     0x02, // 0x02 = 0b00000010, LED 1 on
     0x03, // 0x03 = 0b00000011, LEDs 1-2 on
@@ -27,10 +27,10 @@ uint8_t ledOutputRegisters[] = {
 static cmr_i2c_t i2c;
 
 /** @brief DIM I2C address */
-static uint32_t ownAddress = 0x50; // 0x50 = 0b1010000
+static uint32_t ownAddress = 0x00; // 0x00 = 0b0000000
 
 /** @brief GPIO expander I2C address */
-static uint16_t gpioExpanderAddress = 0x20; // 0x20 = 0b0100000
+static uint16_t gpioExpanderAddress = 0x27; // 0x27 = 0b0100111
 
 /** @brief GPIO expander output port 1 command byte */
 static uint8_t outputCommand = 0x03; // 0x03 = 0b00000011
@@ -46,6 +46,13 @@ void ledStripInit(void) {
         GPIOB, GPIO_PIN_6,
         GPIOB, GPIO_PIN_7
     );
+    // Set ports to output
+    uint8_t data[3] = {
+        0x06,
+        0x00,
+        0x00
+    };
+    cmr_i2cTX(&i2c, gpioExpanderAddress, data, 3, 1);
     setNumLeds(0);
 }
 
@@ -81,7 +88,7 @@ void setNumLeds(unsigned int numLeds) {
     }
 
     // Tranmit data to the GPIO expander
-    cmr_i2cTX(&i2c, gpioExpanderAddress, data, 3, 250);
+    cmr_i2cTX(&i2c, gpioExpanderAddress, data, 3, 1);
 }
 
 
