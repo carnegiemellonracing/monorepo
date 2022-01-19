@@ -205,9 +205,10 @@ void spiInit(void) {
 // We also need to reverse the polarity of this measurement
 int32_t getHVmillivolts() {
     // return (int32_t)(HighVoltage);// * -1207);
-    // TODO: Fix this transfer function - slope is a little too steap
+    // TODO: Confirm this transfer function is accurate
     float rawADC = (float) HighVoltage;
-    float HV_mV = (0.00013 * rawADC - 51.02951) * 1000;
+    // From regression tuning
+    float HV_mV = 0.12149 * rawADC- 35004.52406;
     return (int32_t) HV_mV;
 }
 
