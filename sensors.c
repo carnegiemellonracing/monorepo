@@ -60,7 +60,7 @@ static uint32_t sampleADCSensor(const cmr_sensor_t *sensor) {
 // final scale millivolts = 97.198 * (1 volt / 1000 mv) = 0.097198 (adc counts / output mv)
 // Scale up by 2^12 then divide by (0.097198 * 2^12)
 // V = div * ((ADC/2048) * Vref)
-static inline int32_t ADCtoMV_24v(const cmr_sensor_t *sensor, int16_t reading) {
+static int32_t ADCtoMV_24v(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 	
 	return (((int32_t) reading) << 12) / 398;
@@ -79,7 +79,7 @@ static inline int32_t ADCtoMV_24v(const cmr_sensor_t *sensor, int16_t reading) {
 // (2^12 adc counts / 3.3 adc volts) * (1 adc volt / 20 real volts) * (1 real volt / 0.62 shunt ohms) * (1 amp / 1000 ma) = 0.1000098 adc counts / ma
 // Scale up by 2^11 then divide by (0.1000098 * 2^11)
 // (20 real volts / 1 adc volts) * (1 real volt / 0.62 ohms) = 
-static uint32_t adcToMA_24v(const cmr_sensor_t *sensor, int16_t reading) {
+static int32_t adcToMA_24v(const cmr_sensor_t *sensor, uint32_t reading) {
 	(void) sensor;
 	
 	return (((int32_t) reading) << 11) / 205;
