@@ -99,13 +99,13 @@ int main(void) {
     );
 
     // BMB_task
-   cmr_taskInit(
-       &bmbSample_task,
-       "BMB Sample Task",
-       bmbSample_priority,
-       vBMBSampleTask,
-       NULL
-   );
+    cmr_taskInit(
+        &bmbSample_task,
+        "BMB Sample Task",
+        bmbSample_priority,
+        vBMBSampleTask,
+        NULL
+    );
 
     // // State Task
     // cmr_taskInit(

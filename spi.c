@@ -29,9 +29,9 @@ static const SPI_InitTypeDef HVCSpiInit = {
     .Direction = SPI_DIRECTION_2LINES,
     .DataSize = SPI_DATASIZE_8BIT,
     .CLKPolarity = SPI_POLARITY_HIGH,
-    .CLKPhase = SPI_PHASE_1EDGE,
+    .CLKPhase = SPI_PHASE_2EDGE,
     .NSS = SPI_NSS_HARD_OUTPUT,
-    .BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8, // Need to verify this is an ok prescaler
+    .BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256,
     .FirstBit = SPI_FIRSTBIT_MSB,
     .TIMode = SPI_TIMODE_DISABLE,
     .CRCCalculation = SPI_CRCCALCULATION_DISABLE,
@@ -158,20 +158,16 @@ static void HVCSpiUpdate(void *pvParameters) {
         	dataReady_L = cmr_gpioRead(GPIO_HVSENSE_DRDY_L);
         }
 
-        // Sample everything in burstmode
-        uint8_t rxBurst[BURST_RX_LEN] = {0};
-        HVSenseRead(V1WV, rxBurst, BURST_RX_LEN);
-
-
         // Sample HV Bus Voltage
         uint8_t rxVoltage[VOLTAGE_RX_LEN] = {0,0,0};
         HVSenseRead(V1WV, rxVoltage, VOLTAGE_RX_LEN);
-        HighVoltage = (int32_t) ((rxVoltage[2] << 16) | (rxVoltage[1] << 8) | rxVoltage[0]);
+        HighVoltage = (int32_t) ((rxVoltage[2]) | (rxVoltage[1] << 8) | (rxVoltage[0] << 16) );
+
 
         // Sample HV Current
         uint8_t rxCurrent[3] = {0,0,0};
         HVSenseRead(IWV, rxCurrent, CURRENT_RX_LEN);
-        currentSingleSample = (int32_t) ((rxCurrent[2] << 16) | (rxCurrent[1] << 8) | rxCurrent[0]);
+        currentSingleSample = (int32_t) ((rxCurrent[2]) | (rxCurrent[1] << 8) | rxCurrent[0] << 16);
 
 		// Rolling average
         // A single sample is too noisy for an "instant" measurement so do a small average
@@ -208,14 +204,18 @@ void spiInit(void) {
 // Inverse of this value is 1206.88 (round to 1207)
 // We also need to reverse the polarity of this measurement
 int32_t getHVmillivolts() {
-    return (int32_t)(HighVoltage * -1207);
+    // return (int32_t)(HighVoltage);// * -1207);
+    // TODO: Fix this transfer function - slope is a little too steap
+    float rawADC = (float) HighVoltage;
+    float HV_mV = (0.00013 * rawADC - 51.02951) * 1000;
+    return (int32_t) HV_mV;
 }
 
 // V=IR 
 // Measure current across shunt resistor (166.6 uohm)
 // 1/166.6u = 6002
 int32_t getCurrentInstant() {
-     return (int32_t)(currentInstant * 6002);
+    return (int32_t)(currentInstant * 6002);
 }
  
 int32_t getCurrentAverage() {
