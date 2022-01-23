@@ -164,8 +164,27 @@ cmr_uart_result_t slave_uart_autoAddress() {
     }
   }
   
-  // TODO: Implement check to find top of stack, so do not need to hard code
-  
+  uart_command_t getBmbAddress = {
+    .frameInit = &CMD_SINGLE_RESP_RADDR8_DATA1,
+    .deviceAddress = 0,
+    .registerAddress = SLAVE_REG_ADDR,
+    .data = {0x00},
+  };
+  // find top of stack, so do not need to hard code
+  for(uint8_t boardNum = 0; boardNum < NUM_BMBS; ++boardNum) {
+    getBmbAddress.deviceAddress = boardNum;
+    // ask bmb for response
+    retv = uart_sendCommand(&getBmbAddress);
+    while (retv != UART_SUCCESS) {
+      retvTotal = UART_FAILURE;
+    }
+    // wait for response
+    uart_response_t deviceAddressResponse;
+    retv = uart_receiveResponse(&deviceAddressResponse);
+    while (retv != UART_SUCCESS) {
+      retvTotal = UART_FAILURE;
+    }
+  }
   // From page 5 of BQ76PL455A-Q1 protocol datasheet 1.2.5/1.2.6
   // Receiver/Transmitter for Top/Bottom boards
   static uart_command_t disableHighSideReceiverTopBoard = {

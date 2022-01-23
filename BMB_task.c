@@ -398,7 +398,7 @@ void getBMSMinMaxCellVoltage(cmr_canBMSMinMaxCellVoltage_t *BMSMinMaxCellVoltage
 		
 		// update struct if needed
 		if (minCellVoltage < BMSMinMaxCellVoltage->minCellVoltage_mV) {
-			BMSMinMaxCellVoltage->minCellVoltage_mV = __REVSH(minCellVoltage);
+			BMSMinMaxCellVoltage->minCellVoltage_mV = (minCellVoltage);
 			BMSMinMaxCellVoltage->minVoltageBMBNum = bmb_index;
 			BMSMinMaxCellVoltage->minVoltageCellNum = minCellVoltageIndex;
 		}
@@ -409,7 +409,7 @@ void getBMSMinMaxCellVoltage(cmr_canBMSMinMaxCellVoltage_t *BMSMinMaxCellVoltage
 		
 		// update struct if needed
 		if (maxCellVoltage > BMSMinMaxCellVoltage->maxCellVoltage_mV) {
-			BMSMinMaxCellVoltage->maxCellVoltage_mV = __REVSH(maxCellVoltage);
+			BMSMinMaxCellVoltage->maxCellVoltage_mV = (maxCellVoltage);
 			BMSMinMaxCellVoltage->maxVoltageBMBNum = bmb_index;
 			BMSMinMaxCellVoltage->maxVoltageCellNum = maxCellVoltageIndex;
 		}
@@ -433,7 +433,7 @@ void getBMSMinMaxCellTemperature(cmr_canBMSMinMaxCellTemperature_t *BMSMinMaxCel
 
         // update struct if needed
         if (minCellTemp < BMSMinMaxCellTemp->minCellTemp_C) {
-            BMSMinMaxCellTemp->minCellTemp_C = __REVSH(minCellTemp);
+            BMSMinMaxCellTemp->minCellTemp_C = (minCellTemp);
             BMSMinMaxCellTemp->minTempBMBNum = bmb_index;
             BMSMinMaxCellTemp->minTempCellNum = minCellTempIndex;
         }
@@ -444,7 +444,7 @@ void getBMSMinMaxCellTemperature(cmr_canBMSMinMaxCellTemperature_t *BMSMinMaxCel
 
         // update struct if needed
         if (maxCellTemp > BMSMinMaxCellTemp->maxCellTemp_C) {
-            BMSMinMaxCellTemp->maxCellTemp_C = __REVSH(maxCellTemp);
+            BMSMinMaxCellTemp->maxCellTemp_C = (maxCellTemp);
             BMSMinMaxCellTemp->maxTempBMBNum = bmb_index;
             BMSMinMaxCellTemp->maxTempCellNum = maxCellTempIndex;
         }
@@ -460,8 +460,7 @@ int32_t getBattMillivolts() {
 
     for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
         for (uint8_t i = 0; i < VSENSE_CHANNELS_PER_BMB; i++) {
-            // TODO: Figure out why this doesn't work
-            totalPackCellVoltage += BMBData[bmb_index].cellVoltages[VSENSE_CHANNELS_PER_BMB];
+            totalPackCellVoltage += (int32_t) BMBData[bmb_index].cellVoltages[i];
         }
     }
 
