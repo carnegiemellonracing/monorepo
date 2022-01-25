@@ -57,11 +57,11 @@ static const int16_t numSamplesInstant = 20;//10 * 2;
 static const int16_t numSamplesAverage = 3000;//100 * 30;
 #define NUM_SAMPLES_AVERAGE 3000
 
-static volatile int32_t currentSingleSample = 0;
-static volatile int32_t currentAvg = 0;
-static volatile int32_t currentInstant = 0;
+static volatile int32_t currentSingleSample_ADC = 0;
+static volatile int32_t currentAvg_ADC = 0;
+static volatile int32_t currentInstant_ADC = 0;
 
-static volatile int32_t HighVoltage = 0;
+static volatile int32_t HighVoltage_ADC = 0;
 
 #define ADDR_OFFSET 3
 #define READ_OFFSET 2
@@ -161,18 +161,18 @@ static void HVCSpiUpdate(void *pvParameters) {
         // Sample HV Bus Voltage
         uint8_t rxVoltage[VOLTAGE_RX_LEN] = {0,0,0};
         HVSenseRead(V1WV, rxVoltage, VOLTAGE_RX_LEN);
-        HighVoltage = (int32_t) ((rxVoltage[2]) | (rxVoltage[1] << 8) | (rxVoltage[0] << 16) );
+        HighVoltage_ADC = (int32_t) ((rxVoltage[2]) | (rxVoltage[1] << 8) | ((rxVoltage[0] << 24) >> 8) );
 
 
         // Sample HV Current
         uint8_t rxCurrent[3] = {0,0,0};
         HVSenseRead(IWV, rxCurrent, CURRENT_RX_LEN);
-        currentSingleSample = (int32_t) ((rxCurrent[2]) | (rxCurrent[1] << 8) | rxCurrent[0] << 16);
+        currentSingleSample_ADC = (int32_t) ((rxCurrent[2]) | (rxCurrent[1] << 8) | ((rxCurrent[0] << 24) >> 8));
 
 		// Rolling average
         // A single sample is too noisy for an "instant" measurement so do a small average
-        currentInstant = (currentInstant*(numSamplesInstant-1) + currentSingleSample) / numSamplesInstant;
-        currentAvg = (currentAvg*(numSamplesAverage-1) + currentSingleSample) / numSamplesAverage;
+        currentInstant_ADC = (currentInstant_ADC*(numSamplesInstant-1) + currentSingleSample_ADC) / numSamplesInstant;
+        currentAvg_ADC = (currentAvg_ADC*(numSamplesAverage-1) + currentSingleSample_ADC) / numSamplesAverage;
 
         vTaskDelayUntil(&lastWakeTime, HVCSpiUpdate_period_ms);
     }
@@ -204,22 +204,50 @@ void spiInit(void) {
 // Inverse of this value is 1206.88 (round to 1207)
 // We also need to reverse the polarity of this measurement
 int32_t getHVmillivolts() {
-    // return (int32_t)(HighVoltage);// * -1207);
-    // TODO: Confirm this transfer function is accurate
-    float rawADC = (float) HighVoltage;
-    // From regression tuning
-    float HV_mV = 0.12149 * rawADC- 35004.52406;
-    return (int32_t) HV_mV;
+    // https://www.analog.com/media/en/technical-documentation/data-sheets/ade7912_7913.pdf
+    static const int32_t maxVoltageConverted_mV = 788;
+    static const int32_t maxVoltageADCValue = 0x7FFFFF;
+    static const int32_t minVoltageADCValue = 0x800000;
+    static const int32_t sensedToHV = 1207;
+
+    // Convert ADC value to Sensed Voltage
+    int32_t sensedVoltage_mV;
+    if (HighVoltage_ADC >= 0) {
+        sensedVoltage_mV = HighVoltage_ADC * maxVoltageConverted_mV / maxVoltageADCValue;
+    } else {
+        sensedVoltage_mV = HighVoltage_ADC * maxVoltageConverted_mV / minVoltageADCValue;
+    }
+
+    // Convert Sensed Voltage to HV Bus Voltage
+    int32_t HV_mV = sensedVoltage_mV * sensedToHV;
+
+    return HV_mV;
+}
+
+// Convert IP ADC value to Shunt Voltage
+float adcToCurrent(int32_t currentADC) {
+    static const float maxCurrentConverted_V = 0.04927f;
+    static const int32_t maxCurrentADCValue = 0x7FFFFF;
+    static const int32_t minCurrentADCValue = 0x800000;
+
+    float sensedCurrent_V;
+    if (HighVoltage_ADC >= 0) {
+        sensedCurrent_V = currentADC * maxCurrentConverted_V / maxCurrentADCValue;
+    } else {
+        sensedCurrent_V = currentADC * maxCurrentConverted_V / minCurrentADCValue;
+    }
+
+    return sensedCurrent_V;
 }
 
 // V=IR 
 // Measure current across shunt resistor (166.6 uohm)
 // 1/166.6u = 6002
 int32_t getCurrentInstant() {
-    return (int32_t)(currentInstant * 6002);
+    return (int32_t)(adcToCurrent(currentInstant_ADC) * 6002);
 }
  
 int32_t getCurrentAverage() {
-    return (int32_t)(currentAvg * 6002);
+    return (int32_t)(adcToCurrent(currentAvg_ADC) * 6002);
 }
 
