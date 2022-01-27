@@ -123,7 +123,6 @@ static void HVCSpiUpdate(void *pvParameters) {
 
     // https://www.analog.com/media/en/technical-documentation/data-sheets/ade7912_7913.pdf
     uint8_t temp = 1;
-    HVSenseRead(EMI_CTRL, &temp, 1);
 
     // Read the STATUS0 register until Bit 0 (RESET_ON) is cleared to 0
     uint8_t underReset = 1;
@@ -138,16 +137,17 @@ static void HVCSpiUpdate(void *pvParameters) {
     uint8_t configuration = ADC_FREQ_1kHz;
     HVSenseWrite(CONFIG, &configuration, 1);
     HVSenseRead(CONFIG, &temp, 1);
+    configASSERT(temp == configuration);
 
     // Initialize the EMI_CTRL register
     uint8_t emi_config = EMI_CONFIG;
     HVSenseWrite(EMI_CTRL, &emi_config, 1);
     HVSenseRead(EMI_CTRL, &temp, 1);
+    configASSERT(temp == emi_config);
 
     // Set the lock register to 0xCA to protect the user accessible and internal configuration registers.
     uint8_t lock = LOCK_KEY_EN;
     HVSenseWrite(LOCK, &lock, 1);
-    HVSenseRead(LOCK, &temp, 1);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
@@ -205,23 +205,23 @@ void spiInit(void) {
 // We also need to reverse the polarity of this measurement
 int32_t getHVmillivolts() {
     // https://www.analog.com/media/en/technical-documentation/data-sheets/ade7912_7913.pdf
-    static const int32_t maxVoltageConverted_mV = 788;
-    static const int32_t maxVoltageADCValue = 0x7FFFFF;
-    static const int32_t minVoltageADCValue = 0x800000;
-    static const int32_t sensedToHV = 1207;
-
-    // Convert ADC value to Sensed Voltage
-    int32_t sensedVoltage_mV;
-    if (HighVoltage_ADC >= 0) {
-        sensedVoltage_mV = HighVoltage_ADC * maxVoltageConverted_mV / maxVoltageADCValue;
-    } else {
-        sensedVoltage_mV = HighVoltage_ADC * maxVoltageConverted_mV / minVoltageADCValue;
-    }
-
-    // Convert Sensed Voltage to HV Bus Voltage
-    int32_t HV_mV = sensedVoltage_mV * sensedToHV;
-
-    return HV_mV;
+//    static const float maxVoltageConverted_mV = 788.f;
+//    static const int32_t maxVoltageADCValue = 0x7FFFFF;
+//    static const int32_t minVoltageADCValue = 0x800000;
+//    static const float sensedToHV = 1207.f;
+//
+//    // Convert ADC value to Sensed Voltage
+//    float sensedVoltage_mV;
+//    if (HighVoltage_ADC >= 0) {
+//        sensedVoltage_mV = (HighVoltage_ADC - 400000) * maxVoltageConverted_mV / maxVoltageADCValue;
+//    } else {
+//        sensedVoltage_mV = (HighVoltage_ADC + 400000) * maxVoltageConverted_mV / minVoltageADCValue;
+//    }
+//
+//    // Convert Sensed Voltage to HV Bus Voltage
+//    float HV_mV = sensedVoltage_mV * sensedToHV;
+	float HV_mV = (0.12f * HighVoltage_ADC) - 46391.04f;
+    return (int32_t) HV_mV;
 }
 
 // Convert IP ADC value to Shunt Voltage
@@ -231,7 +231,7 @@ float adcToCurrent(int32_t currentADC) {
     static const int32_t minCurrentADCValue = 0x800000;
 
     float sensedCurrent_V;
-    if (HighVoltage_ADC >= 0) {
+    if (currentADC >= 0) {
         sensedCurrent_V = currentADC * maxCurrentConverted_V / maxCurrentADCValue;
     } else {
         sensedCurrent_V = currentADC * maxCurrentConverted_V / minCurrentADCValue;
