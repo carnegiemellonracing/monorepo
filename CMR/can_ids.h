@@ -61,6 +61,7 @@ typedef enum {
 
     CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief PTC (fan board) cooling loop temps. */
     CMR_CANID_PTC_LOOP_TEMPS_B = 0x234,        /**< @brief PTC (fan board) cooling loop temps. */
+    CMR_CANID_PTC_LOOP_TEMPS_C = 0x244,        /**< @brief PTC (fan board) cooling loop temps. */
     CMR_CANID_PTC_FANS_PUMPS_STATUS = 0x314,   /**< @brief PTC (fan board) fans status */
     CMR_CANID_PTC_POWER_DIAGNOSTICS = 0x534,   /**< @brief PTC (fan board) power diagnostics. */
 

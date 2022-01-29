@@ -624,6 +624,9 @@ typedef struct {
     uint16_t temp7_dC;            /**< @brief Temp 7 */
     uint16_t temp8_dC;            /**< @brief Temp 8 */
 } cmr_canPTCLoopTemp_B_t;
+typedef struct {
+    uint16_t temp9_dC;            /**< @brief Temp 9 */
+} cmr_canPTCLoopTemp_C_t;
 
 
 /** @brief Powertrain Thermal Controller voltage diagnostics. */
