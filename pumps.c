@@ -52,6 +52,7 @@ static void pumpControl(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     // TODO: Fix based on Datasheet
+    // (See Danny's messages)
     /* Initialize PWM channels to 25kHz for fan control lines */
     /* 96Mhz / (24 * 40000) = 100Hz */
     const cmr_pwmPinConfig_t pwmPinConfig1 = {
