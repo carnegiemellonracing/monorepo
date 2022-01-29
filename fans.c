@@ -85,8 +85,6 @@ uint16_t inverter_temp;
 static void fanControl(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-    // TODO: Fix based on Datasheet
-    // (See Danny's messages)
     /* Initialize PWM channels to 25kHz for fan control lines */
     /* 96Mhz / (24 * 160) = 25kHz */
     const cmr_pwmPinConfig_t pwmPinConfig1 = {

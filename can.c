@@ -287,7 +287,6 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
  * @brief Send cooling system temps on CAN bus.
  */
 static void sendCoolingLoopTemps(void) {
-    // TODO: Send Thermistor 9 also
     int32_t Temp_1_dC =
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_1);
     int32_t Temp_2_dC =
@@ -305,6 +304,12 @@ static void sendCoolingLoopTemps(void) {
     int32_t Temp_8_dC =
         cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_8);
 
+    // New for 22e:
+    int32_t Temp_9_dC =
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_9);
+
+
+
     /* Separate A and B messages are due to can packet size limits */
     cmr_canPTCLoopTemp_A_t coolMsg1 = {
         .temp1_dC = Temp_1_dC,
@@ -320,8 +325,15 @@ static void sendCoolingLoopTemps(void) {
         .temp8_dC = Temp_8_dC
     };
 
+    /* New packet needed for Thermistor 9 */
+    cmr_canPTCLoopTemp_C_t coolMsg3 = {
+        .temp9_dC = Temp_9_dC 
+    };
+
+
     canTX(CMR_CANID_PTC_LOOP_TEMPS_A, &coolMsg1, sizeof(coolMsg1), canTX10Hz_period_ms);
     canTX(CMR_CANID_PTC_LOOP_TEMPS_B, &coolMsg2, sizeof(coolMsg2), canTX10Hz_period_ms);
+    canTX(CMR_CANID_PTC_LOOP_TEMPS_C, &coolMsg3, sizeof(coolMsg3), canTX10Hz_period_ms);
 }
 
 /**

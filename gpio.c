@@ -67,8 +67,6 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         }
     },
 
-    //TODO: same as above TODO - add another element
-
     [GPIO_MTR_CTRL_ENABLE] = { 
         .port = GPIOC,
         .init = {
