@@ -558,28 +558,8 @@ typedef struct {
     uint8_t config_val_2;
     uint8_t config_val_3;
     uint8_t config_val_4;
-} cmr_canDIMconfig1_t;
+} cmr_canDIMCDCconfig_t;
 
-typedef struct {
-    uint8_t config_val_1;
-    uint8_t config_val_2;
-    uint8_t config_val_3;
-    uint8_t config_val_4;
-} cmr_canDIMconfig1_t;
-
-typedef struct {
-    uint8_t config_val_1;
-    uint8_t config_val_2;
-    uint8_t config_val_3;
-    uint8_t config_val_4;
-} cmr_canDIMconfig1_t;
-
-typedef struct {
-    uint8_t config_val_1;
-    uint8_t config_val_2;
-    uint8_t config_val_3;
-    uint8_t config_val_4;
-} cmr_canDIMconfig1_t;
 
 // ------------------------------------------------------------------------------------------------
 // Front Sensor Module

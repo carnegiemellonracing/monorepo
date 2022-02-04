@@ -75,11 +75,17 @@ typedef enum {
     CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x535,    /**< @brief DIM power diagnostics. */
     CMR_CANID_DIM_TEXT_WRITE = 0x525,           /**< @brief DIM write command for sending text. */
     CMR_CANID_DIM_ACTION_BUTTON = 0x515,        /**< @brief DIM action button pressed status. */
-    CMR_CANID_DIM_CONFIG0 = 0x530,              /**< @brief DIM action button pressed status. */
-    CMR_CANID_DIM_CONFIG1 = 0x531,              /**< @brief DIM action button pressed status. */
-    CMR_CANID_DIM_CONFIG2 = 0x532,              /**< @brief DIM action button pressed status. */
-    CMR_CANID_DIM_CONFIG3 = 0x533,              /**< @brief DIM action button pressed status. */
-    CMR_CANID_DIM_CONFIG4 = 0x534,              /**< @brief DIM action button pressed status. */
+    num_config_packets = 5,                     /**< @brief in the enum but actually just a count of num of packets. */ 
+    CMR_CANID_DIM_CONFIG0 = 0x530,              /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG1 = 0x531,              /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG2 = 0x532,              /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG3 = 0x533,              /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG4 = 0x534,              /**< @brief DIM config request */
+    CMR_CANID_CDC_CONFIG0 = 0x530,              /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG1 = 0x531,              /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG2 = 0x532,              /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG3 = 0x533,              /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG4 = 0x534,              /**< @brief CDC config request */
 
 
     CMR_CANID_AFC0_FAN_STATUS = 0x236,          /**< @brief AFC 0 fan status. */
