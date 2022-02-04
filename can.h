@@ -18,6 +18,21 @@
 /** @brief Text buffer from RAM - used to display messages to driver */
 char RAMBUF[RAMBUFLEN];
 
+/** @note the state transition of the dim-cdc handshake is described as follows
+ * 
+ * 1. The CDC is always broadcasting its values. On boot, config_screen_update_confirmed
+ *    will be set to true once it's recieved the initial set of params from the CDC.
+ *    Only then will the DIM be able to show the config screen.
+ * 2. Once the values are modified, the flush_config_to_cdc variable is set to true.
+ * 3. The CAN 5hz function will transmit these config messages and set 
+ *    waiting_for_cdc_to_confim_config to true. It will continue to transmit till 
+ *    config_screen_update_confirmed is set to true.
+ * 4. The RX filter will listen while waiting_for_cdc_to_confirm_config is set true.
+ *    Once it gets all the data, it'll set this to false and set the config_screen_update_confirmed
+ *    to true. The screen will now exit and go back to the RTD screen per normal. and it'll reset
+ *    the config_screen_update_confirmed back to false for another iteration. 
+ */
+
 // Config Screen update requested
 bool flush_config_screen_to_cdc; 
 
@@ -25,10 +40,11 @@ bool flush_config_screen_to_cdc;
 bool config_screen_update_confirmed;
 
 // recieved initial config screen values
-bool config_screen_values_received;
+bool config_screen_values_received_on_boot;
 
-// letting the rx callback to know what to do when
+// letting the rx callback to know to pay attention to the cdc messages
 bool waiting_for_cdc_to_confirm_config; 
+
 
 /**
  * @brief CAN receive metadata indices.

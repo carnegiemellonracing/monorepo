@@ -287,31 +287,31 @@ static void canTX1Hz(void *pvParameters) {
     while (1) {
         if (flush_config_screen_to_cdc){
             /* pack struct message for config */
-            cmr_canDIMconfig1_t config0 = {
+            cmr_canDIMCDCconfig_t config0 = {
                 .config_val_1 = config_menu_main_array[0].value.value,
                 .config_val_2 = config_menu_main_array[1].value.value,
                 .config_val_3 = config_menu_main_array[2].value.value,
                 .config_val_4 = config_menu_main_array[3].value.value,
             };
-            cmr_canDIMconfig1_t config1 = {
+            cmr_canDIMCDCconfig_t config1 = {
                 .config_val_1 = config_menu_main_array[4].value.value,
                 .config_val_2 = config_menu_main_array[5].value.value,
                 .config_val_3 = config_menu_main_array[6].value.value,
                 .config_val_4 = config_menu_main_array[7].value.value,
             };
-            cmr_canDIMconfig1_t config2 = {
+            cmr_canDIMCDCconfig_t config2 = {
                 .config_val_1 = config_menu_main_array[8].value.value,
                 .config_val_2 = config_menu_main_array[9].value.value,
                 .config_val_3 = config_menu_main_array[10].value.value,
                 .config_val_4 = config_menu_main_array[11].value.value,
             };
-            cmr_canDIMconfig1_t config3 = {
+            cmr_canDIMCDCconfig_t config3 = {
                 .config_val_1 = config_menu_main_array[12].value.value,
                 .config_val_2 = config_menu_main_array[13].value.value,
                 .config_val_3 = config_menu_main_array[14].value.value,
                 .config_val_4 = config_menu_main_array[15].value.value,
             };
-            cmr_canDIMconfig1_t config4 = {
+            cmr_canDIMCDCconfig_t config4 = {
                 .config_val_1 = config_menu_main_array[16].value.value,
                 .config_val_2 = 0,
                 .config_val_3 = 0,
@@ -400,6 +400,92 @@ void ramRxCallback (cmr_can_t *can, uint16_t canID, const void *data, size_t dat
         }
     }
 }
+
+void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen){
+    // num_config_packets in can_types.h
+    static bool gotten_packet[num_config_packets] = {0};
+    static bool initialized = false;
+    static int items_per_struct = 4;
+
+    // calculate what config packet this message is
+    int packet_number = canID - CMR_CANID_CDC_CONFIG0;
+    // cast the data to the appropriate format
+    cmr_canDIMCDCconfig_t *cdc_config_data = (cmr_canDIMCDCconfig_t*) data;
+    // cast the data to an array for easy indexing. Sly i know :P
+    uint8_t *cdc_config_data_arr = (uint8_t*) data;
+
+    // find the appropriate values to modify in the local copy of our data 
+    // note that there are 4 values per config struct hence the *4
+    uint8_t dim_config_data_array_starting_idx = packet_number * items_per_struct; 
+
+    if (packet_number >= num_config_packets){
+        // time to shit yo pants bc some wack shit has happened.
+        // TODO: Add throwing an error here
+    }
+
+    // used to get all the data from the struct
+    uint8_t struct_incrementer = 0;
+
+    // if waiting to init -- blindly read data and set that to done
+    if (!initialized){
+        // copy data over to local memory!
+        for(uint8_t i = dim_config_data_array_starting_idx, i < dim_config_data_array_starting_idx + 4; i++){
+            config_menu_main_array[i].data.data = cdc_config_data_arr[i];
+            struct_incrementer++;
+        }
+
+        // mark the appropriate packet as recieved
+        gotten_packet[packet_number] = true;
+    }
+
+    // if waiting to save -- make sure all data is same and then reset that
+    else if(waiting_for_cdc_to_confirm_config){
+        bool all_data_matches = true;
+        // get the data and check if all the data is the same
+        for(uint8_t i = dim_config_data_array_starting_idx, i < dim_config_data_array_starting_idx + 4; i++){
+            all_data_matches &= config_menu_main_array[i].data.data == cdc_config_data_arr[i];
+            struct_incrementer++;
+        }
+        // set appropriate config message rx flag if data matches
+        gotten_packet[packet_number] = all_data_matches;
+        
+    }
+
+    // check if all config messages have been received
+    bool all_packets_recieved = true;
+    for(uint8_t i = 0; i < num_config_packets; i++){
+        all_packets_recieved &= gotten_packet[i];
+    }
+
+    // if all data is recieved
+    if(all_packets_recieved){
+        // no need to re-init data
+        initialized = true;
+
+        waiting_for_cdc_to_confirm_config = false;
+
+        // reset all packets rx for the next run
+        for(uint8_t i = 0; i < num_config_packets; i++){
+            gotten_packet[i] = false;
+        }
+
+        config_screen_update_confirmed = true;
+    }
+}
+
+void canRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen){
+    if (canID == CMR_CANID_DIM_TEXT_WRITE) {
+        ramRxCallback(can, canID, data, dataLen);
+    }
+    if (canID == CMR_CANID_CDC_CONFIG0 ||
+        canID == CMR_CANID_CDC_CONFIG1 ||
+        canID == CMR_CANID_CDC_CONFIG2 ||
+        canID == CMR_CANID_CDC_CONFIG3 ||
+        canID == CMR_CANID_CDC_CONFIG4){
+            cdcConfigRXCallback(can, canID, data, dataLen)
+    }
+}
+
 
 /**
  * @brief Initializes the CAN interface.
