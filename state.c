@@ -20,6 +20,25 @@ bool config_scroll_requested = false;
 /** @brief declaration of what screen mode one is in */
 bool in_config_screen = false;
 
+bool exitConfigScreen(){
+    // flash values to screen
+    flush_config_screen_to_cdc = true;
+    if (waiting_for_cdc_to_confirm_config == true){
+        waiting_for_cdc_to_confirm_config = false;
+        in_config_screen = false;
+    }
+}
+
+bool enterConfigScreen(){
+    // make sure you've booted and you can enter by seeing if
+    // waiting for cdc
+    if (in_config_screen == false && 
+        config_screen_values_received_on_boot && 
+        stateGetVSM() == CMR_CAN_GLV_ON){
+        in_config_screen = true;
+    }
+}
+
 bool inConfigScreen() {
     return in_config_screen;
 }
@@ -181,8 +200,12 @@ void stateVSMUpButton(bool pressed) {
     // TODO: modifiy only if in config screen
     config_increment_up_requested = true;
 
-    // don't run following logic if in config screen
-    if (in_config_screen) return;
+    // Exit the config screen
+    if(inConfigScreen() == true){
+        // don't worry this will check to make sure we're in glv mode
+        exitConfigScreen();
+        return;
+    }
 
     cmr_canState_t vsmState = stateGetVSM();
     if (state.vsmReq < vsmState) {
@@ -225,8 +248,10 @@ void stateVSMDownButton(bool pressed) {
     }
 
     // Enter the config screen
-    if (vsmState == CMR_CAN_GLV_ON && in_config_screen == false){
-        in_config_screen = true;
+    if(inConfigScreen() == false){
+        // don't worry this will check to make sure we're in glv mode
+        enterConfigScreen();
+        return;
     }
 
     if (

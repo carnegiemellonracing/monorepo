@@ -463,6 +463,8 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
         initialized = true;
 
         waiting_for_cdc_to_confirm_config = false;
+        flush_config_screen_to_cdc = false; 
+
 
         // reset all packets rx for the next run
         for(uint8_t i = 0; i < num_config_packets; i++){
