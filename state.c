@@ -17,6 +17,12 @@ bool config_increment_up_requested = false;
 bool config_increment_down_requested = false;
 /** @brief declaration of config screen variables */
 bool config_scroll_requested = false;
+/** @brief declaration of what screen mode one is in */
+bool in_config_screen = false;
+
+bool inConfigScreen() {
+    return in_config_screen;
+}
 
 /** @brief DIM state. */
 static volatile struct {
@@ -175,6 +181,9 @@ void stateVSMUpButton(bool pressed) {
     // TODO: modifiy only if in config screen
     config_increment_up_requested = true;
 
+    // don't run following logic if in config screen
+    if (in_config_screen) return;
+
     cmr_canState_t vsmState = stateGetVSM();
     if (state.vsmReq < vsmState) {
         // Cancel state-down request.
@@ -205,11 +214,19 @@ void stateVSMDownButton(bool pressed) {
     // TODO: modifiy only if in config screen
     config_increment_down_requested = true;
 
+    // don't run following logic if in config screen
+    if (in_config_screen) return;
+
     cmr_canState_t vsmState = stateGetVSM();
     if (state.vsmReq > vsmState) {
         // Cancel state-up request.
         state.vsmReq = vsmState;
         return;
+    }
+
+    // Enter the config screen
+    if (vsmState == CMR_CAN_GLV_ON && in_config_screen == false){
+        in_config_screen = true;
     }
 
     if (
@@ -268,8 +285,12 @@ void stateGearUpButton(bool pressed) {
         return;
     }
 
-    // TODO: modifiy only if in config screen
-    config_scroll_requested = true;
+    // don't run following logic if in config screen
+    if (in_config_screen){
+        in_config_screen = false;
+        return; 
+        // TODO: Add logic to exit config screen via can message flushing
+    } 
 
     if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
         return;     // Can only change gears in HV_EN and GLV_ON.

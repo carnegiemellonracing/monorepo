@@ -20,6 +20,13 @@
 #include "state.h"  // State interface
 #include "tftDL.h"  // For RAM buffer indices
 #include "gpio.h"   // For actionButtonPressed status
+#include "config_screen_helper.h" // for config_screen_data tx
+
+extern bool flush_config_screen_to_cdc = false;
+extern bool waiting_for_cdc_to_confirm_config = false;
+
+extern bool waiting_for_cdc_to_confirm_config = false;
+
 
 /**
  * @brief CAN periodic message receive metadata
@@ -255,6 +262,104 @@ static void canTX100Hz(void *pvParameters) {
     }
 }
 
+/** @brief CAN 1 Hz TX priority. */
+static const uint32_t canTX1Hz_priority = 3;
+
+/** @brief CAN 1 Hz TX period (milliseconds). */
+static const TickType_t canTX1Hz_period_ms = 100;
+
+/** @brief CAN 1 Hz TX task. */
+static cmr_task_t canTX1Hz_task;
+
+/**
+ * @brief Task for sending CAN messages at 1 Hz.
+ *
+ * @param pvParameters Ignored.
+ *
+ * @return Does not return.
+ */
+static void canTX1Hz(void *pvParameters) {
+    (void) pvParameters;    // Placate compiler.
+
+    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
+        if (flush_config_screen_to_cdc){
+            /* pack struct message for config */
+            cmr_canDIMconfig1_t config0 = {
+                .config_val_1 = config_menu_main_array[0].value.value,
+                .config_val_2 = config_menu_main_array[1].value.value,
+                .config_val_3 = config_menu_main_array[2].value.value,
+                .config_val_4 = config_menu_main_array[3].value.value,
+            };
+            cmr_canDIMconfig1_t config1 = {
+                .config_val_1 = config_menu_main_array[4].value.value,
+                .config_val_2 = config_menu_main_array[5].value.value,
+                .config_val_3 = config_menu_main_array[6].value.value,
+                .config_val_4 = config_menu_main_array[7].value.value,
+            };
+            cmr_canDIMconfig1_t config2 = {
+                .config_val_1 = config_menu_main_array[8].value.value,
+                .config_val_2 = config_menu_main_array[9].value.value,
+                .config_val_3 = config_menu_main_array[10].value.value,
+                .config_val_4 = config_menu_main_array[11].value.value,
+            };
+            cmr_canDIMconfig1_t config3 = {
+                .config_val_1 = config_menu_main_array[12].value.value,
+                .config_val_2 = config_menu_main_array[13].value.value,
+                .config_val_3 = config_menu_main_array[14].value.value,
+                .config_val_4 = config_menu_main_array[15].value.value,
+            };
+            cmr_canDIMconfig1_t config4 = {
+                .config_val_1 = config_menu_main_array[16].value.value,
+                .config_val_2 = 0,
+                .config_val_3 = 0,
+                .config_val_4 = 0,
+            };
+
+            /* Transmit new messages to cdc */
+            canTX(
+                CMR_CANID_DIM_CONFIG0,
+                &config0,
+                sizeof(config0),
+                canTX1Hz_period_ms
+            );
+            canTX(
+                CMR_CANID_DIM_CONFIG1,
+                &config1,
+                sizeof(config1),
+                canTX1Hz_period_ms
+            );
+            canTX(
+                CMR_CANID_DIM_CONFIG2,
+                &config2,
+                sizeof(config1),
+                canTX1Hz_period_ms
+            );
+            canTX(
+                CMR_CANID_DIM_CONFIG3,
+                &config3,
+                sizeof(config1),
+                canTX1Hz_period_ms
+            );
+            canTX(
+                CMR_CANID_DIM_CONFIG4,
+                &config4,
+                sizeof(config1),
+                canTX1Hz_period_ms
+            );
+
+            /* Set waiting for cdc to be true. RX will wipe this and flush_config_screen
+               only if this was true */
+               waiting_for_cdc_to_confirm_config = true;
+
+        }
+
+        vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
+    }
+}
+
 /**
  * @brief Callback for the RAM messages to the DIM to write to the screen
  * 
@@ -394,6 +499,13 @@ void canInit(void) {
         "CAN TX 100Hz",
         canTX100Hz_priority,
         canTX100Hz,
+        NULL
+    );
+    cmr_taskInit(
+        &canTX1Hz_task,
+        "CAN TX 1Hz",
+        canTX1Hz_priority,
+        canTX1Hz,
         NULL
     );
 }

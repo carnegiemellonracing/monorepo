@@ -89,7 +89,8 @@ typedef struct {
 
 
 config_menu_item_t test;
-config_menu_item_t config_menu_main_array[17] = {
+const size_t len = MAX_MENU_ITEMS;
+config_menu_item_t config_menu_main_array[len] = {
     {
         .name = "Driver Profile",
         .ESE_background_color_variable = ESE_DRIVER_BOX,

@@ -322,13 +322,14 @@ static void tftUpdate(void *pvParameters) {
     while (
         vTaskDelayUntil(&lastWakeTime, tftUpdate_period_ms), 1
     ) {
-        drawConfigScreen();
-
-        // if(stateGetVSM() == CMR_CAN_ERROR){
-        //     drawErrorScreen();
-        // } else {
-        //     drawRTDScreen();
-        // }
+        if (inConfigScreen()){
+            drawConfigScreen();
+        }
+        else if (stateGetVSM() == CMR_CAN_ERROR){
+            drawErrorScreen();
+        } else {
+            drawRTDScreen();
+        }
     }
 }
 

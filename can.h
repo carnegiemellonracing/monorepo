@@ -18,6 +18,18 @@
 /** @brief Text buffer from RAM - used to display messages to driver */
 char RAMBUF[RAMBUFLEN];
 
+// Config Screen update requested
+bool flush_config_screen_to_cdc; 
+
+// bool on if waiting for cdc to confirm config screen update
+bool config_screen_update_confirmed;
+
+// recieved initial config screen values
+bool config_screen_values_received;
+
+// letting the rx callback to know what to do when
+bool waiting_for_cdc_to_confirm_config; 
+
 /**
  * @brief CAN receive metadata indices.
  *
@@ -55,3 +67,5 @@ int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 
 void ramCallback (cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen);
 #endif /* CAN_H */
+
+void transmit_cdc_config_request();
