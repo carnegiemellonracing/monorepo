@@ -11,6 +11,8 @@
 #include <CMR/can.h>        // CMR CAN interface
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/can_ids.h>    // CMR CAN IDs
+#include "config_screen_helper.h" // for config_screen_data tx
+
 
 // Size of text buffer from RAM
 #define RAMBUFLEN 1024
@@ -34,16 +36,16 @@ char RAMBUF[RAMBUFLEN];
  */
 
 // Config Screen update requested
-bool flush_config_screen_to_cdc; 
+extern bool flush_config_screen_to_cdc;// = false;
 
 // bool on if waiting for cdc to confirm config screen update
-bool config_screen_update_confirmed;
+extern bool config_screen_update_confirmed;// = false;
 
 // recieved initial config screen values
-bool config_screen_values_received_on_boot;
+extern bool config_screen_values_received_on_boot;// = false;
 
 // letting the rx callback to know to pay attention to the cdc messages
-bool waiting_for_cdc_to_confirm_config; 
+extern bool waiting_for_cdc_to_confirm_config;// = false;
 
 
 /**

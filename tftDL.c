@@ -14,7 +14,7 @@
 #include "state.h"          // State interface
 #include "can.h"            // Board-specific CAN interface
 #include "gpio.h"            // Board-specific CAN interface
-#include "config_screen_helper.h" // Config screen helper
+
 
 /** @brief Represents a display list. */
 struct tftDL {

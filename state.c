@@ -10,7 +10,7 @@
 #include "can.h"    // can interface
 #include "stdlib.h"
 
-
+extern bool flush_config_screen_to_cdc;
 /** @brief declaration of config screen variables */
 bool config_increment_up_requested = false;
 /** @brief declaration of config screen variables */
@@ -20,7 +20,7 @@ bool config_scroll_requested = false;
 /** @brief declaration of what screen mode one is in */
 bool in_config_screen = false;
 
-bool exitConfigScreen(){
+void exitConfigScreen(){
     // flash values to screen
     flush_config_screen_to_cdc = true;
     if (waiting_for_cdc_to_confirm_config == true){
@@ -29,7 +29,7 @@ bool exitConfigScreen(){
     }
 }
 
-bool enterConfigScreen(){
+void enterConfigScreen(){
     // make sure you've booted and you can enter by seeing if
     // waiting for cdc
     if (in_config_screen == false && 

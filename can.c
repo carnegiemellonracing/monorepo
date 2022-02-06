@@ -20,13 +20,18 @@
 #include "state.h"  // State interface
 #include "tftDL.h"  // For RAM buffer indices
 #include "gpio.h"   // For actionButtonPressed status
-#include "config_screen_helper.h" // for config_screen_data tx
 
-extern bool flush_config_screen_to_cdc = false;
-extern bool waiting_for_cdc_to_confirm_config = false;
+// Config Screen update requested
+bool flush_config_screen_to_cdc = false;
 
-extern bool waiting_for_cdc_to_confirm_config = false;
+// bool on if waiting for cdc to confirm config screen update
+bool config_screen_update_confirmed= false;
 
+// recieved initial config screen values
+bool config_screen_values_received_on_boot = false;
+
+// letting the rx callback to know to pay attention to the cdc messages
+bool waiting_for_cdc_to_confirm_config = false;
 
 /**
  * @brief CAN periodic message receive metadata
@@ -412,7 +417,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
     // cast the data to the appropriate format
     cmr_canDIMCDCconfig_t *cdc_config_data = (cmr_canDIMCDCconfig_t*) data;
     // cast the data to an array for easy indexing. Sly i know :P
-    uint8_t *cdc_config_data_arr = (uint8_t*) data;
+    uint8_t *cdc_config_data_arr = (uint8_t*) cdc_config_data;
 
     // find the appropriate values to modify in the local copy of our data 
     // note that there are 4 values per config struct hence the *4
@@ -429,8 +434,8 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
     // if waiting to init -- blindly read data and set that to done
     if (!initialized){
         // copy data over to local memory!
-        for(uint8_t i = dim_config_data_array_starting_idx, i < dim_config_data_array_starting_idx + 4; i++){
-            config_menu_main_array[i].data.data = cdc_config_data_arr[i];
+        for(uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + 4; i++){
+            config_menu_main_array[i].value.value = cdc_config_data_arr[i];
             struct_incrementer++;
         }
 
@@ -442,8 +447,8 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
     else if(waiting_for_cdc_to_confirm_config){
         bool all_data_matches = true;
         // get the data and check if all the data is the same
-        for(uint8_t i = dim_config_data_array_starting_idx, i < dim_config_data_array_starting_idx + 4; i++){
-            all_data_matches &= config_menu_main_array[i].data.data == cdc_config_data_arr[i];
+        for(uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + 4; i++){
+            all_data_matches &= config_menu_main_array[i].value.value == cdc_config_data_arr[i];
             struct_incrementer++;
         }
         // set appropriate config message rx flag if data matches
@@ -484,7 +489,7 @@ void canRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
         canID == CMR_CANID_CDC_CONFIG2 ||
         canID == CMR_CANID_CDC_CONFIG3 ||
         canID == CMR_CANID_CDC_CONFIG4){
-            cdcConfigRXCallback(can, canID, data, dataLen)
+    	cdcRXCallback(can, canID, data, dataLen);
     }
 }
 
