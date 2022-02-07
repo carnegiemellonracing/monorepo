@@ -18,7 +18,6 @@ static const adcChannels_t sensorsADCCHANNELS[SENSOR_CH_LEN] = {
 	[SENSOR_CH_AIR_POWER]  = ADC_AIR_POWER,
 	[SENSOR_CH_SAFETY]     = ADC_SAFETY,
 	[SENSOR_CH_IBATT_FILTERED] = ADC_IBATT_FILTERED
-	// TODO add Ibatt Filter
 };
 
 /** @brief forward declaration */

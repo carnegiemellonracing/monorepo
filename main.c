@@ -9,9 +9,6 @@
 
 #include <CMR/panic.h>  // cmr_panic()
 #include <CMR/rcc.h>    // RCC interface
-#include <CMR/can.h>    // CAN interface
-#include <CMR/adc.h>    // ADC interface
-#include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
 
 #include "gpio.h"   // Board-specific GPIO interface
@@ -19,6 +16,7 @@
 #include "adc.h"    // Board-specific ADC interface
 #include "uart.h"   // Board-specific UART interface
 #include "bms_error.h"
+#include "watchdog.h"   // Board-specific Watchdog interface
 
 /** @brief Struct to identify stale commands. */
 extern ReceiveMeta_t BMSCommandReceiveMeta;
@@ -86,9 +84,10 @@ int main(void) {
     gpioInit();
     canInit();
     uartInit();
-    // adcInit();
-    // sensorsInit();
+    adcInit();
+    sensorsInit();
     spiInit();
+    wwdgInit();
 
     cmr_taskInit(
         &statusLED_task,
@@ -107,14 +106,14 @@ int main(void) {
         NULL
     );
 
-    // // State Task
-    // cmr_taskInit(
-    //     &setState_task,
-    //     "Set State Task",
-    //     setState_priority,
-    //     vSetStateTask,
-    //     NULL
-    // );
+    // State Task
+    cmr_taskInit(
+        &setState_task,
+        "Set State Task",
+        setState_priority,
+        vSetStateTask,
+        NULL
+    );
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

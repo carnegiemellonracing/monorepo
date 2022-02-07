@@ -62,6 +62,7 @@ static volatile int32_t currentAvg_ADC = 0;
 static volatile int32_t currentInstant_ADC = 0;
 
 static volatile int32_t HighVoltage_ADC = 0;
+static volatile int32_t voltageHV = 0;
 
 #define ADDR_OFFSET 3
 #define READ_OFFSET 2
@@ -109,6 +110,12 @@ static void HVSenseWrite(hvSenseRegister_t address, uint8_t* txData, size_t txLe
     data[0] = getSPIHeaderByte(address, SPI_WRITE);
     memcpy(&(data[1]), txData, txLen);
     cmr_spiTXRX(&spi, &data, NULL, txLen + 1);
+}
+
+
+/** @brief Converts ADC reading into HV voltage */
+static inline int32_t ADCtoMV_HVSense (int32_t adc_input) {
+    return (int32_t) ((0.1242f * adc_input) - 46767.f);
 }
 
 /**
@@ -161,13 +168,16 @@ static void HVCSpiUpdate(void *pvParameters) {
         // Sample HV Bus Voltage
         uint8_t rxVoltage[VOLTAGE_RX_LEN] = {0,0,0};
         HVSenseRead(V1WV, rxVoltage, VOLTAGE_RX_LEN);
-        HighVoltage_ADC = (int32_t) ((rxVoltage[2]) | (rxVoltage[1] << 8) | ((rxVoltage[0] << 24) >> 8) );
+        HighVoltage_ADC = (int32_t) ((rxVoltage[2]) | (rxVoltage[1] << 8) | (rxVoltage[0] << 16) );
+        HighVoltage_ADC = (HighVoltage_ADC << 8) >> 8;
+        voltageHV = ADCtoMV_HVSense(HighVoltage_ADC);
 
 
         // Sample HV Current
         uint8_t rxCurrent[3] = {0,0,0};
         HVSenseRead(IWV, rxCurrent, CURRENT_RX_LEN);
-        currentSingleSample_ADC = (int32_t) ((rxCurrent[2]) | (rxCurrent[1] << 8) | ((rxCurrent[0] << 24) >> 8));
+        currentSingleSample_ADC = (int32_t) ((rxCurrent[2]) | (rxCurrent[1] << 8) | (rxCurrent[0] << 16));
+        currentSingleSample_ADC = (currentSingleSample_ADC << 8) >> 8;
 
 		// Rolling average
         // A single sample is too noisy for an "instant" measurement so do a small average
@@ -220,8 +230,9 @@ int32_t getHVmillivolts() {
 //
 //    // Convert Sensed Voltage to HV Bus Voltage
 //    float HV_mV = sensedVoltage_mV * sensedToHV;
-	float HV_mV = (0.12f * HighVoltage_ADC) - 46391.04f;
-    return (int32_t) HV_mV;
+
+	// float HV_mV = (0.1242f * HighVoltage_ADC) - 46767.f;
+    return voltageHV;
 }
 
 // Convert IP ADC value to Shunt Voltage
