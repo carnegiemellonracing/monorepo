@@ -137,8 +137,8 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
             } else if (packMaxCellVoltage >= 4150) {
                 // T13: Maximum cell voltage > 4.15V, begin balancing
-                //nextState = BMS_STATE_CHARGE_CONSTANT_VOLTAGE;
-                nextState = CMR_CAN_HVC_STATE_ERROR; // not balancing for now
+                nextState = CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE;
+                //nextState = CMR_CAN_HVC_STATE_ERROR; // not balancing for now
             } else {
                 nextState = CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT;
             }
@@ -182,9 +182,6 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
 }
 
 static cmr_canHVCState_t setStateOutput(){
-
-    // TODO add BMB command outputs
-    // TODO add charger command outputs
 
     //Note: For relay action, set all opens before closes to avoid shorts
     switch (currentState) {
