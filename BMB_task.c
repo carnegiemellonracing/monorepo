@@ -143,10 +143,11 @@ void vBMBSampleTask(void *pvParameters) {
         vTaskDelayUntil(&xLastWakeTime, xPeriod);
     }
 
+    // Temp Mux Enable
+    int tempMuxEnable = 0;
     for(;;) {
         uart_response_t channelResponse = {0};
         cmr_uart_result_t uartRetv = UART_SUCCESS;
-
 
         // Sampling method #2: BQ Protocol p12
 
@@ -192,10 +193,11 @@ void vBMBSampleTask(void *pvParameters) {
             for(uint8_t tChannel = 0; tChannel < TSENSE_CHANNELS_PER_MESSAGE; ++tChannel) {
                 uint32_t readAdcValue = (((uint32_t)channelResponse.data[2*tChannel + 2*VSENSE_CHANNELS_PER_BMB])<<8) |
                                         ((uint32_t)channelResponse.data[2*tChannel+2*VSENSE_CHANNELS_PER_BMB+1]);
-                uint8_t logicalThermIndex = (BMBActivityLEDEnable) ? tChannel : tChannel;
+                uint8_t logicalThermIndex = TSENSE_CHANNELS_PER_MESSAGE - 1 - tChannel;
+                logicalThermIndex = (tempMuxEnable) ? logicalThermIndex + 4 : logicalThermIndex; 
                 
                 //This is backwards for some reason.
-                BMBData[BMBIndex].cellTemperatures[TSENSE_CHANNELS_PER_MESSAGE - logicalThermIndex- 1] = lutTemp((uint16_t)readAdcValue);
+                BMBData[BMBIndex].cellTemperatures[logicalThermIndex] = lutTemp((uint16_t)readAdcValue);
                 // TODO set error conditions for bad temps
             }
         }
@@ -232,6 +234,10 @@ void vBMBSampleTask(void *pvParameters) {
         } else {
             ++BMBIndex;
         }
+
+        tempMuxEnable = !tempMuxEnable;
+        slave_uart_sendEnableTempMuxCmd((uint8_t)tempMuxEnable);
+
         // Delay 10ms
         vTaskDelayUntil(&xLastWakeTime, xPeriod);
     }

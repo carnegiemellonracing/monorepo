@@ -535,6 +535,18 @@ cmr_uart_result_t slave_uart_sendBalanceCmd(uint16_t cells, uint8_t deviceAddres
 	return retv;
 }
 
+cmr_uart_result_t slave_uart_sendEnableTempMuxCmd(uint8_t enable) {
+  cmr_uart_result_t retv = UART_SUCCESS;
+
+  static uart_command_t EnableTempMuxCmd = {
+    .frameInit = &CMD_BCAST_NRESP_RADDR8_DATA1,
+    .registerAddress = SLAVE_REG_GPIO_OUT,
+    .data = enable, //SYNC SAMPLE command: BQ Protocol p12
+  };
+
+  retv = uart_sendCommand(&EnableTempMuxCmd);
+}
+
 //-----------------------------------------------------------------------------
 // STATIC HELPER FUNCTIONS                                                    |
 //-----------------------------------------------------------------------------
