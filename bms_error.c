@@ -28,7 +28,6 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
     if(false) {
         // TODO E2 devise a UART monitor system
         errorFlags |= CMR_CAN_HVC_ERROR_BMB_TIMEOUT; /**< @brief BMB has timed out. */
-;
     }
     if(getPackMaxCellTemp() > 590) { // Temp limit of 59C
         // TODO: #Define with 590

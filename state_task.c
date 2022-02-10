@@ -26,10 +26,10 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
     //Default to unknown state if no paths are satisfied.
     cmr_canHVCState_t nextState = CMR_CAN_HVC_STATE_UNKNOWN;
     
-	// initialize min/max cell voltage variables for next state logic
-	uint16_t packMinCellVoltage;
-	uint16_t packMaxCellVoltage;
-	
+    // initialize min/max cell voltage variables for next state logic
+    uint16_t packMinCellVoltage;
+    uint16_t packMaxCellVoltage;
+
     if (currentError != CMR_CAN_HVC_ERROR_NONE) {
         // An error condition is active, stay in ERROR state
         return CMR_CAN_HVC_STATE_ERROR;
@@ -115,9 +115,9 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             }
             break;
         case CMR_CAN_HVC_STATE_CHARGE_TRICKLE: // S8
-			// find lowest cell voltage among all BMBs
-			packMinCellVoltage = getPackMinCellVoltage();
-			
+            // find lowest cell voltage among all BMBs
+            packMinCellVoltage = getPackMinCellVoltage();
+
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 // T16: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
@@ -129,24 +129,24 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             }
             break;
         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT: // S9
-			// find highest cell voltage among all BMBs
-			packMaxCellVoltage = getPackMaxCellVoltage();
-			
+            // find highest cell voltage among all BMBs
+            packMaxCellVoltage = getPackMaxCellVoltage();
+
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 // T15: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
             } else if (packMaxCellVoltage >= 4150) {
                 // T13: Maximum cell voltage > 4.15V, begin balancing
                 //nextState = BMS_STATE_CHARGE_CONSTANT_VOLTAGE;
-				nextState = CMR_CAN_HVC_STATE_ERROR; // not balancing for now
+                nextState = CMR_CAN_HVC_STATE_ERROR; // not balancing for now
             } else {
                 nextState = CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT;
             }
             break;
         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE: // S10
-			// find lowest cell voltage among all BMBs
-			packMinCellVoltage = getPackMinCellVoltage();
-			
+            // find lowest cell voltage among all BMBs
+            packMinCellVoltage = getPackMinCellVoltage();
+
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE || packMinCellVoltage >= 4145) {
                 //T14: Mode requested is not CHARGE or all cells fully charged
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
@@ -194,7 +194,6 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(PRECHARGE_RELAY, OPEN);
             setRelay(DISCHARGE_RELAY, CLOSED);
             clearHardwareFault(false);
-			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_STANDBY: // S2
             setRelay(AIR_POS_RELAY, OPEN);
@@ -202,7 +201,6 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(PRECHARGE_RELAY, OPEN);
             setRelay(DISCHARGE_RELAY, OPEN);
             clearHardwareFault(false);
-			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE: // S3
             setRelay(DISCHARGE_RELAY, OPEN);
@@ -210,7 +208,6 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_NEG_RELAY, CLOSED);
             setRelay(PRECHARGE_RELAY, CLOSED);
             clearHardwareFault(false);
-			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE: // S4
             setRelay(DISCHARGE_RELAY, OPEN);
@@ -218,7 +215,6 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_NEG_RELAY, CLOSED);
             setRelay(PRECHARGE_RELAY, CLOSED);
             clearHardwareFault(false);
-			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_DRIVE: // S5
             setRelay(DISCHARGE_RELAY, OPEN);
@@ -226,7 +222,6 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_POS_RELAY, CLOSED);
             setRelay(AIR_NEG_RELAY, CLOSED);
             clearHardwareFault(false);
-			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 1);
             break;
         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE: // S6
             setRelay(DISCHARGE_RELAY, OPEN);
@@ -234,7 +229,6 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_NEG_RELAY, CLOSED);
             setRelay(PRECHARGE_RELAY, CLOSED);
             clearHardwareFault(false);
-			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE: // S7
             setRelay(DISCHARGE_RELAY, OPEN);
@@ -242,7 +236,6 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_NEG_RELAY, CLOSED);
             setRelay(PRECHARGE_RELAY, CLOSED);
             clearHardwareFault(false);
-			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_CHARGE_TRICKLE: // S8
             setRelay(DISCHARGE_RELAY, OPEN);
@@ -250,7 +243,6 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_POS_RELAY, CLOSED);
             setRelay(AIR_NEG_RELAY, CLOSED);
             clearHardwareFault(false);
-			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT: // S9
             setRelay(DISCHARGE_RELAY, OPEN);
@@ -258,7 +250,6 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_POS_RELAY, CLOSED);
             setRelay(AIR_NEG_RELAY, CLOSED);
             clearHardwareFault(false);
-			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE: // S10
             setRelay(DISCHARGE_RELAY, OPEN);
@@ -266,7 +257,6 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_POS_RELAY, CLOSED);
             setRelay(AIR_NEG_RELAY, CLOSED);
             clearHardwareFault(false);
-			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_ERROR: // S0
             // Note, relays will not powered, as
@@ -279,7 +269,6 @@ static cmr_canHVCState_t setStateOutput(){
             // Its possible that in some error cases we might want to
             // open the contactors without cutting their power.
             // For now, take the more definitive approach
-			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_CLEAR_ERROR: // S11
             setRelay(AIR_POS_RELAY, OPEN);
@@ -288,7 +277,6 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(DISCHARGE_RELAY, CLOSED);
             clearErrorReg();
             clearHardwareFault(true);
-			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
         case CMR_CAN_HVC_STATE_UNKNOWN:
         default:
@@ -297,7 +285,6 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(PRECHARGE_RELAY, OPEN);
             setRelay(DISCHARGE_RELAY, CLOSED);
             clearHardwareFault(false);
-			cmr_gpioWrite(GPIO_DCDC_COIL_EN, 0);
             break;
     }
     
@@ -309,21 +296,21 @@ static cmr_canHVCState_t setStateOutput(){
  */
 
 void vSetStateTask(void *pvParameters) {
-	// Make compiler happy
-	(void) pvParameters;
+    // Make compiler happy
+    (void) pvParameters;
 
-	// Previous wake time pointer, initialized to current tick count.
-	// This gets updated by vTaskDelayUntil every time it is called
-	TickType_t xLastWakeTime = xTaskGetTickCount();
+    // Previous wake time pointer, initialized to current tick count.
+    // This gets updated by vTaskDelayUntil every time it is called
+    TickType_t xLastWakeTime = xTaskGetTickCount();
 
-	// Period
-	const TickType_t xPeriod = 10;		// In ticks (ms)
-	
-	cmr_canHVCState_t nextState;
+    // Period
+    const TickType_t xPeriod = 10;        // In ticks (ms)
+
+    cmr_canHVCState_t nextState;
     cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
-	
-	// Executes infinitely with defined period using vTaskDelayUntil
-	for (;;) {
+
+    // Executes infinitely with defined period using vTaskDelayUntil
+    for (;;) {
 
         // Ask Deepak ab getting rid of this
         //Critical block so that the contents of the heartbeat are consistent
@@ -340,7 +327,7 @@ void vSetStateTask(void *pvParameters) {
 
         currentState = nextState;
 
-		// Delay until next period
-		vTaskDelayUntil(&xLastWakeTime, xPeriod);
-	}
+        // Delay until next period
+        vTaskDelayUntil(&xLastWakeTime, xPeriod);
+    }
 }

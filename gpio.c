@@ -18,7 +18,7 @@
  *
  * @see `stm32f4xx_hal_gpio.h` for various initialization values.
  */
-static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {//TODO: Check to make sure correct
+static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_MCU_LED] = {
         .port = GPIOC,
         .init = {
@@ -32,7 +32,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {//TODO: Check to ma
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_5,
-            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Mode = GPIO_MODE_INPUT,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
@@ -73,7 +73,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {//TODO: Check to ma
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_DCDC_COIL_EN] = {
+    [GPIO_GP2_24V_EN] = { // Not used now but can be used later
         .port = GPIOA,
         .init = {
             .Pin = GPIO_PIN_9,
@@ -82,7 +82,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {//TODO: Check to ma
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_GP_24V_EN] = {
+    [GPIO_GP1_24V_EN] = { // Not used now but can be used later
         .port = GPIOA,
         .init = {
             .Pin = GPIO_PIN_10,
