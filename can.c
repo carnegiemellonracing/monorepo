@@ -351,14 +351,14 @@ static void sendBRUSAChargerControl(void) {
             BRUSAChargerControl.enableVector = 128;
             BRUSAChargerControl.maxMainsCurrent = 150; // 15 A
             BRUSAChargerControl.requestedCurrent = 10; // 1 A
-            BRUSAChargerControl.requestedVoltage = 4500; // 450 V // TODO: Should this be 600V?
+            BRUSAChargerControl.requestedVoltage = 6000; // 600 V
             break;
         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE: // S7
             // units for current and voltage are 1/10 Amps and 1/10 Volts
             BRUSAChargerControl.enableVector = 128;
             BRUSAChargerControl.maxMainsCurrent = 150; // 15 A
             BRUSAChargerControl.requestedCurrent = 10; // 1 A
-            BRUSAChargerControl.requestedVoltage = 4500; // 450 V
+            BRUSAChargerControl.requestedVoltage = 6000; // 600 V
             break;
         case CMR_CAN_HVC_STATE_CHARGE_TRICKLE: // S8
 			// units for current and voltage are 1/10 Amps and 1/10 Volts
