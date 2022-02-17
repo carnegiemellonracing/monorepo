@@ -451,7 +451,7 @@ Var=DIM_action2ButtonPressed unsigned 8,8
 Var=DIM_drsButtonPressed unsigned 16,8
 Var=DIM_regenPercent unsigned 24,8 /u:percent
 
-[PTCf_Heartbeat]
+[PTC_Heartbeat]
 ID=106h
 DLC=5
 CycleTime=10
@@ -464,20 +464,7 @@ Var=PTCf_WRN_VSMTimeout bit 24,1
 Var=PTCf_WRN_VoltageOOR bit 25,1
 Var=PTCf_WRN_CurrentOOR bit 26,1
 
-[PTCp_Heartbeat]
-ID=107h
-DLC=5
-CycleTime=10
-Timeout=100
-Var=PTCp_state unsigned 0,8 /e:State
-Var=PTCp_ERR_VSMTimeout unsigned 8,1
-Var=PTCp_ERR_waterTempOOR bit 21,1
-Var=PTCp_ERR_driversTempOOR bit 22,1
-Var=PTCp_WRN_VSMTimeout bit 24,1
-Var=PTCp_WRN_VoltageOOR bit 25,1
-Var=PTCp_WRN_CurrentOOR bit 26,1
-
-[PTCf_LoopTemps_A]
+[PTC_LoopTemps_A]
 ID=224h
 DLC=8
 CycleTime=100
@@ -487,7 +474,7 @@ Var=PTCf_Temp2 unsigned 16,16 /u:dC
 Var=PTCf_Temp3 unsigned 32,16 /u:dC
 Var=PTCf_Temp4 unsigned 48,16 /u:dC
 
-[PTCf_LoopTemps_B]
+[PTC_LoopTemps_B]
 ID=234h
 DLC=8
 CycleTime=100
@@ -497,27 +484,14 @@ Var=PTCf_Temp6 unsigned 16,16 /u:dC
 Var=PTCf_Temp7 unsigned 32,16 /u:dC
 Var=PTCf_Temp8 unsigned 48,16 /u:dC
 
-[PTCp_LoopTemps_A]
+[PTC_LoopTemps_C]
 ID=244h
-DLC=8
+DLC=2
 CycleTime=100
 Timeout=1000
-Var=PTCp_Temp1 unsigned 0,16 /u:dC
-Var=PTCp_Temp2 unsigned 16,16 /u:dC
-Var=PTCp_Temp3 unsigned 32,16 /u:dC
-Var=PTCp_Temp4 unsigned 48,16 /u:dC
+Var=PTCf_Temp9 unsigned 0,16 /u:dC
 
-[PTCp_LoopTemps_B]
-ID=254h
-DLC=8
-CycleTime=100
-Timeout=1000
-Var=PTCp_Temp5 unsigned 0,16 /u:dC
-Var=PTCp_Temp6 unsigned 16,16 /u:dC
-Var=PTCp_Temp7 unsigned 32,16 /u:dC
-Var=PTCp_Temp8 unsigned 48,16 /u:dC
-
-[PTCf_FansStatus]
+[PTC_FansStatus]
 ID=314h
 DLC=3
 CycleTime=100
@@ -526,16 +500,7 @@ Var=PTCf_channel1State unsigned 0,8 /u:percent
 Var=PTCf_channel2State unsigned 8,8 /u:percent
 Var=PTCf_channel3State unsigned 16,8 /u:percent
 
-[PTCp_PumpsStatus]
-ID=324h
-DLC=3
-CycleTime=100
-Timeout=1000
-Var=PTCp_channel1State unsigned 0,8 /u:percent
-Var=PTCp_channel2State unsigned 8,8 /u:percent
-Var=PTCp_channel3State unsigned 16,8 /u:percent
-
-[PTCf_PowerDiagnostic]
+[PTC_PowerDiagnostic]
 ID=534h
 DLC=6
 CycleTime=100
@@ -543,15 +508,6 @@ Timeout=1000
 Var=PTCf_logicVoltage unsigned 0,16 /u:mV
 Var=PTCf_loadVoltage unsigned 16,16 /u:mV
 Var=PTCf_loadCurrent unsigned 32,16 /u:mA
-
-[PTCp_PowerDiagnostic]
-ID=544h
-DLC=6
-CycleTime=100
-Timeout=1000
-Var=PTCp_logicVoltage unsigned 0,16 /u:mV
-Var=PTCp_loadVoltage unsigned 16,16 /u:mV
-Var=PTCp_loadCurrent unsigned 32,16 /u:mA
 
 [APC_Heartbeat]
 ID=108h
