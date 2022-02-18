@@ -11,7 +11,6 @@ __attribute__((unused)) static uint32_t this_stops_the_compiler_from_complaining
 
 #define NOT_SELECTED_MENU_COLOR 0x04000000
 #define SELECTED_MENU_COLOR 0x04AA0000 
-#define MAX_MENU_ITEMS 17
 
 typedef enum{
     float_1_decimal,
@@ -54,6 +53,25 @@ typedef enum{
     num_values_driver_enum
 } cmr_driver_profile_t;
 
+typdef enum{
+    DRIVER_PROFILE_INDEX,
+    ACCEL_TGT_INDEX,
+    SLIP_RATIO_ACCEL_INDEX,
+    BURNOUT_INDEX,
+    TORQUE_BIAS_INDEX,
+    MAX_REGEN_PRESSURE_INDEX,
+    REGEN_INDEX,
+    REGEN_BIAS_INDEX,
+    TRACTION_CONTROL_INDEX,
+    SLIP_RATIO_TRACTION_INDEX,
+    TORQUE_VECTORING_GAIN_INDEX,
+    MAX_TORQUE_INDEX,
+    MAX_SPEED_INDEX,
+    DRS_INDEX,
+    WET_INDEX,
+    MAX_MENU_ITEMS // The elements in the config array
+} config_menu_main_array_index_t
+
 
 /*************** Various on screen string luts ***************/
 extern char* config_boolean_string_lut[2];
@@ -93,5 +111,8 @@ typedef struct {
 
 config_menu_item_t test;
 extern config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS];
+
+//////// HELPER FUNCTIONS /////////////////
+void getProcessedValue(void* returnPointer, int index);
 
 #endif

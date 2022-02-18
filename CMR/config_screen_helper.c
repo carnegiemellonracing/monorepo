@@ -11,7 +11,7 @@ char* config_regen_string_lut[5] = {"Off", "Prll", "One P", "Hybr", ""};
 /************************************************************/
 
 
-config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
+voltaile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
     {
         .name = "Driver Profile",
         .ESE_background_color_variable = ESE_DRIVER_BOX,
@@ -244,3 +244,41 @@ config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
 
 // ese screen editor
 // drs value at value not label
+
+
+//////// HELPER FUNCTIONS /////////////////
+/**
+ * @param returnPointer the pointer where you want your return value. Type is based on expected_type
+ * @param index use the cmr_config_t enum to index into the appropriate value
+ * @param expected_type the cmr_config_t type of pointer passed into returnPointer. Used for error checking
+ * 
+ * @return bool of whether the value has been fetched correctly
+ */
+bool getProcessedValue(void* returnPointer, int index, cmr_config_t expected_type){
+    if (config_menu_main_array[index].value.type != expected_type){
+        return false;
+    }
+    switch(config_menu_main_array[index].value.type){
+        case float_1_decimal: 
+            *(float*)returnPointer = ((float) config_menu_main_array[index].value.value) / 10.f;
+            return true;
+        case float_2_decimal: 
+            *(float*)returnPointer = ((float) config_menu_main_array[index].value.value) / 100.f;
+            return true;
+        case boolean: 
+            *(bool*)returnPointer = ((bool) config_menu_main_array[index].value.value);
+            return true;
+        case integer: 
+            *(int8_t*)returnPointer = ((int8_t) config_menu_main_array[index].value.value);
+            return true;
+        case unsigned_integer: 
+            *(uint8_t*)returnPointer = ((uint8_t) config_menu_main_array[index].value.value);
+            return true;
+        case custom_enum: 
+            // note, custom enum error checking doesn't exist. That's ok bc its not safety critical
+            *(expected_type*)returnPointer = ((expected_type) config_menu_main_array[index].value.value);
+            return true;
+        defaut:
+            return false;
+    }
+}
