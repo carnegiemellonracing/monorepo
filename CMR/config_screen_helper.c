@@ -5,7 +5,7 @@
 
 /*************** Various on screen string luts ***************/
 char* config_boolean_string_lut[2] = {"Off", "On"};
-char* config_driver_string_lut[8] = {"Saral", "Pravir", "Gabe", "Test1", "Test2", "Test3", "Test4", "Test5"};
+char* config_driver_string_lut[9] = {"Default", "Saral", "Pravir", "Gabe", "Test1", "Test2", "Test3", "Test4", "Test5"};
 char* config_drs_string_lut[5] = {"Dynmk", "Off", "Slpry", "Ar brk", ""};
 char* config_regen_string_lut[5] = {"Off", "Prll", "One P", "Hybr", ""};
 /************************************************************/
