@@ -27,7 +27,7 @@ struct tftDL {
 
 /** @brief Raw startup screen */
 static uint32_t tftDL_startupData[] = {
-#include "ESE/startup.rawh"
+#include <DIM-ESE/startup.rawh>
 };
 
 /** @brief Packets to send to the DL on startup.
@@ -49,7 +49,7 @@ const tftDL_t tftDL_startup = {
 
 /** @brief GLV Screen */
 static uint32_t tftDL_errorData[] = {
-#include "ESE/errors.rawh"
+#include <DIM-ESE/errors.rawh>
 };
 
 /** @brief Packets to send to the DL on error.
@@ -71,7 +71,7 @@ const tftDL_t tftDL_error = {
 
 /** @brief Config Screen */
 static uint32_t tftDL_configData[] = {
-#include "ESE/config.rawh"
+#include <DIM-ESE/config.rawh>
 };
 
 /** @brief Packets to send to the DL on error.
@@ -93,7 +93,7 @@ const tftDL_t tftDL_config = {
 
 /** @brief RTD Screen */
 static uint32_t tftDL_RTDData[] = {
-#include "ESE/RTD.rawh"
+#include <DIM-ESE/RTD.rawh>
 };
 
 /** @brief Complete data required to draw the

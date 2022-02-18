@@ -16,7 +16,7 @@ struct tftContent {
 
 /** @brief Startup image lookup table data. */
 static const uint8_t tftContent_startup_lut_data[] = {
-#include "ESE/content/startup.lut.binh"
+#include <DIM-ESE/content/startup.lut.binh>
 };
 
 /** @brief Startup image lookup table. */
@@ -28,7 +28,7 @@ const tftContent_t tftContent_startup_lut = {
 
 /** @brief Startup image data. */
 static const uint8_t tftContent_startup_data[] = {
-#include "ESE/content/startup.binh"
+#include <DIM-ESE/content/startup.binh>
 };
 
 /** @brief Startup image. */
@@ -40,7 +40,7 @@ const tftContent_t tftContent_startup = {
 
 /** @brief Roboto Mono, bold, 72-pt, 4-bit font data. */
 static const uint8_t tftContent_RobotoMono_Bold_72_L4_data[] = {
-#include "ESE/content/RobotoMono-Bold_72_L4.binh"
+#include <DIM-ESE/content/RobotoMono-Bold_72_L4.binh>
 };
 
 /** @brief Roboto Mono, bold, 72-pt, 4-bit font. */
@@ -52,7 +52,7 @@ const tftContent_t tftContent_RobotoMono_Bold_72_L4 = {
 
 /** @brief Roboto Mono, bold, 40-pt, 4-bit font data. */
 static const uint8_t tftContent_RobotoMono_Bold_40_L4_data[] = {
-#include "ESE/content/RobotoMono-Bold_40_L4.binh"
+#include <DIM-ESE/content/RobotoMono-Bold_40_L4.binh>
 };
 
 /** @brief Roboto Mono, bold, 40-pt, 4-bit font. */
