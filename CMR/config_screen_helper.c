@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>        // snprintf
 #include <string.h>        // memcpy()
-#include "config_screen_helper.h"
+#include <CMR/config_screen_helper.h> // for config_screen_data tx
 
 /*************** Various on screen string luts ***************/
 char* config_boolean_string_lut[2] = {"Off", "On"};

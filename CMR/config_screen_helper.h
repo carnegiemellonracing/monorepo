@@ -5,7 +5,7 @@
 #include <string.h>        // memcpy()
 
 __attribute__((unused)) static uint32_t this_stops_the_compiler_from_complaining[] = {
-#include "ESE/config.rawh"
+#include <DIM-ESE/config.rawh>
 };
 
 
