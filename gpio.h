@@ -32,9 +32,9 @@ typedef enum {
 } gpio_t;
 
 // TODO: Add documentation
-extern bool config_increment_up_requested;
-extern bool config_increment_down_requested;
-extern bool config_scroll_requested;
+extern volatile bool config_increment_up_requested;
+extern volatile bool config_increment_down_requested;
+extern volatile bool config_scroll_requested;
 
 
 /** @brief Data required to processes a button press. */

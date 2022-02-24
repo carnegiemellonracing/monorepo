@@ -10,15 +10,17 @@
 #include "can.h"    // can interface
 #include "stdlib.h"
 
-extern bool flush_config_screen_to_cdc;
+extern volatile bool flush_config_screen_to_cdc;
 /** @brief declaration of config screen variables */
-bool config_increment_up_requested = false;
+volatile bool config_increment_up_requested = false;
 /** @brief declaration of config screen variables */
-bool config_increment_down_requested = false;
+volatile bool config_increment_down_requested = false;
 /** @brief declaration of config screen variables */
-bool config_scroll_requested = false;
+volatile bool config_scroll_requested = false;
 /** @brief declaration of what screen mode one is in */
-bool in_config_screen = false;
+volatile bool in_config_screen = false;
+/** @brief decleration of if the DIM is waiting for a new driver config */
+volatile bool waiting_for_cdc_new_driver_config;
 
 void exitConfigScreen(){
     // flash values to screen

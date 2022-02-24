@@ -36,16 +36,19 @@ char RAMBUF[RAMBUFLEN];
  */
 
 // Config Screen update requested
-extern bool flush_config_screen_to_cdc;// = false;
+extern volatile bool flush_config_screen_to_cdc;// = false;
 
 // bool on if waiting for cdc to confirm config screen update
-extern bool config_screen_update_confirmed;// = false;
+extern volatile bool config_screen_update_confirmed;// = false;
 
 // recieved initial config screen values
-extern bool config_screen_values_received_on_boot;// = false;
+extern volatile bool config_screen_values_received_on_boot;// = false;
 
 // letting the rx callback to know to pay attention to the cdc messages
-extern bool waiting_for_cdc_to_confirm_config;// = false;
+extern volatile bool waiting_for_cdc_to_confirm_config;// = false;
+
+// letting the DIM know that new driver params are available
+extern volatile bool waiting_for_cdc_new_driver_config;
 
 
 /**

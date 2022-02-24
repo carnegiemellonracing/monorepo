@@ -573,11 +573,15 @@ void tftDL_configUpdate(){
         setConfigIncrementValue(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
         config_increment_up_requested = false;
         config_increment_down_requested = false;
-        // // update selection value
-        // if (config_selection_value != 0) {
-        //     current_scroll_index += config_selection_value;
-        //     current_scroll_index = current_scroll_index % MAX_CONFIG_ITEMS;
-        // }
+
+        // handle new driver requested
+        if(current_scroll_index == DRIVER_PROFILE_INDEX){
+            waiting_for_cdc_new_driver_config = true;
+            flush_config_screen_to_cdc = true;
+            while(waiting_for_cdc_new_driver_config){
+                // wait for the new driver to be selected
+            }
+        }
     }
 
     return;
