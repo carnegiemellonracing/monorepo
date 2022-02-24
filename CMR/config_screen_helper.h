@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>        // snprintf
 #include <string.h>        // memcpy()
+#include <stdbool.h>
 
 __attribute__((unused)) static uint32_t this_stops_the_compiler_from_complaining[] = {
 #include <DIM-ESE/config.rawh>
@@ -39,7 +40,6 @@ typedef enum{
     num_values_regen_enum,
 } cmr_regen_policy_t;
 
-// TODO: Move this to the stm32 drivers
 typedef enum{
     Default,
     Saral,
@@ -53,29 +53,31 @@ typedef enum{
     num_values_driver_enum
 } cmr_driver_profile_t;
 
-typdef enum{
+typedef enum{
     DRIVER_PROFILE_INDEX,
     ACCEL_TGT_INDEX,
     SLIP_RATIO_ACCEL_INDEX,
     BURNOUT_INDEX,
     TORQUE_BIAS_INDEX,
+	MAX_REGEN_FORCE_INDEX,
     MAX_REGEN_PRESSURE_INDEX,
     REGEN_INDEX,
     REGEN_BIAS_INDEX,
     TRACTION_CONTROL_INDEX,
     SLIP_RATIO_TRACTION_INDEX,
+    TORQUE_VECTORING_INDEX,
     TORQUE_VECTORING_GAIN_INDEX,
     MAX_TORQUE_INDEX,
     MAX_SPEED_INDEX,
     DRS_INDEX,
     WET_INDEX,
     MAX_MENU_ITEMS // The elements in the config array
-} config_menu_main_array_index_t
+} config_menu_main_array_index_t;
 
 
 /*************** Various on screen string luts ***************/
 extern char* config_boolean_string_lut[2];
-extern char* config_driver_string_lut[8];
+extern char* config_driver_string_lut[9];
 extern char* config_drs_string_lut[5];
 extern char* config_regen_string_lut[5];
 /************************************************************/
@@ -110,9 +112,9 @@ typedef struct {
 
 
 config_menu_item_t test;
-extern config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS];
+extern volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS];
 
 //////// HELPER FUNCTIONS /////////////////
-void getProcessedValue(void* returnPointer, int index);
+bool getProcessedValue(void* returnPointer, int index, cmr_config_t expected_type);
 
 #endif

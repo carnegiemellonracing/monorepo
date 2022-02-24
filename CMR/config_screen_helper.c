@@ -11,7 +11,7 @@ char* config_regen_string_lut[5] = {"Off", "Prll", "One P", "Hybr", ""};
 /************************************************************/
 
 
-voltaile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
+volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
     {
         .name = "Driver Profile",
         .ESE_background_color_variable = ESE_DRIVER_BOX,
@@ -276,7 +276,7 @@ bool getProcessedValue(void* returnPointer, int index, cmr_config_t expected_typ
             return true;
         case custom_enum: 
             // note, custom enum error checking doesn't exist. That's ok bc its not safety critical
-            *(expected_type*)returnPointer = ((expected_type) config_menu_main_array[index].value.value);
+            *(uint8_t*)returnPointer = ((uint8_t)config_menu_main_array[index].value.value);
             return true;
         defaut:
             return false;
