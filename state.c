@@ -23,10 +23,14 @@ volatile bool in_config_screen = false;
 volatile bool waiting_for_cdc_new_driver_config;
 
 void exitConfigScreen(){
-    // flash values to screen
-    flush_config_screen_to_cdc = true;
-    if (waiting_for_cdc_to_confirm_config == true){
-        waiting_for_cdc_to_confirm_config = false;
+    // the first time the user presses the exit button, it'll flush the memory to the cdc
+    // the second time it'll exit the config screen because it'll be dependent having 
+    // recieved the message from CDC
+    if (flush_config_screen_to_cdc == false){
+        flush_config_screen_to_cdc = true;
+        return;
+    }
+    if (waiting_for_cdc_to_confirm_config == false){
         in_config_screen = false;
     }
 }
