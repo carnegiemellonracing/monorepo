@@ -33,6 +33,9 @@ extern const tftDL_t tftDL_config;
 /** @brief Text buffer for messages from RAM */
 extern char RAMBUF[];
 
+/** @brief draw out all the cells if the first time the screen is being displayed */
+extern volatile bool dim_first_time_config_screen;
+
 // Sizes for displaying to screen
 #define GEARDISPLAYLEN 5
 #define STATEDISPLAYLEN 5

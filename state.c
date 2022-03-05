@@ -21,6 +21,8 @@ volatile bool config_scroll_requested = false;
 volatile bool in_config_screen = false;
 /** @brief decleration of if the DIM is waiting for a new driver config */
 volatile bool waiting_for_cdc_new_driver_config;
+/** @brief Checks to see if the screen has been setup before and if not will appropriately draw it */
+volatile bool dim_first_time_config_screen;
 
 void exitConfigScreen(){
     // the first time the user presses the exit button, it'll flush the memory to the cdc
@@ -42,6 +44,7 @@ void enterConfigScreen(){
         config_screen_values_received_on_boot && 
         stateGetVSM() == CMR_CAN_GLV_ON){
         in_config_screen = true;
+        dim_first_time_config_screen = true;
     }
 }
 
@@ -318,7 +321,7 @@ void stateGearUpButton(bool pressed) {
 
     // don't run following logic if in config screen
     if (in_config_screen){
-        in_config_screen = false;
+    	config_increment_up_requested = true;
         return; 
         // TODO: Add logic to exit config screen via can message flushing
     } 

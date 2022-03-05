@@ -487,6 +487,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
     if(all_packets_recieved){
         // no need to ever re-init data
         initialized = true;
+        config_screen_values_received_on_boot = true;
 
         // if statements put here to prevent out of order execution/ context switching
         // in case they are set false here before they are requested to be true elsewhere.
@@ -524,7 +525,7 @@ void canInit(void) {
     cmr_canInit(
         &can, CAN2, CMR_CAN_BITRATE_500K,
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
-        &ramRxCallback,
+        &canRXCallback,
         GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
         GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
     );
@@ -548,7 +549,7 @@ void canInit(void) {
         },
         {
             .isMask = false,
-            .rxFIFO = CAN_RX_FIFO1,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_SBG_STATUS_3,
                 CMR_CANID_SBG_STATUS_3,
@@ -558,7 +559,7 @@ void canInit(void) {
         },
         {
             .isMask = false,
-            .rxFIFO= CAN_RX_FIFO1,
+            .rxFIFO= CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_AFC1_DRIVER_TEMPS,
                 CMR_CANID_HVC_MINMAX_CELL_TEMPS,
@@ -568,7 +569,7 @@ void canInit(void) {
         },
         {
             .isMask = false,
-            .rxFIFO= CAN_RX_FIFO1,
+            .rxFIFO= CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_PTCf_LOOP_TEMPS_A,
                 CMR_CANID_PTCf_LOOP_TEMPS_B,
@@ -578,7 +579,7 @@ void canInit(void) {
         },
         {
             .isMask = false,
-            .rxFIFO= CAN_RX_FIFO1,
+            .rxFIFO= CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_AMK_1_ACT_1,
                 CMR_CANID_AMK_2_ACT_1,
@@ -588,7 +589,7 @@ void canInit(void) {
         },
         {
             .isMask = false,
-            .rxFIFO= CAN_RX_FIFO1,
+            .rxFIFO= CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_AMK_1_ACT_2,
                 CMR_CANID_AMK_2_ACT_2,
@@ -598,7 +599,7 @@ void canInit(void) {
         },
         {
             .isMask = false,
-            .rxFIFO= CAN_RX_FIFO1,
+            .rxFIFO= CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_CDC_CONFIG0_DRV0,
                 CMR_CANID_CDC_CONFIG1_DRV0,
@@ -608,7 +609,7 @@ void canInit(void) {
         },
         {
             .isMask = false,
-            .rxFIFO= CAN_RX_FIFO1,
+            .rxFIFO= CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_CDC_CONFIG0_DRV1,
                 CMR_CANID_CDC_CONFIG1_DRV1,
@@ -618,7 +619,7 @@ void canInit(void) {
         },
         {
             .isMask = false,
-            .rxFIFO= CAN_RX_FIFO1,
+            .rxFIFO= CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_CDC_CONFIG0_DRV2,
                 CMR_CANID_CDC_CONFIG1_DRV2,
@@ -628,7 +629,7 @@ void canInit(void) {
         },
         {
             .isMask = false,
-            .rxFIFO= CAN_RX_FIFO1,
+            .rxFIFO= CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_CDC_CONFIG0_DRV3,
                 CMR_CANID_CDC_CONFIG1_DRV3,
@@ -638,12 +639,12 @@ void canInit(void) {
         },
         {
             .isMask = false,
-            .rxFIFO= CAN_RX_FIFO1,
+            .rxFIFO= CAN_RX_FIFO0,
             .ids = {
-                CMR_CANID_CDC_CONFIG0_DRV4,
-                CMR_CANID_CDC_CONFIG1_DRV4,
-                CMR_CANID_CDC_CONFIG2_DRV4,
-                CMR_CANID_CDC_CONFIG3_DRV4
+                CMR_CANID_CDC_CONFIG4_DRV0,
+                CMR_CANID_CDC_CONFIG4_DRV1,
+                CMR_CANID_CDC_CONFIG4_DRV2,
+                CMR_CANID_CDC_CONFIG4_DRV3
             }
         },
     };

@@ -494,8 +494,8 @@ void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_r
         case boolean:
             if(up_requested || down_requested){
             	value = !value;
-                sprintf(value_address_pointer, config_boolean_string_lut[value]);
             }
+            sprintf(value_address_pointer, config_boolean_string_lut[value]);
             break;
         case float_1_decimal:
             value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested); 
@@ -544,8 +544,20 @@ void setConfigSelectionColor(int8_t scroll_index) {
     return;
 }
 
+void drawLatestConfigValues(){
+    // loop through all the elements of the array and appropriately render the variables
+    for(int i = 0; i < 3; i++){
+        setConfigIncrementValue(i, false, false);
+    }
+}
+
 // TODO: Document
 void tftDL_configUpdate(){
+    if (dim_first_time_config_screen){
+    	drawLatestConfigValues();
+    	dim_first_time_config_screen = false;
+    }
+
     static int8_t current_scroll_index = -1; // start with a value of -1 to enter driver config first
     
     // update scroll and clear selection values
