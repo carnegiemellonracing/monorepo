@@ -24,8 +24,8 @@ typedef enum{
 
 // TODO: Move this to the stm32 drivers
 typedef enum{
-    drs_dynamic,
     drs_off,
+    drs_dynamic,
     drs_slippery,
     drs_airbrake,
     num_values_drs_enum,

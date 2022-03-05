@@ -281,4 +281,5 @@ bool getProcessedValue(void* returnPointer, int index, cmr_config_t expected_typ
         defaut:
             return false;
     }
+    return false;
 }
