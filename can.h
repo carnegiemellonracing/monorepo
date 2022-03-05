@@ -12,6 +12,7 @@
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/can_ids.h>    // CMR CAN IDs
 #include <CMR/config_screen_helper.h> // for config_screen_data tx
+#include "state.h"
 
 
 // Size of text buffer from RAM
@@ -49,6 +50,9 @@ extern volatile bool waiting_for_cdc_to_confirm_config;// = false;
 
 // letting the DIM know that new driver params are available
 extern volatile bool waiting_for_cdc_new_driver_config;
+
+/** @brief Checks to see if the screen needs to be redrawn after getting new driver profiles */
+extern volatile bool redraw_new_driver_profiles;
 
 
 /**

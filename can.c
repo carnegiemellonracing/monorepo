@@ -354,7 +354,6 @@ static void canTX1Hz(void *pvParameters) {
 
             /* Set waiting for cdc to be true. RX will wipe this and flush_config_screen
                only if this was true */
-               waiting_for_cdc_to_confirm_config = true;
         }
 
         vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
@@ -429,9 +428,10 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
     /**** Cold Boot, await default parameters-- blindly read data if it's the first driver and set that to done ****/
     if (!initialized){
         if (((uint32_t)canID - CMR_CANID_CDC_CONFIG0_DRV0) < num_config_packets){
+        	int local_can_data_index = 0;
             // copy data over to local memory!
             for(uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + 4; i++){
-                config_menu_main_array[i].value.value = cdc_config_data_arr[i];
+                config_menu_main_array[i].value.value = cdc_config_data_arr[local_can_data_index++];
             } 
         }
         // mark the appropriate packet as recieved
@@ -450,13 +450,13 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
             bool all_data_matches = true;
 
             // get the data and check if all the data is the same
+            int local_index = 0;
             for(uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + 4; i++){
-                all_data_matches &= config_menu_main_array[i].value.value == cdc_config_data_arr[i];
+                all_data_matches &= (config_menu_main_array[i].value.value == cdc_config_data_arr[local_index++]);
             }
             // set appropriate config message rx flag if data matches
             gotten_packet[packet_number] = all_data_matches;
         }
-        
     }
 
     /**** Get New Driver Parameters. Blindly read them since only CDC knows the right values for new driver ****/
@@ -469,8 +469,9 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
         // filter for only the right driver can ID based on the new requested driver
         if (((uint32_t)canID - requested_driver_cdc_canid) < num_config_packets){
             // get the data and flush it to local memory
+        	int local_index = 0;
             for(uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + 4; i++){
-                config_menu_main_array[i].value.value = cdc_config_data_arr[i];
+                config_menu_main_array[i].value.value = cdc_config_data_arr[local_index++];
             } 
             // set appropriate config message rx flag if data matches
             gotten_packet[packet_number] = true;
@@ -491,9 +492,16 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
 
         // if statements put here to prevent out of order execution/ context switching
         // in case they are set false here before they are requested to be true elsewhere.
-        if (waiting_for_cdc_to_confirm_config) waiting_for_cdc_to_confirm_config = false;
+        if (waiting_for_cdc_to_confirm_config){
+        	waiting_for_cdc_to_confirm_config = false;
+        	exitConfigScreen();
+        }
         if (flush_config_screen_to_cdc) flush_config_screen_to_cdc = false; 
-        if (waiting_for_cdc_new_driver_config) waiting_for_cdc_new_driver_config = false;
+        if (waiting_for_cdc_new_driver_config){
+        	waiting_for_cdc_new_driver_config = false;
+        	// redraw all values
+            redraw_new_driver_profiles = true;
+        }
 
 
         // reset all packets rx for the next run

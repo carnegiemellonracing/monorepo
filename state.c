@@ -23,6 +23,8 @@ volatile bool in_config_screen = false;
 volatile bool waiting_for_cdc_new_driver_config;
 /** @brief Checks to see if the screen has been setup before and if not will appropriately draw it */
 volatile bool dim_first_time_config_screen;
+/** @brief Checks to see if the screen needs to be redrawn after getting new driver profiles */
+volatile bool redraw_new_driver_profiles;
 
 void exitConfigScreen(){
     // the first time the user presses the exit button, it'll flush the memory to the cdc
@@ -30,6 +32,7 @@ void exitConfigScreen(){
     // recieved the message from CDC
     if (flush_config_screen_to_cdc == false){
         flush_config_screen_to_cdc = true;
+        waiting_for_cdc_to_confirm_config = true;
         return;
     }
     if (waiting_for_cdc_to_confirm_config == false){
@@ -206,9 +209,6 @@ void stateVSMUpButton(bool pressed) {
         return;
     }
 
-    // TODO: modifiy only if in config screen
-    config_increment_up_requested = true;
-
     // Exit the config screen
     if(inConfigScreen() == true){
         // don't worry this will check to make sure we're in glv mode
@@ -244,7 +244,10 @@ void stateVSMDownButton(bool pressed) {
     }
 
     // TODO: modifiy only if in config screen
-    config_increment_down_requested = true;
+    if (in_config_screen){
+        config_increment_down_requested = true;
+        return; 
+    } 
 
     // don't run following logic if in config screen
     if (in_config_screen) return;
@@ -289,8 +292,10 @@ void stateGearDownButton(bool pressed) {
         return;
     }
 
-    // TODO: modifiy only if in config screen
-    config_scroll_requested = true;
+    if (in_config_screen){
+        config_scroll_requested = true;
+        return; 
+    } 
 
     if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
         return;     // Can only change gears in HV_ENand GLV_ON.

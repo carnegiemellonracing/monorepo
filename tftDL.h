@@ -35,6 +35,8 @@ extern char RAMBUF[];
 
 /** @brief draw out all the cells if the first time the screen is being displayed */
 extern volatile bool dim_first_time_config_screen;
+/** @brief Checks to see if the screen needs to be redrawn after getting new driver profiles */
+extern volatile bool redraw_new_driver_profiles;
 
 // Sizes for displaying to screen
 #define GEARDISPLAYLEN 5

@@ -546,7 +546,7 @@ void setConfigSelectionColor(int8_t scroll_index) {
 
 void drawLatestConfigValues(){
     // loop through all the elements of the array and appropriately render the variables
-    for(int i = 0; i < 3; i++){
+    for(int i = 0; i < MAX_MENU_ITEMS; i++){
         setConfigIncrementValue(i, false, false);
     }
 }
@@ -556,6 +556,10 @@ void tftDL_configUpdate(){
     if (dim_first_time_config_screen){
     	drawLatestConfigValues();
     	dim_first_time_config_screen = false;
+    }
+    if (redraw_new_driver_profiles){
+        drawLatestConfigValues();
+        redraw_new_driver_profiles = false;
     }
 
     static int8_t current_scroll_index = -1; // start with a value of -1 to enter driver config first
