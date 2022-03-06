@@ -107,7 +107,7 @@ static void canTX10Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         // BRUSA Charger decided by state machine 
-        sendBRUSAChargerControl();
+        // sendBRUSAChargerControl();
 
         // BMB Voltage Status 
         for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
@@ -543,7 +543,6 @@ static void sendBMSMinMaxCellTemp(void) {
 }
 
 static void sendBMSLowVoltage(void) {
-    // NEEDS CHANGES AFTER ADC SWITCH
     cmr_canBMSLowVoltage_t BMSLowVoltage = {
         .ibatt_mA = getLVmilliamps(), // Convert mA to 2/15th mA
         .iDCDC_mA =0,

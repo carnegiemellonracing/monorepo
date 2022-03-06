@@ -98,7 +98,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
             } else if (abs(getBattMillivolts() - getHVmillivolts())  < 15000) {
                 //T10: HV rails are precharged
-                nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE;
+                nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE;
             } else {
                 nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE;
             }
@@ -137,6 +137,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
             } else if (packMaxCellVoltage >= 4150) {
                 // T13: Maximum cell voltage > 4.15V, begin balancing
+                // TODO: may have to update CCM
                 nextState = CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE;
                 //nextState = CMR_CAN_HVC_STATE_ERROR; // not balancing for now
             } else {
@@ -306,6 +307,7 @@ void vSetStateTask(void *pvParameters) {
     cmr_canHVCState_t nextState;
     cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
 
+    // See https://drive.google.com/file/d/1xey3It43X-4tRBvnWUMSgUpSeBYo-Vj6/view?usp=sharing
     // Executes infinitely with defined period using vTaskDelayUntil
     for (;;) {
 

@@ -87,7 +87,7 @@ int main(void) {
     adcInit();
     sensorsInit();
     spiInit();
-    wwdgInit();
+//    wwdgInit();
 
     cmr_taskInit(
         &statusLED_task,

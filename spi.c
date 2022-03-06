@@ -112,9 +112,15 @@ static void HVSenseWrite(hvSenseRegister_t address, uint8_t* txData, size_t txLe
 }
 
 
-/** @brief Converts ADC reading into HV voltage */
+/** @brief Converts ADC reading into HV voltage
+ * ADC value of around 400000 corresponds to 0V on HV Bus
+ * ADC value of around 5320000 corresponds to 600V on HV Bus
+ * Linearly interpolate:    slope = (600000-0)/(532000-400000) = 5/41
+ *                          y-intercept = 0 - 5/41 * 400000 = -2000000/41
+ * Equation of line: HV_mv = 5/41 * adc_input - 2000000/41 = 5*(adc_input-400000)/41
+*/
 static inline int32_t ADCtoMV_HVSense (int32_t adc_input) {
-    return (int32_t) ((0.1242f * adc_input) - 46767.f);
+    return (int32_t) ((5 * (adc_input - 400000)) / 41);
 }
 
 /**
@@ -180,6 +186,7 @@ static void HVCSpiUpdate(void *pvParameters) {
 
         // Rolling average
         // A single sample is too noisy for an "instant" measurement so do a small average
+        // TODO: change so that not both are average
         currentInstant_ADC = (currentInstant_ADC*(numSamplesInstant-1) + currentSingleSample_ADC) / numSamplesInstant;
         currentAvg_ADC = (currentAvg_ADC*(numSamplesAverage-1) + currentSingleSample_ADC) / numSamplesAverage;
 
