@@ -96,6 +96,7 @@ typedef enum {
     /** @brief Low-voltage bus current out-of-range. */
     CMR_CAN_WARN_BUS_CURRENT = (1 << 2),
 
+    // TODO: Consolidate
     /** @brief VSM hasn't received HVC heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_HVC_TIMEOUT = (1 << 14),
     /** @brief VSM hasn't received CDC heartbeat for 25 ms. */
@@ -105,9 +106,7 @@ typedef enum {
     /** @brief VSM hasn't received DIM heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_DIM_TIMEOUT = (1 << 11),
     /** @brief VSM hasn't received PTCf heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_PTCf_TIMEOUT = (1 << 10),
-    /** @brief VSM hasn't received PTCp heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_PTCp_TIMEOUT = (1 << 9),
+    CMR_CAN_WARN_VSM_PTC_TIMEOUT = (1 << 10),
     /** @brief VSM hasn't received APC heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_APC_TIMEOUT = (1 << 8),
     /** @brief VSM is rejecting DIM state request. */
@@ -187,10 +186,8 @@ typedef enum {
     CMR_CAN_VSM_ERROR_SOURCE_FSM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_DIM = (1 << 3),
-    /** @brief At least one PTCf message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_PTCf = (1 << 2),
-    /** @brief At least one PTCp message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_PTCp = (1 << 1),
+    /** @brief At least one PTC message has timed out. */
+    CMR_CAN_VSM_ERROR_SOURCE_PTC = (1 << 2),
     /** @brief At least one Auxiliary Power Controller message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_APC = (1 << 0)
 } cmr_canVSMErrorSource_t;

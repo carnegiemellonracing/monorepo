@@ -22,8 +22,7 @@ typedef enum {
     CMR_CANID_HEARTBEAT_CDC = 0x102,    /**< @brief CDC heartbeat. */
     CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x105,    /**< @brief DIM heartbeat. */
-    CMR_CANID_HEARTBEAT_PTCf= 0x106,    /**< @brief PTCf heatbeart.*/
-    CMR_CANID_HEARTBEAT_PTCp= 0x107,    /**< @brief PTCp heatbeart.*/
+    CMR_CANID_HEARTBEAT_PTC = 0x106,    /**< @brief PTC heatbeart.*/
     CMR_CANID_HEARTBEAT_APC = 0x108,    /**< @brief APC heartbeat. */
     CMR_CANID_HEARTBEAT_TOM = 0x109,    /**< @brief TOM heartbeat. */
     CMR_CANID_HEARTBEAT_COM = 0x10A,    /**< @brief COM heartbeat. */
