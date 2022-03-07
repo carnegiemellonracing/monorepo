@@ -287,7 +287,7 @@ cmr_uart_result_t slave_uart_configureSampling(uint8_t boardNum) {
   // From page 8 of BQ76PL455A-Q1 protocol datasheet 2.2.4
   // Clear all fault flags on BMS slave board
   retv = slave_uart_clearFaultFlags(boardNum);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
     
@@ -318,7 +318,7 @@ cmr_uart_result_t slave_uart_configureChannels() {
   static uart_command_t selectNumberOfChannels = {
     .frameInit = &CMD_BCAST_NRESP_RADDR8_DATA1,
     .registerAddress = SLAVE_REG_NCHAN,
-    .data = {0x0C},
+    .data = {0x09},
   };
   retv = uart_sendCommand(&selectNumberOfChannels);
   while (retv != UART_SUCCESS) {
@@ -328,7 +328,7 @@ cmr_uart_result_t slave_uart_configureChannels() {
   static uart_command_t selectChannelsOnModule = {
     .frameInit = &CMD_BCAST_NRESP_RADDR8_DATA4,
     .registerAddress = SLAVE_REG_CHANNELS0,
-    .data = {0x0F, 0xFF, 0xFF, 0x00},
+    .data = {0x01, 0xFF, 0xFF, 0x00},
   };
   retv = uart_sendCommand(&selectChannelsOnModule);
   while (retv != UART_SUCCESS) {
@@ -538,13 +538,14 @@ cmr_uart_result_t slave_uart_sendBalanceCmd(uint16_t cells, uint8_t deviceAddres
 cmr_uart_result_t slave_uart_sendEnableTempMuxCmd(uint8_t enable) {
   cmr_uart_result_t retv = UART_SUCCESS;
 
-  static uart_command_t EnableTempMuxCmd = {
+  uart_command_t EnableTempMuxCmd = {
     .frameInit = &CMD_BCAST_NRESP_RADDR8_DATA1,
     .registerAddress = SLAVE_REG_GPIO_OUT,
-    .data = enable, //SYNC SAMPLE command: BQ Protocol p12
+    .data = {enable}, //SYNC SAMPLE command: BQ Protocol p12
   };
 
   retv = uart_sendCommand(&EnableTempMuxCmd);
+  return retv;
 }
 
 //-----------------------------------------------------------------------------
@@ -602,7 +603,7 @@ static cmr_uart_result_t slave_uart_clearFaultFlags(uint8_t boardNum) {
     retvTotal = UART_FAILURE;
   }
   uint8_t statusRegisterData = statusRegisterCheckResponse.data[0];
-  while (statusRegisterData != 0x00) {
+  if (statusRegisterData != 0x00) {
     // ERROR CASE: We still saw faults in the status register after clearing them
     retvTotal = UART_FAILURE;
   }
