@@ -171,8 +171,8 @@ static void fanControl(void *pvParameters) {
             default:
                 fan_1_State = 0;
                 fan_2_State = 0;
-                cmr_pwmSetDutyCycle(&fan_1_PWM, fan_1_State);
-                cmr_pwmSetDutyCycle(&fan_2_PWM, fan_2_State);
+                cmr_pwmSetDutyCycle(&fan_1_PWM, 100);
+                cmr_pwmSetDutyCycle(&fan_2_PWM, 100);
                 cmr_gpioWrite(GPIO_FAN_ON, 0);
                 break;
         }

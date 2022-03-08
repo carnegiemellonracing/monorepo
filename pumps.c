@@ -136,8 +136,8 @@ static void pumpControl(void *pvParameters) {
             default:
                 pump_1_State = 0;
                 pump_2_State = 0;
-                cmr_pwmSetDutyCycle(&pump_1_PWM, pump_1_State);
-                cmr_pwmSetDutyCycle(&pump_2_PWM, pump_2_State);
+                cmr_pwmSetDutyCycle(&pump_1_PWM, 100);
+                cmr_pwmSetDutyCycle(&pump_2_PWM, 100);
                 cmr_gpioWrite(GPIO_PUMP_ON, 0);
                 break;
         }

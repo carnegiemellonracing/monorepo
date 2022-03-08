@@ -94,5 +94,6 @@ void gpioInit(void) {
     cmr_gpioPinInit(
         gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0])
     );
+    cmr_gpioWrite(GPIO_AUXILIARY_ENABLE, 0);
 }
 
