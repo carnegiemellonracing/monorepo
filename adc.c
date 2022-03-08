@@ -109,7 +109,7 @@ static cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .value = 0
     },
     [ADC_THERM_9] = { // This is new to 22e
-        .channel = ADC_CHANNEL_0,
+        .channel = ADC_CHANNEL_11,
         .port = GPIOC,
         .pin = GPIO_PIN_1,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
