@@ -491,14 +491,15 @@ CycleTime=100
 Timeout=1000
 Var=PTCf_Temp9 unsigned 0,16 /u:dC
 
-[PTC_FansStatus]
+[PTC_FansPumpsStatus]
 ID=314h
-DLC=3
+DLC=4
 CycleTime=100
 Timeout=1000
-Var=PTCf_channel1State unsigned 0,8 /u:percent
-Var=PTCf_channel2State unsigned 8,8 /u:percent
-Var=PTCf_channel3State unsigned 16,8 /u:percent
+Var=fan1DutyCycle_pcnt unsigned 0,8 /u:percent
+Var=fan2DutyCycle_pcnt unsigned 8,8 /u:percent
+Var=pump1DutyCycle_pcnt unsigned 16,8 /u:percent
+Var=pump2DutyCycle_pcnt unsigned 24,8 /u:percent
 
 [PTC_PowerDiagnostic]
 ID=534h
