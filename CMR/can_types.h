@@ -45,6 +45,19 @@ typedef enum {
     /** @brief No VSM heartbeat received for 50 ms. */
     CMR_CAN_ERROR_VSM_TIMEOUT = (1 << 0),
 
+    /** @brief Safety circuit module tripped */
+    CMR_CAN_ERROR_FSM_SS_MODULE = (1 << 1),
+    /** @brief Safety circuit cockpit tripped */
+    CMR_CAN_ERROR_FSM_SS_COCKPIT = (1 << 2),
+    /** @brief Safety circuit FR hub tripped */
+    CMR_CAN_ERROR_FSM_SS_FRHUB = (1 << 3),
+    /** @brief Safety circuit inertia tripped */
+    CMR_CAN_ERROR_FSM_SS_INERTIA = (1 << 4),
+    /** @brief Safety circuit FL hub tripped */
+    CMR_CAN_ERROR_FSM_SS_FLHUB = (1 << 5),
+    /** @brief Safety circuit bots tripped */
+    CMR_CAN_ERROR_FSM_SS_BOTS = (1 << 6),
+
     /**
      * @brief Reception period for at least one message from another module
      * has surpassed its error threshold.
@@ -80,6 +93,12 @@ typedef enum {
     CMR_CAN_ERROR_PTC_DRIVERS_TEMP = (1 << 14),
     /** @brief PTC water temperature out-of-range. */
     CMR_CAN_ERROR_PTC_WATER_TEMP = (1 << 13),
+    //power errors(shunt resistor), water over heating errors, oil overheatin errors
+    //no oil overheating errors cuz going into uprights
+    // temperature 
+    // pump always on 35 c  
+    // pump turn on at 53 start turning on and 56 turning at 100
+    // fan turn on at 56 starting 58 turn it to max
 
     /** @brief CDC All motor controllers have errored or timed out. */
     CMR_CAN_ERROR_CDC_AMK_ALL = (1 << 15)
@@ -126,6 +145,8 @@ typedef enum {
     CMR_CAN_WARN_FSM_BPRES = (1 << 10),
     /** @brief FSM steering wheel angle out-of-range. */
     CMR_CAN_WARN_FSM_SWANGLE = (1 << 9),
+    /** @brief FSM safety circuit sensing out-of-range. */
+    CMR_CAN_WARN_FSM_SS = (1 << 8),
 
     /** @brief CDC Front left motor controller is warning source. */
     CMR_CAN_WARN_CDC_AMK_FL = (1 << 15),
@@ -154,6 +175,23 @@ typedef enum {
     CMR_CAN_GEAR_TEST,          /**< @brief Test mode (for experimentation) */
     CMR_CAN_GEAR_LEN
 } cmr_canGear_t;
+
+/** @brief Safety Circuit status states. */
+typedef enum {
+    CMR_CAN_SS_STATE_CLEAR = 0,   /**< @brief Not tripped state. */
+    CMR_CAN_SS_STATE_MODULE,      /**< @brief Module tripped state. */
+    CMR_CAN_SS_STATE_COCKPIT,     /**< @brief Cockpit tripped state. */
+    CMR_CAN_SS_STATE_FRHUB,       /**< @brief FRHub tripped state. */
+    CMR_CAN_SS_STATE_INERTIA,     /**< @brief Inertia tripped state. */
+    CMR_CAN_SS_STATE_FLHUB,       /**< @brief FLHub tripped state. */
+    CMR_CAN_SS_STATE_BOTS,        /**< @brief Bots tripped state. */
+    CMR_CAN_SS_STATE_LEN          /**< @brief Number of SS states. */
+} cmr_canSSState_t;
+
+/** @brief Safety circuit state. */
+typedef struct {
+    uint8_t state;  /**< @brief SS state. See cmr_canSSState_t. */
+} cmr_canSSStatus_t;
 
 // ------------------------------------------------------------------------------------------------
 // Vehicle Safety Module
@@ -552,8 +590,24 @@ typedef struct {
 } cmr_canDIMTextWrite_t;
 
 typedef struct {
-    uint8_t actionButtonPressed;    /**< @brief Status of the action button (Active Low). */
-} cmr_canDIMActionButton_t;
+    uint8_t action1ButtonPressed;    /**< @brief Status of the action 1 button (Active Low). */
+    uint8_t action2ButtonPressed;    /**< @brief Status of the action 2 button (Active Low). */
+    uint8_t drsButtonPressed;        /**< @brief Status of the AE/DRS button (Active Low). */
+    uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
+} cmr_canDIMActions_t;
+
+// DIM Config Screen data
+/** @brief Driver Interface Module config screen data. */
+
+// these are all generic types. To modify what values are stored, 
+// modify the config_screen_helper.h file instead
+typedef struct {
+    uint8_t config_val_1;
+    uint8_t config_val_2;
+    uint8_t config_val_3;
+    uint8_t config_val_4;
+} cmr_canDIMCDCconfig_t;
+
 
 // ------------------------------------------------------------------------------------------------
 // Front Sensor Module
@@ -593,38 +647,28 @@ typedef struct {
 
 /** @brief Powertrain Thermal Controller fan/pump status. */
 typedef struct {
-    uint8_t channel1DutyCycle_pcnt;             /**< @brief Fan/Pump channel 1 state. */
-    uint8_t channel2DutyCycle_pcnt;             /**< @brief Fan/Pump channel 2 state. */
-    uint8_t channel3DutyCycle_pcnt;             /**< @brief Fan/Pump channel 3 state. */
+    uint8_t fan1DutyCycle_pcnt;              /**< @brief Fan 1 state. */
+    uint8_t fan2DutyCycle_pcnt;              /**< @brief Fan 2 state. */
+    uint8_t pump1DutyCycle_pcnt;             /**< @brief Pump 1 state. */
+    uint8_t pump2DutyCycle_pcnt;             /**< @brief Pump 2 state. */
 } cmr_canPTCDriverStatus_t;
 
-/** @brief Powertrain Thermal Controller (fan board) cooling loop temperature status. */
+/** @brief Powertrain Thermal Controller cooling loop temperature status. */
 typedef struct {
     uint16_t temp1_dC;            /**< @brief Temp 1 */
     uint16_t temp2_dC;            /**< @brief Temp 2 */
     uint16_t temp3_dC;            /**< @brief Temp 3 */
     uint16_t temp4_dC;            /**< @brief Temp 4 */  //These are placeholders for more useful names
-} cmr_canPTCfLoopTemp_A_t;
+} cmr_canPTCLoopTemp_A_t;
 typedef struct {
     uint16_t temp5_dC;            /**< @brief Temp 5 */
     uint16_t temp6_dC;            /**< @brief Temp 6 */
     uint16_t temp7_dC;            /**< @brief Temp 7 */
     uint16_t temp8_dC;            /**< @brief Temp 8 */
-} cmr_canPTCfLoopTemp_B_t;
-
-/** @brief Powertrain Thermal Controller (pump board) cooling loop temperature status. */
+} cmr_canPTCLoopTemp_B_t;
 typedef struct {
-    uint16_t temp1_dC;            /**< @brief Temp 1 */
-    uint16_t temp2_dC;            /**< @brief Temp 2 */
-    uint16_t temp3_dC;            /**< @brief Temp 3 */
-    uint16_t temp4_dC;            /**< @brief Temp 4 */  //These are placeholders for more useful names
-} cmr_canPTCpLoopTemp_A_t;
-typedef struct {
-    uint16_t temp5_dC;            /**< @brief Temp 5 */
-    uint16_t temp6_dC;            /**< @brief Temp 6 */
-    uint16_t temp7_dC;            /**< @brief Temp 7 */
-    uint16_t temp8_dC;            /**< @brief Temp 8 */
-} cmr_canPTCpLoopTemp_B_t;
+    uint16_t temp9_dC;            /**< @brief Temp 9 */
+} cmr_canPTCLoopTemp_C_t;
 
 
 /** @brief Powertrain Thermal Controller voltage diagnostics. */
