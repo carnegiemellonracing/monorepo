@@ -43,8 +43,7 @@ Var=VSM_WRN_HVCTimeout bit 38,1
 Var=VSM_WRN_CDCTimeout bit 37,1
 Var=VSM_WRN_FSMTimeout bit 36,1
 Var=VSM_WRN_DIMTimeout bit 35,1
-Var=VSM_WRN_PTCfTimeout bit 34,1
-Var=VSM_WRN_PTCpTimeout bit 33,1
+Var=VSM_WRN_PTCTimeout bit 34,1
 Var=VSM_WRN_APCTimeout bit 32,1
 Var=VSM_WRN_DIMReqNAK bit 31,1
 Var=VSM_WRN_VoltageOOR bit 25,1
@@ -60,15 +59,13 @@ Var=VSM_ERR_HVCTimeout bit 14,1
 Var=VSM_ERR_CDCTimeout bit 13,1
 Var=VSM_ERR_FSMTimeout bit 12,1
 Var=VSM_ERR_DIMTimeout bit 11,1
-Var=VSM_ERR_PTCfTimeout bit 10,1
-Var=VSM_ERR_PTCpTimeout bit 9,1
+Var=VSM_ERR_PTCTimeout bit 10,1
 Var=VSM_ERR_APCTimeout bit 8,1
 Var=VSM_ERR_HVCState bit 22,1
 Var=VSM_ERR_CDCState bit 21,1
 Var=VSM_ERR_FSMState bit 20,1
 Var=VSM_ERR_DIMState bit 19,1
-Var=VSM_ERR_PTCfState bit 18,1
-Var=VSM_ERR_PTCpState bit 17,1
+Var=VSM_ERR_PTCState bit 18,1
 Var=VSM_ERR_APCState bit 16,1
 Var=VSM_ERR_latchSoftware bit 26,1
 Var=VSM_ERR_latchAMS bit 26,1
@@ -96,7 +93,6 @@ Var=VSM_latched_ERR_FSMTimeout bit 5,1
 Var=VSM_latched_ERR_PTCTimeout bit 4,1
 Var=VSM_latched_ERR_DIMTimeout bit 3,1
 Var=VSM_latched_ERR_PTCfTimeout bit 2,1
-Var=VSM_latched_ERR_PTCpTimeout bit 1,1
 Var=VSM_latched_ERR_APCTimeout bit 0,1
 Var=VSM_latched_ERR_HVCState bit 15,1
 Var=VSM_latched_ERR_CDCState bit 14,1
@@ -104,7 +100,6 @@ Var=VSM_latched_ERR_FSMState bit 13,1
 Var=VSM_latched_ERR_PTCState bit 12,1
 Var=VSM_latched_ERR_DIMState bit 11,1
 Var=VSM_latched_ERR_PTCfState bit 10,1
-Var=VSM_latched_ERR_PTCpState bit 9,1
 Var=VSM_latched_ERR_APCState bit 8,1
 Var=VSM_latched_ERR_latchSoftware bit 18,1
 Var=VSM_latched_ERR_latchAMS bit 18,1
@@ -456,40 +451,40 @@ ID=106h
 DLC=5
 CycleTime=10
 Timeout=100
-Var=PTCf_state unsigned 0,8 /e:State
-Var=PTCf_ERR_VSMTimeout unsigned 8,1
-Var=PTCf_ERR_waterTempOOR bit 21,1
-Var=PTCf_ERR_driversTempOOR bit 22,1
-Var=PTCf_WRN_VSMTimeout bit 24,1
-Var=PTCf_WRN_VoltageOOR bit 25,1
-Var=PTCf_WRN_CurrentOOR bit 26,1
+Var=PTC_state unsigned 0,8 /e:State
+Var=PTC_ERR_VSMTimeout unsigned 8,1
+Var=PTC_ERR_waterTempOOR bit 21,1
+Var=PTC_ERR_driversTempOOR bit 22,1
+Var=PTC_WRN_VSMTimeout bit 24,1
+Var=PTC_WRN_VoltageOOR bit 25,1
+Var=PTC_WRN_CurrentOOR bit 26,1
 
 [PTC_LoopTemps_A]
 ID=224h
 DLC=8
 CycleTime=100
 Timeout=1000
-Var=PTCf_Temp1 unsigned 0,16 /u:dC
-Var=PTCf_Temp2 unsigned 16,16 /u:dC
-Var=PTCf_Temp3 unsigned 32,16 /u:dC
-Var=PTCf_Temp4 unsigned 48,16 /u:dC
+Var=PTC_Temp1 unsigned 0,16 /u:dC
+Var=PTC_Temp2 unsigned 16,16 /u:dC
+Var=PTC_Temp3 unsigned 32,16 /u:dC
+Var=PTC_Temp4 unsigned 48,16 /u:dC
 
 [PTC_LoopTemps_B]
 ID=234h
 DLC=8
 CycleTime=100
 Timeout=1000
-Var=PTCf_Temp5 unsigned 0,16 /u:dC
-Var=PTCf_Temp6 unsigned 16,16 /u:dC
-Var=PTCf_Temp7 unsigned 32,16 /u:dC
-Var=PTCf_Temp8 unsigned 48,16 /u:dC
+Var=PTC_Temp5 unsigned 0,16 /u:dC
+Var=PTC_Temp6 unsigned 16,16 /u:dC
+Var=PTC_Temp7 unsigned 32,16 /u:dC
+Var=PTC_Temp8 unsigned 48,16 /u:dC
 
 [PTC_LoopTemps_C]
 ID=244h
 DLC=2
 CycleTime=100
 Timeout=1000
-Var=PTCf_Temp9 unsigned 0,16 /u:dC
+Var=PTC_Temp9 unsigned 0,16 /u:dC
 
 [PTC_FansPumpsStatus]
 ID=314h
@@ -506,9 +501,9 @@ ID=534h
 DLC=6
 CycleTime=100
 Timeout=1000
-Var=PTCf_logicVoltage unsigned 0,16 /u:mV
-Var=PTCf_loadVoltage unsigned 16,16 /u:mV
-Var=PTCf_loadCurrent unsigned 32,16 /u:mA
+Var=PTC_logicVoltage unsigned 0,16 /u:mV
+Var=PTC_loadVoltage unsigned 16,16 /u:mV
+Var=PTC_loadCurrent unsigned 32,16 /u:mA
 
 [APC_Heartbeat]
 ID=108h
@@ -517,34 +512,6 @@ CycleTime=10
 Timeout=100
 Var=APC_state unsigned 0,8 /e:State
 Var=APC_ERR_VSMTimeout unsigned 8,1
-
-[BMS_Heartbeat]
-ID=500h
-DLC=6
-CycleTime=10
-Var=BMS_Mode HVCMode 16,8
-Var=BMS_State HVCState 24,8
-Var=BMS_Discharge_Closed unsigned 32,1
-Var=BMS_Precharge_Closed unsigned 33,1
-Var=BMS_AIR_Neg_Closed unsigned 34,1
-Var=BMS_AIR_Pos_Closed unsigned 35,1
-Var=BMS_Discharge_Error unsigned 36,1
-Var=BMS_Precharge_Error unsigned 37,1
-Var=BMS_AIR_Neg_Error unsigned 38,1
-Var=BMS_AIR_Pos_Error unsigned 39,1
-Var=BMS_Error_Vector unsigned 0,16
-Var=BMS_Error_Pack_Undervolt unsigned 0,1
-Var=BMS_Error_Pack_Overvolt unsigned 1,1
-Var=BMS_Error_Pack_Overcurrent unsigned 3,1
-Var=BMS_Error_Cell_Undervolt unsigned 4,1
-Var=BMS_Error_Cell_Overvolt unsigned 5,1
-Var=BMS_Error_Cell_Overcurrent unsigned 6,1
-Var=BMS_Error_BMB_Fault unsigned 7,1
-Var=BMS_Error_BMB_Timeout unsigned 8,1
-Var=BMS_Error_CAN_Timeout unsigned 9,1
-Var=BMS_Error_Relay unsigned 12,1
-Var=BMS_Error_LV_UV unsigned 13,1
-Var=BMS_Uptime unsigned 40,8
 
 [BMS_Pack_Voltages]
 ID=301h
@@ -1222,8 +1189,8 @@ Var=SBG_Auto_Angle_Track signed 0,16 /u:rad /f:0.0001 /p:3
 Var=SBG_Auto_Angle_Slip signed 16,16 /u:rad /f:0.0001 /p:3
 Var=SBG_Auto_Curvature_Radius unsigned 32,16 /u:m /f:0.01 /p:2
 Var=SBG_Auto_Track_Valid bit 48,1
-Var=SBG_Auto_Slip_Valid bit 48,1
-Var=SBG_Auto_Curvature_Valid bit 48,1
+Var=SBG_Auto_Slip_Valid bit 49,1
+Var=SBG_Auto_Curvature_Valid bit 50,1
 
 [BRUSA_Charger_Control]
 ID=528h
@@ -1550,3 +1517,4 @@ Var=Differential_Voltage signed 0,16 -h -m /u:uV
 Var=Calibrated_Output signed 16,16 -m /u:N /f:0.1
 Var=Internal_Temp signed 32,16 -m /u:c /f:0.1
 Var=Opt_External_Temp signed 48,16 -m /u:c /f:0.1
+
