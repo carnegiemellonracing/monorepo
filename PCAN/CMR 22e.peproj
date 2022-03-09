@@ -7,7 +7,6 @@
     </Connections>
     <MessageFilters/>
     <Files>
-        <File RelativePath="CMR 20e.sym"/>
         <File RelativePath="CMR 22e.sym"/>
     </Files>
 </PCANExplorerProject>
