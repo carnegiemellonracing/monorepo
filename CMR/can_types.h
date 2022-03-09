@@ -93,6 +93,12 @@ typedef enum {
     CMR_CAN_ERROR_PTC_DRIVERS_TEMP = (1 << 14),
     /** @brief PTC water temperature out-of-range. */
     CMR_CAN_ERROR_PTC_WATER_TEMP = (1 << 13),
+    //power errors(shunt resistor), water over heating errors, oil overheatin errors
+    //no oil overheating errors cuz going into uprights
+    // temperature 
+    // pump always on 35 c  
+    // pump turn on at 53 start turning on and 56 turning at 100
+    // fan turn on at 56 starting 58 turn it to max
 
     /** @brief CDC All motor controllers have errored or timed out. */
     CMR_CAN_ERROR_CDC_AMK_ALL = (1 << 15)
@@ -109,6 +115,7 @@ typedef enum {
     /** @brief Low-voltage bus current out-of-range. */
     CMR_CAN_WARN_BUS_CURRENT = (1 << 2),
 
+    // TODO: Consolidate
     /** @brief VSM hasn't received HVC heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_HVC_TIMEOUT = (1 << 14),
     /** @brief VSM hasn't received CDC heartbeat for 25 ms. */
@@ -118,9 +125,7 @@ typedef enum {
     /** @brief VSM hasn't received DIM heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_DIM_TIMEOUT = (1 << 11),
     /** @brief VSM hasn't received PTCf heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_PTCf_TIMEOUT = (1 << 10),
-    /** @brief VSM hasn't received PTCp heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_PTCp_TIMEOUT = (1 << 9),
+    CMR_CAN_WARN_VSM_PTC_TIMEOUT = (1 << 10),
     /** @brief VSM hasn't received APC heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_APC_TIMEOUT = (1 << 8),
     /** @brief VSM is rejecting DIM state request. */
@@ -219,10 +224,8 @@ typedef enum {
     CMR_CAN_VSM_ERROR_SOURCE_FSM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_DIM = (1 << 3),
-    /** @brief At least one PTCf message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_PTCf = (1 << 2),
-    /** @brief At least one PTCp message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_PTCp = (1 << 1),
+    /** @brief At least one PTC message has timed out. */
+    CMR_CAN_VSM_ERROR_SOURCE_PTC = (1 << 2),
     /** @brief At least one Auxiliary Power Controller message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_APC = (1 << 0)
 } cmr_canVSMErrorSource_t;
@@ -593,6 +596,19 @@ typedef struct {
     uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
 } cmr_canDIMActions_t;
 
+// DIM Config Screen data
+/** @brief Driver Interface Module config screen data. */
+
+// these are all generic types. To modify what values are stored, 
+// modify the config_screen_helper.h file instead
+typedef struct {
+    uint8_t config_val_1;
+    uint8_t config_val_2;
+    uint8_t config_val_3;
+    uint8_t config_val_4;
+} cmr_canDIMCDCconfig_t;
+
+
 // ------------------------------------------------------------------------------------------------
 // Front Sensor Module
 
@@ -631,38 +647,28 @@ typedef struct {
 
 /** @brief Powertrain Thermal Controller fan/pump status. */
 typedef struct {
-    uint8_t channel1DutyCycle_pcnt;             /**< @brief Fan/Pump channel 1 state. */
-    uint8_t channel2DutyCycle_pcnt;             /**< @brief Fan/Pump channel 2 state. */
-    uint8_t channel3DutyCycle_pcnt;             /**< @brief Fan/Pump channel 3 state. */
+    uint8_t fan1DutyCycle_pcnt;              /**< @brief Fan 1 state. */
+    uint8_t fan2DutyCycle_pcnt;              /**< @brief Fan 2 state. */
+    uint8_t pump1DutyCycle_pcnt;             /**< @brief Pump 1 state. */
+    uint8_t pump2DutyCycle_pcnt;             /**< @brief Pump 2 state. */
 } cmr_canPTCDriverStatus_t;
 
-/** @brief Powertrain Thermal Controller (fan board) cooling loop temperature status. */
+/** @brief Powertrain Thermal Controller cooling loop temperature status. */
 typedef struct {
     uint16_t temp1_dC;            /**< @brief Temp 1 */
     uint16_t temp2_dC;            /**< @brief Temp 2 */
     uint16_t temp3_dC;            /**< @brief Temp 3 */
     uint16_t temp4_dC;            /**< @brief Temp 4 */  //These are placeholders for more useful names
-} cmr_canPTCfLoopTemp_A_t;
+} cmr_canPTCLoopTemp_A_t;
 typedef struct {
     uint16_t temp5_dC;            /**< @brief Temp 5 */
     uint16_t temp6_dC;            /**< @brief Temp 6 */
     uint16_t temp7_dC;            /**< @brief Temp 7 */
     uint16_t temp8_dC;            /**< @brief Temp 8 */
-} cmr_canPTCfLoopTemp_B_t;
-
-/** @brief Powertrain Thermal Controller (pump board) cooling loop temperature status. */
+} cmr_canPTCLoopTemp_B_t;
 typedef struct {
-    uint16_t temp1_dC;            /**< @brief Temp 1 */
-    uint16_t temp2_dC;            /**< @brief Temp 2 */
-    uint16_t temp3_dC;            /**< @brief Temp 3 */
-    uint16_t temp4_dC;            /**< @brief Temp 4 */  //These are placeholders for more useful names
-} cmr_canPTCpLoopTemp_A_t;
-typedef struct {
-    uint16_t temp5_dC;            /**< @brief Temp 5 */
-    uint16_t temp6_dC;            /**< @brief Temp 6 */
-    uint16_t temp7_dC;            /**< @brief Temp 7 */
-    uint16_t temp8_dC;            /**< @brief Temp 8 */
-} cmr_canPTCpLoopTemp_B_t;
+    uint16_t temp9_dC;            /**< @brief Temp 9 */
+} cmr_canPTCLoopTemp_C_t;
 
 
 /** @brief Powertrain Thermal Controller voltage diagnostics. */
@@ -720,6 +726,73 @@ typedef struct {
 } cmr_canAMKSetpoints_t;
 
 // ------------------------------------------------------------------------------------------------
+// Battery Management System
+
+typedef struct {
+    int32_t instantCurrent_mA; /**< @brief Instant Current (mA). */
+    int32_t averageCurrent_mA; /**< @brief Average Current (mA). */
+} cmr_canBMSPackCurrent_t;
+
+/* Might modify these for future use.
+typedef struct __attribute__((__packed__)) BMSCalc1_t {
+    int32_t openCircuitVoltageMV;
+    uint16_t stateOfChargeMAH;
+} BMSCalc1_t;
+
+typedef struct BMSCalc2_t {
+    uint32_t internalResistanceUO;
+    int32_t maxCurrentDrawMAH;
+} BMSCalc2_t;
+*/
+
+typedef struct {
+	uint8_t maxVoltIndex;        /**< @brief Max BMB cell voltage index. */
+    uint8_t minVoltIndex;        /**< @brief Min BMB cell voltage index. */
+    uint16_t maxCellVoltage_mV;  /**< @brief Max BMB cell voltage (mV). */
+    uint16_t minCellVoltage_mV;  /**< @brief Min BMB cell voltage (mV). */
+} cmr_canBMSBMBStatusVoltage_t;
+
+typedef struct {
+	uint8_t maxTempIndex;        /**< @brief Max BMB cell temp index. */
+	uint8_t minTempIndex;        /**< @brief Min BMB cell temp index. */
+    int16_t maxCellTemp_C;       /**< @brief Max BMB cell temp (C). */
+    int16_t minCellTemp_C;       /**< @brief Min BMB cell temp (C). */  
+} cmr_canBMSBMBStatusTemp_t;
+
+typedef struct {
+	uint16_t minCellVoltage_mV;  /**< @brief Min pack cell voltage (mV). */
+	uint16_t maxCellVoltage_mV;  /**< @brief Max pack cell voltage (mV). */
+	uint8_t minVoltageBMBNum;    /**< @brief Min pack cell voltage BMB number. */
+	uint8_t minVoltageCellNum;   /**< @brief Min pack cell voltage cell number. */
+	uint8_t maxVoltageBMBNum;    /**< @brief Max pack cell voltage BMB number. */
+	uint8_t maxVoltageCellNum;   /**< @brief Max pack cell voltage cell number. */
+} cmr_canBMSMinMaxCellVoltage_t;
+
+typedef struct {
+    uint16_t minCellTemp_C;      /**< @brief Min pack cell temp (C). */
+    uint16_t maxCellTemp_C;      /**< @brief Max pack cell temp (C). */
+    uint8_t minTempBMBNum;       /**< @brief Min pack cell temp BMB number. */
+    uint8_t minTempCellNum;      /**< @brief Min pack cell temp cell number. */
+    uint8_t maxTempBMBNum;       /**< @brief Max pack cell temp BMB number. */
+    uint8_t maxTempCellNum;      /**< @brief Max pack cell temp cell number. */
+} cmr_canBMSMinMaxCellTemperature_t;
+
+typedef struct {
+    uint8_t vbatt_mV;       /**< @brief LV battery voltage (mV). */
+    uint8_t vAIR_mV;        /**< @brief AIR voltage (mV). */
+    uint8_t ibatt_mA;       /**< @brief LV battery current (mA). */
+	uint8_t iDCDC_mA;       /**< @brief DCDC current (mA). */
+} cmr_canBMSLowVoltage_t;
+
+// BRUSA Charger Structs
+// packed because BRUSA charger expects 7 bytes DLC
+typedef struct __attribute__((__packed__)) {
+    uint8_t enableVector;
+    uint16_t maxMainsCurrent;
+    uint16_t requestedVoltage;
+    uint16_t requestedCurrent;
+} cmr_canBRUSAChargerControl_t;
+
 // SBG Systems INS definitions.
 
 /** @brief SBG INS 'GENERAL_STATUS' bits. */
@@ -911,4 +984,3 @@ typedef struct {
 } cmr_canEMDMeasurements_t;
 
 #endif /* CMR_CAN_TYPES_H */
-
