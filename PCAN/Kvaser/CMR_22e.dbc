@@ -282,6 +282,7 @@ SG_ FSM_WRN_LeftTPosOOR : 36|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ FSM_WRN_RightTPosOOR : 37|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ FSM_WRN_BPPFault : 38|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ FSM_WRN_TPosImplausible : 39|1@1+ (1,0) [0|1] "" Vector__XXX
+
 SG_ FSM_ERR_SSModule : 9|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ FSM_ERR_SSCockpit : 10|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ FSM_ERR_SSFrHub : 11|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -390,10 +391,12 @@ SG_ PTCf_channel2State : 8|8@1+ (1,0) [0|255] "percent" Vector__XXX
 SG_ PTCf_channel3State : 16|8@1+ (1,0) [0|255] "percent" Vector__XXX
 
 
-BO_ 804 PTCp_PumpsStatus: 3 Vector__XXX
-SG_ PTCp_channel1State : 0|8@1+ (1,0) [0|255] "percent" Vector__XXX
-SG_ PTCp_channel2State : 8|8@1+ (1,0) [0|255] "percent" Vector__XXX
-SG_ PTCp_channel3State : 16|8@1+ (1,0) [0|255] "percent" Vector__XXX
+BO_ 804 PTC_FansPumpsStatus: 4 Vector__XXX
+SG_ fan1DutyCycle_pcnt : 0|8@1+ (1,0) [0|255] "percent" Vector__XXX
+SG_ fan2DutyCycle_pcnt : 8|8@1+ (1,0) [0|255] "percent" Vector__XXX
+SG_ pump1DutyCycle_pcnt : 16|8@1+ (1,0) [0|255] "percent" Vector__XXX
+SG_ pump2DutyCycle_pcnt : 24|8@1+ (1,0) [0|255] "percent" Vector__XXX
+
 
 
 BO_ 1332 PTCf_PowerDiagnostic: 6 Vector__XXX
@@ -1544,12 +1547,14 @@ BA_ "GenSigStartValue" SG_ 259 FSM_WRN_LeftTPosOOR 0;
 BA_ "GenSigStartValue" SG_ 259 FSM_WRN_RightTPosOOR 0;
 BA_ "GenSigStartValue" SG_ 259 FSM_WRN_BPPFault 0;
 BA_ "GenSigStartValue" SG_ 259 FSM_WRN_TPosImplausible 0;
+
 BA_ "GenSigStartValue" SG_ 259 FSM_ERR_SSModule 0;
 BA_ "GenSigStartValue" SG_ 259 FSM_ERR_SSCockpit 0;
 BA_ "GenSigStartValue" SG_ 259 FSM_ERR_SSFrHub 0;
 BA_ "GenSigStartValue" SG_ 259 FSM_ERR_SSInertia 0;
 BA_ "GenSigStartValue" SG_ 259 FSM_ERR_SSFlHub 0;
 BA_ "GenSigStartValue" SG_ 259 FSM_ERR_SSBots 0;
+
 BA_ "GenSigStartValue" SG_ 307 FSM_torqueReq 0;
 BA_ "GenSigStartValue" SG_ 307 FSM_throttlePos 0;
 BA_ "GenSigStartValue" SG_ 307 FSM_brakePressureFront 0;
@@ -1605,9 +1610,12 @@ BA_ "GenSigStartValue" SG_ 596 PTCp_Temp8 0;
 BA_ "GenSigStartValue" SG_ 788 PTCf_channel1State 0;
 BA_ "GenSigStartValue" SG_ 788 PTCf_channel2State 0;
 BA_ "GenSigStartValue" SG_ 788 PTCf_channel3State 0;
-BA_ "GenSigStartValue" SG_ 804 PTCp_channel1State 0;
-BA_ "GenSigStartValue" SG_ 804 PTCp_channel2State 0;
-BA_ "GenSigStartValue" SG_ 804 PTCp_channel3State 0;
+
+BA_ "GenSigStartValue" SG_ 804 fan1DutyCycle_pcnt 0;
+BA_ "GenSigStartValue" SG_ 804 fan2DutyCycle_pcnt 0;
+BA_ "GenSigStartValue" SG_ 804 pump1DutyCycle_pcnt 0;
+BA_ "GenSigStartValue" SG_ 804 pump2DutyCycle_pcnt 0;
+
 BA_ "GenSigStartValue" SG_ 1332 PTCf_logicVoltage 0;
 BA_ "GenSigStartValue" SG_ 1332 PTCf_loadVoltage 0;
 BA_ "GenSigStartValue" SG_ 1332 PTCf_loadCurrent 0;
