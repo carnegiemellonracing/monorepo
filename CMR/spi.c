@@ -164,6 +164,7 @@ void cmr_spiInit(
     HAL_GPIO_Init(pins->miso.port, &pinConfig);
 
     pinConfig.Pin = pins->sck.pin;
+    pinConfig.Pull = GPIO_PULLUP;
     cmr_rccGPIOClockEnable(pins->sck.port);
     HAL_GPIO_Init(pins->sck.port, &pinConfig);
 

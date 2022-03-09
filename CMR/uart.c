@@ -12,6 +12,7 @@
  */
 
 #include "uart.h"    // Interface to implement
+#include "panic.h"
 
 #ifdef HAL_USART_MODULE_ENABLED
 #ifdef HAL_UART_MODULE_ENABLED
@@ -45,7 +46,7 @@ static cmr_uartDevice_t cmr_uartDevices[10];
     f(2, USART, AF7) \
     f(3, USART, AF7) \
     f(4, UART, AF11) \
-    f(5, UART, AF8) \
+    f(5, UART, AF11) \
     f(6, USART, AF8) \
     f(7, UART, AF8) \
     f(8, UART, AF8) \
@@ -507,7 +508,102 @@ size_t cmr_uartMsgWait(cmr_uartMsg_t *msg) {
     return msg->len;
 }
 
+
+/**
+ * @brief initializes polling UART
+ *
+ * @param
+ */
+void cmr_uart_polling_init(cmr_uart_t *uart, USART_TypeDef *instance, const UART_InitTypeDef *init,
+    GPIO_TypeDef *rxPort, uint16_t rxPin,
+    GPIO_TypeDef *txPort, uint16_t txPin) {
+
+    *uart = (cmr_uart_t) {
+        .handle = {
+            .Instance = instance,
+            .Init = *init
+        }
+    };
+
+    // Enable UART Clock
+    cmr_rccUSARTClockEnable(instance);
+
+    // Configure UART device.
+    uint8_t pinAlternate;
+    cmr_uartDeviceInit(instance, &uart->handle, &pinAlternate);
+
+    // Configure pins.
+    GPIO_InitTypeDef pinConfig = {
+        .Pin = rxPin,
+        .Mode = GPIO_MODE_AF_PP,
+        .Pull = GPIO_PULLUP,
+        .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
+        .Alternate = pinAlternate
+    };
+    cmr_rccGPIOClockEnable(rxPort);
+    HAL_GPIO_Init(rxPort, &pinConfig);
+
+    pinConfig.Pin = txPin;
+    cmr_rccGPIOClockEnable(txPort);
+    HAL_GPIO_Init(txPort, &pinConfig);
+
+    if (HAL_UART_Init(&uart->handle) != HAL_OK) {
+        cmr_panic("HAL_UART_Init() failed!");
+    }
+
+    return;
+}
+
+/**
+* @brief transmits a byte over UART
+*
+* @param
+*/
+cmr_uart_result_t cmr_uart_pollingTX(cmr_uart_t *uart, uint8_t *data, uint16_t length) {
+    if (uart == NULL || data == NULL) {
+        return UART_FAILURE;
+    }
+
+    int timeout = CMR_UART_DEFAULT_TIMEOUT;
+    HAL_StatusTypeDef status = HAL_ERROR;
+
+    while (timeout > 0 && status != HAL_OK) {
+        // May still hang within task critical sections
+        status = HAL_UART_Transmit(
+            &(uart->handle), data, length, 1);
+        timeout--;
+    }
+
+    if (status != HAL_OK) {
+        return UART_FAILURE;
+    }
+    return UART_SUCCESS;
+}
+
+/**
+* @brief receives a byte over UART
+*/
+cmr_uart_result_t cmr_uart_pollingRX(cmr_uart_t *uart, uint8_t *data, uint16_t length) {
+    if (uart == NULL || data == NULL) {
+        return UART_FAILURE;
+    }
+
+    int timeout = CMR_UART_DEFAULT_TIMEOUT;
+    HAL_StatusTypeDef status = HAL_ERROR;
+
+    while (timeout > 0 && status != HAL_OK) {
+        // May still hang within task critical sections
+        status = HAL_UART_Receive(
+            &(uart->handle), data, length, 1);
+        timeout--;
+    }
+
+    if (status != HAL_OK) {
+        return UART_FAILURE;
+    }
+    return UART_SUCCESS;
+}
+
 #endif /* HAL_DMA_MODULE_ENABLED */
 #endif /* HAL_UART_MODULE_ENABLED */
 #endif /* HAL_USART_MODULE_ENABLED */
-

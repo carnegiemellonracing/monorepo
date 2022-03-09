@@ -35,7 +35,7 @@ typedef enum {
     CMR_CANID_HVC_PACK_VOLTAGE = 0x301,         /**< @brief HVC pack voltage. */
     CMR_CANID_HVC_MINMAX_CELL_VOLTAGE = 0x310,  /**< @brief HVC pack min and max cell voltages*/
     CMR_CANID_HVC_MINMAX_CELL_TEMPS = 0x311,    /**< @brief HVC pack min and max cell temps. */
-    CMR_CANID_HVC_PACK_CURRENT = 0x321,         /**< @brief HVC pack current. */
+    CMR_CANID_HVC_PACK_CURRENT = 0x302,         /**< @brief HVC pack current. */
 
     CMR_CANID_CDC_WHEEL_SPEEDS = 0x132,         /**< @brief CDC (19e) wheel speeds. */
     CMR_CANID_CDC_SOLENOID_PTC = 0x142,         /**< @brief CDC (19e) brake solenoid command. */
@@ -175,6 +175,38 @@ typedef enum {
     CMR_CANID_RMS_COMMAND = 0x020 + CMR_CANID_RMS_OFFSET,       /**< @brief RMS command. */
     CMR_CANID_RMS_PARAM_REQ = 0x021 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS parameter request. */
     CMR_CANID_RMS_PARAM_RES = 0x022 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS parameter response. */
+
+
+    // BMS CAN Structs
+    CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE = 0x541,                  /**< @brief HVC Max/Min Cell Voltage. */
+    CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE = 0x551,              /**< @brief HVC Max/Min Cell Temperature. */
+    CMR_CANID_HVC_LOW_VOLTAGE = 0x303,                           /**< @brief HVC Low Voltage. */
+    CMR_CANID_HVC_BRUSA_MSG = 0x528,                             /**< @brief HVC Brusa message. */
+
+    CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE = 0x380,                    /**< @brief HVC BMB Voltage: Message ID is BMB number + 3 */
+    CMR_CANID_HVC_BMB_1_STATUS_VOLTAGE = 0x382,
+    CMR_CANID_HVC_BMB_2_STATUS_VOLTAGE = 0x384,
+    CMR_CANID_HVC_BMB_3_STATUS_VOLTAGE = 0x386,
+    CMR_CANID_HVC_BMB_4_STATUS_VOLTAGE = 0x388,
+    CMR_CANID_HVC_BMB_5_STATUS_VOLTAGE = 0x38A,
+    CMR_CANID_HVC_BMB_6_STATUS_VOLTAGE = 0x38C,
+    CMR_CANID_HVC_BMB_7_STATUS_VOLTAGE = 0x38E,
+    CMR_CANID_HVC_BMB_8_STATUS_VOLTAGE = 0x390,
+    CMR_CANID_HVC_BMB_9_STATUS_VOLTAGE = 0x392,
+    CMR_CANID_HVC_BMB_10_STATUS_VOLTAGE = 0x394,
+    CMR_CANID_HVC_BMB_11_STATUS_VOLTAGE = 0x396,
+    CMR_CANID_HVC_BMB_0_STATUS_TEMP = 0x381,                       /**< @brief HVC BMB Temperature: Message ID is BMB number */
+    CMR_CANID_HVC_BMB_1_STATUS_TEMP = 0x383,
+    CMR_CANID_HVC_BMB_2_STATUS_TEMP = 0x385,
+    CMR_CANID_HVC_BMB_3_STATUS_TEMP = 0x387,
+    CMR_CANID_HVC_BMB_4_STATUS_TEMP = 0x389,
+    CMR_CANID_HVC_BMB_5_STATUS_TEMP = 0x38B,
+    CMR_CANID_HVC_BMB_6_STATUS_TEMP = 0x38D,
+    CMR_CANID_HVC_BMB_7_STATUS_TEMP = 0x38F,
+    CMR_CANID_HVC_BMB_8_STATUS_TEMP = 0x391,
+    CMR_CANID_HVC_BMB_9_STATUS_TEMP = 0x393,
+    CMR_CANID_HVC_BMB_10_STATUS_TEMP = 0x395,
+    CMR_CANID_HVC_BMB_11_STATUS_TEMP = 0x397,
 
     CMR_CANID_SBG_STATUS_1 = 0x700,             /**< @brief SBG_ECAN_LOG_STATUS_01 */
     CMR_CANID_SBG_STATUS_2 = 0x701,             /**< @brief SBG_ECAN_LOG_STATUS_02 */
