@@ -183,7 +183,7 @@ typedef enum {
     CMR_CANID_HVC_LOW_VOLTAGE = 0x303,                           /**< @brief HVC Low Voltage. */
     CMR_CANID_HVC_BRUSA_MSG = 0x528,                             /**< @brief HVC Brusa message. */
 
-    CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE = 0x380,                    /**< @brief HVC BMB Voltage: Message ID is BMB number + 3 */
+    CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE = 0x380,                    /**< @brief HVC BMB Voltage: Message ID is BMB number << 1*/
     CMR_CANID_HVC_BMB_1_STATUS_VOLTAGE = 0x382,
     CMR_CANID_HVC_BMB_2_STATUS_VOLTAGE = 0x384,
     CMR_CANID_HVC_BMB_3_STATUS_VOLTAGE = 0x386,
@@ -195,7 +195,11 @@ typedef enum {
     CMR_CANID_HVC_BMB_9_STATUS_VOLTAGE = 0x392,
     CMR_CANID_HVC_BMB_10_STATUS_VOLTAGE = 0x394,
     CMR_CANID_HVC_BMB_11_STATUS_VOLTAGE = 0x396,
-    CMR_CANID_HVC_BMB_0_STATUS_TEMP = 0x381,                       /**< @brief HVC BMB Temperature: Message ID is BMB number */
+    CMR_CANID_HVC_BMB_12_STATUS_VOLTAGE = 0x398,
+    CMR_CANID_HVC_BMB_13_STATUS_VOLTAGE = 0x39A,
+    CMR_CANID_HVC_BMB_14_STATUS_VOLTAGE = 0x39C,
+    CMR_CANID_HVC_BMB_15_STATUS_VOLTAGE = 0x39E,
+    CMR_CANID_HVC_BMB_0_STATUS_TEMP = 0x381,                       /**< @brief HVC BMB Temperature: Message ID is BMB number << 1 + 1*/
     CMR_CANID_HVC_BMB_1_STATUS_TEMP = 0x383,
     CMR_CANID_HVC_BMB_2_STATUS_TEMP = 0x385,
     CMR_CANID_HVC_BMB_3_STATUS_TEMP = 0x387,
@@ -207,6 +211,10 @@ typedef enum {
     CMR_CANID_HVC_BMB_9_STATUS_TEMP = 0x393,
     CMR_CANID_HVC_BMB_10_STATUS_TEMP = 0x395,
     CMR_CANID_HVC_BMB_11_STATUS_TEMP = 0x397,
+    CMR_CANID_HVC_BMB_12_STATUS_TEMP = 0x399,
+    CMR_CANID_HVC_BMB_13_STATUS_TEMP = 0x39B,
+    CMR_CANID_HVC_BMB_14_STATUS_TEMP = 0x39D,
+    CMR_CANID_HVC_BMB_15_STATUS_TEMP = 0x39F,
 
     CMR_CANID_SBG_STATUS_1 = 0x700,             /**< @brief SBG_ECAN_LOG_STATUS_01 */
     CMR_CANID_SBG_STATUS_2 = 0x701,             /**< @brief SBG_ECAN_LOG_STATUS_02 */

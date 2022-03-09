@@ -785,6 +785,78 @@ Var=BMS_BMB_11_Min_Temp_Index unsigned 8,8
 Var=BMS_BMB_11_Max_Temp signed 16,16
 Var=BMS_BMB_11_Min_Temp signed 32,16
 
+[BMS_BMB_12_Voltages]
+ID=398h
+DLC=6
+CycleTime=100
+Var=BMS_BMB_12_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_12_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_12_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_12_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_12_Temps]
+ID=399h
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_12_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_12_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_12_Max_Temp signed 16,16
+Var=BMS_BMB_12_Min_Temp signed 32,16
+
+[BMS_BMB_13_Voltages]
+ID=39Ah
+DLC=6
+CycleTime=100
+Var=BMS_BMB_13_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_13_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_13_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_13_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_13_Temps]
+ID=39Bh
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_13_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_13_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_13_Max_Temp signed 16,16
+Var=BMS_BMB_13_Min_Temp signed 32,16
+
+[BMS_BMB_14_Voltages]
+ID=39Ch
+DLC=6
+CycleTime=100
+Var=BMS_BMB_14_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_14_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_14_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_14_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_14_Temps]
+ID=39Dh
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_14_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_14_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_14_Max_Temp signed 16,16
+Var=BMS_BMB_14_Min_Temp signed 32,16
+
+[BMS_BMB_15_Voltages]
+ID=39Eh
+DLC=6
+CycleTime=100
+Var=BMS_BMB_15_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_15_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_15_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_15_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_15_Temps]
+ID=39Fh
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_15_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_15_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_15_Max_Temp signed 16,16
+Var=BMS_BMB_15_Min_Temp signed 32,16
+
 [BMS_Pack_MinMax_Cell_Voltages]
 ID=310h
 DLC=8
@@ -1478,4 +1550,3 @@ Var=Differential_Voltage signed 0,16 -h -m /u:uV
 Var=Calibrated_Output signed 16,16 -m /u:N /f:0.1
 Var=Internal_Temp signed 32,16 -m /u:c /f:0.1
 Var=Opt_External_Temp signed 48,16 -m /u:c /f:0.1
-
