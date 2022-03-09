@@ -28,7 +28,7 @@ typedef enum {
     CMR_CANID_HEARTBEAT_TOM = 0x109,    /**< @brief TOM heartbeat. */
     CMR_CANID_HEARTBEAT_COM = 0x10A,    /**< @brief COM heartbeat. */
 
-    CMR_CANID_CDL_BROADCAST = 0x605,    /**< @brief CDL broadcast. */
+    CMR_CANID_CDL_BROADCAST = 0x625,    /**< @brief CDL broadcast. */
 
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
     CMR_CANID_VSM_SENSORS = 0x200,              /**< @brief VSM sensor data. */
@@ -77,6 +77,75 @@ typedef enum {
     CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x535,    /**< @brief DIM power diagnostics. */
     CMR_CANID_DIM_TEXT_WRITE = 0x525,           /**< @brief DIM write command for sending text. */
     CMR_CANID_DIM_ACTIONS = 0x515,              /**< @brief DIM action buttons pressed status and regen percentage. */
+
+    /** @Note: The following CAN IDs are used for the dim-cdc driver configuration system.
+     * If you wish to modify these, you must maintain the invariant that the number of config
+     * packets is correct and the config packets are in the correct order with dim config packets
+     * first and then cdc config packets in ascending order. This is imperative to maintaining 
+     * code modularity :)
+    */
+    num_config_packets = 5,                     /**< @brief in the enum but actually just a count of num of packets. */ 
+    CMR_CANID_DIM_CONFIG0_DRV0 = 0x600,         /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG1_DRV0,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG2_DRV0,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG3_DRV0,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG4_DRV0,                 /**< @brief DIM config request */
+    CMR_CANID_CDC_CONFIG0_DRV0,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG1_DRV0,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG2_DRV0,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG3_DRV0,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG4_DRV0,                 /**< @brief CDC config request */
+    CMR_CANID_DIM_CONFIG0_DRV1,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG1_DRV1,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG2_DRV1,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG3_DRV1,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG4_DRV1,                 /**< @brief DIM config request */
+    CMR_CANID_CDC_CONFIG0_DRV1,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG1_DRV1,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG2_DRV1,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG3_DRV1,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG4_DRV1,                 /**< @brief CDC config request */
+    CMR_CANID_DIM_CONFIG0_DRV2,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG1_DRV2,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG2_DRV2,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG3_DRV2,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG4_DRV2,                 /**< @brief DIM config request */
+    CMR_CANID_CDC_CONFIG0_DRV2,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG1_DRV2,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG2_DRV2,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG3_DRV2,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG4_DRV2,                 /**< @brief CDC config request */
+    CMR_CANID_DIM_CONFIG0_DRV3,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG1_DRV3,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG2_DRV3,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG3_DRV3,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG4_DRV3,                 /**< @brief DIM config request */
+    CMR_CANID_CDC_CONFIG0_DRV3,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG1_DRV3,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG2_DRV3,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG3_DRV3,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG4_DRV3,                 /**< @brief CDC config request */
+    CMR_CANID_DIM_CONFIG0_DRV4,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG1_DRV4,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG2_DRV4,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG3_DRV4,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG4_DRV4,                 /**< @brief DIM config request */
+    CMR_CANID_CDC_CONFIG0_DRV4,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG1_DRV4,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG2_DRV4,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG3_DRV4,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG4_DRV4,                 /**< @brief CDC config request */
+    CMR_CANID_DIM_CONFIG0_DRV5,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG1_DRV5,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG2_DRV5,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG3_DRV5,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG4_DRV5,                 /**< @brief DIM config request */
+    CMR_CANID_CDC_CONFIG0_DRV5,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG1_DRV5,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG2_DRV5,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG3_DRV5,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG4_DRV5,                 /**< @brief CDC config request */
+
 
     CMR_CANID_AFC0_FAN_STATUS = 0x236,          /**< @brief AFC 0 fan status. */
     CMR_CANID_AFC0_DRIVER_TEMPS = 0x536,        /**< @brief AFC 0 temperatures. */

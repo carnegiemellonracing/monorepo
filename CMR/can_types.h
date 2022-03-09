@@ -593,6 +593,19 @@ typedef struct {
     uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
 } cmr_canDIMActions_t;
 
+// DIM Config Screen data
+/** @brief Driver Interface Module config screen data. */
+
+// these are all generic types. To modify what values are stored, 
+// modify the config_screen_helper.h file instead
+typedef struct {
+    uint8_t config_val_1;
+    uint8_t config_val_2;
+    uint8_t config_val_3;
+    uint8_t config_val_4;
+} cmr_canDIMCDCconfig_t;
+
+
 // ------------------------------------------------------------------------------------------------
 // Front Sensor Module
 
