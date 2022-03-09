@@ -1,26 +1,21 @@
 FormatVersion=5.0 // Do not edit this line!
 UniqueVariables=True
-Title="CMR 20e"
+Title="CMR 22e"
 
 {ENUMS}
 // This is for the EMD
 enum VtSig_Gain(0="x1", 1="x2", 2="x4", 3="x8", 4="x16", 5="x32")
-enum SBG_Solution_Status_Mode(0="Uninitialized", 1="Vertical_Gyro_Only", 
-  2="Orientation_Only", 3="Nav_Velocity", 4="Full_Nav")
+enum SBG_Solution_Status_Mode(0="Uninitialized", 1="Vertical_Gyro_Only", 2="Orientation_Only", 3="Nav_Velocity",
+  4="Full_Nav")
 enum Fan_State(0="FAN_OFF", 1="FAN_LOW", 2="FAN_HIGH")
-enum State(0="UNKNOWN", 1="GLV_ON", 2="HV_EN", 3="RTD", 4="ERROR", 
-  5="CLEAR_ERROR")
-enum Gear(0="UNKNOWN", 1="REVERSE", 2="SLOW", 3="FAST", 4="ENDURANCE", 
-  5="AUTO-X", 6="SKIDPAD", 7="ACCEL", 8="TEST")
-enum VSMState(0="ERROR", 1="CLEAR_ERROR", 2="GLV_ON", 3="REQ_PRECHARGE", 
-  4="RUN_BMS", 5="DCDC_EN", 6="INVERTER_EN", 7="HV_EN", 8="RTD", 
-  9="COOLING_OFF", 10="DCDC_OFF")
+enum State(0="UNKNOWN", 1="GLV_ON", 2="HV_EN", 3="RTD", 4="ERROR", 5="CLEAR_ERROR")
+enum Gear(0="UNKNOWN", 1="REVERSE", 2="SLOW", 3="FAST", 4="ENDURANCE", 5="AUTO-X", 6="SKIDPAD", 7="ACCEL", 8="TEST")
+enum VSMState(0="ERROR", 1="CLEAR_ERROR", 2="GLV_ON", 3="REQ_PRECHARGE", 4="RUN_BMS", 5="DCDC_EN", 6="INVERTER_EN",
+  7="HV_EN", 8="RTD", 9="COOLING_OFF", 10="DCDC_OFF")
 enum HVCMode(0="ERROR", 1="IDLE", 2="START", 4="RUN", 8="CHARGE")
-enum HVCState(0="ERROR", 1="DISCHARGE", 2="STANDBY", 3="DRIVE_PRECHARGE", 
-  4="DRIVE_PRECHARGE_COMPLETE", 5="DRIVE", 6="CHARGE_PRECHARGE", 
-  7="CHARGE_PRECHARGE_COMPLETE", 8="CHARGE_TRICKLE", 
-  9="CHARGE_CONSTANT_CURRENT", 10="CHARGE_CONSTANT_VOLTAGE", 11="CLEAR_ERROR", 
-  12="UNKNOWN")
+enum HVCState(0="ERROR", 1="DISCHARGE", 2="STANDBY", 3="DRIVE_PRECHARGE", 4="DRIVE_PRECHARGE_COMPLETE", 5="DRIVE",
+  6="CHARGE_PRECHARGE", 7="CHARGE_PRECHARGE_COMPLETE", 8="CHARGE_TRICKLE", 9="CHARGE_CONSTANT_CURRENT",
+  10="CHARGE_CONSTANT_VOLTAGE", 11="CLEAR_ERROR", 12="UNKNOWN")
 enum FanState(0="OFF", 1="LOW", 2="HIGH")
 enum PumpState(0="OFF", 1="ON")
 enum CoolingState(0="OFF", 1="LOW", 2="HIGH")
@@ -83,7 +78,7 @@ Var=VSM_safetyIn unsigned 32,8 /u:V /f:0.1
 Var=VSM_safetyOut unsigned 40,8 /u:V /f:0.1
 
 [VSM_LatchedStatus]
-ID=510h	// Timeout matrix
+ID=510h // Timeout matrix
 DLC=3
 CycleTime=10000
 Timeout=20000
@@ -363,8 +358,7 @@ Var=FSM_ERR_VSMTimeout bit 8,1
 Var=FSM_WRN_VSMTimeout bit 24,1
 Var=FSM_WRN_VoltageOOR bit 25,1
 Var=FSM_WRN_CurrentOOR bit 26,1
-Var=FSM_WRN_SteeringOOR bit 34,1
-Var=FSM_WRN_BrakePressureOOR bit 35,1
+Var=FSM_WRN_BrakePositionOOR bit 35,1
 Var=FSM_WRN_LeftTPosOOR bit 36,1
 Var=FSM_WRN_RightTPosOOR bit 37,1
 Var=FSM_WRN_BPPFault bit 38,1
@@ -375,6 +369,9 @@ Var=FSM_ERR_SSFrHub bit 11,1
 Var=FSM_ERR_SSInertia bit 12,1
 Var=FSM_ERR_SSFlHub bit 13,1
 Var=FSM_ERR_SSBots bit 14,1
+Var=FSM_WRN_BrakePressureOOR bit 34,1
+Var=FSM_WRN_SWAngleOOR bit 33,1
+Var=FSM_WRN_SafetyCircuitOOR bit 32,1
 
 [FSM_Data]
 ID=133h
@@ -1259,7 +1256,7 @@ Var=LED_driver_defect unsigned 33,1
 Var=Save_charging_mode unsigned 32,1
 
 [AMK_FR_Actual_Values_1]
-ID=283h	// Set ID based on wiring
+ID=283h // Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FR_Status_Reserved unsigned 0,8
@@ -1276,7 +1273,7 @@ Var=AMK_FR_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_FR_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_FR_Actual_Values_2]
-ID=285h	// Set ID based on wiring
+ID=285h // Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FR_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1285,7 +1282,7 @@ Var=AMK_FR_ErrorInfo unsigned 32,16
 Var=AMK_FR_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_FR_Setpoints_1]
-ID=184h	// Set ID based on wiring
+ID=184h // Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_FR_Control_Reserved1 unsigned 0,8
@@ -1299,7 +1296,7 @@ Var=AMK_FR_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_FR_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
 [AMK_FL_Actual_Values_1]
-ID=284h	// Set ID based on wiring
+ID=284h // Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FL_Status_Reserved unsigned 0,8
@@ -1316,7 +1313,7 @@ Var=AMK_FL_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_FL_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_FL_Actual_Values_2]
-ID=286h	// Set ID based on wiring
+ID=286h // Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FL_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1325,7 +1322,7 @@ Var=AMK_FL_ErrorInfo unsigned 32,16
 Var=AMK_FL_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_FL_Setpoints_1]
-ID=185h	// Set ID based on wiring
+ID=185h // Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_FL_Control_Reserved1 unsigned 0,8
@@ -1339,7 +1336,7 @@ Var=AMK_FL_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_FL_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
 [AMK_BL_Actual_Values_1]
-ID=287h	// Set ID based on wiring
+ID=287h // Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BL_Status_Reserved unsigned 0,8
@@ -1356,7 +1353,7 @@ Var=AMK_BL_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_BL_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_BL_Actual_Values_2]
-ID=289h	// Set ID based on wiring
+ID=289h // Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BL_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1365,7 +1362,7 @@ Var=AMK_BL_ErrorInfo unsigned 32,16
 Var=AMK_BL_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_BL_Setpoints_1]
-ID=188h	// Set ID based on wiring
+ID=188h // Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_BL_Control_Reserved1 unsigned 0,8
@@ -1379,7 +1376,7 @@ Var=AMK_BL_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_BL_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
 [AMK_BR_Actual_Values_1]
-ID=288h	// Set ID based on wiring
+ID=288h // Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BR_Status_Reserved unsigned 0,8
@@ -1396,7 +1393,7 @@ Var=AMK_BR_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_BR_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_BR_Actual_Values_2]
-ID=28Ah	// Set ID based on wiring
+ID=28Ah // Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BR_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1405,7 +1402,7 @@ Var=AMK_BR_ErrorInfo unsigned 32,16
 Var=AMK_BR_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_BR_Setpoints_1]
-ID=189h	// Set ID based on wiring
+ID=189h // Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_BR_Control_Reserved1 unsigned 0,8
@@ -1467,7 +1464,7 @@ Var=controls_bias signed 32,16 /f:0.01 /p:2
 Var=controls_pid signed 48,16 /f:0.01 /p:2
 
 [EMD_Measurement]
-ID=401h	// This is NOT the real CANID for the EMD. It is 100h, but that conflicts with the VSM_Heartbeat, so we retransmit it on 401h via the CDC.
+ID=401h // This is NOT the real CANID for the EMD. It is 100h, but that conflicts with the VSM_Heartbeat, so we retransmit it on 401h via the CDC.
 DLC=8
 Var=EMD_Current signed 0,32 -m /u:A /f:1.5258789063E-005
 Var=EMD_Voltage signed 32,32 -m /u:V /f:1.5258789063E-005
@@ -1482,11 +1479,11 @@ Var=EMD_OverPower bit 14,1 -m /u:bool
 Var=EMD_Logging bit 13,1 -m /u:bool
 
 [EMD_Reserved1]
-ID=7E7h	// This CAN id is used for communication between the energy meter and the download tool.
+ID=7E7h // This CAN id is used for communication between the energy meter and the download tool.
 DLC=8
 
 [EMD_Reserved2]
-ID=7EFh	// This CAN id is used for communication between the energy meter and the download tool.
+ID=7EFh // This CAN id is used for communication between the energy meter and the download tool.
 DLC=8
 
 [IZZIE_Loadcell_config]
@@ -1517,4 +1514,3 @@ Var=Differential_Voltage signed 0,16 -h -m /u:uV
 Var=Calibrated_Output signed 16,16 -m /u:N /f:0.1
 Var=Internal_Temp signed 32,16 -m /u:c /f:0.1
 Var=Opt_External_Temp signed 48,16 -m /u:c /f:0.1
-
