@@ -45,7 +45,6 @@ static cmr_can_t can;
 
 // Forward declarations
 static void sendHeartbeat(TickType_t lastWakeTime);
-static void sendBRUSAChargerControl(void);
 static void sendHVCPackVoltage(void);
 static void sendBMSPackCurrent(void);
 static void sendBMSBMBStatusVoltage(uint8_t bmb_index);
@@ -80,6 +79,7 @@ static void canTX1Hz(void *pvParameters) {
         for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
             sendBMSBMBStatusTemp(bmb_index);
         }
+        sendBMSMinMaxCellTemp();
 
         vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
     }
@@ -113,6 +113,7 @@ static void canTX10Hz(void *pvParameters) {
         for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
             sendBMSBMBStatusVoltage(bmb_index);
         }
+        sendBMSMinMaxCellVoltage();
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -300,108 +301,6 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     }
 
     canTX(CMR_CANID_HEARTBEAT_HVC, &HVCHeartbeat, sizeof(HVCHeartbeat), canTX100Hz_period_ms);
-}
-
-/**
- * @brief Sets up Brusa Charger Control commands, then sends it.
- */
-static void sendBRUSAChargerControl(void) {
-    cmr_canBRUSAChargerControl_t BRUSAChargerControl = {
-        .enableVector = 0,
-        .maxMainsCurrent = 0,
-        .requestedCurrent = 0,
-        .requestedVoltage = 0
-    };
-    cmr_canHVCState_t currentState = getState();
-
-
-    switch (currentState) {
-        case CMR_CAN_HVC_STATE_DISCHARGE: // S1
-			BRUSAChargerControl.enableVector = 0;
-			BRUSAChargerControl.maxMainsCurrent = 0;
-			BRUSAChargerControl.requestedCurrent = 0;
-			BRUSAChargerControl.requestedVoltage = 0;
-            break;
-        case CMR_CAN_HVC_STATE_STANDBY: // S2
-			BRUSAChargerControl.enableVector = 0;
-			BRUSAChargerControl.maxMainsCurrent = 0;
-			BRUSAChargerControl.requestedCurrent = 0;
-			BRUSAChargerControl.requestedVoltage = 0;
-            break;
-        case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE: // S3
-            BRUSAChargerControl.enableVector = 0;
-            BRUSAChargerControl.maxMainsCurrent = 0;
-            BRUSAChargerControl.requestedCurrent = 0;
-            BRUSAChargerControl.requestedVoltage = 0; 
-            break;
-        case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE: // S4
-            BRUSAChargerControl.enableVector = 0;
-            BRUSAChargerControl.maxMainsCurrent = 0;
-            BRUSAChargerControl.requestedCurrent = 0;
-            BRUSAChargerControl.requestedVoltage = 0;
-            break;
-        case CMR_CAN_HVC_STATE_DRIVE: // S5
-            BRUSAChargerControl.enableVector = 0;
-            BRUSAChargerControl.maxMainsCurrent = 0;
-            BRUSAChargerControl.requestedCurrent = 0;
-            BRUSAChargerControl.requestedVoltage = 0;
-            break;
-        case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE: // S6
-            // units for current and voltage are 1/10 Amps and 1/10 Volts
-            BRUSAChargerControl.enableVector = 128;
-            BRUSAChargerControl.maxMainsCurrent = 150; // 15 A
-            BRUSAChargerControl.requestedCurrent = 10; // 1 A
-            BRUSAChargerControl.requestedVoltage = 6000; // 600 V
-            break;
-        case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE: // S7
-            // units for current and voltage are 1/10 Amps and 1/10 Volts
-            BRUSAChargerControl.enableVector = 128;
-            BRUSAChargerControl.maxMainsCurrent = 150; // 15 A
-            BRUSAChargerControl.requestedCurrent = 10; // 1 A
-            BRUSAChargerControl.requestedVoltage = 6000; // 600 V
-            break;
-        case CMR_CAN_HVC_STATE_CHARGE_TRICKLE: // S8
-			// units for current and voltage are 1/10 Amps and 1/10 Volts
-            BRUSAChargerControl.enableVector = 128;
-            BRUSAChargerControl.maxMainsCurrent = 150; // 15 A
-            BRUSAChargerControl.requestedCurrent = 10; // 1 A
-            BRUSAChargerControl.requestedVoltage = 4500; // 450 V
-            break;
-        case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT: // S9
-			// units for current and voltage are 1/10 Amps and 1/10 Volts
-			BRUSAChargerControl.enableVector = 128;
-			BRUSAChargerControl.maxMainsCurrent = 150; // 15 A
-			BRUSAChargerControl.requestedCurrent = 70; // 7 A
-			BRUSAChargerControl.requestedVoltage = 4500; // 450 V
-            break;
-        case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE: // S10
-            BRUSAChargerControl.enableVector = 0;
-            BRUSAChargerControl.maxMainsCurrent = 0;
-            BRUSAChargerControl.requestedCurrent = 0;
-            BRUSAChargerControl.requestedVoltage = 0;
-            break;
-        case CMR_CAN_HVC_STATE_ERROR: // S0
-            BRUSAChargerControl.enableVector = 0;
-            BRUSAChargerControl.maxMainsCurrent = 0;
-            BRUSAChargerControl.requestedCurrent = 0;
-            BRUSAChargerControl.requestedVoltage = 0;
-            break;
-        case CMR_CAN_HVC_STATE_CLEAR_ERROR: // S11
-            BRUSAChargerControl.enableVector = 0;
-            BRUSAChargerControl.maxMainsCurrent = 0;
-            BRUSAChargerControl.requestedCurrent = 0;
-            BRUSAChargerControl.requestedVoltage = 0;
-            break;
-        case CMR_CAN_HVC_STATE_UNKNOWN:
-        default:			
-            BRUSAChargerControl.enableVector = 0;
-            BRUSAChargerControl.maxMainsCurrent = 0;
-            BRUSAChargerControl.requestedCurrent = 0;
-            BRUSAChargerControl.requestedVoltage = 0;
-            break;
-    }
-
-    canTX(CMR_CANID_HVC_BRUSA_MSG, &BRUSAChargerControl, sizeof(BRUSAChargerControl), canTX10Hz_period_ms);
 }
 
 static void sendHVCPackVoltage(void) {
