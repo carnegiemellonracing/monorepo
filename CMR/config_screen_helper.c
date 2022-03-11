@@ -278,7 +278,7 @@ bool getProcessedValue(void* returnPointer, int index, cmr_config_t expected_typ
             // note, custom enum error checking doesn't exist. That's ok bc its not safety critical
             *(uint8_t*)returnPointer = ((uint8_t)config_menu_main_array[index].value.value);
             return true;
-        defaut:
+        default:
             return false;
     }
     return false;
