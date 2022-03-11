@@ -43,5 +43,6 @@ cmr_uart_result_t slave_uart_configureGPIODirection(uint8_t DDRVector, uint8_t d
 cmr_uart_result_t slave_uart_setGPIO(uint8_t data, uint8_t deviceAddress);
 cmr_uart_result_t slave_uart_broadcast_setBMBTimeout(void);
 cmr_uart_result_t slave_uart_sendBalanceCmd(uint16_t cells, uint8_t deviceAddress);
+cmr_uart_result_t slave_uart_sendEnableTempMuxCmd(uint8_t enable);
 
 #endif /* SLAVE_UART_H_ */

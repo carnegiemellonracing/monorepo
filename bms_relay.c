@@ -53,11 +53,11 @@ uint8_t setRelay(BMS_relay_t relay, BMS_relay_state_t state) {
             if (state == OPEN) {
                 relayUsageVector &= ~(RELAY_CONTACTOR_MASK << DISCHARGE_RELAY);
                 // Discharge relay is default close, set high pin to open
-                cmr_gpioWrite(GPIO_DISCHARGE_EN, 0);
+                cmr_gpioWrite(GPIO_DISCHARGE_EN, 1);
             } else {
                 // Close relay
                 relayUsageVector |= RELAY_CONTACTOR_MASK << DISCHARGE_RELAY;
-                cmr_gpioWrite(GPIO_DISCHARGE_EN, 1);
+                cmr_gpioWrite(GPIO_DISCHARGE_EN, 0);
             }
             break;
         default:

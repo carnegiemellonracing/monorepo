@@ -92,7 +92,6 @@ static uint8_t getSPIHeaderByte(hvSenseRegister_t address, spiReadWrite_t read) 
  */
 static void HVSenseRead(hvSenseRegister_t address, uint8_t* rxData, size_t rxLen) {
     uint8_t header = getSPIHeaderByte(address, SPI_READ);
-    // TODO check if this works - not sure about length
     uint8_t data[rxLen + 1];
     cmr_spiTXRX(&spi, &header, data, rxLen + 1);
     memcpy(rxData, &(data[1]), rxLen);
@@ -113,9 +112,15 @@ static void HVSenseWrite(hvSenseRegister_t address, uint8_t* txData, size_t txLe
 }
 
 
-/** @brief Converts ADC reading into HV voltage */
+/** @brief Converts ADC reading into HV voltage
+ * ADC value of around 400000 corresponds to 0V on HV Bus
+ * ADC value of around 5320000 corresponds to 600V on HV Bus
+ * Linearly interpolate:    slope = (600000-0)/(532000-400000) = 5/41
+ *                          y-intercept = 0 - 5/41 * 400000 = -2000000/41
+ * Equation of line: HV_mv = 5/41 * adc_input - 2000000/41 = 5*(adc_input-400000)/41
+*/
 static inline int32_t ADCtoMV_HVSense (int32_t adc_input) {
-    return (int32_t) ((0.1242f * adc_input) - 46767.f);
+    return (int32_t) ((5 * (adc_input - 400000)) / 41);
 }
 
 /**
@@ -162,7 +167,7 @@ static void HVCSpiUpdate(void *pvParameters) {
         // Wait until data is ready
         int dataReady_L = cmr_gpioRead(GPIO_HVSENSE_DRDY_L);
         while (dataReady_L) {
-        	dataReady_L = cmr_gpioRead(GPIO_HVSENSE_DRDY_L);
+            dataReady_L = cmr_gpioRead(GPIO_HVSENSE_DRDY_L);
         }
 
         // Sample HV Bus Voltage
@@ -179,8 +184,9 @@ static void HVCSpiUpdate(void *pvParameters) {
         currentSingleSample_ADC = (int32_t) ((rxCurrent[2]) | (rxCurrent[1] << 8) | (rxCurrent[0] << 16));
         currentSingleSample_ADC = (currentSingleSample_ADC << 8) >> 8;
 
-		// Rolling average
+        // Rolling average
         // A single sample is too noisy for an "instant" measurement so do a small average
+        // TODO: change so that not both are average
         currentInstant_ADC = (currentInstant_ADC*(numSamplesInstant-1) + currentSingleSample_ADC) / numSamplesInstant;
         currentAvg_ADC = (currentAvg_ADC*(numSamplesAverage-1) + currentSingleSample_ADC) / numSamplesAverage;
 
@@ -201,8 +207,8 @@ void spiInit(void) {
     cmr_taskInit(
         &HVCSpiUpdate_task,
         "Voltage and Current Update",
-		HVCSpiUpdate_priority,
-		HVCSpiUpdate,
+        HVCSpiUpdate_priority,
+        HVCSpiUpdate,
         NULL
     );
 }
@@ -231,7 +237,7 @@ int32_t getHVmillivolts() {
 //    // Convert Sensed Voltage to HV Bus Voltage
 //    float HV_mV = sensedVoltage_mV * sensedToHV;
 
-	// float HV_mV = (0.1242f * HighVoltage_ADC) - 46767.f;
+    // float HV_mV = (0.1242f * HighVoltage_ADC) - 46767.f;
     return voltageHV;
 }
 

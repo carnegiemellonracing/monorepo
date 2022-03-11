@@ -75,7 +75,7 @@ void vBMBSampleTask(void *pvParameters) {
 
     // Index of the BMB we're currently sampling
     uint8_t BMBIndex = 0;
-    // Whether or not slect on the analog mux is asserted
+    // Whether or not select on the analog mux is asserted
     bool BMBActivityLEDEnable = false;
 
     // Previous wake time pointer
@@ -83,11 +83,7 @@ void vBMBSampleTask(void *pvParameters) {
 
     // Period
     const TickType_t xPeriod = 1000 / BMB_SAMPLE_TASK_RATE;		// In ticks (ms)
-    
-    //Enable BMB power init high as it is an active low signal
-    // cmr_gpioWrite(GPIO_BMB_POWER_ENABLE_L, 1);
-    // cmr_gpioWrite(GPIO_BMB_WAKE_PIN, 0);
-    
+
     // Enable BMB IO power (active low)
     cmr_gpioWrite(GPIO_BMB_POWER_ENABLE_L, 0);
 
@@ -129,7 +125,7 @@ void vBMBSampleTask(void *pvParameters) {
     for(int8_t boardNum = TOP_SLAVE_BOARD; boardNum >= 0; --boardNum) {
         taskENTER_CRITICAL();
         retv = slave_uart_configureSampling(boardNum);
-        while(retv != UART_SUCCESS) {
+        if (retv != UART_SUCCESS) {
           // ERROR CASE: Could not configure sampling for slave boards
         }
 
@@ -146,7 +142,6 @@ void vBMBSampleTask(void *pvParameters) {
     for(;;) {
         uart_response_t channelResponse = {0};
         cmr_uart_result_t uartRetv = UART_SUCCESS;
-
 
         // Sampling method #2: BQ Protocol p12
 
@@ -192,10 +187,16 @@ void vBMBSampleTask(void *pvParameters) {
             for(uint8_t tChannel = 0; tChannel < TSENSE_CHANNELS_PER_MESSAGE; ++tChannel) {
                 uint32_t readAdcValue = (((uint32_t)channelResponse.data[2*tChannel + 2*VSENSE_CHANNELS_PER_BMB])<<8) |
                                         ((uint32_t)channelResponse.data[2*tChannel+2*VSENSE_CHANNELS_PER_BMB+1]);
-                uint8_t logicalThermIndex = (BMBActivityLEDEnable) ? tChannel : tChannel;
+                uint8_t logicalThermIndex = TSENSE_CHANNELS_PER_MESSAGE - 1 - tChannel;
+
+                // Temps indexed 4 to 11 are muxed
+                // TODO: make #define
+                if (BMBActivityLEDEnable && logicalThermIndex >= 4) {
+                    logicalThermIndex = logicalThermIndex + 4;
+                }
                 
                 //This is backwards for some reason.
-                BMBData[BMBIndex].cellTemperatures[TSENSE_CHANNELS_PER_MESSAGE - logicalThermIndex- 1] = lutTemp((uint16_t)readAdcValue);
+                BMBData[BMBIndex].cellTemperatures[logicalThermIndex] = lutTemp((uint16_t)readAdcValue);
                 // TODO set error conditions for bad temps
             }
         }
@@ -228,10 +229,11 @@ void vBMBSampleTask(void *pvParameters) {
         if (BMBIndex >= NUM_BMBS-1) {
             BMBIndex = 0;
             BMBActivityLEDEnable = !BMBActivityLEDEnable;
-            // TODO send GPIO command to change ADC Mux on BMBs
         } else {
             ++BMBIndex;
         }
+
+
         // Delay 10ms
         vTaskDelayUntil(&xLastWakeTime, xPeriod);
     }

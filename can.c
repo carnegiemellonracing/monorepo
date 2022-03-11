@@ -107,7 +107,7 @@ static void canTX10Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         // BRUSA Charger decided by state machine 
-        sendBRUSAChargerControl();
+        // sendBRUSAChargerControl();
 
         // BMB Voltage Status 
         for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
@@ -351,14 +351,14 @@ static void sendBRUSAChargerControl(void) {
             BRUSAChargerControl.enableVector = 128;
             BRUSAChargerControl.maxMainsCurrent = 150; // 15 A
             BRUSAChargerControl.requestedCurrent = 10; // 1 A
-            BRUSAChargerControl.requestedVoltage = 4500; // 450 V // TODO: Should this be 600V?
+            BRUSAChargerControl.requestedVoltage = 6000; // 600 V
             break;
         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE: // S7
             // units for current and voltage are 1/10 Amps and 1/10 Volts
             BRUSAChargerControl.enableVector = 128;
             BRUSAChargerControl.maxMainsCurrent = 150; // 15 A
             BRUSAChargerControl.requestedCurrent = 10; // 1 A
-            BRUSAChargerControl.requestedVoltage = 4500; // 450 V
+            BRUSAChargerControl.requestedVoltage = 6000; // 600 V
             break;
         case CMR_CAN_HVC_STATE_CHARGE_TRICKLE: // S8
 			// units for current and voltage are 1/10 Amps and 1/10 Volts
@@ -543,7 +543,6 @@ static void sendBMSMinMaxCellTemp(void) {
 }
 
 static void sendBMSLowVoltage(void) {
-    // NEEDS CHANGES AFTER ADC SWITCH
     cmr_canBMSLowVoltage_t BMSLowVoltage = {
         .ibatt_mA = getLVmilliamps(), // Convert mA to 2/15th mA
         .iDCDC_mA =0,
