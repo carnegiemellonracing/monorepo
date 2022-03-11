@@ -558,7 +558,7 @@ static cmr_uart_result_t slave_uart_clearFaultFlags(uint8_t boardNum) {
   }
   
   uart_command_t clearFaultSummaryFlags = {
-    .frameInit = &CMD_SINGLE_NRESP_RADDR8_DATA1,
+    .frameInit = &CMD_SINGLE_NRESP_RADDR8_DATA2,
     .deviceAddress = boardNum,
     .registerAddress = SLAVE_REG_FAULT_SUM0,
     .data = {0xFF, 0xC0},
@@ -568,6 +568,55 @@ static cmr_uart_result_t slave_uart_clearFaultFlags(uint8_t boardNum) {
     retvTotal = UART_FAILURE;
   }
   
+
+//  /////// START //////
+//    // try to see the faults on bmb 1
+//    uart_command_t getFaults = {
+//      .frameInit = &CMD_SINGLE_RESP_RADDR8_DATA1,
+//      .deviceAddress = 1,
+//      .registerAddress = SLAVE_REG_FAULT_SYS,
+//      .data = {0x00},
+//    };
+//
+//    // ask bmb for response
+//    retv = uart_sendCommand(&getFaults);
+//    while (retv != UART_SUCCESS) {
+//      retvTotal = UART_FAILURE;
+//    }
+//    // wait for response
+//    uart_response_t bmb1Fault_response;
+//    retv = uart_receiveResponse(&bmb1Fault_response);
+//    while (retv != UART_SUCCESS) {
+//      retvTotal = UART_FAILURE;
+//    }
+//    /////// END //////
+//
+    /////// START //////
+//     // try to see the uv on bmb 1
+//  if (boardNum == 1){
+//     uart_command_t getFaults2 = {
+//       .frameInit = &CMD_SINGLE_RESP_RADDR8_DATA2,
+//       .deviceAddress = 1,
+//       .registerAddress = SLAVE_REG_FAULT_UV0,
+//       .data = {0x00, 0x00},
+//     };
+//
+//     // ask bmb for response
+//     retv = uart_sendCommand(&getFaults2);
+//     while (retv != UART_SUCCESS) {
+//       retvTotal = UART_FAILURE;
+//     }
+//     // wait for response
+//     uart_response_t bmb2Fault_response;
+//     retv = uart_receiveResponse(&bmb2Fault_response);
+//  }
+
+//     while (retv != UART_SUCCESS) {
+//       retvTotal = UART_FAILURE;
+//     }
+     /////// END //////
+
+
   /*
   * Check the system status register, and check result is equal to 0 (no faults)
   * Comes from page 8 of BQ76PL455A-Q1 protocol datasheet 2.2.4
