@@ -158,8 +158,9 @@ static void fanControl(void *pvParameters) {
                 }
                 fan_2_State = (fan_2_State > 100) ? 100 : fan_2_State;
 
-                cmr_pwmSetDutyCycle(&fan_1_PWM, (uint32_t) fan_1_State);
-                cmr_pwmSetDutyCycle(&fan_2_PWM, (uint32_t) fan_2_State);
+                // duty cycle is inverted because of MOSFETS
+                cmr_pwmSetDutyCycle(&fan_1_PWM, (uint32_t) 100-fan_1_State);
+                cmr_pwmSetDutyCycle(&fan_2_PWM, (uint32_t) 100-fan_2_State);
                 
                 if (fan_1_State >= 50 || fan_2_State >= 50) {
                     cmr_gpioWrite(GPIO_FAN_ON, 1);
@@ -171,8 +172,9 @@ static void fanControl(void *pvParameters) {
             default:
                 fan_1_State = 0;
                 fan_2_State = 0;
-                cmr_pwmSetDutyCycle(&fan_1_PWM, 100);
-                cmr_pwmSetDutyCycle(&fan_2_PWM, 100);
+                // duty cycle is inverted because of MOSFETS
+                cmr_pwmSetDutyCycle(&fan_1_PWM, 100-100);
+                cmr_pwmSetDutyCycle(&fan_2_PWM, 100-100);
                 cmr_gpioWrite(GPIO_FAN_ON, 0);
                 break;
         }

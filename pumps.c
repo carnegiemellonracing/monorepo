@@ -123,8 +123,9 @@ static void pumpControl(void *pvParameters) {
                 }
                 pump_2_State = (pump_2_State < 100) ? pump_2_State : 100;
 
-                cmr_pwmSetDutyCycle(&pump_1_PWM, (uint32_t) pump_1_State);
-                cmr_pwmSetDutyCycle(&pump_2_PWM, (uint32_t) pump_2_State);
+                // duty cycle is inverted because of MOSFETS
+                cmr_pwmSetDutyCycle(&pump_1_PWM, (uint32_t) 100-pump_1_State);
+                cmr_pwmSetDutyCycle(&pump_2_PWM, (uint32_t) 100-pump_2_State);
                 
                 if (pump_1_State >= 50 || pump_2_State >= 50) {
                     cmr_gpioWrite(GPIO_PUMP_ON, 1);
@@ -136,8 +137,9 @@ static void pumpControl(void *pvParameters) {
             default:
                 pump_1_State = 0;
                 pump_2_State = 0;
-                cmr_pwmSetDutyCycle(&pump_1_PWM, 100);
-                cmr_pwmSetDutyCycle(&pump_2_PWM, 100);
+                // duty cycle is inverted because of MOSFETS
+                cmr_pwmSetDutyCycle(&pump_1_PWM, 100-100);
+                cmr_pwmSetDutyCycle(&pump_2_PWM, 100-100);
                 cmr_gpioWrite(GPIO_PUMP_ON, 0);
                 break;
         }
