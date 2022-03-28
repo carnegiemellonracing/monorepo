@@ -23,7 +23,7 @@
 // STATIC VARIABLE DEFINITIONS                                                |
 //-----------------------------------------------------------------------------
 
-#define NUM_BMBS 12
+#define NUM_BMBS 16
 typedef enum {
 	TOP_SLAVE_BOARD = (NUM_BMBS - 1),
 	BOT_SLAVE_BOARD = 0x00,

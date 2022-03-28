@@ -93,7 +93,8 @@ static uint8_t getSPIHeaderByte(hvSenseRegister_t address, spiReadWrite_t read) 
 static void HVSenseRead(hvSenseRegister_t address, uint8_t* rxData, size_t rxLen) {
     uint8_t header = getSPIHeaderByte(address, SPI_READ);
     uint8_t data[rxLen + 1];
-    cmr_spiTXRX(&spi, &header, data, rxLen + 1);
+    data[0] = 100;
+    int ret = cmr_spiTXRX(&spi, &header, data, rxLen + 1);
     memcpy(rxData, &(data[1]), rxLen);
 }
 
@@ -108,7 +109,7 @@ static void HVSenseWrite(hvSenseRegister_t address, uint8_t* txData, size_t txLe
     uint8_t data[txLen + 1];
     data[0] = getSPIHeaderByte(address, SPI_WRITE);
     memcpy(&(data[1]), txData, txLen);
-    cmr_spiTXRX(&spi, &data, NULL, txLen + 1);
+    int ret = cmr_spiTXRX(&spi, &data, NULL, txLen + 1);
 }
 
 

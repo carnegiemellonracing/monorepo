@@ -234,8 +234,8 @@ void vBMBSampleTask(void *pvParameters) {
         }
 
 
-        // Delay 10ms
-        vTaskDelayUntil(&xLastWakeTime, xPeriod);
+        // Delay 30ms
+        vTaskDelayUntil(&xLastWakeTime, 50);
     }
 }
 

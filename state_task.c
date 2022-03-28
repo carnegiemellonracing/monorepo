@@ -36,7 +36,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
     }
 
     // Getting HVC Command
-    cmr_canHVCCommand_t *HVCCommand = getPayload(CANRX_HVC_COMMAND);
+    volatile cmr_canHVCCommand_t *HVCCommand = getPayload(CANRX_HVC_COMMAND);
     
     switch (currentState) {
         case CMR_CAN_HVC_STATE_DISCHARGE: // S1

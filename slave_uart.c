@@ -447,8 +447,12 @@ cmr_uart_result_t slave_uart_sampleDeviceChannels(uint8_t deviceAddress, uart_re
     }
 
     retv = uart_receiveResponse(response);
-    while (retv != UART_SUCCESS) {
+    int retry = 10;
+    while (retv != UART_SUCCESS && retry > 0) {
         retvTotal = UART_FAILURE;
+        retv = uart_receiveResponse(response);
+        if(retry > 0) retvTotal == retv;
+        retry--;
     }
 
     return retvTotal;
