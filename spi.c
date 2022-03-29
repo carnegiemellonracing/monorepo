@@ -121,7 +121,8 @@ static void HVSenseWrite(hvSenseRegister_t address, uint8_t* txData, size_t txLe
  * Equation of line: HV_mv = 5/41 * adc_input - 2000000/41 = 5*(adc_input-400000)/41
 */
 static inline int32_t ADCtoMV_HVSense (int32_t adc_input) {
-    return (int32_t) ((5 * (adc_input - 400000)) / 41);
+    // return (int32_t) ((5 * (adc_input - 400000)) / 41);
+    return (int32_t) ( ((float) adc_input) * 0.111552066620190f - 46382.999155396500f);
 }
 
 /**
@@ -266,6 +267,8 @@ int32_t getCurrentInstant() {
 }
  
 int32_t getCurrentAverage() {
-    return (int32_t)(adcToCurrent(currentAvg_ADC) * 6002);
+	static int32_t moving_avg = 0;
+	moving_avg = (0.7f * moving_avg) + (0.3f * HighVoltage_ADC);
+    return moving_avg;
 }
 
