@@ -197,7 +197,7 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_POS_RELAY, OPEN);
             setRelay(AIR_NEG_RELAY, OPEN);
             setRelay(PRECHARGE_RELAY, OPEN);
-            setRelay(DISCHARGE_RELAY, OPEN);
+            setRelay(DISCHARGE_RELAY, CLOSED);
             clearHardwareFault(false);
             break;
         case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE: // S3

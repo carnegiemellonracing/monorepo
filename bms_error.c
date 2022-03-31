@@ -6,11 +6,18 @@
  */
 
 #include "bms_error.h"
+#include "slave_uart.h"
 
 // Heartbeat timeout	
 #define HEARTBEAT_TIMEOUT	50		// Periods of 10ms
 
+// BMB timeout
+#define BMB_TIMEOUT         5
+
 static bool checkCommandTimeout();
+static bool checkBMBTimeout();
+
+volatile int BMBTimeoutCount[NUM_BMBS] = { 0 };
 
 // Persistent value for storing the error type. Will be useful if
 // error checking becomes its own task
@@ -22,7 +29,7 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         // TODO E1 check the timeout field of the command message meta data
         errorFlags |= CMR_CAN_HVC_ERROR_CAN_TIMEOUT;
     }
-    if(false) {
+    if(checkBMBTimeout()) {
         // TODO E2 devise a UART monitor system
         errorFlags |= CMR_CAN_HVC_ERROR_BMB_TIMEOUT; /**< @brief BMB has timed out. */
     }
@@ -124,4 +131,13 @@ static bool checkCommandTimeout() {
     bool hvc_commmand_error = (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HVC_COMMAND]), lastWakeTime) < 0);
 
 	return vsm_heartbeat_error || hvc_commmand_error;
+}
+
+static bool checkBMBTimeout() {
+    for (int i = 0; i < NUM_BMBS; i++) {
+        if (BMBTimeoutCount[i] > BMB_TIMEOUT) {
+            return true;
+        }
+    }
+    return false;
 }
