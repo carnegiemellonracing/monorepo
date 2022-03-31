@@ -6,14 +6,18 @@
  */
 
 #include "bms_error.h"
+#include "slave_uart.h"
 
 // Heartbeat timeout	
 #define HEARTBEAT_TIMEOUT	50		// Periods of 10ms
 
-static bool checkCommandTimeout();
+// BMB timeout
+#define BMB_TIMEOUT         5
 
-// Metadata for receive messages
-ReceiveMeta_t BMSCommandReceiveMeta;
+static bool checkCommandTimeout();
+static bool checkBMBTimeout();
+
+volatile int BMBTimeoutCount[NUM_BMBS] = { 0 };
 
 // Persistent value for storing the error type. Will be useful if
 // error checking becomes its own task
@@ -25,7 +29,7 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         // TODO E1 check the timeout field of the command message meta data
         errorFlags |= CMR_CAN_HVC_ERROR_CAN_TIMEOUT;
     }
-    if(false) {
+    if(checkBMBTimeout()) {
         // TODO E2 devise a UART monitor system
         errorFlags |= CMR_CAN_HVC_ERROR_BMB_TIMEOUT; /**< @brief BMB has timed out. */
     }
@@ -120,32 +124,20 @@ cmr_canHVCError_t getErrorReg(){
 }
 
 static bool checkCommandTimeout() {
-    //This function must be run in a task with a 100Hz rate.
+    // CAN error if either VSM Heartbeat or HVC Command has timed out after 50ms
+    // TODO: latch can error?
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    bool vsm_heartbeat_error = (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_VSM]), lastWakeTime) < 0);
+    bool hvc_commmand_error = (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HVC_COMMAND]), lastWakeTime) < 0);
 
-	bool inError = false;
+	return vsm_heartbeat_error || hvc_commmand_error;
+}
 
-	// Command Message Stale Check
-	if(BMSCommandReceiveMeta.staleFlag && !BMSCommandReceiveMeta.timeoutFlag) {
-		// Only increment miss count if stale and not timed out
-		BMSCommandReceiveMeta.missCount++;
-		} else if (!BMSCommandReceiveMeta.staleFlag) {
-		// If not stale, reset miss count and set back to stale
-		BMSCommandReceiveMeta.missCount = 0;
-		BMSCommandReceiveMeta.staleFlag = 1;
-	}
-    // Command Message Timeout
-	if(BMSCommandReceiveMeta.missCount > HEARTBEAT_TIMEOUT) {
-		// Set timeout if above timeout threshold
-		BMSCommandReceiveMeta.timeoutFlag = 1;
-		} else {
-		// Reset timeout flag if not timed out
-		BMSCommandReceiveMeta.timeoutFlag = 0;
-	}
-
-    if (BMSCommandReceiveMeta.timeoutFlag) {
-        inError = true;
+static bool checkBMBTimeout() {
+    for (int i = 0; i < NUM_BMBS; i++) {
+        if (BMBTimeoutCount[i] > BMB_TIMEOUT) {
+            return true;
+        }
     }
-    // TODO: Weird artifact from atmel
     return false;
-	return inError;
 }

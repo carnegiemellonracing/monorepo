@@ -18,9 +18,6 @@
 #include "bms_error.h"
 #include "watchdog.h"   // Board-specific Watchdog interface
 
-/** @brief Struct to identify stale commands. */
-extern ReceiveMeta_t BMSCommandReceiveMeta;
-
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
 
@@ -75,11 +72,6 @@ int main(void) {
     HAL_Init();
     cmr_rccSystemClockEnable();
 
-    BMSCommandReceiveMeta.missCount = 0;
-    BMSCommandReceiveMeta.timeoutFlag = 0;
-    BMSCommandReceiveMeta.staleFlag = 1;
-    BMSCommandReceiveMeta.differentStateCount = 0;
-    BMSCommandReceiveMeta.wrongStateFlag = 0;
     // Peripheral configuration.
     gpioInit();
     canInit();

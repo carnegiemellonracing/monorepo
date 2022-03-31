@@ -9,6 +9,7 @@
 #include "gpio.h"
 #include "state_task.h"
 
+extern volatile int BMBTimeoutCount[NUM_BMBS];
 
 // Max valid thermistor temp, beyond which it is considered a short
 static const int16_t THERM_MAX_TEMP = 850;
@@ -150,14 +151,14 @@ void vBMBSampleTask(void *pvParameters) {
         // Set the analog mux to sample the relevant half of the thermistors and set the status LED
         uint8_t BMBGPIOValues = (BMBActivityLEDEnable) ? (BMB_GPIO_MUX_PIN | BMB_GPIO_LED_PIN) : 0;
         uartRetv = slave_uart_setGPIO(BMBGPIOValues, BMBIndex);
-        while(uartRetv != UART_SUCCESS) {
+        if (uartRetv != UART_SUCCESS) {
             // ERROR CASE: We could not send the set GPIO command
         }
 
         // Sample all analog channels
         uartRetv = slave_uart_broadcast_sampleAndStore();
 
-        while(uartRetv != UART_SUCCESS) {
+        if (uartRetv != UART_SUCCESS) {
             // ERROR CASE: We could not send the sample command
         }
         taskEXIT_CRITICAL();
@@ -174,7 +175,9 @@ void vBMBSampleTask(void *pvParameters) {
             // or the response did not include the expect number of channels
 
             // TODO: add MIA checking for each BMB
+            BMBTimeoutCount[BMBIndex]++;
         } else {
+            BMBTimeoutCount[BMBIndex] = 0;
             // Retrieve each 16 bit cell voltage reading from the response
             for(uint8_t vChannel = 0; vChannel < VSENSE_CHANNELS_PER_BMB; ++vChannel) {
                 uint32_t readAdcValue = (((uint32_t)channelResponse.data[2*vChannel])<<8) |
