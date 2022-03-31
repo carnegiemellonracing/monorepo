@@ -12,9 +12,6 @@
 
 static bool checkCommandTimeout();
 
-// Metadata for receive messages
-ReceiveMeta_t BMSCommandReceiveMeta;
-
 // Persistent value for storing the error type. Will be useful if
 // error checking becomes its own task
 static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_STATE_ERROR;
@@ -120,32 +117,11 @@ cmr_canHVCError_t getErrorReg(){
 }
 
 static bool checkCommandTimeout() {
-    //This function must be run in a task with a 100Hz rate.
+    // CAN error if either VSM Heartbeat or HVC Command has timed out after 50ms
+    // TODO: latch can error?
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    bool vsm_heartbeat_error = (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_VSM]), lastWakeTime) < 0);
+    bool hvc_commmand_error = (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HVC_COMMAND]), lastWakeTime) < 0);
 
-	bool inError = false;
-
-	// Command Message Stale Check
-	if(BMSCommandReceiveMeta.staleFlag && !BMSCommandReceiveMeta.timeoutFlag) {
-		// Only increment miss count if stale and not timed out
-		BMSCommandReceiveMeta.missCount++;
-		} else if (!BMSCommandReceiveMeta.staleFlag) {
-		// If not stale, reset miss count and set back to stale
-		BMSCommandReceiveMeta.missCount = 0;
-		BMSCommandReceiveMeta.staleFlag = 1;
-	}
-    // Command Message Timeout
-	if(BMSCommandReceiveMeta.missCount > HEARTBEAT_TIMEOUT) {
-		// Set timeout if above timeout threshold
-		BMSCommandReceiveMeta.timeoutFlag = 1;
-		} else {
-		// Reset timeout flag if not timed out
-		BMSCommandReceiveMeta.timeoutFlag = 0;
-	}
-
-    if (BMSCommandReceiveMeta.timeoutFlag) {
-        inError = true;
-    }
-    // TODO: Weird artifact from atmel
-    return false;
-	return inError;
+	return vsm_heartbeat_error || hvc_commmand_error;
 }
