@@ -65,8 +65,8 @@ uint8_t setRelay(BMS_relay_t relay, BMS_relay_state_t state) {
             cmr_gpioWrite(GPIO_AIR_POSITIVE_EN, 0);
             cmr_gpioWrite(GPIO_AIR_NEGATIVE_EN, 0);
             cmr_gpioWrite(GPIO_PRECHARGE_EN, 0);
-            cmr_gpioWrite(GPIO_DISCHARGE_EN, 0);
-            relayUsageVector = 0;//RELAY_CONTACTOR_MASK << DISCHARGE_RELAY;
+            cmr_gpioWrite(GPIO_DISCHARGE_EN, 1);
+            relayUsageVector = RELAY_CONTACTOR_MASK << DISCHARGE_RELAY;
             break;
     }
     
