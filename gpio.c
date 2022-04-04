@@ -10,8 +10,9 @@
 #include <task.h>           // Task interface
 #include <queue.h>          // Queue interface
 
-#include "state.h"  // state handling stuff
-#include "gpio.h"   // Interface to implement
+#include "state.h"      // state handling stuff
+#include "gpio.h"       // Interface to implement
+#include "ledStrip.h"   // LED strip interface
 
 /** @brief Maximum number of button events in the queue. */
 #define BUTTON_EVENTS_MAX 64
@@ -62,14 +63,6 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_BUTTON_0] = {
-        .port = GPIOA,
-        .init = {
-            .Pin = GPIO_PIN_8,
-            .Mode = GPIO_MODE_IT_RISING_FALLING,
-            .Pull = GPIO_NOPULL
-        }
-    },
     [GPIO_BUTTON_1] = {
         .port = GPIOC,
         .init = {
@@ -79,9 +72,9 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         }
     },
     [GPIO_BUTTON_2] = {
-        .port = GPIOC,
+        .port = GPIOA,
         .init = {
-            .Pin = GPIO_PIN_8,
+            .Pin = GPIO_PIN_11,
             .Mode = GPIO_MODE_IT_RISING_FALLING,
             .Pull = GPIO_NOPULL
         }
@@ -89,19 +82,59 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_BUTTON_3] = {
         .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_7,
+            .Pin = GPIO_PIN_8,
             .Mode = GPIO_MODE_IT_RISING_FALLING,
             .Pull = GPIO_NOPULL
         }
     },
     [GPIO_BUTTON_4] = {
-            .port = GPIOC,
-            .init = {
-                .Pin = GPIO_PIN_6,
-                .Mode = GPIO_MODE_IT_RISING_FALLING,
-                .Pull = GPIO_NOPULL
-            }
-        },
+        .port = GPIOA,
+        .init = {
+            .Pin = GPIO_PIN_10,
+            .Mode = GPIO_MODE_IT_RISING_FALLING,
+            .Pull = GPIO_NOPULL
+        }
+    },
+    [GPIO_BUTTON_5] = {
+        .port = GPIOA,
+        .init = {
+            .Pin = GPIO_PIN_12,
+            .Mode = GPIO_MODE_IT_RISING_FALLING,
+            .Pull = GPIO_NOPULL
+        }
+    },
+    [GPIO_BUTTON_6] = {
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_7,
+            .Mode = GPIO_MODE_IT_RISING_FALLING,
+            .Pull = GPIO_NOPULL
+        }
+    },
+    [GPIO_BUTTON_7] = {
+        .port = GPIOA,
+        .init = {
+            .Pin = GPIO_PIN_9,
+            .Mode = GPIO_MODE_IT_RISING_FALLING,
+            .Pull = GPIO_NOPULL
+        }
+    },
+    [GPIO_BUTTON_8] = {
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_6,
+            .Mode = GPIO_MODE_IT_RISING_FALLING,
+            .Pull = GPIO_NOPULL
+        }
+    },
+    [GPIO_BUTTON_9] = {
+        .port = GPIOA,
+        .init = {
+            .Pin = GPIO_PIN_8,
+            .Mode = GPIO_MODE_IT_RISING_FALLING,
+            .Pull = GPIO_NOPULL
+        }
+    },
     [GPIO_PD_N] = {
         .port = GPIOC,
         .init = {
@@ -137,6 +170,47 @@ static const uint32_t buttonsInput_priority = 4;
 /** @brief Button input task period (milliseconds). */
 static const TickType_t buttonsInput_period = 10;
 
+/** @brief AE/DRS button value */
+bool drsButtonPressed;
+/** @brief Action 1 button value */
+bool action1ButtonPressed;
+/** @brief Action 2 button value */
+bool action2ButtonPressed;
+
+/** @brief Current regen step */
+unsigned int regenStep = 0;
+
+/**
+ * @brief Handles regen up button presses.
+ *
+ * @param pressed `true` if button is currently pressed.
+ */
+void regenUpButton(bool pressed) {
+    if (!pressed) {
+        return;
+    }
+
+    if (regenStep < REGEN_STEP_NUM) {
+        regenStep++;
+    }
+    setNumLeds(regenStep);
+}
+/**
+ * @brief Handles regen down button presses.
+ *
+ * @param pressed `true` if button is currently pressed.
+ */
+void regenDownButton(bool pressed) {
+    if (!pressed) {
+        return;
+    }
+
+    if (regenStep > 0) {
+        regenStep--;
+    }
+    setNumLeds(regenStep);
+}
+
 /**
  * @brief Handles button events.
  *
@@ -150,8 +224,12 @@ static void buttonsInput_task(void *pvParameters) {
     TickType_t lastButtonPress = xTaskGetTickCount();
     TickType_t currentTime;
     while (1) {
-        volatile int value = cmr_gpioRead(GPIO_BUTTON_0);
-        actionButtonPressed = value;
+        volatile int value = cmr_gpioRead(GPIO_BUTTON_1);
+        drsButtonPressed = value;
+        value = cmr_gpioRead(GPIO_BUTTON_2);
+        action1ButtonPressed = value;
+        value = cmr_gpioRead(GPIO_BUTTON_3);
+        action2ButtonPressed = value;
 
         /* if vsm has changed state unexpectedly we
          * need to adjust our req to still be valid */
@@ -165,21 +243,27 @@ static void buttonsInput_task(void *pvParameters) {
         buttonEvent_t event;
         while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
             switch (event.pin) {
-                case GPIO_BUTTON_1:
-                	stateGearDownButton(event.pressed);
+                case GPIO_BUTTON_4:
+                    regenUpButton(event.pressed);
                     break;
-                case GPIO_BUTTON_2:
-                    stateGearUpButton(event.pressed);
+                case GPIO_BUTTON_5:
+                    regenDownButton(event.pressed);
                     break;
-                case GPIO_BUTTON_3:
+                case GPIO_BUTTON_6:
+                    stateVSMUpButton(event.pressed);
+                    break;
+                case GPIO_BUTTON_7:
                     /* Avoid accidental double clicks on state down button
                     (the transition back into hv_en takes a while) */
                     if((currentTime - lastButtonPress) > 1000) {
                         stateVSMDownButton(event.pressed);
                     }
                     break;
-                case GPIO_BUTTON_4:
-                    stateVSMUpButton(event.pressed);
+                case GPIO_BUTTON_8:
+                    stateGearUpButton(event.pressed);
+                    break;
+                case GPIO_BUTTON_9:
+                	stateGearDownButton(event.pressed);
                     break;
                 default:
                     break;
@@ -237,11 +321,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t gpioPin) {
 
     /** @brief Button states. */
     static buttonState_t states[] = {
-        { .pin = GPIO_BUTTON_0 },
         { .pin = GPIO_BUTTON_1 },
         { .pin = GPIO_BUTTON_2 },
         { .pin = GPIO_BUTTON_3 },
-        { .pin = GPIO_BUTTON_4 }
+        { .pin = GPIO_BUTTON_4 },
+        { .pin = GPIO_BUTTON_5 },
+        { .pin = GPIO_BUTTON_6 },
+        { .pin = GPIO_BUTTON_7 },
+        { .pin = GPIO_BUTTON_8 },
+        { .pin = GPIO_BUTTON_9 }
     };
 
     (void) gpioPin;

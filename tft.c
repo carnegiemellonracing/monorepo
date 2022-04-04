@@ -521,7 +521,8 @@ static void drawRTDScreen(void) {
     /* Pack Voltage */
     int32_t hvVoltage_mV = canHVCPackVoltage->hvVoltage_mV;
 
-    int32_t glvVoltage = adcRead(ADC_VSENSE) * 8 * 11 / 10 / 1000; // TODO: figure out where 8, 10 come from
+    // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
+    int32_t glvVoltage = adcRead(ADC_VSENSE) * 8 * 11 / 10 / 1000;
 
     /* Motor Power Draw*/
     int32_t current_A = computeCurrent_A(canAMK_FL_Act1) +
