@@ -9,6 +9,7 @@
 #define CMR_CAN_TYPES_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 // ------------------------------------------------------------------------------------------------
 // Common enums and structs
@@ -78,7 +79,10 @@ typedef enum {
     /** @brief PTC fan/pump driver IC temperature out-of-range. */
     CMR_CAN_ERROR_PTC_DRIVERS_TEMP = (1 << 14),
     /** @brief PTC water temperature out-of-range. */
-    CMR_CAN_ERROR_PTC_WATER_TEMP = (1 << 13)
+    CMR_CAN_ERROR_PTC_WATER_TEMP = (1 << 13),
+
+    /** @brief CDC All motor controllers have errored or timed out. */
+    CMR_CAN_ERROR_CDC_AMK_ALL = (1 << 15)
 } cmr_canError_t;
 
 /** @brief Heartbeat warning matrix bit fields. */
@@ -93,19 +97,17 @@ typedef enum {
     CMR_CAN_WARN_BUS_CURRENT = (1 << 2),
 
     /** @brief VSM hasn't received HVC heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_HVC_TIMEOUT = (1 << 15),
+    CMR_CAN_WARN_VSM_HVC_TIMEOUT = (1 << 14),
     /** @brief VSM hasn't received CDC heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_CDC_TIMEOUT = (1 << 14),
+    CMR_CAN_WARN_VSM_CDC_TIMEOUT = (1 << 13),
     /** @brief VSM hasn't received FSM heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_FSM_TIMEOUT = (1 << 13),
-    /** @brief VSM hasn't received PTC heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_PTC_TIMEOUT = (1 << 12),
+    CMR_CAN_WARN_VSM_FSM_TIMEOUT = (1 << 12),
     /** @brief VSM hasn't received DIM heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_DIM_TIMEOUT = (1 << 11),
-    /** @brief VSM hasn't received AFC 0 heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_AFC0_TIMEOUT = (1 << 10),
-    /** @brief VSM hasn't received AFC 1 heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_AFC1_TIMEOUT = (1 << 9),
+    /** @brief VSM hasn't received PTCf heartbeat for 25 ms. */
+    CMR_CAN_WARN_VSM_PTCf_TIMEOUT = (1 << 10),
+    /** @brief VSM hasn't received PTCp heartbeat for 25 ms. */
+    CMR_CAN_WARN_VSM_PTCp_TIMEOUT = (1 << 9),
     /** @brief VSM hasn't received APC heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_APC_TIMEOUT = (1 << 8),
     /** @brief VSM is rejecting DIM state request. */
@@ -124,7 +126,20 @@ typedef enum {
     /** @brief FSM brake pressure sensor out-of-range. */
     CMR_CAN_WARN_FSM_BPRES = (1 << 10),
     /** @brief FSM steering wheel angle out-of-range. */
-    CMR_CAN_WARN_FSM_SWANGLE = (1 << 9)
+    CMR_CAN_WARN_FSM_SWANGLE = (1 << 9),
+
+    /** @brief CDC Front left motor controller is warning source. */
+    CMR_CAN_WARN_CDC_AMK_FL = (1 << 15),
+    /** @brief CDC Front right motor controller is warning source. */
+    CMR_CAN_WARN_CDC_AMK_FR = (1 << 14),
+    /** @brief CDC Rear left motor controller is warning source. */
+    CMR_CAN_WARN_CDC_AMK_RL = (1 << 13),
+    /** @brief CDC Rear right motor controller is warning source. */
+    CMR_CAN_WARN_CDC_AMK_RR = (1 << 12),
+    /** @brief CDC Motor controller has an error. */
+    CMR_CAN_WARN_CDC_AMK_ERROR = (1 << 11),
+    /** @brief CDC Motor controller has timed out. */
+    CMR_CAN_WARN_CDC_AMK_TIMEOUT = (1 << 10)
 } cmr_canWarn_t;
 
 /** @brief Represents the car's current driving mode (gear). */
@@ -152,6 +167,7 @@ typedef enum {
     CMR_CAN_VSM_STATE_REQ_PRECHARGE,    /**< @brief Request accumulator isolation relay precharge. */
     CMR_CAN_VSM_STATE_RUN_BMS,          /**< @brief Run Battery Management System. */
     CMR_CAN_VSM_STATE_DCDC_EN,          /**< @brief Enable DCDC converters. */
+    CMR_CAN_VSM_STATE_INVERTER_EN,      /**< #brief Enable inverter logic power. */
     CMR_CAN_VSM_STATE_HV_EN,            /**< @brief Enable high voltage system. */
     CMR_CAN_VSM_STATE_RTD,              /**< @brief Ready to drive. */
     CMR_CAN_VSM_STATE_COOLING_OFF,      /**< @brief Disable powertrain cooling system. */
@@ -164,19 +180,17 @@ typedef enum {
     /** @brief No modules have timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_NONE = 0,
     /** @brief At least one High Voltage Controller message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_HVC = (1 << 7),
+    CMR_CAN_VSM_ERROR_SOURCE_HVC = (1 << 6),
     /** @brief At least one Central Dynamics Controller message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_CDC = (1 << 6),
+    CMR_CAN_VSM_ERROR_SOURCE_CDC = (1 << 5),
     /** @brief At least one Front Sensor Module message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_FSM = (1 << 5),
-    /** @brief At least one Powertrain Thermal Controller message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_PTC = (1 << 4),
+    CMR_CAN_VSM_ERROR_SOURCE_FSM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_DIM = (1 << 3),
-    /** @brief At least one Accumulator Fan Controller 0 message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_AFC0 = (1 << 2),
-    /** @brief At least one Accumulator Fan Controller 1 message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_AFC1 = (1 << 1),
+    /** @brief At least one PTCf message has timed out. */
+    CMR_CAN_VSM_ERROR_SOURCE_PTCf = (1 << 2),
+    /** @brief At least one PTCp message has timed out. */
+    CMR_CAN_VSM_ERROR_SOURCE_PTCp = (1 << 1),
     /** @brief At least one Auxiliary Power Controller message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_APC = (1 << 0)
 } cmr_canVSMErrorSource_t;
@@ -348,8 +362,8 @@ typedef struct {
 
 /** @brief High Voltage Controller pack voltages. */
 typedef struct {
-    int32_t battVoltage;    /**< @brief voltage measured across battery. */
-    int32_t hvVoltage;      /**< @brief voltage outside accumulator. */
+    int32_t battVoltage_mV;    /**< @brief Voltage measured across battery. */
+    int32_t hvVoltage_mV;      /**< @brief Voltage outside accumulator. */
 } cmr_canHVCPackVoltage_t;
 
 /** @brief High Voltage Controller pack overall min and max cell temperatures. */
@@ -361,6 +375,22 @@ typedef struct {
     uint8_t maxTempBMBIndex;    /**< @brief BMB index of hottest cell. */
     uint8_t maxTempCellIndex;   /**< @brief Index of hottest cell. */
 } cmr_canHVCPackMinMaxCellTemps_t;
+
+/** @brief High Voltage Controller pack overall min and max cell voltages. */
+typedef struct {
+    uint16_t minCellVoltage_mV; /**< @brief Min BMB cell voltage (mV). */
+    uint16_t maxCellVoltage_mV; /**< @brief Max BMB cell voltage (mV). */
+    uint8_t minCellVoltBMB;     /**< @brief */
+    uint8_t minVoltIndex;       /**< @brief Min BMB cell voltage index. */
+    uint8_t maxCellVoltBMB;     /**< @brief */
+    uint8_t maxVoltIndex;       /**< @brief Max BMB cell voltage index. */
+} cmr_canHVCPackMinMaxCellVolages_t;
+
+/** @brief High Voltage Controller pack currents. */
+typedef struct {
+    int32_t instantCurrent_mA;  /**< @brief Instantaneous current measurement. */
+    int32_t avgCurrent_mA;      /**< @brief (Not working) rolling average of current. */
+} cmr_canHVCPackCurrent_t;
 
 // ------------------------------------------------------------------------------------------------
 // Accumulator Fan Controller
@@ -385,7 +415,31 @@ typedef struct {
 } cmr_canAFCPowerDiagnostics_t;
 
 // ------------------------------------------------------------------------------------------------
-// Central Dynamics Controller
+// Auxiliary Power Controller
+
+/** @brief Auxiliary Power Controller battery status. */
+typedef struct {
+    uint16_t bat1Voltage_mV;    /**< @brief Voltage across battery 1. */
+    uint16_t bat2Voltage_mV;    /**< @brief Voltage across battery 2. */
+    uint16_t bat3Voltage_mV;    /**< @brief Voltage across battery 3. */
+    uint16_t bat4Voltage_mV;    /**< @brief Voltage across battery 4. */
+    uint16_t bat5Voltage_mV;    /**< @brief Voltage across battery 5. */
+    uint16_t bat6Voltage_mV;    /**< @brief Voltage across battery 6. */
+} cmr_canAPCBatteryStatus_t;
+
+/** @brief Auxiliary Power Controller temperatures. */
+typedef struct {
+    uint8_t batTemp_C[3];    /**< @brief Battery temperatures (C). */
+} cmr_canAPCBatteryTemps_t;
+
+/** @brief Auxiliary Power Controller power diagnostics. */
+typedef struct {
+    int32_t batCurrent_mA;     /**< @brief Battery current draw (mA). */
+} cmr_canAPCBatteryDiagnostics_t;
+
+
+// ------------------------------------------------------------------------------------------------
+// Central Dynamics Controller (19e)
 
 /** @brief Central Dynamics Controller wheel speeds. */
 typedef struct {
@@ -435,6 +489,48 @@ typedef struct {
 } cmr_canCDCIMUAcceleration_t;
 
 // ------------------------------------------------------------------------------------------------
+// Central Dynamics Controller (20e)
+
+/** @brief CDC wheel speeds (used for setpoint and actual). */
+typedef struct {
+    int16_t frontLeft_rpm;  /**< @brief Wheel speed on 20e (rpm * 10). */
+    int16_t frontRight_rpm; /**< @brief Wheel speed on 20e (rpm * 10). */
+    int16_t rearLeft_rpm;   /**< @brief Wheel speed on 20e (rpm * 10). */
+    int16_t rearRight_rpm;  /**< @brief Wheel speed on 20e (rpm * 10). */
+} cmr_canCDCWheelVelocity_t;
+
+typedef struct {
+    int16_t frontLeft_Nm;   /**< @brief Wheel torque on 20e (Nm * 10). */
+    int16_t frontRight_Nm;  /**< @brief Wheel speed on 20e (Nm * 10). */
+    int16_t rearLeft_Nm;    /**< @brief Wheel speed on 20e (Nm * 10). */
+    int16_t rearRight_Nm;   /**< @brief Wheel speed on 20e (Nm * 10). */
+} cmr_canCDCWheelTorque_t;
+
+typedef struct {
+    float latitude_deg;     /**< @brief Position of car on earth. */
+    float longitude_deg;    /**< @brief Position of car on earth. */
+} cmr_canCDCPosePosition_t;
+
+typedef struct {
+    int16_t roll_deg;       /**< @brief Roll of the car (deg * 10). */
+    int16_t pitch_deg;      /**< @brief Pitch of the car (deg * 10). */
+    int16_t yaw_deg;        /**< @brief Yaw of the car (deg * 10). */
+    int16_t velocity_deg;   /**< @brief Velocity vector of the car (deg * 10). */
+} cmr_canCDCPoseOrientation_t;
+
+typedef struct {
+    int16_t longitudinalVel_mps;    /**< @brief Velocity of the car in the forward direction (m/s * 100). */
+    int16_t lateralVel_mps;         /**< @brief Velocity of the car in the right direction (m/s * 100). */
+    int16_t verticalVel_mps;        /**< @brief Velocity of the car in the down direction (m/s * 100). */
+} cmr_canCDCPoseVelocity_t;
+
+typedef struct {
+    int16_t longitudinalAccel_mps2;    /**< @brief Acceleration of the car in the forward direction (m/s^2 * 100). */
+    int16_t lateralAccel_mps2;         /**< @brief Acceleration of the car in the right direction (m/s^2 * 100). */
+    int16_t verticalAccel_mps2;        /**< @brief Acceleration of the car in the down direction (m/s^2 * 100). */
+} cmr_canCDCPoseAcceleration_t;
+
+// ------------------------------------------------------------------------------------------------
 // Driver Interface Module
 
 /** @brief Driver Interface Module state/gear request. */
@@ -449,6 +545,22 @@ typedef struct {
     uint16_t busCurrent_mA;     /**< @brief Low-voltage bus current (mA). */
 } cmr_canDIMPowerDiagnostics_t;
 
+/** @brief Driver Interface Module text write command. This is
+ *  used in conjunction with the RAM to facilite remote text
+ *  writing to the driver's display.
+*/
+typedef struct {
+    uint8_t address;            /**< @brief Buffer index for text. */
+    uint8_t data[4];            /**< @brief Data to write. */
+} cmr_canDIMTextWrite_t;
+
+typedef struct {
+    uint8_t action1ButtonPressed;    /**< @brief Status of the action 1 button (Active Low). */
+    uint8_t action2ButtonPressed;    /**< @brief Status of the action 2 button (Active Low). */
+    uint8_t drsButtonPressed;        /**< @brief Status of the AE/DRS button (Active Low). */
+    uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
+} cmr_canDIMActions_t;
+
 // ------------------------------------------------------------------------------------------------
 // Front Sensor Module
 
@@ -457,7 +569,7 @@ typedef struct {
     uint8_t torqueRequested;            /**< @brief Torque requested (0-255). */
     uint8_t throttlePosition;           /**< @brief Throttle position (0-255). */
     uint8_t brakePressureFront_PSI;     /**< @brief Front brake pressure. */
-    uint8_t brakePedalPosition_pcnt;    /**< @brief Brake pedal position (0-100). */
+    uint8_t brakePedalPosition;         /**< @brief Brake pedal position (0-255). */
 
     /** @brief Steering wheel angle (-180 to 180 degrees). */
     int16_t steeringWheelAngle_deg;
@@ -485,172 +597,302 @@ typedef struct {
 // ------------------------------------------------------------------------------------------------
 // Powertrain Thermal Controller
 
-/** @brief Water cooling pump state enumeration. */
-typedef enum {
-    CMR_CAN_PTC_PUMP_STATE_OFF = 0, /**< @brief Pump disabled. */
-    CMR_CAN_PTC_PUMP_STATE_ON       /**< @brief Pump enabled. */
-} cmr_canPTCPumpState_t;
-
-/** @brief Powertrain Thermal Controller cooling status. */
+/** @brief Powertrain Thermal Controller fan/pump status. */
 typedef struct {
-    uint8_t fanState;             /**< @brief Radiator fan state. */
-    uint8_t pumpState;            /**< @brief Radiator water pump state. */
-    uint16_t preRadiatorTemp_dC;  /**< @brief Pre-radiator water temperature (.1 C). */
-    uint16_t postRadiatorTemp_dC; /**< @brief Post-radiator water temperature (.1 C). */
-} cmr_canPTCCoolingStatus_t;
+    uint8_t channel1DutyCycle_pcnt;             /**< @brief Fan/Pump channel 1 state. */
+    uint8_t channel2DutyCycle_pcnt;             /**< @brief Fan/Pump channel 2 state. */
+    uint8_t channel3DutyCycle_pcnt;             /**< @brief Fan/Pump channel 3 state. */
+} cmr_canPTCDriverStatus_t;
+
+/** @brief Powertrain Thermal Controller (fan board) cooling loop temperature status. */
+typedef struct {
+    uint16_t temp1_dC;            /**< @brief Temp 1 */
+    uint16_t temp2_dC;            /**< @brief Temp 2 */
+    uint16_t temp3_dC;            /**< @brief Temp 3 */
+    uint16_t temp4_dC;            /**< @brief Temp 4 */  //These are placeholders for more useful names
+} cmr_canPTCfLoopTemp_A_t;
+typedef struct {
+    uint16_t temp5_dC;            /**< @brief Temp 5 */
+    uint16_t temp6_dC;            /**< @brief Temp 6 */
+    uint16_t temp7_dC;            /**< @brief Temp 7 */
+    uint16_t temp8_dC;            /**< @brief Temp 8 */
+} cmr_canPTCfLoopTemp_B_t;
+
+/** @brief Powertrain Thermal Controller (pump board) cooling loop temperature status. */
+typedef struct {
+    uint16_t temp1_dC;            /**< @brief Temp 1 */
+    uint16_t temp2_dC;            /**< @brief Temp 2 */
+    uint16_t temp3_dC;            /**< @brief Temp 3 */
+    uint16_t temp4_dC;            /**< @brief Temp 4 */  //These are placeholders for more useful names
+} cmr_canPTCpLoopTemp_A_t;
+typedef struct {
+    uint16_t temp5_dC;            /**< @brief Temp 5 */
+    uint16_t temp6_dC;            /**< @brief Temp 6 */
+    uint16_t temp7_dC;            /**< @brief Temp 7 */
+    uint16_t temp8_dC;            /**< @brief Temp 8 */
+} cmr_canPTCpLoopTemp_B_t;
+
 
 /** @brief Powertrain Thermal Controller voltage diagnostics. */
 typedef struct {
     uint16_t logicVoltage_mV;   /**< @brief Logic voltage (mV). */
     uint16_t loadVoltage_mV;    /**< @brief Load voltage (mV). */
-} cmr_canPTCVoltageDiagnostics_t;
-
-/** @brief Powertrain Thermal Controller current diagnostics. */
-typedef struct {
-    uint16_t logicCurrent_mA;   /**< @brief Logic current (mA). */
-    uint16_t loadCurrent_mA;    /**< @brief Load current (mA). */
-    uint16_t fanCurrent_mA;     /**< @brief Fan current (mA). */
-} cmr_canPTCCurrentDiagnostics_t;
-
-/** @brief Powertrain Thermal Controller accumulator fan duty cycles. */
-typedef struct {
-    uint8_t acFansDuty_pcnt;    /**< @brief Accumulator fan duty cycle. */
-    uint8_t dcdcFanDuty_pcnt;   /**< @brief DCDC fan duty cycle. */
-} cmr_canPTCAFCControl_t;
-
+    uint16_t loadCurrent_mA;    /**< @brief Load current (ma). */
+} cmr_canPTCPowerDiagnostics_t;
 
 // ------------------------------------------------------------------------------------------------
-// Data Acquisition
+// AMK Motor controller definitions.
 
-/** @brief Sensor values. */
-typedef struct {
-    uint16_t sensors[4];       /**< @brief 4 raw sensor channels. */
-} cmr_canDAQSensorsADC_t;
-
-/** @brief Generic frequency enum, used for filtering and sending */
+/** @brief AMK motor controller status bits. */
 typedef enum {
-    CMR_DAQ_1HZ = 0,     /**< @brief 1Hz */
-    CMR_DAQ_5HZ,         /**< @brief 5Hz */
-    CMR_DAQ_10HZ,        /**< @brief 10Hz */
-    CMR_DAQ_25HZ,        /**< @brief 25Hz */
-    CMR_DAQ_100HZ,       /**< @brief 100Hz */
-    CMR_DAQ_250HZ,       /**< @brief 250Hz */
-    CMR_DAQ_500HZ,       /**< @brief 500Hz */
-    CMR_DAQ_1000HZ,      /**< @brief 1000Hz */
-    CMR_DAQ_NUM_FREQS    /**< @brief Number of frequencies */
-} cmr_canDAQFreq_t;
+    CMR_CAN_AMK_STATUS_SYSTEM_READY = (1 << 8),     /**< @brief System ready. */
+    CMR_CAN_AMK_STATUS_ERROR        = (1 << 9),     /**< @brief Error is present. */
+    CMR_CAN_AMK_STATUS_WARNING      = (1 << 10),    /**< @brief Warning is present. */
+    CMR_CAN_AMK_STATUS_HV_EN_ACK    = (1 << 11),    /**< @brief HV enabled acknowledgement. */
+    CMR_CAN_AMK_STATUS_HV_EN        = (1 << 12),    /**< @brief HV enabled. */
+    CMR_CAN_AMK_STATUS_INV_EN_ACK   = (1 << 13),    /**< @brief Inverter enabled acknowledgement. */
+    CMR_CAN_AMK_STATUS_INV_EN       = (1 << 14),    /**< @brief Inverter enabled. */
+    CMR_CAN_AMK_STATUS_DERATING_EN  = (1 << 15)     /**< @brief Protective torque derating enabled. */
+} cmr_canAMKStatus_t;
 
-/** @brief Announce our serial number (UID first, configured serial later) */
-typedef struct {
-    uint32_t serial[2];     /**< @brief As much identifier data as can fit in a message */
-} cmr_canDAQPOST_t;
+/** @brief AMK motor controller control bits. */
+typedef enum {
+    CMR_CAN_AMK_CTRL_INV_ON     = (1 << 8),     /**< @brief Inverter on command. */
+    CMR_CAN_AMK_CTRL_HV_EN      = (1 << 9),     /**< @brief HV enable command. */
+    CMR_CAN_AMK_CTRL_INV_EN     = (1 << 10),    /**< @brief Inverter enable command. */
+    CMR_CAN_AMK_CTRL_ERR_RESET  = (1 << 11)     /**< @brief Inverter error reset command. */
+} cmr_canAMKControl_t;
 
-/** @brief Configurable settings (received on the old cfg_recv_ID) */
+/** @brief AMK motor controller status and velocity. */
 typedef struct {
-    uint16_t send_canID;     /**< @brief New ID to send on for POST/sensor updates */
-    uint16_t cfg_recv_ID;    /**< @brief New ID to listen on for further cfg msgs */
-    uint16_t psuedo_sn;      /**< @brief 2 bytes of (unique, configurable) serial number */
-    uint8_t  lpf_cutoffs[2]; /**< @brief Frequency cutoffs per 4 readings (repacked enum) */
-} cmr_canDAQConfig_t;
+    uint16_t status_bv;         /**< @brief Status bit vector. See cmr_canAMKStatus_t. */
+    int16_t velocity_rpm;       /**< @brief Motor velocity (RPM). */
+    int16_t torqueCurrent_raw;  /**< @brief Raw value for torque producing current. */
+    int16_t magCurrent_raw;     /**< @brief Raw value for magnetizing current. */
+} cmr_canAMKActualValues1_t;
+
+/** @brief AMK motor controller temperatures and error code. */
+typedef struct {
+    int16_t motorTemp_dC;       /**< @brief Motor temperature in dC (0.1 C). */
+    int16_t coldPlateTemp_dC;   /**< @brief Cold plate temperature in dC (0.1 C). */
+    uint16_t errorCode;         /**< @brief Inverter error code. */
+    int16_t igbtTemp_dC;        /**< @brief IGBT temperature in dC (0.1 C). */
+} cmr_canAMKActualValues2_t;
+
+/** @brief AMK motor controller command message. */
+typedef struct {
+    uint16_t control_bv;        /**< @brief Control bit vector. See cmr_canAMKControl_t. */
+    int16_t velocity_rpm;       /**< @brief Velocity setpoint (RPM). */
+    int16_t torqueLimPos_dpcnt; /**< @brief Positive torque limit in 0.1% of 9.8 Nm (nominal torque). */
+    int16_t torqueLimNeg_dpcnt; /**< @brief Negative torque limit in 0.1% of 9.8 Nm (nominal torque). */
+} cmr_canAMKSetpoints_t;
 
 // ------------------------------------------------------------------------------------------------
-// Rinehart Motor Controller Definitions
+// SBG Systems INS definitions.
 
-/** @brief Drive motor with parameters. */
-typedef struct {
-    int16_t torqueCommand; /**< @brief Torque in N.m. times 10. */
-    int16_t speedCommand; /**< @brief Angular velocity in RPM. */
-    /** @brief 0 -> CW, 1 -> CCW viewed looking at shaft side. */
-    uint8_t directionCommand;
-    /** @brief bit 0 = inverter enable, bit 1 = discharge enable. */
-    uint8_t inverterEnableDischargeSpeedMode;
-    /** @brief Set 0 for no limit override (torque in N.m. times 10). */
-    uint16_t torqueLimitCommand;
-} cmr_canRMSCommand_t;
+/** @brief SBG INS 'GENERAL_STATUS' bits. */
+typedef enum {
+    CMR_CAN_SBG_GENERAL_MAIN_POWER_OK   = (1 << 0),    /**< @brief Main power supply is OK. */
+    CMR_CAN_SBG_GENERAL_IMU_POWER_OK    = (1 << 1),    /**< @brief IMU power supply is OK. */
+    CMR_CAN_SBG_GENERAL_GPS_POWER_OK    = (1 << 2),    /**< @brief GPS power supply is OK. */
+    CMR_CAN_SBG_GENERAL_SETTINGS_OK     = (1 << 3),    /**< @brief Settings were correctly loaded */
+    CMR_CAN_SBG_GENERAL_TEMPERATURE_OK  = (1 << 4),    /**< @brief Temperature is within specified limits. */
+    CMR_CAN_SBG_GENERAL_DATALOGGER_OK   = (1 << 5),    /**< @brief Data-logger is working correctly. */
+    CMR_CAN_SBG_GENERAL_CPU_OK          = (1 << 6),    /**< @brief CPU headroom is good. */
+} cmr_canSBGGeneralStatus_t;
 
-/** @brief Configuration parameter/register read/write request. */
-typedef struct {
-    uint16_t address;       /**< @brief Address to access. */
-    uint8_t writeEnable;    /**< @brief 1 to enable write; 0 to read. */
-    uint8_t pad0;           /**< @brief Ignored. */
-    uint16_t data;          /**< @brief Data to write, if any. */
-    uint16_t pad1;          /**< @brief Ignored. */
-} cmr_canRMSParamReq_t;
+/** @brief SBG INS 'SOLUTION_STATUS' bits. */
+typedef enum {
+    CMR_CAN_SBG_SOL_ATTITUDE_VALID  = (1 << 4),    /**< @brief Attitude data is reliable (Roll/Pitch error < 0.5°). */
+    CMR_CAN_SBG_SOL_HEADING_VALID   = (1 << 5),    /**< @brief Heading data is reliable (Heading error < 1°). */
+    CMR_CAN_SBG_SOL_VELOCITY_VALID  = (1 << 6),    /**< @brief Velocity data is reliable (velocity error < 1.5 m/s). */
+    CMR_CAN_SBG_SOL_POSITION_VALID  = (1 << 7),    /**< @brief Position data is reliable (Position error < 10m). */
+    CMR_CAN_SBG_SOL_VERT_REF_USED   = (1 << 8),    /**< @brief Vertical reference is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_MAG_REF_USED    = (1 << 9),    /**< @brief Magnetometer is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_GPS1_VEL_USED   = (1 << 10),   /**< @brief GPS velocity is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_GPS1_POS_USED   = (1 << 11),   /**< @brief GPS Position is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_GPS1_HDT_USED   = (1 << 13),   /**< @brief GPS True Heading is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_GPS2_VEL_USED   = (1 << 14),   /**< @brief GPS2 velocity is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_GPS2_POS_USED   = (1 << 15),   /**< @brief GPS2 Position is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_GPS2_HDT_USED   = (1 << 17),   /**< @brief GPS2 True Heading is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_ODO_USED        = (1 << 18),   /**< @brief Odometer is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_DVL_BT_USED     = (1 << 19),   /**< @brief DVL Bottom Tracking is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_DVL_WT_USED     = (1 << 20),   /**< @brief DVL Water Layer is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_USBL_USED       = (1 << 24),   /**< @brief USBL / LBL is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_PRESSURE_USED   = (1 << 25),   /**< @brief Pressure is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_ZUPT_USED       = (1 << 26),   /**< @brief ZUPT is used in solution (data used and valid since 3s). */
+    CMR_CAN_SBG_SOL_ALIGN_VALID     = (1 << 27),   /**< @brief Sensor alignment and calibration parameters are valid. */
+} cmr_canSBGSolutionStatus_t;
 
-/** @brief Configuration parameter/register read/write response. */
-typedef struct {
-    uint16_t address;       /**< @brief Address that was accessed. */
-    uint8_t writeSuccess;   /**< @brief 1 if write successful, if any. */
-    uint8_t pad0;           /**< @brief Ignored. */
-    uint16_t data;          /**< @brief Data that was read/written. */
-    uint16_t pad1;          /**< @brief Ignored. */
-} cmr_canRMSParamRes_t;
+/** @brief SBG INS 'SOLUTION_STATUS' solution mode (first 4 bits) values. */
+typedef enum {
+    CMR_CAN_SBG_SOL_MODE_UNINITIALIZED = 0,     /**< @brief The Kalman filter is not initialized and the returned data are all invalid. */
+    CMR_CAN_SBG_SOL_MODE_VERTICAL_GYRO = 1,     /**< @brief The Kalman filter only rely on a vertical reference to compute roll and
+                                                            pitch angles. Heading and navigation data drift freely. */
+    CMR_CAN_SBG_SOL_MODE_AHRS          = 2,     /**< @brief A heading reference is available, the Kalman filter provides full orientation
+                                                            but navigation data drift freely. */
+    CMR_CAN_SBG_SOL_MODE_NAV_VELOCITY  = 3,     /**< @brief The Kalman filter computes orientation and velocity. Position is freely
+                                                            integrated from velocity estimation. */
+    CMR_CAN_SBG_SOL_MODE_NAV_POSITION  = 4,     /**< @brief Nominal mode, the Kalman filter computes all parameters
+                                                            (attitude, velocity, position). Absolute position is provided. */
+} cmr_canSBGSolutionStatusMode_t;
 
-/** @brief Faults report from motor controller (see pg 23). */
+/** @brief SBG Systems Status (part 1). */
 typedef struct {
-    uint16_t postFaultLo; /**< @brief See "RMS CAN Protocol" pg 23. */
-    uint16_t postFaultHi; /**< @brief See "RMS CAN Protocol" pg 23. */
-    uint16_t runFaultLo; /**< @brief See "RMS CAN Protocol" pg 23. */
-    uint16_t runFaultHi; /**< @brief See "RMS CAN Protocol" pg 23. */
-} cmr_canRMSFaults_t;
+    uint32_t timestamp;         /**< @brief Timestamp in microseconds. */
+    uint16_t general_status;    /**< @brief General status bit vector. */
+    uint16_t clock_status;      /**< @brief Clock status bit vector. */
+} cmr_canSBGStatus1_t;
 
-/** @brief Motor controller temperatures (set A). Temp in degC times 10. */
+/** @brief SBG Systems Status (part 2). */
 typedef struct {
-    int16_t moduleATemp; /**< @brief Temp in internal module A (degC times 10). */
-    int16_t moduleBTemp; /**< @brief Temp in internal module B (degC times 10). */
-    int16_t moduleCTemp; /**< @brief Temp in internal module C (degC times 10). */
-    int16_t gateDriverBoardTemp; /**< @brief Temp of gate driver (degC times 10). */
-} cmr_canRMSTempA_t;
+    uint32_t com_status;        /**< @brief Com status bit vector. */
+    uint32_t aiding_status;     /**< @brief Aiding status bit vector. */
+} cmr_canSBGStatus2_t;
 
-/** @brief Motor controller temperatures (set B). Temp in degC times 10. */
+/** @brief SBG Systems Status (part 3). */
 typedef struct {
-    int16_t controlBoardTemp; /**< @brief Control board temp (degC times 10). */
-    int16_t RTD1Temp; /**< @brief RTD input 1 temp (degC times 10). */
-    int16_t RTD2Temp; /**< @brief RTD input 2 temp (degC times 10). */
-    int16_t RTD3Temp; /**< @brief RTD input 3 temp (degC times 10). */
-} cmr_canRMSTempB_t;
+    uint32_t solution_status;   /**< @brief Solution status bit vector. */
+    uint16_t heave_status;      /**< @brief Heave status bit vector. */
+} cmr_canSBGStatus3_t;
 
-/** @brief Motor controller temperatures (set C). Temp in degC times 10. */
+/** @brief SBG Systems EKF Position. */
 typedef struct {
-    int16_t RTD4Temp; /**< @brief RTD input 4 temp (degC times 10). */
-    int16_t RTD5Temp; /**< @brief RTD input 5 temp (degC times 10). */
-    int16_t motorTemp; /**< @brief Motor temp (degC times 10). */
-    int16_t torqueShudder; /**< @brief Torque (N.m. times 10). */
-} cmr_canRMSTempC_t;
+    int32_t latitude;           /**< @brief Latitude (Degrees times 10^7). */
+    int32_t longitude;          /**< @brief Longitude (Degrees times 10^7). */
+} cmr_canSBGEKFPosition_t;
 
-/** @brief Motor position information. */
+/** @brief SBG Systems EKF Euler Orientation. */
 typedef struct {
-    int16_t angle; /**< @brief Angle (deg times 10) of motor as read by resolver. */
-    int16_t speed; /**< @brief Speed (RPM) of motor. */
-    int16_t frequency; /**< @brief Inverter frequency (Hz times 10). */
-    int16_t resolverAngle; /**< @brief Resolver angle for calibration. */
-} cmr_canRMSMotorPosition_t;
+    int16_t roll;               /**< @brief Car Roll (radians times 10^4). */
+    int16_t pitch;              /**< @brief Car Pitch (radians times 10^4). */
+    int16_t yaw;                /**< @brief Car Yaw (radians times 10^4). */
+} cmr_canSBGEKFOrient_t;
 
-/** @brief Motor controller measured currents. Current in amps times 10.*/
+/** @brief SBG Systems EKF Velocity. */
 typedef struct {
-    int16_t phaseA; /**< @brief Current in phase A cable. */
-    int16_t phaseB; /**< @brief Current in phase B cable. */
-    int16_t phaseC; /**< @brief Current in phase C cable. */
-    int16_t bus; /**< @brief DC bus current. */
-} cmr_canRMSCurrents_t;
+    int16_t velocity_n;         /**< @brief Velocity in North Direction (m/s times 100). */
+    int16_t velocity_e;         /**< @brief Velocity in East Direction (m/s times 100). */
+    int16_t velocity_d;         /**< @brief Velocity in Down Direction (m/s times 100). */
+} cmr_canSBGEKFVelocity_t;
 
-/** @brief Motor controller measured voltages. Voltage in volts times 10.*/
+/** @brief SBG Systems Body Velocity. */
 typedef struct {
-    int16_t bus; /**< @brief DC bus voltage. */
-    int16_t output; /**< @brief Output voltage as peak line-neutral volts. */
-    int16_t phaseAB; /**< @brief Vab when disabled, Vd when enabled. */
-    int16_t phaseBC; /**< @brief Vbc when disabled, Vq when enabled. */
-} cmr_canRMSVoltages_t;
+    int16_t velocity_forward;     /**< @brief Velocity in Car Forward Direction (m/s times 100). */
+    int16_t velocity_right;       /**< @brief Velocity in Car Right Direction (m/s times 100). */
+    int16_t velocity_down;        /**< @brief Velocity in Car Down Direction (m/s times 100). */
+} cmr_canSBGBodyVelocity_t;
 
-/** @brief Motor controller torque diagnostics. */
+/** @brief SBG Systems IMU Acceleration. */
 typedef struct {
-    /** @brief Setpoint torque (torque in N.m. times 10). */
-    int16_t commandedTorque;
-    /** @brief Measured torque produced (torque in N.m. times 10). */
-    int16_t torqueFeedback;
-    /** @brief Time since power on, increments every .003 sec (time in .003s) */
-    uint32_t powerOnTimer;
-} cmr_canRMSTorqueDiag_t;
+    int16_t accel_x_mps2;         /**< @brief Acceleration in Car Forward Direction (m/s^2 times 100). */
+    int16_t accel_y_mps2;         /**< @brief Acceleration in Car Right Direction (m/s^2 times 100). */
+    int16_t accel_z_mps2;         /**< @brief Acceleration in Car Down Direction (m/s^2 times 100). */
+} cmr_canSBGIMUAcceleration_t;
+
+/** @brief SBG Systems IMU Gyro. */
+typedef struct {
+    int16_t gyro_x_rads;        /**< @brief Roll rate around the Car Forward Direction (rad/s times 1000). */
+    int16_t gyro_y_rads;        /**< @brief Roll rate around the Car Right Direction (rad/s times 1000). */
+    int16_t gyro_z_rads;        /**< @brief Roll rate around the Car Down Direction (rad/s times 1000). */
+} cmr_canSBGIMUGyro_t;
+
+/** @brief SBG Systems automotive data. */
+typedef struct {
+    int16_t angle_track_rad;        /**< @brief Track course angle/direction of travel (rad times 10^4). */
+    int16_t angle_slip_rad;         /**< @brief Vehicle slip angle (rad times 10^4). */
+    uint16_t curvature_radius_m;    /**< @brief Curvature radius based on down rotation rate (meters times 10^2). */
+    uint8_t status;                 /**< @brief Status bitmasks as AUTO_STATUS definition. */
+} cmr_canSBGAutomotive_t;
+
+// ------------------------------------------------------------------------------------------------
+// IZZIE Racing sensors
+
+/** @brief IZZIE Racing loadcell sensors. Big Endian*/
+typedef struct {
+    int16_t delta_voltage;        /**< @brief differential voltage in the wheatstone bridge */
+    int16_t calibrated_output_f;  /**< @brief force output from the loadcell. */
+    int16_t internal_temp;        /**< @brief amp's internal temp */
+    int16_t external_temp;        /**< @brief amp's external temp */
+} cmr_canIzzie_loadcell_raw_t;
+
+
+/** @brief IZZIE Racing loadcell sensors. */
+typedef struct {
+    int16_t delta_voltage;        /**< @brief differential voltage in the wheatstone bridge */
+    int16_t calibrated_output_f;  /**< @brief force output from the loadcell. */
+    int16_t internal_temp;        /**< @brief amp's internal temp */
+    int16_t external_temp;        /**< @brief amp's external temp */
+} cmr_canIzzie_loadcell_calibrated_t;
+
+// ------------------------------------------------------------------------------------------------
+// Controls algo debugging struct
+
+typedef struct {
+    int16_t controls_elapsed_time;
+    int16_t controls_sbg_speed_mps;
+    int16_t controls_target_velocity;
+    int16_t controls_target_accel;
+} cmr_can_controls_debug_global_t;
+
+typedef struct {
+    int16_t controls_current_slip_FR;
+    int16_t controls_slip_correction_active_FR;
+    int16_t controls_wheel_speed_mps_actual_FR;
+    int16_t controls_wheel_speed_mps_target_FR;
+} cmr_can_controls_debug_FR_t;
+
+typedef struct {
+    int16_t controls_current_slip_FL;
+    int16_t controls_slip_correction_active_FL;
+    int16_t controls_wheel_speed_mps_actual_FL;
+    int16_t controls_wheel_speed_mps_target_FL;
+} cmr_can_controls_debug_FL_t;
+
+typedef struct {
+    int16_t controls_current_slip_RR;
+    int16_t controls_slip_correction_active_RR;
+    int16_t controls_wheel_speed_mps_actual_RR;
+    int16_t controls_wheel_speed_mps_target_RR;
+} cmr_can_controls_debug_RR_t;
+
+typedef struct {
+    int16_t controls_current_slip_RL;
+    int16_t controls_slip_correction_active_RL;
+    int16_t controls_wheel_speed_mps_actual_RL;
+    int16_t controls_wheel_speed_mps_target_RL;
+} cmr_can_controls_debug_RL_t;
+
+typedef struct {
+    int16_t controls_current_yaw_rate;
+    int16_t controls_target_yaw_rate;
+    int16_t controls_bias;
+    int16_t controls_pid;
+} cmr_can_controls_pid_debug_t;
+
+// ------------------------------------------------------------------------------------------------
+// DRS
+
+typedef struct {
+	int32_t drs_servo_angle;
+    int32_t drs_dim_status;
+} cmr_canDRSControls_t;
+
+/** @brief Represents the car's current Drag Reduction Mode. */
+typedef enum {
+    CMR_CAN_DRS_UNKNOWN = 0,    /**< @brief Unknown Gear State */
+    CMR_CAN_DRS_DRIVER_HOLD,    /**< @brief Hold to open */
+    CMR_CAN_DRS_DRIVER_TOGGLE,  /**< @brief Toggle to open/close */
+    CMR_CAN_DRS_BRAKE,          /**< @brief Driver control + off on brake */
+    CMR_CAN_DRS_ACCEL,          /**< @brief For accel event - auto on and off */
+    CMR_CAN_DRS_GEAR_LEN
+} cmr_canDRSMode_t;
+// ------------------------------------------------------------------------------------------------
+// SAE Provided EMD definitions
+
+typedef struct {
+    int32_t current;    /**< @brief Current (amps * 2^16). */
+    int32_t voltage;    /**< @brief Voltage (volts * 2^16). */
+} cmr_canEMDMeasurements_t;
 
 #endif /* CMR_CAN_TYPES_H */
-
