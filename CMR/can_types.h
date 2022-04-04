@@ -45,19 +45,6 @@ typedef enum {
     /** @brief No VSM heartbeat received for 50 ms. */
     CMR_CAN_ERROR_VSM_TIMEOUT = (1 << 0),
 
-    /** @brief Safety circuit module tripped */
-    CMR_CAN_ERROR_FSM_SS_MODULE = (1 << 1),
-    /** @brief Safety circuit cockpit tripped */
-    CMR_CAN_ERROR_FSM_SS_COCKPIT = (1 << 2),
-    /** @brief Safety circuit FR hub tripped */
-    CMR_CAN_ERROR_FSM_SS_FRHUB = (1 << 3),
-    /** @brief Safety circuit inertia tripped */
-    CMR_CAN_ERROR_FSM_SS_INERTIA = (1 << 4),
-    /** @brief Safety circuit FL hub tripped */
-    CMR_CAN_ERROR_FSM_SS_FLHUB = (1 << 5),
-    /** @brief Safety circuit bots tripped */
-    CMR_CAN_ERROR_FSM_SS_BOTS = (1 << 6),
-
     /**
      * @brief Reception period for at least one message from another module
      * has surpassed its error threshold.
@@ -145,8 +132,19 @@ typedef enum {
     CMR_CAN_WARN_FSM_BPRES = (1 << 10),
     /** @brief FSM steering wheel angle out-of-range. */
     CMR_CAN_WARN_FSM_SWANGLE = (1 << 9),
-    /** @brief FSM safety circuit sensing out-of-range. */
-    CMR_CAN_WARN_FSM_SS = (1 << 8),
+
+    /** @brief Safety circuit module tripped */
+    CMR_CAN_WARN_FSM_SS_MODULE = (1 << 3),
+    /** @brief Safety circuit cockpit tripped */
+    CMR_CAN_WARN_FSM_SS_COCKPIT = (1 << 4),
+    /** @brief Safety circuit FR hub tripped */
+    CMR_CAN_WARN_FSM_SS_FRHUB = (1 << 5),
+    /** @brief Safety circuit inertia tripped */
+    CMR_CAN_WARN_FSM_SS_INERTIA = (1 << 6),
+    /** @brief Safety circuit FL hub tripped */
+    CMR_CAN_WARN_FSM_SS_FLHUB = (1 << 7),
+    /** @brief Safety circuit bots tripped */
+    CMR_CAN_WARN_FSM_SS_BOTS = (1 << 8),
 
     /** @brief CDC Front left motor controller is warning source. */
     CMR_CAN_WARN_CDC_AMK_FL = (1 << 15),
