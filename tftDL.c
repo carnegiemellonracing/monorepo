@@ -375,7 +375,7 @@ void tftDL_errorUpdate(
 
 
 
-    tftDL_showErrorState(ESE_PTCp_COLOR, err->ptcpTimeout);
+    tftDL_showErrorState(ESE_PTCp_COLOR, err->ptcTimeout);
     tftDL_showErrorState(ESE_APC_COLOR, err->apcTimeout);
     tftDL_showErrorState(ESE_HVC_COLOR, err->hvcTimeout);
     tftDL_showErrorState(ESE_VSM_COLOR, err->vsmTimeout);

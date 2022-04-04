@@ -107,18 +107,18 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
-    [CANRX_PTCf_LOOP_B_TEMPS] = {
-        .canID = CMR_CANID_PTCf_LOOP_TEMPS_B,
+    [CANRX_PTC_LOOP_A_TEMPS] = {
+        .canID = CMR_CANID_PTC_LOOP_TEMPS_A,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
-    [CANRX_PTCp_LOOP_A_TEMPS] = {
-        .canID = CMR_CANID_PTCp_LOOP_TEMPS_A,
+    [CANRX_PTC_LOOP_B_TEMPS] = {
+        .canID = CMR_CANID_PTC_LOOP_TEMPS_B,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
-    [CANRX_PTCp_LOOP_B_TEMPS] = {
-        .canID = CMR_CANID_PTCp_LOOP_TEMPS_B,
+    [CANRX_PTC_LOOP_C_TEMPS] = {
+        .canID = CMR_CANID_PTC_LOOP_TEMPS_C,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
@@ -579,10 +579,10 @@ void canInit(void) {
             .isMask = false,
             .rxFIFO= CAN_RX_FIFO0,
             .ids = {
-                CMR_CANID_PTCf_LOOP_TEMPS_A,
-                CMR_CANID_PTCf_LOOP_TEMPS_B,
-                CMR_CANID_PTCp_LOOP_TEMPS_A,
-                CMR_CANID_PTCp_LOOP_TEMPS_B
+                CMR_CANID_PTC_LOOP_TEMPS_A,
+                CMR_CANID_PTC_LOOP_TEMPS_B,
+                CMR_CANID_PTC_LOOP_TEMPS_C,
+                CMR_CANID_PTC_LOOP_TEMPS_B
             }
         },
         {

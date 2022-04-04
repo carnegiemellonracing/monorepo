@@ -75,8 +75,9 @@ typedef enum {
     CANRX_VSM_STATUS,           /**< @brief VSM status */
     CANRX_PTCf_LOOP_A_TEMPS,    /**< @brief PTCf Loop A temps */
     CANRX_PTCf_LOOP_B_TEMPS,    /**< @brief PTCf Loop B temps */
-    CANRX_PTCp_LOOP_A_TEMPS,    /**< @brief PTCp Loop A temps */
-    CANRX_PTCp_LOOP_B_TEMPS,    /**< @brief PTCp Loop B temps */
+    CANRX_PTC_LOOP_A_TEMPS,    /**< @brief PTC Loop A temps */
+    CANRX_PTC_LOOP_B_TEMPS,    /**< @brief PTC Loop B temps */
+    CANRX_PTC_LOOP_C_TEMPS,    /**< @brief PTC Loop C temps */
     CANRX_HVC_HEARTBEAT,        /**< @brief HVC Error. */
     CANRX_CDC_MOTOR_FAULTS,     /**< @brief CDC Motor Faults */
     CANRX_CDL_BROADCAST,        /**< @brief CDL broadcast. */

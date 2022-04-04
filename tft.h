@@ -23,8 +23,7 @@ void tftInit(void);
 typedef struct {
     bool fsmTimeout;    /**< @brief Has the FSM timed out? */
     bool cdcTimeout;    /**< @brief Has the CDC timed out? */
-    bool ptcfTimeout;   /**< @brief Has the PTCf timed out? */
-    bool ptcpTimeout;   /**< @brief Has the PTCp timed out? */
+    bool ptcTimeout;    /**< @brief Has the PTC timed out? */
     bool vsmTimeout;    /**< @brief Has the VSM timed out? */
     bool apcTimeout;    /**< @brief Has the APC timed out? */
     bool hvcTimeout;    /**< @brief Has the HVC timed out? */
