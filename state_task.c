@@ -307,6 +307,10 @@ void vSetStateTask(void *pvParameters) {
     cmr_canHVCState_t nextState;
     cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
 
+    cmr_gpioWrite(GPIO_CLEAR_FAULT_L, 1);
+    cmr_gpioWrite(GPIO_AIR_POSITIVE_EN, 1);
+    cmr_gpioWrite(GPIO_AIR_NEGATIVE_EN, 1);
+
     // See https://drive.google.com/file/d/1xey3It43X-4tRBvnWUMSgUpSeBYo-Vj6/view?usp=sharing
     // Executes infinitely with defined period using vTaskDelayUntil
     for (;;) {

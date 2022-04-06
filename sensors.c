@@ -174,9 +174,9 @@ int32_t getLVmillivolts(){
 }
 
 int32_t getLVmilliamps(){
-	return (int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_IBATT_FILTERED);
+	return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_IBATT_FILTERED));
 }
 
 int32_t getAIRmillivolts(){
-    return (int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_AIR_POWER);
+    return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_AIR_POWER));
 }

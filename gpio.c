@@ -42,7 +42,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         .init = {
             .Pin = GPIO_PIN_9,
             .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
+            .Pull = GPIO_PULLUP,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
@@ -154,5 +154,7 @@ void gpioInit(void) {
     cmr_gpioPinInit(
         gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0])
     );
+    cmr_gpioWrite(GPIO_BMB_POWER_ENABLE_L, 1);
+
 }
 

@@ -29,6 +29,7 @@ typedef struct BMB_Data_t{
 } BMB_Data_t;
 
 void vBMBSampleTask(void* pvParameters);
+void BMBInit();
 
 uint8_t getBMBMaxTempIndex (uint8_t bmb_index);
 uint8_t getBMBMinTempIndex (uint8_t bmb_index);

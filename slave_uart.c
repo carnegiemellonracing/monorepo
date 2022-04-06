@@ -107,7 +107,7 @@ cmr_uart_result_t slave_uart_autoAddress() {
   };
   
   retv = uart_sendCommand(&enableDefaultCommunicationParams);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -119,7 +119,7 @@ cmr_uart_result_t slave_uart_autoAddress() {
   };
  
   retv = uart_sendCommand(&disableUserChecksum);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -141,11 +141,11 @@ cmr_uart_result_t slave_uart_autoAddress() {
   };
   
   retv = uart_sendCommand(&selectAutoAddressMode);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   retv = uart_sendCommand(&enterAutoAddressMode);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -159,7 +159,7 @@ cmr_uart_result_t slave_uart_autoAddress() {
   for(uint8_t boardNum = 0; boardNum < NUM_BMBS; ++boardNum) {
     setDeviceAddress.data[0] = boardNum;
     retv = uart_sendCommand(&setDeviceAddress);
-    while (retv != UART_SUCCESS) {
+    if (retv != UART_SUCCESS) {
       retvTotal = UART_FAILURE;
     }
   }
@@ -175,13 +175,13 @@ cmr_uart_result_t slave_uart_autoAddress() {
     getBmbAddress.deviceAddress = boardNum;
     // ask bmb for response
     retv = uart_sendCommand(&getBmbAddress);
-    while (retv != UART_SUCCESS) {
+    if (retv != UART_SUCCESS) {
       retvTotal = UART_FAILURE;
     }
     // wait for response
     uart_response_t deviceAddressResponse;
     retv = uart_receiveResponse(&deviceAddressResponse);
-    while (retv != UART_SUCCESS) {
+    if (retv != UART_SUCCESS) {
       retvTotal = UART_FAILURE;
     }
   }
@@ -203,11 +203,11 @@ cmr_uart_result_t slave_uart_autoAddress() {
   };
   
   retv = uart_sendCommand(&disableHighSideReceiverTopBoard);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   retv = uart_sendCommand(&disableLowSideTransmitterBotBoard);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -222,7 +222,7 @@ cmr_uart_result_t slave_uart_autoAddress() {
   for(int8_t boardNum = TOP_SLAVE_BOARD; boardNum >= BOT_SLAVE_BOARD; --boardNum) {
     clearDeviceFault.deviceAddress = boardNum;
     retv = uart_sendCommand(&clearDeviceFault);
-    while (retv != UART_SUCCESS) {
+    if (retv != UART_SUCCESS) {
       retvTotal = UART_FAILURE;
     }
   }
@@ -252,7 +252,7 @@ cmr_uart_result_t slave_uart_configureSampling(uint8_t boardNum) {
   };
   
   retv = uart_sendCommand(&configureInitialSamplingDelay);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -266,7 +266,7 @@ cmr_uart_result_t slave_uart_configureSampling(uint8_t boardNum) {
   };
     
   retv = uart_sendCommand(&configureVoltageSamplePeriod);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -280,7 +280,7 @@ cmr_uart_result_t slave_uart_configureSampling(uint8_t boardNum) {
   };
   
   retv = uart_sendCommand(&configureOversamplingRate);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -298,12 +298,12 @@ cmr_uart_result_t slave_uart_configureSampling(uint8_t boardNum) {
     .data = {0x01}
   };
   retv = uart_sendCommand(&checkUnderVoltageFault);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   uart_response_t undervoltageRegisterCheckResponse = {0};
   retv = uart_receiveResponse(&undervoltageRegisterCheckResponse);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -321,7 +321,7 @@ cmr_uart_result_t slave_uart_configureChannels() {
     .data = {0x09},
   };
   retv = uart_sendCommand(&selectNumberOfChannels);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -331,7 +331,7 @@ cmr_uart_result_t slave_uart_configureChannels() {
     .data = {0x01, 0xFF, 0xFF, 0x00},
   };
   retv = uart_sendCommand(&selectChannelsOnModule);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -353,11 +353,11 @@ cmr_uart_result_t slave_uart_configureChannels() {
   };
   
   retv = uart_sendCommand(&setOvervoltageThresholds);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   retv = uart_sendCommand(&setUndervoltageThresholds);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
 
@@ -397,13 +397,13 @@ cmr_uart_result_t slave_uart_sampleAllChannels(uart_response_t response[NUM_BMBS
   };
 
 	retv = uart_sendCommand(&sampleAllChannels);
-	while (retv != UART_SUCCESS) {
+	if (retv != UART_SUCCESS) {
 		retvTotal = UART_FAILURE;
 	}
 
 	for(int8_t i = TOP_SLAVE_BOARD; i >= 0; --i) {
 		retv = uart_receiveResponse(&response[i]);
-		while (retv != UART_SUCCESS) {
+		if (retv != UART_SUCCESS) {
 			retvTotal = UART_FAILURE;
 		}
 	}
@@ -448,7 +448,7 @@ cmr_uart_result_t slave_uart_sampleDeviceChannels(uint8_t deviceAddress, uart_re
 
     retv = uart_receiveResponse(response);
     int retry = 10;
-    while (retv != UART_SUCCESS && retry > 0) {
+    if (retv != UART_SUCCESS && retry > 0) {
         retvTotal = UART_FAILURE;
         retv = uart_receiveResponse(response);
         if(retry > 0) {
@@ -572,7 +572,7 @@ static cmr_uart_result_t slave_uart_clearFaultFlags(uint8_t boardNum) {
     .data = {0x38},
   };
   retv = uart_sendCommand(&clearFaultFlags);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -583,7 +583,7 @@ static cmr_uart_result_t slave_uart_clearFaultFlags(uint8_t boardNum) {
     .data = {0xFF, 0xC0},
   };
   retv = uart_sendCommand(&clearFaultSummaryFlags);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   
@@ -647,14 +647,14 @@ static cmr_uart_result_t slave_uart_clearFaultFlags(uint8_t boardNum) {
     .data = {0x00},
   };
   retv = uart_sendCommand(&checkSystemStatusRegister);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   frame_init_t statusRegisterCheckResponseFrameInit = {0};
   uart_response_t statusRegisterCheckResponse = {0};
   statusRegisterCheckResponse.frameInit = &statusRegisterCheckResponseFrameInit;
   retv = uart_receiveResponse(&statusRegisterCheckResponse);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   uint8_t statusRegisterData = statusRegisterCheckResponse.data[0];
@@ -674,19 +674,19 @@ static cmr_uart_result_t slave_uart_clearFaultFlags(uint8_t boardNum) {
     .data = {0x01},
   };
   retv = uart_sendCommand(&checkFaultSummaryRegister);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   frame_init_t faultSummaryRegisterCheckResponseFrameInit = {0};
   uart_response_t faultSummaryRegisterCheckResponse = {0};
   faultSummaryRegisterCheckResponse.frameInit = &faultSummaryRegisterCheckResponseFrameInit;
   retv = uart_receiveResponse(&faultSummaryRegisterCheckResponse);
-  while (retv != UART_SUCCESS) {
+  if (retv != UART_SUCCESS) {
     retvTotal = UART_FAILURE;
   }
   uint16_t faultSumaryRegisterData = ((uint16_t)faultSummaryRegisterCheckResponse.data[0] << 8) |
   (uint16_t)faultSummaryRegisterCheckResponse.data[1];
-  while (faultSumaryRegisterData != 0x0000) {
+  if (faultSumaryRegisterData != 0x0000) {
     // ERROR CASE: We still saw faults in the fault summary register after clearing them
     retvTotal = UART_FAILURE;
   }

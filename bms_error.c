@@ -8,12 +8,6 @@
 #include "bms_error.h"
 #include "slave_uart.h"
 
-// Heartbeat timeout	
-#define HEARTBEAT_TIMEOUT	50		// Periods of 10ms
-
-// BMB timeout
-#define BMB_TIMEOUT         5
-
 static bool checkCommandTimeout();
 static bool checkBMBTimeout();
 
@@ -33,8 +27,7 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         // TODO E2 devise a UART monitor system
         errorFlags |= CMR_CAN_HVC_ERROR_BMB_TIMEOUT; /**< @brief BMB has timed out. */
     }
-    // TODO: Temp
-    if(getPackMaxCellTemp() > 1000) { // Temp limit of 59C
+    if(getPackMaxCellTemp() > 590) { // Temp limit of 59C
         // TODO: #Define with 590
         // TODO E3 create structures for cell temp data and stats (min/max)
         errorFlags |= CMR_CAN_HVC_ERROR_CELL_OVERTEMP;
@@ -43,8 +36,7 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         // TODO E4 create structures for cell voltage data and stats (min/max)
         errorFlags |= CMR_CAN_HVC_ERROR_CELL_OVERVOLT;
     }
-    // TODO: Temp
-    if(getPackMinCellVoltage() < 0) {
+    if(getPackMinCellVoltage() < 2650) {
         // TODO E5 create structures for cell voltage data and stats (min/max)
         errorFlags |= CMR_CAN_HVC_ERROR_CELL_UNDERVOLT;
     }
@@ -124,18 +116,17 @@ cmr_canHVCError_t getErrorReg(){
 }
 
 static bool checkCommandTimeout() {
-    // CAN error if either VSM Heartbeat or HVC Command has timed out after 50ms
+    // CAN error if HVC Command has timed out after 50ms
     // TODO: latch can error?
     TickType_t lastWakeTime = xTaskGetTickCount();
-    bool vsm_heartbeat_error = (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_VSM]), lastWakeTime) < 0);
     bool hvc_commmand_error = (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HVC_COMMAND]), lastWakeTime) < 0);
 
-	return vsm_heartbeat_error || hvc_commmand_error;
+	return hvc_commmand_error;
 }
 
 static bool checkBMBTimeout() {
     for (int i = 0; i < NUM_BMBS; i++) {
-        if (BMBTimeoutCount[i] > BMB_TIMEOUT) {
+        if (BMBTimeoutCount[i] >= BMB_TIMEOUT) {
             return true;
         }
     }

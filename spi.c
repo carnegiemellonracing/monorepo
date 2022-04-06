@@ -12,7 +12,7 @@
 #include "spi.h"
 
 /** @brief Voltage/Current Hz TX priority. */
-static const uint32_t HVCSpiUpdate_priority = 5;
+static const uint32_t HVCSpiUpdate_priority = 1;
 
 /** @brief Voltage/Current 1000 Hz TX period (milliseconds). */
 static const TickType_t HVCSpiUpdate_period_ms = 1;
@@ -170,6 +170,7 @@ static void HVCSpiUpdate(void *pvParameters) {
         int dataReady_L = cmr_gpioRead(GPIO_HVSENSE_DRDY_L);
         while (dataReady_L) {
             dataReady_L = cmr_gpioRead(GPIO_HVSENSE_DRDY_L);
+//            vTaskDelayUntil(&lastWakeTime, 1);
         }
 
         // Sample HV Bus Voltage
@@ -179,6 +180,8 @@ static void HVCSpiUpdate(void *pvParameters) {
         HighVoltage_ADC = (HighVoltage_ADC << 8) >> 8;
         voltageHV = ADCtoMV_HVSense(HighVoltage_ADC);
 
+        vTaskDelayUntil(&lastWakeTime, 1);
+
 
         // Sample HV Current
         uint8_t rxCurrent[3] = {0,0,0};
@@ -186,13 +189,15 @@ static void HVCSpiUpdate(void *pvParameters) {
         currentSingleSample_ADC = (int32_t) ((rxCurrent[2]) | (rxCurrent[1] << 8) | (rxCurrent[0] << 16));
         currentSingleSample_ADC = (currentSingleSample_ADC << 8) >> 8;
 
+        vTaskDelayUntil(&lastWakeTime, 1);
+
         // Rolling average
         // A single sample is too noisy for an "instant" measurement so do a small average
         // TODO: change so that not both are average
         currentInstant_ADC = (currentInstant_ADC*(numSamplesInstant-1) + currentSingleSample_ADC) / numSamplesInstant;
         currentAvg_ADC = (currentAvg_ADC*(numSamplesAverage-1) + currentSingleSample_ADC) / numSamplesAverage;
 
-        vTaskDelayUntil(&lastWakeTime, HVCSpiUpdate_period_ms);
+        vTaskDelayUntil(&lastWakeTime, 2);
     }
 }
 

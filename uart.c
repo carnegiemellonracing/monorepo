@@ -101,6 +101,8 @@ cmr_uart_result_t uart_receiveResponse(uart_response_t *response) {
   uint8_t frameInitByte = receivedBytes[0];
 
   uint16_t responseLength = uart_unpackResponse(frameInitByte, response);
+  
+  if (responseLength == 0) retvTotal = UART_FAILURE;
 
   uint8_t c = 0;
   uint16_t receivedIndex = 0;
@@ -226,7 +228,8 @@ static uint16_t uart_packCommand(const uart_command_t *command, Byte message[]) 
 static uint16_t uart_unpackResponse(uint8_t frameInitByte, uart_response_t *response) {
   
   frame_type_t frameType = (frameInitByte >> 7) & 0x01;
-  while(frameType != RESPONSE) {
+  if(frameType != RESPONSE) {
+    return 0;
     // ERROR CASE: We received a response that did not have the response type
   }
   uint8_t responseBytes = frameInitByte & 0x7F;

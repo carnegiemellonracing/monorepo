@@ -41,4 +41,10 @@ void clearHardwareFault(bool assertClear);
 void setErrorReg(cmr_canHVCError_t errorCode);
 cmr_canHVCError_t getErrorReg(void);
 
+// Heartbeat timeout	
+#define HEARTBEAT_TIMEOUT	50		// Periods of 10ms
+
+// BMB timeout
+#define BMB_TIMEOUT         5
+
 #endif /* BMS_ERROR_H_ */
