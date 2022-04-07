@@ -12,7 +12,7 @@
 #include "spi.h"
 
 /** @brief Voltage/Current Hz TX priority. */
-static const uint32_t HVCSpiUpdate_priority = 1;
+static const uint32_t HVCSpiUpdate_priority = 3;
 
 /** @brief Voltage/Current 1000 Hz TX period (milliseconds). */
 static const TickType_t HVCSpiUpdate_period_ms = 1;
@@ -147,40 +147,45 @@ static void HVCSpiUpdate(void *pvParameters) {
         underReset = (status & STATUS0_RESET_ON);
     }
 
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    uint8_t lock = LOCK_KEY_DIS;
+    HVSenseWrite(LOCK, &lock, 1);
+    vTaskDelayUntil(&lastWakeTime, 1);
+
+
+
     // Initialize the CONFIG register
-    uint8_t configuration = ADC_FREQ_1kHz;
+    uint8_t configuration = ADC_FREQ_2kHz;
     HVSenseWrite(CONFIG, &configuration, 1);
     HVSenseRead(CONFIG, &temp, 1);
     configASSERT(temp == configuration);
+    vTaskDelayUntil(&lastWakeTime, 1);
+
 
     // Initialize the EMI_CTRL register
     uint8_t emi_config = EMI_CONFIG;
     HVSenseWrite(EMI_CTRL, &emi_config, 1);
     HVSenseRead(EMI_CTRL, &temp, 1);
     configASSERT(temp == emi_config);
+    vTaskDelayUntil(&lastWakeTime, 1);
 
-    // Set the lock register to 0xCA to protect the user accessible and internal configuration registers.
-    uint8_t lock = LOCK_KEY_EN;
-    HVSenseWrite(LOCK, &lock, 1);
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         
         // Wait until data is ready
         int dataReady_L = cmr_gpioRead(GPIO_HVSENSE_DRDY_L);
         while (dataReady_L) {
             dataReady_L = cmr_gpioRead(GPIO_HVSENSE_DRDY_L);
-//            vTaskDelayUntil(&lastWakeTime, 1);
+             vTaskDelayUntil(&lastWakeTime, 1);
         }
 
         // Sample HV Bus Voltage
         uint8_t rxVoltage[VOLTAGE_RX_LEN] = {0,0,0};
         HVSenseRead(V1WV, rxVoltage, VOLTAGE_RX_LEN);
-        HighVoltage_ADC = (int32_t) ((rxVoltage[2]) | (rxVoltage[1] << 8) | (rxVoltage[0] << 16) );
+        HighVoltage_ADC = (int32_t) (((uint32_t) rxVoltage[2]) | (((uint32_t) rxVoltage[1]) << 8) | (((uint32_t) rxVoltage[0]) << 16) );
         HighVoltage_ADC = (HighVoltage_ADC << 8) >> 8;
         voltageHV = ADCtoMV_HVSense(HighVoltage_ADC);
 
-        vTaskDelayUntil(&lastWakeTime, 1);
+//         vTaskDelayUntil(&lastWakeTime, 1);
 
 
         // Sample HV Current
@@ -189,15 +194,14 @@ static void HVCSpiUpdate(void *pvParameters) {
         currentSingleSample_ADC = (int32_t) ((rxCurrent[2]) | (rxCurrent[1] << 8) | (rxCurrent[0] << 16));
         currentSingleSample_ADC = (currentSingleSample_ADC << 8) >> 8;
 
-        vTaskDelayUntil(&lastWakeTime, 1);
+//         vTaskDelayUntil(&lastWakeTime, 1);
 
         // Rolling average
         // A single sample is too noisy for an "instant" measurement so do a small average
-        // TODO: change so that not both are average
         currentInstant_ADC = (currentInstant_ADC*(numSamplesInstant-1) + currentSingleSample_ADC) / numSamplesInstant;
         currentAvg_ADC = (currentAvg_ADC*(numSamplesAverage-1) + currentSingleSample_ADC) / numSamplesAverage;
 
-        vTaskDelayUntil(&lastWakeTime, 2);
+        vTaskDelayUntil(&lastWakeTime, 10);
     }
 }
 
