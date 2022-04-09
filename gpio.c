@@ -63,7 +63,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_BUTTON_1] = {
+    [GPIO_BUTTON_1] = { // DRS?
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_9,
@@ -71,7 +71,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pull = GPIO_NOPULL
         }
     },
-    [GPIO_BUTTON_2] = {
+    [GPIO_BUTTON_2] = { // Regen Down
         .port = GPIOA,
         .init = {
             .Pin = GPIO_PIN_11,
@@ -79,7 +79,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pull = GPIO_NOPULL
         }
     },
-    [GPIO_BUTTON_3] = {
+    [GPIO_BUTTON_3] = { // Action 1?
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_8,
@@ -87,7 +87,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pull = GPIO_NOPULL
         }
     },
-    [GPIO_BUTTON_4] = {
+    [GPIO_BUTTON_4] = { // Gear Up
         .port = GPIOA,
         .init = {
             .Pin = GPIO_PIN_10,
@@ -95,7 +95,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pull = GPIO_NOPULL
         }
     },
-    [GPIO_BUTTON_5] = {
+    [GPIO_BUTTON_5] = { // Gear Down
         .port = GPIOA,
         .init = {
             .Pin = GPIO_PIN_12,
@@ -103,7 +103,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pull = GPIO_NOPULL
         }
     },
-    [GPIO_BUTTON_6] = {
+    [GPIO_BUTTON_6] = { // State Down
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_7,
@@ -111,7 +111,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pull = GPIO_NOPULL
         }
     },
-    [GPIO_BUTTON_7] = {
+    [GPIO_BUTTON_7] = {	// State Up
         .port = GPIOA,
         .init = {
             .Pin = GPIO_PIN_9,
@@ -119,7 +119,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pull = GPIO_NOPULL
         }
     },
-    [GPIO_BUTTON_8] = {
+    [GPIO_BUTTON_8] = { // Action 2
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_6,
@@ -127,7 +127,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pull = GPIO_NOPULL
         }
     },
-    [GPIO_BUTTON_9] = {
+    [GPIO_BUTTON_9] = { // Regen Up
         .port = GPIOA,
         .init = {
             .Pin = GPIO_PIN_8,
@@ -226,9 +226,9 @@ static void buttonsInput_task(void *pvParameters) {
     while (1) {
         volatile int value = cmr_gpioRead(GPIO_BUTTON_1);
         drsButtonPressed = value;
-        value = cmr_gpioRead(GPIO_BUTTON_2);
-        action1ButtonPressed = value;
         value = cmr_gpioRead(GPIO_BUTTON_3);
+        action1ButtonPressed = value;
+        value = cmr_gpioRead(GPIO_BUTTON_8);
         action2ButtonPressed = value;
 
         /* if vsm has changed state unexpectedly we
@@ -242,27 +242,32 @@ static void buttonsInput_task(void *pvParameters) {
 
         buttonEvent_t event;
         while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
+        	// GPIO 1 is state up
+        	// GPIO 6 State down
+        	// GPIO 9 is br +
+
+
             switch (event.pin) {
-                case GPIO_BUTTON_4:
+                case GPIO_BUTTON_9:
                     regenUpButton(event.pressed);
                     break;
-                case GPIO_BUTTON_5:
+                case GPIO_BUTTON_2:
                     regenDownButton(event.pressed);
                     break;
-                case GPIO_BUTTON_6:
+                case GPIO_BUTTON_7:
                     stateVSMUpButton(event.pressed);
                     break;
-                case GPIO_BUTTON_7:
+                case GPIO_BUTTON_6:
                     /* Avoid accidental double clicks on state down button
                     (the transition back into hv_en takes a while) */
                     if((currentTime - lastButtonPress) > 1000) {
                         stateVSMDownButton(event.pressed);
                     }
                     break;
-                case GPIO_BUTTON_8:
+                case GPIO_BUTTON_4:
                     stateGearUpButton(event.pressed);
                     break;
-                case GPIO_BUTTON_9:
+                case GPIO_BUTTON_5:
                 	stateGearDownButton(event.pressed);
                     break;
                 default:
@@ -304,6 +309,8 @@ void gpioInit(void) {
 
     HAL_NVIC_SetPriority(EXTI9_5_IRQn, 6, 0);
     HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+    HAL_NVIC_SetPriority(EXTI15_10_IRQn, 6, 0);
+    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 
 /**

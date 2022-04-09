@@ -186,7 +186,7 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
                    (vsmReq == CMR_CAN_HV_EN) ||
                    (vsmReq == CMR_CAN_RTD);
         case CMR_CAN_RTD:
-            return ((vsmReq == CMR_CAN_HV_EN) & slowEnough()) ||
+            return ((vsmReq == CMR_CAN_HV_EN)) ||
                    (vsmReq == CMR_CAN_RTD);
         case CMR_CAN_ERROR:
             return (vsmReq == CMR_CAN_GLV_ON);
@@ -243,26 +243,24 @@ void stateVSMDownButton(bool pressed) {
         return;
     }
 
-    // TODO: modifiy only if in config screen
-    if (in_config_screen){
-        config_increment_down_requested = true;
-        return; 
-    } 
+    // // TODO: modifiy only if in config screen
+    // if (in_config_screen){
+    //     config_increment_down_requested = true;
+    //     return; 
+    // } 
 
-    // don't run following logic if in config screen
-    if (in_config_screen) return;
+
+    // // Enter the config screen
+    // if(inConfigScreen() == false){
+    //     // don't worry this will check to make sure we're in glv mode
+    //     enterConfigScreen();
+    //     return;
+    // }
 
     cmr_canState_t vsmState = stateGetVSM();
     if (state.vsmReq > vsmState) {
         // Cancel state-up request.
         state.vsmReq = vsmState;
-        return;
-    }
-
-    // Enter the config screen
-    if(inConfigScreen() == false){
-        // don't worry this will check to make sure we're in glv mode
-        enterConfigScreen();
         return;
     }
 
