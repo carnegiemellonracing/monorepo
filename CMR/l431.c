@@ -508,4 +508,25 @@ void _platform_configCommit(cmr_config_t *config) {
 
 #endif /* HAL_FLASH_MODULE_ENABLED */
 
+#ifdef HAL_TIM_MODULE_ENABLED
+void _platform_rccTIMClockEnable(TIM_TypeDef *instance)
+{
+    switch ((uintptr_t)instance)
+    {
+    case TIM1_BASE:
+        __HAL_RCC_TIM1_CLK_ENABLE();
+        break;
+    case TIM2_BASE:
+        __HAL_RCC_TIM2_CLK_ENABLE();
+        break;
+    case TIM15_BASE:
+        __HAL_RCC_TIM15_CLK_ENABLE();
+        break;
+    case TIM16_BASE:
+        __HAL_RCC_TIM16_CLK_ENABLE();
+        break;
+    }
+}
+#endif /* HAL_TIM_MODULE_ENABLED */
+
 #endif /* L413 */
