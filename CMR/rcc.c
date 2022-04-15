@@ -162,50 +162,7 @@ void cmr_rccUSARTClockEnable(USART_TypeDef *instance) {
 
 #ifdef HAL_TIM_MODULE_ENABLED
 void cmr_rccTIMClockEnable(TIM_TypeDef *instance) {
-    switch ((uintptr_t) instance) {
-        case TIM1_BASE:
-            __HAL_RCC_TIM1_CLK_ENABLE();
-            break;
-        case TIM2_BASE:
-            __HAL_RCC_TIM2_CLK_ENABLE();
-            break;
-        case TIM3_BASE:
-            __HAL_RCC_TIM3_CLK_ENABLE();
-            break;
-        case TIM4_BASE:
-            __HAL_RCC_TIM4_CLK_ENABLE();
-            break;
-        case TIM5_BASE:
-            __HAL_RCC_TIM5_CLK_ENABLE();
-            break;
-        case TIM6_BASE:
-            __HAL_RCC_TIM6_CLK_ENABLE();
-            break;
-        case TIM7_BASE:
-            __HAL_RCC_TIM7_CLK_ENABLE();
-            break;
-        case TIM8_BASE:
-            __HAL_RCC_TIM8_CLK_ENABLE();
-            break;
-        case TIM9_BASE:
-            __HAL_RCC_TIM9_CLK_ENABLE();
-            break;
-        case TIM10_BASE:
-            __HAL_RCC_TIM10_CLK_ENABLE();
-            break;
-        case TIM11_BASE:
-            __HAL_RCC_TIM11_CLK_ENABLE();
-            break;
-        case TIM12_BASE:
-            __HAL_RCC_TIM12_CLK_ENABLE();
-            break;
-        case TIM13_BASE:
-            __HAL_RCC_TIM13_CLK_ENABLE();
-            break;
-        case TIM14_BASE:
-            __HAL_RCC_TIM14_CLK_ENABLE();
-            break;
-    }
+    _platform_rccTIMClockEnable(instance);
 }
 #endif /* HAL_TIM_MODULE_ENABLED */
 
