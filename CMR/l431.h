@@ -56,4 +56,8 @@ void _platform_configInit(cmr_config_t *config, volatile uint32_t *cache, size_t
 void _platform_configCommit(cmr_config_t *config);
 #endif /* HAL_FLASH_MODULE_ENABLED */
 
+#ifdef HAL_TIM_MODULE_ENABLED
+void _platform_rccTIMClockEnable(TIM_TypeDef *instance);
+#endif /* HAL_TIM_MODULE_ENABLED */
+
 #endif /* CMR_L431_H */
