@@ -26,6 +26,63 @@ volatile bool dim_first_time_config_screen;
 /** @brief Checks to see if the screen needs to be redrawn after getting new driver profiles */
 volatile bool redraw_new_driver_profiles;
 
+
+void actionOneButton(bool pressed){
+    if(inConfigScreen() == true){
+    	config_scroll_requested = true;
+		return;
+    }
+}
+
+void actionTwoButton(bool pressed){
+    if(inConfigScreen() == true){
+    	config_scroll_requested = true;
+		return;
+    }
+}
+
+/**
+ * @brief Handles regen up button presses.
+ *
+ * @param pressed `true` if button is currently pressed.
+ */
+void regenUpButton(bool pressed) {
+    if (in_config_screen){
+    	config_increment_up_requested = true;
+        return;
+    }
+
+	if (!pressed) {
+        return;
+    }
+
+    if (regenStep < REGEN_STEP_NUM) {
+        regenStep++;
+    }
+    setNumLeds(regenStep);
+}
+/**
+ * @brief Handles regen down button presses.
+ *
+ * @param pressed `true` if button is currently pressed.
+ */
+void regenDownButton(bool pressed) {
+    if (in_config_screen){
+    	config_increment_down_requested = true;
+        return;
+    }
+
+
+    if (!pressed) {
+        return;
+    }
+
+    if (regenStep > 0) {
+        regenStep--;
+    }
+    setNumLeds(regenStep);
+}
+
 void exitConfigScreen(){
     // the first time the user presses the exit button, it'll flush the memory to the cdc
     // the second time it'll exit the config screen because it'll be dependent having 
@@ -208,7 +265,6 @@ void stateVSMUpButton(bool pressed) {
     if (!pressed) {
         return;
     }
-
     // Exit the config screen
     if(inConfigScreen() == true){
         // don't worry this will check to make sure we're in glv mode
@@ -250,12 +306,14 @@ void stateVSMDownButton(bool pressed) {
     // } 
 
 
-    // // Enter the config screen
-    // if(inConfigScreen() == false){
-    //     // don't worry this will check to make sure we're in glv mode
-    //     enterConfigScreen();
-    //     return;
-    // }
+     // Enter the config screen
+     if(inConfigScreen() == false){
+         // don't worry this will check to make sure we're in glv mode
+         enterConfigScreen();
+         // Enter Config Screen worked, return to avoid other state down logic
+         if(inConfigScreen() == true) return;
+     }
+
 
     cmr_canState_t vsmState = stateGetVSM();
     if (state.vsmReq > vsmState) {
@@ -290,10 +348,10 @@ void stateGearDownButton(bool pressed) {
         return;
     }
 
-    if (in_config_screen){
-        config_scroll_requested = true;
-        return; 
-    } 
+//    if (in_config_screen){
+//        config_scroll_requested = true;
+//        return;
+//    }
 
     if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
         return;     // Can only change gears in HV_ENand GLV_ON.
@@ -322,12 +380,12 @@ void stateGearUpButton(bool pressed) {
         return;
     }
 
-    // don't run following logic if in config screen
-    if (in_config_screen){
-    	config_increment_up_requested = true;
-        return; 
-        // TODO: Add logic to exit config screen via can message flushing
-    } 
+//    // don't run following logic if in config screen
+//    if (in_config_screen){
+//    	config_increment_up_requested = true;
+//        return;
+//        // TODO: Add logic to exit config screen via can message flushing
+//    }
 
     if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
         return;     // Can only change gears in HV_EN and GLV_ON.

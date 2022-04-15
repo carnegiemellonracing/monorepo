@@ -180,36 +180,6 @@ bool action2ButtonPressed;
 /** @brief Current regen step */
 unsigned int regenStep = 0;
 
-/**
- * @brief Handles regen up button presses.
- *
- * @param pressed `true` if button is currently pressed.
- */
-void regenUpButton(bool pressed) {
-    if (!pressed) {
-        return;
-    }
-
-    if (regenStep < REGEN_STEP_NUM) {
-        regenStep++;
-    }
-    setNumLeds(regenStep);
-}
-/**
- * @brief Handles regen down button presses.
- *
- * @param pressed `true` if button is currently pressed.
- */
-void regenDownButton(bool pressed) {
-    if (!pressed) {
-        return;
-    }
-
-    if (regenStep > 0) {
-        regenStep--;
-    }
-    setNumLeds(regenStep);
-}
 
 /**
  * @brief Handles button events.
@@ -240,19 +210,31 @@ static void buttonsInput_task(void *pvParameters) {
         
         currentTime = xTaskGetTickCount();
 
+
+
         buttonEvent_t event;
         while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
-        	// GPIO 1 is state up
-        	// GPIO 6 State down
-        	// GPIO 9 is br +
 
-
-            switch (event.pin) {
+			switch (event.pin) {
+            	case GPIO_BUTTON_3:
+            		if((currentTime - lastButtonPress) > 500) {
+                        actionOneButton(event.pressed);
+					}
+            		break;
+            	case GPIO_BUTTON_8:
+            		if((currentTime - lastButtonPress) > 500) {
+                        actionTwoButton(event.pressed);
+					}
+            		break;
                 case GPIO_BUTTON_9:
-                    regenUpButton(event.pressed);
-                    break;
+                	if((currentTime - lastButtonPress) > 500) {
+                        regenUpButton(event.pressed);
+					}
+                	break;
                 case GPIO_BUTTON_2:
-                    regenDownButton(event.pressed);
+                	if((currentTime - lastButtonPress) > 500) {
+                        regenDownButton(event.pressed);
+					}
                     break;
                 case GPIO_BUTTON_7:
                     stateVSMUpButton(event.pressed);
