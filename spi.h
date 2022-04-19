@@ -43,7 +43,7 @@ typedef enum {
 #define ADC_FREQ_1kHz ((0b11) << 4)
 
 /** @brief Sets ADC output every 0.5ms */
-#define ADC_FREQ_2kHz ((0b01) << 4)
+#define ADC_FREQ_2kHz ((0b01) << 4) | 0b1
 
 /** @brief Sampling time */
 #define EMI_CONFIG 0x55

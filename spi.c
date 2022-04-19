@@ -183,7 +183,9 @@ static void HVCSpiUpdate(void *pvParameters) {
         HVSenseRead(V1WV, rxVoltage, VOLTAGE_RX_LEN);
         HighVoltage_ADC = (int32_t) (((uint32_t) rxVoltage[2]) | (((uint32_t) rxVoltage[1]) << 8) | (((uint32_t) rxVoltage[0]) << 16) );
         HighVoltage_ADC = (HighVoltage_ADC << 8) >> 8;
-        voltageHV = ADCtoMV_HVSense(HighVoltage_ADC);
+        int32_t voltageHV_inst = ADCtoMV_HVSense(HighVoltage_ADC);
+        float mult = 0.9f;
+        voltageHV = (mult * voltageHV) + (voltageHV_inst * (1-mult));
 
 //         vTaskDelayUntil(&lastWakeTime, 1);
 
