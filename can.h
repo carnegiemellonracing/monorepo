@@ -82,6 +82,7 @@ typedef enum {
     CANRX_CDC_MOTOR_FAULTS,     /**< @brief CDC Motor Faults */
     CANRX_CDL_BROADCAST,        /**< @brief CDL broadcast. */
     CANRX_SBG_STATUS_3,            /**< @brief INS Status 3 */
+	CANRX_EMD_VALUES,			/**< @brief EMD Values for HV voltages and current */
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 
@@ -93,5 +94,8 @@ int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 
 void ramCallback (cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen);
 #endif /* CAN_H */
+
+float canEmdHvVoltage(cmr_canEMDMeasurements_t emd_vals);
+float canEmdHvCurrent(cmr_canEMDMeasurements_t emd_vals);
 
 void transmit_cdc_config_request();

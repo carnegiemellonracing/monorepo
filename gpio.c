@@ -210,29 +210,29 @@ static void buttonsInput_task(void *pvParameters) {
         
         currentTime = xTaskGetTickCount();
 
-
+		#define BUTTON_DEBOUNCE_TIME 200
 
         buttonEvent_t event;
         while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
 
 			switch (event.pin) {
             	case GPIO_BUTTON_3:
-            		if((currentTime - lastButtonPress) > 500) {
+            		if((currentTime - lastButtonPress) > BUTTON_DEBOUNCE_TIME) {
                         actionOneButton(event.pressed);
 					}
             		break;
             	case GPIO_BUTTON_8:
-            		if((currentTime - lastButtonPress) > 500) {
+            		if((currentTime - lastButtonPress) > BUTTON_DEBOUNCE_TIME) {
                         actionTwoButton(event.pressed);
 					}
             		break;
                 case GPIO_BUTTON_9:
-                	if((currentTime - lastButtonPress) > 500) {
+                	if((currentTime - lastButtonPress) > BUTTON_DEBOUNCE_TIME) {
                         regenUpButton(event.pressed);
 					}
                 	break;
                 case GPIO_BUTTON_2:
-                	if((currentTime - lastButtonPress) > 500) {
+                	if((currentTime - lastButtonPress) > BUTTON_DEBOUNCE_TIME) {
                         regenDownButton(event.pressed);
 					}
                     break;

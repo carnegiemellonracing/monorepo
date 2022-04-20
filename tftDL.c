@@ -584,9 +584,13 @@ void tftDL_configUpdate(){
 
     // if there are no scroll values, then check/implement selection values
     else if (config_increment_up_requested || config_increment_down_requested) {
+
         if (config_increment_down_requested && config_increment_up_requested)
             return; // both are an error
         
+        // TODO: Finish multiple driver integration
+        if(current_scroll_index == DRIVER_PROFILE_INDEX) return;
+
         setConfigIncrementValue(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
         config_increment_up_requested = false;
         config_increment_down_requested = false;

@@ -141,7 +141,12 @@ cmr_canRXMeta_t canRXMeta[] = {
         .canID = CMR_CANID_SBG_STATUS_3,
         .timeoutError_ms = 4000,
         .timeoutWarn_ms = 2000
-    }
+    },
+    [CANRX_EMD_VALUES] = {
+		.canID = CMR_CANID_EMD_MEASUREMENT_RETX,
+		.timeoutError_ms = 4000,
+		.timeoutWarn_ms = 2000
+    },
 };
 
 /** @brief Primary CAN interface. */
@@ -705,4 +710,28 @@ void canInit(void) {
  */
 int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
     return cmr_canTX(&can, id, data, len, timeout);
+}
+
+/**
+ * @brief Return the HV voltage as measured by the EMD.
+ *
+ * @return HV voltage.
+ */
+float canEmdHvVoltage(cmr_canEMDMeasurements_t emd_vals) {
+    static const float div = powf(2.0f, 16.0f);
+
+    int32_t converted = (int32_t) __builtin_bswap32((uint32_t) emd_vals.voltage);
+    return ((float) converted) / div;
+}
+
+/**
+ * @brief Return the HV current as measured by the EMD.
+ *
+ * @return HV current.
+ */
+float canEmdHvCurrent(cmr_canEMDMeasurements_t emd_vals) {
+    static const float div = powf(2.0f, 16.0f);
+
+    int32_t converted = (int32_t) __builtin_bswap32((uint32_t) emd_vals.current);
+    return ((float) converted) / div;
 }

@@ -447,6 +447,10 @@ static void drawRTDScreen(void) {
     volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps =
         (void *) metaHVCPackTemps->payload;
 
+    cmr_canRXMeta_t *metaEMDvalues = canRXMeta + CANRX_EMD_VALUES;
+    volatile cmr_canEMDMeasurements_t *canEMDvalues =
+    	(void *) metaEMDvalues->payload;
+
     // PTC Temps
     /* cmr_canRXMeta_t *metaPTCfLoopA = canRXMeta + CANRX_PTCf_LOOP_A_TEMPS;
     volatile cmr_canPTCfLoopTemp_A_t *canPTCfLoopTemp_A = (void *) metaPTCfLoopA->payload;
@@ -517,17 +521,22 @@ static void drawRTDScreen(void) {
         }
     }
 
+
+
     /* Pack Voltage */
-    int32_t hvVoltage_mV = canHVCPackVoltage->hvVoltage_mV;
+//    int32_t hvVoltage_mV = canHVCPackVoltage->hvVoltage_mV;
+    int32_t hvVoltage_mV = canEmdHvVoltage(*canEMDvalues);
 
     // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
     int32_t glvVoltage = adcRead(ADC_VSENSE) * 8 * 11 / 10 / 1000;
 
     /* Motor Power Draw*/
-    int32_t current_A = computeCurrent_A(canAMK_FL_Act1) +
-                        computeCurrent_A(canAMK_FR_Act1) + 
-                        computeCurrent_A(canAMK_RL_Act1) + 
-                        computeCurrent_A(canAMK_RR_Act1);
+//    int32_t current_A = computeCurrent_A(canAMK_FL_Act1) +
+//                        computeCurrent_A(canAMK_FR_Act1) +
+//                        computeCurrent_A(canAMK_RL_Act1) +
+//                        computeCurrent_A(canAMK_RR_Act1);
+    int32_t current_A = canEmdHvCurrent(*canEMDvalues);
+
     int32_t power_kW = current_A * hvVoltage_mV / 1000000;
 
     /* Wheel Speed */
