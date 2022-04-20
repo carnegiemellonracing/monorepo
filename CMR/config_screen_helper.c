@@ -34,7 +34,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_context_text_variable = "FF accel for launch ctl [m/s2]",
         .value = {
             .type = float_1_decimal,
-            .value = 0
+            .value = 13
         },
         .min = 10, // scaled by 10 bc 1 decimal point 'float'
         .max = 200, // scaled by 10 bc 1 decimal point 'float'
@@ -47,7 +47,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_context_text_variable = "FB correction for lnc ctl",
         .value = {
             .type = float_1_decimal,
-            .value = 0
+            .value = 14
         },
         .min = 10,
         .max = 20,
@@ -73,7 +73,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_context_text_variable = "All mode torque bias. 0 is FWD",
         .value = {
             .type = integer,
-            .value = 0
+            .value = 60
         },
         .min = 0,
         .max = 100,
@@ -86,7 +86,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_context_text_variable = "Max regen force at Max Pssr",
         .value = {
             .type = integer,
-            .value = 0
+            .value = 50
         },
         .min = 0,
         .max = 100,
@@ -99,7 +99,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_context_text_variable = "When max regen is applied",
         .value = {
             .type = integer,
-            .value = 0
+            .value = 50
         },
         .min = 0,
         .max = 150,
@@ -126,7 +126,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_context_text_variable = "RegenBrake bias. 0 is FWBrake",
         .value = {
             .type = integer,
-            .value = 0
+            .value = 50
         },
         .min = 0,
         .max = 100,
@@ -152,7 +152,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_context_text_variable = "Max SR before traction Ctl",
         .value = {
             .type = float_1_decimal,
-            .value = 0
+            .value = 15
         },
         .min = 10,
         .max = 30, //TODO: annotate this
@@ -178,10 +178,10 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_context_text_variable = "Torque vectoring gain",
         .value = {
             .type = integer,
-            .value = 0
+            .value = 2
         },
         .min = 0,
-        .max = 100,
+        .max = 30,
     },
     {
         .name = "Max Torque",
@@ -191,7 +191,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_context_text_variable = "Max torque, all modes",
         .value = {
             .type = integer,
-            .value = 0
+            .value = 50
         },
         .min = 0,
         .max = 100,
@@ -204,7 +204,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_context_text_variable = "Max speed, all modes",
         .value = {
             .type = integer,
-            .value = 0
+            .value = 30
         },
         .min = 2,
         .max = 100,
@@ -278,8 +278,7 @@ bool getProcessedValue(void* returnPointer, int index, cmr_config_t expected_typ
             // note, custom enum error checking doesn't exist. That's ok bc its not safety critical
             *(uint8_t*)returnPointer = ((uint8_t)config_menu_main_array[index].value.value);
             return true;
-        default:
+        defaut:
             return false;
     }
-    return false;
 }
