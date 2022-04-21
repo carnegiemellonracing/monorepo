@@ -1260,7 +1260,7 @@ Var=LED_driver_defect unsigned 33,1
 Var=Save_charging_mode unsigned 32,1
 
 [AMK_FR_Actual_Values_1]
-ID=283h	// Set ID based on wiring
+ID=287h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FR_Status_Reserved unsigned 0,8
@@ -1277,7 +1277,7 @@ Var=AMK_FR_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_FR_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_FR_Actual_Values_2]
-ID=285h	// Set ID based on wiring
+ID=289h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FR_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1286,7 +1286,7 @@ Var=AMK_FR_ErrorInfo unsigned 32,16
 Var=AMK_FR_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_FR_Setpoints_1]
-ID=184h	// Set ID based on wiring
+ID=188h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_FR_Control_Reserved1 unsigned 0,8
@@ -1300,7 +1300,7 @@ Var=AMK_FR_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_FR_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
 [AMK_FL_Actual_Values_1]
-ID=284h	// Set ID based on wiring
+ID=288h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FL_Status_Reserved unsigned 0,8
@@ -1317,7 +1317,7 @@ Var=AMK_FL_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_FL_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_FL_Actual_Values_2]
-ID=286h	// Set ID based on wiring
+ID=28Ah	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FL_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1326,7 +1326,7 @@ Var=AMK_FL_ErrorInfo unsigned 32,16
 Var=AMK_FL_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_FL_Setpoints_1]
-ID=185h	// Set ID based on wiring
+ID=189h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_FL_Control_Reserved1 unsigned 0,8
@@ -1340,7 +1340,7 @@ Var=AMK_FL_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_FL_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
 [AMK_BL_Actual_Values_1]
-ID=287h	// Set ID based on wiring
+ID=284h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BL_Status_Reserved unsigned 0,8
@@ -1357,7 +1357,7 @@ Var=AMK_BL_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_BL_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_BL_Actual_Values_2]
-ID=289h	// Set ID based on wiring
+ID=286h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BL_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1366,7 +1366,7 @@ Var=AMK_BL_ErrorInfo unsigned 32,16
 Var=AMK_BL_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_BL_Setpoints_1]
-ID=188h	// Set ID based on wiring
+ID=185h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_BL_Control_Reserved1 unsigned 0,8
@@ -1380,7 +1380,7 @@ Var=AMK_BL_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_BL_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
 [AMK_BR_Actual_Values_1]
-ID=288h	// Set ID based on wiring
+ID=283h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BR_Status_Reserved unsigned 0,8
@@ -1397,7 +1397,7 @@ Var=AMK_BR_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_BR_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_BR_Actual_Values_2]
-ID=28Ah	// Set ID based on wiring
+ID=285h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BR_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1406,7 +1406,7 @@ Var=AMK_BR_ErrorInfo unsigned 32,16
 Var=AMK_BR_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_BR_Setpoints_1]
-ID=189h	// Set ID based on wiring
+ID=184h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_BR_Control_Reserved1 unsigned 0,8
@@ -1467,12 +1467,6 @@ Var=controls_target_yaw_rate signed 16,16 /u:rad.s-1 /f:0.01 /p:2
 Var=controls_bias signed 32,16 /f:0.01 /p:2
 Var=controls_pid signed 48,16 /f:0.01 /p:2
 
-[EMD_Measurement]
-ID=401h	// This is NOT the real CANID for the EMD. It is 100h, but that conflicts with the VSM_Heartbeat, so we retransmit it on 401h via the CDC.
-DLC=8
-Var=EMD_Current signed 0,32 -m /u:A /f:1.5258789063E-005
-Var=EMD_Voltage signed 32,32 -m /u:V /f:1.5258789063E-005
-
 [EMD_Status]
 ID=400h
 DLC=4
@@ -1518,4 +1512,12 @@ Var=Differential_Voltage signed 0,16 -h -m /u:uV
 Var=Calibrated_Output signed 16,16 -m /u:N /f:0.1
 Var=Internal_Temp signed 32,16 -m /u:c /f:0.1
 Var=Opt_External_Temp signed 48,16 -m /u:c /f:0.1
+
+[DCM_Configure]
+ID=7A0h
+DLC=8
+Var=frequency unsigned 0,32 /u:MHz /min:400 /max:480
+Var=padding unsigned 32,16 /max:1
+Var=volume unsigned 48,8 /max:7
+Var=squelch unsigned 56,8 /max:8	// 0 for listen, 1 - 8 for transmit
 

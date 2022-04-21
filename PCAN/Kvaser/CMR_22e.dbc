@@ -995,7 +995,7 @@ SG_ LED_driver_defect : 33|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ Save_charging_mode : 32|1@1+ (1,0) [0|1] "" Vector__XXX
 
 
-BO_ 643 AMK_FR_Actual_Values_1: 8 Vector__XXX
+BO_ 647 AMK_FR_Actual_Values_1: 8 Vector__XXX
 SG_ AMK_FR_Status_Reserved : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_FR_Status_SystemReady : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_FR_Status_Error : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1010,14 +1010,14 @@ SG_ AMK_FR_TorqueCurrent : 32|16@1- (1,0) [-32768|32767] "Raw torque unit" Vecto
 SG_ AMK_FR_MagnetizingCurrent : 48|16@1- (1,0) [-32768|32767] "Raw current unit" Vector__XXX
 
 
-BO_ 645 AMK_FR_Actual_Values_2: 8 Vector__XXX
+BO_ 649 AMK_FR_Actual_Values_2: 8 Vector__XXX
 SG_ AMK_FR_TempMotor : 0|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_FR_TempInverter : 16|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_FR_ErrorInfo : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
 SG_ AMK_FR_TempIGBT : 48|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 
 
-BO_ 388 AMK_FR_Setpoints_1: 8 Vector__XXX
+BO_ 392 AMK_FR_Setpoints_1: 8 Vector__XXX
 SG_ AMK_FR_Control_Reserved1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_FR_Control_InverterOn : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_FR_Control_DcOn : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1029,7 +1029,7 @@ SG_ AMK_FR_TorqueLimitPositiv : 32|16@1- (0.1,0) [-3276.8|3276.7] "% Mn" Vector_
 SG_ AMK_FR_TorqueLimitNegativ : 48|16@1- (0.1,0) [-3276.8|3276.7] "% Mn" Vector__XXX
 
 
-BO_ 644 AMK_FL_Actual_Values_1: 8 Vector__XXX
+BO_ 648 AMK_FL_Actual_Values_1: 8 Vector__XXX
 SG_ AMK_FL_Status_Reserved : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_FL_Status_SystemReady : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_FL_Status_Error : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1044,14 +1044,14 @@ SG_ AMK_FL_TorqueCurrent : 32|16@1- (1,0) [-32768|32767] "Raw torque unit" Vecto
 SG_ AMK_FL_MagnetizingCurrent : 48|16@1- (1,0) [-32768|32767] "Raw current unit" Vector__XXX
 
 
-BO_ 646 AMK_FL_Actual_Values_2: 8 Vector__XXX
+BO_ 650 AMK_FL_Actual_Values_2: 8 Vector__XXX
 SG_ AMK_FL_TempMotor : 0|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_FL_TempInverter : 16|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_FL_ErrorInfo : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
 SG_ AMK_FL_TempIGBT : 48|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 
 
-BO_ 389 AMK_FL_Setpoints_1: 8 Vector__XXX
+BO_ 393 AMK_FL_Setpoints_1: 8 Vector__XXX
 SG_ AMK_FL_Control_Reserved1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_FL_Control_InverterOn : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_FL_Control_DcOn : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1063,7 +1063,7 @@ SG_ AMK_FL_TorqueLimitPositiv : 32|16@1- (0.1,0) [-3276.8|3276.7] "% Mn" Vector_
 SG_ AMK_FL_TorqueLimitNegativ : 48|16@1- (0.1,0) [-3276.8|3276.7] "% Mn" Vector__XXX
 
 
-BO_ 647 AMK_BL_Actual_Values_1: 8 Vector__XXX
+BO_ 644 AMK_BL_Actual_Values_1: 8 Vector__XXX
 SG_ AMK_BL_Status_Reserved : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_BL_Status_SystemReady : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_BL_Status_Error : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1078,14 +1078,14 @@ SG_ AMK_BL_TorqueCurrent : 32|16@1- (1,0) [-32768|32767] "Raw torque unit" Vecto
 SG_ AMK_BL_MagnetizingCurrent : 48|16@1- (1,0) [-32768|32767] "Raw current unit" Vector__XXX
 
 
-BO_ 649 AMK_BL_Actual_Values_2: 8 Vector__XXX
+BO_ 646 AMK_BL_Actual_Values_2: 8 Vector__XXX
 SG_ AMK_BL_TempMotor : 0|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_BL_TempInverter : 16|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_BL_ErrorInfo : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
 SG_ AMK_BL_TempIGBT : 48|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 
 
-BO_ 392 AMK_BL_Setpoints_1: 8 Vector__XXX
+BO_ 389 AMK_BL_Setpoints_1: 8 Vector__XXX
 SG_ AMK_BL_Control_Reserved1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_BL_Control_InverterOn : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_BL_Control_DcOn : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1097,7 +1097,7 @@ SG_ AMK_BL_TorqueLimitPositiv : 32|16@1- (0.1,0) [-3276.8|3276.7] "% Mn" Vector_
 SG_ AMK_BL_TorqueLimitNegativ : 48|16@1- (0.1,0) [-3276.8|3276.7] "% Mn" Vector__XXX
 
 
-BO_ 648 AMK_BR_Actual_Values_1: 8 Vector__XXX
+BO_ 643 AMK_BR_Actual_Values_1: 8 Vector__XXX
 SG_ AMK_BR_Status_Reserved : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_BR_Status_SystemReady : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_BR_Status_Error : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1112,14 +1112,14 @@ SG_ AMK_BR_TorqueCurrent : 32|16@1- (1,0) [-32768|32767] "Raw torque unit" Vecto
 SG_ AMK_BR_MagnetizingCurrent : 48|16@1- (1,0) [-32768|32767] "Raw current unit" Vector__XXX
 
 
-BO_ 650 AMK_BR_Actual_Values_2: 8 Vector__XXX
+BO_ 645 AMK_BR_Actual_Values_2: 8 Vector__XXX
 SG_ AMK_BR_TempMotor : 0|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_BR_TempInverter : 16|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_BR_ErrorInfo : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
 SG_ AMK_BR_TempIGBT : 48|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 
 
-BO_ 393 AMK_BR_Setpoints_1: 8 Vector__XXX
+BO_ 388 AMK_BR_Setpoints_1: 8 Vector__XXX
 SG_ AMK_BR_Control_Reserved1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_BR_Control_InverterOn : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_BR_Control_DcOn : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1173,11 +1173,6 @@ SG_ controls_bias : 32|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
 SG_ controls_pid : 48|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
 
 
-BO_ 1025 EMD_Measurement: 8 Vector__XXX
-SG_ EMD_Current : 7|32@0- (1.5258789063E-005,0) [-32768.0000010737|32767.999985815] "A" Vector__XXX
-SG_ EMD_Voltage : 39|32@0- (1.5258789063E-005,0) [-32768.0000010737|32767.999985815] "V" Vector__XXX
-
-
 BO_ 1024 EMD_Status: 4 Vector__XXX
 SG_ EMD_VoltageGain : 3|4@0+ (1,0) [0|15] "" Vector__XXX
 SG_ EMD_CurrentGain : 7|4@0+ (1,0) [0|15] "" Vector__XXX
@@ -1216,22 +1211,29 @@ SG_ Internal_Temp : 39|16@0- (0.1,0) [-3276.8|3276.7] "c" Vector__XXX
 SG_ Opt_External_Temp : 55|16@0- (0.1,0) [-3276.8|3276.7] "c" Vector__XXX
 
 
+BO_ 1952 DCM_Configure: 8 Vector__XXX
+SG_ frequency : 0|32@1+ (1,0) [400|480] "MHz" Vector__XXX
+SG_ padding : 32|16@1+ (1,0) [0|1] "" Vector__XXX
+SG_ volume : 48|8@1+ (1,0) [0|7] "" Vector__XXX
+SG_ squelch : 56|8@1+ (1,0) [0|8] "" Vector__XXX
+
+
 CM_ BO_ 1296 "Timeout matrix";
-CM_ BO_ 643 "Set ID based on wiring";
-CM_ BO_ 645 "Set ID based on wiring";
-CM_ BO_ 388 "Set ID based on wiring";
-CM_ BO_ 644 "Set ID based on wiring";
-CM_ BO_ 646 "Set ID based on wiring";
-CM_ BO_ 389 "Set ID based on wiring";
 CM_ BO_ 647 "Set ID based on wiring";
 CM_ BO_ 649 "Set ID based on wiring";
 CM_ BO_ 392 "Set ID based on wiring";
 CM_ BO_ 648 "Set ID based on wiring";
 CM_ BO_ 650 "Set ID based on wiring";
 CM_ BO_ 393 "Set ID based on wiring";
-CM_ BO_ 1025 "This is NOT the real CANID for the EMD. It is 100h, but that conflicts with the VSM_Heartbeat, so we retransmit it on 401h via the CDC.";
+CM_ BO_ 644 "Set ID based on wiring";
+CM_ BO_ 646 "Set ID based on wiring";
+CM_ BO_ 389 "Set ID based on wiring";
+CM_ BO_ 643 "Set ID based on wiring";
+CM_ BO_ 645 "Set ID based on wiring";
+CM_ BO_ 388 "Set ID based on wiring";
 CM_ BO_ 2023 "This CAN id is used for communication between the energy meter and the download tool.";
 CM_ BO_ 2031 "This CAN id is used for communication between the energy meter and the download tool.";
+CM_ SG_ 1952 squelch "0 for listen, 1 - 8 for transmit";
 
 BA_DEF_  "BusType" STRING ;
 BA_DEF_ BO_  "GenMsgCycleTime" INT 0 65535;
@@ -1318,18 +1320,18 @@ BA_ "GenMsgCycleTime" BO_ 925 1000;
 BA_ "GenMsgCycleTime" BO_ 926 100;
 BA_ "GenMsgCycleTime" BO_ 927 1000;
 BA_ "GenMsgCycleTime" BO_ 1541 1000;
-BA_ "GenMsgCycleTime" BO_ 643 5;
-BA_ "GenMsgCycleTime" BO_ 645 5;
-BA_ "GenMsgCycleTime" BO_ 388 1;
-BA_ "GenMsgCycleTime" BO_ 644 5;
-BA_ "GenMsgCycleTime" BO_ 646 5;
-BA_ "GenMsgCycleTime" BO_ 389 1;
 BA_ "GenMsgCycleTime" BO_ 647 5;
 BA_ "GenMsgCycleTime" BO_ 649 5;
 BA_ "GenMsgCycleTime" BO_ 392 1;
 BA_ "GenMsgCycleTime" BO_ 648 5;
 BA_ "GenMsgCycleTime" BO_ 650 5;
 BA_ "GenMsgCycleTime" BO_ 393 1;
+BA_ "GenMsgCycleTime" BO_ 644 5;
+BA_ "GenMsgCycleTime" BO_ 646 5;
+BA_ "GenMsgCycleTime" BO_ 389 1;
+BA_ "GenMsgCycleTime" BO_ 643 5;
+BA_ "GenMsgCycleTime" BO_ 645 5;
+BA_ "GenMsgCycleTime" BO_ 388 1;
 BA_ "GenMsgCycleTime" BO_ 2016 100;
 BA_ "GenMsgCycleTime" BO_ 2017 100;
 BA_ "GenMsgCycleTime" BO_ 2018 100;
@@ -1941,106 +1943,106 @@ BA_ "GenSigStartValue" SG_ 1316 Command_out_of_range 0;
 BA_ "GenSigStartValue" SG_ 1316 Ctrl_msg_inactive 0;
 BA_ "GenSigStartValue" SG_ 1316 LED_driver_defect 0;
 BA_ "GenSigStartValue" SG_ 1316 Save_charging_mode 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FR_Status_Reserved 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FR_Status_SystemReady 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FR_Status_Error 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FR_Status_Warn 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FR_Status_QuitDcOn 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FR_Status_DcOn 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FR_Status_QuitInvOn 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FR_Status_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FR_Status_Derating 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FR_ActualVelocity 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FR_TorqueCurrent 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FR_MagnetizingCurrent 0;
-BA_ "GenSigStartValue" SG_ 645 AMK_FR_TempMotor 0;
-BA_ "GenSigStartValue" SG_ 645 AMK_FR_TempInverter 0;
-BA_ "GenSigStartValue" SG_ 645 AMK_FR_ErrorInfo 0;
-BA_ "GenSigStartValue" SG_ 645 AMK_FR_TempIGBT 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FR_Control_Reserved1 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FR_Control_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FR_Control_DcOn 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FR_Control_Enable 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FR_Control_ErrorReset 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FR_Control_Reserved2 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FR_TargetVelocity 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FR_TorqueLimitPositiv 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FR_TorqueLimitNegativ 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_FL_Status_Reserved 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_FL_Status_SystemReady 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_FL_Status_Error 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_FL_Status_Warn 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_FL_Status_QuitDcOn 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_FL_Status_DcOn 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_FL_Status_QuitInvOn 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_FL_Status_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_FL_Status_Derating 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_FL_ActualVelocity 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_FL_TorqueCurrent 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_FL_MagnetizingCurrent 0;
-BA_ "GenSigStartValue" SG_ 646 AMK_FL_TempMotor 0;
-BA_ "GenSigStartValue" SG_ 646 AMK_FL_TempInverter 0;
-BA_ "GenSigStartValue" SG_ 646 AMK_FL_ErrorInfo 0;
-BA_ "GenSigStartValue" SG_ 646 AMK_FL_TempIGBT 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_FL_Control_Reserved1 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_FL_Control_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_FL_Control_DcOn 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_FL_Control_Enable 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_FL_Control_ErrorReset 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_FL_Control_Reserved2 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_FL_TargetVelocity 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_FL_TorqueLimitPositiv 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_FL_TorqueLimitNegativ 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_Reserved 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_SystemReady 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_Error 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_Warn 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_QuitDcOn 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_DcOn 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_QuitInvOn 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_Derating 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_BL_ActualVelocity 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_BL_TorqueCurrent 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_BL_MagnetizingCurrent 0;
-BA_ "GenSigStartValue" SG_ 649 AMK_BL_TempMotor 0;
-BA_ "GenSigStartValue" SG_ 649 AMK_BL_TempInverter 0;
-BA_ "GenSigStartValue" SG_ 649 AMK_BL_ErrorInfo 0;
-BA_ "GenSigStartValue" SG_ 649 AMK_BL_TempIGBT 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_BL_Control_Reserved1 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_BL_Control_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_BL_Control_DcOn 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_BL_Control_Enable 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_BL_Control_ErrorReset 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_BL_Control_Reserved2 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_BL_TargetVelocity 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_BL_TorqueLimitPositiv 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_BL_TorqueLimitNegativ 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BR_Status_Reserved 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BR_Status_SystemReady 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BR_Status_Error 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BR_Status_Warn 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BR_Status_QuitDcOn 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BR_Status_DcOn 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BR_Status_QuitInvOn 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BR_Status_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BR_Status_Derating 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BR_ActualVelocity 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BR_TorqueCurrent 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BR_MagnetizingCurrent 0;
-BA_ "GenSigStartValue" SG_ 650 AMK_BR_TempMotor 0;
-BA_ "GenSigStartValue" SG_ 650 AMK_BR_TempInverter 0;
-BA_ "GenSigStartValue" SG_ 650 AMK_BR_ErrorInfo 0;
-BA_ "GenSigStartValue" SG_ 650 AMK_BR_TempIGBT 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_BR_Control_Reserved1 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_BR_Control_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_BR_Control_DcOn 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_BR_Control_Enable 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_RR_Control_ErrorReset 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_RR_Control_Reserved2 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_RR_TargetVelocity 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_RR_TorqueLimitPositiv 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_RR_TorqueLimitNegativ 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_Reserved 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_SystemReady 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_Error 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_Warn 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_QuitDcOn 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_DcOn 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_QuitInvOn 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_Derating 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_FR_ActualVelocity 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_FR_TorqueCurrent 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_FR_MagnetizingCurrent 0;
+BA_ "GenSigStartValue" SG_ 649 AMK_FR_TempMotor 0;
+BA_ "GenSigStartValue" SG_ 649 AMK_FR_TempInverter 0;
+BA_ "GenSigStartValue" SG_ 649 AMK_FR_ErrorInfo 0;
+BA_ "GenSigStartValue" SG_ 649 AMK_FR_TempIGBT 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_FR_Control_Reserved1 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_FR_Control_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_FR_Control_DcOn 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_FR_Control_Enable 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_FR_Control_ErrorReset 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_FR_Control_Reserved2 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_FR_TargetVelocity 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_FR_TorqueLimitPositiv 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_FR_TorqueLimitNegativ 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_Reserved 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_SystemReady 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_Error 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_Warn 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_QuitDcOn 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_DcOn 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_QuitInvOn 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_Derating 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_ActualVelocity 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_TorqueCurrent 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_MagnetizingCurrent 0;
+BA_ "GenSigStartValue" SG_ 650 AMK_FL_TempMotor 0;
+BA_ "GenSigStartValue" SG_ 650 AMK_FL_TempInverter 0;
+BA_ "GenSigStartValue" SG_ 650 AMK_FL_ErrorInfo 0;
+BA_ "GenSigStartValue" SG_ 650 AMK_FL_TempIGBT 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_Reserved1 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_DcOn 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_Enable 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_ErrorReset 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_Reserved2 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_TargetVelocity 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_TorqueLimitPositiv 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_TorqueLimitNegativ 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_Reserved 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_SystemReady 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_Error 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_Warn 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_QuitDcOn 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_DcOn 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_QuitInvOn 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_Derating 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BL_ActualVelocity 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BL_TorqueCurrent 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BL_MagnetizingCurrent 0;
+BA_ "GenSigStartValue" SG_ 646 AMK_BL_TempMotor 0;
+BA_ "GenSigStartValue" SG_ 646 AMK_BL_TempInverter 0;
+BA_ "GenSigStartValue" SG_ 646 AMK_BL_ErrorInfo 0;
+BA_ "GenSigStartValue" SG_ 646 AMK_BL_TempIGBT 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_BL_Control_Reserved1 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_BL_Control_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_BL_Control_DcOn 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_BL_Control_Enable 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_BL_Control_ErrorReset 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_BL_Control_Reserved2 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_BL_TargetVelocity 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_BL_TorqueLimitPositiv 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_BL_TorqueLimitNegativ 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_Reserved 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_SystemReady 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_Error 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_Warn 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_QuitDcOn 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_DcOn 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_QuitInvOn 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_Derating 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_ActualVelocity 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_TorqueCurrent 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_MagnetizingCurrent 0;
+BA_ "GenSigStartValue" SG_ 645 AMK_BR_TempMotor 0;
+BA_ "GenSigStartValue" SG_ 645 AMK_BR_TempInverter 0;
+BA_ "GenSigStartValue" SG_ 645 AMK_BR_ErrorInfo 0;
+BA_ "GenSigStartValue" SG_ 645 AMK_BR_TempIGBT 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_BR_Control_Reserved1 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_BR_Control_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_BR_Control_DcOn 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_BR_Control_Enable 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_RR_Control_ErrorReset 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_RR_Control_Reserved2 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_RR_TargetVelocity 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_RR_TorqueLimitPositiv 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_RR_TorqueLimitNegativ 0;
 BA_ "GenSigStartValue" SG_ 2016 controls_elapsed_time 0;
 BA_ "GenSigStartValue" SG_ 2016 controls_sbg_speed_mps 0;
 BA_ "GenSigStartValue" SG_ 2016 controls_target_velocity 0;
@@ -2065,8 +2067,6 @@ BA_ "GenSigStartValue" SG_ 2021 controls_current_yaw_rate 0;
 BA_ "GenSigStartValue" SG_ 2021 controls_target_yaw_rate 0;
 BA_ "GenSigStartValue" SG_ 2021 controls_bias 0;
 BA_ "GenSigStartValue" SG_ 2021 controls_pid 0;
-BA_ "GenSigStartValue" SG_ 1025 EMD_Current 0;
-BA_ "GenSigStartValue" SG_ 1025 EMD_Voltage 0;
 BA_ "GenSigStartValue" SG_ 1024 EMD_VoltageGain 0;
 BA_ "GenSigStartValue" SG_ 1024 EMD_CurrentGain 0;
 BA_ "GenSigStartValue" SG_ 1024 EMD_OverVoltage 0;
@@ -2087,6 +2087,10 @@ BA_ "GenSigStartValue" SG_ 2032 Differential_Voltage 0;
 BA_ "GenSigStartValue" SG_ 2032 Calibrated_Output 0;
 BA_ "GenSigStartValue" SG_ 2032 Internal_Temp 0;
 BA_ "GenSigStartValue" SG_ 2032 Opt_External_Temp 0;
+BA_ "GenSigStartValue" SG_ 1952 frequency 0;
+BA_ "GenSigStartValue" SG_ 1952 padding 0;
+BA_ "GenSigStartValue" SG_ 1952 volume 0;
+BA_ "GenSigStartValue" SG_ 1952 squelch 0;
 
 
 VAL_ 256 VSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
