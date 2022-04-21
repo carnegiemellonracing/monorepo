@@ -52,8 +52,8 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         // E8
         errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
     }
-    if(false){//getCurrentAverage() > maxPackCurrentAverageMA) {
-        // E9 Average is not reliable, takes to long to compute
+    if(getCurrentAverage() > maxPackCurrentAverageMA) {
+        // E9
         errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
     }
     if(checkRelayPowerFault() && (getState() != CMR_CAN_HVC_STATE_ERROR && getState() != CMR_CAN_HVC_STATE_CLEAR_ERROR)) {//(getRelayStatus() & 0xAA) != 0xAA) {

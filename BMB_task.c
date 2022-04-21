@@ -204,6 +204,8 @@ void vBMBSampleTask(void *pvParameters) {
         // Retrieve the channel data from the device in question
         // taskENTER_CRITICAL();
         uartRetv = slave_uart_sampleDeviceChannels(BMBIndex, &channelResponse);
+
+
         // taskEXIT_CRITICAL();
 
         if(uartRetv != UART_SUCCESS ||
@@ -248,6 +250,9 @@ void vBMBSampleTask(void *pvParameters) {
         for(uint16_t i = 0; i < VSENSE_CHANNELS_PER_BMB; i++) {
             averageVoltage += BMBData[BMBIndex].cellVoltages[i];
         }
+//        if(BMBIndex == 5){
+//        	int a = 0;
+//        }
 
         averageVoltage = averageVoltage/VSENSE_CHANNELS_PER_BMB;
         
@@ -269,7 +274,7 @@ void vBMBSampleTask(void *pvParameters) {
 
         if (BMBIndex >= NUM_BMBS-1) {
             BMBIndex = 0;
-            BMBActivityLEDEnable = !BMBActivityLEDEnable;
+			BMBActivityLEDEnable = !BMBActivityLEDEnable;
         } else {
             ++BMBIndex;
         }
