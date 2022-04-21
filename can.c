@@ -628,36 +628,36 @@ void canInit(void) {
                 CMR_CANID_CDC_CONFIG3_DRV0
             }
         },
-        {
-            .isMask = false,
-            .rxFIFO= CAN_RX_FIFO0,
-            .ids = {
-                CMR_CANID_CDC_CONFIG0_DRV1,
-                CMR_CANID_CDC_CONFIG1_DRV1,
-                CMR_CANID_CDC_CONFIG2_DRV1,
-                CMR_CANID_CDC_CONFIG3_DRV1
-            }
-        },
-        {
-            .isMask = false,
-            .rxFIFO= CAN_RX_FIFO0,
-            .ids = {
-                CMR_CANID_CDC_CONFIG0_DRV2,
-                CMR_CANID_CDC_CONFIG1_DRV2,
-                CMR_CANID_CDC_CONFIG2_DRV2,
-                CMR_CANID_CDC_CONFIG3_DRV2
-            }
-        },
-        {
-            .isMask = false,
-            .rxFIFO= CAN_RX_FIFO0,
-            .ids = {
-                CMR_CANID_CDC_CONFIG0_DRV3,
-                CMR_CANID_CDC_CONFIG1_DRV3,
-                CMR_CANID_CDC_CONFIG2_DRV3,
-                CMR_CANID_CDC_CONFIG3_DRV3
-            }
-        },
+//        {
+//            .isMask = false,
+//            .rxFIFO= CAN_RX_FIFO0,
+//            .ids = {
+//                CMR_CANID_CDC_CONFIG0_DRV1,
+//                CMR_CANID_CDC_CONFIG1_DRV1,
+//                CMR_CANID_CDC_CONFIG2_DRV1,
+//                CMR_CANID_CDC_CONFIG3_DRV1
+//            }
+//        },
+//        {
+//            .isMask = false,
+//            .rxFIFO= CAN_RX_FIFO0,
+//            .ids = {
+//                CMR_CANID_CDC_CONFIG0_DRV2,
+//                CMR_CANID_CDC_CONFIG1_DRV2,
+//                CMR_CANID_CDC_CONFIG2_DRV2,
+//                CMR_CANID_CDC_CONFIG3_DRV2
+//            }
+//        },
+//        {
+//            .isMask = false,
+//            .rxFIFO= CAN_RX_FIFO0,
+//            .ids = {
+//                CMR_CANID_CDC_CONFIG0_DRV3,
+//                CMR_CANID_CDC_CONFIG1_DRV3,
+//                CMR_CANID_CDC_CONFIG2_DRV3,
+//                CMR_CANID_CDC_CONFIG3_DRV3
+//            }
+//        },
         {
             .isMask = false,
             .rxFIFO= CAN_RX_FIFO0,
@@ -668,6 +668,16 @@ void canInit(void) {
                 CMR_CANID_CDC_CONFIG4_DRV3
             }
         },
+		{
+			.isMask = false,
+			.rxFIFO= CAN_RX_FIFO0,
+			.ids = {
+				CMR_CANID_EMD_MEASUREMENT_RETX,
+				CMR_CANID_EMD_MEASUREMENT_RETX,
+				CMR_CANID_EMD_MEASUREMENT_RETX,
+				CMR_CANID_EMD_MEASUREMENT_RETX
+			}
+		}
     };
 
     cmr_canFilter(

@@ -525,7 +525,7 @@ static void drawRTDScreen(void) {
 
     /* Pack Voltage */
 //    int32_t hvVoltage_mV = canHVCPackVoltage->hvVoltage_mV;
-    int32_t hvVoltage_mV = canEmdHvVoltage(*canEMDvalues);
+    int32_t hvVoltage_V = canEmdHvVoltage(*canEMDvalues);
 
     // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
     int32_t glvVoltage = adcRead(ADC_VSENSE) * 8 * 11 / 10 / 1000;
@@ -537,7 +537,7 @@ static void drawRTDScreen(void) {
 //                        computeCurrent_A(canAMK_RR_Act1);
     int32_t current_A = canEmdHvCurrent(*canEMDvalues);
 
-    int32_t power_kW = current_A * hvVoltage_mV / 1000000;
+    int32_t power_kW = (current_A * hvVoltage_V) / 1000;
 
     /* Wheel Speed */
         /* Wheel Speed to Vehicle Speed Conversion
@@ -571,7 +571,7 @@ static void drawRTDScreen(void) {
     bool mcTemp_red = mcTemp_C >= MC_RED_THRESHOLD;
 
     /* Update Display List*/
-    tftDL_RTDUpdate(memoratorPresent, sbgStatus, speed_mph, hvVoltage_mV, power_kW, motorTemp_yellow, motorTemp_red, acTemp_yellow, acTemp_red, mcTemp_yellow, mcTemp_red, motorTemp_C, acTemp_C, mcTemp_C, glvVoltage);
+    tftDL_RTDUpdate(memoratorPresent, sbgStatus, speed_mph, hvVoltage_V, power_kW, motorTemp_yellow, motorTemp_red, acTemp_yellow, acTemp_red, mcTemp_yellow, mcTemp_red, motorTemp_C, acTemp_C, mcTemp_C, glvVoltage);
 
     /* Write Display List to Screen */
     tftDLWrite(&tft, &tftDL_RTD);
