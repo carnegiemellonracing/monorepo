@@ -222,7 +222,9 @@ void vBMBSampleTask(void *pvParameters) {
                                         ((uint32_t)channelResponse.data[2*vChannel+1]);
                 
                 //This is backwards for some reason.
-                BMBData[BMBIndex].cellVoltages[VSENSE_CHANNELS_PER_BMB - vChannel - 1] = (5000*readAdcValue)/65535;
+                uint32_t volt = (5000*readAdcValue)/65535;
+                float mult = 0.7f;
+                BMBData[BMBIndex].cellVoltages[VSENSE_CHANNELS_PER_BMB - vChannel - 1] = mult * BMBData[BMBIndex].cellVoltages[VSENSE_CHANNELS_PER_BMB - vChannel - 1] + (1.0f-mult) * volt;
             }
             // Retrieve each 16 bit temperature reading from the response
             for(uint8_t tChannel = 0; tChannel < TSENSE_CHANNELS_PER_MESSAGE; ++tChannel) {
@@ -276,7 +278,7 @@ void vBMBSampleTask(void *pvParameters) {
 
 
         // Delay 30ms
-        vTaskDelayUntil(&xLastWakeTime, 50);
+        vTaskDelayUntil(&xLastWakeTime, 15);
     }
 }
 

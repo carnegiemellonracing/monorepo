@@ -187,7 +187,7 @@ static void HVCSpiUpdate(void *pvParameters) {
         float mult = 0.9f;
         voltageHV = (mult * voltageHV) + (voltageHV_inst * (1-mult));
 
-//         vTaskDelayUntil(&lastWakeTime, 1);
+         vTaskDelayUntil(&lastWakeTime, 1);
 
 
         // Sample HV Current
@@ -196,7 +196,7 @@ static void HVCSpiUpdate(void *pvParameters) {
         currentSingleSample_ADC = (int32_t) ((rxCurrent[2]) | (rxCurrent[1] << 8) | (rxCurrent[0] << 16));
         currentSingleSample_ADC = (currentSingleSample_ADC << 8) >> 8;
 
-//         vTaskDelayUntil(&lastWakeTime, 1);
+         vTaskDelayUntil(&lastWakeTime, 1);
 
         // Rolling average
         // A single sample is too noisy for an "instant" measurement so do a small average

@@ -77,7 +77,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                 //T7: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
             } else if ((HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN) &&
-                        abs(getBattMillivolts() - getHVmillivolts()) < 5000) {
+                        abs(getBattMillivolts() - getHVmillivolts()) < 15000) {
                 // T3: Contactors are closed and RUN mode is requested
                 nextState = CMR_CAN_HVC_STATE_DRIVE;
             } else {
@@ -96,7 +96,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 //T18: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (abs(getBattMillivolts() - getHVmillivolts())  < 15000) {
+            } else if (abs(getBattMillivolts() - getHVmillivolts())  < 25000) {
                 //T10: HV rails are precharged
                 nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE;
             } else {

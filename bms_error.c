@@ -36,7 +36,7 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         // TODO E4 create structures for cell voltage data and stats (min/max)
         errorFlags |= CMR_CAN_HVC_ERROR_CELL_OVERVOLT;
     }
-    if(getPackMinCellVoltage() < 2650) {
+    if(getPackMinCellVoltage() < 2400) {
         // TODO E5 create structures for cell voltage data and stats (min/max)
         errorFlags |= CMR_CAN_HVC_ERROR_CELL_UNDERVOLT;
     }
@@ -48,7 +48,7 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         // E7
         errorFlags |= CMR_CAN_HVC_ERROR_PACK_UNDERVOLT;
     }
-    if(getCurrentInstant() > maxPackCurrentInstantMA) {
+    if(false){//getCurrentInstant() > maxPackCurrentInstantMA) {
         // E8
         errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
     }
