@@ -53,17 +53,17 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .max = 20,
     },
     {
-        .name = "Burnout",
+        .name = "Pwr Lmt",
         .ESE_background_color_variable = ESE_BURNOUT_BOX,
         .ESE_value_color_variable = ESE_BURNOUT_COLOR,
         .ESE_value_variable = ESE_BURNOUT_VAL,
-        .ESE_context_text_variable = "Initial burnout t in launch ctl",
+        .ESE_context_text_variable = "Power limit in endurance [kW]",
         .value = {
-            .type = float_1_decimal,
-            .value = 0
+            .type = integer,
+            .value = 5
         },
-        .min = 0,
-        .max = 30,
+        .min = 1,
+        .max = 70,
     },
     {
         .name = "Torque Bias",
