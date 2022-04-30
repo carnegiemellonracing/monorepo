@@ -62,7 +62,8 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         //errorFlags |= BMS_ERROR_CODE_RELAY;
     }
 
-    if((currentState == CMR_CAN_HVC_STATE_DRIVE_PRECHARGE ||
+    if(false
+    	/*(currentState == CMR_CAN_HVC_STATE_DRIVE_PRECHARGE ||
         currentState == CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE ||
         currentState == CMR_CAN_HVC_STATE_DRIVE ||
         currentState == CMR_CAN_HVC_STATE_CHARGE_PRECHARGE ||
@@ -70,7 +71,7 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         currentState == CMR_CAN_HVC_STATE_CHARGE_TRICKLE ||
         currentState == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT ||
         currentState == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE) &&
-       (getAIRmillivolts() < minShutdownCiruitVoltageMV)) {
+       (getAIRmillivolts() < minShutdownCiruitVoltageMV)*/) {
         // E11
         // If SC voltage is below 8v while we're trying to drive relays, throw an error.
         errorFlags |= CMR_CAN_HVC_ERROR_LV_UNDERVOLT;

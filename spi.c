@@ -10,6 +10,8 @@
 #include <CMR/gpio.h>
 #include "gpio.h"
 #include "spi.h"
+#include <math.h>
+#include "can.h"
 
 /** @brief Voltage/Current Hz TX priority. */
 static const uint32_t HVCSpiUpdate_priority = 3;
@@ -229,6 +231,34 @@ void spiInit(void) {
 
 // Accessor/Transfer Functions
 
+/**
+ * @brief Return the HV voltage as measured by the EMD.
+ *
+ * @return HV voltage.
+ */
+float canEmdHvVoltage() {
+    static const float div = powf(2.0f, 16.0f);
+
+    volatile cmr_canEMDMeasurements_t *meas = getPayload(CANRX_EMD_MEASURE);
+    int32_t converted = (int32_t) __builtin_bswap32((uint32_t) meas->voltage);
+    return ((float) converted) / div;
+}
+
+/**
+ * @brief Return the HV current as measured by the EMD.
+ *
+ * @return HV current.
+ */
+float canEmdHvCurrent() {
+    static const float div = powf(2.0f, 16.0f);
+
+    volatile cmr_canEMDMeasurements_t *meas = getPayload(CANRX_EMD_MEASURE);
+    int32_t converted = (int32_t) __builtin_bswap32((uint32_t) meas->current);
+    return ((float) converted) / div;
+}
+
+// Accessor/Transfer Functions
+
 // Voltage divider into the input of V1P is 680ohm/(680ohm + 820kohm)
 // Inverse of this value is 1206.88 (round to 1207)
 // We also need to reverse the polarity of this measurement
@@ -251,7 +281,10 @@ int32_t getHVmillivolts() {
 //    float HV_mV = sensedVoltage_mV * sensedToHV;
 
     // float HV_mV = (0.1242f * HighVoltage_ADC) - 46767.f;
-    return voltageHV;
+
+    return (int32_t) (canEmdHvVoltage() * 1000.f);
+
+    // return voltageHV;
 }
 
 // Convert IP ADC value to Shunt Voltage
@@ -274,12 +307,16 @@ float adcToCurrent(int32_t currentADC) {
 // Measure current across shunt resistor (166.6 uohm)
 // 1/166.6u = 6002
 int32_t getCurrentInstant() {
-    return (int32_t)(adcToCurrent(currentInstant_ADC) * 6002);
+    // return (int32_t)(adcToCurrent(currentInstant_ADC) * 6002);
+
+    return (int32_t)(canEmdHvCurrent() * 1000.f);
 }
  
 int32_t getCurrentAverage() {
 	static int32_t moving_avg = 0;
-	moving_avg = (0.7f * moving_avg) + (0.3f * HighVoltage_ADC);
+	// moving_avg = (0.7f * moving_avg) + (0.3f * HighVoltage_ADC);
+    
+    moving_avg = (0.7f * moving_avg) + (0.3f * getCurrentInstant());
     return moving_avg;
 }
 
