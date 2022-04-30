@@ -173,8 +173,9 @@ static void fanControl(void *pvParameters) {
                 fan_1_State = 0;
                 fan_2_State = 0;
                 // duty cycle is inverted because of MOSFETS
-                cmr_pwmSetDutyCycle(&fan_1_PWM, 100-100);
-                cmr_pwmSetDutyCycle(&fan_2_PWM, 100-100);
+                // should be off until RTD
+                cmr_pwmSetDutyCycle(&fan_1_PWM, 100-0);
+                cmr_pwmSetDutyCycle(&fan_2_PWM, 100-0);
                 cmr_gpioWrite(GPIO_FAN_ON, 0);
                 break;
         }
