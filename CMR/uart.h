@@ -21,6 +21,8 @@
 
 #include <FreeRTOS.h>   // FreeRTOS interface
 #include <semphr.h>     // Semaphore interface
+#include <CMR/tasks.h>  // Task interface
+
 
 /** @brief Maximum number of pending UART messages. */
 #define CMR_UART_MSGS_MAX 16
@@ -112,7 +114,7 @@ void cmr_uartRX(
 );
 
 /** @brief Maximum number of UART polling retries. */
-#define CMR_UART_DEFAULT_TIMEOUT 1000
+#define CMR_UART_DEFAULT_TIMEOUT 100
 
 /** @brief Uart polling result */
 typedef enum {
