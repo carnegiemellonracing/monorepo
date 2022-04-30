@@ -7,7 +7,7 @@ BS_:
 
 BU_: Vector__XXX
 
-BO_ 256 VSM_Heartbeat: 5 Vector__XXX
+BO_ 257 VSM_Heartbeat: 5 Vector__XXX
 SG_ VSM_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ VSM_ERR_moduleTimeout : 23|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_moduleState : 22|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -79,7 +79,7 @@ SG_ VSM_busVoltage : 0|16@1+ (1,0) [0|65535] "mV" Vector__XXX
 SG_ VSM_busCurrent : 16|16@1+ (1,0) [0|65535] "mA" Vector__XXX
 
 
-BO_ 257 HVC_Heartbeat: 6 Vector__XXX
+BO_ 258 HVC_Heartbeat: 6 Vector__XXX
 SG_ HVC_Mode : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ HVC_State : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ HVC_Uptime : 40|8@1+ (1,0) [0|255] "s" Vector__XXX
@@ -108,7 +108,7 @@ BO_ 304 HVC_Command: 1 Vector__XXX
 SG_ HVC_modeRequest : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 258 CDC_Heartbeat: 5 Vector__XXX
+BO_ 259 CDC_Heartbeat: 5 Vector__XXX
 SG_ CDC_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_ERR_VSMTimeout : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ CDC_ERR_amkAllError : 23|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -265,7 +265,7 @@ SG_ CDC_LateralAcceleration : 16|16@1- (0.01,0) [-327.68|327.67] "mps2" Vector__
 SG_ CDC_VerticalAcceleration : 32|16@1- (0.01,0) [-327.68|327.67] "mps2" Vector__XXX
 
 
-BO_ 259 FSM_Heartbeat: 5 Vector__XXX
+BO_ 260 FSM_Heartbeat: 5 Vector__XXX
 SG_ FSM_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ FSM_ERR_VSMTimeout : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ FSM_WRN_VSMTimeout : 24|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1245,14 +1245,14 @@ BA_DEF_DEF_  "GenSigStartValue" 0;
 
 BA_ "BusType" "CAN";
 
-BA_ "GenMsgCycleTime" BO_ 256 10;
+BA_ "GenMsgCycleTime" BO_ 257 10;
 BA_ "GenMsgCycleTime" BO_ 272 10;
 BA_ "GenMsgCycleTime" BO_ 512 100;
 BA_ "GenMsgCycleTime" BO_ 1296 10000;
 BA_ "GenMsgCycleTime" BO_ 1328 100;
-BA_ "GenMsgCycleTime" BO_ 257 10;
-BA_ "GenMsgCycleTime" BO_ 304 10;
 BA_ "GenMsgCycleTime" BO_ 258 10;
+BA_ "GenMsgCycleTime" BO_ 304 10;
+BA_ "GenMsgCycleTime" BO_ 259 10;
 BA_ "GenMsgCycleTime" BO_ 306 10;
 BA_ "GenMsgCycleTime" BO_ 322 1;
 BA_ "GenMsgCycleTime" BO_ 338 10;
@@ -1268,7 +1268,7 @@ BA_ "GenMsgCycleTime" BO_ 642 100;
 BA_ "GenMsgCycleTime" BO_ 658 100;
 BA_ "GenMsgCycleTime" BO_ 674 100;
 BA_ "GenMsgCycleTime" BO_ 690 100;
-BA_ "GenMsgCycleTime" BO_ 259 10;
+BA_ "GenMsgCycleTime" BO_ 260 10;
 BA_ "GenMsgCycleTime" BO_ 307 10;
 BA_ "GenMsgCycleTime" BO_ 1331 100;
 BA_ "GenMsgCycleTime" BO_ 1347 100;
@@ -1339,22 +1339,22 @@ BA_ "GenMsgCycleTime" BO_ 2019 100;
 BA_ "GenMsgCycleTime" BO_ 2020 100;
 BA_ "GenMsgCycleTime" BO_ 2021 100;
 
-BA_ "GenSigStartValue" SG_ 256 VSM_state 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_ERR_moduleTimeout 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_ERR_moduleState 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_ERR_latchedError 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_ERR_DCDCFault 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_ERR_hallEffectOOR 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_ERR_brakePresOOR 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_HVCTimeout 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_CDCTimeout 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_FSMTimeout 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_DIMTimeout 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_PTCTimeout 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_APCTimeout 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_DIMReqNAK 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_VoltageOOR 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_CurrentOOR 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_state 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_ERR_moduleTimeout 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_ERR_moduleState 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_ERR_latchedError 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_ERR_DCDCFault 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_ERR_hallEffectOOR 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_ERR_brakePresOOR 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_HVCTimeout 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_CDCTimeout 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_FSMTimeout 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_DIMTimeout 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_PTCTimeout 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_APCTimeout 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_DIMReqNAK 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_VoltageOOR 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_CurrentOOR 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_internalState 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_HVCTimeout 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_CDCTimeout 0;
@@ -1396,39 +1396,39 @@ BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_latchIMD 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_latchBSPD 0;
 BA_ "GenSigStartValue" SG_ 1328 VSM_busVoltage 0;
 BA_ "GenSigStartValue" SG_ 1328 VSM_busCurrent 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_Mode 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_State 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_Uptime 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_PACK_UNDERVOLT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_PACK_OVERVOLT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_PACK_OVERCURRENT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_CELL_UNDERVOLT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_CELL_OVERVOLT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_CELL_OVERTEMP 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_BMB_FAULT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_BMB_TIMEOUT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_CAN_TIMEOUT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_RELAY 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_LV_UNDERVOLT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_dischargeClosed 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_prechargeClosed 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_negAIRClosed 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_posAIRClosed 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_dischargeError 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_prechargeError 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_negAIRError 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_posAIRError 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_Mode 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_State 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_Uptime 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_PACK_UNDERVOLT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_PACK_OVERVOLT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_PACK_OVERCURRENT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_CELL_UNDERVOLT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_CELL_OVERVOLT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_CELL_OVERTEMP 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_BMB_FAULT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_BMB_TIMEOUT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_CAN_TIMEOUT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_RELAY 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_LV_UNDERVOLT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_dischargeClosed 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_prechargeClosed 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_negAIRClosed 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_posAIRClosed 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_dischargeError 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_prechargeError 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_negAIRError 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_posAIRError 0;
 BA_ "GenSigStartValue" SG_ 304 HVC_modeRequest 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_state 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_ERR_VSMTimeout 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_ERR_amkAllError 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_WRN_VSMTimeout 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_WRN_amkSrcFL 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_WRN_amkSrcFR 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_WRN_amkSrcRL 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_WRN_amkSrcRR 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_WRN_amkError 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_WRN_amkTimeout 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_state 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_ERR_VSMTimeout 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_ERR_amkAllError 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_WRN_VSMTimeout 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_WRN_amkSrcFL 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_WRN_amkSrcFR 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_WRN_amkSrcRL 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_WRN_amkSrcRR 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_WRN_amkError 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_WRN_amkTimeout 0;
 BA_ "GenSigStartValue" SG_ 306 CDC_wheelFrontLeft 0;
 BA_ "GenSigStartValue" SG_ 306 CDC_wheelFrontRight 0;
 BA_ "GenSigStartValue" SG_ 306 CDC_wheelBackLeft 0;
@@ -1528,24 +1528,24 @@ BA_ "GenSigStartValue" SG_ 674 CDC_VerticalVelocity 0;
 BA_ "GenSigStartValue" SG_ 690 CDC_LongitudinalAcceleration 0;
 BA_ "GenSigStartValue" SG_ 690 CDC_LateralAcceleration 0;
 BA_ "GenSigStartValue" SG_ 690 CDC_VerticalAcceleration 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_state 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_ERR_VSMTimeout 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_VSMTimeout 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_VoltageOOR 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_CurrentOOR 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_BrakePositionOOR 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_LeftTPosOOR 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_RightTPosOOR 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_BPPFault 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_TPosImplausible 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_SSModule 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_SSCockpit 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_SSFrHub 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_SSInertia 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_SSFlHub 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_SSBots 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_BrakePressureOOR 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_SWAngleOOR 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_state 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_ERR_VSMTimeout 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_VSMTimeout 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_VoltageOOR 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_CurrentOOR 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_BrakePositionOOR 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_LeftTPosOOR 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_RightTPosOOR 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_BPPFault 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_TPosImplausible 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_SSModule 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_SSCockpit 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_SSFrHub 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_SSInertia 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_SSFlHub 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_SSBots 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_BrakePressureOOR 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_SWAngleOOR 0;
 BA_ "GenSigStartValue" SG_ 307 FSM_torqueReq 0;
 BA_ "GenSigStartValue" SG_ 307 FSM_throttlePos 0;
 BA_ "GenSigStartValue" SG_ 307 FSM_brakePressureFront 0;
@@ -2093,13 +2093,13 @@ BA_ "GenSigStartValue" SG_ 1952 volume 0;
 BA_ "GenSigStartValue" SG_ 1952 squelch 0;
 
 
-VAL_ 256 VSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
+VAL_ 257 VSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
 VAL_ 272 VSM_internalState 0 "ERROR" 1 "CLEAR_ERROR" 2 "GLV_ON" 3 "REQ_PRECHARGE" 4 "RUN_BMS" 5 "DCDC_EN" 6 "INVERTER_EN" 7 "HV_EN" 8 "RTD" 9 "COOLING_OFF" 10 "DCDC_OFF" ;
-VAL_ 257 HVC_Mode 0 "ERROR" 1 "IDLE" 2 "START" 4 "RUN" 8 "CHARGE" ;
-VAL_ 257 HVC_State 0 "ERROR" 1 "DISCHARGE" 2 "STANDBY" 3 "DRIVE_PRECHARGE" 4 "DRIVE_PRECHARGE_COMPLETE" 5 "DRIVE" 6 "CHARGE_PRECHARGE" 7 "CHARGE_PRECHARGE_COMPLETE" 8 "CHARGE_TRICKLE" 9 "CHARGE_CONSTANT_CURRENT" 10 "CHARGE_CONSTANT_VOLTAGE" 11 "CLEAR_ERROR" 12 "UNKNOWN" ;
+VAL_ 258 HVC_Mode 0 "ERROR" 1 "IDLE" 2 "START" 4 "RUN" 8 "CHARGE" ;
+VAL_ 258 HVC_State 0 "ERROR" 1 "DISCHARGE" 2 "STANDBY" 3 "DRIVE_PRECHARGE" 4 "DRIVE_PRECHARGE_COMPLETE" 5 "DRIVE" 6 "CHARGE_PRECHARGE" 7 "CHARGE_PRECHARGE_COMPLETE" 8 "CHARGE_TRICKLE" 9 "CHARGE_CONSTANT_CURRENT" 10 "CHARGE_CONSTANT_VOLTAGE" 11 "CLEAR_ERROR" 12 "UNKNOWN" ;
 VAL_ 304 HVC_modeRequest 0 "ERROR" 1 "IDLE" 2 "START" 4 "RUN" 8 "CHARGE" ;
-VAL_ 258 CDC_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
-VAL_ 259 FSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
+VAL_ 259 CDC_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
+VAL_ 260 FSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
 VAL_ 261 DIM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
 VAL_ 565 DIM_requestState 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
 VAL_ 565 DIM_requestGear 0 "UNKNOWN" 1 "REVERSE" 2 "SLOW" 3 "FAST" 4 "ENDURANCE" 5 "AUTO-X" 6 "SKIDPAD" 7 "ACCEL" 8 "TEST" ;
