@@ -12,7 +12,7 @@
 #include <CMR/gpio.h>   // GPIO interface
 
 /** @brief Macros for regen */
-#define REGEN_MAX 100
+#define REGEN_MAX 50
 #define REGEN_MIN 0
 #define REGEN_STEP_NUM 10
 #define REGEN_STEP ((REGEN_MAX - REGEN_MIN) / REGEN_STEP_NUM)

@@ -143,7 +143,7 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 2000
     },
     [CANRX_EMD_VALUES] = {
-		.canID = CMR_CANID_EMD_MEASUREMENT_RETX,
+		.canID = CMR_CANID_EMD_MEASUREMENT,
 		.timeoutError_ms = 4000,
 		.timeoutWarn_ms = 2000
     },
@@ -672,10 +672,10 @@ void canInit(void) {
 			.isMask = false,
 			.rxFIFO= CAN_RX_FIFO0,
 			.ids = {
-				CMR_CANID_EMD_MEASUREMENT_RETX,
-				CMR_CANID_EMD_MEASUREMENT_RETX,
-				CMR_CANID_EMD_MEASUREMENT_RETX,
-				CMR_CANID_EMD_MEASUREMENT_RETX
+				CMR_CANID_EMD_MEASUREMENT,
+				CMR_CANID_EMD_MEASUREMENT,
+				CMR_CANID_EMD_MEASUREMENT,
+				CMR_CANID_EMD_MEASUREMENT
 			}
 		}
     };

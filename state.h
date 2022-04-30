@@ -21,6 +21,9 @@ cmr_canGear_t stateGetGearReq(void);
 void actionOneButton(bool pressed);
 void actionTwoButton(bool pressed);
 
+void regenDownButton(bool pressed);
+void regenUpButton(bool pressed);
+
 
 void stateVSMUpButton(bool pressed);
 void stateVSMDownButton(bool pressed);
