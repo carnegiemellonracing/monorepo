@@ -79,7 +79,7 @@ int main(void) {
     uartInit();
 //    adcInit();
     sensorsInit();
-    // spiInit();
+//     spiInit();
 //    wwdgInit();
 
     cmr_taskInit(

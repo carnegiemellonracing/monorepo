@@ -185,7 +185,7 @@ void vBMBSampleTask(void *pvParameters) {
         // Tell all BMBs to sample their channels and store the results locally
         // taskENTER_CRITICAL();
         // Set the analog mux to sample the relevant half of the thermistors and set the status LED
-        uint8_t BMBGPIOValues = (BMBActivityLEDEnable) ? (BMB_GPIO_MUX_PIN | BMB_GPIO_LED_PIN) : 0;
+        uint8_t BMBGPIOValues = (BMBActivityLEDEnable) ? (BMB_GPIO_LED_PIN) : 0;
         uartRetv = slave_uart_setGPIO(BMBGPIOValues, BMBIndex);
         if (uartRetv != UART_SUCCESS) {
             // ERROR CASE: We could not send the set GPIO command
@@ -226,6 +226,14 @@ void vBMBSampleTask(void *pvParameters) {
                 float mult = 0.7f;
                 BMBData[BMBIndex].cellVoltages[VSENSE_CHANNELS_PER_BMB - vChannel - 1] = mult * BMBData[BMBIndex].cellVoltages[VSENSE_CHANNELS_PER_BMB - vChannel - 1] + (1.0f-mult) * volt;
             }
+
+            // Avg out cell 0 and cell 1
+            uint16_t avg = BMBData[BMBIndex].cellVoltages[0] + BMBData[BMBIndex].cellVoltages[1];
+            avg /= 2;
+            BMBData[BMBIndex].cellVoltages[0] = avg;
+            BMBData[BMBIndex].cellVoltages[1] = avg;
+
+
             // Retrieve each 16 bit temperature reading from the response
             for(uint8_t tChannel = 0; tChannel < TSENSE_CHANNELS_PER_MESSAGE; ++tChannel) {
                 uint32_t readAdcValue = (((uint32_t)channelResponse.data[2*tChannel + 2*VSENSE_CHANNELS_PER_BMB])<<8) |
@@ -240,6 +248,7 @@ void vBMBSampleTask(void *pvParameters) {
                 
                 //This is backwards for some reason.
                 BMBData[BMBIndex].cellTemperatures[logicalThermIndex] = lutTemp((uint16_t)readAdcValue);
+
                 // TODO set error conditions for bad temps
             }
         }
@@ -277,8 +286,7 @@ void vBMBSampleTask(void *pvParameters) {
         }
 
 
-        // Delay 30ms
-        vTaskDelayUntil(&xLastWakeTime, 25);
+        vTaskDelayUntil(&xLastWakeTime, 5);
     }
 }
 
