@@ -77,8 +77,8 @@ int main(void) {
     gpioInit();
     canInit();
     uartInit();
-    adcInit();
-    sensorsInit();
+//    adcInit();
+//    sensorsInit();
 //     spiInit();
 //    wwdgInit();
 

@@ -71,7 +71,7 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         currentState == CMR_CAN_HVC_STATE_CHARGE_TRICKLE ||
         currentState == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT ||
         currentState == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE) &&
-       (getAIRmillivolts() < minShutdownCiruitVoltageMV)) {
+        (cmr_gpioRead(SAFETY_BINARY) == 0)) {
         // E11
         // If SC voltage is below 8v while we're trying to drive relays, throw an error.
         errorFlags |= CMR_CAN_HVC_ERROR_LV_UNDERVOLT;

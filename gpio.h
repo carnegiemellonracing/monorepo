@@ -31,6 +31,7 @@ typedef enum {
     GPIO_AIR_POSITIVE_EN,
     GPIO_AIR_NEGATIVE_EN,
     GPIO_HVSENSE_DRDY_L,
+	SAFETY_BINARY,
     GPIO_LEN    /**< @brief Total GPIO pins. */
 } gpio_t;
 
