@@ -175,6 +175,8 @@ void vBMBSampleTask(void *pvParameters) {
 
     // Previous wake time pointer
     TickType_t xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, 50);
+
 
     for(;;) {
         uart_response_t channelResponse = {0};

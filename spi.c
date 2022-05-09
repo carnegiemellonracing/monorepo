@@ -282,6 +282,7 @@ int32_t getHVmillivolts() {
 
     // float HV_mV = (0.1242f * HighVoltage_ADC) - 46767.f;
 
+	return getBattMillivolts();
     return (int32_t) (canEmdHvVoltage() * 1000.f);
 
     // return voltageHV;

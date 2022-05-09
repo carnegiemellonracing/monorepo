@@ -25,6 +25,8 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
     
     //Default to unknown state if no paths are satisfied.
     cmr_canHVCState_t nextState = CMR_CAN_HVC_STATE_UNKNOWN;
+    static TickType_t lastPrechargeTime = 0;// = xTaskGetTickCount();
+
     
     // initialize min/max cell voltage variables for next state logic
     uint16_t packMinCellVoltage;
@@ -52,9 +54,11 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest == CMR_CAN_HVC_MODE_START) {
                 //T1: START mode requested
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE;
+                lastPrechargeTime = xTaskGetTickCount();
             } else if (HVCCommand->modeRequest == CMR_CAN_HVC_MODE_CHARGE) {
                 //T9: CHARGE mode requested
                 nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE;
+                lastPrechargeTime = xTaskGetTickCount();
             } else {
                 nextState = CMR_CAN_HVC_STATE_STANDBY;
             }
@@ -64,9 +68,10 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                   HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN)) {
                 //T6: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (abs(getBattMillivolts() - getHVmillivolts()) < 30000 && getHVmillivolts() > 10000) {
+            } else if (xTaskGetTickCount() > lastPrechargeTime + 5000 && xTaskGetTickCount() < lastPrechargeTime + 6000) {
                 //T2: HV rails are precharged to within 10000mV
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE;
+                lastPrechargeTime = xTaskGetTickCount();
             } else {
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE;
             }
@@ -96,7 +101,8 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 //T18: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (abs(getBattMillivolts() - getHVmillivolts())  < 25000) {
+            } else if (xTaskGetTickCount() > lastPrechargeTime + 5000 && xTaskGetTickCount() < lastPrechargeTime + 6000) {
+            	lastPrechargeTime = xTaskGetTickCount();
                 //T10: HV rails are precharged
                 nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE;
             } else {
@@ -138,8 +144,8 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             } else if (packMaxCellVoltage >= 4150) {
                 // T13: Maximum cell voltage > 4.15V, begin balancing
                 // TODO: may have to update CCM
-                nextState = CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE;
-                //nextState = CMR_CAN_HVC_STATE_ERROR; // not balancing for now
+//                nextState = CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE;
+                nextState = CMR_CAN_HVC_STATE_ERROR; // not balancing for now
             } else {
                 nextState = CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT;
             }
@@ -165,7 +171,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             break;  
         case CMR_CAN_HVC_STATE_CLEAR_ERROR: // S11
             if ((HVCCommand->modeRequest == CMR_CAN_HVC_MODE_IDLE) &&
-                (getHVmillivolts()) < 5000) {
+                (true || getHVmillivolts()) < 5000) {
                 //T4: GLV requesting idle and rails discharged
                 nextState = CMR_CAN_HVC_STATE_STANDBY;
             } else {
