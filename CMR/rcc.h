@@ -70,6 +70,10 @@ extern void _platform_rccADCClockEnable(ADC_TypeDef *instance);
 extern void _platform_rccCANClockEnable(CAN_TypeDef *instance);
 #endif /* HAL_CAN_MODULE_ENABLED */
 
+#ifdef HAL_TIM_MODULE_ENABLED
+extern void _platform_rccTIMClockEnable(TIM_TypeDef *instance);
+#endif /* HAL_TIM_MODULE_ENABLED */
+
 #endif /* HAL_RCC_MODULE_ENABLED */
 
 #endif /* CMR_RCC_H */

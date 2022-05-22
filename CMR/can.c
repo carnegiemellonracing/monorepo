@@ -296,7 +296,7 @@ void cmr_canInit(
 
     // Configure CAN TX pin.
     pinConfig.Pin = txPin;
-    pinConfig.Alternate = cmr_canGPIOAF(instance, rxPort);
+    pinConfig.Alternate = cmr_canGPIOAF(instance, txPort);
     HAL_GPIO_Init(txPort, &pinConfig);
 
     if (HAL_CAN_Init(&can->handle) != HAL_OK) {
