@@ -301,9 +301,9 @@ void tftDL_RTDUpdate(
     int32_t glvVoltage_V
 ) {
     tftDL_RTDwriteInt(ESE_HV_VOLTAGE_STR, 4, "%3ld", hvVoltage_mV / 1000);
-    tftDL_RTDwriteInt(ESE_MOTOR_TEMP_STR, 3, "%2ld", motorTemp_C);
-    tftDL_RTDwriteInt(ESE_AC_TEMP_STR, 3, "%2ld", acTemp_C);
-    tftDL_RTDwriteInt(ESE_MC_TEMP_STR, 3, "%2ld", mcTemp_C);
+    tftDL_RTDwriteInt(ESE_MOTOR_TEMP_STR, 4, "%3ld", motorTemp_C);
+    tftDL_RTDwriteInt(ESE_AC_TEMP_STR, 4, "%3ld", acTemp_C);
+    tftDL_RTDwriteInt(ESE_MC_TEMP_STR, 4, "%3ld", mcTemp_C);
     tftDL_RTDwriteInt(ESE_RTD_GLV_STR, 3, "%2d", glvVoltage_V);
     tftDL_RTDwriteInt(ESE_POWER_STR, 3, "%2ld", power_kW);
 
