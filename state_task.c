@@ -42,13 +42,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
     
     switch (currentState) {
         case CMR_CAN_HVC_STATE_DISCHARGE: // S1
-            if ((getHVmillivolts()) < 5000) {
-                // TODO change constant to #define
-                //T5: HV < 5V
-                nextState = CMR_CAN_HVC_STATE_STANDBY;
-            } else {
-                nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            }                               
+            nextState = CMR_CAN_HVC_STATE_STANDBY;
             break;
         case CMR_CAN_HVC_STATE_STANDBY: // S2
             if (HVCCommand->modeRequest == CMR_CAN_HVC_MODE_START) {
