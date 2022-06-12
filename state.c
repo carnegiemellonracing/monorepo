@@ -100,9 +100,11 @@ void exitConfigScreen(){
 void enterConfigScreen(){
     // make sure you've booted and you can enter by seeing if
     // waiting for cdc
+
+
     if (in_config_screen == false && 
-        config_screen_values_received_on_boot && 
-        stateGetVSM() == CMR_CAN_GLV_ON){
+    config_screen_values_received_on_boot && 
+    stateGetVSM() == CMR_CAN_GLV_ON && stateGetVSMReq() == CMR_CAN_GLV_ON){
         in_config_screen = true;
         dim_first_time_config_screen = true;
     }

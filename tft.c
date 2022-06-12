@@ -524,9 +524,9 @@ static void drawRTDScreen(void) {
 
 
     /* Pack Voltage */
-//   int32_t hvVoltage_mV = canHVCPackVoltage->hvVoltage_mV;
-     float hvVoltage_mV_f = canEmdHvVoltage(*canEMDvalues) * 1000.0f;
-     int32_t hvVoltage_mV = (int32_t) hvVoltage_mV_f;
+  int32_t hvVoltage_mV = canHVCPackVoltage->battVoltage_mV;
+    //  float hvVoltage_mV_f = canEmdHvVoltage(*canEMDvalues) * 1000.0f;
+    //  int32_t hvVoltage_mV = (int32_t) hvVoltage_mV_f;
 
     // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
     int32_t glvVoltage = adcRead(ADC_VSENSE) * 8 * 11 / 10 / 1000;
@@ -536,7 +536,7 @@ static void drawRTDScreen(void) {
 //                       computeCurrent_A(canAMK_FR_Act2) +
 //                       computeCurrent_A(canAMK_RL_Act2) +
 //                       computeCurrent_A(canAMK_RR_Act2);
-    int32_t current_A = canEmdHvCurrent(*canEMDvalues);
+    int32_t current_A = 0;
 
     int32_t power_kW = (current_A * (hvVoltage_mV / 1000)) / 1000;
 
