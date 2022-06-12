@@ -26,12 +26,12 @@ static const TickType_t fanControl_period_ms = 50;
 static cmr_task_t fanControl_task;
 
 
-#define FAN_AC_TEMP_LOW_dC 560
+#define FAN_AC_TEMP_LOW_dC 530
 #define FAN_AC_TEMP_HIGH_dC 580
 #define FAN_AC_STATE_LOW 30
 #define FAN_AC_STATE_HIGH 100
-#define FAN_INVERTER_TEMP_LOW_dC 560
-#define FAN_INVERTER_TEMP_HIGH_dC 580
+#define FAN_INVERTER_TEMP_LOW_dC 440
+#define FAN_INVERTER_TEMP_HIGH_dC 480
 #define FAN_INVERTER_STATE_LOW 30
 #define FAN_INVERTER_STATE_HIGH 100
 
