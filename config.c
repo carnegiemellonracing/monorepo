@@ -21,7 +21,7 @@
 /**@brief 12-byte unique product ID */
 #define UID_PTR ((uint32_t *) UID_BASE)
 /**@brief Some string to distinguish first-time-boots */
-#define CANARY "\xbd\xa6\x27\x59\xe2\xcf\x25\x88\x95\x24\xed\xee"
+#define CANARY "\xbd\xa6\x27\x59\xe2\xcf\x25\x88\x95\x24\xed\xed"
 
 /**@brief flash driver wrapping the settings */
 static cmr_config_t cfg;
