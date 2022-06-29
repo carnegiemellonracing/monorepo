@@ -78,11 +78,7 @@ DLC=6
 CycleTime=100
 Timeout=1000
 Var=VSM_brakePressureRear unsigned 0,16 /u:PSI
-<<<<<<< HEAD
 Var=VSM_hallEffect signed 16,16 /u:cA
-=======
-Var=VSM_hallEffect signed 16,16 /u:mA
->>>>>>> b02e3c98b59b4131a9fd1bc627c66356e954ceba
 Var=VSM_safetyIn unsigned 32,8 /u:V /f:0.1
 Var=VSM_safetyOut unsigned 40,8 /u:V /f:0.1
 
