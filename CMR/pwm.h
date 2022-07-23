@@ -8,7 +8,7 @@
 #ifndef CMR_PWM_H
 #define CMR_PWM_H
 
-#include <stm32f4xx_hal.h>  // HAL_TIM_MODULE_ENABLED, GPIO_TypeDef
+#include "platform.h"   // HAL_TIM_MODULE_ENABLED, GPIO_TypeDef
 
 #ifdef HAL_TIM_MODULE_ENABLED
 

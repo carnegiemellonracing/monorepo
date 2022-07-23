@@ -8,7 +8,7 @@
 #ifndef CMR_CAN_H
 #define CMR_CAN_H
 
-#include <stm32f4xx_hal.h>  // HAL_CAN_MODULE_ENABLED,
+#include "platform.h"       // HAL_CAN_MODULE_ENABLED,
                             // CAN_HandleTypeDef, CAN_TypeDef
 
 #ifdef HAL_CAN_MODULE_ENABLED

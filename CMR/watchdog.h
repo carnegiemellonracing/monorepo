@@ -8,7 +8,7 @@
 #ifndef CMR_WWDG_H
 #define CMR_WWDG_H
 
-#include <stm32f4xx_hal.h>
+#include "platform.h"
 
 #ifdef HAL_WWDG_MODULE_ENABLED
 

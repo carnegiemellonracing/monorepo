@@ -8,7 +8,7 @@
 #ifndef CMR_ADC_H
 #define CMR_ADC_H
 
-#include <stm32f4xx_hal.h>  // HAL_ADC_MODULE_ENABLED, ADC_HandleTypeDef,
+#include "platform.h"       // HAL_ADC_MODULE_ENABLED, ADC_HandleTypeDef,
                             // ADC_TypeDef, GPIO_TypeDef
 
 #ifdef HAL_ADC_MODULE_ENABLED
