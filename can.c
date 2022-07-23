@@ -12,6 +12,7 @@
  */
 
 #include <string.h>     // memcpy()
+#include <math.h>       // powf()
 
 #include <CMR/tasks.h>  // Task interface
 

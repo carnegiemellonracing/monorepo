@@ -443,7 +443,7 @@ void setConfigContextString(int8_t scroll_index) {
     char* context_string = config_menu_main_array[scroll_index].ESE_context_text_variable;
     uint32_t context_string_address_offset = ESE_CONTEXT_VALUE;
     uint32_t *context_string_pointer = (void *) (tftDL_configData + context_string_address_offset);
-    sprintf(context_string_pointer, context_string);
+    sprintf((char *) context_string_pointer, context_string);
 
 }
 
@@ -490,13 +490,13 @@ void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_r
             // treat it like an integer
         case integer:
             value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested); 
-            snprintf(value_address_pointer, 4, "%3d", value);
+            snprintf((char *) value_address_pointer, 4, "%3d", value);
             break;
         case boolean:
             if(up_requested || down_requested){
             	value = !value;
             }
-            sprintf(value_address_pointer, config_boolean_string_lut[value]);
+            sprintf((char *) value_address_pointer, config_boolean_string_lut[value]);
             break;
         case float_1_decimal:
             value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested); 
@@ -504,19 +504,19 @@ void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_r
             buffer[0] = buffer[1];
             buffer[1] = buffer[2];
             buffer[2] = '.';
-            sprintf(value_address_pointer, buffer);
+            sprintf((char *) value_address_pointer, buffer);
             break;
         case float_2_decimal:
             value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested); 
             snprintf(buffer, 5, "%4d", value);
             buffer[0] = buffer[1];
             buffer[1] = '.';
-            sprintf(value_address_pointer, buffer);
+            sprintf((char *) value_address_pointer, buffer);
             break;
         case custom_enum:
         	// -1 since index off of 0
             value = configValueIncrementer(value, value_min, value_max - 1, up_requested, down_requested);
-            sprintf(value_address_pointer, custom_enum_lut[value]);
+            sprintf((char *) value_address_pointer, custom_enum_lut[value]);
     };
 
     //Flush the modified value

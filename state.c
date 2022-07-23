@@ -9,6 +9,7 @@
 #include "gpio.h"   // GPIO interface
 #include "can.h"    // can interface
 #include "stdlib.h"
+#include "ledStrip.h"
 
 extern volatile bool flush_config_screen_to_cdc;
 /** @brief declaration of config screen variables */

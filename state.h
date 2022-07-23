@@ -24,6 +24,7 @@ void actionTwoButton(bool pressed);
 void regenDownButton(bool pressed);
 void regenUpButton(bool pressed);
 
+void exitConfigScreen();
 
 void stateVSMUpButton(bool pressed);
 void stateVSMDownButton(bool pressed);
