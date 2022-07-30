@@ -183,6 +183,8 @@ all interrupt callbacks are set to the corresponding weak functions:
   ******************************************************************************
   */
 
+#ifdef L431
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l4xx_hal.h"
 
@@ -6901,4 +6903,7 @@ void TIM_ResetCallback(TIM_HandleTypeDef *htim)
 /**
   * @}
   */
+
+#endif /* L431 */
+
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -46,6 +46,8 @@
   ******************************************************************************
   */
 
+#ifdef L431
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l4xx_hal.h"
 
@@ -249,6 +251,8 @@ __RAM_FUNC HAL_FLASHEx_OB_DBankConfig(uint32_t DBankConfig)
 /**
   * @}
   */
+
+#endif /* L431 */
 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
