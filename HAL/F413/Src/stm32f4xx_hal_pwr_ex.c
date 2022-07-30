@@ -20,7 +20,7 @@
   *
   ******************************************************************************
   */ 
-
+#ifdef F413
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
@@ -600,5 +600,5 @@ HAL_StatusTypeDef HAL_PWREx_EnterUnderDriveSTOPMode(uint32_t Regulator, uint8_t 
 /**
   * @}
   */
-
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -147,7 +147,7 @@
   *                        opensource.org/licenses/BSD-3-Clause
   *  ******************************************************************************
   */
-
+#ifdef F413
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
@@ -2087,5 +2087,5 @@ void LPTIM_Disable(LPTIM_HandleTypeDef *lptim)
 /**
   * @}
   */
-
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

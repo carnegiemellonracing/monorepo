@@ -93,7 +93,7 @@
   *
   ******************************************************************************
   */ 
-
+#ifdef F413
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
@@ -1302,5 +1302,5 @@ static HAL_StatusTypeDef DMA_CheckFifoParam(DMA_HandleTypeDef *hdma)
 /**
   * @}
   */
-
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

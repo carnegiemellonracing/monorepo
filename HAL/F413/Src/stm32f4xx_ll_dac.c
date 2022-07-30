@@ -16,6 +16,7 @@
   *
   ******************************************************************************
   */
+#ifdef F413
 #if defined(USE_FULL_LL_DRIVER)
 
 /* Includes ------------------------------------------------------------------*/
@@ -261,5 +262,5 @@ void LL_DAC_StructInit(LL_DAC_InitTypeDef *DAC_InitStruct)
   */
 
 #endif /* USE_FULL_LL_DRIVER */
-
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -80,7 +80,7 @@
   *
   ******************************************************************************
   */
-
+#ifdef F413
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
@@ -436,5 +436,5 @@ void HAL_EXTI_GenerateSWI(EXTI_HandleTypeDef *hexti)
 /**
   * @}
   */
-
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

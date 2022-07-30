@@ -165,7 +165,7 @@
   *
   ******************************************************************************
   */
-
+#ifdef F413
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
@@ -2787,5 +2787,5 @@ static HAL_StatusTypeDef SMBUS_WaitOnFlagUntilTimeout(SMBUS_HandleTypeDef *hsmbu
 /**
   * @}
   */
-
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

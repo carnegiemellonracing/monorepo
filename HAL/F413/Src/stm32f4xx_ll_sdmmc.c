@@ -156,6 +156,7 @@
   ******************************************************************************
   */ 
 
+#ifdef F413
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
@@ -1487,5 +1488,5 @@ static uint32_t SDMMC_GetCmdResp7(SDIO_TypeDef *SDIOx)
 /**
   * @}
   */
-
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

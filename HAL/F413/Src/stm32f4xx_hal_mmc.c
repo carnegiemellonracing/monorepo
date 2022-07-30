@@ -252,7 +252,7 @@
   *
   ******************************************************************************
   */ 
-
+#ifdef F413
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
@@ -2877,5 +2877,5 @@ static HAL_StatusTypeDef MMC_Write_IT(MMC_HandleTypeDef *hmmc)
 /**
   * @}
   */
-
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

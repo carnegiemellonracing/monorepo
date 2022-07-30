@@ -16,6 +16,7 @@
   *
   ******************************************************************************
   */
+#ifdef F413
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_ll_utils.h"
 #include "stm32f4xx_ll_rcc.h"
@@ -736,5 +737,5 @@ static ErrorStatus UTILS_EnablePLLAndSwitchSystem(uint32_t SYSCLK_Frequency, LL_
 /**
   * @}
   */
-
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

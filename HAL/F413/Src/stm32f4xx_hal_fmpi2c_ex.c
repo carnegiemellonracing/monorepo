@@ -41,7 +41,7 @@
   *
   ******************************************************************************
   */
-
+#ifdef F413
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
@@ -242,5 +242,5 @@ void HAL_FMPI2CEx_DisableFastModePlus(uint32_t ConfigFastModePlus)
 /**
   * @}
   */
-
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

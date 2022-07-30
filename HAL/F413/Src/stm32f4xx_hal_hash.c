@@ -162,7 +162,7 @@
   *
   ******************************************************************************
   */
-
+#ifdef F413
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
@@ -3081,5 +3081,5 @@ if((State_tmp == HAL_HASH_STATE_READY) || (State_tmp == HAL_HASH_STATE_SUSPENDED
   */
 
 
-
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

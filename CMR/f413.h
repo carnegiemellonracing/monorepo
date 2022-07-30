@@ -1,6 +1,8 @@
 #ifndef CMR_F413_H
 #define CMR_F413_H
 
+#ifdef F413
+
 #include <string.h>   // memcpy()
 #include <stdbool.h>  // bool
 
@@ -60,5 +62,7 @@ void _platform_configCommit(cmr_config_t *config);
 #ifdef HAL_TIM_MODULE_ENABLED
 void _platform_rccTIMClockEnable(TIM_TypeDef *instance);
 #endif /* HAL_TIM_MODULE_ENABLED */
+
+#endif /* F413 */
 
 #endif /* CMR_F413_H */

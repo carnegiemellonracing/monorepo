@@ -34,7 +34,7 @@
   ******************************************************************************
   */ 
 
-
+#ifdef F413
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
@@ -381,5 +381,5 @@ void DAC_DMAErrorCh2(DMA_HandleTypeDef *hdma)
 /**
   * @}
   */
-
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

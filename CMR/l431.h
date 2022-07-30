@@ -1,6 +1,8 @@
 #ifndef CMR_L431_H
 #define CMR_L431_H
 
+#ifdef L431
+
 #include <string.h>   // memcpy()
 #include <stdbool.h>  // bool
 
@@ -60,5 +62,7 @@ void _platform_configCommit(cmr_config_t *config);
 #ifdef HAL_TIM_MODULE_ENABLED
 void _platform_rccTIMClockEnable(TIM_TypeDef *instance);
 #endif /* HAL_TIM_MODULE_ENABLED */
+
+#endif /* L431 */
 
 #endif /* CMR_L431_H */
