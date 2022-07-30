@@ -16,6 +16,7 @@ uint32_t _platform_canGPIOAF(CAN_TypeDef *instance, GPIO_TypeDef *port);
 void _platform_canFilter(cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen);
 void _platform_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
+    cmr_canBitRate_t bitRate,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
     cmr_canRXCallback_t rxCallback,
     GPIO_TypeDef *rxPort, uint16_t rxPin,

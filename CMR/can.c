@@ -265,15 +265,16 @@ CAN_RX_FIFO_PENDING(1)
  */
 void cmr_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
+    cmr_canBitRate_t bitRate,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
     cmr_canRXCallback_t rxCallback,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin,
-    bool has_hse_clock
+    GPIO_TypeDef *txPort, uint16_t txPin
 ) {
     /* Do any platform-specific initialization */
     _platform_canInit(
         can, instance,
+        bitRate,
         rxMeta, rxMetaLen,
         rxCallback,
         rxPort, rxPin,
