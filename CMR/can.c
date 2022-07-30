@@ -252,9 +252,11 @@ CAN_RX_FIFO_PENDING(1)
  *
  * @warning It is undefined behavior to initialize the same HAL CAN instance
  * more than once!
+ * @warning This driver assumes a 48 MHz APB1 peripheral clock frequency!
  *
  * @param can The interface to initialize.
  * @param instance The HAL CAN instance (`CANx` from `stm32f413xx.h`).
+ * @param bitRate The CAN bit rate to use.
  * @param rxMeta Metadata for periodic messages to receive.
  * @param rxMetaLen Number of periodic receive messages.
  * @param rxCallback Callback for other messages received, or `NULL` to ignore.

@@ -30,5 +30,9 @@
 #include <stm32l4xx_hal.h>
 #endif /* L431 */
 
+#ifdef H735
+#include <stm32h7xx_hal.h>
+#endif /* H735 */
+
 
 #endif /* CMR_PLATFORM_H */
