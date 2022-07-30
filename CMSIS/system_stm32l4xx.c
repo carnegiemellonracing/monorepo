@@ -76,7 +76,7 @@
   *
   ******************************************************************************
   */
-
+#ifdef L431
 /** @addtogroup CMSIS
   * @{
   */
@@ -333,5 +333,5 @@ void SystemCoreClockUpdate(void)
 /**
   * @}
   */
-
+#endif /* L431 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

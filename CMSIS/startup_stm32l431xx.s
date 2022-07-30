@@ -25,7 +25,7 @@
   *
   ******************************************************************************
   */
-
+#ifdef L431
   .syntax unified
 	.cpu cortex-m4
 	.fpu softvfp
@@ -455,4 +455,5 @@ g_pfnVectors:
 	
 	.weak	CRS_IRQHandler
 	.thumb_set CRS_IRQHandler,Default_Handler
+#endif /* L431 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
