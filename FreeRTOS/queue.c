@@ -354,6 +354,7 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 			volatile size_t xSize = sizeof( StaticQueue_t );
 			(void) xSize;
 			configASSERT( xSize == sizeof( Queue_t ) );
+			(void) xSize; // Placate compiler
 		}
 		#endif /* configASSERT_DEFINED */
 

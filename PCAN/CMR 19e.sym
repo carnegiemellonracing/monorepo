@@ -239,6 +239,7 @@ DLC=5
 CycleTime=10
 Timeout=100
 Var=CDC_state unsigned 0,8 /e:State
+Var=CDC_ERR_VSMTimeout unsigned 8,1
 
 [CDC_WheelSpeeds]
 ID=132h
@@ -381,7 +382,7 @@ DLC=5
 CycleTime=10
 Timeout=100
 Var=FSM_state unsigned 0,8 /e:State
-Var=FSM_ERR_VSMTimeout unsigned 8,1
+Var=FSM_ERR_VSMTimeout bit 8,1
 Var=FSM_WRN_VSMTimeout bit 24,1
 Var=FSM_WRN_VoltageOOR bit 25,1
 Var=FSM_WRN_CurrentOOR bit 26,1
@@ -452,144 +453,107 @@ Timeout=1000
 Var=DIM_requestState unsigned 0,8 /e:State
 Var=DIM_requestGear unsigned 8,8 /e:Gear
 
-[AFC0_Heartbeat]
+[PTCf_Heartbeat]
 ID=106h
 DLC=5
 CycleTime=10
 Timeout=100
-Var=AFC0_state unsigned 0,8 /e:State
-Var=AFC0_ERR_VSMTimeout unsigned 8,1
-Var=AFC0_ERR_DCDCTemp1OOR bit 18,1
-Var=AFC0_ERR_DCDCTemp0OOR bit 19,1
-Var=AFC0_ERR_driver2TempOOR bit 20,1
-Var=AFC0_ERR_driver1TempOOR bit 21,1
-Var=AFC0_ERR_driver0TempOOR bit 22,1
-Var=AFC0_ERR_fansCurrentOOR bit 23,1
-Var=AFC0_WRN_VSMTimeout bit 24,1
-Var=AFC0_WRN_VoltageOOR bit 25,1
-Var=AFC0_WRN_CurrentOOR bit 26,1
+Var=PTCf_state unsigned 0,8 /e:State
+Var=PTCf_ERR_VSMTimeout unsigned 8,1
+Var=PTCf_ERR_waterTempOOR bit 21,1
+Var=PTCf_ERR_driversTempOOR bit 22,1
+Var=PTCf_WRN_VSMTimeout bit 24,1
+Var=PTCf_WRN_VoltageOOR bit 25,1
+Var=PTCf_WRN_CurrentOOR bit 26,1
 
-[AFC1_Heartbeat]
+[PTCp_Heartbeat]
 ID=107h
 DLC=5
 CycleTime=10
 Timeout=100
-Var=AFC1_state unsigned 0,8 /e:State
-Var=AFC1_ERR_VSMTimeout unsigned 8,1
-Var=AFC1_ERR_DCDCTemp1OOR bit 18,1
-Var=AFC1_ERR_DCDCTemp0OOR bit 19,1
-Var=AFC1_ERR_driver2TempOOR bit 20,1
-Var=AFC1_ERR_driver1TempOOR bit 21,1
-Var=AFC1_ERR_driver0TempOOR bit 22,1
-Var=AFC1_ERR_fansCurrentOOR bit 23,1
-Var=AFC1_WRN_VSMTimeout bit 24,1
-Var=AFC1_WRN_VoltageOOR bit 25,1
-Var=AFC1_WRN_CurrentOOR bit 26,1
+Var=PTCp_state unsigned 0,8 /e:State
+Var=PTCp_ERR_VSMTimeout unsigned 8,1
+Var=PTCp_ERR_waterTempOOR bit 21,1
+Var=PTCp_ERR_driversTempOOR bit 22,1
+Var=PTCp_WRN_VSMTimeout bit 24,1
+Var=PTCp_WRN_VoltageOOR bit 25,1
+Var=PTCp_WRN_CurrentOOR bit 26,1
 
-[AFC0_FanStatus]
-ID=236h
-DLC=2
+[PTCf_LoopTemps_A]
+ID=224h
+DLC=8
 CycleTime=100
 Timeout=1000
-Var=AFC0_ACFans unsigned 0,8 /e:FanState
-Var=AFC0_DCDCFan unsigned 8,8 /e:PumpState
+Var=PTCf_Temp1 unsigned 0,16 /u:dC
+Var=PTCf_Temp2 unsigned 16,16 /u:dC
+Var=PTCf_Temp3 unsigned 32,16 /u:dC
+Var=PTCf_Temp4 unsigned 48,16 /u:dC
 
-[AFC1_FanStatus]
-ID=237h
-DLC=2
-CycleTime=100
-Timeout=1000
-Var=AFC1_ACFans unsigned 0,8 /e:FanState
-Var=AFC1_DCDCFan unsigned 8,8 /e:PumpState
-
-[AFC0_DriverTemps]
-ID=536h
-DLC=5
-CycleTime=100
-Timeout=1000
-Var=AFC0_driverTemp0 unsigned 0,8 /u:C
-Var=AFC0_driverTemp1 unsigned 8,8 /u:C
-Var=AFC0_driverTemp2 unsigned 16,8 /u:C
-Var=AFC0_DCDCTemp0 unsigned 24,8 /u:C
-Var=AFC0_DCDCTemp1 unsigned 32,8 /u:C
-
-[AFC1_DriverTemps]
-ID=537h
-DLC=5
-CycleTime=100
-Timeout=1000
-Var=AFC1_driverTemp0 unsigned 0,8 /u:C
-Var=AFC1_driverTemp1 unsigned 8,8 /u:C
-Var=AFC1_driverTemp2 unsigned 16,8 /u:C
-Var=AFC1_DCDCTemp0 unsigned 24,8 /u:C
-Var=AFC1_DCDCTemp1 unsigned 32,8 /u:C
-
-[AFC0_PowerDiagnostic]
-ID=546h
-DLC=6
-CycleTime=100
-Timeout=1000
-Var=AFC0_busVoltage unsigned 0,16 /u:mV
-Var=AFC0_busCurrent unsigned 16,16 /u:mA
-Var=AFC0_fansCurrent unsigned 32,16 /u:mA
-
-[AFC1_PowerDiagnostic]
-ID=547h
-DLC=6
-CycleTime=100
-Timeout=1000
-Var=AFC1_busVoltage unsigned 0,16 /u:mV
-Var=AFC1_busCurrent unsigned 16,16 /u:mA
-Var=AFC1_fansCurrent unsigned 32,16 /u:mA
-
-[PTC_Heartbeat]
-ID=104h
-DLC=5
-CycleTime=10
-Timeout=100
-Var=PTC_state unsigned 0,8 /e:State
-Var=PTC_ERR_VSMTimeout unsigned 8,1
-Var=PTC_ERR_waterTempOOR bit 21,1
-Var=PTC_ERR_driversTempOOR bit 22,1
-Var=PTC_ERR_fanCurrentOOR bit 23,1
-Var=PTC_WRN_VSMTimeout bit 24,1
-Var=PTC_WRN_VoltageOOR bit 25,1
-Var=PTC_WRN_CurrentOOR bit 26,1
-
-[PTC_CoolingStatus]
+[PTCf_LoopTemps_B]
 ID=234h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=PTCf_Temp5 unsigned 0,16 /u:dC
+Var=PTCf_Temp6 unsigned 16,16 /u:dC
+Var=PTCf_Temp7 unsigned 32,16 /u:dC
+Var=PTCf_Temp8 unsigned 48,16 /u:dC
+
+[PTCp_LoopTemps_A]
+ID=244h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=PTCp_Temp1 unsigned 0,16 /u:dC
+Var=PTCp_Temp2 unsigned 16,16 /u:dC
+Var=PTCp_Temp3 unsigned 32,16 /u:dC
+Var=PTCp_Temp4 unsigned 48,16 /u:dC
+
+[PTCp_LoopTemps_B]
+ID=245h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=PTCp_Temp5 unsigned 0,16 /u:dC
+Var=PTCp_Temp6 unsigned 16,16 /u:dC
+Var=PTCp_Temp7 unsigned 32,16 /u:dC
+Var=PTCp_Temp8 unsigned 48,16 /u:dC
+
+[PTCf_FansStatus]
+ID=314h
+DLC=3
+CycleTime=100
+Timeout=1000
+Var=PTCf_channel1State unsigned 0,8 /u:percent
+Var=PTCf_channel2State unsigned 8,8 /u:percent
+Var=PTCf_channel3State unsigned 16,8 /u:percent
+
+[PTCp_PumpsStatus]
+ID=324h
+DLC=3
+CycleTime=100
+Timeout=1000
+Var=PTCp_channel1State unsigned 0,8 /u:percent
+Var=PTCp_channel2State unsigned 8,8 /u:percent
+Var=PTCp_channel3State unsigned 16,8 /u:percent
+
+[PTCf_PowerDiagnostic]
+ID=534h
 DLC=6
 CycleTime=100
 Timeout=1000
-Var=PTC_fanState unsigned 0,8 /e:FanState
-Var=PTC_pumpState unsigned 8,8 /e:PumpState
-Var=PTC_preRadiatorTemp unsigned 16,16 /u:dC
-Var=PTC_postRadiatorTemp unsigned 32,16 /u:dC
+Var=PTCf_logicVoltage unsigned 0,16 /u:mV
+Var=PTCf_loadVoltage unsigned 16,16 /u:mV
+Var=PTCf_loadCurrent unsigned 32,16 /u:mA
 
-[PTC_AFCControl]
-ID=254h
-DLC=2
-CycleTime=100
-Timeout=1000
-Var=PTC_acFansDuty unsigned 0,8 /u:%
-Var=PTC_dcdcFanDuty unsigned 8,8 /u:%
-
-[PTC_VoltageDiagnostic]
-ID=534h
-DLC=4
-CycleTime=100
-Timeout=1000
-Var=PTC_logicVoltage unsigned 0,16 /u:mV
-Var=PTC_loadVoltage unsigned 16,16 /u:mV
-
-[PTC_CurrentDiagnostic]
+[PTCp_PowerDiagnostic]
 ID=544h
 DLC=6
 CycleTime=100
 Timeout=1000
-Var=PTC_logicCurrent unsigned 0,16 /u:mA
-Var=PTC_loadCurrent unsigned 16,16 /u:mA
-Var=PTC_fanCurrent unsigned 32,16 /u:mA
+Var=PTCp_logicVoltage unsigned 0,16 /u:mV
+Var=PTCp_loadVoltage unsigned 16,16 /u:mV
+Var=PTCp_loadCurrent unsigned 32,16 /u:mA
 
 [APC_Heartbeat]
 ID=108h
@@ -1296,204 +1260,3 @@ Var=Ctrl_msg_inactive unsigned 35,1
 Var=LED_driver_defect unsigned 33,1
 Var=Save_charging_mode unsigned 32,1
 
-// AMK Inverter Signals
-
-[AMK_Inverter1_Actual_Values_1]
-ID=283h
-DLC=8
-Var=AMK_Inverter1_Status_Reserved       unsigned 0 ,8
-// System ready (SBM)
-Var=AMK_Inverter1_Status_SystemReady    bit      8 ,1
-// Error
-Var=AMK_Inverter1_Status_Error          bit      9 ,1
-// Warning
-Var=AMK_Inverter1_Status_Warn           bit      10,1
-// HV activation acknowledgment
-Var=AMK_Inverter1_Status_QuitDcOn       bit      11,1
-// HV activation level
-Var=AMK_Inverter1_Status_DcOn           bit      12,1
-// Controller enable acknowledgment
-Var=AMK_Inverter1_Status_QuitInvOn      bit      13,1
-// Controller enable level
-Var=AMK_Inverter1_Status_InverterOn     bit      14,1
-// Derating (torque limitation active)
-Var=AMK_Inverter1_Status_Derating       bit      15,1
-Var=AMK_Inverter1_ActualVelocity        signed   16,16 /u:rpm /p:4
-Var=AMK_Inverter1_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
-Var=AMK_Inverter1_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
-
-[AMK_Inverter1_Actual_Values_2]
-ID=285h
-DLC=8
-Var=AMK_Inverter1_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
-Var=AMK_Inverter1_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
-Var=AMK_Inverter1_ErrorInfo             unsigned 32,16
-Var=AMK_Inverter1_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
-
-[AMK_Inverter1_Setpoints_1]
-ID=184h
-DLC=8
-Var=AMK_Inverter1_Control_Reserved1     unsigned 0 ,8
-// Controller enable
-Var=AMK_Inverter1_Control_InverterOn    bit      8 ,1
-// HV active
-Var=AMK_Inverter1_Control_DcOn          bit      9 ,1
-// Driver Enable
-Var=AMK_Inverter1_Control_Enable        bit      10,1
-// Remove Error
-// Setpoints must have the value 0, as otherwise the 'Remove error' command will not be executed
-Var=AMK_Inverter1_Control_ErrorReset    bit      11,1
-Var=AMK_Inverter1_Control_Reserved2     unsigned 12,4
-Var=AMK_Inverter1_TargetVelocity        signed   16,16 /u:rpm /p:2
-Var=AMK_Inverter1_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
-Var=AMK_Inverter1_TorqueLimitNegativ     signed   48,16 /u:"% Mn" /f:0.1 /p:4
-
-[AMK_Inverter2_Actual_Values_1]
-ID=284h
-DLC=8
-Var=AMK_Inverter2_Status_Reserved       unsigned 0 ,8
-// System ready (SBM)
-Var=AMK_Inverter2_Status_SystemReady    bit      8 ,1
-// Error
-Var=AMK_Inverter2_Status_Error          bit      9 ,1
-// Warning
-Var=AMK_Inverter2_Status_Warn           bit      10,1
-// HV activation acknowledgment
-Var=AMK_Inverter2_Status_QuitDcOn       bit      11,1
-// HV activation level
-Var=AMK_Inverter2_Status_DcOn           bit      12,1
-// Controller enable acknowledgment
-Var=AMK_Inverter2_Status_QuitInvOn      bit      13,1
-// Controller enable level
-Var=AMK_Inverter2_Status_InverterOn     bit      14,1
-// Derating (torque limitation active)
-Var=AMK_Inverter2_Status_Derating       bit      15,1
-Var=AMK_Inverter2_ActualVelocity        signed   16,16 /u:rpm /p:4
-Var=AMK_Inverter2_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
-Var=AMK_Inverter2_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
-
-[AMK_Inverter2_Actual_Values_2]
-ID=286h
-DLC=8
-Var=AMK_Inverter2_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
-Var=AMK_Inverter2_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
-Var=AMK_Inverter2_ErrorInfo             unsigned 32,16
-Var=AMK_Inverter2_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
-
-[AMK_Inverter2_Setpoints_1]
-ID=185h
-DLC=8
-Var=AMK_Inverter2_Control_Reserved1     unsigned 0 ,8
-// Controller enable
-Var=AMK_Inverter2_Control_InverterOn    bit      8 ,1
-// HV active
-Var=AMK_Inverter2_Control_DcOn          bit      9 ,1
-// Driver Enable
-Var=AMK_Inverter2_Control_Enable        bit      10,1
-// Remove Error
-// Setpoints must have the value 0, as otherwise the 'Remove error' command will not be executed
-Var=AMK_Inverter2_Control_ErrorReset    bit      11,1
-Var=AMK_Inverter2_Control_Reserved2     unsigned 12,4
-Var=AMK_Inverter2_TargetVelocity        signed   16,16 /u:rpm /p:2
-Var=AMK_Inverter2_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
-Var=AMK_Inverter2_TorqueLimitNegativ     signed   48,16 /u:"% Mn" /f:0.1 /p:4
-
-[AMK_Inverter3_Actual_Values_1]
-ID=287h
-DLC=8
-Var=AMK_Inverter3_Status_Reserved       unsigned 0 ,8
-// System ready (SBM)
-Var=AMK_Inverter3_Status_SystemReady    bit      8 ,1
-// Error
-Var=AMK_Inverter3_Status_Error          bit      9 ,1
-// Warning
-Var=AMK_Inverter3_Status_Warn           bit      10,1
-// HV activation acknowledgment
-Var=AMK_Inverter3_Status_QuitDcOn       bit      11,1
-// HV activation level
-Var=AMK_Inverter3_Status_DcOn           bit      12,1
-// Controller enable acknowledgment
-Var=AMK_Inverter3_Status_QuitInvOn      bit      13,1
-// Controller enable level
-Var=AMK_Inverter3_Status_InverterOn     bit      14,1
-// Derating (torque limitation active)
-Var=AMK_Inverter3_Status_Derating       bit      15,1
-Var=AMK_Inverter3_ActualVelocity        signed   16,16 /u:rpm /p:4
-Var=AMK_Inverter3_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
-Var=AMK_Inverter3_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
-
-[AMK_Inverter3_Actual_Values_2]
-ID=289h
-DLC=8
-Var=AMK_Inverter3_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
-Var=AMK_Inverter3_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
-Var=AMK_Inverter3_ErrorInfo             unsigned 32,16
-Var=AMK_Inverter3_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
-
-[AMK_Inverter3_Setpoints_1]
-ID=188h
-DLC=8
-Var=AMK_Inverter3_Control_Reserved1     unsigned 0 ,8
-// Controller enable
-Var=AMK_Inverter3_Control_InverterOn    bit      8 ,1
-// HV active
-Var=AMK_Inverter3_Control_DcOn          bit      9 ,1
-// Driver Enable
-Var=AMK_Inverter3_Control_Enable        bit      10,1
-// Remove Error
-// Setpoints must have the value 0, as otherwise the 'Remove error' command will not be executed
-Var=AMK_Inverter3_Control_ErrorReset    bit      11,1
-Var=AMK_Inverter3_Control_Reserved2     unsigned 12,4
-Var=AMK_Inverter3_TargetVelocity        signed   16,16 /u:rpm /p:2
-Var=AMK_Inverter3_TorqueLimitPositiv    signed   32,16 /u:"% Mn" /f:0.1 /p:4
-Var=AMK_Inverter3_TorqueLimitNegativ     signed   48,16 /u:"% Mn" /f:0.1 /p:4
-
-[AMK_Inverter4_Actual_Values_1]
-ID=288h
-DLC=8
-Var=AMK_Inverter4_Status_Reserved       unsigned 0 ,8
-// System ready (SBM)
-Var=AMK_Inverter4_Status_SystemReady    bit      8 ,1
-// Error
-Var=AMK_Inverter4_Status_Error          bit      9 ,1
-// Warning
-Var=AMK_Inverter4_Status_Warn           bit      10,1
-// HV activation acknowledgment
-Var=AMK_Inverter4_Status_QuitDcOn       bit      11,1
-// HV activation level
-Var=AMK_Inverter4_Status_DcOn           bit      12,1
-// Controller enable acknowledgment
-Var=AMK_Inverter4_Status_QuitInvOn      bit      13,1
-// Controller enable level
-Var=AMK_Inverter4_Status_InverterOn     bit      14,1
-// Derating (torque limitation active)
-Var=AMK_Inverter4_Status_Derating       bit      15,1
-Var=AMK_Inverter4_ActualVelocity        signed   16,16 /u:rpm /p:4
-Var=AMK_Inverter4_TorqueCurrent         signed   32,16 /u:"Raw torque unit"
-Var=AMK_Inverter4_MagnetizingCurrent    signed   48,16 /u:"Raw current unit"
-
-[AMK_Inverter4_Actual_Values_2]
-ID=28Ah
-DLC=8
-Var=AMK_Inverter4_TempMotor             signed   0,16 /u:'C /f:0.1 /p:2
-Var=AMK_Inverter4_TempInverter          signed   16,16 /u:'C /f:0.1 /p:2
-Var=AMK_Inverter4_ErrorInfo             unsigned 32,16
-Var=AMK_Inverter4_TempIGBT              signed   48,16 /u:'C /f:0.1 /p:2
-
-[AMK_Inverter4_Setpoints_1]
-ID=189h
-DLC=8
-Var=AMK_Inverter4_Control_Reserved1     unsigned 0 ,8
-// Controller enable
-Var=AMK_Inverter4_Control_InverterOn    bit      8 ,1
-// HV active
-Var=AMK_Inverter4_Control_DcOn          bit      9 ,1
-// Driver Enable
-Var=AMK_Inverter4_Control_Enable        bit      10,1
-// Remove Error
-// Setpoints must have the value 0, as otherwise the 'Remove error' command will not be executed
-Var=AMK_Inverter4_Control_ErrorReset    bit      11,1
-Var=AMK_Inverter4_Control_Reserved2     unsigned 12,4
-Var=AMK_Inverter4_TargetVelocity        signed   16,16 /u:rpm /p:2
-Var=AMK_Inverter4_TorqueLimitPositiv    signed   32,16 /u:"% Mn"
-Var=AMK_Inverter4_TorqueLimitNegativ    signed   48,16 /u:"% Mn"

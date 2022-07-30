@@ -16,20 +16,16 @@
 #define CMR_CANID_RMS_OFFSET    0x3A0
 
 /** @brief CAN IDs. */
-typedef enum {
-    CMR_CANID_HEARTBEAT_VSM = 0x100,    /**< @brief VSM heartbeat. */
-    CMR_CANID_HEARTBEAT_HVC = 0x101,    /**< @brief HVC heartbeat. */
-    CMR_CANID_HEARTBEAT_CDC = 0x102,    /**< @brief CDC heartbeat. */
-    CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
+typedef enum {    
+    CMR_CANID_HEARTBEAT_VSM = 0x101,    /**< @brief VSM heartbeat. */
+    CMR_CANID_HEARTBEAT_HVC = 0x102,    /**< @brief HVC heartbeat. */
+    CMR_CANID_HEARTBEAT_CDC = 0x103,    /**< @brief CDC heartbeat. */
+    CMR_CANID_HEARTBEAT_FSM = 0x104,    /**< @brief FSM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x105,    /**< @brief DIM heartbeat. */
-    CMR_CANID_HEARTBEAT_PTCf= 0x106,    /**< @brief PTCf heatbeart.*/
-    CMR_CANID_HEARTBEAT_PTCp= 0x107,    /**< @brief PTCp heatbeart.*/
-    CMR_CANID_HEARTBEAT_APC = 0x108,    /**< @brief APC heartbeat. */
-    CMR_CANID_HEARTBEAT_TOM = 0x109,    /**< @brief TOM heartbeat. */
-    CMR_CANID_HEARTBEAT_COM = 0x10A,    /**< @brief COM heartbeat. */
+    CMR_CANID_HEARTBEAT_PTC = 0x106,    /**< @brief PTC heatbeart.*/
 	CMR_CANID_HEARTBEAT_DRS = 0x10C,	/**< @brief DRS heartbeat. */
 
-    CMR_CANID_CDL_BROADCAST = 0x605,    /**< @brief CDL broadcast. */
+    CMR_CANID_CDL_BROADCAST = 0x625,    /**< @brief CDL broadcast. */
 
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
     CMR_CANID_VSM_SENSORS = 0x200,              /**< @brief VSM sensor data. */
@@ -40,7 +36,7 @@ typedef enum {
     CMR_CANID_HVC_PACK_VOLTAGE = 0x301,         /**< @brief HVC pack voltage. */
     CMR_CANID_HVC_MINMAX_CELL_VOLTAGE = 0x310,  /**< @brief HVC pack min and max cell voltages*/
     CMR_CANID_HVC_MINMAX_CELL_TEMPS = 0x311,    /**< @brief HVC pack min and max cell temps. */
-    CMR_CANID_HVC_PACK_CURRENT = 0x321,         /**< @brief HVC pack current. */
+    CMR_CANID_HVC_PACK_CURRENT = 0x302,         /**< @brief HVC pack current. */
 
     CMR_CANID_CDC_WHEEL_SPEEDS = 0x132,         /**< @brief CDC (19e) wheel speeds. */
     CMR_CANID_CDC_SOLENOID_PTC = 0x142,         /**< @brief CDC (19e) brake solenoid command. */
@@ -63,20 +59,87 @@ typedef enum {
     CMR_CANID_FSM_PEDALS_ADC = 0x533,           /**< @brief FSM raw pedal positions. */
     CMR_CANID_FSM_SENSORS_ADC = 0x543,          /**< @brief FSM raw sensors. */
     CMR_CANID_FSM_POWER_DIAGNOSTICS = 0x553,    /**< @brief FSM power diagnostics. */
+    CMR_CANID_SS_STATUS = 0x554,               /**< @brief Safety Circuit status. */
 
-    CMR_CANID_PTCf_LOOP_TEMPS_A = 0x224,        /**< @brief PTC (fan board) cooling loop temps. */
-    CMR_CANID_PTCf_LOOP_TEMPS_B = 0x234,        /**< @brief PTC (fan board) cooling loop temps. */
-    CMR_CANID_PTCp_LOOP_TEMPS_A = 0x244,        /**< @brief PTC (pump board) cooling loop temps */
-    CMR_CANID_PTCp_LOOP_TEMPS_B = 0x254,        /**< @brief PTC (pump board) cooling loop temps */
-    CMR_CANID_PTCf_FANS_STATUS = 0x314,         /**< @brief PTC (fan board) fans status */
-    CMR_CANID_PTCp_PUMPS_STATUS = 0x324,        /**< @brief PTC (pump board) pumps status */
-    CMR_CANID_PTCf_POWER_DIAGNOSTICS = 0x534,   /**< @brief PTC (fan board) power diagnostics. */
-    CMR_CANID_PTCp_POWER_DIAGNOSTICS = 0x544,   /**< @brief PTC (pump board) power diagnostics. */
+    CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief PTC (fan board) cooling loop temps. */
+    CMR_CANID_PTC_LOOP_TEMPS_B = 0x234,        /**< @brief PTC (fan board) cooling loop temps. */
+    CMR_CANID_PTC_LOOP_TEMPS_C = 0x244,        /**< @brief PTC (fan board) cooling loop temps. */
+    CMR_CANID_PTC_FANS_PUMPS_STATUS = 0x314,   /**< @brief PTC (fan board) fans status */
+    CMR_CANID_PTC_POWER_DIAGNOSTICS = 0x534,   /**< @brief PTC (fan board) power diagnostics. */
 
     CMR_CANID_DIM_REQUEST = 0x235,              /**< @brief DIM state/gear request. */
     CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x535,    /**< @brief DIM power diagnostics. */
     CMR_CANID_DIM_TEXT_WRITE = 0x525,           /**< @brief DIM write command for sending text. */
     CMR_CANID_DIM_ACTIONS = 0x515,              /**< @brief DIM action buttons pressed status and regen percentage. */
+
+    /** @Note: The following CAN IDs are used for the dim-cdc driver configuration system.
+     * If you wish to modify these, you must maintain the invariant that the number of config
+     * packets is correct and the config packets are in the correct order with dim config packets
+     * first and then cdc config packets in ascending order. This is imperative to maintaining 
+     * code modularity :)
+    */
+    num_config_packets = 5,                     /**< @brief in the enum but actually just a count of num of packets. */ 
+    CMR_CANID_DIM_CONFIG0_DRV0 = 0x600,         /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG1_DRV0,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG2_DRV0,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG3_DRV0,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG4_DRV0,                 /**< @brief DIM config request */
+    CMR_CANID_CDC_CONFIG0_DRV0,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG1_DRV0,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG2_DRV0,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG3_DRV0,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG4_DRV0,                 /**< @brief CDC config request */
+    CMR_CANID_DIM_CONFIG0_DRV1,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG1_DRV1,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG2_DRV1,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG3_DRV1,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG4_DRV1,                 /**< @brief DIM config request */
+    CMR_CANID_CDC_CONFIG0_DRV1,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG1_DRV1,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG2_DRV1,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG3_DRV1,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG4_DRV1,                 /**< @brief CDC config request */
+    CMR_CANID_DIM_CONFIG0_DRV2,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG1_DRV2,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG2_DRV2,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG3_DRV2,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG4_DRV2,                 /**< @brief DIM config request */
+    CMR_CANID_CDC_CONFIG0_DRV2,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG1_DRV2,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG2_DRV2,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG3_DRV2,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG4_DRV2,                 /**< @brief CDC config request */
+    CMR_CANID_DIM_CONFIG0_DRV3,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG1_DRV3,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG2_DRV3,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG3_DRV3,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG4_DRV3,                 /**< @brief DIM config request */
+    CMR_CANID_CDC_CONFIG0_DRV3,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG1_DRV3,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG2_DRV3,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG3_DRV3,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG4_DRV3,                 /**< @brief CDC config request */
+    CMR_CANID_DIM_CONFIG0_DRV4,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG1_DRV4,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG2_DRV4,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG3_DRV4,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG4_DRV4,                 /**< @brief DIM config request */
+    CMR_CANID_CDC_CONFIG0_DRV4,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG1_DRV4,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG2_DRV4,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG3_DRV4,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG4_DRV4,                 /**< @brief CDC config request */
+    CMR_CANID_DIM_CONFIG0_DRV5,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG1_DRV5,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG2_DRV5,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG3_DRV5,                 /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG4_DRV5,                 /**< @brief DIM config request */
+    CMR_CANID_CDC_CONFIG0_DRV5,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG1_DRV5,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG2_DRV5,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG3_DRV5,                 /**< @brief CDC config request */
+    CMR_CANID_CDC_CONFIG4_DRV5,                 /**< @brief CDC config request */
+
 
     CMR_CANID_AFC0_FAN_STATUS = 0x236,          /**< @brief AFC 0 fan status. */
     CMR_CANID_AFC0_DRIVER_TEMPS = 0x536,        /**< @brief AFC 0 temperatures. */
@@ -113,6 +176,46 @@ typedef enum {
     CMR_CANID_RMS_COMMAND = 0x020 + CMR_CANID_RMS_OFFSET,       /**< @brief RMS command. */
     CMR_CANID_RMS_PARAM_REQ = 0x021 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS parameter request. */
     CMR_CANID_RMS_PARAM_RES = 0x022 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS parameter response. */
+
+
+    // BMS CAN Structs
+    CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE = 0x310,                  /**< @brief HVC Max/Min Cell Voltage. */
+    CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE = 0x311,              /**< @brief HVC Max/Min Cell Temperature. */
+    CMR_CANID_HVC_LOW_VOLTAGE = 0x303,                           /**< @brief HVC Low Voltage. */
+    CMR_CANID_HVC_BRUSA_MSG = 0x528,                             /**< @brief HVC Brusa message. */
+
+    CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE = 0x380,                    /**< @brief HVC BMB Voltage: Message ID is BMB number << 1*/
+    CMR_CANID_HVC_BMB_1_STATUS_VOLTAGE = 0x382,
+    CMR_CANID_HVC_BMB_2_STATUS_VOLTAGE = 0x384,
+    CMR_CANID_HVC_BMB_3_STATUS_VOLTAGE = 0x386,
+    CMR_CANID_HVC_BMB_4_STATUS_VOLTAGE = 0x388,
+    CMR_CANID_HVC_BMB_5_STATUS_VOLTAGE = 0x38A,
+    CMR_CANID_HVC_BMB_6_STATUS_VOLTAGE = 0x38C,
+    CMR_CANID_HVC_BMB_7_STATUS_VOLTAGE = 0x38E,
+    CMR_CANID_HVC_BMB_8_STATUS_VOLTAGE = 0x390,
+    CMR_CANID_HVC_BMB_9_STATUS_VOLTAGE = 0x392,
+    CMR_CANID_HVC_BMB_10_STATUS_VOLTAGE = 0x394,
+    CMR_CANID_HVC_BMB_11_STATUS_VOLTAGE = 0x396,
+    CMR_CANID_HVC_BMB_12_STATUS_VOLTAGE = 0x398,
+    CMR_CANID_HVC_BMB_13_STATUS_VOLTAGE = 0x39A,
+    CMR_CANID_HVC_BMB_14_STATUS_VOLTAGE = 0x39C,
+    CMR_CANID_HVC_BMB_15_STATUS_VOLTAGE = 0x39E,
+    CMR_CANID_HVC_BMB_0_STATUS_TEMP = 0x381,                       /**< @brief HVC BMB Temperature: Message ID is BMB number << 1 + 1*/
+    CMR_CANID_HVC_BMB_1_STATUS_TEMP = 0x383,
+    CMR_CANID_HVC_BMB_2_STATUS_TEMP = 0x385,
+    CMR_CANID_HVC_BMB_3_STATUS_TEMP = 0x387,
+    CMR_CANID_HVC_BMB_4_STATUS_TEMP = 0x389,
+    CMR_CANID_HVC_BMB_5_STATUS_TEMP = 0x38B,
+    CMR_CANID_HVC_BMB_6_STATUS_TEMP = 0x38D,
+    CMR_CANID_HVC_BMB_7_STATUS_TEMP = 0x38F,
+    CMR_CANID_HVC_BMB_8_STATUS_TEMP = 0x391,
+    CMR_CANID_HVC_BMB_9_STATUS_TEMP = 0x393,
+    CMR_CANID_HVC_BMB_10_STATUS_TEMP = 0x395,
+    CMR_CANID_HVC_BMB_11_STATUS_TEMP = 0x397,
+    CMR_CANID_HVC_BMB_12_STATUS_TEMP = 0x399,
+    CMR_CANID_HVC_BMB_13_STATUS_TEMP = 0x39B,
+    CMR_CANID_HVC_BMB_14_STATUS_TEMP = 0x39D,
+    CMR_CANID_HVC_BMB_15_STATUS_TEMP = 0x39F,
 
     CMR_CANID_SBG_STATUS_1 = 0x700,             /**< @brief SBG_ECAN_LOG_STATUS_01 */
     CMR_CANID_SBG_STATUS_2 = 0x701,             /**< @brief SBG_ECAN_LOG_STATUS_02 */

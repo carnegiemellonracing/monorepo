@@ -10,7 +10,7 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "platform.h"       // HAL_IncTick()
+#include "platform.h"   // HAL_IncTick()
 #include <FreeRTOS.h>   // FreeRTOS interface
 #include <task.h>       // xTaskGetSchedulerState()
 

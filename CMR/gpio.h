@@ -8,7 +8,7 @@
 #ifndef CMR_GPIO_H
 #define CMR_GPIO_H
 
-#include "platform.h"       // HAL_GPIO_MODULE_ENABLED, GPIO_TypeDef
+#include "platform.h"   // HAL_GPIO_MODULE_ENABLED, GPIO_TypeDef
 
 #ifdef HAL_GPIO_MODULE_ENABLED
 

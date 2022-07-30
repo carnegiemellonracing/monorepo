@@ -164,6 +164,7 @@ void cmr_spiInit(
     HAL_GPIO_Init(pins->miso.port, &pinConfig);
 
     pinConfig.Pin = pins->sck.pin;
+    pinConfig.Pull = GPIO_PULLUP;
     cmr_rccGPIOClockEnable(pins->sck.port);
     HAL_GPIO_Init(pins->sck.port, &pinConfig);
 
@@ -178,10 +179,10 @@ void cmr_spiInit(
     HAL_GPIO_WritePin(spi->nssPin.port, spi->nssPin.pin, GPIO_PIN_SET);
 
     // Configure DMA.
-    cmr_dmaInit(&spi->rxDMA);
-    cmr_dmaInit(&spi->txDMA);
-    __HAL_LINKDMA(&spi->handle, hdmarx, spi->rxDMA);
-    __HAL_LINKDMA(&spi->handle, hdmatx, spi->txDMA);
+    // cmr_dmaInit(&spi->rxDMA);
+    // cmr_dmaInit(&spi->txDMA);
+    // __HAL_LINKDMA(&spi->handle, hdmarx, spi->rxDMA);
+    // __HAL_LINKDMA(&spi->handle, hdmatx, spi->txDMA);
 
     if (HAL_SPI_Init(&spi->handle) != HAL_OK) {
         cmr_panic("HAL_SPI_Init() failed!");
@@ -213,18 +214,22 @@ int cmr_spiTXRX(
     HAL_GPIO_WritePin(spi->nssPin.port, spi->nssPin.pin, GPIO_PIN_RESET);
 
     if (txData == NULL) {
-        status = HAL_SPI_Receive_DMA(&spi->handle, rxData, len);
+        status = HAL_SPI_Receive(&spi->handle, rxData, len, 1);
     } else if (rxData == NULL) {
-        status = HAL_SPI_Transmit_DMA(&spi->handle, (void *) txData, len);
+        status = HAL_SPI_Transmit(&spi->handle, (void *) txData, len, 1);
     } else {
-        status = HAL_SPI_TransmitReceive_DMA(
-            &spi->handle, (void *) txData, rxData, len
+        status = HAL_SPI_TransmitReceive(
+            &spi->handle, (void *) txData, rxData, len, 1
         );
     }
+
+    // Enable slave select.
+    HAL_GPIO_WritePin(spi->nssPin.port, spi->nssPin.pin, GPIO_PIN_SET);
 
     switch (status) {
         case HAL_OK:
             break;
+        case HAL_TIMEOUT:
         case HAL_BUSY:
             return -1;
         default:
@@ -232,9 +237,9 @@ int cmr_spiTXRX(
     }
 
     // Wait for transaction to complete.
-    if (xSemaphoreTake(spi->doneSem, portMAX_DELAY) != pdTRUE) {
-        cmr_panic("Acquiring SPI port done semaphore timed out!");
-    }
+//    if (xSemaphoreTake(spi->doneSem, portMAX_DELAY) != pdTRUE) {
+//        cmr_panic("Acquiring SPI port done semaphore timed out!");
+//    }
 
     return 0;
 }
