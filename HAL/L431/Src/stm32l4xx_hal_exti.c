@@ -83,6 +83,8 @@
   ******************************************************************************
   */
 
+#ifdef L431
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l4xx_hal.h"
 
@@ -639,5 +641,7 @@ void HAL_EXTI_GenerateSWI(EXTI_HandleTypeDef *hexti)
 /**
   * @}
   */
+
+#endif /* L431 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -23,6 +23,8 @@
   ******************************************************************************
   */
 
+#ifdef L431
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l4xx_hal.h"
 
@@ -3533,6 +3535,8 @@ static uint32_t RCCEx_GetSAIxPeriphCLKFreq(uint32_t PeriphClk, uint32_t InputFre
 /**
   * @}
   */
+
+#endif /* L431 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 

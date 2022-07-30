@@ -46,6 +46,8 @@
   ******************************************************************************
   */
 
+#ifdef L431
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l4xx_hal.h"
 
@@ -335,5 +337,7 @@ void HAL_I2CEx_DisableFastModePlus(uint32_t ConfigFastModePlus)
 /**
   * @}
   */
+
+#endif /* L431 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

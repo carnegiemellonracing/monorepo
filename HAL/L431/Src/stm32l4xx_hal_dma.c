@@ -86,6 +86,8 @@
   ******************************************************************************
   */
 
+#ifdef L431
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l4xx_hal.h"
 
@@ -1171,5 +1173,7 @@ static void DMA_CalcDMAMUXRequestGenBaseAndMask(DMA_HandleTypeDef *hdma)
 /**
   * @}
   */
+
+#endif /* L431 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

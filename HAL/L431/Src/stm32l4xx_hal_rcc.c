@@ -49,6 +49,8 @@
   ******************************************************************************
   */
 
+#ifdef L431
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l4xx_hal.h"
 
@@ -1865,5 +1867,7 @@ static uint32_t RCC_GetSysClockFreqFromPLLSource(void)
 /**
   * @}
   */
+
+#endif /* L431 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

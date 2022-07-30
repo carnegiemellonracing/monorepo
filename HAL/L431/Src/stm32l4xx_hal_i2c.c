@@ -304,6 +304,8 @@
   ******************************************************************************
   */
 
+#ifdef L431
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l4xx_hal.h"
 
@@ -6498,5 +6500,7 @@ static void I2C_ConvertOtherXferOptions(I2C_HandleTypeDef *hi2c)
 /**
   * @}
   */
+
+#endif /* L431 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
