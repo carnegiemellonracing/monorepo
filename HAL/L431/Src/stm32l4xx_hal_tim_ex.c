@@ -1,10 +1,6 @@
 /**
   ******************************************************************************
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
   * @file    stm32l4xx_hal_tim_ex.c
-========
-  * @file    stm32f4xx_hal_tim_ex.c
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   * @author  MCD Application Team
   * @brief   TIM HAL module driver.
   *          This file provides firmware functions to manage the following
@@ -13,11 +9,8 @@
   *           + Time Hall Sensor Interface Start
   *           + Time Complementary signal break and dead time configuration
   *           + Time Master and Slave synchronization configuration
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
   *           + Time Output Compare/PWM Channel Configuration (for channels 5 and 6)
   *           + Time OCRef clear configuration
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   *           + Timer remapping capabilities configuration
   @verbatim
   ==============================================================================
@@ -72,11 +65,7 @@
   ******************************************************************************
   * @attention
   *
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
   * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics.
-========
-  * <h2><center>&copy; Copyright (c) 2016 STMicroelectronics.
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under BSD 3-Clause license,
@@ -85,21 +74,12 @@
   *                        opensource.org/licenses/BSD-3-Clause
   *
   ******************************************************************************
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
   */
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l4xx_hal.h"
 
 /** @addtogroup STM32L4xx_HAL_Driver
-========
-*/
-
-/* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx_hal.h"
-
-/** @addtogroup STM32F4xx_HAL_Driver
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   * @{
   */
 
@@ -447,11 +427,7 @@ HAL_StatusTypeDef HAL_TIMEx_HallSensor_Start_DMA(TIM_HandleTypeDef *htim, uint32
   /* Set the DMA error callback */
   htim->hdma[TIM_DMA_ID_CC1]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
   /* Enable the DMA channel for Capture 1*/
-========
-  /* Enable the DMA stream for Capture 1*/
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC1], (uint32_t)&htim->Instance->CCR1, (uint32_t)pData, Length) != HAL_OK)
   {
     return HAL_ERROR;
@@ -765,11 +741,7 @@ HAL_StatusTypeDef HAL_TIMEx_OCN_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Chan
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC1]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC1], (uint32_t)pData, (uint32_t)&htim->Instance->CCR1, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -788,11 +760,7 @@ HAL_StatusTypeDef HAL_TIMEx_OCN_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Chan
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC2]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC2], (uint32_t)pData, (uint32_t)&htim->Instance->CCR2, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -811,11 +779,7 @@ HAL_StatusTypeDef HAL_TIMEx_OCN_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Chan
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC3]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC3], (uint32_t)pData, (uint32_t)&htim->Instance->CCR3, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -1184,11 +1148,7 @@ HAL_StatusTypeDef HAL_TIMEx_PWMN_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Cha
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC1]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC1], (uint32_t)pData, (uint32_t)&htim->Instance->CCR1, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -1207,11 +1167,7 @@ HAL_StatusTypeDef HAL_TIMEx_PWMN_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Cha
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC2]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC2], (uint32_t)pData, (uint32_t)&htim->Instance->CCR2, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -1230,11 +1186,7 @@ HAL_StatusTypeDef HAL_TIMEx_PWMN_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Cha
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC3]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC3], (uint32_t)pData, (uint32_t)&htim->Instance->CCR3, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -1487,10 +1439,7 @@ HAL_StatusTypeDef HAL_TIMEx_OnePulseN_Stop_IT(TIM_HandleTypeDef *htim, uint32_t 
       (+) Configure Complementary channels, break features and dead time.
       (+) Configure Master synchronization.
       (+) Configure timer remapping capabilities.
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
       (+) Enable or disable channel grouping.
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
 
 @endverbatim
   * @{
@@ -1518,12 +1467,8 @@ HAL_StatusTypeDef HAL_TIMEx_OnePulseN_Stop_IT(TIM_HandleTypeDef *htim, uint32_t 
   *            @arg TIM_COMMUTATION_SOFTWARE:  Commutation source is set by software using the COMG bit
   * @retval HAL status
   */
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
 HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent(TIM_HandleTypeDef *htim, uint32_t  InputTrigger,
                                               uint32_t  CommutationSource)
-========
-HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent(TIM_HandleTypeDef *htim, uint32_t  InputTrigger, uint32_t  CommutationSource)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
 {
   /* Check the parameters */
   assert_param(IS_TIM_COMMUTATION_EVENT_INSTANCE(htim->Instance));
@@ -1578,12 +1523,8 @@ HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent(TIM_HandleTypeDef *htim, uint32_t 
   *            @arg TIM_COMMUTATION_SOFTWARE:  Commutation source is set by software using the COMG bit
   * @retval HAL status
   */
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
 HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent_IT(TIM_HandleTypeDef *htim, uint32_t  InputTrigger,
                                                  uint32_t  CommutationSource)
-========
-HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent_IT(TIM_HandleTypeDef *htim, uint32_t  InputTrigger, uint32_t  CommutationSource)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
 {
   /* Check the parameters */
   assert_param(IS_TIM_COMMUTATION_EVENT_INSTANCE(htim->Instance));
@@ -1639,12 +1580,8 @@ HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent_IT(TIM_HandleTypeDef *htim, uint32
   *            @arg TIM_COMMUTATION_SOFTWARE:  Commutation source is set by software using the COMG bit
   * @retval HAL status
   */
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
 HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent_DMA(TIM_HandleTypeDef *htim, uint32_t  InputTrigger,
                                                   uint32_t  CommutationSource)
-========
-HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent_DMA(TIM_HandleTypeDef *htim, uint32_t  InputTrigger, uint32_t  CommutationSource)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
 {
   /* Check the parameters */
   assert_param(IS_TIM_COMMUTATION_EVENT_INSTANCE(htim->Instance));
@@ -1715,7 +1652,6 @@ HAL_StatusTypeDef HAL_TIMEx_MasterConfigSynchronization(TIM_HandleTypeDef *htim,
   /* Get the TIMx SMCR register value */
   tmpsmcr = htim->Instance->SMCR;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
   /* If the timer supports ADC synchronization through TRGO2, set the master mode selection 2 */
   if (IS_TIM_TRGO2_INSTANCE(htim->Instance))
   {
@@ -1728,8 +1664,6 @@ HAL_StatusTypeDef HAL_TIMEx_MasterConfigSynchronization(TIM_HandleTypeDef *htim,
     tmpcr2 |= sMasterConfig->MasterOutputTrigger2;
   }
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   /* Reset the MMS Bits */
   tmpcr2 &= ~TIM_CR2_MMS;
   /* Select the TRGO source */
@@ -1776,10 +1710,7 @@ HAL_StatusTypeDef HAL_TIMEx_ConfigBreakDeadTime(TIM_HandleTypeDef *htim,
   assert_param(IS_TIM_DEADTIME(sBreakDeadTimeConfig->DeadTime));
   assert_param(IS_TIM_BREAK_STATE(sBreakDeadTimeConfig->BreakState));
   assert_param(IS_TIM_BREAK_POLARITY(sBreakDeadTimeConfig->BreakPolarity));
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
   assert_param(IS_TIM_BREAK_FILTER(sBreakDeadTimeConfig->BreakFilter));
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   assert_param(IS_TIM_AUTOMATIC_OUTPUT_STATE(sBreakDeadTimeConfig->AutomaticOutput));
 
   /* Check input state */
@@ -1796,7 +1727,6 @@ HAL_StatusTypeDef HAL_TIMEx_ConfigBreakDeadTime(TIM_HandleTypeDef *htim,
   MODIFY_REG(tmpbdtr, TIM_BDTR_BKE, sBreakDeadTimeConfig->BreakState);
   MODIFY_REG(tmpbdtr, TIM_BDTR_BKP, sBreakDeadTimeConfig->BreakPolarity);
   MODIFY_REG(tmpbdtr, TIM_BDTR_AOE, sBreakDeadTimeConfig->AutomaticOutput);
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
   MODIFY_REG(tmpbdtr, TIM_BDTR_BKF, (sBreakDeadTimeConfig->BreakFilter << TIM_BDTR_BKF_Pos));
 
   if (IS_TIM_BKIN2_INSTANCE(htim->Instance))
@@ -1811,9 +1741,6 @@ HAL_StatusTypeDef HAL_TIMEx_ConfigBreakDeadTime(TIM_HandleTypeDef *htim,
     MODIFY_REG(tmpbdtr, TIM_BDTR_BK2E, sBreakDeadTimeConfig->Break2State);
     MODIFY_REG(tmpbdtr, TIM_BDTR_BK2P, sBreakDeadTimeConfig->Break2Polarity);
   }
-========
-
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
 
   /* Set TIMx_BDTR */
   htim->Instance->BDTR = tmpbdtr;
@@ -1824,7 +1751,6 @@ HAL_StatusTypeDef HAL_TIMEx_ConfigBreakDeadTime(TIM_HandleTypeDef *htim,
 }
 
 /**
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
   * @brief  Configures the break input source.
   * @param  htim TIM handle.
   * @param  BreakInput Break input to configure
@@ -2175,46 +2101,11 @@ HAL_StatusTypeDef HAL_TIMEx_ConfigBreakInput(TIM_HandleTypeDef *htim,
   *            @arg TIM_TIM17_TI1_HSE_32:            TIM17 TI1 is connected to HSE div 32
   *            @arg TIM_TIM17_TI1_MCO:               TIM17 TI1 is connected to MCO
   @endif
-========
-  * @brief  Configures the TIMx Remapping input capabilities.
-  * @param  htim TIM handle.
-  * @param  Remap specifies the TIM remapping source.
-  *         For TIM1, the parameter can have the following values:                   (**)
-  *           @arg TIM_TIM1_TIM3_TRGO:  TIM1 ITR2 is connected to TIM3 TRGO
-  *           @arg TIM_TIM1_LPTIM:      TIM1 ITR2 is connected to LPTIM1 output
-  *
-  *         For TIM2, the parameter can have the following values:                   (**)
-  *           @arg TIM_TIM2_TIM8_TRGO:  TIM2 ITR1 is connected to TIM8 TRGO          (*)
-  *           @arg TIM_TIM2_ETH_PTP:    TIM2 ITR1 is connected to PTP trigger output (*)
-  *           @arg TIM_TIM2_USBFS_SOF:  TIM2 ITR1 is connected to OTG FS SOF
-  *           @arg TIM_TIM2_USBHS_SOF:  TIM2 ITR1 is connected to OTG FS SOF
-  *
-  *         For TIM5, the parameter can have the following values:
-  *           @arg TIM_TIM5_GPIO:       TIM5 TI4 is connected to GPIO
-  *           @arg TIM_TIM5_LSI:        TIM5 TI4 is connected to LSI
-  *           @arg TIM_TIM5_LSE:        TIM5 TI4 is connected to LSE
-  *           @arg TIM_TIM5_RTC:        TIM5 TI4 is connected to the RTC wakeup interrupt
-  *           @arg TIM_TIM5_TIM3_TRGO:  TIM5 ITR1 is connected to TIM3 TRGO          (*)
-  *           @arg TIM_TIM5_LPTIM:      TIM5 ITR1 is connected to LPTIM1 output      (*)
-  *
-  *         For TIM9, the parameter can have the following values:                   (**)
-  *           @arg TIM_TIM9_TIM3_TRGO:  TIM9 ITR1 is connected to TIM3 TRGO
-  *           @arg TIM_TIM9_LPTIM:      TIM9 ITR1 is connected to LPTIM1 output
-  *
-  *         For TIM11, the parameter can have the following values:
-  *           @arg TIM_TIM11_GPIO:     TIM11 TI1 is connected to GPIO
-  *           @arg TIM_TIM11_HSE:      TIM11 TI1 is connected to HSE_RTC clock
-  *           @arg TIM_TIM11_SPDIFRX:  TIM11 TI1 is connected to SPDIFRX_FRAME_SYNC  (*)
-  *
-  *         (*)  Value not defined in all devices. \n
-  *         (**) Register not available in all devices.
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   *
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_TIMEx_RemapConfig(TIM_HandleTypeDef *htim, uint32_t Remap)
 {
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
   uint32_t tmpor1 = 0U;
   uint32_t tmpor2 = 0U;
 
@@ -2277,31 +2168,6 @@ HAL_StatusTypeDef HAL_TIMEx_GroupChannel5(TIM_HandleTypeDef *htim, uint32_t Chan
 
   /* Change the htim state */
   htim->State = HAL_TIM_STATE_READY;
-========
-  __HAL_LOCK(htim);
-
-  /* Check parameters */
-  assert_param(IS_TIM_REMAP(htim->Instance, Remap));
-
-#if defined(LPTIM_OR_TIM1_ITR2_RMP) && defined(LPTIM_OR_TIM5_ITR1_RMP) && defined(LPTIM_OR_TIM5_ITR1_RMP)
-  if ((Remap & LPTIM_REMAP_MASK) == LPTIM_REMAP_MASK)
-  {
-    /* Connect TIMx internal trigger to LPTIM1 output */
-    __HAL_RCC_LPTIM1_CLK_ENABLE();
-    MODIFY_REG(LPTIM1->OR,
-               (LPTIM_OR_TIM1_ITR2_RMP | LPTIM_OR_TIM5_ITR1_RMP | LPTIM_OR_TIM9_ITR1_RMP),
-               Remap & ~(LPTIM_REMAP_MASK));
-  }
-  else
-  {
-    /* Set the Timer remapping configuration */
-    WRITE_REG(htim->Instance->OR, Remap);
-  }
-#else
-  /* Set the Timer remapping configuration */
-  WRITE_REG(htim->Instance->OR, Remap);
-#endif /* LPTIM_OR_TIM1_ITR2_RMP &&  LPTIM_OR_TIM5_ITR1_RMP && LPTIM_OR_TIM5_ITR1_RMP */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
 
   __HAL_UNLOCK(htim);
 
@@ -2371,7 +2237,6 @@ __weak void HAL_TIMEx_BreakCallback(TIM_HandleTypeDef *htim)
             the HAL_TIMEx_BreakCallback could be implemented in the user file
    */
 }
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
 
 /**
   * @brief  Hall Break2 detection callback in non blocking mode
@@ -2387,8 +2252,6 @@ __weak void HAL_TIMEx_Break2Callback(TIM_HandleTypeDef *htim)
             the HAL_TIMEx_Break2Callback could be implemented in the user file
    */
 }
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
 /**
   * @}
   */
@@ -2427,11 +2290,7 @@ HAL_TIM_StateTypeDef HAL_TIMEx_HallSensor_GetState(TIM_HandleTypeDef *htim)
   */
 
 /* Private functions ---------------------------------------------------------*/
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
 /** @defgroup TIMEx_Private_Functions TIMEx Private Functions
-========
-/** @defgroup TIMEx_Private_Functions TIM Extended Private Functions
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   * @{
   */
 

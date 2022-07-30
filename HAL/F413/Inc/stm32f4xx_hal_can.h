@@ -1,20 +1,12 @@
 /**
   ******************************************************************************
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_can.h
-  * @file    stm32l4xx_hal_can.h
-========
   * @file    stm32f4xx_hal_can.h
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_can.h
   * @author  MCD Application Team
   * @brief   Header file of CAN HAL module.
   ******************************************************************************
   * @attention
   *
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_can.h
-  * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics.
-========
   * <h2><center>&copy; Copyright (c) 2016 STMicroelectronics.
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_can.h
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under BSD 3-Clause license,
@@ -26,28 +18,17 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_can.h
-#ifndef STM32L4xx_HAL_CAN_H
-#define STM32L4xx_HAL_CAN_H
-========
 #ifndef STM32F4xx_HAL_CAN_H
 #define STM32F4xx_HAL_CAN_H
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_can.h
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_can.h
-#include "stm32l4xx_hal_def.h"
-
-/** @addtogroup STM32L4xx_HAL_Driver
-========
 #include "stm32f4xx_hal_def.h"
 
 /** @addtogroup STM32F4xx_HAL_Driver
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_can.h
   * @{
   */
 
@@ -813,13 +794,7 @@ HAL_StatusTypeDef HAL_CAN_ResetError(CAN_HandleTypeDef *hcan);
                          ((BS2) == CAN_BS2_7TQ) || ((BS2) == CAN_BS2_8TQ))
 #define IS_CAN_PRESCALER(PRESCALER) (((PRESCALER) >= 1U) && ((PRESCALER) <= 1024U))
 #define IS_CAN_FILTER_ID_HALFWORD(HALFWORD) ((HALFWORD) <= 0xFFFFU)
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_can.h
-#if   defined(CAN2)
 #define IS_CAN_FILTER_BANK_DUAL(BANK) ((BANK) <= 27U)
-#endif
-========
-#define IS_CAN_FILTER_BANK_DUAL(BANK) ((BANK) <= 27U)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_can.h
 #define IS_CAN_FILTER_BANK_SINGLE(BANK) ((BANK) <= 13U)
 #define IS_CAN_FILTER_MODE(MODE) (((MODE) == CAN_FILTERMODE_IDMASK) || \
                                   ((MODE) == CAN_FILTERMODE_IDLIST))
@@ -867,11 +842,7 @@ HAL_StatusTypeDef HAL_CAN_ResetError(CAN_HandleTypeDef *hcan);
 }
 #endif
 
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_can.h
-#endif /* STM32L4xx_HAL_CAN_H */
-========
 #endif /* STM32F4xx_HAL_CAN_H */
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_can.h
 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

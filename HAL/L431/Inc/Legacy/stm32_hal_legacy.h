@@ -236,7 +236,6 @@
 #define DAC_WAVEGENERATION_NOISE                        DAC_WAVE_NOISE
 #define DAC_WAVEGENERATION_TRIANGLE                     DAC_WAVE_TRIANGLE
 
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 #if defined(STM32G4)
 #define DAC_CHIPCONNECT_DISABLE       (DAC_CHIPCONNECT_EXTERNAL | DAC_CHIPCONNECT_BOTH)
 #define DAC_CHIPCONNECT_ENABLE        (DAC_CHIPCONNECT_INTERNAL | DAC_CHIPCONNECT_BOTH)
@@ -247,8 +246,6 @@
 #define HAL_DAC_MSP_DEINIT_CB_ID     HAL_DAC_MSPDEINIT_CB_ID
 #endif
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 /**
   * @}
   */
@@ -499,7 +496,6 @@
 #define HAL_SYSCFG_FASTMODEPLUS_I2C1       I2C_FASTMODEPLUS_I2C1
 #define HAL_SYSCFG_FASTMODEPLUS_I2C2       I2C_FASTMODEPLUS_I2C2
 #define HAL_SYSCFG_FASTMODEPLUS_I2C3       I2C_FASTMODEPLUS_I2C3
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 #if defined(STM32G4)
 
 #define HAL_SYSCFG_EnableIOAnalogSwitchBooster    HAL_SYSCFG_EnableIOSwitchBooster
@@ -507,8 +503,6 @@
 #define HAL_SYSCFG_EnableIOAnalogSwitchVDD        HAL_SYSCFG_EnableIOSwitchVDD
 #define HAL_SYSCFG_DisableIOAnalogSwitchVDD       HAL_SYSCFG_DisableIOSwitchVDD
 #endif /* STM32G4 */
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 /**
   * @}
   */
@@ -517,11 +511,7 @@
 /** @defgroup LL_FMC_Aliased_Defines LL FMC Aliased Defines maintained for compatibility purpose
   * @{
   */
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 #if defined(STM32L4) || defined(STM32F7) || defined(STM32H7) || defined(STM32G4)
-========
-#if defined(STM32L4) || defined(STM32F7) || defined(STM32H7)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 #define FMC_NAND_PCC_WAIT_FEATURE_DISABLE       FMC_NAND_WAIT_FEATURE_DISABLE
 #define FMC_NAND_PCC_WAIT_FEATURE_ENABLE        FMC_NAND_WAIT_FEATURE_ENABLE
 #define FMC_NAND_PCC_MEM_BUS_WIDTH_8            FMC_NAND_MEM_BUS_WIDTH_8
@@ -580,20 +570,12 @@
 #define GPIO_AF1_LPTIM                            GPIO_AF1_LPTIM1
 #define GPIO_AF2_LPTIM                            GPIO_AF2_LPTIM1
 
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 #if defined(STM32L0) || defined(STM32L4) || defined(STM32F4) || defined(STM32F2) || defined(STM32F7) || defined(STM32G4) || defined(STM32H7)
-========
-#if defined(STM32L0) || defined(STM32L4) || defined(STM32F4) || defined(STM32F2) || defined(STM32F7) || defined(STM32H7)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 #define  GPIO_SPEED_LOW                           GPIO_SPEED_FREQ_LOW
 #define  GPIO_SPEED_MEDIUM                        GPIO_SPEED_FREQ_MEDIUM
 #define  GPIO_SPEED_FAST                          GPIO_SPEED_FREQ_HIGH
 #define  GPIO_SPEED_HIGH                          GPIO_SPEED_FREQ_VERY_HIGH
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 #endif /* STM32L0 || STM32L4 || STM32F4 || STM32F2 || STM32F7 || STM32G4 || STM32H7*/
-========
-#endif /* STM32L0 || STM32L4 || STM32F4 || STM32F2 || STM32F7 || STM32H7*/
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 
 #if defined(STM32L1)
  #define  GPIO_SPEED_VERY_LOW    GPIO_SPEED_FREQ_LOW
@@ -634,7 +616,6 @@
 #define __HAL_HRTIM_GetClockPrescaler __HAL_HRTIM_GETCLOCKPRESCALER
 #define __HAL_HRTIM_SetCompare        __HAL_HRTIM_SETCOMPARE
 #define __HAL_HRTIM_GetCompare        __HAL_HRTIM_GETCOMPARE
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 
 #if defined(STM32G4)
 #define HAL_HRTIM_ExternalEventCounterConfig    HAL_HRTIM_ExtEventCounterConfig
@@ -642,8 +623,6 @@
 #define HAL_HRTIM_ExternalEventCounterDisable   HAL_HRTIM_ExtEventCounterDisable
 #define HAL_HRTIM_ExternalEventCounterReset     HAL_HRTIM_ExtEventCounterReset
 #endif /* STM32G4 */
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 /**
   * @}
   */
@@ -783,15 +762,12 @@
 #define OPAMP_PGACONNECT_VM0                  OPAMP_PGA_CONNECT_INVERTINGINPUT_IO0
 #define OPAMP_PGACONNECT_VM1                  OPAMP_PGA_CONNECT_INVERTINGINPUT_IO1
 
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 #if defined(STM32L1) || defined(STM32L4) || defined(STM32L5)
 #define HAL_OPAMP_MSP_INIT_CB_ID       HAL_OPAMP_MSPINIT_CB_ID
 #define HAL_OPAMP_MSP_DEINIT_CB_ID     HAL_OPAMP_MSPDEINIT_CB_ID
 #endif
 
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 /**
   * @}
   */
@@ -807,10 +783,6 @@
 
   #define I2S_FLAG_TXE             I2S_FLAG_TXP
   #define I2S_FLAG_RXNE            I2S_FLAG_RXP
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
-========
-  #define I2S_FLAG_FRE             I2S_FLAG_TIFRE
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 #endif
 
 #if defined(STM32F7)
@@ -1028,7 +1000,6 @@
 #define IS_TIM_HALL_INTERFACE_INSTANCE   IS_TIM_HALL_SENSOR_INTERFACE_INSTANCE
 #endif
 
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 #if defined(STM32H7)
 #define TIM_TIM1_ETR_COMP1_OUT        TIM_TIM1_ETR_COMP1
 #define TIM_TIM1_ETR_COMP2_OUT        TIM_TIM1_ETR_COMP2
@@ -1047,8 +1018,6 @@
 #define TIM_TIM3_TI1_COMP1COMP2_OUT   TIM_TIM3_TI1_COMP1_COMP2
 #endif
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 /**
   * @}
   */
@@ -1328,11 +1297,7 @@
 
 #define HAL_I2CFastModePlusConfig(SYSCFG_I2CFastModePlus, cmd) (((cmd)==ENABLE)? HAL_I2CEx_EnableFastModePlus(SYSCFG_I2CFastModePlus): HAL_I2CEx_DisableFastModePlus(SYSCFG_I2CFastModePlus))
 
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 #if defined(STM32H7) || defined(STM32WB) || defined(STM32G0) || defined(STM32F4) || defined(STM32F7) || defined(STM32L0) || defined(STM32L4)
-========
-#if defined(STM32H7) || defined(STM32WB) || defined(STM32G0) || defined(STM32F4) || defined(STM32F7)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 #define HAL_I2C_Master_Sequential_Transmit_IT  HAL_I2C_Master_Seq_Transmit_IT
 #define HAL_I2C_Master_Sequential_Receive_IT   HAL_I2C_Master_Seq_Receive_IT
 #define HAL_I2C_Slave_Sequential_Transmit_IT   HAL_I2C_Slave_Seq_Transmit_IT
@@ -1341,11 +1306,7 @@
 #define HAL_I2C_Master_Sequential_Receive_DMA  HAL_I2C_Master_Seq_Receive_DMA
 #define HAL_I2C_Slave_Sequential_Transmit_DMA  HAL_I2C_Slave_Seq_Transmit_DMA
 #define HAL_I2C_Slave_Sequential_Receive_DMA   HAL_I2C_Slave_Seq_Receive_DMA
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 #endif /* STM32H7 || STM32WB  || STM32G0 || STM32F4 || STM32F7 || STM32L0 || STM32L4 */
-========
-#endif /* STM32H7 || STM32WB  || STM32G0 || STM32F4 || STM32F7 */
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 
 #if defined(STM32F4)
 #define HAL_FMPI2C_Master_Sequential_Transmit_IT  HAL_FMPI2C_Master_Seq_Transmit_IT
@@ -1436,11 +1397,7 @@
 #define HAL_TIM_DMAError                                TIM_DMAError
 #define HAL_TIM_DMACaptureCplt                          TIM_DMACaptureCplt
 #define HAL_TIMEx_DMACommutationCplt                    TIMEx_DMACommutationCplt
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 #if defined(STM32H7) || defined(STM32G0) || defined(STM32F7) || defined(STM32F4) || defined(STM32L0) || defined(STM32L4)
-========
-#if defined(STM32H7) || defined(STM32G0) || defined(STM32F7) || defined(STM32F4) || defined(STM32L0)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 #define HAL_TIM_SlaveConfigSynchronization              HAL_TIM_SlaveConfigSynchro
 #define HAL_TIM_SlaveConfigSynchronization_IT           HAL_TIM_SlaveConfigSynchro_IT
 #define HAL_TIMEx_CommutationCallback                   HAL_TIMEx_CommutCallback
@@ -2566,7 +2523,6 @@
 #define __USB_OTG_FS_CLK_DISABLE __HAL_RCC_USB_OTG_FS_CLK_DISABLE
 #define __USB_OTG_FS_CLK_ENABLE __HAL_RCC_USB_OTG_FS_CLK_ENABLE
 #define __USB_RELEASE_RESET __HAL_RCC_USB_RELEASE_RESET
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 
 #if defined(STM32H7)
 #define __HAL_RCC_WWDG_CLK_DISABLE   __HAL_RCC_WWDG1_CLK_DISABLE
@@ -2582,18 +2538,13 @@
 #define  __HAL_RCC_WWDG_IS_CLK_DISABLED  __HAL_RCC_WWDG1_IS_CLK_DISABLED
 #endif
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 #define __WWDG_CLK_DISABLE __HAL_RCC_WWDG_CLK_DISABLE
 #define __WWDG_CLK_ENABLE __HAL_RCC_WWDG_CLK_ENABLE
 #define __WWDG_CLK_SLEEP_DISABLE __HAL_RCC_WWDG_CLK_SLEEP_DISABLE
 #define __WWDG_CLK_SLEEP_ENABLE __HAL_RCC_WWDG_CLK_SLEEP_ENABLE
 #define __WWDG_FORCE_RESET __HAL_RCC_WWDG_FORCE_RESET
 #define __WWDG_RELEASE_RESET __HAL_RCC_WWDG_RELEASE_RESET
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 #define __TIM21_CLK_ENABLE   __HAL_RCC_TIM21_CLK_ENABLE
 #define __TIM21_CLK_DISABLE   __HAL_RCC_TIM21_CLK_DISABLE
 #define __TIM21_FORCE_RESET   __HAL_RCC_TIM21_FORCE_RESET
@@ -2926,7 +2877,6 @@
 #define __WWDG_IS_CLK_ENABLED       __HAL_RCC_WWDG_IS_CLK_ENABLED
 #define __WWDG_IS_CLK_DISABLED      __HAL_RCC_WWDG_IS_CLK_DISABLED
 
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 #if defined(STM32L1)
 #define __HAL_RCC_CRYP_CLK_DISABLE         __HAL_RCC_AES_CLK_DISABLE
 #define __HAL_RCC_CRYP_CLK_ENABLE          __HAL_RCC_AES_CLK_ENABLE
@@ -2936,8 +2886,6 @@
 #define __HAL_RCC_CRYP_RELEASE_RESET       __HAL_RCC_AES_RELEASE_RESET
 #endif /* STM32L1 */
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 #if defined(STM32F4)
 #define __HAL_RCC_SDMMC1_FORCE_RESET       __HAL_RCC_SDIO_FORCE_RESET
 #define __HAL_RCC_SDMMC1_RELEASE_RESET     __HAL_RCC_SDIO_RELEASE_RESET
@@ -3054,11 +3002,7 @@
 
 #if defined(STM32L4)
 #define RCC_RTCCLKSOURCE_NO_CLK     RCC_RTCCLKSOURCE_NONE
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 #elif defined(STM32WB) || defined(STM32G0) || defined(STM32G4) || defined(STM32L5)
-========
-#elif defined(STM32WB) || defined(STM32G0)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 #else
 #define RCC_RTCCLKSOURCE_NONE       RCC_RTCCLKSOURCE_NO_CLK
 #endif
@@ -3186,11 +3130,7 @@
 /** @defgroup HAL_RTC_Aliased_Macros HAL RTC Aliased Macros maintained for legacy purpose
   * @{
   */
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 #if defined (STM32G0) || defined (STM32L5) || defined (STM32L412xx) || defined (STM32L422xx) || defined (STM32G4)
-========
-#if defined (STM32G0) || defined (STM32L412xx) || defined (STM32L422xx) || defined (STM32L4P5xx) || defined (STM32L4Q5xx)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 #else
 #define __HAL_RTC_CLEAR_FLAG                      __HAL_RTC_EXTI_CLEAR_FLAG
 #endif
@@ -3306,11 +3246,7 @@
 #define  SDIO_IRQHandler            SDMMC1_IRQHandler
 #endif
 
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 #if defined(STM32F7) || defined(STM32F4) || defined(STM32F2) || defined(STM32L4)
-========
-#if defined(STM32F7) || defined(STM32F4) || defined(STM32F2)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 #define  HAL_SD_CardCIDTypedef       HAL_SD_CardCIDTypeDef
 #define  HAL_SD_CardCSDTypedef       HAL_SD_CardCSDTypeDef
 #define  HAL_SD_CardStatusTypedef    HAL_SD_CardStatusTypeDef
@@ -3557,11 +3493,7 @@
 /** @defgroup HAL_HRTIM_Aliased_Functions HAL HRTIM Aliased Functions maintained for legacy purpose
   * @{
   */
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 #if defined (STM32H7) || defined (STM32G4) || defined (STM32F3)
-========
-#if defined (STM32H7) || defined (STM32F3)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 #define HAL_HRTIM_WaveformCounterStart_IT HAL_HRTIM_WaveformCountStart_IT
 #define HAL_HRTIM_WaveformCounterStart_DMA HAL_HRTIM_WaveformCountStart_DMA
 #define HAL_HRTIM_WaveformCounterStart HAL_HRTIM_WaveformCountStart
@@ -3573,7 +3505,6 @@
   * @}
   */
 
-<<<<<<<< HEAD:HAL/L431/Inc/Legacy/stm32_hal_legacy.h
 /** @defgroup HAL_QSPI_Aliased_Macros HAL QSPI Aliased Macros maintained for legacy purpose
   * @{
   */
@@ -3584,8 +3515,6 @@
   * @}
   */
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/Legacy/stm32_hal_legacy.h
 /** @defgroup HAL_PPP_Aliased_Macros HAL PPP Aliased Macros maintained for legacy purpose
   * @{
   */

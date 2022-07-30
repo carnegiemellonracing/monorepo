@@ -1,10 +1,6 @@
 /**
   ******************************************************************************
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-  * @file    stm32l4xx_hal_tim_ex.c
-========
   * @file    stm32f4xx_hal_tim_ex.c
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   * @author  MCD Application Team
   * @brief   TIM HAL module driver.
   *          This file provides firmware functions to manage the following
@@ -13,11 +9,6 @@
   *           + Time Hall Sensor Interface Start
   *           + Time Complementary signal break and dead time configuration
   *           + Time Master and Slave synchronization configuration
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-  *           + Time Output Compare/PWM Channel Configuration (for channels 5 and 6)
-  *           + Time OCRef clear configuration
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   *           + Timer remapping capabilities configuration
   @verbatim
   ==============================================================================
@@ -72,11 +63,7 @@
   ******************************************************************************
   * @attention
   *
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-  * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics.
-========
   * <h2><center>&copy; Copyright (c) 2016 STMicroelectronics.
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under BSD 3-Clause license,
@@ -85,21 +72,12 @@
   *                        opensource.org/licenses/BSD-3-Clause
   *
   ******************************************************************************
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-  */
-
-/* Includes ------------------------------------------------------------------*/
-#include "stm32l4xx_hal.h"
-
-/** @addtogroup STM32L4xx_HAL_Driver
-========
 */
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
 /** @addtogroup STM32F4xx_HAL_Driver
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   * @{
   */
 
@@ -447,11 +425,7 @@ HAL_StatusTypeDef HAL_TIMEx_HallSensor_Start_DMA(TIM_HandleTypeDef *htim, uint32
   /* Set the DMA error callback */
   htim->hdma[TIM_DMA_ID_CC1]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-  /* Enable the DMA channel for Capture 1*/
-========
   /* Enable the DMA stream for Capture 1*/
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC1], (uint32_t)&htim->Instance->CCR1, (uint32_t)pData, Length) != HAL_OK)
   {
     return HAL_ERROR;
@@ -765,11 +739,7 @@ HAL_StatusTypeDef HAL_TIMEx_OCN_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Chan
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC1]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-      /* Enable the DMA channel */
-========
       /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC1], (uint32_t)pData, (uint32_t)&htim->Instance->CCR1, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -788,11 +758,7 @@ HAL_StatusTypeDef HAL_TIMEx_OCN_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Chan
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC2]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-      /* Enable the DMA channel */
-========
       /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC2], (uint32_t)pData, (uint32_t)&htim->Instance->CCR2, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -811,11 +777,7 @@ HAL_StatusTypeDef HAL_TIMEx_OCN_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Chan
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC3]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-      /* Enable the DMA channel */
-========
       /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC3], (uint32_t)pData, (uint32_t)&htim->Instance->CCR3, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -1184,11 +1146,7 @@ HAL_StatusTypeDef HAL_TIMEx_PWMN_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Cha
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC1]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-      /* Enable the DMA channel */
-========
       /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC1], (uint32_t)pData, (uint32_t)&htim->Instance->CCR1, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -1207,11 +1165,7 @@ HAL_StatusTypeDef HAL_TIMEx_PWMN_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Cha
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC2]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-      /* Enable the DMA channel */
-========
       /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC2], (uint32_t)pData, (uint32_t)&htim->Instance->CCR2, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -1230,11 +1184,7 @@ HAL_StatusTypeDef HAL_TIMEx_PWMN_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Cha
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC3]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-      /* Enable the DMA channel */
-========
       /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC3], (uint32_t)pData, (uint32_t)&htim->Instance->CCR3, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -1487,10 +1437,6 @@ HAL_StatusTypeDef HAL_TIMEx_OnePulseN_Stop_IT(TIM_HandleTypeDef *htim, uint32_t 
       (+) Configure Complementary channels, break features and dead time.
       (+) Configure Master synchronization.
       (+) Configure timer remapping capabilities.
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-      (+) Enable or disable channel grouping.
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
 
 @endverbatim
   * @{
@@ -1518,12 +1464,7 @@ HAL_StatusTypeDef HAL_TIMEx_OnePulseN_Stop_IT(TIM_HandleTypeDef *htim, uint32_t 
   *            @arg TIM_COMMUTATION_SOFTWARE:  Commutation source is set by software using the COMG bit
   * @retval HAL status
   */
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent(TIM_HandleTypeDef *htim, uint32_t  InputTrigger,
-                                              uint32_t  CommutationSource)
-========
 HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent(TIM_HandleTypeDef *htim, uint32_t  InputTrigger, uint32_t  CommutationSource)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
 {
   /* Check the parameters */
   assert_param(IS_TIM_COMMUTATION_EVENT_INSTANCE(htim->Instance));
@@ -1578,12 +1519,7 @@ HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent(TIM_HandleTypeDef *htim, uint32_t 
   *            @arg TIM_COMMUTATION_SOFTWARE:  Commutation source is set by software using the COMG bit
   * @retval HAL status
   */
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent_IT(TIM_HandleTypeDef *htim, uint32_t  InputTrigger,
-                                                 uint32_t  CommutationSource)
-========
 HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent_IT(TIM_HandleTypeDef *htim, uint32_t  InputTrigger, uint32_t  CommutationSource)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
 {
   /* Check the parameters */
   assert_param(IS_TIM_COMMUTATION_EVENT_INSTANCE(htim->Instance));
@@ -1639,12 +1575,7 @@ HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent_IT(TIM_HandleTypeDef *htim, uint32
   *            @arg TIM_COMMUTATION_SOFTWARE:  Commutation source is set by software using the COMG bit
   * @retval HAL status
   */
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent_DMA(TIM_HandleTypeDef *htim, uint32_t  InputTrigger,
-                                                  uint32_t  CommutationSource)
-========
 HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent_DMA(TIM_HandleTypeDef *htim, uint32_t  InputTrigger, uint32_t  CommutationSource)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
 {
   /* Check the parameters */
   assert_param(IS_TIM_COMMUTATION_EVENT_INSTANCE(htim->Instance));
@@ -1715,21 +1646,6 @@ HAL_StatusTypeDef HAL_TIMEx_MasterConfigSynchronization(TIM_HandleTypeDef *htim,
   /* Get the TIMx SMCR register value */
   tmpsmcr = htim->Instance->SMCR;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-  /* If the timer supports ADC synchronization through TRGO2, set the master mode selection 2 */
-  if (IS_TIM_TRGO2_INSTANCE(htim->Instance))
-  {
-    /* Check the parameters */
-    assert_param(IS_TIM_TRGO2_SOURCE(sMasterConfig->MasterOutputTrigger2));
-
-    /* Clear the MMS2 bits */
-    tmpcr2 &= ~TIM_CR2_MMS2;
-    /* Select the TRGO2 source*/
-    tmpcr2 |= sMasterConfig->MasterOutputTrigger2;
-  }
-
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   /* Reset the MMS Bits */
   tmpcr2 &= ~TIM_CR2_MMS;
   /* Select the TRGO source */
@@ -1776,10 +1692,6 @@ HAL_StatusTypeDef HAL_TIMEx_ConfigBreakDeadTime(TIM_HandleTypeDef *htim,
   assert_param(IS_TIM_DEADTIME(sBreakDeadTimeConfig->DeadTime));
   assert_param(IS_TIM_BREAK_STATE(sBreakDeadTimeConfig->BreakState));
   assert_param(IS_TIM_BREAK_POLARITY(sBreakDeadTimeConfig->BreakPolarity));
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-  assert_param(IS_TIM_BREAK_FILTER(sBreakDeadTimeConfig->BreakFilter));
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   assert_param(IS_TIM_AUTOMATIC_OUTPUT_STATE(sBreakDeadTimeConfig->AutomaticOutput));
 
   /* Check input state */
@@ -1796,24 +1708,7 @@ HAL_StatusTypeDef HAL_TIMEx_ConfigBreakDeadTime(TIM_HandleTypeDef *htim,
   MODIFY_REG(tmpbdtr, TIM_BDTR_BKE, sBreakDeadTimeConfig->BreakState);
   MODIFY_REG(tmpbdtr, TIM_BDTR_BKP, sBreakDeadTimeConfig->BreakPolarity);
   MODIFY_REG(tmpbdtr, TIM_BDTR_AOE, sBreakDeadTimeConfig->AutomaticOutput);
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-  MODIFY_REG(tmpbdtr, TIM_BDTR_BKF, (sBreakDeadTimeConfig->BreakFilter << TIM_BDTR_BKF_Pos));
 
-  if (IS_TIM_BKIN2_INSTANCE(htim->Instance))
-  {
-    /* Check the parameters */
-    assert_param(IS_TIM_BREAK2_STATE(sBreakDeadTimeConfig->Break2State));
-    assert_param(IS_TIM_BREAK2_POLARITY(sBreakDeadTimeConfig->Break2Polarity));
-    assert_param(IS_TIM_BREAK_FILTER(sBreakDeadTimeConfig->Break2Filter));
-
-    /* Set the BREAK2 input related BDTR bits */
-    MODIFY_REG(tmpbdtr, TIM_BDTR_BK2F, (sBreakDeadTimeConfig->Break2Filter << TIM_BDTR_BK2F_Pos));
-    MODIFY_REG(tmpbdtr, TIM_BDTR_BK2E, sBreakDeadTimeConfig->Break2State);
-    MODIFY_REG(tmpbdtr, TIM_BDTR_BK2P, sBreakDeadTimeConfig->Break2Polarity);
-  }
-========
-
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
 
   /* Set TIMx_BDTR */
   htim->Instance->BDTR = tmpbdtr;
@@ -1824,358 +1719,6 @@ HAL_StatusTypeDef HAL_TIMEx_ConfigBreakDeadTime(TIM_HandleTypeDef *htim,
 }
 
 /**
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-  * @brief  Configures the break input source.
-  * @param  htim TIM handle.
-  * @param  BreakInput Break input to configure
-  *          This parameter can be one of the following values:
-  *            @arg TIM_BREAKINPUT_BRK: Timer break input
-  *            @arg TIM_BREAKINPUT_BRK2: Timer break 2 input
-  * @param  sBreakInputConfig Break input source configuration
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_TIMEx_ConfigBreakInput(TIM_HandleTypeDef *htim,
-                                             uint32_t BreakInput,
-                                             TIMEx_BreakInputConfigTypeDef *sBreakInputConfig)
-
-{
-  uint32_t tmporx;
-  uint32_t bkin_enable_mask = 0U;
-  uint32_t bkin_polarity_mask = 0U;
-  uint32_t bkin_enable_bitpos = 0U;
-  uint32_t bkin_polarity_bitpos = 0U;
-
-  /* Check the parameters */
-  assert_param(IS_TIM_BREAK_INSTANCE(htim->Instance));
-  assert_param(IS_TIM_BREAKINPUT(BreakInput));
-  assert_param(IS_TIM_BREAKINPUTSOURCE(sBreakInputConfig->Source));
-  assert_param(IS_TIM_BREAKINPUTSOURCE_STATE(sBreakInputConfig->Enable));
-#if defined(DFSDM1_Channel0)
-  if (sBreakInputConfig->Source != TIM_BREAKINPUTSOURCE_DFSDM1)
-  {
-    assert_param(IS_TIM_BREAKINPUTSOURCE_POLARITY(sBreakInputConfig->Polarity));
-  }
-#else
-  assert_param(IS_TIM_BREAKINPUTSOURCE_POLARITY(sBreakInputConfig->Polarity));
-#endif /* DFSDM1_Channel0 */
-
-  /* Check input state */
-  __HAL_LOCK(htim);
-
-  switch (sBreakInputConfig->Source)
-  {
-    case TIM_BREAKINPUTSOURCE_BKIN:
-    {
-      bkin_enable_mask = TIM1_OR2_BKINE;
-      bkin_enable_bitpos = TIM1_OR2_BKINE_Pos;
-      bkin_polarity_mask = TIM1_OR2_BKINP;
-      bkin_polarity_bitpos = TIM1_OR2_BKINP_Pos;
-      break;
-    }
-    case TIM_BREAKINPUTSOURCE_COMP1:
-    {
-      bkin_enable_mask = TIM1_OR2_BKCMP1E;
-      bkin_enable_bitpos = TIM1_OR2_BKCMP1E_Pos;
-      bkin_polarity_mask = TIM1_OR2_BKCMP1P;
-      bkin_polarity_bitpos = TIM1_OR2_BKCMP1P_Pos;
-      break;
-    }
-    case TIM_BREAKINPUTSOURCE_COMP2:
-    {
-      bkin_enable_mask = TIM1_OR2_BKCMP2E;
-      bkin_enable_bitpos = TIM1_OR2_BKCMP2E_Pos;
-      bkin_polarity_mask = TIM1_OR2_BKCMP2P;
-      bkin_polarity_bitpos = TIM1_OR2_BKCMP2P_Pos;
-      break;
-    }
-#if defined(DFSDM1_Channel0)
-    case TIM_BREAKINPUTSOURCE_DFSDM1:
-    {
-      bkin_enable_mask = TIM1_OR2_BKDF1BK0E;
-      bkin_enable_bitpos = 8U;
-      break;
-    }
-#endif /* DFSDM1_Channel0 */
-
-    default:
-      break;
-  }
-
-  switch (BreakInput)
-  {
-    case TIM_BREAKINPUT_BRK:
-    {
-      /* Get the TIMx_OR2 register value */
-      tmporx = htim->Instance->OR2;
-
-      /* Enable the break input */
-      tmporx &= ~bkin_enable_mask;
-      tmporx |= (sBreakInputConfig->Enable << bkin_enable_bitpos) & bkin_enable_mask;
-
-      /* Set the break input polarity */
-#if defined(DFSDM1_Channel0)
-      if (sBreakInputConfig->Source != TIM_BREAKINPUTSOURCE_DFSDM1)
-#endif /* DFSDM1_Channel0 */
-      {
-        tmporx &= ~bkin_polarity_mask;
-        tmporx |= (sBreakInputConfig->Polarity << bkin_polarity_bitpos) & bkin_polarity_mask;
-      }
-
-      /* Set TIMx_OR2 */
-      htim->Instance->OR2 = tmporx;
-      break;
-    }
-    case TIM_BREAKINPUT_BRK2:
-    {
-      /* Get the TIMx_OR3 register value */
-      tmporx = htim->Instance->OR3;
-
-      /* Enable the break input */
-      tmporx &= ~bkin_enable_mask;
-      tmporx |= (sBreakInputConfig->Enable << bkin_enable_bitpos) & bkin_enable_mask;
-
-      /* Set the break input polarity */
-#if defined(DFSDM1_Channel0)
-      if (sBreakInputConfig->Source != TIM_BREAKINPUTSOURCE_DFSDM1)
-#endif /* DFSDM1_Channel0 */
-      {
-        tmporx &= ~bkin_polarity_mask;
-        tmporx |= (sBreakInputConfig->Polarity << bkin_polarity_bitpos) & bkin_polarity_mask;
-      }
-
-      /* Set TIMx_OR3 */
-      htim->Instance->OR3 = tmporx;
-      break;
-    }
-    default:
-      break;
-  }
-
-  __HAL_UNLOCK(htim);
-
-  return HAL_OK;
-}
-
-/**
-  * @brief  Configures the TIMx Remapping input capabilities.
-  * @param  htim TIM handle.
-  * @param  Remap specifies the TIM remapping source.
-    @if STM32L422xx
-  *         For TIM1, the parameter is a combination of 2 fields (field1 | field2):
-  *
-  *                   field1 can have the following values:
-  *            @arg TIM_TIM1_ETR_ADC1_NONE:           TIM1_ETR is not connected to any ADC1 AWD (analog watchdog)
-  *            @arg TIM_TIM1_ETR_ADC1_AWD1:           TIM1_ETR is connected to ADC1 AWD1
-  *            @arg TIM_TIM1_ETR_ADC1_AWD2:           TIM1_ETR is connected to ADC1 AWD2
-  *            @arg TIM_TIM1_ETR_ADC1_AWD3:           TIM1_ETR is connected to ADC1 AWD3
-  *
-  *                   field2 can have the following values:
-  *            @arg TIM_TIM1_TI1_GPIO:                TIM1 TI1 is connected to GPIO
-  *            @arg TIM_TIM1_TI1_COMP1:               TIM1 TI1 is connected to COMP1 output
-  *
-  @endif
-@if STM32L486xx
-  *         For TIM1, the parameter is a combination of 4 fields (field1 | field2 | field3 | field4):
-  *
-  *                   field1 can have the following values:
-  *            @arg TIM_TIM1_ETR_ADC1_NONE:           TIM1_ETR is not connected to any ADC1 AWD (analog watchdog)
-  *            @arg TIM_TIM1_ETR_ADC1_AWD1:           TIM1_ETR is connected to ADC1 AWD1
-  *            @arg TIM_TIM1_ETR_ADC1_AWD2:           TIM1_ETR is connected to ADC1 AWD2
-  *            @arg TIM_TIM1_ETR_ADC1_AWD3:           TIM1_ETR is connected to ADC1 AWD3
-  *
-  *                   field2 can have the following values:
-  *            @arg TIM_TIM1_ETR_ADC3_NONE:           TIM1_ETR is not connected to any ADC3 AWD (analog watchdog)
-  *            @arg TIM_TIM1_ETR_ADC3_AWD1:           TIM1_ETR is connected to ADC3 AWD1
-  *            @arg TIM_TIM1_ETR_ADC3_AWD2:           TIM1_ETR is connected to ADC3 AWD2
-  *            @arg TIM_TIM1_ETR_ADC3_AWD3:           TIM1_ETR is connected to ADC3 AWD3
-  *
-  *                   field3 can have the following values:
-  *            @arg TIM_TIM1_TI1_GPIO:                TIM1 TI1 is connected to GPIO
-  *            @arg TIM_TIM1_TI1_COMP1:               TIM1 TI1 is connected to COMP1 output
-  *
-  *                   field4 can have the following values:
-  *            @arg TIM_TIM1_ETR_COMP1:               TIM1_ETR is connected to COMP1 output
-  *            @arg TIM_TIM1_ETR_COMP2:               TIM1_ETR is connected to COMP2 output
-  *            @note  When field4 is set to TIM_TIM1_ETR_COMP1 or TIM_TIM1_ETR_COMP2 field1 and field2 values are not significant
-  @endif
-  @if STM32L443xx
-  *         For TIM1, the parameter is a combination of 3 fields (field1 | field2 | field3):
-  *
-  *                   field1 can have the following values:
-  *            @arg TIM_TIM1_ETR_ADC1_NONE:           TIM1_ETR is not connected to any ADC1 AWD (analog watchdog)
-  *            @arg TIM_TIM1_ETR_ADC1_AWD1:           TIM1_ETR is connected to ADC1 AWD1
-  *            @arg TIM_TIM1_ETR_ADC1_AWD2:           TIM1_ETR is connected to ADC1 AWD2
-  *            @arg TIM_TIM1_ETR_ADC1_AWD3:           TIM1_ETR is connected to ADC1 AWD3
-  *
-  *                   field2 can have the following values:
-  *            @arg TIM_TIM1_TI1_GPIO:                TIM1 TI1 is connected to GPIO
-  *            @arg TIM_TIM1_TI1_COMP1:               TIM1 TI1 is connected to COMP1 output
-  *
-  *                   field3 can have the following values:
-  *            @arg TIM_TIM1_ETR_COMP1:               TIM1_ETR is connected to COMP1 output
-  *            @arg TIM_TIM1_ETR_COMP2:               TIM1_ETR is connected to COMP2 output
-  *
-  *            @note  When field3 is set to TIM_TIM1_ETR_COMP1 or TIM_TIM1_ETR_COMP2 field1 values is not significant
-  *
-  @endif
-  @if STM32L486xx
-  *         For TIM2, the parameter is a combination of 3 fields (field1 | field2 | field3):
-  *
-  *                   field1 can have the following values:
-  *            @arg TIM_TIM2_ITR1_TIM8_TRGO:          TIM2_ITR1 is connected to TIM8_TRGO
-  *            @arg TIM_TIM2_ITR1_OTG_FS_SOF:         TIM2_ITR1 is connected to OTG_FS SOF
-  *
-  *                   field2 can have the following values:
-  *            @arg TIM_TIM2_ETR_GPIO:                TIM2_ETR is connected to GPIO
-  *            @arg TIM_TIM2_ETR_LSE:                 TIM2_ETR is connected to LSE
-  *            @arg TIM_TIM2_ETR_COMP1:               TIM2_ETR is connected to COMP1 output
-  *            @arg TIM_TIM2_ETR_COMP2:               TIM2_ETR is connected to COMP2 output
-  *
-  *                   field3 can have the following values:
-  *            @arg TIM_TIM2_TI4_GPIO:                TIM2 TI4 is connected to GPIO
-  *            @arg TIM_TIM2_TI4_COMP1:               TIM2 TI4 is connected to COMP1 output
-  *            @arg TIM_TIM2_TI4_COMP2:               TIM2 TI4 is connected to COMP2 output
-  *            @arg TIM_TIM2_TI4_COMP1_COMP2:         TIM2 TI4 is connected to logical OR between COMP1 and COMP2 output
-  @endif
-  @if STM32L422xx
-  *         For TIM2, the parameter is a combination of 3 fields (field1 | field2 | field3):
-  *
-  *                   field1 can have the following values:
-  *            @arg TIM_TIM2_ITR1_NONE:               No internal trigger on TIM2_ITR1
-  *            @arg TIM_TIM2_ITR1_USB_SOF:            TIM2_ITR1 is connected to USB SOF
-  *
-  *                   field2 can have the following values:
-  *            @arg TIM_TIM2_ETR_GPIO:                TIM2_ETR is connected to GPIO
-  *            @arg TIM_TIM2_ETR_LSE:                 TIM2_ETR is connected to LSE
-  *            @arg TIM_TIM2_ETR_COMP1:               TIM2_ETR is connected to COMP1 output
-  *
-  *                   field3 can have the following values:
-  *            @arg TIM_TIM2_TI4_GPIO:                TIM2 TI4 is connected to GPIO
-  *            @arg TIM_TIM2_TI4_COMP1:               TIM2 TI4 is connected to COMP1 output
-  *
-  @endif
-  @if STM32L443xx
-  *         For TIM2, the parameter is a combination of 3 fields (field1 | field2 | field3):
-  *
-  *                   field1 can have the following values:
-  *            @arg TIM_TIM2_ITR1_NONE:               No internal trigger on TIM2_ITR1
-  *            @arg TIM_TIM2_ITR1_USB_SOF:            TIM2_ITR1 is connected to USB SOF
-  *
-  *                   field2 can have the following values:
-  *            @arg TIM_TIM2_ETR_GPIO:                TIM2_ETR is connected to GPIO
-  *            @arg TIM_TIM2_ETR_LSE:                 TIM2_ETR is connected to LSE
-  *            @arg TIM_TIM2_ETR_COMP1:               TIM2_ETR is connected to COMP1 output
-  *            @arg TIM_TIM2_ETR_COMP2:               TIM2_ETR is connected to COMP2 output
-  *
-  *                   field3 can have the following values:
-  *            @arg TIM_TIM2_TI4_GPIO:                TIM2 TI4 is connected to GPIO
-  *            @arg TIM_TIM2_TI4_COMP1:               TIM2 TI4 is connected to COMP1 output
-  *            @arg TIM_TIM2_TI4_COMP2:               TIM2 TI4 is connected to COMP2 output
-  *            @arg TIM_TIM2_TI4_COMP1_COMP2:         TIM2 TI4 is connected to logical OR between COMP1 and COMP2 output
-  *
-  @endif
-  @if STM32L486xx
-  *         For TIM3, the parameter is a combination 2 fields(field1 | field2):
-  *
-  *                   field1 can have the following values:
-  *            @arg TIM_TIM3_TI1_GPIO:                TIM3 TI1 is connected to GPIO
-  *            @arg TIM_TIM3_TI1_COMP1:               TIM3 TI1 is connected to COMP1 output
-  *            @arg TIM_TIM3_TI1_COMP2:               TIM3 TI1 is connected to COMP2 output
-  *            @arg TIM_TIM3_TI1_COMP1_COMP2:         TIM3 TI1 is connected to logical OR between COMP1 and COMP2 output
-  *
-  *                   field2 can have the following values:
-  *            @arg TIM_TIM3_ETR_GPIO:                TIM3_ETR is connected to GPIO
-  *            @arg TIM_TIM3_ETR_COMP1:               TIM3_ETR is connected to COMP1 output
-  *
-  @endif
-  @if STM32L486xx
-  *         For TIM8, the parameter is a combination of 3 fields (field1 | field2 | field3):
-  *
-  *                   field1 can have the following values:
-  *            @arg TIM_TIM8_ETR_ADC2_NONE:          TIM8_ETR is not connected to any ADC2 AWD (analog watchdog)
-  *            @arg TIM_TIM8_ETR_ADC2_AWD1:          TIM8_ETR is connected to ADC2 AWD1
-  *            @arg TIM_TIM8_ETR_ADC2_AWD2:          TIM8_ETR is connected to ADC2 AWD2
-  *            @arg TIM_TIM8_ETR_ADC2_AWD3:          TIM8_ETR is connected to ADC2 AWD3
-  *
-  *                   field2 can have the following values:
-  *            @arg TIM_TIM8_ETR_ADC3_NONE:          TIM8_ETR is not connected to any ADC3 AWD (analog watchdog)
-  *            @arg TIM_TIM8_ETR_ADC3_AWD1:          TIM8_ETR is connected to ADC3 AWD1
-  *            @arg TIM_TIM8_ETR_ADC3_AWD2:          TIM8_ETR is connected to ADC3 AWD2
-  *            @arg TIM_TIM8_ETR_ADC3_AWD3:          TIM8_ETR is connected to ADC3 AWD3
-  *
-  *                   field3 can have the following values:
-  *            @arg TIM_TIM8_TI1_GPIO:               TIM8 TI1 is connected to GPIO
-  *            @arg TIM_TIM8_TI1_COMP2:              TIM8 TI1 is connected to COMP2 output
-  *
-  *                   field4 can have the following values:
-  *            @arg TIM_TIM8_ETR_COMP1:               TIM8_ETR is connected to COMP1 output
-  *            @arg TIM_TIM8_ETR_COMP2:               TIM8_ETR is connected to COMP2 output
-  *            @note  When field4 is set to TIM_TIM8_ETR_COMP1 or TIM_TIM8_ETR_COMP2 field1 and field2 values are not significant
-  *
-  @endif
-  @if STM32L422xx
-  *         For TIM15, the parameter is a combination of 2 fields (field1 | field2):
-  *
-  *                   field1 can have the following values:
-  *            @arg TIM_TIM15_TI1_GPIO:              TIM15 TI1 is connected to GPIO
-  *            @arg TIM_TIM15_TI1_LSE:               TIM15 TI1 is connected to LSE
-  *
-  *                   field2 can have the following values:
-  *            @arg TIM_TIM15_ENCODERMODE_NONE:      No redirection
-  *            @arg TIM_TIM15_ENCODERMODE_TIM2:      TIM2 IC1 and TIM2 IC2 are connected to TIM15 IC1 and TIM15 IC2 respectively
-  *
-  @endif
-  @if STM32L443xx
-  *         For TIM15, the parameter is a combination of 2 fields (field1 | field2):
-  *
-  *                   field1 can have the following values:
-  *            @arg TIM_TIM15_TI1_GPIO:              TIM15 TI1 is connected to GPIO
-  *            @arg TIM_TIM15_TI1_LSE:               TIM15 TI1 is connected to LSE
-  *
-  *                   field2 can have the following values:
-  *            @arg TIM_TIM15_ENCODERMODE_NONE:      No redirection
-  *            @arg TIM_TIM15_ENCODERMODE_TIM2:      TIM2 IC1 and TIM2 IC2 are connected to TIM15 IC1 and TIM15 IC2 respectively
-  *            @arg TIM_TIM15_ENCODERMODE_TIM3:      TIM3 IC1 and TIM3 IC2 are connected to TIM15 IC1 and TIM15 IC2 respectively
-  *            @arg TIM_TIM15_ENCODERMODE_TIM4:      TIM4 IC1 and TIM4 IC2 are connected to TIM15 IC1 and TIM15 IC2 respectively
-  *
-  @endif
-  @if STM32L486xx
-  *            @arg TIM_TIM16_TI1_GPIO:              TIM16 TI1 is connected to GPIO
-  *            @arg TIM_TIM16_TI1_LSI:               TIM16 TI1 is connected to LSI
-  *            @arg TIM_TIM16_TI1_LSE:               TIM16 TI1 is connected to LSE
-  *            @arg TIM_TIM16_TI1_RTC:               TIM16 TI1 is connected to RTC wakeup interrupt
-  *
-  @endif
-  @if STM32L422xx
-  *         For TIM16, the parameter can have the following values:
-  *            @arg TIM_TIM16_TI1_GPIO:              TIM16 TI1 is connected to GPIO
-  *            @arg TIM_TIM16_TI1_LSI:               TIM16 TI1 is connected to LSI
-  *            @arg TIM_TIM16_TI1_LSE:               TIM16 TI1 is connected to LSE
-  *            @arg TIM_TIM16_TI1_RTC:               TIM16 TI1 is connected to RTC wakeup interrupt
-  *            @arg TIM_TIM16_TI1_MSI:               TIM16 TI1 is connected to MSI  (contraints: MSI clock < 1/4 TIM APB clock)
-  *            @arg TIM_TIM16_TI1_HSE_32:            TIM16 TI1 is connected to HSE div 32  (note that HSE div 32 must be selected as RTC clock source)
-  *            @arg TIM_TIM16_TI1_MCO:               TIM16 TI1 is connected to MCO
-  *
-  @endif
-  @if STM32L443xx
-  *         For TIM16, the parameter can have the following values:
-  *            @arg TIM_TIM16_TI1_GPIO:              TIM16 TI1 is connected to GPIO
-  *            @arg TIM_TIM16_TI1_LSI:               TIM16 TI1 is connected to LSI
-  *            @arg TIM_TIM16_TI1_LSE:               TIM16 TI1 is connected to LSE
-  *            @arg TIM_TIM16_TI1_RTC:               TIM16 TI1 is connected to RTC wakeup interrupt
-  *            @arg TIM_TIM16_TI1_MSI:               TIM16 TI1 is connected to MSI  (contraints: MSI clock < 1/4 TIM APB clock)
-  *            @arg TIM_TIM16_TI1_HSE_32:            TIM16 TI1 is connected to HSE div 32  (note that HSE div 32 must be selected as RTC clock source)
-  *            @arg TIM_TIM16_TI1_MCO:               TIM16 TI1 is connected to MCO
-  *
-  @endif
-  @if STM32L486xx
-  *         For TIM17, the parameter can have the following values:
-  *            @arg TIM_TIM17_TI1_GPIO:              TIM17 TI1 is connected to GPIO
-  *            @arg TIM_TIM17_TI1_MSI:               TIM17 TI1 is connected to MSI  (contraints: MSI clock < 1/4 TIM APB clock)
-  *            @arg TIM_TIM17_TI1_HSE_32:            TIM17 TI1 is connected to HSE div 32
-  *            @arg TIM_TIM17_TI1_MCO:               TIM17 TI1 is connected to MCO
-  @endif
-========
   * @brief  Configures the TIMx Remapping input capabilities.
   * @param  htim TIM handle.
   * @param  Remap specifies the TIM remapping source.
@@ -2208,76 +1751,11 @@ HAL_StatusTypeDef HAL_TIMEx_ConfigBreakInput(TIM_HandleTypeDef *htim,
   *
   *         (*)  Value not defined in all devices. \n
   *         (**) Register not available in all devices.
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   *
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_TIMEx_RemapConfig(TIM_HandleTypeDef *htim, uint32_t Remap)
 {
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-  uint32_t tmpor1 = 0U;
-  uint32_t tmpor2 = 0U;
-
-  __HAL_LOCK(htim);
-
-  /* Check parameters */
-  assert_param(IS_TIM_REMAP_INSTANCE(htim->Instance));
-  assert_param(IS_TIM_REMAP(Remap));
-
-  /* Set ETR_SEL bit field (if required) */
-  if (IS_TIM_ETRSEL_INSTANCE(htim->Instance))
-  {
-    tmpor2 = htim->Instance->OR2;
-    tmpor2 &= ~TIM1_OR2_ETRSEL_Msk;
-    tmpor2 |= (Remap & TIM1_OR2_ETRSEL_Msk);
-
-    /* Set TIMx_OR2 */
-    htim->Instance->OR2 = tmpor2;
-  }
-
-  /* Set other remapping capabilities */
-  tmpor1 = Remap;
-  tmpor1 &= ~TIM1_OR2_ETRSEL_Msk;
-
-  /* Set TIMx_OR1 */
-  htim->Instance->OR1 = tmpor1;
-
-  __HAL_UNLOCK(htim);
-
-  return HAL_OK;
-}
-
-/**
-  * @brief  Group channel 5 and channel 1, 2 or 3
-  * @param  htim TIM handle.
-  * @param  Channels specifies the reference signal(s) the OC5REF is combined with.
-  *         This parameter can be any combination of the following values:
-  *         TIM_GROUPCH5_NONE: No effect of OC5REF on OC1REFC, OC2REFC and OC3REFC
-  *         TIM_GROUPCH5_OC1REFC: OC1REFC is the logical AND of OC1REFC and OC5REF
-  *         TIM_GROUPCH5_OC2REFC: OC2REFC is the logical AND of OC2REFC and OC5REF
-  *         TIM_GROUPCH5_OC3REFC: OC3REFC is the logical AND of OC3REFC and OC5REF
-  * @retval HAL status
-  */
-HAL_StatusTypeDef HAL_TIMEx_GroupChannel5(TIM_HandleTypeDef *htim, uint32_t Channels)
-{
-  /* Check parameters */
-  assert_param(IS_TIM_COMBINED3PHASEPWM_INSTANCE(htim->Instance));
-  assert_param(IS_TIM_GROUPCH5(Channels));
-
-  /* Process Locked */
-  __HAL_LOCK(htim);
-
-  htim->State = HAL_TIM_STATE_BUSY;
-
-  /* Clear GC5Cx bit fields */
-  htim->Instance->CCR5 &= ~(TIM_CCR5_GC5C3 | TIM_CCR5_GC5C2 | TIM_CCR5_GC5C1);
-
-  /* Set GC5Cx bit fields */
-  htim->Instance->CCR5 |= Channels;
-
-  /* Change the htim state */
-  htim->State = HAL_TIM_STATE_READY;
-========
   __HAL_LOCK(htim);
 
   /* Check parameters */
@@ -2301,7 +1779,6 @@ HAL_StatusTypeDef HAL_TIMEx_GroupChannel5(TIM_HandleTypeDef *htim, uint32_t Chan
   /* Set the Timer remapping configuration */
   WRITE_REG(htim->Instance->OR, Remap);
 #endif /* LPTIM_OR_TIM1_ITR2_RMP &&  LPTIM_OR_TIM5_ITR1_RMP && LPTIM_OR_TIM5_ITR1_RMP */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
 
   __HAL_UNLOCK(htim);
 
@@ -2371,24 +1848,6 @@ __weak void HAL_TIMEx_BreakCallback(TIM_HandleTypeDef *htim)
             the HAL_TIMEx_BreakCallback could be implemented in the user file
    */
 }
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-
-/**
-  * @brief  Hall Break2 detection callback in non blocking mode
-  * @param  htim: TIM handle
-  * @retval None
-  */
-__weak void HAL_TIMEx_Break2Callback(TIM_HandleTypeDef *htim)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(htim);
-
-  /* NOTE : This function Should not be modified, when the callback is needed,
-            the HAL_TIMEx_Break2Callback could be implemented in the user file
-   */
-}
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
 /**
   * @}
   */
@@ -2427,11 +1886,7 @@ HAL_TIM_StateTypeDef HAL_TIMEx_HallSensor_GetState(TIM_HandleTypeDef *htim)
   */
 
 /* Private functions ---------------------------------------------------------*/
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim_ex.c
-/** @defgroup TIMEx_Private_Functions TIMEx Private Functions
-========
 /** @defgroup TIMEx_Private_Functions TIM Extended Private Functions
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim_ex.c
   * @{
   */
 

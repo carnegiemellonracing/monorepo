@@ -1,20 +1,12 @@
 /**
   ******************************************************************************
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   * @file    stm32l4xx_hal_tim.h
-========
-  * @file    stm32f4xx_hal_tim.h
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
   * @author  MCD Application Team
   * @brief   Header file of TIM HAL module.
   ******************************************************************************
   * @attention
   *
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics.
-========
-  * <h2><center>&copy; Copyright (c) 2016 STMicroelectronics.
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under BSD 3-Clause license,
@@ -26,28 +18,17 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #ifndef STM32L4xx_HAL_TIM_H
 #define STM32L4xx_HAL_TIM_H
-========
-#ifndef STM32F4xx_HAL_TIM_H
-#define STM32F4xx_HAL_TIM_H
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #include "stm32l4xx_hal_def.h"
 
 /** @addtogroup STM32L4xx_HAL_Driver
-========
-#include "stm32f4xx_hal_def.h"
-
-/** @addtogroup STM32F4xx_HAL_Driver
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
   * @{
   */
 
@@ -244,21 +225,15 @@ typedef struct
 
 /**
   * @brief  TIM Master configuration Structure definition
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   * @note   Advanced timers provide TRGO2 internal line which is redirected
   *         to the ADC
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
   */
 typedef struct
 {
   uint32_t  MasterOutputTrigger;   /*!< Trigger output (TRGO) selection
                                         This parameter can be a value of @ref TIM_Master_Mode_Selection */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   uint32_t  MasterOutputTrigger2;  /*!< Trigger output2 (TRGO2) selection
                                         This parameter can be a value of @ref TIM_Master_Mode_Selection_2 */
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
   uint32_t  MasterSlaveMode;       /*!< Master/slave mode selection
                                         This parameter can be a value of @ref TIM_Master_Slave_Mode */
 } TIM_MasterConfigTypeDef;
@@ -302,15 +277,12 @@ typedef struct
                                       This parameter can be a value of @ref TIM_Break_Polarity */
   uint32_t BreakFilter;          /*!< Specifies the break input filter.
                                       This parameter can be a number between Min_Data = 0x0 and Max_Data = 0xF */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   uint32_t Break2State;          /*!< TIM Break2 State
                                       This parameter can be a value of @ref TIM_Break2_Input_enable_disable */
   uint32_t Break2Polarity;       /*!< TIM Break2 input polarity
                                       This parameter can be a value of @ref TIM_Break2_Polarity */
   uint32_t Break2Filter;         /*!< TIM break2 input filter.
                                       This parameter can be a number between Min_Data = 0x0 and Max_Data = 0xF */
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
   uint32_t AutomaticOutput;      /*!< TIM Automatic Output Enable state
                                       This parameter can be a value of @ref TIM_AOE_Bit_Set_Reset */
 } TIM_BreakDeadTimeConfigTypeDef;
@@ -336,11 +308,8 @@ typedef enum
   HAL_TIM_ACTIVE_CHANNEL_2        = 0x02U,    /*!< The active channel is 2     */
   HAL_TIM_ACTIVE_CHANNEL_3        = 0x04U,    /*!< The active channel is 3     */
   HAL_TIM_ACTIVE_CHANNEL_4        = 0x08U,    /*!< The active channel is 4     */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   HAL_TIM_ACTIVE_CHANNEL_5        = 0x10U,    /*!< The active channel is 5     */
   HAL_TIM_ACTIVE_CHANNEL_6        = 0x20U,    /*!< The active channel is 6     */
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
   HAL_TIM_ACTIVE_CHANNEL_CLEARED  = 0x00U     /*!< All active channels cleared */
 } HAL_TIM_ActiveChannel;
 
@@ -389,10 +358,7 @@ typedef struct
   void (* CommutationCallback)(struct __TIM_HandleTypeDef *htim);               /*!< TIM Commutation Callback                                */
   void (* CommutationHalfCpltCallback)(struct __TIM_HandleTypeDef *htim);       /*!< TIM Commutation half complete Callback                  */
   void (* BreakCallback)(struct __TIM_HandleTypeDef *htim);                     /*!< TIM Break Callback                                      */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   void (* Break2Callback)(struct __TIM_HandleTypeDef *htim);                    /*!< TIM Break2 Callback                                     */
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 #endif /* USE_HAL_TIM_REGISTER_CALLBACKS */
 } TIM_HandleTypeDef;
 
@@ -430,10 +396,7 @@ typedef enum
   ,HAL_TIM_COMMUTATION_CB_ID             = 0x18U    /*!< TIM Commutation Callback ID                                */
   ,HAL_TIM_COMMUTATION_HALF_CB_ID        = 0x19U    /*!< TIM Commutation half complete Callback ID                  */
   ,HAL_TIM_BREAK_CB_ID                   = 0x1AU    /*!< TIM Break Callback ID                                      */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   ,HAL_TIM_BREAK2_CB_ID                  = 0x1BU    /*!< TIM Break2 Callback ID                                     */
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 } HAL_TIM_CallbackIDTypeDef;
 
 /**
@@ -458,10 +421,7 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
   */
 #define TIM_CLEARINPUTSOURCE_NONE           0x00000000U   /*!< OCREF_CLR is disabled */
 #define TIM_CLEARINPUTSOURCE_ETR            0x00000001U   /*!< OCREF_CLR is connected to ETRF input */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #define TIM_CLEARINPUTSOURCE_OCREFCLR       0x00000002U   /*!< OCREF_CLR is connected to OCREF_CLR_INT */
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 /**
   * @}
   */
@@ -489,15 +449,12 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
 #define TIM_DMABASE_BDTR                   0x00000011U
 #define TIM_DMABASE_DCR                    0x00000012U
 #define TIM_DMABASE_DMAR                   0x00000013U
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #define TIM_DMABASE_OR1                    0x00000014U
 #define TIM_DMABASE_CCMR3                  0x00000015U
 #define TIM_DMABASE_CCR5                   0x00000016U
 #define TIM_DMABASE_CCR6                   0x00000017U
 #define TIM_DMABASE_OR2                    0x00000018U
 #define TIM_DMABASE_OR3                    0x00000019U
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 /**
   * @}
   */
@@ -513,10 +470,7 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
 #define TIM_EVENTSOURCE_COM                 TIM_EGR_COMG   /*!< A commutation event is generated */
 #define TIM_EVENTSOURCE_TRIGGER             TIM_EGR_TG     /*!< A trigger event is generated */
 #define TIM_EVENTSOURCE_BREAK               TIM_EGR_BG     /*!< A break event is generated */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #define TIM_EVENTSOURCE_BREAK2              TIM_EGR_B2G    /*!< A break 2 event is generated */
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 /**
   * @}
   */
@@ -744,7 +698,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
 #define TIM_FLAG_CC2                       TIM_SR_CC2IF                         /*!< Capture/Compare 2 interrupt flag */
 #define TIM_FLAG_CC3                       TIM_SR_CC3IF                         /*!< Capture/Compare 3 interrupt flag */
 #define TIM_FLAG_CC4                       TIM_SR_CC4IF                         /*!< Capture/Compare 4 interrupt flag */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #define TIM_FLAG_CC5                       TIM_SR_CC5IF                         /*!< Capture/Compare 5 interrupt flag */
 #define TIM_FLAG_CC6                       TIM_SR_CC6IF                         /*!< Capture/Compare 6 interrupt flag */
 #define TIM_FLAG_COM                       TIM_SR_COMIF                         /*!< Commutation interrupt flag    */
@@ -752,11 +705,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
 #define TIM_FLAG_BREAK                     TIM_SR_BIF                           /*!< Break interrupt flag          */
 #define TIM_FLAG_BREAK2                    TIM_SR_B2IF                          /*!< Break 2 interrupt flag        */
 #define TIM_FLAG_SYSTEM_BREAK              TIM_SR_SBIF                          /*!< System Break interrupt flag   */
-========
-#define TIM_FLAG_COM                       TIM_SR_COMIF                         /*!< Commutation interrupt flag    */
-#define TIM_FLAG_TRIGGER                   TIM_SR_TIF                           /*!< Trigger interrupt flag        */
-#define TIM_FLAG_BREAK                     TIM_SR_BIF                           /*!< Break interrupt flag          */
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 #define TIM_FLAG_CC1OF                     TIM_SR_CC1OF                         /*!< Capture 1 overcapture flag    */
 #define TIM_FLAG_CC2OF                     TIM_SR_CC2OF                         /*!< Capture 2 overcapture flag    */
 #define TIM_FLAG_CC3OF                     TIM_SR_CC3OF                         /*!< Capture 3 overcapture flag    */
@@ -772,11 +720,8 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
 #define TIM_CHANNEL_2                      0x00000004U                          /*!< Capture/compare channel 2 identifier      */
 #define TIM_CHANNEL_3                      0x00000008U                          /*!< Capture/compare channel 3 identifier      */
 #define TIM_CHANNEL_4                      0x0000000CU                          /*!< Capture/compare channel 4 identifier      */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #define TIM_CHANNEL_5                      0x00000010U                          /*!< Compare channel 5 identifier              */
 #define TIM_CHANNEL_6                      0x00000014U                          /*!< Compare channel 6 identifier              */
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 #define TIM_CHANNEL_ALL                    0x0000003CU                          /*!< Global Capture/compare channel identifier  */
 /**
   * @}
@@ -888,7 +833,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
   * @}
   */
 
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 /** @defgroup TIM_Break2_Input_enable_disable TIM Break input 2 Enable
   * @{
   */
@@ -907,8 +851,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
   * @}
   */
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 /** @defgroup TIM_AOE_Bit_Set_Reset TIM Automatic Output Enable
   * @{
   */
@@ -919,7 +861,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
   * @}
   */
 
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 /** @defgroup TIM_Group_Channel5 Group Channel 5 and Channel 1, 2 or 3
   * @{
   */
@@ -931,8 +872,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
   * @}
   */
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 /** @defgroup TIM_Master_Mode_Selection TIM Master Mode Selection
   * @{
   */
@@ -948,7 +887,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
   * @}
   */
 
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 /** @defgroup TIM_Master_Mode_Selection_2 TIM Master Mode Selection 2 (TRGO2)
   * @{
   */
@@ -972,8 +910,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
   * @}
   */
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 /** @defgroup TIM_Master_Slave_Mode TIM Master/Slave Mode
   * @{
   */
@@ -991,10 +927,7 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
 #define TIM_SLAVEMODE_GATED                  (TIM_SMCR_SMS_2 | TIM_SMCR_SMS_0)                  /*!< Gated Mode                    */
 #define TIM_SLAVEMODE_TRIGGER                (TIM_SMCR_SMS_2 | TIM_SMCR_SMS_1)                  /*!< Trigger Mode                  */
 #define TIM_SLAVEMODE_EXTERNAL1              (TIM_SMCR_SMS_2 | TIM_SMCR_SMS_1 | TIM_SMCR_SMS_0) /*!< External Clock Mode 1         */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #define TIM_SLAVEMODE_COMBINED_RESETTRIGGER  TIM_SMCR_SMS_3                                     /*!< Combined reset + trigger mode */
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 /**
   * @}
   */
@@ -1010,15 +943,12 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
 #define TIM_OCMODE_PWM2                     (TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1M_0) /*!< PWM mode 2                             */
 #define TIM_OCMODE_FORCED_ACTIVE            (TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1M_0)                    /*!< Force active level                     */
 #define TIM_OCMODE_FORCED_INACTIVE          TIM_CCMR1_OC1M_2                                         /*!< Force inactive level                   */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #define TIM_OCMODE_RETRIGERRABLE_OPM1      TIM_CCMR1_OC1M_3                                          /*!< Retrigerrable OPM mode 1               */
 #define TIM_OCMODE_RETRIGERRABLE_OPM2      (TIM_CCMR1_OC1M_3 | TIM_CCMR1_OC1M_0)                     /*!< Retrigerrable OPM mode 2               */
 #define TIM_OCMODE_COMBINED_PWM1           (TIM_CCMR1_OC1M_3 | TIM_CCMR1_OC1M_2)                     /*!< Combined PWM mode 1                    */
 #define TIM_OCMODE_COMBINED_PWM2           (TIM_CCMR1_OC1M_3 | TIM_CCMR1_OC1M_0 | TIM_CCMR1_OC1M_2)  /*!< Combined PWM mode 2                    */
 #define TIM_OCMODE_ASSYMETRIC_PWM1         (TIM_CCMR1_OC1M_3 | TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1M_2)  /*!< Asymmetric PWM mode 1                  */
 #define TIM_OCMODE_ASSYMETRIC_PWM2         TIM_CCMR1_OC1M                                            /*!< Asymmetric PWM mode 2                  */
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 /**
   * @}
   */
@@ -1121,7 +1051,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
   * @}
   */
 
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 /** @defgroup TIM_Break_System TIM Break System
   * @{
   */
@@ -1133,8 +1062,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
   * @}
   */
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 /**
   * @}
   */
@@ -1191,7 +1118,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
   * @retval None
   */
 #define __HAL_TIM_DISABLE(__HANDLE__) \
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   do { \
     if (((__HANDLE__)->Instance->CCER & TIM_CCER_CCxE_MASK) == 0UL) \
     { \
@@ -1201,17 +1127,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
       } \
     } \
   } while(0)
-========
-                        do { \
-                          if (((__HANDLE__)->Instance->CCER & TIM_CCER_CCxE_MASK) == 0UL) \
-                            { \
-                            if(((__HANDLE__)->Instance->CCER & TIM_CCER_CCxNE_MASK) == 0UL) \
-                            { \
-                              (__HANDLE__)->Instance->CR1 &= ~(TIM_CR1_CEN); \
-                            } \
-                          } \
-                        } while(0)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /**
   * @brief  Disable the TIM main Output.
@@ -1220,7 +1135,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
   * @note The Main Output Enable of a timer instance is disabled only if all the CCx and CCxN channels have been disabled
   */
 #define __HAL_TIM_MOE_DISABLE(__HANDLE__) \
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   do { \
     if (((__HANDLE__)->Instance->CCER & TIM_CCER_CCxE_MASK) == 0UL) \
     { \
@@ -1230,17 +1144,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
       } \
     } \
   } while(0)
-========
-                        do { \
-                          if (((__HANDLE__)->Instance->CCER & TIM_CCER_CCxE_MASK) == 0UL) \
-                          { \
-                            if(((__HANDLE__)->Instance->CCER & TIM_CCER_CCxNE_MASK) == 0UL) \
-                            { \
-                              (__HANDLE__)->Instance->BDTR &= ~(TIM_BDTR_MOE); \
-                            } \
-                            } \
-                        } while(0)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /**
   * @brief  Disable the TIM main Output.
@@ -1321,7 +1224,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
   *            @arg TIM_FLAG_CC2: Capture/Compare 2 interrupt flag
   *            @arg TIM_FLAG_CC3: Capture/Compare 3 interrupt flag
   *            @arg TIM_FLAG_CC4: Capture/Compare 4 interrupt flag
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   *            @arg TIM_FLAG_CC5: Compare 5 interrupt flag
   *            @arg TIM_FLAG_CC6: Compare 6 interrupt flag
   *            @arg TIM_FLAG_COM:  Commutation interrupt flag
@@ -1329,11 +1231,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
   *            @arg TIM_FLAG_BREAK: Break interrupt flag
   *            @arg TIM_FLAG_BREAK2: Break 2 interrupt flag
   *            @arg TIM_FLAG_SYSTEM_BREAK: System Break interrupt flag
-========
-  *            @arg TIM_FLAG_COM:  Commutation interrupt flag
-  *            @arg TIM_FLAG_TRIGGER: Trigger interrupt flag
-  *            @arg TIM_FLAG_BREAK: Break interrupt flag
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
   *            @arg TIM_FLAG_CC1OF: Capture/Compare 1 overcapture flag
   *            @arg TIM_FLAG_CC2OF: Capture/Compare 2 overcapture flag
   *            @arg TIM_FLAG_CC3OF: Capture/Compare 3 overcapture flag
@@ -1351,7 +1248,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
   *            @arg TIM_FLAG_CC2: Capture/Compare 2 interrupt flag
   *            @arg TIM_FLAG_CC3: Capture/Compare 3 interrupt flag
   *            @arg TIM_FLAG_CC4: Capture/Compare 4 interrupt flag
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   *            @arg TIM_FLAG_CC5: Compare 5 interrupt flag
   *            @arg TIM_FLAG_CC6: Compare 6 interrupt flag
   *            @arg TIM_FLAG_COM:  Commutation interrupt flag
@@ -1359,11 +1255,6 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
   *            @arg TIM_FLAG_BREAK: Break interrupt flag
   *            @arg TIM_FLAG_BREAK2: Break 2 interrupt flag
   *            @arg TIM_FLAG_SYSTEM_BREAK: System Break interrupt flag
-========
-  *            @arg TIM_FLAG_COM:  Commutation interrupt flag
-  *            @arg TIM_FLAG_TRIGGER: Trigger interrupt flag
-  *            @arg TIM_FLAG_BREAK: Break interrupt flag
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
   *            @arg TIM_FLAG_CC1OF: Capture/Compare 1 overcapture flag
   *            @arg TIM_FLAG_CC2OF: Capture/Compare 2 overcapture flag
   *            @arg TIM_FLAG_CC3OF: Capture/Compare 3 overcapture flag
@@ -1387,12 +1278,8 @@ typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to
   *            @arg TIM_IT_BREAK: Break interrupt
   * @retval The state of TIM_IT (SET or RESET).
   */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #define __HAL_TIM_GET_IT_SOURCE(__HANDLE__, __INTERRUPT__) ((((__HANDLE__)->Instance->DIER & (__INTERRUPT__)) \
                                                              == (__INTERRUPT__)) ? SET : RESET)
-========
-#define __HAL_TIM_GET_IT_SOURCE(__HANDLE__, __INTERRUPT__) ((((__HANDLE__)->Instance->DIER & (__INTERRUPT__)) == (__INTERRUPT__)) ? SET : RESET)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /** @brief Clear the TIM interrupt pending bits.
   * @param  __HANDLE__ TIM handle
@@ -1440,12 +1327,7 @@ mode.
   * @param  __HANDLE__ TIM handle.
   * @retval 16-bit or 32-bit value of the timer counter register (TIMx_CNT)
   */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #define __HAL_TIM_GET_COUNTER(__HANDLE__)  ((__HANDLE__)->Instance->CNT)
-========
-#define __HAL_TIM_GET_COUNTER(__HANDLE__) \
-   ((__HANDLE__)->Instance->CNT)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /**
   * @brief  Set the TIM Autoreload Register value on runtime without calling another time any Init function.
@@ -1454,29 +1336,17 @@ mode.
   * @retval None
   */
 #define __HAL_TIM_SET_AUTORELOAD(__HANDLE__, __AUTORELOAD__) \
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   do{                                                    \
     (__HANDLE__)->Instance->ARR = (__AUTORELOAD__);  \
     (__HANDLE__)->Init.Period = (__AUTORELOAD__);    \
   } while(0)
-========
-                        do{                                                    \
-                              (__HANDLE__)->Instance->ARR = (__AUTORELOAD__);  \
-                              (__HANDLE__)->Init.Period = (__AUTORELOAD__);    \
-                          } while(0)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /**
   * @brief  Get the TIM Autoreload Register value on runtime.
   * @param  __HANDLE__ TIM handle.
   * @retval 16-bit or 32-bit value of the timer auto-reload register(TIMx_ARR)
   */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #define __HAL_TIM_GET_AUTORELOAD(__HANDLE__)  ((__HANDLE__)->Instance->ARR)
-========
-#define __HAL_TIM_GET_AUTORELOAD(__HANDLE__) \
-   ((__HANDLE__)->Instance->ARR)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /**
   * @brief  Set the TIM Clock Division value on runtime without calling another time any Init function.
@@ -1489,19 +1359,11 @@ mode.
   * @retval None
   */
 #define __HAL_TIM_SET_CLOCKDIVISION(__HANDLE__, __CKD__) \
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   do{                                                   \
     (__HANDLE__)->Instance->CR1 &= (~TIM_CR1_CKD);  \
     (__HANDLE__)->Instance->CR1 |= (__CKD__);       \
     (__HANDLE__)->Init.ClockDivision = (__CKD__);   \
   } while(0)
-========
-                        do{                                                   \
-                              (__HANDLE__)->Instance->CR1 &= (~TIM_CR1_CKD);  \
-                              (__HANDLE__)->Instance->CR1 |= (__CKD__);       \
-                              (__HANDLE__)->Init.ClockDivision = (__CKD__);   \
-                          } while(0)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /**
   * @brief  Get the TIM Clock Division value on runtime.
@@ -1511,12 +1373,7 @@ mode.
   *            @arg TIM_CLOCKDIVISION_DIV2: tDTS=2*tCK_INT
   *            @arg TIM_CLOCKDIVISION_DIV4: tDTS=4*tCK_INT
   */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #define __HAL_TIM_GET_CLOCKDIVISION(__HANDLE__)  ((__HANDLE__)->Instance->CR1 & TIM_CR1_CKD)
-========
-#define __HAL_TIM_GET_CLOCKDIVISION(__HANDLE__)  \
-   ((__HANDLE__)->Instance->CR1 & TIM_CR1_CKD)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /**
   * @brief  Set the TIM Input Capture prescaler on runtime without calling another time HAL_TIM_IC_ConfigChannel() function.
@@ -1536,17 +1393,10 @@ mode.
   * @retval None
   */
 #define __HAL_TIM_SET_ICPRESCALER(__HANDLE__, __CHANNEL__, __ICPSC__) \
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   do{                                                    \
     TIM_RESET_ICPRESCALERVALUE((__HANDLE__), (__CHANNEL__));  \
     TIM_SET_ICPRESCALERVALUE((__HANDLE__), (__CHANNEL__), (__ICPSC__)); \
   } while(0)
-========
-                        do{                                                    \
-                              TIM_RESET_ICPRESCALERVALUE((__HANDLE__), (__CHANNEL__));  \
-                              TIM_SET_ICPRESCALERVALUE((__HANDLE__), (__CHANNEL__), (__ICPSC__)); \
-                          } while(0)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /**
   * @brief  Get the TIM Input Capture prescaler on runtime.
@@ -1578,28 +1428,18 @@ mode.
   *            @arg TIM_CHANNEL_2: TIM Channel 2 selected
   *            @arg TIM_CHANNEL_3: TIM Channel 3 selected
   *            @arg TIM_CHANNEL_4: TIM Channel 4 selected
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   *            @arg TIM_CHANNEL_5: TIM Channel 5 selected
   *            @arg TIM_CHANNEL_6: TIM Channel 6 selected
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
   * @param  __COMPARE__ specifies the Capture Compare register new value.
   * @retval None
   */
 #define __HAL_TIM_SET_COMPARE(__HANDLE__, __CHANNEL__, __COMPARE__) \
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   (((__CHANNEL__) == TIM_CHANNEL_1) ? ((__HANDLE__)->Instance->CCR1 = (__COMPARE__)) :\
    ((__CHANNEL__) == TIM_CHANNEL_2) ? ((__HANDLE__)->Instance->CCR2 = (__COMPARE__)) :\
    ((__CHANNEL__) == TIM_CHANNEL_3) ? ((__HANDLE__)->Instance->CCR3 = (__COMPARE__)) :\
    ((__CHANNEL__) == TIM_CHANNEL_4) ? ((__HANDLE__)->Instance->CCR4 = (__COMPARE__)) :\
    ((__CHANNEL__) == TIM_CHANNEL_5) ? ((__HANDLE__)->Instance->CCR5 = (__COMPARE__)) :\
    ((__HANDLE__)->Instance->CCR6 = (__COMPARE__)))
-========
-(((__CHANNEL__) == TIM_CHANNEL_1) ? ((__HANDLE__)->Instance->CCR1 = (__COMPARE__)) :\
- ((__CHANNEL__) == TIM_CHANNEL_2) ? ((__HANDLE__)->Instance->CCR2 = (__COMPARE__)) :\
- ((__CHANNEL__) == TIM_CHANNEL_3) ? ((__HANDLE__)->Instance->CCR3 = (__COMPARE__)) :\
- ((__HANDLE__)->Instance->CCR4 = (__COMPARE__)))
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /**
   * @brief  Get the TIM Capture Compare Register value on runtime.
@@ -1610,7 +1450,6 @@ mode.
   *            @arg TIM_CHANNEL_2: get capture/compare 2 register value
   *            @arg TIM_CHANNEL_3: get capture/compare 3 register value
   *            @arg TIM_CHANNEL_4: get capture/compare 4 register value
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   *            @arg TIM_CHANNEL_5: get capture/compare 5 register value
   *            @arg TIM_CHANNEL_6: get capture/compare 6 register value
   * @retval 16-bit or 32-bit value of the capture/compare register (TIMx_CCRy)
@@ -1622,15 +1461,6 @@ mode.
    ((__CHANNEL__) == TIM_CHANNEL_4) ? ((__HANDLE__)->Instance->CCR4) :\
    ((__CHANNEL__) == TIM_CHANNEL_5) ? ((__HANDLE__)->Instance->CCR5) :\
    ((__HANDLE__)->Instance->CCR6))
-========
-  * @retval 16-bit or 32-bit value of the capture/compare register (TIMx_CCRy)
-  */
-#define __HAL_TIM_GET_COMPARE(__HANDLE__, __CHANNEL__) \
-(((__CHANNEL__) == TIM_CHANNEL_1) ? ((__HANDLE__)->Instance->CCR1) :\
- ((__CHANNEL__) == TIM_CHANNEL_2) ? ((__HANDLE__)->Instance->CCR2) :\
- ((__CHANNEL__) == TIM_CHANNEL_3) ? ((__HANDLE__)->Instance->CCR3) :\
- ((__HANDLE__)->Instance->CCR4))
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /**
   * @brief  Set the TIM Output compare preload.
@@ -1641,7 +1471,6 @@ mode.
   *            @arg TIM_CHANNEL_2: TIM Channel 2 selected
   *            @arg TIM_CHANNEL_3: TIM Channel 3 selected
   *            @arg TIM_CHANNEL_4: TIM Channel 4 selected
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   *            @arg TIM_CHANNEL_5: TIM Channel 5 selected
   *            @arg TIM_CHANNEL_6: TIM Channel 6 selected
   * @retval None
@@ -1653,15 +1482,6 @@ mode.
    ((__CHANNEL__) == TIM_CHANNEL_4) ? ((__HANDLE__)->Instance->CCMR2 |= TIM_CCMR2_OC4PE) :\
    ((__CHANNEL__) == TIM_CHANNEL_5) ? ((__HANDLE__)->Instance->CCMR3 |= TIM_CCMR3_OC5PE) :\
    ((__HANDLE__)->Instance->CCMR3 |= TIM_CCMR3_OC6PE))
-========
-  * @retval None
-  */
-#define __HAL_TIM_ENABLE_OCxPRELOAD(__HANDLE__, __CHANNEL__)    \
-        (((__CHANNEL__) == TIM_CHANNEL_1) ? ((__HANDLE__)->Instance->CCMR1 |= TIM_CCMR1_OC1PE) :\
-         ((__CHANNEL__) == TIM_CHANNEL_2) ? ((__HANDLE__)->Instance->CCMR1 |= TIM_CCMR1_OC2PE) :\
-         ((__CHANNEL__) == TIM_CHANNEL_3) ? ((__HANDLE__)->Instance->CCMR2 |= TIM_CCMR2_OC3PE) :\
-         ((__HANDLE__)->Instance->CCMR2 |= TIM_CCMR2_OC4PE))
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /**
   * @brief  Reset the TIM Output compare preload.
@@ -1672,7 +1492,6 @@ mode.
   *            @arg TIM_CHANNEL_2: TIM Channel 2 selected
   *            @arg TIM_CHANNEL_3: TIM Channel 3 selected
   *            @arg TIM_CHANNEL_4: TIM Channel 4 selected
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   *            @arg TIM_CHANNEL_5: TIM Channel 5 selected
   *            @arg TIM_CHANNEL_6: TIM Channel 6 selected
   * @retval None
@@ -1684,15 +1503,6 @@ mode.
    ((__CHANNEL__) == TIM_CHANNEL_4) ? ((__HANDLE__)->Instance->CCMR2 &= (uint16_t)~TIM_CCMR2_OC4PE) :\
    ((__CHANNEL__) == TIM_CHANNEL_5) ? ((__HANDLE__)->Instance->CCMR3 &= (uint16_t)~TIM_CCMR3_OC5PE) :\
    ((__HANDLE__)->Instance->CCMR3 &= (uint16_t)~TIM_CCMR3_OC6PE))
-========
-  * @retval None
-  */
-#define __HAL_TIM_DISABLE_OCxPRELOAD(__HANDLE__, __CHANNEL__)    \
-        (((__CHANNEL__) == TIM_CHANNEL_1) ? ((__HANDLE__)->Instance->CCMR1 &= (uint16_t)~TIM_CCMR1_OC1PE) :\
-         ((__CHANNEL__) == TIM_CHANNEL_2) ? ((__HANDLE__)->Instance->CCMR1 &= (uint16_t)~TIM_CCMR1_OC2PE) :\
-         ((__CHANNEL__) == TIM_CHANNEL_3) ? ((__HANDLE__)->Instance->CCMR2 &= (uint16_t)~TIM_CCMR2_OC3PE) :\
-         ((__HANDLE__)->Instance->CCMR2 &= (uint16_t)~TIM_CCMR2_OC4PE))
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /**
   * @brief  Set the Update Request Source (URS) bit of the TIMx_CR1 register.
@@ -1702,12 +1512,7 @@ mode.
   *        enabled)
   * @retval None
   */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #define __HAL_TIM_URS_ENABLE(__HANDLE__)  ((__HANDLE__)->Instance->CR1|= TIM_CR1_URS)
-========
-#define __HAL_TIM_URS_ENABLE(__HANDLE__) \
-    ((__HANDLE__)->Instance->CR1|= TIM_CR1_URS)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /**
   * @brief  Reset the Update Request Source (URS) bit of the TIMx_CR1 register.
@@ -1720,12 +1525,7 @@ mode.
   *           _ Update generation through the slave mode controller
   * @retval None
   */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #define __HAL_TIM_URS_DISABLE(__HANDLE__)  ((__HANDLE__)->Instance->CR1&=~TIM_CR1_URS)
-========
-#define __HAL_TIM_URS_DISABLE(__HANDLE__) \
-      ((__HANDLE__)->Instance->CR1&=~TIM_CR1_URS)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /**
   * @brief  Set the TIM Capture x input polarity on runtime.
@@ -1743,17 +1543,10 @@ mode.
   * @retval None
   */
 #define __HAL_TIM_SET_CAPTUREPOLARITY(__HANDLE__, __CHANNEL__, __POLARITY__)    \
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   do{                                                                     \
     TIM_RESET_CAPTUREPOLARITY((__HANDLE__), (__CHANNEL__));               \
     TIM_SET_CAPTUREPOLARITY((__HANDLE__), (__CHANNEL__), (__POLARITY__)); \
   }while(0)
-========
-        do{                                                                     \
-          TIM_RESET_CAPTUREPOLARITY((__HANDLE__), (__CHANNEL__));               \
-          TIM_SET_CAPTUREPOLARITY((__HANDLE__), (__CHANNEL__), (__POLARITY__)); \
-        }while(0)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /**
   * @}
@@ -1777,14 +1570,9 @@ mode.
 /** @defgroup TIM_Private_Macros TIM Private Macros
   * @{
   */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #define IS_TIM_CLEARINPUT_SOURCE(__MODE__)  (((__MODE__) == TIM_CLEARINPUTSOURCE_ETR)      || \
                                              ((__MODE__) == TIM_CLEARINPUTSOURCE_OCREFCLR) || \
                                              ((__MODE__) == TIM_CLEARINPUTSOURCE_NONE))
-========
-#define IS_TIM_CLEARINPUT_SOURCE(__MODE__)  (((__MODE__) == TIM_CLEARINPUTSOURCE_NONE)      || \
-                                             ((__MODE__) == TIM_CLEARINPUTSOURCE_ETR))
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 #define IS_TIM_DMA_BASE(__BASE__) (((__BASE__) == TIM_DMABASE_CR1)   || \
                                    ((__BASE__) == TIM_DMABASE_CR2)   || \
@@ -1803,7 +1591,6 @@ mode.
                                    ((__BASE__) == TIM_DMABASE_CCR2)  || \
                                    ((__BASE__) == TIM_DMABASE_CCR3)  || \
                                    ((__BASE__) == TIM_DMABASE_CCR4)  || \
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
                                    ((__BASE__) == TIM_DMABASE_BDTR)  || \
                                    ((__BASE__) == TIM_DMABASE_OR1)    || \
                                    ((__BASE__) == TIM_DMABASE_CCMR3) || \
@@ -1813,11 +1600,6 @@ mode.
                                    ((__BASE__) == TIM_DMABASE_OR3))
 
 #define IS_TIM_EVENT_SOURCE(__SOURCE__) ((((__SOURCE__) & 0xFFFFFE00U) == 0x00000000U) && ((__SOURCE__) != 0x00000000U))
-========
-                                   ((__BASE__) == TIM_DMABASE_BDTR))
-
-#define IS_TIM_EVENT_SOURCE(__SOURCE__) ((((__SOURCE__) & 0xFFFFFF00U) == 0x00000000U) && ((__SOURCE__) != 0x00000000U))
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 #define IS_TIM_COUNTER_MODE(__MODE__)      (((__MODE__) == TIM_COUNTERMODE_UP)              || \
                                             ((__MODE__) == TIM_COUNTERMODE_DOWN)            || \
@@ -1873,11 +1655,8 @@ mode.
                                             ((__CHANNEL__) == TIM_CHANNEL_2) || \
                                             ((__CHANNEL__) == TIM_CHANNEL_3) || \
                                             ((__CHANNEL__) == TIM_CHANNEL_4) || \
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
                                             ((__CHANNEL__) == TIM_CHANNEL_5) || \
                                             ((__CHANNEL__) == TIM_CHANNEL_6) || \
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
                                             ((__CHANNEL__) == TIM_CHANNEL_ALL))
 
 #define IS_TIM_OPM_CHANNELS(__CHANNEL__)   (((__CHANNEL__) == TIM_CHANNEL_1) || \
@@ -1941,7 +1720,6 @@ mode.
 #define IS_TIM_BREAK_POLARITY(__POLARITY__) (((__POLARITY__) == TIM_BREAKPOLARITY_LOW) || \
                                              ((__POLARITY__) == TIM_BREAKPOLARITY_HIGH))
 
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #define IS_TIM_BREAK2_STATE(__STATE__)     (((__STATE__) == TIM_BREAK2_ENABLE) || \
                                             ((__STATE__) == TIM_BREAK2_DISABLE))
 
@@ -1953,11 +1731,6 @@ mode.
 
 #define IS_TIM_GROUPCH5(__OCREF__) ((((__OCREF__) & 0x1FFFFFFFU) == 0x00000000U))
 
-========
-#define IS_TIM_AUTOMATIC_OUTPUT_STATE(__STATE__) (((__STATE__) == TIM_AUTOMATICOUTPUT_ENABLE) || \
-                                                  ((__STATE__) == TIM_AUTOMATICOUTPUT_DISABLE))
-
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 #define IS_TIM_TRGO_SOURCE(__SOURCE__) (((__SOURCE__) == TIM_TRGO_RESET)  || \
                                         ((__SOURCE__) == TIM_TRGO_ENABLE) || \
                                         ((__SOURCE__) == TIM_TRGO_UPDATE) || \
@@ -1967,7 +1740,6 @@ mode.
                                         ((__SOURCE__) == TIM_TRGO_OC3REF) || \
                                         ((__SOURCE__) == TIM_TRGO_OC4REF))
 
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #define IS_TIM_TRGO2_SOURCE(__SOURCE__) (((__SOURCE__) == TIM_TRGO2_RESET)                        || \
                                          ((__SOURCE__) == TIM_TRGO2_ENABLE)                       || \
                                          ((__SOURCE__) == TIM_TRGO2_UPDATE)                       || \
@@ -1986,8 +1758,6 @@ mode.
                                          ((__SOURCE__) == TIM_TRGO2_OC5REF_RISING_OC6REF_RISING)  || \
                                          ((__SOURCE__) == TIM_TRGO2_OC5REF_RISING_OC6REF_FALLING))
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 #define IS_TIM_MSM_STATE(__STATE__)      (((__STATE__) == TIM_MASTERSLAVEMODE_ENABLE) || \
                                           ((__STATE__) == TIM_MASTERSLAVEMODE_DISABLE))
 
@@ -1995,7 +1765,6 @@ mode.
                                      ((__MODE__) == TIM_SLAVEMODE_RESET)     || \
                                      ((__MODE__) == TIM_SLAVEMODE_GATED)     || \
                                      ((__MODE__) == TIM_SLAVEMODE_TRIGGER)   || \
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
                                      ((__MODE__) == TIM_SLAVEMODE_EXTERNAL1) || \
                                      ((__MODE__) == TIM_SLAVEMODE_COMBINED_RESETTRIGGER))
 
@@ -2005,25 +1774,15 @@ mode.
                                    ((__MODE__) == TIM_OCMODE_COMBINED_PWM2)      || \
                                    ((__MODE__) == TIM_OCMODE_ASSYMETRIC_PWM1)    || \
                                    ((__MODE__) == TIM_OCMODE_ASSYMETRIC_PWM2))
-========
-                                     ((__MODE__) == TIM_SLAVEMODE_EXTERNAL1))
-
-#define IS_TIM_PWM_MODE(__MODE__) (((__MODE__) == TIM_OCMODE_PWM1)               || \
-                                   ((__MODE__) == TIM_OCMODE_PWM2))
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 #define IS_TIM_OC_MODE(__MODE__)  (((__MODE__) == TIM_OCMODE_TIMING)             || \
                                    ((__MODE__) == TIM_OCMODE_ACTIVE)             || \
                                    ((__MODE__) == TIM_OCMODE_INACTIVE)           || \
                                    ((__MODE__) == TIM_OCMODE_TOGGLE)             || \
                                    ((__MODE__) == TIM_OCMODE_FORCED_ACTIVE)      || \
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
                                    ((__MODE__) == TIM_OCMODE_FORCED_INACTIVE)    || \
                                    ((__MODE__) == TIM_OCMODE_RETRIGERRABLE_OPM1) || \
                                    ((__MODE__) == TIM_OCMODE_RETRIGERRABLE_OPM2))
-========
-                                   ((__MODE__) == TIM_OCMODE_FORCED_INACTIVE))
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 #define IS_TIM_TRIGGER_SELECTION(__SELECTION__) (((__SELECTION__) == TIM_TS_ITR0) || \
                                                  ((__SELECTION__) == TIM_TS_ITR1) || \
@@ -2079,7 +1838,6 @@ mode.
 
 #define IS_TIM_DEADTIME(__DEADTIME__)    ((__DEADTIME__) <= 0xFFU)
 
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #define IS_TIM_BREAK_SYSTEM(__CONFIG__)    (((__CONFIG__) == TIM_BREAK_SYSTEM_ECC)                  || \
                                             ((__CONFIG__) == TIM_BREAK_SYSTEM_PVD)                  || \
                                             ((__CONFIG__) == TIM_BREAK_SYSTEM_SRAM2_PARITY_ERROR)   || \
@@ -2111,33 +1869,6 @@ mode.
    ((__CHANNEL__) == TIM_CHANNEL_2) ? ((__HANDLE__)->Instance->CCER &= (uint16_t)~(TIM_CCER_CC2P | TIM_CCER_CC2NP)) :\
    ((__CHANNEL__) == TIM_CHANNEL_3) ? ((__HANDLE__)->Instance->CCER &= (uint16_t)~(TIM_CCER_CC3P | TIM_CCER_CC3NP)) :\
    ((__HANDLE__)->Instance->CCER &= (uint16_t)~(TIM_CCER_CC4P | TIM_CCER_CC4NP)))
-========
-#define IS_TIM_SLAVEMODE_TRIGGER_ENABLED(__TRIGGER__) ((__TRIGGER__) == TIM_SLAVEMODE_TRIGGER)
-
-#define TIM_SET_ICPRESCALERVALUE(__HANDLE__, __CHANNEL__, __ICPSC__) \
-(((__CHANNEL__) == TIM_CHANNEL_1) ? ((__HANDLE__)->Instance->CCMR1 |= (__ICPSC__)) :\
- ((__CHANNEL__) == TIM_CHANNEL_2) ? ((__HANDLE__)->Instance->CCMR1 |= ((__ICPSC__) << 8U)) :\
- ((__CHANNEL__) == TIM_CHANNEL_3) ? ((__HANDLE__)->Instance->CCMR2 |= (__ICPSC__)) :\
- ((__HANDLE__)->Instance->CCMR2 |= ((__ICPSC__) << 8U)))
-
-#define TIM_RESET_ICPRESCALERVALUE(__HANDLE__, __CHANNEL__) \
-(((__CHANNEL__) == TIM_CHANNEL_1) ? ((__HANDLE__)->Instance->CCMR1 &= (uint16_t)~TIM_CCMR1_IC1PSC) :\
- ((__CHANNEL__) == TIM_CHANNEL_2) ? ((__HANDLE__)->Instance->CCMR1 &= (uint16_t)~TIM_CCMR1_IC2PSC) :\
- ((__CHANNEL__) == TIM_CHANNEL_3) ? ((__HANDLE__)->Instance->CCMR2 &= (uint16_t)~TIM_CCMR2_IC3PSC) :\
- ((__HANDLE__)->Instance->CCMR2 &= (uint16_t)~TIM_CCMR2_IC4PSC))
-
-#define TIM_SET_CAPTUREPOLARITY(__HANDLE__, __CHANNEL__, __POLARITY__) \
-(((__CHANNEL__) == TIM_CHANNEL_1) ? ((__HANDLE__)->Instance->CCER |= (__POLARITY__)) :\
- ((__CHANNEL__) == TIM_CHANNEL_2) ? ((__HANDLE__)->Instance->CCER |= ((__POLARITY__) << 4U)) :\
- ((__CHANNEL__) == TIM_CHANNEL_3) ? ((__HANDLE__)->Instance->CCER |= ((__POLARITY__) << 8U)) :\
- ((__HANDLE__)->Instance->CCER |= (((__POLARITY__) << 12U))))
-
-#define TIM_RESET_CAPTUREPOLARITY(__HANDLE__, __CHANNEL__) \
-(((__CHANNEL__) == TIM_CHANNEL_1) ? ((__HANDLE__)->Instance->CCER &= (uint16_t)~(TIM_CCER_CC1P | TIM_CCER_CC1NP)) :\
- ((__CHANNEL__) == TIM_CHANNEL_2) ? ((__HANDLE__)->Instance->CCER &= (uint16_t)~(TIM_CCER_CC2P | TIM_CCER_CC2NP)) :\
- ((__CHANNEL__) == TIM_CHANNEL_3) ? ((__HANDLE__)->Instance->CCER &= (uint16_t)~(TIM_CCER_CC3P | TIM_CCER_CC3NP)) :\
- ((__HANDLE__)->Instance->CCER &= (uint16_t)~(TIM_CCER_CC4P | TIM_CCER_CC4NP)))
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /**
   * @}
@@ -2145,11 +1876,7 @@ mode.
 /* End of private macros -----------------------------------------------------*/
 
 /* Include TIM HAL Extended module */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #include "stm32l4xx_hal_tim_ex.h"
-========
-#include "stm32f4xx_hal_tim_ex.h"
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /* Exported functions --------------------------------------------------------*/
 /** @addtogroup TIM_Exported_Functions TIM Exported Functions
@@ -2279,12 +2006,8 @@ HAL_StatusTypeDef HAL_TIM_Encoder_Stop(TIM_HandleTypeDef *htim, uint32_t Channel
 HAL_StatusTypeDef HAL_TIM_Encoder_Start_IT(TIM_HandleTypeDef *htim, uint32_t Channel);
 HAL_StatusTypeDef HAL_TIM_Encoder_Stop_IT(TIM_HandleTypeDef *htim, uint32_t Channel);
 /* Non-Blocking mode: DMA */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 HAL_StatusTypeDef HAL_TIM_Encoder_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel, uint32_t *pData1,
                                             uint32_t *pData2, uint16_t Length);
-========
-HAL_StatusTypeDef HAL_TIM_Encoder_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel, uint32_t *pData1, uint32_t *pData2, uint16_t Length);
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 HAL_StatusTypeDef HAL_TIM_Encoder_Stop_DMA(TIM_HandleTypeDef *htim, uint32_t Channel);
 /**
   * @}
@@ -2308,32 +2031,19 @@ void HAL_TIM_IRQHandler(TIM_HandleTypeDef *htim);
 HAL_StatusTypeDef HAL_TIM_OC_ConfigChannel(TIM_HandleTypeDef *htim, TIM_OC_InitTypeDef *sConfig, uint32_t Channel);
 HAL_StatusTypeDef HAL_TIM_PWM_ConfigChannel(TIM_HandleTypeDef *htim, TIM_OC_InitTypeDef *sConfig, uint32_t Channel);
 HAL_StatusTypeDef HAL_TIM_IC_ConfigChannel(TIM_HandleTypeDef *htim, TIM_IC_InitTypeDef *sConfig, uint32_t Channel);
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 HAL_StatusTypeDef HAL_TIM_OnePulse_ConfigChannel(TIM_HandleTypeDef *htim, TIM_OnePulse_InitTypeDef *sConfig,
                                                  uint32_t OutputChannel,  uint32_t InputChannel);
 HAL_StatusTypeDef HAL_TIM_ConfigOCrefClear(TIM_HandleTypeDef *htim, TIM_ClearInputConfigTypeDef *sClearInputConfig,
                                            uint32_t Channel);
-========
-HAL_StatusTypeDef HAL_TIM_OnePulse_ConfigChannel(TIM_HandleTypeDef *htim, TIM_OnePulse_InitTypeDef *sConfig, uint32_t OutputChannel,  uint32_t InputChannel);
-HAL_StatusTypeDef HAL_TIM_ConfigOCrefClear(TIM_HandleTypeDef *htim, TIM_ClearInputConfigTypeDef *sClearInputConfig, uint32_t Channel);
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 HAL_StatusTypeDef HAL_TIM_ConfigClockSource(TIM_HandleTypeDef *htim, TIM_ClockConfigTypeDef *sClockSourceConfig);
 HAL_StatusTypeDef HAL_TIM_ConfigTI1Input(TIM_HandleTypeDef *htim, uint32_t TI1_Selection);
 HAL_StatusTypeDef HAL_TIM_SlaveConfigSynchro(TIM_HandleTypeDef *htim, TIM_SlaveConfigTypeDef *sSlaveConfig);
 HAL_StatusTypeDef HAL_TIM_SlaveConfigSynchro_IT(TIM_HandleTypeDef *htim, TIM_SlaveConfigTypeDef *sSlaveConfig);
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 HAL_StatusTypeDef HAL_TIM_DMABurst_WriteStart(TIM_HandleTypeDef *htim, uint32_t BurstBaseAddress,
                                               uint32_t BurstRequestSrc, uint32_t  *BurstBuffer, uint32_t  BurstLength);
 HAL_StatusTypeDef HAL_TIM_DMABurst_WriteStop(TIM_HandleTypeDef *htim, uint32_t BurstRequestSrc);
 HAL_StatusTypeDef HAL_TIM_DMABurst_ReadStart(TIM_HandleTypeDef *htim, uint32_t BurstBaseAddress,
                                              uint32_t BurstRequestSrc, uint32_t  *BurstBuffer, uint32_t  BurstLength);
-========
-HAL_StatusTypeDef HAL_TIM_DMABurst_WriteStart(TIM_HandleTypeDef *htim, uint32_t BurstBaseAddress, uint32_t BurstRequestSrc, \
-                                              uint32_t  *BurstBuffer, uint32_t  BurstLength);
-HAL_StatusTypeDef HAL_TIM_DMABurst_WriteStop(TIM_HandleTypeDef *htim, uint32_t BurstRequestSrc);
-HAL_StatusTypeDef HAL_TIM_DMABurst_ReadStart(TIM_HandleTypeDef *htim, uint32_t BurstBaseAddress, uint32_t BurstRequestSrc, \
-                                             uint32_t  *BurstBuffer, uint32_t  BurstLength);
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 HAL_StatusTypeDef HAL_TIM_DMABurst_ReadStop(TIM_HandleTypeDef *htim, uint32_t BurstRequestSrc);
 HAL_StatusTypeDef HAL_TIM_GenerateEvent(TIM_HandleTypeDef *htim, uint32_t EventSource);
 uint32_t HAL_TIM_ReadCapturedValue(TIM_HandleTypeDef *htim, uint32_t Channel);
@@ -2359,12 +2069,8 @@ void HAL_TIM_ErrorCallback(TIM_HandleTypeDef *htim);
 
 /* Callbacks Register/UnRegister functions  ***********************************/
 #if (USE_HAL_TIM_REGISTER_CALLBACKS == 1)
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 HAL_StatusTypeDef HAL_TIM_RegisterCallback(TIM_HandleTypeDef *htim, HAL_TIM_CallbackIDTypeDef CallbackID,
                                            pTIM_CallbackTypeDef pCallback);
-========
-HAL_StatusTypeDef HAL_TIM_RegisterCallback(TIM_HandleTypeDef *htim, HAL_TIM_CallbackIDTypeDef CallbackID, pTIM_CallbackTypeDef pCallback);
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 HAL_StatusTypeDef HAL_TIM_UnRegisterCallback(TIM_HandleTypeDef *htim, HAL_TIM_CallbackIDTypeDef CallbackID);
 #endif /* USE_HAL_TIM_REGISTER_CALLBACKS */
 
@@ -2394,13 +2100,8 @@ HAL_TIM_StateTypeDef HAL_TIM_Encoder_GetState(TIM_HandleTypeDef *htim);
 
 /* Private functions----------------------------------------------------------*/
 /** @defgroup TIM_Private_Functions TIM Private Functions
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   * @{
   */
-========
-* @{
-*/
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 void TIM_Base_SetConfig(TIM_TypeDef *TIMx, TIM_Base_InitTypeDef *Structure);
 void TIM_TI1_SetConfig(TIM_TypeDef *TIMx, uint32_t TIM_ICPolarity, uint32_t TIM_ICSelection, uint32_t TIM_ICFilter);
 void TIM_OC2_SetConfig(TIM_TypeDef *TIMx, TIM_OC_InitTypeDef *OC_Config);
@@ -2419,13 +2120,8 @@ void TIM_ResetCallback(TIM_HandleTypeDef *htim);
 #endif /* USE_HAL_TIM_REGISTER_CALLBACKS */
 
 /**
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
   * @}
   */
-========
-* @}
-*/
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 /* End of private functions --------------------------------------------------*/
 
 /**
@@ -2440,10 +2136,6 @@ void TIM_ResetCallback(TIM_HandleTypeDef *htim);
 }
 #endif
 
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_tim.h
 #endif /* STM32L4xx_HAL_TIM_H */
-========
-#endif /* STM32F4xx_HAL_TIM_H */
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_tim.h
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

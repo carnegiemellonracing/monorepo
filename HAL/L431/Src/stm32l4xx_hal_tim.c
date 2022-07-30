@@ -1,10 +1,6 @@
 /**
   ******************************************************************************
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   * @file    stm32l4xx_hal_tim.c
-========
-  * @file    stm32f4xx_hal_tim.c
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   * @author  MCD Application Team
   * @brief   TIM HAL module driver.
   *          This file provides firmware functions to manage the following
@@ -102,34 +98,22 @@
     *** Callback registration ***
   =============================================
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   [..]
   The compilation define  USE_HAL_TIM_REGISTER_CALLBACKS when set to 1
   allows the user to configure dynamically the driver callbacks.
 
   [..]
-========
-  The compilation define  USE_HAL_TIM_REGISTER_CALLBACKS when set to 1
-  allows the user to configure dynamically the driver callbacks.
-
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   Use Function @ref HAL_TIM_RegisterCallback() to register a callback.
   @ref HAL_TIM_RegisterCallback() takes as parameters the HAL peripheral handle,
   the Callback ID and a pointer to the user callback function.
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   [..]
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   Use function @ref HAL_TIM_UnRegisterCallback() to reset a callback to the default
   weak function.
   @ref HAL_TIM_UnRegisterCallback takes as parameters the HAL peripheral handle,
   and the Callback ID.
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   [..]
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   These functions allow to register/unregister following callbacks:
     (+) Base_MspInitCallback              : TIM Base Msp Init Callback.
     (+) Base_MspDeInitCallback            : TIM Base Msp DeInit Callback.
@@ -158,30 +142,20 @@
     (+) CommutationCallback               : TIM Commutation Callback.
     (+) CommutationHalfCpltCallback       : TIM Commutation half complete Callback.
     (+) BreakCallback                     : TIM Break Callback.
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
     (+) Break2Callback                    : TIM Break2 Callback.
 
   [..]
-========
-
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 By default, after the Init and when the state is HAL_TIM_STATE_RESET
 all interrupt callbacks are set to the corresponding weak functions:
   examples @ref HAL_TIM_TriggerCallback(), @ref HAL_TIM_ErrorCallback().
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   [..]
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   Exception done for MspInit and MspDeInit functions that are reset to the legacy weak
   functionalities in the Init / DeInit only when these callbacks are null
   (not registered beforehand). If not, MspInit or MspDeInit are not null, the Init / DeInit
     keep and use the user MspInit / MspDeInit callbacks(registered beforehand)
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   [..]
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
     Callbacks can be registered / unregistered in HAL_TIM_STATE_READY state only.
     Exception done MspInit / MspDeInit that can be registered / unregistered
     in HAL_TIM_STATE_READY or HAL_TIM_STATE_RESET state,
@@ -189,10 +163,7 @@ all interrupt callbacks are set to the corresponding weak functions:
   In that case first register the MspInit/MspDeInit user callbacks
       using @ref HAL_TIM_RegisterCallback() before calling DeInit or Init function.
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   [..]
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       When The compilation define USE_HAL_TIM_REGISTER_CALLBACKS is set to 0 or
       not defined, the callback registration feature is not available and all callbacks
       are set to the corresponding weak functions.
@@ -201,11 +172,7 @@ all interrupt callbacks are set to the corresponding weak functions:
   ******************************************************************************
   * @attention
   *
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics.
-========
-  * <h2><center>&copy; Copyright (c) 2016 STMicroelectronics.
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under BSD 3-Clause license,
@@ -217,15 +184,9 @@ all interrupt callbacks are set to the corresponding weak functions:
   */
 
 /* Includes ------------------------------------------------------------------*/
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
 #include "stm32l4xx_hal.h"
 
 /** @addtogroup STM32L4xx_HAL_Driver
-========
-#include "stm32f4xx_hal.h"
-
-/** @addtogroup STM32F4xx_HAL_Driver
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   * @{
   */
 
@@ -247,11 +208,8 @@ all interrupt callbacks are set to the corresponding weak functions:
 static void TIM_OC1_SetConfig(TIM_TypeDef *TIMx, TIM_OC_InitTypeDef *OC_Config);
 static void TIM_OC3_SetConfig(TIM_TypeDef *TIMx, TIM_OC_InitTypeDef *OC_Config);
 static void TIM_OC4_SetConfig(TIM_TypeDef *TIMx, TIM_OC_InitTypeDef *OC_Config);
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
 static void TIM_OC5_SetConfig(TIM_TypeDef *TIMx, TIM_OC_InitTypeDef *OC_Config);
 static void TIM_OC6_SetConfig(TIM_TypeDef *TIMx, TIM_OC_InitTypeDef *OC_Config);
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 static void TIM_TI1_ConfigInputStage(TIM_TypeDef *TIMx, uint32_t TIM_ICPolarity, uint32_t TIM_ICFilter);
 static void TIM_TI2_SetConfig(TIM_TypeDef *TIMx, uint32_t TIM_ICPolarity, uint32_t TIM_ICSelection,
                               uint32_t TIM_ICFilter);
@@ -266,11 +224,7 @@ static void TIM_DMAPeriodElapsedHalfCplt(DMA_HandleTypeDef *hdma);
 static void TIM_DMATriggerCplt(DMA_HandleTypeDef *hdma);
 static void TIM_DMATriggerHalfCplt(DMA_HandleTypeDef *hdma);
 static HAL_StatusTypeDef TIM_SlaveTimer_SetConfig(TIM_HandleTypeDef *htim,
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
                                                   TIM_SlaveConfigTypeDef *sSlaveConfig);
-========
-                                     TIM_SlaveConfigTypeDef *sSlaveConfig);
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 /**
   * @}
   */
@@ -281,13 +235,8 @@ static HAL_StatusTypeDef TIM_SlaveTimer_SetConfig(TIM_HandleTypeDef *htim,
   */
 
 /** @defgroup TIM_Exported_Functions_Group1 TIM Time Base functions
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *  @brief    Time Base functions
   *
-========
- *  @brief    Time Base functions
- *
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 @verbatim
   ==============================================================================
               ##### Time Base functions #####
@@ -568,11 +517,7 @@ HAL_StatusTypeDef HAL_TIM_Base_Start_DMA(TIM_HandleTypeDef *htim, uint32_t *pDat
   /* Set the DMA error callback */
   htim->hdma[TIM_DMA_ID_UPDATE]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   /* Enable the DMA channel */
-========
-  /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_UPDATE], (uint32_t)pData, (uint32_t)&htim->Instance->ARR, Length) != HAL_OK)
   {
     return HAL_ERROR;
@@ -622,13 +567,8 @@ HAL_StatusTypeDef HAL_TIM_Base_Stop_DMA(TIM_HandleTypeDef *htim)
   */
 
 /** @defgroup TIM_Exported_Functions_Group2 TIM Output Compare functions
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *  @brief    TIM Output Compare functions
   *
-========
- *  @brief    TIM Output Compare functions
- *
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 @verbatim
   ==============================================================================
                   ##### TIM Output Compare functions #####
@@ -779,11 +719,8 @@ __weak void HAL_TIM_OC_MspDeInit(TIM_HandleTypeDef *htim)
   *            @arg TIM_CHANNEL_2: TIM Channel 2 selected
   *            @arg TIM_CHANNEL_3: TIM Channel 3 selected
   *            @arg TIM_CHANNEL_4: TIM Channel 4 selected
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *            @arg TIM_CHANNEL_5: TIM Channel 5 selected
   *            @arg TIM_CHANNEL_6: TIM Channel 6 selected
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_TIM_OC_Start(TIM_HandleTypeDef *htim, uint32_t Channel)
@@ -822,11 +759,8 @@ HAL_StatusTypeDef HAL_TIM_OC_Start(TIM_HandleTypeDef *htim, uint32_t Channel)
   *            @arg TIM_CHANNEL_2: TIM Channel 2 selected
   *            @arg TIM_CHANNEL_3: TIM Channel 3 selected
   *            @arg TIM_CHANNEL_4: TIM Channel 4 selected
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *            @arg TIM_CHANNEL_5: TIM Channel 5 selected
   *            @arg TIM_CHANNEL_6: TIM Channel 6 selected
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_TIM_OC_Stop(TIM_HandleTypeDef *htim, uint32_t Channel)
@@ -1003,11 +937,7 @@ HAL_StatusTypeDef HAL_TIM_OC_Stop_IT(TIM_HandleTypeDef *htim, uint32_t Channel)
   */
 HAL_StatusTypeDef HAL_TIM_OC_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel, uint32_t *pData, uint16_t Length)
 {
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   uint32_t tmpsmcr;
-========
-   uint32_t tmpsmcr;
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 
   /* Check the parameters */
   assert_param(IS_TIM_CCX_INSTANCE(htim->Instance, Channel));
@@ -1043,11 +973,7 @@ HAL_StatusTypeDef HAL_TIM_OC_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC1]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC1], (uint32_t)pData, (uint32_t)&htim->Instance->CCR1, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -1067,11 +993,7 @@ HAL_StatusTypeDef HAL_TIM_OC_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC2]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC2], (uint32_t)pData, (uint32_t)&htim->Instance->CCR2, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -1091,11 +1013,7 @@ HAL_StatusTypeDef HAL_TIM_OC_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC3]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC3], (uint32_t)pData, (uint32_t)&htim->Instance->CCR3, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -1114,11 +1032,7 @@ HAL_StatusTypeDef HAL_TIM_OC_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC4]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC4], (uint32_t)pData, (uint32_t)&htim->Instance->CCR4, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -1230,13 +1144,8 @@ HAL_StatusTypeDef HAL_TIM_OC_Stop_DMA(TIM_HandleTypeDef *htim, uint32_t Channel)
   */
 
 /** @defgroup TIM_Exported_Functions_Group3 TIM PWM functions
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *  @brief    TIM PWM functions
   *
-========
- *  @brief    TIM PWM functions
- *
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 @verbatim
   ==============================================================================
                           ##### TIM PWM functions #####
@@ -1387,11 +1296,8 @@ __weak void HAL_TIM_PWM_MspDeInit(TIM_HandleTypeDef *htim)
   *            @arg TIM_CHANNEL_2: TIM Channel 2 selected
   *            @arg TIM_CHANNEL_3: TIM Channel 3 selected
   *            @arg TIM_CHANNEL_4: TIM Channel 4 selected
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *            @arg TIM_CHANNEL_5: TIM Channel 5 selected
   *            @arg TIM_CHANNEL_6: TIM Channel 6 selected
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_TIM_PWM_Start(TIM_HandleTypeDef *htim, uint32_t Channel)
@@ -1430,11 +1336,8 @@ HAL_StatusTypeDef HAL_TIM_PWM_Start(TIM_HandleTypeDef *htim, uint32_t Channel)
   *            @arg TIM_CHANNEL_2: TIM Channel 2 selected
   *            @arg TIM_CHANNEL_3: TIM Channel 3 selected
   *            @arg TIM_CHANNEL_4: TIM Channel 4 selected
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *            @arg TIM_CHANNEL_5: TIM Channel 5 selected
   *            @arg TIM_CHANNEL_6: TIM Channel 6 selected
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_TIM_PWM_Stop(TIM_HandleTypeDef *htim, uint32_t Channel)
@@ -1649,11 +1552,7 @@ HAL_StatusTypeDef HAL_TIM_PWM_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channe
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC1]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC1], (uint32_t)pData, (uint32_t)&htim->Instance->CCR1, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -1673,11 +1572,7 @@ HAL_StatusTypeDef HAL_TIM_PWM_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channe
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC2]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC2], (uint32_t)pData, (uint32_t)&htim->Instance->CCR2, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -1696,11 +1591,7 @@ HAL_StatusTypeDef HAL_TIM_PWM_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channe
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC3]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC3], (uint32_t)pData, (uint32_t)&htim->Instance->CCR3, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -1719,11 +1610,7 @@ HAL_StatusTypeDef HAL_TIM_PWM_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channe
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC4]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC4], (uint32_t)pData, (uint32_t)&htim->Instance->CCR4, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -1835,13 +1722,8 @@ HAL_StatusTypeDef HAL_TIM_PWM_Stop_DMA(TIM_HandleTypeDef *htim, uint32_t Channel
   */
 
 /** @defgroup TIM_Exported_Functions_Group4 TIM Input Capture functions
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *  @brief    TIM Input Capture functions
   *
-========
- *  @brief    TIM Input Capture functions
- *
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 @verbatim
   ==============================================================================
               ##### TIM Input Capture functions #####
@@ -2218,11 +2100,7 @@ HAL_StatusTypeDef HAL_TIM_IC_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC1]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC1], (uint32_t)&htim->Instance->CCR1, (uint32_t)pData, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -2241,11 +2119,7 @@ HAL_StatusTypeDef HAL_TIM_IC_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC2]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC2], (uint32_t)&htim->Instance->CCR2, (uint32_t)pData, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -2264,11 +2138,7 @@ HAL_StatusTypeDef HAL_TIM_IC_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC3]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC3], (uint32_t)&htim->Instance->CCR3, (uint32_t)pData, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -2287,11 +2157,7 @@ HAL_StatusTypeDef HAL_TIM_IC_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC4]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC4], (uint32_t)&htim->Instance->CCR4, (uint32_t)pData, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -2391,13 +2257,8 @@ HAL_StatusTypeDef HAL_TIM_IC_Stop_DMA(TIM_HandleTypeDef *htim, uint32_t Channel)
   */
 
 /** @defgroup TIM_Exported_Functions_Group5 TIM One Pulse functions
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *  @brief    TIM One Pulse functions
   *
-========
- *  @brief    TIM One Pulse functions
- *
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 @verbatim
   ==============================================================================
                         ##### TIM One Pulse functions #####
@@ -2710,13 +2571,8 @@ HAL_StatusTypeDef HAL_TIM_OnePulse_Stop_IT(TIM_HandleTypeDef *htim, uint32_t Out
   */
 
 /** @defgroup TIM_Exported_Functions_Group6 TIM Encoder functions
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *  @brief    TIM Encoder functions
   *
-========
- *  @brief    TIM Encoder functions
- *
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 @verbatim
   ==============================================================================
                           ##### TIM Encoder functions #####
@@ -3118,12 +2974,8 @@ HAL_StatusTypeDef HAL_TIM_Encoder_Stop_IT(TIM_HandleTypeDef *htim, uint32_t Chan
   * @param  Length The length of data to be transferred from TIM peripheral to memory.
   * @retval HAL status
   */
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
 HAL_StatusTypeDef HAL_TIM_Encoder_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel, uint32_t *pData1,
                                             uint32_t *pData2, uint16_t Length)
-========
-HAL_StatusTypeDef HAL_TIM_Encoder_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel, uint32_t *pData1, uint32_t *pData2, uint16_t Length)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 {
   /* Check the parameters */
   assert_param(IS_TIM_DMA_CC_INSTANCE(htim->Instance));
@@ -3159,11 +3011,7 @@ HAL_StatusTypeDef HAL_TIM_Encoder_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Ch
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC1]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC1], (uint32_t)&htim->Instance->CCR1, (uint32_t)pData1, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -3187,11 +3035,7 @@ HAL_StatusTypeDef HAL_TIM_Encoder_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Ch
 
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC2]->XferErrorCallback = TIM_DMAError;
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC2], (uint32_t)&htim->Instance->CCR2, (uint32_t)pData2, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -3216,11 +3060,7 @@ HAL_StatusTypeDef HAL_TIM_Encoder_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Ch
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC1]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC1], (uint32_t)&htim->Instance->CCR1, (uint32_t)pData1, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -3233,11 +3073,7 @@ HAL_StatusTypeDef HAL_TIM_Encoder_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Ch
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC2]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC2], (uint32_t)&htim->Instance->CCR2, (uint32_t)pData2, Length) != HAL_OK)
       {
         return HAL_ERROR;
@@ -3322,13 +3158,8 @@ HAL_StatusTypeDef HAL_TIM_Encoder_Stop_DMA(TIM_HandleTypeDef *htim, uint32_t Cha
   * @}
   */
 /** @defgroup TIM_Exported_Functions_Group7 TIM IRQ handler management
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *  @brief    TIM IRQ handler management
   *
-========
- *  @brief    TIM IRQ handler management
- *
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 @verbatim
   ==============================================================================
                         ##### IRQ handler management #####
@@ -3495,7 +3326,6 @@ void HAL_TIM_IRQHandler(TIM_HandleTypeDef *htim)
 #endif /* USE_HAL_TIM_REGISTER_CALLBACKS */
     }
   }
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   /* TIM Break2 input event */
   if (__HAL_TIM_GET_FLAG(htim, TIM_FLAG_BREAK2) != RESET)
   {
@@ -3509,8 +3339,6 @@ void HAL_TIM_IRQHandler(TIM_HandleTypeDef *htim)
 #endif /* USE_HAL_TIM_REGISTER_CALLBACKS */
     }
   }
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   /* TIM Trigger detection event */
   if (__HAL_TIM_GET_FLAG(htim, TIM_FLAG_TRIGGER) != RESET)
   {
@@ -3544,13 +3372,8 @@ void HAL_TIM_IRQHandler(TIM_HandleTypeDef *htim)
   */
 
 /** @defgroup TIM_Exported_Functions_Group8 TIM Peripheral Control functions
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *  @brief    TIM Peripheral Control functions
   *
-========
- *  @brief    TIM Peripheral Control functions
- *
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 @verbatim
   ==============================================================================
                    ##### Peripheral Control functions #####
@@ -3578,11 +3401,8 @@ void HAL_TIM_IRQHandler(TIM_HandleTypeDef *htim)
   *            @arg TIM_CHANNEL_2: TIM Channel 2 selected
   *            @arg TIM_CHANNEL_3: TIM Channel 3 selected
   *            @arg TIM_CHANNEL_4: TIM Channel 4 selected
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *            @arg TIM_CHANNEL_5: TIM Channel 5 selected
   *            @arg TIM_CHANNEL_6: TIM Channel 6 selected
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_TIM_OC_ConfigChannel(TIM_HandleTypeDef *htim,
@@ -3641,7 +3461,6 @@ HAL_StatusTypeDef HAL_TIM_OC_ConfigChannel(TIM_HandleTypeDef *htim,
       break;
     }
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
     case TIM_CHANNEL_5:
     {
       /* Check the parameters */
@@ -3662,8 +3481,6 @@ HAL_StatusTypeDef HAL_TIM_OC_ConfigChannel(TIM_HandleTypeDef *htim,
       break;
     }
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
     default:
       break;
   }
@@ -3783,11 +3600,8 @@ HAL_StatusTypeDef HAL_TIM_IC_ConfigChannel(TIM_HandleTypeDef *htim, TIM_IC_InitT
   *            @arg TIM_CHANNEL_2: TIM Channel 2 selected
   *            @arg TIM_CHANNEL_3: TIM Channel 3 selected
   *            @arg TIM_CHANNEL_4: TIM Channel 4 selected
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *            @arg TIM_CHANNEL_5: TIM Channel 5 selected
   *            @arg TIM_CHANNEL_6: TIM Channel 6 selected
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_TIM_PWM_ConfigChannel(TIM_HandleTypeDef *htim,
@@ -3875,7 +3689,6 @@ HAL_StatusTypeDef HAL_TIM_PWM_ConfigChannel(TIM_HandleTypeDef *htim,
       break;
     }
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
     case TIM_CHANNEL_5:
     {
       /* Check the parameters */
@@ -3910,8 +3723,6 @@ HAL_StatusTypeDef HAL_TIM_PWM_ConfigChannel(TIM_HandleTypeDef *htim,
       break;
     }
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
     default:
       break;
   }
@@ -3938,12 +3749,8 @@ HAL_StatusTypeDef HAL_TIM_PWM_ConfigChannel(TIM_HandleTypeDef *htim,
   *            @arg TIM_CHANNEL_2: TIM Channel 2 selected
   * @retval HAL status
   */
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
 HAL_StatusTypeDef HAL_TIM_OnePulse_ConfigChannel(TIM_HandleTypeDef *htim,  TIM_OnePulse_InitTypeDef *sConfig,
                                                  uint32_t OutputChannel,  uint32_t InputChannel)
-========
-HAL_StatusTypeDef HAL_TIM_OnePulse_ConfigChannel(TIM_HandleTypeDef *htim,  TIM_OnePulse_InitTypeDef *sConfig, uint32_t OutputChannel,  uint32_t InputChannel)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 {
   TIM_OC_InitTypeDef temp1;
 
@@ -4066,15 +3873,12 @@ HAL_StatusTypeDef HAL_TIM_OnePulse_ConfigChannel(TIM_HandleTypeDef *htim,  TIM_O
   *            @arg TIM_DMABASE_CCR3
   *            @arg TIM_DMABASE_CCR4
   *            @arg TIM_DMABASE_BDTR
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *            @arg TIM_DMABASE_OR1
   *            @arg TIM_DMABASE_CCMR3 
   *            @arg TIM_DMABASE_CCR5 
   *            @arg TIM_DMABASE_CCR6 
   *            @arg TIM_DMABASE_OR2  
   *            @arg TIM_DMABASE_OR3  
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   * @param  BurstRequestSrc TIM DMA Request sources
   *         This parameter can be one of the following values:
   *            @arg TIM_DMA_UPDATE: TIM update Interrupt source
@@ -4129,11 +3933,7 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_WriteStart(TIM_HandleTypeDef *htim, uint32_t 
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_UPDATE]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_UPDATE], (uint32_t)BurstBuffer, (uint32_t)&htim->Instance->DMAR, ((BurstLength) >> 8U) + 1U) != HAL_OK)
       {
         return HAL_ERROR;
@@ -4149,14 +3949,9 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_WriteStart(TIM_HandleTypeDef *htim, uint32_t 
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC1]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC1], (uint32_t)BurstBuffer,
                            (uint32_t)&htim->Instance->DMAR, ((BurstLength) >> 8U) + 1U) != HAL_OK)
-========
-      /* Enable the DMA stream */
-      if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC1], (uint32_t)BurstBuffer, (uint32_t)&htim->Instance->DMAR, ((BurstLength) >> 8U) + 1U) != HAL_OK)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       {
         return HAL_ERROR;
       }
@@ -4171,14 +3966,9 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_WriteStart(TIM_HandleTypeDef *htim, uint32_t 
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC2]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC2], (uint32_t)BurstBuffer,
                            (uint32_t)&htim->Instance->DMAR, ((BurstLength) >> 8U) + 1U) != HAL_OK)
-========
-      /* Enable the DMA stream */
-      if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC2], (uint32_t)BurstBuffer, (uint32_t)&htim->Instance->DMAR, ((BurstLength) >> 8U) + 1U) != HAL_OK)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       {
         return HAL_ERROR;
       }
@@ -4193,14 +3983,9 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_WriteStart(TIM_HandleTypeDef *htim, uint32_t 
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC3]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC3], (uint32_t)BurstBuffer,
                            (uint32_t)&htim->Instance->DMAR, ((BurstLength) >> 8U) + 1U) != HAL_OK)
-========
-      /* Enable the DMA stream */
-      if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC3], (uint32_t)BurstBuffer, (uint32_t)&htim->Instance->DMAR, ((BurstLength) >> 8U) + 1U) != HAL_OK)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       {
         return HAL_ERROR;
       }
@@ -4215,14 +4000,9 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_WriteStart(TIM_HandleTypeDef *htim, uint32_t 
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC4]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC4], (uint32_t)BurstBuffer,
                            (uint32_t)&htim->Instance->DMAR, ((BurstLength) >> 8U) + 1U) != HAL_OK)
-========
-      /* Enable the DMA stream */
-      if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC4], (uint32_t)BurstBuffer, (uint32_t)&htim->Instance->DMAR, ((BurstLength) >> 8U) + 1U) != HAL_OK)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       {
         return HAL_ERROR;
       }
@@ -4237,14 +4017,9 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_WriteStart(TIM_HandleTypeDef *htim, uint32_t 
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_COMMUTATION]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_COMMUTATION], (uint32_t)BurstBuffer,
                            (uint32_t)&htim->Instance->DMAR, ((BurstLength) >> 8U) + 1U) != HAL_OK)
-========
-      /* Enable the DMA stream */
-      if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_COMMUTATION], (uint32_t)BurstBuffer, (uint32_t)&htim->Instance->DMAR, ((BurstLength) >> 8U) + 1U) != HAL_OK)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       {
         return HAL_ERROR;
       }
@@ -4259,14 +4034,9 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_WriteStart(TIM_HandleTypeDef *htim, uint32_t 
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_TRIGGER]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_TRIGGER], (uint32_t)BurstBuffer,
                            (uint32_t)&htim->Instance->DMAR, ((BurstLength) >> 8U) + 1U) != HAL_OK)
-========
-      /* Enable the DMA stream */
-      if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_TRIGGER], (uint32_t)BurstBuffer, (uint32_t)&htim->Instance->DMAR, ((BurstLength) >> 8U) + 1U) != HAL_OK)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       {
         return HAL_ERROR;
       }
@@ -4299,11 +4069,7 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_WriteStop(TIM_HandleTypeDef *htim, uint32_t B
   /* Check the parameters */
   assert_param(IS_TIM_DMA_SOURCE(BurstRequestSrc));
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   /* Abort the DMA transfer (at least disable the DMA channel) */
-========
-  /* Abort the DMA transfer (at least disable the DMA stream) */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   switch (BurstRequestSrc)
   {
     case TIM_DMA_UPDATE:
@@ -4378,15 +4144,12 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_WriteStop(TIM_HandleTypeDef *htim, uint32_t B
   *            @arg TIM_DMABASE_CCR3
   *            @arg TIM_DMABASE_CCR4
   *            @arg TIM_DMABASE_BDTR
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *            @arg TIM_DMABASE_OR1
   *            @arg TIM_DMABASE_CCMR3 
   *            @arg TIM_DMABASE_CCR5 
   *            @arg TIM_DMABASE_CCR6 
   *            @arg TIM_DMABASE_OR2  
   *            @arg TIM_DMABASE_OR3  
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   * @param  BurstRequestSrc TIM DMA Request sources
   *         This parameter can be one of the following values:
   *            @arg TIM_DMA_UPDATE: TIM update Interrupt source
@@ -4402,13 +4165,8 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_WriteStop(TIM_HandleTypeDef *htim, uint32_t B
   * @note   This function should be used only when BurstLength is equal to DMA data transfer length.
   * @retval HAL status
   */
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
 HAL_StatusTypeDef HAL_TIM_DMABurst_ReadStart(TIM_HandleTypeDef *htim, uint32_t BurstBaseAddress,
                                              uint32_t BurstRequestSrc, uint32_t  *BurstBuffer, uint32_t  BurstLength)
-========
-HAL_StatusTypeDef HAL_TIM_DMABurst_ReadStart(TIM_HandleTypeDef *htim, uint32_t BurstBaseAddress, uint32_t BurstRequestSrc,
-                                             uint32_t  *BurstBuffer, uint32_t  BurstLength)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 {
   /* Check the parameters */
   assert_param(IS_TIM_DMABURST_INSTANCE(htim->Instance));
@@ -4446,11 +4204,7 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_ReadStart(TIM_HandleTypeDef *htim, uint32_t B
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_UPDATE]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_UPDATE], (uint32_t)&htim->Instance->DMAR, (uint32_t)BurstBuffer, ((BurstLength) >> 8U) + 1U) != HAL_OK)
       {
         return HAL_ERROR;
@@ -4466,11 +4220,7 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_ReadStart(TIM_HandleTypeDef *htim, uint32_t B
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC1]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC1], (uint32_t)&htim->Instance->DMAR, (uint32_t)BurstBuffer, ((BurstLength) >> 8U) + 1U) != HAL_OK)
       {
         return HAL_ERROR;
@@ -4486,11 +4236,7 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_ReadStart(TIM_HandleTypeDef *htim, uint32_t B
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC2]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC2], (uint32_t)&htim->Instance->DMAR, (uint32_t)BurstBuffer, ((BurstLength) >> 8U) + 1U) != HAL_OK)
       {
         return HAL_ERROR;
@@ -4506,11 +4252,7 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_ReadStart(TIM_HandleTypeDef *htim, uint32_t B
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC3]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC3], (uint32_t)&htim->Instance->DMAR, (uint32_t)BurstBuffer, ((BurstLength) >> 8U) + 1U) != HAL_OK)
       {
         return HAL_ERROR;
@@ -4526,11 +4268,7 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_ReadStart(TIM_HandleTypeDef *htim, uint32_t B
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_CC4]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC4], (uint32_t)&htim->Instance->DMAR, (uint32_t)BurstBuffer, ((BurstLength) >> 8U) + 1U) != HAL_OK)
       {
         return HAL_ERROR;
@@ -4546,11 +4284,7 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_ReadStart(TIM_HandleTypeDef *htim, uint32_t B
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_COMMUTATION]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_COMMUTATION], (uint32_t)&htim->Instance->DMAR, (uint32_t)BurstBuffer, ((BurstLength) >> 8U) + 1U) != HAL_OK)
       {
         return HAL_ERROR;
@@ -4566,11 +4300,7 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_ReadStart(TIM_HandleTypeDef *htim, uint32_t B
       /* Set the DMA error callback */
       htim->hdma[TIM_DMA_ID_TRIGGER]->XferErrorCallback = TIM_DMAError ;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       /* Enable the DMA channel */
-========
-      /* Enable the DMA stream */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       if (HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_TRIGGER], (uint32_t)&htim->Instance->DMAR, (uint32_t)BurstBuffer, ((BurstLength) >> 8U) + 1U) != HAL_OK)
       {
         return HAL_ERROR;
@@ -4605,11 +4335,7 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_ReadStop(TIM_HandleTypeDef *htim, uint32_t Bu
   /* Check the parameters */
   assert_param(IS_TIM_DMA_SOURCE(BurstRequestSrc));
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   /* Abort the DMA transfer (at least disable the DMA channel) */
-========
-  /* Abort the DMA transfer (at least disable the DMA stream) */
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   switch (BurstRequestSrc)
   {
     case TIM_DMA_UPDATE:
@@ -4674,18 +4400,11 @@ HAL_StatusTypeDef HAL_TIM_DMABurst_ReadStop(TIM_HandleTypeDef *htim, uint32_t Bu
   *            @arg TIM_EVENTSOURCE_COM: Timer COM event source
   *            @arg TIM_EVENTSOURCE_TRIGGER: Timer Trigger Event source
   *            @arg TIM_EVENTSOURCE_BREAK: Timer Break event source
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *            @arg TIM_EVENTSOURCE_BREAK2: Timer Break2 event source
   * @note   Basic timers can only generate an update event.
   * @note   TIM_EVENTSOURCE_COM is relevant only with advanced timer instances.
   * @note   TIM_EVENTSOURCE_BREAK and TIM_EVENTSOURCE_BREAK2 are relevant
   *         only for timer instances supporting break input(s).
-========
-  * @note   Basic timers can only generate an update event.
-  * @note   TIM_EVENTSOURCE_COM is relevant only with advanced timer instances.
-  * @note   TIM_EVENTSOURCE_BREAK are relevant only for timer instances
-  *         supporting a break input.
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   * @retval HAL status
   */
 
@@ -4724,11 +4443,8 @@ HAL_StatusTypeDef HAL_TIM_GenerateEvent(TIM_HandleTypeDef *htim, uint32_t EventS
   *            @arg TIM_CHANNEL_2: TIM Channel 2
   *            @arg TIM_CHANNEL_3: TIM Channel 3
   *            @arg TIM_CHANNEL_4: TIM Channel 4
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *            @arg TIM_CHANNEL_5: TIM Channel 5
   *            @arg TIM_CHANNEL_6: TIM Channel 6
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_TIM_ConfigOCrefClear(TIM_HandleTypeDef *htim,
@@ -4749,7 +4465,6 @@ HAL_StatusTypeDef HAL_TIM_ConfigOCrefClear(TIM_HandleTypeDef *htim,
     case TIM_CLEARINPUTSOURCE_NONE:
     {
       /* Clear the OCREF clear selection bit and the the ETR Bits */
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       CLEAR_BIT(htim->Instance->SMCR, (TIM_SMCR_OCCS | TIM_SMCR_ETF | TIM_SMCR_ETPS | TIM_SMCR_ECE | TIM_SMCR_ETP));
       break;
     }
@@ -4759,11 +4474,6 @@ HAL_StatusTypeDef HAL_TIM_ConfigOCrefClear(TIM_HandleTypeDef *htim,
       CLEAR_BIT(htim->Instance->SMCR, TIM_SMCR_OCCS);
     }
     break;
-========
-      CLEAR_BIT(htim->Instance->SMCR, (TIM_SMCR_ETF | TIM_SMCR_ETPS | TIM_SMCR_ECE | TIM_SMCR_ETP));
-      break;
-    }
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 
     case TIM_CLEARINPUTSOURCE_ETR:
     {
@@ -4775,11 +4485,7 @@ HAL_StatusTypeDef HAL_TIM_ConfigOCrefClear(TIM_HandleTypeDef *htim,
       /* When OCRef clear feature is used with ETR source, ETR prescaler must be off */
       if (sClearInputConfig->ClearInputPrescaler != TIM_CLEARINPUTPRESCALER_DIV1)
       {
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
         htim->State = HAL_TIM_STATE_READY;
-========
-          htim->State = HAL_TIM_STATE_READY;
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
         __HAL_UNLOCK(htim);
         return HAL_ERROR;
       }
@@ -4788,12 +4494,9 @@ HAL_StatusTypeDef HAL_TIM_ConfigOCrefClear(TIM_HandleTypeDef *htim,
                         sClearInputConfig->ClearInputPrescaler,
                         sClearInputConfig->ClearInputPolarity,
                         sClearInputConfig->ClearInputFilter);
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
 
       /* Set the OCREF clear selection bit */
       SET_BIT(htim->Instance->SMCR, TIM_SMCR_OCCS);
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       break;
     }
 
@@ -4859,7 +4562,6 @@ HAL_StatusTypeDef HAL_TIM_ConfigOCrefClear(TIM_HandleTypeDef *htim,
       }
       break;
     }
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
     case TIM_CHANNEL_5:
     {
       if (sClearInputConfig->ClearInputState != (uint32_t)DISABLE)
@@ -4888,8 +4590,6 @@ HAL_StatusTypeDef HAL_TIM_ConfigOCrefClear(TIM_HandleTypeDef *htim,
       }
       break;
     }
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
     default:
       break;
   }
@@ -5103,15 +4803,9 @@ HAL_StatusTypeDef HAL_TIM_SlaveConfigSynchro(TIM_HandleTypeDef *htim, TIM_SlaveC
 
   htim->State = HAL_TIM_STATE_BUSY;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   if (TIM_SlaveTimer_SetConfig(htim, sSlaveConfig) != HAL_OK)
   {
     htim->State = HAL_TIM_STATE_READY;
-========
-  if(TIM_SlaveTimer_SetConfig(htim, sSlaveConfig) != HAL_OK)
-  {
-      htim->State = HAL_TIM_STATE_READY;
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
     __HAL_UNLOCK(htim);
     return HAL_ERROR;
   }
@@ -5139,11 +4833,7 @@ HAL_StatusTypeDef HAL_TIM_SlaveConfigSynchro(TIM_HandleTypeDef *htim, TIM_SlaveC
   * @retval HAL status
   */
 HAL_StatusTypeDef HAL_TIM_SlaveConfigSynchro_IT(TIM_HandleTypeDef *htim,
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
                                                 TIM_SlaveConfigTypeDef *sSlaveConfig)
-========
-                                                        TIM_SlaveConfigTypeDef *sSlaveConfig)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 {
   /* Check the parameters */
   assert_param(IS_TIM_SLAVE_INSTANCE(htim->Instance));
@@ -5154,15 +4844,9 @@ HAL_StatusTypeDef HAL_TIM_SlaveConfigSynchro_IT(TIM_HandleTypeDef *htim,
 
   htim->State = HAL_TIM_STATE_BUSY;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   if (TIM_SlaveTimer_SetConfig(htim, sSlaveConfig) != HAL_OK)
   {
     htim->State = HAL_TIM_STATE_READY;
-========
-  if(TIM_SlaveTimer_SetConfig(htim, sSlaveConfig) != HAL_OK)
-  {
-      htim->State = HAL_TIM_STATE_READY;
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
     __HAL_UNLOCK(htim);
     return HAL_ERROR;
   }
@@ -5252,13 +4936,8 @@ uint32_t HAL_TIM_ReadCapturedValue(TIM_HandleTypeDef *htim, uint32_t Channel)
   */
 
 /** @defgroup TIM_Exported_Functions_Group9 TIM Callbacks functions
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *  @brief    TIM Callbacks functions
   *
-========
- *  @brief    TIM Callbacks functions
- *
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 @verbatim
   ==============================================================================
                         ##### TIM Callbacks functions #####
@@ -5458,19 +5137,12 @@ __weak void HAL_TIM_ErrorCallback(TIM_HandleTypeDef *htim)
   *          @arg @ref HAL_TIM_COMMUTATION_CB_ID Commutation Callback ID
   *          @arg @ref HAL_TIM_COMMUTATION_HALF_CB_ID Commutation half complete Callback ID
   *          @arg @ref HAL_TIM_BREAK_CB_ID Break Callback ID
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *          @arg @ref HAL_TIM_BREAK2_CB_ID Break2 Callback ID
   *          @param pCallback pointer to the callback function
   *          @retval status
   */
 HAL_StatusTypeDef HAL_TIM_RegisterCallback(TIM_HandleTypeDef *htim, HAL_TIM_CallbackIDTypeDef CallbackID,
                                            pTIM_CallbackTypeDef pCallback)
-========
-  *          @param pCallback pointer to the callback function
-  *          @retval status
-  */
-HAL_StatusTypeDef HAL_TIM_RegisterCallback(TIM_HandleTypeDef *htim, HAL_TIM_CallbackIDTypeDef CallbackID, pTIM_CallbackTypeDef pCallback)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 {
   HAL_StatusTypeDef status = HAL_OK;
 
@@ -5593,13 +5265,10 @@ HAL_StatusTypeDef HAL_TIM_RegisterCallback(TIM_HandleTypeDef *htim, HAL_TIM_Call
         htim->BreakCallback                        = pCallback;
         break;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       case HAL_TIM_BREAK2_CB_ID :
         htim->Break2Callback                       = pCallback;
         break;
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       default :
         /* Return error status */
         status =  HAL_ERROR;
@@ -5717,10 +5386,7 @@ HAL_StatusTypeDef HAL_TIM_RegisterCallback(TIM_HandleTypeDef *htim, HAL_TIM_Call
   *          @arg @ref HAL_TIM_COMMUTATION_CB_ID Commutation Callback ID
   *          @arg @ref HAL_TIM_COMMUTATION_HALF_CB_ID Commutation half complete Callback ID
   *          @arg @ref HAL_TIM_BREAK_CB_ID Break Callback ID
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *          @arg @ref HAL_TIM_BREAK2_CB_ID Break2 Callback ID
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   *          @retval status
   */
 HAL_StatusTypeDef HAL_TIM_UnRegisterCallback(TIM_HandleTypeDef *htim, HAL_TIM_CallbackIDTypeDef CallbackID)
@@ -5842,13 +5508,10 @@ HAL_StatusTypeDef HAL_TIM_UnRegisterCallback(TIM_HandleTypeDef *htim, HAL_TIM_Ca
         htim->BreakCallback                     = HAL_TIMEx_BreakCallback;                   /* Legacy weak Break Callback */
         break;
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
       case HAL_TIM_BREAK2_CB_ID :
         htim->Break2Callback                    = HAL_TIMEx_Break2Callback;                  /* Legacy weak Break2 Callback */
         break;
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
       default :
         /* Return error status */
         status =  HAL_ERROR;
@@ -5939,13 +5602,8 @@ HAL_StatusTypeDef HAL_TIM_UnRegisterCallback(TIM_HandleTypeDef *htim, HAL_TIM_Ca
   */
 
 /** @defgroup TIM_Exported_Functions_Group10 TIM Peripheral State functions
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *  @brief   TIM Peripheral State functions
   *
-========
- *  @brief   TIM Peripheral State functions
- *
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 @verbatim
   ==============================================================================
                         ##### Peripheral State functions #####
@@ -6618,7 +6276,6 @@ static void TIM_OC4_SetConfig(TIM_TypeDef *TIMx, TIM_OC_InitTypeDef *OC_Config)
 }
 
 /**
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   * @brief  Timer Output Compare 5 configuration
   * @param  TIMx to select the TIM peripheral
   * @param  OC_Config The ouput configuration structure
@@ -6726,19 +6383,13 @@ static void TIM_OC6_SetConfig(TIM_TypeDef *TIMx,
 }
 
 /**
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   * @brief  Slave Timer configuration function
   * @param  htim TIM handle
   * @param  sSlaveConfig Slave timer configuration
   * @retval None
   */
 static HAL_StatusTypeDef TIM_SlaveTimer_SetConfig(TIM_HandleTypeDef *htim,
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
                                                   TIM_SlaveConfigTypeDef *sSlaveConfig)
-========
-                                     TIM_SlaveConfigTypeDef *sSlaveConfig)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 {
   uint32_t tmpsmcr;
   uint32_t tmpccmr1;
@@ -7188,11 +6839,8 @@ void TIM_ETR_SetConfig(TIM_TypeDef *TIMx, uint32_t TIM_ExtTRGPrescaler,
   *            @arg TIM_CHANNEL_2: TIM Channel 2
   *            @arg TIM_CHANNEL_3: TIM Channel 3
   *            @arg TIM_CHANNEL_4: TIM Channel 4
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   *            @arg TIM_CHANNEL_5: TIM Channel 5 selected
   *            @arg TIM_CHANNEL_6: TIM Channel 6 selected
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
   * @param  ChannelState specifies the TIM Channel CCxE bit new state.
   *          This parameter can be: TIM_CCx_ENABLE or TIM_CCx_DISABLE.
   * @retval None
@@ -7237,10 +6885,7 @@ void TIM_ResetCallback(TIM_HandleTypeDef *htim)
   htim->CommutationCallback               = HAL_TIMEx_CommutCallback;                  /* Legacy weak CommutationCallback               */
   htim->CommutationHalfCpltCallback       = HAL_TIMEx_CommutHalfCpltCallback;          /* Legacy weak CommutationHalfCpltCallback       */
   htim->BreakCallback                     = HAL_TIMEx_BreakCallback;                   /* Legacy weak BreakCallback                     */
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_tim.c
   htim->Break2Callback                    = HAL_TIMEx_Break2Callback;                  /* Legacy weak Break2Callback                    */
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_tim.c
 }
 #endif /* USE_HAL_TIM_REGISTER_CALLBACKS */
 

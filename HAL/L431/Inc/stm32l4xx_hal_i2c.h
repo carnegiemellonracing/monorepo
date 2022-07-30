@@ -1,20 +1,12 @@
 /**
   ******************************************************************************
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
   * @file    stm32l4xx_hal_i2c.h
-========
-  * @file    stm32f4xx_hal_i2c.h
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
   * @author  MCD Application Team
   * @brief   Header file of I2C HAL module.
   ******************************************************************************
   * @attention
   *
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
   * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics.
-========
-  * <h2><center>&copy; Copyright (c) 2016 STMicroelectronics.
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under BSD 3-Clause license,
@@ -26,28 +18,17 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 #ifndef STM32L4xx_HAL_I2C_H
 #define STM32L4xx_HAL_I2C_H
-========
-#ifndef __STM32F4xx_HAL_I2C_H
-#define __STM32F4xx_HAL_I2C_H
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 #include "stm32l4xx_hal_def.h"
 
 /** @addtogroup STM32L4xx_HAL_Driver
-========
-#include "stm32f4xx_hal_def.h"
-
-/** @addtogroup STM32F4xx_HAL_Driver
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
   * @{
   */
 
@@ -66,7 +47,6 @@ extern "C" {
   */
 typedef struct
 {
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
   uint32_t Timing;              /*!< Specifies the I2C_TIMINGR_register value.
                                   This parameter calculated by referring to I2C initialization
                                          section in Reference manual */
@@ -91,31 +71,6 @@ typedef struct
 
   uint32_t NoStretchMode;       /*!< Specifies if nostretch mode is selected.
                                   This parameter can be a value of @ref I2C_NOSTRETCH_MODE */
-========
-  uint32_t ClockSpeed;       /*!< Specifies the clock frequency.
-                                  This parameter must be set to a value lower than 400kHz */
-
-  uint32_t DutyCycle;        /*!< Specifies the I2C fast mode duty cycle.
-                                  This parameter can be a value of @ref I2C_duty_cycle_in_fast_mode */
-
-  uint32_t OwnAddress1;      /*!< Specifies the first device own address.
-                                  This parameter can be a 7-bit or 10-bit address. */
-
-  uint32_t AddressingMode;   /*!< Specifies if 7-bit or 10-bit addressing mode is selected.
-                                  This parameter can be a value of @ref I2C_addressing_mode */
-
-  uint32_t DualAddressMode;  /*!< Specifies if dual addressing mode is selected.
-                                  This parameter can be a value of @ref I2C_dual_addressing_mode */
-
-  uint32_t OwnAddress2;      /*!< Specifies the second device own address if dual addressing mode is selected
-                                  This parameter can be a 7-bit address. */
-
-  uint32_t GeneralCallMode;  /*!< Specifies if general call mode is selected.
-                                  This parameter can be a value of @ref I2C_general_call_addressing_mode */
-
-  uint32_t NoStretchMode;    /*!< Specifies if nostretch mode is selected.
-                                  This parameter can be a value of @ref I2C_nostretch_mode */
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 
 } I2C_InitTypeDef;
 
@@ -125,7 +80,6 @@ typedef struct
 
 /** @defgroup HAL_state_structure_definition HAL state structure definition
   * @brief  HAL State structure definition
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
   * @note  HAL I2C State value coding follow below described bitmap :\n
   *          b7-b6  Error information\n
   *             00 : No Error\n
@@ -148,30 +102,6 @@ typedef struct
   *             1  : Busy (Rx operation ongoing)\n
   *          b0     Tx state\n
   *             0  : Ready (no Tx operation ongoing)\n
-========
-  * @note  HAL I2C State value coding follow below described bitmap :
-  *          b7-b6  Error information
-  *             00 : No Error
-  *             01 : Abort (Abort user request on going)
-  *             10 : Timeout
-  *             11 : Error
-  *          b5     Peripheral initilisation status
-  *             0  : Reset (Peripheral not initialized)
-  *             1  : Init done (Peripheral initialized and ready to use. HAL I2C Init function called)
-  *          b4     (not used)
-  *             x  : Should be set to 0
-  *          b3
-  *             0  : Ready or Busy (No Listen mode ongoing)
-  *             1  : Listen (Peripheral in Address Listen Mode)
-  *          b2     Intrinsic process state
-  *             0  : Ready
-  *             1  : Busy (Peripheral busy with some configuration or internal operations)
-  *          b1     Rx state
-  *             0  : Ready (no Rx operation ongoing)
-  *             1  : Busy (Rx operation ongoing)
-  *          b0     Tx state
-  *             0  : Ready (no Tx operation ongoing)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
   *             1  : Busy (Tx operation ongoing)
   * @{
   */
@@ -232,7 +162,6 @@ typedef enum
   * @brief  I2C Error Code definition
   * @{
   */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 #define HAL_I2C_ERROR_NONE      (0x00000000U)    /*!< No error              */
 #define HAL_I2C_ERROR_BERR      (0x00000001U)    /*!< BERR error            */
 #define HAL_I2C_ERROR_ARLO      (0x00000002U)    /*!< ARLO error            */
@@ -246,20 +175,6 @@ typedef enum
 #define HAL_I2C_ERROR_INVALID_CALLBACK  (0x00000100U)    /*!< Invalid Callback error */
 #endif /* USE_HAL_I2C_REGISTER_CALLBACKS */
 #define HAL_I2C_ERROR_INVALID_PARAM     (0x00000200U)    /*!< Invalid Parameters error  */
-========
-#define HAL_I2C_ERROR_NONE              0x00000000U    /*!< No error              */
-#define HAL_I2C_ERROR_BERR              0x00000001U    /*!< BERR error            */
-#define HAL_I2C_ERROR_ARLO              0x00000002U    /*!< ARLO error            */
-#define HAL_I2C_ERROR_AF                0x00000004U    /*!< AF error              */
-#define HAL_I2C_ERROR_OVR               0x00000008U    /*!< OVR error             */
-#define HAL_I2C_ERROR_DMA               0x00000010U    /*!< DMA transfer error    */
-#define HAL_I2C_ERROR_TIMEOUT           0x00000020U    /*!< Timeout Error         */
-#define HAL_I2C_ERROR_SIZE              0x00000040U    /*!< Size Management error */
-#define HAL_I2C_ERROR_DMA_PARAM         0x00000080U    /*!< DMA Parameter Error   */
-#if (USE_HAL_I2C_REGISTER_CALLBACKS == 1)
-#define HAL_I2C_ERROR_INVALID_CALLBACK  0x00000100U    /*!< Invalid Callback error */
-#endif /* USE_HAL_I2C_REGISTER_CALLBACKS */
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 /**
   * @}
   */
@@ -270,7 +185,6 @@ typedef enum
   */
 typedef struct __I2C_HandleTypeDef
 {
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
   I2C_TypeDef                *Instance;      /*!< I2C registers base address                */
 
   I2C_InitTypeDef            Init;           /*!< I2C communication parameters              */
@@ -301,43 +215,6 @@ typedef struct __I2C_HandleTypeDef
   __IO uint32_t              ErrorCode;      /*!< I2C Error code                            */
 
   __IO uint32_t              AddrEventCount; /*!< I2C Address Event counter                 */
-========
-  I2C_TypeDef                *Instance;      /*!< I2C registers base address               */
-
-  I2C_InitTypeDef            Init;           /*!< I2C communication parameters             */
-
-  uint8_t                    *pBuffPtr;      /*!< Pointer to I2C transfer buffer           */
-
-  uint16_t                   XferSize;       /*!< I2C transfer size                        */
-
-  __IO uint16_t              XferCount;      /*!< I2C transfer counter                     */
-
-  __IO uint32_t              XferOptions;    /*!< I2C transfer options                     */
-
-  __IO uint32_t              PreviousState;  /*!< I2C communication Previous state and mode
-                                                  context for internal usage               */
-
-  DMA_HandleTypeDef          *hdmatx;        /*!< I2C Tx DMA handle parameters             */
-
-  DMA_HandleTypeDef          *hdmarx;        /*!< I2C Rx DMA handle parameters             */
-
-  HAL_LockTypeDef            Lock;           /*!< I2C locking object                       */
-
-  __IO HAL_I2C_StateTypeDef  State;          /*!< I2C communication state                  */
-
-  __IO HAL_I2C_ModeTypeDef   Mode;           /*!< I2C communication mode                   */
-
-  __IO uint32_t              ErrorCode;      /*!< I2C Error code                           */
-
-  __IO uint32_t              Devaddress;     /*!< I2C Target device address                */
-
-  __IO uint32_t              Memaddress;     /*!< I2C Target memory address                */
-
-  __IO uint32_t              MemaddSize;     /*!< I2C Target memory address  size          */
-
-  __IO uint32_t              EventCount;     /*!< I2C Event counter                        */
-
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 
 #if (USE_HAL_I2C_REGISTER_CALLBACKS == 1)
   void (* MasterTxCpltCallback)(struct __I2C_HandleTypeDef *hi2c);           /*!< I2C Master Tx Transfer completed callback */
@@ -399,7 +276,6 @@ typedef  void (*pI2C_AddrCallbackTypeDef)(I2C_HandleTypeDef *hi2c, uint8_t Trans
   * @{
   */
 
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 /** @defgroup I2C_XFEROPTIONS  I2C Sequential Transfer Options
   * @{
   */
@@ -409,85 +285,10 @@ typedef  void (*pI2C_AddrCallbackTypeDef)(I2C_HandleTypeDef *hi2c, uint8_t Trans
 #define I2C_FIRST_AND_LAST_FRAME        ((uint32_t)I2C_AUTOEND_MODE)
 #define I2C_LAST_FRAME                  ((uint32_t)I2C_AUTOEND_MODE)
 #define I2C_LAST_FRAME_NO_STOP          ((uint32_t)I2C_SOFTEND_MODE)
-========
-/** @defgroup I2C_duty_cycle_in_fast_mode I2C duty cycle in fast mode
-  * @{
-  */
-#define I2C_DUTYCYCLE_2                 0x00000000U
-#define I2C_DUTYCYCLE_16_9              I2C_CCR_DUTY
-/**
-  * @}
-  */
-
-/** @defgroup I2C_addressing_mode I2C addressing mode
-  * @{
-  */
-#define I2C_ADDRESSINGMODE_7BIT         0x00004000U
-#define I2C_ADDRESSINGMODE_10BIT        (I2C_OAR1_ADDMODE | 0x00004000U)
-/**
-  * @}
-  */
-
-/** @defgroup I2C_dual_addressing_mode  I2C dual addressing mode
-  * @{
-  */
-#define I2C_DUALADDRESS_DISABLE        0x00000000U
-#define I2C_DUALADDRESS_ENABLE         I2C_OAR2_ENDUAL
-/**
-  * @}
-  */
-
-/** @defgroup I2C_general_call_addressing_mode I2C general call addressing mode
-  * @{
-  */
-#define I2C_GENERALCALL_DISABLE        0x00000000U
-#define I2C_GENERALCALL_ENABLE         I2C_CR1_ENGC
-/**
-  * @}
-  */
-
-/** @defgroup I2C_nostretch_mode I2C nostretch mode
-  * @{
-  */
-#define I2C_NOSTRETCH_DISABLE          0x00000000U
-#define I2C_NOSTRETCH_ENABLE           I2C_CR1_NOSTRETCH
-/**
-  * @}
-  */
-
-/** @defgroup I2C_Memory_Address_Size I2C Memory Address Size
-  * @{
-  */
-#define I2C_MEMADD_SIZE_8BIT            0x00000001U
-#define I2C_MEMADD_SIZE_16BIT           0x00000010U
-/**
-  * @}
-  */
-
-/** @defgroup I2C_XferDirection_definition I2C XferDirection definition
-  * @{
-  */
-#define I2C_DIRECTION_RECEIVE           0x00000000U
-#define I2C_DIRECTION_TRANSMIT          0x00000001U
-/**
-  * @}
-  */
-
-/** @defgroup I2C_XferOptions_definition I2C XferOptions definition
-  * @{
-  */
-#define  I2C_FIRST_FRAME                0x00000001U
-#define  I2C_FIRST_AND_NEXT_FRAME       0x00000002U
-#define  I2C_NEXT_FRAME                 0x00000004U
-#define  I2C_FIRST_AND_LAST_FRAME       0x00000008U
-#define  I2C_LAST_FRAME_NO_STOP         0x00000010U
-#define  I2C_LAST_FRAME                 0x00000020U
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 
 /* List of XferOptions in usage of :
  * 1- Restart condition in all use cases (direction change or not)
  */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 #define  I2C_OTHER_FRAME                (0x000000AAU)
 #define  I2C_OTHER_AND_LAST_FRAME       (0x0000AA00U)
 /**
@@ -580,10 +381,6 @@ typedef  void (*pI2C_AddrCallbackTypeDef)(I2C_HandleTypeDef *hi2c, uint8_t Trans
 #define  I2C_GENERATE_STOP              (uint32_t)(0x80000000U | I2C_CR2_STOP)
 #define  I2C_GENERATE_START_READ        (uint32_t)(0x80000000U | I2C_CR2_START | I2C_CR2_RD_WRN)
 #define  I2C_GENERATE_START_WRITE       (uint32_t)(0x80000000U | I2C_CR2_START)
-========
-#define  I2C_OTHER_FRAME                (0x00AA0000U)
-#define  I2C_OTHER_AND_LAST_FRAME       (0xAA000000U)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 /**
   * @}
   */
@@ -594,7 +391,6 @@ typedef  void (*pI2C_AddrCallbackTypeDef)(I2C_HandleTypeDef *hi2c, uint8_t Trans
   *           - XXXXXXXX  : Interrupt control mask
   * @{
   */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 #define I2C_IT_ERRI                     I2C_CR1_ERRIE
 #define I2C_IT_TCI                      I2C_CR1_TCIE
 #define I2C_IT_STOPI                    I2C_CR1_STOPIE
@@ -602,11 +398,6 @@ typedef  void (*pI2C_AddrCallbackTypeDef)(I2C_HandleTypeDef *hi2c, uint8_t Trans
 #define I2C_IT_ADDRI                    I2C_CR1_ADDRIE
 #define I2C_IT_RXI                      I2C_CR1_RXIE
 #define I2C_IT_TXI                      I2C_CR1_TXIE
-========
-#define I2C_IT_BUF                      I2C_CR2_ITBUFEN
-#define I2C_IT_EVT                      I2C_CR2_ITEVTEN
-#define I2C_IT_ERR                      I2C_CR2_ITERREN
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 /**
   * @}
   */
@@ -614,7 +405,6 @@ typedef  void (*pI2C_AddrCallbackTypeDef)(I2C_HandleTypeDef *hi2c, uint8_t Trans
 /** @defgroup I2C_Flag_definition I2C Flag definition
   * @{
   */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 #define I2C_FLAG_TXE                    I2C_ISR_TXE
 #define I2C_FLAG_TXIS                   I2C_ISR_TXIS
 #define I2C_FLAG_RXNE                   I2C_ISR_RXNE
@@ -631,25 +421,6 @@ typedef  void (*pI2C_AddrCallbackTypeDef)(I2C_HandleTypeDef *hi2c, uint8_t Trans
 #define I2C_FLAG_ALERT                  I2C_ISR_ALERT
 #define I2C_FLAG_BUSY                   I2C_ISR_BUSY
 #define I2C_FLAG_DIR                    I2C_ISR_DIR
-========
-
-#define I2C_FLAG_OVR                    0x00010800U
-#define I2C_FLAG_AF                     0x00010400U
-#define I2C_FLAG_ARLO                   0x00010200U
-#define I2C_FLAG_BERR                   0x00010100U
-#define I2C_FLAG_TXE                    0x00010080U
-#define I2C_FLAG_RXNE                   0x00010040U
-#define I2C_FLAG_STOPF                  0x00010010U
-#define I2C_FLAG_ADD10                  0x00010008U
-#define I2C_FLAG_BTF                    0x00010004U
-#define I2C_FLAG_ADDR                   0x00010002U
-#define I2C_FLAG_SB                     0x00010001U
-#define I2C_FLAG_DUALF                  0x00100080U
-#define I2C_FLAG_GENCALL                0x00100010U
-#define I2C_FLAG_TRA                    0x00100004U
-#define I2C_FLAG_BUSY                   0x00100002U
-#define I2C_FLAG_MSL                    0x00100001U
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 /**
   * @}
   */
@@ -678,7 +449,6 @@ typedef  void (*pI2C_AddrCallbackTypeDef)(I2C_HandleTypeDef *hi2c, uint8_t Trans
 #define __HAL_I2C_RESET_HANDLE_STATE(__HANDLE__)                ((__HANDLE__)->State = HAL_I2C_STATE_RESET)
 #endif
 
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 /** @brief  Enable the specified I2C interrupt.
   * @param  __HANDLE__ specifies the I2C Handle.
   * @param  __INTERRUPT__ specifies the interrupt source to enable.
@@ -772,110 +542,17 @@ typedef  void (*pI2C_AddrCallbackTypeDef)(I2C_HandleTypeDef *hi2c, uint8_t Trans
   */
 #define __HAL_I2C_CLEAR_FLAG(__HANDLE__, __FLAG__) (((__FLAG__) == I2C_FLAG_TXE) ? ((__HANDLE__)->Instance->ISR |= (__FLAG__)) \
                                                                                  : ((__HANDLE__)->Instance->ICR = (__FLAG__)))
-========
-/** @brief  Enable or disable the specified I2C interrupts.
-  * @param  __HANDLE__ specifies the I2C Handle.
-  * @param  __INTERRUPT__ specifies the interrupt source to enable or disable.
-  *         This parameter can be one of the following values:
-  *            @arg I2C_IT_BUF: Buffer interrupt enable
-  *            @arg I2C_IT_EVT: Event interrupt enable
-  *            @arg I2C_IT_ERR: Error interrupt enable
-  * @retval None
-  */
-#define __HAL_I2C_ENABLE_IT(__HANDLE__, __INTERRUPT__)   SET_BIT((__HANDLE__)->Instance->CR2,(__INTERRUPT__))
-#define __HAL_I2C_DISABLE_IT(__HANDLE__, __INTERRUPT__)  CLEAR_BIT((__HANDLE__)->Instance->CR2, (__INTERRUPT__))
-
-/** @brief  Checks if the specified I2C interrupt source is enabled or disabled.
-  * @param  __HANDLE__ specifies the I2C Handle.
-  * @param  __INTERRUPT__ specifies the I2C interrupt source to check.
-  *          This parameter can be one of the following values:
-  *            @arg I2C_IT_BUF: Buffer interrupt enable
-  *            @arg I2C_IT_EVT: Event interrupt enable
-  *            @arg I2C_IT_ERR: Error interrupt enable
-  * @retval The new state of __INTERRUPT__ (TRUE or FALSE).
-  */
-#define __HAL_I2C_GET_IT_SOURCE(__HANDLE__, __INTERRUPT__) ((((__HANDLE__)->Instance->CR2 & (__INTERRUPT__)) == (__INTERRUPT__)) ? SET : RESET)
-
-/** @brief  Checks whether the specified I2C flag is set or not.
-  * @param  __HANDLE__ specifies the I2C Handle.
-  * @param  __FLAG__ specifies the flag to check.
-  *         This parameter can be one of the following values:
-  *            @arg I2C_FLAG_OVR: Overrun/Underrun flag
-  *            @arg I2C_FLAG_AF: Acknowledge failure flag
-  *            @arg I2C_FLAG_ARLO: Arbitration lost flag
-  *            @arg I2C_FLAG_BERR: Bus error flag
-  *            @arg I2C_FLAG_TXE: Data register empty flag
-  *            @arg I2C_FLAG_RXNE: Data register not empty flag
-  *            @arg I2C_FLAG_STOPF: Stop detection flag
-  *            @arg I2C_FLAG_ADD10: 10-bit header sent flag
-  *            @arg I2C_FLAG_BTF: Byte transfer finished flag
-  *            @arg I2C_FLAG_ADDR: Address sent flag
-  *                                Address matched flag
-  *            @arg I2C_FLAG_SB: Start bit flag
-  *            @arg I2C_FLAG_DUALF: Dual flag
-  *            @arg I2C_FLAG_GENCALL: General call header flag
-  *            @arg I2C_FLAG_TRA: Transmitter/Receiver flag
-  *            @arg I2C_FLAG_BUSY: Bus busy flag
-  *            @arg I2C_FLAG_MSL: Master/Slave flag
-  * @retval The new state of __FLAG__ (TRUE or FALSE).
-  */
-#define __HAL_I2C_GET_FLAG(__HANDLE__, __FLAG__) ((((uint8_t)((__FLAG__) >> 16U)) == 0x01U) ? \
-                                                  (((((__HANDLE__)->Instance->SR1) & ((__FLAG__) & I2C_FLAG_MASK)) == ((__FLAG__) & I2C_FLAG_MASK)) ? SET : RESET) : \
-                                                  (((((__HANDLE__)->Instance->SR2) & ((__FLAG__) & I2C_FLAG_MASK)) == ((__FLAG__) & I2C_FLAG_MASK)) ? SET : RESET))
-
-/** @brief  Clears the I2C pending flags which are cleared by writing 0 in a specific bit.
-  * @param  __HANDLE__ specifies the I2C Handle.
-  * @param  __FLAG__ specifies the flag to clear.
-  *         This parameter can be any combination of the following values:
-  *            @arg I2C_FLAG_OVR: Overrun/Underrun flag (Slave mode)
-  *            @arg I2C_FLAG_AF: Acknowledge failure flag
-  *            @arg I2C_FLAG_ARLO: Arbitration lost flag (Master mode)
-  *            @arg I2C_FLAG_BERR: Bus error flag
-  * @retval None
-  */
-#define __HAL_I2C_CLEAR_FLAG(__HANDLE__, __FLAG__) ((__HANDLE__)->Instance->SR1 = ~((__FLAG__) & I2C_FLAG_MASK))
-
-/** @brief  Clears the I2C ADDR pending flag.
-  * @param  __HANDLE__ specifies the I2C Handle.
-  *         This parameter can be I2C where x: 1, 2, or 3 to select the I2C peripheral.
-  * @retval None
-  */
-#define __HAL_I2C_CLEAR_ADDRFLAG(__HANDLE__)    \
-  do{                                           \
-    __IO uint32_t tmpreg = 0x00U;               \
-    tmpreg = (__HANDLE__)->Instance->SR1;       \
-    tmpreg = (__HANDLE__)->Instance->SR2;       \
-    UNUSED(tmpreg);                             \
-  } while(0)
-
-/** @brief  Clears the I2C STOPF pending flag.
-  * @param  __HANDLE__ specifies the I2C Handle.
-  * @retval None
-  */
-#define __HAL_I2C_CLEAR_STOPFLAG(__HANDLE__)           \
-  do{                                                  \
-    __IO uint32_t tmpreg = 0x00U;                      \
-    tmpreg = (__HANDLE__)->Instance->SR1;              \
-    SET_BIT((__HANDLE__)->Instance->CR1, I2C_CR1_PE);  \
-    UNUSED(tmpreg);                                    \
-  } while(0)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 
 /** @brief  Enable the specified I2C peripheral.
   * @param  __HANDLE__ specifies the I2C Handle.
   * @retval None
   */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 #define __HAL_I2C_ENABLE(__HANDLE__)                            (SET_BIT((__HANDLE__)->Instance->CR1,  I2C_CR1_PE))
-========
-#define __HAL_I2C_ENABLE(__HANDLE__)                  SET_BIT((__HANDLE__)->Instance->CR1, I2C_CR1_PE)
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 
 /** @brief  Disable the specified I2C peripheral.
   * @param  __HANDLE__ specifies the I2C Handle.
   * @retval None
   */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 #define __HAL_I2C_DISABLE(__HANDLE__)                           (CLEAR_BIT((__HANDLE__)->Instance->CR1, I2C_CR1_PE))
 
 /** @brief  Generate a Non-Acknowledge I2C peripheral in Slave mode.
@@ -883,21 +560,12 @@ typedef  void (*pI2C_AddrCallbackTypeDef)(I2C_HandleTypeDef *hi2c, uint8_t Trans
   * @retval None
   */
 #define __HAL_I2C_GENERATE_NACK(__HANDLE__)                     (SET_BIT((__HANDLE__)->Instance->CR2, I2C_CR2_NACK))
-========
-#define __HAL_I2C_DISABLE(__HANDLE__)                 CLEAR_BIT((__HANDLE__)->Instance->CR1, I2C_CR1_PE)
-
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 /**
   * @}
   */
 
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 /* Include I2C HAL Extended module */
 #include "stm32l4xx_hal_i2c_ex.h"
-========
-/* Include I2C HAL Extension module */
-#include "stm32f4xx_hal_i2c_ex.h"
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 
 /* Exported functions --------------------------------------------------------*/
 /** @addtogroup I2C_Exported_Functions
@@ -995,13 +663,8 @@ void HAL_I2C_AbortCpltCallback(I2C_HandleTypeDef *hi2c);
   */
 /* Peripheral State, Mode and Error functions  *********************************/
 HAL_I2C_StateTypeDef HAL_I2C_GetState(I2C_HandleTypeDef *hi2c);
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 HAL_I2C_ModeTypeDef  HAL_I2C_GetMode(I2C_HandleTypeDef *hi2c);
 uint32_t             HAL_I2C_GetError(I2C_HandleTypeDef *hi2c);
-========
-HAL_I2C_ModeTypeDef HAL_I2C_GetMode(I2C_HandleTypeDef *hi2c);
-uint32_t HAL_I2C_GetError(I2C_HandleTypeDef *hi2c);
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 
 /**
   * @}
@@ -1010,29 +673,17 @@ uint32_t HAL_I2C_GetError(I2C_HandleTypeDef *hi2c);
 /**
   * @}
   */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 
-========
-/* Private types -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 /* Private constants ---------------------------------------------------------*/
 /** @defgroup I2C_Private_Constants I2C Private Constants
   * @{
   */
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 
-========
-#define I2C_FLAG_MASK                    0x0000FFFFU
-#define I2C_MIN_PCLK_FREQ_STANDARD       2000000U     /*!< 2 MHz                     */
-#define I2C_MIN_PCLK_FREQ_FAST           4000000U     /*!< 4 MHz                     */
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 /**
   * @}
   */
 
 /* Private macros ------------------------------------------------------------*/
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 /** @defgroup I2C_Private_Macro I2C Private Macros
   * @{
   */
@@ -1077,62 +728,10 @@ uint32_t HAL_I2C_GetError(I2C_HandleTypeDef *hi2c);
                                                    ((REQUEST) == I2C_LAST_FRAME)           || \
                                                    ((REQUEST) == I2C_LAST_FRAME_NO_STOP)   || \
                                                    IS_I2C_TRANSFER_OTHER_OPTIONS_REQUEST(REQUEST))
-========
-/** @defgroup I2C_Private_Macros I2C Private Macros
-  * @{
-  */
-
-#define I2C_MIN_PCLK_FREQ(__PCLK__, __SPEED__)             (((__SPEED__) <= 100000U) ? ((__PCLK__) < I2C_MIN_PCLK_FREQ_STANDARD) : ((__PCLK__) < I2C_MIN_PCLK_FREQ_FAST))
-#define I2C_CCR_CALCULATION(__PCLK__, __SPEED__, __COEFF__)     (((((__PCLK__) - 1U)/((__SPEED__) * (__COEFF__))) + 1U) & I2C_CCR_CCR)
-#define I2C_FREQRANGE(__PCLK__)                            ((__PCLK__)/1000000U)
-#define I2C_RISE_TIME(__FREQRANGE__, __SPEED__)            (((__SPEED__) <= 100000U) ? ((__FREQRANGE__) + 1U) : ((((__FREQRANGE__) * 300U) / 1000U) + 1U))
-#define I2C_SPEED_STANDARD(__PCLK__, __SPEED__)            ((I2C_CCR_CALCULATION((__PCLK__), (__SPEED__), 2U) < 4U)? 4U:I2C_CCR_CALCULATION((__PCLK__), (__SPEED__), 2U))
-#define I2C_SPEED_FAST(__PCLK__, __SPEED__, __DUTYCYCLE__) (((__DUTYCYCLE__) == I2C_DUTYCYCLE_2)? I2C_CCR_CALCULATION((__PCLK__), (__SPEED__), 3U) : (I2C_CCR_CALCULATION((__PCLK__), (__SPEED__), 25U) | I2C_DUTYCYCLE_16_9))
-#define I2C_SPEED(__PCLK__, __SPEED__, __DUTYCYCLE__)      (((__SPEED__) <= 100000U)? (I2C_SPEED_STANDARD((__PCLK__), (__SPEED__))) : \
-                                                                  ((I2C_SPEED_FAST((__PCLK__), (__SPEED__), (__DUTYCYCLE__)) & I2C_CCR_CCR) == 0U)? 1U : \
-                                                                  ((I2C_SPEED_FAST((__PCLK__), (__SPEED__), (__DUTYCYCLE__))) | I2C_CCR_FS))
-
-#define I2C_7BIT_ADD_WRITE(__ADDRESS__)                    ((uint8_t)((__ADDRESS__) & (uint8_t)(~I2C_OAR1_ADD0)))
-#define I2C_7BIT_ADD_READ(__ADDRESS__)                     ((uint8_t)((__ADDRESS__) | I2C_OAR1_ADD0))
-
-#define I2C_10BIT_ADDRESS(__ADDRESS__)                     ((uint8_t)((uint16_t)((__ADDRESS__) & (uint16_t)0x00FF)))
-#define I2C_10BIT_HEADER_WRITE(__ADDRESS__)                ((uint8_t)((uint16_t)((uint16_t)(((uint16_t)((__ADDRESS__) & (uint16_t)0x0300)) >> 7) | (uint16_t)0x00F0)))
-#define I2C_10BIT_HEADER_READ(__ADDRESS__)                 ((uint8_t)((uint16_t)((uint16_t)(((uint16_t)((__ADDRESS__) & (uint16_t)0x0300)) >> 7) | (uint16_t)(0x00F1))))
-
-#define I2C_MEM_ADD_MSB(__ADDRESS__)                       ((uint8_t)((uint16_t)(((uint16_t)((__ADDRESS__) & (uint16_t)0xFF00)) >> 8)))
-#define I2C_MEM_ADD_LSB(__ADDRESS__)                       ((uint8_t)((uint16_t)((__ADDRESS__) & (uint16_t)0x00FF)))
-
-/** @defgroup I2C_IS_RTC_Definitions I2C Private macros to check input parameters
-  * @{
-  */
-#define IS_I2C_DUTY_CYCLE(CYCLE) (((CYCLE) == I2C_DUTYCYCLE_2) || \
-                                  ((CYCLE) == I2C_DUTYCYCLE_16_9))
-#define IS_I2C_ADDRESSING_MODE(ADDRESS) (((ADDRESS) == I2C_ADDRESSINGMODE_7BIT) || \
-                                         ((ADDRESS) == I2C_ADDRESSINGMODE_10BIT))
-#define IS_I2C_DUAL_ADDRESS(ADDRESS) (((ADDRESS) == I2C_DUALADDRESS_DISABLE) || \
-                                      ((ADDRESS) == I2C_DUALADDRESS_ENABLE))
-#define IS_I2C_GENERAL_CALL(CALL) (((CALL) == I2C_GENERALCALL_DISABLE) || \
-                                   ((CALL) == I2C_GENERALCALL_ENABLE))
-#define IS_I2C_NO_STRETCH(STRETCH) (((STRETCH) == I2C_NOSTRETCH_DISABLE) || \
-                                    ((STRETCH) == I2C_NOSTRETCH_ENABLE))
-#define IS_I2C_MEMADD_SIZE(SIZE) (((SIZE) == I2C_MEMADD_SIZE_8BIT) || \
-                                  ((SIZE) == I2C_MEMADD_SIZE_16BIT))
-#define IS_I2C_CLOCK_SPEED(SPEED) (((SPEED) > 0U) && ((SPEED) <= 400000U))
-#define IS_I2C_OWN_ADDRESS1(ADDRESS1) (((ADDRESS1) & 0xFFFFFC00U) == 0U)
-#define IS_I2C_OWN_ADDRESS2(ADDRESS2) (((ADDRESS2) & 0xFFFFFF01U) == 0U)
-#define IS_I2C_TRANSFER_OPTIONS_REQUEST(REQUEST)      (((REQUEST) == I2C_FIRST_FRAME)              || \
-                                                       ((REQUEST) == I2C_FIRST_AND_NEXT_FRAME)     || \
-                                                       ((REQUEST) == I2C_NEXT_FRAME)               || \
-                                                       ((REQUEST) == I2C_FIRST_AND_LAST_FRAME)     || \
-                                                       ((REQUEST) == I2C_LAST_FRAME)               || \
-                                                       ((REQUEST) == I2C_LAST_FRAME_NO_STOP)       || \
-                                                       IS_I2C_TRANSFER_OTHER_OPTIONS_REQUEST(REQUEST))
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 
 #define IS_I2C_TRANSFER_OTHER_OPTIONS_REQUEST(REQUEST) (((REQUEST) == I2C_OTHER_FRAME)     || \
                                                         ((REQUEST) == I2C_OTHER_AND_LAST_FRAME))
 
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 #define I2C_RESET_CR2(__HANDLE__)                 ((__HANDLE__)->Instance->CR2 &= (uint32_t)~((uint32_t)(I2C_CR2_SADD | I2C_CR2_HEAD10R | I2C_CR2_NBYTES | I2C_CR2_RELOAD | I2C_CR2_RD_WRN)))
 
 #define I2C_GET_ADDR_MATCH(__HANDLE__)            ((uint16_t)(((__HANDLE__)->Instance->ISR & I2C_ISR_ADDCODE) >> 16U))
@@ -1150,31 +749,17 @@ uint32_t HAL_I2C_GetError(I2C_HandleTypeDef *hi2c);
 #define I2C_GENERATE_START(__ADDMODE__,__ADDRESS__) (((__ADDMODE__) == I2C_ADDRESSINGMODE_7BIT) ? (uint32_t)((((uint32_t)(__ADDRESS__) & (I2C_CR2_SADD)) | (I2C_CR2_START) | (I2C_CR2_AUTOEND)) & (~I2C_CR2_RD_WRN)) : \
                                                           (uint32_t)((((uint32_t)(__ADDRESS__) & (I2C_CR2_SADD)) | (I2C_CR2_ADD10) | (I2C_CR2_START)) & (~I2C_CR2_RD_WRN)))
 
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 #define I2C_CHECK_FLAG(__ISR__, __FLAG__)         ((((__ISR__) & ((__FLAG__) & I2C_FLAG_MASK)) == ((__FLAG__) & I2C_FLAG_MASK)) ? SET : RESET)
 #define I2C_CHECK_IT_SOURCE(__CR1__, __IT__)      ((((__CR1__) & (__IT__)) == (__IT__)) ? SET : RESET)
 /**
   * @}
   */
 
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 /* Private Functions ---------------------------------------------------------*/
 /** @defgroup I2C_Private_Functions I2C Private Functions
   * @{
   */
 /* Private functions are defined in stm32l4xx_hal_i2c.c file */
-========
-/**
-  * @}
-  */
-
-/* Private functions ---------------------------------------------------------*/
-/** @defgroup I2C_Private_Functions I2C Private Functions
-  * @{
-  */
-
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 /**
   * @}
   */
@@ -1192,10 +777,6 @@ uint32_t HAL_I2C_GetError(I2C_HandleTypeDef *hi2c);
 #endif
 
 
-<<<<<<<< HEAD:HAL/L431/Inc/stm32l4xx_hal_i2c.h
 #endif /* STM32L4xx_HAL_I2C_H */
-========
-#endif /* __STM32F4xx_HAL_I2C_H */
->>>>>>>> origin/alternative_stms:HAL/F413/Inc/stm32f4xx_hal_i2c.h
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

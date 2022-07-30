@@ -1,10 +1,6 @@
 /**
   ******************************************************************************
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_can.c
-  * @file    stm32l4xx_hal_can.c
-========
   * @file    stm32f4xx_hal_can.c
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_can.c
   * @author  MCD Application Team
   * @brief   CAN HAL module driver.
   *          This file provides firmware functions to manage the following
@@ -202,11 +198,7 @@
   ******************************************************************************
   * @attention
   *
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_can.c
-  * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics.
-========
   * <h2><center>&copy; Copyright (c) 2016 STMicroelectronics.
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_can.c
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under BSD 3-Clause license,
@@ -218,15 +210,9 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_can.c
-#include "stm32l4xx_hal.h"
-
-/** @addtogroup STM32L4xx_HAL_Driver
-========
 #include "stm32f4xx_hal.h"
 
 /** @addtogroup STM32F4xx_HAL_Driver
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_can.c
   * @{
   */
 
@@ -868,9 +854,6 @@ HAL_StatusTypeDef HAL_CAN_ConfigFilter(CAN_HandleTypeDef *hcan, CAN_FilterTypeDe
     assert_param(IS_CAN_FILTER_FIFO(sFilterConfig->FilterFIFOAssignment));
     assert_param(IS_CAN_FILTER_ACTIVATION(sFilterConfig->FilterActivation));
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_can.c
-#if   defined(CAN2)
-========
 #if defined(CAN3)
     /* Check the CAN instance */
     if (hcan->Instance == CAN3)
@@ -891,7 +874,6 @@ HAL_StatusTypeDef HAL_CAN_ConfigFilter(CAN_HandleTypeDef *hcan, CAN_FilterTypeDe
       assert_param(IS_CAN_FILTER_BANK_DUAL(sFilterConfig->SlaveStartFilterBank));
     }
 #elif defined(CAN2)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_can.c
     /* CAN1 and CAN2 are dual instances with 28 common filters banks */
     /* Select master instance to access the filter banks */
     can_ip = CAN1;
@@ -909,9 +891,6 @@ HAL_StatusTypeDef HAL_CAN_ConfigFilter(CAN_HandleTypeDef *hcan, CAN_FilterTypeDe
     /* Initialisation mode for the filter */
     SET_BIT(can_ip->FMR, CAN_FMR_FINIT);
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_can.c
-#if   defined(CAN2)
-========
 #if defined(CAN3)
     /* Check the CAN instance */
     if (can_ip == CAN1)
@@ -922,7 +901,6 @@ HAL_StatusTypeDef HAL_CAN_ConfigFilter(CAN_HandleTypeDef *hcan, CAN_FilterTypeDe
     }
 
 #elif defined(CAN2)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_can.c
     /* Select the start filter number of CAN2 slave instance */
     CLEAR_BIT(can_ip->FMR, CAN_FMR_CAN2SB);
     SET_BIT(can_ip->FMR, sFilterConfig->SlaveStartFilterBank << CAN_FMR_CAN2SB_Pos);

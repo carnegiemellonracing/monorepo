@@ -1,16 +1,9 @@
 /**
   ******************************************************************************
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  * @file    stm32l4xx_hal_gpio.c
-  * @author  MCD Application Team
-  * @brief   GPIO HAL module driver.
-  *          This file provides firmware functions to manage the following
-========
   * @file    stm32f4xx_hal_gpio.c
   * @author  MCD Application Team
   * @brief   GPIO HAL module driver.
   *          This file provides firmware functions to manage the following 
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   *          functionalities of the General Purpose Input/Output (GPIO) peripheral:
   *           + Initialization and de-initialization functions
   *           + IO operation functions
@@ -19,83 +12,6 @@
   ==============================================================================
                     ##### GPIO Peripheral features #####
   ==============================================================================
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  [..]
-    (+) Each port bit of the general-purpose I/O (GPIO) ports can be individually
-        configured by software in several modes:
-        (++) Input mode
-        (++) Analog mode
-        (++) Output mode
-        (++) Alternate function mode
-        (++) External interrupt/event lines
-
-    (+) During and just after reset, the alternate functions and external interrupt
-        lines are not active and the I/O ports are configured in input floating mode.
-
-    (+) All GPIO pins have weak internal pull-up and pull-down resistors, which can be
-        activated or not.
-
-    (+) In Output or Alternate mode, each IO can be configured on open-drain or push-pull
-        type and the IO speed can be selected depending on the VDD value.
-
-    (+) The microcontroller IO pins are connected to onboard peripherals/modules through a
-        multiplexer that allows only one peripheral alternate function (AF) connected
-       to an IO pin at a time. In this way, there can be no conflict between peripherals
-       sharing the same IO pin.
-
-    (+) All ports have external interrupt/event capability. To use external interrupt
-        lines, the port must be configured in input mode. All available GPIO pins are
-        connected to the 16 external interrupt/event lines from EXTI0 to EXTI15.
-
-    (+) The external interrupt/event controller consists of up to 39 edge detectors
-        (16 lines are connected to GPIO) for generating event/interrupt requests (each
-        input line can be independently configured to select the type (interrupt or event)
-        and the corresponding trigger event (rising or falling or both). Each line can
-        also be masked independently.
-
-                     ##### How to use this driver #####
-  ==============================================================================
-  [..]
-    (#) Enable the GPIO AHB clock using the following function: __HAL_RCC_GPIOx_CLK_ENABLE().
-
-    (#) Configure the GPIO pin(s) using HAL_GPIO_Init().
-        (++) Configure the IO mode using "Mode" member from GPIO_InitTypeDef structure
-        (++) Activate Pull-up, Pull-down resistor using "Pull" member from GPIO_InitTypeDef
-             structure.
-        (++) In case of Output or alternate function mode selection: the speed is
-             configured through "Speed" member from GPIO_InitTypeDef structure.
-        (++) In alternate mode is selection, the alternate function connected to the IO
-             is configured through "Alternate" member from GPIO_InitTypeDef structure.
-        (++) Analog mode is required when a pin is to be used as ADC channel
-             or DAC output.
-        (++) In case of external interrupt/event selection the "Mode" member from
-             GPIO_InitTypeDef structure select the type (interrupt or event) and
-             the corresponding trigger event (rising or falling or both).
-
-    (#) In case of external interrupt/event mode selection, configure NVIC IRQ priority
-        mapped to the EXTI line using HAL_NVIC_SetPriority() and enable it using
-        HAL_NVIC_EnableIRQ().
-
-    (#) To get the level of a pin configured in input mode use HAL_GPIO_ReadPin().
-
-    (#) To set/reset the level of a pin configured in output mode use
-        HAL_GPIO_WritePin()/HAL_GPIO_TogglePin().
-
-   (#) To lock pin configuration until next reset use HAL_GPIO_LockPin().
-
-    (#) During and just after reset, the alternate functions are not
-        active and the GPIO pins are configured in input floating mode (except JTAG
-        pins).
-
-    (#) The LSE oscillator pins OSC32_IN and OSC32_OUT can be used as general purpose
-        (PC14 and PC15, respectively) when the LSE oscillator is off. The LSE has
-        priority over the GPIO function.
-
-    (#) The HSE oscillator pins OSC_IN/OSC_OUT can be used as
-        general purpose PH0 and PH1, respectively, when the HSE oscillator is off.
-        The HSE has priority over the GPIO function.
-
-========
   [..] 
   Subject to the specific hardware characteristics of each I/O port listed in the datasheet, each
   port bit of the General Purpose IO (GPIO) Ports, can be individually configured by software
@@ -173,7 +89,6 @@
         general purpose PH0 and PH1, respectively, when the HSE oscillator is off. 
         The HSE has priority over the GPIO function.
   
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   @endverbatim
   ******************************************************************************
   * @attention
@@ -187,21 +102,12 @@
   *                        opensource.org/licenses/BSD-3-Clause
   *
   ******************************************************************************
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  */
-
-/* Includes ------------------------------------------------------------------*/
-#include "stm32l4xx_hal.h"
-
-/** @addtogroup STM32L4xx_HAL_Driver
-========
   */ 
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
 /** @addtogroup STM32F4xx_HAL_Driver
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   * @{
   */
 
@@ -209,44 +115,10 @@
   * @brief GPIO HAL module driver
   * @{
   */
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-/** MISRA C:2012 deviation rule has been granted for following rules:
-  * Rule-12.2 - Medium: RHS argument is in interval [0,INF] which is out of
-  * range of the shift operator in following API :
-  * HAL_GPIO_Init
-  * HAL_GPIO_DeInit
-  */
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
 
 #ifdef HAL_GPIO_MODULE_ENABLED
 
 /* Private typedef -----------------------------------------------------------*/
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-/* Private defines -----------------------------------------------------------*/
-/** @defgroup GPIO_Private_Defines GPIO Private Defines
-  * @{
-  */
-#define GPIO_MODE             (0x00000003u)
-#define ANALOG_MODE           (0x00000008u)
-#define EXTI_MODE             (0x10000000u)
-#define GPIO_MODE_IT          (0x00010000u)
-#define GPIO_MODE_EVT         (0x00020000u)
-#define RISING_EDGE           (0x00100000u)
-#define FALLING_EDGE          (0x00200000u)
-#define GPIO_OUTPUT_TYPE      (0x00000010u)
-
-#define GPIO_NUMBER           (16u)
-/**
-  * @}
-  */
-
-/* Private macros ------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-/* Exported functions --------------------------------------------------------*/
-
-========
 /* Private define ------------------------------------------------------------*/
 /** @addtogroup GPIO_Private_Constants GPIO Private Constants
   * @{
@@ -268,21 +140,10 @@
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
 /** @defgroup GPIO_Exported_Functions GPIO Exported Functions
   * @{
   */
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-/** @defgroup GPIO_Exported_Functions_Group1 Initialization/de-initialization functions
- *  @brief    Initialization and Configuration functions
- *
-@verbatim
- ===============================================================================
-              ##### Initialization and de-initialization functions #####
- ===============================================================================
-
-========
 /** @defgroup GPIO_Exported_Functions_Group1 Initialization and de-initialization functions
   *  @brief    Initialization and Configuration functions
   *
@@ -294,39 +155,25 @@
     This section provides functions allowing to initialize and de-initialize the GPIOs
     to be ready for use.
  
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
 @endverbatim
   * @{
   */
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-/**
-  * @brief  Initialize the GPIOx peripheral according to the specified parameters in the GPIO_Init.
-  * @param  GPIOx: where x can be (A..H) to select the GPIO peripheral for STM32L4 family
-  * @param  GPIO_Init: pointer to a GPIO_InitTypeDef structure that contains
-========
 
 /**
   * @brief  Initializes the GPIOx peripheral according to the specified parameters in the GPIO_Init.
   * @param  GPIOx where x can be (A..K) to select the GPIO peripheral for STM32F429X device or
   *                      x can be (A..I) to select the GPIO peripheral for STM32F40XX and STM32F427X devices.
   * @param  GPIO_Init pointer to a GPIO_InitTypeDef structure that contains
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   *         the configuration information for the specified GPIO peripheral.
   * @retval None
   */
 void HAL_GPIO_Init(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init)
 {
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  uint32_t position = 0x00u;
-  uint32_t iocurrent;
-  uint32_t temp;
-========
   uint32_t position;
   uint32_t ioposition = 0x00U;
   uint32_t iocurrent = 0x00U;
   uint32_t temp = 0x00U;
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
 
   /* Check the parameters */
   assert_param(IS_GPIO_ALL_INSTANCE(GPIOx));
@@ -335,14 +182,6 @@ void HAL_GPIO_Init(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init)
   assert_param(IS_GPIO_PULL(GPIO_Init->Pull));
 
   /* Configure the port pins */
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  while (((GPIO_Init->Pin) >> position) != 0x00u)
-  {
-    /* Get current io position */
-    iocurrent = (GPIO_Init->Pin) & (1uL << position);
-
-    if (iocurrent != 0x00u)
-========
   for(position = 0U; position < GPIO_NUMBER; position++)
   {
     /* Get the IO position */
@@ -351,23 +190,11 @@ void HAL_GPIO_Init(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init)
     iocurrent = (uint32_t)(GPIO_Init->Pin) & ioposition;
 
     if(iocurrent == ioposition)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
     {
       /*--------------------- GPIO Mode Configuration ------------------------*/
       /* In case of Alternate function mode selection */
       if((GPIO_Init->Mode == GPIO_MODE_AF_PP) || (GPIO_Init->Mode == GPIO_MODE_AF_OD))
       {
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-        /* Check the Alternate function parameters */
-        assert_param(IS_GPIO_AF_INSTANCE(GPIOx));
-        assert_param(IS_GPIO_AF(GPIO_Init->Alternate));
-
-        /* Configure Alternate function mapped with the current IO */
-        temp = GPIOx->AFR[position >> 3u];
-        temp &= ~(0xFu << ((position & 0x07u) * 4u));
-        temp |= ((GPIO_Init->Alternate) << ((position & 0x07u) * 4u));
-        GPIOx->AFR[position >> 3u] = temp;
-========
         /* Check the Alternate function parameter */
         assert_param(IS_GPIO_AF(GPIO_Init->Alternate));
         /* Configure Alternate function mapped with the current IO */
@@ -375,18 +202,12 @@ void HAL_GPIO_Init(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init)
         temp &= ~(0xFU << ((uint32_t)(position & 0x07U) * 4U)) ;
         temp |= ((uint32_t)(GPIO_Init->Alternate) << (((uint32_t)position & 0x07U) * 4U));
         GPIOx->AFR[position >> 3U] = temp;
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
       }
 
       /* Configure IO Direction mode (Input, Output, Alternate or Analog) */
       temp = GPIOx->MODER;
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-      temp &= ~(GPIO_MODER_MODE0 << (position * 2u));
-      temp |= ((GPIO_Init->Mode & GPIO_MODE) << (position * 2u));
-========
       temp &= ~(GPIO_MODER_MODER0 << (position * 2U));
       temp |= ((GPIO_Init->Mode & GPIO_MODE) << (position * 2U));
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
       GPIOx->MODER = temp;
 
       /* In case of Output or Alternate function mode selection */
@@ -396,44 +217,13 @@ void HAL_GPIO_Init(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init)
         /* Check the Speed parameter */
         assert_param(IS_GPIO_SPEED(GPIO_Init->Speed));
         /* Configure the IO Speed */
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-        temp = GPIOx->OSPEEDR;
-        temp &= ~(GPIO_OSPEEDR_OSPEED0 << (position * 2u));
-        temp |= (GPIO_Init->Speed << (position * 2u));
-========
         temp = GPIOx->OSPEEDR; 
         temp &= ~(GPIO_OSPEEDER_OSPEEDR0 << (position * 2U));
         temp |= (GPIO_Init->Speed << (position * 2U));
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
         GPIOx->OSPEEDR = temp;
 
         /* Configure the IO Output Type */
         temp = GPIOx->OTYPER;
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-        temp &= ~(GPIO_OTYPER_OT0 << position) ;
-        temp |= (((GPIO_Init->Mode & GPIO_OUTPUT_TYPE) >> 4u) << position);
-        GPIOx->OTYPER = temp;
-      }
-
-#if defined(STM32L471xx) || defined(STM32L475xx) || defined(STM32L476xx) || defined(STM32L485xx) || defined(STM32L486xx)
-
-      /* In case of Analog mode, check if ADC control mode is selected */
-      if((GPIO_Init->Mode & GPIO_MODE_ANALOG) == GPIO_MODE_ANALOG)
-      {
-        /* Configure the IO Output Type */
-        temp = GPIOx->ASCR;
-        temp &= ~(GPIO_ASCR_ASC0 << position) ;
-        temp |= (((GPIO_Init->Mode & ANALOG_MODE) >> 3) << position);
-        GPIOx->ASCR = temp;
-      }
-
-#endif /* STM32L471xx || STM32L475xx || STM32L476xx || STM32L485xx || STM32L486xx */
-
-      /* Activate the Pull-up or Pull down resistor for the current IO */
-      temp = GPIOx->PUPDR;
-      temp &= ~(GPIO_PUPDR_PUPD0 << (position * 2u));
-      temp |= ((GPIO_Init->Pull) << (position * 2u));
-========
         temp &= ~(GPIO_OTYPER_OT_0 << position) ;
         temp |= (((GPIO_Init->Mode & GPIO_OUTPUT_TYPE) >> 4U) << position);
         GPIOx->OTYPER = temp;
@@ -443,7 +233,6 @@ void HAL_GPIO_Init(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init)
       temp = GPIOx->PUPDR;
       temp &= ~(GPIO_PUPDR_PUPDR0 << (position * 2U));
       temp |= ((GPIO_Init->Pull) << (position * 2U));
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
       GPIOx->PUPDR = temp;
 
       /*--------------------- EXTI Mode Configuration ------------------------*/
@@ -453,16 +242,6 @@ void HAL_GPIO_Init(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init)
         /* Enable SYSCFG Clock */
         __HAL_RCC_SYSCFG_CLK_ENABLE();
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-        temp = SYSCFG->EXTICR[position >> 2u];
-        temp &= ~(0x0FuL << (4u * (position & 0x03u)));
-        temp |= (GPIO_GET_INDEX(GPIOx) << (4u * (position & 0x03u)));
-        SYSCFG->EXTICR[position >> 2u] = temp;
-
-        /* Clear EXTI line configuration */
-        temp = EXTI->IMR1;
-        temp &= ~(iocurrent);
-========
         temp = SYSCFG->EXTICR[position >> 2U];
         temp &= ~(0x0FU << (4U * (position & 0x03U)));
         temp |= ((uint32_t)(GPIO_GET_INDEX(GPIOx)) << (4U * (position & 0x03U)));
@@ -471,149 +250,51 @@ void HAL_GPIO_Init(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init)
         /* Clear EXTI line configuration */
         temp = EXTI->IMR;
         temp &= ~((uint32_t)iocurrent);
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
         if((GPIO_Init->Mode & GPIO_MODE_IT) == GPIO_MODE_IT)
         {
           temp |= iocurrent;
         }
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-        EXTI->IMR1 = temp;
-
-        temp = EXTI->EMR1;
-        temp &= ~(iocurrent);
-========
         EXTI->IMR = temp;
 
         temp = EXTI->EMR;
         temp &= ~((uint32_t)iocurrent);
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
         if((GPIO_Init->Mode & GPIO_MODE_EVT) == GPIO_MODE_EVT)
         {
           temp |= iocurrent;
         }
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-        EXTI->EMR1 = temp;
-
-        /* Clear Rising Falling edge configuration */
-        temp = EXTI->RTSR1;
-        temp &= ~(iocurrent);
-========
         EXTI->EMR = temp;
 
         /* Clear Rising Falling edge configuration */
         temp = EXTI->RTSR;
         temp &= ~((uint32_t)iocurrent);
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
         if((GPIO_Init->Mode & RISING_EDGE) == RISING_EDGE)
         {
           temp |= iocurrent;
         }
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-        EXTI->RTSR1 = temp;
-
-        temp = EXTI->FTSR1;
-        temp &= ~(iocurrent);
-========
         EXTI->RTSR = temp;
 
         temp = EXTI->FTSR;
         temp &= ~((uint32_t)iocurrent);
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
         if((GPIO_Init->Mode & FALLING_EDGE) == FALLING_EDGE)
         {
           temp |= iocurrent;
         }
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-        EXTI->FTSR1 = temp;
-      }
-    }
-
-    position++;
-========
         EXTI->FTSR = temp;
       }
     }
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   }
 }
 
 /**
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  * @brief  De-initialize the GPIOx peripheral registers to their default reset values.
-  * @param  GPIOx: where x can be (A..H) to select the GPIO peripheral for STM32L4 family
-  * @param  GPIO_Pin: specifies the port bit to be written.
-  *         This parameter can be any combination of GPIO_Pin_x where x can be (0..15).
-========
   * @brief  De-initializes the GPIOx peripheral registers to their default reset values.
   * @param  GPIOx where x can be (A..K) to select the GPIO peripheral for STM32F429X device or
   *                      x can be (A..I) to select the GPIO peripheral for STM32F40XX and STM32F427X devices.
   * @param  GPIO_Pin specifies the port bit to be written.
   *          This parameter can be one of GPIO_PIN_x where x can be (0..15).
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   * @retval None
   */
 void HAL_GPIO_DeInit(GPIO_TypeDef  *GPIOx, uint32_t GPIO_Pin)
 {
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  uint32_t position = 0x00u;
-  uint32_t iocurrent;
-  uint32_t tmp;
-
-  /* Check the parameters */
-  assert_param(IS_GPIO_ALL_INSTANCE(GPIOx));
-  assert_param(IS_GPIO_PIN(GPIO_Pin));
-
-  /* Configure the port pins */
-  while ((GPIO_Pin >> position) != 0x00u)
-  {
-    /* Get current io position */
-    iocurrent = (GPIO_Pin) & (1uL << position);
-
-    if (iocurrent != 0x00u)
-    {
-      /*------------------------- EXTI Mode Configuration --------------------*/
-      /* Clear the External Interrupt or Event for the current IO */
-
-      tmp = SYSCFG->EXTICR[position >> 2u];
-      tmp &= (0x0FuL << (4u * (position & 0x03u)));
-      if (tmp == (GPIO_GET_INDEX(GPIOx) << (4u * (position & 0x03u))))
-      {
-        /* Clear EXTI line configuration */
-        EXTI->IMR1 &= ~(iocurrent);
-        EXTI->EMR1 &= ~(iocurrent);
-
-        /* Clear Rising Falling edge configuration */
-        EXTI->RTSR1 &= ~(iocurrent);
-        EXTI->FTSR1 &= ~(iocurrent);
-
-        tmp = 0x0FuL << (4u * (position & 0x03u));
-        SYSCFG->EXTICR[position >> 2u] &= ~tmp;
-      }
-
-      /*------------------------- GPIO Mode Configuration --------------------*/
-      /* Configure IO in Analog Mode */
-      GPIOx->MODER |= (GPIO_MODER_MODE0 << (position * 2u));
-
-      /* Configure the default Alternate Function in current IO */
-      GPIOx->AFR[position >> 3u] &= ~(0xFu << ((position & 0x07u) * 4u)) ;
-
-      /* Configure the default value for IO Speed */
-      GPIOx->OSPEEDR &= ~(GPIO_OSPEEDR_OSPEED0 << (position * 2u));
-
-      /* Configure the default value IO Output Type */
-      GPIOx->OTYPER  &= ~(GPIO_OTYPER_OT0 << position) ;
-
-      /* Deactivate the Pull-up and Pull-down resistor for the current IO */
-      GPIOx->PUPDR &= ~(GPIO_PUPDR_PUPD0 << (position * 2u));
-
-#if defined(STM32L471xx) || defined(STM32L475xx) || defined(STM32L476xx) || defined(STM32L485xx) || defined(STM32L486xx)
-      /* Deactivate the Control bit of Analog mode for the current IO */
-      GPIOx->ASCR &= ~(GPIO_ASCR_ASC0<< position);
-#endif /* STM32L471xx || STM32L475xx || STM32L476xx || STM32L485xx || STM32L486xx */
-    }
-
-    position++;
-========
   uint32_t position;
   uint32_t ioposition = 0x00U;
   uint32_t iocurrent = 0x00U;
@@ -666,7 +347,6 @@ void HAL_GPIO_DeInit(GPIO_TypeDef  *GPIOx, uint32_t GPIO_Pin)
       /* Deactivate the Pull-up and Pull-down resistor for the current IO */
       GPIOx->PUPDR &= ~(GPIO_PUPDR_PUPDR0 << (position * 2U));
     }
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   }
 }
 
@@ -674,15 +354,9 @@ void HAL_GPIO_DeInit(GPIO_TypeDef  *GPIOx, uint32_t GPIO_Pin)
   * @}
   */
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-/** @defgroup GPIO_Exported_Functions_Group2 IO operation functions
- *  @brief GPIO Read, Write, Toggle, Lock and EXTI management functions.
- *
-========
 /** @defgroup GPIO_Exported_Functions_Group2 IO operation functions 
   *  @brief   GPIO Read and Write
   *
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
 @verbatim
  ===============================================================================
                        ##### IO operation functions #####
@@ -693,18 +367,11 @@ void HAL_GPIO_DeInit(GPIO_TypeDef  *GPIOx, uint32_t GPIO_Pin)
   */
 
 /**
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  * @brief  Read the specified input port pin.
-  * @param  GPIOx: where x can be (A..H) to select the GPIO peripheral for STM32L4 family
-  * @param  GPIO_Pin: specifies the port bit to read.
-  *         This parameter can be any combination of GPIO_Pin_x where x can be (0..15).
-========
   * @brief  Reads the specified input port pin.
   * @param  GPIOx where x can be (A..K) to select the GPIO peripheral for STM32F429X device or
   *                      x can be (A..I) to select the GPIO peripheral for STM32F40XX and STM32F427X devices.
   * @param  GPIO_Pin specifies the port bit to read.
   *         This parameter can be GPIO_PIN_x where x can be (0..15).
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   * @retval The input port pin value.
   */
 GPIO_PinState HAL_GPIO_ReadPin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
@@ -714,11 +381,7 @@ GPIO_PinState HAL_GPIO_ReadPin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
   /* Check the parameters */
   assert_param(IS_GPIO_PIN(GPIO_Pin));
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  if ((GPIOx->IDR & GPIO_Pin) != 0x00u)
-========
   if((GPIOx->IDR & GPIO_Pin) != (uint32_t)GPIO_PIN_RESET)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   {
     bitstatus = GPIO_PIN_SET;
   }
@@ -730,19 +393,6 @@ GPIO_PinState HAL_GPIO_ReadPin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
 }
 
 /**
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  * @brief  Set or clear the selected data port bit.
-  *
-  * @note   This function uses GPIOx_BSRR and GPIOx_BRR registers to allow atomic read/modify
-  *         accesses. In this way, there is no risk of an IRQ occurring between
-  *         the read and the modify access.
-  *
-  * @param  GPIOx where x can be (A..H) to select the GPIO peripheral for STM32L4 family
-  * @param  GPIO_Pin specifies the port bit to be written.
-  *         This parameter can be any combination of GPIO_Pin_x where x can be (0..15).
-  * @param  PinState specifies the value to be written to the selected bit.
-  *         This parameter can be one of the GPIO_PinState enum values:
-========
   * @brief  Sets or clears the selected data port bit.
   *
   * @note   This function uses GPIOx_BSRR register to allow atomic read/modify
@@ -755,7 +405,6 @@ GPIO_PinState HAL_GPIO_ReadPin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
   *          This parameter can be one of GPIO_PIN_x where x can be (0..15).
   * @param  PinState specifies the value to be written to the selected bit.
   *          This parameter can be one of the GPIO_PinState enum values:
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   *            @arg GPIO_PIN_RESET: to clear the port pin
   *            @arg GPIO_PIN_SET: to set the port pin
   * @retval None
@@ -768,33 +417,19 @@ void HAL_GPIO_WritePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, GPIO_PinState Pin
 
   if(PinState != GPIO_PIN_RESET)
   {
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-    GPIOx->BSRR = (uint32_t)GPIO_Pin;
-  }
-  else
-  {
-    GPIOx->BRR = (uint32_t)GPIO_Pin;
-========
     GPIOx->BSRR = GPIO_Pin;
   }
   else
   {
     GPIOx->BSRR = (uint32_t)GPIO_Pin << 16U;
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   }
 }
 
 /**
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  * @brief  Toggle the specified GPIO pin.
-  * @param  GPIOx where x can be (A..H) to select the GPIO peripheral for STM32L4 family
-  * @param  GPIO_Pin specifies the pin to be toggled.
-========
   * @brief  Toggles the specified GPIO pins.
   * @param  GPIOx Where x can be (A..K) to select the GPIO peripheral for STM32F429X device or
   *                      x can be (A..I) to select the GPIO peripheral for STM32F40XX and STM32F427X devices.
   * @param  GPIO_Pin Specifies the pins to be toggled.
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   * @retval None
   */
 void HAL_GPIO_TogglePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
@@ -802,15 +437,6 @@ void HAL_GPIO_TogglePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
   /* Check the parameters */
   assert_param(IS_GPIO_PIN(GPIO_Pin));
 
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  if ((GPIOx->ODR & GPIO_Pin) != 0x00u)
-  {
-    GPIOx->BRR = (uint32_t)GPIO_Pin;
-  }
-  else
-  {
-    GPIOx->BSRR = (uint32_t)GPIO_Pin;
-========
   if ((GPIOx->ODR & GPIO_Pin) == GPIO_Pin)
   {
     GPIOx->BSRR = (uint32_t)GPIO_Pin << GPIO_NUMBER;
@@ -818,29 +444,18 @@ void HAL_GPIO_TogglePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
   else
   {
     GPIOx->BSRR = GPIO_Pin;
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   }
 }
 
 /**
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-* @brief  Lock GPIO Pins configuration registers.
-========
   * @brief  Locks GPIO Pins configuration registers.
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   * @note   The locked registers are GPIOx_MODER, GPIOx_OTYPER, GPIOx_OSPEEDR,
   *         GPIOx_PUPDR, GPIOx_AFRL and GPIOx_AFRH.
   * @note   The configuration of the locked GPIO pins can no longer be modified
   *         until the next reset.
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  * @param  GPIOx where x can be (A..H) to select the GPIO peripheral for STM32L4 family
-  * @param  GPIO_Pin specifies the port bits to be locked.
-  *         This parameter can be any combination of GPIO_Pin_x where x can be (0..15).
-========
   * @param  GPIOx where x can be (A..F) to select the GPIO peripheral for STM32F4 family
   * @param  GPIO_Pin specifies the port bit to be locked.
   *         This parameter can be any combination of GPIO_PIN_x where x can be (0..15).
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   * @retval None
   */
 HAL_StatusTypeDef HAL_GPIO_LockPin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
@@ -848,10 +463,6 @@ HAL_StatusTypeDef HAL_GPIO_LockPin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
   __IO uint32_t tmp = GPIO_LCKR_LCKK;
 
   /* Check the parameters */
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  assert_param(IS_GPIO_LOCK_INSTANCE(GPIOx));
-========
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   assert_param(IS_GPIO_PIN(GPIO_Pin));
 
   /* Apply lock key write sequence */
@@ -862,18 +473,10 @@ HAL_StatusTypeDef HAL_GPIO_LockPin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
   GPIOx->LCKR = GPIO_Pin;
   /* Set LCKx bit(s): LCKK='1' + LCK[15-0] */
   GPIOx->LCKR = tmp;
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  /* Read LCKK register. This read is mandatory to complete key lock sequence */
-  tmp = GPIOx->LCKR;
-
-  /* Read again in order to confirm lock is active */
-  if ((GPIOx->LCKR & GPIO_LCKR_LCKK) != 0x00u)
-========
   /* Read LCKK bit*/
   tmp = GPIOx->LCKR;
 
  if((GPIOx->LCKR & GPIO_LCKR_LCKK) != RESET)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   {
     return HAL_OK;
   }
@@ -884,23 +487,14 @@ HAL_StatusTypeDef HAL_GPIO_LockPin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
 }
 
 /**
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  * @brief  Handle EXTI interrupt request.
-  * @param  GPIO_Pin Specifies the port pin connected to corresponding EXTI line.
-========
   * @brief  This function handles EXTI interrupt request.
   * @param  GPIO_Pin Specifies the pins connected EXTI line
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   * @retval None
   */
 void HAL_GPIO_EXTI_IRQHandler(uint16_t GPIO_Pin)
 {
   /* EXTI line interrupt detected */
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  if(__HAL_GPIO_EXTI_GET_IT(GPIO_Pin) != 0x00u)
-========
   if(__HAL_GPIO_EXTI_GET_IT(GPIO_Pin) != RESET)
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   {
     __HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin);
     HAL_GPIO_EXTI_Callback(GPIO_Pin);
@@ -908,25 +502,15 @@ void HAL_GPIO_EXTI_IRQHandler(uint16_t GPIO_Pin)
 }
 
 /**
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-  * @brief  EXTI line detection callback.
-  * @param  GPIO_Pin: Specifies the port pin connected to corresponding EXTI line.
-========
   * @brief  EXTI line detection callbacks.
   * @param  GPIO_Pin Specifies the pins connected EXTI line
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
   * @retval None
   */
 __weak void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(GPIO_Pin);
-<<<<<<<< HEAD:HAL/L431/Src/stm32l4xx_hal_gpio.c
-
-  /* NOTE: This function should not be modified, when the callback is needed,
-========
   /* NOTE: This function Should not be modified, when the callback is needed,
->>>>>>>> origin/alternative_stms:HAL/F413/Src/stm32f4xx_hal_gpio.c
            the HAL_GPIO_EXTI_Callback could be implemented in the user file
    */
 }
