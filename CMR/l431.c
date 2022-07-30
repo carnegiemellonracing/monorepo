@@ -533,4 +533,4 @@ void _platform_rccTIMClockEnable(TIM_TypeDef *instance)
 }
 #endif /* HAL_TIM_MODULE_ENABLED */
 
-#endif /* L413 */
+#endif /* L431 */

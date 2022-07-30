@@ -5,6 +5,8 @@
  * @author Carnegie Mellon Racing
  */
 
+#ifdef L431
+
 #include <stdlib.h>
 #include "dsp.h"
 
@@ -144,3 +146,5 @@ uint32_t cmr_dspFilterProcessFixed(cmr_dspFilter_t *filter, uint32_t in){
     cmr_dspFilterProcess(filter, &in_f, &out_f);
     return (uint32_t) out_f;
 }
+
+#endif /* L431 */

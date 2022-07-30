@@ -155,6 +155,7 @@ void _platform_canInit(
 
     can->txSem = xSemaphoreCreateCountingStatic(
         CAN_TX_MAILBOXES, CAN_TX_MAILBOXES, &can->txSemBuf
+    );
     configASSERT(can->txSem != NULL);
 
     // Configure interrupts.
@@ -422,7 +423,7 @@ ADC_ChannelConfTypeDef _platform_adcChannelConfig(const cmr_adcChannel_t *channe
 {
     ADC_ChannelConfTypeDef channelConfig = {
         .Channel = channel->channel,
-        .Rank = i + 1, // HAL needs Rank to be from 1 to 16
+        .Rank = rank, // HAL needs Rank to be from 1 to 16
         .SamplingTime = channel->samplingTime,
         .Offset = 0 // reserved, set to 0
     };
