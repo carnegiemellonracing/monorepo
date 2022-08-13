@@ -127,6 +127,20 @@ void _platform_canInit(
         .rxCallback = rxCallback
     };
 
+    // These numbers assume 16 MHz ABP1 peripheral clock frequency
+    // 16 MHz / (1 + 13 + 2 time quanta) / Prescaler = bitRate
+    switch (bitRate) {
+        case CMR_CAN_BITRATE_250K:
+            can->handle.Init.Prescaler = 4;
+            break;
+        case CMR_CAN_BITRATE_500K:
+            can->handle.Init.Prescaler = 2;
+            break;
+        case CMR_CAN_BITRATE_1M:
+            can->handle.Init.Prescaler = 1;
+            break;
+    }
+
     can->txSem = xSemaphoreCreateCountingStatic(
         CAN_TX_MAILBOXES, CAN_TX_MAILBOXES, &can->txSemBuf
     );
@@ -249,17 +263,17 @@ void _platform_rccSystemClockEnable(void)  {
     RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
     if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK) {
-        cmr_panic("HAL_RCC_OscConfig() failed!");
+        cmr_panic("HAL_RCC_ClockConfig() failed!");
     }
     PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
     PeriphClkInit.AdcClockSelection = RCC_ADCCLKSOURCE_SYSCLK;
     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK) {
-        cmr_panic("HAL_RCC_OscConfig() failed!");
+        cmr_panic("HAL_RCCEx_PeriphCLKConfig() failed!");
     }
     /** Configure the main internal regulator output voltage
      */
     if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK) {
-        cmr_panic("HAL_RCC_OscConfig() failed!");
+        cmr_panic("HAL_PWREx_ControlVoltageScaling() failed!");
     }
 }
 

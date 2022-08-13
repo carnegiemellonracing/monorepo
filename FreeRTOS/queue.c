@@ -352,7 +352,6 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 			variable of type StaticQueue_t or StaticSemaphore_t equals the size of
 			the real queue and semaphore structures. */
 			volatile size_t xSize = sizeof( StaticQueue_t );
-			(void) xSize;
 			configASSERT( xSize == sizeof( Queue_t ) );
 			(void) xSize; // Placate compiler
 		}

@@ -13,13 +13,13 @@
 #include "panic.h"  // cmr_panic()
 
 /** @brief Timeout (in ms) for each ADC channel sample poll. */
-static const uint32_t CMR_ADC_TIMEOUT_MS = 5;
+static const uint32_t CMR_ADC_TIMEOUT_MS = 1;
 
 /** @brief ADC sampling priority. */
 static const uint32_t cmr_adcSample_priority = 5;
 
 /** @brief ADC sampling period (milliseconds). */
-static const TickType_t cmr_adcSample_period_ms = 1;
+static const TickType_t cmr_adcSample_period_ms = 10;
 
 /**
  * @brief Task for sampling the ADC.

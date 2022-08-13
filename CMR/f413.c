@@ -181,7 +181,8 @@ void _platform_canInit(
     }
 
     cmr_canInterrupts[canIdx] = (cmr_canInterrupt_t){
-        .handle = &can->handle};
+        .handle = &can->handle
+    };
     HAL_NVIC_SetPriority(irqTX, 5, 0);
     HAL_NVIC_SetPriority(irqRX0, 5, 0);
     HAL_NVIC_SetPriority(irqRX1, 5, 0);
@@ -190,48 +191,6 @@ void _platform_canInit(
     HAL_NVIC_EnableIRQ(irqRX0);
     HAL_NVIC_EnableIRQ(irqRX1);
     HAL_NVIC_EnableIRQ(irqSCE);
-
-    cmr_rccCANClockEnable(instance);
-    cmr_rccGPIOClockEnable(rxPort);
-    cmr_rccGPIOClockEnable(txPort);
-
-    // Configure CAN RX pin.
-    GPIO_InitTypeDef pinConfig = {
-        .Pin = rxPin,
-        .Mode = GPIO_MODE_AF_PP,
-        .Pull = GPIO_NOPULL,
-        .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
-        .Alternate = cmr_canGPIOAF(instance, rxPort)};
-    HAL_GPIO_Init(rxPort, &pinConfig);
-
-    // Configure CAN TX pin.
-    pinConfig.Pin = txPin;
-    pinConfig.Alternate = cmr_canGPIOAF(instance, rxPort);
-    HAL_GPIO_Init(txPort, &pinConfig);
-
-    if (HAL_CAN_Init(&can->handle) != HAL_OK)
-    {
-        cmr_panic("HAL_CAN_Init() failed!");
-    }
-
-    if (HAL_CAN_Start(&can->handle) != HAL_OK)
-    {
-        cmr_panic("HAL_CAN_Start() failed!");
-    }
-
-    if (HAL_CAN_ActivateNotification(
-            &can->handle,
-            CAN_IT_TX_MAILBOX_EMPTY |
-                CAN_IT_RX_FIFO0_MSG_PENDING |
-                CAN_IT_RX_FIFO1_MSG_PENDING |
-                CAN_IT_ERROR_WARNING |
-                CAN_IT_ERROR_PASSIVE |
-                CAN_IT_BUSOFF |
-                CAN_IT_LAST_ERROR_CODE |
-                CAN_IT_ERROR))
-    {
-        cmr_panic("HAL_CAN_ActivateNotification() failed!");
-    }
 }
 
 /**
@@ -312,25 +271,32 @@ void _platform_rccSystemClockEnable(void)
     __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
     // Initializes the CPU, AHB and APB busses clocks
-    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-    RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-    RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+    RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+    RCC_OscInitStruct.PLL.PLLM = 25;
+    RCC_OscInitStruct.PLL.PLLN = 192;
+    RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+    RCC_OscInitStruct.PLL.PLLQ = 2;
+    RCC_OscInitStruct.PLL.PLLR = 2;
     if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
     {
         cmr_panic("HAL_RCC_OscConfig() failed!");
     }
 
     // Initializes the CPU, AHB and APB busses clocks
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+    // Initializes the CPU, AHB and APB busses clocks
+    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
+                                  | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
     RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
     if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
     {
-        cmr_panic("HAL_RCC_OscConfig() failed!");
+        cmr_panic("HAL_RCC_ClockConfig() failed!");
     }
 }
 
