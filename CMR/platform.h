@@ -1,22 +1,38 @@
-#ifndef PLATFORM_H
-#define PLATFORM_H
+/**
+ * @file platform.h
+ * @brief Platform-dependent shims (HALALAL)
+ *
+ * The core driver suite is largely platform independent, as the basic API
+ * HAL provides us is (mostly) the same across the suite of MCU's ST offers us.
+ * However, fundamental hardware differences across the product line make
+ * some interactions with the HAL target-specific by nature, such as
+ * peripheral initialization, where the the core peripheral may be duplicated
+ * over the product line, but the number of instances and specific configuration needed for
+ * each instance of a peripheral may vary between targets.
+ *
+ * The necessary declarations of such target-specific driver functions
+ * are found in e.g. l431.h, where the file name corresponds to the target suffix,
+ * and the relevant definitions can be switched on at compile time
+ * by settings in parent repositories (by passing -DF413).
+ *
+ * @author Carnegie Mellon Racing
+ */
 
-#define F413_COMPARE    0
-#define L431_COMPARE    1
-#define H735_COMPARE    2
+#ifndef CMR_PLATFORM_H
+#define CMR_PLATFORM_H
 
-#define CONCAT_PROCESSOR(platform)    (platform ## _COMPARE)
-#define COMPARE_PROCESSOR(platform)    CONCAT_PROCESSOR(platform)
 
-#if defined(PLATFORM) && (COMPARE_PROCESSOR(PLATFORM)==F413_COMPARE)
+#ifdef F413
 #include <stm32f4xx_hal.h>
-#elif defined(PLATFORM) && (COMPARE_PROCESSOR(PLATFORM)==L431_COMPARE)
+#endif /* F413 */
+
+#ifdef L431
 #include <stm32l4xx_hal.h>
-#elif defined(PLATFORM) && (COMPARE_PROCESSOR(PLATFORM)==H735_COMPARE)
+#endif /* L431 */
+
+#ifdef H735
 #include <stm32h7xx_hal.h>
-#endif
+#endif /* H735 */
 
-#undef CONCAT_PROCESSOR
-#undef COMPARE_PROCESSOR
 
-#endif /* PLATFORM_H */
+#endif /* CMR_PLATFORM_H */

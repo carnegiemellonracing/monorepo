@@ -16,6 +16,7 @@
   *
   ******************************************************************************
   */
+#ifdef F413
 #if defined(USE_FULL_LL_DRIVER)
 
 /* Includes ------------------------------------------------------------------*/
@@ -421,5 +422,5 @@ void LL_DMA_StructInit(LL_DMA_InitTypeDef *DMA_InitStruct)
   */
 
 #endif /* USE_FULL_LL_DRIVER */
-
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

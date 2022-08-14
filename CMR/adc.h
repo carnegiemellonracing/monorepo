@@ -70,6 +70,11 @@ void cmr_adcInit(
 
 uint32_t cmr_adcRead(cmr_adc_t *adc, size_t channel);
 
+/* Platform-specific external dependencies (don't expose to application code) */
+extern void _platform_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance, cmr_adcChannel_t *channels, const size_t channelsLen);
+extern ADC_ChannelConfTypeDef _platform_adcChannelConfig(const cmr_adcChannel_t *channel, uint32_t rank);
+extern GPIO_InitTypeDef _platform_adcPinConfig(const cmr_adcChannel_t *channel);
+
 #endif /* HAL_ADC_MODULE_ENABLED */
 
 #endif /* CMR_ADC_H */

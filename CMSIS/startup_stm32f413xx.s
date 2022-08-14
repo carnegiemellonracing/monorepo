@@ -40,7 +40,7 @@
   *
   ******************************************************************************
   */
-    
+#ifdef F413
   .syntax unified
   .cpu cortex-m4
   .fpu softvfp
@@ -589,4 +589,5 @@ g_pfnVectors:
 
    .weak      DFSDM2_FLT3_IRQHandler
    .thumb_set DFSDM2_FLT3_IRQHandler,Default_Handler
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

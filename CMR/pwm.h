@@ -1,7 +1,7 @@
 /**
  * @file pwm.h
  * @brief Pulse Width Modulation port.
- * 
+ *
  * @author Carnegie Mellon Racing
  */
 
@@ -41,7 +41,7 @@ typedef struct {
 /**
  * @brief Represents a single PWM pin.
  *
- * @note The contents of this struct are opaque to the library consumer. 
+ * @note The contents of this struct are opaque to the library consumer.
  */
 typedef struct {
     TIM_HandleTypeDef handle;   /**< @brief HAL TIM handle. */

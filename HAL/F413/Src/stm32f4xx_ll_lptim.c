@@ -15,6 +15,7 @@
   *                        opensource.org/licenses/BSD-3-Clause
   *  ******************************************************************************
   */
+#ifdef F413
 #if defined(USE_FULL_LL_DRIVER)
 
 /* Includes ------------------------------------------------------------------*/
@@ -293,5 +294,5 @@ void LL_LPTIM_Disable(LPTIM_TypeDef *LPTIMx)
   */
 
 #endif /* USE_FULL_LL_DRIVER */
-
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

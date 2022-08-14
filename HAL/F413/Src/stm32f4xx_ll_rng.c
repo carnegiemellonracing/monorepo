@@ -16,6 +16,7 @@
   *
   ******************************************************************************
   */
+#ifdef F413
 #if defined(USE_FULL_LL_DRIVER)
 
 /* Includes ------------------------------------------------------------------*/
@@ -99,6 +100,6 @@ ErrorStatus LL_RNG_DeInit(RNG_TypeDef *RNGx)
   */
 
 #endif /* USE_FULL_LL_DRIVER */
-
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 

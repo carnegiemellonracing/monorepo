@@ -17,6 +17,7 @@
   ******************************************************************************
   */
 
+#ifdef F413
 #if defined(USE_FULL_LL_DRIVER)
 
 /* Includes ------------------------------------------------------------------*/
@@ -503,6 +504,6 @@ void LL_USART_ClockStructInit(LL_USART_ClockInitTypeDef *USART_ClockInitStruct)
   */
 
 #endif /* USE_FULL_LL_DRIVER */
-
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 

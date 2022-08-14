@@ -54,6 +54,26 @@ void cmr_rccUSARTClockEnable(USART_TypeDef *instance);
 void cmr_rccTIMClockEnable(TIM_TypeDef *instance);
 #endif /* HAL_TIM_MODULE_ENABLED */
 
+/* Platform-specific external dependencies */
+extern void _platform_rccSystemClockEnable(void);
+extern void _platform_rccSystemInternalClockEnable(void);
+
+#ifdef HAL_GPIO_MODULE_ENABLED
+extern void _platform_rccGPIOClockEnable(GPIO_TypeDef *port);
+#endif /* HAL_GPIO_MODULE_ENABLED */
+
+#ifdef HAL_ADC_MODULE_ENABLED
+extern void _platform_rccADCClockEnable(ADC_TypeDef *instance);
+#endif /* HAL_ADC_MODULE_ENABLED */
+
+#ifdef HAL_CAN_MODULE_ENABLED
+extern void _platform_rccCANClockEnable(CAN_TypeDef *instance);
+#endif /* HAL_CAN_MODULE_ENABLED */
+
+#ifdef HAL_TIM_MODULE_ENABLED
+extern void _platform_rccTIMClockEnable(TIM_TypeDef *instance);
+#endif /* HAL_TIM_MODULE_ENABLED */
+
 #endif /* HAL_RCC_MODULE_ENABLED */
 
 #endif /* CMR_RCC_H */

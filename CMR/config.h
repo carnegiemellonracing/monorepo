@@ -27,11 +27,15 @@ void cmr_configInit(cmr_config_t *config, volatile uint32_t *cache, size_t cache
 
 int cmr_configSet(cmr_config_t *config, size_t addr, uint32_t data);
 
-int cmr_configGet(cmr_config_t *config, size_t addr, uint32_t *dest);
-
 void cmr_configPull(cmr_config_t *config);
 
+int cmr_configGet(cmr_config_t *config, size_t addr, uint32_t *dest);
+
 void cmr_configCommit(cmr_config_t *config);
+
+/* External Platform-specific dependecies */
+extern void _platform_configInit(cmr_config_t *config, volatile uint32_t *cache, size_t cacheLen, uint32_t sector);
+extern void _platform_configCommit(cmr_config_t *config);
 
 #endif /* HAL_FLASH_MODULE_ENABLED */
 
