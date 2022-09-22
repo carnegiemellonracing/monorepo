@@ -35,7 +35,12 @@ cmr_canRXMeta_t canRXMeta[] = {
     },
     [CANRX_HVC_COMMAND] = {
         .canID = CMR_CANID_HVC_COMMAND,
-        .timeoutError_ms = 50,
+        .timeoutError_ms = 200,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_EMD_MEASURE] = {
+        .canID = CMR_CANID_EMD_MEASUREMENT,
+        .timeoutError_ms = 100,
         .timeoutWarn_ms = 25
     },
     [CANRX_EMD_MEASURE] = {   
@@ -184,7 +189,7 @@ void canInit(void) {
                 CMR_CANID_HEARTBEAT_VSM,
                 CMR_CANID_HEARTBEAT_VSM,
                 CMR_CANID_HVC_COMMAND,
-				CMR_CANID_EMD_MEASUREMENT_RETX
+				CMR_CANID_EMD_MEASUREMENT
             }
         }
     };

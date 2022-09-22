@@ -225,6 +225,18 @@ cmr_uart_result_t slave_uart_autoAddress() {
     if (retv != UART_SUCCESS) {
       retvTotal = UART_FAILURE;
     }
+    // setup power regulation
+//    uart_command_t configPowerFiltering = {
+//      .frameInit = &CMD_SINGLE_NRESP_RADDR8_DATA1,
+//      .deviceAddress = boardNum,
+//      .registerAddress = SLAVE_REG_PWRCONFIG,
+//      .data = {0x80},
+//    };
+//
+//    retv = uart_sendCommand(&configPowerFiltering);
+//    if (retv != UART_SUCCESS) {
+//      retvTotal = UART_FAILURE;
+//    }
   }
   
   return retvTotal;	
@@ -248,7 +260,7 @@ cmr_uart_result_t slave_uart_configureSampling(uint8_t boardNum) {
     .frameInit = &CMD_SINGLE_NRESP_RADDR8_DATA1,
     .deviceAddress = boardNum,
     .registerAddress = SLAVE_REG_SMPL_DLY1,
-    .data = {0x00},
+    .data = {0x22},
   };
   
   retv = uart_sendCommand(&configureInitialSamplingDelay);
@@ -256,13 +268,15 @@ cmr_uart_result_t slave_uart_configureSampling(uint8_t boardNum) {
     retvTotal = UART_FAILURE;
   }
   
+
+
   // From page 7 of BQ76PL455A-Q1 protocol datasheet 2.2.2
   // Configure voltage and internal sample period
   uart_command_t configureVoltageSamplePeriod = {
     .frameInit = &CMD_SINGLE_NRESP_RADDR8_DATA1,
     .deviceAddress = boardNum,
     .registerAddress = SLAVE_REG_CELL_SPER,
-    .data = {0xBC},
+    .data = {0x7C},
   };
     
   retv = uart_sendCommand(&configureVoltageSamplePeriod);

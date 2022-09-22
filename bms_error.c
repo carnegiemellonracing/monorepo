@@ -36,7 +36,7 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         // TODO E4 create structures for cell voltage data and stats (min/max)
         errorFlags |= CMR_CAN_HVC_ERROR_CELL_OVERVOLT;
     }
-    if(getPackMinCellVoltage() < 2650) {
+    if(getPackMinCellVoltage() < 2400) {
         // TODO E5 create structures for cell voltage data and stats (min/max)
         errorFlags |= CMR_CAN_HVC_ERROR_CELL_UNDERVOLT;
     }
@@ -48,7 +48,7 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         // E7
         errorFlags |= CMR_CAN_HVC_ERROR_PACK_UNDERVOLT;
     }
-    if(getCurrentInstant() > maxPackCurrentInstantMA) {
+    if(false){//getCurrentInstant() > maxPackCurrentInstantMA) {
         // E8
         errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
     }
@@ -62,7 +62,8 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         //errorFlags |= BMS_ERROR_CODE_RELAY;
     }
 
-    if((currentState == CMR_CAN_HVC_STATE_DRIVE_PRECHARGE ||
+    if(
+    	(currentState == CMR_CAN_HVC_STATE_DRIVE_PRECHARGE ||
         currentState == CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE ||
         currentState == CMR_CAN_HVC_STATE_DRIVE ||
         currentState == CMR_CAN_HVC_STATE_CHARGE_PRECHARGE ||
@@ -70,7 +71,7 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         currentState == CMR_CAN_HVC_STATE_CHARGE_TRICKLE ||
         currentState == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT ||
         currentState == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE) &&
-       (getAIRmillivolts() < minShutdownCiruitVoltageMV)) {
+        (cmr_gpioRead(SAFETY_BINARY) == 0)) {
         // E11
         // If SC voltage is below 8v while we're trying to drive relays, throw an error.
         errorFlags |= CMR_CAN_HVC_ERROR_LV_UNDERVOLT;

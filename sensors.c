@@ -122,10 +122,10 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 };
 
 /** @brief Sensors update priority. */
-static const uint32_t sensorsUpdate_priority = 5;
+static const uint32_t sensorsUpdate_priority = 1;
 
 /** @brief Sensors update period (milliseconds). */
-static const TickType_t sensorsUpdate_period_ms = 10;
+static const TickType_t sensorsUpdate_period_ms = 50;
 
 /** @brief Sensors update task. */
 static cmr_task_t sensorsUpdate_task;
@@ -142,6 +142,8 @@ static void sensorsUpdate(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
+        vTaskDelayUntil(&lastWakeTime, sensorsUpdate_period_ms);
+
         cmr_sensorListUpdate(&sensorList);
 
         vTaskDelayUntil(&lastWakeTime, sensorsUpdate_period_ms);
@@ -178,5 +180,5 @@ int32_t getLVmilliamps(){
 }
 
 int32_t getAIRmillivolts(){
-    return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_AIR_POWER));
+    return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_SAFETY));
 }
