@@ -107,6 +107,12 @@ void BMBInit() {
 
         // Initialize the slave UART interface
         // taskENTER_CRITICAL();
+
+
+        //***UART HAVE TO CHANGE***
+
+
+        /*
         cmr_uart_result_t retv = slave_uart_autoAddress();
         // taskEXIT_CRITICAL();
 
@@ -132,13 +138,16 @@ void BMBInit() {
             setAllBMBsTimeout();
             continue;
         }
-
+*/
         // vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
         // Initialize the slave UART sampling and GPIO per board
         for(int8_t boardNum = TOP_SLAVE_BOARD; boardNum >= 0; --boardNum) {
             // taskENTER_CRITICAL();
-            retv = slave_uart_configureSampling(boardNum);
+            
+            //***UART: REPLACE WITH I2C
+            
+            //retv = slave_uart_configureSampling(boardNum);
             if (retv != UART_SUCCESS) {
                 // ERROR CASE: Could not configure sampling for slave boards
                 BMBTimeoutCount[boardNum] = BMB_TIMEOUT;
@@ -147,7 +156,9 @@ void BMBInit() {
             }
 
             // Configure GPIO as outputs for analog mux select line and LED
-            retv = slave_uart_configureGPIODirection(BMB_GPIO_MUX_PIN | BMB_GPIO_LED_PIN, boardNum);
+
+            //***UART: REPLACE WITH I2C
+            //retv = slave_uart_configureGPIODirection(BMB_GPIO_MUX_PIN | BMB_GPIO_LED_PIN, boardNum);
             // taskEXIT_CRITICAL();
 
             if (retv != UART_SUCCESS) {
@@ -179,6 +190,8 @@ void vBMBSampleTask(void *pvParameters) {
 
 
     for(;;) {
+
+        //***CHANGE TO i2C
         uart_response_t channelResponse = {0};
         cmr_uart_result_t uartRetv = UART_SUCCESS;
 
@@ -187,20 +200,30 @@ void vBMBSampleTask(void *pvParameters) {
         // Tell all BMBs to sample their channels and store the results locally
         // taskENTER_CRITICAL();
         // Set the analog mux to sample the relevant half of the thermistors and set the status LED
+
+        //***UART: REPLACE WITH MUX SWITCHING AND I2C Code
+
+        /*
         uint8_t BMBGPIOValues = (BMBActivityLEDEnable) ? (BMB_GPIO_LED_PIN) : 0;
         uartRetv = slave_uart_setGPIO(BMBGPIOValues, BMBIndex);
         if (uartRetv != UART_SUCCESS) {
             // ERROR CASE: We could not send the set GPIO command
             BMBTimeoutCount[BMBIndex]++;
         }
+        */
 
         // Sample all analog channels
-        uartRetv = slave_uart_broadcast_sampleAndStore();
 
+        //***UART: REPLACE WITH MUX SWITCHING AND I2C Code
+        //uartRetv = slave_uart_broadcast_sampleAndStore();
+
+        /*
         if (uartRetv != UART_SUCCESS) {
             // ERROR CASE: We could not send the sample command
             BMBTimeoutCount[BMBIndex]++;
         }
+        */
+
         // taskEXIT_CRITICAL();
 
         // Retrieve the channel data from the device in question
@@ -210,6 +233,7 @@ void vBMBSampleTask(void *pvParameters) {
 
         // taskEXIT_CRITICAL();
 
+        //***CHANGE UART CHECK TO I2C Check
         if(uartRetv != UART_SUCCESS ||
            (channelResponse.frameInit->responseBytes+1 <
            2*(VSENSE_CHANNELS_PER_BMB+TSENSE_CHANNELS_PER_MESSAGE))) {
@@ -222,8 +246,10 @@ void vBMBSampleTask(void *pvParameters) {
             BMBTimeoutCount[BMBIndex] = 0;
             // Retrieve each 16 bit cell voltage reading from the response
             for(uint8_t vChannel = 0; vChannel < VSENSE_CHANNELS_PER_BMB; ++vChannel) {
-                uint32_t readAdcValue = (((uint32_t)channelResponse.data[2*vChannel])<<8) |
-                                        ((uint32_t)channelResponse.data[2*vChannel+1]);
+                
+                //**REPLACE WITH I2C
+                //uint32_t readAdcValue = (((uint32_t)channelResponse.data[2*vChannel])<<8) |
+                                        //((uint32_t)channelResponse.data[2*vChannel+1]);
                 
                 //This is backwards for some reason.
                 uint32_t volt = (5000*readAdcValue)/65535;
@@ -277,10 +303,12 @@ void vBMBSampleTask(void *pvParameters) {
         
         // taskENTER_CRITICAL();
         if(getState() == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE){
-            slave_uart_sendBalanceCmd(cellsToBalance, BMBIndex);
+            //***CHANGE TO I2C
+           // slave_uart_sendBalanceCmd(cellsToBalance, BMBIndex);
         }
         else{
-            slave_uart_sendBalanceCmd(0x0000, BMBIndex);
+            //***CHANGE TO I2C
+            //slave_uart_sendBalanceCmd(0x0000, BMBIndex);
         }
         // taskEXIT_CRITICAL();
 
