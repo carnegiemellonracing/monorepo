@@ -36,13 +36,6 @@ cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .pin = GPIO_PIN_1,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
-    },
-    [ADC_IBATT_FILTERED] = {
-        .channel = ADC_CHANNEL_0,
-        .port = GPIOA,
-        .pin = GPIO_PIN_0,
-        .samplingTime = ADC_SAMPLETIME_15CYCLES,
-        .value = 0
     }
 };
 

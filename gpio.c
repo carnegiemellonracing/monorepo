@@ -19,7 +19,7 @@
  * @see `stm32f4xx_hal_gpio.h` for various initialization values.
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
-    [GPIO_MCU_LED] = {
+    [GPIO_MCU_LED] = { // VERIFIED
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_10,
@@ -28,7 +28,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_HV_ACTIVE_TSAL_LIGHT] = {
+    [GPIO_HV_ACTIVE_TSAL_LIGHT] = { // VERIFIED
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_5,
@@ -37,34 +37,25 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_BMB_POWER_ENABLE_L] = {
-        .port = GPIOB,
-        .init = {
-            .Pin = GPIO_PIN_9,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_PULLUP,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_BMB_WAKE_PIN] = {
-        .port = GPIOB,
-        .init = {
-            .Pin = GPIO_PIN_14,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_BMB_FAULT_L] = {
+    [GPIO_AMS_EN_L] = { // VERIFIED, active low to enable 5V HV reference
         .port = GPIOB,
         .init = {
             .Pin = GPIO_PIN_10,
-            .Mode = GPIO_MODE_INPUT,
+            .Mode = GPIO_MODE_OUTPUT_PP, // TODO: double check this
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_CLEAR_FAULT_L] = {
+    [GPIO_BMB_FAULT_L] = { // VERIFIED, active low to enable 5V HV reference
+        .port = GPIOA,
+        .init = {
+            .Pin = GPIO_PIN_9,
+            .Mode = GPIO_MODE_OUTPUT_PP, // TODO: double check this
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_CLEAR_FAULT_L] = { // VERIFIED
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_9,
@@ -73,25 +64,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_GP2_24V_EN] = { // Not used now but can be used later
-        .port = GPIOA,
-        .init = {
-            .Pin = GPIO_PIN_9,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_GP1_24V_EN] = { // Not used now but can be used later
-        .port = GPIOA,
-        .init = {
-            .Pin = GPIO_PIN_10,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_AIR_FAULT_L] = {
+    [GPIO_AIR_FAULT_L] = { // VERIFIED
         .port = GPIOB,
         .init = {
             .Pin = GPIO_PIN_15,
@@ -100,7 +73,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_DISCHARGE_EN] = {
+    [GPIO_DISCHARGE_EN] = { // VERIFIED
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_8,
@@ -109,7 +82,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_PRECHARGE_EN] = {
+    [GPIO_PRECHARGE_EN] = { // VERIFIED
         .port = GPIOA,
         .init = {
             .Pin = GPIO_PIN_8,
@@ -118,7 +91,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_AIR_POSITIVE_EN] = {
+    [GPIO_AIR_POSITIVE_EN] = { // VERIFIED
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_7,
@@ -127,7 +100,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_AIR_NEGATIVE_EN] = {
+    [GPIO_AIR_NEGATIVE_EN] = { // VERIFIED
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_6,
@@ -136,16 +109,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_HVSENSE_DRDY_L] = {
-        .port = GPIOC,
-        .init = {
-            .Pin = GPIO_PIN_4,
-            .Mode = GPIO_MODE_INPUT,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-	[SAFETY_BINARY] = {
+	[SAFETY_BINARY] = { // VERIFIED
 	        .port = GPIOC,
 	        .init = {
 	            .Pin = GPIO_PIN_1,

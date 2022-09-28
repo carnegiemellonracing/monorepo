@@ -8,10 +8,7 @@
 #ifndef BMB_TASK_H_
 #define BMB_TASK_H_
 
-#include "FreeRTOS.h"
-#include "slave_uart.h"
-#include "task.h"
-#include "stm32f413-drivers/CMR/can_types.h"
+/* #include "stm32f413-drivers/CMR/can_types.h" */
 
 #define BMB_GPIO_MUX_PIN 0b000001
 #define BMB_GPIO_LED_PIN 0b000100
