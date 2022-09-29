@@ -56,9 +56,9 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         }
     },
     [GPIO_CLEAR_FAULT_L] = { // VERIFIED
-        .port = GPIOC,
+        .port = GPIOA,
         .init = {
-            .Pin = GPIO_PIN_9,
+            .Pin = GPIO_PIN_10,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
@@ -76,16 +76,16 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_DISCHARGE_EN] = { // VERIFIED
         .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_8,
+            .Pin = GPIO_PIN_7,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
     [GPIO_PRECHARGE_EN] = { // VERIFIED
-        .port = GPIOA,
+        .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_8,
+            .Pin = GPIO_PIN_6,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
@@ -94,16 +94,16 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_AIR_POSITIVE_EN] = { // VERIFIED
         .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_7,
+            .Pin = GPIO_PIN_8,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
     [GPIO_AIR_NEGATIVE_EN] = { // VERIFIED
-        .port = GPIOC,
+        .port = GPIOA,
         .init = {
-            .Pin = GPIO_PIN_6,
+            .Pin = GPIO_PIN_11,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
