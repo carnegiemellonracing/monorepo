@@ -15,11 +15,8 @@
 #include "state.h"
 
 
-// Size of text buffer from RAM
-#define RAMBUFLEN 1024
-
 /** @brief Text buffer from RAM - used to display messages to driver */
-char RAMBUF[RAMBUFLEN];
+extern char RAMBUF[];
 
 /** @note the state transition of the dim-cdc handshake is described as follows
  * 

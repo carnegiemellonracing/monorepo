@@ -37,6 +37,13 @@ bool volatile waiting_for_cdc_to_confirm_config = false;
 // letting the DIM know that it has received all the config screen values for a new driver
 bool volatile config_screen_values_received_for_new_driver = false;
 
+
+// Size of text buffer from RAM
+#define RAMBUFLEN 1024
+
+/** @brief Text buffer from RAM - used to display messages to driver */
+char RAMBUF[RAMBUFLEN];
+
 /**
  * @brief CAN periodic message receive metadata
  *
