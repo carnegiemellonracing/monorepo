@@ -126,10 +126,6 @@ LoopFillZerobss:
 	.global HardFault_Handler_C
     .section  .text.Default_Handler,"ax",%progbits
 Default_Handler:
-	mrs r0, msp /* stacking was using MSP */
-	mov r1, lr /* second parameter */
-	ldr r2,=HardFault_Handler_C
-	bx r2
   /* Load the address of the interrupt control register into r3. */
   ldr r3, NVIC_INT_CTRL_CONST
   /* Load the value of the interrupt control register into r2 from the
