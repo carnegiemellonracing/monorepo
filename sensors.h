@@ -19,6 +19,8 @@ typedef enum {
 	SENSOR_CH_AIR_POWER      = 1,
 	SENSOR_CH_SAFETY         = 2,
 	SENSOR_CH_IBATT_FILTERED = 3,
+	SENSOR_CH_VSENSE         = 4,
+	SENSOR_CH_ISENSE         = 5,
 	SENSOR_CH_LEN     /**< @brief Total ADC channels. */
 } sensorChannel_t;
 
