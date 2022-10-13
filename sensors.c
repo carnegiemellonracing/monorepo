@@ -68,6 +68,29 @@ static int32_t ADCtoMV_24v(const cmr_sensor_t *sensor, uint32_t reading) {
 }
 
 /**
+ * @brief Converts a raw ADC value into HV voltage
+ *
+ * @param sensor The sensor to read.
+ *
+ * @param reading The ADC value to convert.
+ *
+ * @return Voltage in V.
+ */
+// HV voltage divider is 806 Ohm differential with 2M pull down to gnd
+// Vref = 1.65v
+// div = 1 / [(Rtop + Rbottom) / Rbottom] = 14.43 / 1.13 = 12.76
+// adc_scale = 3.3 / 4096
+// final scale volts = [1 / (((1.13 + 13.3) / 1.13) * (3.3 / 2^12))] = 97.198 (adc counts / output volt)
+// final scale millivolts = 97.198 * (1 volt / 1000 mv) = 0.097198 (adc counts / output mv)
+// Scale up by 2^12 then divide by (0.097198 * 2^12)
+// V = div * ((ADC/2048) * Vref)
+static int32_t ADCtoMV_24v(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void) sensor;
+	
+	return (((int32_t) reading) << 12) / 398;
+}
+
+/**
  * @brief Converts a raw ADC value into a low voltage current value.
  *
  * @param sensor The sensor to read.
@@ -120,7 +143,23 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		//.readingMax = ?,
 		.outOfRange_pcnt = 10,
 		//.warnFlag = What errors to use?
-	}
+	},
+    [SENSOR_CH_VSENSE] = {
+		.conv = adcToMA_24v,
+		.sample = sampleADCSensor,
+		//.readingMin = ?,
+		//.readingMax = ?,
+		.outOfRange_pcnt = 10,
+		//.warnFlag = What errors to use?
+	},
+    [SENSOR_CH_ISENSE] = {
+		.conv = adcToMA_24v,
+		.sample = sampleADCSensor,
+		//.readingMin = ?,
+		//.readingMax = ?,
+		.outOfRange_pcnt = 10,
+		//.warnFlag = What errors to use?
+	},
 };
 
 /** @brief Sensors update priority. */
