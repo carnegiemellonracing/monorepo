@@ -14,7 +14,6 @@
 #include "gpio.h"   // Board-specific GPIO interface
 #include "can.h"    // Board-specific CAN interface
 #include "adc.h"    // Board-specific ADC interface
-#include "uart.h"   // Board-specific UART interface
 #include "bms_error.h"
 #include "watchdog.h"   // Board-specific Watchdog interface
 
@@ -76,11 +75,10 @@ int main(void) {
     // Peripheral configuration.
     gpioInit();
     canInit();
-    uartInit();
-//    adcInit();
-//    sensorsInit();
+    adcInit();
+    sensorsInit();
 //     spiInit();
-//    wwdgInit();
+    wwdgInit();
 
     cmr_taskInit(
         &statusLED_task,
@@ -90,14 +88,14 @@ int main(void) {
         NULL
     );
 
-    // BMB_task
-    cmr_taskInit(
-        &bmbSample_task,
-        "BMB Sample Task",
-        bmbSample_priority,
-        vBMBSampleTask,
-        NULL
-    );
+    /* // BMB_task */
+    /* cmr_taskInit( */
+    /*     &bmbSample_task, */
+    /*     "BMB Sample Task", */
+    /*     bmbSample_priority, */
+    /*     vBMBSampleTask, */
+    /*     NULL */
+    /* ); */
 
     // State Task
     cmr_taskInit(
