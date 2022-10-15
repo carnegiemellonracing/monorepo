@@ -316,7 +316,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 
 static void sendHVCPackVoltage(void) {
     //int32_t bVolt = getBattMillivolts();
-    int32_t hvVolt = getHVmillivolts();
+    int32_t hvVolt = getHVvolts();
     int bVolt = hvVolt; // TODO: Gustav change this back
 
     cmr_canHVCPackVoltage_t HVCPackVoltage = {
@@ -456,7 +456,7 @@ static void sendBMSMinMaxCellTemp(void) {
 
 static void sendBMSLowVoltage(void) {
     cmr_canBMSLowVoltage_t BMSLowVoltage = {
-        .ibatt_mA = getLVmilliamps(), // Convert mA to 2/15th mA
+        .safety_mV = (getSafetymillivolts()*15)/2000, // Convert mA to 2/15th mA //TODO: Gustav change this back?
         .iDCDC_mA =0,
         .vAIR_mV = (getAIRmillivolts()*15)/2000, // Convert mV to 2/15th V
         .vbatt_mV= (getLVmillivolts()*15/2000), // Convert mV to 2/15th V

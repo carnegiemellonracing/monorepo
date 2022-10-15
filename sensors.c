@@ -53,17 +53,12 @@ static uint32_t sampleADCSensor(const cmr_sensor_t *sensor) {
  * @return Voltage in mV.
  */
 // 24v voltage divider is factor of 1.13/14.43
-// Vref = 1.65v
-// div = 1 / [(Rtop + Rbottom) / Rbottom] = 14.43 / 1.13 = 12.76
-// adc_scale = 3.3 / 4096
-// final scale volts = [1 / (((1.13 + 13.3) / 1.13) * (3.3 / 2^12))] = 97.198 (adc counts / output volt)
-// final scale millivolts = 97.198 * (1 volt / 1000 mv) = 0.097198 (adc counts / output mv)
-// Scale up by 2^12 then divide by (0.097198 * 2^12)
-// V = div * ((ADC/2048) * Vref)
 static int32_t ADCtoMV_24v(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 	
-	return (((int32_t) reading) << 12) / 398;
+	//return (((int32_t) reading) << 12) / 398;
+    return ((int32_t) reading) * 7.39;
+
 }
 
 /**
@@ -75,17 +70,10 @@ static int32_t ADCtoMV_24v(const cmr_sensor_t *sensor, uint32_t reading) {
  *
  * @return Voltage in V.
  */
-// HV voltage divider is 806 Ohm differential with 2M pull down to gnd
-// 2M/(2M + 806) * 600 = 0.2417 V diff
-// Goes into iso amp with gain of 8, so max diff of 1.934V
-// Goes into diff opamp, so output should be 1.934V to 0V.
-// 1.934 / 3.3 * 4096 = 2400 usable
-// Entirely linear, so 600 / 2400 = 0.25V per tick
-// Divide by 4
 static int32_t ADCtoV_HV(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 	
-	return (((int32_t) reading) >> 2);
+	return (((int32_t) reading) * 0.268 - 426.4);
 }
 
 /**
@@ -152,7 +140,7 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		//.warnFlag = What errors to use?
 	},
     [SENSOR_CH_VSENSE] = {
-		.conv = NULL,
+		.conv = ADCtoV_HV,
 		.sample = sampleADCSensor,
 		//.readingMin = ?,
 		//.readingMax = ?,
@@ -223,15 +211,15 @@ int32_t getLVmillivolts(){
     return (int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_V24V);
 }
 
-int32_t getLVmilliamps(){
-	return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_IBATT_FILTERED));
+int32_t getAIRmillivolts(){
+    return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_AIR_POWER));
 }
 
-int32_t getAIRmillivolts(){
+int32_t getSafetymillivolts(){
     return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_SAFETY));
 }
 
-int32_t getHVmillivolts(){
+int32_t getHVvolts(){
     return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_VSENSE));
 }
 
