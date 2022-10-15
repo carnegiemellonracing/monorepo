@@ -17,7 +17,6 @@ static const adcChannels_t sensorsADCCHANNELS[SENSOR_CH_LEN] = {
     [SENSOR_CH_V24V]       = ADC_V24V,     
 	[SENSOR_CH_AIR_POWER]  = ADC_AIR_POWER,
 	[SENSOR_CH_SAFETY]     = ADC_SAFETY,
-	[SENSOR_CH_IBATT_FILTERED] = ADC_IBATT_FILTERED,
 	[SENSOR_CH_VSENSE]     = ADC_VSENSE,
 	[SENSOR_CH_ISENSE]     = ADC_ISENSE
 };
@@ -86,7 +85,7 @@ static int32_t ADCtoMV_24v(const cmr_sensor_t *sensor, uint32_t reading) {
 static int32_t ADCtoV_HV(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 	
-	return (((int32_t) reading) >> 2)
+	return (((int32_t) reading) >> 2);
 }
 
 /**
@@ -103,7 +102,7 @@ static int32_t ADCtoV_HV(const cmr_sensor_t *sensor, uint32_t reading) {
 static int32_t ADCtoA_HV(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 	
-	return (((int32_t) reading) >> 2)
+	return (((int32_t) reading) >> 2);
 }
 
 /**
@@ -146,14 +145,6 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 	},
 	[SENSOR_CH_SAFETY] = {
 		.conv = ADCtoMV_24v,
-		.sample = sampleADCSensor,
-		//.readingMin = ?,
-		//.readingMax = ?,
-		.outOfRange_pcnt = 10,
-		//.warnFlag = What errors to use?
-	},
-    [SENSOR_CH_IBATT_FILTERED] = {
-		.conv = adcToMA_24v,
 		.sample = sampleADCSensor,
 		//.readingMin = ?,
 		//.readingMax = ?,
@@ -238,4 +229,12 @@ int32_t getLVmilliamps(){
 
 int32_t getAIRmillivolts(){
     return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_SAFETY));
+}
+
+int32_t getHVmillivolts(){
+    return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_VSENSE));
+}
+
+int32_t getHVmilliamps(){
+    return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_ISENSE));
 }

@@ -6,7 +6,6 @@
  */
 
 #include "bms_error.h"
-#include "slave_uart.h"
 
 static bool checkCommandTimeout();
 static bool checkBMBTimeout();

@@ -9,7 +9,10 @@
 #define BMB_TASK_H_
 
 /* #include "stm32f413-drivers/CMR/can_types.h" */
+#include <CMR/can_types.h>
+#include <stdint.h>
 
+#define NUM_BMBS 16
 #define BMB_GPIO_MUX_PIN 0b000001
 #define BMB_GPIO_LED_PIN 0b000100
 #define BMB_GPIO_TEMP_FAULT_PIN 0b00000

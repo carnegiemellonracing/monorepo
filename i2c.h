@@ -22,6 +22,8 @@ static const uint16_t bms_mux_address[NUM_BMBS] = {
 #define BMS_ADC_ADDR 0x33;
 #define BMS_CELL_BALANCE_IO_ADDR 0x50; // TODO: Change this, variable from 0x50-0x57
 
+#define I2C_TIMEOUT 50
+
 static cmr_i2c_t bmb_i2c;
 
 #endif

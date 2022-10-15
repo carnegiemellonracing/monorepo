@@ -31,5 +31,7 @@ void sensorsInit(void);
 int32_t getLVmillivolts();
 int32_t getLVmilliamps();
 int32_t getAIRmillivolts();
+int32_t getHVmillivolts();
+int32_t getHVmilliamps();
 
 #endif /* SENSORS_H_ */
