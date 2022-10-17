@@ -307,6 +307,15 @@ static void cmr_canRXPendingCallback(CAN_HandleTypeDef *handle, uint32_t fifo) {
         return;
     }
 
+#ifdef CMR_ENABLE_BOOTLOADER
+    if (msg.StdId == CMR_CANID_OPENBLT_XMP_RX) {
+        if (data[0] == 0xff && msg.DLC == 2) {
+            NVIC_SystemReset();
+        }
+        return;
+    }
+#endif
+
     cmr_can_t *can = cmr_canFromHandle(handle);
     cmr_canRXData(can, msg.StdId, data, msg.DLC);
 }
@@ -521,6 +530,37 @@ void cmr_canFilter(
             cmr_panic("HAL_CAN_ConfigFilter() failed!");
         }
     }
+
+#ifdef CMR_ENABLE_BOOTLOADER
+        // if the bootloader is enabled, add an extra filter for the bootloader
+        // receive message, so that we reset
+        uint32_t bank = filtersLen;
+        if (instance == CAN2) {
+            // CAN2 uses banks 14-27.
+            bank += CMR_CAN_FILTERBANKS;
+        }
+        // In 16 bit ID list mode, FilterIdHigh, FilterIdLow, FilterMaskIdHigh,
+        // and FilterMaskIdLow all serve as a whitelist of left-aligned 11-bit
+        // CAN IDs.
+        // See RM0430 32.7.4 Fig. 387.
+        const uint16_t CMR_CAN_ID_FILTER_SHIFT = 5;
+        CAN_FilterTypeDef config = {
+            .FilterIdHigh           = CMR_CANID_OPENBLT_XMP_RX << CMR_CAN_ID_FILTER_SHIFT,
+            .FilterIdLow            = CMR_CANID_OPENBLT_XMP_RX << CMR_CAN_ID_FILTER_SHIFT,
+            .FilterMaskIdHigh       = CMR_CANID_OPENBLT_XMP_RX << CMR_CAN_ID_FILTER_SHIFT,
+            .FilterMaskIdLow        = CMR_CANID_OPENBLT_XMP_RX << CMR_CAN_ID_FILTER_SHIFT,
+            .FilterFIFOAssignment   = CAN_RX_FIFO0,
+            .FilterBank             = bank,
+            .FilterMode             = CAN_FILTERMODE_IDLIST,
+            .FilterScale            = CAN_FILTERSCALE_16BIT,
+            .FilterActivation       = ENABLE,
+            .SlaveStartFilterBank   = CMR_CAN_FILTERBANKS
+        };
+
+        if (HAL_CAN_ConfigFilter(&can->handle, &config) != HAL_OK) {
+            cmr_panic("HAL_CAN_ConfigFilter() failed!");
+        }
+#endif
 }
 
 /**

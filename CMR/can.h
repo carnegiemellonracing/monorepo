@@ -22,6 +22,8 @@
 #include "tasks.h"      // Task interface
 
 #include <CMR/can_types.h>  // cmr_canError_t, cmr_canWarn_t
+#include <CMR/can_ids.h>
+#include <CMR/bootloader.h>
 
 /** @brief Number of CAN filter banks allocated for each interface. */
 #define CMR_CAN_FILTERBANKS 14
