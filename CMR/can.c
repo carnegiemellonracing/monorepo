@@ -309,7 +309,7 @@ static void cmr_canRXPendingCallback(CAN_HandleTypeDef *handle, uint32_t fifo) {
 
 #ifdef CMR_ENABLE_BOOTLOADER
     if (msg.StdId == CMR_CANID_OPENBLT_XMP_RX) {
-        if (data[0] == 0xff && msg.DLC == 2) {
+        if (data[0] == 0xff && data[1] == CMR_ENABLE_BOOTLOADER) {
             NVIC_SystemReset();
         }
         return;
