@@ -13,6 +13,7 @@
 #include <CMR/can_ids.h>    // CMR CAN IDs
 #include <CMR/config_screen_helper.h> // for config_screen_data tx
 #include "state.h"
+#include "sensors.h"        // sensors interface
 
 
 /** @brief Text buffer from RAM - used to display messages to driver */
@@ -80,7 +81,8 @@ typedef enum {
     CANRX_CDL_BROADCAST,        /**< @brief CDL broadcast. */
     CANRX_SBG_STATUS_3,            /**< @brief INS Status 3 */
 	CANRX_EMD_VALUES,			/**< @brief EMD Values for HV voltages and current */
-    CANRX_LEN     /**< @brief Number of periodic CAN messages. */
+    CANRX_LEN,     /**< @brief Number of periodic CAN messages. */
+    CANRX_VSM_SENSORS
 } canRX_t;
 
 extern cmr_canRXMeta_t canRXMeta[];
@@ -90,6 +92,10 @@ void canInit(void);
 int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 
 void ramCallback (cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen);
+
+void *getPayload(canRX_t rxMsg);
+uint8_t throttleGetPos(void);
+
 #endif /* CAN_H */
 
 float canEmdHvVoltage(cmr_canEMDMeasurements_t emd_vals);
