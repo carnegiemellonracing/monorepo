@@ -15,7 +15,7 @@
 #define BMB_GPIO_TEMP_FAULT_PIN 0b00000
 
 #define VSENSE_CHANNELS_PER_BMB 9
-#define TSENSE_CHANNELS_PER_BMB 12
+#define TSENSE_CHANNELS_PER_BMB 15
 #define TSENSE_CHANNELS_PER_MESSAGE 8
 
 #define BMB_SAMPLE_TASK_RATE 10
@@ -39,6 +39,7 @@ uint16_t getPackMinCellVoltage();
 uint16_t getPackMaxCellVoltage();
 uint16_t getPackMinCellTemp();
 uint16_t getPackMaxCellTemp();
+uint16_t selfTestMux(uint8_t mux_index);
 void getBMSMinMaxCellVoltage(cmr_canBMSMinMaxCellVoltage_t *BMSMinMaxCellVoltage);
 void getBMSMinMaxCellTemperature(cmr_canBMSMinMaxCellTemperature_t *BMSMinMaxCellTemp);
 BMB_Data_t* getBMBData (uint8_t bmb_index);
