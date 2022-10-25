@@ -112,7 +112,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 	[SAFETY_BINARY] = { // VERIFIED
 	        .port = GPIOC,
 	        .init = {
-	            .Pin = GPIO_PIN_1,
+	            .Pin = GPIO_PIN_3,
 	            .Mode = GPIO_MODE_INPUT,
 	            .Pull = GPIO_PULLUP,
 	            .Speed = GPIO_SPEED_FREQ_LOW
@@ -127,7 +127,5 @@ void gpioInit(void) {
     cmr_gpioPinInit(
         gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0])
     );
-    cmr_gpioWrite(GPIO_BMB_POWER_ENABLE_L, 1);
-
 }
 

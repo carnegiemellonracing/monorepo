@@ -37,7 +37,7 @@ uint16_t i2cVerifyConfigChain(void) {
             return ((uint16_t)(i)) << 8;
         }
         // now verify the 4 IO expander
-        if (
+        //if (
     }
     return 0;
 }

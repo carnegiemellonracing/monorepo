@@ -78,7 +78,7 @@ int main(void) {
     adcInit();
     sensorsInit();
 //     spiInit();
-    wwdgInit();
+//    wwdgInit();
 
     cmr_taskInit(
         &statusLED_task,
@@ -98,13 +98,23 @@ int main(void) {
     /* ); */
 
     // State Task
-    cmr_taskInit(
-        &setState_task,
-        "Set State Task",
-        setState_priority,
-        vSetStateTask,
-        NULL
-    );
+//    cmr_taskInit(
+//        &setState_task,
+//        "Set State Task",
+//        setState_priority,
+//        vSetStateTask,
+//        NULL
+//    );
+    cmr_gpioWrite(GPIO_BMB_FAULT_L, 1);
+    cmr_gpioWrite(GPIO_CLEAR_FAULT_L, 0);
+    float sum = 0;
+    for (int i = 0; i < 100000; i++)
+    	sum += sum*0.99995;
+    cmr_gpioWrite(GPIO_CLEAR_FAULT_L, 1);
+    cmr_gpioWrite(GPIO_PRECHARGE_EN, 0);
+    cmr_gpioWrite(GPIO_DISCHARGE_EN, 0);
+    cmr_gpioWrite(GPIO_AIR_POSITIVE_EN, 0);
+    cmr_gpioWrite(GPIO_AIR_NEGATIVE_EN, 1);
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

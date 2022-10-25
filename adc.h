@@ -19,6 +19,8 @@ typedef enum {
 	ADC_V24V            = 0,
 	ADC_AIR_POWER       = 1,
 	ADC_SAFETY          = 2,
+	ADC_VSENSE,
+	ADC_ISENSE,
 	ADC_LEN     /**< @brief Total ADC channels. */
 } adcChannels_t;
 
