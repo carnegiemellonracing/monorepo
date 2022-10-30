@@ -26,4 +26,16 @@ static const uint16_t bms_mux_address[NUM_BMBS] = {
 
 static cmr_i2c_t bmb_i2c;
 
+
+//switch across sides of BMB
+bool switchI2CMux(uint8_t side);
+
+//switch mux channel for FET muxes through the IO expander
+bool selectMuxChannel(uint8_t channel);
+
+//get values from each adc channel
+bool scan_adc();
+
+
+
 #endif

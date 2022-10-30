@@ -41,3 +41,5 @@ uint16_t i2cVerifyConfigChain(void) {
     }
     return 0;
 }
+
+

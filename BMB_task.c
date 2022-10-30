@@ -8,6 +8,7 @@
 #include "BMB_task.h"
 #include "gpio.h"
 #include "state_task.h"
+#include "idc.h"
 
 extern volatile int BMBTimeoutCount[NUM_BMBS];
 
@@ -83,246 +84,281 @@ void BMBInit() {
     const TickType_t xPeriod = 1000 / BMB_SAMPLE_TASK_RATE;		// In ticks (ms)
     #define MAXRETRY 10
     int retryCount;
-//    for (retryCount = 0; retryCount < MAXRETRY; retryCount++) {
-//        //cmr_gpioWrite(GPIO_BMB_POWER_ENABLE_L, 1);
-//        if (retryCount >= MAXRETRY - 1) {
-//            cmr_panic("Can't initialize BMBs");
-//        }
-//
-//        HAL_Delay(1000);
-//
-//        // Enable BMB IO power (active low)
-//        //cmr_gpioWrite(GPIO_BMB_POWER_ENABLE_L, 0);
-//
-//        // Wake BMB0
-//        // NOTE: This MUST happen immediately after power on
-//        //cmr_gpioWrite(GPIO_BMB_WAKE_PIN, 1);
-//        // Wait then clear wake signal
-//        // BMB requires a pulse for wake
-//        HAL_Delay(100);
-//        //cmr_gpioWrite(GPIO_BMB_WAKE_PIN, 0);
-//
-//
-//        HAL_Delay(100);
-//
-//        // Initialize the slave UART interface
-//        // taskENTER_CRITICAL();
-//
-//
-//        //***UART HAVE TO CHANGE***
-//
-//
-//        /*
-//        cmr_uart_result_t retv = slave_uart_autoAddress();
-//        // taskEXIT_CRITICAL();
-//
-//        if (retv != UART_SUCCESS) {
-//            // ERROR CASE: Could not auto address the slave boards
-//            setAllBMBsTimeout();
-//            continue;
-//        }
-//
-//        // vTaskDelayUntil(&xLastWakeTime, xPeriod);
-//
-//        retv = slave_uart_configureChannels();
-//        if (retv != UART_SUCCESS) {
-//            // ERROR CASE: The slaves were not able to configure their channels and OV/UV thresholds
-//            setAllBMBsTimeout();
-//            continue;
-//        }
-//
-//        // Set communications timeout
-//        retv = slave_uart_broadcast_setBMBTimeout();
-//        if (retv != UART_SUCCESS) {
-//            // ERROR CASE: The slaves were not able to configure their channels and OV/UV thresholds
-//            setAllBMBsTimeout();
-//            continue;
-//        }
-//*/
-//        // vTaskDelayUntil(&xLastWakeTime, xPeriod);
-//
-//        // Initialize the slave UART sampling and GPIO per board
-//        for(int8_t boardNum = TOP_SLAVE_BOARD; boardNum >= 0; --boardNum) {
-//            // taskENTER_CRITICAL();
-//
-//            //***UART: REPLACE WITH I2C
-//
-//            //retv = slave_uart_configureSampling(boardNum);
-//            if (retv != UART_SUCCESS) {
-//                // ERROR CASE: Could not configure sampling for slave boards
-//                BMBTimeoutCount[boardNum] = BMB_TIMEOUT;
-//                // taskEXIT_CRITICAL();
-//                continue;
-//            }
-//
-//            // Configure GPIO as outputs for analog mux select line and LED
-//
-//            //***UART: REPLACE WITH I2C
-//            //retv = slave_uart_configureGPIODirection(BMB_GPIO_MUX_PIN | BMB_GPIO_LED_PIN, boardNum);
-//            // taskEXIT_CRITICAL();
-//
-//            if (retv != UART_SUCCESS) {
-//                // ERROR CASE: The slaves were not able to configure the AFE
-//                BMBTimeoutCount[boardNum] = BMB_TIMEOUT;
-//                continue;
-//            }
-//            // vTaskDelayUntil(&xLastWakeTime, xPeriod);
-//        }
-//
-//        break;
-//    }
+   for (retryCount = 0; retryCount < MAXRETRY; retryCount++) {
+       //cmr_gpioWrite(GPIO_BMB_POWER_ENABLE_L, 1);
+       if (retryCount >= MAXRETRY - 1) {
+           cmr_panic("Can't initialize BMBs");
+       }
+
+       HAL_Delay(1000);
+
+       // Enable BMB IO power (active low)
+       //cmr_gpioWrite(GPIO_BMB_POWER_ENABLE_L, 0);
+
+       // Wake BMB0
+       // NOTE: This MUST happen immediately after power on
+       //cmr_gpioWrite(GPIO_BMB_WAKE_PIN, 1);
+       // Wait then clear wake signal
+       // BMB requires a pulse for wake
+
+
+
+       // Initialize the slave UART interface
+       // taskENTER_CRITICAL();
+
+
+       //***UART HAVE TO CHANGE***
+
+
+       /*
+       cmr_uart_result_t retv = slave_uart_autoAddress();
+       // taskEXIT_CRITICAL();
+
+       if (retv != UART_SUCCESS) {
+           // ERROR CASE: Could not auto address the slave boards
+           setAllBMBsTimeout();
+           continue;
+       }
+
+       // vTaskDelayUntil(&xLastWakeTime, xPeriod);
+
+       retv = slave_uart_configureChannels();
+       if (retv != UART_SUCCESS) {
+           // ERROR CASE: The slaves were not able to configure their channels and OV/UV thresholds
+           setAllBMBsTimeout();
+           continue;
+       }
+
+       // Set communications timeout
+       retv = slave_uart_broadcast_setBMBTimeout();
+       if (retv != UART_SUCCESS) {
+           // ERROR CASE: The slaves were not able to configure their channels and OV/UV thresholds
+           setAllBMBsTimeout();
+           continue;
+       }
+*/
+       // vTaskDelayUntil(&xLastWakeTime, xPeriod);
+
+       // Initialize the slave UART sampling and GPIO per board
+       for(int8_t boardNum = TOP_SLAVE_BOARD; boardNum >= 0; --boardNum) {
+           // taskENTER_CRITICAL();
+
+           //***UART: REPLACE WITH I2C
+
+           //retv = slave_uart_configureSampling(boardNum);
+           if (retv != UART_SUCCESS) {
+               // ERROR CASE: Could not configure sampling for slave boards
+               BMBTimeoutCount[boardNum] = BMB_TIMEOUT;
+               // taskEXIT_CRITICAL();
+               continue;
+           }
+
+           // Configure GPIO as outputs for analog mux select line and LED
+
+           //***UART: REPLACE WITH I2C
+           //retv = slave_uart_configureGPIODirection(BMB_GPIO_MUX_PIN | BMB_GPIO_LED_PIN, boardNum);
+           // taskEXIT_CRITICAL();
+
+           if (retv != UART_SUCCESS) {
+               // ERROR CASE: The slaves were not able to configure the AFE
+               BMBTimeoutCount[boardNum] = BMB_TIMEOUT;
+               continue;
+           }
+           // vTaskDelayUntil(&xLastWakeTime, xPeriod);
+       }
+
+       break;
+   }
 }
 
 
 void vBMBSampleTask(void *pvParameters) {
 
     
-//    BMBInit();
-//
-//    // Index of the BMB we're currently sampling
-//    uint8_t BMBIndex = 0;
-//    // Whether or not select on the analog mux is asserted
-//    bool BMBActivityLEDEnable = false;
-//
-//    // Previous wake time pointer
-//    TickType_t xLastWakeTime = xTaskGetTickCount();
-//    vTaskDelayUntil(&xLastWakeTime, 50);
-//
-//
-//    for(;;) {
-//
-//        //***CHANGE TO i2C
-//        uart_response_t channelResponse = {0};
-//        cmr_uart_result_t uartRetv = UART_SUCCESS;
-//
-//        // Sampling method #2: BQ Protocol p12
-//
-//        // Tell all BMBs to sample their channels and store the results locally
-//        // taskENTER_CRITICAL();
-//        // Set the analog mux to sample the relevant half of the thermistors and set the status LED
-//
-//        //***UART: REPLACE WITH MUX SWITCHING AND I2C Code
-//
-//        /*
-//        uint8_t BMBGPIOValues = (BMBActivityLEDEnable) ? (BMB_GPIO_LED_PIN) : 0;
-//        uartRetv = slave_uart_setGPIO(BMBGPIOValues, BMBIndex);
-//        if (uartRetv != UART_SUCCESS) {
-//            // ERROR CASE: We could not send the set GPIO command
-//            BMBTimeoutCount[BMBIndex]++;
+   BMBInit();
+
+   // Index of the BMB we're currently sampling
+   uint8_t BMBIndex = 0;
+   // Whether or not select on the analog mux is asserted
+   bool BMBActivityLEDEnable = false;
+
+   // Previous wake time pointer
+   TickType_t xLastWakeTime = xTaskGetTickCount();
+   vTaskDelayUntil(&xLastWakeTime, 50);
+
+
+   for(;;) {
+
+       //***CHANGE TO i2C
+       
+
+       // Sampling method #2: BQ Protocol p12
+
+       // Tell all BMBs to sample their channels and store the results locally
+        //taskENTER_CRITICAL();
+       // Set the analog mux to sample the relevant half of the thermistors and set the status LED
+
+       //***UART: REPLACE WITH MUX SWITCHING AND I2C Code
+
+       
+       uint16_t BMBADCResponse[8];
+       
+       
+
+       // Sample all analog channels
+
+       //***UART: REPLACE WITH MUX SWITCHING AND I2C Code
+       taskENTER_CRITICAL();
+        
+        for(uint8_t i = 0; i < NUM_BMBS; i++) {
+            for(uint8_t j = 0; j < 2; j++) {
+                if(!switchI2CMux(j)) {
+                    BMBTimeoutCount[i] = BMB_TIMEOUT;
+                }
+                for(int channel = 0; channel < 3; channel++) {
+                    if(!selectMuxChannel(channel)) {
+                        BMBTimeoutCount[i] = BMB_TIMEOUT;
+                    }
+                    if(!scan_adc(BMBADCResponse)) {
+                        BMBTimeoutCount[i] = BMB_TIMEOUT;
+                    }
+
+                    //TODO: ADD VOLTAGE FUNCTION
+                    if(channel == 0) {
+                        BMBData[i].cellVoltages[0] == BMBADCResponse[0];
+                        BMBData[i].cellVoltages[4] == BMBADCResponse[1];
+                        BMBData[i].cellVoltages[7] == BMBADCResponse[2];
+                    }
+                    else if(channel == 1) {
+                        BMBData[i].cellVoltages[1] == BMBADCResponse[0];
+                        BMBData[i].cellVoltages[5] == BMBADCResponse[1];
+                        BMBData[i].cellVoltages[8] == BMBADCResponse[2];
+                    }
+                    else if(channel == 2) {
+                        BMBData[i].cellVoltages[2] == BMBADCResponse[0];
+                        BMBData[i].cellVoltages[6] == BMBADCResponse[1];
+                        BMBData[i].cellVoltages[9] == BMBADCResponse[2];
+                    }
+                    else if(channel == 4) {
+                        BMBData[i].cellVoltages[4] == BMBADCResponse[0];
+                    }
+                    if(channel < 3) {
+                        for(int temps = 0; temps < 5; temps++) {
+                            //TODO: ADD TEMP LUT
+                            BMBData[i].cellTemperatures[(temps*5)+channel] == BMBADCResponse[temps+3];
+                        }
+                    }
+                    
+                }
+            }
+        }
+        
+       /*
+       if (uartRetv != UART_SUCCESS) {
+           // ERROR CASE: We could not send the sample command
+           BMBTimeoutCount[BMBIndex]++;
+       }
+       */
+
+       // taskEXIT_CRITICAL();
+
+       // Retrieve the channel data from the device in question
+        //taskENTER_CRITICAL();
+       //uartRetv = slave_uart_sampleDeviceChannels(BMBIndex, &channelResponse);
+
+
+        taskEXIT_CRITICAL();
+/*
+       //***CHANGE UART CHECK TO I2C Check
+       if(uartRetv != UART_SUCCESS ||
+          (channelResponse.frameInit->responseBytes+1 <
+          2*(VSENSE_CHANNELS_PER_BMB+TSENSE_CHANNELS_PER_MESSAGE))) {
+           // ERROR CASE: We could not sample the BMB's channels correctly
+           // or the response did not include the expect number of channels
+
+           // TODO: add MIA checking for each BMB
+           BMBTimeoutCount[BMBIndex]++;
+       } else {
+           BMBTimeoutCount[BMBIndex] = 0;
+           // Retrieve each 16 bit cell voltage reading from the response
+           for(uint8_t vChannel = 0; vChannel < VSENSE_CHANNELS_PER_BMB; ++vChannel) {
+
+               //**REPLACE WITH I2C
+               //uint32_t readAdcValue = (((uint32_t)channelResponse.data[2*vChannel])<<8) |
+                                       //((uint32_t)channelResponse.data[2*vChannel+1]);
+
+               //This is backwards for some reason.
+               uint32_t volt = (5000*readAdcValue)/65535;
+               float mult = 0.7f;
+               BMBData[BMBIndex].cellVoltages[VSENSE_CHANNELS_PER_BMB - vChannel - 1] = mult * BMBData[BMBIndex].cellVoltages[VSENSE_CHANNELS_PER_BMB - vChannel - 1] + (1.0f-mult) * volt;
+           }
+
+           // Avg out cell 0 and cell 1
+           uint16_t avg = BMBData[BMBIndex].cellVoltages[0] + BMBData[BMBIndex].cellVoltages[1];
+           avg /= 2;
+           BMBData[BMBIndex].cellVoltages[0] = avg;
+           BMBData[BMBIndex].cellVoltages[1] = avg;
+
+
+           // Retrieve each 16 bit temperature reading from the response
+           for(uint8_t tChannel = 0; tChannel < TSENSE_CHANNELS_PER_MESSAGE; ++tChannel) {
+               uint32_t readAdcValue = (((uint32_t)channelResponse.data[2*tChannel + 2*VSENSE_CHANNELS_PER_BMB])<<8) |
+                                       ((uint32_t)channelResponse.data[2*tChannel+2*VSENSE_CHANNELS_PER_BMB+1]);
+               uint8_t logicalThermIndex = TSENSE_CHANNELS_PER_MESSAGE - 1 - tChannel;
+
+               // Temps indexed 4 to 11 are muxed
+               // TODO: make #define
+               if (BMBActivityLEDEnable && logicalThermIndex >= 4) {
+                   logicalThermIndex = logicalThermIndex + 4;
+               }
+
+               //This is backwards for some reason.
+               BMBData[BMBIndex].cellTemperatures[logicalThermIndex] = lutTemp((uint16_t)readAdcValue);
+
+               // TODO set error conditions for bad temps
+           }
+       }
+*/
+       uint16_t averageVoltage = 0;
+       uint16_t cellsToBalance = 0x0000;
+
+       for(uint16_t i = 0; i < VSENSE_CHANNELS_PER_BMB; i++) {
+           averageVoltage += BMBData[BMBIndex].cellVoltages[i];
+       }
+//        if(BMBIndex == 5){
+//        	int a = 0;
 //        }
-//        */
-//
-//        // Sample all analog channels
-//
-//        //***UART: REPLACE WITH MUX SWITCHING AND I2C Code
-//        //uartRetv = slave_uart_broadcast_sampleAndStore();
-//
-//        /*
-//        if (uartRetv != UART_SUCCESS) {
-//            // ERROR CASE: We could not send the sample command
-//            BMBTimeoutCount[BMBIndex]++;
-//        }
-//        */
-//
-//        // taskEXIT_CRITICAL();
-//
-//        // Retrieve the channel data from the device in question
-//        // taskENTER_CRITICAL();
-//        uartRetv = slave_uart_sampleDeviceChannels(BMBIndex, &channelResponse);
-//
-//
-//        // taskEXIT_CRITICAL();
-//
-//        //***CHANGE UART CHECK TO I2C Check
-//        if(uartRetv != UART_SUCCESS ||
-//           (channelResponse.frameInit->responseBytes+1 <
-//           2*(VSENSE_CHANNELS_PER_BMB+TSENSE_CHANNELS_PER_MESSAGE))) {
-//            // ERROR CASE: We could not sample the BMB's channels correctly
-//            // or the response did not include the expect number of channels
-//
-//            // TODO: add MIA checking for each BMB
-//            BMBTimeoutCount[BMBIndex]++;
-//        } else {
-//            BMBTimeoutCount[BMBIndex] = 0;
-//            // Retrieve each 16 bit cell voltage reading from the response
-//            for(uint8_t vChannel = 0; vChannel < VSENSE_CHANNELS_PER_BMB; ++vChannel) {
-//
-//                //**REPLACE WITH I2C
-//                //uint32_t readAdcValue = (((uint32_t)channelResponse.data[2*vChannel])<<8) |
-//                                        //((uint32_t)channelResponse.data[2*vChannel+1]);
-//
-//                //This is backwards for some reason.
-//                uint32_t volt = (5000*readAdcValue)/65535;
-//                float mult = 0.7f;
-//                BMBData[BMBIndex].cellVoltages[VSENSE_CHANNELS_PER_BMB - vChannel - 1] = mult * BMBData[BMBIndex].cellVoltages[VSENSE_CHANNELS_PER_BMB - vChannel - 1] + (1.0f-mult) * volt;
-//            }
-//
-//            // Avg out cell 0 and cell 1
-//            uint16_t avg = BMBData[BMBIndex].cellVoltages[0] + BMBData[BMBIndex].cellVoltages[1];
-//            avg /= 2;
-//            BMBData[BMBIndex].cellVoltages[0] = avg;
-//            BMBData[BMBIndex].cellVoltages[1] = avg;
-//
-//
-//            // Retrieve each 16 bit temperature reading from the response
-//            for(uint8_t tChannel = 0; tChannel < TSENSE_CHANNELS_PER_MESSAGE; ++tChannel) {
-//                uint32_t readAdcValue = (((uint32_t)channelResponse.data[2*tChannel + 2*VSENSE_CHANNELS_PER_BMB])<<8) |
-//                                        ((uint32_t)channelResponse.data[2*tChannel+2*VSENSE_CHANNELS_PER_BMB+1]);
-//                uint8_t logicalThermIndex = TSENSE_CHANNELS_PER_MESSAGE - 1 - tChannel;
-//
-//                // Temps indexed 4 to 11 are muxed
-//                // TODO: make #define
-//                if (BMBActivityLEDEnable && logicalThermIndex >= 4) {
-//                    logicalThermIndex = logicalThermIndex + 4;
-//                }
-//
-//                //This is backwards for some reason.
-//                BMBData[BMBIndex].cellTemperatures[logicalThermIndex] = lutTemp((uint16_t)readAdcValue);
-//
-//                // TODO set error conditions for bad temps
-//            }
-//        }
-//
-//        uint16_t averageVoltage = 0;
-//        uint16_t cellsToBalance = 0x0000;
-//
-//        for(uint16_t i = 0; i < VSENSE_CHANNELS_PER_BMB; i++) {
-//            averageVoltage += BMBData[BMBIndex].cellVoltages[i];
-//        }
-////        if(BMBIndex == 5){
-////        	int a = 0;
-////        }
-//
-//        averageVoltage = averageVoltage/VSENSE_CHANNELS_PER_BMB;
-//
-//        for(uint16_t i = 0; i < VSENSE_CHANNELS_PER_BMB; i++) {
-//            if(BMBData[BMBIndex].cellVoltages[i] - averageVoltage > 50){
-//                cellsToBalance |= 1 << i;
-//            }
-//        }
-//
-//        // taskENTER_CRITICAL();
-//        if(getState() == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE){
-//            //***CHANGE TO I2C
-//           // slave_uart_sendBalanceCmd(cellsToBalance, BMBIndex);
-//        }
-//        else{
-//            //***CHANGE TO I2C
-//            //slave_uart_sendBalanceCmd(0x0000, BMBIndex);
-//        }
-//        // taskEXIT_CRITICAL();
-//
-//
-//        if (BMBIndex >= NUM_BMBS-1) {
-//            BMBIndex = 0;
-//			BMBActivityLEDEnable = !BMBActivityLEDEnable;
-//        } else {
-//            ++BMBIndex;
-//        }
-//
-//
-//        vTaskDelayUntil(&xLastWakeTime, 5);
-//    }
+
+       averageVoltage = averageVoltage/VSENSE_CHANNELS_PER_BMB;
+
+       for(uint16_t i = 0; i < VSENSE_CHANNELS_PER_BMB; i++) {
+           if(BMBData[BMBIndex].cellVoltages[i] - averageVoltage > 50){
+               cellsToBalance |= 1 << i;
+           }
+       }
+
+       // taskENTER_CRITICAL();
+       if(getState() == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE){
+           //***CHANGE TO I2C
+           //slave_uart_sendBalanceCmd(cellsToBalance, BMBIndex);
+       }
+       else{
+           //***CHANGE TO I2C
+           //slave_uart_sendBalanceCmd(0x0000, BMBIndex);
+       }
+       // taskEXIT_CRITICAL();
+
+
+       if (BMBIndex >= NUM_BMBS-1) {
+           BMBIndex = 0;
+			BMBActivityLEDEnable = !BMBActivityLEDEnable;
+       } else {
+           ++BMBIndex;
+       }
+
+
+       vTaskDelayUntil(&xLastWakeTime, 5);
+   }
 }
 
 // Temperature Transfer Functions
