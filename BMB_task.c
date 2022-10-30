@@ -224,28 +224,29 @@ void vBMBSampleTask(void *pvParameters) {
                     }
 
                     //TODO: ADD VOLTAGE FUNCTION
+                    
                     if(channel == 0) {
-                        BMBData[i].cellVoltages[0] == BMBADCResponse[0];
-                        BMBData[i].cellVoltages[4] == BMBADCResponse[1];
-                        BMBData[i].cellVoltages[7] == BMBADCResponse[2];
+                        BMBData[i].cellVoltages[(j*10)+0] = BMBADCResponse[0];
+                        BMBData[i].cellVoltages[(j*10)+4] = BMBADCResponse[1];
+                        BMBData[i].cellVoltages[(j*10)+7] = BMBADCResponse[2];
                     }
                     else if(channel == 1) {
-                        BMBData[i].cellVoltages[1] == BMBADCResponse[0];
-                        BMBData[i].cellVoltages[5] == BMBADCResponse[1];
-                        BMBData[i].cellVoltages[8] == BMBADCResponse[2];
+                        BMBData[i].cellVoltages[(j*10)+1] = BMBADCResponse[0];
+                        BMBData[i].cellVoltages[(j*10)+5] = BMBADCResponse[1];
+                        BMBData[i].cellVoltages[(j*10)+8] = BMBADCResponse[2];
                     }
                     else if(channel == 2) {
-                        BMBData[i].cellVoltages[2] == BMBADCResponse[0];
-                        BMBData[i].cellVoltages[6] == BMBADCResponse[1];
-                        BMBData[i].cellVoltages[9] == BMBADCResponse[2];
+                        BMBData[i].cellVoltages[(j*10)+2] = BMBADCResponse[0];
+                        BMBData[i].cellVoltages[(j*10)+6] = BMBADCResponse[1];
+                        BMBData[i].cellVoltages[(j*10)+9] = BMBADCResponse[2];
                     }
                     else if(channel == 4) {
-                        BMBData[i].cellVoltages[4] == BMBADCResponse[0];
+                        BMBData[i].cellVoltages[(j*10)+4] = BMBADCResponse[0];
                     }
                     if(channel < 3) {
                         for(int temps = 0; temps < 5; temps++) {
                             //TODO: ADD TEMP LUT
-                            BMBData[i].cellTemperatures[(temps*5)+channel] == BMBADCResponse[temps+3];
+                            BMBData[i].cellTemperatures[(15*j)+(temps*5)+channel] = BMBADCResponse[temps+3];
                         }
                     }
                     

@@ -42,4 +42,6 @@ uint16_t i2cVerifyConfigChain(void) {
     return 0;
 }
 
-
+bool switchI2CMux(uint8_t side) {
+    
+}
