@@ -28,13 +28,13 @@ static cmr_i2c_t bmb_i2c;
 
 
 //switch across sides of BMB
-bool switchI2CMux(uint8_t side);
+bool switchI2CMux(uint8_t side, uint8_t bmb);
 
 //switch mux channel for FET muxes through the IO expander
 bool selectMuxChannel(uint8_t channel);
 
 //get values from each adc channel
-bool scan_adc();
+bool scan_adc(int16_t adcResponse[]);
 
 
 

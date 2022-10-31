@@ -42,6 +42,44 @@ uint16_t i2cVerifyConfigChain(void) {
     return 0;
 }
 
-bool switchI2CMux(uint8_t side) {
-    
+bool switchI2CMux(uint8_t side, uint8_t bmb) {
+    int enableData = 1<<side;
+    int disableData = 0;
+    for(int i = 0; i < 8; i++) {
+        if(i == bmb) {
+            if(cmr_i2cTX(&bmb_i2c, bms_mux_address[i], &enableData, 1, I2C_TIMEOUT) != 0) {
+                return false;
+            }
+        }
+        else  {
+            if(cmr_i2cTX(&bmb_i2c, bms_mux_address[i], &disableData, 1, I2C_TIMEOUT) != 0) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool selectMuxChannel(uint8_t channel) {
+    //simply write the channel as a byte to the io expander
+    int data = channel;
+    if(cmr_i2cTX(&bmb_i2c, BMS_SELECT_IO_ADDR, &data, 1, I2C_TIMEOUT) != 0) {
+        return false;
+    }
+    return true;
+}
+
+bool scan_adc(int16_t adcResponse[]) {
+    int configByte = 0xF;
+    uint8_t buffer[16];
+    if(cmr_i2cTX(&bmb_i2c, BMS_ADC_ADDR, &configByte, 1, I2C_TIMEOUT) != 0) {
+        return false;
+    }
+    if(cmr_i2cRX(&bmb_i2c, BMS_ADC_ADDR, buffer, 16, I2C_TIMEOUT) != 0) {
+        return false;
+    }   
+    for(int i = 0; i < 16; i+=2) {
+        adcResponse[i] = (buffer[i] << 8) | (buffer[i+1])
+    }
+    return true;
 }

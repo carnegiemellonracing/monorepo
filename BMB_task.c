@@ -201,7 +201,7 @@ void vBMBSampleTask(void *pvParameters) {
        //***UART: REPLACE WITH MUX SWITCHING AND I2C Code
 
        
-       uint16_t BMBADCResponse[8];
+       int16_t BMBADCResponse[8];
        
        
 
@@ -212,7 +212,7 @@ void vBMBSampleTask(void *pvParameters) {
         
         for(uint8_t i = 0; i < NUM_BMBS; i++) {
             for(uint8_t j = 0; j < 2; j++) {
-                if(!switchI2CMux(j)) {
+                if(!switchI2CMux(j, i)) {
                     BMBTimeoutCount[i] = BMB_TIMEOUT;
                 }
                 for(int channel = 0; channel < 3; channel++) {
