@@ -81,8 +81,9 @@ typedef enum {
     CANRX_CDL_BROADCAST,        /**< @brief CDL broadcast. */
     CANRX_SBG_STATUS_3,            /**< @brief INS Status 3 */
 	CANRX_EMD_VALUES,			/**< @brief EMD Values for HV voltages and current */
-    CANRX_LEN,     /**< @brief Number of periodic CAN messages. */
-    CANRX_VSM_SENSORS
+    CANRX_VSM_SENSORS,
+    CANRX_LEN     /**< @brief Number of periodic CAN messages. */
+   
 } canRX_t;
 
 extern cmr_canRXMeta_t canRXMeta[];

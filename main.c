@@ -117,6 +117,7 @@ int main(void) {
     gpioInit();
     canInit();
     adcInit();
+    sensorsInit();
     tftInit();
     ledStripInit();
 
