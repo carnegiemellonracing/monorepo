@@ -226,7 +226,7 @@ void vBMBSampleTask(void *pvParameters) {
                     //TODO: ADD VOLTAGE FUNCTION
                     
                     if(channel == 0) {
-                        BMBData[i].cellVoltages[(j*10)+0] = BMBADCResponse[0];
+                        BMBData[i].cellVoltages[(j*10)+0] = ((BMBADCResponse[0]/1023.0)*4.096);
                         BMBData[i].cellVoltages[(j*10)+4] = BMBADCResponse[1];
                         BMBData[i].cellVoltages[(j*10)+7] = BMBADCResponse[2];
                     }
@@ -246,7 +246,7 @@ void vBMBSampleTask(void *pvParameters) {
                     if(channel < 3) {
                         for(int temps = 0; temps < 5; temps++) {
                             //TODO: ADD TEMP LUT
-                            BMBData[i].cellTemperatures[(15*j)+(temps*5)+channel] = BMBADCResponse[temps+3];
+                            BMBData[i].cellTemperatures[(15*j)+(temps*5)+channel] = lutTemp((uint16_t)BMBADCResponse[temps+3]);
                         }
                     }
                     
