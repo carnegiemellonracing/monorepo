@@ -310,6 +310,7 @@ void vSetStateTask(void *pvParameters) {
     cmr_gpioWrite(GPIO_CLEAR_FAULT_L, 1);
     cmr_gpioWrite(GPIO_AIR_POSITIVE_EN, 1);
     cmr_gpioWrite(GPIO_AIR_NEGATIVE_EN, 1);
+    cmr_gpioWrite(GPIO_AMS_EN_L, 0); // set power on for the HVC
 
     // See https://drive.google.com/file/d/1xey3It43X-4tRBvnWUMSgUpSeBYo-Vj6/view?usp=sharing
     // Executes infinitely with defined period using vTaskDelayUntil

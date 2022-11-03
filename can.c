@@ -315,9 +315,8 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 }
 
 static void sendHVCPackVoltage(void) {
-    //int32_t bVolt = getBattMillivolts();
+    int32_t bVolt = getBattMillivolts();
     int32_t hvVolt = getHVvolts();
-    int bVolt = hvVolt; // TODO: Gustav change this back
 
     cmr_canHVCPackVoltage_t HVCPackVoltage = {
         .battVoltage_mV = bVolt,
