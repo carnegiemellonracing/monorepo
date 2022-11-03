@@ -22,6 +22,12 @@ static int16_t linearTemp(uint16_t ADC_lt);
 //Fill in data to this array
 static BMB_Data_t BMBData[NUM_BMBS];
 
+//takes in adc output and cell index to get voltage value
+static int16_t adcOutputToVoltage(uint16_t ADC_val, int cell) {
+    const float resistorRatios[10];
+    return ((ADC_val/1023.0)*4096) * resistorRatios[cell % 10];
+}
+
 // Returns temperature in 1/10th degC given ADC
 // using LUT interpolation from the transfer function.
 // See drive doc "18e CMR BMS Temperature Math" for LUT
@@ -212,21 +218,28 @@ void vBMBSampleTask(void *pvParameters) {
         
         for(uint8_t i = 0; i < NUM_BMBS; i++) {
             for(uint8_t j = 0; j < 2; j++) {
-                if(!switchI2CMux(j, i)) {
+                if(!i2c_enableI2CMux(j, i)) {
                     BMBTimeoutCount[i] = BMB_TIMEOUT;
                 }
+                for(int k = 0; k < NUM_BMBS; k++) {
+                    if(k!=i) {
+                        if(!i2c_disableI2CMux(k)) {
+                            BMBTimeoutCount[k] = BMB_TIMEOUT;
+                        }
+                    }
+                }
                 for(int channel = 0; channel < 3; channel++) {
-                    if(!selectMuxChannel(channel)) {
+                    if(!i2c_select4MuxChannel(channel)) {
                         BMBTimeoutCount[i] = BMB_TIMEOUT;
                     }
-                    if(!scan_adc(BMBADCResponse)) {
+                    if(!i2c_scanADC(BMBADCResponse)) {
                         BMBTimeoutCount[i] = BMB_TIMEOUT;
                     }
 
                     //TODO: ADD VOLTAGE FUNCTION
                     
                     if(channel == 0) {
-                        BMBData[i].cellVoltages[(j*10)+0] = ((BMBADCResponse[0]/1023.0)*4.096);
+                        BMBData[i].cellVoltages[(j*10)+0] = BMBADCResponse[0];
                         BMBData[i].cellVoltages[(j*10)+4] = BMBADCResponse[1];
                         BMBData[i].cellVoltages[(j*10)+7] = BMBADCResponse[2];
                     }
@@ -253,109 +266,23 @@ void vBMBSampleTask(void *pvParameters) {
                 }
             }
         }
-        
-       /*
-       if (uartRetv != UART_SUCCESS) {
-           // ERROR CASE: We could not send the sample command
-           BMBTimeoutCount[BMBIndex]++;
-       }
-       */
-
-       // taskEXIT_CRITICAL();
-
-       // Retrieve the channel data from the device in question
-        //taskENTER_CRITICAL();
-       //uartRetv = slave_uart_sampleDeviceChannels(BMBIndex, &channelResponse);
-
 
         taskEXIT_CRITICAL();
-/*
-       //***CHANGE UART CHECK TO I2C Check
-       if(uartRetv != UART_SUCCESS ||
-          (channelResponse.frameInit->responseBytes+1 <
-          2*(VSENSE_CHANNELS_PER_BMB+TSENSE_CHANNELS_PER_MESSAGE))) {
-           // ERROR CASE: We could not sample the BMB's channels correctly
-           // or the response did not include the expect number of channels
 
-           // TODO: add MIA checking for each BMB
-           BMBTimeoutCount[BMBIndex]++;
-       } else {
-           BMBTimeoutCount[BMBIndex] = 0;
-           // Retrieve each 16 bit cell voltage reading from the response
-           for(uint8_t vChannel = 0; vChannel < VSENSE_CHANNELS_PER_BMB; ++vChannel) {
+        //loop through all cells and get adc 
+        for(int i = 0; i < NUM_BMBS; i++) {
+            for(int j = 0; j < 20; j++) {
+                BMBData[i].cellVoltages[j] = adcOutputToVoltage(BMBData[i].cellVoltages[j], j);
+                //find difference between current TOTAL cell voltage - previous TOTAL cell voltage
+                if(j != 0 || j != 10) {
+                    BMBData[i].cellVoltages[j] = BMBData[i].cellVoltages[j]-BMBData[i].cellVoltages[j-1];
+                }
+            }
+        }
 
-               //**REPLACE WITH I2C
-               //uint32_t readAdcValue = (((uint32_t)channelResponse.data[2*vChannel])<<8) |
-                                       //((uint32_t)channelResponse.data[2*vChannel+1]);
+       
 
-               //This is backwards for some reason.
-               uint32_t volt = (5000*readAdcValue)/65535;
-               float mult = 0.7f;
-               BMBData[BMBIndex].cellVoltages[VSENSE_CHANNELS_PER_BMB - vChannel - 1] = mult * BMBData[BMBIndex].cellVoltages[VSENSE_CHANNELS_PER_BMB - vChannel - 1] + (1.0f-mult) * volt;
-           }
-
-           // Avg out cell 0 and cell 1
-           uint16_t avg = BMBData[BMBIndex].cellVoltages[0] + BMBData[BMBIndex].cellVoltages[1];
-           avg /= 2;
-           BMBData[BMBIndex].cellVoltages[0] = avg;
-           BMBData[BMBIndex].cellVoltages[1] = avg;
-
-
-           // Retrieve each 16 bit temperature reading from the response
-           for(uint8_t tChannel = 0; tChannel < TSENSE_CHANNELS_PER_MESSAGE; ++tChannel) {
-               uint32_t readAdcValue = (((uint32_t)channelResponse.data[2*tChannel + 2*VSENSE_CHANNELS_PER_BMB])<<8) |
-                                       ((uint32_t)channelResponse.data[2*tChannel+2*VSENSE_CHANNELS_PER_BMB+1]);
-               uint8_t logicalThermIndex = TSENSE_CHANNELS_PER_MESSAGE - 1 - tChannel;
-
-               // Temps indexed 4 to 11 are muxed
-               // TODO: make #define
-               if (BMBActivityLEDEnable && logicalThermIndex >= 4) {
-                   logicalThermIndex = logicalThermIndex + 4;
-               }
-
-               //This is backwards for some reason.
-               BMBData[BMBIndex].cellTemperatures[logicalThermIndex] = lutTemp((uint16_t)readAdcValue);
-
-               // TODO set error conditions for bad temps
-           }
-       }
-*/
-       uint16_t averageVoltage = 0;
-       uint16_t cellsToBalance = 0x0000;
-
-       for(uint16_t i = 0; i < VSENSE_CHANNELS_PER_BMB; i++) {
-           averageVoltage += BMBData[BMBIndex].cellVoltages[i];
-       }
-//        if(BMBIndex == 5){
-//        	int a = 0;
-//        }
-
-       averageVoltage = averageVoltage/VSENSE_CHANNELS_PER_BMB;
-
-       for(uint16_t i = 0; i < VSENSE_CHANNELS_PER_BMB; i++) {
-           if(BMBData[BMBIndex].cellVoltages[i] - averageVoltage > 50){
-               cellsToBalance |= 1 << i;
-           }
-       }
-
-       // taskENTER_CRITICAL();
-       if(getState() == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE){
-           //***CHANGE TO I2C
-           //slave_uart_sendBalanceCmd(cellsToBalance, BMBIndex);
-       }
-       else{
-           //***CHANGE TO I2C
-           //slave_uart_sendBalanceCmd(0x0000, BMBIndex);
-       }
-       // taskEXIT_CRITICAL();
-
-
-       if (BMBIndex >= NUM_BMBS-1) {
-           BMBIndex = 0;
-			BMBActivityLEDEnable = !BMBActivityLEDEnable;
-       } else {
-           ++BMBIndex;
-       }
+       //Add cell balancing here
 
 
        vTaskDelayUntil(&xLastWakeTime, 5);
