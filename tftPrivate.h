@@ -42,6 +42,7 @@ typedef enum {
     TFT_ADDR_VSYNC0 = 0x30204C,     /**< @brief Vertical sync time 0. */
     TFT_ADDR_VSYNC1 = 0x302050,     /**< @brief Vertical sync time 1. */
     TFT_ADDR_SWIZZLE = 0x302064,    /**< @brief RGB signal swizzle. */
+    TFT_ADDR_DITHER = 0x302060,     /**< @brief RGB signal dithering. */
     TFT_ADDR_CSPREAD = 0x302068,    /**< @brief Clock spreading enable. */
     TFT_ADDR_HSIZE = 0x302034,      /**< @brief Horizontal pixel count. */
     TFT_ADDR_VSIZE = 0x302048,      /**< @brief Vertical pixel count. */
