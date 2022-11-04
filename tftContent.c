@@ -38,28 +38,40 @@ const tftContent_t tftContent_startup = {
     .data = tftContent_startup_data
 };
 
-/** @brief Roboto Mono, bold, 72-pt, 4-bit font data. */
-static const uint8_t tftContent_RobotoMono_Bold_72_L4_data[] = {
-#include <DIM-ESE/content/RobotoMono-Bold_72_L4.binh>
+/** @brief Roboto Mono, bold, large font data. */
+static const uint8_t tftContent_RobotoMono_Large_data[] = {
+#include <DIM-ESE/fonts/RobotoMono-Bold_Large.binh>
 };
 
-/** @brief Roboto Mono, bold, 72-pt, 4-bit font. */
-const tftContent_t tftContent_RobotoMono_Bold_72_L4 = {
-    .len = sizeof(tftContent_RobotoMono_Bold_72_L4_data),
-    .addr = 1000,
-    .data = tftContent_RobotoMono_Bold_72_L4_data
+/** @brief Roboto Mono, bold, large font. */
+const tftContent_t tftContent_RobotoMono_Large = {
+    .len = sizeof(tftContent_RobotoMono_Large_data),
+    .addr = 0,
+    .data = tftContent_RobotoMono_Large_data
 };
 
-/** @brief Roboto Mono, bold, 40-pt, 4-bit font data. */
-static const uint8_t tftContent_RobotoMono_Bold_40_L4_data[] = {
-#include <DIM-ESE/content/RobotoMono-Bold_40_L4.binh>
+/** @brief Roboto Mono, bold, medium font data. */
+static const uint8_t tftContent_RobotoMono_Medium_data[] = {
+#include <DIM-ESE/fonts/RobotoMono-Bold_Medium.binh>
 };
 
-/** @brief Roboto Mono, bold, 40-pt, 4-bit font. */
-const tftContent_t tftContent_RobotoMono_Bold_40_L4 = {
-    .len = sizeof(tftContent_RobotoMono_Bold_40_L4_data),
-    .addr = 45192,
-    .data = tftContent_RobotoMono_Bold_40_L4_data
+/** @brief Roboto Mono, bold, medium font. */
+const tftContent_t tftContent_RobotoMono_Medium = {
+    .len = sizeof(tftContent_RobotoMono_Medium_data),
+    .addr = 98188,
+    .data = tftContent_RobotoMono_Medium_data
+};
+
+/** @brief Roboto Mono, bold, small font data. */
+static const uint8_t tftContent_RobotoMono_Small_data[] = {
+#include <DIM-ESE/fonts/RobotoMono-Bold_Small.binh>
+};
+
+/** @brief Roboto Mono, bold, small font. */
+const tftContent_t tftContent_RobotoMono_Small = {
+    .len = sizeof(tftContent_RobotoMono_Small_data),
+    .addr = 171296,
+    .data = tftContent_RobotoMono_Small_data
 };
 
 /**

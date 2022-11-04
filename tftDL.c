@@ -55,8 +55,9 @@ static uint32_t tftDL_errorData[] = {
 /** @brief Packets to send to the DL on error.
  * See datasheet */
 static const tftContent_t *tftDL_errorContent[] = {
-    &tftContent_RobotoMono_Bold_72_L4,
-    &tftContent_RobotoMono_Bold_40_L4,
+    &tftContent_RobotoMono_Large,
+    &tftContent_RobotoMono_Medium,
+    &tftContent_RobotoMono_Small,
 };
 
 /** @brief Complete data required to draw the error screen.
@@ -74,11 +75,12 @@ static uint32_t tftDL_configData[] = {
 #include <DIM-ESE/config.rawh>
 };
 
-/** @brief Packets to send to the DL on error.
+/** @brief Packets to send to the DL on config.
  * See datasheet */
 static const tftContent_t *tftDL_configContent[] = {
-    &tftContent_RobotoMono_Bold_72_L4,
-    &tftContent_RobotoMono_Bold_40_L4,
+    &tftContent_RobotoMono_Large,
+    &tftContent_RobotoMono_Medium,
+    &tftContent_RobotoMono_Small,
 };
 
 /** @brief Complete data required to draw the error screen.
@@ -100,8 +102,9 @@ static uint32_t tftDL_RTDData[] = {
  * ready-to-drive screen.
  * Exposed to interface consumers. */
 static const tftContent_t *tftDL_RTDContent[] = {
-    &tftContent_RobotoMono_Bold_72_L4,
-    &tftContent_RobotoMono_Bold_40_L4,
+    &tftContent_RobotoMono_Large,
+    &tftContent_RobotoMono_Medium,
+    &tftContent_RobotoMono_Small,
 };
 
 /** @brief Complete data required to draw the
