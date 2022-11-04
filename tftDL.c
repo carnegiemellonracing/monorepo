@@ -376,15 +376,13 @@ void tftDL_errorUpdate(
         "%2dV", err->glvVoltage_V
     );
 
-
-
     tftDL_showErrorState(ESE_PTCp_COLOR, err->ptcTimeout);
     tftDL_showErrorState(ESE_PTCf_COLOR, err->ptcTimeout);
     tftDL_showErrorState(ESE_APC_COLOR, err->apcTimeout);
     tftDL_showErrorState(ESE_HVC_COLOR, err->hvcTimeout);
     tftDL_showErrorState(ESE_VSM_COLOR, err->vsmTimeout);
-    tftDL_showErrorState(ESE_VSM_COLOR, err->vsmTimeout);
-    tftDL_showErrorState(ESE_VSM_COLOR, err->vsmTimeout);
+    tftDL_showErrorState(ESE_FSM_COLOR, err->fsmTimeout);
+    tftDL_showErrorState(ESE_CDC_COLOR, err->cdcTimeout);
     tftDL_showErrorState(ESE_OVERVOLT_COLOR, err->overVolt);
     tftDL_showErrorState(ESE_UNDERVOLT_COLOR, err->underVolt);
     tftDL_showErrorState(ESE_HVC_OVERTEMP_COLOR, err->hvcoverTemp);
