@@ -48,7 +48,7 @@ SG_ VSM_ERR_latchBSPD : 24|1@1+ (1,0) [0|1] "" Vector__XXX
 
 BO_ 512 VSM_Sensors: 6 Vector__XXX
 SG_ VSM_brakePressureRear : 0|16@1+ (1,0) [0|65535] "PSI" Vector__XXX
-SG_ VSM_hallEffect : 16|16@1- (1,0) [-32768|32767] "A" Vector__XXX
+SG_ VSM_hallEffect : 16|16@1- (1,0) [-32768|32767] "cA" Vector__XXX
 SG_ VSM_safetyIn : 32|8@1+ (0.1,0) [0|25.5] "V" Vector__XXX
 SG_ VSM_safetyOut : 40|8@1+ (0.1,0) [0|25.5] "V" Vector__XXX
 
