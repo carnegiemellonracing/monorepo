@@ -594,7 +594,6 @@ void tftInit(void) {
         .DualFlash = QSPI_DUALFLASH_DISABLE
     };
 
-    // TODO: Update pin config
     const cmr_qspiPinConfig_t pins = {
         .io = {
             { .port = GPIOA, .pin = GPIO_PIN_6 },
@@ -603,7 +602,7 @@ void tftInit(void) {
             { .port = GPIOC, .pin = GPIO_PIN_5 }
         },
         .sck = { .port = GPIOB, .pin = GPIO_PIN_1 },
-        .nss = { .port = GPIOC, .pin = GPIO_PIN_11 }
+        .nss = { .port = GPIOC, .pin = GPIO_PIN_1 }
     };
 
     cmr_qspiInit(
