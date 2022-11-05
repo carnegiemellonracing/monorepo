@@ -146,14 +146,9 @@ void vBMBSampleTask(void *pvParameters) {
 						}
 					}
 
-<<<<<<< HEAD
-				}
-			}
-		}
 		if (!(i2c_disableI2CMux(BMBIndex))) {
 			BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
 		}
-=======
         taskEXIT_CRITICAL();
         // increment the counter or reset if we just flashed
         if (BMBFlashCounter >= LED_FLASH_COUNT) {
@@ -161,9 +156,6 @@ void vBMBSampleTask(void *pvParameters) {
         } else {
             BMBFlashCounter++;
         }
->>>>>>> 3754772a58e5751a42c8e580030c98d20d3a18f8
-
-		taskEXIT_CRITICAL();
 
 		uint32_t totalVoltage = 0;
 
