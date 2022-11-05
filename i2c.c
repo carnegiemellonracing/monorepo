@@ -9,20 +9,27 @@
 // current config of the selectIO (cause we don't want to overwrite the top LED bit)
 uint8_t selectIOCurrent = 0x0;
 
-void i2cInit(void) {
-	cmr_i2cInit(&bmb_i2c, I2C1, I2C_CLOCK_HI, 0, // 100kHz limited by the PCA9536 TODO: Check if own address should be 0
-			GPIOB, GPIO_PIN_8, // clock
-			GPIOB, GPIO_PIN_9); // data
+cmr_i2c_t bmb_i2c;
 
-	for (int bmb = 0; bmb < NUM_BMBS; bmb++) {
-		for (int side = 0; side < 2; side++) {
-			i2c_enableI2CMux(bmb, side);
-			i2c_pullUpCellBalanceIOExpander(bmb);
-			i2c_configSelectMux();
-			i2c_configADC();
-		}
-		i2c_disableI2CMux(bmb);
-	}
+bool i2cInit(void) {
+    cmr_i2cInit(&bmb_i2c, I2C1,
+    		I2C_CLOCK_HI, 0, // 100kHz limited by the PCA9536 TODO: Check if own address should be 0
+                GPIOB, GPIO_PIN_8, // clock
+                GPIOB, GPIO_PIN_9); // data
+
+    for (int bmb = 0; bmb < I2C_NUM_BMBS; bmb++) {
+        for (int side = 0; side < 2; side++) {
+            if (!i2c_enableI2CMux(bmb, side))
+            	return false;
+            if (!i2c_configSelectMux())
+            	return false;
+            if (!i2c_configADC())
+            	return false;
+        }
+        if (!i2c_disableI2CMux(bmb))
+        	return false;
+    }
+    return true;
 }
 
 // This verifies everything looks like it works
@@ -55,58 +62,52 @@ void i2cInit(void) {
 /* } */
 
 bool i2c_enableI2CMux(uint8_t bmb, uint8_t side) {
-	configASSERT(side <= 1);
-	configASSERT(bmb < NUM_BMBS);
-	// bit 2 is enable bit, bit 1 & 0 is the side (either 00 or 01)
-	uint8_t data = 0x4 | side;
-	if (cmr_i2cTX(&bmb_i2c, bms_mux_address[bmb], &data, 1, I2C_TIMEOUT) != 0) {
-		return false;
-	}
-	return true;
+    // bit 2 is enable bit, bit 1 & 0 is the side (either 00 or 01)
+    uint8_t data = 0x4 | side;
+    if(cmr_i2cTX(&bmb_i2c, bms_mux_address[bmb], &data, 1, I2C_TIMEOUT) != 0) {
+        return false;
+    }
+    return true;
 }
 
 bool i2c_disableI2CMux(uint8_t bmb) {
-	configASSERT(bmb < NUM_BMBS);
-	// bit 2 is enable bit
-	uint8_t data = 0x0;
-	if (cmr_i2cTX(&bmb_i2c, bms_mux_address[bmb], &data, 1, I2C_TIMEOUT) != 0) {
-		return false;
-	}
-	return true;
+    // bit 2 is enable bit
+    uint8_t data = 0x0;
+    if(cmr_i2cTX(&bmb_i2c, bms_mux_address[bmb], &data, 1, I2C_TIMEOUT) != 0) {
+        return false;
+    }
+    return true;
 }
 
 bool i2c_configSelectMux() {
-	// select control register, set them all to output
-	uint8_t data[2] = { 0x3, 0x00 };
-	if (cmr_i2cTX(&bmb_i2c, BMS_SELECT_IO_ADDR, &data, 2, I2C_TIMEOUT) != 0) {
-		return false;
-	}
-	return true;
+    // select control register, set them all to output
+    uint8_t data[2] = {0x3, 0x00};
+    if (cmr_i2cTX(&bmb_i2c, BMS_SELECT_IO_ADDR, (uint8_t*)&data, 2, I2C_TIMEOUT) != 0) {
+        return false;
+    }
+    return true;
 }
 
 bool i2c_select4MuxChannel(uint8_t channel) {
-	configASSERT(channel < 4);
-	// 0x1 is output port, we set select lines of mux
-	// mux only uses last 2 bits, the top 4th bit is the LED blinking
-	// save top 2 bits, overwrite bottom 2 bits
-	selectIOCurrent = (selectIOCurrent & 0xC) | channel;
-	uint8_t outData[2] = { 0x1, selectIOCurrent };
-	if (cmr_i2cTX(&bmb_i2c, BMS_SELECT_IO_ADDR, &outData, 2, I2C_TIMEOUT)
-			!= 0) {
-		return false;
-	}
-	return true;
+    // 0x1 is output port, we set select lines of mux
+    // mux only uses last 2 bits, the top 4th bit is the LED blinking
+    // save top 2 bits, overwrite bottom 2 bits
+    selectIOCurrent = (selectIOCurrent & 0xC) | channel;
+    uint8_t outData[2] = {0x1, selectIOCurrent};
+    if(cmr_i2cTX(&bmb_i2c, BMS_SELECT_IO_ADDR, (uint8_t*)&outData, 2, I2C_TIMEOUT) != 0) {
+        return false;
+    }
+    return true;
 }
 
 bool i2c_selectMuxBlink() {
-	// flip top 2 bits, don't flip bottom 2 bits
-	selectIOCurrent = (~selectIOCurrent & 0xC) | (selectIOCurrent & 0x3);
-	uint8_t outData[2] = { 0x1, selectIOCurrent };
-	if (cmr_i2cTX(&bmb_i2c, BMS_SELECT_IO_ADDR, &outData, 2, I2C_TIMEOUT)
-			!= 0) {
-		return false;
-	}
-	return true;
+    // flip top 2 bits, don't flip bottom 2 bits
+    selectIOCurrent = (~selectIOCurrent & 0xC) | (selectIOCurrent & 0x3);
+    uint8_t outData[2] = {0x1, selectIOCurrent};
+    if(cmr_i2cTX(&bmb_i2c, BMS_SELECT_IO_ADDR, (uint8_t*)&outData, 2, I2C_TIMEOUT) != 0) {
+        return false;
+    }
+    return true;
 }
 
 bool i2c_configADC() {
