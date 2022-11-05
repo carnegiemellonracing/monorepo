@@ -76,16 +76,9 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         errorFlags |= CMR_CAN_HVC_ERROR_LV_UNDERVOLT;
     }
 
-    if(cmr_gpioRead(GPIO_BMB_FAULT_L) == false) {
-        // E2
-        // BMB fault pin is asserted (low), could indicate BMB disconnected
-        // or hardware UV/OV condition.
-        errorFlags |= CMR_CAN_HVC_ERROR_BMB_FAULT;
-    }
-
     // Cut relay power if we have an error
     if (errorFlags != CMR_CAN_HVC_ERROR_NONE) {
-        // TODO - Now Set in HW is this needed??
+        cmr_gpioWrite(GPIO_BMB_FAULT_L, 0);
     }
     errorRegister = errorFlags;
     

@@ -32,27 +32,27 @@ void i2cInit(void) {
 // bits 0 indicates mux failure, 1 indicates 4 IO expander
 // failure, 2 indicates ADC failure, 3 indicates 9 IO expander
 // failure
-uint16_t i2cVerifyConfigChain(void) {
-    for (int bmb = 0; bmb < NUM_BMBS; bmb++) {
-        uint8_t data = 0;
-        if (cmr_i2cRX(&bmb_i2c, bms_mux_address[bmb], &data,
-                  1, I2C_TIMEOUT) != 0) {
-            return ((uint16_t)(i)) << 8;
-        }
-        if (data != 0x0) {
-            return ((uint16_t)(i)) << 8;
-        }
+/* uint16_t i2cVerifyConfigChain(void) { */
+/*     for (int bmb = 0; bmb < NUM_BMBS; bmb++) { */
+/*         uint8_t data = 0; */
+/*         if (cmr_i2cRX(&bmb_i2c, bms_mux_address[bmb], &data, */
+/*                   1, I2C_TIMEOUT) != 0) { */
+/*             return ((uint16_t)(i)) << 8; */
+/*         } */
+/*         if (data != 0x0) { */
+/*             return ((uint16_t)(i)) << 8; */
+/*         } */
 
-        for (int side = 0; side < 2; side++) {
-            // verified mux is reset to 0
-            // now enable the mux, check ADC and GPIO per side
-            i2c_enableI2CMux(bmb, side);
-            // now verify the 4 IO expander
-            //if (
-        }
-    }
-    return 0;
-}
+/*         for (int side = 0; side < 2; side++) { */
+/*             // verified mux is reset to 0 */
+/*             // now enable the mux, check ADC and GPIO per side */
+/*             i2c_enableI2CMux(bmb, side); */
+/*             // now verify the 4 IO expander */
+/*             if */ 
+/*         } */
+/*     } */
+/*     return 0; */
+/* } */
 
 bool i2c_enableI2CMux(uint8_t bmb, uint8_t side) {
     configASSERT(side <= 1);
