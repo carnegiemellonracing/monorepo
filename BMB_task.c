@@ -8,7 +8,8 @@
 #include "BMB_task.h"
 #include "gpio.h"
 #include "state_task.h"
-#include "idc.h"
+#include "i2c.h"
+#include <stdbool.h>
 
 extern volatile int BMBTimeoutCount[NUM_BMBS];
 
@@ -89,92 +90,7 @@ void BMBInit() {
     // Period
     const TickType_t xPeriod = 1000 / BMB_SAMPLE_TASK_RATE;		// In ticks (ms)
     #define MAXRETRY 10
-    int retryCount;
-   for (retryCount = 0; retryCount < MAXRETRY; retryCount++) {
-       //cmr_gpioWrite(GPIO_BMB_POWER_ENABLE_L, 1);
-       if (retryCount >= MAXRETRY - 1) {
-           cmr_panic("Can't initialize BMBs");
-       }
-
-       HAL_Delay(1000);
-
-       // Enable BMB IO power (active low)
-       //cmr_gpioWrite(GPIO_BMB_POWER_ENABLE_L, 0);
-
-       // Wake BMB0
-       // NOTE: This MUST happen immediately after power on
-       //cmr_gpioWrite(GPIO_BMB_WAKE_PIN, 1);
-       // Wait then clear wake signal
-       // BMB requires a pulse for wake
-
-
-
-       // Initialize the slave UART interface
-       // taskENTER_CRITICAL();
-
-
-       //***UART HAVE TO CHANGE***
-
-
-       /*
-       cmr_uart_result_t retv = slave_uart_autoAddress();
-       // taskEXIT_CRITICAL();
-
-       if (retv != UART_SUCCESS) {
-           // ERROR CASE: Could not auto address the slave boards
-           setAllBMBsTimeout();
-           continue;
-       }
-
-       // vTaskDelayUntil(&xLastWakeTime, xPeriod);
-
-       retv = slave_uart_configureChannels();
-       if (retv != UART_SUCCESS) {
-           // ERROR CASE: The slaves were not able to configure their channels and OV/UV thresholds
-           setAllBMBsTimeout();
-           continue;
-       }
-
-       // Set communications timeout
-       retv = slave_uart_broadcast_setBMBTimeout();
-       if (retv != UART_SUCCESS) {
-           // ERROR CASE: The slaves were not able to configure their channels and OV/UV thresholds
-           setAllBMBsTimeout();
-           continue;
-       }
-*/
-       // vTaskDelayUntil(&xLastWakeTime, xPeriod);
-
-       // Initialize the slave UART sampling and GPIO per board
-       for(int8_t boardNum = TOP_SLAVE_BOARD; boardNum >= 0; --boardNum) {
-           // taskENTER_CRITICAL();
-
-           //***UART: REPLACE WITH I2C
-
-           //retv = slave_uart_configureSampling(boardNum);
-           if (retv != UART_SUCCESS) {
-               // ERROR CASE: Could not configure sampling for slave boards
-               BMBTimeoutCount[boardNum] = BMB_TIMEOUT;
-               // taskEXIT_CRITICAL();
-               continue;
-           }
-
-           // Configure GPIO as outputs for analog mux select line and LED
-
-           //***UART: REPLACE WITH I2C
-           //retv = slave_uart_configureGPIODirection(BMB_GPIO_MUX_PIN | BMB_GPIO_LED_PIN, boardNum);
-           // taskEXIT_CRITICAL();
-
-           if (retv != UART_SUCCESS) {
-               // ERROR CASE: The slaves were not able to configure the AFE
-               BMBTimeoutCount[boardNum] = BMB_TIMEOUT;
-               continue;
-           }
-           // vTaskDelayUntil(&xLastWakeTime, xPeriod);
-       }
-
-       break;
-   }
+    i2cInit();
 }
 
 
@@ -186,7 +102,6 @@ void vBMBSampleTask(void *pvParameters) {
    // Index of the BMB we're currently sampling
    uint8_t BMBIndex = 0;
    // Whether or not select on the analog mux is asserted
-   bool BMBActivityLEDEnable = false;
 
    // Previous wake time pointer
    TickType_t xLastWakeTime = xTaskGetTickCount();
@@ -195,38 +110,16 @@ void vBMBSampleTask(void *pvParameters) {
 
    for(;;) {
 
-       //***CHANGE TO i2C
-       
-
-       // Sampling method #2: BQ Protocol p12
-
-       // Tell all BMBs to sample their channels and store the results locally
-        //taskENTER_CRITICAL();
-       // Set the analog mux to sample the relevant half of the thermistors and set the status LED
-
-       //***UART: REPLACE WITH MUX SWITCHING AND I2C Code
-
        
        int16_t BMBADCResponse[8];
        
-       
-
-       // Sample all analog channels
-
-       //***UART: REPLACE WITH MUX SWITCHING AND I2C Code
+       //Sample BMBs
        taskENTER_CRITICAL();
         
         for(uint8_t i = 0; i < NUM_BMBS; i++) {
             for(uint8_t j = 0; j < 2; j++) {
                 if(!i2c_enableI2CMux(j, i)) {
                     BMBTimeoutCount[i] = BMB_TIMEOUT;
-                }
-                for(int k = 0; k < NUM_BMBS; k++) {
-                    if(k!=i) {
-                        if(!i2c_disableI2CMux(k)) {
-                            BMBTimeoutCount[k] = BMB_TIMEOUT;
-                        }
-                    }
                 }
                 for(int channel = 0; channel < 3; channel++) {
                     if(!i2c_select4MuxChannel(channel)) {
@@ -236,8 +129,6 @@ void vBMBSampleTask(void *pvParameters) {
                         BMBTimeoutCount[i] = BMB_TIMEOUT;
                     }
 
-                    //TODO: ADD VOLTAGE FUNCTION
-                    
                     if(channel == 0) {
                         BMBData[i].cellVoltages[(j*10)+0] = BMBADCResponse[0];
                         BMBData[i].cellVoltages[(j*10)+4] = BMBADCResponse[1];
@@ -253,7 +144,7 @@ void vBMBSampleTask(void *pvParameters) {
                         BMBData[i].cellVoltages[(j*10)+6] = BMBADCResponse[1];
                         BMBData[i].cellVoltages[(j*10)+9] = BMBADCResponse[2];
                     }
-                    else if(channel == 4) {
+                    else if(channel == 3) {
                         BMBData[i].cellVoltages[(j*10)+4] = BMBADCResponse[0];
                     }
                     if(channel < 3) {
@@ -262,14 +153,17 @@ void vBMBSampleTask(void *pvParameters) {
                             BMBData[i].cellTemperatures[(15*j)+(temps*5)+channel] = lutTemp((uint16_t)BMBADCResponse[temps+3]);
                         }
                     }
-                    
+
                 }
+            }
+            if(!(i2c_disableI2CMux(i))) {
+                BMBTimeoutCount[i] = BMB_TIMEOUT;
             }
         }
 
         taskEXIT_CRITICAL();
 
-        //loop through all cells and get adc 
+        //loop through all cells and turn adc output to voltage
         for(int i = 0; i < NUM_BMBS; i++) {
             for(int j = 0; j < 20; j++) {
                 BMBData[i].cellVoltages[j] = adcOutputToVoltage(BMBData[i].cellVoltages[j], j);

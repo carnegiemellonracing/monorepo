@@ -10,6 +10,7 @@
 #define I2C_H
 
 #include <CMR/i2c.h>
+#include <stdbool.h>
 
 #define NUM_BMBS 8
 // I2c addresses of muxes 
@@ -19,10 +20,10 @@ static const uint16_t bms_mux_address[NUM_BMBS] = {
 };
 
 // https://www.mouser.com/datasheet/2/302/PCA9536-1127758.pdf
-#define BMS_SELECT_IO_ADDR 0x41;
+#define BMS_SELECT_IO_ADDR 0x41
 // https://www.mouser.com/datasheet/2/256/MAX11606-MAX11611-1514405.pdf
-#define BMS_ADC_ADDR 0x33;
-#define BMS_CELL_BALANCE_IO_ADDR 0x50; // TODO: Change this, variable from 0x50-0x57
+#define BMS_ADC_ADDR 0x33
+#define BMS_CELL_BALANCE_IO_ADDR 0x50 // TODO: Change this, variable from 0x50-0x57
 
 #define I2C_TIMEOUT 50
 

@@ -11,6 +11,7 @@
 /* #include "stm32f413-drivers/CMR/can_types.h" */
 #include <CMR/can_types.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #define NUM_BMBS 16
 #define BMB_GPIO_MUX_PIN 0b000001

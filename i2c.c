@@ -4,13 +4,14 @@
 */
 
 #include "i2c.h"
+#include <stdbool.h>
 
 // current config of the selectIO (cause we don't want to overwrite the top LED bit)
 uint8_t selectIOCurrent = 0x0;
 
 void i2cInit(void) {
     cmr_i2cInit(&bmb_i2c, I2C1,
-                400000, 0, // 100kHz limited by the PCA9536 TODO: Check if own address should be 0
+    		I2C_CLOCK_HI, 0, // 100kHz limited by the PCA9536 TODO: Check if own address should be 0
                 GPIOB, GPIO_PIN_8, // clock
                 GPIOB, GPIO_PIN_9); // data
 
@@ -114,6 +115,7 @@ bool i2c_configADC() {
     uint8_t configByte = 0x1F;
     if(cmr_i2cTX(&bmb_i2c, BMS_ADC_ADDR, &setupByte, 1, I2C_TIMEOUT) != 0) {
         return false;
+    }
     if(cmr_i2cTX(&bmb_i2c, BMS_ADC_ADDR, &configByte, 1, I2C_TIMEOUT) != 0) {
         return false;
     }
