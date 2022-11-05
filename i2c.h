@@ -18,7 +18,7 @@
 static const uint16_t bms_mux_address[I2C_NUM_BMBS] = {
     0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77
 };
-static const uint16_t bms_cell_balancer_addresses[NUM_BMBS] = {
+static const uint16_t bms_cell_balancer_addresses[I2C_NUM_BMBS] = {
     0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57
 };
 

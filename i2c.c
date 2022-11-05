@@ -142,6 +142,9 @@ bool i2c_scanADC(int16_t adcResponse[]) {
 }
 
 bool i2c_pullUpCellBalanceIOExpander(uint8_t bmb) {
+	//Two different packets, one for cells 0-8 and the other one for 9
+	//The first byte of each packet is the register address
+	//These two registers will enable all the input pullups on the io expander
 	uint16_t data = ((0xF0) << 8) | 0xFF;
 	uint16_t data2 = ((0xF1) << 8) | 0x1;
 	if (cmr_i2cTX(&bmb_i2c, bms_cell_balancer_addresses[bmb], &data, 2,
@@ -155,6 +158,8 @@ bool i2c_pullUpCellBalanceIOExpander(uint8_t bmb) {
 	return true;
 }
 bool i2c_cellBalance(uint8_t bmb, uint8_t cells, uint8_t cells1) {
+	//Two different packets, one for cells 0-8 and the other one for 9
+	//The first byte of each packet is the register address
 	uint16_t data = ((0xF2) << 8) | (cells);
 	uint16_t data2 = ((0xF3) << 8) | (cells);
 	if (cmr_i2cTX(&bmb_i2c, bms_cell_balancer_addresses[bmb], &data, 2,

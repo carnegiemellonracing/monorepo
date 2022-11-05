@@ -101,10 +101,12 @@ void vBMBSampleTask(void *pvParameters) {
 		//Sample BMBs
 		taskENTER_CRITICAL();
 
+		//loop through each side of the bmb
 		for (uint8_t j = 0; j < 2; j++) {
 			if (!i2c_enableI2CMux(j, BMBIndex)) {
 				BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
 			} else {
+				//select through each of the mux channels
 				for (int channel = 0; channel < 3; channel++) {
 					if (!i2c_select4MuxChannel(channel)
 							|| !i2c_scanADC(BMBADCResponse)) {
@@ -192,6 +194,8 @@ void vBMBSampleTask(void *pvParameters) {
 		balanceCommands[2] = 0xFF & cellsToBalance[1];
 		balanceCommands[3] = (0xFF00 & cellsToBalance[1]) >> 8;
 
+		//only send balance command when changing
+		//otherwise, make sure all the balancing is OFF
 		if (getState() == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE) {
 			i2c_enableI2CMux(0, BMBIndex);
 			if (!i2c_cellBalance(BMBIndex, balanceCommands[0],
