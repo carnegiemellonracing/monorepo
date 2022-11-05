@@ -116,7 +116,7 @@ void vBMBSampleTask(void *pvParameters) {
        //Sample BMBs
        taskENTER_CRITICAL();
         
-        for(uint8_t i = 0; i < NUM_BMBS; i++) {
+        for(uint8_t i = 0; i < 8; i++) {
             for(uint8_t j = 0; j < 2; j++) {
                 if(!i2c_enableI2CMux(j, i)) {
                     BMBTimeoutCount[i] = BMB_TIMEOUT;

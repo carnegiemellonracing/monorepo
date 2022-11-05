@@ -12,10 +12,10 @@
 #include <CMR/i2c.h>
 #include <stdbool.h>
 
-#define NUM_BMBS 8
+#define I2C_NUM_BMBS 8
 // I2c addresses of muxes 
 // From https://www.nxp.com/docs/en/data-sheet/PCA9542A.pdf
-static const uint16_t bms_mux_address[NUM_BMBS] = {
+static const uint16_t bms_mux_address[I2C_NUM_BMBS] = {
     0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77
 };
 
@@ -27,7 +27,7 @@ static const uint16_t bms_mux_address[NUM_BMBS] = {
 
 #define I2C_TIMEOUT 50
 
-static cmr_i2c_t bmb_i2c;
+bool i2cInit();
 
 //switch across sides of BMB
 bool i2c_enableI2CMux(uint8_t bmb, uint8_t side);

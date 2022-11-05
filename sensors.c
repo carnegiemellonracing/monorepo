@@ -56,7 +56,6 @@ static uint32_t sampleADCSensor(const cmr_sensor_t *sensor) {
 static int32_t ADCtoMV_24v(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 	
-	//return (((int32_t) reading) << 12) / 398;
     return ((int32_t) reading) * 7.39;
 
 }
@@ -70,10 +69,10 @@ static int32_t ADCtoMV_24v(const cmr_sensor_t *sensor, uint32_t reading) {
  *
  * @return Voltage in V.
  */
-static int32_t ADCtoV_HV(const cmr_sensor_t *sensor, uint32_t reading) {
+static int32_t ADCtoMV_HV(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 	
-	return (((int32_t) reading) * 0.268 - 426.4);
+	return (((int32_t) reading) * 268 - 426400);
 }
 
 /**
@@ -89,27 +88,8 @@ static int32_t ADCtoV_HV(const cmr_sensor_t *sensor, uint32_t reading) {
 // Max current of 250A, means max Vdiff of 250mV
 static int32_t ADCtoA_HV(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
-	
+	// TODO: Figure out this transfer function
 	return (((int32_t) reading) >> 2);
-}
-
-/**
- * @brief Converts a raw ADC value into a low voltage current value.
- *
- * @param sensor The sensor to read.
- *
- * @param reading The ADC value to convert.
- *
- * @return Current in mA.
- */
-// 24v current shunt amplifier has a transfer function of: 
-// (2^12 adc counts / 3.3 adc volts) * (1 adc volt / 20 real volts) * (1 real volt / 0.62 shunt ohms) * (1 amp / 1000 ma) = 0.1000098 adc counts / ma
-// Scale up by 2^11 then divide by (0.1000098 * 2^11)
-// (20 real volts / 1 adc volts) * (1 real volt / 0.62 ohms) = 
-static int32_t adcToMA_24v(const cmr_sensor_t *sensor, uint32_t reading) {
-	(void) sensor;
-	
-	return (((int32_t) reading) << 11) / 205;
 }
 
 static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
@@ -140,7 +120,7 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		//.warnFlag = What errors to use?
 	},
     [SENSOR_CH_VSENSE] = {
-		.conv = ADCtoV_HV,
+		.conv = ADCtoMV_HV,
 		.sample = sampleADCSensor,
 		//.readingMin = ?,
 		//.readingMax = ?,
@@ -219,7 +199,7 @@ int32_t getSafetymillivolts(){
     return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_SAFETY));
 }
 
-int32_t getHVvolts(){
+int32_t getHVmillivolts(){
     return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_VSENSE));
 }
 
