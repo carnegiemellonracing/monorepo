@@ -7,9 +7,9 @@
 #include <stdbool.h>
 
 // current config of the selectIO (cause we don't want to overwrite the top LED bit)
-uint8_t selectIOCurrent = 0x0;
+static uint8_t selectIOCurrent = 0x0;
 
-cmr_i2c_t bmb_i2c;
+static cmr_i2c_t bmb_i2c;
 
 bool i2cInit(void) {
     cmr_i2cInit(&bmb_i2c, I2C1,

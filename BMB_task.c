@@ -23,6 +23,10 @@ static int16_t linearTemp(uint16_t ADC_lt);
 //Fill in data to this array
 static BMB_Data_t BMBData[NUM_BMBS];
 
+// Counter for how many times until we flash the LED
+static const uint8_t LED_FLASH_COUNT = 5;
+static uint8_t BMBFlashCounter = 0;
+
 //takes in adc output and cell index to get voltage value
 static int16_t adcOutputToVoltage(uint16_t ADC_val, int cell) {
     const float resistorRatios[10];
@@ -121,6 +125,10 @@ void vBMBSampleTask(void *pvParameters) {
                 if(!i2c_enableI2CMux(j, i)) {
                     BMBTimeoutCount[i] = BMB_TIMEOUT;
                 }
+                // don't reset here, so we can set the rest of the LEDs
+                if (BMBFlashCounter >= LED_FLASH_COUNT) {
+                    i2c_selectMuxBlink();
+                }
                 for(int channel = 0; channel < 3; channel++) {
                     if(!i2c_select4MuxChannel(channel)) {
                         BMBTimeoutCount[i] = BMB_TIMEOUT;
@@ -162,6 +170,12 @@ void vBMBSampleTask(void *pvParameters) {
         }
 
         taskEXIT_CRITICAL();
+        // increment the counter or reset if we just flashed
+        if (BMBFlashCounter >= LED_FLASH_COUNT) {
+            BMBFlashCounter = 0;
+        } else {
+            BMBFlashCounter++;
+        }
 
         //loop through all cells and turn adc output to voltage
         for(int i = 0; i < NUM_BMBS; i++) {
