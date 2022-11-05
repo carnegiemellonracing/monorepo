@@ -18,6 +18,9 @@
 static const uint16_t bms_mux_address[NUM_BMBS] = {
     0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77
 };
+static const uint16_t bms_cell_balancer_addresses[NUM_BMBS] = {
+    0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57
+};
 
 // https://www.mouser.com/datasheet/2/302/PCA9536-1127758.pdf
 #define BMS_SELECT_IO_ADDR 0x41
@@ -41,6 +44,8 @@ bool i2c_selectMuxBlink();
 //get values from each adc channel
 bool i2c_configADC();
 bool i2c_scanADC(int16_t adcResponse[]);
+bool i2c_pullUpCellBalanceIOExpander(uint8_t bmb);
+bool i2c_cellBalance(uint8_t bmb, uint8_t cells, uint8_t cells1);
 
 
 
