@@ -27,9 +27,9 @@
  * @see `stm32f4xx_hal_gpio.h` for various initialization values.
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
-    [GPIO_LED_STATUS] = {
+    [GPIO_LED_STATUS] = { // not in the schematic
         .port = GPIOC,
-        .init = {
+        .init = { 
             .Pin = GPIO_PIN_0,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
@@ -37,7 +37,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         }
     },
     [GPIO_LED_IMD] = {
-        .port = GPIOB,
+        .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_9,
             .Mode = GPIO_MODE_OUTPUT_PP,
@@ -48,7 +48,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_LED_AMS] = {
         .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_12,
+            .Pin = GPIO_PIN_8,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
@@ -57,13 +57,13 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_LED_BSPD] = {
         .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_10,
+            .Pin = GPIO_PIN_7,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_BUTTON_1] = { // DRS?
+    [GPIO_BUTTON_1] = { // DRS? // buttons not in the board??
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_9,

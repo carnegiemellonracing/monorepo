@@ -16,8 +16,8 @@
  * @warning New channels MUST be added before `ADC_LEN`.
  */
 typedef enum {
-    ADC_VSENSE = 0,     /**< @brief Board voltage sense. */
-    ADC_ISENSE,         /**< @brief Board current sense. */
+    ADC_VSENSE = 0, /**< @brief Board voltage sense. */
+    ADC_ISENSE,     /**< @brief Board current sense. */
     ADC_CH1,        /**< @brief Sensor channel 1. */
     ADC_CH2,        /**< @brief Sensor channel 2. */
     ADC_CH3,        /**< @brief Sensor channel 3. */
@@ -29,11 +29,11 @@ typedef enum {
     ADC_SS_INERTIA,
     ADC_SS_FLHUB,
     ADC_SS_BOTS,
-    ADC_LEN     /**< @brief Total ADC channels. */
-} adcChannels_t;
+    ADC_LEN         /**< @brief Total ADC channels. */
+} adcChannel_t;
 
 void adcInit(void);
-uint32_t adcRead(adcChannels_t channel);
+uint32_t adcRead(adcChannel_t channel);
 
 #endif /* ADC_H */
 

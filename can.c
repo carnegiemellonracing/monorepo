@@ -174,6 +174,136 @@ static const TickType_t canTX10Hz_period_ms = 100;
 /** @brief CAN 10 Hz TX task. */
 static cmr_task_t canTX10Hz_task;
 
+// Forward declarations
+static void sendHeartbeat(TickType_t lastWakeTime);
+static void sendFSMData(void);
+static cmr_canWarn_t genSafetyCircuitMessage(void);
+static void sendFSMPedalsADC(void);
+static void sendFSMSensorsADC(void);
+static void sendPowerDiagnostics(void);
+static void *getPayload(canRX_t rxMsg)
+
+/**
+ * @brief Sends safety circuit message.
+ */
+static cmr_canWarn_t genSafetyCircuitMessage(void) {
+    sensorChannel_t safetyCircuitStart = SENSOR_CH_SS_MODULE; // first safety circuit in sensor list
+    sensorChannel_t safetyCircuitEnd = SENSOR_CH_SS_BOTS; // last safety circuit in sensor list
+    const cmr_canWarn_t safetyCircuitWarns[] = { // in same order as in sensors.h to map them
+        CMR_CAN_WARN_FSM_SS_MODULE,
+        CMR_CAN_WARN_FSM_SS_COCKPIT,
+        CMR_CAN_WARN_FSM_SS_FRHUB,
+        CMR_CAN_WARN_FSM_SS_INERTIA,
+        CMR_CAN_WARN_FSM_SS_FLHUB,
+        CMR_CAN_WARN_FSM_SS_BOTS
+    };
+
+    cmr_canWarn_t warn = CMR_CAN_WARN_NONE;
+
+    for (sensorChannel_t sensor = safetyCircuitStart; sensor <= safetyCircuitEnd; sensor++) {
+        if (!cmr_sensorListGetValue(&sensorList, sensor)) {
+            warn |= safetyCircuitWarns[sensor-safetyCircuitStart];
+            break;
+        }
+    }
+    return warn;
+}
+
+/**
+ * @brief Sends raw pedal position sensor ADC values.
+ *
+ * @note This is only useful for calibration and should not be sent constantly.
+ */
+static void sendFSMPedalsADC(void) {
+    cmr_canFSMPedalsADC_t msg = {
+        .throttleLeftADC  = adcRead(sensorsADCChannels[SENSOR_CH_TPOS_L_U8]),
+        .throttleRightADC = adcRead(sensorsADCChannels[SENSOR_CH_TPOS_R_U8]),
+        .brakePedalADC    = adcRead(sensorsADCChannels[SENSOR_CH_BPOS_U8])
+    };
+
+    canTX(CMR_CANID_FSM_PEDALS_ADC, &msg, sizeof(msg), canTX10Hz_period_ms);
+}
+
+/**
+ * @brief Sends raw sensor ADC values.
+ *
+ * @note This is only useful for calibration and should not be sent constantly.
+ */
+static void sendFSMSensorsADC(void) {
+    cmr_canFSMSensorsADC_t msg = {
+        .brakePressureFrontADC = adcRead(sensorsADCChannels[SENSOR_CH_BPRES_PSI]),
+        .steeringWheelAngleADC = adcRead(sensorsADCChannels[SENSOR_CH_SWANGLE_DEG])
+    };
+
+    canTX(CMR_CANID_FSM_SENSORS_ADC, &msg, sizeof(msg), canTX10Hz_period_ms);
+}
+
+/**
+ * @brief Sends latest bus voltage and current draw measurements.
+ */
+static void sendPowerDiagnostics(void) {
+    // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
+    uint32_t busVoltage_mV = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
+    uint32_t busCurrent_mA = cmr_sensorListGetValue(&sensorList, SENSOR_CH_AVG_CURRENT_MA);
+
+    cmr_canFSMPowerDiagnostics_t msg = {
+        .busVoltage_mV = busVoltage_mV,
+        .busCurrent_mA = busCurrent_mA
+    };
+
+    canTX(CMR_CANID_FSM_POWER_DIAGNOSTICS, &msg, sizeof(msg), canTX10Hz_period_ms);
+}
+
+
+/**
+ * @brief Sets up FSM CAN heartbeat by checking errors and sends it.
+ *
+ * @param lastWakeTime Pass in from canTX100Hz. Used to determine pedal implausibility
+ * according to FSAE rule T.6.2.3.
+ */
+static void sendHeartbeat(TickType_t lastWakeTime) {
+    cmr_canRXMeta_t *heartbeatVSMMeta = &(canRXMeta[CANRX_HEARTBEAT_VSM]);
+    volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
+
+    // Create heartbeat
+    cmr_canHeartbeat_t heartbeat = {
+        .state = heartbeatVSM->state
+    };
+
+    cmr_canWarn_t warning = CMR_CAN_WARN_NONE;
+    cmr_canError_t error = CMR_CAN_ERROR_NONE;
+
+    cmr_sensorListGetFlags(&sensorList, &warning, &error);
+
+    if (cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPP_IMPLAUS) != 0) {
+        warning |= CMR_CAN_WARN_FSM_BPP;
+    }
+    if (cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_IMPLAUS) != 0) {
+        warning |= CMR_CAN_WARN_FSM_TPOS_IMPLAUSIBLE;
+    }
+
+    if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
+        error |= CMR_CAN_ERROR_VSM_TIMEOUT;
+    }
+
+    // TODO: are these the correct bits?
+    warning |= genSafetyCircuitMessage(); // add safety circuit message to heartbeat
+
+    if (error != CMR_CAN_ERROR_NONE) {
+        heartbeat.state = CMR_CAN_ERROR;
+    }
+
+    memcpy(&heartbeat.error, &error, sizeof(heartbeat.error));
+
+    if (cmr_canRXMetaTimeoutWarn(heartbeatVSMMeta, lastWakeTime) < 0) {
+        warning |= CMR_CAN_WARN_VSM_TIMEOUT;
+    }
+
+    memcpy(&heartbeat.warning, &warning, sizeof(heartbeat.warning));
+
+    canTX(CMR_CANID_HEARTBEAT_FSM, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
+}
+
 /**
  * @brief Task for sending CAN messages at 10 Hz.
  *
@@ -223,6 +353,13 @@ static void canTX10Hz(void *pvParameters) {
 
             stateGearUpdate();
         }
+        sendPowerDiagnostics();
+
+        // TODO These should probably only be sent when in some "calibration"
+        // mode that we enter upon receiving some "begin calibration" message
+        // from PCAN Explorer
+        sendFSMPedalsADC();
+        sendFSMSensorsADC();
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -252,29 +389,31 @@ static void canTX100Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         /* Transmit DIM heartbeat */
-        cmr_canState_t vsmState = stateGetVSM();
-        cmr_canHeartbeat_t heartbeat = {
-            .state = vsmState
-        };
+        // cmr_canState_t vsmState = stateGetVSM();
+        // cmr_canHeartbeat_t heartbeat = {
+        //     .state = vsmState
+        // };
 
-        uint16_t error = CMR_CAN_ERROR_NONE;
-        if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
-            error |= CMR_CAN_ERROR_VSM_TIMEOUT;
-        }
-        memcpy(&heartbeat.error, &error, sizeof(error));
+        // uint16_t error = CMR_CAN_ERROR_NONE;
+        // if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
+        //     error |= CMR_CAN_ERROR_VSM_TIMEOUT;
+        // }
+        // memcpy(&heartbeat.error, &error, sizeof(error));
 
-        uint16_t warning = CMR_CAN_WARN_NONE;
-        if (cmr_canRXMetaTimeoutWarn(heartbeatVSMMeta, lastWakeTime) < 0) {
-            warning |= CMR_CAN_WARN_VSM_TIMEOUT;
-        }
-        memcpy(&heartbeat.warning, &warning, sizeof(warning));
+        // uint16_t warning = CMR_CAN_WARN_NONE;
+        // if (cmr_canRXMetaTimeoutWarn(heartbeatVSMMeta, lastWakeTime) < 0) {
+        //     warning |= CMR_CAN_WARN_VSM_TIMEOUT;
+        // }
+        // memcpy(&heartbeat.warning, &warning, sizeof(warning));
 
-        canTX(
-            CMR_CANID_HEARTBEAT_DIM,
-            &heartbeat,
-            sizeof(heartbeat),
-            canTX100Hz_period_ms
-        );
+        // canTX(
+        //     CMR_CANID_HEARTBEAT_DIM,
+        //     &heartbeat,
+        //     sizeof(heartbeat),
+        //     canTX100Hz_period_ms
+        // );
+
+        sendHeartbeat(lastWakeTime);
 
         // Calculate integer regenPercent from regenStep
         uint8_t regenPercent = (uint8_t) (REGEN_MIN + REGEN_STEP * regenStep);
@@ -291,6 +430,9 @@ static void canTX100Hz(void *pvParameters) {
             &actions, sizeof(actions),
             canTX100Hz_period_ms
         );
+
+        
+        sendFSMData();
 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
@@ -750,6 +892,7 @@ int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
  *
  * @return HV voltage.
  */
+
 float canEmdHvVoltage(cmr_canEMDMeasurements_t emd_vals) {
     static const float div = powf(2.0f, 16.0f);
 
@@ -784,153 +927,6 @@ void *getPayload(canRX_t rxMsg) {
     return (void *)(&rxMeta->payload);
 }
 
-/**
- * @brief Sets up FSM CAN heartbeat by checking errors and sends it.
- *
- * @param lastWakeTime Pass in from canTX100Hz. Used to determine pedal implausibility
- * according to FSAE rule T.6.2.3.
- */
-static void sendHeartbeat(TickType_t lastWakeTime) {
-    cmr_canRXMeta_t *heartbeatVSMMeta = &(canRXMeta[CANRX_HEARTBEAT_VSM]);
-    volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
 
-    // Create heartbeat
-    cmr_canHeartbeat_t heartbeat = {
-        .state = heartbeatVSM->state
-    };
 
-    cmr_canWarn_t warning = CMR_CAN_WARN_NONE;
-    cmr_canError_t error = CMR_CAN_ERROR_NONE;
 
-    cmr_sensorListGetFlags(&sensorList, &warning, &error);
-
-    if (cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPP_IMPLAUS) != 0) {
-        warning |= CMR_CAN_WARN_FSM_BPP;
-    }
-    if (cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_IMPLAUS) != 0) {
-        warning |= CMR_CAN_WARN_FSM_TPOS_IMPLAUSIBLE;
-    }
-
-    if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
-        error |= CMR_CAN_ERROR_VSM_TIMEOUT;
-    }
-
-    // TODO: are these the correct bits?
-    warning |= genSafetyCircuitMessage(); // add safety circuit message to heartbeat
-
-    if (error != CMR_CAN_ERROR_NONE) {
-        heartbeat.state = CMR_CAN_ERROR;
-    }
-
-    memcpy(&heartbeat.error, &error, sizeof(heartbeat.error));
-
-    if (cmr_canRXMetaTimeoutWarn(heartbeatVSMMeta, lastWakeTime) < 0) {
-        warning |= CMR_CAN_WARN_VSM_TIMEOUT;
-    }
-
-    memcpy(&heartbeat.warning, &warning, sizeof(heartbeat.warning));
-
-    canTX(CMR_CANID_HEARTBEAT_FSM, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
-}
-
-/**
- * @brief Sends FSM data message.
- */
-static void sendFSMData(void) {
-    cmr_canRXMeta_t *heartbeatVSMMeta = &(canRXMeta[CANRX_HEARTBEAT_VSM]);
-    volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
-
-    uint8_t throttlePosition = throttleGetPos();
-    uint8_t torqueRequested = 0;
-
-    if (heartbeatVSM->state == CMR_CAN_RTD &&
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPP_IMPLAUS) == 0 // Temp comment to remove implausability
-    ) {
-        torqueRequested = throttlePosition;
-    }
-
-    uint8_t brakePressureFront_PSI = (uint8_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI);
-    int16_t steeringWheelAngle_deg = (int16_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG);
-    uint8_t brakePedalPosition = (uint8_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPOS_U8);
-
-    cmr_canFSMData_t msg = {
-        .torqueRequested         = torqueRequested,
-        .throttlePosition        = throttlePosition,
-        .brakePressureFront_PSI  = brakePressureFront_PSI,
-        .brakePedalPosition      = brakePedalPosition,
-        .steeringWheelAngle_deg  = steeringWheelAngle_deg
-    };
-
-    canTX(CMR_CANID_FSM_DATA, &msg, sizeof(msg), canTX100Hz_period_ms);
-}
-
-/**
- * @brief Sends safety circuit message.
- */
-static cmr_canWarn_t genSafetyCircuitMessage(void) {
-    sensorChannel_t safetyCircuitStart = SENSOR_CH_SS_MODULE; // first safety circuit in sensor list
-    sensorChannel_t safetyCircuitEnd = SENSOR_CH_SS_BOTS; // last safety circuit in sensor list
-    const cmr_canWarn_t safetyCircuitWarns[] = { // in same order as in sensors.h to map them
-        CMR_CAN_WARN_FSM_SS_MODULE,
-        CMR_CAN_WARN_FSM_SS_COCKPIT,
-        CMR_CAN_WARN_FSM_SS_FRHUB,
-        CMR_CAN_WARN_FSM_SS_INERTIA,
-        CMR_CAN_WARN_FSM_SS_FLHUB,
-        CMR_CAN_WARN_FSM_SS_BOTS
-    };
-
-    cmr_canWarn_t warn = CMR_CAN_WARN_NONE;
-
-    for (sensorChannel_t sensor = safetyCircuitStart; sensor <= safetyCircuitEnd; sensor++) {
-        if (!cmr_sensorListGetValue(&sensorList, sensor)) {
-            warn |= safetyCircuitWarns[sensor-safetyCircuitStart];
-            break;
-        }
-    }
-    return warn;
-}
-
-/**
- * @brief Sends raw pedal position sensor ADC values.
- *
- * @note This is only useful for calibration and should not be sent constantly.
- */
-static void sendFSMPedalsADC(void) {
-    cmr_canFSMPedalsADC_t msg = {
-        .throttleLeftADC  = adcRead(sensorsADCChannels[SENSOR_CH_TPOS_L_U8]),
-        .throttleRightADC = adcRead(sensorsADCChannels[SENSOR_CH_TPOS_R_U8]),
-        .brakePedalADC    = adcRead(sensorsADCChannels[SENSOR_CH_BPOS_U8])
-    };
-
-    canTX(CMR_CANID_FSM_PEDALS_ADC, &msg, sizeof(msg), canTX10Hz_period_ms);
-}
-
-/**
- * @brief Sends raw sensor ADC values.
- *
- * @note This is only useful for calibration and should not be sent constantly.
- */
-static void sendFSMSensorsADC(void) {
-    cmr_canFSMSensorsADC_t msg = {
-        .brakePressureFrontADC = adcRead(sensorsADCChannels[SENSOR_CH_BPRES_PSI]),
-        .steeringWheelAngleADC = adcRead(sensorsADCChannels[SENSOR_CH_SWANGLE_DEG])
-    };
-
-    canTX(CMR_CANID_FSM_SENSORS_ADC, &msg, sizeof(msg), canTX10Hz_period_ms);
-}
-
-/**
- * @brief Sends latest bus voltage and current draw measurements.
- */
-static void sendPowerDiagnostics(void) {
-    // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
-    uint32_t busVoltage_mV = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
-    uint32_t busCurrent_mA = cmr_sensorListGetValue(&sensorList, SENSOR_CH_AVG_CURRENT_MA);
-
-    cmr_canFSMPowerDiagnostics_t msg = {
-        .busVoltage_mV = busVoltage_mV,
-        .busCurrent_mA = busCurrent_mA
-    };
-
-    canTX(CMR_CANID_FSM_POWER_DIAGNOSTICS, &msg, sizeof(msg), canTX10Hz_period_ms);
-}
