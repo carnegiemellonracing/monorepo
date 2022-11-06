@@ -130,7 +130,7 @@ void adcInit(void) {
  * @param channel The channel.
  * @return The channel's last sampled value.
  */
-uint16_t adcRead(adcChannels_t channel) {
+uint32_t adcRead(adcChannel_t channel) {
     return cmr_adcRead(&adc, channel);
 }
 

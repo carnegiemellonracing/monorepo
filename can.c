@@ -181,7 +181,7 @@ static cmr_canWarn_t genSafetyCircuitMessage(void);
 static void sendFSMPedalsADC(void);
 static void sendFSMSensorsADC(void);
 static void sendPowerDiagnostics(void);
-static void *getPayload(canRX_t rxMsg)
+// static void *getPayload(canRX_t rxMsg);
 
 /**
  * @brief Sends safety circuit message.
@@ -256,55 +256,6 @@ static void sendPowerDiagnostics(void) {
 
 
 /**
- * @brief Sets up FSM CAN heartbeat by checking errors and sends it.
- *
- * @param lastWakeTime Pass in from canTX100Hz. Used to determine pedal implausibility
- * according to FSAE rule T.6.2.3.
- */
-static void sendHeartbeat(TickType_t lastWakeTime) {
-    cmr_canRXMeta_t *heartbeatVSMMeta = &(canRXMeta[CANRX_HEARTBEAT_VSM]);
-    volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
-
-    // Create heartbeat
-    cmr_canHeartbeat_t heartbeat = {
-        .state = heartbeatVSM->state
-    };
-
-    cmr_canWarn_t warning = CMR_CAN_WARN_NONE;
-    cmr_canError_t error = CMR_CAN_ERROR_NONE;
-
-    cmr_sensorListGetFlags(&sensorList, &warning, &error);
-
-    if (cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPP_IMPLAUS) != 0) {
-        warning |= CMR_CAN_WARN_FSM_BPP;
-    }
-    if (cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_IMPLAUS) != 0) {
-        warning |= CMR_CAN_WARN_FSM_TPOS_IMPLAUSIBLE;
-    }
-
-    if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
-        error |= CMR_CAN_ERROR_VSM_TIMEOUT;
-    }
-
-    // TODO: are these the correct bits?
-    warning |= genSafetyCircuitMessage(); // add safety circuit message to heartbeat
-
-    if (error != CMR_CAN_ERROR_NONE) {
-        heartbeat.state = CMR_CAN_ERROR;
-    }
-
-    memcpy(&heartbeat.error, &error, sizeof(heartbeat.error));
-
-    if (cmr_canRXMetaTimeoutWarn(heartbeatVSMMeta, lastWakeTime) < 0) {
-        warning |= CMR_CAN_WARN_VSM_TIMEOUT;
-    }
-
-    memcpy(&heartbeat.warning, &warning, sizeof(heartbeat.warning));
-
-    canTX(CMR_CANID_HEARTBEAT_FSM, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
-}
-
-/**
  * @brief Task for sending CAN messages at 10 Hz.
  *
  * @param pvParameters Ignored.
@@ -353,6 +304,8 @@ static void canTX10Hz(void *pvParameters) {
 
             stateGearUpdate();
         }
+
+        // TODO: Confirm that fsm power diagnostics are different from dim ones
         sendPowerDiagnostics();
 
         // TODO These should probably only be sent when in some "calibration"
@@ -375,6 +328,56 @@ static const TickType_t canTX100Hz_period_ms = 10;
 static cmr_task_t canTX100Hz_task;
 
 /**
+ * @brief Sets up FSM CAN heartbeat by checking errors and sends it.
+ *
+ * @param lastWakeTime Pass in from canTX100Hz. Used to determine pedal implausibility
+ * according to FSAE rule T.6.2.3.
+ */
+static void sendHeartbeat(TickType_t lastWakeTime) {
+    cmr_canRXMeta_t *heartbeatVSMMeta = &(canRXMeta[CANRX_HEARTBEAT_VSM]);
+    volatile cmr_canHeartbeat_t *heartbeatVSM = (void *) heartbeatVSMMeta->payload;
+
+    // Create heartbeat
+    cmr_canHeartbeat_t heartbeat = {
+        .state = heartbeatVSM->state
+    };
+
+    cmr_canWarn_t warning = CMR_CAN_WARN_NONE;
+    cmr_canError_t error = CMR_CAN_ERROR_NONE;
+
+    cmr_sensorListGetFlags(&sensorList, &warning, &error);
+
+    if (cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPP_IMPLAUS) != 0) {
+        warning |= CMR_CAN_WARN_FSM_BPP;
+    }
+    if (cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_IMPLAUS) != 0) {
+        warning |= CMR_CAN_WARN_FSM_TPOS_IMPLAUSIBLE;
+    }
+
+    if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
+        error |= CMR_CAN_ERROR_VSM_TIMEOUT;
+    }
+
+    // TODO: are these the correct bits?
+    warning |= genSafetyCircuitMessage(); // add safety circuit message to heartbeat
+
+    if (error != CMR_CAN_ERROR_NONE) {
+        heartbeat.state = CMR_CAN_ERROR;
+    }
+
+    memcpy(&heartbeat.error, &error, sizeof(heartbeat.error));
+
+    if (cmr_canRXMetaTimeoutWarn(heartbeatVSMMeta, lastWakeTime) < 0) {
+        warning |= CMR_CAN_WARN_VSM_TIMEOUT;
+    }
+
+    memcpy(&heartbeat.warning, &warning, sizeof(heartbeat.warning));
+
+    canTX(CMR_CANID_HEARTBEAT_FSM, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
+}
+
+
+/**
  * @brief Task for sending CAN messages at 100 Hz.
  *
  * @param pvParameters Ignored.
@@ -388,6 +391,8 @@ static void canTX100Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
+
+        // commented this out and called sendheartbeat instead
         /* Transmit DIM heartbeat */
         // cmr_canState_t vsmState = stateGetVSM();
         // cmr_canHeartbeat_t heartbeat = {
