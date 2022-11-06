@@ -31,65 +31,65 @@ static cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .value = 0
     },
     [ADC_CH1] = {
-        .channel = ADC_CHANNEL_8,
-        .port = GPIOB,
-        .pin = GPIO_PIN_0,
+        .channel = ADC_CHANNEL_8, // TODO: No ADC channel
+        .port = GPIOA,
+        .pin = GPIO_PIN_8,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_CH2] = {
-        .channel = ADC_CHANNEL_15,
+        .channel = ADC_CHANNEL_15, // TODO: No ADC channel
         .port = GPIOC,
-        .pin = GPIO_PIN_5,
+        .pin = GPIO_PIN_10,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_CH3] = {
-        .channel = ADC_CHANNEL_14,
+        .channel = ADC_CHANNEL_14, // TODO: No ADC channel
         .port = GPIOC,
-        .pin = GPIO_PIN_4,
+        .pin = GPIO_PIN_11,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_CH4] = {
-        .channel = ADC_CHANNEL_7,
+        .channel = ADC_CHANNEL_5,
         .port = GPIOA,
-        .pin = GPIO_PIN_7,
+        .pin = GPIO_PIN_5,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_CH5] = {
-        .channel = ADC_CHANNEL_6,
+        .channel = ADC_CHANNEL_4,
         .port = GPIOA,
-        .pin = GPIO_PIN_6,
+        .pin = GPIO_PIN_4,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_SS_MODULE] = {
-        .channel = ADC_CHANNEL_10,
-        .port = GPIOC,
-        .pin = GPIO_PIN_0,
+        .channel = ADC_CHANNEL_10, // TODO: No ADC channel
+        .port = GPIOA,
+        .pin = GPIO_PIN_12,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_SS_COCKPIT] = {
-        .channel = ADC_CHANNEL_11,
-        .port = GPIOC,
-        .pin = GPIO_PIN_1,
+        .channel = ADC_CHANNEL_11, // TODO: No ADC channel
+        .port = GPIOA,
+        .pin = GPIO_PIN_11,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_SS_FRHUB] = {
-        .channel = ADC_CHANNEL_12,
-        .port = GPIOC,
-        .pin = GPIO_PIN_2,
+        .channel = ADC_CHANNEL_12,  // TODO: No ADC channel
+        .port = GPIOA,
+        .pin = GPIO_PIN_10,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_SS_INERTIA] = {
-        .channel = ADC_CHANNEL_13,
-        .port = GPIOC,
-        .pin = GPIO_PIN_3,
+        .channel = ADC_CHANNEL_13, // TODO: no ADC channel
+        .port = GPIOA,
+        .pin = GPIO_PIN_9,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
