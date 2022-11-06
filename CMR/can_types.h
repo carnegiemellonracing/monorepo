@@ -973,6 +973,16 @@ typedef struct {
     int16_t controls_pid;
 } cmr_can_controls_pid_debug_t;
 
+typedef struct {
+    uint8_t seconds;
+    uint8_t minutes;
+    uint8_t hours;
+    uint8_t date;
+    uint8_t month;
+    uint8_t year;
+    uint8_t err; /* 1 in error state and 0 otherwise */
+} cmr_can_rtc_data_t;
+
 // ------------------------------------------------------------------------------------------------
 // SAE Provided EMD definitions
 
