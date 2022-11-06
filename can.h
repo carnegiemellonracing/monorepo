@@ -83,7 +83,6 @@ typedef enum {
 	CANRX_EMD_VALUES,			/**< @brief EMD Values for HV voltages and current */
     CANRX_VSM_SENSORS,
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
-   
 } canRX_t;
 
 extern cmr_canRXMeta_t canRXMeta[];
@@ -93,7 +92,6 @@ void canInit(void);
 int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 
 void ramCallback (cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen);
-
 void *getPayload(canRX_t rxMsg);
 uint8_t throttleGetPos(void);
 

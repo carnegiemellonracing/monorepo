@@ -109,7 +109,6 @@ static cmr_adcChannel_t adcChannels[ADC_LEN] = {
     }
 };
 
-
 /** @brief Primary ADC. */
 static cmr_adc_t adc;
 
@@ -125,12 +124,13 @@ void adcInit(void) {
 }
 
 /**
- * @brief Reads an ADC channel's value.
+ * @brief Reads the given ADC channel's latest value.
  *
  * @param channel The channel.
- * @return The channel's last sampled value.
+ *
+ * @return The read value.
  */
-uint16_t adcRead(adcChannels_t channel) {
+uint32_t adcRead(adcChannel_t channel) {
     return cmr_adcRead(&adc, channel);
 }
 
