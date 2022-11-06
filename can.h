@@ -95,9 +95,10 @@ void ramCallback (cmr_can_t *can, uint16_t canID, const void *data, size_t dataL
 void *getPayload(canRX_t rxMsg);
 uint8_t throttleGetPos(void);
 
-#endif /* CAN_H */
-
 float canEmdHvVoltage(cmr_canEMDMeasurements_t emd_vals);
 float canEmdHvCurrent(cmr_canEMDMeasurements_t emd_vals);
 
 void transmit_cdc_config_request();
+
+#endif /* CAN_H */
+
