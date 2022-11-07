@@ -174,6 +174,16 @@ typedef enum {
     CMR_CAN_GEAR_LEN
 } cmr_canGear_t;
 
+/** @brief Represents the car's current driving mode (gear). */
+typedef enum {
+    CMR_CAN_DRSM_UNKNOWN = 0,   /**< @brief Unknown Gear State */
+    CMR_CAN_DRSM_OPEN,
+    CMR_CAN_DRSM_CLOSED,
+    CMR_CAN_DRSM_TOGGLE,
+    CMR_CAN_DRSM_HOLD,
+    CMR_CAN_DRSM_AUTO
+} cmr_canDrsMode_t;
+
 /** @brief Safety Circuit status states. */
 typedef enum {
     CMR_CAN_SS_STATE_CLEAR = 0,   /**< @brief Not tripped state. */

@@ -210,20 +210,6 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .max = 100,
     },
     {
-        .name = "DRS",
-        .ESE_background_color_variable = ESE_DRS_BOX,
-        .ESE_value_color_variable = ESE_DRS_COLOR,
-        .ESE_value_variable = ESE_DRS_VAL,
-        .ESE_context_text_variable = "DRS Control policy, all modes", 
-        .ESE_value_string_lut = config_drs_string_lut,
-        .value = {
-            .type = custom_enum,
-            .value = 0
-        },
-        .min = 0,
-        .max = num_values_drs_enum,
-    },
-    {
         .name = "Wet",
         .ESE_background_color_variable = ESE_WET_BOX,
         .ESE_value_color_variable = ESE_WET_COLOR,
@@ -235,7 +221,47 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         },
         .min = 0,
         .max = 1,
-    }
+    },
+    {
+        .name = "DRS Swangle Threshold",
+        .ESE_background_color_variable = ESE_WET_BOX,
+        .ESE_value_color_variable = ESE_WET_COLOR,
+        .ESE_value_variable = ESE_WET_VAL,
+        .ESE_context_text_variable = "High TC & capped torque",
+        .value = {
+            .type = boolean,
+            .value = 0
+        },
+        .min = 0,
+        .max = 1,
+    },
+    {
+        .name = "DRS Throttle Threshold",
+        .ESE_background_color_variable = ESE_WET_BOX,
+        .ESE_value_color_variable = ESE_WET_COLOR,
+        .ESE_value_variable = ESE_WET_VAL,
+        .ESE_context_text_variable = "High TC & capped torque",
+        .value = {
+            .type = boolean,
+            .value = 0
+        },
+        .min = 0,
+        .max = 1,
+    },
+    {
+        .name = "DRS Brake Threshold",
+        .ESE_background_color_variable = ESE_WET_BOX,
+        .ESE_value_color_variable = ESE_WET_COLOR,
+        .ESE_value_variable = ESE_WET_VAL,
+        .ESE_context_text_variable = "High TC & capped torque",
+        .value = {
+            .type = boolean,
+            .value = 0
+        },
+        .min = 0,
+        .max = 1,
+    },
+
 };
 
 // burnout value breaks everything (potentially s?)
