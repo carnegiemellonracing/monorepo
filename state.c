@@ -9,7 +9,7 @@
 #include "gpio.h"   // GPIO interface
 #include "can.h"    // can interface
 #include "stdlib.h"
-#include "ledStrip.h"
+#include "expanders.h"
 
 extern volatile bool flush_config_screen_to_cdc;
 /** @brief declaration of config screen variables */
@@ -60,7 +60,7 @@ void regenUpButton(bool pressed) {
     if (regenStep < REGEN_STEP_NUM) {
         regenStep++;
     }
-    setNumLeds(regenStep);
+    // setNumLeds(regenStep);
 }
 /**
  * @brief Handles regen down button presses.
@@ -81,7 +81,7 @@ void regenDownButton(bool pressed) {
     if (regenStep > 0) {
         regenStep--;
     }
-    setNumLeds(regenStep);
+    // setNumLeds(regenStep);
 }
 
 void exitConfigScreen(){

@@ -12,7 +12,7 @@
 
 #include "state.h"      // state handling stuff
 #include "gpio.h"       // Interface to implement
-#include "ledStrip.h"   // LED strip interface
+#include "expanders.h"   // GPIO expanders interface
 
 /** @brief Maximum number of button events in the queue. */
 #define BUTTON_EVENTS_MAX 64
