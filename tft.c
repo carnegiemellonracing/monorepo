@@ -20,7 +20,7 @@
 #include "adc.h"
 
 /** @brief Expected chip ID. */
-#define TFT_CHIP_ID 0x00011208
+#define TFT_CHIP_ID 0x00011308
 
 /** @brief Display reset time, in milliseconds. */
 #define TFT_RESET_MS 50
@@ -262,22 +262,23 @@ static void tftUpdate(void *pvParameters) {
 
     /** @brief Display register initialization values. */
     static const tftInit_t tftInits[] = {
-        { .addr = TFT_ADDR_HCYCLE, .val = 408 },
-        { .addr = TFT_ADDR_HOFFSET, .val = 70 },
+        { .addr = TFT_ADDR_HCYCLE, .val = 928 },
+        { .addr = TFT_ADDR_HOFFSET, .val = 88 },
         { .addr = TFT_ADDR_HSYNC0, .val = 0 },
-        { .addr = TFT_ADDR_HSYNC1, .val = 10 },
-        { .addr = TFT_ADDR_VCYCLE, .val = 263 },
-        { .addr = TFT_ADDR_VOFFSET, .val = 13 },
+        { .addr = TFT_ADDR_HSYNC1, .val = 48 },
+        { .addr = TFT_ADDR_VCYCLE, .val = 525 },
+        { .addr = TFT_ADDR_VOFFSET, .val = 32 },
         { .addr = TFT_ADDR_VSYNC0, .val = 0 },
-        { .addr = TFT_ADDR_VSYNC1, .val = 2 },
-        { .addr = TFT_ADDR_SWIZZLE, .val = 2 },
-        { .addr = TFT_ADDR_PCLK_POL, .val = 1 },
-        { .addr = TFT_ADDR_CSPREAD, .val = 0 },
-        { .addr = TFT_ADDR_HSIZE, .val = 320 },
-        { .addr = TFT_ADDR_VSIZE, .val = 240 },
+        { .addr = TFT_ADDR_VSYNC1, .val = 3 },
+        { .addr = TFT_ADDR_SWIZZLE, .val = 0 },
+        { .addr = TFT_ADDR_DITHER, .val = 1 },
+        { .addr = TFT_ADDR_PCLK_POL, .val = 0 },
+        { .addr = TFT_ADDR_CSPREAD, .val = 1 },
+        { .addr = TFT_ADDR_HSIZE, .val = 800 },
+        { .addr = TFT_ADDR_VSIZE, .val = 480 },
         { .addr = TFT_ADDR_GPIOX_DIR, .val = (1 << 15) },
         { .addr = TFT_ADDR_GPIOX, .val = (1 << 15) },
-        { .addr = TFT_ADDR_PCLK, .val = 6 }
+        { .addr = TFT_ADDR_PCLK, .val = 2 }
     };
 
     tft_t *tft = pvParameters;
@@ -601,7 +602,7 @@ void tftInit(void) {
             { .port = GPIOC, .pin = GPIO_PIN_5 }
         },
         .sck = { .port = GPIOB, .pin = GPIO_PIN_1 },
-        .nss = { .port = GPIOC, .pin = GPIO_PIN_11 }
+        .nss = { .port = GPIOC, .pin = GPIO_PIN_1 }
     };
 
     cmr_qspiInit(
