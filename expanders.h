@@ -40,7 +40,7 @@ typedef enum {
 } expanderLED_t;
 
 void expandersInit(void);
-bool expanderGetButton(expanderButton_t button);
+bool expanderGetButtonPressed(expanderButton_t button);
 uint8_t expanderGetRotary(expanderRotary_t rotary);
 uint32_t expanderGetClutch(expanderClutch_t clutch);
 void expanderSetLED(expanderLED_t led, bool on);

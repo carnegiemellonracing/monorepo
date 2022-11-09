@@ -28,11 +28,10 @@ typedef enum {
 } pca9554Cmd_t;
 
 typedef struct {
-    uint16_t expanderAddr;
+    uint16_t expanderAddress;
     uint8_t port;
     uint8_t pin;
-    bool value;
-} expanderButtonState_t;
+} expanderButtonConfig_t;
 
 
 #endif /* EXPANDERS_H */
