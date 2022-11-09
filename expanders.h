@@ -8,6 +8,8 @@
 #ifndef EXPANDERS_H
 #define EXPANDERS_H
 
+#include <stdbool.h>
+
 typedef enum {
     EXP_DASH_BUTTON_1 = 0,
     EXP_DASH_BUTTON_2,
@@ -35,7 +37,7 @@ typedef enum {
     EXP_LED_1 = 0,
     EXP_LED_2,
     EXP_LED_LEN
-} expanderLED_t
+} expanderLED_t;
 
 void expandersInit(void);
 bool expanderGetButton(expanderButton_t button);

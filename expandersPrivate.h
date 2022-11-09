@@ -18,8 +18,21 @@ typedef enum {
     PCA9555_POL_INV_PORT_1,         /** Write polarity inversion to port 1 */
     PCA9555_CONFIG_PORT_0,          /** Write I/O direction config to port 0 */
     PCA9555_CONFIG_PORT_1           /** Write I/O direction config to port 0 */
-} pca9555PCA9555_t;
+} pca9555Cmd_t;
 
+typedef enum {
+    PCA9554_INPUT_PORT = 0x00,    /** Read input */
+    PCA9554_OUTPUT_PORT,          /** Write output */
+    PCA9554_POL_INV_PORT,         /** Write polarity inversion */
+    PCA9554_CONFIG_PORT,          /** Write I/O direction config */
+} pca9554Cmd_t;
+
+typedef struct {
+    uint16_t expanderAddr;
+    uint8_t port;
+    uint8_t pin;
+    bool value;
+} expanderButtonState_t;
 
 
 #endif /* EXPANDERS_H */

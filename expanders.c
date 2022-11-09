@@ -21,23 +21,90 @@
 static cmr_i2c_t i2c;
 
 /** @brief DIM I2C address */
-static uint32_t ownAddress = 0x00; // 0x00 = 0b0000000
+static const uint32_t ownAddress = 0x00; // 0x00 = 0b0000000
 
 // TODO: Fix addresses
 /** @brief Main Board Digital 1 expander I2C address */
-static uint16_t mainDigital1Address = 0x27; // 0x27 = 0b0100111
+static const uint16_t mainDigital1Address = 0x27; // 0x27 = 0b0100111
 
 /** @brief Main Board Digital 2 expander I2C address */
-static uint16_t mainDigital2Address = 0x26; // 0x26 = 0b0100110
+static const uint16_t mainDigital2Address = 0x26; // 0x26 = 0b0100110
 
 /** @brief Daughter Board Digital expander I2C address */
-static uint16_t daughterDigitalAddress = 0x27; // 0x27 = 0b0100111
+static const uint16_t daughterDigitalAddress = 0x25; // 0x27 = 0b0100101
 
 /** @brief Daughter Board Analog expander I2C address */
-static uint16_t daughterAnalogAddress = 0x27; // 0x27 = 0b0100111
+static const uint16_t daughterAnalogAddress = 0x27; // 0x27 = 0b0100111
 
 /** @brief I2C Timeout (milliseconds). */
-static uint32_t i2cTimeout_ms = 1;
+static const uint32_t i2cTimeout_ms = 1;
+
+/**
+ * @brief Array of expander button config and states
+ * 
+ */
+static expanderButtonState_t buttons[EXP_BUTTON_LEN] = {
+    [EXP_DASH_BUTTON_1] = {
+        .expanderAddr = mainDigital2Address,
+        .port = 1,
+        .pin = 2,
+        .value = false
+    },
+    [EXP_DASH_BUTTON_2] = {
+        .expanderAddr = mainDigital2Address,
+        .port = 1,
+        .pin = 3,
+        .value = false
+    },
+    [EXP_DASH_BUTTON_3] = {
+        .expanderAddr = mainDigital2Address,
+        .port = 1,
+        .pin = 4,
+        .value = false
+    },
+    [EXP_DASH_BUTTON_4] = {
+        .expanderAddr = mainDigital2Address,
+        .port = 1,
+        .pin = 5,
+        .value = false
+    },
+    [EXP_WHEEL_BUTTON_1] = {
+        .expanderAddr = daughterDigitalAddress,
+        .port = 0,
+        .pin = 0,
+        .value = false
+    },
+    [EXP_WHEEL_BUTTON_2] = {
+        .expanderAddr = daughterDigitalAddress,
+        .port = 0,
+        .pin = 1,
+        .value = false
+    },
+    [EXP_WHEEL_BUTTON_3] = {
+        .expanderAddr = daughterDigitalAddress,
+        .port = 0,
+        .pin = 2,
+        .value = false
+    },
+};
+
+bool expanderGetButton(expanderButton_t button)
+{
+    return buttons[button].value;
+}
+
+uint8_t expanderGetRotary(expanderRotary_t rotary)
+{
+    return 0;
+}
+uint32_t expanderGetClutch(expanderClutch_t clutch)
+{
+    return 0;
+}
+void expanderSetLED(expanderLED_t led, bool on)
+{
+    return;
+}
 
 /**
  * @brief Initializes the GPIO expander interface.
@@ -63,7 +130,13 @@ void expandersInit(void) {
         0xFC    // 0b11111100
     };
 
-    // Transmit config to main digital expanders
+    // Daughter Board Digital expander has all inputs
+    uint8_t daughterDigitalConfig[2] = {
+        PCA9554_CONFIG_PORT,
+        0xFF
+    };
+
+    // Transmit config to expanders
     cmr_i2cTX(
         &i2c,
         mainDigital1Address, mainDigital1Config,
@@ -74,6 +147,12 @@ void expandersInit(void) {
         &i2c,
         mainDigital2Address, mainDigital2Config,
         sizeof(mainDigital2Config) / sizeof(mainDigital2Config[0]),
+        i2cTimeout_ms
+    );
+    cmr_i2cTX(
+        &i2c,
+        daughterDigitalAddress, daughterDigitalConfig,
+        sizeof(daughterDigitalConfig) / sizeof(daughterDigitalConfig[0]),
         i2cTimeout_ms
     );
 
