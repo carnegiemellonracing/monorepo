@@ -8,7 +8,40 @@
 #ifndef EXPANDERS_H
 #define EXPANDERS_H
 
+typedef enum {
+    EXP_DASH_BUTTON_1 = 0,
+    EXP_DASH_BUTTON_2,
+    EXP_DASH_BUTTON_3,
+    EXP_DASH_BUTTON_4,
+    EXP_WHEEL_BUTTON_1,
+    EXP_WHEEL_BUTTON_2,
+    EXP_WHEEL_BUTTON_3,
+    EXP_BUTTON_LEN
+} expanderButton_t;
+
+typedef enum {
+    EXP_ROTARY_1 = 0,
+    EXP_ROTARY_2,
+    EXP_ROTARY_LEN
+} expanderRotary_t;
+
+typedef enum {
+    EXP_CLUTCH_1 = 0,
+    EXP_CLUTCH_2,
+    EXP_CLUTCH_LEN
+} expanderClutch_t;
+
+typedef enum {
+    EXP_LED_1 = 0,
+    EXP_LED_2,
+    EXP_LED_LEN
+} expanderLED_t
+
 void expandersInit(void);
+bool expanderGetButton(expanderButton_t button);
+uint8_t expanderGetRotary(expanderRotary_t rotary);
+uint32_t expanderGetClutch(expanderClutch_t clutch);
+void expanderSetLED(expanderLED_t led, bool on);
 
 #endif /* EXPANDERS_H */
 
