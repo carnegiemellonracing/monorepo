@@ -208,6 +208,14 @@ void expandersInit(void) {
         sizeof(daughterDigitalConfig) / sizeof(daughterDigitalConfig[0]),
         i2cTimeout_ms
     );
+    
+    cmr_taskInit(
+        &expanderUpdate100Hz_task,
+        "GPIO Expander Update 100Hz",
+        expanderUpdate100Hz_priority,
+        expanderUpdate100Hz,
+        NULL
+    );
 
 }
 
