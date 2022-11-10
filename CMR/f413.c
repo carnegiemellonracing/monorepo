@@ -164,23 +164,22 @@ void _platform_canInit(
     IRQn_Type irqRX0;
     IRQn_Type irqRX1;
     IRQn_Type irqSCE;
-    switch ((uintptr_t)instance)
-    {
-#define CAN_INTERRUPT_CONFIG(num)     \
-    case CAN##num##_BASE:             \
-        canIdx = num - 1;             \
-        irqTX = CAN##num##_TX_IRQn;   \
-        irqRX0 = CAN##num##_RX0_IRQn; \
-        irqRX1 = CAN##num##_RX1_IRQn; \
-        irqSCE = CAN##num##_SCE_IRQn; \
-        break;
-        CAN_FOREACH(CAN_INTERRUPT_CONFIG)
+    switch ((uintptr_t) instance) {
+#define CAN_INTERRUPT_CONFIG(num) \
+        case CAN ## num ## _BASE: \
+            canIdx = num - 1; \
+            irqTX = CAN ## num ## _TX_IRQn; \
+            irqRX0 = CAN ## num ## _RX0_IRQn; \
+            irqRX1 = CAN ## num ## _RX1_IRQn; \
+            irqSCE = CAN ## num ## _SCE_IRQn; \
+            break;
+CAN_FOREACH(CAN_INTERRUPT_CONFIG)
 #undef CAN_INTERRUPT_CONFIG
-    default:
-        cmr_panic("Unknown CAN instance!");
+        default:
+            cmr_panic("Unknown CAN instance!");
     }
 
-    cmr_canInterrupts[canIdx] = (cmr_canInterrupt_t){
+    cmr_canInterrupts[canIdx] = (cmr_canInterrupt_t) {
         .handle = &can->handle
     };
     HAL_NVIC_SetPriority(irqTX, 5, 0);
@@ -216,15 +215,14 @@ void _platform_canFilter(
         const cmr_canFilter_t *filter = filters + i;
 
         uint32_t bank = i;
-        if (instance == CAN2)
-        {
+        if (instance == CAN2) {
             // CAN2 uses banks 14-27.
             bank += CMR_CAN_FILTERBANKS;
         }
 
         uint32_t filterMode = filter->isMask
-                                  ? CAN_FILTERMODE_IDMASK
-                                  : CAN_FILTERMODE_IDLIST;
+            ? CAN_FILTERMODE_IDMASK
+            : CAN_FILTERMODE_IDLIST;
 
         // In 16 bit ID list mode, FilterIdHigh, FilterIdLow, FilterMaskIdHigh,
         // and FilterMaskIdLow all serve as a whitelist of left-aligned 11-bit
@@ -232,16 +230,17 @@ void _platform_canFilter(
         // See RM0430 32.7.4 Fig. 387.
         const uint16_t CMR_CAN_ID_FILTER_SHIFT = 5;
         CAN_FilterTypeDef config = {
-            .FilterIdHigh = filter->ids[0] << CMR_CAN_ID_FILTER_SHIFT,
-            .FilterIdLow = filter->ids[1] << CMR_CAN_ID_FILTER_SHIFT,
-            .FilterMaskIdHigh = filter->ids[2] << CMR_CAN_ID_FILTER_SHIFT,
-            .FilterMaskIdLow = filter->ids[3] << CMR_CAN_ID_FILTER_SHIFT,
-            .FilterFIFOAssignment = filter->rxFIFO,
-            .FilterBank = bank,
-            .FilterMode = filterMode,
-            .FilterScale = CAN_FILTERSCALE_16BIT,
-            .FilterActivation = ENABLE,
-            .SlaveStartFilterBank = CMR_CAN_FILTERBANKS};
+            .FilterIdHigh           = filter->ids[0] << CMR_CAN_ID_FILTER_SHIFT,
+            .FilterIdLow            = filter->ids[1] << CMR_CAN_ID_FILTER_SHIFT,
+            .FilterMaskIdHigh       = filter->ids[2] << CMR_CAN_ID_FILTER_SHIFT,
+            .FilterMaskIdLow        = filter->ids[3] << CMR_CAN_ID_FILTER_SHIFT,
+            .FilterFIFOAssignment   = filter->rxFIFO,
+            .FilterBank             = bank,
+            .FilterMode             = filterMode,
+            .FilterScale            = CAN_FILTERSCALE_16BIT,
+            .FilterActivation       = ENABLE,
+            .SlaveStartFilterBank   = CMR_CAN_FILTERBANKS
+        };
 
         if (HAL_CAN_ConfigFilter(&can->handle, &config) != HAL_OK)
         {
@@ -285,7 +284,6 @@ void _platform_rccSystemClockEnable(void)
         cmr_panic("HAL_RCC_OscConfig() failed!");
     }
 
-    // Initializes the CPU, AHB and APB busses clocks
     // Initializes the CPU, AHB and APB busses clocks
     RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
                                   | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
