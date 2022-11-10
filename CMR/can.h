@@ -8,7 +8,7 @@
 #ifndef CMR_CAN_H
 #define CMR_CAN_H
 
-#include <stm32f4xx_hal.h>  // HAL_CAN_MODULE_ENABLED,
+#include "platform.h"       // HAL_CAN_MODULE_ENABLED,
                             // CAN_HandleTypeDef, CAN_TypeDef
 
 #ifdef HAL_CAN_MODULE_ENABLED
@@ -142,6 +142,20 @@ int cmr_canTX(
 
 void cmr_canFieldEnable(uint8_t *field, const void *value, size_t len);
 void cmr_canFieldDisable(uint8_t *field, const void *value, size_t len);
+uint32_t cmr_canGPIOAF(CAN_TypeDef *instance, GPIO_TypeDef *port);
+void cmr_canFilter(cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen);
+
+/* Platform-specific external dependencies (don't expose to application code) */
+extern uint32_t _platform_canGPIOAF(CAN_TypeDef *instance, GPIO_TypeDef *port);
+extern void _platform_canFilter(cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen);
+extern void _platform_canInit(
+    cmr_can_t *can, CAN_TypeDef *instance,
+    cmr_canBitRate_t bitRate,
+    cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
+    cmr_canRXCallback_t rxCallback,
+    GPIO_TypeDef *rxPort, uint16_t rxPin,
+    GPIO_TypeDef *txPort, uint16_t txPin
+);
 
 #endif /* HAL_CAN_MODULE_ENABLED */
 

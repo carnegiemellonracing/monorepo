@@ -59,12 +59,8 @@ static void cmr_adcConfigChannels(cmr_adc_t *adc) {
             cmr_panic("Invalid ADC channel!");
         }
 
-        ADC_ChannelConfTypeDef channelConfig = {
-            .Channel = channel->channel,
-            .Rank = i + 1,  // HAL needs Rank to be from 1 to 16
-            .SamplingTime = channel->samplingTime,
-            .Offset = 0     // reserved, set to 0
-        };
+        // Rank goes from 1 to 16
+        ADC_ChannelConfTypeDef channelConfig = _platform_adcChannelConfig(channel, (uint32_t) i+1);
 
         if (HAL_ADC_ConfigChannel(&adc->handle, &channelConfig) != HAL_OK) {
             cmr_panic("HAL_ADC_ConfigChannel() failed!");
@@ -73,13 +69,7 @@ static void cmr_adcConfigChannels(cmr_adc_t *adc) {
         // Configure the pin for analog use.
         cmr_rccGPIOClockEnable(channel->port);
 
-        GPIO_InitTypeDef pinConfig = {
-            .Pin = channel->pin,
-            .Mode = GPIO_MODE_ANALOG,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW,
-            .Alternate = 0
-        };
+        GPIO_InitTypeDef pinConfig = _platform_adcPinConfig(channel);
 
         HAL_GPIO_Init(channel->port, &pinConfig);
     }
@@ -104,30 +94,7 @@ void cmr_adcInit(
         cmr_panic("Too many channels");
     }
 
-    *adc = (cmr_adc_t) {
-        .handle = {
-            .Instance = instance,
-
-            // Configure ADC in discontinuous scan mode.
-            // This will allow conversion of a series of channels one at a time.
-            .Init = {
-                .ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4,
-                .Resolution = ADC_RESOLUTION_12B,
-                .ScanConvMode = ENABLE,
-                .ContinuousConvMode = DISABLE,
-                .DiscontinuousConvMode = ENABLE,
-                .NbrOfDiscConversion = 1,
-                .ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE,
-                .ExternalTrigConv = ADC_SOFTWARE_START,
-                .DataAlign = ADC_DATAALIGN_RIGHT,
-                .NbrOfConversion = channelsLen,
-                .DMAContinuousRequests = DISABLE,
-                .EOCSelection = ADC_EOC_SINGLE_CONV
-            }
-        },
-        .channels = channels,
-        .channelsLen = channelsLen
-    };
+    _platform_adcInit(adc, instance, channels, channelsLen);
 
     cmr_rccADCClockEnable(instance);
 

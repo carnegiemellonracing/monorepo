@@ -1,3 +1,4 @@
+#ifdef F413
 /**
   ******************************************************************************
   * @file      startup_stm32f413xx.s
@@ -591,3 +592,4 @@ g_pfnVectors:
    .weak      DFSDM2_FLT3_IRQHandler
    .thumb_set DFSDM2_FLT3_IRQHandler,Default_Handler
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+#endif /* F413 */

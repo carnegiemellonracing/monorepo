@@ -974,6 +974,23 @@ typedef struct {
 } cmr_can_controls_pid_debug_t;
 
 // ------------------------------------------------------------------------------------------------
+// DRS
+
+typedef struct {
+	int32_t drs_servo_angle;
+    int32_t drs_dim_status;
+} cmr_canDRSControls_t;
+
+/** @brief Represents the car's current Drag Reduction Mode. */
+typedef enum {
+    CMR_CAN_DRS_UNKNOWN = 0,    /**< @brief Unknown Gear State */
+    CMR_CAN_DRS_DRIVER_HOLD,    /**< @brief Hold to open */
+    CMR_CAN_DRS_DRIVER_TOGGLE,  /**< @brief Toggle to open/close */
+    CMR_CAN_DRS_BRAKE,          /**< @brief Driver control + off on brake */
+    CMR_CAN_DRS_ACCEL,          /**< @brief For accel event - auto on and off */
+    CMR_CAN_DRS_GEAR_LEN
+} cmr_canDRSMode_t;
+// ------------------------------------------------------------------------------------------------
 // SAE Provided EMD definitions
 
 typedef struct {

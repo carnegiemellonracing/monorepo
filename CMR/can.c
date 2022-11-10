@@ -10,89 +10,10 @@
 #ifdef HAL_CAN_MODULE_ENABLED
 
 #include <string.h> // memcpy()
+#include <stdbool.h> // bool
 
 #include "rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
 #include "panic.h"  // cmr_panic()
-
-/** @brief Total number of hardware TX mailboxes. */
-static const size_t CAN_TX_MAILBOXES = 3;
-
-/** @brief CAN interrupt configuration. */
-typedef struct {
-    CAN_HandleTypeDef *handle;  /**< @brief The handle. */
-} cmr_canInterrupt_t;
-
-/**
- * @brief All CAN interrupt configurations, indexed by port.
- *
- * There are 3 CAN controllers on the STM32F413 (CAN1, CAN2, CAN3).
- *
- * @note This array maps CAN1 to index 0, CAN2 to 1, etc.
- */
-static cmr_canInterrupt_t cmr_canInterrupts[3];
-
-/**
- * @brief Instantiates the macro for each CAN interface.
- *
- * @param f The macro to instantiate.
- */
-#define CAN_FOREACH(f) \
-    f(1) \
-    f(2) \
-    f(3)
-
-/**
- * @brief Defines interrupt handlers for each CAN interface.
- *
- * @param can The CAN interface number.
- */
-#define CAN_IRQ_HANDLERS(can) \
-    void CAN ## can ## _TX_IRQHandler(void) { \
-        HAL_CAN_IRQHandler(cmr_canInterrupts[can - 1].handle); \
-    } \
-    \
-    void CAN ## can ## _RX0_IRQHandler(void) { \
-        HAL_CAN_IRQHandler(cmr_canInterrupts[can - 1].handle); \
-    } \
-    \
-    void CAN ## can ## _RX1_IRQHandler(void) { \
-        HAL_CAN_IRQHandler(cmr_canInterrupts[can - 1].handle); \
-    } \
-    \
-    void CAN ## can ## _SCE_IRQHandler(void) { \
-        HAL_CAN_IRQHandler(cmr_canInterrupts[can - 1].handle); \
-    }
-CAN_FOREACH(CAN_IRQ_HANDLERS)
-#undef CAN_IRQ_HANDLERS
-
-/**
- * @brief Determines the GPIO alternate function for the given CAN interface.
- *
- * @param can The CAN interface.
- * @param port The GPIO port.
- *
- * @return The GPIO alternate function.
- */
-static uint32_t cmr_canGPIOAF(CAN_TypeDef *instance, GPIO_TypeDef *port) {
-    switch ((uintptr_t) instance) {
-        case CAN1_BASE:
-            switch ((uintptr_t) port) {
-                case GPIOA_BASE:
-                case GPIOD_BASE:
-                    return GPIO_AF9_CAN1;
-                case GPIOB_BASE:
-                    return GPIO_AF8_CAN1;
-                default:
-                    cmr_panic("Unknown/unspported GPIO port!");
-            }
-        case CAN2_BASE:
-            return GPIO_AF9_CAN2;
-        case CAN3_BASE:
-            return GPIO_AF11_CAN3;
-        default:
-            cmr_panic("Unknown CAN instance!");
-    }
-}
 
 /**
  * @brief Gets the corresponding CAN interface from the HAL handle.
@@ -361,80 +282,15 @@ void cmr_canInit(
     GPIO_TypeDef *rxPort, uint16_t rxPin,
     GPIO_TypeDef *txPort, uint16_t txPin
 ) {
-    *can = (cmr_can_t) {
-        .handle = {
-            .Instance = instance,
-            .Init = {
-                .Prescaler = 0,
-                .Mode = CAN_MODE_NORMAL,
-                .SyncJumpWidth = CAN_SJW_2TQ,
-                .TimeSeg1 = CAN_BS1_6TQ,
-                .TimeSeg2 = CAN_BS2_1TQ,
-                .TimeTriggeredMode = DISABLE,
-                .AutoBusOff = ENABLE,
-                .AutoWakeUp = DISABLE,
-                .AutoRetransmission = ENABLE,
-                .ReceiveFifoLocked = DISABLE,
-                .TransmitFifoPriority = DISABLE
-            }
-        },
-
-        .rxMeta = rxMeta,
-        .rxMetaLen = rxMetaLen,
-        .rxCallback = rxCallback
-    };
-
-    // These numbers assume 48 MHz ABP1 peripheral clock frequency
-    // 48 MHz / (6 + 1 + 1 time quanta) / Prescaler = bitRate
-    switch (bitRate) {
-        case CMR_CAN_BITRATE_250K:
-            can->handle.Init.Prescaler = 24;
-            break;
-        case CMR_CAN_BITRATE_500K:
-            can->handle.Init.Prescaler = 12;
-            break;
-        case CMR_CAN_BITRATE_1M:
-            can->handle.Init.Prescaler = 6;
-            break;
-    }
-
-    can->txSem = xSemaphoreCreateCountingStatic(
-        CAN_TX_MAILBOXES, CAN_TX_MAILBOXES, &can->txSemBuf
+    /* Do any platform-specific initialization */
+    _platform_canInit(
+        can, instance,
+        bitRate,
+        rxMeta, rxMetaLen,
+        rxCallback,
+        rxPort, rxPin,
+        txPort, txPin
     );
-    configASSERT(can->txSem != NULL);
-
-    // Configure interrupts.
-    size_t canIdx;
-    IRQn_Type irqTX;
-    IRQn_Type irqRX0;
-    IRQn_Type irqRX1;
-    IRQn_Type irqSCE;
-    switch ((uintptr_t) instance) {
-#define CAN_INTERRUPT_CONFIG(num) \
-        case CAN ## num ## _BASE: \
-            canIdx = num - 1; \
-            irqTX = CAN ## num ## _TX_IRQn; \
-            irqRX0 = CAN ## num ## _RX0_IRQn; \
-            irqRX1 = CAN ## num ## _RX1_IRQn; \
-            irqSCE = CAN ## num ## _SCE_IRQn; \
-            break;
-CAN_FOREACH(CAN_INTERRUPT_CONFIG)
-#undef CAN_INTERRUPT_CONFIG
-        default:
-            cmr_panic("Unknown CAN instance!");
-    }
-
-    cmr_canInterrupts[canIdx] = (cmr_canInterrupt_t) {
-        .handle = &can->handle
-    };
-    HAL_NVIC_SetPriority(irqTX, 5, 0);
-    HAL_NVIC_SetPriority(irqRX0, 5, 0);
-    HAL_NVIC_SetPriority(irqRX1, 5, 0);
-    HAL_NVIC_SetPriority(irqSCE, 5, 0);
-    HAL_NVIC_EnableIRQ(irqTX);
-    HAL_NVIC_EnableIRQ(irqRX0);
-    HAL_NVIC_EnableIRQ(irqRX1);
-    HAL_NVIC_EnableIRQ(irqSCE);
 
     cmr_rccCANClockEnable(instance);
     cmr_rccGPIOClockEnable(rxPort);
@@ -452,7 +308,7 @@ CAN_FOREACH(CAN_INTERRUPT_CONFIG)
 
     // Configure CAN TX pin.
     pinConfig.Pin = txPin;
-    pinConfig.Alternate = cmr_canGPIOAF(instance, rxPort);
+    pinConfig.Alternate = cmr_canGPIOAF(instance, txPort);
     HAL_GPIO_Init(txPort, &pinConfig);
 
     if (HAL_CAN_Init(&can->handle) != HAL_OK) {
@@ -476,91 +332,6 @@ CAN_FOREACH(CAN_INTERRUPT_CONFIG)
     )) {
         cmr_panic("HAL_CAN_ActivateNotification() failed!");
     }
-}
-
-/**
- * @brief Configures a filter bank with 4 CAN IDs to filter.
- *
- * @param can The CAN interface to configure.
- * @param filters The filter configuration(s).
- * @param filtersLen The number of filters. Must be less than
- * `CMR_CAN_FILTERBANKS`.
- */
-void cmr_canFilter(
-    cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen
-) {
-    if (filtersLen >= CMR_CAN_FILTERBANKS) {
-        cmr_panic("Too many filter banks!");
-    }
-
-    CAN_TypeDef *instance = can->handle.Instance;
-
-    for (size_t i = 0; i < filtersLen; i++) {
-        const cmr_canFilter_t *filter = filters + i;
-
-        uint32_t bank = i;
-        if (instance == CAN2) {
-            // CAN2 uses banks 14-27.
-            bank += CMR_CAN_FILTERBANKS;
-        }
-
-        uint32_t filterMode = filter->isMask
-            ? CAN_FILTERMODE_IDMASK
-            : CAN_FILTERMODE_IDLIST;
-
-        // In 16 bit ID list mode, FilterIdHigh, FilterIdLow, FilterMaskIdHigh,
-        // and FilterMaskIdLow all serve as a whitelist of left-aligned 11-bit
-        // CAN IDs.
-        // See RM0430 32.7.4 Fig. 387.
-        const uint16_t CMR_CAN_ID_FILTER_SHIFT = 5;
-        CAN_FilterTypeDef config = {
-            .FilterIdHigh           = filter->ids[0] << CMR_CAN_ID_FILTER_SHIFT,
-            .FilterIdLow            = filter->ids[1] << CMR_CAN_ID_FILTER_SHIFT,
-            .FilterMaskIdHigh       = filter->ids[2] << CMR_CAN_ID_FILTER_SHIFT,
-            .FilterMaskIdLow        = filter->ids[3] << CMR_CAN_ID_FILTER_SHIFT,
-            .FilterFIFOAssignment   = filter->rxFIFO,
-            .FilterBank             = bank,
-            .FilterMode             = filterMode,
-            .FilterScale            = CAN_FILTERSCALE_16BIT,
-            .FilterActivation       = ENABLE,
-            .SlaveStartFilterBank   = CMR_CAN_FILTERBANKS
-        };
-
-        if (HAL_CAN_ConfigFilter(&can->handle, &config) != HAL_OK) {
-            cmr_panic("HAL_CAN_ConfigFilter() failed!");
-        }
-    }
-
-#ifdef CMR_ENABLE_BOOTLOADER
-        // if the bootloader is enabled, add an extra filter for the bootloader
-        // receive message, so that we reset
-        uint32_t bank = filtersLen;
-        if (instance == CAN2) {
-            // CAN2 uses banks 14-27.
-            bank += CMR_CAN_FILTERBANKS;
-        }
-        // In 16 bit ID list mode, FilterIdHigh, FilterIdLow, FilterMaskIdHigh,
-        // and FilterMaskIdLow all serve as a whitelist of left-aligned 11-bit
-        // CAN IDs.
-        // See RM0430 32.7.4 Fig. 387.
-        const uint16_t CMR_CAN_ID_FILTER_SHIFT = 5;
-        CAN_FilterTypeDef config = {
-            .FilterIdHigh           = CMR_CANID_OPENBLT_XMP_RX << CMR_CAN_ID_FILTER_SHIFT,
-            .FilterIdLow            = CMR_CANID_OPENBLT_XMP_RX << CMR_CAN_ID_FILTER_SHIFT,
-            .FilterMaskIdHigh       = CMR_CANID_OPENBLT_XMP_RX << CMR_CAN_ID_FILTER_SHIFT,
-            .FilterMaskIdLow        = CMR_CANID_OPENBLT_XMP_RX << CMR_CAN_ID_FILTER_SHIFT,
-            .FilterFIFOAssignment   = CAN_RX_FIFO0,
-            .FilterBank             = bank,
-            .FilterMode             = CAN_FILTERMODE_IDLIST,
-            .FilterScale            = CAN_FILTERSCALE_16BIT,
-            .FilterActivation       = ENABLE,
-            .SlaveStartFilterBank   = CMR_CAN_FILTERBANKS
-        };
-
-        if (HAL_CAN_ConfigFilter(&can->handle, &config) != HAL_OK) {
-            cmr_panic("HAL_CAN_ConfigFilter() failed!");
-        }
-#endif
 }
 
 /**
@@ -639,6 +410,32 @@ void cmr_canFieldDisable(uint8_t *field, const void *value, size_t len) {
     for (size_t i = 0; i < len; i++) {
         field[i] &= ~((const uint8_t *) value)[i];
     }
+}
+
+/**
+ * @brief Configures a filter bank with 4 CAN IDs to filter.
+ *
+ * @param can The CAN interface to configure.
+ * @param filters The filter configuration(s).
+ * @param filtersLen The number of filters. Must be less than
+ * `CMR_CAN_FILTERBANKS`.
+ */
+void cmr_canFilter(
+    cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen
+) {
+    _platform_canFilter(can, filters, filtersLen);
+}
+
+/**
+ * @brief Determines the GPIO alternate function for the given CAN interface.
+ *
+ * @param can The CAN interface.
+ * @param port The GPIO port.
+ *
+ * @return The GPIO alternate function.
+ */
+uint32_t cmr_canGPIOAF(CAN_TypeDef *instance, GPIO_TypeDef *port) {
+    return _platform_canGPIOAF(instance, port);
 }
 
 #endif /* HAL_CAN_MODULE_ENABLED */
