@@ -177,6 +177,24 @@ static expanderRotaryConfig_t rotaries[EXP_ROTARY_LEN] = {
     }
 };
 
+/**
+ * @brief Array of expander LED pin configs
+ * 
+ */
+static expanderPinConfig_t leds[EXP_LED_LEN] = {
+    [EXP_LED_1] = {
+        .expanderAddress = mainDigital2Address,
+        .port = 1,
+        .pin = 0
+    },
+    [EXP_LED_2] = {
+        .expanderAddress = mainDigital2Address,
+        .port = 1,
+        .pin = 1
+    }
+};
+
+
 /** @brief Array of bytes containing data for the pins of each digital GPIO expander */
 uint8_t mainDigital1Data[2];
 uint8_t mainDigital2Data[2];
@@ -191,7 +209,7 @@ static const TickType_t expanderUpdate100Hz_period_ms = 10;
 /** @brief GPIO expander update 100 Hz TX task. */
 static cmr_task_t expanderUpdate100Hz_task;
 
-void getExpanderData(uint16_t addr, uint8_t cmd, uint8_t *data, size_t len)
+static void getExpanderData(uint16_t addr, uint8_t cmd, uint8_t *data, size_t len)
 {
     cmr_i2cTX(&i2c, addr, &cmd, 1, i2cTimeout_ms);
     cmr_i2cRX(&i2c, addr, data, len, i2cTimeout_ms);
@@ -219,7 +237,7 @@ static void expanderUpdate100Hz(void *pvParameters) {
     }
 }
 
-static bool getDataBitFromConfig(expanderPinConfig_t config)
+static bool getPinValueFromConfig(expanderPinConfig_t config)
 {
     uint16_t addr = config.expanderAddress;
 
@@ -239,10 +257,61 @@ static bool getDataBitFromConfig(expanderPinConfig_t config)
     return data[config.port] & mask;
 }
 
+
+/**
+ * @brief Set digital expander output pin to value based on pin config
+ * 
+ * Reads the latest data from the target expander to ensure other output
+ * pins are not overridden by this write.
+ * 
+ * TODO: Better way of handling preventing overrides?
+ * 
+ * @param config 
+ * @param value 
+ */
+static void setPinValueFromConfig(expanderPinConfig_t config, bool value)
+{
+    uint16_t addr = config.expanderAddress;
+    uint8_t cmd[2];
+
+    if (addr == mainDigital1Address)
+    {
+        cmd[0] = PCA9555_OUTPUT_PORT_0 + config.port;
+        cmd[1] = mainDigital1Data[config.port];
+    }
+    else if (addr == mainDigital2Address)
+    {
+        cmd[0] = PCA9555_OUTPUT_PORT_0 + config.port;
+        cmd[1] = mainDigital2Data[config.port];
+    }
+    else if (addr == daughterDigitalAddress)
+    {
+        cmd[0] = PCA9554_OUTPUT_PORT;
+        cmd[1] = daughterDigitalData[config.port];
+    }
+    else
+    {
+        return;
+    }
+
+    // Clears only the bit we want to set, and sets it to value
+    uint8_t mask = 1 << config.pin;
+    cmd[1] &= ~mask;
+    if (value)
+        cmd[1] |= mask;
+
+    cmr_i2cTX(
+        &i2c,
+        addr, cmd,
+        sizeof(cmd) / sizeof(cmd[0]),
+        i2cTimeout_ms
+    );
+}
+
 bool expanderGetButtonPressed(expanderButton_t button)
 {
     expanderPinConfig_t buttonConfig = buttons[button];
-    return getDataBitFromConfig(buttonConfig);
+    return getPinValueFromConfig(buttonConfig);
 }
 
 expanderRotaryPosition_t expanderGetRotary(expanderRotary_t rotary)
@@ -251,7 +320,7 @@ expanderRotaryPosition_t expanderGetRotary(expanderRotary_t rotary)
 
     for (size_t pos = ROTARY_POS_1; pos < ROTARY_POS_LEN; pos++)
     {
-        if (getDataBitFromConfig(rotaryConfig.pins[pos]))
+        if (getPinValueFromConfig(rotaryConfig.pins[pos]))
         {
             return pos;
         }
@@ -262,9 +331,10 @@ uint32_t expanderGetClutch(expanderClutch_t clutch)
 {
     return 0;
 }
-void expanderSetLED(expanderLED_t led, bool on)
+void expanderSetLED(expanderLED_t led, bool isOn)
 {
-    return;
+    expanderPinConfig_t ledConfig = leds[led];
+    setPinValueFromConfig(ledConfig, isOn);
 }
 
 /**
