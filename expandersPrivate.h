@@ -8,6 +8,8 @@
 #ifndef EXPANDERS_PRIVATE_H
 #define EXPANDERS_PRIVATE_H
 
+#include "expanders.h"
+
 /** @brief Represents a PCA9555 command byte. */
 typedef enum {
     PCA9555_INPUT_PORT_0 = 0x00,    /** Read input from port 0 */
@@ -31,8 +33,11 @@ typedef struct {
     uint16_t expanderAddress;
     uint8_t port;
     uint8_t pin;
-} expanderButtonConfig_t;
+} expanderPinConfig_t;
 
+typedef struct {
+    expanderPinConfig_t pins[ROTARY_POS_LEN];
+} expanderRotaryConfig_t;
 
 #endif /* EXPANDERS_H */
 

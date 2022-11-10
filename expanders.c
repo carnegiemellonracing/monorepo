@@ -41,10 +41,10 @@ static const uint16_t daughterAnalogAddress = 0x27; // 0x27 = 0b0100111
 static const uint32_t i2cTimeout_ms = 1;
 
 /**
- * @brief Array of expander button config and states
+ * @brief Array of expander button pin configs
  * 
  */
-static expanderButtonConfig_t buttons[EXP_BUTTON_LEN] = {
+static expanderPinConfig_t buttons[EXP_BUTTON_LEN] = {
     [EXP_DASH_BUTTON_1] = {
         .expanderAddress = mainDigital2Address,
         .port = 1,
@@ -79,7 +79,102 @@ static expanderButtonConfig_t buttons[EXP_BUTTON_LEN] = {
         .expanderAddress = daughterDigitalAddress,
         .port = 0,
         .pin = 2
+    }
+};
+
+/**
+ * @brief Array of expander rotary pin configs
+ * 
+ */
+static expanderRotaryConfig_t rotaries[EXP_ROTARY_LEN] = {
+    [EXP_ROTARY_1] = {
+        .pins = {
+            [ROTARY_POS_1] = {
+                .expanderAddress = mainDigital2Address,
+                .port = 0,
+                .pin = 1
+            },
+            [ROTARY_POS_2] = {
+                .expanderAddress = mainDigital2Address,
+                .port = 0,
+                .pin = 3
+            },
+            [ROTARY_POS_3] = {
+                .expanderAddress = mainDigital2Address,
+                .port = 0,
+                .pin = 5
+            },
+            [ROTARY_POS_4] = {
+                .expanderAddress = mainDigital2Address,
+                .port = 0,
+                .pin = 7
+            },
+            [ROTARY_POS_5] = {
+                .expanderAddress = mainDigital1Address,
+                .port = 0,
+                .pin = 1
+            },
+            [ROTARY_POS_6] = {
+                .expanderAddress = mainDigital1Address,
+                .port = 0,
+                .pin = 3
+            },
+            [ROTARY_POS_7] = {
+                .expanderAddress = mainDigital1Address,
+                .port = 0,
+                .pin = 5
+            },
+            [ROTARY_POS_8] = {
+                .expanderAddress = mainDigital1Address,
+                .port = 0,
+                .pin = 7
+            }
+        }
     },
+    [EXP_ROTARY_2] = {
+        .pins = {
+            [ROTARY_POS_1] = {
+                .expanderAddress = mainDigital2Address,
+                .port = 0,
+                .pin = 0
+            },
+            [ROTARY_POS_2] = {
+                .expanderAddress = mainDigital2Address,
+                .port = 0,
+                .pin = 2
+            },
+            [ROTARY_POS_3] = {
+                .expanderAddress = mainDigital2Address,
+                .port = 0,
+                .pin = 4
+            },
+            [ROTARY_POS_4] = {
+                .expanderAddress = mainDigital2Address,
+                .port = 0,
+                .pin = 6
+            },
+            [ROTARY_POS_5] = {
+                .expanderAddress = mainDigital1Address,
+                .port = 0,
+                .pin = 0
+            },
+            [ROTARY_POS_6] = {
+                .expanderAddress = mainDigital1Address,
+                .port = 0,
+                .pin = 2
+            },
+            [ROTARY_POS_7] = {
+                .expanderAddress = mainDigital1Address,
+                .port = 0,
+                .pin = 4
+            },
+            [ROTARY_POS_8] = {
+                .expanderAddress = mainDigital1Address,
+                .port = 0,
+                .pin = 6
+            }
+        }
+    }
 };
 
 /** @brief Array of bytes containing data for the pins of each digital GPIO expander */
@@ -124,15 +219,13 @@ static void expanderUpdate100Hz(void *pvParameters) {
     }
 }
 
-
-bool expanderGetButtonPressed(expanderButton_t button)
+static bool getDataBitFromConfig(expanderPinConfig_t config)
 {
-    expanderButtonConfig_t buttonConfig = buttons[button];
-    uint16_t addr = buttonConfig.expanderAddress;
+    uint16_t addr = config.expanderAddress;
 
     // Select correct expander data based on config
     uint8_t *data;
-    if (addr == mainDigital1Address)        // Should never happen based on 23e config
+    if (addr == mainDigital1Address) 
         data = mainDigital1Data;
     else if (addr == mainDigital2Address)
         data = mainDigital2Data;
@@ -141,14 +234,29 @@ bool expanderGetButtonPressed(expanderButton_t button)
     else
         return false;
 
-    // Mask out bit corresponding to button
-    uint8_t mask = 1 << buttonConfig.pin;
-    return data[buttonConfig.port] & mask;
+    // Mask out bit corresponding to pin
+    uint8_t mask = 1 << config.pin;
+    return data[config.port] & mask;
 }
 
-uint8_t expanderGetRotary(expanderRotary_t rotary)
+bool expanderGetButtonPressed(expanderButton_t button)
 {
-    return 0;
+    expanderPinConfig_t buttonConfig = buttons[button];
+    return getDataBitFromConfig(buttonConfig);
+}
+
+expanderRotaryPosition_t expanderGetRotary(expanderRotary_t rotary)
+{
+    expanderRotaryConfig_t rotaryConfig = rotaries[rotary];
+
+    for (size_t pos = ROTARY_POS_1; pos < ROTARY_POS_LEN; pos++)
+    {
+        if (getDataBitFromConfig(rotaryConfig.pins[pos]))
+        {
+            return pos;
+        }
+    }
+    return ROTARY_POS_INVALID;
 }
 uint32_t expanderGetClutch(expanderClutch_t clutch)
 {

@@ -28,6 +28,19 @@ typedef enum {
 } expanderRotary_t;
 
 typedef enum {
+    ROTARY_POS_1 = 0,
+    ROTARY_POS_2,
+    ROTARY_POS_3,
+    ROTARY_POS_4,
+    ROTARY_POS_5,
+    ROTARY_POS_6,
+    ROTARY_POS_7,
+    ROTARY_POS_8,
+    ROTARY_POS_LEN,
+    ROTARY_POS_INVALID
+} expanderRotaryPosition_t;
+
+typedef enum {
     EXP_CLUTCH_1 = 0,
     EXP_CLUTCH_2,
     EXP_CLUTCH_LEN
@@ -41,7 +54,7 @@ typedef enum {
 
 void expandersInit(void);
 bool expanderGetButtonPressed(expanderButton_t button);
-uint8_t expanderGetRotary(expanderRotary_t rotary);
+expanderRotaryPosition_t expanderGetRotary(expanderRotary_t rotary);
 uint32_t expanderGetClutch(expanderClutch_t clutch);
 void expanderSetLED(expanderLED_t led, bool on);
 
