@@ -1,6 +1,6 @@
 /**
  * @file expandersPrivate.h
- * @brief Private GPIO expanders interface
+ * @brief Private GPIO/ADC expanders interface
  *
  * @author Carnegie Mellon Racing
  */

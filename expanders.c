@@ -32,10 +32,10 @@ static const uint16_t mainDigital1Address = 0x27; // 0x27 = 0b0100111
 static const uint16_t mainDigital2Address = 0x26; // 0x26 = 0b0100110
 
 /** @brief Daughter Board Digital expander I2C address */
-static const uint16_t daughterDigitalAddress = 0x25; // 0x27 = 0b0100101
+static const uint16_t daughterDigitalAddress = 0x25; // 0x25 = 0b0100101
 
 /** @brief Daughter Board Analog expander I2C address */
-static const uint16_t daughterAnalogAddress = 0x27; // 0x27 = 0b0100111
+static const uint16_t daughterAnalogAddress = 0x11; // 0x11 = 0b0010001
 
 /** @brief I2C Timeout (milliseconds). */
 static const uint32_t i2cTimeout_ms = 1;
@@ -331,10 +331,10 @@ uint32_t expanderGetClutch(expanderClutch_t clutch)
 {
     return 0;
 }
-void expanderSetLED(expanderLED_t led, bool isOn)
+void expanderSetLED(expanderLED_t led, bool on)
 {
     expanderPinConfig_t ledConfig = leds[led];
-    setPinValueFromConfig(ledConfig, isOn);
+    setPinValueFromConfig(ledConfig, on);
 }
 
 /**
