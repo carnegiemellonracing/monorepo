@@ -139,14 +139,16 @@ void vBMBSampleTask(void *pvParameters) {
 					if (!i2c_scanADC(BMBADCResponse[channel])) {
 						BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
 					}
-				}
-			}
-		}
 		if (!(i2c_disableI2CMux(BMBIndex))) {
 			BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
 		}
-
-		taskEXIT_CRITICAL();
+        taskEXIT_CRITICAL();
+        // increment the counter or reset if we just flashed
+        if (BMBFlashCounter >= LED_FLASH_COUNT) {
+            BMBFlashCounter = 0;
+        } else {
+            BMBFlashCounter++;
+        }
 
 		if(BMBTimeoutCount[BMBIndex] != BMB_TIMEOUT) {
 
