@@ -455,7 +455,7 @@ static void sendBMSMinMaxCellTemp(void) {
 
 static void sendBMSLowVoltage(void) {
     cmr_canBMSLowVoltage_t BMSLowVoltage = {
-        .safety_mV = (getSafetymillivolts()*15)/2000, // Convert mA to 2/15th mA //TODO: Gustav change this back?
+        .ibatt_mA = (getSafetymillivolts()*15)/2000, // Convert mA to 2/15th mA //TODO: Gustav change this back?
         .iDCDC_mA =0,
         .vAIR_mV = (getAIRmillivolts()*15)/2000, // Convert mV to 2/15th V
         .vbatt_mV= (getLVmillivolts()*15/2000), // Convert mV to 2/15th V

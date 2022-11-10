@@ -12,7 +12,8 @@ static uint8_t selectIOCurrent = 0x0;
 static cmr_i2c_t bmb_i2c;
 
 bool i2cInit(void) {
-    cmr_i2cInit(&bmb_i2c, I2C1,
+    cmr_i2cDmaInit(&bmb_i2c, I2C1,
+            DMA1_Stream0, DMA1_Stream1,
     		I2C_CLOCK_HI, 0, // 100kHz limited by the PCA9536 TODO: Check if own address should be 0
                 GPIOB, GPIO_PIN_8, // clock
                 GPIOB, GPIO_PIN_9); // data
@@ -39,32 +40,31 @@ bool i2cInit(void) {
 // bits 0 indicates mux failure, 1 indicates 4 IO expander
 // failure, 2 indicates ADC failure, 3 indicates 9 IO expander
 // failure
-/* uint16_t i2cVerifyConfigChain(void) { */
-/*     for (int bmb = 0; bmb < NUM_BMBS; bmb++) { */
-/*         uint8_t data = 0; */
-/*         if (cmr_i2cRX(&bmb_i2c, bms_mux_address[bmb], &data, */
-/*                   1, I2C_TIMEOUT) != 0) { */
-/*             return ((uint16_t)(i)) << 8; */
-/*         } */
-/*         if (data != 0x0) { */
-/*             return ((uint16_t)(i)) << 8; */
-/*         } */
+uint16_t i2cVerifyConfigChain(void) {
+    for (int bmb = 0; bmb < I2C_NUM_BMBS; bmb++) {
+        uint8_t data = 0;
+        if (cmr_i2cRX(&bmb_i2c, bms_mux_address[bmb], &data,
+                  1, I2C_TIMEOUT) != 0) {
+            return ((uint16_t)(bmb)) << 8;
+        }
+        if (data != 0x0) {
+            return ((uint16_t)(bmb)) << 8;
+        }
 
-/*         for (int side = 0; side < 2; side++) { */
-/*             // verified mux is reset to 0 */
-/*             // now enable the mux, check ADC and GPIO per side */
-/*             i2c_enableI2CMux(bmb, side); */
-/*             // now verify the 4 IO expander */
-/*             if */
-/*         } */
-/*     } */
-/*     return 0; */
-/* } */
+        for (int side = 0; side < 2; side++) {
+            // verified mux is reset to 0
+            // now enable the mux, check ADC and GPIO per side
+            i2c_enableI2CMux(bmb, side);
+            // now verify the 4 IO expander
+        }
+    }
+    return 0;
+}
 
 bool i2c_enableI2CMux(uint8_t bmb, uint8_t side) {
     // bit 2 is enable bit, bit 1 & 0 is the side (either 00 or 01)
     uint8_t data = 0x4 | side;
-    if(cmr_i2cTX(&bmb_i2c, bms_mux_address[bmb], &data, 1, I2C_TIMEOUT) != 0) {
+    if(cmr_i2cDmaTX(&bmb_i2c, bms_mux_address[bmb], &data, 1, I2C_TIMEOUT) != 0) {
         return false;
     }
     return true;
@@ -73,7 +73,7 @@ bool i2c_enableI2CMux(uint8_t bmb, uint8_t side) {
 bool i2c_disableI2CMux(uint8_t bmb) {
     // bit 2 is enable bit
     uint8_t data = 0x0;
-    if(cmr_i2cTX(&bmb_i2c, bms_mux_address[bmb], &data, 1, I2C_TIMEOUT) != 0) {
+    if(cmr_i2cDmaTX(&bmb_i2c, bms_mux_address[bmb], &data, 1, I2C_TIMEOUT) != 0) {
         return false;
     }
     return true;
@@ -82,7 +82,7 @@ bool i2c_disableI2CMux(uint8_t bmb) {
 bool i2c_configSelectMux() {
     // select control register, set them all to output
     uint8_t data[2] = {0x3, 0x00};
-    if (cmr_i2cTX(&bmb_i2c, BMS_SELECT_IO_ADDR, (uint8_t*)&data, 2, I2C_TIMEOUT) != 0) {
+    if (cmr_i2cDmaTX(&bmb_i2c, BMS_SELECT_IO_ADDR, (uint8_t*)&data, 2, I2C_TIMEOUT) != 0) {
         return false;
     }
     return true;
@@ -94,7 +94,7 @@ bool i2c_select4MuxChannel(uint8_t channel) {
     // save top 2 bits, overwrite bottom 2 bits
     selectIOCurrent = (selectIOCurrent & 0xC) | channel;
     uint8_t outData[2] = {0x1, selectIOCurrent};
-    if(cmr_i2cTX(&bmb_i2c, BMS_SELECT_IO_ADDR, (uint8_t*)&outData, 2, I2C_TIMEOUT) != 0) {
+    if(cmr_i2cDmaTX(&bmb_i2c, BMS_SELECT_IO_ADDR, (uint8_t*)&outData, 2, I2C_TIMEOUT) != 0) {
         return false;
     }
     return true;
@@ -104,7 +104,7 @@ bool i2c_selectMuxBlink() {
     // flip top 2 bits, don't flip bottom 2 bits
     selectIOCurrent = (~selectIOCurrent & 0xC) | (selectIOCurrent & 0x3);
     uint8_t outData[2] = {0x1, selectIOCurrent};
-    if(cmr_i2cTX(&bmb_i2c, BMS_SELECT_IO_ADDR, (uint8_t*)&outData, 2, I2C_TIMEOUT) != 0) {
+    if(cmr_i2cDmaTX(&bmb_i2c, BMS_SELECT_IO_ADDR, (uint8_t*)&outData, 2, I2C_TIMEOUT) != 0) {
         return false;
     }
     return true;
@@ -116,10 +116,10 @@ bool i2c_configADC() {
 	uint8_t setupByte = 0xF2;
 	// 0_00_0111_1 means {config_bit, scan_all, scan_to_A7, single_ended}
 	uint8_t configByte = 0x1F;
-	if (cmr_i2cTX(&bmb_i2c, BMS_ADC_ADDR, &setupByte, 1, I2C_TIMEOUT) != 0) {
+	if (cmr_i2cDmaTX(&bmb_i2c, BMS_ADC_ADDR, &setupByte, 1, I2C_TIMEOUT) != 0) {
 		return false;
 	}
-	if (cmr_i2cTX(&bmb_i2c, BMS_ADC_ADDR, &configByte, 1, I2C_TIMEOUT) != 0) {
+	if (cmr_i2cDmaTX(&bmb_i2c, BMS_ADC_ADDR, &configByte, 1, I2C_TIMEOUT) != 0) {
 		return false;
 	}
 	return true;
@@ -127,7 +127,7 @@ bool i2c_configADC() {
 
 bool i2c_scanADC(int16_t adcResponse[]) {
 	uint8_t buffer[16];
-	if (cmr_i2cRX(&bmb_i2c, BMS_ADC_ADDR, buffer, 16, I2C_TIMEOUT) != 0) {
+	if (cmr_i2cDmaRX(&bmb_i2c, BMS_ADC_ADDR, buffer, 16, I2C_TIMEOUT) != 0) {
 		return false;
 	}
 	for (int i = 0; i < 8; i++) {
@@ -147,11 +147,11 @@ bool i2c_pullUpCellBalanceIOExpander(uint8_t bmb) {
 	//These two registers will enable all the input pullups on the io expander
 	uint16_t data = ((0xF0) << 8) | 0xFF;
 	uint16_t data2 = ((0xF1) << 8) | 0x1;
-	if (cmr_i2cTX(&bmb_i2c, bms_cell_balancer_addresses[bmb], &data, 2,
+	if (cmr_i2cDmaTX(&bmb_i2c, bms_cell_balancer_addresses[bmb], &data, 2,
 			I2C_TIMEOUT) != 0) {
 		return false;
 	}
-	if (cmr_i2cTX(&bmb_i2c, bms_cell_balancer_addresses[bmb], &data2, 2,
+	if (cmr_i2cDmaTX(&bmb_i2c, bms_cell_balancer_addresses[bmb], &data2, 2,
 			I2C_TIMEOUT) != 0) {
 		return false;
 	}
@@ -162,11 +162,11 @@ bool i2c_cellBalance(uint8_t bmb, uint8_t cells, uint8_t cells1) {
 	//The first byte of each packet is the register address
 	uint16_t data = ((0xF2) << 8) | (cells);
 	uint16_t data2 = ((0xF3) << 8) | (cells);
-	if (cmr_i2cTX(&bmb_i2c, bms_cell_balancer_addresses[bmb], &data, 2,
+	if (cmr_i2cDmaTX(&bmb_i2c, bms_cell_balancer_addresses[bmb], &data, 2,
 			I2C_TIMEOUT) != 0) {
 		return false;
 	}
-	if (cmr_i2cTX(&bmb_i2c, bms_cell_balancer_addresses[bmb], &data2, 2,
+	if (cmr_i2cDmaTX(&bmb_i2c, bms_cell_balancer_addresses[bmb], &data2, 2,
 			I2C_TIMEOUT) != 0) {
 		return false;
 	}

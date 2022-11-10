@@ -107,7 +107,7 @@ void vBMBSampleTask(void *pvParameters) {
 				BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
 			} else {
 				//select through each of the mux channels
-				for (int channel = 0; channel < 3; channel++) {
+				for (int channel = 0; channel < 4; channel++) {
 					if (!i2c_select4MuxChannel(channel)
 							|| !i2c_scanADC(BMBADCResponse)) {
 						BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
@@ -147,7 +147,9 @@ void vBMBSampleTask(void *pvParameters) {
 							}
 						}
 					}
-
+                }
+            }
+        }
 		if (!(i2c_disableI2CMux(BMBIndex))) {
 			BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
 		}
@@ -223,8 +225,8 @@ void vBMBSampleTask(void *pvParameters) {
 		} else {
 			BMBIndex = 0;
 		}
-		vTaskDelayUntil(&xLastWakeTime, 5);
 	}
+    vTaskDelayUntil(&xLastWakeTime, 3);
 }
 
 // Temperature Transfer Functions
