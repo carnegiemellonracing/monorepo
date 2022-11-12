@@ -38,8 +38,8 @@ static cmr_task_t pumpControl_task;
 
 //extern cmr_sensor_t *sensors;
 
-uint16_t accum_temp;
-uint16_t inverter_temp;
+static uint16_t accum_temp;
+static uint16_t inverter_temp;
 
 /**
  * @brief Task for controlling the pumps.

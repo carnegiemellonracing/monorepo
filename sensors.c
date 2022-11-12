@@ -133,6 +133,7 @@ static int32_t adcConvSwitchTemp_dC(const cmr_sensor_t *s, uint32_t adcVal) {
     // Rth = (33000 / adcVal * (8 / 10000)) - 10000
     // Rth = (33000 / (adcVal * 8) / 10000) - 10000
     // Rth = (330,000,000 / (adcVal * 8)) - 10000
+    //if (adcVal == 0) return 0;
     uint32_t thermistorResistance_Ohm = (330000000 / (adcVal * 8)) - 10000;
 
     for (size_t i = 0; i < thermTempConvsSwitch_len; i++) {
