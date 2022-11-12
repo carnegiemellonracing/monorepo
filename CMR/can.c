@@ -14,6 +14,7 @@
 
 #include "rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
 #include "panic.h"  // cmr_panic()
+#include "bootloader.h" // cmr_bootloaderReceiveCallback()
 
 /**
  * @brief Gets the corresponding CAN interface from the HAL handle.
