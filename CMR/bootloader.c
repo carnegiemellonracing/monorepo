@@ -26,11 +26,32 @@ static void _VectorBase_Config(void)
   SCB->VTOR = (unsigned long)&g_pfnVectors[0];
 }
 
+/**
+ * @brief Initialize the bootloader, ie set the correct vectorbase after getting
+ * control from the bootloader
+ * @return none
+ */
 void cmr_bootloaderInit(void)
 {
 #ifdef CMR_ENABLE_BOOTLOADER
     _VectorBase_Config();
 #else
 #warning "Compiling without bootloader support"
+#endif
+}
+
+/**
+ * @brief Callback for every time that a message is received from CAN to
+ * check if we should system reset and enter bootloader
+ */
+void cmr_bootloaderReceiveCallback(CAN_RxHeaderTypeDef *msg, uint8_t *rxData)
+{
+#ifdef CMR_ENABLE_BOOTLOADER
+    if (msg->StdId == CMR_CANID_OPENBLT_XMP_RX) {
+        if (rxData[0] == 0xff && rxData[1] == CMR_ENABLE_BOOTLOADER) {
+            NVIC_SystemReset();
+        }
+        return;
+    }
 #endif
 }
