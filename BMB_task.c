@@ -36,6 +36,19 @@ static ADC_Mux_Channel_t ADCChannelLookupArr[NUM_ADC_CHANNELS][NUM_MUX_CHANNELS]
 										  {FIXED7, THERM6, THERM5, THERM4},
 										  {THERM3, FIXED8, THERM2, THERM1}};
 
+// Lookup array based on voltage divider on BMB
+static const float resistorRatios[VSENSE_CHANNELS_PER_BMB] = {
+                                                    0.930255795,
+                                                    0.465267366,
+                                                    0.312311305,
+                                                    0.231534444,
+                                                    0.186162767,
+                                                    0.154369093,
+                                                    0.133553292,
+                                                    0.116506069,
+                                                    0.103547992
+};
+
 
 // Counter for how many times until we flash the LED
 static const uint8_t LED_FLASH_COUNT = 5;
@@ -43,8 +56,7 @@ static uint8_t BMBFlashCounter = 0;
 
 //takes in adc output and cell index to get voltage value
 static int16_t adcOutputToVoltage(uint16_t ADC_val, int cell) {
-	const float resistorRatios[VSENSE_CHANNELS_PER_BMB];
-	return ((ADC_val / 1023.0) * 4096) * resistorRatios[cell % 10];
+	return ((ADC_val / 1023.0) * 4096) * resistorRatios[cell];
 }
 
 // Returns temperature in 1/10th degC given ADC
@@ -144,6 +156,7 @@ bool sampleOneBMB(uint8_t BMBIndex, uint8_t BMBNum, uint8_t BMBSide) {
         BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
         return false;
     }
+    return true;
 }
 
 void doCellBalanceOneBMB(uint8_t BMBIndex) {
