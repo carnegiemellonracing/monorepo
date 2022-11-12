@@ -55,3 +55,21 @@ void cmr_bootloaderReceiveCallback(CAN_RxHeaderTypeDef *msg, uint8_t *rxData)
     }
 #endif
 }
+
+void cmr_bootloaderCanFilter(cmr_can_t *can) {
+#ifdef CMR_ENABLE_BOOTLOADER
+    cmr_canFilter_t bootloaderFilter[] = {
+        {
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO0,
+            .ids = {
+                CMR_CANID_OPENBLT_XMP_RX,
+                CMR_CANID_OPENBLT_XMP_RX,
+                CMR_CANID_OPENBLT_XMP_RX,
+                CMR_CANID_OPENBLT_XMP_RX
+            }
+        }
+    };
+    cmr_canFilter(can, bootloaderFilter, 1);
+#endif
+}

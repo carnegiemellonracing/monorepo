@@ -9,4 +9,6 @@ void cmr_bootloaderInit(void);
 
 void cmr_bootloaderReceiveCallback(CAN_RxHeaderTypeDef *msg, uint8_t *rxData);
 
+void cmr_bootloaderCanFilter(cmr_can_t *can);
+
 #endif
