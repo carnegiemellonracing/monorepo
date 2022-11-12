@@ -146,7 +146,7 @@ bool sampleOneBMB(uint8_t BMBIndex, uint8_t BMBNum, uint8_t BMBSide) {
     }
 }
 
-void doCellBalanceOneBMB(uint8_t BMBIndex);
+void doCellBalanceOneBMB(uint8_t BMBIndex) {
     uint32_t totalVoltage = 0;
     //loop through all cells and turn adc output to voltage
     for (int j = 0; j < VSENSE_CHANNELS_PER_BMB; j++) {
