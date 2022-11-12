@@ -14,6 +14,7 @@
 
 #include "rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
 #include "panic.h"  // cmr_panic()
+#include "bootloader.h" // cmr_bootloaderReceiveCallback()
 
 /**
  * @brief Gets the corresponding CAN interface from the HAL handle.
@@ -227,6 +228,8 @@ static void cmr_canRXPendingCallback(CAN_HandleTypeDef *handle, uint32_t fifo) {
     if (HAL_CAN_GetRxMessage(handle, fifo, &msg, data) != HAL_OK) {
         return;
     }
+
+    cmr_bootloaderReceiveCallback(&msg, (uint8_t*)data);
 
     cmr_can_t *can = cmr_canFromHandle(handle);
     cmr_canRXData(can, msg.StdId, data, msg.DLC);

@@ -1,3 +1,4 @@
+#ifdef F413
 /**
   ******************************************************************************
   * @file      startup_stm32f413xx.s
@@ -40,7 +41,7 @@
   *
   ******************************************************************************
   */
-#ifdef F413
+    
   .syntax unified
   .cpu cortex-m4
   .fpu softvfp
@@ -70,8 +71,6 @@ defined in linker script */
  * @param  None
  * @retval : None
 */
-
-
 
     .section  .text.Reset_Handler
   .weak  Reset_Handler
@@ -123,7 +122,6 @@ LoopFillZerobss:
  * @param  None     
  * @retval None       
 */
-	.global HardFault_Handler_C
     .section  .text.Default_Handler,"ax",%progbits
 Default_Handler:
   /* Load the address of the interrupt control register into r3. */
@@ -273,6 +271,7 @@ g_pfnVectors:
   .word     DFSDM2_FLT1_IRQHandler            /* DFSDM2 Filter1                              */
   .word     DFSDM2_FLT2_IRQHandler            /* DFSDM2 Filter2                              */
   .word     DFSDM2_FLT3_IRQHandler            /* DFSDM2 Filter3                              */
+  .word     0x55AA11EE                        /* Reserved for OpenBLT checksum*/
   
 /*******************************************************************************
 *
@@ -592,5 +591,5 @@ g_pfnVectors:
 
    .weak      DFSDM2_FLT3_IRQHandler
    .thumb_set DFSDM2_FLT3_IRQHandler,Default_Handler
-#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+#endif /* F413 */

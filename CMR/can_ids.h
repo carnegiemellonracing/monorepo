@@ -240,6 +240,8 @@ typedef enum {
     CMR_CANID_CONTROLS_DEBUG_RL = 0x7E4,        /**< @brief control algo testing data. */
     CMR_CANID_CONTROLS_PID = 0x7E5,        /**< @brief control algo testing data. */
 
+	CMR_CANID_OPENBLT_XMP_TX = 0x7E8,        /**< @brief Bootloader CAN firmware flash to comp. */
+	CMR_CANID_OPENBLT_XMP_RX = 0x7E9,        /**< @brief Bootloader CAN firmware flash to board. */
 	CMR_CANID_DRS_CONTROLS = 0x29C, 				/**< @brief DRS Motor Controls. */
 } cmr_canID_t;
 
