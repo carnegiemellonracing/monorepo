@@ -174,14 +174,15 @@ typedef enum {
     CMR_CAN_GEAR_LEN
 } cmr_canGear_t;
 
-/** @brief Represents the car's current driving mode (gear). */
+/** @brief Represents the car's current DRS mode (). */
 typedef enum {
-    CMR_CAN_DRSM_UNKNOWN = 0,   /**< @brief Unknown Gear State */
+    CMR_CAN_DRSM_UNKNOWN = 0,   /**< @brief Unknown Mode State */
     CMR_CAN_DRSM_OPEN,
     CMR_CAN_DRSM_CLOSED,
     CMR_CAN_DRSM_TOGGLE,
     CMR_CAN_DRSM_HOLD,
-    CMR_CAN_DRSM_AUTO
+    CMR_CAN_DRSM_AUTO,
+    CMR_CAN_DRSM_LEN
 } cmr_canDrsMode_t;
 
 /** @brief Safety Circuit status states. */
@@ -580,7 +581,7 @@ typedef struct {
 typedef struct {
     uint8_t requestedState;     /**< @brief Requested state. */
     uint8_t requestedGear;      /**< @brief Requested gear. */
-    uint16_t requestedDrsMode;   /**< @brief Requested DRS mode. */
+    uint8_t requestedDrsMode;   /**< @brief Requested DRS mode. */
 } cmr_canDIMRequest_t;
 
 /** @brief Driver Interface Module power diagnostics. */
