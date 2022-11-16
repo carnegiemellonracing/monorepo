@@ -15,7 +15,7 @@ typedef enum {
     PCA9555_INPUT_PORT_0 = 0x00,    /** Read input from port 0 */
     PCA9555_INPUT_PORT_1,           /** Read input from port 1 */
     PCA9555_OUTPUT_PORT_0,          /** Write output to port 0 */
-    PCA9555_OUPTUT_PORT_1,          /** Write output to port 1 */
+    PCA9555_OUTPUT_PORT_1,          /** Write output to port 1 */
     PCA9555_POL_INV_PORT_0,         /** Write polarity inversion to port 0 */
     PCA9555_POL_INV_PORT_1,         /** Write polarity inversion to port 1 */
     PCA9555_CONFIG_PORT_0,          /** Write I/O direction config to port 0 */

@@ -56,7 +56,7 @@ void expandersInit(void);
 bool expanderGetButtonPressed(expanderButton_t button);
 expanderRotaryPosition_t expanderGetRotary(expanderRotary_t rotary);
 uint32_t expanderGetClutch(expanderClutch_t clutch);
-void expanderSetLED(expanderLED_t led, bool on);
+void expanderSetLED(expanderLED_t led, bool isOn);
 
 #endif /* EXPANDERS_H */
 
