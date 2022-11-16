@@ -29,6 +29,34 @@ typedef enum {
     PCA9554_CONFIG_PORT,          /** Write I/O direction config */
 } pca9554Cmd_t;
 
+// TODO: Inconsistent datasheet with pointer byte?
+typedef enum {
+    AD5593R_POINTER_CONFIG_MODE = 0x00,     /** Configuration mode */
+    AD5593R_POINTER_DAC_WR = 0x10,          /** DAC write mode */
+    AD5593R_POINTER_ADC_RD = 0x40,          /** ADC readback mode */
+    AD5593R_POINTER_DAC_RD = 0x50,          /** DAC readback mode */
+    AD5593R_POINTER_GPIO_RD = 0x60,         /** GPIO readback mode */
+    AD5593R_POINTER_REG_RD = 0x70,          /** Register readback mode */
+} ad5593RPointerByte_t;
+
+typedef enum {
+    AD5593R_CTRL_REG_NOP = 0x0,                     /** NOP */
+    AD5593R_CTRL_REG_ADC_SEQ = 0x2,                 /** ADC Sequence Register */
+    AD5593R_CTRL_REG_GEN = 0x3,                     /** General-Purpose Control Register */
+    AD5593R_CTRL_REG_ADC_CONFIG = 0x4,              /** ADC Pin Configuration Register */
+    AD5593R_CTRL_REG_DAC_CONFIG = 0x5,              /** DAC Pin Configuration Register */
+    AD5593R_CTRL_REG_PULLDWN_CONFIG = 0x6,          /** Pull-Down Configuration Register */
+    AD5593R_CTRL_REG_LDAC_MODE = 0x7,               /** LDAC Mode Register */
+    AD5593R_CTRL_REG_GPIO_CONFIG = 0x8,             /** GPIO Write Configuration Register */
+    AD5593R_CTRL_REG_GPIO_OUTPUT = 0x9,             /** GPIO Write Data Register */
+    AD5593R_CTRL_REG_GPIO_INPUT = 0xA,              /** GPIO Read Configuration Register */
+    AD5593R_CTRL_REG_PD_REF = 0xB,                  /** Power-Down/Reference Control Register */
+    AD5593R_CTRL_REG_GPIO_OPENDRAIN_CONFIG = 0xC,   /** GPIO Open-Drain Configuration Register */
+    AD5593R_CTRL_REG_IO_TS_CONFIG = 0xD,            /** Three-State Configuration Register */
+    AD5593R_CTRL_REG_SW_RESET = 0xF,                /** Software Reset */
+    AD5593R_CTRL_REG_DAC_WR = 0x10                  /** DAC Write Register */
+} ad5593RControlRegister_t;
+
 typedef struct {
     uint16_t expanderAddress;
     uint8_t port;

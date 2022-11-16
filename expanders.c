@@ -194,6 +194,23 @@ static expanderPinConfig_t leds[EXP_LED_LEN] = {
     }
 };
 
+/**
+ * @brief Array of expander clutch pin configs
+ * 
+ */
+static expanderPinConfig_t clutchPaddles[EXP_CLUTCH_LEN] = {
+    [EXP_CLUTCH_1] = {
+        .expanderAddress = daughterAnalogAddress,
+        .port = 0,
+        .pin = 0
+    },
+    [EXP_CLUTCH_2] = {
+        .expanderAddress = daughterAnalogAddress,
+        .port = 0,
+        .pin = 1
+    }
+};
+
 /** @brief Array to store target LED states */
 bool ledTargets[EXP_LED_LEN];
 
@@ -201,6 +218,7 @@ bool ledTargets[EXP_LED_LEN];
 uint8_t mainDigital1Data[2];
 uint8_t mainDigital2Data[1];
 uint8_t daughterDigitalData[1];
+uint8_t daughterAnalogData[2 * EXP_CLUTCH_LEN];
 
 /** @brief GPIO expander update 100 Hz priority. */
 static const uint32_t expanderUpdate100Hz_priority = 4;
@@ -230,6 +248,10 @@ static void updateExpanderData()
     getExpanderData(
         daughterDigitalAddress, PCA9554_INPUT_PORT,
         daughterDigitalData, 1
+    );
+    getExpanderData(
+        daughterAnalogAddress, AD5593R_POINTER_ADC_RD,
+        daughterAnalogData, 2 * EXP_CLUTCH_LEN
     );
 }
 
@@ -323,7 +345,30 @@ expanderRotaryPosition_t expanderGetRotary(expanderRotary_t rotary)
 }
 uint32_t expanderGetClutch(expanderClutch_t clutch)
 {
-    return 0;
+    // Mask for lower 12 bits corresponding to actual ADC value
+    static const uint16_t valueMask = 0xFFF;
+
+    uint8_t pin = clutchPaddles[clutch].pin;
+    for (size_t c = 0; c < 2 * EXP_CLUTCH_LEN; c += 2)
+    {
+        uint16_t curr = ((uint16_t) daughterAnalogData[c]) << 8 | daughterAnalogData[c];
+
+        // Most-significant bit of any ADC conversion result is 0
+        bool msb = curr >> 15;
+        if (msb) continue;
+
+        // Actual ADC pin is next 3 bits, so shift down to check
+        // Mask not needed since MSB should be 0
+        uint16_t adcAddr = curr >> 12;
+
+        if (adcAddr == pin)
+        {
+            return curr & valueMask;
+        }
+    }
+    
+    // Failed to find clutch data, no valid value would be this large
+    return -1;
 }
 void expanderSetLED(expanderLED_t led, bool isOn)
 {
@@ -360,6 +405,19 @@ void expandersInit(void) {
         0xFF
     };
 
+    // Daughter Board Analog expander has ADC inputs on pins 0 and 1
+    uint8_t daughterAnalogADCConfig[3] = {
+        AD5593R_CTRL_REG_ADC_CONFIG,
+        0x00,   
+        0x03    // 0b00000011
+    };
+    // Set REP bit so ADC conversions are repeated (see datasheet)
+    uint8_t daughterAnalogADCSequence[3] = {
+        AD5593R_CTRL_REG_ADC_SEQ,
+        0x02,   // 0b00000010 (REG bit)
+        0x03    // 0b00000011
+    };
+
     // Transmit config to expanders
     cmr_i2cTX(
         &i2c,
@@ -377,6 +435,18 @@ void expandersInit(void) {
         &i2c,
         daughterDigitalAddress, daughterDigitalConfig,
         sizeof(daughterDigitalConfig) / sizeof(daughterDigitalConfig[0]),
+        i2cTimeout_ms
+    );
+    cmr_i2cTX(
+        &i2c,
+        daughterAnalogAddress, daughterAnalogADCConfig,
+        sizeof(daughterAnalogADCConfig) / sizeof(daughterAnalogADCConfig[0]),
+        i2cTimeout_ms
+    );
+    cmr_i2cTX(
+        &i2c,
+        daughterAnalogAddress, daughterAnalogADCSequence,
+        sizeof(daughterAnalogADCSequence) / sizeof(daughterAnalogADCSequence[0]),
         i2cTimeout_ms
     );
     
