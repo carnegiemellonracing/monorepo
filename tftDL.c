@@ -52,35 +52,19 @@ static uint32_t tftDL_errorData[] = {
 #include <DIM-ESE/errors.rawh>
 };
 
-/** @brief Packets to send to the DL on error.
- * See datasheet */
-static const tftContent_t *tftDL_errorContent[] = {
-    &tftContent_RobotoMono_Large,
-    &tftContent_RobotoMono_Medium,
-    &tftContent_RobotoMono_Small,
-};
-
 /** @brief Complete data required to draw the error screen.
  * Exposed to interface consumers. */
 const tftDL_t tftDL_error = {
     .len = sizeof(tftDL_errorData),
     .data = tftDL_errorData,
 
-    .contentLen = sizeof(tftDL_errorContent) / sizeof(tftDL_errorContent[0]),
-    .content = tftDL_errorContent
+    .contentLen = 0,
+    .content = NULL
 };
 
 /** @brief Config Screen */
 static uint32_t tftDL_configData[] = {
 #include <DIM-ESE/config.rawh>
-};
-
-/** @brief Packets to send to the DL on config.
- * See datasheet */
-static const tftContent_t *tftDL_configContent[] = {
-    &tftContent_RobotoMono_Large,
-    &tftContent_RobotoMono_Medium,
-    &tftContent_RobotoMono_Small,
 };
 
 /** @brief Complete data required to draw the error screen.
@@ -89,22 +73,13 @@ const tftDL_t tftDL_config = {
     .len = sizeof(tftDL_configData),
     .data = tftDL_configData,
 
-    .contentLen = sizeof(tftDL_configContent) / sizeof(tftDL_configContent[0]),
-    .content = tftDL_configContent
+    .contentLen = 0,
+    .content = NULL
 };
 
 /** @brief RTD Screen */
 static uint32_t tftDL_RTDData[] = {
 #include <DIM-ESE/RTD.rawh>
-};
-
-/** @brief Complete data required to draw the
- * ready-to-drive screen.
- * Exposed to interface consumers. */
-static const tftContent_t *tftDL_RTDContent[] = {
-    &tftContent_RobotoMono_Large,
-    &tftContent_RobotoMono_Medium,
-    &tftContent_RobotoMono_Small,
 };
 
 /** @brief Complete data required to draw the
@@ -114,8 +89,8 @@ const tftDL_t tftDL_RTD = {
     .len = sizeof(tftDL_RTDData),
     .data = tftDL_RTDData,
 
-    .contentLen = sizeof(tftDL_RTDContent) / sizeof(tftDL_RTDContent[0]),
-    .content = tftDL_RTDContent
+    .contentLen = 0,
+    .content = NULL
 };
 
 /** @brief How to draw a single bar dynamically. */
