@@ -381,10 +381,10 @@ void expanderSetLED(expanderLED_t led, bool isOn)
 void expandersInit(void) {
     // I2C initialization
     cmr_i2cInit(
-        &i2c, I2C1,
+        &i2c, I2C3,
         I2C_CLOCK_LOW, ownAddress,
-        GPIOB, GPIO_PIN_6,
-        GPIOB, GPIO_PIN_7
+        GPIOA, GPIO_PIN_8,
+        GPIOB, GPIO_PIN_4
     );
 
     // Main Board Digital 1 expander has all inputs on Ports 0 and 1
