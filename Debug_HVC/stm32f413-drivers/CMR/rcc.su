@@ -1,0 +1,8 @@
+../stm32f413-drivers/CMR/rcc.c:19:6:cmr_rccSystemClockEnable	8	static
+../stm32f413-drivers/CMR/rcc.c:27:6:cmr_rccSystemInternalClockEnable	8	static
+../stm32f413-drivers/CMR/rcc.c:37:6:cmr_rccGPIOClockEnable	16	static
+../stm32f413-drivers/CMR/rcc.c:48:6:cmr_rccADCClockEnable	16	static
+../stm32f413-drivers/CMR/rcc.c:59:6:cmr_rccCANClockEnable	16	static
+../stm32f413-drivers/CMR/rcc.c:70:6:cmr_rccI2CClockEnable	32	static
+../stm32f413-drivers/CMR/rcc.c:91:6:cmr_rccSPIClockEnable	40	static
+../stm32f413-drivers/CMR/rcc.c:129:6:cmr_rccUSARTClockEnable	56	static

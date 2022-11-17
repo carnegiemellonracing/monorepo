@@ -68,6 +68,7 @@ static void statusLED(void *pvParameters) {
 int main(void) {
 
     // System initialization.
+
 	HAL_Init();
     cmr_rccSystemClockEnable();
     // cmr_rccSystemInternalClockEnable();
@@ -77,7 +78,7 @@ int main(void) {
     canInit();
     adcInit();
     sensorsInit();
-    wwdgInit();
+//    wwdgInit();
 
     cmr_taskInit(
         &statusLED_task,

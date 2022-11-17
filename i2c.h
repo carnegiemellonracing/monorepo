@@ -12,7 +12,8 @@
 #include <CMR/i2c.h>
 #include <stdbool.h>
 
-#define I2C_NUM_BMBS 8
+//#define I2C_NUM_BMBS 8
+#define I2C_NUM_BMBS 1 //TODO: SET THIS BACK TO 8
 // I2c addresses of muxes 
 // From https://www.nxp.com/docs/en/data-sheet/PCA9542A.pdf
 static const uint16_t bms_mux_address[I2C_NUM_BMBS] = {
@@ -34,6 +35,7 @@ bool i2cInit();
 
 //switch across sides of BMB
 bool i2c_enableI2CMux(uint8_t bmb, uint8_t side);
+bool i2c_readI2CMux(uint8_t bmb, uint8_t *enabled, uint8_t *side);
 bool i2c_disableI2CMux(uint8_t bmb);
 
 //switch mux channel for FET muxes through the IO expander

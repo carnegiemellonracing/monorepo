@@ -1,0 +1,7 @@
+../stm32f413-drivers/CMR/spi.c:27:6:HAL_SPI_ErrorCallback	16	static
+../stm32f413-drivers/CMR/spi.c:39:13:cmr_spiDoneCallback	32	static,ignoring_inline_asm
+../stm32f413-drivers/CMR/spi.c:59:6:HAL_SPI_TxCpltCallback	16	static
+../stm32f413-drivers/CMR/spi.c:68:6:HAL_SPI_RxCpltCallback	16	static
+../stm32f413-drivers/CMR/spi.c:77:6:HAL_SPI_TxRxCpltCallback	16	static
+../stm32f413-drivers/CMR/spi.c:101:6:cmr_spiInit	496	static
+../stm32f413-drivers/CMR/spi.c:205:5:cmr_spiTXRX	40	static

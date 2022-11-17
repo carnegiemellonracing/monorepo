@@ -51,7 +51,7 @@ static const float resistorRatios[VSENSE_CHANNELS_PER_BMB] = {
 
 
 // Counter for how many times until we flash the LED
-static const uint8_t LED_FLASH_COUNT = 5;
+static const uint8_t LED_FLASH_COUNT = 50;
 static uint8_t BMBFlashCounter = 0;
 
 //takes in adc output and cell index to get voltage value
@@ -121,7 +121,9 @@ void setAllBMBsTimeout() {
 void BMBInit() {
 	// Period
 	const TickType_t xPeriod = 1000 / BMB_SAMPLE_TASK_RATE;		// In ticks (ms)
-	i2cInit();
+	if (!i2cInit()) {
+		cmr_panic("Couldn't initialize I2C BMB Chain");
+	}
 }
 
 bool sampleOneBMB(uint8_t BMBIndex, uint8_t BMBNum, uint8_t BMBSide) {
@@ -217,37 +219,39 @@ void vBMBSampleTask(void *pvParameters) {
 	TickType_t xLastWakeTime = xTaskGetTickCount();
 	vTaskDelayUntil(&xLastWakeTime, 50);
 
+	while (1) {
+		for (uint8_t BMBIndex = 0; BMBIndex < NUM_BMBS; BMBIndex++) {
+			//since we treat each BMB side as an individual bmb
+			//we just check whether the current bmb index is odd/even
+			//uint8_t BMBSide = BMBIndex % 2;
+			uint8_t BMBSide = 1; // TODO: CHANGE THIS BACKs
+			// our actual BMB number, the physical board
+			uint8_t BMBNum = BMBIndex / 2;
 
-	for (uint8_t BMBIndex = 0; BMBIndex < NUM_BMBS; BMBIndex++) {
-		//since we treat each BMB side as an individual bmb
-		//we just check whether the current bmb index is odd/even
-		uint8_t BMBSide = BMBIndex % 2;
-		// our actual BMB number, the physical board
-		uint8_t BMBNum = BMBIndex / 2;
+			//Sample BMBs
+			taskENTER_CRITICAL();
+			// Sample a single BMB (number and side fully)
+			if (!sampleOneBMB(BMBIndex, BMBNum, BMBSide)) {
+				// there was an error, so reset mux
+				if (!(i2c_disableI2CMux(BMBIndex))) {
+					BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
+				}
+			}
+			taskEXIT_CRITICAL();
 
-		//Sample BMBs
-		taskENTER_CRITICAL();
-        // Sample a single BMB (number and side fully)
-        if (!sampleOneBMB(BMBIndex, BMBNum, BMBSide)) {
-            // there was an error, so reset mux
-            if (!(i2c_disableI2CMux(BMBIndex))) {
-                BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
-            }
-        }
-        taskEXIT_CRITICAL();
+			if(BMBTimeoutCount[BMBIndex] == BMB_TIMEOUT) {
+				// we had a timeout, continue onto next BMB
+				continue;
+			}
 
-		if(BMBTimeoutCount[BMBIndex] == BMB_TIMEOUT) {
-		    // we had a timeout, continue onto next BMB
-		    continue;
-        }
+			// Calculate the values for this BMB
+			calculateOneBMB(BMBIndex);
 
-        // Calculate the values for this BMB
-        calculateOneBMB(BMBIndex);
+			doCellBalanceOneBMB(BMBIndex);
 
-        doCellBalanceOneBMB(BMBIndex);
-
-	} // end for loop
-    vTaskDelayUntil(&xLastWakeTime, 3);
+		} // end for loop
+		vTaskDelayUntil(&xLastWakeTime, 3);
+	}
 }
 
 // Temperature Transfer Functions

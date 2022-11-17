@@ -1,0 +1,4 @@
+../state_task.c:16:19:getState	4	static
+../state_task.c:24:26:getNextState	40	static
+../state_task.c:185:26:setStateOutput	8	static
+../state_task.c:296:6:vSetStateTask	32	static

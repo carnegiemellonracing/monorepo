@@ -1,0 +1,11 @@
+../sensors.c:40:17:sampleADCSensor	24	static
+../sensors.c:56:16:ADCtoMV_24v	16	static
+../sensors.c:72:16:ADCtoMV_HV	16	static
+../sensors.c:89:16:ADCtoA_HV	16	static
+../sensors.c:156:13:sensorsUpdate	24	static
+../sensors.c:172:6:sensorsInit	16	static
+../sensors.c:190:9:getLVmillivolts	8	static
+../sensors.c:194:9:getAIRmillivolts	8	static
+../sensors.c:198:9:getSafetymillivolts	8	static
+../sensors.c:202:9:getHVmillivolts	8	static
+../sensors.c:206:9:getHVmilliamps	8	static

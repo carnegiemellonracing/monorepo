@@ -1,0 +1,3 @@
+../stm32f413-drivers/CMR/watchdog.c:21:6:cmr_wwdgInit	56	static
+../stm32f413-drivers/CMR/watchdog.c:49:6:cmr_wwdgStart	16	static
+../stm32f413-drivers/CMR/watchdog.c:60:6:cmr_wwdgKick	16	static
