@@ -193,75 +193,99 @@ static void buttonsInput_task(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     TickType_t lastButtonPress = xTaskGetTickCount();
     TickType_t currentTime;
-    while (1) {
-        volatile int value = cmr_gpioRead(GPIO_BUTTON_1);
-        drsButtonPressed = value;
-        value = cmr_gpioRead(GPIO_BUTTON_3);
-        action1ButtonPressed = value;
-        value = cmr_gpioRead(GPIO_BUTTON_8);
-        action2ButtonPressed = value;
+    
+    // Initialize expanders
+    expandersInit();
 
-        /* if vsm has changed state unexpectedly we
-         * need to adjust our req to still be valid */
-        if(!stateVSMReqIsValid(stateGetVSM(), stateGetVSMReq()))
-        {
-            updateReq();
-        }
-        
-        currentTime = xTaskGetTickCount();
-
-		#define BUTTON_DEBOUNCE_TIME 200
-
-        buttonEvent_t event;
-        while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
-
-			switch (event.pin) {
-            	case GPIO_BUTTON_3:
-            		if((currentTime - lastButtonPress) > BUTTON_DEBOUNCE_TIME) {
-                        actionOneButton(event.pressed);
-					}
-            		break;
-            	case GPIO_BUTTON_8:
-            		if((currentTime - lastButtonPress) > BUTTON_DEBOUNCE_TIME) {
-                        actionTwoButton(event.pressed);
-					}
-            		break;
-                case GPIO_BUTTON_9:
-                	if((currentTime - lastButtonPress) > BUTTON_DEBOUNCE_TIME) {
-                        regenUpButton(event.pressed);
-					}
-                	break;
-                case GPIO_BUTTON_2:
-                	if((currentTime - lastButtonPress) > BUTTON_DEBOUNCE_TIME) {
-                        regenDownButton(event.pressed);
-					}
-                    break;
-                case GPIO_BUTTON_7:
-                    stateVSMUpButton(event.pressed);
-                    break;
-                case GPIO_BUTTON_6:
-                    /* Avoid accidental double clicks on state down button
-                    (the transition back into hv_en takes a while) */
-                    if((currentTime - lastButtonPress) > 1000) {
-                        stateVSMDownButton(event.pressed);
-                    }
-                    break;
-                case GPIO_BUTTON_4:
-                    stateGearUpButton(event.pressed);
-                    break;
-                case GPIO_BUTTON_5:
-                	stateGearDownButton(event.pressed);
-                    break;
-                default:
-                    break;
-            }
-            
-            // Record the time of the last button press
-            lastButtonPress = xTaskGetTickCount();
-        }
-
-        vTaskDelayUntil(&lastWakeTime, buttonsInput_period);
+    // initialize array of buttons
+    expanderButton_t[EXP_BUTTON_LEN] expanderButtons;
+    for (expanderButton_t i = EXP_DASH_BUTTON_1; i < EXP_BUTTON_LEN; i ++){
+        expanderButtons[i] = expanderGetButtonPressed(i);
     }
+
+    while(1){
+        // updating each button and updating states according to button presses
+        for (expanderButton_t i = EXP_DASH_BUTTON_1; i < EXP_BUTTON_LEN; i ++){
+            if (expanderButtons[i] != expanderGetButtonPressetd(i)){
+                if (expanderGetButtonPressed(i)){
+                    setAction(i, !getActionState());
+                }
+            }
+            expanderButtons[i] = expanderGetButtonPressetd(i);
+        }        
+    }
+
+    
+    // while (1) {
+
+    //     volatile int value = cmr_gpioRead(GPIO_BUTTON_1);
+    //     drsButtonPressed = value;
+    //     value = cmr_gpioRead(GPIO_BUTTON_3);
+    //     action1ButtonPressed = value;
+    //     value = cmr_gpioRead(GPIO_BUTTON_8);
+    //     action2ButtonPressed = value;
+
+    //     /* if vsm has changed state unexpectedly we
+    //      * need to adjust our req to still be valid */
+    //     if(!stateVSMReqIsValid(stateGetVSM(), stateGetVSMReq()))
+    //     {
+    //         updateReq();
+    //     }
+        
+    //     currentTime = xTaskGetTickCount();
+
+	// 	#define BUTTON_DEBOUNCE_TIME 200
+
+    //     buttonEvent_t event;
+    //     while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
+
+	// 		switch (event.pin) {
+    //         	case GPIO_BUTTON_3:
+    //         		if((currentTime - lastButtonPress) > BUTTON_DEBOUNCE_TIME) {
+    //                     actionOneButton(event.pressed);
+	// 				}
+    //         		break;
+    //         	case GPIO_BUTTON_8:
+    //         		if((currentTime - lastButtonPress) > BUTTON_DEBOUNCE_TIME) {
+    //                     actionTwoButton(event.pressed);
+	// 				}
+    //         		break;
+    //             case GPIO_BUTTON_9:
+    //             	if((currentTime - lastButtonPress) > BUTTON_DEBOUNCE_TIME) {
+    //                     regenUpButton(event.pressed);
+	// 				}
+    //             	break;
+    //             case GPIO_BUTTON_2:
+    //             	if((currentTime - lastButtonPress) > BUTTON_DEBOUNCE_TIME) {
+    //                     regenDownButton(event.pressed);
+	// 				}
+    //                 break;
+    //             case GPIO_BUTTON_7:
+    //                 stateVSMUpButton(event.pressed);
+    //                 break;
+    //             case GPIO_BUTTON_6:
+    //                 /* Avoid accidental double clicks on state down button
+    //                 (the transition back into hv_en takes a while) */
+    //                 if((currentTime - lastButtonPress) > 1000) {
+    //                     stateVSMDownButton(event.pressed);
+    //                 }
+    //                 break;
+    //             case GPIO_BUTTON_4:
+    //                 stateGearUpButton(event.pressed);
+    //                 break;
+    //             case GPIO_BUTTON_5:
+    //             	stateGearDownButton(event.pressed);
+    //                 break;
+    //             default:
+    //                 break;
+    //         }
+            
+    //         // Record the time of the last button press
+    //         lastButtonPress = xTaskGetTickCount();
+    //     }
+
+    //     vTaskDelayUntil(&lastWakeTime, buttonsInput_period);
+    // } 
 }
 
 /**
