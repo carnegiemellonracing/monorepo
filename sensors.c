@@ -8,9 +8,11 @@
 #include <stdlib.h>     // abs()
 
 #include <CMR/tasks.h>  // Task interface
+#include <CMR/gpio.h>  // GPIO interface
 
 #include "sensors.h"    // Interface to implement
 #include "adc.h"        // Board-specific ADC interface
+#include "gpio.h"       // Board-specific GPIO interface
 #include "can.h"        // Board-specific CAN interface
 
 /** @brief Number of samples for current measurement rolling average. */
@@ -48,13 +50,19 @@ const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
     [SENSOR_CH_SWANGLE_DEG]    = ADC_CH2,
     [SENSOR_CH_VOLTAGE_MV]     = ADC_VSENSE,
     [SENSOR_CH_AVG_CURRENT_MA] = ADC_ISENSE,
-    [SENSOR_CH_SS_MODULE]      = ADC_SS_MODULE,
-    [SENSOR_CH_SS_COCKPIT]      = ADC_SS_COCKPIT,
-    [SENSOR_CH_SS_FRHUB]       = ADC_SS_FRHUB,
-    [SENSOR_CH_SS_INERTIA]     = ADC_SS_INERTIA,
-    [SENSOR_CH_SS_FLHUB]       = ADC_SS_FLHUB,
-    [SENSOR_CH_SS_BOTS]        = ADC_SS_BOTS,
     [SENSOR_CH_TPOS_IMPLAUS]   = ADC_LEN  // Not an ADC channel!
+};
+
+/**
+ * @brief Mapping of sensor channels to GPIO pins.
+ */
+const gpio_t sensorsGPIOChannels[SENSOR_CH_LEN] = {
+    [SENSOR_CH_SS_MODULE]      = GPIO_SS_MODULE,
+    [SENSOR_CH_SS_COCKPIT]     = GPIO_SS_COCKPIT,
+    [SENSOR_CH_SS_FRHUB]       = GPIO_SS_FRHUB,
+    [SENSOR_CH_SS_INERTIA]     = GPIO_SS_INERTIA,
+    [SENSOR_CH_SS_FLHUB]       = GPIO_SS_FLHUB,
+    [SENSOR_CH_SS_BOTS]        = GPIO_SS_BOTS,
 };
 
 /** @brief forward declaration */
@@ -77,6 +85,19 @@ static uint32_t sampleADCSensor(const cmr_sensor_t *sensor) {
     sensorChannel_t sensorChannel = sensor - sensors;
     configASSERT(sensorChannel < SENSOR_CH_LEN);
     return adcRead(sensorsADCChannels[sensorChannel]);
+}
+
+/**
+ * @brief Gets a new value from an GPIO sensor.
+ *
+ * @param sensor The GPIO sensor to sample.
+ *
+ * @return The latest sampled value from the GPIO.
+ */
+static uint32_t sampleGPIOSensor(const cmr_sensor_t *sensor) {
+    sensorChannel_t sensorChannel = sensor - sensors;
+    configASSERT(sensorChannel < SENSOR_CH_LEN);
+    return cmr_gpioRead(sensorsGPIOChannels[sensorChannel]);
 }
 
 /**
@@ -361,45 +382,45 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .warnFlag = CMR_CAN_WARN_FSM_BPP
     },
     [SENSOR_CH_SS_MODULE] = {
-        .conv = adcToDigital,
-        .sample = sampleADCSensor,
+        .conv = NULL,
+        .sample = sampleGPIOSensor,
         .readingMin = 0,    // output is typically 2V max
-        .readingMax = 2600,
+        .readingMax = 1,
         .warnFlag = CMR_CAN_WARN_FSM_SS_MODULE
     },
     [SENSOR_CH_SS_COCKPIT]= {
-        .conv = adcToDigital,
-        .sample = sampleADCSensor,
+        .conv = NULL,
+        .sample = sampleGPIOSensor,
         .readingMin = 0,    // output is typically 2V max
-        .readingMax = 2600,
+        .readingMax = 1,
         .warnFlag = CMR_CAN_WARN_FSM_SS_COCKPIT
     },
     [SENSOR_CH_SS_FRHUB] = {
-        .conv = adcToDigital,
-        .sample = sampleADCSensor,
-        .readingMin = 1,    // output is typically 2V max
-        .readingMax = 2600,
+        .conv = NULL,
+        .sample = sampleGPIOSensor,
+        .readingMin = 0,    // output is typically 2V max
+        .readingMax = 1,
         .warnFlag = CMR_CAN_WARN_FSM_SS_FRHUB
     },
     [SENSOR_CH_SS_INERTIA] = {
-        .conv = adcToDigital,
-        .sample = sampleADCSensor,
+        .conv = NULL,
+        .sample = sampleGPIOSensor,
         .readingMin = 0,    // output is typically 2V max
-        .readingMax = 2600,
+        .readingMax = 1,
         .warnFlag = CMR_CAN_WARN_FSM_SS_INERTIA
     },
     [SENSOR_CH_SS_FLHUB] = {
-        .conv = adcToDigital,
-        .sample = sampleADCSensor,
+        .conv = NULL,
+        .sample = sampleGPIOSensor,
         .readingMin = 0,    // output is typically 2V max
-        .readingMax = 2600,
+        .readingMax = 1,
         .warnFlag = CMR_CAN_WARN_FSM_SS_FLHUB
     },
     [SENSOR_CH_SS_BOTS] = {
-        .conv = adcToDigital,
-        .sample = sampleADCSensor,
+        .conv = NULL,
+        .sample = sampleGPIOSensor,
         .readingMin = 0,    // output is typically 2V max
-        .readingMax = 0,
+        .readingMax = 1,
         .warnFlag = CMR_CAN_WARN_FSM_SS_BOTS
     }
 };
