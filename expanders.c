@@ -3,8 +3,8 @@
  * @brief GPIO expanders implementation
  * 
  * GPIO expanders in use:
- *      Main Board Digital 1:   PCA9555DBR      (ROT_{1,2}_{5..8})
- *      Main Board Digital 2:   PCA9555DBR      (ROT_{1,2}_{1..4}, LED_{1,2}, PUSH{1..4})
+ *      Main Board Digital 1:   PCA9555DBR      (ROT_{1,2}_{1..8})
+ *      Main Board Digital 2:   PCA9554PW,118   (LED_{1,2}, PUSH{1..4})
  *      Daughter Board Digital: PCA9554PW,118   (PUSH{1..3})
  *      Daughter Board Analog:  AD5593RBRUZ     (CLUTCH{1,2})
  *
@@ -47,23 +47,23 @@ static const uint32_t i2cTimeout_ms = 1;
 static expanderPinConfig_t buttons[EXP_BUTTON_LEN] = {
     [EXP_DASH_BUTTON_1] = {
         .expanderAddress = mainDigital2Address,
-        .port = 1,
-        .pin = 2
+        .port = 0,
+        .pin = 7
     },
     [EXP_DASH_BUTTON_2] = {
         .expanderAddress = mainDigital2Address,
-        .port = 1,
-        .pin = 3
+        .port = 0,
+        .pin = 6
     },
     [EXP_DASH_BUTTON_3] = {
         .expanderAddress = mainDigital2Address,
-        .port = 1,
-        .pin = 4
+        .port = 0,
+        .pin = 5
     },
     [EXP_DASH_BUTTON_4] = {
         .expanderAddress = mainDigital2Address,
-        .port = 1,
-        .pin = 5
+        .port = 0,
+        .pin = 4
     },
     [EXP_WHEEL_BUTTON_1] = {
         .expanderAddress = daughterDigitalAddress,
@@ -90,88 +90,88 @@ static expanderRotaryConfig_t rotaries[EXP_ROTARY_LEN] = {
     [EXP_ROTARY_1] = {
         .pins = {
             [ROTARY_POS_1] = {
-                .expanderAddress = mainDigital2Address,
-                .port = 0,
+                .expanderAddress = mainDigital1Address,
+                .port = 1,
                 .pin = 1
             },
             [ROTARY_POS_2] = {
-                .expanderAddress = mainDigital2Address,
-                .port = 0,
+                .expanderAddress = mainDigital1Address,
+                .port = 1,
                 .pin = 3
             },
             [ROTARY_POS_3] = {
-                .expanderAddress = mainDigital2Address,
-                .port = 0,
+                .expanderAddress = mainDigital1Address,
+                .port = 1,
                 .pin = 5
             },
             [ROTARY_POS_4] = {
-                .expanderAddress = mainDigital2Address,
-                .port = 0,
+                .expanderAddress = mainDigital1Address,
+                .port = 1,
                 .pin = 7
             },
             [ROTARY_POS_5] = {
                 .expanderAddress = mainDigital1Address,
                 .port = 0,
-                .pin = 1
+                .pin = 6
             },
             [ROTARY_POS_6] = {
                 .expanderAddress = mainDigital1Address,
                 .port = 0,
-                .pin = 3
+                .pin = 4
             },
             [ROTARY_POS_7] = {
                 .expanderAddress = mainDigital1Address,
                 .port = 0,
-                .pin = 5
+                .pin = 2
             },
             [ROTARY_POS_8] = {
                 .expanderAddress = mainDigital1Address,
                 .port = 0,
-                .pin = 7
+                .pin = 0
             }
         }
     },
     [EXP_ROTARY_2] = {
         .pins = {
             [ROTARY_POS_1] = {
-                .expanderAddress = mainDigital2Address,
-                .port = 0,
+                .expanderAddress = mainDigital1Address,
+                .port = 1,
                 .pin = 0
             },
             [ROTARY_POS_2] = {
-                .expanderAddress = mainDigital2Address,
-                .port = 0,
+                .expanderAddress = mainDigital1Address,
+                .port = 1,
                 .pin = 2
             },
             [ROTARY_POS_3] = {
-                .expanderAddress = mainDigital2Address,
-                .port = 0,
+                .expanderAddress = mainDigital1Address,
+                .port = 1,
                 .pin = 4
             },
             [ROTARY_POS_4] = {
-                .expanderAddress = mainDigital2Address,
-                .port = 0,
+                .expanderAddress = mainDigital1Address,
+                .port = 1,
                 .pin = 6
             },
             [ROTARY_POS_5] = {
                 .expanderAddress = mainDigital1Address,
                 .port = 0,
-                .pin = 0
+                .pin = 7
             },
             [ROTARY_POS_6] = {
                 .expanderAddress = mainDigital1Address,
                 .port = 0,
-                .pin = 2
+                .pin = 5
             },
             [ROTARY_POS_7] = {
                 .expanderAddress = mainDigital1Address,
                 .port = 0,
-                .pin = 4
+                .pin = 3
             },
             [ROTARY_POS_8] = {
                 .expanderAddress = mainDigital1Address,
                 .port = 0,
-                .pin = 6
+                .pin = 1
             }
         }
     }
@@ -184,21 +184,41 @@ static expanderRotaryConfig_t rotaries[EXP_ROTARY_LEN] = {
 static expanderPinConfig_t leds[EXP_LED_LEN] = {
     [EXP_LED_1] = {
         .expanderAddress = mainDigital2Address,
-        .port = 1,
+        .port = 0,
         .pin = 0
     },
     [EXP_LED_2] = {
         .expanderAddress = mainDigital2Address,
-        .port = 1,
+        .port = 0,
         .pin = 1
     }
 };
 
+/**
+ * @brief Array of expander clutch pin configs
+ * 
+ */
+static expanderPinConfig_t clutchPaddles[EXP_CLUTCH_LEN] = {
+    [EXP_CLUTCH_1] = {
+        .expanderAddress = daughterAnalogAddress,
+        .port = 0,
+        .pin = 0
+    },
+    [EXP_CLUTCH_2] = {
+        .expanderAddress = daughterAnalogAddress,
+        .port = 0,
+        .pin = 1
+    }
+};
+
+/** @brief Array to store target LED states */
+bool ledTargets[EXP_LED_LEN];
 
 /** @brief Array of bytes containing data for the pins of each digital GPIO expander */
 uint8_t mainDigital1Data[2];
-uint8_t mainDigital2Data[2];
+uint8_t mainDigital2Data[1];
 uint8_t daughterDigitalData[1];
+uint8_t daughterAnalogData[2 * EXP_CLUTCH_LEN];
 
 /** @brief GPIO expander update 100 Hz priority. */
 static const uint32_t expanderUpdate100Hz_priority = 4;
@@ -215,23 +235,70 @@ static void getExpanderData(uint16_t addr, uint8_t cmd, uint8_t *data, size_t le
     cmr_i2cRX(&i2c, addr, data, len, i2cTimeout_ms);
 }
 
+static void updateExpanderData()
+{
+    getExpanderData(
+        mainDigital1Address, PCA9555_INPUT_PORT_0,
+        mainDigital1Data, 2
+    );
+    getExpanderData(
+        mainDigital2Address, PCA9554_INPUT_PORT,
+        mainDigital2Data, 1
+    );
+    getExpanderData(
+        daughterDigitalAddress, PCA9554_INPUT_PORT,
+        daughterDigitalData, 1
+    );
+    getExpanderData(
+        daughterAnalogAddress, AD5593R_POINTER_ADC_RD,
+        daughterAnalogData, 2 * EXP_CLUTCH_LEN
+    );
+}
+
+/**
+ * @brief Checks current LED state and updates if different from `ledTargets`
+ * 
+ * Not wholly generic since it's too complicated,
+ * so it uses the fact that all LEDs are on Main Digital 2 Port 1
+ * 
+ */
+static void checkLEDState()
+{
+    uint8_t targetMask = 0;
+    uint8_t targetState = 0;
+
+    for (size_t l = EXP_LED_1; l < EXP_LED_LEN; l++)
+    {
+        uint8_t pin = leds[l].pin;
+        targetMask |= 1 << pin;
+        targetState |= ledTargets[l] << pin;
+    }
+
+    // See note above about non-generic code
+    uint8_t currentState = mainDigital2Data[0];
+    if ((currentState & targetMask) != targetState)
+    {
+        uint8_t cmd[2] = {
+            PCA9554_OUTPUT_PORT,
+            targetState
+        };
+
+        cmr_i2cTX(
+            &i2c,
+            mainDigital2Address, cmd,
+            sizeof(cmd) / sizeof(cmd[0]),
+            i2cTimeout_ms
+        );
+    }
+}
+
 static void expanderUpdate100Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        getExpanderData(
-            mainDigital1Address, PCA9555_INPUT_PORT_0,
-            mainDigital1Data, 2
-        );
-        getExpanderData(
-            mainDigital2Address, PCA9555_INPUT_PORT_0,
-            mainDigital2Data, 2
-        );
-        getExpanderData(
-            daughterDigitalAddress, PCA9554_INPUT_PORT,
-            daughterDigitalData, 1
-        );
+        updateExpanderData();
+        checkLEDState();
 
         vTaskDelayUntil(&lastWakeTime, expanderUpdate100Hz_period_ms);
     }
@@ -257,57 +324,6 @@ static bool getPinValueFromConfig(expanderPinConfig_t config)
     return data[config.port] & mask;
 }
 
-
-/**
- * @brief Set digital expander output pin to value based on pin config
- * 
- * Reads the latest data from the target expander to ensure other output
- * pins are not overridden by this write.
- * 
- * TODO: Better way of handling preventing overrides?
- * 
- * @param config 
- * @param value 
- */
-static void setPinValueFromConfig(expanderPinConfig_t config, bool value)
-{
-    uint16_t addr = config.expanderAddress;
-    uint8_t cmd[2];
-
-    if (addr == mainDigital1Address)
-    {
-        cmd[0] = PCA9555_OUTPUT_PORT_0 + config.port;
-        cmd[1] = mainDigital1Data[config.port];
-    }
-    else if (addr == mainDigital2Address)
-    {
-        cmd[0] = PCA9555_OUTPUT_PORT_0 + config.port;
-        cmd[1] = mainDigital2Data[config.port];
-    }
-    else if (addr == daughterDigitalAddress)
-    {
-        cmd[0] = PCA9554_OUTPUT_PORT;
-        cmd[1] = daughterDigitalData[config.port];
-    }
-    else
-    {
-        return;
-    }
-
-    // Clears only the bit we want to set, and sets it to value
-    uint8_t mask = 1 << config.pin;
-    cmd[1] &= ~mask;
-    if (value)
-        cmd[1] |= mask;
-
-    cmr_i2cTX(
-        &i2c,
-        addr, cmd,
-        sizeof(cmd) / sizeof(cmd[0]),
-        i2cTimeout_ms
-    );
-}
-
 bool expanderGetButtonPressed(expanderButton_t button)
 {
     expanderPinConfig_t buttonConfig = buttons[button];
@@ -329,12 +345,34 @@ expanderRotaryPosition_t expanderGetRotary(expanderRotary_t rotary)
 }
 uint32_t expanderGetClutch(expanderClutch_t clutch)
 {
-    return 0;
+    // Mask for lower 12 bits corresponding to actual ADC value
+    static const uint16_t valueMask = 0xFFF;
+
+    uint8_t pin = clutchPaddles[clutch].pin;
+    for (size_t c = 0; c < 2 * EXP_CLUTCH_LEN; c += 2)
+    {
+        uint16_t curr = ((uint16_t) daughterAnalogData[c]) << 8 | daughterAnalogData[c];
+
+        // Most-significant bit of any ADC conversion result is 0
+        bool msb = curr >> 15;
+        if (msb) continue;
+
+        // Actual ADC pin is next 3 bits, so shift down to check
+        // Mask not needed since MSB should be 0
+        uint16_t adcAddr = curr >> 12;
+
+        if (adcAddr == pin)
+        {
+            return curr & valueMask;
+        }
+    }
+    
+    // Failed to find clutch data, no valid value would be this large
+    return -1;
 }
-void expanderSetLED(expanderLED_t led, bool on)
+void expanderSetLED(expanderLED_t led, bool isOn)
 {
-    expanderPinConfig_t ledConfig = leds[led];
-    setPinValueFromConfig(ledConfig, on);
+    ledTargets[led] = isOn;
 }
 
 /**
@@ -343,21 +381,21 @@ void expanderSetLED(expanderLED_t led, bool on)
 void expandersInit(void) {
     // I2C initialization
     cmr_i2cInit(
-        &i2c, I2C1,
+        &i2c, I2C3,
         I2C_CLOCK_LOW, ownAddress,
-        GPIOB, GPIO_PIN_6,
-        GPIOB, GPIO_PIN_7
+        GPIOA, GPIO_PIN_8,
+        GPIOB, GPIO_PIN_4
     );
 
-    // Main Board Digital 1 expander has all inputs on Port 0, nothing on Port 1
-    uint8_t mainDigital1Config[2] = {
-        PCA9555_CONFIG_PORT_0,
-        0xFF
-    };
-    // Main Board Digital 2 expander has all inputs except outputs on Port 1 Pins 0 and 1
-    uint8_t mainDigital2Config[3] = {
+    // Main Board Digital 1 expander has all inputs on Ports 0 and 1
+    uint8_t mainDigital1Config[3] = {
         PCA9555_CONFIG_PORT_0,
         0xFF,
+        0xFF
+    };
+    // Main Board Digital 2 expander has all inputs except outputs on Pins 0 and 1
+    uint8_t mainDigital2Config[3] = {
+        PCA9554_CONFIG_PORT,
         0xFC    // 0b11111100
     };
 
@@ -365,6 +403,19 @@ void expandersInit(void) {
     uint8_t daughterDigitalConfig[2] = {
         PCA9554_CONFIG_PORT,
         0xFF
+    };
+
+    // Daughter Board Analog expander has ADC inputs on pins 0 and 1
+    uint8_t daughterAnalogADCConfig[3] = {
+        AD5593R_CTRL_REG_ADC_CONFIG,
+        0x00,   
+        0x03    // 0b00000011
+    };
+    // Set REP bit so ADC conversions are repeated (see datasheet)
+    uint8_t daughterAnalogADCSequence[3] = {
+        AD5593R_CTRL_REG_ADC_SEQ,
+        0x02,   // 0b00000010 (REG bit)
+        0x03    // 0b00000011
     };
 
     // Transmit config to expanders
@@ -384,6 +435,18 @@ void expandersInit(void) {
         &i2c,
         daughterDigitalAddress, daughterDigitalConfig,
         sizeof(daughterDigitalConfig) / sizeof(daughterDigitalConfig[0]),
+        i2cTimeout_ms
+    );
+    cmr_i2cTX(
+        &i2c,
+        daughterAnalogAddress, daughterAnalogADCConfig,
+        sizeof(daughterAnalogADCConfig) / sizeof(daughterAnalogADCConfig[0]),
+        i2cTimeout_ms
+    );
+    cmr_i2cTX(
+        &i2c,
+        daughterAnalogAddress, daughterAnalogADCSequence,
+        sizeof(daughterAnalogADCSequence) / sizeof(daughterAnalogADCSequence[0]),
         i2cTimeout_ms
     );
     

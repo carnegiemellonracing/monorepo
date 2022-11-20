@@ -23,12 +23,6 @@ typedef enum {
     ADC_CH3,        /**< @brief Sensor channel 3. */
     ADC_CH4,        /**< @brief Sensor channel 4. */
     ADC_CH5,        /**< @brief Sensor channel 5. */
-    ADC_SS_MODULE,
-    ADC_SS_COCKPIT,
-    ADC_SS_FRHUB,
-    ADC_SS_INERTIA,
-    ADC_SS_FLHUB,
-    ADC_SS_BOTS,
     ADC_LEN         /**< @brief Total ADC channels. */
 } adcChannel_t;
 
