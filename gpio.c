@@ -149,8 +149,6 @@ static void buttonsInput_task(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     
-    expandersInit();
-
     // initialize array of buttons
     expanderButtonEvent_t[EXP_BUTTON_LEN] expanderButtons;
     for (expanderButton_t i = EXP_DASH_BUTTON_1; i < EXP_BUTTON_LEN; i ++){
