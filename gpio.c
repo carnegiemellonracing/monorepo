@@ -152,20 +152,23 @@ static void buttonsInput_task(void *pvParameters) {
     expandersInit();
 
     // initialize array of buttons
-    expanderButton_t[EXP_BUTTON_LEN] expanderButtons;
+    expanderButtonEvent_t[EXP_BUTTON_LEN] expanderButtons;
     for (expanderButton_t i = EXP_DASH_BUTTON_1; i < EXP_BUTTON_LEN; i ++){
-        expanderButtons[i] = expanderGetButtonPressed(i);
+        expanderButtons[i].button = i;
+        expanderButtons[i].buttonState = expanderGetButtonPressed(i);
+        expanderButtons[i].setAction = &actionFunc; // placeholder
+        expanderButtons[i].getActionState = &actionState; // placeholder
     }
 
     while (1) {
         // updating each button and updating states according to button presses
         for (expanderButton_t i = EXP_DASH_BUTTON_1; i < EXP_BUTTON_LEN; i ++){
-            if (expanderButtons[i] != expanderGetButtonPressetd(i)){
+            if (expanderButtons[i].buttonState != expanderGetButtonPressetd(i)){
                 if (expanderGetButtonPressed(i)){
-                    setAction(i, !getActionState());
+                    *expanderButtons[i].setAction(i, !(*expanderButtons[i].getActionState(i)));
                 }
             }
-            expanderButtons[i] = expanderGetButtonPressetd(i);
+            expanderButtons[i].buttonState = expanderGetButtonPressetd(i);
         }  
         vTaskDelayUntil(&lastWakeTime, buttonsInput_period);
     }

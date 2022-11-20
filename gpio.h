@@ -52,6 +52,16 @@ typedef struct {
 
 void gpioInit(void);
 
+typedef (void) (action_f*) (expanderButton_t, bool); 
+typedef (bool) (actionState_f*) (expanderButton_t);  
+
+typedef struct {
+    expanderButton_t button; // this field could be reduntant
+    bool buttonState;
+    action_f setAction;
+    actionState_f getActionState;
+} expanderButtonEvent_t
+
 /** @brief AE/DRS button value */
 extern bool drsButtonPressed;
 /** @brief Action 1 button value */
