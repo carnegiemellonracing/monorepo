@@ -138,6 +138,52 @@ bool action2ButtonPressed;
 /** @brief Current regen step */
 unsigned int regenStep = 0;
 
+
+static expanderButtonEvent_t[EXP_BUTTON_LEN] expanderButtons = {
+    [EXP_DASH_BUTTON_1] = {
+        .button = EXP_DASH_BUTTON_1,
+        .buttonState = expanderGetButtonPressed(EXP_DASH_BUTTON_1),
+        .setAction = &actionFunc,
+        .lastPressed = 0,
+    },
+    [EXP_DASH_BUTTON_2] = {
+        .button = EXP_DASH_BUTTON_2,
+        .buttonState = expanderGetButtonPressed(EXP_DASH_BUTTON_2),
+        .setAction = &actionFunc,
+        .lastPressed = 0,
+    },
+    [EXP_DASH_BUTTON_3] = {
+        .button = EXP_DASH_BUTTON_3,
+        .buttonState = expanderGetButtonPressed(EXP_DASH_BUTTON_3),
+        .setAction = &actionFunc,
+        .lastPressed = 0,
+    },
+    [EXP_DASH_BUTTON_4] = {
+        .button = EXP_DASH_BUTTON_3,
+        .buttonState = expanderGetButtonPressed(EXP_DASH_BUTTON_4),
+        .setAction = &actionFunc,
+        .lastPressed = 0,
+    },
+    [EXP_WHEEL_BUTTON_1] = {
+        .button = EXP_DASH_BUTTON_3,
+        .buttonState = expanderGetButtonPressed(EXP_WHEEL_BUTTON_1),
+        .setAction = &actionFunc,
+        .lastPressed = 0,
+    },
+    [EXP_WHEEL_BUTTON_2] = {
+        .button = EXP_DASH_BUTTON_3,
+        .buttonState = expanderGetButtonPressed(EXP_WHEEL_BUTTON_2),
+        .setAction = &actionFunc,
+        .lastPressed = 0,
+    },
+    [EXP_WHEEL_BUTTON_3] = {
+        .button = EXP_DASH_BUTTON_3,
+        .buttonState = expanderGetButtonPressed(EXP_WHEEL_BUTTON_3),
+        .setAction = &actionFunc,
+        .lastPressed = 0,
+    }
+}
+
 /**
  * @brief Handles button events.
  *
@@ -148,26 +194,23 @@ static void buttonsInput_task(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     TickType_t lastWakeTime = xTaskGetTickCount();
-    
-    // initialize array of buttons
-    expanderButtonEvent_t[EXP_BUTTON_LEN] expanderButtons;
-    for (expanderButton_t i = EXP_DASH_BUTTON_1; i < EXP_BUTTON_LEN; i ++){
-        expanderButtons[i].button = i;
-        expanderButtons[i].buttonState = expanderGetButtonPressed(i);
-        expanderButtons[i].setAction = &actionFunc; // placeholder
-        expanderButtons[i].getActionState = &actionState; // placeholder
-    }
+    #define BUTTON_DEBOUNCE_TIME 200
 
     while (1) {
+        currentTime = xTaskGetTickCount();
         // updating each button and updating states according to button presses
         for (expanderButton_t i = EXP_DASH_BUTTON_1; i < EXP_BUTTON_LEN; i ++){
-            if (expanderButtons[i].buttonState != expanderGetButtonPressetd(i)){
-                if (expanderGetButtonPressed(i)){
-                    *expanderButtons[i].setAction(i, !(*expanderButtons[i].getActionState(i)));
+            if (expanderGetButtonPressed(i)){
+                if (expanderButtons[i].buttonState != expanderGetButtonPressed(i) && 
+                    currentTime - expanderButtons[i].lastPressed > BUTTON_DEBOUNCE_TIME){
+                    *expanderButtons[i].setAction(i);
+                    expanderButtons[i].lastPressed = currentTime;  
                 }
+                
             }
             expanderButtons[i].buttonState = expanderGetButtonPressetd(i);
-        }  
+        } 
+
         vTaskDelayUntil(&lastWakeTime, buttonsInput_period);
     }
 
@@ -190,8 +233,7 @@ static void buttonsInput_task(void *pvParameters) {
         
     //     currentTime = xTaskGetTickCount();
 
-	// 	#define BUTTON_DEBOUNCE_TIME 200
-
+	
     //     buttonEvent_t event;
     //     while (xQueueReceive(buttons.events.q, &event, 0) == pdTRUE) {
 
@@ -237,7 +279,7 @@ static void buttonsInput_task(void *pvParameters) {
     //         }
             
     //         // Record the time of the last button press
-    //         lastButtonPress = xTaskGetTickCount();
+            // lastButtonPress = xTaskGetTickCount();
     //     }
 
     //     vTaskDelayUntil(&lastWakeTime, buttonsInput_period);
