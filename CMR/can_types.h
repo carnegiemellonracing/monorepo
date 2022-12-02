@@ -532,6 +532,14 @@ typedef struct {
     int16_t vertical;       /**< @brief Vertical Acceleration where full scale is +/- 2g (positive Down). */
 } cmr_canCDCIMUAcceleration_t;
 
+/** @brief Central Dynamics Controller DRS states. */
+typedef struct {
+    int16_t state;
+    int16_t angle;
+    int16_t pwm_left;
+    int16_t pwm_right;
+} cmr_canCDCDRSStates_t
+
 // ------------------------------------------------------------------------------------------------
 // Central Dynamics Controller (20e)
 
