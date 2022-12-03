@@ -199,6 +199,69 @@ void doCellBalanceOneBMB(uint8_t BMBIndex) {
     }
 }
 
+bool doCellBalanceAllBMBs() {
+    uint32_t totalVoltage = 0;
+    //loop through all cells and turn adc output to voltage
+    for (int j = 0; j < NUM_BMBS; j++) {
+		for(int i = 0; i < VSENSE_CHANNELS_PER_BMB; i++) {
+        //find difference between current TOTAL cell voltage - previous TOTAL cell voltage
+        	totalVoltage += BMBData[j].cellVoltages[i];
+		}
+    }
+
+    //Add cell balancing here
+    uint32_t averageVoltage = totalVoltage / (VSENSE_CHANNELS_PER_BMB*NUM_BMBS);
+    uint16_t cellsToBalance[NUM_BMBS];
+
+	//all bits are 1 initially, as the balancing IO expanders are pulled up
+	for(int i = 0; i < NUM_BMBS; i++) {
+		cellsToBalance[i] = 0xFFFF;
+	}
+
+	for (int j = 0; j < NUM_BMBS; j++) {
+		for (uint16_t i = 0; i < VSENSE_CHANNELS_PER_BMB; i++) {
+			if (BMBData[j].cellVoltages[i] - averageVoltage > 50) {
+				cellsToBalance[j] &= ~(1 << i);
+			}
+		}
+    }
+
+    //we have 9 bits, so split the cells into two 8 bit integers
+    //LSB of the higher 8 bits is the 9th cell balancer
+    uint8_t balanceCommands[NUM_BMBS][2];
+	for(int i = 0; i < NUM_BMBS; i++) {
+		balanceCommands[i][0] = 0xFF & cellsToBalance[i];
+		balanceCommands[i][1] = (0xFF00 & cellsToBalance[i]) >> 8;
+	}
+
+    //only send balance command when changing
+    //otherwise, make sure all the balancing is OFF
+	for(int i = 0; i < NUM_BMBS; i++) {
+		int BMBNum = i/2;
+		int BMBSide = i%2;
+		if (!i2c_enableI2CMux(BMBNum, BMBSide)) {
+        	BMBTimeoutCount[i] = BMB_TIMEOUT;
+        	return false;
+    	}
+		if (getState() == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT) {
+			if (!i2c_cellBalance(i, balanceCommands[0],
+					balanceCommands[1])) {
+				BMBTimeoutCount[i] = BMB_TIMEOUT;
+				return false;
+			}
+		} else {
+			if (!i2c_cellBalance(i, 0, 0)) {
+				BMBTimeoutCount[i] = BMB_TIMEOUT;
+				return false;
+			}
+		}
+		if (!(i2c_disableI2CMux(BMBNum))) {
+        	BMBTimeoutCount[i] = BMB_TIMEOUT;
+        	return false;
+    	}
+	}
+}
+
 // calculate all the values for a single BMB
 // this does converting to voltage, converting to temp, calculating avg
 void calculateOneBMB(uint8_t BMBIndex) {
@@ -247,9 +310,10 @@ void vBMBSampleTask(void *pvParameters) {
 			// Calculate the values for this BMB
 			calculateOneBMB(BMBIndex);
 
-			doCellBalanceOneBMB(BMBIndex);
+			//doCellBalanceOneBMB(BMBIndex);
 
 		} // end for loop
+		doCellBalanceAllBMBs();
 		vTaskDelayUntil(&xLastWakeTime, 3);
 	}
 }

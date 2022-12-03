@@ -194,11 +194,11 @@ bool i2c_cellBalance(uint8_t bmb, uint8_t cells, uint8_t cells1) {
 	uint8_t data2[2] = {0xF3, cells};
     //i2c_flipEndianness(data, 2);
     //i2c_flipEndianness(data2, 2);
-	if (cmr_i2cTX(&bmb_i2c, bms_cell_balancer_addresses[bmb], data, 2,
+	if (cmr_i2cTX(&bmb_i2c, BMS_CELL_BALANCE_IO_ADDR, data, 2,
 			I2C_TIMEOUT) != 0) {
 		return false;
 	}
-	if (cmr_i2cTX(&bmb_i2c, bms_cell_balancer_addresses[bmb], data2, 2,
+	if (cmr_i2cTX(&bmb_i2c, BMS_CELL_BALANCE_IO_ADDR, data2, 2,
 			I2C_TIMEOUT) != 0) {
 		return false;
 	}
