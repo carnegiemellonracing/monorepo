@@ -69,6 +69,7 @@ static int32_t ADCtoMV_24v(const cmr_sensor_t *sensor, uint32_t reading) {
  *
  * @return Voltage in V.
  */
+// was determined experimentally
 static int32_t ADCtoMV_HV(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 	

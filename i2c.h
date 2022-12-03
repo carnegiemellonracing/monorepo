@@ -12,13 +12,11 @@
 #include <CMR/i2c.h>
 #include <stdbool.h>
 
-//#define I2C_NUM_BMBS 8
-#define I2C_NUM_BMBS 1 //TODO: SET THIS BACK TO 8
+#define I2C_NUM_BMBS 8
+// #define I2C_NUM_BMBS 1 //TODO: SET THIS BACK TO 8
 // I2c addresses of muxes 
 // From https://www.nxp.com/docs/en/data-sheet/PCA9542A.pdf
-static const uint16_t bms_mux_address[I2C_NUM_BMBS] = {
-    0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77
-};
+#define BMS_MUX_BASE_ADDR 0x70;
 static const uint16_t bms_cell_balancer_addresses[I2C_NUM_BMBS] = {
     0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57
 };

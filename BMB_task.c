@@ -223,8 +223,8 @@ void vBMBSampleTask(void *pvParameters) {
 		for (uint8_t BMBIndex = 0; BMBIndex < NUM_BMBS; BMBIndex++) {
 			//since we treat each BMB side as an individual bmb
 			//we just check whether the current bmb index is odd/even
-			//uint8_t BMBSide = BMBIndex % 2;
-			uint8_t BMBSide = 1; // TODO: CHANGE THIS BACKs
+			uint8_t BMBSide = BMBIndex % 2;
+			//uint8_t BMBSide = 1; // TODO: CHANGE THIS BACKs
 			// our actual BMB number, the physical board
 			uint8_t BMBNum = BMBIndex / 2;
 

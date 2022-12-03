@@ -11,15 +11,6 @@ static uint8_t selectIOCurrent = 0x0;
 
 static cmr_i2c_t bmb_i2c;
 
-//void i2c_flipEndianness(uint8_t *data, uint8_t len) {
-//    uint8_t tmp;
-//    for (uint8_t i = 0; i < len / 2; i++) {
-//        tmp = data[i];
-//        data[i] = data[len - i - 1];
-//        data[len - i - 1] = tmp;
-//    }
-//}
-
 bool i2cInit(void) {
     cmr_i2cInit(&bmb_i2c, I2C1,
     		I2C_CLOCK_HI, 0, // 100kHz limited by the PCA9536 TODO: Check if own address should be 0
@@ -64,7 +55,7 @@ bool i2cInit(void) {
 uint16_t i2cVerifyConfigChain(void) {
     for (int bmb = 0; bmb < I2C_NUM_BMBS; bmb++) {
         uint8_t data = 0;
-        if (cmr_i2cRX(&bmb_i2c, bms_mux_address[bmb], &data,
+        if (cmr_i2cRX(&bmb_i2c, bms_mux_base_addr + bmb, &data,
                   1, I2C_TIMEOUT) != 0) {
             return ((uint16_t)(bmb)) << 8;
         }
@@ -85,7 +76,7 @@ uint16_t i2cVerifyConfigChain(void) {
 bool i2c_enableI2CMux(uint8_t bmb, uint8_t side) {
     // bit 2 is enable bit, bit 1 & 0 is the side (either 00 or 01)
     uint8_t data = 0x4 | side;
-    if(cmr_i2cTX(&bmb_i2c, bms_mux_address[bmb], &data, 1, I2C_TIMEOUT) != 0) {
+    if(cmr_i2cTX(&bmb_i2c, bms_mux_base_addr + bmb, &data, 1, I2C_TIMEOUT) != 0) {
         return false;
     }
     return true;
@@ -94,7 +85,7 @@ bool i2c_enableI2CMux(uint8_t bmb, uint8_t side) {
 bool i2c_readI2CMux(uint8_t bmb, uint8_t *enabled, uint8_t *side) {
     // bit 2 is enable bit, bit 1 & 0 is the side (either 00 or 01)
     uint8_t buf;
-    if(cmr_i2cRX(&bmb_i2c, bms_mux_address[bmb], &buf, 1, I2C_TIMEOUT) != 0) {
+    if(cmr_i2cRX(&bmb_i2c, bms_mux_base_addr + bmb, &buf, 1, I2C_TIMEOUT) != 0) {
         return false;
     }
     *enabled = (buf >> 2) & 0x1;
@@ -105,7 +96,7 @@ bool i2c_readI2CMux(uint8_t bmb, uint8_t *enabled, uint8_t *side) {
 bool i2c_disableI2CMux(uint8_t bmb) {
     // bit 2 is enable bit
     uint8_t data = 0x0;
-    if(cmr_i2cTX(&bmb_i2c, bms_mux_address[bmb], &data, 1, I2C_TIMEOUT) != 0) {
+    if(cmr_i2cTX(&bmb_i2c, bms_mux_base_addr + bmb, &data, 1, I2C_TIMEOUT) != 0) {
         return false;
     }
     return true;
