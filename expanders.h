@@ -37,7 +37,7 @@ typedef enum {
     ROTARY_POS_7,
     ROTARY_POS_8,
     ROTARY_POS_LEN,
-    ROTARY_POS_INVALID
+    ROTARY_POS_INVALID  // If none of the pins read high
 } expanderRotaryPosition_t;
 
 typedef enum {

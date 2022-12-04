@@ -145,14 +145,6 @@ static int32_t adcToBPres_PSI(const cmr_sensor_t *sensor, uint32_t reading) {
     return (int32_t) (reading >> 4);
 }
 
-static int32_t adcToDigital(const cmr_sensor_t *sensor, uint32_t reading) {
-    if (reading > ADC_DIGITAL_LOW_THRES && reading < ADC_DIGITAL_HIGH_THRES) {
-        // TODO: What to do here?
-    }
-
-    return reading > ADC_DIGITAL_LOW_THRES;
-}
-
 /**
  * @brief Converts a raw ADC value to a steering wheel angle in degrees.
  *

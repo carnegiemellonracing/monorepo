@@ -13,6 +13,8 @@
  * Replace/add more ADC channel configurations here as appropriate. Each
  * enumeration value of `adcChannel_t` should get a configuration.
  *
+ * TODO: UPDATE PIN CONFIGS
+ * 
  * @see `CMR/adc.h` for various initialization values.
  */
 static cmr_adcChannel_t adcChannels[ADC_LEN] = {

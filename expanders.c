@@ -38,7 +38,7 @@ static const uint16_t daughterDigitalAddress = 0x25; // 0x25 = 0b0100101
 static const uint16_t daughterAnalogAddress = 0x11; // 0x11 = 0b0010001
 
 /** @brief I2C Timeout (milliseconds). */
-static const uint32_t i2cTimeout_ms = 1;
+static const uint32_t i2cTimeout_ms = 2;
 
 /**
  * @brief Array of expander button pin configs
@@ -180,6 +180,8 @@ static expanderRotaryConfig_t rotaries[EXP_ROTARY_LEN] = {
 /**
  * @brief Array of expander LED pin configs
  * 
+ * Must change checkLEDState function since it is not generic to LED configurations
+ * 
  */
 static expanderPinConfig_t leds[EXP_LED_LEN] = {
     [EXP_LED_1] = {
@@ -215,9 +217,11 @@ static expanderPinConfig_t clutchPaddles[EXP_CLUTCH_LEN] = {
 bool ledTargets[EXP_LED_LEN];
 
 /** @brief Array of bytes containing data for the pins of each digital GPIO expander */
+// Number of elements in the array corresponds to number of ports for GPIO
 uint8_t mainDigital1Data[2];
 uint8_t mainDigital2Data[1];
 uint8_t daughterDigitalData[1];
+// TODO: Look into switching to uint16_t and reverse byte order
 uint8_t daughterAnalogData[2 * EXP_CLUTCH_LEN];
 
 /** @brief GPIO expander update 100 Hz priority. */
@@ -309,7 +313,7 @@ static bool getPinValueFromConfig(expanderPinConfig_t config)
     uint16_t addr = config.expanderAddress;
 
     // Select correct expander data based on config
-    uint8_t *data;
+    uint8_t *data = NULL;
     if (addr == mainDigital1Address) 
         data = mainDigital1Data;
     else if (addr == mainDigital2Address)
@@ -321,13 +325,22 @@ static bool getPinValueFromConfig(expanderPinConfig_t config)
 
     // Mask out bit corresponding to pin
     uint8_t mask = 1 << config.pin;
+    configASSERT(data != NULL);
     return data[config.port] & mask;
 }
 
+/**
+ * @brief Get expander button states
+ * 
+ * @param button 
+ * @return true 
+ * @return false 
+ */
 bool expanderGetButtonPressed(expanderButton_t button)
 {
     expanderPinConfig_t buttonConfig = buttons[button];
-    return getPinValueFromConfig(buttonConfig);
+    // Buttons are active low, negate for active high
+    return !getPinValueFromConfig(buttonConfig);
 }
 
 expanderRotaryPosition_t expanderGetRotary(expanderRotary_t rotary)
@@ -343,6 +356,7 @@ expanderRotaryPosition_t expanderGetRotary(expanderRotary_t rotary)
     }
     return ROTARY_POS_INVALID;
 }
+// TODO: scale down to uint8_t and send over CAN
 uint32_t expanderGetClutch(expanderClutch_t clutch)
 {
     // Mask for lower 12 bits corresponding to actual ADC value
@@ -351,7 +365,7 @@ uint32_t expanderGetClutch(expanderClutch_t clutch)
     uint8_t pin = clutchPaddles[clutch].pin;
     for (size_t c = 0; c < 2 * EXP_CLUTCH_LEN; c += 2)
     {
-        uint16_t curr = ((uint16_t) daughterAnalogData[c]) << 8 | daughterAnalogData[c];
+        uint16_t curr = (((uint16_t) daughterAnalogData[c]) << 8) | ((uint16_t) daughterAnalogData[c + 1]);
 
         // Most-significant bit of any ADC conversion result is 0
         bool msb = curr >> 15;
@@ -368,7 +382,7 @@ uint32_t expanderGetClutch(expanderClutch_t clutch)
     }
     
     // Failed to find clutch data, no valid value would be this large
-    return -1;
+    return 0;
 }
 void expanderSetLED(expanderLED_t led, bool isOn)
 {
@@ -414,7 +428,7 @@ void expandersInit(void) {
     // Set REP bit so ADC conversions are repeated (see datasheet)
     uint8_t daughterAnalogADCSequence[3] = {
         AD5593R_CTRL_REG_ADC_SEQ,
-        0x02,   // 0b00000010 (REG bit)
+        0x02,   // 0b00000010 (REP bit)
         0x03    // 0b00000011
     };
 
