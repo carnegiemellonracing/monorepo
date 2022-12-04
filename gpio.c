@@ -14,10 +14,6 @@
 #include "gpio.h"       // Interface to implement
 #include "expanders.h"   // GPIO expanders interface
 
-/** @brief Maximum number of button events in the queue. */
-#define BUTTON_EVENTS_MAX 64
-
-
 /**
  * @brief Board-specific pin configuration.
  *
@@ -128,6 +124,9 @@ static const uint32_t buttonsInput_priority = 4;
 /** @brief Button input task period (milliseconds). */
 static const TickType_t buttonsInput_period = 10;
 
+/** @brief Button input task task. */
+static cmr_task_t buttonsInput_task;
+
 /** @brief AE/DRS button value */
 bool drsButtonPressed;
 /** @brief Action 1 button value */
@@ -138,78 +137,101 @@ bool action2ButtonPressed;
 /** @brief Current regen step */
 unsigned int regenStep = 0;
 
-
-static expanderButtonEvent_t[EXP_BUTTON_LEN] expanderButtons = {
-    [EXP_DASH_BUTTON_1] = {
-        .button = EXP_DASH_BUTTON_1,
-        .buttonState = expanderGetButtonPressed(EXP_DASH_BUTTON_1),
-        .setAction = &actionFunc,
-        .lastPressed = 0,
-    },
-    [EXP_DASH_BUTTON_2] = {
-        .button = EXP_DASH_BUTTON_2,
-        .buttonState = expanderGetButtonPressed(EXP_DASH_BUTTON_2),
-        .setAction = &actionFunc,
-        .lastPressed = 0,
-    },
-    [EXP_DASH_BUTTON_3] = {
-        .button = EXP_DASH_BUTTON_3,
-        .buttonState = expanderGetButtonPressed(EXP_DASH_BUTTON_3),
-        .setAction = &actionFunc,
-        .lastPressed = 0,
-    },
-    [EXP_DASH_BUTTON_4] = {
-        .button = EXP_DASH_BUTTON_3,
-        .buttonState = expanderGetButtonPressed(EXP_DASH_BUTTON_4),
-        .setAction = &actionFunc,
-        .lastPressed = 0,
-    },
-    [EXP_WHEEL_BUTTON_1] = {
-        .button = EXP_DASH_BUTTON_3,
-        .buttonState = expanderGetButtonPressed(EXP_WHEEL_BUTTON_1),
-        .setAction = &actionFunc,
-        .lastPressed = 0,
-    },
-    [EXP_WHEEL_BUTTON_2] = {
-        .button = EXP_DASH_BUTTON_3,
-        .buttonState = expanderGetButtonPressed(EXP_WHEEL_BUTTON_2),
-        .setAction = &actionFunc,
-        .lastPressed = 0,
-    },
-    [EXP_WHEEL_BUTTON_3] = {
-        .button = EXP_DASH_BUTTON_3,
-        .buttonState = expanderGetButtonPressed(EXP_WHEEL_BUTTON_3),
-        .setAction = &actionFunc,
-        .lastPressed = 0,
-    }
+static void actionOneButtonAction(bool pressed)
+{
+    action1ButtonPressed = pressed;
+    actionOneButton(pressed);
 }
 
+static void actionTwoButtonAction(bool pressed)
+{
+    action2ButtonPressed = pressed;
+    actionTwoButton(pressed);
+}
+
+static void drsButtonAction(bool pressed)
+{
+    drsButtonPressed = pressed;
+}
+
+#define BUTTON_DEBOUNCE_TIME 200
+
+static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
+    [EXP_DASH_BUTTON_1] = {
+        .buttonState = false,
+        .setAction = &stateVSMUpButton,
+        .lastPressed = 0,
+        .debounce = BUTTON_DEBOUNCE_TIME,
+    },
+    [EXP_DASH_BUTTON_2] = {
+        .buttonState = false,
+        .setAction = &stateVSMDownButton,
+        .lastPressed = 0,
+        .debounce = BUTTON_DEBOUNCE_TIME * 5,
+    },
+    [EXP_DASH_BUTTON_3] = {
+        .buttonState = false,
+        .setAction = &stateGearUpButton,
+        .lastPressed = 0,
+        .debounce = BUTTON_DEBOUNCE_TIME,
+    },
+    [EXP_DASH_BUTTON_4] = {
+        .buttonState = false,
+        .setAction = &stateGearDownButton,
+        .lastPressed = 0,
+        .debounce = BUTTON_DEBOUNCE_TIME,
+    },
+    [EXP_WHEEL_BUTTON_1] = {
+        .buttonState = false,
+        .setAction = &actionOneButtonAction,
+        .lastPressed = 0,
+        .debounce = BUTTON_DEBOUNCE_TIME,
+    },
+    [EXP_WHEEL_BUTTON_2] = {
+        .buttonState = false,
+        .setAction = &actionTwoButtonAction,
+        .lastPressed = 0,
+        .debounce = BUTTON_DEBOUNCE_TIME,
+    },
+    [EXP_WHEEL_BUTTON_3] = {
+        .buttonState = false,
+        .setAction = &drsButtonAction,
+        .lastPressed = 0,
+        .debounce = BUTTON_DEBOUNCE_TIME,
+    }
+};
+
 /**
- * @brief Handles button events.
+ * @brief Handles button actions.
  *
  * @param pvParameters Ignored.
  */
-
-static void buttonsInput_task(void *pvParameters) {
+static void buttonsInput(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     TickType_t lastWakeTime = xTaskGetTickCount();
-    #define BUTTON_DEBOUNCE_TIME 200
+    TickType_t currentTime;
 
     while (1) {
+        if(!stateVSMReqIsValid(stateGetVSM(), stateGetVSMReq()))
+        {
+            updateReq();
+        }
+
         currentTime = xTaskGetTickCount();
+
         // updating each button and updating states according to button presses
-        for (expanderButton_t i = EXP_DASH_BUTTON_1; i < EXP_BUTTON_LEN; i ++){
-            if (expanderGetButtonPressed(i)){
-                if (expanderButtons[i].buttonState != expanderGetButtonPressed(i) && 
-                    currentTime - expanderButtons[i].lastPressed > BUTTON_DEBOUNCE_TIME){
-                    *expanderButtons[i].setAction(i);
-                    expanderButtons[i].lastPressed = currentTime;  
-                }
-                
+        for (expanderButton_t i = EXP_DASH_BUTTON_1; i < EXP_BUTTON_LEN; i ++) {
+            bool currState = expanderGetButtonPressed(i);
+            expanderButtonEvent_t *currButton = &expanderButtons[i];
+
+            if (currButton->buttonState != currState && 
+                currentTime - currButton->lastPressed > currButton->debounce) {
+                (*currButton->setAction)(currState);
+                currButton->lastPressed = currentTime;  
+                currButton->buttonState = currState;
             }
-            expanderButtons[i].buttonState = expanderGetButtonPressetd(i);
-        } 
+        }
 
         vTaskDelayUntil(&lastWakeTime, buttonsInput_period);
     }
@@ -294,6 +316,12 @@ void gpioInit(void) {
         gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0])
     );
 
-    
+    cmr_taskInit(
+        &buttonsInput_task,
+        "buttonsInput",
+        buttonsInput_priority,
+        buttonsInput,
+        NULL
+    );
 }
 

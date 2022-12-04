@@ -43,26 +43,18 @@ extern volatile bool config_increment_up_requested;
 extern volatile bool config_increment_down_requested;
 extern volatile bool config_scroll_requested;
 
-
-/** @brief Data required to processes a button press. */
-typedef struct {
-    gpio_t pin;     /**< @brief The triggering pin. */
-    bool pressed;   /**< @brief `true` for pressed; `false` for released. */
-} buttonEvent_t;
-
 void gpioInit(void);
 
-typedef (void) (action_f*) (expanderButton_t); 
+typedef void (*action_f) (bool); 
 // typedef (bool) (actionState_f*) (expanderButton_t);  
 
 typedef struct {
-    expanderButton_t button; // this field could be reduntant
     bool buttonState;
     action_f setAction;
     TickType_t lastPressed;
+    TickType_t debounce;
     // actionState_f getActionState;
-
-} expanderButtonEvent_t
+} expanderButtonEvent_t;
 
 /** @brief AE/DRS button value */
 extern bool drsButtonPressed;
