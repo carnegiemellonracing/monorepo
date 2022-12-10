@@ -9,6 +9,7 @@
 
 #include "test.h"
 #include "gpio.h"
+#include "adc.h"
 
 void testGPIOWrite()
 {
@@ -25,7 +26,17 @@ void testGPIORead()
     for (size_t pin = GPIO_SS_MODULE; pin <= GPIO_SS_BOTS; pin++)
     {
         read = cmr_gpioRead(pin);
-        printf("Pin %u: %d\n", pin, read);
+        printf("GPIO Pin %u: %d\n", pin, read);
+    }
+}
+
+void testADCRead()
+{
+    volatile uint32_t read;
+    for (size_t ch = ADC_VSENSE; ch < ADC_LEN; ch++)
+    {
+        read = adcRead(ch);
+        printf("ADC Channel %u: %u\n", ch, read);
     }
 }
 
@@ -47,6 +58,7 @@ static void test(void *pvParameters) {
         vTaskDelayUntil(&lastWakeTime, test_period_ms)
     ) {
         testGPIOWrite();
+        testGPIORead();
     }
 }
 
