@@ -2,6 +2,7 @@
 #include <FreeRTOS.h>       // FreeRTOS API
 #include <task.h>           // Task interface
 #include <stdbool.h>
+#include <stdio.h>
 
 #include <CMR/tasks.h>      // CMR task drivers 
 #include <CMR/gpio.h>
@@ -16,6 +17,16 @@ void testGPIOWrite()
     cmr_gpioToggle(GPIO_LED_AMS);
     cmr_gpioToggle(GPIO_LED_BSPD);
     cmr_gpioToggle(GPIO_PD_N);
+}
+
+void testGPIORead()
+{
+    volatile int read;
+    for (size_t pin = GPIO_SS_MODULE; pin <= GPIO_SS_BOTS; pin++)
+    {
+        read = cmr_gpioRead(pin);
+        printf("Pin %u: %d\n", pin, read);
+    }
 }
 
 /** @brief Test task priority. */
