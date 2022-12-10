@@ -18,6 +18,7 @@
 #include "adc.h"        // Board-specific ADC interface
 #include "tft.h"        // TFT display interface.
 #include "expanders.h"   // LED strip interface.
+#include "test.h"
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -110,32 +111,34 @@ static void errorLEDs(void *pvParameters) {
  */
 int main(void) {
     // System initialization.
-     HAL_Init();
+    HAL_Init();
     cmr_rccSystemClockEnable();
 
     // Peripheral configuration.
     gpioInit();
-    canInit();
-    adcInit();
-    sensorsInit();
-    tftInit();
-    expandersInit();
+    // canInit();
+    // adcInit();
+    // sensorsInit();
+    // tftInit();
+    // expandersInit();
 
-    cmr_taskInit(
-        &statusLED_task,
-        "statusLED",
-        statusLED_priority,
-        statusLED,
-        NULL
-    );
+    testInit();
 
-    cmr_taskInit(
-        &errorLEDs_task,
-        "errorLEDs",
-        errorLEDs_priority,
-        errorLEDs,
-        NULL
-    );
+    // cmr_taskInit(
+    //     &statusLED_task,
+    //     "statusLED",
+    //     statusLED_priority,
+    //     statusLED,
+    //     NULL
+    // );
+
+    // cmr_taskInit(
+    //     &errorLEDs_task,
+    //     "errorLEDs",
+    //     errorLEDs_priority,
+    //     errorLEDs,
+    //     NULL
+    // );
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");
