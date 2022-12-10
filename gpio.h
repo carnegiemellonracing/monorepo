@@ -45,15 +45,14 @@ extern volatile bool config_scroll_requested;
 
 void gpioInit(void);
 
+/** Function pointer type for button actions, input is whether the button is pressed or not*/
 typedef void (*action_f) (bool); 
-// typedef (bool) (actionState_f*) (expanderButton_t);  
 
 typedef struct {
     bool buttonState;
     action_f setAction;
     TickType_t lastPressed;
     TickType_t debounce;
-    // actionState_f getActionState;
 } expanderButtonEvent_t;
 
 /** @brief AE/DRS button value */

@@ -213,6 +213,8 @@ static void buttonsInput(void *pvParameters) {
     TickType_t currentTime;
 
     while (1) {
+        /* if vsm has changed state unexpectedly we
+         * need to adjust our req to still be valid */
         if(!stateVSMReqIsValid(stateGetVSM(), stateGetVSMReq()))
         {
             updateReq();
@@ -227,7 +229,7 @@ static void buttonsInput(void *pvParameters) {
 
             if (currButton->buttonState != currState && 
                 currentTime - currButton->lastPressed > currButton->debounce) {
-                (*currButton->setAction)(currState);
+                (*(currButton->setAction))(currState);
                 currButton->lastPressed = currentTime;  
                 currButton->buttonState = currState;
             }
