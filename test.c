@@ -35,8 +35,8 @@ void testADCRead()
     volatile uint32_t read;
     for (size_t ch = ADC_VSENSE; ch < ADC_LEN; ch++)
     {
-        read = adcRead(ch);
-        printf("ADC Channel %u: %u\n", ch, read);
+        read = adcRead(ADC_VSENSE);
+        printf("ADC Channel %u: %ld\n", ch, read);
     }
 }
 
@@ -59,6 +59,7 @@ static void test(void *pvParameters) {
     ) {
         testGPIOWrite();
         testGPIORead();
+        testADCRead();
     }
 }
 
