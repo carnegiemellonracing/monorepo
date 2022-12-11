@@ -128,18 +128,18 @@ void BMBInit() {
 
 bool sampleOneBMB(uint8_t BMBIndex, uint8_t BMBNum, uint8_t BMBSide) {
     if (!i2c_enableI2CMux(BMBNum, BMBSide)) {
-        BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
+    	BMBTimeoutCount[BMBIndex]++;
         return false;
     }
     //select through each of the mux channels
     for (int channel = 0; channel < NUM_MUX_CHANNELS; channel++) {
         if (!i2c_select4MuxChannel(channel)) {
-            BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
+        	BMBTimeoutCount[BMBIndex]++;
             return false;
         }
         // through each channel, input 8 adc channels
         if (!i2c_scanADC(BMBADCResponse[channel])) {
-            BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
+        	BMBTimeoutCount[BMBIndex]++;
             return false;
         }
     }
@@ -147,7 +147,7 @@ bool sampleOneBMB(uint8_t BMBIndex, uint8_t BMBNum, uint8_t BMBSide) {
     if (BMBFlashCounter >= LED_FLASH_COUNT) {
         // we got to threshold, blink this BMB
         if (!i2c_selectMuxBlink()) {
-            BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
+        	BMBTimeoutCount[BMBIndex]++;
             return false;
         }
         BMBFlashCounter = 0;
@@ -155,7 +155,7 @@ bool sampleOneBMB(uint8_t BMBIndex, uint8_t BMBNum, uint8_t BMBSide) {
         BMBFlashCounter++;
     }
     if (!(i2c_disableI2CMux(BMBIndex))) {
-        BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
+    	BMBTimeoutCount[BMBIndex]++;
         return false;
     }
     return true;
@@ -190,11 +190,11 @@ void doCellBalanceOneBMB(uint8_t BMBIndex) {
     if (getState() == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT) {
         if (!i2c_cellBalance(BMBIndex, balanceCommands[0],
                 balanceCommands[1])) {
-            BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
+        	BMBTimeoutCount[BMBIndex]++;
         }
     } else {
         if (!i2c_cellBalance(BMBIndex, 0, 0)) {
-            BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
+        	BMBTimeoutCount[BMBIndex]++;
         }
     }
 }
@@ -240,23 +240,23 @@ bool doCellBalanceAllBMBs() {
 		int BMBNum = i/2;
 		int BMBSide = i%2;
 		if (!i2c_enableI2CMux(BMBNum, BMBSide)) {
-        	BMBTimeoutCount[i] = BMB_TIMEOUT;
+			BMBTimeoutCount[i]++;
         	return false;
     	}
 		if (getState() == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT) {
 			if (!i2c_cellBalance(i, balanceCommands[0],
 					balanceCommands[1])) {
-				BMBTimeoutCount[i] = BMB_TIMEOUT;
+				BMBTimeoutCount[i]++;
 				return false;
 			}
 		} else {
 			if (!i2c_cellBalance(i, 0, 0)) {
-				BMBTimeoutCount[i] = BMB_TIMEOUT;
+				BMBTimeoutCount[i]++;
 				return false;
 			}
 		}
 		if (!(i2c_disableI2CMux(BMBNum))) {
-        	BMBTimeoutCount[i] = BMB_TIMEOUT;
+			BMBTimeoutCount[i]++;
         	return false;
     	}
 	}
@@ -283,38 +283,44 @@ void vBMBSampleTask(void *pvParameters) {
 	vTaskDelayUntil(&xLastWakeTime, 50);
 
 	while (1) {
-		for (uint8_t BMBIndex = 0; BMBIndex < NUM_BMBS; BMBIndex++) {
+		for (uint8_t BMBIndex = 0; BMBIndex < 1; BMBIndex++) {//TODO: Change back to BMBIndex < NUM_BMBS
 			//since we treat each BMB side as an individual bmb
 			//we just check whether the current bmb index is odd/even
-			uint8_t BMBSide = BMBIndex % 2;
-			//uint8_t BMBSide = 1; // TODO: CHANGE THIS BACKs
+			//uint8_t BMBSide = BMBIndex % 2;
+			uint8_t BMBSide = 1; // TODO: CHANGE THIS BACKs
 			// our actual BMB number, the physical board
-			uint8_t BMBNum = BMBIndex / 2;
+			//uint8_t BMBNum = BMBIndex / 2;
+			uint8_t BMBNum = 0; // TODO: Change back
 
 			//Sample BMBs
-			taskENTER_CRITICAL();
+			// Get interesting crashes in list.c:192 with critical
+			//taskENTER_CRITICAL();
 			// Sample a single BMB (number and side fully)
-			if (!sampleOneBMB(BMBIndex, BMBNum, BMBSide)) {
+			if (!sampleOneBMB(0, BMBNum, BMBSide)) {
 				// there was an error, so reset mux
-				if (!(i2c_disableI2CMux(BMBIndex))) {
-					BMBTimeoutCount[BMBIndex] = BMB_TIMEOUT;
+				BMBTimeoutCount[BMBIndex]++;
+				if (!(i2c_disableI2CMux(0))) {
+					BMBTimeoutCount[BMBIndex]++;
 				}
+			} else {
+				BMBTimeoutCount[BMBIndex] = 0;
 			}
-			taskEXIT_CRITICAL();
+			//taskEXIT_CRITICAL();
 
-			if(BMBTimeoutCount[BMBIndex] == BMB_TIMEOUT) {
+			if(BMBTimeoutCount[BMBIndex] != 0) {
 				// we had a timeout, continue onto next BMB
 				continue;
 			}
 
 			// Calculate the values for this BMB
-			calculateOneBMB(BMBIndex);
+			calculateOneBMB(0);
 
 			//doCellBalanceOneBMB(BMBIndex);
 
 		} // end for loop
-		doCellBalanceAllBMBs();
-		vTaskDelayUntil(&xLastWakeTime, 3);
+		//doCellBalanceAllBMBs();
+		//TickType_t temp = xTaskGetTickCount();
+		vTaskDelayUntil(&xLastWakeTime, 5);
 	}
 }
 

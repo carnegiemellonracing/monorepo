@@ -58,6 +58,13 @@ static void statusLED(void *pvParameters) {
     }
 }
 
+/* Debug Exception and Monitor Control Register base address */
+#define DEMCR                 *((volatile uint32_t*) 0xE000EDFCu)
+
+/* ITM register addresses */
+#define ITM_STIMULUS_PORT0    *((volatile uint32_t*) 0xE0000000u)
+#define ITM_TRACE_EN          *((volatile uint32_t*) 0xE0000E00u)
+
 /**
  * @brief Firmware entry point.
  *
@@ -66,6 +73,16 @@ static void statusLED(void *pvParameters) {
  * @return Does not return.
  */
 int main(void) {
+	// Enable TRCENA
+	DEMCR |= ( 1 << 24);
+	// Enable stimulus port 0
+	ITM_TRACE_EN |= ( 1 << 0);
+
+    // System initialization.
+    uint32_t *ACTLR = (uint32_t *)0xE000E008;
+
+
+    *ACTLR |= 2; // disable write buffering
 
     // System initialization.
 
@@ -98,13 +115,13 @@ int main(void) {
     );
 
     // State Task
-    cmr_taskInit(
-        &setState_task,
-        "Set State Task",
-        setState_priority,
-        vSetStateTask,
-        NULL
-    );
+//    cmr_taskInit(
+//        &setState_task,
+//        "Set State Task",
+//        setState_priority,
+//        vSetStateTask,
+//        NULL
+//    );
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

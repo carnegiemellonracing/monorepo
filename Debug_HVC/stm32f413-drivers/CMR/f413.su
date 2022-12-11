@@ -19,7 +19,7 @@
 ../stm32f413-drivers/CMR/f413.c:388:24:_platform_adcChannelConfig	40	static
 ../stm32f413-drivers/CMR/f413.c:400:18:_platform_adcPinConfig	48	static
 ../stm32f413-drivers/CMR/f413.c:417:6:_platform_rccADCClockEnable	24	static
-../stm32f413-drivers/CMR/f413.c:432:6:_platform_adcInit	4304	static
+../stm32f413-drivers/CMR/f413.c:432:6:_platform_adcInit	21328	static
 ../stm32f413-drivers/CMR/f413.c:464:6:_platform_rccCANClockEnable	32	static
 ../stm32f413-drivers/CMR/f413.c:512:14:getSectorBase	16	static
 ../stm32f413-drivers/CMR/f413.c:525:15:getSectorSize	16	static

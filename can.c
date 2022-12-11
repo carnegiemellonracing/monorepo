@@ -126,11 +126,19 @@ static void canTX10Hz(void *pvParameters) {
         for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
             sendBMSBMBStatusVoltage(bmb_index);
         }
-        sendBMSMinMaxCellVoltage();
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
 }
+
+/** @brief CAN 100 Hz TX priority. */
+static const uint32_t canTX200Hz_priority = 5;
+
+/** @brief CAN 100 Hz TX period (milliseconds). */
+static const TickType_t canTX200Hz_period_ms = 5;
+
+/** @brief CAN 100 Hz TX task. */
+static cmr_task_t canTX200Hz_task;
 
 /** @brief CAN 100 Hz TX priority. */
 static const uint32_t canTX100Hz_priority = 5;
@@ -142,12 +150,27 @@ static const TickType_t canTX100Hz_period_ms = 10;
 static cmr_task_t canTX100Hz_task;
 
 /**
- * @brief Task for sending CAN messages at 100 Hz.
+ * @brief Task for sending CAN messages at 200 Hz.
  *
  * @param pvParameters Ignored.
  *
  * @return Does not return.
  */
+static void canTX200Hz(void *pvParameters) {
+    (void) pvParameters;    // Placate compiler.
+
+//    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
+//    volatile cmr_canHeartbeat_t *heartbeatVSM =
+//        (void *) heartbeatVSMMeta->payload;
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
+        sendBMSMinMaxCellVoltage();
+
+        vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
+    }
+}
+
 static void canTX100Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
@@ -210,6 +233,13 @@ void canInit(void) {
         "CAN TX 10Hz",
         canTX10Hz_priority,
         canTX10Hz,
+        NULL
+    );
+    cmr_taskInit(
+        &canTX200Hz_task,
+        "CAN TX 200Hz",
+        canTX200Hz_priority,
+        canTX200Hz,
         NULL
     );
     cmr_taskInit(
@@ -409,7 +439,7 @@ static void sendBMSMinMaxCellVoltage(void) {
         .maxVoltageCellNum = maxCellVoltageIndex,
     };
 
-    canTX(CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE, &BMSBMBMinMaxVoltage, sizeof(BMSBMBMinMaxVoltage), canTX10Hz_period_ms);
+    canTX(CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE, &BMSBMBMinMaxVoltage, sizeof(BMSBMBMinMaxVoltage), canTX200Hz_period_ms);
 }
 
 static void sendBMSMinMaxCellTemp(void) {
