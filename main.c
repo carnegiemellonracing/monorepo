@@ -118,9 +118,9 @@ int main(void) {
     gpioInit();
     // canInit();
     adcInit();
-    // sensorsInit();
-    tftInit();
-    // expandersInit();
+ 	// sensorsInit();
+//    tftInit();
+//     expandersInit();
 
     // testInit();
 
