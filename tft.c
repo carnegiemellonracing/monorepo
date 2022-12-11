@@ -602,7 +602,7 @@ void tftInit(void) {
             { .port = GPIOC, .pin = GPIO_PIN_5 }
         },
         .sck = { .port = GPIOB, .pin = GPIO_PIN_1 },
-        .nss = { .port = GPIOC, .pin = GPIO_PIN_1 }
+        .nss = { .port = GPIOB, .pin = GPIO_PIN_6 }
     };
 
     cmr_qspiInit(
