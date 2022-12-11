@@ -41,6 +41,25 @@ void I2C1_EV_IRQHandler(void) {
 void I2C2_EV_IRQHandler(void) {
     HAL_I2C_EV_IRQHandler(cmr_i2cDevices[1].handle);
 }
+/**
+ * @brief I2C interrupt handler.
+ */
+void I2C1_ER_IRQHandler(void) {
+    HAL_I2C_ER_IRQHandler(cmr_i2cDevices[0].handle);
+}
+
+/**
+ * @brief I2C interrupt handler.
+ */
+void I2C2_ER_IRQHandler(void) {
+    HAL_I2C_ER_IRQHandler(cmr_i2cDevices[1].handle);
+}
+
+void I2C1_DMA_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(cmr_i2cDevices[0].handle->hdmarx);
+  HAL_DMA_IRQHandler(I2cHandle.hdmatx);
+}
 
 /**
  * @brief Handles I2C completion for the given port.
@@ -217,6 +236,7 @@ void cmr_i2cDmaInit(
             .Instance = txDmaStream,
             .Init = {
                 .Direction = DMA_MEMORY_TO_PERIPH,
+				.Channel = DMA_CHANNEL_1,
                 .PeriphInc = DMA_PINC_DISABLE,
                 .MemInc = DMA_MINC_ENABLE,
                 .PeriphDataAlignment = DMA_PDATAALIGN_BYTE,
@@ -232,7 +252,8 @@ void cmr_i2cDmaInit(
         .dmarx_handle = {
             .Instance = rxDmaStream,
             .Init = {
-                .Direction = DMA_MEMORY_TO_PERIPH,
+                .Direction = DMA_PERIPH_TO_MEMORY,
+				.Channel = DMA_CHANNEL_1,
                 .PeriphInc = DMA_PINC_DISABLE,
                 .MemInc = DMA_MINC_ENABLE,
                 .PeriphDataAlignment = DMA_PDATAALIGN_BYTE,
@@ -249,7 +270,7 @@ void cmr_i2cDmaInit(
     };
 
     i2c->txDone = xSemaphoreCreateBinaryStatic(&(i2c->txDoneBuf));
-    i2c->txDone = xSemaphoreCreateBinaryStatic(&(i2c->rxDoneBuf));
+    i2c->rxDone = xSemaphoreCreateBinaryStatic(&(i2c->rxDoneBuf));
     configASSERT(i2c->txDone != NULL);
     configASSERT(i2c->rxDone != NULL);
 
@@ -281,11 +302,21 @@ void cmr_i2cDmaInit(
     __HAL_LINKDMA(&i2c->handle,hdmarx,i2c->dmarx_handle);
 
     if (instance == I2C1) {
+        cmr_i2cDevices[0].handle = &(i2c->handle);
+        HAL_NVIC_SetPriority(I2C1_DMA_IRQn, 7, 0);
+        HAL_NVIC_EnableIRQ(I2C1_DMA_IRQn);
         HAL_NVIC_SetPriority(I2C1_EV_IRQn, 7, 0);
         HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
+        HAL_NVIC_SetPriority(I2C1_ER_IRQn, 7, 0);
+        HAL_NVIC_EnableIRQ(I2C1_ER_IRQn);
     } else if (instance == I2C2) {
+    	cmr_i2cDevices[1].handle = &(i2c->handle);
+    	HAL_NVIC_SetPriority(I2C2_DMA_IRQn, 7, 0);
+    	HAL_NVIC_EnableIRQ(I2C2_DMA_IRQn);
         HAL_NVIC_SetPriority(I2C2_EV_IRQn, 7, 0);
         HAL_NVIC_EnableIRQ(I2C2_EV_IRQn);
+        HAL_NVIC_SetPriority(I2C2_ER_IRQn, 7, 0);
+        HAL_NVIC_EnableIRQ(I2C2_ER_IRQn);
     } else {
         cmr_panic("Unexpected I2C instance!");
     }
@@ -308,6 +339,7 @@ int cmr_i2cIsReady(cmr_i2c_t *i2c) {
   */
 int cmr_i2cDmaTX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
               size_t dataLength, uint32_t timeout_ms) {
+	configASSERT(HAL_I2C_GetState(&(i2c->handle)) == HAL_I2C_STATE_READY);
     // Shift the address by 1 per HAL library suggestion
     HAL_StatusTypeDef txStatus = HAL_I2C_Master_Transmit_DMA(
         &(i2c->handle), devAddr << 1, data, dataLength 
@@ -337,6 +369,7 @@ int cmr_i2cDmaTX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
   */
 int cmr_i2cDmaRX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
               size_t dataLength, uint32_t timeout_ms) {
+	configASSERT(HAL_I2C_GetState(&(i2c->handle)) == HAL_I2C_STATE_READY);
     // Shift the address by 1 per HAL library suggestion
     HAL_StatusTypeDef rxStatus = HAL_I2C_Master_Receive_DMA(
         &(i2c->handle), devAddr << 1, data, dataLength 
