@@ -29,7 +29,7 @@ static const uint32_t ownAddress = 0x00; // 0x00 = 0b0000000
 static const uint16_t mainDigital1Address = 0x23; // 0x23 = 0b0100011
 
 /** @brief Main Board Digital 2 expander I2C address */
-static const uint16_t mainDigital2Address = 0x27; // 0x26 = 0b0100111
+static const uint16_t mainDigital2Address = 0x27; // 0x27 = 0b0100111
 
 /** @brief Daughter Board Digital expander I2C address */
 static const uint16_t daughterDigitalAddress = 0x25; // 0x25 = 0b0100101
@@ -233,19 +233,21 @@ static const TickType_t expanderUpdate100Hz_period_ms = 10;
 /** @brief GPIO expander update 100 Hz TX task. */
 static cmr_task_t expanderUpdate100Hz_task;
 
-static void getExpanderData(uint16_t addr, uint8_t cmd, uint8_t *data, size_t len)
+static int getExpanderData(uint16_t addr, uint8_t cmd, uint8_t *data, size_t len)
 {
-    cmr_i2cTX(&i2c, addr, &cmd, 1, i2cTimeout_ms);
-    cmr_i2cRX(&i2c, addr, data, len, i2cTimeout_ms);
+    int status = cmr_i2cTX(&i2c, addr, &cmd, 1, i2cTimeout_ms);
+    if (status < 0)
+    	return -1;
+    return cmr_i2cRX(&i2c, addr, data, len, i2cTimeout_ms);
 }
 
 static void updateExpanderData()
 {
-    getExpanderData(
+    int status = getExpanderData(
         mainDigital1Address, PCA9555_INPUT_PORT_0,
         mainDigital1Data, 2
     );
-    getExpanderData(
+    status = getExpanderData(
         mainDigital2Address, PCA9554_INPUT_PORT,
         mainDigital2Data, 1
     );
@@ -331,36 +333,37 @@ static void expanderUpdate100Hz(void *pvParameters) {
     };
 
     // Transmit config to expanders
-    cmr_i2cTX(
+    int status;
+    status = cmr_i2cTX(
         &i2c,
         mainDigital1Address, mainDigital1Config,
         sizeof(mainDigital1Config) / sizeof(mainDigital1Config[0]),
         i2cTimeout_ms
     );
-    cmr_i2cTX(
+    status = cmr_i2cTX(
         &i2c,
         mainDigital2Address, mainDigital2Config,
         sizeof(mainDigital2Config) / sizeof(mainDigital2Config[0]),
         i2cTimeout_ms
     );
-    cmr_i2cTX(
-        &i2c,
-        daughterDigitalAddress, daughterDigitalConfig,
-        sizeof(daughterDigitalConfig) / sizeof(daughterDigitalConfig[0]),
-        i2cTimeout_ms
-    );
-    cmr_i2cTX(
-        &i2c,
-        daughterAnalogAddress, daughterAnalogADCConfig,
-        sizeof(daughterAnalogADCConfig) / sizeof(daughterAnalogADCConfig[0]),
-        i2cTimeout_ms
-    );
-    cmr_i2cTX(
-        &i2c,
-        daughterAnalogAddress, daughterAnalogADCSequence,
-        sizeof(daughterAnalogADCSequence) / sizeof(daughterAnalogADCSequence[0]),
-        i2cTimeout_ms
-    );
+    // cmr_i2cTX(
+    //     &i2c,
+    //     daughterDigitalAddress, daughterDigitalConfig,
+    //     sizeof(daughterDigitalConfig) / sizeof(daughterDigitalConfig[0]),
+    //     i2cTimeout_ms
+    // );
+    // cmr_i2cTX(
+    //     &i2c,
+    //     daughterAnalogAddress, daughterAnalogADCConfig,
+    //     sizeof(daughterAnalogADCConfig) / sizeof(daughterAnalogADCConfig[0]),
+    //     i2cTimeout_ms
+    // );
+    // cmr_i2cTX(
+    //     &i2c,
+    //     daughterAnalogAddress, daughterAnalogADCSequence,
+    //     sizeof(daughterAnalogADCSequence) / sizeof(daughterAnalogADCSequence[0]),
+    //     i2cTimeout_ms
+    // );
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {

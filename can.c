@@ -532,11 +532,11 @@ void canRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
 void canInit(void) {
     // CAN2 initialization.
     cmr_canInit(
-        &can, CAN2, CMR_CAN_BITRATE_500K,
+        &can, CAN1, CMR_CAN_BITRATE_500K,
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
         &canRXCallback,
-        GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
-        GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
+        GPIOB, GPIO_PIN_8,     // CAN1 RX port/pin.
+        GPIOB, GPIO_PIN_9      // CAN1 TX port/pin.
     );
 
     // Clear RAM Buf - Set all to Spaces
