@@ -125,9 +125,9 @@ static void fanControl(void *pvParameters) {
                 // linear in between                
 
                 if (accum_temp < FAN_AC_TEMP_LOW_dC) 
-                    fan_1_State = 30;
+                    fan_1_State = FAN_AC_STATE_LOW;
                 else if (accum_temp > FAN_AC_TEMP_HIGH_dC)
-                    fan_1_State = 100;
+                    fan_1_State = FAN_AC_STATE_HIGH;
                 else {
                     fan_1_State = (FAN_AC_STATE_HIGH - FAN_AC_STATE_LOW) * (accum_temp - FAN_AC_TEMP_LOW_dC) / (FAN_AC_TEMP_HIGH_dC - FAN_AC_TEMP_LOW_dC) + FAN_AC_STATE_LOW;
                 }
@@ -150,9 +150,9 @@ static void fanControl(void *pvParameters) {
                 // linear in between                
 
                 if (inverter_temp < FAN_INVERTER_TEMP_LOW_dC) 
-                    fan_2_State = 30;
+                    fan_2_State = FAN_INVERTER_STATE_LOW;
                 else if (inverter_temp > FAN_INVERTER_TEMP_HIGH_dC)
-                    fan_2_State = 100;
+                    fan_2_State = FAN_INVERTER_STATE_HIGH;
                 else {
                     fan_2_State = (FAN_INVERTER_STATE_HIGH - FAN_INVERTER_STATE_LOW) * (inverter_temp - FAN_INVERTER_TEMP_LOW_dC) / (FAN_INVERTER_TEMP_HIGH_dC - FAN_INVERTER_TEMP_LOW_dC) + FAN_INVERTER_STATE_LOW;
                 }

@@ -94,7 +94,7 @@ static void pumpControl(void *pvParameters) {
                 else if (accum_temp > PUMP_AC_TEMP_HIGH_dC)
                     pump_1_State = PUMP_AC_STATE_HIGH;
                 else {
-                    pump_1_State = ((PUMP_AC_STATE_HIGH - PUMP_AC_STATE_LOW) * (accum_temp - PUMP_AC_TEMP_LOW_dC)) / (PUMP_AC_TEMP_HIGH_dC - PUMP_AC_STATE_LOW) + PUMP_AC_STATE_LOW;
+                    pump_1_State = ((PUMP_AC_STATE_HIGH - PUMP_AC_STATE_LOW) * (accum_temp - PUMP_AC_TEMP_LOW_dC)) / (PUMP_AC_TEMP_HIGH_dC - PUMP_AC_TEMP_LOW_dC) + PUMP_AC_STATE_LOW;
                 }
                 pump_1_State = (pump_1_State < 100) ? pump_1_State : 100;
 
@@ -119,7 +119,7 @@ static void pumpControl(void *pvParameters) {
                 else if (inverter_temp > PUMP_INVERTER_TEMP_HIGH_dC)
                     pump_2_State = PUMP_INVERTER_STATE_HIGH;
                 else {
-                    pump_2_State = ((PUMP_INVERTER_STATE_HIGH - PUMP_INVERTER_STATE_LOW) * (inverter_temp - PUMP_INVERTER_TEMP_LOW_dC) / (PUMP_INVERTER_TEMP_HIGH_dC - PUMP_INVERTER_STATE_LOW)) + PUMP_INVERTER_STATE_LOW;
+                    pump_2_State = ((PUMP_INVERTER_STATE_HIGH - PUMP_INVERTER_STATE_LOW) * (inverter_temp - PUMP_INVERTER_TEMP_LOW_dC) / (PUMP_INVERTER_TEMP_HIGH_dC - PUMP_INVERTER_TEMP_LOW_dC)) + PUMP_INVERTER_STATE_LOW;
                 }
                 pump_2_State = (pump_2_State < 100) ? pump_2_State : 100;
 

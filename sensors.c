@@ -29,15 +29,6 @@ static const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
     [SENSOR_CH_LOGIC_VOLTAGE_MV]  = ADC_LOGIC_VSENSE,
     [SENSOR_CH_BOARD_THERM_1]  = ADC_BOARD_THERM_1,
     [SENSOR_CH_BOARD_THERM_2]  = ADC_BOARD_THERM_2,
-    [SENSOR_CH_THERM_1]  = ADC_THERM_1,
-    [SENSOR_CH_THERM_2]  = ADC_THERM_2,
-    [SENSOR_CH_THERM_3]  = ADC_THERM_3,
-    [SENSOR_CH_THERM_4]  = ADC_THERM_4,
-    [SENSOR_CH_THERM_5]  = ADC_THERM_5,
-    [SENSOR_CH_THERM_6]  = ADC_THERM_6,
-    [SENSOR_CH_THERM_7]  = ADC_THERM_7,
-    [SENSOR_CH_THERM_8]  = ADC_THERM_8,
-    [SENSOR_CH_THERM_9]  = ADC_THERM_9
 };
 
 /**
@@ -133,7 +124,7 @@ static int32_t adcConvSwitchTemp_dC(const cmr_sensor_t *s, uint32_t adcVal) {
     // Rth = (33000 / adcVal * (8 / 10000)) - 10000
     // Rth = (33000 / (adcVal * 8) / 10000) - 10000
     // Rth = (330,000,000 / (adcVal * 8)) - 10000
-    //if (adcVal == 0) return 0;
+    if (adcVal == 0) return 0;
     uint32_t thermistorResistance_Ohm = (330000000 / (adcVal * 8)) - 10000;
 
     for (size_t i = 0; i < thermTempConvsSwitch_len; i++) {
@@ -211,69 +202,69 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .readingMax = CMR_ADC_MAX,
         .outOfRange_pcnt = 10
     },
-    [SENSOR_CH_THERM_1] = {
-        .sample = sampleADCSensor,
-        .conv = adcConvRadTherm_dC,
-        .readingMin = 0,
-        .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10
-    },
-    [SENSOR_CH_THERM_2] = {
-        .sample = sampleADCSensor,
-        .conv = adcConvRadTherm_dC,
-        .readingMin = 0,
-        .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10
-    },
-    [SENSOR_CH_THERM_3] = {
-        .sample = sampleADCSensor,
-        .conv = adcConvRadTherm_dC,
-        .readingMin = 0,
-        .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10
-    },
-    [SENSOR_CH_THERM_4] = {
-        .sample = sampleADCSensor,
-        .conv = adcConvRadTherm_dC,
-        .readingMin = 0,
-        .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10
-    },
-    [SENSOR_CH_THERM_5] = {
-        .sample = sampleADCSensor,
-        .conv = adcConvRadTherm_dC,
-        .readingMin = 0,
-        .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10
-    },
-    [SENSOR_CH_THERM_6] = {
-        .sample = sampleADCSensor,
-        .conv = adcConvRadTherm_dC,
-        .readingMin = 0,
-        .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10
-    },
-    [SENSOR_CH_THERM_7] = {
-        .sample = sampleADCSensor,
-        .conv = adcConvRadTherm_dC,
-        .readingMin = 0,
-        .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10
-    },
-    [SENSOR_CH_THERM_8] = {
-        .sample = sampleADCSensor,
-        .conv = adcConvRadTherm_dC,
-        .readingMin = 0,
-        .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10
-    },
-    [SENSOR_CH_THERM_9] = {
-        .sample = sampleADCSensor,
-        .conv = adcConvRadTherm_dC,
-        .readingMin = 0,
-        .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10
-    }
+    // [SENSOR_CH_THERM_1] = {
+    //     .sample = sampleADCSensor,
+    //     .conv = adcConvRadTherm_dC,
+    //     .readingMin = 0,
+    //     .readingMax = CMR_ADC_MAX,
+    //     .outOfRange_pcnt = 10
+    // },
+    // [SENSOR_CH_THERM_2] = {
+    //     .sample = sampleADCSensor,
+    //     .conv = adcConvRadTherm_dC,
+    //     .readingMin = 0,
+    //     .readingMax = CMR_ADC_MAX,
+    //     .outOfRange_pcnt = 10
+    // },
+    // [SENSOR_CH_THERM_3] = {
+    //     .sample = sampleADCSensor,
+    //     .conv = adcConvRadTherm_dC,
+    //     .readingMin = 0,
+    //     .readingMax = CMR_ADC_MAX,
+    //     .outOfRange_pcnt = 10
+    // },
+    // [SENSOR_CH_THERM_4] = {
+    //     .sample = sampleADCSensor,
+    //     .conv = adcConvRadTherm_dC,
+    //     .readingMin = 0,
+    //     .readingMax = CMR_ADC_MAX,
+    //     .outOfRange_pcnt = 10
+    // },
+    // [SENSOR_CH_THERM_5] = {
+    //     .sample = sampleADCSensor,
+    //     .conv = adcConvRadTherm_dC,
+    //     .readingMin = 0,
+    //     .readingMax = CMR_ADC_MAX,
+    //     .outOfRange_pcnt = 10
+    // },
+    // [SENSOR_CH_THERM_6] = {
+    //     .sample = sampleADCSensor,
+    //     .conv = adcConvRadTherm_dC,
+    //     .readingMin = 0,
+    //     .readingMax = CMR_ADC_MAX,
+    //     .outOfRange_pcnt = 10
+    // },
+    // [SENSOR_CH_THERM_7] = {
+    //     .sample = sampleADCSensor,
+    //     .conv = adcConvRadTherm_dC,
+    //     .readingMin = 0,
+    //     .readingMax = CMR_ADC_MAX,
+    //     .outOfRange_pcnt = 10
+    // },
+    // [SENSOR_CH_THERM_8] = {
+    //     .sample = sampleADCSensor,
+    //     .conv = adcConvRadTherm_dC,
+    //     .readingMin = 0,
+    //     .readingMax = CMR_ADC_MAX,
+    //     .outOfRange_pcnt = 10
+    // },
+    // [SENSOR_CH_THERM_9] = {
+    //     .sample = sampleADCSensor,
+    //     .conv = adcConvRadTherm_dC,
+    //     .readingMin = 0,
+    //     .readingMax = CMR_ADC_MAX,
+    //     .outOfRange_pcnt = 10
+    // }
 };
 
 /** @brief The sensors list. */

@@ -109,7 +109,6 @@ static cmr_task_t canTX100Hz_task;
 static cmr_can_t can;
 
 // Forward declarations
-static void sendCoolingLoopTemps(void);
 static void sendPowerDiagnostics(void);
 static void sendDriverStatus(void);
 static void sendHeartbeat(TickType_t lastWakeTime);
@@ -126,7 +125,6 @@ static void canTX10Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        sendCoolingLoopTemps();
         sendPowerDiagnostics();
         sendDriverStatus();
 
@@ -284,59 +282,6 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 }
 
 /**
- * @brief Send cooling system temps on CAN bus.
- */
-static void sendCoolingLoopTemps(void) {
-    int32_t Temp_1_dC =
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_1);
-    int32_t Temp_2_dC =
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_2);
-    int32_t Temp_3_dC =
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_3);
-    int32_t Temp_4_dC =
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_4);
-    int32_t Temp_5_dC =
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_5);
-    int32_t Temp_6_dC =
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_6);
-    int32_t Temp_7_dC =
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_7);
-    int32_t Temp_8_dC =
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_8);
-
-    // New for 22e:
-    int32_t Temp_9_dC =
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_THERM_9);
-
-
-
-    /* Separate A and B messages are due to can packet size limits */
-    cmr_canPTCLoopTemp_A_t coolMsg1 = {
-        .temp1_dC = Temp_1_dC,
-        .temp2_dC = Temp_2_dC,
-        .temp3_dC = Temp_3_dC,
-        .temp4_dC = Temp_4_dC
-    };
-
-    cmr_canPTCLoopTemp_B_t coolMsg2 = {
-        .temp5_dC = Temp_5_dC,
-        .temp6_dC = Temp_6_dC,
-        .temp7_dC = Temp_7_dC,
-        .temp8_dC = Temp_8_dC
-    };
-
-    /* New packet needed for Thermistor 9 */
-    cmr_canPTCLoopTemp_C_t coolMsg3 = {
-        .temp9_dC = Temp_9_dC 
-    };
-
-
-    canTX(CMR_CANID_PTC_LOOP_TEMPS_A, &coolMsg1, sizeof(coolMsg1), canTX10Hz_period_ms);
-    canTX(CMR_CANID_PTC_LOOP_TEMPS_B, &coolMsg2, sizeof(coolMsg2), canTX10Hz_period_ms);
-    canTX(CMR_CANID_PTC_LOOP_TEMPS_C, &coolMsg3, sizeof(coolMsg3), canTX10Hz_period_ms);
-}
-
-/**
  * @brief Send Fan or Pump status information.
  */
 static void sendDriverStatus(void) {
@@ -371,7 +316,7 @@ static void sendPowerDiagnostics(void) {
         .logicVoltage_mV = logicVoltage_mV,
         .loadVoltage_mV = loadVoltage_mV,
         .loadCurrent_mA = loadCurrent_mA
-    };
+    };                                                                                                   
 
     canTX(CMR_CANID_PTC_POWER_DIAGNOSTICS, &powerMsg, sizeof(powerMsg), canTX10Hz_period_ms);
 }

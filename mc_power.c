@@ -38,9 +38,15 @@ static void mcPowerControl(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
+        bool vsmHeartbeatTimeout = (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_VSM]), lastWakeTime) < 0);
+        bool vsmStateTimeout = (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_VSM_STATUS]), lastWakeTime) < 0);
+        // If VSM has timed out, don't power the inverters
+        if (vsmHeartbeatTimeout || vsmStateTimeout) {
+            cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 0);
+        }
         // Inverter should be powered if the car is in HV_EN, RTD, or the
         // VSM is attempting to boot the inverter in it's internal state
-        if (vsmHeartbeat->state == CMR_CAN_HV_EN ||
+        else if (vsmHeartbeat->state == CMR_CAN_HV_EN ||
             vsmHeartbeat->state == CMR_CAN_RTD || 
             vsmState->internalState == CMR_CAN_VSM_STATE_INVERTER_EN ||
             vsmState->internalState == CMR_CAN_VSM_STATE_HV_EN) 
