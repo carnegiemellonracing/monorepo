@@ -11,6 +11,7 @@ static bool checkCommandTimeout();
 static bool checkBMBTimeout();
 
 volatile int BMBTimeoutCount[NUM_BMBS] = { 0 };
+volatile int BMBErrs[NUM_BMBS] = { 0 };
 
 // Persistent value for storing the error type. Will be useful if
 // error checking becomes its own task

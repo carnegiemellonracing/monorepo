@@ -48,6 +48,7 @@ stm32f413-drivers/CMR/f413.o: ../stm32f413-drivers/CMR/f413.c \
  C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/task.h \
  C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/list.h \
  C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/can_types.h \
+ C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/can_ids.h \
  ../stm32f413-drivers/CMR/adc.h ../stm32f413-drivers/CMR/rcc.h \
  ../stm32f413-drivers/CMR/config.h ../stm32f413-drivers/CMR/panic.h
 ../stm32f413-drivers/CMR/f413.h:
@@ -100,6 +101,7 @@ C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/queue.h:
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/task.h:
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/list.h:
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/can_types.h:
+C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/can_ids.h:
 ../stm32f413-drivers/CMR/adc.h:
 ../stm32f413-drivers/CMR/rcc.h:
 ../stm32f413-drivers/CMR/config.h:

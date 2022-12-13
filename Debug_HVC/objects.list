@@ -11,6 +11,7 @@
 "./state_task.o"
 "./watchdog.o"
 "./stm32f413-drivers/CMR/adc.o"
+"./stm32f413-drivers/CMR/bootloader.o"
 "./stm32f413-drivers/CMR/can.o"
 "./stm32f413-drivers/CMR/config.o"
 "./stm32f413-drivers/CMR/config_screen_helper.o"

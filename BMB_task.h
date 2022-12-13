@@ -14,7 +14,7 @@
 #include <stdbool.h>
 
 // #define NUM_BMBS 16
-#define NUM_BMBS 1 // TODO: CHANGE THIS BACK
+#define NUM_BMBS 16 // TODO: CHANGE THIS BACK
 #define NUM_MUX_CHANNELS 4
 #define NUM_ADC_CHANNELS 8
 #define BMB_GPIO_MUX_PIN 0b000001
@@ -25,7 +25,7 @@
 #define TSENSE_CHANNELS_PER_BMB 15
 #define TSENSE_CHANNELS_PER_MESSAGE 8
 
-#define BMB_SAMPLE_TASK_RATE 10
+#define BMB_SAMPLE_TASK_RATE 5
 
 //Define array indices for the ADC Channels
 

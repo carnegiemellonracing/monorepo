@@ -43,7 +43,22 @@ i2c.o: ../i2c.c ../i2c.h \
  C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM4F/portmacro.h \
  C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/mpu_wrappers.h \
  C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/semphr.h \
- C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/queue.h
+ C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/queue.h \
+ ../bms_error.h \
+ C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/can_types.h \
+ ../adc.h C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/adc.h \
+ C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/tasks.h \
+ C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/task.h \
+ C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/list.h \
+ ../sensors.h \
+ C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/sensors.h \
+ C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/can_types.h \
+ ../bms_relay.h ../gpio.h \
+ C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/gpio.h \
+ ../state_task.h ../can.h \
+ C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/can.h \
+ C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/can_ids.h \
+ ../BMB_task.h
 ../i2c.h:
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/i2c.h:
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/platform.h:
@@ -90,3 +105,21 @@ C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/mpu_wrappers.h:
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/semphr.h:
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/queue.h:
+../bms_error.h:
+C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/can_types.h:
+../adc.h:
+C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/adc.h:
+C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/tasks.h:
+C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/task.h:
+C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/list.h:
+../sensors.h:
+C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/sensors.h:
+C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/can_types.h:
+../bms_relay.h:
+../gpio.h:
+C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/gpio.h:
+../state_task.h:
+../can.h:
+C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/can.h:
+C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/can_ids.h:
+../BMB_task.h:

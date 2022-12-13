@@ -12,6 +12,7 @@
 #include <stdbool.h>
 
 extern volatile int BMBTimeoutCount[NUM_BMBS];
+extern volatile int BMBErrs[NUM_BMBS];
 
 // Max valid thermistor temp, beyond which it is considered a short
 static const int16_t THERM_MAX_TEMP = 850;
@@ -54,6 +55,19 @@ static const float resistorRatios[VSENSE_CHANNELS_PER_BMB] = {
 static const uint8_t LED_FLASH_COUNT = 50;
 static uint8_t BMBFlashCounter = 0;
 
+static const uint8_t LUT_SIZE = 18;
+static const uint16_t lut[18][2] = { { 8802, 850 }, { 9930, 800 }, { 11208, 750 },
+		{ 12657, 700 }, { 14281, 650 }, { 16112, 600 }, { 18146, 550 }, {
+				20408, 500 }, { 22879, 450 }, { 25575, 400 },
+		{ 28459, 350 }, { 31533, 300 }, { 34744, 250 }, { 38019, 200 }, {
+				41331, 150 }, { 44621, 100 }, { 47792, 50 }, { 50833, 0 }, };
+
+static void setBMBErr(uint8_t BMBIndex, BMB_I2C_Errs_t err) {
+	if (BMBErrs[BMBIndex] == BMB_NO_ERR) {
+		BMBErrs[BMBIndex] = err;
+	}
+}
+
 //takes in adc output and cell index to get voltage value
 static int16_t adcOutputToVoltage(uint16_t ADC_val, int cell) {
 	return ((ADC_val / 1023.0) * 4096) * resistorRatios[cell];
@@ -63,13 +77,6 @@ static int16_t adcOutputToVoltage(uint16_t ADC_val, int cell) {
 // using LUT interpolation from the transfer function.
 // See drive doc "18e CMR BMS Temperature Math" for LUT
 static int16_t lutTemp(uint16_t ADC_lt) {
-	const uint8_t LUT_SIZE = 18;
-	const uint16_t lut[18][2] = { { 8802, 850 }, { 9930, 800 }, { 11208, 750 },
-			{ 12657, 700 }, { 14281, 650 }, { 16112, 600 }, { 18146, 550 }, {
-					20408, 500 }, { 22879, 450 }, { 25575, 400 },
-			{ 28459, 350 }, { 31533, 300 }, { 34744, 250 }, { 38019, 200 }, {
-					41331, 150 }, { 44621, 100 }, { 47792, 50 }, { 50833, 0 }, };
-
 	// Check if input is out of LUT bounds
 	// If so, return the boundary values
 	if (ADC_lt < lut[0][0]) {
@@ -129,17 +136,20 @@ void BMBInit() {
 bool sampleOneBMB(uint8_t BMBIndex, uint8_t BMBNum, uint8_t BMBSide) {
     if (!i2c_enableI2CMux(BMBNum, BMBSide)) {
     	BMBTimeoutCount[BMBIndex]++;
+    	setBMBErr(BMBIndex, BMB_ENABLE_I2C_MUX_ERR);
         return false;
     }
     //select through each of the mux channels
     for (int channel = 0; channel < NUM_MUX_CHANNELS; channel++) {
         if (!i2c_select4MuxChannel(channel)) {
         	BMBTimeoutCount[BMBIndex]++;
+        	setBMBErr(BMBIndex, BMB_SEL_4_MUX_ERR);
             return false;
         }
         // through each channel, input 8 adc channels
         if (!i2c_scanADC(BMBADCResponse[channel])) {
         	BMBTimeoutCount[BMBIndex]++;
+        	setBMBErr(BMBIndex, BMB_SCAN_ADC_ERR);
             return false;
         }
     }
@@ -147,6 +157,7 @@ bool sampleOneBMB(uint8_t BMBIndex, uint8_t BMBNum, uint8_t BMBSide) {
     if (BMBFlashCounter >= LED_FLASH_COUNT) {
         // we got to threshold, blink this BMB
         if (!i2c_selectMuxBlink()) {
+        	setBMBErr(BMBIndex, BMB_MUX_BLINK_ERR);
         	BMBTimeoutCount[BMBIndex]++;
             return false;
         }
@@ -154,8 +165,15 @@ bool sampleOneBMB(uint8_t BMBIndex, uint8_t BMBNum, uint8_t BMBSide) {
     } else {
         BMBFlashCounter++;
     }
-    if (!(i2c_disableI2CMux(BMBIndex))) {
+    if (!(i2c_disableI2CMux(BMBNum))) {
     	BMBTimeoutCount[BMBIndex]++;
+    	setBMBErr(BMBIndex, BMB_DISABLE_I2C_MUX_ERR);
+        return false;
+    }
+    uint8_t enabled, side;
+    if (!i2c_readI2CMux(BMBNum, &enabled, &side) || enabled) {
+    	BMBTimeoutCount[BMBIndex]++;
+    	setBMBErr(BMBIndex, BMB_DISABLE_I2C_MUX_ERR);
         return false;
     }
     return true;
@@ -283,7 +301,7 @@ void vBMBSampleTask(void *pvParameters) {
 	vTaskDelayUntil(&xLastWakeTime, 50);
 
 	while (1) {
-		for (uint8_t BMBIndex = 0; BMBIndex < 1; BMBIndex++) {//TODO: Change back to BMBIndex < NUM_BMBS
+		for (uint8_t BMBIndex = 0; BMBIndex < 16; BMBIndex++) {//TODO: Change back to BMBIndex < NUM_BMBS
 			//since we treat each BMB side as an individual bmb
 			//we just check whether the current bmb index is odd/even
 			//uint8_t BMBSide = BMBIndex % 2;
@@ -320,7 +338,7 @@ void vBMBSampleTask(void *pvParameters) {
 		} // end for loop
 		//doCellBalanceAllBMBs();
 		//TickType_t temp = xTaskGetTickCount();
-		vTaskDelayUntil(&xLastWakeTime, 5);
+		vTaskDelayUntil(&xLastWakeTime, BMB_SAMPLE_TASK_RATE);
 	}
 }
 

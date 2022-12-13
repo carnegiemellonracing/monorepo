@@ -1,5 +1,5 @@
-stm32f413-drivers/CMR/can.o: ../stm32f413-drivers/CMR/can.c \
- ../stm32f413-drivers/CMR/can.h ../stm32f413-drivers/CMR/platform.h \
+stm32f413-drivers/CMR/bootloader.o: ../stm32f413-drivers/CMR/bootloader.c \
+ ../stm32f413-drivers/CMR/bootloader.h \
  C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/HAL/F413/Inc/stm32f4xx_hal.h \
  C:/Users/CMR/Documents/GitHub/HVC/stm32f4xx_hal_conf.h \
  C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/HAL/F413/Inc/stm32f4xx_hal_rcc.h \
@@ -33,6 +33,7 @@ stm32f413-drivers/CMR/can.o: ../stm32f413-drivers/CMR/can.c \
  C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/HAL/F413/Inc/stm32f4xx_hal_uart.h \
  C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/HAL/F413/Inc/stm32f4xx_hal_usart.h \
  C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/HAL/F413/Inc/stm32f4xx_hal_wwdg.h \
+ ../stm32f413-drivers/CMR/can.h ../stm32f413-drivers/CMR/platform.h \
  C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/FreeRTOS.h \
  C:/Users/CMR/Documents/GitHub/HVC/FreeRTOSConfig.h \
  C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/panic.h \
@@ -47,11 +48,8 @@ stm32f413-drivers/CMR/can.o: ../stm32f413-drivers/CMR/can.c \
  C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/task.h \
  C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/list.h \
  C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/can_types.h \
- C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/can_ids.h \
- ../stm32f413-drivers/CMR/rcc.h ../stm32f413-drivers/CMR/panic.h \
- ../stm32f413-drivers/CMR/bootloader.h
-../stm32f413-drivers/CMR/can.h:
-../stm32f413-drivers/CMR/platform.h:
+ C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/can_ids.h
+../stm32f413-drivers/CMR/bootloader.h:
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/HAL/F413/Inc/stm32f4xx_hal.h:
 C:/Users/CMR/Documents/GitHub/HVC/stm32f4xx_hal_conf.h:
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/HAL/F413/Inc/stm32f4xx_hal_rcc.h:
@@ -85,6 +83,8 @@ C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/HAL/F413/Inc/stm32f4xx_hal_s
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/HAL/F413/Inc/stm32f4xx_hal_uart.h:
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/HAL/F413/Inc/stm32f4xx_hal_usart.h:
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/HAL/F413/Inc/stm32f4xx_hal_wwdg.h:
+../stm32f413-drivers/CMR/can.h:
+../stm32f413-drivers/CMR/platform.h:
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/FreeRTOS.h:
 C:/Users/CMR/Documents/GitHub/HVC/FreeRTOSConfig.h:
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/panic.h:
@@ -100,6 +100,3 @@ C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/task.h:
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/FreeRTOS/include/list.h:
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/can_types.h:
 C:/Users/CMR/Documents/GitHub/HVC/stm32f413-drivers/CMR/can_ids.h:
-../stm32f413-drivers/CMR/rcc.h:
-../stm32f413-drivers/CMR/panic.h:
-../stm32f413-drivers/CMR/bootloader.h:

@@ -22,6 +22,8 @@
 /** @brief Struct to identify stale commands. */
 extern ReceiveMeta_t BMSCommandReceiveMeta;
 
+extern volatile int BMBErrs[NUM_BMBS];
+
 /**
  * @brief CAN periodic message receive metadata
  *
@@ -57,6 +59,7 @@ static cmr_can_t can;
 static void sendHeartbeat(TickType_t lastWakeTime);
 static void sendHVCPackVoltage(void);
 static void sendBMSPackCurrent(void);
+static void sendBMSBMBStatusErrors(void);
 static void sendBMSBMBStatusVoltage(uint8_t bmb_index);
 static void sendBMSBMBStatusTemp(uint8_t bmb_index);
 static void sendBMSMinMaxCellVoltage(void);
@@ -184,6 +187,7 @@ static void canTX100Hz(void *pvParameters) {
         sendHVCPackVoltage();
         sendBMSPackCurrent();
         sendBMSLowVoltage();
+        sendBMSBMBStatusErrors();
 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
@@ -493,6 +497,23 @@ static void sendBMSLowVoltage(void) {
     (void) BMSLowVoltage;
 
     canTX(CMR_CANID_HVC_LOW_VOLTAGE, &BMSLowVoltage, sizeof(BMSLowVoltage), canTX100Hz_period_ms);
+}
+
+static void sendBMSBMBStatusErrors(void) {
+	configASSERT(BMB_ERR_LEN < 16);
+
+	cmr_canHVCBMBErrors_t errs = {
+			.BMB1_2_Errs = (BMBErrs[0] << 4) | BMBErrs[1],
+			.BMB3_4_Errs = (BMBErrs[2] << 4) | BMBErrs[3],
+			.BMB5_6_Errs = (BMBErrs[4] << 4) | BMBErrs[5],
+			.BMB7_8_Errs = (BMBErrs[6] << 4) | BMBErrs[7],
+			.BMB9_10_Errs = (BMBErrs[8] << 4) | BMBErrs[9],
+			.BMB11_12_Errs = (BMBErrs[10] << 4) | BMBErrs[11],
+			.BMB13_14_Errs = (BMBErrs[12] << 4) | BMBErrs[13],
+			.BMB15_16_Errs = (BMBErrs[14] << 4) | BMBErrs[15],
+	};
+
+	canTX(CMR_CANID_HVC_BMB_STATUS_ERRORS, &errs, sizeof(cmr_canHVCBMBErrors_t), canTX100Hz_period_ms);
 }
 
 static void sendAllBMBVoltages(void) {

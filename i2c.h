@@ -11,6 +11,7 @@
 
 #include <CMR/i2c.h>
 #include <stdbool.h>
+#include "bms_error.h"
 
 //#define I2C_NUM_BMBS 8
  #define I2C_NUM_BMBS 1 //TODO: SET THIS BACK TO 8
@@ -24,7 +25,9 @@
 #define BMS_ADC_ADDR 0x33
 #define BMS_CELL_BALANCE_IO_ADDR 0x50 // TODO: Change this, variable from 0x50-0x57
 
-#define I2C_TIMEOUT 1
+// This needs to be reasonably long b/c the ADC takes a while to send back
+// With a too low threshold, you will panic on the I2C HAL state not being ready
+#define I2C_TIMEOUT 50
 
 bool i2cInit();
 

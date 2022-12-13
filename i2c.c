@@ -11,39 +11,49 @@ static uint8_t selectIOCurrent = 0x0;
 
 static cmr_i2c_t bmb_i2c;
 
+extern volatile int BMBErrs[NUM_BMBS];
+
 bool i2cInit(void) {
     cmr_i2cDmaInit(&bmb_i2c, I2C1,
-    		DMA1_Stream6, DMA1_Stream5,
+    		DMA1_Stream1, DMA_CHANNEL_0,
+			DMA1_Stream0, DMA_CHANNEL_1,
     		I2C_CLOCK_HI, 0, // 100kHz limited by the PCA9536 TODO: Check if own address should be 0
                 GPIOB, GPIO_PIN_8, // clock
                 GPIOB, GPIO_PIN_9); // data
 
-//    for (int i = 0; i < 5000*100; i++)
-//    	__NOP();
-    //HAL_Delay(2000);
+    // This is so that the I2C devices have time to turn
+    // on, b/c they are controlled by the relay
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, 2000);
 
-    // TODO: I2C IS GOING TO NEED DELAYS
     for (int bmb = 0; bmb < I2C_NUM_BMBS; bmb++) {
         for (int side = 1; side < 2; side++) { //TODO: CHANGE THIS BACK
-            if (!i2c_enableI2CMux(bmb, side))
-            	return false;
+            if (!i2c_enableI2CMux(bmb, side)) {
+                BMBErrs[bmb*2+side] = BMB_INIT_ENABLE_I2C_MUX_ERR;
+                return false;
+            }
             // verify mux is correctly set
             uint8_t recv_en, recv_side;
-            if (!i2c_readI2CMux(bmb, &recv_en, &recv_side))
+            if (!i2c_readI2CMux(bmb, &recv_en, &recv_side)) {
+                BMBErrs[bmb*2+side] = BMB_INIT_READ_I2C_MUX_ERR;
             	return false;
-            // TODO: Make error messages for root cause, not just
-            // all false
+            }
+
             if (!(recv_en && recv_side == side))
             	return false;
-            if (!i2c_configSelectMux())
+            if (!i2c_configSelectMux()) {
+                BMBErrs[bmb*2+side] = BMB_INIT_CONFIG_SEL_MUX_ERR;
             	return false;
-            if (!i2c_configADC())
+            }
+            if (!i2c_configADC()) {
+                BMBErrs[bmb*2+side] = BMB_INIT_CONFIG_ADC_ERR;
             	return false;
+            }
         }
-        if (!i2c_disableI2CMux(bmb))
+        if (!i2c_disableI2CMux(bmb)) {
+            BMBErrs[bmb*2] = BMB_INIT_DISABLE_I2C_MUX_ERR;
         	return false;
+        }
     }
     return true;
 }
@@ -156,12 +166,11 @@ bool i2c_configADC() {
 
 bool i2c_scanADC(int16_t adcResponse[]) {
 	uint8_t buffer[16];
-	//TODO: WHY IS THIS 14
-	if (cmr_i2cDmaRX(&bmb_i2c, BMS_ADC_ADDR, buffer, 14, I2C_TIMEOUT) != 0) {
+	if (cmr_i2cDmaRX(&bmb_i2c, BMS_ADC_ADDR, buffer, 16, I2C_TIMEOUT) != 0) {
 		return false;
 	}
     //i2c_flipEndianness(buffer, 16);
-	for (int i = 0; i < 7; i++) {
+	for (int i = 0; i < 8; i++) {
 		// top 6 bits should be 1
 		if ((buffer[i << 1] & 0xFC) != 0xFC) {
 			return false;

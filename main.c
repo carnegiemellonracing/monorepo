@@ -21,7 +21,7 @@
 static const uint32_t statusLED_priority = 2;
 
 /** @brief BMB Sample Task priority. */
-static const uint32_t bmbSample_priority = 7;
+static const uint32_t bmbSample_priority = 4;
 
 /** @brief BMB Sample Task priority. */
 static const uint32_t setState_priority = 4;
@@ -74,15 +74,15 @@ static void statusLED(void *pvParameters) {
  */
 int main(void) {
 	// Enable TRCENA
-	DEMCR |= ( 1 << 24);
-	// Enable stimulus port 0
-	ITM_TRACE_EN |= ( 1 << 0);
+//	DEMCR |= ( 1 << 24);
+//	// Enable stimulus port 0
+//	ITM_TRACE_EN |= ( 1 << 0);
 
-    // System initialization.
-    uint32_t *ACTLR = (uint32_t *)0xE000E008;
-
-
-    *ACTLR |= 2; // disable write buffering
+//    // System initialization.
+//    uint32_t *ACTLR = (uint32_t *)0xE000E008;
+//
+//
+//    *ACTLR |= 2; // disable write buffering
 
     // System initialization.
 
