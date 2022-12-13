@@ -26,10 +26,10 @@ static const uint32_t ownAddress = 0x00; // 0x00 = 0b0000000
 
 // TODO: Fix addresses
 /** @brief Main Board Digital 1 expander I2C address */
-static const uint16_t mainDigital1Address = 0x27; // 0x27 = 0b0100111
+static const uint16_t mainDigital1Address = 0x23; // 0x23 = 0b0100011
 
 /** @brief Main Board Digital 2 expander I2C address */
-static const uint16_t mainDigital2Address = 0x26; // 0x26 = 0b0100110
+static const uint16_t mainDigital2Address = 0x27; // 0x26 = 0b0100111
 
 /** @brief Daughter Board Digital expander I2C address */
 static const uint16_t daughterDigitalAddress = 0x25; // 0x25 = 0b0100101
@@ -249,14 +249,14 @@ static void updateExpanderData()
         mainDigital2Address, PCA9554_INPUT_PORT,
         mainDigital2Data, 1
     );
-    getExpanderData(
-        daughterDigitalAddress, PCA9554_INPUT_PORT,
-        daughterDigitalData, 1
-    );
-    getExpanderData(
-        daughterAnalogAddress, AD5593R_POINTER_ADC_RD,
-        daughterAnalogData, 2 * EXP_CLUTCH_LEN
-    );
+    // getExpanderData(
+    //     daughterDigitalAddress, PCA9554_INPUT_PORT,
+    //     daughterDigitalData, 1
+    // );
+    // getExpanderData(
+    //     daughterAnalogAddress, AD5593R_POINTER_ADC_RD,
+    //     daughterAnalogData, 2 * EXP_CLUTCH_LEN
+    // );
 }
 
 /**
@@ -298,6 +298,69 @@ static void checkLEDState()
 
 static void expanderUpdate100Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
+    
+    // Main Board Digital 1 expander has all inputs on Ports 0 and 1
+    uint8_t mainDigital1Config[3] = {
+        PCA9555_CONFIG_PORT_0,
+        0xFF,
+        0xFF
+    };
+    // Main Board Digital 2 expander has all inputs except outputs on Pins 0 and 1
+    uint8_t mainDigital2Config[3] = {
+        PCA9554_CONFIG_PORT,
+        0xFC    // 0b11111100
+    };
+
+    // Daughter Board Digital expander has all inputs
+    uint8_t daughterDigitalConfig[2] = {
+        PCA9554_CONFIG_PORT,
+        0xFF
+    };
+
+    // Daughter Board Analog expander has ADC inputs on pins 0 and 1
+    uint8_t daughterAnalogADCConfig[3] = {
+        AD5593R_CTRL_REG_ADC_CONFIG,
+        0x00,   
+        0x03    // 0b00000011
+    };
+    // Set REP bit so ADC conversions are repeated (see datasheet)
+    uint8_t daughterAnalogADCSequence[3] = {
+        AD5593R_CTRL_REG_ADC_SEQ,
+        0x02,   // 0b00000010 (REP bit)
+        0x03    // 0b00000011
+    };
+
+    // Transmit config to expanders
+    cmr_i2cTX(
+        &i2c,
+        mainDigital1Address, mainDigital1Config,
+        sizeof(mainDigital1Config) / sizeof(mainDigital1Config[0]),
+        i2cTimeout_ms
+    );
+    cmr_i2cTX(
+        &i2c,
+        mainDigital2Address, mainDigital2Config,
+        sizeof(mainDigital2Config) / sizeof(mainDigital2Config[0]),
+        i2cTimeout_ms
+    );
+    cmr_i2cTX(
+        &i2c,
+        daughterDigitalAddress, daughterDigitalConfig,
+        sizeof(daughterDigitalConfig) / sizeof(daughterDigitalConfig[0]),
+        i2cTimeout_ms
+    );
+    cmr_i2cTX(
+        &i2c,
+        daughterAnalogAddress, daughterAnalogADCConfig,
+        sizeof(daughterAnalogADCConfig) / sizeof(daughterAnalogADCConfig[0]),
+        i2cTimeout_ms
+    );
+    cmr_i2cTX(
+        &i2c,
+        daughterAnalogAddress, daughterAnalogADCSequence,
+        sizeof(daughterAnalogADCSequence) / sizeof(daughterAnalogADCSequence[0]),
+        i2cTimeout_ms
+    );
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
@@ -399,69 +462,6 @@ void expandersInit(void) {
         I2C_CLOCK_LOW, ownAddress,
         GPIOA, GPIO_PIN_8,
         GPIOB, GPIO_PIN_4
-    );
-
-    // Main Board Digital 1 expander has all inputs on Ports 0 and 1
-    uint8_t mainDigital1Config[3] = {
-        PCA9555_CONFIG_PORT_0,
-        0xFF,
-        0xFF
-    };
-    // Main Board Digital 2 expander has all inputs except outputs on Pins 0 and 1
-    uint8_t mainDigital2Config[3] = {
-        PCA9554_CONFIG_PORT,
-        0xFC    // 0b11111100
-    };
-
-    // Daughter Board Digital expander has all inputs
-    uint8_t daughterDigitalConfig[2] = {
-        PCA9554_CONFIG_PORT,
-        0xFF
-    };
-
-    // Daughter Board Analog expander has ADC inputs on pins 0 and 1
-    uint8_t daughterAnalogADCConfig[3] = {
-        AD5593R_CTRL_REG_ADC_CONFIG,
-        0x00,   
-        0x03    // 0b00000011
-    };
-    // Set REP bit so ADC conversions are repeated (see datasheet)
-    uint8_t daughterAnalogADCSequence[3] = {
-        AD5593R_CTRL_REG_ADC_SEQ,
-        0x02,   // 0b00000010 (REP bit)
-        0x03    // 0b00000011
-    };
-
-    // Transmit config to expanders
-    cmr_i2cTX(
-        &i2c,
-        mainDigital1Address, mainDigital1Config,
-        sizeof(mainDigital1Config) / sizeof(mainDigital1Config[0]),
-        i2cTimeout_ms
-    );
-    cmr_i2cTX(
-        &i2c,
-        mainDigital2Address, mainDigital2Config,
-        sizeof(mainDigital2Config) / sizeof(mainDigital2Config[0]),
-        i2cTimeout_ms
-    );
-    cmr_i2cTX(
-        &i2c,
-        daughterDigitalAddress, daughterDigitalConfig,
-        sizeof(daughterDigitalConfig) / sizeof(daughterDigitalConfig[0]),
-        i2cTimeout_ms
-    );
-    cmr_i2cTX(
-        &i2c,
-        daughterAnalogAddress, daughterAnalogADCConfig,
-        sizeof(daughterAnalogADCConfig) / sizeof(daughterAnalogADCConfig[0]),
-        i2cTimeout_ms
-    );
-    cmr_i2cTX(
-        &i2c,
-        daughterAnalogAddress, daughterAnalogADCSequence,
-        sizeof(daughterAnalogADCSequence) / sizeof(daughterAnalogADCSequence[0]),
-        i2cTimeout_ms
     );
     
     cmr_taskInit(

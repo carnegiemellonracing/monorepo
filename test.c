@@ -10,6 +10,7 @@
 #include "test.h"
 #include "gpio.h"
 #include "adc.h"
+#include "expanders.h"
 
 void testGPIOWrite()
 {
@@ -28,6 +29,14 @@ void testGPIORead()
         read = cmr_gpioRead(pin);
         printf("GPIO Pin %u: %d\n", pin, read);
     }
+}
+
+void testExpanderWrite()
+{
+    static bool toggle = false;
+    expanderSetLED(EXP_LED_1, toggle);
+    expanderSetLED(EXP_LED_2, toggle);
+    toggle = !toggle;
 }
 
 void testADCRead()
@@ -57,9 +66,10 @@ static void test(void *pvParameters) {
         1;
         vTaskDelayUntil(&lastWakeTime, test_period_ms)
     ) {
-        testGPIOWrite();
-        testGPIORead();
-        testADCRead();
+    //    testGPIOWrite();
+        // testGPIORead();
+        // testADCRead();
+        testExpanderWrite();
     }
 }
 

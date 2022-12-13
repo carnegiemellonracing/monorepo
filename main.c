@@ -117,12 +117,12 @@ int main(void) {
     // Peripheral configuration.
     gpioInit();
     // canInit();
-    adcInit();
+    // adcInit();
  	// sensorsInit();
-//    tftInit();
-//     expandersInit();
+    // tftInit();
+    expandersInit();
 
-    // testInit();
+    testInit();
 
     cmr_taskInit(
         &statusLED_task,

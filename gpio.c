@@ -92,9 +92,9 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         }
     },
     [GPIO_SS_FLHUB] = {
-        .port = GPIOC,
+        .port = GPIOB,
         .init = {
-            .Pin = GPIO_PIN_11,
+            .Pin = GPIO_PIN_6,
             .Mode = GPIO_MODE_INPUT,
             .Pull = GPIO_NOPULL,
         }
