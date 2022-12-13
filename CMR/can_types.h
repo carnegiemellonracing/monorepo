@@ -425,6 +425,18 @@ typedef struct {
     int32_t avgCurrent_mA;      /**< @brief (Not working) rolling average of current. */
 } cmr_canHVCPackCurrent_t;
 
+/** @brief High Voltage Controller BMB errors. */
+typedef struct {
+    uint8_t BMB1_2_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
+    uint8_t BMB3_4_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
+    uint8_t BMB5_6_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
+    uint8_t BMB7_8_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
+    uint8_t BMB9_10_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
+    uint8_t BMB11_12_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
+    uint8_t BMB13_14_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
+    uint8_t BMB15_16_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
+} cmr_canHVCBMBErrors_t;
+
 // ------------------------------------------------------------------------------------------------
 // Accumulator Fan Controller
 

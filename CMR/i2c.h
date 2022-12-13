@@ -51,7 +51,8 @@ int cmr_i2cDmaRX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
 
 void cmr_i2cDmaInit(
     cmr_i2c_t *i2c, I2C_TypeDef *instance,
-    DMA_Stream_TypeDef *txDmaStream, DMA_Stream_TypeDef *rxDmaStream,
+    DMA_Stream_TypeDef *txDmaStream, uint32_t txDmaChannel,
+    DMA_Stream_TypeDef *rxDmaStream, uint32_t rxDmaChannel,
     uint32_t clockSpeed, uint32_t ownAddr,
     GPIO_TypeDef *i2cClkPort, uint32_t i2cClkPin,
     GPIO_TypeDef *i2cDataPort, uint32_t i2cDataPin
