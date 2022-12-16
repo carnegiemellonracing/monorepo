@@ -1,4 +1,4 @@
-/**
+ /**
  * @file expanders.h
  * @brief GPIO expanders interface
  *

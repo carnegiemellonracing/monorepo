@@ -318,12 +318,12 @@ void gpioInit(void) {
         gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0])
     );
 
-    // cmr_taskInit(
-    //     &buttonsInput_task,
-    //     "buttonsInput",
-    //     buttonsInput_priority,
-    //     buttonsInput,
-    //     NULL
-    // );
+     cmr_taskInit(
+         &buttonsInput_task,
+         "buttonsInput",
+         buttonsInput_priority,
+         buttonsInput,
+         NULL
+     );
 }
 

@@ -251,14 +251,14 @@ static void updateExpanderData()
         mainDigital2Address, PCA9554_INPUT_PORT,
         mainDigital2Data, 1
     );
-    // getExpanderData(
-    //     daughterDigitalAddress, PCA9554_INPUT_PORT,
-    //     daughterDigitalData, 1
-    // );
-    // getExpanderData(
-    //     daughterAnalogAddress, AD5593R_POINTER_ADC_RD,
-    //     daughterAnalogData, 2 * EXP_CLUTCH_LEN
-    // );
+    status = getExpanderData(
+         daughterDigitalAddress, PCA9554_INPUT_PORT,
+         daughterDigitalData, 1
+     );
+    status = getExpanderData(
+         daughterAnalogAddress, AD5593R_POINTER_ADC_RD,
+         daughterAnalogData, 2 * EXP_CLUTCH_LEN
+     );
 }
 
 /**
@@ -308,7 +308,7 @@ static void expanderUpdate100Hz(void *pvParameters) {
         0xFF
     };
     // Main Board Digital 2 expander has all inputs except outputs on Pins 0 and 1
-    uint8_t mainDigital2Config[3] = {
+    uint8_t mainDigital2Config[2] = {
         PCA9554_CONFIG_PORT,
         0xFC    // 0b11111100
     };
@@ -346,24 +346,24 @@ static void expanderUpdate100Hz(void *pvParameters) {
         sizeof(mainDigital2Config) / sizeof(mainDigital2Config[0]),
         i2cTimeout_ms
     );
-    // cmr_i2cTX(
-    //     &i2c,
-    //     daughterDigitalAddress, daughterDigitalConfig,
-    //     sizeof(daughterDigitalConfig) / sizeof(daughterDigitalConfig[0]),
-    //     i2cTimeout_ms
-    // );
-    // cmr_i2cTX(
-    //     &i2c,
-    //     daughterAnalogAddress, daughterAnalogADCConfig,
-    //     sizeof(daughterAnalogADCConfig) / sizeof(daughterAnalogADCConfig[0]),
-    //     i2cTimeout_ms
-    // );
-    // cmr_i2cTX(
-    //     &i2c,
-    //     daughterAnalogAddress, daughterAnalogADCSequence,
-    //     sizeof(daughterAnalogADCSequence) / sizeof(daughterAnalogADCSequence[0]),
-    //     i2cTimeout_ms
-    // );
+    status =cmr_i2cTX(
+         &i2c,
+         daughterDigitalAddress, daughterDigitalConfig,
+         sizeof(daughterDigitalConfig) / sizeof(daughterDigitalConfig[0]),
+         i2cTimeout_ms
+     );
+    status =cmr_i2cTX(
+         &i2c,
+         daughterAnalogAddress, daughterAnalogADCConfig,
+         sizeof(daughterAnalogADCConfig) / sizeof(daughterAnalogADCConfig[0]),
+         i2cTimeout_ms
+     );
+    status =cmr_i2cTX(
+         &i2c,
+         daughterAnalogAddress, daughterAnalogADCSequence,
+         sizeof(daughterAnalogADCSequence) / sizeof(daughterAnalogADCSequence[0]),
+         i2cTimeout_ms
+     );
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
@@ -385,6 +385,8 @@ static bool getPinValueFromConfig(expanderPinConfig_t config)
     else if (addr == mainDigital2Address)
         data = mainDigital2Data;
     else if (addr == daughterAnalogAddress)
+        data = daughterAnalogData;
+    else if (addr == daughterDigitalAddress)
         data = daughterDigitalData;
     else
         return false;
