@@ -356,6 +356,8 @@ int cmr_i2cDmaTX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
     // IMPORTANT: If we don't check this and an existing transaction is
     // going on, very bad things happen
 	configASSERT(HAL_I2C_GetState(&(i2c->handle)) == HAL_I2C_STATE_READY);
+	configASSERT(i2c->handle.hdmatx->State == HAL_DMA_STATE_READY);
+	configASSERT(i2c->handle.hdmarx->State == HAL_DMA_STATE_READY);
     // Shift the address by 1 per HAL library suggestion
     HAL_StatusTypeDef txStatus = HAL_I2C_Master_Transmit_DMA(
         &(i2c->handle), devAddr << 1, data, dataLength 
@@ -394,6 +396,8 @@ int cmr_i2cDmaRX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
     // IMPORTANT: If we don't check this and an existing transaction is
     // going on, very bad things happen
 	configASSERT(HAL_I2C_GetState(&(i2c->handle)) == HAL_I2C_STATE_READY);
+	configASSERT(i2c->handle.hdmatx->State == HAL_DMA_STATE_READY);
+	configASSERT(i2c->handle.hdmarx->State == HAL_DMA_STATE_READY);
     // Shift the address by 1 per HAL library suggestion
     HAL_StatusTypeDef rxStatus = HAL_I2C_Master_Receive_DMA(
         &(i2c->handle), devAddr << 1, data, dataLength 
