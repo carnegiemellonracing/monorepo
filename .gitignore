@@ -1,5 +1,6 @@
 Release/
 Debug/
+Debug_HVC/
 .settings/
 *.ld
 *.launch

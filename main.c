@@ -115,13 +115,13 @@ int main(void) {
     );
 
     // State Task
-//    cmr_taskInit(
-//        &setState_task,
-//        "Set State Task",
-//        setState_priority,
-//        vSetStateTask,
-//        NULL
-//    );
+    cmr_taskInit(
+        &setState_task,
+        "Set State Task",
+        setState_priority,
+        vSetStateTask,
+        NULL
+    );
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

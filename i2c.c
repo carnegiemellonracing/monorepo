@@ -17,7 +17,7 @@ bool i2cInit(void) {
     cmr_i2cDmaInit(&bmb_i2c, I2C1,
     		DMA1_Stream1, DMA_CHANNEL_0,
 			DMA1_Stream0, DMA_CHANNEL_1,
-    		I2C_CLOCK_HI, 0, // 100kHz limited by the PCA9536 TODO: Check if own address should be 0
+    		400000, 0, // 100kHz limited by the PCA9536 TODO: Check if own address should be 0
                 GPIOB, GPIO_PIN_8, // clock
                 GPIOB, GPIO_PIN_9); // data
 
@@ -165,7 +165,7 @@ bool i2c_configADC() {
 }
 
 bool i2c_scanADC(int16_t adcResponse[]) {
-	uint8_t buffer[16];
+	uint8_t buffer[16] = {0};
 	if (cmr_i2cDmaRX(&bmb_i2c, BMS_ADC_ADDR, buffer, 16, I2C_TIMEOUT) != 0) {
 		return false;
 	}
