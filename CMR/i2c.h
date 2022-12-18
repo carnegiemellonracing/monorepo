@@ -24,10 +24,13 @@ typedef struct {
     DMA_HandleTypeDef dmatx_handle; /**< @brief HAL DMA TX Handle.*/
     DMA_HandleTypeDef dmarx_handle; /**< @brief HAL DMA RX Handle.*/
 
-    SemaphoreHandle_t txDone; /**< @brief Semaphore for TX.*/
-    StaticSemaphore_t txDoneBuf; /**< @brief Static buffer for TX semaphore.*/
-    SemaphoreHandle_t rxDone; /**< @brief Semaphore for RX.*/
-    StaticSemaphore_t rxDoneBuf; /**< @brief Static buffer for RX semaphore.*/
+    GPIO_TypeDef *i2cClkPort;
+    uint32_t i2cClkPin;
+    GPIO_TypeDef *i2cDataPort;
+    uint32_t i2cDataPin;
+
+    SemaphoreHandle_t doneSem; /**< @brief Semaphore for TX.*/
+    StaticSemaphore_t doneSemBuf; /**< @brief Static buffer for TX semaphore.*/
 } cmr_i2c_t;
 
 int cmr_i2cTX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,

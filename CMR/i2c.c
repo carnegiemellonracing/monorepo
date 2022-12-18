@@ -13,6 +13,8 @@
 #include "rcc.h"    // cmr_rccGPIOClockEnable(), cmr_rccI2CClockEnable()
                     //
 
+static void I2C_ClearBusyFlagErratum(cmr_i2c_t* i2c, uint32_t timeout);
+
 typedef struct {
     /** @brief The associated handle, or `NULL` if not configured. */
     I2C_HandleTypeDef *handle;
@@ -67,9 +69,6 @@ void I2C2_ER_IRQHandler(void) {
 //   HAL_DMA_IRQHandler(cmr_i2cDevices[1].handle->hdmatx);
 // }
 
-void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *handle) {
-} 
-
 /**
  * @brief Handles I2C completion for the given port.
  *
@@ -77,25 +76,28 @@ void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *handle) {
  *
  * @param handle The HAL I2C handle.
  */
-static void cmr_i2cDoneCallback(I2C_HandleTypeDef *handle, int tx) {
+static void cmr_i2cDoneCallback(I2C_HandleTypeDef *handle) {
     char *addr = (void *) handle;
     cmr_i2c_t *i2c = (void *) (addr - offsetof(cmr_i2c_t, handle));
 
     // Indicate completion.
     BaseType_t higherWoken;
-    SemaphoreHandle_t sem = tx ? i2c->txDone : i2c->rxDone;
-    if (xSemaphoreGiveFromISR(sem, &higherWoken) != pdTRUE) {
+    if (xSemaphoreGiveFromISR(i2c->doneSem, &higherWoken) != pdTRUE) {
         cmr_panic("I2C done semaphore released more than once!");
     }
     portYIELD_FROM_ISR(higherWoken);
 }
 
 void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *handle) {
-    cmr_i2cDoneCallback(handle, 1);
+    cmr_i2cDoneCallback(handle);
 }
 
 void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *handle) {
-    cmr_i2cDoneCallback(handle, 0);
+    cmr_i2cDoneCallback(handle);
+}
+
+void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *handle) {
+	cmr_i2cDoneCallback(handle);
 }
 
 /**
@@ -229,6 +231,10 @@ void cmr_i2cDmaInit(
     GPIO_TypeDef *i2cDataPort, uint32_t i2cDataPin
 ) {
     *i2c = (cmr_i2c_t) {
+        .i2cClkPort = i2cClkPort,
+        .i2cClkPin = i2cClkPin,
+        .i2cDataPort = i2cDataPort,
+        .i2cDataPin = i2cDataPin,
         .handle = {
             .Instance = instance,
             .Init = {
@@ -279,14 +285,12 @@ void cmr_i2cDmaInit(
 
     };
 
-    i2c->txDone = xSemaphoreCreateBinaryStatic(&(i2c->txDoneBuf));
-    i2c->rxDone = xSemaphoreCreateBinaryStatic(&(i2c->rxDoneBuf));
-    configASSERT(i2c->txDone != NULL);
-    configASSERT(i2c->rxDone != NULL);
+    i2c->doneSem = xSemaphoreCreateBinaryStatic(&(i2c->doneSemBuf));
+    configASSERT(i2c->doneSem != NULL);
 
-    cmr_rccI2CClockEnable(instance);
     cmr_rccGPIOClockEnable(i2cClkPort);
     cmr_rccGPIOClockEnable(i2cDataPort);
+    cmr_rccI2CClockEnable(instance);
 
     if (HAL_I2C_Init(&(i2c->handle)) != HAL_OK) {
         cmr_panic("HAL_I2C_Init() failed!");
@@ -297,7 +301,7 @@ void cmr_i2cDmaInit(
         .Pin = i2cClkPin,
         .Mode = GPIO_MODE_AF_OD,
         .Pull = GPIO_PULLUP,
-        .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
+        .Speed = GPIO_SPEED_FREQ_HIGH,
         .Alternate = GPIO_AF4_I2C1
     };
 
@@ -315,17 +319,17 @@ void cmr_i2cDmaInit(
         cmr_i2cDevices[0].handle = &(i2c->handle);
         // HAL_NVIC_SetPriority(I2C1_DMA_IRQn, 7, 0);
         // HAL_NVIC_EnableIRQ(I2C1_DMA_IRQn);
-        HAL_NVIC_SetPriority(I2C1_EV_IRQn, 7, 0);
+        HAL_NVIC_SetPriority(I2C1_EV_IRQn, 5, 0);
         HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
-        HAL_NVIC_SetPriority(I2C1_ER_IRQn, 7, 0);
+        HAL_NVIC_SetPriority(I2C1_ER_IRQn, 5, 0);
         HAL_NVIC_EnableIRQ(I2C1_ER_IRQn);
     } else if (instance == I2C2) {
     	cmr_i2cDevices[1].handle = &(i2c->handle);
     	// HAL_NVIC_SetPriority(I2C2_DMA_IRQn, 7, 0);
     	// HAL_NVIC_EnableIRQ(I2C2_DMA_IRQn);
-        HAL_NVIC_SetPriority(I2C2_EV_IRQn, 7, 0);
+        HAL_NVIC_SetPriority(I2C2_EV_IRQn, 5, 0);
         HAL_NVIC_EnableIRQ(I2C2_EV_IRQn);
-        HAL_NVIC_SetPriority(I2C2_ER_IRQn, 7, 0);
+        HAL_NVIC_SetPriority(I2C2_ER_IRQn, 5, 0);
         HAL_NVIC_EnableIRQ(I2C2_ER_IRQn);
     } else {
         cmr_panic("Unexpected I2C instance!");
@@ -358,10 +362,15 @@ int cmr_i2cDmaTX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
     );
 
     if (txStatus != HAL_OK) {
+    	if (__HAL_I2C_GET_FLAG(&(i2c->handle), I2C_FLAG_BUSY) != RESET) {
+    		//I2C_ClearBusyFlagErratum(i2c, 1000);
+    		SET_BIT(i2c->handle.Instance->CR1, I2C_CR1_STOP);
+    		//I2C_WaitOnFlagUntilTimeout(&(i2c->handle), I2C_FLAG_BUSY, SET, 1000);
+    	}
         return -1;
     }
 
-    if (xSemaphoreTake(i2c->txDone, timeout_ms) != pdTRUE) {
+    if (xSemaphoreTake(i2c->doneSem, timeout_ms) != pdTRUE) {
         return -2;
     }
     configASSERT(HAL_I2C_GetState(&(i2c->handle)) == HAL_I2C_STATE_READY);
@@ -392,15 +401,125 @@ int cmr_i2cDmaRX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
 
 
     if (rxStatus != HAL_OK) {
+    	if (__HAL_I2C_GET_FLAG(&(i2c->handle), I2C_FLAG_BUSY) != RESET) {
+    		//I2C_ClearBusyFlagErratum(i2c, 1000);
+    		SET_BIT(i2c->handle.Instance->CR1, I2C_CR1_STOP);
+    		//I2C_WaitOnFlagUntilTimeout(&(i2c->handle), I2C_FLAG_BUSY, SET, 1000);
+    	}
         return -1;
     }
 
-    if (xSemaphoreTake(i2c->rxDone, timeout_ms) != pdTRUE) {
+    if (xSemaphoreTake(i2c->doneSem, timeout_ms) != pdTRUE) {
         return -2;
     }
     configASSERT(HAL_I2C_GetState(&(i2c->handle)) == HAL_I2C_STATE_READY);
 
     return 0;
+}
+
+static int wait_for_gpio_state_timeout(GPIO_TypeDef *port, uint16_t pin, GPIO_PinState state, uint32_t timeout)
+ {
+    uint32_t Tickstart = HAL_GetTick();
+    int ret = 0;
+    /* Wait until flag is set */
+    for(;(state != HAL_GPIO_ReadPin(port, pin)) && (0 == ret);)
+    {
+        /* Check for the timeout */
+        if (timeout != HAL_MAX_DELAY)
+        {
+            if ((timeout == 0U) || ((HAL_GetTick() - Tickstart) > timeout))
+            {
+                ret = -1;
+            }
+            else
+            {
+            }
+        }
+        asm("nop");
+    }
+    return ret;
+}
+
+static void I2C_ClearBusyFlagErratum(cmr_i2c_t* i2c, uint32_t timeout)
+{
+    GPIO_InitTypeDef GPIO_InitStructure;
+
+    I2C_HandleTypeDef *handle = &(i2c->handle);
+    GPIO_TypeDef *I2C1_SCL_GPIO_Port = i2c->i2cClkPort;
+    GPIO_TypeDef *I2C1_SDA_GPIO_Port = i2c->i2cDataPort;
+    uint32_t I2C1_SDA_Pin = i2c->i2cDataPin;
+    uint32_t I2C1_SCL_Pin = i2c->i2cClkPin;
+
+    // 1. Clear PE bit.
+    CLEAR_BIT(handle->Instance->CR1, I2C_CR1_PE);
+
+    //  2. Configure the SCL and SDA I/Os as General Purpose Output Open-Drain, High level (Write 1 to GPIOx_ODR).
+    HAL_I2C_DeInit(handle);
+
+    GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_OD;
+    GPIO_InitStructure.Pull = GPIO_NOPULL;
+
+    GPIO_InitStructure.Pin = i2c->i2cClkPin;
+    HAL_GPIO_Init(I2C1_SCL_GPIO_Port, &GPIO_InitStructure);
+
+    GPIO_InitStructure.Pin = i2c->i2cDataPin;
+    HAL_GPIO_Init(I2C1_SDA_GPIO_Port, &GPIO_InitStructure);
+
+    // 3. Check SCL and SDA High level in GPIOx_IDR.
+    HAL_GPIO_WritePin(I2C1_SDA_GPIO_Port, I2C1_SDA_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(I2C1_SCL_GPIO_Port, I2C1_SCL_Pin, GPIO_PIN_SET);
+
+    wait_for_gpio_state_timeout(I2C1_SCL_GPIO_Port, I2C1_SCL_Pin, GPIO_PIN_SET, timeout);
+    wait_for_gpio_state_timeout(I2C1_SDA_GPIO_Port, I2C1_SDA_Pin, GPIO_PIN_SET, timeout);
+
+    // 4. Configure the SDA I/O as General Purpose Output Open-Drain, Low level (Write 0 to GPIOx_ODR).
+    HAL_GPIO_WritePin(I2C1_SDA_GPIO_Port, I2C1_SDA_Pin, GPIO_PIN_RESET);
+
+    // 5. Check SDA Low level in GPIOx_IDR.
+    wait_for_gpio_state_timeout(I2C1_SDA_GPIO_Port, I2C1_SDA_Pin, GPIO_PIN_RESET, timeout);
+
+    // 6. Configure the SCL I/O as General Purpose Output Open-Drain, Low level (Write 0 to GPIOx_ODR).
+    HAL_GPIO_WritePin(I2C1_SCL_GPIO_Port, I2C1_SCL_Pin, GPIO_PIN_RESET);
+
+    // 7. Check SCL Low level in GPIOx_IDR.
+    wait_for_gpio_state_timeout(I2C1_SCL_GPIO_Port, I2C1_SCL_Pin, GPIO_PIN_RESET, timeout);
+
+    // 8. Configure the SCL I/O as General Purpose Output Open-Drain, High level (Write 1 to GPIOx_ODR).
+    HAL_GPIO_WritePin(I2C1_SCL_GPIO_Port, I2C1_SCL_Pin, GPIO_PIN_SET);
+
+    // 9. Check SCL High level in GPIOx_IDR.
+    wait_for_gpio_state_timeout(I2C1_SCL_GPIO_Port, I2C1_SCL_Pin, GPIO_PIN_SET, timeout);
+
+    // 10. Configure the SDA I/O as General Purpose Output Open-Drain , High level (Write 1 to GPIOx_ODR).
+    HAL_GPIO_WritePin(I2C1_SDA_GPIO_Port, I2C1_SDA_Pin, GPIO_PIN_SET);
+
+    // 11. Check SDA High level in GPIOx_IDR.
+    wait_for_gpio_state_timeout(I2C1_SDA_GPIO_Port, I2C1_SDA_Pin, GPIO_PIN_SET, timeout);
+
+    // 12. Configure the SCL and SDA I/Os as Alternate function Open-Drain.
+    GPIO_InitStructure.Mode = GPIO_MODE_AF_OD;
+    GPIO_InitStructure.Alternate = GPIO_AF4_I2C1;
+
+    GPIO_InitStructure.Pin = I2C1_SCL_Pin;
+    HAL_GPIO_Init(I2C1_SCL_GPIO_Port, &GPIO_InitStructure);
+
+    GPIO_InitStructure.Pin = I2C1_SDA_Pin;
+    HAL_GPIO_Init(I2C1_SDA_GPIO_Port, &GPIO_InitStructure);
+
+    // 13. Set SWRST bit in I2Cx_CR1 register.
+    SET_BIT(handle->Instance->CR1, I2C_CR1_SWRST);
+    asm("nop");
+
+    /* 14. Clear SWRST bit in I2Cx_CR1 register. */
+    CLEAR_BIT(handle->Instance->CR1, I2C_CR1_SWRST);
+    asm("nop");
+
+    /* 15. Enable the I2C peripheral by setting the PE bit in I2Cx_CR1 register */
+    SET_BIT(handle->Instance->CR1, I2C_CR1_PE);
+    asm("nop");
+
+    // Call initialization function.
+    HAL_I2C_Init(handle);
 }
 
 #endif /* HAL_I2C_MODULE_ENABLED */
