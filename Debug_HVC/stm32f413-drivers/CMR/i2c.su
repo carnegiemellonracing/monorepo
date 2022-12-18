@@ -12,6 +12,6 @@
 ../stm32f413-drivers/CMR/i2c.c:225:6:cmr_i2cDmaInit	432	static
 ../stm32f413-drivers/CMR/i2c.c:339:5:cmr_i2cIsReady	16	static
 ../stm32f413-drivers/CMR/i2c.c:354:5:cmr_i2cDmaTX	32	static
-../stm32f413-drivers/CMR/i2c.c:392:5:cmr_i2cDmaRX	32	static
-../stm32f413-drivers/CMR/i2c.c:420:12:wait_for_gpio_state_timeout	32	static,ignoring_inline_asm
-../stm32f413-drivers/CMR/i2c.c:443:13:I2C_ClearBusyFlagErratum	56	static,ignoring_inline_asm
+../stm32f413-drivers/CMR/i2c.c:394:5:cmr_i2cDmaRX	32	static
+../stm32f413-drivers/CMR/i2c.c:424:12:wait_for_gpio_state_timeout	32	static,ignoring_inline_asm
+../stm32f413-drivers/CMR/i2c.c:447:13:I2C_ClearBusyFlagErratum	56	static,ignoring_inline_asm
