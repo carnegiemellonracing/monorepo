@@ -534,10 +534,10 @@ typedef struct {
 
 /** @brief Central Dynamics Controller DRS states. */
 typedef struct {
-    int16_t state;          /**< @brief DRS current control state (open or closed position). */
-    int16_t angle;          /**< @brief DRS setpoint angle for its current state (debug info). */
-    int16_t pwm_left;       /**< @brief PWM of the left  DRS servo (debug info). */
-    int16_t pwm_right;      /**< @brief PWM of the right DRS servo (debug info). */
+    uint8_t state;          /**< @brief DRS current control state (open or closed position). */
+    uint8_t angle;          /**< @brief DRS setpoint angle for its current state (debug info). */
+    uint8_t pwm_left;       /**< @brief PWM of the left  DRS servo (debug info). */
+    uint8_t pwm_right;      /**< @brief PWM of the right DRS servo (debug info). */
 } cmr_canCDCDRSStates_t;
 
 // ------------------------------------------------------------------------------------------------

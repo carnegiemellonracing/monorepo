@@ -24,6 +24,8 @@ enum HVCState(0="ERROR", 1="DISCHARGE", 2="STANDBY", 3="DRIVE_PRECHARGE",
 enum FanState(0="OFF", 1="LOW", 2="HIGH")
 enum PumpState(0="OFF", 1="ON")
 enum CoolingState(0="OFF", 1="LOW", 2="HIGH")
+enum DRS_MODE(0="DRS_UNKNOWN", 1="DRS_OPEN", 2="DRS_CLOSED", 3="DRS_TOGGLE", 
+  4="DRS_HOLD", 5="DRS_AUTO")
 
 {SENDRECEIVE}
 
@@ -431,11 +433,12 @@ Var=DIM_busCurrent unsigned 16,16 /u:mA
 
 [DIM_Request]
 ID=235h
-DLC=2
+DLC=3
 CycleTime=100
 Timeout=1000
 Var=DIM_requestState unsigned 0,8 /e:State
 Var=DIM_requestGear unsigned 8,8 /e:Gear
+Var=DIM_requestDRSMode DRS_MODE 16,8
 
 [DIM_Actions]
 ID=515h
@@ -1546,4 +1549,14 @@ Var=RTC_Date_In unsigned 24,8 /u:day
 Var=RTC_Month_In unsigned 32,8 /u:month
 Var=RTC_Year_In unsigned 40,8 /u:year
 Var=RTC_Error_In unsigned 48,8	// For interpreting this, see comments in code.
+
+[CDC_DrsState]
+ID=52Ch
+DLC=4
+CycleTime=200
+Color=0000FFh
+Var=drsState unsigned 0,8
+Var=drsAngle unsigned 8,8
+Var=drsPwmLeft unsigned 16,8
+Var=drsPwmRight unsigned 24,8
 
