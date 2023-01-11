@@ -110,8 +110,6 @@ typedef struct {
     uint8_t max; // these will have to be converted at the time of initing;
 }config_menu_item_t;
 
-
-// config_menu_item_t test;
 extern volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS];
 
 //////// HELPER FUNCTIONS /////////////////
