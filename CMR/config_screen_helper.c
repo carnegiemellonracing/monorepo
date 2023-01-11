@@ -12,7 +12,7 @@ char* config_regen_string_lut[5] = {"Off", "Prll", "One P", "Hybr", ""};
 
 
 volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
-    {
+    [DRIVER_PROFILE_INDEX] = {
         .name = "Driver Profile",
         .ESE_background_color_variable = ESE_DRIVER_BOX,
         .ESE_value_color_variable = ESE_DRIVER_COLOR, 
@@ -26,7 +26,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0, // scaled by 10 bc 1 decimal point 'float'
         .max = num_values_driver_enum, // scaled by 10 bc 1 decimal point 'float'
     },
-    {
+    [ACCEL_TGT_INDEX] = {
         .name = "Accl Tgt",
         .ESE_background_color_variable = ESE_ACCL_TGT_BOX,
         .ESE_value_color_variable = ESE_ACCEL_TGT_COLOR, 
@@ -39,7 +39,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 10, // scaled by 10 bc 1 decimal point 'float'
         .max = 200, // scaled by 10 bc 1 decimal point 'float'
     },
-    {
+    [SLIP_RATIO_ACCEL_INDEX] = {
         .name = "Slip Ratio Accel",
         .ESE_background_color_variable = ESE_SLIP_RATIO_ACCEL_BOX,
         .ESE_value_color_variable = ESE_SLIP_RATIO_ACCEL_COLOR,
@@ -52,7 +52,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 10,
         .max = 20,
     },
-    {
+    [POWER_LIMIT_INDEX] = {
         .name = "Pwr Lmt",
         .ESE_background_color_variable = ESE_BURNOUT_BOX,
         .ESE_value_color_variable = ESE_BURNOUT_COLOR,
@@ -65,7 +65,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 1,
         .max = 70,
     },
-    {
+    [TORQUE_BIAS_INDEX] = {
         .name = "Torque Bias",
         .ESE_background_color_variable = ESE_TRQ_BIAS_BOX,
         .ESE_value_color_variable = ESE_TRQ_BIAS_COLOR,
@@ -78,7 +78,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 100,
     },
-    {
+    [MAX_REGEN_FORCE_INDEX] = {
         .name = "Max Regen Force",
         .ESE_background_color_variable = ESE_MAX_RGN_BOX,
         .ESE_value_color_variable = ESE_MAX_RGN_COLOR,
@@ -91,7 +91,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 100,
     },
-    {
+    [MAX_REGEN_PRESSURE_INDEX] = {
         .name = "Max Regen Pressure",
         .ESE_background_color_variable = ESE_MAX_PSSR_BOX,
         .ESE_value_color_variable = ESE_MAX_PSSR_COLOR, 
@@ -104,7 +104,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 150,
     },
-    {
+    [REGEN_INDEX] = {
         .name = "Regen",
         .ESE_background_color_variable = ESE_REGEN_BOX,
         .ESE_value_color_variable = ESE_REGEN_COLOR, 
@@ -118,7 +118,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = num_values_regen_enum,
     },
-    {
+    [REGEN_BIAS_INDEX] = {
         .name = "Regen Bias",
         .ESE_background_color_variable = ESE_RGN_BIAS_BOX,
         .ESE_value_color_variable = ESE_RGN_BIAS_COLOR,
@@ -131,7 +131,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 100,
     },
-    {
+    [TRACTION_CONTROL_INDEX] = {
         .name = "Traction control",
         .ESE_background_color_variable = ESE_TRAC_CTL_BOX,
         .ESE_value_color_variable = ESE_TRAC_CTL_COLOR, 
@@ -144,7 +144,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 1,
     },
-    {
+    [SLIP_RATIO_TRACTION_INDEX] = {
         .name = "Slip Ratio traction control",
         .ESE_background_color_variable = ESE_SLIP_RATIO_DRV_BOX,
         .ESE_value_color_variable = ESE_SLIP_RATIO_DRV_COLOR, 
@@ -157,7 +157,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 10,
         .max = 30, //TODO: annotate this
     },
-    {
+    [TORQUE_VECTORING_INDEX] = {
         .name = "Torque Vectoring",
         .ESE_background_color_variable = ESE_TRQ_VEC_BOX,
         .ESE_value_color_variable = ESE_MAX_TRQ_COLOR,
@@ -170,7 +170,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 1,
     },
-    {
+    [TORQUE_VECTORING_GAIN_INDEX] = {
         .name = "Torque Vectoring Gain",
         .ESE_background_color_variable = ESE_TV_GAIN_BOX,
         .ESE_value_color_variable = ESE_TV_GAIN_COLOR,
@@ -183,7 +183,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 30,
     },
-    {
+    [MAX_TORQUE_INDEX] = {
         .name = "Max Torque",
         .ESE_background_color_variable = ESE_MAX_TRQ_BOX,
         .ESE_value_color_variable = ESE_MAX_TRQ_COLOR, 
@@ -196,7 +196,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 100,
     },
-    {
+    [MAX_SPEED_INDEX] = {
         .name = "Max Speed",
         .ESE_background_color_variable = ESE_MAX_SPD_BOX,
         .ESE_value_color_variable = ESE_MAX_SPD_COLOR, 
@@ -209,7 +209,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 2,
         .max = 100,
     },
-    {
+    [WET_INDEX] = {
         .name = "Wet",
         .ESE_background_color_variable = ESE_WET_BOX,
         .ESE_value_color_variable = ESE_WET_COLOR,
@@ -222,11 +222,11 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 1,
     },
-    {
+    [DRS_SWANGLE_INDEX] = {
         .name = "DRS Swangle Threshold",
-        .ESE_background_color_variable = ESE_WET_BOX,
-        .ESE_value_color_variable = ESE_WET_COLOR,
-        .ESE_value_variable = ESE_WET_VAL,
+        .ESE_background_color_variable = ESE_DRS_SWANGLE_BOX,
+        .ESE_value_color_variable = ESE_DRS_SWANGLE_COLOR,
+        .ESE_value_variable = ESE_DRS_SWANGLE_VAL,
         .ESE_context_text_variable = "High TC & capped torque",
         .value = {
             .type = boolean,
@@ -235,11 +235,11 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 1,
     },
-    {
+    [DRS_THROTTLE_INDEX] = {
         .name = "DRS Throttle Threshold",
-        .ESE_background_color_variable = ESE_WET_BOX,
-        .ESE_value_color_variable = ESE_WET_COLOR,
-        .ESE_value_variable = ESE_WET_VAL,
+        .ESE_background_color_variable = ESE_DRS_THROTTLE_BOX,
+        .ESE_value_color_variable = ESE_DRS_THROTTLE_COLOR,
+        .ESE_value_variable = ESE_DRS_THROTTLE_VAL,
         .ESE_context_text_variable = "High TC & capped torque",
         .value = {
             .type = boolean,
@@ -248,11 +248,11 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 1,
     },
-    {
+    [DRS_BRAKE_INDEX] = {
         .name = "DRS Brake Threshold",
-        .ESE_background_color_variable = ESE_WET_BOX,
-        .ESE_value_color_variable = ESE_WET_COLOR,
-        .ESE_value_variable = ESE_WET_VAL,
+        .ESE_background_color_variable = ESE_DRS_BRAKE_BOX,
+        .ESE_value_color_variable = ESE_DRS_BRAKE_COLOR,
+        .ESE_value_variable = ESE_DRS_BRAKE_VAL,
         .ESE_context_text_variable = "High TC & capped torque",
         .value = {
             .type = boolean,
