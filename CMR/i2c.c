@@ -89,8 +89,8 @@ void cmr_i2cInit(
         .handle = {
             .Instance = instance,
             .Init = {
-                .ClockSpeed = clockSpeed,
-                .DutyCycle = I2C_DUTYCYCLE_2,
+//                .ClockSpeed = clockSpeed,
+//                .DutyCycle = I2C_DUTYCYCLE_2,
                 .OwnAddress1 = ownAddr,
                 .AddressingMode = I2C_ADDRESSINGMODE_7BIT,
                 .DualAddressMode = I2C_DUALADDRESS_DISABLE,
