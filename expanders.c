@@ -225,7 +225,7 @@ uint8_t daughterDigitalData[1];
 uint8_t daughterAnalogData[2 * EXP_CLUTCH_LEN];
 
 /** @brief GPIO expander update 100 Hz priority. */
-static const uint32_t expanderUpdate100Hz_priority = 4;
+static const uint32_t expanderUpdate100Hz_priority = 7;
 
 /** @brief GPIO expander update 100 Hz TX period (milliseconds). */
 static const TickType_t expanderUpdate100Hz_period_ms = 10;
