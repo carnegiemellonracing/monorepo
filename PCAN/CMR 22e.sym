@@ -1521,3 +1521,23 @@ Var=padding unsigned 32,16 /max:1
 Var=volume unsigned 48,8 /max:7
 Var=squelch unsigned 56,8 /max:8	// 0 for listen, 1 - 8 for transmit
 
+[DAQ_LOADCELL_0]
+ID=650h
+DLC=8
+Var=HX711_FORCE signed 0,32
+Var=NAU7802_FORCE signed 32,32
+
+[DAQ_THERMISTOR_0]
+ID=651h
+DLC=8
+Var=TMP0 unsigned 0,16
+Var=TMP1 unsigned 16,16
+Var=TMP2 unsigned 32,16
+Var=TMP3 unsigned 48,16
+
+[DAQ_DEBUG_0]
+ID=652h
+DLC=8
+Var=HX711_DEBUG unsigned 0,32 -h
+Var=NAU7802_DEBUG unsigned 32,32 -h
+
