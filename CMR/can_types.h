@@ -1003,6 +1003,30 @@ typedef struct {
     uint8_t err; /* 1 in error state and 0 otherwise */
 } cmr_can_rtc_data_t;
 
+typedef struct 
+{
+    float slipRatio_FL;
+    float slipRatio_FR;
+} cmr_can_front_slip_ratio_data_t;
+
+typedef struct
+{
+    float slipRatio_RL;
+    float slipRatio_RR;
+} cmr_can_rear_slip_ratio_data_t;
+
+typedef struct 
+{
+    float omega_FL;
+    float omega_FR;
+} cmr_can_front_whl_speed_setpoint_t;
+
+typedef struct
+{
+    float omega_RL;
+    float omega_RR;
+} cmr_can_rear_whl_speed_setpoint_t;
+
 // ------------------------------------------------------------------------------------------------
 // SAE Provided EMD definitions
 
