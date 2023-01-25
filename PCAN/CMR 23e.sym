@@ -1560,3 +1560,27 @@ Var=drsAngle unsigned 8,8
 Var=drsPwmLeft unsigned 16,8
 Var=drsPwmRight unsigned 24,8
 
+[CDC_Front_Slip_Ratios]
+ID=000h
+DLC=8
+Var=slipRatio_FL float 0,32
+Var=slipRatio_FR float 32,32
+
+[CDC_Rear_Slip_Ratios]
+ID=001h
+DLC=8
+Var=slipRatio_RL float 0,32
+Var=slipRatio_RR float 32,32
+
+[CDC_Front_Velocity_Setpoints]
+ID=002h
+DLC=8
+Var=setPoint_FL float 0,32
+Var=setPoint_FR float 32,32
+
+[CDC_Rear_Velocity_Setpoints]
+ID=003h
+DLC=8
+Var=setPoint_RL float 0,32
+Var=setPoint_RR float 32,32
+
