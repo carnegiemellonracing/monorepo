@@ -25,7 +25,10 @@
 #define TSENSE_CHANNELS_PER_BMB 15
 #define TSENSE_CHANNELS_PER_MESSAGE 8
 
-#define BMB_SAMPLE_TASK_RATE 5
+#define BMB_SAMPLE_TASK_RATE 50
+
+#define CELL_MAX_VOLTAGE_HI 4250
+#define CELL_MAX_VOLTAGE_LO 4150
 
 //Define array indices for the ADC Channels
 

@@ -27,7 +27,8 @@ bool i2cInit(void) {
     vTaskDelayUntil(&xLastWakeTime, 2000);
 
     for (int bmb = 0; bmb < I2C_NUM_BMBS; bmb++) {
-        for (int side = 1; side < 2; side++) { //TODO: CHANGE THIS BACK
+    	bmb = 3; //TODO: Remove this
+        for (int side = 0; side < 2; side++) { //TODO: CHANGE THIS BACK
             if (!i2c_enableI2CMux(bmb, side)) {
                 BMBErrs[bmb*2+side] = BMB_INIT_ENABLE_I2C_MUX_ERR;
                 return false;
@@ -151,10 +152,10 @@ bool i2c_selectMuxBlink() {
 
 bool i2c_configADC() {
 	// 1111 means {setup_bit, internal_ref, ref_output, ref_always_on}
-	// 0010 means {internal_clock, unipolar, no_action, X}
+	// 0000 means {internal_clock, unipolar, reset_config, X}
 	uint8_t setupByte = 0xF0;
 	// 0_00_0111_1 means {config_bit, scan_all, scan_to_A7, single_ended}
-	uint8_t configByte = 0x1F;
+	uint8_t configByte = 0x0F;
 	if (cmr_i2cDmaTX(&bmb_i2c, BMS_ADC_ADDR, &setupByte, 1, I2C_TIMEOUT) != 0) {
 		return false;
 	}
