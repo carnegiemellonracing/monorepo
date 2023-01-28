@@ -1,2 +1,0 @@
-../watchdog.c:30:13:WatchdogUpdate	24	static
-../watchdog.c:44:6:wwdgInit	40	static

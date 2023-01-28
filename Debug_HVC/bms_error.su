@@ -1,7 +1,0 @@
-../bms_error.c:20:19:checkErrors	24	static
-../bms_error.c:89:6:clearHardwareFault	16	static
-../bms_error.c:100:6:clearErrorReg	4	static
-../bms_error.c:104:6:setErrorReg	16	static
-../bms_error.c:108:19:getErrorReg	4	static
-../bms_error.c:112:13:checkCommandTimeout	16	static
-../bms_error.c:121:13:checkBMBTimeout	16	static

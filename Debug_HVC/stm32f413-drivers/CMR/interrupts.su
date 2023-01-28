@@ -1,3 +1,0 @@
-../stm32f413-drivers/CMR/interrupts.c:27:6:SysTick_Handler	8	static
-../stm32f413-drivers/CMR/interrupts.c:40:6:NMI_Handler	4	static
-../stm32f413-drivers/CMR/interrupts.c:47:6:DebugMon_Handler	4	static

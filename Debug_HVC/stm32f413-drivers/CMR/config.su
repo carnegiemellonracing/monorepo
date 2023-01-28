@@ -1,5 +1,0 @@
-../stm32f413-drivers/CMR/config.c:33:6:cmr_configInit	24	static
-../stm32f413-drivers/CMR/config.c:46:5:cmr_configSet	24	static
-../stm32f413-drivers/CMR/config.c:64:5:cmr_configGet	24	static
-../stm32f413-drivers/CMR/config.c:79:6:cmr_configPull	16	static
-../stm32f413-drivers/CMR/config.c:88:6:cmr_configCommit	16	static

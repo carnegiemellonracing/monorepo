@@ -1,2 +1,0 @@
-../stm32f413-drivers/CMR/panic.c:16:6:cmr_panicSetup	4	static
-../stm32f413-drivers/CMR/panic.c:32:6:cmr_panic	8	static

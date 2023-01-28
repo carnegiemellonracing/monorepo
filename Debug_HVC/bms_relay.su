@@ -1,4 +1,0 @@
-../bms_relay.c:14:6:relaySetup	4	static
-../bms_relay.c:19:9:setRelay	16	static
-../bms_relay.c:77:9:getRelayStatus	16	static
-../bms_relay.c:86:6:checkRelayPowerFault	8	static
