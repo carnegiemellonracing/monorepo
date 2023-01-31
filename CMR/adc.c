@@ -38,9 +38,24 @@ static void cmr_adcSample(void *pvParameters) {
         for (size_t i = 0; i < adc->channelsLen; i++) {
             cmr_adcChannel_t *channel = &(adc->channels[i]);
 
+            ADC_ChannelConfTypeDef sConfig = {0};
+            /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+             */
+            sConfig.Channel = channel->channel;
+            sConfig.Rank = ADC_REGULAR_RANK_1;
+            sConfig.SamplingTime = ADC_SAMPLETIME_24CYCLES_5;
+            sConfig.SingleDiff = ADC_SINGLE_ENDED;
+            sConfig.OffsetNumber = ADC_OFFSET_NONE;
+            sConfig.Offset = 0;
+            if (HAL_ADC_ConfigChannel(&adc->handle, &sConfig) != HAL_OK)
+            {
+                cmr_panic("HAL_ADC_ConfigChannel() failed");
+            }
+
             HAL_ADC_Start(&adc->handle);
             HAL_ADC_PollForConversion(&adc->handle, CMR_ADC_TIMEOUT_MS);
             channel->value = HAL_ADC_GetValue(&adc->handle);
+            HAL_ADC_Stop(&adc->handle);
         }
 
         vTaskDelayUntil(&lastWakeTime, cmr_adcSample_period_ms);
@@ -102,7 +117,7 @@ void cmr_adcInit(
         cmr_panic("HAL_ADC_Init() failed!");
     }
 
-    cmr_adcConfigChannels(adc);
+    // cmr_adcConfigChannels(adc);
 
     cmr_taskInit(
         &adc->sampleTask,

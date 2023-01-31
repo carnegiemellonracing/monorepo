@@ -413,18 +413,18 @@ void _platform_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance, cmr_adcChannel_t *
             // Configure ADC in discontinuous scan mode.
             // This will allow conversion of a series of channels one at a time.
             .Init = {
-                .ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4,
+                .ClockPrescaler = ADC_CLOCK_ASYNC_DIV4,
                 .Resolution = ADC_RESOLUTION_12B,
-                .ScanConvMode = ENABLE,
-                .ContinuousConvMode = DISABLE,
-                .DiscontinuousConvMode = ENABLE,
-                .NbrOfDiscConversion = 1,
-                .ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE,
-                .ExternalTrigConv = ADC_SOFTWARE_START,
                 .DataAlign = ADC_DATAALIGN_RIGHT,
-                .NbrOfConversion = channelsLen,
-                .DMAContinuousRequests = DISABLE,
+                .ScanConvMode = ADC_SCAN_DISABLE,
                 .EOCSelection = ADC_EOC_SINGLE_CONV,
+                .LowPowerAutoWait = DISABLE,
+                .ContinuousConvMode = DISABLE,
+                .NbrOfConversion = 1,
+                .DiscontinuousConvMode = DISABLE,
+                .ExternalTrigConv = ADC_SOFTWARE_START,
+                .ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE,
+                .DMAContinuousRequests = DISABLE,
                 .Overrun = ADC_OVR_DATA_PRESERVED,
                 .OversamplingMode = DISABLE
             }
