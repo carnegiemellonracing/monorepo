@@ -30,6 +30,8 @@
 #define CELL_MAX_VOLTAGE_HI 4250
 #define CELL_MAX_VOLTAGE_LO 4150
 
+#define FILTER_ALPHA 0.25
+
 //Define array indices for the ADC Channels
 
 typedef enum {
