@@ -8,7 +8,7 @@
 #ifndef CMR_I2C_H
 #define CMR_I2C_H
 
-#include <stm32f4xx_hal.h>
+#include "platform.h"
 
 #ifdef HAL_I2C_MODULE_ENABLED
 

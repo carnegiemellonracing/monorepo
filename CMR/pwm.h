@@ -1,14 +1,14 @@
 /**
  * @file pwm.h
  * @brief Pulse Width Modulation port.
- * 
+ *
  * @author Carnegie Mellon Racing
  */
 
 #ifndef CMR_PWM_H
 #define CMR_PWM_H
 
-#include <stm32f4xx_hal.h>  // HAL_TIM_MODULE_ENABLED, GPIO_TypeDef
+#include "platform.h"   // HAL_TIM_MODULE_ENABLED, GPIO_TypeDef
 
 #ifdef HAL_TIM_MODULE_ENABLED
 
@@ -41,7 +41,7 @@ typedef struct {
 /**
  * @brief Represents a single PWM pin.
  *
- * @note The contents of this struct are opaque to the library consumer. 
+ * @note The contents of this struct are opaque to the library consumer.
  */
 typedef struct {
     TIM_HandleTypeDef handle;   /**< @brief HAL TIM handle. */
