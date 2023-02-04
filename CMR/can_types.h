@@ -428,13 +428,13 @@ typedef struct {
 /** @brief High Voltage Controller BMB errors. */
 typedef struct {
     uint8_t BMB1_2_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
-    uint8_t BMB3_4_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
-    uint8_t BMB5_6_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
-    uint8_t BMB7_8_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
-    uint8_t BMB9_10_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
-    uint8_t BMB11_12_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
-    uint8_t BMB13_14_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
-    uint8_t BMB15_16_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
+    uint8_t BMB3_4_Errs;  /**< @brief Errors for BMB3&4 (BMB3 = higher 4 bits). */
+    uint8_t BMB5_6_Errs;  /**< @brief Errors for BMB5&6 (BMB5 = higher 4 bits). */
+    uint8_t BMB7_8_Errs;  /**< @brief Errors for BMB7&8 (BMB7 = higher 4 bits). */
+    uint8_t BMB9_10_Errs;  /**< @brief Errors for BMB9&10 (BMB9 = higher 4 bits). */
+    uint8_t BMB11_12_Errs;  /**< @brief Errors for BMB11&12 (BMB11 = higher 4 bits). */
+    uint8_t BMB13_14_Errs;  /**< @brief Errors for BMB13&14 (BMB13 = higher 4 bits). */
+    uint8_t BMB15_16_Errs;  /**< @brief Errors for BMB15&16 (BMB15 = higher 4 bits). */
 } cmr_canHVCBMBErrors_t;
 
 // ------------------------------------------------------------------------------------------------
