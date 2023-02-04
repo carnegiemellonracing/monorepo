@@ -40,7 +40,7 @@
   *
   ******************************************************************************
   */
-    
+#ifdef F413
   .syntax unified
   .cpu cortex-m4
   .fpu softvfp
@@ -70,6 +70,8 @@ defined in linker script */
  * @param  None
  * @retval : None
 */
+
+
 
     .section  .text.Reset_Handler
   .weak  Reset_Handler
@@ -121,6 +123,7 @@ LoopFillZerobss:
  * @param  None     
  * @retval None       
 */
+	.global HardFault_Handler_C
     .section  .text.Default_Handler,"ax",%progbits
 Default_Handler:
   /* Load the address of the interrupt control register into r3. */
@@ -589,4 +592,5 @@ g_pfnVectors:
 
    .weak      DFSDM2_FLT3_IRQHandler
    .thumb_set DFSDM2_FLT3_IRQHandler,Default_Handler
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
