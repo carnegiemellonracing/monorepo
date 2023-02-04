@@ -69,8 +69,10 @@ typedef enum{
     TORQUE_VECTORING_GAIN_INDEX,
     MAX_TORQUE_INDEX,
     MAX_SPEED_INDEX,
-    DRS_INDEX,
     WET_INDEX,
+    DRS_SWANGLE_INDEX,
+    DRS_THROTTLE_INDEX,
+    DRS_BRAKE_INDEX,
     MAX_MENU_ITEMS // The elements in the config array
 } config_menu_main_array_index_t;
 
@@ -110,8 +112,6 @@ typedef struct {
     uint8_t max; // these will have to be converted at the time of initing;
 }config_menu_item_t;
 
-
-// config_menu_item_t test;
 extern volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS];
 
 //////// HELPER FUNCTIONS /////////////////

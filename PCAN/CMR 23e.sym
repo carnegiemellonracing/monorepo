@@ -24,6 +24,8 @@ enum HVCState(0="ERROR", 1="DISCHARGE", 2="STANDBY", 3="DRIVE_PRECHARGE",
 enum FanState(0="OFF", 1="LOW", 2="HIGH")
 enum PumpState(0="OFF", 1="ON")
 enum CoolingState(0="OFF", 1="LOW", 2="HIGH")
+enum DRS_MODE(0="DRS_UNKNOWN", 1="DRS_OPEN", 2="DRS_CLOSED", 3="DRS_TOGGLE", 
+  4="DRS_HOLD", 5="DRS_AUTO")
 
 {SENDRECEIVE}
 
@@ -75,7 +77,7 @@ Var=VSM_ERR_latchBSPD bit 24,1
 [VSM_Sensors]
 ID=200h
 DLC=6
-CycleTime=10
+CycleTime=100
 Timeout=1000
 Var=VSM_brakePressureRear unsigned 0,16 /u:PSI
 Var=VSM_hallEffect signed 16,16 /u:cA
@@ -431,11 +433,12 @@ Var=DIM_busCurrent unsigned 16,16 /u:mA
 
 [DIM_Request]
 ID=235h
-DLC=2
+DLC=3
 CycleTime=100
 Timeout=1000
 Var=DIM_requestState unsigned 0,8 /e:State
 Var=DIM_requestGear unsigned 8,8 /e:Gear
+Var=DIM_requestDRSMode DRS_MODE 16,8
 
 [DIM_Actions]
 ID=515h
@@ -1260,7 +1263,7 @@ Var=LED_driver_defect unsigned 33,1
 Var=Save_charging_mode unsigned 32,1
 
 [AMK_FR_Actual_Values_1]
-ID=284h	// Set ID based on wiring
+ID=287h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FR_Status_Reserved unsigned 0,8
@@ -1277,7 +1280,7 @@ Var=AMK_FR_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_FR_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_FR_Actual_Values_2]
-ID=286h	// Set ID based on wiring
+ID=289h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FR_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1286,7 +1289,7 @@ Var=AMK_FR_ErrorInfo unsigned 32,16
 Var=AMK_FR_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_FR_Setpoints_1]
-ID=185h	// Set ID based on wiring
+ID=188h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_FR_Control_Reserved1 unsigned 0,8
@@ -1300,7 +1303,7 @@ Var=AMK_FR_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_FR_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
 [AMK_FL_Actual_Values_1]
-ID=283h	// Set ID based on wiring
+ID=288h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FL_Status_Reserved unsigned 0,8
@@ -1317,7 +1320,7 @@ Var=AMK_FL_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_FL_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_FL_Actual_Values_2]
-ID=285h	// Set ID based on wiring
+ID=28Ah	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FL_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1326,7 +1329,7 @@ Var=AMK_FL_ErrorInfo unsigned 32,16
 Var=AMK_FL_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_FL_Setpoints_1]
-ID=184h	// Set ID based on wiring
+ID=189h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_FL_Control_Reserved1 unsigned 0,8
@@ -1340,7 +1343,7 @@ Var=AMK_FL_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_FL_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
 [AMK_BL_Actual_Values_1]
-ID=287h	// Set ID based on wiring
+ID=284h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BL_Status_Reserved unsigned 0,8
@@ -1357,7 +1360,7 @@ Var=AMK_BL_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_BL_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_BL_Actual_Values_2]
-ID=289h	// Set ID based on wiring
+ID=286h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BL_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1366,7 +1369,7 @@ Var=AMK_BL_ErrorInfo unsigned 32,16
 Var=AMK_BL_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_BL_Setpoints_1]
-ID=188h	// Set ID based on wiring
+ID=185h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_BL_Control_Reserved1 unsigned 0,8
@@ -1380,7 +1383,7 @@ Var=AMK_BL_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_BL_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
 [AMK_BR_Actual_Values_1]
-ID=288h	// Set ID based on wiring
+ID=283h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BR_Status_Reserved unsigned 0,8
@@ -1397,7 +1400,7 @@ Var=AMK_BR_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_BR_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_BR_Actual_Values_2]
-ID=28Ah	// Set ID based on wiring
+ID=285h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BR_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1406,18 +1409,18 @@ Var=AMK_BR_ErrorInfo unsigned 32,16
 Var=AMK_BR_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_BR_Setpoints_1]
-ID=189h	// Set ID based on wiring
+ID=184h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_BR_Control_Reserved1 unsigned 0,8
 Var=AMK_BR_Control_InverterOn bit 8,1
 Var=AMK_BR_Control_DcOn bit 9,1
 Var=AMK_BR_Control_Enable bit 10,1
-Var=AMK_BR_Control_ErrorReset bit 11,1
-Var=AMK_BR_Control_Reserved2 unsigned 12,4
-Var=AMK_BR_TargetVelocity signed 16,16 /u:rpm /p:2
-Var=AMK_BR_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
-Var=AMK_BR_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_RR_Control_ErrorReset bit 11,1
+Var=AMK_RR_Control_Reserved2 unsigned 12,4
+Var=AMK_RR_TargetVelocity signed 16,16 /u:rpm /p:2
+Var=AMK_RR_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_RR_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
 [controls_debug_global]
 ID=7E0h
@@ -1520,4 +1523,40 @@ Var=frequency unsigned 0,32 /u:MHz /min:400 /max:480
 Var=padding unsigned 32,16 /max:1
 Var=volume unsigned 48,8 /max:7
 Var=squelch unsigned 56,8 /max:8	// 0 for listen, 1 - 8 for transmit
+
+[CDC_RTC_DATA_OUT]
+ID=6A2h
+DLC=7
+CycleTime=1000
+Timeout=8000
+Var=RTC_Seconds unsigned 0,8 /u:seconds
+Var=RTC_Minutes unsigned 8,8 /u:minutes
+Var=RTC_Hours unsigned 16,8 /u:hours
+Var=RTC_Date unsigned 24,8 /u:day
+Var=RTC_Month unsigned 32,8 /u:month
+Var=RTC_Year unsigned 40,8 /u:year
+Var=RTC_Error unsigned 48,8	// For interpreting this, see comments in code.
+
+[CDC_RTC_DATA_IN]
+ID=6B2h
+DLC=7
+CycleTime=1000
+Timeout=8000
+Var=RTC_Seconds_In unsigned 0,8 /u:seconds
+Var=RTC_Minutes_In unsigned 8,8 /u:minutes
+Var=RTC_Hours_In unsigned 16,8 /u:hours
+Var=RTC_Date_In unsigned 24,8 /u:day
+Var=RTC_Month_In unsigned 32,8 /u:month
+Var=RTC_Year_In unsigned 40,8 /u:year
+Var=RTC_Error_In unsigned 48,8	// For interpreting this, see comments in code.
+
+[CDC_DrsState]
+ID=52Ch
+DLC=4
+CycleTime=200
+Color=0000FFh
+Var=drsState unsigned 0,8
+Var=drsAngle unsigned 8,8
+Var=drsPwmLeft unsigned 16,8
+Var=drsPwmRight unsigned 24,8
 

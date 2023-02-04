@@ -174,6 +174,17 @@ typedef enum {
     CMR_CAN_GEAR_LEN
 } cmr_canGear_t;
 
+/** @brief Represents the car's current DRS mode (). */
+typedef enum {
+    CMR_CAN_DRSM_UNKNOWN = 0,   /**< @brief Unknown Mode State */
+    CMR_CAN_DRSM_OPEN,
+    CMR_CAN_DRSM_CLOSED,
+    CMR_CAN_DRSM_TOGGLE,
+    CMR_CAN_DRSM_HOLD,
+    CMR_CAN_DRSM_AUTO,
+    CMR_CAN_DRSM_LEN
+} cmr_canDrsMode_t;
+
 /** @brief Safety Circuit status states. */
 typedef enum {
     CMR_CAN_SS_STATE_CLEAR = 0,   /**< @brief Not tripped state. */
@@ -521,6 +532,14 @@ typedef struct {
     int16_t vertical;       /**< @brief Vertical Acceleration where full scale is +/- 2g (positive Down). */
 } cmr_canCDCIMUAcceleration_t;
 
+/** @brief Central Dynamics Controller DRS states. */
+typedef struct {
+    uint8_t state;          /**< @brief DRS current control state (open or closed position). */
+    uint8_t angle;          /**< @brief DRS setpoint angle for its current state (debug info). */
+    uint8_t pwm_left;       /**< @brief PWM of the left  DRS servo (debug info). */
+    uint8_t pwm_right;      /**< @brief PWM of the right DRS servo (debug info). */
+} cmr_canCDCDRSStates_t;
+
 // ------------------------------------------------------------------------------------------------
 // Central Dynamics Controller (20e)
 
@@ -570,6 +589,7 @@ typedef struct {
 typedef struct {
     uint8_t requestedState;     /**< @brief Requested state. */
     uint8_t requestedGear;      /**< @brief Requested gear. */
+    uint8_t requestedDrsMode;   /**< @brief Requested DRS mode. */
 } cmr_canDIMRequest_t;
 
 /** @brief Driver Interface Module power diagnostics. */
@@ -778,7 +798,7 @@ typedef struct {
 typedef struct {
     uint8_t vbatt_mV;       /**< @brief LV battery voltage (mV). */
     uint8_t vAIR_mV;        /**< @brief AIR voltage (mV). */
-    uint8_t ibatt_mA;       /**< @brief LV battery current (mA). */
+    uint8_t safety_mV;       /**< @brief Safety circuit voltage (mA). */
 	uint8_t iDCDC_mA;       /**< @brief DCDC current (mA). */
 } cmr_canBMSLowVoltage_t;
 
@@ -972,6 +992,16 @@ typedef struct {
     int16_t controls_bias;
     int16_t controls_pid;
 } cmr_can_controls_pid_debug_t;
+
+typedef struct {
+    uint8_t seconds;
+    uint8_t minutes;
+    uint8_t hours;
+    uint8_t date;
+    uint8_t month;
+    uint8_t year;
+    uint8_t err; /* 1 in error state and 0 otherwise */
+} cmr_can_rtc_data_t;
 
 // ------------------------------------------------------------------------------------------------
 // DRS
