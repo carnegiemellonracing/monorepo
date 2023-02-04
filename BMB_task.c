@@ -14,6 +14,9 @@
 extern volatile int BMBTimeoutCount[NUM_BMBS];
 extern volatile int BMBErrs[NUM_BMBS];
 
+uint16_t cellsToBalance[NUM_BMBS] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF,
+		0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};
+
 // Max valid thermistor temp, beyond which it is considered a short
 static const int16_t THERM_MAX_TEMP = 850;
 // Min valid thermistor temp, beyond which it is considered open
@@ -37,22 +40,9 @@ static ADC_Mux_Channel_t ADCChannelLookupArr[NUM_ADC_CHANNELS][NUM_MUX_CHANNELS]
 										  {FIXED7, THERM6, THERM5, THERM4},
 										  {THERM3, FIXED8, THERM2, THERM1}};
 
-// Lookup array based on voltage divider on BMB
-static const float resistorRatios[VSENSE_CHANNELS_PER_BMB] = {
-                                                    0.930255795,
-                                                    0.465267366,
-                                                    0.312311305,
-                                                    0.231534444,
-                                                    0.186162767,
-                                                    0.154369093,
-                                                    0.133553292,
-                                                    0.116506069,
-                                                    0.103547992
-};
-
 
 // Counter for how many times until we flash the LED
-static const uint8_t LED_FLASH_COUNT = 50;
+static const uint8_t LED_FLASH_COUNT = 10;
 static uint8_t BMBFlashCounter = 0;
 
 static const uint8_t LUT_SIZE = 18;
@@ -62,6 +52,8 @@ static const uint16_t lut[18][2] = { { 8802, 850 }, { 9930, 800 }, { 11208, 750 
 		{ 28459, 350 }, { 31533, 300 }, { 34744, 250 }, { 38019, 200 }, {
 				41331, 150 }, { 44621, 100 }, { 47792, 50 }, { 50833, 0 }, };
 
+static const uint16_t idealFixedVals[8] = {645, 564, 483, 403, 322, 241, 161, 80};
+
 static void setBMBErr(uint8_t BMBIndex, BMB_I2C_Errs_t err) {
 	if (BMBErrs[BMBIndex] == BMB_NO_ERR) {
 		BMBErrs[BMBIndex] = err;
@@ -70,7 +62,7 @@ static void setBMBErr(uint8_t BMBIndex, BMB_I2C_Errs_t err) {
 
 //takes in adc output and cell index to get voltage value
 static int16_t adcOutputToVoltage(uint16_t ADC_val, int cell) {
-	return ((ADC_val / 1023.0) * 4096) * resistorRatios[cell];
+	return ((ADC_val / 1024.0) * 4096) / 0.91;
 }
 
 // Returns temperature in 1/10th degC given ADC
@@ -103,19 +95,29 @@ static int16_t lutTemp(uint16_t ADC_lt) {
 }
 
 
+//smooth out voltage data with ______ filter 
+uint16_t filterADCData(uint16_t cumulativeValue, uint16_t newValue, float weightingAlpha) {
+	return (uint16_t)(cumulativeValue * (1-weightingAlpha) + newValue * weightingAlpha);
+}
+
+
 //update corresponding voltage or temperature reading
 void updateBMBData(uint16_t val, uint8_t adcChannel, uint8_t muxChannel, uint8_t bmb) {
 	ADC_Mux_Channel_t indexToUpdate = ADCChannelLookupArr[adcChannel][muxChannel];
 	if(indexToUpdate <= CELL9) {
 		int16_t voltage = adcOutputToVoltage(val, indexToUpdate);
-		if (indexToUpdate == CELL1) {
-		    BMBData[bmb].cellVoltages[0] = voltage;
-        } else {
-            BMBData[bmb].cellVoltages[indexToUpdate] = voltage - BMBData[bmb].cellVoltages[indexToUpdate - 1];
-        }
+        BMBData[bmb].cellVoltages[indexToUpdate] = filterADCData(BMBData[bmb].cellVoltages[indexToUpdate], voltage, FILTER_ALPHA);
 	}
 	if(CELL9 < indexToUpdate && indexToUpdate <= THERM15) {
-		BMBData[bmb].cellTemperatures[indexToUpdate - THERM1] = lutTemp(val);
+		BMBData[bmb].cellTemperatures[indexToUpdate - THERM1] = lutTemp(val<<4);
+	}
+	if (indexToUpdate >= FIXED1) {
+		uint8_t fixedNum = indexToUpdate - FIXED1;
+		// voltage divider, 470k on top, rest is 100k between each fixed
+		if (val < idealFixedVals[fixedNum] - 50 || val > idealFixedVals[fixedNum] + 50) {
+			BMBTimeoutCount[bmb]++;
+			setBMBErr(bmb, BMB_FIXED_CHECK_ERR);
+		}
 	}
 }
 
@@ -179,67 +181,53 @@ bool sampleOneBMB(uint8_t BMBIndex, uint8_t BMBNum, uint8_t BMBSide) {
     return true;
 }
 
-void doCellBalanceOneBMB(uint8_t BMBIndex) {
-    uint32_t totalVoltage = 0;
-    //loop through all cells and turn adc output to voltage
-    for (int j = 0; j < VSENSE_CHANNELS_PER_BMB; j++) {
-        //find difference between current TOTAL cell voltage - previous TOTAL cell voltage
-        totalVoltage += BMBData[BMBIndex].cellVoltages[j];
-    }
-
-    //Add cell balancing here
-    uint32_t averageVoltage = totalVoltage / VSENSE_CHANNELS_PER_BMB;
-    uint16_t cellsToBalance = 0xFFFF;
-
-    for (uint16_t i = 0; i < VSENSE_CHANNELS_PER_BMB; i++) {
-        if (BMBData[BMBIndex].cellVoltages[i] - averageVoltage > 50) {
-            cellsToBalance &= ~(1 << i);
-        }
-    }
-
-    //we have 9 bits, so split the cells into two 8 bit integers
-    //LSB of the higher 8 bits is the 9th cell balancer
-    uint8_t balanceCommands[2];
-    balanceCommands[0] = 0xFF & cellsToBalance;
-    balanceCommands[1] = (0xFF00 & cellsToBalance) >> 8;
-
-    //only send balance command when changing
-    //otherwise, make sure all the balancing is OFF
-    if (getState() == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT) {
-        if (!i2c_cellBalance(BMBIndex, balanceCommands[0],
-                balanceCommands[1])) {
-        	BMBTimeoutCount[BMBIndex]++;
-        }
-    } else {
-        if (!i2c_cellBalance(BMBIndex, 0, 0)) {
-        	BMBTimeoutCount[BMBIndex]++;
-        }
-    }
-}
+//void doCellBalanceOneBMB(uint8_t BMBIndex) {
+//    uint32_t totalVoltage = 0;
+//    //loop through all cells and turn adc output to voltage
+//    for (int j = 0; j < VSENSE_CHANNELS_PER_BMB; j++) {
+//        //find difference between current TOTAL cell voltage - previous TOTAL cell voltage
+//        totalVoltage += BMBData[BMBIndex].cellVoltages[j];
+//    }
+//
+//    //Add cell balancing here
+//    uint32_t averageVoltage = totalVoltage / VSENSE_CHANNELS_PER_BMB;
+//    uint16_t cellsToBalance = 0xFFFF;
+//
+//    for (uint16_t i = 0; i < VSENSE_CHANNELS_PER_BMB; i++) {
+//        if (BMBData[BMBIndex].cellVoltages[i] - averageVoltage > 50) {
+//            cellsToBalance &= ~(1 << i);
+//        }
+//    }
+//
+//    //we have 9 bits, so split the cells into two 8 bit integers
+//    //LSB of the higher 8 bits is the 9th cell balancer
+//    uint8_t balanceCommands[2];
+//    balanceCommands[0] = 0xFF & cellsToBalance;
+//    balanceCommands[1] = (0xFF00 & cellsToBalance) >> 8;
+//
+//    //only send balance command when changing
+//    //otherwise, make sure all the balancing is OFF
+//    if (getState() == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE) {
+//        if (!i2c_cellBalance(BMBIndex, balanceCommands[0],
+//                balanceCommands[1])) {
+//        	BMBTimeoutCount[BMBIndex]++;
+//        }
+//    } else {
+//        if (!i2c_cellBalance(BMBIndex, 0, 0)) {
+//        	BMBTimeoutCount[BMBIndex]++;
+//        }
+//    }
+//}
 
 bool doCellBalanceAllBMBs() {
-    uint32_t totalVoltage = 0;
-    //loop through all cells and turn adc output to voltage
-    for (int j = 0; j < NUM_BMBS; j++) {
-		for(int i = 0; i < VSENSE_CHANNELS_PER_BMB; i++) {
-        //find difference between current TOTAL cell voltage - previous TOTAL cell voltage
-        	totalVoltage += BMBData[j].cellVoltages[i];
-		}
-    }
-
-    //Add cell balancing here
-    uint32_t averageVoltage = totalVoltage / (VSENSE_CHANNELS_PER_BMB*NUM_BMBS);
-    uint16_t cellsToBalance[NUM_BMBS];
-
-	//all bits are 1 initially, as the balancing IO expanders are pulled up
-	for(int i = 0; i < NUM_BMBS; i++) {
-		cellsToBalance[i] = 0xFFFF;
-	}
-
+	//TODO: Check for timeout
 	for (int j = 0; j < NUM_BMBS; j++) {
 		for (uint16_t i = 0; i < VSENSE_CHANNELS_PER_BMB; i++) {
-			if (BMBData[j].cellVoltages[i] - averageVoltage > 50) {
+			if (BMBData[j].cellVoltages[i]  > CELL_MAX_VOLTAGE_HI) {
 				cellsToBalance[j] &= ~(1 << i);
+			}
+			if (BMBData[j].cellVoltages[i]  < CELL_MAX_VOLTAGE_LO) {
+				cellsToBalance[j] |= (1 << i);
 			}
 		}
     }
@@ -259,23 +247,23 @@ bool doCellBalanceAllBMBs() {
 		int BMBSide = i%2;
 		if (!i2c_enableI2CMux(BMBNum, BMBSide)) {
 			BMBTimeoutCount[i]++;
-        	return false;
+        	continue;
     	}
-		if (getState() == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT) {
+		if (getState() == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE) { //TODO: CHANGE THIS BACK
 			if (!i2c_cellBalance(i, balanceCommands[0],
 					balanceCommands[1])) {
 				BMBTimeoutCount[i]++;
-				return false;
+				continue;
 			}
 		} else {
-			if (!i2c_cellBalance(i, 0, 0)) {
+			if (!i2c_cellBalance(i, 0xFF, 0xFF)) {
 				BMBTimeoutCount[i]++;
-				return false;
+				continue;
 			}
 		}
 		if (!(i2c_disableI2CMux(BMBNum))) {
 			BMBTimeoutCount[i]++;
-        	return false;
+        	continue;
     	}
 	}
 }
@@ -287,6 +275,7 @@ void calculateOneBMB(uint8_t BMBIndex) {
         for(int adc = 0; adc < NUM_ADC_CHANNELS; adc++) {
             // convert each bmb response to voltage or temperature
             updateBMBData(BMBADCResponse[mux][adc], adc, mux, BMBIndex);
+            BMBADCResponse[mux][adc] = 0xFFFF;
         }
     }
 }
@@ -301,23 +290,24 @@ void vBMBSampleTask(void *pvParameters) {
 	vTaskDelayUntil(&xLastWakeTime, 50);
 
 	while (1) {
-		for (uint8_t BMBIndex = 0; BMBIndex < 16; BMBIndex++) {//TODO: Change back to BMBIndex < NUM_BMBS
+		for (uint8_t BMBIndex = 6; BMBIndex < 8; BMBIndex++) {//TODO: Change back to BMBIndex < NUM_BMBS
 			//since we treat each BMB side as an individual bmb
 			//we just check whether the current bmb index is odd/even
-			//uint8_t BMBSide = BMBIndex % 2;
-			uint8_t BMBSide = 1; // TODO: CHANGE THIS BACKs
+			uint8_t BMBSide = BMBIndex % 2;
+			//uint8_t BMBSide = 0; // TODO: CHANGE THIS BACKs
 			// our actual BMB number, the physical board
-			//uint8_t BMBNum = BMBIndex / 2;
-			uint8_t BMBNum = 0; // TODO: Change back
+			uint8_t BMBNum = BMBIndex / 2;
+			//uint8_t BMBNum = 3; // TODO: Change back
 
 			//Sample BMBs
 			// Get interesting crashes in list.c:192 with critical
 			//taskENTER_CRITICAL();
 			// Sample a single BMB (number and side fully)
-			if (!sampleOneBMB(0, BMBNum, BMBSide)) {
+			// this disables the mux at the end as well
+			if (!sampleOneBMB(BMBIndex, BMBNum, BMBSide)) {
 				// there was an error, so reset mux
 				BMBTimeoutCount[BMBIndex]++;
-				if (!(i2c_disableI2CMux(0))) {
+				if (!(i2c_disableI2CMux(BMBNum))) {
 					BMBTimeoutCount[BMBIndex]++;
 				}
 			} else {
@@ -331,12 +321,12 @@ void vBMBSampleTask(void *pvParameters) {
 			}
 
 			// Calculate the values for this BMB
-			calculateOneBMB(0);
+			calculateOneBMB(BMBIndex);
 
-			//doCellBalanceOneBMB(BMBIndex);
+			//doCellBalanceOneBMB(BMBIndex); // WE DON'T DO THIS ANYMORE
 
 		} // end for loop
-		//doCellBalanceAllBMBs();
+		doCellBalanceAllBMBs();
 		//TickType_t temp = xTaskGetTickCount();
 		vTaskDelayUntil(&xLastWakeTime, BMB_SAMPLE_TASK_RATE);
 	}
