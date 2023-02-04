@@ -13,8 +13,6 @@
 #include "rcc.h"    // cmr_rccGPIOClockEnable(), cmr_rccI2CClockEnable()
                     //
 
-static void I2C_ClearBusyFlagErratum(cmr_i2c_t* i2c, uint32_t timeout);
-
 typedef struct {
     /** @brief The associated handle, or `NULL` if not configured. */
     I2C_HandleTypeDef *handle;
