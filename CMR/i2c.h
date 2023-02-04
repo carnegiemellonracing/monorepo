@@ -31,6 +31,7 @@ typedef struct {
 
     SemaphoreHandle_t doneSem; /**< @brief Semaphore for TX.*/
     StaticSemaphore_t doneSemBuf; /**< @brief Static buffer for TX semaphore.*/
+    uint32_t error; /**< @brief Error code when DMA receives an error.*/
 } cmr_i2c_t;
 
 int cmr_i2cTX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
