@@ -97,12 +97,18 @@ static int16_t lutTemp(uint16_t ADC_lt) {
 }
 
 
+//smooth out voltage data with ______ filter 
+uint16_t filterADCData(uint16_t cumulativeValue, uint16_t newValue, float weightingAlpha) {
+	return (uint16_t)(cumulativeValue * (1-weightingAlpha) + newValue * weightingAlpha);
+}
+
+
 //update corresponding voltage or temperature reading
 void updateBMBData(uint16_t val, uint8_t adcChannel, uint8_t muxChannel, uint8_t bmb) {
 	ADC_Mux_Channel_t indexToUpdate = ADCChannelLookupArr[adcChannel][muxChannel];
 	if(indexToUpdate <= CELL9) {
 		int16_t voltage = adcOutputToVoltage(val, indexToUpdate);
-        BMBData[bmb].cellVoltages[indexToUpdate] = voltage;
+        BMBData[bmb].cellVoltages[indexToUpdate] = filterADCData(BMBData[bmb].cellVoltages[indexToUpdate], voltage, FILTER_ALPHA);
 	}
 	if(CELL9 < indexToUpdate && indexToUpdate <= THERM15) {
 		BMBData[bmb].cellTemperatures[indexToUpdate - THERM1] = lutTemp(val<<4);

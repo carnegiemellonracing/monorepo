@@ -1,3 +1,6 @@
 [submodule "stm32f413-drivers"]
 	path = stm32f413-drivers
 	url = git@github.com:carnegiemellonracing/stm32f413-drivers.git
+[submodule "ci-scripts"]
+	path = ci-scripts
+	url = git@github.com:carnegiemellonracing/ci-scripts.git
