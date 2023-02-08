@@ -13,8 +13,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-// #define NUM_BMBS 16
-#define NUM_BMBS 16 // TODO: CHANGE THIS BACK
+#define NUM_BMBS 16
 #define NUM_MUX_CHANNELS 4
 #define NUM_ADC_CHANNELS 8
 #define BMB_GPIO_MUX_PIN 0b000001

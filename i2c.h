@@ -13,8 +13,7 @@
 #include <stdbool.h>
 #include "bms_error.h"
 
-//#define I2C_NUM_BMBS 8
- #define I2C_NUM_BMBS 1 //TODO: SET THIS BACK TO 8
+#define I2C_NUM_BMBS 8
 // I2c addresses of muxes 
 // From https://www.nxp.com/docs/en/data-sheet/PCA9542A.pdf
 #define BMS_MUX_BASE_ADDR 0x70

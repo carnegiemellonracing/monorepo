@@ -1,3 +1,0 @@
-../crc.c:46:1:reflect	24	static
-../crc.c:73:6:crcInit	24	static
-../crc.c:93:9:calculateCRC	32	static

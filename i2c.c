@@ -17,7 +17,7 @@ bool i2cInit(void) {
     cmr_i2cDmaInit(&bmb_i2c, I2C1,
     		DMA1_Stream1, DMA_CHANNEL_0,
 			DMA1_Stream0, DMA_CHANNEL_1,
-    		400000, 0, // 100kHz limited by the PCA9536 TODO: Check if own address should be 0
+    		400000, 0,
                 GPIOB, GPIO_PIN_8, // clock
                 GPIOB, GPIO_PIN_9); // data
 
@@ -27,8 +27,7 @@ bool i2cInit(void) {
     vTaskDelayUntil(&xLastWakeTime, 2000);
 
     for (int bmb = 0; bmb < I2C_NUM_BMBS; bmb++) {
-    	bmb = 3; //TODO: Remove this
-        for (int side = 0; side < 2; side++) { //TODO: CHANGE THIS BACK
+        for (int side = 0; side < 2; side++) {
             if (!i2c_enableI2CMux(bmb, side)) {
                 BMBErrs[bmb*2+side] = BMB_INIT_ENABLE_I2C_MUX_ERR;
                 return false;

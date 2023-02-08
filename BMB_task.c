@@ -45,6 +45,8 @@ static ADC_Mux_Channel_t ADCChannelLookupArr[NUM_ADC_CHANNELS][NUM_MUX_CHANNELS]
 static const uint8_t LED_FLASH_COUNT = 10;
 static uint8_t BMBFlashCounter = 0;
 
+static bool failedToInitI2c = false;
+
 static const uint8_t LUT_SIZE = 18;
 static const uint16_t lut[18][2] = { { 8802, 850 }, { 9930, 800 }, { 11208, 750 },
 		{ 12657, 700 }, { 14281, 650 }, { 16112, 600 }, { 18146, 550 }, {
@@ -110,7 +112,7 @@ void updateBMBData(uint16_t val, uint8_t adcChannel, uint8_t muxChannel, uint8_t
 		// voltage divider, 470k on top, rest is 100k between each fixed
 		if (val < idealFixedVals[fixedNum] - 50 || val > idealFixedVals[fixedNum] + 50) {
 			BMBTimeoutCount[bmb]++;
-			setBMBErr(bmb, BMB_FIXED_CHECK_ERR);
+			//setBMBErr(bmb, BMB_FIXED_CHECK_ERR);
 		}
 	}
 }
@@ -125,7 +127,8 @@ void BMBInit() {
 	// Period
 	const TickType_t xPeriod = 1000 / BMB_SAMPLE_TASK_RATE;		// In ticks (ms)
 	if (!i2cInit()) {
-		cmr_panic("Couldn't initialize I2C BMB Chain");
+		failedToInitI2c = true;
+		//cmr_panic("Couldn't initialize I2C BMB Chain");
 	}
 }
 
@@ -284,14 +287,13 @@ void vBMBSampleTask(void *pvParameters) {
 	vTaskDelayUntil(&xLastWakeTime, 50);
 
 	while (1) {
-		for (uint8_t BMBIndex = 6; BMBIndex < 8; BMBIndex++) {//TODO: Change back to BMBIndex < NUM_BMBS
+		for (uint8_t BMBIndex = 0; BMBIndex < NUM_BMBS; BMBIndex++) {
+			if (failedToInitI2c) break;
 			//since we treat each BMB side as an individual bmb
 			//we just check whether the current bmb index is odd/even
 			uint8_t BMBSide = BMBIndex % 2;
-			//uint8_t BMBSide = 0; // TODO: CHANGE THIS BACKs
 			// our actual BMB number, the physical board
 			uint8_t BMBNum = BMBIndex / 2;
-			//uint8_t BMBNum = 3; // TODO: Change back
 
 			//Sample BMBs
 			// Get interesting crashes in list.c:192 with critical
@@ -320,7 +322,8 @@ void vBMBSampleTask(void *pvParameters) {
 			//doCellBalanceOneBMB(BMBIndex); // WE DON'T DO THIS ANYMORE
 
 		} // end for loop
-		doCellBalanceAllBMBs();
+		if (!failedToInitI2c)
+			doCellBalanceAllBMBs();
 		//TickType_t temp = xTaskGetTickCount();
 		vTaskDelayUntil(&xLastWakeTime, BMB_SAMPLE_TASK_RATE);
 	}
