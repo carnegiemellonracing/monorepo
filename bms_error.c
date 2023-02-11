@@ -38,7 +38,7 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
     }
     if(getPackMinCellVoltage() < 2400) {
         // TODO E5 create structures for cell voltage data and stats (min/max)
-        errorFlags |= CMR_CAN_HVC_ERROR_CELL_UNDERVOLT;
+        //errorFlags |= CMR_CAN_HVC_ERROR_CELL_UNDERVOLT;
     }
     if((getBattMillivolts()) > maxPackVoltageMV) {
         // E6
@@ -71,7 +71,7 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         currentState == CMR_CAN_HVC_STATE_CHARGE_TRICKLE ||
         currentState == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT ||
         currentState == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE) &&
-        (cmr_gpioRead(SAFETY_BINARY) == 0)) {
+        (getSafetymillivolts() < 14000)) {
         // E11
         // If SC voltage is below 8v while we're trying to drive relays, throw an error.
         errorFlags |= CMR_CAN_HVC_ERROR_LV_UNDERVOLT;
@@ -79,7 +79,10 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
 
     // Cut relay power if we have an error
     if (errorFlags != CMR_CAN_HVC_ERROR_NONE) {
-        cmr_gpioWrite(GPIO_BMB_FAULT_L, 0);
+        //cmr_gpioWrite(GPIO_BMB_FAULT_L, 0);
+    	int x = 0;
+    } else {
+    	cmr_gpioWrite(GPIO_BMB_FAULT_L, 1);
     }
     errorRegister = errorFlags;
     

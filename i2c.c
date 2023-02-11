@@ -17,7 +17,7 @@ bool i2cInit(void) {
     cmr_i2cDmaInit(&bmb_i2c, I2C1,
     		DMA1_Stream1, DMA_CHANNEL_0,
 			DMA1_Stream0, DMA_CHANNEL_1,
-    		400000, 0,
+    		100000, 0,
                 GPIOB, GPIO_PIN_8, // clock
                 GPIOB, GPIO_PIN_9); // data
 

@@ -42,6 +42,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
     
     switch (currentState) {
         case CMR_CAN_HVC_STATE_DISCHARGE: // S1
+        	// TODO: WAIT FOR HV VOLTAGE TO GO DOWN
             nextState = CMR_CAN_HVC_STATE_STANDBY;
             break;
         case CMR_CAN_HVC_STATE_STANDBY: // S2
@@ -307,7 +308,8 @@ void vSetStateTask(void *pvParameters) {
     cmr_canHVCState_t nextState;
     cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
 
-    cmr_gpioWrite(GPIO_CLEAR_FAULT_L, 1);
+    cmr_gpioWrite(GPIO_CLEAR_FAULT_L, 0);
+    cmr_gpioWrite(GPIO_BMB_FAULT_L, 1);
     cmr_gpioWrite(GPIO_AIR_POSITIVE_EN, 1);
     cmr_gpioWrite(GPIO_AIR_NEGATIVE_EN, 1);
     cmr_gpioWrite(GPIO_AMS_EN_L, 0); // set power on for the HVC
@@ -318,12 +320,12 @@ void vSetStateTask(void *pvParameters) {
 
         // Ask Deepak ab getting rid of this
         //Critical block so that the contents of the heartbeat are consistent
-        taskENTER_CRITICAL();
+        //taskENTER_CRITICAL();
         setStateOutput();
         // HVCHeartbeat->errorStatus = __REVSH(currentError);
         // HVCHeartbeat->state = currentState;
         // HVCHeartbeat->contactorStatus = getRelayStatus();
-        taskEXIT_CRITICAL();
+        //taskEXIT_CRITICAL();
         
 
         currentError = checkErrors(currentState);

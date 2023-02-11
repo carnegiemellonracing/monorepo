@@ -46,7 +46,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_BMB_FAULT_L] = { // VERIFIED, active low to enable 5V HV reference
+    [GPIO_BMB_FAULT_L] = {
         .port = GPIOA,
         .init = {
             .Pin = GPIO_PIN_9,
@@ -108,16 +108,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
-    },
-	[SAFETY_BINARY] = { // VERIFIED
-	        .port = GPIOC,
-	        .init = {
-	            .Pin = GPIO_PIN_3,
-	            .Mode = GPIO_MODE_INPUT,
-	            .Pull = GPIO_PULLUP,
-	            .Speed = GPIO_SPEED_FREQ_LOW
-	        }
-	    }
+    }
 };
 
 /**

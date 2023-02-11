@@ -9,7 +9,7 @@
 #include <CMR/tasks.h>
 
 /** @brief Watchdog priority */
-static const uint32_t Watchdog_priority = 7;
+static const uint32_t Watchdog_priority = 2;
 
 /** @brief Watchdog task period (milliseconds). */
 static const TickType_t Watchdog_period_ms = 2;
@@ -42,9 +42,9 @@ static void WatchdogUpdate(void *pvParameters) {
  * 
  */
 void wwdgInit() {
-    /* Want to reset watchdog with a window between 1 ms and 5 ms
+    /* Want to reset watchdog with a window between 1 ms and 10 ms
     APB1 = 48 MHz
-    WWDG clock counter = (5ms * 48*10^6 Hz) / (4096 * 2^(prescalar value 0) * 1000) + 64 = 123
+    WWDG clock counter = (10ms * 48*10^6 Hz) / (4096 * 2^(prescalar value 0) * 1000) + 64 = 182
     WWDG Window value = counter - (1ms * 46*10^6 Hz) / 4096 *2^(prescalar value 0) * 1000) = 111 
     WWDG Window value means that the WWDG counter should be refreshed only
     when the counter is below 111 (and greater than 64) otherwise a reset will
@@ -53,7 +53,7 @@ void wwdgInit() {
     const WWDG_InitTypeDef wwdgInit = {
         .Prescaler = WWDG_PRESCALER_1,
         .Window = 111,
-        .Counter = 123,
+        .Counter = 182,
         .EWIMode = WWDG_EWI_DISABLE
     };
 

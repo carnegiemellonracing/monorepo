@@ -10,6 +10,7 @@
 #include "state_task.h"
 #include "i2c.h"
 #include <stdbool.h>
+#include <math.h>               // math.h
 
 extern volatile int BMBTimeoutCount[NUM_BMBS];
 extern volatile int BMBErrs[NUM_BMBS];
@@ -57,45 +58,41 @@ static const uint16_t lut[18][2] = { { 8802, 850 }, { 9930, 800 }, { 11208, 750 
 static const uint16_t idealFixedVals[8] = {645, 564, 483, 403, 322, 241, 161, 80};
 
 static void setBMBErr(uint8_t BMBIndex, BMB_I2C_Errs_t err) {
-	if (BMBErrs[BMBIndex] == BMB_NO_ERR) {
-		BMBErrs[BMBIndex] = err;
-	}
+	BMBErrs[BMBIndex] = err;
 }
 
 //takes in adc output and cell index to get voltage value
 static int16_t adcOutputToVoltage(uint16_t ADC_val, int cell) {
-	return ((ADC_val / 1024.0) * 4096) / 0.91;
+	return ((((int32_t)ADC_val) * 4) * 11) / 10;
 }
 
-// Returns temperature in 1/10th degC given ADC
-// using LUT interpolation from the transfer function.
-// See drive doc "18e CMR BMS Temperature Math" for LUT
-static int16_t lutTemp(uint16_t ADC_lt) {
-	// Check if input is out of LUT bounds
-	// If so, return the boundary values
-	if (ADC_lt < lut[0][0]) {
-		return lut[0][1];
-	}
-	if (ADC_lt > lut[LUT_SIZE - 1][0]) {
-		return lut[LUT_SIZE - 1][1];
-	}
-
-	// Modified LUT linear interpolation code from stack overflow
-	uint8_t i;
-	for (i = 0; i < LUT_SIZE - 1; ++i) {
-		if (lut[i][0] <= ADC_lt && lut[i + 1][0] >= ADC_lt) {
-			// Target value is between two LUT points
-			uint16_t diffADC = ADC_lt - lut[i][0];
-			uint16_t diffLUT = lut[i + 1][0] - lut[i][0];
-
-			return lut[i][1] + ((lut[i + 1][1] - lut[i][1]) * diffADC) / diffLUT;
-		}
-	}
-
-	// Something went wrong, return max temp
-	return 850;
+/**
+ * @brief Converts thermistor resisistance to temperature in C
+ *
+ * @param B Beta value of thermistor
+ * @param refResistance Thermistor resistance at refTemp
+ * @param refTemp Reference temperature (in Celcius)
+ * @param thermResistance Current Thermistor Resistance
+ * @return Temperature based on thermistor resistance, in Celcius
+ */
+float thermistorCalc(float B, float refResistance, float refTemp, float thermResistance) {
+    const float celciusToKelvin = 273.15f;
+    float temp_K = (B * (refTemp + celciusToKelvin)) / (B + ((refTemp + celciusToKelvin) * log(thermResistance/refResistance)));
+    return temp_K - celciusToKelvin;
 }
 
+uint16_t thermistorCalculate(uint16_t adcVal) {
+    const float B = 3435.f;
+    const float refResistance_Ohm = 10000.f;
+    const float refTemp_C = 25.f;
+
+    float adcmV = ((float)adcVal) * 4.f;
+
+    float thermistorResistance_Ohm = 4700.f * (adcmV) / (5000.f - adcmV);
+
+    float sensedTemp_C = thermistorCalc(B, refResistance_Ohm, refTemp_C, thermistorResistance_Ohm);
+    return (uint16_t) (sensedTemp_C * 10);
+}
 
 //smooth out voltage data with ______ filter 
 uint16_t filterADCData(uint16_t cumulativeValue, uint16_t newValue, float weightingAlpha) {
@@ -111,13 +108,13 @@ void updateBMBData(uint16_t val, uint8_t adcChannel, uint8_t muxChannel, uint8_t
         BMBData[bmb].cellVoltages[indexToUpdate] = filterADCData(BMBData[bmb].cellVoltages[indexToUpdate], voltage, FILTER_ALPHA);
 	}
 	if(CELL9 < indexToUpdate && indexToUpdate <= THERM15) {
-		BMBData[bmb].cellTemperatures[indexToUpdate - THERM1] = lutTemp(val<<4);
+		BMBData[bmb].cellTemperatures[indexToUpdate - THERM1] = thermistorCalculate(val);
 	}
 	if (indexToUpdate >= FIXED1) {
 		uint8_t fixedNum = indexToUpdate - FIXED1;
 		// voltage divider, 470k on top, rest is 100k between each fixed
 		if (val < idealFixedVals[fixedNum] - 50 || val > idealFixedVals[fixedNum] + 50) {
-			BMBTimeoutCount[bmb]++;
+			//BMBTimeoutCount[bmb]++;
 			//setBMBErr(bmb, BMB_FIXED_CHECK_ERR);
 		}
 	}
@@ -131,6 +128,7 @@ void setAllBMBsTimeout() {
 
 void BMBInit() {
 	// Period
+
 	const TickType_t xPeriod = 1000 / BMB_SAMPLE_TASK_RATE;		// In ticks (ms)
 	if (!i2cInit()) {
 		failedToInitI2c = true;
@@ -295,6 +293,7 @@ void vBMBSampleTask(void *pvParameters) {
 	while (1) {
 		for (uint8_t BMBIndex = 0; BMBIndex < NUM_BMBS; BMBIndex++) {
 			if (failedToInitI2c) break;
+			if (getState() == CMR_CAN_HVC_STATE_DRIVE_PRECHARGE) break;
 			//since we treat each BMB side as an individual bmb
 			//we just check whether the current bmb index is odd/even
 			uint8_t BMBSide = BMBIndex % 2;

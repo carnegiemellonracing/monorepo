@@ -409,11 +409,11 @@ static void sendBMSMinMaxCellVoltage(void) {
     uint16_t minCellVoltage = UINT16_MAX;
     uint16_t maxCellVoltage = 0;
 
-    uint8_t minCellVoltageBMBNum;
-	uint8_t maxCellVoltageBMBNum;
+    uint8_t minCellVoltageBMBNum = 0;
+	uint8_t maxCellVoltageBMBNum = 0;
 	
-	uint8_t minCellVoltageIndex;
-	uint8_t maxCellVoltageIndex;
+	uint8_t minCellVoltageIndex = 0;
+	uint8_t maxCellVoltageIndex = 0;
 
     for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
         uint8_t maxIndex = getBMBMaxVoltIndex(bmb_index);
