@@ -33,31 +33,7 @@ static void cmr_adcSample(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // ADC set up in discontinuous scan mode.
-        // Each `HAL_ADC_Start()` call converts the next-highest-rank channel.
-        for (size_t i = 0; i < adc->channelsLen; i++) {
-            cmr_adcChannel_t *channel = &(adc->channels[i]);
-
-            ADC_ChannelConfTypeDef sConfig = {0};
-            /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-             */
-            sConfig.Channel = channel->channel;
-            sConfig.Rank = ADC_REGULAR_RANK_1;
-            sConfig.SamplingTime = ADC_SAMPLETIME_24CYCLES_5;
-            sConfig.SingleDiff = ADC_SINGLE_ENDED;
-            sConfig.OffsetNumber = ADC_OFFSET_NONE;
-            sConfig.Offset = 0;
-            if (HAL_ADC_ConfigChannel(&adc->handle, &sConfig) != HAL_OK)
-            {
-                cmr_panic("HAL_ADC_ConfigChannel() failed");
-            }
-
-            HAL_ADC_Start(&adc->handle);
-            HAL_ADC_PollForConversion(&adc->handle, CMR_ADC_TIMEOUT_MS);
-            channel->value = HAL_ADC_GetValue(&adc->handle);
-            HAL_ADC_Stop(&adc->handle);
-        }
-
+        _platform_adcPoll(adc);
         vTaskDelayUntil(&lastWakeTime, cmr_adcSample_period_ms);
     }
 }
@@ -117,7 +93,9 @@ void cmr_adcInit(
         cmr_panic("HAL_ADC_Init() failed!");
     }
 
-    // cmr_adcConfigChannels(adc);
+    #ifdef F413
+    cmr_adcConfigChannels(adc);
+    #endif /* F413 */
 
     cmr_taskInit(
         &adc->sampleTask,

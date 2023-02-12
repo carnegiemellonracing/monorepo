@@ -32,6 +32,7 @@ void _platform_canInit(
 void _platform_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance, cmr_adcChannel_t *channels, const size_t channelsLen);
 ADC_ChannelConfTypeDef _platform_adcChannelConfig(const cmr_adcChannel_t *channel, uint32_t rank);
 GPIO_InitTypeDef _platform_adcPinConfig(const cmr_adcChannel_t *channel);
+void _platform_adcPoll(cmr_adc_t *adc);
 
 #endif /* HAL_ADC_MODULE_ENABLED */
 
@@ -62,6 +63,10 @@ void _platform_configCommit(cmr_config_t *config);
 #ifdef HAL_TIM_MODULE_ENABLED
 void _platform_rccTIMClockEnable(TIM_TypeDef *instance);
 #endif /* HAL_TIM_MODULE_ENABLED */
+
+#ifdef HAL_I2C_MODULE_ENABLED
+void _platform_i2cInit(cmr_i2c_t *i2c, I2C_TypeDef *instance, uint32_t clockSpeed, uint32_t ownAddr);
+#endif /* HAL_I2C_MODULE_ENABLED */
 
 #endif /* L431 */
 

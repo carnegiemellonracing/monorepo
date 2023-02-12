@@ -100,6 +100,7 @@ void cmr_i2cInit(
             }
         }
     };
+    _platform_i2cInit(i2c, instance, clockSpeed, ownAddr);
 
     cmr_rccI2CClockEnable(instance);
     cmr_rccGPIOClockEnable(i2cClkPort);
