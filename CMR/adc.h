@@ -74,6 +74,7 @@ uint32_t cmr_adcRead(cmr_adc_t *adc, size_t channel);
 extern void _platform_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance, cmr_adcChannel_t *channels, const size_t channelsLen);
 extern ADC_ChannelConfTypeDef _platform_adcChannelConfig(const cmr_adcChannel_t *channel, uint32_t rank);
 extern GPIO_InitTypeDef _platform_adcPinConfig(const cmr_adcChannel_t *channel);
+extern void _platform_adcPoll(cmr_adc_t *adc, uint32_t adcTimeout);
 
 #endif /* HAL_ADC_MODULE_ENABLED */
 

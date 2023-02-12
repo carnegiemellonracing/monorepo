@@ -34,6 +34,8 @@ void cmr_i2cInit(
     GPIO_TypeDef *i2cDataPort, uint32_t i2cDataPin
 );
 
+extern void _platform_i2cInit(cmr_i2c_t *i2c, I2C_TypeDef *instance, uint32_t clockSpeed, uint32_t ownAddr);
+
 #endif /* HAL_I2C_MODULE_ENABLED */
 
 #endif /* CMR_I2C_H */

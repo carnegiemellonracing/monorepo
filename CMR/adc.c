@@ -33,7 +33,7 @@ static void cmr_adcSample(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        _platform_adcPoll(adc);
+        _platform_adcPoll(adc, CMR_ADC_TIMEOUT_MS);
         vTaskDelayUntil(&lastWakeTime, cmr_adcSample_period_ms);
     }
 }

@@ -452,14 +452,14 @@ void _platform_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance, cmr_adcChannel_t *
         .channelsLen = channelsLen};
 }
 
-void _platform_adcPoll(cmr_adc_t *adc) {
+void _platform_adcPoll(cmr_adc_t *adc, uint32_t adcTimeout) {
     // ADC set up in discontinuous scan mode.
     // Each `HAL_ADC_Start()` call converts the next-highest-rank channel.
     for (size_t i = 0; i < adc->channelsLen; i++) {
         cmr_adcChannel_t *channel = &(adc->channels[i]);
 
         HAL_ADC_Start(&adc->handle);
-        HAL_ADC_PollForConversion(&adc->handle, CMR_ADC_TIMEOUT_MS);
+        HAL_ADC_PollForConversion(&adc->handle, adcTimeout);
         channel->value = HAL_ADC_GetValue(&adc->handle);
     }
 }

@@ -10,6 +10,7 @@
 #include "adc.h"      // adc types
 #include "rcc.h"      // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
 #include "config.h"   // config types
+#include "i2c.h"      // i2c types
 #include "panic.h"    // cmr_panic()
 
 #ifdef HAL_CAN_MODULE_ENABLED
@@ -32,7 +33,7 @@ void _platform_canInit(
 void _platform_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance, cmr_adcChannel_t *channels, const size_t channelsLen);
 ADC_ChannelConfTypeDef _platform_adcChannelConfig(const cmr_adcChannel_t *channel, uint32_t rank);
 GPIO_InitTypeDef _platform_adcPinConfig(const cmr_adcChannel_t *channel);
-void _platform_adcPoll(cmr_adc_t *adc);
+void _platform_adcPoll(cmr_adc_t *adc, uint32_t adcTimeout);
 
 #endif /* HAL_ADC_MODULE_ENABLED */
 
