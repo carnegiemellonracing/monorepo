@@ -1246,24 +1246,34 @@ SG_ drsPwmLeft : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ drsPwmRight : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 0 CDC_Front_Slip_Ratios: 8 Vector__XXX
+BO_ 2024 CDC_Front_Slip_Ratios: 8 Vector__XXX
 SG_ slipRatio_FL : 0|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
 SG_ slipRatio_FR : 32|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
 
 
-BO_ 1 CDC_Rear_Slip_Ratios: 8 Vector__XXX
+BO_ 2025 CDC_Rear_Slip_Ratios: 8 Vector__XXX
 SG_ slipRatio_RL : 0|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
 SG_ slipRatio_RR : 32|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
 
 
-BO_ 2 CDC_Front_Velocity_Setpoints: 8 Vector__XXX
+BO_ 2026 CDC_Front_Velocity_Setpoints: 8 Vector__XXX
 SG_ setPoint_FL : 0|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
 SG_ setPoint_FR : 32|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
 
 
-BO_ 3 CDC_Rear_Velocity_Setpoints: 8 Vector__XXX
+BO_ 2027 CDC_Rear_Velocity_Setpoints: 8 Vector__XXX
 SG_ setPoint_RL : 0|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
 SG_ setPoint_RR : 32|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
+
+
+BO_ 2028 CDC_Front_Whl_Velocity_Calc: 8 Vector__XXX
+SG_ vel_calc_FL : 0|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
+SG_ vel_calc_FR : 32|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
+
+
+BO_ 2029 CDC_Rear_Whl_Velocity_Calc: 8 Vector__XXX
+SG_ vel_calc_RL : 0|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
+SG_ vel_calc_RR : 32|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
 
 
 CM_ BO_ 1296 "Timeout matrix";
@@ -2163,14 +2173,18 @@ BA_ "GenSigStartValue" SG_ 1324 drsState 0;
 BA_ "GenSigStartValue" SG_ 1324 drsAngle 0;
 BA_ "GenSigStartValue" SG_ 1324 drsPwmLeft 0;
 BA_ "GenSigStartValue" SG_ 1324 drsPwmRight 0;
-BA_ "GenSigStartValue" SG_ 0 slipRatio_FL 0;
-BA_ "GenSigStartValue" SG_ 0 slipRatio_FR 0;
-BA_ "GenSigStartValue" SG_ 1 slipRatio_RL 0;
-BA_ "GenSigStartValue" SG_ 1 slipRatio_RR 0;
-BA_ "GenSigStartValue" SG_ 2 setPoint_FL 0;
-BA_ "GenSigStartValue" SG_ 2 setPoint_FR 0;
-BA_ "GenSigStartValue" SG_ 3 setPoint_RL 0;
-BA_ "GenSigStartValue" SG_ 3 setPoint_RR 0;
+BA_ "GenSigStartValue" SG_ 2024 slipRatio_FL 0;
+BA_ "GenSigStartValue" SG_ 2024 slipRatio_FR 0;
+BA_ "GenSigStartValue" SG_ 2025 slipRatio_RL 0;
+BA_ "GenSigStartValue" SG_ 2025 slipRatio_RR 0;
+BA_ "GenSigStartValue" SG_ 2026 setPoint_FL 0;
+BA_ "GenSigStartValue" SG_ 2026 setPoint_FR 0;
+BA_ "GenSigStartValue" SG_ 2027 setPoint_RL 0;
+BA_ "GenSigStartValue" SG_ 2027 setPoint_RR 0;
+BA_ "GenSigStartValue" SG_ 2028 vel_calc_FL 0;
+BA_ "GenSigStartValue" SG_ 2028 vel_calc_FR 0;
+BA_ "GenSigStartValue" SG_ 2029 vel_calc_RL 0;
+BA_ "GenSigStartValue" SG_ 2029 vel_calc_RR 0;
 
 
 VAL_ 257 VSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
@@ -2195,12 +2209,16 @@ SIG_VALTYPE_ 642 CDC_Longitude : 1;
 SIG_VALTYPE_ 1860 SBG_Velocity_ODO : 1;
 SIG_VALTYPE_ 1862 SBG_Pressure_IMU : 1;
 SIG_VALTYPE_ 1862 SBG_Altitude_IMU : 1;
-SIG_VALTYPE_ 0 slipRatio_FL : 1;
-SIG_VALTYPE_ 0 slipRatio_FR : 1;
-SIG_VALTYPE_ 1 slipRatio_RL : 1;
-SIG_VALTYPE_ 1 slipRatio_RR : 1;
-SIG_VALTYPE_ 2 setPoint_FL : 1;
-SIG_VALTYPE_ 2 setPoint_FR : 1;
-SIG_VALTYPE_ 3 setPoint_RL : 1;
-SIG_VALTYPE_ 3 setPoint_RR : 1;
+SIG_VALTYPE_ 2024 slipRatio_FL : 1;
+SIG_VALTYPE_ 2024 slipRatio_FR : 1;
+SIG_VALTYPE_ 2025 slipRatio_RL : 1;
+SIG_VALTYPE_ 2025 slipRatio_RR : 1;
+SIG_VALTYPE_ 2026 setPoint_FL : 1;
+SIG_VALTYPE_ 2026 setPoint_FR : 1;
+SIG_VALTYPE_ 2027 setPoint_RL : 1;
+SIG_VALTYPE_ 2027 setPoint_RR : 1;
+SIG_VALTYPE_ 2028 vel_calc_FL : 1;
+SIG_VALTYPE_ 2028 vel_calc_FR : 1;
+SIG_VALTYPE_ 2029 vel_calc_RL : 1;
+SIG_VALTYPE_ 2029 vel_calc_RR : 1;
 
