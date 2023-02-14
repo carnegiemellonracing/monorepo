@@ -1584,13 +1584,13 @@ DLC=8
 Var=setPoint_RL float 0,32
 Var=setPoint_RR float 32,32
 
-[CDC_Front_Whl_Velocity_Calculated]
+[CDC_Front_Whl_Velocity_Calc]
 ID=7ECh
 DLC=8
 Var=vel_calc_FL float 0,32
 Var=vel_calc_FR float 32,32
 
-[CDC_Rear_Whl_Velocity_Calculated]
+[CDC_Rear_Whl_Velocity_Calc]
 ID=7EDh
 DLC=8
 Var=vel_calc_RL float 0,32
