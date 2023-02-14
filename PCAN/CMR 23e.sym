@@ -1,6 +1,6 @@
 FormatVersion=5.0 // Do not edit this line!
 UniqueVariables=True
-Title="CMR 22e"
+Title="CMR 23e"
 
 {ENUMS}
 // This is for the EMD
@@ -1561,26 +1561,37 @@ Var=drsPwmLeft unsigned 16,8
 Var=drsPwmRight unsigned 24,8
 
 [CDC_Front_Slip_Ratios]
-ID=000h
+ID=7E8h
 DLC=8
 Var=slipRatio_FL float 0,32
 Var=slipRatio_FR float 32,32
 
 [CDC_Rear_Slip_Ratios]
-ID=001h
+ID=7E9h
 DLC=8
 Var=slipRatio_RL float 0,32
 Var=slipRatio_RR float 32,32
 
 [CDC_Front_Velocity_Setpoints]
-ID=002h
+ID=7EAh
 DLC=8
 Var=setPoint_FL float 0,32
 Var=setPoint_FR float 32,32
 
 [CDC_Rear_Velocity_Setpoints]
-ID=003h
+ID=7EBh
 DLC=8
 Var=setPoint_RL float 0,32
 Var=setPoint_RR float 32,32
 
+[CDC_Front_Whl_Velocity_Calculated]
+ID=7ECh
+DLC=8
+Var=vel_calc_FL float 0,32
+Var=vel_calc_FR float 32,32
+
+[CDC_Rear_Whl_Velocity_Calculated]
+ID=7EDh
+DLC=8
+Var=vel_calc_RL float 0,32
+Var=vel_calc_RR float 32,32
