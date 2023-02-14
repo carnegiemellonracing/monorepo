@@ -1027,6 +1027,19 @@ typedef struct
     float omega_RR;
 } cmr_can_rear_whl_speed_setpoint_t;
 
+typedef struct 
+{
+    float v_whl_fl;
+    float v_whl_fr;
+} cmr_can_front_whl_velocity_t;
+
+typedef struct 
+{
+    float v_whl_rl;
+    float v_whl_rr;
+} cmr_can_rear_whl_velocity_t;
+
+
 // ------------------------------------------------------------------------------------------------
 // SAE Provided EMD definitions
 
