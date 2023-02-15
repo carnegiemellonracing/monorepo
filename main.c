@@ -21,7 +21,7 @@
 static const uint32_t statusLED_priority = 2;
 
 /** @brief BMB Sample Task priority. */
-static const uint32_t bmbSample_priority = 6;
+static const uint32_t bmbSample_priority = 7;
 
 /** @brief BMB Sample Task priority. */
 static const uint32_t setState_priority = 4;

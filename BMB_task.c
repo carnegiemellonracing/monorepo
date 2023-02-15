@@ -8,7 +8,6 @@
 #include "BMB_task.h"
 #include "gpio.h"
 #include "state_task.h"
-#include "i2c.h"
 #include <stdbool.h>
 #include <math.h>               // math.h
 
@@ -47,6 +46,8 @@ static const uint8_t LED_FLASH_COUNT = 10;
 static uint8_t BMBFlashCounter = 0;
 
 static bool failedToInitI2c = false;
+bool startingPrecharge = false;
+bool haltedI2C = false;
 
 static const uint8_t LUT_SIZE = 18;
 static const uint16_t lut[18][2] = { { 8802, 850 }, { 9930, 800 }, { 11208, 750 },
@@ -105,10 +106,20 @@ void updateBMBData(uint16_t val, uint8_t adcChannel, uint8_t muxChannel, uint8_t
 	ADC_Mux_Channel_t indexToUpdate = ADCChannelLookupArr[adcChannel][muxChannel];
 	if(indexToUpdate <= CELL9) {
 		int16_t voltage = adcOutputToVoltage(val, indexToUpdate);
-        BMBData[bmb].cellVoltages[indexToUpdate] = filterADCData(BMBData[bmb].cellVoltages[indexToUpdate], voltage, FILTER_ALPHA);
+		if (voltage > 4400 || voltage < 2000) {
+			// don't update anything
+			BMBData[bmb].cellVoltages[indexToUpdate] = 3456;
+		} else {
+			BMBData[bmb].cellVoltages[indexToUpdate] = filterADCData(BMBData[bmb].cellVoltages[indexToUpdate], voltage, FILTER_ALPHA);
+		}
 	}
 	if(CELL9 < indexToUpdate && indexToUpdate <= THERM15) {
-		BMBData[bmb].cellTemperatures[indexToUpdate - THERM1] = thermistorCalculate(val);
+		uint16_t temp = thermistorCalculate(val);
+		if (temp > 600 || temp < 200) {
+			BMBData[bmb].cellTemperatures[indexToUpdate - THERM1] = 278;
+		} else {
+			BMBData[bmb].cellTemperatures[indexToUpdate - THERM1] = thermistorCalculate(val);
+		}
 	}
 	if (indexToUpdate >= FIXED1) {
 		uint8_t fixedNum = indexToUpdate - FIXED1;
@@ -127,12 +138,19 @@ void setAllBMBsTimeout() {
 }
 
 void BMBInit() {
-	// Period
-
-	const TickType_t xPeriod = 1000 / BMB_SAMPLE_TASK_RATE;		// In ticks (ms)
-	if (!i2cInit()) {
+	i2cInit();
+	bool succeeded = false;
+	for (int i = 0; i < 10; i++) {
+		if (!i2cInitChain()) {
+			continue;
+			//cmr_panic("Couldn't initialize I2C BMB Chain");
+		} else {
+			succeeded = true;
+			break;
+		}
+	}
+	if (!succeeded) {
 		failedToInitI2c = true;
-		//cmr_panic("Couldn't initialize I2C BMB Chain");
 	}
 }
 
@@ -293,7 +311,16 @@ void vBMBSampleTask(void *pvParameters) {
 	while (1) {
 		for (uint8_t BMBIndex = 0; BMBIndex < NUM_BMBS; BMBIndex++) {
 			if (failedToInitI2c) break;
-			if (getState() == CMR_CAN_HVC_STATE_DRIVE_PRECHARGE) break;
+			if (startingPrecharge) {
+				haltedI2C = true;
+				break;
+			}
+			if (haltedI2C) {
+				if (!i2cInitChain()) {
+					failedToInitI2c = true;
+				}
+				haltedI2C = false;
+			}
 			//since we treat each BMB side as an individual bmb
 			//we just check whether the current bmb index is odd/even
 			uint8_t BMBSide = BMBIndex % 2;
@@ -327,9 +354,13 @@ void vBMBSampleTask(void *pvParameters) {
 			//doCellBalanceOneBMB(BMBIndex); // WE DON'T DO THIS ANYMORE
 
 		} // end for loop
-		if (!failedToInitI2c)
+		if (!failedToInitI2c && !startingPrecharge)
 			doCellBalanceAllBMBs();
 		//TickType_t temp = xTaskGetTickCount();
+		if (xLastWakeTime+BMB_SAMPLE_TASK_RATE < xTaskGetTickCount()) {
+			// we are already in the past trying to catch up, just give up and sleep for like 10ms
+			xLastWakeTime = xTaskGetTickCount();
+		}
 		vTaskDelayUntil(&xLastWakeTime, BMB_SAMPLE_TASK_RATE);
 	}
 }

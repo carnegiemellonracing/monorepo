@@ -8,6 +8,8 @@
 #include <stdlib.h>
 
 static cmr_canHVCState_t currentState = CMR_CAN_HVC_STATE_ERROR;
+extern bool startingPrecharge;
+extern bool haltedI2C;
 
 /*
  * External Accessor Functions
@@ -48,8 +50,14 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
         case CMR_CAN_HVC_STATE_STANDBY: // S2
             if (HVCCommand->modeRequest == CMR_CAN_HVC_MODE_START) {
                 //T1: START mode requested
-                nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE;
-                lastPrechargeTime = xTaskGetTickCount();
+            	startingPrecharge = true;
+            	if(haltedI2C) {
+            		nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE;
+            		lastPrechargeTime = xTaskGetTickCount();
+            	}
+            	else {
+            		nextState = CMR_CAN_HVC_STATE_STANDBY;
+            	}
             } else if (HVCCommand->modeRequest == CMR_CAN_HVC_MODE_CHARGE) {
                 //T9: CHARGE mode requested
                 nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE;
@@ -72,6 +80,9 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             }
             break;
         case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE: // S4
+//        	if (xTaskGetTickCount() > lastPrechargeTime + 2000) {
+                startingPrecharge = false;
+//        	}
             if (!(HVCCommand->modeRequest == CMR_CAN_HVC_MODE_START ||
                   HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN)) {
                 //T7: Mode requested is neither START nor RUN
@@ -206,6 +217,7 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_POS_RELAY, OPEN);
             setRelay(AIR_NEG_RELAY, CLOSED);
             setRelay(PRECHARGE_RELAY, CLOSED);
+            cmr_gpioWrite(GPIO_AMS_EN_L, 1);
             clearHardwareFault(false);
             break;
         case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE: // S4
@@ -213,6 +225,7 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_POS_RELAY, CLOSED);
             setRelay(AIR_NEG_RELAY, CLOSED);
             setRelay(PRECHARGE_RELAY, CLOSED);
+            cmr_gpioWrite(GPIO_AMS_EN_L, 0);
             clearHardwareFault(false);
             break;
         case CMR_CAN_HVC_STATE_DRIVE: // S5

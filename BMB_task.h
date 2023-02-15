@@ -12,8 +12,9 @@
 #include <CMR/can_types.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "i2c.h"
 
-#define NUM_BMBS 16
+#define NUM_BMBS (I2C_NUM_BMBS*2)
 #define NUM_MUX_CHANNELS 4
 #define NUM_ADC_CHANNELS 8
 #define BMB_GPIO_MUX_PIN 0b000001
@@ -29,7 +30,9 @@
 #define CELL_MAX_VOLTAGE_HI 4250
 #define CELL_MAX_VOLTAGE_LO 4150
 
-#define FILTER_ALPHA 0.25
+//#define FILTER_ALPHA 0.25
+#define FILTER_ALPHA 0.75 // we slightly prefer new data
+
 
 //Define array indices for the ADC Channels
 
