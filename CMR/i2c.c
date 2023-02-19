@@ -33,7 +33,10 @@ int cmr_i2cTX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
     );
 
     if (txStatus != HAL_OK) {
-        return -1;
+    //HAL_ERROR    = 0x01U,
+    //HAL_BUSY     = 0x02U,
+    //HAL_TIMEOUT  = 0x03U
+        return txStatus;
     }
 
     return 0;
