@@ -1560,3 +1560,10 @@ Var=drsAngle unsigned 8,8
 Var=drsPwmLeft unsigned 16,8
 Var=drsPwmRight unsigned 24,8
 
+[SF_State]
+ID=52Dh
+DLC=3
+Var=Error_Count unsigned 0,8
+Var=Pack_Voltage_Over_Count unsigned 8,8
+Var=Pack_Voltage_Under_Count unsigned 16,8
+

@@ -540,6 +540,12 @@ typedef struct {
     uint8_t pwm_right;      /**< @brief PWM of the right DRS servo (debug info). */
 } cmr_canCDCDRSStates_t;
 
+/** @brief Central Dynamics Controller Safety Filter states. */
+typedef struct {
+    uint8_t error_count;          /**< @brief number of errors, expect 0 */
+    uint8_t packVoltage_over;          /**< @brief when pack voltage exceeds 590 */
+    uint8_t packVoltage_under;       /**< @brief when pack voltage under 365 */
+} cmr_canSafetyFilterStates_t;
 // ------------------------------------------------------------------------------------------------
 // Central Dynamics Controller (20e)
 
