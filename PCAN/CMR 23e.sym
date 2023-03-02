@@ -30,7 +30,7 @@ enum DRS_MODE(0="DRS_UNKNOWN", 1="DRS_OPEN", 2="DRS_CLOSED", 3="DRS_TOGGLE",
 {SENDRECEIVE}
 
 [VSM_Heartbeat]
-ID=101h
+ID=100h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -117,7 +117,7 @@ Var=VSM_busVoltage unsigned 0,16 /u:mV
 Var=VSM_busCurrent unsigned 16,16 /u:mA
 
 [HVC_Heartbeat]
-ID=102h
+ID=101h
 DLC=6
 CycleTime=10
 Timeout=100
@@ -151,7 +151,7 @@ CycleTime=10
 Var=HVC_modeRequest unsigned 0,8 /e:HVCMode
 
 [CDC_Heartbeat]
-ID=103h
+ID=102h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -356,7 +356,7 @@ Var=CDC_LateralAcceleration signed 16,16 /u:mps2 /f:0.01
 Var=CDC_VerticalAcceleration signed 32,16 /u:mps2 /f:0.01
 
 [FSM_Heartbeat]
-ID=104h
+ID=103h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -416,7 +416,7 @@ Var=FSM_busVoltage unsigned 0,16 /u:mV
 Var=FSM_busCurrent unsigned 16,16 /u:mA
 
 [DIM_Heartbeat]
-ID=105h
+ID=104h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -451,7 +451,7 @@ Var=DIM_drsButtonPressed unsigned 16,8
 Var=DIM_regenPercent unsigned 24,8 /u:percent
 
 [PTC_Heartbeat]
-ID=106h
+ID=105h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -508,14 +508,6 @@ Timeout=1000
 Var=PTC_logicVoltage unsigned 0,16 /u:mV
 Var=PTC_loadVoltage unsigned 16,16 /u:mV
 Var=PTC_loadCurrent unsigned 32,16 /u:mA
-
-[APC_Heartbeat]
-ID=108h
-DLC=5
-CycleTime=10
-Timeout=100
-Var=APC_state unsigned 0,8 /e:State
-Var=APC_ERR_VSMTimeout unsigned 8,1
 
 [BMS_Pack_Voltages]
 ID=301h
@@ -847,13 +839,6 @@ Var=Min_Cell_Temp_BMB unsigned 32,8
 Var=Min_Cell_Temp_Index unsigned 40,8
 Var=Max_Cell_Temp_BMB unsigned 48,8
 Var=Max_Cell_Temp_Index unsigned 56,8
-
-[Memorator_Broadcast]
-ID=605h
-DLC=1
-CycleTime=1000
-Timeout=10000
-Var=Memorator_status unsigned 0,8
 
 [DILONG_Charger_Status]
 ID=18FF50E5h
@@ -1560,3 +1545,661 @@ Var=drsAngle unsigned 8,8
 Var=drsPwmLeft unsigned 16,8
 Var=drsPwmRight unsigned 24,8
 
+[DIM_Config0_Drv0]
+ID=600h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config0_drv0_config_val_1 unsigned 0,8
+Var=DIM_config0_drv0_config_val_2 unsigned 8,8
+Var=DIM_config0_drv0_config_val_3 unsigned 16,8
+Var=DIM_config0_drv0_config_val_4 unsigned 24,8
+
+
+[DIM_Config1_Drv0]
+ID=601h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config1_drv0_config_val_1 unsigned 0,8
+Var=DIM_config1_drv0_config_val_2 unsigned 8,8
+Var=DIM_config1_drv0_config_val_3 unsigned 16,8
+Var=DIM_config1_drv0_config_val_4 unsigned 24,8
+
+
+[DIM_Config2_Drv0]
+ID=602h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config2_drv0_config_val_1 unsigned 0,8
+Var=DIM_config2_drv0_config_val_2 unsigned 8,8
+Var=DIM_config2_drv0_config_val_3 unsigned 16,8
+Var=DIM_config2_drv0_config_val_4 unsigned 24,8
+
+
+[DIM_Config3_Drv0]
+ID=603h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config3_drv0_config_val_1 unsigned 0,8
+Var=DIM_config3_drv0_config_val_2 unsigned 8,8
+Var=DIM_config3_drv0_config_val_3 unsigned 16,8
+Var=DIM_config3_drv0_config_val_4 unsigned 24,8
+
+
+[DIM_Config4_Drv0]
+ID=604h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config4_drv0_config_val_1 unsigned 0,8
+Var=DIM_config4_drv0_config_val_2 unsigned 8,8
+Var=DIM_config4_drv0_config_val_3 unsigned 16,8
+Var=DIM_config4_drv0_config_val_4 unsigned 24,8
+
+
+[CDC_Config0_Drv0]
+ID=605h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config0_drv0_config_val_1 unsigned 0,8
+Var=CDC_config0_drv0_config_val_2 unsigned 8,8
+Var=CDC_config0_drv0_config_val_3 unsigned 16,8
+Var=CDC_config0_drv0_config_val_4 unsigned 24,8
+
+
+[CDC_Config1_Drv0]
+ID=606h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config1_drv0_config_val_1 unsigned 0,8
+Var=CDC_config1_drv0_config_val_2 unsigned 8,8
+Var=CDC_config1_drv0_config_val_3 unsigned 16,8
+Var=CDC_config1_drv0_config_val_4 unsigned 24,8
+
+
+[CDC_Config2_Drv0]
+ID=607h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config2_drv0_config_val_1 unsigned 0,8
+Var=CDC_config2_drv0_config_val_2 unsigned 8,8
+Var=CDC_config2_drv0_config_val_3 unsigned 16,8
+Var=CDC_config2_drv0_config_val_4 unsigned 24,8
+
+
+[CDC_Config3_Drv0]
+ID=608h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config3_drv0_config_val_1 unsigned 0,8
+Var=CDC_config3_drv0_config_val_2 unsigned 8,8
+Var=CDC_config3_drv0_config_val_3 unsigned 16,8
+Var=CDC_config3_drv0_config_val_4 unsigned 24,8
+
+
+[CDC_Config4_Drv0]
+ID=609h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config4_drv0_config_val_1 unsigned 0,8
+Var=CDC_config4_drv0_config_val_2 unsigned 8,8
+Var=CDC_config4_drv0_config_val_3 unsigned 16,8
+Var=CDC_config4_drv0_config_val_4 unsigned 24,8
+
+
+[DIM_Config0_Drv1]
+ID=60ah
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config0_drv1_config_val_1 unsigned 0,8
+Var=DIM_config0_drv1_config_val_2 unsigned 8,8
+Var=DIM_config0_drv1_config_val_3 unsigned 16,8
+Var=DIM_config0_drv1_config_val_4 unsigned 24,8
+
+
+[DIM_Config1_Drv1]
+ID=60bh
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config1_drv1_config_val_1 unsigned 0,8
+Var=DIM_config1_drv1_config_val_2 unsigned 8,8
+Var=DIM_config1_drv1_config_val_3 unsigned 16,8
+Var=DIM_config1_drv1_config_val_4 unsigned 24,8
+
+
+[DIM_Config2_Drv1]
+ID=60ch
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config2_drv1_config_val_1 unsigned 0,8
+Var=DIM_config2_drv1_config_val_2 unsigned 8,8
+Var=DIM_config2_drv1_config_val_3 unsigned 16,8
+Var=DIM_config2_drv1_config_val_4 unsigned 24,8
+
+
+[DIM_Config3_Drv1]
+ID=60dh
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config3_drv1_config_val_1 unsigned 0,8
+Var=DIM_config3_drv1_config_val_2 unsigned 8,8
+Var=DIM_config3_drv1_config_val_3 unsigned 16,8
+Var=DIM_config3_drv1_config_val_4 unsigned 24,8
+
+
+[DIM_Config4_Drv1]
+ID=60eh
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config4_drv1_config_val_1 unsigned 0,8
+Var=DIM_config4_drv1_config_val_2 unsigned 8,8
+Var=DIM_config4_drv1_config_val_3 unsigned 16,8
+Var=DIM_config4_drv1_config_val_4 unsigned 24,8
+
+
+[CDC_Config0_Drv1]
+ID=60fh
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config0_drv1_config_val_1 unsigned 0,8
+Var=CDC_config0_drv1_config_val_2 unsigned 8,8
+Var=CDC_config0_drv1_config_val_3 unsigned 16,8
+Var=CDC_config0_drv1_config_val_4 unsigned 24,8
+
+
+[CDC_Config1_Drv1]
+ID=610h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config1_drv1_config_val_1 unsigned 0,8
+Var=CDC_config1_drv1_config_val_2 unsigned 8,8
+Var=CDC_config1_drv1_config_val_3 unsigned 16,8
+Var=CDC_config1_drv1_config_val_4 unsigned 24,8
+
+
+[CDC_Config2_Drv1]
+ID=611h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config2_drv1_config_val_1 unsigned 0,8
+Var=CDC_config2_drv1_config_val_2 unsigned 8,8
+Var=CDC_config2_drv1_config_val_3 unsigned 16,8
+Var=CDC_config2_drv1_config_val_4 unsigned 24,8
+
+
+[CDC_Config3_Drv1]
+ID=612h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config3_drv1_config_val_1 unsigned 0,8
+Var=CDC_config3_drv1_config_val_2 unsigned 8,8
+Var=CDC_config3_drv1_config_val_3 unsigned 16,8
+Var=CDC_config3_drv1_config_val_4 unsigned 24,8
+
+
+[CDC_Config4_Drv1]
+ID=613h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config4_drv1_config_val_1 unsigned 0,8
+Var=CDC_config4_drv1_config_val_2 unsigned 8,8
+Var=CDC_config4_drv1_config_val_3 unsigned 16,8
+Var=CDC_config4_drv1_config_val_4 unsigned 24,8
+
+
+[DIM_Config0_Drv2]
+ID=614h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config0_drv2_config_val_1 unsigned 0,8
+Var=DIM_config0_drv2_config_val_2 unsigned 8,8
+Var=DIM_config0_drv2_config_val_3 unsigned 16,8
+Var=DIM_config0_drv2_config_val_4 unsigned 24,8
+
+
+[DIM_Config1_Drv2]
+ID=615h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config1_drv2_config_val_1 unsigned 0,8
+Var=DIM_config1_drv2_config_val_2 unsigned 8,8
+Var=DIM_config1_drv2_config_val_3 unsigned 16,8
+Var=DIM_config1_drv2_config_val_4 unsigned 24,8
+
+
+[DIM_Config2_Drv2]
+ID=616h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config2_drv2_config_val_1 unsigned 0,8
+Var=DIM_config2_drv2_config_val_2 unsigned 8,8
+Var=DIM_config2_drv2_config_val_3 unsigned 16,8
+Var=DIM_config2_drv2_config_val_4 unsigned 24,8
+
+
+[DIM_Config3_Drv2]
+ID=617h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config3_drv2_config_val_1 unsigned 0,8
+Var=DIM_config3_drv2_config_val_2 unsigned 8,8
+Var=DIM_config3_drv2_config_val_3 unsigned 16,8
+Var=DIM_config3_drv2_config_val_4 unsigned 24,8
+
+
+[DIM_Config4_Drv2]
+ID=618h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config4_drv2_config_val_1 unsigned 0,8
+Var=DIM_config4_drv2_config_val_2 unsigned 8,8
+Var=DIM_config4_drv2_config_val_3 unsigned 16,8
+Var=DIM_config4_drv2_config_val_4 unsigned 24,8
+
+
+[CDC_Config0_Drv2]
+ID=619h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config0_drv2_config_val_1 unsigned 0,8
+Var=CDC_config0_drv2_config_val_2 unsigned 8,8
+Var=CDC_config0_drv2_config_val_3 unsigned 16,8
+Var=CDC_config0_drv2_config_val_4 unsigned 24,8
+
+
+[CDC_Config1_Drv2]
+ID=61ah
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config1_drv2_config_val_1 unsigned 0,8
+Var=CDC_config1_drv2_config_val_2 unsigned 8,8
+Var=CDC_config1_drv2_config_val_3 unsigned 16,8
+Var=CDC_config1_drv2_config_val_4 unsigned 24,8
+
+
+[CDC_Config2_Drv2]
+ID=61bh
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config2_drv2_config_val_1 unsigned 0,8
+Var=CDC_config2_drv2_config_val_2 unsigned 8,8
+Var=CDC_config2_drv2_config_val_3 unsigned 16,8
+Var=CDC_config2_drv2_config_val_4 unsigned 24,8
+
+
+[CDC_Config3_Drv2]
+ID=61ch
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config3_drv2_config_val_1 unsigned 0,8
+Var=CDC_config3_drv2_config_val_2 unsigned 8,8
+Var=CDC_config3_drv2_config_val_3 unsigned 16,8
+Var=CDC_config3_drv2_config_val_4 unsigned 24,8
+
+
+[CDC_Config4_Drv2]
+ID=61dh
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config4_drv2_config_val_1 unsigned 0,8
+Var=CDC_config4_drv2_config_val_2 unsigned 8,8
+Var=CDC_config4_drv2_config_val_3 unsigned 16,8
+Var=CDC_config4_drv2_config_val_4 unsigned 24,8
+
+
+[DIM_Config0_Drv3]
+ID=61eh
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config0_drv3_config_val_1 unsigned 0,8
+Var=DIM_config0_drv3_config_val_2 unsigned 8,8
+Var=DIM_config0_drv3_config_val_3 unsigned 16,8
+Var=DIM_config0_drv3_config_val_4 unsigned 24,8
+
+
+[DIM_Config1_Drv3]
+ID=61fh
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config1_drv3_config_val_1 unsigned 0,8
+Var=DIM_config1_drv3_config_val_2 unsigned 8,8
+Var=DIM_config1_drv3_config_val_3 unsigned 16,8
+Var=DIM_config1_drv3_config_val_4 unsigned 24,8
+
+
+[DIM_Config2_Drv3]
+ID=620h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config2_drv3_config_val_1 unsigned 0,8
+Var=DIM_config2_drv3_config_val_2 unsigned 8,8
+Var=DIM_config2_drv3_config_val_3 unsigned 16,8
+Var=DIM_config2_drv3_config_val_4 unsigned 24,8
+
+
+[DIM_Config3_Drv3]
+ID=621h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config3_drv3_config_val_1 unsigned 0,8
+Var=DIM_config3_drv3_config_val_2 unsigned 8,8
+Var=DIM_config3_drv3_config_val_3 unsigned 16,8
+Var=DIM_config3_drv3_config_val_4 unsigned 24,8
+
+
+[DIM_Config4_Drv3]
+ID=622h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config4_drv3_config_val_1 unsigned 0,8
+Var=DIM_config4_drv3_config_val_2 unsigned 8,8
+Var=DIM_config4_drv3_config_val_3 unsigned 16,8
+Var=DIM_config4_drv3_config_val_4 unsigned 24,8
+
+
+[CDC_Config0_Drv3]
+ID=623h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config0_drv3_config_val_1 unsigned 0,8
+Var=CDC_config0_drv3_config_val_2 unsigned 8,8
+Var=CDC_config0_drv3_config_val_3 unsigned 16,8
+Var=CDC_config0_drv3_config_val_4 unsigned 24,8
+
+
+[CDC_Config1_Drv3]
+ID=624h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config1_drv3_config_val_1 unsigned 0,8
+Var=CDC_config1_drv3_config_val_2 unsigned 8,8
+Var=CDC_config1_drv3_config_val_3 unsigned 16,8
+Var=CDC_config1_drv3_config_val_4 unsigned 24,8
+
+
+[CDC_Config2_Drv3]
+ID=625h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config2_drv3_config_val_1 unsigned 0,8
+Var=CDC_config2_drv3_config_val_2 unsigned 8,8
+Var=CDC_config2_drv3_config_val_3 unsigned 16,8
+Var=CDC_config2_drv3_config_val_4 unsigned 24,8
+
+
+[CDC_Config3_Drv3]
+ID=626h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config3_drv3_config_val_1 unsigned 0,8
+Var=CDC_config3_drv3_config_val_2 unsigned 8,8
+Var=CDC_config3_drv3_config_val_3 unsigned 16,8
+Var=CDC_config3_drv3_config_val_4 unsigned 24,8
+
+
+[CDC_Config4_Drv3]
+ID=627h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config4_drv3_config_val_1 unsigned 0,8
+Var=CDC_config4_drv3_config_val_2 unsigned 8,8
+Var=CDC_config4_drv3_config_val_3 unsigned 16,8
+Var=CDC_config4_drv3_config_val_4 unsigned 24,8
+
+
+[DIM_Config0_Drv4]
+ID=628h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config0_drv4_config_val_1 unsigned 0,8
+Var=DIM_config0_drv4_config_val_2 unsigned 8,8
+Var=DIM_config0_drv4_config_val_3 unsigned 16,8
+Var=DIM_config0_drv4_config_val_4 unsigned 24,8
+
+
+[DIM_Config1_Drv4]
+ID=629h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config1_drv4_config_val_1 unsigned 0,8
+Var=DIM_config1_drv4_config_val_2 unsigned 8,8
+Var=DIM_config1_drv4_config_val_3 unsigned 16,8
+Var=DIM_config1_drv4_config_val_4 unsigned 24,8
+
+
+[DIM_Config2_Drv4]
+ID=62ah
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config2_drv4_config_val_1 unsigned 0,8
+Var=DIM_config2_drv4_config_val_2 unsigned 8,8
+Var=DIM_config2_drv4_config_val_3 unsigned 16,8
+Var=DIM_config2_drv4_config_val_4 unsigned 24,8
+
+
+[DIM_Config3_Drv4]
+ID=62bh
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config3_drv4_config_val_1 unsigned 0,8
+Var=DIM_config3_drv4_config_val_2 unsigned 8,8
+Var=DIM_config3_drv4_config_val_3 unsigned 16,8
+Var=DIM_config3_drv4_config_val_4 unsigned 24,8
+
+
+[DIM_Config4_Drv4]
+ID=62ch
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config4_drv4_config_val_1 unsigned 0,8
+Var=DIM_config4_drv4_config_val_2 unsigned 8,8
+Var=DIM_config4_drv4_config_val_3 unsigned 16,8
+Var=DIM_config4_drv4_config_val_4 unsigned 24,8
+
+
+[CDC_Config0_Drv4]
+ID=62dh
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config0_drv4_config_val_1 unsigned 0,8
+Var=CDC_config0_drv4_config_val_2 unsigned 8,8
+Var=CDC_config0_drv4_config_val_3 unsigned 16,8
+Var=CDC_config0_drv4_config_val_4 unsigned 24,8
+
+
+[CDC_Config1_Drv4]
+ID=62eh
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config1_drv4_config_val_1 unsigned 0,8
+Var=CDC_config1_drv4_config_val_2 unsigned 8,8
+Var=CDC_config1_drv4_config_val_3 unsigned 16,8
+Var=CDC_config1_drv4_config_val_4 unsigned 24,8
+
+
+[CDC_Config2_Drv4]
+ID=62fh
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config2_drv4_config_val_1 unsigned 0,8
+Var=CDC_config2_drv4_config_val_2 unsigned 8,8
+Var=CDC_config2_drv4_config_val_3 unsigned 16,8
+Var=CDC_config2_drv4_config_val_4 unsigned 24,8
+
+
+[CDC_Config3_Drv4]
+ID=630h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config3_drv4_config_val_1 unsigned 0,8
+Var=CDC_config3_drv4_config_val_2 unsigned 8,8
+Var=CDC_config3_drv4_config_val_3 unsigned 16,8
+Var=CDC_config3_drv4_config_val_4 unsigned 24,8
+
+
+[CDC_Config4_Drv4]
+ID=631h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config4_drv4_config_val_1 unsigned 0,8
+Var=CDC_config4_drv4_config_val_2 unsigned 8,8
+Var=CDC_config4_drv4_config_val_3 unsigned 16,8
+Var=CDC_config4_drv4_config_val_4 unsigned 24,8
+
+
+[DIM_Config0_Drv5]
+ID=632h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config0_drv5_config_val_1 unsigned 0,8
+Var=DIM_config0_drv5_config_val_2 unsigned 8,8
+Var=DIM_config0_drv5_config_val_3 unsigned 16,8
+Var=DIM_config0_drv5_config_val_4 unsigned 24,8
+
+
+[DIM_Config1_Drv5]
+ID=633h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config1_drv5_config_val_1 unsigned 0,8
+Var=DIM_config1_drv5_config_val_2 unsigned 8,8
+Var=DIM_config1_drv5_config_val_3 unsigned 16,8
+Var=DIM_config1_drv5_config_val_4 unsigned 24,8
+
+
+[DIM_Config2_Drv5]
+ID=634h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config2_drv5_config_val_1 unsigned 0,8
+Var=DIM_config2_drv5_config_val_2 unsigned 8,8
+Var=DIM_config2_drv5_config_val_3 unsigned 16,8
+Var=DIM_config2_drv5_config_val_4 unsigned 24,8
+
+
+[DIM_Config3_Drv5]
+ID=635h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config3_drv5_config_val_1 unsigned 0,8
+Var=DIM_config3_drv5_config_val_2 unsigned 8,8
+Var=DIM_config3_drv5_config_val_3 unsigned 16,8
+Var=DIM_config3_drv5_config_val_4 unsigned 24,8
+
+
+[DIM_Config4_Drv5]
+ID=636h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_config4_drv5_config_val_1 unsigned 0,8
+Var=DIM_config4_drv5_config_val_2 unsigned 8,8
+Var=DIM_config4_drv5_config_val_3 unsigned 16,8
+Var=DIM_config4_drv5_config_val_4 unsigned 24,8
+
+
+[CDC_Config0_Drv5]
+ID=637h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config0_drv5_config_val_1 unsigned 0,8
+Var=CDC_config0_drv5_config_val_2 unsigned 8,8
+Var=CDC_config0_drv5_config_val_3 unsigned 16,8
+Var=CDC_config0_drv5_config_val_4 unsigned 24,8
+
+
+[CDC_Config1_Drv5]
+ID=638h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config1_drv5_config_val_1 unsigned 0,8
+Var=CDC_config1_drv5_config_val_2 unsigned 8,8
+Var=CDC_config1_drv5_config_val_3 unsigned 16,8
+Var=CDC_config1_drv5_config_val_4 unsigned 24,8
+
+
+[CDC_Config2_Drv5]
+ID=639h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config2_drv5_config_val_1 unsigned 0,8
+Var=CDC_config2_drv5_config_val_2 unsigned 8,8
+Var=CDC_config2_drv5_config_val_3 unsigned 16,8
+Var=CDC_config2_drv5_config_val_4 unsigned 24,8
+
+
+[CDC_Config3_Drv5]
+ID=63ah
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config3_drv5_config_val_1 unsigned 0,8
+Var=CDC_config3_drv5_config_val_2 unsigned 8,8
+Var=CDC_config3_drv5_config_val_3 unsigned 16,8
+Var=CDC_config3_drv5_config_val_4 unsigned 24,8
+
+
+[CDC_Config4_Drv5]
+ID=63bh
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_config4_drv5_config_val_1 unsigned 0,8
+Var=CDC_config4_drv5_config_val_2 unsigned 8,8
+Var=CDC_config4_drv5_config_val_3 unsigned 16,8
+Var=CDC_config4_drv5_config_val_4 unsigned 24,8
