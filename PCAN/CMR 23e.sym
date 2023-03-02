@@ -433,12 +433,11 @@ Var=DIM_busCurrent unsigned 16,16 /u:mA
 
 [DIM_Request]
 ID=235h
-DLC=3
+DLC=2
 CycleTime=100
 Timeout=1000
 Var=DIM_requestState unsigned 0,8 /e:State
 Var=DIM_requestGear unsigned 8,8 /e:Gear
-Var=DIM_requestDRSMode DRS_MODE 16,8
 
 [DIM_Actions]
 ID=515h
