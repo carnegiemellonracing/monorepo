@@ -11,10 +11,10 @@
 /** @brief setting the thresholds for the backgrounds to turn yellow and red*/
 #define AC_YELLOW_THRESHOLD 55
 #define AC_RED_THRESHOLD 57
-#define MOTOR_YELLOW_THRESHOLD 60
-#define MOTOR_RED_THRESHOLD 70
-#define MC_YELLOW_THRESHOLD 35
-#define MC_RED_THRESHOLD 40
+#define MOTOR_YELLOW_THRESHOLD 100
+#define MOTOR_RED_THRESHOLD 115
+#define MC_YELLOW_THRESHOLD 48
+#define MC_RED_THRESHOLD 58
 
 void tftInit(void);
 
@@ -23,8 +23,7 @@ void tftInit(void);
 typedef struct {
     bool fsmTimeout;    /**< @brief Has the FSM timed out? */
     bool cdcTimeout;    /**< @brief Has the CDC timed out? */
-    bool ptcfTimeout;   /**< @brief Has the PTCf timed out? */
-    bool ptcpTimeout;   /**< @brief Has the PTCp timed out? */
+    bool ptcTimeout;    /**< @brief Has the PTC timed out? */
     bool vsmTimeout;    /**< @brief Has the VSM timed out? */
     bool apcTimeout;    /**< @brief Has the APC timed out? */
     bool hvcTimeout;    /**< @brief Has the HVC timed out? */

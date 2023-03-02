@@ -13,6 +13,8 @@
  * Replace/add more ADC channel configurations here as appropriate. Each
  * enumeration value of `adcChannel_t` should get a configuration.
  *
+ * TODO: UPDATE PIN CONFIGS
+ * 
  * @see `CMR/adc.h` for various initialization values.
  */
 static cmr_adcChannel_t adcChannels[ADC_LEN] = {
@@ -25,8 +27,43 @@ static cmr_adcChannel_t adcChannels[ADC_LEN] = {
     },
     [ADC_ISENSE] = {
         .channel = ADC_CHANNEL_1,
-        .port = GPIOB,
-        .pin = GPIO_PIN_0,
+        .port = GPIOA,
+        .pin = GPIO_PIN_1,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
+    [ADC_CH1] = {
+        .channel = ADC_CHANNEL_8, // TODO: No ADC channel
+        .port = GPIOA,
+        .pin = GPIO_PIN_8,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
+    [ADC_CH2] = {
+        .channel = ADC_CHANNEL_15, // TODO: No ADC channel
+        .port = GPIOC,
+        .pin = GPIO_PIN_10,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
+    [ADC_CH3] = {
+        .channel = ADC_CHANNEL_14, // TODO: No ADC channel
+        .port = GPIOC,
+        .pin = GPIO_PIN_11,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
+    [ADC_CH4] = {
+        .channel = ADC_CHANNEL_5,
+        .port = GPIOA,
+        .pin = GPIO_PIN_5,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
+    [ADC_CH5] = {
+        .channel = ADC_CHANNEL_4,
+        .port = GPIOA,
+        .pin = GPIO_PIN_4,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     }
@@ -47,12 +84,13 @@ void adcInit(void) {
 }
 
 /**
- * @brief Reads an ADC channel's value.
+ * @brief Reads the given ADC channel's latest value.
  *
  * @param channel The channel.
- * @return The channel's last sampled value.
+ *
+ * @return The read value.
  */
-uint16_t adcRead(adcChannels_t channel) {
+uint32_t adcRead(adcChannel_t channel) {
     return cmr_adcRead(&adc, channel);
 }
 

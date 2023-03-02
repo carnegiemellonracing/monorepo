@@ -9,6 +9,111 @@
 #include "gpio.h"   // GPIO interface
 #include "can.h"    // can interface
 #include "stdlib.h"
+#include "expanders.h"
+
+extern volatile bool flush_config_screen_to_cdc;
+/** @brief declaration of config screen variables */
+volatile bool config_increment_up_requested = false;
+/** @brief declaration of config screen variables */
+volatile bool config_increment_down_requested = false;
+/** @brief declaration of config screen variables */
+volatile bool config_scroll_requested = false;
+/** @brief declaration of what screen mode one is in */
+volatile bool in_config_screen = false;
+/** @brief decleration of if the DIM is waiting for a new driver config */
+volatile bool waiting_for_cdc_new_driver_config;
+/** @brief Checks to see if the screen has been setup before and if not will appropriately draw it */
+volatile bool dim_first_time_config_screen;
+/** @brief Checks to see if the screen needs to be redrawn after getting new driver profiles */
+volatile bool redraw_new_driver_profiles;
+
+
+void actionOneButton(bool pressed){
+    if(inConfigScreen() == true){
+    	config_scroll_requested = true;
+		return;
+    }
+}
+
+void actionTwoButton(bool pressed){
+    if(inConfigScreen() == true){
+    	config_scroll_requested = true;
+		return;
+    }
+}
+
+/**
+ * @brief Handles regen up button presses.
+ *
+ * @param pressed `true` if button is currently pressed.
+ */
+void regenUpButton(bool pressed) {
+    if (in_config_screen){
+    	config_increment_up_requested = true;
+        return;
+    }
+
+	if (!pressed) {
+        return;
+    }
+
+    if (regenStep < REGEN_STEP_NUM) {
+        regenStep++;
+    }
+    // setNumLeds(regenStep);
+}
+/**
+ * @brief Handles regen down button presses.
+ *
+ * @param pressed `true` if button is currently pressed.
+ */
+void regenDownButton(bool pressed) {
+    if (in_config_screen){
+    	config_increment_down_requested = true;
+        return;
+    }
+
+
+    if (!pressed) {
+        return;
+    }
+
+    if (regenStep > 0) {
+        regenStep--;
+    }
+    // setNumLeds(regenStep);
+}
+
+void exitConfigScreen(){
+    // the first time the user presses the exit button, it'll flush the memory to the cdc
+    // the second time it'll exit the config screen because it'll be dependent having 
+    // recieved the message from CDC
+    if (flush_config_screen_to_cdc == false){
+        flush_config_screen_to_cdc = true;
+        waiting_for_cdc_to_confirm_config = true;
+        return;
+    }
+    if (waiting_for_cdc_to_confirm_config == false){
+        in_config_screen = false;
+    }
+}
+
+void enterConfigScreen(){
+    // make sure you've booted and you can enter by seeing if
+    // waiting for cdc
+
+
+    if (in_config_screen == false && 
+    config_screen_values_received_on_boot && 
+    stateGetVSM() == CMR_CAN_GLV_ON && stateGetVSMReq() == CMR_CAN_GLV_ON){
+        in_config_screen = true;
+        dim_first_time_config_screen = true;
+    }
+}
+
+bool inConfigScreen() {
+    return in_config_screen;
+}
 
 /** @brief DIM state. */
 static volatile struct {
@@ -141,7 +246,7 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
                    (vsmReq == CMR_CAN_HV_EN) ||
                    (vsmReq == CMR_CAN_RTD);
         case CMR_CAN_RTD:
-            return ((vsmReq == CMR_CAN_HV_EN) & slowEnough()) ||
+            return ((vsmReq == CMR_CAN_HV_EN)) ||
                    (vsmReq == CMR_CAN_RTD);
         case CMR_CAN_ERROR:
             return (vsmReq == CMR_CAN_GLV_ON);
@@ -161,6 +266,12 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
  */
 void stateVSMUpButton(bool pressed) {
     if (!pressed) {
+        return;
+    }
+    // Exit the config screen
+    if(inConfigScreen() == true){
+        // don't worry this will check to make sure we're in glv mode
+        exitConfigScreen();
         return;
     }
 
@@ -190,6 +301,22 @@ void stateVSMDownButton(bool pressed) {
     if (!pressed) {
         return;
     }
+
+    // // TODO: modifiy only if in config screen
+    // if (in_config_screen){
+    //     config_increment_down_requested = true;
+    //     return; 
+    // } 
+
+
+     // Enter the config screen
+     if(inConfigScreen() == false){
+         // don't worry this will check to make sure we're in glv mode
+         enterConfigScreen();
+         // Enter Config Screen worked, return to avoid other state down logic
+         if(inConfigScreen() == true) return;
+     }
+
 
     cmr_canState_t vsmState = stateGetVSM();
     if (state.vsmReq > vsmState) {
@@ -224,6 +351,11 @@ void stateGearDownButton(bool pressed) {
         return;
     }
 
+//    if (in_config_screen){
+//        config_scroll_requested = true;
+//        return;
+//    }
+
     if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
         return;     // Can only change gears in HV_ENand GLV_ON.
     }
@@ -250,6 +382,13 @@ void stateGearUpButton(bool pressed) {
     if (!pressed) {
         return;
     }
+
+//    // don't run following logic if in config screen
+//    if (in_config_screen){
+//    	config_increment_up_requested = true;
+//        return;
+//        // TODO: Add logic to exit config screen via can message flushing
+//    }
 
     if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
         return;     // Can only change gears in HV_EN and GLV_ON.

@@ -13,6 +13,8 @@
 #include "adc.h"            // GLV voltage
 #include "state.h"          // State interface
 #include "can.h"            // Board-specific CAN interface
+#include "gpio.h"            // Board-specific CAN interface
+
 
 /** @brief Represents a display list. */
 struct tftDL {
@@ -25,7 +27,7 @@ struct tftDL {
 
 /** @brief Raw startup screen */
 static uint32_t tftDL_startupData[] = {
-#include "ESE/startup.rawh"
+#include <DIM-ESE/startup.rawh>
 };
 
 /** @brief Packets to send to the DL on startup.
@@ -47,14 +49,7 @@ const tftDL_t tftDL_startup = {
 
 /** @brief GLV Screen */
 static uint32_t tftDL_errorData[] = {
-#include "ESE/errors.rawh"
-};
-
-/** @brief Packets to send to the DL on error.
- * See datasheet */
-static const tftContent_t *tftDL_errorContent[] = {
-    &tftContent_RobotoMono_Bold_72_L4,
-    &tftContent_RobotoMono_Bold_40_L4,
+#include <DIM-ESE/errors.rawh>
 };
 
 /** @brief Complete data required to draw the error screen.
@@ -63,21 +58,28 @@ const tftDL_t tftDL_error = {
     .len = sizeof(tftDL_errorData),
     .data = tftDL_errorData,
 
-    .contentLen = sizeof(tftDL_errorContent) / sizeof(tftDL_errorContent[0]),
-    .content = tftDL_errorContent
+    .contentLen = 0,
+    .content = NULL
+};
+
+/** @brief Config Screen */
+static uint32_t tftDL_configData[] = {
+#include <DIM-ESE/config.rawh>
+};
+
+/** @brief Complete data required to draw the error screen.
+ * Exposed to interface consumers. */
+const tftDL_t tftDL_config = {
+    .len = sizeof(tftDL_configData),
+    .data = tftDL_configData,
+
+    .contentLen = 0,
+    .content = NULL
 };
 
 /** @brief RTD Screen */
 static uint32_t tftDL_RTDData[] = {
-#include "ESE/RTD.rawh"
-};
-
-/** @brief Complete data required to draw the
- * ready-to-drive screen.
- * Exposed to interface consumers. */
-static const tftContent_t *tftDL_RTDContent[] = {
-    &tftContent_RobotoMono_Bold_72_L4,
-    &tftContent_RobotoMono_Bold_40_L4,
+#include <DIM-ESE/RTD.rawh>
 };
 
 /** @brief Complete data required to draw the
@@ -87,8 +89,8 @@ const tftDL_t tftDL_RTD = {
     .len = sizeof(tftDL_RTDData),
     .data = tftDL_RTDData,
 
-    .contentLen = sizeof(tftDL_RTDContent) / sizeof(tftDL_RTDContent[0]),
-    .content = tftDL_RTDContent
+    .contentLen = 0,
+    .content = NULL
 };
 
 /** @brief How to draw a single bar dynamically. */
@@ -277,9 +279,9 @@ void tftDL_RTDUpdate(
     int32_t glvVoltage_V
 ) {
     tftDL_RTDwriteInt(ESE_HV_VOLTAGE_STR, 4, "%3ld", hvVoltage_mV / 1000);
-    tftDL_RTDwriteInt(ESE_MOTOR_TEMP_STR, 3, "%2ld", motorTemp_C);
-    tftDL_RTDwriteInt(ESE_AC_TEMP_STR, 3, "%2ld", acTemp_C);
-    tftDL_RTDwriteInt(ESE_MC_TEMP_STR, 3, "%2ld", mcTemp_C);
+    tftDL_RTDwriteInt(ESE_MOTOR_TEMP_STR, 4, "%3ld", motorTemp_C);
+    tftDL_RTDwriteInt(ESE_AC_TEMP_STR, 4, "%3ld", acTemp_C);
+    tftDL_RTDwriteInt(ESE_MC_TEMP_STR, 4, "%3ld", mcTemp_C);
     tftDL_RTDwriteInt(ESE_RTD_GLV_STR, 3, "%2d", glvVoltage_V);
     tftDL_RTDwriteInt(ESE_POWER_STR, 3, "%2ld", power_kW);
 
@@ -349,16 +351,13 @@ void tftDL_errorUpdate(
         "%2dV", err->glvVoltage_V
     );
 
-
-    tftDL_showErrorState(ESE_FSM_COLOR, err->fsmTimeout);
-    tftDL_showErrorState(ESE_CDC_COLOR, err->cdcTimeout);
-    tftDL_showErrorState(ESE_PTCf_COLOR, err->ptcfTimeout);
-    tftDL_showErrorState(ESE_PTCp_COLOR, err->ptcpTimeout);
+    tftDL_showErrorState(ESE_PTCp_COLOR, err->ptcTimeout);
+    tftDL_showErrorState(ESE_PTCf_COLOR, err->ptcTimeout);
     tftDL_showErrorState(ESE_APC_COLOR, err->apcTimeout);
     tftDL_showErrorState(ESE_HVC_COLOR, err->hvcTimeout);
     tftDL_showErrorState(ESE_VSM_COLOR, err->vsmTimeout);
-    tftDL_showErrorState(ESE_VSM_COLOR, err->vsmTimeout);
-    tftDL_showErrorState(ESE_VSM_COLOR, err->vsmTimeout);
+    tftDL_showErrorState(ESE_FSM_COLOR, err->fsmTimeout);
+    tftDL_showErrorState(ESE_CDC_COLOR, err->cdcTimeout);
     tftDL_showErrorState(ESE_OVERVOLT_COLOR, err->overVolt);
     tftDL_showErrorState(ESE_UNDERVOLT_COLOR, err->underVolt);
     tftDL_showErrorState(ESE_HVC_OVERTEMP_COLOR, err->hvcoverTemp);
@@ -415,3 +414,173 @@ void tftDLWrite(tft_t *tft, const tftDL_t *tftDL) {
     tftCoCmd(tft, tftDL->len, tftDL->data, true);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+void setConfigContextString(int8_t scroll_index) {
+    char* context_string = config_menu_main_array[scroll_index].ESE_context_text_variable;
+    uint32_t context_string_address_offset = ESE_CONTEXT_VALUE;
+    uint32_t *context_string_pointer = (void *) (tftDL_configData + context_string_address_offset);
+    sprintf((char *) context_string_pointer, context_string);
+
+}
+
+// implements wraparound. Can't use modulo since it's min is not always 0. Could do (val % max-min) + min but that's less readable
+uint8_t configValueIncrementer(uint8_t value, uint8_t value_min, uint8_t value_max, bool up_requested, bool down_requested) {
+    uint8_t new_value = value;
+    if(up_requested){
+        if (value + 1 > value_max)
+            new_value = value_min;
+        else
+            new_value++;
+    }
+    if(down_requested){
+        if (value - 1 < value_min)
+            new_value = value_max;
+        else
+            new_value--;
+    }
+    return new_value;
+}
+
+void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_requested) {
+    // calculate the varoius addresses to modify 
+    uint32_t value_address_offset = config_menu_main_array[scroll_index].ESE_value_variable;
+    uint32_t *value_address_pointer = (void *) (tftDL_configData + value_address_offset);
+
+    // lut for custom enum
+    char** custom_enum_lut = config_menu_main_array[scroll_index].ESE_value_string_lut;
+    
+    // type of value being modified
+    cmr_config_t value_type = config_menu_main_array[scroll_index].value.type;
+    // current value of the item
+    uint8_t value = config_menu_main_array[scroll_index].value.value;
+    uint8_t value_min = config_menu_main_array[scroll_index].min;
+    uint8_t value_max = config_menu_main_array[scroll_index].max;
+    
+    // unsigned_integer,
+    // custom_enum
+
+    char buffer[5];
+
+    switch(value_type){
+        case unsigned_integer: 
+            // treat it like an integer
+        case integer:
+            value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested); 
+            snprintf((char *) value_address_pointer, 4, "%3d", value);
+            break;
+        case boolean:
+            if(up_requested || down_requested){
+            	value = !value;
+            }
+            sprintf((char *) value_address_pointer, config_boolean_string_lut[value]);
+            break;
+        case float_1_decimal:
+            value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested); 
+            snprintf(buffer, 5, "%4d", value);
+            buffer[0] = buffer[1];
+            buffer[1] = buffer[2];
+            buffer[2] = '.';
+            sprintf((char *) value_address_pointer, buffer);
+            break;
+        case float_2_decimal:
+            value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested); 
+            snprintf(buffer, 5, "%4d", value);
+            buffer[0] = buffer[1];
+            buffer[1] = '.';
+            sprintf((char *) value_address_pointer, buffer);
+            break;
+        case custom_enum:
+        	// -1 since index off of 0
+            value = configValueIncrementer(value, value_min, value_max - 1, up_requested, down_requested);
+            sprintf((char *) value_address_pointer, custom_enum_lut[value]);
+    };
+
+    //Flush the modified value
+    config_menu_main_array[scroll_index].value.value = value;
+}
+
+void setConfigSelectionColor(int8_t scroll_index) {
+    // index who's color to restore
+    uint8_t restore_index = scroll_index - 1; // underflow is expected :)
+	if (scroll_index == 0){
+		restore_index = MAX_MENU_ITEMS;
+		restore_index--; // issues with this not working in one line since MAX_MENU_ITEMS is a #define hence 2 lines
+	}
+    
+    // calculate the varoius addresses to modify 
+    uint32_t background_address_offset = config_menu_main_array[scroll_index].ESE_background_color_variable;
+    uint32_t *background_item_pointer = (void *) (tftDL_configData + background_address_offset);
+
+    uint32_t restore_background_address_offset = config_menu_main_array[restore_index].ESE_background_color_variable;
+    uint32_t *restore_background_item_pointer = (void *) (tftDL_configData + restore_background_address_offset);
+
+    // modify the actual addresses 
+    *background_item_pointer = (uint32_t) SELECTED_MENU_COLOR;
+    *restore_background_item_pointer = (uint32_t) NOT_SELECTED_MENU_COLOR;
+
+    return;
+}
+
+void drawLatestConfigValues(){
+    // loop through all the elements of the array and appropriately render the variables
+    for(int i = 0; i < MAX_MENU_ITEMS; i++){
+        setConfigIncrementValue(i, false, false);
+    }
+}
+
+// TODO: Document
+void tftDL_configUpdate(){
+    if (dim_first_time_config_screen){
+    	drawLatestConfigValues();
+    	dim_first_time_config_screen = false;
+    }
+    if (redraw_new_driver_profiles){
+        drawLatestConfigValues();
+        redraw_new_driver_profiles = false;
+    }
+
+    static int8_t current_scroll_index = -1; // start with a value of -1 to enter driver config first
+    
+    // update scroll and clear selection values
+    if (config_scroll_requested) {
+    	current_scroll_index++;
+        current_scroll_index = current_scroll_index % MAX_MENU_ITEMS;
+
+
+        // clear the selection value just in case no one accidently presses both buttons at the same time
+        config_scroll_requested = false;
+
+        // call the background color updater
+        setConfigSelectionColor(current_scroll_index);
+        setConfigContextString(current_scroll_index);
+        
+        config_increment_up_requested = false;
+        config_increment_down_requested = false;
+    }
+
+    // if there are no scroll values, then check/implement selection values
+    else if (config_increment_up_requested || config_increment_down_requested) {
+
+        if (config_increment_down_requested && config_increment_up_requested)
+            return; // both are an error
+        
+        // TODO: Finish multiple driver integration
+        if(current_scroll_index == DRIVER_PROFILE_INDEX) return;
+
+        setConfigIncrementValue(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
+        config_increment_up_requested = false;
+        config_increment_down_requested = false;
+
+        // handle new driver requested
+        if(current_scroll_index == DRIVER_PROFILE_INDEX){
+            waiting_for_cdc_new_driver_config = true;
+            flush_config_screen_to_cdc = true;
+            while(waiting_for_cdc_new_driver_config){
+                // wait for the new driver to be selected
+            }
+        }
+    }
+
+    return;
+    
+}

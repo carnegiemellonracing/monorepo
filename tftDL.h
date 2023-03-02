@@ -27,8 +27,16 @@ extern const tftDL_t tftDL_RTD;
 /** @brief Exported error screen definition for interface consumers. */
 extern const tftDL_t tftDL_error;
 
+/** @brief Exported error screen definition for interface consumers. */
+extern const tftDL_t tftDL_config;
+
 /** @brief Text buffer for messages from RAM */
-extern char RAMBUF[];
+// extern char RAMBUF[];
+
+/** @brief draw out all the cells if the first time the screen is being displayed */
+extern volatile bool dim_first_time_config_screen;
+/** @brief Checks to see if the screen needs to be redrawn after getting new driver profiles */
+extern volatile bool redraw_new_driver_profiles;
 
 // Sizes for displaying to screen
 #define GEARDISPLAYLEN 5
@@ -62,6 +70,8 @@ void tftDL_RTDUpdate(
 void tftDL_errorUpdate(
     tft_errors_t *err
 );
+
+void tftDL_configUpdate();
 
 void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yellow, bool temp_red);
 

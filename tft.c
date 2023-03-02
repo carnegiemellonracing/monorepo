@@ -20,7 +20,7 @@
 #include "adc.h"
 
 /** @brief Expected chip ID. */
-#define TFT_CHIP_ID 0x00011208
+#define TFT_CHIP_ID 0x00011308
 
 /** @brief Display reset time, in milliseconds. */
 #define TFT_RESET_MS 50
@@ -48,6 +48,7 @@ static tft_t tft;
 
 static void drawErrorScreen(void);
 static void drawRTDScreen(void);
+static void drawConfigScreen(void);
 
 /**
  * @brief Sends a command to the display.
@@ -261,22 +262,23 @@ static void tftUpdate(void *pvParameters) {
 
     /** @brief Display register initialization values. */
     static const tftInit_t tftInits[] = {
-        { .addr = TFT_ADDR_HCYCLE, .val = 408 },
-        { .addr = TFT_ADDR_HOFFSET, .val = 70 },
+        { .addr = TFT_ADDR_HCYCLE, .val = 928 },
+        { .addr = TFT_ADDR_HOFFSET, .val = 88 },
         { .addr = TFT_ADDR_HSYNC0, .val = 0 },
-        { .addr = TFT_ADDR_HSYNC1, .val = 10 },
-        { .addr = TFT_ADDR_VCYCLE, .val = 263 },
-        { .addr = TFT_ADDR_VOFFSET, .val = 13 },
+        { .addr = TFT_ADDR_HSYNC1, .val = 48 },
+        { .addr = TFT_ADDR_VCYCLE, .val = 525 },
+        { .addr = TFT_ADDR_VOFFSET, .val = 32 },
         { .addr = TFT_ADDR_VSYNC0, .val = 0 },
-        { .addr = TFT_ADDR_VSYNC1, .val = 2 },
-        { .addr = TFT_ADDR_SWIZZLE, .val = 2 },
-        { .addr = TFT_ADDR_PCLK_POL, .val = 1 },
-        { .addr = TFT_ADDR_CSPREAD, .val = 0 },
-        { .addr = TFT_ADDR_HSIZE, .val = 320 },
-        { .addr = TFT_ADDR_VSIZE, .val = 240 },
+        { .addr = TFT_ADDR_VSYNC1, .val = 3 },
+        { .addr = TFT_ADDR_SWIZZLE, .val = 0 },
+        { .addr = TFT_ADDR_DITHER, .val = 1 },
+        { .addr = TFT_ADDR_PCLK_POL, .val = 0 },
+        { .addr = TFT_ADDR_CSPREAD, .val = 1 },
+        { .addr = TFT_ADDR_HSIZE, .val = 800 },
+        { .addr = TFT_ADDR_VSIZE, .val = 480 },
         { .addr = TFT_ADDR_GPIOX_DIR, .val = (1 << 15) },
         { .addr = TFT_ADDR_GPIOX, .val = (1 << 15) },
-        { .addr = TFT_ADDR_PCLK, .val = 6 }
+        { .addr = TFT_ADDR_PCLK, .val = 2 }
     };
 
     tft_t *tft = pvParameters;
@@ -315,18 +317,31 @@ static void tftUpdate(void *pvParameters) {
     /* Display Startup Screen for fixed time */
     tftDLContentLoad(tft, &tftDL_startup);
     tftDLWrite(tft, &tftDL_startup);
-    vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
+    //vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS); //TODO: Uncomment
 
     /* Update Screen Info from CAN Indefinitely */
     while (
         vTaskDelayUntil(&lastWakeTime, tftUpdate_period_ms), 1
     ) {
-        if(stateGetVSM() == CMR_CAN_ERROR){
+        if (inConfigScreen()){
+            drawConfigScreen();
+        }
+        else if (stateGetVSM() == CMR_CAN_ERROR){
             drawErrorScreen();
         } else {
             drawRTDScreen();
         }
     }
+}
+
+/**
+ * @brief Draws the Display Updated List to the Screen
+ *
+ */
+static void drawConfigScreen(void) {
+    tftDLContentLoad(&tft, &tftDL_config);
+    tftDL_configUpdate();
+    tftDLWrite(&tft, &tftDL_config);
 }
 
 /**
@@ -358,8 +373,7 @@ static void drawErrorScreen(void) {
     /* Timeouts */
     err.fsmTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_FSM);
     err.cdcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_CDC);
-    err.ptcfTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_PTCf);
-    err.ptcpTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_PTCp);
+    err.ptcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_PTC);
     err.apcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_APC);
     err.hvcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_HVC);
     err.vsmTimeout = 0;
@@ -434,6 +448,10 @@ static void drawRTDScreen(void) {
     volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps =
         (void *) metaHVCPackTemps->payload;
 
+    cmr_canRXMeta_t *metaEMDvalues = canRXMeta + CANRX_EMD_VALUES;
+    volatile cmr_canEMDMeasurements_t *canEMDvalues =
+    	(void *) metaEMDvalues->payload;
+
     // PTC Temps
     /* cmr_canRXMeta_t *metaPTCfLoopA = canRXMeta + CANRX_PTCf_LOOP_A_TEMPS;
     volatile cmr_canPTCfLoopTemp_A_t *canPTCfLoopTemp_A = (void *) metaPTCfLoopA->payload;
@@ -504,17 +522,24 @@ static void drawRTDScreen(void) {
         }
     }
 
-    /* Pack Voltage */
-    int32_t hvVoltage_mV = canHVCPackVoltage->hvVoltage_mV;
 
-    int32_t glvVoltage = adcRead(ADC_VSENSE) * 8 * 11 / 10 / 1000; // TODO: figure out where 8, 10 come from
+
+    /* Pack Voltage */
+  int32_t hvVoltage_mV = canHVCPackVoltage->battVoltage_mV;
+    //  float hvVoltage_mV_f = canEmdHvVoltage(*canEMDvalues) * 1000.0f;
+    //  int32_t hvVoltage_mV = (int32_t) hvVoltage_mV_f;
+
+    // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
+    int32_t glvVoltage = adcRead(ADC_VSENSE) * 8 * 11 / 10 / 1000;
 
     /* Motor Power Draw*/
-    int32_t current_A = computeCurrent_A(canAMK_FL_Act1) +
-                        computeCurrent_A(canAMK_FR_Act1) + 
-                        computeCurrent_A(canAMK_RL_Act1) + 
-                        computeCurrent_A(canAMK_RR_Act1);
-    int32_t power_kW = current_A * hvVoltage_mV / 1000000;
+//   int33_t current_A = computeCurrent_A(canAMK_FL_Act1) +
+//                       computeCurrent_A(canAMK_FR_Act2) +
+//                       computeCurrent_A(canAMK_RL_Act2) +
+//                       computeCurrent_A(canAMK_RR_Act2);
+    int32_t current_A = 0;
+
+    int32_t power_kW = (current_A * (hvVoltage_mV / 1000)) / 1000;
 
     /* Wheel Speed */
         /* Wheel Speed to Vehicle Speed Conversion

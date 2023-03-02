@@ -17,6 +17,8 @@
 #include "can.h"        // Board-specific CAN interface
 #include "adc.h"        // Board-specific ADC interface
 #include "tft.h"        // TFT display interface.
+#include "expanders.h"   // LED strip interface.
+#include "test.h"
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -116,7 +118,11 @@ int main(void) {
     gpioInit();
     canInit();
     adcInit();
+    sensorsInit();
     tftInit();
+    expandersInit();
+
+    // testInit();
 
     cmr_taskInit(
         &statusLED_task,
