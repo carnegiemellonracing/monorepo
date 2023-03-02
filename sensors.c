@@ -43,11 +43,11 @@ static const uint32_t ADC_DIGITAL_HIGH_THRES = 2450;
  * @brief Mapping of sensor channels to ADC channels.
  */
 const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
-    [SENSOR_CH_TPOS_L_U8]      = ADC_CH1,
-    [SENSOR_CH_TPOS_R_U8]      = ADC_CH3,
-    [SENSOR_CH_BPOS_U8]        = ADC_CH4,
-    [SENSOR_CH_BPRES_PSI]      = ADC_CH5,
-    [SENSOR_CH_SWANGLE_DEG]    = ADC_CH2,
+    [SENSOR_CH_TPOS_L_U8]      = ADC_TPOS_L,
+    [SENSOR_CH_TPOS_R_U8]      = ADC_TPOS_R,
+    [SENSOR_CH_BPOS_U8]        = ADC_BPRES,
+    [SENSOR_CH_BPRES_PSI]      = ADC_BPRES,
+    [SENSOR_CH_SWANGLE_DEG]    = ADC_SWANGLE,
     [SENSOR_CH_VOLTAGE_MV]     = ADC_VSENSE,
     [SENSOR_CH_AVG_CURRENT_MA] = ADC_ISENSE,
     [SENSOR_CH_TPOS_IMPLAUS]   = ADC_LEN  // Not an ADC channel!
