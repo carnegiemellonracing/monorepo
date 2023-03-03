@@ -21,6 +21,7 @@
 #include "state.h"  // State interface
 #include "tftDL.h"  // For RAM buffer indices
 #include "gpio.h"   // For actionButtonPressed status
+#include "expanders.h" // For Paddles
 
 // Config Screen update requested
 bool volatile flush_config_screen_to_cdc = false;
@@ -262,6 +263,8 @@ static void canTX100Hz(void *pvParameters) {
             .action1ButtonPressed = action1ButtonPressed,
             .action2ButtonPressed = action2ButtonPressed,
             .regenPercent = regenPercent,
+            .paddleLeft = (uint8_t) (((float) expanderGetClutch(EXP_CLUTCH_1)) / ((float) (0xFFF)) * ((float) UINT8_MAX)),
+            .paddleRight = (uint8_t) (((float) expanderGetClutch(EXP_CLUTCH_2)) / ((float) (0xFFF)) * ((float) UINT8_MAX)),
         };
         canTX(
             CMR_CANID_DIM_ACTIONS,
