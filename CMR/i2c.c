@@ -89,6 +89,46 @@ void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *handle) {
 }
 
 /**
+ * @brief Returns the AF for the given I2C instance and GPIO port.
+ * @param instance The I2C instance.
+ * @param port The GPIO port.
+ * @param pin The GPIO pin.
+ * @return The AF for the given I2C instance and GPIO port.
+ */
+uint32_t i2cGPIOAF(I2C_TypeDef *instance, GPIO_TypeDef *port, uint32_t pin) {
+    switch (instance) {
+        case I2C1: {
+            return GPIO_AF4_I2C1;
+            break;
+        }
+        case I2C2: {
+            if (port == GPIOB && (pin == GPIO_PIN_10 || pin == GPIO_PIN_11)) {
+                return GPIO_AF4_I2C2;
+            } else if (port == GPIOB) {
+                return GPIO_AF9_I2C2;
+            } else {
+                return GPIO_AF4_I2C2;
+            }
+            break;
+        }
+        case I2C3: {
+            if (port == GPIOA) {
+                return GPIO_AF4_I2C3;
+            } else if (port == GPIOB) {
+                return GPIO_AF9_I2C3;
+            } else {
+                return GPIO_AF4_I2C3;
+            }
+            break;
+        }
+        default: {
+            cmr_panic("Invalid I2C instance!");
+        }
+    }
+}
+
+
+/**
   * @brief I2C Transmission Function
   *
   * @param i2c I2C instance to transmit on.
@@ -189,24 +229,13 @@ void cmr_i2cInit(
         .Mode = GPIO_MODE_AF_OD,
         .Pull = GPIO_PULLUP,
         .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
-        .Alternate = GPIO_AF4_I2C1
+        .Alternate = i2cGPIOAF(instance, i2cClkPort, i2cClkPin)
     };
 
     HAL_GPIO_Init(i2cClkPort, &pinConfig);
     pinConfig.Pin = i2cDataPin;
+    pinConfig.Alternate = i2cGPIOAF(instance, i2cDataPort, i2cDataPin)
     HAL_GPIO_Init(i2cDataPort, &pinConfig);
-}
-
-uint32_t i2cGPIOAF(I2C_TypeDef *instance) {
-    if (instance == I2C1) {
-        return GPIO_AF4_I2C1;
-    } else if (instance == I2C2) {
-        return GPIO_AF4_I2C2;
-    } else if (instance == I2C3) {
-        return GPIO_AF4_I2C3;
-    } else {
-        cmr_panic("Invalid I2C instance!");
-    }
 }
 
 /**
@@ -302,11 +331,12 @@ void cmr_i2cDmaInit(
         .Mode = GPIO_MODE_AF_OD,
         .Pull = GPIO_PULLUP,
         .Speed = GPIO_SPEED_FREQ_HIGH,
-        .Alternate = i2cGPIOAF(instance)
+        .Alternate = i2cGPIOAF(instance, i2cClkPort, i2cClkPin)
     };
 
     HAL_GPIO_Init(i2cClkPort, &pinConfig);
     pinConfig.Pin = i2cDataPin;
+    pinConfig.Alternate = i2cGPIOAF(instance, i2cDataPort, i2cDataPin)
     HAL_GPIO_Init(i2cDataPort, &pinConfig);
 
     cmr_dmaInit(&(i2c->dmatx_handle));
