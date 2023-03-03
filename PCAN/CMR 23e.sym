@@ -441,13 +441,15 @@ Var=DIM_requestGear unsigned 8,8 /e:Gear
 
 [DIM_Actions]
 ID=515h
-DLC=4
+DLC=6
 CycleTime=100
 Timeout=1000
 Var=DIM_action1ButtonPressed unsigned 0,8
 Var=DIM_action2ButtonPressed unsigned 8,8
 Var=DIM_drsButtonPressed unsigned 16,8
 Var=DIM_regenPercent unsigned 24,8 /u:percent
+Var=DIM_paddleLeft unsigned 32,8
+Var=DIM_paddleRight unsigned 40,8
 
 [PTC_Heartbeat]
 ID=105h

@@ -624,6 +624,8 @@ typedef struct {
     uint8_t action2ButtonPressed;    /**< @brief Status of the action 2 button (Active Low). */
     uint8_t drsButtonPressed;        /**< @brief Status of the AE/DRS button (Active Low). */
     uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
+    uint8_t paddleLeft;              /**< @brief Between 0 and 255 for left paddle pos*/
+    uint8_t paddleRight;             /**< @brief Between 0 and 255 for left paddle pos*/
 } cmr_canDIMActions_t;
 
 // DIM Config Screen data
