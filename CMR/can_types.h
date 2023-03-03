@@ -542,7 +542,8 @@ typedef struct {
 
 /** @brief Central Dynamics Controller Safety Filter states. */
 typedef struct {
-    uint8_t error_count;          /**< @brief number of errors, expect 0 */
+	float filteredCurrent;
+	uint8_t error_count;          /**< @brief number of errors, expect 0 */
     uint8_t packVoltage_over;          /**< @brief when pack voltage exceeds 590 */
     uint8_t packVoltage_under;       /**< @brief when pack voltage under 365 */
 } cmr_canSafetyFilterStates_t;

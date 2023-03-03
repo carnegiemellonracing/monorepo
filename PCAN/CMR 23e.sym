@@ -80,7 +80,7 @@ DLC=6
 CycleTime=100
 Timeout=1000
 Var=VSM_brakePressureRear unsigned 0,16 /u:PSI
-Var=VSM_hallEffect signed 16,16 /u:cA
+Var=VSM_hallEffect signed 16,16 /u:A /f:0.01
 Var=VSM_safetyIn unsigned 32,8 /u:V /f:0.1
 Var=VSM_safetyOut unsigned 40,8 /u:V /f:0.1
 
@@ -1562,8 +1562,11 @@ Var=drsPwmRight unsigned 24,8
 
 [SF_State]
 ID=52Dh
-DLC=3
-Var=Error_Count unsigned 0,8
-Var=Pack_Voltage_Over_Count unsigned 8,8
-Var=Pack_Voltage_Under_Count unsigned 16,8
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=Filtered_Current float 0,32 /u:A
+Var=Error_Count unsigned 32,8
+Var=Pack_Voltage_Over_Count unsigned 40,8
+Var=Pack_Voltage_Under_Count unsigned 48,8
 
