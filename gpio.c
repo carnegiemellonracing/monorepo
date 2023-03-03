@@ -159,25 +159,25 @@ static void drsButtonAction(bool pressed)
 static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
     [EXP_DASH_BUTTON_1] = {
         .buttonState = false,
-        .setAction = &stateVSMUpButton,
+        .setAction = &stateVSMDownButton,
         .lastPressed = 0,
-        .debounce = BUTTON_DEBOUNCE_TIME,
+        .debounce = BUTTON_DEBOUNCE_TIME * 5, // State down has a long debounce time so don't accidentally drop out of HVEN
     },
     [EXP_DASH_BUTTON_2] = {
         .buttonState = false,
-        .setAction = &stateVSMDownButton,
+        .setAction = &stateGearDownButton,
         .lastPressed = 0,
-        .debounce = BUTTON_DEBOUNCE_TIME * 5,
+        .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_DASH_BUTTON_3] = {
         .buttonState = false,
-        .setAction = &stateGearUpButton,
+        .setAction = &stateVSMUpButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_DASH_BUTTON_4] = {
         .buttonState = false,
-        .setAction = &stateGearDownButton,
+        .setAction = &stateGearUpButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
