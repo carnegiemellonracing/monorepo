@@ -311,16 +311,6 @@ void vBMBSampleTask(void *pvParameters) {
 	while (1) {
 		for (uint8_t BMBIndex = 0; BMBIndex < NUM_BMBS; BMBIndex++) {
 			if (failedToInitI2c) break;
-			// if (startingPrecharge) {
-			// 	haltedI2C = true;
-			// 	break;
-			// }
-			// if (haltedI2C) {
-			// 	if (!i2cInitChain()) {
-			// 		failedToInitI2c = true;
-			// 	}
-			// 	haltedI2C = false;
-			// }
 			//since we treat each BMB side as an individual bmb
 			//we just check whether the current bmb index is odd/even
 			uint8_t BMBSide = BMBIndex % 2;
@@ -356,7 +346,6 @@ void vBMBSampleTask(void *pvParameters) {
 		} // end for loop
 		if (!failedToInitI2c && !startingPrecharge)
 			doCellBalanceAllBMBs();
-		//TickType_t temp = xTaskGetTickCount();
 		if (xLastWakeTime+BMB_SAMPLE_TASK_RATE < xTaskGetTickCount()) {
 			// we are already in the past trying to catch up, just give up and sleep for like 10ms
 			xLastWakeTime = xTaskGetTickCount();
