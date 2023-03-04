@@ -152,6 +152,7 @@ typedef enum {
 
     CMR_CANID_DRS_STATE = 0x52C,                /**< @brief DRS state values.*/
 	CMR_CANID_SF_STATE = 0x52D,				/**< @brief Safety Filter state. */
+    CMR_CANID_MOTORPOWER_STATE = 0x52E,				/**< @brief Motor Power state. */
 
     CMR_CANID_AMK_1_ACT_1 = 0x283,              /**< @brief AMK Inverter 1 actual values 1.*/
     CMR_CANID_AMK_1_ACT_2 = 0x285,              /**< @brief AMK Inverter 1 actual values 2.*/

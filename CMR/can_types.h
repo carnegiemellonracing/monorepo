@@ -546,7 +546,14 @@ typedef struct {
 	uint8_t error_count;          /**< @brief number of errors, expect 0 */
     uint8_t packVoltage_over;          /**< @brief when pack voltage exceeds 590 */
     uint8_t packVoltage_under;       /**< @brief when pack voltage under 365 */
-} cmr_canSafetyFilterStates_t;
+} cmr_canCDCSafetyFilterStates_t;
+
+typedef struct {
+    uint16_t motor_power_FL;
+    uint16_t motor_power_FR;
+    uint16_t motor_power_RL;
+    uint16_t motor_power_RR;
+} cmr_canCDCMotorPower_t;
 // ------------------------------------------------------------------------------------------------
 // Central Dynamics Controller (20e)
 

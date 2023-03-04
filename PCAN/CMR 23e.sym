@@ -1570,3 +1570,11 @@ Var=Error_Count unsigned 32,8
 Var=Pack_Voltage_Over_Count unsigned 40,8
 Var=Pack_Voltage_Under_Count unsigned 48,8
 
+[CDC_Motor_Power]
+ID=52Eh
+DLC=8
+Var=motor_power_FL unsigned 0,16
+Var=motor_power_FR unsigned 16,16
+Var=motor_power_RL unsigned 32,16
+Var=motor_power_RR unsigned 48,16
+
