@@ -9,6 +9,7 @@
 #define STATE_H
 
 #include <stdbool.h>    // bool
+#include "expanders.h"
 
 #include "can.h"        // Board-specific CAN interface
 
@@ -17,6 +18,9 @@ cmr_canState_t stateGetVSMReq(void);
 
 cmr_canGear_t stateGetGear(void);
 cmr_canGear_t stateGetGearReq(void);
+
+cmr_canDRSMode_t stateGetDrs(void);
+cmr_canDRSMode_t stateGetDrsReq(void);
 
 void actionOneButton(bool pressed);
 void actionTwoButton(bool pressed);
@@ -32,6 +36,11 @@ void stateVSMDownButton(bool pressed);
 void stateGearUpButton(bool pressed);
 void stateGearDownButton(bool pressed);
 void stateGearUpdate(void);
+
+void stateDrsModeSwitch(expanderRotaryPosition_t pos);
+void stateDrsUpdate(void);
+
+void stateRotary2Switch(expanderRotaryPosition_t pos);
 
 int32_t getAverageWheelRPM(void);
 bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq);

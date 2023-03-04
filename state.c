@@ -120,10 +120,14 @@ static volatile struct {
     cmr_canState_t vsmReq;      /**< @brief Requested VSM state. */
     cmr_canGear_t gear;         /**< @brief Current gear. */
     cmr_canGear_t gearReq;      /**< @brief Requested gear. */
+    cmr_canDrsMode_t drsMode;   /**< @brief Current DRS Mode. */
+    cmr_canDrsMode_t drsReq;    /**< @brief Requested DRS Mode. */
 } state = {
     .vsmReq = CMR_CAN_GLV_ON,
     .gear = CMR_CAN_GEAR_SLOW,
-    .gearReq = CMR_CAN_GEAR_SLOW
+    .gearReq = CMR_CAN_GEAR_SLOW,
+    .drsMode = CMR_CAN_DRSM_CLOSED,
+    .drsReq = CMR_CAN_DRSM_CLOSED
 };
 
 /**
@@ -167,6 +171,15 @@ cmr_canGear_t stateGetGear(void) {
 cmr_canGear_t stateGetGearReq(void) {
     return state.gearReq;
 }
+
+cmr_canDRSMode_t stateGetDrs(void) {
+    return state.drsMode;
+}
+
+cmr_canDRSMode_t stateGetDrsReq(void) {
+    return state.drsReq;
+}
+
 
 /**
  * @brief Gets the average wheel speed reported by the inverters.
@@ -407,6 +420,23 @@ void stateGearUpButton(bool pressed) {
     state.gearReq = gearReq;
 }
 
+void stateDrsModeSwitch(expanderRotaryPosition_t position) {
+    // we can change DRS in any state
+
+    if (position == ROTARY_POS_INVALID) {
+        state.drsReq = CMR_CAN_DRSM_UNKNOWN;
+    } else if (position >= CMR_CAN_DRSM_LEN) { 
+        // set drs mode to closed if dial pos > drs modes
+        state.drsReq = CMR_CAN_DRSM_CLOSED;
+    } else {
+        state.drsReq = position;
+    }
+}
+
+void stateRotary2Switch(expanderRotaryPosition_t position) {
+    // Not implemented
+}
+
 /**
  * @brief Updates state request to be consistent with VSM state.
  */
@@ -421,3 +451,6 @@ void stateGearUpdate(void) {
     state.gear = state.gearReq;
 }
 
+void stateDrsUpdate(void) {
+    state.drsMode = state.drsReq;
+}

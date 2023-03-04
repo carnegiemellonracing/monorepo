@@ -201,14 +201,18 @@ static void canTX10Hz(void *pvParameters) {
         cmr_canState_t stateVSMReq = stateGetVSMReq();
         cmr_canGear_t gear = stateGetGear();
         cmr_canGear_t gearReq = stateGetGearReq();
+        cmr_canDRSMode_t drsMode = stateGetDrs();
+        cmr_canDRSMode_t drsReq = stateGetDrsReq();
 
         if (
             (stateVSM != stateVSMReq) ||
-            (gear != gearReq)
+            (gear != gearReq) ||
+            (drsMode != drsReq)
         ) {
             cmr_canDIMRequest_t request = {
                 .requestedState = stateVSMReq,
-                .requestedGear = gearReq
+                .requestedGear = gearReq,
+                .requestedDrsMode = drsReq
             };
             canTX(
                 CMR_CANID_DIM_REQUEST,
@@ -217,6 +221,7 @@ static void canTX10Hz(void *pvParameters) {
             );
 
             stateGearUpdate();
+            stateDrsUpdate();
         }
         sendPowerDiagnostics();
 

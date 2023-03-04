@@ -168,9 +168,21 @@ static void tftDL_showGear() {
         [CMR_CAN_GEAR_ACCEL] =     "Accel",
         [CMR_CAN_GEAR_TEST] =      " Test"
     };
+
+    size_t drsCharsLen = 6;
+    static const char *drsChars[] = {
+        [CMR_CAN_DRSM_UNKNOWN] =      "?????",
+        [CMR_CAN_DRSM_CLOSED] =       "CLOSE",
+        [CMR_CAN_DRSM_OPEN] =         " OPEN",
+        [CMR_CAN_DRSM_TOGGLE] =       "TOGGL",
+        [CMR_CAN_DRSM_HOLD] =         " HOLD",
+        [CMR_CAN_DRSM_AUTO] =         " AUTO",
+    };
+
     cmr_canState_t stateVSM = stateGetVSM();
     cmr_canGear_t gear = stateGetGear();
     cmr_canState_t stateVSMReq = stateGetVSMReq();
+    cmr_canDrsMode_t drsMode = stateGetDrs();
 
     const char* stateChar = (stateVSM < stateCharsLen)
         ? stateChars[stateVSM]
@@ -183,6 +195,10 @@ static void tftDL_showGear() {
     const char* stateReqChar = (stateVSMReq < stateCharsLen)
             ? stateChars[stateVSMReq]
             : stateChars[CMR_CAN_UNKNOWN];
+    
+    const char* drsChar = (drsMode < drsCharsLen)
+            ? drsChars[drsMode]
+            : drsChars[CMR_CAN_DRSM_UNKNOWN];
 
     static struct {
         char buf[STATEDISPLAYLEN];
@@ -201,6 +217,12 @@ static void tftDL_showGear() {
     } *const reqState_str = (void *) (tftDL_RTDData + ESE_REQ_STATE_STR);
 
     memcpy((void *) reqState_str->buf, (void *) stateReqChar, STATEDISPLAYLEN);
+
+    static struct {
+        char buf[DRSDISPLAYLEN];
+    } *const drsState_str = (void *) (tftDL_RTDData + ESE_DRS_MODE_STR);
+
+    memcpy((void *) drsState_str->buf, (void *) drsChar, DRSDISPLAYLEN);
 }
 
 /**

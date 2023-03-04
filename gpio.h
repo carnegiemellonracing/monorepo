@@ -10,6 +10,7 @@
 
 #include <stdbool.h>    // bool
 #include <CMR/gpio.h>   // GPIO interface
+#include "expanders.h"   // GPIO expanders interface
 
 /** @brief Macros for regen */
 #define REGEN_MAX 50
@@ -54,6 +55,12 @@ typedef struct {
     TickType_t lastPressed;
     TickType_t debounce;
 } expanderButtonEvent_t;
+
+typedef void (*rotaryAction_f) (expanderRotaryPosition_t); 
+typedef struct {
+    expanderRotaryPosition_t position;
+    rotaryAction_f setAction;
+} expanderRotaryEvent_t;
 
 /** @brief AE/DRS button value */
 extern bool drsButtonPressed;
