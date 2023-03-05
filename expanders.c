@@ -394,7 +394,8 @@ static bool getPinValueFromConfig(expanderPinConfig_t config)
     // Mask out bit corresponding to pin
     uint8_t mask = 1 << config.pin;
     configASSERT(data != NULL);
-    return data[config.port] & mask;
+    // ~data because sense lines are active low
+    return (~(data[config.port])) & mask;
 }
 
 /**
@@ -408,7 +409,7 @@ bool expanderGetButtonPressed(expanderButton_t button)
 {
     expanderPinConfig_t buttonConfig = buttons[button];
     // Buttons are active low, negate for active high
-    return !getPinValueFromConfig(buttonConfig);
+    return getPinValueFromConfig(buttonConfig);
 }
 
 expanderRotaryPosition_t expanderGetRotary(expanderRotary_t rotary)
