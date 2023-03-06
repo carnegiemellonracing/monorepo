@@ -1,0 +1,84 @@
+/**
+ * @file fir_filter.c
+ * @brief Naive implementation of FIR (finite impulse response) filters
+ * 
+ * @warning The user should statically allocate buffers for samples and
+ * filter coefficients, and ensure that their lengths are correct
+ */
+
+#include <inttypes.h>
+#include <stddef.h>
+#include "fir_filter.h"
+
+/**
+ * @brief Initialize the filter state
+ * @param filter_state Pointer to the filter state to be initialized
+ * @param buf buffer for the FIR filter, must have length len
+ * @param coefs FIR filter coefficients, must have length len
+ * @param len The length of buf and coefs
+ */
+void fir_filter_init(
+    fir_filter_state_t *filter_state,
+    float *buf,
+    const float *coefs,
+    size_t len
+) {
+    // fill in the fields
+    filter_state->buf = buf;
+    filter_state->coefs = coefs;
+    filter_state->len = len;
+
+    // reset the filter state
+    fir_filter_reset(filter_state);
+}
+
+/**
+ * @brief Resets the filter state by filling the buffer with zeros
+ * @param filter_state Pointer to the filter state
+ */
+void fir_filter_reset(fir_filter_state_t *filter_state) {
+    for (size_t i = 0; i < filter_state->len; i++) {
+        filter_state->buf[i] = 0.0f;
+    }
+}
+
+/** 
+ * @brief Push a new sample into the buffer and compute the filtered value
+ * @param filter_state Pointer to the filter state
+ * @param new_sample The new sample to be inserted into the buffer
+ * @return The dot product of the updated buffer and the filter coefficients
+ */
+float fir_filter_update(fir_filter_state_t *filter_state, float new_sample) {
+    float dot_product = 0.0f;
+
+    // right-shift the buffer by one element and insert new_sample at buf[0]
+    // and compute the dot product
+    for (size_t i = 0; i < filter_state->len; i++) {
+        // swap buf[i] and new_sample
+        float tmp = filter_state->buf[i];
+        filter_state->buf[i] = new_sample;
+        new_sample = tmp;
+
+        // update dot_product
+        dot_product += filter_state->buf[i] * filter_state->coefs[i];
+    }
+
+    return dot_product;
+}
+
+/**
+ * @brief Compute te filtered value without updating the buffer
+ * @param filter_state Pointer to the filter state
+ * @return The dot product of the updated buffer and the filter coefficients
+ */
+float fir_filter_peak(const fir_filter_state_t *filter_state) {
+    float dot_product = 0.0f;
+
+    // compute the dot product
+    for (size_t i = 0; i < filter_state->len; i++) {
+        // update dot_product
+        dot_product += filter_state->buf[i] * filter_state->coefs[i];
+    }
+
+    return dot_product;
+}
