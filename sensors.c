@@ -6,6 +6,7 @@
  */
 
 #include <stdlib.h>     // abs()
+#include <math.h>       // tanh()
 
 #include <CMR/tasks.h>  // Task interface
 #include <CMR/gpio.h>  // GPIO interface
@@ -161,20 +162,36 @@ static int32_t adcToBPres_PSI(const cmr_sensor_t *sensor, uint32_t reading) {
 static int32_t adcToSwangle(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;  // Placate compiler.
 
-    static const int32_t center_offset = 2350;
+    // See swangle.py
+    /* 2 Layers:
+        - Layer 1: 3 Neurons with tanh activation fn
+        - Layer 2: 1 Neuron with linear activation fn */
+    const double minAdcValue = 532.0l;
+    const double maxAdcValue = 3343.0l;
+    
+    #define LAYER1_SIZE 3
+    const double W1[LAYER1_SIZE] = {4.423423, 4.352119, 3.5617096};
+    const double b1[LAYER1_SIZE] = {-2.1946218, -0.34729433, -2.9068983};
+    const double W2[LAYER1_SIZE] = {-49.75351, -42.093838, -50.62649};
+    const double b2 = 1.5765486;
 
-    int32_t calc = ((int32_t)reading) - center_offset;
+    double adcValue = (double) reading;
+    double scaledAdc = (adcValue - minAdcValue) / (maxAdcValue - minAdcValue);
 
-    // I have no idea why I need two separate rates for each
-    // half of the sensor, but doing this, the values look pretty good
-    float scaled_reading;
-    if (calc >= 0) {
-        scaled_reading = ((float) calc) / 9.05;
-    } else {
-        scaled_reading = ((float) calc) / 11.2777;
-    }
+    // Layer 1 Weight
+    double z1_0 = W1[0] * scaledAdc + b1[0];
+    double z1_1 = W1[1] * scaledAdc + b1[1];
+    double z1_2 = W1[2] * scaledAdc + b1[2];
 
-    return (int32_t) scaled_reading;
+    // Layer 1 activation
+    double a1_0 = tanh(z1_0);
+    double a1_1 = tanh(z1_1);
+    double a1_2 = tanh(z1_2);
+
+    // Layer 2 Weight
+    double swangle_deg = W2[0] * a1_0 + W2[1] * a1_1 + W2[2] * a1_2 + b2;
+
+    return (int32_t) swangle_deg;
 }
 
 /**
