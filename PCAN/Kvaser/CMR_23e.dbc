@@ -374,11 +374,6 @@ SG_ PTC_loadVoltage : 16|16@1+ (1,0) [0|65535] "mV" Vector__XXX
 SG_ PTC_loadCurrent : 32|16@1+ (1,0) [0|65535] "mA" Vector__XXX
 
 
-BO_ 264 APC_Heartbeat: 5 Vector__XXX
-SG_ APC_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ APC_ERR_VSMTimeout : 8|1@1+ (1,0) [0|1] "" Vector__XXX
-
-
 BO_ 769 BMS_Pack_Voltages: 8 Vector__XXX
 SG_ BMS_Batt_Voltage : 0|32@1- (1,0) [-2147483648|2147483647] "mV" Vector__XXX
 SG_ BMS_HV_Voltage : 32|32@1- (1,0) [-2147483648|2147483647] "mV" Vector__XXX
@@ -1167,7 +1162,7 @@ SG_ controls_wheel_speed_actual_RL : 32|16@1- (1,0) [-32768|32767] "m.s-1" Vecto
 SG_ controls_wheel_speed_target_RL : 48|16@1- (1,0) [-32768|32767] "m.s-1" Vector__XXX
 
 
-BO_ 2021 controls_pid: 8 Vector__XXX
+BO_ 2021 Controls_YRC_Debug: 8 Vector__XXX
 SG_ controls_current_yaw_rate : 0|16@1- (0.01,0) [-327.68|327.67] "rad.s-1" Vector__XXX
 SG_ controls_target_yaw_rate : 16|16@1- (0.01,0) [-327.68|327.67] "rad.s-1" Vector__XXX
 SG_ controls_bias : 32|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
@@ -1343,7 +1338,6 @@ BA_ "GenMsgCycleTime" BO_ 564 100;
 BA_ "GenMsgCycleTime" BO_ 580 100;
 BA_ "GenMsgCycleTime" BO_ 788 100;
 BA_ "GenMsgCycleTime" BO_ 1332 100;
-BA_ "GenMsgCycleTime" BO_ 264 10;
 BA_ "GenMsgCycleTime" BO_ 769 10;
 BA_ "GenMsgCycleTime" BO_ 770 10;
 BA_ "GenMsgCycleTime" BO_ 771 10;
@@ -1655,8 +1649,6 @@ BA_ "GenSigStartValue" SG_ 788 pump2DutyCycle_pcnt 0;
 BA_ "GenSigStartValue" SG_ 1332 PTC_logicVoltage 0;
 BA_ "GenSigStartValue" SG_ 1332 PTC_loadVoltage 0;
 BA_ "GenSigStartValue" SG_ 1332 PTC_loadCurrent 0;
-BA_ "GenSigStartValue" SG_ 264 APC_state 0;
-BA_ "GenSigStartValue" SG_ 264 APC_ERR_VSMTimeout 0;
 BA_ "GenSigStartValue" SG_ 769 BMS_Batt_Voltage 0;
 BA_ "GenSigStartValue" SG_ 769 BMS_HV_Voltage 0;
 BA_ "GenSigStartValue" SG_ 770 BMS_Current_Instant 0;
@@ -2199,7 +2191,6 @@ VAL_ 565 DIM_requestState 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "
 VAL_ 565 DIM_requestGear 0 "UNKNOWN" 1 "REVERSE" 2 "SLOW" 3 "FAST" 4 "ENDURANCE" 5 "AUTO-X" 6 "SKIDPAD" 7 "ACCEL" 8 "TEST" ;
 VAL_ 565 DIM_requestDRSMode 0 "DRS_UNKNOWN" 1 "DRS_OPEN" 2 "DRS_CLOSED" 3 "DRS_TOGGLE" 4 "DRS_HOLD" 5 "DRS_AUTO" ;
 VAL_ 262 PTC_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
-VAL_ 264 APC_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
 VAL_ 1794 SBG_Solution_Mode 0 "Uninitialized" 1 "Vertical_Gyro_Only" 2 "Orientation_Only" 3 "Nav_Velocity" 4 "Full_Nav" ;
 VAL_ 1024 EMD_VoltageGain 0 "x1" 1 "x2" 2 "x4" 3 "x8" 4 "x16" 5 "x32" ;
 VAL_ 1024 EMD_CurrentGain 0 "x1" 1 "x2" 2 "x4" 3 "x8" 4 "x16" 5 "x32" ;
