@@ -4,10 +4,8 @@
 #include <CMR/config_screen_helper.h> // for config_screen_data tx
 
 /*************** Various on screen string luts ***************/
-char* config_boolean_string_lut[2] = {"Off", "On"};
-char* config_driver_string_lut[9] = {"Default", "Saral", "Pravir", "Gabe", "Test1", "Test2", "Test3", "Test4", "Test5"};
-char* config_drs_string_lut[5] = {"Dynmk", "Off", "Slpry", "Ar brk", ""};
-char* config_regen_string_lut[5] = {"Off", "Prll", "One P", "Hybr", ""};
+char* config_boolean_string_lut[2] = {"Off", " On"};
+char* config_driver_string_lut[9] = {"Deflt", "Trent", "Pravr", " Gabe"};
 /************************************************************/
 
 
@@ -44,7 +42,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_background_color_variable = ESE_SF_OP_MARGIN_BOX,
         .ESE_value_color_variable = ESE_SF_OP_MARGIN_COLOR,
         .ESE_value_variable = ESE_SF_OP_MARGIN_VAL,
-        .ESE_context_text_variable = "Safety Filter Overpower Safety Margin [kW]",
+        .ESE_context_text_variable = "Safety Filter Over Pwr Margin [kW]",
         .value = {
             .type = float_1_decimal,
             .value = 100
@@ -83,7 +81,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_background_color_variable = ESE_TC_LUT_Y_SCALE_BOX,
         .ESE_value_color_variable = ESE_TC_LUT_Y_SCALE_COLOR,
         .ESE_value_variable = ESE_TC_LUT_Y_SCALE_VAL,
-        .ESE_context_text_variable = "Traction Control LUT Horizontal Scale",
+        .ESE_context_text_variable = "Traction Control LUT Horiz Scale",
         .value = {
             .type = float_2_decimal,
             .value = 100
@@ -96,7 +94,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_background_color_variable = ESE_TC_LUT_X_SCALE_BOX,
         .ESE_value_color_variable = ESE_TC_LUT_X_SCALE_COLOR, 
         .ESE_value_variable = ESE_TC_LUT_X_SCALE_VAL,
-        .ESE_context_text_variable = "Traction Control LUT Vertical Scale",
+        .ESE_context_text_variable = "Traction Control LUT Vert Scale",
         .value = {
             .type = float_2_decimal,
             .value = 100
@@ -110,7 +108,6 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_value_color_variable = ESE_PEDAL_REGEN_STRENGTH_COLOR, 
         .ESE_value_variable = ESE_PEDAL_REGEN_STRENGTH_VAL,
         .ESE_context_text_variable = "Pedal Regen Braking Strength",
-        .ESE_value_string_lut = config_regen_string_lut,
         .value = {
             .type = unsigned_integer,
             .value = 0

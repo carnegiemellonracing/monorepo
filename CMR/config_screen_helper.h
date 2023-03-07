@@ -54,8 +54,6 @@ typedef enum {
 /*************** Various on screen string luts ***************/
 extern char* config_boolean_string_lut[2];
 extern char* config_driver_string_lut[9];
-extern char* config_drs_string_lut[5];
-extern char* config_regen_string_lut[5];
 /************************************************************/
 
 
