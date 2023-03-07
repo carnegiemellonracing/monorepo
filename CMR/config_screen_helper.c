@@ -26,25 +26,143 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0, // scaled by 10 bc 1 decimal point 'float'
         .max = num_values_driver_enum, // scaled by 10 bc 1 decimal point 'float'
     },
+    [POWER_LIM_INDEX] = {
+        .name = "Power Limit",
+        .ESE_background_color_variable = ESE_POWER_LIM_BOX,
+        .ESE_value_color_variable = ESE_POWER_LIM_COLOR, 
+        .ESE_value_variable = ESE_POWER_LIM_VAL,
+        .ESE_context_text_variable = "Power Limit for Endurance [kW]",
+        .value = {
+            .type = unsigned_integer,
+            .value = 30
+        },
+        .min = 0,
+        .max = 80, 
+    },
+    [SF_OP_MARGIN_INDEX] = {
+        .name = "SF OP Sfty Mgn",
+        .ESE_background_color_variable = ESE_SF_OP_MARGIN_BOX,
+        .ESE_value_color_variable = ESE_SF_OP_MARGIN_COLOR,
+        .ESE_value_variable = ESE_SF_OP_MARGIN_VAL,
+        .ESE_context_text_variable = "Safety Filter Overpower Safety Margin [kW]",
+        .value = {
+            .type = float_1_decimal,
+            .value = 100
+        },
+        .min = 0,
+        .max = 255,
+    },
+    [YRC_KP_INDEX] = {
+        .name = "YRC Kp",
+        .ESE_background_color_variable = ESE_YRC_KP_BOX,
+        .ESE_value_color_variable = ESE_YRC_KP_COLOR,
+        .ESE_value_variable = ESE_YRC_KP_VAL,
+        .ESE_context_text_variable = "Yaw Rate Controller Kp",
+        .value = {
+            .type = unsigned_integer,
+            .value = 0
+        },
+        .min = 0,
+        .max = 255,
+    },
+    [YRC_KD_INDEX] = {
+        .name = "YRC Kd",
+        .ESE_background_color_variable = ESE_YRC_KD_BOX,
+        .ESE_value_color_variable = ESE_YRC_KD_COLOR,
+        .ESE_value_variable = ESE_YRC_KD_VAL,
+        .ESE_context_text_variable = "Yaw Rate Controller Kd",
+        .value = {
+            .type = integer,
+            .value = 0
+        },
+        .min = 0,
+        .max = 255,
+    },
+    [TC_LUT_Y_SCALE_INDEX] = {
+        .name = "TC LUT Horiz Scl",
+        .ESE_background_color_variable = ESE_TC_LUT_Y_SCALE_BOX,
+        .ESE_value_color_variable = ESE_TC_LUT_Y_SCALE_COLOR,
+        .ESE_value_variable = ESE_TC_LUT_Y_SCALE_VAL,
+        .ESE_context_text_variable = "Traction Control LUT Horizontal Scale",
+        .value = {
+            .type = float_2_decimal,
+            .value = 100
+        },
+        .min = 0,
+        .max = 255,
+    },
+    [TC_LUT_X_SCALE_INDEX] = {
+        .name = "TC LUT Vert Scl",
+        .ESE_background_color_variable = ESE_TC_LUT_X_SCALE_BOX,
+        .ESE_value_color_variable = ESE_TC_LUT_X_SCALE_COLOR, 
+        .ESE_value_variable = ESE_TC_LUT_X_SCALE_VAL,
+        .ESE_context_text_variable = "Traction Control LUT Vertical Scale",
+        .value = {
+            .type = float_2_decimal,
+            .value = 100
+        },
+        .min = 0,
+        .max = 255,
+    },
+    [PEDAL_REGEN_STRENGTH_INDEX] = {
+        .name = "Pedal Regen Str",
+        .ESE_background_color_variable = ESE_PEDAL_REGEN_STRENGTH_BOX,
+        .ESE_value_color_variable = ESE_PEDAL_REGEN_STRENGTH_COLOR, 
+        .ESE_value_variable = ESE_PEDAL_REGEN_STRENGTH_VAL,
+        .ESE_context_text_variable = "Pedal Regen Braking Strength",
+        .ESE_value_string_lut = config_regen_string_lut,
+        .value = {
+            .type = unsigned_integer,
+            .value = 0
+        },
+        .min = 0,
+        .max = 100,
+    },
+    [PADDLE_MAX_REGEN_INDEX] = {
+        .name = "Paddl Max Regen",
+        .ESE_background_color_variable = ESE_PADDLE_MAX_REGEN_BOX,
+        .ESE_value_color_variable = ESE_PADDLE_MAX_REGEN_COLOR,
+        .ESE_value_variable = ESE_PADDLE_MAX_REGEN_VAL,
+        .ESE_context_text_variable = "Paddle Regen Braking Max",
+        .value = {
+            .type = integer,
+            .value = 50
+        },
+        .min = 0,
+        .max = 100,
+    },
+    [BRAKE_TC_INDEX] = {
+        .name = "Brake TC",
+        .ESE_background_color_variable = ESE_BRAKE_TC_BOX,
+        .ESE_value_color_variable = ESE_BRAKE_TC_COLOR, 
+        .ESE_value_variable = ESE_BRAKE_TC_VAL,
+        .ESE_context_text_variable = "Brake Traction Control",
+        .value = {
+            .type = boolean,
+            .value = 0
+        },
+        .min = 0,
+        .max = 1,
+    },
     [ACCEL_TGT_INDEX] = {
-        .name = "Accl Tgt",
-        .ESE_background_color_variable = ESE_ACCL_TGT_BOX,
+        .name = "Accl Target (BU)",
+        .ESE_background_color_variable = ESE_ACCEL_TGT_BOX,
         .ESE_value_color_variable = ESE_ACCEL_TGT_COLOR, 
         .ESE_value_variable = ESE_ACCEL_TGT_VAL,
-        .ESE_context_text_variable = "FF accel for launch ctl [m/s2]",
+        .ESE_context_text_variable = "Acceleration Target [Backup]",
         .value = {
             .type = float_1_decimal,
             .value = 13
         },
-        .min = 10, // scaled by 10 bc 1 decimal point 'float'
-        .max = 200, // scaled by 10 bc 1 decimal point 'float'
+        .min = 10,
+        .max = 200,
     },
-    [SLIP_RATIO_ACCEL_INDEX] = {
-        .name = "Slip Ratio Accel",
-        .ESE_background_color_variable = ESE_SLIP_RATIO_ACCEL_BOX,
-        .ESE_value_color_variable = ESE_SLIP_RATIO_ACCEL_COLOR,
-        .ESE_value_variable = ESE_SLIP_RATIO_ACCEL_VAL,
-        .ESE_context_text_variable = "FB correction for lnc ctl",
+    [SLIP_RATIO_INDEX] = {
+        .name = "Slip Ratio (BU)",
+        .ESE_background_color_variable = ESE_SLIP_RATIO_BOX,
+        .ESE_value_color_variable = ESE_SLIP_RATIO_COLOR,
+        .ESE_value_variable = ESE_SLIP_RATIO_VAL,
+        .ESE_context_text_variable = "Slip Ratio [Backup]",
         .value = {
             .type = float_1_decimal,
             .value = 14
@@ -52,25 +170,12 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 10,
         .max = 20,
     },
-    [POWER_LIMIT_INDEX] = {
-        .name = "Pwr Lmt",
-        .ESE_background_color_variable = ESE_BURNOUT_BOX,
-        .ESE_value_color_variable = ESE_BURNOUT_COLOR,
-        .ESE_value_variable = ESE_BURNOUT_VAL,
-        .ESE_context_text_variable = "Power limit in endurance [kW]",
-        .value = {
-            .type = integer,
-            .value = 5
-        },
-        .min = 1,
-        .max = 70,
-    },
     [TORQUE_BIAS_INDEX] = {
-        .name = "Torque Bias",
-        .ESE_background_color_variable = ESE_TRQ_BIAS_BOX,
-        .ESE_value_color_variable = ESE_TRQ_BIAS_COLOR,
-        .ESE_value_variable = ESE_TRQ_BIAS_VAL,
-        .ESE_context_text_variable = "All mode torque bias. 0 is FWD",
+        .name = "Torque Bias (BU)",
+        .ESE_background_color_variable = ESE_TORQUE_BIAS_BOX,
+        .ESE_value_color_variable = ESE_TORQUE_BIAS_COLOR,
+        .ESE_value_variable = ESE_TORQUE_BIAS_VAL,
+        .ESE_context_text_variable = "Torque Bias [Backup]",
         .value = {
             .type = integer,
             .value = 60
@@ -78,143 +183,51 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 100,
     },
-    [MAX_REGEN_FORCE_INDEX] = {
-        .name = "Max Regen Force",
-        .ESE_background_color_variable = ESE_MAX_RGN_BOX,
-        .ESE_value_color_variable = ESE_MAX_RGN_COLOR,
-        .ESE_value_variable = ESE_MAX_RGN_VAL,
-        .ESE_context_text_variable = "Max regen force at Max Pssr",
+    [DRS_THROTTLE_THRESH_INDEX] = {
+        .name = "DRS Throtl Thrsh",
+        .ESE_background_color_variable = ESE_DRS_THROTTLE_THRESH_BOX,
+        .ESE_value_color_variable = ESE_DRS_THROTTLE_THRESH_COLOR, 
+        .ESE_value_variable = ESE_DRS_THROTTLE_THRESH_VAL,
+        .ESE_context_text_variable = "DRS Throttle Threshold",
         .value = {
-            .type = integer,
-            .value = 50
+            .type = unsigned_integer,
+            .value = 20
         },
         .min = 0,
         .max = 100,
     },
-    [MAX_REGEN_PRESSURE_INDEX] = {
-        .name = "Max Regen Pressure",
-        .ESE_background_color_variable = ESE_MAX_PSSR_BOX,
-        .ESE_value_color_variable = ESE_MAX_PSSR_COLOR, 
-        .ESE_value_variable = ESE_MAX_PSSR_VAL,
-        .ESE_context_text_variable = "When max regen is applied",
+    [DRS_SWANGLE_THRESH_INDEX] = {
+        .name = "DRS Swngl Thrsh",
+        .ESE_background_color_variable = ESE_DRS_SWANGLE_THRESH_BOX,
+        .ESE_value_color_variable = ESE_DRS_SWANGLE_THRESH_COLOR, 
+        .ESE_value_variable = ESE_DRS_SWANGLE_THRESH_VAL,
+        .ESE_context_text_variable = "DRS Swangle Threshold",
         .value = {
-            .type = integer,
-            .value = 50
+            .type = unsigned_integer,
+            .value = 20
         },
         .min = 0,
-        .max = 150,
+        .max = 120,
     },
-    [REGEN_INDEX] = {
-        .name = "Regen",
-        .ESE_background_color_variable = ESE_REGEN_BOX,
-        .ESE_value_color_variable = ESE_REGEN_COLOR, 
-        .ESE_value_variable = ESE_REGEN_VAL,
-        .ESE_context_text_variable = "Enable various regen modes",
-        .ESE_value_string_lut = config_regen_string_lut,
-        .value = {
-            .type = custom_enum,
-            .value = 0
-        },
-        .min = 0,
-        .max = num_values_regen_enum,
-    },
-    [REGEN_BIAS_INDEX] = {
-        .name = "Regen Bias",
-        .ESE_background_color_variable = ESE_RGN_BIAS_BOX,
-        .ESE_value_color_variable = ESE_RGN_BIAS_COLOR,
-        .ESE_value_variable = ESE_RGN_BIAS_VAL,
-        .ESE_context_text_variable = "RegenBrake bias. 0 is FWBrake",
-        .value = {
-            .type = integer,
-            .value = 50
-        },
-        .min = 0,
-        .max = 100,
-    },
-    [TRACTION_CONTROL_INDEX] = {
-        .name = "Traction control",
-        .ESE_background_color_variable = ESE_TRAC_CTL_BOX,
-        .ESE_value_color_variable = ESE_TRAC_CTL_COLOR, 
-        .ESE_value_variable = ESE_TRAC_CTL_VAL,
-        .ESE_context_text_variable = "Enable traction control",
-        .value = {
-            .type = boolean,
-            .value = 0
-        },
-        .min = 0,
-        .max = 1,
-    },
-    [SLIP_RATIO_TRACTION_INDEX] = {
-        .name = "Slip Ratio traction control",
-        .ESE_background_color_variable = ESE_SLIP_RATIO_DRV_BOX,
-        .ESE_value_color_variable = ESE_SLIP_RATIO_DRV_COLOR, 
-        .ESE_value_variable = ESE_SLIP_RATIO_DRV_VAL,
-        .ESE_context_text_variable = "Max SR before traction Ctl",
+    [DRS_BRAKE_THRESH_INDEX] = {
+        .name = "DRS Brake Thrsh",
+        .ESE_background_color_variable = ESE_DRS_BRAKE_THRESH_BOX,
+        .ESE_value_color_variable = ESE_DRS_BRAKE_THRESH_COLOR, 
+        .ESE_value_variable = ESE_DRS_BRAKE_THRESH_VAL,
+        .ESE_context_text_variable = "DRS Brake Pressure Threshold",
         .value = {
             .type = float_1_decimal,
-            .value = 15
-        },
-        .min = 10,
-        .max = 30, //TODO: annotate this
-    },
-    [TORQUE_VECTORING_INDEX] = {
-        .name = "Torque Vectoring",
-        .ESE_background_color_variable = ESE_TRQ_VEC_BOX,
-        .ESE_value_color_variable = ESE_MAX_TRQ_COLOR,
-        .ESE_value_variable = ESE_TRQ_VEC_VAL,
-        .ESE_context_text_variable = "Enable torque vectoring",
-        .value = {
-            .type = boolean,
-            .value = 0
-        },
-        .min = 0,
-        .max = 1,
-    },
-    [TORQUE_VECTORING_GAIN_INDEX] = {
-        .name = "Torque Vectoring Gain",
-        .ESE_background_color_variable = ESE_TV_GAIN_BOX,
-        .ESE_value_color_variable = ESE_TV_GAIN_COLOR,
-        .ESE_value_variable = ESE_TV_GAIN_VAL,
-        .ESE_context_text_variable = "Torque vectoring gain",
-        .value = {
-            .type = integer,
-            .value = 2
-        },
-        .min = 0,
-        .max = 30,
-    },
-    [MAX_TORQUE_INDEX] = {
-        .name = "Max Torque",
-        .ESE_background_color_variable = ESE_MAX_TRQ_BOX,
-        .ESE_value_color_variable = ESE_MAX_TRQ_COLOR, 
-        .ESE_value_variable = ESE_MAX_TRQ_VAL,
-        .ESE_context_text_variable = "Max torque, all modes",
-        .value = {
-            .type = integer,
-            .value = 50
-        },
-        .min = 0,
-        .max = 100,
-    },
-    [MAX_SPEED_INDEX] = {
-        .name = "Max Speed",
-        .ESE_background_color_variable = ESE_MAX_SPD_BOX,
-        .ESE_value_color_variable = ESE_MAX_SPD_COLOR, 
-        .ESE_value_variable = ESE_MAX_SPD_VAL,
-        .ESE_context_text_variable = "Max speed, all modes",
-        .value = {
-            .type = integer,
             .value = 30
         },
-        .min = 2,
-        .max = 100,
+        .min = 0,
+        .max = 255,
     },
     [WET_INDEX] = {
         .name = "Wet",
         .ESE_background_color_variable = ESE_WET_BOX,
         .ESE_value_color_variable = ESE_WET_COLOR,
         .ESE_value_variable = ESE_WET_VAL,
-        .ESE_context_text_variable = "High TC & capped torque",
+        .ESE_context_text_variable = "Wet Mode",
         .value = {
             .type = boolean,
             .value = 0
@@ -222,54 +235,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 1,
     },
-    [DRS_SWANGLE_INDEX] = {
-        .name = "DRS Swangle Threshold",
-//        .ESE_background_color_variable = ESE_DRS_SWANGLE_BOX,
-//        .ESE_value_color_variable = ESE_DRS_SWANGLE_COLOR,
-//        .ESE_value_variable = ESE_DRS_SWANGLE_VAL,
-        .ESE_context_text_variable = "High TC & capped torque",
-        .value = {
-            .type = boolean,
-            .value = 0
-        },
-        .min = 0,
-        .max = 1,
-    },
-    [DRS_THROTTLE_INDEX] = {
-        .name = "DRS Throttle Threshold",
-//        .ESE_background_color_variable = ESE_DRS_THROTTLE_BOX,
-//        .ESE_value_color_variable = ESE_DRS_THROTTLE_COLOR,
-//        .ESE_value_variable = ESE_DRS_THROTTLE_VAL,
-        .ESE_context_text_variable = "High TC & capped torque",
-        .value = {
-            .type = boolean,
-            .value = 0
-        },
-        .min = 0,
-        .max = 1,
-    },
-    [DRS_BRAKE_INDEX] = {
-        .name = "DRS Brake Threshold",
-//        .ESE_background_color_variable = ESE_DRS_BRAKE_BOX,
-//        .ESE_value_color_variable = ESE_DRS_BRAKE_COLOR,
-//        .ESE_value_variable = ESE_DRS_BRAKE_VAL,
-        .ESE_context_text_variable = "High TC & capped torque",
-        .value = {
-            .type = boolean,
-            .value = 0
-        },
-        .min = 0,
-        .max = 1,
-    },
-
 };
-
-// burnout value breaks everything (potentially s?)
-// max pressure also breaks everything (probs psi?)
-
-
-// ese screen editor
-// drs value at value not label
 
 
 //////// HELPER FUNCTIONS /////////////////

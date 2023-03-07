@@ -24,15 +24,6 @@ typedef enum{
 
 // TODO: Move this to the stm32 drivers
 typedef enum{
-    drs_off,
-    drs_dynamic,
-    drs_slippery,
-    drs_airbrake,
-    num_values_drs_enum,
-} cmr_drs_policy_t;
-
-// TODO: Move this to the stm32 drivers
-typedef enum{
     regen_off,
     regen_parallel,
     regen_one_pedal,
@@ -42,7 +33,7 @@ typedef enum{
 
 typedef enum{
     Default,
-    Saral,
+    Trent,
     Pravir,
     Gabe,
     Test1,
@@ -53,26 +44,24 @@ typedef enum{
     num_values_driver_enum
 } cmr_driver_profile_t;
 
-typedef enum{
+typedef enum {
     DRIVER_PROFILE_INDEX,
+    POWER_LIM_INDEX,
+    SF_OP_MARGIN_INDEX,
+    YRC_KP_INDEX,
+    YRC_KD_INDEX,
+    TC_LUT_Y_SCALE_INDEX,
+    TC_LUT_X_SCALE_INDEX,
+    PEDAL_REGEN_STRENGTH_INDEX,
+    PADDLE_MAX_REGEN_INDEX,
+    BRAKE_TC_INDEX,
     ACCEL_TGT_INDEX,
-    SLIP_RATIO_ACCEL_INDEX,
-    POWER_LIMIT_INDEX,
+    SLIP_RATIO_INDEX,
     TORQUE_BIAS_INDEX,
-	MAX_REGEN_FORCE_INDEX,
-    MAX_REGEN_PRESSURE_INDEX,
-    REGEN_INDEX,
-    REGEN_BIAS_INDEX,
-    TRACTION_CONTROL_INDEX,
-    SLIP_RATIO_TRACTION_INDEX,
-    TORQUE_VECTORING_INDEX,
-    TORQUE_VECTORING_GAIN_INDEX,
-    MAX_TORQUE_INDEX,
-    MAX_SPEED_INDEX,
+    DRS_THROTTLE_THRESH_INDEX,
+    DRS_SWANGLE_THRESH_INDEX,
+    DRS_BRAKE_THRESH_INDEX,
     WET_INDEX,
-    DRS_SWANGLE_INDEX,
-    DRS_THROTTLE_INDEX,
-    DRS_BRAKE_INDEX,
     MAX_MENU_ITEMS // The elements in the config array
 } config_menu_main_array_index_t;
 
