@@ -13,6 +13,12 @@
 
 #include "can.h"        // Board-specific CAN interface
 
+// TODO: Add documentation
+extern volatile bool config_increment_up_requested;
+extern volatile bool config_increment_down_requested;
+extern volatile int8_t config_move_request;
+#define CONFIG_SCREEN_NUM_COLS 4
+
 cmr_canState_t stateGetVSM(void);
 cmr_canState_t stateGetVSMReq(void);
 

@@ -17,7 +17,7 @@ volatile bool config_increment_up_requested = false;
 /** @brief declaration of config screen variables */
 volatile bool config_increment_down_requested = false;
 /** @brief declaration of config screen variables */
-volatile bool config_scroll_requested = false;
+volatile int8_t config_move_request = 0;
 /** @brief declaration of what screen mode one is in */
 volatile bool in_config_screen = false;
 /** @brief decleration of if the DIM is waiting for a new driver config */
@@ -30,6 +30,7 @@ volatile bool redraw_new_driver_profiles;
 // Forward declarations
 void stateVSMUp(void);
 void stateVSMDown(void);
+void enterConfigScreen(void);
 
 
 void actionOneButton(bool pressed) {
@@ -59,7 +60,7 @@ void upButton(bool pressed) {
     }
 
     if (inConfigScreen()) {
-        // TODO: do stuff
+        config_move_request = -CONFIG_SCREEN_NUM_COLS;
     } else {
         stateVSMUp();
     }
@@ -76,7 +77,7 @@ void downButton(bool pressed) {
     }
 
     if (inConfigScreen()) {
-        // TODO: do stuff
+        config_move_request = CONFIG_SCREEN_NUM_COLS;
     } else {
         stateVSMDown();
     }
@@ -93,10 +94,10 @@ void leftButton(bool pressed) {
     }
 
     if (inConfigScreen()) {
-        // TODO: do stuff
+        config_move_request = -1;
     } else {
         // Enter config screen function does necesarry state checks
-        enterConfigScreen()
+        enterConfigScreen();
     }
 }
 
@@ -111,7 +112,7 @@ void rightButton(bool pressed) {
     }
 
     if (inConfigScreen()) {
-        // TODO: do stuff
+        config_move_request = 1;
     } else {
         // TODO: do stuff
     }
@@ -377,7 +378,7 @@ void stateDrsModeSwitch(expanderRotaryPosition_t position) {
 
     if (position == ROTARY_POS_INVALID) {
         state.drsReq = CMR_CAN_DRSM_UNKNOWN;
-    } else if (position >= CMR_CAN_DRSM_LEN) { 
+    } else if ((cmr_canDrsMode_t) position >= CMR_CAN_DRSM_LEN) { 
         // set drs mode to closed if dial pos > drs modes
         state.drsReq = CMR_CAN_DRSM_CLOSED;
     } else {

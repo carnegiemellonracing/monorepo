@@ -521,14 +521,8 @@ void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_r
     config_menu_main_array[scroll_index].value.value = value;
 }
 
-void setConfigSelectionColor(int8_t scroll_index) {
-    // index who's color to restore
-    uint8_t restore_index = scroll_index - 1; // underflow is expected :)
-	if (scroll_index == 0){
-		restore_index = MAX_MENU_ITEMS;
-		restore_index--; // issues with this not working in one line since MAX_MENU_ITEMS is a #define hence 2 lines
-	}
-    
+void setConfigSelectionColor(int8_t scroll_index, int8_t restore_index) {
+  
     // calculate the varoius addresses to modify 
     uint32_t background_address_offset = config_menu_main_array[scroll_index].ESE_background_color_variable;
     uint32_t *background_item_pointer = (void *) (tftDL_configData + background_address_offset);
@@ -561,19 +555,40 @@ void tftDL_configUpdate(){
         redraw_new_driver_profiles = false;
     }
 
-    static int8_t current_scroll_index = -1; // start with a value of -1 to enter driver config first
+    static int8_t current_scroll_index = 0; // start with a value of -1 to enter driver config first
     
-    // update scroll and clear selection values
-    if (config_scroll_requested) {
-    	current_scroll_index++;
-        current_scroll_index = current_scroll_index % MAX_MENU_ITEMS;
+    // Handles movement accounting for Driver Profile annoyance
+    if (config_move_request !=0) {
+        int8_t prev_scroll_index = current_scroll_index;
+        if (current_scroll_index == DRIVER_PROFILE_INDEX) {
+            if (config_move_request > 0) {
+                current_scroll_index++;
+            } else {
+                current_scroll_index = MAX_MENU_ITEMS - 1;
+            }
+        } else if  (config_move_request == CONFIG_SCREEN_NUM_COLS &&
+                    current_scroll_index >= MAX_MENU_ITEMS - CONFIG_SCREEN_NUM_COLS) {
+            current_scroll_index = DRIVER_PROFILE_INDEX;
+        } else if  (config_move_request == -CONFIG_SCREEN_NUM_COLS &&
+                    current_scroll_index <= CONFIG_SCREEN_NUM_COLS) {
+            current_scroll_index = DRIVER_PROFILE_INDEX;
+        } else if (((current_scroll_index - 1) % CONFIG_SCREEN_NUM_COLS) == 0 &&
+                 config_move_request == -1) {
+            current_scroll_index += CONFIG_SCREEN_NUM_COLS - 1;
+        } else if (((current_scroll_index - 1) % CONFIG_SCREEN_NUM_COLS) == CONFIG_SCREEN_NUM_COLS -1 &&
+                 config_move_request == 1) {
+            current_scroll_index -= CONFIG_SCREEN_NUM_COLS - 1;
+        } else {
+    	    current_scroll_index += config_move_request;
+            current_scroll_index = ((current_scroll_index - 1) % (MAX_MENU_ITEMS - 1)) + 1;
+        }
 
 
         // clear the selection value just in case no one accidently presses both buttons at the same time
-        config_scroll_requested = false;
+        config_move_request = 0;
 
         // call the background color updater
-        setConfigSelectionColor(current_scroll_index);
+        setConfigSelectionColor(current_scroll_index, prev_scroll_index);
         setConfigContextString(current_scroll_index);
         
         config_increment_up_requested = false;

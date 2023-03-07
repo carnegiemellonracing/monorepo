@@ -39,11 +39,6 @@ typedef enum {
     GPIO_LEN    /**< @brief Total GPIO pins. */
 } gpio_t;
 
-// TODO: Add documentation
-extern volatile bool config_increment_up_requested;
-extern volatile bool config_increment_down_requested;
-extern volatile bool config_scroll_requested;
-
 void gpioInit(void);
 
 /** Function pointer type for button actions, input is whether the button is pressed or not*/

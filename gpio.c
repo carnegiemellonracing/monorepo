@@ -161,7 +161,7 @@ static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
         .buttonState = false,
         .setAction = &downButton,
         .lastPressed = 0,
-        .debounce = BUTTON_DEBOUNCE_TIME * 5, // State down has a long debounce time so don't accidentally drop out of HVEN
+        .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_DASH_BUTTON_2] = {
         .buttonState = false,
