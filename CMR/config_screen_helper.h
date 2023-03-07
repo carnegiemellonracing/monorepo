@@ -21,26 +21,11 @@ typedef enum{
     unsigned_integer,
     custom_enum,
 } cmr_config_t;
-
-// TODO: Move this to the stm32 drivers
-typedef enum{
-    regen_off,
-    regen_parallel,
-    regen_one_pedal,
-    regen_parallel_one_pedal,
-    num_values_regen_enum,
-} cmr_regen_policy_t;
-
 typedef enum{
     Default,
     Trent,
     Pravir,
     Gabe,
-    Test1,
-    Test2,
-    Test3,
-    Test4,
-    Test5,
     num_values_driver_enum
 } cmr_driver_profile_t;
 
