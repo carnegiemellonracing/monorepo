@@ -159,25 +159,25 @@ static void drsButtonAction(bool pressed)
 static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
     [EXP_DASH_BUTTON_1] = {
         .buttonState = false,
-        .setAction = &stateVSMDownButton,
+        .setAction = &downButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME * 5, // State down has a long debounce time so don't accidentally drop out of HVEN
     },
     [EXP_DASH_BUTTON_2] = {
         .buttonState = false,
-        .setAction = &stateGearDownButton,
+        .setAction = &leftButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_DASH_BUTTON_3] = {
         .buttonState = false,
-        .setAction = &stateVSMUpButton,
+        .setAction = &upButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_DASH_BUTTON_4] = {
         .buttonState = false,
-        .setAction = &stateGearUpButton,
+        .setAction = &rightButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
@@ -204,11 +204,11 @@ static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
 static expanderRotaryEvent_t rotaries[EXP_ROTARY_LEN] = {
     [EXP_ROTARY_1] = {
         .position = ROTARY_POS_INVALID,
-        .setAction = &stateDrsModeSwitch
+        .setAction = &stateGearSwitch
     },
     [EXP_ROTARY_2] = {
         .position = ROTARY_POS_INVALID,
-        .setAction = &stateRotary2Switch
+        .setAction = &stateDrsModeSwitch
     }
 };
 

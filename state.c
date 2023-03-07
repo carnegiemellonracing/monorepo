@@ -27,18 +27,93 @@ volatile bool dim_first_time_config_screen;
 /** @brief Checks to see if the screen needs to be redrawn after getting new driver profiles */
 volatile bool redraw_new_driver_profiles;
 
+// Forward declarations
+void stateVSMUp(void);
+void stateVSMDown(void);
 
-void actionOneButton(bool pressed){
-    if(inConfigScreen() == true){
-    	config_scroll_requested = true;
+
+void actionOneButton(bool pressed) {
+    if (!pressed) return;
+    if (inConfigScreen()) {
 		return;
     }
 }
 
-void actionTwoButton(bool pressed){
-    if(inConfigScreen() == true){
-    	config_scroll_requested = true;
+void actionTwoButton(bool pressed) {
+    if (!pressed) return;
+    if (inConfigScreen()) {
+    	exitConfigScreen();
 		return;
+    }
+}
+
+/**
+ * @brief handles UP button press on D-Pad
+ * 
+ * @param pressed `true` if button is currently pressed.
+*/
+
+void upButton(bool pressed) {
+    if (!pressed) {
+        return;
+    }
+
+    if (inConfigScreen()) {
+        // TODO: do stuff
+    } else {
+        stateVSMUp();
+    }
+}
+
+/**
+ * @brief handles DOWN button press on D-Pad
+ * 
+ * @param pressed `true` if button is currently pressed.
+*/
+void downButton(bool pressed) {
+    if (!pressed) {
+        return;
+    }
+
+    if (inConfigScreen()) {
+        // TODO: do stuff
+    } else {
+        stateVSMDown();
+    }
+}
+
+/**
+ * @brief handles LEFT button press on D-Pad
+ * 
+ * @param pressed `true` if button is currently pressed.
+*/
+void leftButton(bool pressed) {
+    if (!pressed) {
+        return;
+    }
+
+    if (inConfigScreen()) {
+        // TODO: do stuff
+    } else {
+        // Enter config screen function does necesarry state checks
+        enterConfigScreen()
+    }
+}
+
+/**
+ * @brief handles RIGHT button press on D-Pad
+ * 
+ * @param pressed `true` if button is currently pressed.
+*/
+void rightButton(bool pressed) {
+    if (!pressed) {
+        return;
+    }
+
+    if (inConfigScreen()) {
+        // TODO: do stuff
+    } else {
+        // TODO: do stuff
     }
 }
 
@@ -63,7 +138,8 @@ void enterConfigScreen(){
 
     if (in_config_screen == false && 
     config_screen_values_received_on_boot && 
-    stateGetVSM() == CMR_CAN_GLV_ON && stateGetVSMReq() == CMR_CAN_GLV_ON){
+    ((stateGetVSM() == CMR_CAN_GLV_ON && stateGetVSMReq() == CMR_CAN_GLV_ON) ||
+    (stateGetVSM() == CMR_CAN_HV_EN && stateGetVSMReq() == CMR_CAN_HV_EN))){
         in_config_screen = true;
         dim_first_time_config_screen = true;
     }
@@ -231,20 +307,9 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
 }
 
 /**
- * @brief Handles VSM state up button presses.
- *
- * @param pressed `true` if button is currently pressed.
+ * @brief Handles VSM state up.
  */
-void stateVSMUpButton(bool pressed) {
-    if (!pressed) {
-        return;
-    }
-    // Exit the config screen
-    if(inConfigScreen() == true){
-        // don't worry this will check to make sure we're in glv mode
-        exitConfigScreen();
-        return;
-    }
+void stateVSMUp() {
 
     cmr_canState_t vsmState = stateGetVSM();
     if (state.vsmReq < vsmState) {
@@ -264,31 +329,9 @@ void stateVSMUpButton(bool pressed) {
 }
 
 /**
- * @brief Handles VSM state down button presses.
- *
- * @param pressed `true` if button is currently pressed.
+ * @brief Handles VSM state down request.
  */
-void stateVSMDownButton(bool pressed) {
-    if (!pressed) {
-        return;
-    }
-
-    // // TODO: modifiy only if in config screen
-    // if (in_config_screen){
-    //     config_increment_down_requested = true;
-    //     return; 
-    // } 
-
-
-     // Enter the config screen
-     if(inConfigScreen() == false){
-         // don't worry this will check to make sure we're in glv mode
-         enterConfigScreen();
-         // Enter Config Screen worked, return to avoid other state down logic
-         if(inConfigScreen() == true) return;
-     }
-
-
+void stateVSMDown() {
     cmr_canState_t vsmState = stateGetVSM();
     if (state.vsmReq > vsmState) {
         // Cancel state-up request.
@@ -312,67 +355,18 @@ void stateVSMDownButton(bool pressed) {
     state.vsmReq = vsmReq;
 }
 
-/**
- * @brief Handles gear down button presses.
- *
- * @param pressed `true` if button is currently pressed.
- */
-void stateGearDownButton(bool pressed) {
-    if (!pressed) {
-        return;
-    }
-
-//    if (in_config_screen){
-//        config_scroll_requested = true;
-//        return;
-//    }
-
-    if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
-        return;     // Can only change gears in HV_ENand GLV_ON.
-    }
-
-    cmr_canGear_t gear = state.gear;
-    if (gear != state.gearReq) {
-        return;     // Previous gear request not satisfied yet.
-    }
-
-    cmr_canGear_t gearReq = gear - 1;
-    if (gearReq < CMR_CAN_GEAR_REVERSE) {
-        gearReq = CMR_CAN_GEAR_TEST;     // Wrap around; skip `GEAR_UNKNOWN`.
-    }
-
-    state.gearReq = gearReq;
-}
-
-/**
- * @brief Handles gear up button presses.
- *
- * @param pressed `true` if button is currently pressed.
- */
-void stateGearUpButton(bool pressed) {
-    if (!pressed) {
-        return;
-    }
-
-//    // don't run following logic if in config screen
-//    if (in_config_screen){
-//    	config_increment_up_requested = true;
-//        return;
-//        // TODO: Add logic to exit config screen via can message flushing
-//    }
-
+void stateGearSwitch(expanderRotaryPosition_t position) {
     if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
         return;     // Can only change gears in HV_EN and GLV_ON.
     }
-
-    cmr_canGear_t gear = state.gear;
-    if (gear != state.gearReq) {
-        return;     // Previous gear request not satisfied yet.
-    }
-
-    cmr_canGear_t gearReq = gear + 1;
-    if (gearReq >= CMR_CAN_GEAR_LEN) {
-        gearReq = CMR_CAN_GEAR_REVERSE;     // Wrap around; skip `GEAR_UNKNOWN`.
+    cmr_canGear_t gearReq;
+    if (position == ROTARY_POS_INVALID) {
+        gearReq = CMR_CAN_GEAR_SLOW;
+    } else {
+        gearReq = (cmr_canGear_t)((size_t) position + 1);
+        if (gearReq >= CMR_CAN_GEAR_LEN) {
+            gearReq = CMR_CAN_GEAR_SLOW;
+        }
     }
 
     state.gearReq = gearReq;
@@ -412,47 +406,3 @@ void stateGearUpdate(void) {
 void stateDrsUpdate(void) {
     state.drsMode = state.drsReq;
 }
-
-
-// Redundant regen button code
-// /**
-//  * @brief Handles regen up button presses.
-//  *
-//  * @param pressed `true` if button is currently pressed.
-//  */
-// void regenUpButton(bool pressed) {
-//     if (in_config_screen){
-//     	config_increment_up_requested = true;
-//         return;
-//     }
-
-// 	if (!pressed) {
-//         return;
-//     }
-
-//     if (regenStep < REGEN_STEP_NUM) {
-//         regenStep++;
-//     }
-//     // setNumLeds(regenStep);
-// }
-// /**
-//  * @brief Handles regen down button presses.
-//  *
-//  * @param pressed `true` if button is currently pressed.
-//  */
-// void regenDownButton(bool pressed) {
-//     if (in_config_screen){
-//     	config_increment_down_requested = true;
-//         return;
-//     }
-
-
-//     if (!pressed) {
-//         return;
-//     }
-
-//     if (regenStep > 0) {
-//         regenStep--;
-//     }
-//     // setNumLeds(regenStep);
-// }

@@ -25,16 +25,14 @@ cmr_canDRSMode_t stateGetDrsReq(void);
 void actionOneButton(bool pressed);
 void actionTwoButton(bool pressed);
 
-void regenDownButton(bool pressed);
-void regenUpButton(bool pressed);
+void upButton(bool pressed);
+void downButton(bool pressed);
+void leftButton(bool pressed);
+void rightButton(bool pressed);
 
 void exitConfigScreen();
 
-void stateVSMUpButton(bool pressed);
-void stateVSMDownButton(bool pressed);
-
-void stateGearUpButton(bool pressed);
-void stateGearDownButton(bool pressed);
+void stateGearSwitch(expanderRotaryPosition_t pos);
 void stateGearUpdate(void);
 
 void stateDrsModeSwitch(expanderRotaryPosition_t pos);
