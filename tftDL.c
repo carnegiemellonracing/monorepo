@@ -557,10 +557,14 @@ void tftDL_configUpdate(){
 
     static int8_t current_scroll_index = 0; // start with a value of -1 to enter driver config first
     
-    // Handles movement accounting for Driver Profile annoyance
+    // Handles D Dap logic accounting for Driver Profile annoyance
+    // If there is a move request
     if (config_move_request !=0) {
+        // record previous index so we can clear colour
         int8_t prev_scroll_index = current_scroll_index;
+
         if (current_scroll_index == DRIVER_PROFILE_INDEX) {
+            // if we're on the driver profile we either go to first or last grid square
             if (config_move_request > 0) {
                 current_scroll_index++;
             } else {
@@ -568,21 +572,25 @@ void tftDL_configUpdate(){
             }
         } else if  (config_move_request == CONFIG_SCREEN_NUM_COLS &&
                     current_scroll_index >= MAX_MENU_ITEMS - CONFIG_SCREEN_NUM_COLS) {
+            // if we're in the bottom row and go down, we go to driver square
             current_scroll_index = DRIVER_PROFILE_INDEX;
         } else if  (config_move_request == -CONFIG_SCREEN_NUM_COLS &&
                     current_scroll_index <= CONFIG_SCREEN_NUM_COLS) {
+            // if we're in the top row and go up, we go to the driver square
             current_scroll_index = DRIVER_PROFILE_INDEX;
         } else if (((current_scroll_index - 1) % CONFIG_SCREEN_NUM_COLS) == 0 &&
                  config_move_request == -1) {
+            // if we're at the left and go left, we wrap around to the right
             current_scroll_index += CONFIG_SCREEN_NUM_COLS - 1;
         } else if (((current_scroll_index - 1) % CONFIG_SCREEN_NUM_COLS) == CONFIG_SCREEN_NUM_COLS -1 &&
                  config_move_request == 1) {
+            // if we're at the right and go right, we wrap around to the left
             current_scroll_index -= CONFIG_SCREEN_NUM_COLS - 1;
         } else {
+            // standard logic accounting for driver profile sqaure
     	    current_scroll_index += config_move_request;
             current_scroll_index = ((current_scroll_index - 1) % (MAX_MENU_ITEMS - 1)) + 1;
         }
-
 
         // clear the selection value just in case no one accidently presses both buttons at the same time
         config_move_request = 0;
