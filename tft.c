@@ -317,7 +317,7 @@ static void tftUpdate(void *pvParameters) {
     /* Display Startup Screen for fixed time */
     tftDLContentLoad(tft, &tftDL_startup);
     tftDLWrite(tft, &tftDL_startup);
-    //vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS); //TODO: Uncomment
+//    vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS); //TODO: Uncomment
 
     /* Update Screen Info from CAN Indefinitely */
     while (

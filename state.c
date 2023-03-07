@@ -42,48 +42,6 @@ void actionTwoButton(bool pressed){
     }
 }
 
-/**
- * @brief Handles regen up button presses.
- *
- * @param pressed `true` if button is currently pressed.
- */
-void regenUpButton(bool pressed) {
-    if (in_config_screen){
-    	config_increment_up_requested = true;
-        return;
-    }
-
-	if (!pressed) {
-        return;
-    }
-
-    if (regenStep < REGEN_STEP_NUM) {
-        regenStep++;
-    }
-    // setNumLeds(regenStep);
-}
-/**
- * @brief Handles regen down button presses.
- *
- * @param pressed `true` if button is currently pressed.
- */
-void regenDownButton(bool pressed) {
-    if (in_config_screen){
-    	config_increment_down_requested = true;
-        return;
-    }
-
-
-    if (!pressed) {
-        return;
-    }
-
-    if (regenStep > 0) {
-        regenStep--;
-    }
-    // setNumLeds(regenStep);
-}
-
 void exitConfigScreen(){
     // the first time the user presses the exit button, it'll flush the memory to the cdc
     // the second time it'll exit the config screen because it'll be dependent having 
@@ -454,3 +412,47 @@ void stateGearUpdate(void) {
 void stateDrsUpdate(void) {
     state.drsMode = state.drsReq;
 }
+
+
+// Redundant regen button code
+// /**
+//  * @brief Handles regen up button presses.
+//  *
+//  * @param pressed `true` if button is currently pressed.
+//  */
+// void regenUpButton(bool pressed) {
+//     if (in_config_screen){
+//     	config_increment_up_requested = true;
+//         return;
+//     }
+
+// 	if (!pressed) {
+//         return;
+//     }
+
+//     if (regenStep < REGEN_STEP_NUM) {
+//         regenStep++;
+//     }
+//     // setNumLeds(regenStep);
+// }
+// /**
+//  * @brief Handles regen down button presses.
+//  *
+//  * @param pressed `true` if button is currently pressed.
+//  */
+// void regenDownButton(bool pressed) {
+//     if (in_config_screen){
+//     	config_increment_down_requested = true;
+//         return;
+//     }
+
+
+//     if (!pressed) {
+//         return;
+//     }
+
+//     if (regenStep > 0) {
+//         regenStep--;
+//     }
+//     // setNumLeds(regenStep);
+// }

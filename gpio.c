@@ -189,13 +189,13 @@ static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
     },
     [EXP_WHEEL_BUTTON_2] = {
         .buttonState = false,
-        .setAction = &actionTwoButtonAction,
+        .setAction = &drsButtonAction,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_WHEEL_BUTTON_3] = {
         .buttonState = false,
-        .setAction = &drsButtonAction,
+        .setAction = &actionTwoButtonAction,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     }

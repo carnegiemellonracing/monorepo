@@ -305,42 +305,35 @@ static void canTX1Hz(void *pvParameters) {
         if (flush_config_screen_to_cdc){
             /* pack struct message for config */
             cmr_canDIMCDCconfig_t config0 = {
-                .config_val_1 = config_menu_main_array[0].value.value,
-                .config_val_2 = config_menu_main_array[1].value.value,
-                .config_val_3 = config_menu_main_array[2].value.value,
-                .config_val_4 = config_menu_main_array[3].value.value,
+                .config_val_1 = config_menu_main_array[1].value.value,
+                .config_val_2 = config_menu_main_array[2].value.value,
+                .config_val_3 = config_menu_main_array[3].value.value,
+                .config_val_4 = config_menu_main_array[4].value.value,
             };
             cmr_canDIMCDCconfig_t config1 = {
-                .config_val_1 = config_menu_main_array[4].value.value,
-                .config_val_2 = config_menu_main_array[5].value.value,
-                .config_val_3 = config_menu_main_array[6].value.value,
-                .config_val_4 = config_menu_main_array[7].value.value,
+                .config_val_1 = config_menu_main_array[5].value.value,
+                .config_val_2 = config_menu_main_array[6].value.value,
+                .config_val_3 = config_menu_main_array[7].value.value,
+                .config_val_4 = config_menu_main_array[8].value.value,
             };
             cmr_canDIMCDCconfig_t config2 = {
-                .config_val_1 = config_menu_main_array[8].value.value,
-                .config_val_2 = config_menu_main_array[9].value.value,
-                .config_val_3 = config_menu_main_array[10].value.value,
-                .config_val_4 = config_menu_main_array[11].value.value,
+                .config_val_1 = config_menu_main_array[9].value.value,
+                .config_val_2 = config_menu_main_array[10].value.value,
+                .config_val_3 = config_menu_main_array[11].value.value,
+                .config_val_4 = config_menu_main_array[12].value.value,
             };
             cmr_canDIMCDCconfig_t config3 = {
-                .config_val_1 = config_menu_main_array[12].value.value,
-                .config_val_2 = config_menu_main_array[13].value.value,
-                .config_val_3 = config_menu_main_array[14].value.value,
-                .config_val_4 = config_menu_main_array[15].value.value,
-            };
-            cmr_canDIMCDCconfig_t config4 = {
-                .config_val_1 = config_menu_main_array[16].value.value,
-                .config_val_2 = 0,
-                .config_val_3 = 0,
-                .config_val_4 = 0,
+                .config_val_1 = config_menu_main_array[13].value.value,
+                .config_val_2 = config_menu_main_array[14].value.value,
+                .config_val_3 = config_menu_main_array[15].value.value,
+                .config_val_4 = config_menu_main_array[16].value.value,
             };
 
             cmr_canDIMCDCconfig_t config_message_array[num_config_packets] = {
                 config0,
                 config1,
                 config2,
-                config3,
-                config4
+                config3
             };
 
             // calculate the correct CAN ID based on the current driver
@@ -418,7 +411,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
     static int items_per_struct = 4; // number of items in the struct. Probably not good to leave hardcoded
 
     // calculate what config packet this message is
-    int packet_number = (canID - CMR_CANID_DIM_CONFIG0_DRV0) % num_config_packets;
+    int packet_number = (canID - CMR_CANID_CDC_CONFIG0_DRV0) % num_config_packets;
     // cast the data to the appropriate format
     cmr_canDIMCDCconfig_t *cdc_config_data = (cmr_canDIMCDCconfig_t*) data;
     // cast the data to an array for easy indexing. Sly i know :P
@@ -426,7 +419,8 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
 
     // find the appropriate values to modify in the local copy of our data 
     // note that there are 4 values per config struct hence the *4
-    uint8_t dim_config_data_array_starting_idx = packet_number * items_per_struct; 
+    // Increment i by 1 because offset for driver index
+    uint8_t dim_config_data_array_starting_idx = packet_number * items_per_struct + 1; 
 
     if (packet_number >= num_config_packets){
         // time to shit yo pants bc some wack shit has happened.
@@ -436,10 +430,11 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
 
     /**** Cold Boot, await default parameters-- blindly read data if it's the first driver and set that to done ****/
     if (!initialized){
+        config_menu_main_array[DRIVER_PROFILE_INDEX].value.value = 0; // Initialize to driver 0
         if (((uint32_t)canID - CMR_CANID_CDC_CONFIG0_DRV0) < num_config_packets){
         	int local_can_data_index = 0;
             // copy data over to local memory!
-            for(uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + 4; i++){
+            for(uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + items_per_struct; i++){
                 config_menu_main_array[i].value.value = cdc_config_data_arr[local_can_data_index++];
             } 
         }
@@ -460,7 +455,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
 
             // get the data and check if all the data is the same
             int local_index = 0;
-            for(uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + 4; i++){
+            for(uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + items_per_struct; i++){
                 all_data_matches &= (config_menu_main_array[i].value.value == cdc_config_data_arr[local_index++]);
             }
             // set appropriate config message rx flag if data matches
@@ -479,7 +474,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
         if (((uint32_t)canID - requested_driver_cdc_canid) < num_config_packets){
             // get the data and flush it to local memory
         	int local_index = 0;
-            for(uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + 4; i++){
+            for(uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + items_per_struct; i++){
                 config_menu_main_array[i].value.value = cdc_config_data_arr[local_index++];
             } 
             // set appropriate config message rx flag if data matches
@@ -528,7 +523,7 @@ void canRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
     }
     // make sure its a valid can id for config.
     if (canID >= CMR_CANID_CDC_CONFIG0_DRV0 && 
-        canID <= CMR_CANID_CDC_CONFIG4_DRV4){ 
+        canID <= CMR_CANID_CDC_CONFIG3_DRV3){
     	cdcRXCallback(can, canID, data, dataLen);
     }
 }
@@ -624,56 +619,46 @@ void canInit(void) {
                 CMR_CANID_CDC_CONFIG3_DRV0
             }
         },
-//        {
-//            .isMask = false,
-//            .rxFIFO= CAN_RX_FIFO0,
-//            .ids = {
-//                CMR_CANID_CDC_CONFIG0_DRV1,
-//                CMR_CANID_CDC_CONFIG1_DRV1,
-//                CMR_CANID_CDC_CONFIG2_DRV1,
-//                CMR_CANID_CDC_CONFIG3_DRV1
-//            }
-//        },
-//        {
-//            .isMask = false,
-//            .rxFIFO= CAN_RX_FIFO0,
-//            .ids = {
-//                CMR_CANID_CDC_CONFIG0_DRV2,
-//                CMR_CANID_CDC_CONFIG1_DRV2,
-//                CMR_CANID_CDC_CONFIG2_DRV2,
-//                CMR_CANID_CDC_CONFIG3_DRV2
-//            }
-//        },
-//        {
-//            .isMask = false,
-//            .rxFIFO= CAN_RX_FIFO0,
-//            .ids = {
-//                CMR_CANID_CDC_CONFIG0_DRV3,
-//                CMR_CANID_CDC_CONFIG1_DRV3,
-//                CMR_CANID_CDC_CONFIG2_DRV3,
-//                CMR_CANID_CDC_CONFIG3_DRV3
-//            }
-//        },
         {
             .isMask = false,
             .rxFIFO= CAN_RX_FIFO0,
             .ids = {
-                CMR_CANID_CDC_CONFIG4_DRV0,
-                CMR_CANID_CDC_CONFIG4_DRV1,
-                CMR_CANID_CDC_CONFIG4_DRV2,
-                CMR_CANID_CDC_CONFIG4_DRV3
+                CMR_CANID_CDC_CONFIG0_DRV1,
+                CMR_CANID_CDC_CONFIG1_DRV1,
+                CMR_CANID_CDC_CONFIG2_DRV1,
+                CMR_CANID_CDC_CONFIG3_DRV1
             }
         },
-		{
-			.isMask = false,
-			.rxFIFO= CAN_RX_FIFO0,
-			.ids = {
-				CMR_CANID_EMD_MEASUREMENT,
-				CMR_CANID_EMD_MEASUREMENT,
-				CMR_CANID_EMD_MEASUREMENT,
-				CMR_CANID_EMD_MEASUREMENT
-			}
-		},
+        {
+            .isMask = false,
+            .rxFIFO= CAN_RX_FIFO0,
+            .ids = {
+                CMR_CANID_CDC_CONFIG0_DRV2,
+                CMR_CANID_CDC_CONFIG1_DRV2,
+                CMR_CANID_CDC_CONFIG2_DRV2,
+                CMR_CANID_CDC_CONFIG3_DRV2
+            }
+        },
+        {
+            .isMask = false,
+            .rxFIFO= CAN_RX_FIFO0,
+            .ids = {
+                CMR_CANID_CDC_CONFIG0_DRV3,
+                CMR_CANID_CDC_CONFIG1_DRV3,
+                CMR_CANID_CDC_CONFIG2_DRV3,
+                CMR_CANID_CDC_CONFIG3_DRV3
+            }
+        },
+            {
+            .isMask = false,
+            .rxFIFO= CAN_RX_FIFO0,
+            .ids = {
+                CMR_CANID_EMD_MEASUREMENT,
+                CMR_CANID_EMD_MEASUREMENT,
+                CMR_CANID_EMD_MEASUREMENT,
+                CMR_CANID_EMD_MEASUREMENT
+            }
+        },
         {
             .isMask = false,
             .rxFIFO = CAN_RX_FIFO1,
