@@ -17,6 +17,9 @@ volatile bool config_increment_up_requested = false;
 /** @brief declaration of config screen variables */
 volatile bool config_increment_down_requested = false;
 /** @brief declaration of config screen variables */
+volatile uint8_t config_paddle_left_request = 0;
+volatile uint8_t config_paddle_right_request = 0;
+/** @brief declaration of config screen variables */
 volatile int8_t config_move_request = 0;
 /** @brief declaration of what screen mode one is in */
 volatile bool in_config_screen = false;
@@ -442,4 +445,38 @@ void stateGearUpdate(void) {
 
 void stateDrsUpdate(void) {
     state.drsMode = state.drsReq;
+}
+
+// Called by CAN 100 Hz
+uint8_t getLeftPaddleState() {
+    uint8_t pos = (uint8_t) (((float) expanderGetClutch(EXP_CLUTCH_1)) / ((float) (0xFFF)) * ((float) UINT8_MAX));
+    if (inConfigScreen()) {
+        if (pos > MIN_PADDLE_VAL) {
+            config_paddle_left_request = pos - MIN_PADDLE_VAL;
+        } else {
+            config_paddle_left_request= 0;
+        }
+        // Return 0 to CAN because we are in config screen
+        return 0;
+    } else {
+        // only send paddle state if we're not in config screen
+        return pos;
+    }
+}
+
+// Called by CAN 100 Hz
+uint8_t getRightPaddleState() {
+    uint8_t pos = (uint8_t) (((float) expanderGetClutch(EXP_CLUTCH_2)) / ((float) (0xFFF)) * ((float) UINT8_MAX));
+    if (inConfigScreen()) {
+        if (pos > MIN_PADDLE_VAL) {
+            config_paddle_right_request = pos - MIN_PADDLE_VAL;
+        } else {
+            config_paddle_right_request= 0;
+        }
+        // Return 0 to CAN because we are in config screen
+        return 0;
+    } else {
+        // only send paddle state if we're not in config screen
+        return pos;
+    }
 }

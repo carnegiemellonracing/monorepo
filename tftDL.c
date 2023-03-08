@@ -15,6 +15,9 @@
 #include "can.h"            // Board-specific CAN interface
 #include "gpio.h"            // Board-specific CAN interface
 
+// used to calculate increment frequency:
+// max paddle val (255) / max increment speed (20Hz) 
+static const float paddle_time_scale_factor = 255.0f / 20.0f;
 
 /** @brief Represents a display list. */
 struct tftDL {
@@ -556,7 +559,8 @@ void tftDL_configUpdate(){
     }
 
     static int8_t current_scroll_index = 0; // start with a value of -1 to enter driver config first
-    
+    static bool paddle_prev_active = false;
+    static uint32_t paddle_time_since_change = 0;
     // Handles D Pad logic accounting for Driver Profile annoyance
     // If there is a move request
     if (config_move_request !=0) {
@@ -623,6 +627,52 @@ void tftDL_configUpdate(){
         setConfigIncrementValue(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
         config_increment_up_requested = false;
         config_increment_down_requested = false;
+    } else if (config_paddle_left_request > 0 || config_paddle_right_request > 0) {
+        if (config_paddle_left_request > 0 && config_paddle_right_request > 0) {
+            // both paddles depressed => do nothing
+            paddle_prev_active = false;
+            return;
+        }
+        // don't use paddles to change driver profile
+        if (current_scroll_index == DRIVER_PROFILE_INDEX) return;
+
+        // left paddle logic
+        if (config_paddle_left_request > 0) {
+            if (!paddle_prev_active) {
+                setConfigIncrementValue(current_scroll_index, false, true);
+                paddle_prev_active = true;
+                paddle_time_since_change = 0;
+            } else {
+                paddle_time_since_change += 1;
+                float increment_freq = (float)config_paddle_left_request / (float)paddle_time_scale_factor;
+                // increment count relative to display update period (ie period of this function)
+                float increment_count =  (float)TFT_UPDATE_PERIOD_MS / increment_freq;
+                if ((float)paddle_time_since_change >= increment_count) {
+                    setConfigIncrementValue(current_scroll_index, false, true);
+                    paddle_time_since_change = 0;
+                }
+            }
+        } else if (config_paddle_right_request > 0) {
+            if (!paddle_prev_active) {
+                setConfigIncrementValue(current_scroll_index, true, false);
+                paddle_prev_active = true;
+                paddle_time_since_change = 0;
+            } else {
+                paddle_time_since_change += 1;
+                float increment_freq = (float)config_paddle_right_request / (float)paddle_time_scale_factor;
+                // increment count relative to display update period (ie period of this function)
+                float increment_count =  (float)TFT_UPDATE_PERIOD_MS / increment_freq;
+                if ((float)paddle_time_since_change >= increment_count) {
+                    setConfigIncrementValue(current_scroll_index, true, false);
+                    paddle_time_since_change = 0;
+                }
+            }
+        }
+
+        if (config_paddle_left_request == 0 && config_paddle_right_request == 0) {
+                paddle_prev_active = false;
+        }
+
     }
 
     return;

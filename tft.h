@@ -16,6 +16,9 @@
 #define MC_YELLOW_THRESHOLD 48
 #define MC_RED_THRESHOLD 58
 
+/** @brief Display update period. */
+#define TFT_UPDATE_PERIOD_MS 20
+
 void tftInit(void);
 
 /** @brief All of the errors to be drawn on-screen

@@ -240,8 +240,6 @@ void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait) {
 /** @brief Display update priority. */
 static const uint32_t tftUpdate_priority = 1;
 
-/** @brief Display update period. */
-static const TickType_t tftUpdate_period_ms = 20;
 
 /** @brief Display update task. */
 static cmr_task_t tftUpdate_task;
@@ -321,7 +319,7 @@ static void tftUpdate(void *pvParameters) {
 
     /* Update Screen Info from CAN Indefinitely */
     while (
-        vTaskDelayUntil(&lastWakeTime, tftUpdate_period_ms), 1
+        vTaskDelayUntil(&lastWakeTime, TFT_UPDATE_PERIOD_MS), 1
     ) {
         if (inConfigScreen()){
             drawConfigScreen();

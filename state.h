@@ -16,8 +16,12 @@
 // TODO: Add documentation
 extern volatile bool config_increment_up_requested;
 extern volatile bool config_increment_down_requested;
+extern volatile uint8_t config_paddle_left_request;
+extern volatile uint8_t config_paddle_right_request;
 extern volatile int8_t config_move_request;
 #define CONFIG_SCREEN_NUM_COLS 4
+#define MIN_PADDLE_VAL 50
+#define MAX_PADDLE_VAL 255
 
 cmr_canState_t stateGetVSM(void);
 cmr_canState_t stateGetVSMReq(void);
@@ -52,10 +56,11 @@ void stateGearUpdate(void);
 void stateDrsModeSwitch(expanderRotaryPosition_t pos);
 void stateDrsUpdate(void);
 
-void stateRotary2Switch(expanderRotaryPosition_t pos);
-
 int32_t getAverageWheelRPM(void);
 bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq);
+
+uint8_t getLeftPaddleState(void);
+uint8_t getRightPaddleState(void);
 
 void updateReq(void);
 
