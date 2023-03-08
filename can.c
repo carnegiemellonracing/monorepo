@@ -194,6 +194,7 @@ static void canTX10Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     TickType_t lastWakeTime = xTaskGetTickCount();
+    cmr_driver_profile_t previousDriverReq = Default;  // Request Default
     while (1) {
         /* if DIM is requesting a state/gear change
          * send this request to VSM */
@@ -207,12 +208,14 @@ static void canTX10Hz(void *pvParameters) {
         if (
             (stateVSM != stateVSMReq) ||
             (gear != gearReq) ||
-            (drsMode != drsReq)
+            (drsMode != drsReq) ||
+            (config_menu_main_array[DRIVER_PROFILE_INDEX].value.value != previousDriverReq)
         ) {
             cmr_canDIMRequest_t request = {
                 .requestedState = stateVSMReq,
                 .requestedGear = gearReq,
-                .requestedDrsMode = drsReq
+                .requestedDrsMode = drsReq,
+                .requestedDriver = (uint8_t) config_menu_main_array[DRIVER_PROFILE_INDEX].value.value
             };
             canTX(
                 CMR_CANID_DIM_REQUEST,
@@ -220,6 +223,7 @@ static void canTX10Hz(void *pvParameters) {
                 canTX10Hz_period_ms
             );
 
+            previousDriverReq = config_menu_main_array[DRIVER_PROFILE_INDEX].value.value;
             stateGearUpdate();
             stateDrsUpdate();
         }
@@ -450,7 +454,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
         uint32_t requested_driver_cdc_canid = CMR_CANID_CDC_CONFIG0_DRV0 + (2 * requested_driver * num_config_packets);
 
         // filter for only the right driver can ID
-        if (((uint32_t)canID - requested_driver_cdc_canid) < num_config_packets){
+        if (((uint32_t)canID - requested_driver_cdc_canid) < num_config_packets && ((uint32_t) canID) >= requested_driver_cdc_canid){
             bool all_data_matches = true;
 
             // get the data and check if all the data is the same
@@ -471,7 +475,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
         uint32_t requested_driver_cdc_canid = CMR_CANID_CDC_CONFIG0_DRV0 + (2 * requested_driver * num_config_packets);
 
         // filter for only the right driver can ID based on the new requested driver
-        if (((uint32_t)canID - requested_driver_cdc_canid) < num_config_packets){
+        if (((uint32_t)canID - requested_driver_cdc_canid) < num_config_packets && ((uint32_t) canID) >= requested_driver_cdc_canid){
             // get the data and flush it to local memory
         	int local_index = 0;
             for(uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + items_per_struct; i++){
@@ -496,9 +500,11 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
 
         // if statements put here to prevent out of order execution/ context switching
         // in case they are set false here before they are requested to be true elsewhere.
-        if (waiting_for_cdc_to_confirm_config){
+        if (waiting_for_cdc_to_confirm_config) {
         	waiting_for_cdc_to_confirm_config = false;
-        	exitConfigScreen();
+            if (exit_config_request) {
+        	    exitConfigScreen();
+            }
         }
         if (flush_config_screen_to_cdc) flush_config_screen_to_cdc = false; 
         if (waiting_for_cdc_new_driver_config){

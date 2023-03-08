@@ -614,17 +614,25 @@ void tftDL_configUpdate(){
             return; // both are an error
         
         // TODO: Finish multiple driver integration
-        if (current_scroll_index == DRIVER_PROFILE_INDEX) return;
+        // if (current_scroll_index == DRIVER_PROFILE_INDEX) return;
         // handle new driver requested
         if (current_scroll_index == DRIVER_PROFILE_INDEX) {
-            waiting_for_cdc_new_driver_config = true;
             flush_config_screen_to_cdc = true;
+            waiting_for_cdc_to_confirm_config = true;
+            // Wait for CDC to confirm old driver params first
+            while (waiting_for_cdc_to_confirm_config) {    
+            }
+
+            // Change driver
+            setConfigIncrementValue(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
+            waiting_for_cdc_new_driver_config = true;
             while(waiting_for_cdc_new_driver_config){
                 // wait for the new driver to be selected
             }
+        } else {
+            setConfigIncrementValue(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
         }
 
-        setConfigIncrementValue(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
         config_increment_up_requested = false;
         config_increment_down_requested = false;
     } else if (config_paddle_left_request > 0 || config_paddle_right_request > 0) {

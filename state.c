@@ -25,6 +25,8 @@ volatile int8_t config_move_request = 0;
 volatile bool in_config_screen = false;
 /** @brief decleration of if the DIM is waiting for a new driver config */
 volatile bool waiting_for_cdc_new_driver_config;
+/** @brief decleration of if the DIM is waiting for a new driver config */
+volatile bool exit_config_request = false;
 /** @brief Checks to see if the screen has been setup before and if not will appropriately draw it */
 volatile bool dim_first_time_config_screen;
 /** @brief Checks to see if the screen needs to be redrawn after getting new driver profiles */
@@ -64,6 +66,7 @@ void actionTwoButton(bool pressed) {
         return;
     } else {
         if (inConfigScreen()) {
+            exit_config_request = true;
             exitConfigScreen();
             return;
         } else {
@@ -168,6 +171,7 @@ void exitConfigScreen(){
     }
     if (waiting_for_cdc_to_confirm_config == false){
         in_config_screen = false;
+        exit_config_request = false;
     }
 }
 

@@ -49,6 +49,8 @@ extern volatile bool waiting_for_cdc_to_confirm_config;// = false;
 // letting the DIM know that new driver params are available
 extern volatile bool waiting_for_cdc_new_driver_config;
 
+extern volatile bool exit_config_request;
+
 /** @brief Checks to see if the screen needs to be redrawn after getting new driver profiles */
 extern volatile bool redraw_new_driver_profiles;
 
