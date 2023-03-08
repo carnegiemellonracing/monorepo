@@ -46,7 +46,7 @@ void actionOneButton(bool pressed) {
         return;
     } else {
         if (inConfigScreen()) {
-		    return;
+		    config_increment_down_requested = true;
         } else {
             // only set can message to true if we're not in config screen
             action1ButtonPressed = pressed;
@@ -76,8 +76,7 @@ void drsButton(bool pressed) {
         return;
     } else {
         if (inConfigScreen()) {
-            exitConfigScreen();
-            return;
+            config_increment_up_requested = true;
         } else {
             // only set can message to true if we're not in config screen
             drsButtonPressed = pressed;
