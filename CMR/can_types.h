@@ -602,6 +602,7 @@ typedef struct {
     uint8_t requestedState;     /**< @brief Requested state. */
     uint8_t requestedGear;      /**< @brief Requested gear. */
     uint8_t requestedDrsMode;   /**< @brief Requested DRS mode. */
+    uint8_t requestedDriver;    /**< @brief Requested Driver for Config Screen. */
 } cmr_canDIMRequest_t;
 
 /** @brief Driver Interface Module power diagnostics. */

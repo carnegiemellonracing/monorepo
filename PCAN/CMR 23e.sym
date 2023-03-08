@@ -439,6 +439,7 @@ Timeout=1000
 Var=DIM_requestState unsigned 0,8 /e:State
 Var=DIM_requestGear unsigned 8,8 /e:Gear
 Var=DIM_requestDRSMode unsigned 16,8 /e:DRS_MODE
+Var=DIM_requestDriver unsigned 24,8
 
 [DIM_Actions]
 ID=515h
