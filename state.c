@@ -27,6 +27,13 @@ volatile bool dim_first_time_config_screen;
 /** @brief Checks to see if the screen needs to be redrawn after getting new driver profiles */
 volatile bool redraw_new_driver_profiles;
 
+/** @brief AE/DRS button value */
+bool drsButtonPressed;
+/** @brief Action 1 button value */
+bool action1ButtonPressed;
+/** @brief Action 2 button value */
+bool action2ButtonPressed;
+
 // Forward declarations
 void stateVSMUp(void);
 void stateVSMDown(void);
@@ -34,17 +41,47 @@ void enterConfigScreen(void);
 
 
 void actionOneButton(bool pressed) {
-    if (!pressed) return;
-    if (inConfigScreen()) {
-		return;
+    if (!pressed) {
+        action1ButtonPressed = false;
+        return;
+    } else {
+        if (inConfigScreen()) {
+		    return;
+        } else {
+            // only set can message to true if we're not in config screen
+            action1ButtonPressed = pressed;
+        }
     }
+    
 }
 
 void actionTwoButton(bool pressed) {
-    if (!pressed) return;
-    if (inConfigScreen()) {
-    	exitConfigScreen();
-		return;
+    if (!pressed) {
+        action2ButtonPressed = false;
+        return;
+    } else {
+        if (inConfigScreen()) {
+            exitConfigScreen();
+            return;
+        } else {
+            // only set can message to true if we're not in config screen
+            action2ButtonPressed = pressed;
+        }
+    }
+}
+
+void drsButton(bool pressed) {
+    if (!pressed) {
+        drsButtonPressed = false;
+        return;
+    } else {
+        if (inConfigScreen()) {
+            exitConfigScreen();
+            return;
+        } else {
+            // only set can message to true if we're not in config screen
+            drsButtonPressed = pressed;
+        }
     }
 }
 

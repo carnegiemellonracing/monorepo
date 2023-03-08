@@ -57,13 +57,6 @@ typedef struct {
     rotaryAction_f setAction;
 } expanderRotaryEvent_t;
 
-/** @brief AE/DRS button value */
-extern bool drsButtonPressed;
-/** @brief Action 1 button value */
-extern bool action1ButtonPressed;
-/** @brief Action 2 button value */
-extern bool action2ButtonPressed;
-
 /** @brief Current regen step */
 extern unsigned int regenStep;
 

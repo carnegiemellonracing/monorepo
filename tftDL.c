@@ -557,7 +557,7 @@ void tftDL_configUpdate(){
 
     static int8_t current_scroll_index = 0; // start with a value of -1 to enter driver config first
     
-    // Handles D Dap logic accounting for Driver Profile annoyance
+    // Handles D Pad logic accounting for Driver Profile annoyance
     // If there is a move request
     if (config_move_request !=0) {
         // record previous index so we can clear colour
@@ -603,7 +603,7 @@ void tftDL_configUpdate(){
         config_increment_down_requested = false;
     }
 
-    // if there are no scroll values, then check/implement selection values
+    // if there are no move requests, then check/implement selection values
 	else if (config_increment_up_requested || config_increment_down_requested) {
 
         if (config_increment_down_requested && config_increment_up_requested)

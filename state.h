@@ -28,8 +28,16 @@ cmr_canGear_t stateGetGearReq(void);
 cmr_canDRSMode_t stateGetDrs(void);
 cmr_canDRSMode_t stateGetDrsReq(void);
 
+/** @brief AE/DRS button value */
+extern bool drsButtonPressed;
+/** @brief Action 1 button value */
+extern bool action1ButtonPressed;
+/** @brief Action 2 button value */
+extern bool action2ButtonPressed;
+
 void actionOneButton(bool pressed);
 void actionTwoButton(bool pressed);
+void drsButton(bool pressed);
 
 void upButton(bool pressed);
 void downButton(bool pressed);
