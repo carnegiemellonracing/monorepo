@@ -433,7 +433,7 @@ Var=DIM_busCurrent unsigned 16,16 /u:mA
 
 [DIM_Request]
 ID=235h
-DLC=3
+DLC=4
 CycleTime=100
 Timeout=1000
 Var=DIM_requestState unsigned 0,8 /e:State
