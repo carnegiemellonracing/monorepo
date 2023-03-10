@@ -573,8 +573,8 @@ static void drawRTDScreen(void) {
     bool mcTemp_red = mcTemp_C >= MC_RED_THRESHOLD;
 
     //TODO: get real vals
-    uint8_t glvSoC = 80;
-    uint8_t hvSoC = 35;
+    uint8_t glvSoC = 0;
+    uint8_t hvSoC = 0;
     bool yrcOn = false;
     bool tcOn = false;
 

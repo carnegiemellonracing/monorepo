@@ -541,7 +541,7 @@ void tftDLWrite(tft_t *tft, const tftDL_t *tftDL) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 void setConfigContextString(int8_t scroll_index) {
     char* context_string = config_menu_main_array[scroll_index].ESE_context_text_variable;
-    uint32_t context_string_address_offset = ESE_CONTEXT_VALUE;
+    uint32_t context_string_address_offset = ESE_CONTEXT_VAL;
     uint32_t *context_string_pointer = (void *) (tftDL_configData + context_string_address_offset);
     sprintf((char *) context_string_pointer, context_string);
 
