@@ -1019,13 +1019,6 @@ typedef struct {
 } cmr_can_rtc_data_t;
 
 // ------------------------------------------------------------------------------------------------
-// DRS
-
-typedef struct {
-	int32_t drs_servo_angle;
-    int32_t drs_dim_status;
-} cmr_canDRSControls_t;
-
 /** @brief Represents the car's current Drag Reduction Mode. */
 typedef enum {
     CMR_CAN_DRS_UNKNOWN = 0,    /**< @brief Unknown Gear State */
