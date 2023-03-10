@@ -123,8 +123,6 @@ int main(void) {
     expandersInit();
     odometerInit();
 
-    // testInit();
-
     cmr_taskInit(
         &statusLED_task,
         "statusLED",

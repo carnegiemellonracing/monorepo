@@ -12,8 +12,34 @@
 #include "expanders.h"
 #include <stdbool.h>
 
+#include "CMR/config.h"     // Board-specific flash interface
+#include <FreeRTOS.h>       // FreeRTOS interface
+#include <semphr.h>         // Semaphore interface
+
+/** @brief Update Odometer task. */
+static cmr_task_t odometer_task;
+/** @brief Odometer update priority. */
+static const uint32_t odometer_priority = 2;
 /** @brief declaration of odometer update task */
 static const TickType_t odometer_period_ms = 100;
+
+/**@brief Some string to distinguish first-time-boots */
+#define CANARY "\xbd\xa6\x27\x59\xe2\xcf\x25\x88\x95\x24\xed\xee"
+
+/** @brief Odometer variable */
+typedef struct {
+    float odometer_km;
+    uint8_t canary[12];
+} odometer_t;
+static odometer_t odometer;
+
+/**@brief flash driver wrapping the settings */
+static cmr_config_t cfg;
+
+/**@brief Index of the sector to use */
+static const uint32_t sector_id = FLASH_SECTOR_15;
+static SemaphoreHandle_t cfg_lock;
+static StaticSemaphore_t _cfg_lock_buf;
 
 /** @brief declaration of config screen variables */
 extern volatile bool flush_config_screen_to_cdc;
@@ -502,14 +528,33 @@ float getSpeedKmh() {
     return vehicleSpeed;
 }
 
-
+/**
+ * @brief Returns the current car's odometry in km
+*/
 float getOdometer() {
-    float speed_Kmh = getSpeedKmh();
-    return 89.34f;
+    return odometer.odometer_km;
 }
 
-void updateOdometer() {
-    return;
+/**
+ * @brief Writes the current odometer to flash
+*/
+static void commitOdometer() {
+    xSemaphoreTake(cfg_lock, portMAX_DELAY);
+    memcpy(odometer.canary, CANARY, sizeof(odometer.canary));
+    cmr_configCommit(&cfg);
+    xSemaphoreGive(cfg_lock);
+}
+
+static void updateOdometer(void *pvParameters) {
+    (void) pvParameters;
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (true) {
+        float speed_kmph = getSpeedKmh();
+        // dist = x kmph * (1 hr/3600sec) * (20ms/ (1000ms/sec))
+        odometer.odometer_km += (speed_kmph / (60.0f * 60.0f)) * (((float) odometer_period_ms) / 1000.0f);
+        commitOdometer();
+        vTaskDelayUntil(&lastWakeTime, odometer_period_ms);
+    }
 }
 
 /**
@@ -520,10 +565,35 @@ void updateOdometer() {
  * @return Does not return.
  */
 void odometerInit(void) {
-//    TickType_t lastWakeTime = xTaskGetTickCount();
-//    while (true) {
-//        updateOdometer();
-//        vTaskDelayUntil(&lastWakeTime, odometer_period_ms);
-//    }
+    /** Initialize flash cache, pull in current settings,
+     * and perform first-boot-time initialization.
+     */
+    cmr_configInit(
+        &cfg,
+        (volatile uint32_t *) &odometer,
+        sizeof(odometer) / sizeof(uint32_t),    /* Flash driver expects
+                                                         * a size in words,
+                                                         * sadly */
+        sector_id
+    );
+
+    cfg_lock = xSemaphoreCreateBinaryStatic(&_cfg_lock_buf);
+    xSemaphoreGive(cfg_lock);
+    configASSERT(cfg_lock);
+
+    /* Do a vaguely sketchy uninitialized flash check to
+     * set defaults on the first boot */
+    if (memcmp(odometer.canary, CANARY, sizeof(odometer.canary))) {
+        odometer.odometer_km = 0.0f;
+        commitOdometer();
+    }
+
+    cmr_taskInit(
+        &odometer_task,
+        "odometer",
+        odometer_priority,
+        updateOdometer,
+        NULL
+    );
 }
 
