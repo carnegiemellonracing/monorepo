@@ -574,7 +574,7 @@ void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_r
     char** custom_enum_lut = config_menu_main_array[scroll_index].ESE_value_string_lut;
     
     // type of value being modified
-    cmr_config_t value_type = config_menu_main_array[scroll_index].value.type;
+    cmr_config_type_t value_type = config_menu_main_array[scroll_index].value.type;
     // current value of the item
     uint8_t value = config_menu_main_array[scroll_index].value.value;
     uint8_t value_min = config_menu_main_array[scroll_index].min;
