@@ -39,23 +39,23 @@ extern volatile bool dim_first_time_config_screen;
 extern volatile bool redraw_new_driver_profiles;
 
 // Sizes for displaying to screen
-#define GEARDISPLAYLEN 5
-#define STATEDISPLAYLEN 5
-#define DRSDISPLAYLEN 5
-#define RAMDISPLAYLEN 20
+#define GEARDISPLAYLEN 12
+#define STATEDISPLAYLEN 12
+#define DRSDISPLAYLEN 12
+#define RAMDISPLAYLEN 19
 #define NOTEDISPLAYLEN 12
 
 // Indices for accessing RAM Buffer
 #define NOTE1_INDEX 40
 #define NOTE2_INDEX 60
-#define NOTE3_INDEX 80
+
 
 void tftDL_RTDUpdate(
     bool memoratorPresent,
     SBG_status_t sbgStatus,
-    uint32_t speed_mph,
     int32_t hvVoltage_mV,
     int32_t power_kW,
+	uint32_t speed_kph,
     bool motorTemp_yellow,
     bool motorTemp_red,
     bool acTemp_yellow,
@@ -65,7 +65,14 @@ void tftDL_RTDUpdate(
     int32_t motorTemp_C,
     int32_t acTemp_C,
     int32_t mcTemp_C,
-    int32_t glvVoltage_V
+    int32_t glvVoltage_V,
+	uint8_t glvSoC,
+	uint8_t hvSoC,
+	bool yrcOn,
+	bool tcOn,
+	bool ssOn,
+	float odometer_km,
+	bool drsClosed
 );
 
 void tftDL_errorUpdate(

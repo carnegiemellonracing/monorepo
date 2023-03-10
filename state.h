@@ -64,7 +64,13 @@ uint8_t getRightPaddleState(void);
 
 void updateReq(void);
 
-bool inConfigScreen();
+bool inConfigScreen(void);
+
+float getSpeedKmh(void);
+
+float getOdometer(void);
+
+void odometerInit(void);
 
 #endif /* STATE_H */
 

@@ -160,7 +160,17 @@ cmr_canRXMeta_t canRXMeta[] = {
         .canID = CMR_CANID_VSM_SENSORS,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
-    }
+    },
+    [CANRX_HVC_LOW_VOLTAGE] = {
+        .canID = CMR_CANID_HVC_LOW_VOLTAGE,
+        .timeoutError_ms = 4000,
+		.timeoutWarn_ms = 2000
+    }, 
+    [CANRX_DRS_STATE] = {
+        .canID = CMR_CANID_DRS_STATE,
+        .timeoutError_ms = 4000,
+		.timeoutWarn_ms = 2000
+    }, 
 };
 
 /** @brief Primary CAN interface. */
@@ -375,8 +385,6 @@ static void canTX1Hz(void *pvParameters) {
  * This corresponds to text->address 0x0A, 0x0B, and 0x0C.
  * Character indices 60-72 inclusive are for the second note on the right side of the screen.
  * This corresponds to text->address 0x0F, 0x10, and 0x11.
- * Character indices 80-92 inclusive are for the third note on the right side of the screen.
- * This corresponds to text->address 0x14, 0x15, and 0x16.
  */
 void ramRxCallback (cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen) {
     if (canID == CMR_CANID_DIM_TEXT_WRITE) {
@@ -394,7 +402,7 @@ void ramRxCallback (cmr_can_t *can, uint16_t canID, const void *data, size_t dat
                  */
                 bool clearing = false;
                 for(uint16_t i = 0; i < RAMBUFLEN; i++) {
-                    if (i == NOTE1_INDEX || i == NOTE2_INDEX || i == NOTE3_INDEX) {
+                    if (i == NOTE1_INDEX || i == NOTE2_INDEX) {
                         clearing = false;
                     }
                     if (RAMBUF[i] == '\0' || clearing) {
@@ -671,8 +679,8 @@ void canInit(void) {
             .ids = {
                 CMR_CANID_VSM_SENSORS,
                 CMR_CANID_VSM_SENSORS,
-                CMR_CANID_VSM_SENSORS,
-                CMR_CANID_VSM_SENSORS
+                CMR_CANID_HVC_LOW_VOLTAGE,
+                CMR_CANID_DRS_STATE
             }
         }
     };

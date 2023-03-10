@@ -539,13 +539,15 @@ static void drawRTDScreen(void) {
 
     int32_t power_kW = (current_A * (hvVoltage_mV / 1000)) / 1000;
 
-    /* Wheel Speed */
-        /* Wheel Speed to Vehicle Speed Conversion
-         *      Avg Wheel Speed *
-         *      (18" * PI) * (1' / 12") * (60min / 1hr) * (1 mi / 5280')
-         *      = AvgWheelSpeed * 0.05355                                   */
-        uint32_t wheelSpeed_rpm = getAverageWheelRPM();
-        uint32_t speed_mph = (wheelSpeed_rpm * 5355) / 100000;
+    uint8_t speed_kmh = (uint8_t)getSpeedKmh();
+
+    float odometer_km = getOdometer();
+
+    volatile cmr_canBMSLowVoltage_t *bmsLV = (volatile cmr_canBMSLowVoltage_t*)&(canRXMeta[CANRX_HVC_LOW_VOLTAGE]);
+    bool ssOk = (bmsLV->safety_mV > 18);
+
+    volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t*)&(canRXMeta[CANRX_DRS_STATE]);
+    bool drsClosed = (bool)drsState->state;
 
     /* Accumulator Temperature */
     int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC)/10;
@@ -570,8 +572,35 @@ static void drawRTDScreen(void) {
     bool mcTemp_yellow = mcTemp_C >= MC_YELLOW_THRESHOLD;
     bool mcTemp_red = mcTemp_C >= MC_RED_THRESHOLD;
 
+    //TODO: get real vals
+    uint8_t glvSoC = 80;
+    uint8_t hvSoC = 35;
+    bool yrcOn = false;
+    bool tcOn = false;
+
     /* Update Display List*/
-    tftDL_RTDUpdate(memoratorPresent, sbgStatus, speed_mph, hvVoltage_mV, power_kW, motorTemp_yellow, motorTemp_red, acTemp_yellow, acTemp_red, mcTemp_yellow, mcTemp_red, motorTemp_C, acTemp_C, mcTemp_C, glvVoltage);
+    tftDL_RTDUpdate(memoratorPresent, 
+                    sbgStatus, 
+                    hvVoltage_mV, 
+                    power_kW,
+                    speed_kmh,
+                    motorTemp_yellow, 
+                    motorTemp_red, 
+                    acTemp_yellow, 
+                    acTemp_red, 
+                    mcTemp_yellow, 
+                    mcTemp_red, 
+                    motorTemp_C, 
+                    acTemp_C, 
+                    mcTemp_C, 
+                    glvVoltage,
+                    glvSoC,
+                    hvSoC,
+                    yrcOn,
+                    tcOn,
+                    ssOk,
+					odometer_km,
+                    drsClosed);
 
     /* Write Display List to Screen */
     tftDLWrite(&tft, &tftDL_RTD);

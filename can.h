@@ -84,6 +84,8 @@ typedef enum {
     CANRX_SBG_STATUS_3,            /**< @brief INS Status 3 */
 	CANRX_EMD_VALUES,			/**< @brief EMD Values for HV voltages and current */
     CANRX_VSM_SENSORS,
+    CANRX_HVC_LOW_VOLTAGE,      /**< @brief HVC Low Voltage for Safety Circuit Status*/
+    CANRX_DRS_STATE,
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 

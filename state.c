@@ -10,7 +10,12 @@
 #include "can.h"    // can interface
 #include "stdlib.h"
 #include "expanders.h"
+#include <stdbool.h>
 
+/** @brief declaration of odometer update task */
+static const TickType_t odometer_period_ms = 100;
+
+/** @brief declaration of config screen variables */
 extern volatile bool flush_config_screen_to_cdc;
 /** @brief declaration of config screen variables */
 volatile bool config_increment_up_requested = false;
@@ -484,3 +489,41 @@ uint8_t getRightPaddleState() {
         return pos;
     }
 }
+
+float getSpeedKmh() {
+    int32_t avgWheelRPM = getAverageWheelRPM();
+
+    /* Wheel Speed to Vehicle Speed Conversion
+     *      (x rotations / 1min) * (18" * PI) *  (2.54*10^-5km/inch)
+     *      (60min / 1hr) * (1/15.1 gear ratio)
+     *      = x * 0.0057072960048526627892388896218624717297547517194475432371                                 */
+    float vehicleSpeed = (float)avgWheelRPM * 0.0057073;
+
+    return vehicleSpeed;
+}
+
+
+float getOdometer() {
+    float speed_Kmh = getSpeedKmh();
+    return 89.34f;
+}
+
+void updateOdometer() {
+    return;
+}
+
+/**
+ * @brief Task for updating odometer.
+ *
+ * @param pvParameters Ignored.
+ *
+ * @return Does not return.
+ */
+void odometerInit(void) {
+//    TickType_t lastWakeTime = xTaskGetTickCount();
+//    while (true) {
+//        updateOdometer();
+//        vTaskDelayUntil(&lastWakeTime, odometer_period_ms);
+//    }
+}
+

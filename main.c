@@ -121,6 +121,7 @@ int main(void) {
     sensorsInit();
     tftInit();
     expandersInit();
+    odometerInit();
 
     // testInit();
 
