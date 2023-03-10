@@ -238,12 +238,12 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
 //////// HELPER FUNCTIONS /////////////////
 /**
  * @param returnPointer the pointer where you want your return value. Type is based on expected_type
- * @param index use the cmr_config_t enum to index into the appropriate value
- * @param expected_type the cmr_config_t type of pointer passed into returnPointer. Used for error checking
+ * @param index use the cmr_config_type_t enum to index into the appropriate value
+ * @param expected_type the cmr_config_type_t type of pointer passed into returnPointer. Used for error checking
  * 
  * @return bool of whether the value has been fetched correctly
  */
-bool getProcessedValue(void* returnPointer, int index, cmr_config_t expected_type){
+bool getProcessedValue(void* returnPointer, int index, cmr_config_type_t expected_type){
     if (config_menu_main_array[index].value.type != expected_type){
         return false;
     }

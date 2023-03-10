@@ -20,7 +20,7 @@ typedef enum{
     integer,
     unsigned_integer,
     custom_enum,
-} cmr_config_t;
+} cmr_config_type_t;
 typedef enum{
     Default,
     Trent,
@@ -68,7 +68,7 @@ extern char* config_driver_string_lut[9];
  * restricted to a uint8_t for now since that's what is transmitted over CAN
  */
 typedef struct{
-    cmr_config_t type;
+    cmr_config_type_t type;
     uint8_t value; 
 }cmr_config_value_t;
 
@@ -87,6 +87,6 @@ typedef struct {
 extern volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS];
 
 //////// HELPER FUNCTIONS /////////////////
-bool getProcessedValue(void* returnPointer, int index, cmr_config_t expected_type);
+bool getProcessedValue(void* returnPointer, int index, cmr_config_type_t expected_type);
 
 #endif
