@@ -6,9 +6,6 @@
         <Connection Bus="3" Enabled="0" Protocol="0" ErrorFrames="1" SymbolsFileName="CMR 23e.sym" Connection="DAQ_CAN@pcan_usb" Name="DAQ_CAN"/>
     </Connections>
     <MessageFilters/>
-    <TransmitList>
-        <TransmitListItem Bus="1" CanId="256" Type="0" DLC="5" Data="01" CycleTime="10" IsPaused="0" Creator="User"/>
-    </TransmitList>
     <Files>
         <File RelativePath="CMR 23e.sym"/>
     </Files>

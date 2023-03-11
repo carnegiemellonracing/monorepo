@@ -53,7 +53,7 @@ typedef enum {
 
 /*************** Various on screen string luts ***************/
 extern char* config_boolean_string_lut[2];
-extern char* config_driver_string_lut[9];
+extern char* config_driver_string_lut[4];
 /************************************************************/
 
 
@@ -80,6 +80,7 @@ typedef struct {
     char *ESE_context_text_variable;
     char** ESE_value_string_lut;
     cmr_config_value_t value;
+    size_t ESE_string_len;
     uint8_t min; // these will have to be converted at the time of initing
     uint8_t max; // these will have to be converted at the time of initing;
 }config_menu_item_t;

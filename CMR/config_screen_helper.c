@@ -4,8 +4,14 @@
 #include <CMR/config_screen_helper.h> // for config_screen_data tx
 
 /*************** Various on screen string luts ***************/
-char* config_boolean_string_lut[2] = {"Off", " On"};
-char* config_driver_string_lut[9] = {"Deflt", "Trent", "Pravr", " Gabe"};
+char* config_boolean_string_lut[2] = {"Off", "On\0"};
+// Pad the length to always be 10
+// There can be at most 1 null terminator (to center it)
+char* config_driver_string_lut[4] = {
+    " Default \0", 
+    "  Trent  \0",
+    "  Pravir  ", 
+    "   Gabe   "};
 /************************************************************/
 
 
@@ -17,6 +23,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_value_variable = ESE_DRIVER_VAL,
         .ESE_context_text_variable = "The driver profile",
         .ESE_value_string_lut = config_driver_string_lut,
+        .ESE_string_len = 11, // including null terminator
         .value = {
             .type = custom_enum,
             .value = 0
@@ -225,6 +232,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_value_color_variable = ESE_WET_COLOR,
         .ESE_value_variable = ESE_WET_VAL,
         .ESE_context_text_variable = "Wet Mode",
+        .ESE_string_len = 4, // including null terminator
         .value = {
             .type = boolean,
             .value = 0
