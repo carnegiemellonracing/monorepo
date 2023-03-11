@@ -616,7 +616,9 @@ void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_r
         case custom_enum:
         	// -1 since index off of 0
             value = configValueIncrementer(value, value_min, value_max - 1, up_requested, down_requested);
-            sprintf((char *) value_address_pointer, custom_enum_lut[value]);
+            size_t len = config_menu_main_array[scroll_index].ESE_string_len;
+            
+            memcpy((void *) value_address_pointer, (void *)custom_enum_lut[value], len);
     };
 
     //Flush the modified value
@@ -650,7 +652,9 @@ void drawLatestConfigValues(){
 void tftDL_configUpdate(){
     if (dim_first_time_config_screen){
     	drawLatestConfigValues();
-    	dim_first_time_config_screen = false;
+    	setConfigSelectionColor(DRIVER_PROFILE_INDEX, DRIVER_PROFILE_INDEX + 1);
+		setConfigContextString(DRIVER_PROFILE_INDEX);
+		dim_first_time_config_screen = false;
     }
     if (redraw_new_driver_profiles){
         drawLatestConfigValues();
@@ -661,7 +665,7 @@ void tftDL_configUpdate(){
     static bool paddle_prev_active = false;
     static uint32_t paddle_time_since_change = 0;
     // Handles D Pad logic accounting for Driver Profile annoyance
-    // If there is a move request
+    // If there is a move request or we're loading the page for the first time
     if (config_move_request !=0) {
         // record previous index so we can clear colour
         int8_t prev_scroll_index = current_scroll_index;
@@ -712,9 +716,6 @@ void tftDL_configUpdate(){
         if (config_increment_down_requested && config_increment_up_requested)
             return; // both are an error
         
-        // TODO: Finish multiple driver integration
-        // if (current_scroll_index == DRIVER_PROFILE_INDEX) return;
-        // handle new driver requested
         if (current_scroll_index == DRIVER_PROFILE_INDEX) {
             flush_config_screen_to_cdc = true;
             waiting_for_cdc_to_confirm_config = true;
@@ -743,8 +744,8 @@ void tftDL_configUpdate(){
         // don't use paddles to change driver profile
         if (current_scroll_index == DRIVER_PROFILE_INDEX) return;
 
-        // left paddle logic
         if (config_paddle_left_request > 0) {
+            // Handle left paddle request
             if (!paddle_prev_active) {
                 setConfigIncrementValue(current_scroll_index, false, true);
                 paddle_prev_active = true;
@@ -760,6 +761,7 @@ void tftDL_configUpdate(){
                 }
             }
         } else if (config_paddle_right_request > 0) {
+            // Handle right paddle request
             if (!paddle_prev_active) {
                 setConfigIncrementValue(current_scroll_index, true, false);
                 paddle_prev_active = true;

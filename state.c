@@ -539,10 +539,12 @@ float getOdometer() {
  * @brief Writes the current odometer to flash
 */
 static void commitOdometer() {
-    xSemaphoreTake(cfg_lock, portMAX_DELAY);
+    // xSemaphoreTake(cfg_lock, portMAX_DELAY);
     memcpy(odometer.canary, CANARY, sizeof(odometer.canary));
+    taskENTER_CRITICAL();
     cmr_configCommit(&cfg);
-    xSemaphoreGive(cfg_lock);
+    taskEXIT_CRITICAL();
+    // xSemaphoreGive(cfg_lock);
 }
 
 static void updateOdometer(void *pvParameters) {
