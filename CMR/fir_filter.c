@@ -52,6 +52,7 @@ void cmr_fir_filter_reset(cmr_fir_filter_state_t *filter_state) {
 
 /** 
  * @brief Push a new sample into the buffer and compute the filtered value
+ * @note This function should be called at the filter's sampling rate
  * @param filter_state Pointer to the filter state
  * @param new_sample The new sample to be inserted into the buffer
  * @return The dot product of the updated buffer and the filter coefficients
