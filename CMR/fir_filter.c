@@ -6,9 +6,8 @@
  * filter coefficients, and ensure that their lengths are correct
  */
 
-#include <inttypes.h>
-#include <stddef.h>
-#include <math.h>
+#include <stddef.h>     // size_t
+#include <FreeRTOS.h>   // configASSERT()
 #include "fir_filter.h"
 
 /**
@@ -24,10 +23,9 @@ void cmr_fir_filter_init(
     const float *coefs,
     size_t len
 ) {
-    // check for NULL
-    if (!filter_state) {
-        return;
-    }
+    configASSERT(filter_state != NULL);
+    configASSERT(buf != NULL);
+    configASSERT(coefs != NULL);
 
     // fill in the fields
     filter_state->buf = buf;
@@ -43,10 +41,8 @@ void cmr_fir_filter_init(
  * @param filter_state Pointer to the filter state
  */
 void cmr_fir_filter_reset(cmr_fir_filter_state_t *filter_state) {
-    // check for NULL
-    if (!filter_state || !filter_state->buf) {
-        return;
-    }
+    configASSERT(filter_state != NULL);
+    configASSERT(filter_state->buf != NULL);
 
     // fill buf with zeros
     for (size_t i = 0; i < filter_state->len; i++) {
@@ -64,10 +60,9 @@ float cmr_fir_filter_update(
     cmr_fir_filter_state_t *filter_state, 
     float new_sample
 ) {
-    // check for NULL
-    if (!filter_state || !filter_state->buf || !filter_state->coefs) {
-        return NAN;
-    }
+    configASSERT(filter_state != NULL);
+    configASSERT(filter_state->buf != NULL);
+    configASSERT(filter_state->coefs != NULL);
 
     float dot_product = 0.0f;
 
@@ -92,10 +87,9 @@ float cmr_fir_filter_update(
  * @return The dot product of the updated buffer and the filter coefficients
  */
 float cmr_fir_filter_peak(const cmr_fir_filter_state_t *filter_state) {
-    // check for NULL
-    if (!filter_state || !filter_state->buf || !filter_state->coefs) {
-        return NAN;
-    }
+    configASSERT(filter_state != NULL);
+    configASSERT(filter_state->buf != NULL);
+    configASSERT(filter_state->coefs != NULL);
 
     float dot_product = 0.0f;
 
