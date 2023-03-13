@@ -8,6 +8,7 @@
 
 #include <inttypes.h>
 #include <stddef.h>
+#include <math.h>
 #include "fir_filter.h"
 
 /**
@@ -24,7 +25,7 @@ void cmr_fir_filter_init(
     size_t len
 ) {
     // check for NULL
-    if (filter_state == NULL) {
+    if (!filter_state) {
         return;
     }
 
@@ -43,7 +44,7 @@ void cmr_fir_filter_init(
  */
 void cmr_fir_filter_reset(cmr_fir_filter_state_t *filter_state) {
     // check for NULL
-    if (filter_state == NULL || filter_state->buf == NULL) {
+    if (!filter_state || !filter_state->buf) {
         return;
     }
 
@@ -59,10 +60,13 @@ void cmr_fir_filter_reset(cmr_fir_filter_state_t *filter_state) {
  * @param new_sample The new sample to be inserted into the buffer
  * @return The dot product of the updated buffer and the filter coefficients
  */
-float cmr_fir_filter_update(cmr_fir_filter_state_t *filter_state, float new_sample) {
+float cmr_fir_filter_update(
+    cmr_fir_filter_state_t *filter_state, 
+    float new_sample
+) {
     // check for NULL
-    if (filter_state == NULL || filter_state->buf == NULL || filter_state->coefs == NULL) {
-        return;
+    if (!filter_state || !filter_state->buf || !filter_state->coefs) {
+        return NAN;
     }
 
     float dot_product = 0.0f;
@@ -89,8 +93,8 @@ float cmr_fir_filter_update(cmr_fir_filter_state_t *filter_state, float new_samp
  */
 float cmr_fir_filter_peak(const cmr_fir_filter_state_t *filter_state) {
     // check for NULL
-    if (filter_state == NULL || filter_state->buf == NULL || filter_state->coefs == NULL) {
-        return;
+    if (!filter_state || !filter_state->buf || !filter_state->coefs) {
+        return NAN;
     }
 
     float dot_product = 0.0f;
