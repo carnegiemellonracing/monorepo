@@ -20,7 +20,7 @@ typedef struct {
     const float *coefs;
     /** @brief Length of buf and coefs */
     size_t len;
-} fir_filter_state_t;
+} cmr_fir_filter_state_t;
 
 /**
  * ------- Pre-designed filters ------- 
@@ -77,14 +77,14 @@ const float FIR_COEFFICIENTS_9_80_5[9] = {
 
 /* ------- End of pre-designed filters ------- */
 
-void fir_filter_init(
-    fir_filter_state_t *filter_state,
+void cmr_fir_filter_init(
+    cmr_fir_filter_state_t *filter_state,
     float *buf,
     const float *coefs,
     size_t len
 );
-void fir_filter_reset(fir_filter_state_t *filter_state);
-float fir_filter_update(fir_filter_state_t *filter_state, float new_sample);
-float fir_filter_peak(const fir_filter_state_t *filter_state);
+void cmr_fir_filter_reset(cmr_fir_filter_state_t *filter_state);
+float cmr_fir_filter_update(cmr_fir_filter_state_t *filter_state, float new_sample);
+float cmr_fir_filter_peak(const cmr_fir_filter_state_t *filter_state);
 
 #endif /* _FIR_FILTER_H_ */

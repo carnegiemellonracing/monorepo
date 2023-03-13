@@ -17,26 +17,37 @@
  * @param coefs FIR filter coefficients, must have length len
  * @param len The length of buf and coefs
  */
-void fir_filter_init(
-    fir_filter_state_t *filter_state,
+void cmr_fir_filter_init(
+    cmr_fir_filter_state_t *filter_state,
     float *buf,
     const float *coefs,
     size_t len
 ) {
+    // check for NULL
+    if (filter_state == NULL) {
+        return;
+    }
+
     // fill in the fields
     filter_state->buf = buf;
     filter_state->coefs = coefs;
     filter_state->len = len;
 
     // reset the filter state
-    fir_filter_reset(filter_state);
+    cmr_fir_filter_reset(filter_state);
 }
 
 /**
  * @brief Resets the filter state by filling the buffer with zeros
  * @param filter_state Pointer to the filter state
  */
-void fir_filter_reset(fir_filter_state_t *filter_state) {
+void cmr_fir_filter_reset(cmr_fir_filter_state_t *filter_state) {
+    // check for NULL
+    if (filter_state == NULL || filter_state->buf == NULL) {
+        return;
+    }
+
+    // fill buf with zeros
     for (size_t i = 0; i < filter_state->len; i++) {
         filter_state->buf[i] = 0.0f;
     }
@@ -48,7 +59,12 @@ void fir_filter_reset(fir_filter_state_t *filter_state) {
  * @param new_sample The new sample to be inserted into the buffer
  * @return The dot product of the updated buffer and the filter coefficients
  */
-float fir_filter_update(fir_filter_state_t *filter_state, float new_sample) {
+float cmr_fir_filter_update(cmr_fir_filter_state_t *filter_state, float new_sample) {
+    // check for NULL
+    if (filter_state == NULL || filter_state->buf == NULL || filter_state->coefs == NULL) {
+        return;
+    }
+
     float dot_product = 0.0f;
 
     // right-shift the buffer by one element and insert new_sample at buf[0]
@@ -71,7 +87,12 @@ float fir_filter_update(fir_filter_state_t *filter_state, float new_sample) {
  * @param filter_state Pointer to the filter state
  * @return The dot product of the updated buffer and the filter coefficients
  */
-float fir_filter_peak(const fir_filter_state_t *filter_state) {
+float cmr_fir_filter_peak(const cmr_fir_filter_state_t *filter_state) {
+    // check for NULL
+    if (filter_state == NULL || filter_state->buf == NULL || filter_state->coefs == NULL) {
+        return;
+    }
+
     float dot_product = 0.0f;
 
     // compute the dot product
