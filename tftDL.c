@@ -650,10 +650,16 @@ void drawLatestConfigValues(){
 
 // TODO: Document
 void tftDL_configUpdate(){
+    static int8_t current_scroll_index = DRIVER_PROFILE_INDEX; 
+    static bool paddle_prev_active = false;
+    static uint32_t paddle_time_since_change = 0;
+
     if (dim_first_time_config_screen){
+        int8_t prev_scroll_index = (current_scroll_index == DRIVER_PROFILE_INDEX)? DRIVER_PROFILE_INDEX + 1: current_scroll_index;
+        current_scroll_index = DRIVER_PROFILE_INDEX;
     	drawLatestConfigValues();
-    	setConfigSelectionColor(DRIVER_PROFILE_INDEX, DRIVER_PROFILE_INDEX + 1);
-		setConfigContextString(DRIVER_PROFILE_INDEX);
+    	setConfigSelectionColor(current_scroll_index,prev_scroll_index );
+		setConfigContextString(current_scroll_index);
 		dim_first_time_config_screen = false;
     }
     if (redraw_new_driver_profiles){
@@ -661,9 +667,7 @@ void tftDL_configUpdate(){
         redraw_new_driver_profiles = false;
     }
 
-    static int8_t current_scroll_index = 0; // start with a value of -1 to enter driver config first
-    static bool paddle_prev_active = false;
-    static uint32_t paddle_time_since_change = 0;
+    
     // Handles D Pad logic accounting for Driver Profile annoyance
     // If there is a move request or we're loading the page for the first time
     if (config_move_request !=0) {
