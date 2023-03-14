@@ -16,6 +16,11 @@
 #include <FreeRTOS.h>       // FreeRTOS interface
 #include <semphr.h>         // Semaphore interface
 
+#define min(a,b) \
+   ({ __typeof__ (a) _a = (a); \
+       __typeof__ (b) _b = (b); \
+     _a < _b ? _a : _b; })
+
 /** @brief Update Odometer task. */
 static cmr_task_t odometer_task;
 /** @brief Odometer update priority. */
@@ -619,7 +624,7 @@ static const voltage_SoC_t LV_SoC_lookup[LV_LUT_NUM_ITEMS] = {
     {25.8, 30},
     {25.6, 20},
     {24.0, 10},
-    {10.0, 0}
+    {20.0, 0}
 };
 
 uint8_t getLVSoC(float voltage) {
@@ -627,16 +632,15 @@ uint8_t getLVSoC(float voltage) {
         if (LV_SoC_lookup[i].voltage == voltage) {
             // if voltage equals voltage from lut, return soc
             return LV_SoC_lookup[i].SoC;
-        } else if (LV_SoC_lookup[i].voltage > voltage) {
+        } else if (LV_SoC_lookup[i].voltage < voltage) {
             // if voltage > voltage from lut, we have passed correct value
             if (i == 0) {
                 // if i == 0, then it must be higher than highest voltage
-                return 100;
+                return 99;
             } else {
                 // otherwise we do some linear extrapolation! 
-                return LV_SoC_lookup[i].SoC + 
-                       ((voltage - LV_SoC_lookup[i].voltage) / (LV_SoC_lookup[i-1].voltage - LV_SoC_lookup[i].voltage)) * 
-                       (LV_SoC_lookup[i-1].SoC - LV_SoC_lookup[i].SoC);
+                float result = (float)LV_SoC_lookup[i].SoC + ((voltage - LV_SoC_lookup[i].voltage) / (LV_SoC_lookup[i-1].voltage - LV_SoC_lookup[i].voltage)) * ((float)LV_SoC_lookup[i-1].SoC - (float)LV_SoC_lookup[i].SoC);
+                return min(99, ((uint8_t)result));
             }
         }
     }

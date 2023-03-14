@@ -525,7 +525,7 @@ static void drawRTDScreen(void) {
     /* Pack Voltage */
     int32_t hvVoltage_mV = canHVCPackVoltage->battVoltage_mV;
 
-    float glvVoltage = ((float)cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV)) * 1000.0;
+    float glvVoltage = ((float)cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV)) / 1000.0;
     
     volatile cmr_canVSMSensors_t *vsmSensors = (volatile cmr_canVSMSensors_t*)&(canRXMeta[CANRX_VSM_SENSORS]);
     
