@@ -605,10 +605,10 @@ typedef struct {
     uint8_t SoC;
 } voltage_SoC_t;
 
-static const size_t LV_lookup_num_items = 11;
+#define LV_LUT_NUM_ITEMS 11
 
 // look up table must be sorted in descending order
-const voltage_SoC_t LV_SoC_lookup[] = {
+static const voltage_SoC_t LV_SoC_lookup[LV_LUT_NUM_ITEMS] = {
     {27.2, 100},
     {26.8, 90},
     {26.6, 80},
@@ -623,7 +623,7 @@ const voltage_SoC_t LV_SoC_lookup[] = {
 };
 
 uint8_t getLVSoC(float voltage) {
-    for (size_t i = 0; i < LV_lookup_num_items; i++) {
+    for (size_t i = 0; i < LV_LUT_NUM_ITEMS; i++) {
         if (LV_SoC_lookup[i].voltage == voltage) {
             // if voltage equals voltage from lut, return soc
             return LV_SoC_lookup[i].SoC;
