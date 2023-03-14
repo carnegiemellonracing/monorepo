@@ -634,9 +634,9 @@ uint8_t getLVSoC(float voltage) {
                 return 100;
             } else {
                 // otherwise we do some linear extrapolation! 
-                return LV_SoC_lookup[i-1].SoC + 
-                       ((voltage - LV_SoC_lookup[i-1].voltage) / (LV_SoC_lookup[i].voltage - LV_SoC_lookup[i-1].voltage)) * 
-                       (LV_SoC_lookup[i].SoC - LV_SoC_lookup[i-1].SoC);
+                return LV_SoC_lookup[i].SoC + 
+                       ((voltage - LV_SoC_lookup[i].voltage) / (LV_SoC_lookup[i-1].voltage - LV_SoC_lookup[i].voltage)) * 
+                       (LV_SoC_lookup[i-1].SoC - LV_SoC_lookup[i].SoC);
             }
         }
     }
