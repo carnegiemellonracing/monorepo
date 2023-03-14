@@ -72,5 +72,7 @@ float getOdometer(void);
 
 void odometerInit(void);
 
+uint8_t getLVSoC(float voltage);
+
 #endif /* STATE_H */
 

@@ -523,12 +523,12 @@ static void drawRTDScreen(void) {
 
 
     /* Pack Voltage */
-  int32_t hvVoltage_mV = canHVCPackVoltage->battVoltage_mV;
+    int32_t hvVoltage_mV = canHVCPackVoltage->battVoltage_mV;
     //  float hvVoltage_mV_f = canEmdHvVoltage(*canEMDvalues) * 1000.0f;
     //  int32_t hvVoltage_mV = (int32_t) hvVoltage_mV_f;
 
     // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
-    int32_t glvVoltage = adcRead(ADC_VSENSE) * 8 * 11 / 10 / 1000;
+    float glvVoltage = adcRead(ADC_VSENSE) * 8.0 * 11.0 / 10.0 / 1000.0;
 
     /* Motor Power Draw*/
 //   int33_t current_A = computeCurrent_A(canAMK_FL_Act1) +
@@ -544,6 +544,7 @@ static void drawRTDScreen(void) {
     float odometer_km = getOdometer();
 
     volatile cmr_canBMSLowVoltage_t *bmsLV = (volatile cmr_canBMSLowVoltage_t*)&(canRXMeta[CANRX_HVC_LOW_VOLTAGE]);
+    
     bool ssOk = (bmsLV->safety_mV > 18);
 
     volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t*)&(canRXMeta[CANRX_DRS_STATE]);
@@ -572,8 +573,8 @@ static void drawRTDScreen(void) {
     bool mcTemp_yellow = mcTemp_C >= MC_YELLOW_THRESHOLD;
     bool mcTemp_red = mcTemp_C >= MC_RED_THRESHOLD;
 
-    //TODO: get real vals
-    uint8_t glvSoC = 0;
+    uint8_t glvSoC = getLVSoC(glvSoC);
+
     uint8_t hvSoC = 0;
     bool yrcOn = false;
     bool tcOn = false;
@@ -593,7 +594,7 @@ static void drawRTDScreen(void) {
                     motorTemp_C, 
                     acTemp_C, 
                     mcTemp_C, 
-                    glvVoltage,
+                    (int32_t)glvVoltage,
                     glvSoC,
                     hvSoC,
                     yrcOn,

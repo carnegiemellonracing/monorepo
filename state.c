@@ -599,3 +599,48 @@ void odometerInit(void) {
     );
 }
 
+
+typedef struct {
+    float voltage;
+    uint8_t SoC;
+} voltage_SoC_t;
+
+static const size_t LV_lookup_num_items = 11;
+
+// look up table must be sorted in descending order
+const voltage_SoC_t LV_SoC_lookup[] = {
+    {27.2, 100},
+    {26.8, 90},
+    {26.6, 80},
+    {26.1, 70},
+    {26.4, 60},
+    {26.1, 50},
+    {26.0, 40},
+    {25.8, 30},
+    {25.6, 20},
+    {24.0, 10},
+    {10.0, 0}
+};
+
+uint8_t getLVSoC(float voltage) {
+    for (size_t i = 0; i < LV_lookup_num_items; i++) {
+        if (LV_SoC_lookup[i].voltage == voltage) {
+            // if voltage equals voltage from lut, return soc
+            return LV_SoC_lookup[i].SoC;
+        } else if (LV_SoC_lookup[i].voltage > voltage) {
+            // if voltage > voltage from lut, we have passed correct value
+            if (i == 0) {
+                // if i == 0, then it must be higher than highest voltage
+                return 100;
+            } else {
+                // otherwise we do some linear extrapolation! 
+                return LV_SoC_lookup[i-1].SoC + 
+                       ((voltage - LV_SoC_lookup[i-1].voltage) / (LV_SoC_lookup[i].voltage - LV_SoC_lookup[i-1].voltage)) * 
+                       (LV_SoC_lookup[i].SoC - LV_SoC_lookup[i-1].SoC);
+            }
+        }
+    }
+    // if we get to end of loop, voltage is less than lowest voltage in lut
+    return 0;
+
+}
