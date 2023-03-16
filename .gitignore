@@ -6,3 +6,4 @@ Debug/
 .vscode/
 html/
 *.warn
+.DS_Store

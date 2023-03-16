@@ -38,10 +38,10 @@ typedef struct {
 } odometer_t;
 static odometer_t odometer;
 
-/**@brief flash driver wrapping the settings */
+/** @brief flash driver wrapping the settings */
 static cmr_config_t cfg;
 
-/**@brief Index of the sector to use */
+/** @brief Index of the sector to use */
 static const uint32_t sector_id = FLASH_SECTOR_15;
 static SemaphoreHandle_t cfg_lock;
 static StaticSemaphore_t _cfg_lock_buf;
@@ -81,6 +81,11 @@ void stateVSMDown(void);
 void enterConfigScreen(void);
 
 
+/**
+ * @brief handles Action 1 button press on steering wheel
+ * 
+ * @param pressed `true` if button is currently pressed.
+*/
 void actionOneButton(bool pressed) {
     if (!pressed) {
         action1ButtonPressed = false;
@@ -96,6 +101,11 @@ void actionOneButton(bool pressed) {
     
 }
 
+/**
+ * @brief handles Action 2 button press on steering wheel
+ * 
+ * @param pressed `true` if button is currently pressed.
+*/
 void actionTwoButton(bool pressed) {
     if (!pressed) {
         action2ButtonPressed = false;
@@ -112,6 +122,11 @@ void actionTwoButton(bool pressed) {
     }
 }
 
+/**
+ * @brief handles DRS button press on steering wheel
+ * 
+ * @param pressed `true` if button is currently pressed.
+*/
 void drsButton(bool pressed) {
     if (!pressed) {
         drsButtonPressed = false;
@@ -605,6 +620,9 @@ void odometerInit(void) {
 }
 
 
+/**
+ * @brief Struct for voltage SoC lookup table
+ */
 typedef struct {
     float voltage;
     uint8_t SoC;
@@ -612,8 +630,12 @@ typedef struct {
 
 #define LV_LUT_NUM_ITEMS 11
 
-// look up table must be sorted in descending order
-static const voltage_SoC_t LV_SoC_lookup[LV_LUT_NUM_ITEMS] = {
+/**
+ * @brief Look up table for 24v lifepo4 battery State of Charge
+ * 
+ * Must be sorted in descending order
+ */
+ static const voltage_SoC_t LV_SoC_lookup[LV_LUT_NUM_ITEMS] = {
     {27.2, 100},
     {26.8, 90},
     {26.6, 80},
@@ -627,6 +649,13 @@ static const voltage_SoC_t LV_SoC_lookup[LV_LUT_NUM_ITEMS] = {
     {20.0, 0}
 };
 
+/**
+ * @brief Function for getting Low Voltage SoC
+ *
+ * @param voltage the current LV Voltage.
+ *
+ * @return the state of charge % between 0 and 99.
+ */
 uint8_t getLVSoC(float voltage) {
     for (size_t i = 0; i < LV_LUT_NUM_ITEMS; i++) {
         if (LV_SoC_lookup[i].voltage == voltage) {

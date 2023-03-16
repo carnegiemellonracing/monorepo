@@ -222,7 +222,7 @@ static void tftDL_showStates() {
     size_t drsCharsLen = 6;
     static const char *drsChars[] = {
         [CMR_CAN_DRSM_UNKNOWN] =      "????????????",
-        [CMR_CAN_DRSM_CLOSED] =       "       CLOSE",
+        [CMR_CAN_DRSM_CLOSED] =       "      CLOSED",
         [CMR_CAN_DRSM_OPEN] =         "        OPEN",
         [CMR_CAN_DRSM_TOGGLE] =       "      TOGGLE",
         [CMR_CAN_DRSM_HOLD] =         "        HOLD",
