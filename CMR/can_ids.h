@@ -17,12 +17,12 @@
 
 /** @brief CAN IDs. */
 typedef enum {    
-    CMR_CANID_HEARTBEAT_VSM = 0x100,    /**< @brief VSM heartbeat. */
-    CMR_CANID_HEARTBEAT_HVC = 0x101,    /**< @brief HVC heartbeat. */
-    CMR_CANID_HEARTBEAT_CDC = 0x102,    /**< @brief CDC heartbeat. */
-    CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
-    CMR_CANID_HEARTBEAT_DIM = 0x104,    /**< @brief DIM heartbeat. */
-    CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief PTC heatbeart.*/
+    CMR_CANID_HEARTBEAT_VSM = 0x101,    /**< @brief VSM heartbeat. */
+    CMR_CANID_HEARTBEAT_HVC = 0x102,    /**< @brief HVC heartbeat. */
+    CMR_CANID_HEARTBEAT_CDC = 0x103,    /**< @brief CDC heartbeat. */
+    CMR_CANID_HEARTBEAT_FSM = 0x104,    /**< @brief FSM heartbeat. */
+    CMR_CANID_HEARTBEAT_DIM = 0x105,    /**< @brief DIM heartbeat. */
+    CMR_CANID_HEARTBEAT_PTC = 0x106,    /**< @brief PTC heatbeart.*/
 
     CMR_CANID_CDL_BROADCAST = 0x625,    /**< @brief CDL broadcast. */
 
