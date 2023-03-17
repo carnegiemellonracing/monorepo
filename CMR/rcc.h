@@ -11,7 +11,7 @@
 #ifndef CMR_RCC_H
 #define CMR_RCC_H
 
-#include <stm32f4xx_hal.h>  // HAL_RCC_MODULE_ENABLED, HAL_GPIO_MODULE_ENABLED,
+#include "platform.h"       // HAL_RCC_MODULE_ENABLED, HAL_GPIO_MODULE_ENABLED,
                             // HAL_ADC_MODULE_ENABLED, HAL_CAN_MODULE_ENABLED,
                             // HAL_SPI_MODULE_ENABLED,
                             // GPIO_TypeDef, ADC_TypeDef, CAN_TypeDef,
@@ -52,6 +52,26 @@ void cmr_rccUSARTClockEnable(USART_TypeDef *instance);
 
 #ifdef HAL_TIM_MODULE_ENABLED
 void cmr_rccTIMClockEnable(TIM_TypeDef *instance);
+#endif /* HAL_TIM_MODULE_ENABLED */
+
+/* Platform-specific external dependencies */
+extern void _platform_rccSystemClockEnable(void);
+extern void _platform_rccSystemInternalClockEnable(void);
+
+#ifdef HAL_GPIO_MODULE_ENABLED
+extern void _platform_rccGPIOClockEnable(GPIO_TypeDef *port);
+#endif /* HAL_GPIO_MODULE_ENABLED */
+
+#ifdef HAL_ADC_MODULE_ENABLED
+extern void _platform_rccADCClockEnable(ADC_TypeDef *instance);
+#endif /* HAL_ADC_MODULE_ENABLED */
+
+#ifdef HAL_CAN_MODULE_ENABLED
+extern void _platform_rccCANClockEnable(CAN_TypeDef *instance);
+#endif /* HAL_CAN_MODULE_ENABLED */
+
+#ifdef HAL_TIM_MODULE_ENABLED
+extern void _platform_rccTIMClockEnable(TIM_TypeDef *instance);
 #endif /* HAL_TIM_MODULE_ENABLED */
 
 #endif /* HAL_RCC_MODULE_ENABLED */

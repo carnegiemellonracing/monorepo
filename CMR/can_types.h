@@ -176,13 +176,13 @@ typedef enum {
 
 /** @brief Represents the car's current DRS mode (). */
 typedef enum {
-    CMR_CAN_DRSM_UNKNOWN = 0,   /**< @brief Unknown Mode State */
+    CMR_CAN_DRSM_CLOSED = 0,
     CMR_CAN_DRSM_OPEN,
-    CMR_CAN_DRSM_CLOSED,
     CMR_CAN_DRSM_TOGGLE,
     CMR_CAN_DRSM_HOLD,
     CMR_CAN_DRSM_AUTO,
-    CMR_CAN_DRSM_LEN
+    CMR_CAN_DRSM_LEN,
+    CMR_CAN_DRSM_UNKNOWN
 } cmr_canDrsMode_t;
 
 /** @brief Safety Circuit status states. */
@@ -436,6 +436,18 @@ typedef struct {
     int32_t avgCurrent_mA;      /**< @brief (Not working) rolling average of current. */
 } cmr_canHVCPackCurrent_t;
 
+/** @brief High Voltage Controller BMB errors. */
+typedef struct {
+    uint8_t BMB1_2_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
+    uint8_t BMB3_4_Errs;  /**< @brief Errors for BMB3&4 (BMB3 = higher 4 bits). */
+    uint8_t BMB5_6_Errs;  /**< @brief Errors for BMB5&6 (BMB5 = higher 4 bits). */
+    uint8_t BMB7_8_Errs;  /**< @brief Errors for BMB7&8 (BMB7 = higher 4 bits). */
+    uint8_t BMB9_10_Errs;  /**< @brief Errors for BMB9&10 (BMB9 = higher 4 bits). */
+    uint8_t BMB11_12_Errs;  /**< @brief Errors for BMB11&12 (BMB11 = higher 4 bits). */
+    uint8_t BMB13_14_Errs;  /**< @brief Errors for BMB13&14 (BMB13 = higher 4 bits). */
+    uint8_t BMB15_16_Errs;  /**< @brief Errors for BMB15&16 (BMB15 = higher 4 bits). */
+} cmr_canHVCBMBErrors_t;
+
 // ------------------------------------------------------------------------------------------------
 // Accumulator Fan Controller
 
@@ -626,6 +638,8 @@ typedef struct {
     uint8_t action2ButtonPressed;    /**< @brief Status of the action 2 button (Active Low). */
     uint8_t drsButtonPressed;        /**< @brief Status of the AE/DRS button (Active Low). */
     uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
+    uint8_t paddleLeft;              /**< @brief Between 0 and 255 for left paddle pos*/
+    uint8_t paddleRight;             /**< @brief Between 0 and 255 for left paddle pos*/
 } cmr_canDIMActions_t;
 
 // DIM Config Screen data
@@ -1017,6 +1031,23 @@ typedef struct {
     uint8_t err; /* 1 in error state and 0 otherwise */
 } cmr_can_rtc_data_t;
 
+// ------------------------------------------------------------------------------------------------
+// DRS
+
+typedef struct {
+	int32_t drs_servo_angle;
+    int32_t drs_dim_status;
+} cmr_canDRSControls_t;
+
+/** @brief Represents the car's current Drag Reduction Mode. */
+typedef enum {
+    CMR_CAN_DRS_UNKNOWN = 0,    /**< @brief Unknown Gear State */
+    CMR_CAN_DRS_DRIVER_HOLD,    /**< @brief Hold to open */
+    CMR_CAN_DRS_DRIVER_TOGGLE,  /**< @brief Toggle to open/close */
+    CMR_CAN_DRS_BRAKE,          /**< @brief Driver control + off on brake */
+    CMR_CAN_DRS_ACCEL,          /**< @brief For accel event - auto on and off */
+    CMR_CAN_DRS_GEAR_LEN
+} cmr_canDRSMode_t;
 // ------------------------------------------------------------------------------------------------
 // SAE Provided EMD definitions
 

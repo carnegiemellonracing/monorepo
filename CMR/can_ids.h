@@ -16,13 +16,13 @@
 #define CMR_CANID_RMS_OFFSET    0x3A0
 
 /** @brief CAN IDs. */
-typedef enum {
-    CMR_CANID_HEARTBEAT_VSM = 0x101,    /**< @brief VSM heartbeat. */
-    CMR_CANID_HEARTBEAT_HVC = 0x102,    /**< @brief HVC heartbeat. */
-    CMR_CANID_HEARTBEAT_CDC = 0x103,    /**< @brief CDC heartbeat. */
-    CMR_CANID_HEARTBEAT_FSM = 0x104,    /**< @brief FSM heartbeat. */
-    CMR_CANID_HEARTBEAT_DIM = 0x105,    /**< @brief DIM heartbeat. */
-    CMR_CANID_HEARTBEAT_PTC = 0x106,    /**< @brief PTC heatbeart.*/
+typedef enum {    
+    CMR_CANID_HEARTBEAT_VSM = 0x100,    /**< @brief VSM heartbeat. */
+    CMR_CANID_HEARTBEAT_HVC = 0x101,    /**< @brief HVC heartbeat. */
+    CMR_CANID_HEARTBEAT_CDC = 0x102,    /**< @brief CDC heartbeat. */
+    CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
+    CMR_CANID_HEARTBEAT_DIM = 0x104,    /**< @brief DIM heartbeat. */
+    CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief PTC heatbeart.*/
 
     CMR_CANID_CDL_BROADCAST = 0x625,    /**< @brief CDL broadcast. */
 
@@ -187,6 +187,7 @@ typedef enum {
     CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE = 0x310,                  /**< @brief HVC Max/Min Cell Voltage. */
     CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE = 0x311,              /**< @brief HVC Max/Min Cell Temperature. */
     CMR_CANID_HVC_LOW_VOLTAGE = 0x303,                           /**< @brief HVC Low Voltage. */
+    CMR_CANID_HVC_BMB_STATUS_ERRORS = 0x304,
     CMR_CANID_HVC_BRUSA_MSG = 0x528,                             /**< @brief HVC Brusa message. */
 
     CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE = 0x380,                    /**< @brief HVC BMB Voltage: Message ID is BMB number << 1*/
@@ -244,6 +245,8 @@ typedef enum {
     CMR_CANID_CONTROLS_DEBUG_RR = 0x7E3,        /**< @brief control algo testing data. */
     CMR_CANID_CONTROLS_DEBUG_RL = 0x7E4,        /**< @brief control algo testing data. */
     CMR_CANID_CONTROLS_PID = 0x7E5,        /**< @brief control algo testing data. */
+
+	CMR_CANID_DRS_CONTROLS = 0x29C, 				/**< @brief DRS Motor Controls. */
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
