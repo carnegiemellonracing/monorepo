@@ -10,6 +10,7 @@
 
 #include <stddef.h>     // size_t
 #include <stdint.h>     // uint32_t
+#include <CMR/can_types.h>
 
 #include "tftPrivate.h"     // Private interface
 #include "tft.h"            // tft interface
@@ -76,7 +77,8 @@ void tftDL_RTDUpdate(
 );
 
 void tftDL_errorUpdate(
-    tft_errors_t *err
+    tft_errors_t *err,
+    cmr_canHVCBMBErrors_t *BMBerr
 );
 
 void tftDL_configUpdate();

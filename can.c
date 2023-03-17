@@ -136,8 +136,8 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
-    [CANRX_CDC_MOTOR_FAULTS] = {
-        .canID = CMR_CANID_CDC_MOTOR_FAULTS,
+    [CANRX_HVC_BMB_STATUS] = {
+        .canID = CMR_CANID_HVC_BMB_STATUS_ERRORS,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
@@ -569,7 +569,7 @@ void canInit(void) {
             .ids = {
                 CMR_CANID_HEARTBEAT_VSM,
                 CMR_CANID_HVC_PACK_VOLTAGE,
-                CMR_CANID_CDC_MOTOR_FAULTS,
+                CMR_CANID_HVC_BMB_STATUS_ERRORS,
                 CMR_CANID_HEARTBEAT_HVC
             }
         },
