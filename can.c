@@ -61,7 +61,7 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
-    [CANRX_AMK_FL_ACT_1] = {
+    [CANRX_AMK_FL_ACT_1] = {// TODO: Change CAN ID order based on inverter CAN IDs
         .canID = CMR_CANID_AMK_1_ACT_1,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25

@@ -463,14 +463,14 @@ static void tftDL_ERRwriteInt(uint32_t location, uint32_t length,  char* formatS
 }
 
 static void tftDL_showBMBStatus(cmr_canHVCBMBErrors_t *BMBerr) {
-    tftDL_ERRwriteInt(ESE_BMB_0_NUM_STR, 3, "%2x", BMBerr->BMB1_2_Errs);
-    tftDL_ERRwriteInt(ESE_BMB_1_NUM_STR, 3, "%2x", BMBerr->BMB3_4_Errs);
-    tftDL_ERRwriteInt(ESE_BMB_2_NUM_STR, 3, "%2x", BMBerr->BMB5_6_Errs);
-    tftDL_ERRwriteInt(ESE_BMB_3_NUM_STR, 3, "%2x", BMBerr->BMB7_8_Errs);
-    tftDL_ERRwriteInt(ESE_BMB_4_NUM_STR, 3, "%2x", BMBerr->BMB9_10_Errs);
-    tftDL_ERRwriteInt(ESE_BMB_5_NUM_STR, 3, "%2x", BMBerr->BMB11_12_Errs);
-    tftDL_ERRwriteInt(ESE_BMB_6_NUM_STR, 3, "%2x", BMBerr->BMB13_14_Errs);
-    tftDL_ERRwriteInt(ESE_BMB_7_NUM_STR, 3, "%2x", BMBerr->BMB15_16_Errs);
+    tftDL_ERRwriteInt(ESE_BMB_0_NUM_STR, 3, "%02X", BMBerr->BMB1_2_Errs);
+    tftDL_ERRwriteInt(ESE_BMB_1_NUM_STR, 3, "%02X", BMBerr->BMB3_4_Errs);
+    tftDL_ERRwriteInt(ESE_BMB_2_NUM_STR, 3, "%02X", BMBerr->BMB5_6_Errs);
+    tftDL_ERRwriteInt(ESE_BMB_3_NUM_STR, 3, "%02X", BMBerr->BMB7_8_Errs);
+    tftDL_ERRwriteInt(ESE_BMB_4_NUM_STR, 3, "%02X", BMBerr->BMB9_10_Errs);
+    tftDL_ERRwriteInt(ESE_BMB_5_NUM_STR, 3, "%02X", BMBerr->BMB11_12_Errs);
+    tftDL_ERRwriteInt(ESE_BMB_6_NUM_STR, 3, "%02X", BMBerr->BMB13_14_Errs);
+    tftDL_ERRwriteInt(ESE_BMB_7_NUM_STR, 3, "%02X", BMBerr->BMB15_16_Errs);
 
     // If any are non-zero, display red
     bool bmbRed = (bool) (BMBerr->BMB1_2_Errs | BMBerr->BMB3_4_Errs | BMBerr->BMB5_6_Errs |
@@ -482,25 +482,26 @@ static void tftDL_showBMBStatus(cmr_canHVCBMBErrors_t *BMBerr) {
 static void tftDL_showAMKError(uint32_t strlocation, uint32_t colorLocation, uint16_t errorCode) {
     char *print_location = (void *) (tftDL_errorData + strlocation);
     const size_t print_len = 13;
+    // Spaces are to align text, so each string has 12 characters followed by a \0
     switch (errorCode) {
-        case 2347:
-            snprintf(print_location, print_len, "MOTOR TEMP");
-            break;
-        case 2346:
-            snprintf(print_location, print_len, "IGBT TEMP");
-            break;
-        case 2310:
-            snprintf(print_location, print_len, "ENCODER PROB");
-            break;
-        case 3587:
-            snprintf(print_location, print_len, "SOFTWARE CAN");
-            break;
-        case 1049:
-            snprintf(print_location, print_len, "HV LOW VOLT");
-            break;
+       case 2347:
+           snprintf(print_location, print_len, "MOTOR TEMP  ");
+           break;
+       case 2346:
+           snprintf(print_location, print_len, "IGBT TEMP   ");
+           break;
+       case 2310:
+           snprintf(print_location, print_len, "ENCODER PROB");
+           break;
+       case 3587:
+           snprintf(print_location, print_len, "SOFTWARE CAN");
+           break;
+       case 1049:
+           snprintf(print_location, print_len, "HV LOW VOLT ");
+           break;
         default:
             // No text, so display error number
-            snprintf(print_location, 5, "%4d", errorCode);
+            snprintf(print_location, print_len, "%04d        ", errorCode);
             break;
     }
     tftDL_showErrorState(colorLocation, errorCode != 0);
@@ -546,6 +547,8 @@ void tftDL_errorUpdate(
         hvc_error_num_str->buf, sizeof(hvc_error_num_str->buf),
         "%04x", err->hvcErrorNum
     );
+    tftDL_showErrorState(ESE_HVC_ERROR_COLOR, err->hvcErrorNum != 0);
+    
 
     // BMB Status
     tftDL_showBMBStatus(BMBerr);
