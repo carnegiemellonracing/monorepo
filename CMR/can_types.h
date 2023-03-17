@@ -552,6 +552,11 @@ typedef struct {
     uint8_t pwm_right;      /**< @brief PWM of the right DRS servo (debug info). */
 } cmr_canCDCDRSStates_t;
 
+/** @brief Central Dynamics Controller */
+typedef struct {
+    float odometer_km;      /**< @brief Odometer in km*/
+} cmr_canCDCOdometer_t;
+
 // ------------------------------------------------------------------------------------------------
 // Central Dynamics Controller (20e)
 

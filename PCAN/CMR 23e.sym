@@ -1538,6 +1538,12 @@ Var=RTC_Month_In unsigned 32,8 /u:month
 Var=RTC_Year_In unsigned 40,8 /u:year
 Var=RTC_Error_In unsigned 48,8	// For interpreting this, see comments in code.
 
+[CDC_ODOMETER]
+ID=6C2h
+DLC=4
+CycleTime=1000
+Var=CDC_Odometer float 0,32 /u:km
+
 [CDC_DrsState]
 ID=52Ch
 DLC=4
