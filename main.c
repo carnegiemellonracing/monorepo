@@ -24,7 +24,7 @@
 static const uint32_t statusLED_priority = 2;
 
 /** @brief Status LED period (milliseconds). */
-static const TickType_t statusLED_period_ms = 250;
+static const TickType_t statusLED_period_ms = 1000;
 
 /** @brief Status LED task. */
 static cmr_task_t statusLED_task;
@@ -50,13 +50,16 @@ static void statusLED(void *pvParameters) {
     (void) pvParameters;
 
     cmr_gpioWrite(GPIO_LED_STATUS, 0);
+    static bool toggle = false;
 
     for (
         TickType_t lastWakeTime = xTaskGetTickCount();
         1;
         vTaskDelayUntil(&lastWakeTime, statusLED_period_ms)
     ) {
+        expanderSetLED(EXP_LED_1, toggle);
         cmr_gpioToggle(GPIO_LED_STATUS);
+        toggle = !toggle;
     }
 }
 
