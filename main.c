@@ -121,7 +121,6 @@ int main(void) {
     sensorsInit();
     tftInit();
     expandersInit();
-//    odometerInit();
 
     cmr_taskInit(
         &statusLED_task,

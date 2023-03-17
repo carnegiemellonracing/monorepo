@@ -170,7 +170,12 @@ cmr_canRXMeta_t canRXMeta[] = {
         .canID = CMR_CANID_DRS_STATE,
         .timeoutError_ms = 4000,
 		.timeoutWarn_ms = 2000
-    }, 
+    },
+    [CANRX_CDC_ODOMETER] {
+        .canID = CMR_CANID_CDC_ODOMETER,
+        .timeoutError_ms = 4000,
+		.timeoutWarn_ms = 2000
+    }
 };
 
 /** @brief Primary CAN interface. */
@@ -578,7 +583,7 @@ void canInit(void) {
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_SBG_STATUS_3,
-                CMR_CANID_SBG_STATUS_3,
+                CMR_CANID_CDC_ODOMETER,
                 CMR_CANID_DIM_TEXT_WRITE,
                 CMR_CANID_DIM_TEXT_WRITE
             }
