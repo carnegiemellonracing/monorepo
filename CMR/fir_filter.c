@@ -83,7 +83,7 @@ float cmr_fir_filter_update(
 }
 
 /**
- * @brief Compute te filtered value without updating the buffer
+ * @brief Compute the filtered value without updating the buffer
  * @param filter_state Pointer to the filter state
  * @return The dot product of the updated buffer and the filter coefficients
  */
