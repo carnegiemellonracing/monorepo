@@ -77,7 +77,7 @@ Var=VSM_ERR_latchBSPD bit 24,1
 [VSM_Sensors]
 ID=200h
 DLC=6
-CycleTime=100
+CycleTime=10
 Timeout=1000
 Var=VSM_brakePressureRear unsigned 0,16 /u:PSI
 Var=VSM_hallEffect signed 16,16 /u:A /f:0.01
