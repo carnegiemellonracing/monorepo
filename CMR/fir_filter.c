@@ -11,6 +11,61 @@
 #include "fir_filter.h"
 
 /**
+ * ------- Pre-designed filters ------- 
+ * @brief Pre-designed filter coefficients, useful for testing and debugging
+ * @note Please design your own filter for your particular use case
+ */
+
+// window length:       6 samples
+// sample rate:         100Hz
+// cutoff frequency:    10Hz
+// group delay:         (1 / 100Hz) * (6 - 1) / 2 = 25ms
+const float FIR_COEFFICIENTS_6_100_10[6] = {
+    0.091148595327006,
+    0.179031716037403,
+    0.229819688635591,
+    0.229819688635591,
+    0.179031716037403,
+    0.091148595327006
+};
+
+// window length:       11 samples
+// sample rate:         100Hz
+// cutoff frequency:    5Hz
+// group delay:         (1 / 100Hz) * (11 - 1) / 2 = 50ms
+const float FIR_COEFFICIENTS_11_100_5[11] = {
+    0.033083518941111,
+    0.065270358225107,
+    0.093043719495299,
+    0.114433034257841,
+    0.127911899644417,
+    0.132514938872449,
+    0.127911899644417,
+    0.114433034257841,
+    0.093043719495299,
+    0.065270358225107,
+    0.033083518941111
+};
+
+// window length:       9 samples
+// sample rate:         80Hz
+// cutoff frequency:    5Hz
+// group delay:         (1 / 80Hz) * (9 - 1) / 2 = 50ms
+const float FIR_COEFFICIENTS_9_80_5[9] = {
+    0.047747067652875,
+    0.092418281872636,
+    0.128356570723088,
+    0.151633628385033,
+    0.159688902732734,
+    0.151633628385033,
+    0.128356570723088,
+    0.092418281872636,
+    0.047747067652875
+};
+
+/* ------- End of pre-designed filters ------- */
+
+/**
  * @brief Initialize the filter state
  * @param filter_state Pointer to the filter state to be initialized
  * @param buf buffer for the FIR filter, must have length len
