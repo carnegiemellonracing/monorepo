@@ -43,6 +43,7 @@ static void mcPowerControl(void *pvParameters) {
         // If VSM has timed out, don't power the inverters
         if (vsmHeartbeatTimeout || vsmStateTimeout) {
             cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 0);
+            cmr_gpioWrite(GPIO_AUXILIARY_ENABLE, 0);
         }
         // Inverter should be powered if the car is in HV_EN, RTD, or the
         // VSM is attempting to boot the inverter in it's internal state
@@ -52,8 +53,10 @@ static void mcPowerControl(void *pvParameters) {
             vsmState->internalState == CMR_CAN_VSM_STATE_HV_EN) 
         {
             cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 1);
+            cmr_gpioWrite(GPIO_AUXILIARY_ENABLE, 1);
         } else {
             cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 0);
+            cmr_gpioWrite(GPIO_AUXILIARY_ENABLE, 0);
         }
 
         vTaskDelayUntil(&lastWakeTime, mcPowerControl_period_ms);
