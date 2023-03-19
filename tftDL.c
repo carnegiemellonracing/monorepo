@@ -113,7 +113,7 @@ const tftDL_t tftDL_racing_screen = {
 
 
 /** @brief Bitposition of Y-coordinate byte in vertices */
-#define TFT_DL_VERTEX_Y_BIT 16
+#define TFT_DL_VERTEX_Y_BIT 15
 
 /** @brief How to draw a single bar dynamically. */
 typedef struct {
@@ -124,9 +124,19 @@ typedef struct {
     * corresponding to bottom edge */
     uint32_t minVal;  /**< @brief Logical value
     * corresponding to top edge */
-} tftDL_bar_t;
+} tftDL_vert_bar_t;
 
-static const tftDL_bar_t hvSoc_bar = {
+typedef struct {
+    uint32_t *addr;  /**< @brief Top-left vertex addr */
+    uint32_t leftX;    /**< @brief Top edge Y coord. */
+    uint32_t rightX;    /**< @brief Bot edge Y coord. */
+    uint32_t maxVal;  /**< @brief Logical value
+    * corresponding to bottom edge */
+    uint32_t minVal;  /**< @brief Logical value
+    * corresponding to top edge */
+} tftDL_horiz_bar_t;
+
+static const tftDL_vert_bar_t hvSoc_bar = {
     .addr = tftDL_RTDData + ESE_HV_BOX_VAL,
     .topY = 1920,
     .botY = 6120,
@@ -134,10 +144,18 @@ static const tftDL_bar_t hvSoc_bar = {
     .minVal = 0
 };
 
-static const tftDL_bar_t glvSoc_bar = {
+static const tftDL_vert_bar_t glvSoc_bar = {
     .addr = tftDL_RTDData + ESE_GLV_BOX_VAL,
     .topY = 1920,
     .botY = 6120,
+    .maxVal = 99,
+    .minVal = 0
+};
+
+static const tftDL_horiz_bar_t hvHorizSoc_bar = {
+    .addr = tftDL_racingData + ESE_RS_HV_BOX_VAL,
+    .leftX = 3728,
+    .rightX = 10032,
     .maxVal = 99,
     .minVal = 0
 };
@@ -148,7 +166,7 @@ static const tftDL_bar_t glvSoc_bar = {
  * @param bar The bar to update.
  * @param val The logical value to draw.
  */
-static void tftDL_barSetY(const tftDL_bar_t *bar, int32_t val) {
+static void tftDL_barSetY(const tftDL_vert_bar_t *bar, int32_t val) {
     uint32_t y;
     if (val < bar->minVal) {
         y = bar->botY;
@@ -162,9 +180,41 @@ static void tftDL_barSetY(const tftDL_bar_t *bar, int32_t val) {
     }
 
     uint32_t vertex = *bar->addr;
+    // Create mask with 0s for y, and 1s for x
     uint32_t mask = ((~((uint32_t)0)) << TFT_DL_VERTEX_Y_BIT);
-    vertex &= mask; //TODO: This is dumb
+    // vertex and mask to remove current y coord
+    vertex &= mask; 
+    // replace zeros with new y coord (already in correct position)
     vertex |= y;
+    *bar->addr = vertex;
+}
+
+/**
+ * @brief Reflect logical value into bar plot for drawing.
+ *
+ * @param bar The bar to update.
+ * @param val The logical value to draw.
+ */
+static void tftDL_barSetX(const tftDL_horiz_bar_t *bar, int32_t val) {
+    uint32_t x;
+    if (val < bar->minVal) {
+        x = bar->leftX;
+    } else if (val > bar->maxVal) {
+        x = bar->rightX;
+    } else {
+        uint32_t len = (
+            (val - bar->minVal) * ((uint32_t) (bar->rightX - bar->leftX))
+        ) / (bar->maxVal - bar->minVal);
+        x = bar->leftX + len;
+    }
+
+    uint32_t vertex = *bar->addr;
+    // Create mask with 1s for y, and 0s for x
+    uint32_t mask = (~((~((uint32_t)0)) << TFT_DL_VERTEX_Y_BIT)) ^ ((1 << 31) >> 1);
+    // vertex and mask to remove current x coord
+    vertex &= mask;
+    // replace zeros with new x coord (shifted to correct position)
+    vertex |= (x << TFT_DL_VERTEX_Y_BIT);
     *bar->addr = vertex;
 }
 
@@ -490,6 +540,9 @@ void tftDL_racingScreenUpdate(
     tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_AC_TEMP_STR, 4, "%3ld", acTemp_C);
     tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_MC_TEMP_STR, 4, "%3ld", mcTemp_C);
     tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_HV_SOC_VAL, 3, "%2ld", (int32_t)hvSoC);
+
+    // set HV SoC bar
+    tftDL_barSetX(&hvHorizSoc_bar, (uint32_t)hvSoC);
 
     /* DRS color */
     uint32_t *drs_color = (void *) (tftDL_racingData + ESE_RS_DRS_COLOR);

@@ -579,7 +579,9 @@ static void drawRTDScreen(void) {
 
     uint8_t glvSoC = getLVSoC(glvVoltage);
 
-    uint8_t hvSoC = 76;
+    uint8_t hvSoC = 10;
+    
+
     bool yrcOn = false;
     bool tcOn = false;
 
