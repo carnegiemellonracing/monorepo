@@ -61,7 +61,7 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
-    [CANRX_AMK_FL_ACT_1] = {
+    [CANRX_AMK_FL_ACT_1] = {// TODO: Change CAN ID order based on inverter CAN IDs
         .canID = CMR_CANID_AMK_1_ACT_1,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
@@ -136,8 +136,8 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
-    [CANRX_CDC_MOTOR_FAULTS] = {
-        .canID = CMR_CANID_CDC_MOTOR_FAULTS,
+    [CANRX_HVC_BMB_STATUS] = {
+        .canID = CMR_CANID_HVC_BMB_STATUS_ERRORS,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
@@ -170,7 +170,12 @@ cmr_canRXMeta_t canRXMeta[] = {
         .canID = CMR_CANID_DRS_STATE,
         .timeoutError_ms = 4000,
 		.timeoutWarn_ms = 2000
-    }, 
+    },
+    [CANRX_CDC_ODOMETER] {
+        .canID = CMR_CANID_CDC_ODOMETER,
+        .timeoutError_ms = 4000,
+		.timeoutWarn_ms = 2000
+    }
 };
 
 /** @brief Primary CAN interface. */
@@ -569,7 +574,7 @@ void canInit(void) {
             .ids = {
                 CMR_CANID_HEARTBEAT_VSM,
                 CMR_CANID_HVC_PACK_VOLTAGE,
-                CMR_CANID_CDC_MOTOR_FAULTS,
+                CMR_CANID_HVC_BMB_STATUS_ERRORS,
                 CMR_CANID_HEARTBEAT_HVC
             }
         },
@@ -578,7 +583,7 @@ void canInit(void) {
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_SBG_STATUS_3,
-                CMR_CANID_SBG_STATUS_3,
+                CMR_CANID_CDC_ODOMETER,
                 CMR_CANID_DIM_TEXT_WRITE,
                 CMR_CANID_DIM_TEXT_WRITE
             }

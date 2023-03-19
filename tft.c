@@ -355,24 +355,31 @@ static void drawErrorScreen(void) {
     volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat =
         (void *) metaHVCHeartbeat->payload;
 
-    cmr_canRXMeta_t *metaCDCMotorFaults = canRXMeta + CANRX_CDC_MOTOR_FAULTS;
-    volatile cmr_canCDCMotorFaults_t *canCDCMotorFaults =
-        (void *) metaCDCMotorFaults->payload;
+    cmr_canRXMeta_t *metaAmkFLActualValues2 = canRXMeta + CANRX_AMK_FL_ACT_2;
+    volatile cmr_canAMKActualValues2_t *amkFLActualValues2 =
+        (void *) metaAmkFLActualValues2->payload;
+    cmr_canRXMeta_t *metaAmkFRActualValues2 = canRXMeta + CANRX_AMK_FR_ACT_2;
+    volatile cmr_canAMKActualValues2_t *amkFRActualValues2 =
+        (void *) metaAmkFRActualValues2->payload;
+    cmr_canRXMeta_t *metaAmkBLActualValues2 = canRXMeta + CANRX_AMK_RL_ACT_2;
+    volatile cmr_canAMKActualValues2_t *amkBLActualValues2 =
+        (void *) metaAmkBLActualValues2->payload;
+    cmr_canRXMeta_t *metaAmkBRActualValues2 = canRXMeta + CANRX_AMK_RR_ACT_2;
+    volatile cmr_canAMKActualValues2_t *amkBRActualValues2 =
+        (void *) metaAmkBRActualValues2->payload;
 
     tftDLContentLoad(&tft, &tftDL_error);
 
     tft_errors_t err;
 
     /* Low Voltage */
-    unsigned int voltage_mV = adcRead(ADC_VSENSE) * 8 * 11 / 10;
+    unsigned int voltage_mV = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
     err.glvVoltage_V =  voltage_mV / 1000;
     err.glvLowVolt = voltage_mV < 20*1000;
 
     /* Timeouts */
-    err.fsmTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_FSM);
     err.cdcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_CDC);
     err.ptcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_PTC);
-    err.apcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_APC);
     err.hvcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_HVC);
     err.vsmTimeout = 0;
 
@@ -382,21 +389,23 @@ static void drawErrorScreen(void) {
     err.bspdError = (canVSMStatus->latchMatrix & CMR_CAN_VSM_LATCH_BSPD);
 
     /* HVC Errors */
-    err.overVolt = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_PACK_OVERVOLT);
-    err.underVolt = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_PACK_UNDERVOLT);
+    err.overVolt = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERVOLT);
+    err.underVolt = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_UNDERVOLT);
     err.hvcoverTemp = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERTEMP);
-    err.hvc_Error = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_FAULT);
+    err.hvcBMBTimeout = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_TIMEOUT);
+    err.hvcBMBFault = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_FAULT);
     err.hvcErrorNum = (canHVCHeartbeat->errorStatus);
 
     /* CDC Motor Faults */
-    err.overSpeed = (canCDCMotorFaults->run & 1);
-    err.mcoverTemp = (canCDCMotorFaults->run & (0x7f << 17));
-    err.overCurrent = (canCDCMotorFaults->run & 2);
-    err.mcError = (canCDCMotorFaults->run);
-    err.mcErrorNum = (canCDCMotorFaults->run);
+    err.amkFLErrorCode = amkFLActualValues2->errorCode;
+    err.amkFRErrorCode = amkFRActualValues2->errorCode;
+    err.amkBLErrorCode = amkBLActualValues2->errorCode;
+    err.amkBRErrorCode = amkBRActualValues2->errorCode;
+
+    volatile cmr_canHVCBMBErrors_t *BMBerr = (volatile cmr_canHVCBMBErrors_t *) getPayload(CANRX_HVC_BMB_STATUS);
 
     /* Update Display List*/
-    tftDL_errorUpdate(&err);
+    tftDL_errorUpdate(&err, BMBerr);
 
     /* Write Display List to Screen */
     tftDLWrite(&tft, &tftDL_error);

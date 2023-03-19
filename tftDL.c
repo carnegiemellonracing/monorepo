@@ -457,13 +457,65 @@ static void tftDL_showErrorState(uint32_t location, bool condition) {
     *color_location = condition ? color_err : color_none;
 }
 
+static void tftDL_ERRwriteInt(uint32_t location, uint32_t length,  char* formatString, uint32_t number) {
+    char *print_location = (void *) (tftDL_errorData + location);
+    snprintf(print_location, length, formatString, number);
+}
+
+static void tftDL_showBMBStatus(cmr_canHVCBMBErrors_t *BMBerr) {
+    tftDL_ERRwriteInt(ESE_BMB_0_NUM_STR, 3, "%02X", BMBerr->BMB1_2_Errs);
+    tftDL_ERRwriteInt(ESE_BMB_1_NUM_STR, 3, "%02X", BMBerr->BMB3_4_Errs);
+    tftDL_ERRwriteInt(ESE_BMB_2_NUM_STR, 3, "%02X", BMBerr->BMB5_6_Errs);
+    tftDL_ERRwriteInt(ESE_BMB_3_NUM_STR, 3, "%02X", BMBerr->BMB7_8_Errs);
+    tftDL_ERRwriteInt(ESE_BMB_4_NUM_STR, 3, "%02X", BMBerr->BMB9_10_Errs);
+    tftDL_ERRwriteInt(ESE_BMB_5_NUM_STR, 3, "%02X", BMBerr->BMB11_12_Errs);
+    tftDL_ERRwriteInt(ESE_BMB_6_NUM_STR, 3, "%02X", BMBerr->BMB13_14_Errs);
+    tftDL_ERRwriteInt(ESE_BMB_7_NUM_STR, 3, "%02X", BMBerr->BMB15_16_Errs);
+
+    // If any are non-zero, display red
+    bool bmbRed = (bool) (BMBerr->BMB1_2_Errs | BMBerr->BMB3_4_Errs | BMBerr->BMB5_6_Errs |
+                        BMBerr->BMB7_8_Errs | BMBerr->BMB9_10_Errs | BMBerr->BMB11_12_Errs |
+                        BMBerr->BMB13_14_Errs | BMBerr->BMB15_16_Errs);
+    tftDL_showErrorState(ESE_HVC_BMB_STATUS_COLOR, bmbRed);
+}
+
+static void tftDL_showAMKError(uint32_t strlocation, uint32_t colorLocation, uint16_t errorCode) {
+    char *print_location = (void *) (tftDL_errorData + strlocation);
+    const size_t print_len = 13;
+    // Spaces are to align text, so each string has 12 characters followed by a \0
+    switch (errorCode) {
+       case 2347:
+           snprintf(print_location, print_len, "MOTOR TEMP  ");
+           break;
+       case 2346:
+           snprintf(print_location, print_len, "IGBT TEMP   ");
+           break;
+       case 2310:
+           snprintf(print_location, print_len, "ENCODER PROB");
+           break;
+       case 3587:
+           snprintf(print_location, print_len, "SOFTWARE CAN");
+           break;
+       case 1049:
+           snprintf(print_location, print_len, "HV LOW VOLT ");
+           break;
+        default:
+            // No text, so display error number
+            snprintf(print_location, print_len, "%04d        ", errorCode);
+            break;
+    }
+    tftDL_showErrorState(colorLocation, errorCode != 0);
+}
+
 /**
  * @brief Updates the error screen.
  *
  * @param err Error statuses to display.
+ * @param BMBerr BMB error statuses to display.
  */
 void tftDL_errorUpdate(
-    tft_errors_t *err
+    tft_errors_t *err,
+    cmr_canHVCBMBErrors_t *BMBerr
 ) {
 
     static struct {
@@ -475,44 +527,44 @@ void tftDL_errorUpdate(
         "%2dV", err->glvVoltage_V
     );
 
-    tftDL_showErrorState(ESE_PTCp_COLOR, err->ptcTimeout);
-    tftDL_showErrorState(ESE_PTCf_COLOR, err->ptcTimeout);
-    tftDL_showErrorState(ESE_APC_COLOR, err->apcTimeout);
+    /* Timeouts */
+    tftDL_showErrorState(ESE_PTC_COLOR, err->ptcTimeout);
     tftDL_showErrorState(ESE_HVC_COLOR, err->hvcTimeout);
     tftDL_showErrorState(ESE_VSM_COLOR, err->vsmTimeout);
-    tftDL_showErrorState(ESE_FSM_COLOR, err->fsmTimeout);
     tftDL_showErrorState(ESE_CDC_COLOR, err->cdcTimeout);
-    tftDL_showErrorState(ESE_OVERVOLT_COLOR, err->overVolt);
-    tftDL_showErrorState(ESE_UNDERVOLT_COLOR, err->underVolt);
+
+    /* HVC */
+    tftDL_showErrorState(ESE_HVC_OVERVOLT_COLOR, err->overVolt);
+    tftDL_showErrorState(ESE_HVC_UNDERVOLT_COLOR, err->underVolt);
     tftDL_showErrorState(ESE_HVC_OVERTEMP_COLOR, err->hvcoverTemp);
-    tftDL_showErrorState(ESE_HVC_ERROR_COLOR, err->hvc_Error);
-    tftDL_showErrorState(ESE_OVERSPEED_COLOR, err->overSpeed);
-    tftDL_showErrorState(ESE_MC_OVERTEMP_COLOR, err->mcoverTemp);
-    tftDL_showErrorState(ESE_OVERCURRENT_COLOR, err->overCurrent);
-    tftDL_showErrorState(ESE_MC_ERROR_COLOR, err->mcError);
+    tftDL_showErrorState(ESE_HVC_BMB_TIMEOUT_COLOR, err->hvcBMBTimeout);
+    tftDL_showErrorState(ESE_HVC_BMB_FAULT_COLOR, err->hvcBMBFault);
+    
+    static struct {
+        char buf[5];
+    } *const hvc_error_num_str = (void *) (tftDL_errorData + ESE_HVC_ERROR_NUM_STR);
+    snprintf(
+        hvc_error_num_str->buf, sizeof(hvc_error_num_str->buf),
+        "%04x", err->hvcErrorNum
+    );
+    tftDL_showErrorState(ESE_HVC_ERROR_COLOR, err->hvcErrorNum != 0);
+    
+
+    // BMB Status
+    tftDL_showBMBStatus(BMBerr);
+
+    /* Latching */
     tftDL_showErrorState(ESE_IMD_COLOR, err->imdError);
     tftDL_showErrorState(ESE_AMS_COLOR, err->amsError);
     tftDL_showErrorState(ESE_BSPD_COLOR, err->bspdError);
     tftDL_showErrorState(ESE_GLV_COLOR, err->glvLowVolt);
 
-    static struct {
-        char buf[11];
-    } *const hvc_error_num_str = (void *) (tftDL_errorData + ESE_HVC_ERROR_NUM_STR);
 
-    snprintf(
-        hvc_error_num_str->buf, sizeof(hvc_error_num_str->buf),
-        "%04x", err->hvcErrorNum
-    );
-
-    static struct {
-        char buf[15];
-    } *const mc_error_num_str = (void *) (tftDL_errorData + ESE_MC_ERROR_NUM_STR);
-
-    snprintf(
-        mc_error_num_str->buf, sizeof(mc_error_num_str->buf),
-        "%08x", err->mcErrorNum
-    );
-
+    /* Display AMK errors */
+    tftDL_showAMKError(ESE_AMK_FL_STR, ESE_AMK_FL_COLOR, err->amkFLErrorCode);
+    tftDL_showAMKError(ESE_AMK_FR_STR, ESE_AMK_FR_COLOR, err->amkFRErrorCode);
+    tftDL_showAMKError(ESE_AMK_BL_STR, ESE_AMK_BL_COLOR, err->amkBLErrorCode);
+    tftDL_showAMKError(ESE_AMK_BR_STR, ESE_AMK_BR_COLOR, err->amkBRErrorCode);
 }
 
 /**
