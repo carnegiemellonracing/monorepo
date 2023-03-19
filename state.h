@@ -66,6 +66,8 @@ void updateReq(void);
 
 bool inConfigScreen(void);
 
+bool inRacingScreen(void);
+
 float getSpeedKmh(void);
 
 float getOdometer(void);
@@ -75,4 +77,3 @@ void odometerInit(void);
 uint8_t getLVSoC(float voltage);
 
 #endif /* STATE_H */
-

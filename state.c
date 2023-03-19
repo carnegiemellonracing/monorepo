@@ -29,11 +29,14 @@ volatile bool config_increment_up_requested = false;
 volatile bool config_increment_down_requested = false;
 /** @brief declaration of config screen variables */
 volatile uint8_t config_paddle_left_request = 0;
+/** @brief declaration of config screen variables */
 volatile uint8_t config_paddle_right_request = 0;
 /** @brief declaration of config screen variables */
 volatile int8_t config_move_request = 0;
 /** @brief declaration of what screen mode one is in */
 volatile bool in_config_screen = false;
+/** @brief declaration of what screen mode one is in */
+volatile bool in_racing_screen = false;
 /** @brief decleration of if the DIM is waiting for a new driver config */
 volatile bool waiting_for_cdc_new_driver_config;
 /** @brief decleration of if the DIM is waiting for a new driver config */
@@ -91,8 +94,13 @@ void actionTwoButton(bool pressed) {
             exitConfigScreen();
             return;
         } else {
-            // only set can message to true if we're not in config screen
-            action2ButtonPressed = pressed;
+            if (inRacingScreen()) {
+                in_racing_screen = false;
+            } else {
+                in_racing_screen = true;
+            }
+            // // only set can message to true if we're not in config screen
+            // action2ButtonPressed = pressed;
         }
     }
 }
@@ -217,6 +225,10 @@ void enterConfigScreen(){
 
 bool inConfigScreen() {
     return in_config_screen;
+}
+
+bool inRacingScreen() {
+    return in_racing_screen;
 }
 
 /** @brief DIM state. */

@@ -327,6 +327,7 @@ static void tftUpdate(void *pvParameters) {
         else if (stateGetVSM() == CMR_CAN_ERROR){
             drawErrorScreen();
         } else {
+            // within drawRTDScreen, we decide if to draw testing or racing screen
             drawRTDScreen();
         }
     }
@@ -578,36 +579,48 @@ static void drawRTDScreen(void) {
 
     uint8_t glvSoC = getLVSoC(glvVoltage);
 
-    uint8_t hvSoC = 0;
+    uint8_t hvSoC = 76;
     bool yrcOn = false;
     bool tcOn = false;
 
-    /* Update Display List*/
-    tftDL_RTDUpdate(memoratorPresent, 
-                    sbgStatus, 
-                    hvVoltage_mV, 
-                    power_kW,
-                    speed_kmh,
-                    motorTemp_yellow, 
-                    motorTemp_red, 
-                    acTemp_yellow, 
-                    acTemp_red, 
-                    mcTemp_yellow, 
-                    mcTemp_red, 
-                    motorTemp_C, 
-                    acTemp_C, 
-                    mcTemp_C, 
-                    (int32_t)glvVoltage,
-                    glvSoC,
-                    hvSoC,
-                    yrcOn,
-                    tcOn,
-                    ssOk,
-					odometer_km,
-                    drsClosed);
+    if (inRacingScreen()) {
+        tftDL_racingScreenUpdate(
+            motorTemp_C,
+            acTemp_C,
+            mcTemp_C,
+            hvSoC,
+            drsClosed
+        );
+        // /* Write Display List to Screen */
+        tftDLWrite(&tft, &tftDL_racing_screen);
+    } else {
+        /* Update Display List*/
+        tftDL_RTDUpdate(memoratorPresent, 
+                        sbgStatus, 
+                        hvVoltage_mV, 
+                        power_kW,
+                        speed_kmh,
+                        motorTemp_yellow, 
+                        motorTemp_red, 
+                        acTemp_yellow, 
+                        acTemp_red, 
+                        mcTemp_yellow, 
+                        mcTemp_red, 
+                        motorTemp_C, 
+                        acTemp_C, 
+                        mcTemp_C, 
+                        (int32_t)glvVoltage,
+                        glvSoC,
+                        hvSoC,
+                        yrcOn,
+                        tcOn,
+                        ssOk,
+                        odometer_km,
+                        drsClosed);
 
-    /* Write Display List to Screen */
-    tftDLWrite(&tft, &tftDL_RTD);
+        /* Write Display List to Screen */
+        tftDLWrite(&tft, &tftDL_RTD);
+    }
 }
 
 /**
