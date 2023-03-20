@@ -1551,10 +1551,10 @@ ID=52Dh
 DLC=8
 CycleTime=100
 Timeout=1000
-Var=Filtered_Current float 0,32 /u:A
+Var=Power_Limit_Max_Violation_W float 0,32 /u:A
 Var=Error_Count unsigned 32,8
-Var=Pack_Voltage_Over_Count unsigned 40,8
-Var=Pack_Voltage_Under_Count unsigned 48,8
+Var=Over_Voltage_Count unsigned 40,8
+Var=Under_Voltage_Count unsigned 48,8
 
 [CDC_Motor_Power]
 ID=52Eh
