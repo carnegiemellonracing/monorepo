@@ -40,7 +40,7 @@ bool volatile config_screen_values_received_for_new_driver = false;
 
 
 // Size of text buffer from RAM
-#define RAMBUFLEN 1024
+#define RAMBUFLEN 64
 
 /** @brief Text buffer from RAM - used to display messages to driver */
 char RAMBUF[RAMBUFLEN];
@@ -407,7 +407,7 @@ void ramRxCallback (cmr_can_t *can, uint16_t canID, const void *data, size_t dat
                  */
                 bool clearing = false;
                 for(uint16_t i = 0; i < RAMBUFLEN; i++) {
-                    if (i == NOTE1_INDEX || i == NOTE2_INDEX) {
+                    if (i == TARGET_TIME_INDEX || i == MESSAGE_INDEX) {
                         clearing = false;
                     }
                     if (RAMBUF[i] == '\0' || clearing) {
