@@ -376,19 +376,19 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
  * @brief sets the display message from the RAM
  * Sets at top and 2 notes on right side
  */
-void tftDL_showRAMMsg(uint32_t *file_addr, uint32_t msg_1_addr, uint32_t msg_2_addr, uint32_t msg_3_addr) {
+void tftDL_showRAMMsg(uint32_t *file_addr, uint32_t prev_lap_loc, uint32_t targ_lap_loc, uint32_t msg_loc) {
     struct {
-        char buf[RAMDISPLAYLEN];
-    } *ramMsg_str = (void *) (file_addr + msg_1_addr);
-    memcpy((void *) ramMsg_str->buf, (void *) RAMBUF, RAMDISPLAYLEN);
+        char buf[TIMEDISPLAYLEN];
+    } *prev_time_str = (void *) (file_addr + prev_lap_loc);
+    memcpy((void *) prev_time_str->buf, (void *) &(RAMBUF[PREV_TIME_INDEX]), TIMEDISPLAYLEN);
     struct {
-        char buf[NOTEDISPLAYLEN];
-    } *note1_str = (void *) (file_addr + msg_2_addr);
-    memcpy((void *) note1_str->buf, (void *) &(RAMBUF[NOTE1_INDEX]), NOTEDISPLAYLEN);
+        char buf[TIMEDISPLAYLEN];
+    } *target_time_str = (void *) (file_addr + targ_lap_loc);
+    memcpy((void *) target_time_str->buf, (void *) &(RAMBUF[TARGET_TIME_INDEX]), TIMEDISPLAYLEN);
     struct {
-        char buf[NOTEDISPLAYLEN];
-    } *note2_str = (void *) (file_addr + msg_3_addr);
-    memcpy((void *) note2_str->buf, (void *) &(RAMBUF[NOTE2_INDEX]), NOTEDISPLAYLEN);
+		char buf[MESSAGEDISPLAYLEN];
+	} *ramMsg_str = (void *) (file_addr + msg_loc);
+	memcpy((void *) ramMsg_str->buf, (void *) &(RAMBUF[MESSAGE_INDEX]), MESSAGEDISPLAYLEN);
 }
 
 /**
@@ -526,7 +526,8 @@ void tftDL_RTDUpdate(
     setTempColor(ESE_MC_TEMP_BG_COLOR, ESE_MC_TEMP_COLOR, mcTemp_yellow, mcTemp_red);
 
     tftDL_showStates(tftDL_RTDData, ESE_VSM_STATE_STR, ESE_VSM_STATE_COLOR, ESE_GEAR_STR, ESE_DRS_MODE_STR, false);
-    tftDL_showRAMMsg(tftDL_RTDData, ESE_RAM_MSG1_STR, ESE_RAM_MSG2_STR, ESE_RAM_MSG3_STR);
+    tftDL_showRAMMsg(tftDL_RTDData, ESE_RAM_MSG2_STR, ESE_RAM_MSG3_STR, ESE_RAM_MSG1_STR);
+
 }
 
 void tftDL_racingScreenUpdate(
@@ -550,7 +551,8 @@ void tftDL_racingScreenUpdate(
     *drs_color = drs_color_cmd;
 
     tftDL_showStates(tftDL_racingData, ESE_RS_VSM_STATE_STR, ESE_RS_VSM_STATE_COLOR, ESE_RS_GEAR_STR, ESE_RS_DRS_MODE_STR, true);
-    // tftDL_showRAMMsg(tftDL_racingData, ESE_RAM_MSG1_STR, ESE_RAM_MSG2_STR, ESE_RAM_MSG3_STR);
+    tftDL_showRAMMsg(tftDL_racingData, ESE_RS_RAM_LAST_LAP, ESE_RS_RAM_TARG_LAP, ESE_RS_RAM_MSG_STR);
+
 }
 
 

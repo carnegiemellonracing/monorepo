@@ -47,13 +47,14 @@ extern volatile bool redraw_new_driver_profiles;
 #define GEARDISPLAYLEN 12
 #define STATEDISPLAYLEN 13
 #define DRSDISPLAYLEN 7
-#define RAMDISPLAYLEN 19
-#define NOTEDISPLAYLEN 12
 
-// Indices for accessing RAM Buffer
+// Indices for accessing RAM Buffer + their lengths 
 #define PREV_TIME_INDEX 0
 #define TARGET_TIME_INDEX 8
+#define TIMEDISPLAYLEN 8
+
 #define MESSAGE_INDEX 16
+#define MESSAGEDISPLAYLEN 21
 
 void tftDL_RTDUpdate(
     bool memoratorPresent,
