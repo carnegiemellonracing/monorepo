@@ -398,23 +398,6 @@ void ramRxCallback (cmr_can_t *can, uint16_t canID, const void *data, size_t dat
             uint16_t index = ((uint16_t)text->address) << 2;
             if (index < RAMBUFLEN) {
                 memcpy(RAMBUF + index, &(text->data), 4);
-
-                /*
-                 * Replace all null terminators with spaces - otherwise screen
-                 * doesn't display any characters after a null terminator is found
-                 * clearing is so that if found null terminator within in section of text,
-                 * all characters after null terminator will also be cleared
-                 */
-                bool clearing = false;
-                for(uint16_t i = 0; i < RAMBUFLEN; i++) {
-                    if (i == TARGET_TIME_INDEX || i == MESSAGE_INDEX) {
-                        clearing = false;
-                    }
-                    if (RAMBUF[i] == '\0' || clearing) {
-                        clearing = true;
-                        RAMBUF[i] = '1';
-                    }
-                }
             }
         }
     }
