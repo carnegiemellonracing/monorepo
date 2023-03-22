@@ -25,6 +25,10 @@ extern const tftDL_t tftDL_startup;
  * for interface consumers. */
 extern const tftDL_t tftDL_RTD;
 
+/** @brief Exported ready-to-drive screen definition
+ * for interface consumers. */
+extern const tftDL_t tftDL_racing_screen;
+
 /** @brief Exported error screen definition for interface consumers. */
 extern const tftDL_t tftDL_error;
 
@@ -41,15 +45,16 @@ extern volatile bool redraw_new_driver_profiles;
 
 // Sizes for displaying to screen
 #define GEARDISPLAYLEN 12
-#define STATEDISPLAYLEN 12
-#define DRSDISPLAYLEN 12
-#define RAMDISPLAYLEN 19
-#define NOTEDISPLAYLEN 12
+#define STATEDISPLAYLEN 13
+#define DRSDISPLAYLEN 7
 
-// Indices for accessing RAM Buffer
-#define NOTE1_INDEX 40
-#define NOTE2_INDEX 60
+// Indices for accessing RAM Buffer + their lengths 
+#define PREV_TIME_INDEX 0
+#define TARGET_TIME_INDEX 8
+#define TIMEDISPLAYLEN 8
 
+#define MESSAGE_INDEX 16
+#define MESSAGEDISPLAYLEN 21
 
 void tftDL_RTDUpdate(
     bool memoratorPresent,
@@ -73,6 +78,14 @@ void tftDL_RTDUpdate(
 	bool tcOn,
 	bool ssOn,
 	float odometer_km,
+	bool drsClosed
+);
+
+void tftDL_racingScreenUpdate(
+    int32_t motorTemp_C,
+    int32_t acTemp_C,
+    int32_t mcTemp_C,
+	uint8_t hvSoC,
 	bool drsClosed
 );
 

@@ -40,7 +40,7 @@ bool volatile config_screen_values_received_for_new_driver = false;
 
 
 // Size of text buffer from RAM
-#define RAMBUFLEN 1024
+#define RAMBUFLEN 64
 
 /** @brief Text buffer from RAM - used to display messages to driver */
 char RAMBUF[RAMBUFLEN];
@@ -398,23 +398,6 @@ void ramRxCallback (cmr_can_t *can, uint16_t canID, const void *data, size_t dat
             uint16_t index = ((uint16_t)text->address) << 2;
             if (index < RAMBUFLEN) {
                 memcpy(RAMBUF + index, &(text->data), 4);
-                
-                /* 
-                 * Replace all null terminators with spaces - otherwise screen
-                 * doesn't display any characters after a null terminator is found
-                 * clearing is so that if found null terminator within in section of text,
-                 * all characters after null terminator will also be cleared
-                 */
-                bool clearing = false;
-                for(uint16_t i = 0; i < RAMBUFLEN; i++) {
-                    if (i == NOTE1_INDEX || i == NOTE2_INDEX) {
-                        clearing = false;
-                    }
-                    if (RAMBUF[i] == '\0' || clearing) {
-                        clearing = true;
-                        RAMBUF[i] = ' ';
-                    }
-                }
             }
         }
     }
@@ -563,7 +546,13 @@ void canInit(void) {
 
     // Clear RAM Buf - Set all to Spaces
     for(uint16_t i = 0; i < RAMBUFLEN; i++) {
-        RAMBUF[i] = ' ';
+        if (i == PREV_TIME_INDEX + TIMEDISPLAYLEN -1 ||
+            i == TARGET_TIME_INDEX + TIMEDISPLAYLEN -1 ||
+            i == MESSAGE_INDEX + MESSAGEDISPLAYLEN -1 ) {
+            RAMBUF[i] = '\0';
+        } else {
+            RAMBUF[i] = ' ';
+        }
     }
 
     // CAN2 filters.

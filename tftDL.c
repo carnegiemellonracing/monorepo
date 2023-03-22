@@ -96,9 +96,24 @@ const tftDL_t tftDL_RTD = {
     .content = NULL
 };
 
+/** @brief Racing Screen */
+static uint32_t tftDL_racingData[] = {
+#include <DIM-ESE/racing-screen.rawh>
+};
+/** @brief Complete data required to draw the
+ * Racing Screen
+ * Exposed to interface consumers. */
+const tftDL_t tftDL_racing_screen = {
+    .len = sizeof(tftDL_racingData),
+    .data = tftDL_racingData,
+
+    .contentLen = 0,
+    .content = NULL
+};
+
 
 /** @brief Bitposition of Y-coordinate byte in vertices */
-#define TFT_DL_VERTEX_Y_BIT 16
+#define TFT_DL_VERTEX_Y_BIT 15
 
 /** @brief How to draw a single bar dynamically. */
 typedef struct {
@@ -109,9 +124,19 @@ typedef struct {
     * corresponding to bottom edge */
     uint32_t minVal;  /**< @brief Logical value
     * corresponding to top edge */
-} tftDL_bar_t;
+} tftDL_vert_bar_t;
 
-static const tftDL_bar_t hvSoc_bar = {
+typedef struct {
+    uint32_t *addr;  /**< @brief Top-left vertex addr */
+    uint32_t leftX;    /**< @brief Top edge Y coord. */
+    uint32_t rightX;    /**< @brief Bot edge Y coord. */
+    uint32_t maxVal;  /**< @brief Logical value
+    * corresponding to bottom edge */
+    uint32_t minVal;  /**< @brief Logical value
+    * corresponding to top edge */
+} tftDL_horiz_bar_t;
+
+static const tftDL_vert_bar_t hvSoc_bar = {
     .addr = tftDL_RTDData + ESE_HV_BOX_VAL,
     .topY = 1920,
     .botY = 6120,
@@ -119,10 +144,18 @@ static const tftDL_bar_t hvSoc_bar = {
     .minVal = 0
 };
 
-static const tftDL_bar_t glvSoc_bar = {
+static const tftDL_vert_bar_t glvSoc_bar = {
     .addr = tftDL_RTDData + ESE_GLV_BOX_VAL,
     .topY = 1920,
     .botY = 6120,
+    .maxVal = 99,
+    .minVal = 0
+};
+
+static const tftDL_horiz_bar_t hvHorizSoc_bar = {
+    .addr = tftDL_racingData + ESE_RS_HV_BOX_VAL,
+    .leftX = 3728,
+    .rightX = 10032,
     .maxVal = 99,
     .minVal = 0
 };
@@ -133,7 +166,7 @@ static const tftDL_bar_t glvSoc_bar = {
  * @param bar The bar to update.
  * @param val The logical value to draw.
  */
-static void tftDL_barSetY(const tftDL_bar_t *bar, int32_t val) {
+static void tftDL_barSetY(const tftDL_vert_bar_t *bar, int32_t val) {
     uint32_t y;
     if (val < bar->minVal) {
         y = bar->botY;
@@ -147,9 +180,41 @@ static void tftDL_barSetY(const tftDL_bar_t *bar, int32_t val) {
     }
 
     uint32_t vertex = *bar->addr;
+    // Create mask with 0s for y, and 1s for x
     uint32_t mask = ((~((uint32_t)0)) << TFT_DL_VERTEX_Y_BIT);
-    vertex &= mask; //TODO: This is dumb
+    // vertex and mask to remove current y coord
+    vertex &= mask; 
+    // replace zeros with new y coord (already in correct position)
     vertex |= y;
+    *bar->addr = vertex;
+}
+
+/**
+ * @brief Reflect logical value into bar plot for drawing.
+ *
+ * @param bar The bar to update.
+ * @param val The logical value to draw.
+ */
+static void tftDL_barSetX(const tftDL_horiz_bar_t *bar, int32_t val) {
+    uint32_t x;
+    if (val < bar->minVal) {
+        x = bar->leftX;
+    } else if (val > bar->maxVal) {
+        x = bar->rightX;
+    } else {
+        uint32_t len = (
+            (val - bar->minVal) * ((uint32_t) (bar->rightX - bar->leftX))
+        ) / (bar->maxVal - bar->minVal);
+        x = bar->leftX + len;
+    }
+
+    uint32_t vertex = *bar->addr;
+    // Create mask with 1s for y, and 0s for x
+    uint32_t mask = (~((~((uint32_t)0)) << TFT_DL_VERTEX_Y_BIT)) ^ ((1 << 31) >> 1);
+    // vertex and mask to remove current x coord
+    vertex &= mask;
+    // replace zeros with new x coord (shifted to correct position)
+    vertex |= (x << TFT_DL_VERTEX_Y_BIT);
     *bar->addr = vertex;
 }
 
@@ -186,16 +251,18 @@ static void tftDL_barSetY(const tftDL_bar_t *bar, int32_t val) {
  * @param formatString the format string to write the int using.
  * @param number the number to write.
  */
-static void tftDL_RTDwriteInt(uint32_t location, uint32_t length,  char* formatString, uint32_t number) {
-    char *print_location = (void *) (tftDL_RTDData + location);
+static void tftDL_RTDwriteInt(uint32_t *file_addr, uint32_t location, uint32_t length,  char* formatString, uint32_t number) {
+    char *print_location = (void *) (file_addr + location);
     snprintf(print_location, length, formatString, number);
 }
 
 /*
  * @brief Writes the current VSM state and gear to the RTD screen.
  */
-static void tftDL_showStates() {
+static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t state_col_addr,
+                             uint32_t gear_addr, uint32_t drs_addr, bool centered) {
     /** @brief Characters for each state. */
+    
     size_t stateCharsLen = 6;
     static const char *stateChars[] = {
         [CMR_CAN_UNKNOWN] =       "????",
@@ -208,38 +275,57 @@ static void tftDL_showStates() {
 
     /** @brief Characters for each gear. */
     static const char* gearChars[CMR_CAN_GEAR_LEN] = {
-        [CMR_CAN_GEAR_UNKNOWN] =   "      ??????",
-        [CMR_CAN_GEAR_REVERSE] =   "     REVERSE",
-        [CMR_CAN_GEAR_SLOW] =      "        SLOW",
-        [CMR_CAN_GEAR_FAST] =      "        FAST",
-        [CMR_CAN_GEAR_ENDURANCE] = "   ENDURANCE",
-        [CMR_CAN_GEAR_AUTOX] =     "   AUTOCROSS",
-        [CMR_CAN_GEAR_SKIDPAD] =   "     SKIDPAD",
-        [CMR_CAN_GEAR_ACCEL] =     "       ACCEL",
-        [CMR_CAN_GEAR_TEST] =      "        TEST"
+        [CMR_CAN_GEAR_UNKNOWN] =   "     ??????",
+        [CMR_CAN_GEAR_REVERSE] =   "    REVERSE",
+        [CMR_CAN_GEAR_SLOW] =      "       SLOW",
+        [CMR_CAN_GEAR_FAST] =      "       FAST",
+        [CMR_CAN_GEAR_ENDURANCE] = "  ENDURANCE",
+        [CMR_CAN_GEAR_AUTOX] =     "  AUTOCROSS",
+        [CMR_CAN_GEAR_SKIDPAD] =   "    SKIDPAD",
+        [CMR_CAN_GEAR_ACCEL] =     "      ACCEL",
+        [CMR_CAN_GEAR_TEST] =      "       TEST"
+    };
+
+    /** @brief Characters for each gear. */
+    static const char* gearCenteredChars[CMR_CAN_GEAR_LEN] = {
+        [CMR_CAN_GEAR_UNKNOWN] =   "   ??????  ",
+        [CMR_CAN_GEAR_REVERSE] =   "  REVERSE  ",
+        [CMR_CAN_GEAR_SLOW] =      "   SLOW    ",
+        [CMR_CAN_GEAR_FAST] =      "   FAST    ",
+        [CMR_CAN_GEAR_ENDURANCE] = " ENDURANCE ",
+        [CMR_CAN_GEAR_AUTOX] =     " AUTOCROSS ",
+        [CMR_CAN_GEAR_SKIDPAD] =   "  SKIDPAD  ",
+        [CMR_CAN_GEAR_ACCEL] =     "   ACCEL   ",
+        [CMR_CAN_GEAR_TEST] =      "    TEST   "
     };
 
     size_t drsCharsLen = 6;
     static const char *drsChars[] = {
-        [CMR_CAN_DRSM_UNKNOWN] =      "????????????",
-        [CMR_CAN_DRSM_CLOSED] =       "      CLOSED",
-        [CMR_CAN_DRSM_OPEN] =         "        OPEN",
-        [CMR_CAN_DRSM_TOGGLE] =       "      TOGGLE",
-        [CMR_CAN_DRSM_HOLD] =         "        HOLD",
-        [CMR_CAN_DRSM_AUTO] =         "   AUTOMATIC",
+        [CMR_CAN_DRSM_UNKNOWN] =      "??????",
+        [CMR_CAN_DRSM_CLOSED] =       "CLOSED",
+        [CMR_CAN_DRSM_OPEN] =         " OPEN ",
+        [CMR_CAN_DRSM_TOGGLE] =       "TOGGLE",
+        [CMR_CAN_DRSM_HOLD] =         " HOLD ",
+        [CMR_CAN_DRSM_AUTO] =         " AUTO ",
     };
 
     cmr_canState_t stateVSM = stateGetVSM();
     cmr_canState_t stateVSMReq = stateGetVSMReq();
     cmr_canGear_t gear = stateGetGear();
     cmr_canDrsMode_t drsMode = stateGetDrs();
-    uint32_t *state_color = (void *) (tftDL_RTDData + ESE_VSM_STATE_COLOR);
+    uint32_t *state_color = (void *) (file_addr + state_col_addr);
 
     char stateChar[12];
     if (stateVSM == stateVSMReq) {
         if (stateVSM < stateCharsLen) {
-        	strcpy(stateChar, "        ");
-        	strcat(stateChar, stateChars[stateVSM]);
+        	if (centered) {
+        		strcpy(stateChar, "    ");
+        		strcat(stateChar, stateChars[stateVSM]);
+        		strcat(stateChar, "    ");
+        	} else {
+        		strcpy(stateChar, "        ");
+        		strcat(stateChar, stateChars[stateVSM]);
+        	}
         }
         *state_color = white;
     } else {
@@ -260,28 +346,28 @@ static void tftDL_showStates() {
     }
 
     const char* gearChar = (gear < CMR_CAN_GEAR_LEN)
-        ? gearChars[gear]
+        ? ((centered) ? gearCenteredChars[gear] : gearChars[gear])
         : gearChars[CMR_CAN_GEAR_UNKNOWN];
 
     const char* drsChar = (drsMode < drsCharsLen)
             ? drsChars[drsMode]
             : drsChars[CMR_CAN_DRSM_UNKNOWN];
 
-    static struct {
+    struct {
         char buf[STATEDISPLAYLEN];
-    } *const vsmState_str = (void *) (tftDL_RTDData + ESE_VSM_STATE_STR);
+    } *vsmState_str = (void *) (file_addr + state_addr);
 
     memcpy((void *) vsmState_str->buf, (void *) stateChar, STATEDISPLAYLEN);
 
-    static struct {
+    struct {
         char buf[GEARDISPLAYLEN];
-    } *const gearState_str = (void *) (tftDL_RTDData + ESE_GEAR_STR);
+    } *gearState_str = (void *) (file_addr + gear_addr);
 
     memcpy((void *) gearState_str->buf, (void *) gearChar, GEARDISPLAYLEN);
 
-    static struct {
+    struct {
         char buf[DRSDISPLAYLEN];
-    } *const drsState_str = (void *) (tftDL_RTDData + ESE_DRS_MODE_STR);
+    } *drsState_str = (void *) (file_addr + drs_addr);
 
     memcpy((void *) drsState_str->buf, (void *) drsChar, DRSDISPLAYLEN);
 }
@@ -290,19 +376,19 @@ static void tftDL_showStates() {
  * @brief sets the display message from the RAM
  * Sets at top and 2 notes on right side
  */
-void tftDL_showRAMMsg() {
-    static struct {
-            char buf[RAMDISPLAYLEN];
-        } *const ramMsg_str = (void *) (tftDL_RTDData + ESE_RAM_MSG1_STR);
-        memcpy((void *) ramMsg_str->buf, (void *) RAMBUF, RAMDISPLAYLEN);
-    static struct {
-            char buf[NOTEDISPLAYLEN];
-        } *const note1_str = (void *) (tftDL_RTDData + ESE_RAM_MSG2_STR);
-        memcpy((void *) note1_str->buf, (void *) &(RAMBUF[NOTE1_INDEX]), NOTEDISPLAYLEN);
-    static struct {
-            char buf[NOTEDISPLAYLEN];
-        } *const note2_str = (void *) (tftDL_RTDData + ESE_RAM_MSG3_STR);
-        memcpy((void *) note2_str->buf, (void *) &(RAMBUF[NOTE2_INDEX]), NOTEDISPLAYLEN);
+void tftDL_showRAMMsg(uint32_t *file_addr, uint32_t prev_lap_loc, uint32_t targ_lap_loc, uint32_t msg_loc) {
+    struct {
+        char buf[TIMEDISPLAYLEN];
+    } *prev_time_str = (void *) (file_addr + prev_lap_loc);
+    memcpy((void *) prev_time_str->buf, (void *) &(RAMBUF[PREV_TIME_INDEX]), TIMEDISPLAYLEN);
+    struct {
+        char buf[TIMEDISPLAYLEN];
+    } *target_time_str = (void *) (file_addr + targ_lap_loc);
+    memcpy((void *) target_time_str->buf, (void *) &(RAMBUF[TARGET_TIME_INDEX]), TIMEDISPLAYLEN);
+    struct {
+		char buf[MESSAGEDISPLAYLEN];
+	} *ramMsg_str = (void *) (file_addr + msg_loc);
+	memcpy((void *) ramMsg_str->buf, (void *) &(RAMBUF[MESSAGE_INDEX]), MESSAGEDISPLAYLEN);
 }
 
 /**
@@ -364,15 +450,15 @@ void tftDL_RTDUpdate(
     float odometer_km,
     bool drsClosed
 ) {
-    tftDL_RTDwriteInt(ESE_HV_VOLTAGE_VAL, 4, "%3ld", hvVoltage_mV / 1000);
-    tftDL_RTDwriteInt(ESE_MOTOR_TEMP_STR, 4, "%3ld", motorTemp_C);
-    tftDL_RTDwriteInt(ESE_AC_TEMP_STR, 4, "%3ld", acTemp_C);
-    tftDL_RTDwriteInt(ESE_MC_TEMP_STR, 4, "%3ld", mcTemp_C);
-    tftDL_RTDwriteInt(ESE_GLV_VOLTAGE_VAL, 3, "%2d", glvVoltage_V);
-    tftDL_RTDwriteInt(ESE_POWER_VAL, 3, "%2ld", power_kW);
-    tftDL_RTDwriteInt(ESE_SPEED_VAL, 4, "%3ld", (int32_t)speed_kmh);
-    tftDL_RTDwriteInt(ESE_HV_SOC_VAL, 3, "%2ld", (int32_t)hvSoC);
-    tftDL_RTDwriteInt(ESE_GLV_SOC_VAL, 3, "%2ld", (int32_t)glvSoC);
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_HV_VOLTAGE_VAL, 4, "%3ld", hvVoltage_mV / 1000);
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_MOTOR_TEMP_STR, 4, "%3ld", motorTemp_C);
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_AC_TEMP_STR, 4, "%3ld", acTemp_C);
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_MC_TEMP_STR, 4, "%3ld", mcTemp_C);
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_GLV_VOLTAGE_VAL, 3, "%2d", glvVoltage_V);
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_POWER_VAL, 3, "%2ld", power_kW);
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_SPEED_VAL, 4, "%3ld", (int32_t)speed_kmh);
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_HV_SOC_VAL, 3, "%2ld", (int32_t)hvSoC);
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_GLV_SOC_VAL, 3, "%2ld", (int32_t)glvSoC);
 
     // Doing this jank buffer because snprintf doesnt work for floats on embedded
 	#define ODOMETER_STR_SIZE 8
@@ -439,8 +525,34 @@ void tftDL_RTDUpdate(
     setTempColor(ESE_AC_TEMP_BG_COLOR, ESE_AC_TEMP_COLOR, acTemp_yellow, acTemp_red);
     setTempColor(ESE_MC_TEMP_BG_COLOR, ESE_MC_TEMP_COLOR, mcTemp_yellow, mcTemp_red);
 
-    tftDL_showStates();
-    tftDL_showRAMMsg();
+    tftDL_showStates(tftDL_RTDData, ESE_VSM_STATE_STR, ESE_VSM_STATE_COLOR, ESE_GEAR_STR, ESE_DRS_MODE_STR, false);
+    tftDL_showRAMMsg(tftDL_RTDData, ESE_RAM_MSG2_STR, ESE_RAM_MSG3_STR, ESE_RAM_MSG1_STR);
+
+}
+
+void tftDL_racingScreenUpdate(
+    int32_t motorTemp_C,
+    int32_t acTemp_C,
+    int32_t mcTemp_C,
+	uint8_t hvSoC,
+	bool drsClosed
+) {
+    tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_MOTOR_TEMP_STR, 4, "%3ld", motorTemp_C);
+    tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_AC_TEMP_STR, 4, "%3ld", acTemp_C);
+    tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_MC_TEMP_STR, 4, "%3ld", mcTemp_C);
+    tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_HV_SOC_VAL, 3, "%2ld", (int32_t)hvSoC);
+
+    // set HV SoC bar
+    tftDL_barSetX(&hvHorizSoc_bar, (uint32_t)hvSoC);
+
+    /* DRS color */
+    uint32_t *drs_color = (void *) (tftDL_racingData + ESE_RS_DRS_COLOR);
+    uint32_t drs_color_cmd = drsClosed ? black : green;
+    *drs_color = drs_color_cmd;
+
+    tftDL_showStates(tftDL_racingData, ESE_RS_VSM_STATE_STR, ESE_RS_VSM_STATE_COLOR, ESE_RS_GEAR_STR, ESE_RS_DRS_MODE_STR, true);
+    tftDL_showRAMMsg(tftDL_racingData, ESE_RS_RAM_LAST_LAP, ESE_RS_RAM_TARG_LAP, ESE_RS_RAM_MSG_STR);
+
 }
 
 
