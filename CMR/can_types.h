@@ -994,6 +994,18 @@ typedef struct {
 } cmr_can_controls_pid_debug_t;
 
 typedef struct {
+    int16_t p;
+    int16_t i;
+    int16_t d;
+    int16_t accum;
+} cmr_can_controls_pid_internals1_t;
+
+typedef struct {
+    int16_t lastError;
+    uint16_t lastTime;
+} cmr_can_controls_pid_internals2_t;
+
+typedef struct {
     uint8_t seconds;
     uint8_t minutes;
     uint8_t hours;

@@ -1454,7 +1454,7 @@ Var=controls_slip_correction_RL signed 16,16 /p:2
 Var=controls_wheel_speed_actual_RL signed 32,16 /u:m.s-1 /p:2
 Var=controls_wheel_speed_target_RL signed 48,16 /u:m.s-1 /p:2
 
-[Controls_YRC_Debug]
+[controls_pid]
 ID=7E5h
 CycleTime=100
 Var=controls_current_yaw_rate signed 0,16 /u:rad.s-1 /f:0.01 /p:2
@@ -1587,4 +1587,18 @@ ID=7EDh
 DLC=8
 Var=vel_calc_RL float 0,32
 Var=vel_calc_RR float 32,32
+
+[CONTROLS_PID_INTERNALS1]
+ID=7EEh
+DLC=8
+Var=Kp signed 0,16 /f:0.01
+Var=Ki signed 16,16 /f:0.01
+Var=Kd signed 32,16 /f:0.01
+Var=accum signed 48,16
+
+[CONTROLS_PID_INTERNALS2]
+ID=7F1h
+DLC=4
+Var=lastError signed 0,16 /f:0.01
+Var=lastTime unsigned 16,16
 
