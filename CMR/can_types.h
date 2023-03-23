@@ -555,9 +555,10 @@ typedef struct {
 /** @brief Central Dynamics Controller Safety Filter states. */
 typedef struct {
 	float power_limit_max_violation_W;  /**< @brief the maximum amount in W the power hard-limit is violated, expect 0.0 */
-	uint8_t error_count;                /**< @brief number of errors, expect 0 */
+	uint8_t longest_power_violation_ms; /**< @brief counts the number of clock cycles when power is over the hard limit, expect <2*/
     uint8_t over_voltage_count;         /**< @brief incremented when pack voltage exceeds 590 */
     uint8_t under_voltage_count;        /**< @brief incremented when pack voltage under 365 */
+    uint8_t over_temp_count;            /**<@brief incremented when pack temperature exceeds the hard limit, expect 0>*/
 } cmr_canCDCSafetyFilterStates_t;
 
 typedef struct {
