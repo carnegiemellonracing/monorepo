@@ -38,7 +38,7 @@ static const uint16_t daughterDigitalAddress = 0x25; // 0x25 = 0b0100101
 static const uint16_t daughterAnalogAddress = 0x11; // 0x11 = 0b0010001
 
 /** @brief I2C Timeout (milliseconds). */
-static const uint32_t i2cTimeout_ms = 2;
+static const uint32_t i2cTimeout_ms = 1;
 
 /**
  * @brief Array of expander button pin configs
