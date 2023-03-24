@@ -61,23 +61,23 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
-    [CANRX_AMK_FL_ACT_1] = {// TODO: Change CAN ID order based on inverter CAN IDs
+    [CANRX_AMK_FL_ACT_1] = {
         .canID = CMR_CANID_AMK_1_ACT_1,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
     [CANRX_AMK_FR_ACT_1] = {
-        .canID = CMR_CANID_AMK_2_ACT_1,
-        .timeoutError_ms = 50,
-        .timeoutWarn_ms = 25
-    },
-    [CANRX_AMK_RL_ACT_1] = {
         .canID = CMR_CANID_AMK_3_ACT_1,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
-    [CANRX_AMK_RR_ACT_1] = {
+    [CANRX_AMK_RL_ACT_1] = {
         .canID = CMR_CANID_AMK_4_ACT_1,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_AMK_RR_ACT_1] = {
+        .canID = CMR_CANID_AMK_2_ACT_1,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
@@ -87,17 +87,17 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 25
     },
     [CANRX_AMK_FR_ACT_2] = {
-        .canID = CMR_CANID_AMK_2_ACT_2,
-        .timeoutError_ms = 50,
-        .timeoutWarn_ms = 25
-    },
-    [CANRX_AMK_RL_ACT_2] = {
         .canID = CMR_CANID_AMK_3_ACT_2,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
-    [CANRX_AMK_RR_ACT_2] = {
+    [CANRX_AMK_RL_ACT_2] = {
         .canID = CMR_CANID_AMK_4_ACT_2,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_AMK_RR_ACT_2] = {
+        .canID = CMR_CANID_AMK_2_ACT_2,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
