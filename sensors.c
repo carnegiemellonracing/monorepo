@@ -207,7 +207,9 @@ static int32_t adcToBusVoltage_mV(const cmr_sensor_t *sensor, uint32_t reading) 
     (void) sensor;  // Placate compiler.
 
     // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
-    uint32_t busVoltage_mV = reading * 8 * 11 / 10;
+    float temp = (reading * 8 * 11 / 10) *1.05;
+    uint32_t busVoltage_mV = (uint32_t) temp;
+    
     return (int32_t) busVoltage_mV;
 }
 
