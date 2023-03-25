@@ -30,7 +30,7 @@ enum DRS_MODE(0="DRS_UNKNOWN", 1="DRS_OPEN", 2="DRS_CLOSED", 3="DRS_TOGGLE",
 {SENDRECEIVE}
 
 [VSM_Heartbeat]
-ID=101h
+ID=100h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -77,10 +77,10 @@ Var=VSM_ERR_latchBSPD bit 24,1
 [VSM_Sensors]
 ID=200h
 DLC=6
-CycleTime=100
+CycleTime=10
 Timeout=1000
 Var=VSM_brakePressureRear unsigned 0,16 /u:PSI
-Var=VSM_hallEffect signed 16,16 /u:cA
+Var=VSM_hallEffect signed 16,16 /u:A /f:0.01
 Var=VSM_safetyIn unsigned 32,8 /u:V /f:0.1
 Var=VSM_safetyOut unsigned 40,8 /u:V /f:0.1
 
@@ -117,7 +117,7 @@ Var=VSM_busVoltage unsigned 0,16 /u:mV
 Var=VSM_busCurrent unsigned 16,16 /u:mA
 
 [HVC_Heartbeat]
-ID=102h
+ID=101h
 DLC=6
 CycleTime=10
 Timeout=100
@@ -151,7 +151,7 @@ CycleTime=10
 Var=HVC_modeRequest unsigned 0,8 /e:HVCMode
 
 [CDC_Heartbeat]
-ID=103h
+ID=102h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -356,7 +356,7 @@ Var=CDC_LateralAcceleration signed 16,16 /u:mps2 /f:0.01
 Var=CDC_VerticalAcceleration signed 32,16 /u:mps2 /f:0.01
 
 [FSM_Heartbeat]
-ID=104h
+ID=103h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -416,7 +416,7 @@ Var=FSM_busVoltage unsigned 0,16 /u:mV
 Var=FSM_busCurrent unsigned 16,16 /u:mA
 
 [DIM_Heartbeat]
-ID=105h
+ID=104h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -433,25 +433,26 @@ Var=DIM_busCurrent unsigned 16,16 /u:mA
 
 [DIM_Request]
 ID=235h
-DLC=3
+DLC=2
 CycleTime=100
 Timeout=1000
 Var=DIM_requestState unsigned 0,8 /e:State
 Var=DIM_requestGear unsigned 8,8 /e:Gear
-Var=DIM_requestDRSMode DRS_MODE 16,8
 
 [DIM_Actions]
 ID=515h
-DLC=4
+DLC=6
 CycleTime=100
 Timeout=1000
 Var=DIM_action1ButtonPressed unsigned 0,8
 Var=DIM_action2ButtonPressed unsigned 8,8
 Var=DIM_drsButtonPressed unsigned 16,8
 Var=DIM_regenPercent unsigned 24,8 /u:percent
+Var=DIM_paddleLeft unsigned 32,8
+Var=DIM_paddleRight unsigned 40,8
 
 [PTC_Heartbeat]
-ID=106h
+ID=105h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -839,13 +840,6 @@ Var=Min_Cell_Temp_BMB unsigned 32,8
 Var=Min_Cell_Temp_Index unsigned 40,8
 Var=Max_Cell_Temp_BMB unsigned 48,8
 Var=Max_Cell_Temp_Index unsigned 56,8
-
-[Memorator_Broadcast]
-ID=605h
-DLC=1
-CycleTime=1000
-Timeout=10000
-Var=Memorator_status unsigned 0,8
 
 [DILONG_Charger_Status]
 ID=18FF50E5h
@@ -1552,6 +1546,24 @@ Var=drsAngle unsigned 8,8
 Var=drsPwmLeft unsigned 16,8
 Var=drsPwmRight unsigned 24,8
 
+[SF_State]
+ID=52Dh
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=Power_Limit_Max_Violation_W float 0,32 /u:W
+Var=Longest_Power_Violation unsigned 32,8
+Var=Over_Voltage_Count unsigned 40,8
+Var=Under_Voltage_Count unsigned 48,8
+Var=Over_Temp_Count unsigned 56,8
+
+[CDC_Motor_Power]
+ID=52Eh
+DLC=8
+Var=motor_power_FL unsigned 0,16
+Var=motor_power_FR unsigned 16,16
+Var=motor_power_RL unsigned 32,16
+Var=motor_power_RR unsigned 48,16
 [CDC_Front_Slip_Ratios]
 ID=7E8h
 DLC=8

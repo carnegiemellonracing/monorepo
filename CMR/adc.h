@@ -8,7 +8,7 @@
 #ifndef CMR_ADC_H
 #define CMR_ADC_H
 
-#include <stm32f4xx_hal.h>  // HAL_ADC_MODULE_ENABLED, ADC_HandleTypeDef,
+#include "platform.h"       // HAL_ADC_MODULE_ENABLED, ADC_HandleTypeDef,
                             // ADC_TypeDef, GPIO_TypeDef
 
 #ifdef HAL_ADC_MODULE_ENABLED
@@ -69,6 +69,11 @@ void cmr_adcInit(
 );
 
 uint32_t cmr_adcRead(cmr_adc_t *adc, size_t channel);
+
+/* Platform-specific external dependencies (don't expose to application code) */
+extern void _platform_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance, cmr_adcChannel_t *channels, const size_t channelsLen);
+extern ADC_ChannelConfTypeDef _platform_adcChannelConfig(const cmr_adcChannel_t *channel, uint32_t rank);
+extern GPIO_InitTypeDef _platform_adcPinConfig(const cmr_adcChannel_t *channel);
 
 #endif /* HAL_ADC_MODULE_ENABLED */
 
