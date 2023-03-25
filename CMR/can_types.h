@@ -1023,6 +1023,18 @@ typedef struct {
 } cmr_can_controls_pid_debug_t;
 
 typedef struct {
+    int16_t p;
+    int16_t i;
+    int16_t d;
+    int16_t accum;
+} cmr_can_controls_pid_internals1_t;
+
+typedef struct {
+    int16_t lastError;
+    uint16_t lastTime;
+} cmr_can_controls_pid_internals2_t;
+
+typedef struct {
     uint8_t seconds;
     uint8_t minutes;
     uint8_t hours;
@@ -1031,6 +1043,42 @@ typedef struct {
     uint8_t year;
     uint8_t err; /* 1 in error state and 0 otherwise */
 } cmr_can_rtc_data_t;
+
+typedef struct 
+{
+    float slipRatio_FL;
+    float slipRatio_FR;
+} cmr_can_front_slip_ratio_data_t;
+
+typedef struct
+{
+    float slipRatio_RL;
+    float slipRatio_RR;
+} cmr_can_rear_slip_ratio_data_t;
+
+typedef struct 
+{
+    float omega_FL;
+    float omega_FR;
+} cmr_can_front_whl_speed_setpoint_t;
+
+typedef struct
+{
+    float omega_RL;
+    float omega_RR;
+} cmr_can_rear_whl_speed_setpoint_t;
+
+typedef struct 
+{
+    float v_whl_fl;
+    float v_whl_fr;
+} cmr_can_front_whl_velocity_t;
+
+typedef struct 
+{
+    float v_whl_rl;
+    float v_whl_rr;
+} cmr_can_rear_whl_velocity_t;
 
 // ------------------------------------------------------------------------------------------------
 // DRS

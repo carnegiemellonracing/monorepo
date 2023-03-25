@@ -244,7 +244,17 @@ typedef enum {
     CMR_CANID_CONTROLS_DEBUG_FL = 0x7E2,        /**< @brief control algo testing data. */
     CMR_CANID_CONTROLS_DEBUG_RR = 0x7E3,        /**< @brief control algo testing data. */
     CMR_CANID_CONTROLS_DEBUG_RL = 0x7E4,        /**< @brief control algo testing data. */
-    CMR_CANID_CONTROLS_PID = 0x7E5,        /**< @brief control algo testing data. */
+    CMR_CANID_CONTROLS_PID_IO = 0x7E5,        /**< @brief control algo testing data. */
+
+    CMR_CANID_FRONT_SLIP_RATIOS = 0x7E8,
+    CMR_CANID_REAR_SLIP_RATIOS = 0x7E9,
+    CMR_CANID_FRONT_WHL_SETPOINTS = 0x7EA,
+    CMR_CANID_REAR_WHL_SETPOINTS = 0x7EB,
+    CMR_CANID_FRONT_WHL_VELS = 0x7EC,
+    CMR_CANID_REAR_WHL_VELS = 0x7ED,
+
+    CMR_CANID_CONTROLS_PID_INTERNALS1 = 0x7EE,
+    CMR_CANID_CONTROLS_PID_INTERNALS2 = 0x7F1,
 
 	CMR_CANID_DRS_CONTROLS = 0x29C, 				/**< @brief DRS Motor Controls. */
 } cmr_canID_t;
