@@ -1564,6 +1564,7 @@ Var=motor_power_FL unsigned 0,16
 Var=motor_power_FR unsigned 16,16
 Var=motor_power_RL unsigned 32,16
 Var=motor_power_RR unsigned 48,16
+
 [CDC_Front_Slip_Ratios]
 ID=7E8h
 DLC=8
