@@ -409,11 +409,24 @@ void resetClock() {
     // i2cInitChain();
 }
 
+static int configDaughterDigital(){
+    // Daughter Board Digital expander has all inputs
+    uint8_t daughterDigitalConfig[2] = {
+        PCA9554_CONFIG_PORT,
+        0xFF
+    };
 
-
-static void expanderUpdate100Hz(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
+    int status =cmr_i2cTX(
+         &i2c,
+         daughterDigitalAddress, daughterDigitalConfig,
+         sizeof(daughterDigitalConfig) / sizeof(daughterDigitalConfig[0]),
+         i2cTimeout_ms
+     );
     
+    return status;
+}
+
+static int configMainDigital1and2(){
     // Main Board Digital 1 expander has all inputs on Ports 0 and 1
     uint8_t mainDigital1Config[3] = {
         PCA9555_CONFIG_PORT_0,
@@ -426,27 +439,6 @@ static void expanderUpdate100Hz(void *pvParameters) {
         0xFC    // 0b11111100
     };
 
-    // Daughter Board Digital expander has all inputs
-    uint8_t daughterDigitalConfig[2] = {
-        PCA9554_CONFIG_PORT,
-        0xFF
-    };
-
-    // dont need called in configfAnalogADCDaughter()
-    // // Daughter Board Analog expander has ADC inputs on pins 0 and 1
-    // uint8_t daughterAnalogADCConfig[3] = {
-    //     AD5593R_CTRL_REG_ADC_CONFIG,
-    //     0x00,   
-    //     0x03    // 0b00000011
-    // };
-    // // Set REP bit so ADC conversions are repeated (see datasheet)
-    // uint8_t daughterAnalogADCSequence[3] = {
-    //     AD5593R_CTRL_REG_ADC_SEQ,
-    //     0x02,   // 0b00000010 (REP bit)
-    //     0x03    // 0b00000011
-    // };
-
-    // Transmit config to expanders
     int status;
     status = cmr_i2cTX(
         &i2c,
@@ -454,18 +446,22 @@ static void expanderUpdate100Hz(void *pvParameters) {
         sizeof(mainDigital1Config) / sizeof(mainDigital1Config[0]),
         i2cTimeout_ms
     );
-    status = cmr_i2cTX(
+    status |= cmr_i2cTX(
         &i2c,
         mainDigital2Address, mainDigital2Config,
         sizeof(mainDigital2Config) / sizeof(mainDigital2Config[0]),
         i2cTimeout_ms
     );
-    status =cmr_i2cTX(
-         &i2c,
-         daughterDigitalAddress, daughterDigitalConfig,
-         sizeof(daughterDigitalConfig) / sizeof(daughterDigitalConfig[0]),
-         i2cTimeout_ms
-     );
+
+    return status;
+}
+
+static void expanderUpdate100Hz(void *pvParameters) {
+    (void) pvParameters;    // Placate compiler.
+
+    int status = configMainDigital1and2();
+    
+    status |= configDaughterDigital();
 
     status |= configAnalogADCDaughter();
 
@@ -495,8 +491,15 @@ static void expanderUpdate100Hz(void *pvParameters) {
         if (badStatus_count > 4) {
             lastWakeTime = xTaskGetTickCount();
             vTaskDelayUntil(&lastWakeTime, 100);
-           resetClock();
+            resetClock();
+
+            // config everything again since clock reset
+            configMainDigital1and2();
+            configDaughterDigital();
+            configAnalogADCDaughter();
         }
+
+        
     }
 }
 
