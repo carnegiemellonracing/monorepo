@@ -1,6 +1,6 @@
 FormatVersion=5.0 // Do not edit this line!
 UniqueVariables=True
-Title="CMR 22e"
+Title="CMR 23e"
 
 {ENUMS}
 // This is for the EMD
@@ -1291,7 +1291,7 @@ Var=AMK_FR_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_FR_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
 [AMK_FL_Actual_Values_1]
-ID=288h	// Set ID based on wiring
+ID=283h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FL_Status_Reserved unsigned 0,8
@@ -1308,7 +1308,7 @@ Var=AMK_FL_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_FL_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_FL_Actual_Values_2]
-ID=28Ah	// Set ID based on wiring
+ID=285h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FL_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1317,7 +1317,7 @@ Var=AMK_FL_ErrorInfo unsigned 32,16
 Var=AMK_FL_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_FL_Setpoints_1]
-ID=189h	// Set ID based on wiring
+ID=184h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_FL_Control_Reserved1 unsigned 0,8
@@ -1331,7 +1331,7 @@ Var=AMK_FL_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_FL_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
 [AMK_BL_Actual_Values_1]
-ID=284h	// Set ID based on wiring
+ID=288h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BL_Status_Reserved unsigned 0,8
@@ -1348,7 +1348,7 @@ Var=AMK_BL_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_BL_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_BL_Actual_Values_2]
-ID=286h	// Set ID based on wiring
+ID=28Ah	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BL_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1357,7 +1357,7 @@ Var=AMK_BL_ErrorInfo unsigned 32,16
 Var=AMK_BL_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_BL_Setpoints_1]
-ID=185h	// Set ID based on wiring
+ID=189h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_BL_Control_Reserved1 unsigned 0,8
@@ -1371,7 +1371,7 @@ Var=AMK_BL_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_BL_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
 [AMK_BR_Actual_Values_1]
-ID=283h	// Set ID based on wiring
+ID=284h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BR_Status_Reserved unsigned 0,8
@@ -1388,7 +1388,7 @@ Var=AMK_BR_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_BR_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_BR_Actual_Values_2]
-ID=285h	// Set ID based on wiring
+ID=286h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BR_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1397,7 +1397,7 @@ Var=AMK_BR_ErrorInfo unsigned 32,16
 Var=AMK_BR_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_BR_Setpoints_1]
-ID=184h	// Set ID based on wiring
+ID=185h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_BR_Control_Reserved1 unsigned 0,8
