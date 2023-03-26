@@ -198,7 +198,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
             .value = 20
         },
         .min = 0,
-        .max = 100,
+        .max = 255,
     },
     [DRS_SWANGLE_THRESH_INDEX] = {
         .name = "DRS Swngl Thrsh",
@@ -220,7 +220,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_value_variable = ESE_DRS_BRAKE_THRESH_VAL,
         .ESE_context_text_variable = "DRS Brake Pressure Threshold",
         .value = {
-            .type = float_1_decimal,
+            .type = unsigned_integer,
             .value = 30
         },
         .min = 0,
