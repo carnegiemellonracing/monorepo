@@ -74,6 +74,12 @@ float getOdometer(void);
 
 void odometerInit(void);
 
-uint8_t getLVSoC(float voltage);
+typedef enum {
+    LV_LIFEPO = 0,        
+    LV_LIPO,
+} lv_battery_type_t;
+
+uint8_t getLVSoC(float voltage, lv_battery_type_t battery_type);
+
 
 #endif /* STATE_H */

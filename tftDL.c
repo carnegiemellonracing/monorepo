@@ -275,28 +275,15 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
 
     /** @brief Characters for each gear. */
     static const char* gearChars[CMR_CAN_GEAR_LEN] = {
-        [CMR_CAN_GEAR_UNKNOWN] =   "     ??????",
-        [CMR_CAN_GEAR_REVERSE] =   "    REVERSE",
-        [CMR_CAN_GEAR_SLOW] =      "       SLOW",
-        [CMR_CAN_GEAR_FAST] =      "       FAST",
-        [CMR_CAN_GEAR_ENDURANCE] = "  ENDURANCE",
-        [CMR_CAN_GEAR_AUTOX] =     "  AUTOCROSS",
-        [CMR_CAN_GEAR_SKIDPAD] =   "    SKIDPAD",
-        [CMR_CAN_GEAR_ACCEL] =     "      ACCEL",
-        [CMR_CAN_GEAR_TEST] =      "       TEST"
-    };
-
-    /** @brief Characters for each gear. */
-    static const char* gearCenteredChars[CMR_CAN_GEAR_LEN] = {
-        [CMR_CAN_GEAR_UNKNOWN] =   "   ??????  ",
-        [CMR_CAN_GEAR_REVERSE] =   "  REVERSE  ",
-        [CMR_CAN_GEAR_SLOW] =      "   SLOW    ",
-        [CMR_CAN_GEAR_FAST] =      "   FAST    ",
-        [CMR_CAN_GEAR_ENDURANCE] = " ENDURANCE ",
-        [CMR_CAN_GEAR_AUTOX] =     " AUTOCROSS ",
-        [CMR_CAN_GEAR_SKIDPAD] =   "  SKIDPAD  ",
-        [CMR_CAN_GEAR_ACCEL] =     "   ACCEL   ",
-        [CMR_CAN_GEAR_TEST] =      "    TEST   "
+        [CMR_CAN_GEAR_UNKNOWN] =   "  ?????? ",
+        [CMR_CAN_GEAR_REVERSE] =   " REVERSE ",
+        [CMR_CAN_GEAR_SLOW] =      "  SLOW   ",
+        [CMR_CAN_GEAR_FAST] =      "  FAST   ",
+        [CMR_CAN_GEAR_ENDURANCE] = "ENDURANCE",
+        [CMR_CAN_GEAR_AUTOX] =     "AUTOCROSS",
+        [CMR_CAN_GEAR_SKIDPAD] =   " SKIDPAD ",
+        [CMR_CAN_GEAR_ACCEL] =     "  ACCEL  ",
+        [CMR_CAN_GEAR_TEST] =      "   TEST  "
     };
 
     size_t drsCharsLen = 6;
@@ -346,7 +333,7 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
     }
 
     const char* gearChar = (gear < CMR_CAN_GEAR_LEN)
-        ? ((centered) ? gearCenteredChars[gear] : gearChars[gear])
+        ? gearChars[gear]
         : gearChars[CMR_CAN_GEAR_UNKNOWN];
 
     const char* drsChar = (drsMode < drsCharsLen)
@@ -498,7 +485,7 @@ void tftDL_RTDUpdate(
 
     /* DRS color */
     uint32_t *drs_color = (void *) (tftDL_RTDData + ESE_DRS_COLOR);
-    uint32_t drs_color_cmd = drsClosed ? white : green;
+    uint32_t drs_color_cmd = drsClosed ? black : green;
     *drs_color = drs_color_cmd;
 
     /* GPS color */
@@ -520,13 +507,9 @@ void tftDL_RTDUpdate(
     }
     *gps_color = gps_color_cmd;
 
-    /* Temperature backgrounds */
-    setTempColor(ESE_MOTOR_TEMP_BG_COLOR, ESE_MOTOR_TEMP_COLOR, motorTemp_yellow, motorTemp_red);
-    setTempColor(ESE_AC_TEMP_BG_COLOR, ESE_AC_TEMP_COLOR, acTemp_yellow, acTemp_red);
-    setTempColor(ESE_MC_TEMP_BG_COLOR, ESE_MC_TEMP_COLOR, mcTemp_yellow, mcTemp_red);
 
-    tftDL_showStates(tftDL_RTDData, ESE_VSM_STATE_STR, ESE_VSM_STATE_COLOR, ESE_GEAR_STR, ESE_DRS_MODE_STR, false);
-    tftDL_showRAMMsg(tftDL_RTDData, ESE_RAM_MSG2_STR, ESE_RAM_MSG3_STR, ESE_RAM_MSG1_STR);
+    tftDL_showStates(tftDL_RTDData, ESE_STATE_STR, ESE_VSM_STATE_COLOR, ESE_GEAR_STR, ESE_DRS_MODE_STR, false);
+    tftDL_showRAMMsg(tftDL_RTDData, ESE_RAM_LAST_LAP_STR, ESE_RAM_TARGET_LAP_STR, ESE_RAM_MSG_STR);
 
 }
 

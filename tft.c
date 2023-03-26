@@ -577,7 +577,7 @@ static void drawRTDScreen(void) {
     bool mcTemp_yellow = mcTemp_C >= MC_YELLOW_THRESHOLD;
     bool mcTemp_red = mcTemp_C >= MC_RED_THRESHOLD;
 
-    uint8_t glvSoC = getLVSoC(glvVoltage);
+    uint8_t glvSoC = getLVSoC(glvVoltage, LV_LIPO);
 
     uint8_t hvSoC = 10;
     

@@ -551,14 +551,15 @@ typedef struct {
     uint8_t SoC;
 } voltage_SoC_t;
 
-#define LV_LUT_NUM_ITEMS 11
+#define LV_LIFEPO_LUT_NUM_ITEMS 11
+#define LV_LIPO_LUT_NUM_ITEMS 6
 
 /**
  * @brief Look up table for 24v lifepo4 battery State of Charge
  * 
  * Must be sorted in descending order
  */
- static const voltage_SoC_t LV_SoC_lookup[LV_LUT_NUM_ITEMS] = {
+ static const voltage_SoC_t LV_LiFePo_SoC_lookup[LV_LIFEPO_LUT_NUM_ITEMS] = {
     {27.2, 100},
     {26.8, 90},
     {26.6, 80},
@@ -572,6 +573,15 @@ typedef struct {
     {20.0, 0}
 };
 
+ static const voltage_SoC_t LV_LiPo_SoC_lookup[LV_LIPO_LUT_NUM_ITEMS] = {
+    {25.2, 100},
+    {24.5, 90},
+    {23, 80},
+    {21, 20},
+    {20.0, 10},
+    {18.0, 0}
+};
+
 /**
  * @brief Function for getting Low Voltage SoC
  *
@@ -579,19 +589,33 @@ typedef struct {
  *
  * @return the state of charge % between 0 and 99.
  */
-uint8_t getLVSoC(float voltage) {
-    for (size_t i = 0; i < LV_LUT_NUM_ITEMS; i++) {
-        if (LV_SoC_lookup[i].voltage == voltage) {
+uint8_t getLVSoC(float voltage, lv_battery_type_t battery_type) {
+    voltage_SoC_t *lut;
+    size_t num_items;
+
+    if (battery_type == LV_LIFEPO) {
+        lut = LV_LiFePo_SoC_lookup;
+        num_items = LV_LIFEPO_LUT_NUM_ITEMS;
+    } else if (battery_type == LV_LIPO) {
+        lut = LV_LiPo_SoC_lookup;
+        num_items = LV_LIPO_LUT_NUM_ITEMS;
+    } else {
+        // unknown battery type - return 0%
+        return 0;
+    }
+    
+    for (size_t i = 0; i < num_items; i++) {
+        if (lut[i].voltage == voltage) {
             // if voltage equals voltage from lut, return soc
-            return LV_SoC_lookup[i].SoC;
-        } else if (LV_SoC_lookup[i].voltage < voltage) {
+            return lut[i].SoC;
+        } else if (lut[i].voltage < voltage) {
             // if voltage > voltage from lut, we have passed correct value
             if (i == 0) {
                 // if i == 0, then it must be higher than highest voltage
                 return 99;
             } else {
                 // otherwise we do some linear extrapolation! 
-                float result = (float)LV_SoC_lookup[i].SoC + ((voltage - LV_SoC_lookup[i].voltage) / (LV_SoC_lookup[i-1].voltage - LV_SoC_lookup[i].voltage)) * ((float)LV_SoC_lookup[i-1].SoC - (float)LV_SoC_lookup[i].SoC);
+                float result = (float)lut[i].SoC + ((voltage - lut[i].voltage) / (lut[i-1].voltage - lut[i].voltage)) * ((float)lut[i-1].SoC - (float)lut[i].SoC);
                 return min(99, ((uint8_t)result));
             }
         }

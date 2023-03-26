@@ -44,7 +44,7 @@ extern volatile bool dim_first_time_config_screen;
 extern volatile bool redraw_new_driver_profiles;
 
 // Sizes for displaying to screen
-#define GEARDISPLAYLEN 12
+#define GEARDISPLAYLEN 10
 #define STATEDISPLAYLEN 13
 #define DRSDISPLAYLEN 7
 
