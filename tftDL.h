@@ -78,7 +78,7 @@ void tftDL_RTDUpdate(
 	bool tcOn,
 	bool ssOn,
 	float odometer_km,
-	bool drsClosed
+	bool drsOpen
 );
 
 void tftDL_racingScreenUpdate(
@@ -86,7 +86,7 @@ void tftDL_racingScreenUpdate(
     int32_t acTemp_C,
     int32_t mcTemp_C,
 	uint8_t hvSoC,
-	bool drsClosed
+	bool drsOpen
 );
 
 void tftDL_errorUpdate(

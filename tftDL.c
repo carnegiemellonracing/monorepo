@@ -435,7 +435,7 @@ void tftDL_RTDUpdate(
     bool tcOn,
     bool ssOn,
     float odometer_km,
-    bool drsClosed
+    bool drsOpen
 ) {
     tftDL_RTDwriteInt(tftDL_RTDData, ESE_HV_VOLTAGE_VAL, 4, "%3ld", hvVoltage_mV / 1000);
     tftDL_RTDwriteInt(tftDL_RTDData, ESE_MOTOR_TEMP_STR, 4, "%3ld", motorTemp_C);
@@ -485,7 +485,7 @@ void tftDL_RTDUpdate(
 
     /* DRS color */
     uint32_t *drs_color = (void *) (tftDL_RTDData + ESE_DRS_COLOR);
-    uint32_t drs_color_cmd = drsClosed ? black : green;
+    uint32_t drs_color_cmd = drsOpen ? green : black;
     *drs_color = drs_color_cmd;
 
     /* GPS color */
@@ -518,7 +518,7 @@ void tftDL_racingScreenUpdate(
     int32_t acTemp_C,
     int32_t mcTemp_C,
 	uint8_t hvSoC,
-	bool drsClosed
+	bool drsOpen
 ) {
     tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_MOTOR_TEMP_STR, 4, "%3ld", motorTemp_C);
     tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_AC_TEMP_STR, 4, "%3ld", acTemp_C);
@@ -529,9 +529,9 @@ void tftDL_racingScreenUpdate(
     tftDL_barSetX(&hvHorizSoc_bar, (uint32_t)hvSoC);
 
     /* DRS color */
-    uint32_t *drs_color = (void *) (tftDL_racingData + ESE_RS_DRS_COLOR);
-    uint32_t drs_color_cmd = drsClosed ? black : green;
-    *drs_color = drs_color_cmd;
+	uint32_t *drs_color = (void *) (tftDL_racingData + ESE_RS_DRS_COLOR);
+	uint32_t drs_color_cmd = drsOpen ? green : black;
+	*drs_color = drs_color_cmd;
 
     tftDL_showStates(tftDL_racingData, ESE_RS_VSM_STATE_STR, ESE_RS_VSM_STATE_COLOR, ESE_RS_GEAR_STR, ESE_RS_DRS_MODE_STR, true);
     tftDL_showRAMMsg(tftDL_racingData, ESE_RS_RAM_LAST_LAP, ESE_RS_RAM_TARG_LAP, ESE_RS_RAM_MSG_STR);

@@ -288,11 +288,11 @@ cmr_canGear_t stateGetGearReq(void) {
     return state.gearReq;
 }
 
-cmr_canDRSMode_t stateGetDrs(void) {
+cmr_canDrsMode_t stateGetDrs(void) {
     return state.drsMode;
 }
 
-cmr_canDRSMode_t stateGetDrsReq(void) {
+cmr_canDrsMode_t stateGetDrsReq(void) {
     return state.drsReq;
 }
 
@@ -559,7 +559,7 @@ typedef struct {
  * 
  * Must be sorted in descending order
  */
- static const voltage_SoC_t LV_LiFePo_SoC_lookup[LV_LIFEPO_LUT_NUM_ITEMS] = {
+ static voltage_SoC_t LV_LiFePo_SoC_lookup[LV_LIFEPO_LUT_NUM_ITEMS] = {
     {27.2, 100},
     {26.8, 90},
     {26.6, 80},
@@ -573,7 +573,7 @@ typedef struct {
     {20.0, 0}
 };
 
- static const voltage_SoC_t LV_LiPo_SoC_lookup[LV_LIPO_LUT_NUM_ITEMS] = {
+ static voltage_SoC_t LV_LiPo_SoC_lookup[LV_LIPO_LUT_NUM_ITEMS] = {
     {25.2, 100},
     {24.5, 90},
     {23, 80},

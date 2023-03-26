@@ -217,8 +217,8 @@ static void canTX10Hz(void *pvParameters) {
         cmr_canState_t stateVSMReq = stateGetVSMReq();
         cmr_canGear_t gear = stateGetGear();
         cmr_canGear_t gearReq = stateGetGearReq();
-        cmr_canDRSMode_t drsMode = stateGetDrs();
-        cmr_canDRSMode_t drsReq = stateGetDrsReq();
+        cmr_canDrsMode_t drsMode = stateGetDrs();
+        cmr_canDrsMode_t drsReq = stateGetDrsReq();
 
         if (
             (stateVSM != stateVSMReq) ||

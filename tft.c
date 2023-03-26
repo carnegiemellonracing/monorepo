@@ -537,7 +537,7 @@ static void drawRTDScreen(void) {
 
     float glvVoltage = ((float)cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV)) / 1000.0;
     
-    volatile cmr_canVSMSensors_t *vsmSensors = (volatile cmr_canVSMSensors_t*)&(canRXMeta[CANRX_VSM_SENSORS]);
+    volatile cmr_canVSMSensors_t *vsmSensors = (volatile cmr_canVSMSensors_t*)getPayload(CANRX_VSM_SENSORS);
     
     int32_t current_A = (int32_t)(vsmSensors->hallEffect_cA) * 100;
 
@@ -547,12 +547,12 @@ static void drawRTDScreen(void) {
 
     float odometer_km = getOdometer();
 
-    volatile cmr_canBMSLowVoltage_t *bmsLV = (volatile cmr_canBMSLowVoltage_t*)&(canRXMeta[CANRX_HVC_LOW_VOLTAGE]);
+    volatile cmr_canBMSLowVoltage_t *bmsLV = (volatile cmr_canBMSLowVoltage_t*)getPayload(CANRX_HVC_LOW_VOLTAGE);
     
     bool ssOk = (bmsLV->safety_mV > 18);
 
-    volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t*)&(canRXMeta[CANRX_DRS_STATE]);
-    bool drsClosed = (bool)drsState->state;
+    volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t*)getPayload(CANRX_DRS_STATE);
+    bool drsOpen = (drsState->state == CMR_CAN_DRS_STATE_OPEN);
 
     /* Accumulator Temperature */
     int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC)/10;
@@ -591,7 +591,7 @@ static void drawRTDScreen(void) {
             acTemp_C,
             mcTemp_C,
             hvSoC,
-            drsClosed
+            drsOpen
         );
         // /* Write Display List to Screen */
         tftDLWrite(&tft, &tftDL_racing_screen);
@@ -618,7 +618,7 @@ static void drawRTDScreen(void) {
                         tcOn,
                         ssOk,
                         odometer_km,
-                        drsClosed);
+                        drsOpen);
 
         /* Write Display List to Screen */
         tftDLWrite(&tft, &tftDL_RTD);

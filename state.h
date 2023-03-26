@@ -29,8 +29,8 @@ cmr_canState_t stateGetVSMReq(void);
 cmr_canGear_t stateGetGear(void);
 cmr_canGear_t stateGetGearReq(void);
 
-cmr_canDRSMode_t stateGetDrs(void);
-cmr_canDRSMode_t stateGetDrsReq(void);
+cmr_canDrsMode_t stateGetDrs(void);
+cmr_canDrsMode_t stateGetDrsReq(void);
 
 /** @brief AE/DRS button value */
 extern bool drsButtonPressed;
