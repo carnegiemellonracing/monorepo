@@ -551,6 +551,11 @@ typedef struct {
     uint8_t pwm_left;       /**< @brief PWM of the left  DRS servo (debug info). */
     uint8_t pwm_right;      /**< @brief PWM of the right DRS servo (debug info). */
 } cmr_canCDCDRSStates_t;
+typedef enum { 
+  CMR_CAN_DRS_STATE_CLOSED = 0,
+  CMR_CAN_DRS_STATE_OPEN,
+  CMR_CAN_DRS_STATE_OTHER
+} cmr_canCDCDRSStateEnum_t;
 
 /** @brief Central Dynamics Controller */
 typedef struct {
@@ -1023,16 +1028,6 @@ typedef struct {
     uint8_t err; /* 1 in error state and 0 otherwise */
 } cmr_can_rtc_data_t;
 
-// ------------------------------------------------------------------------------------------------
-/** @brief Represents the car's current Drag Reduction Mode. */
-typedef enum {
-    CMR_CAN_DRS_UNKNOWN = 0,    /**< @brief Unknown Gear State */
-    CMR_CAN_DRS_DRIVER_HOLD,    /**< @brief Hold to open */
-    CMR_CAN_DRS_DRIVER_TOGGLE,  /**< @brief Toggle to open/close */
-    CMR_CAN_DRS_BRAKE,          /**< @brief Driver control + off on brake */
-    CMR_CAN_DRS_ACCEL,          /**< @brief For accel event - auto on and off */
-    CMR_CAN_DRS_GEAR_LEN
-} cmr_canDRSMode_t;
 // ------------------------------------------------------------------------------------------------
 // SAE Provided EMD definitions
 
