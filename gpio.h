@@ -39,11 +39,6 @@ typedef enum {
     GPIO_LEN    /**< @brief Total GPIO pins. */
 } gpio_t;
 
-// TODO: Add documentation
-extern volatile bool config_increment_up_requested;
-extern volatile bool config_increment_down_requested;
-extern volatile bool config_scroll_requested;
-
 void gpioInit(void);
 
 /** Function pointer type for button actions, input is whether the button is pressed or not*/
@@ -61,13 +56,6 @@ typedef struct {
     expanderRotaryPosition_t position;
     rotaryAction_f setAction;
 } expanderRotaryEvent_t;
-
-/** @brief AE/DRS button value */
-extern bool drsButtonPressed;
-/** @brief Action 1 button value */
-extern bool action1ButtonPressed;
-/** @brief Action 2 button value */
-extern bool action2ButtonPressed;
 
 /** @brief Current regen step */
 extern unsigned int regenStep;

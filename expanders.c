@@ -38,7 +38,7 @@ static const uint16_t daughterDigitalAddress = 0x25; // 0x25 = 0b0100101
 static const uint16_t daughterAnalogAddress = 0x11; // 0x11 = 0b0010001
 
 /** @brief I2C Timeout (milliseconds). */
-static const uint32_t i2cTimeout_ms = 2;
+static const uint32_t i2cTimeout_ms = 1;
 
 /**
  * @brief Array of expander button pin configs
@@ -233,6 +233,12 @@ static const TickType_t expanderUpdate100Hz_period_ms = 10;
 /** @brief GPIO expander update 100 Hz TX task. */
 static cmr_task_t expanderUpdate100Hz_task;
 
+
+bool checkStatus(int status){
+    if (status != 0) return false;
+    else return true;
+}
+
 static int getExpanderData(uint16_t addr, uint8_t cmd, uint8_t *data, size_t len)
 {
     int status = cmr_i2cTX(&i2c, addr, &cmd, 1, i2cTimeout_ms);
@@ -241,24 +247,41 @@ static int getExpanderData(uint16_t addr, uint8_t cmd, uint8_t *data, size_t len
     return cmr_i2cRX(&i2c, addr, data, len, i2cTimeout_ms);
 }
 
-static void updateExpanderData()
+static int updateExpanderDataDaughter(){
+    // don't really need status but returning anyway
+
+    int status = getExpanderData(
+         daughterDigitalAddress, PCA9554_INPUT_PORT,
+         daughterDigitalData, 1
+     );
+
+    if (!checkStatus(status)) return status;
+
+    status |= getExpanderData(
+         daughterAnalogAddress, AD5593R_POINTER_ADC_RD,
+         daughterAnalogData, 2 * EXP_CLUTCH_LEN
+     );
+    
+    return status;
+}
+
+static int updateExpanderDataMain()
 {
     int status = getExpanderData(
         mainDigital1Address, PCA9555_INPUT_PORT_0,
         mainDigital1Data, 2
     );
-    status = getExpanderData(
+
+    if (!checkStatus(status)) return status;
+
+    status |= getExpanderData(
         mainDigital2Address, PCA9554_INPUT_PORT,
         mainDigital2Data, 1
     );
-    status = getExpanderData(
-         daughterDigitalAddress, PCA9554_INPUT_PORT,
-         daughterDigitalData, 1
-     );
-    status = getExpanderData(
-         daughterAnalogAddress, AD5593R_POINTER_ADC_RD,
-         daughterAnalogData, 2 * EXP_CLUTCH_LEN
-     );
+
+    if (!checkStatus(status)) return status;
+
+    return status;
 }
 
 /**
@@ -298,27 +321,8 @@ static void checkLEDState()
     }
 }
 
-static void expanderUpdate100Hz(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
-    
-    // Main Board Digital 1 expander has all inputs on Ports 0 and 1
-    uint8_t mainDigital1Config[3] = {
-        PCA9555_CONFIG_PORT_0,
-        0xFF,
-        0xFF
-    };
-    // Main Board Digital 2 expander has all inputs except outputs on Pins 0 and 1
-    uint8_t mainDigital2Config[2] = {
-        PCA9554_CONFIG_PORT,
-        0xFC    // 0b11111100
-    };
 
-    // Daughter Board Digital expander has all inputs
-    uint8_t daughterDigitalConfig[2] = {
-        PCA9554_CONFIG_PORT,
-        0xFF
-    };
-
+static int configAnalogADCDaughter(){
     // Daughter Board Analog expander has ADC inputs on pins 0 and 1
     uint8_t daughterAnalogADCConfig[3] = {
         AD5593R_CTRL_REG_ADC_CONFIG,
@@ -332,7 +336,109 @@ static void expanderUpdate100Hz(void *pvParameters) {
         0x03    // 0b00000011
     };
 
-    // Transmit config to expanders
+    int status;
+
+    status = cmr_i2cTX(
+         &i2c,
+         daughterAnalogAddress, daughterAnalogADCConfig,
+         sizeof(daughterAnalogADCConfig) / sizeof(daughterAnalogADCConfig[0]),
+         i2cTimeout_ms
+     );
+
+    if (!checkStatus(status)) return status;
+
+    status |= cmr_i2cTX(
+         &i2c,
+         daughterAnalogAddress, daughterAnalogADCSequence,
+         sizeof(daughterAnalogADCSequence) / sizeof(daughterAnalogADCSequence[0]),
+         i2cTimeout_ms
+     );
+    
+    return status;
+}
+
+#define SYSTICKCLOCK 96000000ULL
+#define SYSTICKPERUS (SYSTICKCLOCK / 1000000UL)
+
+// delay has to constant expression
+static void inline __attribute__((always_inline)) delayus(unsigned delay)
+{
+    uint32_t ticks = SYSTICKPERUS * delay;
+    uint32_t start_tick = SysTick -> VAL;
+
+    while(SysTick -> VAL - start_tick < ticks);
+}
+
+void resetClock() {
+    GPIO_InitTypeDef pinConfig = { //clock
+        .Pin = GPIO_PIN_8,
+        .Mode = GPIO_MODE_OUTPUT_OD,
+        .Pull = GPIO_NOPULL,
+        .Speed = GPIO_SPEED_FREQ_VERY_HIGH
+    };
+
+    HAL_GPIO_Init(GPIOA, &pinConfig);
+
+
+    pinConfig.Pin = GPIO_PIN_4; //data
+    pinConfig.Mode = GPIO_MODE_INPUT;
+    HAL_GPIO_Init(GPIOB, &pinConfig);
+
+    for (int i = 0; i < 10; i++) {
+        HAL_GPIO_WritePin( // clock
+            GPIOA, GPIO_PIN_8,
+            GPIO_PIN_RESET
+        );
+    	delayus(5);
+        HAL_GPIO_WritePin( // data
+            GPIOA, GPIO_PIN_8,
+            GPIO_PIN_SET
+        );
+        delayus(5);
+    }
+
+    pinConfig.Pin = GPIO_PIN_8; //clock
+    pinConfig.Mode = GPIO_MODE_AF_OD;
+    pinConfig.Alternate = GPIO_AF4_I2C3;
+    HAL_GPIO_Init(GPIOA, &pinConfig);
+
+    pinConfig.Pin = GPIO_PIN_4; //data
+    pinConfig.Alternate = GPIO_AF9_I2C3;
+    HAL_GPIO_Init(GPIOB, &pinConfig);
+
+    // i2cInitChain();
+}
+
+static int configDaughterDigital(){
+    // Daughter Board Digital expander has all inputs
+    uint8_t daughterDigitalConfig[2] = {
+        PCA9554_CONFIG_PORT,
+        0xFF
+    };
+
+    int status =cmr_i2cTX(
+         &i2c,
+         daughterDigitalAddress, daughterDigitalConfig,
+         sizeof(daughterDigitalConfig) / sizeof(daughterDigitalConfig[0]),
+         i2cTimeout_ms
+     );
+    
+    return status;
+}
+
+static int configMainDigital1and2(){
+    // Main Board Digital 1 expander has all inputs on Ports 0 and 1
+    uint8_t mainDigital1Config[3] = {
+        PCA9555_CONFIG_PORT_0,
+        0xFF,
+        0xFF
+    };
+    // Main Board Digital 2 expander has all inputs except outputs on Pins 0 and 1
+    uint8_t mainDigital2Config[2] = {
+        PCA9554_CONFIG_PORT,
+        0xFC    // 0b11111100
+    };
+
     int status;
     status = cmr_i2cTX(
         &i2c,
@@ -340,37 +446,60 @@ static void expanderUpdate100Hz(void *pvParameters) {
         sizeof(mainDigital1Config) / sizeof(mainDigital1Config[0]),
         i2cTimeout_ms
     );
-    status = cmr_i2cTX(
+    status |= cmr_i2cTX(
         &i2c,
         mainDigital2Address, mainDigital2Config,
         sizeof(mainDigital2Config) / sizeof(mainDigital2Config[0]),
         i2cTimeout_ms
     );
-    status =cmr_i2cTX(
-         &i2c,
-         daughterDigitalAddress, daughterDigitalConfig,
-         sizeof(daughterDigitalConfig) / sizeof(daughterDigitalConfig[0]),
-         i2cTimeout_ms
-     );
-    status =cmr_i2cTX(
-         &i2c,
-         daughterAnalogAddress, daughterAnalogADCConfig,
-         sizeof(daughterAnalogADCConfig) / sizeof(daughterAnalogADCConfig[0]),
-         i2cTimeout_ms
-     );
-    status =cmr_i2cTX(
-         &i2c,
-         daughterAnalogAddress, daughterAnalogADCSequence,
-         sizeof(daughterAnalogADCSequence) / sizeof(daughterAnalogADCSequence[0]),
-         i2cTimeout_ms
-     );
+
+    return status;
+}
+
+static void expanderUpdate100Hz(void *pvParameters) {
+    (void) pvParameters;    // Placate compiler.
+
+    int status = configMainDigital1and2();
+    
+    status |= configDaughterDigital();
+
+    status |= configAnalogADCDaughter();
 
     TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        updateExpanderData();
-        checkLEDState();
 
+    int badStatus_count = 0;
+
+    while (1) {
+        status = 0;
+        
+        // check status of each function
+        if (checkStatus(status)) status |= updateExpanderDataMain();
+
+        // dont check status of daughter board, if steering is removed, DIM should still work
+        configAnalogADCDaughter();
+        updateExpanderDataDaughter();
+
+        if (checkStatus(status)) checkLEDState();
+        
         vTaskDelayUntil(&lastWakeTime, expanderUpdate100Hz_period_ms);
+
+        if (checkStatus(status)) badStatus_count = 0;
+        else badStatus_count += 1;
+
+        // if we've seen a badStatus for more than 4 times, 
+        // reset clock and delay for a while so that the timed out function finishes.
+        if (badStatus_count > 4) {
+            lastWakeTime = xTaskGetTickCount();
+            vTaskDelayUntil(&lastWakeTime, 100);
+            resetClock();
+
+            // config everything again since clock reset
+            configMainDigital1and2();
+            configDaughterDigital();
+            configAnalogADCDaughter();
+        }
+
+        
     }
 }
 
@@ -465,7 +594,7 @@ void expandersInit(void) {
     // I2C initialization
     cmr_i2cInit(
         &i2c, I2C3,
-        I2C_CLOCK_LOW, ownAddress,
+        I2C_CLOCK_HI, ownAddress,
         GPIOA, GPIO_PIN_8,
         GPIOB, GPIO_PIN_4
     );

@@ -240,8 +240,6 @@ void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait) {
 /** @brief Display update priority. */
 static const uint32_t tftUpdate_priority = 1;
 
-/** @brief Display update period. */
-static const TickType_t tftUpdate_period_ms = 20;
 
 /** @brief Display update task. */
 static cmr_task_t tftUpdate_task;
@@ -317,11 +315,11 @@ static void tftUpdate(void *pvParameters) {
     /* Display Startup Screen for fixed time */
     tftDLContentLoad(tft, &tftDL_startup);
     tftDLWrite(tft, &tftDL_startup);
-    //vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS); //TODO: Uncomment
+//    vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS); //TODO: Uncomment
 
     /* Update Screen Info from CAN Indefinitely */
     while (
-        vTaskDelayUntil(&lastWakeTime, tftUpdate_period_ms), 1
+        vTaskDelayUntil(&lastWakeTime, TFT_UPDATE_PERIOD_MS), 1
     ) {
         if (inConfigScreen()){
             drawConfigScreen();
@@ -329,6 +327,7 @@ static void tftUpdate(void *pvParameters) {
         else if (stateGetVSM() == CMR_CAN_ERROR){
             drawErrorScreen();
         } else {
+            // within drawRTDScreen, we decide if to draw testing or racing screen
             drawRTDScreen();
         }
     }
@@ -357,24 +356,31 @@ static void drawErrorScreen(void) {
     volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat =
         (void *) metaHVCHeartbeat->payload;
 
-    cmr_canRXMeta_t *metaCDCMotorFaults = canRXMeta + CANRX_CDC_MOTOR_FAULTS;
-    volatile cmr_canCDCMotorFaults_t *canCDCMotorFaults =
-        (void *) metaCDCMotorFaults->payload;
+    cmr_canRXMeta_t *metaAmkFLActualValues2 = canRXMeta + CANRX_AMK_FL_ACT_2;
+    volatile cmr_canAMKActualValues2_t *amkFLActualValues2 =
+        (void *) metaAmkFLActualValues2->payload;
+    cmr_canRXMeta_t *metaAmkFRActualValues2 = canRXMeta + CANRX_AMK_FR_ACT_2;
+    volatile cmr_canAMKActualValues2_t *amkFRActualValues2 =
+        (void *) metaAmkFRActualValues2->payload;
+    cmr_canRXMeta_t *metaAmkBLActualValues2 = canRXMeta + CANRX_AMK_RL_ACT_2;
+    volatile cmr_canAMKActualValues2_t *amkBLActualValues2 =
+        (void *) metaAmkBLActualValues2->payload;
+    cmr_canRXMeta_t *metaAmkBRActualValues2 = canRXMeta + CANRX_AMK_RR_ACT_2;
+    volatile cmr_canAMKActualValues2_t *amkBRActualValues2 =
+        (void *) metaAmkBRActualValues2->payload;
 
     tftDLContentLoad(&tft, &tftDL_error);
 
     tft_errors_t err;
 
     /* Low Voltage */
-    unsigned int voltage_mV = adcRead(ADC_VSENSE) * 8 * 11 / 10;
+    unsigned int voltage_mV = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
     err.glvVoltage_V =  voltage_mV / 1000;
     err.glvLowVolt = voltage_mV < 20*1000;
 
     /* Timeouts */
-    err.fsmTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_FSM);
     err.cdcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_CDC);
     err.ptcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_PTC);
-    err.apcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_APC);
     err.hvcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_HVC);
     err.vsmTimeout = 0;
 
@@ -384,21 +390,23 @@ static void drawErrorScreen(void) {
     err.bspdError = (canVSMStatus->latchMatrix & CMR_CAN_VSM_LATCH_BSPD);
 
     /* HVC Errors */
-    err.overVolt = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_PACK_OVERVOLT);
-    err.underVolt = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_PACK_UNDERVOLT);
+    err.overVolt = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERVOLT);
+    err.underVolt = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_UNDERVOLT);
     err.hvcoverTemp = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERTEMP);
-    err.hvc_Error = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_FAULT);
+    err.hvcBMBTimeout = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_TIMEOUT);
+    err.hvcBMBFault = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_FAULT);
     err.hvcErrorNum = (canHVCHeartbeat->errorStatus);
 
     /* CDC Motor Faults */
-    err.overSpeed = (canCDCMotorFaults->run & 1);
-    err.mcoverTemp = (canCDCMotorFaults->run & (0x7f << 17));
-    err.overCurrent = (canCDCMotorFaults->run & 2);
-    err.mcError = (canCDCMotorFaults->run);
-    err.mcErrorNum = (canCDCMotorFaults->run);
+    err.amkFLErrorCode = amkFLActualValues2->errorCode;
+    err.amkFRErrorCode = amkFRActualValues2->errorCode;
+    err.amkBLErrorCode = amkBLActualValues2->errorCode;
+    err.amkBRErrorCode = amkBRActualValues2->errorCode;
+
+    volatile cmr_canHVCBMBErrors_t *BMBerr = (volatile cmr_canHVCBMBErrors_t *) getPayload(CANRX_HVC_BMB_STATUS);
 
     /* Update Display List*/
-    tftDL_errorUpdate(&err);
+    tftDL_errorUpdate(&err, BMBerr);
 
     /* Write Display List to Screen */
     tftDLWrite(&tft, &tftDL_error);
@@ -525,29 +533,26 @@ static void drawRTDScreen(void) {
 
 
     /* Pack Voltage */
-  int32_t hvVoltage_mV = canHVCPackVoltage->battVoltage_mV;
-    //  float hvVoltage_mV_f = canEmdHvVoltage(*canEMDvalues) * 1000.0f;
-    //  int32_t hvVoltage_mV = (int32_t) hvVoltage_mV_f;
+    int32_t hvVoltage_mV = canHVCPackVoltage->battVoltage_mV;
 
-    // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
-    int32_t glvVoltage = adcRead(ADC_VSENSE) * 8 * 11 / 10 / 1000;
-
-    /* Motor Power Draw*/
-//   int33_t current_A = computeCurrent_A(canAMK_FL_Act1) +
-//                       computeCurrent_A(canAMK_FR_Act2) +
-//                       computeCurrent_A(canAMK_RL_Act2) +
-//                       computeCurrent_A(canAMK_RR_Act2);
-    int32_t current_A = 0;
+    float glvVoltage = ((float)cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV)) / 1000.0;
+    
+    volatile cmr_canVSMSensors_t *vsmSensors = (volatile cmr_canVSMSensors_t*)getPayload(CANRX_VSM_SENSORS);
+    
+    int32_t current_A = (int32_t)(vsmSensors->hallEffect_cA) * 100;
 
     int32_t power_kW = (current_A * (hvVoltage_mV / 1000)) / 1000;
 
-    /* Wheel Speed */
-        /* Wheel Speed to Vehicle Speed Conversion
-         *      Avg Wheel Speed *
-         *      (18" * PI) * (1' / 12") * (60min / 1hr) * (1 mi / 5280')
-         *      = AvgWheelSpeed * 0.05355                                   */
-        uint32_t wheelSpeed_rpm = getAverageWheelRPM();
-        uint32_t speed_mph = (wheelSpeed_rpm * 5355) / 100000;
+    uint8_t speed_kmh = (uint8_t)getSpeedKmh();
+
+    float odometer_km = getOdometer();
+
+    volatile cmr_canBMSLowVoltage_t *bmsLV = (volatile cmr_canBMSLowVoltage_t*)getPayload(CANRX_HVC_LOW_VOLTAGE);
+    
+    bool ssOk = (bmsLV->safety_mV > 18);
+
+    volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t*)getPayload(CANRX_DRS_STATE);
+    bool drsOpen = (drsState->state == CMR_CAN_DRS_STATE_OPEN);
 
     /* Accumulator Temperature */
     int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC)/10;
@@ -572,11 +577,52 @@ static void drawRTDScreen(void) {
     bool mcTemp_yellow = mcTemp_C >= MC_YELLOW_THRESHOLD;
     bool mcTemp_red = mcTemp_C >= MC_RED_THRESHOLD;
 
-    /* Update Display List*/
-    tftDL_RTDUpdate(memoratorPresent, sbgStatus, speed_mph, hvVoltage_mV, power_kW, motorTemp_yellow, motorTemp_red, acTemp_yellow, acTemp_red, mcTemp_yellow, mcTemp_red, motorTemp_C, acTemp_C, mcTemp_C, glvVoltage);
+    uint8_t glvSoC = getLVSoC(glvVoltage, LV_LIPO);
 
-    /* Write Display List to Screen */
-    tftDLWrite(&tft, &tftDL_RTD);
+    uint8_t hvSoC = 10;
+    
+
+    bool yrcOn = false;
+    bool tcOn = false;
+
+    if (inRacingScreen()) {
+        tftDL_racingScreenUpdate(
+            motorTemp_C,
+            acTemp_C,
+            mcTemp_C,
+            hvSoC,
+            drsOpen
+        );
+        // /* Write Display List to Screen */
+        tftDLWrite(&tft, &tftDL_racing_screen);
+    } else {
+        /* Update Display List*/
+        tftDL_RTDUpdate(memoratorPresent, 
+                        sbgStatus, 
+                        hvVoltage_mV, 
+                        power_kW,
+                        speed_kmh,
+                        motorTemp_yellow, 
+                        motorTemp_red, 
+                        acTemp_yellow, 
+                        acTemp_red, 
+                        mcTemp_yellow, 
+                        mcTemp_red, 
+                        motorTemp_C, 
+                        acTemp_C, 
+                        mcTemp_C, 
+                        (int32_t)glvVoltage,
+                        glvSoC,
+                        hvSoC,
+                        yrcOn,
+                        tcOn,
+                        ssOk,
+                        odometer_km,
+                        drsOpen);
+
+        /* Write Display List to Screen */
+        tftDLWrite(&tft, &tftDL_RTD);
+    }
 }
 
 /**

@@ -207,7 +207,9 @@ static int32_t adcToBusVoltage_mV(const cmr_sensor_t *sensor, uint32_t reading) 
     (void) sensor;  // Placate compiler.
 
     // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
-    uint32_t busVoltage_mV = reading * 8 * 11 / 10;
+    float temp = (reading * 8 * 11 / 10) *1.05;
+    uint32_t busVoltage_mV = (uint32_t) temp;
+    
     return (int32_t) busVoltage_mV;
 }
 
@@ -323,16 +325,16 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     [SENSOR_CH_TPOS_L_U8] = {
         .conv = adcToUInt8,
         .sample = sampleADCSensor,
-        .readingMin = 580,
-        .readingMax = 3125,
+        .readingMin = 680,
+        .readingMax = 3889,
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_FSM_TPOS_L
     },
     [SENSOR_CH_TPOS_R_U8] = {
         .conv = adcToUInt8,
         .sample = sampleADCSensor,
-        .readingMin = 500,
-        .readingMax = 2640, 
+        .readingMin = 618,
+        .readingMax = 3630, 
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_FSM_TPOS_R
     },

@@ -16,16 +16,17 @@
 #define MC_YELLOW_THRESHOLD 48
 #define MC_RED_THRESHOLD 58
 
+/** @brief Display update period. */
+#define TFT_UPDATE_PERIOD_MS 20
+
 void tftInit(void);
 
 /** @brief All of the errors to be drawn on-screen
  * in error state. */
 typedef struct {
-    bool fsmTimeout;    /**< @brief Has the FSM timed out? */
     bool cdcTimeout;    /**< @brief Has the CDC timed out? */
     bool ptcTimeout;    /**< @brief Has the PTC timed out? */
     bool vsmTimeout;    /**< @brief Has the VSM timed out? */
-    bool apcTimeout;    /**< @brief Has the APC timed out? */
     bool hvcTimeout;    /**< @brief Has the HVC timed out? */
     bool imdError;      /**< @brief Has the IMD faulted? */
     bool amsError;      /**< @brief Has the AMS faulted? */
@@ -34,15 +35,14 @@ typedef struct {
     bool underVolt;     /**< @brief Has the HVC errored w/ UV? */
     bool glvLowVolt;    /**< @brief Has the GLV errored w/ UV? */
     bool hvcoverTemp;   /**< @brief Has the HVC errored w/ over temp? */
-    bool hvc_Error;     /**< @brief Has a BMB errored (probably timed out)? */
-    bool overSpeed;     /**< @brief Has the RMS errored? */
-    bool mcoverTemp;    /**< @brief Has the RMS errored? */
-    bool overCurrent;   /**< @brief Has the RMS errored? */
-    bool mcError;       /**< @brief Has the RMS errored? */
+    bool hvcBMBTimeout; /**< @brief Has a BMB timed out? */
+    bool hvcBMBFault;   /**< @brief Has a BMB raised a fault? */
     uint16_t hvcErrorNum;       /**< @brief Give the error number,
     * So the driver can relay even if the error is not accounted for above. */
-    unsigned int mcErrorNum;    /**< @brief Give the error number,
-    * So the driver can relay even if the error is not accounted for above. */
+    uint16_t amkFLErrorCode;    /**< @brief AMK FL Error Code */
+    uint16_t amkFRErrorCode;    /**< @brief AMK FR Error Code */
+    uint16_t amkBLErrorCode;    /**< @brief AMK BL Error Code */
+    uint16_t amkBRErrorCode;    /**< @brief AMK BR Error Code */
     unsigned int glvVoltage_V; /**< @brief GLV Voltage in Volts */
 } tft_errors_t;
 

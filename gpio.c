@@ -127,75 +127,51 @@ static const TickType_t buttonsInput_period = 10;
 /** @brief Button input task task. */
 static cmr_task_t buttonsInput_task;
 
-/** @brief AE/DRS button value */
-bool drsButtonPressed;
-/** @brief Action 1 button value */
-bool action1ButtonPressed;
-/** @brief Action 2 button value */
-bool action2ButtonPressed;
-
 /** @brief Current regen step */
 unsigned int regenStep = 0;
-
-static void actionOneButtonAction(bool pressed)
-{
-    action1ButtonPressed = pressed;
-    actionOneButton(pressed);
-}
-
-static void actionTwoButtonAction(bool pressed)
-{
-    action2ButtonPressed = pressed;
-    actionTwoButton(pressed);
-}
-
-static void drsButtonAction(bool pressed)
-{
-    drsButtonPressed = pressed;
-}
 
 #define BUTTON_DEBOUNCE_TIME 200
 
 static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
     [EXP_DASH_BUTTON_1] = {
         .buttonState = false,
-        .setAction = &stateVSMDownButton,
+        .setAction = &downButton,
         .lastPressed = 0,
-        .debounce = BUTTON_DEBOUNCE_TIME * 5, // State down has a long debounce time so don't accidentally drop out of HVEN
+        .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_DASH_BUTTON_2] = {
         .buttonState = false,
-        .setAction = &stateGearDownButton,
+        .setAction = &leftButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_DASH_BUTTON_3] = {
         .buttonState = false,
-        .setAction = &stateVSMUpButton,
+        .setAction = &upButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_DASH_BUTTON_4] = {
         .buttonState = false,
-        .setAction = &stateGearUpButton,
+        .setAction = &rightButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_WHEEL_BUTTON_1] = {
         .buttonState = false,
-        .setAction = &actionOneButtonAction,
+        .setAction = &actionOneButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_WHEEL_BUTTON_2] = {
         .buttonState = false,
-        .setAction = &actionTwoButtonAction,
+        .setAction = &drsButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_WHEEL_BUTTON_3] = {
         .buttonState = false,
-        .setAction = &drsButtonAction,
+        .setAction = &actionTwoButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     }
@@ -204,11 +180,11 @@ static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
 static expanderRotaryEvent_t rotaries[EXP_ROTARY_LEN] = {
     [EXP_ROTARY_1] = {
         .position = ROTARY_POS_INVALID,
-        .setAction = &stateDrsModeSwitch
+        .setAction = &stateGearSwitch
     },
     [EXP_ROTARY_2] = {
         .position = ROTARY_POS_INVALID,
-        .setAction = &stateRotary2Switch
+        .setAction = &stateDrsModeSwitch
     }
 };
 

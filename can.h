@@ -49,6 +49,8 @@ extern volatile bool waiting_for_cdc_to_confirm_config;// = false;
 // letting the DIM know that new driver params are available
 extern volatile bool waiting_for_cdc_new_driver_config;
 
+extern volatile bool exit_config_request;
+
 /** @brief Checks to see if the screen needs to be redrawn after getting new driver profiles */
 extern volatile bool redraw_new_driver_profiles;
 
@@ -77,11 +79,14 @@ typedef enum {
     CANRX_PTC_LOOP_B_TEMPS,    /**< @brief PTC Loop B temps */
     CANRX_PTC_LOOP_C_TEMPS,    /**< @brief PTC Loop C temps */
     CANRX_HVC_HEARTBEAT,        /**< @brief HVC Error. */
-    CANRX_CDC_MOTOR_FAULTS,     /**< @brief CDC Motor Faults */
+    CANRX_HVC_BMB_STATUS,       /**< @brief HVC BMB Status */
     CANRX_CDL_BROADCAST,        /**< @brief CDL broadcast. */
     CANRX_SBG_STATUS_3,            /**< @brief INS Status 3 */
 	CANRX_EMD_VALUES,			/**< @brief EMD Values for HV voltages and current */
     CANRX_VSM_SENSORS,
+    CANRX_HVC_LOW_VOLTAGE,      /**< @brief HVC Low Voltage for Safety Circuit Status*/
+    CANRX_DRS_STATE,
+    CANRX_CDC_ODOMETER,
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 

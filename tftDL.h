@@ -10,6 +10,7 @@
 
 #include <stddef.h>     // size_t
 #include <stdint.h>     // uint32_t
+#include <CMR/can_types.h>
 
 #include "tftPrivate.h"     // Private interface
 #include "tft.h"            // tft interface
@@ -23,6 +24,10 @@ extern const tftDL_t tftDL_startup;
 /** @brief Exported ready-to-drive screen definition
  * for interface consumers. */
 extern const tftDL_t tftDL_RTD;
+
+/** @brief Exported ready-to-drive screen definition
+ * for interface consumers. */
+extern const tftDL_t tftDL_racing_screen;
 
 /** @brief Exported error screen definition for interface consumers. */
 extern const tftDL_t tftDL_error;
@@ -39,23 +44,24 @@ extern volatile bool dim_first_time_config_screen;
 extern volatile bool redraw_new_driver_profiles;
 
 // Sizes for displaying to screen
-#define GEARDISPLAYLEN 5
-#define STATEDISPLAYLEN 5
-#define DRSDISPLAYLEN 5
-#define RAMDISPLAYLEN 20
-#define NOTEDISPLAYLEN 12
+#define GEARDISPLAYLEN 10
+#define STATEDISPLAYLEN 13
+#define DRSDISPLAYLEN 7
 
-// Indices for accessing RAM Buffer
-#define NOTE1_INDEX 40
-#define NOTE2_INDEX 60
-#define NOTE3_INDEX 80
+// Indices for accessing RAM Buffer + their lengths 
+#define PREV_TIME_INDEX 0
+#define TARGET_TIME_INDEX 8
+#define TIMEDISPLAYLEN 8
+
+#define MESSAGE_INDEX 16
+#define MESSAGEDISPLAYLEN 21
 
 void tftDL_RTDUpdate(
     bool memoratorPresent,
     SBG_status_t sbgStatus,
-    uint32_t speed_mph,
     int32_t hvVoltage_mV,
     int32_t power_kW,
+	uint32_t speed_kph,
     bool motorTemp_yellow,
     bool motorTemp_red,
     bool acTemp_yellow,
@@ -65,11 +71,27 @@ void tftDL_RTDUpdate(
     int32_t motorTemp_C,
     int32_t acTemp_C,
     int32_t mcTemp_C,
-    int32_t glvVoltage_V
+    int32_t glvVoltage_V,
+	uint8_t glvSoC,
+	uint8_t hvSoC,
+	bool yrcOn,
+	bool tcOn,
+	bool ssOn,
+	float odometer_km,
+	bool drsOpen
+);
+
+void tftDL_racingScreenUpdate(
+    int32_t motorTemp_C,
+    int32_t acTemp_C,
+    int32_t mcTemp_C,
+	uint8_t hvSoC,
+	bool drsOpen
 );
 
 void tftDL_errorUpdate(
-    tft_errors_t *err
+    tft_errors_t *err,
+    cmr_canHVCBMBErrors_t *BMBerr
 );
 
 void tftDL_configUpdate();

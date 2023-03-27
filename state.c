@@ -10,78 +10,188 @@
 #include "can.h"    // can interface
 #include "stdlib.h"
 #include "expanders.h"
+#include <stdbool.h>
 
+#include "CMR/config.h"     // Board-specific flash interface
+#include <FreeRTOS.h>       // FreeRTOS interface
+#include <semphr.h>         // Semaphore interface
+
+#define min(a,b) \
+   ({ __typeof__ (a) _a = (a); \
+       __typeof__ (b) _b = (b); \
+     _a < _b ? _a : _b; })
+
+/** @brief declaration of config screen variables */
 extern volatile bool flush_config_screen_to_cdc;
 /** @brief declaration of config screen variables */
 volatile bool config_increment_up_requested = false;
 /** @brief declaration of config screen variables */
 volatile bool config_increment_down_requested = false;
 /** @brief declaration of config screen variables */
-volatile bool config_scroll_requested = false;
+volatile uint8_t config_paddle_left_request = 0;
+/** @brief declaration of config screen variables */
+volatile uint8_t config_paddle_right_request = 0;
+/** @brief declaration of config screen variables */
+volatile int8_t config_move_request = 0;
 /** @brief declaration of what screen mode one is in */
 volatile bool in_config_screen = false;
+/** @brief declaration of what screen mode one is in */
+volatile bool in_racing_screen = false;
 /** @brief decleration of if the DIM is waiting for a new driver config */
 volatile bool waiting_for_cdc_new_driver_config;
+/** @brief decleration of if the DIM is waiting for a new driver config */
+volatile bool exit_config_request = false;
 /** @brief Checks to see if the screen has been setup before and if not will appropriately draw it */
 volatile bool dim_first_time_config_screen;
 /** @brief Checks to see if the screen needs to be redrawn after getting new driver profiles */
 volatile bool redraw_new_driver_profiles;
 
+/** @brief AE/DRS button value */
+bool drsButtonPressed;
+/** @brief Action 1 button value */
+bool action1ButtonPressed;
+/** @brief Action 2 button value */
+bool action2ButtonPressed;
 
-void actionOneButton(bool pressed){
-    if(inConfigScreen() == true){
-    	config_scroll_requested = true;
-		return;
+// Forward declarations
+void stateVSMUp(void);
+void stateVSMDown(void);
+void enterConfigScreen(void);
+
+
+/**
+ * @brief handles Action 1 button press on steering wheel
+ * 
+ * @param pressed `true` if button is currently pressed.
+*/
+void actionOneButton(bool pressed) {
+    if (!pressed) {
+        action1ButtonPressed = false;
+        return;
+    } else {
+        if (inConfigScreen()) {
+		    config_increment_down_requested = true;
+        } else {
+            // only set can message to true if we're not in config screen
+            action1ButtonPressed = pressed;
+        }
     }
+    
 }
 
-void actionTwoButton(bool pressed){
-    if(inConfigScreen() == true){
-    	config_scroll_requested = true;
-		return;
+/**
+ * @brief handles Action 2 button press on steering wheel
+ * 
+ * @param pressed `true` if button is currently pressed.
+*/
+void actionTwoButton(bool pressed) {
+    if (!pressed) {
+        action2ButtonPressed = false;
+        return;
+    } else {
+        if (inConfigScreen()) {
+            exit_config_request = true;
+            exitConfigScreen();
+            return;
+        } else {
+            if (inRacingScreen()) {
+                in_racing_screen = false;
+            } else {
+                in_racing_screen = true;
+            }
+            // // only set can message to true if we're not in config screen
+            // action2ButtonPressed = pressed;
+        }
     }
 }
 
 /**
- * @brief Handles regen up button presses.
- *
+ * @brief handles DRS button press on steering wheel
+ * 
  * @param pressed `true` if button is currently pressed.
- */
-void regenUpButton(bool pressed) {
-    if (in_config_screen){
-    	config_increment_up_requested = true;
+*/
+void drsButton(bool pressed) {
+    if (!pressed) {
+        drsButtonPressed = false;
         return;
+    } else {
+        if (inConfigScreen()) {
+            config_increment_up_requested = true;
+        } else {
+            // only set can message to true if we're not in config screen
+            drsButtonPressed = pressed;
+        }
     }
-
-	if (!pressed) {
-        return;
-    }
-
-    if (regenStep < REGEN_STEP_NUM) {
-        regenStep++;
-    }
-    // setNumLeds(regenStep);
 }
+
 /**
- * @brief Handles regen down button presses.
- *
+ * @brief handles UP button press on D-Pad
+ * 
  * @param pressed `true` if button is currently pressed.
- */
-void regenDownButton(bool pressed) {
-    if (in_config_screen){
-    	config_increment_down_requested = true;
-        return;
-    }
+*/
 
-
+void upButton(bool pressed) {
     if (!pressed) {
         return;
     }
 
-    if (regenStep > 0) {
-        regenStep--;
+    if (inConfigScreen()) {
+        config_move_request = -CONFIG_SCREEN_NUM_COLS;
+    } else {
+        stateVSMUp();
     }
-    // setNumLeds(regenStep);
+}
+
+/**
+ * @brief handles DOWN button press on D-Pad
+ * 
+ * @param pressed `true` if button is currently pressed.
+*/
+void downButton(bool pressed) {
+    if (!pressed) {
+        return;
+    }
+
+    if (inConfigScreen()) {
+        config_move_request = CONFIG_SCREEN_NUM_COLS;
+    } else {
+        stateVSMDown();
+    }
+}
+
+/**
+ * @brief handles LEFT button press on D-Pad
+ * 
+ * @param pressed `true` if button is currently pressed.
+*/
+void leftButton(bool pressed) {
+    if (!pressed) {
+        return;
+    }
+
+    if (inConfigScreen()) {
+        config_move_request = -1;
+    } else {
+        // Enter config screen function does necesarry state checks
+        enterConfigScreen();
+    }
+}
+
+/**
+ * @brief handles RIGHT button press on D-Pad
+ * 
+ * @param pressed `true` if button is currently pressed.
+*/
+void rightButton(bool pressed) {
+    if (!pressed) {
+        return;
+    }
+
+    if (inConfigScreen()) {
+        config_move_request = 1;
+    } else {
+        // TODO: do stuff
+    }
 }
 
 void exitConfigScreen(){
@@ -95,6 +205,7 @@ void exitConfigScreen(){
     }
     if (waiting_for_cdc_to_confirm_config == false){
         in_config_screen = false;
+        exit_config_request = false;
     }
 }
 
@@ -105,7 +216,8 @@ void enterConfigScreen(){
 
     if (in_config_screen == false && 
     config_screen_values_received_on_boot && 
-    stateGetVSM() == CMR_CAN_GLV_ON && stateGetVSMReq() == CMR_CAN_GLV_ON){
+    ((stateGetVSM() == CMR_CAN_GLV_ON && stateGetVSMReq() == CMR_CAN_GLV_ON) ||
+    (stateGetVSM() == CMR_CAN_HV_EN && stateGetVSMReq() == CMR_CAN_HV_EN))){
         in_config_screen = true;
         dim_first_time_config_screen = true;
     }
@@ -113,6 +225,10 @@ void enterConfigScreen(){
 
 bool inConfigScreen() {
     return in_config_screen;
+}
+
+bool inRacingScreen() {
+    return in_racing_screen;
 }
 
 /** @brief DIM state. */
@@ -172,11 +288,11 @@ cmr_canGear_t stateGetGearReq(void) {
     return state.gearReq;
 }
 
-cmr_canDRSMode_t stateGetDrs(void) {
+cmr_canDrsMode_t stateGetDrs(void) {
     return state.drsMode;
 }
 
-cmr_canDRSMode_t stateGetDrsReq(void) {
+cmr_canDrsMode_t stateGetDrsReq(void) {
     return state.drsReq;
 }
 
@@ -273,20 +389,9 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
 }
 
 /**
- * @brief Handles VSM state up button presses.
- *
- * @param pressed `true` if button is currently pressed.
+ * @brief Handles VSM state up.
  */
-void stateVSMUpButton(bool pressed) {
-    if (!pressed) {
-        return;
-    }
-    // Exit the config screen
-    if(inConfigScreen() == true){
-        // don't worry this will check to make sure we're in glv mode
-        exitConfigScreen();
-        return;
-    }
+void stateVSMUp() {
 
     cmr_canState_t vsmState = stateGetVSM();
     if (state.vsmReq < vsmState) {
@@ -306,31 +411,9 @@ void stateVSMUpButton(bool pressed) {
 }
 
 /**
- * @brief Handles VSM state down button presses.
- *
- * @param pressed `true` if button is currently pressed.
+ * @brief Handles VSM state down request.
  */
-void stateVSMDownButton(bool pressed) {
-    if (!pressed) {
-        return;
-    }
-
-    // // TODO: modifiy only if in config screen
-    // if (in_config_screen){
-    //     config_increment_down_requested = true;
-    //     return; 
-    // } 
-
-
-     // Enter the config screen
-     if(inConfigScreen() == false){
-         // don't worry this will check to make sure we're in glv mode
-         enterConfigScreen();
-         // Enter Config Screen worked, return to avoid other state down logic
-         if(inConfigScreen() == true) return;
-     }
-
-
+void stateVSMDown() {
     cmr_canState_t vsmState = stateGetVSM();
     if (state.vsmReq > vsmState) {
         // Cancel state-up request.
@@ -354,67 +437,18 @@ void stateVSMDownButton(bool pressed) {
     state.vsmReq = vsmReq;
 }
 
-/**
- * @brief Handles gear down button presses.
- *
- * @param pressed `true` if button is currently pressed.
- */
-void stateGearDownButton(bool pressed) {
-    if (!pressed) {
-        return;
-    }
-
-//    if (in_config_screen){
-//        config_scroll_requested = true;
-//        return;
-//    }
-
-    if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
-        return;     // Can only change gears in HV_ENand GLV_ON.
-    }
-
-    cmr_canGear_t gear = state.gear;
-    if (gear != state.gearReq) {
-        return;     // Previous gear request not satisfied yet.
-    }
-
-    cmr_canGear_t gearReq = gear - 1;
-    if (gearReq < CMR_CAN_GEAR_REVERSE) {
-        gearReq = CMR_CAN_GEAR_TEST;     // Wrap around; skip `GEAR_UNKNOWN`.
-    }
-
-    state.gearReq = gearReq;
-}
-
-/**
- * @brief Handles gear up button presses.
- *
- * @param pressed `true` if button is currently pressed.
- */
-void stateGearUpButton(bool pressed) {
-    if (!pressed) {
-        return;
-    }
-
-//    // don't run following logic if in config screen
-//    if (in_config_screen){
-//    	config_increment_up_requested = true;
-//        return;
-//        // TODO: Add logic to exit config screen via can message flushing
-//    }
-
+void stateGearSwitch(expanderRotaryPosition_t position) {
     if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
         return;     // Can only change gears in HV_EN and GLV_ON.
     }
-
-    cmr_canGear_t gear = state.gear;
-    if (gear != state.gearReq) {
-        return;     // Previous gear request not satisfied yet.
-    }
-
-    cmr_canGear_t gearReq = gear + 1;
-    if (gearReq >= CMR_CAN_GEAR_LEN) {
-        gearReq = CMR_CAN_GEAR_REVERSE;     // Wrap around; skip `GEAR_UNKNOWN`.
+    cmr_canGear_t gearReq;
+    if (position == ROTARY_POS_INVALID) {
+        gearReq = CMR_CAN_GEAR_SLOW;
+    } else {
+        gearReq = (cmr_canGear_t)((size_t) position + 1);
+        if (gearReq >= CMR_CAN_GEAR_LEN) {
+            gearReq = CMR_CAN_GEAR_SLOW;
+        }
     }
 
     state.gearReq = gearReq;
@@ -425,7 +459,7 @@ void stateDrsModeSwitch(expanderRotaryPosition_t position) {
 
     if (position == ROTARY_POS_INVALID) {
         state.drsReq = CMR_CAN_DRSM_UNKNOWN;
-    } else if (position >= CMR_CAN_DRSM_LEN) { 
+    } else if ((cmr_canDrsMode_t) position >= CMR_CAN_DRSM_LEN) { 
         // set drs mode to closed if dial pos > drs modes
         state.drsReq = CMR_CAN_DRSM_CLOSED;
     } else {
@@ -453,4 +487,140 @@ void stateGearUpdate(void) {
 
 void stateDrsUpdate(void) {
     state.drsMode = state.drsReq;
+}
+
+// Called by CAN 100 Hz
+uint8_t getLeftPaddleState() {
+    uint8_t pos = (uint8_t) (((float) expanderGetClutch(EXP_CLUTCH_1)) / ((float) (0xFFF)) * ((float) UINT8_MAX));
+    if (inConfigScreen()) {
+        if (pos > MIN_PADDLE_VAL) {
+            config_paddle_left_request = pos - MIN_PADDLE_VAL;
+        } else {
+            config_paddle_left_request= 0;
+        }
+        // Return 0 to CAN because we are in config screen
+        return 0;
+    } else {
+        // only send paddle state if we're not in config screen
+        return pos;
+    }
+}
+
+// Called by CAN 100 Hz
+uint8_t getRightPaddleState() {
+    uint8_t pos = (uint8_t) (((float) expanderGetClutch(EXP_CLUTCH_2)) / ((float) (0xFFF)) * ((float) UINT8_MAX));
+    if (inConfigScreen()) {
+        if (pos > MIN_PADDLE_VAL) {
+            config_paddle_right_request = pos - MIN_PADDLE_VAL;
+        } else {
+            config_paddle_right_request= 0;
+        }
+        // Return 0 to CAN because we are in config screen
+        return 0;
+    } else {
+        // only send paddle state if we're not in config screen
+        return pos;
+    }
+}
+
+float getSpeedKmh() {
+    int32_t avgWheelRPM = getAverageWheelRPM();
+
+    /* Wheel Speed to Vehicle Speed Conversion
+     *      (x rotations / 1min) * (18" * PI) *  (2.54*10^-5km/inch)
+     *      (60min / 1hr) * (1/15.1 gear ratio)
+     *      = x * 0.0057072960048526627892388896218624717297547517194475432371                                 */
+    float vehicleSpeed = (float)avgWheelRPM * 0.0057073;
+
+    return vehicleSpeed;
+}
+
+/**
+ * @brief Returns the current car's odometry in km
+*/
+float getOdometer() {
+    volatile cmr_canCDCOdometer_t *odometer = (volatile cmr_canCDCOdometer_t *) getPayload(CANRX_CDC_ODOMETER);
+    return odometer->odometer_km;
+}
+
+/**
+ * @brief Struct for voltage SoC lookup table
+ */
+typedef struct {
+    float voltage;
+    uint8_t SoC;
+} voltage_SoC_t;
+
+#define LV_LIFEPO_LUT_NUM_ITEMS 11
+#define LV_LIPO_LUT_NUM_ITEMS 6
+
+/**
+ * @brief Look up table for 24v lifepo4 battery State of Charge
+ * 
+ * Must be sorted in descending order
+ */
+ static voltage_SoC_t LV_LiFePo_SoC_lookup[LV_LIFEPO_LUT_NUM_ITEMS] = {
+    {27.2, 100},
+    {26.8, 90},
+    {26.6, 80},
+    {26.1, 70},
+    {26.4, 60},
+    {26.1, 50},
+    {26.0, 40},
+    {25.8, 30},
+    {25.6, 20},
+    {24.0, 10},
+    {20.0, 0}
+};
+
+ static voltage_SoC_t LV_LiPo_SoC_lookup[LV_LIPO_LUT_NUM_ITEMS] = {
+    {25.2, 100},
+    {24.5, 90},
+    {23, 80},
+    {21, 20},
+    {20.0, 10},
+    {18.0, 0}
+};
+
+/**
+ * @brief Function for getting Low Voltage SoC
+ *
+ * @param voltage the current LV Voltage.
+ *
+ * @return the state of charge % between 0 and 99.
+ */
+uint8_t getLVSoC(float voltage, lv_battery_type_t battery_type) {
+    voltage_SoC_t *lut;
+    size_t num_items;
+
+    if (battery_type == LV_LIFEPO) {
+        lut = LV_LiFePo_SoC_lookup;
+        num_items = LV_LIFEPO_LUT_NUM_ITEMS;
+    } else if (battery_type == LV_LIPO) {
+        lut = LV_LiPo_SoC_lookup;
+        num_items = LV_LIPO_LUT_NUM_ITEMS;
+    } else {
+        // unknown battery type - return 0%
+        return 0;
+    }
+    
+    for (size_t i = 0; i < num_items; i++) {
+        if (lut[i].voltage == voltage) {
+            // if voltage equals voltage from lut, return soc
+            return lut[i].SoC;
+        } else if (lut[i].voltage < voltage) {
+            // if voltage > voltage from lut, we have passed correct value
+            if (i == 0) {
+                // if i == 0, then it must be higher than highest voltage
+                return 99;
+            } else {
+                // otherwise we do some linear extrapolation! 
+                float result = (float)lut[i].SoC + ((voltage - lut[i].voltage) / (lut[i-1].voltage - lut[i].voltage)) * ((float)lut[i-1].SoC - (float)lut[i].SoC);
+                return min(99, ((uint8_t)result));
+            }
+        }
+    }
+    // if we get to end of loop, voltage is less than lowest voltage in lut
+    return 0;
+
 }
