@@ -163,7 +163,6 @@ typedef enum {
 /** @brief Represents the car's current driving mode (gear). */
 typedef enum {
     CMR_CAN_GEAR_UNKNOWN = 0,   /**< @brief Unknown Gear State */
-    CMR_CAN_GEAR_REVERSE,       /**< @brief Reverse mode */
     CMR_CAN_GEAR_SLOW,          /**< @brief Slow mode */
     CMR_CAN_GEAR_FAST,          /**< @brief Fast simple mode */
     CMR_CAN_GEAR_ENDURANCE,     /**< @brief Endurance-event mode */
@@ -171,6 +170,7 @@ typedef enum {
     CMR_CAN_GEAR_SKIDPAD,       /**< @brief Skidpad-event mode */
     CMR_CAN_GEAR_ACCEL,         /**< @brief Acceleration-event mode */
     CMR_CAN_GEAR_TEST,          /**< @brief Test mode (for experimentation) */
+    CMR_CAN_GEAR_REVERSE,       /**< @brief Reverse mode */
     CMR_CAN_GEAR_LEN
 } cmr_canGear_t;
 
@@ -551,6 +551,16 @@ typedef struct {
     uint8_t pwm_left;       /**< @brief PWM of the left  DRS servo (debug info). */
     uint8_t pwm_right;      /**< @brief PWM of the right DRS servo (debug info). */
 } cmr_canCDCDRSStates_t;
+typedef enum { 
+  CMR_CAN_DRS_STATE_CLOSED = 0,
+  CMR_CAN_DRS_STATE_OPEN,
+  CMR_CAN_DRS_STATE_OTHER
+} cmr_canCDCDRSStateEnum_t;
+
+/** @brief Central Dynamics Controller */
+typedef struct {
+    float odometer_km;      /**< @brief Odometer in km*/
+} cmr_canCDCOdometer_t;
 
 // ------------------------------------------------------------------------------------------------
 // Central Dynamics Controller (20e)
@@ -602,6 +612,7 @@ typedef struct {
     uint8_t requestedState;     /**< @brief Requested state. */
     uint8_t requestedGear;      /**< @brief Requested gear. */
     uint8_t requestedDrsMode;   /**< @brief Requested DRS mode. */
+    uint8_t requestedDriver;    /**< @brief Requested Driver for Config Screen. */
 } cmr_canDIMRequest_t;
 
 /** @brief Driver Interface Module power diagnostics. */
@@ -1017,23 +1028,6 @@ typedef struct {
     uint8_t err; /* 1 in error state and 0 otherwise */
 } cmr_can_rtc_data_t;
 
-// ------------------------------------------------------------------------------------------------
-// DRS
-
-typedef struct {
-	int32_t drs_servo_angle;
-    int32_t drs_dim_status;
-} cmr_canDRSControls_t;
-
-/** @brief Represents the car's current Drag Reduction Mode. */
-typedef enum {
-    CMR_CAN_DRS_UNKNOWN = 0,    /**< @brief Unknown Gear State */
-    CMR_CAN_DRS_DRIVER_HOLD,    /**< @brief Hold to open */
-    CMR_CAN_DRS_DRIVER_TOGGLE,  /**< @brief Toggle to open/close */
-    CMR_CAN_DRS_BRAKE,          /**< @brief Driver control + off on brake */
-    CMR_CAN_DRS_ACCEL,          /**< @brief For accel event - auto on and off */
-    CMR_CAN_DRS_GEAR_LEN
-} cmr_canDRSMode_t;
 // ------------------------------------------------------------------------------------------------
 // SAE Provided EMD definitions
 
