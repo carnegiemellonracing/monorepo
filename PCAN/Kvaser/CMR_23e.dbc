@@ -48,7 +48,7 @@ SG_ VSM_ERR_latchBSPD : 24|1@1+ (1,0) [0|1] "" Vector__XXX
 
 BO_ 512 VSM_Sensors: 6 Vector__XXX
 SG_ VSM_brakePressureRear : 0|16@1+ (1,0) [0|65535] "PSI" Vector__XXX
-SG_ VSM_hallEffect : 16|16@1- (1,0) [-32768|32767] "cA" Vector__XXX
+SG_ VSM_hallEffect : 16|16@1- (0.01,0) [-327.68|327.67] "A" Vector__XXX
 SG_ VSM_safetyIn : 32|8@1+ (0.1,0) [0|25.5] "V" Vector__XXX
 SG_ VSM_safetyOut : 40|8@1+ (0.1,0) [0|25.5] "V" Vector__XXX
 
@@ -320,17 +320,18 @@ SG_ DIM_busVoltage : 0|16@1+ (1,0) [0|65535] "mV" Vector__XXX
 SG_ DIM_busCurrent : 16|16@1+ (1,0) [0|65535] "mA" Vector__XXX
 
 
-BO_ 565 DIM_Request: 3 Vector__XXX
+BO_ 565 DIM_Request: 2 Vector__XXX
 SG_ DIM_requestState : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_requestGear : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_requestDRSMode : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1301 DIM_Actions: 4 Vector__XXX
+BO_ 1301 DIM_Actions: 6 Vector__XXX
 SG_ DIM_action1ButtonPressed : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_action2ButtonPressed : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_drsButtonPressed : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_regenPercent : 24|8@1+ (1,0) [0|255] "percent" Vector__XXX
+SG_ DIM_paddleLeft : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ DIM_paddleRight : 40|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
 BO_ 262 PTC_Heartbeat: 5 Vector__XXX
@@ -631,10 +632,6 @@ SG_ Min_Cell_Temp_BMB : 32|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ Min_Cell_Temp_Index : 40|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ Max_Cell_Temp_BMB : 48|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ Max_Cell_Temp_Index : 56|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1541 Memorator_Broadcast: 1 Vector__XXX
-SG_ Memorator_status : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
 BO_ 2566869221 DILONG_Charger_Status: 8 Vector__XXX
@@ -1162,7 +1159,7 @@ SG_ controls_wheel_speed_actual_RL : 32|16@1- (1,0) [-32768|32767] "m.s-1" Vecto
 SG_ controls_wheel_speed_target_RL : 48|16@1- (1,0) [-32768|32767] "m.s-1" Vector__XXX
 
 
-BO_ 2021 Controls_YRC_Debug: 8 Vector__XXX
+BO_ 2021 controls_pid: 8 Vector__XXX
 SG_ controls_current_yaw_rate : 0|16@1- (0.01,0) [-327.68|327.67] "rad.s-1" Vector__XXX
 SG_ controls_target_yaw_rate : 16|16@1- (0.01,0) [-327.68|327.67] "rad.s-1" Vector__XXX
 SG_ controls_bias : 32|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
@@ -1241,6 +1238,21 @@ SG_ drsPwmLeft : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ drsPwmRight : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
+BO_ 1325 SF_State: 8 Vector__XXX
+SG_ Power_Limit_Max_Violation_W : 0|32@1- (1,0) [-3.4E038|3.4E038] "W" Vector__XXX
+SG_ Longest_Power_Violation : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ Over_Voltage_Count : 40|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ Under_Voltage_Count : 48|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ Over_Temp_Count : 56|8@1+ (1,0) [0|255] "" Vector__XXX
+
+
+BO_ 1326 CDC_Motor_Power: 8 Vector__XXX
+SG_ motor_power_FL : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ motor_power_FR : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ motor_power_RL : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ motor_power_RR : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
+
+
 BO_ 2024 CDC_Front_Slip_Ratios: 8 Vector__XXX
 SG_ slipRatio_FL : 0|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
 SG_ slipRatio_FR : 32|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
@@ -1269,6 +1281,18 @@ SG_ vel_calc_FR : 32|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
 BO_ 2029 CDC_Rear_Whl_Velocity_Calc: 8 Vector__XXX
 SG_ vel_calc_RL : 0|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
 SG_ vel_calc_RR : 32|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
+
+
+BO_ 2030 CONTROLS_PID_INTERNALS1: 8 Vector__XXX
+SG_ Kp : 0|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
+SG_ Ki : 16|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
+SG_ Kd : 32|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
+SG_ accum : 48|16@1- (1,0) [-32768|32767] "" Vector__XXX
+
+
+BO_ 2033 CONTROLS_PID_INTERNALS2: 4 Vector__XXX
+SG_ lastError : 0|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
+SG_ lastTime : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
 
 
 CM_ BO_ 1296 "Timeout matrix";
@@ -1302,7 +1326,7 @@ BA_ "BusType" "CAN";
 
 BA_ "GenMsgCycleTime" BO_ 257 10;
 BA_ "GenMsgCycleTime" BO_ 272 10;
-BA_ "GenMsgCycleTime" BO_ 512 100;
+BA_ "GenMsgCycleTime" BO_ 512 10;
 BA_ "GenMsgCycleTime" BO_ 1296 10000;
 BA_ "GenMsgCycleTime" BO_ 1328 100;
 BA_ "GenMsgCycleTime" BO_ 258 10;
@@ -1373,7 +1397,6 @@ BA_ "GenMsgCycleTime" BO_ 924 100;
 BA_ "GenMsgCycleTime" BO_ 925 1000;
 BA_ "GenMsgCycleTime" BO_ 926 100;
 BA_ "GenMsgCycleTime" BO_ 927 1000;
-BA_ "GenMsgCycleTime" BO_ 1541 1000;
 BA_ "GenMsgCycleTime" BO_ 647 5;
 BA_ "GenMsgCycleTime" BO_ 649 5;
 BA_ "GenMsgCycleTime" BO_ 392 1;
@@ -1395,6 +1418,7 @@ BA_ "GenMsgCycleTime" BO_ 2021 100;
 BA_ "GenMsgCycleTime" BO_ 1698 1000;
 BA_ "GenMsgCycleTime" BO_ 1714 1000;
 BA_ "GenMsgCycleTime" BO_ 1324 200;
+BA_ "GenMsgCycleTime" BO_ 1325 100;
 
 BA_ "GenSigStartValue" SG_ 257 VSM_state 0;
 BA_ "GenSigStartValue" SG_ 257 VSM_ERR_moduleTimeout 0;
@@ -1621,11 +1645,12 @@ BA_ "GenSigStartValue" SG_ 1333 DIM_busVoltage 0;
 BA_ "GenSigStartValue" SG_ 1333 DIM_busCurrent 0;
 BA_ "GenSigStartValue" SG_ 565 DIM_requestState 0;
 BA_ "GenSigStartValue" SG_ 565 DIM_requestGear 0;
-BA_ "GenSigStartValue" SG_ 565 DIM_requestDRSMode 0;
 BA_ "GenSigStartValue" SG_ 1301 DIM_action1ButtonPressed 0;
 BA_ "GenSigStartValue" SG_ 1301 DIM_action2ButtonPressed 0;
 BA_ "GenSigStartValue" SG_ 1301 DIM_drsButtonPressed 0;
 BA_ "GenSigStartValue" SG_ 1301 DIM_regenPercent 0;
+BA_ "GenSigStartValue" SG_ 1301 DIM_paddleLeft 0;
+BA_ "GenSigStartValue" SG_ 1301 DIM_paddleRight 0;
 BA_ "GenSigStartValue" SG_ 262 PTC_state 0;
 BA_ "GenSigStartValue" SG_ 262 PTC_ERR_VSMTimeout 0;
 BA_ "GenSigStartValue" SG_ 262 PTC_ERR_waterTempOOR 0;
@@ -1797,7 +1822,6 @@ BA_ "GenSigStartValue" SG_ 785 Min_Cell_Temp_BMB 0;
 BA_ "GenSigStartValue" SG_ 785 Min_Cell_Temp_Index 0;
 BA_ "GenSigStartValue" SG_ 785 Max_Cell_Temp_BMB 0;
 BA_ "GenSigStartValue" SG_ 785 Max_Cell_Temp_Index 0;
-BA_ "GenSigStartValue" SG_ 1541 Memorator_status 0;
 BA_ "GenSigStartValue" SG_ 2566869221 Output_Voltage 0;
 BA_ "GenSigStartValue" SG_ 2566869221 Output_Current 0;
 BA_ "GenSigStartValue" SG_ 2566869221 DILONG_ERR 0;
@@ -2165,6 +2189,15 @@ BA_ "GenSigStartValue" SG_ 1324 drsState 0;
 BA_ "GenSigStartValue" SG_ 1324 drsAngle 0;
 BA_ "GenSigStartValue" SG_ 1324 drsPwmLeft 0;
 BA_ "GenSigStartValue" SG_ 1324 drsPwmRight 0;
+BA_ "GenSigStartValue" SG_ 1325 Power_Limit_Max_Violation_W 0;
+BA_ "GenSigStartValue" SG_ 1325 Longest_Power_Violation 0;
+BA_ "GenSigStartValue" SG_ 1325 Over_Voltage_Count 0;
+BA_ "GenSigStartValue" SG_ 1325 Under_Voltage_Count 0;
+BA_ "GenSigStartValue" SG_ 1325 Over_Temp_Count 0;
+BA_ "GenSigStartValue" SG_ 1326 motor_power_FL 0;
+BA_ "GenSigStartValue" SG_ 1326 motor_power_FR 0;
+BA_ "GenSigStartValue" SG_ 1326 motor_power_RL 0;
+BA_ "GenSigStartValue" SG_ 1326 motor_power_RR 0;
 BA_ "GenSigStartValue" SG_ 2024 slipRatio_FL 0;
 BA_ "GenSigStartValue" SG_ 2024 slipRatio_FR 0;
 BA_ "GenSigStartValue" SG_ 2025 slipRatio_RL 0;
@@ -2177,6 +2210,12 @@ BA_ "GenSigStartValue" SG_ 2028 vel_calc_FL 0;
 BA_ "GenSigStartValue" SG_ 2028 vel_calc_FR 0;
 BA_ "GenSigStartValue" SG_ 2029 vel_calc_RL 0;
 BA_ "GenSigStartValue" SG_ 2029 vel_calc_RR 0;
+BA_ "GenSigStartValue" SG_ 2030 Kp 0;
+BA_ "GenSigStartValue" SG_ 2030 Ki 0;
+BA_ "GenSigStartValue" SG_ 2030 Kd 0;
+BA_ "GenSigStartValue" SG_ 2030 accum 0;
+BA_ "GenSigStartValue" SG_ 2033 lastError 0;
+BA_ "GenSigStartValue" SG_ 2033 lastTime 0;
 
 
 VAL_ 257 VSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
@@ -2189,7 +2228,6 @@ VAL_ 260 FSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_E
 VAL_ 261 DIM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
 VAL_ 565 DIM_requestState 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
 VAL_ 565 DIM_requestGear 0 "UNKNOWN" 1 "REVERSE" 2 "SLOW" 3 "FAST" 4 "ENDURANCE" 5 "AUTO-X" 6 "SKIDPAD" 7 "ACCEL" 8 "TEST" ;
-VAL_ 565 DIM_requestDRSMode 0 "DRS_UNKNOWN" 1 "DRS_OPEN" 2 "DRS_CLOSED" 3 "DRS_TOGGLE" 4 "DRS_HOLD" 5 "DRS_AUTO" ;
 VAL_ 262 PTC_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
 VAL_ 1794 SBG_Solution_Mode 0 "Uninitialized" 1 "Vertical_Gyro_Only" 2 "Orientation_Only" 3 "Nav_Velocity" 4 "Full_Nav" ;
 VAL_ 1024 EMD_VoltageGain 0 "x1" 1 "x2" 2 "x4" 3 "x8" 4 "x16" 5 "x32" ;
@@ -2200,6 +2238,7 @@ SIG_VALTYPE_ 642 CDC_Longitude : 1;
 SIG_VALTYPE_ 1860 SBG_Velocity_ODO : 1;
 SIG_VALTYPE_ 1862 SBG_Pressure_IMU : 1;
 SIG_VALTYPE_ 1862 SBG_Altitude_IMU : 1;
+SIG_VALTYPE_ 1325 Power_Limit_Max_Violation_W : 1;
 SIG_VALTYPE_ 2024 slipRatio_FL : 1;
 SIG_VALTYPE_ 2024 slipRatio_FR : 1;
 SIG_VALTYPE_ 2025 slipRatio_RL : 1;

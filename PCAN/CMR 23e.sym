@@ -30,7 +30,7 @@ enum DRS_MODE(0="DRS_UNKNOWN", 1="DRS_OPEN", 2="DRS_CLOSED", 3="DRS_TOGGLE",
 {SENDRECEIVE}
 
 [VSM_Heartbeat]
-ID=100h
+ID=101h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -117,7 +117,7 @@ Var=VSM_busVoltage unsigned 0,16 /u:mV
 Var=VSM_busCurrent unsigned 16,16 /u:mA
 
 [HVC_Heartbeat]
-ID=101h
+ID=102h
 DLC=6
 CycleTime=10
 Timeout=100
@@ -151,7 +151,7 @@ CycleTime=10
 Var=HVC_modeRequest unsigned 0,8 /e:HVCMode
 
 [CDC_Heartbeat]
-ID=102h
+ID=103h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -356,7 +356,7 @@ Var=CDC_LateralAcceleration signed 16,16 /u:mps2 /f:0.01
 Var=CDC_VerticalAcceleration signed 32,16 /u:mps2 /f:0.01
 
 [FSM_Heartbeat]
-ID=103h
+ID=104h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -416,7 +416,7 @@ Var=FSM_busVoltage unsigned 0,16 /u:mV
 Var=FSM_busCurrent unsigned 16,16 /u:mA
 
 [DIM_Heartbeat]
-ID=104h
+ID=105h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -452,7 +452,7 @@ Var=DIM_paddleLeft unsigned 32,8
 Var=DIM_paddleRight unsigned 40,8
 
 [PTC_Heartbeat]
-ID=105h
+ID=106h
 DLC=5
 CycleTime=10
 Timeout=100
