@@ -7,7 +7,7 @@ BS_:
 
 BU_: Vector__XXX
 
-BO_ 256 VSM_Heartbeat: 5 Vector__XXX
+BO_ 257 VSM_Heartbeat: 5 Vector__XXX
 SG_ VSM_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ VSM_ERR_moduleTimeout : 23|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_moduleState : 22|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -48,7 +48,7 @@ SG_ VSM_ERR_latchBSPD : 24|1@1+ (1,0) [0|1] "" Vector__XXX
 
 BO_ 512 VSM_Sensors: 6 Vector__XXX
 SG_ VSM_brakePressureRear : 0|16@1+ (1,0) [0|65535] "PSI" Vector__XXX
-SG_ VSM_hallEffect : 16|16@1- (1,0) [-32768|32767] "cA" Vector__XXX
+SG_ VSM_hallEffect : 16|16@1- (0.01,0) [-327.68|327.67] "A" Vector__XXX
 SG_ VSM_safetyIn : 32|8@1+ (0.1,0) [0|25.5] "V" Vector__XXX
 SG_ VSM_safetyOut : 40|8@1+ (0.1,0) [0|25.5] "V" Vector__XXX
 
@@ -79,7 +79,7 @@ SG_ VSM_busVoltage : 0|16@1+ (1,0) [0|65535] "mV" Vector__XXX
 SG_ VSM_busCurrent : 16|16@1+ (1,0) [0|65535] "mA" Vector__XXX
 
 
-BO_ 257 HVC_Heartbeat: 6 Vector__XXX
+BO_ 258 HVC_Heartbeat: 6 Vector__XXX
 SG_ HVC_Mode : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ HVC_State : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ HVC_Uptime : 40|8@1+ (1,0) [0|255] "s" Vector__XXX
@@ -108,7 +108,7 @@ BO_ 304 HVC_Command: 1 Vector__XXX
 SG_ HVC_modeRequest : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 258 CDC_Heartbeat: 5 Vector__XXX
+BO_ 259 CDC_Heartbeat: 5 Vector__XXX
 SG_ CDC_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_ERR_VSMTimeout : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ CDC_ERR_amkAllError : 23|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -265,7 +265,7 @@ SG_ CDC_LateralAcceleration : 16|16@1- (0.01,0) [-327.68|327.67] "mps2" Vector__
 SG_ CDC_VerticalAcceleration : 32|16@1- (0.01,0) [-327.68|327.67] "mps2" Vector__XXX
 
 
-BO_ 259 FSM_Heartbeat: 5 Vector__XXX
+BO_ 260 FSM_Heartbeat: 5 Vector__XXX
 SG_ FSM_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ FSM_ERR_VSMTimeout : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ FSM_WRN_VSMTimeout : 24|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -310,7 +310,7 @@ SG_ FSM_busVoltage : 0|16@1+ (1,0) [0|65535] "mV" Vector__XXX
 SG_ FSM_busCurrent : 16|16@1+ (1,0) [0|65535] "mA" Vector__XXX
 
 
-BO_ 260 DIM_Heartbeat: 5 Vector__XXX
+BO_ 261 DIM_Heartbeat: 5 Vector__XXX
 SG_ DIM_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_ERR_VSMTimeout : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 
@@ -320,9 +320,11 @@ SG_ DIM_busVoltage : 0|16@1+ (1,0) [0|65535] "mV" Vector__XXX
 SG_ DIM_busCurrent : 16|16@1+ (1,0) [0|65535] "mA" Vector__XXX
 
 
-BO_ 565 DIM_Request: 2 Vector__XXX
+BO_ 565 DIM_Request: 4 Vector__XXX
 SG_ DIM_requestState : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_requestGear : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ DIM_requestDRSMode : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ DIM_requestDriver : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
 BO_ 1301 DIM_Actions: 6 Vector__XXX
@@ -334,7 +336,7 @@ SG_ DIM_paddleLeft : 32|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_paddleRight : 40|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 261 PTC_Heartbeat: 5 Vector__XXX
+BO_ 262 PTC_Heartbeat: 5 Vector__XXX
 SG_ PTC_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ PTC_ERR_VSMTimeout : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ PTC_ERR_waterTempOOR : 21|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1022,7 +1024,7 @@ SG_ AMK_FR_TorqueLimitPositiv : 32|16@1- (0.1,0) [-3276.8|3276.7] "% Mn" Vector_
 SG_ AMK_FR_TorqueLimitNegativ : 48|16@1- (0.1,0) [-3276.8|3276.7] "% Mn" Vector__XXX
 
 
-BO_ 648 AMK_FL_Actual_Values_1: 8 Vector__XXX
+BO_ 643 AMK_FL_Actual_Values_1: 8 Vector__XXX
 SG_ AMK_FL_Status_Reserved : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_FL_Status_SystemReady : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_FL_Status_Error : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1037,14 +1039,14 @@ SG_ AMK_FL_TorqueCurrent : 32|16@1- (1,0) [-32768|32767] "Raw torque unit" Vecto
 SG_ AMK_FL_MagnetizingCurrent : 48|16@1- (1,0) [-32768|32767] "Raw current unit" Vector__XXX
 
 
-BO_ 650 AMK_FL_Actual_Values_2: 8 Vector__XXX
+BO_ 645 AMK_FL_Actual_Values_2: 8 Vector__XXX
 SG_ AMK_FL_TempMotor : 0|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_FL_TempInverter : 16|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_FL_ErrorInfo : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
 SG_ AMK_FL_TempIGBT : 48|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 
 
-BO_ 393 AMK_FL_Setpoints_1: 8 Vector__XXX
+BO_ 388 AMK_FL_Setpoints_1: 8 Vector__XXX
 SG_ AMK_FL_Control_Reserved1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_FL_Control_InverterOn : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_FL_Control_DcOn : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1056,7 +1058,7 @@ SG_ AMK_FL_TorqueLimitPositiv : 32|16@1- (0.1,0) [-3276.8|3276.7] "% Mn" Vector_
 SG_ AMK_FL_TorqueLimitNegativ : 48|16@1- (0.1,0) [-3276.8|3276.7] "% Mn" Vector__XXX
 
 
-BO_ 644 AMK_BL_Actual_Values_1: 8 Vector__XXX
+BO_ 648 AMK_BL_Actual_Values_1: 8 Vector__XXX
 SG_ AMK_BL_Status_Reserved : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_BL_Status_SystemReady : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_BL_Status_Error : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1071,14 +1073,14 @@ SG_ AMK_BL_TorqueCurrent : 32|16@1- (1,0) [-32768|32767] "Raw torque unit" Vecto
 SG_ AMK_BL_MagnetizingCurrent : 48|16@1- (1,0) [-32768|32767] "Raw current unit" Vector__XXX
 
 
-BO_ 646 AMK_BL_Actual_Values_2: 8 Vector__XXX
+BO_ 650 AMK_BL_Actual_Values_2: 8 Vector__XXX
 SG_ AMK_BL_TempMotor : 0|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_BL_TempInverter : 16|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_BL_ErrorInfo : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
 SG_ AMK_BL_TempIGBT : 48|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 
 
-BO_ 389 AMK_BL_Setpoints_1: 8 Vector__XXX
+BO_ 393 AMK_BL_Setpoints_1: 8 Vector__XXX
 SG_ AMK_BL_Control_Reserved1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_BL_Control_InverterOn : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_BL_Control_DcOn : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1090,7 +1092,7 @@ SG_ AMK_BL_TorqueLimitPositiv : 32|16@1- (0.1,0) [-3276.8|3276.7] "% Mn" Vector_
 SG_ AMK_BL_TorqueLimitNegativ : 48|16@1- (0.1,0) [-3276.8|3276.7] "% Mn" Vector__XXX
 
 
-BO_ 643 AMK_BR_Actual_Values_1: 8 Vector__XXX
+BO_ 644 AMK_BR_Actual_Values_1: 8 Vector__XXX
 SG_ AMK_BR_Status_Reserved : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_BR_Status_SystemReady : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_BR_Status_Error : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1105,14 +1107,14 @@ SG_ AMK_BR_TorqueCurrent : 32|16@1- (1,0) [-32768|32767] "Raw torque unit" Vecto
 SG_ AMK_BR_MagnetizingCurrent : 48|16@1- (1,0) [-32768|32767] "Raw current unit" Vector__XXX
 
 
-BO_ 645 AMK_BR_Actual_Values_2: 8 Vector__XXX
+BO_ 646 AMK_BR_Actual_Values_2: 8 Vector__XXX
 SG_ AMK_BR_TempMotor : 0|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_BR_TempInverter : 16|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_BR_ErrorInfo : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
 SG_ AMK_BR_TempIGBT : 48|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 
 
-BO_ 388 AMK_BR_Setpoints_1: 8 Vector__XXX
+BO_ 389 AMK_BR_Setpoints_1: 8 Vector__XXX
 SG_ AMK_BR_Control_Reserved1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_BR_Control_InverterOn : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_BR_Control_DcOn : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1231,11 +1233,72 @@ SG_ RTC_Year_In : 40|8@1+ (1,0) [0|255] "year" Vector__XXX
 SG_ RTC_Error_In : 48|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
+BO_ 1730 CDC_ODOMETER: 4 Vector__XXX
+SG_ CDC_Odometer : 0|32@1- (1,0) [-3.4E038|3.4E038] "km" Vector__XXX
+
+
 BO_ 1324 CDC_DrsState: 4 Vector__XXX
 SG_ drsState : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ drsAngle : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ drsPwmLeft : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ drsPwmRight : 24|8@1+ (1,0) [0|255] "" Vector__XXX
+
+
+BO_ 1325 SF_State: 8 Vector__XXX
+SG_ Power_Limit_Max_Violation_W : 0|32@1- (1,0) [-3.4E038|3.4E038] "W" Vector__XXX
+SG_ Longest_Power_Violation : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ Over_Voltage_Count : 40|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ Under_Voltage_Count : 48|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ Over_Temp_Count : 56|8@1+ (1,0) [0|255] "" Vector__XXX
+
+
+BO_ 1326 CDC_Motor_Power: 8 Vector__XXX
+SG_ motor_power_FL : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ motor_power_FR : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ motor_power_RL : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ motor_power_RR : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
+
+
+BO_ 2024 CDC_Front_Slip_Ratios: 8 Vector__XXX
+SG_ slipRatio_FL : 0|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
+SG_ slipRatio_FR : 32|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
+
+
+BO_ 2025 CDC_Rear_Slip_Ratios: 8 Vector__XXX
+SG_ slipRatio_RL : 0|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
+SG_ slipRatio_RR : 32|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
+
+
+BO_ 2026 CDC_Front_Velocity_Setpoints: 8 Vector__XXX
+SG_ setPoint_FL : 0|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
+SG_ setPoint_FR : 32|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
+
+
+BO_ 2027 CDC_Rear_Velocity_Setpoints: 8 Vector__XXX
+SG_ setPoint_RL : 0|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
+SG_ setPoint_RR : 32|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
+
+
+BO_ 2028 CDC_Front_Whl_Velocity_Calc: 8 Vector__XXX
+SG_ vel_calc_FL : 0|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
+SG_ vel_calc_FR : 32|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
+
+
+BO_ 2029 CDC_Rear_Whl_Velocity_Calc: 8 Vector__XXX
+SG_ vel_calc_RL : 0|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
+SG_ vel_calc_RR : 32|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
+
+
+BO_ 2030 CONTROLS_PID_INTERNALS1: 8 Vector__XXX
+SG_ Kp : 0|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
+SG_ Ki : 16|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
+SG_ Kd : 32|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
+SG_ accum : 48|16@1- (1,0) [-32768|32767] "" Vector__XXX
+
+
+BO_ 2033 CONTROLS_PID_INTERNALS2: 4 Vector__XXX
+SG_ lastError : 0|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
+SG_ lastTime : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
 
 
 BO_ 1536 DIM_Config0_Drv0: 4 Vector__XXX
@@ -1266,396 +1329,193 @@ SG_ DIM_config3_drv0_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config3_drv0_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1540 DIM_Config4_Drv0: 4 Vector__XXX
-SG_ DIM_config4_drv0_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv0_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv0_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv0_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1541 CDC_Config0_Drv0: 4 Vector__XXX
+BO_ 1540 CDC_Config0_Drv0: 4 Vector__XXX
 SG_ CDC_config0_drv0_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config0_drv0_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config0_drv0_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config0_drv0_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1542 CDC_Config1_Drv0: 4 Vector__XXX
+BO_ 1541 CDC_Config1_Drv0: 4 Vector__XXX
 SG_ CDC_config1_drv0_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config1_drv0_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config1_drv0_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config1_drv0_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1543 CDC_Config2_Drv0: 4 Vector__XXX
+BO_ 1542 CDC_Config2_Drv0: 4 Vector__XXX
 SG_ CDC_config2_drv0_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config2_drv0_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config2_drv0_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config2_drv0_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1544 CDC_Config3_Drv0: 4 Vector__XXX
+BO_ 1543 CDC_Config3_Drv0: 4 Vector__XXX
 SG_ CDC_config3_drv0_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config3_drv0_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config3_drv0_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config3_drv0_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1545 CDC_Config4_Drv0: 4 Vector__XXX
-SG_ CDC_config4_drv0_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv0_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv0_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv0_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1546 DIM_Config0_Drv1: 4 Vector__XXX
+BO_ 1544 DIM_Config0_Drv1: 4 Vector__XXX
 SG_ DIM_config0_drv1_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config0_drv1_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config0_drv1_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config0_drv1_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1547 DIM_Config1_Drv1: 4 Vector__XXX
+BO_ 1545 DIM_Config1_Drv1: 4 Vector__XXX
 SG_ DIM_config1_drv1_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config1_drv1_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config1_drv1_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config1_drv1_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1548 DIM_Config2_Drv1: 4 Vector__XXX
+BO_ 1546 DIM_Config2_Drv1: 4 Vector__XXX
 SG_ DIM_config2_drv1_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config2_drv1_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config2_drv1_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config2_drv1_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1549 DIM_Config3_Drv1: 4 Vector__XXX
+BO_ 1547 DIM_Config3_Drv1: 4 Vector__XXX
 SG_ DIM_config3_drv1_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config3_drv1_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config3_drv1_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config3_drv1_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1550 DIM_Config4_Drv1: 4 Vector__XXX
-SG_ DIM_config4_drv1_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv1_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv1_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv1_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1551 CDC_Config0_Drv1: 4 Vector__XXX
+BO_ 1548 CDC_Config0_Drv1: 4 Vector__XXX
 SG_ CDC_config0_drv1_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config0_drv1_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config0_drv1_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config0_drv1_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1552 CDC_Config1_Drv1: 4 Vector__XXX
+BO_ 1549 CDC_Config1_Drv1: 4 Vector__XXX
 SG_ CDC_config1_drv1_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config1_drv1_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config1_drv1_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config1_drv1_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1553 CDC_Config2_Drv1: 4 Vector__XXX
+BO_ 1550 CDC_Config2_Drv1: 4 Vector__XXX
 SG_ CDC_config2_drv1_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config2_drv1_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config2_drv1_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config2_drv1_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1554 CDC_Config3_Drv1: 4 Vector__XXX
+BO_ 1551 CDC_Config3_Drv1: 4 Vector__XXX
 SG_ CDC_config3_drv1_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config3_drv1_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config3_drv1_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config3_drv1_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1555 CDC_Config4_Drv1: 4 Vector__XXX
-SG_ CDC_config4_drv1_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv1_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv1_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv1_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1556 DIM_Config0_Drv2: 4 Vector__XXX
-SG_ DIM_config0_drv2_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config0_drv2_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config0_drv2_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config0_drv2_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1557 DIM_Config1_Drv2: 4 Vector__XXX
+BO_ 1552 DIM_Config0_Drv2: 4 Vector__XXX
 SG_ DIM_config1_drv2_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config1_drv2_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config1_drv2_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config1_drv2_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1558 DIM_Config2_Drv2: 4 Vector__XXX
+BO_ 1554 DIM_Config2_Drv2: 4 Vector__XXX
 SG_ DIM_config2_drv2_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config2_drv2_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config2_drv2_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config2_drv2_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1559 DIM_Config3_Drv2: 4 Vector__XXX
+BO_ 1555 DIM_Config3_Drv2: 4 Vector__XXX
 SG_ DIM_config3_drv2_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config3_drv2_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config3_drv2_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config3_drv2_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1560 DIM_Config4_Drv2: 4 Vector__XXX
-SG_ DIM_config4_drv2_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv2_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv2_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv2_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1561 CDC_Config0_Drv2: 4 Vector__XXX
+BO_ 1556 CDC_Config0_Drv2: 4 Vector__XXX
 SG_ CDC_config0_drv2_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config0_drv2_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config0_drv2_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config0_drv2_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1562 CDC_Config1_Drv2: 4 Vector__XXX
+BO_ 1557 CDC_Config1_Drv2: 4 Vector__XXX
 SG_ CDC_config1_drv2_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config1_drv2_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config1_drv2_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config1_drv2_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1563 CDC_Config2_Drv2: 4 Vector__XXX
+BO_ 1558 CDC_Config2_Drv2: 4 Vector__XXX
 SG_ CDC_config2_drv2_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config2_drv2_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config2_drv2_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config2_drv2_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1564 CDC_Config3_Drv2: 4 Vector__XXX
+BO_ 1559 CDC_Config3_Drv2: 4 Vector__XXX
 SG_ CDC_config3_drv2_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config3_drv2_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config3_drv2_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config3_drv2_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1565 CDC_Config4_Drv2: 4 Vector__XXX
-SG_ CDC_config4_drv2_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv2_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv2_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv2_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1566 DIM_Config0_Drv3: 4 Vector__XXX
+BO_ 1560 DIM_Config0_Drv3: 4 Vector__XXX
 SG_ DIM_config0_drv3_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config0_drv3_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config0_drv3_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config0_drv3_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1567 DIM_Config1_Drv3: 4 Vector__XXX
+BO_ 1561 DIM_Config1_Drv3: 4 Vector__XXX
 SG_ DIM_config1_drv3_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config1_drv3_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config1_drv3_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config1_drv3_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1568 DIM_Config2_Drv3: 4 Vector__XXX
+BO_ 1562 DIM_Config2_Drv3: 4 Vector__XXX
 SG_ DIM_config2_drv3_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config2_drv3_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config2_drv3_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config2_drv3_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1569 DIM_Config3_Drv3: 4 Vector__XXX
+BO_ 1563 DIM_Config3_Drv3: 4 Vector__XXX
 SG_ DIM_config3_drv3_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config3_drv3_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config3_drv3_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_config3_drv3_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1570 DIM_Config4_Drv3: 4 Vector__XXX
-SG_ DIM_config4_drv3_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv3_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv3_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv3_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1571 CDC_Config0_Drv3: 4 Vector__XXX
+BO_ 1564 CDC_Config0_Drv3: 4 Vector__XXX
 SG_ CDC_config0_drv3_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config0_drv3_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config0_drv3_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config0_drv3_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1572 CDC_Config1_Drv3: 4 Vector__XXX
+BO_ 1565 CDC_Config1_Drv3: 4 Vector__XXX
 SG_ CDC_config1_drv3_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config1_drv3_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config1_drv3_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config1_drv3_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1573 CDC_Config2_Drv3: 4 Vector__XXX
+BO_ 1566 CDC_Config2_Drv3: 4 Vector__XXX
 SG_ CDC_config2_drv3_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config2_drv3_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config2_drv3_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config2_drv3_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1574 CDC_Config3_Drv3: 4 Vector__XXX
+BO_ 1567 CDC_Config3_Drv3: 4 Vector__XXX
 SG_ CDC_config3_drv3_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config3_drv3_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config3_drv3_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ CDC_config3_drv3_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1575 CDC_Config4_Drv3: 4 Vector__XXX
-SG_ CDC_config4_drv3_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv3_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv3_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv3_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1576 DIM_Config0_Drv4: 4 Vector__XXX
-SG_ DIM_config0_drv4_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config0_drv4_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config0_drv4_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config0_drv4_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1577 DIM_Config1_Drv4: 4 Vector__XXX
-SG_ DIM_config1_drv4_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config1_drv4_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config1_drv4_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config1_drv4_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1578 DIM_Config2_Drv4: 4 Vector__XXX
-SG_ DIM_config2_drv4_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config2_drv4_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config2_drv4_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config2_drv4_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1579 DIM_Config3_Drv4: 4 Vector__XXX
-SG_ DIM_config3_drv4_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config3_drv4_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config3_drv4_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config3_drv4_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1580 DIM_Config4_Drv4: 4 Vector__XXX
-SG_ DIM_config4_drv4_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv4_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv4_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv4_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1581 CDC_Config0_Drv4: 4 Vector__XXX
-SG_ CDC_config0_drv4_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config0_drv4_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config0_drv4_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config0_drv4_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1582 CDC_Config1_Drv4: 4 Vector__XXX
-SG_ CDC_config1_drv4_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config1_drv4_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config1_drv4_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config1_drv4_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1583 CDC_Config2_Drv4: 4 Vector__XXX
-SG_ CDC_config2_drv4_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config2_drv4_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config2_drv4_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config2_drv4_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1584 CDC_Config3_Drv4: 4 Vector__XXX
-SG_ CDC_config3_drv4_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config3_drv4_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config3_drv4_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config3_drv4_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1585 CDC_Config4_Drv4: 4 Vector__XXX
-SG_ CDC_config4_drv4_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv4_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv4_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv4_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1586 DIM_Config0_Drv5: 4 Vector__XXX
-SG_ DIM_config0_drv5_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config0_drv5_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config0_drv5_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config0_drv5_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1587 DIM_Config1_Drv5: 4 Vector__XXX
-SG_ DIM_config1_drv5_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config1_drv5_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config1_drv5_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config1_drv5_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1588 DIM_Config2_Drv5: 4 Vector__XXX
-SG_ DIM_config2_drv5_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config2_drv5_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config2_drv5_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config2_drv5_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1589 DIM_Config3_Drv5: 4 Vector__XXX
-SG_ DIM_config3_drv5_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config3_drv5_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config3_drv5_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config3_drv5_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1590 DIM_Config4_Drv5: 4 Vector__XXX
-SG_ DIM_config4_drv5_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv5_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv5_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_config4_drv5_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1591 CDC_Config0_Drv5: 4 Vector__XXX
-SG_ CDC_config0_drv5_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config0_drv5_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config0_drv5_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config0_drv5_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1592 CDC_Config1_Drv5: 4 Vector__XXX
-SG_ CDC_config1_drv5_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config1_drv5_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config1_drv5_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config1_drv5_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1593 CDC_Config2_Drv5: 4 Vector__XXX
-SG_ CDC_config2_drv5_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config2_drv5_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config2_drv5_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config2_drv5_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1594 CDC_Config3_Drv5: 4 Vector__XXX
-SG_ CDC_config3_drv5_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config3_drv5_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config3_drv5_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config3_drv5_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
-
-
-BO_ 1595 CDC_Config4_Drv5: 4 Vector__XXX
-SG_ CDC_config4_drv5_config_val_1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv5_config_val_2 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv5_config_val_3 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ CDC_config4_drv5_config_val_4 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
 BO_ 772 BMS_ErrorCodes: 8 Vector__XXX
@@ -1677,19 +1537,27 @@ SG_ BMB14_Error : 56|4@1+ (1,0) [0|15] "" Vector__XXX
 SG_ BMB15_Error : 60|4@1+ (1,0) [0|15] "" Vector__XXX
 
 
+BO_ 1317 DIM_DAQ_TEXT: 5 Vector__XXX
+SG_ Address : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ Data0 : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ Data1 : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ Data2 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ Data3 : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+
+
 CM_ BO_ 1296 "Timeout matrix";
 CM_ BO_ 647 "Set ID based on wiring";
 CM_ BO_ 649 "Set ID based on wiring";
 CM_ BO_ 392 "Set ID based on wiring";
+CM_ BO_ 643 "Set ID based on wiring";
+CM_ BO_ 645 "Set ID based on wiring";
+CM_ BO_ 388 "Set ID based on wiring";
 CM_ BO_ 648 "Set ID based on wiring";
 CM_ BO_ 650 "Set ID based on wiring";
 CM_ BO_ 393 "Set ID based on wiring";
 CM_ BO_ 644 "Set ID based on wiring";
 CM_ BO_ 646 "Set ID based on wiring";
 CM_ BO_ 389 "Set ID based on wiring";
-CM_ BO_ 643 "Set ID based on wiring";
-CM_ BO_ 645 "Set ID based on wiring";
-CM_ BO_ 388 "Set ID based on wiring";
 CM_ BO_ 2023 "This CAN id is used for communication between the energy meter and the download tool.";
 CM_ BO_ 2031 "This CAN id is used for communication between the energy meter and the download tool.";
 CM_ SG_ 1952 squelch "0 for listen, 1 - 8 for transmit";
@@ -1706,14 +1574,14 @@ BA_DEF_DEF_  "GenSigStartValue" 0;
 
 BA_ "BusType" "CAN";
 
-BA_ "GenMsgCycleTime" BO_ 256 10;
+BA_ "GenMsgCycleTime" BO_ 257 10;
 BA_ "GenMsgCycleTime" BO_ 272 10;
-BA_ "GenMsgCycleTime" BO_ 512 100;
+BA_ "GenMsgCycleTime" BO_ 512 10;
 BA_ "GenMsgCycleTime" BO_ 1296 10000;
 BA_ "GenMsgCycleTime" BO_ 1328 100;
-BA_ "GenMsgCycleTime" BO_ 257 10;
-BA_ "GenMsgCycleTime" BO_ 304 10;
 BA_ "GenMsgCycleTime" BO_ 258 10;
+BA_ "GenMsgCycleTime" BO_ 304 10;
+BA_ "GenMsgCycleTime" BO_ 259 10;
 BA_ "GenMsgCycleTime" BO_ 306 10;
 BA_ "GenMsgCycleTime" BO_ 322 1;
 BA_ "GenMsgCycleTime" BO_ 338 10;
@@ -1729,16 +1597,16 @@ BA_ "GenMsgCycleTime" BO_ 642 100;
 BA_ "GenMsgCycleTime" BO_ 658 100;
 BA_ "GenMsgCycleTime" BO_ 674 100;
 BA_ "GenMsgCycleTime" BO_ 690 100;
-BA_ "GenMsgCycleTime" BO_ 259 10;
+BA_ "GenMsgCycleTime" BO_ 260 10;
 BA_ "GenMsgCycleTime" BO_ 307 10;
 BA_ "GenMsgCycleTime" BO_ 1331 100;
 BA_ "GenMsgCycleTime" BO_ 1347 100;
 BA_ "GenMsgCycleTime" BO_ 1363 100;
-BA_ "GenMsgCycleTime" BO_ 260 10;
+BA_ "GenMsgCycleTime" BO_ 261 10;
 BA_ "GenMsgCycleTime" BO_ 1333 100;
 BA_ "GenMsgCycleTime" BO_ 565 100;
 BA_ "GenMsgCycleTime" BO_ 1301 100;
-BA_ "GenMsgCycleTime" BO_ 261 10;
+BA_ "GenMsgCycleTime" BO_ 262 10;
 BA_ "GenMsgCycleTime" BO_ 548 100;
 BA_ "GenMsgCycleTime" BO_ 564 100;
 BA_ "GenMsgCycleTime" BO_ 580 100;
@@ -1782,15 +1650,15 @@ BA_ "GenMsgCycleTime" BO_ 927 1000;
 BA_ "GenMsgCycleTime" BO_ 647 5;
 BA_ "GenMsgCycleTime" BO_ 649 5;
 BA_ "GenMsgCycleTime" BO_ 392 1;
+BA_ "GenMsgCycleTime" BO_ 643 5;
+BA_ "GenMsgCycleTime" BO_ 645 5;
+BA_ "GenMsgCycleTime" BO_ 388 1;
 BA_ "GenMsgCycleTime" BO_ 648 5;
 BA_ "GenMsgCycleTime" BO_ 650 5;
 BA_ "GenMsgCycleTime" BO_ 393 1;
 BA_ "GenMsgCycleTime" BO_ 644 5;
 BA_ "GenMsgCycleTime" BO_ 646 5;
 BA_ "GenMsgCycleTime" BO_ 389 1;
-BA_ "GenMsgCycleTime" BO_ 643 5;
-BA_ "GenMsgCycleTime" BO_ 645 5;
-BA_ "GenMsgCycleTime" BO_ 388 1;
 BA_ "GenMsgCycleTime" BO_ 2016 100;
 BA_ "GenMsgCycleTime" BO_ 2017 100;
 BA_ "GenMsgCycleTime" BO_ 2018 100;
@@ -1799,7 +1667,9 @@ BA_ "GenMsgCycleTime" BO_ 2020 100;
 BA_ "GenMsgCycleTime" BO_ 2021 100;
 BA_ "GenMsgCycleTime" BO_ 1698 1000;
 BA_ "GenMsgCycleTime" BO_ 1714 1000;
+BA_ "GenMsgCycleTime" BO_ 1730 1000;
 BA_ "GenMsgCycleTime" BO_ 1324 200;
+BA_ "GenMsgCycleTime" BO_ 1325 100;
 BA_ "GenMsgCycleTime" BO_ 1536 1000;
 BA_ "GenMsgCycleTime" BO_ 1537 1000;
 BA_ "GenMsgCycleTime" BO_ 1538 1000;
@@ -1816,8 +1686,6 @@ BA_ "GenMsgCycleTime" BO_ 1548 1000;
 BA_ "GenMsgCycleTime" BO_ 1549 1000;
 BA_ "GenMsgCycleTime" BO_ 1550 1000;
 BA_ "GenMsgCycleTime" BO_ 1551 1000;
-BA_ "GenMsgCycleTime" BO_ 1552 1000;
-BA_ "GenMsgCycleTime" BO_ 1553 1000;
 BA_ "GenMsgCycleTime" BO_ 1554 1000;
 BA_ "GenMsgCycleTime" BO_ 1555 1000;
 BA_ "GenMsgCycleTime" BO_ 1556 1000;
@@ -1832,51 +1700,23 @@ BA_ "GenMsgCycleTime" BO_ 1564 1000;
 BA_ "GenMsgCycleTime" BO_ 1565 1000;
 BA_ "GenMsgCycleTime" BO_ 1566 1000;
 BA_ "GenMsgCycleTime" BO_ 1567 1000;
-BA_ "GenMsgCycleTime" BO_ 1568 1000;
-BA_ "GenMsgCycleTime" BO_ 1569 1000;
-BA_ "GenMsgCycleTime" BO_ 1570 1000;
-BA_ "GenMsgCycleTime" BO_ 1571 1000;
-BA_ "GenMsgCycleTime" BO_ 1572 1000;
-BA_ "GenMsgCycleTime" BO_ 1573 1000;
-BA_ "GenMsgCycleTime" BO_ 1574 1000;
-BA_ "GenMsgCycleTime" BO_ 1575 1000;
-BA_ "GenMsgCycleTime" BO_ 1576 1000;
-BA_ "GenMsgCycleTime" BO_ 1577 1000;
-BA_ "GenMsgCycleTime" BO_ 1578 1000;
-BA_ "GenMsgCycleTime" BO_ 1579 1000;
-BA_ "GenMsgCycleTime" BO_ 1580 1000;
-BA_ "GenMsgCycleTime" BO_ 1581 1000;
-BA_ "GenMsgCycleTime" BO_ 1582 1000;
-BA_ "GenMsgCycleTime" BO_ 1583 1000;
-BA_ "GenMsgCycleTime" BO_ 1584 1000;
-BA_ "GenMsgCycleTime" BO_ 1585 1000;
-BA_ "GenMsgCycleTime" BO_ 1586 1000;
-BA_ "GenMsgCycleTime" BO_ 1587 1000;
-BA_ "GenMsgCycleTime" BO_ 1588 1000;
-BA_ "GenMsgCycleTime" BO_ 1589 1000;
-BA_ "GenMsgCycleTime" BO_ 1590 1000;
-BA_ "GenMsgCycleTime" BO_ 1591 1000;
-BA_ "GenMsgCycleTime" BO_ 1592 1000;
-BA_ "GenMsgCycleTime" BO_ 1593 1000;
-BA_ "GenMsgCycleTime" BO_ 1594 1000;
-BA_ "GenMsgCycleTime" BO_ 1595 1000;
 
-BA_ "GenSigStartValue" SG_ 256 VSM_state 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_ERR_moduleTimeout 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_ERR_moduleState 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_ERR_latchedError 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_ERR_DCDCFault 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_ERR_hallEffectOOR 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_ERR_brakePresOOR 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_HVCTimeout 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_CDCTimeout 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_FSMTimeout 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_DIMTimeout 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_PTCTimeout 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_APCTimeout 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_DIMReqNAK 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_VoltageOOR 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_CurrentOOR 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_state 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_ERR_moduleTimeout 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_ERR_moduleState 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_ERR_latchedError 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_ERR_DCDCFault 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_ERR_hallEffectOOR 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_ERR_brakePresOOR 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_HVCTimeout 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_CDCTimeout 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_FSMTimeout 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_DIMTimeout 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_PTCTimeout 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_APCTimeout 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_DIMReqNAK 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_VoltageOOR 0;
+BA_ "GenSigStartValue" SG_ 257 VSM_WRN_CurrentOOR 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_internalState 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_HVCTimeout 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_CDCTimeout 0;
@@ -1918,39 +1758,39 @@ BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_latchIMD 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_latchBSPD 0;
 BA_ "GenSigStartValue" SG_ 1328 VSM_busVoltage 0;
 BA_ "GenSigStartValue" SG_ 1328 VSM_busCurrent 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_Mode 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_State 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_Uptime 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_PACK_UNDERVOLT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_PACK_OVERVOLT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_PACK_OVERCURRENT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_CELL_UNDERVOLT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_CELL_OVERVOLT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_CELL_OVERTEMP 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_BMB_FAULT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_BMB_TIMEOUT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_CAN_TIMEOUT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_RELAY 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_ERR_LV_UNDERVOLT 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_dischargeClosed 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_prechargeClosed 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_negAIRClosed 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_posAIRClosed 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_dischargeError 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_prechargeError 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_negAIRError 0;
-BA_ "GenSigStartValue" SG_ 257 HVC_posAIRError 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_Mode 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_State 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_Uptime 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_PACK_UNDERVOLT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_PACK_OVERVOLT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_PACK_OVERCURRENT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_CELL_UNDERVOLT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_CELL_OVERVOLT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_CELL_OVERTEMP 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_BMB_FAULT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_BMB_TIMEOUT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_CAN_TIMEOUT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_RELAY 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_ERR_LV_UNDERVOLT 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_dischargeClosed 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_prechargeClosed 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_negAIRClosed 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_posAIRClosed 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_dischargeError 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_prechargeError 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_negAIRError 0;
+BA_ "GenSigStartValue" SG_ 258 HVC_posAIRError 0;
 BA_ "GenSigStartValue" SG_ 304 HVC_modeRequest 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_state 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_ERR_VSMTimeout 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_ERR_amkAllError 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_WRN_VSMTimeout 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_WRN_amkSrcFL 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_WRN_amkSrcFR 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_WRN_amkSrcRL 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_WRN_amkSrcRR 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_WRN_amkError 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_WRN_amkTimeout 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_state 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_ERR_VSMTimeout 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_ERR_amkAllError 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_WRN_VSMTimeout 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_WRN_amkSrcFL 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_WRN_amkSrcFR 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_WRN_amkSrcRL 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_WRN_amkSrcRR 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_WRN_amkError 0;
+BA_ "GenSigStartValue" SG_ 259 CDC_WRN_amkTimeout 0;
 BA_ "GenSigStartValue" SG_ 306 CDC_wheelFrontLeft 0;
 BA_ "GenSigStartValue" SG_ 306 CDC_wheelFrontRight 0;
 BA_ "GenSigStartValue" SG_ 306 CDC_wheelBackLeft 0;
@@ -2050,24 +1890,24 @@ BA_ "GenSigStartValue" SG_ 674 CDC_VerticalVelocity 0;
 BA_ "GenSigStartValue" SG_ 690 CDC_LongitudinalAcceleration 0;
 BA_ "GenSigStartValue" SG_ 690 CDC_LateralAcceleration 0;
 BA_ "GenSigStartValue" SG_ 690 CDC_VerticalAcceleration 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_state 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_ERR_VSMTimeout 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_VSMTimeout 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_VoltageOOR 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_CurrentOOR 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_BrakePositionOOR 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_LeftTPosOOR 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_RightTPosOOR 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_BPPFault 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_TPosImplausible 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_SSModule 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_SSCockpit 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_SSFrHub 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_SSInertia 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_SSFlHub 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_SSBots 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_BrakePressureOOR 0;
-BA_ "GenSigStartValue" SG_ 259 FSM_WRN_SWAngleOOR 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_state 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_ERR_VSMTimeout 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_VSMTimeout 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_VoltageOOR 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_CurrentOOR 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_BrakePositionOOR 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_LeftTPosOOR 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_RightTPosOOR 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_BPPFault 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_TPosImplausible 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_SSModule 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_SSCockpit 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_SSFrHub 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_SSInertia 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_SSFlHub 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_SSBots 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_BrakePressureOOR 0;
+BA_ "GenSigStartValue" SG_ 260 FSM_WRN_SWAngleOOR 0;
 BA_ "GenSigStartValue" SG_ 307 FSM_torqueReq 0;
 BA_ "GenSigStartValue" SG_ 307 FSM_throttlePos 0;
 BA_ "GenSigStartValue" SG_ 307 FSM_brakePressureFront 0;
@@ -2080,25 +1920,27 @@ BA_ "GenSigStartValue" SG_ 1347 FSM_brakePressureFrontADC 0;
 BA_ "GenSigStartValue" SG_ 1347 FSM_steeringWheelAngleADC 0;
 BA_ "GenSigStartValue" SG_ 1363 FSM_busVoltage 0;
 BA_ "GenSigStartValue" SG_ 1363 FSM_busCurrent 0;
-BA_ "GenSigStartValue" SG_ 260 DIM_state 0;
-BA_ "GenSigStartValue" SG_ 260 DIM_ERR_VSMTimeout 0;
+BA_ "GenSigStartValue" SG_ 261 DIM_state 0;
+BA_ "GenSigStartValue" SG_ 261 DIM_ERR_VSMTimeout 0;
 BA_ "GenSigStartValue" SG_ 1333 DIM_busVoltage 0;
 BA_ "GenSigStartValue" SG_ 1333 DIM_busCurrent 0;
 BA_ "GenSigStartValue" SG_ 565 DIM_requestState 0;
 BA_ "GenSigStartValue" SG_ 565 DIM_requestGear 0;
+BA_ "GenSigStartValue" SG_ 565 DIM_requestDRSMode 0;
+BA_ "GenSigStartValue" SG_ 565 DIM_requestDriver 0;
 BA_ "GenSigStartValue" SG_ 1301 DIM_action1ButtonPressed 0;
 BA_ "GenSigStartValue" SG_ 1301 DIM_action2ButtonPressed 0;
 BA_ "GenSigStartValue" SG_ 1301 DIM_drsButtonPressed 0;
 BA_ "GenSigStartValue" SG_ 1301 DIM_regenPercent 0;
 BA_ "GenSigStartValue" SG_ 1301 DIM_paddleLeft 0;
 BA_ "GenSigStartValue" SG_ 1301 DIM_paddleRight 0;
-BA_ "GenSigStartValue" SG_ 261 PTC_state 0;
-BA_ "GenSigStartValue" SG_ 261 PTC_ERR_VSMTimeout 0;
-BA_ "GenSigStartValue" SG_ 261 PTC_ERR_waterTempOOR 0;
-BA_ "GenSigStartValue" SG_ 261 PTC_ERR_driversTempOOR 0;
-BA_ "GenSigStartValue" SG_ 261 PTC_WRN_VSMTimeout 0;
-BA_ "GenSigStartValue" SG_ 261 PTC_WRN_VoltageOOR 0;
-BA_ "GenSigStartValue" SG_ 261 PTC_WRN_CurrentOOR 0;
+BA_ "GenSigStartValue" SG_ 262 PTC_state 0;
+BA_ "GenSigStartValue" SG_ 262 PTC_ERR_VSMTimeout 0;
+BA_ "GenSigStartValue" SG_ 262 PTC_ERR_waterTempOOR 0;
+BA_ "GenSigStartValue" SG_ 262 PTC_ERR_driversTempOOR 0;
+BA_ "GenSigStartValue" SG_ 262 PTC_WRN_VSMTimeout 0;
+BA_ "GenSigStartValue" SG_ 262 PTC_WRN_VoltageOOR 0;
+BA_ "GenSigStartValue" SG_ 262 PTC_WRN_CurrentOOR 0;
 BA_ "GenSigStartValue" SG_ 548 PTC_Temp1 0;
 BA_ "GenSigStartValue" SG_ 548 PTC_Temp2 0;
 BA_ "GenSigStartValue" SG_ 548 PTC_Temp3 0;
@@ -2489,81 +2331,81 @@ BA_ "GenSigStartValue" SG_ 392 AMK_FR_Control_Reserved2 0;
 BA_ "GenSigStartValue" SG_ 392 AMK_FR_TargetVelocity 0;
 BA_ "GenSigStartValue" SG_ 392 AMK_FR_TorqueLimitPositiv 0;
 BA_ "GenSigStartValue" SG_ 392 AMK_FR_TorqueLimitNegativ 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_Reserved 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_SystemReady 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_Error 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_Warn 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_QuitDcOn 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_DcOn 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_QuitInvOn 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_Derating 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_FL_ActualVelocity 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_FL_TorqueCurrent 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_FL_MagnetizingCurrent 0;
-BA_ "GenSigStartValue" SG_ 650 AMK_FL_TempMotor 0;
-BA_ "GenSigStartValue" SG_ 650 AMK_FL_TempInverter 0;
-BA_ "GenSigStartValue" SG_ 650 AMK_FL_ErrorInfo 0;
-BA_ "GenSigStartValue" SG_ 650 AMK_FL_TempIGBT 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_Reserved1 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_DcOn 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_Enable 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_ErrorReset 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_Reserved2 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_FL_TargetVelocity 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_FL_TorqueLimitPositiv 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_FL_TorqueLimitNegativ 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_Reserved 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_SystemReady 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_Error 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_Warn 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_QuitDcOn 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_DcOn 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_QuitInvOn 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BL_Status_Derating 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BL_ActualVelocity 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BL_TorqueCurrent 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BL_MagnetizingCurrent 0;
-BA_ "GenSigStartValue" SG_ 646 AMK_BL_TempMotor 0;
-BA_ "GenSigStartValue" SG_ 646 AMK_BL_TempInverter 0;
-BA_ "GenSigStartValue" SG_ 646 AMK_BL_ErrorInfo 0;
-BA_ "GenSigStartValue" SG_ 646 AMK_BL_TempIGBT 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BL_Control_Reserved1 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BL_Control_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BL_Control_DcOn 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BL_Control_Enable 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BL_Control_ErrorReset 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BL_Control_Reserved2 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BL_TargetVelocity 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BL_TorqueLimitPositiv 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BL_TorqueLimitNegativ 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_Reserved 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_SystemReady 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_Error 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_Warn 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_QuitDcOn 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_DcOn 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_QuitInvOn 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_Derating 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_BR_ActualVelocity 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_BR_TorqueCurrent 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_BR_MagnetizingCurrent 0;
-BA_ "GenSigStartValue" SG_ 645 AMK_BR_TempMotor 0;
-BA_ "GenSigStartValue" SG_ 645 AMK_BR_TempInverter 0;
-BA_ "GenSigStartValue" SG_ 645 AMK_BR_ErrorInfo 0;
-BA_ "GenSigStartValue" SG_ 645 AMK_BR_TempIGBT 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_BR_Control_Reserved1 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_BR_Control_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_BR_Control_DcOn 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_BR_Control_Enable 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_RR_Control_ErrorReset 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_RR_Control_Reserved2 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_RR_TargetVelocity 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_RR_TorqueLimitPositiv 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_RR_TorqueLimitNegativ 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_Reserved 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_SystemReady 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_Error 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_Warn 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_QuitDcOn 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_DcOn 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_QuitInvOn 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_Derating 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_FL_ActualVelocity 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_FL_TorqueCurrent 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_FL_MagnetizingCurrent 0;
+BA_ "GenSigStartValue" SG_ 645 AMK_FL_TempMotor 0;
+BA_ "GenSigStartValue" SG_ 645 AMK_FL_TempInverter 0;
+BA_ "GenSigStartValue" SG_ 645 AMK_FL_ErrorInfo 0;
+BA_ "GenSigStartValue" SG_ 645 AMK_FL_TempIGBT 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_FL_Control_Reserved1 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_FL_Control_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_FL_Control_DcOn 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_FL_Control_Enable 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_FL_Control_ErrorReset 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_FL_Control_Reserved2 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_FL_TargetVelocity 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_FL_TorqueLimitPositiv 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_FL_TorqueLimitNegativ 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_Reserved 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_SystemReady 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_Error 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_Warn 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_QuitDcOn 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_DcOn 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_QuitInvOn 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_Derating 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_BL_ActualVelocity 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_BL_TorqueCurrent 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_BL_MagnetizingCurrent 0;
+BA_ "GenSigStartValue" SG_ 650 AMK_BL_TempMotor 0;
+BA_ "GenSigStartValue" SG_ 650 AMK_BL_TempInverter 0;
+BA_ "GenSigStartValue" SG_ 650 AMK_BL_ErrorInfo 0;
+BA_ "GenSigStartValue" SG_ 650 AMK_BL_TempIGBT 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_BL_Control_Reserved1 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_BL_Control_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_BL_Control_DcOn 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_BL_Control_Enable 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_BL_Control_ErrorReset 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_BL_Control_Reserved2 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_BL_TargetVelocity 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_BL_TorqueLimitPositiv 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_BL_TorqueLimitNegativ 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_Reserved 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_SystemReady 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_Error 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_Warn 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_QuitDcOn 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_DcOn 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_QuitInvOn 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_Derating 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BR_ActualVelocity 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BR_TorqueCurrent 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_BR_MagnetizingCurrent 0;
+BA_ "GenSigStartValue" SG_ 646 AMK_BR_TempMotor 0;
+BA_ "GenSigStartValue" SG_ 646 AMK_BR_TempInverter 0;
+BA_ "GenSigStartValue" SG_ 646 AMK_BR_ErrorInfo 0;
+BA_ "GenSigStartValue" SG_ 646 AMK_BR_TempIGBT 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_BR_Control_Reserved1 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_BR_Control_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_BR_Control_DcOn 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_BR_Control_Enable 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_RR_Control_ErrorReset 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_RR_Control_Reserved2 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_RR_TargetVelocity 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_RR_TorqueLimitPositiv 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_RR_TorqueLimitNegativ 0;
 BA_ "GenSigStartValue" SG_ 2016 controls_elapsed_time 0;
 BA_ "GenSigStartValue" SG_ 2016 controls_sbg_speed_mps 0;
 BA_ "GenSigStartValue" SG_ 2016 controls_target_velocity 0;
@@ -2626,10 +2468,38 @@ BA_ "GenSigStartValue" SG_ 1714 RTC_Date_In 0;
 BA_ "GenSigStartValue" SG_ 1714 RTC_Month_In 0;
 BA_ "GenSigStartValue" SG_ 1714 RTC_Year_In 0;
 BA_ "GenSigStartValue" SG_ 1714 RTC_Error_In 0;
+BA_ "GenSigStartValue" SG_ 1730 CDC_Odometer 0;
 BA_ "GenSigStartValue" SG_ 1324 drsState 0;
 BA_ "GenSigStartValue" SG_ 1324 drsAngle 0;
 BA_ "GenSigStartValue" SG_ 1324 drsPwmLeft 0;
 BA_ "GenSigStartValue" SG_ 1324 drsPwmRight 0;
+BA_ "GenSigStartValue" SG_ 1325 Power_Limit_Max_Violation_W 0;
+BA_ "GenSigStartValue" SG_ 1325 Longest_Power_Violation 0;
+BA_ "GenSigStartValue" SG_ 1325 Over_Voltage_Count 0;
+BA_ "GenSigStartValue" SG_ 1325 Under_Voltage_Count 0;
+BA_ "GenSigStartValue" SG_ 1325 Over_Temp_Count 0;
+BA_ "GenSigStartValue" SG_ 1326 motor_power_FL 0;
+BA_ "GenSigStartValue" SG_ 1326 motor_power_FR 0;
+BA_ "GenSigStartValue" SG_ 1326 motor_power_RL 0;
+BA_ "GenSigStartValue" SG_ 1326 motor_power_RR 0;
+BA_ "GenSigStartValue" SG_ 2024 slipRatio_FL 0;
+BA_ "GenSigStartValue" SG_ 2024 slipRatio_FR 0;
+BA_ "GenSigStartValue" SG_ 2025 slipRatio_RL 0;
+BA_ "GenSigStartValue" SG_ 2025 slipRatio_RR 0;
+BA_ "GenSigStartValue" SG_ 2026 setPoint_FL 0;
+BA_ "GenSigStartValue" SG_ 2026 setPoint_FR 0;
+BA_ "GenSigStartValue" SG_ 2027 setPoint_RL 0;
+BA_ "GenSigStartValue" SG_ 2027 setPoint_RR 0;
+BA_ "GenSigStartValue" SG_ 2028 vel_calc_FL 0;
+BA_ "GenSigStartValue" SG_ 2028 vel_calc_FR 0;
+BA_ "GenSigStartValue" SG_ 2029 vel_calc_RL 0;
+BA_ "GenSigStartValue" SG_ 2029 vel_calc_RR 0;
+BA_ "GenSigStartValue" SG_ 2030 Kp 0;
+BA_ "GenSigStartValue" SG_ 2030 Ki 0;
+BA_ "GenSigStartValue" SG_ 2030 Kd 0;
+BA_ "GenSigStartValue" SG_ 2030 accum 0;
+BA_ "GenSigStartValue" SG_ 2033 lastError 0;
+BA_ "GenSigStartValue" SG_ 2033 lastTime 0;
 BA_ "GenSigStartValue" SG_ 1536 DIM_config0_drv0_config_val_1 0;
 BA_ "GenSigStartValue" SG_ 1536 DIM_config0_drv0_config_val_2 0;
 BA_ "GenSigStartValue" SG_ 1536 DIM_config0_drv0_config_val_3 0;
@@ -2646,230 +2516,114 @@ BA_ "GenSigStartValue" SG_ 1539 DIM_config3_drv0_config_val_1 0;
 BA_ "GenSigStartValue" SG_ 1539 DIM_config3_drv0_config_val_2 0;
 BA_ "GenSigStartValue" SG_ 1539 DIM_config3_drv0_config_val_3 0;
 BA_ "GenSigStartValue" SG_ 1539 DIM_config3_drv0_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1540 DIM_config4_drv0_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1540 DIM_config4_drv0_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1540 DIM_config4_drv0_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1540 DIM_config4_drv0_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1541 CDC_config0_drv0_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1541 CDC_config0_drv0_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1541 CDC_config0_drv0_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1541 CDC_config0_drv0_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1542 CDC_config1_drv0_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1542 CDC_config1_drv0_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1542 CDC_config1_drv0_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1542 CDC_config1_drv0_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1543 CDC_config2_drv0_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1543 CDC_config2_drv0_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1543 CDC_config2_drv0_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1543 CDC_config2_drv0_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1544 CDC_config3_drv0_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1544 CDC_config3_drv0_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1544 CDC_config3_drv0_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1544 CDC_config3_drv0_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1545 CDC_config4_drv0_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1545 CDC_config4_drv0_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1545 CDC_config4_drv0_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1545 CDC_config4_drv0_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1546 DIM_config0_drv1_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1546 DIM_config0_drv1_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1546 DIM_config0_drv1_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1546 DIM_config0_drv1_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1547 DIM_config1_drv1_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1547 DIM_config1_drv1_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1547 DIM_config1_drv1_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1547 DIM_config1_drv1_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1548 DIM_config2_drv1_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1548 DIM_config2_drv1_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1548 DIM_config2_drv1_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1548 DIM_config2_drv1_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1549 DIM_config3_drv1_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1549 DIM_config3_drv1_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1549 DIM_config3_drv1_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1549 DIM_config3_drv1_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1550 DIM_config4_drv1_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1550 DIM_config4_drv1_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1550 DIM_config4_drv1_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1550 DIM_config4_drv1_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1551 CDC_config0_drv1_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1551 CDC_config0_drv1_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1551 CDC_config0_drv1_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1551 CDC_config0_drv1_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1552 CDC_config1_drv1_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1552 CDC_config1_drv1_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1552 CDC_config1_drv1_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1552 CDC_config1_drv1_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1553 CDC_config2_drv1_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1553 CDC_config2_drv1_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1553 CDC_config2_drv1_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1553 CDC_config2_drv1_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1554 CDC_config3_drv1_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1554 CDC_config3_drv1_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1554 CDC_config3_drv1_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1554 CDC_config3_drv1_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1555 CDC_config4_drv1_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1555 CDC_config4_drv1_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1555 CDC_config4_drv1_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1555 CDC_config4_drv1_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1556 DIM_config0_drv2_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1556 DIM_config0_drv2_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1556 DIM_config0_drv2_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1556 DIM_config0_drv2_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1557 DIM_config1_drv2_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1557 DIM_config1_drv2_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1557 DIM_config1_drv2_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1557 DIM_config1_drv2_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1558 DIM_config2_drv2_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1558 DIM_config2_drv2_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1558 DIM_config2_drv2_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1558 DIM_config2_drv2_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1559 DIM_config3_drv2_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1559 DIM_config3_drv2_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1559 DIM_config3_drv2_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1559 DIM_config3_drv2_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1560 DIM_config4_drv2_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1560 DIM_config4_drv2_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1560 DIM_config4_drv2_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1560 DIM_config4_drv2_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1561 CDC_config0_drv2_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1561 CDC_config0_drv2_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1561 CDC_config0_drv2_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1561 CDC_config0_drv2_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1562 CDC_config1_drv2_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1562 CDC_config1_drv2_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1562 CDC_config1_drv2_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1562 CDC_config1_drv2_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1563 CDC_config2_drv2_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1563 CDC_config2_drv2_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1563 CDC_config2_drv2_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1563 CDC_config2_drv2_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1564 CDC_config3_drv2_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1564 CDC_config3_drv2_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1564 CDC_config3_drv2_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1564 CDC_config3_drv2_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1565 CDC_config4_drv2_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1565 CDC_config4_drv2_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1565 CDC_config4_drv2_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1565 CDC_config4_drv2_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1566 DIM_config0_drv3_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1566 DIM_config0_drv3_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1566 DIM_config0_drv3_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1566 DIM_config0_drv3_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1567 DIM_config1_drv3_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1567 DIM_config1_drv3_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1567 DIM_config1_drv3_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1567 DIM_config1_drv3_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1568 DIM_config2_drv3_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1568 DIM_config2_drv3_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1568 DIM_config2_drv3_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1568 DIM_config2_drv3_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1569 DIM_config3_drv3_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1569 DIM_config3_drv3_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1569 DIM_config3_drv3_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1569 DIM_config3_drv3_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1570 DIM_config4_drv3_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1570 DIM_config4_drv3_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1570 DIM_config4_drv3_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1570 DIM_config4_drv3_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1571 CDC_config0_drv3_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1571 CDC_config0_drv3_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1571 CDC_config0_drv3_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1571 CDC_config0_drv3_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1572 CDC_config1_drv3_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1572 CDC_config1_drv3_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1572 CDC_config1_drv3_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1572 CDC_config1_drv3_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1573 CDC_config2_drv3_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1573 CDC_config2_drv3_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1573 CDC_config2_drv3_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1573 CDC_config2_drv3_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1574 CDC_config3_drv3_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1574 CDC_config3_drv3_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1574 CDC_config3_drv3_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1574 CDC_config3_drv3_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1575 CDC_config4_drv3_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1575 CDC_config4_drv3_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1575 CDC_config4_drv3_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1575 CDC_config4_drv3_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1576 DIM_config0_drv4_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1576 DIM_config0_drv4_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1576 DIM_config0_drv4_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1576 DIM_config0_drv4_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1577 DIM_config1_drv4_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1577 DIM_config1_drv4_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1577 DIM_config1_drv4_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1577 DIM_config1_drv4_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1578 DIM_config2_drv4_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1578 DIM_config2_drv4_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1578 DIM_config2_drv4_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1578 DIM_config2_drv4_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1579 DIM_config3_drv4_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1579 DIM_config3_drv4_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1579 DIM_config3_drv4_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1579 DIM_config3_drv4_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1580 DIM_config4_drv4_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1580 DIM_config4_drv4_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1580 DIM_config4_drv4_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1580 DIM_config4_drv4_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1581 CDC_config0_drv4_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1581 CDC_config0_drv4_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1581 CDC_config0_drv4_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1581 CDC_config0_drv4_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1582 CDC_config1_drv4_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1582 CDC_config1_drv4_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1582 CDC_config1_drv4_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1582 CDC_config1_drv4_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1583 CDC_config2_drv4_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1583 CDC_config2_drv4_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1583 CDC_config2_drv4_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1583 CDC_config2_drv4_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1584 CDC_config3_drv4_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1584 CDC_config3_drv4_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1584 CDC_config3_drv4_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1584 CDC_config3_drv4_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1585 CDC_config4_drv4_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1585 CDC_config4_drv4_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1585 CDC_config4_drv4_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1585 CDC_config4_drv4_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1586 DIM_config0_drv5_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1586 DIM_config0_drv5_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1586 DIM_config0_drv5_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1586 DIM_config0_drv5_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1587 DIM_config1_drv5_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1587 DIM_config1_drv5_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1587 DIM_config1_drv5_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1587 DIM_config1_drv5_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1588 DIM_config2_drv5_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1588 DIM_config2_drv5_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1588 DIM_config2_drv5_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1588 DIM_config2_drv5_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1589 DIM_config3_drv5_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1589 DIM_config3_drv5_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1589 DIM_config3_drv5_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1589 DIM_config3_drv5_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1590 DIM_config4_drv5_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1590 DIM_config4_drv5_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1590 DIM_config4_drv5_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1590 DIM_config4_drv5_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1591 CDC_config0_drv5_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1591 CDC_config0_drv5_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1591 CDC_config0_drv5_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1591 CDC_config0_drv5_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1592 CDC_config1_drv5_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1592 CDC_config1_drv5_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1592 CDC_config1_drv5_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1592 CDC_config1_drv5_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1593 CDC_config2_drv5_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1593 CDC_config2_drv5_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1593 CDC_config2_drv5_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1593 CDC_config2_drv5_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1594 CDC_config3_drv5_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1594 CDC_config3_drv5_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1594 CDC_config3_drv5_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1594 CDC_config3_drv5_config_val_4 0;
-BA_ "GenSigStartValue" SG_ 1595 CDC_config4_drv5_config_val_1 0;
-BA_ "GenSigStartValue" SG_ 1595 CDC_config4_drv5_config_val_2 0;
-BA_ "GenSigStartValue" SG_ 1595 CDC_config4_drv5_config_val_3 0;
-BA_ "GenSigStartValue" SG_ 1595 CDC_config4_drv5_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1540 CDC_config0_drv0_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1540 CDC_config0_drv0_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1540 CDC_config0_drv0_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1540 CDC_config0_drv0_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1541 CDC_config1_drv0_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1541 CDC_config1_drv0_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1541 CDC_config1_drv0_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1541 CDC_config1_drv0_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1542 CDC_config2_drv0_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1542 CDC_config2_drv0_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1542 CDC_config2_drv0_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1542 CDC_config2_drv0_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1543 CDC_config3_drv0_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1543 CDC_config3_drv0_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1543 CDC_config3_drv0_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1543 CDC_config3_drv0_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1544 DIM_config0_drv1_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1544 DIM_config0_drv1_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1544 DIM_config0_drv1_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1544 DIM_config0_drv1_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1545 DIM_config1_drv1_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1545 DIM_config1_drv1_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1545 DIM_config1_drv1_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1545 DIM_config1_drv1_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1546 DIM_config2_drv1_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1546 DIM_config2_drv1_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1546 DIM_config2_drv1_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1546 DIM_config2_drv1_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1547 DIM_config3_drv1_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1547 DIM_config3_drv1_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1547 DIM_config3_drv1_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1547 DIM_config3_drv1_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1548 CDC_config0_drv1_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1548 CDC_config0_drv1_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1548 CDC_config0_drv1_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1548 CDC_config0_drv1_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1549 CDC_config1_drv1_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1549 CDC_config1_drv1_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1549 CDC_config1_drv1_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1549 CDC_config1_drv1_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1550 CDC_config2_drv1_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1550 CDC_config2_drv1_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1550 CDC_config2_drv1_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1550 CDC_config2_drv1_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1551 CDC_config3_drv1_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1551 CDC_config3_drv1_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1551 CDC_config3_drv1_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1551 CDC_config3_drv1_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1552 DIM_config1_drv2_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1552 DIM_config1_drv2_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1552 DIM_config1_drv2_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1552 DIM_config1_drv2_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1554 DIM_config2_drv2_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1554 DIM_config2_drv2_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1554 DIM_config2_drv2_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1554 DIM_config2_drv2_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1555 DIM_config3_drv2_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1555 DIM_config3_drv2_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1555 DIM_config3_drv2_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1555 DIM_config3_drv2_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1556 CDC_config0_drv2_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1556 CDC_config0_drv2_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1556 CDC_config0_drv2_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1556 CDC_config0_drv2_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1557 CDC_config1_drv2_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1557 CDC_config1_drv2_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1557 CDC_config1_drv2_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1557 CDC_config1_drv2_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1558 CDC_config2_drv2_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1558 CDC_config2_drv2_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1558 CDC_config2_drv2_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1558 CDC_config2_drv2_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1559 CDC_config3_drv2_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1559 CDC_config3_drv2_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1559 CDC_config3_drv2_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1559 CDC_config3_drv2_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1560 DIM_config0_drv3_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1560 DIM_config0_drv3_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1560 DIM_config0_drv3_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1560 DIM_config0_drv3_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1561 DIM_config1_drv3_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1561 DIM_config1_drv3_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1561 DIM_config1_drv3_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1561 DIM_config1_drv3_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1562 DIM_config2_drv3_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1562 DIM_config2_drv3_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1562 DIM_config2_drv3_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1562 DIM_config2_drv3_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1563 DIM_config3_drv3_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1563 DIM_config3_drv3_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1563 DIM_config3_drv3_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1563 DIM_config3_drv3_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1564 CDC_config0_drv3_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1564 CDC_config0_drv3_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1564 CDC_config0_drv3_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1564 CDC_config0_drv3_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1565 CDC_config1_drv3_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1565 CDC_config1_drv3_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1565 CDC_config1_drv3_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1565 CDC_config1_drv3_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1566 CDC_config2_drv3_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1566 CDC_config2_drv3_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1566 CDC_config2_drv3_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1566 CDC_config2_drv3_config_val_4 0;
+BA_ "GenSigStartValue" SG_ 1567 CDC_config3_drv3_config_val_1 0;
+BA_ "GenSigStartValue" SG_ 1567 CDC_config3_drv3_config_val_2 0;
+BA_ "GenSigStartValue" SG_ 1567 CDC_config3_drv3_config_val_3 0;
+BA_ "GenSigStartValue" SG_ 1567 CDC_config3_drv3_config_val_4 0;
 BA_ "GenSigStartValue" SG_ 772 BMB0_Error 0;
 BA_ "GenSigStartValue" SG_ 772 BMB1_Error 0;
 BA_ "GenSigStartValue" SG_ 772 BMB2_Error 0;
@@ -2886,19 +2640,21 @@ BA_ "GenSigStartValue" SG_ 772 BMB12_Error 0;
 BA_ "GenSigStartValue" SG_ 772 BMB13_Error 0;
 BA_ "GenSigStartValue" SG_ 772 BMB14_Error 0;
 BA_ "GenSigStartValue" SG_ 772 BMB15_Error 0;
+BA_ "GenSigStartValue" SG_ 1317 Address 0;
 
 
-VAL_ 256 VSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
+VAL_ 257 VSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
 VAL_ 272 VSM_internalState 0 "ERROR" 1 "CLEAR_ERROR" 2 "GLV_ON" 3 "REQ_PRECHARGE" 4 "RUN_BMS" 5 "DCDC_EN" 6 "INVERTER_EN" 7 "HV_EN" 8 "RTD" 9 "COOLING_OFF" 10 "DCDC_OFF" ;
-VAL_ 257 HVC_Mode 0 "ERROR" 1 "IDLE" 2 "START" 4 "RUN" 8 "CHARGE" ;
-VAL_ 257 HVC_State 0 "ERROR" 1 "DISCHARGE" 2 "STANDBY" 3 "DRIVE_PRECHARGE" 4 "DRIVE_PRECHARGE_COMPLETE" 5 "DRIVE" 6 "CHARGE_PRECHARGE" 7 "CHARGE_PRECHARGE_COMPLETE" 8 "CHARGE_TRICKLE" 9 "CHARGE_CONSTANT_CURRENT" 10 "CHARGE_CONSTANT_VOLTAGE" 11 "CLEAR_ERROR" 12 "UNKNOWN" ;
+VAL_ 258 HVC_Mode 0 "ERROR" 1 "IDLE" 2 "START" 4 "RUN" 8 "CHARGE" ;
+VAL_ 258 HVC_State 0 "ERROR" 1 "DISCHARGE" 2 "STANDBY" 3 "DRIVE_PRECHARGE" 4 "DRIVE_PRECHARGE_COMPLETE" 5 "DRIVE" 6 "CHARGE_PRECHARGE" 7 "CHARGE_PRECHARGE_COMPLETE" 8 "CHARGE_TRICKLE" 9 "CHARGE_CONSTANT_CURRENT" 10 "CHARGE_CONSTANT_VOLTAGE" 11 "CLEAR_ERROR" 12 "UNKNOWN" ;
 VAL_ 304 HVC_modeRequest 0 "ERROR" 1 "IDLE" 2 "START" 4 "RUN" 8 "CHARGE" ;
-VAL_ 258 CDC_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
-VAL_ 259 FSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
-VAL_ 260 DIM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
+VAL_ 259 CDC_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
+VAL_ 260 FSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
+VAL_ 261 DIM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
 VAL_ 565 DIM_requestState 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
-VAL_ 565 DIM_requestGear 0 "UNKNOWN" 1 "REVERSE" 2 "SLOW" 3 "FAST" 4 "ENDURANCE" 5 "AUTO-X" 6 "SKIDPAD" 7 "ACCEL" 8 "TEST" ;
-VAL_ 261 PTC_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
+VAL_ 565 DIM_requestGear 0 "UNKNOWN" 1 "SLOW" 2 "FAST" 3 "ENDURANCE" 4 "AUTO-X" 5 "SKIDPAD" 6 "ACCEL" 7 "TEST" 8 "REVERSE" ;
+VAL_ 565 DIM_requestDRSMode 0 "DRS_CLOSED" 1 "DRS_OPEN" 2 "DRS_TOGGLE" 3 "DRS_HOLD" 4 "DRS_AUTO" 5 "DRS_UNKNOWN" ;
+VAL_ 262 PTC_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
 VAL_ 1794 SBG_Solution_Mode 0 "Uninitialized" 1 "Vertical_Gyro_Only" 2 "Orientation_Only" 3 "Nav_Velocity" 4 "Full_Nav" ;
 VAL_ 1024 EMD_VoltageGain 0 "x1" 1 "x2" 2 "x4" 3 "x8" 4 "x16" 5 "x32" ;
 VAL_ 1024 EMD_CurrentGain 0 "x1" 1 "x2" 2 "x4" 3 "x8" 4 "x16" 5 "x32" ;
@@ -2908,4 +2664,18 @@ SIG_VALTYPE_ 642 CDC_Longitude : 1;
 SIG_VALTYPE_ 1860 SBG_Velocity_ODO : 1;
 SIG_VALTYPE_ 1862 SBG_Pressure_IMU : 1;
 SIG_VALTYPE_ 1862 SBG_Altitude_IMU : 1;
+SIG_VALTYPE_ 1730 CDC_Odometer : 1;
+SIG_VALTYPE_ 1325 Power_Limit_Max_Violation_W : 1;
+SIG_VALTYPE_ 2024 slipRatio_FL : 1;
+SIG_VALTYPE_ 2024 slipRatio_FR : 1;
+SIG_VALTYPE_ 2025 slipRatio_RL : 1;
+SIG_VALTYPE_ 2025 slipRatio_RR : 1;
+SIG_VALTYPE_ 2026 setPoint_FL : 1;
+SIG_VALTYPE_ 2026 setPoint_FR : 1;
+SIG_VALTYPE_ 2027 setPoint_RL : 1;
+SIG_VALTYPE_ 2027 setPoint_RR : 1;
+SIG_VALTYPE_ 2028 vel_calc_FL : 1;
+SIG_VALTYPE_ 2028 vel_calc_FR : 1;
+SIG_VALTYPE_ 2029 vel_calc_RL : 1;
+SIG_VALTYPE_ 2029 vel_calc_RR : 1;
 
