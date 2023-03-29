@@ -16,13 +16,14 @@
 #define CMR_CANID_RMS_OFFSET    0x3A0
 
 /** @brief CAN IDs. */
-typedef enum {
+typedef enum {    
     CMR_CANID_HEARTBEAT_VSM = 0x101,    /**< @brief VSM heartbeat. */
     CMR_CANID_HEARTBEAT_HVC = 0x102,    /**< @brief HVC heartbeat. */
     CMR_CANID_HEARTBEAT_CDC = 0x103,    /**< @brief CDC heartbeat. */
     CMR_CANID_HEARTBEAT_FSM = 0x104,    /**< @brief FSM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x105,    /**< @brief DIM heartbeat. */
     CMR_CANID_HEARTBEAT_PTC = 0x106,    /**< @brief PTC heatbeart.*/
+	CMR_CANID_HEARTBEAT_DRS = 0x10C,	/**< @brief DRS heartbeat. */
 
     CMR_CANID_CDL_BROADCAST = 0x625,    /**< @brief CDL broadcast. */
 
@@ -253,7 +254,6 @@ typedef enum {
     CMR_CANID_DAQ_3_LOADCELL,                   /**< @brief Load cell data for DAQ Board 3. */ 
     CMR_CANID_DAQ_3_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 3. */
     CMR_CANID_DAQ_3_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 3. */
-
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */

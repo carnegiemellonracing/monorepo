@@ -33,7 +33,10 @@ int cmr_i2cTX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
     );
 
     if (txStatus != HAL_OK) {
-        return -1;
+    //HAL_ERROR    = 0x01U,
+    //HAL_BUSY     = 0x02U,
+    //HAL_TIMEOUT  = 0x03U
+        return txStatus;
     }
 
     return 0;
@@ -89,8 +92,8 @@ void cmr_i2cInit(
         .handle = {
             .Instance = instance,
             .Init = {
-                .ClockSpeed = clockSpeed,
-                .DutyCycle = I2C_DUTYCYCLE_2,
+//                .ClockSpeed = clockSpeed,
+//                .DutyCycle = I2C_DUTYCYCLE_2,
                 .OwnAddress1 = ownAddr,
                 .AddressingMode = I2C_ADDRESSINGMODE_7BIT,
                 .DualAddressMode = I2C_DUALADDRESS_DISABLE,
@@ -100,6 +103,7 @@ void cmr_i2cInit(
             }
         }
     };
+    _platform_i2cInit(i2c, instance, clockSpeed, ownAddr);
 
     cmr_rccI2CClockEnable(instance);
     cmr_rccGPIOClockEnable(i2cClkPort);

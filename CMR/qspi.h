@@ -8,7 +8,7 @@
 #ifndef CMR_QSPI_H
 #define CMR_QSPI_H
 
-#include <stm32f4xx_hal.h>  // HAL_QSPI_MODULE_ENABLED,
+#include "platform.h"       // HAL_QSPI_MODULE_ENABLED,
                             // QSPI_HandleTypeDef, QUADSPI_TypeDef,
                             // QSPI_InitTypeDef, DMA_HandleTypeDef
 

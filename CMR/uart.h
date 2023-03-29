@@ -8,7 +8,7 @@
 #ifndef CMR_UART_H
 #define CMR_UART_H
 
-#include <stm32f4xx_hal.h>  // HAL_UART_MODULE_ENABLED,
+#include "platform.h"       // HAL_UART_MODULE_ENABLED,
                             // HAL_USART_MODULE_ENABLED,
                             // HAL_DMA_MODULE_ENABLED,
                             // UART_HandleTypeDef, UART_InitTypeDef,

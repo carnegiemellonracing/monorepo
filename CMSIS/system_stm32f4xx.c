@@ -48,7 +48,7 @@
   *
   ******************************************************************************
   */
-
+#ifdef F413
 /** @addtogroup CMSIS
   * @{
   */
@@ -758,4 +758,5 @@ void SystemInit_ExtMemCtl(void)
 /**
   * @}
   */
+#endif /* F413 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
