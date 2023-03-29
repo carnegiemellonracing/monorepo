@@ -293,13 +293,7 @@ void _platform_rccSystemInternalClockEnable(void)  {
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
     RCC_OscInitStruct.HSIState = RCC_HSI_ON;
     RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-    RCC_OscInitStruct.PLL.PLLM = 1;
-    RCC_OscInitStruct.PLL.PLLN = 20;
-    RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV7;
-    RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;
-    RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV4;
+    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
     if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
         cmr_panic("HAL_RCC_OscConfig() failed!");
     }
@@ -307,11 +301,11 @@ void _platform_rccSystemInternalClockEnable(void)  {
     // Initializes the CPU, AHB and APB busses clocks
     RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                                 |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
     RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
-    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK) {
+    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK) {
         cmr_panic("HAL_RCC_OscConfig() failed!");
     }
 
@@ -419,18 +413,18 @@ void _platform_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance, cmr_adcChannel_t *
             // Configure ADC in discontinuous scan mode.
             // This will allow conversion of a series of channels one at a time.
             .Init = {
-                .ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4,
+                .ClockPrescaler = ADC_CLOCK_ASYNC_DIV4,
                 .Resolution = ADC_RESOLUTION_12B,
-                .ScanConvMode = ENABLE,
-                .ContinuousConvMode = DISABLE,
-                .DiscontinuousConvMode = ENABLE,
-                .NbrOfDiscConversion = 1,
-                .ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE,
-                .ExternalTrigConv = ADC_SOFTWARE_START,
                 .DataAlign = ADC_DATAALIGN_RIGHT,
-                .NbrOfConversion = channelsLen,
-                .DMAContinuousRequests = DISABLE,
+                .ScanConvMode = ADC_SCAN_DISABLE,
                 .EOCSelection = ADC_EOC_SINGLE_CONV,
+                .LowPowerAutoWait = DISABLE,
+                .ContinuousConvMode = DISABLE,
+                .NbrOfConversion = 1,
+                .DiscontinuousConvMode = DISABLE,
+                .ExternalTrigConv = ADC_SOFTWARE_START,
+                .ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE,
+                .DMAContinuousRequests = DISABLE,
                 .Overrun = ADC_OVR_DATA_PRESERVED,
                 .OversamplingMode = DISABLE
             }
@@ -438,6 +432,31 @@ void _platform_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance, cmr_adcChannel_t *
         .channels = channels,
         .channelsLen = channelsLen
     };
+}
+
+void _platform_adcPoll(cmr_adc_t *adc, uint32_t adcTimeout) {
+    for (size_t i = 0; i < adc->channelsLen; i++) {
+        cmr_adcChannel_t *channel = &(adc->channels[i]);
+
+        ADC_ChannelConfTypeDef sConfig = {0};
+        /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+         */
+        sConfig.Channel = channel->channel;
+        sConfig.Rank = ADC_REGULAR_RANK_1;
+        sConfig.SamplingTime = ADC_SAMPLETIME_24CYCLES_5;
+        sConfig.SingleDiff = ADC_SINGLE_ENDED;
+        sConfig.OffsetNumber = ADC_OFFSET_NONE;
+        sConfig.Offset = 0;
+        if (HAL_ADC_ConfigChannel(&adc->handle, &sConfig) != HAL_OK)
+        {
+            cmr_panic("HAL_ADC_ConfigChannel() failed");
+        }
+
+        HAL_ADC_Start(&adc->handle);
+        HAL_ADC_PollForConversion(&adc->handle, adcTimeout);
+        channel->value = HAL_ADC_GetValue(&adc->handle);
+        HAL_ADC_Stop(&adc->handle);
+    }
 }
 #endif /* HAL_ADC_MODULE_ENABLED */
 
@@ -546,5 +565,25 @@ void _platform_rccTIMClockEnable(TIM_TypeDef *instance)
     }
 }
 #endif /* HAL_TIM_MODULE_ENABLED */
+
+#ifdef HAL_I2C_MODULE_ENABLED
+void _platform_i2cInit(cmr_i2c_t *i2c, I2C_TypeDef *instance, uint32_t clockSpeed, uint32_t ownAddr) {
+    *i2c = (cmr_i2c_t) {
+        .handle = {
+            .Instance = instance,
+            .Init = {
+                .Timing = 0x00303D5B,   // Hard-coded to 100KHz
+                .OwnAddress1 = ownAddr,
+                .AddressingMode = I2C_ADDRESSINGMODE_7BIT,
+                .DualAddressMode = I2C_DUALADDRESS_DISABLE,
+                .OwnAddress2 = 0,
+                .OwnAddress2Masks = I2C_OA2_NOMASK,
+                .GeneralCallMode = I2C_GENERALCALL_DISABLE,
+                .NoStretchMode = I2C_NOSTRETCH_DISABLE
+            }
+        }
+    };
+}
+#endif /* HAL_I2C_MODULE_ENABLED */
 
 #endif /* L431 */

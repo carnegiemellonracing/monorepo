@@ -47,6 +47,8 @@ void cmr_i2cInit(
     GPIO_TypeDef *i2cDataPort, uint32_t i2cDataPin
 );
 
+extern void _platform_i2cInit(cmr_i2c_t *i2c, I2C_TypeDef *instance, uint32_t clockSpeed, uint32_t ownAddr);
+
 int cmr_i2cDmaTX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
               size_t dataLength, uint32_t timeout_ms);
 

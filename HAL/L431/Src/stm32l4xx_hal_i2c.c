@@ -476,6 +476,7 @@ HAL_StatusTypeDef HAL_I2C_Init(I2C_HandleTypeDef *hi2c)
     return HAL_ERROR;
   }
 
+  __HAL_RCC_I2C1_FORCE_RESET();
   /* Check the parameters */
   assert_param(IS_I2C_ALL_INSTANCE(hi2c->Instance));
   assert_param(IS_I2C_OWN_ADDRESS1(hi2c->Init.OwnAddress1));

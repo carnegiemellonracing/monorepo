@@ -1099,4 +1099,24 @@ typedef struct {
     int32_t voltage;    /**< @brief Voltage (volts * 2^16). */
 } cmr_canEMDMeasurements_t;
 
+// ------------------------------------------------------------------------------------------------
+// DAQ Modules 
+
+typedef struct {
+    int32_t HX711_force;     /**< @brief Force from HX711 */
+    int32_t NAU7802_force;   /**< @brief Force from NAU7802 */
+} cmr_canDAQLoadCell_t;
+
+typedef struct {
+    uint16_t thermistor_0_tmp_dC; /**< @brief Temperature on thermistor 0 in dC */
+    uint16_t thermistor_1_tmp_dC; /**< @brief Temperature on thermistor 1 in dC */
+    uint16_t thermistor_2_tmp_dC; /**< @brief Resistance on thermistor 2 in dC */
+    uint16_t thermistor_3_tmp_dC; /**< @brief Resistance on thermistor 3 in dC */
+} cmr_canDAQThermistor_t;
+
+typedef struct {
+    int32_t HX711_debug;     /**< @brief Debug for HX711 - 0 if no errors */
+    int32_t NAU7802_debug;   /**< @brief Debug for NAU7802 - 0 if no errors */
+} cmr_canDAQDebug_t;
+
 #endif /* CMR_CAN_TYPES_H */

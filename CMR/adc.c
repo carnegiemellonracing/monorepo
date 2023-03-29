@@ -33,16 +33,7 @@ static void cmr_adcSample(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // ADC set up in discontinuous scan mode.
-        // Each `HAL_ADC_Start()` call converts the next-highest-rank channel.
-        for (size_t i = 0; i < adc->channelsLen; i++) {
-            cmr_adcChannel_t *channel = &(adc->channels[i]);
-
-            HAL_ADC_Start(&adc->handle);
-            HAL_ADC_PollForConversion(&adc->handle, CMR_ADC_TIMEOUT_MS);
-            channel->value = HAL_ADC_GetValue(&adc->handle);
-        }
-
+        _platform_adcPoll(adc, CMR_ADC_TIMEOUT_MS);
         vTaskDelayUntil(&lastWakeTime, cmr_adcSample_period_ms);
     }
 }
@@ -102,7 +93,9 @@ void cmr_adcInit(
         cmr_panic("HAL_ADC_Init() failed!");
     }
 
+    #ifdef F413
     cmr_adcConfigChannels(adc);
+    #endif /* F413 */
 
     cmr_taskInit(
         &adc->sampleTask,
