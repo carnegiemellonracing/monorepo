@@ -1104,7 +1104,7 @@ typedef struct {
 
 typedef struct {
     int32_t HX711_force;     /**< @brief Force from HX711 */
-    int32_t NAU7802_force;   /**< @brief Force from NAU7802 */
+    float NAU7802_force;   /**< @brief Force from NAU7802 */
 } cmr_canDAQLoadCell_t;
 
 typedef struct {

@@ -1960,3 +1960,83 @@ Var=Data1 char 16,8
 Var=Data2 char 24,8
 Var=Data3 char 32,8
 
+[DAQ_0_LOADCELL]
+ID=650h
+DLC=8
+Var=HX711_FORCE_0 signed 0,32
+Var=NAU7802_FORCE_0 float 32,32
+
+[DAQ_0_THERMISTOR]
+ID=651h
+DLC=8
+Var=TMP0_0 unsigned 0,16
+Var=TMP1_0 unsigned 16,16
+Var=TMP2_0 unsigned 32,16
+Var=TMP3_0 unsigned 48,16
+
+[DAQ_0_DEBUG]
+ID=652h
+DLC=8
+Var=HX711_DEBUG_0 unsigned 0,32 -h
+Var=NAU7802_DEBUG_0 unsigned 32,32 -h
+
+[DAQ_1_LOADCELL]
+ID=653h
+DLC=8
+Var=HX711_FORCE_1 signed 0,32
+Var=NAU7802_FORCE_1 float 32,32
+
+[DAQ_1_THERMISTOR]
+ID=654h
+DLC=8
+Var=TMP0_1 unsigned 0,16
+Var=TMP1_1 unsigned 16,16
+Var=TMP2_1 unsigned 32,16
+Var=TMP3_1 unsigned 48,16
+
+[DAQ_1_DEBUG]
+ID=655h
+DLC=8
+Var=HX711_DEBUG_1 unsigned 0,32 -h
+Var=NAU7802_DEBUG_1 unsigned 32,32 -h
+
+[DAQ_2_LOADCELL]
+ID=656h
+DLC=8
+Var=HX711_FORCE_2 signed 0,32
+Var=NAU7802_FORCE_2 float 32,32
+
+[DAQ_2_THERMISTOR]
+ID=657h
+DLC=8
+Var=TMP0_2 unsigned 0,16
+Var=TMP1_2 unsigned 16,16
+Var=TMP2_2 unsigned 32,16
+Var=TMP3_2 unsigned 48,16
+
+[DAQ_2_DEBUG]
+ID=658h
+DLC=8
+Var=HX711_DEBUG_2 unsigned 0,32 -h
+Var=NAU7802_DEBUG_2 unsigned 32,32 -h
+
+[DAQ_3_LOADCELL]
+ID=659h
+DLC=8
+Var=HX711_FORCE_3 signed 0,32
+Var=NAU7802_FORCE_3 float 32,32
+
+[DAQ_3_THERMISTOR]
+ID=65Ah
+DLC=8
+Var=TMP0_3 unsigned 0,16
+Var=TMP1_3 unsigned 16,16
+Var=TMP2_3 unsigned 32,16
+Var=TMP3_3 unsigned 48,16
+
+[DAQ_3_DEBUG]
+ID=65Bh
+DLC=8
+Var=HX711_DEBUG_3 unsigned 0,32 -h
+Var=NAU7802_DEBUG_3 unsigned 32,32 -h
+
