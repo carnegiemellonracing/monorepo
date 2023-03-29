@@ -23,7 +23,6 @@ typedef enum {
     CMR_CANID_HEARTBEAT_FSM = 0x104,    /**< @brief FSM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x105,    /**< @brief DIM heartbeat. */
     CMR_CANID_HEARTBEAT_PTC = 0x106,    /**< @brief PTC heatbeart.*/
-	CMR_CANID_HEARTBEAT_DRS = 0x10C,	/**< @brief DRS heartbeat. */
 
     CMR_CANID_CDL_BROADCAST = 0x625,    /**< @brief CDL broadcast. */
 
@@ -54,6 +53,9 @@ typedef enum {
     CMR_CANID_CDC_POSE_ORIENTATION = 0x292,         /**< @brief CDC (20e) roll/pitch/yaw real car position. */
     CMR_CANID_CDC_POSE_VELOCITY = 0x2A2,            /**< @brief CDC (20e) real car velocity. */
     CMR_CANID_CDC_POSE_ACCELERATION = 0x2B2,        /**< @brief CDC (20e) real car acceleration. */
+    CMR_CANID_CDC_RTC_DATA_OUT = 0x6A2,             /**< @brief CDC RTC data. */
+    CMR_CANID_CDC_RTC_DATA_IN = 0x6B2,              /**< @brief CDC RTC data. */
+    CMR_CANID_CDC_ODOMETER = 0x6C2,              /**< @brief CDC RTC data. */
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
     CMR_CANID_FSM_PEDALS_ADC = 0x533,           /**< @brief FSM raw pedal positions. */
@@ -78,67 +80,39 @@ typedef enum {
      * first and then cdc config packets in ascending order. This is imperative to maintaining 
      * code modularity :)
     */
-    num_config_packets = 5,                     /**< @brief in the enum but actually just a count of num of packets. */ 
+    num_config_packets = 4,                     /**< @brief in the enum but actually just a count of num of packets. */ 
     CMR_CANID_DIM_CONFIG0_DRV0 = 0x600,         /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG1_DRV0,                 /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG2_DRV0,                 /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG3_DRV0,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG4_DRV0,                 /**< @brief DIM config request */
     CMR_CANID_CDC_CONFIG0_DRV0,                 /**< @brief CDC config request */
     CMR_CANID_CDC_CONFIG1_DRV0,                 /**< @brief CDC config request */
     CMR_CANID_CDC_CONFIG2_DRV0,                 /**< @brief CDC config request */
     CMR_CANID_CDC_CONFIG3_DRV0,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG4_DRV0,                 /**< @brief CDC config request */
     CMR_CANID_DIM_CONFIG0_DRV1,                 /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG1_DRV1,                 /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG2_DRV1,                 /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG3_DRV1,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG4_DRV1,                 /**< @brief DIM config request */
     CMR_CANID_CDC_CONFIG0_DRV1,                 /**< @brief CDC config request */
     CMR_CANID_CDC_CONFIG1_DRV1,                 /**< @brief CDC config request */
     CMR_CANID_CDC_CONFIG2_DRV1,                 /**< @brief CDC config request */
     CMR_CANID_CDC_CONFIG3_DRV1,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG4_DRV1,                 /**< @brief CDC config request */
     CMR_CANID_DIM_CONFIG0_DRV2,                 /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG1_DRV2,                 /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG2_DRV2,                 /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG3_DRV2,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG4_DRV2,                 /**< @brief DIM config request */
     CMR_CANID_CDC_CONFIG0_DRV2,                 /**< @brief CDC config request */
     CMR_CANID_CDC_CONFIG1_DRV2,                 /**< @brief CDC config request */
     CMR_CANID_CDC_CONFIG2_DRV2,                 /**< @brief CDC config request */
     CMR_CANID_CDC_CONFIG3_DRV2,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG4_DRV2,                 /**< @brief CDC config request */
     CMR_CANID_DIM_CONFIG0_DRV3,                 /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG1_DRV3,                 /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG2_DRV3,                 /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG3_DRV3,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG4_DRV3,                 /**< @brief DIM config request */
     CMR_CANID_CDC_CONFIG0_DRV3,                 /**< @brief CDC config request */
     CMR_CANID_CDC_CONFIG1_DRV3,                 /**< @brief CDC config request */
     CMR_CANID_CDC_CONFIG2_DRV3,                 /**< @brief CDC config request */
     CMR_CANID_CDC_CONFIG3_DRV3,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG4_DRV3,                 /**< @brief CDC config request */
-    CMR_CANID_DIM_CONFIG0_DRV4,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG1_DRV4,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG2_DRV4,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG3_DRV4,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG4_DRV4,                 /**< @brief DIM config request */
-    CMR_CANID_CDC_CONFIG0_DRV4,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG1_DRV4,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG2_DRV4,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG3_DRV4,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG4_DRV4,                 /**< @brief CDC config request */
-    CMR_CANID_DIM_CONFIG0_DRV5,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG1_DRV5,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG2_DRV5,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG3_DRV5,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG4_DRV5,                 /**< @brief DIM config request */
-    CMR_CANID_CDC_CONFIG0_DRV5,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG1_DRV5,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG2_DRV5,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG3_DRV5,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG4_DRV5,                 /**< @brief CDC config request */
 
 
     CMR_CANID_AFC0_FAN_STATUS = 0x236,          /**< @brief AFC 0 fan status. */
@@ -149,18 +123,26 @@ typedef enum {
     CMR_CANID_AFC1_DRIVER_TEMPS = 0x537,        /**< @brief AFC 1 temperatures. */
     CMR_CANID_AFC1_POWER_DIAGNOSTICS = 0x547,   /**< @brief AFC 1 power diagnostics. */
 
+    CMR_CANID_DRS_STATE = 0x52C,                /**< @brief DRS state values.*/
+	CMR_CANID_SF_STATE = 0x52D,				/**< @brief Safety Filter state. */
+    CMR_CANID_MOTORPOWER_STATE = 0x52E,				/**< @brief Motor Power state. */
+
+    // FL
     CMR_CANID_AMK_1_ACT_1 = 0x283,              /**< @brief AMK Inverter 1 actual values 1.*/
     CMR_CANID_AMK_1_ACT_2 = 0x285,              /**< @brief AMK Inverter 1 actual values 2.*/
     CMR_CANID_AMK_1_SETPOINTS = 0x184,          /**< @brief AMK Inverter 1 setpoints.*/
 
+    // BR
     CMR_CANID_AMK_2_ACT_1 = 0x284,              /**< @brief AMK Inverter 2 actual values 1.*/
     CMR_CANID_AMK_2_ACT_2 = 0x286,              /**< @brief AMK Inverter 2 actual values 2.*/
     CMR_CANID_AMK_2_SETPOINTS = 0x185,          /**< @brief AMK Inverter 2 setpoints.*/
 
+    // FR
     CMR_CANID_AMK_3_ACT_1 = 0x287,              /**< @brief AMK Inverter 3 actual values 1.*/
     CMR_CANID_AMK_3_ACT_2 = 0x289,              /**< @brief AMK Inverter 3 actual values 2.*/
     CMR_CANID_AMK_3_SETPOINTS = 0x188,          /**< @brief AMK Inverter 3 setpoints.*/
 
+    // BL
     CMR_CANID_AMK_4_ACT_1 = 0x288,              /**< @brief AMK Inverter 4 actual values 1.*/
     CMR_CANID_AMK_4_ACT_2 = 0x28A,              /**< @brief AMK Inverter 4 actual values 2.*/
     CMR_CANID_AMK_4_SETPOINTS = 0x189,          /**< @brief AMK Inverter 4 setpoints.*/
@@ -182,6 +164,7 @@ typedef enum {
     CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE = 0x310,                  /**< @brief HVC Max/Min Cell Voltage. */
     CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE = 0x311,              /**< @brief HVC Max/Min Cell Temperature. */
     CMR_CANID_HVC_LOW_VOLTAGE = 0x303,                           /**< @brief HVC Low Voltage. */
+    CMR_CANID_HVC_BMB_STATUS_ERRORS = 0x304,
     CMR_CANID_HVC_BRUSA_MSG = 0x528,                             /**< @brief HVC Brusa message. */
 
     CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE = 0x380,                    /**< @brief HVC BMB Voltage: Message ID is BMB number << 1*/
@@ -238,7 +221,17 @@ typedef enum {
     CMR_CANID_CONTROLS_DEBUG_FL = 0x7E2,        /**< @brief control algo testing data. */
     CMR_CANID_CONTROLS_DEBUG_RR = 0x7E3,        /**< @brief control algo testing data. */
     CMR_CANID_CONTROLS_DEBUG_RL = 0x7E4,        /**< @brief control algo testing data. */
-    CMR_CANID_CONTROLS_PID = 0x7E5,        /**< @brief control algo testing data. */
+    CMR_CANID_CONTROLS_PID_IO = 0x7E5,        /**< @brief control algo testing data. */
+
+    CMR_CANID_FRONT_SLIP_RATIOS = 0x7E8,
+    CMR_CANID_REAR_SLIP_RATIOS = 0x7E9,
+    CMR_CANID_FRONT_WHL_SETPOINTS = 0x7EA,
+    CMR_CANID_REAR_WHL_SETPOINTS = 0x7EB,
+    CMR_CANID_FRONT_WHL_VELS = 0x7EC,
+    CMR_CANID_REAR_WHL_VELS = 0x7ED,
+
+    CMR_CANID_CONTROLS_PID_INTERNALS1 = 0x7EE,
+    CMR_CANID_CONTROLS_PID_INTERNALS2 = 0x7F1,
 
 	CMR_CANID_DRS_CONTROLS = 0x29C, 				/**< @brief DRS Motor Controls. */
 

@@ -163,7 +163,6 @@ typedef enum {
 /** @brief Represents the car's current driving mode (gear). */
 typedef enum {
     CMR_CAN_GEAR_UNKNOWN = 0,   /**< @brief Unknown Gear State */
-    CMR_CAN_GEAR_REVERSE,       /**< @brief Reverse mode */
     CMR_CAN_GEAR_SLOW,          /**< @brief Slow mode */
     CMR_CAN_GEAR_FAST,          /**< @brief Fast simple mode */
     CMR_CAN_GEAR_ENDURANCE,     /**< @brief Endurance-event mode */
@@ -171,8 +170,20 @@ typedef enum {
     CMR_CAN_GEAR_SKIDPAD,       /**< @brief Skidpad-event mode */
     CMR_CAN_GEAR_ACCEL,         /**< @brief Acceleration-event mode */
     CMR_CAN_GEAR_TEST,          /**< @brief Test mode (for experimentation) */
+    CMR_CAN_GEAR_REVERSE,       /**< @brief Reverse mode */
     CMR_CAN_GEAR_LEN
 } cmr_canGear_t;
+
+/** @brief Represents the car's current DRS mode (). */
+typedef enum {
+    CMR_CAN_DRSM_CLOSED = 0,
+    CMR_CAN_DRSM_OPEN,
+    CMR_CAN_DRSM_TOGGLE,
+    CMR_CAN_DRSM_HOLD,
+    CMR_CAN_DRSM_AUTO,
+    CMR_CAN_DRSM_LEN,
+    CMR_CAN_DRSM_UNKNOWN
+} cmr_canDrsMode_t;
 
 /** @brief Safety Circuit status states. */
 typedef enum {
@@ -425,6 +436,18 @@ typedef struct {
     int32_t avgCurrent_mA;      /**< @brief (Not working) rolling average of current. */
 } cmr_canHVCPackCurrent_t;
 
+/** @brief High Voltage Controller BMB errors. */
+typedef struct {
+    uint8_t BMB1_2_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
+    uint8_t BMB3_4_Errs;  /**< @brief Errors for BMB3&4 (BMB3 = higher 4 bits). */
+    uint8_t BMB5_6_Errs;  /**< @brief Errors for BMB5&6 (BMB5 = higher 4 bits). */
+    uint8_t BMB7_8_Errs;  /**< @brief Errors for BMB7&8 (BMB7 = higher 4 bits). */
+    uint8_t BMB9_10_Errs;  /**< @brief Errors for BMB9&10 (BMB9 = higher 4 bits). */
+    uint8_t BMB11_12_Errs;  /**< @brief Errors for BMB11&12 (BMB11 = higher 4 bits). */
+    uint8_t BMB13_14_Errs;  /**< @brief Errors for BMB13&14 (BMB13 = higher 4 bits). */
+    uint8_t BMB15_16_Errs;  /**< @brief Errors for BMB15&16 (BMB15 = higher 4 bits). */
+} cmr_canHVCBMBErrors_t;
+
 // ------------------------------------------------------------------------------------------------
 // Accumulator Fan Controller
 
@@ -521,6 +544,39 @@ typedef struct {
     int16_t vertical;       /**< @brief Vertical Acceleration where full scale is +/- 2g (positive Down). */
 } cmr_canCDCIMUAcceleration_t;
 
+/** @brief Central Dynamics Controller DRS states. */
+typedef struct {
+    uint8_t state;          /**< @brief DRS current control state (open or closed position). */
+    uint8_t angle;          /**< @brief DRS setpoint angle for its current state (debug info). */
+    uint8_t pwm_left;       /**< @brief PWM of the left  DRS servo (debug info). */
+    uint8_t pwm_right;      /**< @brief PWM of the right DRS servo (debug info). */
+} cmr_canCDCDRSStates_t;
+typedef enum { 
+  CMR_CAN_DRS_STATE_CLOSED = 0,
+  CMR_CAN_DRS_STATE_OPEN,
+  CMR_CAN_DRS_STATE_OTHER
+} cmr_canCDCDRSStateEnum_t;
+
+/** @brief Central Dynamics Controller */
+typedef struct {
+    float odometer_km;      /**< @brief Odometer in km*/
+} cmr_canCDCOdometer_t;
+
+/** @brief Central Dynamics Controller Safety Filter states. */
+typedef struct {
+	float power_limit_max_violation_W;  /**< @brief the maximum amount in W the power hard-limit is violated, expect 0.0 */
+	uint8_t longest_power_violation_ms; /**< @brief counts the number of clock cycles when power is over the hard limit, expect <2*/
+    uint8_t over_voltage_count;         /**< @brief incremented when pack voltage exceeds 590 */
+    uint8_t under_voltage_count;        /**< @brief incremented when pack voltage under 365 */
+    uint8_t over_temp_count;            /**<@brief incremented when pack temperature exceeds the hard limit, expect 0>*/
+} cmr_canCDCSafetyFilterStates_t;
+
+typedef struct {
+    uint16_t motor_power_FL;
+    uint16_t motor_power_FR;
+    uint16_t motor_power_RL;
+    uint16_t motor_power_RR;
+} cmr_canCDCMotorPower_t;
 // ------------------------------------------------------------------------------------------------
 // Central Dynamics Controller (20e)
 
@@ -570,6 +626,8 @@ typedef struct {
 typedef struct {
     uint8_t requestedState;     /**< @brief Requested state. */
     uint8_t requestedGear;      /**< @brief Requested gear. */
+    uint8_t requestedDrsMode;   /**< @brief Requested DRS mode. */
+    uint8_t requestedDriver;    /**< @brief Requested Driver for Config Screen. */
 } cmr_canDIMRequest_t;
 
 /** @brief Driver Interface Module power diagnostics. */
@@ -592,6 +650,8 @@ typedef struct {
     uint8_t action2ButtonPressed;    /**< @brief Status of the action 2 button (Active Low). */
     uint8_t drsButtonPressed;        /**< @brief Status of the AE/DRS button (Active Low). */
     uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
+    uint8_t paddleLeft;              /**< @brief Between 0 and 255 for left paddle pos*/
+    uint8_t paddleRight;             /**< @brief Between 0 and 255 for left paddle pos*/
 } cmr_canDIMActions_t;
 
 // DIM Config Screen data
@@ -973,23 +1033,64 @@ typedef struct {
     int16_t controls_pid;
 } cmr_can_controls_pid_debug_t;
 
-// ------------------------------------------------------------------------------------------------
-// DRS
+typedef struct {
+    int16_t p;
+    int16_t i;
+    int16_t d;
+    int16_t accum;
+} cmr_can_controls_pid_internals1_t;
 
 typedef struct {
-	int32_t drs_servo_angle;
-    int32_t drs_dim_status;
-} cmr_canDRSControls_t;
+    int16_t lastError;
+    uint16_t lastTime;
+} cmr_can_controls_pid_internals2_t;
 
-/** @brief Represents the car's current Drag Reduction Mode. */
-typedef enum {
-    CMR_CAN_DRS_UNKNOWN = 0,    /**< @brief Unknown Gear State */
-    CMR_CAN_DRS_DRIVER_HOLD,    /**< @brief Hold to open */
-    CMR_CAN_DRS_DRIVER_TOGGLE,  /**< @brief Toggle to open/close */
-    CMR_CAN_DRS_BRAKE,          /**< @brief Driver control + off on brake */
-    CMR_CAN_DRS_ACCEL,          /**< @brief For accel event - auto on and off */
-    CMR_CAN_DRS_GEAR_LEN
-} cmr_canDRSMode_t;
+typedef struct {
+    uint8_t seconds;
+    uint8_t minutes;
+    uint8_t hours;
+    uint8_t date;
+    uint8_t month;
+    uint8_t year;
+    uint8_t err; /* 1 in error state and 0 otherwise */
+} cmr_can_rtc_data_t;
+
+typedef struct 
+{
+    float slipRatio_FL;
+    float slipRatio_FR;
+} cmr_can_front_slip_ratio_data_t;
+
+typedef struct
+{
+    float slipRatio_RL;
+    float slipRatio_RR;
+} cmr_can_rear_slip_ratio_data_t;
+
+typedef struct 
+{
+    float omega_FL;
+    float omega_FR;
+} cmr_can_front_whl_speed_setpoint_t;
+
+typedef struct
+{
+    float omega_RL;
+    float omega_RR;
+} cmr_can_rear_whl_speed_setpoint_t;
+
+typedef struct 
+{
+    float v_whl_fl;
+    float v_whl_fr;
+} cmr_can_front_whl_velocity_t;
+
+typedef struct 
+{
+    float v_whl_rl;
+    float v_whl_rr;
+} cmr_can_rear_whl_velocity_t;
+
 // ------------------------------------------------------------------------------------------------
 // SAE Provided EMD definitions
 
