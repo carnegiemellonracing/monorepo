@@ -68,7 +68,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
             .value = 0
         },
         .min = 0,
-        .max = 255,
+        .max = 100,
     },
     [YRC_KD_INDEX] = {
         .name = "YRC Kd",
@@ -77,7 +77,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_value_variable = ESE_YRC_KD_VAL,
         .ESE_context_text_variable = "Yaw Rate Controller Kd",
         .value = {
-            .type = integer,
+            .type = unsigned_integer,
             .value = 0
         },
         .min = 0,
