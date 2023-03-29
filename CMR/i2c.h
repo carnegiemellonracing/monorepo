@@ -49,6 +49,7 @@ void cmr_i2cInit(
 
 extern void _platform_i2cInit(cmr_i2c_t *i2c, I2C_TypeDef *instance, uint32_t clockSpeed, uint32_t ownAddr);
 
+#ifdef F413
 int cmr_i2cDmaTX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
               size_t dataLength, uint32_t timeout_ms);
 
@@ -63,6 +64,7 @@ void cmr_i2cDmaInit(
     GPIO_TypeDef *i2cClkPort, uint32_t i2cClkPin,
     GPIO_TypeDef *i2cDataPort, uint32_t i2cDataPin
 );
+#endif /* F413 */
 
 #endif /* HAL_I2C_MODULE_ENABLED */
 

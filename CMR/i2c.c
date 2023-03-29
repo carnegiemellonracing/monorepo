@@ -98,7 +98,9 @@ void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *handle) {
 uint32_t i2cGPIOAF(I2C_TypeDef *instance, GPIO_TypeDef *port, uint32_t pin) {
     if (instance == I2C1) {
         return GPIO_AF4_I2C1;
-    } else if (instance == I2C2) {
+    }
+    #ifdef F413
+	else if (instance == I2C2) {
 		if (port == GPIOB && (pin == GPIO_PIN_10 || pin == GPIO_PIN_11)) {
 			return GPIO_AF4_I2C2;
 		} else if (port == GPIOB) {
@@ -114,7 +116,9 @@ uint32_t i2cGPIOAF(I2C_TypeDef *instance, GPIO_TypeDef *port, uint32_t pin) {
 		} else {
 			return GPIO_AF4_I2C3;
 		}
-    } else {
+    }
+	#endif /* F413 */
+    else {
     	cmr_panic("Invalid I2C instance!");
     }
 }
@@ -234,6 +238,7 @@ void cmr_i2cInit(
     HAL_GPIO_Init(i2cDataPort, &pinConfig);
 }
 
+#ifdef F413
 /**
   * @brief I2C DMA Initialization Function
   *
@@ -446,6 +451,7 @@ int cmr_i2cDmaRX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
 
     return 0;
 }
+#endif /* F413 */
 
 #endif /* HAL_I2C_MODULE_ENABLED */
 
