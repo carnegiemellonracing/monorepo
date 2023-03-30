@@ -30,7 +30,7 @@ enum DRS_MODE(0="DRS_CLOSED", 1="DRS_OPEN", 2="DRS_TOGGLE", 3="DRS_HOLD",
 {SENDRECEIVE}
 
 [VSM_Heartbeat]
-ID=101h
+ID=100h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -117,7 +117,7 @@ Var=VSM_busVoltage unsigned 0,16 /u:mV
 Var=VSM_busCurrent unsigned 16,16 /u:mA
 
 [HVC_Heartbeat]
-ID=102h
+ID=101h
 DLC=6
 CycleTime=10
 Timeout=100
@@ -151,7 +151,7 @@ CycleTime=10
 Var=HVC_modeRequest unsigned 0,8 /e:HVCMode
 
 [CDC_Heartbeat]
-ID=103h
+ID=102h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -356,7 +356,7 @@ Var=CDC_LateralAcceleration signed 16,16 /u:mps2 /f:0.01
 Var=CDC_VerticalAcceleration signed 32,16 /u:mps2 /f:0.01
 
 [FSM_Heartbeat]
-ID=104h
+ID=103h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -416,7 +416,7 @@ Var=FSM_busVoltage unsigned 0,16 /u:mV
 Var=FSM_busCurrent unsigned 16,16 /u:mA
 
 [DIM_Heartbeat]
-ID=105h
+ID=104h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -454,7 +454,7 @@ Var=DIM_paddleLeft unsigned 32,8
 Var=DIM_paddleRight unsigned 40,8
 
 [PTC_Heartbeat]
-ID=106h
+ID=105h
 DLC=5
 CycleTime=10
 Timeout=100
@@ -1964,7 +1964,7 @@ Var=Data3 char 32,8
 ID=650h
 DLC=8
 Var=HX711_FORCE_0 signed 0,32
-Var=NAU7802_FORCE_0 float 32,32
+Var=NAU7802_FORCE_0 float 32,32 /u:N
 
 [DAQ_0_THERMISTOR]
 ID=651h
@@ -1984,7 +1984,7 @@ Var=NAU7802_DEBUG_0 unsigned 32,32 -h
 ID=653h
 DLC=8
 Var=HX711_FORCE_1 signed 0,32
-Var=NAU7802_FORCE_1 float 32,32
+Var=NAU7802_FORCE_1 float 32,32 /u:N
 
 [DAQ_1_THERMISTOR]
 ID=654h
@@ -2004,7 +2004,7 @@ Var=NAU7802_DEBUG_1 unsigned 32,32 -h
 ID=656h
 DLC=8
 Var=HX711_FORCE_2 signed 0,32
-Var=NAU7802_FORCE_2 float 32,32
+Var=NAU7802_FORCE_2 float 32,32 /u:N
 
 [DAQ_2_THERMISTOR]
 ID=657h
@@ -2024,7 +2024,7 @@ Var=NAU7802_DEBUG_2 unsigned 32,32 -h
 ID=659h
 DLC=8
 Var=HX711_FORCE_3 signed 0,32
-Var=NAU7802_FORCE_3 float 32,32
+Var=NAU7802_FORCE_3 float 32,32 /u:N
 
 [DAQ_3_THERMISTOR]
 ID=65Ah
