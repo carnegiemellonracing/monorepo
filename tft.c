@@ -549,7 +549,7 @@ static void drawRTDScreen(void) {
 
     volatile cmr_canBMSLowVoltage_t *bmsLV = (volatile cmr_canBMSLowVoltage_t*)getPayload(CANRX_HVC_LOW_VOLTAGE);
     
-    bool ssOk = (bmsLV->safety_mV > 18);
+    bool ssOk = (bmsLV->safety_mV > 18000);
 
     volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t*)getPayload(CANRX_DRS_STATE);
     bool drsOpen = (drsState->state == CMR_CAN_DRS_STATE_OPEN);
