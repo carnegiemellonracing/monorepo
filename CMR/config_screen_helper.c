@@ -64,7 +64,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_value_variable = ESE_YRC_KP_VAL,
         .ESE_context_text_variable = "Yaw Rate Controller Kp",
         .value = {
-            .type = unsigned_integer,
+            .type = float_2_decimal,
             .value = 0
         },
         .min = 0,
@@ -77,7 +77,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_value_variable = ESE_YRC_KD_VAL,
         .ESE_context_text_variable = "Yaw Rate Controller Kd",
         .value = {
-            .type = unsigned_integer,
+            .type = float_2_decimal,
             .value = 0
         },
         .min = 0,
