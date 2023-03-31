@@ -579,11 +579,12 @@ static void drawRTDScreen(void) {
 
     uint8_t glvSoC = getLVSoC(glvVoltage, LV_LIPO);
 
-    uint8_t hvSoC = 10;
+    uint8_t hvSoC = 0;
     
+    volatile cmr_canCDCControlsStatus_t *controlsStatus = (volatile cmr_canCDCControlsStatus_t*)getPayload(CANRX_CDC_CONTROLS_STATUS);
 
-    bool yrcOn = false;
-    bool tcOn = false;
+    bool yrcOn = (bool)controlsStatus->yrcOn;
+    bool tcOn = (bool)controlsStatus->tcOn;;
 
     if (inRacingScreen()) {
         tftDL_racingScreenUpdate(
