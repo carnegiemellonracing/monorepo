@@ -1124,4 +1124,8 @@ typedef struct {
     int32_t NAU7802_debug;   /**< @brief Debug for NAU7802 - 0 if no errors */
 } cmr_canDAQDebug_t;
 
+typedef struct {
+    uint8_t state;
+} cmr_canMemoratorHeartbeat_t;
+
 #endif /* CMR_CAN_TYPES_H */

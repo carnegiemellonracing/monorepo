@@ -2040,3 +2040,8 @@ DLC=8
 Var=HX711_DEBUG_3 unsigned 0,32 -h
 Var=NAU7802_DEBUG_3 unsigned 32,32 -h
 
+[Memorator_Heartbeat]
+ID=109h
+DLC=1
+Var=State unsigned 0,8
+
