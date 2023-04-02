@@ -414,7 +414,7 @@ void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yell
  * @param glvVoltage Voltage from GLV
  */
 void tftDL_RTDUpdate(
-    bool memoratorPresent,
+    memorator_status_t memoratorStatus,
     SBG_status_t sbgStatus,
     int32_t hvVoltage_mV,
     int32_t power_kW,
@@ -465,7 +465,18 @@ void tftDL_RTDUpdate(
     tftDL_barSetY(&glvSoc_bar, (uint32_t)glvSoC);
     /* Memorator color */
     uint32_t *memorator_color = (void *) (tftDL_RTDData + ESE_MEMO_TEXT_COLOR);
-    uint32_t memorator_color_cmd = memoratorPresent ? green : red;
+    uint32_t memorator_color_cmd;
+    switch (memoratorStatus) {
+        case MEMORATOR_CONNECTED_STATE_OK:
+            memorator_color_cmd = green;
+            break;
+        case MEMORATOR_CONNECTED_BAD_STATE:
+            memorator_color_cmd = yellow;
+            break;
+        case MEMORATOR_NOT_CONNECTED:
+        default:
+            memorator_color_cmd = red;
+    }
     *memorator_color = memorator_color_cmd;
 
     /* Traction Control color */

@@ -80,7 +80,7 @@ typedef enum {
     CANRX_PTC_LOOP_C_TEMPS,    /**< @brief PTC Loop C temps */
     CANRX_HVC_HEARTBEAT,        /**< @brief HVC Error. */
     CANRX_HVC_BMB_STATUS,       /**< @brief HVC BMB Status */
-    CANRX_CDL_BROADCAST,        /**< @brief CDL broadcast. */
+    CANRX_MEMORATOR_BROADCAST,      /**< @brief Memorator broadcast. */
     CANRX_SBG_STATUS_3,            /**< @brief INS Status 3 */
 	CANRX_EMD_VALUES,			/**< @brief EMD Values for HV voltages and current */
     CANRX_VSM_SENSORS,

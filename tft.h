@@ -52,5 +52,11 @@ typedef enum {
     SBG_STATUS_WORKING_POS_FOUND        /** @brief INS working and has fix on position */
 } SBG_status_t;
 
+typedef enum {
+    MEMORATOR_NOT_CONNECTED = 0,        /** @brief Memorator not connected/not sending info */
+    MEMORATOR_CONNECTED_BAD_STATE,      /** @brief Memorator transmitting, but not sending correctly */
+    MEMORATOR_CONNECTED_STATE_OK        /** @brief Memorator transmitting correctly */
+} memorator_status_t;
+
 #endif /* TFT_H */
 

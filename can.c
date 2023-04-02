@@ -141,10 +141,10 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
-    [CANRX_CDL_BROADCAST] = {
-        .canID = CMR_CANID_CDL_BROADCAST,
-        .timeoutError_ms = 4000,
-        .timeoutWarn_ms = 2000
+    [CANRX_MEMORATOR_BROADCAST] = {
+        .canID = CMR_CANID_HEARTBEAT_MEMORATOR,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1500
     },
     [CANRX_SBG_STATUS_3] = {
         .canID = CMR_CANID_SBG_STATUS_3,
@@ -589,7 +589,7 @@ void canInit(void) {
                 CMR_CANID_AFC1_DRIVER_TEMPS,
                 CMR_CANID_HVC_MINMAX_CELL_TEMPS,
                 CMR_CANID_VSM_STATUS,
-                CMR_CANID_CDL_BROADCAST
+                CMR_CANID_HEARTBEAT_MEMORATOR
             }
         },
         {

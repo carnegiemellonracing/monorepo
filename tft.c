@@ -446,7 +446,7 @@ uint32_t computeCurrent_A(volatile cmr_canAMKActualValues1_t *canAMK_Act1) {
  */
 static void drawRTDScreen(void) {
     /* Setup the Required CAN info for Display */
-    cmr_canRXMeta_t *metaCDLBroadcast = canRXMeta + CANRX_CDL_BROADCAST;
+    cmr_canRXMeta_t *metaMemoratorBroadcast = canRXMeta + CANRX_MEMORATOR_BROADCAST;
 
     cmr_canRXMeta_t *metaHVCPackVoltage = canRXMeta + CANRX_HVC_PACK_VOLTAGE;
     volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage =
@@ -507,7 +507,14 @@ static void drawRTDScreen(void) {
 
     /* Memorator present? */
     // Wait to update if hasn't seen in 2 sec (2000 ms)
-    bool memoratorPresent = cmr_canRXMetaTimeoutWarn(metaCDLBroadcast, xTaskGetTickCount()) == 0;
+    memorator_status_t memoratorStatus = MEMORATOR_NOT_CONNECTED;
+    if (cmr_canRXMetaTimeoutWarn(metaMemoratorBroadcast, xTaskGetTickCount()) == 0) {
+        memoratorStatus = MEMORATOR_CONNECTED_BAD_STATE;
+        volatile cmr_canMemoratorHeartbeat_t *memoratorHeartbeat = (void *) metaMemoratorBroadcast->payload;
+        if (memoratorHeartbeat->state == 0xA3) {
+            memoratorStatus = MEMORATOR_CONNECTED_STATE_OK;
+        }
+    }
 
     /* GPS present? */
     // Checks broadcast from CDC to see status of SBG
@@ -598,7 +605,7 @@ static void drawRTDScreen(void) {
         tftDLWrite(&tft, &tftDL_racing_screen);
     } else {
         /* Update Display List*/
-        tftDL_RTDUpdate(memoratorPresent, 
+        tftDL_RTDUpdate(memoratorStatus, 
                         sbgStatus, 
                         hvVoltage_mV, 
                         power_kW,

@@ -57,7 +57,7 @@ extern volatile bool redraw_new_driver_profiles;
 #define MESSAGEDISPLAYLEN 21
 
 void tftDL_RTDUpdate(
-    bool memoratorPresent,
+    memorator_status_t memoratorStatus,
     SBG_status_t sbgStatus,
     int32_t hvVoltage_mV,
     int32_t power_kW,
