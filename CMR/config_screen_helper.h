@@ -111,7 +111,7 @@ typedef struct {
 }config_menu_item_t;
 
 
-config_menu_item_t test;
+//config_menu_item_t test;
 extern volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS];
 
 //////// HELPER FUNCTIONS /////////////////
