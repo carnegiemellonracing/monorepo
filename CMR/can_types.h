@@ -1120,6 +1120,13 @@ typedef struct {
 } cmr_canDAQThermistor_t;
 
 typedef struct {
+    uint16_t linpot_front_mm;       /**< @brief Front damper length in mm */
+    uint16_t linpot_front_adc;      /**< @brief Front linpot ADC Value */
+    uint16_t linpot_rear_mm;        /**< @brief Rear damper length in mm */
+    uint16_t linpot_rear_adc;       /**< @brief Rear linpot ADC Value */
+} cmr_canDAQLinpot_t;
+
+typedef struct {
     int32_t HX711_debug;     /**< @brief Debug for HX711 - 0 if no errors */
     int32_t NAU7802_debug;   /**< @brief Debug for NAU7802 - 0 if no errors */
 } cmr_canDAQDebug_t;

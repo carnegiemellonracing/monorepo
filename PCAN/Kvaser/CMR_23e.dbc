@@ -1550,11 +1550,11 @@ SG_ HX711_FORCE_0 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
 SG_ NAU7802_FORCE_0 : 32|32@1- (1,0) [-3.4E038|3.4E038] "N" Vector__XXX
 
 
-BO_ 1617 DAQ_0_THERMISTOR: 8 Vector__XXX
-SG_ TMP0_0 : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ TMP1_0 : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ TMP2_0 : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ TMP3_0 : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
+BO_ 1617 DAQ_0_LINPOT: 8 Vector__XXX
+SG_ FR_DAMPER_MM : 0|16@1+ (1,0) [0|65535] "mm" Vector__XXX
+SG_ FR_LINPOT_ADC : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ BR_DAMPER_MM : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ BR_DAMPER_ADC : 48|16@1+ (1,0) [0|65535] "mm" Vector__XXX
 
 
 BO_ 1618 DAQ_0_DEBUG: 8 Vector__XXX
@@ -1601,11 +1601,11 @@ SG_ HX711_FORCE_3 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
 SG_ NAU7802_FORCE_3 : 32|32@1- (1,0) [-3.4E038|3.4E038] "N" Vector__XXX
 
 
-BO_ 1626 DAQ_3_THERMISTOR: 8 Vector__XXX
-SG_ TMP0_3 : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ TMP1_3 : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ TMP2_3 : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ TMP3_3 : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
+BO_ 1626 DAQ_3_LINPOT: 8 Vector__XXX
+SG_ FL_DAMPER_MM : 0|16@1+ (1,0) [0|65535] "mm" Vector__XXX
+SG_ FL_LINPOT_ADC : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ BL_DAMPER_MM : 32|16@1+ (1,0) [0|65535] "mm" Vector__XXX
+SG_ BL_DAMPER_ADC : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
 
 
 BO_ 1627 DAQ_3_DEBUG: 8 Vector__XXX
@@ -2715,10 +2715,10 @@ BA_ "GenSigStartValue" SG_ 772 BMB15_Error 0;
 BA_ "GenSigStartValue" SG_ 1317 Address 0;
 BA_ "GenSigStartValue" SG_ 1616 HX711_FORCE_0 0;
 BA_ "GenSigStartValue" SG_ 1616 NAU7802_FORCE_0 0;
-BA_ "GenSigStartValue" SG_ 1617 TMP0_0 0;
-BA_ "GenSigStartValue" SG_ 1617 TMP1_0 0;
-BA_ "GenSigStartValue" SG_ 1617 TMP2_0 0;
-BA_ "GenSigStartValue" SG_ 1617 TMP3_0 0;
+BA_ "GenSigStartValue" SG_ 1617 FR_DAMPER_MM 0;
+BA_ "GenSigStartValue" SG_ 1617 FR_LINPOT_ADC 0;
+BA_ "GenSigStartValue" SG_ 1617 BR_DAMPER_MM 0;
+BA_ "GenSigStartValue" SG_ 1617 BR_DAMPER_ADC 0;
 BA_ "GenSigStartValue" SG_ 1618 HX711_DEBUG_0 0;
 BA_ "GenSigStartValue" SG_ 1618 NAU7802_DEBUG_0 0;
 BA_ "GenSigStartValue" SG_ 1619 HX711_FORCE_1 0;
@@ -2739,10 +2739,10 @@ BA_ "GenSigStartValue" SG_ 1624 HX711_DEBUG_2 0;
 BA_ "GenSigStartValue" SG_ 1624 NAU7802_DEBUG_2 0;
 BA_ "GenSigStartValue" SG_ 1625 HX711_FORCE_3 0;
 BA_ "GenSigStartValue" SG_ 1625 NAU7802_FORCE_3 0;
-BA_ "GenSigStartValue" SG_ 1626 TMP0_3 0;
-BA_ "GenSigStartValue" SG_ 1626 TMP1_3 0;
-BA_ "GenSigStartValue" SG_ 1626 TMP2_3 0;
-BA_ "GenSigStartValue" SG_ 1626 TMP3_3 0;
+BA_ "GenSigStartValue" SG_ 1626 FL_DAMPER_MM 0;
+BA_ "GenSigStartValue" SG_ 1626 FL_LINPOT_ADC 0;
+BA_ "GenSigStartValue" SG_ 1626 BL_DAMPER_MM 0;
+BA_ "GenSigStartValue" SG_ 1626 BL_DAMPER_ADC 0;
 BA_ "GenSigStartValue" SG_ 1627 HX711_DEBUG_3 0;
 BA_ "GenSigStartValue" SG_ 1627 NAU7802_DEBUG_3 0;
 BA_ "GenSigStartValue" SG_ 265 State 0;
