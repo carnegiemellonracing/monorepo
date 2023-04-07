@@ -129,7 +129,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_value_variable = ESE_PADDLE_MAX_REGEN_VAL,
         .ESE_context_text_variable = "Paddle Regen Braking Max",
         .value = {
-            .type = integer,
+            .type = unsigned_integer,
             .value = 50
         },
         .min = 0,
