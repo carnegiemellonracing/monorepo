@@ -1966,13 +1966,13 @@ DLC=8
 Var=HX711_FORCE_0 signed 0,32
 Var=NAU7802_FORCE_0 float 32,32 /u:N
 
-[DAQ_0_THERMISTOR]
+[DAQ_0_LINPOT]
 ID=651h
 DLC=8
-Var=TMP0_0 unsigned 0,16
-Var=TMP1_0 unsigned 16,16
-Var=TMP2_0 unsigned 32,16
-Var=TMP3_0 unsigned 48,16
+Var=FR_DAMPER_MM unsigned 0,16
+Var=FR_LINPOT_ADC unsigned 16,16
+Var=BR_DAMPER_MM unsigned 32,16
+Var=BR_DAMPER_ADC unsigned 48,16
 
 [DAQ_0_DEBUG]
 ID=652h
@@ -2026,13 +2026,13 @@ DLC=8
 Var=HX711_FORCE_3 signed 0,32
 Var=NAU7802_FORCE_3 float 32,32 /u:N
 
-[DAQ_3_THERMISTOR]
+[DAQ_3_LINPOT]
 ID=65Ah
 DLC=8
-Var=TMP0_3 unsigned 0,16
-Var=TMP1_3 unsigned 16,16
-Var=TMP2_3 unsigned 32,16
-Var=TMP3_3 unsigned 48,16
+Var=FL_DAMPER_MM unsigned 0,16
+Var=FL_LINPOT_ADC unsigned 16,16
+Var=BL_DAMPER_MM unsigned 32,16
+Var=BL_DAMPER_ADC unsigned 48,16
 
 [DAQ_3_DEBUG]
 ID=65Bh
