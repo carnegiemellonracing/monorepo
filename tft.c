@@ -546,7 +546,7 @@ static void drawRTDScreen(void) {
     
     volatile cmr_canVSMSensors_t *vsmSensors = (volatile cmr_canVSMSensors_t*)getPayload(CANRX_VSM_SENSORS);
     
-    int32_t current_A = (int32_t)(vsmSensors->hallEffect_cA) * 100;
+    int32_t current_A = (int32_t)(vsmSensors->hallEffect_cA) / 100;
 
     int32_t power_kW = (current_A * (hvVoltage_mV / 1000)) / 1000;
 
