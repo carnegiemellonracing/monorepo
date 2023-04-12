@@ -324,9 +324,9 @@ int32_t getAverageWheelRPM(void) {
         (void *) metaAMK_RR_Act1->payload;
 
     /* Extract wheel speeds */
-    int32_t frontLeftRPM = -1*(canAMK_FL_Act1->velocity_rpm); // Motor direction reversed on left side
+    int32_t frontLeftRPM = (canAMK_FL_Act1->velocity_rpm); // Motor direction reversed on left side
     int32_t frontRightRPM = canAMK_FR_Act1->velocity_rpm;
-    int32_t rearLeftRPM = -1*(canAMK_RL_Act1->velocity_rpm); // Motor direction reversed on left side
+    int32_t rearLeftRPM = (canAMK_RL_Act1->velocity_rpm); // Motor direction reversed on left side
     int32_t rearRightRPM = canAMK_RR_Act1->velocity_rpm;
 
     /* Compute average */
