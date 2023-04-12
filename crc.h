@@ -10,9 +10,11 @@
 
 #include <stdint.h>
 
-typedef uint16_t crc16_t;
 
-void crcInit(void);
-crc16_t calculateCRC(uint8_t message[], uint16_t numBytes);
+
+uint8_t reverse(uint8_t n);
+unsigned long long concat_arr(uint8_t *values, uint8_t numBytes);
+
+
 
 #endif /* CRC_H_ */
