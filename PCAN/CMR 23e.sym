@@ -1971,9 +1971,9 @@ Var=NAU7802_FORCE_0 float 32,32 /u:N
 ID=651h
 DLC=8
 Var=FR_DAMPER_MM unsigned 0,16 /u:mm
-Var=FR_LINPOT_ADC unsigned 16,16
-Var=BR_DAMPER_MM unsigned 32,16
-Var=BR_DAMPER_ADC unsigned 48,16 /u:mm
+Var=FR_DAMPER_ADC unsigned 16,16
+Var=BR_DAMPER_MM unsigned 32,16 /u:mm
+Var=BR_DAMPER_ADC unsigned 48,16
 
 [DAQ_0_DEBUG]
 ID=652h
@@ -2031,7 +2031,7 @@ Var=NAU7802_FORCE_3 float 32,32 /u:N
 ID=65Ah
 DLC=8
 Var=FL_DAMPER_MM unsigned 0,16 /u:mm
-Var=FL_LINPOT_ADC unsigned 16,16
+Var=FL_DAMPER_ADC unsigned 16,16
 Var=BL_DAMPER_MM unsigned 32,16 /u:mm
 Var=BL_DAMPER_ADC unsigned 48,16
 
