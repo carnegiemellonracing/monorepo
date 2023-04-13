@@ -80,7 +80,7 @@ DLC=6
 CycleTime=10
 Timeout=1000
 Var=VSM_brakePressureRear unsigned 0,16 /u:PSI
-Var=VSM_hallEffect signed 16,16 /u:A /f:0.01
+Var=VSM_hallEffect signed 16,16 /u:A /f:0.01 /p:2
 Var=VSM_safetyIn unsigned 32,8 /u:V /f:0.1
 Var=VSM_safetyOut unsigned 40,8 /u:V /f:0.1
 
@@ -165,6 +165,7 @@ Var=CDC_WRN_amkSrcRL bit 37,1
 Var=CDC_WRN_amkSrcRR bit 36,1
 Var=CDC_WRN_amkError bit 35,1
 Var=CDC_WRN_amkTimeout bit 34,1
+Var=CDC_WRN_memoratorTimeout bit 33,1
 
 [CDC_WheelSpeeds]
 ID=132h

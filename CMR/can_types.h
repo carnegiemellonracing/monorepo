@@ -157,7 +157,8 @@ typedef enum {
     /** @brief CDC Motor controller has an error. */
     CMR_CAN_WARN_CDC_AMK_ERROR = (1 << 11),
     /** @brief CDC Motor controller has timed out. */
-    CMR_CAN_WARN_CDC_AMK_TIMEOUT = (1 << 10)
+    CMR_CAN_WARN_CDC_AMK_TIMEOUT = (1 << 10),
+    CMR_CAN_WARN_CDC_MEMORATOR_DAQ_TIMEOUT = (1 << 9)
 } cmr_canWarn_t;
 
 /** @brief Represents the car's current driving mode (gear). */

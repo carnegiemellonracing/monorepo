@@ -119,6 +119,7 @@ SG_ CDC_WRN_amkSrcRL : 37|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ CDC_WRN_amkSrcRR : 36|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ CDC_WRN_amkError : 35|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ CDC_WRN_amkTimeout : 34|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ CDC_WRN_memoratorTimeout : 33|1@1+ (1,0) [0|1] "" Vector__XXX
 
 
 BO_ 306 CDC_WheelSpeeds: 8 Vector__XXX
@@ -1863,6 +1864,7 @@ BA_ "GenSigStartValue" SG_ 258 CDC_WRN_amkSrcRL 0;
 BA_ "GenSigStartValue" SG_ 258 CDC_WRN_amkSrcRR 0;
 BA_ "GenSigStartValue" SG_ 258 CDC_WRN_amkError 0;
 BA_ "GenSigStartValue" SG_ 258 CDC_WRN_amkTimeout 0;
+BA_ "GenSigStartValue" SG_ 258 CDC_WRN_memoratorTimeout 0;
 BA_ "GenSigStartValue" SG_ 306 CDC_wheelFrontLeft 0;
 BA_ "GenSigStartValue" SG_ 306 CDC_wheelFrontRight 0;
 BA_ "GenSigStartValue" SG_ 306 CDC_wheelBackLeft 0;
