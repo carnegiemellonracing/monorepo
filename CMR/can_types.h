@@ -449,6 +449,13 @@ typedef struct {
     uint8_t BMB15_16_Errs;  /**< @brief Errors for BMB15&16 (BMB15 = higher 4 bits). */
 } cmr_canHVCBMBErrors_t;
 
+//HV_I Sense Board CAN Types
+typedef struct {
+    int32_t packCurrent;
+    int32_t packVoltage;
+    uint8_t uptime_s;
+} cmr_canHVIHeartbeat_t;
+
 // ------------------------------------------------------------------------------------------------
 // Accumulator Fan Controller
 
