@@ -2046,3 +2046,10 @@ ID=109h
 DLC=1
 Var=State unsigned 0,8
 
+[HVI_Heartbeat]
+ID=106h
+DLC=6
+Var=HVI_Current signed 0,16 /u:A
+Var=HVI_Voltage signed 16,16 /u:V
+Var=HVI_Uptime unsigned 32,16 /u:s
+
