@@ -517,8 +517,8 @@ Var=PTC_loadCurrent unsigned 32,16 /u:mA
 ID=301h
 DLC=8
 CycleTime=10
-Var=BMS_Batt_Voltage signed 0,32 /u:mV
-Var=BMS_HV_Voltage signed 32,32 /u:mV
+Var=BMS_Batt_Voltage signed 0,32 /u:V /f:0.001 /p:3
+Var=BMS_HV_Voltage signed 32,32 /u:V /f:0.001 /p:3
 
 [BMS_Pack_Currents]
 ID=302h

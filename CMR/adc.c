@@ -19,7 +19,7 @@ static const uint32_t CMR_ADC_TIMEOUT_MS = 1;
 static const uint32_t cmr_adcSample_priority = 5;
 
 /** @brief ADC sampling period (milliseconds). */
-static const TickType_t cmr_adcSample_period_ms = 10;
+static TickType_t cmr_adcSample_period_ms = 10;
 
 /**
  * @brief Task for sampling the ADC.
@@ -79,7 +79,8 @@ static void cmr_adcConfigChannels(cmr_adc_t *adc) {
  */
 void cmr_adcInit(
     cmr_adc_t *adc, ADC_TypeDef *instance,
-    cmr_adcChannel_t *channels, const size_t channelsLen
+    cmr_adcChannel_t *channels, const size_t channelsLen,
+    TickType_t samplePeriod_ms
 ) {
     if (channelsLen > CMR_ADC_CHANNELS) {
         cmr_panic("Too many channels");
@@ -97,6 +98,7 @@ void cmr_adcInit(
     cmr_adcConfigChannels(adc);
     #endif /* F413 */
 
+    cmr_adcSample_period_ms = samplePeriod_ms;
     cmr_taskInit(
         &adc->sampleTask,
         "ADC sample",

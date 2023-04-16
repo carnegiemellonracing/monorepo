@@ -379,8 +379,8 @@ SG_ PTC_loadCurrent : 32|16@1+ (1,0) [0|65535] "mA" Vector__XXX
 
 
 BO_ 769 BMS_Pack_Voltages: 8 Vector__XXX
-SG_ BMS_Batt_Voltage : 0|32@1- (1,0) [-2147483648|2147483647] "mV" Vector__XXX
-SG_ BMS_HV_Voltage : 32|32@1- (1,0) [-2147483648|2147483647] "mV" Vector__XXX
+SG_ BMS_Batt_Voltage : 0|32@1- (0.001,0) [-2147483.648|2147483.647] "V" Vector__XXX
+SG_ BMS_HV_Voltage : 32|32@1- (0.001,0) [-2147483.648|2147483.647] "V" Vector__XXX
 
 
 BO_ 770 BMS_Pack_Currents: 8 Vector__XXX

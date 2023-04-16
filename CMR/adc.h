@@ -65,7 +65,8 @@ typedef struct {
 
 void cmr_adcInit(
     cmr_adc_t *adc, ADC_TypeDef *instance,
-    cmr_adcChannel_t *channels, const size_t channelsLen
+    cmr_adcChannel_t *channels, const size_t channelsLen,
+    TickType_t samplePeriod_ms
 );
 
 uint32_t cmr_adcRead(cmr_adc_t *adc, size_t channel);
