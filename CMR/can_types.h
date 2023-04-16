@@ -452,8 +452,8 @@ typedef struct {
 //HV_I Sense Board CAN Types
 typedef struct {
     int16_t packCurrent_dA;
-    int16_t packVoltage_V;
-    uint16_t uptime_s;
+    uint16_t packVoltage_cV;
+    int32_t packPower_W;
 } cmr_canHVIHeartbeat_t;
 
 // ------------------------------------------------------------------------------------------------

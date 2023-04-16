@@ -1618,6 +1618,12 @@ BO_ 265 Memorator_Heartbeat: 1 Vector__XXX
 SG_ State : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
+BO_ 262 HVI_Heartbeat: 8 Vector__XXX
+SG_ HVI_Current : 0|16@1- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+SG_ HVI_Voltage : 16|16@1+ (0.01,0) [0|655.35] "V" Vector__XXX
+SG_ HVI_Power : 32|32@1- (0.001,0) [-2147483.648|2147483.647] "kW" Vector__XXX
+
+
 CM_ BO_ 1296 "Timeout matrix";
 CM_ BO_ 647 "Set ID based on wiring";
 CM_ BO_ 649 "Set ID based on wiring";
@@ -2748,6 +2754,9 @@ BA_ "GenSigStartValue" SG_ 1626 BL_DAMPER_ADC 0;
 BA_ "GenSigStartValue" SG_ 1627 HX711_DEBUG_3 0;
 BA_ "GenSigStartValue" SG_ 1627 NAU7802_DEBUG_3 0;
 BA_ "GenSigStartValue" SG_ 265 State 0;
+BA_ "GenSigStartValue" SG_ 262 HVI_Current 0;
+BA_ "GenSigStartValue" SG_ 262 HVI_Voltage 0;
+BA_ "GenSigStartValue" SG_ 262 HVI_Power 0;
 
 
 VAL_ 256 VSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
