@@ -180,6 +180,11 @@ cmr_canRXMeta_t canRXMeta[] = {
         .canID = CMR_CANID_CDC_CONTROLS_STATUS,
         .timeoutError_ms = 4000,
 		.timeoutWarn_ms = 2000
+    },
+    [CANRX_CDC_HEARTBEAT] {
+        .canID = CMR_CANID_HEARTBEAT_CDC,
+        .timeoutError_ms = 4000,
+		.timeoutWarn_ms = 2000
     }
 };
 

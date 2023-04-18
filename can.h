@@ -88,6 +88,7 @@ typedef enum {
     CANRX_DRS_STATE,
     CANRX_CDC_ODOMETER,
     CANRX_CDC_CONTROLS_STATUS,
+    CANRX_CDC_HEARTBEAT,
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 

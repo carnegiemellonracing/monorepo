@@ -32,7 +32,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_LED_IMD] = {
+    [GPIO_LED_AMS] = {
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_9,
@@ -41,7 +41,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_LED_AMS] = {
+    [GPIO_LED_IMD] = {
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_8,
