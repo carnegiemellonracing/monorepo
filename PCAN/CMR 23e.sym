@@ -1978,7 +1978,7 @@ Var=BR_DAMPER_ADC unsigned 48,16
 ID=652h
 DLC=8
 Var=HX711_DEBUG_0 unsigned 0,32 -h
-Var=NAU7802_DEBUG_0 unsigned 32,32 -h
+Var=NAU7802_DEBUG_0 signed 32,32
 
 [DAQ_1_LOADCELL]
 ID=653h
@@ -1998,7 +1998,7 @@ Var=TMP3_1 unsigned 48,16
 ID=655h
 DLC=8
 Var=HX711_DEBUG_1 unsigned 0,32 -h
-Var=NAU7802_DEBUG_1 unsigned 32,32 -h
+Var=NAU7802_DEBUG_1 signed 32,32
 
 [DAQ_2_LOADCELL]
 ID=656h
@@ -2018,7 +2018,7 @@ Var=TMP3_2 unsigned 48,16
 ID=658h
 DLC=8
 Var=HX711_DEBUG_2 unsigned 0,32 -h
-Var=NAU7802_DEBUG_2 unsigned 32,32 -h
+Var=NAU7802_DEBUG_2 signed 32,32
 
 [DAQ_3_LOADCELL]
 ID=659h
@@ -2038,7 +2038,7 @@ Var=BL_DAMPER_ADC unsigned 48,16
 ID=65Bh
 DLC=8
 Var=HX711_DEBUG_3 unsigned 0,32 -h
-Var=NAU7802_DEBUG_3 unsigned 32,32 -h
+Var=NAU7802_DEBUG_3 signed 32,32
 
 [Memorator_Heartbeat]
 ID=109h
