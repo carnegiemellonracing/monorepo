@@ -46,11 +46,10 @@ SG_ VSM_ERR_latchIMD : 25|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_latchBSPD : 24|1@1+ (1,0) [0|1] "" Vector__XXX
 
 
-BO_ 512 VSM_Sensors: 6 Vector__XXX
+BO_ 512 VSM_Sensors: 8 Vector__XXX
 SG_ VSM_brakePressureRear : 0|16@1+ (1,0) [0|65535] "PSI" Vector__XXX
 SG_ VSM_hallEffect : 16|16@1- (0.01,0) [-327.68|327.67] "A" Vector__XXX
-SG_ VSM_safetyIn : 32|8@1+ (0.1,0) [0|25.5] "V" Vector__XXX
-SG_ VSM_safetyOut : 40|8@1+ (0.1,0) [0|25.5] "V" Vector__XXX
+SG_ VSM_HE_CoulombCount : 32|32@1- (1,0) [-3.4E038|3.4E038] "C" Vector__XXX
 
 
 BO_ 1296 VSM_LatchedStatus: 3 Vector__XXX
@@ -1655,7 +1654,7 @@ BA_ "BusType" "CAN";
 
 BA_ "GenMsgCycleTime" BO_ 256 10;
 BA_ "GenMsgCycleTime" BO_ 272 10;
-BA_ "GenMsgCycleTime" BO_ 512 10;
+BA_ "GenMsgCycleTime" BO_ 512 5;
 BA_ "GenMsgCycleTime" BO_ 1296 10000;
 BA_ "GenMsgCycleTime" BO_ 1328 100;
 BA_ "GenMsgCycleTime" BO_ 257 10;
@@ -1815,8 +1814,7 @@ BA_ "GenSigStartValue" SG_ 272 VSM_ERR_latchIMD 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_latchBSPD 0;
 BA_ "GenSigStartValue" SG_ 512 VSM_brakePressureRear 0;
 BA_ "GenSigStartValue" SG_ 512 VSM_hallEffect 0;
-BA_ "GenSigStartValue" SG_ 512 VSM_safetyIn 0;
-BA_ "GenSigStartValue" SG_ 512 VSM_safetyOut 0;
+BA_ "GenSigStartValue" SG_ 512 VSM_HE_CoulombCount 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_HVCTimeout 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_CDCTimeout 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_FSMTimeout 0;
@@ -2775,6 +2773,7 @@ VAL_ 1794 SBG_Solution_Mode 0 "Uninitialized" 1 "Vertical_Gyro_Only" 2 "Orientat
 VAL_ 1024 EMD_VoltageGain 0 "x1" 1 "x2" 2 "x4" 3 "x8" 4 "x16" 5 "x32" ;
 VAL_ 1024 EMD_CurrentGain 0 "x1" 1 "x2" 2 "x4" 3 "x8" 4 "x16" 5 "x32" ;
 
+SIG_VALTYPE_ 512 VSM_HE_CoulombCount : 1;
 SIG_VALTYPE_ 642 CDC_Latitude : 1;
 SIG_VALTYPE_ 642 CDC_Longitude : 1;
 SIG_VALTYPE_ 1860 SBG_Velocity_ODO : 1;
