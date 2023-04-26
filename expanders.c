@@ -599,6 +599,17 @@ void expandersInit(void) {
         GPIOB, GPIO_PIN_4
     );
     
+	if (HAL_I2CEx_ConfigAnalogFilter(&(i2c.handle), I2C_ANALOGFILTER_DISABLE) != HAL_OK)
+		{
+		cmr_panic("Failed to disable analog filter");
+		}
+		/** Configure Digital filter
+		*/
+	if (HAL_I2CEx_ConfigDigitalFilter(&(i2c.handle), 15) != HAL_OK)
+		{
+		  cmr_panic("Failed to enable digital filter");
+		}
+
     cmr_taskInit(
         &expanderUpdate100Hz_task,
         "GPIO Expander Update 100Hz",

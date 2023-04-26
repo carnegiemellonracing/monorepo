@@ -325,16 +325,16 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     [SENSOR_CH_TPOS_L_U8] = {
         .conv = adcToUInt8,
         .sample = sampleADCSensor,
-        .readingMin = 700,
-        .readingMax = 3889,
+        .readingMin = 670,
+        .readingMax = 3630,
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_FSM_TPOS_L
     },
     [SENSOR_CH_TPOS_R_U8] = {
         .conv = adcToUInt8,
         .sample = sampleADCSensor,
-        .readingMin = 685,
-        .readingMax = 3630, 
+        .readingMin = 703,
+        .readingMax = 3860,
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_FSM_TPOS_R
     },
