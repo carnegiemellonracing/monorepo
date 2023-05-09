@@ -453,6 +453,13 @@ Var=DIM_regenPercent unsigned 24,8 /u:percent
 Var=DIM_paddleLeft unsigned 32,8
 Var=DIM_paddleRight unsigned 40,8
 
+[DIM_Acknowledge]
+ID=545h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_Acknowledge unsigned 0,8
+
 [PTC_Heartbeat]
 ID=105h
 DLC=5

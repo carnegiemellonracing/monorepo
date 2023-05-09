@@ -671,6 +671,13 @@ typedef struct {
     uint8_t paddleRight;             /**< @brief Between 0 and 255 for left paddle pos*/
 } cmr_canDIMActions_t;
 
+/** @brief DIM sends message to acknowledge radio message 
+ * CDC rebroadcasts to DAQ Live.
+*/
+typedef struct {
+    uint8_t acknowledge;
+} cmr_canDIMAck_t;
+
 // DIM Config Screen data
 /** @brief Driver Interface Module config screen data. */
 

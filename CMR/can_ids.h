@@ -75,6 +75,7 @@ typedef enum {
     CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x535,    /**< @brief DIM power diagnostics. */
     CMR_CANID_DIM_TEXT_WRITE = 0x525,           /**< @brief DIM write command for sending text. */
     CMR_CANID_DIM_ACTIONS = 0x515,              /**< @brief DIM action buttons pressed status and regen percentage. */
+    CMR_CANID_DIM_ACKNOWLEDGE = 0x545,              /**< @brief DIM action buttons pressed status and regen percentage. */
 
     /** @Note: The following CAN IDs are used for the dim-cdc driver configuration system.
      * If you wish to modify these, you must maintain the invariant that the number of config
