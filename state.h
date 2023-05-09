@@ -56,6 +56,8 @@ void stateGearUpdate(void);
 void stateDrsModeSwitch(expanderRotaryPosition_t pos);
 void stateDrsUpdate(void);
 
+bool getAcknowledgeButton(void);
+
 int32_t getAverageWheelRPM(void);
 bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq);
 

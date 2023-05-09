@@ -499,6 +499,11 @@ void tftDL_RTDUpdate(
     uint32_t drs_color_cmd = drsOpen ? green : black;
     *drs_color = drs_color_cmd;
 
+    /* Radio color */
+    uint32_t *radio_color = (void *) (tftDL_RTDData + ESE_RADIO_COLOR);
+    uint32_t radio_color_cmd = getAcknowledgeButton() ? green : black;
+    *radio_color = radio_color_cmd;
+
     /* GPS color */
     uint32_t *gps_color = (void *) (tftDL_RTDData + ESE_GPS_TEXT_COLOR);
     uint32_t gps_color_cmd;
