@@ -191,7 +191,8 @@ static int32_t adcToSwangle(const cmr_sensor_t *sensor, uint32_t reading) {
     // Layer 2 Weight
     double swangle_deg = W2[0] * a1_0 + W2[1] * a1_1 + W2[2] * a1_2 + b2;
 
-    return (int32_t) swangle_deg;
+    // Bias changed after mechanical changes
+    return ((int32_t) swangle_deg) - 18;
 }
 
 /**
