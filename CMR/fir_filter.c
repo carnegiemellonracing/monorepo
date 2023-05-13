@@ -47,6 +47,18 @@ const float FIR_COEFFICIENTS_11_100_5[11] = {
     0.033083518941111
 };
 
+// window length:       5 samples
+// sample rate:         80Hz
+// cutoff frequency:    10Hz
+// group delay:         (1 / 80Hz) * (5 - 1) / 2 = 25ms
+const float FIR_COEFFICIENTS_5_80_10[5] = {
+    0.144424263033140,
+    0.226592535371819,
+    0.257966403190083,
+    0.226592535371819,
+    0.144424263033140
+};
+
 // window length:       9 samples
 // sample rate:         80Hz
 // cutoff frequency:    5Hz
@@ -148,7 +160,9 @@ float cmr_fir_filter_update(
  * @param filter_state Pointer to the filter state
  * @return The dot product of the updated buffer and the filter coefficients
  */
-float cmr_fir_filter_peak(const cmr_fir_filter_state_t *filter_state) {
+float cmr_fir_filter_peak(
+    const cmr_fir_filter_state_t *filter_state
+) {
     configASSERT(filter_state != NULL);
     configASSERT(filter_state->buf != NULL);
     configASSERT(filter_state->coefs != NULL);

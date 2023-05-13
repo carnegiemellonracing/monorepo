@@ -24,6 +24,7 @@ typedef struct {
 /** @brief Pre-designed filter coefficients*/
 extern const float FIR_COEFFICIENTS_6_100_10[6];
 extern const float FIR_COEFFICIENTS_11_100_5[11];
+extern const float FIR_COEFFICIENTS_5_80_10[5];
 extern const float FIR_COEFFICIENTS_9_80_5[9];
 
 void cmr_fir_filter_init(
@@ -41,6 +42,8 @@ float cmr_fir_filter_update(
     cmr_fir_filter_state_t *filter_state,
     float new_sample
 );
-float cmr_fir_filter_peak(const cmr_fir_filter_state_t *filter_state);
+float cmr_fir_filter_peak(
+    const cmr_fir_filter_state_t *filter_state
+);
 
 #endif /* _FIR_FILTER_H_ */
