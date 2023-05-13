@@ -191,8 +191,7 @@ static int32_t adcToSwangle(const cmr_sensor_t *sensor, uint32_t reading) {
     // Layer 2 Weight
     double swangle_deg = W2[0] * a1_0 + W2[1] * a1_1 + W2[2] * a1_2 + b2;
 
-    // Bias changed after mechanical changes
-    return ((int32_t) swangle_deg) - 18;
+    return (int32_t) swangle_deg;
 }
 
 /**
@@ -326,7 +325,7 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     [SENSOR_CH_TPOS_L_U8] = {
         .conv = adcToUInt8,
         .sample = sampleADCSensor,
-        .readingMin = 670,
+        .readingMin = 700,
         .readingMax = 3630,
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_FSM_TPOS_L
@@ -334,7 +333,7 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     [SENSOR_CH_TPOS_R_U8] = {
         .conv = adcToUInt8,
         .sample = sampleADCSensor,
-        .readingMin = 703,
+        .readingMin = 710,
         .readingMax = 3860,
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_FSM_TPOS_R
