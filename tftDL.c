@@ -548,6 +548,12 @@ void tftDL_racingScreenUpdate(
 	uint32_t *drs_color = (void *) (tftDL_racingData + ESE_RS_DRS_COLOR);
 	uint32_t drs_color_cmd = drsOpen ? green : black;
 	*drs_color = drs_color_cmd;
+    
+     /* Radio color */
+    uint32_t *radio_color = (void *) (tftDL_racingData + ESE_RS_RADIO_COL);
+    uint32_t radio_color_cmd = getAcknowledgeButton() ? green : black;
+    *radio_color = radio_color_cmd;
+
 
     tftDL_showStates(tftDL_racingData, ESE_RS_VSM_STATE_STR, ESE_RS_VSM_STATE_COLOR, ESE_RS_GEAR_STR, ESE_RS_DRS_MODE_STR, true);
     tftDL_showRAMMsg(tftDL_racingData, ESE_RS_RAM_LAST_LAP, ESE_RS_RAM_TARG_LAP, ESE_RS_RAM_MSG_STR);
