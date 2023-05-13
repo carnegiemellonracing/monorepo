@@ -30,9 +30,13 @@ void cmr_fir_filter_init(
     cmr_fir_filter_state_t *filter_state,
     float *buf,
     const float *coefs,
-    size_t len
+    size_t len,
+    float initial_value
 );
-void cmr_fir_filter_reset(cmr_fir_filter_state_t *filter_state);
+void cmr_fir_filter_reset(
+    cmr_fir_filter_state_t *filter_state,
+    float initial_value
+);
 float cmr_fir_filter_update(
     cmr_fir_filter_state_t *filter_state,
     float new_sample

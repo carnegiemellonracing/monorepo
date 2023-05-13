@@ -68,15 +68,17 @@ const float FIR_COEFFICIENTS_9_80_5[9] = {
 /**
  * @brief Initialize the filter state
  * @param filter_state Pointer to the filter state to be initialized
- * @param buf buffer for the FIR filter, must have length len
+ * @param buf Buffer for the FIR filter, must have length len
  * @param coefs FIR filter coefficients, must have length len
  * @param len The length of buf and coefs
+ * @param initial_value The initial value of the filter
  */
 void cmr_fir_filter_init(
     cmr_fir_filter_state_t *filter_state,
     float *buf,
     const float *coefs,
-    size_t len
+    size_t len,
+    float initial_value
 ) {
     configASSERT(filter_state != NULL);
     configASSERT(buf != NULL);
@@ -88,20 +90,24 @@ void cmr_fir_filter_init(
     filter_state->len = len;
 
     // reset the filter state
-    cmr_fir_filter_reset(filter_state);
+    cmr_fir_filter_reset(filter_state, initial_value);
 }
 
 /**
  * @brief Resets the filter state by filling the buffer with zeros
  * @param filter_state Pointer to the filter state
+ * @param initial_value The initial value of the filter
  */
-void cmr_fir_filter_reset(cmr_fir_filter_state_t *filter_state) {
+void cmr_fir_filter_reset(
+    cmr_fir_filter_state_t *filter_state,
+    float initial_value
+) {
     configASSERT(filter_state != NULL);
     configASSERT(filter_state->buf != NULL);
 
     // fill buf with zeros
     for (size_t i = 0; i < filter_state->len; i++) {
-        filter_state->buf[i] = 0.0f;
+        filter_state->buf[i] = initial_value;
     }
 }
 
