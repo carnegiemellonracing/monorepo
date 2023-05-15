@@ -177,7 +177,8 @@ typedef enum {
 
 /** @brief Represents the car's current DRS mode (). */
 typedef enum {
-    CMR_CAN_DRSM_CLOSED = 0,
+    CMR_CAN_DRSM_QUIET = 0,
+    CMR_CAN_DRSM_CLOSED,
     CMR_CAN_DRSM_OPEN,
     CMR_CAN_DRSM_TOGGLE,
     CMR_CAN_DRSM_HOLD,
