@@ -289,6 +289,7 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
     size_t drsCharsLen = 6;
     static const char *drsChars[] = {
         [CMR_CAN_DRSM_UNKNOWN] =      "??????",
+        [CMR_CAN_DRSM_QUIET] =        "QUIET\0",
         [CMR_CAN_DRSM_CLOSED] =       "CLOSED",
         [CMR_CAN_DRSM_OPEN] =         " OPEN ",
         [CMR_CAN_DRSM_TOGGLE] =       "TOGGLE",

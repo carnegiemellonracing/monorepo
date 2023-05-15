@@ -478,7 +478,7 @@ void stateDrsModeSwitch(expanderRotaryPosition_t position) {
         state.drsReq = CMR_CAN_DRSM_UNKNOWN;
     } else if ((cmr_canDrsMode_t) position >= CMR_CAN_DRSM_LEN) { 
         // set drs mode to closed if dial pos > drs modes
-        state.drsReq = CMR_CAN_DRSM_CLOSED;
+        state.drsReq = CMR_CAN_DRSM_QUIET;
     } else {
         state.drsReq = position;
     }
