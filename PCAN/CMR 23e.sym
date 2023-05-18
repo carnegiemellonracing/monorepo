@@ -26,6 +26,8 @@ enum PumpState(0="OFF", 1="ON")
 enum CoolingState(0="OFF", 1="LOW", 2="HIGH")
 enum DRS_MODE(0="DRS_CLOSED", 1="DRS_OPEN", 2="DRS_TOGGLE", 3="DRS_HOLD", 
   4="DRS_AUTO", 5="DRS_UNKNOWN")
+enum CCMState(0="ERROR", 1="CLEAR_ERROR", 2="CLEAR_HVC", 3="IDLE_HVC", 
+  4="STANDBY", 5="CHARGE_REQ", 6="CHARGE", 7="SLOW_CHARGE", 8="SHUTDOWN")
 
 {SENDRECEIVE}
 
@@ -2058,4 +2060,14 @@ DLC=8
 Var=HVI_Current signed 0,16 /u:A /f:0.1 /p:1
 Var=HVI_Voltage unsigned 16,16 /u:V /f:0.01 /p:2
 Var=HVI_Power signed 32,32 /u:kW /f:0.001 /p:3
+
+[CCM_Heartbeat]
+ID=107h
+DLC=6
+CycleTime=1000
+Timeout=10000
+Var=CCM_state unsigned 0,8 /e:CCMState
+Var=CCM_ChargerVoltage unsigned 8,16 /u:dV
+Var=CCM_ChargerCurrent unsigned 24,16 /u:dA
+Var=CCM_ChargerDisabled unsigned 40,8
 

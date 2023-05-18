@@ -336,6 +336,10 @@ SG_ DIM_paddleLeft : 32|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_paddleRight : 40|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
+BO_ 1349 DIM_Acknowledge: 4 Vector__XXX
+SG_ DIM_Acknowledge : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+
+
 BO_ 261 PTC_Heartbeat: 5 Vector__XXX
 SG_ PTC_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ PTC_ERR_VSMTimeout : 8|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1559,7 +1563,7 @@ SG_ BR_DAMPER_ADC : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
 
 BO_ 1618 DAQ_0_DEBUG: 8 Vector__XXX
 SG_ HX711_DEBUG_0 : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-SG_ NAU7802_DEBUG_0 : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+SG_ NAU7802_DEBUG_0 : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
 
 
 BO_ 1619 DAQ_1_LOADCELL: 8 Vector__XXX
@@ -1576,7 +1580,7 @@ SG_ TMP3_1 : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
 
 BO_ 1621 DAQ_1_DEBUG: 8 Vector__XXX
 SG_ HX711_DEBUG_1 : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-SG_ NAU7802_DEBUG_1 : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+SG_ NAU7802_DEBUG_1 : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
 
 
 BO_ 1622 DAQ_2_LOADCELL: 8 Vector__XXX
@@ -1593,7 +1597,7 @@ SG_ TMP3_2 : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
 
 BO_ 1624 DAQ_2_DEBUG: 8 Vector__XXX
 SG_ HX711_DEBUG_2 : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-SG_ NAU7802_DEBUG_2 : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+SG_ NAU7802_DEBUG_2 : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
 
 
 BO_ 1625 DAQ_3_LOADCELL: 8 Vector__XXX
@@ -1610,7 +1614,7 @@ SG_ BL_DAMPER_ADC : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
 
 BO_ 1627 DAQ_3_DEBUG: 8 Vector__XXX
 SG_ HX711_DEBUG_3 : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-SG_ NAU7802_DEBUG_3 : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+SG_ NAU7802_DEBUG_3 : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
 
 
 BO_ 265 Memorator_Heartbeat: 1 Vector__XXX
@@ -1621,6 +1625,13 @@ BO_ 262 HVI_Heartbeat: 8 Vector__XXX
 SG_ HVI_Current : 0|16@1- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
 SG_ HVI_Voltage : 16|16@1+ (0.01,0) [0|655.35] "V" Vector__XXX
 SG_ HVI_Power : 32|32@1- (0.001,0) [-2147483.648|2147483.647] "kW" Vector__XXX
+
+
+BO_ 263 CCM_Heartbeat: 6 Vector__XXX
+SG_ CCM_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ CCM_ChargerVoltage : 8|16@1+ (1,0) [0|65535] "dV" Vector__XXX
+SG_ CCM_ChargerCurrent : 24|16@1+ (1,0) [0|65535] "dA" Vector__XXX
+SG_ CCM_ChargerDisabled : 40|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
 CM_ BO_ 1296 "Timeout matrix";
@@ -1684,6 +1695,7 @@ BA_ "GenMsgCycleTime" BO_ 260 10;
 BA_ "GenMsgCycleTime" BO_ 1333 100;
 BA_ "GenMsgCycleTime" BO_ 565 100;
 BA_ "GenMsgCycleTime" BO_ 1301 100;
+BA_ "GenMsgCycleTime" BO_ 1349 1000;
 BA_ "GenMsgCycleTime" BO_ 261 10;
 BA_ "GenMsgCycleTime" BO_ 548 100;
 BA_ "GenMsgCycleTime" BO_ 564 100;
@@ -1778,6 +1790,7 @@ BA_ "GenMsgCycleTime" BO_ 1564 1000;
 BA_ "GenMsgCycleTime" BO_ 1565 1000;
 BA_ "GenMsgCycleTime" BO_ 1566 1000;
 BA_ "GenMsgCycleTime" BO_ 1567 1000;
+BA_ "GenMsgCycleTime" BO_ 263 1000;
 
 BA_ "GenSigStartValue" SG_ 256 VSM_state 0;
 BA_ "GenSigStartValue" SG_ 256 VSM_ERR_moduleTimeout 0;
@@ -2012,6 +2025,7 @@ BA_ "GenSigStartValue" SG_ 1301 DIM_drsButtonPressed 0;
 BA_ "GenSigStartValue" SG_ 1301 DIM_regenPercent 0;
 BA_ "GenSigStartValue" SG_ 1301 DIM_paddleLeft 0;
 BA_ "GenSigStartValue" SG_ 1301 DIM_paddleRight 0;
+BA_ "GenSigStartValue" SG_ 1349 DIM_Acknowledge 0;
 BA_ "GenSigStartValue" SG_ 261 PTC_state 0;
 BA_ "GenSigStartValue" SG_ 261 PTC_ERR_VSMTimeout 0;
 BA_ "GenSigStartValue" SG_ 261 PTC_ERR_waterTempOOR 0;
@@ -2755,6 +2769,10 @@ BA_ "GenSigStartValue" SG_ 265 State 0;
 BA_ "GenSigStartValue" SG_ 262 HVI_Current 0;
 BA_ "GenSigStartValue" SG_ 262 HVI_Voltage 0;
 BA_ "GenSigStartValue" SG_ 262 HVI_Power 0;
+BA_ "GenSigStartValue" SG_ 263 CCM_state 0;
+BA_ "GenSigStartValue" SG_ 263 CCM_ChargerVoltage 0;
+BA_ "GenSigStartValue" SG_ 263 CCM_ChargerCurrent 0;
+BA_ "GenSigStartValue" SG_ 263 CCM_ChargerDisabled 0;
 
 
 VAL_ 256 VSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
@@ -2772,6 +2790,7 @@ VAL_ 261 PTC_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_E
 VAL_ 1794 SBG_Solution_Mode 0 "Uninitialized" 1 "Vertical_Gyro_Only" 2 "Orientation_Only" 3 "Nav_Velocity" 4 "Full_Nav" ;
 VAL_ 1024 EMD_VoltageGain 0 "x1" 1 "x2" 2 "x4" 3 "x8" 4 "x16" 5 "x32" ;
 VAL_ 1024 EMD_CurrentGain 0 "x1" 1 "x2" 2 "x4" 3 "x8" 4 "x16" 5 "x32" ;
+VAL_ 263 CCM_state 0 "ERROR" 1 "CLEAR_ERROR" 2 "CLEAR_HVC" 3 "IDLE_HVC" 4 "STANDBY" 5 "CHARGE_REQ" 6 "CHARGE" 7 "SLOW_CHARGE" 8 "SHUTDOWN" ;
 
 SIG_VALTYPE_ 512 VSM_HE_CoulombCount : 1;
 SIG_VALTYPE_ 642 CDC_Latitude : 1;
