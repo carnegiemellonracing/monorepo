@@ -1,20 +1,12 @@
 /*
- * uart.h
+ * bq_interface.h
  *
- *  Created on: Mar 29, 2023
+ *  Created on: Apr 30, 2023
  *      Author: sidsr
  */
 
-#ifndef UART_H_
-#define UART_H_
-
-#include <CMR/uart.h>
-
-#define CRC_FRAME 2
-#define MAX_RESPONSE_LENGTH 128u
-
-#define BQ_BAUD_RATE 1000000
-
+#ifndef BQ_INTERFACE_H_
+#define BQ_INTERFACE_H_
 
 //register address definitions
 #define DIR0_ADDR_OTP			0x0
@@ -325,34 +317,4 @@
 #define DEBUG_OTP_SEC_BLK		0x7A0
 #define DEBUG_OTP_DED_BLK		0x7A1
 
-typedef enum {
-	SINGLE_READ = 0x00,
-	SINGLE_WRITE,
-	STACK_READ,
-	STACK_WRITE,
-	BROADCAST_READ,
-	BROADCAST_WRITE,
-	BROADCAST_WRITE_REVERSE
-} frame_t;
-
-typedef struct {
-	frame_t readWrite;
-	uint8_t dataLen;
-	uint8_t deviceAddress;
-	uint16_t registerAddress;
-	uint8_t data[MAX_RESPONSE_LENGTH];
-	uint8_t crc[CRC_LEN];
-} uart_command_t;
-
-typedef struct {
-	uint8_t len_bytes;
-	uint8_t deviceAddress;
-	uint16_t registerAddress;
-	uint8_t data[MAX_RESPONSE_LENGTH];
-	uint8_t crc[CRC_LEN];
-} uart_response_t;
-
-void uartInit(void);
-cmr_uart_result_t uart_receiveResponse(uart_response_t *response, bool deviceResponse);
-cmr_uart_result_t uart_sendCommand(const uart_command_t *command);
-#endif /* UART_H_ */
+#endif /* BQ_INTERFACE_H_ */

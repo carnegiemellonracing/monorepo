@@ -8,13 +8,7 @@
 #ifndef CRC_H_
 #define CRC_H_
 
-#include <stdint.h>
-
-
-
-uint8_t reverse(uint8_t n);
-unsigned long long concat_arr(uint8_t *values, uint8_t numBytes);
-
+uint16 crc(uint8_t *pBuf, int nLen);
 
 
 #endif /* CRC_H_ */

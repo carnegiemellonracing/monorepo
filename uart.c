@@ -8,6 +8,7 @@
 #include <CMR/tasks.h>      // CMR task interface
 #include <CMR/config.h>     // CMR configuration itnerface
 #include <CMR/panic.h>      // bad things
+#include <CMR/uart.h>
 
 #include "uart.h"       // Interface to implement
 #include "crc.h"
@@ -26,8 +27,6 @@ static cmr_uart_t uart;
 //-----------------------------------------------------------------------------
 // STATIC HELPER FUNCTION PROTOTYPES                                          |
 //-----------------------------------------------------------------------------
-static uint16_t uart_packCommand(const uart_command_t *command, Byte message[]);
-static uint16_t uart_unpackResponse(uint8_t frameInitByte, uart_response_t *response);
 static cmr_uart_result_t uart_getChar(cmr_uart_t *uart, uint8_t *c);
 static cmr_uart_result_t uart_sendMessage(cmr_uart_t *uart, Byte message[], uint16_t messageLength);
 
@@ -141,10 +140,7 @@ cmr_uart_result_t uart_sendCommand(const uart_command_t *command) {
 	uint8_t message[128] = {0};
 	uint8_t currByte = 0;
 
-
-
-
-	uint8_t initByte = command->readWrite | (0x07 & command->dataLen);
+	uint8_t initByte = ((command->readWrite) << 4) | (0x07 & command->dataLen-1);
 	message[currByte] = initByte;
 	currByte++;
 
@@ -168,13 +164,14 @@ cmr_uart_result_t uart_sendCommand(const uart_command_t *command) {
 	}
 
 	// Calculate the CRC and put at the end of the message
-	uint16_t crc = calculateCRC(message, messageLength);
-	message[messageLength] = (crc) & 0x00FF;
-	++messageLength;
-	message[messageLength] = (crc >> 8) & 0x00FF;
-	++messageLength;
+	uint16_t crc = calculateCRC(message, currByte);
+	message[currByte] = (crc) & 0x00FF;
+	currByte++;
+	message[currByte] = (crc >> 8) & 0x00FF;
+	currByte++;
 
-	return messageLength;
+	cmr_uart_result_t res;
+	res = uart_sendMessage(&uart, message, currByte);
 }
 
 
@@ -198,6 +195,6 @@ static cmr_uart_result_t uart_getChar(cmr_uart_t *uart, uint8_t *c) {
  * @param messageLength The number of bytes from message to send
  * @return The status of the UART result (success or failure)
  */
-static cmr_uart_result_t uart_sendMessage(cmr_uart_t *uart, Byte message[], uint16_t messageLength) {
+static cmr_uart_result_t uart_sendMessage(cmr_uart_t *uart, uint8_t message[], uint16_t messageLength) {
 	return cmr_uart_pollingTX(uart, message, messageLength);
 }
