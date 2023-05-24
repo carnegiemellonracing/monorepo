@@ -317,4 +317,6 @@
 #define DEBUG_OTP_SEC_BLK		0x7A0
 #define DEBUG_OTP_DED_BLK		0x7A1
 
+bool autoAddr(uint8_t num_boards);
+
 #endif /* BQ_INTERFACE_H_ */

@@ -6,6 +6,7 @@
  */
 #include "bq_interface.h"
 #include "uart.h"
+#include <CMR/uart.h>
 #include <stdbool.h>
 
 
