@@ -54,7 +54,7 @@ bool autoAddr(uint8_t num_boards) {
 		if(res != UART_SUCCESS) {
 			return false;
 		}
-		set_addr.data+=1;
+		set_addr.data[0]++;
 	}
 
 	//Set all devices as stack devices first
@@ -90,18 +90,34 @@ bool autoAddr(uint8_t num_boards) {
 
 	//otherwise, set 0x00 as base and num_board-1 as top
 	else {
-		set_comm_ctrl.data = 0x00;
+		set_comm_ctrl.data[0] = 0x00;
 		res = uart_sendCommand(&set_comm_ctrl);
 		if(res != UART_SUCCESS) {
 			return false;
 		}
 		set_comm_ctrl.deviceAddress = num_boards-1;
-		set_comm_ctrl.data = 0x03;
+		set_comm_ctrl.data[0] = 0x03;
 		res = uart_sendCommand(&set_comm_ctrl);
 		if(res != UART_SUCCESS) {
 			return false;
 		}
 	}
 
+}
+
+bool enableMainADC() {
+	uart_command_t adcMsg = {
+		.readWrite = BROADCAST_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0x00, //not used!
+		.registerAddress = ADC_CTRL1,
+		.data = {0x06},
+		.crc = {0x00, 0x00}
+	};
+	cmr_uart_result_t res;
+	res = uart_sendCommand(&adcMsg);
+	if(res != UART_SUCCESS) {
+		return false;
+	}
 }
 

@@ -8,6 +8,10 @@
 #ifndef BQ_INTERFACE_H_
 #define BQ_INTERFACE_H_
 
+#include <stdbool.h>
+#include <stdint.h>
+
+
 //register address definitions
 #define DIR0_ADDR_OTP			0x0
 #define DIR1_ADDR_OTP			0x1

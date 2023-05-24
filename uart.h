@@ -9,8 +9,9 @@
 #define UART_H_
 
 #include <CMR/uart.h>
+#include <stdbool.h>
 
-#define CRC_FRAME 2
+#define CRC_LEN 2
 #define MAX_RESPONSE_LENGTH 128u
 
 #define BQ_BAUD_RATE 1000000
