@@ -105,6 +105,7 @@ bool autoAddr(uint8_t num_boards) {
 
 }
 
+//start the main ADC in continuous mode
 bool enableMainADC() {
 	uart_command_t adcMsg = {
 		.readWrite = BROADCAST_WRITE,
@@ -119,5 +120,29 @@ bool enableMainADC() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
+	return true;
 }
+
+//enable however many cells are in series in our segment
+bool enableNumCells(uint8_t num_cells) {
+	if(num_cells < 1 || num_cells > 16) {
+		return false;
+	}
+	uart_command_t active_cell = {
+		.readWrite = BROADCAST_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0x00, //not used!
+		.registerAddress = ACTIVE_CELL,
+		.data = {num_cells-0x06}, //there is a min of 6 cells
+		.crc = {0x00, 0x00}
+	};
+	cmr_uart_result_t res;
+	res = uart_sendCommand(&active_cell);
+	if(res != UART_SUCCESS) {
+		return false;
+	}
+	return true;
+}
+
+
 

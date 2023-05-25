@@ -61,9 +61,11 @@ static cmr_adc_t adc;
  */
 void adcInit(void) {
     // ADC initialization and channel configuration.
+	static TickType_t cmr_adcSample_period_ms = 10;
     cmr_adcInit(
         &adc, ADC1,
-        adcChannels, sizeof(adcChannels) / sizeof(adcChannels[0])
+        adcChannels, sizeof(adcChannels) / sizeof(adcChannels[0]),
+		cmr_adcSample_period_ms
     );
 }
 

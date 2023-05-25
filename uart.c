@@ -28,8 +28,7 @@ static cmr_uart_t uart;
 // STATIC HELPER FUNCTION PROTOTYPES                                          |
 //-----------------------------------------------------------------------------
 static cmr_uart_result_t uart_getChar(cmr_uart_t *uart, uint8_t *c);
-static cmr_uart_result_t uart_sendMessage(cmr_uart_t *uart, Byte message[], uint16_t messageLength);
-
+static cmr_uart_result_t uart_sendMessage(cmr_uart_t *uart, uint8_t message[], uint16_t messageLength);
 //-----------------------------------------------------------------------------
 // GLOBAL INTERFACE FUNCTIONS                                                 |
 //-----------------------------------------------------------------------------
@@ -86,7 +85,7 @@ cmr_uart_result_t uart_receiveResponse(uart_response_t *response, bool deviceRes
 		if(retv != UART_SUCCESS) {
 			retvTotal = UART_FAILURE;
 		}
-		response->deviceAdress = deviceAddr;
+		response->deviceAddress = deviceAddr;
 	}
 	else {
 		response->deviceAddress = 0;
@@ -105,7 +104,7 @@ cmr_uart_result_t uart_receiveResponse(uart_response_t *response, bool deviceRes
 
 	uint8_t c = 0;
 	uint16_t receivedIndex = 0;
-	while((receivedIndex < responseLength) && (retvTotal == UART_SUCCESS)) {
+	while((receivedIndex < responseLen) && (retvTotal == UART_SUCCESS)) {
 
 		retv = uart_getChar(&uart, &c);
 		if(retv != UART_SUCCESS) {
