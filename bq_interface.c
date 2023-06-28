@@ -144,5 +144,19 @@ bool enableNumCells(uint8_t num_cells) {
 	return true;
 }
 
+//return voltage data
+bool pollAllVoltageData() {
+	uart_command_t read_voltage = {
+		.readWrite = BROADCAST_READ,
+		.dataLen = 1,
+		.deviceAddress = 0x00, //not used!
+		.registerAddress = VCELL_16,
+		.data = 0x1F, //reading high and low for 16 cells
+		.crc = {0x00, 0x00}
+	};
+	cmr_uart_result_t res;
+	res = uart_sendCommand(&read_voltage);
+}
+
 
 
