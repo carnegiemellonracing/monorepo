@@ -1618,20 +1618,6 @@ DLC=8
 Var=vel_calc_RL float 0,32
 Var=vel_calc_RR float 32,32
 
-[CONTROLS_PID_INTERNALS1]
-ID=7EEh
-DLC=8
-Var=Kp signed 0,16 /f:0.01
-Var=Ki signed 16,16 /f:0.01
-Var=Kd signed 32,16 /f:0.01
-Var=accum signed 48,16
-
-[CONTROLS_PID_INTERNALS2]
-ID=7F1h
-DLC=4
-Var=lastError signed 0,16 /f:0.01
-Var=lastTime unsigned 16,16
-
 [DIM_Config0_Drv0]
 ID=600h
 DLC=4
