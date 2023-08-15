@@ -105,6 +105,7 @@ bool autoAddr() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
+	return true;
 
 }
 
@@ -115,14 +116,12 @@ bool autoAddr() {
  * @return True if all uart commands succeeded, false otherwise
  */
 bool enableMainADC() {
-	uint8_t data[MAX_RESPONSE_LENGTH];
-	data[0] = 0x06;
 	uart_command_t adcMsg = {
 		.readWrite = STACK_WRITE,
 		.dataLen = 1,
 		.deviceAddress = 0x00, //not used!
 		.registerAddress = ADC_CTRL1,
-		.data = data,
+		.data = {0x06},
 		.crc = {0x00, 0x00}
 	};
 	cmr_uart_result_t res;
@@ -135,14 +134,12 @@ bool enableMainADC() {
 
 //enable however many cells are in series in our segment
 bool enableNumCells() {
-	uint8_t data[MAX_RESPONSE_LENGTH];
-	data[0] = VSENSE_CHANNELS-0x06; //there is a min of 6 cells
 	uart_command_t active_cell = {
 		.readWrite = STACK_WRITE,
 		.dataLen = 1,
 		.deviceAddress = 0x00, //not used!
 		.registerAddress = ACTIVE_CELL,
-		.data = data,
+		.data = {VSENSE_CHANNELS-0x06},
 		.crc = {0x00, 0x00}
 	};
 	cmr_uart_result_t res;
@@ -154,14 +151,12 @@ bool enableNumCells() {
 }
 
 bool enableGPIOPins() {
-	uint8_t data[MAX_RESPONSE_LENGTH];
-	data[0] = 0x01;
 	uart_command_t enable_tsref = {
 			.readWrite = STACK_WRITE,
 			.dataLen = 1,
 			.deviceAddress = 0x00, //not used!
 			.registerAddress = CONTROL2,
-			.data = data, //enable TSREF for NTC Thermistor Biasing
+			.data = {0x01}, //enable TSREF for NTC Thermistor Biasing
 			.crc = {0x00, 0x00}
 	};
 	cmr_uart_result_t res = uart_sendCommand(&enable_tsref);
@@ -170,13 +165,12 @@ bool enableGPIOPins() {
 	}
 
 	//enable GPIO inputs
-	data[0] = 0x12; //enable both GPIO pins in register as ADC input
 	uart_command_t enable_gpio = {
 			.readWrite = STACK_WRITE,
 			.dataLen = 1,
 			.deviceAddress = 0x00, //not used!
 			.registerAddress = GPIO_CONF3,
-			.data = data,
+			.data = {0x12},
 			.crc = {0x00, 0x00}
 	};
 	res = uart_sendCommand(&enable_gpio);
@@ -206,6 +200,7 @@ void BMBInit() {
 	enableMainADC();
 	enableNumCells();
 	enableGPIOPins();
+	cellBalancingSetup();
 }
 
 static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
@@ -217,14 +212,12 @@ static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
 
 //return voltage data
 void pollAllVoltageData() {
-	uint8_t data[MAX_RESPONSE_LENGTH];
-	data[0] = VSENSE_CHANNELS*2-1;
 	uart_command_t read_voltage = {
 		.readWrite = STACK_READ,
 		.dataLen = 1,
 		.deviceAddress = 0x00, //not used!
 		.registerAddress = TOP_CELL,
-		.data = data, //reading high and low for cell 0-16, so 0-31 bytes = 0x1F
+		.data = {VSENSE_CHANNELS*2-1}, //reading high and low for cell 0-VSENSE_CHANNELS
 		.crc = {0x00, 0x00}
 	};
 	cmr_uart_result_t res;
@@ -257,19 +250,19 @@ void pollAllVoltageData() {
 }
 
 static bool setMuxOutput(uint8_t channel) {
-	uint8_t data[MAX_RESPONSE_LENGTH];
+	uint8_t data;
 	switch(channel) {
 	case 0:
-		data[0] = 0x2D; //0 and 0
+		data = 0x2D; //0 and 0
 		break;
 	case 1:
-		data[0] = 0x25; //0 and 1
+		data = 0x25; //0 and 1
 		break;
 	case 2:
-		data[0] = 0x2C; //1 and 0
+		data = 0x2C; //1 and 0
 		break;
 	case 3:
-		data[0] = 0x24; //1 and 1
+		data = 0x24; //1 and 1
 		break;
 	default:
 		return false;
@@ -279,7 +272,7 @@ static bool setMuxOutput(uint8_t channel) {
 			.dataLen = 1,
 			.deviceAddress = 0x00, //not used!
 			.registerAddress = GPIO_CONF3,
-			.data = data,
+			.data = {data},
 			.crc = {0x00, 0x00}
 	};
 	cmr_uart_result_t res = uart_sendCommand(&enable_gpio);
@@ -294,16 +287,17 @@ static int16_t calculateTemp(uint8_t msb, uint8_t lsb) {
 }
 
 void pollAllTemperatureData() {
-	uint8_t data[MAX_RESPONSE_LENGTH];
-	data[0] = 0x07; //bytes 0-7
 	uart_command_t read_therms = {
 		.readWrite = STACK_READ,
 		.dataLen = 1,
 		.deviceAddress = 0x00, //not used!
 		.registerAddress = GPIO5_HI,
-		.data = data,
+		.data = {0x07},
 		.crc = {0x00, 0x00}
 	};
+	cmr_uart_result_t res;
+	res = uart_sendCommand(&read_therms);
+
 
 	//loop through each muxed channel
 	for(uint8_t j = 0; j < 4; j++) {
@@ -332,9 +326,71 @@ void pollAllTemperatureData() {
 			}
 		}
 	}
+}
 
+void cellBalancingSetup() {
+	//set up cell balancing timers
+	//done in two sets because max register write is 8 :(
+
+	uart_command_t balance_register = {
+		.readWrite = STACK_WRITE,
+		.dataLen = VSENSE_CHANNELS/2,
+		.deviceAddress = 0x00, //not used!
+		.registerAddress = CB_CELL14_CTRL,
+		.data = {0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02},
+		.crc = {0x00, 0x00}
+	};
+	cmr_uart_result_t res;
+	res = uart_sendCommand(&balance_register);
+
+	balance_register.registerAddress = CB_CELL7_CTRL;
+	res = uart_sendCommand(&balance_register);
+
+	//set duty cycle to switch between even and odd cells
+	uart_command_t duty_cycle = {
+		.readWrite = STACK_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0x00, //not used!
+		.registerAddress = BAL_CTRL1,
+		.data = {0x01}, //TODO what is this value supposed to be?
+		.crc = {0x00, 0x00}
+	};
+	res = uart_sendCommand(&duty_cycle);
+
+	//set UV stuff for stopping balancing
+	uart_command_t UV = {
+		.readWrite = STACK_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0x00, //not used!
+		.registerAddress = VCB_DONE_THRESH,
+		.data = {0x3F}, //TODO figure out correct low value
+		.crc = {0x00, 0x00}
+	};
+	res = uart_sendCommand(&UV);
+
+	UV.registerAddress = OVUV_CTRL;
+	UV.data[0] = 0x05;
+
+	res = uart_sendCommand(&UV);
 
 }
+
+void cellBalancing(bool set) {
+	uart_command_t enable = {
+		.readWrite = STACK_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0x00, //not used!
+		.registerAddress = BAL_CTRL2,
+		.data = {0x03},
+		.crc = {0x00, 0x00}
+	};
+	if(!set) {
+		enable.data[0] = 0x02;
+	}
+	cmr_uart_result_t res;
+	res = uart_sendCommand(&enable);
+}
+
 
 
 

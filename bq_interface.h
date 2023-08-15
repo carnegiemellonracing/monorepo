@@ -325,14 +325,17 @@
 #define VSENSE_CHANNELS 14
 #define TEMP_CHANNELS 10
 
+//TODO change this
+#define CELL_BALANCING_LOW_VOLTAGE 3.9
+
 typedef struct BMB_Data_t{
     uint16_t cellVoltages[VSENSE_CHANNELS];
     int16_t cellTemperatures[TEMP_CHANNELS];
 } BMB_Data_t;
 
-#define TOP_CELL VCELL16_HI
-#define GPIO_LOW
+#define TOP_CELL VCELL14_HI
 #define NUM_GPIO_CHANNELS 4
+
 
 
 bool autoAddr();
@@ -343,5 +346,8 @@ bool enableGPIOPins();
 void BMBInit();
 void pollAllVoltageData();
 void pollAllTemperatureData();
+
+void cellBalancingSetup();
+void cellBalancing(bool set);
 
 #endif /* BQ_INTERFACE_H_ */

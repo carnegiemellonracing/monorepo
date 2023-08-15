@@ -17,6 +17,8 @@ extern BMB_Data_t BMBData[BOARD_NUM];
 extern volatile int BMBTimeoutCount[BOARD_NUM];
 extern volatile int BMBErrs[BOARD_NUM];
 
+#define BALANCE_EN true
+#define BALANCE_DIS false
 
 
 
@@ -27,8 +29,17 @@ void vBMBSampleTask(void *pvParameters) {
 	// Previous wake time pointer
 	TickType_t xLastWakeTime = xTaskGetTickCount();
 	vTaskDelayUntil(&xLastWakeTime, 50);
+	bool prevStateBalance = false;
 
 	while (1) {
+		if (getState() == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE && !prevStateBalance) {
+			cellBalancing(BALANCE_EN);
+			prevStateBalance = true;
+		}
+		else if(getState() != CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE && prevStateBalance){
+			cellBalancing(BALANCE_DIS);
+			prevStateBalance = false;
+		}
 		pollAllVoltageData();
 		pollAllTemperatureData();
 	}
