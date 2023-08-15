@@ -23,6 +23,29 @@ static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
 	BMBErrs[BMBIndex] = err;
 }
 
+void turnOn() {
+	GPIO_InitTypeDef pinConfig = { //tx pin
+		.Pin = GPIO_PIN_13,
+		.Mode = GPIO_MODE_AF_PP,
+		.Pull = GPIO_PULLUP,
+		.Speed = GPIO_SPEED_FREQ_VERY_HIGH
+	};
+	HAL_GPIO_Init(GPIOB, &pinConfig);
+	HAL_GPIO_WritePin(
+		GPIOB, GPIO_PIN_13,
+		GPIO_PIN_SET
+	);
+	TickType_t xLastWakeTime = xTaskGetTickCount();
+	vTaskDelayUntil(&xLastWakeTime, 2.5);
+	HAL_GPIO_WritePin(
+		GPIOB, GPIO_PIN_13,
+		GPIO_PIN_RESET
+	);
+	pinConfig.Alternate = GPIO_AF11_UART5;
+	HAL_GPIO_Init(GPIOB, &pinConfig);
+
+}
+
 /** Auto Address Function
  * This helper function will autoaddress a certain amount of BQ79616-Q1
  * chips. It runs the procedure exactly described in the datasheet and the TI
@@ -196,6 +219,7 @@ bool enableGPIOPins() {
 }
 
 void BMBInit() {
+	turnOn();
 	autoAddr();
 	enableMainADC();
 	enableNumCells();

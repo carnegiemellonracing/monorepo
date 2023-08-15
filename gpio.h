@@ -19,7 +19,6 @@
 typedef enum {
     GPIO_MCU_LED = 0,    /**< @brief Status LED. */
     GPIO_HV_ACTIVE_TSAL_LIGHT,
-    GPIO_AMS_EN_L,
     GPIO_BMB_FAULT_L,
     GPIO_CLEAR_FAULT_L,
     GPIO_AIR_FAULT_L,

@@ -16,6 +16,7 @@
 #include "adc.h"    // Board-specific ADC interface
 #include "bms_error.h"
 #include "watchdog.h"   // Board-specific Watchdog interface
+#include "fans.h" // Board-specific Fan interface
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -95,6 +96,9 @@ int main(void) {
     canInit();
     adcInit();
     sensorsInit();
+
+    //init fan task
+    fanInit();
     //wwdgInit();
 
     cmr_taskInit(
@@ -122,6 +126,7 @@ int main(void) {
         vSetStateTask,
         NULL
     );
+
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");
