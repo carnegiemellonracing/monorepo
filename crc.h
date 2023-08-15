@@ -9,7 +9,7 @@
 #define CRC_H_
 #include "FreeRTOS.h"
 
-uint16_t crc(uint8_t *pBuf, int nLen);
+uint16_t calculateCRC(uint8_t *pBuf, int nLen);
 
 
 #endif /* CRC_H_ */

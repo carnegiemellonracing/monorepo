@@ -6,13 +6,12 @@
  */
 
 #include <CMR/tasks.h>      // CMR task interface
-#include <CMR/config.h>     // CMR configuration itnerface
+#include <CMR/config.h>     // CMR configuration interface
 #include <CMR/panic.h>      // bad things
 #include <CMR/uart.h>
 
 #include "uart.h"       // Interface to implement
 #include "crc.h"
-#include "can.h"        // Can interface
 
 //-----------------------------------------------------------------------------
 // GLOBAL VARIABLE DEFINITIONS                                                |
@@ -74,9 +73,10 @@ cmr_uart_result_t uart_receiveResponse(uart_response_t *response, bool deviceRes
 	if(retv != UART_SUCCESS) {
 		retvTotal = UART_FAILURE;
 	}
-	if (responseLen == 0) retvTotal = UART_FAILURE;
+	if (responseLen == 0) {
+		retvTotal = UART_FAILURE;
+	}
 
-	uint8_t deviceAddress;
 	response->len_bytes = responseLen;
 
 	uint8_t deviceAddr;
@@ -122,6 +122,8 @@ cmr_uart_result_t uart_receiveResponse(uart_response_t *response, bool deviceRes
 	if(retv != UART_SUCCESS) {
 		retvTotal = UART_FAILURE;
 	}
+
+
 
 	return retvTotal;
 }
@@ -171,6 +173,7 @@ cmr_uart_result_t uart_sendCommand(const uart_command_t *command) {
 
 	cmr_uart_result_t res;
 	res = uart_sendMessage(&uart, message, currByte);
+	return res;
 }
 
 
@@ -182,7 +185,7 @@ cmr_uart_result_t uart_sendCommand(const uart_command_t *command) {
  * @return The status of the UART result (success or failure)
  */
 static cmr_uart_result_t uart_getChar(cmr_uart_t *uart, uint8_t *c) {
-	return cmr_uart_pollingRX(uart, c, 1);
+	return cmr_uart_pollingRX(uart, c, UART_TIMEOUT);
 }
 
 /** UART Send Message

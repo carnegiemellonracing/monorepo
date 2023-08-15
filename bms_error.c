@@ -10,8 +10,8 @@
 static bool checkCommandTimeout();
 static bool checkBMBTimeout();
 
-volatile int BMBTimeoutCount[NUM_BMBS] = { 0 };
-volatile int BMBErrs[NUM_BMBS] = { 0 };
+volatile int BMBTimeoutCount[BOARD_NUM] = { 0 };
+volatile int BMBErrs[BOARD_NUM] = { 0 };
 
 // Persistent value for storing the error type. Will be useful if
 // error checking becomes its own task
@@ -122,7 +122,7 @@ static bool checkCommandTimeout() {
 }
 
 static bool checkBMBTimeout() {
-    for (int i = 0; i < NUM_BMBS; i++) {
+    for (int i = 0; i < BOARD_NUM; i++) {
         if (BMBTimeoutCount[i] >= BMB_TIMEOUT) {
             return true;
         }

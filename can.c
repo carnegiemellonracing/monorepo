@@ -22,7 +22,7 @@
 /** @brief Struct to identify stale commands. */
 extern ReceiveMeta_t BMSCommandReceiveMeta;
 
-extern volatile int BMBErrs[NUM_BMBS];
+extern volatile int BMBErrs[BOARD_NUM];
 
 /**
  * @brief CAN periodic message receive metadata
@@ -90,7 +90,7 @@ static void canTX1Hz(void *pvParameters) {
     while (1) {
 
         // BMB Temperature Status 
-        for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
+        for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM; bmb_index++) {
             sendBMSBMBStatusTemp(bmb_index);
         }
         sendBMSMinMaxCellTemp();
@@ -126,7 +126,7 @@ static void canTX10Hz(void *pvParameters) {
         // sendBRUSAChargerControl();
 
         // BMB Voltage Status 
-        for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
+        for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM; bmb_index++) {
             sendBMSBMBStatusVoltage(bmb_index);
         }
 
@@ -415,7 +415,7 @@ static void sendBMSMinMaxCellVoltage(void) {
 	uint8_t minCellVoltageIndex = 0;
 	uint8_t maxCellVoltageIndex = 0;
 
-    for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
+    for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM; bmb_index++) {
         uint8_t maxIndex = getBMBMaxVoltIndex(bmb_index);
         uint8_t minIndex = getBMBMinVoltIndex(bmb_index);
         uint16_t maxVoltage = getBMBVoltage(bmb_index, maxIndex);
@@ -456,7 +456,7 @@ static void sendBMSMinMaxCellTemp(void) {
 	uint8_t minCellTempIndex;
 	uint8_t maxCellTempIndex;
 
-    for (uint8_t bmb_index = 0; bmb_index < NUM_BMBS; bmb_index++) {
+    for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM; bmb_index++) {
         uint8_t maxIndex = getBMBMaxTempIndex(bmb_index);
         uint8_t minIndex = getBMBMinTempIndex(bmb_index);
         uint16_t maxTemp = getBMBTemp(bmb_index, maxIndex);
@@ -500,24 +500,23 @@ static void sendBMSLowVoltage(void) {
 }
 
 static void sendBMSBMBStatusErrors(void) {
-	configASSERT(BMB_ERR_LEN < 16);
+	//TODO Update status error sending
+//	cmr_canHVCBMBErrors_t errs = {
+//			.BMB1_2_Errs = (BMBErrs[0] << 4) | BMBErrs[1],
+//			.BMB3_4_Errs = (BMBErrs[2] << 4) | BMBErrs[3],
+//			.BMB5_6_Errs = (BMBErrs[4] << 4) | BMBErrs[5],
+//			.BMB7_8_Errs = (BMBErrs[6] << 4) | BMBErrs[7],
+//			.BMB9_10_Errs = (BMBErrs[8] << 4) | BMBErrs[9],
+//			.BMB11_12_Errs = (BMBErrs[10] << 4) | BMBErrs[11],
+//			.BMB13_14_Errs = (BMBErrs[12] << 4) | BMBErrs[13],
+//			.BMB15_16_Errs = (BMBErrs[14] << 4) | BMBErrs[15],
+//	};
 
-	cmr_canHVCBMBErrors_t errs = {
-			.BMB1_2_Errs = (BMBErrs[0] << 4) | BMBErrs[1],
-			.BMB3_4_Errs = (BMBErrs[2] << 4) | BMBErrs[3],
-			.BMB5_6_Errs = (BMBErrs[4] << 4) | BMBErrs[5],
-			.BMB7_8_Errs = (BMBErrs[6] << 4) | BMBErrs[7],
-			.BMB9_10_Errs = (BMBErrs[8] << 4) | BMBErrs[9],
-			.BMB11_12_Errs = (BMBErrs[10] << 4) | BMBErrs[11],
-			.BMB13_14_Errs = (BMBErrs[12] << 4) | BMBErrs[13],
-			.BMB15_16_Errs = (BMBErrs[14] << 4) | BMBErrs[15],
-	};
-
-	canTX(CMR_CANID_HVC_BMB_STATUS_ERRORS, &errs, sizeof(cmr_canHVCBMBErrors_t), canTX100Hz_period_ms);
+//	canTX(CMR_CANID_HVC_BMB_STATUS_ERRORS, &errs, sizeof(cmr_canHVCBMBErrors_t), canTX100Hz_period_ms);
 }
 
 static void sendAllBMBVoltages(void) {
-//    for (int bmbIndex = 0; bmbIndex < NUM_BMBS; bmbIndex++) {
+//    for (int bmbIndex = 0; bmbIndex < BOARD_NUM; bmbIndex++) {
 //        BMB_Data_t *data = getBMBData(bmbIndex);
 //        cmr_canHVCBMB_Voltage0_t volt0 = {
 //            .cellVoltage0_mV = data->cellVoltages[0],

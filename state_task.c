@@ -8,8 +8,7 @@
 #include <stdlib.h>
 
 static cmr_canHVCState_t currentState = CMR_CAN_HVC_STATE_ERROR;
-extern bool startingPrecharge;
-extern bool haltedI2C;
+
 
 /*
  * External Accessor Functions
@@ -108,7 +107,6 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             }
             break;
         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE: {// S7
-//            startingPrecharge = false;
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 // T17: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
@@ -162,7 +160,6 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             }
             break;
         case CMR_CAN_HVC_STATE_ERROR: { // S0
-            startingPrecharge = false;
             if (HVCCommand->modeRequest == CMR_CAN_HVC_MODE_ERROR) {
                 //T19: GLV acknowledged error, move to clear error
                 nextState = CMR_CAN_HVC_STATE_CLEAR_ERROR;

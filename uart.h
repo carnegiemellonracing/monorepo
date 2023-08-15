@@ -16,6 +16,8 @@
 
 #define BQ_BAUD_RATE 1000000
 
+#define UART_TIMEOUT 500
+
 
 typedef enum {
 	SINGLE_READ = 0x00,

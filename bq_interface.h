@@ -321,6 +321,27 @@
 #define DEBUG_OTP_SEC_BLK		0x7A0
 #define DEBUG_OTP_DED_BLK		0x7A1
 
-bool autoAddr(uint8_t num_boards);
+#define BOARD_NUM 10
+#define VSENSE_CHANNELS 14
+#define TEMP_CHANNELS 10
+
+typedef struct BMB_Data_t{
+    uint16_t cellVoltages[VSENSE_CHANNELS];
+    int16_t cellTemperatures[TEMP_CHANNELS];
+} BMB_Data_t;
+
+#define TOP_CELL VCELL16_HI
+#define GPIO_LOW
+#define NUM_GPIO_CHANNELS 4
+
+
+bool autoAddr();
+bool enableMainADC();
+bool enableNumCells();
+bool enableGPIOPins();
+
+void BMBInit();
+void pollAllVoltageData();
+void pollAllTemperatureData();
 
 #endif /* BQ_INTERFACE_H_ */
