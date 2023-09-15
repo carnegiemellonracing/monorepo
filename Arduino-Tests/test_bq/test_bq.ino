@@ -1,7 +1,6 @@
-
 //set all cells to active
 void VoltageSetup() {
-  byte adc_msg1[6] = {0xD0, 0x00, 0x03, 0x0A, 0xB8, 0x13};
+  byte adc_msg1[6] = {0xB0, 0x00, 0x03, 0x0A, 0xB8, 0x13};
   
   Serial3.write(adc_msg1, sizeof(adc_msg1));
   delay(100);
@@ -15,9 +14,9 @@ void VoltageSetup1() {
 }
 //turns on GPIOs 3 and 4 for input
 void GPIOSetup() {
-  byte adc_msg[6] = {0xD0, 0x03, 0x0A, 0x01, 0x0F, 0x84};
-  byte adc_msg1[6] = {0xD0, 0x00, 0x0E, 0x12, 0xBC, 0x89};  
-  byte adc_msg2[6] = {0xD0, 0x00, 0x0F, 0x12, 0xBD, 0x19};
+  byte adc_msg[6] = {0xB0, 0x03, 0x0A, 0x01, 0x0F, 0x84};
+  byte adc_msg1[6] = {0xB0, 0x00, 0x0E, 0x12, 0xBC, 0x89};  
+  byte adc_msg2[6] = {0xB0, 0x00, 0x0F, 0x12, 0xBD, 0x19};
   Serial3.write(adc_msg, sizeof(adc_msg));
   delay(100);
   Serial3.write(adc_msg1, sizeof(adc_msg1));
@@ -28,10 +27,10 @@ void GPIOSetup() {
 
 //pulse GPIO 1 output 2 seconds high/low
 void GPIOOutputOne() {
-  byte GPIOHigh[6] = {0xD0, 0x00, 0x0E, 0x04, 0x3D, 0x47};  
+  byte GPIOHigh[6] = {0xB0, 0x00, 0x0E, 0x04, 0x3D, 0x47};  
   Serial3.write(GPIOHigh, sizeof(GPIOHigh));
   delay(2000);
-  byte GPIOLow[6] = {0xD0, 0x00, 0x0E, 0x05, 0xFC, 0x87};  
+  byte GPIOLow[6] = {0xB0, 0x00, 0x0E, 0x05, 0xFC, 0x87};  
   Serial3.write(GPIOLow, sizeof(GPIOLow));
   delay(2000);
 }
@@ -39,7 +38,7 @@ void GPIOOutputOne() {
 
 //starts main ADC
 void ADCSetup() {
-  byte adc_msg[6] = {0xD0, 0x03, 0x0D, 0x06, 0x4C, 0x76};
+  byte adc_msg[6] = {0xB0, 0x03, 0x0D, 0x06, 0x4C, 0x76};
   
   Serial3.write(adc_msg, sizeof(adc_msg));
   delay(500);
@@ -53,7 +52,7 @@ void ADCSetup1() {
 }
 //function to loop read voltages
 void VoltageRead() {
-  byte readd[6] = {0xC0, 0x05, 0x68, 0x1F, 0x42, 0x2D};
+  byte readd[6] = {0xA0, 0x05, 0x68, 0x1F, 0x42, 0x2D};
   
   Serial3.write(readd, sizeof(readd));
   while(!Serial3.available()) {
@@ -107,7 +106,7 @@ void VoltageRead1() {
 
 //function to loop read GPIO 3 and 4
 void GPIORead() {
-  byte readd[6] = {0xC0, 0x05, 0x92, 0x04, 0x40, 0x86};
+  byte readd[6] = {0xA0, 0x05, 0x92, 0x04, 0x40, 0x86};
   Serial3.write(readd, sizeof(readd));
   while(!Serial3.available()) {
     digitalWrite(13, HIGH);
@@ -340,9 +339,7 @@ void setup() {
   Serial.begin(9600);
   Serial3.begin(1000000);
   //autoaddressing stuff for 2 device
-//  byte soft_reset[7] = {0xD0, 0x03, 0x09, 0x02, 0x4f, 0x75}; //SR 0 for DIR0_REG
-//  Serial3.write(soft_reset, sizeof(soft_reset));
-  autoAddressOne();
+  autoAddressTwo();
   ADCSetup();
   VoltageSetup();
 
