@@ -45,6 +45,8 @@ volatile bool exit_config_request = false;
 volatile bool dim_first_time_config_screen;
 /** @brief Checks to see if the screen needs to be redrawn after getting new driver profiles */
 volatile bool redraw_new_driver_profiles;
+/** @brief indicates if acknowledge button is being pressed */
+static bool ackButtonPressed;
 
 /** @brief AE/DRS button value */
 bool drsButtonPressed;
@@ -67,13 +69,25 @@ void enterConfigScreen(void);
 void actionOneButton(bool pressed) {
     if (!pressed) {
         action1ButtonPressed = false;
+        ackButtonPressed = false;
         return;
     } else {
         if (inConfigScreen()) {
 		    config_increment_down_requested = true;
         } else {
-            // only set can message to true if we're not in config screen
-            action1ButtonPressed = pressed;
+            if (stateGetGear() != CMR_CAN_GEAR_ACCEL) {
+                // Send an acknowledgement CAN message for DAQ Live
+                if (!ackButtonPressed) {
+                    sendAcknowledgement();
+                }
+                // update for DIM display
+                ackButtonPressed = true;
+            } else {
+                // only set can message to true if we're not in config screen
+                // Allow CDC to use this button for TC
+                action1ButtonPressed = pressed;
+            }
+            
         }
     }
     
@@ -296,6 +310,9 @@ cmr_canDrsMode_t stateGetDrsReq(void) {
     return state.drsReq;
 }
 
+bool getAcknowledgeButton(void) {
+    return ackButtonPressed;
+ }
 
 /**
  * @brief Gets the average wheel speed reported by the inverters.
@@ -461,7 +478,7 @@ void stateDrsModeSwitch(expanderRotaryPosition_t position) {
         state.drsReq = CMR_CAN_DRSM_UNKNOWN;
     } else if ((cmr_canDrsMode_t) position >= CMR_CAN_DRSM_LEN) { 
         // set drs mode to closed if dial pos > drs modes
-        state.drsReq = CMR_CAN_DRSM_CLOSED;
+        state.drsReq = CMR_CAN_DRSM_QUIET;
     } else {
         state.drsReq = position;
     }

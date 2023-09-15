@@ -944,3 +944,16 @@ static void sendPowerDiagnostics(void) {
             canTX10Hz_period_ms
         );
 }
+
+void sendAcknowledgement(void) {
+    cmr_canDIMAck_t ack = {
+        .acknowledge = (uint8_t)true
+    };
+
+    canTX(
+        CMR_CANID_DIM_ACKNOWLEDGE,
+        &ack,
+        sizeof(cmr_canDIMAck_t),
+        canTX10Hz_period_ms
+    );
+}

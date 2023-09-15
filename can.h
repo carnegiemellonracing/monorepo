@@ -105,7 +105,7 @@ uint8_t throttleGetPos(void);
 float canEmdHvVoltage(cmr_canEMDMeasurements_t emd_vals);
 float canEmdHvCurrent(cmr_canEMDMeasurements_t emd_vals);
 
-void transmit_cdc_config_request();
+void sendAcknowledgement(void);
 
 #endif /* CAN_H */
 
