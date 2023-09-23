@@ -2,6 +2,7 @@ Release/
 Debug/
 .settings/
 *.ld
+!STM32F413RG_FLASH.ld
 *.launch
 .vscode/
 html/
