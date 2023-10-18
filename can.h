@@ -25,8 +25,7 @@ typedef enum {
     CANRX_SBG_VELOCITY,
     CANRX_SBG_ACCELERATION,
     CANRX_SBG_GPS_POS,
-    CANRX_PTCf_TEMPS,
-    CANRX_PTCp_TEMPS,
+    CANRX_PTC_TEMPS,
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 

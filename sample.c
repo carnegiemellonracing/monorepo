@@ -19,16 +19,6 @@
 #include <cn-cbor/cn-cbor.h>                /* CBOR encoding */
 #include "FreeRTOSConfig.h"                 /* configASSERT */
 
-/**
- * @brief Maximum number of queuable sample bytes before coding/
- * downsampling. For practical messages @<= 100Hz and <=4 bytes
- * this is reasonable. In future, we aim to establish 'reasonable'
- * bounds on input frequencies to be able to configure downsampling
- * for signals outside of this 'reasonable' bound,
- * e.g. downsampling a 1 byte message sent at 1KHz to 10Hz.
- * (As of now we would drop the 600/1000 of these sample bytes).
- */
-#define MAX_SAMPLEVEC_LEN 500
 
 /**
  *  @brief Look up table for the maximum send counts on each signal according to
@@ -45,15 +35,7 @@ const int count_freq_map[SAMPLE_NUM_FREQS] = {
     [SAMPLE_100HZ] = 100,
 };
 
-/**
- * @brief All of the tracked sample data. Fill between transmit periods,
- * empty at the end of one.
- */
-static struct sample_data {
-    uint8_t count;      /**< @brief Number of samples on this signal */
-    uint8_t len;        /**< @brief Length of each sample */
-    uint8_t values[MAX_SAMPLEVEC_LEN];  /**< @brief Raw sample values */
-} raw_sample_data[MAX_SIGNALS];
+sample_data_t raw_sample_data[MAX_SIGNALS];
 
 /**
  * @brief Encoded message after sampleFmtMsg(). Callers are responsible
@@ -266,11 +248,11 @@ void sampleClearMsg(void) {
  * @return ssize_t The (new) length of raw_msg
  */
 ssize_t sampleFmtMsg(void) {
-   downsample();
+//    downsample();
 
     for (size_t i = 0; i < MAX_SIGNALS; i++) {
         if (raw_sample_data[i].count) {
-            cn_cbor *data = cn_cbor_data_create(
+        	cn_cbor *data = cn_cbor_data_create(
                 raw_sample_data[i].values,
                 raw_sample_data[i].count * raw_sample_data[i].len,
                 &err

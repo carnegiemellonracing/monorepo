@@ -113,7 +113,7 @@ static struct signal signal_map[MAX_SIGNALS];
  * @brief How we read in the configuration file (use marshall.py to update).
  */
 static const char JSON_STRING[] = {
-  #include "can_fmt.rawh"
+ #include "can_fmt.rawh"
 };
 
 /**
@@ -181,116 +181,116 @@ static sig_intermediary_val_t signal_apply_conversion(
  * @return int 0 on success, -1 on failure.
  */
 int parseData(uint32_t bus, uint16_t id, const uint8_t msg[], size_t len) {
-    struct sample sample;
-    struct sample *s = &sample;
+   struct sample sample;
+   struct sample *s = &sample;
 
-    struct signal *sigv[MAX_VAL_PER_SIG];
-    int relevant_sigs = 0;
-    for (int i = 0; i < signals_parsed; i++) {
-        if (signal_map[i].id == id && signal_map[i].bus == bus) {
-            sigv[relevant_sigs++] = &signal_map[i];
-        }
+   struct signal *sigv[MAX_VAL_PER_SIG];
+   int relevant_sigs = 0;
+   for (int i = 0; i < signals_parsed; i++) {
+       if (signal_map[i].id == id && signal_map[i].bus == bus) {
+           sigv[relevant_sigs++] = &signal_map[i];
+       }
 
-        if (relevant_sigs >= MAX_VAL_PER_SIG - 1) {
-            /* There are more subscribing signals on this message That we can
-             * handle. This will never happen if the configuration is valid, but
-             * I would still rather continue execution here by dropping the rest
-             * of the (desired) samples. */
-            break;
-        }
-    }
+       if (relevant_sigs >= MAX_VAL_PER_SIG - 1) {
+           /* There are more subscribing signals on this message That we can
+            * handle. This will never happen if the configuration is valid, but
+            * I would still rather continue execution here by dropping the rest
+            * of the (desired) samples. */
+           break;
+       }
+   }
 
-    if (!relevant_sigs) {
-        /* No sample parsed, but that's ok */
-        return 0;
-    }
+   if (!relevant_sigs) {
+       /* No sample parsed, but that's ok */
+       return 0;
+   }
 
-    for (size_t i = 0; i < relevant_sigs; i++) {
-        struct signal *sig = sigv[i];
+   for (size_t i = 0; i < relevant_sigs; i++) {
+       struct signal *sig = sigv[i];
 
-        if (sig->offset + sig->in_len > len) {
-            /* Uh oh */
-            return -1;
-        }
+       if (sig->offset + sig->in_len > len) {
+           /* Uh oh */
+           return -1;
+       }
 
-        const void *v_pt = msg + sig->offset;
+       const void *v_pt = msg + sig->offset;
 
-        /* Generate a bunch of locals as holding variables before shunting into
-         * the union. This isn't strictly necessary to do, but some types might
-         * have *strange* conversion rules, so casting in/out of memory is safer
-         * in my mind than a mem-mem copy. */
+       /* Generate a bunch of locals as holding variables before shunting into
+        * the union. This isn't strictly necessary to do, but some types might
+        * have *strange* conversion rules, so casting in/out of memory is safer
+        * in my mind than a mem-mem copy. */
 #define INST_LOCAL(dt_name, abv_name, type)   \
-        type abv_name = 0;
+       type abv_name = 0;
 
-        /* Each local is e.g. float32_t f32 = 0 */
-       DT_FOREACH(INST_LOCAL)
+       /* Each local is e.g. float32_t f32 = 0 */
+      DT_FOREACH(INST_LOCAL)
 #undef INST_LOCAL
 
-        switch(sig->dt_in) {
+       switch(sig->dt_in) {
 
 #define REINTERP_IN(dt_name, abv_name, type)                                   \
-        case dt_name:                                                          \
-            /* Fill in abv_name with the raw value */                          \
-            abv_name = *(type *) v_pt;                                         \
-            break;
+       case dt_name:                                                          \
+           /* Fill in abv_name with the raw value */                          \
+           abv_name = *(type *) v_pt;                                         \
+           break;
 
 
-        DT_FOREACH(REINTERP_IN)
+       DT_FOREACH(REINTERP_IN)
 
-        default:
-            /* Not entirely sure what the best course of action is here. */
-            /* Note that this will get hit on DT_UNK as well. */
-            return -1;
-        }
+       default:
+           /* Not entirely sure what the best course of action is here. */
+           /* Note that this will get hit on DT_UNK as well. */
+           return -1;
+       }
 
 #undef REINTERP_IN
 
-    /* Each local is named abv_name, e.g. float32_t f32 */
+   /* Each local is named abv_name, e.g. float32_t f32 */
 #define REINTERP_IN(dt_name, field, var, type)                                 \
-        case dt_name:                                                          \
-            s->v[i].field = (type) signal_apply_conversion(                    \
-                sig,                                                           \
-                (sig_intermediary_val_t) var                                   \
-            );                                                                 \
-            break;
+       case dt_name:                                                          \
+           s->v[i].field = (type) signal_apply_conversion(                    \
+               sig,                                                           \
+               (sig_intermediary_val_t) var                                   \
+           );                                                                 \
+           break;
 
 #define REINTERP_OUT(dt_name, abv_name, type_out)                              \
-        case dt_name:                                                          \
-            switch(sig->dt_in) {                                               \
-            REINTERP_IN(DT_INT8,    abv_name,  i8, type_out)                   \
-            REINTERP_IN(DT_INT16,   abv_name, i16, type_out)                   \
-            REINTERP_IN(DT_INT32,   abv_name, i32, type_out)                   \
-            REINTERP_IN(DT_INT64,   abv_name, i64, type_out)                   \
-            REINTERP_IN(DT_UINT8,   abv_name,  u8, type_out)                   \
-            REINTERP_IN(DT_UINT16,  abv_name, u16, type_out)                   \
-            REINTERP_IN(DT_UINT32,  abv_name, u32, type_out)                   \
-            REINTERP_IN(DT_UINT64,  abv_name, u64, type_out)                   \
-            REINTERP_IN(DT_FLOAT16, abv_name, f16, type_out)                   \
-            REINTERP_IN(DT_FLOAT32, abv_name, f32, type_out)                   \
-            REINTERP_IN(DT_FLOAT64, abv_name, f64, type_out)                   \
-            default:                                                           \
-                return -1;                                                     \
-            }                                                                  \
-            break;
+       case dt_name:                                                          \
+           switch(sig->dt_in) {                                               \
+           REINTERP_IN(DT_INT8,    abv_name,  i8, type_out)                   \
+           REINTERP_IN(DT_INT16,   abv_name, i16, type_out)                   \
+           REINTERP_IN(DT_INT32,   abv_name, i32, type_out)                   \
+           REINTERP_IN(DT_INT64,   abv_name, i64, type_out)                   \
+           REINTERP_IN(DT_UINT8,   abv_name,  u8, type_out)                   \
+           REINTERP_IN(DT_UINT16,  abv_name, u16, type_out)                   \
+           REINTERP_IN(DT_UINT32,  abv_name, u32, type_out)                   \
+           REINTERP_IN(DT_UINT64,  abv_name, u64, type_out)                   \
+           REINTERP_IN(DT_FLOAT16, abv_name, f16, type_out)                   \
+           REINTERP_IN(DT_FLOAT32, abv_name, f32, type_out)                   \
+           REINTERP_IN(DT_FLOAT64, abv_name, f64, type_out)                   \
+           default:                                                           \
+               return -1;                                                     \
+           }                                                                  \
+           break;
 
 
-        switch (sig->dt_out) {
-        DT_FOREACH(REINTERP_OUT)
-        default:
-            return -1;
-        }
+       switch (sig->dt_out) {
+       DT_FOREACH(REINTERP_OUT)
+       default:
+           return -1;
+       }
 #undef REINTERP_OUT
 #undef REINTERP_IN
 #undef DT_FOREACH
 
-        s->sig[i] = (struct sample_info) {
-            .kind = sig->kind,
-            .len  = sig->out_len,
-        };
-    }
+       s->sig[i] = (struct sample_info) {
+           .kind = sig->kind,
+           .len  = sig->out_len,
+       };
+   }
 
-    s->values_parsed = relevant_sigs;
-    addSample(s);
+   s->values_parsed = relevant_sigs;
+   addSample(s);
     return 0;
 }
 
@@ -298,76 +298,76 @@ int parseData(uint32_t bus, uint16_t id, const uint8_t msg[], size_t len) {
  * @brief Read in the configuration file for subsequent message parsing.
  */
 void parserInit(void) {
-    cJSON *json = cJSON_Parse(JSON_STRING);
+   cJSON *json = cJSON_Parse(JSON_STRING);
 
-    const cJSON *name_pt = cJSON_GetObjectItemCaseSensitive(json, "signals");
+   const cJSON *name_pt = cJSON_GetObjectItemCaseSensitive(json, "signals");
 
-    uint32_t kind_count = 0;
-    struct cJSON *cur;
-    cJSON_ArrayForEach(cur, name_pt) {
-        struct signal s = {
-            .bus     = 0,   /* Assumed 0 if not specified */
-            .id      = 0,
-            .out_len = 0,
-            .in_len  = 0,
-            .name    = "UNKNOWN_SIGNAL",
-            .dt_in   = DT_UNK,
-            .dt_out  = DT_UNK,
-            .offset  = 0,
-            .factor  = 1.,
-            .bias    = 0.,
-            .kind   = kind_count++,
-        };
-        if (cJSON_IsObject(cur)) {
-            struct cJSON *id, *name, *intype, *outtype, *offset, *factor, *bias;
-            struct cJSON *bus;
-            bus     = cJSON_GetObjectItem(cur, "bus");
-            id      = cJSON_GetObjectItem(cur, "id");
-            name    = cJSON_GetObjectItem(cur, "name");
-            intype  = cJSON_GetObjectItem(cur, "in_type");
-            outtype = cJSON_GetObjectItem(cur, "out_type");
-            offset  = cJSON_GetObjectItem(cur, "offset");
-            factor  = cJSON_GetObjectItem(cur, "factor");
-            bias    = cJSON_GetObjectItem(cur, "bias");
+   uint32_t kind_count = 0;
+   struct cJSON *cur;
+   cJSON_ArrayForEach(cur, name_pt) {
+       struct signal s = {
+           .bus     = 0,   /* Assumed 0 if not specified */
+           .id      = 0,
+           .out_len = 0,
+           .in_len  = 0,
+           .name    = "UNKNOWN_SIGNAL",
+           .dt_in   = DT_UNK,
+           .dt_out  = DT_UNK,
+           .offset  = 0,
+           .factor  = 1.,
+           .bias    = 0.,
+           .kind   = kind_count++,
+       };
+       if (cJSON_IsObject(cur)) {
+           struct cJSON *id, *name, *intype, *outtype, *offset, *factor, *bias;
+           struct cJSON *bus;
+           bus     = cJSON_GetObjectItem(cur, "bus");
+           id      = cJSON_GetObjectItem(cur, "id");
+           name    = cJSON_GetObjectItem(cur, "name");
+           intype  = cJSON_GetObjectItem(cur, "in_type");
+           outtype = cJSON_GetObjectItem(cur, "out_type");
+           offset  = cJSON_GetObjectItem(cur, "offset");
+           factor  = cJSON_GetObjectItem(cur, "factor");
+           bias    = cJSON_GetObjectItem(cur, "bias");
 
-            if (cJSON_IsNumber(bus)) {
-                s.bus = bus->valueint;
-            }
+           if (cJSON_IsNumber(bus)) {
+               s.bus = bus->valueint;
+           }
 
-            if (cJSON_IsNumber(id)) {
-                s.id = id->valueint;
-            }
+           if (cJSON_IsNumber(id)) {
+               s.id = id->valueint;
+           }
 
-            if (cJSON_IsNumber(offset)) {
-                s.offset = offset->valueint;
-            }
+           if (cJSON_IsNumber(offset)) {
+               s.offset = offset->valueint;
+           }
 
-            if (cJSON_IsNumber(factor)) {
-                s.factor = factor->valuedouble;
-            }
+           if (cJSON_IsNumber(factor)) {
+               s.factor = factor->valuedouble;
+           }
 
-            if (cJSON_IsNumber(bias)) {
-                s.bias   = bias->valuedouble;
-            }
+           if (cJSON_IsNumber(bias)) {
+               s.bias   = bias->valuedouble;
+           }
 
-            if (cJSON_IsString(name) && (name->valuestring != NULL)) {
-                strncpy(s.name, name->valuestring, sizeof(s.name));
-            }
+           if (cJSON_IsString(name) && (name->valuestring != NULL)) {
+               strncpy(s.name, name->valuestring, sizeof(s.name));
+           }
 
-            if (cJSON_IsString(intype) && (intype->valuestring != NULL)) {
-                s.dt_in   = dtLookupStr(intype->valuestring);
-                s.in_len  = dtSizeMap[s.dt_in];
-            }
+           if (cJSON_IsString(intype) && (intype->valuestring != NULL)) {
+               s.dt_in   = dtLookupStr(intype->valuestring);
+               s.in_len  = dtSizeMap[s.dt_in];
+           }
 
-            if (cJSON_IsString(outtype) && (outtype->valuestring != NULL)) {
-                s.dt_out  = dtLookupStr(outtype->valuestring);
-                s.out_len = dtSizeMap[s.dt_out];
-            }
+           if (cJSON_IsString(outtype) && (outtype->valuestring != NULL)) {
+               s.dt_out  = dtLookupStr(outtype->valuestring);
+               s.out_len = dtSizeMap[s.dt_out];
+           }
 
-            signal_map[signals_parsed++] = s;
-        }
-    }
+           signal_map[signals_parsed++] = s;
+       }
+   }
 
-    /* Don't need this any more */
-    cJSON_Delete(json);
+   /* Don't need this any more */
+   cJSON_Delete(json);
 }

@@ -64,6 +64,27 @@ struct sample {
                              * this sample.*/
 };
 
+/**
+ * @brief Maximum number of queuable sample bytes before coding/
+ * downsampling. For practical messages @<= 100Hz and <=4 bytes
+ * this is reasonable. In future, we aim to establish 'reasonable'
+ * bounds on input frequencies to be able to configure downsampling
+ * for signals outside of this 'reasonable' bound,
+ * e.g. downsampling a 1 byte message sent at 1KHz to 10Hz.
+ * (As of now we would drop the 600/1000 of these sample bytes).
+ */
+#define MAX_SAMPLEVEC_LEN 8
+
+/**
+ * @brief All of the tracked sample data. Fill between transmit periods,
+ * empty at the end of one.
+ */
+typedef struct sample_data {
+    uint8_t count;      /**< @brief Number of samples on this signal */
+    uint8_t len;        /**< @brief Length of each sample */
+    uint8_t values[MAX_SAMPLEVEC_LEN];  /**< @brief Raw sample values */
+} sample_data_t;
+
 void sampleClearMsg(void);
 ssize_t sampleFmtMsg(void);
 void addSample(struct sample *s);

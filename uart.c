@@ -12,6 +12,7 @@
 #include <CMR/uart.h>       // CMR UART interface
 #include <CMR/tasks.h>      // CMR task interface
 #include <CMR/config.h>     // CMR configuration itnerface
+#include <CMR/config_screen_helper.h>
 #include <CMR/panic.h>      // bad things
 
 #include "uart.h"       // Interface to implement
@@ -22,6 +23,8 @@
 
 /** @brief Represents a UART interface. */
 typedef struct uart uart_t;
+
+extern sample_data_t raw_sample_data[MAX_SIGNALS];
 
 struct uart {
     cmr_uart_t port;    /**< @brief The underlying UART port. */
@@ -42,6 +45,9 @@ const TickType_t boron_tx_period_ms = 1000;
 /** @brief Boron RX period (milliseconds). (Shared with sample.c) */
 const TickType_t boron_rx_period_ms = 1000;
 
+/** @brief Delay between each can Message with text for dim */
+const TickType_t dim_message_delay_ms = 5;
+
 /** @brief Width of N-way UART receive buffering (e.g. 2 for double buffereing) */
 #define NUM_RX_BUFFERS 2
 
@@ -53,6 +59,12 @@ static cn_cbor_errback err;
 
 static void handle_command(cn_cbor *command);
 
+__STATIC_INLINE void DWT_Init(void)
+{
+	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk; // allow to use counter
+	DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;  // start counter
+}
+
 /**
  * @brief UART TX
  *
@@ -61,20 +73,31 @@ static void handle_command(cn_cbor *command);
 static void uartTX_Task(void *pvParameters) {
     (void) pvParameters;
     TickType_t last_wake = xTaskGetTickCount();
+    DWT_Init();
     while(1) {
         taskENTER_CRITICAL();
+        uint32_t au32_initial_ticks = DWT->CYCCNT;
             /* Formatting must be atomic w.r.t. CAN stream
              * TODO modify to drop messages during this instead */
            ssize_t msg_len = sampleFmtMsg();
 
             if (msg_len <= 0) {
-                cmr_panic("The CBOR parser exploded");
+                taskEXIT_CRITICAL();
+            	vTaskDelayUntil(&last_wake, boron_tx_period_ms);
+            	continue;
+                // cmr_panic("The CBOR parser exploded");
             }
 
             cmr_uartMsg_t txMsg;
             cmr_uartMsgInit(&txMsg);
             memcpy(send_buf, raw_msg, msg_len);
             sampleClearMsg();
+            // Sketchy things done at comp for DIM Ack
+            raw_sample_data[10].count = 0;
+            raw_sample_data[10].len = 0;
+            memset(raw_sample_data[10].values, 0, MAX_SAMPLEVEC_LEN);
+		uint32_t total_ticks = DWT->CYCCNT - au32_initial_ticks;
+		uint32_t microsecs = total_ticks*1000000/HAL_RCC_GetHCLKFreq();
         taskEXIT_CRITICAL();
         cmr_uartTX(&uart.port, &txMsg, send_buf, msg_len);
         cmr_uartMsgWait(&txMsg);
@@ -82,7 +105,6 @@ static void uartTX_Task(void *pvParameters) {
         vTaskDelayUntil(&last_wake, boron_tx_period_ms);
     }
 }
-
 
 /**
  * @brief UART RX
@@ -180,11 +202,43 @@ static void handle_command(cn_cbor *command) {
                 (bus->v.uint < CMR_CAN_BUS_NUM)) &&
             (data != NULL && data->type == CN_CBOR_BYTES)
         ) {
-            canTX(
-                (cmr_canBusID_t) bus->v.uint, (uint16_t) id->v.uint,
-                data->v.bytes, data->length,
-                portMAX_DELAY
-            );
+            if ((uint16_t) id->v.uint == CMR_CANID_DIM_TEXT_WRITE) {
+                const size_t sizePerMessage = 4;
+                for (size_t i = 0; i < data->length; i += sizePerMessage) {
+                    cmr_canDIMTextWrite_t canData = (cmr_canDIMTextWrite_t) {
+                        .address = i/sizePerMessage,
+                        .data = { 0 }
+                    };
+                    for (size_t j = 0; j < sizePerMessage; j++) {
+                        if (i+j < data->length) {
+                            canData.data[j] = data->v.bytes[i+j];
+                        }
+                    }
+                    canTX(
+                        (cmr_canBusID_t) bus->v.uint, (uint16_t) id->v.uint,
+                        (void *) &canData, sizeof(cmr_canDIMTextWrite_t),
+                        portMAX_DELAY
+                    );
+                    TickType_t last_wake = xTaskGetTickCount();
+                    vTaskDelayUntil(&last_wake, dim_message_delay_ms);
+
+                }
+            } else if ((uint16_t) id->v.uint == CMR_CANID_CDC_POWER_UPDATE) {
+                // Set the power limit in config params from DAQ Live
+                if (data->length == sizeof(cmr_canCDCPowerLimit_t)) {
+                    cmr_canCDCPowerLimit_t *powerLimit = (cmr_canCDCPowerLimit_t *) data->v.bytes;
+                    config_menu_main_array[POWER_LIM_INDEX].value.value = powerLimit->powerLimit_kW;
+                }
+            } else {
+                // Do not allow transmission on tractive CAN.
+                if (bus->v.uint == CMR_CAN_BUS_VEH || bus->v.uint == CMR_CAN_BUS_DAQ) {
+                    canTX(
+                        (cmr_canBusID_t) bus->v.uint, (uint16_t) id->v.uint,
+                        data->v.bytes, data->length,
+                        portMAX_DELAY
+                    );
+                }
+            }
         }
     }
 
@@ -306,22 +360,22 @@ void uartInit(void) {
     // UART interface initialization.
     const UART_InitTypeDef uartInit = {
         .BaudRate = 19200,
-		.WordLength = UART_WORDLENGTH_8B,
-		.StopBits = UART_STOPBITS_1,
-		.Parity = UART_PARITY_NONE,
-		.HwFlowCtl = UART_HWCONTROL_NONE,
-		.Mode = UART_MODE_TX_RX,
-		.OverSampling = UART_OVERSAMPLING_16
+        .WordLength = UART_WORDLENGTH_8B,
+        .StopBits = UART_STOPBITS_1,
+        .Parity = UART_PARITY_NONE,
+        .HwFlowCtl = UART_HWCONTROL_NONE,
+        .Mode = UART_MODE_TX_RX,
+        .OverSampling = UART_OVERSAMPLING_16
     };
 
     cmr_uartInit(
-        &uart.port, USART1, &uartInit,
-        GPIOA, GPIO_PIN_10,     /* rx */
-        GPIOA, GPIO_PIN_9,      /* tx */
-        DMA2_Stream2, DMA_CHANNEL_4,    /* See reference manual */
-        DMA2_Stream7, DMA_CHANNEL_4
+        &uart.port, USART2, &uartInit,
+        GPIOA, GPIO_PIN_3,      /* rx */
+        GPIOA, GPIO_PIN_2,      /* tx */
+        DMA1_Stream5, DMA_CHANNEL_4,    /* See reference manual */
+        DMA1_Stream6, DMA_CHANNEL_4
     );
 
-    cmr_taskInit(&uart.txTask, "UART TX", 8, uartTX_Task, NULL);
-    cmr_taskInit(&uart.rxTask, "UART RX", 8, uartRX_Task, NULL);
+    cmr_taskInit(&uart.txTask, "UART TX", 2, uartTX_Task, NULL);
+    cmr_taskInit(&uart.rxTask, "UART RX", 2, uartRX_Task, NULL);
 }

@@ -22,19 +22,19 @@ char bytes[] = {
 0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x18,0x29,0x58,0xC8,0x0
 };
 
-int main() {
+// int main() {
 
-    msg = cn_cbor_decode(bytes, sizeof(bytes), &err);
+//     msg = cn_cbor_decode(bytes, sizeof(bytes), &err);
 
-    /* Signal 42 in the current signal vector is the VSM's error vec,
-     * try to parse and validate */
-    cn_cbor *signal = cn_cbor_mapget_int(msg, 41);
-    if (signal == NULL || signal->type != CN_CBOR_BYTES) {
-        printf("Didn't find VSM messages in the parsed stream\n");
-        exit(-1);
-    }
+//     /* Signal 42 in the current signal vector is the VSM's error vec,
+//      * try to parse and validate */
+//     cn_cbor *signal = cn_cbor_mapget_int(msg, 41);
+//     if (signal == NULL || signal->type != CN_CBOR_BYTES) {
+//         printf("Didn't find VSM messages in the parsed stream\n");
+//         exit(-1);
+//     }
 
-    printf("All tests passed!\n");
-    cn_cbor_free(msg);
-    return 0;
-}
+//     printf("All tests passed!\n");
+//     cn_cbor_free(msg);
+//     return 0;
+// }

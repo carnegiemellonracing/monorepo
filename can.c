@@ -59,13 +59,8 @@ cmr_canRXMeta_t canRXMeta[CANRX_LEN] = {
         .timeoutError_ms = -1,
         .timeoutWarn_ms = -1
     },
-    [CANRX_PTCf_TEMPS] = {
-        .canID = CMR_CANID_PTCf_LOOP_TEMPS_A,
-        .timeoutError_ms = -1,
-        .timeoutWarn_ms = -1
-    },
-    [CANRX_PTCp_TEMPS] = {
-        .canID = CMR_CANID_PTCp_LOOP_TEMPS_A,
+    [CANRX_PTC_TEMPS] = {
+        .canID = CMR_CANID_PTC_LOOP_TEMPS_A,
         .timeoutError_ms = -1,
         .timeoutWarn_ms = -1
     },
