@@ -106,6 +106,7 @@ static void uartTX_Task(void *pvParameters) {
     }
 }
 
+
 /**
  * @brief UART RX
  *
@@ -207,7 +208,7 @@ static void handle_command(cn_cbor *command) {
                 for (size_t i = 0; i < data->length; i += sizePerMessage) {
                     cmr_canDIMTextWrite_t canData = (cmr_canDIMTextWrite_t) {
                         .address = i/sizePerMessage,
-                        .data = { 0 }
+                        .data = { 0 } 
                     };
                     for (size_t j = 0; j < sizePerMessage; j++) {
                         if (i+j < data->length) {
