@@ -60,7 +60,7 @@ int main(void) {
     // System initialization.
     HAL_Init();
     cmr_rccSystemInternalClockEnable();
-    return;
+//    return;
 
     // Peripheral configuration.
     uartInit();
