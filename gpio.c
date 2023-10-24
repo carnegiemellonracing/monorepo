@@ -8,7 +8,9 @@
 #include <stm32f4xx_hal.h>  // HAL interface
 #include <FreeRTOS.h>       // FreeRTOS API
 
+#include "state.h"
 #include "gpio.h"       // Interface to implement
+#include "expanders.h"  // GPIO expanders interface
 
 /**
  * @brief Board-specific pin configuration.
@@ -21,7 +23,7 @@
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_LED_0] = { // not in the schematic
         .port = GPIOB,
-        .init = { 
+        .init = {
             .Pin = GPIO_PIN_6,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
@@ -84,6 +86,128 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 	}
 };
 
+static const uint32_t buttonsInput_priority = 4;
+
+/** @brief Button input task period (milliseconds). */
+static const TickType_t buttonsInput_period = 10;
+
+/** @brief Button input task task. */
+static cmr_task_t buttonsInput_task;
+
+/** @brief Current regen step */
+unsigned int regenStep = 0;
+
+#define BUTTON_DEBOUNCE_TIME 200
+
+static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
+    [EXP_DASH_BUTTON_1] = {
+        .buttonState = false,
+        .setAction = &downButton,
+        .lastPressed = 0,
+        .debounce = BUTTON_DEBOUNCE_TIME,
+    },
+    [EXP_DASH_BUTTON_2] = {
+        .buttonState = false,
+        .setAction = &leftButton,
+        .lastPressed = 0,
+        .debounce = BUTTON_DEBOUNCE_TIME,
+    },
+    [EXP_DASH_BUTTON_3] = {
+        .buttonState = false,
+        .setAction = &upButton,
+        .lastPressed = 0,
+        .debounce = BUTTON_DEBOUNCE_TIME,
+    },
+    [EXP_DASH_BUTTON_4] = {
+        .buttonState = false,
+        .setAction = &rightButton,
+        .lastPressed = 0,
+        .debounce = BUTTON_DEBOUNCE_TIME,
+    },
+    [EXP_WHEEL_BUTTON_1] = {
+        .buttonState = false,
+        .setAction = &actionOneButton,
+        .lastPressed = 0,
+        .debounce = BUTTON_DEBOUNCE_TIME,
+    },
+    [EXP_WHEEL_BUTTON_2] = {
+        .buttonState = false,
+        .setAction = &drsButton,
+        .lastPressed = 0,
+        .debounce = BUTTON_DEBOUNCE_TIME,
+    },
+    [EXP_WHEEL_BUTTON_3] = {
+        .buttonState = false,
+        .setAction = &actionTwoButton,
+        .lastPressed = 0,
+        .debounce = BUTTON_DEBOUNCE_TIME,
+    }
+};
+
+static expanderRotaryEvent_t rotaries[EXP_ROTARY_LEN] = {
+    [EXP_ROTARY_1] = {
+        .position = ROTARY_POS_INVALID,
+        .setAction = &stateGearSwitch
+    },
+    [EXP_ROTARY_2] = {
+        .position = ROTARY_POS_INVALID,
+        .setAction = &stateDrsModeSwitch
+    }
+};
+
+/**
+ * @brief Handles button actions.
+ *
+ * @param pvParameters Ignored.
+ */
+static void buttonsInput(void *pvParameters) {
+    (void) pvParameters;    // Placate compiler.
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    TickType_t currentTime;
+
+    while (1) {
+        /* if vsm has changed state unexpectedly we
+         * need to adjust our req to still be valid */
+        if(!stateVSMReqIsValid(stateGetVSM(), stateGetVSMReq()))
+        {
+            updateReq();
+        }
+
+        currentTime = xTaskGetTickCount();
+
+        // updating each button and updating states according to button presses
+        for (expanderButton_t i = EXP_DASH_BUTTON_1; i < EXP_BUTTON_LEN; i ++) {
+            bool currState = expanderGetButtonPressed(i);
+            expanderButtonEvent_t *currButton = &expanderButtons[i];
+
+            if (currButton->buttonState != currState &&
+                currentTime - currButton->lastPressed > currButton->debounce) {
+                (*(currButton->setAction))(currState);
+                currButton->lastPressed = currentTime;
+                currButton->buttonState = currState;
+            }
+        }
+
+        for (expanderRotary_t i = EXP_ROTARY_1; i < EXP_ROTARY_LEN; i++) {
+            expanderRotaryPosition_t rotaryPos = expanderGetRotary(i);
+            expanderRotaryEvent_t *currRotary =  &rotaries[i];
+
+            if (rotaryPos != currRotary->position) {
+                (*(currRotary->setAction))(rotaryPos);
+                currRotary->position = rotaryPos;
+            }
+        }
+
+        vTaskDelayUntil(&lastWakeTime, buttonsInput_period);
+    }
+
+}
+
+
+
+
+
 /**
  * @brief Initializes the GPIO interface.
  */
@@ -91,5 +215,12 @@ void gpioInit(void) {
     cmr_gpioPinInit(
         gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0])
     );
+    cmr_taskInit(
+         &buttonsInput_task,
+         "buttonsInput",
+         buttonsInput_priority,
+         buttonsInput,
+         NULL
+     );
 }
 
