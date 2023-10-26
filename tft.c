@@ -283,9 +283,9 @@ static void tftUpdate(void *pvParameters) {
 
     /* Restarting the Display. */
     TickType_t lastWakeTime = xTaskGetTickCount();
-    cmr_gpioWrite(GPIO_PD_N, 0);
+    // cmr_gpioWrite(GPIO_PD_N, 0); // TODO figure out pin
     vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
-    cmr_gpioWrite(GPIO_PD_N, 1);
+    // cmr_gpioWrite(GPIO_PD_N, 1);
     vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
 
     /* Initialize the display. */
@@ -465,13 +465,13 @@ static void drawRTDScreen(void) {
     // PTC Temps
     /* cmr_canRXMeta_t *metaPTCfLoopA = canRXMeta + CANRX_PTCf_LOOP_A_TEMPS;
     volatile cmr_canPTCfLoopTemp_A_t *canPTCfLoopTemp_A = (void *) metaPTCfLoopA->payload;
-    
+
     cmr_canRXMeta_t *metaPTCfLoopB = canRXMeta + CANRX_PTCf_LOOP_B_TEMPS;
     volatile cmr_canPTCfLoopTemp_B_t *canPTCfLoopTemp_B = (void *) metaPTCfLoopB->payload;
-    
+
     cmr_canRXMeta_t *metaPTCpLoopA = canRXMeta + CANRX_PTCp_LOOP_A_TEMPS;
     volatile cmr_canPTCpLoopTemp_A_t *canPTCpLoopTemp_A = (void *) metaPTCpLoopA->payload;
-    
+
     cmr_canRXMeta_t *metaPTCpLoopB = canRXMeta + CANRX_PTCp_LOOP_B_TEMPS;
     volatile cmr_canPTCpLoopTemp_B_t *canPTCpLoopTemp_B = (void *) metaPTCpLoopB->payload;*/
 
@@ -549,9 +549,9 @@ static void drawRTDScreen(void) {
     int32_t hvVoltage_mV = canHVCPackVoltage->battVoltage_mV;
 
     float glvVoltage = ((float)cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV)) / 1000.0;
-    
+
     volatile cmr_canVSMSensors_t *vsmSensors = (volatile cmr_canVSMSensors_t*)getPayload(CANRX_VSM_SENSORS);
-    
+
     int32_t current_A = (int32_t)(vsmSensors->hallEffect_cA) / 100;
     int32_t hvVoltage_V = hvVoltage_mV / 1000;
     int32_t power_kW = (current_A * hvVoltage_V) / 1000;
@@ -561,7 +561,7 @@ static void drawRTDScreen(void) {
     float odometer_km = getOdometer();
 
     volatile cmr_canBMSLowVoltage_t *bmsLV = (volatile cmr_canBMSLowVoltage_t*)getPayload(CANRX_HVC_LOW_VOLTAGE);
-    
+
     // this is actually volts not mV but cant be bothered changing it :(
     // 18000mV * 15 / 2000 as sent by HVC = 135
     bool ssOk = (bmsLV->safety_mV > 135);
@@ -595,7 +595,7 @@ static void drawRTDScreen(void) {
     uint8_t glvSoC = getLVSoC(glvVoltage, LV_LIPO);
 
     uint8_t hvSoC = 0;
-    
+
     volatile cmr_canCDCControlsStatus_t *controlsStatus = (volatile cmr_canCDCControlsStatus_t*)getPayload(CANRX_CDC_CONTROLS_STATUS);
 
     bool yrcOn = (bool)controlsStatus->yrcOn;
@@ -613,20 +613,20 @@ static void drawRTDScreen(void) {
         tftDLWrite(&tft, &tftDL_racing_screen);
     } else {
         /* Update Display List*/
-        tftDL_RTDUpdate(memoratorStatus, 
-                        sbgStatus, 
-                        hvVoltage_mV, 
+        tftDL_RTDUpdate(memoratorStatus,
+                        sbgStatus,
+                        hvVoltage_mV,
                         power_kW,
                         speed_kmh,
-                        motorTemp_yellow, 
-                        motorTemp_red, 
-                        acTemp_yellow, 
-                        acTemp_red, 
-                        mcTemp_yellow, 
-                        mcTemp_red, 
-                        motorTemp_C, 
-                        acTemp_C, 
-                        mcTemp_C, 
+                        motorTemp_yellow,
+                        motorTemp_red,
+                        acTemp_yellow,
+                        acTemp_red,
+                        mcTemp_yellow,
+                        mcTemp_red,
+                        motorTemp_C,
+                        acTemp_C,
+                        mcTemp_C,
                         (int32_t)glvVoltage,
                         glvSoC,
                         hvSoC,

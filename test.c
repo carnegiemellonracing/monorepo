@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <CMR/tasks.h>      // CMR task drivers 
+#include <CMR/tasks.h>      // CMR task drivers
 #include <CMR/gpio.h>
 
 #include "test.h"
@@ -14,17 +14,15 @@
 
 void testGPIOWrite()
 {
-    cmr_gpioToggle(GPIO_LED_STATUS);
     cmr_gpioToggle(GPIO_LED_IMD);
     cmr_gpioToggle(GPIO_LED_AMS);
     cmr_gpioToggle(GPIO_LED_BSPD);
-    cmr_gpioToggle(GPIO_PD_N);
 }
 
 void testGPIORead()
 {
     volatile int read;
-    for (size_t pin = GPIO_SS_MODULE; pin <= GPIO_SS_BOTS; pin++)
+    for (size_t pin = GPIO_LED_0; pin < GPIO_LEN; pin++)
     {
         read = cmr_gpioRead(pin);
         printf("GPIO Pin %u: %d\n", pin, read);

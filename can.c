@@ -165,7 +165,7 @@ cmr_canRXMeta_t canRXMeta[] = {
         .canID = CMR_CANID_HVC_LOW_VOLTAGE,
         .timeoutError_ms = 4000,
 		.timeoutWarn_ms = 2000
-    }, 
+    },
     [CANRX_DRS_STATE] = {
         .canID = CMR_CANID_DRS_STATE,
         .timeoutError_ms = 4000,
@@ -381,7 +381,7 @@ static void canTX1Hz(void *pvParameters) {
                     sizeof(config_message_array[i]),
                     canTX1Hz_period_ms
                 );
-            } 
+            }
 
             /* Set waiting for cdc to be true. RX will wipe this and flush_config_screen
                only if this was true */
@@ -393,7 +393,7 @@ static void canTX1Hz(void *pvParameters) {
 
 /**
  * @brief Callback for the RAM messages to the DIM to write to the screen
- * 
+ *
  * For displaying from the RAM buffer, character indices 0-20 inclusive are for the
  * message at the top. This corresponds to text->address 0, 1, 2, 3, and 4.
  * Character indices 40-52 inclusive are for the first note on the right side of the screen.
@@ -427,10 +427,10 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
     // cast the data to an array for easy indexing. Sly i know :P
     uint8_t *cdc_config_data_arr = (uint8_t*) cdc_config_data;
 
-    // find the appropriate values to modify in the local copy of our data 
+    // find the appropriate values to modify in the local copy of our data
     // note that there are 4 values per config struct hence the *4
     // Increment i by 1 because offset for driver index
-    uint8_t dim_config_data_array_starting_idx = packet_number * items_per_struct + 1; 
+    uint8_t dim_config_data_array_starting_idx = packet_number * items_per_struct + 1;
 
     if (packet_number >= num_config_packets){
         // time to shit yo pants bc some wack shit has happened.
@@ -446,7 +446,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
             // copy data over to local memory!
             for(uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + items_per_struct; i++){
                 config_menu_main_array[i].value.value = cdc_config_data_arr[local_can_data_index++];
-            } 
+            }
         }
         // mark the appropriate packet as recieved
         gotten_packet[packet_number] = true;
@@ -486,7 +486,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
         	int local_index = 0;
             for(uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + items_per_struct; i++){
                 config_menu_main_array[i].value.value = cdc_config_data_arr[local_index++];
-            } 
+            }
             // set appropriate config message rx flag if data matches
             gotten_packet[packet_number] = true;
         }
@@ -512,7 +512,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
         	    exitConfigScreen();
             }
         }
-        if (flush_config_screen_to_cdc) flush_config_screen_to_cdc = false; 
+        if (flush_config_screen_to_cdc) flush_config_screen_to_cdc = false;
         if (waiting_for_cdc_new_driver_config){
         	waiting_for_cdc_new_driver_config = false;
         	// redraw all values
@@ -534,7 +534,7 @@ void canRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
         ramRxCallback(can, canID, data, dataLen);
     }
     // make sure its a valid can id for config.
-    if (canID >= CMR_CANID_CDC_CONFIG0_DRV0 && 
+    if (canID >= CMR_CANID_CDC_CONFIG0_DRV0 &&
         canID <= CMR_CANID_CDC_CONFIG3_DRV3){
     	cdcRXCallback(can, canID, data, dataLen);
     }
@@ -859,32 +859,6 @@ static void sendFSMData(void) {
     };
 
     canTX(CMR_CANID_FSM_DATA, &msg, sizeof(msg), canTX100Hz_period_ms);
-}
-
-/**
- * @brief Sends safety circuit message.
- */
-static cmr_canWarn_t genSafetyCircuitMessage(void) {
-    sensorChannel_t safetyCircuitStart = SENSOR_CH_SS_MODULE; // first safety circuit in sensor list
-    sensorChannel_t safetyCircuitEnd = SENSOR_CH_SS_BOTS; // last safety circuit in sensor list
-    const cmr_canWarn_t safetyCircuitWarns[] = { // in same order as in sensors.h to map them
-        CMR_CAN_WARN_FSM_SS_MODULE,
-        CMR_CAN_WARN_FSM_SS_COCKPIT,
-        CMR_CAN_WARN_FSM_SS_FRHUB,
-        CMR_CAN_WARN_FSM_SS_INERTIA,
-        CMR_CAN_WARN_FSM_SS_FLHUB,
-        CMR_CAN_WARN_FSM_SS_BOTS
-    };
-
-    cmr_canWarn_t warn = CMR_CAN_WARN_NONE;
-
-    for (sensorChannel_t sensor = safetyCircuitStart; sensor <= safetyCircuitEnd; sensor++) {
-        if (!cmr_sensorListGetValue(&sensorList, sensor)) {
-            warn |= safetyCircuitWarns[sensor-safetyCircuitStart];
-            break;
-        }
-    }
-    return warn;
 }
 
 /**

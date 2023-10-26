@@ -8,7 +8,6 @@
 #ifndef GPIO_H
 #define GPIO_H
 
-#include <stdbool.h>    // bool
 #include <CMR/gpio.h>   // GPIO interface
 #include "expanders.h"   // GPIO expanders interface
 

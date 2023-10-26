@@ -54,18 +54,6 @@ const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
     [SENSOR_CH_TPOS_IMPLAUS]   = ADC_LEN  // Not an ADC channel!
 };
 
-/**
- * @brief Mapping of sensor channels to GPIO pins.
- */
-const gpio_t sensorsGPIOChannels[SENSOR_CH_LEN] = {
-    [SENSOR_CH_SS_MODULE]      = GPIO_SS_MODULE,
-    [SENSOR_CH_SS_COCKPIT]     = GPIO_SS_COCKPIT,
-    [SENSOR_CH_SS_FRHUB]       = GPIO_SS_FRHUB,
-    [SENSOR_CH_SS_INERTIA]     = GPIO_SS_INERTIA,
-    [SENSOR_CH_SS_FLHUB]       = GPIO_SS_FLHUB,
-    [SENSOR_CH_SS_BOTS]        = GPIO_SS_BOTS,
-};
-
 /** @brief forward declaration */
 static cmr_sensor_t sensors[];
 
@@ -86,19 +74,6 @@ static uint32_t sampleADCSensor(const cmr_sensor_t *sensor) {
     sensorChannel_t sensorChannel = sensor - sensors;
     configASSERT(sensorChannel < SENSOR_CH_LEN);
     return adcRead(sensorsADCChannels[sensorChannel]);
-}
-
-/**
- * @brief Gets a new value from an GPIO sensor.
- *
- * @param sensor The GPIO sensor to sample.
- *
- * @return The latest sampled value from the GPIO.
- */
-static uint32_t sampleGPIOSensor(const cmr_sensor_t *sensor) {
-    sensorChannel_t sensorChannel = sensor - sensors;
-    configASSERT(sensorChannel < SENSOR_CH_LEN);
-    return cmr_gpioRead(sensorsGPIOChannels[sensorChannel]);
 }
 
 /**
@@ -168,7 +143,7 @@ static int32_t adcToSwangle(const cmr_sensor_t *sensor, uint32_t reading) {
         - Layer 2: 1 Neuron with linear activation fn */
     const double minAdcValue = 532.0l;
     const double maxAdcValue = 3343.0l;
-    
+
     #define LAYER1_SIZE 3
     const double W1[LAYER1_SIZE] = {4.423423, 4.352119, 3.5617096};
     const double b1[LAYER1_SIZE] = {-2.1946218, -0.34729433, -2.9068983};
@@ -209,7 +184,7 @@ static int32_t adcToBusVoltage_mV(const cmr_sensor_t *sensor, uint32_t reading) 
     // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
     float temp = (reading * 8 * 11 / 10) *1.05;
     uint32_t busVoltage_mV = (uint32_t) temp;
-    
+
     return (int32_t) busVoltage_mV;
 }
 
@@ -391,48 +366,6 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .readingMin = 0,    // output is typically 2V max
         .readingMax = 2600,
         .warnFlag = CMR_CAN_WARN_FSM_BPP
-    },
-    [SENSOR_CH_SS_MODULE] = {
-        .conv = NULL,
-        .sample = sampleGPIOSensor,
-        .readingMin = 0,    // output is typically 2V max
-        .readingMax = 1,
-        .warnFlag = CMR_CAN_WARN_FSM_SS_MODULE
-    },
-    [SENSOR_CH_SS_COCKPIT]= {
-        .conv = NULL,
-        .sample = sampleGPIOSensor,
-        .readingMin = 0,    // output is typically 2V max
-        .readingMax = 1,
-        .warnFlag = CMR_CAN_WARN_FSM_SS_COCKPIT
-    },
-    [SENSOR_CH_SS_FRHUB] = {
-        .conv = NULL,
-        .sample = sampleGPIOSensor,
-        .readingMin = 0,    // output is typically 2V max
-        .readingMax = 1,
-        .warnFlag = CMR_CAN_WARN_FSM_SS_FRHUB
-    },
-    [SENSOR_CH_SS_INERTIA] = {
-        .conv = NULL,
-        .sample = sampleGPIOSensor,
-        .readingMin = 0,    // output is typically 2V max
-        .readingMax = 1,
-        .warnFlag = CMR_CAN_WARN_FSM_SS_INERTIA
-    },
-    [SENSOR_CH_SS_FLHUB] = {
-        .conv = NULL,
-        .sample = sampleGPIOSensor,
-        .readingMin = 0,    // output is typically 2V max
-        .readingMax = 1,
-        .warnFlag = CMR_CAN_WARN_FSM_SS_FLHUB
-    },
-    [SENSOR_CH_SS_BOTS] = {
-        .conv = NULL,
-        .sample = sampleGPIOSensor,
-        .readingMin = 0,    // output is typically 2V max
-        .readingMax = 1,
-        .warnFlag = CMR_CAN_WARN_FSM_SS_BOTS
     }
 };
 

@@ -1,8 +1,11 @@
-#include <ADS7038.h>
+#include "ADS7038.h"
 #include <CMR/spi.h>    // SPI interface
 #include <CMR/gpio.h>
 #include <CMR/tasks.h>
-#include <stdbool.h>
+
+
+
+
 
 cmr_spi_t ADS7038Spi;
 uint16_t ppos[2];
@@ -112,6 +115,6 @@ void ADS7038Init() {
     while (1) {
     	ADS7038_adcManualRead();
     	swButtons = ADS7038_read(0xD);
-    	int x = 0;
+//    	int x = 0; If there are issues uncomment this (maybe)
     }
 }
