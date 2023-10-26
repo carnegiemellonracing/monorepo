@@ -141,7 +141,7 @@ cmr_uart_result_t uart_sendCommand(const uart_command_t *command) {
 	uint8_t message[128] = {0};
 	uint8_t currByte = 0;
 
-	uint8_t initByte = ((command->readWrite) << 4) | ((0x07 & command->dataLen-1));
+	uint8_t initByte = ((command->readWrite) << 4) | ((0x07 & (command->dataLen)-1));
 	message[currByte] = initByte;
 	currByte++;
 

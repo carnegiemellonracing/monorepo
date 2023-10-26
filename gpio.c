@@ -20,9 +20,9 @@
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_MCU_LED] = { // VERIFIED
-        .port = GPIOC,
+        .port = GPIOD,
         .init = {
-            .Pin = GPIO_PIN_10,
+            .Pin = GPIO_PIN_2,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
@@ -99,6 +99,15 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
+    },
+    [RX_TURNON] = {
+		.port = GPIOB,
+		.init = {
+			.Pin = GPIO_PIN_13,
+			.Mode = GPIO_MODE_OUTPUT_PP,
+			.Pull = GPIO_NOPULL,
+			.Speed = GPIO_SPEED_FREQ_LOW
+		}
     }
 };
 

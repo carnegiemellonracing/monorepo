@@ -93,42 +93,44 @@ int main(void) {
 
     // Peripheral configuration.
     gpioInit();
-    canInit();
-    adcInit();
-    sensorsInit();
+//    canInit();
+//    adcInit();
+//    sensorsInit();
+
+    turnOn();
 
     //init fan task
-    fanInit();
+    //fanInit();
     //wwdgInit();
 
-    cmr_taskInit(
-        &statusLED_task,
-        "statusLED",
-        statusLED_priority,
-        statusLED,
-        NULL
-    );
+//    cmr_taskInit(
+//        &statusLED_task,
+//        "statusLED",
+//        statusLED_priority,
+//        statusLED,
+//        NULL
+//    );
+//
+//    // BMB_task
+//    cmr_taskInit(
+//        &bmbSample_task,
+//        "BMB Sample Task",
+//        bmbSample_priority,
+//        vBMBSampleTask,
+//        NULL
+//    );
+//
+//    // State Task
+//    cmr_taskInit(
+//        &setState_task,
+//        "Set State Task",
+//        setState_priority,
+//        vSetStateTask,
+//        NULL
+//    );
 
-    // BMB_task
-    cmr_taskInit(
-        &bmbSample_task,
-        "BMB Sample Task",
-        bmbSample_priority,
-        vBMBSampleTask,
-        NULL
-    );
 
-    // State Task
-    cmr_taskInit(
-        &setState_task,
-        "Set State Task",
-        setState_priority,
-        vSetStateTask,
-        NULL
-    );
-
-
-    vTaskStartScheduler();
+    //vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");
 }
 

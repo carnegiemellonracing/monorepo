@@ -20,7 +20,7 @@
 
 
 typedef enum {
-	SINGLE_READ = 0x00,
+	SINGLE_READ = 0x08,
 	SINGLE_WRITE,
 	STACK_READ,
 	STACK_WRITE,

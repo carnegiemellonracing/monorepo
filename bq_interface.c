@@ -7,7 +7,9 @@
 #include "bq_interface.h"
 #include "state_task.h"
 #include "uart.h"
+#include "gpio.h"
 #include <CMR/uart.h>
+#include <stm32f4xx_hal.h>
 #include <stdbool.h>
 
 #define SINGLE_DEVICE true
@@ -24,26 +26,48 @@ static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
 }
 
 void turnOn() {
-	GPIO_InitTypeDef pinConfig = { //tx pin
-		.Pin = GPIO_PIN_13,
-		.Mode = GPIO_MODE_AF_PP,
-		.Pull = GPIO_PULLUP,
-		.Speed = GPIO_SPEED_FREQ_VERY_HIGH
-	};
-	HAL_GPIO_Init(GPIOB, &pinConfig);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_SET
 	);
-	TickType_t xLastWakeTime = xTaskGetTickCount();
-	vTaskDelayUntil(&xLastWakeTime, 2.5);
+	//TickType_t xLastWakeTime = xTaskGetTickCount();
+	HAL_Delay(1000);
+	//vTaskDelayUntil(&xLastWakeTime, 2.5);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_RESET
 	);
-	pinConfig.Alternate = GPIO_AF11_UART5;
-	HAL_GPIO_Init(GPIOB, &pinConfig);
+	HAL_Delay(3);
+	HAL_GPIO_WritePin(
+		GPIOB, GPIO_PIN_13,
+		GPIO_PIN_SET
+	);
+	HAL_Delay(5);
+	HAL_GPIO_WritePin(
+			GPIOB, GPIO_PIN_13,
+			GPIO_PIN_RESET
+		);
+		HAL_Delay(3);
+		HAL_GPIO_WritePin(
+				GPIOB, GPIO_PIN_13,
+			GPIO_PIN_SET
+		);
+	//pinConfig.Alternate = GPIO_AF11_UART5;
+	HAL_Delay(1000);
+	uartInit();
 
+	uart_command_t enableAutoaddress = {
+			.readWrite = SINGLE_WRITE,
+			.dataLen = 1,
+			.deviceAddress = 0x00,
+			.registerAddress = CONTROL1,
+			.data = {0x20},
+			.crc = {0x00, 0x00}
+	};
+	cmr_uart_result_t res = uart_sendCommand(&enableAutoaddress);
+	if(res != UART_SUCCESS) {
+		return false;
+	}
 }
 
 /** Auto Address Function
