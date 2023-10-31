@@ -17,6 +17,7 @@
 #include "bms_error.h"
 #include "watchdog.h"   // Board-specific Watchdog interface
 #include "fans.h" // Board-specific Fan interface
+#include "bq_interface.h"
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -98,6 +99,8 @@ int main(void) {
 //    sensorsInit();
 
     turnOn();
+    HAL_Delay(1000);
+    autoAddr();
 
     //init fan task
     //fanInit();

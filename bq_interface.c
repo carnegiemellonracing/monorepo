@@ -82,17 +82,33 @@ bool autoAddr() {
 		return false;
 	}
 
+	uart_command_t otpSync = {
+		.readWrite = STACK_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0xFF, //not used!!!
+		.registerAddress = OTP_ECC_DATAIN1,
+		.data = {0x00},
+		.crc = {0x00, 0x00}
+	};
+	cmr_uart_result_t res;
+	for(int i = 0; i < 8; i++) {
+		otpSync.registerAddress = OTP_ECC_DATAIN1 + i;
+		res = uart_sendCommand(&otpSync);
+		if(res != UART_SUCCESS) {
+			return false;
+		}
+	}
+
 	//broadcast write to enable autoaddressing
 	uart_command_t enableAutoaddress = {
 			.readWrite = BROADCAST_WRITE,
 			.dataLen = 1,
-			.deviceAddress = 0x00, //not used!!!
+			.deviceAddress = 0xFF, //not used!!!
 			.registerAddress = CONTROL1,
 			.data = {0x01},
 			.crc = {0x00, 0x00}
 	};
 
-	cmr_uart_result_t res;
 
 
 	res = uart_sendCommand(&enableAutoaddress);
@@ -104,7 +120,7 @@ bool autoAddr() {
 	uart_command_t set_addr = {
 			.readWrite = BROADCAST_WRITE,
 			.dataLen = 1,
-			.deviceAddress = 0x00, //not used!!!
+			.deviceAddress = 0xFF, //not used!!!
 			.registerAddress = DIR0_ADDR,
 			.data = {0x00},
 			.crc = {0x00, 0x00}
@@ -121,7 +137,7 @@ bool autoAddr() {
 	uart_command_t set_stack_devices = {
 		.readWrite = BROADCAST_WRITE,
 		.dataLen = 1,
-		.deviceAddress = 0x00, //not used!!!
+		.deviceAddress = 0xFF, //not used!!!
 		.registerAddress = COMM_CTRL,
 		.data = {0x02},
 		.crc = {0x00, 0x00}
@@ -132,11 +148,11 @@ bool autoAddr() {
 	}
 
 	uart_command_t set_comm_ctrl = {
-		.readWrite = STACK_WRITE,
+		.readWrite = SINGLE_WRITE,
 		.dataLen = 1,
-		.deviceAddress = 0x00,
+		.deviceAddress = BOARD_NUM-1,
 		.registerAddress = COMM_CTRL,
-		.data = {0x01},
+		.data = {0x03},
 		.crc = {0x00, 0x00}
 	};
 
@@ -146,10 +162,33 @@ bool autoAddr() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
-	set_comm_ctrl.deviceAddress = BOARD_NUM;
+	set_comm_ctrl.deviceAddress = BOARD_NUM-1;
 	set_comm_ctrl.data[0] = 0x03;
 	res = uart_sendCommand(&set_comm_ctrl);
 	if(res != UART_SUCCESS) {
+		return false;
+	}
+
+	otpSync.readWrite = STACK_READ;
+	otpSync.data[0] = 1;
+	uart_response_t response;
+	for(int i = 0; i < 8; i++) {
+		otpSync.registerAddress = OTP_ECC_DATAIN1 + i;
+		res = uart_sendCommand(&otpSync);
+		if(res != UART_SUCCESS) {
+			return false;
+		}
+	}
+	uart_command_t readReg = {
+		.readWrite = SINGLE_READ,
+		.dataLen = 1,
+		.deviceAddress = 0,
+		.registerAddress = 0x2001,
+		.data = {0x00},
+		.crc = {0x00, 0x00}
+	};
+	res = uart_sendCommand(&readReg);
+	if(uart_receiveResponse(&response, SINGLE_DEVICE) == UART_FAILURE) {
 		return false;
 	}
 	return true;
