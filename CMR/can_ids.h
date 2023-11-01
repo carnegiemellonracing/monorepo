@@ -23,6 +23,7 @@ typedef enum {
     CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x104,    /**< @brief DIM heartbeat. */
     CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief PTC heatbeart.*/
+    CMR_CANID_HEARTBEAT_AIM = 0x106,    /**< @brief AIM heatbeart.*/
 
     CMR_CANID_CDL_BROADCAST = 0x625,    /**< @brief CDL broadcast. */
 
@@ -59,6 +60,8 @@ typedef enum {
     CMR_CANID_FSM_SENSORS_ADC = 0x543,          /**< @brief FSM raw sensors. */
     CMR_CANID_FSM_POWER_DIAGNOSTICS = 0x553,    /**< @brief FSM power diagnostics. */
     CMR_CANID_SS_STATUS = 0x554,               /**< @brief Safety Circuit status. */
+
+    CMR_CANID_AIM_DATA = 0x134,
 
     CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief PTC (fan board) cooling loop temps. */
     CMR_CANID_PTC_LOOP_TEMPS_B = 0x234,        /**< @brief PTC (fan board) cooling loop temps. */
@@ -241,3 +244,4 @@ typedef enum {
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
+
