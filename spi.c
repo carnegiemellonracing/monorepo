@@ -3,10 +3,6 @@
 #include <CMR/gpio.h>
 #include <CMR/tasks.h>
 
-
-
-
-
 cmr_spi_t ADS7038Spi;
 uint16_t ppos[2];
 uint8_t	swButtons;
@@ -115,6 +111,5 @@ void ADS7038Init() {
     while (1) {
     	ADS7038_adcManualRead();
     	swButtons = ADS7038_read(0xD);
-//    	int x = 0; If there are issues uncomment this (maybe)
     }
 }
