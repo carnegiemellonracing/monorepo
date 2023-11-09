@@ -429,7 +429,7 @@ typedef struct {
     uint8_t minVoltIndex;       /**< @brief Min BMB cell voltage index. */
     uint8_t maxCellVoltBMB;     /**< @brief */ 
     uint8_t maxVoltIndex;       /**< @brief Max BMB cell voltage index. */
-} cmr_canHVCPackMinMaxCellVolages_t;
+} cmr_canHVCPackMinMaxCellVoltages_t;
 
 /** @brief High Voltage Controller pack currents. */
 typedef struct {
