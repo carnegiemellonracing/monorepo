@@ -283,9 +283,9 @@ static void tftUpdate(void *pvParameters) {
 
     /* Restarting the Display. */
     TickType_t lastWakeTime = xTaskGetTickCount();
-    // cmr_gpioWrite(GPIO_PD_N, 0); // TODO figure out pin
+    cmr_gpioWrite(GPIO_PD_N, 0); // TODO figure out pin
     vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
-    // cmr_gpioWrite(GPIO_PD_N, 1);
+    cmr_gpioWrite(GPIO_PD_N, 1);
     vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
 
     /* Initialize the display. */

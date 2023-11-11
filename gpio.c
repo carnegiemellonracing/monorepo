@@ -21,7 +21,7 @@
  * @see `stm32f4xx_hal_gpio.h` for various initialization values.
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
-    [GPIO_LED_0] = { // not in the schematic
+    [GPIO_LED_0] = {
         .port = GPIOB,
         .init = {
             .Pin = GPIO_PIN_6,
@@ -30,7 +30,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_LED_1] = { // not in the schematic
+    [GPIO_LED_1] = {
         .port = GPIOB,
         .init = {
             .Pin = GPIO_PIN_5,
@@ -83,7 +83,16 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 	            .Pull = GPIO_NOPULL,
 	            .Speed = GPIO_SPEED_FREQ_LOW
 	        }
-	}
+	},
+    [GPIO_PD_N] = {
+            .port = GPIOA,
+            .init = {
+                .Pin = GPIO_PIN_5,
+	            .Mode = GPIO_MODE_OUTPUT_PP,
+	            .Pull = GPIO_NOPULL,
+	            .Speed = GPIO_SPEED_FREQ_LOW
+            }
+    }
 };
 
 static const uint32_t buttonsInput_priority = 4;
@@ -177,7 +186,7 @@ static void buttonsInput(void *pvParameters) {
         currentTime = xTaskGetTickCount();
 
         // updating each button and updating states according to button presses
-        for (expanderButton_t i = EXP_DASH_BUTTON_1; i < EXP_BUTTON_LEN; i ++) {
+        for (expanderButton_t i = EXP_DASH_BUTTON_0; i < EXP_BUTTON_LEN; i ++) {
             bool currState = expanderGetButtonPressed(i);
             expanderButtonEvent_t *currButton = &expanderButtons[i];
 

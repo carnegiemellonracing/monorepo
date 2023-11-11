@@ -28,6 +28,7 @@ typedef enum {
 	GPIO_LED_IMD,
 	GPIO_LED_BSPD,
 	GPIO_PTT_N,
+    GPIO_PD_N,
     GPIO_LEN    /**< @brief Total GPIO pins. */
 } gpio_t;
 

@@ -1,19 +1,20 @@
 /**
  * @file expanders.c
  * @brief GPIO expanders implementation
- * 
+ *
  * GPIO expanders in use:
- *      Main Board Digital 1:   PCA9555DBR      (ROT_{1,2}_{1..8})
+ *      Main Board Digital 1:   PCF8574PW       (ROT_{0..2},ROT_SEL,BUTTON{0..3})
  *      Main Board Digital 2:   PCA9554PW,118   (LED_{1,2}, PUSH{1..4})
+ *      Steering Wheel SPI  :   ADS7038IRTET    (PUSH{0..3}, PPOS{0,1})
  *      Daughter Board Digital: PCA9554PW,118   (PUSH{1..3})
  *      Daughter Board Analog:  AD5593RBRUZ     (CLUTCH{1,2})
- *
  * @author Carnegie Mellon Racing
  */
 
 #include <CMR/i2c.h>    // I2C interface
 #include <CMR/tasks.h>  // Task interface
 
+#include "spi.h"                // SPI Interface
 #include "expanders.h"          // Interface to implement
 #include "expandersPrivate.h"   // Private interface
 
@@ -21,15 +22,16 @@
 /** @brief Primary I2C interface */
 static cmr_i2c_t i2c;
 
+/** @brief SPI Interface*/
+static cmr_spi_t spi;
+
 /** @brief DIM I2C address */
 static const uint32_t ownAddress = 0x00; // 0x00 = 0b0000000
 
 // TODO: Fix addresses
 /** @brief Main Board Digital 1 expander I2C address */
-static const uint16_t mainDigital1Address = 0x23; // 0x23 = 0b0100011
-
-/** @brief Main Board Digital 2 expander I2C address */
-static const uint16_t mainDigital2Address = 0x27; // 0x27 = 0b0100111
+// static const uint16_t mainDigital1Address = 0x23; // 0x23 = 0b0100011
+static const uint16_t mainDigital1Address = 0x20; // 0x23 = 0b010_0000
 
 /** @brief Daughter Board Digital expander I2C address */
 static const uint16_t daughterDigitalAddress = 0x25; // 0x25 = 0b0100101
@@ -42,28 +44,28 @@ static const uint32_t i2cTimeout_ms = 1;
 
 /**
  * @brief Array of expander button pin configs
- * 
+ *
  */
 static expanderPinConfig_t buttons[EXP_BUTTON_LEN] = {
-    [EXP_DASH_BUTTON_1] = {
-        .expanderAddress = mainDigital2Address,
+    [EXP_DASH_BUTTON_0] = {
+        .expanderAddress = mainDigital1Address,
         .port = 0,
-        .pin = 7
+        .pin = 4
+    },
+    [EXP_DASH_BUTTON_1] = {
+        .expanderAddress = mainDigital1Address,
+        .port = 0,
+        .pin = 5
     },
     [EXP_DASH_BUTTON_2] = {
-        .expanderAddress = mainDigital2Address,
+        .expanderAddress = mainDigital1Address,
         .port = 0,
         .pin = 6
     },
     [EXP_DASH_BUTTON_3] = {
-        .expanderAddress = mainDigital2Address,
+        .expanderAddress = mainDigital1Address,
         .port = 0,
-        .pin = 5
-    },
-    [EXP_DASH_BUTTON_4] = {
-        .expanderAddress = mainDigital2Address,
-        .port = 0,
-        .pin = 4
+        .pin = 7
     },
     [EXP_WHEEL_BUTTON_1] = {
         .expanderAddress = daughterDigitalAddress,
@@ -84,121 +86,55 @@ static expanderPinConfig_t buttons[EXP_BUTTON_LEN] = {
 
 /**
  * @brief Array of expander rotary pin configs
- * 
+ *
  */
-static expanderRotaryConfig_t rotaries[EXP_ROTARY_LEN] = {
+static expanderPinConfig_t rotaries[EXP_ROTARY_LEN] = {
+    [EXP_ROTARY_0] = {
+        .expanderAddress = mainDigital1Address,
+        .port = 0,
+        .pin = 2
+    },
     [EXP_ROTARY_1] = {
-        .pins = {
-            [ROTARY_POS_1] = {
-                .expanderAddress = mainDigital1Address,
-                .port = 1,
-                .pin = 1
-            },
-            [ROTARY_POS_2] = {
-                .expanderAddress = mainDigital1Address,
-                .port = 1,
-                .pin = 3
-            },
-            [ROTARY_POS_3] = {
-                .expanderAddress = mainDigital1Address,
-                .port = 1,
-                .pin = 5
-            },
-            [ROTARY_POS_4] = {
-                .expanderAddress = mainDigital1Address,
-                .port = 1,
-                .pin = 7
-            },
-            [ROTARY_POS_5] = {
-                .expanderAddress = mainDigital1Address,
-                .port = 0,
-                .pin = 6
-            },
-            [ROTARY_POS_6] = {
-                .expanderAddress = mainDigital1Address,
-                .port = 0,
-                .pin = 4
-            },
-            [ROTARY_POS_7] = {
-                .expanderAddress = mainDigital1Address,
-                .port = 0,
-                .pin = 2
-            },
-            [ROTARY_POS_8] = {
-                .expanderAddress = mainDigital1Address,
-                .port = 0,
-                .pin = 0
-            }
-        }
+        .expanderAddress = mainDigital1Address,
+        .port = 0,
+        .pin = 1
+
     },
     [EXP_ROTARY_2] = {
-        .pins = {
-            [ROTARY_POS_1] = {
-                .expanderAddress = mainDigital1Address,
-                .port = 1,
-                .pin = 0
-            },
-            [ROTARY_POS_2] = {
-                .expanderAddress = mainDigital1Address,
-                .port = 1,
-                .pin = 2
-            },
-            [ROTARY_POS_3] = {
-                .expanderAddress = mainDigital1Address,
-                .port = 1,
-                .pin = 4
-            },
-            [ROTARY_POS_4] = {
-                .expanderAddress = mainDigital1Address,
-                .port = 1,
-                .pin = 6
-            },
-            [ROTARY_POS_5] = {
-                .expanderAddress = mainDigital1Address,
-                .port = 0,
-                .pin = 7
-            },
-            [ROTARY_POS_6] = {
-                .expanderAddress = mainDigital1Address,
-                .port = 0,
-                .pin = 5
-            },
-            [ROTARY_POS_7] = {
-                .expanderAddress = mainDigital1Address,
-                .port = 0,
-                .pin = 3
-            },
-            [ROTARY_POS_8] = {
-                .expanderAddress = mainDigital1Address,
-                .port = 0,
-                .pin = 1
-            }
-        }
+        .expanderAddress = mainDigital1Address,
+        .port = 0,
+        .pin = 0
     }
+};
+
+static expanderPinConfig_t EXP_ROTARY_SEL = {
+    .expanderAddress = mainDigital1Address,
+    .port = 0,
+    .pin  = 3
 };
 
 /**
  * @brief Array of expander LED pin configs
- * 
+ *
  * Must change checkLEDState function since it is not generic to LED configurations
- * 
+ *
  */
-static expanderPinConfig_t leds[EXP_LED_LEN] = {
-    [EXP_LED_1] = {
-        .expanderAddress = mainDigital2Address,
-        .port = 0,
-        .pin = 0
-    },
-    [EXP_LED_2] = {
-        .expanderAddress = mainDigital2Address,
-        .port = 0,
-        .pin = 1
-    }
-};
+// static expanderPinConfig_t leds[EXP_LED_LEN] = {
+//     [EXP_LED_1] = {
+//         .expanderAddress = mainDigital2Address,
+//         .port = 0,
+//         .pin = 0
+//     },
+//     [EXP_LED_2] = {
+//         .expanderAddress = mainDigital2Address,
+//         .port = 0,
+//         .pin = 1
+//     }
+// };
 
 /**
  * @brief Array of expander clutch pin configs
- * 
+ *
  */
 static expanderPinConfig_t clutchPaddles[EXP_CLUTCH_LEN] = {
     [EXP_CLUTCH_1] = {
@@ -214,7 +150,7 @@ static expanderPinConfig_t clutchPaddles[EXP_CLUTCH_LEN] = {
 };
 
 /** @brief Array to store target LED states */
-bool ledTargets[EXP_LED_LEN];
+// bool ledTargets[EXP_LED_LEN];
 
 /** @brief Array of bytes containing data for the pins of each digital GPIO expander */
 // Number of elements in the array corresponds to number of ports for GPIO
@@ -261,7 +197,7 @@ static int updateExpanderDataDaughter(){
          daughterAnalogAddress, AD5593R_POINTER_ADC_RD,
          daughterAnalogData, 2 * EXP_CLUTCH_LEN
      );
-    
+
     return status;
 }
 
@@ -286,47 +222,47 @@ static int updateExpanderDataMain()
 
 /**
  * @brief Checks current LED state and updates if different from `ledTargets`
- * 
+ *
  * Not wholly generic since it's too complicated,
  * so it uses the fact that all LEDs are on Main Digital 2 Port 1
- * 
+ *
  */
-static void checkLEDState()
-{
-    uint8_t targetMask = 0;
-    uint8_t targetState = 0;
+// static void checkLEDState()
+// {
+//     uint8_t targetMask = 0;
+//     uint8_t targetState = 0;
 
-    for (size_t l = EXP_LED_1; l < EXP_LED_LEN; l++)
-    {
-        uint8_t pin = leds[l].pin;
-        targetMask |= 1 << pin;
-        targetState |= ledTargets[l] << pin;
-    }
+//     for (size_t l = EXP_LED_1; l < EXP_LED_LEN; l++)
+//     {
+//         uint8_t pin = leds[l].pin;
+//         targetMask |= 1 << pin;
+//         targetState |= ledTargets[l] << pin;
+//     }
 
-    // See note above about non-generic code
-    uint8_t currentState = mainDigital2Data[0];
-    if ((currentState & targetMask) != targetState)
-    {
-        uint8_t cmd[2] = {
-            PCA9554_OUTPUT_PORT,
-            targetState
-        };
+//     // See note above about non-generic code
+//     uint8_t currentState = mainDigital2Data[0];
+//     if ((currentState & targetMask) != targetState)
+//     {
+//         uint8_t cmd[2] = {
+//             PCA9554_OUTPUT_PORT,
+//             targetState
+//         };
 
-        cmr_i2cTX(
-            &i2c,
-            mainDigital2Address, cmd,
-            sizeof(cmd) / sizeof(cmd[0]),
-            i2cTimeout_ms
-        );
-    }
-}
+//         cmr_i2cTX(
+//             &i2c,
+//             mainDigital2Address, cmd,
+//             sizeof(cmd) / sizeof(cmd[0]),
+//             i2cTimeout_ms
+//         );
+//     }
+// }
 
 
 static int configAnalogADCDaughter(){
     // Daughter Board Analog expander has ADC inputs on pins 0 and 1
     uint8_t daughterAnalogADCConfig[3] = {
         AD5593R_CTRL_REG_ADC_CONFIG,
-        0x00,   
+        0x00,
         0x03    // 0b00000011
     };
     // Set REP bit so ADC conversions are repeated (see datasheet)
@@ -353,7 +289,7 @@ static int configAnalogADCDaughter(){
          sizeof(daughterAnalogADCSequence) / sizeof(daughterAnalogADCSequence[0]),
          i2cTimeout_ms
      );
-    
+
     return status;
 }
 
@@ -422,7 +358,7 @@ static int configDaughterDigital(){
          sizeof(daughterDigitalConfig) / sizeof(daughterDigitalConfig[0]),
          i2cTimeout_ms
      );
-    
+
     return status;
 }
 
@@ -460,7 +396,7 @@ static void expanderUpdate100Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     int status = configMainDigital1and2();
-    
+
     status |= configDaughterDigital();
 
     status |= configAnalogADCDaughter();
@@ -471,7 +407,7 @@ static void expanderUpdate100Hz(void *pvParameters) {
 
     while (1) {
         status = 0;
-        
+
         // check status of each function
         if (checkStatus(status)) status |= updateExpanderDataMain();
 
@@ -479,14 +415,14 @@ static void expanderUpdate100Hz(void *pvParameters) {
         configAnalogADCDaughter();
         updateExpanderDataDaughter();
 
-        if (checkStatus(status)) checkLEDState();
-        
+        // if (checkStatus(status)) checkLEDState();
+
         vTaskDelayUntil(&lastWakeTime, expanderUpdate100Hz_period_ms);
 
         if (checkStatus(status)) badStatus_count = 0;
         else badStatus_count += 1;
 
-        // if we've seen a badStatus for more than 4 times, 
+        // if we've seen a badStatus for more than 4 times,
         // reset clock and delay for a while so that the timed out function finishes.
         if (badStatus_count > 4) {
             lastWakeTime = xTaskGetTickCount();
@@ -499,7 +435,7 @@ static void expanderUpdate100Hz(void *pvParameters) {
             configAnalogADCDaughter();
         }
 
-        
+
     }
 }
 
@@ -509,7 +445,7 @@ static bool getPinValueFromConfig(expanderPinConfig_t config)
 
     // Select correct expander data based on config
     uint8_t *data = NULL;
-    if (addr == mainDigital1Address) 
+    if (addr == mainDigital1Address)
         data = mainDigital1Data;
     else if (addr == mainDigital2Address)
         data = mainDigital2Data;
@@ -529,10 +465,10 @@ static bool getPinValueFromConfig(expanderPinConfig_t config)
 
 /**
  * @brief Get expander button states
- * 
- * @param button 
- * @return true 
- * @return false 
+ *
+ * @param button
+ * @return true
+ * @return false
  */
 bool expanderGetButtonPressed(expanderButton_t button)
 {
@@ -541,19 +477,19 @@ bool expanderGetButtonPressed(expanderButton_t button)
     return getPinValueFromConfig(buttonConfig);
 }
 
-expanderRotaryPosition_t expanderGetRotary(expanderRotary_t rotary)
-{
-    expanderRotaryConfig_t rotaryConfig = rotaries[rotary];
+// expanderRotaryPosition_t expanderGetRotary(expanderRotary_t rotary)
+// {
+//     expanderRotaryConfig_t rotaryConfig = rotaries[rotary];
 
-    for (size_t pos = ROTARY_POS_1; pos < ROTARY_POS_LEN; pos++)
-    {
-        if (getPinValueFromConfig(rotaryConfig.pins[pos]))
-        {
-            return pos;
-        }
-    }
-    return ROTARY_POS_INVALID;
-}
+//     for (size_t pos = ROTARY_POS_1; pos < ROTARY_POS_LEN; pos++)
+//     {
+//         if (getPinValueFromConfig(rotaryConfig.pins[pos]))
+//         {
+//             return pos;
+//         }
+//     }
+//     return ROTARY_POS_INVALID;
+// }
 // TODO: scale down to uint8_t and send over CAN
 uint32_t expanderGetClutch(expanderClutch_t clutch)
 {
@@ -578,7 +514,7 @@ uint32_t expanderGetClutch(expanderClutch_t clutch)
             return curr & valueMask;
         }
     }
-    
+
     // Failed to find clutch data, no valid value would be this large
     return 0;
 }
@@ -598,7 +534,7 @@ void expandersInit(void) {
         GPIOA, GPIO_PIN_8,
         GPIOB, GPIO_PIN_4
     );
-    
+
 	if (HAL_I2CEx_ConfigAnalogFilter(&(i2c.handle), I2C_ANALOGFILTER_DISABLE) != HAL_OK)
 		{
 		cmr_panic("Failed to disable analog filter");

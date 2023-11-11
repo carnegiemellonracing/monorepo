@@ -1,4 +1,4 @@
-#include "ADS7038.h"
+#include "spi.h"
 #include <CMR/spi.h>    // SPI interface
 #include <CMR/gpio.h>
 #include <CMR/tasks.h>
