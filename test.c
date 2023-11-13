@@ -29,13 +29,13 @@ void testGPIORead()
     }
 }
 
-void testExpanderWrite()
-{
-    static bool toggle = false;
-    expanderSetLED(EXP_LED_1, toggle);
-    expanderSetLED(EXP_LED_2, toggle);
-    toggle = !toggle;
-}
+//void testExpanderWrite()
+//{
+//    static bool toggle = false;
+//    expanderSetLED(EXP_LED_1, toggle);
+//    expanderSetLED(EXP_LED_2, toggle);
+//    toggle = !toggle;
+//}
 
 void testADCRead()
 {

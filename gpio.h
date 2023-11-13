@@ -43,11 +43,11 @@ typedef struct {
     TickType_t debounce;
 } expanderButtonEvent_t;
 
-typedef void (*rotaryAction_f) (expanderRotaryPosition_t);
-typedef struct {
-    expanderRotaryPosition_t position;
-    rotaryAction_f setAction;
-} expanderRotaryEvent_t;
+// typedef void (*rotaryAction_f) (expanderRotaryPosition_t);
+// typedef struct {
+//     expanderRotaryPosition_t position;
+//     rotaryAction_f setAction;
+// } expanderRotaryEvent_t;
 
 /** @brief Current regen step */
 extern unsigned int regenStep;

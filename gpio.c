@@ -109,25 +109,25 @@ unsigned int regenStep = 0;
 #define BUTTON_DEBOUNCE_TIME 200
 
 static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
-    [EXP_DASH_BUTTON_1] = {
+    [EXP_DASH_BUTTON_0] = {
         .buttonState = false,
         .setAction = &downButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
-    [EXP_DASH_BUTTON_2] = {
+    [EXP_DASH_BUTTON_1] = {
         .buttonState = false,
         .setAction = &leftButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
-    [EXP_DASH_BUTTON_3] = {
+    [EXP_DASH_BUTTON_2] = {
         .buttonState = false,
         .setAction = &upButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
-    [EXP_DASH_BUTTON_4] = {
+    [EXP_DASH_BUTTON_3] = {
         .buttonState = false,
         .setAction = &rightButton,
         .lastPressed = 0,
@@ -153,16 +153,16 @@ static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
     }
 };
 
-static expanderRotaryEvent_t rotaries[EXP_ROTARY_LEN] = {
-    [EXP_ROTARY_1] = {
-        .position = ROTARY_POS_INVALID,
-        .setAction = &stateGearSwitch
-    },
-    [EXP_ROTARY_2] = {
-        .position = ROTARY_POS_INVALID,
-        .setAction = &stateDrsModeSwitch
-    }
-};
+//static expanderRotaryEvent_t rotaries[EXP_ROTARY_LEN] = {
+//    [EXP_ROTARY_1] = {
+//        .position = ROTARY_POS_INVALID,
+//        .setAction = &stateGearSwitch
+//    },
+//    [EXP_ROTARY_2] = {
+//        .position = ROTARY_POS_INVALID,
+//        .setAction = &stateDrsModeSwitch
+//    }
+//};
 
 /**
  * @brief Handles button actions.
@@ -198,15 +198,15 @@ static void buttonsInput(void *pvParameters) {
             }
         }
 
-        for (expanderRotary_t i = EXP_ROTARY_1; i < EXP_ROTARY_LEN; i++) {
-            expanderRotaryPosition_t rotaryPos = expanderGetRotary(i);
-            expanderRotaryEvent_t *currRotary =  &rotaries[i];
+        // for (expanderRotary_t i = EXP_ROTARY_1; i < EXP_ROTARY_LEN; i++) {
+        //     expanderRotaryPosition_t rotaryPos = expanderGetRotary(i);
+        //     expanderRotaryEvent_t *currRotary =  &rotaries[i];
 
-            if (rotaryPos != currRotary->position) {
-                (*(currRotary->setAction))(rotaryPos);
-                currRotary->position = rotaryPos;
-            }
-        }
+        //     if (rotaryPos != currRotary->position) {
+        //         (*(currRotary->setAction))(rotaryPos);
+        //         currRotary->position = rotaryPos;
+        //     }
+        // }
 
         vTaskDelayUntil(&lastWakeTime, buttonsInput_period);
     }

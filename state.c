@@ -63,7 +63,7 @@ void enterConfigScreen(void);
 
 /**
  * @brief handles Action 1 button press on steering wheel
- * 
+ *
  * @param pressed `true` if button is currently pressed.
 */
 void actionOneButton(bool pressed) {
@@ -87,15 +87,15 @@ void actionOneButton(bool pressed) {
                 // Allow CDC to use this button for TC
                 action1ButtonPressed = pressed;
             }
-            
+
         }
     }
-    
+
 }
 
 /**
  * @brief handles Action 2 button press on steering wheel
- * 
+ *
  * @param pressed `true` if button is currently pressed.
 */
 void actionTwoButton(bool pressed) {
@@ -121,7 +121,7 @@ void actionTwoButton(bool pressed) {
 
 /**
  * @brief handles DRS button press on steering wheel
- * 
+ *
  * @param pressed `true` if button is currently pressed.
 */
 void drsButton(bool pressed) {
@@ -140,7 +140,7 @@ void drsButton(bool pressed) {
 
 /**
  * @brief handles UP button press on D-Pad
- * 
+ *
  * @param pressed `true` if button is currently pressed.
 */
 
@@ -158,7 +158,7 @@ void upButton(bool pressed) {
 
 /**
  * @brief handles DOWN button press on D-Pad
- * 
+ *
  * @param pressed `true` if button is currently pressed.
 */
 void downButton(bool pressed) {
@@ -175,7 +175,7 @@ void downButton(bool pressed) {
 
 /**
  * @brief handles LEFT button press on D-Pad
- * 
+ *
  * @param pressed `true` if button is currently pressed.
 */
 void leftButton(bool pressed) {
@@ -193,7 +193,7 @@ void leftButton(bool pressed) {
 
 /**
  * @brief handles RIGHT button press on D-Pad
- * 
+ *
  * @param pressed `true` if button is currently pressed.
 */
 void rightButton(bool pressed) {
@@ -210,7 +210,7 @@ void rightButton(bool pressed) {
 
 void exitConfigScreen(){
     // the first time the user presses the exit button, it'll flush the memory to the cdc
-    // the second time it'll exit the config screen because it'll be dependent having 
+    // the second time it'll exit the config screen because it'll be dependent having
     // recieved the message from CDC
     if (flush_config_screen_to_cdc == false){
         flush_config_screen_to_cdc = true;
@@ -228,8 +228,8 @@ void enterConfigScreen(){
     // waiting for cdc
 
 
-    if (in_config_screen == false && 
-    config_screen_values_received_on_boot && 
+    if (in_config_screen == false &&
+    config_screen_values_received_on_boot &&
     ((stateGetVSM() == CMR_CAN_GLV_ON && stateGetVSMReq() == CMR_CAN_GLV_ON) ||
     (stateGetVSM() == CMR_CAN_HV_EN && stateGetVSMReq() == CMR_CAN_HV_EN))){
         in_config_screen = true;
@@ -366,7 +366,7 @@ bool slowEnough(void) {
     uint16_t cutoff = 3; //mph
 
     /* Wheel Speed to Vehicle Speed Conversion
-     *      (x rotations / 1min) * (18" * PI) * (1' / 12") * 
+     *      (x rotations / 1min) * (18" * PI) * (1' / 12") *
      *      (60min / 1hr) * (1 mi / 5280')
      *      = x * 0.0535                                   */
     uint16_t vehicleSpeed = avgWheelRPM * 0.0535;
@@ -454,39 +454,39 @@ void stateVSMDown() {
     state.vsmReq = vsmReq;
 }
 
-void stateGearSwitch(expanderRotaryPosition_t position) {
-    if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
-        return;     // Can only change gears in HV_EN and GLV_ON.
-    }
-    cmr_canGear_t gearReq;
-    if (position == ROTARY_POS_INVALID) {
-        gearReq = CMR_CAN_GEAR_SLOW;
-    } else {
-        gearReq = (cmr_canGear_t)((size_t) position + 1);
-        if (gearReq >= CMR_CAN_GEAR_LEN) {
-            gearReq = CMR_CAN_GEAR_SLOW;
-        }
-    }
+// void stateGearSwitch(expanderRotaryPosition_t position) {
+//     if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
+//         return;     // Can only change gears in HV_EN and GLV_ON.
+//     }
+//     cmr_canGear_t gearReq;
+//     if (position == ROTARY_POS_INVALID) {
+//         gearReq = CMR_CAN_GEAR_SLOW;
+//     } else {
+//         gearReq = (cmr_canGear_t)((size_t) position + 1);
+//         if (gearReq >= CMR_CAN_GEAR_LEN) {
+//             gearReq = CMR_CAN_GEAR_SLOW;
+//         }
+//     }
 
-    state.gearReq = gearReq;
-}
+//     state.gearReq = gearReq;
+// }
 
-void stateDrsModeSwitch(expanderRotaryPosition_t position) {
-    // we can change DRS in any state
+// void stateDrsModeSwitch(expanderRotaryPosition_t position) {
+//     // we can change DRS in any state
 
-    if (position == ROTARY_POS_INVALID) {
-        state.drsReq = CMR_CAN_DRSM_UNKNOWN;
-    } else if ((cmr_canDrsMode_t) position >= CMR_CAN_DRSM_LEN) { 
-        // set drs mode to closed if dial pos > drs modes
-        state.drsReq = CMR_CAN_DRSM_QUIET;
-    } else {
-        state.drsReq = position;
-    }
-}
+//     if (position == ROTARY_POS_INVALID) {
+//         state.drsReq = CMR_CAN_DRSM_UNKNOWN;
+//     } else if ((cmr_canDrsMode_t) position >= CMR_CAN_DRSM_LEN) {
+//         // set drs mode to closed if dial pos > drs modes
+//         state.drsReq = CMR_CAN_DRSM_QUIET;
+//     } else {
+//         state.drsReq = position;
+//     }
+// }
 
-void stateRotary2Switch(expanderRotaryPosition_t position) {
-    // Not implemented
-}
+// void stateRotary2Switch(expanderRotaryPosition_t position) {
+//     // Not implemented
+// }
 
 /**
  * @brief Updates state request to be consistent with VSM state.
@@ -573,7 +573,7 @@ typedef struct {
 
 /**
  * @brief Look up table for 24v lifepo4 battery State of Charge
- * 
+ *
  * Must be sorted in descending order
  */
  static voltage_SoC_t LV_LiFePo_SoC_lookup[LV_LIFEPO_LUT_NUM_ITEMS] = {
@@ -620,7 +620,7 @@ uint8_t getLVSoC(float voltage, lv_battery_type_t battery_type) {
         // unknown battery type - return 0%
         return 0;
     }
-    
+
     for (size_t i = 0; i < num_items; i++) {
         if (lut[i].voltage == voltage) {
             // if voltage equals voltage from lut, return soc
@@ -631,7 +631,7 @@ uint8_t getLVSoC(float voltage, lv_battery_type_t battery_type) {
                 // if i == 0, then it must be higher than highest voltage
                 return 99;
             } else {
-                // otherwise we do some linear extrapolation! 
+                // otherwise we do some linear extrapolation!
                 float result = (float)lut[i].SoC + ((voltage - lut[i].voltage) / (lut[i-1].voltage - lut[i].voltage)) * ((float)lut[i-1].SoC - (float)lut[i].SoC);
                 return min(99, ((uint8_t)result));
             }

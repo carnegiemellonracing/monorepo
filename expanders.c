@@ -12,9 +12,10 @@
  */
 
 #include <CMR/i2c.h>    // I2C interface
+#include <CMR/spi.h>    // SPI interface
 #include <CMR/tasks.h>  // Task interface
 
-#include "spi.h"                // SPI Interface
+
 #include "expanders.h"          // Interface to implement
 #include "expandersPrivate.h"   // Private interface
 
@@ -67,20 +68,25 @@ static expanderPinConfig_t buttons[EXP_BUTTON_LEN] = {
         .port = 0,
         .pin = 7
     },
+    [EXP_WHEEL_BUTTON_0] = {
+        .expanderAddress = daughterDigitalAddress,
+        .port = 0,
+        .pin = 5
+    },
     [EXP_WHEEL_BUTTON_1] = {
         .expanderAddress = daughterDigitalAddress,
         .port = 0,
-        .pin = 0
+        .pin = 2
     },
     [EXP_WHEEL_BUTTON_2] = {
         .expanderAddress = daughterDigitalAddress,
         .port = 0,
-        .pin = 1
+        .pin = 3
     },
     [EXP_WHEEL_BUTTON_3] = {
         .expanderAddress = daughterDigitalAddress,
         .port = 0,
-        .pin = 2
+        .pin = 4
     }
 };
 
@@ -210,10 +216,10 @@ static int updateExpanderDataMain()
 
     if (!checkStatus(status)) return status;
 
-    status |= getExpanderData(
-        mainDigital2Address, PCA9554_INPUT_PORT,
-        mainDigital2Data, 1
-    );
+    // status |= getExpanderData(
+    //     mainDigital2Address, PCA9554_INPUT_PORT,
+    //     mainDigital2Data, 1
+    // );
 
     if (!checkStatus(status)) return status;
 
@@ -382,12 +388,12 @@ static int configMainDigital1and2(){
         sizeof(mainDigital1Config) / sizeof(mainDigital1Config[0]),
         i2cTimeout_ms
     );
-    status |= cmr_i2cTX(
-        &i2c,
-        mainDigital2Address, mainDigital2Config,
-        sizeof(mainDigital2Config) / sizeof(mainDigital2Config[0]),
-        i2cTimeout_ms
-    );
+//    status |= cmr_i2cTX(
+//        &i2c,
+//        mainDigital2Address, mainDigital2Config,
+//        sizeof(mainDigital2Config) / sizeof(mainDigital2Config[0]),
+//        i2cTimeout_ms
+//    );
 
     return status;
 }
@@ -447,8 +453,8 @@ static bool getPinValueFromConfig(expanderPinConfig_t config)
     uint8_t *data = NULL;
     if (addr == mainDigital1Address)
         data = mainDigital1Data;
-    else if (addr == mainDigital2Address)
-        data = mainDigital2Data;
+//    else if (addr == mainDigital2Address)
+//        data = mainDigital2Data;
     else if (addr == daughterAnalogAddress)
         data = daughterAnalogData;
     else if (addr == daughterDigitalAddress)
@@ -518,10 +524,10 @@ uint32_t expanderGetClutch(expanderClutch_t clutch)
     // Failed to find clutch data, no valid value would be this large
     return 0;
 }
-void expanderSetLED(expanderLED_t led, bool isOn)
-{
-    ledTargets[led] = isOn;
-}
+//void expanderSetLED(expanderLED_t led, bool isOn)
+//{
+//    ledTargets[led] = isOn;
+//}
 
 /**
  * @brief Initializes the GPIO expander interface.

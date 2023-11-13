@@ -9,13 +9,14 @@
 #define EXPANDERS_H
 
 #include <stdbool.h>
-#include <stdint.h>     // uint32_t?
+#include <stdint.h>
 
 typedef enum {
     EXP_DASH_BUTTON_0 = 0,
     EXP_DASH_BUTTON_1,
     EXP_DASH_BUTTON_2,
     EXP_DASH_BUTTON_3,
+    EXP_WHEEL_BUTTON_0,
     EXP_WHEEL_BUTTON_1,
     EXP_WHEEL_BUTTON_2,
     EXP_WHEEL_BUTTON_3,

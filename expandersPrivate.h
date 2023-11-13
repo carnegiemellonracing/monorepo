@@ -63,9 +63,9 @@ typedef struct {
     uint8_t pin;
 } expanderPinConfig_t;
 
-typedef struct {
-    expanderPinConfig_t pins[ROTARY_POS_LEN];
-} expanderRotaryConfig_t;
+// typedef struct {
+//     expanderPinConfig_t pins[ROTARY_POS_LEN];
+// } expanderRotaryConfig_t;
 
 #endif /* EXPANDERS_H */
 

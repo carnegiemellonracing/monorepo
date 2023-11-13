@@ -50,10 +50,10 @@ void rightButton(bool pressed);
 
 void exitConfigScreen();
 
-void stateGearSwitch(expanderRotaryPosition_t pos);
+// void stateGearSwitch(expanderRotaryPosition_t pos);
 void stateGearUpdate(void);
 
-void stateDrsModeSwitch(expanderRotaryPosition_t pos);
+// void stateDrsModeSwitch(expanderRotaryPosition_t pos);
 void stateDrsUpdate(void);
 
 bool getAcknowledgeButton(void);
@@ -77,7 +77,7 @@ float getOdometer(void);
 void odometerInit(void);
 
 typedef enum {
-    LV_LIFEPO = 0,        
+    LV_LIFEPO = 0,
     LV_LIPO,
 } lv_battery_type_t;
 
