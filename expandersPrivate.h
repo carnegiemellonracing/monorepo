@@ -10,17 +10,17 @@
 
 #include "expanders.h"
 
-/** @brief Represents a PCA9555 command byte. */
-typedef enum {
-    PCA9555_INPUT_PORT_0 = 0x00,    /** Read input from port 0 */
-    PCA9555_INPUT_PORT_1,           /** Read input from port 1 */
-    PCA9555_OUTPUT_PORT_0,          /** Write output to port 0 */
-    PCA9555_OUTPUT_PORT_1,          /** Write output to port 1 */
-    PCA9555_POL_INV_PORT_0,         /** Write polarity inversion to port 0 */
-    PCA9555_POL_INV_PORT_1,         /** Write polarity inversion to port 1 */
-    PCA9555_CONFIG_PORT_0,          /** Write I/O direction config to port 0 */
-    PCA9555_CONFIG_PORT_1           /** Write I/O direction config to port 0 */
-} pca9555Cmd_t;
+// /** @brief Represents a PCA9555 command byte. */
+// typedef enum {
+//     PCA9555_INPUT_PORT_0 = 0x00,    /** Read input from port 0 */
+//     PCA9555_INPUT_PORT_1,           /** Read input from port 1 */
+//     PCA9555_OUTPUT_PORT_0,          /** Write output to port 0 */
+//     PCA9555_OUTPUT_PORT_1,          /** Write output to port 1 */
+//     PCA9555_POL_INV_PORT_0,         /** Write polarity inversion to port 0 */
+//     PCA9555_POL_INV_PORT_1,         /** Write polarity inversion to port 1 */
+//     PCA9555_CONFIG_PORT_0,          /** Write I/O direction config to port 0 */
+//     PCA9555_CONFIG_PORT_1           /** Write I/O direction config to port 0 */
+// } pca9555Cmd_t;
 
 typedef enum {
     PCA9554_INPUT_PORT = 0x00,    /** Read input */
@@ -57,6 +57,20 @@ typedef enum {
     AD5593R_CTRL_REG_DAC_WR = 0x10                  /** DAC Write Register */
 } ad5593RControlRegister_t;
 
+typedef enum {
+    SYSTEM_STATUS_REG   = 0x0,          /** System Status Register */
+    GENERAL_CFG_REG     = 0x1,          /** General Configuration Register */
+    DATA_CFG_REG        = 0x2,          /** Data Configuration Register */
+    OSR_CFG_REG         = 0x3,          /** Oversampling Ratio Configuration Register */
+    OPMODE_CFG_REG      = 0x4,          /** Operating Mode Configuration Register */
+    PIN_CFG_REG         = 0x5,          /** Pin Configuration Register */
+    GPIO_CFG_REG        = 0x7,          /** GPIO Configuration Register */
+    GPO_VALUE_REG       = 0xB,          /** GPIO Output Value Register */
+    GPI_VALUE_REG       = 0xD,          /** GPIO Input Value Register */
+    SEQUENCE_CFG_REG    = 0x10,         /** Sequence Configuration Register */
+    CHANNEL_SEL_REG     = 0x11,         /** Channel Select Register */
+
+} ADS7038Register_t;
 typedef struct {
     uint16_t expanderAddress;
     uint8_t port;
