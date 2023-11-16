@@ -18,6 +18,7 @@
 #include <stdint.h>                         /* Usual suspects */
 #include <string.h>                         /* strncmp */
 #include <arm_neon.h>                       /* Floating types */
+#include <stdbool.h>                        /* bool */
 
 /**
  * @brief Maximum length of a signal name in bytes.
@@ -97,6 +98,8 @@ struct signal {
                                          * 1. If not found. */
     sig_intermediary_val_t bias;        /**< @brief Parsed term term.
                                          * 0. If not found. */
+    bool enabled;                       /**< @brief Whether this signal
+                                         * is enabled for transmission. */
 };
 
 /**
@@ -172,6 +175,10 @@ static sig_intermediary_val_t signal_apply_conversion(
     return ret;
 }
 
+void setSignalEnable(uint32_t kind, bool is_enabled) {
+    signal_map[kind].enabled = is_enabled;
+}
+
 /**
  * @brief Parse a CAN message and enqueue it to be sent out later.
  * @param bus The ID of the bus the message came in on.
@@ -187,7 +194,7 @@ int parseData(uint32_t bus, uint16_t id, const uint8_t msg[], size_t len) {
    struct signal *sigv[MAX_VAL_PER_SIG];
    int relevant_sigs = 0;
    for (int i = 0; i < signals_parsed; i++) {
-       if (signal_map[i].id == id && signal_map[i].bus == bus) {
+       if (signal_map[i].id == id && signal_map[i].bus == bus && signal_map[i].enabled) {
            sigv[relevant_sigs++] = &signal_map[i];
        }
 

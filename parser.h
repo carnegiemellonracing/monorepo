@@ -9,7 +9,9 @@
 
 #include <stdint.h>     /* integer types */
 #include <stdlib.h>     /* size_t */
+#include <stdbool.h>    /* bool */
 
+void setSignalEnable(uint32_t kind, bool is_enabled);
 int parseData(uint32_t bus, uint16_t id, const uint8_t msg[], size_t len);
 void parserInit(void);
 
