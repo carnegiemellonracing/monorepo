@@ -101,6 +101,9 @@ int main(void) {
     turnOn();
     HAL_Delay(1000);
     autoAddr();
+    enableNumCells();
+    enableMainADC();
+    pollAllVoltageData();
 
     //init fan task
     //fanInit();

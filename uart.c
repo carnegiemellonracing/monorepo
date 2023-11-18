@@ -73,9 +73,6 @@ cmr_uart_result_t uart_receiveResponse(uart_response_t *response, bool deviceRes
 	if(retv != UART_SUCCESS) {
 		retvTotal = UART_FAILURE;
 	}
-	if (responseLen == 0) {
-		retvTotal = UART_FAILURE;
-	}
 
 	response->len_bytes = responseLen;
 
@@ -100,11 +97,11 @@ cmr_uart_result_t uart_receiveResponse(uart_response_t *response, bool deviceRes
 	if(retv != UART_SUCCESS) {
 		retvTotal = UART_FAILURE;
 	}
-	response->registerAddress = (((uint16_t)registerValues[1])<<8) | ((uint16_t)registerValues[0]);
+	response->registerAddress = (((uint16_t)registerValues[0])<<8) | ((uint16_t)registerValues[1]);
 
 	uint8_t c = 0;
 	uint16_t receivedIndex = 0;
-	while((receivedIndex < responseLen) && (retvTotal == UART_SUCCESS)) {
+	while((receivedIndex < responseLen+1) && (retvTotal == UART_SUCCESS)) {
 
 		retv = uart_getChar(&uart, &c);
 		if(retv != UART_SUCCESS) {
@@ -185,7 +182,7 @@ cmr_uart_result_t uart_sendCommand(const uart_command_t *command) {
  * @return The status of the UART result (success or failure)
  */
 static cmr_uart_result_t uart_getChar(cmr_uart_t *uart, uint8_t *c) {
-	return cmr_uart_pollingRX(uart, c, UART_TIMEOUT);
+	return cmr_uart_pollingRX(uart, c, 1);
 }
 
 /** UART Send Message

@@ -37,6 +37,24 @@ void turnOn() {
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_RESET
 	);
+	HAL_Delay(13);
+	HAL_GPIO_WritePin(
+		GPIOB, GPIO_PIN_13,
+		GPIO_PIN_SET
+	);
+
+	HAL_Delay(1000);
+	HAL_GPIO_WritePin(
+		GPIOB, GPIO_PIN_13,
+		GPIO_PIN_SET
+	);
+	//TickType_t xLastWakeTime = xTaskGetTickCount();
+	HAL_Delay(1000);
+	//vTaskDelayUntil(&xLastWakeTime, 2.5);
+	HAL_GPIO_WritePin(
+		GPIOB, GPIO_PIN_13,
+		GPIO_PIN_RESET
+	);
 	HAL_Delay(3);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
@@ -56,7 +74,7 @@ void turnOn() {
 	HAL_Delay(1000);
 	uartInit();
 
-	uart_command_t enableAutoaddress = {
+	uart_command_t sendWake = {
 			.readWrite = SINGLE_WRITE,
 			.dataLen = 1,
 			.deviceAddress = 0x00,
@@ -64,7 +82,47 @@ void turnOn() {
 			.data = {0x20},
 			.crc = {0x00, 0x00}
 	};
-	cmr_uart_result_t res = uart_sendCommand(&enableAutoaddress);
+	cmr_uart_result_t res = uart_sendCommand(&sendWake);
+	if(res != UART_SUCCESS) {
+		return false;
+	}
+
+	HAL_Delay(1000);
+
+	uart_command_t sendShutdown = {
+			.readWrite = BROADCAST_WRITE,
+			.dataLen = 1,
+			.deviceAddress = 0xFF,
+			.registerAddress = CONTROL1,
+			.data = {0x40},
+			.crc = {0x00, 0x00}
+	};
+
+	res = uart_sendCommand(&sendShutdown);
+	if(res != UART_SUCCESS) {
+		return false;
+	}
+
+	HAL_Delay(1000);
+//
+
+	res = uart_sendCommand(&sendWake);
+	if(res != UART_SUCCESS) {
+		return false;
+	}
+
+	HAL_Delay(1000);
+
+	uart_command_t softReset = {
+			.readWrite = BROADCAST_WRITE,
+			.dataLen = 1,
+			.deviceAddress = 0xFF,
+			.registerAddress = CONTROL1,
+			.data = {0x02},
+			.crc = {0x00, 0x00}
+	};
+
+	res = uart_sendCommand(&softReset);
 	if(res != UART_SUCCESS) {
 		return false;
 	}
@@ -157,11 +215,11 @@ bool autoAddr() {
 	};
 
 	//set 0x00 as base and num_board-1 as top
-	set_comm_ctrl.data[0] = 0x00;
-	res = uart_sendCommand(&set_comm_ctrl);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
+//	set_comm_ctrl.data[0] = 0x00;
+//	res = uart_sendCommand(&set_comm_ctrl);
+//	if(res != UART_SUCCESS) {
+//		return false;
+//	}
 	set_comm_ctrl.deviceAddress = BOARD_NUM-1;
 	set_comm_ctrl.data[0] = 0x03;
 	res = uart_sendCommand(&set_comm_ctrl);
@@ -170,8 +228,8 @@ bool autoAddr() {
 	}
 
 	otpSync.readWrite = STACK_READ;
-	otpSync.data[0] = 1;
-	uart_response_t response;
+	otpSync.data[0] = 0;
+
 	for(int i = 0; i < 8; i++) {
 		otpSync.registerAddress = OTP_ECC_DATAIN1 + i;
 		res = uart_sendCommand(&otpSync);
@@ -179,18 +237,35 @@ bool autoAddr() {
 			return false;
 		}
 	}
+	uart_response_t response;
 	uart_command_t readReg = {
 		.readWrite = SINGLE_READ,
 		.dataLen = 1,
-		.deviceAddress = 0,
-		.registerAddress = 0x2001,
+		.deviceAddress = 0x00,
+		.registerAddress = 0x0306,
 		.data = {0x00},
 		.crc = {0x00, 0x00}
 	};
-	res = uart_sendCommand(&readReg);
+	uart_sendCommand(&readReg);
+
 	if(uart_receiveResponse(&response, SINGLE_DEVICE) == UART_FAILURE) {
 		return false;
 	}
+
+	readReg.deviceAddress = 0x01;
+	uart_sendCommand(&readReg);
+
+	if(uart_receiveResponse(&response, SINGLE_DEVICE) == UART_FAILURE) {
+		return false;
+	}
+
+	readReg.deviceAddress = 0x02;
+	uart_sendCommand(&readReg);
+
+	if(uart_receiveResponse(&response, SINGLE_DEVICE) == UART_FAILURE) {
+		return false;
+	}
+
 	return true;
 
 }
@@ -205,7 +280,7 @@ bool enableMainADC() {
 	uart_command_t adcMsg = {
 		.readWrite = STACK_WRITE,
 		.dataLen = 1,
-		.deviceAddress = 0x00, //not used!
+		.deviceAddress = 0xFF, //not used!
 		.registerAddress = ADC_CTRL1,
 		.data = {0x06},
 		.crc = {0x00, 0x00}
@@ -223,7 +298,7 @@ bool enableNumCells() {
 	uart_command_t active_cell = {
 		.readWrite = STACK_WRITE,
 		.dataLen = 1,
-		.deviceAddress = 0x00, //not used!
+		.deviceAddress = 0xFF, //not used!
 		.registerAddress = ACTIVE_CELL,
 		.data = {VSENSE_CHANNELS-0x06},
 		.crc = {0x00, 0x00}
@@ -302,9 +377,9 @@ void pollAllVoltageData() {
 	uart_command_t read_voltage = {
 		.readWrite = STACK_READ,
 		.dataLen = 1,
-		.deviceAddress = 0x00, //not used!
+		.deviceAddress = 0xFF, //not used!
 		.registerAddress = TOP_CELL,
-		.data = {VSENSE_CHANNELS*2-1}, //reading high and low for cell 0-VSENSE_CHANNELS
+		.data = {VSENSE_CHANNELS*2 - 1}, //reading high and low for cell 0-VSENSE_CHANNELS
 		.crc = {0x00, 0x00}
 	};
 	cmr_uart_result_t res;
