@@ -14,6 +14,6 @@
 void ADS7038Init();
 uint8_t ADS7038_read(uint8_t reg);
 void ADS7038_write(uint8_t reg, uint8_t data);
-void ADS7038_adcManualRead();
+void ADS7038_adcManualRead(uint16_t *ppos);
 
 #endif

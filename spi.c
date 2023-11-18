@@ -5,7 +5,6 @@
 #include <CMR/tasks.h>
 
 cmr_spi_t ADS7038Spi;
-uint16_t ppos[2];
 uint8_t	swButtons;
 
 static const SPI_InitTypeDef ADS7038SpiInit = {
@@ -67,7 +66,7 @@ uint16_t ADS7038_manualRead() {
 	}
 }
 
-void ADS7038_adcManualRead() {
+void ADS7038_adcManualRead(uint16_t *ppos) {
 	uint8_t command0[3] = {WR_REG, CHANNEL_SEL_REG, PPOS_0_PORT};
 	uint8_t command1[3] = {WR_REG, CHANNEL_SEL_REG, PPOS_1_PORT};
 	uint8_t data[3];
@@ -109,7 +108,7 @@ void ADS7038Init() {
     ADS7038_read(GPIO_CFG_REG);
 
     while (1) {
-    	ADS7038_adcManualRead();
+//    	ADS7038_adcManualRead();
     	swButtons = ADS7038_read(GPI_VALUE_REG);
     }
 }

@@ -4,8 +4,8 @@
  *
  * GPIO expanders in use:
  *      Main Board Digital 1:   PCF8574PW       (ROT_{0..2},ROT_SEL,BUTTON{0..3})
- *      Main Board Digital 2:   PCA9554PW,118   (LED_{1,2}, PUSH{1..4})
  *      Steering Wheel SPI  :   ADS7038IRTET    (PUSH{0..3}, PPOS{0,1})
+ *      Old:
  *      Daughter Board Digital: PCA9554PW,118   (PUSH{1..3})
  *      Daughter Board Analog:  AD5593RBRUZ     (CLUTCH{1,2})
  * @author Carnegie Mellon Racing
@@ -15,10 +15,11 @@
 #include <CMR/spi.h>    // SPI interface
 #include <CMR/tasks.h>  // Task interface
 
-
+#include "spi.h"
 #include "expanders.h"          // Interface to implement
 #include "expandersPrivate.h"   // Private interface
 
+#define NO_COMMAND 0
 
 /** @brief Primary I2C interface */
 static cmr_i2c_t i2c;
@@ -31,11 +32,10 @@ static const uint32_t ownAddress = 0x00; // 0x00 = 0b0000000
 
 // TODO: Fix addresses
 /** @brief Main Board Digital 1 expander I2C address */
-// static const uint16_t mainDigital1Address = 0x23; // 0x23 = 0b0100011
 static const uint16_t mainDigital1Address = 0x20; // 0x23 = 0b010_0000
 
 /** @brief Daughter Board Digital expander I2C address */
-static const uint16_t daughterDigitalAddress = 0x25; // 0x25 = 0b0100101
+static const uint16_t daughterDigitalAddress = 0x25; // 0x25 = 0b010_0101
 
 /** @brief Daughter Board Analog expander I2C address */
 static const uint16_t daughterAnalogAddress = 0x11; // 0x11 = 0b0010001
@@ -119,24 +119,6 @@ static expanderPinConfig_t EXP_ROTARY_SEL = {
     .pin  = 3
 };
 
-/**
- * @brief Array of expander LED pin configs
- *
- * Must change checkLEDState function since it is not generic to LED configurations
- *
- */
-// static expanderPinConfig_t leds[EXP_LED_LEN] = {
-//     [EXP_LED_1] = {
-//         .expanderAddress = mainDigital2Address,
-//         .port = 0,
-//         .pin = 0
-//     },
-//     [EXP_LED_2] = {
-//         .expanderAddress = mainDigital2Address,
-//         .port = 0,
-//         .pin = 1
-//     }
-// };
 
 /**
  * @brief Array of expander clutch pin configs
@@ -160,8 +142,8 @@ static expanderPinConfig_t clutchPaddles[EXP_CLUTCH_LEN] = {
 
 /** @brief Array of bytes containing data for the pins of each digital GPIO expander */
 // Number of elements in the array corresponds to number of ports for GPIO
-uint8_t mainDigital1Data[2];
-uint8_t mainDigital2Data[1];
+uint8_t mainDigital1Data[8];
+// uint8_t mainDigital2Data[1];
 uint8_t daughterDigitalData[1];
 // TODO: Look into switching to uint16_t and reverse byte order
 uint8_t daughterAnalogData[2 * EXP_CLUTCH_LEN];
@@ -177,30 +159,41 @@ static cmr_task_t expanderUpdate100Hz_task;
 
 
 bool checkStatus(int status){
-    if (status != 0) return false;
-    else return true;
+    return status == 0;
 }
 
 static int getExpanderData(uint16_t addr, uint8_t cmd, uint8_t *data, size_t len)
 {
-    int status = cmr_i2cTX(&i2c, addr, &cmd, 1, i2cTimeout_ms);
-    if (status < 0)
-    	return -1;
-    return cmr_i2cRX(&i2c, addr, data, len, i2cTimeout_ms);
+    if (addr == mainDigital1Address)
+    {
+        int status = cmr_i2cTX(&i2c, addr, &cmd, 1, i2cTimeout_ms);
+        if (status < 0)
+            return -1;
+        return cmr_i2cRX(&i2c, addr, data, len, i2cTimeout_ms);
+    }
+    if (addr == daughterDigitalAddress){
+        *data = ADS7038_read(cmd);
+        return 0; // TODO fix this
+    }
+    if (addr == daughterAnalogAddress){
+        ADS7038_adcManualRead(data);
+        return 0;
+    }
+    return -1; // Invalid Address
 }
 
 static int updateExpanderDataDaughter(){
     // don't really need status but returning anyway
 
     int status = getExpanderData(
-         daughterDigitalAddress, PCA9554_INPUT_PORT,
+         daughterDigitalAddress, NO_COMMAND,
          daughterDigitalData, 1
      );
 
     if (!checkStatus(status)) return status;
 
     status |= getExpanderData(
-         daughterAnalogAddress, AD5593R_POINTER_ADC_RD,
+         daughterAnalogAddress, NO_COMMAND,
          daughterAnalogData, 2 * EXP_CLUTCH_LEN
      );
 
@@ -210,18 +203,9 @@ static int updateExpanderDataDaughter(){
 static int updateExpanderDataMain()
 {
     int status = getExpanderData(
-        mainDigital1Address, PCA9555_INPUT_PORT_0,
+        mainDigital1Address, NULL,
         mainDigital1Data, 2
     );
-
-    if (!checkStatus(status)) return status;
-
-    // status |= getExpanderData(
-    //     mainDigital2Address, PCA9554_INPUT_PORT,
-    //     mainDigital2Data, 1
-    // );
-
-    if (!checkStatus(status)) return status;
 
     return status;
 }
@@ -368,18 +352,19 @@ static int configDaughterDigital(){
     return status;
 }
 
-static int configMainDigital1and2(){
+static int configMainDigital1()
+{
     // Main Board Digital 1 expander has all inputs on Ports 0 and 1
     uint8_t mainDigital1Config[3] = {
-        PCA9555_CONFIG_PORT_0,
+        //    PCA9555_CONFIG_PORT_0,
+        NULL,
         0xFF,
-        0xFF
-    };
-    // Main Board Digital 2 expander has all inputs except outputs on Pins 0 and 1
-    uint8_t mainDigital2Config[2] = {
-        PCA9554_CONFIG_PORT,
-        0xFC    // 0b11111100
-    };
+        0xFF};
+    //    // Main Board Digital 2 expander has all inputs except outputs on Pins 0 and 1
+    //    uint8_t mainDigital2Config[2] = {
+    //        PCA9554_CONFIG_PORT,
+    //        0xFC    // 0b11111100
+    //    };
 
     int status;
     status = cmr_i2cTX(
@@ -388,20 +373,13 @@ static int configMainDigital1and2(){
         sizeof(mainDigital1Config) / sizeof(mainDigital1Config[0]),
         i2cTimeout_ms
     );
-//    status |= cmr_i2cTX(
-//        &i2c,
-//        mainDigital2Address, mainDigital2Config,
-//        sizeof(mainDigital2Config) / sizeof(mainDigital2Config[0]),
-//        i2cTimeout_ms
-//    );
-
     return status;
 }
 
 static void expanderUpdate100Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-    int status = configMainDigital1and2();
+    int status = configMainDigital1();
 
     status |= configDaughterDigital();
 
@@ -415,19 +393,25 @@ static void expanderUpdate100Hz(void *pvParameters) {
         status = 0;
 
         // check status of each function
-        if (checkStatus(status)) status |= updateExpanderDataMain();
+        if (checkStatus(status)){
+            status |= updateExpanderDataMain();
+        }
 
         // dont check status of daughter board, if steering is removed, DIM should still work
         configAnalogADCDaughter();
+        // ADS7038Init();
         updateExpanderDataDaughter();
 
         // if (checkStatus(status)) checkLEDState();
 
         vTaskDelayUntil(&lastWakeTime, expanderUpdate100Hz_period_ms);
 
-        if (checkStatus(status)) badStatus_count = 0;
-        else badStatus_count += 1;
-
+        if (checkStatus(status)){
+            badStatus_count = 0;
+        }
+        else{
+            badStatus_count += 1;
+        }
         // if we've seen a badStatus for more than 4 times,
         // reset clock and delay for a while so that the timed out function finishes.
         if (badStatus_count > 4) {
@@ -451,14 +435,18 @@ static bool getPinValueFromConfig(expanderPinConfig_t config)
 
     // Select correct expander data based on config
     uint8_t *data = NULL;
-    if (addr == mainDigital1Address)
+    if (addr == mainDigital1Address){
         data = mainDigital1Data;
+    }
 //    else if (addr == mainDigital2Address)
 //        data = mainDigital2Data;
-    else if (addr == daughterAnalogAddress)
+    else if (addr == daughterAnalogAddress){
         data = daughterAnalogData;
-    else if (addr == daughterDigitalAddress)
+
+    }
+    else if (addr == daughterDigitalAddress){
         data = daughterDigitalData;
+    }
     else
         return false;
 
@@ -499,30 +487,7 @@ bool expanderGetButtonPressed(expanderButton_t button)
 // TODO: scale down to uint8_t and send over CAN
 uint32_t expanderGetClutch(expanderClutch_t clutch)
 {
-    // Mask for lower 12 bits corresponding to actual ADC value
-    static const uint16_t valueMask = 0xFFF;
-
-    uint8_t pin = clutchPaddles[clutch].pin;
-    for (size_t c = 0; c < 2 * EXP_CLUTCH_LEN; c += 2)
-    {
-        uint16_t curr = (((uint16_t) daughterAnalogData[c]) << 8) | ((uint16_t) daughterAnalogData[c + 1]);
-
-        // Most-significant bit of any ADC conversion result is 0
-        bool msb = curr >> 15;
-        if (msb) continue;
-
-        // Actual ADC pin is next 3 bits, so shift down to check
-        // Mask not needed since MSB should be 0
-        uint16_t adcAddr = curr >> 12;
-
-        if (adcAddr == pin)
-        {
-            return curr & valueMask;
-        }
-    }
-
-    // Failed to find clutch data, no valid value would be this large
-    return 0;
+    return daughterAnalogData[clutch*2];
 }
 //void expanderSetLED(expanderLED_t led, bool isOn)
 //{
