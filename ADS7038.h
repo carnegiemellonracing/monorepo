@@ -11,7 +11,8 @@
 #define PPOS_0_PORT 1
 #define PPOS_1_PORT 6
 
-int ADS7038Init();
+bool ADS7038Init();
+int ADS7038Configure();
 int  ADS7038_read(uint8_t reg, uint8_t* data);
 int ADS7038_write(uint8_t reg, uint8_t data);
 int ADS7038_adcManualRead(uint16_t *ppos);

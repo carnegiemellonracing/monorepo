@@ -1,4 +1,4 @@
-#include "i2c.h"
+#include "PCF8574.h"
 #include <stdbool.h>
 
 
@@ -67,13 +67,27 @@ bool i2cInit(void) {
                 GPIOA, GPIO_PIN_8, // clock but change pins per schem
                 GPIOC, GPIO_PIN_9); // data but change pins per schem
 
-    cmr_taskInit(
-        &i2c_updateIO_task,
-        "i2c Update IO",
-		i2c_updateIO_priority,
-        i2c_updateIO,
-        NULL
-    );
+	if (HAL_I2CEx_ConfigAnalogFilter(&(dim_i2c.handle), I2C_ANALOGFILTER_DISABLE) != HAL_OK)
+		{
+		cmr_panic("Failed to disable analog filter");
+		}
+		/** Configure Digital filter
+		*/
+	if (HAL_I2CEx_ConfigDigitalFilter(&(dim_i2c.handle), 15) != HAL_OK)
+		{
+		  cmr_panic("Failed to enable digital filter");
+		}
+    // cmr_taskInit(
+    //     &i2c_updateIO_task,
+    //     "i2c Update IO",
+	// 	i2c_updateIO_priority,
+    //     i2c_updateIO,
+    //     NULL
+    // );
 
     return true;
+}
+
+bool PCF8574Configure(void) {
+	return true;
 }

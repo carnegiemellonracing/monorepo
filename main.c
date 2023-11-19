@@ -19,7 +19,7 @@
 #include "tft.h"        // TFT display interface.
 #include "expanders.h"   // LED strip interface.
 #include "test.h"
-#include "i2c.h"
+#include "PCF8574.h"
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -124,7 +124,9 @@ int main(void) {
 //    adcInit();
 //    sensorsInit();
 //    tftInit();
-   expandersInit();
+    i2cInit();
+    ADS7038Init();
+    expandersInit();
 
 //    cmr_taskInit(
 //        &statusLED_task,
@@ -142,7 +144,7 @@ int main(void) {
 //        NULL
 //    );
 
-    // i2cInit();
+
 
     uint8_t test;
     bool toggle = false;
