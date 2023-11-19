@@ -265,8 +265,9 @@ static void expanderUpdate100Hz(void *pvParameters) {
         }
 
         // dont check status of daughter board, if steering is removed, DIM should still work
-        PCF8574Configure();
+        // PCF8574Configure();
         ADS7038Configure();
+        updateExpanderDataDaughter();
 
         vTaskDelayUntil(&lastWakeTime, expanderUpdate100Hz_period_ms);
 
