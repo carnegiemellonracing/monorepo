@@ -103,7 +103,8 @@ int main(void) {
     autoAddr();
     enableNumCells();
     enableMainADC();
-    pollAllVoltageData();
+    while(1)
+    	pollAllVoltageData();
 
     //init fan task
     //fanInit();

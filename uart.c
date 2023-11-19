@@ -134,7 +134,8 @@ cmr_uart_result_t uart_receiveResponse(uart_response_t *response, bool deviceRes
  * @return The result of the command send
  */
 cmr_uart_result_t uart_sendCommand(const uart_command_t *command) {
-
+	int dummy;
+	uart_getChar(&uart, &dummy);
 	uint8_t message[128] = {0};
 	uint8_t currByte = 0;
 

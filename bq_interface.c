@@ -26,22 +26,6 @@ static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
 }
 
 void turnOn() {
-	HAL_GPIO_WritePin(
-		GPIOB, GPIO_PIN_13,
-		GPIO_PIN_SET
-	);
-	//TickType_t xLastWakeTime = xTaskGetTickCount();
-	HAL_Delay(1000);
-	//vTaskDelayUntil(&xLastWakeTime, 2.5);
-	HAL_GPIO_WritePin(
-		GPIOB, GPIO_PIN_13,
-		GPIO_PIN_RESET
-	);
-	HAL_Delay(13);
-	HAL_GPIO_WritePin(
-		GPIOB, GPIO_PIN_13,
-		GPIO_PIN_SET
-	);
 
 	HAL_Delay(1000);
 	HAL_GPIO_WritePin(
@@ -126,6 +110,19 @@ void turnOn() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
+
+	uart_command_t hardReset = {
+			.readWrite = BROADCAST_WRITE,
+			.dataLen = 1,
+			.deviceAddress = 0xFF,
+			.registerAddress = CONTROL2,
+			.data = {0x02},
+			.crc = {0x00, 0x00}
+	};
+//	res = uart_sendCommand(&hardReset);
+//	if(res != UART_SUCCESS) {
+//		return false;
+//	}
 }
 
 /** Auto Address Function
@@ -155,6 +152,7 @@ bool autoAddr() {
 		if(res != UART_SUCCESS) {
 			return false;
 		}
+		HAL_Delay(10);
 	}
 
 	//broadcast write to enable autoaddressing
@@ -173,6 +171,7 @@ bool autoAddr() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
+	HAL_Delay(10);
 
 	//set all the addresses of the boards in DIR0_ADDR
 	uart_command_t set_addr = {
@@ -189,6 +188,7 @@ bool autoAddr() {
 			return false;
 		}
 		set_addr.data[0]++;
+		HAL_Delay(10);
 	}
 
 	//Set all devices as stack devices first
@@ -204,6 +204,7 @@ bool autoAddr() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
+	HAL_Delay(10);
 
 	uart_command_t set_comm_ctrl = {
 		.readWrite = SINGLE_WRITE,
@@ -220,12 +221,11 @@ bool autoAddr() {
 //	if(res != UART_SUCCESS) {
 //		return false;
 //	}
-	set_comm_ctrl.deviceAddress = BOARD_NUM-1;
-	set_comm_ctrl.data[0] = 0x03;
 	res = uart_sendCommand(&set_comm_ctrl);
 	if(res != UART_SUCCESS) {
 		return false;
 	}
+	HAL_Delay(10);
 
 	otpSync.readWrite = STACK_READ;
 	otpSync.data[0] = 0;
@@ -236,34 +236,35 @@ bool autoAddr() {
 		if(res != UART_SUCCESS) {
 			return false;
 		}
+		HAL_Delay(10);
 	}
 	uart_response_t response;
 	uart_command_t readReg = {
 		.readWrite = SINGLE_READ,
 		.dataLen = 1,
 		.deviceAddress = 0x00,
-		.registerAddress = 0x0306,
+		.registerAddress = 0x306,
 		.data = {0x00},
 		.crc = {0x00, 0x00}
 	};
 	uart_sendCommand(&readReg);
 
 	if(uart_receiveResponse(&response, SINGLE_DEVICE) == UART_FAILURE) {
-		return false;
+		//return false;
 	}
 
 	readReg.deviceAddress = 0x01;
 	uart_sendCommand(&readReg);
 
 	if(uart_receiveResponse(&response, SINGLE_DEVICE) == UART_FAILURE) {
-		return false;
+		//return false;
 	}
 
 	readReg.deviceAddress = 0x02;
 	uart_sendCommand(&readReg);
 
 	if(uart_receiveResponse(&response, SINGLE_DEVICE) == UART_FAILURE) {
-		return false;
+		//return false;
 	}
 
 	return true;
@@ -375,27 +376,22 @@ static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
 //return voltage data
 void pollAllVoltageData() {
 	uart_command_t read_voltage = {
-		.readWrite = STACK_READ,
-		.dataLen = 1,
-		.deviceAddress = 0xFF, //not used!
-		.registerAddress = TOP_CELL,
-		.data = {VSENSE_CHANNELS*2 - 1}, //reading high and low for cell 0-VSENSE_CHANNELS
-		.crc = {0x00, 0x00}
-	};
-	cmr_uart_result_t res;
-	res = uart_sendCommand(&read_voltage);
-	//TODO add tx error handler
+			.readWrite = STACK_READ,
+			.dataLen = 1,
+			.deviceAddress = 0xFF, //not used!
+			.registerAddress = TOP_CELL,
+			.data = {VSENSE_CHANNELS*2-1}, //reading high and low for cell 0-VSENSE_CHANNELS
+			.crc = {0xFF, 0xFF}
+		};
+		uart_sendCommand(&read_voltage);
+		//TODO add tx error handler
 
-	//loop through boards and parse all response frames
-	for(uint8_t i = 0; i < BOARD_NUM; i++) {
+		//loop through boards and parse all response frames
+
 		uart_response_t response;
 		if(uart_receiveResponse(&response, MULTIPLE_DEVICE) != UART_FAILURE) {
-			if(response.len_bytes * 2 != VSENSE_CHANNELS) {
-				setBMBErr(i, BMB_VOLTAGE_READ_ERROR);
-				BMBTimeoutCount[i]+=1;
-			}
-			else {
-				//loop through each channel
+			//loop through each BMB and channel
+			for(uint8_t i = 0; i < BOARD_NUM; i++) {
 				for(uint8_t j = 0; j < VSENSE_CHANNELS; j++) {
 					uint8_t high_byte_data = response.data[2*j];
 					uint8_t low_byte_data = response.data[2*j+1];
@@ -404,10 +400,11 @@ void pollAllVoltageData() {
 			}
 		}
 		else {
-			setBMBErr(i, BMB_VOLTAGE_READ_ERROR);
-			BMBTimeoutCount[i]+=1;
+			for(uint8_t i = 0; i < BOARD_NUM; i++) {
+				setBMBErr(i, BMB_VOLTAGE_READ_ERROR);
+				BMBTimeoutCount[i]+=1;
+			}
 		}
-	}
 
 }
 
