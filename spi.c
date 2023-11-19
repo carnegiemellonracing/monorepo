@@ -31,7 +31,6 @@ static const cmr_spiPinConfig_t ADS7038SpiPins = {
 int ADS7038_read(uint8_t reg,  uint8_t *data) {
     uint8_t command[3] = {RD_REG, reg, 0};
     uint8_t dummy[3] = {0, 0, 0};
-    uint8_t data[3];
 	// Initiate Register Read
 	int status = 0;
     status = cmr_spiTXRX(&ADS7038Spi, command, NULL, SPI_MSG_LEN); // TODO add check for -1
@@ -111,7 +110,6 @@ int ADS7038Init() {
         DMA2_Stream2, DMA_CHANNEL_3,
         DMA2_Stream3, DMA_CHANNEL_3
     );
-	uint8_
 	int status = 0;
     status |= ADS7038_read(SYSTEM_STATUS_REG,NULL);
     status |= ADS7038_write(DATA_CFG_REG, 0b00010000);

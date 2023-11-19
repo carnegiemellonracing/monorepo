@@ -200,7 +200,7 @@ static int updateExpanderDataMain()
 {
     int status = getExpanderData(
         mainDigital1Address, NULL,
-        mainDigital1Data, 2
+        mainDigital1Data
     );
 
     return status;

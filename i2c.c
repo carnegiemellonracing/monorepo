@@ -21,7 +21,10 @@ int i2c_expanderRead(uint8_t *data) {
 bool i2c_expanderWrite(uint8_t channel, uint8_t value) {
 
 	uint8_t command;
-	uint8_t currentRead = i2c_expanderRead();
+	uint8_t currentRead;
+	if(!checkStatus(i2c_expanderRead(&currentRead))){
+		return false;
+	}
 
 	if (value) {
 		command = currentRead | (1 << channel);
@@ -43,10 +46,12 @@ static void i2c_updateIO(void *pvParameters) {
 
 	while (1) {
 		i2c_expanderWrite(I2C_ROTSEL, 0);
-		uint8_t read1 = i2c_expanderRead();
-
+		uint8_t read1;
+		uint8_t read2;
+		int status = 0;
+		status = i2c_expanderRead(&read1);
 		i2c_expanderWrite(I2C_ROTSEL, 1);
-		uint8_t read2 = i2c_expanderRead();
+		status |= i2c_expanderRead(&read2);
 
 		buttonStatus = read2 >> 4;
 		rotaryStatus = ((read2 & 0xF) << 4) | (read1 & 0xF);
