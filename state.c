@@ -524,6 +524,7 @@ uint8_t getLeftPaddleState() {
 }
 
 // Called by CAN 100 Hz
+// TODO look at this, make scaling a function
 uint8_t getRightPaddleState() {
     uint8_t pos = (uint8_t) (((float) expanderGetClutch(EXP_CLUTCH_2)) / ((float) (0xFFF)) * ((float) UINT8_MAX));
     if (inConfigScreen()) {

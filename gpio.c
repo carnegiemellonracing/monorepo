@@ -244,12 +244,6 @@ static void buttonsInput(void *pvParameters) {
 //         //     targetState
 //         // };
 
-//         // cmr_i2cTX(
-//         //     &i2c,
-//         //     mainDigital2Address, cmd,
-//         //     sizeof(cmd) / sizeof(cmd[0]),
-//         //     i2cTimeout_ms
-//         // );
 //     }
 // }
 

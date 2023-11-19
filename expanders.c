@@ -148,55 +148,46 @@ static const TickType_t expanderUpdate100Hz_period_ms = 10;
 /** @brief GPIO expander update 100 Hz TX task. */
 static cmr_task_t expanderUpdate100Hz_task;
 
-
-bool checkStatus(int status){
+bool checkStatus(int status) {
     return status == 0;
 }
 
-static int getExpanderData(uint16_t addr,uint8_t *data)
-{
-    if (addr == mainDigital1Address)
-    {
+static int getExpanderData(uint16_t addr, uint8_t *data) {
+    if (addr == mainDigital1Address) {
         return i2c_expanderRead(data);
     }
-    if (addr == daughterDigitalAddress){
-        return ADS7038_read(GPI_VALUE_REG,data);
+    if (addr == daughterDigitalAddress) {
+        return ADS7038_read(GPI_VALUE_REG, data);
     }
-    if (addr == daughterAnalogAddress){
+    if (addr == daughterAnalogAddress) {
         return ADS7038_adcManualRead(data);
     }
     return -1;
 }
 
-static int updateExpanderDataDaughter(){
+static int updateExpanderDataDaughter() {
     // don't really need status but returning anyway
 
     int status = getExpanderData(
-         daughterDigitalAddress,
-         daughterDigitalData
-     );
+        daughterDigitalAddress,
+        daughterDigitalData);
 
     if (!checkStatus(status)) return status;
 
     status |= getExpanderData(
-         daughterAnalogAddress,
-         daughterAnalogData
-     );
+        daughterAnalogAddress,
+        daughterAnalogData);
 
     return status;
 }
 
-static int updateExpanderDataMain()
-{
+static int updateExpanderDataMain() {
     int status = getExpanderData(
         mainDigital1Address,
-        mainDigital1Data
-    );
+        mainDigital1Data);
 
     return status;
 }
-
-
 
 // delay has to constant expression
 static void inline __attribute__((always_inline)) delayus(unsigned delay)
@@ -248,7 +239,7 @@ void resetClock() {
 }
 
 static void expanderUpdate100Hz(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
+    (void)pvParameters;  // Placate compiler.
 
     int status = PCF8574Configure();
 
@@ -260,7 +251,7 @@ static void expanderUpdate100Hz(void *pvParameters) {
         status = 0;
 
         // check status of each function
-        if (checkStatus(status)){
+        if (checkStatus(status)) {
             status |= updateExpanderDataMain();
         }
 
@@ -271,10 +262,9 @@ static void expanderUpdate100Hz(void *pvParameters) {
 
         vTaskDelayUntil(&lastWakeTime, expanderUpdate100Hz_period_ms);
 
-        if (checkStatus(status)){
+        if (checkStatus(status)) {
             badStatus_count = 0;
-        }
-        else{
+        } else {
             badStatus_count += 1;
         }
         // if we've seen a badStatus for more than 4 times,
@@ -288,8 +278,6 @@ static void expanderUpdate100Hz(void *pvParameters) {
             PCF8574Configure();
             ADS7038Configure();
         }
-
-
     }
 }
 
@@ -357,16 +345,12 @@ uint32_t expanderGetClutch(expanderClutch_t clutch)
  * @brief Initializes the GPIO expander interface.
  */
 void expandersInit(void) {
-
+    ADS7038Init();
+    PCF8574Init();
     cmr_taskInit(
         &expanderUpdate100Hz_task,
         "GPIO Expander Update 100Hz",
         expanderUpdate100Hz_priority,
         expanderUpdate100Hz,
-        NULL
-    );
-
+        NULL);
 }
-
-
-
