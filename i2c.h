@@ -13,7 +13,7 @@
 
 bool i2cInit();
 
-uint8_t i2c_expanderRead();
+int i2c_expanderRead(uint8_t *data);
 bool i2c_expanderWrite(uint8_t channel, uint8_t value);
 static void i2c_updateIO(void *pvParameters);
 

@@ -11,15 +11,11 @@ static cmr_task_t i2c_updateIO_task;
 static const TickType_t i2c_updateIO_period_ms = 100;
 static const uint32_t i2c_updateIO_priority = 3;
 
-uint8_t i2c_expanderRead() {
-
-	uint8_t data;
-
-    if(cmr_i2cRX(&dim_i2c, I2C_EXPANDER_ADDR, &data, 1, I2C_TIMEOUT) != 0) {
-        return false;
+int i2c_expanderRead(uint8_t *data) {
+    if(cmr_i2cRX(&dim_i2c, I2C_EXPANDER_ADDR,data, 1, I2C_TIMEOUT) != 0) {
+        return -1;
     }
-
-    return data;
+    return 0;
 }
 
 bool i2c_expanderWrite(uint8_t channel, uint8_t value) {

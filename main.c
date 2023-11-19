@@ -79,32 +79,32 @@ static cmr_task_t errorLEDs_task;
 //    return statusVSM->latchMatrix;
 //}
 //
-///**
-// * @brief Task for error indication over LEDs.
-// *
-// * @param pvParameters Ignored.
-// *
-// * @return Does not return.
-// */
-//static void errorLEDs(void *pvParameters) {
-//    (void) pvParameters;
-//
-//    cmr_gpioWrite(GPIO_LED_IMD, 0);
-//    cmr_gpioWrite(GPIO_LED_AMS, 0);
-//    cmr_gpioWrite(GPIO_LED_BSPD, 0);
-//
-//    uint8_t latch = getVSMlatchMatrix();
-//    for (
-//        TickType_t lastWakeTime = xTaskGetTickCount();
-//        1;
-//        vTaskDelayUntil(&lastWakeTime, errorLEDs_period_ms)
-//    ) {
-//        latch = getVSMlatchMatrix();
-//        cmr_gpioWrite(GPIO_LED_IMD, latch & CMR_CAN_VSM_LATCH_IMD);
-//        cmr_gpioWrite(GPIO_LED_AMS, latch & CMR_CAN_VSM_LATCH_AMS);
-//        cmr_gpioWrite(GPIO_LED_BSPD, latch & CMR_CAN_VSM_LATCH_BSPD);
-//    }
-//}
+/**
+* @brief Task for error indication over LEDs.
+*
+* @param pvParameters Ignored.
+*
+* @return Does not return.
+*/
+static void errorLEDs(void *pvParameters) {
+   (void) pvParameters;
+
+   cmr_gpioWrite(GPIO_LED_IMD, 0);
+   cmr_gpioWrite(GPIO_LED_AMS, 0);
+   cmr_gpioWrite(GPIO_LED_BSPD, 0);
+
+   uint8_t latch = getVSMlatchMatrix();
+   for (
+       TickType_t lastWakeTime = xTaskGetTickCount();
+       1;
+       vTaskDelayUntil(&lastWakeTime, errorLEDs_period_ms)
+   ) {
+       latch = getVSMlatchMatrix();
+       cmr_gpioWrite(GPIO_LED_IMD, latch & CMR_CAN_VSM_LATCH_IMD);
+       cmr_gpioWrite(GPIO_LED_AMS, latch & CMR_CAN_VSM_LATCH_AMS);
+       cmr_gpioWrite(GPIO_LED_BSPD, latch & CMR_CAN_VSM_LATCH_BSPD);
+   }
+}
 
 /**
  * @brief Firmware entry point.
@@ -119,12 +119,12 @@ int main(void) {
     cmr_rccSystemClockEnable();
 
     // Peripheral configuration.
-//    gpioInit();
+   gpioInit();
 //    canInit();
 //    adcInit();
 //    sensorsInit();
 //    tftInit();
-//    expandersInit();
+   expandersInit();
 
 //    cmr_taskInit(
 //        &statusLED_task,
@@ -142,7 +142,7 @@ int main(void) {
 //        NULL
 //    );
 
-    i2cInit();
+    // i2cInit();
 
     uint8_t test;
     bool toggle = false;

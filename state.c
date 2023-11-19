@@ -454,35 +454,35 @@ void stateVSMDown() {
     state.vsmReq = vsmReq;
 }
 
-// void stateGearSwitch(expanderRotaryPosition_t position) {
-//     if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
-//         return;     // Can only change gears in HV_EN and GLV_ON.
-//     }
-//     cmr_canGear_t gearReq;
-//     if (position == ROTARY_POS_INVALID) {
-//         gearReq = CMR_CAN_GEAR_SLOW;
-//     } else {
-//         gearReq = (cmr_canGear_t)((size_t) position + 1);
-//         if (gearReq >= CMR_CAN_GEAR_LEN) {
-//             gearReq = CMR_CAN_GEAR_SLOW;
-//         }
-//     }
+void stateGearSwitch(expanderRotaryPosition_t position) {
+    if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
+        return;     // Can only change gears in HV_EN and GLV_ON.
+    }
+    cmr_canGear_t gearReq;
+    if (position == ROTARY_POS_INVALID) {
+        gearReq = CMR_CAN_GEAR_SLOW;
+    } else {
+        gearReq = (cmr_canGear_t)((size_t) position + 1);
+        if (gearReq >= CMR_CAN_GEAR_LEN) {
+            gearReq = CMR_CAN_GEAR_SLOW;
+        }
+    }
 
-//     state.gearReq = gearReq;
-// }
+    state.gearReq = gearReq;
+}
 
-// void stateDrsModeSwitch(expanderRotaryPosition_t position) {
-//     // we can change DRS in any state
+void stateDrsModeSwitch(expanderRotaryPosition_t position) {
+    // we can change DRS in any state
 
-//     if (position == ROTARY_POS_INVALID) {
-//         state.drsReq = CMR_CAN_DRSM_UNKNOWN;
-//     } else if ((cmr_canDrsMode_t) position >= CMR_CAN_DRSM_LEN) {
-//         // set drs mode to closed if dial pos > drs modes
-//         state.drsReq = CMR_CAN_DRSM_QUIET;
-//     } else {
-//         state.drsReq = position;
-//     }
-// }
+    if (position == ROTARY_POS_INVALID) {
+        state.drsReq = CMR_CAN_DRSM_UNKNOWN;
+    } else if ((cmr_canDrsMode_t) position >= CMR_CAN_DRSM_LEN) {
+        // set drs mode to closed if dial pos > drs modes
+        state.drsReq = CMR_CAN_DRSM_QUIET;
+    } else {
+        state.drsReq = position;
+    }
+}
 
 // void stateRotary2Switch(expanderRotaryPosition_t position) {
 //     // Not implemented

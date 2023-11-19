@@ -50,10 +50,10 @@ void rightButton(bool pressed);
 
 void exitConfigScreen();
 
-// void stateGearSwitch(expanderRotaryPosition_t pos);
+void stateGearSwitch(expanderRotaryPosition_t pos);
 void stateGearUpdate(void);
 
-// void stateDrsModeSwitch(expanderRotaryPosition_t pos);
+void stateDrsModeSwitch(expanderRotaryPosition_t pos);
 void stateDrsUpdate(void);
 
 bool getAcknowledgeButton(void);

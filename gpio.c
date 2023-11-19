@@ -12,6 +12,10 @@
 #include "gpio.h"       // Interface to implement
 #include "expanders.h"  // GPIO expanders interface
 
+
+/** @brief Array to store target LED states */
+// bool ledTargets[EXP_LED_LEN];
+
 /**
  * @brief Board-specific pin configuration.
  *
@@ -152,7 +156,6 @@ static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
         .debounce = BUTTON_DEBOUNCE_TIME,
     }
 };
-
 //static expanderRotaryEvent_t rotaries[EXP_ROTARY_LEN] = {
 //    [EXP_ROTARY_1] = {
 //        .position = ROTARY_POS_INVALID,
@@ -198,22 +201,62 @@ static void buttonsInput(void *pvParameters) {
             }
         }
 
-        // for (expanderRotary_t i = EXP_ROTARY_1; i < EXP_ROTARY_LEN; i++) {
-        //     expanderRotaryPosition_t rotaryPos = expanderGetRotary(i);
-        //     expanderRotaryEvent_t *currRotary =  &rotaries[i];
-
-        //     if (rotaryPos != currRotary->position) {
-        //         (*(currRotary->setAction))(rotaryPos);
-        //         currRotary->position = rotaryPos;
-        //     }
-        // }
+        // TODO
+//        for (expanderRotary_t i = EXP_ROTARY_1; i < EXP_ROTARY_LEN; i++) {
+//            expanderRotaryPosition_t rotaryPos = expanderGetRotary(i);
+//            expanderRotaryEvent_t *currRotary =  &rotaries[i];
+//
+//            if (rotaryPos != currRotary->position) {
+//                (*(currRotary->setAction))(rotaryPos);
+//                currRotary->position = rotaryPos;
+//            }
+//        }
 
         vTaskDelayUntil(&lastWakeTime, buttonsInput_period);
     }
 
 }
 
+/**
+ * @brief Checks current LED state and updates if different from `ledTargets`
+ *
+ * Not wholly generic since it's too complicated,
+ * so it uses the fact that all LEDs are on Main Digital 2 Port 1
+ *
+ */
+// static void checkLEDState()
+// {
+//     uint8_t targetMask = 0;
+//     uint8_t targetState = 0;
 
+//     for (size_t l = EXP_LED_1; l < EXP_LED_LEN; l++)
+//     {
+//         uint8_t pin = leds[l].pin;
+//         targetMask |= 1 << pin;
+//         targetState |= ledTargets[l] << pin;
+//     }
+
+//     // See note above about non-generic code
+//     if ((currentState & targetMask) != targetState)
+//     {
+//         // uint8_t cmd[2] = {
+//         //     PCA9554_OUTPUT_PORT,
+//         //     targetState
+//         // };
+
+//         // cmr_i2cTX(
+//         //     &i2c,
+//         //     mainDigital2Address, cmd,
+//         //     sizeof(cmd) / sizeof(cmd[0]),
+//         //     i2cTimeout_ms
+//         // );
+//     }
+// }
+
+// void expanderSetLED(expanderLED_t led, bool isOn)
+// {
+//    ledTargets[led] = isOn;
+// }
 
 
 
