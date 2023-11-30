@@ -30,10 +30,6 @@ static const uint8_t BPP_TPOS_IMPLAUS_THRES = UINT8_MAX / 4;
 static const uint8_t BPP_TPOS_CLEAR_THRES = UINT8_MAX / 20;
 /** @brief Threshold where brakes are considered to be actuated. */
 static const uint8_t BRAKE_ACTIVE_THRES_PSI = 40;
-/** @brief Theshold to be considered a digital low on the ADC. Out of 4095, ADC at 3.3V.*/
-static const uint32_t ADC_DIGITAL_LOW_THRES = 300;
-/** @brief Theshold to be considered a digital high on the ADC. Out of 4095, ADC at 3.3V.*/
-static const uint32_t ADC_DIGITAL_HIGH_THRES = 2450;
 
 /** @brief 90 degree sw left lock adc value. */
 #define SWANGLE_90DEG_LEFT 1345
