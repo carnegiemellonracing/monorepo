@@ -22,7 +22,6 @@ bool TCA9554Configure();
 
 int TCA9554_expanderRead(uint8_t reg,uint8_t *data);
 bool TCA9554_expanderWrite(uint8_t reg, uint8_t value);
-static void TCA9554_updateIO(void *pvParameters);
 
 uint8_t TCA9554_getButtonStatus();
 uint8_t TCA9554_getRotaryStatus();

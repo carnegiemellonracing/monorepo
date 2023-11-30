@@ -10,20 +10,15 @@
 
 #include "expanders.h"  // Interface to implement
 
-#include <CMR/tasks.h>  // Task interface
 #include <CMR/gpio.h>   // GPIO interface
-
+#include <CMR/tasks.h>  // Task interface
 
 #include "ADS7038.h"           //SPI interface
 #include "TCA9554.h"           //I2c interface
 #include "expandersPrivate.h"  // Private interface
 
-#define NO_COMMAND 0
 #define SYSTICKCLOCK 96000000ULL
 #define SYSTICKPERUS (SYSTICKCLOCK / 1000000UL)
-
-/** @brief DIM I2C address */
-static const uint32_t ownAddress = 0x00;  // 0x00 = 0b0000000
 
 /** @brief Main Board Digital 1 expander I2C address */
 static const uint16_t mainDigital1Address = 0x20;  // 0x23 = 0b010_0000
@@ -34,9 +29,6 @@ static const uint16_t daughterDigitalAddress = 0x1;  // 0x25 = 0b010_0101
 
 /** @brief Daughter Board Analog expander Identifier */
 static const uint16_t daughterAnalogAddress = 0x2;  // 0x11 = 0b0010001
-
-/** @brief I2C Timeout (milliseconds). */
-static const uint32_t i2cTimeout_ms = 1;
 
 /**
  * @brief Array of expander button pin configs
@@ -106,7 +98,7 @@ bool checkStatus(int status) {
 
 static int getExpanderData(uint16_t addr, void *data) {
     if (addr == mainDigital1Address) {
-        return TCA9554_expanderRead(TCA9554_INPUT_PORT,data);
+        return TCA9554_expanderRead(TCA9554_INPUT_PORT, data);
     }
     if (addr == daughterDigitalAddress) {
         return ADS7038_read(GPI_VALUE_REG, data);
