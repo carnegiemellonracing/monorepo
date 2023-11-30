@@ -12,13 +12,12 @@
 #include <CMR/rcc.h>        // RCC interface
 #include <stm32f4xx_hal.h>  // HAL interface
 
-#include "PCF8574.h"
 #include "adc.h"        // Board-specific ADC interface
 #include "can.h"        // Board-specific CAN interface
 #include "expanders.h"  // LED strip interface.
 #include "gpio.h"       // Board-specific GPIO interface
 #include "test.h"
-#include "tft.h"  // TFT display interface.
+#include "tft.h"        // TFT display interface.
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -121,7 +120,7 @@ int main(void) {
     //    adcInit();
     //    sensorsInit();
     //    tftInit();
-    expandersInit();
+    expandersInit(); // Initialize SPI AND I2C expanders
 
     //    cmr_taskInit(
     //        &statusLED_task,

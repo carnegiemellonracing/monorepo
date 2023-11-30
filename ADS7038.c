@@ -65,7 +65,7 @@ uint16_t ADS7038_manualRead() {
 
         adcValues[readChannel] = adcValue;
 
-        channel = (channel + 1) % 8;
+        channel = (channel + 1) & 0b1111;  //(channel + 1) % 8;
     }
 }
 
