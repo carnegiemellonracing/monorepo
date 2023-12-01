@@ -6,18 +6,19 @@
  */
 
 #include "state.h"  // interface to implement
-#include "gpio.h"   // GPIO interface
-#include "can.h"    // can interface
-#include "stdlib.h"
-#include "expanders.h"
+
+#include <FreeRTOS.h>  // FreeRTOS interface
+#include <semphr.h>    // Semaphore interface
 #include <stdbool.h>
 
-#include "CMR/config.h"     // Board-specific flash interface
-#include <FreeRTOS.h>       // FreeRTOS interface
-#include <semphr.h>         // Semaphore interface
+#include "CMR/config.h"  // Board-specific flash interface
+#include "can.h"         // can interface
+#include "expanders.h"
+#include "gpio.h"  // GPIO interface
+#include "stdlib.h"
 
-#define min(a,b) \
-   ({ __typeof__ (a) _a = (a); \
+#define min(a, b) \
+    ({ __typeof__ (a) _a = (a); \
        __typeof__ (b) _b = (b); \
      _a < _b ? _a : _b; })
 
@@ -60,81 +61,70 @@ void stateVSMUp(void);
 void stateVSMDown(void);
 void enterConfigScreen(void);
 
-
 /**
  * @brief handles Action 1 button press on steering wheel
  *
  * @param pressed `true` if button is currently pressed.
-*/
+ */
 void actionOneButton(bool pressed) {
     if (!pressed) {
         action1ButtonPressed = false;
         ackButtonPressed = false;
         return;
-    } else {
-        if (inConfigScreen()) {
-		    config_increment_down_requested = true;
-        } else {
-            if (stateGetGear() != CMR_CAN_GEAR_ACCEL) {
-                // Send an acknowledgement CAN message for DAQ Live
-                if (!ackButtonPressed) {
-                    sendAcknowledgement();
-                }
-                // update for DIM display
-                ackButtonPressed = true;
-            } else {
-                // only set can message to true if we're not in config screen
-                // Allow CDC to use this button for TC
-                action1ButtonPressed = pressed;
-            }
-
-        }
     }
-
+    if (inConfigScreen()) {
+        config_increment_down_requested = true;
+        return;
+    }
+    if (stateGetGear() != CMR_CAN_GEAR_ACCEL) {
+        // Send an acknowledgement CAN message for DAQ Live
+        if (!ackButtonPressed) {
+            sendAcknowledgement();
+        }
+        // update for DIM display
+        ackButtonPressed = true;
+        return;
+    }
+    // only set can message to true if we're not in config screen
+    // Allow CDC to use this button for TC
+    action1ButtonPressed = pressed;
 }
 
 /**
  * @brief handles Action 2 button press on steering wheel
  *
  * @param pressed `true` if button is currently pressed.
-*/
+ */
 void actionTwoButton(bool pressed) {
     if (!pressed) {
         action2ButtonPressed = false;
         return;
-    } else {
-        if (inConfigScreen()) {
-            exit_config_request = true;
-            exitConfigScreen();
-            return;
-        } else {
-            if (inRacingScreen()) {
-                in_racing_screen = false;
-            } else {
-                in_racing_screen = true;
-            }
-            // // only set can message to true if we're not in config screen
-            // action2ButtonPressed = pressed;
-        }
     }
+    if (inConfigScreen()) {
+        exit_config_request = true;
+        exitConfigScreen();
+        return;
+    }
+    in_racing_screen = !inRacingScreen();
+    // // only set can message to true if we're not in config screen
+    // action2ButtonPressed = pressed;
 }
 
 /**
  * @brief handles DRS button press on steering wheel
  *
  * @param pressed `true` if button is currently pressed.
-*/
+ */
 void drsButton(bool pressed) {
     if (!pressed) {
         drsButtonPressed = false;
         return;
+    }
+    if (inConfigScreen()) {
+        config_increment_up_requested = true;
     } else {
-        if (inConfigScreen()) {
-            config_increment_up_requested = true;
-        } else {
-            // only set can message to true if we're not in config screen
-            drsButtonPressed = pressed;
-        }
+        // only set can message to true if we're not in config screen
+        drsButtonPressed = pressed;
     }
 }
 
@@ -142,7 +132,7 @@ void drsButton(bool pressed) {
  * @brief handles UP button press on D-Pad
  *
  * @param pressed `true` if button is currently pressed.
-*/
+ */
 
 void upButton(bool pressed) {
     if (!pressed) {
@@ -160,7 +150,7 @@ void upButton(bool pressed) {
  * @brief handles DOWN button press on D-Pad
  *
  * @param pressed `true` if button is currently pressed.
-*/
+ */
 void downButton(bool pressed) {
     if (!pressed) {
         return;
@@ -177,7 +167,7 @@ void downButton(bool pressed) {
  * @brief handles LEFT button press on D-Pad
  *
  * @param pressed `true` if button is currently pressed.
-*/
+ */
 void leftButton(bool pressed) {
     if (!pressed) {
         return;
@@ -195,7 +185,7 @@ void leftButton(bool pressed) {
  * @brief handles RIGHT button press on D-Pad
  *
  * @param pressed `true` if button is currently pressed.
-*/
+ */
 void rightButton(bool pressed) {
     if (!pressed) {
         return;
@@ -208,30 +198,30 @@ void rightButton(bool pressed) {
     }
 }
 
-void exitConfigScreen(){
+void exitConfigScreen() {
     // the first time the user presses the exit button, it'll flush the memory to the cdc
     // the second time it'll exit the config screen because it'll be dependent having
     // recieved the message from CDC
-    if (flush_config_screen_to_cdc == false){
+    if (!flush_config_screen_to_cdc) {
         flush_config_screen_to_cdc = true;
         waiting_for_cdc_to_confirm_config = true;
         return;
     }
-    if (waiting_for_cdc_to_confirm_config == false){
+    if (!waiting_for_cdc_to_confirm_config) {
         in_config_screen = false;
         exit_config_request = false;
+        return;
     }
 }
 
-void enterConfigScreen(){
+void enterConfigScreen() {
     // make sure you've booted and you can enter by seeing if
     // waiting for cdc
 
-
     if (in_config_screen == false &&
-    config_screen_values_received_on_boot &&
-    ((stateGetVSM() == CMR_CAN_GLV_ON && stateGetVSMReq() == CMR_CAN_GLV_ON) ||
-    (stateGetVSM() == CMR_CAN_HV_EN && stateGetVSMReq() == CMR_CAN_HV_EN))){
+        config_screen_values_received_on_boot &&
+        ((stateGetVSM() == CMR_CAN_GLV_ON && stateGetVSMReq() == CMR_CAN_GLV_ON) ||
+         (stateGetVSM() == CMR_CAN_HV_EN && stateGetVSMReq() == CMR_CAN_HV_EN))) {
         in_config_screen = true;
         dim_first_time_config_screen = true;
     }
@@ -247,18 +237,17 @@ bool inRacingScreen() {
 
 /** @brief DIM state. */
 static volatile struct {
-    cmr_canState_t vsmReq;      /**< @brief Requested VSM state. */
-    cmr_canGear_t gear;         /**< @brief Current gear. */
-    cmr_canGear_t gearReq;      /**< @brief Requested gear. */
-    cmr_canDrsMode_t drsMode;   /**< @brief Current DRS Mode. */
-    cmr_canDrsMode_t drsReq;    /**< @brief Requested DRS Mode. */
+    cmr_canState_t vsmReq;    /**< @brief Requested VSM state. */
+    cmr_canGear_t gear;       /**< @brief Current gear. */
+    cmr_canGear_t gearReq;    /**< @brief Requested gear. */
+    cmr_canDrsMode_t drsMode; /**< @brief Current DRS Mode. */
+    cmr_canDrsMode_t drsReq;  /**< @brief Requested DRS Mode. */
 } state = {
     .vsmReq = CMR_CAN_GLV_ON,
     .gear = CMR_CAN_GEAR_SLOW,
     .gearReq = CMR_CAN_GEAR_SLOW,
     .drsMode = CMR_CAN_DRSM_CLOSED,
-    .drsReq = CMR_CAN_DRSM_CLOSED
-};
+    .drsReq = CMR_CAN_DRSM_CLOSED};
 
 /**
  * @brief Gets the VSM state.
@@ -270,7 +259,7 @@ static volatile struct {
 cmr_canState_t stateGetVSM(void) {
     cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
     volatile cmr_canHeartbeat_t *heartbeatVSM =
-        (void *) heartbeatVSMMeta->payload;
+        (void *)heartbeatVSMMeta->payload;
 
     return heartbeatVSM->state;
 }
@@ -312,7 +301,7 @@ cmr_canDrsMode_t stateGetDrsReq(void) {
 
 bool getAcknowledgeButton(void) {
     return ackButtonPressed;
- }
+}
 
 /**
  * @brief Gets the average wheel speed reported by the inverters.
@@ -326,28 +315,28 @@ int32_t getAverageWheelRPM(void) {
     // Front Left
     cmr_canRXMeta_t *metaAMK_FL_Act1 = canRXMeta + CANRX_AMK_FL_ACT_1;
     volatile cmr_canAMKActualValues1_t *canAMK_FL_Act1 =
-        (void *) metaAMK_FL_Act1->payload;
+        (void *)metaAMK_FL_Act1->payload;
     // Front Right
     cmr_canRXMeta_t *metaAMK_FR_Act1 = canRXMeta + CANRX_AMK_FR_ACT_1;
     volatile cmr_canAMKActualValues1_t *canAMK_FR_Act1 =
-        (void *) metaAMK_FR_Act1->payload;
+        (void *)metaAMK_FR_Act1->payload;
     // Rear Left
     cmr_canRXMeta_t *metaAMK_RL_Act1 = canRXMeta + CANRX_AMK_RL_ACT_1;
     volatile cmr_canAMKActualValues1_t *canAMK_RL_Act1 =
-        (void *) metaAMK_RL_Act1->payload;
+        (void *)metaAMK_RL_Act1->payload;
     // Rear Right
     cmr_canRXMeta_t *metaAMK_RR_Act1 = canRXMeta + CANRX_AMK_RR_ACT_1;
     volatile cmr_canAMKActualValues1_t *canAMK_RR_Act1 =
-        (void *) metaAMK_RR_Act1->payload;
+        (void *)metaAMK_RR_Act1->payload;
 
     /* Extract wheel speeds */
-    int32_t frontLeftRPM = (canAMK_FL_Act1->velocity_rpm); // Motor direction reversed on left side
+    int32_t frontLeftRPM = (canAMK_FL_Act1->velocity_rpm);  // Motor direction reversed on left side
     int32_t frontRightRPM = canAMK_FR_Act1->velocity_rpm;
-    int32_t rearLeftRPM = (canAMK_RL_Act1->velocity_rpm); // Motor direction reversed on left side
+    int32_t rearLeftRPM = (canAMK_RL_Act1->velocity_rpm);  // Motor direction reversed on left side
     int32_t rearRightRPM = canAMK_RR_Act1->velocity_rpm;
 
     /* Compute average */
-    int32_t average = (frontLeftRPM + frontRightRPM + rearLeftRPM + rearRightRPM)/4;
+    int32_t average = (frontLeftRPM + frontRightRPM + rearLeftRPM + rearRightRPM) / 4;
 
     return average;
 }
@@ -363,7 +352,7 @@ int32_t getAverageWheelRPM(void) {
 bool slowEnough(void) {
     int32_t avgWheelRPM = getAverageWheelRPM();
 
-    uint16_t cutoff = 3; //mph
+    uint16_t cutoff = 3;  // mph
 
     /* Wheel Speed to Vehicle Speed Conversion
      *      (x rotations / 1min) * (18" * PI) * (1' / 12") *
@@ -409,7 +398,6 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
  * @brief Handles VSM state up.
  */
 void stateVSMUp() {
-
     cmr_canState_t vsmState = stateGetVSM();
     if (state.vsmReq < vsmState) {
         // Cancel state-down request.
@@ -418,10 +406,10 @@ void stateVSMUp() {
     }
 
     cmr_canState_t vsmReq = ((vsmState == CMR_CAN_UNKNOWN) || (vsmState == CMR_CAN_ERROR))
-        ? (CMR_CAN_GLV_ON)  // Unknown state; request GLV_ON.
-        : (vsmState + 1);        // Increment state.
+                                ? (CMR_CAN_GLV_ON)  // Unknown state; request GLV_ON.
+                                : (vsmState + 1);   // Increment state.
     if (!stateVSMReqIsValid(vsmState, vsmReq)) {
-        return;     // Invalid requested state.
+        return;  // Invalid requested state.
     }
 
     state.vsmReq = vsmReq;
@@ -440,29 +428,28 @@ void stateVSMDown() {
 
     if (
         state.vsmReq == CMR_CAN_RTD &&
-        getAverageWheelRPM() > 5
-    ) {
+        getAverageWheelRPM() > 5) {
         // Only exit RTD when motor is basically stopped.
         return;
     }
 
-    cmr_canState_t vsmReq = vsmState - 1;   // Decrement state.
-    if (!stateVSMReqIsValid(vsmState, vsmReq)) {
-        return;     // Invalid requested state.
+    cmr_canState_t vsmReq = vsmState - 1;  // Decrement state.
+    // Valid State
+    if (stateVSMReqIsValid(vsmState, vsmReq)) {
+        state.vsmReq = vsmReq;
+        return;
     }
-
-    state.vsmReq = vsmReq;
 }
 
 void stateGearSwitch(expanderRotaryPosition_t position) {
     if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
-        return;     // Can only change gears in HV_EN and GLV_ON.
+        return;  // Can only change gears in HV_EN and GLV_ON.
     }
     cmr_canGear_t gearReq;
     if (position == ROTARY_POS_INVALID) {
         gearReq = CMR_CAN_GEAR_SLOW;
     } else {
-        gearReq = (cmr_canGear_t)((size_t) position + 1);
+        gearReq = (cmr_canGear_t)((size_t)position + 1);
         if (gearReq >= CMR_CAN_GEAR_LEN) {
             gearReq = CMR_CAN_GEAR_SLOW;
         }
@@ -476,7 +463,7 @@ void stateDrsModeSwitch(expanderRotaryPosition_t position) {
 
     if (position == ROTARY_POS_INVALID) {
         state.drsReq = CMR_CAN_DRSM_UNKNOWN;
-    } else if ((cmr_canDrsMode_t) position >= CMR_CAN_DRSM_LEN) {
+    } else if ((cmr_canDrsMode_t)position >= CMR_CAN_DRSM_LEN) {
         // set drs mode to closed if dial pos > drs modes
         state.drsReq = CMR_CAN_DRSM_QUIET;
     } else {
@@ -507,40 +494,36 @@ void stateDrsUpdate(void) {
 }
 
 // Called by CAN 100 Hz
-uint8_t getLeftPaddleState() {
-    uint8_t pos = (uint8_t) (((float) expanderGetClutch(EXP_CLUTCH_1)) / ((float) (0xFFF)) * ((float) UINT8_MAX));
+uint8_t getPaddleState(expanderClutch_t clutch) {
+    uint8_t pos = getPos(clutch);
     if (inConfigScreen()) {
-        if (pos > MIN_PADDLE_VAL) {
-            config_paddle_left_request = pos - MIN_PADDLE_VAL;
-        } else {
-            config_paddle_left_request= 0;
+        uint8_t config_paddle_request = (pos > MIN_PADDLE_VAL) ? pos - MIN_PADDLE_VAL : 0;
+        if (clutch == EXP_CLUTCH_1) {
+            config_paddle_left_request = config_paddle_request;
+        } else if (clutch == EXP_CLUTCH_2) {
+            config_paddle_right_request = config_paddle_request;
         }
         // Return 0 to CAN because we are in config screen
         return 0;
-    } else {
-        // only send paddle state if we're not in config screen
-        return pos;
     }
+    // only send paddle state if we're not in config screen
+    return pos;
 }
 
-// Called by CAN 100 Hz
-// TODO look at this, make scaling a function
-uint8_t getRightPaddleState() {
-    uint8_t pos = (uint8_t) (((float) expanderGetClutch(EXP_CLUTCH_2)) / ((float) (0xFFF)) * ((float) UINT8_MAX));
-    if (inConfigScreen()) {
-        if (pos > MIN_PADDLE_VAL) {
-            config_paddle_right_request = pos - MIN_PADDLE_VAL;
-        } else {
-            config_paddle_right_request= 0;
-        }
-        // Return 0 to CAN because we are in config screen
-        return 0;
-    } else {
-        // only send paddle state if we're not in config screen
-        return pos;
-    }
+/**
+ * @brief Returns the position of the clutch
+ *
+ * @param clutch the clutch to get the position of
+ *
+ * @return the position of the clutch
+ */
+uint8_t getPos(expanderClutch_t clutch) {
+    return (uint8_t)(((float)expanderGetClutch(clutch)) / 4095.0f) * ((float)UINT8_MAX);
 }
 
+/**
+ * @brief Returns the current car's speed in km/h
+ */
 float getSpeedKmh() {
     int32_t avgWheelRPM = getAverageWheelRPM();
 
@@ -555,9 +538,9 @@ float getSpeedKmh() {
 
 /**
  * @brief Returns the current car's odometry in km
-*/
+ */
 float getOdometer() {
-    volatile cmr_canCDCOdometer_t *odometer = (volatile cmr_canCDCOdometer_t *) getPayload(CANRX_CDC_ODOMETER);
+    volatile cmr_canCDCOdometer_t *odometer = (volatile cmr_canCDCOdometer_t *)getPayload(CANRX_CDC_ODOMETER);
     return odometer->odometer_km;
 }
 
@@ -577,7 +560,7 @@ typedef struct {
  *
  * Must be sorted in descending order
  */
- static voltage_SoC_t LV_LiFePo_SoC_lookup[LV_LIFEPO_LUT_NUM_ITEMS] = {
+static voltage_SoC_t LV_LiFePo_SoC_lookup[LV_LIFEPO_LUT_NUM_ITEMS] = {
     {27.2, 100},
     {26.8, 90},
     {26.6, 80},
@@ -588,17 +571,15 @@ typedef struct {
     {25.8, 30},
     {25.6, 20},
     {24.0, 10},
-    {20.0, 0}
-};
+    {20.0, 0}};
 
- static voltage_SoC_t LV_LiPo_SoC_lookup[LV_LIPO_LUT_NUM_ITEMS] = {
+static voltage_SoC_t LV_LiPo_SoC_lookup[LV_LIPO_LUT_NUM_ITEMS] = {
     {25.2, 100},
     {24.5, 90},
     {23, 80},
     {21, 20},
     {20.0, 10},
-    {18.0, 0}
-};
+    {18.0, 0}};
 
 /**
  * @brief Function for getting Low Voltage SoC
@@ -633,12 +614,11 @@ uint8_t getLVSoC(float voltage, lv_battery_type_t battery_type) {
                 return 99;
             } else {
                 // otherwise we do some linear extrapolation!
-                float result = (float)lut[i].SoC + ((voltage - lut[i].voltage) / (lut[i-1].voltage - lut[i].voltage)) * ((float)lut[i-1].SoC - (float)lut[i].SoC);
+                float result = (float)lut[i].SoC + ((voltage - lut[i].voltage) / (lut[i - 1].voltage - lut[i].voltage)) * ((float)(lut[i - 1].SoC - lut[i].SoC));
                 return min(99, ((uint8_t)result));
             }
         }
     }
     // if we get to end of loop, voltage is less than lowest voltage in lut
     return 0;
-
 }

@@ -8,10 +8,10 @@
 #ifndef STATE_H
 #define STATE_H
 
-#include <stdbool.h>    // bool
-#include "expanders.h"
+#include <stdbool.h>  // bool
 
-#include "can.h"        // Board-specific CAN interface
+#include "can.h"  // Board-specific CAN interface
+#include "expanders.h"
 
 // TODO: Add documentation
 extern volatile bool config_increment_up_requested;
@@ -61,8 +61,8 @@ bool getAcknowledgeButton(void);
 int32_t getAverageWheelRPM(void);
 bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq);
 
-uint8_t getLeftPaddleState(void);
-uint8_t getRightPaddleState(void);
+uint8_t getPaddleState(expanderClutch_t clutch);
+uint8_t getPos(expanderClutch_t clutch);
 
 void updateReq(void);
 
@@ -82,6 +82,5 @@ typedef enum {
 } lv_battery_type_t;
 
 uint8_t getLVSoC(float voltage, lv_battery_type_t battery_type);
-
 
 #endif /* STATE_H */

@@ -20,15 +20,12 @@
 #define SYSTICKCLOCK 96000000ULL
 #define SYSTICKPERUS (SYSTICKCLOCK / 1000000UL)
 
-/** @brief Main Board Digital 1 expander I2C address */
-static const uint16_t mainDigital1Address = 0x20;  // 0x23 = 0b010_0000
-
 // These addresses do not matter, they can be any unique number
 /** @brief Daughter Board Digital expander Identifier */
-static const uint16_t daughterDigitalAddress = 0x1;  // 0x25 = 0b010_0101
+static const uint16_t daughterDigitalAddress = 0x1;
 
 /** @brief Daughter Board Analog expander Identifier */
-static const uint16_t daughterAnalogAddress = 0x2;  // 0x11 = 0b0010001
+static const uint16_t daughterAnalogAddress = 0x2;
 
 /**
  * @brief Array of expander button pin configs
@@ -36,12 +33,12 @@ static const uint16_t daughterAnalogAddress = 0x2;  // 0x11 = 0b0010001
  */
 static expanderPinConfig_t buttons[EXP_BUTTON_LEN] = {
     [EXP_DASH_BUTTON_0] = {
-        .expanderAddress = mainDigital1Address,
+        .expanderAddress = TCA9554_EXPANDER_ADDR,
         .port = 0,
         .pin = 4},
-    [EXP_DASH_BUTTON_1] = {.expanderAddress = mainDigital1Address, .port = 0, .pin = 5},
-    [EXP_DASH_BUTTON_2] = {.expanderAddress = mainDigital1Address, .port = 0, .pin = 6},
-    [EXP_DASH_BUTTON_3] = {.expanderAddress = mainDigital1Address, .port = 0, .pin = 7},
+    [EXP_DASH_BUTTON_1] = {.expanderAddress = TCA9554_EXPANDER_ADDR, .port = 0, .pin = 5},
+    [EXP_DASH_BUTTON_2] = {.expanderAddress = TCA9554_EXPANDER_ADDR, .port = 0, .pin = 6},
+    [EXP_DASH_BUTTON_3] = {.expanderAddress = TCA9554_EXPANDER_ADDR, .port = 0, .pin = 7},
     [EXP_WHEEL_BUTTON_0] = {.expanderAddress = daughterDigitalAddress, .port = 0, .pin = 5},
     [EXP_WHEEL_BUTTON_1] = {.expanderAddress = daughterDigitalAddress, .port = 0, .pin = 2},
     [EXP_WHEEL_BUTTON_2] = {.expanderAddress = daughterDigitalAddress, .port = 0, .pin = 3},
@@ -53,16 +50,16 @@ static expanderPinConfig_t buttons[EXP_BUTTON_LEN] = {
  */
 static expanderPinConfig_t rotaries[EXP_ROTARY_LEN] = {
     [EXP_ROTARY_0] = {
-        .expanderAddress = mainDigital1Address,
+        .expanderAddress = TCA9554_EXPANDER_ADDR,
         .port = 0,
         .pin = 2},
-    [EXP_ROTARY_1] = {.expanderAddress = mainDigital1Address, .port = 0, .pin = 1
+    [EXP_ROTARY_1] = {.expanderAddress = TCA9554_EXPANDER_ADDR, .port = 0, .pin = 1
 
     },
-    [EXP_ROTARY_2] = {.expanderAddress = mainDigital1Address, .port = 0, .pin = 0}};
+    [EXP_ROTARY_2] = {.expanderAddress = TCA9554_EXPANDER_ADDR, .port = 0, .pin = 0}};
 
 static expanderPinConfig_t EXP_ROTARY_SEL = {
-    .expanderAddress = mainDigital1Address,
+    .expanderAddress = TCA9554_EXPANDER_ADDR,
     .port = 0,
     .pin = 3};
 
@@ -97,7 +94,7 @@ bool checkStatus(int status) {
 }
 
 static int getExpanderData(uint16_t addr, void *data) {
-    if (addr == mainDigital1Address) {
+    if (addr == TCA9554_EXPANDER_ADDR) {
         return TCA9554_expanderRead(TCA9554_INPUT_PORT, data);
     }
     if (addr == daughterDigitalAddress) {
@@ -127,7 +124,7 @@ static int updateExpanderDataDaughter() {
 
 static int updateExpanderDataMain() {
     int status = getExpanderData(
-        mainDigital1Address,
+        TCA9554_EXPANDER_ADDR,
         mainDigital1Data);
 
     return status;
@@ -181,7 +178,7 @@ static bool getPinValueFromConfig(expanderPinConfig_t config) {
     uint8_t mask = 1 << config.pin;
     // Select correct expander data based on config
     uint8_t *data = NULL;
-    if (addr == mainDigital1Address) {
+    if (addr == TCA9554_EXPANDER_ADDR) {
         data = mainDigital1Data;
     } else if (addr == daughterAnalogAddress) {
         // Analog data is 16 bits, special case

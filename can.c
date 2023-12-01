@@ -297,8 +297,8 @@ static void canTX100Hz(void *pvParameters) {
             .action1ButtonPressed = action1ButtonPressed,
             .action2ButtonPressed = action2ButtonPressed,
             .regenPercent = regenPercent,
-            .paddleLeft = getLeftPaddleState(),
-            .paddleRight = getRightPaddleState(),
+            .paddleLeft = getPaddleState(EXP_CLUTCH_1),
+            .paddleRight = getPaddleState(EXP_CLUTCH_2),
         };
         canTX(
             CMR_CANID_DIM_ACTIONS,

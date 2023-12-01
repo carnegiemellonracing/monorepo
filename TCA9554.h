@@ -6,7 +6,7 @@
 
 #define I2C_TIMEOUT 10
 
-#define TCA9554_EXPANDER_ADDR 0b0100000
+#define TCA9554_EXPANDER_ADDR 0b0100000 // {0}{1}{0}{0}{A2}{A1}{A0}
 #define I2C_ROTSEL 3
 
 typedef enum {

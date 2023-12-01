@@ -68,14 +68,14 @@ static cmr_task_t errorLEDs_task;
 // *
 // * @return The VSM latch matrix.
 // */
-// uint8_t getVSMlatchMatrix(void) {
-//    cmr_canRXMeta_t *statusVSMMeta = canRXMeta + CANRX_VSM_STATUS;
-//    volatile cmr_canVSMStatus_t *statusVSM =
-//        (void *) statusVSMMeta->payload;
-//
-//    return statusVSM->latchMatrix;
-//}
-//
+uint8_t getVSMlatchMatrix(void) {
+   cmr_canRXMeta_t *statusVSMMeta = canRXMeta + CANRX_VSM_STATUS;
+   volatile cmr_canVSMStatus_t *statusVSM =
+       (void *) statusVSMMeta->payload;
+
+   return statusVSM->latchMatrix;
+}
+
 /**
  * @brief Task for error indication over LEDs.
  *
@@ -120,7 +120,7 @@ int main(void) {
     //    adcInit();
     //    sensorsInit();
     //    tftInit();
-    expandersInit(); // Initialize SPI AND I2C expanders
+    expandersInit();  // Initialize SPI AND I2C expanders
 
     //    cmr_taskInit(
     //        &statusLED_task,
