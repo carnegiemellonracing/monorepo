@@ -27,11 +27,11 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         // TODO E2 devise a UART monitor system
         errorFlags |= CMR_CAN_HVC_ERROR_BMB_TIMEOUT; /**< @brief BMB has timed out. */
     }
-    if(getPackMaxCellTemp() > 590) { // Temp limit of 59C
-        // TODO: #Define with 590
-        // TODO E3 create structures for cell temp data and stats (min/max)
-        errorFlags |= CMR_CAN_HVC_ERROR_CELL_OVERTEMP;
-    }
+//    if(getPackMaxCellTemp() > 590) { // Temp limit of 59C
+//        // TODO: #Define with 590
+//        // TODO E3 create structures for cell temp data and stats (min/max)
+//        errorFlags |= CMR_CAN_HVC_ERROR_CELL_OVERTEMP;
+//    }
     if(getPackMaxCellVoltage() > 4175) { // Cell voltage limit of 4175
         // TODO E4 create structures for cell voltage data and stats (min/max)
         errorFlags |= CMR_CAN_HVC_ERROR_CELL_OVERVOLT;
@@ -40,14 +40,14 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         // TODO E5 create structures for cell voltage data and stats (min/max)
         //errorFlags |= CMR_CAN_HVC_ERROR_CELL_UNDERVOLT;
     }
-    if((getBattMillivolts()) > maxPackVoltageMV) {
-        // E6
-        errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERVOLT;
-    }
-    if((getBattMillivolts()) < minPackVoltageMV) {
-        // E7
-        errorFlags |= CMR_CAN_HVC_ERROR_PACK_UNDERVOLT;
-    }
+//    if((getBattMillivolts()) > maxPackVoltageMV) {
+//        // E6
+//        errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERVOLT;
+//    }
+//    if((getBattMillivolts()) < minPackVoltageMV) {
+//        // E7
+//        errorFlags |= CMR_CAN_HVC_ERROR_PACK_UNDERVOLT;
+//    }
     if(false){//getCurrentInstant() > maxPackCurrentInstantMA) {
         // E8
         errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
@@ -62,20 +62,20 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         //errorFlags |= BMS_ERROR_CODE_RELAY;
     }
 
-    if(
-    	(currentState == CMR_CAN_HVC_STATE_DRIVE_PRECHARGE ||
-        currentState == CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE ||
-        currentState == CMR_CAN_HVC_STATE_DRIVE ||
-        currentState == CMR_CAN_HVC_STATE_CHARGE_PRECHARGE ||
-        currentState == CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE ||
-        currentState == CMR_CAN_HVC_STATE_CHARGE_TRICKLE ||
-        currentState == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT ||
-        currentState == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE) &&
-        (getSafetymillivolts() < 14000)) {
-        // E11
-        // If SC voltage is below 8v while we're trying to drive relays, throw an error.
-        errorFlags |= CMR_CAN_HVC_ERROR_LV_UNDERVOLT;
-    }
+//    if(
+//    	(currentState == CMR_CAN_HVC_STATE_DRIVE_PRECHARGE ||
+//        currentState == CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE ||
+//        currentState == CMR_CAN_HVC_STATE_DRIVE ||
+//        currentState == CMR_CAN_HVC_STATE_CHARGE_PRECHARGE ||
+//        currentState == CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE ||
+//        currentState == CMR_CAN_HVC_STATE_CHARGE_TRICKLE ||
+//        currentState == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT ||
+//        currentState == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE) &&
+//        (getSafetymillivolts() < 14000)) {
+//        // E11
+//        // If SC voltage is below 8v while we're trying to drive relays, throw an error.
+//        errorFlags |= CMR_CAN_HVC_ERROR_LV_UNDERVOLT;
+//    }
 
     // Cut relay power if we have an error
     if (errorFlags != CMR_CAN_HVC_ERROR_NONE) {

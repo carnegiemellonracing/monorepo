@@ -47,6 +47,7 @@ typedef struct {
 } uart_response_t;
 
 void uartInit(void);
-cmr_uart_result_t uart_receiveResponse(uart_response_t *response, bool deviceResponse);
+cmr_uart_result_t uart_receiveResponse(uart_response_t *response);
 cmr_uart_result_t uart_sendCommand(const uart_command_t *command);
+void readUartTest();
 #endif /* UART_H_ */

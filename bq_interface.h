@@ -323,7 +323,7 @@
 
 #define BOARD_NUM 3
 #define VSENSE_CHANNELS 14
-#define TEMP_CHANNELS 10
+#define TEMP_CHANNELS 14
 
 //TODO change this
 #define CELL_BALANCING_LOW_VOLTAGE 3.9
@@ -342,6 +342,9 @@ bool autoAddr();
 bool enableMainADC();
 bool enableNumCells();
 bool enableGPIOPins();
+void enableTimeout();
+
+bool setMuxOutput(uint8_t channel);
 
 void BMBInit();
 void pollAllVoltageData();
@@ -349,5 +352,6 @@ void pollAllTemperatureData();
 
 void cellBalancingSetup();
 void cellBalancing(bool set);
+void writeLED(bool set);
 
 #endif /* BQ_INTERFACE_H_ */

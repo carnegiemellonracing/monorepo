@@ -54,7 +54,16 @@ void uartInit(void) {
 	return;
 }
 
-
+void readUartTest() {
+	char c;
+	char arr[100];
+	int i = 0;
+	while(uart_getChar(&uart, &c) != UART_FAILURE) {
+		arr[i] = c;
+		i++;
+	}
+	return;
+}
 
 /** UART Receive Response
  * This helper function will receive a response and store the result
@@ -63,7 +72,7 @@ void uartInit(void) {
  * @param deviceResponse Boolean indicating whether this is a single device read or not
  * @return The status of the UART result (success or failure)
  */
-cmr_uart_result_t uart_receiveResponse(uart_response_t *response, bool deviceResponse) {
+cmr_uart_result_t uart_receiveResponse(uart_response_t *response) {
 
 	cmr_uart_result_t retvTotal = UART_SUCCESS;
 	cmr_uart_result_t retv = UART_SUCCESS;
@@ -77,16 +86,11 @@ cmr_uart_result_t uart_receiveResponse(uart_response_t *response, bool deviceRes
 	response->len_bytes = responseLen;
 
 	uint8_t deviceAddr;
-	if(deviceResponse) {
-		retv = uart_getChar(&uart, &deviceAddr);
-		if(retv != UART_SUCCESS) {
-			retvTotal = UART_FAILURE;
-		}
-		response->deviceAddress = deviceAddr;
+	retv = uart_getChar(&uart, &deviceAddr);
+	if(retv != UART_SUCCESS) {
+		retvTotal = UART_FAILURE;
 	}
-	else {
-		response->deviceAddress = 0;
-	}
+	response->deviceAddress = deviceAddr;
 
 	uint8_t registerValues[2] = {0};
 	retv = uart_getChar(&uart, &registerValues[0]);
@@ -168,6 +172,9 @@ cmr_uart_result_t uart_sendCommand(const uart_command_t *command) {
 	currByte++;
 	message[currByte] = (crc >> 8) & 0x00FF;
 	currByte++;
+
+	uint8_t buff = 0;
+	HAL_UART_Receive(&(uart.handle), &buff, 1, 0);
 
 	cmr_uart_result_t res;
 	res = uart_sendMessage(&uart, message, currByte);

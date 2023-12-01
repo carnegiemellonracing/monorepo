@@ -9,6 +9,7 @@
 
 static cmr_canHVCState_t currentState = CMR_CAN_HVC_STATE_ERROR;
 
+#define PRECHARGE_THRESH 57000
 
 /*
  * External Accessor Functions
@@ -40,13 +41,14 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
 
     // Getting HVC Command
     volatile cmr_canHVCCommand_t *HVCCommand = getPayload(CANRX_HVC_COMMAND);
-    
+	volatile cmr_canHVIHeartbeat_t *hvi_heartbeat = getPayload(CANRX_HVI_COMMAND);
+
     switch (currentState) {
         case CMR_CAN_HVC_STATE_DISCHARGE: // S1
         	// TODO: WAIT FOR HV VOLTAGE TO GO DOWN
             nextState = CMR_CAN_HVC_STATE_STANDBY;
             break;
-        case CMR_CAN_HVC_STATE_STANDBY: // S2
+        case CMR_CAN_HVC_STATE_STANDBY: // S23
             if (HVCCommand->modeRequest == CMR_CAN_HVC_MODE_START) {
                 //T1: START mode requested
             		nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE;
@@ -64,7 +66,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                   HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN)) {
                 //T6: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (xTaskGetTickCount() > lastPrechargeTime + 5000 && xTaskGetTickCount() < lastPrechargeTime + 6000) {
+            } else if (hvi_heartbeat->packVoltage_cV >= PRECHARGE_THRESH) {
                 //T2: HV rails are precharged to within 10000mV
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE;
                 lastPrechargeTime = xTaskGetTickCount();
@@ -78,7 +80,8 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                 //T7: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
             } else if ((HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN) &&
-                        abs(getBattMillivolts() - getHVmillivolts()) < 30000) {
+            		true) {
+//                        abs(getBattMillivolts() - getHVmillivolts()) < 30000) {
                 // T3: Contactors are closed and RUN mode is requested
                 nextState = CMR_CAN_HVC_STATE_DRIVE;
             } else {

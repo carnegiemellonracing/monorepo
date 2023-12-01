@@ -23,7 +23,7 @@
 static const uint32_t statusLED_priority = 2;
 
 /** @brief BMB Sample Task priority. */
-static const uint32_t bmbSample_priority = 7;
+static const uint32_t bmbSample_priority = 3;
 
 /** @brief BMB Sample Task priority. */
 static const uint32_t setState_priority = 4;
@@ -94,50 +94,46 @@ int main(void) {
 
     // Peripheral configuration.
     gpioInit();
-//    canInit();
+
 //    adcInit();
 //    sensorsInit();
 
-    turnOn();
-    HAL_Delay(1000);
-    autoAddr();
-    enableNumCells();
-    enableMainADC();
-    while(1)
-    	pollAllVoltageData();
+    BMBInit();
+
+    canInit();
 
     //init fan task
     //fanInit();
     //wwdgInit();
 
-//    cmr_taskInit(
-//        &statusLED_task,
-//        "statusLED",
-//        statusLED_priority,
-//        statusLED,
-//        NULL
-//    );
+    cmr_taskInit(
+        &statusLED_task,
+        "statusLED",
+        statusLED_priority,
+        statusLED,
+        NULL
+    );
 //
-//    // BMB_task
-//    cmr_taskInit(
-//        &bmbSample_task,
-//        "BMB Sample Task",
-//        bmbSample_priority,
-//        vBMBSampleTask,
-//        NULL
-//    );
-//
-//    // State Task
-//    cmr_taskInit(
-//        &setState_task,
-//        "Set State Task",
-//        setState_priority,
-//        vSetStateTask,
-//        NULL
-//    );
+    // BMB_task
+    cmr_taskInit(
+        &bmbSample_task,
+        "BMB Sample Task",
+        bmbSample_priority,
+        vBMBSampleTask,
+        NULL
+    );
+
+    // State Task
+    cmr_taskInit(
+        &setState_task,
+        "Set State Task",
+        setState_priority,
+        vSetStateTask,
+        NULL
+    );
 
 
-    //vTaskStartScheduler();
+    vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");
 }
 

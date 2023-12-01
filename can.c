@@ -49,7 +49,13 @@ cmr_canRXMeta_t canRXMeta[] = {
         .canID = CMR_CANID_EMD_MEASUREMENT_RETX,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
+    },
+	[CANRX_HVI_COMMAND] = {
+		.canID = CMR_CANID_HEARTBEAT_HVI,
+		.timeoutError_ms = 50,
+		.timeoutWarn_ms = 25
     }
+
 };
 
 /** @brief Primary CAN interface. */
@@ -68,7 +74,7 @@ static void sendBMSLowVoltage(void);
 static void sendAllBMBVoltages(void);
 
 /** @brief CAN 1 Hz TX priority. */
-static const uint32_t canTX1Hz_priority = 3;
+static const uint32_t canTX1Hz_priority = 4;
 
 /** @brief CAN 10 Hz TX period (milliseconds). */
 static const TickType_t canTX1Hz_period_ms = 1000;
@@ -90,7 +96,7 @@ static void canTX1Hz(void *pvParameters) {
     while (1) {
 
         // BMB Temperature Status 
-        for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM; bmb_index++) {
+        for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM - 1; bmb_index++) {
             sendBMSBMBStatusTemp(bmb_index);
         }
         sendBMSMinMaxCellTemp();
@@ -102,7 +108,7 @@ static void canTX1Hz(void *pvParameters) {
 }
 
 /** @brief CAN 10 Hz TX priority. */
-static const uint32_t canTX10Hz_priority = 3;
+static const uint32_t canTX10Hz_priority = 4;
 
 /** @brief CAN 10 Hz TX period (milliseconds). */
 static const TickType_t canTX10Hz_period_ms = 100;
@@ -126,7 +132,7 @@ static void canTX10Hz(void *pvParameters) {
         // sendBRUSAChargerControl();
 
         // BMB Voltage Status 
-        for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM; bmb_index++) {
+        for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
             sendBMSBMBStatusVoltage(bmb_index);
         }
 
@@ -184,9 +190,9 @@ static void canTX100Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendHeartbeat(lastWakeTime);
-        sendHVCPackVoltage();
-        sendBMSPackCurrent();
-        sendBMSLowVoltage();
+        //sendHVCPackVoltage();
+        //sendBMSPackCurrent();
+        //sendBMSLowVoltage();
         sendBMSBMBStatusErrors();
 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
@@ -199,12 +205,12 @@ static void canTX100Hz(void *pvParameters) {
 void canInit(void) {
     // CAN2 initialization.
     cmr_canInit(
-        &can, CAN2,
+        &can, CAN1,
 		CMR_CAN_BITRATE_500K,
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
         NULL,
-        GPIOB, GPIO_PIN_5,     // CAN2 RX port/pin.
-        GPIOB, GPIO_PIN_6      // CAN2 TX port/pin.
+        GPIOA, GPIO_PIN_11,     // CAN2 RX port/pin.
+        GPIOA, GPIO_PIN_12      // CAN2 TX port/pin.
     );
 
     // CAN2 filters.
@@ -214,7 +220,7 @@ void canInit(void) {
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_HEARTBEAT_VSM,
-                CMR_CANID_HEARTBEAT_VSM,
+				CMR_CANID_HEARTBEAT_HVI,
                 CMR_CANID_HVC_COMMAND,
 				CMR_CANID_EMD_MEASUREMENT
             }
@@ -415,7 +421,7 @@ static void sendBMSMinMaxCellVoltage(void) {
 	uint8_t minCellVoltageIndex = 0;
 	uint8_t maxCellVoltageIndex = 0;
 
-    for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM; bmb_index++) {
+    for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
         uint8_t maxIndex = getBMBMaxVoltIndex(bmb_index);
         uint8_t minIndex = getBMBMinVoltIndex(bmb_index);
         uint16_t maxVoltage = getBMBVoltage(bmb_index, maxIndex);

@@ -27,13 +27,13 @@ static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
 
 void turnOn() {
 
-	HAL_Delay(1000);
+	HAL_Delay(100);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_SET
 	);
 	//TickType_t xLastWakeTime = xTaskGetTickCount();
-	HAL_Delay(1000);
+	HAL_Delay(100);
 	//vTaskDelayUntil(&xLastWakeTime, 2.5);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
@@ -55,7 +55,7 @@ void turnOn() {
 			GPIO_PIN_SET
 		);
 	//pinConfig.Alternate = GPIO_AF11_UART5;
-	HAL_Delay(1000);
+	HAL_Delay(100);
 	uartInit();
 
 	uart_command_t sendWake = {
@@ -71,7 +71,7 @@ void turnOn() {
 		return false;
 	}
 
-	HAL_Delay(1000);
+	HAL_Delay(100);
 
 	uart_command_t sendShutdown = {
 			.readWrite = BROADCAST_WRITE,
@@ -87,7 +87,7 @@ void turnOn() {
 		return false;
 	}
 
-	HAL_Delay(1000);
+	HAL_Delay(100);
 //
 
 	res = uart_sendCommand(&sendWake);
@@ -95,7 +95,7 @@ void turnOn() {
 		return false;
 	}
 
-	HAL_Delay(1000);
+	HAL_Delay(100);
 
 	uart_command_t softReset = {
 			.readWrite = BROADCAST_WRITE,
@@ -249,22 +249,22 @@ bool autoAddr() {
 	};
 	uart_sendCommand(&readReg);
 
-	if(uart_receiveResponse(&response, SINGLE_DEVICE) == UART_FAILURE) {
-		//return false;
+	if(uart_receiveResponse(&response) == UART_FAILURE) {
+		return false;
 	}
 
 	readReg.deviceAddress = 0x01;
 	uart_sendCommand(&readReg);
 
-	if(uart_receiveResponse(&response, SINGLE_DEVICE) == UART_FAILURE) {
-		//return false;
+	if(uart_receiveResponse(&response) == UART_FAILURE) {
+		return false;
 	}
 
 	readReg.deviceAddress = 0x02;
 	uart_sendCommand(&readReg);
 
-	if(uart_receiveResponse(&response, SINGLE_DEVICE) == UART_FAILURE) {
-		//return false;
+	if(uart_receiveResponse(&response) == UART_FAILURE) {
+		return false;
 	}
 
 	return true;
@@ -316,7 +316,7 @@ bool enableGPIOPins() {
 	uart_command_t enable_tsref = {
 			.readWrite = STACK_WRITE,
 			.dataLen = 1,
-			.deviceAddress = 0x00, //not used!
+			.deviceAddress = 0xFF, //not used!
 			.registerAddress = CONTROL2,
 			.data = {0x01}, //enable TSREF for NTC Thermistor Biasing
 			.crc = {0x00, 0x00}
@@ -330,7 +330,7 @@ bool enableGPIOPins() {
 	uart_command_t enable_gpio = {
 			.readWrite = STACK_WRITE,
 			.dataLen = 1,
-			.deviceAddress = 0x00, //not used!
+			.deviceAddress = 0xFF, //not used!
 			.registerAddress = GPIO_CONF3,
 			.data = {0x12},
 			.crc = {0x00, 0x00}
@@ -345,6 +345,7 @@ bool enableGPIOPins() {
 		return false;
 	}
 
+
 	//enable MUX outputs as low initially
 	enable_gpio.registerAddress = GPIO_CONF2;
 	enable_gpio.data[0] = 0x2D;
@@ -357,20 +358,35 @@ bool enableGPIOPins() {
 
 }
 
+void enableTimeout() {
+	uart_command_t enable_timeout = {
+			.readWrite = STACK_WRITE,
+			.dataLen = 1,
+			.deviceAddress = 0xFF, //not used!
+			.registerAddress = COMM_TIMEOUT_CONF,
+			.data = {0x0A},
+			.crc = {0x00, 0x00}
+	};
+	uart_sendCommand(&enable_timeout);
+}
+
 void BMBInit() {
 	turnOn();
+	HAL_Delay(100);
 	autoAddr();
-	enableMainADC();
 	enableNumCells();
 	enableGPIOPins();
-	cellBalancingSetup();
+	enableMainADC();
+	//enableTimeout();
+	//cellBalancingSetup();
 }
 
 static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
 	//formula from TI's code
 	//Bitwise OR high byte shifted by 8 and low byte, apply scaling factor
 	//TODO explain this better
-	return (uint16_t) ((190.73) * (((uint16_t)msb << 8) | lsb));
+
+	return (uint16_t) (0.19073*((((uint16_t)msb << 8) | lsb)));
 }
 
 //return voltage data
@@ -383,32 +399,34 @@ void pollAllVoltageData() {
 			.data = {VSENSE_CHANNELS*2-1}, //reading high and low for cell 0-VSENSE_CHANNELS
 			.crc = {0xFF, 0xFF}
 		};
+
+
 		uart_sendCommand(&read_voltage);
 		//TODO add tx error handler
 
 		//loop through boards and parse all response frames
+		uart_response_t response[BOARD_NUM];
 
-		uart_response_t response;
-		if(uart_receiveResponse(&response, MULTIPLE_DEVICE) != UART_FAILURE) {
-			//loop through each BMB and channel
-			for(uint8_t i = 0; i < BOARD_NUM; i++) {
-				for(uint8_t j = 0; j < VSENSE_CHANNELS; j++) {
-					uint8_t high_byte_data = response.data[2*j];
-					uint8_t low_byte_data = response.data[2*j+1];
-					BMBData[i].cellVoltages[j] = calculateVoltage(high_byte_data, low_byte_data);
-				}
-			}
-		}
-		else {
-			for(uint8_t i = 0; i < BOARD_NUM; i++) {
+		//loop through each BMB and channel
+		for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
+			if(uart_receiveResponse(&response[i]) == UART_FAILURE) {
 				setBMBErr(i, BMB_VOLTAGE_READ_ERROR);
 				BMBTimeoutCount[i]+=1;
 			}
 		}
 
+		for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
+			for(uint8_t j = 0; j < VSENSE_CHANNELS; j++) {
+				uint8_t high_byte_data = response[i].data[2*j];
+				uint8_t low_byte_data = response[i].data[2*j+1];
+				BMBData[i].cellVoltages[j] = calculateVoltage(high_byte_data, low_byte_data);
+			}
+		}
+
+		return;
 }
 
-static bool setMuxOutput(uint8_t channel) {
+bool setMuxOutput(uint8_t channel) {
 	uint8_t data;
 	switch(channel) {
 	case 0:
@@ -429,8 +447,8 @@ static bool setMuxOutput(uint8_t channel) {
 	uart_command_t enable_gpio = {
 			.readWrite = STACK_WRITE,
 			.dataLen = 1,
-			.deviceAddress = 0x00, //not used!
-			.registerAddress = GPIO_CONF3,
+			.deviceAddress = 0xFF, //not used!
+			.registerAddress = GPIO_CONF2,
 			.data = {data},
 			.crc = {0x00, 0x00}
 	};
@@ -442,49 +460,55 @@ static bool setMuxOutput(uint8_t channel) {
 }
 
 static int16_t calculateTemp(uint8_t msb, uint8_t lsb) {
-	return (int16_t)((152.59) * (((int16_t)msb << 8) | lsb));
+	return (uint16_t)((0.15259) * (((int16_t) msb << 8) | lsb));
 }
 
-void pollAllTemperatureData() {
+void pollAllTemperatureData(int channel) {
 	uart_command_t read_therms = {
 		.readWrite = STACK_READ,
 		.dataLen = 1,
-		.deviceAddress = 0x00, //not used!
+		.deviceAddress = 0xFF, //not used!
 		.registerAddress = GPIO5_HI,
 		.data = {0x07},
-		.crc = {0x00, 0x00}
+		.crc = {0xFF, 0xFF}
 	};
-	cmr_uart_result_t res;
-	res = uart_sendCommand(&read_therms);
 
+	uart_sendCommand(&read_therms);
 
-	//loop through each muxed channel
-	for(uint8_t j = 0; j < 4; j++) {
-		setMuxOutput(j);
-		for(uint8_t i = 0; i < BOARD_NUM; i++) {
-			uart_response_t response;
-			if(uart_receiveResponse(&response, MULTIPLE_DEVICE) != UART_FAILURE) {
-				if(response.len_bytes * 2 != 8) {
-					setBMBErr(i, BMB_TEMP_READ_ERROR);
-					BMBTimeoutCount[i]+=1;
-				}
-				else {
-					//loop through each GPIO channel
-					for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; j++) {
-						uint8_t high_byte_data = response.data[2*k];
-						uint8_t low_byte_data = response.data[2*k+1];
+	uart_response_t response[BOARD_NUM-1] = {0};
 
-						//TODO: make sure this is matching the thermistor indices properly
-						BMBData[i].cellTemperatures[(4*j)+k] = calculateTemp(high_byte_data, low_byte_data);
-					}
-				}
-			}
-			else {
-				setBMBErr(i, BMB_TEMP_READ_ERROR);
-				BMBTimeoutCount[i]+=1;
-			}
+	for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
+		if(uart_receiveResponse(&response[i]) == UART_FAILURE) {
+				//loop through each GPIO channel
+			setBMBErr(i, BMB_TEMP_READ_ERROR);
+			BMBTimeoutCount[i]+=1;
 		}
 	}
+
+
+	for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
+		for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; k++) {
+			uint8_t high_byte_data = response[i].data[2*k];
+			uint8_t low_byte_data = response[i].data[2*k+1];
+			size_t index = (4*channel) + k;
+			//TODO: make sure this is matching the thermistor indices properly
+
+			if (index == 3 || index == 10) {
+				continue;
+			}
+
+			if (index > 10) {
+				index--;
+			}
+
+			if (index > 3) {
+				index--;
+			}
+
+			BMBData[i].cellTemperatures[index] = calculateTemp(high_byte_data, low_byte_data);
+		}
+	}
+	return;
 }
 
 void cellBalancingSetup() {
@@ -494,7 +518,7 @@ void cellBalancingSetup() {
 	uart_command_t balance_register = {
 		.readWrite = STACK_WRITE,
 		.dataLen = VSENSE_CHANNELS/2,
-		.deviceAddress = 0x00, //not used!
+		.deviceAddress = 0xFF, //not used!
 		.registerAddress = CB_CELL14_CTRL,
 		.data = {0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02},
 		.crc = {0x00, 0x00}
@@ -548,6 +572,19 @@ void cellBalancing(bool set) {
 	}
 	cmr_uart_result_t res;
 	res = uart_sendCommand(&enable);
+}
+
+void writeLED(bool set) {
+	uint8_t enableLed = set ? 0 : 1;
+	uart_command_t write_led = {
+			.readWrite = STACK_WRITE,
+			.dataLen = 1,
+			.deviceAddress = 0xFF, //not used!
+			.registerAddress = GPIO_CONF1,
+			.data = {0x04 + enableLed},
+			.crc = {0x00, 0x00}
+	};
+	uart_sendCommand(&write_led);
 }
 
 
