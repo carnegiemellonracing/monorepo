@@ -800,9 +800,6 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
         error |= CMR_CAN_ERROR_VSM_TIMEOUT;
     }
 
-    // TODO: are these the correct bits?
-    warning |= genSafetyCircuitMessage(); // add safety circuit message to heartbeat
-
     if (error != CMR_CAN_ERROR_NONE) {
         heartbeat.state = CMR_CAN_ERROR;
     }

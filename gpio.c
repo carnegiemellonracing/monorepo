@@ -137,6 +137,12 @@ static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
+    [EXP_WHEEL_BUTTON_0] = {
+        .buttonState = false,
+        .setAction = &actionOneButton, // TODO change the setAction
+        .lastPressed = 0,
+        .debounce = BUTTON_DEBOUNCE_TIME,
+    },
     [EXP_WHEEL_BUTTON_1] = {
         .buttonState = false,
         .setAction = &actionOneButton,
@@ -261,12 +267,12 @@ void gpioInit(void) {
     cmr_gpioPinInit(
         gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0])
     );
-    cmr_taskInit(
-         &buttonsInput_task,
-         "buttonsInput",
-         buttonsInput_priority,
-         buttonsInput,
-         NULL
-     );
+     cmr_taskInit(
+          &buttonsInput_task,
+          "buttonsInput",
+          buttonsInput_priority,
+          buttonsInput,
+          NULL
+      );
 }
 

@@ -36,11 +36,11 @@ typedef enum {
 
 void gpioInit(void);
 
-typedef void (*action_f) (bool);
+typedef void (*action_fn) (bool);
 
 typedef struct {
     bool buttonState;
-    action_f setAction;
+    action_fn setAction;
     TickType_t lastPressed;
     TickType_t debounce;
 } expanderButtonEvent_t;

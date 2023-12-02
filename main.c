@@ -116,27 +116,27 @@ int main(void) {
 
     // Peripheral configuration.
     gpioInit();
-    //    canInit();
-    //    adcInit();
+    canInit();
+//        adcInit();
     //    sensorsInit();
     //    tftInit();
-    expandersInit();  // Initialize SPI AND I2C expanders
+//    expandersInit();  // Initialize SPI AND I2C expanders
 
-    //    cmr_taskInit(
-    //        &statusLED_task,
-    //        "statusLED",
-    //        statusLED_priority,
-    //        statusLED,
-    //        NULL
-    //    );
-    //
-    //    cmr_taskInit(
-    //        &errorLEDs_task,
-    //        "errorLEDs",
-    //        errorLEDs_priority,
-    //        errorLEDs,
-    //        NULL
-    //    );
+//        cmr_taskInit(
+//            &statusLED_task,
+//            "statusLED",
+//            statusLED_priority,
+//            statusLED,
+//            NULL
+//        );
+
+        cmr_taskInit(
+            &errorLEDs_task,
+            "errorLEDs",
+            errorLEDs_priority,
+            errorLEDs,
+            NULL
+        );
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");
