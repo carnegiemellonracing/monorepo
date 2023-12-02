@@ -57,6 +57,6 @@ bool TCA9554Init(void) {
 }
 
 bool TCA9554Configure(void) {
-    int status = TCA9554_expanderWrite(TCA9554_CONFIG_PORT, 0xFC);
+    int status = TCA9554_expanderWrite(TCA9554_CONFIG_PORT,0xFF); // Configure all ports as inputs
     return status;
 }

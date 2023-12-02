@@ -3,7 +3,7 @@
  * @brief GPIO expanders implementation
  *
  * GPIO expanders in use:
- *      Main Board Digital 1:   TCA9554DRW      (ROT_{0..2},ROT_SEL,BUTTON{0..3})
+ *      Main Board Digital 1:   TCA9554DWR      (ROT_{0..2},ROT_SEL,BUTTON{0..3})
  *      Steering Wheel SPI  :   ADS7038IRTET    (PUSH{0..3}, PPOS{0,1})
  * @author Carnegie Mellon Racing
  */
