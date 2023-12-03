@@ -20,6 +20,7 @@
 #include "can.h"             // Can interface
 #include "config.h"          // Config interface
 #include <cn-cbor/cn-cbor.h> /* CBOR decoding */
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 /** @brief Represents a UART interface. */
 typedef struct uart uart_t;
@@ -197,7 +198,7 @@ static void uartRX_Task(void *pvParameters)
  */
 static void handle_command(cn_cbor *command)
 {
-    cn_cbor *msg, *params, *pull, *id, *data, *bus, signal_en;
+    cn_cbor *msg, *params, *pull, *id, *data, *bus, *signal_en;
     msg = cn_cbor_mapget_string(command, "msg");
     params = cn_cbor_mapget_string(command, "params");
     pull = cn_cbor_mapget_string(command, "pull");
@@ -340,12 +341,20 @@ static void handle_command(cn_cbor *command)
     }
 
     if (signal_en != NULL &&
-        (params->type == CN_CBOR_BYTES || params->type == CN_CBOR_TEXT))
+        (signal_en->type == CN_CBOR_BYTES || signal_en->type == CN_CBOR_TEXT))
     {
-        for (uint32_t i = 0; i < min((uint32_t)signal_en->length, MAX_SIGNALS); i++)
+        for (uint32_t i = 0; i < MIN((uint32_t)signal_en->length, MAX_SIGNALS); i++)
         {
-            if (signal_en->v[i])
-                setSignalEnable(i, (bool)signal_en->v[i]);
+            if (signal_en->type == CN_CBOR_BYTES)
+            {
+                if (signal_en->v.bytes[i])
+                    setSignalEnable(i, (bool)signal_en->v.bytes[i]);
+            }
+            else
+            {
+                if (signal_en->v.str[i])
+                    setSignalEnable(i, (bool)signal_en->v.str[i]);
+            }
         }
     }
 
