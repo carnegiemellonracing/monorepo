@@ -1,4 +1,4 @@
-#include "TCA9554.h"
+#include "PCF8574.h"
 
 #include <CMR/i2c.h>
 #include <CMR/tasks.h>
@@ -6,22 +6,18 @@
 
 cmr_i2c_t dim_i2c;
 
-int TCA9554_expanderRead(uint8_t reg, uint8_t *data) {
-    // Select Register
-    if (cmr_i2cTX(&dim_i2c, TCA9554_EXPANDER_ADDR, &reg, 1, I2C_TIMEOUT) != 0) {
-        return -1;
-    }
+int PCF8574_expanderRead(uint8_t *data) {
     // Read Data from register address
-    if (cmr_i2cRX(&dim_i2c, TCA9554_EXPANDER_ADDR, data, 1, I2C_TIMEOUT) != 0) {
+    if (cmr_i2cRX(&dim_i2c, PCF8574_EXPANDER_ADDR, data, 1, I2C_TIMEOUT) != 0) {
         return -1;
     }
     return 0;
 }
 
-bool TCA9554_expanderWrite(uint8_t reg, uint8_t value) {
+bool PCF8574_expanderWrite(uint8_t reg, uint8_t value) {
     uint8_t command;
     uint8_t currentRead;
-    if ((TCA9554_expanderRead(TCA9554_INPUT_PORT, &currentRead)) != 0) {
+    if ((PCF8574_expanderRead(&currentRead)) != 0) {
         return false;
     }
 
@@ -31,14 +27,14 @@ bool TCA9554_expanderWrite(uint8_t reg, uint8_t value) {
         command = currentRead & ~(1 << reg);
     }
 
-    if (cmr_i2cTX(&dim_i2c, TCA9554_EXPANDER_ADDR, &command, sizeof(command), I2C_TIMEOUT) != 0) {
+    if (cmr_i2cTX(&dim_i2c, PCF8574_EXPANDER_ADDR, &command, sizeof(command), I2C_TIMEOUT) != 0) {
         return false;
     }
 
     return true;
 }
 
-bool TCA9554Init(void) {
+bool PCF8574Init(void) {
     cmr_i2cInit(&dim_i2c, I2C3,
                 I2C_CLOCK_LOW, 0,
                 GPIOA, GPIO_PIN_8,   // clock but change pins per schem
@@ -56,7 +52,6 @@ bool TCA9554Init(void) {
     return true;
 }
 
-bool TCA9554Configure(void) {
-    int status = TCA9554_expanderWrite(TCA9554_CONFIG_PORT,0xFF); // Configure all ports as inputs
-    return status;
+bool PCF8574Configure(void) {
+    return true;
 }

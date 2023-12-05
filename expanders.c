@@ -3,7 +3,7 @@
  * @brief GPIO expanders implementation
  *
  * GPIO expanders in use:
- *      Main Board Digital 1:   TCA9554DWR      (ROT_{0..2},ROT_SEL,BUTTON{0..3})
+ *      Main Board Digital 1:   PCF8574       (ROT_{0..2},ROT_SEL,BUTTON{0..3})
  *      Steering Wheel SPI  :   ADS7038IRTET    (PUSH{0..3}, PPOS{0,1})
  * @author Carnegie Mellon Racing
  */
@@ -14,7 +14,7 @@
 #include <CMR/tasks.h>  // Task interface
 
 #include "ADS7038.h"           //SPI interface
-#include "TCA9554.h"           //I2c interface
+#include "PCF8574.h"           //I2c interface
 #include "expandersPrivate.h"  // Private interface
 
 #define SYSTICKCLOCK 96000000ULL
@@ -33,12 +33,12 @@ static const uint16_t daughterAnalogAddress = 0x2;
  */
 static expanderPinConfig_t buttons[EXP_BUTTON_LEN] = {
     [EXP_DASH_BUTTON_0] = {
-        .expanderAddress = TCA9554_EXPANDER_ADDR,
+        .expanderAddress = PCF8574_EXPANDER_ADDR,
         .port = 0,
         .pin = 4},
-    [EXP_DASH_BUTTON_1] = {.expanderAddress = TCA9554_EXPANDER_ADDR, .port = 0, .pin = 5},
-    [EXP_DASH_BUTTON_2] = {.expanderAddress = TCA9554_EXPANDER_ADDR, .port = 0, .pin = 6},
-    [EXP_DASH_BUTTON_3] = {.expanderAddress = TCA9554_EXPANDER_ADDR, .port = 0, .pin = 7},
+    [EXP_DASH_BUTTON_1] = {.expanderAddress = PCF8574_EXPANDER_ADDR, .port = 0, .pin = 5},
+    [EXP_DASH_BUTTON_2] = {.expanderAddress = PCF8574_EXPANDER_ADDR, .port = 0, .pin = 6},
+    [EXP_DASH_BUTTON_3] = {.expanderAddress = PCF8574_EXPANDER_ADDR, .port = 0, .pin = 7},
     [EXP_WHEEL_BUTTON_0] = {.expanderAddress = daughterDigitalAddress, .port = 0, .pin = 5},
     [EXP_WHEEL_BUTTON_1] = {.expanderAddress = daughterDigitalAddress, .port = 0, .pin = 2},
     [EXP_WHEEL_BUTTON_2] = {.expanderAddress = daughterDigitalAddress, .port = 0, .pin = 3},
@@ -50,16 +50,16 @@ static expanderPinConfig_t buttons[EXP_BUTTON_LEN] = {
  */
 static expanderPinConfig_t rotaries[EXP_ROTARY_LEN] = {
     [EXP_ROTARY_0] = {
-        .expanderAddress = TCA9554_EXPANDER_ADDR,
+        .expanderAddress = PCF8574_EXPANDER_ADDR,
         .port = 0,
         .pin = 2},
-    [EXP_ROTARY_1] = {.expanderAddress = TCA9554_EXPANDER_ADDR, .port = 0, .pin = 1
+    [EXP_ROTARY_1] = {.expanderAddress = PCF8574_EXPANDER_ADDR, .port = 0, .pin = 1
 
     },
-    [EXP_ROTARY_2] = {.expanderAddress = TCA9554_EXPANDER_ADDR, .port = 0, .pin = 0}};
+    [EXP_ROTARY_2] = {.expanderAddress = PCF8574_EXPANDER_ADDR, .port = 0, .pin = 0}};
 
 static expanderPinConfig_t EXP_ROTARY_SEL = {
-    .expanderAddress = TCA9554_EXPANDER_ADDR,
+    .expanderAddress = PCF8574_EXPANDER_ADDR,
     .port = 0,
     .pin = 3};
 
@@ -94,8 +94,8 @@ bool checkStatus(int status) {
 }
 
 static int getExpanderData(uint16_t addr, void *data) {
-    if (addr == TCA9554_EXPANDER_ADDR) {
-        return TCA9554_expanderRead(TCA9554_INPUT_PORT, data);
+    if (addr == PCF8574_EXPANDER_ADDR) {
+        return PCF8574_expanderRead(data);
     }
     if (addr == daughterDigitalAddress) {
         return ADS7038_read(GPI_VALUE_REG, data);
@@ -124,7 +124,7 @@ static int updateExpanderDataDaughter() {
 
 static int updateExpanderDataMain() {
     int status = getExpanderData(
-        TCA9554_EXPANDER_ADDR,
+        PCF8574_EXPANDER_ADDR,
         mainDigital1Data);
 
     return status;
@@ -178,7 +178,7 @@ static bool getPinValueFromConfig(expanderPinConfig_t config) {
     uint8_t mask = 1 << config.pin;
     // Select correct expander data based on config
     uint8_t *data = NULL;
-    if (addr == TCA9554_EXPANDER_ADDR) {
+    if (addr == PCF8574_EXPANDER_ADDR) {
         data = mainDigital1Data;
     } else if (addr == daughterAnalogAddress) {
         // Analog data is 16 bits, special case
@@ -232,7 +232,7 @@ uint32_t expanderGetClutch(expanderClutch_t clutch) {
 static void expanderUpdate100Hz(void *pvParameters) {
     (void)pvParameters;  // Placate compiler.
 
-    int status = TCA9554Configure();
+    int status = PCF8574Configure();
 
     TickType_t lastWakeTime = xTaskGetTickCount();
 
@@ -266,7 +266,7 @@ static void expanderUpdate100Hz(void *pvParameters) {
             resetClock();
 
             // config everything again since clock reset
-            TCA9554Configure();
+            PCF8574Configure();
             ADS7038Configure();
         }
     }
@@ -276,7 +276,7 @@ static void expanderUpdate100Hz(void *pvParameters) {
  */
 void expandersInit(void) {
     ADS7038Init();
-    TCA9554Init();
+    PCF8574Init();
     cmr_taskInit(
         &expanderUpdate100Hz_task,
         "GPIO Expander Update 100Hz",
