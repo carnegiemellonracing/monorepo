@@ -19,28 +19,28 @@
  */
 static cmr_adcChannel_t adcChannels[ADC_LEN] = {
     [ADC_VSENSE] = {
-        .channel = ADC_CHANNEL_0,
+        .channel = ADC_CHANNEL_2,
         .port = GPIOA,
         .pin = GPIO_PIN_0,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_ISENSE] = {
-        .channel = ADC_CHANNEL_1,
+        .channel = ADC_CHANNEL_3,
         .port = GPIOA,
         .pin = GPIO_PIN_1,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_TPOS_L] = {
-        .channel = ADC_CHANNEL_2,
+        .channel = ADC_CHANNEL_1,
         .port = GPIOA,
         .pin = GPIO_PIN_2,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_TPOS_R] = {
-        .channel = ADC_CHANNEL_3,
+        .channel = ADC_CHANNEL_0,
         .port = GPIOA,
         .pin = GPIO_PIN_3,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,

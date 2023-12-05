@@ -117,8 +117,8 @@ int main(void) {
     // Peripheral configuration.
     gpioInit();
     canInit();
-//        adcInit();
-    //    sensorsInit();
+    adcInit();
+    sensorsInit();
     //    tftInit();
 //    expandersInit();  // Initialize SPI AND I2C expanders
 
