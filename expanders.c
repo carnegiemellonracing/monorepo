@@ -98,7 +98,10 @@ static int getExpanderData(uint16_t addr, void *data) {
         return PCF8574_expanderRead(data);
     }
     if (addr == daughterDigitalAddress) {
-        return ADS7038_read(GPI_VALUE_REG, data);
+        uint8_t temp[3];
+        int status = ADS7038_read(GPI_VALUE_REG, temp);
+        *((uint8_t *)data) = temp[0];
+        return status;
     }
     if (addr == daughterAnalogAddress) {
         return ADS7038_adcManualRead(data);
@@ -232,8 +235,8 @@ uint32_t expanderGetClutch(expanderClutch_t clutch) {
 static void expanderUpdate100Hz(void *pvParameters) {
     (void)pvParameters;  // Placate compiler.
 
-    int status = PCF8574Configure();
-
+//    int status = PCF8574Configure();
+    int status = 0;
     TickType_t lastWakeTime = xTaskGetTickCount();
 
     int badStatus_count = 0;
@@ -248,7 +251,7 @@ static void expanderUpdate100Hz(void *pvParameters) {
 
         // dont check status of daughter board, if steering is removed, DIM should still work
         // PCF8574Configure();
-        ADS7038Configure();
+//        ADS7038Configure();
         updateExpanderDataDaughter();
 
         vTaskDelayUntil(&lastWakeTime, expanderUpdate100Hz_period_ms);
@@ -266,8 +269,8 @@ static void expanderUpdate100Hz(void *pvParameters) {
             resetClock();
 
             // config everything again since clock reset
-            PCF8574Configure();
-            ADS7038Configure();
+//            PCF8574Configure();
+//            ADS7038Configure();
         }
     }
 }
@@ -276,7 +279,7 @@ static void expanderUpdate100Hz(void *pvParameters) {
  */
 void expandersInit(void) {
     ADS7038Init();
-    PCF8574Init();
+//     PCF8574Init();
     cmr_taskInit(
         &expanderUpdate100Hz_task,
         "GPIO Expander Update 100Hz",

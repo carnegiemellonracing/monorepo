@@ -13,7 +13,7 @@ int PCF8574_expanderRead(uint8_t *data) {
     }
     return 0;
 }
-
+// TODO get rid of read
 bool PCF8574_expanderWrite(uint8_t reg, uint8_t value) {
     uint8_t command;
     uint8_t currentRead;
