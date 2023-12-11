@@ -34,11 +34,14 @@ cmr_canDrsMode_t stateGetDrsReq(void);
 
 /** @brief AE/DRS button value */
 extern bool drsButtonPressed;
+/** @brief Action 0 button value */
+extern bool action0ButtonPressed;
 /** @brief Action 1 button value */
 extern bool action1ButtonPressed;
 /** @brief Action 2 button value */
 extern bool action2ButtonPressed;
 
+void actionZeroButton(bool pressed);
 void actionOneButton(bool pressed);
 void actionTwoButton(bool pressed);
 void drsButton(bool pressed);

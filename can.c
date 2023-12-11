@@ -294,6 +294,7 @@ static void canTX100Hz(void *pvParameters) {
         /* Transmit action button status */
         cmr_canDIMActions_t actions = {
             .drsButtonPressed = drsButtonPressed,
+            .action0ButtonPressed = action0ButtonPressed,
             .action1ButtonPressed = action1ButtonPressed,
             .action2ButtonPressed = action2ButtonPressed,
             .regenPercent = regenPercent,

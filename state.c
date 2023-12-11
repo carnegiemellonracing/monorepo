@@ -51,6 +51,8 @@ static bool ackButtonPressed;
 
 /** @brief AE/DRS button value */
 bool drsButtonPressed;
+/** @brief Action 0 button value */
+bool action0ButtonPressed;
 /** @brief Action 1 button value */
 bool action1ButtonPressed;
 /** @brief Action 2 button value */
@@ -60,6 +62,14 @@ bool action2ButtonPressed;
 void stateVSMUp(void);
 void stateVSMDown(void);
 void enterConfigScreen(void);
+
+void actionZeroButton(bool pressed) {
+    if (!pressed) {
+        action0ButtonPressed = false;
+        return;
+    }
+    action0ButtonPressed = pressed; // True
+}
 
 /**
  * @brief handles Action 1 button press on steering wheel
