@@ -40,6 +40,14 @@ extern bool action0ButtonPressed;
 extern bool action1ButtonPressed;
 /** @brief Action 2 button value */
 extern bool action2ButtonPressed;
+/** @brief Up button value */
+extern bool actionUpButtonPressed;
+/** @brief Down button value*/
+extern bool actionDownButtonPressed;
+/** @brief Left button value */
+extern bool actionLeftButtonPressed;
+/** @brief Right button value */
+extern bool actionRightButtonPressed;
 
 void actionZeroButton(bool pressed);
 void actionOneButton(bool pressed);

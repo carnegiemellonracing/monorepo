@@ -57,6 +57,14 @@ bool action0ButtonPressed;
 bool action1ButtonPressed;
 /** @brief Action 2 button value */
 bool action2ButtonPressed;
+/** @brief Up button value */
+bool actionUpButtonPressed;
+/** @brief Down button value*/
+bool actionDownButtonPressed;
+/** @brief Left button value */
+bool actionLeftButtonPressed;
+/** @brief Right button value */
+bool actionRightButtonPressed;
 
 // Forward declarations
 void stateVSMUp(void);
