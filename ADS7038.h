@@ -3,13 +3,20 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+
 #define SPI_MSG_LEN 3
 #define RD_REG 0b00010000       // 0b0001_0000
 #define WR_REG 0b00001000       // 0b0000_1000
 #define SPI_SET_BIT 0b00011000  // 0b0001_1000
 #define SPI_CLR_BIT 0b00100000  // 0b0010_0000
-#define PPOS_0_PORT 1 // Padde Position 0 Port
-#define PPOS_1_PORT 6 // Padde Position 1 Port
+
+#define PPOS_0_PORT 1 // Paddle Position 0 Port
+#define PPOS_1_PORT 6 // Paddle Position 1 Port
+#define SW_BUTTON_0 5 // Steering Wheel Button 0
+#define SW_BUTTON_1 2 // Steering Wheel Button 1
+#define SW_BUTTON_2 3 // Steering Wheel Button 2
+#define SW_BUTTON_3 4 // Steering Wheel Button 3
+
 
 typedef enum {
     SYSTEM_STATUS_REG   = 0x0,          /** System Status Register */

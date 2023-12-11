@@ -1,7 +1,8 @@
 #include "ADS7038.h"
 
 #include <CMR/gpio.h>
-#include <CMR/spi.h>  // SPI interface
+#include <CMR/spi.h> // SPI interface
+#include <CMR/panic.h>
 #include <CMR/tasks.h>
 
 #include "expandersPrivate.h"
@@ -105,19 +106,42 @@ bool ADS7038Init() {
         &ADS7038Spi, SPI2, &ADS7038SpiInit, &ADS7038SpiPins,
         DMA2_Stream2, DMA_CHANNEL_3,
         DMA2_Stream3, DMA_CHANNEL_3);
-    return true;
+    int status = ADS7038Configure();
+    uint8_t data[3];
+    ADS7038_read(GPI_VALUE_REG,data);
+    ADS7038_read(GPI_VALUE_REG,data);
+    ADS7038_read(GPI_VALUE_REG,data);
+    ADS7038_read(GPI_VALUE_REG,data);
+    ADS7038_read(GPI_VALUE_REG,data);
+    return status;
+}
+
+static void compareReadAndWrite(int command,uint8_t* data){
+    if(command != data[0]){
+        cmr_panic("Data in register does not match command!");
+    }
 }
 
 int ADS7038Configure() {
     int status = 0;
-    status |= ADS7038_read(SYSTEM_STATUS_REG, NULL);
+    uint8_t data[3];
+    status |= ADS7038_read(SYSTEM_STATUS_REG, data);
+
     status |= ADS7038_write(DATA_CFG_REG, CHANNEL_ID_ENABLE);
-    status |= ADS7038_read(DATA_CFG_REG, NULL);
+    status |= ADS7038_read(DATA_CFG_REG, data);
+    compareReadAndWrite(CHANNEL_ID_ENABLE,data);
+
     status |= ADS7038_write(SEQUENCE_CFG_REG, 0b00000000);
-    status |= ADS7038_read(SEQUENCE_CFG_REG, NULL);
+    status |= ADS7038_read(SEQUENCE_CFG_REG, data);
+    compareReadAndWrite(0b00000000,data);
+
     status |= ADS7038_write(PIN_CFG_REG, 0b00111100);
-    status |= ADS7038_read(PIN_CFG_REG, NULL);
+    status |= ADS7038_read(PIN_CFG_REG, data);
+    compareReadAndWrite(0b00111100,data);
+
     status |= ADS7038_write(GPIO_CFG_REG, 0b00000000);
-    status |= ADS7038_read(GPIO_CFG_REG, NULL);
+    status |= ADS7038_read(GPIO_CFG_REG, data);
+    compareReadAndWrite(0b00000000,data);
+
     return status;
 }
