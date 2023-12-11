@@ -668,6 +668,10 @@ typedef struct {
     uint8_t action1ButtonPressed;    /**< @brief Status of the action 1 button (Active Low). */
     uint8_t action2ButtonPressed;    /**< @brief Status of the action 2 button (Active Low). */
     uint8_t drsButtonPressed;        /**< @brief Status of the AE/DRS button (Active Low). */
+    uint8_t actionUpButtonPressed;   /** @brief Status of the action up button. */
+    uint8_t actionDownButtonPressed; /** @brief Status of the action down button. */
+    uint8_t actionLeftButtonPressed; /** @brief Status of the action left button. */
+    uint8_t actionRightButtonPressed;/** @brief Status of the action right button. */
     uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
     uint8_t paddleLeft;              /**< @brief Between 0 and 255 for left paddle pos*/
     uint8_t paddleRight;             /**< @brief Between 0 and 255 for left paddle pos*/
