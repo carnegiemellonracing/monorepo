@@ -82,8 +82,8 @@ typedef enum {
     CMR_CAN_ERROR_PTC_WATER_TEMP = (1 << 13),
     //power errors(shunt resistor), water over heating errors, oil overheatin errors
     //no oil overheating errors cuz going into uprights
-    // temperature 
-    // pump always on 35 c  
+    // temperature
+    // pump always on 35 c
     // pump turn on at 53 start turning on and 56 turning at 100
     // fan turn on at 56 starting 58 turn it to max
 
@@ -425,9 +425,9 @@ typedef struct {
 typedef struct {
     uint16_t minCellVoltage_mV; /**< @brief Min BMB cell voltage (mV). */
     uint16_t maxCellVoltage_mV; /**< @brief Max BMB cell voltage (mV). */
-    uint8_t minCellVoltBMB;     /**< @brief */ 
+    uint8_t minCellVoltBMB;     /**< @brief */
     uint8_t minVoltIndex;       /**< @brief Min BMB cell voltage index. */
-    uint8_t maxCellVoltBMB;     /**< @brief */ 
+    uint8_t maxCellVoltBMB;     /**< @brief */
     uint8_t maxVoltIndex;       /**< @brief Max BMB cell voltage index. */
 } cmr_canHVCPackMinMaxCellVolages_t;
 
@@ -559,7 +559,7 @@ typedef struct {
     uint8_t pwm_left;       /**< @brief PWM of the left  DRS servo (debug info). */
     uint8_t pwm_right;      /**< @brief PWM of the right DRS servo (debug info). */
 } cmr_canCDCDRSStates_t;
-typedef enum { 
+typedef enum {
   CMR_CAN_DRS_STATE_CLOSED = 0,
   CMR_CAN_DRS_STATE_OPEN,
   CMR_CAN_DRS_STATE_OTHER
@@ -621,7 +621,7 @@ typedef struct {
 typedef struct {
     int16_t roll_deg;       /**< @brief Roll of the car (deg * 10). */
     int16_t pitch_deg;      /**< @brief Pitch of the car (deg * 10). */
-    int16_t yaw_deg;        /**< @brief Yaw of the car (deg * 10). */ 
+    int16_t yaw_deg;        /**< @brief Yaw of the car (deg * 10). */
     int16_t velocity_deg;   /**< @brief Velocity vector of the car (deg * 10). */
 } cmr_canCDCPoseOrientation_t;
 
@@ -634,7 +634,7 @@ typedef struct {
 typedef struct {
     int16_t longitudinalAccel_mps2;    /**< @brief Acceleration of the car in the forward direction (m/s^2 * 100). */
     int16_t lateralAccel_mps2;         /**< @brief Acceleration of the car in the right direction (m/s^2 * 100). */
-    int16_t verticalAccel_mps2;        /**< @brief Acceleration of the car in the down direction (m/s^2 * 100). */   
+    int16_t verticalAccel_mps2;        /**< @brief Acceleration of the car in the down direction (m/s^2 * 100). */
 } cmr_canCDCPoseAcceleration_t;
 
 // ------------------------------------------------------------------------------------------------
@@ -664,6 +664,7 @@ typedef struct {
 } cmr_canDIMTextWrite_t;
 
 typedef struct {
+    uint8_t action0ButtonPressed;    /**< @brief Status of the action 0 button (Active Low). */
     uint8_t action1ButtonPressed;    /**< @brief Status of the action 1 button (Active Low). */
     uint8_t action2ButtonPressed;    /**< @brief Status of the action 2 button (Active Low). */
     uint8_t drsButtonPressed;        /**< @brief Status of the AE/DRS button (Active Low). */
@@ -672,7 +673,7 @@ typedef struct {
     uint8_t paddleRight;             /**< @brief Between 0 and 255 for left paddle pos*/
 } cmr_canDIMActions_t;
 
-/** @brief DIM sends message to acknowledge radio message 
+/** @brief DIM sends message to acknowledge radio message
  * CDC rebroadcasts to DAQ Live.
 */
 typedef struct {
@@ -682,7 +683,7 @@ typedef struct {
 // DIM Config Screen data
 /** @brief Driver Interface Module config screen data. */
 
-// these are all generic types. To modify what values are stored, 
+// these are all generic types. To modify what values are stored,
 // modify the config_screen_helper.h file instead
 typedef struct {
     uint8_t config_val_1;
@@ -839,7 +840,7 @@ typedef struct {
 	uint8_t maxTempIndex;        /**< @brief Max BMB cell temp index. */
 	uint8_t minTempIndex;        /**< @brief Min BMB cell temp index. */
     int16_t maxCellTemp_C;       /**< @brief Max BMB cell temp (C). */
-    int16_t minCellTemp_C;       /**< @brief Min BMB cell temp (C). */  
+    int16_t minCellTemp_C;       /**< @brief Min BMB cell temp (C). */
 } cmr_canBMSBMBStatusTemp_t;
 
 typedef struct {
@@ -915,11 +916,11 @@ typedef enum {
 /** @brief SBG INS 'SOLUTION_STATUS' solution mode (first 4 bits) values. */
 typedef enum {
     CMR_CAN_SBG_SOL_MODE_UNINITIALIZED = 0,     /**< @brief The Kalman filter is not initialized and the returned data are all invalid. */
-    CMR_CAN_SBG_SOL_MODE_VERTICAL_GYRO = 1,     /**< @brief The Kalman filter only rely on a vertical reference to compute roll and 
+    CMR_CAN_SBG_SOL_MODE_VERTICAL_GYRO = 1,     /**< @brief The Kalman filter only rely on a vertical reference to compute roll and
                                                             pitch angles. Heading and navigation data drift freely. */
-    CMR_CAN_SBG_SOL_MODE_AHRS          = 2,     /**< @brief A heading reference is available, the Kalman filter provides full orientation  
+    CMR_CAN_SBG_SOL_MODE_AHRS          = 2,     /**< @brief A heading reference is available, the Kalman filter provides full orientation
                                                             but navigation data drift freely. */
-    CMR_CAN_SBG_SOL_MODE_NAV_VELOCITY  = 3,     /**< @brief The Kalman filter computes orientation and velocity. Position is freely 
+    CMR_CAN_SBG_SOL_MODE_NAV_VELOCITY  = 3,     /**< @brief The Kalman filter computes orientation and velocity. Position is freely
                                                             integrated from velocity estimation. */
     CMR_CAN_SBG_SOL_MODE_NAV_POSITION  = 4,     /**< @brief Nominal mode, the Kalman filter computes all parameters
                                                             (attitude, velocity, position). Absolute position is provided. */
@@ -1068,7 +1069,7 @@ typedef struct {
     uint8_t err; /* 1 in error state and 0 otherwise */
 } cmr_can_rtc_data_t;
 
-typedef struct 
+typedef struct
 {
     float slipRatio_FL;
     float slipRatio_FR;
@@ -1080,7 +1081,7 @@ typedef struct
     float slipRatio_RR;
 } cmr_can_rear_slip_ratio_data_t;
 
-typedef struct 
+typedef struct
 {
     float omega_FL;
     float omega_FR;
@@ -1092,13 +1093,13 @@ typedef struct
     float omega_RR;
 } cmr_can_rear_whl_speed_setpoint_t;
 
-typedef struct 
+typedef struct
 {
     float v_whl_fl;
     float v_whl_fr;
 } cmr_can_front_whl_velocity_t;
 
-typedef struct 
+typedef struct
 {
     float v_whl_rl;
     float v_whl_rr;
@@ -1113,7 +1114,7 @@ typedef struct {
 } cmr_canEMDMeasurements_t;
 
 // ------------------------------------------------------------------------------------------------
-// DAQ Modules 
+// DAQ Modules
 
 typedef struct {
     int32_t HX711_force;     /**< @brief Force from HX711 */
