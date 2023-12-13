@@ -120,7 +120,7 @@ int main(void) {
     adcInit();
     sensorsInit();
     //    tftInit();
-   //expandersInit();  // Initialize SPI AND I2C expanders
+   expandersInit();  // Initialize SPI AND I2C expanders
 
 //        cmr_taskInit(
 //            &statusLED_task,

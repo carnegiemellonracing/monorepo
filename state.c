@@ -153,6 +153,7 @@ void drsButton(bool pressed) {
  */
 
 void upButton(bool pressed) {
+    actionUpButtonPressed = pressed;
     if (!pressed) {
         return;
     }
@@ -162,6 +163,7 @@ void upButton(bool pressed) {
     } else {
         stateVSMUp();
     }
+
 }
 
 /**
@@ -170,6 +172,7 @@ void upButton(bool pressed) {
  * @param pressed `true` if button is currently pressed.
  */
 void downButton(bool pressed) {
+    actionDownButtonPressed = pressed;
     if (!pressed) {
         return;
     }
@@ -179,6 +182,7 @@ void downButton(bool pressed) {
     } else {
         stateVSMDown();
     }
+
 }
 
 /**
@@ -187,6 +191,7 @@ void downButton(bool pressed) {
  * @param pressed `true` if button is currently pressed.
  */
 void leftButton(bool pressed) {
+    actionLeftButtonPressed = pressed;
     if (!pressed) {
         return;
     }
@@ -197,6 +202,7 @@ void leftButton(bool pressed) {
         // Enter config screen function does necesarry state checks
         enterConfigScreen();
     }
+
 }
 
 /**
@@ -205,6 +211,7 @@ void leftButton(bool pressed) {
  * @param pressed `true` if button is currently pressed.
  */
 void rightButton(bool pressed) {
+    actionRightButtonPressed = pressed;
     if (!pressed) {
         return;
     }
