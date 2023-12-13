@@ -1,7 +1,7 @@
 # Driver Interface Module
 
 **NOTE**: This project uses [Git submodules][submodules].
-- When cloning this repository for the first time `git clone <url> --recursive`
+- When cloning this repository for the first time `git clone git@github.com:carnegiemellonracing/DIM.git --recursive`
 - When updating an existing clone: `git submodule update --init --recursive`
 
 This repository contains firmware for the Driver Interface Module.
