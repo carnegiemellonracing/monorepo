@@ -1,3 +1,6 @@
+
+
+
 /**
  * @file sensors.c
  * @brief Board-specific sensors implementation.
@@ -45,8 +48,6 @@ const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
     [SENSOR_CH_BPOS_U8]        = ADC_BPRES,
     [SENSOR_CH_BPRES_PSI]      = ADC_BPRES,
     [SENSOR_CH_SWANGLE_DEG]    = ADC_SWANGLE,
-    [SENSOR_CH_VOLTAGE_MV]     = ADC_VSENSE,
-    [SENSOR_CH_AVG_CURRENT_MA] = ADC_ISENSE,
     [SENSOR_CH_TPOS_IMPLAUS]   = ADC_LEN  // Not an ADC channel!
 };
 

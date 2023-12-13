@@ -16,9 +16,7 @@
  * @warning New channels MUST be added before `ADC_LEN`.
  */
 typedef enum {
-    ADC_VSENSE = 0, /**< @brief Board voltage sense. */
-    ADC_ISENSE,     /**< @brief Board current sense. */
-    ADC_TPOS_L,     /**< @brief Sensor channel 1. - TPOS L */
+    ADC_TPOS_L = 0,     /**< @brief Sensor channel 1. - TPOS L */
     ADC_TPOS_R,     /**< @brief Sensor channel 2. - TPOS R */
     ADC_BPRES,      /**< @brief Sensor channel 3. - BPRES */
     ADC_SWANGLE,    /**< @brief Sensor channel 4. - SWANGLE */
