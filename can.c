@@ -290,17 +290,18 @@ static void canTX100Hz(void *pvParameters) {
 
         // Calculate integer regenPercent from regenStep
         uint8_t regenPercent = (uint8_t) (REGEN_MIN + REGEN_STEP * regenStep);
-
+        uint8_t packed = 0;
+        packed |= drsButtonPressed << 7;
+        packed |= action0ButtonPressed << 6;
+        packed |= action1ButtonPressed << 5;
+        packed |= action2ButtonPressed << 4;
+        packed |= actionUpButtonPressed << 3;
+        packed |= actionDownButtonPressed << 2;
+        packed |= actionLeftButtonPressed << 1;
+        packed |= actionRightButtonPressed;
         /* Transmit action button status */
         cmr_canDIMActions_t actions = {
-            .drsButtonPressed = drsButtonPressed,
-            .action0ButtonPressed = action0ButtonPressed,
-            .action1ButtonPressed = action1ButtonPressed,
-            .action2ButtonPressed = action2ButtonPressed,
-            .actionUpButtonPressed = actionUpButtonPressed,
-            .actionDownButtonPressed = actionDownButtonPressed,
-            .actionLeftButtonPressed = actionLeftButtonPressed,
-            .actionRightButtonPressed = actionRightButtonPressed,
+            .buttons = packed,
             .regenPercent = regenPercent,
             .paddleLeft = getPaddleState(EXP_CLUTCH_1),
             .paddleRight = getPaddleState(EXP_CLUTCH_2),
