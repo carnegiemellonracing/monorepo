@@ -73,6 +73,24 @@ static uint32_t sampleADCSensor(const cmr_sensor_t *sensor) {
     return adcRead(sensorsADCChannels[sensorChannel]);
 }
 
+static uint32_t leftThrottleToRequest(const cmr_sensor_t *sensor) {
+	sensorChannel_t sensorChannel = sensor - sensors;
+	configASSERT(sensorChannel < SENSOR_CH_LEN);
+
+	uint16_t leftADC = adcRead(sensorsADCChannels[sensorChannel]);
+
+	return leftADC / 16;
+}
+
+static uint32_t rightThrottleToRequest(const cmr_sensor_t *sensor) {
+	sensorChannel_t sensorChannel = sensor - sensors;
+	configASSERT(sensorChannel < SENSOR_CH_LEN);
+
+	uint16_t rightADC = adcRead(sensorsADCChannels[sensorChannel]);
+
+	return rightADC / 8;
+}
+
 /**
  * @brief Rescales ADC value from 12 bit to 8 bit.
  *
@@ -296,17 +314,17 @@ static uint32_t sampleBrakeImplaus(const cmr_sensor_t *sensor) {
 static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     [SENSOR_CH_TPOS_L_U8] = {
         .conv = adcToUInt8,
-        .sample = sampleADCSensor,
-        .readingMin = 770,
-        .readingMax = 3630,
+        .sample = leftThrottleToRequest,
+        .readingMin = 0,
+        .readingMax = 256,
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_FSM_TPOS_L
     },
     [SENSOR_CH_TPOS_R_U8] = {
         .conv = adcToUInt8,
-        .sample = sampleADCSensor,
-        .readingMin = 790,
-        .readingMax = 3880,
+        .sample = rightThrottleToRequest,
+        .readingMin = 0,
+        .readingMax = 256,
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_FSM_TPOS_R
     },
@@ -428,8 +446,8 @@ uint8_t throttleGetPos(void) {
         return 0;
     }
 
-    int32_t tposL = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_L_U8);
-    int32_t tposR = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_R_U8);
+    uint8_t tposL = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_L_U8);
+    uint8_t tposR = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_R_U8);
 
     if ((tposL == 0) || (tposR == 0)) {
         return 0;
