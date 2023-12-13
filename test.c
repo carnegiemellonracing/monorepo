@@ -39,12 +39,12 @@ void testGPIORead()
 
 void testADCRead()
 {
-    volatile uint32_t read;
-    for (size_t ch = ADC_VSENSE; ch < ADC_LEN; ch++)
-    {
-        read = adcRead(ADC_VSENSE);
-        printf("ADC Channel %u: %ld\n", ch, read);
-    }
+//    volatile uint32_t read;
+//    for (size_t ch = ADC_VSENSE; ch < ADC_LEN; ch++)
+//    {
+//        read = adcRead(ADC_VSENSE);
+//        printf("ADC Channel %u: %ld\n", ch, read);
+//    }
 }
 
 /** @brief Test task priority. */

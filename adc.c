@@ -18,45 +18,31 @@
  * @see `CMR/adc.h` for various initialization values.
  */
 static cmr_adcChannel_t adcChannels[ADC_LEN] = {
-    [ADC_VSENSE] = {
-        .channel = ADC_CHANNEL_2,
-        .port = GPIOA,
-        .pin = GPIO_PIN_0,
-        .samplingTime = ADC_SAMPLETIME_15CYCLES,
-        .value = 0
-    },
-    [ADC_ISENSE] = {
-        .channel = ADC_CHANNEL_3,
-        .port = GPIOA,
-        .pin = GPIO_PIN_1,
-        .samplingTime = ADC_SAMPLETIME_15CYCLES,
-        .value = 0
-    },
     [ADC_TPOS_L] = {
         .channel = ADC_CHANNEL_1,
         .port = GPIOA,
-        .pin = GPIO_PIN_2,
+        .pin = GPIO_PIN_1,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_TPOS_R] = {
         .channel = ADC_CHANNEL_0,
         .port = GPIOA,
-        .pin = GPIO_PIN_3,
+        .pin = GPIO_PIN_0,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_BPRES] = {
-        .channel = ADC_CHANNEL_4,
+        .channel = ADC_CHANNEL_3,
         .port = GPIOA,
-        .pin = GPIO_PIN_4,
+        .pin = GPIO_PIN_3,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_SWANGLE] = {
-        .channel = ADC_CHANNEL_5,
+        .channel = ADC_CHANNEL_2,
         .port = GPIOA,
-        .pin = GPIO_PIN_5,
+        .pin = GPIO_PIN_2,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     }
