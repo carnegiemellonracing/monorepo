@@ -51,7 +51,7 @@ const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
 };
 
 /** @brief forward declaration */
-static cmr_sensor_t sensors[];
+static cmr_sensor_t sensors[SENSOR_CH_LEN];
 
 /** @brief The list of sensors sampled by the driver. */
 cmr_sensorList_t sensorList;
@@ -178,7 +178,7 @@ static int32_t adcToBusVoltage_mV(const cmr_sensor_t *sensor, uint32_t reading) 
     (void) sensor;  // Placate compiler.
 
     // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
-    float temp = (reading * 8 * 11 / 10) *1.05;
+    float temp = (reading * 8 * 11 / 10) *1.05f;
     uint32_t busVoltage_mV = (uint32_t) temp;
 
     return (int32_t) busVoltage_mV;

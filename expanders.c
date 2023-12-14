@@ -134,7 +134,7 @@ static int updateExpanderDataMain() {
 }
 
 // delay has to constant expression
-static void inline __attribute__((always_inline)) delayus(unsigned delay) {
+static inline void  __attribute__((always_inline)) delayus(unsigned delay) {
     uint32_t ticks = SYSTICKPERUS * delay;
     uint32_t start_tick = SysTick->VAL;
 

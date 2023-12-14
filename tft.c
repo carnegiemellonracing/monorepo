@@ -510,7 +510,7 @@ static void drawRTDScreen(void) {
     /* Memorator present? */
     // Wait to update if hasn't seen in 2 sec (2000 ms)
     memorator_status_t memoratorStatus = MEMORATOR_NOT_CONNECTED;
-    volatile cmr_canHeartbeat_t *cdcHeartbeat = metaCDCHeartbeat->payload;
+    volatile cmr_canHeartbeat_t *cdcHeartbeat = (cmr_canHeartbeat_t*) metaCDCHeartbeat->payload;
     if ((*(uint16_t*)(cdcHeartbeat->warning) & CMR_CAN_WARN_CDC_MEMORATOR_DAQ_TIMEOUT) != 0) {
         memoratorStatus = MEMORATOR_NOT_CONNECTED;
     }

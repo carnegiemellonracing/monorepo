@@ -73,11 +73,13 @@ static uint32_t tftDL_configData[] = {
 const tftDL_t tftDL_config = {
     .len = sizeof(tftDL_configData),
     .data = tftDL_configData,
-
     .contentLen = 0,
     .content = NULL};
 
-/** @brief RTD Screen */
+/** @brief RTD Screen
+ *
+ *  #include is effectiveley copy and paste. Creates a well formed array of uint32_t
+*/
 static uint32_t tftDL_RTDData[] = {
 #include <DIM-ESE/RTD.rawh>
 };
@@ -157,7 +159,7 @@ static const tftDL_horiz_bar_t hvHorizSoc_bar = {
  * @param bar The bar to update.
  * @param val The logical value to draw.
  */
-static void tftDL_barSetY(const tftDL_vert_bar_t *bar, int32_t val) {
+static void tftDL_barSetY(const tftDL_vert_bar_t *bar, uint32_t val) {
     uint32_t y;
     if (val < bar->minVal) {
         y = bar->botY;
@@ -184,7 +186,7 @@ static void tftDL_barSetY(const tftDL_vert_bar_t *bar, int32_t val) {
  * @param bar The bar to update.
  * @param val The logical value to draw.
  */
-static void tftDL_barSetX(const tftDL_horiz_bar_t *bar, int32_t val) {
+static void tftDL_barSetX(const tftDL_horiz_bar_t *bar, uint32_t val) {
     uint32_t x;
     if (val < bar->minVal) {
         x = bar->leftX;
@@ -433,7 +435,7 @@ void tftDL_RTDUpdate(
     tftDL_RTDwriteInt(tftDL_RTDData, ESE_GLV_SOC_VAL, 3, "%2ld", (int32_t)glvSoC);
 
     // Doing this jank buffer because snprintf doesnt work for floats on embedded
-#define ODOMETER_STR_SIZE 8
+    #define ODOMETER_STR_SIZE 8
     char odometer_str[ODOMETER_STR_SIZE] = {
         ((char)((((int32_t)odometer_km) % 10000) / 1000)) + '0',
         ((char)((((int32_t)odometer_km) % 1000) / 100)) + '0',
@@ -445,8 +447,8 @@ void tftDL_RTDUpdate(
         '\0'};
     memcpy((void *)(tftDL_RTDData + ESE_ODO_VAL), (void *)odometer_str, ODOMETER_STR_SIZE);
 
-    tftDL_barSetY(&hvSoc_bar, (uint32_t)hvSoC);
-    tftDL_barSetY(&glvSoc_bar, (uint32_t)glvSoC);
+    tftDL_barSetY(&hvSoc_bar,hvSoC);
+    tftDL_barSetY(&glvSoc_bar,glvSoC);
     /* Memorator color */
     uint32_t *memorator_color = (void *)(tftDL_RTDData + ESE_MEMO_TEXT_COLOR);
     uint32_t memorator_color_cmd;
@@ -520,7 +522,7 @@ void tftDL_racingScreenUpdate(
     tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_MOTOR_TEMP_STR, 4, "%3ld", motorTemp_C);
     tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_AC_TEMP_STR, 4, "%3ld", acTemp_C);
     tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_MC_TEMP_STR, 4, "%3ld", mcTemp_C);
-    tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_HV_SOC_VAL, 3, "%2ld", (int32_t)hvSoC);
+    tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_HV_SOC_VAL, 3, "%2ld", (uint32_t)hvSoC);
 
     // set HV SoC bar
     tftDL_barSetX(&hvHorizSoc_bar, (uint32_t)hvSoC);
@@ -557,7 +559,7 @@ static void tftDL_ERRwriteInt(uint32_t location, uint32_t length, char *formatSt
     snprintf(print_location, length, formatString, number);
 }
 
-static void tftDL_showBMBStatus(cmr_canHVCBMBErrors_t *BMBerr) {
+static void tftDL_showBMBStatus(volatile cmr_canHVCBMBErrors_t *BMBerr) {
     tftDL_ERRwriteInt(ESE_BMB_0_NUM_STR, 3, "%02X", BMBerr->BMB1_2_Errs);
     tftDL_ERRwriteInt(ESE_BMB_1_NUM_STR, 3, "%02X", BMBerr->BMB3_4_Errs);
     tftDL_ERRwriteInt(ESE_BMB_2_NUM_STR, 3, "%02X", BMBerr->BMB5_6_Errs);
@@ -610,7 +612,7 @@ static void tftDL_showAMKError(uint32_t strlocation, uint32_t colorLocation, uin
  */
 void tftDL_errorUpdate(
     tft_errors_t *err,
-    cmr_canHVCBMBErrors_t *BMBerr) {
+    volatile cmr_canHVCBMBErrors_t *BMBerr) {
     static struct {
         char buf[4];
     } *const glvVoltage_V_str = (void *)(tftDL_errorData + ESE_ERR_GLV_STR);
