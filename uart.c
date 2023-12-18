@@ -411,8 +411,8 @@ void uartInit(void)
 
     cmr_uartInit(
         &uart.port, USART2, &uartInit,
-        GPIOA, GPIO_PIN_3,           /* rx */
-        GPIOA, GPIO_PIN_2,           /* tx */
+        GPIOA, GPIO_PIN_10,           /* rx */
+        GPIOA, GPIO_PIN_9,           /* tx */
         DMA1_Stream5, DMA_CHANNEL_4, /* See reference manual */
         DMA1_Stream6, DMA_CHANNEL_4);
 

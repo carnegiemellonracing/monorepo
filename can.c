@@ -72,6 +72,9 @@ static cmr_can_t can[CMR_CAN_BUS_NUM];
 static void canRX(
     cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t dataLen
 ) {
+	if(canID == CMR_CANID_AMK_1_SETPOINTS) {
+		int x = 0;
+	}
     size_t iface_idx = (canb_rx - can);
     configASSERT(iface_idx < CMR_CAN_BUS_NUM);
     int ret = parseData((uint32_t) iface_idx, canID, data, dataLen);
@@ -102,6 +105,15 @@ void canInit(void) {
         GPIOB, GPIO_PIN_12,    // CAN2 RX port/pin.
         GPIOB, GPIO_PIN_13     // CAN2 TX port/pin.
     );
+    // Trac-CAN (CAN1) initialization.
+	cmr_canInit(
+		&can[CMR_CAN_BUS_TRAC], CAN1,
+		CMR_CAN_BITRATE_500K,
+		NULL, 0,
+		canRX,
+		GPIOB, GPIO_PIN_8,    // CAN1 RX port/pin.
+		GPIOB, GPIO_PIN_9     // CAN1 TX port/pin.
+	);
 
     // filters.
     const cmr_canFilter_t canFilters[] = {
@@ -133,6 +145,9 @@ void canInit(void) {
     cmr_canFilter(
         &can[CMR_CAN_BUS_DAQ], canFilters, sizeof(canFilters) / sizeof(canFilters[0])
     );
+    cmr_canFilter(
+		&can[CMR_CAN_BUS_TRAC], canFilters, sizeof(canFilters) / sizeof(canFilters[0])
+	);
 }
 
 /**
