@@ -22,8 +22,9 @@ typedef enum {
     CMR_CAN_RTD,            /**< @brief Ready to drive. */
     CMR_CAN_ERROR,          /**< @brief Error has occurred. */
     CMR_CAN_CLEAR_ERROR,     /**< @brief Request to clear error. */
-    CMR_CAN_AUTONOMOUS_EN,   /**< @brief Autonomous System ready. */
-    CMR_CAN_AUTONOMOUS_RTD   /**< @brief Autonomous System Ready to Drive. */
+    CMR_CAN_AS_READY,   /**< @brief Autonomous System ready. */
+    CMR_CAN_AS_DRIVING,   /**< @brief Autonomous System Driving. */
+	CMR_CAN_AS_FINISHED   /**< @brief Autonomous System Finished. */
 } cmr_canState_t;
 
 /** @brief Fan states. */
@@ -211,8 +212,9 @@ typedef enum {
     CMR_CAN_VSM_STATE_INVERTER_EN,      /**< #brief Enable inverter logic power. */
     CMR_CAN_VSM_STATE_HV_EN,            /**< @brief Enable high voltage system. */
     CMR_CAN_VSM_STATE_RTD,              /**< @brief Ready to drive. */
-    CMR_CAN_VSM_STATE_AUTONOMOUS_EN,    /**< @brief Autonomous System ready. */
-    CMR_CAN_VSM_STATE_AUTONOMOUS_RTD,   /**< @brief Autonomous System Ready to Drive. */
+    CMR_CAN_VSM_STATE_AS_READY,   		/**< @brief Autonomous System ready. */
+    CMR_CAN_VSM_STATE_AS_DRIVING,   	/**< @brief Autonomous System Driving. */
+	CMR_CAN_VSM_STATE_AS_FINISHED,   	/**< @brief Autonomous System Finished. */
     CMR_CAN_VSM_STATE_COOLING_OFF,      /**< @brief Disable powertrain cooling system. */
     CMR_CAN_VSM_STATE_DCDC_OFF,         /**< @brief Disable DCDC converters. */
     CMR_CAN_VSM_STATE_LEN               /**< @brief Number of VSM states. */
