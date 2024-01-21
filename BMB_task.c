@@ -41,14 +41,19 @@ void vBMBSampleTask(void *pvParameters) {
 		}
 		for(uint8_t j = 0; j < 4; j++) {
 			setMuxOutput(j);
-			pollAllVoltageData();
+			xLastWakeTime = xTaskGetTickCount();
+			vTaskDelayUntil(&xLastWakeTime, 10);
+			uint8_t err = pollAllVoltageData();
+			xLastWakeTime = xTaskGetTickCount();
+			vTaskDelayUntil(&xLastWakeTime, 10);
 			pollAllTemperatureData(j);
+			xLastWakeTime = xTaskGetTickCount();
+			vTaskDelayUntil(&xLastWakeTime, 10);
+			writeLED(ledToggle);
+			ledToggle = !ledToggle;
 			xLastWakeTime = xTaskGetTickCount();
 			vTaskDelayUntil(&xLastWakeTime, 100);
 		}
-
-		writeLED(ledToggle);
-		ledToggle = !ledToggle;
 	}
 }
 

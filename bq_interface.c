@@ -238,34 +238,34 @@ bool autoAddr() {
 		}
 		HAL_Delay(10);
 	}
-	uart_response_t response;
-	uart_command_t readReg = {
-		.readWrite = SINGLE_READ,
-		.dataLen = 1,
-		.deviceAddress = 0x00,
-		.registerAddress = 0x306,
-		.data = {0x00},
-		.crc = {0x00, 0x00}
-	};
-	uart_sendCommand(&readReg);
-
-	if(uart_receiveResponse(&response) == UART_FAILURE) {
-		return false;
-	}
-
-	readReg.deviceAddress = 0x01;
-	uart_sendCommand(&readReg);
-
-	if(uart_receiveResponse(&response) == UART_FAILURE) {
-		return false;
-	}
-
-	readReg.deviceAddress = 0x02;
-	uart_sendCommand(&readReg);
-
-	if(uart_receiveResponse(&response) == UART_FAILURE) {
-		return false;
-	}
+//	uart_response_t response;
+//	uart_command_t readReg = {
+//		.readWrite = SINGLE_READ,
+//		.dataLen = 1,
+//		.deviceAddress = 0x00,
+//		.registerAddress = 0x306,
+//		.data = {0x00},
+//		.crc = {0x00, 0x00}
+//	};
+//	uart_sendCommand(&readReg);
+//
+//	if(uart_receiveResponse(&response) == UART_FAILURE) {
+//		return false;
+//	}
+//
+//	readReg.deviceAddress = 0x01;
+//	uart_sendCommand(&readReg);
+//
+//	if(uart_receiveResponse(&response) == UART_FAILURE) {
+//		return false;
+//	}
+//
+//	readReg.deviceAddress = 0x02;
+//	uart_sendCommand(&readReg);
+//
+//	if(uart_receiveResponse(&response) == UART_FAILURE) {
+//		return false;
+//	}
 
 	return true;
 
@@ -372,12 +372,24 @@ void enableTimeout() {
 
 void BMBInit() {
 	turnOn();
-	HAL_Delay(100);
+	HAL_Delay(1000);
 	autoAddr();
+	HAL_Delay(100);
 	enableNumCells();
+	HAL_Delay(100);
 	enableGPIOPins();
+	HAL_Delay(100);
 	enableMainADC();
+	HAL_Delay(100);
 	//enableTimeout();
+	disableTimeout();
+	HAL_Delay(100);
+	txToRxDelay();
+	HAL_Delay(100);
+	byteDelay(0x3F);
+	HAL_Delay(100);
+
+	HAL_Delay(100);
 	//cellBalancingSetup();
 }
 
@@ -390,7 +402,7 @@ static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
 }
 
 //return voltage data
-void pollAllVoltageData() {
+uint8_t pollAllVoltageData() {
 	uart_command_t read_voltage = {
 			.readWrite = STACK_READ,
 			.dataLen = 1,
@@ -400,20 +412,33 @@ void pollAllVoltageData() {
 			.crc = {0xFF, 0xFF}
 		};
 
+		uart_response_t response[BOARD_NUM-1] = {0};
 
-		uart_sendCommand(&read_voltage);
 		//TODO add tx error handler
 
 		//loop through boards and parse all response frames
-		uart_response_t response[BOARD_NUM];
 
+//		for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
+//			if(response[i].registerAddress != 1388) {
+//				return;
+//			}
+//		}
+		int x= 0;
+		taskENTER_CRITICAL();
+		uart_sendCommand(&read_voltage);
 		//loop through each BMB and channel
-		for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
-			if(uart_receiveResponse(&response[i]) == UART_FAILURE) {
-				setBMBErr(i, BMB_VOLTAGE_READ_ERROR);
-				BMBTimeoutCount[i]+=1;
+		//taskENTER_CRITICAL();
+		for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
+
+			uint8_t status = uart_receiveResponse(&response[i-1], 27);
+			if(status != 0) {
+				setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
+				BMBTimeoutCount[i-1]+=1;
+				taskEXIT_CRITICAL();
+				return i;
 			}
 		}
+		taskEXIT_CRITICAL();
 
 		for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
 			for(uint8_t j = 0; j < VSENSE_CHANNELS; j++) {
@@ -423,7 +448,7 @@ void pollAllVoltageData() {
 			}
 		}
 
-		return;
+		return 0;
 }
 
 bool setMuxOutput(uint8_t channel) {
@@ -473,17 +498,22 @@ void pollAllTemperatureData(int channel) {
 		.crc = {0xFF, 0xFF}
 	};
 
+	taskENTER_CRITICAL();
 	uart_sendCommand(&read_therms);
 
 	uart_response_t response[BOARD_NUM-1] = {0};
 
-	for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
-		if(uart_receiveResponse(&response[i]) == UART_FAILURE) {
+
+
+	for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
+		if(uart_receiveResponse(&response[i-1], 7) != UART_FAILURE) {
 				//loop through each GPIO channel
-			setBMBErr(i, BMB_TEMP_READ_ERROR);
-			BMBTimeoutCount[i]+=1;
+			setBMBErr(i-1, BMB_TEMP_READ_ERROR);
+			BMBTimeoutCount[i-1]+=1;
+			return;
 		}
 	}
+	taskEXIT_CRITICAL();
 
 
 	for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
@@ -587,6 +617,65 @@ void writeLED(bool set) {
 	uart_sendCommand(&write_led);
 }
 
+void disableTimeout() {
+	uart_command_t disable_timeout = {
+			.readWrite = SINGLE_WRITE,
+			.dataLen = 1,
+			.deviceAddress = 0x00,
+			.registerAddress = 0x2005,
+			.data = 0x00,
+			.crc = {0x00, 0x00}
+	};
+	uart_sendCommand(&disable_timeout);
+}
+
+void byteDelay(uint8_t delay) {
+	if (delay > 0x3F) return;
+
+	uart_command_t byte_delay = {
+			.readWrite = STACK_WRITE,
+			.dataLen = 1,
+			.deviceAddress = 0xFF,
+			.registerAddress = 0x29,
+			.data = delay,
+			.crc = {0x00, 0x00}
+	};
+	uart_sendCommand(&byte_delay);
+}
+
+void txToRxDelay(uint8_t delay) {
+	uart_command_t tx_to_rx_delay = {
+			.readWrite = SINGLE_WRITE,
+			.dataLen = 1,
+			.deviceAddress = 0x00,
+			.registerAddress = 0x2003,
+			.data = delay,
+			.crc = {0x00, 0x00}
+	};
+	uart_sendCommand(&tx_to_rx_delay);
+}
+
+void twoStop() {
+	uart_command_t two_stop_single = {
+			.readWrite = SINGLE_WRITE,
+			.dataLen = 1,
+			.deviceAddress = 0x00,
+			.registerAddress = 0x2001,
+			.data = 0b00111000,
+			.crc = {0x00, 0x00}
+	};
+	uart_sendCommand(&two_stop_single);
+
+	uart_command_t two_stop_stack = {
+			.readWrite = STACK_WRITE,
+			.dataLen = 1,
+			.deviceAddress = 0xFF,
+			.registerAddress = 0x02,
+			.data = 0b00111010,
+			.crc = {0x00, 0x00}
+	};
+	uart_sendCommand(&two_stop_stack);
+}
 
 
 

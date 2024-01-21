@@ -321,7 +321,7 @@
 #define DEBUG_OTP_SEC_BLK		0x7A0
 #define DEBUG_OTP_DED_BLK		0x7A1
 
-#define BOARD_NUM 3
+#define BOARD_NUM 11
 #define VSENSE_CHANNELS 14
 #define TEMP_CHANNELS 14
 
@@ -347,7 +347,7 @@ void enableTimeout();
 bool setMuxOutput(uint8_t channel);
 
 void BMBInit();
-void pollAllVoltageData();
+uint8_t pollAllVoltageData();
 void pollAllTemperatureData();
 
 void cellBalancingSetup();
