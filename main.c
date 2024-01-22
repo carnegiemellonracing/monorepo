@@ -95,9 +95,9 @@ int main(void) {
 
     // Peripheral configuration.
     gpioInit();
-    adcInit();
-    canInit();
-    sensorsInit();
+//    adcInit();
+//    canInit();
+//    sensorsInit();
 
     cmr_taskInit(
         &statusLED_task,
@@ -107,10 +107,10 @@ int main(void) {
         NULL
     );
 
-    mcPowerInit();
-    brakelightInit();
-    pumpInit();
-    fanInit();
+//    mcPowerInit();
+//    brakelightInit();
+//    pumpInit();
+//    fanInit();
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

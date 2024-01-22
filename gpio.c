@@ -67,7 +67,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         }
     },
 
-    [GPIO_MTR_CTRL_ENABLE] = { 
+    [GPIO_MTR_CTRL_ENABLE] = {
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_10,
