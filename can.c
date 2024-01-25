@@ -15,6 +15,7 @@
 #include <math.h>       // powf()
 
 #include <CMR/tasks.h>  // Task interface
+#include <CMR/panic.h>  // Panic interface
 
 #include "can.h"    // Interface to implement
 #include "adc.h"    // adcVSense, adcISense
@@ -171,17 +172,17 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 4000,
 		.timeoutWarn_ms = 2000
     },
-    [CANRX_CDC_ODOMETER] {
+    [CANRX_CDC_ODOMETER] = {
         .canID = CMR_CANID_CDC_ODOMETER,
         .timeoutError_ms = 4000,
 		.timeoutWarn_ms = 2000
     },
-    [CANRX_CDC_CONTROLS_STATUS] {
+    [CANRX_CDC_CONTROLS_STATUS] = {
         .canID = CMR_CANID_CDC_CONTROLS_STATUS,
         .timeoutError_ms = 4000,
 		.timeoutWarn_ms = 2000
     },
-    [CANRX_CDC_HEARTBEAT] {
+    [CANRX_CDC_HEARTBEAT] = {
         .canID = CMR_CANID_HEARTBEAT_CDC,
         .timeoutError_ms = 4000,
 		.timeoutWarn_ms = 2000
@@ -440,8 +441,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
 
     if (packet_number >= num_config_packets){
         // time to shit yo pants bc some wack shit has happened.
-        // TODO: Add throwing an error here
-        while(1);
+        cmr_panic("Number of Packets >= Number of Configured Packets");
     }
 
     /**** Cold Boot, await default parameters-- blindly read data if it's the first driver and set that to done ****/
@@ -743,7 +743,7 @@ int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
  * @return HV voltage.
  */
 float canEmdHvVoltage(cmr_canEMDMeasurements_t emd_vals) {
-    static const float div = powf(2.0f, 16.0f);
+    static const float div = 65536.0f;
 
     int32_t converted = (int32_t) __builtin_bswap32((uint32_t) emd_vals.voltage);
     return ((float) converted) / div;
@@ -755,7 +755,7 @@ float canEmdHvVoltage(cmr_canEMDMeasurements_t emd_vals) {
  * @return HV current.
  */
 float canEmdHvCurrent(cmr_canEMDMeasurements_t emd_vals) {
-    static const float div = powf(2.0f, 16.0f);
+    static const float div = 65536.0f;
 
     int32_t converted = (int32_t) __builtin_bswap32((uint32_t) emd_vals.current);
     return ((float) converted) / div;

@@ -84,7 +84,6 @@ int ADS7038_adcManualRead(uint16_t *ppos) {
     // Receive first channel data
     if (cmr_spiTXRX(&ADS7038Spi, dummy, data, SPI_MSG_LEN) == 0) {
         uint16_t adcValue0 = (data[0] << 4) | (data[1] >> 4);
-        uint8_t readChannel0 = data[1] & 0xF;
         ppos[0] = adcValue0;
     } else {
         return -1;
@@ -93,7 +92,6 @@ int ADS7038_adcManualRead(uint16_t *ppos) {
     // Receive second channel data
     if (cmr_spiTXRX(&ADS7038Spi, dummy, data, SPI_MSG_LEN) == 0) {
         uint16_t adcValue1 = (data[0] << 4) | (data[1] >> 4);
-        uint8_t readChannel1 = data[1] & 0xF;
         ppos[1] = adcValue1;
     } else {
         return -1;
@@ -117,6 +115,9 @@ bool ADS7038Init() {
 }
 
 static void compareReadAndWrite(int command,uint8_t* data){
+    if(data == NULL){
+        cmr_panic("Data is NULL!");
+    }
     if(command != data[0]){
         cmr_panic("Data in register does not match command!");
     }

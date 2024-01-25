@@ -385,7 +385,7 @@ bool slowEnough(void) {
      *      = x * 0.0535                                   */
     uint16_t vehicleSpeed = avgWheelRPM * 0.0535;
 
-    return abs(vehicleSpeed) < cutoff;
+    return vehicleSpeed < cutoff;
 }
 
 /**
@@ -586,25 +586,25 @@ typedef struct {
  * Must be sorted in descending order
  */
 static voltage_SoC_t LV_LiFePo_SoC_lookup[LV_LIFEPO_LUT_NUM_ITEMS] = {
-    {27.2, 100},
-    {26.8, 90},
-    {26.6, 80},
-    {26.1, 70},
-    {26.4, 60},
-    {26.1, 50},
-    {26.0, 40},
-    {25.8, 30},
-    {25.6, 20},
-    {24.0, 10},
-    {20.0, 0}};
+    {27.2f, 100},
+    {26.8f, 90},
+    {26.6f, 80},
+    {26.1f, 70},
+    {26.4f, 60},
+    {26.1f, 50},
+    {26.0f, 40},
+    {25.8f, 30},
+    {25.6f, 20},
+    {24.0f, 10},
+    {20.0f, 0}};
 
 static voltage_SoC_t LV_LiPo_SoC_lookup[LV_LIPO_LUT_NUM_ITEMS] = {
-    {25.2, 100},
-    {24.5, 90},
-    {23, 80},
-    {21, 20},
-    {20.0, 10},
-    {18.0, 0}};
+    {25.2f, 100},
+    {24.5f, 90},
+    {23.0f, 80},
+    {21.0f, 20},
+    {20.0f, 10},
+    {18.0f, 0}};
 
 /**
  * @brief Function for getting Low Voltage SoC

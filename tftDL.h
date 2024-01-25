@@ -48,7 +48,7 @@ extern volatile bool redraw_new_driver_profiles;
 #define STATEDISPLAYLEN 13
 #define DRSDISPLAYLEN 7
 
-// Indices for accessing RAM Buffer + their lengths 
+// Indices for accessing RAM Buffer + their lengths
 #define PREV_TIME_INDEX 0
 #define TARGET_TIME_INDEX 8
 #define TIMEDISPLAYLEN 8
@@ -91,7 +91,7 @@ void tftDL_racingScreenUpdate(
 
 void tftDL_errorUpdate(
     tft_errors_t *err,
-    cmr_canHVCBMBErrors_t *BMBerr
+    volatile cmr_canHVCBMBErrors_t *BMBerr
 );
 
 void tftDL_configUpdate();
