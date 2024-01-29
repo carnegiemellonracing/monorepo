@@ -86,7 +86,8 @@ void adcInit(void) {
     // XXX edit me to match your pin configuration
     cmr_adcInit(
         &adc, ADC1,
-        adcChannels, sizeof(adcChannels) / sizeof(adcChannels[0])
+        adcChannels, sizeof(adcChannels) / sizeof(adcChannels[0]),
+		100
     );
 }
 

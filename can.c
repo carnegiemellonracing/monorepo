@@ -18,6 +18,7 @@
 #include "can.h"        // Interface to implement
 #include "sensors.h"    // Sensors interface.
 #include "adc.h"
+#include "gitcommit.h"
 
 /**
  * @brief CAN periodic message receive metadata
@@ -101,10 +102,17 @@ static const uint32_t canTX100Hz_priority = 5;
 /** @brief CAN 100 Hz TX period (milliseconds). */
 static const TickType_t canTX100Hz_period_ms = 10;
 
+/** @brief CAN 1 Hz TX priority. */
+static const uint32_t canTX1Hz_priority = 7;
+/** @brief CAN 1 Hz TX period (milliseconds). */
+static const TickType_t canTX1Hz_period_ms = 1000;
+
 /** @brief CAN 10 Hz TX task. */
 static cmr_task_t canTX10Hz_task;
 /** @brief CAN 100 Hz TX task. */
 static cmr_task_t canTX100Hz_task;
+/** @brief CAN 1 Hz TX task. */
+static cmr_task_t canTX1Hz_task;
 
 /** @brief Primary CAN interface. */
 static cmr_can_t can;
@@ -114,6 +122,25 @@ static void sendPowerDiagnostics(void);
 static void sendDriverStatus(void);
 static void sendHeartbeat(TickType_t lastWakeTime);
 static void sendTherms(void);
+static void sendGitCommit(void);
+
+/**
+ * @brief Task for sending CAN messages at 1 Hz.
+ *
+ * @param pvParameters Ignored.
+ *
+ * @return Does not return.
+ */
+static void canTX1Hz(void *pvParameters) {
+    (void) pvParameters;    // Placate compiler.
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
+        sendGitCommit();
+
+        vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
+    }
+}
 
 /**
  * @brief Task for sending CAN messages at 10 Hz.
@@ -212,6 +239,13 @@ void canInit(void) {
         canTX10Hz,
         NULL
     );
+    cmr_taskInit(
+		&canTX1Hz_task,
+		"CAN TX 1Hz",
+		canTX1Hz_priority,
+		canTX1Hz,
+		NULL
+	);
     cmr_taskInit(
         &canTX100Hz_task,
         "CAN TX 100Hz",
@@ -337,5 +371,12 @@ static void sendTherms(void) {
 	pumpB.temp2_dC = adcRead(ADC_BOARD_THERM_6);
 	canTX(CMR_CANID_PTC_LOOP_TEMPS_A, &pumpA, sizeof(pumpA), canTX10Hz_period_ms);
 	canTX(CMR_CANID_PTC_LOOP_TEMPS_B, &pumpB, sizeof(pumpB), canTX10Hz_period_ms);
+}
+
+static void sendGitCommit(void) {
+	cmr_canGitFlashStatus flash;
+	flash.commitHash = GIT_INFO;
+	flash.dirtyFlash = IS_UNCOMMITTED;
+	canTX(CMR_CANID_PTC_GIT, &flash, sizeof(flash), canTX1Hz_period_ms);
 }
 

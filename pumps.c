@@ -120,6 +120,8 @@ static void pumpControl(void *pvParameters) {
                     pump_2_State = PUMP_INVERTER_STATE_HIGH;
                 else {
                     pump_2_State = ((PUMP_INVERTER_STATE_HIGH - PUMP_INVERTER_STATE_LOW) * (inverter_temp - PUMP_INVERTER_TEMP_LOW_dC) / (PUMP_INVERTER_TEMP_HIGH_dC - PUMP_INVERTER_TEMP_LOW_dC)) + PUMP_INVERTER_STATE_LOW;
+
+
                 }
                 pump_2_State = (pump_2_State < 100) ? pump_2_State : 100;
 
@@ -139,8 +141,8 @@ static void pumpControl(void *pvParameters) {
                 pump_2_State = 0;
                 // duty cycle is inverted because of MOSFETS
                 // we want them to be off when without AC
-                cmr_pwmSetDutyCycle(&pump_1_PWM, 100-pump_1_State);
-                cmr_pwmSetDutyCycle(&pump_2_PWM, 100-pump_2_State);
+                cmr_pwmSetDutyCycle(&pump_1_PWM, 100);
+                cmr_pwmSetDutyCycle(&pump_2_PWM, 100);
                 cmr_gpioWrite(GPIO_PUMP_ON, 0);
                 break;
         }

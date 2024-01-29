@@ -5,33 +5,6 @@
  * @author Carnegie Mellon Racing
  */
 
-/**
- * @brief
- * ==========================================================
- *                      IMPORTANT NOTICE
- * ==========================================================
- *
- * This code is relevant to two different systems.
- *
- * There is a PTCf (fan control board) dedicated to driving
- * the fans on the vehicle.
- *
- * There is a PTCp (pump control board) dedicated to driving
- * the pumps on the vehicle.
- *
- * Selection of either PTCp or PTCf firmware occurs in the build
- * configuration selection dialogue.
- *
- * As such, it is important that you are aware of which
- * board you are working with when attempting to flash code.
- *
- * NEGLIGENCE COULD RESULT IN DAMAGE TO HARDWARE!
- *
- *
- * =========================================================
- *                         END NOTICE
- * =========================================================
- */
 
 #include <stm32f4xx_hal.h>  // HAL interface
 
@@ -97,7 +70,7 @@ int main(void) {
     gpioInit();
     adcInit();
     canInit();
-    //sensorsInit();
+    sensorsInit();
 
     cmr_taskInit(
         &statusLED_task,

@@ -91,7 +91,7 @@ static void fanControl(void *pvParameters) {
         .port = GPIOB,
         .pin = GPIO_PIN_4,
         .channel = TIM_CHANNEL_1,
-        .presc = 24,
+        .presc = 256,
         .period_ticks = 160,
         .timer = TIM3
     };
@@ -99,7 +99,7 @@ static void fanControl(void *pvParameters) {
         .port = GPIOB,
         .pin = GPIO_PIN_5,
         .channel = TIM_CHANNEL_2,
-        .presc = 24,
+        .presc = 256,
         .period_ticks = 160,
         .timer = TIM3
     };
@@ -174,8 +174,8 @@ static void fanControl(void *pvParameters) {
                 fan_2_State = 0;
                 // duty cycle is inverted because of MOSFETS
                 // should be off until RTD
-                cmr_pwmSetDutyCycle(&fan_1_PWM, 100-0);
-                cmr_pwmSetDutyCycle(&fan_2_PWM, 100-0);
+                cmr_pwmSetDutyCycle(&fan_1_PWM, 0);
+                cmr_pwmSetDutyCycle(&fan_2_PWM, 0);
                 cmr_gpioWrite(GPIO_FAN_ON, 0);
                 break;
         }
