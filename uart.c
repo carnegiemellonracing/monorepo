@@ -133,6 +133,11 @@ static void uartRX_Task(void *pvParameters)
 
     while (1)
     {
+        cmr_canHeartbeat_t heartbeat;
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_HEARTBEAT_DIM, (void *) &heartbeat, sizeof(cmr_canHeartbeat_t), portMAX_DELAY);
+        vTaskDelayUntil(&last_wake, boron_rx_period_ms);
+        continue;
+        
         // QUESTION why cant you do NUM_RX_BUFFERS
         for (size_t i = 0; i < sizeof(rx) / sizeof(rx[0]); i++)
         {
