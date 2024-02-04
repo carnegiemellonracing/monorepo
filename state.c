@@ -38,9 +38,9 @@ volatile int8_t config_move_request = 0;
 volatile bool in_config_screen = false;
 /** @brief declaration of what screen mode one is in */
 volatile bool in_racing_screen = false;
-/** @brief decleration of if the DIM is waiting for a new driver config */
+/** @brief declaration of if the DIM is waiting for a new driver config */
 volatile bool waiting_for_cdc_new_driver_config;
-/** @brief decleration of if the DIM is waiting for a new driver config */
+/** @brief declaration of if the DIM is waiting for a new driver config */
 volatile bool exit_config_request = false;
 /** @brief Checks to see if the screen has been setup before and if not will appropriately draw it */
 volatile bool dim_first_time_config_screen;
@@ -65,7 +65,11 @@ bool actionDownButtonPressed;
 bool actionLeftButtonPressed;
 /** @brief Right button value */
 bool actionRightButtonPressed;
-
+/** @brief rotatory values {ROT_2,ROT_1,ROT_0} */
+uint8_t rotaryPos;
+uint8_t switchValues;
+uint8_t prevRotary = 0;
+uint8_t prevSwitch = 0; 
 // Forward declarations
 void stateVSMUp(void);
 void stateVSMDown(void);
@@ -220,6 +224,25 @@ void rightButton(bool pressed) {
         config_move_request = 1;
     } else {
         // TODO: do stuff
+    }
+}
+
+void rotaries(bool select,uint8_t pos) {
+    if (select)
+    {
+        if (prevRotary == pos)
+        {
+            rotaryPos = pos;
+        }
+        prevRotary = pos;
+    }
+    else
+    {
+        if (prevSwitch == pos)
+        {
+            switchValues = pos;
+        }
+        prevSwitch = pos;
     }
 }
 
@@ -496,9 +519,7 @@ void stateDrsModeSwitch(expanderRotaryPosition_t position) {
     }
 }
 
-// void stateRotary2Switch(expanderRotaryPosition_t position) {
-//     // Not implemented
-// }
+
 
 /**
  * @brief Updates state request to be consistent with VSM state.

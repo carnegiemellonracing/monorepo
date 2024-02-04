@@ -183,7 +183,7 @@ static void buttonsInput(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     TickType_t currentTime;
-
+    bool select = 0;
     while (1) {
         /* if vsm has changed state unexpectedly we
          * need to adjust our req to still be valid */
@@ -207,16 +207,18 @@ static void buttonsInput(void *pvParameters) {
             }
         }
 
-        // TODO
-//        for (expanderRotary_t i = EXP_ROTARY_1; i < EXP_ROTARY_LEN; i++) {
-//            expanderRotaryPosition_t rotaryPos = expanderGetRotary(i);
-//            expanderRotaryEvent_t *currRotary =  &rotaries[i];
-//
-//            if (rotaryPos != currRotary->position) {
-//                (*(currRotary->setAction))(rotaryPos);
-//                currRotary->position = rotaryPos;
-//            }
-//        }
+            expanderRotaryPosition_t rotaryPos = expanderGetRotary(select);
+            rotaries(select,rotaryPos);
+            select = !select;
+            // expanderRotaryPosition_t switchValues = expanderGetRotary(0);
+            // rotaries(0,switchValues);
+        //    expanderRotaryEvent_t *currRotary =  &rotaries[i];
+        //    if (rotaryPos != currRotary->position) {
+        //        (*(currRotary->setActionFn))(rotaryPos);
+        //        currRotary->position = rotaryPos;
+        //    }
+    
+
 
         vTaskDelayUntil(&lastWakeTime, buttonsInput_period);
     }

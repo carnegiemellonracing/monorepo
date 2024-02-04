@@ -48,7 +48,7 @@ typedef struct {
 typedef void (*rotaryAction_f) (expanderRotaryPosition_t);
 typedef struct {
     expanderRotaryPosition_t position;
-    rotaryAction_f setAction;
+    rotaryAction_f setActionFn;
 } expanderRotaryEvent_t;
 
 /** @brief Current regen step */

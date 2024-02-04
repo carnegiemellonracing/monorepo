@@ -48,15 +48,15 @@ static expanderPinConfig_t buttons[EXP_BUTTON_LEN] = {
  * @brief Array of expander rotary pin configs
  *
  */
-static expanderPinConfig_t rotaries[EXP_ROTARY_LEN] = {
-    [EXP_ROTARY_0] = {
-        .expanderAddress = PCF8574_EXPANDER_ADDR,
-        .port = 0,
-        .pin = 2},
-    [EXP_ROTARY_1] = {.expanderAddress = PCF8574_EXPANDER_ADDR, .port = 0, .pin = 1
-
-    },
-    [EXP_ROTARY_2] = {.expanderAddress = PCF8574_EXPANDER_ADDR, .port = 0, .pin = 0}};
+//static expanderPinConfig_t rotaries[EXP_ROTARY_LEN] = {
+//    [EXP_ROTARY_0] = {
+//        .expanderAddress = PCF8574_EXPANDER_ADDR,
+//        .port = 0,
+//        .pin = 2},
+//    [EXP_ROTARY_1] = {.expanderAddress = PCF8574_EXPANDER_ADDR, .port = 0, .pin = 1
+//
+//    },
+//    [EXP_ROTARY_2] = {.expanderAddress = PCF8574_EXPANDER_ADDR, .port = 0, .pin = 0}};
 
 static expanderPinConfig_t EXP_ROTARY_SEL = {
     .expanderAddress = PCF8574_EXPANDER_ADDR,
@@ -213,20 +213,18 @@ bool expanderGetButtonPressed(expanderButton_t button) {
     return getPinValueFromConfig(buttonConfig);
 }
 
-// TODO change when one hot board is figured out
-// expanderRotaryPosition_t expanderGetRotary(expanderRotary_t rotary)
-//{
-//    expanderRotaryConfig_t rotaryConfig = rotaries[rotary];
-//
-//    for (size_t pos = ROTARY_POS_1; pos < ROTARY_POS_LEN; pos++)
-//    {
-//        if (getPinValueFromConfig(rotaryConfig.pins[pos]))
-//        {
-//            return pos;
-//        }
-//    }
-//    return ROTARY_POS_INVALID;
-//}
+expanderRotaryPosition_t expanderGetRotary(bool select)
+{
+    // expanderRotaryConfig_t rotaryConfig = rotaries[rotary];s
+    uint8_t pos = 0;
+    PCF8574_expanderWrite(I2C_ROTSEL,select);
+    PCF8574_expanderRead(&pos);
+    pos &= 0b111;
+    if (pos >= ROTARY_POS_LEN){
+        return ROTARY_POS_INVALID;
+    }
+    return pos;
+}
 // TODO: scale down to uint8_t and send over CAN
 uint32_t expanderGetClutch(expanderClutch_t clutch) {
     return daughterAnalogData[clutch];

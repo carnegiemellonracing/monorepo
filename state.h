@@ -48,7 +48,9 @@ extern bool actionDownButtonPressed;
 extern bool actionLeftButtonPressed;
 /** @brief Right button value */
 extern bool actionRightButtonPressed;
-
+/** @brief rotatory values {ROT_SEL,ROT_2,ROT_1,ROT_0} */
+extern uint8_t rotaryPos;
+extern uint8_t switchValues; 
 void actionZeroButton(bool pressed);
 void actionOneButton(bool pressed);
 void actionTwoButton(bool pressed);
@@ -58,6 +60,8 @@ void upButton(bool pressed);
 void downButton(bool pressed);
 void leftButton(bool pressed);
 void rightButton(bool pressed);
+
+void rotaries(bool select,uint8_t pos);
 
 void exitConfigScreen();
 

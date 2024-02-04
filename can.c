@@ -303,6 +303,8 @@ static void canTX100Hz(void *pvParameters) {
         /* Transmit action button status */
         cmr_canDIMActions_t actions = {
             .buttons = packed,
+            .rotaryPos = rotaryPos,
+            .switchValues = switchValues,
             .regenPercent = regenPercent,
             .paddleLeft = getPaddleState(EXP_CLUTCH_1),
             .paddleRight = getPaddleState(EXP_CLUTCH_2),
