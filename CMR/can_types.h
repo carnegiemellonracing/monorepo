@@ -575,6 +575,13 @@ typedef struct {
     int16_t verticalAccel_mps2;        /**< @brief Acceleration of the car in the down direction (m/s^2 * 100). */   
 } cmr_canCDCPoseAcceleration_t;
 
+typedef struct {
+	uint8_t frontLeftThrottle;
+	uint8_t frontRightThrottle;
+	uint8_t backLeftThrottle;
+	uint8_t backRightThrottle;
+}cmr_canCDCAIMMotorControl_t;
+
 // ------------------------------------------------------------------------------------------------
 // Driver Interface Module
 
