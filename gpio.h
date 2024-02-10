@@ -52,6 +52,6 @@ typedef struct {
 } expanderRotaryEvent_t;
 
 /** @brief Current regen step */
-extern unsigned int regenStep;
+extern uint32_t regenStep;
 
 #endif /* GPIO_H */

@@ -43,7 +43,7 @@ typedef struct {
     uint16_t amkFRErrorCode;    /**< @brief AMK FR Error Code */
     uint16_t amkBLErrorCode;    /**< @brief AMK BL Error Code */
     uint16_t amkBRErrorCode;    /**< @brief AMK BR Error Code */
-    unsigned int glvVoltage_V; /**< @brief GLV Voltage in Volts */
+    uint32_t glvVoltage_V; /**< @brief GLV Voltage in Volts */
 } tft_errors_t;
 
 typedef enum {

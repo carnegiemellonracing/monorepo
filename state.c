@@ -69,7 +69,7 @@ bool actionRightButtonPressed;
 uint8_t rotaryPos;
 uint8_t switchValues;
 uint8_t prevRotary = 0;
-uint8_t prevSwitch = 0; 
+uint8_t prevSwitch = 0;
 // Forward declarations
 void stateVSMUp(void);
 void stateVSMDown(void);
@@ -128,7 +128,7 @@ void actionTwoButton(bool pressed) {
         return;
     }
     in_racing_screen = !inRacingScreen();
-    // // only set can message to true if we're not in config screen
+    // only set can message to true if we're not in config screen
     // action2ButtonPressed = pressed;
 }
 
@@ -400,7 +400,7 @@ int32_t getAverageWheelRPM(void) {
 bool slowEnough(void) {
     int32_t avgWheelRPM = getAverageWheelRPM();
 
-    uint16_t cutoff = 3;  // mph
+    uint16_t cutoffMph = 3;
 
     /* Wheel Speed to Vehicle Speed Conversion
      *      (x rotations / 1min) * (18" * PI) * (1' / 12") *
@@ -408,7 +408,7 @@ bool slowEnough(void) {
      *      = x * 0.0535                                   */
     uint16_t vehicleSpeed = avgWheelRPM * 0.0535;
 
-    return vehicleSpeed < cutoff;
+    return vehicleSpeed < cutoffMph;
 }
 
 /**

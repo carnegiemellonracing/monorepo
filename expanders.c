@@ -15,7 +15,6 @@
 
 #include "ADS7038.h"           //SPI interface
 #include "PCF8574.h"           //I2c interface
-#include "expandersPrivate.h"  // Private interface
 
 #define SYSTICKCLOCK 96000000ULL
 #define SYSTICKPERUS (SYSTICKCLOCK / 1000000UL)
@@ -44,19 +43,6 @@ static expanderPinConfig_t buttons[EXP_BUTTON_LEN] = {
     [EXP_WHEEL_BUTTON_2] = {.expanderAddress = daughterDigitalAddress, .port = 0, .pin = 3},
     [EXP_WHEEL_BUTTON_3] = {.expanderAddress = daughterDigitalAddress, .port = 0, .pin = 4}};
 
-/**
- * @brief Array of expander rotary pin configs
- *
- */
-//static expanderPinConfig_t rotaries[EXP_ROTARY_LEN] = {
-//    [EXP_ROTARY_0] = {
-//        .expanderAddress = PCF8574_EXPANDER_ADDR,
-//        .port = 0,
-//        .pin = 2},
-//    [EXP_ROTARY_1] = {.expanderAddress = PCF8574_EXPANDER_ADDR, .port = 0, .pin = 1
-//
-//    },
-//    [EXP_ROTARY_2] = {.expanderAddress = PCF8574_EXPANDER_ADDR, .port = 0, .pin = 0}};
 
 static expanderPinConfig_t EXP_ROTARY_SEL = {
     .expanderAddress = PCF8574_EXPANDER_ADDR,
@@ -191,8 +177,9 @@ static bool getPinValueFromConfig(expanderPinConfig_t config) {
 
     } else if (addr == daughterDigitalAddress) {
         data = daughterDigitalData;
-    } else
+    } else {
         return false;
+    }
 
     // Mask out bit corresponding to pin
     configASSERT(data != NULL);
@@ -215,7 +202,6 @@ bool expanderGetButtonPressed(expanderButton_t button) {
 
 expanderRotaryPosition_t expanderGetRotary(bool select)
 {
-    // expanderRotaryConfig_t rotaryConfig = rotaries[rotary];s
     uint8_t pos = 0;
     PCF8574_expanderWrite(I2C_ROTSEL,select);
     PCF8574_expanderRead(&pos);

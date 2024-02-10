@@ -10,7 +10,6 @@
 #include <CMR/gpio.h>       // GPIO interface
 #include <CMR/panic.h>      // cmr_panic()
 #include <CMR/rcc.h>        // RCC interface
-#include <stm32f4xx_hal.h>  // HAL interface
 
 #include "adc.h"        // Board-specific ADC interface
 #include "can.h"        // Board-specific CAN interface

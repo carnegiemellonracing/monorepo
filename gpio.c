@@ -108,7 +108,7 @@ static const TickType_t buttonsInput_period = 10;
 static cmr_task_t buttonsInput_task;
 
 /** @brief Current regen step */
-unsigned int regenStep = 0;
+uint32_t regenStep = 0;
 
 #define BUTTON_DEBOUNCE_TIME 200
 
@@ -162,16 +162,6 @@ static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
         .debounce = BUTTON_DEBOUNCE_TIME,
     }
 };
-//static expanderRotaryEvent_t rotaries[EXP_ROTARY_LEN] = {
-//    [EXP_ROTARY_1] = {
-//        .position = ROTARY_POS_INVALID,
-//        .setAction = &stateGearSwitch
-//    },
-//    [EXP_ROTARY_2] = {
-//        .position = ROTARY_POS_INVALID,
-//        .setAction = &stateDrsModeSwitch
-//    }
-//};
 
 /**
  * @brief Handles button actions.
@@ -210,15 +200,6 @@ static void buttonsInput(void *pvParameters) {
             expanderRotaryPosition_t rotaryPos = expanderGetRotary(select);
             rotaries(select,rotaryPos);
             select = !select;
-            // expanderRotaryPosition_t switchValues = expanderGetRotary(0);
-            // rotaries(0,switchValues);
-        //    expanderRotaryEvent_t *currRotary =  &rotaries[i];
-        //    if (rotaryPos != currRotary->position) {
-        //        (*(currRotary->setActionFn))(rotaryPos);
-        //        currRotary->position = rotaryPos;
-        //    }
-    
-
 
         vTaskDelayUntil(&lastWakeTime, buttonsInput_period);
     }
