@@ -306,8 +306,8 @@ static void canTX100Hz(void *pvParameters) {
             .rotaryPos = rotaryPos,
             .switchValues = switchValues,
             .regenPercent = regenPercent,
-            .paddleLeft = getPaddleState(EXP_CLUTCH_1),
-            .paddleRight = getPaddleState(EXP_CLUTCH_2),
+            .paddleLeft = getPaddleState(EXP_CLUTCH_LEFT),
+            .paddleRight = getPaddleState(EXP_CLUTCH_RIGHT),
         };
         canTX(
             CMR_CANID_DIM_ACTIONS,

@@ -44,21 +44,18 @@ static expanderPinConfig_t buttons[EXP_BUTTON_LEN] = {
     [EXP_WHEEL_BUTTON_3] = {.expanderAddress = daughterDigitalAddress, .port = 0, .pin = 4}};
 
 
-static expanderPinConfig_t EXP_ROTARY_SEL = {
-    .expanderAddress = PCF8574_EXPANDER_ADDR,
-    .port = 0,
-    .pin = 3};
+
 
 /**
  * @brief Array of expander clutch pin configs
  *
  */
 static expanderPinConfig_t clutchPaddles[EXP_CLUTCH_LEN] = {
-    [EXP_CLUTCH_1] = {
+    [EXP_CLUTCH_LEFT] = {
         .expanderAddress = daughterAnalogAddress,
         .port = 0,
         .pin = 0},
-    [EXP_CLUTCH_2] = {.expanderAddress = daughterAnalogAddress, .port = 0, .pin = 1}};
+    [EXP_CLUTCH_RIGHT] = {.expanderAddress = daughterAnalogAddress, .port = 0, .pin = 1}};
 
 /** @brief Array of bytes containing data for the pins of each digital GPIO expander */
 // Number of elements in the array corresponds to number of ports for GPIO
@@ -102,21 +99,18 @@ static int updateExpanderDataDaughter() {
         daughterDigitalAddress,
         daughterDigitalData);
 
-    if (!checkStatus(status)) return status;
-
-    status |= getExpanderData(
-        daughterAnalogAddress,
-        daughterAnalogData);
-
+    if (checkStatus(status)) {
+        status |= getExpanderData(
+            daughterAnalogAddress,
+            daughterAnalogData);
+    }
     return status;
 }
 
 static int updateExpanderDataMain() {
-    int status = getExpanderData(
+    return getExpanderData(
         PCF8574_EXPANDER_ADDR,
         mainDigital1Data);
-
-    return status;
 }
 
 // delay has to constant expression

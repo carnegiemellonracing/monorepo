@@ -37,8 +37,8 @@ typedef enum {
 } expanderRotaryPosition_t;
 
 typedef enum {
-    EXP_CLUTCH_1 = 0,
-    EXP_CLUTCH_2,
+    EXP_CLUTCH_LEFT = 0,
+    EXP_CLUTCH_RIGHT,
     EXP_CLUTCH_LEN
 } expanderClutch_t;
 
@@ -47,6 +47,7 @@ typedef struct {
     uint8_t port;
     uint8_t pin;
 } expanderPinConfig_t;
+
 
 void expandersInit(void);
 bool expanderGetButtonPressed(expanderButton_t button);

@@ -435,6 +435,7 @@ void tftDL_RTDUpdate(
     tftDL_RTDwriteInt(tftDL_RTDData, ESE_GLV_SOC_VAL, 3, "%2ld", (int32_t)glvSoC);
 
     // Doing this jank buffer because snprintf doesnt work for floats on embedded
+    // TODO check if we can use "Use float with printf from newlib-nano) ???
     #define ODOMETER_STR_SIZE 8
     char odometer_str[ODOMETER_STR_SIZE] = {
         ((char)((((int32_t)odometer_km) % 10000) / 1000)) + '0',

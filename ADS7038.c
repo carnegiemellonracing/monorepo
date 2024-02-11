@@ -52,22 +52,6 @@ int ADS7038_write(uint8_t reg, uint8_t data) {
     return cmr_spiTXRX(&ADS7038Spi, command, NULL, SPI_MSG_LEN);
 }
 
-uint16_t ADS7038_manualRead() {
-    uint8_t channel = 0;
-    uint16_t adcValues[8];
-    while (1) {
-        uint8_t command[3] = {WR_REG, 0x11, channel};
-        uint8_t data[3];
-
-        cmr_spiTXRX(&ADS7038Spi, command, data, SPI_MSG_LEN);
-        uint16_t adcValue = (data[0] << 4) | (data[1] >> 4);
-        uint8_t readChannel = data[1] & 0xF;
-
-        adcValues[readChannel] = adcValue;
-
-        channel = (channel + 1) & 0b111;  //(channel + 1) % 8;
-    }
-}
 
 int ADS7038_adcManualRead(uint16_t *ppos) {
     uint8_t command0[3] = {WR_REG, CHANNEL_SEL_REG, PPOS_0_PORT};

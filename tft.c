@@ -11,7 +11,6 @@
 #include <math.h>           // sqrt
 
 #include "tft.h"            // Interface to implement
-#include "tftPrivate.h"     // Private interface
 #include "tftContent.h"     // Content interface
 #include "tftDL.h"          // Display list interface
 #include "gpio.h"           // Board-specific GPIO interface
