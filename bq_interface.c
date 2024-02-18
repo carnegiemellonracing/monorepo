@@ -381,8 +381,8 @@ void BMBInit() {
 	HAL_Delay(100);
 	enableMainADC();
 	HAL_Delay(100);
-	//enableTimeout();
-	disableTimeout();
+	enableTimeout();
+	//disableTimeout();
 	HAL_Delay(100);
 	txToRxDelay();
 	HAL_Delay(100);

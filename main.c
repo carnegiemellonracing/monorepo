@@ -94,12 +94,9 @@ int main(void) {
 
     // Peripheral configuration.
     gpioInit();
-
-//    adcInit();
-//    sensorsInit();
-
     BMBInit();
-
+    adcInit();
+    sensorsInit();
     canInit();
 
     //init fan task
@@ -113,8 +110,7 @@ int main(void) {
         statusLED,
         NULL
     );
-//
-    // BMB_task
+//BMB_task
     cmr_taskInit(
         &bmbSample_task,
         "BMB Sample Task",
