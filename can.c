@@ -204,7 +204,6 @@ static cmr_task_t canTX10Hz_task;
 // Forward declarations
 static void sendHeartbeat(TickType_t lastWakeTime);
 static void sendFSMData(void);
-static cmr_canWarn_t genSafetyCircuitMessage(void);
 static void sendFSMPedalsADC(void);
 static void sendFSMSensorsADC(void);
 static void sendPowerDiagnostics(void);
