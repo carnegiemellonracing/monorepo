@@ -291,31 +291,33 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
     uint32_t *state_color = (void *)(file_addr + state_col_addr);
 
     char stateChar[12];
+    // TODO make this name better i dont want it to be stateCharLen since it very similar to other var
+    size_t bufLen = sizeof(stateChars);
     if (stateVSM == stateVSMReq) {
         if (stateVSM < stateCharsLen) {
             if (centered) {
                 strcpy(stateChar, "    ");
-                strcat(stateChar, stateChars[stateVSM]);
-                strcat(stateChar, "    ");
+                strlcat(stateChar, stateChars[stateVSM],bufLen);
+                strlcat(stateChar, "    ",stateCharsLen);
             } else {
                 strcpy(stateChar, "        ");
-                strcat(stateChar, stateChars[stateVSM]);
+                strlcat(stateChar, stateChars[stateVSM],bufLen);
             }
         }
         *state_color = white;
     } else {
         if (stateVSM < stateCharsLen && stateVSMReq < stateCharsLen) {
             strcpy(stateChar, stateChars[stateVSM]);
-            strcat(stateChar, " -> ");
-            strcat(stateChar, stateChars[stateVSMReq]);
+            strlcat(stateChar, " -> ",bufLen);
+            strlcat(stateChar, stateChars[stateVSMReq],bufLen);
         } else if (stateVSM < stateCharsLen) {
             strcpy(stateChar, stateChars[stateVSM]);
-            strcat(stateChar, " -> ");
-            strcat(stateChar, stateChars[CMR_CAN_UNKNOWN]);
+            strlcat(stateChar, " -> ",stateCharsLen);
+            strlcat(stateChar, stateChars[CMR_CAN_UNKNOWN],bufLen);
         } else {
             strcpy(stateChar, stateChars[CMR_CAN_UNKNOWN]);
-            strcat(stateChar, " -> ");
-            strcat(stateChar, stateChars[stateVSMReq]);
+            strlcat(stateChar, " -> ",bufLen);
+            strlcat(stateChar, stateChars[stateVSMReq],bufLen);
         }
         *state_color = grey;
     }
@@ -620,7 +622,7 @@ void tftDL_errorUpdate(
 
     snprintf(
         glvVoltage_V_str->buf, sizeof(glvVoltage_V_str->buf),
-        "%2dV", err->glvVoltage_V);
+        "%2uV", err->glvVoltage_V);
 
     /* Timeouts */
     tftDL_showErrorState(ESE_PTC_COLOR, err->ptcTimeout);
@@ -694,16 +696,20 @@ void setConfigContextString(int8_t scroll_index) {
 uint8_t configValueIncrementer(uint8_t value, uint8_t value_min, uint8_t value_max, bool up_requested, bool down_requested) {
     uint8_t new_value = value;
     if (up_requested) {
-        if (value + 1 > value_max)
+        if (value + 1 > value_max){
             new_value = value_min;
-        else
+        }
+        else{
             new_value++;
+        }
     }
     if (down_requested) {
-        if (value - 1 < value_min)
+        if (value - 1 < value_min){
             new_value = value_max;
-        else
+        }
+        else{
             new_value--;
+        }
     }
     return new_value;
 }
