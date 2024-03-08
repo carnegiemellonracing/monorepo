@@ -2113,13 +2113,42 @@ Timeout=2000
 Var=Commit_Hash_RAM unsigned 0,32 -h
 Var=Dirty_RAM unsigned 32,8
 
-[DAQ_PI_FL]
-ID=770h
-DLC=7
-Var=MLX90640 unsigned 0,10 /u:C /f:0.1
-Var=VL53L0X unsigned 10,8 /u:cm /f:0.1
-Var=ELPM75 unsigned 18,12
-Var="GE-2102 (1)" unsigned 30,12
-Var="GE-2102 (2)" unsigned 42,12
-Var=VALIDITY_FLAG unsigned 54,2
+[DAQ_PI_RL_MLX]
+ID=671h
+DLC=2
+Var=RL_AVG_TIRE_TEMP signed 0,16 /u:C /f:0.01
+
+[DAQ_PI_RL_VL53]
+ID=672h
+DLC=2
+Var=RL_LINE_HEIGHT unsigned 0,16 /u:mm
+
+[DAQ_PI_RL_NAU1]
+ID=673h
+DLC=3
+Var=RL_ADC1 unsigned 0,24
+
+[Symbol1]
+ID=000h
+DLC=1
+
+[DAQ_PI_RL_NAU2]
+ID=674h
+DLC=3
+Var=RL_ADC2 unsigned 0,24
+
+[DAQ_PI_RL_ELPM75]
+ID=675h
+DLC=2
+Var=RL_LINPOT unsigned 0,12
+
+[DAQ_PI_RL_THERM_1]
+ID=676h
+DLC=2
+Var=RL_TEMP_1 unsigned 0,12
+
+[DAQ_PI_RL_THERM_2]
+ID=677h
+DLC=2
+Var=RL_TEMP_2 unsigned 0,12
 
