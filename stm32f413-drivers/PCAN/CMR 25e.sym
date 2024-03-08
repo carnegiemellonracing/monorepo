@@ -2128,10 +2128,6 @@ ID=673h
 DLC=3
 Var=RL_ADC1 unsigned 0,24
 
-[Symbol1]
-ID=000h
-DLC=1
-
 [DAQ_PI_RL_NAU2]
 ID=674h
 DLC=3
@@ -2152,3 +2148,107 @@ ID=677h
 DLC=2
 Var=RL_TEMP_2 unsigned 0,12
 
+[DAQ_PI_RR_MLX]
+ID=678h
+DLC=2
+Var=RR_AVG_TIRE_TEMP signed 0,16 /u:C /f:0.01
+
+[DAQ_PI_RR_VL53]
+ID=679h
+DLC=2
+Var=RR_LINE_HEIGHT unsigned 0,16 /u:mm
+
+[DAQ_PI_RR_NAU1]
+ID=680h
+DLC=3
+Var=RR_ADC1 unsigned 0,24
+
+[DAQ_PI_RR_NAU2]
+ID=681h
+DLC=3
+Var=RR_ADC2 unsigned 0,24
+
+[DAQ_PI_RR_ELPM75]
+ID=682h
+DLC=2
+Var=RR_LINPOT unsigned 0,12
+
+[DAQ_PI_RR_THERM_1]
+ID=683h
+DLC=2
+Var=RR_TEMP_1 unsigned 0,12
+
+[DAQ_PI_RR_THERM_2]
+ID=684h
+DLC=2
+Var=RR_TEMP_2 unsigned 0,12
+
+[DAQ_PI_FL_MLX]
+ID=685h
+DLC=2
+Var=FL_AVG_TIRE_TEMP signed 0,16 /u:C /f:0.01
+
+[DAQ_PI_FL_VL53]
+ID=686h
+DLC=2
+Var=FL_LINE_HEIGHT unsigned 0,16 /u:mm
+
+[DAQ_PI_FL_NAU1]
+ID=687h
+DLC=3
+Var=FL_ADC1 unsigned 0,24
+
+[DAQ_PI_FL_NAU2]
+ID=688h
+DLC=3
+Var=FL_ADC2 unsigned 0,24
+
+[DAQ_PI_FL_ELPM75]
+ID=689h
+DLC=2
+Var=FL_LINPOT unsigned 0,12
+
+[DAQ_PI_FL_THERM_1]
+ID=690h
+DLC=2
+Var=FL_TEMP_1 unsigned 0,12
+
+[DAQ_PI_FL_THERM_2]
+ID=691h
+DLC=2
+Var=FL_TEMP_2 unsigned 0,12
+
+[DAQ_PI_FR_MLX]
+ID=692h
+DLC=2
+Var=FR_AVG_TIRE_TEMP signed 0,16 /u:C /f:0.01
+
+[DAQ_PI_FR_VL53]
+ID=693h
+DLC=2
+Var=FR_LINE_HEIGHT unsigned 0,16 /u:mm
+
+[DAQ_PI_FR_NAU1]
+ID=694h
+DLC=3
+Var=FR_ADC1 unsigned 0,24
+
+[DAQ_PI_FR_NAU2]
+ID=695h
+DLC=3
+Var=FR_ADC2 unsigned 0,24
+
+[DAQ_PI_FR_ELPM75]
+ID=696h
+DLC=2
+Var=FR_LINPOT unsigned 0,12
+
+[DAQ_PI_FR_THERM_1]
+ID=697h
+DLC=2
+Var=FR_TEMP_1 unsigned 0,12
+
+[DAQ_PI_FR_THERM_2]
+ID=698h
+DLC=2
+Var=FR_TEMP_2 unsigned 0,12
