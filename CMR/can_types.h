@@ -1116,9 +1116,9 @@ typedef struct {
 // DAQ Modules
 
 typedef struct {
-    int32_t HX711_force;     /**< @brief Force from HX711 */
-    float NAU7802_force;   /**< @brief Force from NAU7802 */
-} cmr_canDAQLoadCell_t;
+	int16_t force_0;
+    int16_t force_1;
+} cmr_canDAQStrainGauge_t;
 
 typedef struct {
     uint16_t thermistor_0_tmp_dC; /**< @brief Temperature on thermistor 0 in dC */
@@ -1128,16 +1128,14 @@ typedef struct {
 } cmr_canDAQThermistor_t;
 
 typedef struct {
-    uint16_t linpot_front_mm;       /**< @brief Front damper length in mm */
-    uint16_t linpot_front_adc;      /**< @brief Front linpot ADC Value */
-    uint16_t linpot_rear_mm;        /**< @brief Rear damper length in mm */
-    uint16_t linpot_rear_adc;       /**< @brief Rear linpot ADC Value */
+    uint32_t linpot_mm;       /**< @brief Front damper length in mm */
+    uint32_t linpot_adc;      /**< @brief Front linpot ADC Value */
 } cmr_canDAQLinpot_t;
 
 typedef struct {
-    int32_t HX711_debug;     /**< @brief Debug for HX711 - 0 if no errors */
-    int32_t NAU7802_debug;   /**< @brief Debug for NAU7802 - 0 if no errors */
-} cmr_canDAQDebug_t;
+    uint32_t airspeed_mph;       /**< @brief Front damper length in mm */
+    uint32_t airtemp_dC;         /**< @brief Front linpot ADC Value */
+} cmr_canDAQAnemometer_t;
 
 typedef struct {
     uint8_t state;
