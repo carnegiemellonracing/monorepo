@@ -890,6 +890,9 @@ static void sendFSMSensorsADC(void) {
         .brakePressureFrontADC = adcRead(sensorsADCChannels[SENSOR_CH_BPRES_PSI]),
         .steeringWheelAngleADC = adcRead(sensorsADCChannels[SENSOR_CH_SWANGLE_DEG])
     };
+    if (msg.steeringWheelAngleADC < 10) {
+    	msg.steeringWheelAngleADC = 4096;
+    }
 
     canTX(CMR_CANID_FSM_SENSORS_ADC, &msg, sizeof(msg), canTX10Hz_period_ms);
 }
