@@ -77,8 +77,8 @@ static uint32_t sampleADCSensorSwangle(const cmr_sensor_t *sensor) {
     sensorChannel_t sensorChannel = sensor - sensors;
     configASSERT(sensorChannel < SENSOR_CH_LEN);
     uint32_t val = adcRead(sensorsADCChannels[sensorChannel]);
-    if (val < 150) {
-        val += 4096;
+    if (val < 10) {
+        val = 4096;
     }
     return val;
 }
