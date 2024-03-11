@@ -73,6 +73,16 @@ static uint32_t sampleADCSensor(const cmr_sensor_t *sensor) {
     return adcRead(sensorsADCChannels[sensorChannel]);
 }
 
+static uint32_t sampleADCSensorSwangle(const cmr_sensor_t *sensor) {
+    sensorChannel_t sensorChannel = sensor - sensors;
+    configASSERT(sensorChannel < SENSOR_CH_LEN);
+    uint32_t val = adcRead(sensorsADCChannels[sensorChannel]);
+    if (val < 150) {
+        val += 4096;
+    }
+    return val;
+}
+
 static uint32_t leftThrottleToRequest(const cmr_sensor_t *sensor) {
 	sensorChannel_t sensorChannel = sensor - sensors;
 	configASSERT(sensorChannel < SENSOR_CH_LEN);
@@ -346,7 +356,7 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     },
     [SENSOR_CH_SWANGLE_DEG] = {
         .conv = adcToSwangle,
-        .sample = sampleADCSensor,
+        .sample = sampleADCSensorSwangle,
         .readingMin = SWANGLE_90DEG_LEFT,
         .readingMax = SWANGLE_90DEG_RIGHT,
         .outOfRange_pcnt = 10,
