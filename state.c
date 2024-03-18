@@ -542,14 +542,15 @@ void stateDrsUpdate(void) {
 // Called by CAN 100 Hz
 uint8_t getPaddleState(expanderClutch_t clutch) {
     uint8_t pos = getPos(clutch);
-    uint8_t config_paddle_request = (pos > MIN_PADDLE_VAL) ? pos - MIN_PADDLE_VAL : 0;
-    if (clutch == EXP_CLUTCH_LEFT) {
-        config_paddle_left_request = config_paddle_request;
-    } else if (clutch == EXP_CLUTCH_RIGHT) {
-        config_paddle_right_request = config_paddle_request;
+    if (inConfigScreen()) {
+        uint8_t config_paddle_request = (pos > MIN_PADDLE_VAL) ? pos - MIN_PADDLE_VAL : 0;
+        if (clutch == EXP_CLUTCH_LEFT) {
+            config_paddle_left_request = config_paddle_request;
+        } else if (clutch == EXP_CLUTCH_RIGHT) {
+            config_paddle_right_request = config_paddle_request;
+        }
     }
-    // Return 0 to CAN because we are in config screen
-    // only send paddle state if we're not in config screen
+    // Always return the paddle position to CAN
     return pos;
 }
 
