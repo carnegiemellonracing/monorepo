@@ -1,6 +1,6 @@
 FormatVersion=5.0 // Do not edit this line!
 UniqueVariables=True
-Title="CMR 22e"
+Title="CMR 23e"
 
 {ENUMS}
 // This is for the EMD
@@ -10,8 +10,8 @@ enum SBG_Solution_Status_Mode(0="Uninitialized", 1="Vertical_Gyro_Only",
 enum Fan_State(0="FAN_OFF", 1="FAN_LOW", 2="FAN_HIGH")
 enum State(0="UNKNOWN", 1="GLV_ON", 2="HV_EN", 3="RTD", 4="ERROR", 
   5="CLEAR_ERROR")
-enum Gear(0="UNKNOWN", 1="REVERSE", 2="SLOW", 3="FAST", 4="ENDURANCE", 
-  5="AUTO-X", 6="SKIDPAD", 7="ACCEL", 8="TEST")
+enum Gear(0="UNKNOWN", 1="SLOW", 2="FAST", 3="ENDURANCE", 4="AUTO-X", 
+  5="SKIDPAD", 6="ACCEL", 7="TEST", 8="REVERSE")
 enum VSMState(0="ERROR", 1="CLEAR_ERROR", 2="GLV_ON", 3="REQ_PRECHARGE", 
   4="RUN_BMS", 5="DCDC_EN", 6="INVERTER_EN", 7="HV_EN", 8="RTD", 
   9="COOLING_OFF", 10="DCDC_OFF")
@@ -24,8 +24,23 @@ enum HVCState(0="ERROR", 1="DISCHARGE", 2="STANDBY", 3="DRIVE_PRECHARGE",
 enum FanState(0="OFF", 1="LOW", 2="HIGH")
 enum PumpState(0="OFF", 1="ON")
 enum CoolingState(0="OFF", 1="LOW", 2="HIGH")
-enum DRS_MODE(0="DRS_UNKNOWN", 1="DRS_OPEN", 2="DRS_CLOSED", 3="DRS_TOGGLE", 
-  4="DRS_HOLD", 5="DRS_AUTO")
+enum DRS_MODE(0="DRS_CLOSED", 1="DRS_OPEN", 2="DRS_TOGGLE", 3="DRS_HOLD", 
+  4="DRS_AUTO", 5="DRS_UNKNOWN")
+enum CCMState(0="ERROR", 1="CLEAR_ERROR", 2="CLEAR_HVC", 3="IDLE_HVC", 
+  4="STANDBY", 5="CHARGE_REQ", 6="CHARGE", 7="SLOW_CHARGE", 8="SHUTDOWN")
+
+{SEND}
+
+[IZZIE_Loadcell_config]
+ID=000004E2h
+Type=Extended
+DLC=8
+Var=Programming_Constant_config unsigned 0,16 -h -m /d:30000
+Var=New_Can_ID unsigned 16,16 -m /d:2033
+Var=Update_Rate unsigned 32,8 -m /u:hz /d:1
+Var=Temp_Comp unsigned 40,8 -m /d:1
+Var=Temp_Sensor unsigned 48,8 -m /d:1
+Var=Bit_rate unsigned 56,8 -m /d:2
 
 {SENDRECEIVE}
 
@@ -76,13 +91,12 @@ Var=VSM_ERR_latchBSPD bit 24,1
 
 [VSM_Sensors]
 ID=200h
-DLC=6
-CycleTime=100
-Timeout=1000
+DLC=8
+CycleTime=5
+Timeout=100
 Var=VSM_brakePressureRear unsigned 0,16 /u:PSI
-Var=VSM_hallEffect signed 16,16 /u:cA
-Var=VSM_safetyIn unsigned 32,8 /u:V /f:0.1
-Var=VSM_safetyOut unsigned 40,8 /u:V /f:0.1
+Var=VSM_hallEffect signed 16,16 /u:A /f:0.01 /p:2
+Var=VSM_HE_CoulombCount float 32,32 /u:C /p:3
 
 [VSM_LatchedStatus]
 ID=510h	// Timeout matrix
@@ -165,6 +179,7 @@ Var=CDC_WRN_amkSrcRL bit 37,1
 Var=CDC_WRN_amkSrcRR bit 36,1
 Var=CDC_WRN_amkError bit 35,1
 Var=CDC_WRN_amkTimeout bit 34,1
+Var=CDC_WRN_memoratorTimeout bit 33,1
 
 [CDC_WheelSpeeds]
 ID=132h
@@ -433,11 +448,13 @@ Var=DIM_busCurrent unsigned 16,16 /u:mA
 
 [DIM_Request]
 ID=235h
-DLC=2
+DLC=4
 CycleTime=100
 Timeout=1000
 Var=DIM_requestState unsigned 0,8 /e:State
 Var=DIM_requestGear unsigned 8,8 /e:Gear
+Var=DIM_requestDRSMode unsigned 16,8 /e:DRS_MODE
+Var=DIM_requestDriver unsigned 24,8
 
 [DIM_Actions]
 ID=515h
@@ -450,6 +467,13 @@ Var=DIM_drsButtonPressed unsigned 16,8
 Var=DIM_regenPercent unsigned 24,8 /u:percent
 Var=DIM_paddleLeft unsigned 32,8
 Var=DIM_paddleRight unsigned 40,8
+
+[DIM_Acknowledge]
+ID=545h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=DIM_Acknowledge unsigned 0,8
 
 [PTC_Heartbeat]
 ID=105h
@@ -514,8 +538,8 @@ Var=PTC_loadCurrent unsigned 32,16 /u:mA
 ID=301h
 DLC=8
 CycleTime=10
-Var=BMS_Batt_Voltage signed 0,32 /u:mV
-Var=BMS_HV_Voltage signed 32,32 /u:mV
+Var=BMS_Batt_Voltage signed 0,32 /u:V /f:0.001 /p:3
+Var=BMS_HV_Voltage signed 32,32 /u:V /f:0.001 /p:3
 
 [BMS_Pack_Currents]
 ID=302h
@@ -1289,7 +1313,7 @@ Var=AMK_FR_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_FR_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
 [AMK_FL_Actual_Values_1]
-ID=288h	// Set ID based on wiring
+ID=283h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FL_Status_Reserved unsigned 0,8
@@ -1306,7 +1330,7 @@ Var=AMK_FL_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_FL_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_FL_Actual_Values_2]
-ID=28Ah	// Set ID based on wiring
+ID=285h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FL_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1315,7 +1339,7 @@ Var=AMK_FL_ErrorInfo unsigned 32,16
 Var=AMK_FL_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_FL_Setpoints_1]
-ID=189h	// Set ID based on wiring
+ID=184h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_FL_Control_Reserved1 unsigned 0,8
@@ -1329,7 +1353,7 @@ Var=AMK_FL_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_FL_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
 [AMK_BL_Actual_Values_1]
-ID=284h	// Set ID based on wiring
+ID=288h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BL_Status_Reserved unsigned 0,8
@@ -1346,7 +1370,7 @@ Var=AMK_BL_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_BL_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_BL_Actual_Values_2]
-ID=286h	// Set ID based on wiring
+ID=28Ah	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BL_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1355,7 +1379,7 @@ Var=AMK_BL_ErrorInfo unsigned 32,16
 Var=AMK_BL_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_BL_Setpoints_1]
-ID=185h	// Set ID based on wiring
+ID=189h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_BL_Control_Reserved1 unsigned 0,8
@@ -1369,7 +1393,7 @@ Var=AMK_BL_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_BL_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
 [AMK_BR_Actual_Values_1]
-ID=283h	// Set ID based on wiring
+ID=284h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BR_Status_Reserved unsigned 0,8
@@ -1386,7 +1410,7 @@ Var=AMK_BR_TorqueCurrent signed 32,16 /u:"Raw torque unit"
 Var=AMK_BR_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
 
 [AMK_BR_Actual_Values_2]
-ID=285h	// Set ID based on wiring
+ID=286h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BR_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1395,7 +1419,7 @@ Var=AMK_BR_ErrorInfo unsigned 32,16
 Var=AMK_BR_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_BR_Setpoints_1]
-ID=184h	// Set ID based on wiring
+ID=185h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_BR_Control_Reserved1 unsigned 0,8
@@ -1473,17 +1497,6 @@ DLC=8
 ID=7EFh	// This CAN id is used for communication between the energy meter and the download tool.
 DLC=8
 
-[IZZIE_Loadcell_config]
-ID=00000801h
-Type=Extended
-DLC=8
-Var=Programming_Constant_config unsigned 0,16 -h -m /d:30000
-Var=New_Can_ID unsigned 16,16 -m /d:2033
-Var=Update_Rate unsigned 32,8 -m /u:hz /d:1
-Var=Temp_Comp unsigned 40,8 -m /d:1
-Var=Temp_Sensor unsigned 48,8 -m /d:1
-Var=Bit_rate unsigned 56,8 -m /d:2
-
 [IZZIE_Loadcell_calibration]
 ID=00000800h
 Type=Extended
@@ -1536,6 +1549,12 @@ Var=RTC_Month_In unsigned 32,8 /u:month
 Var=RTC_Year_In unsigned 40,8 /u:year
 Var=RTC_Error_In unsigned 48,8	// For interpreting this, see comments in code.
 
+[CDC_ODOMETER]
+ID=6C2h
+DLC=4
+CycleTime=1000
+Var=CDC_Odometer float 0,32 /u:km
+
 [CDC_DrsState]
 ID=52Ch
 DLC=4
@@ -1545,6 +1564,61 @@ Var=drsState unsigned 0,8
 Var=drsAngle unsigned 8,8
 Var=drsPwmLeft unsigned 16,8
 Var=drsPwmRight unsigned 24,8
+
+[SF_State]
+ID=52Dh
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=Power_Limit_Max_Violation_W float 0,32 /u:W
+Var=Longest_Power_Violation unsigned 32,8
+Var=Over_Voltage_Count unsigned 40,8
+Var=Under_Voltage_Count unsigned 48,8
+Var=Over_Temp_Count unsigned 56,8
+
+[CDC_Motor_Power]
+ID=52Eh
+DLC=8
+Var=motor_power_FL unsigned 0,16
+Var=motor_power_FR unsigned 16,16
+Var=motor_power_RL unsigned 32,16
+Var=motor_power_RR unsigned 48,16
+
+[CDC_Front_Slip_Ratios]
+ID=7E8h
+DLC=8
+Var=slipRatio_FL float 0,32 /p:8
+Var=slipRatio_FR float 32,32 /p:8
+
+[CDC_Rear_Slip_Ratios]
+ID=7E9h
+DLC=8
+Var=slipRatio_RL float 0,32 /p:8
+Var=slipRatio_RR float 32,32 /p:8
+
+[CDC_Front_Velocity_Setpoints]
+ID=7EAh
+DLC=8
+Var=setPoint_FL float 0,32
+Var=setPoint_FR float 32,32
+
+[CDC_Rear_Velocity_Setpoints]
+ID=7EBh
+DLC=8
+Var=setPoint_RL float 0,32
+Var=setPoint_RR float 32,32
+
+[CDC_Front_Whl_Velocity_Calc]
+ID=7ECh
+DLC=8
+Var=vel_calc_FL float 0,32
+Var=vel_calc_FR float 32,32
+
+[CDC_Rear_Whl_Velocity_Calc]
+ID=7EDh
+DLC=8
+Var=vel_calc_RL float 0,32
+Var=vel_calc_RR float 32,32
 
 [DIM_Config0_Drv0]
 ID=600h
@@ -1586,18 +1660,8 @@ Var=DIM_config3_drv0_config_val_2 unsigned 8,8
 Var=DIM_config3_drv0_config_val_3 unsigned 16,8
 Var=DIM_config3_drv0_config_val_4 unsigned 24,8
 
-[DIM_Config4_Drv0]
-ID=604h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config4_drv0_config_val_1 unsigned 0,8
-Var=DIM_config4_drv0_config_val_2 unsigned 8,8
-Var=DIM_config4_drv0_config_val_3 unsigned 16,8
-Var=DIM_config4_drv0_config_val_4 unsigned 24,8
-
 [CDC_Config0_Drv0]
-ID=605h
+ID=604h
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1607,7 +1671,7 @@ Var=CDC_config0_drv0_config_val_3 unsigned 16,8
 Var=CDC_config0_drv0_config_val_4 unsigned 24,8
 
 [CDC_Config1_Drv0]
-ID=606h
+ID=605h
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1617,7 +1681,7 @@ Var=CDC_config1_drv0_config_val_3 unsigned 16,8
 Var=CDC_config1_drv0_config_val_4 unsigned 24,8
 
 [CDC_Config2_Drv0]
-ID=607h
+ID=606h
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1627,7 +1691,7 @@ Var=CDC_config2_drv0_config_val_3 unsigned 16,8
 Var=CDC_config2_drv0_config_val_4 unsigned 24,8
 
 [CDC_Config3_Drv0]
-ID=608h
+ID=607h
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1636,18 +1700,8 @@ Var=CDC_config3_drv0_config_val_2 unsigned 8,8
 Var=CDC_config3_drv0_config_val_3 unsigned 16,8
 Var=CDC_config3_drv0_config_val_4 unsigned 24,8
 
-[CDC_Config4_Drv0]
-ID=609h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=CDC_config4_drv0_config_val_1 unsigned 0,8
-Var=CDC_config4_drv0_config_val_2 unsigned 8,8
-Var=CDC_config4_drv0_config_val_3 unsigned 16,8
-Var=CDC_config4_drv0_config_val_4 unsigned 24,8
-
 [DIM_Config0_Drv1]
-ID=60Ah
+ID=608h
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1657,7 +1711,7 @@ Var=DIM_config0_drv1_config_val_3 unsigned 16,8
 Var=DIM_config0_drv1_config_val_4 unsigned 24,8
 
 [DIM_Config1_Drv1]
-ID=60Bh
+ID=609h
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1667,7 +1721,7 @@ Var=DIM_config1_drv1_config_val_3 unsigned 16,8
 Var=DIM_config1_drv1_config_val_4 unsigned 24,8
 
 [DIM_Config2_Drv1]
-ID=60Ch
+ID=60Ah
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1677,7 +1731,7 @@ Var=DIM_config2_drv1_config_val_3 unsigned 16,8
 Var=DIM_config2_drv1_config_val_4 unsigned 24,8
 
 [DIM_Config3_Drv1]
-ID=60Dh
+ID=60Bh
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1686,18 +1740,8 @@ Var=DIM_config3_drv1_config_val_2 unsigned 8,8
 Var=DIM_config3_drv1_config_val_3 unsigned 16,8
 Var=DIM_config3_drv1_config_val_4 unsigned 24,8
 
-[DIM_Config4_Drv1]
-ID=60Eh
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config4_drv1_config_val_1 unsigned 0,8
-Var=DIM_config4_drv1_config_val_2 unsigned 8,8
-Var=DIM_config4_drv1_config_val_3 unsigned 16,8
-Var=DIM_config4_drv1_config_val_4 unsigned 24,8
-
 [CDC_Config0_Drv1]
-ID=60Fh
+ID=60Ch
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1707,7 +1751,7 @@ Var=CDC_config0_drv1_config_val_3 unsigned 16,8
 Var=CDC_config0_drv1_config_val_4 unsigned 24,8
 
 [CDC_Config1_Drv1]
-ID=610h
+ID=60Dh
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1717,7 +1761,7 @@ Var=CDC_config1_drv1_config_val_3 unsigned 16,8
 Var=CDC_config1_drv1_config_val_4 unsigned 24,8
 
 [CDC_Config2_Drv1]
-ID=611h
+ID=60Eh
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1727,7 +1771,7 @@ Var=CDC_config2_drv1_config_val_3 unsigned 16,8
 Var=CDC_config2_drv1_config_val_4 unsigned 24,8
 
 [CDC_Config3_Drv1]
-ID=612h
+ID=60Fh
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1736,30 +1780,8 @@ Var=CDC_config3_drv1_config_val_2 unsigned 8,8
 Var=CDC_config3_drv1_config_val_3 unsigned 16,8
 Var=CDC_config3_drv1_config_val_4 unsigned 24,8
 
-[CDC_Config4_Drv1]
-ID=613h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=CDC_config4_drv1_config_val_1 unsigned 0,8
-Var=CDC_config4_drv1_config_val_2 unsigned 8,8
-Var=CDC_config4_drv1_config_val_3 unsigned 16,8
-Var=CDC_config4_drv1_config_val_4 unsigned 24,8
-
 [DIM_Config0_Drv2]
-ID=614h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config0_drv2_config_val_1 unsigned 0,8
-Var=DIM_config0_drv2_config_val_2 unsigned 8,8
-Var=DIM_config0_drv2_config_val_3 unsigned 16,8
-Var=DIM_config0_drv2_config_val_4 unsigned 24,8
-
-[DIM_Config1_Drv2]
-ID=615h
-DLC=4
-CycleTime=1000
+ID=610h
 Timeout=10000
 Var=DIM_config1_drv2_config_val_1 unsigned 0,8
 Var=DIM_config1_drv2_config_val_2 unsigned 8,8
@@ -1767,7 +1789,7 @@ Var=DIM_config1_drv2_config_val_3 unsigned 16,8
 Var=DIM_config1_drv2_config_val_4 unsigned 24,8
 
 [DIM_Config2_Drv2]
-ID=616h
+ID=612h
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1777,7 +1799,7 @@ Var=DIM_config2_drv2_config_val_3 unsigned 16,8
 Var=DIM_config2_drv2_config_val_4 unsigned 24,8
 
 [DIM_Config3_Drv2]
-ID=617h
+ID=613h
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1786,18 +1808,8 @@ Var=DIM_config3_drv2_config_val_2 unsigned 8,8
 Var=DIM_config3_drv2_config_val_3 unsigned 16,8
 Var=DIM_config3_drv2_config_val_4 unsigned 24,8
 
-[DIM_Config4_Drv2]
-ID=618h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config4_drv2_config_val_1 unsigned 0,8
-Var=DIM_config4_drv2_config_val_2 unsigned 8,8
-Var=DIM_config4_drv2_config_val_3 unsigned 16,8
-Var=DIM_config4_drv2_config_val_4 unsigned 24,8
-
 [CDC_Config0_Drv2]
-ID=619h
+ID=614h
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1807,7 +1819,7 @@ Var=CDC_config0_drv2_config_val_3 unsigned 16,8
 Var=CDC_config0_drv2_config_val_4 unsigned 24,8
 
 [CDC_Config1_Drv2]
-ID=61Ah
+ID=615h
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1817,7 +1829,7 @@ Var=CDC_config1_drv2_config_val_3 unsigned 16,8
 Var=CDC_config1_drv2_config_val_4 unsigned 24,8
 
 [CDC_Config2_Drv2]
-ID=61Bh
+ID=616h
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1827,7 +1839,7 @@ Var=CDC_config2_drv2_config_val_3 unsigned 16,8
 Var=CDC_config2_drv2_config_val_4 unsigned 24,8
 
 [CDC_Config3_Drv2]
-ID=61Ch
+ID=617h
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1836,18 +1848,8 @@ Var=CDC_config3_drv2_config_val_2 unsigned 8,8
 Var=CDC_config3_drv2_config_val_3 unsigned 16,8
 Var=CDC_config3_drv2_config_val_4 unsigned 24,8
 
-[CDC_Config4_Drv2]
-ID=61Dh
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=CDC_config4_drv2_config_val_1 unsigned 0,8
-Var=CDC_config4_drv2_config_val_2 unsigned 8,8
-Var=CDC_config4_drv2_config_val_3 unsigned 16,8
-Var=CDC_config4_drv2_config_val_4 unsigned 24,8
-
 [DIM_Config0_Drv3]
-ID=61Eh
+ID=618h
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1857,7 +1859,7 @@ Var=DIM_config0_drv3_config_val_3 unsigned 16,8
 Var=DIM_config0_drv3_config_val_4 unsigned 24,8
 
 [DIM_Config1_Drv3]
-ID=61Fh
+ID=619h
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1867,7 +1869,7 @@ Var=DIM_config1_drv3_config_val_3 unsigned 16,8
 Var=DIM_config1_drv3_config_val_4 unsigned 24,8
 
 [DIM_Config2_Drv3]
-ID=620h
+ID=61Ah
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1877,7 +1879,7 @@ Var=DIM_config2_drv3_config_val_3 unsigned 16,8
 Var=DIM_config2_drv3_config_val_4 unsigned 24,8
 
 [DIM_Config3_Drv3]
-ID=621h
+ID=61Bh
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1886,18 +1888,8 @@ Var=DIM_config3_drv3_config_val_2 unsigned 8,8
 Var=DIM_config3_drv3_config_val_3 unsigned 16,8
 Var=DIM_config3_drv3_config_val_4 unsigned 24,8
 
-[DIM_Config4_Drv3]
-ID=622h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config4_drv3_config_val_1 unsigned 0,8
-Var=DIM_config4_drv3_config_val_2 unsigned 8,8
-Var=DIM_config4_drv3_config_val_3 unsigned 16,8
-Var=DIM_config4_drv3_config_val_4 unsigned 24,8
-
 [CDC_Config0_Drv3]
-ID=623h
+ID=61Ch
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1907,7 +1899,7 @@ Var=CDC_config0_drv3_config_val_3 unsigned 16,8
 Var=CDC_config0_drv3_config_val_4 unsigned 24,8
 
 [CDC_Config1_Drv3]
-ID=624h
+ID=61Dh
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1917,7 +1909,7 @@ Var=CDC_config1_drv3_config_val_3 unsigned 16,8
 Var=CDC_config1_drv3_config_val_4 unsigned 24,8
 
 [CDC_Config2_Drv3]
-ID=625h
+ID=61Eh
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1927,7 +1919,7 @@ Var=CDC_config2_drv3_config_val_3 unsigned 16,8
 Var=CDC_config2_drv3_config_val_4 unsigned 24,8
 
 [CDC_Config3_Drv3]
-ID=626h
+ID=61Fh
 DLC=4
 CycleTime=1000
 Timeout=10000
@@ -1935,216 +1927,6 @@ Var=CDC_config3_drv3_config_val_1 unsigned 0,8
 Var=CDC_config3_drv3_config_val_2 unsigned 8,8
 Var=CDC_config3_drv3_config_val_3 unsigned 16,8
 Var=CDC_config3_drv3_config_val_4 unsigned 24,8
-
-[CDC_Config4_Drv3]
-ID=627h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=CDC_config4_drv3_config_val_1 unsigned 0,8
-Var=CDC_config4_drv3_config_val_2 unsigned 8,8
-Var=CDC_config4_drv3_config_val_3 unsigned 16,8
-Var=CDC_config4_drv3_config_val_4 unsigned 24,8
-
-[DIM_Config0_Drv4]
-ID=628h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config0_drv4_config_val_1 unsigned 0,8
-Var=DIM_config0_drv4_config_val_2 unsigned 8,8
-Var=DIM_config0_drv4_config_val_3 unsigned 16,8
-Var=DIM_config0_drv4_config_val_4 unsigned 24,8
-
-[DIM_Config1_Drv4]
-ID=629h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config1_drv4_config_val_1 unsigned 0,8
-Var=DIM_config1_drv4_config_val_2 unsigned 8,8
-Var=DIM_config1_drv4_config_val_3 unsigned 16,8
-Var=DIM_config1_drv4_config_val_4 unsigned 24,8
-
-[DIM_Config2_Drv4]
-ID=62Ah
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config2_drv4_config_val_1 unsigned 0,8
-Var=DIM_config2_drv4_config_val_2 unsigned 8,8
-Var=DIM_config2_drv4_config_val_3 unsigned 16,8
-Var=DIM_config2_drv4_config_val_4 unsigned 24,8
-
-[DIM_Config3_Drv4]
-ID=62Bh
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config3_drv4_config_val_1 unsigned 0,8
-Var=DIM_config3_drv4_config_val_2 unsigned 8,8
-Var=DIM_config3_drv4_config_val_3 unsigned 16,8
-Var=DIM_config3_drv4_config_val_4 unsigned 24,8
-
-[DIM_Config4_Drv4]
-ID=62Ch
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config4_drv4_config_val_1 unsigned 0,8
-Var=DIM_config4_drv4_config_val_2 unsigned 8,8
-Var=DIM_config4_drv4_config_val_3 unsigned 16,8
-Var=DIM_config4_drv4_config_val_4 unsigned 24,8
-
-[CDC_Config0_Drv4]
-ID=62Dh
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=CDC_config0_drv4_config_val_1 unsigned 0,8
-Var=CDC_config0_drv4_config_val_2 unsigned 8,8
-Var=CDC_config0_drv4_config_val_3 unsigned 16,8
-Var=CDC_config0_drv4_config_val_4 unsigned 24,8
-
-[CDC_Config1_Drv4]
-ID=62Eh
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=CDC_config1_drv4_config_val_1 unsigned 0,8
-Var=CDC_config1_drv4_config_val_2 unsigned 8,8
-Var=CDC_config1_drv4_config_val_3 unsigned 16,8
-Var=CDC_config1_drv4_config_val_4 unsigned 24,8
-
-[CDC_Config2_Drv4]
-ID=62Fh
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=CDC_config2_drv4_config_val_1 unsigned 0,8
-Var=CDC_config2_drv4_config_val_2 unsigned 8,8
-Var=CDC_config2_drv4_config_val_3 unsigned 16,8
-Var=CDC_config2_drv4_config_val_4 unsigned 24,8
-
-[CDC_Config3_Drv4]
-ID=630h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=CDC_config3_drv4_config_val_1 unsigned 0,8
-Var=CDC_config3_drv4_config_val_2 unsigned 8,8
-Var=CDC_config3_drv4_config_val_3 unsigned 16,8
-Var=CDC_config3_drv4_config_val_4 unsigned 24,8
-
-[CDC_Config4_Drv4]
-ID=631h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=CDC_config4_drv4_config_val_1 unsigned 0,8
-Var=CDC_config4_drv4_config_val_2 unsigned 8,8
-Var=CDC_config4_drv4_config_val_3 unsigned 16,8
-Var=CDC_config4_drv4_config_val_4 unsigned 24,8
-
-[DIM_Config0_Drv5]
-ID=632h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config0_drv5_config_val_1 unsigned 0,8
-Var=DIM_config0_drv5_config_val_2 unsigned 8,8
-Var=DIM_config0_drv5_config_val_3 unsigned 16,8
-Var=DIM_config0_drv5_config_val_4 unsigned 24,8
-
-[DIM_Config1_Drv5]
-ID=633h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config1_drv5_config_val_1 unsigned 0,8
-Var=DIM_config1_drv5_config_val_2 unsigned 8,8
-Var=DIM_config1_drv5_config_val_3 unsigned 16,8
-Var=DIM_config1_drv5_config_val_4 unsigned 24,8
-
-[DIM_Config2_Drv5]
-ID=634h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config2_drv5_config_val_1 unsigned 0,8
-Var=DIM_config2_drv5_config_val_2 unsigned 8,8
-Var=DIM_config2_drv5_config_val_3 unsigned 16,8
-Var=DIM_config2_drv5_config_val_4 unsigned 24,8
-
-[DIM_Config3_Drv5]
-ID=635h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config3_drv5_config_val_1 unsigned 0,8
-Var=DIM_config3_drv5_config_val_2 unsigned 8,8
-Var=DIM_config3_drv5_config_val_3 unsigned 16,8
-Var=DIM_config3_drv5_config_val_4 unsigned 24,8
-
-[DIM_Config4_Drv5]
-ID=636h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config4_drv5_config_val_1 unsigned 0,8
-Var=DIM_config4_drv5_config_val_2 unsigned 8,8
-Var=DIM_config4_drv5_config_val_3 unsigned 16,8
-Var=DIM_config4_drv5_config_val_4 unsigned 24,8
-
-[CDC_Config0_Drv5]
-ID=637h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=CDC_config0_drv5_config_val_1 unsigned 0,8
-Var=CDC_config0_drv5_config_val_2 unsigned 8,8
-Var=CDC_config0_drv5_config_val_3 unsigned 16,8
-Var=CDC_config0_drv5_config_val_4 unsigned 24,8
-
-[CDC_Config1_Drv5]
-ID=638h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=CDC_config1_drv5_config_val_1 unsigned 0,8
-Var=CDC_config1_drv5_config_val_2 unsigned 8,8
-Var=CDC_config1_drv5_config_val_3 unsigned 16,8
-Var=CDC_config1_drv5_config_val_4 unsigned 24,8
-
-[CDC_Config2_Drv5]
-ID=639h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=CDC_config2_drv5_config_val_1 unsigned 0,8
-Var=CDC_config2_drv5_config_val_2 unsigned 8,8
-Var=CDC_config2_drv5_config_val_3 unsigned 16,8
-Var=CDC_config2_drv5_config_val_4 unsigned 24,8
-
-[CDC_Config3_Drv5]
-ID=63Ah
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=CDC_config3_drv5_config_val_1 unsigned 0,8
-Var=CDC_config3_drv5_config_val_2 unsigned 8,8
-Var=CDC_config3_drv5_config_val_3 unsigned 16,8
-Var=CDC_config3_drv5_config_val_4 unsigned 24,8
-
-[CDC_Config4_Drv5]
-ID=63Bh
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=CDC_config4_drv5_config_val_1 unsigned 0,8
-Var=CDC_config4_drv5_config_val_2 unsigned 8,8
-Var=CDC_config4_drv5_config_val_3 unsigned 16,8
-Var=CDC_config4_drv5_config_val_4 unsigned 24,8
 
 [BMS_ErrorCodes]
 ID=304h
@@ -2165,3 +1947,123 @@ Var=BMB12_Error unsigned 48,4
 Var=BMB13_Error unsigned 52,4
 Var=BMB14_Error unsigned 56,4
 Var=BMB15_Error unsigned 60,4
+
+[DIM_DAQ_TEXT]
+ID=525h
+DLC=5
+Var=Address unsigned 0,8
+Var=Data0 char 8,8
+Var=Data1 char 16,8
+Var=Data2 char 24,8
+Var=Data3 char 32,8
+
+[DAQ_0_LOADCELL]
+ID=650h
+DLC=8
+Var=HX711_FORCE_0 signed 0,32
+Var=NAU7802_FORCE_0 float 32,32 /u:N
+
+[DAQ_0_LINPOT]
+ID=651h
+DLC=8
+Var=FR_DAMPER_MM unsigned 0,16 /u:mm
+Var=FR_DAMPER_ADC unsigned 16,16
+Var=BR_DAMPER_MM unsigned 32,16 /u:mm
+Var=BR_DAMPER_ADC unsigned 48,16
+
+[DAQ_0_DEBUG]
+ID=652h
+DLC=8
+Var=HX711_DEBUG_0 unsigned 0,32 -h
+Var=NAU7802_DEBUG_0 signed 32,32
+
+[DAQ_1_LOADCELL]
+ID=653h
+DLC=8
+Var=HX711_FORCE_1 signed 0,32
+Var=NAU7802_FORCE_1 float 32,32 /u:N
+
+[DAQ_1_THERMISTOR]
+ID=654h
+DLC=8
+Var=TMP0_1 unsigned 0,16
+Var=TMP1_1 unsigned 16,16
+Var=TMP2_1 unsigned 32,16
+Var=TMP3_1 unsigned 48,16
+
+[DAQ_1_DEBUG]
+ID=655h
+DLC=8
+Var=HX711_DEBUG_1 unsigned 0,32 -h
+Var=NAU7802_DEBUG_1 signed 32,32
+
+[DAQ_2_LOADCELL]
+ID=656h
+DLC=8
+Var=HX711_FORCE_2 signed 0,32
+Var=NAU7802_FORCE_2 float 32,32 /u:N
+
+[DAQ_2_THERMISTOR]
+ID=657h
+DLC=8
+Var=TMP0_2 unsigned 0,16
+Var=TMP1_2 unsigned 16,16
+Var=TMP2_2 unsigned 32,16
+Var=TMP3_2 unsigned 48,16
+
+[DAQ_2_DEBUG]
+ID=658h
+DLC=8
+Var=HX711_DEBUG_2 unsigned 0,32 -h
+Var=NAU7802_DEBUG_2 signed 32,32
+
+[DAQ_3_LOADCELL]
+ID=659h
+DLC=8
+Var=HX711_FORCE_3 signed 0,32
+Var=NAU7802_FORCE_3 float 32,32 /u:N
+
+[DAQ_3_LINPOT]
+ID=65Ah
+DLC=8
+Var=FL_DAMPER_MM unsigned 0,16 /u:mm
+Var=FL_DAMPER_ADC unsigned 16,16
+Var=BL_DAMPER_MM unsigned 32,16 /u:mm
+Var=BL_DAMPER_ADC unsigned 48,16
+
+[DAQ_3_DEBUG]
+ID=65Bh
+DLC=8
+Var=HX711_DEBUG_3 unsigned 0,32 -h
+Var=NAU7802_DEBUG_3 signed 32,32
+
+[Memorator_Heartbeat]
+ID=109h
+DLC=1
+Var=State unsigned 0,8
+
+[HVI_Heartbeat]
+ID=106h
+DLC=8
+Var=HVI_Current signed 0,16 /u:A /f:0.1 /p:1
+Var=HVI_Voltage unsigned 16,16 /u:V /f:0.01 /p:2
+Var=HVI_Power signed 32,32 /u:kW /f:0.001 /p:3
+
+[CCM_Heartbeat]
+ID=107h
+DLC=6
+CycleTime=1000
+Timeout=10000
+Var=CCM_state unsigned 0,8 /e:CCMState
+Var=CCM_ChargerVoltage unsigned 8,16 /u:dV
+Var=CCM_ChargerCurrent unsigned 24,16 /u:dA
+Var=CCM_ChargerDisabled unsigned 40,8
+
+[DAQ_IZZE]
+ID=4E2h
+DLC=8
+Var="IZZE Differential Voltage" signed 0,16 -m /u:uV
+Var="IZZE Calibrated Output" signed 16,16 -m /u:F
+Var="IZZE Internal Temperature" signed 32,16 -m /u:C
+Var="IZZE Opt External Temp" signed 48,16 -m /u:C
+

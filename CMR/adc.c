@@ -19,7 +19,7 @@ static const uint32_t CMR_ADC_TIMEOUT_MS = 1;
 static const uint32_t cmr_adcSample_priority = 5;
 
 /** @brief ADC sampling period (milliseconds). */
-static const TickType_t cmr_adcSample_period_ms = 10;
+static TickType_t cmr_adcSample_period_ms = 10;
 
 /**
  * @brief Task for sampling the ADC.
@@ -33,16 +33,7 @@ static void cmr_adcSample(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // ADC set up in discontinuous scan mode.
-        // Each `HAL_ADC_Start()` call converts the next-highest-rank channel.
-        for (size_t i = 0; i < adc->channelsLen; i++) {
-            cmr_adcChannel_t *channel = &(adc->channels[i]);
-
-            HAL_ADC_Start(&adc->handle);
-            HAL_ADC_PollForConversion(&adc->handle, CMR_ADC_TIMEOUT_MS);
-            channel->value = HAL_ADC_GetValue(&adc->handle);
-        }
-
+        _platform_adcPoll(adc, CMR_ADC_TIMEOUT_MS);
         vTaskDelayUntil(&lastWakeTime, cmr_adcSample_period_ms);
     }
 }
@@ -88,7 +79,8 @@ static void cmr_adcConfigChannels(cmr_adc_t *adc) {
  */
 void cmr_adcInit(
     cmr_adc_t *adc, ADC_TypeDef *instance,
-    cmr_adcChannel_t *channels, const size_t channelsLen
+    cmr_adcChannel_t *channels, const size_t channelsLen,
+    TickType_t samplePeriod_ms
 ) {
     if (channelsLen > CMR_ADC_CHANNELS) {
         cmr_panic("Too many channels");
@@ -102,8 +94,11 @@ void cmr_adcInit(
         cmr_panic("HAL_ADC_Init() failed!");
     }
 
+    #ifdef F413
     cmr_adcConfigChannels(adc);
+    #endif /* F413 */
 
+    cmr_adcSample_period_ms = samplePeriod_ms;
     cmr_taskInit(
         &adc->sampleTask,
         "ADC sample",

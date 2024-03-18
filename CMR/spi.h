@@ -8,7 +8,7 @@
 #ifndef CMR_SPI_H
 #define CMR_SPI_H
 
-#include "platform.h"       // HAL_SPI_MODULE_ENABLED, HAL_DMA_MODULE_ENABLED
+#include "platform.h"  		// HAL_SPI_MODULE_ENABLED, HAL_DMA_MODULE_ENABLED
                             // SPI_HandleTypeDef, SPI_TypeDef, SPI_InitTypeDef,
                             // DMA_HandleTypeDef, DMA_Stream_TypeDef
 

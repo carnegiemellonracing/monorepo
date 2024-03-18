@@ -451,6 +451,19 @@ void _platform_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance, cmr_adcChannel_t *
         .channels = channels,
         .channelsLen = channelsLen};
 }
+
+void _platform_adcPoll(cmr_adc_t *adc, uint32_t adcTimeout) {
+    // ADC set up in discontinuous scan mode.
+    // Each `HAL_ADC_Start()` call converts the next-highest-rank channel.
+    for (size_t i = 0; i < adc->channelsLen; i++) {
+        cmr_adcChannel_t *channel = &(adc->channels[i]);
+
+        HAL_ADC_Start(&adc->handle);
+        HAL_ADC_PollForConversion(&adc->handle, adcTimeout);
+        channel->value = HAL_ADC_GetValue(&adc->handle);
+    }
+}
+
 #endif /* HAL_ADC_MODULE_ENABLED */
 
 #ifdef HAL_CAN_MODULE_ENABLED
@@ -655,5 +668,25 @@ void _platform_rccTIMClockEnable(TIM_TypeDef *instance)
     }
 }
 #endif /* HAL_TIM_MODULE_ENABLED */
+
+#ifdef HAL_I2C_MODULE_ENABLED
+void _platform_i2cInit(cmr_i2c_t *i2c, I2C_TypeDef *instance, uint32_t clockSpeed, uint32_t ownAddr) {
+    *i2c = (cmr_i2c_t) {
+        .handle = {
+            .Instance = instance,
+            .Init = {
+                .ClockSpeed = clockSpeed,
+                .DutyCycle = I2C_DUTYCYCLE_2,
+                .OwnAddress1 = ownAddr,
+                .AddressingMode = I2C_ADDRESSINGMODE_7BIT,
+                .DualAddressMode = I2C_DUALADDRESS_DISABLE,
+                .OwnAddress2 = 0,
+                .GeneralCallMode = I2C_GENERALCALL_DISABLE,
+                .NoStretchMode = I2C_NOSTRETCH_DISABLE
+            }
+        }
+    };
+}
+#endif /* HAL_I2C_MODULE_ENABLED */
 
 #endif /* F413 */

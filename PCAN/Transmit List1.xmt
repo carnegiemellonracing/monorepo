@@ -1,0 +1,16 @@
+;$FORMATVERSION=5.1
+; C:\Users\CMR\Documents\GitHub\DAQ-Modules\stm32f413-drivers\PCAN\Transmit List1.xmt
+; CAN messages saved by PCAN-Explorer 5.4.2
+;
+; Columns descriptions:
+; ~~~~~~~~~~~~~~~~~~~~~
+;+Bus
+;|  +Message ID
+;|  |         +Reserved
+;|  |         |  +Cycle time in ms (0=manual)
+;|  |         |  |     +Length of message
+;|  |         |  |     |    +Frame type: D)ata or R)emote request
+;|  |         |  |     |    | +Message data
+;|  |         |  |     |    | |
+ 1  130h      -  10    1    D 00h
+ 1  101h      -  10    5    D 02h 00h 00h 00h 00h
