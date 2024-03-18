@@ -38,6 +38,11 @@ typedef struct {
     uint8_t warning[2];     /**< @brief Warning matrix. */
 } cmr_canHeartbeat_t;
 
+/** @brief Standard CAN PTC State. */
+typedef struct {
+    uint8_t state;          /**< @brief PTC state. */
+} cmr_canPTCState_t;
+
 /** @brief Heartbeat error matrix bit fields. */
 typedef enum {
     CMR_CAN_ERROR_NONE = 0,     /**< @brief No errors. */
