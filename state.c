@@ -76,11 +76,10 @@ void stateVSMDown(void);
 void enterConfigScreen(void);
 
 void actionZeroButton(bool pressed) {
+    action0ButtonPressed = pressed; // True
     if (!pressed) {
-        action0ButtonPressed = false;
         return;
     }
-    action0ButtonPressed = pressed; // True
 }
 
 /**
@@ -89,8 +88,8 @@ void actionZeroButton(bool pressed) {
  * @param pressed `true` if button is currently pressed.
  */
 void actionOneButton(bool pressed) {
+    action1ButtonPressed = pressed;
     if (!pressed) {
-        action1ButtonPressed = false;
         ackButtonPressed = false;
         return;
     }
@@ -107,9 +106,8 @@ void actionOneButton(bool pressed) {
         ackButtonPressed = true;
         return;
     }
-    // only set can message to true if we're not in config screen
     // Allow CDC to use this button for TC
-    action1ButtonPressed = pressed;
+
 }
 
 /**
@@ -118,8 +116,8 @@ void actionOneButton(bool pressed) {
  * @param pressed `true` if button is currently pressed.
  */
 void actionTwoButton(bool pressed) {
+    action2ButtonPressed = pressed;
     if (!pressed) {
-        action2ButtonPressed = false;
         return;
     }
     if (inConfigScreen()) {
@@ -128,8 +126,6 @@ void actionTwoButton(bool pressed) {
         return;
     }
     in_racing_screen = !inRacingScreen();
-    // only set can message to true if we're not in config screen
-    // action2ButtonPressed = pressed;
 }
 
 /**
@@ -138,15 +134,9 @@ void actionTwoButton(bool pressed) {
  * @param pressed `true` if button is currently pressed.
  */
 void drsButton(bool pressed) {
-    if (!pressed) {
-        drsButtonPressed = false;
-        return;
-    }
+    drsButtonPressed = pressed;
     if (inConfigScreen()) {
         config_increment_up_requested = true;
-    } else {
-        // only set can message to true if we're not in config screen
-        drsButtonPressed = pressed;
     }
 }
 
@@ -228,6 +218,7 @@ void rightButton(bool pressed) {
 }
 
 void rotaries(bool select,uint8_t pos) {
+    // stabilizes the rotary switch inputs
     if (select)
     {
         if (prevRotary == pos)
