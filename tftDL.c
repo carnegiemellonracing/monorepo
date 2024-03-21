@@ -108,6 +108,17 @@ const tftDL_t tftDL_racing_screen = {
     .contentLen = 0,
     .content = NULL};
 
+static uint32_t tftDl_safetyData[] = {
+#include <DIM-ESE/safety-circuit.rawh>
+};
+
+const tftDL_t tftDL_safety_screen = {
+    .len = sizeof(tftDl_safetyData),
+    .data = tftDl_safetyData,
+
+    .contentLen = 0,
+    .content = NULL};
+
 /** @brief Bitposition of Y-coordinate byte in vertices */
 #define TFT_DL_VERTEX_Y_BIT 15
 
