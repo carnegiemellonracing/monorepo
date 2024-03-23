@@ -553,7 +553,8 @@ uint8_t getPaddleState(expanderClutch_t clutch) {
  * @return the position of the clutch
  */
 uint8_t getPos(expanderClutch_t clutch) {
-    return (uint8_t)(((float)expanderGetClutch(clutch)) / 4095.0f) * ((float)UINT8_MAX);
+	float val = (float)(expanderGetClutch(clutch)) / 4095.0f;
+    return (uint8_t)(val * ((float)UINT8_MAX));
 }
 
 /**

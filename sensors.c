@@ -324,17 +324,17 @@ static uint32_t sampleBrakeImplaus(const cmr_sensor_t *sensor) {
 static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     [SENSOR_CH_TPOS_L_U8] = {
         .conv = adcToUInt8,
-        .sample = leftThrottleToRequest,
-        .readingMin = 0,
-        .readingMax = 256,
+        .sample = sampleADCSensor,
+        .readingMin = 780,
+        .readingMax = 3783,
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_FSM_TPOS_L
     },
     [SENSOR_CH_TPOS_R_U8] = {
         .conv = adcToUInt8,
-        .sample = rightThrottleToRequest,
-        .readingMin = 0,
-        .readingMax = 256,
+        .sample = sampleADCSensor,
+        .readingMin = 396,
+        .readingMax = 1930,
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_FSM_TPOS_R
     },
