@@ -118,7 +118,7 @@ int main(void) {
     canInit();
     adcInit();
     sensorsInit();
-    //    tftInit();
+    tftInit();
    expandersInit();  // Initialize SPI AND I2C expanders
 
 //        cmr_taskInit(
