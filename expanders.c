@@ -256,7 +256,7 @@ static void expanderUpdate100Hz(void *pvParameters) {
  * @brief Initializes the GPIO expander interface.
  */
 void expandersInit(void) {
-    //ADS7038Init();
+    ADS7038Init();
 	PCF8574Init();
     cmr_taskInit(
         &expanderUpdate100Hz_task,

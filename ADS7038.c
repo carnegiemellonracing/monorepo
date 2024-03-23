@@ -60,9 +60,9 @@ int ADS7038_adcManualRead(uint16_t *ppos) {
     uint8_t dummy[3] = {0, 0, 0};
     // Set first channel, data received is not meaningful
     cmr_spiTXRX(&ADS7038Spi, command0, NULL, 3);
-
     // Set second channel, data received is not meaningful
     cmr_spiTXRX(&ADS7038Spi, command1, NULL, 3);
+
 
     // Receive first channel data
     if (cmr_spiTXRX(&ADS7038Spi, dummy, data, SPI_MSG_LEN) == 0) {
@@ -71,7 +71,8 @@ int ADS7038_adcManualRead(uint16_t *ppos) {
     } else {
         return -1;
     }
-
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&lastWakeTime, 1);
     // Receive second channel data
     if (cmr_spiTXRX(&ADS7038Spi, dummy, data, SPI_MSG_LEN) == 0) {
         uint16_t adcValue1 = (data[0] << 4) | (data[1] >> 4);
