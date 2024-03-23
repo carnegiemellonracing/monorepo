@@ -461,12 +461,19 @@ ID=515h
 DLC=6
 CycleTime=100
 Timeout=1000
-Var=DIM_action1ButtonPressed unsigned 0,8
-Var=DIM_action2ButtonPressed unsigned 8,8
-Var=DIM_drsButtonPressed unsigned 16,8
+Var=DIM_action1ButtonPressed unsigned 5,1
+Var=DIM_action2ButtonPressed unsigned 4,1
+Var=DIM_drsButtonPressed unsigned 7,1
 Var=DIM_regenPercent unsigned 24,8 /u:percent
 Var=DIM_paddleLeft unsigned 32,8
 Var=DIM_paddleRight unsigned 40,8
+Var=DIM_action0ButtonPressed unsigned 6,1
+Var=DIM_actionUpButtonPressed unsigned 3,1
+Var=DIM_actionRightButtonPressed unsigned 0,1
+Var=DIM_actionLeftButtonPressed unsigned 1,1
+Var=DIM_actionDownButtonPressed unsigned 2,1
+Var=DIM_rotaryPos unsigned 8,8
+Var=DIM_switchValues unsigned 16,8
 
 [DIM_Acknowledge]
 ID=545h
