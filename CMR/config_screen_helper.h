@@ -11,7 +11,7 @@ __attribute__((unused)) static uint32_t this_stops_the_compiler_from_complaining
 
 
 #define NOT_SELECTED_MENU_COLOR 0x04000000
-#define SELECTED_MENU_COLOR 0x04AA0000 
+#define SELECTED_MENU_COLOR 0x04AA0000
 
 typedef enum{
     float_1_decimal,
@@ -32,6 +32,7 @@ typedef enum{
 typedef enum {
     DRIVER_PROFILE_INDEX,
     POWER_LIM_INDEX,
+    POWER_ERR_INDEX,
     SF_OP_MARGIN_INDEX,
     YRC_KP_INDEX,
     YRC_KD_INDEX,
@@ -47,6 +48,12 @@ typedef enum {
     DRS_SWANGLE_THRESH_INDEX,
     DRS_BRAKE_THRESH_INDEX,
     WET_INDEX,
+    K_LIN_INDEX,
+    K_YAW_INDEX,
+    K_TIE_INDEX,
+    K_EFF_INDEX,
+    FFLAUNCH_FEEDBACK_INDEX,
+    EXTRA_K_INDEX,
     MAX_MENU_ITEMS // The elements in the config array
 } config_menu_main_array_index_t;
 
@@ -59,17 +66,17 @@ extern char* config_driver_string_lut[4];
 
 /**
  * @brief the value struct for the config menu
- * 
+ *
  * floats with 1 decimal are stored as ints with 10^1 multiplier
  * floats with 2 decimal are stored as ints with 10^2 multiplier
  * booleans are stored as ints with 0 as false, 1 as true
  * integers are stored as uints and simply casted at the time they're needed
- * 
+ *
  * restricted to a uint8_t for now since that's what is transmitted over CAN
  */
 typedef struct{
     cmr_config_type_t type;
-    uint8_t value; 
+    uint8_t value;
 }cmr_config_value_t;
 
 typedef struct {
