@@ -302,7 +302,7 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
     uint32_t *state_color = (void *)(file_addr + state_col_addr);
 
     char stateChar[12];
-    // TODO make this name better i dont want it to be stateCharLen since it very similar to other var
+    // TODO make this name better I dont want it to be stateCharLen since it very similar to other var
     size_t bufLen = sizeof(stateChars);
     if (stateVSM == stateVSMReq) {
         if (stateVSM < stateCharsLen) {
