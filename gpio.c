@@ -199,6 +199,9 @@ static void buttonsInput(void *pvParameters) {
 
             expanderRotaryPosition_t rotaryPos = expanderGetRotary(select);
             rotaries(select,rotaryPos);
+            if(!select) {
+            	stateGearSwitch(rotaryPos);
+            }
             select = !select;
 
         vTaskDelayUntil(&lastWakeTime, buttonsInput_period);
