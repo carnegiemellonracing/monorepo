@@ -221,19 +221,19 @@ void rotaries(bool select,uint8_t pos) {
     // stabilizes the rotary switch inputs
     if (select)
     {
-        if (prevRotary == pos)
-        {
-            rotaryPos = pos;
-        }
-        prevRotary = pos;
-    }
-    else
-    {
         if (prevSwitch == pos)
         {
             switchValues = pos;
         }
         prevSwitch = pos;
+    }
+    else
+    {
+        if (prevRotary == pos)
+        {
+            rotaryPos = pos;
+        }
+        prevRotary = pos;
     }
 }
 

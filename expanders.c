@@ -205,50 +205,38 @@ expanderRotaryPosition_t expanderGetRotary(bool select)
     }
     return pos;
 }
-// TODO: scale down to uint8_t and send over CAN
+
 uint32_t expanderGetClutch(expanderClutch_t clutch) {
     return daughterAnalogData[clutch];
 }
 
 static void expanderUpdate100Hz(void *pvParameters) {
     (void)pvParameters;  // Placate compiler.
-
-//    int status = PCF8574Configure();
     int status = 0;
     TickType_t lastWakeTime = xTaskGetTickCount();
 
-    int badStatus_count = 0;
+    int badStatusCount = 0;
 
     while (1) {
         status = 0;
-
-        // check status of each function
-        if (checkStatus(status)) {
-            status |= updateExpanderDataMain();
-        }
+        status |= updateExpanderDataMain();
 
         // dont check status of daughter board, if steering is removed, DIM should still work
-        // PCF8574Configure();
-//        ADS7038Configure();
         updateExpanderDataDaughter();
 
         vTaskDelayUntil(&lastWakeTime, expanderUpdate100Hz_period_ms);
 
         if (checkStatus(status)) {
-            badStatus_count = 0;
+            badStatusCount = 0; // Clear Counter
         } else {
-            badStatus_count += 1;
+            badStatusCount += 1;
         }
         // if we've seen a badStatus for more than 4 times,
         // reset clock and delay for a while so that the timed out function finishes.
-        if (badStatus_count > 4) {
+        if (badStatusCount > 4) {
             lastWakeTime = xTaskGetTickCount();
             vTaskDelayUntil(&lastWakeTime, 100);
             resetClock();
-
-            // config everything again since clock reset
-//            PCF8574Configure();
-//            ADS7038Configure();
         }
     }
 }
