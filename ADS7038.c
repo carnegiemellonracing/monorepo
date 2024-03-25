@@ -111,22 +111,22 @@ int ADS7038Configure() {
     int status = 0;
     uint8_t data[3];
     status |= ADS7038_read(SYSTEM_STATUS_REG, data);
-
+    // Uncomment compareReadAndWrite when steering wheel is connected and you want to verify the data
     status |= ADS7038_write(DATA_CFG_REG, CHANNEL_ID_ENABLE);
     status |= ADS7038_read(DATA_CFG_REG, data);
-    compareReadAndWrite(CHANNEL_ID_ENABLE,data);
+    //compareReadAndWrite(CHANNEL_ID_ENABLE,data);
 
     status |= ADS7038_write(SEQUENCE_CFG_REG, 0b00000000);
     status |= ADS7038_read(SEQUENCE_CFG_REG, data);
-    compareReadAndWrite(0b00000000,data);
+    //compareReadAndWrite(0b00000000,data);
 
     status |= ADS7038_write(PIN_CFG_REG, 0b00111100);
     status |= ADS7038_read(PIN_CFG_REG, data);
-    compareReadAndWrite(0b00111100,data);
+    //compareReadAndWrite(0b00111100,data);
 
     status |= ADS7038_write(GPIO_CFG_REG, 0b00000000);
     status |= ADS7038_read(GPIO_CFG_REG, data);
-    compareReadAndWrite(0b00000000,data);
+    //compareReadAndWrite(0b00000000,data);
 
     return status;
 }
