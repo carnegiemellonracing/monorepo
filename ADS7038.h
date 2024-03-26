@@ -1,6 +1,7 @@
 #ifndef ADS_H
 #define ADS_H
 
+#include <FreeRTOS.h>       // FreeRTOS API
 #include <stdbool.h>
 #include <stdint.h>
 

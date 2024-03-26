@@ -122,8 +122,8 @@ int main(void) {
     canInit();
     adcInit();
     sensorsInit();
-   expandersInit();  // Initialize SPI AND I2C expanders
-   tftInit();
+    expandersInit();  // Initialize SPI AND I2C expanders
+    tftInit();
 
         cmr_taskInit(
             &statusLED_task,

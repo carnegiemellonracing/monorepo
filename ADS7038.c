@@ -83,12 +83,13 @@ int ADS7038_adcManualRead(uint16_t *ppos) {
     return 0;
 }
 
-bool ADS7038Init() {
+bool ADS7038Init(TickType_t *lastWakeTime) {
     cmr_spiInit(
         &ADS7038Spi, SPI2, &ADS7038SpiInit, &ADS7038SpiPins,
         DMA2_Stream2, DMA_CHANNEL_3,
         DMA2_Stream3, DMA_CHANNEL_3);
     int status = ADS7038Configure();
+    vTaskDelayUntil(lastWakeTime, 1000);
     return status;
 }
 
