@@ -22,7 +22,7 @@
 static const uint32_t statusLED_priority = 2;
 
 /** @brief Status LED period (milliseconds). */
-static const TickType_t statusLED_period_ms = 1000;
+static const TickType_t statusLED_period_ms = 250;
 
 /** @brief Status LED task. */
 static cmr_task_t statusLED_task;
@@ -43,22 +43,26 @@ static cmr_task_t errorLEDs_task;
  *
  * @return Does not return.
  */
-// static void statusLED(void *pvParameters) {
-//     (void) pvParameters;
-//
-//     cmr_gpioWrite(GPIO_LED_STATUS, 0);
-//     static bool toggle = false;
-//
-//     for (
-//         TickType_t lastWakeTime = xTaskGetTickCount();
-//         1;
-//         vTaskDelayUntil(&lastWakeTime, statusLED_period_ms)
-//     ) {
-//         expanderSetLED(EXP_LED_1, toggle);
-//         cmr_gpioToggle(GPIO_LED_STATUS);
-//         toggle = !toggle;
-//     }
-// }
+ static void statusLED(void *pvParameters) {
+     (void) pvParameters;
+
+     cmr_gpioWrite(GPIO_LED_0, 0);
+     cmr_gpioWrite(GPIO_LED_1, 0);
+     cmr_gpioWrite(GPIO_LED_2, 0);
+
+     static bool toggle = true;
+
+     for (
+         TickType_t lastWakeTime = xTaskGetTickCount();
+         1;
+         vTaskDelayUntil(&lastWakeTime, statusLED_period_ms)
+     ) {
+         cmr_gpioWrite(GPIO_LED_0, toggle);
+         cmr_gpioWrite(GPIO_LED_1, toggle);
+         cmr_gpioWrite(GPIO_LED_2, toggle);
+         toggle = !toggle;
+     }
+ }
 //
 ///**
 // * @brief Gets the VSM latch matrix.
@@ -118,16 +122,16 @@ int main(void) {
     canInit();
     adcInit();
     sensorsInit();
-    tftInit();
    expandersInit();  // Initialize SPI AND I2C expanders
+   tftInit();
 
-//        cmr_taskInit(
-//            &statusLED_task,
-//            "statusLED",
-//            statusLED_priority,
-//            statusLED,
-//            NULL
-//        );
+        cmr_taskInit(
+            &statusLED_task,
+            "statusLED",
+            statusLED_priority,
+            statusLED,
+            NULL
+        );
 
         cmr_taskInit(
             &errorLEDs_task,

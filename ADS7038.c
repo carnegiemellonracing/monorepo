@@ -15,7 +15,7 @@ static const SPI_InitTypeDef ADS7038SpiInit = {
     .CLKPolarity = SPI_POLARITY_HIGH,
     .CLKPhase = SPI_PHASE_2EDGE,
     .NSS = SPI_NSS_SOFT,
-    .BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256,
+    .BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64,
     .FirstBit = SPI_FIRSTBIT_MSB,
     .TIMode = SPI_TIMODE_DISABLE,
     .CRCCalculation = SPI_CRCCALCULATION_DISABLE,
@@ -83,12 +83,13 @@ int ADS7038_adcManualRead(uint16_t *ppos) {
     return 0;
 }
 
-bool ADS7038Init() {
+bool ADS7038Init(TickType_t *lastWakeTime) {
     cmr_spiInit(
         &ADS7038Spi, SPI2, &ADS7038SpiInit, &ADS7038SpiPins,
         DMA2_Stream2, DMA_CHANNEL_3,
         DMA2_Stream3, DMA_CHANNEL_3);
     int status = ADS7038Configure();
+    vTaskDelayUntil(lastWakeTime, 1000);
     uint8_t data[3];
     ADS7038_read(GPI_VALUE_REG,data);
     ADS7038_read(GPI_VALUE_REG,data);
