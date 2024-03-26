@@ -218,7 +218,7 @@ static void expanderUpdate100Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&lastWakeTime, 1000);
 	PCF8574Init();
-    ADS7038Init(&lastWakeTime);
+    bool possibleDisconnected = ADS7038Init(&lastWakeTime);
 
     while (1) {
         status = 0;
