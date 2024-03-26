@@ -213,9 +213,12 @@ uint32_t expanderGetClutch(expanderClutch_t clutch) {
 static void expanderUpdate100Hz(void *pvParameters) {
     (void)pvParameters;  // Placate compiler.
     int status = 0;
-    TickType_t lastWakeTime = xTaskGetTickCount();
-
     int badStatusCount = 0;
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&lastWakeTime, 1000);
+    ADS7038Init();
+	PCF8574Init();
 
     while (1) {
         status = 0;
@@ -244,8 +247,6 @@ static void expanderUpdate100Hz(void *pvParameters) {
  * @brief Initializes the GPIO expander interface.
  */
 void expandersInit(void) {
-    ADS7038Init();
-	PCF8574Init();
     cmr_taskInit(
         &expanderUpdate100Hz_task,
         "GPIO Expander Update 100Hz",
