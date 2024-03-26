@@ -219,7 +219,7 @@ static void expanderUpdate100Hz(void *pvParameters) {
     vTaskDelayUntil(&lastWakeTime, 1000);
 	PCF8574Init();
     // 0 == no issue
-    int possibleDisconnected = ADS7038Init(&lastWakeTime);
+    int possibleDisconnected = ADS7038Init();
 
     while (1) {
         status = 0;
@@ -227,7 +227,7 @@ static void expanderUpdate100Hz(void *pvParameters) {
 
         // dont check status of daughter board, if steering is removed, DIM should still work
         if (possibleDisconnected == 0){
-            possibleDisconnected = ADS7038Init(&lastWakeTime);
+            possibleDisconnected = ADS7038Init();
         }
         else{
             updateExpanderDataDaughter();

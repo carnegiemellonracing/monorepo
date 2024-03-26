@@ -1,7 +1,6 @@
 #ifndef ADS_H
 #define ADS_H
 
-#include <FreeRTOS.h>       // FreeRTOS API
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -34,7 +33,7 @@ typedef enum {
 
 } ADS7038Register_t;
 
-bool ADS7038Init(TickType_t *lastWakeTime);
+bool ADS7038Init();
 int ADS7038Configure();
 int ADS7038_read(uint8_t reg, uint8_t* data);
 int ADS7038_write(uint8_t reg, uint8_t data);
