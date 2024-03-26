@@ -33,7 +33,7 @@ typedef enum {
 
 } ADS7038Register_t;
 
-bool ADS7038Init();
+bool ADS7038Init(TickType_t *lastWakeTime);
 int ADS7038Configure();
 int ADS7038_read(uint8_t reg, uint8_t* data);
 int ADS7038_write(uint8_t reg, uint8_t data);

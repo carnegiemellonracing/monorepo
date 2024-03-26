@@ -15,7 +15,7 @@ static const SPI_InitTypeDef ADS7038SpiInit = {
     .CLKPolarity = SPI_POLARITY_HIGH,
     .CLKPhase = SPI_PHASE_2EDGE,
     .NSS = SPI_NSS_SOFT,
-    .BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64,
+    .BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256,
     .FirstBit = SPI_FIRSTBIT_MSB,
     .TIMode = SPI_TIMODE_DISABLE,
     .CRCCalculation = SPI_CRCCALCULATION_DISABLE,
@@ -83,19 +83,12 @@ int ADS7038_adcManualRead(uint16_t *ppos) {
     return 0;
 }
 
-bool ADS7038Init(TickType_t *lastWakeTime) {
+bool ADS7038Init() {
     cmr_spiInit(
         &ADS7038Spi, SPI2, &ADS7038SpiInit, &ADS7038SpiPins,
         DMA2_Stream2, DMA_CHANNEL_3,
         DMA2_Stream3, DMA_CHANNEL_3);
     int status = ADS7038Configure();
-    vTaskDelayUntil(lastWakeTime, 1000);
-    uint8_t data[3];
-    ADS7038_read(GPI_VALUE_REG,data);
-    ADS7038_read(GPI_VALUE_REG,data);
-    ADS7038_read(GPI_VALUE_REG,data);
-    ADS7038_read(GPI_VALUE_REG,data);
-    ADS7038_read(GPI_VALUE_REG,data);
     return status;
 }
 
@@ -112,7 +105,7 @@ int ADS7038Configure() {
     int status = 0;
     uint8_t data[3];
     status |= ADS7038_read(SYSTEM_STATUS_REG, data);
-    // Uncomment compareReadAndWrite when steering wheel is connected and you want to verify the data
+    // Uncomment compareReadAndWrite when steering wheel is connected and you want to verify
     status |= ADS7038_write(DATA_CFG_REG, CHANNEL_ID_ENABLE);
     status |= ADS7038_read(DATA_CFG_REG, data);
     //compareReadAndWrite(CHANNEL_ID_ENABLE,data);
