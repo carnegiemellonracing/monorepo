@@ -110,29 +110,29 @@ static cmr_task_t buttonsInput_task;
 /** @brief Current regen step */
 uint32_t regenStep = 0;
 
-#define BUTTON_DEBOUNCE_TIME 200
+#define BUTTON_DEBOUNCE_TIME 250
 
 static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
     [EXP_DASH_BUTTON_0] = {
-        .buttonState = false,
+        .buttonState = true,
         .setAction = &downButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_DASH_BUTTON_1] = {
-        .buttonState = false,
+        .buttonState = true,
         .setAction = &upButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_DASH_BUTTON_2] = {
-        .buttonState = false,
+        .buttonState = true,
         .setAction = &rightButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_DASH_BUTTON_3] = {
-        .buttonState = false,
+        .buttonState = true,
         .setAction = &leftButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
@@ -144,19 +144,19 @@ static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_WHEEL_BUTTON_1] = {
-        .buttonState = false,
+        .buttonState = true,
         .setAction = &actionTwoButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_WHEEL_BUTTON_2] = {
-        .buttonState = false,
+        .buttonState = true,
         .setAction = &drsButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
     [EXP_WHEEL_BUTTON_3] = {
-        .buttonState = false,
+        .buttonState = true,
         .setAction = &actionZeroButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
