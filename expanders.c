@@ -226,7 +226,7 @@ static void expanderUpdate100Hz(void *pvParameters) {
         status |= updateExpanderDataMain();
 
         // dont check status of daughter board, if steering is removed, DIM should still work
-        if (possibleDisconnected == 0){
+        if (possibleDisconnected != 0){
             possibleDisconnected = ADS7038Init();
         }
         else{
