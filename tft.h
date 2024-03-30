@@ -8,6 +8,8 @@
 #ifndef TFT_H
 #define TFT_H
 
+#include <stdbool.h>
+#include <stdint.h>
 /** @brief setting the thresholds for the backgrounds to turn yellow and red*/
 #define AC_YELLOW_THRESHOLD 55
 #define AC_RED_THRESHOLD 57

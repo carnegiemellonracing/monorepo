@@ -35,6 +35,9 @@ extern const tftDL_t tftDL_error;
 /** @brief Exported error screen definition for interface consumers. */
 extern const tftDL_t tftDL_config;
 
+/** @brief Exported safety screen definition for interface consumers. */
+extern const tftDL_t tftDL_safety_screen;
+
 /** @brief Text buffer for messages from RAM */
 // extern char RAMBUF[];
 
