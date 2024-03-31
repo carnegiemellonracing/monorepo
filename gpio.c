@@ -7,7 +7,6 @@
 
 #include "gpio.h"  // Interface to implement
 
-#include <FreeRTOS.h>       // FreeRTOS API
 #include <stm32f4xx_hal.h>  // HAL interface
 
 #include "expanders.h"  // GPIO expanders interface

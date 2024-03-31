@@ -9,6 +9,7 @@
 #define GPIO_H
 
 #include <CMR/gpio.h>  // GPIO interface
+#include <FreeRTOS.h>  // FreeRTOS API
 
 #include "expanders.h"  // GPIO expanders interface
 
