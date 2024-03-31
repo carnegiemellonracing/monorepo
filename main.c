@@ -5,18 +5,18 @@
  * @author Carnegie Mellon Racing
  */
 
-#include <CMR/adc.h>        // ADC interface
-#include <CMR/can.h>        // CAN interface
-#include <CMR/gpio.h>       // GPIO interface
-#include <CMR/panic.h>      // cmr_panic()
-#include <CMR/rcc.h>        // RCC interface
+#include <CMR/adc.h>    // ADC interface
+#include <CMR/can.h>    // CAN interface
+#include <CMR/gpio.h>   // GPIO interface
+#include <CMR/panic.h>  // cmr_panic()
+#include <CMR/rcc.h>    // RCC interface
 
 #include "adc.h"        // Board-specific ADC interface
 #include "can.h"        // Board-specific CAN interface
 #include "expanders.h"  // LED strip interface.
 #include "gpio.h"       // Board-specific GPIO interface
 #include "test.h"
-#include "tft.h"        // TFT display interface.
+#include "tft.h"  // TFT display interface.
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -43,26 +43,25 @@ static cmr_task_t errorLEDs_task;
  *
  * @return Does not return.
  */
- static void statusLED(void *pvParameters) {
-     (void) pvParameters;
+static void statusLED(void *pvParameters) {
+    (void)pvParameters;
 
-     cmr_gpioWrite(GPIO_LED_0, 0);
-     cmr_gpioWrite(GPIO_LED_1, 0);
-     cmr_gpioWrite(GPIO_LED_2, 0);
+    cmr_gpioWrite(GPIO_LED_0, 0);
+    cmr_gpioWrite(GPIO_LED_1, 0);
+    cmr_gpioWrite(GPIO_LED_2, 0);
 
-     static bool toggle = true;
+    static bool toggle = true;
 
-     for (
-         TickType_t lastWakeTime = xTaskGetTickCount();
-         1;
-         vTaskDelayUntil(&lastWakeTime, statusLED_period_ms)
-     ) {
-         cmr_gpioWrite(GPIO_LED_0, toggle);
-         cmr_gpioWrite(GPIO_LED_1, toggle);
-         cmr_gpioWrite(GPIO_LED_2, toggle);
-         toggle = !toggle;
-     }
- }
+    for (
+        TickType_t lastWakeTime = xTaskGetTickCount();
+        1;
+        vTaskDelayUntil(&lastWakeTime, statusLED_period_ms)) {
+        cmr_gpioWrite(GPIO_LED_0, toggle);
+        cmr_gpioWrite(GPIO_LED_1, toggle);
+        cmr_gpioWrite(GPIO_LED_2, toggle);
+        toggle = !toggle;
+    }
+}
 //
 ///**
 // * @brief Gets the VSM latch matrix.
@@ -72,11 +71,11 @@ static cmr_task_t errorLEDs_task;
 // * @return The VSM latch matrix.
 // */
 uint8_t getVSMlatchMatrix(void) {
-   cmr_canRXMeta_t *statusVSMMeta = canRXMeta + CANRX_VSM_STATUS;
-   volatile cmr_canVSMStatus_t *statusVSM =
-       (void *) statusVSMMeta->payload;
+    cmr_canRXMeta_t *statusVSMMeta = canRXMeta + CANRX_VSM_STATUS;
+    volatile cmr_canVSMStatus_t *statusVSM =
+        (void *)statusVSMMeta->payload;
 
-   return statusVSM->latchMatrix;
+    return statusVSM->latchMatrix;
 }
 
 /**
@@ -125,21 +124,19 @@ int main(void) {
     expandersInit();  // Initialize SPI AND I2C expanders
     tftInit();
 
-        cmr_taskInit(
-            &statusLED_task,
-            "statusLED",
-            statusLED_priority,
-            statusLED,
-            NULL
-        );
+    cmr_taskInit(
+        &statusLED_task,
+        "statusLED",
+        statusLED_priority,
+        statusLED,
+        NULL);
 
-        cmr_taskInit(
-            &errorLEDs_task,
-            "errorLEDs",
-            errorLEDs_priority,
-            errorLEDs,
-            NULL
-        );
+    cmr_taskInit(
+        &errorLEDs_task,
+        "errorLEDs",
+        errorLEDs_priority,
+        errorLEDs,
+        NULL);
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

@@ -48,7 +48,6 @@ typedef struct {
     uint8_t pin;
 } expanderPinConfig_t;
 
-
 void expandersInit(void);
 bool expanderGetButtonPressed(expanderButton_t button);
 expanderRotaryPosition_t expanderGetRotary(bool select);

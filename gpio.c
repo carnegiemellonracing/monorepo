@@ -5,13 +5,13 @@
  * @author Carnegie Mellon Racing
  */
 
-#include <stm32f4xx_hal.h>  // HAL interface
+#include "gpio.h"  // Interface to implement
+
 #include <FreeRTOS.h>       // FreeRTOS API
+#include <stm32f4xx_hal.h>  // HAL interface
 
-#include "state.h"
-#include "gpio.h"       // Interface to implement
 #include "expanders.h"  // GPIO expanders interface
-
+#include "state.h"
 
 /** @brief Array to store target LED states */
 // bool ledTargets[EXP_LED_LEN];
@@ -31,72 +31,14 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pin = GPIO_PIN_6,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_LED_1] = {
-        .port = GPIOB,
-        .init = {
-            .Pin = GPIO_PIN_5,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_LED_2] = { // not in the schematic
-        .port = GPIOB,
-        .init = {
-            .Pin = GPIO_PIN_4,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_LED_AMS] = {
-        .port = GPIOA,
-        .init = {
-            .Pin = GPIO_PIN_11,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_LED_IMD] = {
-        .port = GPIOA,
-        .init = {
-            .Pin = GPIO_PIN_9,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_LED_BSPD] = {
-        .port = GPIOA,
-        .init = {
-            .Pin = GPIO_PIN_10,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-	[GPIO_PTT_N] = {
-	        .port = GPIOC,
-	        .init = {
-	            .Pin = GPIO_PIN_8,
-	            .Mode = GPIO_MODE_OUTPUT_PP,
-	            .Pull = GPIO_NOPULL,
-	            .Speed = GPIO_SPEED_FREQ_LOW
-	        }
-	},
-    [GPIO_PD_N] = {
-            .port = GPIOA,
-            .init = {
-                .Pin = GPIO_PIN_5,
-	            .Mode = GPIO_MODE_OUTPUT_PP,
-	            .Pull = GPIO_NOPULL,
-	            .Speed = GPIO_SPEED_FREQ_LOW
-            }
-    }
+            .Speed = GPIO_SPEED_FREQ_LOW } },
+    [GPIO_LED_1] = { .port = GPIOB, .init = { .Pin = GPIO_PIN_5, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW } },
+    [GPIO_LED_2] = { .port = GPIOB, .init = { .Pin = GPIO_PIN_4, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW } },  // not in the schematic
+    [GPIO_LED_AMS] = { .port = GPIOA, .init = { .Pin = GPIO_PIN_11, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW } },
+    [GPIO_LED_IMD] = { .port = GPIOA, .init = { .Pin = GPIO_PIN_9, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW } },
+    [GPIO_LED_BSPD] = { .port = GPIOA, .init = { .Pin = GPIO_PIN_10, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW } },
+    [GPIO_PTT_N] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_8, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW } },
+    [GPIO_PD_N] = { .port = GPIOA, .init = { .Pin = GPIO_PIN_5, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_FREQ_LOW } }
 };
 
 static const uint32_t buttonsInput_priority = 4;
@@ -169,7 +111,7 @@ static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
  * @param pvParameters Ignored.
  */
 static void buttonsInput(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
+    (void)pvParameters;  // Placate compiler.
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     TickType_t currentTime;
@@ -177,15 +119,14 @@ static void buttonsInput(void *pvParameters) {
     while (1) {
         /* if vsm has changed state unexpectedly we
          * need to adjust our req to still be valid */
-        if(!stateVSMReqIsValid(stateGetVSM(), stateGetVSMReq()))
-        {
+        if (!stateVSMReqIsValid(stateGetVSM(), stateGetVSMReq())) {
             updateReq();
         }
 
         currentTime = xTaskGetTickCount();
 
         // updating each button and updating states according to button presses
-        for (expanderButton_t i = EXP_DASH_BUTTON_0; i < EXP_BUTTON_LEN; i ++) {
+        for (expanderButton_t i = EXP_DASH_BUTTON_0; i < EXP_BUTTON_LEN; i++) {
             bool currState = expanderGetButtonPressed(i);
             expanderButtonEvent_t *currButton = &expanderButtons[i];
 
@@ -197,16 +138,15 @@ static void buttonsInput(void *pvParameters) {
             }
         }
 
-            expanderRotaryPosition_t rotaryPos = expanderGetRotary(select);
-            rotaries(select,rotaryPos);
-            if(!select) {
-            	stateGearSwitch(rotaryPos);
-            }
-            select = !select;
+        expanderRotaryPosition_t rotaryPos = expanderGetRotary(select);
+        rotaries(select, rotaryPos);
+        if (!select) {
+            stateGearSwitch(rotaryPos);
+        }
+        select = !select;
 
         vTaskDelayUntil(&lastWakeTime, buttonsInput_period);
     }
-
 }
 
 /**
@@ -244,21 +184,16 @@ static void buttonsInput(void *pvParameters) {
 //    ledTargets[led] = isOn;
 // }
 
-
-
 /**
  * @brief Initializes the GPIO interface.
  */
 void gpioInit(void) {
     cmr_gpioPinInit(
-        gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0])
-    );
-     cmr_taskInit(
-          &buttonsInput_task,
-          "buttonsInput",
-          buttonsInput_priority,
-          buttonsInput,
-          NULL
-      );
+        gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0]));
+    cmr_taskInit(
+        &buttonsInput_task,
+        "buttonsInput",
+        buttonsInput_priority,
+        buttonsInput,
+        NULL);
 }
-

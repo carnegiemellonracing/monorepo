@@ -76,7 +76,7 @@ void stateVSMDown(void);
 void enterConfigScreen(void);
 
 void actionZeroButton(bool pressed) {
-    action0ButtonPressed = pressed; // True
+    action0ButtonPressed = pressed;  // True
     if (!pressed) {
         return;
     }
@@ -107,7 +107,6 @@ void actionOneButton(bool pressed) {
         return;
     }
     // Allow CDC to use this button for TC
-
 }
 
 /**
@@ -157,7 +156,6 @@ void upButton(bool pressed) {
     } else {
         stateVSMUp();
     }
-
 }
 
 /**
@@ -176,7 +174,6 @@ void downButton(bool pressed) {
     } else {
         stateVSMDown();
     }
-
 }
 
 /**
@@ -196,7 +193,6 @@ void leftButton(bool pressed) {
         // Enter config screen function does necesarry state checks
         enterConfigScreen();
     }
-
 }
 
 /**
@@ -217,20 +213,15 @@ void rightButton(bool pressed) {
     }
 }
 
-void rotaries(bool select,uint8_t pos) {
+void rotaries(bool select, uint8_t pos) {
     // stabilizes the rotary switch inputs
-    if (select)
-    {
-        if (prevSwitch == pos)
-        {
+    if (select) {
+        if (prevSwitch == pos) {
             switchValues = pos;
         }
         prevSwitch = pos;
-    }
-    else
-    {
-        if (prevRotary == pos)
-        {
+    } else {
+        if (prevRotary == pos) {
             rotaryPos = pos;
         }
         prevRotary = pos;
@@ -286,7 +277,8 @@ static volatile struct {
     .gear = CMR_CAN_GEAR_SLOW,
     .gearReq = CMR_CAN_GEAR_SLOW,
     .drsMode = CMR_CAN_DRSM_CLOSED,
-    .drsReq = CMR_CAN_DRSM_CLOSED};
+    .drsReq = CMR_CAN_DRSM_CLOSED
+};
 
 /**
  * @brief Gets the VSM state.
@@ -510,8 +502,6 @@ void stateDrsModeSwitch(expanderRotaryPosition_t position) {
     }
 }
 
-
-
 /**
  * @brief Updates state request to be consistent with VSM state.
  */
@@ -553,7 +543,7 @@ uint8_t getPaddleState(expanderClutch_t clutch) {
  * @return the position of the clutch
  */
 uint8_t getPos(expanderClutch_t clutch) {
-	float val = (float)(expanderGetClutch(clutch)) / 4095.0f;
+    float val = (float)(expanderGetClutch(clutch)) / 4095.0f;
     return (uint8_t)(val * ((float)UINT8_MAX));
 }
 
@@ -597,25 +587,27 @@ typedef struct {
  * Must be sorted in descending order
  */
 static voltage_SoC_t LV_LiFePo_SoC_lookup[LV_LIFEPO_LUT_NUM_ITEMS] = {
-    {27.2f, 100},
-    {26.8f, 90},
-    {26.6f, 80},
-    {26.1f, 70},
-    {26.4f, 60},
-    {26.1f, 50},
-    {26.0f, 40},
-    {25.8f, 30},
-    {25.6f, 20},
-    {24.0f, 10},
-    {20.0f, 0}};
+    { 27.2f, 100 },
+    { 26.8f, 90 },
+    { 26.6f, 80 },
+    { 26.1f, 70 },
+    { 26.4f, 60 },
+    { 26.1f, 50 },
+    { 26.0f, 40 },
+    { 25.8f, 30 },
+    { 25.6f, 20 },
+    { 24.0f, 10 },
+    { 20.0f, 0 }
+};
 
 static voltage_SoC_t LV_LiPo_SoC_lookup[LV_LIPO_LUT_NUM_ITEMS] = {
-    {25.2f, 100},
-    {24.5f, 90},
-    {23.0f, 80},
-    {21.0f, 20},
-    {20.0f, 10},
-    {18.0f, 0}};
+    { 25.2f, 100 },
+    { 24.5f, 90 },
+    { 23.0f, 80 },
+    { 21.0f, 20 },
+    { 20.0f, 10 },
+    { 18.0f, 0 }
+};
 
 /**
  * @brief Function for getting Low Voltage SoC

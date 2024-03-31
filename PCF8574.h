@@ -6,9 +6,8 @@
 
 #define I2C_TIMEOUT 10
 
-#define PCF8574_EXPANDER_ADDR 0b0100000 // {0}{1}{0}{0}{A2}{A1}{A0}
+#define PCF8574_EXPANDER_ADDR 0b0100000  // {0}{1}{0}{0}{A2}{A1}{A0}
 #define I2C_ROTSEL 3
-
 
 bool PCF8574Init();
 bool PCF8574Configure();

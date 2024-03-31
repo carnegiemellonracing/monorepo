@@ -26,39 +26,38 @@ void tftInit(void);
 /** @brief All of the errors to be drawn on-screen
  * in error state. */
 typedef struct {
-    bool cdcTimeout;    /**< @brief Has the CDC timed out? */
-    bool ptcTimeout;    /**< @brief Has the PTC timed out? */
-    bool vsmTimeout;    /**< @brief Has the VSM timed out? */
-    bool hvcTimeout;    /**< @brief Has the HVC timed out? */
-    bool imdError;      /**< @brief Has the IMD faulted? */
-    bool amsError;      /**< @brief Has the AMS faulted? */
-    bool bspdError;     /**< @brief Has the BSPD tripped? */
-    bool overVolt;      /**< @brief Has the HVC errored w/ OV? */
-    bool underVolt;     /**< @brief Has the HVC errored w/ UV? */
-    bool glvLowVolt;    /**< @brief Has the GLV errored w/ UV? */
-    bool hvcoverTemp;   /**< @brief Has the HVC errored w/ over temp? */
-    bool hvcBMBTimeout; /**< @brief Has a BMB timed out? */
-    bool hvcBMBFault;   /**< @brief Has a BMB raised a fault? */
-    uint16_t hvcErrorNum;       /**< @brief Give the error number,
-    * So the driver can relay even if the error is not accounted for above. */
-    uint16_t amkFLErrorCode;    /**< @brief AMK FL Error Code */
-    uint16_t amkFRErrorCode;    /**< @brief AMK FR Error Code */
-    uint16_t amkBLErrorCode;    /**< @brief AMK BL Error Code */
-    uint16_t amkBRErrorCode;    /**< @brief AMK BR Error Code */
-    uint32_t glvVoltage_V; /**< @brief GLV Voltage in Volts */
+    bool cdcTimeout;         /**< @brief Has the CDC timed out? */
+    bool ptcTimeout;         /**< @brief Has the PTC timed out? */
+    bool vsmTimeout;         /**< @brief Has the VSM timed out? */
+    bool hvcTimeout;         /**< @brief Has the HVC timed out? */
+    bool imdError;           /**< @brief Has the IMD faulted? */
+    bool amsError;           /**< @brief Has the AMS faulted? */
+    bool bspdError;          /**< @brief Has the BSPD tripped? */
+    bool overVolt;           /**< @brief Has the HVC errored w/ OV? */
+    bool underVolt;          /**< @brief Has the HVC errored w/ UV? */
+    bool glvLowVolt;         /**< @brief Has the GLV errored w/ UV? */
+    bool hvcoverTemp;        /**< @brief Has the HVC errored w/ over temp? */
+    bool hvcBMBTimeout;      /**< @brief Has a BMB timed out? */
+    bool hvcBMBFault;        /**< @brief Has a BMB raised a fault? */
+    uint16_t hvcErrorNum;    /**< @brief Give the error number,
+                              * So the driver can relay even if the error is not accounted for above. */
+    uint16_t amkFLErrorCode; /**< @brief AMK FL Error Code */
+    uint16_t amkFRErrorCode; /**< @brief AMK FR Error Code */
+    uint16_t amkBLErrorCode; /**< @brief AMK BL Error Code */
+    uint16_t amkBRErrorCode; /**< @brief AMK BR Error Code */
+    uint32_t glvVoltage_V;   /**< @brief GLV Voltage in Volts */
 } tft_errors_t;
 
 typedef enum {
-    SBG_STATUS_NOT_CONNECTED = 0,        /** @brief INS not connected/not sending info */
-    SBG_STATUS_WORKING_NO_POS_FOUND,    /** @brief INS working but doesn't have fix on position */
-    SBG_STATUS_WORKING_POS_FOUND        /** @brief INS working and has fix on position */
+    SBG_STATUS_NOT_CONNECTED = 0,    /** @brief INS not connected/not sending info */
+    SBG_STATUS_WORKING_NO_POS_FOUND, /** @brief INS working but doesn't have fix on position */
+    SBG_STATUS_WORKING_POS_FOUND     /** @brief INS working and has fix on position */
 } SBG_status_t;
 
 typedef enum {
-    MEMORATOR_NOT_CONNECTED = 0,        /** @brief Memorator not connected/not sending info */
-    MEMORATOR_CONNECTED_BAD_STATE,      /** @brief Memorator transmitting, but not sending correctly */
-    MEMORATOR_CONNECTED_STATE_OK        /** @brief Memorator transmitting correctly */
+    MEMORATOR_NOT_CONNECTED = 0,   /** @brief Memorator not connected/not sending info */
+    MEMORATOR_CONNECTED_BAD_STATE, /** @brief Memorator transmitting, but not sending correctly */
+    MEMORATOR_CONNECTED_STATE_OK   /** @brief Memorator transmitting correctly */
 } memorator_status_t;
 
 #endif /* TFT_H */
-

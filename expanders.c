@@ -13,8 +13,8 @@
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
 
-#include "ADS7038.h"           //SPI interface
-#include "PCF8574.h"           //I2c interface
+#include "ADS7038.h"  //SPI interface
+#include "PCF8574.h"  //I2c interface
 
 #define SYSTICKCLOCK 96000000ULL
 #define SYSTICKPERUS (SYSTICKCLOCK / 1000000UL)
@@ -34,17 +34,15 @@ static expanderPinConfig_t buttons[EXP_BUTTON_LEN] = {
     [EXP_DASH_BUTTON_0] = {
         .expanderAddress = PCF8574_EXPANDER_ADDR,
         .port = 0,
-        .pin = 4},
-    [EXP_DASH_BUTTON_1] = {.expanderAddress = PCF8574_EXPANDER_ADDR, .port = 0, .pin = 5},
-    [EXP_DASH_BUTTON_2] = {.expanderAddress = PCF8574_EXPANDER_ADDR, .port = 0, .pin = 6},
-    [EXP_DASH_BUTTON_3] = {.expanderAddress = PCF8574_EXPANDER_ADDR, .port = 0, .pin = 7},
-    [EXP_WHEEL_BUTTON_0] = {.expanderAddress = daughterDigitalAddress, .port = 0, .pin = 5},
-    [EXP_WHEEL_BUTTON_1] = {.expanderAddress = daughterDigitalAddress, .port = 0, .pin = 2},
-    [EXP_WHEEL_BUTTON_2] = {.expanderAddress = daughterDigitalAddress, .port = 0, .pin = 3},
-    [EXP_WHEEL_BUTTON_3] = {.expanderAddress = daughterDigitalAddress, .port = 0, .pin = 4}};
-
-
-
+        .pin = 4 },
+    [EXP_DASH_BUTTON_1] = { .expanderAddress = PCF8574_EXPANDER_ADDR, .port = 0, .pin = 5 },
+    [EXP_DASH_BUTTON_2] = { .expanderAddress = PCF8574_EXPANDER_ADDR, .port = 0, .pin = 6 },
+    [EXP_DASH_BUTTON_3] = { .expanderAddress = PCF8574_EXPANDER_ADDR, .port = 0, .pin = 7 },
+    [EXP_WHEEL_BUTTON_0] = { .expanderAddress = daughterDigitalAddress, .port = 0, .pin = 5 },
+    [EXP_WHEEL_BUTTON_1] = { .expanderAddress = daughterDigitalAddress, .port = 0, .pin = 2 },
+    [EXP_WHEEL_BUTTON_2] = { .expanderAddress = daughterDigitalAddress, .port = 0, .pin = 3 },
+    [EXP_WHEEL_BUTTON_3] = { .expanderAddress = daughterDigitalAddress, .port = 0, .pin = 4 }
+};
 
 /**
  * @brief Array of expander clutch pin configs
@@ -54,8 +52,9 @@ static expanderPinConfig_t clutchPaddles[EXP_CLUTCH_LEN] = {
     [EXP_CLUTCH_LEFT] = {
         .expanderAddress = daughterAnalogAddress,
         .port = 0,
-        .pin = 0},
-    [EXP_CLUTCH_RIGHT] = {.expanderAddress = daughterAnalogAddress, .port = 0, .pin = 1}};
+        .pin = 0 },
+    [EXP_CLUTCH_RIGHT] = { .expanderAddress = daughterAnalogAddress, .port = 0, .pin = 1 }
+};
 
 /** @brief Array of bytes containing data for the pins of each digital GPIO expander */
 // Number of elements in the array corresponds to number of ports for GPIO
@@ -114,20 +113,20 @@ static int updateExpanderDataMain() {
 }
 
 // delay has to constant expression
-static inline void  __attribute__((always_inline)) delayus(unsigned delay) {
+static inline void __attribute__((always_inline)) delayus(unsigned delay) {
     uint32_t ticks = SYSTICKPERUS * delay;
     uint32_t start_tick = SysTick->VAL;
 
-    while (SysTick->VAL - start_tick < ticks)
-        ;
+    while (SysTick->VAL - start_tick < ticks);
 }
 
 void resetClock() {
-    GPIO_InitTypeDef pinConfig = {// clock
-                                  .Pin = GPIO_PIN_8,
-                                  .Mode = GPIO_MODE_OUTPUT_OD,
-                                  .Pull = GPIO_NOPULL,
-                                  .Speed = GPIO_SPEED_FREQ_VERY_HIGH};
+    GPIO_InitTypeDef pinConfig = { // clock
+                                   .Pin = GPIO_PIN_8,
+                                   .Mode = GPIO_MODE_OUTPUT_OD,
+                                   .Pull = GPIO_NOPULL,
+                                   .Speed = GPIO_SPEED_FREQ_VERY_HIGH
+    };
 
     HAL_GPIO_Init(GPIOA, &pinConfig);
 
@@ -194,13 +193,12 @@ bool expanderGetButtonPressed(expanderButton_t button) {
     return getPinValueFromConfig(buttonConfig);
 }
 
-expanderRotaryPosition_t expanderGetRotary(bool select)
-{
+expanderRotaryPosition_t expanderGetRotary(bool select) {
     uint8_t pos = 0;
-    PCF8574_expanderWrite(I2C_ROTSEL,select);
+    PCF8574_expanderWrite(I2C_ROTSEL, select);
     PCF8574_expanderRead(&pos);
     pos &= 0b111;
-    if (pos >= ROTARY_POS_LEN){
+    if (pos >= ROTARY_POS_LEN) {
         return ROTARY_POS_INVALID;
     }
     return pos;
@@ -217,7 +215,7 @@ static void expanderUpdate100Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&lastWakeTime, 1000);
-	PCF8574Init();
+    PCF8574Init();
     // 0 == no issue
     int possibleDisconnected = ADS7038Init();
 
@@ -226,17 +224,16 @@ static void expanderUpdate100Hz(void *pvParameters) {
         status |= updateExpanderDataMain();
 
         // dont check status of daughter board, if steering is removed, DIM should still work
-        if (possibleDisconnected != 0){
+        if (possibleDisconnected != 0) {
             possibleDisconnected = ADS7038Init();
-        }
-        else{
+        } else {
             updateExpanderDataDaughter();
         }
 
         vTaskDelayUntil(&lastWakeTime, expanderUpdate100Hz_period_ms);
 
         if (checkStatus(status)) {
-            badStatusCount = 0; // Clear Counter
+            badStatusCount = 0;  // Clear Counter
         } else {
             badStatusCount += 1;
         }

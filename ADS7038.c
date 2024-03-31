@@ -1,10 +1,9 @@
 #include "ADS7038.h"
 
 #include <CMR/gpio.h>
-#include <CMR/spi.h> // SPI interface
 #include <CMR/panic.h>
+#include <CMR/spi.h>  // SPI interface
 #include <CMR/tasks.h>
-
 
 cmr_spi_t ADS7038Spi;
 
@@ -19,19 +18,21 @@ static const SPI_InitTypeDef ADS7038SpiInit = {
     .FirstBit = SPI_FIRSTBIT_MSB,
     .TIMode = SPI_TIMODE_DISABLE,
     .CRCCalculation = SPI_CRCCALCULATION_DISABLE,
-    .CRCPolynomial = 10};
+    .CRCPolynomial = 10,
+};
 
 static const cmr_spiPinConfig_t ADS7038SpiPins = {
-    .mosi = {.port = GPIOC, .pin = GPIO_PIN_3},
-    .miso = {.port = GPIOC, .pin = GPIO_PIN_2},
-    .sck = {.port = GPIOB, .pin = GPIO_PIN_13},
-    .nss = {.port = GPIOB, .pin = GPIO_PIN_12}};
+    .mosi = { .port = GPIOC, .pin = GPIO_PIN_3 },
+    .miso = { .port = GPIOC, .pin = GPIO_PIN_2 },
+    .sck = { .port = GPIOB, .pin = GPIO_PIN_13 },
+    .nss = { .port = GPIOB, .pin = GPIO_PIN_12 },
+};
 
 #define CHANNEL_ID_ENABLE 1 << 4
 
 int ADS7038_read(uint8_t reg, uint8_t *data) {
-    uint8_t command[3] = {RD_REG, reg, 0};
-    uint8_t dummy[3] = {0, 0, 0};
+    uint8_t command[3] = { RD_REG, reg, 0 };
+    uint8_t dummy[3] = { 0, 0, 0 };
     // Initiate Register Read
     int status = 0;
     status = cmr_spiTXRX(&ADS7038Spi, command, NULL, SPI_MSG_LEN);
@@ -48,21 +49,19 @@ int ADS7038_read(uint8_t reg, uint8_t *data) {
 }
 
 int ADS7038_write(uint8_t reg, uint8_t data) {
-    uint8_t command[3] = {WR_REG, reg, data};
+    uint8_t command[3] = { WR_REG, reg, data };
     return cmr_spiTXRX(&ADS7038Spi, command, NULL, SPI_MSG_LEN);
 }
 
-
 int ADS7038_adcManualRead(uint16_t *ppos) {
-    uint8_t command0[3] = {WR_REG, CHANNEL_SEL_REG, PPOS_0_PORT};
-    uint8_t command1[3] = {WR_REG, CHANNEL_SEL_REG, PPOS_1_PORT};
+    uint8_t command0[3] = { WR_REG, CHANNEL_SEL_REG, PPOS_0_PORT };
+    uint8_t command1[3] = { WR_REG, CHANNEL_SEL_REG, PPOS_1_PORT };
     uint8_t data[3];
-    uint8_t dummy[3] = {0, 0, 0};
+    uint8_t dummy[3] = { 0, 0, 0 };
     // Set first channel, data received is not meaningful
     cmr_spiTXRX(&ADS7038Spi, command0, NULL, 3);
     // Set second channel, data received is not meaningful
     cmr_spiTXRX(&ADS7038Spi, command1, NULL, 3);
-
 
     // Receive first channel data
     if (cmr_spiTXRX(&ADS7038Spi, dummy, data, SPI_MSG_LEN) == 0) {
@@ -92,11 +91,11 @@ bool ADS7038Init() {
     return status;
 }
 
-static void compareReadAndWrite(int command,uint8_t* data){
-    if(data == NULL){
+static void compareReadAndWrite(int command, uint8_t *data) {
+    if (data == NULL) {
         cmr_panic("Data is NULL!");
     }
-    if(command != data[0]){
+    if (command != data[0]) {
         cmr_panic("Data in register does not match command!");
     }
 }
@@ -108,19 +107,19 @@ int ADS7038Configure() {
     // Uncomment compareReadAndWrite when steering wheel is connected and you want to verify
     status |= ADS7038_write(DATA_CFG_REG, CHANNEL_ID_ENABLE);
     status |= ADS7038_read(DATA_CFG_REG, data);
-    //compareReadAndWrite(CHANNEL_ID_ENABLE,data);
+    // compareReadAndWrite(CHANNEL_ID_ENABLE,data);
 
     status |= ADS7038_write(SEQUENCE_CFG_REG, 0b00000000);
     status |= ADS7038_read(SEQUENCE_CFG_REG, data);
-    //compareReadAndWrite(0b00000000,data);
+    // compareReadAndWrite(0b00000000,data);
 
     status |= ADS7038_write(PIN_CFG_REG, 0b00111100);
     status |= ADS7038_read(PIN_CFG_REG, data);
-    //compareReadAndWrite(0b00111100,data);
+    // compareReadAndWrite(0b00111100,data);
 
     status |= ADS7038_write(GPIO_CFG_REG, 0b00000000);
     status |= ADS7038_read(GPIO_CFG_REG, data);
-    //compareReadAndWrite(0b00000000,data);
+    // compareReadAndWrite(0b00000000,data);
 
     return status;
 }

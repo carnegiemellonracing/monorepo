@@ -8,12 +8,12 @@
 #ifndef TFTDL_H
 #define TFTDL_H
 
-#include <stddef.h>     // size_t
-#include <stdint.h>     // uint32_t
 #include <CMR/can_types.h>
+#include <stddef.h>  // size_t
+#include <stdint.h>  // uint32_t
 
-#include "tftPrivate.h"     // Private interface
-#include "tft.h"            // tft interface
+#include "tft.h"         // tft interface
+#include "tftPrivate.h"  // Private interface
 
 /** @brief Represents a display list. */
 typedef struct tftDL tftDL_t;
@@ -64,7 +64,7 @@ void tftDL_RTDUpdate(
     SBG_status_t sbgStatus,
     int32_t hvVoltage_mV,
     int32_t power_kW,
-	uint32_t speed_kph,
+    uint32_t speed_kph,
     bool motorTemp_yellow,
     bool motorTemp_red,
     bool acTemp_yellow,
@@ -75,27 +75,24 @@ void tftDL_RTDUpdate(
     int32_t acTemp_C,
     int32_t mcTemp_C,
     int32_t glvVoltage_V,
-	uint8_t glvSoC,
-	uint8_t hvSoC,
-	bool yrcOn,
-	bool tcOn,
-	bool ssOn,
-	float odometer_km,
-	bool drsOpen
-);
+    uint8_t glvSoC,
+    uint8_t hvSoC,
+    bool yrcOn,
+    bool tcOn,
+    bool ssOn,
+    float odometer_km,
+    bool drsOpen);
 
 void tftDL_racingScreenUpdate(
     int32_t motorTemp_C,
     int32_t acTemp_C,
     int32_t mcTemp_C,
-	uint8_t hvSoC,
-	bool drsOpen
-);
+    uint8_t hvSoC,
+    bool drsOpen);
 
 void tftDL_errorUpdate(
     tft_errors_t *err,
-    volatile cmr_canHVCBMBErrors_t *BMBerr
-);
+    volatile cmr_canHVCBMBErrors_t *BMBerr);
 
 void tftDL_configUpdate();
 
@@ -105,4 +102,3 @@ void tftDLContentLoad(tft_t *tft, const tftDL_t *tftDL);
 void tftDLWrite(tft_t *tft, const tftDL_t *tftDL);
 
 #endif /* TFTDL_H */
-

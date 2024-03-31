@@ -38,7 +38,8 @@ static uint32_t tftDL_startupData[] = {
  * See datasheet */
 static const tftContent_t *tftDL_startupContent[] = {
     &tftContent_startup_lut,
-    &tftContent_startup};
+    &tftContent_startup
+};
 
 /** @brief Complete data required to draw the startup screen.
  * Exposed to interface consumers. */
@@ -47,7 +48,8 @@ const tftDL_t tftDL_startup = {
     .data = tftDL_startupData,
 
     .contentLen = sizeof(tftDL_startupContent) / sizeof(tftDL_startupContent[0]),
-    .content = tftDL_startupContent};
+    .content = tftDL_startupContent
+};
 
 /** @brief GLV Screen */
 static uint32_t tftDL_errorData[] = {
@@ -61,7 +63,8 @@ const tftDL_t tftDL_error = {
     .data = tftDL_errorData,
 
     .contentLen = 0,
-    .content = NULL};
+    .content = NULL
+};
 
 /** @brief Config Screen */
 static uint32_t tftDL_configData[] = {
@@ -74,12 +77,13 @@ const tftDL_t tftDL_config = {
     .len = sizeof(tftDL_configData),
     .data = tftDL_configData,
     .contentLen = 0,
-    .content = NULL};
+    .content = NULL
+};
 
 /** @brief RTD Screen
  *
  *  #include is effectiveley copy and paste. Creates a well formed array of uint32_t
-*/
+ */
 static uint32_t tftDL_RTDData[] = {
 #include <DIM-ESE/RTD.rawh>
 };
@@ -92,7 +96,8 @@ const tftDL_t tftDL_RTD = {
     .data = tftDL_RTDData,
 
     .contentLen = 0,
-    .content = NULL};
+    .content = NULL
+};
 
 /** @brief Racing Screen */
 static uint32_t tftDL_racingData[] = {
@@ -106,7 +111,8 @@ const tftDL_t tftDL_racing_screen = {
     .data = tftDL_racingData,
 
     .contentLen = 0,
-    .content = NULL};
+    .content = NULL
+};
 
 static uint32_t tftDl_safetyData[] = {
 #include <DIM-ESE/safety-circuit.rawh>
@@ -117,7 +123,8 @@ const tftDL_t tftDL_safety_screen = {
     .data = tftDl_safetyData,
 
     .contentLen = 0,
-    .content = NULL};
+    .content = NULL
+};
 
 /** @brief Bitposition of Y-coordinate byte in vertices */
 #define TFT_DL_VERTEX_Y_BIT 15
@@ -148,21 +155,24 @@ static const tftDL_vert_bar_t hvSoc_bar = {
     .topY = 1920,
     .botY = 6120,
     .maxVal = 99,
-    .minVal = 0};
+    .minVal = 0
+};
 
 static const tftDL_vert_bar_t glvSoc_bar = {
     .addr = tftDL_RTDData + ESE_GLV_BOX_VAL,
     .topY = 1920,
     .botY = 6120,
     .maxVal = 99,
-    .minVal = 0};
+    .minVal = 0
+};
 
 static const tftDL_horiz_bar_t hvHorizSoc_bar = {
     .addr = tftDL_racingData + ESE_RS_HV_BOX_VAL,
     .leftX = 3728,
     .rightX = 10032,
     .maxVal = 99,
-    .minVal = 0};
+    .minVal = 0
+};
 
 /**
  * @brief Reflect logical value into bar plot for drawing.
@@ -282,7 +292,8 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
         [CMR_CAN_GEAR_AUTOX] = "AUTOCROSS",
         [CMR_CAN_GEAR_SKIDPAD] = " SKIDPAD ",
         [CMR_CAN_GEAR_ACCEL] = "  ACCEL  ",
-        [CMR_CAN_GEAR_TEST] = "   TEST  "};
+        [CMR_CAN_GEAR_TEST] = "   TEST  "
+    };
 
     size_t drsCharsLen = 6;
     static const char *drsChars[] = {
@@ -308,27 +319,27 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
         if (stateVSM < stateCharsLen) {
             if (centered) {
                 strcpy(stateChar, "    ");
-                strlcat(stateChar, stateChars[stateVSM],bufLen);
-                strlcat(stateChar, "    ",stateCharsLen);
+                strlcat(stateChar, stateChars[stateVSM], bufLen);
+                strlcat(stateChar, "    ", stateCharsLen);
             } else {
                 strcpy(stateChar, "        ");
-                strlcat(stateChar, stateChars[stateVSM],bufLen);
+                strlcat(stateChar, stateChars[stateVSM], bufLen);
             }
         }
         *state_color = white;
     } else {
         if (stateVSM < stateCharsLen && stateVSMReq < stateCharsLen) {
             strcpy(stateChar, stateChars[stateVSM]);
-            strlcat(stateChar, " -> ",bufLen);
-            strlcat(stateChar, stateChars[stateVSMReq],bufLen);
+            strlcat(stateChar, " -> ", bufLen);
+            strlcat(stateChar, stateChars[stateVSMReq], bufLen);
         } else if (stateVSM < stateCharsLen) {
             strcpy(stateChar, stateChars[stateVSM]);
-            strlcat(stateChar, " -> ",stateCharsLen);
-            strlcat(stateChar, stateChars[CMR_CAN_UNKNOWN],bufLen);
+            strlcat(stateChar, " -> ", stateCharsLen);
+            strlcat(stateChar, stateChars[CMR_CAN_UNKNOWN], bufLen);
         } else {
             strcpy(stateChar, stateChars[CMR_CAN_UNKNOWN]);
-            strlcat(stateChar, " -> ",bufLen);
-            strlcat(stateChar, stateChars[stateVSMReq],bufLen);
+            strlcat(stateChar, " -> ", bufLen);
+            strlcat(stateChar, stateChars[stateVSMReq], bufLen);
         }
         *state_color = grey;
     }
@@ -447,9 +458,9 @@ void tftDL_RTDUpdate(
     tftDL_RTDwriteInt(tftDL_RTDData, ESE_HV_SOC_VAL, 3, "%2ld", (int32_t)hvSoC);
     tftDL_RTDwriteInt(tftDL_RTDData, ESE_GLV_SOC_VAL, 3, "%2ld", (int32_t)glvSoC);
 
-    // Doing this jank buffer because snprintf doesnt work for floats on embedded
-    // TODO check if we can use "Use float with printf from newlib-nano) ???
-    #define ODOMETER_STR_SIZE 8
+// Doing this jank buffer because snprintf doesnt work for floats on embedded
+// TODO check if we can use "Use float with printf from newlib-nano) ???
+#define ODOMETER_STR_SIZE 8
     char odometer_str[ODOMETER_STR_SIZE] = {
         ((char)((((int32_t)odometer_km) % 10000) / 1000)) + '0',
         ((char)((((int32_t)odometer_km) % 1000) / 100)) + '0',
@@ -458,11 +469,12 @@ void tftDL_RTDUpdate(
         '.',
         ((char)((int32_t)(odometer_km * 10.f) % 10)) + '0',
         ((char)((int32_t)(odometer_km * 100.f) % 10)) + '0',
-        '\0'};
+        '\0'
+    };
     memcpy((void *)(tftDL_RTDData + ESE_ODO_VAL), (void *)odometer_str, ODOMETER_STR_SIZE);
 
-    tftDL_barSetY(&hvSoc_bar,hvSoC);
-    tftDL_barSetY(&glvSoc_bar,glvSoC);
+    tftDL_barSetY(&hvSoc_bar, hvSoC);
+    tftDL_barSetY(&glvSoc_bar, glvSoC);
     /* Memorator color */
     uint32_t *memorator_color = (void *)(tftDL_RTDData + ESE_MEMO_TEXT_COLOR);
     uint32_t memorator_color_cmd;
@@ -707,18 +719,16 @@ void setConfigContextString(int8_t scroll_index) {
 uint8_t configValueIncrementer(uint8_t value, uint8_t value_min, uint8_t value_max, bool up_requested, bool down_requested) {
     uint8_t new_value = value;
     if (up_requested) {
-        if (value + 1 > value_max){
+        if (value + 1 > value_max) {
             new_value = value_min;
-        }
-        else{
+        } else {
             new_value++;
         }
     }
     if (down_requested) {
-        if (value - 1 < value_min){
+        if (value - 1 < value_min) {
             new_value = value_max;
-        }
-        else{
+        } else {
             new_value--;
         }
     }
