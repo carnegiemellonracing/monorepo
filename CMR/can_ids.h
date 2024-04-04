@@ -233,6 +233,8 @@ typedef enum {
     CMR_CANID_FRONT_WHL_VELS = 0x7EC,
     CMR_CANID_REAR_WHL_VELS = 0x7ED,
 
+    CMR_CANID_TEST_ID=0x777,
+
 	CMR_CANID_DRS_CONTROLS = 0x29C, 				/**< @brief DRS Motor Controls. */
 
     CMR_CANID_DAQ_0_STRAIN_0 = 0x650,           /**< @brief Load cell data for DAQ Board 0. */
