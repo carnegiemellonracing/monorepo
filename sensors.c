@@ -1,6 +1,5 @@
 
 
-
 /**
  * @file sensors.c
  * @brief Board-specific sensors implementation.
@@ -8,16 +7,16 @@
  * @author Carnegie Mellon Racing
  */
 
-#include <stdlib.h>     // abs()
-#include <math.h>       // tanh()
+#include "sensors.h"  // Interface to implement
 
+#include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
-#include <CMR/gpio.h>  // GPIO interface
+#include <math.h>       // tanh()
+#include <stdlib.h>     // abs()
 
-#include "sensors.h"    // Interface to implement
-#include "adc.h"        // Board-specific ADC interface
-#include "gpio.h"       // Board-specific GPIO interface
-#include "can.h"        // Board-specific CAN interface
+#include "adc.h"   // Board-specific ADC interface
+#include "can.h"   // Board-specific CAN interface
+#include "gpio.h"  // Board-specific GPIO interface
 
 /** @brief Number of samples for current measurement rolling average. */
 #define BUS_CURRENT_SAMPLES 10
@@ -43,12 +42,12 @@ static const uint8_t BRAKE_ACTIVE_THRES_PSI = 40;
  * @brief Mapping of sensor channels to ADC channels.
  */
 const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
-    [SENSOR_CH_TPOS_L_U8]      = ADC_TPOS_L,
-    [SENSOR_CH_TPOS_R_U8]      = ADC_TPOS_R,
-    [SENSOR_CH_BPOS_U8]        = ADC_BPRES,
-    [SENSOR_CH_BPRES_PSI]      = ADC_BPRES,
-    [SENSOR_CH_SWANGLE_DEG]    = ADC_SWANGLE,
-    [SENSOR_CH_TPOS_IMPLAUS]   = ADC_LEN  // Not an ADC channel!
+    [SENSOR_CH_TPOS_L_U8] = ADC_TPOS_L,
+    [SENSOR_CH_TPOS_R_U8] = ADC_TPOS_R,
+    [SENSOR_CH_BPOS_U8] = ADC_BPRES,
+    [SENSOR_CH_BPRES_PSI] = ADC_BPRES,
+    [SENSOR_CH_SWANGLE_DEG] = ADC_SWANGLE,
+    [SENSOR_CH_TPOS_IMPLAUS] = ADC_LEN  // Not an ADC channel!
 };
 
 /** @brief forward declaration */
@@ -84,21 +83,21 @@ static uint32_t sampleADCSensorSwangle(const cmr_sensor_t *sensor) {
 }
 
 static uint32_t leftThrottleToRequest(const cmr_sensor_t *sensor) {
-	sensorChannel_t sensorChannel = sensor - sensors;
-	configASSERT(sensorChannel < SENSOR_CH_LEN);
+    sensorChannel_t sensorChannel = sensor - sensors;
+    configASSERT(sensorChannel < SENSOR_CH_LEN);
 
-	uint16_t leftADC = adcRead(sensorsADCChannels[sensorChannel]);
+    uint16_t leftADC = adcRead(sensorsADCChannels[sensorChannel]);
 
-	return leftADC / 16;
+    return leftADC / 16;
 }
 
 static uint32_t rightThrottleToRequest(const cmr_sensor_t *sensor) {
-	sensorChannel_t sensorChannel = sensor - sensors;
-	configASSERT(sensorChannel < SENSOR_CH_LEN);
+    sensorChannel_t sensorChannel = sensor - sensors;
+    configASSERT(sensorChannel < SENSOR_CH_LEN);
 
-	uint16_t rightADC = adcRead(sensorsADCChannels[sensorChannel]);
+    uint16_t rightADC = adcRead(sensorsADCChannels[sensorChannel]);
 
-	return rightADC / 8;
+    return rightADC / 8;
 }
 
 /**
@@ -113,8 +112,7 @@ static int32_t adcToUInt8(const cmr_sensor_t *sensor, uint32_t reading) {
     int32_t sensorVal = 0;
     if (reading >= sensor->readingMax) {
         sensorVal = UINT8_MAX;
-    }
-    else if (reading <= sensor->readingMin) {
+    } else if (reading <= sensor->readingMin) {
         sensorVal = 0;
     } else {
         uint32_t sensorRange = sensor->readingMax - sensor->readingMin;
@@ -140,10 +138,10 @@ static int32_t adcToUInt8(const cmr_sensor_t *sensor, uint32_t reading) {
  * @return Front brake pressure in PSI.
  */
 static int32_t adcToBPres_PSI(const cmr_sensor_t *sensor, uint32_t reading) {
-    (void) sensor;  // Placate compiler.
+    (void)sensor;  // Placate compiler.
 
     // Temporarily just rescale raw 12-bit value to 8 bits
-    return (int32_t) (reading >> 4);
+    return (int32_t)(reading >> 4);
 }
 
 /**
@@ -160,7 +158,7 @@ static int32_t adcToBPres_PSI(const cmr_sensor_t *sensor, uint32_t reading) {
  * @note turning the wheel right increases adc value
  */
 static int32_t adcToSwangle(const cmr_sensor_t *sensor, uint32_t reading) {
-    (void) sensor;  // Placate compiler.
+    (void)sensor;  // Placate compiler.
 
     // See swangle.py
     /* 2 Layers:
@@ -169,13 +167,13 @@ static int32_t adcToSwangle(const cmr_sensor_t *sensor, uint32_t reading) {
     const double minAdcValue = 532.0l;
     const double maxAdcValue = 3343.0l;
 
-    #define LAYER1_SIZE 3
-    const double W1[LAYER1_SIZE] = {4.423423, 4.352119, 3.5617096};
-    const double b1[LAYER1_SIZE] = {-2.1946218, -0.34729433, -2.9068983};
-    const double W2[LAYER1_SIZE] = {-49.75351, -42.093838, -50.62649};
+#define LAYER1_SIZE 3
+    const double W1[LAYER1_SIZE] = { 4.423423, 4.352119, 3.5617096 };
+    const double b1[LAYER1_SIZE] = { -2.1946218, -0.34729433, -2.9068983 };
+    const double W2[LAYER1_SIZE] = { -49.75351, -42.093838, -50.62649 };
     const double b2 = 1.5765486;
 
-    double adcValue = (double) reading;
+    double adcValue = (double)reading;
     double scaledAdc = (adcValue - minAdcValue) / (maxAdcValue - minAdcValue);
 
     // Layer 1 Weight
@@ -191,7 +189,7 @@ static int32_t adcToSwangle(const cmr_sensor_t *sensor, uint32_t reading) {
     // Layer 2 Weight
     double swangle_deg = W2[0] * a1_0 + W2[1] * a1_1 + W2[2] * a1_2 + b2;
 
-    return (int32_t) swangle_deg;
+    return (int32_t)swangle_deg;
 }
 
 /**
@@ -204,13 +202,13 @@ static int32_t adcToSwangle(const cmr_sensor_t *sensor, uint32_t reading) {
  * @return Voltage in mV.
  */
 static int32_t adcToBusVoltage_mV(const cmr_sensor_t *sensor, uint32_t reading) {
-    (void) sensor;  // Placate compiler.
+    (void)sensor;  // Placate compiler.
 
     // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
-    float temp = (reading * 8 * 11 / 10) *1.05f;
-    uint32_t busVoltage_mV = (uint32_t) temp;
+    float temp = (reading * 8 * 11 / 10) * 1.05f;
+    uint32_t busVoltage_mV = (uint32_t)temp;
 
-    return (int32_t) busVoltage_mV;
+    return (int32_t)busVoltage_mV;
 }
 
 /**
@@ -223,7 +221,7 @@ static int32_t adcToBusVoltage_mV(const cmr_sensor_t *sensor, uint32_t reading) 
  * @return Current in mA.
  */
 static int32_t adcToAvgBusCurrent_mA(const cmr_sensor_t *sensor, uint32_t reading) {
-    (void) sensor;  // Placate compiler.
+    (void)sensor;  // Placate compiler.
 
     /** @brief Previous current values, in milliamps. */
     static uint32_t currentSamples_mA[BUS_CURRENT_SAMPLES] = { 0 };
@@ -250,7 +248,7 @@ static int32_t adcToAvgBusCurrent_mA(const cmr_sensor_t *sensor, uint32_t readin
         oldestIndex = 0;
     }
 
-    return (int32_t) currentSamplesSum_mA / BUS_CURRENT_SAMPLES;
+    return (int32_t)currentSamplesSum_mA / BUS_CURRENT_SAMPLES;
 }
 
 /**
@@ -261,7 +259,7 @@ static int32_t adcToAvgBusCurrent_mA(const cmr_sensor_t *sensor, uint32_t readin
  * @return 1 if the throttle position is implausible, 0 otherwise.
  */
 static uint32_t sampleTPOSDiff(const cmr_sensor_t *sensor) {
-    (void) sensor;  // Placate compiler.
+    (void)sensor;  // Placate compiler.
 
     /** @brief Last plausible time. */
     static TickType_t lastPlausible = 0;
@@ -287,7 +285,7 @@ static uint32_t sampleTPOSDiff(const cmr_sensor_t *sensor) {
         return 0;
     }
 
-    return 1;   // Implausible!
+    return 1;  // Implausible!
 }
 
 /**
@@ -298,7 +296,7 @@ static uint32_t sampleTPOSDiff(const cmr_sensor_t *sensor) {
  * @return 1 if the brake pedal position is implausible, 0 otherwise.
  */
 static uint32_t sampleBrakeImplaus(const cmr_sensor_t *sensor) {
-    (void) sensor;  // Placate compiler.
+    (void)sensor;  // Placate compiler.
 
     /** @brief Current implausibility status. */
     static bool implaus = false;
@@ -309,8 +307,7 @@ static uint32_t sampleBrakeImplaus(const cmr_sensor_t *sensor) {
     uint16_t brakePres_PSI = vsmSensors->brakePressureRear_PSI;
 
     // Set brake implausibility
-    if ((throttlePos > BPP_TPOS_IMPLAUS_THRES)
-     && (brakePres_PSI > BRAKE_ACTIVE_THRES_PSI)) {
+    if ((throttlePos > BPP_TPOS_IMPLAUS_THRES) && (brakePres_PSI > BRAKE_ACTIVE_THRES_PSI)) {
         implaus = true;
     }
     // Clear brake implausibility
@@ -328,70 +325,32 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .readingMin = 750,
         .readingMax = 3800,
         .outOfRange_pcnt = 10,
-        .warnFlag = CMR_CAN_WARN_FSM_TPOS_L
-    },
-    [SENSOR_CH_TPOS_R_U8] = {
-        .conv = adcToUInt8,
-        .sample = sampleADCSensor,
-        .readingMin = 350,
-        .readingMax = 1930,
-        .outOfRange_pcnt = 10,
-        .warnFlag = CMR_CAN_WARN_FSM_TPOS_R
-    },
-    [SENSOR_CH_BPOS_U8] = {
-        .conv = adcToUInt8,
-        .sample = sampleADCSensor,
-        .readingMin = 365,
-        .readingMax = 1651,
-        .outOfRange_pcnt = 10,
-        .warnFlag = CMR_CAN_WARN_FSM_BPOS
-    },
-    [SENSOR_CH_BPRES_PSI] = {
-        .conv = adcToBPres_PSI,
-        .sample = sampleADCSensor,
-        .readingMin = 0,
-        .readingMax = CMR_ADC_MAX,
-        .outOfRange_pcnt = 10,
-        .warnFlag = CMR_CAN_WARN_FSM_BPRES
-    },
-    [SENSOR_CH_SWANGLE_DEG] = {
-        .conv = adcToSwangle,
-        .sample = sampleADCSensorSwangle,
-        .readingMin = SWANGLE_90DEG_LEFT,
-        .readingMax = SWANGLE_90DEG_RIGHT,
-        .outOfRange_pcnt = 10,
-        .warnFlag = CMR_CAN_WARN_FSM_SWANGLE
-    },
+        .warnFlag = CMR_CAN_WARN_FSM_TPOS_L },
+    [SENSOR_CH_TPOS_R_U8] = { .conv = adcToUInt8, .sample = sampleADCSensor, .readingMin = 350, .readingMax = 1930, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_TPOS_R },
+    [SENSOR_CH_BPOS_U8] = { .conv = adcToUInt8, .sample = sampleADCSensor, .readingMin = 365, .readingMax = 1651, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_BPOS },
+    [SENSOR_CH_BPRES_PSI] = { .conv = adcToBPres_PSI, .sample = sampleADCSensor, .readingMin = 0, .readingMax = CMR_ADC_MAX, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_BPRES },
+    [SENSOR_CH_SWANGLE_DEG] = { .conv = adcToSwangle, .sample = sampleADCSensorSwangle, .readingMin = SWANGLE_90DEG_LEFT, .readingMax = SWANGLE_90DEG_RIGHT, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_SWANGLE },
     [SENSOR_CH_VOLTAGE_MV] = {
         .conv = adcToBusVoltage_mV,
         .sample = sampleADCSensor,
-        .readingMin = 2256, // 20 Volts
-        .readingMax = 2933, // 26 Volts
+        .readingMin = 2256,  // 20 Volts
+        .readingMax = 2933,  // 26 Volts
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_BUS_VOLTAGE,
     },
-    [SENSOR_CH_AVG_CURRENT_MA] = {
-        .conv = adcToAvgBusCurrent_mA,
-        .sample = sampleADCSensor,
-        .readingMin = 250,  // 10 mA
-        .readingMax = 2500, // 100 mA
-        .outOfRange_pcnt = 10,
-        .warnFlag = CMR_CAN_WARN_BUS_CURRENT
-    },
-    [SENSOR_CH_TPOS_IMPLAUS] = {
-        .conv = NULL,
-        .sample = sampleTPOSDiff,
-        .readingMin = 0,    // output is typically 2V max
-        .readingMax = 2600,
-        .warnFlag = CMR_CAN_WARN_FSM_TPOS_IMPLAUSIBLE
-    },
-    [SENSOR_CH_BPP_IMPLAUS] = {
-        .conv = NULL,
-        .sample = sampleBrakeImplaus,
-        .readingMin = 0,    // output is typically 2V max
-        .readingMax = 2600,
-        .warnFlag = CMR_CAN_WARN_FSM_BPP
-    }
+    [SENSOR_CH_AVG_CURRENT_MA] = { .conv = adcToAvgBusCurrent_mA, .sample = sampleADCSensor,
+                                   .readingMin = 250,   // 10 mA
+                                   .readingMax = 2500,  // 100 mA
+                                   .outOfRange_pcnt = 10,
+                                   .warnFlag = CMR_CAN_WARN_BUS_CURRENT },
+    [SENSOR_CH_TPOS_IMPLAUS] = { .conv = NULL, .sample = sampleTPOSDiff,
+                                 .readingMin = 0,  // output is typically 2V max
+                                 .readingMax = 2600,
+                                 .warnFlag = CMR_CAN_WARN_FSM_TPOS_IMPLAUSIBLE },
+    [SENSOR_CH_BPP_IMPLAUS] = { .conv = NULL, .sample = sampleBrakeImplaus,
+                                .readingMin = 0,  // output is typically 2V max
+                                .readingMax = 2600,
+                                .warnFlag = CMR_CAN_WARN_FSM_BPP }
 };
 
 /** @brief Sensors update priority. */
@@ -411,7 +370,7 @@ static cmr_task_t sensorsUpdate_task;
  * @return Does not return.
  */
 static void sensorsUpdate(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
+    (void)pvParameters;  // Placate compiler.
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
@@ -427,8 +386,7 @@ static void sensorsUpdate(void *pvParameters) {
 void sensorsInit(void) {
     cmr_sensorListInit(
         &sensorList,
-        sensors, sizeof(sensors) / sizeof(sensors[0])
-    );
+        sensors, sizeof(sensors) / sizeof(sensors[0]));
 
     // Task creation.
     cmr_taskInit(
@@ -436,8 +394,7 @@ void sensorsInit(void) {
         "sensor update",
         sensorsUpdate_priority,
         sensorsUpdate,
-        NULL
-    );
+        NULL);
 }
 
 /**
@@ -451,8 +408,7 @@ void sensorsInit(void) {
 uint8_t throttleGetPos(void) {
     if (/* cmr_sensorListGetError(&sensorList, SENSOR_CH_TPOS_L) != CMR_SENSOR_ERR_NONE ||
         cmr_sensorListGetError(&sensorList, SENSOR_CH_TPOS_R) != CMR_SENSOR_ERR_NONE || */
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_IMPLAUS) != 0
-    ) {
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_IMPLAUS) != 0) {
         return 0;
     }
 

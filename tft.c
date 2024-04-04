@@ -74,7 +74,8 @@ void tftCmd(tft_t *tft, tftCmd_t cmd, uint8_t param) {
         .NbData = 0,
         .DdrMode = QSPI_DDR_MODE_DISABLE,
         .DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY,
-        .SIOOMode = QSPI_SIOO_INST_EVERY_CMD};
+        .SIOOMode = QSPI_SIOO_INST_EVERY_CMD
+    };
 
     cmr_qspiCmd(&tft->qspi, &qspiCmd);
 }
@@ -102,7 +103,8 @@ void tftWrite(tft_t *tft, tftAddr_t addr, size_t len, const void *data) {
         .NbData = len,
         .DdrMode = QSPI_DDR_MODE_DISABLE,
         .DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY,
-        .SIOOMode = QSPI_SIOO_INST_EVERY_CMD};
+        .SIOOMode = QSPI_SIOO_INST_EVERY_CMD
+    };
 
     cmr_qspiTX(&tft->qspi, &cmd, data);
 }
@@ -130,7 +132,8 @@ void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data) {
         .NbData = len,
         .DdrMode = QSPI_DDR_MODE_DISABLE,
         .DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY,
-        .SIOOMode = QSPI_SIOO_INST_EVERY_CMD};
+        .SIOOMode = QSPI_SIOO_INST_EVERY_CMD
+    };
 
     cmr_qspiRX(&tft->qspi, &cmd, data);
 }
@@ -253,23 +256,24 @@ static void tftUpdate(void *pvParameters) {
 
     /** @brief Display register initialization values. */
     static const tftInit_t tftInits[] = {
-        {.addr = TFT_ADDR_HCYCLE, .val = 928},
-        {.addr = TFT_ADDR_HOFFSET, .val = 88},
-        {.addr = TFT_ADDR_HSYNC0, .val = 0},
-        {.addr = TFT_ADDR_HSYNC1, .val = 48},
-        {.addr = TFT_ADDR_VCYCLE, .val = 525},
-        {.addr = TFT_ADDR_VOFFSET, .val = 32},
-        {.addr = TFT_ADDR_VSYNC0, .val = 0},
-        {.addr = TFT_ADDR_VSYNC1, .val = 3},
-        {.addr = TFT_ADDR_SWIZZLE, .val = 0},
-        {.addr = TFT_ADDR_DITHER, .val = 1},
-        {.addr = TFT_ADDR_PCLK_POL, .val = 0},
-        {.addr = TFT_ADDR_CSPREAD, .val = 1},
-        {.addr = TFT_ADDR_HSIZE, .val = 800},
-        {.addr = TFT_ADDR_VSIZE, .val = 480},
-        {.addr = TFT_ADDR_GPIOX_DIR, .val = (1 << 15)},
-        {.addr = TFT_ADDR_GPIOX, .val = (1 << 15)},
-        {.addr = TFT_ADDR_PCLK, .val = 2}};
+        { .addr = TFT_ADDR_HCYCLE, .val = 928 },
+        { .addr = TFT_ADDR_HOFFSET, .val = 88 },
+        { .addr = TFT_ADDR_HSYNC0, .val = 0 },
+        { .addr = TFT_ADDR_HSYNC1, .val = 48 },
+        { .addr = TFT_ADDR_VCYCLE, .val = 525 },
+        { .addr = TFT_ADDR_VOFFSET, .val = 32 },
+        { .addr = TFT_ADDR_VSYNC0, .val = 0 },
+        { .addr = TFT_ADDR_VSYNC1, .val = 3 },
+        { .addr = TFT_ADDR_SWIZZLE, .val = 0 },
+        { .addr = TFT_ADDR_DITHER, .val = 1 },
+        { .addr = TFT_ADDR_PCLK_POL, .val = 0 },
+        { .addr = TFT_ADDR_CSPREAD, .val = 1 },
+        { .addr = TFT_ADDR_HSIZE, .val = 800 },
+        { .addr = TFT_ADDR_VSIZE, .val = 480 },
+        { .addr = TFT_ADDR_GPIOX_DIR, .val = (1 << 15) },
+        { .addr = TFT_ADDR_GPIOX, .val = (1 << 15) },
+        { .addr = TFT_ADDR_PCLK, .val = 2 }
+    };
 
     tft_t *tft = pvParameters;
 
@@ -654,16 +658,18 @@ void tftInit(void) {
         .ChipSelectHighTime = QSPI_CS_HIGH_TIME_1_CYCLE,
         .ClockMode = QSPI_CLOCK_MODE_0,
         .FlashID = QSPI_FLASH_ID_2,
-        .DualFlash = QSPI_DUALFLASH_DISABLE};
+        .DualFlash = QSPI_DUALFLASH_DISABLE
+    };
 
     const cmr_qspiPinConfig_t pins = {
         .io = {
-            {.port = GPIOA, .pin = GPIO_PIN_6},
-            {.port = GPIOA, .pin = GPIO_PIN_7},
-            {.port = GPIOC, .pin = GPIO_PIN_4},
-            {.port = GPIOC, .pin = GPIO_PIN_5}},
-        .sck = {.port = GPIOB, .pin = GPIO_PIN_1},
-        .nss = {.port = GPIOC, .pin = GPIO_PIN_11}};
+            { .port = GPIOA, .pin = GPIO_PIN_6 },
+            { .port = GPIOA, .pin = GPIO_PIN_7 },
+            { .port = GPIOC, .pin = GPIO_PIN_4 },
+            { .port = GPIOC, .pin = GPIO_PIN_5 } },
+        .sck = { .port = GPIOB, .pin = GPIO_PIN_1 },
+        .nss = { .port = GPIOC, .pin = GPIO_PIN_11 }
+    };
 
     cmr_qspiInit(
         &tft.qspi, QUADSPI, &qspiInit, &pins,
