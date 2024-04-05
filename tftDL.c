@@ -379,10 +379,12 @@ void tftDL_showRAMMsg(uint32_t *file_addr, uint32_t prev_lap_loc, uint32_t targ_
     struct {
         char buf[TIMEDISPLAYLEN];
     } *prev_time_str = (void *)(file_addr + prev_lap_loc);
-    memcpy((void *)prev_time_str->buf, (void *)&(RAMBUF[PREV_TIME_INDEX]), TIMEDISPLAYLEN);
+    sprintf(prev_time_str->buf, "%07x", get_test_message_id());
+    //memcpy((void *)prev_time_str->buf, (void *)&(RAMBUF[PREV_TIME_INDEX]), TIMEDISPLAYLEN);
     struct {
         char buf[TIMEDISPLAYLEN];
     } *target_time_str = (void *)(file_addr + targ_lap_loc);
+
     memcpy((void *)target_time_str->buf, (void *)&(RAMBUF[TARGET_TIME_INDEX]), TIMEDISPLAYLEN);
     struct {
         char buf[MESSAGEDISPLAYLEN];

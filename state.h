@@ -56,6 +56,9 @@ void actionOneButton(bool pressed);
 void actionTwoButton(bool pressed);
 void drsButton(bool pressed);
 
+uint32_t get_test_message_id();
+void new_test_message_id();
+
 void upButton(bool pressed);
 void downButton(bool pressed);
 void leftButton(bool pressed);

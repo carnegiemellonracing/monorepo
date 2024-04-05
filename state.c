@@ -75,6 +75,16 @@ void stateVSMUp(void);
 void stateVSMDown(void);
 void enterConfigScreen(void);
 
+static uint32_t test_message_id = 0;
+
+uint32_t get_test_message_id() {
+    return test_message_id;
+}
+
+void new_test_message_id() {
+    test_message_id = (rand() % 0xFFFFFFFFu) & 0x0FFFFFFF;
+}
+
 void actionZeroButton(bool pressed) {
     action0ButtonPressed = pressed;  // True
     if (!pressed) {
@@ -209,6 +219,7 @@ void rightButton(bool pressed) {
     if (inConfigScreen()) {
         config_move_request = 1;
     } else {
+        new_test_message_id();
         // TODO: do stuff
     }
 }

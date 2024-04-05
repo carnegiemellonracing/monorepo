@@ -120,7 +120,10 @@ static void canTX10Hz(void *pvParameters) {
         cmr_canGear_t gearReq = stateGetGearReq();
         cmr_canDrsMode_t drsMode = stateGetDrs();
         cmr_canDrsMode_t drsReq = stateGetDrsReq();
-
+        cmr_canTestID_t test_id = {
+        	.test_id = get_test_message_id()
+        };
+        canTX(CMR_CANID_TEST_ID, &test_id, sizeof(test_id), canTX10Hz_period_ms);
         if (
             (stateVSM != stateVSMReq) ||
             (gear != gearReq) ||
