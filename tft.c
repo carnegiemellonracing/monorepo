@@ -374,12 +374,17 @@ static void drawErrorScreen(void) {
     volatile cmr_canAMKActualValues2_t *amkBRActualValues2 =
         (void *)metaAmkBRActualValues2->payload;
 
+    cmr_canRXMeta_t *metaBMSLowVoltage = canRXMeta + CANRX_HVC_LOW_VOLTAGE;
+    volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
+        (void *)metaBMSLowVoltage->payload;
+
     tftDLContentLoad(&tft, &tftDL_error);
 
     tft_errors_t err;
 
-    /* Low Voltage */
-    unsigned int voltage_mV = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
+
+    unsigned int voltage_mV = ((unsigned int) canBMSLowVoltageStatus->vbatt_mV) * 133u;
+    //unsigned int voltage_mV = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
     err.glvVoltage_V = voltage_mV / 1000;
     err.glvLowVolt = voltage_mV < 20 * 1000;
 
@@ -407,7 +412,6 @@ static void drawErrorScreen(void) {
     err.amkFRErrorCode = amkFRActualValues2->errorCode;
     err.amkBLErrorCode = amkBLActualValues2->errorCode;
     err.amkBRErrorCode = amkBRActualValues2->errorCode;
-
     volatile cmr_canHVCBMBErrors_t *BMBerr = (volatile cmr_canHVCBMBErrors_t *)getPayload(CANRX_HVC_BMB_STATUS);
 
     /* Update Display List*/
@@ -466,6 +470,12 @@ static void drawRTDScreen(void) {
     cmr_canRXMeta_t *metaEMDvalues = canRXMeta + CANRX_EMD_VALUES;
     volatile cmr_canEMDMeasurements_t *canEMDvalues =
         (void *)metaEMDvalues->payload;
+
+
+
+    cmr_canRXMeta_t *metaBMSLowVoltage = canRXMeta + CANRX_HVC_LOW_VOLTAGE;
+    volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
+        (void *)metaBMSLowVoltage->payload;
 
     // PTC Temps
     /* cmr_canRXMeta_t *metaPTCfLoopA = canRXMeta + CANRX_PTCf_LOOP_A_TEMPS;
@@ -551,7 +561,10 @@ static void drawRTDScreen(void) {
     /* Pack Voltage */
     int32_t hvVoltage_mV = canHVCPackVoltage->battVoltage_mV;
 
-    float glvVoltage = ((float)cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV)) / 1000.0;
+
+    float glvVoltage = ((float) canBMSLowVoltageStatus->vbatt_mV) * 2 / 15;
+    //unsigned int voltage_mV = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
+//    float glvVoltage = ((float)cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV)) / 1000.0;
 
     volatile cmr_canVSMSensors_t *vsmSensors = (volatile cmr_canVSMSensors_t *)getPayload(CANRX_VSM_SENSORS);
 
