@@ -44,19 +44,6 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 150,
     },
-    [POWER_ERR_INDEX] = {
-        .name = "Power Error Margin",
-        .ESE_background_color_variable = ESE_POWER_LIM_BOX,
-        .ESE_value_color_variable = ESE_POWER_LIM_COLOR,
-        .ESE_value_variable = ESE_POWER_LIM_VAL,
-        .ESE_context_text_variable = "Power Error",
-        .value = {
-            .type = unsigned_integer,
-            .value = 30
-        },
-        .min = 0,
-        .max = 80,
-    },
     [SF_OP_MARGIN_INDEX] = {
         .name = "SF OP Sfty Mgn",
         .ESE_background_color_variable = ESE_SF_OP_MARGIN_BOX,
@@ -76,19 +63,6 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .ESE_value_color_variable = ESE_YRC_KP_COLOR,
         .ESE_value_variable = ESE_YRC_KP_VAL,
         .ESE_context_text_variable = "Yaw Rate Controller Kp",
-        .value = {
-            .type = float_1_decimal,
-            .value = 0
-        },
-        .min = 0,
-        .max = 255,
-    },
-     [YRC_KD_INDEX] = {
-        .name = "YRC Kd",
-        .ESE_background_color_variable = ESE_YRC_KD_BOX,
-        .ESE_value_color_variable = ESE_YRC_KD_COLOR,
-        .ESE_value_variable = ESE_YRC_KD_VAL,
-        .ESE_context_text_variable = "Yaw Rate Controller Kd",
         .value = {
             .type = float_1_decimal,
             .value = 0
@@ -148,58 +122,6 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 100,
     },
-    [BRAKE_TC_INDEX] = {
-        .name = "Brake TC",
-        .ESE_background_color_variable = ESE_BRAKE_TC_BOX,
-        .ESE_value_color_variable = ESE_BRAKE_TC_COLOR,
-        .ESE_value_variable = ESE_BRAKE_TC_VAL,
-        .ESE_context_text_variable = "Brake Traction Control",
-        .value = {
-            .type = boolean,
-            .value = 0
-        },
-        .min = 0,
-        .max = 1,
-    },
-    [ACCEL_TGT_INDEX] = {
-        .name = "Accl Target (BU)",
-        .ESE_background_color_variable = ESE_ACCEL_TGT_BOX,
-        .ESE_value_color_variable = ESE_ACCEL_TGT_COLOR,
-        .ESE_value_variable = ESE_ACCEL_TGT_VAL,
-        .ESE_context_text_variable = "Acceleration Target [Backup]",
-        .value = {
-            .type = float_1_decimal,
-            .value = 13
-        },
-        .min = 10,
-        .max = 200,
-    },
-    [SLIP_RATIO_INDEX] = {
-        .name = "Slip Ratio (BU)",
-        .ESE_background_color_variable = ESE_SLIP_RATIO_BOX,
-        .ESE_value_color_variable = ESE_SLIP_RATIO_COLOR,
-        .ESE_value_variable = ESE_SLIP_RATIO_VAL,
-        .ESE_context_text_variable = "Slip Ratio [Backup]",
-        .value = {
-            .type = float_1_decimal,
-            .value = 14
-        },
-        .min = 10,
-        .max = 20,
-    },
-    [TORQUE_BIAS_INDEX] = {
-        .name = "Torque Bias (BU)",
-        .ESE_background_color_variable = ESE_TORQUE_BIAS_BOX,
-        .ESE_value_color_variable = ESE_TORQUE_BIAS_COLOR,
-        .ESE_value_variable = ESE_TORQUE_BIAS_VAL,
-        .ESE_context_text_variable = "Torque Bias [Backup]",
-        .value = {
-            .type = integer,
-            .value = 60
-        },
-        .min = 0,
-        .max = 100,
-    },
     [DRS_THROTTLE_THRESH_INDEX] = {
         .name = "DRS Throtl Thrsh",
         .ESE_background_color_variable = ESE_DRS_THROTTLE_THRESH_BOX,
@@ -225,33 +147,6 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         },
         .min = 0,
         .max = 120,
-    },
-    [DRS_BRAKE_THRESH_INDEX] = {
-        .name = "DRS Brake Thrsh",
-        .ESE_background_color_variable = ESE_DRS_BRAKE_THRESH_BOX,
-        .ESE_value_color_variable = ESE_DRS_BRAKE_THRESH_COLOR,
-        .ESE_value_variable = ESE_DRS_BRAKE_THRESH_VAL,
-        .ESE_context_text_variable = "DRS Brake Pressure Threshold",
-        .value = {
-            .type = unsigned_integer,
-            .value = 30
-        },
-        .min = 0,
-        .max = 255,
-    },
-    [WET_INDEX] = {
-        .name = "Wet",
-        .ESE_background_color_variable = ESE_WET_BOX,
-        .ESE_value_color_variable = ESE_WET_COLOR,
-        .ESE_value_variable = ESE_WET_VAL,
-        .ESE_context_text_variable = "Wet Mode",
-        .ESE_string_len = 4, // including null terminator
-        .value = {
-            .type = boolean,
-            .value = 0
-        },
-        .min = 0,
-        .max = 1,
     },
     [K_LIN_INDEX] = {
         .name = "k_lin",
@@ -336,21 +231,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         },
         .min = 0,
         .max = 100,
-    },
-    [EXTRA_K_INDEX] = {
-        .name = "Extra K",
-        .ESE_background_color_variable = ESE_WET_BOX,
-        .ESE_value_color_variable = ESE_WET_COLOR,
-        .ESE_value_variable = ESE_WET_VAL,
-        .ESE_context_text_variable = "ExtraK",
-        .ESE_string_len = 4, // including null terminator
-        .value = {
-            .type = float_1_decimal,
-            .value = 0
-        },
-        .min = 0,
-        .max = 100,
-    },
+    }
 
 };
 
