@@ -392,6 +392,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
         all_packets_recieved &= gotten_packet[i];
     }
 
+
     // if all data is recieved
     if (all_packets_recieved) {
         // no need to ever re-init data
