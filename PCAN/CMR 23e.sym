@@ -29,6 +29,18 @@ enum DRS_MODE(0="DRS_CLOSED", 1="DRS_OPEN", 2="DRS_TOGGLE", 3="DRS_HOLD",
 enum CCMState(0="ERROR", 1="CLEAR_ERROR", 2="CLEAR_HVC", 3="IDLE_HVC", 
   4="STANDBY", 5="CHARGE_REQ", 6="CHARGE", 7="SLOW_CHARGE", 8="SHUTDOWN")
 
+{SEND}
+
+[IZZIE_Loadcell_config]
+ID=4E4h
+DLC=8
+Var=Programming_Constant_config unsigned 0,16 -h -m /d:30000
+Var=New_Can_ID unsigned 16,16 -m /d:2033
+Var=Update_Rate unsigned 32,8 -m /u:hz /d:1
+Var=Temp_Comp unsigned 40,8 -m /d:1
+Var=Temp_Sensor unsigned 48,8 -m /d:1
+Var=Bit_rate unsigned 56,8 -m /d:2
+
 {SENDRECEIVE}
 
 [VSM_Heartbeat]
@@ -448,12 +460,19 @@ ID=515h
 DLC=6
 CycleTime=100
 Timeout=1000
-Var=DIM_action1ButtonPressed unsigned 0,8
-Var=DIM_action2ButtonPressed unsigned 8,8
-Var=DIM_drsButtonPressed unsigned 16,8
+Var=DIM_action1ButtonPressed unsigned 5,1
+Var=DIM_action2ButtonPressed unsigned 4,1
+Var=DIM_drsButtonPressed unsigned 7,1
 Var=DIM_regenPercent unsigned 24,8 /u:percent
 Var=DIM_paddleLeft unsigned 32,8
 Var=DIM_paddleRight unsigned 40,8
+Var=DIM_action0ButtonPressed unsigned 6,1
+Var=DIM_actionUpButtonPressed unsigned 3,1
+Var=DIM_actionRightButtonPressed unsigned 0,1
+Var=DIM_actionLeftButtonPressed unsigned 1,1
+Var=DIM_actionDownButtonPressed unsigned 2,1
+Var=DIM_rotaryPos unsigned 8,8
+Var=DIM_switchValues unsigned 16,8
 
 [DIM_Acknowledge]
 ID=545h
@@ -1484,20 +1503,8 @@ DLC=8
 ID=7EFh	// This CAN id is used for communication between the energy meter and the download tool.
 DLC=8
 
-[IZZIE_Loadcell_config]
-ID=00000801h
-Type=Extended
-DLC=8
-Var=Programming_Constant_config unsigned 0,16 -h -m /d:30000
-Var=New_Can_ID unsigned 16,16 -m /d:2033
-Var=Update_Rate unsigned 32,8 -m /u:hz /d:1
-Var=Temp_Comp unsigned 40,8 -m /d:1
-Var=Temp_Sensor unsigned 48,8 -m /d:1
-Var=Bit_rate unsigned 56,8 -m /d:2
-
 [IZZIE_Loadcell_calibration]
-ID=00000800h
-Type=Extended
+ID=7FFh
 DLC=8
 Var=Programming_Constant_calibration unsigned 0,16 -h -m /d:20000
 Var=Gain_coefficient_m_m signed 16,16 -m /d:5772
@@ -2056,4 +2063,17 @@ Var=CCM_state unsigned 0,8 /e:CCMState
 Var=CCM_ChargerVoltage unsigned 8,16 /u:dV
 Var=CCM_ChargerCurrent unsigned 24,16 /u:dA
 Var=CCM_ChargerDisabled unsigned 40,8
+
+[DAQ_IZZE]
+ID=4E2h
+DLC=8
+Var="IZZE Differential Voltage" signed 0,16 -m /u:uV
+Var="IZZE Calibrated Output" signed 16,16 -m /u:F
+Var="IZZE Internal Temperature" signed 32,16 -m /u:C
+Var="IZZE Opt External Temp" signed 48,16 -m /u:C
+
+[DIM_TEST_FLAG]
+ID=777h
+DLC=4
+Var=TEST_FLAG unsigned 0,32 -h
 
