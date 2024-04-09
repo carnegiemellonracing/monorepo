@@ -82,6 +82,7 @@ uint32_t get_test_message_id() {
 }
 
 void new_test_message_id() {
+	srand(HAL_GetTick());
     test_message_id = (rand() % 0xFFFFFFFFu) & 0x0FFFFFFF;
 }
 
