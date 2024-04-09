@@ -1937,7 +1937,7 @@ Var=FR_FORCE_3 signed 32,32
 [DAQ_FR_THERM]
 ID=652h
 DLC=8
-Var=FR_THERM_0 unsigned 0,16 -h
+Var=FR_THERM_0 unsigned 0,16 
 Var=FR_THERM_1 signed 16,16
 Var=FR_THERM_2 unsigned 32,16
 Var=FR_THERM_3 unsigned 48,16
@@ -1954,43 +1954,101 @@ DLC=8
 Var=FR_AIRSPEED_MPH unsigned 0,32
 Var=FR_AIRSPEED_ADC unsigned 32,32
 
-[DAQ_1_DEBUG]
+[DAQ_RR_STRAIN_0]
 ID=655h
 DLC=8
-Var=HX711_DEBUG_1 unsigned 0,32 -h
-Var=NAU7802_DEBUG_1 signed 32,32
+Var=RR_FORCE_0 signed 0,32
+Var=RR_FORCE_1 signed 32,32 /u:N
 
-[DAQ_2_LOADCELL]
+[DAQ_RR_STRAIN_1]
 ID=656h
 DLC=8
-Var=HX711_FORCE_2 signed 0,32
-Var=NAU7802_FORCE_2 float 32,32 /u:N
+Var=RR_FORCE_2 signed 0,32
+Var=RR_FORCE_3 signed 32,32
 
-[DAQ_2_THERMISTOR]
+[DAQ_RR_THERM]
 ID=657h
 DLC=8
-Var=TMP0_2 unsigned 0,16
-Var=TMP1_2 unsigned 16,16
-Var=TMP2_2 unsigned 32,16
-Var=TMP3_2 unsigned 48,16
+Var=RR_THERM_0 unsigned 0,16 -h
+Var=RR_THERM_1 signed 16,16
+Var=RR_THERM_2 unsigned 32,16
+Var=RR_THERM_3 unsigned 48,16
 
-[DAQ_2_DEBUG]
+[DAQ_RR_DAMPER]
 ID=658h
 DLC=8
-Var=HX711_DEBUG_2 unsigned 0,32 -h
-Var=NAU7802_DEBUG_2 signed 32,32
+Var=RR_DAMPER_MM unsigned 0,32
+Var=RR_DAMPER_ADC unsigned 32,32
 
-[DAQ_3_LOADCELL]
+[DAQ_RR_ANEMOMETER]
 ID=659h
 DLC=8
-Var=HX711_FORCE_3 signed 0,32
-Var=NAU7802_FORCE_3 float 32,32 /u:N
+Var=RR_AIRSPEED_MPH unsigned 0,32
+Var=RR_AIRSPEED_ADC unsigned 32,32
 
-[DAQ_3_DEBUG]
+[DAQ_RL_STRAIN_0]
+ID=65Ah
+DLC=8
+Var=RL_FORCE_0 signed 0,32
+Var=RL_FORCE_1 signed 32,32 /u:N
+
+[DAQ_RL_STRAIN_1]
 ID=65Bh
 DLC=8
-Var=HX711_DEBUG_3 unsigned 0,32 -h
-Var=NAU7802_DEBUG_3 signed 32,32
+Var=RL_FORCE_2 signed 0,32
+Var=RL_FORCE_3 signed 32,32
+
+[DAQ_RL_THERM]
+ID=65Ch
+DLC=8
+Var=RL_THERM_0 unsigned 0,16 
+Var=RL_THERM_1 signed 16,16
+Var=RL_THERM_2 unsigned 32,16
+Var=RL_THERM_3 unsigned 48,16
+
+[DAQ_RL_DAMPER]
+ID=65Dh
+DLC=8
+Var=RL_DAMPER_MM unsigned 0,32
+Var=RL_DAMPER_ADC unsigned 32,32
+
+[DAQ_RL_ANEMOMETER]
+ID=65Eh
+DLC=8
+Var=RL_AIRSPEED_MPH unsigned 0,32
+Var=RL_AIRSPEED_ADC unsigned 32,32
+
+[DAQ_FL_STRAIN_0]
+ID=65Fh
+DLC=8
+Var=FL_FORCE_0 signed 0,32
+Var=FL_FORCE_1 signed 32,32 /u:N
+
+[DAQ_FL_STRAIN_1]
+ID=660h
+DLC=8
+Var=FL_FORCE_2 signed 0,32
+Var=FL_FORCE_3 signed 32,32
+
+[DAQ_FL_THERM]
+ID=661h
+DLC=8
+Var=FL_THERM_0 unsigned 0,16 
+Var=FL_THERM_1 signed 16,16
+Var=FL_THERM_2 unsigned 32,16
+Var=FL_THERM_3 unsigned 48,16
+
+[DAQ_FL_DAMPER]
+ID=662h
+DLC=8
+Var=FL_DAMPER_MM unsigned 0,32
+Var=FL_DAMPER_ADC unsigned 32,32
+
+[DAQ_FL_ANEMOMETER]
+ID=663h
+DLC=8
+Var=FL_AIRSPEED_MPH unsigned 0,32
+Var=FL_AIRSPEED_ADC unsigned 32,32
 
 [Memorator_Heartbeat]
 ID=109h
