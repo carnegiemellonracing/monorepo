@@ -50,6 +50,11 @@ static void drawRTDScreen(void);
 static void drawConfigScreen(void);
 static void drawSafetyScreen(void);
 
+/*Prev HVC errors to latch on display*/
+static bool prevOverVolt = false;
+static bool prevUnderVolt = false;
+static bool prevOverTemp = false;
+
 /**
  * @brief Sends a command to the display.
  *
@@ -323,6 +328,10 @@ static void tftUpdate(void *pvParameters) {
         } else if (stateGetVSM() == CMR_CAN_ERROR) {
             drawErrorScreen();
         } else {
+        	//reset latching errors for ams as shown on screen
+        	prevOverVolt = false;
+        	prevUnderVolt = false;
+        	prevOverTemp = false;
             // within drawRTDScreen, we decide if to draw testing or racing screen
             drawRTDScreen();
         }
@@ -400,9 +409,19 @@ static void drawErrorScreen(void) {
     err.bspdError = (canVSMStatus->latchMatrix & CMR_CAN_VSM_LATCH_BSPD);
 
     /* HVC Errors */
-    err.overVolt = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERVOLT);
-    err.underVolt = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_UNDERVOLT);
-    err.hvcoverTemp = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERTEMP);
+    /* Latch errors so we know what the issue is after AMS fault*/
+    err.overVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVC_ERROR_CELL_OVERVOLT)) | prevOverVolt;
+    if(err.overVolt) {
+    	prevOverVolt = true;
+    }
+    err.underVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVC_ERROR_CELL_UNDERVOLT)) | prevUnderVolt;
+    if(err.underVolt) {
+		prevUnderVolt = true;
+	}
+    err.hvcoverTemp = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVC_ERROR_CELL_OVERTEMP))  | prevOverTemp;
+    if(err.hvcoverTemp) {
+		prevOverTemp = true;
+	}
     err.hvcBMBTimeout = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_TIMEOUT);
     err.hvcBMBFault = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_FAULT);
     err.hvcErrorNum = (canHVCHeartbeat->errorStatus);
