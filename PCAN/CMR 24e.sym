@@ -1922,39 +1922,37 @@ Var=Data1 char 16,8
 Var=Data2 char 24,8
 Var=Data3 char 32,8
 
-[DAQ_0_LOADCELL]
+[DAQ_FR_STRAIN_0]
 ID=650h
 DLC=8
-Var=HX711_FORCE_0 signed 0,32
-Var=NAU7802_FORCE_0 float 32,32 /u:N
+Var=FR_FORCE_0 signed 0,32
+Var=FR_FORCE_1 signed 32,32 /u:N
 
-[DAQ_0_LINPOT]
+[DAQ_FR_STRAIN_1]
 ID=651h
 DLC=8
-Var=FR_DAMPER_MM unsigned 0,16 /u:mm
-Var=FR_DAMPER_ADC unsigned 16,16
-Var=BR_DAMPER_MM unsigned 32,16 /u:mm
-Var=BR_DAMPER_ADC unsigned 48,16
+Var=FR_FORCE_2 signed 0,32
+Var=FR_FORCE_3 signed 32,32
 
-[DAQ_0_DEBUG]
+[DAQ_FR_THERM]
 ID=652h
 DLC=8
-Var=HX711_DEBUG_0 unsigned 0,32 -h
-Var=NAU7802_DEBUG_0 signed 32,32
+Var=FR_THERM_0 unsigned 0,16 -h
+Var=FR_THERM_1 signed 16,16
+Var=FR_THERM_2 unsigned 32,16
+Var=FR_THERM_3 unsigned 48,16
 
-[DAQ_1_LOADCELL]
+[DAQ_FR_DAMPER]
 ID=653h
 DLC=8
-Var=HX711_FORCE_1 signed 0,32
-Var=NAU7802_FORCE_1 float 32,32 /u:N
+Var=FR_DAMPER_MM unsigned 0,32
+Var=FR_DAMPER_ADC unsigned 32,32
 
-[DAQ_1_THERMISTOR]
+[DAQ_FR_ANEMOMETER]
 ID=654h
 DLC=8
-Var=TMP0_1 unsigned 0,16
-Var=TMP1_1 unsigned 16,16
-Var=TMP2_1 unsigned 32,16
-Var=TMP3_1 unsigned 48,16
+Var=FR_AIRSPEED_MPH unsigned 0,32
+Var=FR_AIRSPEED_ADC unsigned 32,32
 
 [DAQ_1_DEBUG]
 ID=655h
@@ -1987,14 +1985,6 @@ ID=659h
 DLC=8
 Var=HX711_FORCE_3 signed 0,32
 Var=NAU7802_FORCE_3 float 32,32 /u:N
-
-[DAQ_3_LINPOT]
-ID=65Ah
-DLC=8
-Var=FL_DAMPER_MM unsigned 0,16 /u:mm
-Var=FL_DAMPER_ADC unsigned 16,16
-Var=BL_DAMPER_MM unsigned 32,16 /u:mm
-Var=BL_DAMPER_ADC unsigned 48,16
 
 [DAQ_3_DEBUG]
 ID=65Bh
