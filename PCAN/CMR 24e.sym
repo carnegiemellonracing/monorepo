@@ -1383,47 +1383,7 @@ Var=AMK_RR_TargetVelocity signed 16,16 /u:rpm /p:2
 Var=AMK_RR_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_RR_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
-[controls_debug_global]
-ID=7E0h
-CycleTime=100
-Var=controls_elapsed_time signed 0,16 /p:2
-Var=controls_sbg_speed_mps signed 16,16 /u:m.s-1 /p:2
-Var=controls_target_velocity signed 32,16 /u:m.s-1 /p:2
-Var=controls_target_accel signed 48,16 /u:m.s-2 /f:0.1 /p:2
-
-[controls_debug_fr]
-ID=7E1h
-CycleTime=100
-Var=controls_current_slip_FR signed 0,16 /f:0.01 /p:2
-Var=controls_slip_correction_FR signed 16,16 /p:2
-Var=controls_wheel_speed_actual_FR signed 32,16 /u:m.s-1 /p:2
-Var=controls_wheel_speed_target_FR signed 48,16 /u:m.s-1 /p:2
-
-[controls_debug_fl]
-ID=7E2h
-CycleTime=100
-Var=controls_current_slip_FL signed 0,16 /f:0.01 /p:2
-Var=controls_slip_correction_FL signed 16,16 /p:2
-Var=controls_wheel_speed_actual_FL signed 32,16 /u:m.s-1 /p:2
-Var=controls_wheel_speed_target_FL signed 48,16 /u:m.s-1 /p:2
-
-[controls_debug_rr]
-ID=7E3h
-CycleTime=100
-Var=controls_current_slip_RR signed 0,16 /f:0.01 /p:2
-Var=controls_slip_correction_RR signed 16,16 /p:2
-Var=controls_wheel_speed_actual_RR signed 32,16 /u:m.s-1 /p:2
-Var=controls_wheel_speed_target_RR signed 48,16 /u:m.s-1 /p:2
-
-[controls_debug_rl]
-ID=7E4h
-CycleTime=100
-Var=controls_current_slip_RL signed 0,16 /f:0.01 /p:2
-Var=controls_slip_correction_RL signed 16,16 /p:2
-Var=controls_wheel_speed_actual_RL signed 32,16 /u:m.s-1 /p:2
-Var=controls_wheel_speed_target_RL signed 48,16 /u:m.s-1 /p:2
-
-[controls_pid]
+[CDC_CONTROLS_PID]
 ID=7E5h
 CycleTime=100
 Var=controls_current_yaw_rate signed 0,16 /u:rad.s-1 /f:0.01 /p:2
@@ -2087,3 +2047,16 @@ ID=777h
 DLC=4
 Var=TEST_FLAG float 0,32
 
+[CDC_CONTROLS_SOLVER_INFO]
+ID=7E6h
+DLC=8
+Var=Moment_REQ float 0,32
+Var=Lin_Accel_REQ float 32,32
+
+[CDC_CONTROLS_SOLVER_TORQUES]
+ID=7D7h
+DLC=8
+Var=Torque_FL signed 0,16
+Var=Torque_FR signed 16,16
+Var=Torque_RL signed 32,16
+Var=Torque_RR signed 48,16
