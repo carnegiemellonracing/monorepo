@@ -18,6 +18,7 @@
 #include "can.h"      // Interface to implement
 #include "adc.h"      // adcVSense, adcISense
 #include "sensors.h"  // HVC Values
+#include "math.h"
 
 /** @brief Struct to identify stale commands. */
 extern ReceiveMeta_t BMSCommandReceiveMeta;
@@ -462,13 +463,14 @@ static void sendBMSMinMaxCellTemp(void) {
 	uint8_t minCellTempIndex;
 	uint8_t maxCellTempIndex;
 
-    for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM; bmb_index++) {
+    for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
         uint8_t maxIndex = getBMBMaxTempIndex(bmb_index);
         uint8_t minIndex = getBMBMinTempIndex(bmb_index);
         uint16_t maxTemp = getBMBTemp(bmb_index, maxIndex);
         uint16_t minTemp = getBMBTemp(bmb_index, minIndex);
 
-        if (maxTemp > maxCellTemp) {
+        //bmb 2 channel 13, bmb 7 channel 0, bmb 8 channel 9/11, bmb 9 channel 6
+        if ((maxTemp > maxCellTemp)) {
             maxCellTemp = maxTemp;
             maxCellTempBMBNum = bmb_index;
             maxCellTempIndex = maxIndex;
@@ -480,14 +482,21 @@ static void sendBMSMinMaxCellTemp(void) {
             minCellTempIndex = minIndex;
         }
     }
+    float xMin = (4.7f*((float)minCellTemp)/1000.0f)* 1000.0f / ((5.0f - (((float)minCellTemp)/1000.0f)) );
+    float temp_minTemp = (1/(0.00335348f + (0.00030662f*log((xMin)/10000.0f)) + powf(0.00000837316f*log(xMin/10000.0f), 2))) - 273.15;
+    minCellTemp = (int16_t) (temp_minTemp * 10.0f);
 
+    float xMax = (4.7f*((float)maxCellTemp)/1000.0f) * 1000.0f / ((5.0f - (((float)maxCellTemp)/1000.0f)));
+	float temp_maxTemp = (1/(0.00335348f + (0.00030662f*log((xMax)/10000.0f)) + powf(0.00000837316f*log(xMax/10000.0f), 2))) - 273.15;
+	maxCellTemp = (int16_t) (temp_maxTemp * 10.0f);
+    //currently swapped because the min logic reading only voltage
     cmr_canBMSMinMaxCellTemperature_t BMSBMBMinMaxTemperature = {
-        .minCellTemp_C = minCellTemp,
-        .maxCellTemp_C = maxCellTemp,
-        .minTempBMBNum = minCellTempBMBNum,
-        .maxTempBMBNum = maxCellTempBMBNum,
-        .minTempCellNum = minCellTempIndex,
-        .maxTempCellNum = maxCellTempIndex,
+        .minCellTemp_C = maxCellTemp,
+        .maxCellTemp_C = minCellTemp,
+        .minTempBMBNum = maxCellTempBMBNum,
+        .maxTempBMBNum = minCellTempBMBNum,
+        .minTempCellNum = maxCellTempIndex,
+        .maxTempCellNum = minCellTempIndex,
     };
 
     canTX(CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE, &BMSBMBMinMaxTemperature, sizeof(BMSBMBMinMaxTemperature), canTX10Hz_period_ms);

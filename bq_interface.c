@@ -485,7 +485,10 @@ bool setMuxOutput(uint8_t channel) {
 }
 
 static int16_t calculateTemp(uint8_t msb, uint8_t lsb) {
-	return (uint16_t)((0.15259) * (((int16_t) msb << 8) | lsb));
+	int16_t voltage_mv = (uint16_t)((0.15259) * (((int16_t) msb << 8) | lsb));
+//    uint32_t resistance_centiOhm = (47 * voltage_mv) / (5000 - voltage_mv); // Calculate the resistance of thermistor
+//    uint32_t temp = (resistance_centiOhm*resistance_centiOhm) * 46 - (resistance_centiOhm) * 11303 + 905666;
+    return (voltage_mv);
 }
 
 void pollAllTemperatureData(int channel) {

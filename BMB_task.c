@@ -18,6 +18,18 @@ extern volatile int BMBErrs[BOARD_NUM-1];
 
 #define BALANCE_EN true
 #define BALANCE_DIS false
+#define TO_IGNORE 6
+
+static const temp_to_ignore[TO_IGNORE] = {2, 41, 98, 121, 123, 132};
+
+bool check_to_ignore(uint8_t bmb_index, uint8_t channel) {
+	for(int i = 0; i < TO_IGNORE; i++) {
+		if(bmb_index*14 + channel == temp_to_ignore[i]) {
+			return true;
+		}
+	}
+	return false;
+}
 
 
 
@@ -64,7 +76,7 @@ uint8_t getBMBMaxTempIndex(uint8_t bmb_index) {
 	uint8_t cell_index = 0;
 	for (uint8_t i = 0; i < TEMP_CHANNELS; i++) {
 		int16_t temp = BMBData[bmb_index].cellTemperatures[i];
-		if (temp > maxTemp) {
+		if ((temp > maxTemp) && !check_to_ignore(bmb_index, i)) {
 			maxTemp = temp;
 			cell_index = i;
 		}
@@ -77,7 +89,7 @@ uint8_t getBMBMinTempIndex(uint8_t bmb_index) {
 	uint8_t cell_index = 0;
 	for (uint8_t i = 0; i < TEMP_CHANNELS; i++) {
 		int16_t temp = BMBData[bmb_index].cellTemperatures[i];
-		if (temp < minTemp) {
+		if (temp < minTemp && !check_to_ignore(bmb_index, i)) {
 			minTemp = temp;
 			cell_index = i;
 		}
@@ -252,7 +264,7 @@ void getBMSMinMaxCellTemperature(
 			BMSMinMaxCellTemp->minTempCellNum = minCellTempIndex;
 		}
 
-		// find highest cell voltage on current BMB
+		// find highest cell temp on current BMB
 		maxCellTempIndex = getBMBMaxTempIndex(bmb_index);
 		maxCellTemp = BMBData[bmb_index].cellTemperatures[maxCellTempIndex];
 
@@ -264,6 +276,8 @@ void getBMSMinMaxCellTemperature(
 		}
 	}
 }
+
+//temp index 2,
 
 BMB_Data_t* getBMBData(uint8_t bmb_index) {
 	return &(BMBData[bmb_index]);
