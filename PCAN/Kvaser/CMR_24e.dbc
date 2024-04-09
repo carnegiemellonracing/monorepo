@@ -1144,8 +1144,7 @@ SG_ controls_wheel_speed_target_RL : 48|16@1- (1,0) [-32768|32767] "m.s-1" Vecto
 BO_ 2021 controls_pid: 8 Vector__XXX
 SG_ controls_current_yaw_rate : 0|16@1- (0.01,0) [-327.68|327.67] "rad.s-1" Vector__XXX
 SG_ controls_target_yaw_rate : 16|16@1- (0.01,0) [-327.68|327.67] "rad.s-1" Vector__XXX
-SG_ controls_bias : 32|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
-SG_ controls_pid : 48|16@1- (0.01,0) [-327.68|327.67] "" Vector__XXX
+SG_ controls_pid : 32|32@1- (0.01,0) [-3.4E036|3.4E036] "" Vector__XXX
 
 
 BO_ 1024 EMD_Status: 4 Vector__XXX
@@ -1517,72 +1516,112 @@ SG_ Data2 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ Data3 : 32|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1616 DAQ_0_LOADCELL: 8 Vector__XXX
-SG_ HX711_FORCE_0 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
-SG_ NAU7802_FORCE_0 : 32|32@1- (1,0) [-3.4E038|3.4E038] "N" Vector__XXX
+BO_ 1616 DAQ_FR_STRAIN_0: 8 Vector__XXX
+SG_ FR_FORCE_0 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
+SG_ FR_FORCE_1 : 32|32@1- (1,0) [-2147483648|2147483647] "N" Vector__XXX
 
 
-BO_ 1617 DAQ_0_LINPOT: 8 Vector__XXX
-SG_ FR_DAMPER_MM : 0|16@1+ (1,0) [0|65535] "mm" Vector__XXX
-SG_ FR_DAMPER_ADC : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ BR_DAMPER_MM : 32|16@1+ (1,0) [0|65535] "mm" Vector__XXX
-SG_ BR_DAMPER_ADC : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
+BO_ 1617 DAQ_FR_STRAIN_1: 8 Vector__XXX
+SG_ FR_FORCE_2 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
+SG_ FR_FORCE_3 : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
 
 
-BO_ 1618 DAQ_0_DEBUG: 8 Vector__XXX
-SG_ HX711_DEBUG_0 : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-SG_ NAU7802_DEBUG_0 : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
+BO_ 1618 DAQ_FR_THERM: 8 Vector__XXX
+SG_ FR_THERM_0 : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ FR_THERM_1 : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
+SG_ FR_THERM_2 : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ FR_THERM_3 : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
 
 
-BO_ 1619 DAQ_1_LOADCELL: 8 Vector__XXX
-SG_ HX711_FORCE_1 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
-SG_ NAU7802_FORCE_1 : 32|32@1- (1,0) [-3.4E038|3.4E038] "N" Vector__XXX
+BO_ 1619 DAQ_FR_DAMPER: 8 Vector__XXX
+SG_ FR_DAMPER_MM : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+SG_ FR_DAMPER_ADC : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
 
 
-BO_ 1620 DAQ_1_THERMISTOR: 8 Vector__XXX
-SG_ TMP0_1 : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ TMP1_1 : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ TMP2_1 : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ TMP3_1 : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
+BO_ 1620 DAQ_FR_ANEMOMETER: 8 Vector__XXX
+SG_ FR_AIRSPEED_MPH : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+SG_ FR_AIRSPEED_ADC : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
 
 
-BO_ 1621 DAQ_1_DEBUG: 8 Vector__XXX
-SG_ HX711_DEBUG_1 : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-SG_ NAU7802_DEBUG_1 : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
+BO_ 1621 DAQ_RR_STRAIN_0: 8 Vector__XXX
+SG_ RR_FORCE_0 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
+SG_ RR_FORCE_1 : 32|32@1- (1,0) [-2147483648|2147483647] "N" Vector__XXX
 
 
-BO_ 1622 DAQ_2_LOADCELL: 8 Vector__XXX
-SG_ HX711_FORCE_2 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
-SG_ NAU7802_FORCE_2 : 32|32@1- (1,0) [-3.4E038|3.4E038] "N" Vector__XXX
+BO_ 1622 DAQ_RR_STRAIN_1: 8 Vector__XXX
+SG_ RR_FORCE_2 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
+SG_ RR_FORCE_3 : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
 
 
-BO_ 1623 DAQ_2_THERMISTOR: 8 Vector__XXX
-SG_ TMP0_2 : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ TMP1_2 : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ TMP2_2 : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ TMP3_2 : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
+BO_ 1623 DAQ_RR_THERM: 8 Vector__XXX
+SG_ RR_THERM_0 : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ RR_THERM_1 : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
+SG_ RR_THERM_2 : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ RR_THERM_3 : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
 
 
-BO_ 1624 DAQ_2_DEBUG: 8 Vector__XXX
-SG_ HX711_DEBUG_2 : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-SG_ NAU7802_DEBUG_2 : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
+BO_ 1624 DAQ_RR_DAMPER: 8 Vector__XXX
+SG_ RR_DAMPER_MM : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+SG_ RR_DAMPER_ADC : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
 
 
-BO_ 1625 DAQ_3_LOADCELL: 8 Vector__XXX
-SG_ HX711_FORCE_3 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
-SG_ NAU7802_FORCE_3 : 32|32@1- (1,0) [-3.4E038|3.4E038] "N" Vector__XXX
+BO_ 1625 DAQ_RR_ANEMOMETER: 8 Vector__XXX
+SG_ RR_AIRSPEED_MPH : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+SG_ RR_AIRSPEED_ADC : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
 
 
-BO_ 1626 DAQ_3_LINPOT: 8 Vector__XXX
-SG_ FL_DAMPER_MM : 0|16@1+ (1,0) [0|65535] "mm" Vector__XXX
-SG_ FL_DAMPER_ADC : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ BL_DAMPER_MM : 32|16@1+ (1,0) [0|65535] "mm" Vector__XXX
-SG_ BL_DAMPER_ADC : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
+BO_ 1626 DAQ_RL_STRAIN_0: 8 Vector__XXX
+SG_ RL_FORCE_0 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
+SG_ RL_FORCE_1 : 32|32@1- (1,0) [-2147483648|2147483647] "N" Vector__XXX
 
 
-BO_ 1627 DAQ_3_DEBUG: 8 Vector__XXX
-SG_ HX711_DEBUG_3 : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-SG_ NAU7802_DEBUG_3 : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
+BO_ 1627 DAQ_RL_STRAIN_1: 8 Vector__XXX
+SG_ RL_FORCE_2 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
+SG_ RL_FORCE_3 : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
+
+
+BO_ 1628 DAQ_RL_THERM: 8 Vector__XXX
+SG_ RL_THERM_0 : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ RL_THERM_1 : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
+SG_ RL_THERM_2 : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ RL_THERM_3 : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
+
+
+BO_ 1629 DAQ_RL_DAMPER: 8 Vector__XXX
+SG_ RL_DAMPER_MM : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+SG_ RL_DAMPER_ADC : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+
+
+BO_ 1630 DAQ_RL_ANEMOMETER: 8 Vector__XXX
+SG_ RL_AIRSPEED_MPH : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+SG_ RL_AIRSPEED_ADC : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+
+
+BO_ 1631 DAQ_FL_STRAIN_0: 8 Vector__XXX
+SG_ FL_FORCE_0 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
+SG_ FL_FORCE_1 : 32|32@1- (1,0) [-2147483648|2147483647] "N" Vector__XXX
+
+
+BO_ 1632 DAQ_FL_STRAIN_1: 8 Vector__XXX
+SG_ FL_FORCE_2 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
+SG_ FL_FORCE_3 : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
+
+
+BO_ 1633 DAQ_FL_THERM: 8 Vector__XXX
+SG_ FL_THERM_0 : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ FL_THERM_1 : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
+SG_ FL_THERM_2 : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ FL_THERM_3 : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
+
+
+BO_ 1634 DAQ_FL_DAMPER: 8 Vector__XXX
+SG_ FL_DAMPER_MM : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+SG_ FL_DAMPER_ADC : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+
+
+BO_ 1635 DAQ_FL_ANEMOMETER: 8 Vector__XXX
+SG_ FL_AIRSPEED_MPH : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+SG_ FL_AIRSPEED_ADC : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
 
 
 BO_ 265 Memorator_Heartbeat: 1 Vector__XXX
@@ -2486,7 +2525,6 @@ BA_ "GenSigStartValue" SG_ 2020 controls_wheel_speed_actual_RL 0;
 BA_ "GenSigStartValue" SG_ 2020 controls_wheel_speed_target_RL 0;
 BA_ "GenSigStartValue" SG_ 2021 controls_current_yaw_rate 0;
 BA_ "GenSigStartValue" SG_ 2021 controls_target_yaw_rate 0;
-BA_ "GenSigStartValue" SG_ 2021 controls_bias 0;
 BA_ "GenSigStartValue" SG_ 2021 controls_pid 0;
 BA_ "GenSigStartValue" SG_ 1024 EMD_VoltageGain 0;
 BA_ "GenSigStartValue" SG_ 1024 EMD_CurrentGain 0;
@@ -2694,38 +2732,54 @@ BA_ "GenSigStartValue" SG_ 772 BMB13_Error 0;
 BA_ "GenSigStartValue" SG_ 772 BMB14_Error 0;
 BA_ "GenSigStartValue" SG_ 772 BMB15_Error 0;
 BA_ "GenSigStartValue" SG_ 1317 Address 0;
-BA_ "GenSigStartValue" SG_ 1616 HX711_FORCE_0 0;
-BA_ "GenSigStartValue" SG_ 1616 NAU7802_FORCE_0 0;
-BA_ "GenSigStartValue" SG_ 1617 FR_DAMPER_MM 0;
-BA_ "GenSigStartValue" SG_ 1617 FR_DAMPER_ADC 0;
-BA_ "GenSigStartValue" SG_ 1617 BR_DAMPER_MM 0;
-BA_ "GenSigStartValue" SG_ 1617 BR_DAMPER_ADC 0;
-BA_ "GenSigStartValue" SG_ 1618 HX711_DEBUG_0 0;
-BA_ "GenSigStartValue" SG_ 1618 NAU7802_DEBUG_0 0;
-BA_ "GenSigStartValue" SG_ 1619 HX711_FORCE_1 0;
-BA_ "GenSigStartValue" SG_ 1619 NAU7802_FORCE_1 0;
-BA_ "GenSigStartValue" SG_ 1620 TMP0_1 0;
-BA_ "GenSigStartValue" SG_ 1620 TMP1_1 0;
-BA_ "GenSigStartValue" SG_ 1620 TMP2_1 0;
-BA_ "GenSigStartValue" SG_ 1620 TMP3_1 0;
-BA_ "GenSigStartValue" SG_ 1621 HX711_DEBUG_1 0;
-BA_ "GenSigStartValue" SG_ 1621 NAU7802_DEBUG_1 0;
-BA_ "GenSigStartValue" SG_ 1622 HX711_FORCE_2 0;
-BA_ "GenSigStartValue" SG_ 1622 NAU7802_FORCE_2 0;
-BA_ "GenSigStartValue" SG_ 1623 TMP0_2 0;
-BA_ "GenSigStartValue" SG_ 1623 TMP1_2 0;
-BA_ "GenSigStartValue" SG_ 1623 TMP2_2 0;
-BA_ "GenSigStartValue" SG_ 1623 TMP3_2 0;
-BA_ "GenSigStartValue" SG_ 1624 HX711_DEBUG_2 0;
-BA_ "GenSigStartValue" SG_ 1624 NAU7802_DEBUG_2 0;
-BA_ "GenSigStartValue" SG_ 1625 HX711_FORCE_3 0;
-BA_ "GenSigStartValue" SG_ 1625 NAU7802_FORCE_3 0;
-BA_ "GenSigStartValue" SG_ 1626 FL_DAMPER_MM 0;
-BA_ "GenSigStartValue" SG_ 1626 FL_DAMPER_ADC 0;
-BA_ "GenSigStartValue" SG_ 1626 BL_DAMPER_MM 0;
-BA_ "GenSigStartValue" SG_ 1626 BL_DAMPER_ADC 0;
-BA_ "GenSigStartValue" SG_ 1627 HX711_DEBUG_3 0;
-BA_ "GenSigStartValue" SG_ 1627 NAU7802_DEBUG_3 0;
+BA_ "GenSigStartValue" SG_ 1616 FR_FORCE_0 0;
+BA_ "GenSigStartValue" SG_ 1616 FR_FORCE_1 0;
+BA_ "GenSigStartValue" SG_ 1617 FR_FORCE_2 0;
+BA_ "GenSigStartValue" SG_ 1617 FR_FORCE_3 0;
+BA_ "GenSigStartValue" SG_ 1618 FR_THERM_0 0;
+BA_ "GenSigStartValue" SG_ 1618 FR_THERM_1 0;
+BA_ "GenSigStartValue" SG_ 1618 FR_THERM_2 0;
+BA_ "GenSigStartValue" SG_ 1618 FR_THERM_3 0;
+BA_ "GenSigStartValue" SG_ 1619 FR_DAMPER_MM 0;
+BA_ "GenSigStartValue" SG_ 1619 FR_DAMPER_ADC 0;
+BA_ "GenSigStartValue" SG_ 1620 FR_AIRSPEED_MPH 0;
+BA_ "GenSigStartValue" SG_ 1620 FR_AIRSPEED_ADC 0;
+BA_ "GenSigStartValue" SG_ 1621 RR_FORCE_0 0;
+BA_ "GenSigStartValue" SG_ 1621 RR_FORCE_1 0;
+BA_ "GenSigStartValue" SG_ 1622 RR_FORCE_2 0;
+BA_ "GenSigStartValue" SG_ 1622 RR_FORCE_3 0;
+BA_ "GenSigStartValue" SG_ 1623 RR_THERM_0 0;
+BA_ "GenSigStartValue" SG_ 1623 RR_THERM_1 0;
+BA_ "GenSigStartValue" SG_ 1623 RR_THERM_2 0;
+BA_ "GenSigStartValue" SG_ 1623 RR_THERM_3 0;
+BA_ "GenSigStartValue" SG_ 1624 RR_DAMPER_MM 0;
+BA_ "GenSigStartValue" SG_ 1624 RR_DAMPER_ADC 0;
+BA_ "GenSigStartValue" SG_ 1625 RR_AIRSPEED_MPH 0;
+BA_ "GenSigStartValue" SG_ 1625 RR_AIRSPEED_ADC 0;
+BA_ "GenSigStartValue" SG_ 1626 RL_FORCE_0 0;
+BA_ "GenSigStartValue" SG_ 1626 RL_FORCE_1 0;
+BA_ "GenSigStartValue" SG_ 1627 RL_FORCE_2 0;
+BA_ "GenSigStartValue" SG_ 1627 RL_FORCE_3 0;
+BA_ "GenSigStartValue" SG_ 1628 RL_THERM_0 0;
+BA_ "GenSigStartValue" SG_ 1628 RL_THERM_1 0;
+BA_ "GenSigStartValue" SG_ 1628 RL_THERM_2 0;
+BA_ "GenSigStartValue" SG_ 1628 RL_THERM_3 0;
+BA_ "GenSigStartValue" SG_ 1629 RL_DAMPER_MM 0;
+BA_ "GenSigStartValue" SG_ 1629 RL_DAMPER_ADC 0;
+BA_ "GenSigStartValue" SG_ 1630 RL_AIRSPEED_MPH 0;
+BA_ "GenSigStartValue" SG_ 1630 RL_AIRSPEED_ADC 0;
+BA_ "GenSigStartValue" SG_ 1631 FL_FORCE_0 0;
+BA_ "GenSigStartValue" SG_ 1631 FL_FORCE_1 0;
+BA_ "GenSigStartValue" SG_ 1632 FL_FORCE_2 0;
+BA_ "GenSigStartValue" SG_ 1632 FL_FORCE_3 0;
+BA_ "GenSigStartValue" SG_ 1633 FL_THERM_0 0;
+BA_ "GenSigStartValue" SG_ 1633 FL_THERM_1 0;
+BA_ "GenSigStartValue" SG_ 1633 FL_THERM_2 0;
+BA_ "GenSigStartValue" SG_ 1633 FL_THERM_3 0;
+BA_ "GenSigStartValue" SG_ 1634 FL_DAMPER_MM 0;
+BA_ "GenSigStartValue" SG_ 1634 FL_DAMPER_ADC 0;
+BA_ "GenSigStartValue" SG_ 1635 FL_AIRSPEED_MPH 0;
+BA_ "GenSigStartValue" SG_ 1635 FL_AIRSPEED_ADC 0;
 BA_ "GenSigStartValue" SG_ 265 State 0;
 BA_ "GenSigStartValue" SG_ 262 HVI_Current 0;
 BA_ "GenSigStartValue" SG_ 262 HVI_Voltage 0;
@@ -2764,6 +2818,7 @@ SIG_VALTYPE_ 642 CDC_Longitude : 1;
 SIG_VALTYPE_ 1860 SBG_Velocity_ODO : 1;
 SIG_VALTYPE_ 1862 SBG_Pressure_IMU : 1;
 SIG_VALTYPE_ 1862 SBG_Altitude_IMU : 1;
+SIG_VALTYPE_ 2021 controls_pid : 1;
 SIG_VALTYPE_ 1730 CDC_Odometer : 1;
 SIG_VALTYPE_ 1325 Power_Limit_Max_Violation_W : 1;
 SIG_VALTYPE_ 2024 slipRatio_FL : 1;
@@ -2778,10 +2833,6 @@ SIG_VALTYPE_ 2028 vel_calc_FL : 1;
 SIG_VALTYPE_ 2028 vel_calc_FR : 1;
 SIG_VALTYPE_ 2029 vel_calc_RL : 1;
 SIG_VALTYPE_ 2029 vel_calc_RR : 1;
-SIG_VALTYPE_ 1616 NAU7802_FORCE_0 : 1;
-SIG_VALTYPE_ 1619 NAU7802_FORCE_1 : 1;
-SIG_VALTYPE_ 1622 NAU7802_FORCE_2 : 1;
-SIG_VALTYPE_ 1625 NAU7802_FORCE_3 : 1;
 SIG_VALTYPE_ 2037 whl_angle_RL : 1;
 SIG_VALTYPE_ 2037 whl_angle_RR : 1;
 SIG_VALTYPE_ 2036 whl_angle_FR : 1;

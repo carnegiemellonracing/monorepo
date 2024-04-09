@@ -1059,8 +1059,7 @@ typedef struct {
 typedef struct {
     int16_t controls_current_yaw_rate;
     int16_t controls_target_yaw_rate;
-    int16_t controls_bias;
-    int16_t controls_pid;
+    float controls_pid;
 } cmr_can_controls_pid_debug_t;
 
 typedef struct {

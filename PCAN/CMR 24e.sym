@@ -1428,8 +1428,7 @@ ID=7E5h
 CycleTime=100
 Var=controls_current_yaw_rate signed 0,16 /u:rad.s-1 /f:0.01 /p:2
 Var=controls_target_yaw_rate signed 16,16 /u:rad.s-1 /f:0.01 /p:2
-Var=controls_bias signed 32,16 /f:0.01 /p:2
-Var=controls_pid signed 48,16 /f:0.01 /p:2
+Var=controls_pid float 32,32 /f:0.01 /p:2
 
 [EMD_Status]
 ID=400h
@@ -1937,7 +1936,7 @@ Var=FR_FORCE_3 signed 32,32
 [DAQ_FR_THERM]
 ID=652h
 DLC=8
-Var=FR_THERM_0 unsigned 0,16 
+Var=FR_THERM_0 unsigned 0,16
 Var=FR_THERM_1 signed 16,16
 Var=FR_THERM_2 unsigned 32,16
 Var=FR_THERM_3 unsigned 48,16
@@ -2001,7 +2000,7 @@ Var=RL_FORCE_3 signed 32,32
 [DAQ_RL_THERM]
 ID=65Ch
 DLC=8
-Var=RL_THERM_0 unsigned 0,16 
+Var=RL_THERM_0 unsigned 0,16
 Var=RL_THERM_1 signed 16,16
 Var=RL_THERM_2 unsigned 32,16
 Var=RL_THERM_3 unsigned 48,16
@@ -2033,7 +2032,7 @@ Var=FL_FORCE_3 signed 32,32
 [DAQ_FL_THERM]
 ID=661h
 DLC=8
-Var=FL_THERM_0 unsigned 0,16 
+Var=FL_THERM_0 unsigned 0,16
 Var=FL_THERM_1 signed 16,16
 Var=FL_THERM_2 unsigned 32,16
 Var=FL_THERM_3 unsigned 48,16
