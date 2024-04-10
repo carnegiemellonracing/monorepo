@@ -2054,9 +2054,15 @@ Var=Moment_REQ float 0,32
 Var=Lin_Accel_REQ float 32,32
 
 [CDC_CONTROLS_SOLVER_TORQUES]
-ID=7D7h
+ID=7F0h
 DLC=8
 Var=Torque_FL signed 0,16
 Var=Torque_FR signed 16,16
 Var=Torque_RL signed 32,16
 Var=Torque_RR signed 48,16
+
+[CDC_CONTROLS_SOLVER_CONVERGENCE]
+ID=7EEh
+DLC=4
+Var=non_convergence_counter unsigned 0,32
+
