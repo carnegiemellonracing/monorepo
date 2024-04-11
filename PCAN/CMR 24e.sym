@@ -1,6 +1,6 @@
 FormatVersion=5.0 // Do not edit this line!
 UniqueVariables=True
-Title="CMR 23e"
+Title="CMR 24e"
 
 {ENUMS}
 // This is for the EMD
@@ -1383,53 +1383,12 @@ Var=AMK_RR_TargetVelocity signed 16,16 /u:rpm /p:2
 Var=AMK_RR_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
 Var=AMK_RR_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
 
-[controls_debug_global]
-ID=7E0h
-CycleTime=100
-Var=controls_elapsed_time signed 0,16 /p:2
-Var=controls_sbg_speed_mps signed 16,16 /u:m.s-1 /p:2
-Var=controls_target_velocity signed 32,16 /u:m.s-1 /p:2
-Var=controls_target_accel signed 48,16 /u:m.s-2 /f:0.1 /p:2
-
-[controls_debug_fr]
-ID=7E1h
-CycleTime=100
-Var=controls_current_slip_FR signed 0,16 /f:0.01 /p:2
-Var=controls_slip_correction_FR signed 16,16 /p:2
-Var=controls_wheel_speed_actual_FR signed 32,16 /u:m.s-1 /p:2
-Var=controls_wheel_speed_target_FR signed 48,16 /u:m.s-1 /p:2
-
-[controls_debug_fl]
-ID=7E2h
-CycleTime=100
-Var=controls_current_slip_FL signed 0,16 /f:0.01 /p:2
-Var=controls_slip_correction_FL signed 16,16 /p:2
-Var=controls_wheel_speed_actual_FL signed 32,16 /u:m.s-1 /p:2
-Var=controls_wheel_speed_target_FL signed 48,16 /u:m.s-1 /p:2
-
-[controls_debug_rr]
-ID=7E3h
-CycleTime=100
-Var=controls_current_slip_RR signed 0,16 /f:0.01 /p:2
-Var=controls_slip_correction_RR signed 16,16 /p:2
-Var=controls_wheel_speed_actual_RR signed 32,16 /u:m.s-1 /p:2
-Var=controls_wheel_speed_target_RR signed 48,16 /u:m.s-1 /p:2
-
-[controls_debug_rl]
-ID=7E4h
-CycleTime=100
-Var=controls_current_slip_RL signed 0,16 /f:0.01 /p:2
-Var=controls_slip_correction_RL signed 16,16 /p:2
-Var=controls_wheel_speed_actual_RL signed 32,16 /u:m.s-1 /p:2
-Var=controls_wheel_speed_target_RL signed 48,16 /u:m.s-1 /p:2
-
-[controls_pid]
+[CDC_CONTROLS_PID]
 ID=7E5h
 CycleTime=100
 Var=controls_current_yaw_rate signed 0,16 /u:rad.s-1 /f:0.01 /p:2
 Var=controls_target_yaw_rate signed 16,16 /u:rad.s-1 /f:0.01 /p:2
-Var=controls_bias signed 32,16 /f:0.01 /p:2
-Var=controls_pid signed 48,16 /f:0.01 /p:2
+Var=controls_pid float 32,32 /f:0.01 /p:2
 
 [EMD_Status]
 ID=400h
@@ -1922,85 +1881,133 @@ Var=Data1 char 16,8
 Var=Data2 char 24,8
 Var=Data3 char 32,8
 
-[DAQ_0_LOADCELL]
+[DAQ_FR_STRAIN_0]
 ID=650h
 DLC=8
-Var=HX711_FORCE_0 signed 0,32
-Var=NAU7802_FORCE_0 float 32,32 /u:N
+Var=FR_FORCE_0 signed 0,32
+Var=FR_FORCE_1 signed 32,32 /u:N
 
-[DAQ_0_LINPOT]
+[DAQ_FR_STRAIN_1]
 ID=651h
 DLC=8
-Var=FR_DAMPER_MM unsigned 0,16 /u:mm
-Var=FR_DAMPER_ADC unsigned 16,16
-Var=BR_DAMPER_MM unsigned 32,16 /u:mm
-Var=BR_DAMPER_ADC unsigned 48,16
+Var=FR_FORCE_2 signed 0,32
+Var=FR_FORCE_3 signed 32,32
 
-[DAQ_0_DEBUG]
+[DAQ_FR_THERM]
 ID=652h
 DLC=8
-Var=HX711_DEBUG_0 unsigned 0,32 -h
-Var=NAU7802_DEBUG_0 signed 32,32
+Var=FR_THERM_0 unsigned 0,16
+Var=FR_THERM_1 signed 16,16
+Var=FR_THERM_2 unsigned 32,16
+Var=FR_THERM_3 unsigned 48,16
 
-[DAQ_1_LOADCELL]
+[DAQ_FR_DAMPER]
 ID=653h
 DLC=8
-Var=HX711_FORCE_1 signed 0,32
-Var=NAU7802_FORCE_1 float 32,32 /u:N
+Var=FR_DAMPER_MM unsigned 0,32
+Var=FR_DAMPER_ADC unsigned 32,32
 
-[DAQ_1_THERMISTOR]
+[DAQ_FR_ANEMOMETER]
 ID=654h
 DLC=8
-Var=TMP0_1 unsigned 0,16
-Var=TMP1_1 unsigned 16,16
-Var=TMP2_1 unsigned 32,16
-Var=TMP3_1 unsigned 48,16
+Var=FR_AIRSPEED_MPH unsigned 0,32
+Var=FR_AIRSPEED_ADC unsigned 32,32
 
-[DAQ_1_DEBUG]
+[DAQ_RR_STRAIN_0]
 ID=655h
 DLC=8
-Var=HX711_DEBUG_1 unsigned 0,32 -h
-Var=NAU7802_DEBUG_1 signed 32,32
+Var=RR_FORCE_0 signed 0,32
+Var=RR_FORCE_1 signed 32,32 /u:N
 
-[DAQ_2_LOADCELL]
+[DAQ_RR_STRAIN_1]
 ID=656h
 DLC=8
-Var=HX711_FORCE_2 signed 0,32
-Var=NAU7802_FORCE_2 float 32,32 /u:N
+Var=RR_FORCE_2 signed 0,32
+Var=RR_FORCE_3 signed 32,32
 
-[DAQ_2_THERMISTOR]
+[DAQ_RR_THERM]
 ID=657h
 DLC=8
-Var=TMP0_2 unsigned 0,16
-Var=TMP1_2 unsigned 16,16
-Var=TMP2_2 unsigned 32,16
-Var=TMP3_2 unsigned 48,16
+Var=RR_THERM_0 unsigned 0,16 -h
+Var=RR_THERM_1 signed 16,16
+Var=RR_THERM_2 unsigned 32,16
+Var=RR_THERM_3 unsigned 48,16
 
-[DAQ_2_DEBUG]
+[DAQ_RR_DAMPER]
 ID=658h
 DLC=8
-Var=HX711_DEBUG_2 unsigned 0,32 -h
-Var=NAU7802_DEBUG_2 signed 32,32
+Var=RR_DAMPER_MM unsigned 0,32
+Var=RR_DAMPER_ADC unsigned 32,32
 
-[DAQ_3_LOADCELL]
+[DAQ_RR_ANEMOMETER]
 ID=659h
 DLC=8
-Var=HX711_FORCE_3 signed 0,32
-Var=NAU7802_FORCE_3 float 32,32 /u:N
+Var=RR_AIRSPEED_MPH unsigned 0,32
+Var=RR_AIRSPEED_ADC unsigned 32,32
 
-[DAQ_3_LINPOT]
+[DAQ_RL_STRAIN_0]
 ID=65Ah
 DLC=8
-Var=FL_DAMPER_MM unsigned 0,16 /u:mm
-Var=FL_DAMPER_ADC unsigned 16,16
-Var=BL_DAMPER_MM unsigned 32,16 /u:mm
-Var=BL_DAMPER_ADC unsigned 48,16
+Var=RL_FORCE_0 signed 0,32
+Var=RL_FORCE_1 signed 32,32 /u:N
 
-[DAQ_3_DEBUG]
+[DAQ_RL_STRAIN_1]
 ID=65Bh
 DLC=8
-Var=HX711_DEBUG_3 unsigned 0,32 -h
-Var=NAU7802_DEBUG_3 signed 32,32
+Var=RL_FORCE_2 signed 0,32
+Var=RL_FORCE_3 signed 32,32
+
+[DAQ_RL_THERM]
+ID=65Ch
+DLC=8
+Var=RL_THERM_0 unsigned 0,16
+Var=RL_THERM_1 signed 16,16
+Var=RL_THERM_2 unsigned 32,16
+Var=RL_THERM_3 unsigned 48,16
+
+[DAQ_RL_DAMPER]
+ID=65Dh
+DLC=8
+Var=RL_DAMPER_MM unsigned 0,32
+Var=RL_DAMPER_ADC unsigned 32,32
+
+[DAQ_RL_ANEMOMETER]
+ID=65Eh
+DLC=8
+Var=RL_AIRSPEED_MPH unsigned 0,32
+Var=RL_AIRSPEED_ADC unsigned 32,32
+
+[DAQ_FL_STRAIN_0]
+ID=65Fh
+DLC=8
+Var=FL_FORCE_0 signed 0,32
+Var=FL_FORCE_1 signed 32,32 /u:N
+
+[DAQ_FL_STRAIN_1]
+ID=660h
+DLC=8
+Var=FL_FORCE_2 signed 0,32
+Var=FL_FORCE_3 signed 32,32
+
+[DAQ_FL_THERM]
+ID=661h
+DLC=8
+Var=FL_THERM_0 unsigned 0,16
+Var=FL_THERM_1 signed 16,16
+Var=FL_THERM_2 unsigned 32,16
+Var=FL_THERM_3 unsigned 48,16
+
+[DAQ_FL_DAMPER]
+ID=662h
+DLC=8
+Var=FL_DAMPER_MM unsigned 0,32
+Var=FL_DAMPER_ADC unsigned 32,32
+
+[DAQ_FL_ANEMOMETER]
+ID=663h
+DLC=8
+Var=FL_AIRSPEED_MPH unsigned 0,32
+Var=FL_AIRSPEED_ADC unsigned 32,32
 
 [Memorator_Heartbeat]
 ID=109h
@@ -2040,3 +2047,16 @@ ID=777h
 DLC=4
 Var=TEST_FLAG float 0,32
 
+[CDC_CONTROLS_SOLVER_INFO]
+ID=7E6h
+DLC=8
+Var=Moment_REQ float 0,32
+Var=Lin_Accel_REQ float 32,32
+
+[CDC_CONTROLS_SOLVER_TORQUES]
+ID=7D7h
+DLC=8
+Var=Torque_FL signed 0,16
+Var=Torque_FR signed 16,16
+Var=Torque_RL signed 32,16
+Var=Torque_RR signed 48,16
