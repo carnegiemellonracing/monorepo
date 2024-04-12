@@ -5,28 +5,28 @@ Title="CMR 23e"
 {ENUMS}
 // This is for the EMD
 enum VtSig_Gain(0="x1", 1="x2", 2="x4", 3="x8", 4="x16", 5="x32")
-enum SBG_Solution_Status_Mode(0="Uninitialized", 1="Vertical_Gyro_Only",
+enum SBG_Solution_Status_Mode(0="Uninitialized", 1="Vertical_Gyro_Only", 
   2="Orientation_Only", 3="Nav_Velocity", 4="Full_Nav")
 enum Fan_State(0="FAN_OFF", 1="FAN_LOW", 2="FAN_HIGH")
-enum State(0="UNKNOWN", 1="GLV_ON", 2="HV_EN", 3="RTD", 4="ERROR",
+enum State(0="UNKNOWN", 1="GLV_ON", 2="HV_EN", 3="RTD", 4="ERROR", 
   5="CLEAR_ERROR")
-enum Gear(0="UNKNOWN", 1="SLOW", 2="FAST", 3="ENDURANCE", 4="AUTO-X",
+enum Gear(0="UNKNOWN", 1="SLOW", 2="FAST", 3="ENDURANCE", 4="AUTO-X", 
   5="SKIDPAD", 6="ACCEL", 7="TEST", 8="REVERSE")
-enum VSMState(0="ERROR", 1="CLEAR_ERROR", 2="GLV_ON", 3="REQ_PRECHARGE",
-  4="RUN_BMS", 5="DCDC_EN", 6="INVERTER_EN", 7="HV_EN", 8="RTD",
+enum VSMState(0="ERROR", 1="CLEAR_ERROR", 2="GLV_ON", 3="REQ_PRECHARGE", 
+  4="RUN_BMS", 5="DCDC_EN", 6="INVERTER_EN", 7="HV_EN", 8="RTD", 
   9="COOLING_OFF", 10="DCDC_OFF")
 enum HVCMode(0="ERROR", 1="IDLE", 2="START", 4="RUN", 8="CHARGE")
-enum HVCState(0="ERROR", 1="DISCHARGE", 2="STANDBY", 3="DRIVE_PRECHARGE",
-  4="DRIVE_PRECHARGE_COMPLETE", 5="DRIVE", 6="CHARGE_PRECHARGE",
-  7="CHARGE_PRECHARGE_COMPLETE", 8="CHARGE_TRICKLE",
-  9="CHARGE_CONSTANT_CURRENT", 10="CHARGE_CONSTANT_VOLTAGE", 11="CLEAR_ERROR",
+enum HVCState(0="ERROR", 1="DISCHARGE", 2="STANDBY", 3="DRIVE_PRECHARGE", 
+  4="DRIVE_PRECHARGE_COMPLETE", 5="DRIVE", 6="CHARGE_PRECHARGE", 
+  7="CHARGE_PRECHARGE_COMPLETE", 8="CHARGE_TRICKLE", 
+  9="CHARGE_CONSTANT_CURRENT", 10="CHARGE_CONSTANT_VOLTAGE", 11="CLEAR_ERROR", 
   12="UNKNOWN")
 enum FanState(0="OFF", 1="LOW", 2="HIGH")
 enum PumpState(0="OFF", 1="ON")
 enum CoolingState(0="OFF", 1="LOW", 2="HIGH")
-enum DRS_MODE(0="DRS_CLOSED", 1="DRS_OPEN", 2="DRS_TOGGLE", 3="DRS_HOLD",
+enum DRS_MODE(0="DRS_CLOSED", 1="DRS_OPEN", 2="DRS_TOGGLE", 3="DRS_HOLD", 
   4="DRS_AUTO", 5="DRS_UNKNOWN")
-enum CCMState(0="ERROR", 1="CLEAR_ERROR", 2="CLEAR_HVC", 3="IDLE_HVC",
+enum CCMState(0="ERROR", 1="CLEAR_ERROR", 2="CLEAR_HVC", 3="IDLE_HVC", 
   4="STANDBY", 5="CHARGE_REQ", 6="CHARGE", 7="SLOW_CHARGE", 8="SHUTDOWN")
 enum HVC_Balance_State(0="BALANCE_DIS", 1="BALANCE_EN")
 
@@ -368,7 +368,7 @@ Var=FSM_brakePosADC unsigned 32,16
 
 [FSM_SensorsADC]
 ID=543h
-DLC=4
+DLC=0
 CycleTime=100
 Timeout=1000
 Var=FSM_brakePressureFrontADC unsigned 0,16
@@ -2252,3 +2252,10 @@ Var=FR_TEMP_1 unsigned 0,12
 ID=698h
 DLC=2
 Var=FR_TEMP_2 unsigned 0,12
+
+[FSM_Swangle]
+ID=135h
+DLC=8
+Var=SwangleLeft signed 0,32 /u:Deg /min:-50 /max:50
+Var=SwangleRight signed 32,32 /min:-50 /max:50
+
