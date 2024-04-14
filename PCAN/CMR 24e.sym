@@ -28,6 +28,7 @@ enum DRS_MODE(0="DRS_CLOSED", 1="DRS_OPEN", 2="DRS_TOGGLE", 3="DRS_HOLD",
   4="DRS_AUTO", 5="DRS_UNKNOWN")
 enum CCMState(0="ERROR", 1="CLEAR_ERROR", 2="CLEAR_HVC", 3="IDLE_HVC", 
   4="STANDBY", 5="CHARGE_REQ", 6="CHARGE", 7="SLOW_CHARGE", 8="SHUTDOWN")
+enum HVC_Balance_State(0="BALANCE_DIS", 1="BALANCE_EN")
 
 {SENDRECEIVE}
 
@@ -2065,3 +2066,12 @@ Var=Torque_RR signed 48,16
 ID=7EEh
 DLC=4
 Var=non_convergence_counter unsigned 0,32
+
+[HVC_Balance_Command]
+ID=134h
+DLC=3
+CycleTime=10
+Timeout=25
+Var=Enable unsigned 0,8 /max:1 /e:HVC_Balance_State
+Var=Threshold unsigned 8,16 /u:mV /min:2450 /max:4000
+

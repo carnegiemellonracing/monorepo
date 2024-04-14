@@ -412,7 +412,8 @@ typedef struct {
 
 /** @brief High Voltage Controller Balance Command. */
 typedef struct {
-    bool modeRequest;    /**< @brief HVC balance command. */
+    bool balanceRequest;    /**< @brief HVC balance command. */
+    uint16_t threshold;  /**< @brief Voltage threshold to stop balancing at */
 } cmr_canHVCBalanceCommand_t;
 
 /** @brief High Voltage Controller pack voltages. */
