@@ -67,7 +67,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                 //T6: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
             } else if (abs((getBattMillivolts()) - (((uint32_t)hvi_heartbeat->packVoltage_cV))*10) < 30000) {
-                //T2: HV rails are precharged to within 10000mV
+                //T2: HV rails are precharged to within 30000mV
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE;
                 lastPrechargeTime = xTaskGetTickCount();
             } else {
@@ -142,7 +142,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 // T15: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (packMaxCellVoltage >= 4150) {
+            } else if (packMaxCellVoltage >= 4280) {
                 // T13: Maximum cell voltage > 4.15V, begin balancing
                 // TODO: may have to update CCM
 //                nextState = CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE;

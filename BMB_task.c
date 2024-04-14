@@ -7,6 +7,7 @@
 
 #include "BMB_task.h"
 #include "gpio.h"
+#include "can.h"
 #include "state_task.h"
 #include <stdbool.h>
 #include <math.h>               // math.h
@@ -31,6 +32,16 @@ bool check_to_ignore(uint8_t bmb_index, uint8_t channel) {
 	return false;
 }
 
+bool getBalance(uint16_t *thresh) {
+	TickType_t xLastWakeTime = xTaskGetTickCount();
+	if(cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_BALANCE_COMMAND]), xLastWakeTime) < 0) {
+		return false;
+	}
+	volatile cmr_canHVCBalanceCommand_t *balanceCommand = getPayload(CANRX_BALANCE_COMMAND);
+	*thresh = balanceCommand->threshold;
+	return balanceCommand->balanceRequest;
+}
+
 
 
 void vBMBSampleTask(void *pvParameters) {
@@ -40,17 +51,32 @@ void vBMBSampleTask(void *pvParameters) {
 	vTaskDelayUntil(&xLastWakeTime, 50);
 	bool prevStateBalance = false;
 	bool ledToggle = false;
-
+	uint16_t threshold = 0;
+	uint32_t startTime;
+	bool toReenable = false;
 
 	while (1) {
-		if (getState() == CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE && !prevStateBalance) {
-			cellBalancing(BALANCE_EN);
+		//taskENTER_CRITICAL();
+		if (getBalance(&threshold) && !prevStateBalance) {
+			cellBalancing(BALANCE_EN, threshold);
 			prevStateBalance = true;
+			startTime = xTaskGetTickCount();
 		}
-		else if(getState() != CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE && prevStateBalance){
-			cellBalancing(BALANCE_DIS);
+		else if(!getBalance(&threshold) && prevStateBalance){
+			cellBalancing(BALANCE_DIS, threshold);
 			prevStateBalance = false;
 		}
+		else if((prevStateBalance && !toReenable) && (xTaskGetTickCount()-startTime)>300000) {
+			cellBalancing(BALANCE_DIS, threshold);
+			toReenable = true;
+		}
+		else if(toReenable && (xTaskGetTickCount()-startTime)>300500) {
+			cellBalancing(BALANCE_EN, threshold);
+			startTime = xTaskGetTickCount();
+			prevStateBalance = true;
+			toReenable = false;
+		}
+		//taskEXIT_CRITICAL();
 		for(uint8_t j = 0; j < 4; j++) {
 			setMuxOutput(j);
 			xLastWakeTime = xTaskGetTickCount();

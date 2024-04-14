@@ -27,18 +27,18 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
         // TODO E2 devise a UART monitor system
         errorFlags |= CMR_CAN_HVC_ERROR_BMB_TIMEOUT; /**< @brief BMB has timed out. */
     }
-//    if(getPackMaxCellTemp() > 590) { // Temp limit of 59C
+    if(getPackMaxCellTemp() > 590) { // Temp limit of 59C
 //        // TODO: #Define with 590
 //        // TODO E3 create structures for cell temp data and stats (min/max)
-//        errorFlags |= CMR_CAN_HVC_ERROR_CELL_OVERTEMP;
-//    }
-    if(getPackMaxCellVoltage() > 4175) { // Cell voltage limit of 4175
+        errorFlags |= CMR_CAN_HVC_ERROR_CELL_OVERTEMP;
+    }
+    if(getPackMaxCellVoltage() > 4280) { // Cell voltage limit of 4280
         // TODO E4 create structures for cell voltage data and stats (min/max)
         errorFlags |= CMR_CAN_HVC_ERROR_CELL_OVERVOLT;
     }
     if(getPackMinCellVoltage() < 2400) {
         // TODO E5 create structures for cell voltage data and stats (min/max)
-        //errorFlags |= CMR_CAN_HVC_ERROR_CELL_UNDERVOLT;
+        errorFlags |= CMR_CAN_HVC_ERROR_CELL_UNDERVOLT;
     }
 //    if((getBattMillivolts()) > maxPackVoltageMV) {
 //        // E6

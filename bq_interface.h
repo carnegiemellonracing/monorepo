@@ -351,7 +351,9 @@ uint8_t pollAllVoltageData();
 void pollAllTemperatureData();
 
 void cellBalancingSetup();
-void cellBalancing(bool set);
+void cellBalancing(bool set, uint16_t thresh);
 void writeLED(bool set);
+
+bool getBalDone();
 
 #endif /* BQ_INTERFACE_H_ */
