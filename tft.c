@@ -443,16 +443,20 @@ static void drawErrorScreen(void) {
 /**
  * @brief computes max of 4 numbers
  */
-int16_t findMax(int16_t a, int16_t b, int16_t c, int16_t d) {
+int16_t findMax(int16_t a, int16_t b, int16_t c, int16_t d, uint8_t *index) {
     int16_t maximum = a;
+    *index = 0;
     if (b > maximum) {
         maximum = b;
+        *index = 1;
     }
     if (c > maximum) {
         maximum = c;
+        *index = 2;
     }
     if (d > maximum) {
         maximum = d;
+        *index = 3;
     }
     return maximum;
 }
@@ -474,13 +478,15 @@ uint32_t computeCurrent_A(volatile cmr_canAMKActualValues1_t *canAMK_Act1) {
  * @returns mcTemp
  * @returns motorTemp
 */
-static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C) {
+
+static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hottest) {
     
     // If we're in GLV, we don't want temps to latch on their prev vals
 	cmr_canState_t state = stateGetVSM();
     if (state == CMR_CAN_GLV_ON) {
         *mcTemp_C = 0;
         *motorTemp_C = 0;
+        *hottest = NONE;
         return;
     }
 
@@ -517,18 +523,27 @@ static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C) {
         (void *)metaAMK_RR_Act2->payload;
 
     /* Motor Temperature */
+    uint8_t hottest_motor_index = 0;
     *motorTemp_C = findMax(FL->motorTemp_dC,
                                   FR->motorTemp_dC,
                                   RL->motorTemp_dC,
-                                  RR->motorTemp_dC) /
+                                  RR->motorTemp_dC, 
+                                  &hottest_motor_index) /
                           10;
     
+    // provide hottest motor as corner type
+    *hottest = (cornerId_t)(hottest_motor_index);
+
+    uint8_t hottest_mc_index = 0;
     /* Motor Controller Temperature */
     *mcTemp_C = findMax(FL->coldPlateTemp_dC,
                                FR->coldPlateTemp_dC,
                                RL->coldPlateTemp_dC,
-                               RR->coldPlateTemp_dC) /
+                               RR->coldPlateTemp_dC,
+                               &hottest_mc_index) /
                        10;
+    
+    
 }
 
 /**
@@ -641,8 +656,9 @@ static void drawRTDScreen(void) {
     int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC) / 10;
 
     int32_t mcTemp_C, motorTemp_C = 0;
+    cornerId_t hottest_motor;
 
-    getAMKTemps(&mcTemp_C, &motorTemp_C);
+    getAMKTemps(&mcTemp_C, &motorTemp_C, &hottest_motor);
 
     /* Temperature warnings */
     bool motorTemp_yellow = motorTemp_C >= MOTOR_YELLOW_THRESHOLD;
@@ -694,7 +710,8 @@ static void drawRTDScreen(void) {
                         tcOn,
                         ssOk,
                         odometer_km,
-                        drsOpen);
+                        drsOpen,
+                        hottest_motor);
 
         /* Write Display List to Screen */
         tftDLWrite(&tft, &tftDL_RTD);

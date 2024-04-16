@@ -81,7 +81,8 @@ void tftDL_RTDUpdate(
     bool tcOn,
     bool ssOn,
     float odometer_km,
-    bool drsOpen);
+    bool drsOpen,
+    cornerId_t hottest_motor);
 
 void tftDL_racingScreenUpdate(
     int32_t motorTemp_C,

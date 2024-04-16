@@ -449,7 +449,8 @@ void tftDL_RTDUpdate(
     bool tcOn,
     bool ssOn,
     float odometer_km,
-    bool drsOpen) {
+    bool drsOpen,
+    cornerId_t hottest_motor) {
 
      // temps probs arent 0 - just display nothing
     tftDL_RTDwriteInt(tftDL_RTDData, ESE_MOTOR_TEMP_STR, 4, "%3ld", motorTemp_C);
@@ -543,6 +544,34 @@ void tftDL_RTDUpdate(
 
     tftDL_showStates(tftDL_RTDData, ESE_STATE_STR, ESE_VSM_STATE_COLOR, ESE_GEAR_STR, ESE_DRS_MODE_STR, false);
     tftDL_showRAMMsg(tftDL_RTDData, ESE_RAM_LAST_LAP_STR, ESE_RAM_TARGET_LAP_STR, ESE_RAM_MSG_STR);
+
+
+    uint32_t *fl_color = (void *)(tftDL_RTDData + ESE_RTD_FL_COLOR);
+    uint32_t *fr_color = (void *)(tftDL_RTDData + ESE_RTD_FR_COLOR);
+    uint32_t *rl_color = (void *)(tftDL_RTDData + ESE_RTD_RL_COLOR);
+    uint32_t *rr_color = (void *)(tftDL_RTDData + ESE_RTD_RR_COLOR);
+    uint32_t fl_color_cmd = black;
+    uint32_t fr_color_cmd = black;
+    uint32_t rl_color_cmd = black;
+    uint32_t rr_color_cmd = black;
+    switch (hottest_motor) {
+        case FL:
+            fl_color_cmd = red;
+            break;
+        case FR:
+            fr_color_cmd = red;
+            break;
+        case RL:
+            rl_color_cmd = red;
+            break;
+        case RR:
+            rr_color_cmd = red;
+            break;
+    }
+    *fl_color = fl_color_cmd;
+    *fr_color = fr_color_cmd;
+    *rl_color = rl_color_cmd;
+    *rr_color = rr_color_cmd;
 }
 
 void tftDL_racingScreenUpdate(

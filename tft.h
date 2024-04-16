@@ -60,4 +60,13 @@ typedef enum {
     MEMORATOR_CONNECTED_STATE_OK   /** @brief Memorator transmitting correctly */
 } memorator_status_t;
 
+typedef enum {
+    FL = 0,
+    FR,
+    RL,
+    RR,
+    NUM_CORNERS,
+    NONE
+} cornerId_t;
+
 #endif /* TFT_H */
