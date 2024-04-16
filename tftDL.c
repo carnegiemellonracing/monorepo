@@ -450,10 +450,14 @@ void tftDL_RTDUpdate(
     bool ssOn,
     float odometer_km,
     bool drsOpen) {
-    tftDL_RTDwriteInt(tftDL_RTDData, ESE_HV_VOLTAGE_VAL, 4, "%3ld", hvVoltage_mV / 1000);
+
+     // temps probs arent 0 - just display nothing
     tftDL_RTDwriteInt(tftDL_RTDData, ESE_MOTOR_TEMP_STR, 4, "%3ld", motorTemp_C);
-    tftDL_RTDwriteInt(tftDL_RTDData, ESE_AC_TEMP_STR, 4, "%3ld", acTemp_C);
+
     tftDL_RTDwriteInt(tftDL_RTDData, ESE_MC_TEMP_STR, 4, "%3ld", mcTemp_C);
+
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_HV_VOLTAGE_VAL, 4, "%3ld", hvVoltage_mV / 1000);
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_AC_TEMP_STR, 4, "%3ld", acTemp_C);
     tftDL_RTDwriteInt(tftDL_RTDData, ESE_GLV_VOLTAGE_VAL, 3, "%2d", glvVoltage_V);
     tftDL_RTDwriteInt(tftDL_RTDData, ESE_POWER_VAL, 3, "%2ld", power_kW);
     tftDL_RTDwriteInt(tftDL_RTDData, ESE_SPEED_VAL, 4, "%3ld", (int32_t)speed_kmh);
@@ -548,8 +552,9 @@ void tftDL_racingScreenUpdate(
     uint8_t hvSoC,
     bool drsOpen) {
     tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_MOTOR_TEMP_STR, 4, "%3ld", motorTemp_C);
-    tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_AC_TEMP_STR, 4, "%3ld", acTemp_C);
     tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_MC_TEMP_STR, 4, "%3ld", mcTemp_C);
+
+    tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_AC_TEMP_STR, 4, "%3ld", acTemp_C);
     tftDL_RTDwriteInt(tftDL_racingData, ESE_RS_HV_SOC_VAL, 3, "%2ld", (uint32_t)hvSoC);
 
     // set HV SoC bar

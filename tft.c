@@ -468,6 +468,69 @@ uint32_t computeCurrent_A(volatile cmr_canAMKActualValues1_t *canAMK_Act1) {
     return Is_A;
 }
 
+
+/**
+ * @brief gets temps from motors and inverters
+ * @returns mcTemp
+ * @returns motorTemp
+*/
+static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C) {
+    
+    // If we're in GLV, we don't want temps to latch on their prev vals
+	cmr_canState_t state = stateGetVSM();
+    if (state == CMR_CAN_GLV_ON) {
+        *mcTemp_C = 0;
+        *motorTemp_C = 0;
+        return;
+    }
+
+    // Front Left
+    // cmr_canRXMeta_t *metaAMK_FL_Act1 = canRXMeta + CANRX_AMK_FL_ACT_1;
+    // volatile cmr_canAMKActualValues1_t *canAMK_FL_Act1 =
+    //     (void *)metaAMK_FL_Act1->payload;
+    cmr_canRXMeta_t *metaAMK_FL_Act2 = canRXMeta + CANRX_AMK_FL_ACT_2;
+    volatile cmr_canAMKActualValues2_t *FL =
+        (void *)metaAMK_FL_Act2->payload;
+
+    // Front Right
+    // cmr_canRXMeta_t *metaAMK_FR_Act1 = canRXMeta + CANRX_AMK_FR_ACT_1;
+    // volatile cmr_canAMKActualValues1_t *canAMK_FR_Act1 =
+    //     (void *)metaAMK_FR_Act1->payload;
+    cmr_canRXMeta_t *metaAMK_FR_Act2 = canRXMeta + CANRX_AMK_FR_ACT_2;
+    volatile cmr_canAMKActualValues2_t *FR =
+        (void *)metaAMK_FR_Act2->payload;
+
+    // Rear Left
+    // cmr_canRXMeta_t *metaAMK_RL_Act1 = canRXMeta + CANRX_AMK_RL_ACT_1;
+    // volatile cmr_canAMKActualValues1_t *canAMK_RL_Act1 =
+    //     (void *)metaAMK_RL_Act1->payload;
+    cmr_canRXMeta_t *metaAMK_RL_Act2 = canRXMeta + CANRX_AMK_RL_ACT_2;
+    volatile cmr_canAMKActualValues2_t *RL =
+        (void *)metaAMK_RL_Act2->payload;
+
+    // Rear Right
+    // cmr_canRXMeta_t *metaAMK_RR_Act1 = canRXMeta + CANRX_AMK_RR_ACT_1;
+    // volatile cmr_canAMKActualValues1_t *canAMK_RR_Act1 =
+    //     (void *)metaAMK_RR_Act1->payload;
+    cmr_canRXMeta_t *metaAMK_RR_Act2 = canRXMeta + CANRX_AMK_RR_ACT_2;
+    volatile cmr_canAMKActualValues2_t *RR =
+        (void *)metaAMK_RR_Act2->payload;
+
+    /* Motor Temperature */
+    *motorTemp_C = findMax(FL->motorTemp_dC,
+                                  FR->motorTemp_dC,
+                                  RL->motorTemp_dC,
+                                  RR->motorTemp_dC) /
+                          10;
+    
+    /* Motor Controller Temperature */
+    *mcTemp_C = findMax(FL->coldPlateTemp_dC,
+                               FR->coldPlateTemp_dC,
+                               RL->coldPlateTemp_dC,
+                               RR->coldPlateTemp_dC) /
+                       10;
+}
+
 /**
  * @brief Draws the Display Updated List to the Screen
  *
@@ -508,36 +571,6 @@ static void drawRTDScreen(void) {
 
     cmr_canRXMeta_t *metaPTCpLoopB = canRXMeta + CANRX_PTCp_LOOP_B_TEMPS;
     volatile cmr_canPTCpLoopTemp_B_t *canPTCpLoopTemp_B = (void *) metaPTCpLoopB->payload;*/
-
-    // AMK Inverter
-    // Front Left
-    cmr_canRXMeta_t *metaAMK_FL_Act1 = canRXMeta + CANRX_AMK_FL_ACT_1;
-    volatile cmr_canAMKActualValues1_t *canAMK_FL_Act1 =
-        (void *)metaAMK_FL_Act1->payload;
-    cmr_canRXMeta_t *metaAMK_FL_Act2 = canRXMeta + CANRX_AMK_FL_ACT_2;
-    volatile cmr_canAMKActualValues2_t *canAMK_FL_Act2 =
-        (void *)metaAMK_FL_Act2->payload;
-    // Front Right
-    cmr_canRXMeta_t *metaAMK_FR_Act1 = canRXMeta + CANRX_AMK_FR_ACT_1;
-    volatile cmr_canAMKActualValues1_t *canAMK_FR_Act1 =
-        (void *)metaAMK_FR_Act1->payload;
-    cmr_canRXMeta_t *metaAMK_FR_Act2 = canRXMeta + CANRX_AMK_FR_ACT_2;
-    volatile cmr_canAMKActualValues2_t *canAMK_FR_Act2 =
-        (void *)metaAMK_FR_Act2->payload;
-    // Rear Left
-    cmr_canRXMeta_t *metaAMK_RL_Act1 = canRXMeta + CANRX_AMK_RL_ACT_1;
-    volatile cmr_canAMKActualValues1_t *canAMK_RL_Act1 =
-        (void *)metaAMK_RL_Act1->payload;
-    cmr_canRXMeta_t *metaAMK_RL_Act2 = canRXMeta + CANRX_AMK_RL_ACT_2;
-    volatile cmr_canAMKActualValues2_t *canAMK_RL_Act2 =
-        (void *)metaAMK_RL_Act2->payload;
-    // Rear Right
-    cmr_canRXMeta_t *metaAMK_RR_Act1 = canRXMeta + CANRX_AMK_RR_ACT_1;
-    volatile cmr_canAMKActualValues1_t *canAMK_RR_Act1 =
-        (void *)metaAMK_RR_Act1->payload;
-    cmr_canRXMeta_t *metaAMK_RR_Act2 = canRXMeta + CANRX_AMK_RR_ACT_2;
-    volatile cmr_canAMKActualValues2_t *canAMK_RR_Act2 =
-        (void *)metaAMK_RR_Act2->payload;
 
     tftDLContentLoad(&tft, &tftDL_RTD);
 
@@ -607,19 +640,9 @@ static void drawRTDScreen(void) {
     /* Accumulator Temperature */
     int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC) / 10;
 
-    /* Motor Controller Temperature */
-    int32_t mcTemp_C = findMax(canAMK_FL_Act2->coldPlateTemp_dC,
-                               canAMK_FR_Act2->coldPlateTemp_dC,
-                               canAMK_RL_Act2->coldPlateTemp_dC,
-                               canAMK_RR_Act2->coldPlateTemp_dC) /
-                       10;
+    int32_t mcTemp_C, motorTemp_C = 0;
 
-    /* Motor Temperature */
-    int32_t motorTemp_C = findMax(canAMK_FL_Act2->motorTemp_dC,
-                                  canAMK_FR_Act2->motorTemp_dC,
-                                  canAMK_RL_Act2->motorTemp_dC,
-                                  canAMK_RR_Act2->motorTemp_dC) /
-                          10;
+    getAMKTemps(&mcTemp_C, &motorTemp_C);
 
     /* Temperature warnings */
     bool motorTemp_yellow = motorTemp_C >= MOTOR_YELLOW_THRESHOLD;
