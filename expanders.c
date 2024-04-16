@@ -44,6 +44,18 @@ static expanderPinConfig_t buttons[EXP_BUTTON_LEN] = {
     [EXP_WHEEL_BUTTON_3] = { .expanderAddress = daughterDigitalAddress, .port = 0, .pin = 4 }
 };
 
+
+static rotaryPinConfig_t rotaryPositions[ROTARY_POS_LEN] = {
+     [ROTARY_POS_0] = { .pin = 0b111},
+     [ROTARY_POS_1] = { .pin = 0b011},
+     [ROTARY_POS_2] = { .pin = 0b101},
+     [ROTARY_POS_3] = { .pin = 0b001},
+     [ROTARY_POS_4] = { .pin = 0b110},
+     [ROTARY_POS_5] = { .pin = 0b010},
+     [ROTARY_POS_6] = { .pin = 0b100},
+     [ROTARY_POS_7] = { .pin = 0b000},
+};
+
 /**
  * @brief Array of expander clutch pin configs
  *
@@ -194,14 +206,18 @@ bool expanderGetButtonPressed(expanderButton_t button) {
 }
 
 expanderRotaryPosition_t expanderGetRotary(bool select) {
-    uint8_t pos = 0;
+    uint8_t pin = 0;
     PCF8574_expanderWrite(I2C_ROTSEL, select);
-    PCF8574_expanderRead(&pos);
-    pos &= 0b111;
-    if (pos >= ROTARY_POS_LEN) {
-        return ROTARY_POS_INVALID;
+    PCF8574_expanderRead(&pin);
+    pin &= 0b111;
+    for (size_t pos = ROTARY_POS_0; pos < ROTARY_POS_LEN; pos++)
+    {
+        if (rotaryPositions[pos].pin == pin)
+        {
+            return pos;
+        }
     }
-    return pos;
+    return ROTARY_POS_INVALID;
 }
 
 uint32_t expanderGetClutch(expanderClutch_t clutch) {

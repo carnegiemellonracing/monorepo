@@ -24,17 +24,21 @@ typedef enum {
 } expanderButton_t;
 
 typedef enum {
-    ROTARY_POS_0 = 0b111,
-    ROTARY_POS_1 = 0b011,
-    ROTARY_POS_2 = 0b101,
-    ROTARY_POS_3 = 0b001,
-    ROTARY_POS_4 = 0b110,
-    ROTARY_POS_5 = 0b010,
-    ROTARY_POS_6 = 0b100,
-    ROTARY_POS_7 = 0b000,
-    ROTARY_POS_LEN = 8,
-    ROTARY_POS_INVALID = 9  // If none of the pins read high
+    ROTARY_POS_0 = 0,
+    ROTARY_POS_1,
+    ROTARY_POS_2,
+    ROTARY_POS_3,
+    ROTARY_POS_4,
+    ROTARY_POS_5,
+    ROTARY_POS_6,
+    ROTARY_POS_7,
+    ROTARY_POS_LEN,
+    ROTARY_POS_INVALID  // If none of the pins read high
 } expanderRotaryPosition_t;
+
+typedef struct {
+    uint8_t pin;
+} rotaryPinConfig_t;
 
 typedef enum {
     EXP_CLUTCH_LEFT = 0,
