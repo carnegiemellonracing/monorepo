@@ -233,7 +233,7 @@ int cmr_spiTXRX(
         case HAL_BUSY:
             return -1;
         default:
-            cmr_panic("HAL SPI transaction failed!");
+            //cmr_panic("HAL SPI transaction failed!");
     }
 
     // Wait for transaction to complete.
