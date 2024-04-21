@@ -91,13 +91,14 @@ bool ADS7038Init() {
     return status;
 }
 
-static void compareReadAndWrite(int command, uint8_t *data) {
+static bool compareReadAndWrite(int command, uint8_t *data) {
     if (data == NULL) {
-        cmr_panic("Data is NULL!");
+    	return true;
     }
     if (command != data[0]) {
-        cmr_panic("Data in register does not match command!");
+    	return true;
     }
+    return false;
 }
 
 int ADS7038Configure() {
@@ -122,4 +123,11 @@ int ADS7038Configure() {
     // compareReadAndWrite(0b00000000,data);
 
     return status;
+}
+
+bool ADS7038Check() {
+	uint8_t data[3];
+	ADS7038_read(GPIO_CFG_REG, data);
+	ADS7038_read(PIN_CFG_REG, data);
+	return compareReadAndWrite(0b00111100,data);
 }

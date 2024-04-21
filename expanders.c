@@ -233,17 +233,20 @@ static void expanderUpdate100Hz(void *pvParameters) {
     vTaskDelayUntil(&lastWakeTime, 1000);
     PCF8574Init();
     // 0 == no issue
-    int possibleDisconnected = ADS7038Init();
+    ADS7038Init();
+    bool possibleDisconnected;
+
 
     while (1) {
         status = 0;
         status |= updateExpanderDataMain();
 
         // dont check status of daughter board, if steering is removed, DIM should still work
-        if (possibleDisconnected != 0) {
-            possibleDisconnected = ADS7038Init();
+        possibleDisconnected = ADS7038Check();
+        if (possibleDisconnected) {
+            ADS7038Init();
         } else {
-            updateExpanderDataDaughter();
+        	updateExpanderDataDaughter();
         }
 
         vTaskDelayUntil(&lastWakeTime, expanderUpdate100Hz_period_ms);
@@ -256,9 +259,9 @@ static void expanderUpdate100Hz(void *pvParameters) {
         // if we've seen a badStatus for more than 4 times,
         // reset clock and delay for a while so that the timed out function finishes.
         if (badStatusCount > 4) {
-            lastWakeTime = xTaskGetTickCount();
-            vTaskDelayUntil(&lastWakeTime, 100);
-            resetClock();
+//            lastWakeTime = xTaskGetTickCount();
+//            vTaskDelayUntil(&lastWakeTime, 100);
+//            resetClock();
         }
     }
 }

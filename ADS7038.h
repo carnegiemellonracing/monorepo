@@ -38,5 +38,6 @@ int ADS7038Configure();
 int ADS7038_read(uint8_t reg, uint8_t* data);
 int ADS7038_write(uint8_t reg, uint8_t data);
 int ADS7038_adcManualRead(uint16_t* ppos);
+bool ADS7038Check();
 
 #endif
