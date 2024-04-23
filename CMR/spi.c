@@ -229,10 +229,10 @@ int cmr_spiTXRX(
     switch (status) {
         case HAL_OK:
             break;
-        case HAL_TIMEOUT:
+//        case HAL_TIMEOUT:
         case HAL_BUSY:
             return -1;
-        default:
+//        default:
             //cmr_panic("HAL SPI transaction failed!");
     }
 

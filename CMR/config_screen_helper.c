@@ -11,7 +11,7 @@ char* config_driver_string_lut[4] = {
     " Default \0",
     "  Trent  \0",
     "  Pravir  ",
-    "   Gabe   "};
+    "   Tony   "};
 /************************************************************/
 
 
@@ -122,6 +122,20 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 100,
     },
+    [FFLAUNCH_FEEDBACK_INDEX] = {
+        .name = "FF Launch",
+        .ESE_background_color_variable = ESE_FF_LAUNCH_FB_BOX,
+        .ESE_value_color_variable = ESE_FF_LAUNCH_FB_COLOR,
+        .ESE_value_variable = ESE_FF_LAUNCH_FB_VAL,
+        .ESE_context_text_variable = "FFLaunch",
+        .ESE_string_len = 4, // including null terminator
+        .value = {
+            .type = float_1_decimal,
+            .value = 0
+        },
+        .min = 0,
+        .max = 100,
+    },
     [DRS_THROTTLE_THRESH_INDEX] = {
         .name = "DRS Throtl Thrsh",
         .ESE_background_color_variable = ESE_DRS_THROTTLE_THRESH_BOX,
@@ -150,11 +164,10 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
     },
     [K_LIN_INDEX] = {
         .name = "k_lin",
-        .ESE_background_color_variable = ESE_WET_BOX,
-        .ESE_value_color_variable = ESE_WET_COLOR,
-        .ESE_value_variable = ESE_WET_VAL,
+        .ESE_background_color_variable = ESE_K_LIN_BOX,
+        .ESE_value_color_variable = ESE_K_LIN_COLOR,
+        .ESE_value_variable = ESE_K_LIN_VAL,
         .ESE_context_text_variable = "k_lin",
-        .ESE_string_len = 4, // including null terminator
         .value = {
             .type = float_1_decimal,
             .value = 0
@@ -164,11 +177,10 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
     },
     [K_YAW_INDEX] = {
         .name = "k_yaw",
-        .ESE_background_color_variable = ESE_WET_BOX,
-        .ESE_value_color_variable = ESE_WET_COLOR,
-        .ESE_value_variable = ESE_WET_VAL,
+        .ESE_background_color_variable = ESE_K_YAW_BOX,
+        .ESE_value_color_variable = ESE_K_YAW_COLOR,
+        .ESE_value_variable = ESE_K_YAW_VAL,
         .ESE_context_text_variable = "k_yaw",
-        .ESE_string_len = 4, // including null terminator
         .value = {
             .type = float_1_decimal,
             .value = 0
@@ -178,25 +190,10 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
     },
     [K_TIE_INDEX] = {
         .name = "k_tie",
-        .ESE_background_color_variable = ESE_WET_BOX,
-        .ESE_value_color_variable = ESE_WET_COLOR,
-        .ESE_value_variable = ESE_WET_VAL,
+        .ESE_background_color_variable = ESE_K_TIE_BOX,
+        .ESE_value_color_variable = ESE_K_TIE_COLOR,
+        .ESE_value_variable = ESE_K_TIE_VAL,
         .ESE_context_text_variable = "k_tie",
-        .ESE_string_len = 4, // including null terminator
-        .value = {
-            .type = float_1_decimal,
-            .value = 0
-        },
-        .min = 0,
-        .max = 100,
-    },
-    [K_TIE_INDEX] = {
-        .name = "k_tie",
-        .ESE_background_color_variable = ESE_WET_BOX,
-        .ESE_value_color_variable = ESE_WET_COLOR,
-        .ESE_value_variable = ESE_WET_VAL,
-        .ESE_context_text_variable = "k_tie",
-        .ESE_string_len = 4, // including null terminator
         .value = {
             .type = float_1_decimal,
             .value = 0
@@ -206,9 +203,9 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
     },
     [K_EFF_INDEX] = {
         .name = "k_eff",
-        .ESE_background_color_variable = ESE_WET_BOX,
-        .ESE_value_color_variable = ESE_WET_COLOR,
-        .ESE_value_variable = ESE_WET_VAL,
+        .ESE_background_color_variable = ESE_K_EFF_BOX,
+        .ESE_value_color_variable = ESE_K_EFF_COLOR,
+        .ESE_value_variable = ESE_K_EFF_VAL,
         .ESE_context_text_variable = "k_eff",
         .ESE_string_len = 4, // including null terminator
         .value = {
@@ -218,21 +215,32 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 100,
     },
-    [FFLAUNCH_FEEDBACK_INDEX] = {
-        .name = "FF Launch",
-        .ESE_background_color_variable = ESE_WET_BOX,
-        .ESE_value_color_variable = ESE_WET_COLOR,
-        .ESE_value_variable = ESE_WET_VAL,
-        .ESE_context_text_variable = "FFLaunch",
-        .ESE_string_len = 4, // including null terminator
+    [PLACEHOLDER_1_INDEX] = {
+        .name = "Placeholder 1",
+        .ESE_background_color_variable = ESE_PLACEHOLDER_1_BOX,
+        .ESE_value_color_variable = ESE_PLACEHOLDER_1_COLOR,
+        .ESE_value_variable = ESE_PLACEHOLDER_1_VAL,
+        .ESE_context_text_variable = "Configurable uint8_t",
         .value = {
-            .type = float_1_decimal,
+            .type = unsigned_integer,
             .value = 0
         },
         .min = 0,
-        .max = 100,
+        .max = 255,
+    },
+    [PLACEHOLDER_2_INDEX] = {
+        .name = "Placeholder 2",
+        .ESE_background_color_variable = ESE_PLACEHOLDER_2_BOX,
+        .ESE_value_color_variable = ESE_PLACEHOLDER_2_COLOR,
+        .ESE_value_variable = ESE_PLACEHOLDER_2_VAL,
+        .ESE_context_text_variable = "Configurable uint8_t",
+        .value = {
+            .type = unsigned_integer,
+            .value = 0
+        },
+        .min = 0,
+        .max = 255,
     }
-
 };
 
 
