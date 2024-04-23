@@ -11,7 +11,7 @@
 #ifndef CMR_DMA_H
 #define CMR_DMA_H
 
-#include <stm32f4xx_hal.h>  // HAL_DMA_MODULE_ENABLED, DMA_HandleTypeDef
+#include "platform.h"   // HAL_DMA_MODULE_ENABLED, DMA_HandleTypeDef
 
 #ifdef HAL_DMA_MODULE_ENABLED
 

@@ -15,6 +15,7 @@
 
 static uint32_t cmr_timerToAltFunc(TIM_TypeDef *timer) {
     switch ((uintptr_t) timer) {
+#ifdef F413
         case TIM1_BASE:
             return GPIO_AF1_TIM1;
         case TIM2_BASE:
@@ -39,6 +40,16 @@ static uint32_t cmr_timerToAltFunc(TIM_TypeDef *timer) {
             return GPIO_AF9_TIM13;
         case TIM14_BASE:
             return GPIO_AF9_TIM14;
+#elif defined(L431)
+		case TIM1_BASE:
+			return GPIO_AF1_TIM1;
+        case TIM2_BASE:
+			return GPIO_AF1_TIM2;
+		case TIM15_BASE:
+			return GPIO_AF14_TIM15;
+		case TIM16_BASE:
+			return GPIO_AF14_TIM16;
+#endif
     }
 
     return (uint32_t) -1;

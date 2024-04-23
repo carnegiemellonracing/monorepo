@@ -42,6 +42,7 @@ static cmr_dmaInterrupt_t cmr_dmaInterrupts[2][8];
  *
  * @param f The macro to instantiate.
  */
+#ifdef F413
 #define DMA_STREAM_FOREACH(f) \
     f(1, 0) \
     f(1, 1) \
@@ -59,6 +60,23 @@ static cmr_dmaInterrupt_t cmr_dmaInterrupts[2][8];
     f(2, 5) \
     f(2, 6) \
     f(2, 7)
+#elif defined(L431)
+#define DMA_STREAM_FOREACH(f) \
+    f(1, 1) \
+    f(1, 2) \
+    f(1, 3) \
+    f(1, 4) \
+    f(1, 5) \
+    f(1, 6) \
+    f(1, 7) \
+    f(2, 1) \
+    f(2, 2) \
+    f(2, 3) \
+    f(2, 4) \
+    f(2, 5) \
+    f(2, 6) \
+    f(2, 7)
+#endif
 
 /**
  * @brief Creates a HAL/CMSIS DMA stream name.
@@ -67,9 +85,13 @@ static cmr_dmaInterrupt_t cmr_dmaInterrupts[2][8];
  * @param stream The stream number.
  * @param suffix The suffix to append, if any.
  */
+#ifdef F413
 #define DMA_STREAM_NAME(ctrl, stream, suffix) \
     DMA ## ctrl ## _Stream ## stream ## suffix
-
+#elif defined(L431)
+#define DMA_STREAM_NAME(ctrl, stream, suffix) \
+    DMA ## ctrl ## _Channel ## stream ## suffix
+#endif
 /**
  * @brief Defines the IRQ handler for each DMA stream.
  *
