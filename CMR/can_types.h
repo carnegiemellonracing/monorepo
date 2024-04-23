@@ -904,13 +904,8 @@ typedef struct {
 typedef struct {
     uint8_t vbatt_mV;       /**< @brief LV battery voltage (mV). */
     uint8_t vAIR_mV;        /**< @brief AIR voltage (mV). */
-<<<<<<< HEAD
-    uint8_t ibatt_mA;       /**< @brief LV battery current (mA). */
-  uint8_t iDCDC_mA;       /**< @brief DCDC current (mA). */
-=======
     uint8_t safety_mV;       /**< @brief Safety circuit voltage (mA). */
 	uint8_t iDCDC_mA;       /**< @brief DCDC current (mA). */
->>>>>>> bfd4baafd812778e9a46fa7b0d2b4164032e4311
 } cmr_canBMSLowVoltage_t;
 
 // BRUSA Charger Structs

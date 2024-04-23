@@ -16,25 +16,15 @@
 #define CMR_CANID_RMS_OFFSET    0x3A0
 
 /** @brief CAN IDs. */
-<<<<<<< HEAD
-typedef enum {
-=======
 typedef enum {    
->>>>>>> bfd4baafd812778e9a46fa7b0d2b4164032e4311
     CMR_CANID_HEARTBEAT_VSM = 0x100,    /**< @brief VSM heartbeat. */
     CMR_CANID_HEARTBEAT_HVC = 0x101,    /**< @brief HVC heartbeat. */
     CMR_CANID_HEARTBEAT_CDC = 0x102,    /**< @brief CDC heartbeat. */
     CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x104,    /**< @brief DIM heartbeat. */
     CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief PTC heatbeart.*/
-<<<<<<< HEAD
-    CMR_CANID_HEARTBEAT_AIM = 0x106,    /**< @brief AIM heatbeart.*/
-
-    CMR_CANID_CDL_BROADCAST = 0x625,    /**< @brief CDL broadcast. */
-=======
 	CMR_CANID_HEARTBEAT_HVI = 0x106,
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
->>>>>>> bfd4baafd812778e9a46fa7b0d2b4164032e4311
 
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
     CMR_CANID_VSM_SENSORS = 0x200,              /**< @brief VSM sensor data. */
@@ -63,15 +53,11 @@ typedef enum {
     CMR_CANID_CDC_POSE_ORIENTATION = 0x292,         /**< @brief CDC (20e) roll/pitch/yaw real car position. */
     CMR_CANID_CDC_POSE_VELOCITY = 0x2A2,            /**< @brief CDC (20e) real car velocity. */
     CMR_CANID_CDC_POSE_ACCELERATION = 0x2B2,        /**< @brief CDC (20e) real car acceleration. */
-<<<<<<< HEAD
-	CMR_CANID_CDC_AIM_CDC_MOTOR_CONTROL = 0x2D2,    /**< @brief CDC (22a) Motor control through AIM via CDC. */
-=======
     CMR_CANID_CDC_RTC_DATA_OUT = 0x6A2,             /**< @brief CDC RTC data. */
     CMR_CANID_CDC_RTC_DATA_IN = 0x6B2,              /**< @brief CDC RTC data. */
     CMR_CANID_CDC_ODOMETER = 0x6C2,                 /**< @brief CDC Odometer data. */
     CMR_CANID_CDC_CONTROLS_STATUS = 0x6D2,          /**< @brief CDC controls status data. */
     CMR_CANID_CDC_POWER_UPDATE = 0x6E2,             /**< @brief DAQ Live to CDC - changing power limit. */
->>>>>>> bfd4baafd812778e9a46fa7b0d2b4164032e4311
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
 	CMR_CANID_CELL_BALANCE_ENABLE = 0x134,
