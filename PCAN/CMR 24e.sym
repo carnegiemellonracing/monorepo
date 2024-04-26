@@ -2069,9 +2069,9 @@ Var=non_convergence_counter unsigned 0,32
 
 [HVC_Balance_Command]
 ID=134h
-DLC=3
+DLC=4
 CycleTime=10
 Timeout=25
 Var=Enable unsigned 0,8 /max:1 /e:HVC_Balance_State
-Var=Threshold unsigned 8,16 /u:mV /min:2450 /max:4000
+Var=Threshold unsigned 16,16 /u:mV /min:2450 /max:4000
 
