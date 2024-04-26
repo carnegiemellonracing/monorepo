@@ -66,6 +66,8 @@ typedef enum {
     CMR_CANID_FSM_POWER_DIAGNOSTICS = 0x553,    /**< @brief FSM power diagnostics. */
     CMR_CANID_SS_STATUS = 0x554,               /**< @brief Safety Circuit status. */
 
+    CMR_CANID_AIM_DATA = 0x134,
+
     CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief PTC (fan board) cooling loop temps. */
     CMR_CANID_PTC_LOOP_TEMPS_B = 0x234,        /**< @brief PTC (fan board) cooling loop temps. */
     CMR_CANID_PTC_LOOP_TEMPS_C = 0x244,        /**< @brief PTC (fan board) cooling loop temps. */
@@ -261,3 +263,4 @@ typedef enum {
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
+
