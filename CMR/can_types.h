@@ -21,10 +21,7 @@ typedef enum {
     CMR_CAN_HV_EN,          /**< @brief High voltage enabled. */
     CMR_CAN_RTD,            /**< @brief Ready to drive. */
     CMR_CAN_ERROR,          /**< @brief Error has occurred. */
-    CMR_CAN_CLEAR_ERROR,     /**< @brief Request to clear error. */
-    CMR_CAN_AS_READY,   /**< @brief Autonomous System ready. */
-    CMR_CAN_AS_DRIVING,   /**< @brief Autonomous System Driving. */
-	CMR_CAN_AS_FINISHED   /**< @brief Autonomous System Finished. */
+    CMR_CAN_CLEAR_ERROR     /**< @brief Request to clear error. */
 } cmr_canState_t;
 
 /** @brief Fan states. */
@@ -111,8 +108,6 @@ typedef enum {
     CMR_CAN_WARN_BUS_CURRENT = (1 << 2),
 
     // TODO: Consolidate
-    /** @brief VSM hasn't received AIM heartbeat for 25 ms. */
-    CMR_CAN_WARN_AIM_TIMEOUT = (1 << 15),
     /** @brief VSM hasn't received HVC heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_HVC_TIMEOUT = (1 << 14),
     /** @brief VSM hasn't received CDC heartbeat for 25 ms. */
@@ -180,8 +175,6 @@ typedef enum {
     CMR_CAN_GEAR_AUTOX,         /**< @brief Autocross-event mode */
     CMR_CAN_GEAR_SKIDPAD,       /**< @brief Skidpad-event mode */
     CMR_CAN_GEAR_ACCEL,         /**< @brief Acceleration-event mode */
-    CMR_CAN_GEAR_AUTONOMOUS_INSPECTION, /**< @brief Autonomous Inspection mode */
-    CMR_CAN_GEAR_AUTONOMOUS_TRACKDRIVE, /**< @brief Autonomous Trackdrive mode */
     CMR_CAN_GEAR_TEST,          /**< @brief Test mode (for experimentation) */
     CMR_CAN_GEAR_REVERSE,       /**< @brief Reverse mode */
     CMR_CAN_GEAR_LEN
@@ -230,9 +223,6 @@ typedef enum {
     CMR_CAN_VSM_STATE_INVERTER_EN,      /**< #brief Enable inverter logic power. */
     CMR_CAN_VSM_STATE_HV_EN,            /**< @brief Enable high voltage system. */
     CMR_CAN_VSM_STATE_RTD,              /**< @brief Ready to drive. */
-    CMR_CAN_VSM_STATE_AS_READY,   		/**< @brief Autonomous System ready. */
-    CMR_CAN_VSM_STATE_AS_DRIVING,   	/**< @brief Autonomous System Driving. */
-	CMR_CAN_VSM_STATE_AS_FINISHED,   	/**< @brief Autonomous System Finished. */
     CMR_CAN_VSM_STATE_COOLING_OFF,      /**< @brief Disable powertrain cooling system. */
     CMR_CAN_VSM_STATE_DCDC_OFF,         /**< @brief Disable DCDC converters. */
     CMR_CAN_VSM_STATE_LEN               /**< @brief Number of VSM states. */
@@ -242,8 +232,6 @@ typedef enum {
 typedef enum {
     /** @brief No modules have timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_NONE = 0,
-    /** @brief At least one Autonomous Interface Module message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_AIM = (1 << 7),
     /** @brief At least one High Voltage Controller message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_HVC = (1 << 6),
     /** @brief At least one Central Dynamics Controller message has timed out. */
@@ -660,13 +648,6 @@ typedef struct {
     int16_t verticalAccel_mps2;        /**< @brief Acceleration of the car in the down direction (m/s^2 * 100). */
 } cmr_canCDCPoseAcceleration_t;
 
-typedef struct {
-	uint8_t frontLeftThrottle;
-	uint8_t frontRightThrottle;
-	uint8_t backLeftThrottle;
-	uint8_t backRightThrottle;
-}cmr_canCDCAIMMotorControl_t;
-
 // ------------------------------------------------------------------------------------------------
 // Driver Interface Module
 
@@ -754,17 +735,6 @@ typedef struct {
     uint16_t busVoltage_mV;     /**< @brief Low-voltage bus voltage (mV). */
     uint16_t busCurrent_mA;     /**< @brief Low-voltage bus current (mA). */
 } cmr_canFSMPowerDiagnostics_t;
-
-// ------------------------------------------------------------------------------------------------
-// Autonomous Interface Module
-
-/** @brief Autonomous Interface Module data. */
-typedef struct {
-    uint8_t autonomousTorqueRequested;  /**< @brief Torque requested (0-255). */
-
-    /** @brief Steering wheel angle requested (-180 to 180 degrees). */
-    int16_t autonomousSwangleRequested;
-} cmr_can_AIMData_t;
 
 // ------------------------------------------------------------------------------------------------
 // Powertrain Thermal Controller
@@ -870,26 +840,26 @@ typedef struct BMSCalc2_t {
 */
 
 typedef struct {
-  uint8_t maxVoltIndex;        /**< @brief Max BMB cell voltage index. */
+	uint8_t maxVoltIndex;        /**< @brief Max BMB cell voltage index. */
     uint8_t minVoltIndex;        /**< @brief Min BMB cell voltage index. */
     uint16_t maxCellVoltage_mV;  /**< @brief Max BMB cell voltage (mV). */
     uint16_t minCellVoltage_mV;  /**< @brief Min BMB cell voltage (mV). */
 } cmr_canBMSBMBStatusVoltage_t;
 
 typedef struct {
-  uint8_t maxTempIndex;        /**< @brief Max BMB cell temp index. */
-  uint8_t minTempIndex;        /**< @brief Min BMB cell temp index. */
+	uint8_t maxTempIndex;        /**< @brief Max BMB cell temp index. */
+	uint8_t minTempIndex;        /**< @brief Min BMB cell temp index. */
     int16_t maxCellTemp_C;       /**< @brief Max BMB cell temp (C). */
     int16_t minCellTemp_C;       /**< @brief Min BMB cell temp (C). */
 } cmr_canBMSBMBStatusTemp_t;
 
 typedef struct {
-  uint16_t minCellVoltage_mV;  /**< @brief Min pack cell voltage (mV). */
-  uint16_t maxCellVoltage_mV;  /**< @brief Max pack cell voltage (mV). */
-  uint8_t minVoltageBMBNum;    /**< @brief Min pack cell voltage BMB number. */
-  uint8_t minVoltageCellNum;   /**< @brief Min pack cell voltage cell number. */
-  uint8_t maxVoltageBMBNum;    /**< @brief Max pack cell voltage BMB number. */
-  uint8_t maxVoltageCellNum;   /**< @brief Max pack cell voltage cell number. */
+	uint16_t minCellVoltage_mV;  /**< @brief Min pack cell voltage (mV). */
+	uint16_t maxCellVoltage_mV;  /**< @brief Max pack cell voltage (mV). */
+	uint8_t minVoltageBMBNum;    /**< @brief Min pack cell voltage BMB number. */
+	uint8_t minVoltageCellNum;   /**< @brief Min pack cell voltage cell number. */
+	uint8_t maxVoltageBMBNum;    /**< @brief Max pack cell voltage BMB number. */
+	uint8_t maxVoltageCellNum;   /**< @brief Max pack cell voltage cell number. */
 } cmr_canBMSMinMaxCellVoltage_t;
 
 typedef struct {
@@ -1185,4 +1155,3 @@ typedef struct {
 	uint32_t test_id;
 } cmr_canTestID_t;
 #endif /* CMR_CAN_TYPES_H */
-
