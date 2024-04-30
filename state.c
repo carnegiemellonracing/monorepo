@@ -145,6 +145,16 @@ void actionTwoButton(bool pressed) {
  */
 void drsButton(bool pressed) {
     drsButtonPressed = pressed;
+     if (!pressed) {
+        ackButtonPressed = false;
+        return;
+     }
+     if (!ackButtonPressed) {
+            sendAcknowledgement();
+        }
+        // update for DIM display
+        ackButtonPressed = true;
+        return;
     if (inConfigScreen()) {
         config_increment_up_requested = true;
     }
