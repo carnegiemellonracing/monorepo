@@ -181,13 +181,13 @@ static void canTX100Hz(void *pvParameters) {
         uint8_t regenPercent = (uint8_t)(REGEN_MIN + REGEN_STEP * regenStep);
         uint8_t packed = 0;
         packed |= drsButtonPressed << 7;
-        packed |= action0ButtonPressed << 6;
+        packed |= actionRightButtonPressed << 6;
         packed |= action1ButtonPressed << 5;
         packed |= action2ButtonPressed << 4;
         packed |= actionUpButtonPressed << 3;
         packed |= actionDownButtonPressed << 2;
         packed |= actionLeftButtonPressed << 1;
-        packed |= actionRightButtonPressed;
+        packed |= action0ButtonPressed;
         /* Transmit action button status */
         cmr_canDIMActions_t actions = {
             .buttons = packed,
