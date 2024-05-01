@@ -46,8 +46,6 @@ volatile bool exit_config_request = false;
 volatile bool dim_first_time_config_screen;
 /** @brief Checks to see if the screen needs to be redrawn after getting new driver profiles */
 volatile bool redraw_new_driver_profiles;
-/** @brief indicates if acknowledge button is being pressed */
-static bool ackButtonPressed;
 
 /** @brief AE/DRS button value */
 bool drsButtonPressed;
@@ -108,14 +106,13 @@ void ackButton(bool pressed) {
         config_increment_down_requested = true;
         return;
     }
-    if (stateGetGear() != CMR_CAN_GEAR_ACCEL) {
-        // Send an acknowledgement CAN message for DAQ Live
-        if (!ackButtonPressed) {
-            sendAcknowledgement();
-        }
-        // update for DIM display
-        ackButtonPressed = true;
-        return;
+
+	if (!ackButtonPressed) {
+		sendAcknowledgement();
+	}
+	// update for DIM display
+	ackButtonPressed = true;
+	return;
     }
     // Allow CDC to use this button for TC
 }
@@ -141,22 +138,12 @@ void screenButton(bool pressed) {
 }
 
 /**
- * @brief handles DRS button press on steering wheel
+ * @brief handles PTT button press on steering wheel
  *
  * @param pressed `true` if button is currently pressed.
  */
-void drsButton(bool pressed) {
-    drsButtonPressed = pressed;
-     if (!pressed) {
-        ackButtonPressed = false;
-        return;
-     }
-     if (!ackButtonPressed) {
-            sendAcknowledgement();
-        }
-        // update for DIM display
-        ackButtonPressed = true;
-        return;
+void pttButton(bool pressed) {
+    pttButtonPressed = pressed;
     if (inConfigScreen()) {
         config_increment_up_requested = true;
     }

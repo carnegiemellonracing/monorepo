@@ -33,7 +33,7 @@ cmr_canDrsMode_t stateGetDrs(void);
 cmr_canDrsMode_t stateGetDrsReq(void);
 
 /** @brief AE/DRS button value */
-extern bool drsButtonPressed;
+extern bool pttButtonPressed;
 /** @brief Action 0 button value */
 extern bool actionButtonPressed;
 /** @brief Action 1 button value */
@@ -54,7 +54,7 @@ extern uint8_t switchValues;
 void actionButton(bool pressed);
 void ackButton(bool pressed);
 void screenButton(bool pressed);
-void drsButton(bool pressed);
+void pttButton(bool pressed);
 
 uint32_t get_test_message_id();
 void new_test_message_id();

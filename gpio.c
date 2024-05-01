@@ -80,7 +80,7 @@ static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
     },
     [EXP_WHEEL_BUTTON_0] = {
         .buttonState = false,
-        .setAction = &ackButton,
+        .setAction = &pttButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
@@ -92,7 +92,7 @@ static expanderButtonEvent_t expanderButtons[EXP_BUTTON_LEN] = {
     },
     [EXP_WHEEL_BUTTON_2] = {
         .buttonState = true,
-        .setAction = &drsButton,
+        .setAction = &ackButton,
         .lastPressed = 0,
         .debounce = BUTTON_DEBOUNCE_TIME,
     },
