@@ -182,12 +182,12 @@ static void canTX100Hz(void *pvParameters) {
         uint8_t packed = 0;
         packed |= drsButtonPressed << 7;
         packed |= actionRightButtonPressed << 6;
-        packed |= action1ButtonPressed << 5;
-        packed |= action2ButtonPressed << 4;
+        packed |= ackButtonPressed << 5;
+        packed |= screenButtonPressed << 4;
         packed |= actionUpButtonPressed << 3;
         packed |= actionDownButtonPressed << 2;
         packed |= actionLeftButtonPressed << 1;
-        packed |= action0ButtonPressed;
+        packed |= actionButtonPressed;
         /* Transmit action button status */
         cmr_canDIMActions_t actions = {
             .buttons = packed,

@@ -52,11 +52,11 @@ static bool ackButtonPressed;
 /** @brief AE/DRS button value */
 bool drsButtonPressed;
 /** @brief Action 0 button value */
-bool action0ButtonPressed;
+bool actionButtonPressed;
 /** @brief Action 1 button value */
-bool action1ButtonPressed;
+bool ackButtonPressed;
 /** @brief Action 2 button value */
-bool action2ButtonPressed;
+bool screenButtonPressed;
 /** @brief Up button value */
 bool actionUpButtonPressed;
 /** @brief Down button value*/
@@ -86,20 +86,20 @@ void new_test_message_id() {
     test_message_id = (rand() % 0xFFFFFFFFu) & 0x0FFFFFFF;
 }
 
-void actionZeroButton(bool pressed) {
-    action0ButtonPressed = pressed;  // True
+void actionButton(bool pressed) {
+    actionButtonPressed = pressed;  // True
     if (!pressed) {
         return;
     }
 }
 
 /**
- * @brief handles Action 1 button press on steering wheel
+ * @brief handles Acknowledge Button button press on steering wheel
  *
  * @param pressed `true` if button is currently pressed.
  */
-void actionOneButton(bool pressed) {
-    action1ButtonPressed = pressed;
+void ackButton(bool pressed) {
+    ackButtonPressed = pressed;
     if (!pressed) {
         ackButtonPressed = false;
         return;
@@ -121,12 +121,12 @@ void actionOneButton(bool pressed) {
 }
 
 /**
- * @brief handles Action 2 button press on steering wheel
+ * @brief handles Screen (SCR) button press on steering wheel
  *
  * @param pressed `true` if button is currently pressed.
  */
-void actionTwoButton(bool pressed) {
-    action2ButtonPressed = pressed;
+void screenButton(bool pressed) {
+    screenButtonPressed = pressed;
     if (!pressed) {
         return;
     }
@@ -135,7 +135,9 @@ void actionTwoButton(bool pressed) {
         exitConfigScreen();
         return;
     }
-    in_racing_screen = !inRacingScreen();
+    in_racing_screen = false;
+    // disabling racing screen bc its not working (comp change)
+    // in_racing_screen = !inRacingScreen();
 }
 
 /**

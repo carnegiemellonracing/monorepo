@@ -35,11 +35,11 @@ cmr_canDrsMode_t stateGetDrsReq(void);
 /** @brief AE/DRS button value */
 extern bool drsButtonPressed;
 /** @brief Action 0 button value */
-extern bool action0ButtonPressed;
+extern bool actionButtonPressed;
 /** @brief Action 1 button value */
-extern bool action1ButtonPressed;
+extern bool ackButtonPressed;
 /** @brief Action 2 button value */
-extern bool action2ButtonPressed;
+extern bool screenButtonPressed;
 /** @brief Up button value */
 extern bool actionUpButtonPressed;
 /** @brief Down button value*/
@@ -51,9 +51,9 @@ extern bool actionRightButtonPressed;
 /** @brief rotatory values {ROT_SEL,ROT_2,ROT_1,ROT_0} */
 extern uint8_t rotaryPos;
 extern uint8_t switchValues;
-void actionZeroButton(bool pressed);
-void actionOneButton(bool pressed);
-void actionTwoButton(bool pressed);
+void actionButton(bool pressed);
+void ackButton(bool pressed);
+void screenButton(bool pressed);
 void drsButton(bool pressed);
 
 uint32_t get_test_message_id();
