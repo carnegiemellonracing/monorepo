@@ -22,6 +22,10 @@ typedef enum {
     /* Logic-side current sense has been omitted from the pcb */
     ADC_BOARD_THERM_1,      /**< @brief On-board thermistor 1.      */
     ADC_BOARD_THERM_2,      /**< @brief On-board thermistor 2.      */
+	ADC_BOARD_THERM_3,
+	ADC_BOARD_THERM_4,
+	ADC_BOARD_THERM_5,
+	ADC_BOARD_THERM_6,
     ADC_LEN     /**< @brief Total ADC channels. */
 } adcChannel_t;
 

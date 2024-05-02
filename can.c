@@ -17,6 +17,7 @@
 
 #include "can.h"        // Interface to implement
 #include "sensors.h"    // Sensors interface.
+#include "adc.h"
 
 /**
  * @brief CAN periodic message receive metadata
@@ -112,6 +113,7 @@ static cmr_can_t can;
 static void sendPowerDiagnostics(void);
 static void sendDriverStatus(void);
 static void sendHeartbeat(TickType_t lastWakeTime);
+static void sendTherms(void);
 
 /**
  * @brief Task for sending CAN messages at 10 Hz.
@@ -127,6 +129,7 @@ static void canTX10Hz(void *pvParameters) {
     while (1) {
         sendPowerDiagnostics();
         sendDriverStatus();
+        sendTherms();
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -319,5 +322,20 @@ static void sendPowerDiagnostics(void) {
     };                                                                                                   
 
     canTX(CMR_CANID_PTC_POWER_DIAGNOSTICS, &powerMsg, sizeof(powerMsg), canTX10Hz_period_ms);
+}
+
+static void sendTherms(void) {
+	cmr_canPTCLoopTemp_A_t pumpA;
+	cmr_canPTCLoopTemp_A_t pumpB;
+
+	pumpA.temp1_dC = adcRead(ADC_BOARD_THERM_1);
+	pumpA.temp2_dC = adcRead(ADC_BOARD_THERM_2);
+	pumpA.temp3_dC = adcRead(ADC_BOARD_THERM_3);
+	pumpA.temp4_dC = adcRead(ADC_BOARD_THERM_4);
+
+	pumpB.temp1_dC = adcRead(ADC_BOARD_THERM_5);
+	pumpB.temp2_dC = adcRead(ADC_BOARD_THERM_6);
+	canTX(CMR_CANID_PTC_LOOP_TEMPS_A, &pumpA, sizeof(pumpA), canTX10Hz_period_ms);
+	canTX(CMR_CANID_PTC_LOOP_TEMPS_B, &pumpB, sizeof(pumpB), canTX10Hz_period_ms);
 }
 
