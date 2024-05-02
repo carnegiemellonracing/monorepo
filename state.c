@@ -47,13 +47,13 @@ volatile bool dim_first_time_config_screen;
 /** @brief Checks to see if the screen needs to be redrawn after getting new driver profiles */
 volatile bool redraw_new_driver_profiles;
 
-/** @brief AE/DRS button value */
-bool drsButtonPressed;
-/** @brief Action 0 button value */
+/** @brief Push To Talk button value */
+bool pttButtonPressed;
+/** @brief Action button value */
 bool actionButtonPressed;
-/** @brief Action 1 button value */
+/** @brief Acknowledge button value */
 bool ackButtonPressed;
-/** @brief Action 2 button value */
+/** @brief Screen button value */
 bool screenButtonPressed;
 /** @brief Up button value */
 bool actionUpButtonPressed;
@@ -89,6 +89,10 @@ void actionButton(bool pressed) {
     if (!pressed) {
         return;
     }
+
+    if (inConfigScreen()) {
+        config_increment_up_requested = true;
+    }
 }
 
 /**
@@ -110,11 +114,6 @@ void ackButton(bool pressed) {
 	if (!ackButtonPressed) {
 		sendAcknowledgement();
 	}
-	// update for DIM display
-	ackButtonPressed = true;
-	return;
-    }
-    // Allow CDC to use this button for TC
 }
 
 /**
@@ -144,9 +143,7 @@ void screenButton(bool pressed) {
  */
 void pttButton(bool pressed) {
     pttButtonPressed = pressed;
-    if (inConfigScreen()) {
-        config_increment_up_requested = true;
-    }
+    
 }
 
 /**

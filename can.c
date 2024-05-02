@@ -180,7 +180,7 @@ static void canTX100Hz(void *pvParameters) {
         // Calculate integer regenPercent from regenStep
         uint8_t regenPercent = (uint8_t)(REGEN_MIN + REGEN_STEP * regenStep);
         uint8_t packed = 0;
-        packed |= drsButtonPressed << 7;
+        packed |= pttButtonPressed << 7;
         packed |= actionRightButtonPressed << 6;
         packed |= ackButtonPressed << 5;
         packed |= screenButtonPressed << 4;
