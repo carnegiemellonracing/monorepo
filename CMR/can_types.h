@@ -43,6 +43,12 @@ typedef struct {
     uint8_t state;          /**< @brief PTC state. */
 } cmr_canPTCState_t;
 
+/** @brief Standard Git committed State. */
+typedef struct {
+	uint16_t commitHash;
+	uint8_t dirtyFlash;
+} cmr_canGitFlashStatus;
+
 /** @brief Heartbeat error matrix bit fields. */
 typedef enum {
     CMR_CAN_ERROR_NONE = 0,     /**< @brief No errors. */
