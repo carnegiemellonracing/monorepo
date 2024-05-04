@@ -2032,17 +2032,6 @@ Var=CCM_ChargerVoltage unsigned 8,16 /u:dV
 Var=CCM_ChargerCurrent unsigned 24,16 /u:dA
 Var=CCM_ChargerDisabled unsigned 40,8
 
-[CDC_Rear_Whl_Angles]
-ID=7F5h
-DLC=8
-Var=whl_angle_RL float 0,32
-Var=whl_angle_RR float 32,32
-
-[CDC_front_Whl_Angles]
-ID=7F4h
-Var=whl_angle_FR float 32,32
-Var=whl_angle_FL float 0,32
-
 [DIM_TEST_FLAG]
 ID=777h
 DLC=4
@@ -2074,4 +2063,52 @@ CycleTime=10
 Timeout=25
 Var=Enable unsigned 0,8 /max:1 /e:HVC_Balance_State
 Var=Threshold unsigned 16,16 /u:mV /min:2450 /max:4280
+
+[VSM_Git]
+ID=7F1h
+DLC=8
+CycleTime=1000
+Timeout=1005
+Var=Commit_Hash_VSM unsigned 0,32 -h
+Var=Dirty_VSM unsigned 32,8
+
+[HVC_Git]
+ID=7F2h
+DLC=3
+CycleTime=1000
+Timeout=2000
+Var=Commit_Hash_HVC unsigned 0,16 -h
+Var=Dirty_HVC unsigned 16,8
+
+[PTC_Git]
+ID=7F3h
+DLC=8
+CycleTime=1000
+Timeout=2000
+Var=Commit_Hash_PTC unsigned 0,32 -h
+Var=Dirty_PTC unsigned 32,8
+
+[CDC_Git]
+ID=7F4h
+DLC=8
+CycleTime=1000
+Timeout=2000
+Var=Commit_Hash_CDC unsigned 0,32 -h
+Var=Dirty_CDC unsigned 32,8 -o
+
+[DIM_Git]
+ID=7F5h
+DLC=8
+CycleTime=1000
+Timeout=2000
+Var=Commit_Hash_DIM unsigned 0,32 -h
+Var=Dirty_DIM unsigned 32,8
+
+[RAM_Git]
+ID=7F6h
+DLC=8
+CycleTime=1000
+Timeout=2000
+Var=Commit_Hash_RAM unsigned 0,32 -h
+Var=Dirty_RAM unsigned 32,8
 

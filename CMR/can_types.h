@@ -45,7 +45,7 @@ typedef struct {
 
 /** @brief Standard Git committed State. */
 typedef struct {
-	uint16_t commitHash;
+	uint32_t commitHash;
 	uint8_t dirtyFlash;
 } cmr_canGitFlashStatus;
 
