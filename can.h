@@ -48,5 +48,19 @@ void canInit(void);
 int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 void *canGetPayload(canRX_t rxMsg);
 
+/**
+ * @brief Represents parameters for thermistor logarithmic transfer function
+ *
+ * temp = a + b * ln(adc_raw_value)
+ *
+ * a -> intercept
+ * b -> slope
+ */
+typedef struct {
+    float slope;                 /**< @brief */
+    float intercept;             /**< @brief */
+} thermParams_t;
+
+
 #endif /* CAN_H */
 

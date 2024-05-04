@@ -73,6 +73,13 @@ static cmr_adcChannel_t adcChannels[ADC_LEN] = {
 		.samplingTime = ADC_SAMPLETIME_15CYCLES,
 		.value = 0
 	},
+	[ADC_BOARD_THERM_6] = {
+		.channel = ADC_CHANNEL_5,
+		.port = GPIOA,
+		.pin = GPIO_PIN_5,
+		.samplingTime = ADC_SAMPLETIME_15CYCLES,
+		.value = 0
+	},
 };
 
 /** @brief Primary ADC. */

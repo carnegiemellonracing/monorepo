@@ -14,6 +14,7 @@
 #include <string.h>     // memcpy()
 
 #include <CMR/tasks.h>  // Task interface
+#include <math.h>
 
 #include "can.h"        // Interface to implement
 #include "sensors.h"    // Sensors interface.
@@ -338,6 +339,7 @@ static void sendDriverStatus(void) {
     canTX(CMR_CANID_PTC_FANS_PUMPS_STATUS, &driverStatusMsg, sizeof(driverStatusMsg), canTX10Hz_period_ms);
 }
 
+
 /**
  * @brief Send power diagnostic information.
  */
@@ -358,17 +360,72 @@ static void sendPowerDiagnostics(void) {
     canTX(CMR_CANID_PTC_POWER_DIAGNOSTICS, &powerMsg, sizeof(powerMsg), canTX10Hz_period_ms);
 }
 
+/** @brief Setting up thermistor params */
+static thermParams_t thermParams[6] = {
+	{ // CAR THERM 0, ADC BOARD THERM 6 (probably)
+		.slope = -26.9f,
+		.intercept = 84.8f,
+	},
+	{ // CAR THERM 1, ADC BOARD THERM 2
+		.slope = -27.5f,
+		.intercept = 86.4f,
+	},
+	{ // CAR THERM 2 -- NOT CONNECTED
+		.slope = -27.3f,
+		.intercept = 86.3f,
+	},
+	{ // CAR THERM 3, ADC BOARD THERM 5
+		.slope = -27.4f,
+		.intercept = 86.2f,
+	},
+	{ // CAR THERM 4 -- NOT CONNECTED (probably)
+		.slope = -26.5f,
+		.intercept = 84.6f,
+	},
+	{ // CAR THERM 5, ADC BOARD THERM 4
+		.slope = -26.8f,
+		.intercept = 85.4f,
+	},
+};
+
+
+/**
+ * @brief Reads from an ADC channel and convert data into temperature (dC)
+ */
+uint16_t getTempAdc(adcChannel_t channel){
+	// map thermistor ADC channels to labels on the car
+	uint32_t index = 0;
+	switch(channel){
+		case ADC_BOARD_THERM_2: index = 1; break;
+		case ADC_BOARD_THERM_4: index = 5; break;
+		case ADC_BOARD_THERM_5: index = 3; break;
+		// NOTE: we're still not sure if this is the correct mapping for ADC BOARD THERM 6.
+		case ADC_BOARD_THERM_6: index = 0; break;
+	}
+
+	// retrieve transfer function parameters
+	float slope = thermParams[index].slope;
+	float intercept = thermParams[index].intercept;
+
+	// read from ADC, calculate resistance and temperature
+	float raw = (float)adcRead(channel);
+	float resistance = raw * 4700.0f / (4096.0f - raw);
+	float temp_dC = (intercept + slope * (float)log(resistance / 1000.0f)) * 10.0f;
+	return (uint32_t)temp_dC;
+}
+
 static void sendTherms(void) {
 	cmr_canPTCLoopTemp_A_t pumpA;
 	cmr_canPTCLoopTemp_A_t pumpB;
 
-	pumpA.temp1_dC = adcRead(ADC_BOARD_THERM_1);
-	pumpA.temp2_dC = adcRead(ADC_BOARD_THERM_2);
+	pumpA.temp1_dC = getTempAdc(ADC_BOARD_THERM_1);
+	pumpA.temp2_dC = getTempAdc(ADC_BOARD_THERM_2);
 	pumpA.temp3_dC = adcRead(ADC_BOARD_THERM_3);
-	pumpA.temp4_dC = adcRead(ADC_BOARD_THERM_4);
+	pumpA.temp4_dC = getTempAdc(ADC_BOARD_THERM_4);
 
-	pumpB.temp1_dC = adcRead(ADC_BOARD_THERM_5);
-	pumpB.temp2_dC = adcRead(ADC_BOARD_THERM_6);
+	pumpB.temp1_dC = getTempAdc(ADC_BOARD_THERM_5);
+	pumpB.temp2_dC = getTempAdc(ADC_BOARD_THERM_6);
+
 	canTX(CMR_CANID_PTC_LOOP_TEMPS_A, &pumpA, sizeof(pumpA), canTX10Hz_period_ms);
 	canTX(CMR_CANID_PTC_LOOP_TEMPS_B, &pumpB, sizeof(pumpB), canTX10Hz_period_ms);
 }
