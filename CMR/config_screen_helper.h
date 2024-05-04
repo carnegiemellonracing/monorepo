@@ -25,35 +25,28 @@ typedef enum{
     Default,
     Trent,
     Pravir,
-    Gabe,
+    Tony,
     num_values_driver_enum
 } cmr_driver_profile_t;
 
 typedef enum {
     DRIVER_PROFILE_INDEX,
     POWER_LIM_INDEX,
-    POWER_ERR_INDEX,
     SF_OP_MARGIN_INDEX,
     YRC_KP_INDEX,
-    YRC_KD_INDEX,
     TC_LUT_Y_SCALE_INDEX,
     TC_LUT_X_SCALE_INDEX,
     PEDAL_REGEN_STRENGTH_INDEX,
     PADDLE_MAX_REGEN_INDEX,
-    BRAKE_TC_INDEX,
-    ACCEL_TGT_INDEX,
-    SLIP_RATIO_INDEX,
-    TORQUE_BIAS_INDEX,
-    DRS_THROTTLE_THRESH_INDEX,
-    DRS_SWANGLE_THRESH_INDEX,
-    DRS_BRAKE_THRESH_INDEX,
-    WET_INDEX,
+    FFLAUNCH_FEEDBACK_INDEX,
     K_LIN_INDEX,
     K_YAW_INDEX,
     K_TIE_INDEX,
     K_EFF_INDEX,
-    FFLAUNCH_FEEDBACK_INDEX,
-    EXTRA_K_INDEX,
+    DRS_THROTTLE_THRESH_INDEX,
+    DRS_SWANGLE_THRESH_INDEX,
+    PLACEHOLDER_1_INDEX,
+    PLACEHOLDER_2_INDEX,
     MAX_MENU_ITEMS // The elements in the config array
 } config_menu_main_array_index_t;
 

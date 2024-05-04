@@ -416,6 +416,12 @@ typedef struct {
     uint8_t modeRequest;    /**< @brief HVC operating mode request. See cmr_canHVCMode_t. */
 } cmr_canHVCCommand_t;
 
+/** @brief High Voltage Controller Balance Command. */
+typedef struct {
+    bool balanceRequest;    /**< @brief HVC balance command. */
+    uint16_t threshold;  /**< @brief Voltage threshold to stop balancing at */
+} cmr_canHVCBalanceCommand_t;
+
 /** @brief High Voltage Controller pack voltages. */
 typedef struct {
     int32_t battVoltage_mV;    /**< @brief Voltage measured across battery. */
@@ -1065,8 +1071,7 @@ typedef struct {
 typedef struct {
     int16_t controls_current_yaw_rate;
     int16_t controls_target_yaw_rate;
-    int16_t controls_bias;
-    int16_t controls_pid;
+    float controls_pid;
 } cmr_can_controls_pid_debug_t;
 
 typedef struct {
@@ -1152,4 +1157,7 @@ typedef struct {
     uint8_t state;
 } cmr_canMemoratorHeartbeat_t;
 
+typedef struct {
+	uint32_t test_id;
+} cmr_canTestID_t;
 #endif /* CMR_CAN_TYPES_H */

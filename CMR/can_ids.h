@@ -60,6 +60,7 @@ typedef enum {
     CMR_CANID_CDC_POWER_UPDATE = 0x6E2,             /**< @brief DAQ Live to CDC - changing power limit. */
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
+	CMR_CANID_CELL_BALANCE_ENABLE = 0x134,
     CMR_CANID_FSM_PEDALS_ADC = 0x533,           /**< @brief FSM raw pedal positions. */
     CMR_CANID_FSM_SENSORS_ADC = 0x543,          /**< @brief FSM raw sensors. */
     CMR_CANID_FSM_POWER_DIAGNOSTICS = 0x553,    /**< @brief FSM power diagnostics. */
@@ -232,6 +233,8 @@ typedef enum {
     CMR_CANID_REAR_WHL_SETPOINTS = 0x7EB,
     CMR_CANID_FRONT_WHL_VELS = 0x7EC,
     CMR_CANID_REAR_WHL_VELS = 0x7ED,
+
+    CMR_CANID_TEST_ID=0x777,
 
 	CMR_CANID_DRS_CONTROLS = 0x29C, 				/**< @brief DRS Motor Controls. */
 

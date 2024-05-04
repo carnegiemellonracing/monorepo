@@ -32,8 +32,7 @@ enum CCMState(0="ERROR", 1="CLEAR_ERROR", 2="CLEAR_HVC", 3="IDLE_HVC",
 {SEND}
 
 [IZZIE_Loadcell_config]
-ID=000004E2h
-Type=Extended
+ID=4E4h
 DLC=8
 Var=Programming_Constant_config unsigned 0,16 -h -m /d:30000
 Var=New_Can_ID unsigned 16,16 -m /d:2033
@@ -1505,8 +1504,7 @@ ID=7EFh	// This CAN id is used for communication between the energy meter and th
 DLC=8
 
 [IZZIE_Loadcell_calibration]
-ID=00000800h
-Type=Extended
+ID=7FFh
 DLC=8
 Var=Programming_Constant_calibration unsigned 0,16 -h -m /d:20000
 Var=Gain_coefficient_m_m signed 16,16 -m /d:5772
@@ -2073,4 +2071,9 @@ Var="IZZE Differential Voltage" signed 0,16 -m /u:uV
 Var="IZZE Calibrated Output" signed 16,16 -m /u:F
 Var="IZZE Internal Temperature" signed 32,16 -m /u:C
 Var="IZZE Opt External Temp" signed 48,16 -m /u:C
+
+[DIM_TEST_FLAG]
+ID=777h
+DLC=4
+Var=TEST_FLAG unsigned 0,32 -h
 
