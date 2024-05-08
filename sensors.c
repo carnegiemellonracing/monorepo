@@ -187,7 +187,7 @@ static int32_t adcToSwangle(const cmr_sensor_t *sensor, uint32_t reading) {
 //    double a1_2 = tanh(z1_2);
 
     // Layer 2 Weight
-    double swangle_deg = (reading - 2910.0)/54.9;
+    double swangle_deg = (reading * 0.016f)-17.2f;
 
     return (int32_t)swangle_deg;
 }
