@@ -135,7 +135,7 @@ static cmr_uart_t *cmr_uartFromHandle(UART_HandleTypeDef *handle) {
 
 static HAL_StatusTypeDef UART_WaitOnFlagUntilCounter(UART_HandleTypeDef *huart, uint32_t Flag, FlagStatus Status, uint32_t Timeout)
 {
-  int counter = 0;
+  uint32_t counter = 0;
   /* Wait until flag is set */
   while ((__HAL_UART_GET_FLAG(huart, Flag) ? SET : RESET) == Status)
   {
@@ -473,7 +473,7 @@ void cmr_uartInit(
     if (HAL_UART_Init(&uart->handle) != HAL_OK) {
         cmr_panic("HAL_UART_Init() failed!");
     }
-    
+
     // Disable idle interrupt and clear the flag.
     __HAL_UART_DISABLE_IT(&uart->handle, UART_IT_IDLE);
     __HAL_UART_CLEAR_IDLEFLAG(&uart->handle);
