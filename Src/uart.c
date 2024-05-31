@@ -80,7 +80,6 @@ static void uartTX_Task(void *pvParameters)
     while (1)
     {
         taskENTER_CRITICAL();
-        uint32_t au32_initial_ticks = DWT->CYCCNT;
         /* Formatting must be atomic w.r.t. CAN stream
          * TODO modify to drop messages during this instead */
         ssize_t msg_len = sampleFmtMsg();
@@ -101,7 +100,6 @@ static void uartTX_Task(void *pvParameters)
         raw_sample_data[10].count = 0;
         raw_sample_data[10].len = 0;
         memset(raw_sample_data[10].values, 0, MAX_SAMPLEVEC_LEN);
-        uint32_t total_ticks = DWT->CYCCNT - au32_initial_ticks;
         taskEXIT_CRITICAL();
         cmr_uartTX(&uart.port, &txMsg, send_buf, msg_len);
         cmr_uartMsgWait(&txMsg);
