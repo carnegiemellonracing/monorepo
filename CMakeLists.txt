@@ -47,8 +47,6 @@ set(include_DIRS
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMSIS/Include
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMSIS/Device/${PROCESSOR}
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Inc
-    # ${CMAKE_SOURCE_DIR}/stm32f413-drivers/FreeRTOS/include
-    # ${CMAKE_SOURCE_DIR}/stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM4F
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/DIM-ESE
     ${CMAKE_SOURCE_DIR}/cn-cbor/include
     ${CMAKE_SOURCE_DIR}/cJSON
@@ -166,9 +164,6 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_flash_ex.c
     #CMSIS
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMSIS/system_stm32f4xx.c
-
-
-
     #cJSON
     ${CMAKE_SOURCE_DIR}/cJSON/cJSON.c
     #cn-cbor
@@ -221,17 +216,18 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     ${cpu_PARAMS}
     ${compiler_OPTS}
     -Wall
-
-    # -Wextra
-    # -Wpedantic
-    -Wno-unused-parameter
-    -Wno-unused-variable
+    -Wshadow
+    -Wextra
+    -Wpedantic
+    # -Wno-unused-parameter
+    # -Wno-unused-variable
     $<$<COMPILE_LANGUAGE:C>:
     -O0
     -ffunction-sections
     -fdata-sections
     -fstack-usage
     -fcyclomatic-complexity
+    -Wdouble-promotion
     >
     $<$<COMPILE_LANGUAGE:CXX>:
 
