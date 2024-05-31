@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.22)
 # User is free to modify the file as much as necessary
 #
 
-#list(APPEND CMAKE_MODULE_PATH "C:/Users/user1/Downloads/CmakeTestProject/cmake")
+# list(APPEND CMAKE_MODULE_PATH "C:/Users/user1/Downloads/CmakeTestProject/cmake")
 list(APPEND CMAKE_MODULE_PATH "{{sr:cmake_path}}")
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 include("cmake/gcc-arm-none-eabi.cmake")
@@ -25,6 +25,7 @@ set(CMAKE_CXX_EXTENSIONS ON)
 
 # Core MCU flags, CPU type, instruction set and FPU setup
 set(cpu_PARAMS
+
     # Other parameters
     # -mthumb
     # -mcpu, -mfloat, -mfloat-abi, ...
@@ -32,54 +33,58 @@ set(cpu_PARAMS
     -mthumb
     -mfpu=fpv4-sp-d16
     -mfloat-abi=hard
-
 )
 
 # Sources
 set(sources_SRCS)
 set(PROCESSOR F413)
+
 # Include directories for all compilers
 set(include_DIRS
-${CMAKE_SOURCE_DIR}/Inc
-${CMAKE_SOURCE_DIR}/Gen
-${CMAKE_SOURCE_DIR}/stm32f413-drivers
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMSIS/Include
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMSIS/Device/${PROCESSOR}
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Inc
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/FreeRTOS/include
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM4F
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/DIM-ESE
-${CMAKE_SOURCE_DIR}/cn-cbor/include
-${CMAKE_SOURCE_DIR}/cJSON
+    ${CMAKE_SOURCE_DIR}/Inc
+    ${CMAKE_SOURCE_DIR}/Gen
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMSIS/Include
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMSIS/Device/${PROCESSOR}
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Inc
+    # ${CMAKE_SOURCE_DIR}/stm32f413-drivers/FreeRTOS/include
+    # ${CMAKE_SOURCE_DIR}/stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM4F
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/DIM-ESE
+    ${CMAKE_SOURCE_DIR}/cn-cbor/include
+    ${CMAKE_SOURCE_DIR}/cJSON
 )
 
 # Include directories for each compiler
 set(include_c_DIRS)
 set(include_cxx_DIRS)
 set(include_asm_DIRS)
+
 # Symbols definition for all compilers
 set(symbols_SYMB
-STM32F413xx
-${PROCESSOR}
+    STM32F413xx
+    ${PROCESSOR}
 )
 
 # Symbols definition for each compiler
 set(symbols_c_SYMB
-configASSERT
+    configASSERT
 )
 set(symbols_cxx_SYMB)
 set(symbols_asm_SYMB)
 
 # Link directories and names of libraries
 set(link_DIRS)
-set(link_LIBS)
+set(link_LIBS
+    freertos_kernel
+)
 
 # Linker script
 set(linker_script_SRC)
 
 # Compiler options
 set(compiler_OPTS
--mfp16-format=ieee
+    -mfp16-format=ieee
+    --specs=nano.specs
 )
 
 # Linker options
@@ -96,37 +101,82 @@ link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
-${CMAKE_SOURCE_DIR}/Src/can.c
-${CMAKE_SOURCE_DIR}/Src/config.c
-${CMAKE_SOURCE_DIR}/Src/gpio.c
-${CMAKE_SOURCE_DIR}/Src/main.c
-${CMAKE_SOURCE_DIR}/Src/parser_test.c
-${CMAKE_SOURCE_DIR}/Src/parser.c
-${CMAKE_SOURCE_DIR}/Src/sample.c
-${CMAKE_SOURCE_DIR}/Src/syscall.c
-${CMAKE_SOURCE_DIR}/Src/sysmem.c
-${CMAKE_SOURCE_DIR}/Src/uart.c
-# STM sources
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/adc.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/can.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/config_screen_helper.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/config.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/dma.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/dsp.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/f413.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/fir_filter.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/gpio.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/i2c.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/interrupts.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/l431.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/panic.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/pwm.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/qspi.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/rcc.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/spi.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/tasks.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/uart.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/watchdog.c
+    ${CMAKE_SOURCE_DIR}/Src/can.c
+    ${CMAKE_SOURCE_DIR}/Src/config.c
+    ${CMAKE_SOURCE_DIR}/Src/gpio.c
+    ${CMAKE_SOURCE_DIR}/Src/main.c
+    ${CMAKE_SOURCE_DIR}/Src/parser_test.c
+    ${CMAKE_SOURCE_DIR}/Src/parser.c
+    ${CMAKE_SOURCE_DIR}/Src/sample.c
+    ${CMAKE_SOURCE_DIR}/Src/syscall.c
+    ${CMAKE_SOURCE_DIR}/Src/sysmem.c
+    ${CMAKE_SOURCE_DIR}/Src/uart.c
+
+    # STM sources
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/adc.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/can.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/config_screen_helper.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/config.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/dma.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/dsp.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/f413.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/fir_filter.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/gpio.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/i2c.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/interrupts.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/l431.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/panic.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/pwm.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/qspi.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/rcc.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/spi.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/tasks.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/uart.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/watchdog.c
+    #HAL
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_rcc.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_can.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_cortex.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_dma.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_gpio.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_i2c.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_pwr.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_rcc_ex.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_spi.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_uart.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_qspi.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_tim.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_tim_ex.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_pcd.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_pcd_ex.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_sd.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_sdram.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_sram.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_ltdc.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_ltdc_ex.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_dsi.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_cryp.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_cryp_ex.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_hash.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_hash_ex.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_rng.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_cortex.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_flash.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_flash_ex.c
+    #CMSIS
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMSIS/system_stm32f4xx.c
+
+
+
+    #cJSON
+    ${CMAKE_SOURCE_DIR}/cJSON/cJSON.c
+    #cn-cbor
+    ${CMAKE_SOURCE_DIR}/cn-cbor/src/cn-cbor.c
+    ${CMAKE_SOURCE_DIR}/cn-cbor/src/cn-create.c
+    ${CMAKE_SOURCE_DIR}/cn-cbor/src/cn-encoder.c
+    ${CMAKE_SOURCE_DIR}/cn-cbor/src/cn-error.c
+    ${CMAKE_SOURCE_DIR}/cn-cbor/src/cn-get.c
 
 )
 
@@ -152,6 +202,16 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     $<$<CONFIG:Debug>:DEBUG>
     $<$<CONFIG:Release>: >
 )
+# FreeRTOS
+# https://forums.freertos.org/t/i-cannot-build-a-complete-static-application-bug-or-feature/9553/5
+add_compile_options(${cpu_PARAMS})
+set(FREERTOS_HEAP ${CMAKE_SOURCE_DIR}/Src/heap.c)
+set(FREERTOS_CONFIG_FILE_DIRECTORY ${CMAKE_SOURCE_DIR}/Inc)
+set(FREERTOS_PORT GCC_ARM_CM4F)
+add_subdirectory(${CMAKE_SOURCE_DIR}/stm32f413-drivers/FreeRTOS)
+
+#cn-cbor
+# add_subdirectory(${CMAKE_SOURCE_DIR}/cn-cbor)
 
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME} ${link_LIBS})
@@ -161,11 +221,18 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     ${cpu_PARAMS}
     ${compiler_OPTS}
     -Wall
+
     # -Wextra
     # -Wpedantic
     -Wno-unused-parameter
     -Wno-unused-variable
-    $<$<COMPILE_LANGUAGE:C>: >
+    $<$<COMPILE_LANGUAGE:C>:
+    -O0
+    -ffunction-sections
+    -fdata-sections
+    -fstack-usage
+    -fcyclomatic-complexity
+    >
     $<$<COMPILE_LANGUAGE:CXX>:
 
     # -Wno-volatile
@@ -184,7 +251,8 @@ target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
     ${cpu_PARAMS}
     ${linker_OPTS}
     -Wl,-Map=${CMAKE_PROJECT_NAME}.map
-    -u _printf_float # STDIO float formatting support (remove if not used)
+    -Wl,--gc-sections
+    -static
     --specs=nano.specs
     -Wl,--start-group
     -lc
