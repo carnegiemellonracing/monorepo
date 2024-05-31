@@ -191,7 +191,7 @@ add_library(freertos_kernel STATIC
     event_groups.c
     list.c
     queue.c
-    stream_buffer.c
+    # stream_buffer.c We currently do not use this feature
     tasks.c
     timers.c
 
