@@ -219,15 +219,17 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     -Wshadow
     -Wextra
     -Wpedantic
-    # -Wno-unused-parameter
-    # -Wno-unused-variable
+    -Wformat-overflow # Detects buffer overflow (sprintf, snprintf, etc.)
+    -Wformat-truncation # Detects buffer truncation (sprintf, snprintf, etc.)
+    -Wdouble-promotion # Doubles do not natively use the FPU on a Cortex-M4F
+    -fno-common # Do not allow common global symbols
+    # -Wundef # Detects undefined macros which would silently evaluate to 0
     $<$<COMPILE_LANGUAGE:C>:
     -O0
-    -ffunction-sections
+    -ffunction-sections # Place each function in its own section in .text
     -fdata-sections
     -fstack-usage
-    -fcyclomatic-complexity
-    -Wdouble-promotion
+    -fcyclomatic-complexity # Has no effect on compiled code
     >
     $<$<COMPILE_LANGUAGE:CXX>:
 
@@ -247,7 +249,7 @@ target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
     ${cpu_PARAMS}
     ${linker_OPTS}
     -Wl,-Map=${CMAKE_PROJECT_NAME}.map
-    -Wl,--gc-sections
+    -Wl,--gc-sections #Optimize unused sections flagged by -ffunction-sections
     -static
     --specs=nano.specs
     -Wl,--start-group
