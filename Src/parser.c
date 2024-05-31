@@ -192,7 +192,7 @@ int parseData(uint32_t bus, uint16_t id, const uint8_t msg[], size_t len) {
    struct sample *s = &sample;
 
    struct signal *sigv[MAX_VAL_PER_SIG];
-   int relevant_sigs = 0;
+   size_t relevant_sigs = 0;
    for (int i = 0; i < signals_parsed; i++) {
        if (signal_map[i].id == id && signal_map[i].bus == bus && signal_map[i].enabled) {
            sigv[relevant_sigs++] = &signal_map[i];

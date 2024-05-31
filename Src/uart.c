@@ -102,7 +102,6 @@ static void uartTX_Task(void *pvParameters)
         raw_sample_data[10].len = 0;
         memset(raw_sample_data[10].values, 0, MAX_SAMPLEVEC_LEN);
         uint32_t total_ticks = DWT->CYCCNT - au32_initial_ticks;
-        uint32_t microsecs = total_ticks * 1000000 / HAL_RCC_GetHCLKFreq();
         taskEXIT_CRITICAL();
         cmr_uartTX(&uart.port, &txMsg, send_buf, msg_len);
         cmr_uartMsgWait(&txMsg);
@@ -137,7 +136,7 @@ static void uartRX_Task(void *pvParameters)
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_HEARTBEAT_DIM, (void *) &heartbeat, sizeof(cmr_canHeartbeat_t), portMAX_DELAY);
         vTaskDelayUntil(&last_wake, boron_rx_period_ms);
         continue;
-        
+
         // QUESTION why cant you do NUM_RX_BUFFERS
         for (size_t i = 0; i < sizeof(rx) / sizeof(rx[0]); i++)
         {
