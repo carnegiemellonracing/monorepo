@@ -44,6 +44,7 @@ set(include_DIRS
     ${CMAKE_SOURCE_DIR}/Inc
     ${CMAKE_SOURCE_DIR}/Gen
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMSIS/Include
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMSIS/Device/${PROCESSOR}
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Inc
@@ -99,6 +100,7 @@ link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
+    # Project sources
     ${CMAKE_SOURCE_DIR}/Src/can.c
     ${CMAKE_SOURCE_DIR}/Src/config.c
     ${CMAKE_SOURCE_DIR}/Src/gpio.c
@@ -110,27 +112,27 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/sysmem.c
     ${CMAKE_SOURCE_DIR}/Src/uart.c
 
-    # STM sources
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/adc.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/can.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/config_screen_helper.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/config.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/dma.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/dsp.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/f413.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/fir_filter.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/gpio.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/i2c.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/interrupts.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/l431.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/panic.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/pwm.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/qspi.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/rcc.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/spi.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/tasks.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/uart.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/watchdog.c
+    # CMR sources
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/adc.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/can.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/config_screen_helper.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/config.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/dma.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/dsp.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/f413.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/fir_filter.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/gpio.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/i2c.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/interrupts.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/l431.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/panic.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/pwm.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/qspi.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/rcc.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/spi.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/tasks.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/uart.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/watchdog.c
     #HAL
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal.c
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_rcc.c
