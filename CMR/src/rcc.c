@@ -5,8 +5,8 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "rcc.h"    // Interface to implement
-#include "panic.h"  // cmr_panic()
+#include "../rcc.h"    // Interface to implement
+#include "../panic.h"  // cmr_panic()
 
 #ifdef HAL_RCC_MODULE_ENABLED
 

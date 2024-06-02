@@ -11,8 +11,8 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "uart.h"    // Interface to implement
-#include "panic.h"
+#include "../uart.h"    // Interface to implement
+#include "../panic.h"
 
 #ifdef HAL_USART_MODULE_ENABLED
 #ifdef HAL_UART_MODULE_ENABLED

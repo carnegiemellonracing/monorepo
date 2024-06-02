@@ -5,12 +5,12 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "adc.h"    // Interface to implement
+#include "../adc.h"
 
 #ifdef HAL_ADC_MODULE_ENABLED
 
-#include "rcc.h"    // cmr_rccADCClockEnable(), cmr_rccGPIOClockEnable()
-#include "panic.h"  // cmr_panic()
+#include "../rcc.h"    // cmr_rccADCClockEnable(), cmr_rccGPIOClockEnable()
+#include "../panic.h"  // cmr_panic()
 
 /** @brief Timeout (in ms) for each ADC channel sample poll. */
 static const uint32_t CMR_ADC_TIMEOUT_MS = 1;

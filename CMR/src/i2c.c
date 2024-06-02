@@ -4,7 +4,7 @@
  *
  * @author Carnegie Mellon Racing
  */
-#include "i2c.h"    // Interface to implement
+#include "../i2c.h"    // Interface to implement
 
 #ifdef HAL_I2C_MODULE_ENABLED
 
@@ -387,7 +387,7 @@ int cmr_i2cDmaTX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
 	configASSERT(i2c->handle.hdmarx->State == HAL_DMA_STATE_READY);
     // Shift the address by 1 per HAL library suggestion
     HAL_StatusTypeDef txStatus = HAL_I2C_Master_Transmit_DMA(
-        &(i2c->handle), devAddr << 1, data, dataLength 
+        &(i2c->handle), devAddr << 1, data, dataLength
     );
 
     if (txStatus != HAL_OK) {
@@ -429,7 +429,7 @@ int cmr_i2cDmaRX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
 	configASSERT(i2c->handle.hdmarx->State == HAL_DMA_STATE_READY);
     // Shift the address by 1 per HAL library suggestion
     HAL_StatusTypeDef rxStatus = HAL_I2C_Master_Receive_DMA(
-        &(i2c->handle), devAddr << 1, data, dataLength 
+        &(i2c->handle), devAddr << 1, data, dataLength
     );
 
 

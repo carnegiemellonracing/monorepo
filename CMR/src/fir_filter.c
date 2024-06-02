@@ -1,17 +1,17 @@
 /**
  * @file fir_filter.c
  * @brief Naive implementation of FIR (finite impulse response) filters
- * 
+ *
  * @warning The user should statically allocate buffers for samples and
  * filter coefficients, and ensure that their lengths are correct
  */
 
 #include <stddef.h>     // size_t
 #include <FreeRTOS.h>   // configASSERT()
-#include "fir_filter.h"
+#include "../fir_filter.h"
 
 /**
- * ------- Pre-designed filters ------- 
+ * ------- Pre-designed filters -------
  * @brief Pre-designed filter coefficients, useful for testing and debugging
  * @note Please design your own filter for your particular use case
  */
@@ -123,7 +123,7 @@ void cmr_fir_filter_reset(
     }
 }
 
-/** 
+/**
  * @brief Push a new sample into the buffer and compute the filtered value
  * @note This function should be called at the filter's sampling rate
  * @param filter_state Pointer to the filter state
@@ -131,7 +131,7 @@ void cmr_fir_filter_reset(
  * @return The dot product of the updated buffer and the filter coefficients
  */
 float cmr_fir_filter_update(
-    cmr_fir_filter_state_t *filter_state, 
+    cmr_fir_filter_state_t *filter_state,
     float new_sample
 ) {
     configASSERT(filter_state != NULL);

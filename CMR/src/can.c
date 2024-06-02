@@ -12,8 +12,8 @@
 #include <string.h> // memcpy()
 #include <stdbool.h> // bool
 
-#include "rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
-#include "panic.h"  // cmr_panic()
+#include "../rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
+#include "../panic.h"  // cmr_panic()
 
 /**
  * @brief Gets the corresponding CAN interface from the HAL handle.

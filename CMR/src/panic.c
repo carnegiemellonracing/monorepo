@@ -5,7 +5,7 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "panic.h"  // interface to implement
+#include "../panic.h"  // interface to implement
 
 /**
  * @brief Default pre-panic setup implementation.

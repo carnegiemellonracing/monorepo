@@ -16,8 +16,8 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "dma.h"    // Interface to implement
-#include "panic.h"  // cmr_panic()
+#include "../dma.h"    // Interface to implement
+#include "../panic.h"  // cmr_panic()
 
 #ifdef HAL_DMA_MODULE_ENABLED
 

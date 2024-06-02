@@ -10,7 +10,7 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "gpio.h"   // Interface to implement
+#include "../gpio.h"   // Interface to implement
 
 #ifdef HAL_GPIO_MODULE_ENABLED
 

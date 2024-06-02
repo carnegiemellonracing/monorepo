@@ -10,14 +10,14 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "spi.h"    // Interface to implement
+#include "../spi.h"    // Interface to implement
 
 #ifdef HAL_SPI_MODULE_ENABLED
 #ifdef HAL_DMA_MODULE_ENABLED
 
-#include "rcc.h"    // cmr_rccSPIClockEnable(), cmr_rccGPIOClockEnable()
-#include "dma.h"    // cmr_dmaInit()
-#include "panic.h"  // cmr_panic()
+#include "../rcc.h"    // cmr_rccSPIClockEnable(), cmr_rccGPIOClockEnable()
+#include "../dma.h"    // cmr_dmaInit()
+#include "../panic.h"  // cmr_panic()
 
 /**
  * @brief HAL SPI error handler.

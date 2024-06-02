@@ -13,7 +13,7 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "config.h" // Interface to implement
+#include "../config.h" // Interface to implement
 
 #ifdef HAL_FLASH_MODULE_ENABLED
 
