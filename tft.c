@@ -674,9 +674,8 @@ static void drawRTDScreen(void) {
 
     volatile cmr_canCDCControlsStatus_t *controlsStatus = (volatile cmr_canCDCControlsStatus_t *)getPayload(CANRX_CDC_CONTROLS_STATUS);
 
-    bool yrcOn = (bool)controlsStatus->yrcOn;
-    bool tcOn = (bool)controlsStatus->tcOn;
-    ;
+    bool yrcOn = ((bool)controlsStatus->yrcOn) && (!(switchValues & 0x02));
+    bool tcOn = ((bool)controlsStatus->tcOn) && (!(switchValues & 0x04));
 
     if (inRacingScreen()) {
         tftDL_racingScreenUpdate(
