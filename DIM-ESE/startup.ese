@@ -1,0 +1,51 @@
+{
+    "content": [
+        {
+            "converter": "Image",
+            "dataCompressed": true,
+            "dataStorage": "Embedded",
+            "destName": "content/startup",
+            "imageFormat": 16,
+            "memoryAddress": 0,
+            "memoryLoaded": true,
+            "sourcePath": "C:/Users/CMR/Documents/DIM/ESE/images/startup.png"
+        }
+    ],
+    "coprocessor": [
+        "BITMAP_HANDLE(0)",
+        "CMD_SETBITMAP(1024, PALETTED8, 300, 112)",
+        "CLEAR(1, 1, 1)",
+        "BEGIN(BITMAPS)",
+        "SAVE_CONTEXT()",
+        "BLEND_FUNC(ONE, ZERO)",
+        "COLOR_MASK(0, 0, 0, 1)",
+        "PALETTE_SOURCE(3)",
+        "VERTEX2II(10, 64, 0, 0)",
+        "BLEND_FUNC(DST_ALPHA, ONE_MINUS_DST_ALPHA)",
+        "COLOR_MASK(1, 0, 0, 0)",
+        "PALETTE_SOURCE(2)",
+        "VERTEX2II(10, 64, 0, 0)",
+        "COLOR_MASK(0, 1, 0, 0)",
+        "PALETTE_SOURCE(1)",
+        "VERTEX2II(10, 64, 0, 0)",
+        "COLOR_MASK(0, 0, 1, 0)",
+        "PALETTE_SOURCE(0)",
+        "VERTEX2II(10, 64, 0, 0)",
+        "RESTORE_CONTEXT()",
+        "END()",
+        ""
+    ],
+    "displayList": [
+        ""
+    ],
+    "project": {
+        "device": 2066
+    },
+    "registers": {
+        "hSize": 320,
+        "macro": [
+            ""
+        ],
+        "vSize": 240
+    }
+}
