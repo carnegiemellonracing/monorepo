@@ -8,7 +8,7 @@ but it is by design less general purpose.
 [submodules]: https://git-scm.com/book/en/v2/Git-Tools-Submodules
 
 You can clone this repository via:
-`git clone --recursive git@github.com:carnegiemellonracing/FSM.git`
+`git clone --recursive git@github.com:carnegiemellonracing/RAM.git`
 
 ## File manifest
 
