@@ -231,7 +231,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     -ffunction-sections # Place each function in its own section in .text
     -fdata-sections
     -fstack-usage
-    -fcyclomatic-complexity # Has no effect on compiled code
+    #-fcyclomatic-complexity # Has no effect on compiled code
     >
     $<$<COMPILE_LANGUAGE:CXX>:
 
