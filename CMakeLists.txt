@@ -63,6 +63,9 @@ set(symbols_SYMB
     STM32F413xx
     ${PROCESSOR}
 )
+set(FREERTOS_HEAP ${CMAKE_SOURCE_DIR}/Src/heap.c)
+set(FREERTOS_CONFIG_FILE_DIRECTORY ${CMAKE_SOURCE_DIR}/Inc)
+set(FREERTOS_PORT GCC_ARM_CM4F)
 
 # Symbols definition for each compiler
 set(symbols_c_SYMB
@@ -202,13 +205,8 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 # FreeRTOS
 # https://forums.freertos.org/t/i-cannot-build-a-complete-static-application-bug-or-feature/9553/5
 add_compile_options(${cpu_PARAMS})
-set(FREERTOS_HEAP ${CMAKE_SOURCE_DIR}/Src/heap.c)
-set(FREERTOS_CONFIG_FILE_DIRECTORY ${CMAKE_SOURCE_DIR}/Inc)
-set(FREERTOS_PORT GCC_ARM_CM4F)
 add_subdirectory(${CMAKE_SOURCE_DIR}/stm32f413-drivers/FreeRTOS)
 
-#cn-cbor
-# add_subdirectory(${CMAKE_SOURCE_DIR}/cn-cbor)
 
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME} ${link_LIBS})
@@ -231,7 +229,6 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     -ffunction-sections # Place each function in its own section in .text
     -fdata-sections
     -fstack-usage
-    #-fcyclomatic-complexity # Has no effect on compiled code
     >
     $<$<COMPILE_LANGUAGE:CXX>:
 
