@@ -10,6 +10,10 @@ but it is by design less general purpose.
 You can clone this repository via:
 `git clone --recursive git@github.com:carnegiemellonracing/RAM.git`
 
+Cmake Clean
+
+`cmake --build build/debug/ --target clean`
+
 ## File manifest
 
 - [`stm32f413-drivers/`][drivers]: [Shared device drivers/system code.][drivers]
