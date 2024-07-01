@@ -223,7 +223,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     -Wformat-truncation # Detects buffer truncation (sprintf, snprintf, etc.)
     -Wdouble-promotion # Doubles do not natively use the FPU on a Cortex-M4F
     -fno-common # Do not allow common global symbols
-    # -Wundef # Detects undefined macros which would silently evaluate to 0
+    -Wundef # Detects undefined macros which would silently evaluate to 0
     $<$<COMPILE_LANGUAGE:C>:
     -O0
     -ffunction-sections # Place each function in its own section in .text
@@ -238,6 +238,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     # -Wsuggest-override
     >
     $<$<COMPILE_LANGUAGE:ASM>:-x assembler-with-cpp -MMD -MP>
+    $<$<CONFIG:Static>:-fanalyzer>
     $<$<CONFIG:Debug>:-Og -g3 -ggdb>
     $<$<CONFIG:Release>:-Og -g0>
 )
