@@ -223,14 +223,14 @@ static void handle_command(cn_cbor *command)
             if ((uint16_t)id->v.uint == CMR_CANID_DIM_TEXT_WRITE)
             {
                 const size_t sizePerMessage = 4;
-                for (size_t i = 0; i < data->length; i += sizePerMessage)
+                for (size_t i = 0; i < (size_t)data->length; i += sizePerMessage)
                 {
                     cmr_canDIMTextWrite_t canData = (cmr_canDIMTextWrite_t){
                         .address = i / sizePerMessage,
                         .data = {0}};
                     for (size_t j = 0; j < sizePerMessage; j++)
                     {
-                        if (i + j < data->length)
+                        if (i + j < (size_t)data->length)
                         {
                             canData.data[j] = data->v.bytes[i + j];
                         }
@@ -293,7 +293,7 @@ static void handle_command(cn_cbor *command)
         /* Have some parameters to update */
         /* Expects an byte-string of 2-byte values, each byte pairs with form
          * kind:cutoff */
-        int len = params->length;
+        size_t len = (size_t)params->length;
         for (size_t i = 0; i < len; i += sizeof(struct param_pair))
         {
             struct param_pair *pair = (struct param_pair *)(params->v.bytes + i);
