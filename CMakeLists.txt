@@ -16,7 +16,7 @@ enable_language(C CXX ASM)
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
 # Setup compiler settings
-set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 set(CMAKE_CXX_STANDARD 20)
