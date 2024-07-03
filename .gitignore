@@ -9,7 +9,7 @@ Debug/
 !.vscode/launch.json
 html/
 *.warn
-
+build/
 #Cmake
 CMakeLists.txt.user
 CMakeCache.txt
