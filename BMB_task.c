@@ -23,6 +23,9 @@ extern volatile int BMBErrs[BOARD_NUM-1];
 
 static const temp_to_ignore[TO_IGNORE] = {2, 41, 98, 121, 123, 132};
 
+
+// Use array to ignore some broken thermistor channels
+
 bool check_to_ignore(uint8_t bmb_index, uint8_t channel) {
 	for(int i = 0; i < TO_IGNORE; i++) {
 		if(bmb_index*14 + channel == temp_to_ignore[i]) {
@@ -31,6 +34,8 @@ bool check_to_ignore(uint8_t bmb_index, uint8_t channel) {
 	}
 	return false;
 }
+
+// Check CANRX struct for balance command and threshold
 
 bool getBalance(uint16_t *thresh) {
 	TickType_t xLastWakeTime = xTaskGetTickCount();
@@ -43,10 +48,11 @@ bool getBalance(uint16_t *thresh) {
 }
 
 
+// Main sample task entry point for BMS
 
 void vBMBSampleTask(void *pvParameters) {
 
-// Previous wake time pointer
+	// Previous wake time pointer
 	TickType_t xLastWakeTime = xTaskGetTickCount();
 	vTaskDelayUntil(&xLastWakeTime, 50);
 	bool prevStateBalance = false;
@@ -55,40 +61,65 @@ void vBMBSampleTask(void *pvParameters) {
 	uint32_t startTime;
 	bool toReenable = false;
 
+	// Main BMS control loop
 	while (1) {
-		//taskENTER_CRITICAL();
+
+		// Balancing logic
+
+		// If we get a balancing command and we weren't previously balancing, enable
+		// cells to balance
 		if (getBalance(&threshold) && !prevStateBalance) {
 			cellBalancing(BALANCE_EN, threshold);
 			prevStateBalance = true;
 			startTime = xTaskGetTickCount();
 		}
+
+		// If the balancing command stops and we were balancing previously, disable
+		// all balancing cells
 		else if(!getBalance(&threshold) && prevStateBalance){
 			cellBalancing(BALANCE_DIS, threshold);
 			prevStateBalance = false;
 		}
+
+		// If 5 minutes has elapsed since balancing started, turn off balancing to
+		// allow for rechecking of voltages
 		else if((prevStateBalance && !toReenable) && (xTaskGetTickCount()-startTime)>300000) {
 			cellBalancing(BALANCE_DIS, threshold);
 			toReenable = true;
 		}
+
+		// After a 500 ms resting period, recheck the voltages
+		// and enable whichever cells are above threshold
 		else if(toReenable && (xTaskGetTickCount()-startTime)>300500) {
 			cellBalancing(BALANCE_EN, threshold);
 			startTime = xTaskGetTickCount();
 			prevStateBalance = true;
 			toReenable = false;
 		}
-		//taskEXIT_CRITICAL();
+
+		// Loop through the 4 different MUX channels and select a different one
+		// We still monitor all voltages each channel switch
 		for(uint8_t j = 0; j < 4; j++) {
+			// Small delays put between all transaction
+
 			setMuxOutput(j);
+
 			xLastWakeTime = xTaskGetTickCount();
 			vTaskDelayUntil(&xLastWakeTime, 10);
+
 			uint8_t err = pollAllVoltageData();
+
 			xLastWakeTime = xTaskGetTickCount();
 			vTaskDelayUntil(&xLastWakeTime, 10);
+
 			pollAllTemperatureData(j);
+
 			xLastWakeTime = xTaskGetTickCount();
 			vTaskDelayUntil(&xLastWakeTime, 10);
+
 			writeLED(ledToggle);
 			ledToggle = !ledToggle;
+
 			xLastWakeTime = xTaskGetTickCount();
 			vTaskDelayUntil(&xLastWakeTime, 100);
 		}

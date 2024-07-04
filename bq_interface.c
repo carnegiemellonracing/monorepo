@@ -133,10 +133,12 @@ void turnOn() {
  * @return True if all uart commands succeeded, false otherwise
  */
 bool autoAddr() {
+	// Sanity check number of boards
 	if(BOARD_NUM > 64 || BOARD_NUM < 1) {
 		return false;
 	}
 
+	// Dummy write to sync OTP addresses
 	uart_command_t otpSync = {
 		.readWrite = STACK_WRITE,
 		.dataLen = 1,
@@ -227,6 +229,7 @@ bool autoAddr() {
 	}
 	HAL_Delay(10);
 
+	// Resync OTP registers with dummy reads
 	otpSync.readWrite = STACK_READ;
 	otpSync.data[0] = 0;
 
@@ -238,6 +241,9 @@ bool autoAddr() {
 		}
 		HAL_Delay(10);
 	}
+
+	// COMMENTED OUT CODE THAT IS USED FOR SANITY CHECKING AUTOADDRESSING
+
 //	uart_response_t response;
 //	uart_command_t readReg = {
 //		.readWrite = SINGLE_READ,
@@ -294,7 +300,7 @@ bool enableMainADC() {
 	return true;
 }
 
-//enable however many cells are in series in our segment
+// Enable however many cells are in series in one segment
 bool enableNumCells() {
 	uart_command_t active_cell = {
 		.readWrite = STACK_WRITE,
@@ -312,6 +318,7 @@ bool enableNumCells() {
 	return true;
 }
 
+// Enable all GPIO registers and TSREF for thermistor biasing
 bool enableGPIOPins() {
 	uart_command_t enable_tsref = {
 			.readWrite = STACK_WRITE,
@@ -358,6 +365,7 @@ bool enableGPIOPins() {
 
 }
 
+// Enable command timeout so BQ sleeps turns off when car is off
 void enableTimeout() {
 	uart_command_t enable_timeout = {
 			.readWrite = STACK_WRITE,
@@ -370,6 +378,7 @@ void enableTimeout() {
 	uart_sendCommand(&enable_timeout);
 }
 
+// Init function for all BMBs
 void BMBInit() {
 	turnOn();
 	HAL_Delay(1000);
@@ -384,6 +393,8 @@ void BMBInit() {
 	enableTimeout();
 	//disableTimeout();
 	HAL_Delay(100);
+
+	//No idea lol
 	txToRxDelay();
 	HAL_Delay(100);
 	byteDelay(0x3F);
@@ -396,7 +407,6 @@ void BMBInit() {
 static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
 	//formula from TI's code
 	//Bitwise OR high byte shifted by 8 and low byte, apply scaling factor
-	//TODO explain this better
 
 	return (uint16_t) (0.19073*((((uint16_t)msb << 8) | lsb)));
 }
@@ -416,18 +426,12 @@ uint8_t pollAllVoltageData() {
 
 		//TODO add tx error handler
 
-		//loop through boards and parse all response frames
-
-//		for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
-//			if(response[i].registerAddress != 1388) {
-//				return;
-//			}
-//		}
 		int x= 0;
+
+		// Critical section used so UART RX is not preempted
 		taskENTER_CRITICAL();
 		uart_sendCommand(&read_voltage);
 		//loop through each BMB and channel
-		//taskENTER_CRITICAL();
 		for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
 
 			uint8_t status = uart_receiveResponse(&response[i-1], 27);
@@ -440,6 +444,7 @@ uint8_t pollAllVoltageData() {
 		}
 		taskEXIT_CRITICAL();
 
+		// Handle writing data separately from receive so you don't miss a byte
 		for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
 			for(uint8_t j = 0; j < VSENSE_CHANNELS; j++) {
 				uint8_t high_byte_data = response[i].data[2*j];
