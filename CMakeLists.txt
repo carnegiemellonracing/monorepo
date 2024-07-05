@@ -7,7 +7,9 @@ cmake_minimum_required(VERSION 3.24)
 # list(APPEND CMAKE_MODULE_PATH "C:/Users/user1/Downloads/CmakeTestProject/cmake")
 list(APPEND CMAKE_MODULE_PATH "{{sr:cmake_path}}")
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
-include("cmake/gcc-arm-none-eabi.cmake")
+if(NOT ENABLE_TESTING)
+    include("cmake/gcc-arm-none-eabi.cmake")
+endif()
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 
 # Core project settings
@@ -24,16 +26,34 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
-)
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
+# GoogleTests
+# include(FetchContent)
+# FetchContent_Declare(
+#   googletest
+#   URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+# )
+# # For Windows: Prevent overriding the parent project's compiler/linker settings
+# set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+# FetchContent_MakeAvailable(googletest)
+# enable_testing()
+
+# add_executable(
+#   hello_test
+#   tests/hello_test.cc
+# )
+# target_link_libraries(
+#   hello_test
+#   GTest::gtest_main
+# )
+
+# include(GoogleTest)
+# gtest_discover_tests(hello_test)
 
 # Core MCU flags, CPU type, instruction set and FPU setup
+if (ENABLE_TESTING)
+    set(cpu_PARAMS)
+else()
+
 set(cpu_PARAMS
 
     # Other parameters
@@ -43,7 +63,9 @@ set(cpu_PARAMS
     -mthumb
     -mfpu=fpv4-sp-d16
     -mfloat-abi=hard
+
 )
+endif()
 
 # Sources
 set(sources_SRCS)
@@ -75,8 +97,11 @@ set(symbols_SYMB
 )
 set(FREERTOS_HEAP ${CMAKE_SOURCE_DIR}/Src/heap.c)
 set(FREERTOS_CONFIG_FILE_DIRECTORY ${CMAKE_SOURCE_DIR}/Inc CACHE INTERNAL "")
-set(FREERTOS_PORT GCC_ARM_CM4F CACHE INTERNAL "")
-
+if(ENABLE_TESTING)
+    set(FREERTOS_PORT GCC_POSIX CACHE INTERNAL "")
+else()
+    set(FREERTOS_PORT GCC_ARM_CM4F CACHE INTERNAL "")
+endif()
 # Symbols definition for each compiler
 set(symbols_c_SYMB
     configASSERT
@@ -94,18 +119,23 @@ set(link_LIBS
 set(linker_script_SRC)
 
 # Compiler options
+if(ENABLE_TESTING)
+set (compiler_OPTS)
+else()
 set(compiler_OPTS
     -mfp16-format=ieee
     --specs=nano.specs
 )
-
+endif()
 # Linker options
 set(linker_OPTS)
 
 # Now call generated cmake
 # This will add script generated
 # information to the project
-include("cmake/vscode_generated.cmake")
+if(NOT ENABLE_TESTING)
+    include("cmake/vscode_generated.cmake")
+endif()
 
 # Link directories setup
 # Must be before executable is added
@@ -275,17 +305,3 @@ add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.hex
     COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.bin
 )
-
-enable_testing()
-
-add_executable(
-  hello_test
-  tests/hello_test.cc
-)
-target_link_libraries(
-  hello_test
-  GTest::gtest_main
-)
-
-include(GoogleTest)
-gtest_discover_tests(hello_test)
