@@ -82,7 +82,7 @@ TaskHandle_t cmr_taskHandle(const cmr_task_t *task) {
 void vApplicationGetIdleTaskMemory(
     StaticTask_t **task,
     StackType_t **stack,
-    uint32_t *stackLen
+    configSTACK_DEPTH_TYPE *stackLen
 ) {
     /** @brief The task state buffer. */
     static StaticTask_t taskBuf;
