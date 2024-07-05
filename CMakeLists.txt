@@ -7,9 +7,9 @@ cmake_minimum_required(VERSION 3.24)
 # list(APPEND CMAKE_MODULE_PATH "C:/Users/user1/Downloads/CmakeTestProject/cmake")
 list(APPEND CMAKE_MODULE_PATH "{{sr:cmake_path}}")
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
-if(NOT ENABLE_TESTING)
-    include("cmake/gcc-arm-none-eabi.cmake")
-endif()
+
+include("cmake/gcc-arm-none-eabi.cmake")
+
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 
 # Core project settings
@@ -26,34 +26,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
-# GoogleTests
-# include(FetchContent)
-# FetchContent_Declare(
-#   googletest
-#   URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
-# )
-# # For Windows: Prevent overriding the parent project's compiler/linker settings
-# set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-# FetchContent_MakeAvailable(googletest)
-# enable_testing()
-
-# add_executable(
-#   hello_test
-#   tests/hello_test.cc
-# )
-# target_link_libraries(
-#   hello_test
-#   GTest::gtest_main
-# )
-
-# include(GoogleTest)
-# gtest_discover_tests(hello_test)
-
 # Core MCU flags, CPU type, instruction set and FPU setup
-if (ENABLE_TESTING)
-    set(cpu_PARAMS)
-else()
-
 set(cpu_PARAMS
 
     # Other parameters
@@ -65,7 +38,7 @@ set(cpu_PARAMS
     -mfloat-abi=hard
 
 )
-endif()
+
 
 # Sources
 set(sources_SRCS)
@@ -95,13 +68,10 @@ set(symbols_SYMB
     STM32F413xx
     ${PROCESSOR}
 )
-set(FREERTOS_HEAP ${CMAKE_SOURCE_DIR}/Src/heap.c)
+
 set(FREERTOS_CONFIG_FILE_DIRECTORY ${CMAKE_SOURCE_DIR}/Inc CACHE INTERNAL "")
-if(ENABLE_TESTING)
-    set(FREERTOS_PORT GCC_POSIX CACHE INTERNAL "")
-else()
-    set(FREERTOS_PORT GCC_ARM_CM4F CACHE INTERNAL "")
-endif()
+
+set(FREERTOS_PORT GCC_ARM_CM4F CACHE INTERNAL "")
 # Symbols definition for each compiler
 set(symbols_c_SYMB
     configASSERT
@@ -119,23 +89,27 @@ set(link_LIBS
 set(linker_script_SRC)
 
 # Compiler options
-if(ENABLE_TESTING)
+
 set (compiler_OPTS)
-else()
+
 set(compiler_OPTS
     -mfp16-format=ieee
     --specs=nano.specs
 )
-endif()
+
 # Linker options
 set(linker_OPTS)
 
 # Now call generated cmake
 # This will add script generated
 # information to the project
-if(NOT ENABLE_TESTING)
-    include("cmake/vscode_generated.cmake")
-endif()
+
+include("cmake/vscode_generated.cmake")
+# We should really add Target groups or something
+include(CTest)
+enable_testing()
+include_directories(${CMAKE_SOURCE_DIR}/stm32f413-drivers/Unity)
+add_subdirectory( ${CMAKE_SOURCE_DIR}/tests)
 
 # Link directories setup
 # Must be before executable is added
