@@ -1,1 +1,0 @@
-// Look at FREERTOS_HEAP in CMakeLists.txt to see why this is needed

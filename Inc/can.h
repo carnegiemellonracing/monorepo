@@ -57,7 +57,6 @@ int canTX(
 );
 
 void *getPayload(canRX_t rxMsg);
-uint8_t throttleGetPos(void);
 
 #endif /* CAN_H */
 

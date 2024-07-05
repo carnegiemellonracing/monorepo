@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.24)
 # list(APPEND CMAKE_MODULE_PATH "C:/Users/user1/Downloads/CmakeTestProject/cmake")
 list(APPEND CMAKE_MODULE_PATH "{{sr:cmake_path}}")
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
-
+#Why does vscode readd this when its included here?
 include("cmake/gcc-arm-none-eabi.cmake")
 
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
@@ -106,10 +106,6 @@ set(linker_OPTS)
 
 include("cmake/vscode_generated.cmake")
 # We should really add Target groups or something
-include(CTest)
-enable_testing()
-include_directories(${CMAKE_SOURCE_DIR}/stm32f413-drivers/Unity)
-add_subdirectory( ${CMAKE_SOURCE_DIR}/tests)
 
 # Link directories setup
 # Must be before executable is added

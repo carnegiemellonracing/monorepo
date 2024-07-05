@@ -1,12 +1,19 @@
+cmake_minimum_required(VERSION 3.21)
 project(MyUnitTests)
 
-cmake_minimum_required(VERSION 3.21)
-message(STATUS "Configuring Tests")
-add_subdirectory(${CMAKE_SOURCE_DIR}/stm32f413-drivers/Unity build)
-include_directories(${CMAKE_SOURCE_DIR}/stm32f413-drivers/Unity/src)
+include(CTest)
+enable_testing()
+include_directories(../stm32f413-drivers/Unity
+../stm32f413-drivers/Unity/src
+)
+
+add_subdirectory(../stm32f413-drivers/Unity unity)
+add_subdirectory(../cn-cbor cn-cbor)
+
+include_directories()
 
 add_executable(MyUnitTests test1.c)
 
-target_link_libraries(MyUnitTests unity)
+target_link_libraries(MyUnitTests unity cn-cbor)
 add_test(tests1 MyUnitTests)
 
