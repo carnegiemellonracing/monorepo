@@ -119,7 +119,6 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/config.c
     ${CMAKE_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_SOURCE_DIR}/Src/main.c
-    ${CMAKE_SOURCE_DIR}/Src/parser_test.c
     ${CMAKE_SOURCE_DIR}/Src/parser.c
     ${CMAKE_SOURCE_DIR}/Src/sample.c
     ${CMAKE_SOURCE_DIR}/Src/syscall.c
