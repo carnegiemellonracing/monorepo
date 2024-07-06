@@ -53,9 +53,8 @@ set(include_DIRS
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMSIS/Include
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMSIS/Device/${PROCESSOR}
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Inc
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Inc
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/DIM-ESE
-    ${CMAKE_SOURCE_DIR}/cn-cbor/include
     ${CMAKE_SOURCE_DIR}/cJSON
 )
 
@@ -84,6 +83,7 @@ set(symbols_asm_SYMB)
 set(link_DIRS)
 set(link_LIBS
     freertos_kernel
+    cn-cbor
 )
 
 # Linker script
@@ -181,13 +181,6 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMSIS/system_stm32f4xx.c
     #cJSON
     ${CMAKE_SOURCE_DIR}/cJSON/cJSON.c
-    #cn-cbor
-    ${CMAKE_SOURCE_DIR}/cn-cbor/src/cn-cbor.c
-    ${CMAKE_SOURCE_DIR}/cn-cbor/src/cn-create.c
-    ${CMAKE_SOURCE_DIR}/cn-cbor/src/cn-encoder.c
-    ${CMAKE_SOURCE_DIR}/cn-cbor/src/cn-error.c
-    ${CMAKE_SOURCE_DIR}/cn-cbor/src/cn-get.c
-
 )
 
 # Add sources to executable
@@ -213,10 +206,12 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     $<$<CONFIG:Release>: >
 )
 # FreeRTOS
-# https://forums.freertos.org/t/i-cannot-build-a-complete-static-application-bug-or-feature/9553/5
+
 add_compile_options(${cpu_PARAMS})
 add_subdirectory(${CMAKE_SOURCE_DIR}/stm32f413-drivers/FreeRTOS)
 
+add_subdirectory(${CMAKE_SOURCE_DIR}/cn-cbor)
+set(coveralls OFF CACHE BOOL "Generate coveralls data")
 
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME} ${link_LIBS})

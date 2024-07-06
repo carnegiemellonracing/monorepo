@@ -3,9 +3,6 @@ project(MyUnitTests)
 
 include(CTest)
 enable_testing()
-include_directories(../stm32f413-drivers/Unity
-../stm32f413-drivers/Unity/src
-)
 
 add_subdirectory(../stm32f413-drivers/Unity unity)
 add_subdirectory(../cn-cbor cn-cbor)
