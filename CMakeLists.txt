@@ -43,6 +43,7 @@ set(cpu_PARAMS
 # Sources
 set(sources_SRCS)
 set(PROCESSOR F413)
+set(PROCESSOR_FAM F4XX)
 
 # Include directories for all compilers
 set(include_DIRS
@@ -147,36 +148,36 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/uart.c
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/watchdog.c
     #HAL
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_rcc.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_can.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_cortex.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_dma.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_gpio.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_i2c.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_pwr.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_rcc_ex.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_spi.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_uart.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_qspi.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_tim.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_tim_ex.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_pcd.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_pcd_ex.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_sd.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_sdram.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_sram.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_ltdc.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_ltdc_ex.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_dsi.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_cryp.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_cryp_ex.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_hash.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_hash_ex.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_rng.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_cortex.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_flash.c
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR}/Src/stm32f4xx_hal_flash_ex.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_rcc.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_can.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_cortex.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_dma.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_gpio.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_i2c.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_pwr.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_rcc_ex.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_spi.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_uart.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_qspi.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_tim.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_tim_ex.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_pcd.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_pcd_ex.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_sd.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_sdram.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_sram.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_ltdc.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_ltdc_ex.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_dsi.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_cryp.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_cryp_ex.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_hash.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_hash_ex.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_rng.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_cortex.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_flash.c
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/HAL/${PROCESSOR_FAM}/Src/stm32f4xx_hal_flash_ex.c
     #CMSIS
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMSIS/system_stm32f4xx.c
     #cJSON
