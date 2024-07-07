@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 __attribute__((unused)) static uint32_t this_stops_the_compiler_from_complaining[] = {
-#include <DIM-ESE/config.rawh>
+#include <config.rawh>
 };
 
 
