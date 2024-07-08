@@ -10,6 +10,7 @@ Debug/
 html/
 *.warn
 build/
+
 #Cmake
 CMakeLists.txt.user
 CMakeCache.txt
@@ -23,3 +24,16 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
+
+# Virtualenv
+# http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
+.Python
+[Bb]in
+[Ii]nclude
+[Ll]ib
+[Ll]ib64
+[Ll]ocal
+[Ss]cripts
+pyvenv.cfg
+.venv
+pip-selfcheck.json

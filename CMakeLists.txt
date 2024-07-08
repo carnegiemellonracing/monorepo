@@ -7,7 +7,7 @@ set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 # list(APPEND CMAKE_MODULE_PATH "C:/Users/user1/Downloads/CmakeTestProject/cmake")
 list(APPEND CMAKE_MODULE_PATH "{{sr:cmake_path}}")
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
-#Why does vscode readd this when its included here?
+#Why does vscode read this when its included here?
 include("cmake/gcc-arm-none-eabi.cmake")
 
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
