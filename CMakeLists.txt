@@ -62,6 +62,8 @@ set(symbols_SYMB
     ${PROCESSOR}
 )
 
+find_package (Python3 REQUIRED COMPONENTS Interpreter)
+
 add_library(freertos_config INTERFACE)
 target_include_directories(freertos_config SYSTEM
     INTERFACE
@@ -150,7 +152,18 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     $<$<CONFIG:Release>: >
 )
 
+# Custom Command then adding to custom target allows us not to run the python script on every build
+add_custom_command(
+    OUTPUT ${CMAKE_SOURCE_DIR}/Src/can_fmt.rawh
+    DEPENDS ${CMAKE_SOURCE_DIR}/can_fmt.json
+    COMMAND ${Python3_EXECUTABLE} marshall.py
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
+add_custom_target(  marshall
+                    DEPENDS ${CMAKE_SOURCE_DIR}/Src/can_fmt.rawh
+)
 
+add_dependencies(${CMAKE_PROJECT_NAME} marshall)
 add_compile_options(${cpu_PARAMS})
 add_subdirectory(${CMAKE_SOURCE_DIR}/stm32f413-drivers)
 
