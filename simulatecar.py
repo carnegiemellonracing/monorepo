@@ -42,7 +42,7 @@ class EnumGenerator:
     def __init__(self, rate=0, init=0, proto=None, byname=None):
         self.samp = rate
         self.val = init
-        if proto: 
+        if proto:
             self.info = config['signals'][proto]['enum']
             self.map = [x['name'] for x in self.info]
             self.val = self.map.index(byname)
@@ -90,7 +90,7 @@ class ParticleTransmit:
         self.url = "https://api.particle.io/v1/devices/events"
         self.fields = {'name':'sim-car-to-web', 'private':'true', 'data':None,
             'access_token':'f18cc8fdcc2678cb8f9b94aa307cf22e5f87c8b3'}
-        
+
     def send(self, data):
         b = cbor2.dumps(data)
         enc = base64.b64encode(b)
@@ -129,7 +129,7 @@ class ParticleReceive:
 class RAM:
     def __init__(self, cfg=dict(), sigs=dict()):
         self.rates = {0: 0, 1: 1, 2: 5, 3: 10, 4: 50, 5: 100}
-        self.types = {'i64': np.double, 'f32': np.float32, 'i32': np.int32, 'u32': np.uint32, 'f16': np.float16, 'u16': np.uint16, 'u8': np.uint8}
+        self.types = {'i64': np.double, 'f32': np.float32, 'i32': np.int32,'i16': np.int16, 'u32': np.uint32, 'f16': np.float16, 'u16': np.uint16, 'u8': np.uint8}
         self.cfg = self.generateStore(cfg)
         self.sigs = self.generateSignals(sigs)
         self.ptx = ParticleTransmit()
@@ -186,7 +186,7 @@ class RAM:
 
                 self.cfg[ind] = val
                 self.sigs[ind].setRate(self.rates[val])
-            
+
             # Respond with same values to confirm update
             self.ptx.send(obj)
 
@@ -205,10 +205,8 @@ class RAM:
             waitTime = 1 - (time.time() - t)
             time.sleep(waitTime if waitTime > 0 else 0)
             inc +=  1
-            
-ram = RAM()
-while True:
-    time.sleep(1)
+
+
 
 def findSigIndex(name):
     for i,x in enumerate(config['signals']):
@@ -223,3 +221,7 @@ def nameToEnum(signame, enumname, amnt=1):
             enumval = i
 
     return np.array([enumval]*amnt, dtype='uint8').tobytes()
+
+ram = RAM()
+while True:
+    time.sleep(1)
