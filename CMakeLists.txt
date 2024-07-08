@@ -62,7 +62,13 @@ set(symbols_SYMB
     ${PROCESSOR}
 )
 
-set(FREERTOS_CONFIG_FILE_DIRECTORY ${CMAKE_SOURCE_DIR}/Inc CACHE INTERNAL "")
+add_library(freertos_config INTERFACE)
+target_include_directories(freertos_config SYSTEM
+    INTERFACE
+    ${CMAKE_SOURCE_DIR}/Inc) # The config file directory
+target_compile_definitions(freertos_config
+    INTERFACE
+    projCOVERAGE_TEST=0)
 
 set(FREERTOS_PORT GCC_ARM_CM4F CACHE INTERNAL "")
 # Symbols definition for each compiler
