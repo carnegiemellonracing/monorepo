@@ -13,12 +13,12 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "../config.h" // Interface to implement
+#include <CMR/config.h> // Interface to implement
 
 #ifdef HAL_FLASH_MODULE_ENABLED
 
 #include <string.h> // memcpy()
-#include "panic.h"  // cmr_panic()
+#include <CMR/panic.h>  // cmr_panic()
 
 /**
  * @brief Initializes the configuration system with a base address.

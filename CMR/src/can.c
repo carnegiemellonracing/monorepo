@@ -5,15 +5,15 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "can.h"    // Interface to implement
+#include "CMR/can.h"    // Interface to implement
 
 #ifdef HAL_CAN_MODULE_ENABLED
 
 #include <string.h> // memcpy()
 #include <stdbool.h> // bool
 
-#include "../rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
-#include "../panic.h"  // cmr_panic()
+#include "CMR/rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
+#include "CMR/panic.h"  // cmr_panic()
 
 /**
  * @brief Gets the corresponding CAN interface from the HAL handle.

@@ -9,7 +9,7 @@
 #define CMR_DSP_H
 
 #include "platform.h"
-#include "arm_math.h"
+#include <arm_math.h>
 
 /** @brief Signals voodoo, just trust it */
 #define CMR_DSP_FILTER_NUM_STAGES	4

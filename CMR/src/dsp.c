@@ -8,7 +8,7 @@
 #ifdef L431
 
 #include <stdlib.h>
-#include "../dsp.h"
+#include <CMR/dsp.h>
 
 /** @brief Filter coefficients for each desired corner.
  * We could add the matlab code to generate these in the documentation,

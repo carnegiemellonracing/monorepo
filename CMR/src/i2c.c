@@ -4,13 +4,13 @@
  *
  * @author Carnegie Mellon Racing
  */
-#include "../i2c.h"    // Interface to implement
+#include <CMR/i2c.h>    // Interface to implement
 
 #ifdef HAL_I2C_MODULE_ENABLED
 
-#include "panic.h"  // cmr_panic()
-#include "dma.h"    // dma interface
-#include "rcc.h"    // cmr_rccGPIOClockEnable(), cmr_rccI2CClockEnable()
+#include <CMR/panic.h>  // cmr_panic()
+#include <CMR/dma.h>    // dma interface
+#include <CMR/rcc.h>    // cmr_rccGPIOClockEnable(), cmr_rccI2CClockEnable()
                     //
 
 typedef struct {

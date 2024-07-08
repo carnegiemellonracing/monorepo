@@ -5,7 +5,7 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "../tasks.h"  // Interface to implement
+#include <CMR/tasks.h>  // Interface to implement
 
 /**
  * @brief Initializes a task.

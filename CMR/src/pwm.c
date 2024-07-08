@@ -5,8 +5,8 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "../pwm.h"    // Interface to implement
-#include "../panic.h"  // cmr_panic()
+#include <CMR/pwm.h>    // Interface to implement
+#include <CMR/panic.h>  // cmr_panic()
 
 #ifdef HAL_TIM_MODULE_ENABLED
 

@@ -1,4 +1,4 @@
-#include "../l431.h"      // Interface to implement
+#include <CMR/l431.h>      // Interface to implement
 
 #ifdef L431
 

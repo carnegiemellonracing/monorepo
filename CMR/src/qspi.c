@@ -10,8 +10,8 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "../qspi.h"   // Interface to implement
-#include "../panic.h"
+#include <CMR/qspi.h>   // Interface to implement
+#include <CMR/panic.h>
 
 #ifdef HAL_QSPI_MODULE_ENABLED
 

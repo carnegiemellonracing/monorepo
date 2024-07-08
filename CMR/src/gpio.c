@@ -10,12 +10,12 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "../gpio.h"   // Interface to implement
+#include <CMR/gpio.h>   // Interface to implement
 
 #ifdef HAL_GPIO_MODULE_ENABLED
 
-#include "rcc.h"    // cmr_rccGPIOClockEnable()
-#include "FreeRTOSConfig.h" // configASSERT
+#include <CMR/rcc.h>    // cmr_rccGPIOClockEnable()
+#include <FreeRTOSConfig.h> // configASSERT
 
 static const cmr_gpioPinConfig_t *cmr_gpioPinConfigs;
 static size_t cmr_gpioPinConfigsLen;

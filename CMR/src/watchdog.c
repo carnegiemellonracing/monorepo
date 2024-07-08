@@ -5,12 +5,12 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "../watchdog.h"
+#include <CMR/watchdog.h>
 
 #ifdef HAL_WWDG_MODULE_ENABLED
 
-#include "../rcc.h"    // cmr_rccCANClockEnable()
-#include "../panic.h"  // cmr_panic()
+#include CMR/rcc.h>    // cmr_rccCANClockEnable()
+#include CMR/panic.h>  // cmr_panic()
 
 
 /** @brief Initialize the watchdog

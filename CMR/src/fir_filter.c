@@ -8,7 +8,7 @@
 
 #include <stddef.h>     // size_t
 #include <FreeRTOS.h>   // configASSERT()
-#include "../fir_filter.h"
+#include "CMR/fir_filter.h"
 
 /**
  * ------- Pre-designed filters -------

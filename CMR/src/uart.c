@@ -11,15 +11,15 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "../uart.h"    // Interface to implement
-#include "../panic.h"
+#include <CMR/uart.h>    // Interface to implement
+#include <CMR/panic.h>
 
 #ifdef HAL_USART_MODULE_ENABLED
 #ifdef HAL_UART_MODULE_ENABLED
 #ifdef HAL_DMA_MODULE_ENABLED
 
-#include "rcc.h"    // cmr_rccUSARTClockEnable(), cmr_rccGPIOClockEnable()
-#include "dma.h"    // cmr_dmaInit()
+#include <CMR/rcc.h>    // cmr_rccUSARTClockEnable(), cmr_rccGPIOClockEnable()
+#include <CMR/dma.h>    // cmr_dmaInit()
 
 /** @brief U(S)ART device configuration. */
 typedef struct {
