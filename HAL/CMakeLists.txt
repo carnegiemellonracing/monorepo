@@ -1,7 +1,6 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.24)
 
 project(HAL)
-message(STATUS "HAL")
 
 # Not recomended to use GLOB but this allows us to flexibly change HAL source
 add_library(HAL)

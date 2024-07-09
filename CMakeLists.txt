@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.24)
 project(stm-drivers)
 message(STATUS "stm-drivers")
 add_compile_definitions(${PROCESSOR})

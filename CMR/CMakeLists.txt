@@ -1,10 +1,8 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.24)
 
 project(CMR)
-message(STATUS "CMR")
 
 add_library(CMR)
-message("Chip:" ${PROCESSOR})
 target_include_directories(CMR PUBLIC include)
 target_sources(CMR PRIVATE
 ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/adc.c
