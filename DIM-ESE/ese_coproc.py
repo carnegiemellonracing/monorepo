@@ -165,7 +165,7 @@ class FT81x(object):
     #
     # Coprocessor commands (chapter 5).
     #
-    
+
     def get_options(self, options):
         # Parse option flags
         opts = 0
@@ -176,7 +176,7 @@ class FT81x(object):
     string_pattern = re.compile(r'"(.*)"')
 
     # 5.8 (158-159)
-    
+
     OPTIONS  = {
             'OPT_3D': 0,
             'OPT_RGB565': 0,
@@ -207,7 +207,7 @@ class FT81x(object):
         opts = get_options(options)
 
         return [0xffffff24, ptr, opts]
-        
+
     # 5.30 (183)
     def CMD_FGCOLOR(self, c):
         c = int(c)
@@ -219,33 +219,33 @@ class FT81x(object):
         return [0xffffff09, c]
 
     # 5.33 (187)
-    def CMD_GAUGE(self, x, y, r, options, major, minor, val, gauge_range): 
+    def CMD_GAUGE(self, x, y, r, options, major, minor, val, gauge_range):
        #range is a keyword in Python
-       x = int(x) 
-       y = int(y) 
-       r = int(r) 
-       options = int(options) 
-       major = int(major) 
-       minor = int(minor) 
-       val = int(val) 
-       gauge_range = int(gauge_range) 
+       x = int(x)
+       y = int(y)
+       r = int(r)
+       options = int(options)
+       major = int(major)
+       minor = int(minor)
+       val = int(val)
+       gauge_range = int(gauge_range)
 
        data = [0xffffff13, ((x << 16) | (y << 0)), ((r << 16) | (options << 0)), \
-             ((major << 16) | (minor << 0)), ((value << 16) | (gauge_range))] 
+             ((major << 16) | (minor << 0)), ((value << 16) | (gauge_range))]
        return data
 
     # 5.36 (200)
     def CMD_PROGRESS(self, x, y, w, h, options, val, progress_range):
        #range is a keyword in Python
-       x = int(x) 
-       y = int(y) 
-       r = int(r) 
-       options = int(options) 
-       major = int(major) 
-       minor = int(minor) 
-       val = int(val) 
-       progress_range = int(progress_range) 
-    
+       x = int(x)
+       y = int(y)
+       r = int(r)
+       options = int(options)
+       major = int(major)
+       minor = int(minor)
+       val = int(val)
+       progress_range = int(progress_range)
+
        data = [0xffffff0f, ((x << 16) | (y << 0)), ((w << 16) | (h << 0)), \
               ((options << 16) | (val << 0)), progress_range]
 
@@ -311,6 +311,8 @@ if len(sys.argv) < 2:
     print('Usage: %s <ESE project file>' % (sys.argv[0]), file=sys.stderr)
     sys.exit(1)
 
+# If you want to underestand the following regex https://regex101.com/r/ZwYkFu/1
+# Works with commands from an .ese file
 command_pattern = re.compile(r'(.+)\((.*)\)( +@variable +(\w+))?')
 
 variables = []
