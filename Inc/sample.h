@@ -19,7 +19,7 @@
 
 #include <stdint.h>         /* usual suspects */
 #include <unistd.h>         /* ssize_t */
-#include <arm_neon.h>       /* floating types */
+
 
 /**
  * @brief Maximum number of signals subscribing to a given can message.
@@ -31,10 +31,13 @@
 
 /**
  * @brief Real sample values.
+ *
+ * Arm Architecture uses IEEE-754 so float is guaranteed 32 bits
+ * GCC supports __fp16 defined in ARM C Language Extensions
  */
 union sample_value {
-	float16_t f16;      /**< @brief Sample value. */
-    float32_t f32;      /**< @brief Sample value. */
+	__fp16    f16;      /**< @brief Sample value. */
+    float     f32;      /**< @brief Sample value. */
     double    f64;      /**< @brief Sample value. */
     int32_t   i32;      /**< @brief Sample value. */
     uint32_t  u32;      /**< @brief Sample value. */

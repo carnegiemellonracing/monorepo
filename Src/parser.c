@@ -17,7 +17,6 @@
 #include <stdlib.h>                         /* NULL */
 #include <stdint.h>                         /* Usual suspects */
 #include <string.h>                         /* strncmp */
-#include <arm_neon.h>                       /* Floating types */
 #include <stdbool.h>                        /* bool */
 
 /**
@@ -65,8 +64,8 @@ enum data_type {
     f(DT_UINT16,  u16, uint16_t)                                               \
     f(DT_UINT32,  u32, uint32_t)                                               \
     f(DT_UINT64,  u64, uint64_t)                                               \
-    f(DT_FLOAT16, f16, float16_t)                                              \
-    f(DT_FLOAT32, f32, float32_t)                                              \
+    f(DT_FLOAT16, f16, __fp16)                                                 \
+    f(DT_FLOAT32, f32, float)                                                  \
     f(DT_FLOAT64, f64, double)
 
 /** @brief Some type on which we can apply any conversion gain/bias. It would

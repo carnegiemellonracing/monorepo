@@ -13,8 +13,6 @@
 
 #include <string.h>     // memcpy()
 
-#include <CMR/tasks.h>  // Task interface
-
 #include "can.h"        // Interface to implement
 #include "parser.h"     // parser ingestation
 

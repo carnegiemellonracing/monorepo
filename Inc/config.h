@@ -9,7 +9,6 @@
 #define _CFG_H_
 
 #include "parser.h"         /* MAX_SIGNALS */
-#include <arm_neon.h>       /* float32 */
 
 /**
  * @brief Valid cutoff frequencies at which to downsample.

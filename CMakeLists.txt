@@ -4,12 +4,12 @@ cmake_minimum_required(VERSION 3.24)
 # User is free to modify the file as much as necessary
 #
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+
 # list(APPEND CMAKE_MODULE_PATH "C:/Users/user1/Downloads/CmakeTestProject/cmake")
 list(APPEND CMAKE_MODULE_PATH "{{sr:cmake_path}}")
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 #Why does vscode read this when its included here?
 include("cmake/gcc-arm-none-eabi.cmake")
-
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 
 # Core project settings
