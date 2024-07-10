@@ -1,5 +1,3 @@
-# STM32F413 firmware template
-
 **NOTE**: This project uses [Git submodules][submodules].
 - When cloning this repository for the first time `git clone <url> --recursive`
 - When updating an existing clone: `git submodule update --init --recursive`

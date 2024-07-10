@@ -1,7 +1,6 @@
 Release/
 PTC_Debug/
 .settings/
-*.ld
 *.launch
 .vscode/
 html/
