@@ -6,9 +6,9 @@
  * filter coefficients, and ensure that their lengths are correct
  */
 
-#include <stddef.h>     // size_t
-#include <FreeRTOS.h>   // configASSERT()
-#include "CMR/fir_filter.h"
+#include <FreeRTOSConfig.h>  // for configASSERT
+#include <stddef.h>          // for size_t
+#include "CMR/fir_filter.h"  // for cmr_fir_filter_state_t, cmr_fir_filter_init
 
 /**
  * ------- Pre-designed filters -------

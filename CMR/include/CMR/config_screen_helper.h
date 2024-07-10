@@ -1,8 +1,7 @@
 #ifndef CONFIG_SCREEN_HELPER_H
 #define CONFIG_SCREEN_HELPER_H
-#include <stdint.h>
-#include <stdio.h>        // snprintf
-#include <string.h>        // memcpy()
+
+#include <stddef.h>
 #include <stdbool.h>
 
 __attribute__((unused)) static uint32_t this_stops_the_compiler_from_complaining[] = {

@@ -1,8 +1,9 @@
 #include <stdint.h>
-#include <stdio.h>        // snprintf
-#include <string.h>        // memcpy()
 #include <CMR/config_screen_helper.h> // for config_screen_data tx
 
+__attribute__((unused)) static uint32_t rawh_import[] = {
+#include <config.rawh>
+};
 /*************** Various on screen string luts ***************/
 char* config_boolean_string_lut[2] = {"Off", "On\0"};
 // Pad the length to always be 10
