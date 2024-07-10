@@ -1,4 +1,4 @@
-# STM32F413 firmware template
+# HVC
 
 **NOTE**: This project uses [Git submodules][submodules].
 - When cloning this repository for the first time `git clone <url> --recursive`
