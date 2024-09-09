@@ -6,4 +6,7 @@
 	url = git@github.com:DaveGamble/cJSON.git
 [submodule "cn-cbor"]
 	path = cn-cbor
-	url = git@github.com:repmop/cn-cbor.git
+	url = git@github.com:jimsch/cn-cbor.git
+[submodule "ci-scripts"]
+	path = ci-scripts
+	url = git@github.com:carnegiemellonracing/ci-scripts.git
