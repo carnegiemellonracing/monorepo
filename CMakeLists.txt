@@ -67,9 +67,11 @@ find_package (Python3 REQUIRED COMPONENTS Interpreter)
 add_library(freertos_config INTERFACE)
 target_include_directories(freertos_config SYSTEM
     INTERFACE
-    ${CMAKE_SOURCE_DIR}/Inc) # The config file directory
+    ${CMAKE_SOURCE_DIR}/Inc
+    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/include) # The config file directory
 target_compile_definitions(freertos_config
     INTERFACE
+    configASSERT
     projCOVERAGE_TEST=0)
 
 set(FREERTOS_PORT GCC_ARM_CM4F CACHE INTERNAL "")
