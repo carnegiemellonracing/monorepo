@@ -4,7 +4,7 @@ project(CMR)
 
 add_library(CMR)
 target_include_directories(CMR PUBLIC include)
-target_sources(CMR PRIVATE
+target_sources(CMR PUBLIC
 ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/adc.c
 ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/can.c
 ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/config_screen_helper.c

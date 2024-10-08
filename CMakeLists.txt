@@ -6,11 +6,11 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/DIM-ESE)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/HAL)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/CMR)
-add_library(stm-drivers INTERFACE)
+add_library(stm-drivers STATIC)
 
-target_link_libraries(CMR PRIVATE DIM-ESE freertos_kernel HAL)
+target_link_libraries(CMR PUBLIC DIM-ESE freertos_kernel HAL)
 target_link_libraries(stm-drivers
-    INTERFACE
+    PUBLIC
     DIM-ESE
     freertos_kernel
     HAL
