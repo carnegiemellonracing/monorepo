@@ -74,7 +74,7 @@ target_compile_definitions(freertos_config
     configASSERT
     projCOVERAGE_TEST=0)
 
-set(FREERTOS_PORT GCC_ARM_CM4F CACHE INTERNAL "")
+set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "" FORCE)
 # Symbols definition for each compiler
 set(symbols_c_SYMB
     configASSERT
