@@ -15,9 +15,9 @@
 #ifdef HAL_SPI_MODULE_ENABLED
 #ifdef HAL_DMA_MODULE_ENABLED
 
-#include CMR/rcc.h>    // cmr_rccSPIClockEnable(), cmr_rccGPIOClockEnable()
-#include CMR/dma.h>    // cmr_dmaInit()
-#include CMR/panic.h>  // cmr_panic()
+#include <CMR/rcc.h>    // cmr_rccSPIClockEnable(), cmr_rccGPIOClockEnable()
+#include <CMR/dma.h>    // cmr_dmaInit()
+#include <CMR/panic.h>  // cmr_panic()
 
 /**
  * @brief HAL SPI error handler.

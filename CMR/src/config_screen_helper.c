@@ -2,7 +2,7 @@
 #include <CMR/config_screen_helper.h> // for config_screen_data tx
 
 __attribute__((unused)) static uint32_t rawh_import[] = {
-#include <config.rawh>
+#include <DIM-ESE/config.rawh>
 };
 /*************** Various on screen string luts ***************/
 char* config_boolean_string_lut[2] = {"Off", "On\0"};

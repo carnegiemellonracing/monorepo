@@ -15,8 +15,8 @@
 
 #ifdef HAL_QSPI_MODULE_ENABLED
 
-#include "dma.h"    // DMA interface
-#include "rcc.h"    // cmr_rccQSPIClockEnable(), cmr_rccGPIOClockEnable()
+#include "CMR/dma.h"    // DMA interface
+#include "CMR/rcc.h"    // cmr_rccQSPIClockEnable(), cmr_rccGPIOClockEnable()
 
 /** @brief QuadSPI device configuration. */
 typedef struct {
