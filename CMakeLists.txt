@@ -80,7 +80,8 @@ set(symbols_c_SYMB
     configASSERT
 )
 set(symbols_cxx_SYMB)
-set(symbols_asm_SYMB)
+set(symbols_asm_SYMB
+    ${PROCESSOR})
 
 # Link directories and names of libraries
 set(link_DIRS)
@@ -93,9 +94,6 @@ set(link_LIBS
 set(linker_script_SRC)
 
 # Compiler options
-
-set (compiler_OPTS)
-
 set(compiler_OPTS
     -mfp16-format=ieee
     --specs=nano.specs
