@@ -62,6 +62,13 @@ set(symbols_SYMB
     ${PROCESSOR}
 )
 
+set(symbols_c_SYMB
+    configASSERT
+)
+
+set(symbols_cxx_SYMB)
+set(symbols_asm_SYMB)
+
 find_package (Python3 REQUIRED COMPONENTS Interpreter)
 
 add_library(freertos_config INTERFACE)
@@ -69,19 +76,14 @@ target_include_directories(freertos_config SYSTEM
     INTERFACE
     ${CMAKE_SOURCE_DIR}/Inc
     ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/include) # The config file directory
+
 target_compile_definitions(freertos_config
     INTERFACE
     configASSERT
     projCOVERAGE_TEST=0)
 
 set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "" FORCE)
-# Symbols definition for each compiler
-set(symbols_c_SYMB
-    configASSERT
-)
-set(symbols_cxx_SYMB)
-set(symbols_asm_SYMB
-    ${PROCESSOR})
+
 
 # Link directories and names of libraries
 set(link_DIRS)
