@@ -405,6 +405,12 @@ typedef struct {
     uint8_t modeRequest;    /**< @brief HVC operating mode request. See cmr_canHVCMode_t. */
 } cmr_canHVCCommand_t;
 
+/** @brief High Voltage Controller Balance Command. */
+typedef struct {
+    bool balanceRequest;    /**< @brief HVC balance command. */
+    uint16_t threshold;  /**< @brief Voltage threshold to stop balancing at */
+} cmr_canHVCBalanceCommand_t;
+
 /** @brief High Voltage Controller pack voltages. */
 typedef struct {
     int32_t battVoltage_mV;    /**< @brief Voltage measured across battery. */

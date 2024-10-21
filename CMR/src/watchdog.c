@@ -9,8 +9,8 @@
 
 #ifdef HAL_WWDG_MODULE_ENABLED
 
-#include CMR/rcc.h>    // cmr_rccCANClockEnable()
-#include CMR/panic.h>  // cmr_panic()
+#include <CMR/rcc.h>    // cmr_rccCANClockEnable()
+#include <CMR/panic.h>  // cmr_panic()
 
 
 /** @brief Initialize the watchdog

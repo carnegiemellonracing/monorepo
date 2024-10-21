@@ -11,7 +11,7 @@
 #ifdef HAL_TIM_MODULE_ENABLED
 
 #include <FreeRTOS.h>
-#include "rcc.h"
+#include "CMR/rcc.h"
 
 static uint32_t cmr_timerToAltFunc(TIM_TypeDef *timer) {
     switch ((uintptr_t) timer) {
