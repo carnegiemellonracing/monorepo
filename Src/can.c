@@ -264,25 +264,12 @@ static cmr_can_t can[CMR_CAN_BUS_NUM];
 static void canRX(
     cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t dataLen
 ) {
-
-//	if(canID == CMR_CANID_AMK_1_SETPOINTS) {
-//		int x = 0;
-//	}
-//    size_t iface_idx = (canb_rx - can);
-//    configASSERT(iface_idx < CMR_CAN_BUS_NUM);
-//    int ret = parseData((uint32_t) iface_idx, canID, data, dataLen);
-//    configASSERT(ret == 0);
-//    (void) ret;
-
-	uint32_t au32_initial_ticks = DWT->CYCCNT;
-
 	size_t iface_idx = (canb_rx - can);
 	configASSERT(iface_idx < CMR_CAN_BUS_NUM);
 
 
 	int ret = parseData((uint32_t) iface_idx, canID, data, dataLen);
 	configASSERT(ret == 0);
-	(void) ret;
 
 	// Update the RX Meta array
 	cmr_canRXMeta_t *rxMetaArray = NULL;
@@ -306,8 +293,6 @@ static void canRX(
 			}
 		}
 	}
-	uint32_t total_ticks = DWT->CYCCNT - au32_initial_ticks;
-	uint32_t microsecs = total_ticks*1000000/HAL_RCC_GetHCLKFreq();
 }
 
 /**

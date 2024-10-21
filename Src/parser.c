@@ -48,7 +48,7 @@
 /**
  * @brief Number of signals configured in the parsed vector.
  */
-int signals_parsed = 0;
+uint32_t signals_parsed = 0;
 
 /**
  * @brief Metadata on each signal in the vector (filled during parsing)
@@ -135,13 +135,9 @@ int parseData(uint32_t bus, uint16_t id, const uint8_t msg[], size_t len) {
    struct sample *s = &sample;
 
    struct signal *sigv[MAX_VAL_PER_SIG];
-   int relevant_sigs = 0;
-   for (int i = 0; i < signals_parsed; i++) {
+   size_t relevant_sigs = 0;
+   for (size_t i = 0; i < signals_parsed; i++) {
        if (signal_map[i].id == id && signal_map[i].bus == bus && signal_map[i].enabled) {
-    	   if(signal_map[i].id == 261) {
-    		   int x = 0;
-    		   x++;
-    	   }
            sigv[relevant_sigs++] = &signal_map[i];
        }
 

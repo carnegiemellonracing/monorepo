@@ -80,6 +80,6 @@ void parserInit(void);
  * the JSON configuration. (Used by the sampler).
  */
 
-extern int signals_parsed;
+extern uint32_t signals_parsed;
 
 #endif  /* _PARSER_H_ */
