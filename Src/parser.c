@@ -20,36 +20,9 @@
 #include <stdbool.h>                        /* bool */
 
 /**
- * @brief Maximum length of a signal name in bytes.
- * @note Name is silently truncated on overrun.
- */
-#define MAX_SIGNAL_NAME 30
-
-/**
  * @brief Data type names are <= 9 bytes
  */
 #define DT_NAME_MAX 10
-
-/**
- * @brief Data type encapsulation for re-interpretation
- * (e.g. you specify f16 in the JSON config, but the incoming
- * signal sends as a u32).
- */
-enum data_type {
-    DT_INT8,            /**< @brief i8 datatype */
-    DT_INT16,           /**< @brief i16 datatype */
-    DT_INT32,           /**< @brief i32 datatype */
-    DT_INT64,           /**< @brief i64 datatype */
-    DT_UINT8,           /**< @brief u8 datatype */
-    DT_UINT16,          /**< @brief u16 datatype */
-    DT_UINT32,          /**< @brief u32 datatype */
-    DT_UINT64,          /**< @brief u64 datatype */
-    DT_FLOAT16,         /**< @brief f16 datatype */
-    DT_FLOAT32,         /**< @brief f32 datatype */
-    DT_FLOAT64,         /**< @brief f64 datatype */
-    DT_UNK,             /**< @brief If you see this, something is wrong.*/
-    DT_NUM              /**< @brief Number of data types. */
-};
 
 /** @brief Call f on each internal datatype, with args: dt enum, abv. type name,
  *  real/compiler-facing type name. Note that this won't hit DT_UNK, as that's
@@ -68,38 +41,9 @@ enum data_type {
     f(DT_FLOAT32, f32, float)                                                  \
     f(DT_FLOAT64, f64, double)
 
-/** @brief Some type on which we can apply any conversion gain/bias. It would
- * probably be prudent to make this a floating type. */
-typedef double sig_intermediary_val_t;
-
 /**
  * @brief Parsed signal information.
  */
-struct signal {
-    uint32_t id;                        /**< @brief Backing can message ID */
-    uint32_t bus;                       /**< @brief Backing bus ID */
-    size_t offset;                      /**< @brief Backing offset within
-                                         * the relevant message */
-    size_t out_len;                     /**< @brief Length of each sample
-                                         * (in bytes) */
-    size_t in_len;                      /**< @brief Length raw received data. */
-    char name[MAX_SIGNAL_NAME];         /**< @brief Signal name
-                                         * (mostly useful for debugging
-                                         * right now, but we have it anyways) */
-    enum data_type dt_in;               /**< @brief Type to reinterpret
-                                         * input data */
-    enum data_type dt_out;              /**< @brief Type to reinterpret
-                                         * output data */
-    uint32_t kind;                      /**< @brief Index in the configured
-                                         * signal vector, unique among
-                                         * all signals parsed. */
-    sig_intermediary_val_t factor;      /**< @brief Parsed conversion term.
-                                         * 1. If not found. */
-    sig_intermediary_val_t bias;        /**< @brief Parsed term term.
-                                         * 0. If not found. */
-    bool enabled;                       /**< @brief Whether this signal
-                                         * is enabled for transmission. */
-};
 
 /**
  * @brief Number of signals configured in the parsed vector.
@@ -109,7 +53,7 @@ int signals_parsed = 0;
 /**
  * @brief Metadata on each signal in the vector (filled during parsing)
  */
-static struct signal signal_map[MAX_SIGNALS];
+struct signal signal_map[MAX_SIGNALS];
 
 /**
  * @brief How we read in the configuration file (use marshall.py to update).
@@ -191,9 +135,13 @@ int parseData(uint32_t bus, uint16_t id, const uint8_t msg[], size_t len) {
    struct sample *s = &sample;
 
    struct signal *sigv[MAX_VAL_PER_SIG];
-   size_t relevant_sigs = 0;
+   int relevant_sigs = 0;
    for (int i = 0; i < signals_parsed; i++) {
        if (signal_map[i].id == id && signal_map[i].bus == bus && signal_map[i].enabled) {
+    	   if(signal_map[i].id == 261) {
+    		   int x = 0;
+    		   x++;
+    	   }
            sigv[relevant_sigs++] = &signal_map[i];
        }
 
@@ -323,9 +271,10 @@ void parserInit(void) {
            .factor  = 1.,
            .bias    = 0.,
            .kind   = kind_count++,
+           .enabled = true,
        };
        if (cJSON_IsObject(cur)) {
-           struct cJSON *id, *name, *intype, *outtype, *offset, *factor, *bias;
+           struct cJSON *id, *name, *intype, *outtype, *offset, *factor, *bias, *enabled;
            struct cJSON *bus;
            bus     = cJSON_GetObjectItem(cur, "bus");
            id      = cJSON_GetObjectItem(cur, "id");
@@ -335,6 +284,8 @@ void parserInit(void) {
            offset  = cJSON_GetObjectItem(cur, "offset");
            factor  = cJSON_GetObjectItem(cur, "factor");
            bias    = cJSON_GetObjectItem(cur, "bias");
+           enabled = cJSON_GetObjectItem(cur, "enabled");
+
 
            if (cJSON_IsNumber(bus)) {
                s.bus = bus->valueint;
@@ -354,6 +305,10 @@ void parserInit(void) {
 
            if (cJSON_IsNumber(bias)) {
                s.bias   = bias->valuedouble;
+           }
+
+           if (cJSON_IsNumber(enabled)) {
+        	   s.enabled = enabled->valueint;
            }
 
            if (cJSON_IsString(name) && (name->valuestring != NULL)) {

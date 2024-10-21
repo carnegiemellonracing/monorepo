@@ -27,6 +27,9 @@ typedef struct uart uart_t;
 
 extern sample_data_t raw_sample_data[MAX_SIGNALS];
 
+#define SIGNAL_MAP_OFFSET 24
+extern struct signal signal_map[MAX_SIGNALS];
+
 struct uart
 {
     cmr_uart_t port; /**< @brief The underlying UART port. */
@@ -80,6 +83,7 @@ static void uartTX_Task(void *pvParameters)
     while (1)
     {
         taskENTER_CRITICAL();
+        uint32_t au32_initial_ticks = DWT->CYCCNT;
         /* Formatting must be atomic w.r.t. CAN stream
          * TODO modify to drop messages during this instead */
         ssize_t msg_len = sampleFmtMsg();
@@ -100,6 +104,8 @@ static void uartTX_Task(void *pvParameters)
         raw_sample_data[10].count = 0;
         raw_sample_data[10].len = 0;
         memset(raw_sample_data[10].values, 0, MAX_SAMPLEVEC_LEN);
+        uint32_t total_ticks = DWT->CYCCNT - au32_initial_ticks;
+        uint32_t microsecs = total_ticks * 1000000 / HAL_RCC_GetHCLKFreq();
         taskEXIT_CRITICAL();
         cmr_uartTX(&uart.port, &txMsg, send_buf, msg_len);
         cmr_uartMsgWait(&txMsg);
@@ -120,7 +126,7 @@ static void uartRX_Task(void *pvParameters)
     struct
     {
         cmr_uartMsg_t msg;
-        uint8_t buf[100];
+        uint8_t buf[200];
         size_t bytes_present;
     } rx[NUM_RX_BUFFERS] = {
         [0 ... NUM_RX_BUFFERS - 1] = {
@@ -130,16 +136,12 @@ static void uartRX_Task(void *pvParameters)
 
     while (1)
     {
-        cmr_canHeartbeat_t heartbeat;
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_HEARTBEAT_DIM, (void *) &heartbeat, sizeof(cmr_canHeartbeat_t), portMAX_DELAY);
-        vTaskDelayUntil(&last_wake, boron_rx_period_ms);
-        continue;
-
         // QUESTION why cant you do NUM_RX_BUFFERS
-        for (size_t i = 0; i < sizeof(rx) / sizeof(rx[0]); i++)
+        for (size_t i = 0; i < NUM_RX_BUFFERS; i++)
         {
             size_t space_left = sizeof(rx[i].buf) - rx[i].bytes_present;
             cmr_uartMsgInit(&rx[i].msg);
+            int x =  uxQueueSpacesAvailable(uart.port.rx.q);
             cmr_uartRX(
                 &uart.port, &rx[i].msg,
                 rx[i].buf + rx[i].bytes_present, space_left,
@@ -200,11 +202,12 @@ static void uartRX_Task(void *pvParameters)
  */
 static void handle_command(cn_cbor *command)
 {
-    cn_cbor *msg, *params, *pull, *id, *data, *bus, *signal_en;
+    cn_cbor *msg, *params, *pull, *id, *data, *bus, *signal_en, *num_ids;
     msg = cn_cbor_mapget_string(command, "msg");
     params = cn_cbor_mapget_string(command, "params");
     pull = cn_cbor_mapget_string(command, "pull");
     signal_en = cn_cbor_mapget_string(command, "signal_en");
+
 
     if (msg != NULL)
     {
@@ -212,25 +215,28 @@ static void handle_command(cn_cbor *command)
         id = cn_cbor_mapget_string(msg, "id");
         data = cn_cbor_mapget_string(msg, "data");
         bus = cn_cbor_mapget_string(msg, "bus");
+        num_ids = cn_cbor_mapget_string(msg, "num_ids");
+        cn_cbor *arr = cn_cbor_mapget_string(msg, "config_ids");
+
         if (
             (id != NULL &&
              (id->type == CN_CBOR_INT || id->type == CN_CBOR_UINT)) &&
             (bus != NULL &&
              (bus->type == CN_CBOR_INT || bus->type == CN_CBOR_UINT) &&
              (bus->v.uint < CMR_CAN_BUS_NUM)) &&
-            (data != NULL && data->type == CN_CBOR_BYTES))
+            (data != NULL && (data->type == CN_CBOR_BYTES || data->type == CN_CBOR_MAP)))
         {
             if ((uint16_t)id->v.uint == CMR_CANID_DIM_TEXT_WRITE)
             {
                 const size_t sizePerMessage = 4;
-                for (size_t i = 0; i < (size_t)data->length; i += sizePerMessage)
+                for (size_t i = 0; i < data->length; i += sizePerMessage)
                 {
                     cmr_canDIMTextWrite_t canData = (cmr_canDIMTextWrite_t){
                         .address = i / sizePerMessage,
                         .data = {0}};
                     for (size_t j = 0; j < sizePerMessage; j++)
                     {
-                        if (i + j < (size_t)data->length)
+                        if (i + j < data->length)
                         {
                             canData.data[j] = data->v.bytes[i + j];
                         }
@@ -249,11 +255,11 @@ static void handle_command(cn_cbor *command)
                 if (data->length == sizeof(cmr_canCDCPowerLimit_t))
                 {
                     cmr_canCDCPowerLimit_t *powerLimit = (cmr_canCDCPowerLimit_t *)data->v.bytes;
-                    config_menu_main_array[POWER_LIM_INDEX].value.value = powerLimit->powerLimit_kW;
+                    canTX((cmr_canBusID_t)bus->v.uint, (uint16_t)id->v.uint,
+                    	  powerLimit, sizeof(cmr_canCDCPowerLimit_t),
+					      200);
                 }
-            }
-            else
-            {
+            } else {
                 // Do not allow transmission on tractive CAN.
                 if (bus->v.uint == CMR_CAN_BUS_VEH || bus->v.uint == CMR_CAN_BUS_DAQ)
                 {
@@ -293,7 +299,7 @@ static void handle_command(cn_cbor *command)
         /* Have some parameters to update */
         /* Expects an byte-string of 2-byte values, each byte pairs with form
          * kind:cutoff */
-        size_t len = (size_t)params->length;
+        int len = params->length;
         for (size_t i = 0; i < len; i += sizeof(struct param_pair))
         {
             struct param_pair *pair = (struct param_pair *)(params->v.bytes + i);
@@ -341,7 +347,6 @@ static void handle_command(cn_cbor *command)
             };
         }
     }
-
     if (signal_en != NULL &&
         (signal_en->type == CN_CBOR_BYTES || signal_en->type == CN_CBOR_TEXT))
     {
@@ -389,6 +394,19 @@ static void handle_command(cn_cbor *command)
             cmr_uartTX(&uart.port, &txMsg, response_buffer, ret);
             cmr_uartMsgWait(&txMsg);
         }
+    } else { // this is the case where we're not updating signal configs.
+        ssize_t ret = cn_cbor_encoder_write(
+            response_buffer, 0, sizeof(response_buffer),
+            response_packet);
+
+        if (ret > 0)
+        {
+            /* Finally ready to send the dang thing */
+            cmr_uartMsg_t txMsg;
+            cmr_uartMsgInit(&txMsg);
+            cmr_uartTX(&uart.port, &txMsg, response_buffer, ret);
+            cmr_uartMsgWait(&txMsg);
+        }
     }
 
     /* Free the response packet */
@@ -412,11 +430,11 @@ void uartInit(void)
         .OverSampling = UART_OVERSAMPLING_16};
 
     cmr_uartInit(
-        &uart.port, USART2, &uartInit,
-        GPIOA, GPIO_PIN_10,           /* rx */
+        &uart.port, USART1, &uartInit,
+        GPIOA, GPIO_PIN_10,          /* rx */
         GPIOA, GPIO_PIN_9,           /* tx */
-        DMA1_Stream5, DMA_CHANNEL_4, /* See reference manual */
-        DMA1_Stream6, DMA_CHANNEL_4);
+        DMA2_Stream5, DMA_CHANNEL_4, /* See reference manual pp. 218/1324 https://www.st.com/resource/en/reference_manual/rm0430-stm32f413423-advanced-armbased-32bit-mcus-stmicroelectronics.pdf*/
+        DMA2_Stream7, DMA_CHANNEL_4);
 
     cmr_taskInit(&uart.txTask, "UART TX", 2, uartTX_Task, NULL);
     cmr_taskInit(&uart.rxTask, "UART RX", 2, uartRX_Task, NULL);

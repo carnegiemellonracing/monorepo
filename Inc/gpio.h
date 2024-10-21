@@ -22,4 +22,3 @@ typedef enum {
 void gpioInit(void);
 
 #endif /* GPIO_H */
-

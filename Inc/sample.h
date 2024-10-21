@@ -20,7 +20,6 @@
 #include <stdint.h>         /* usual suspects */
 #include <unistd.h>         /* ssize_t */
 
-
 /**
  * @brief Maximum number of signals subscribing to a given can message.
  * For example, VSM_Heartbeat might be used by VSM_errorvec and VSM_status.
@@ -31,9 +30,6 @@
 
 /**
  * @brief Real sample values.
- *
- * Arm Architecture uses IEEE-754 so float is guaranteed 32 bits
- * GCC supports __fp16 defined in ARM C Language Extensions
  */
 union sample_value {
 	__fp16    f16;      /**< @brief Sample value. */

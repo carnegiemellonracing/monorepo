@@ -40,10 +40,11 @@ static void statusLED(void *pvParameters) {
     (void) pvParameters;
 
     cmr_gpioWrite(GPIO_LED_STATUS, 0);
-
+    char c = 'x';
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
            cmr_gpioToggle(GPIO_LED_STATUS);
+           canTX(2, 0x100, &c, 1, 100);
 
         vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
     }
@@ -84,4 +85,3 @@ int main(void) {
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");
 }
-

@@ -95,8 +95,8 @@
     ],
     "signals": [
         {
-            "id": 512,
-            "offset": 4,
+            "id": 1763,
+            "offset": 0,
             "bus": 0,
             "Source": "VSM",
             "name": "GLV Voltage",
@@ -104,10 +104,11 @@
             "unit": "coulombs",
             "unit_short": "C",
             "in_type": "f32",
-            "factor": 0.001,
-            "out_type": "f16",
+            "factor": 1,
+            "out_type": "f32",
             "min": 0,
-            "max": 30
+            "max": 50,
+            "enabled": 1
         },
         {
             "id": 256,
@@ -137,7 +138,8 @@
                 }
             ],
             "in_type": "u8",
-            "out_type": "u8"
+            "out_type": "u8",
+            "enabled": 1
         },
         {
             "id": 769,
@@ -153,7 +155,7 @@
             "out_type": "f16",
             "min": 0,
             "max": 700
-        }, 
+        },
         {
             "id": 769,
             "offset": 0,
@@ -167,7 +169,8 @@
             "in_type": "i32",
             "out_type": "f16",
             "max": 700,
-            "min": 0
+            "min": 0,
+            "enabled": 1
         },
         {
             "id": 770,
@@ -182,7 +185,8 @@
             "in_type": "i32",
             "out_type": "f16",
             "min": -300,
-            "max": 300
+            "max": 300,
+            "enabled": 1
         },
         {
             "id": 770,
@@ -212,7 +216,8 @@
             "in_type": "i16",
             "out_type": "f16",
             "min": 0,
-            "max": 150
+            "max": 150,
+            "enabled": 1
         },
         {
             "id": 785,
@@ -227,7 +232,8 @@
             "in_type": "i16",
             "out_type": "f16",
             "min": 0,
-            "max": 150
+            "max": 150,
+            "enabled": 1
         },
         {
             "id": 784,
@@ -242,7 +248,8 @@
             "out_type": "u16",
             "post_factor": 0.001,
             "min": 0,
-            "max": 5
+            "max": 5,
+            "enabled": 1
         },
         {
             "id": 784,
@@ -257,7 +264,8 @@
             "out_type": "u16",
             "post_factor": 0.001,
             "min": 0,
-            "max": 5
+            "max": 5,
+            "enabled": 1
         },
         {
             "id": 1349,
@@ -267,7 +275,8 @@
             "name": "Driver Acknowledge",
             "short": "Driver Ack",
             "in_type": "u8",
-            "out_type": "u8"
+            "out_type": "u8",
+            "enabled": 1
         },
         {
             "id": 645,
@@ -282,7 +291,8 @@
             "out_type": "i16",
             "post_factor": 0.1,
             "min": -20,
-            "max": 150
+            "max": 150,
+            "enabled": 1
         },
         {
             "id": 649,
@@ -297,7 +307,8 @@
             "out_type": "i16",
             "post_factor": 0.1,
             "min": -20,
-            "max": 150
+            "max": 150,
+            "enabled": 1
         },
         {
             "id": 650,
@@ -312,7 +323,8 @@
             "out_type": "i16",
             "post_factor": 0.1,
             "min": -20,
-            "max": 150
+            "max": 150,
+            "enabled": 1
         },
         {
             "id": 646,
@@ -327,7 +339,8 @@
             "out_type": "i16",
             "post_factor": 0.1,
             "min": -20,
-            "max": 150
+            "max": 150,
+            "enabled": 1
         },
         {
             "id": 645,
@@ -342,7 +355,8 @@
             "out_type": "i16",
             "post_factor": 0.1,
             "min": -20,
-            "max": 150
+            "max": 150,
+            "enabled": 1
         },
         {
             "id": 649,
@@ -357,7 +371,8 @@
             "out_type": "i16",
             "post_factor": 0.1,
             "min": -20,
-            "max": 150
+            "max": 150,
+            "enabled": 1
         },
         {
             "id": 650,
@@ -372,7 +387,8 @@
             "out_type": "i16",
             "post_factor": 0.1,
             "min": -20,
-            "max": 150
+            "max": 150,
+            "enabled": 1
         },
         {
             "id": 646,
@@ -387,7 +403,8 @@
             "out_type": "i16",
             "post_factor": 0.1,
             "min": -20,
-            "max": 150
+            "max": 150,
+            "enabled": 1
         },
         {
             "id": 1828,
@@ -402,7 +419,8 @@
             "out_type": "i32",
             "post_factor": 0.0000001,
             "min": -90,
-            "max": 90
+            "max": 90,
+            "enabled": 1
         },
         {
             "id": 1828,
@@ -417,7 +435,8 @@
             "out_type": "i32",
             "post_factor": 0.0000001,
             "min": -180,
-            "max": 180
+            "max": 180,
+            "enabled": 1
         },
         {
             "id": 1833,
@@ -432,7 +451,8 @@
             "out_type": "i16",
             "post_factor": 0.01,
             "min": -50,
-            "max": 50
+            "max": 50,
+            "enabled": 1
         },
         {
             "id": 1809,
@@ -447,7 +467,8 @@
             "out_type": "i16",
             "post_factor": 0.01,
             "min": -30,
-            "max": 30
+            "max": 30,
+            "enabled": 1
         },
         {
             "id": 1794,
@@ -479,7 +500,39 @@
                 }
             ],
             "in_type": "u32",
-            "out_type": "u32"
+            "out_type": "u32",
+            "enabled": 1
+        },
+        {
+            "id": 261,
+            "offset": 0,
+            "bus": 0,
+            "Source": "VSM",
+            "name": "Car State",
+            "short": "Car State",
+            "enum": [
+                {
+                    "name": "Unknown"
+                },
+                {
+                    "name": "GLV"
+                },
+                {
+                    "name": "HV"
+                },
+                {
+                    "name": "RTD"
+                },
+                {
+                    "name": "Error"
+                },
+                {
+                    "name": "Clear Error"
+                }
+            ],
+            "in_type": "u8",
+            "out_type": "u8",
+            "enabled": 0
         }
     ]
 }

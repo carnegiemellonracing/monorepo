@@ -6,7 +6,6 @@
  */
 
 #include <stm32f4xx_hal.h>  // HAL interface
-#include <FreeRTOSConfig.h>   // configASSERT()
 
 #include <CMR/gpio.h>   // GPIO interface
 
@@ -40,4 +39,3 @@ void gpioInit(void) {
         gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0])
     );
 }
-

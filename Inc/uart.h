@@ -13,6 +13,7 @@
 #include <stdbool.h>
 
 void uartInit(void);
+void uartTX(cmr_uartMsg_t *msg, void *data, size_t len);
 
 extern const TickType_t boron_tx_period_ms;
 
