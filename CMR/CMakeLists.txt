@@ -21,6 +21,7 @@ ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/panic.c
 ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/pwm.c
 ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/qspi.c
 ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/rcc.c
+${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/sensors.c
 ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/spi.c
 ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/tasks.c
 ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/uart.c

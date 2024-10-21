@@ -10,13 +10,13 @@
 
 #include "platform.h"       // HAL_ADC_MODULE_ENABLED, ADC_HandleTypeDef,
                             // ADC_TypeDef, GPIO_TypeDef
-#ifdef HAL_ADC_MODULE_ENABLED
 
 #include "tasks.h"      // Task interface
 
 #include <stddef.h>     // size_t
 #include <stdint.h>     // uint32_t
 
+#ifdef HAL_ADC_MODULE_ENABLED
 /** @brief Number of channels per ADC. */
 #define CMR_ADC_CHANNELS 16
 

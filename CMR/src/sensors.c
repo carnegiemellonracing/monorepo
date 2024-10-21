@@ -7,7 +7,7 @@
 
 #include <FreeRTOS.h>   // configASSERT()
 
-#include "../sensors.h"     // Interface to implement
+#include "sensors.h"     // Interface to implement
 
 /**
  * @brief Initializes the sensor.
