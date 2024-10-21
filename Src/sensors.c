@@ -14,7 +14,7 @@
  * @brief Mapping of sensor channels to ADC channels.
  */
 static const adcChannels_t sensorsADCCHANNELS[SENSOR_CH_LEN] = {
-    [SENSOR_CH_V24V]       = ADC_V24V,     
+    [SENSOR_CH_V24V]       = ADC_V24V,
 	[SENSOR_CH_AIR_POWER]  = ADC_AIR_POWER,
 	[SENSOR_CH_SAFETY]     = ADC_SAFETY,
 	[SENSOR_CH_VSENSE]     = ADC_VSENSE,
@@ -22,7 +22,7 @@ static const adcChannels_t sensorsADCCHANNELS[SENSOR_CH_LEN] = {
 };
 
 /** @brief forward declaration */
-static cmr_sensor_t sensors[];
+static cmr_sensor_t sensors[SENSOR_CH_LEN];
 
 /** @brief The list of sensors sampled by the driver. */
 cmr_sensorList_t sensorList;
@@ -55,7 +55,7 @@ static uint32_t sampleADCSensor(const cmr_sensor_t *sensor) {
 // 24v voltage divider is factor of 1.13/14.43
 static int32_t ADCtoMV_24v(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
-	
+
     return ((int32_t) reading) * 7.39;
 
 }
@@ -72,7 +72,7 @@ static int32_t ADCtoMV_24v(const cmr_sensor_t *sensor, uint32_t reading) {
 // was determined experimentally
 static int32_t ADCtoMV_HV(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
-	
+
 	return (((int32_t) reading) * 268 - 426400);
 }
 

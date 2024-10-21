@@ -118,7 +118,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/BMB_task.c
     ${CMAKE_SOURCE_DIR}/Src/bms_error.c
     ${CMAKE_SOURCE_DIR}/Src/bms_relay.c
-    ${CMAKE_SOURCE_DIR}/Src/bms_interface.c
+    ${CMAKE_SOURCE_DIR}/Src/bq_interface.c
     ${CMAKE_SOURCE_DIR}/Src/can.c
     ${CMAKE_SOURCE_DIR}/Src/crc.c
     ${CMAKE_SOURCE_DIR}/Src/fans.c
