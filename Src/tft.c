@@ -319,8 +319,8 @@ static void tftUpdate(void *pvParameters) {
     //    vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS); //TODO: Uncomment
 
     /* Update Screen Info from CAN Indefinitely */
-    while (
-        vTaskDelayUntil(&lastWakeTime, TFT_UPDATE_PERIOD_MS), 1) {
+    while (1) {
+        vTaskDelayUntil(&lastWakeTime, TFT_UPDATE_PERIOD_MS);
         if (inConfigScreen()) {
             drawConfigScreen();
         } else if ((stateGetVSMReq() == CMR_CAN_HV_EN) && (stateGetVSM() == CMR_CAN_ERROR)) {
@@ -480,7 +480,7 @@ uint32_t computeCurrent_A(volatile cmr_canAMKActualValues1_t *canAMK_Act1) {
 */
 
 static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hottest) {
-    
+
     // If we're in GLV, we don't want temps to latch on their prev vals
 	cmr_canState_t state = stateGetVSM();
     if (state == CMR_CAN_GLV_ON) {
@@ -527,10 +527,10 @@ static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hot
     *motorTemp_C = findMax(FL->motorTemp_dC,
                                   FR->motorTemp_dC,
                                   RL->motorTemp_dC,
-                                  RR->motorTemp_dC, 
+                                  RR->motorTemp_dC,
                                   &hottest_motor_index) /
                           10;
-    
+
     // provide hottest motor as corner type
     *hottest = (cornerId_t)(hottest_motor_index);
 
@@ -542,8 +542,8 @@ static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hot
                                RR->coldPlateTemp_dC,
                                &hottest_mc_index) /
                        10;
-    
-    
+
+
 }
 
 /**

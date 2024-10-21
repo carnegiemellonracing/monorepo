@@ -15,7 +15,6 @@
 
 #include <CMR/panic.h>  // Panic interface
 #include <CMR/tasks.h>  // Task interface
-#include <math.h>       // powf()
 #include <string.h>     // memcpy()
 
 #include "adc.h"        // adcVSense, adcISense
