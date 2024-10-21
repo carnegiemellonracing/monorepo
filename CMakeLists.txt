@@ -11,8 +11,5 @@ add_library(stm-drivers STATIC)
 target_link_libraries(CMR PUBLIC DIM-ESE freertos_kernel HAL)
 target_link_libraries(stm-drivers
     PUBLIC
-    DIM-ESE
-    freertos_kernel
-    HAL
     CMR
 )
