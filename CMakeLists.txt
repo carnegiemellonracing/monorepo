@@ -48,7 +48,6 @@ set(PROCESSOR_FAM F4XX)
 # Include directories for all compilers
 set(include_DIRS
     ${CMAKE_SOURCE_DIR}/Inc
-    ${CMAKE_SOURCE_DIR}/cJSON
 )
 
 # Include directories for each compiler
@@ -84,7 +83,6 @@ set(symbols_asm_SYMB)
 set(link_DIRS)
 set(link_LIBS
     stm-drivers
-    cn-cbor
 )
 
 # Linker script
@@ -116,16 +114,17 @@ link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
     # Project sources
-    ${CMAKE_SOURCE_DIR}/Src/can.c
     ${CMAKE_SOURCE_DIR}/Src/ADS7038.c
     ${CMAKE_SOURCE_DIR}/Src/can.c
     ${CMAKE_SOURCE_DIR}/Src/expanders.c
     ${CMAKE_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_SOURCE_DIR}/Src/main.c
     ${CMAKE_SOURCE_DIR}/Src/PCF8574.c
-    ${CMAKE_SOURCE_DIR}/Src/syscalls.c
+    ${CMAKE_SOURCE_DIR}/Src/sensors.c
+    ${CMAKE_SOURCE_DIR}/Src/state.c
+    ${CMAKE_SOURCE_DIR}/Src/syscall.c
     ${CMAKE_SOURCE_DIR}/Src/sysmem.c
-    ${CMAKE_SOURCE_DIR}/Src/test.c
+    # ${CMAKE_SOURCE_DIR}/Src/test.c
     ${CMAKE_SOURCE_DIR}/Src/tft.c
     ${CMAKE_SOURCE_DIR}/Src/tftContent.c
     ${CMAKE_SOURCE_DIR}/Src/tftDL.c
