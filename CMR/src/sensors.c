@@ -7,7 +7,7 @@
 
 #include <FreeRTOS.h>   // configASSERT()
 
-#include "sensors.h"     // Interface to implement
+#include "CMR/sensors.h"     // Interface to implement
 
 /**
  * @brief Initializes the sensor.
