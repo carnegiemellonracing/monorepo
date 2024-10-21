@@ -13,7 +13,7 @@ include("cmake/gcc-arm-none-eabi.cmake")
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 
 # Core project settings
-project(DIM)
+project(HVC)
 enable_language(C CXX ASM)
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
