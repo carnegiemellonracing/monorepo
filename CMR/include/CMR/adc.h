@@ -8,9 +8,10 @@
 #ifndef CMR_ADC_H
 #define CMR_ADC_H
 
-#ifdef HAL_ADC_MODULE_ENABLED
 #include "platform.h"       // HAL_ADC_MODULE_ENABLED, ADC_HandleTypeDef,
                             // ADC_TypeDef, GPIO_TypeDef
+#ifdef HAL_ADC_MODULE_ENABLED
+
 #include "tasks.h"      // Task interface
 
 #include <stddef.h>     // size_t
