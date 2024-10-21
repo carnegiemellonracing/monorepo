@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.24)
 project(CMR)
 
 add_library(CMR)
-target_include_directories(CMR PUBLIC include)
+target_include_directories(CMR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_sources(CMR PUBLIC
 ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/adc.c
 ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/can.c
