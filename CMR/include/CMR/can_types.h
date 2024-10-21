@@ -38,17 +38,6 @@ typedef struct {
     uint8_t warning[2];     /**< @brief Warning matrix. */
 } cmr_canHeartbeat_t;
 
-/** @brief Standard CAN PTC State. */
-typedef struct {
-    uint8_t state;          /**< @brief PTC state. */
-} cmr_canPTCState_t;
-
-/** @brief Standard Git committed State. */
-typedef struct {
-	uint32_t commitHash;
-	uint8_t dirtyFlash;
-} cmr_canGitFlashStatus;
-
 /** @brief Heartbeat error matrix bit fields. */
 typedef enum {
     CMR_CAN_ERROR_NONE = 0,     /**< @brief No errors. */
@@ -416,12 +405,6 @@ typedef struct {
     uint8_t modeRequest;    /**< @brief HVC operating mode request. See cmr_canHVCMode_t. */
 } cmr_canHVCCommand_t;
 
-/** @brief High Voltage Controller Balance Command. */
-typedef struct {
-    bool balanceRequest;    /**< @brief HVC balance command. */
-    uint16_t threshold;  /**< @brief Voltage threshold to stop balancing at */
-} cmr_canHVCBalanceCommand_t;
-
 /** @brief High Voltage Controller pack voltages. */
 typedef struct {
     int32_t battVoltage_mV;    /**< @brief Voltage measured across battery. */
@@ -446,7 +429,7 @@ typedef struct {
     uint8_t minVoltIndex;       /**< @brief Min BMB cell voltage index. */
     uint8_t maxCellVoltBMB;     /**< @brief */
     uint8_t maxVoltIndex;       /**< @brief Max BMB cell voltage index. */
-} cmr_canHVCPackMinMaxCellVoltages_t;
+} cmr_canHVCPackMinMaxCellVolages_t;
 
 /** @brief High Voltage Controller pack currents. */
 typedef struct {
@@ -681,9 +664,9 @@ typedef struct {
 } cmr_canDIMTextWrite_t;
 
 typedef struct {
-    uint8_t buttons;                 /**< @brief Button states packed into an uint8_t. {drs,0,1,2,up,down,left,right}*/
-    uint8_t rotaryPos;
-    uint8_t switchValues;
+    uint8_t action1ButtonPressed;    /**< @brief Status of the action 1 button (Active Low). */
+    uint8_t action2ButtonPressed;    /**< @brief Status of the action 2 button (Active Low). */
+    uint8_t drsButtonPressed;        /**< @brief Status of the AE/DRS button (Active Low). */
     uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
     uint8_t paddleLeft;              /**< @brief Between 0 and 255 for left paddle pos*/
     uint8_t paddleRight;             /**< @brief Between 0 and 255 for left paddle pos*/
@@ -1071,7 +1054,8 @@ typedef struct {
 typedef struct {
     int16_t controls_current_yaw_rate;
     int16_t controls_target_yaw_rate;
-    float controls_pid;
+    int16_t controls_bias;
+    int16_t controls_pid;
 } cmr_can_controls_pid_debug_t;
 
 typedef struct {
@@ -1132,9 +1116,9 @@ typedef struct {
 // DAQ Modules
 
 typedef struct {
-	int16_t force_0;
-    int16_t force_1;
-} cmr_canDAQStrainGauge_t;
+    int32_t HX711_force;     /**< @brief Force from HX711 */
+    float NAU7802_force;   /**< @brief Force from NAU7802 */
+} cmr_canDAQLoadCell_t;
 
 typedef struct {
     uint16_t thermistor_0_tmp_dC; /**< @brief Temperature on thermistor 0 in dC */
@@ -1144,20 +1128,19 @@ typedef struct {
 } cmr_canDAQThermistor_t;
 
 typedef struct {
-    uint32_t linpot_mm;       /**< @brief Front damper length in mm */
-    uint32_t linpot_adc;      /**< @brief Front linpot ADC Value */
+    uint16_t linpot_front_mm;       /**< @brief Front damper length in mm */
+    uint16_t linpot_front_adc;      /**< @brief Front linpot ADC Value */
+    uint16_t linpot_rear_mm;        /**< @brief Rear damper length in mm */
+    uint16_t linpot_rear_adc;       /**< @brief Rear linpot ADC Value */
 } cmr_canDAQLinpot_t;
 
 typedef struct {
-    uint32_t airspeed_mph;       /**< @brief Front damper length in mm */
-    uint32_t airtemp_dC;         /**< @brief Front linpot ADC Value */
-} cmr_canDAQAnemometer_t;
+    int32_t HX711_debug;     /**< @brief Debug for HX711 - 0 if no errors */
+    int32_t NAU7802_debug;   /**< @brief Debug for NAU7802 - 0 if no errors */
+} cmr_canDAQDebug_t;
 
 typedef struct {
     uint8_t state;
 } cmr_canMemoratorHeartbeat_t;
 
-typedef struct {
-	uint32_t test_id;
-} cmr_canTestID_t;
 #endif /* CMR_CAN_TYPES_H */

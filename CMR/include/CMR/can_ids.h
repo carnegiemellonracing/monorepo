@@ -16,7 +16,7 @@
 #define CMR_CANID_RMS_OFFSET    0x3A0
 
 /** @brief CAN IDs. */
-typedef enum {    
+typedef enum {
     CMR_CANID_HEARTBEAT_VSM = 0x100,    /**< @brief VSM heartbeat. */
     CMR_CANID_HEARTBEAT_HVC = 0x101,    /**< @brief HVC heartbeat. */
     CMR_CANID_HEARTBEAT_CDC = 0x102,    /**< @brief CDC heartbeat. */
@@ -60,7 +60,6 @@ typedef enum {
     CMR_CANID_CDC_POWER_UPDATE = 0x6E2,             /**< @brief DAQ Live to CDC - changing power limit. */
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
-	CMR_CANID_CELL_BALANCE_ENABLE = 0x134,
     CMR_CANID_FSM_PEDALS_ADC = 0x533,           /**< @brief FSM raw pedal positions. */
     CMR_CANID_FSM_SENSORS_ADC = 0x543,          /**< @brief FSM raw sensors. */
     CMR_CANID_FSM_POWER_DIAGNOSTICS = 0x553,    /**< @brief FSM power diagnostics. */
@@ -81,10 +80,10 @@ typedef enum {
     /** @Note: The following CAN IDs are used for the dim-cdc driver configuration system.
      * If you wish to modify these, you must maintain the invariant that the number of config
      * packets is correct and the config packets are in the correct order with dim config packets
-     * first and then cdc config packets in ascending order. This is imperative to maintaining 
+     * first and then cdc config packets in ascending order. This is imperative to maintaining
      * code modularity :)
     */
-    num_config_packets = 4,                     /**< @brief in the enum but actually just a count of num of packets. */ 
+    num_config_packets = 4,                     /**< @brief in the enum but actually just a count of num of packets. */
     CMR_CANID_DIM_CONFIG0_DRV0 = 0x600,         /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG1_DRV0,                 /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG2_DRV0,                 /**< @brief DIM config request */
@@ -234,38 +233,20 @@ typedef enum {
     CMR_CANID_FRONT_WHL_VELS = 0x7EC,
     CMR_CANID_REAR_WHL_VELS = 0x7ED,
 
-    CMR_CANID_TEST_ID=0x777,
-
 	CMR_CANID_DRS_CONTROLS = 0x29C, 				/**< @brief DRS Motor Controls. */
 
-    CMR_CANID_DAQ_0_STRAIN_0 = 0x650,           /**< @brief Load cell data for DAQ Board 0. */
-    CMR_CANID_DAQ_0_STRAIN_1,           		/**< @brief Load cell data for DAQ Board 0. */
+    CMR_CANID_DAQ_0_LOADCELL = 0x650,           /**< @brief Load cell data for DAQ Board 0. */
     CMR_CANID_DAQ_0_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 0. */
-    CMR_CANID_DAQ_0_LINPOT,                     /**< @brief Thermistor data for DAQ Board 0. */
-    CMR_CANID_DAQ_0_ANEMOMETER,                 /**< @brief Load cell amplifier debug data for DAQ Board 0. */
-    CMR_CANID_DAQ_1_STRAIN_0,		            /**< @brief Load cell data for DAQ Board 0. */
-    CMR_CANID_DAQ_1_STRAIN_1,           		/**< @brief Load cell data for DAQ Board 0. */
-    CMR_CANID_DAQ_1_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 0. */
-    CMR_CANID_DAQ_1_LINPOT,                     /**< @brief Thermistor data for DAQ Board 0. */
-    CMR_CANID_DAQ_1_ANEMOMETER,                 /**< @brief Load cell amplifier debug data for DAQ Board 0. */
-    CMR_CANID_DAQ_2_STRAIN_0,		            /**< @brief Load cell data for DAQ Board 0. */
-    CMR_CANID_DAQ_2_STRAIN_1,           		/**< @brief Load cell data for DAQ Board 0. */
-    CMR_CANID_DAQ_2_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 0. */
-    CMR_CANID_DAQ_2_LINPOT,                     /**< @brief Thermistor data for DAQ Board 0. */
-    CMR_CANID_DAQ_2_ANEMOMETER,                 /**< @brief Load cell amplifier debug data for DAQ Board 0. */
-    CMR_CANID_DAQ_3_STRAIN_0,		            /**< @brief Load cell data for DAQ Board 0. */
-    CMR_CANID_DAQ_3_STRAIN_1,           		/**< @brief Load cell data for DAQ Board 0. */
-    CMR_CANID_DAQ_3_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 0. */
-    CMR_CANID_DAQ_3_LINPOT,                     /**< @brief Thermistor data for DAQ Board 0. */
-    CMR_CANID_DAQ_3_ANEMOMETER,                 /**< @brief Load cell amplifier debug data for DAQ Board 0. */
-
-	CMR_CANID_VSM_GIT = 0x7F1,
-	CMR_CANID_HVC_GIT,
-	CMR_CANID_PTC_GIT,
-	CMR_CANID_CDC_GIT,
-	CMR_CANID_DIM_GIT,
-	CMR_CANID_RAM_GIT,
-
+    CMR_CANID_DAQ_0_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 0. */
+    CMR_CANID_DAQ_1_LOADCELL,                   /**< @brief Load cell data for DAQ Board 1. */
+    CMR_CANID_DAQ_1_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 1. */
+    CMR_CANID_DAQ_1_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 1. */
+    CMR_CANID_DAQ_2_LOADCELL,                   /**< @brief Load cell data for DAQ Board 2. */
+    CMR_CANID_DAQ_2_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 2. */
+    CMR_CANID_DAQ_2_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 2. */
+    CMR_CANID_DAQ_3_LOADCELL,                   /**< @brief Load cell data for DAQ Board 3. */
+    CMR_CANID_DAQ_3_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 3. */
+    CMR_CANID_DAQ_3_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 3. */
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
