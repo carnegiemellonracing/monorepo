@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ci-scripts" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/stm32f413-drivers" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/stm32f413-drivers/DIM-ESE" vcs="Git" />
+  </component>
+</project>
