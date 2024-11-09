@@ -23,6 +23,7 @@
 #include "gpio.h"       // For actionButtonPressed status
 #include "state.h"      // State interface
 #include "tftDL.h"      // For RAM buffer indices
+#include "NewState.h"	// For new state machine
 
 // Config Screen update requested
 bool volatile flush_config_screen_to_cdc = false;
@@ -114,15 +115,19 @@ static void canTX10Hz(void *pvParameters) {
     while (1) {
         /* if DIM is requesting a state/gear change
          * send this request to VSM */
+		reqVSM();
         cmr_canState_t stateVSM = stateGetVSM();
         cmr_canState_t stateVSMReq = stateGetVSMReq();
         cmr_canGear_t gear = stateGetGear();
-        cmr_canGear_t gearReq = stateGetGearReq();
+        //cmr_canGear_t gearReq = stateGetGearReq();
+		//below is the new gear request mechanism can delete if wrong
+		cmr_canGear_t gearReq = getRequestedGear();
         cmr_canDrsMode_t drsMode = stateGetDrs();
         cmr_canDrsMode_t drsReq = stateGetDrsReq();
         cmr_canTestID_t test_id = {
         	.test_id = get_test_message_id()
         };
+
         canTX(CMR_CANID_TEST_ID, &test_id, sizeof(test_id), canTX10Hz_period_ms);
         if (
             (stateVSM != stateVSMReq) ||
@@ -186,11 +191,13 @@ static void canTX100Hz(void *pvParameters) {
         /* Transmit action button status */
         cmr_canDIMActions_t actions = {
             .buttons = packed,
-            .rotaryPos = rotaryPos,
+            //.rotaryPos = rotaryPos,
+			.rotaryPos = getRotaryPosition(),
             .switchValues = switchValues,
             .regenPercent = regenPercent,
             .paddleLeft = getPaddleState(EXP_CLUTCH_LEFT),
             .paddleRight = getPaddleState(EXP_CLUTCH_RIGHT),
+			.LRUDButtons = canLRUDStates,
         };
         canTX(
             CMR_CANID_DIM_ACTIONS,

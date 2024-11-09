@@ -32,7 +32,9 @@ static const TickType_t stateMachine_period = 10;
 static cmr_task_t stateMachine_task;
 
 static void getReqScreen(void) {
-    if(stateGetVSM() == CMR_CAN_ERROR) return ERROR;
+    if(stateGetVSM() == CMR_CAN_ERROR){
+    	nextState = ERROR;
+    }
     /*case if we use safety screen
     if(stateGetVSM() == CMR_CAN_ERROR) {
         if(stateGetVSMReq() == CMR_CAN_HV_EN) return SAFETY;
@@ -63,36 +65,36 @@ static void getReqScreen(void) {
             else nextState = START;
             break;
         case NORMAL:
-            if(gpioButtonStates[L]) {
+            if(gpioLRUDStates[LEFT]) {
                 nextState = CONFIG;
-                gpioButtonStates[L] = false;
+                gpioLRUDStates[LEFT] = false;
             }
-            else if(gpioButtonStates[R]) {
+            else if(gpioLRUDStates[RIGHT]) {
                 nextState = RACING;
-                gpioButtonStates[R] = false;
+                gpioLRUDStates[RIGHT] = false;
             }
             else nextState = NORMAL;
             break;
         case CONFIG:
             //look into how button move on screen on campus
-            if(gpioButtonStates[L]) {
+            if(gpioLRUDStates[LEFT]) {
                 //move left on screen
-                gpioButtonStates[L] = 0;
+                gpioLRUDStates[LEFT] = 0;
                 nextState = CONFIG;
             }
-            else if(gpioButtonStates[R]) {
+            else if(gpioLRUDStates[RIGHT]) {
                 //move right on screen
-                gpioButtonStates[R] = 0;
+                gpioLRUDStates[RIGHT] = 0;
                 nextState = CONFIG;
             }
-            else if(gpioButtonStates[U]) {
+            else if(gpioLRUDStates[UP]) {
                 //move up on screen
-                gpioButtonStates[U] = 0;
+                gpioLRUDStates[UP] = 0;
                 nextState = CONFIG;
             }
-            else if(gpioButtonStates[D]) {
+            else if(gpioLRUDStates[DOWN]) {
                 //move down on screen
-                gpioButtonStates[D] = 0;
+                gpioLRUDStates[DOWN] = 0;
                 nextState = CONFIG;
             }
             else if(gpioButtonStates[SW1]) {
@@ -112,13 +114,13 @@ static void getReqScreen(void) {
             break;
         case RACING:
             //need to incorporate the other sw buttons, accel?
-            if(gpioButtonStates[L] && stateGetVSMReq() == CMR_CAN_GLV_ON) {
+            if(gpioLRUDStates[LEFT] && stateGetVSMReq() == CMR_CAN_GLV_ON) {
                 nextState = CONFIG;
-                gpioButtonStates[U] = false;
+                gpioLRUDStates[UP] = false;
             }
-            else if(gpioButtonStates[R]) {
+            else if(gpioLRUDStates[RIGHT]) {
                 nextState = NORMAL;
-                gpioButtonStates[R] = false;
+                gpioLRUDStates[RIGHT] = false;
             }
             else nextState = RACING;
             break;
@@ -127,15 +129,65 @@ static void getReqScreen(void) {
     }
 }
 
+void reqVSM(void) {
+	//So check state of the car and the pressing of up or down button, then based on the output
+	//update VstateVSMReq
+	if (((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN)) && (gpioLRUDStates[UP])){
+		StateVSMUp();
+	}
+	if (((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN)) && (gpioLRUDStates[DOWN])){
+		StateVSMDown();
+	}
+}
+
+//keeps track of requested gear
+volatile static int requestedGear;
+
+/**
+* @brief Request Gear Change
+*
+* Clockwise is negative, counterclockwise is positive
+* Turn clockwise is Gearup, counterclockwise is Geardown
+* Request gear change if necessary
+*
+*/
+void reqGear(void) {
+	int pastRotary = getPastRotaryPosition();
+	int currentRotary = getRotaryPosition();
+	int currGear = stateGetGear();
+
+	bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN));
+	if(canChangeGear && (currentRotary!=stateGetGear())){
+		if((currentRotary < pastRotary) || (currentRotary == 7 && pastRotary==0)){
+			//turned clockwise so gearup
+			requestedGear = stateGetGear() + 1;
+			}
+		} else {
+				requestedGear = stateGetGear() - 1;
+
+
+	}
+}
+
+//returns requested gear
+int getRequstedGear(void){
+	return requestedGear;
+}
+
+//TODO: Add state functions based on button press based on may's sheet
+
 static void stateOutput() { 
     //output
     switch(currState) {
         case INIT:
             //initialize buttons to 0
+			//also initializes all LRUD buttons to 0
             for(int i=0; i<NUM_BUTTONS; i++){
                 //is it necessary to initialize the can buttons to 0 if they are just reading pins??
                 canButtonStates[i] = 0;
                 gpioButtonStates[i] = 0;
+				gpioLRUDStates[i] = 0;
+				canLRUDStates[i] = 0;
             }
              /* Restarting the Display. */
             TickType_t lastWakeTime = xTaskGetTickCount();
@@ -178,7 +230,7 @@ static void stateMachine(void *pvParameters){
     while (1) {
         taskENTER_CRITICAL();
         getReqScreen();
-        state_output();
+        stateOutput();
         taskEXIT_CRITICAL();
     }
     vTaskDelayUntil(&lastWakeTime, stateMachine_period);

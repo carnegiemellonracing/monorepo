@@ -79,6 +79,9 @@ bool getAcknowledgeButton(void);
 int32_t getAverageWheelRPM(void);
 bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq);
 
+void StateVSMUp();
+void StateVSMDown();
+
 uint8_t getPaddleState(expanderClutch_t clutch);
 uint8_t getPos(expanderClutch_t clutch);
 
@@ -100,5 +103,9 @@ typedef enum {
 } lv_battery_type_t;
 
 uint8_t getLVSoC(float voltage, lv_battery_type_t battery_type);
+
+//enum Gear(0="UNKNOWN", 1="SLOW", 2="FAST", 3="ENDURANCE", 4="AUTO-X",
+//  5="SKIDPAD", 6="ACCEL", 7="TEST", 8="REVERSE")
+
 
 #endif /* STATE_H */

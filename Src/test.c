@@ -59,11 +59,8 @@ static cmr_task_t test_task;
 static void test(void *pvParameters) {
     (void) pvParameters;
 
-    for (
-        TickType_t lastWakeTime = xTaskGetTickCount();
-        1;
-        vTaskDelayUntil(&lastWakeTime, test_period_ms)
-    ) {
+    for (;;) {
+        vTaskDelayUntil(&lastWakeTime, test_period_ms);
     //    testGPIOWrite();
         // testGPIORead();
         // testADCRead();

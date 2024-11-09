@@ -20,6 +20,9 @@ typedef enum {
     ADC_TPOS_R,     /**< @brief Sensor channel 2. - TPOS R */
     ADC_BPRES,      /**< @brief Sensor channel 3. - BPRES */
     ADC_SWANGLE,    /**< @brief Sensor channel 4. - SWANGLE */
+              //ADD 2 More ADCs
+    ADC_X,          /**< @brief Sensor channel 5. - X */
+    ADC_Y,          /**< @brief Sensor channel 6. - Y */
     ADC_LEN         /**< @brief Total ADC channels. */
 } adcChannel_t;
 

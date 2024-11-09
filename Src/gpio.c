@@ -11,6 +11,7 @@
 
 #include "expanders.h"  // GPIO expanders interface
 #include "state.h"
+#include "newState.h"
 
 static const uint32_t gpioReadButtons_priority = 4;
 
@@ -32,7 +33,24 @@ static cmr_task_t gpioReadButtons_task;
  * @see `stm32f4xx_hal_gpio.h` for various initialization values.
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
-    [GPIO_LED_AMS] = { .port = GPIOA, .init = { .Pin = GPIO_PIN_6,
+    // Change LRUD
+	//Delete LRUD
+	[GPIO_BUTTON_A] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_0,
+					.Mode = GPIO_MODE_IT_RISING_FALLING, .Pull = GPIO_PULLUP,
+					.Speed = GPIO_SPEED_FREQ_LOW } },
+	[GPIO_BUTTON_B] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_1,
+				.Mode = GPIO_MODE_IT_RISING_FALLING, .Pull = GPIO_PULLUP,
+				.Speed = GPIO_SPEED_FREQ_LOW } },
+    [GPIO_BUTTON_SW1] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_2,
+                        .Mode = GPIO_MODE_INPUT, .Pull = GPIO_PULLUP, 
+                        .Speed = GPIO_SPEED_FREQ_LOW } },
+    [GPIO_BUTTON_SW2] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_3,
+                        .Mode = GPIO_MODE_INPUT, .Pull = GPIO_PULLUP, 
+                        .Speed = GPIO_SPEED_FREQ_LOW } },
+    [GPIO_BUTTON_PUSH] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_4,
+                        .Mode = GPIO_MODE_INPUT, .Pull = GPIO_PULLUP, 
+                        .Speed = GPIO_SPEED_FREQ_LOW } },
+	[GPIO_LED_AMS] = { .port = GPIOA, .init = { .Pin = GPIO_PIN_6,
                        .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL,
                        .Speed = GPIO_SPEED_FREQ_LOW } },
     [GPIO_LED_IMD] = { .port = GPIOA, .init = { .Pin = GPIO_PIN_7,
@@ -41,28 +59,98 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_LED_BSPD] = { .port = GPIOA, .init = { .Pin = GPIO_PIN_8,
                         .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL,
                         .Speed = GPIO_SPEED_FREQ_LOW } },
-    [GPIO_BUTTON_L] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_0, 
-                        .Mode = GPIO_MODE_INPUT, .Pull = GPIO_PULLUP, 
-                        .Speed = GPIO_SPEED_FREQ_LOW } },
-    [GPIO_BUTTON_R] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_1, 
-                        .Mode = GPIO_MODE_INPUT, .Pull = GPIO_PULLUP, 
-                        .Speed = GPIO_SPEED_FREQ_LOW } },
-    [GPIO_BUTTON_U] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_2, 
-                        .Mode = GPIO_MODE_INPUT, .Pull = GPIO_PULLUP, 
-                        .Speed = GPIO_SPEED_FREQ_LOW } },
-    [GPIO_BUTTON_D] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_3, 
-                        .Mode = GPIO_MODE_INPUT, .Pull = GPIO_PULLUP, 
-                        .Speed = GPIO_SPEED_FREQ_LOW } },
-    [GPIO_BUTTON_SW1] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_4, 
-                        .Mode = GPIO_MODE_INPUT, .Pull = GPIO_PULLUP, 
-                        .Speed = GPIO_SPEED_FREQ_LOW } },
-    [GPIO_BUTTON_SW2] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_5, 
-                        .Mode = GPIO_MODE_INPUT, .Pull = GPIO_PULLUP, 
-                        .Speed = GPIO_SPEED_FREQ_LOW } },
-    [GPIO_BUTTON_PUSH] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_9, 
-                        .Mode = GPIO_MODE_INPUT, .Pull = GPIO_PULLUP, 
-                        .Speed = GPIO_SPEED_FREQ_LOW } },
 };
+
+void static Arising();
+void static Afalling();
+void static Brising();
+void static Bfalling();
+
+//Define the two variables that tracks rotary input
+volatile int RotaryA = 0;
+volatile int RotaryB = 0;
+/**
+* @brief Adds Interrupt and Programs Callback Function
+*/
+volatile static int rotaryPosition = 0; //This keeps track of rotary position, the important variable, mod 8
+volatile static int pastRotaryPosition = 0; //Keeps track of past rotary position, mod 8
+
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	if(GPIO_Pin == GPIO_PIN_0){
+		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0) == GPIO_PIN_SET){
+			Arising();
+			reqGear();
+		} else {
+			Afalling();
+			reqGear();
+		}
+    }
+	if(GPIO_Pin == GPIO_PIN_1){
+		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1) == GPIO_PIN_SET){
+			Brising();
+			reqGear();
+		} else {
+			Bfalling();
+			reqGear();
+		}
+	}
+}
+
+/**
+* @brief Adds the four function that will be called in the Callback Function
+*
+* Clockwise is negative, counterclockwise is positive
+* To the future firmware people, watch this video to understand it
+* https://www.youtube.com/watch?v=v4BbSzJ-hz4&t=157s&ab_channel=HowToMechatronics
+*
+*/
+//TODO: Check with actual switch to figure out can reduce to two cases?
+void static Arising(){
+	int RotaryA = 1;
+	if (RotaryB!=RotaryA){
+		pastRotaryPosition = rotaryPosition;
+		//wrap around logic
+		rotaryPosition = ((rotaryPosition-1)%8+8)%8;
+	} else {
+		pastRotaryPosition = rotaryPosition;
+		rotaryPosition = (rotaryPosition+1)%8;
+	}
+}
+void static Afalling(){
+	int RotaryA = 0;
+	if (RotaryB!=RotaryA){
+		pastRotaryPosition = rotaryPosition;
+		//wrap around logic
+		rotaryPosition = ((rotaryPosition-1)%8+8)%8;
+	} else {
+		rotaryPosition = (rotaryPosition+1)%8;
+		pastRotaryPosition = rotaryPosition;
+	}
+}
+void static Brising(){
+	int RotaryB = 1;
+	if (RotaryA!=RotaryB){
+		pastRotaryPosition = rotaryPosition;
+		rotaryPosition = (rotaryPosition+1)%8;
+	} else {
+		pastRotaryPosition = rotaryPosition;
+		//wrap around logic
+		rotaryPosition = ((rotaryPosition-1)%8+8)%8;
+	}
+}
+void static Bfalling(){
+	int RotaryB = 0;
+	if (RotaryA!=RotaryB){
+		pastRotaryPosition = rotaryPosition;
+		rotaryPosition = (rotaryPosition+1)%8;
+	} else {
+		pastRotaryPosition = rotaryPosition;
+		//wrap around logic
+		rotaryPosition = ((rotaryPosition-1)%8+8)%8;
+	}
+}
+
 
 /**
  * @brief Checks current LED state and updates if different from `ledTargets`
@@ -98,6 +186,72 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 // {
 //    ledTargets[led] = isOn;
 // }
+//declaration for use
+static void XYActivate(void);
+
+/*
+debouncing for button presses for LRUD
+ */
+# define DEBOUNCE_DELAY 50 //TODO: in milliseconds, to change
+static void canLRUDdebounce (cmr_LRUD_index button){
+	//set can state to false to switch it off
+	canLRUDStates[button] = false;
+	//delay by ((debounce delay time) / (time per tick)) ticks
+	vTaskDelay(DEBOUNCE_DELAY / portTICK_PERIOD_MS);
+	XYActivate();
+	if (gpioLRUDStates[button] == true){
+		while(gpioLRUDStates[button] == true){
+			vTaskDelay(portTICK_PERIOD_MS);
+			XYActivate();
+		}
+		canLRUDStates[button] = true;
+	}
+}
+
+// master function for detecting and changing can button states, will be in gpio loop
+void canLRUDDetect(void){
+	XYActivate();
+	for(int i=0; i<LRUDLen; i++){
+		if(gpioLRUDStates[i] == true){
+			canLRUDdebounce(i);
+		}
+	}
+}
+
+/* Reads ADC input and switch case based on voltage values and has corresponding states boolean variables
+		*Case 1: below 0.5V both
+		*Case 2: X between 0.5V and 4.5V and Y below 0.5V
+		*Case 3: Y between 0.5V and 4.5V and X below 0.5V
+		*Case 4: above 4.5V both
+		*/
+//add can buttons to this
+static void XYActivate(void){
+	float sensorX = cmr_sensorListGetValue(&sensorList, SENSOR_CH_X);
+	float sensorY = cmr_sensorListGetValue(&sensorList, SENSOR_CH_Y);
+	// Both sensors less than 0.5V
+    // LEFT
+	if (sensorX <=0.5 && sensorY <=0.5){
+		gpioLRUDStates[LEFT] = true;
+	}else{
+		gpioLRUDStates[LEFT] = false;
+	}
+	if (sensorX<=4.5 && sensorX >=0.5 && sensorY <=0.5){
+		gpioLRUDStates[RIGHT] = true;
+	}else{
+		gpioLRUDStates[RIGHT] = false;
+	}
+	if (sensorX <=0.5 && sensorY>=0.5 && sensorY <=4.5){
+		gpioLRUDStates[UP] = true;
+	}else{
+		gpioLRUDStates[UP] = false;
+	}
+	if (sensorX >=4.5 && sensorY >=4.5){
+		gpioLRUDStates[DOWN] = true;
+	}else{
+		gpioLRUDStates[DOWN] = false;
+	}
+}
+
 
 /**
  * @brief reads state of all buttons
@@ -109,23 +263,27 @@ static void gpioReadButtons(void *pvParameters) {
     while (1) {
         // Direct assignment for CAN buttons
         for(int i=0; i<NUM_BUTTONS; i++){
+			//TODO: two button states
             canButtonStates[i] = (HAL_GPIO_ReadPin(gpioPinConfigs[i].port, gpioPinConfigs[i].pin) == GPIO_PIN_RESET);
         }
-        //the for loop iterates over all the pins including the LEDs will it mess up the LEDs (should i change it repeat for the num of buttons insteaed)??
-        for(int i=0; i<GPIO_LEN; i++) {
-            while(HAL_GPIO_ReadPin(gpioPinConfigs[i].port, gpioPinConfigs[i].pin)
-                == GPIO_PIN_RESET) { 
-                //when you press it goes to zero
-                vTaskDelayUntil(&lastWakeTime, buttonsInput_period);
-                pressConfirmed = true;        
-            }
-            if(pressConfirmed){
-                gpioButtonStates[i] = true;
-            }
-        }
-        vTaskDelayUntil(&lastWakeTime, gpioReadButtons_period);
+		canLRUDDetect();
     }
 }
+
+/**
+* @brief Gets rotary position
+*/
+int getRotaryPosition(){
+	return rotaryPosition;
+}
+
+/**
+* @brief: Gets past rotary position
+*/
+int getPastRotaryPosition(){
+	return pastRotaryPosition;
+}
+
 
 /**
  * @brief Initializes the GPIO interface.
