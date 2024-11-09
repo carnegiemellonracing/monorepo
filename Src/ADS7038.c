@@ -1,0 +1,133 @@
+#include "ADS7038.h"
+
+#include <CMR/gpio.h>
+#include <CMR/panic.h>
+#include <CMR/spi.h>  // SPI interface
+#include <CMR/tasks.h>
+
+cmr_spi_t ADS7038Spi;
+
+static const SPI_InitTypeDef ADS7038SpiInit = {
+    .Mode = SPI_MODE_MASTER,
+    .Direction = SPI_DIRECTION_2LINES,
+    .DataSize = SPI_DATASIZE_8BIT,
+    .CLKPolarity = SPI_POLARITY_HIGH,
+    .CLKPhase = SPI_PHASE_2EDGE,
+    .NSS = SPI_NSS_SOFT,
+    .BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64,
+    .FirstBit = SPI_FIRSTBIT_MSB,
+    .TIMode = SPI_TIMODE_DISABLE,
+    .CRCCalculation = SPI_CRCCALCULATION_DISABLE,
+    .CRCPolynomial = 10,
+};
+
+static const cmr_spiPinConfig_t ADS7038SpiPins = {
+    .mosi = { .port = GPIOC, .pin = GPIO_PIN_3 },
+    .miso = { .port = GPIOC, .pin = GPIO_PIN_2 },
+    .sck = { .port = GPIOB, .pin = GPIO_PIN_13 },
+    .nss = { .port = GPIOB, .pin = GPIO_PIN_12 },
+};
+
+#define CHANNEL_ID_ENABLE 1 << 4
+
+int ADS7038_read(uint8_t reg, uint8_t *data) {
+    uint8_t command[3] = { RD_REG, reg, 0 };
+    uint8_t dummy[3] = { 0, 0, 0 };
+    // Initiate Register Read
+    int status = 0;
+    status = cmr_spiTXRX(&ADS7038Spi, command, NULL, SPI_MSG_LEN);
+    if (status < 0) {
+        return -1;
+    }
+
+    // Read Data from register address
+    status = cmr_spiTXRX(&ADS7038Spi, dummy, data, SPI_MSG_LEN);
+    if (status < 0) {
+        return -1;
+    }
+    return status;
+}
+
+int ADS7038_write(uint8_t reg, uint8_t data) {
+    uint8_t command[3] = { WR_REG, reg, data };
+    return cmr_spiTXRX(&ADS7038Spi, command, NULL, SPI_MSG_LEN);
+}
+
+int ADS7038_adcManualRead(uint16_t *ppos) {
+    uint8_t command0[3] = { WR_REG, CHANNEL_SEL_REG, PPOS_0_PORT };
+    uint8_t command1[3] = { WR_REG, CHANNEL_SEL_REG, PPOS_1_PORT };
+    uint8_t data[3];
+    uint8_t dummy[3] = { 0, 0, 0 };
+    // Set first channel, data received is not meaningful
+    cmr_spiTXRX(&ADS7038Spi, command0, NULL, 3);
+    // Set second channel, data received is not meaningful
+    cmr_spiTXRX(&ADS7038Spi, command1, NULL, 3);
+
+    // Receive first channel data
+    if (cmr_spiTXRX(&ADS7038Spi, dummy, data, SPI_MSG_LEN) == 0) {
+        uint16_t adcValue0 = (data[0] << 4) | (data[1] >> 4);
+        ppos[0] = adcValue0;
+    } else {
+        return -1;
+    }
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&lastWakeTime, 1);
+    // Receive second channel data
+    if (cmr_spiTXRX(&ADS7038Spi, dummy, data, SPI_MSG_LEN) == 0) {
+        uint16_t adcValue1 = (data[0] << 4) | (data[1] >> 4);
+        ppos[1] = adcValue1;
+    } else {
+        return -1;
+    }
+    return 0;
+}
+
+bool ADS7038Init() {
+    cmr_spiInit(
+        &ADS7038Spi, SPI2, &ADS7038SpiInit, &ADS7038SpiPins,
+        DMA2_Stream2, DMA_CHANNEL_3,
+        DMA2_Stream3, DMA_CHANNEL_3);
+    int status = ADS7038Configure();
+    return status;
+}
+
+static bool compareReadAndWrite(int command, uint8_t *data) {
+    if (data == NULL) {
+    	return true;
+    }
+    if (command != data[0]) {
+    	return true;
+    }
+    return false;
+}
+
+int ADS7038Configure() {
+    int status = 0;
+    uint8_t data[3];
+    status |= ADS7038_read(SYSTEM_STATUS_REG, data);
+    // Uncomment compareReadAndWrite when steering wheel is connected and you want to verify
+    status |= ADS7038_write(DATA_CFG_REG, CHANNEL_ID_ENABLE);
+    status |= ADS7038_read(DATA_CFG_REG, data);
+    // compareReadAndWrite(CHANNEL_ID_ENABLE,data);
+
+    status |= ADS7038_write(SEQUENCE_CFG_REG, 0b00000000);
+    status |= ADS7038_read(SEQUENCE_CFG_REG, data);
+    // compareReadAndWrite(0b00000000,data);
+
+    status |= ADS7038_write(PIN_CFG_REG, 0b00111100);
+    status |= ADS7038_read(PIN_CFG_REG, data);
+    // compareReadAndWrite(0b00111100,data);
+
+    status |= ADS7038_write(GPIO_CFG_REG, 0b00000000);
+    status |= ADS7038_read(GPIO_CFG_REG, data);
+    // compareReadAndWrite(0b00000000,data);
+
+    return status;
+}
+
+bool ADS7038Check() {
+	uint8_t data[3];
+	ADS7038_read(GPIO_CFG_REG, data);
+	ADS7038_read(PIN_CFG_REG, data);
+	return compareReadAndWrite(0b00111100,data);
+}
