@@ -282,7 +282,7 @@ static void tftUpdate(void *pvParameters) {
 
     tft_t *tft = pvParameters;
 
-
+	TickType_t lastWakeTime = xTaskGetTickCount();
     /* Wait for display to initialize. */
     vTaskDelayUntil(&lastWakeTime, TFT_INIT_MS);
 
