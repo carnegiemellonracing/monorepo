@@ -357,7 +357,7 @@ static void drawRacingScreen(void) {
         hvSoC,
         drsOpen);
     // /* Write Display List to Screen */
-    tftDLWrite(&tft, &tftDL_raci ng_screen);
+    tftDLWrite(&tft, &tftDL_racing_screen);
 }
 
 /**

@@ -51,7 +51,7 @@ static void statusLED(void *pvParameters) {
     cmr_gpioWrite(GPIO_LED_2, 0);
 
     static bool toggle = true;
-
+    TickType_t lastWakeTime = xTaskGetTickCount();
     for (;;) {
         vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
         cmr_gpioWrite(GPIO_LED_0, toggle);
@@ -93,11 +93,12 @@ static void errorLEDs(void *pvParameters) {
     uint8_t latch = getVSMlatchMatrix();
     for (;;) {
         TickType_t lastWakeTime = xTaskGetTickCount();
-        vTaskDelayUntil(&lastWakeTime, errorLEDs_period_ms){
+        vTaskDelayUntil(&lastWakeTime, errorLEDs_period_ms);
         latch = getVSMlatchMatrix();
         cmr_gpioWrite(GPIO_LED_IMD, latch & CMR_CAN_VSM_LATCH_IMD);
         cmr_gpioWrite(GPIO_LED_AMS, latch & CMR_CAN_VSM_LATCH_AMS);
         cmr_gpioWrite(GPIO_LED_BSPD, latch & CMR_CAN_VSM_LATCH_BSPD);
+
     }
 }
 
