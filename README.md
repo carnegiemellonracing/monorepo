@@ -5,35 +5,36 @@ It does some wonky things to stream data slices at low bandwidth off
 of the car. It is not totally dissimilar to the TOM firmware in this way,
 but it is by design less general purpose.
 
-[submodules]: https://git-scm.com/book/en/v2/Git-Tools-Submodules
-
 You can clone this repository via:
 `git clone --recursive git@github.com:carnegiemellonracing/RAM.git`
 
-Cmake Clean
+## Project Structure
 
-`cmake --build build/debug/ --target clean`
+The project directory is organized as follows:
 
-## File manifest
-
-- [`stm32f413-drivers/`][drivers]: [Shared device drivers/system code.][drivers]
-- `.cproject`: [TrueStudio][truestudio] C project file.
-    - Managed by TrueStudio project configuration GUI.
-- `.project`: [TrueStudio][truestudio] project file.
-    - Managed by TrueStudio project configuration GUI.
-- `stm32f4xx_hal_conf.h`: [STM32 hardware abstraction layer (HAL)][hal] config.
-    - Mostly used for enabling HAL modules.
-- `FreeRTOSConfig.h`: [FreeRTOS][freertos] config.
-    - Mostly used for enabling various RTOS features.
-- `main.c`: Firmware entry point.
-    - Some small node-specific RTOS tasks can go here.
-    - However, if they become unwieldly, they should go into their own modules.
-- `*.{c,h}`: Board-specific implementation modules.
-    - Device peripheral management, including RTOS tasks when applicable.
-    - Node-specific APIs/RTOS tasks.
-
-[drivers]: https://github.com/carnegiemellonracing/stm32f413-drivers
-[truestudio]: https://atollic.com/truestudio/
-[hal]: https://www.st.com/en/embedded-software/stm32cubef4.html
-[freertos]: https://freertos.org/
-
+- `.env`: Environment variables file.
+- `.gitignore`: Git ignore file.
+- `.gitmodules`: Git submodules configuration.
+- `.project`: Project configuration file.
+- `.vscode/`: Visual Studio Code configuration files.
+- `build/`: Build output directory.
+- `build.sh`: Build script.
+- `can_fmt.json`: CAN format configuration file.
+- `ci-scripts/`: Continuous integration scripts.
+- `cJSON/`: cJSON library directory.
+- `cmake/`: CMake configuration files.
+- `CMakeLists.txt`: CMake build configuration file.
+- `CMakePresets.json`: CMake presets configuration file.
+- `cn-cbor/`: CN-CBOR library directory.
+- `doxygen.conf`: Doxygen configuration file.
+- `Inc/`: Header files directory.
+- `marshall.py`: Marshalling script.
+- `README.md`: Project README file.
+- `requirements.txt`: Python dependencies file.
+- `simulatecar.py`: Car simulation script.
+- `Src/`: Source files directory.
+- `Startup/`: Startup files directory.
+- `static.sh`: Static analysis script.
+- `stm32f413-drivers/`: STM32F413 drivers directory.
+- `stm32f413rgtx_FLASH.ld`: STM32F413RG linker script.
+- `tests/`: Test files directory.

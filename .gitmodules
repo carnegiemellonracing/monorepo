@@ -7,6 +7,3 @@
 [submodule "cn-cbor"]
 	path = cn-cbor
 	url = git@github.com:carnegiemellonracing/cn-cbor.git
-[submodule "ci-scripts"]
-	path = ci-scripts
-	url = git@github.com:carnegiemellonracing/ci-scripts.git
