@@ -18,11 +18,16 @@ import requests
 import time
 import base64
 import numpy as np
+import os
+from dotenv import load_dotenv
 import cbor2
 import json
 import sseclient
 import pprint
 import threading
+
+# Load environment variables from .env file
+load_dotenv()
 
 cfile = open("can_fmt.json", mode="r")
 config = json.loads(cfile.read())
@@ -81,12 +86,6 @@ class SignalGenerator:
 
         return np.array(sig, dtype=self.dtype).tobytes()
 
-    def setRate(self, rate):
-        self.samp = rate
-
-    def setFreq(self, freq):
-        self.freq = freq
-
 
 class EnumGenerator:
     """
@@ -122,9 +121,6 @@ class EnumGenerator:
             self.val = self.map.index(byname)
         else:
             self.map = []
-
-    def setRate(self, rate):
-        self.samp = rate
 
     def setVal(self, val):
         if self.map:
@@ -165,8 +161,6 @@ class VectorGenerator:
         if bylist:
             self.setVal(bylist)
 
-    def setRate(self, rate):
-        self.samp = rate
 
     def setVal(self, vlist):
         b = 0
@@ -185,13 +179,13 @@ class VectorGenerator:
 class ParticleTransmit:
     """
     A class to transmit data to a Particle.io device.
-    Attributes:
+    Attributes
     -----------
     url : str
         The URL endpoint for sending events to Particle.io.
     fields : dict
         A dictionary containing the fields required for the event data.
-    Methods:
+    Methods
     --------
     __init__():
         Initializes the ParticleTransmit instance with the URL and fields.
@@ -205,7 +199,7 @@ class ParticleTransmit:
             "name": "sim-car-to-web",
             "private": "true",
             "data": None,
-            "access_token": "f18cc8fdcc2678cb8f9b94aa307cf22e5f87c8b3",
+            "access_token": os.getenv("ACCESS_TOKEN"),
         }
 
     def send(self, data):
@@ -238,6 +232,7 @@ class ParticleReceive:
                 client = sseclient.SSEClient(r)
             except requests.exceptions.InvalidURL:
                 print("Invalid URL")
+                print(r.text)
                 return
 
             for event in client.events():
@@ -394,6 +389,7 @@ def nameToEnum(signame, enumname, amnt=1):
     return np.array([enumval] * amnt, dtype="uint8").tobytes()
 
 
-ram = RAM()
-while True:
-    time.sleep(1)
+if __name__ == "__main__":
+    ram = RAM()
+    while True:
+        time.sleep(1)
