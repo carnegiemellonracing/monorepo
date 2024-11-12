@@ -7,13 +7,9 @@
 
 #include <stdio.h>   // snprintf()
 #include <string.h>  // memcpy()
-#include <stdbool.h> // bool
 
-#include <CMR/uart.h>   // CMR UART interface
-#include <CMR/tasks.h>  // CMR task interface
 #include <CMR/config.h> // CMR configuration itnerface
 #include <CMR/config_screen_helper.h>
-#include <CMR/panic.h> // bad things
 
 #include "uart.h"            // Interface to implement
 #include "sample.h"          // Sample formatting
@@ -92,7 +88,6 @@ static void uartTX_Task(void *pvParameters)
             taskEXIT_CRITICAL();
             vTaskDelayUntil(&last_wake, boron_tx_period_ms);
             continue;
-            // cmr_panic("The CBOR parser exploded");
         }
 
         cmr_uartMsg_t txMsg;
@@ -103,7 +98,9 @@ static void uartTX_Task(void *pvParameters)
         raw_sample_data[10].count = 0;
         raw_sample_data[10].len = 0;
         memset(raw_sample_data[10].values, 0, MAX_SAMPLEVEC_LEN);
+
         taskEXIT_CRITICAL();
+
         cmr_uartTX(&uart.port, &txMsg, send_buf, msg_len);
         cmr_uartMsgWait(&txMsg);
 
@@ -251,6 +248,7 @@ static void handle_command(cn_cbor *command)
                 if (data->length == sizeof(cmr_canCDCPowerLimit_t))
                 {
                     cmr_canCDCPowerLimit_t *powerLimit = (cmr_canCDCPowerLimit_t *)data->v.bytes;
+
                     canTX((cmr_canBusID_t)bus->v.uint, (uint16_t)id->v.uint,
                     	  powerLimit, sizeof(cmr_canCDCPowerLimit_t),
 					      200);
@@ -285,17 +283,15 @@ static void handle_command(cn_cbor *command)
     {
         return;
     }
-
+    /* Apparently the CBOR javascript lib is going to send as text. */
     if (
         params != NULL &&
-        /* Apparently the CBOR javascript lib is going to send as text. */
         (params->type == CN_CBOR_BYTES || params->type == CN_CBOR_TEXT) &&
-        params->length >= sizeof(struct param_pair))
-    {
+        params->length >= sizeof(struct param_pair)) {
         /* Have some parameters to update */
         /* Expects an byte-string of 2-byte values, each byte pairs with form
          * kind:cutoff */
-        int len = params->length;
+        uint32_t len = params->length;
         for (size_t i = 0; i < len; i += sizeof(struct param_pair))
         {
             struct param_pair *pair = (struct param_pair *)(params->v.bytes + i);
@@ -322,10 +318,7 @@ static void handle_command(cn_cbor *command)
         /* Commit any modified settings. We could put a flag in for the
          * no-update-detected case, but it's fiiine. */
         commit_settings();
-    }
-    else if (
-        pull != NULL)
-    {
+    } else if (pull != NULL) {
         /* We were requested a dump of the current settings.
          * Note that this must be exclusive with the parameter update path.
          * (which has priority). */
@@ -335,7 +328,7 @@ static void handle_command(cn_cbor *command)
         /* Gather the settings up. We don't need to transmit -all- of the
          * settings, as most will probably be unused; The parser
          * can inform us how many are in use. */
-        for (int i = 0; i < signals_parsed; i++)
+        for (uint32_t i = 0; i < signals_parsed; i++)
         {
             response_data[response_num_pairs++] = (struct param_pair){
                 .kind = i,

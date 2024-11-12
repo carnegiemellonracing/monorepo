@@ -13,11 +13,7 @@
 
 #include "parser.h"                         /* Interface */
 #include "sample.h"                         /* Sample queuing */
-#include <cJSON.h>                          /* JSON parsing */
-#include <stdlib.h>                         /* NULL */
-#include <stdint.h>                         /* Usual suspects */
 #include <string.h>                         /* strncmp */
-#include <stdbool.h>                        /* bool */
 
 /**
  * @brief Data type names are <= 9 bytes
@@ -41,9 +37,6 @@
     f(DT_FLOAT32, f32, float)                                                  \
     f(DT_FLOAT64, f64, double)
 
-/**
- * @brief Parsed signal information.
- */
 
 /**
  * @brief Number of signals configured in the parsed vector.
