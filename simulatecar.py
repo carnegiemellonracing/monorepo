@@ -128,7 +128,7 @@ class EnumGenerator:
         else:
             self.val = val
 
-    def get(self, t=0):
+    def get(self):
         if self.samp == 0:
             return np.array([])
         return np.array([self.val] * self.samp, dtype=np.uint8).tobytes()
@@ -282,7 +282,7 @@ class RAM:
     def __init__(self, cfg=dict(), sigs=dict()):
         self.rates = {0: 0, 1: 1, 2: 5, 3: 10, 4: 50, 5: 100}
         self.types = {
-            "i64": np.double,
+            "i64": np.int64,
             "f32": np.float32,
             "i32": np.int32,
             "i16": np.int16,
