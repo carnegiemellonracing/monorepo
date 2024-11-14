@@ -218,6 +218,28 @@ void canLRUDDetect(void){
 	}
 }
 
+/**
+ * @brief Converts analog ADC to 0-3.3V, then scales that to 0-5V
+ *
+ * @param analog ADC value between 0-4096. Helper function for adcToXY
+ *
+ * @return a float between 0-5V.
+ */
+
+static float adcToVoltage(uint32_t analog){
+
+	//error check
+	if(analog > 4096){
+		return -1;
+	}else{
+		//Scale analog to voltage between 0-5V
+		float finalVolt = (analog/4096) * 5;
+
+		return finalVolt;
+	}
+}
+
+
 /* Reads ADC input and switch case based on voltage values and has corresponding states boolean variables
 		*Case 1: below 0.5V both
 		*Case 2: X between 0.5V and 4.5V and Y below 0.5V
@@ -226,8 +248,8 @@ void canLRUDDetect(void){
 		*/
 //add can buttons to this
 static void XYActivate(void){
-	float sensorX = cmr_sensorListGetValue(&sensorList, SENSOR_CH_X);
-	float sensorY = cmr_sensorListGetValue(&sensorList, SENSOR_CH_Y);
+	float sensorX = adcToVoltage(cmr_sensorListGetValue(&sensorList, SENSOR_CH_X));
+	float sensorY = adcToVoltage(cmr_sensorListGetValue(&sensorList, SENSOR_CH_Y));
 	// Both sensors less than 0.5V
     // LEFT
 	if (sensorX <=0.5 && sensorY <=0.5){

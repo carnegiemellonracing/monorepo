@@ -320,42 +320,7 @@ static uint32_t sampleBrakeImplaus(const cmr_sensor_t *sensor) {
     return implaus;
 }
 
-/**
- * @brief Converts analog ADC to 0-3.3V, then scales that to 0-5V
- *
- * @param analog ADC value between 0-4096. Helper function for adcToXY
- *
- * @return a float between 0-5V.
- */
 
-static float adcToVoltage(uint32_t analog){
-
-	//error check
-	if(analog > 4096){
-		return -1;
-	}else{
-		//Scale analog to voltage between 0-5V
-		float finalVolt = (analog/4096) * 5;
-
-		return finalVolt;
-	}
-}
-/**
- * @brief Converts a raw ADC value for adc X or Y into voltage.
- *
- * @param sensor The sensor to read.
- *
- * @param reading The ADC value to convert.
- *
- * @return Voltage in mV.
- */
-static float adcToXY(const cmr_sensor_t *sensor, uint32_t reading) {
-	(void)sensor; //Placate Compiler
-
-	float XYVoltage = adcToVoltage(reading);
-
-	return XYVoltage; //should be range of 0-5V inclusive
-}
 
 
 static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
@@ -391,10 +356,10 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
                                 .readingMin = 0,  // output is typically 2V max
                                 .readingMax = 2600,
                                 .warnFlag = CMR_CAN_WARN_FSM_BPP },
-	[SENSOR_CH_X] = { .conv = adcToXY, .sample = sampleADCSensor,
+	[SENSOR_CH_X] = { .conv = NULL, .sample = sampleADCSensor,
 					  .readingMin = 0,
 					  .readingMax = 5,},
-	[SENSOR_CH_Y] = { .conv = adcToXY, .sample = sampleADCSensor,
+	[SENSOR_CH_Y] = { .conv = NULL, .sample = sampleADCSensor,
 				  .readingMin = 0,
 				  .readingMax = 5,}
 };
