@@ -28,6 +28,8 @@ void reqVSM(void);
 void reqGear(void);
 int getRequestedGear(void);
 
+int getMotorTemp(void);
+
 // Declare the global variable
 extern cmr_state currState;
 extern cmr_state nextState;
