@@ -32,6 +32,58 @@ static const TickType_t stateMachine_period = 10;
 /** @brief Button input task task. */
 static cmr_task_t stateMachine_task;
 
+
+/**
+ * @brief Gets the highest motor temperature.
+ *
+ * @param none
+ *
+ * @return highest motor temperature in celsius, rounded to integer
+ */
+int getMaxMotorTemp(void){
+	/* Get CAN data */
+	// Front Left
+	cmr_canRXMeta_t *metaAMK_FL_Act2 = canRXMeta + CANRX_AMK_FL_ACT_2;
+	volatile cmr_canAMKActualValues2_t *canAMK_FL_Act2 =
+		(void *)metaAMK_FL_Act2->payload;
+	// Front Right
+	cmr_canRXMeta_t *metaAMK_FR_Act2 = canRXMeta + CANRX_AMK_FR_ACT_2;
+	volatile cmr_canAMKActualValues2_t *canAMK_FR_Act2 =
+		(void *)metaAMK_FR_Act2->payload;
+	// Rear Left
+	cmr_canRXMeta_t *metaAMK_RL_Act2 = canRXMeta + CANRX_AMK_RL_ACT_2;
+	volatile cmr_canAMKActualValues2_t *canAMK_RL_Act2 =
+		(void *)metaAMK_RL_Act2->payload;
+	// Rear Right
+	cmr_canRXMeta_t *metaAMK_RR_Act2 = canRXMeta + CANRX_AMK_RR_ACT_2;
+	volatile cmr_canAMKActualValues2_t *canAMK_RR_Act2 =
+		(void *)metaAMK_RR_Act2->payload;
+
+	/* Extract motor temperatures */
+	int32_t frontLeftTemp = canAMK_FL_Act2->motorTemp_dC;
+	int32_t frontRightTemp = canAMK_FR_Act2->motorTemp_dC;
+	int32_t rearLeftTemp = canAMK_RL_Act2->motorTemp_dC;
+	int32_t rearRightTemp = canAMK_RR_Act2->motorTemp_dC;
+
+	/* Return highest motor temperature*/
+	int32_t maxTemp = frontLeftTemp;
+
+	if( maxTemp < frontRightTemp ){
+		maxTemp = frontRightTemp;
+	}
+	if (maxTemp < rearLeftTemp )
+	{
+		maxTemp = rearLeftTemp;
+	}
+	if (maxTemp < rearRightTemp )
+	{
+		maxTemp = rearRightTemp;
+	}
+
+	return maxTemp;
+
+}
+
 static cmr_state getReqScreen(void) {
     if(stateGetVSM() == CMR_CAN_ERROR){
     	nextState = dimStateERROR;

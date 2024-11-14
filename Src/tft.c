@@ -17,6 +17,8 @@
 #include "state.h"       // State interface
 #include "tftContent.h"  // Content interface
 #include "tftDL.h"       // Display list interface
+#include "CMR/can_types.h" //can_types
+#include "newState.h"    //New State Machine
 
 /** @brief Expected chip ID. */
 #define TFT_CHIP_ID 0x00011308
@@ -351,7 +353,7 @@ static void drawSafetyScreen(void) {
  */
 static void drawRacingScreen(void) {
     tftDL_racingScreenUpdate(
-        motorTemp_C,
+        getMaxMotorTemp(),
         acTemp_C,
         mcTemp_C,
         hvSoC,
