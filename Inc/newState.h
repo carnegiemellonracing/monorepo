@@ -18,7 +18,7 @@ typedef enum {
     START = 1, 
     NORMAL = 2, 
     CONFIG = 3, 
-    ERROR = 4, 
+    dimStateERROR = 4,
     RACING = 5
     //SAFETY
 } cmr_state;

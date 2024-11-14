@@ -46,17 +46,17 @@ static cmr_task_t errorLEDs_task;
 static void statusLED(void *pvParameters) {
     (void)pvParameters;
 
-    cmr_gpioWrite(GPIO_LED_0, 0);
-    cmr_gpioWrite(GPIO_LED_1, 0);
-    cmr_gpioWrite(GPIO_LED_2, 0);
+    cmr_gpioWrite(GPIO_LED_AMS, 0);
+    cmr_gpioWrite(GPIO_LED_IMD, 0);
+    cmr_gpioWrite(GPIO_LED_BSPD, 0);
 
     static bool toggle = true;
     TickType_t lastWakeTime = xTaskGetTickCount();
     for (;;) {
         vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
-        cmr_gpioWrite(GPIO_LED_0, toggle);
-        cmr_gpioWrite(GPIO_LED_1, toggle);
-        cmr_gpioWrite(GPIO_LED_2, toggle);
+        cmr_gpioWrite(GPIO_LED_AMS, toggle);
+        cmr_gpioWrite(GPIO_LED_IMD, toggle);
+        cmr_gpioWrite(GPIO_LED_BSPD, toggle);
         toggle = !toggle;
     }
 }

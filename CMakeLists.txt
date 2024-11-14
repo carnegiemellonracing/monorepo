@@ -129,6 +129,8 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/tft.c
     ${CMAKE_SOURCE_DIR}/Src/tftContent.c
     ${CMAKE_SOURCE_DIR}/Src/tftDL.c
+        Src/newState.c
+        Src/test.c
 )
 
 # Add sources to executable

@@ -20,6 +20,7 @@
 #include "expanders.h"   // LED strip interface.
 #include "test.h"
 #include "newState.h"
+#include "tftPrivate.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -31,14 +32,14 @@ static const TickType_t stateMachine_period = 10;
 /** @brief Button input task task. */
 static cmr_task_t stateMachine_task;
 
-static void getReqScreen(void) {
+static cmr_state getReqScreen(void) {
     if(stateGetVSM() == CMR_CAN_ERROR){
-    	nextState = ERROR;
+    	nextState = dimStateERROR;
     }
     /*case if we use safety screen
     if(stateGetVSM() == CMR_CAN_ERROR) {
         if(stateGetVSMReq() == CMR_CAN_HV_EN) return SAFETY;
-        return ERROR;
+        return dimStateERROR;
     }
     */
     switch (currState) {
@@ -109,7 +110,7 @@ static void getReqScreen(void) {
             }
             else nextState = CONFIG;
             break;
-        case ERROR:
+        case dimStateERROR:
             nextState = INIT;
             break;
         case RACING:
@@ -127,6 +128,7 @@ static void getReqScreen(void) {
         default:
             nextState = INIT;
     }
+	return nextState;
 }
 
 void reqVSM(void) {
@@ -170,7 +172,7 @@ void reqGear(void) {
 }
 
 //returns requested gear
-int getRequstedGear(void){
+int getRequestedGear(void){
 	return requestedGear;
 }
 
@@ -213,7 +215,7 @@ static void stateOutput() {
         case CONFIG:
             drawConfigScreen();
             break;
-        case ERROR:
+        case dimStateERROR:
             drawErrorScreen();
             break;
         case RACING:

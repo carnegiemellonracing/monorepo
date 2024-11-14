@@ -11,7 +11,7 @@
 #include "gpio.h"
 #include "adc.h"
 #include "expanders.h"
-
+TickType_t lastWakeTime = xTaskGetTickCount();
 void testGPIOWrite()
 {
     cmr_gpioToggle(GPIO_LED_IMD);
@@ -22,7 +22,7 @@ void testGPIOWrite()
 void testGPIORead()
 {
     volatile int read;
-    for (size_t pin = GPIO_LED_0; pin < GPIO_LEN; pin++)
+    for (size_t pin = GPIO_LED_AMS; pin < GPIO_LEN; pin++)
     {
         read = cmr_gpioRead(pin);
         printf("GPIO Pin %u: %d\n", pin, read);

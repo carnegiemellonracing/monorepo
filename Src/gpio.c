@@ -264,7 +264,7 @@ static void gpioReadButtons(void *pvParameters) {
         // Direct assignment for CAN buttons
         for(int i=0; i<NUM_BUTTONS; i++){
 			//TODO: two button states
-            canButtonStates[i] = (HAL_GPIO_ReadPin(gpioPinConfigs[i].port, gpioPinConfigs[i].pin) == GPIO_PIN_RESET);
+            canButtonStates[i] = (HAL_GPIO_ReadPin(gpioPinConfigs[i].port, gpioPinConfigs[i].init.Pin) == GPIO_PIN_RESET);
         }
 		canLRUDDetect();
     }
