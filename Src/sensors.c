@@ -432,6 +432,3 @@ uint8_t throttleGetPos(void) {
 
     return (uint8_t)((tposL + tposR) / 2);
 }
-
-
-vTaskDelayUntil(&lastWakeTime, gpioReadButtons_period);
