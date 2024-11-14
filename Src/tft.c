@@ -353,7 +353,7 @@ static void drawSafetyScreen(void) {
  */
 static void drawRacingScreen(void) {
     tftDL_racingScreenUpdate(
-        getMotorTemp(),
+        getMaxMotorTemp(),
         acTemp_C,
         mcTemp_C,
         hvSoC,

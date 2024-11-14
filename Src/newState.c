@@ -40,7 +40,7 @@ static cmr_task_t stateMachine_task;
  *
  * @return highest motor temperature in celsius, rounded to integer
  */
-int getMotorTemp(void){
+int getMaxMotorTemp(void){
 	/* Get CAN data */
 	// Front Left
 	cmr_canRXMeta_t *metaAMK_FL_Act2 = canRXMeta + CANRX_AMK_FL_ACT_2;
