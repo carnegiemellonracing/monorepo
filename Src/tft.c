@@ -23,9 +23,6 @@
 /** @brief Expected chip ID. */
 #define TFT_CHIP_ID 0x00011308
 
-/** @brief Display reset time, in milliseconds. */
-#define TFT_RESET_MS 50
-
 /** @brief Display initialization QuadSPI prescaler. */
 #define TFT_INIT_QSPI_PRESCALER 32
 
@@ -47,10 +44,10 @@
 /** @brief The display. */
 static tft_t tft;
 
-static void drawErrorScreen(void);
-static void drawRTDScreen(void);
-static void drawConfigScreen(void);
-static void drawSafetyScreen(void);
+void drawErrorScreen(void);
+void drawRTDScreen(void);
+void drawConfigScreen(void);
+void drawSafetyScreen(void);
 
 /*Prev HVC errors to latch on display*/
 static bool prevOverVolt = false;
@@ -333,7 +330,7 @@ static void tftUpdate(void *pvParameters) {
  * @brief Draws the Display Updated List to the Screen
  *
  */
-static void drawConfigScreen(void) {
+void drawConfigScreen(void) {
     tftDLContentLoad(&tft, &tftDL_config);
     tftDL_configUpdate();
     tftDLWrite(&tft, &tftDL_config);
@@ -343,7 +340,7 @@ static void drawConfigScreen(void) {
  * @brief Draws the Safety Circuit to the Screen
  *
  */
-static void drawSafetyScreen(void) {
+void drawSafetyScreen(void) {
     tftDLContentLoad(&tft, &tftDL_safety_screen);
     tftDLWrite(&tft, &tftDL_safety_screen);
 }
@@ -351,7 +348,7 @@ static void drawSafetyScreen(void) {
  /** @brief Draws the motor, ac, cooling, etc. temps to the Screen
  *
  */
-static void drawRacingScreen(void) {
+void drawRacingScreen(void) {
 	//TODO: Figure out what the heck this is
 	uint32_t hvSoC = 0;
     tftDL_racingScreenUpdate(
@@ -368,7 +365,7 @@ static void drawRacingScreen(void) {
  * @brief Draws the Display Updated List to the Screen
  *
  */
-static void drawErrorScreen(void) {
+void drawErrorScreen(void) {
     cmr_canRXMeta_t *metaVSMStatus = canRXMeta + CANRX_VSM_STATUS;
     volatile cmr_canVSMStatus_t *canVSMStatus =
         (void *)metaVSMStatus->payload;
@@ -561,7 +558,7 @@ static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hot
  * @brief Draws the Display Updated List to the Screen
  *
  */
-static void drawRTDScreen(void) {
+void drawRTDScreen(void) {
     /* Setup the Required CAN info for Display */
     cmr_canRXMeta_t *metaMemoratorBroadcast = canRXMeta + CANRX_MEMORATOR_BROADCAST;
 

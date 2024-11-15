@@ -10,6 +10,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <tftPrivate.h>
 /** @brief setting the thresholds for the backgrounds to turn yellow and red*/
 #define AC_YELLOW_THRESHOLD 55
 #define AC_RED_THRESHOLD 57
@@ -18,11 +19,19 @@
 #define MC_YELLOW_THRESHOLD 48
 #define MC_RED_THRESHOLD 58
 
+/** @brief Display reset time, in milliseconds. */
+#define TFT_RESET_MS 50
+
+
 /** @brief Display update period. */
 #define TFT_UPDATE_PERIOD_MS 20
 
 void tftInit(void);
-
+void drawRacingScreen(void);
+void drawConfigScreen(void);
+void drawSafetyScreen(void);
+void drawErrorScreen(void);
+void drawRTDScreen(void);
 /** @brief All of the errors to be drawn on-screen
  * in error state. */
 typedef struct {

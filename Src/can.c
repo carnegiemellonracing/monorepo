@@ -181,7 +181,6 @@ static void canTX100Hz(void *pvParameters) {
     while (1) {
         sendHeartbeat(lastWakeTime);
         sendFSMData();
-
         // Calculate integer regenPercent from regenStep
         uint8_t regenPercent = (uint8_t)(REGEN_MIN + REGEN_STEP * regenStep);
         uint8_t packed = 0;

@@ -23,6 +23,7 @@
 #include "tftPrivate.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <tftDL.h>
 
 static const uint32_t stateMachine_priority = 4;
 
