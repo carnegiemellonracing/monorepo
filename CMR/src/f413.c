@@ -186,10 +186,12 @@ CAN_FOREACH(CAN_INTERRUPT_CONFIG)
     HAL_NVIC_SetPriority(irqRX0, 5, 0);
     HAL_NVIC_SetPriority(irqRX1, 5, 0);
     HAL_NVIC_SetPriority(irqSCE, 5, 0);
+    HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(irqTX);
     HAL_NVIC_EnableIRQ(irqRX0);
     HAL_NVIC_EnableIRQ(irqRX1);
     HAL_NVIC_EnableIRQ(irqSCE);
+    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 
 /**
