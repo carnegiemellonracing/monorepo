@@ -126,6 +126,17 @@ void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac)
 
 }
 
+static void VectorBase_Config(void)
+{
+  /* The constant array with vectors of the vector table is declared externally in the
+   * c-startup code.
+   */
+  extern const unsigned long g_pfnVectors[];
+ 
+  /* Remap the vector table to where the vector table is located for this program. */
+  SCB->VTOR = (unsigned long)&g_pfnVectors[0];
+}
+
 /**
  * @brief Firmware entry point.
  *
@@ -135,6 +146,7 @@ void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac)
  */
 int main(void) {
     // System initialization.
+    VectorBase_Config();
     HAL_Init();
     cmr_rccSystemClockEnable();
     
