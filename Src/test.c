@@ -11,7 +11,7 @@
 #include "gpio.h"
 #include "adc.h"
 #include "expanders.h"
-TickType_t lastWakeTime = xTaskGetTickCount();
+
 void testGPIOWrite()
 {
     cmr_gpioToggle(GPIO_LED_IMD);
@@ -58,7 +58,7 @@ static cmr_task_t test_task;
 
 static void test(void *pvParameters) {
     (void) pvParameters;
-
+	TickType_t lastWakeTime = xTaskGetTickCount();
     for (;;) {
         vTaskDelayUntil(&lastWakeTime, test_period_ms);
     //    testGPIOWrite();

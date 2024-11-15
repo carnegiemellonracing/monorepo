@@ -29,6 +29,8 @@ void reqGear(void);
 int getRequestedGear(void);
 
 int getMaxMotorTemp(void);
+int getACTemp(void);
+int getMCTemp(void);
 
 // Declare the global variable
 extern cmr_state currState;

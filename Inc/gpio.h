@@ -20,6 +20,7 @@
 /**
  * @brief Represents a GPIO pin.
  */
+
 //TODO Fix gpio
 typedef enum {
     //new pins

@@ -79,9 +79,64 @@ int getMaxMotorTemp(void){
 	{
 		maxTemp = rearRightTemp;
 	}
+/* conversion from dC to C*/
+	return maxTemp / 10;
 
-	return maxTemp;
+}
 
+/**
+ * @brief Gets the ac temperature.
+ *
+ * @param none
+ *
+ * @return ac temperature in celsius
+ */
+int getACTemp(void)
+{
+	cmr_canRXMeta_t *metaHVCPackTemps = canRXMeta + CANRX_HVC_PACK_TEMPS;
+	volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps =
+		(void *)metaHVCPackTemps->payload;
+	int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC) / 10;
+	return acTemp_C;
+}
+
+int getMCTemp(void)
+{
+	cmr_canRXMeta_t *metaAMK_FL_Act2 = canRXMeta + CANRX_AMK_FL_ACT_2;
+	volatile cmr_canAMKActualValues2_t *canAMK_FL_Act2 =
+		(void *)metaAMK_FL_Act2->payload;
+	// Front Right
+	cmr_canRXMeta_t *metaAMK_FR_Act2 = canRXMeta + CANRX_AMK_FR_ACT_2;
+	volatile cmr_canAMKActualValues2_t *canAMK_FR_Act2 =
+		(void *)metaAMK_FR_Act2->payload;
+	// Rear Left
+	cmr_canRXMeta_t *metaAMK_RL_Act2 = canRXMeta + CANRX_AMK_RL_ACT_2;
+	volatile cmr_canAMKActualValues2_t *canAMK_RL_Act2 =
+		(void *)metaAMK_RL_Act2->payload;
+	// Rear Right
+	cmr_canRXMeta_t *metaAMK_RR_Act2 = canRXMeta + CANRX_AMK_RR_ACT_2;
+	volatile cmr_canAMKActualValues2_t *canAMK_RR_Act2 =
+		(void *)metaAMK_RR_Act2->payload;
+	int32_t frontLeftMCTemp = canAMK_FL_Act2->motorTemp_dC;
+	int32_t frontRightMCTemp = canAMK_FR_Act2->motorTemp_dC;
+	int32_t rearLeftMCTemp = canAMK_RL_Act2->motorTemp_dC;
+	int32_t rearRightMCTemp = canAMK_RR_Act2->motorTemp_dC;
+
+	/* Return highest motor temperature*/
+	int32_t maxTemp = frontLeftMCTemp;
+
+	if( maxTemp < frontRightMCTemp ){
+		maxTemp = frontRightMCTemp;
+	}
+	if (maxTemp < rearLeftMCTemp )
+	{
+		maxTemp = rearLeftMCTemp;
+	}
+	if (maxTemp < rearRightMCTemp )
+	{
+		maxTemp = rearRightMCTemp;
+	}
+	return maxTemp / 10;
 }
 
 static cmr_state getReqScreen(void) {
