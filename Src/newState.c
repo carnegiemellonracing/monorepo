@@ -99,7 +99,13 @@ int getACTemp(void)
 	int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC) / 10;
 	return acTemp_C;
 }
-
+/**
+ * @brief Gets the mc temperature.
+ *
+ * @param none
+ *
+ * @return mc temperature in celsius
+ */
 int getMCTemp(void)
 {
 	cmr_canRXMeta_t *metaAMK_FL_Act2 = canRXMeta + CANRX_AMK_FL_ACT_2;
@@ -138,6 +144,31 @@ int getMCTemp(void)
 	}
 	return maxTemp / 10;
 }
+
+/**
+ * @brief Gets the door state
+ * true = closed
+ * false = open or other
+ *
+ * @param none
+ *
+ * @return door state as integer
+ */
+bool getDoorsState(void)
+{
+	cmr_canRXMeta_t *meta_canCDCDRSStates_t = canRXMeta + CANRX_DRS_STATE;
+	volatile cmr_canCDCDRSStates_t *canCDCDRSState =
+		(void *) meta_canCDCDRSStates_t->payload;
+
+	int16_t doorState = canCDCDRSState->state;
+	if (doorState == 0)
+	{
+		return true;
+	}else{
+		return false;
+	}
+}
+
 
 static cmr_state getReqScreen(void) {
     if(stateGetVSM() == CMR_CAN_ERROR){

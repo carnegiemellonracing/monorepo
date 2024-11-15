@@ -352,12 +352,14 @@ static void drawSafetyScreen(void) {
  *
  */
 static void drawRacingScreen(void) {
+	//TODO: Figure out what the heck this is
+	uint32_t hvSoC = 0;
     tftDL_racingScreenUpdate(
         getMaxMotorTemp(),
         getACTemp(),
         getMCTemp(),
         hvSoC,
-        drsOpen);
+        getDoorsState());
     // /* Write Display List to Screen */
     tftDLWrite(&tft, &tftDL_racing_screen);
 }
