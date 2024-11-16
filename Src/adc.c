@@ -29,7 +29,8 @@ static cmr_adcChannel_t adcChannels[ADC_LEN] = {
     [ADC_BPRES] = { .channel = ADC_CHANNEL_3, .port = GPIOA, .pin = GPIO_PIN_3, .samplingTime = ADC_SAMPLETIME_15CYCLES, .value = 0 },
     [ADC_SWANGLE] = { .channel = ADC_CHANNEL_2, .port = GPIOA, .pin = GPIO_PIN_2, .samplingTime = ADC_SAMPLETIME_15CYCLES, .value = 0 },
     [ADC_X] = { .channel = ADC_CHANNEL_4, .port = GPIOA, .pin = GPIO_PIN_7, .samplingTime = ADC_SAMPLETIME_15CYCLES, .value = 0 },
-    [ADC_Y] = { .channel = ADC_CHANNEL_5, .port = GPIOA, .pin = GPIO_PIN_8, .samplingTime = ADC_SAMPLETIME_15CYCLES, .value = 0 }
+    [ADC_Y] = { .channel = ADC_CHANNEL_5, .port = GPIOA, .pin = GPIO_PIN_8, .samplingTime = ADC_SAMPLETIME_15CYCLES, .value = 0 },
+	[ADC_PADDLE] = { .channel = ADC_CHANNEL_6, .port = GPIOA, .pin = GPIO_PIN_12, .samplingTime = ADC_SAMPLETIME_15CYCLES, .value = 0 }
 };
 //Above is the 4 ADCs
 /** @brief Primary ADC. */

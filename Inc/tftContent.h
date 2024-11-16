@@ -8,7 +8,7 @@
 #include <stddef.h>  // size_t
 #include <stdint.h>  // uint8_t
 
-#include "tftPrivate.h"  // Private interface
+#include "tft.h"  // Private interface
 
 /** @brief Forward declare exported content type. */
 typedef struct tftContent tftContent_t;

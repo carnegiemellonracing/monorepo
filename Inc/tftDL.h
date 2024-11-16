@@ -13,7 +13,6 @@
 #include <stdint.h>  // uint32_t
 
 #include "tft.h"         // tft interface
-#include "tftPrivate.h"  // Private interface
 
 /** @brief Represents a display list. */
 typedef struct tftDL tftDL_t;

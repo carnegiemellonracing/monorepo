@@ -17,6 +17,7 @@
 #include <CMR/tasks.h>  // Task interface
 #include <math.h>       // powf()
 #include <string.h>     // memcpy()
+#include <CMR/config_screen_helper.h>
 
 #include "adc.h"        // adcVSense, adcISense
 #include "expanders.h"  // For Paddles
@@ -176,13 +177,13 @@ static cmr_task_t canTX100Hz_task;
  */
 static void canTX100Hz(void *pvParameters) {
     (void)pvParameters;  // Placate compiler.
-
+	uint16_t REGEN_MIN = 0;
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendHeartbeat(lastWakeTime);
         sendFSMData();
         // Calculate integer regenPercent from regenStep
-        uint8_t regenPercent = (uint8_t)(REGEN_MIN + REGEN_STEP * regenStep);
+        uint8_t regenPercent = adcRead(ADC_PADDLE);
         uint8_t packed = 0;
         for(int i=0; i<NUM_BUTTONS; i++){
             packed |= canButtonStates[i] << i;

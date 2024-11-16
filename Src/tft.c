@@ -259,7 +259,7 @@ static void tftUpdate(void *pvParameters) {
     } tftInit_t;
 
     /** @brief Display register initialization values. */
-    static const tftInit_t tftInits[] = {
+	const tftInit_t tftInits[] = {
         { .addr = TFT_ADDR_HCYCLE, .val = 928 },
         { .addr = TFT_ADDR_HOFFSET, .val = 88 },
         { .addr = TFT_ADDR_HSYNC0, .val = 0 },

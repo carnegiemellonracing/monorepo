@@ -77,6 +77,7 @@ volatile static int pastRotaryPosition = 0; //Keeps track of past rotary positio
 
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	//TODO: CHANGE TO CMR
 	if(GPIO_Pin == GPIO_PIN_0){
 		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0) == GPIO_PIN_SET){
 			Arising();

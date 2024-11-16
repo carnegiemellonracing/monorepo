@@ -20,7 +20,6 @@
 #include "expanders.h"   // LED strip interface.
 #include "test.h"
 #include "newState.h"
-#include "tftPrivate.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <tftDL.h>
