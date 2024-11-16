@@ -8,16 +8,13 @@
 #include <stm32f4xx_hal.h>  // HAL interface
 
 #include <CMR/panic.h>  // cmr_panic()
-#include <CMR/rcc.h>    // RCC interface
 #include <CMR/can.h>    // CAN interface
 #include <CMR/adc.h>    // ADC interface
 #include <CMR/gpio.h>   // GPIO interface
 
 #include "gpio.h"       // Board-specific GPIO interface
 #include "can.h"        // Board-specific CAN interface
-#include "adc.h"        // Board-specific ADC interface
 #include "tft.h"        // TFT display interface.
-#include "test.h"
 #include "newState.h"
 #include <stdlib.h>
 #include <stdio.h>

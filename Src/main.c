@@ -14,7 +14,6 @@
 #include "adc.h"        // Board-specific ADC interface
 #include "can.h"        // Board-specific CAN interface
 #include "gpio.h"       // Board-specific GPIO interface
-#include "test.h"
 #include "newState.h"
 
 /** @brief Status LED priority. */
