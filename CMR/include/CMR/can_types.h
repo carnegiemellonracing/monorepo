@@ -670,7 +670,7 @@ typedef struct {
     uint8_t rotaryPos;
     uint8_t switchValues;
     uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
-    uint8_t paddle;            /**< @brief Between 0 and 255 for right paddle pos*/
+    uint8_t paddle;            /**< @brief Between 0 and 255 for paddle pos*/
     uint8_t LRUDButtons[4];     /**< @brief LRUD Button States, array of 4, [LEFT, RIGHT, UP, DOWN]*/
 } cmr_canDIMActions_t;
 
