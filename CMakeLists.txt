@@ -117,7 +117,6 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/adc.c
     ${CMAKE_SOURCE_DIR}/Src/ADS7038.c
     ${CMAKE_SOURCE_DIR}/Src/can.c
-    ${CMAKE_SOURCE_DIR}/Src/expanders.c
     ${CMAKE_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_SOURCE_DIR}/Src/main.c
     ${CMAKE_SOURCE_DIR}/Src/PCF8574.c

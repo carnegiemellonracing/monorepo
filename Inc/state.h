@@ -11,7 +11,6 @@
 #include <stdbool.h>  // bool
 
 #include "can.h"  // Board-specific CAN interface
-#include "expanders.h"
 
 // TODO: Add documentation
 extern volatile bool config_increment_up_requested;
@@ -68,11 +67,7 @@ void rotaries(bool select, uint8_t pos);
 
 void exitConfigScreen();
 
-void stateGearSwitch(expanderRotaryPosition_t pos);
-void stateGearUpdate(void);
 
-void stateDrsModeSwitch(expanderRotaryPosition_t pos);
-void stateDrsUpdate(void);
 
 bool getAcknowledgeButton(void);
 
@@ -82,8 +77,6 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq);
 void StateVSMUp();
 void StateVSMDown();
 
-uint8_t getPaddleState(expanderClutch_t clutch);
-uint8_t getPos(expanderClutch_t clutch);
 
 void updateReq(void);
 

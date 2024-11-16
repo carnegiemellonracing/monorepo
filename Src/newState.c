@@ -17,7 +17,6 @@
 #include "can.h"        // Board-specific CAN interface
 #include "adc.h"        // Board-specific ADC interface
 #include "tft.h"        // TFT display interface.
-#include "expanders.h"   // LED strip interface.
 #include "test.h"
 #include "newState.h"
 #include <stdlib.h>
@@ -236,13 +235,13 @@ static cmr_state getReqScreen(void) {
                 gpioLRUDStates[DOWN] = 0;
                 nextState = CONFIG;
             }
+    	//TODO: WHAT THE HELL IS THIS??
             else if(gpioButtonStates[SW1]) {
                 nextState = NORMAL;
                 gpioButtonStates[SW1] = 0;
                 nextState = CONFIG;
             }
             else if(gpioButtonStates[SW2]) {
-                //move right on screen
                 nextState = RACING;
                 gpioButtonStates[SW2] = 0;
             }
@@ -252,7 +251,6 @@ static cmr_state getReqScreen(void) {
             nextState = INIT;
             break;
         case RACING:
-            //need to incorporate the other sw buttons, accel?
             if(gpioLRUDStates[LEFT] && stateGetVSMReq() == CMR_CAN_GLV_ON) {
                 nextState = CONFIG;
                 gpioLRUDStates[UP] = false;
@@ -314,7 +312,6 @@ int getRequestedGear(void){
 	return requestedGear;
 }
 
-//TODO: Add state functions based on button press based on may's sheet
 
 static void stateOutput() { 
     //output
@@ -360,15 +357,18 @@ static void stateOutput() {
             drawRacingScreen();
             break;
     }
+	//TODO: Why is this called again?
     currState = getReqScreen();
 }
-
+//TODO: I think the best idea is to deleted getReqScreen() from the task and change tft.c to read the current state from dim instead of can
 static void stateMachine(void *pvParameters){
     (void)pvParameters;
     TickType_t lastWakeTime = xTaskGetTickCount();
     currState = INIT;
     while (1) {
+    	//TODO: WHAT IS CRITICAL?
         taskENTER_CRITICAL();
+    	//TODO: CALLED TWICE getReqScreen()?
         getReqScreen();
         stateOutput();
         taskEXIT_CRITICAL();

@@ -9,7 +9,6 @@
 #define CMR_STATE_H
 
 #include <stdbool.h>    // bool
-#include "expanders.h"
 #include "can.h"        // Board-specific CAN interface
 
 //states

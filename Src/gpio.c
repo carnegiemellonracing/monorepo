@@ -9,7 +9,6 @@
 
 #include <stm32f4xx_hal.h>  // HAL interface
 
-#include "expanders.h"  // GPIO expanders interface
 #include "state.h"
 #include "newState.h"
 

@@ -20,7 +20,6 @@
 #include <CMR/config_screen_helper.h>
 
 #include "adc.h"        // adcVSense, adcISense
-#include "expanders.h"  // For Paddles
 #include "gpio.h"       // For actionButtonPressed status
 #include "state.h"      // State interface
 #include "tftDL.h"      // For RAM buffer indices
@@ -183,7 +182,8 @@ static void canTX100Hz(void *pvParameters) {
         sendHeartbeat(lastWakeTime);
         sendFSMData();
         // Calculate integer regenPercent from regenStep
-        uint8_t regenPercent = adcRead(ADC_PADDLE);
+    	uint8_t paddle = adcRead(ADC_PADDLE);
+    	uint8_t regenPercent = (uint8_t)((adcRead(ADC_PADDLE) / 255.0) * 100.0);
         uint8_t packed = 0;
         for(int i=0; i<NUM_BUTTONS; i++){
             packed |= canButtonStates[i] << i;
@@ -195,8 +195,7 @@ static void canTX100Hz(void *pvParameters) {
 			.rotaryPos = getRotaryPosition(),
             .switchValues = switchValues,
             .regenPercent = regenPercent,
-            .paddleLeft = getPaddleState(EXP_CLUTCH_LEFT),
-            .paddleRight = getPaddleState(EXP_CLUTCH_RIGHT),
+            .paddle = paddle,
 			.LRUDButtons = canLRUDStates,
         };
         canTX(

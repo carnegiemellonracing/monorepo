@@ -10,7 +10,6 @@
 #include "test.h"
 #include "gpio.h"
 #include "adc.h"
-#include "expanders.h"
 
 void testGPIOWrite()
 {

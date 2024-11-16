@@ -13,7 +13,6 @@
 
 #include "CMR/config.h"  // Board-specific flash interface
 #include "can.h"         // can interface
-#include "expanders.h"
 #include "gpio.h"  // GPIO interface
 #include "stdlib.h"
 
@@ -480,35 +479,9 @@ void stateVSMDown() {
     }
 }
 
-void stateGearSwitch(expanderRotaryPosition_t position) {
-    if ((stateGetVSM() != CMR_CAN_HV_EN) && (stateGetVSM() != CMR_CAN_GLV_ON)) {
-        return;  // Can only change gears in HV_EN and GLV_ON.
-    }
-    cmr_canGear_t gearReq;
-    if (position == ROTARY_POS_INVALID) {
-        gearReq = CMR_CAN_GEAR_SLOW;
-    } else {
-        gearReq = (cmr_canGear_t)((size_t)position + 1);
-        if (gearReq >= CMR_CAN_GEAR_LEN) {
-            gearReq = CMR_CAN_GEAR_SLOW;
-        }
-    }
 
-    state.gearReq = gearReq;
-}
 
-void stateDrsModeSwitch(expanderRotaryPosition_t position) {
-    // we can change DRS in any state
 
-    if (position == ROTARY_POS_INVALID) {
-        state.drsReq = CMR_CAN_DRSM_UNKNOWN;
-    } else if ((cmr_canDrsMode_t)position >= CMR_CAN_DRSM_LEN) {
-        // set drs mode to closed if dial pos > drs modes
-        state.drsReq = CMR_CAN_DRSM_QUIET;
-    } else {
-        state.drsReq = position;
-    }
-}
 
 /**
  * @brief Updates state request to be consistent with VSM state.
@@ -528,32 +501,8 @@ void stateDrsUpdate(void) {
     state.drsMode = state.drsReq;
 }
 
-// Called by CAN 100 Hz
-uint8_t getPaddleState(expanderClutch_t clutch) {
-    uint8_t pos = getPos(clutch);
-    if (inConfigScreen()) {
-        uint8_t config_paddle_request = (pos > MIN_PADDLE_VAL) ? pos - MIN_PADDLE_VAL : 0;
-        if (clutch == EXP_CLUTCH_LEFT) {
-            config_paddle_left_request = config_paddle_request;
-        } else if (clutch == EXP_CLUTCH_RIGHT) {
-            config_paddle_right_request = config_paddle_request;
-        }
-    }
-    // Always return the paddle position to CAN
-    return pos;
-}
 
-/**
- * @brief Returns the position of the clutch
- *
- * @param clutch the clutch to get the position of
- *
- * @return the position of the clutch
- */
-uint8_t getPos(expanderClutch_t clutch) {
-    float val = (float)(expanderGetClutch(clutch)) / 4095.0f;
-    return (uint8_t)(val * ((float)UINT8_MAX));
-}
+
 
 /**
  * @brief Returns the current car's speed in km/h
