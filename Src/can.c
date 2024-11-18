@@ -298,7 +298,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 
     uint16_t error = CMR_CAN_ERROR_NONE;
 
-    //or the water overheating bit 
+    //or the water overheating bit
 
     if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
         error |= CMR_CAN_ERROR_VSM_TIMEOUT;
@@ -355,7 +355,7 @@ static void sendPowerDiagnostics(void) {
         .logicVoltage_mV = logicVoltage_mV,
         .loadVoltage_mV = loadVoltage_mV,
         .loadCurrent_mA = loadCurrent_mA
-    };                                                                                                   
+    };
 
     canTX(CMR_CANID_PTC_POWER_DIAGNOSTICS, &powerMsg, sizeof(powerMsg), canTX10Hz_period_ms);
 }
