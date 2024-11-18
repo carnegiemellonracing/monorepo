@@ -6,4 +6,4 @@ if( $COMMIT_CLEAN -eq $COMMIT_DIRTY )
 {
 	$IS_DIRTY=0
 }
-echo "const uint32_t GIT_INFO = 0x$HASH; const uint8_t IS_UNCOMMITTED = $IS_DIRTY;" | Out-File -Encoding ASCII -FilePath ../gitcommit.h
+Write-Output "const uint32_t GIT_INFO = 0x$HASH; const uint8_t IS_UNCOMMITTED = $IS_DIRTY;" | Out-File -Encoding ASCII -FilePath ./Inc/gitcommit.h
