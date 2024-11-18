@@ -11,7 +11,7 @@
  * each instance of a peripheral may vary between targets.
  *
  * The necessary declarations of such target-specific driver functions
- * are found in e.g. l431.h, where the file name corresponds to the target suffix,
+ * are found in e.g. f413.h, where the file name corresponds to the target suffix,
  * and the relevant definitions can be switched on at compile time
  * by settings in parent repositories (by passing -DF413).
  *
@@ -25,10 +25,6 @@
 #ifdef F413
 #include <stm32f4xx_hal.h>
 #endif /* F413 */
-
-#ifdef L431
-#include <stm32l4xx_hal.h>
-#endif /* L431 */
 
 #ifdef H735
 #include <stm32h7xx_hal.h>
