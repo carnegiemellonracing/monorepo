@@ -755,6 +755,16 @@ typedef struct {
     uint16_t temp9_dC;            /**< @brief Temp 9 */
 } cmr_canPTCLoopTemp_C_t;
 
+/** @brief Standard CAN PTC State. */
+typedef struct {
+    uint8_t state;          /**< @brief PTC state. */
+} cmr_canPTCState_t;
+
+/** @brief Standard Git committed State. */
+typedef struct {
+	uint32_t commitHash;
+	uint8_t dirtyFlash;
+} cmr_canGitFlashStatus;
 
 /** @brief Powertrain Thermal Controller voltage diagnostics. */
 typedef struct {

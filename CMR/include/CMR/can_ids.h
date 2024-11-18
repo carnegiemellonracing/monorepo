@@ -250,6 +250,13 @@ typedef enum {
     CMR_CANID_DAQ_3_LOADCELL,                   /**< @brief Load cell data for DAQ Board 3. */
     CMR_CANID_DAQ_3_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 3. */
     CMR_CANID_DAQ_3_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 3. */
+
+    CMR_CANID_VSM_GIT = 0x7F1,
+	CMR_CANID_HVC_GIT,
+	CMR_CANID_PTC_GIT,
+	CMR_CANID_CDC_GIT,
+	CMR_CANID_DIM_GIT,
+	CMR_CANID_RAM_GIT,
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
