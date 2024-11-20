@@ -7,10 +7,9 @@ set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 # list(APPEND CMAKE_MODULE_PATH "C:/Users/user1/Downloads/CmakeTestProject/cmake")
 list(APPEND CMAKE_MODULE_PATH "{{sr:cmake_path}}")
-message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
+
 #Why does vscode read this when its included here?
 include("cmake/gcc-arm-none-eabi.cmake")
-message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 
 # Core project settings
 project(RAM)
@@ -47,8 +46,8 @@ set(PROCESSOR_FAM F4XX)
 
 # Include directories for all compilers
 set(include_DIRS
-    ${CMAKE_SOURCE_DIR}/Inc
-    ${CMAKE_SOURCE_DIR}/cJSON
+    ${CMAKE_CURRENT_SOURCE_DIR}/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/cJSON
 )
 
 # Include directories for each compiler
@@ -76,8 +75,8 @@ find_package (Python3 REQUIRED COMPONENTS Interpreter)
 add_library(freertos_config INTERFACE)
 target_include_directories(freertos_config SYSTEM
     INTERFACE
-    ${CMAKE_SOURCE_DIR}/Inc # The config file directory
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/include )
+    ${CMAKE_CURRENT_SOURCE_DIR}/Inc # The config file directory
+    ${CMAKE_CURRENT_SOURCE_DIR}/../stm32f413-drivers/CMR/include )
 
 target_compile_definitions(freertos_config
     INTERFACE
@@ -120,17 +119,18 @@ link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
     # Project sources
-    ${CMAKE_SOURCE_DIR}/Src/can.c
-    ${CMAKE_SOURCE_DIR}/Src/config.c
-    ${CMAKE_SOURCE_DIR}/Src/gpio.c
-    ${CMAKE_SOURCE_DIR}/Src/main.c
-    ${CMAKE_SOURCE_DIR}/Src/parser.c
-    ${CMAKE_SOURCE_DIR}/Src/sample.c
-    ${CMAKE_SOURCE_DIR}/Src/syscall.c
-    ${CMAKE_SOURCE_DIR}/Src/sysmem.c
-    ${CMAKE_SOURCE_DIR}/Src/uart.c
+    # $<TARGET_OBJECTS:CMR>
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/can.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/config.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/parser.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/sample.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/syscall.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/sysmem.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/uart.c
     #cJSON
-    ${CMAKE_SOURCE_DIR}/cJSON/cJSON.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/cJSON/cJSON.c
 )
 
 # Add sources to executable
@@ -158,21 +158,20 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 
 # Custom Command then adding to custom target allows us not to run the python script on every build
 add_custom_command(
-    OUTPUT ${CMAKE_SOURCE_DIR}/Src/can_fmt.rawh
-    DEPENDS ${CMAKE_SOURCE_DIR}/can_fmt.json
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/Src/can_fmt.rawh
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/can_fmt.json
     COMMAND ${Python3_EXECUTABLE} marshall.py
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 add_custom_target(  marshall
-                    DEPENDS ${CMAKE_SOURCE_DIR}/Src/can_fmt.rawh
+                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Src/can_fmt.rawh
 )
 
 add_dependencies(${CMAKE_PROJECT_NAME} marshall)
 add_compile_options(${cpu_PARAMS})
-add_subdirectory(${CMAKE_SOURCE_DIR}/stm32f413-drivers)
-
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../stm32f413-drivers ${CMAKE_BINARY_DIR}/stm32f413-drivers)
 set(coveralls OFF)
-add_subdirectory(${CMAKE_SOURCE_DIR}/cn-cbor)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cn-cbor)
 
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME} ${link_LIBS})

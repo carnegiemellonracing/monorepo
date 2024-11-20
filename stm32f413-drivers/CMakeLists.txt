@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 project(stm-drivers)
-message(STATUS "stm-drivers")
+
 add_compile_definitions(${PROCESSOR})
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/DIM-ESE)

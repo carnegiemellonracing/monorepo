@@ -4,25 +4,26 @@ project(CMR)
 
 add_library(CMR)
 target_include_directories(CMR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 target_sources(CMR PUBLIC
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/adc.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/can.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/config_screen_helper.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/config.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/dma.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/f413.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/fir_filter.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/gpio.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/i2c.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/interrupts.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/panic.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/pwm.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/qspi.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/rcc.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/sensors.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/spi.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/tasks.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/uart.c
-${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/src/watchdog.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/adc.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/can.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/config_screen_helper.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/config.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/dma.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/f413.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/fir_filter.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/gpio.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/i2c.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/interrupts.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/panic.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/pwm.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/qspi.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/rcc.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/sensors.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/spi.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/tasks.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/uart.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/watchdog.c
 )
 
