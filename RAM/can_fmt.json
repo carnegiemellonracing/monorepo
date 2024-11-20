@@ -1,0 +1,538 @@
+{
+    "name": "can_fmt",
+    "description": "JSON specification for CBOR serialization/transmission",
+    "data_types": {
+        "i64": {
+            "description": "64-bit signed int",
+            "bytes": 8
+        },
+        "f32": {
+            "description": "32-bit floating point",
+            "bytes": 4
+        },
+        "i32": {
+            "description": "32-bit signed int",
+            "bytes": 4
+        },
+        "u32": {
+            "description": "32-bit unsigned int",
+            "bytes": 4
+        },
+        "f16": {
+            "description": "16-bit floating point",
+            "bytes": 2
+        },
+        "i16": {
+            "description": "16-bit signed int",
+            "bytes": 2
+        },
+        "u16": {
+            "description": "16-bit unsigned int",
+            "bytes": 2
+        },
+        "u8": {
+            "description": "8-bit unsigned int",
+            "bytes": 1
+        }
+    },
+    "state_actions": [
+        {
+            "name": "Go to HV",
+            "id": 565,
+            "bus": 0,
+            "data": "02"
+        },
+        {
+            "name": "Go to GLV",
+            "id": 565,
+            "bus": 0,
+            "data": "01"
+        },
+        {
+            "name": "Go to RTD",
+            "id": 565,
+            "bus": 0,
+            "data": "03"
+        },
+        {
+            "name": "Go to Clear Error",
+            "id": 565,
+            "bus": 0,
+            "data": "05"
+        }
+    ],
+    "drs_actions": [
+        {
+            "name": "Close DRS",
+            "id": 565,
+            "bus": 0,
+            "data": "00"
+        },
+        {
+            "name": "Open DRS",
+            "id": 565,
+            "bus": 0,
+            "data": "01"
+        },
+        {
+            "name": "Go to Auto",
+            "id": 565,
+            "bus": 0,
+            "data": "04"
+        },
+        {
+            "name": "Go to Toggle",
+            "id": 565,
+            "bus": 0,
+            "data": "02"
+        },
+        {
+            "name": "Go to Hold",
+            "id": 565,
+            "bus": 0,
+            "data": "03"
+        }
+    ],
+    "signals": [
+        {
+            "id": 1763,
+            "offset": 0,
+            "bus": 0,
+            "Source": "VSM",
+            "name": "GLV Voltage",
+            "short": "GLV",
+            "unit": "coulombs",
+            "unit_short": "C",
+            "in_type": "f32",
+            "factor": 1,
+            "out_type": "f32",
+            "min": 0,
+            "max": 50,
+            "enabled": 1
+        },
+        {
+            "id": 256,
+            "offset": 0,
+            "bus": 0,
+            "Source": "VSM",
+            "name": "Car State",
+            "short": "Car State",
+            "enum": [
+                {
+                    "name": "Unknown"
+                },
+                {
+                    "name": "GLV"
+                },
+                {
+                    "name": "HV"
+                },
+                {
+                    "name": "RTD"
+                },
+                {
+                    "name": "Error"
+                },
+                {
+                    "name": "Clear Error"
+                }
+            ],
+            "in_type": "u8",
+            "out_type": "u8",
+            "enabled": 1
+        },
+        {
+            "id": 769,
+            "offset": 4,
+            "bus": 0,
+            "Source": "HVC",
+            "name": "Pack Voltage",
+            "short": "Pack+",
+            "unit": "volts",
+            "unit_short": "V",
+            "factor": 0.001,
+            "in_type": "i32",
+            "out_type": "f16",
+            "min": 0,
+            "max": 700
+        },
+        {
+            "id": 769,
+            "offset": 0,
+            "bus": 0,
+            "Source": "HVC",
+            "name": "HV Voltage",
+            "short": "HV+",
+            "unit": "volts",
+            "unit_short": "V",
+            "factor": 0.001,
+            "in_type": "i32",
+            "out_type": "f16",
+            "max": 700,
+            "min": 0,
+            "enabled": 1
+        },
+        {
+            "id": 770,
+            "offset": 0,
+            "bus": 0,
+            "Source": "HVC",
+            "name": "Instant Pack Current",
+            "short": "HV Current",
+            "unit": "amps",
+            "unit_short": "A",
+            "factor": 0.001,
+            "in_type": "i32",
+            "out_type": "f16",
+            "min": -300,
+            "max": 300,
+            "enabled": 1
+        },
+        {
+            "id": 770,
+            "offset": 4,
+            "bus": 0,
+            "Source": "HVC",
+            "name": "Average Pack Current",
+            "short": "HV Current (avg)",
+            "unit": "amps",
+            "unit_short": "A",
+            "factor": 0.001,
+            "in_type": "i32",
+            "out_type": "f16",
+            "min": -300,
+            "max": 300
+        },
+        {
+            "id": 785,
+            "offset": 2,
+            "bus": 0,
+            "Source": "HVC",
+            "name": "Max Cell Temperature",
+            "short": "Max Cell Temp",
+            "unit": "degC",
+            "unit_short": "C",
+            "factor": 0.1,
+            "in_type": "i16",
+            "out_type": "f16",
+            "min": 0,
+            "max": 150,
+            "enabled": 1
+        },
+        {
+            "id": 785,
+            "offset": 0,
+            "bus": 0,
+            "Source": "HVC",
+            "name": "Min Cell Temperature",
+            "short": "Min Cell Temp",
+            "unit": "degC",
+            "unit_short": "C",
+            "factor": 0.1,
+            "in_type": "i16",
+            "out_type": "f16",
+            "min": 0,
+            "max": 150,
+            "enabled": 1
+        },
+        {
+            "id": 784,
+            "offset": 0,
+            "bus": 0,
+            "Source": "HVC",
+            "name": "Min Cell Voltage",
+            "short": "Min Cell V",
+            "unit": "volts",
+            "unit_short": "V",
+            "in_type": "u16",
+            "out_type": "u16",
+            "post_factor": 0.001,
+            "min": 0,
+            "max": 5,
+            "enabled": 1
+        },
+        {
+            "id": 784,
+            "offset": 2,
+            "bus": 0,
+            "Source": "HVC",
+            "name": "Max Cell Voltage",
+            "short": "Max Cell V",
+            "unit": "volts",
+            "unit_short": "V",
+            "in_type": "u16",
+            "out_type": "u16",
+            "post_factor": 0.001,
+            "min": 0,
+            "max": 5,
+            "enabled": 1
+        },
+        {
+            "id": 1349,
+            "offset": 0,
+            "bus": 0,
+            "Source": "DIM",
+            "name": "Driver Acknowledge",
+            "short": "Driver Ack",
+            "in_type": "u8",
+            "out_type": "u8",
+            "enabled": 1
+        },
+        {
+            "id": 645,
+            "offset": 0,
+            "bus": 2,
+            "Source": "AMK",
+            "name": "Front-Left Motor Temperature",
+            "short": "(FL) Motor Temp.",
+            "unit": "degrees C",
+            "unit_short": "degC",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -20,
+            "max": 150,
+            "enabled": 1
+        },
+        {
+            "id": 649,
+            "offset": 0,
+            "bus": 2,
+            "Source": "AMK",
+            "name": "Front-Right Motor Temperature",
+            "short": "(FR) Motor Temp.",
+            "unit": "degrees C",
+            "unit_short": "degC",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -20,
+            "max": 150,
+            "enabled": 1
+        },
+        {
+            "id": 650,
+            "offset": 0,
+            "bus": 2,
+            "Source": "AMK",
+            "name": "Rear-Left Motor Temperature",
+            "short": "(RL) Motor Temp.",
+            "unit": "degrees C",
+            "unit_short": "degC",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -20,
+            "max": 150,
+            "enabled": 1
+        },
+        {
+            "id": 646,
+            "offset": 0,
+            "bus": 2,
+            "Source": "AMK",
+            "name": "Rear-Right Motor Temperature",
+            "short": "(RR) Motor Temp.",
+            "unit": "degrees C",
+            "unit_short": "degC",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -20,
+            "max": 150,
+            "enabled": 1
+        },
+        {
+            "id": 645,
+            "offset": 6,
+            "bus": 2,
+            "Source": "AMK",
+            "name": "Front-Left IBGT Temperature",
+            "short": "(FL) IGBT Temp.",
+            "unit": "degrees C",
+            "unit_short": "degC",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -20,
+            "max": 150,
+            "enabled": 1
+        },
+        {
+            "id": 649,
+            "offset": 6,
+            "bus": 2,
+            "Source": "AMK",
+            "name": "Front-Right IGBT Temperature",
+            "short": "(FR) IGBT Temp.",
+            "unit": "degrees C",
+            "unit_short": "degC",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -20,
+            "max": 150,
+            "enabled": 1
+        },
+        {
+            "id": 650,
+            "offset": 6,
+            "bus": 2,
+            "Source": "AMK",
+            "name": "Rear-Left IGBT Temperature",
+            "short": "(RL) IGBT Temp.",
+            "unit": "degrees C",
+            "unit_short": "degC",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -20,
+            "max": 150,
+            "enabled": 1
+        },
+        {
+            "id": 646,
+            "offset": 6,
+            "bus": 2,
+            "Source": "AMK",
+            "name": "Rear-Right IGBT Temperature",
+            "short": "(RR) IGBT Temp.",
+            "unit": "degrees C",
+            "unit_short": "degC",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.1,
+            "min": -20,
+            "max": 150,
+            "enabled": 1
+        },
+        {
+            "id": 1828,
+            "offset": 0,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Latitude Position",
+            "short": "Lat.",
+            "unit": "degrees",
+            "unit_short": "deg",
+            "in_type": "i32",
+            "out_type": "i32",
+            "post_factor": 0.0000001,
+            "min": -90,
+            "max": 90,
+            "enabled": 1
+        },
+        {
+            "id": 1828,
+            "offset": 4,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Longitude Position",
+            "short": "Long.",
+            "unit": "degrees",
+            "unit_short": "deg",
+            "in_type": "i32",
+            "out_type": "i32",
+            "post_factor": 0.0000001,
+            "min": -180,
+            "max": 180,
+            "enabled": 1
+        },
+        {
+            "id": 1833,
+            "offset": 0,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Longitudinal (Forward) Velocity",
+            "short": "Fwd. Vel.",
+            "unit": "meters/second",
+            "unit_short": "m/s",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.01,
+            "min": -50,
+            "max": 50,
+            "enabled": 1
+        },
+        {
+            "id": 1809,
+            "offset": 0,
+            "bus": 1,
+            "Source": "CDC",
+            "name": "Longitudinal (Forward) Acceleration",
+            "short": "Fwd. Accel.",
+            "unit": "meters/second^2",
+            "unit_short": "m/s2",
+            "in_type": "i16",
+            "out_type": "i16",
+            "post_factor": 0.01,
+            "min": -30,
+            "max": 30,
+            "enabled": 1
+        },
+        {
+            "id": 1794,
+            "offset": 0,
+            "bus": 1,
+            "Source": "SBG",
+            "name": "Solution Status",
+            "short": "Sol. Status",
+            "vector": [
+                {
+                    "name": "EKF Roll/Pitch Status",
+                    "short": "Att. Status",
+                    "state": ["Invalid", "Valid"]
+                },
+                {
+                    "name": "EKF Yaw Status",
+                    "short": "Yaw Status",
+                    "state": ["Invalid", "Valid"]
+                },
+                {
+                    "name": "EKF Velocity Status",
+                    "short": "Vel. Status",
+                    "state": ["Invalid", "Valid"]
+                },
+                {
+                    "name": "EKF Position Status",
+                    "short": "Pos. Status",
+                    "state": ["Invalid", "Valid"]
+                }
+            ],
+            "in_type": "u32",
+            "out_type": "u32",
+            "enabled": 1
+        },
+        {
+            "id": 261,
+            "offset": 0,
+            "bus": 0,
+            "Source": "VSM",
+            "name": "Car State",
+            "short": "Car State",
+            "enum": [
+                {
+                    "name": "Unknown"
+                },
+                {
+                    "name": "GLV"
+                },
+                {
+                    "name": "HV"
+                },
+                {
+                    "name": "RTD"
+                },
+                {
+                    "name": "Error"
+                },
+                {
+                    "name": "Clear Error"
+                }
+            ],
+            "in_type": "u8",
+            "out_type": "u8",
+            "enabled": 0
+        }
+    ]
+}
