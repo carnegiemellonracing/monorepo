@@ -1,0 +1,53 @@
+{
+    "content": [
+    ],
+    "coprocessor": [
+        "CLEAR_COLOR_RGB(0, 0, 0)",
+        "CMD_TEXT(32, 9, 27, OPT_CENTER, \"GLV ON\")",
+        "CMD_TEXT(268, 10, 27, OPT_CENTER, \"GEAR: SLOW\")",
+        "BEGIN(LINES)",
+        "VERTEX2II(320, 20, 0, 0)",
+        "VERTEX2II(0, 20, 0, 0)",
+        "END()",
+        "COLOR_RGB(200, 200, 255)",
+        "CMD_TEXT(160, 22, 28, OPT_CENTERX, \"STATUS\")",
+        "COLOR_RGB(255, 255, 255)",
+        "",
+        "CMD_TEXT(20, 60, 26, OPT_CENTERY, \"ACCEL POS\")",
+        "CMD_TEXT(20, 78, 26, OPT_CENTERY, \"FRONT BRAKE PRESSURE\")",
+        "CMD_TEXT(20, 96, 26,  OPT_CENTERY, \"REAR BRAKE PRESSURE\")",
+        "",
+        "COLOR_RGB(255, 255, 255)",
+        "CMD_TEXT(160, 114, 26, OPT_CENTER, \"ACCUMULATOR VOLTAGES\")",
+        "COLOR_RGB(255, 10, 10)",
+        "",
+        "CMD_TEXT(5, 138, 30, OPT_CENTERY, \"BATT:400V\")",
+        "CMD_TEXT(180, 138, 30, OPT_CENTERY, \"HV:-200V\")",
+        "",
+        "",
+        "COLOR_RGB(255, 255, 255)",
+        "CMD_TEXT(160, 168, 26, OPT_CENTER, \"GLV VOLTAGES\")",
+        "COLOR_RGB(255, 10, 10)",
+        "",
+        "CMD_TEXT(20, 186, 26,  OPT_CENTERY, \"VSM GLV\")",
+        "CMD_TEXT(180, 186, 26, OPT_CENTERY, \"VSM SC\")",
+        "",
+        "CMD_TEXT(20, 204, 26,  OPT_CENTERY, \"HVC GLV\")",
+        "CMD_TEXT(180, 204, 26, OPT_CENTERY, \"HVC SC\")",
+        "",
+        "CMD_TEXT(20, 222, 26,  OPT_CENTERY, \"GLV BATT\")"
+    ],
+    "displayList": [
+        ""
+    ],
+    "project": {
+        "device": 2066
+    },
+    "registers": {
+        "hSize": 320,
+        "macro": [
+            ""
+        ],
+        "vSize": 240
+    }
+}
