@@ -4,9 +4,6 @@ Debug/
 .settings/
 *.rawh
 *.launch
-.vscode/*
-!.vscode/tasks.json
-!.vscode/launch.json
 html/
 *.warn
 build/

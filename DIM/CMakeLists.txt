@@ -65,7 +65,7 @@ add_library(freertos_config INTERFACE)
 target_include_directories(freertos_config SYSTEM
     INTERFACE
     ${CMAKE_SOURCE_DIR}/Inc
-    ${CMAKE_SOURCE_DIR}/stm32f413-drivers/CMR/include) # The config file directory
+    ${CMAKE_SOURCE_DIR}/../stm32f413-drivers/CMR/include) # The config file directory
 target_compile_definitions(freertos_config
     INTERFACE
     configASSERT
@@ -153,7 +153,7 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 add_compile_options(${cpu_PARAMS})
-add_subdirectory(${CMAKE_SOURCE_DIR}/stm32f413-drivers)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../stm32f413-drivers ${CMAKE_BINARY_DIR}/stm32f413-drivers)
 
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME} ${link_LIBS})
