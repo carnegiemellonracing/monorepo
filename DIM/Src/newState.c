@@ -29,6 +29,7 @@ static const TickType_t stateMachine_period = 10;
 static cmr_task_t stateMachine_task;
 
 
+
 /**
  * @brief Gets the highest motor temperature.
  *
@@ -178,20 +179,10 @@ static cmr_state getReqScreen(void) {
     */
     switch (currState) {
         case INIT:
-            /* Ensure that Chip ID is read correctly */
-            uint32_t chipID; 
-            tftRead(tft, TFT_ADDR_CHIP_ID, sizeof(chipID), &chipID);
-            if(chipID == TFT_CHIP_ID){
-                /* Initialize Video Registers. */
-                for (size_t i = 0; i < sizeof(tftInits) / sizeof(tftInits[0]); i++) {
-                    const tftInit_t *init = tftInits + i;
-                    tftWrite(tft, init->addr, sizeof(init->val), &init->val);
-                }
-                /* Enable Faster Clock Rate now that initialization is complete */
-                cmr_qspiSetPrescaler(&tft->qspi, TFT_QSPI_PRESCALER);
-                nextState = START; 
-                //depends if we want a start screen
-            }
+        	//initializes tft screen
+        	tftUpdate(&tft);
+    		nextState = START;
+
             break;
         case START:
             if(stateGetVSMReq() == CMR_CAN_GLV_ON) {
@@ -320,25 +311,28 @@ static void stateOutput() {
                 //is it necessary to initialize the can buttons to 0 if they are just reading pins??
                 canButtonStates[i] = 0;
                 gpioButtonStates[i] = 0;
-				gpioLRUDStates[i] = 0;
-				canLRUDStates[i] = 0;
             }
+    		for (int i=0; i<LRUDLen; i++) {
+    			canButtonStates[i] = 0;
+    			gpioButtonStates[i] = 0;
+    		}
              /* Restarting the Display. */
             TickType_t lastWakeTime = xTaskGetTickCount();
-            cmr_gpioWrite(GPIO_PD_N, 0);  // TODO figure out pin
+    		//change pin of screen
+            cmr_gpioWrite(0, 0);  // TODO figure out pin
             vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
-            cmr_gpioWrite(GPIO_PD_N, 1);
+            cmr_gpioWrite(0, 1);
             vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
 
             /* Initialize the display. */
-            tftCmd(tft, TFT_CMD_CLKEXT, 0x00);
-            tftCmd(tft, TFT_CMD_ACTIVE, 0x00);
-            tftCmd(tft, TFT_CMD_ACTIVE, 0x00);
+            tftCmd(&tft, TFT_CMD_CLKEXT, 0x00);
+            tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
+            tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
             break;
         case START:
             /* Display Startup Screen for fixed time */
-            tftDLContentLoad(tft, &tftDL_startup);
-            tftDLWrite(tft, &tftDL_startup);
+            tftDLContentLoad(&tft, &tftDL_startup);
+            tftDLWrite(&tft, &tftDL_startup);
             //    vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
             break;
         case NORMAL:

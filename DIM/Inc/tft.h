@@ -27,6 +27,7 @@
 /** @brief Display update period. */
 #define TFT_UPDATE_PERIOD_MS 20
 
+void tftUpdate(void *pvParameters);
 void tftInit(void);
 void drawRacingScreen(void);
 void drawConfigScreen(void);
@@ -147,6 +148,7 @@ typedef struct {
     uint16_t coCmdRd; /**< @brief Coprocessor command read address. */
     uint16_t coCmdWr; /**< @brief Coprocessor command write address. */
 } tft_t;
+extern tft_t tft;
 
 void tftCmd(tft_t *tft, tftCmd_t cmd, uint8_t param);
 void tftWrite(tft_t *tft, tftAddr_t addr, size_t len, const void *data);

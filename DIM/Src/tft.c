@@ -42,7 +42,7 @@
 #define TFT_READ_DUMMY_CYCLES 8
 
 /** @brief The display. */
-static tft_t tft;
+extern tft_t tft;
 
 void drawErrorScreen(void);
 void drawRTDScreen(void);
@@ -251,7 +251,7 @@ static cmr_task_t tftUpdate_task;
  *
  * @return Does not return.
  */
-static void tftUpdate(void *pvParameters) {
+void tftUpdate(void *pvParameters) {
     /** @brief Represents a display initialization value. */
     typedef struct {
         tftAddr_t addr; /**< @brief Address to initialize. */
@@ -306,7 +306,7 @@ static void tftUpdate(void *pvParameters) {
     tftDLWrite(tft, &tftDL_startup);
     //    vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS); //TODO: Uncomment
 
-    /* Update Screen Info from CAN Indefinitely */
+    /* Update Screen Info from CAN Indefinitely
     while (1) {
         vTaskDelayUntil(&lastWakeTime, TFT_UPDATE_PERIOD_MS);
         if (inConfigScreen()) {
@@ -324,7 +324,9 @@ static void tftUpdate(void *pvParameters) {
             drawRTDScreen();
         }
     }
+    */
 }
+
 
 /**
  * @brief Draws the Display Updated List to the Screen
@@ -348,7 +350,7 @@ void drawSafetyScreen(void) {
  /** @brief Draws the motor, ac, cooling, etc. temps to the Screen
  *
  */
-void drawRacingScreen(void) {
+void drawRacingScreen(void){
 	//TODO: Figure out what the heck this is
 	uint32_t hvSoC = 0;
     tftDL_racingScreenUpdate(
@@ -444,111 +446,9 @@ void drawErrorScreen(void) {
     tftDLWrite(&tft, &tftDL_error);
 }
 
-/**
- * @brief computes max of 4 numbers
- */
-int16_t findMax(int16_t a, int16_t b, int16_t c, int16_t d, uint8_t *index) {
-    int16_t maximum = a;
-    *index = 0;
-    if (b > maximum) {
-        maximum = b;
-        *index = 1;
-    }
-    if (c > maximum) {
-        maximum = c;
-        *index = 2;
-    }
-    if (d > maximum) {
-        maximum = d;
-        *index = 3;
-    }
-    return maximum;
-}
-
-/**
- * @brief Computes the total current of a motor
- * https://drive.google.com/file/d/1dyoIuW85M110q4x2OXapvWxm-WnFBys2/view pg76
- */
-uint32_t computeCurrent_A(volatile cmr_canAMKActualValues1_t *canAMK_Act1) {
-    int32_t Iq_A = (int32_t)canAMK_Act1->torqueCurrent_raw;
-    int32_t Id_A = (int32_t)canAMK_Act1->magCurrent_raw;
-    uint32_t Is_A = sqrt(Iq_A * Iq_A + Id_A * Id_A);
-    return Is_A;
-}
 
 
-/**
- * @brief gets temps from motors and inverters
- * @returns mcTemp
- * @returns motorTemp
-*/
 
-static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hottest) {
-
-    // If we're in GLV, we don't want temps to latch on their prev vals
-	cmr_canState_t state = stateGetVSM();
-    if (state == CMR_CAN_GLV_ON) {
-        *mcTemp_C = 0;
-        *motorTemp_C = 0;
-        *hottest = NONE;
-        return;
-    }
-
-    // Front Left
-    // cmr_canRXMeta_t *metaAMK_FL_Act1 = canRXMeta + CANRX_AMK_FL_ACT_1;
-    // volatile cmr_canAMKActualValues1_t *canAMK_FL_Act1 =
-    //     (void *)metaAMK_FL_Act1->payload;
-    cmr_canRXMeta_t *metaAMK_FL_Act2 = canRXMeta + CANRX_AMK_FL_ACT_2;
-    volatile cmr_canAMKActualValues2_t *FL =
-        (void *)metaAMK_FL_Act2->payload;
-
-    // Front Right
-    // cmr_canRXMeta_t *metaAMK_FR_Act1 = canRXMeta + CANRX_AMK_FR_ACT_1;
-    // volatile cmr_canAMKActualValues1_t *canAMK_FR_Act1 =
-    //     (void *)metaAMK_FR_Act1->payload;
-    cmr_canRXMeta_t *metaAMK_FR_Act2 = canRXMeta + CANRX_AMK_FR_ACT_2;
-    volatile cmr_canAMKActualValues2_t *FR =
-        (void *)metaAMK_FR_Act2->payload;
-
-    // Rear Left
-    // cmr_canRXMeta_t *metaAMK_RL_Act1 = canRXMeta + CANRX_AMK_RL_ACT_1;
-    // volatile cmr_canAMKActualValues1_t *canAMK_RL_Act1 =
-    //     (void *)metaAMK_RL_Act1->payload;
-    cmr_canRXMeta_t *metaAMK_RL_Act2 = canRXMeta + CANRX_AMK_RL_ACT_2;
-    volatile cmr_canAMKActualValues2_t *RL =
-        (void *)metaAMK_RL_Act2->payload;
-
-    // Rear Right
-    // cmr_canRXMeta_t *metaAMK_RR_Act1 = canRXMeta + CANRX_AMK_RR_ACT_1;
-    // volatile cmr_canAMKActualValues1_t *canAMK_RR_Act1 =
-    //     (void *)metaAMK_RR_Act1->payload;
-    cmr_canRXMeta_t *metaAMK_RR_Act2 = canRXMeta + CANRX_AMK_RR_ACT_2;
-    volatile cmr_canAMKActualValues2_t *RR =
-        (void *)metaAMK_RR_Act2->payload;
-
-    /* Motor Temperature */
-    uint8_t hottest_motor_index = 0;
-    *motorTemp_C = findMax(FL->motorTemp_dC,
-                                  FR->motorTemp_dC,
-                                  RL->motorTemp_dC,
-                                  RR->motorTemp_dC,
-                                  &hottest_motor_index) /
-                          10;
-
-    // provide hottest motor as corner type
-    *hottest = (cornerId_t)(hottest_motor_index);
-
-    uint8_t hottest_mc_index = 0;
-    /* Motor Controller Temperature */
-    *mcTemp_C = findMax(FL->coldPlateTemp_dC,
-                               FR->coldPlateTemp_dC,
-                               RL->coldPlateTemp_dC,
-                               RR->coldPlateTemp_dC,
-                               &hottest_mc_index) /
-                       10;
-
-
-}
 
 /**
  * @brief Draws the Display Updated List to the Screen
@@ -558,7 +458,7 @@ static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hot
  * @brief Draws the Display Updated List to the Screen
  *
  */
-void drawRTDScreen(void) {
+void drawRTDScreen(void){
     /* Setup the Required CAN info for Display */
     cmr_canRXMeta_t *metaMemoratorBroadcast = canRXMeta + CANRX_MEMORATOR_BROADCAST;
 
@@ -666,8 +566,6 @@ void drawRTDScreen(void) {
     int32_t mcTemp_C, motorTemp_C = 0;
     cornerId_t hottest_motor;
 
-    getAMKTemps(&mcTemp_C, &motorTemp_C, &hottest_motor);
-
     /* Temperature warnings */
     bool motorTemp_yellow = motorTemp_C >= MOTOR_YELLOW_THRESHOLD;
     bool motorTemp_red = motorTemp_C >= MOTOR_RED_THRESHOLD;
@@ -694,7 +592,7 @@ void drawRTDScreen(void) {
 /**
  * @brief Initializes the display.
  */
-void tftInit(void) {
+void tftInit(void){
     const QSPI_InitTypeDef qspiInit = {
         .ClockPrescaler = TFT_INIT_QSPI_PRESCALER,
         .FifoThreshold = 4,
