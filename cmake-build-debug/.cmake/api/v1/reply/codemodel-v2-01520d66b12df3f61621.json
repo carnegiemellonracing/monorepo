@@ -1,0 +1,78 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.24"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "25e",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "HVC::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-HVC-Debug-eba8631ba072f147e77d.json",
+					"name" : "HVC",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "PTC::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-PTC-Debug-cfa8af3051f5899cecb4.json",
+					"name" : "PTC",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "RAM::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-RAM-Debug-53505131d3ef02e2aa97.json",
+					"name" : "RAM",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/Users/jeffreyshen/Desktop/Vscode/monorepo/cmake-build-debug",
+		"source" : "/Users/jeffreyshen/Desktop/Vscode/monorepo"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

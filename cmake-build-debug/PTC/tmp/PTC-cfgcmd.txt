@@ -1,0 +1,1 @@
+cmd='/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake;-GNinja;-S;<SOURCE_DIR><SOURCE_SUBDIR>;-B;<BINARY_DIR>'
