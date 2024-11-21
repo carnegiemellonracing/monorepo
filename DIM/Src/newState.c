@@ -351,13 +351,12 @@ static void stateOutput() {
 	//TODO: Why is this called again?
     currState = getReqScreen();
 }
-//TODO: I think the best idea is to deleted getReqScreen() from the task and change tft.c to read the current state from dim instead of can
+
 static void stateMachine(void *pvParameters){
     (void)pvParameters;
     TickType_t lastWakeTime = xTaskGetTickCount();
     currState = INIT;
     while (1) {
-    	//TODO: WHAT IS CRITICAL?
         taskENTER_CRITICAL();
     	//TODO: CALLED TWICE getReqScreen()?
         getReqScreen();
