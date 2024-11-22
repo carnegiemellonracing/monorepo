@@ -348,7 +348,7 @@ bool setMuxOutput(uint8_t channel);
 
 void BMBInit();
 uint8_t pollAllVoltageData();
-void pollAllTemperatureData();
+void pollAllTemperatureData(int channel);
 
 void cellBalancingSetup();
 void cellBalancing(bool set, uint16_t thresh);

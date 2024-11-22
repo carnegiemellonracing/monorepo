@@ -1,21 +1,17 @@
 
 name: Build
-run-name: ${{ github.actor }} Build 🚀
+run-name: ${{ github.actor }}-${{github.repository}} Build 🚀
 
 on: pull_request
 
-defaults:
-  run:
-    shell: bash -leo pipefail {0}
-
 jobs:
   build:
-    runs-on: [self-hosted,linux]
+    runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v3.6.0
+      - name: Checkout Project
+        uses: actions/checkout@v4.2.2
         with:
-          # check out HEAD on the branch
-          ref: ${{ github.head_ref }}
-          # Feature just to grab the branch in newer version
-          fetch-depth: 1
-      - run: ${GITHUB_WORKSPACE}/build.sh
+          submodules: true
+
+      - name: Build Project
+        uses: threeal/cmake-action@v2.0.0

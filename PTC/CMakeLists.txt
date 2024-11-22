@@ -26,6 +26,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
+if(CMAKE_HOST_WIN32)
+add_custom_target(generate_gitcommit ALL
+    COMMAND powershell -ExecutionPolicy Bypass -File ${CMAKE_CURRENT_SOURCE_DIR}/export_git.ps1
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generating gitcommit.h using PowerShell"
+)
+elseif(CMAKE_HOST_UNIX)
+    add_custom_target(generate_gitcommit ALL
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/export_git.sh
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating gitcommit.h on Linux/Unix"
+    )
+endif()
 # Core MCU flags, CPU type, instruction set and FPU setup
 set(cpu_PARAMS
 
@@ -128,7 +141,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/thermistor_table.c
 
 )
-
+add_dependencies(${CMAKE_PROJECT_NAME} generate_gitcommit)
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PUBLIC ${sources_SRCS})
 
