@@ -34,7 +34,6 @@ add_custom_target(generate_gitcommit ALL
 )
 elseif(CMAKE_HOST_UNIX)
     add_custom_target(generate_gitcommit ALL
-        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/Inc/gitcommit.h
         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/export_git.sh
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Generating gitcommit.h on Linux/Unix"
