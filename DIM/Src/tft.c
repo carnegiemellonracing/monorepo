@@ -42,7 +42,7 @@
 #define TFT_READ_DUMMY_CYCLES 8
 
 /** @brief The display. */
-extern tft_t tft;
+tft_t tft;
 
 void drawErrorScreen(void);
 void drawRTDScreen(void);

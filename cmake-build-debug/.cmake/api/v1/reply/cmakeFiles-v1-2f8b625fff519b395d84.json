@@ -1315,6 +1315,35 @@
 			"isCMake" : true,
 			"isExternal" : true,
 			"path" : "/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.29/Modules/ExternalProject/cfgcmd.txt.in"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.29/Modules/ExternalProject/mkdirs.cmake.in"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/DIM/tmp/DIM-mkdirs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.29/Modules/ExternalProject/RepositoryInfo.txt.in"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.29/Modules/ExternalProject/UpdateInfo.txt.in"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.29/Modules/ExternalProject/PatchInfo.txt.in"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.29/Modules/ExternalProject/cfgcmd.txt.in"
 		}
 	],
 	"kind" : "cmakeFiles",

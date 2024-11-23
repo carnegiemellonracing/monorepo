@@ -4,13 +4,14 @@
     <option name="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue" value="false" type="bool" />
     <option name="/Default/Housekeeping/GlobalSettingsUpgraded/IsUpgraded/@EntryValue" value="true" type="bool" />
     <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
-    <option name="/Default/Environment/Hierarchy/GeneratedFilesCacheKey/Timestamp/@EntryValue" value="5" type="long" />
+    <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexRemoved" />
+    <option name="/Default/Environment/Hierarchy/GeneratedFilesCacheKey/Timestamp/@EntryValue" value="18" type="long" />
     <option name="/Default/Housekeeping/OptionsDialog/SelectedPageId/@EntryValue" value="CppFormatterOtherPage" type="string" />
     <option name="/Default/CodeEditing/TypingAssist/Cpp/CloseBlockComment/@EntryValue" value="true" type="bool" />
     <option name="/Default/Housekeeping/RefactoringsMru/RenameRefactoring/DoSearchForTextInStrings/@EntryValue" value="true" type="bool" />
-    <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexRemoved" />
   </component>
-  <component name="CMakeWorkspace">
-    <contentRoot DIR="$PROJECT_DIR$" />
+  <component name="CMakePythonSetting">
+    <option name="pythonIntegrationState" value="YES" />
   </component>
+  <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
 </project>

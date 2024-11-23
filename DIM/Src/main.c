@@ -15,6 +15,7 @@
 #include "can.h"        // Board-specific CAN interface
 #include "gpio.h"       // Board-specific GPIO interface
 #include "newState.h"
+#include "tft.h"
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -118,7 +119,6 @@ int main(void) {
     adcInit();
     stateMachineInit();
     sensorsInit();
-    expandersInit();  // Initialize SPI AND I2C expanders
     tftInit();
 
     cmr_taskInit(

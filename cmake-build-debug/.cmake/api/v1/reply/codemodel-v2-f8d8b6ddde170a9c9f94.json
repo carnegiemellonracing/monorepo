@@ -17,7 +17,8 @@
 					[
 						0,
 						1,
-						2
+						2,
+						3
 					]
 				}
 			],
@@ -34,12 +35,20 @@
 					[
 						0,
 						1,
-						2
+						2,
+						3
 					]
 				}
 			],
 			"targets" : 
 			[
+				{
+					"directoryIndex" : 0,
+					"id" : "DIM::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-DIM-Debug-aa2d64f1016d26908c46.json",
+					"name" : "DIM",
+					"projectIndex" : 0
+				},
 				{
 					"directoryIndex" : 0,
 					"id" : "HVC::@6890427a1f51a3e7e1df",
