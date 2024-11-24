@@ -671,7 +671,7 @@ typedef struct {
     uint8_t switchValues;
     uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
     uint8_t paddle;            /**< @brief Between 0 and 255 for paddle pos*/
-    bool LRUDButtons[4];     /**< @brief LRUD Button States, array of 4, [LEFT, RIGHT, UP, DOWN]*/
+    uint8_t LRUDButtons;     /**< @brief LRUD Button States, packed into an uint8_t*/
 } cmr_canDIMActions_t;
 
 /** @brief DIM sends message to acknowledge radio message

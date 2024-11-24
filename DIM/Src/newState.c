@@ -11,6 +11,7 @@
 #include <CMR/can.h>    // CAN interface
 #include <CMR/adc.h>    // ADC interface
 #include <CMR/gpio.h>   // GPIO interface
+#include <CMR/can_types.h>
 
 #include "gpio.h"       // Board-specific GPIO interface
 #include "can.h"        // Board-specific CAN interface
@@ -19,6 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <tftDL.h>
+#include <state.h>
 
 static const uint32_t stateMachine_priority = 4;
 
@@ -28,6 +30,9 @@ static const TickType_t stateMachine_period = 10;
 /** @brief Button input task task. */
 static cmr_task_t stateMachine_task;
 
+cmr_state nextState;
+
+cmr_state currState;
 
 
 /**
@@ -259,10 +264,10 @@ void reqVSM(void) {
 	//So check state of the car and the pressing of up or down button, then based on the output
 	//update VstateVSMReq
 	if (((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN)) && (gpioLRUDStates[UP])){
-		StateVSMUp();
+		stateVSMUp();
 	}
 	if (((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN)) && (gpioLRUDStates[DOWN])){
-		StateVSMDown();
+		stateVSMDown();
 	}
 }
 
@@ -351,13 +356,12 @@ static void stateOutput() {
 	//TODO: Why is this called again?
     currState = getReqScreen();
 }
-//TODO: I think the best idea is to deleted getReqScreen() from the task and change tft.c to read the current state from dim instead of can
+
 static void stateMachine(void *pvParameters){
     (void)pvParameters;
     TickType_t lastWakeTime = xTaskGetTickCount();
     currState = INIT;
     while (1) {
-    	//TODO: WHAT IS CRITICAL?
         taskENTER_CRITICAL();
     	//TODO: CALLED TWICE getReqScreen()?
         getReqScreen();

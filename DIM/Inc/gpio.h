@@ -10,6 +10,7 @@
 
 #include <CMR/gpio.h>  // GPIO interface
 #include <FreeRTOS.h>  // FreeRTOS API
+#include <stdbool.h>
 
 #define NUM_BUTTONS 8 //number of buttons
 #define NUM_ROTARY_POSITION 14 // number of rotary positions

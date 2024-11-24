@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.24)
 # User is free to modify the file as much as necessary
 #
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
-
+set(CMAKE_COLOR_MAKEFILE ON)
 # list(APPEND CMAKE_MODULE_PATH "C:/Users/user1/Downloads/CmakeTestProject/cmake")
 list(APPEND CMAKE_MODULE_PATH "{{sr:cmake_path}}")
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
@@ -114,18 +114,18 @@ link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
     # Project sources
-    ${CMAKE_SOURCE_DIR}/Src/adc.c
-    ${CMAKE_SOURCE_DIR}/Src/can.c
-    ${CMAKE_SOURCE_DIR}/Src/gpio.c
-    ${CMAKE_SOURCE_DIR}/Src/main.c
-    ${CMAKE_SOURCE_DIR}/Src/sensors.c
-    ${CMAKE_SOURCE_DIR}/Src/state.c
-    ${CMAKE_SOURCE_DIR}/Src/syscall.c
-    ${CMAKE_SOURCE_DIR}/Src/sysmem.c
-    ${CMAKE_SOURCE_DIR}/Src/tft.c
-    ${CMAKE_SOURCE_DIR}/Src/tftContent.c
-    ${CMAKE_SOURCE_DIR}/Src/tftDL.c
-    ${CMAKE_SOURCE_DIR}/Src/newState.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/adc.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/can.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/sensors.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/state.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/syscall.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/sysmem.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/tft.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/tftContent.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/tftDL.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/newState.c
 
 )
 

@@ -185,8 +185,12 @@ static void canTX100Hz(void *pvParameters) {
     	uint8_t paddle = adcRead(ADC_PADDLE);
     	uint8_t regenPercent = (uint8_t)((adcRead(ADC_PADDLE) / 255.0) * 100.0);
         uint8_t packed = 0;
+        uint8_t LRUDpacked = 0;
         for(int i=0; i<NUM_BUTTONS; i++){
             packed |= canButtonStates[i] << i;
+        }
+        for(int i=0; i<LRUDLen; i++) {
+            LRUDpacked |= canLRUDStates[i] << i;
         }
         /* Transmit action button status */
         cmr_canDIMActions_t actions = {
@@ -196,7 +200,7 @@ static void canTX100Hz(void *pvParameters) {
             .switchValues = switchValues,
             .regenPercent = regenPercent,
             .paddle = paddle,
-			.LRUDButtons = canLRUDStates,
+			.LRUDButtons = LRUDpacked,
         };
         canTX(
             CMR_CANID_DIM_ACTIONS,
