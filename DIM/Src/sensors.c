@@ -342,10 +342,10 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
                                 .warnFlag = CMR_CAN_WARN_FSM_BPP },
 	[SENSOR_CH_X] = { .conv = NULL, .sample = sampleADCSensor,
 					  .readingMin = 0,
-					  .readingMax = 5,},
+					  .readingMax = 4096,},
 	[SENSOR_CH_Y] = { .conv = NULL, .sample = sampleADCSensor,
 				  .readingMin = 0,
-				  .readingMax = 5,}
+				  .readingMax = 4096,}
 };
 
 /** @brief Sensors update priority. */

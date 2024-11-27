@@ -613,9 +613,9 @@ static void stateOutput() {
              /* Restarting the Display. */
             TickType_t lastWakeTime = xTaskGetTickCount();
     		//change pin of screen
-            cmr_gpioWrite(0, 0);  // TODO figure out pin
+            //cmr_gpioWrite(0, 0);  // TODO figure out pin
             vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
-            cmr_gpioWrite(0, 1);
+            //cmr_gpioWrite(0, 1);
             vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
 
             /* Initialize the display. */
@@ -630,16 +630,16 @@ static void stateOutput() {
             //    vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
             break;
         case NORMAL:
-            drawRTDScreen(); //from something
+            //drawRTDScreen(); //from something
             break;
         case CONFIG:
-            drawConfigScreen();
+            //drawConfigScreen();
             break;
         case dimStateERROR:
             drawErrorScreen();
             break;
         case RACING:
-            drawRacingScreen();
+            //drawRacingScreen();
             break;
     }
 	//TODO: Why is this called again?
@@ -740,8 +740,8 @@ static void stateMachine(void *pvParameters){
         getReqScreen();
         stateOutput();
         taskEXIT_CRITICAL();
+		vTaskDelayUntil(&lastWakeTime, stateMachine_period);
     }
-    vTaskDelayUntil(&lastWakeTime, stateMachine_period);
 }
 //want to pack into cmr driver 
 

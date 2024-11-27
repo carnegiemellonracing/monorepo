@@ -176,7 +176,7 @@ static float adcToVoltage(uint32_t analog){
 		return -1;
 	}else{
 		//Scale analog to voltage between 0-5V
-		float finalVolt = (analog/4096) * 5;
+		float finalVolt = ((float)analog/4096.0) * 5.0;
 
 		return finalVolt;
 	}
@@ -223,6 +223,7 @@ static void XYActivate(void){
  */
 static void gpioReadButtons(void *pvParameters) {
     (void)pvParameters;
+	TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         // Direct assignment for CAN buttons
         for(int i=0; i<NUM_BUTTONS; i++){
@@ -230,6 +231,7 @@ static void gpioReadButtons(void *pvParameters) {
             canButtonStates[i] = (HAL_GPIO_ReadPin(gpioPinConfigs[i].port, gpioPinConfigs[i].init.Pin) == GPIO_PIN_RESET);
         }
 		canLRUDDetect();
+		vTaskDelayUntil(&lastWakeTime, 100);
     }
 }
 
