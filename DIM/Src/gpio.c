@@ -82,76 +82,19 @@ volatile static int pastRotaryPosition = 0; //Keeps track of past rotary positio
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	//TODO: CHANGE TO CMR
 	if(GPIO_Pin == GPIO_PIN_0){
-		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0) == GPIO_PIN_SET){
-			Arising();
-			reqGear();
-		} else {
-			Afalling();
-			reqGear();
+		//check the state of the first pin
+		int currstate = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0);
+		//if the state of the second pin is behind, we increment encoder
+		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1) == currstate) {
+			pastRotaryPosition = rotaryPosition;
+			rotaryPosition++;
+		}else {
+			pastRotaryPosition = rotaryPosition;
+			//if the state of the second pin is behind, we decrement encoder
+			rotaryPosition--;
 		}
-    }
-	if(GPIO_Pin == GPIO_PIN_1){
-		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1) == GPIO_PIN_SET){
-			Brising();
-			reqGear();
-		} else {
-			Bfalling();
-			reqGear();
-		}
-	}
-}
-
-/**
-* @brief Adds the four function that will be called in the Callback Function
-*
-* Clockwise is negative, counterclockwise is positive
-* To the future firmware people, watch this video to understand it
-* https://www.youtube.com/watch?v=v4BbSzJ-hz4&t=157s&ab_channel=HowToMechatronics
-*
-*/
-//TODO: Check with actual switch to figure out can reduce to two cases?
-void static Arising(){
-	int RotaryA = 1;
-	if (RotaryB!=RotaryA){
-		pastRotaryPosition = rotaryPosition;
-		//wrap around logic
-		rotaryPosition = ((rotaryPosition-1)%8+8)%8;
-	} else {
-		pastRotaryPosition = rotaryPosition;
-		rotaryPosition = (rotaryPosition+1)%8;
-	}
-}
-void static Afalling(){
-	int RotaryA = 0;
-	if (RotaryB!=RotaryA){
-		pastRotaryPosition = rotaryPosition;
-		//wrap around logic
-		rotaryPosition = ((rotaryPosition-1)%8+8)%8;
-	} else {
-		rotaryPosition = (rotaryPosition+1)%8;
-		pastRotaryPosition = rotaryPosition;
-	}
-}
-void static Brising(){
-	int RotaryB = 1;
-	if (RotaryA!=RotaryB){
-		pastRotaryPosition = rotaryPosition;
-		rotaryPosition = (rotaryPosition+1)%8;
-	} else {
-		pastRotaryPosition = rotaryPosition;
-		//wrap around logic
-		rotaryPosition = ((rotaryPosition-1)%8+8)%8;
-	}
-}
-void static Bfalling(){
-	int RotaryB = 0;
-	if (RotaryA!=RotaryB){
-		pastRotaryPosition = rotaryPosition;
-		rotaryPosition = (rotaryPosition+1)%8;
-	} else {
-		pastRotaryPosition = rotaryPosition;
-		//wrap around logic
-		rotaryPosition = ((rotaryPosition-1)%8+8)%8;
+		//request change in gear
+		reqGear();
 	}
 }
 
