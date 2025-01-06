@@ -60,6 +60,24 @@ static cmr_dmaInterrupt_t cmr_dmaInterrupts[2][8];
     f(2, 5) \
     f(2, 6) \
     f(2, 7)
+#elif defined(H725)
+#define DMA_STREAM_FOREACH(f) \
+    f(1, 0) \
+    f(1, 1) \
+    f(1, 2) \
+    f(1, 3) \
+    f(1, 4) \
+    f(1, 5) \
+    f(1, 6) \
+    f(1, 7) \
+    f(2, 0) \
+    f(2, 1) \
+    f(2, 2) \
+    f(2, 3) \
+    f(2, 4) \
+    f(2, 5) \
+    f(2, 6) \
+    f(2, 7)
 #endif
 
 /**
@@ -70,6 +88,9 @@ static cmr_dmaInterrupt_t cmr_dmaInterrupts[2][8];
  * @param suffix The suffix to append, if any.
  */
 #ifdef F413
+#define DMA_STREAM_NAME(ctrl, stream, suffix) \
+    DMA ## ctrl ## _Stream ## stream ## suffix
+#elif defined(H725)
 #define DMA_STREAM_NAME(ctrl, stream, suffix) \
     DMA ## ctrl ## _Stream ## stream ## suffix
 #endif

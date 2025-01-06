@@ -67,6 +67,7 @@ void _platform_rccTIMClockEnable(TIM_TypeDef *instance);
 
 #ifdef HAL_I2C_MODULE_ENABLED
 void _platform_i2cInit(cmr_i2c_t *i2c, I2C_TypeDef *instance, uint32_t clockSpeed, uint32_t ownAddr);
+void _platform_i2cClockInit(I2C_TypeDef *instance);
 #endif /* HAL_I2C_MODULE_ENABLED */
 
 #endif /* F413 */

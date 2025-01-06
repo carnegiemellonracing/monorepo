@@ -34,6 +34,10 @@ void cmr_rccADCClockEnable(ADC_TypeDef *instance);
 void cmr_rccCANClockEnable(CAN_TypeDef *instance);
 #endif /* HAL_CAN_MODULE_ENABLED */
 
+#ifdef HAL_FDCAN_MODULE_ENABLED
+void cmr_rccCANClockEnable(FDCAN_GlobalTypeDef *instance);
+#endif /* HAL_CAN_MODULE_ENABLED */
+
 #ifdef HAL_I2C_MODULE_ENABLED
 void cmr_rccI2CClockEnable(I2C_TypeDef *instance);
 #endif /* HAL_I2C_MODULE_ENABLED */
@@ -73,6 +77,10 @@ extern void _platform_rccCANClockEnable(CAN_TypeDef *instance);
 #ifdef HAL_TIM_MODULE_ENABLED
 extern void _platform_rccTIMClockEnable(TIM_TypeDef *instance);
 #endif /* HAL_TIM_MODULE_ENABLED */
+
+#ifdef HAL_I2C_MODULE_ENABLED
+extern void _platform_i2cClockInit(I2C_TypeDef *instance);
+#endif /* HAL_I2C_MODULE_ENABLED */
 
 #endif /* HAL_RCC_MODULE_ENABLED */
 

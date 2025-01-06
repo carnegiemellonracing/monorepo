@@ -36,6 +36,54 @@ typedef struct {
  */
 static cmr_uartDevice_t cmr_uartDevices[10];
 
+
+
+#ifdef H725
+
+/**
+ * @brief Instantiates the macro for each U(S)ART interface.
+ *
+ * @param f The macro to instantiate.
+ */
+#define UART_FOREACH(f) \
+    f(1, USART, AF7) \
+    f(2, USART, AF7) \
+    f(3, USART, AF7) \
+    f(4, UART, AF6) \
+    f(5, UART, AF8) \
+    f(6, USART, AF7) \
+    f(7, UART, AF11) \
+    f(8, UART, AF8) \
+    f(9, UART, AF11) \
+    f(10, USART, AF11)
+
+
+
+/**
+ * @brief Instantiates the macro for each CAN interface.
+ *
+ * @param f The macro to instantiate.
+ */
+
+uint32_t DMA_UART_Request_From_Instance(USART_TypeDef *instance, bool Tx) {
+	switch((uintptr_t) instance) {
+#define DMA_HANDLE_CONFIG(num, uart, af) \
+        case ## uart ## num: \
+            if(Tx) { \
+				return DMA_REQUEST_ ## uart ## num ## _TX ; \
+			} \
+			else { \
+				return DMA_REQUEST_ ## uart ## num ## _RX ; \
+			} \
+UART_FOREACH(DMA_HANDLE_CONFIG)
+#undef DMA_HANDLE_CONFIG
+	default:
+		cmr_panic("Invalid UART Handle!");
+	}
+}
+
+#else
+
 /**
  * @brief Instantiates the macro for each U(S)ART interface.
  *
@@ -52,7 +100,7 @@ static cmr_uartDevice_t cmr_uartDevices[10];
     f(8, UART, AF8) \
     f(9, UART, AF11) \
     f(10, UART, AF11)
-
+#endif
 /**
  * @brief Initializes the device corresponding to the given instance.
  *
@@ -132,117 +180,6 @@ static cmr_uart_t *cmr_uartFromHandle(UART_HandleTypeDef *handle) {
     char *addr = (void *) handle;
     return (void *) (addr - offsetof(cmr_uart_t, handle));
 }
-
-static HAL_StatusTypeDef UART_WaitOnFlagUntilCounter(UART_HandleTypeDef *huart, uint32_t Flag, FlagStatus Status, uint32_t Timeout)
-{
-  uint32_t counter = 0;
-  /* Wait until flag is set */
-  while ((__HAL_UART_GET_FLAG(huart, Flag) ? SET : RESET) == Status)
-  {
-    /* Check for the Timeout */
-    if (Timeout != HAL_MAX_DELAY)
-    {
-      if ((Timeout == 0U) || ((counter) > Timeout))
-      {
-        /* Disable TXE, RXNE, PE and ERR (Frame error, noise error, overrun error) interrupts for the interrupt process */
-        CLEAR_BIT(huart->Instance->CR1, (USART_CR1_RXNEIE | USART_CR1_PEIE | USART_CR1_TXEIE));
-        CLEAR_BIT(huart->Instance->CR3, USART_CR3_EIE);
-
-        huart->gState  = HAL_UART_STATE_READY;
-        huart->RxState = HAL_UART_STATE_READY;
-
-        /* Process Unlocked */
-        __HAL_UNLOCK(huart);
-
-        return HAL_TIMEOUT;
-      }
-      counter++;
-    }
-  }
-  return HAL_OK;
-}
-
-static HAL_StatusTypeDef HAL_UART_Receive_Counting(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Count)
-{
-  uint16_t *tmp;
-
-  /* Check that a Rx process is not already ongoing */
-  if (huart->RxState == HAL_UART_STATE_READY)
-  {
-    if ((pData == NULL) || (Size == 0U))
-    {
-      return  HAL_ERROR;
-    }
-
-    /* Process Locked */
-    __HAL_LOCK(huart);
-
-    huart->ErrorCode = HAL_UART_ERROR_NONE;
-    huart->RxState = HAL_UART_STATE_BUSY_RX;
-
-
-    huart->RxXferSize = Size;
-    huart->RxXferCount = Size;
-
-    int timeout = Count + Size;
-
-
-    /* Check the remain data to be received */
-    while (huart->RxXferCount > 0U)
-    {
-      huart->RxXferCount--;
-      if (huart->Init.WordLength == UART_WORDLENGTH_9B)
-      {
-        if (UART_WaitOnFlagUntilCounter(huart, UART_FLAG_RXNE, RESET, timeout) != HAL_OK)
-        {
-          return HAL_TIMEOUT;
-        }
-        tmp = (uint16_t *) pData;
-        if (huart->Init.Parity == UART_PARITY_NONE)
-        {
-          *tmp = (uint16_t)(huart->Instance->DR & (uint16_t)0x01FF);
-          pData += 2U;
-        }
-        else
-        {
-          *tmp = (uint16_t)(huart->Instance->DR & (uint16_t)0x00FF);
-          pData += 1U;
-        }
-
-      }
-      else
-      {
-        if (UART_WaitOnFlagUntilCounter(huart, UART_FLAG_RXNE, RESET, timeout) != HAL_OK)
-        {
-          return HAL_TIMEOUT;
-        }
-        if (huart->Init.Parity == UART_PARITY_NONE)
-        {
-          *pData++ = (uint8_t)(huart->Instance->DR & (uint8_t)0x00FF);
-        }
-        else
-        {
-          *pData++ = (uint8_t)(huart->Instance->DR & (uint8_t)0x007F);
-        }
-
-      }
-    }
-
-    /* At end of Rx process, restore huart->RxState to Ready */
-    huart->RxState = HAL_UART_STATE_READY;
-
-    /* Process Unlocked */
-    __HAL_UNLOCK(huart);
-
-    return HAL_OK;
-  }
-  else
-  {
-    return HAL_BUSY;
-  }
-}
-
-
 
 /**
  * @brief HAL UART transmit completion handler.
@@ -387,7 +324,11 @@ void cmr_uartInit(
             .dma = {
                 .Instance = rxDMA,
                 .Init = {
-                    .Channel = rxDMAChannel,
+#ifdef H725
+            	.Request = DMA_UART_Request_From_Instance(instance, false),
+#else
+                .Channel = rxDMAChannel,
+#endif
                     .Direction = DMA_PERIPH_TO_MEMORY,
                     .PeriphInc = DMA_PINC_DISABLE,
                     .MemInc = DMA_MINC_ENABLE,
@@ -403,7 +344,11 @@ void cmr_uartInit(
             .dma = {
                 .Instance = txDMA,
                 .Init = {
-                    .Channel = txDMAChannel,
+#ifdef H725
+            	.Request = DMA_UART_Request_From_Instance(instance, true),
+#else
+                .Channel = rxDMAChannel,
+#endif
                     .Direction = DMA_MEMORY_TO_PERIPH,
                     .PeriphInc = DMA_PINC_DISABLE,
                     .MemInc = DMA_MINC_ENABLE,
@@ -473,7 +418,7 @@ void cmr_uartInit(
     if (HAL_UART_Init(&uart->handle) != HAL_OK) {
         cmr_panic("HAL_UART_Init() failed!");
     }
-
+    
     // Disable idle interrupt and clear the flag.
     __HAL_UART_DISABLE_IT(&uart->handle, UART_IT_IDLE);
     __HAL_UART_CLEAR_IDLEFLAG(&uart->handle);
@@ -710,7 +655,7 @@ cmr_uart_result_t cmr_uart_pollingRX(cmr_uart_t *uart, uint8_t *data, uint16_t l
 
     while (timeout > 0 && status != HAL_OK) {
         // May still hang within task critical sections
-        status = HAL_UART_Receive_Counting(
+        status = HAL_UART_Receive(
             &(uart->handle), data, length, 1);
         timeout--;
     }
@@ -720,9 +665,6 @@ cmr_uart_result_t cmr_uart_pollingRX(cmr_uart_t *uart, uint8_t *data, uint16_t l
     }
     return UART_SUCCESS;
 }
-
-
-
 
 #endif /* HAL_DMA_MODULE_ENABLED */
 #endif /* HAL_UART_MODULE_ENABLED */

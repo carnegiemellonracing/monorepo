@@ -26,9 +26,9 @@
 #include <stm32f4xx_hal.h>
 #endif /* F413 */
 
-#ifdef H735
+#ifdef H725
 #include <stm32h7xx_hal.h>
-#endif /* H735 */
+#endif /* H725 */
 
 
 #endif /* CMR_PLATFORM_H */
