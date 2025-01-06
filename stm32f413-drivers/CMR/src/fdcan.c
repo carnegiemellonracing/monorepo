@@ -5,16 +5,16 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "fdcan.h"    // Interface to implement
+#include <CMR/fdcan.h>    // Interface to implement
 
 #ifdef HAL_FDCAN_MODULE_ENABLED
 
 #include <string.h> // memcpy()
 #include <stdbool.h> // bool
 
-#include "rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
-#include "panic.h"  // cmr_panic()
-#include "h725.h" // cmr_
+#include <CMR/rcc.h>   // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
+#include <CMR/panic.h>  // cmr_panic()
+#include <CMR/h725.h> // cmr_
 
 
 /**

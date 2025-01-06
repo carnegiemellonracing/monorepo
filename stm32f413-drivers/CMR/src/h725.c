@@ -1,4 +1,4 @@
-#include "h725.h"      // Interface to implement
+#include <CMR/h725.h>      // Interface to implement
 
 #ifdef H725
 
