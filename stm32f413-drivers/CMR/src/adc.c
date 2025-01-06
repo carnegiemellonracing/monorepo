@@ -51,7 +51,12 @@ static void cmr_adcConfigChannels(cmr_adc_t *adc) {
         }
 
         // Rank goes from 1 to 16
-        ADC_ChannelConfTypeDef channelConfig = _platform_adcChannelConfig(channel, (uint32_t) i+1);
+        ADC_ChannelConfTypeDef channelConfig;
+#ifdef H725
+        channelConfig = _platform_adcChannelConfig(channel, (uint32_t) 6*(i+1));
+#else
+        channelConfig = _platform_adcChannelConfig(channel, (uint32_t) (i+1));
+#endif
 
         if (HAL_ADC_ConfigChannel(&adc->handle, &channelConfig) != HAL_OK) {
             cmr_panic("HAL_ADC_ConfigChannel() failed!");
