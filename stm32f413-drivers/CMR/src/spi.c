@@ -10,15 +10,45 @@
  * @author Carnegie Mellon Racing
  */
 
-#include <CMR/spi.h>    // Interface to implement
+#include "spi.h"    // Interface to implement
 
 #ifdef HAL_SPI_MODULE_ENABLED
 #ifdef HAL_DMA_MODULE_ENABLED
 
-#include <CMR/rcc.h>    // cmr_rccSPIClockEnable(), cmr_rccGPIOClockEnable()
-#include <CMR/dma.h>    // cmr_dmaInit()
-#include <CMR/panic.h>  // cmr_panic()
+#include "rcc.h"    // cmr_rccSPIClockEnable(), cmr_rccGPIOClockEnable()
+#include "dma.h"    // cmr_dmaInit()
+#include "panic.h"  // cmr_panic()
 
+#ifdef H725
+
+/**
+ * @brief Instantiates the macro for each CAN interface.
+ *
+ * @param f The macro to instantiate.
+ */
+#define SPI_FOREACH(f) \
+    f(1)               \
+        f(2)           \
+            f(3)
+
+uint32_t DMA_Request_From_Instance(SPI_TypeDef *instance, bool Tx) {
+	switch((uintptr_t) instance) {
+#define DMA_HANDLE_CONFIG(num) \
+        case SPI ## num: \
+            if(Tx) { \
+				return DMA_REQUEST_SPI ## num ## _TX ; \
+			} \
+			else { \
+				return DMA_REQUEST_SPI ## num ## _RX ; \
+			} \
+DMA_FOREACH(DMA_HANDLE_CONFIG)
+#undef DMA_HANDLE_CONFIG
+	default:
+		cmr_panic("Invalid SPI Handle!");
+	}
+}
+
+#endif
 /**
  * @brief HAL SPI error handler.
  *
@@ -78,6 +108,8 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *handle) {
     cmr_spiDoneCallback(handle);
 }
 
+
+
 /**
  * @brief Initializes the SPI port.
  *
@@ -112,7 +144,11 @@ void cmr_spiInit(
         .rxDMA = {
             .Instance = rxDMA,
             .Init = {
+#ifdef H725
+            	.Request = 0, /*DMA_Request_From_Instance(instance, false),*/
+#else
                 .Channel = rxDMAChannel,
+#endif
                 .Direction = DMA_PERIPH_TO_MEMORY,
                 .PeriphInc = DMA_PINC_DISABLE,
                 .MemInc = DMA_MINC_ENABLE,
@@ -126,7 +162,11 @@ void cmr_spiInit(
         .txDMA = {
             .Instance = txDMA,
             .Init = {
-                .Channel = txDMAChannel,
+#ifdef H725
+            	.Request = 0, /*DMA_Request_From_Instance(instance, false),*/
+#else
+                .Channel = rxDMAChannel,
+#endif
                 .Direction = DMA_MEMORY_TO_PERIPH,
                 .PeriphInc = DMA_PINC_DISABLE,
                 .MemInc = DMA_MINC_ENABLE,
@@ -149,13 +189,15 @@ void cmr_spiInit(
     cmr_rccSPIClockEnable(instance);
 
     // Configure pins.
+
     GPIO_InitTypeDef pinConfig = {
-        .Pin = pins->mosi.pin,
-        .Mode = GPIO_MODE_AF_PP,
-        .Pull = GPIO_NOPULL,
-        .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
-        .Alternate = GPIO_AF5_SPI1,     // All SPI ports on AF5.
-    };
+			.Pin = pins->mosi.pin,
+			.Mode = GPIO_MODE_AF_PP,
+			.Pull = GPIO_NOPULL,
+			.Speed = GPIO_SPEED_FREQ_VERY_HIGH,
+			.Alternate = GPIO_AF5_SPI4,     // All SPI ports on AF5.
+    	};
+
     cmr_rccGPIOClockEnable(pins->mosi.port);
     HAL_GPIO_Init(pins->mosi.port, &pinConfig);
 
@@ -232,8 +274,8 @@ int cmr_spiTXRX(
         case HAL_TIMEOUT:
         case HAL_BUSY:
             return -1;
-        case HAL_ERROR:
-            cmr_panic("cmr_spiTXRX() failed!");
+        default:
+            cmr_panic("HAL SPI transaction failed!");
     }
 
     // Wait for transaction to complete.
@@ -246,4 +288,3 @@ int cmr_spiTXRX(
 
 #endif /* HAL_DMA_MODULE_ENABLED */
 #endif /* HAL_SPI_MODULE_ENABLED */
-

@@ -61,6 +61,17 @@ void cmr_rccCANClockEnable(CAN_TypeDef *instance) {
 }
 #endif /* HAL_CAN_MODULE_ENABLED */
 
+#ifdef HAL_FDCAN_MODULE_ENABLED
+/**
+ * @brief Enables the specified CAN interface's clock.
+ *
+ * @param instance The HAL CAN instance.
+ */
+void cmr_rccCANClockEnable(FDCAN_GlobalTypeDef *instance) {
+	_platform_rccFDCanClockEnable(instance);
+}
+#endif /* HAL_FDCAN_MODULE_ENABLED */
+
 #ifdef HAL_I2C_MODULE_ENABLED
 /**
  * @brief Enables the specified I2C port's clock.
@@ -68,17 +79,7 @@ void cmr_rccCANClockEnable(CAN_TypeDef *instance) {
  * @param instance The HAL I2C instance.
  */
 void cmr_rccI2CClockEnable(I2C_TypeDef *instance) {
-    switch ((uintptr_t) instance) {
-        case I2C1_BASE:
-            __HAL_RCC_I2C1_CLK_ENABLE();
-            break;
-        case I2C2_BASE:
-            __HAL_RCC_I2C2_CLK_ENABLE();
-            break;
-        case I2C3_BASE:
-            __HAL_RCC_I2C3_CLK_ENABLE();
-            break;
-    }
+    _platform_i2cClockInit(instance);
 }
 #endif /* HAL_I2C_MODULE_ENABLED */
 
@@ -89,6 +90,15 @@ void cmr_rccI2CClockEnable(I2C_TypeDef *instance) {
  * @param instance The HAL SPI instance.
  */
 void cmr_rccSPIClockEnable(SPI_TypeDef *instance) {
+    #ifdef H725
+		RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+		PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SPI4;
+		PeriphClkInitStruct.Spi45ClockSelection = RCC_SPI45CLKSOURCE_HSE;
+		if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+		{
+		  cmr_panic("fucky wucky periph clock config");
+		}
+	#endif
     switch ((uintptr_t) instance) {
         case SPI1_BASE:
             __HAL_RCC_SPI1_CLK_ENABLE();
@@ -155,12 +165,17 @@ void cmr_rccUSARTClockEnable(USART_TypeDef *instance) {
         case UART9_BASE:
             __HAL_RCC_UART9_CLK_ENABLE();
             return;
+#ifdef H725
+        case USART10_BASE:
+        	__HAL_RCC_USART10_CLK_ENABLE();
+        	return;
+#else
         case UART10_BASE:
             __HAL_RCC_UART10_CLK_ENABLE();
             return;
+#endif
     }
 }
-#endif /* HAL_USART_MODULE_ENABLED */
 
 #ifdef HAL_TIM_MODULE_ENABLED
 void cmr_rccTIMClockEnable(TIM_TypeDef *instance) {

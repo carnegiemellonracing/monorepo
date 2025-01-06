@@ -12,6 +12,10 @@
 #include <CMR/rcc.h>    // cmr_rccCANClockEnable()
 #include <CMR/panic.h>  // cmr_panic()
 
+#ifdef H725
+#define RCC_FLAG_WWDGRST RCC_FLAG_WWDG1RST
+#define WWDG WWDG1
+#endif
 
 /** @brief Initialize the watchdog
  *

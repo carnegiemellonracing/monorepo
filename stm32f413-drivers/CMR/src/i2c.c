@@ -182,6 +182,32 @@ int cmr_i2cRX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
     return 0;
 }
 
+/**
+  * @brief I2C Mem Reception Function
+  *
+  * @param i2c I2C instance to receive on.
+  * @param devAddr Target device address
+  * @param memaddress Target register address
+  * @param data The data to receive
+  * @param dataLength The length of the data
+  * @param timeout_ms Amount of time to wait in milliseconds.
+  *
+  * @retval 0 upon success, or otherwise a negative error code
+  */
+int cmr_i2cMemRX(cmr_i2c_t *i2c, uint16_t devAddr, uint16_t memaddress, uint8_t memsize, uint8_t *data,
+              size_t dataLength, uint32_t timeout_ms) {
+    // Shift the address by 1 per HAL library suggestion
+    HAL_StatusTypeDef rxStatus = HAL_I2C_Mem_Read(
+        &(i2c->handle), devAddr << 1, memaddress, memsize, data, dataLength, timeout_ms
+    );
+
+
+    if (rxStatus != HAL_OK) {
+        return -1;
+    }
+
+    return 0;
+}
 
 /**
   * @brief I2C Initialization Function
@@ -227,6 +253,17 @@ void cmr_i2cInit(
         cmr_panic("HAL_I2C_Init() failed!");
     }
 
+    if (HAL_I2CEx_ConfigAnalogFilter(&(i2c->handle), I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+    {
+    cmr_panic("bruh");
+    }
+
+    /** Configure Digital filter
+     */
+    if (HAL_I2CEx_ConfigDigitalFilter(&(i2c->handle), 0) != HAL_OK)
+    {
+        cmr_panic("bruh");
+    }
     // TODO: Init GPIO with CMR drivers instead of HAL
     GPIO_InitTypeDef pinConfig = {
         .Pin = i2cClkPin,
