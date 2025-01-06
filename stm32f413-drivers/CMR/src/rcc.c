@@ -176,6 +176,7 @@ void cmr_rccUSARTClockEnable(USART_TypeDef *instance) {
 #endif
     }
 }
+#endif /* HAL_USART_MODULE_ENABLED */
 
 #ifdef HAL_TIM_MODULE_ENABLED
 void cmr_rccTIMClockEnable(TIM_TypeDef *instance) {
