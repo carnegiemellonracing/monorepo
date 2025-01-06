@@ -17,6 +17,7 @@
 
 #include <FreeRTOS.h>   // FreeRTOS interface
 #include <semphr.h>     // Semaphore interface
+#include <stdbool.h>
 
 /** @brief Represents a single SPI pin. */
 typedef struct {

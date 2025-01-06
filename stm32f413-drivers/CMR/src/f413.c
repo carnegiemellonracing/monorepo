@@ -689,6 +689,21 @@ void _platform_i2cInit(cmr_i2c_t *i2c, I2C_TypeDef *instance, uint32_t clockSpee
         }
     };
 }
+
+void _platform_i2cClockInit(I2C_TypeDef *instance) {
+	switch ((uintptr_t) instance) {
+	        case I2C1_BASE:
+	            __HAL_RCC_I2C1_CLK_ENABLE();
+	            break;
+	        case I2C2_BASE:
+	            __HAL_RCC_I2C2_CLK_ENABLE();
+	            break;
+	        case I2C3_BASE:
+	            __HAL_RCC_I2C3_CLK_ENABLE();
+	            break;
+	    }
+}
+
 #endif /* HAL_I2C_MODULE_ENABLED */
 
 #endif /* F413 */

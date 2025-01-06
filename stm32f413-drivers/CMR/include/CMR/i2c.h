@@ -39,6 +39,8 @@ int cmr_i2cTX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
 
 int cmr_i2cRX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
               size_t dataLength, uint32_t timeout_ms);
+int cmr_i2cMemRX(cmr_i2c_t *i2c, uint16_t devAddr, uint16_t memaddress, uint8_t memsize, uint8_t *data,
+              size_t dataLength, uint32_t timeout_ms);
 
 void cmr_i2cInit(
     cmr_i2c_t *i2c, I2C_TypeDef *instance,

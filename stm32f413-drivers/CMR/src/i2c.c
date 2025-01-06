@@ -96,10 +96,10 @@ void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *handle) {
  * @return The AF for the given I2C instance and GPIO port.
  */
 uint32_t i2cGPIOAF(I2C_TypeDef *instance, GPIO_TypeDef *port, uint32_t pin) {
+    #ifdef F413
     if (instance == I2C1) {
         return GPIO_AF4_I2C1;
     }
-    #ifdef F413
 	else if (instance == I2C2) {
 		if (port == GPIOB && (pin == GPIO_PIN_10 || pin == GPIO_PIN_11)) {
 			return GPIO_AF4_I2C2;
@@ -117,11 +117,15 @@ uint32_t i2cGPIOAF(I2C_TypeDef *instance, GPIO_TypeDef *port, uint32_t pin) {
 			return GPIO_AF4_I2C3;
 		}
     }
-	#endif /* F413 */
     else {
     	cmr_panic("Invalid I2C instance!");
     }
+    //TODO: FIX H7 I2C AFs
+    #elif defined(H725)
+    return GPIO_AF4_I2C4;
+    #endif
 }
+    
 
 
 /**
