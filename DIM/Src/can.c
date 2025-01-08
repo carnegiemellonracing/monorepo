@@ -23,7 +23,7 @@
 #include "gpio.h"       // For actionButtonPressed status
 #include "state.h"      // State interface
 #include "tftDL.h"      // For RAM buffer indices
-#include "NewState.h"	// For new state machine
+#include "newState.h"	// For new state machine
 
 // Config Screen update requested
 bool volatile flush_config_screen_to_cdc = false;
