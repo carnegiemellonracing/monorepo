@@ -26,9 +26,16 @@ ExternalProject_Add(
     INSTALL_COMMAND ""
 )
 
-# ExternalProject_Add(
-#         DIM
-#         PREFIX ${CMAKE_CURRENT_BINARY_DIR}/DIM
-#         SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/DIM
-#         INSTALL_COMMAND ""
-# )
+ExternalProject_Add(
+    VSM
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/VSM
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/VSM
+    INSTALL_COMMAND ""
+)
+
+ExternalProject_Add(
+        DIM
+        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/DIM
+        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/DIM
+        INSTALL_COMMAND ""
+)
