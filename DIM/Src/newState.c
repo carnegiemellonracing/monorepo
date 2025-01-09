@@ -175,6 +175,8 @@ bool getDoorsState(void)
 static cmr_state getReqScreen(void) {
     if(stateGetVSM() == CMR_CAN_ERROR){
     	nextState = dimStateERROR;
+    	//check later
+    	break;
     }
     /*case if we use safety screen
     if(stateGetVSM() == CMR_CAN_ERROR) {
