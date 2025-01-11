@@ -74,11 +74,6 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
         badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_DIM;
     }
 
-    if (getBadModuleState(CANRX_HEARTBEAT_PTC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
-        heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
-        badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_PTC;
-    }
-
     // Set software latch in the event of BMS voltage or temperature errors.
     // See rule EV 5.1.10.
     cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
