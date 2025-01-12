@@ -21,7 +21,6 @@ typedef enum {
     CANRX_HEARTBEAT_HVC = 0,  /**< @brief HVC heartbeat. */
     CANRX_HEARTBEAT_CDC,      /**< @brief CDC heartbeat. */
     CANRX_HEARTBEAT_DIM,      /**< @brief DIM heartbeat. */
-    CANRX_HEARTBEAT_PTC,      /**< @brief PTC heartbeat. */
     CANRX_FSM_DATA,           /**< @brief FSM data. */
     CANRX_DIM_REQUEST,        /**< @brief DIM state request. */
     CANRX_INVERTER_1,         /**< @brief Inverter1 status */
