@@ -13,6 +13,7 @@
 #include <CMR/adc.h>    // ADC interface
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
+#include <CMR/openblt.h>  // VectorBase_Config
 
 #include "gpio.h"       // Board-specific GPIO interface
 #include "can.h"        // Board-specific CAN interface
@@ -69,7 +70,7 @@ static void MX_DAC1_Init(void)
   /* USER CODE BEGIN DAC1_Init 1 */
 
   /* USER CODE END DAC1_Init 1 */
-  /** DAC Initialization 
+  /** DAC Initialization
   */
   hdac1.Instance = DAC1;
   if (HAL_DAC_Init(&hdac1) != HAL_OK)
@@ -77,7 +78,7 @@ static void MX_DAC1_Init(void)
 //    Error_Handler();
 	  cmr_panic("init failed");
   }
-  /** DAC channel OUT1 config 
+  /** DAC channel OUT1 config
   */
   sConfig.DAC_Trigger = DAC_TRIGGER_NONE;
   sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
@@ -109,10 +110,10 @@ void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac)
   /* USER CODE END DAC1_MspInit 0 */
     /* Peripheral clock enable */
 	__HAL_RCC_DAC_CLK_ENABLE();
-  
+
     __HAL_RCC_GPIOA_CLK_ENABLE();
-    /**DAC1 GPIO Configuration    
-    PA4     ------> DAC1_OUT1 
+    /**DAC1 GPIO Configuration
+    PA4     ------> DAC1_OUT1
     */
     GPIO_InitStruct.Pin = GPIO_PIN_5;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
@@ -124,17 +125,6 @@ void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac)
   /* USER CODE END DAC1_MspInit 1 */
   }
 
-}
-
-static void VectorBase_Config(void)
-{
-  /* The constant array with vectors of the vector table is declared externally in the
-   * c-startup code.
-   */
-  extern const unsigned long g_pfnVectors[];
- 
-  /* Remap the vector table to where the vector table is located for this program. */
-  SCB->VTOR = (unsigned long)&g_pfnVectors[0];
 }
 
 /**
@@ -149,7 +139,7 @@ int main(void) {
     VectorBase_Config();
     HAL_Init();
     cmr_rccSystemClockEnable();
-    
+
     HAL_DAC_MspInit(&hdac1);
     MX_DAC1_Init();
     HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, 1899);

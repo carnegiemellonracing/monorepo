@@ -16,6 +16,7 @@
 #include <CMR/tasks.h>      // Task interface
 #include <CMR/pwm.h>        // PWM interface
 #include <CMR/can_types.h>  // CMR CAN types
+#include <CMR/openblt.h>  // VectorBase_Config
 
 #include "gpio.h"       // Board-specific GPIO interface
 #include "can.h"        // Board-specific CAN interface
@@ -63,6 +64,7 @@ static void statusLED(void *pvParameters) {
  */
 int main(void) {
     // System initialization.
+    VectorBase_Config();
     HAL_Init();
     cmr_rccSystemClockEnable();
 

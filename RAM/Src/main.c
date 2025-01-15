@@ -12,6 +12,7 @@
 #include <CMR/can.h>    // CAN interface
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
+#include <CMR/openblt.h>  // VectorBase_Config
 
 #include "parser.h" // JSON configuration
 #include "sample.h" // CBOR encoding
@@ -59,6 +60,7 @@ static void statusLED(void *pvParameters) {
  */
 int main(void) {
     // System initialization.
+    VectorBase_Config();
     HAL_Init();
     cmr_rccSystemClockEnable();
 
