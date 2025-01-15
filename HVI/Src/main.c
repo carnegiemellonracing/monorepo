@@ -7,12 +7,15 @@
 
 #include <stm32f4xx_hal.h>  // HAL interface
 
-#include <CMR/panic.h>  // cmr_panic()
-#include <CMR/rcc.h>    // RCC interface
-#include <CMR/can.h>    // CAN interface
-#include <CMR/adc.h>    // ADC interface
-#include <CMR/gpio.h>   // GPIO interface
-#include <CMR/tasks.h>  // Task interface
+#include <CMR/panic.h>      // cmr_panic()
+#include <CMR/rcc.h>        // RCC interface
+#include <CMR/can.h>        // CAN interface
+#include <CMR/adc.h>        // ADC interface
+#include <CMR/gpio.h>       // GPIO interface
+#include <CMR/tasks.h>      // Task interface
+#include <CMR/pwm.h>        // PWM interface
+#include <CMR/can_types.h>  // CMR CAN types
+#include <CMR/openblt.h>  // VectorBase_Config
 
 #include "adc.h"
 #include "gpio.h"
@@ -60,6 +63,7 @@ static void statusLED(void *pvParameters) {
  */
 int main(void) {
     // System initialization.
+    VectorBase_Config();
     HAL_Init();
     cmr_rccSystemClockEnable();
 

@@ -10,6 +10,7 @@
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/panic.h>  // cmr_panic()
 #include <CMR/rcc.h>    // RCC interface
+#include <CMR/openblt.h>  // VectorBase_Config
 
 #include "adc.h"        // Board-specific ADC interface
 #include "can.h"        // Board-specific CAN interface
@@ -112,12 +113,12 @@ static void errorLEDs(void *pvParameters) {
  */
 int main(void) {
     // System initialization.
-     HAL_Init();
-     
+    VectorBase_Config();
+    HAL_Init();
     cmr_rccSystemClockEnable();
 
     // Peripheral configuration.
-    gpioInit(); 
+    gpioInit();
     //canInit();
     //adcInit();
     stateMachineInit();

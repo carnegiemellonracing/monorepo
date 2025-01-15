@@ -10,6 +10,7 @@
 #include <CMR/panic.h>  // cmr_panic()
 #include <CMR/rcc.h>    // RCC interface
 #include <CMR/tasks.h>  // Task interface
+#include <CMR/openblt.h>  // VectorBase_Config
 
 #include "gpio.h"   // Board-specific GPIO interface
 #include "can.h"    // Board-specific CAN interface
@@ -75,6 +76,7 @@ static void statusLED(void *pvParameters) {
  * @return Does not return.
  */
 int main(void) {
+    VectorBase_Config();
 	HAL_Init();
     cmr_rccSystemClockEnable();
     // cmr_rccSystemInternalClockEnable();
