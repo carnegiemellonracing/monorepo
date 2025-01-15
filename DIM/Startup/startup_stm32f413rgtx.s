@@ -273,6 +273,7 @@ g_pfnVectors:
   .word     DFSDM2_FLT1_IRQHandler            /* DFSDM2 Filter1                              */
   .word     DFSDM2_FLT2_IRQHandler            /* DFSDM2 Filter2                              */
   .word     DFSDM2_FLT3_IRQHandler            /* DFSDM2 Filter3                              */
+  .word     0x55AA11EE                        /* Reserved for OpenBLT checksum*/
 
 /*******************************************************************************
 *
