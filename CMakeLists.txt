@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.24)
 
 set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
+set(CMAKE_SYSTEM_NAME               Generic)
+set(CMAKE_SYSTEM_PROCESSOR          arm)
 project(25e)
 
 # Needed for ExternalProject_Add
