@@ -1,0 +1,5 @@
+../servo.c:21:17:dutyCycleToLeftDutyCycle	2
+../servo.c:25:17:dutyCycleToRightDutyCycle	2
+../servo.c:31:6:setServoQuiet	1
+../servo.c:36:6:setDrsPosition	1
+../servo.c:51:6:servoInit	1

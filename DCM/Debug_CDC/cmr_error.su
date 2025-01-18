@@ -1,0 +1,5 @@
+../cmr_error.c:50:6:updateErrorsWarnings	24	static
+../cmr_error.c:74:13:updateErrors	32	static
+../cmr_error.c:128:13:updateWarnings	24	static
+../cmr_error.c:177:13:updateAMKTimeouts	56	static
+../cmr_error.c:220:13:updateAMKErrors	32	static

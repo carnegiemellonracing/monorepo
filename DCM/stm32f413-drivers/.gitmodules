@@ -1,0 +1,3 @@
+[submodule "DIM-ESE"]
+	path = DIM-ESE
+	url = git@github.com:carnegiemellonracing/DIM-ESE

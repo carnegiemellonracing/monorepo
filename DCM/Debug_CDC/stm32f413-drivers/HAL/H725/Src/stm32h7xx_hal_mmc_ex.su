@@ -1,0 +1,4 @@
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_mmc_ex.c:86:19:HAL_MMCEx_ConfigDMAMultiBuffer	24	static
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_mmc_ex.c:112:19:HAL_MMCEx_ReadBlocksDMAMultiBuffer	64	static
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_mmc_ex.c:215:19:HAL_MMCEx_WriteBlocksDMAMultiBuffer	64	static
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_mmc_ex.c:319:19:HAL_MMCEx_ChangeDMABuffer	24	static

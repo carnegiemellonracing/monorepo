@@ -1,0 +1,5 @@
+../servo.c:21:17:dutyCycleToLeftDutyCycle	16	static
+../servo.c:25:17:dutyCycleToRightDutyCycle	16	static
+../servo.c:31:6:setServoQuiet	8	static
+../servo.c:36:6:setDrsPosition	24	static
+../servo.c:51:6:servoInit	64	static

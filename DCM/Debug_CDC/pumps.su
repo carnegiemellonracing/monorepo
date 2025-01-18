@@ -1,0 +1,2 @@
+../pumps.c:55:6:pumpsOn	56	static
+../pumps.c:117:6:pumpsOff	8	static

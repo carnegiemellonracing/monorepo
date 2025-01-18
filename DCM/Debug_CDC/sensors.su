@@ -1,0 +1,7 @@
+../sensors.c:43:17:sampleADCSensor	24	static
+../sensors.c:58:16:adcToBusVoltage_cV	16	static
+../sensors.c:73:16:adcToAvgBusCurrent_cA	24	static
+../sensors.c:98:9:getVoltage	8	static
+../sensors.c:102:9:getCurrent	8	static
+../sensors.c:122:13:sensorsUpdate	24	static
+../sensors.c:136:6:sensorsInit	16	static

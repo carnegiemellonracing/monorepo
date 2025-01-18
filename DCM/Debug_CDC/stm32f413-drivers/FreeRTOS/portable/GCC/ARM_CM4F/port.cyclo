@@ -1,0 +1,13 @@
+../stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:229:14:pxPortInitialiseStack	1
+../stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:259:13:prvTaskExitError	1
+../stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:273:6:SVC_Handler	1
+../stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:292:13:prvPortStartFirstTask	1
+../stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:312:12:xPortStartScheduler	2
+../stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:399:6:vPortEndScheduler	1
+../stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:407:6:vPortEnterCritical	2
+../stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:424:6:vPortExitCritical	2
+../stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:435:6:PendSV_Handler	1
+../stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:493:6:xPortSysTickHandler	2
+../stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:671:30:vPortSetupTimerInterrupt	1
+../stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:689:13:vPortEnableVFP	1
+../stm32f413-drivers/FreeRTOS/portable/GCC/ARM_CM4F/port.c:705:7:vPortValidateInterruptPriority	2

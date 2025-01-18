@@ -1,0 +1,5 @@
+../stm32f413-drivers/FreeRTOS/list.c:79:6:vListInitialise	1
+../stm32f413-drivers/FreeRTOS/list.c:104:6:vListInitialiseItem	1
+../stm32f413-drivers/FreeRTOS/list.c:116:6:vListInsertEnd	1
+../stm32f413-drivers/FreeRTOS/list.c:145:6:vListInsert	3
+../stm32f413-drivers/FreeRTOS/list.c:212:13:uxListRemove	2

@@ -1,0 +1,4 @@
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_smbus_ex.c:88:19:HAL_SMBUSEx_EnableWakeUp	3
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_smbus_ex.c:127:19:HAL_SMBUSEx_DisableWakeUp	3
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_smbus_ex.c:196:6:HAL_SMBUSEx_EnableFastModePlus	1
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_smbus_ex.c:227:6:HAL_SMBUSEx_DisableFastModePlus	1

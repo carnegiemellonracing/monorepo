@@ -1,0 +1,3 @@
+../osqp/src/osqp/kkt.c:184:6:update_KKT_P	64	static
+../osqp/src/osqp/kkt.c:205:6:update_KKT_A	40	static
+../osqp/src/osqp/kkt.c:214:6:update_KKT_param2	40	static
