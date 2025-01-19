@@ -1,0 +1,2 @@
+../osqp/src/osqp/proj.c:4:6:project	5
+../osqp/src/osqp/proj.c:16:6:project_normalcone	5

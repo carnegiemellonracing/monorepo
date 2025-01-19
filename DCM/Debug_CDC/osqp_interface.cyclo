@@ -1,0 +1,3 @@
+../osqp_interface.c:20:6:osqp_guess	1
+../osqp_interface.c:40:6:osqp_init	1
+../osqp_interface.c:45:7:solve_with_osqp	1

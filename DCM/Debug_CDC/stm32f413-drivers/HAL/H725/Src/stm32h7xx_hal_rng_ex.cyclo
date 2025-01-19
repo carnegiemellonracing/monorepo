@@ -1,0 +1,4 @@
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_rng_ex.c:98:19:HAL_RNGEx_SetConfig	7
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_rng_ex.c:197:19:HAL_RNGEx_GetConfig	4
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_rng_ex.c:246:19:HAL_RNGEx_LockConfig	3
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_rng_ex.c:305:19:HAL_RNGEx_RecoverSeedError	3

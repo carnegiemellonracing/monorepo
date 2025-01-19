@@ -1,0 +1,2 @@
+../cvxgen_interface.c:22:6:cvxgen_init	24	static
+../cvxgen_interface.c:39:6:load_data	48	static

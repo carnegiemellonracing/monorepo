@@ -1,0 +1,1262 @@
+FormatVersion=5.0 // Do not edit this line!
+UniqueVariables=True
+Title="CMR 19e"
+
+{ENUMS}
+enum BMS_Precharge_State(0="Error", 1="Idle", 2="Measure", 3="Precharge",
+  4="Run", 5="Enable Pack")
+enum BMS_Precharge_Timer_State(0="Timer Not Elapsed", 1="Timer Elapsed")
+enum BMS_Ignition(0="BMS_ACCESS", 96="BMS_START", 32="BMS_RUN")
+enum BMS_State_t(0="BMS_STATE_ERROR", 1="BMS_STATE_DISCHARGE",
+  2="BMS_STATE_STANDBY", 3="BMS_STATE_DRIVE_PRECHARGE",
+  4="BMS_STATE_DRIVE_PRECHARGE_COMPLETE", 5="BMS_STATE_DRIVE",
+  6="BMS_STATE_CHARGE_PRECHARGE", 7="BMS_STATE_CHARGE_PRECHARGE_COMPLETE",
+  8="BMS_STATE_CHARGE_TRICKLE", 9="BMS_STATE_CHARGE_CONSTANT_CURRENT",
+  10="BMS_STATE_CHARGE_CONSTANT_VOLTAGE", 11="BMS_STATE_CLEAR_ERROR",
+  12="BMS_STATE_UNKNOWN")
+enum BMS_Mode_t(0="BMS_MODE_ERROR", 1="BMS_MODE_IDLE", 2="BMS_MODE_START",
+  4="BMS_MODE_RUN", 8="BMS_MODE_CHARGE")
+enum Fan_State(0="FAN_OFF", 1="FAN_LOW", 2="FAN_HIGH")
+
+enum State(
+    0 = "UNKNOWN",
+    1 = "GLV_ON",
+    2 = "HV_EN",
+    3 = "RTD",
+    4 = "ERROR",
+    5 = "CLEAR_ERROR"
+)
+
+enum Gear(
+    0 = "UNKNOWN",
+    1 = "REVERSE",
+    2 = "SLOW",
+    3 = "FAST",
+    4 = "ENDURANCE",
+    5 = "AUTO-X",
+    6 = "SKIDPAD",
+    7 = "ACCEL",
+    8 = "TEST"
+)
+
+enum VSMState (
+    0 = "ERROR",
+    1 = "CLEAR_ERROR",
+    2 = "GLV_ON",
+    3 = "REQ_PRECHARGE",
+    4 = "RUN_BMS",
+    5 = "DCDC_EN",
+    6 = "HV_EN",
+    7 = "RTD",
+    8 = "COOLING_OFF",
+    9 = "DCDC_OFF"
+)
+
+enum HVCMode(
+    0 = "ERROR",
+    1 = "IDLE",
+    2 = "START",
+    4 = "RUN",
+    8 = "CHARGE"
+)
+
+enum HVCState (
+    0 = "ERROR",
+    1 = "DISCHARGE",
+    2 = "STANDBY",
+    3 = "DRIVE_PRECHARGE",
+    4 = "DRIVE_PRECHARGE_COMPLETE",
+    5 = "DRIVE",
+    6 = "CHARGE_PRECHARGE",
+    7 = "CHARGE_PRECHARGE_COMPLETE",
+    8 = "CHARGE_TRICKLE",
+    9 = "CHARGE_CONSTANT_CURRENT",
+    10 = "CHARGE_CONSTANT_VOLTAGE",
+    11 = "CLEAR_ERROR",
+    12 = "UNKNOWN"
+)
+
+enum FanState (
+    0 = "OFF",
+    1 = "LOW",
+    2 = "HIGH"
+)
+
+enum PumpState (
+    0 = "OFF",
+    1 = "ON"
+)
+
+enum CoolingState (
+    0 = "OFF",
+    1 = "LOW",
+    2 = "HIGH"
+)
+
+{SENDRECEIVE}
+
+[VSM_Heartbeat]
+ID=100h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=VSM_state unsigned 0,8 /e:State
+Var=VSM_ERR_moduleTimeout bit 23,1
+Var=VSM_ERR_moduleState bit 22,1
+Var=VSM_ERR_latchedError bit 21,1
+Var=VSM_ERR_DCDCFault bit 20,1
+Var=VSM_ERR_hallEffectOOR bit 19,1
+Var=VSM_ERR_brakePresOOR bit 18,1
+Var=VSM_WRN_HVCTimeout bit 39,1
+Var=VSM_WRN_CDCTimeout bit 38,1
+Var=VSM_WRN_FSMTimeout bit 37,1
+Var=VSM_WRN_PTCTimeout bit 36,1
+Var=VSM_WRN_DIMTimeout bit 35,1
+Var=VSM_WRN_AFC0Timeout bit 34,1
+Var=VSM_WRN_AFC1Timeout bit 33,1
+Var=VSM_WRN_APCTimeout bit 32,1
+Var=VSM_WRN_DIMReqNAK bit 31,1
+Var=VSM_WRN_VoltageOOR bit 25,1
+Var=VSM_WRN_CurrentOOR bit 26,1
+
+[VSM_Status]
+ID=110h
+DLC=4
+CycleTime=10
+Timeout=100
+Var=VSM_internalState unsigned 0,8 /e:VSMState
+// Timeout matrix
+Var=VSM_ERR_HVCTimeout bit 15,1
+Var=VSM_ERR_CDCTimeout bit 14,1
+Var=VSM_ERR_FSMTimeout bit 13,1
+Var=VSM_ERR_PTCTimeout bit 12,1
+Var=VSM_ERR_DIMTimeout bit 11,1
+Var=VSM_ERR_AFC0Timeout bit 10,1
+Var=VSM_ERR_AFC1Timeout bit 9,1
+Var=VSM_ERR_APCTimeout bit 8,1
+// Bad state matrix
+Var=VSM_ERR_HVCState bit 23,1
+Var=VSM_ERR_CDCState bit 22,1
+Var=VSM_ERR_FSMState bit 21,1
+Var=VSM_ERR_PTCState bit 20,1
+Var=VSM_ERR_DIMState bit 19,1
+Var=VSM_ERR_AFC0State bit 18,1
+Var=VSM_ERR_AFC1State bit 17,1
+Var=VSM_ERR_APCState bit 16,1
+// Latched error matrix
+Var=VSM_ERR_latchSoftware bit 26,1
+Var=VSM_ERR_latchAMS bit 26,1
+Var=VSM_ERR_latchIMD bit 25,1
+Var=VSM_ERR_latchBSPD bit 24,1
+
+[VSM_Sensors]
+ID=200h
+DLC=6
+CycleTime=100
+Timeout=1000
+Var=VSM_brakePressureRear unsigned 0,16 /u:PSI
+Var=VSM_hallEffect signed 16,16 /u:A
+Var=VSM_safetyIn unsigned 32,8 /u:V /f:0.1
+Var=VSM_safetyOut unsigned 40,8 /u:V /f:0.1
+
+[VSM_LatchedStatus]
+ID=510h
+DLC=3
+CycleTime=10000
+Timeout=20000
+// Timeout matrix
+Var=VSM_latched_ERR_HVCTimeout bit 7,1
+Var=VSM_latched_ERR_CDCTimeout bit 6,1
+Var=VSM_latched_ERR_FSMTimeout bit 5,1
+Var=VSM_latched_ERR_PTCTimeout bit 4,1
+Var=VSM_latched_ERR_DIMTimeout bit 3,1
+Var=VSM_latched_ERR_AFC0Timeout bit 2,1
+Var=VSM_latched_ERR_AFC1Timeout bit 1,1
+Var=VSM_latched_ERR_APCTimeout bit 0,1
+// Bad state matrix
+Var=VSM_latched_ERR_HVCState bit 15,1
+Var=VSM_latched_ERR_CDCState bit 14,1
+Var=VSM_latched_ERR_FSMState bit 13,1
+Var=VSM_latched_ERR_PTCState bit 12,1
+Var=VSM_latched_ERR_DIMState bit 11,1
+Var=VSM_latched_ERR_AFC0State bit 10,1
+Var=VSM_latched_ERR_AFC1State bit 9,1
+Var=VSM_latched_ERR_APCState bit 8,1
+// Latched error matrix
+Var=VSM_latched_ERR_latchSoftware bit 18,1
+Var=VSM_latched_ERR_latchAMS bit 18,1
+Var=VSM_latched_ERR_latchIMD bit 17,1
+Var=VSM_latched_ERR_latchBSPD bit 16,1
+
+[VSM_PowerDiagnostic]
+ID=530h
+DLC=4
+CycleTime=100
+Timeout=1000
+Var=VSM_busVoltage unsigned 0,16 /u:mV
+Var=VSM_busCurrent unsigned 16,16 /u:mA
+
+[HVC_Heartbeat]
+ID=101h
+DLC=6
+CycleTime=10
+Timeout=100
+Var=HVC_Mode unsigned 16,8 /e:HVCMode
+Var=HVC_State unsigned 24,8 /e:HVCState
+var=HVC_Uptime unsigned 40,8 /u:s
+// Error vector
+Var=HVC_ERR_PACK_UNDERVOLT bit 0,1
+Var=HVC_ERR_PACK_OVERVOLT bit 1,1
+Var=HVC_ERR_PACK_OVERCURRENT bit 3,1
+Var=HVC_ERR_CELL_UNDERVOLT bit 4,1
+Var=HVC_ERR_CELL_OVERVOLT bit 5,1
+Var=HVC_ERR_CELL_OVERTEMP bit 6,1
+Var=HVC_ERR_BMB_FAULT bit 7,1
+Var=HVC_ERR_BMB_TIMEOUT bit 8,1
+Var=HVC_ERR_CAN_TIMEOUT bit 9,1
+Var=HVC_ERR_RELAY bit 12,1
+Var=HVC_ERR_LV_UNDERVOLT bit 13,1
+// Contactor status vector
+Var=HVC_dischargeClosed unsigned 32,1
+Var=HVC_prechargeClosed unsigned 33,1
+Var=HVC_negAIRClosed unsigned 34,1
+Var=HVC_posAIRClosed unsigned 35,1
+Var=HVC_dischargeError unsigned 36,1
+Var=HVC_prechargeError unsigned 37,1
+Var=HVC_negAIRError unsigned 38,1
+Var=HVC_posAIRError unsigned 39,1
+
+[HVC_Command]
+ID=130h
+DLC=1
+CycleTime=10
+Var=HVC_modeRequest unsigned 0,8 /e:HVCMode
+
+
+[CDC_Heartbeat]
+ID=102h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=CDC_state unsigned 0,8 /e:State
+Var=CDC_ERR_VSMTimeout unsigned 8,1
+
+[CDC_WheelSpeeds]
+ID=132h
+DLC=8
+CycleTime=10
+Timeout=100
+Var=CDC_wheelFrontLeft unsigned 0,16 /u:RPM /f:0.1
+Var=CDC_wheelFrontRight unsigned 16,16 /u:RPM /f:0.1
+Var=CDC_wheelBackLeft unsigned 32,16 /u:RPM /f:0.1
+Var=CDC_wheelBackRight unsigned 48,16 /u:RPM /f:0.1
+
+[CDC_SolenoidPTC]
+ID=142h
+DLC=1
+CycleTime=1
+Timeout=10
+Var=CDC_solenoidEnable unsigned 0,8
+
+[CDC_MotorData]
+ID=152h
+DLC=8
+CycleTime=10
+Timeout=100
+Var=CDC_motorTorque signed 0,16 /u:Nm /f:0.1
+Var=CDC_motorSpeed signed 16,16 /u:RPM /f:-1
+Var=CDC_motorCurrent signed 32,16 /u:A /f:0.1
+Var=CDC_motorVoltage signed 48,16 /u:V /f:0.1
+
+[CDC_MotorTemps]
+ID=512h
+DLC=4
+CycleTime=1000
+Timeout=10000
+Var=CDC_motorTemp signed 0,16 /u:C /f:0.1
+Var=CDC_mcMaxInternalTemp signed 16,16 /u:C /f:0.1
+
+[CDC_IMUAccelerations]
+ID=162h
+DLC=6
+CycleTime=10
+Timeout=100
+Var=CDC_IMULongitudinalAcc signed 0,16 /u:MPSS /f:0.000061
+Var=CDC_IMULateralAcc signed 16,16 /u:MPSS /f:0.000061
+Var=CDC_IMUVerticalAcc signed 32,16 /u:MPSS /f:0.000061
+
+[CDC_MotorPhaseCurrents]
+ID=172h
+DLC=6
+CycleTime=10
+Timeout=100
+Var=CDC_PhaseACurrent signed 0,16 /u:A /f:0.1
+Var=CDC_PhaseBCurrent signed 16,16 /u:A /f:0.1
+Var=CDC_PhaseCCurrent signed 32,16 /u:A /f:0.1
+
+[CDC_MCFaults]
+ID=502h
+DLC=8
+CycleTime=1000
+Timeout=2000
+Var=POST_ERR_HWDesat bit 0,1
+Var=POST_ERR_HWOverCurr bit 1,1
+Var=POST_ERR_AccelShort bit 2,1
+Var=POST_ERR_AccelOpen bit 3,1
+Var=POST_ERR_CurrSensLo bit 4,1
+Var=POST_ERR_CurrSensHi bit 5,1
+Var=POST_ERR_Module_TempLo bit 6,1
+Var=POST_ERR_Module_TempHi bit 7,1
+Var=POST_ERR_CtrlPCB_TempLo bit 8,1
+Var=POST_ERR_CtrlPCB_TempHi bit 9,1
+Var=POST_ERR_GateDrPCB_TempLo bit 10,1
+Var=POST_ERR_GateDrPCB_TempHi bit 11,1
+Var=POST_ERR_5V_SensVoltLo bit 12,1
+Var=POST_ERR_5V_SensVoltHi bit 13,1
+Var=POST_ERR_12V_SensVoltLo bit 14,1
+Var=POST_ERR_12V_SensVoltHi bit 15,1
+Var=POST_ERR_2V5_SensVoltLo bit 16,1
+Var=POST_ERR_2V5_SensVoltHi bit 17,1
+Var=POST_ERR_1V5_SensVoltLo bit 18,1
+Var=POST_ERR_1V5_SensVoltHi bit 19,1
+Var=POST_ERR_DCBusVoltHi bit 20,1
+Var=POST_ERR_DCBusVoltLo bit 21,1
+Var=POST_ERR_PreChgTimeout bit 22,1
+Var=POST_ERR_PreChgVoltFail bit 23,1
+Var=POST_ERR_EEPROM_ChecksumInvalid bit 24,1
+Var=POST_ERR_EEPROM_DataOOR bit 25,1
+Var=POST_ERR_EEPROM_UpdateRequired bit 26,1
+Var=POST_ERR_BrakeShort bit 30,1
+Var=POST_ERR_BrakeOpen bit 31,1
+
+Var=RUN_ERROR_MotorOverspeed bit 32,1
+Var=RUN_ERROR_OverCurrent bit 33,1
+Var=RUN_ERROR_OverVoltage bit 34,1
+Var=RUN_ERROR_Inverter_OverTemp bit 35,1
+Var=RUN_ERROR_AccelInputShort bit 36,1
+Var=RUN_ERROR_AccelInputOpen bit 37,1
+Var=RUN_ERROR_DirectionCommand bit 38,1
+Var=RUN_ERROR_InverterTimeout bit 39,1
+Var=RUN_ERROR_HWDesat bit 40,1
+Var=RUN_ERROR_HWOverCurrent bit 41,1
+Var=RUN_ERROR_UnderVolt bit 42,1
+Var=RUN_ERROR_CANMessageLost bit 43,1
+Var=RUN_ERROR_Motor_OverTemp bit 44,1
+Var=RUN_ERROR_BrakeInputShort bit 48,1
+Var=RUN_ERROR_BrakeInputOpen bit 49,1
+Var=RUN_ERROR_ModuleA_OverTemp bit 50,1
+Var=RUN_ERROR_ModuleB_OverTemp bit 51,1
+Var=RUN_ERROR_ModuleC_OverTemp bit 52,1
+Var=RUN_ERROR_PCB_OverTemp bit 53,1
+Var=RUN_ERROR_GateDrBoard1_OverTemp bit 54,1
+Var=RUN_ERROR_GateDrBoard2_OverTemp bit 55,1
+Var=RUN_ERROR_GateDrBoard3_OverTemp bit 56,1
+Var=RUN_ERROR_CurrSensFault bit 57,1
+Var=RUN_ERROR_ResolverDisconnected bit 62,1
+Var=RUN_ERROR_InvtrDischargeActive bit 63,1
+
+[DAQ_Sensors_0]
+ID=2ACh
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=DAQ_sensor1 unsigned 0,32
+Var=DAQ_sensor2 unsigned 32,32
+
+[DAQ_Sensors_1]
+ID=2BCh
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=DAQ_sensor3 unsigned 0,32
+Var=DAQ_sensor4 unsigned 32,32
+
+[DAQ_Startup]
+ID=2ADh
+DLC=8
+Var=Serial_Number unsigned 0,64
+
+[FSM_Heartbeat]
+ID=103h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=FSM_state unsigned 0,8 /e:State
+Var=FSM_ERR_VSMTimeout bit 8,1
+Var=FSM_WRN_VSMTimeout bit 24,1
+Var=FSM_WRN_VoltageOOR bit 25,1
+Var=FSM_WRN_CurrentOOR bit 26,1
+Var=FSM_WRN_SteeringOOR bit 34,1
+Var=FSM_WRN_BrakePressureOOR bit 35,1
+Var=FSM_WRN_LeftTPosOOR bit 36,1
+Var=FSM_WRN_RightTPosOOR bit 37,1
+Var=FSM_WRN_BPPFault bit 38,1
+Var=FSM_WRN_TPosImplausible bit 39,1
+
+[FSM_Data]
+ID=133h
+DLC=6
+CycleTime=10
+Timeout=100
+Var=FSM_torqueReq unsigned 0,8
+Var=FSM_throttlePos unsigned 8,8
+Var=FSM_brakePressureFront unsigned 16,8 /u:PSI
+Var=FSM_brakePedalPos unsigned 24,8 /u:%
+Var=FSM_steeringWheelAngle signed 32,16 /u:deg
+
+[FSM_PedalsADC]
+ID=533h
+DLC=6
+CycleTime=100
+Timeout=1000
+Var=FSM_throttlePosLeftADC unsigned 0,16
+Var=FSM_throttlePosRightADC unsigned 16,16
+Var=FSM_brakePosADC unsigned 32,16
+
+[FSM_SensorsADC]
+ID=543h
+DLC=4
+CycleTime=100
+Timeout=1000
+Var=FSM_brakePressureFrontADC unsigned 0,16
+Var=FSM_steeringWheelAngleADC unsigned 16,16
+
+[FSM_PowerDiagnostic]
+ID=553h
+DLC=4
+CycleTime=100
+Timeout=1000
+Var=FSM_busVoltage unsigned 0,16 /u:mV
+Var=FSM_busCurrent unsigned 16,16 /u:mA
+
+[DIM_Heartbeat]
+ID=105h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=DIM_state unsigned 0,8 /e:State
+Var=DIM_ERR_VSMTimeout unsigned 8,1
+
+[DIM_PowerDiagnostic]
+ID=535h
+DLC=4
+CycleTime=100
+Timeout=1000
+Var=DIM_busVoltage unsigned 0,16 /u:mV
+Var=DIM_busCurrent unsigned 16,16 /u:mA
+
+[DIM_Request]
+ID=235h
+DLC=2
+CycleTime=100
+Timeout=1000
+Var=DIM_requestState unsigned 0,8 /e:State
+Var=DIM_requestGear unsigned 8,8 /e:Gear
+
+[PTCf_Heartbeat]
+ID=106h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=PTCf_state unsigned 0,8 /e:State
+Var=PTCf_ERR_VSMTimeout unsigned 8,1
+Var=PTCf_ERR_waterTempOOR bit 21,1
+Var=PTCf_ERR_driversTempOOR bit 22,1
+Var=PTCf_WRN_VSMTimeout bit 24,1
+Var=PTCf_WRN_VoltageOOR bit 25,1
+Var=PTCf_WRN_CurrentOOR bit 26,1
+
+[PTCp_Heartbeat]
+ID=107h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=PTCp_state unsigned 0,8 /e:State
+Var=PTCp_ERR_VSMTimeout unsigned 8,1
+Var=PTCp_ERR_waterTempOOR bit 21,1
+Var=PTCp_ERR_driversTempOOR bit 22,1
+Var=PTCp_WRN_VSMTimeout bit 24,1
+Var=PTCp_WRN_VoltageOOR bit 25,1
+Var=PTCp_WRN_CurrentOOR bit 26,1
+
+[PTCf_LoopTemps_A]
+ID=224h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=PTCf_Temp1 unsigned 0,16 /u:dC
+Var=PTCf_Temp2 unsigned 16,16 /u:dC
+Var=PTCf_Temp3 unsigned 32,16 /u:dC
+Var=PTCf_Temp4 unsigned 48,16 /u:dC
+
+[PTCf_LoopTemps_B]
+ID=234h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=PTCf_Temp5 unsigned 0,16 /u:dC
+Var=PTCf_Temp6 unsigned 16,16 /u:dC
+Var=PTCf_Temp7 unsigned 32,16 /u:dC
+Var=PTCf_Temp8 unsigned 48,16 /u:dC
+
+[PTCp_LoopTemps_A]
+ID=244h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=PTCp_Temp1 unsigned 0,16 /u:dC
+Var=PTCp_Temp2 unsigned 16,16 /u:dC
+Var=PTCp_Temp3 unsigned 32,16 /u:dC
+Var=PTCp_Temp4 unsigned 48,16 /u:dC
+
+[PTCp_LoopTemps_B]
+ID=245h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=PTCp_Temp5 unsigned 0,16 /u:dC
+Var=PTCp_Temp6 unsigned 16,16 /u:dC
+Var=PTCp_Temp7 unsigned 32,16 /u:dC
+Var=PTCp_Temp8 unsigned 48,16 /u:dC
+
+[PTCf_FansStatus]
+ID=314h
+DLC=3
+CycleTime=100
+Timeout=1000
+Var=PTCf_channel1State unsigned 0,8 /u:percent
+Var=PTCf_channel2State unsigned 8,8 /u:percent
+Var=PTCf_channel3State unsigned 16,8 /u:percent
+
+[PTCp_PumpsStatus]
+ID=324h
+DLC=3
+CycleTime=100
+Timeout=1000
+Var=PTCp_channel1State unsigned 0,8 /u:percent
+Var=PTCp_channel2State unsigned 8,8 /u:percent
+Var=PTCp_channel3State unsigned 16,8 /u:percent
+
+[PTCf_PowerDiagnostic]
+ID=534h
+DLC=6
+CycleTime=100
+Timeout=1000
+Var=PTCf_logicVoltage unsigned 0,16 /u:mV
+Var=PTCf_loadVoltage unsigned 16,16 /u:mV
+Var=PTCf_loadCurrent unsigned 32,16 /u:mA
+
+[PTCp_PowerDiagnostic]
+ID=544h
+DLC=6
+CycleTime=100
+Timeout=1000
+Var=PTCp_logicVoltage unsigned 0,16 /u:mV
+Var=PTCp_loadVoltage unsigned 16,16 /u:mV
+Var=PTCp_loadCurrent unsigned 32,16 /u:mA
+
+[APC_Heartbeat]
+ID=108h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=APC_state unsigned 0,8 /e:State
+Var=APC_ERR_VSMTimeout unsigned 8,1
+
+[RMS_Command]
+ID=3C0h
+DLC=8
+CycleTime=1
+Timeout=25
+Var=RMS_torqueCommand signed 0,16 /u:Nm /f:0.1
+Var=RMS_speedCommand signed 16,16 /u:RPM
+Var=RMS_directionCommand unsigned 32,8
+Var=RMS_invEnDischargeEn unsigned 40,8
+Var=RMS_torqueLimitCommand unsigned 48,16 /u:Nm /f:0.1
+
+[RMS_ParamRequest]
+ID=3C1h
+DLC=8
+Var=RMS_paramReqAddr unsigned 0,16
+Var=RMS_paramReqWrite unsigned 16,8
+Var=RMS_paramReqData unsigned 32,16
+
+[RMS_ParamResponse]
+ID=3C2h
+DLC=8
+Var=RMS_paramResAddr unsigned 0,16
+Var=RMS_paramResWriteSuccess unsigned 16,8
+Var=RMS_paramResData unsigned 32,16
+
+[RMS_TempA]
+ID=3A0h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=RMS_moduleA signed 0,16 /u:C /f:0.1
+Var=RMS_moduleB signed 16,16 /u:C /f:0.1
+Var=RMS_moduleC signed 32,16 /u:C /f:0.1
+Var=RMS_gateDriver signed 48,16 /u:C /f:0.1
+
+[RMS_TempB]
+ID=3A1h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=RMS_controlBoard signed 0,16 /u:C /f:0.1
+Var=RMS_RTD1 signed 16,16 /u:C /f:0.1
+Var=RMS_RTD2 signed 32,16 /u:C /f:0.1
+Var=RMS_RTD3 signed 48,16 /u:C /f:0.1
+
+[RMS_TempC]
+ID=3A2h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=RMS_RTD4 signed 0,16 /u:C /f:0.1
+Var=RMS_RTD5 signed 16,16 /u:C /f:0.1
+Var=RMS_motorTemp signed 32,16 /u:C /f:0.1
+Var=RMS_torqueShudder signed 48,16 /u:Nm /f:0.1
+
+[RMS_MotorPosition]
+ID=3A5h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=RMS_angle signed 0,16 /u:deg /f:0.1
+Var=RMS_speed signed 16,16 /u:RPM
+Var=RMS_frequency signed 32,16 /u:Hz /f:0.1
+Var=RMS_resolver signed 48,16 /u:deg /f:0.1
+
+[RMS_Currents]
+ID=3A6h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=RMS_currentPhaseA signed 0,16 /u:A /f:0.1
+Var=RMS_currentPhaseB signed 16,16 /u:A /f:0.1
+Var=RMS_currentPhaseC signed 32,16 /u:A /f:0.1
+Var=RMS_currentBus signed 48,16 /u:A /f:0.1
+
+[RMS_Voltages]
+ID=3A7h
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=RMS_voltageBus signed 0,16 /u:V /f:0.1
+Var=RMS_voltageOutput signed 16,16 /u:V /f:0.1
+Var=RMS_voltagePhaseAB signed 32,16 /u:V /f:0.1
+Var=RMS_voltagePhaseBC signed 48,16 /u:V /f:0.1
+
+[RMS_TorqueDiag]
+ID=3ACh
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=RMS_commandedTorque signed 0,16 /u:Nm /f:0.1
+Var=RMS_torqueFeedback signed 16,16 /u:Nm /f:0.1
+Var=RMS_powerOnTime signed 32,32
+
+[RMS_Faults]
+ID=3ABh
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=RMS_postFaultLo unsigned 0,16 /u:C
+Var=RMS_postFaultHi unsigned 16,16 /u:C
+Var=RMS_runFaultLo unsigned 32,16 /u:C
+Var=RMS_runFaultHi unsigned 48,16 /u:C
+
+[BMS_Heartbeat]
+ID=500h
+DLC=6
+CycleTime=10
+Var=BMS_Mode BMS_Mode_t 16,8
+Var=BMS_State BMS_State_t 24,8
+Var=BMS_Discharge_Closed unsigned 32,1
+Var=BMS_Precharge_Closed unsigned 33,1
+Var=BMS_AIR_Neg_Closed unsigned 34,1
+Var=BMS_AIR_Pos_Closed unsigned 35,1
+Var=BMS_Discharge_Error unsigned 36,1
+Var=BMS_Precharge_Error unsigned 37,1
+Var=BMS_AIR_Neg_Error unsigned 38,1
+Var=BMS_AIR_Pos_Error unsigned 39,1
+Var=BMS_Error_Vector unsigned 0,16
+Var=BMS_Error_Pack_Undervolt unsigned 0,1
+Var=BMS_Error_Pack_Overvolt unsigned 1,1
+Var=BMS_Error_Pack_Overcurrent unsigned 3,1
+Var=BMS_Error_Cell_Undervolt unsigned 4,1
+Var=BMS_Error_Cell_Overvolt unsigned 5,1
+Var=BMS_Error_Cell_Overcurrent unsigned 6,1
+Var=BMS_Error_BMB_Fault unsigned 7,1
+Var=BMS_Error_BMB_Timeout unsigned 8,1
+Var=BMS_Error_CAN_Timeout unsigned 9,1
+Var=BMS_Error_Relay unsigned 12,1
+Var=BMS_Error_LV_UV unsigned 13,1
+var=BMS_Uptime unsigned 40,8
+
+[BMS_Pack_Voltages]
+ID=301h
+DLC=8
+CycleTime=10
+Var=BMS_Batt_Voltage signed 0,32 /u:mV
+Var=BMS_HV_Voltage signed 32,32 /u:mV
+
+[BMS_Pack_Currents]
+ID=302h
+DLC=8
+CycleTime=10
+Var=BMS_Current_Instant signed 0,32 /u:mA
+Var=BMS_Current_Average signed 32,32 /u:mA
+
+[BMS_Low_Voltages]
+ID=303h
+DLC=4
+CycleTime=10
+Var=BMS_VBatt unsigned 0,8 /u:V /f:0.1333333
+Var=BMS_VAIR unsigned 8,8 /u:V /f:0.1333333
+Var=BMS_iBatt unsigned 16,8 /u:mA /f:0.1333333
+Var=BMS_iDCDC unsigned 24,8 /u:mA /f:0.1333333
+
+[BMS_BMB_0_Voltages]
+ID=380h
+DLC=6
+CycleTime=100
+Var=BMS_BMB_0_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_0_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_0_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_0_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_0_Temps]
+ID=381h
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_0_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_0_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_0_Max_Temp signed 16,16
+Var=BMS_BMB_0_Min_Temp signed 32,16
+
+[BMS_BMB_1_Voltages]
+ID=382h
+DLC=6
+CycleTime=100
+Var=BMS_BMB_1_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_1_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_1_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_1_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_1_Temps]
+ID=383h
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_1_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_1_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_1_Max_Temp signed 16,16
+Var=BMS_BMB_1_Min_Temp signed 32,16
+
+[BMS_BMB_2_Voltages]
+ID=384h
+DLC=6
+CycleTime=100
+Var=BMS_BMB_2_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_2_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_2_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_2_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_2_Temps]
+ID=385h
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_2_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_2_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_2_Max_Temp signed 16,16
+Var=BMS_BMB_2_Min_Temp signed 32,16
+
+[BMS_BMB_3_Voltages]
+ID=386h
+DLC=6
+CycleTime=100
+Var=BMS_BMB_3_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_3_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_3_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_3_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_3_Temps]
+ID=387h
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_3_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_3_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_3_Max_Temp signed 16,16
+Var=BMS_BMB_3_Min_Temp signed 32,16
+
+[BMS_BMB_4_Voltages]
+ID=388h
+DLC=6
+CycleTime=100
+Var=BMS_BMB_4_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_4_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_4_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_4_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_4_Temps]
+ID=389h
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_4_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_4_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_4_Max_Temp signed 16,16
+Var=BMS_BMB_4_Min_Temp signed 32,16
+
+[BMS_BMB_5_Voltages]
+ID=38Ah
+DLC=6
+CycleTime=100
+Var=BMS_BMB_5_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_5_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_5_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_5_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_5_Temps]
+ID=38Bh
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_5_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_5_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_5_Max_Temp signed 16,16
+Var=BMS_BMB_5_Min_Temp signed 32,16
+
+[BMS_BMB_6_Voltages]
+ID=38Ch
+DLC=6
+CycleTime=100
+Var=BMS_BMB_6_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_6_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_6_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_6_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_6_Temps]
+ID=38Dh
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_6_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_6_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_6_Max_Temp signed 16,16
+Var=BMS_BMB_6_Min_Temp signed 32,16
+
+[BMS_BMB_7_Voltages]
+ID=38Eh
+DLC=6
+CycleTime=100
+Var=BMS_BMB_7_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_7_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_7_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_7_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_7_Temps]
+ID=38Fh
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_7_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_7_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_7_Max_Temp signed 16,16
+Var=BMS_BMB_7_Min_Temp signed 32,16
+
+[BMS_Pack_MinMax_Cell_Voltages]
+ID=310h
+DLC=8
+Var=Pack_Min_Cell_Voltage unsigned 0,16
+Var=Pack_Max_Cell_Voltage unsigned 16,16
+Var=Min_Cell_Volt_BMB unsigned 32,8
+Var=Min_Cell_Volt_Index unsigned 40,8
+Var=Max_Cell_Volt_BMB unsigned 48,8
+Var=Max_Cell_Volt_Index unsigned 56,8
+
+[BMS_Pack_MinMax_Cell_Temps]
+ID=311h
+DLC=8
+Var=Pack_Min_Cell_Temp unsigned 0,16
+Var=Pack_Max_Cell_Temp unsigned 16,16
+Var=Min_Cell_Temp_BMB unsigned 32,8
+Var=Min_Cell_Temp_Index unsigned 40,8
+Var=Max_Cell_Temp_BMB unsigned 48,8
+Var=Max_Cell_Temp_Index unsigned 56,8
+
+[Memorator_Broadcast]
+ID=605h
+DLC=1
+CycleTime=1000
+Timeout=10000
+Var=Memorator_status unsigned 0,8
+
+[DILONG_Charger_Status]
+ID=18FF50E5h
+DLC=8
+Var=Output_Voltage unsigned 0,16 -m /u:V /f:0.1
+Var=Output_Current unsigned 16,16 -m /u:A /f:0.1
+Var=DILONG_ERR bit 32,1
+Var=DILONG_OVERTEMP bit 33,1
+Var=DILONG_INPUT_OVERVOLT bit 34,1
+Var=DILONG_START_STATE_N bit 35,1
+Var=DILONG_COMM_TIMEOUT bit 36,1
+
+[DILONG_Charger_Control]
+ID=1806E5F4h
+DLC=8
+Var=Max_Voltage unsigned 0,16 -m /u:V /f:0.1
+Var=Max_Current unsigned 16,16 -m /u:A /f:0.1
+Var=DILONG_Enable_N unsigned 32, 8
+Var=DILONG_Battery_Mode_N unsigned 40, 8
+
+[ELLIPSE_IMU_General_Status_1]
+ID=700h
+DLC=8
+Var=Time_Stamp_GS1 unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=General_Status unsigned 32,16
+Var=Clock_Status unsigned 48,16
+
+[ELLIPSE_IMU_General_Status_2]
+ID=701h
+DLC=8
+Var=Com_Status unsigned 0,32
+Var=Aiding_Status unsigned 32,32
+
+[ELLIPSE_IMU_General_Status_3]
+ID=702h
+DLC=6
+Var=Solution_Status unsigned 0,32
+Var=Heave_Status_GENERAL3 unsigned 32,16
+
+[ELLIPSE_IMU_UTC_0]
+ID=703h
+DLC=8
+Var=Time_Stamp_UTC0 unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=Gps_Tow_UTC0 unsigned 32,32 /u:s /f:0.001 /p:3
+
+[ELLIPSE_IMU_UTC_1]
+ID=704h
+DLC=8
+Var=Year unsigned 0,8 /u:year
+Var=Month unsigned 8,8 /u:month
+Var=Day unsigned 16,8 /u:d
+Var=Hour unsigned 24,8 /u:h
+Var=Min unsigned 32,8 /u:min
+Var=Sec unsigned 40,8 /u:s
+Var=Tenthms unsigned 48,16 /u:s /f:0.0001 /p:3
+
+[ELLIPSE_IMU_INFO]
+ID=710h
+DLC=8
+Var=Time_Stamp_IMU unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=Imu_Status unsigned 32,16
+Var=Temperature signed 48,16 /u:'C /f:0.01 /p:2
+
+[ELLIPSE_IMU_ACCEL]
+ID=711h
+DLC=6
+Var=Accel_X signed 0,16 /u:m.s-2 /f:0.01 /p:4
+Var=Accel_Y signed 16,16 /u:m.s-2 /f:0.01 /p:4
+Var=Accel_Z signed 32,16 /u:m.s-2 /f:0.01 /p:4
+
+[ELLIPSE_IMU_GYRO]
+ID=712h
+DLC=6
+Var=Gyro_X signed 0,16 /u:rad.s-1 /f:0.001 /p:4
+Var=Gyro_Y signed 16,16 /u:rad.s-1 /f:0.001 /p:4
+Var=Gyro_Z signed 32,16 /u:rad.s-1 /f:0.001 /p:4
+
+[ELLIPSE_IMU_DELTA_VEL]
+ID=713h
+DLC=6
+Var=Delta_Vel_X signed 0,16 /u:m.s-2 /u:m.s-2 /f:0.01 /p:4
+Var=Delta_Vel_Y signed 16,16 /u:m.s-2 /u:m.s-2 /f:0.01 /p:4
+Var=Delta_Vel_Z signed 32,16 /u:m.s-2 /u:m.s-2 /f:0.01 /p:4
+
+[ELLIPSE_IMU_DELTA_ANGLE]
+ID=714h
+DLC=6
+Var=Delta_Angle_X signed 0,16 /u:rad.s-1 /f:0.001 /p:4
+Var=Delta_Angle_Y signed 16,16 /u:rad.s-1 /f:0.001 /p:4
+Var=Delta_Angle_Z signed 32,16 /u:rad.s-1 /f:0.001 /p:4
+
+[ELLIPSE_IMU_EKF_INFO]
+ID=720h
+DLC=4
+Var=Time_Stamp_EKF unsigned 0,32 /u:s /f:0.000001 /p:3
+
+[ELLIPSE_IMU_EKF_QUAT]
+ID=721h
+DLC=8
+Var=Q0 signed 0,16
+Var=Q1 signed 16,16
+Var=Q2 signed 32,16
+Var=Q3 signed 48,16
+
+
+[ELLIPSE_IMU_EKF_EULER]
+ID=722h
+DLC=6
+Var=Roll signed 0,16 /u:' /f:0.0057295779 /p:4
+Var=Pitch signed 16,16 /u:' /f:0.0057295779 /p:4
+Var=Yaw signed 32,16 /u:' /f:0.0057295779 /p:4
+
+[ELLIPSE_IMU_EKF_ORIENT_ACC]
+ID=723h
+DLC=6
+Var=Roll_Acc unsigned 0,16 /u:' /f:0.0057295779 /p:4
+Var=Pitch_Acc unsigned 16,16 /u:' /f:0.0057295779 /p:4
+Var=Yaw_Acc unsigned 32,16 /u:' /f:0.0057295779 /p:4
+
+[ELLIPSE_IMU_EKF_POS]
+ID=724h
+DLC=8
+Var=Latitude signed 0,32 /u:' /f:0.0000001 /p:2
+Var=Longitude signed 32,32 /u:' /f:0.0000001 /p:2
+
+[ELLIPSE_IMU_EKF_ALTITUDE]
+ID=725h
+DLC=6
+Var=Altitude signed 0,32 /u:m /f:0.001 /p:2
+Var=Undulation signed 32,16 /u:m /f:0.005 /p:2
+
+[ELLIPSE_IMU_EKF_POS_ACC]
+ID=726h
+DLC=6
+Var=Latitude_Acc unsigned 0,16 /u:m /f:0.01 /p:2
+Var=Longitude_Acc unsigned 16,16 /u:m /f:0.01 /p:2
+Var=Altitude_Acc unsigned 32,16 /u:m /f:0.01 /p:2
+
+[ELLIPSE_IMU_EKF_VEL]
+ID=727h
+DLC=6
+Var=Velocity_N signed 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=Velocity_E signed 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=Velocity_D signed 32,16 /u:m.s-1 /f:0.01 /p:2
+
+[ELLIPSE_IMU_EKF_VEL_ACC]
+ID=728h
+DLC=6
+Var=Velocity_Acc_N unsigned 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=Velocity_Acc_E unsigned 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=Velocity_Acc_D unsigned 32,16 /u:m.s-1 /f:0.01 /p:2
+
+[ELLIPSE_IMU_SHIP_MOTION_INFO]
+ID=730h
+DLC=8
+Var=Time_Stamp_SHIP_MOTION unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=Period_SHIP_MOTION unsigned 32,16 /u:s /f:0.01 /p:2
+Var=Heave_Status_SHIP_MOTION unsigned 48,16
+
+[ELLIPSE_IMU_SHIP_MOTION_0]
+ID=731h
+DLC=6
+Var=Surge_SHIP_MOTION signed 0,16 /u:m /f:0.001 /p:2
+Var=Sway_SHIP_MOTION signed 16,16 /u:m /f:0.001 /p:2
+Var=Heave_SHIP_MOTION signed 32,16 /u:m /f:0.001 /p:2
+
+[ELLIPSE_IMU_SHIP_MOTION_1]
+ID=732h
+DLC=6
+Var=Accel_X_SHIP_MOTION_1 signed 0,16 /u:m.s-2 /f:0.01 /p:2
+Var=Accel_Y_SHIP_MOTION_1 signed 16,16 /u:m.s-2 /f:0.01 /p:2
+Var=Accel_Z_SHIP_MOTION_1 signed 32,16 /u:m.s-2 /f:0.01 /p:2
+
+[ELLIPSE_IMU_SHIP_MOTION_2]
+ID=733h
+DLC=6
+Var=Vel_X_SHIP_MOTION_2 signed 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=Vel_Y_SHIP_MOTION_2 signed 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=Vel_Z_SHIP_MOTION_2 signed 32,16 /u:m.s-1 /f:0.01 /p:2
+
+[ELLIPSE_IMU_MAG_0]
+ID=740h
+DLC=6
+Var=Time_Stamp_MAG0 unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=Mag_Status_MAG0 unsigned 32,16
+
+[ELLIPSE_IMU_MAG_1]
+ID=741h
+DLC=6
+Var=Mag_X_MAG1 signed 0,16 /u:a.u. /f:0.001 /p:2
+Var=Mag_Y_MAG2 signed 16,16 /u:a.u. /f:0.001 /p:2
+Var=Mag_Z_MAG2 signed 32,16 /u:a.u. /f:0.001 /p:2
+
+[ELLIPSE_IMU_MAG_2]
+ID=742h
+DLC=6
+Var=Acc_X_MAG2 signed 0,16 /u:m.s-2 /f:0.01 /p:2
+Var=Acc_Y_MAG2 signed 16,16 /u:m.s-2 /f:0.01 /p:2
+Var=Acc_Z_MAG2 signed 32,16 /u:m.s-2 /f:0.01 /p:2
+
+[ELLIPSE_IMU_ODO_INFO]
+ID=743h
+DLC=6
+Var=Time_Stamp_ODO unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=Odo_Status unsigned 32,16
+
+[ELLIPSE_IMU_ODO_VELOCITY]
+ID=744h
+DLC=4
+Var=Velocity_ODO float 0,32 /u:m.s-1
+
+[ELLIPSE_IMU_PRESSURE_INFO]
+ID=745h
+DLC=5
+Var=Time_Stamp_PRESSURE unsigned 0,32
+Var=Pressure_Status unsigned 32,8
+
+[ELLIPSE_IMU_PRESSURE_ALTITUDE]
+ID=746h
+DLC=8
+Var=Pressure_IMU float 0,32 /u:1
+Var=Altitude_IMU float 32,32 /u:1
+
+[ELLIPSE_IMU_GPS1_VEL_INFO]
+ID=750h
+DLC=8
+Var=Time_Stamp_GPS1_VEL unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=Gps_Vel_Status unsigned 32,32
+
+[ELLIPSE_IMU_GPS1_VEL]
+ID=751h
+DLC=6
+Var=Vel_N signed 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=Vel_E signed 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=Vel_D signed 32,16 /u:m.s-1 /f:0.01 /p:2
+
+[ELLIPSE_IMU_GPS1_VEL_ACC]
+ID=752h
+DLC=6
+Var=Vel_Acc_N unsigned 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=Vel_Acc_E unsigned 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=Vel_Acc_D unsigned 32,16 /u:m.s-1 /f:0.01 /p:2
+
+[ELLIPSE_IMU_GPS1_COURSE]
+ID=753h
+DLC=4
+Var=Course unsigned 0,16 /u:' /f:0.01 /p:2
+Var=Course_Acc unsigned 16,16 /u:' /f:0.01 /p:2
+
+[ELLIPSE_IMU_GPS1_POS_INFO]
+ID=754h
+DLC=8
+Var=Time_Stamp_GPS1_POS unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=Gps_Pos_Status unsigned 32,32
+
+[ELLIPSE_IMU_GPS1_POS]
+ID=755h
+DLC=8
+Var=Latitude_GPS1 signed 0,32 /u:' /f:0.0000001 /p:5
+Var=Longitude_GPS1 signed 32,32 /u:' /f:0.0000001 /p:5
+
+[ELLIPSE_IMU_GPS1_ALT]
+ID=756h
+DLC=8
+Var=Altitude_GPS1 signed 0,32 /u:m /f:0.001 /p:2
+Var=Undulation_GPS1 signed 32,16 /u:m /f:0.005 /p:2
+Var=Num_Sv_GPS1 unsigned 48,8
+Var=Diff_Corr_Age_GPS1 unsigned 56,8 /u:s
+
+[ELLIPSE_IMU_GPS1_POS_ACC]
+ID=757h
+DLC=8
+Var=Lat_Acc_GPS1 unsigned 0,16 /u:m
+Var=Long_Acc_GPS1 unsigned 16,16 /u:m
+Var=Alt_Acc_GPS1 unsigned 32,16 /u:m
+Var=Base_Station_Id_GPS1 unsigned 48,16
+
+[ELLIPSE_IMU_GPS1_HOT_INFO]
+ID=758h
+DLC=6
+Var=Time_Stamp_GPS1_HOT unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=Gps_Hdt_Status unsigned 32,16
+
+[ELLIPSE_IMU_GPS1_HOT]
+ID=759h
+DLC=8
+Var=True_Heading_GPS1 unsigned 0,16 /u:'
+Var=True_Heading_Acc_GPS1 unsigned 16,16 /u:'
+Var=Pitch_GPS1 signed 32,16 /u:'
+Var=Pitch_Acc_GPS1 unsigned 48,16 /u:'
+
+[ELLIPSE_IMU_EVENT_INFO_A]
+ID=760h
+DLC=6
+Var=Time_Stamp_EVENTA unsigned 0,32 /u:s /f:0.000001 /p:3
+Var=Event_Status unsigned 32,16
+
+[ELLIPSE_IMU_EVENT_TIME_A]
+ID=761h
+DLC=8
+Var=Time_Offset_0 unsigned 0,16 /u:s /f:0.000001 /p:3
+Var=Time_Offset_1 unsigned 16,16 /u:s /f:0.000001 /p:3
+Var=Time_Offset_2 unsigned 32,16 /u:s /f:0.000001 /p:3
+Var=Time_Offset_3 unsigned 48,16 /u:s /f:0.000001 /p:3
+
+
+[BRUSA_Charger_Control]
+ID=528h
+DLC=7
+Var=Charger_Enable_Vector unsigned 0,8
+Var=Max_Mains_Current unsigned 8,16 -m /u:A /f:0.1
+Var=Requested_Voltage unsigned 24,16 -m /u:V /f:0.1
+Var=Requested_Current unsigned 40,16 -m /u:A /f:0.1
+
+[BRUSA_Charger_Status]
+ID=520h
+DLC=8
+
+[BRUSA_Charger_Act_I]
+ID=521h
+DLC=8
+Var=Mains_Current unsigned 0,16 -m /u:A /f:0.01
+Var=Mains_Voltage unsigned 16,16 -m /u:V /f:0.1
+Var=Batt_Voltage unsigned 32,16 -m /u:V /f:0.1
+Var=Batt_Current unsigned 48,16 -m /u:A /f:0.01
+
+[BRUSA_Charger_Temp]
+ID=523h
+DLC=8
+var=Power_Stage_Temp unsigned 0,16 -m /u:C /f:0.1 /o:-4
+
+[BRUSA_Charger_Error]
+ID=524h
+DLC=5
+Var=Output_overvoltage unsigned 7,1
+Var=Mains_overvoltage_2 unsigned 6,1
+Var=Mains_overvoltage_1 unsigned 5,1
+Var=Short_circuit unsigned 4,1
+Var=Batt_out_implausible unsigned 3,1
+Var=Mains_volts_implausible unsigned 2,1
+Var=Output_fuse_defect unsigned 1,1
+Var=Mains_fuse_defect unsigned 0,1
+Var=Batt_polarity_wrong unsigned 15,1
+Var=Temp_sensor_defect_prim_cap unsigned 14,1
+Var=Temp_sensor_defect_prim_power unsigned 13,1
+Var=Temp_sensor_defect_diodes unsigned 12,1
+Var=Temp_sensor_defect_transformer unsigned 11,1
+Var=Temp_sensor_defect_ext1 unsigned 10,1
+Var=Temp_sensor_defect_ext2 unsigned 9,1
+Var=Temp_sensor_defect_ext3 unsigned 8,1
+Var=Flash_checksum_fail unsigned 23,1
+Var=NVSRAM_checksum_fail unsigned 22,1
+Var=Sys_EEPROM_checksum_fail unsigned 21,1
+Var=Pow_EEPROM_checksum_fail unsigned 20,1
+Var=Internal_watchdog_timeout unsigned 19,1
+Var=Initialization_error unsigned 18,1
+Var=CAN_timeout_300ms unsigned 17,1
+Var=CAN_off unsigned 16,1
+Var=CAN_tx_buf>127 unsigned 31,1
+Var=CAN_rx_buf>127 unsigned 30,1
+Var=Batt_temp_exceeded unsigned 29,1
+Var=Batt_volt_exceeded unsigned 28,1
+Var=Amp_hours_exceeded unsigned 27,1
+Var=Charge_time_exceeded unsigned 26,1
+Var=Low_mains_voltage unsigned 39,1
+Var=Low_batt_voltage unsigned 38,1
+Var=Internal_overtemp unsigned 37,1
+Var=Command_out_of_range unsigned 36,1
+Var=Ctrl_msg_inactive unsigned 35,1
+Var=LED_driver_defect unsigned 33,1
+Var=Save_charging_mode unsigned 32,1
+

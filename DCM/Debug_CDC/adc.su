@@ -1,0 +1,2 @@
+../adc.c:41:6:adcInit	16	static
+../adc.c:53:10:adcRead	16	static

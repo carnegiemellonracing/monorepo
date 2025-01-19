@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PCANExplorerProject Version="5.0" Name="CMR 24e">
+    <Connections AutoReset="0" IgnoreRTRLength="0" ProcessRTR="1">
+        <Connection Bus="1" Enabled="0" Protocol="0" CalcBusLoad="1" SymbolsFileName="CMR 24e.sym" Connection="VEH_CAN@pcan_usb" Name="VEH_CAN"/>
+        <Connection Bus="2" Enabled="0" Protocol="0" CalcBusLoad="1" SymbolsFileName="CMR 24e.sym" BitRate="28" Connection="TRAC_CAN@pcan_usb" Name="TRAC_CAN"/>
+        <Connection Bus="3" Enabled="1" Protocol="0" ErrorFrames="1" SymbolsFileName="CMR 24e.sym" BitRate="28" Connection="DAQ_CAN@pcan_usb" Name="DAQ_CAN"/>
+        <Connection Bus="4" Enabled="0" Protocol="0" BitRate="28" Connection="DAQ_CAN_1@pcan_usb" Name="Connection4"/>
+        <Connection Bus="5" Enabled="0" Protocol="0" BitRate="20" Connection="VEH_CAN_1@pcan_usb" Name="Connection5"/>
+        <Connection Bus="6" Enabled="0" Protocol="0" BitRate="28" Connection="Veh_can1@pcan_usb" Name="Connection6"/>
+        <Connection Bus="7" Enabled="0" Protocol="0" Connection="VEH_CAN@pcan_usb" Name="Connection7"/>
+        <Connection Bus="8" Enabled="0" Protocol="0" BitRate="284" Connection="TEST_CAN@pcan_usb" Name="Connection8"/>
+    </Connections>
+    <MessageFilters>
+        <MessageFilter Name="Filter1">
+            <MessageFilterItem Type="0" Bus="0" ID11From="257" ID11To="257"/>
+        </MessageFilter>
+    </MessageFilters>
+    <Files>
+        <File RelativePath="CMR 24e.sym"/>
+    </Files>
+</PCANExplorerProject>

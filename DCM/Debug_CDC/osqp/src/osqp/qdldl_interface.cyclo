@@ -1,0 +1,6 @@
+../osqp/src/osqp/qdldl_interface.c:329:6:permute_x	2
+../osqp/src/osqp/qdldl_interface.c:335:6:permutet_x	2
+../osqp/src/osqp/qdldl_interface.c:341:13:LDLSolve	1
+../osqp/src/osqp/qdldl_interface.c:350:7:solve_linsys_qdldl	3
+../osqp/src/osqp/qdldl_interface.c:381:7:update_linsys_solver_matrices_qdldl	1
+../osqp/src/osqp/qdldl_interface.c:396:7:update_linsys_solver_rho_vec_qdldl	2

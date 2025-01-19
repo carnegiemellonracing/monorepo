@@ -1,0 +1,6 @@
+../cvxgen/ldl.c:11:6:ldl_solve	2
+../cvxgen/ldl.c:94:6:ldl_factor	23
+../cvxgen/ldl.c:308:8:check_factorization	1
+../cvxgen/ldl.c:413:6:matrix_multiply	1
+../cvxgen/ldl.c:438:8:check_residual	2
+../cvxgen/ldl.c:450:6:fill_KKT	1

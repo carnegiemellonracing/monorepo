@@ -1,0 +1,2 @@
+../mc_power.c:34:6:mcCtrlOff	8	static
+../mc_power.c:39:6:mcCtrlOn	8	static

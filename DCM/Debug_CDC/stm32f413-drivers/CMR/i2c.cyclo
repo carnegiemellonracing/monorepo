@@ -1,0 +1,13 @@
+../stm32f413-drivers/CMR/i2c.c:34:6:I2C1_EV_IRQHandler	1
+../stm32f413-drivers/CMR/i2c.c:41:6:I2C2_EV_IRQHandler	1
+../stm32f413-drivers/CMR/i2c.c:47:6:I2C1_ER_IRQHandler	1
+../stm32f413-drivers/CMR/i2c.c:54:6:I2C2_ER_IRQHandler	1
+../stm32f413-drivers/CMR/i2c.c:65:13:cmr_i2cDoneCallback	2
+../stm32f413-drivers/CMR/i2c.c:79:6:HAL_I2C_MasterTxCpltCallback	1
+../stm32f413-drivers/CMR/i2c.c:83:6:HAL_I2C_MasterRxCpltCallback	1
+../stm32f413-drivers/CMR/i2c.c:87:6:HAL_I2C_ErrorCallback	1
+../stm32f413-drivers/CMR/i2c.c:98:10:i2cGPIOAF	1
+../stm32f413-drivers/CMR/i2c.c:140:5:cmr_i2cTX	2
+../stm32f413-drivers/CMR/i2c.c:168:5:cmr_i2cRX	2
+../stm32f413-drivers/CMR/i2c.c:195:5:cmr_i2cMemRX	2
+../stm32f413-drivers/CMR/i2c.c:223:6:cmr_i2cInit	1

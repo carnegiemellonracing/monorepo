@@ -1,0 +1,6 @@
+../cvxgen/ldl.c:11:6:ldl_solve	24	static
+../cvxgen/ldl.c:94:6:ldl_factor	4	static
+../cvxgen/ldl.c:308:8:check_factorization	24	static
+../cvxgen/ldl.c:413:6:matrix_multiply	16	static
+../cvxgen/ldl.c:438:8:check_residual	32	static
+../cvxgen/ldl.c:450:6:fill_KKT	4	static

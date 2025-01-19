@@ -1,0 +1,17 @@
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_ramecc.c:135:19:HAL_RAMECC_Init	2
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_ramecc.c:181:19:HAL_RAMECC_DeInit	2
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_ramecc.c:245:19:HAL_RAMECC_StartMonitor	2
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_ramecc.c:283:19:HAL_RAMECC_StopMonitor	2
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_ramecc.c:322:19:HAL_RAMECC_EnableNotification	7
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_ramecc.c:362:19:HAL_RAMECC_DisableNotification	7
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_ramecc.c:403:19:HAL_RAMECC_RegisterCallback	3
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_ramecc.c:445:19:HAL_RAMECC_UnRegisterCallback	2
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_ramecc.c:478:6:HAL_RAMECC_IRQHandler	3
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_ramecc.c:529:10:HAL_RAMECC_GetFailingAddress	1
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_ramecc.c:546:10:HAL_RAMECC_GetFailingDataLow	1
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_ramecc.c:563:10:HAL_RAMECC_GetFailingDataHigh	1
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_ramecc.c:580:10:HAL_RAMECC_GetHammingErrorCode	1
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_ramecc.c:596:10:HAL_RAMECC_IsECCSingleErrorDetected	2
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_ramecc.c:612:10:HAL_RAMECC_IsECCDoubleErrorDetected	2
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_ramecc.c:651:25:HAL_RAMECC_GetState	1
+../stm32f413-drivers/HAL/H725/Src/stm32h7xx_hal_ramecc.c:664:10:HAL_RAMECC_GetError	1
