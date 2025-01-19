@@ -1,5 +1,0 @@
-../stm32f413-drivers/CMR/config.c:33:6:cmr_configInit	1
-../stm32f413-drivers/CMR/config.c:46:5:cmr_configSet	2
-../stm32f413-drivers/CMR/config.c:64:5:cmr_configGet	3
-../stm32f413-drivers/CMR/config.c:79:6:cmr_configPull	1
-../stm32f413-drivers/CMR/config.c:88:6:cmr_configCommit	1

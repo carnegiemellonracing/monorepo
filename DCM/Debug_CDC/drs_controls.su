@@ -1,3 +1,0 @@
-../drs_controls.c:59:30:getDRSInfo	4	static
-../drs_controls.c:72:6:runDrsControls	32	static
-../drs_controls.c:155:13:setAutoDrs	24	static

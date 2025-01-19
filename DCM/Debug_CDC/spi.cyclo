@@ -1,8 +1,0 @@
-../spi.c:63:9:ADS7038_read	2
-../spi.c:75:6:ADS7038_write	1
-../spi.c:82:13:ADS7038_updateIO	1
-../spi.c:94:11:ADS7038_getPaddles	1
-../spi.c:98:9:ADS7038_getButtons	1
-../spi.c:102:6:ADS7038Init	1
-../spi.c:121:10:MCP3202_init	1
-../spi.c:153:10:MCP3202_read	3

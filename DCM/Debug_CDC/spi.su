@@ -1,8 +1,0 @@
-../spi.c:63:9:ADS7038_read	32	static
-../spi.c:75:6:ADS7038_write	24	static
-../spi.c:82:13:ADS7038_updateIO	24	static
-../spi.c:94:11:ADS7038_getPaddles	4	static
-../spi.c:98:9:ADS7038_getButtons	4	static
-../spi.c:102:6:ADS7038Init	24	static
-../spi.c:121:10:MCP3202_init	112	static
-../spi.c:153:10:MCP3202_read	32	static

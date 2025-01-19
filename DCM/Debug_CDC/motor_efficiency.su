@@ -1,5 +1,0 @@
-../motor_efficiency.c:45:14:lookUpEfficiencyByIndex	24	static
-../motor_efficiency.c:63:14:getAverage	24	static
-../motor_efficiency.c:86:15:getUpperBoundIndex	40	static
-../motor_efficiency.c:124:14:getInterpolationFactor	32	static
-../motor_efficiency.c:153:7:getEstimatedMaxTorque	128	static

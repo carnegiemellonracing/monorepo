@@ -1,4 +1,0 @@
-../stm32f413-drivers/CMR/adc.c:31:13:cmr_adcSample	1
-../stm32f413-drivers/CMR/adc.c:46:13:cmr_adcConfigChannels	2
-../stm32f413-drivers/CMR/adc.c:85:6:cmr_adcInit	1
-../stm32f413-drivers/CMR/adc.c:122:10:cmr_adcRead	1

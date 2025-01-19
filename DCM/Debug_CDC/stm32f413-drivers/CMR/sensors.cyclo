@@ -1,7 +1,0 @@
-../stm32f413-drivers/CMR/sensors.c:19:13:cmr_sensorInit	5
-../stm32f413-drivers/CMR/sensors.c:56:13:cmr_sensorUpdate	4
-../stm32f413-drivers/CMR/sensors.c:83:6:cmr_sensorListInit	2
-../stm32f413-drivers/CMR/sensors.c:100:6:cmr_sensorListUpdate	2
-../stm32f413-drivers/CMR/sensors.c:115:6:cmr_sensorListGetFlags	7
-../stm32f413-drivers/CMR/sensors.c:152:9:cmr_sensorListGetValue	1
-../stm32f413-drivers/CMR/sensors.c:167:19:cmr_sensorListGetError	1

@@ -1,5 +1,0 @@
-../osqp/src/osqp/scaling.c:7:6:limit_scaling	4
-../osqp/src/osqp/scaling.c:28:6:compute_inf_norm_cols_KKT	1
-../osqp/src/osqp/scaling.c:44:7:scale_data	3
-../osqp/src/osqp/scaling.c:160:7:unscale_data	1
-../osqp/src/osqp/scaling.c:177:7:unscale_solution	1

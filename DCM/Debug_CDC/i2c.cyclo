@@ -1,6 +1,0 @@
-../i2c.c:63:6:i2cInit	1
-../i2c.c:103:5:framRead	3
-../i2c.c:122:5:framWrite	5
-../i2c.c:177:13:framInit	5
-../i2c.c:230:13:rtcInit	1
-../i2c.c:232:13:framUpdate	4

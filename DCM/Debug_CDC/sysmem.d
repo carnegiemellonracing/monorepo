@@ -1,1 +1,0 @@
-sysmem.o: ../sysmem.c

@@ -1,5 +1,0 @@
-../state.c:57:19:getNextState	3
-../state.c:86:13:getPTCStatus	1
-../state.c:90:13:setStateOutputs	3
-../state.c:106:13:stateUpdate	1
-../state.c:120:6:stateInit	1

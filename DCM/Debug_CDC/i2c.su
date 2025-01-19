@@ -1,6 +1,0 @@
-../i2c.c:63:6:i2cInit	24	static
-../i2c.c:103:5:framRead	48	static
-../i2c.c:122:5:framWrite	96	dynamic
-../i2c.c:177:13:framInit	56	static
-../i2c.c:230:13:rtcInit	4	static
-../i2c.c:232:13:framUpdate	64	static

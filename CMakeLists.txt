@@ -45,3 +45,11 @@ ExternalProject_Add(
         INSTALL_COMMAND ""
         BUILD_ALWAYS TRUE
 )
+
+ExternalProject_Add(
+        DCM
+        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/DCM
+        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/DCM
+        INSTALL_COMMAND ""
+        BUILD_ALWAYS TRUE
+)

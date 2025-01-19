@@ -1,2 +1,0 @@
-../stm32f413-drivers/CMSIS/system_stm32h7xx.c:176:6:SystemInit	4	static
-../stm32f413-drivers/CMSIS/system_stm32h7xx.c:341:6:SystemCoreClockUpdate	48	static

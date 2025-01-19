@@ -1,5 +1,0 @@
-../cmr_error.c:50:6:updateErrorsWarnings	1
-../cmr_error.c:74:13:updateErrors	20
-../cmr_error.c:128:13:updateWarnings	11
-../cmr_error.c:177:13:updateAMKTimeouts	12
-../cmr_error.c:220:13:updateAMKErrors	8

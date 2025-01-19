@@ -1,4 +1,0 @@
-../stm32f413-drivers/CMR/adc.c:31:13:cmr_adcSample	24	static
-../stm32f413-drivers/CMR/adc.c:46:13:cmr_adcConfigChannels	128	static
-../stm32f413-drivers/CMR/adc.c:85:6:cmr_adcInit	32	static
-../stm32f413-drivers/CMR/adc.c:122:10:cmr_adcRead	16	static

@@ -1,3 +1,0 @@
-../stm32f413-drivers/CMR/pwm.c:16:17:cmr_timerToAltFunc	16	static
-../stm32f413-drivers/CMR/pwm.c:64:6:cmr_pwmInit	248	static
-../stm32f413-drivers/CMR/pwm.c:180:6:cmr_pwmSetDutyCycle	24	static

@@ -1,5 +1,0 @@
-../osqp/src/osqp/qdldl.c:11:11:QDLDL_etree	112	static
-../osqp/src/osqp/qdldl.c:72:11:QDLDL_factor	248	static
-../osqp/src/osqp/qdldl.c:236:6:QDLDL_Lsolve	64	static
-../osqp/src/osqp/qdldl.c:252:6:QDLDL_Ltsolve	72	static
-../osqp/src/osqp/qdldl.c:269:6:QDLDL_solve	48	static
