@@ -74,8 +74,8 @@ bool getAcknowledgeButton(void);
 int32_t getAverageWheelRPM(void);
 bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq);
 
-void StateVSMUp(void);
-void StateVSMDown(void);
+void stateVSMUp(void);
+void stateVSMDown(void);
 
 
 void updateReq(void);
