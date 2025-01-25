@@ -385,7 +385,7 @@ static cmr_state getReqScreen(void) {
     switch (currState) {
         case INIT:
         	//initializes tft screen
-        	tftUpdate(&tft);
+        	//tftUpdate(&tft);
     		nextState = START;
 
             break;
@@ -619,14 +619,14 @@ static void stateOutput() {
             vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
 
             /* Initialize the display. */
-            tftCmd(&tft, TFT_CMD_CLKEXT, 0x00);
-            tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
-            tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
+            //tftCmd(&tft, TFT_CMD_CLKEXT, 0x00);
+            //tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
+            //tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
             break;
         case START:
             /* Display Startup Screen for fixed time */
-            tftDLContentLoad(&tft, &tftDL_startup);
-            tftDLWrite(&tft, &tftDL_startup);
+            //tftDLContentLoad(&tft, &tftDL_startup);
+            //tftDLWrite(&tft, &tftDL_startup);
             //    vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
             break;
         case NORMAL:
