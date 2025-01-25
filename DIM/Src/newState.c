@@ -66,7 +66,6 @@ volatile bool dim_first_time_config_screen;
 /** @brief Checks to see if the screen needs to be redrawn after getting new driver profiles */
 volatile bool redraw_new_driver_profiles;
 
-
 /** @brief Acknowledge button value */
 bool ackButtonPressed;
 
