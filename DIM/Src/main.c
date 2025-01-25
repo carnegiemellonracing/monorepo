@@ -48,6 +48,7 @@ static void statusLED(void *pvParameters) {
     cmr_gpioWrite(GPIO_LED_AMS, 0);
     cmr_gpioWrite(GPIO_LED_IMD, 0);
     cmr_gpioWrite(GPIO_LED_BSPD, 0);
+    cmr_gpioWrite(GPIO_LED_STATUS, 0);
 
     static bool toggle = true;
     TickType_t lastWakeTime = xTaskGetTickCount();
@@ -56,6 +57,7 @@ static void statusLED(void *pvParameters) {
         cmr_gpioWrite(GPIO_LED_AMS, toggle);
         cmr_gpioWrite(GPIO_LED_IMD, toggle);
         cmr_gpioWrite(GPIO_LED_BSPD, toggle);
+        cmr_gpioWrite(GPIO_LED_STATUS, toggle);
         toggle = !toggle;
     }
 }
