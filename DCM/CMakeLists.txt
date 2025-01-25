@@ -60,6 +60,7 @@ set(PROCESSOR_FAM H7XX)
 # Include directories for all compilers
 set(include_DIRS
     ${CMAKE_SOURCE_DIR}/Inc
+    ${CMAKE_SOURCE_DIR}/data
 )
 
 # Include directories for each compiler
@@ -77,7 +78,8 @@ add_library(freertos_config INTERFACE)
 target_include_directories(freertos_config SYSTEM
     INTERFACE
     ${CMAKE_SOURCE_DIR}/Inc
-    ${CMAKE_SOURCE_DIR}/../stm32f413-drivers/CMR/include) # The config file directory
+    ${CMAKE_SOURCE_DIR}/../stm32f413-drivers/CMR/include  # The config file directory
+    )
 target_compile_definitions(freertos_config
     INTERFACE
     configASSERT

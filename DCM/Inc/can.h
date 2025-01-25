@@ -8,7 +8,7 @@
 #ifndef CAN_H
 #define CAN_H
 
-#include <CMR/can.h>        // CMR CAN interface
+#include <CMR/fdcan.h>        // CMR CAN interface
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/can_ids.h>    // CMR CAN IDs
 

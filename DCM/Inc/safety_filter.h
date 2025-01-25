@@ -8,7 +8,6 @@ void setTorqueLimsProtected ( const cmr_torqueDistributionNm_t *torquesPos_Nm, c
 cmr_torque_limit_t getPreemptiveTorqueLimits();
 void initRetroactiveLimitFilters();
 void resetRetroactiveLimitFilters();
-void setTorqueLimsProtected();
 void setPowerLimit(uint8_t limit);
 
 const cmr_canCDCSafetyFilterStates_t *getSafetyFilterInfo();

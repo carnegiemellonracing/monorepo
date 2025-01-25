@@ -4,7 +4,6 @@
  *  @brief uses the cvxgen solver to give desired torques
  */
 
-#include "solver.h"
 #include "motors_helper.h"
 #include "motors.h"
 

@@ -6,7 +6,7 @@
 
 #include <stm32h7xx_hal.h>
 
-#include "solver.h"
+#include "../cvxgen/solver.h"
 #include "cvxgen_interface.h"
 #include "motors.h"
 #include "daq.h"
@@ -44,7 +44,7 @@ bool load_data(
 	cmr_torqueDistributionNm_t * torque_max_Nm,
 	cmr_torqueDistributionNm_t *result_torques_Nm
 	) {
-  
+
 	//mostly copied sweep code here
 	double cos_swangle = cos(steering_angle_rad);
 	double sin_swangle = sin(steering_angle_rad);
@@ -55,15 +55,15 @@ bool load_data(
 	params.Q[8] = 2*K_LIN + 3519.8941669047*K_YAW*cos_swangle + 4196.79689130945*K_YAW*sin_swangle;
 	params.Q[9] = 2*K_LIN - 3519.8941669047*K_YAW*cos_swangle + 4196.79689130945*K_YAW*sin_swangle;
 	params.Q[10] = 2*K_LIN + 2*K_TIE + 3519.8941669047*K_YAW;
-	params.Q[12] = 2*K_LIN - 3519.8941669047*K_YAW*cos_swangle - 4196.79689130945*K_YAW*sin_swangle;     
-	params.Q[13] = 2*K_LIN + 3519.8941669047*K_YAW*cos_swangle - 4196.79689130945*K_YAW*sin_swangle;     
+	params.Q[12] = 2*K_LIN - 3519.8941669047*K_YAW*cos_swangle - 4196.79689130945*K_YAW*sin_swangle;
+	params.Q[13] = 2*K_LIN + 3519.8941669047*K_YAW*cos_swangle - 4196.79689130945*K_YAW*sin_swangle;
 	params.Q[14] = 2*K_LIN - 3519.8941669047*K_YAW;
 	params.Q[15] = 2*K_LIN + 2*K_TIE + 3519.8941669047*K_YAW;
 
 	// Mirrors 4
 	params.Q[1] = 2*K_LIN - 3519.8941669047*K_YAW*cos_swangle*cos_swangle + 5003.87321656127*K_YAW*sin_swangle*sin_swangle;
 	// Mirrors 8
-	params.Q[2] = 2*K_LIN + 3519.8941669047*K_YAW*cos_swangle + 4196.79689130945*K_YAW*sin_swangle;      
+	params.Q[2] = 2*K_LIN + 3519.8941669047*K_YAW*cos_swangle + 4196.79689130945*K_YAW*sin_swangle;
 	// Mirrors 12
 	params.Q[3] = 2*K_LIN - 3519.8941669047*K_YAW*cos_swangle - 4196.79689130945*K_YAW*sin_swangle;
 	// Mirrors 9
