@@ -1,0 +1,1 @@
+cmd='/opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake;-GNinja;-S;<SOURCE_DIR><SOURCE_SUBDIR>;-B;<BINARY_DIR>'
