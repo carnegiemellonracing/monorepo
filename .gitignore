@@ -18,4 +18,5 @@ _deps
 CMakeUserPresets.json
 .vscode/settings.json
 .DS_Store
+*/.DS_Store
 VSM/Inc/gitcommit.h
