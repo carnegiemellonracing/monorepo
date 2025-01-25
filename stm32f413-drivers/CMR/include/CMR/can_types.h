@@ -74,11 +74,14 @@ typedef enum {
     /** @brief AFC DCDC #2 temperature out-of-range. */
     CMR_CAN_ERROR_AFC_DCDC2_TEMP = (1 << 10),
 
-    /** @brief PTC fan current out-of-range. */
+    /** @brief 
+ fan current out-of-range. */
     CMR_CAN_ERROR_PTC_FAN_CURRENT = (1 << 15),
-    /** @brief PTC fan/pump driver IC temperature out-of-range. */
+    /** @brief 
+ fan/pump driver IC temperature out-of-range. */
     CMR_CAN_ERROR_PTC_DRIVERS_TEMP = (1 << 14),
-    /** @brief PTC water temperature out-of-range. */
+    /** @brief 
+ water temperature out-of-range. */
     CMR_CAN_ERROR_PTC_WATER_TEMP = (1 << 13),
     //power errors(shunt resistor), water over heating errors, oil overheatin errors
     //no oil overheating errors cuz going into uprights
@@ -235,7 +238,8 @@ typedef enum {
     CMR_CAN_VSM_ERROR_SOURCE_FSM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_DIM = (1 << 3),
-    /** @brief At least one PTC message has timed out. */
+    /** @brief At least one 
+ message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_PTC = (1 << 2),
     /** @brief At least one Auxiliary Power Controller message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_APC = (1 << 0)
@@ -521,7 +525,8 @@ typedef struct {
     uint16_t backRight;     /**< @brief Back right wheel speed (RPM). */
 } cmr_canCDCWheelSpeeds_t;
 
-/** @brief Central Dynamics Controller PTC brake solenoid command. */
+/** @brief Central Dynamics Controller 
+ brake solenoid command. */
 typedef struct {
     uint8_t solenoidEnable;     /**< @brief Enable the solenoid (disable the brakes). */
 } cmr_canCDCSolenoidPTC_t;
@@ -755,9 +760,11 @@ typedef struct {
     uint16_t temp9_dC;            /**< @brief Temp 9 */
 } cmr_canPTCLoopTemp_C_t;
 
-/** @brief Standard CAN PTC State. */
+/** @brief Standard CAN 
+ State. */
 typedef struct {
-    uint8_t state;          /**< @brief PTC state. */
+    uint8_t state;          /**< @brief 
+ state. */
 } cmr_canPTCState_t;
 
 /** @brief Standard Git committed State. */

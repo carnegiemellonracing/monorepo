@@ -42,7 +42,8 @@ static uint16_t inverter_temp;
 void fansOn();
 void fansOff();
 
-// need init funcs from ptc
+// need init funcs from 
+
 
 //TODO: 
 /*

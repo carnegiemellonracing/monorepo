@@ -8,7 +8,8 @@ This repository consolidates individual board codebases into a single, unified s
 
 - **DIM**: Driver Interface Module  
 - **HVC**: High Voltage Controller  
-- **PTC**: Powertrain Controller  
+- **
+**: Powertrain Controller  
 - **RAM**: Random Access Module
 - **VSM**: Vehicle Safety Module  
 
