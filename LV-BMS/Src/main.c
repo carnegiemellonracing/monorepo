@@ -21,20 +21,14 @@
 
 /** @brief Status LED priority. */
 static const uint32_t status_LED_priority = 2;
-static const uint32_t vtherm_read_priority = 5;
-static const uint32_t vcout_read_priority = 1;
 static const uint32_t post_ms_monitor_priority = 1;
 
 /** @brief Status LED period (milliseconds). */
 static const TickType_t status_LED_period_ms = 250;
-static const TickType_t vtherm_read_period_ms = 10;
-static const TickType_t vcout_read_period_ms = 10;
 static const TickType_t post_ms_monitor_read_period_ms = 10;
 
 /** @brief Status LED task. */
 static cmr_task_t status_LED_task;
-static cmr_task_t vtherm_read_task;
-static cmr_task_t vcout_read_task;
 static cmr_task_t post_ms_monitor_task;
 
 /**
@@ -58,32 +52,8 @@ static void status_LED() {
 /**
  * @param vtherm_index ∈ ℕ, vtherm_index ∈ [0, 15]
  */
-static uint32_t vtherm_read_index(uint32_t vtherm_index) {
 
-	int map[] = {4, 6, 7, 5, 2, 1, 0, 3, 3, 0, 1, 2, 5, 4, 2, 1};
-	int sel_index = map[vtherm_index];
 
-	cmr_gpioWrite(GPIO_VTHERM_SEL0, sel_index & 0x1);
-	cmr_gpioWrite(GPIO_VTHERM_SEL1, sel_index & 0x2);
-	cmr_gpioWrite(GPIO_VTHERM_SEL2, sel_index & 0x4);
-	if(vtherm_index < 0x8)
-		return adc_read(ADC_VTHERM_PIN1);
-	return adc_read(ADC_VTHERM_PIN2);
-}
-
-static void vtherm_read(const adc_channel_t ch) {
-	TickType_t time_prev = xTaskGetTickCount();
-	while(true) {
-		for(uint32_t i = 0; i < VTHERM_NUM; i++) {
-			int temp = vtherm_read_index(i);
-			(void *)temp;
-		}
-		int temp = vtherm_read_index(7);
-		int temp2 = vtherm_read_index(8);
-		temp + temp2;
-		vTaskDelayUntil(&time_prev, vtherm_read_period_ms);
-	}
-}
 
 static void post_ms_monitor() {
 	TickType_t time_prev = xTaskGetTickCount();
@@ -102,24 +72,6 @@ static void post_ms_monitor() {
 			write_sleep(); // This line will kill itself
 
 		vTaskDelayUntil(&time_prev, post_ms_monitor_read_period_ms);
-	}
-}
-
-static void vcout_read() {
-	TickType_t time_prev = xTaskGetTickCount();
-	while(true){
-//		int vc = adc_read(ADC_AFE_VCOUT);
-//
-		write_ref_sel(true);
-		uint8_t ref_sel = read_ref_sel();
-		write_cell_ctl(0x1, 0x5);
-		uint8_t cell_ctl = read_cell_ctl();
-//
-//		uint8_t power_ctl = read_power_ctl();
-//		write_sleep(); // This line will kill itself
-
-//		int dummy = vc + 1;
-		vTaskDelayUntil(&time_prev, vcout_read_period_ms);
 	}
 }
 
@@ -157,13 +109,6 @@ int main(void) {
 //		uint8_t dummy = 0;
 //	}
 
-	cmr_taskInit(
-		&vtherm_read_task,
-		"vtherm read",
-		vtherm_read_priority,
-		vtherm_read,
-		NULL
-	);
 
 	// It seems like whichever task first created can turn off the AFE by write_sleep()
 	cmr_taskInit(
@@ -171,14 +116,6 @@ int main(void) {
 		"post ms monitor",
 		post_ms_monitor_priority,
 		post_ms_monitor,
-		NULL
-	);
-
-	cmr_taskInit(
-		&vcout_read_task,
-		"vcout read",
-		vcout_read_priority,
-		vcout_read,
 		NULL
 	);
 
@@ -191,5 +128,5 @@ int main(void) {
 	);
 
 	vTaskStartScheduler();
-    cmr_panic("vTaskStartScheduler returned!");
+    cmr_panic("vTaskStartScheduler returned!"); //what is this?
 }
