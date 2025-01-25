@@ -153,8 +153,6 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/spi.c
     ${CMAKE_SOURCE_DIR}/Src/syscalls.c
     ${CMAKE_SOURCE_DIR}/Src/sysmem.c
-    ${CMAKE_SOURCE_DIR}/Src/ve.c
-
 )
 add_dependencies(${CMAKE_PROJECT_NAME} generate_gitcommit)
 # Add sources to executable

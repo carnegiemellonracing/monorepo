@@ -1,6 +1,0 @@
-content/*
-!content/*.binh
-fonts/**/*
-!fonts/**/*.raw
-!fonts/*.binh
-
