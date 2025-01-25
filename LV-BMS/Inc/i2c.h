@@ -23,12 +23,6 @@
 #define CELL_CTL 0x21     // CELL_CTL register
 #define STATUS 0x20
 #define VREF_CAL 0x30
-#define VC1_CAL 0x31
-#define VC2_CAL 0x32  
-#define VC3_CAL 0x33 
-#define VC4_CAL 0x34 
-#define VC5_CAL 0x35
-#define VC6_CAL 0x36
 #define VC_CAL_EXT_1 0x37
 #define VC_CAL_EXT_2 0x38
 #define VREF_CAL_EXT 0x3B
