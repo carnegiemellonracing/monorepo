@@ -14,7 +14,6 @@
 #include "adc.h"
 #include "can.h"         // Board-specific CAN interface
 #include "gpio.h"        // Board-specific GPIO interface
-#include "state.h"       // State interface
 #include "tftContent.h"  // Content interface
 #include "tftDL.h"       // Display list interface
 #include "CMR/can_types.h" //can_types
@@ -580,8 +579,6 @@ void drawRTDScreen(void){
 
     volatile cmr_canCDCControlsStatus_t *controlsStatus = (volatile cmr_canCDCControlsStatus_t *)getPayload(CANRX_CDC_CONTROLS_STATUS);
 
-    bool yrcOn = ((bool)controlsStatus->yrcOn) && (!(switchValues & 0x02));
-    bool tcOn = ((bool)controlsStatus->tcOn) && (!(switchValues & 0x04));
 
     //line 716 tft.c
     /* Write Display List to Screen */

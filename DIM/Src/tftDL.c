@@ -13,8 +13,8 @@
 #include "adc.h"         // GLV voltage
 #include "can.h"         // Board-specific CAN interface
 #include "gpio.h"        // Board-specific CAN interface
-#include "state.h"       // State interface
 #include "tftContent.h"  // Content interface
+#include "newState.h"
 
 // used to calculate increment frequency:
 // max paddle val (255) / max increment speed (20Hz)

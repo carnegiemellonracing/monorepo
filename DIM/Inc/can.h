@@ -14,7 +14,6 @@
 #include <CMR/config_screen_helper.h>  // for config_screen_data tx
 
 #include "sensors.h"  // sensors interface
-#include "state.h"
 #include "gpio.h"
 
 /** @brief Text buffer from RAM - used to display messages to driver */
