@@ -16,20 +16,20 @@
 #include "motors.h"         // motorLocation_t
 
 /** @brief Inverter error status tracking. Indexed by 'motorLocation_t'. */
-static bool amkErrors[MOTOR_LEN] = {
-    [MOTOR_FL] = false,
-    [MOTOR_FR] = false,
-    [MOTOR_RL] = false,
-    [MOTOR_RR] = false,
-};
+// static bool amkErrors[MOTOR_LEN] = {
+//     [MOTOR_FL] = false,
+//     [MOTOR_FR] = false,
+//     [MOTOR_RL] = false,
+//     [MOTOR_RR] = false,
+// };
 
 /** @brief Inverter timeout tracking. Indexed by 'motorLocation_t'. */
-static bool amkTimeouts[MOTOR_LEN] = {
-    [MOTOR_FL] = false,
-    [MOTOR_FR] = false,
-    [MOTOR_RL] = false,
-    [MOTOR_RR] = false,
-};
+// static bool amkTimeouts[MOTOR_LEN] = {
+//     [MOTOR_FL] = false,
+//     [MOTOR_FR] = false,
+//     [MOTOR_RL] = false,
+//     [MOTOR_RR] = false,
+// };
 
 // Forward declarations
 static void updateErrors(cmr_canError_t *errors, TickType_t lastWakeTime);
@@ -51,8 +51,8 @@ void updateErrorsWarnings(cmr_canHeartbeat_t *heartbeat, TickType_t lastWakeTime
     cmr_canError_t errors = CMR_CAN_ERROR_NONE;
     cmr_canWarn_t warnings = CMR_CAN_WARN_NONE;
 
-    updateAMKErrors();
-    updateAMKTimeouts(lastWakeTime);
+    // updateAMKErrors();
+    // updateAMKTimeouts(lastWakeTime);
 
     updateErrors(&errors, lastWakeTime);
     updateWarnings(&warnings, lastWakeTime);
