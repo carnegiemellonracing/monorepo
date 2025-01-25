@@ -18,10 +18,11 @@
 #include <math.h>       // powf()
 #include <string.h>     // memcpy()
 #include <CMR/config_screen_helper.h>
+#include <CMR/can_types.h>
 
 #include "adc.h"        // adcVSense, adcISense
 #include "gpio.h"       // For actionButtonPressed status
-#include "state.h"      // State interface
+
 #include "tftDL.h"      // For RAM buffer indices
 #include "newState.h"	// For new state machine
 
@@ -195,9 +196,8 @@ static void canTX100Hz(void *pvParameters) {
         /* Transmit action button status */
         cmr_canDIMActions_t actions = {
             .buttons = packed,
-            //.rotaryPos = rotaryPos,
 			.rotaryPos = getRotaryPosition(),
-            .switchValues = switchValues,
+            .switchValues = 0,
             .regenPercent = regenPercent,
             .paddle = paddle,
 			.LRUDButtons = LRUDpacked,

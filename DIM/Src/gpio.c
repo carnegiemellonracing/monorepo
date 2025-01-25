@@ -9,7 +9,6 @@
 
 #include <stm32f4xx_hal.h>  // HAL interface
 
-#include "state.h"
 #include "newState.h"
 
 bool gpioButtonStates[NUM_BUTTONS];
@@ -64,10 +63,6 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
                         .Speed = GPIO_SPEED_FREQ_LOW } },
 };
 
-static void Arising();
-static void Afalling();
-static void Brising();
-static void Bfalling();
 
 //Define the two variables that tracks rotary input
 volatile int RotaryA = 0;
