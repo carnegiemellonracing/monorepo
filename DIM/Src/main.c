@@ -121,7 +121,8 @@ int main(void) {
     adcInit();
     stateMachineInit();
     sensorsInit();
-    tftInit();
+    //
+    //tftInit();
 
     cmr_taskInit(
         &statusLED_task,
