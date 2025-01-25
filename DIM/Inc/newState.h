@@ -42,6 +42,8 @@ int getACTemp(void);
 int getMCTemp(void);
 bool getDoorsState(void);
 void exitConfigScreen();
+void stateGearUpdate(void);
+void stateDrsUpdate(void);
 cmr_canState_t stateGetVSM(void);
 cmr_canState_t stateGetVSMReq(void);
 

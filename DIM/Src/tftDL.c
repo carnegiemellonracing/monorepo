@@ -414,6 +414,7 @@ void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yell
 /**
  * @brief Updates the ready-to-drive screen.
  *
+ * @param memoratorStatus
  * @param memoratorPresent Memorator present (based on heartbeat)
  * @param sbgStatus SBG INS Status
  * @param speed_mph Speed (from CDC)
@@ -436,12 +437,6 @@ void tftDL_RTDUpdate(
     int32_t hvVoltage_mV,
     int32_t power_kW,
     uint32_t speed_kmh,
-    bool motorTemp_yellow,
-    bool motorTemp_red,
-    bool acTemp_yellow,
-    bool acTemp_red,
-    bool mcTemp_yellow,
-    bool mcTemp_red,
     int32_t motorTemp_C,
     int32_t acTemp_C,
     int32_t mcTemp_C,
@@ -663,7 +658,7 @@ static void tftDL_showAMKError(uint32_t strlocation, uint32_t colorLocation, uin
             break;
         default:
             // No text, so display error number
-            snprintf(print_location, print_len, "%04d        ", errorCode);
+            snprintf(print_location, print_len, "%04d ", errorCode);
             break;
     }
     tftDL_showErrorState(colorLocation, errorCode != 0);
@@ -684,7 +679,7 @@ void tftDL_errorUpdate(
 
     snprintf(
         glvVoltage_V_str->buf, sizeof(glvVoltage_V_str->buf),
-        "%2uV", err->glvVoltage_V);
+        "%luV", err->glvVoltage_V);
 
     /* Timeouts */
     tftDL_showErrorState(ESE_PTC_COLOR, err->ptcTimeout);

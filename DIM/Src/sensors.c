@@ -84,23 +84,7 @@ static uint32_t sampleADCSensorSwangle(const cmr_sensor_t *sensor) {
     return val;
 }
 
-static uint32_t leftThrottleToRequest(const cmr_sensor_t *sensor) {
-    sensorChannel_t sensorChannel = sensor - sensors;
-    configASSERT(sensorChannel < SENSOR_CH_LEN);
 
-    uint16_t leftADC = adcRead(sensorsADCChannels[sensorChannel]);
-
-    return leftADC / 16;
-}
-
-static uint32_t rightThrottleToRequest(const cmr_sensor_t *sensor) {
-    sensorChannel_t sensorChannel = sensor - sensors;
-    configASSERT(sensorChannel < SENSOR_CH_LEN);
-
-    uint16_t rightADC = adcRead(sensorsADCChannels[sensorChannel]);
-
-    return rightADC / 8;
-}
 
 /**
  * @brief Rescales ADC value from 12 bit to 8 bit.

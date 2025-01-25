@@ -18,8 +18,6 @@ bool gpioLRUDStates[4];
 
 static const uint32_t gpioReadButtons_priority = 4;
 
-/** @brief Button input task period (milliseconds). */
-static const TickType_t gpioReadButtons_period = 10;
 
 /** @brief Button input task task. */
 static cmr_task_t gpioReadButtons_task;
@@ -70,8 +68,8 @@ volatile int RotaryB = 0;
 /**
 * @brief Adds Interrupt and Programs Callback Function
 */
-static volatile  int rotaryPosition = 0; //This keeps track of rotary position, the important variable, mod 8
-static volatile  int pastRotaryPosition = 0; //Keeps track of past rotary position, mod 8
+static volatile int rotaryPosition = 0; //This keeps track of rotary position, the important variable, mod 8
+static volatile int pastRotaryPosition = 0; //Keeps track of past rotary position, mod 8
 
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
@@ -222,8 +220,6 @@ static void XYActivate(void){
  */
 static void gpioReadButtons(void *pvParameters) {
     (void)pvParameters;
-    bool pressConfirmed = false;
-    TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         // Direct assignment for CAN buttons
         for(int i=0; i<NUM_BUTTONS; i++){
