@@ -31,6 +31,7 @@ typedef enum {
 	GPIO_LED_AMS,
     GPIO_LED_IMD,
     GPIO_LED_BSPD,
+	GPIO_LED_STATUS,
     GPIO_LEN /**< @brief Total GPIO pins. */
 } gpio_t;
 
