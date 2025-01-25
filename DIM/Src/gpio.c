@@ -18,8 +18,6 @@ bool gpioLRUDStates[4];
 
 static const uint32_t gpioReadButtons_priority = 4;
 
-/** @brief Button input task period (milliseconds). */
-static const TickType_t gpioReadButtons_period = 10;
 
 /** @brief Button input task task. */
 static cmr_task_t gpioReadButtons_task;
@@ -70,8 +68,8 @@ volatile int RotaryB = 0;
 /**
 * @brief Adds Interrupt and Programs Callback Function
 */
-volatile static int rotaryPosition = 0; //This keeps track of rotary position, the important variable, mod 8
-volatile static int pastRotaryPosition = 0; //Keeps track of past rotary position, mod 8
+static volatile int rotaryPosition = 0; //This keeps track of rotary position, the important variable, mod 8
+static volatile int pastRotaryPosition = 0; //Keeps track of past rotary position, mod 8
 
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
@@ -194,22 +192,22 @@ static void XYActivate(void){
 	float sensorY = adcToVoltage(cmr_sensorListGetValue(&sensorList, SENSOR_CH_Y));
 	// Both sensors less than 0.5V
     // LEFT
-	if (sensorX <=0.5 && sensorY <=0.5){
+	if (sensorX <=0.5f && sensorY <=0.5f){
 		gpioLRUDStates[LEFT] = true;
 	}else{
 		gpioLRUDStates[LEFT] = false;
 	}
-	if (sensorX<=4.5 && sensorX >=0.5 && sensorY <=0.5){
+	if (sensorX<=4.5f && sensorX >=0.5f && sensorY <=0.5f){
 		gpioLRUDStates[RIGHT] = true;
 	}else{
 		gpioLRUDStates[RIGHT] = false;
 	}
-	if (sensorX <=0.5 && sensorY>=0.5 && sensorY <=4.5){
+	if (sensorX <=0.5f && sensorY>=0.5f && sensorY <=4.5f){
 		gpioLRUDStates[UP] = true;
 	}else{
 		gpioLRUDStates[UP] = false;
 	}
-	if (sensorX >=4.5 && sensorY >=4.5){
+	if (sensorX >=4.5f && sensorY >=4.5f){
 		gpioLRUDStates[DOWN] = true;
 	}else{
 		gpioLRUDStates[DOWN] = false;
@@ -222,8 +220,6 @@ static void XYActivate(void){
  */
 static void gpioReadButtons(void *pvParameters) {
     (void)pvParameters;
-    bool pressConfirmed = false;
-    TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         // Direct assignment for CAN buttons
         for(int i=0; i<NUM_BUTTONS; i++){

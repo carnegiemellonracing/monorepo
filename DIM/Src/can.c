@@ -24,7 +24,7 @@
 #include "gpio.h"       // For actionButtonPressed status
 
 #include "tftDL.h"      // For RAM buffer indices
-#include "NewState.h"	// For new state machine
+#include "newState.h"	// For new state machine
 
 // Config Screen update requested
 bool volatile flush_config_screen_to_cdc = false;
@@ -301,7 +301,7 @@ static void canTX1Hz(void *pvParameters) {
  * Character indices 60-72 inclusive are for the second note on the right side of the screen.
  * This corresponds to text->address 0x0F, 0x10, and 0x11.
  */
-void ramRxCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen) {
+void ramRxCallback(cmr_can_t *can1, uint16_t canID, const void *data, size_t dataLen) {
     if (canID == CMR_CANID_DIM_TEXT_WRITE) {
         cmr_canDIMTextWrite_t *text = (cmr_canDIMTextWrite_t *)data;
         if (dataLen == sizeof(cmr_canDIMTextWrite_t)) {
