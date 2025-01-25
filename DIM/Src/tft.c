@@ -482,8 +482,6 @@ void drawRTDScreen(void){
     volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
         (void *)metaBMSLowVoltage->payload;
 
-    // 
- Temps
     /* cmr_canRXMeta_t *metaPTCfLoopA = canRXMeta + CANRX_PTCf_LOOP_A_TEMPS;
     volatile cmr_canPTCfLoopTemp_A_t *canPTCfLoopTemp_A = (void *) metaPTCfLoopA->payload;
 
