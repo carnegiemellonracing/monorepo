@@ -12,33 +12,33 @@ set(cpu_PARAMS ${cpu_PARAMS}
     -mcpu=cortex-m7
 	-mfpu=fpv5-d16
 	-mfloat-abi=hard
-	
+
 )
 
 # Linker script
 set(linker_script_SRC ${linker_script_SRC}
-    ${CMAKE_CURRENT_SOURCE_DIR}/stm32h725zgtx_FLASH.ld
+    ${CMAKE_CURRENT_SOURCE_DIR}/STM32H725ZGTX_FLASH.ld
 )
 
 # Sources
 set(sources_SRCS ${sources_SRCS}
-    
+
 	${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
-	${CMAKE_CURRENT_SOURCE_DIR}/Src/syscall.c
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/syscalls.c
 	${CMAKE_CURRENT_SOURCE_DIR}/Src/sysmem.c
-	${CMAKE_CURRENT_SOURCE_DIR}/Startup/startup_stm32h725zgtx.s
+	${CMAKE_CURRENT_SOURCE_DIR}/Startup/startup_stm32h725xx.s
 )
 
 # Include directories
 set(include_c_DIRS ${include_c_DIRS}
-    
+
 	${CMAKE_CURRENT_SOURCE_DIR}/Inc
 )
 set(include_cxx_DIRS ${include_cxx_DIRS}
-    
+
 )
 set(include_asm_DIRS ${include_asm_DIRS}
-    
+
 )
 
 # Symbols definition
@@ -46,20 +46,20 @@ set(symbols_c_SYMB ${symbols_c_SYMB}
 
 )
 set(symbols_cxx_SYMB ${symbols_cxx_SYMB}
-    
+
 )
 set(symbols_asm_SYMB ${symbols_asm_SYMB}
-    
+
 )
 
 # Link directories
 set(link_DIRS ${link_DIRS}
-    
+
 )
 
 # Link libraries
 set(link_LIBS ${link_LIBS}
-    
+
 )
 
 # Compiler options

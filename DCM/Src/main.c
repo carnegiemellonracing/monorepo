@@ -91,13 +91,11 @@ int main(void) {
 
     gpioInit();
     i2cInit();
-    MCP3202_init();
     canInit();
     adcInit();
     servoInit();
     motorsInit();
     sensorsInit();
-    veInit();
     stateInit();
 
     cmr_taskInit(&statusLED_task, "statusLED", statusLED_priority, statusLED,

@@ -28,7 +28,6 @@
 #include "controls_helper.h"
 #include "controls_23e.h"
 #include "sensors.h"
-#include "ve.h"
 
 extern volatile uint8_t currentParameters[MAX_MENU_ITEMS];
 volatile uint8_t parametersFromDIM[MAX_MENU_ITEMS];
@@ -408,7 +407,7 @@ static void canTX10Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_REAR_WHL_SETPOINTS, &rearWhlSetpoints, sizeof(rearWhlSetpoints), canTX10Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_FRONT_WHL_VELS, &frontWhlVelocities, sizeof(frontWhlVelocities), canTX10Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_REAR_WHL_VELS, &rearWhlVelocities, sizeof(rearWhlVelocities), canTX10Hz_period_ms);
-        
+
         //powersense is dead, it's voltage * HVI
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_POWER_SENSE, &powerSense, sizeof(powerSense), canTX10Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canCDCKiloCoulombs_t), canTX10Hz_period_ms);
@@ -453,13 +452,13 @@ static void canTX100Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_CVXGEN_INFO, &solverInfo, sizeof(solverInfo), canTX100Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_CVXGEN_TORQUES, &solverTorques, sizeof(solverTorques), canTX100Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_CVXGEN_CONVERGENCE, &nonConvergenceCounter, sizeof(nonConvergenceCounter), canTX100Hz_period_ms);
-        
+
         /**
          * Velocity estimation message
          */
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_VELOCITY_ESTIMATION1, &velocity_estimator1, sizeof(velocity_estimator1), canTX100Hz_period_ms);
 		canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_VELOCITY_ESTIMATION2, &velocity_estimator2, sizeof(velocity_estimator2), canTX100Hz_period_ms);
-        
+
 		// SF
 		const cmr_canCDCSafetyFilterStates_t *sfStatesInfo = getSafetyFilterInfo();
 		cmr_canCDCMotorPower_t *motorPowerInfo = getMotorPowerInfo();
@@ -474,7 +473,7 @@ static void canTX100Hz(void *pvParameters) {
 		canTX(CMR_CAN_BUS_DAQ, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX100Hz_period_ms); //motor power
 		//canTX(CMR_CAN_BUS_TRAC, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
 
-        
+
         //debug code for sending rxmeta receive to current time difference
 //        uint16_t arr[2];
 //        arr[0] = lastWakeTime - canVehicleRXMeta[CANRX_VEH_HEARTBEAT_VSM].lastReceived_ms;
@@ -494,8 +493,8 @@ static void canTX100Hz(void *pvParameters) {
             sizeof(heartbeat),
             canTX100Hz_period_ms
         );
-        
-        
+
+
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
 }
@@ -596,7 +595,7 @@ static void canTX5Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
 
     while (1) {
-        
+
         // Forward AMK messages to vehicle CAN at lower 5Hz rate
         for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
             // Do not transmit if we haven't received that message lately
@@ -687,7 +686,7 @@ static void canTX1Hz(void *pvParameters) {
             .odometer_km = odometer_km
         };
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_ODOMETER, &odometer, sizeof(odometer), canTX1Hz_period_ms);
-        
+
         cmr_canCDCControlsStatus_t *controlsStatus = getControlsStatus();
 
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_CONTROLS_STATUS, controlsStatus, sizeof(cmr_canCDCControlsStatus_t), canTX1Hz_period_ms);
@@ -708,9 +707,9 @@ void *canGetPayload(canRX_t rxMsg) {
 
 /**
  * @brief Get the Received Driver profile number
- * 
- * @param canID 
- * @param packet_number 
+ *
+ * @param canID
+ * @param packet_number
  * @return driver returns -1 if not found
  */
 int getReceivedDriver(uint16_t canID, int *packet_number) {
@@ -759,12 +758,12 @@ void dim_params_callback (cmr_can_t *canb_rx, uint16_t canID, const void *data, 
 
     // calculate what config packet this message is and the driver
     cmr_driver_profile_t recievedDriver = getReceivedDriver(canID, &packet_number);
-    
+
     // Exit quickly if not found
     if (recievedDriver == -1) return;
 
     /* Actual logic starts here */
-    
+
     // exit if just changed driver and let DIM stop sending data
     if (currentTime - lastDriverChangeTime < 10000) return;
 
@@ -814,7 +813,7 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
 
 	size_t iface_idx = (canb_rx - can);
     configASSERT(iface_idx < CMR_CAN_BUS_NUM);
- 
+
     // If DIM config message, handle it
     if(CMR_CANID_CDC_CONFIG3_DRV3 >= canID && canID >= CMR_CANID_DIM_CONFIG0_DRV0) {
         dim_params_callback(canb_rx, canID, data, dataLen);
