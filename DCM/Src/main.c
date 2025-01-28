@@ -23,8 +23,6 @@
 #include "i2c.h"
 #include "servo.h"
 
-#include "cvxgen_interface.h"
-
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
 

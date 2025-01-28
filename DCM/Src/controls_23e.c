@@ -15,8 +15,6 @@
 #include "controls_23e.h"
 #include "motors.h"
 #include "lut_3d.h"
-#include "../cvxgen/solver.h"
-#include "cvxgen_interface.h"
 #include "safety_filter.h"
 
 #define PI 3.1415926535897932384626
