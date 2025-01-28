@@ -448,17 +448,12 @@ static void canTX100Hz(void *pvParameters) {
             heartbeat.state = CMR_CAN_ERROR;
         }
 
-        //CVXGEN
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_CVXGEN_INFO, &solverInfo, sizeof(solverInfo), canTX100Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_CVXGEN_TORQUES, &solverTorques, sizeof(solverTorques), canTX100Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_CVXGEN_CONVERGENCE, &nonConvergenceCounter, sizeof(nonConvergenceCounter), canTX100Hz_period_ms);
-
-        /**
-         * Velocity estimation message
-         */
-        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_VELOCITY_ESTIMATION1, &velocity_estimator1, sizeof(velocity_estimator1), canTX100Hz_period_ms);
-		canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_VELOCITY_ESTIMATION2, &velocity_estimator2, sizeof(velocity_estimator2), canTX100Hz_period_ms);
-
+        // Solver
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_INPUTS, &solver_inputs, sizeof(cmr_can_solver_inputs_t), canTX100Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_AUX, &solver_aux, sizeof(cmr_can_solver_aux_t), canTX100Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_OUTPUTS, &solver_torques, sizeof(solver_torques), canTX100Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_SETTINGS, &solver_settings, sizeof(cmr_can_solver_settings_t), canTX100Hz_period_ms);
+        
 		// SF
 		const cmr_canCDCSafetyFilterStates_t *sfStatesInfo = getSafetyFilterInfo();
 		cmr_canCDCMotorPower_t *motorPowerInfo = getMotorPowerInfo();
