@@ -83,6 +83,29 @@ static cmr_canAMKSetpoints_t motorSetpoints[MOTOR_LEN] = {
     },
 };
 
+typedef struct {
+    TickType_t torque_update_timestamp;
+    TickType_t velocity_update_timestamp;
+} motor_command_update_timestamp_t;
+static motor_command_update_timestamp_t motor_command_update_timestamps[MOTOR_LEN] = {
+    [MOTOR_FL] = {
+        .torque_update_timestamp         = 0,
+        .velocity_update_timestamp       = 0,
+    },
+    [MOTOR_FR] = {
+        .torque_update_timestamp         = 0,
+        .velocity_update_timestamp       = 0,
+    },
+    [MOTOR_RL] = {
+        .torque_update_timestamp         = 0,
+        .velocity_update_timestamp       = 0,
+    },
+    [MOTOR_RR] = {
+        .torque_update_timestamp         = 0,
+        .velocity_update_timestamp       = 0,
+    },
+};
+
 // ------------------------------------------------------------------------------------------------
 // Private functions
 
@@ -201,7 +224,7 @@ static void motorsCommand (
                         drsMode,
                         dataFSM    -> throttlePosition,
                         dataFSM    -> brakePressureFront_PSI,
-                        dataFSM    -> steeringWheelAngle_deg);
+                        dataFSM    -> steeringWheelAngle_millideg);
                               
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
@@ -242,10 +265,24 @@ static void motorsCommand (
                 		    dataFSM    -> torqueRequested,
                             dataFSM    -> brakePedalPosition,
                             dataFSM    -> brakePressureFront_PSI,
-                            dataFSM    -> steeringWheelAngle_deg,
+                            dataFSM    -> steeringWheelAngle_millideg,
                             voltageHVC -> hvVoltage_mV,
                             currentHVC -> instantCurrent_mA,
                             blank_command);
+
+                // compare time-stamps for velocity and torque, check for updates
+            	TickType_t current_time = xTaskGetTickCount();
+            	TickType_t set_time = 20;
+
+            	for (size_t i = 0; i < MOTOR_LEN; i++) {
+
+            		if (current_time - motor_command_update_timestamps[i].torque_update_timestamp > set_time
+            				&& (current_time - motor_command_update_timestamps[i].velocity_update_timestamp) > set_time) {
+
+            			setTorqueLimsUnprotected(i, 0.0f, 0.0f);
+            		}
+
+            	}
                 //taskEXIT_CRITICAL();
 
                 TickType_t endTime = xTaskGetTickCount();
@@ -449,9 +486,13 @@ void setTorqueLimsUnprotected (
     float torqueLimPos_Nm, 
     float torqueLimNeg_Nm
 ) {
+
     if (motor >= MOTOR_LEN) {
         return;
     }
+
+    TickType_t current_time = xTaskGetTickCount();
+    motor_command_update_timestamps[motor].torque_update_timestamp = current_time;
 
     /** Check feasibility with field weakening (page 38 manual) */
 
@@ -475,6 +516,9 @@ void setVelocityInt16 (
     if (motor >= MOTOR_LEN) {
         return;
     }
+
+    TickType_t current_time = xTaskGetTickCount();
+	motor_command_update_timestamps[motor].velocity_update_timestamp = current_time;
 
     if (velocity_rpm > maxSpeed_rpm) {
         velocity_rpm = maxSpeed_rpm;
