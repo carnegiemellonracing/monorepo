@@ -1,10 +1,12 @@
 #include <stdint.h>
 #include <CMR/can_types.h>
 #include "lut_3d.h"
+#include "constants.h"
 #include "can.h"
 #include <CMR/config_screen_helper.h>
 #include <math.h>
-#include "controls_23e.h"
+#include "controls.h"
+#include "daq.h"
 
 // LUT Dimensions
 #define LUT_IDX_N_ROWS_SLIPANGLE 21
@@ -84,12 +86,15 @@ static float getKappaScaleFactor() {
  * @brief Return the vertical (Fz) scale factor set by DIM
  */
 static float getFzScaleFactor() {
-    float yScaleFactor = 1.0f;
-    const bool retVal = getProcessedValue(&yScaleFactor, TC_LUT_X_SCALE_INDEX, float_2_decimal);
-    if (retVal) {
-        return yScaleFactor;
-    }
-    return 1.0f;
+//    float yScaleFactor = 1.0f;
+//    const bool retVal = getProcessedValue(&yScaleFactor, TC_LUT_X_SCALE_INDEX, float_2_decimal);
+//    if (retVal) {
+//        return yScaleFactor;
+//    }
+//    return 1.0f;
+
+	// I don't trust the config screen value.
+	return 0.4;
 }
 
 /**
@@ -102,18 +107,6 @@ static uint8_t getBrakeRegenStrength() {
         return parallelRegenStrength;
     }
     return 0; 
-}
-
-/**
- * @brief Return the parallel regen enable flag set by DIM
- */
-static bool shouldActivateParallelRegen() {
-    bool activateParallelRegen = false;
-    const bool retVal = false; //used to be config screen value
-    if (retVal) {
-        return activateParallelRegen;
-    }
-    return false;
 }
 
 static float getLinpotDownforce(canDaqRX_t leftRight, bool fronts, float springConstant, float pushrodAngle) {
@@ -142,31 +135,33 @@ float get_fake_downforce(motorLocation_t motor) {
  */
 static float getDownforce(motorLocation_t motor) {
 
-    if(!use_true_downforce)
-        return get_fake_downforce(motor);
+    float downforce_N = get_fake_downforce(motor);
 
-    float downforce_N = carWeight_N / 4.0f;
-    if (useLoadCells) {
-        const canDaqRX_t loadIndex = getLoadIndex(motor);
-        // If we have valid loadcell data, use loadcell as downforce
-        if (cmr_canRXMetaTimeoutWarn(&canDaqRXMeta[loadIndex],  xTaskGetTickCount()) == 0) {
-            volatile cmr_canIZZELoadCell_t *downforcePayload = (volatile cmr_canIZZELoadCell_t*) canDAQGetPayload(loadIndex);
-            downforce_N = downforcePayload->force_output_N;
-        }
-    } else {
-        const float frontAngle_rad = ((float) M_PI) / 4;
-        const float rearAngle_rad = 0.9f;
-        const float frontSpringConstant = 225;
-        const float rearSpringConstant = 300;
-        if (motor == MOTOR_FL) {
-            downforce_N = getLinpotDownforce(CANRX_DAQ_LINPOTS_LEFTS, true, frontSpringConstant, frontAngle_rad);
-        } else if (motor == MOTOR_FR) {
-            downforce_N = getLinpotDownforce(CANRX_DAQ_LINPOTS_RIGHTS, true, frontSpringConstant, frontAngle_rad);
-        } else if (motor == MOTOR_RL) {
-            downforce_N = getLinpotDownforce(CANRX_DAQ_LINPOTS_LEFTS, false, rearSpringConstant, rearAngle_rad);
-        } else if (motor == MOTOR_RR) {
-            downforce_N = getLinpotDownforce(CANRX_DAQ_LINPOTS_RIGHTS, false, rearSpringConstant, rearAngle_rad);
-        }
+    if(use_true_downforce) {
+
+		if (useLoadCells) {
+			const canDaqRX_t loadIndex = getLoadIndex(motor);
+			// If we have valid loadcell data, use loadcell as downforce
+			if (cmr_canRXMetaTimeoutWarn(&canDaqRXMeta[loadIndex],  xTaskGetTickCount()) == 0) {
+				volatile cmr_canIZZELoadCell_t *downforcePayload = (volatile cmr_canIZZELoadCell_t*) canDAQGetPayload(loadIndex);
+				downforce_N = downforcePayload->force_output_N;
+			}
+		} else {
+			const float frontAngle_rad = ((float) M_PI) / 4;
+			const float rearAngle_rad = 0.9f;
+			const float frontSpringConstant = 225;
+			const float rearSpringConstant = 300;
+			if (motor == MOTOR_FL) {
+				downforce_N = getLinpotDownforce(CANRX_DAQ_LINPOTS_LEFTS, true, frontSpringConstant, frontAngle_rad);
+			} else if (motor == MOTOR_FR) {
+				downforce_N = getLinpotDownforce(CANRX_DAQ_LINPOTS_RIGHTS, true, frontSpringConstant, frontAngle_rad);
+			} else if (motor == MOTOR_RL) {
+				downforce_N = getLinpotDownforce(CANRX_DAQ_LINPOTS_LEFTS, false, rearSpringConstant, rearAngle_rad);
+			} else if (motor == MOTOR_RR) {
+				downforce_N = getLinpotDownforce(CANRX_DAQ_LINPOTS_RIGHTS, false, rearSpringConstant, rearAngle_rad);
+			}
+		}
+
     }
 
     // Multiply by the scale factor
@@ -824,32 +819,63 @@ float getMaxKappaCurrentState (
  * @brief Get the kappa setpoint for brake parallel regen
 */
 float getBrakeKappa(motorLocation_t motor, uint8_t brakePressurePsi_u8, float deadband) {
-    const bool parallelRegen = shouldActivateParallelRegen();
+    //const bool parallelRegen = shouldActivateParallelRegen(); // make sure to set this to true for the branch
     float brake_kappa = 0.0f;
 
-    if (parallelRegen) {
-        const float regen_percentage = (float)(getBrakeRegenStrength());
-        const float adjusted_brake_pressure = (((float) brakePressurePsi_u8) - deadband);
+    const float regen_percentage = (float)(getBrakeRegenStrength()); // regen percentage requested by DIM
+    const float adjusted_brake_pressure = (((float) brakePressurePsi_u8) - deadband);
+    
+    // check, dont allow negatives
+    if ((adjusted_brake_pressure - deadband) < 0) {
+        brake_kappa = 0.0f;
+    }
+    // brake pressure being translated into something that getKappaFxGlobalMax can use
 
-        // Convert from measured brake pressure to intended brake amount on a uint8_scale 
-        //  normalized_brake_pressure=255 indicates request of max brake torque available in LUT if achieveable as checked by getKappaMapped
-        const float slope_deg = regen_percentage * (90.0f / 100.0f); // map from percentage [0,100] -> to slope [0,90]
-        const float slope_rad = slope_deg * ((float) M_PI) / 180.0f;
-        float mapped_brake_pressure = adjusted_brake_pressure * tanf(slope_rad);
+    float scaled_brake_kappa = ((adjusted_brake_pressure - deadband) / (255 - deadband)) * regen_percentage;
+    const uint8_t normalized_brake_pressure = scaled_brake_kappa * 255;
 
-        // clamp results between 0 and cap_brake_psi
-        mapped_brake_pressure = fmaxf(mapped_brake_pressure, 0.0f);
-        mapped_brake_pressure = fminf(mapped_brake_pressure, cap_brake_psi - deadband);
-
-        // normalize -- to uint8 since getKappaByFx takes in a uint_8 throttlePos value
-        const uint8_t normalized_brake_pressure = (uint8_t) (mapped_brake_pressure / (cap_brake_psi - deadband) * 255.0f);
-
-        // get the kappa setpoint
-        if (normalized_brake_pressure > 0) {
-            brake_kappa = -(getKappaFxGlobalMax(motor, normalized_brake_pressure, false)).kappa; //TODO: Check if straight line bool can be always false
-        }
-    } else {
+	// get the kappa setpoint
+	if (normalized_brake_pressure > 0) {
+		brake_kappa = -(getKappaFxGlobalMax(motor, normalized_brake_pressure, false)).kappa; //TODO: Check if straight line bool can be always false // what?
+	} else {
         brake_kappa = 0.0f;
     }
     return brake_kappa;
+}
+
+/**
+ * @brief Get the torque setpoint for brake parallel regen
+*/
+int32_t getBrakeMaxTorque_mNm(motorLocation_t motor, uint8_t brakePressurePsi_u8) {
+
+    float desired_brake_torque_Nm = 0.0f;
+
+    const float regen_strength = ((float) getBrakeRegenStrength()) * 0.01f;
+    const float brake_strength = ((float) (brakePressurePsi_u8 - braking_threshold_psi)) / (UINT8_MAX - braking_threshold_psi);
+    const float combined_strength = regen_strength * brake_strength;
+    
+    const float max_regen_torque_Nm = 42.0f;
+    // combined_strength: [0, 1] -> [0Nm, 42Nm].
+    // Since brake pressure caps at ~180 psi, brake_strength caps at ~0.65.
+    // Hence, combined_strength caps at ~0.65, leading to a torque of ~27.3 Nm.
+    // Of course this is more than allowed, and the DIM config is expected to be tuned to accommodate this.
+
+    if (combined_strength <= 0)
+        return 0;
+    
+    desired_brake_torque_Nm = combined_strength * max_regen_torque_Nm;
+
+    const float max_brake_force_N = getKappaFxGlobalMax(motor, UINT8_MAX, false).Fx;
+    const float max_brake_torque_Nm = (max_brake_force_N * effective_wheel_rad_m) / gear_ratio;
+    // Clamping desired_brake_force_N as per tractive capacity.
+    desired_brake_torque_Nm = fminf(desired_brake_torque_Nm, max_brake_torque_Nm);
+
+    // Clamping desired_brake_torque_Nm as per motor limit.
+    desired_brake_torque_Nm = fminf(desired_brake_torque_Nm, maxTorque_continuous_stall_Nm);
+
+    return (int32_t)(-desired_brake_torque_Nm * 1000.0f);
+}
+
+float test() {
+	return 42.42f;
 }

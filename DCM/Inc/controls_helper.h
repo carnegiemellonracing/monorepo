@@ -24,23 +24,6 @@
 // ------------------------------------------------------------------------------------------------
 // constants
 
-extern const float maxTorque_Nm;
-extern const int16_t maxSpeed_rpm;
-
-extern const float maxSlowTorque_Nm;
-extern const int16_t maxSlowSpeed_rpm;
-
-extern const float maxMediumTorque_Nm;
-extern const int16_t maxMediumSpeed_rpm;
-
-extern const float maxFastTorque_Nm;
-extern const int16_t maxFastSpeed_rpm;
-
-extern const float chassis_a;
-extern const float chassis_b;
-extern const float chassis_w_f;
-extern const float chassis_w_r;
-
 extern const float braking_threshold_psi;
 
 extern const uint8_t brake_pressure_start;
@@ -59,7 +42,7 @@ float getPackCurrent();
 float getHVISensePackPower();
 float getMaxCellVoltage();
 float getMinCellVoltage();
-float swAngleDegToSteeringAngleRad(int16_t swAngle_deg);
+float swAngleMillidegToSteeringAngleRad(int16_t swAngle_deg);
 bool canTrustSBGVelocity(bool ignore_valid_bit);
 bool setRegen(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM);
 float getRegenTorqueReq(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8);

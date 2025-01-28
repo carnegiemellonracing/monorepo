@@ -1,54 +1,10 @@
+#include "constants.h"
+
 #include "controls_helper.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include <math.h>
 #include "motors.h"
-
-/** @brief Maximum motor torque
- * motor datasheet: "maximum torque 'Mmax': 21 Nm"
-*/
-const float maxTorque_Nm = 21.0f;
-
-/** @brief Maximum motor speed
- * motor datasheet: "no-load-speed 'No': 18617"
- * motor datasheet: "mech. speed limit 'Nmax': 20000"
- * AMK racing kit summary p.16: "Speed setpoint values are limited to 30000 rpm"
-*/
-const int16_t maxSpeed_rpm = 20000;
-
-/** @brief Maximum motor torque in slow gear */
-const float maxSlowTorque_Nm = 5.0f;
-
-/** @brief Maximum motor speed in slow gear. Roughly 10 MPH.
- *  @details WolframAlpha query: (convert 10mph to meters/second) /
- *                               (((convert 18 inches to meters) / rev) * (pi revolutions / rev)) *
- *                               (60 seconds / 1 minute) * (15 revolutions / rev)
- */
-const int16_t maxSlowSpeed_rpm = 1500;
-
-/** @brief Maximum motor torque in medium gear */
-const float maxMediumTorque_Nm = 10.5f;
-
-/** @brief Maximum motor speed in medium gear. Roughly 20m/s */
-const int16_t maxMediumSpeed_rpm = 13000;
-
-/** @brief Maximum motor torque in fast gear */
-const float maxFastTorque_Nm = 21.0f;
-
-/** @brief Maximum motor speed in fast gear */
-const int16_t maxFastSpeed_rpm = maxSpeed_rpm;
-
-/** @brief horizontal distance between the center of the front wheels and the origin of the SBG frame in meters */
-const float chassis_a = 0.775f;
-
-/** @brief horizontal distance between the center of the rear wheels and the origin of the SBG frame in meters*/
-const float chassis_b = 0.775f;
-
-/** @brief horizontal distance between the front wheels in meters */
-const float chassis_w_f = 0.625; //Confirm with CAD people
-
-/** @brief horizontal distance between the rear wheels in meters */
-const float chassis_w_r = 0.625; //Confirm with CAD people
 
 /** @brief  min brake pressure for starting to apply regen */
 const uint8_t brake_pressure_start = 50;
@@ -76,7 +32,7 @@ float Mz_calc(cmr_torqueDistributionNm_t *torque_req, float steering_angle_deg)
 	float cangle = cos(steering_angle_deg);
 
     //calculates Mz Nm from four torques
-	return (GEAR_RATIO / EFFECTIVE_WHEEL_RAD_M) 
+	return (gear_ratio / effective_wheel_rad_m) 
             * (torque_req->fl * chassis_a * sangle 
             + torque_req->fl * (chassis_w_f * 0.5f)  * cangle 
             + torque_req->fr * chassis_b * sangle 
@@ -132,9 +88,10 @@ float getMinCellVoltage() {
 /**
  * @brief Convert steering wheel angle to steering angle (the orientation of the front wheels)
  */
-float swAngleDegToSteeringAngleRad(int16_t swAngle_deg) {
-    const float steering_angle_deg = ((float)swAngle_deg); // convert steering wheel angle into steering angle SIKE BITCHED ALREADY GOT STEERING ANGLE
-    return steering_angle_deg * M_PI / 180.0f; // convert to rads
+float swAngleMillidegToSteeringAngleRad(int16_t swAngle_millideg) {
+    float steering_angle_deg = ((float)swAngle_millideg); // convert steering wheel angle into steering angle SIKE BITCHED ALREADY GOT STEERING ANGLE
+    float steering_angle_rad = steering_angle_deg * 0.001f * M_PI / 180.0f;
+    return  steering_angle_rad; // convert to rads
 }
 
 /**
@@ -148,8 +105,10 @@ bool canTrustSBGVelocity(bool ignore_valid_bit) {
     const uint32_t sbg_vel_valid = sbg_soln_status & CMR_CAN_SBG_SOL_VELOCITY_VALID;
     const bool sbg_timeout = cmr_canRXMetaTimeoutError(&canDaqRXMeta[CANRX_DAQ_SBG_STATUS_3], xTaskGetTickCount()) != 0;
 
-    return !sbg_timeout && (sbg_vel_valid || ignore_valid_bit);
+    return true;//!sbg_timeout && (sbg_vel_valid || ignore_valid_bit);
 }
+
+// REGEN SEGMENT
 
 // returns if regen was activated. Updates throttlePos_u8 in paddle regen
 bool setRegen(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM){
@@ -221,15 +180,16 @@ bool setPaddleRegen(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8, int32_
     if (paddle_pressure < paddle_pressure_start) return false;
 
     float paddle_request = ((float)(paddle_pressure - paddle_pressure_start)) * (((float) paddle_regen_strength) / (100.0f));
-    float pedal_request = ((float)(*throttlePos_u8)) - paddle_request;
+    float pedal_request = ((float)(*throttlePos_u8)) - paddle_request; // delta b/w throttle and regen
     
-    if (pedal_request >= 0.0f) {
+    if (pedal_request >= 0.0f) { 
         *throttlePos_u8 = (uint8_t) pedal_request;
         return false; 
     }
 
     // Regen due to paddles
-    *throttlePos_u8 = 0;
+    *throttlePos_u8 = 0; // avoid negative - wheel going backwards
+
 
     float reqTorque = maxFastTorque_Nm * pedal_request / ((float)(UINT8_MAX));
     float recuperative_limit = -21.0f;//getMotorRegenerativeCapacity(avgMotorSpeed_RPM);
@@ -239,7 +199,7 @@ bool setPaddleRegen(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8, int32_
         setTorqueLimsAllProtected(0.0f, reqTorque);
         setVelocityInt16All(0);
     } 
-    // Requested recuperation is even more negative than the limit
+    // Requested recuperation is even more negative than the limit i.e. "more than possible negative torque allowed"
     else {
         setTorqueLimsAllProtected(0.0f, recuperative_limit);
         setVelocityInt16All(0);
@@ -247,59 +207,88 @@ bool setPaddleRegen(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8, int32_
     return true;
 }
 
+static float test_local() {
+	return 42.42f;
+}
+
 bool setParallelRegen(uint8_t throttlePos_u8, uint8_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM) {
     
     // return if regen is not needed
-    if (brakePressurePsi_u8 < brake_pressure_start) return false;
+    if (brakePressurePsi_u8 < braking_threshold_psi) {
+        setVelocityInt16All(0);
+        return false;
+    }
 
     bool ret_val = true;
 
+    // DIM requested regen_force_multiplier
     uint8_t regen_force_multiplier_int8 = 80;//0;
     ret_val &= getProcessedValue(&regen_force_multiplier_int8, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer); 
-
-
-    // regen button unused due to endurance tuning throwing off drivers
-    // uint8_t dim_regen_buttons = !((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
 
     // process the max regen force requested:
     float regen_force_multiplier_f = (float)regen_force_multiplier_int8 / 100.0f;
 
+    // clamping multiplier from DIM
+    if (regen_force_multiplier_f > 1.0) {
+        regen_force_multiplier_f = 1.0;
+    }
+
     // process regen button max force:
     // float dim_regen_buttons_f = (float)dim_regen_buttons / 100.0f;
 
-    if(ret_val == false) return false;
-    if (regen_force_multiplier_int8 == 0) return false;
+    if(ret_val == false) {
+        setVelocityInt16All(0);
+        return false;
+    }
+    if (regen_force_multiplier_int8 == 0) {
+        setVelocityInt16All(0);
+        return false;
+    }
 
     // ******* END DIM CONFIG SETTINGS *********
 
 
     // get regen limit
-    float recuperative_limit = getMotorRegenerativeCapacity(avgMotorSpeed_RPM);
+    // what is this recuperative limit shit 
+
+    //float recuperative_limit = getMotorRegenerativeCapacity(avgMotorSpeed_RPM);
+    // yes but where is this value coming from??? 
+
     // this will overflow as brake pressure exceeds max regen pressure, that's why there is a clamp below
-    float regenTorque = maxFastTorque_Nm * regen_force_multiplier_f * ((float)brakePressurePsi_u8 - (float)brake_pressure_start);
 
-    if (regenTorque > maxFastTorque_Nm) {
-        regenTorque = maxFastTorque_Nm;
-    }
+    // get brake kappa for each motor and then run the following if checks against maxfasttorque and the capping max regen force
+    // task: find deadband
+    float regenTorque_FL = getBrakeMaxTorque_mNm(MOTOR_FL, brakePressurePsi_u8) * 0.001;
+    float regenTorque_FR = getBrakeMaxTorque_mNm(MOTOR_FR, brakePressurePsi_u8) * 0.001;
+    float regenTorque_RL = getBrakeMaxTorque_mNm(MOTOR_RL, brakePressurePsi_u8) * 0.001;
+    float regenTorque_RR = getBrakeMaxTorque_mNm(MOTOR_RR, brakePressurePsi_u8) * 0.001;
 
-    // cap max regen force
-    if (regenTorque > regen_force_multiplier_f * maxFastTorque_Nm) {
-        regenTorque = regen_force_multiplier_f * maxFastTorque_Nm;
-    }
-    
+    // debugging code
+    float debug = test();
+    float debug_local = test_local();
+    float temp = getKappaByFx(MOTOR_FL, throttlePos_u8, 300.0f, true);
 
-    // we want negative torque
-    regenTorque = regenTorque * -1.00f ;
+    // clamp torque to the scaled maximum
 
-    if (regenTorque > recuperative_limit) {
-        setTorqueLimsAllProtected(0.0f, regenTorque);
-        setVelocityInt16All(0);
-    }
+    // clamp to maintain within recuperative limit
+    // regenTorque_FL = fminf(regenTorque_FL, -recuperative_limit);
+    // regenTorque_FR = fminf(regenTorque_FR, -recuperative_limit);
+    // regenTorque_RL = fminf(regenTorque_RL, -recuperative_limit);
+    // regenTorque_RR = fminf(regenTorque_RR, -recuperative_limit);
 
-    // Requested recuperation is even more negative than the limit
-    else {
-        setTorqueLimsAllProtected(0.0f, recuperative_limit);
-        setVelocityInt16All(0);
-    }
+    cmr_torqueDistributionNm_t neg_torques = {
+        .fl = regenTorque_FL,
+        .fr = regenTorque_FR,
+        .rl = regenTorque_RL,
+        .rr = regenTorque_RR,  
+    };
+
+    // send torques!! 
+    setTorqueLimsProtected(NULL, &neg_torques);
+
+    // stop goin  
+    setVelocityInt16All(0);
+
+
     return true;
 }

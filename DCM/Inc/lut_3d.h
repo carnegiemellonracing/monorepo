@@ -21,6 +21,10 @@ float getMaxKappaCurrentState(motorLocation_t motor, bool assumeNoTurn);
 
 float getBrakeKappa(motorLocation_t motor, uint8_t brakePressurePsi_u8, float deadband);
 
+int32_t getBrakeMaxTorque_mNm(motorLocation_t motor, uint8_t brakePressurePsi_u8);
+
+float test();
+
 float getLUTMaxFx();
 
 #endif /* LUT_H */

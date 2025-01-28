@@ -26,7 +26,7 @@
 #include "i2c.h"
 #include "drs_controls.h"
 #include "controls_helper.h"
-#include "controls_23e.h"
+#include "controls.h"
 #include "sensors.h"
 
 extern volatile uint8_t currentParameters[MAX_MENU_ITEMS];

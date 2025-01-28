@@ -13,32 +13,25 @@
 #include "daq.h"
 #include "can.h"
 #include "motors.h"
+#include "constants.h"
 
 #include <math.h>
 #include <complex.h>
 
-// Gear ratio is defined as (TOP + BOTTOM) / (BOTTOM)
-static const int32_t GEAR_RATIO_TOP = 8784;
-static const int32_t GEAR_RATIO_BOT = 621;
-
-const float GEAR_RATIO = 13.93; //updated for 24e
-const float EFFECTIVE_WHEEL_DIA_M = 0.43; /** @brief effective wheel diameter */
-const float EFFECTIVE_WHEEL_RAD_M = EFFECTIVE_WHEEL_DIA_M * 0.5f; /** @brief effective wheel radius */
-
 int32_t motorRPMtoWheelRPM10(int16_t rpm) {
-    return (((int32_t) rpm) * 10 * GEAR_RATIO_BOT / (GEAR_RATIO_TOP + GEAR_RATIO_BOT));
+    return (((int32_t) rpm) * 10 * gear_ratio_bot / (gear_ratio_top + gear_ratio_bot));
 }
 
 float motorCurrentToTorque10(int16_t current) {
     static const float UNIT_TO_NM = 0.001701171875;
 
-    return ((float) current) * 10 * GEAR_RATIO * UNIT_TO_NM;
+    return ((float) current) * 10 * gear_ratio * UNIT_TO_NM;
 }
 
 float motorSetpointPercentToTorque10(int16_t sp) {
     static const float PCT10_TO_NM10 = 0.098;
 
-    return ((float) sp) * PCT10_TO_NM10 * GEAR_RATIO; 
+    return ((float) sp) * PCT10_TO_NM10 * gear_ratio; 
 }
 
 int16_t getMotorTorqueRequest(motorLocation_t motor) {
@@ -141,19 +134,19 @@ void daqPoseVelocity(cmr_canCDCPoseVelocity_t *poseVel) {
 }
 
 float carVelocityToWheelRPM(float vel) {
-    return (vel / (EFFECTIVE_WHEEL_DIA_M * M_PI)) * 60.0f;
+    return (vel / (effective_wheel_dia_m * M_PI)) * 60.0f;
 }
 
 float carVelocityToMotorRPM(float vel) {
-    return carVelocityToWheelRPM(vel) * GEAR_RATIO;
+    return carVelocityToWheelRPM(vel) * gear_ratio;
 }
 
 float wheelRPMToCarVelocity(float wheelRPM) {
-	return wheelRPM * (EFFECTIVE_WHEEL_DIA_M * M_PI) / 60.0f;
+	return wheelRPM * (effective_wheel_dia_m * M_PI) / 60.0f;
 }
 
 float motorRPMToCarVelocity(float wheelRPM) {
-    return wheelRPM * (EFFECTIVE_WHEEL_DIA_M * M_PI) / 60.0 / GEAR_RATIO;
+    return wheelRPM * (effective_wheel_dia_m * M_PI) / 60.0 / gear_ratio;
 }
 
 float estimateCarVelocityFromMotors() {
@@ -163,7 +156,7 @@ float estimateCarVelocityFromMotors() {
     	// speed += 5000;
     }
     speed /= MOTOR_LEN;   // Get average motor RPM
-    speed /= GEAR_RATIO;  // Convert to wheel RPM
+    speed /= gear_ratio;  // Convert to wheel RPM
     return wheelRPMToCarVelocity(speed);
 }
 

@@ -10,6 +10,7 @@
 
 #include "motors.h"         // Interface to implement
 #include "motors_helper.h"
+#include "constants.h"
 #include <math.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -18,7 +19,7 @@
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/config_screen_helper.h>
 #include <CMR/fir_filter.h>
-#include "controls_23e.h"
+#include "controls.h"
 #include "drs_controls.h"
 #include "servo.h"
 #include "can.h"
@@ -558,6 +559,10 @@ const cmr_canCDCSafetyFilterStates_t *getSafetyFilterInfo(){
 
 const cmr_canCDCMotorPower_t *getMotorPowerInfo(){
     return (const cmr_canCDCMotorPower_t*) &motorPower_state;
+}
+
+float getPowerLimit() {
+	return power_upper_limit_W;
 }
 
 void setPowerLimit(uint8_t limit) {

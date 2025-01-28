@@ -6,6 +6,7 @@
  */
 
 #include "motors_helper.h"
+#include "constants.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -109,7 +110,7 @@ float rpmToRadps(float rpm) {
 
 /** @brief Convert motor speed (in rad/s) to wheel linear speed (in m/s) */
 float motorSpeedToWheelLinearSpeed_mps(float motor_speed_radps) {
-    return motor_speed_radps / GEAR_RATIO * EFFECTIVE_WHEEL_RAD_M;
+    return motor_speed_radps / gear_ratio * effective_wheel_rad_m;
 }
 
 /**

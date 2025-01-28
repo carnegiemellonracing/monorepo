@@ -9,6 +9,7 @@
 // Includes 
 
 #include "motors.h"         // Interface to implement
+#include "constants.h"
 #include <math.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -17,12 +18,13 @@
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/config_screen_helper.h>
 #include <CMR/fir_filter.h>
-#include "controls_23e.h"
+#include "controls.h"
 #include "drs_controls.h"
 #include "servo.h"
 #include "can.h"
 #include "daq.h"
 #include "safety_filter.h"
+#include "lut_3d.h"
 
 // ------------------------------------------------------------------------------------------------
 // Constants
@@ -190,7 +192,6 @@ static void motorsCommand (
         volatile cmr_canFSMData_t        *dataFSM      = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
         volatile cmr_canHVCPackVoltage_t *voltageHVC   = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
         volatile cmr_canHVCPackCurrent_t *currentHVC   = canVehicleGetPayload(CANRX_VEH_CURRENT_HVC);
-        volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
 
         uint32_t throttle;
 
@@ -225,13 +226,15 @@ static void motorsCommand (
                         dataFSM    -> throttlePosition,
                         dataFSM    -> brakePressureFront_PSI,
                         dataFSM    -> steeringWheelAngle_millideg);
+
+        // Tests.
+        uint8_t brake_pressure = 63;
+        kappaAndFx temp = getKappaFxGlobalMax(MOTOR_FR, brake_pressure, false);
+        int test_torque = getBrakeMaxTorque_mNm(MOTOR_FL, brake_pressure);
                               
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
             case CMR_CAN_RTD: {
-            	mcCtrlOn();
-            	fansOn();
-            	pumpsOn();
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv = CMR_CAN_AMK_CTRL_HV_EN  |
                                                    CMR_CAN_AMK_CTRL_INV_ON |
@@ -307,9 +310,6 @@ static void motorsCommand (
 
             // Reset errors in HV_EN
             case CMR_CAN_HV_EN: {
-            	mcCtrlOn();
-            	fansOn();
-            	pumpsOn();
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = CMR_CAN_AMK_CTRL_HV_EN |
                                                            CMR_CAN_AMK_CTRL_ERR_RESET;
@@ -317,6 +317,7 @@ static void motorsCommand (
                     motorSetpoints[i].torqueLimPos_dpcnt = 0;
                     motorSetpoints[i].torqueLimNeg_dpcnt = 0;
                 }
+
 
                 // set status so DIM can see
                 setControlsStatus(reqDIM->requestedGear);
@@ -327,15 +328,6 @@ static void motorsCommand (
 
             // Also reset errors in GLV_ON
             case CMR_CAN_GLV_ON: {
-            	mcCtrlOff();
-                
-
-                if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
-                    mcCtrlOn();
-                }
-                
-            	fansOff();
-            	pumpsOff();
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = CMR_CAN_AMK_CTRL_ERR_RESET;
                     motorSetpoints[i].velocity_rpm       = 0;
@@ -487,12 +479,12 @@ void setTorqueLimsUnprotected (
     float torqueLimNeg_Nm
 ) {
 
+	TickType_t current_time = xTaskGetTickCount();
+		motor_command_update_timestamps[motor].torque_update_timestamp = current_time;
+
     if (motor >= MOTOR_LEN) {
         return;
     }
-
-    TickType_t current_time = xTaskGetTickCount();
-    motor_command_update_timestamps[motor].torque_update_timestamp = current_time;
 
     /** Check feasibility with field weakening (page 38 manual) */
 
@@ -512,13 +504,15 @@ void setTorqueLimsUnprotected (
 void setVelocityInt16 (
     motorLocation_t motor,
     int16_t velocity_rpm
+
 ) {
+	TickType_t current_time = xTaskGetTickCount();
+	motor_command_update_timestamps[motor].velocity_update_timestamp = current_time;
+
+
     if (motor >= MOTOR_LEN) {
         return;
     }
-
-    TickType_t current_time = xTaskGetTickCount();
-	motor_command_update_timestamps[motor].velocity_update_timestamp = current_time;
 
     if (velocity_rpm > maxSpeed_rpm) {
         velocity_rpm = maxSpeed_rpm;

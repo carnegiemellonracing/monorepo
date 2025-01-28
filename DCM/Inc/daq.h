@@ -11,11 +11,6 @@
 #include <CMR/can_types.h>
 #include <CMR/can_ids.h>
 
-/** @brief Gear ratio from motors to wheels. */
-extern const float GEAR_RATIO;
-extern const float EFFECTIVE_WHEEL_DIA_M; /** @brief effective wheel diameter */
-extern const float EFFECTIVE_WHEEL_RAD_M; /** @brief effective wheel radius */
-
 void daqWheelSpeedFeedback(cmr_canCDCWheelVelocity_t *speedFeedback);
 void daqWheelTorqueFeedback(cmr_canCDCWheelTorque_t *torqueFeedback);
 void daqWheelSpeedSetpoints(cmr_canCDCWheelVelocity_t *speedSetpoint);

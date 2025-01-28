@@ -5,11 +5,11 @@
  * @author Carnegie Mellon Racing
  */
 
-#ifndef CONTROLS_32E_H
-#define CONTROLS_32E_H
+#ifndef CONTROLS_H
+#define CONTROLS_H
 
 #define ASSUME_NO_TURN true
-#define BUTTON_ACT 0b1000000
+#define BUTTON_ACT 0b00000001
 #define BUTTON_ACK 0b10000000
 #define BUTTON_PTT 0b100000
 #define BUTTON_SCRN 0b10000
@@ -24,8 +24,9 @@
 // ------------------------------------------------------------------------------------------------
 // Gear functions forward declarations
 
-void setSlowTorque(uint8_t throttlePos_u8);
+void setSlowTorque(uint8_t throttlePos_u8, int16_t swAngle_deg);
 void setFastTorque(uint8_t throttlePos_u8);
+float getYawRateControlLeftRightBias(int16_t swAngle_millideg);
 void setTractionControl(uint8_t throttlePos_u8, uint8_t brakePressurePsi_u8, int16_t swAngle_deg, float leftRightBias_Nm,
     bool assumeNoTurn, bool ignoreYawRate, bool allowRegen, float critical_speed_mps);
 void setYawRateControl (
@@ -48,14 +49,6 @@ void setEnduranceTestTorque(
     int32_t battCurrent_mA,
     uint8_t brakePressurePsi_u8,
     bool clampbyside
-);
-bool setCVXGENSolver(
-    uint8_t throttlePos_u8,
-    uint8_t brakePressurePsi_u8,
-    int16_t swAngle_deg,
-    bool enable_Regen,
-    bool timing_Test,
-	bool assumeNoTurn
 );
 
 // ------------------------------------------------------------------------------------------------
@@ -80,9 +73,11 @@ extern volatile cmr_can_front_whl_speed_setpoint_t frontWhlSetpoints;
 extern volatile cmr_can_rear_whl_speed_setpoint_t rearWhlSetpoints;
 extern volatile cmr_can_front_whl_velocity_t frontWhlVelocities;
 extern volatile cmr_can_rear_whl_velocity_t rearWhlVelocities;
-extern volatile cmr_can_CVXGEN_info_t solverInfo;
-extern volatile cmr_canCDCWheelTorque_t solverTorques;
-extern volatile cmr_can_CVXGEN_counter_t nonConvergenceCounter;
+extern volatile cmr_can_front_whl_slip_angle_t frontWhlSlipAngles;
+extern volatile cmr_can_solver_inputs_t solver_inputs;
+extern volatile cmr_can_solver_aux_t solver_aux;
+extern volatile cmr_canCDCWheelTorque_t solver_torques;
+extern volatile cmr_can_solver_settings_t solver_settings;
 extern volatile cmr_canCDCKiloCoulombs_t coulombCounting;
 
 extern volatile bool use_true_downforce;
