@@ -19,11 +19,11 @@
 #include "lut_3d.h"
 #include "safety_filter.h"
 #include "CMR/can_types.h"
-#include "optimizer/optimizer.h"
+#include "../optimizer/optimizer.h"
 
 #define PI 3.1415926535897932384626
 
-#define X1000_INT16(x) ((int16_t)(x * 1000.0f))
+#define X1000_INT16(x) ((int16_t)((float)x * 1000.0f))
 
 
 // ------------------------------------------------------------------------------------------------
@@ -80,7 +80,7 @@ static void initYawRateControl() {
     // read yrc_kp from DIM
     yrc_kp = 0.0f;
     getProcessedValue(&yrc_kp, YRC_KP_INDEX, float_1_decimal);
-    
+
     yrc_kp = yrc_kp*100.0f;
     // yrc_kp = 200;
     //yrcDebug = getPidDebug();
@@ -144,11 +144,11 @@ void setControlsStatus(cmr_canGear_t gear) {
             break;
         case CMR_CAN_GEAR_ACCEL:
             controlsStatus.tcOn = (uint8_t)true;
-            controlsStatus.yrcOn = (uint8_t)false;            
+            controlsStatus.yrcOn = (uint8_t)false;
             break;
         case CMR_CAN_GEAR_TEST:
             controlsStatus.tcOn = (uint8_t)true;
-            controlsStatus.yrcOn = (uint8_t)true;           
+            controlsStatus.yrcOn = (uint8_t)true;
             break;
         case CMR_CAN_GEAR_REVERSE:
             controlsStatus.tcOn = (uint8_t)false;
@@ -158,7 +158,7 @@ void setControlsStatus(cmr_canGear_t gear) {
             controlsStatus.tcOn = (uint8_t)false;
             controlsStatus.yrcOn = (uint8_t)false;
             break;
-    } 
+    }
 }
 
 /** @brief get the a read-only pointer to controlsStatus */
@@ -172,7 +172,7 @@ static float get_motor_regen_capacity(float wheelspeed_radps) {
 }
 
 static inline void set_motor_speed_and_torque(
-    motorLocation_t motor, 
+    motorLocation_t motor,
     float val,
     cmr_torqueDistributionNm_t *torquesPos_Nm,
     cmr_torqueDistributionNm_t *torquesNeg_Nm
@@ -228,7 +228,7 @@ static inline void set_motor_speed_and_torque(
 }
 
 /**
- * @param normalized_throttle A value in [-1, 1]. 
+ * @param normalized_throttle A value in [-1, 1].
  * In [0, 1] if without regen.
  */
 static void set_optimal_control(
@@ -307,7 +307,7 @@ static void set_optimal_control(
     // Logging solver inputs.
 	solver_inputs.lin_accel_Nm = optimizer_state.areq;
 	solver_inputs.moment_req_Nm = optimizer_state.mreq;
-    
+
     // Logging solver aux.
 	solver_aux.combined_normalized_throttle = X1000_INT16(normalized_throttle);
 	solver_aux.allow_regen = allow_regen;
@@ -329,7 +329,7 @@ static void set_optimal_control(
         setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
         // The API for setting speeds and torques is not optimal.
         // It should allow setting velocities the same way as setting torques, by passing a struct.
-        
+
     } else {
 
         torquesPos_Nm.fl = optimizer_state.optimal_assignment[0].val;
@@ -363,7 +363,7 @@ void runControls (
     cmr_canGear_t gear,
     uint8_t throttlePos_u8,
     uint8_t brakePos_u8,
-    uint8_t brakePressurePsi_u8, 
+    uint8_t brakePressurePsi_u8,
     int16_t swAngle_millideg,
     int32_t battVoltage_mV,
     int32_t battCurrent_mA,
@@ -388,7 +388,7 @@ void runControls (
         + (int32_t)(amkAct1RL->velocity_rpm)
         + (int32_t)(amkAct1RR->velocity_rpm)
     ) / MOTOR_LEN;
-    
+
     // Update odometer
     /* Wheel Speed to Vehicle Speed Conversion
     *      (x rotations / 1min) * (16" * PI) *  (2.54*10^-5km/inch)
@@ -415,7 +415,7 @@ void runControls (
             // const bool ignoreYawRate = false; // TC takes yaw rate into account to prevent the vehicle from stopping unintendedly when turning at low speeds
             // const bool allowRegen = true; // regen-braking is allowed to protect the AC by keeping charge level high
             // const float critical_speed_mps = 5.0f; // using a high value to prevent the vehicle from stopping unintendedly when turning at low speeds
-            const bool clampbyside = true; 
+            const bool clampbyside = true;
             setYawRateControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, clampbyside);
             //setYawRateAndTractionControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
             break;
@@ -442,19 +442,19 @@ void runControls (
             uint8_t paddle_regen_strength_raw = 100;
             getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
             float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
-            
+
             float paddle_request = 0.0f;
             if (paddle_pressure > paddle_pressure_start) {
                 paddle_request = ((float)(paddle_pressure - paddle_pressure_start)) / (UINT8_MAX - paddle_pressure_start);
                 paddle_request *= paddle_regen_strength; // [0, 1].
-            } 
+            }
 
             float throttle = (float)throttlePos_u8 / UINT8_MAX;
             float combined_request = throttle - paddle_request; // [0, 1].
             set_optimal_control(combined_request, swAngle_millideg, true);
             break;
         }
-        
+
         case CMR_CAN_GEAR_REVERSE: {
             // for rule-compliance, the car shouldn't reverse
             setTorqueLimsAllProtected(0.0f, 0.0f);
@@ -564,7 +564,7 @@ void setSlowTorque (
     // setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
     // setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
 
-    // Testing motors one by one 
+    // Testing motors one by one
 //    motorLocation_t active_motor = MOTOR_FR;
 //    for(int i = 0; i < MOTOR_LEN; i++) {
 //    	setTorqueLimsUnprotected(i, reqTorque, 0.0f);
@@ -594,7 +594,7 @@ void setFastTorqueWithParallelRegen(uint8_t brakePressurePsi_u8, uint8_t throttl
 {
     if (brakePressurePsi_u8 >= braking_threshold_psi) {
         bool activateParallelRegen = false;
-        
+
         volatile cmr_canRXMeta_t *timeoutMsg = canVehicleGetMeta(CANRX_VEH_DIM_ACTION_BUTTON);
         if(cmr_canRXMetaTimeoutError(timeoutMsg, xTaskGetTickCount()) != (-1)) {
 
@@ -620,7 +620,7 @@ void setFastTorqueWithParallelRegen(uint8_t brakePressurePsi_u8, uint8_t throttl
 
 /**
  * @brief Calculates the relative speeds between each wheel and the ground
- * 
+ *
  * @param steering_ang_fl Steering angle of the front-left wheel
  * @param steering_ang_fr Steering angle of the front-right wheel
  * @param longitudinal_velocity_mps The longitudinal velocity of the vehicle
@@ -661,7 +661,7 @@ static void update_whl_vels_and_angles (
 
 /**
  * @brief Calculates the wheel speed setpoints
- * 
+ *
  * @param slip_ratio_* The slip ratio of a wheel
  * @param steering_ang_fl Steering angle of the front-left wheel
  * @param steering_ang_fr Steering angle of the front-right wheel
@@ -675,10 +675,10 @@ static void update_whl_speed_setpoint (
     float slip_ratio_fr,
     float slip_ratio_rl,
     float slip_ratio_rr,
-    float steering_ang_fl, 
-    float steering_ang_fr, 
+    float steering_ang_fl,
+    float steering_ang_fr,
     float longitudinal_velocity_mps,
-    float lateral_velocity_mps, 
+    float lateral_velocity_mps,
     float yaw_rate_radps_sae,
     float critical_speed_mps
 ) {
@@ -778,7 +778,7 @@ void setLaunchControl(
 
     // Not braking, throttle engaged, no button pressed, launch control is active.
     if (brakePressurePsi_u8 < braking_threshold_psi && throttlePos_u8 > 0 && !action_button_pressed && launchControlActive) {
-        // swAngle_millideg = 0 means assume no turn. 
+        // swAngle_millideg = 0 means assume no turn.
         set_optimal_control((float) throttlePos_u8 / UINT8_MAX, 0, false);
     }
 }
@@ -827,7 +827,7 @@ void setTractionControl (
     /** @brief Ease in torque based on throttle position, ignored if traction_control_mode is TC_MODE_TORQUE */
     static const bool ease_in_torque = false;
 
-    /** @brief Torque saturation point, IGNORED if ease_in_torque is false or traction_control_mode is TC_MODE_TORQUE 
+    /** @brief Torque saturation point, IGNORED if ease_in_torque is false or traction_control_mode is TC_MODE_TORQUE
      *  @note For example, 0.25 will raise the torque limit to max when throttle is more than 25%
      */
     static const float ease_in_torque_saturation_point = 0.25f;
@@ -888,7 +888,7 @@ void setTractionControl (
 
     cmr_torqueDistributionNm_t pos_torques_Nm = {.fl = 0.0f, .fr = 0.0f, .rl = 0.0f, .rr = 0.0f};
     cmr_torqueDistributionNm_t neg_torques_Nm = {.fl = 0.0f, .fr = 0.0f, .rl = 0.0f, .rr = 0.0f};
-    
+
     // launch control
     bool inhibit_throttle = false;
     const float nonnegative_odometer_velocity_mps = motorSpeedToWheelLinearSpeed_mps(getTotalMotorSpeed_radps() * 0.25f);
@@ -902,7 +902,7 @@ void setTractionControl (
         switch (traction_control_mode) {
             default: // default to torque-mapped mode if traction_control_mode is not valid
             case TC_MODE_TORQUE: { // torque-mapped mode, retrieve the local max slip ratio setpoints
-                frontSlipRatios.slipRatio_FL = getMaxKappaCurrentState(MOTOR_FL, assumeNoTurn); 
+                frontSlipRatios.slipRatio_FL = getMaxKappaCurrentState(MOTOR_FL, assumeNoTurn);
                 frontSlipRatios.slipRatio_FR = getMaxKappaCurrentState(MOTOR_FR, assumeNoTurn);
                 rearSlipRatios.slipRatio_RL = getMaxKappaCurrentState(MOTOR_RL, assumeNoTurn);
                 rearSlipRatios.slipRatio_RR = getMaxKappaCurrentState(MOTOR_RR, assumeNoTurn);
@@ -929,7 +929,7 @@ void setTractionControl (
                     traction_rl = min_traction_back;
                     traction_rr = min_traction_back;
                 }
-                
+
                 frontSlipRatios.slipRatio_FL = getKappaByFx(MOTOR_FL, throttlePos_u8, traction_fl, ASSUME_NO_TURN);
                 frontSlipRatios.slipRatio_FR = getKappaByFx(MOTOR_FR, throttlePos_u8, traction_fr, ASSUME_NO_TURN);
                 rearSlipRatios.slipRatio_RL = getKappaByFx(MOTOR_RL, throttlePos_u8, traction_rl, ASSUME_NO_TURN);
@@ -994,7 +994,7 @@ void setTractionControl (
         // leave positive torques at 0 when breaking to avoid going against the mechanical breaks
         // set negative torques according to left-right bias
         const float brake_neg_torque_Nm = -maxFastTorque_Nm; /** @todo allow configuration of regen torque via DIM */
-        // WHY??? 
+        // WHY???
         leftRightBias_Nm = fminf(leftRightBias_Nm, -brake_neg_torque_Nm); // ensures leftRightBias_Nm <= -brake_neg_torque_Nm
         leftRightBias_Nm = fmaxf(leftRightBias_Nm, brake_neg_torque_Nm); // ensures leftRightBias_Nm >= brake_neg_torque_Nm
         const float left_neg_torque_Nm = fminf(brake_neg_torque_Nm - leftRightBias_Nm, 0.0f);
@@ -1055,7 +1055,7 @@ float getYawRateControlLeftRightBias(int16_t swAngle_millideg) {
     const float distance_between_axles_m = chassis_a + chassis_b;
     const float yaw_rate_setpoint_radps = steering_angle_rad * forward_velocity_nonnegative_mps /
         (distance_between_axles_m + forward_velocity_nonnegative_mps * forward_velocity_nonnegative_mps * natural_understeer_gradient);
-        
+
     yrcDebug.controls_target_yaw_rate = (int16_t)(1000.0f * yaw_rate_setpoint_radps);
     yrcDebug.controls_current_yaw_rate = (int16_t)(1000.0f * yaw_rate_radps_sae);
     if (!canTrustSBGVelocity(trust_sbg_vels_when_invalid)) {
@@ -1093,7 +1093,7 @@ void setYawRateControl (
 
     // calculate left-right torque bias, positive values increase torque output on the right side and decreases that on the left side
     float left_right_torque_bias_Nm = getYawRateControlLeftRightBias(swAngle_millideg) * 0.5f; // halved because the bias will be applied to two wheels per side
-    
+
     left_right_torque_bias_Nm = fminf(left_right_torque_bias_Nm, throttle_pos_torque_Nm); // ensures left_right_torque_bias_Nm <= throttle_pos_torque_Nm
     left_right_torque_bias_Nm = fmaxf(left_right_torque_bias_Nm, -throttle_pos_torque_Nm); // ensures left_right_torque_bias_Nm >= -throttle_pos_torque_Nm
 
@@ -1134,7 +1134,7 @@ void setYawRateControl (
         // float rearWhlAvgVelocity_mps = (rearWhlVelocity_RL_mps + rearWhlVelocity_RR_mps) / 2.0f;
         // float frontWhlTargetVelocity_mps = rearWhlAvgVelocity_mps + 0.1f;
         // float frontWheelVelocityRPM = gear_ratio * 60.0f * frontWhlTargetVelocity_mps / (2 * M_PI * effective_wheel_rad_m);
-        
+
         float clamped_FL_RPM = fminf(rearWhlVelocity_RL_RPM*1.12f     , (rearWhlVelocity_RR_RPM)*1.12f+3000) + 0.1f;
         float clamped_FR_RPM = fminf((rearWhlVelocity_RL_RPM*1.12f)+3000, rearWhlVelocity_RR_RPM*1.12f) + 0.1f;//why? slip ratio vibes
 
@@ -1191,7 +1191,7 @@ void setCruiseControlTorque (
     static uint16_t cruiseVelocity = 0;
 
     bool action1 = (((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->buttons) & BUTTON_ACT;
-    
+
     if (throttlePos_u8 == 0 || brakePressurePsi_u8 >= 40) {
         cruiseControl = false;
         cruiseVelocity = 0;
@@ -1242,7 +1242,7 @@ void setEnduranceTorque (
     uint8_t pedal_regen_strength = 0;
     getProcessedValue(&pedal_regen_strength, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
     const float regentPcnt_f = ((float)pedal_regen_strength) * 1e-2; // convert a coefficient between 0 and 1
-    
+
     int32_t pedal_request = (int32_t)throttlePos_u8;
     if (regen_button_pressed) {
         // Pressing button equal to a bit over 30% on brake pedal
@@ -1287,7 +1287,7 @@ void setEnduranceTorque (
         reqTorque = fmaxf(reqTorque, 0.0f);
         setTorqueLimsAllProtected(reqTorque, 0.0f);
         setVelocityInt16All(maxFastSpeed_rpm);
-    } 
+    }
     // Regen button not pressed, set zero torque
     else if (!regen_button_pressed) {
         setTorqueLimsAllProtected(0.0f, 0.0f);
@@ -1297,7 +1297,7 @@ void setEnduranceTorque (
     else if (reqTorque > recuperative_limit) {
         setTorqueLimsAllProtected(0.0f, reqTorque);
         setVelocityInt16All(0);
-    } 
+    }
     // Requested recuperation is even more negative than the limit
     else {
         setTorqueLimsAllProtected(0.0f, recuperative_limit);
@@ -1372,7 +1372,7 @@ void setEnduranceTestTorque(
     else if (reqTorque > recuperative_limit) {
         setTorqueLimsAllProtected(0.0f, reqTorque);
         setVelocityInt16All(0);
-    } 
+    }
     // Requested recuperation is even more negative than the limit
     else {
         setTorqueLimsAllProtected(0.0f, recuperative_limit);

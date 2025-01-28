@@ -132,27 +132,23 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/brakelight.c
     ${CMAKE_SOURCE_DIR}/Src/can.c
     ${CMAKE_SOURCE_DIR}/Src/cmr_error.c
-    ${CMAKE_SOURCE_DIR}/Src/controls_23e.c
     ${CMAKE_SOURCE_DIR}/Src/controls_helper.c
-    ${CMAKE_SOURCE_DIR}/Src/cvxgen_interface.c
+    ${CMAKE_SOURCE_DIR}/Src/controls.c
     ${CMAKE_SOURCE_DIR}/Src/daq.c
     ${CMAKE_SOURCE_DIR}/Src/drs_controls.c
     ${CMAKE_SOURCE_DIR}/Src/fans.c
     ${CMAKE_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_SOURCE_DIR}/Src/i2c.c
-    ${CMAKE_SOURCE_DIR}/Src/imu.c
     ${CMAKE_SOURCE_DIR}/Src/lut_3d.c
     ${CMAKE_SOURCE_DIR}/Src/main.c
     ${CMAKE_SOURCE_DIR}/Src/mc_power.c
     ${CMAKE_SOURCE_DIR}/Src/motor_efficiency.c
     ${CMAKE_SOURCE_DIR}/Src/motors_helper.c
     ${CMAKE_SOURCE_DIR}/Src/motors.c
-    ${CMAKE_SOURCE_DIR}/Src/osqp_interface.c
     ${CMAKE_SOURCE_DIR}/Src/pumps.c
     ${CMAKE_SOURCE_DIR}/Src/safety_filter.c
     ${CMAKE_SOURCE_DIR}/Src/sensors.c
     ${CMAKE_SOURCE_DIR}/Src/servo.c
-    ${CMAKE_SOURCE_DIR}/Src/spi.c
     ${CMAKE_SOURCE_DIR}/Src/syscalls.c
     ${CMAKE_SOURCE_DIR}/Src/sysmem.c
 )

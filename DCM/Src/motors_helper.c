@@ -21,7 +21,7 @@
 const float torqueIncrement_Nm = 0.0098f;
 
 /** @brief Constant factor for transforming motor RPM to induced voltage.
- * 
+ *
  *  @details See motor manual page 37
  */
 const float rpm_to_mV_factor = 0.026587214972f;
@@ -104,7 +104,7 @@ bool isMotorDataValid(motorLocation_t motor) {
 
 /** @brief Convert rpm to rad/s*/
 float rpmToRadps(float rpm) {
-    static const float radps_per_rpm = 2.0f * M_PI / 60.0f;
+    static const float radps_per_rpm = 2.0f * (float)M_PI / 60.0f;
     return rpm * radps_per_rpm;
 }
 
@@ -163,12 +163,12 @@ float getMinMotorSpeed_radps() {
  * Uses inverter-reported magnetization current and torque current to calculate total current,
  * which is multiplied with pack voltage to calculate power
  * @bug This is incorrect because the output voltage of the inverters, that is the voltage across the motors, is not the AC voltage
- * 
+ *
  * @param motor the ID of the motor
  * @param pack_voltage_V the pack voltage
  */
 float getMotorPower(motorLocation_t motor, float pack_voltage_V) {
-    static const float RAW_CURRENT_TO_A = 0.00654297f; 
+    static const float RAW_CURRENT_TO_A = 0.00654297f;
 
     const float torque_current_A = (float)(getMotorActualValues1(motor)->torqueCurrent_raw) * RAW_CURRENT_TO_A;
     const float magnetization_current_A = (float)(getMotorActualValues1(motor)->magCurrent_raw) * RAW_CURRENT_TO_A;
@@ -187,14 +187,19 @@ float getLoadByIndex(const cmr_loadDistribution_t *loads, size_t motor) {
     switch (motor) {
         case MOTOR_FL:
             load = loads->fl;
+            break;
         case MOTOR_FR:
             load = loads->fr;
+            break;
         case MOTOR_RL:
             load = loads->rl;
+            break;
         case MOTOR_RR:
             load = loads->rr;
+            break;
         default:
             load = 0.0f;
+            break;
     }
     return fmaxf(load, 0.0f);
 }
@@ -256,7 +261,7 @@ float getMotorRegenerativeCapacity(int32_t rpm) {
 
 /**
  * @brief returns true if AC voltage is under ~590
- * 
+ *
  * Need to test
  */
 bool overVoltProtection() {
@@ -276,7 +281,7 @@ bool overVoltProtection() {
         voltage_V = (int32_t) fmaxf(battVoltage_V, hvVoltage_V);
     }
 
-    // Returns false voltage is above threshold 
+    // Returns false voltage is above threshold
     if (voltage_V >= upperVoltageLimit_V) {
         return false;
     }

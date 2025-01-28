@@ -6,7 +6,7 @@
  */
 
 // ------------------------------------------------------------------------------------------------
-// Includes 
+// Includes
 
 #include "motors.h"         // Interface to implement
 #include "constants.h"
@@ -179,7 +179,7 @@ static void motorsCommand (
 
     cmr_canState_t prevState = CMR_CAN_GLV_ON;
 
-    /** @brief Timer for temporarily blanking vel/torque commands 
+    /** @brief Timer for temporarily blanking vel/torque commands
      *         on transition to RTD. Without this, the inverter may have
      *         non-zero torque/speed in the same message used to enable it,
      *         which would cause the inverter to refuse to enable.  */
@@ -193,7 +193,6 @@ static void motorsCommand (
         volatile cmr_canHVCPackVoltage_t *voltageHVC   = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
         volatile cmr_canHVCPackCurrent_t *currentHVC   = canVehicleGetPayload(CANRX_VEH_CURRENT_HVC);
 
-        uint32_t throttle;
 
         //transmit Coulombs using HVI sense
         integrateCurrent();
@@ -231,7 +230,7 @@ static void motorsCommand (
         uint8_t brake_pressure = 63;
         kappaAndFx temp = getKappaFxGlobalMax(MOTOR_FR, brake_pressure, false);
         int test_torque = getBrakeMaxTorque_mNm(MOTOR_FL, brake_pressure);
-                              
+
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
             case CMR_CAN_RTD: {
@@ -286,22 +285,12 @@ static void motorsCommand (
             		}
 
             	}
-                //taskEXIT_CRITICAL();
-
-                TickType_t endTime = xTaskGetTickCount();
-
-                uint32_t total_ticks = DWT->CYCCNT - au32_initial_ticks;
-                uint32_t microsecs = total_ticks*1000000/HAL_RCC_GetHCLKFreq();
-
-
-
-                //canTX(CMR_CAN_BUS_VEH, 0x7F9, &microsecs, 4, 5);
 
 
                 // Throttle pos is used instead of torque requested bc torque
                 // requested is always 0 unless in RTD (this allows drivers to
                 // test DRS implementation without being in RTD)
-                
+
                 // set status so DIM can see
                 setControlsStatus(gear);
 
@@ -370,19 +359,12 @@ static void motorsCommand (
 /**
  * @brief Initializes motor interface.
  */
-void motorsInit (
-    void
-) {
+void motorsInit(void) {
     initControls();
 
     // Task creation.
-    cmr_taskInit(
-        &motorsCommand_task,
-        "motorsCommand",
-        motorsCommand_priority,
-        motorsCommand,
-        NULL
-    );
+    cmr_taskInit(&motorsCommand_task, "motorsCommand", motorsCommand_priority,
+                 motorsCommand, NULL);
 }
 
 /**
@@ -428,7 +410,7 @@ void setTorqueLimNeg (
  * @param torqueLimNeg_Nm Desired negative torque limit.
  */
 void setTorqueLimsAllProtected (
-    float torqueLimPos_Nm, 
+    float torqueLimPos_Nm,
     float torqueLimNeg_Nm
 ) {
     setTorqueLimsAllDistProtected(torqueLimPos_Nm, torqueLimNeg_Nm, NULL, NULL);
@@ -474,8 +456,8 @@ void setTorqueLimsAllDistProtected (
  * @param torqueLimNeg_Nm Desired negative torque limit.
  */
 void setTorqueLimsUnprotected (
-    motorLocation_t motor, 
-    float torqueLimPos_Nm, 
+    motorLocation_t motor,
+    float torqueLimPos_Nm,
     float torqueLimNeg_Nm
 ) {
 
@@ -491,7 +473,7 @@ void setTorqueLimsUnprotected (
     torqueLimPos_Nm = fmaxf(torqueLimPos_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
     torqueLimNeg_Nm = fminf(torqueLimNeg_Nm, 0.0f); // ensures torqueLimNeg_Nm <= 0
 
-    motorSetpoints[motor].torqueLimPos_dpcnt = convertNmToAMKTorque(torqueLimPos_Nm); 
+    motorSetpoints[motor].torqueLimPos_dpcnt = convertNmToAMKTorque(torqueLimPos_Nm);
     motorSetpoints[motor].torqueLimNeg_dpcnt = convertNmToAMKTorque(torqueLimNeg_Nm);
 }
 
@@ -570,7 +552,7 @@ void setVelocityFloatAll (
 
 /**
  * @brief Calculate the torque budget for power-aware traction and yaw rate control.
- * 
+ *
  * @return The torque upper- and lower-limits for a motor, which applies to every motor.
  */
 cmr_torque_limit_t getTorqueBudget() {
