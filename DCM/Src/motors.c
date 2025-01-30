@@ -30,7 +30,7 @@
 // Constants
 
 /** @brief Motors command 200 Hz priority */
-static const uint32_t motorsCommand_priority = 7;
+static const uint32_t motorsCommand_priority = 6;
 
 /** @brief Motors command 200 Hz period (milliseconds) */
 static const TickType_t motorsCommand_period_ms = 5;
