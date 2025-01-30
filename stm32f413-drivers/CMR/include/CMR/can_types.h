@@ -468,6 +468,13 @@ typedef struct {
     int32_t packPower_W;
 } cmr_canHVIHeartbeat_t;
 
+//Power Sense Board CAN Types
+typedef struct {
+    int16_t packCurrent_dA;
+    uint16_t packVoltage_cV;
+    int32_t packPower_W;
+} cmr_canPowerSense_t;
+
 // ------------------------------------------------------------------------------------------------
 // Accumulator Fan Controller
 
@@ -602,6 +609,11 @@ typedef struct {
     uint16_t motor_power_RL;
     uint16_t motor_power_RR;
 } cmr_canCDCMotorPower_t;
+
+typedef struct {
+	float KCoulombs;
+} cmr_canCDCKiloCoulombs_t;
+
 // ------------------------------------------------------------------------------------------------
 // Central Dynamics Controller (20e)
 
@@ -710,7 +722,7 @@ typedef struct {
     uint8_t brakePedalPosition;         /**< @brief Brake pedal position (0-255). */
 
     /** @brief Steering wheel angle (-180 to 180 degrees). */
-    int16_t steeringWheelAngle_deg;
+    int16_t steeringWheelAngle_millideg;
 } cmr_canFSMData_t;
 
 /** @brief Front Sensor Module raw pedal positions. */
@@ -1123,6 +1135,25 @@ typedef struct
     float v_whl_rr;
 } cmr_can_rear_whl_velocity_t;
 
+typedef struct
+{
+    float moment_req_Nm;
+    float lin_accel_Nm;
+} cmr_can_solver_inputs_t;
+
+typedef struct
+{
+    int16_t combined_normalized_throttle;
+    bool allow_regen;
+    uint8_t placeholder[5];
+} cmr_can_solver_aux_t;
+
+typedef struct {
+    uint16_t k_lin;
+    uint16_t k_yaw;
+    uint16_t k_tie;
+} cmr_can_solver_settings_t;
+
 // ------------------------------------------------------------------------------------------------
 // SAE Provided EMD definitions
 
@@ -1157,6 +1188,13 @@ typedef struct {
     int32_t HX711_debug;     /**< @brief Debug for HX711 - 0 if no errors */
     int32_t NAU7802_debug;   /**< @brief Debug for NAU7802 - 0 if no errors */
 } cmr_canDAQDebug_t;
+
+typedef struct {
+    int16_t differential_voltage_uv;
+    int16_t force_output_N;
+    int16_t internal_temp;
+    int16_t external_temp;
+} cmr_canIZZELoadCell_t;
 
 typedef struct {
     uint8_t state;

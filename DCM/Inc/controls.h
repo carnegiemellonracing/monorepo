@@ -73,7 +73,6 @@ extern volatile cmr_can_front_whl_speed_setpoint_t frontWhlSetpoints;
 extern volatile cmr_can_rear_whl_speed_setpoint_t rearWhlSetpoints;
 extern volatile cmr_can_front_whl_velocity_t frontWhlVelocities;
 extern volatile cmr_can_rear_whl_velocity_t rearWhlVelocities;
-extern volatile cmr_can_front_whl_slip_angle_t frontWhlSlipAngles;
 extern volatile cmr_can_solver_inputs_t solver_inputs;
 extern volatile cmr_can_solver_aux_t solver_aux;
 extern volatile cmr_canCDCWheelTorque_t solver_torques;

@@ -94,7 +94,6 @@ int main(void) {
     servoInit();
     motorsInit();
     sensorsInit();
-    stateInit();
 
     cmr_taskInit(&statusLED_task, "statusLED", statusLED_priority, statusLED,
                 NULL);

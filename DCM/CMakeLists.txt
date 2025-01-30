@@ -60,6 +60,7 @@ set(PROCESSOR_FAM H7XX)
 # Include directories for all compilers
 set(include_DIRS
     ${CMAKE_SOURCE_DIR}/Inc
+    ${CMAKE_SOURCE_DIR}/optimizer
     ${CMAKE_SOURCE_DIR}/data
 )
 
@@ -134,6 +135,8 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/cmr_error.c
     ${CMAKE_SOURCE_DIR}/Src/controls_helper.c
     ${CMAKE_SOURCE_DIR}/Src/controls.c
+    ${CMAKE_SOURCE_DIR}/optimizer/optimizer.c
+    ${CMAKE_SOURCE_DIR}/optimizer/qform.c
     ${CMAKE_SOURCE_DIR}/Src/daq.c
     ${CMAKE_SOURCE_DIR}/Src/drs_controls.c
     ${CMAKE_SOURCE_DIR}/Src/fans.c

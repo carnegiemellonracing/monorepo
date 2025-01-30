@@ -123,9 +123,7 @@ bool setRegen(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8, int32_t avgM
 //        return false;
 //    }
 
-    uint8_t leftPaddle = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddleLeft;
-    uint8_t rightPaddle = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddleRight;
-    uint8_t paddle_pressure = max(leftPaddle, rightPaddle);
+    uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
 
     if (pedal_regen_strength > 0 && brakePressurePsi_u8 >= brake_pressure_start) {
         return setParallelRegen(throttlePos_u8, brakePressurePsi_u8, avgMotorSpeed_RPM);
@@ -151,9 +149,7 @@ float getRegenTorqueReq(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8){
 //        return 0.0f;
 //    }
 
-    uint8_t leftPaddle = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddleLeft;
-    uint8_t rightPaddle = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddleRight;
-    uint8_t paddle_pressure = max(leftPaddle, rightPaddle);
+    uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
 
     if (paddle_regen_strength > 0 && paddle_pressure >= paddle_pressure_start) {
 

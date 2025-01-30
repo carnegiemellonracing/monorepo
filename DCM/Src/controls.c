@@ -40,7 +40,6 @@ volatile cmr_can_front_whl_speed_setpoint_t frontWhlSetpoints;
 volatile cmr_can_rear_whl_speed_setpoint_t rearWhlSetpoints;
 volatile cmr_can_front_whl_velocity_t frontWhlVelocities;
 volatile cmr_can_rear_whl_velocity_t rearWhlVelocities;
-volatile cmr_can_front_whl_slip_angle_t frontWhlSlipAngles;
 
 /** @brief FF Launch Control Start Tick and Button Released  **/
 static TickType_t startTickCount;
@@ -435,9 +434,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_TEST: {
 
-            uint8_t paddle_pressure_left = ((volatile cmr_canDIMActions_t*) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddleLeft;
-            uint8_t paddle_pressure_right = ((volatile cmr_canDIMActions_t*) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddleRight;
-            uint8_t paddle_pressure = max(paddle_pressure_left, paddle_pressure_right);
+            uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
 
             uint8_t paddle_regen_strength_raw = 100;
             getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
@@ -653,10 +650,6 @@ static void update_whl_vels_and_angles (
     frontWhlVelocities.v_whl_fr =   hypotf(V_whl_frx, V_whl_fry);
     rearWhlVelocities.v_whl_rl =    hypotf(V_whl_rlx, V_whl_rly);
     rearWhlVelocities.v_whl_rr =    hypotf(V_whl_rrx, V_whl_rry);
-
-	frontWhlSlipAngles.angle_whl_fl = atan2(V_whl_flx, V_whl_fly) - steering_ang_fl;
-	frontWhlSlipAngles.angle_whl_fr = atan2(V_whl_frx, V_whl_fry) - steering_ang_fr;
-
 }
 
 /**
