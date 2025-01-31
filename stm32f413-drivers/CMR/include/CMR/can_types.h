@@ -74,11 +74,14 @@ typedef enum {
     /** @brief AFC DCDC #2 temperature out-of-range. */
     CMR_CAN_ERROR_AFC_DCDC2_TEMP = (1 << 10),
 
-    /** @brief PTC fan current out-of-range. */
+    /** @brief 
+ fan current out-of-range. */
     CMR_CAN_ERROR_PTC_FAN_CURRENT = (1 << 15),
-    /** @brief PTC fan/pump driver IC temperature out-of-range. */
+    /** @brief 
+ fan/pump driver IC temperature out-of-range. */
     CMR_CAN_ERROR_PTC_DRIVERS_TEMP = (1 << 14),
-    /** @brief PTC water temperature out-of-range. */
+    /** @brief 
+ water temperature out-of-range. */
     CMR_CAN_ERROR_PTC_WATER_TEMP = (1 << 13),
     //power errors(shunt resistor), water over heating errors, oil overheatin errors
     //no oil overheating errors cuz going into uprights
@@ -235,7 +238,8 @@ typedef enum {
     CMR_CAN_VSM_ERROR_SOURCE_FSM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_DIM = (1 << 3),
-    /** @brief At least one PTC message has timed out. */
+    /** @brief At least one 
+ message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_PTC = (1 << 2),
     /** @brief At least one Auxiliary Power Controller message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_APC = (1 << 0)
@@ -464,6 +468,13 @@ typedef struct {
     int32_t packPower_W;
 } cmr_canHVIHeartbeat_t;
 
+//Power Sense Board CAN Types
+typedef struct {
+    int16_t packCurrent_dA;
+    uint16_t packVoltage_cV;
+    int32_t packPower_W;
+} cmr_canPowerSense_t;
+
 // ------------------------------------------------------------------------------------------------
 // Accumulator Fan Controller
 
@@ -521,7 +532,8 @@ typedef struct {
     uint16_t backRight;     /**< @brief Back right wheel speed (RPM). */
 } cmr_canCDCWheelSpeeds_t;
 
-/** @brief Central Dynamics Controller PTC brake solenoid command. */
+/** @brief Central Dynamics Controller 
+ brake solenoid command. */
 typedef struct {
     uint8_t solenoidEnable;     /**< @brief Enable the solenoid (disable the brakes). */
 } cmr_canCDCSolenoidPTC_t;
@@ -597,6 +609,11 @@ typedef struct {
     uint16_t motor_power_RL;
     uint16_t motor_power_RR;
 } cmr_canCDCMotorPower_t;
+
+typedef struct {
+	float KCoulombs;
+} cmr_canCDCKiloCoulombs_t;
+
 // ------------------------------------------------------------------------------------------------
 // Central Dynamics Controller (20e)
 
@@ -705,7 +722,7 @@ typedef struct {
     uint8_t brakePedalPosition;         /**< @brief Brake pedal position (0-255). */
 
     /** @brief Steering wheel angle (-180 to 180 degrees). */
-    int16_t steeringWheelAngle_deg;
+    int16_t steeringWheelAngle_millideg;
 } cmr_canFSMData_t;
 
 /** @brief Front Sensor Module raw pedal positions. */
@@ -755,9 +772,11 @@ typedef struct {
     uint16_t temp9_dC;            /**< @brief Temp 9 */
 } cmr_canPTCLoopTemp_C_t;
 
-/** @brief Standard CAN PTC State. */
+/** @brief Standard CAN 
+ State. */
 typedef struct {
-    uint8_t state;          /**< @brief PTC state. */
+    uint8_t state;          /**< @brief 
+ state. */
 } cmr_canPTCState_t;
 
 /** @brief Standard Git committed State. */
@@ -1116,6 +1135,25 @@ typedef struct
     float v_whl_rr;
 } cmr_can_rear_whl_velocity_t;
 
+typedef struct
+{
+    float moment_req_Nm;
+    float lin_accel_Nm;
+} cmr_can_solver_inputs_t;
+
+typedef struct
+{
+    int16_t combined_normalized_throttle;
+    bool allow_regen;
+    uint8_t placeholder[5];
+} cmr_can_solver_aux_t;
+
+typedef struct {
+    uint16_t k_lin;
+    uint16_t k_yaw;
+    uint16_t k_tie;
+} cmr_can_solver_settings_t;
+
 // ------------------------------------------------------------------------------------------------
 // SAE Provided EMD definitions
 
@@ -1150,6 +1188,13 @@ typedef struct {
     int32_t HX711_debug;     /**< @brief Debug for HX711 - 0 if no errors */
     int32_t NAU7802_debug;   /**< @brief Debug for NAU7802 - 0 if no errors */
 } cmr_canDAQDebug_t;
+
+typedef struct {
+    int16_t differential_voltage_uv;
+    int16_t force_output_N;
+    int16_t internal_temp;
+    int16_t external_temp;
+} cmr_canIZZELoadCell_t;
 
 typedef struct {
     uint8_t state;

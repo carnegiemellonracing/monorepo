@@ -10,9 +10,13 @@ file(GLOB SOURCES_CMSIS CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../CMSIS/*
 target_sources(HAL PUBLIC
 ${SOURCES}
 ${SOURCES_CMSIS}
-${CMAKE_CURRENT_SOURCE_DIR}/../CMSIS/system_stm32f4xx.c
 )
-
+if (${PROCESSOR_FAM} STREQUAL "H4XX")
+    target_sources(HAL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../CMSIS/system_stm32f4xx.c)
+endif()
+if (${PROCESSOR_FAM} STREQUAL "H7XX")
+    target_sources(HAL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../CMSIS/system_stm32h7xx.c)
+endif()
 target_include_directories(HAL PUBLIC
     ${CMAKE_SOURCE_DIR}/Inc #stm32f4xx_hal_conf.h
     ${PROCESSOR_FAM}/Inc

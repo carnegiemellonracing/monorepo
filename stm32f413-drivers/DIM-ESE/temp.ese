@@ -25,7 +25,8 @@
         "CMD_TEXT(20, 114, 26,  OPT_CENTERY, \"MOTOR:\")",
         "CMD_TEXT(200, 114, 26, OPT_CENTERY, \"-100.3 C\")",
         "",
-        "CMD_TEXT(20, 132, 26,  OPT_CENTERY, \"PTC DRIVERS:\")",
+        "CMD_TEXT(20, 132, 26,  OPT_CENTERY, \"
+ DRIVERS:\")",
         "CMD_TEXT(200, 132, 26, OPT_CENTERY, \"-100.3 C\")",
         "",
         "CMD_TEXT(20, 150, 26,  OPT_CENTERY, \"RADIATOR PRE:\")",

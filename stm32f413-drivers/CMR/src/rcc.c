@@ -7,6 +7,7 @@
 
 #include <CMR/rcc.h>    // Interface to implement
 #include <CMR/panic.h>  // cmr_panic()
+#include <CMR/h725.h>
 
 #ifdef HAL_RCC_MODULE_ENABLED
 

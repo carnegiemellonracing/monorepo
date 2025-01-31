@@ -924,20 +924,24 @@ __inline void AT91F_PWMC_UpdateChannel( AT91PS_PWMC pPWM,       /* \arg  pointer
 /** \fn    AT91F_TC_InterruptEnable */
 /** \brief Enable TC Interrupt */
 /**---------------------------------------------------------------------------- */
-__inline void AT91F_TC_InterruptEnable( AT91PS_TC pTc,      /* \arg  pointer to a TC controller */
+__inline void AT91F_TC_InterruptEnable( AT91PS_TC 
+,      /* \arg  pointer to a TC controller */
                                         unsigned int flag ) /* \arg  TC interrupt to be enabled */
 {
-    pTc->TC_IER = flag;
+    
+->TC_IER = flag;
 }
 
 /**---------------------------------------------------------------------------- */
 /** \fn    AT91F_TC_InterruptDisable */
 /** \brief Disable TC Interrupt */
 /**---------------------------------------------------------------------------- */
-__inline void AT91F_TC_InterruptDisable( AT91PS_TC pTc,      /* \arg  pointer to a TC controller */
+__inline void AT91F_TC_InterruptDisable( AT91PS_TC 
+,      /* \arg  pointer to a TC controller */
                                          unsigned int flag ) /* \arg  TC interrupt to be disabled */
 {
-    pTc->TC_IDR = flag;
+    
+->TC_IDR = flag;
 }
 
 /**---------------------------------------------------------------------------- */
@@ -945,19 +949,23 @@ __inline void AT91F_TC_InterruptDisable( AT91PS_TC pTc,      /* \arg  pointer to
 /** \brief Return TC Interrupt Mask Status */
 /**---------------------------------------------------------------------------- */
 __inline unsigned int AT91F_TC_GetInterruptMaskStatus( /* \return TC Interrupt Mask Status */
-    AT91PS_TC pTc )                                    /* \arg  pointer to a TC controller */
+    AT91PS_TC 
+ )                                    /* \arg  pointer to a TC controller */
 {
-    return pTc->TC_IMR;
+    return 
+->TC_IMR;
 }
 
 /**---------------------------------------------------------------------------- */
 /** \fn    AT91F_TC_IsInterruptMasked */
 /** \brief Test if TC Interrupt is Masked */
 /**---------------------------------------------------------------------------- */
-__inline int AT91F_TC_IsInterruptMasked( AT91PS_TC pTc,      /* \arg  pointer to a TC controller */
+__inline int AT91F_TC_IsInterruptMasked( AT91PS_TC 
+,      /* \arg  pointer to a TC controller */
                                          unsigned int flag ) /* \arg  flag to be tested */
 {
-    return( AT91F_TC_GetInterruptMaskStatus( pTc ) & flag );
+    return( AT91F_TC_GetInterruptMaskStatus( 
+ ) & flag );
 }
 
 /* *****************************************************************************

@@ -28,7 +28,8 @@
         "CMD_TEXT(100, 130, 2, OPT_CENTERY, \"VSM TIMEOUT\")",
         "",
         "COLOR_RGB(255, 10, 10) @variable PTC_COLOR",
-        "CMD_TEXT(100, 160, 2,  OPT_CENTERY, \"PTC TIMEOUT\")",
+        "CMD_TEXT(100, 160, 2,  OPT_CENTERY, \"
+ TIMEOUT\")",
         "",
         "COLOR_RGB(255, 10, 10) @variable HVC_COLOR",
         "CMD_TEXT(480, 160, 2, OPT_CENTERY, \"HVC TIMEOUT\")",
