@@ -396,13 +396,13 @@ static cmr_state getReqScreen(void) {
             else nextState = START;
             break;
         case NORMAL:
-            if(canLRUDStates[LEFT]) {
+            if(gpioLRUDStates[LEFT]) {
                 nextState = CONFIG;
-				canLRUDStates[LEFT] = false;
+				//gpioLRUDStates[LEFT] = false;
             }
             else if(canLRUDStates[RIGHT]) {
                 nextState = RACING;
-                canLRUDStates[RIGHT] = false;
+                //canLRUDStates[RIGHT] = false;
             }
             else nextState = NORMAL;
             break;
@@ -410,33 +410,33 @@ static cmr_state getReqScreen(void) {
             //look into how button move on screen on campus
             if(canLRUDStates[LEFT]) {
                 //move left on screen
-                canLRUDStates[LEFT] = 0;
+                //canLRUDStates[LEFT] = 0;
                 nextState = CONFIG;
             }
             else if(canLRUDStates[RIGHT]) {
                 //move right on screen
-                canLRUDStates[RIGHT] = 0;
+                //canLRUDStates[RIGHT] = 0;
                 nextState = CONFIG;
             }
             else if(canLRUDStates[UP]) {
                 //move up on screen
-                canLRUDStates[UP] = 0;
+                //canLRUDStates[UP] = 0;
                 nextState = CONFIG;
             }
             else if(canLRUDStates[DOWN]) {
                 //move down on screen
-                canLRUDStates[DOWN] = 0;
+                //canLRUDStates[DOWN] = 0;
                 nextState = CONFIG;
             }
     	//TODO: WHAT THE HELL IS THIS??
             else if(gpioButtonStates[SW1]) {
                 nextState = NORMAL;
-                gpioButtonStates[SW1] = 0;
+                //gpioButtonStates[SW1] = 0;
                 nextState = CONFIG;
             }
             else if(gpioButtonStates[SW2]) {
                 nextState = RACING;
-                gpioButtonStates[SW2] = 0;
+                //gpioButtonStates[SW2] = 0;
             }
             else nextState = CONFIG;
             break;
@@ -446,11 +446,11 @@ static cmr_state getReqScreen(void) {
         case RACING:
             if(canLRUDStates[LEFT] && stateGetVSMReq() == CMR_CAN_GLV_ON) {
                 nextState = CONFIG;
-                canLRUDStates[LEFT] = false;
+                //canLRUDStates[LEFT] = false;
             }
             else if(canLRUDStates[RIGHT]) {
                 nextState = NORMAL;
-                canLRUDStates[RIGHT] = false;
+                //canLRUDStates[RIGHT] = false;
             }
             else nextState = RACING;
             break;

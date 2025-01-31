@@ -154,11 +154,11 @@ static void canLRUDdebounce (cmr_LRUD_index button){
 // master function for detecting and changing can button states, will be in gpio loop
 void canLRUDDetect(void){
 	XYActivate();
-	for(int i=0; i<LRUDLen; i++){
+	/*for(int i=0; i<LRUDLen; i++){
 		if(gpioLRUDStates[i] == true){
 			canLRUDdebounce(i);
 		}
-	}
+	}*/
 }
 
 /**
