@@ -6,10 +6,9 @@
  */
 
 // ------------------------------------------------------------------------------------------------
-// Includes
+// Includes 
 
 #include "motors.h"         // Interface to implement
-#include "constants.h"
 #include <math.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -18,13 +17,16 @@
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/config_screen_helper.h>
 #include <CMR/fir_filter.h>
-#include "controls.h"
+// #include "controls_23e.h"
 #include "drs_controls.h"
 #include "servo.h"
 #include "can.h"
 #include "daq.h"
 #include "safety_filter.h"
-#include "lut_3d.h"
+#include "mc_power.h"
+#include "pumps.h"
+#include "fans.h"
+#include "constants.h"
 
 // ------------------------------------------------------------------------------------------------
 // Constants
@@ -82,29 +84,6 @@ static cmr_canAMKSetpoints_t motorSetpoints[MOTOR_LEN] = {
         .velocity_rpm       = 0,
         .torqueLimPos_dpcnt = 0,
         .torqueLimNeg_dpcnt = 0
-    },
-};
-
-typedef struct {
-    TickType_t torque_update_timestamp;
-    TickType_t velocity_update_timestamp;
-} motor_command_update_timestamp_t;
-static motor_command_update_timestamp_t motor_command_update_timestamps[MOTOR_LEN] = {
-    [MOTOR_FL] = {
-        .torque_update_timestamp         = 0,
-        .velocity_update_timestamp       = 0,
-    },
-    [MOTOR_FR] = {
-        .torque_update_timestamp         = 0,
-        .velocity_update_timestamp       = 0,
-    },
-    [MOTOR_RL] = {
-        .torque_update_timestamp         = 0,
-        .velocity_update_timestamp       = 0,
-    },
-    [MOTOR_RR] = {
-        .torque_update_timestamp         = 0,
-        .velocity_update_timestamp       = 0,
     },
 };
 
@@ -179,7 +158,7 @@ static void motorsCommand (
 
     cmr_canState_t prevState = CMR_CAN_GLV_ON;
 
-    /** @brief Timer for temporarily blanking vel/torque commands
+    /** @brief Timer for temporarily blanking vel/torque commands 
      *         on transition to RTD. Without this, the inverter may have
      *         non-zero torque/speed in the same message used to enable it,
      *         which would cause the inverter to refuse to enable.  */
@@ -192,7 +171,9 @@ static void motorsCommand (
         volatile cmr_canFSMData_t        *dataFSM      = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
         volatile cmr_canHVCPackVoltage_t *voltageHVC   = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
         volatile cmr_canHVCPackCurrent_t *currentHVC   = canVehicleGetPayload(CANRX_VEH_CURRENT_HVC);
+        volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
 
+        uint32_t throttle;
 
         //transmit Coulombs using HVI sense
         integrateCurrent();
@@ -225,15 +206,13 @@ static void motorsCommand (
                         dataFSM    -> throttlePosition,
                         dataFSM    -> brakePressureFront_PSI,
                         dataFSM    -> steeringWheelAngle_millideg);
-
-        // Tests.
-        uint8_t brake_pressure = 63;
-        kappaAndFx temp = getKappaFxGlobalMax(MOTOR_FR, brake_pressure, false);
-        int test_torque = getBrakeMaxTorque_mNm(MOTOR_FL, brake_pressure);
-
+                              
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
             case CMR_CAN_RTD: {
+            	mcCtrlOn();
+            	// fansOn();
+            	// pumpsOn();
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv = CMR_CAN_AMK_CTRL_HV_EN  |
                                                    CMR_CAN_AMK_CTRL_INV_ON |
@@ -271,26 +250,22 @@ static void motorsCommand (
                             voltageHVC -> hvVoltage_mV,
                             currentHVC -> instantCurrent_mA,
                             blank_command);
+                //taskEXIT_CRITICAL();
 
-                // compare time-stamps for velocity and torque, check for updates
-            	TickType_t current_time = xTaskGetTickCount();
-            	TickType_t set_time = 20;
+                TickType_t endTime = xTaskGetTickCount();
 
-            	for (size_t i = 0; i < MOTOR_LEN; i++) {
+                uint32_t total_ticks = DWT->CYCCNT - au32_initial_ticks;
+                uint32_t microsecs = total_ticks*1000000/HAL_RCC_GetHCLKFreq();
 
-            		if (current_time - motor_command_update_timestamps[i].torque_update_timestamp > set_time
-            				&& (current_time - motor_command_update_timestamps[i].velocity_update_timestamp) > set_time) {
 
-            			setTorqueLimsUnprotected(i, 0.0f, 0.0f);
-            		}
 
-            	}
+                //canTX(CMR_CAN_BUS_VEH, 0x7F9, &microsecs, 4, 5);
 
 
                 // Throttle pos is used instead of torque requested bc torque
                 // requested is always 0 unless in RTD (this allows drivers to
                 // test DRS implementation without being in RTD)
-
+                
                 // set status so DIM can see
                 setControlsStatus(gear);
 
@@ -299,6 +274,9 @@ static void motorsCommand (
 
             // Reset errors in HV_EN
             case CMR_CAN_HV_EN: {
+            	mcCtrlOn();
+            	// fansOn();
+            	// pumpsOn();
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = CMR_CAN_AMK_CTRL_HV_EN |
                                                            CMR_CAN_AMK_CTRL_ERR_RESET;
@@ -306,7 +284,6 @@ static void motorsCommand (
                     motorSetpoints[i].torqueLimPos_dpcnt = 0;
                     motorSetpoints[i].torqueLimNeg_dpcnt = 0;
                 }
-
 
                 // set status so DIM can see
                 setControlsStatus(reqDIM->requestedGear);
@@ -317,6 +294,15 @@ static void motorsCommand (
 
             // Also reset errors in GLV_ON
             case CMR_CAN_GLV_ON: {
+            	// mcCtrlOff();
+                
+
+                if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
+                    // mcCtrlOn();
+                }
+                
+            	// fansOff();
+            	// pumpsOff();
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = CMR_CAN_AMK_CTRL_ERR_RESET;
                     motorSetpoints[i].velocity_rpm       = 0;
@@ -359,12 +345,19 @@ static void motorsCommand (
 /**
  * @brief Initializes motor interface.
  */
-void motorsInit(void) {
+void motorsInit (
+    void
+) {
     initControls();
 
     // Task creation.
-    cmr_taskInit(&motorsCommand_task, "motorsCommand", motorsCommand_priority,
-                 motorsCommand, NULL);
+    cmr_taskInit(
+        &motorsCommand_task,
+        "motorsCommand",
+        motorsCommand_priority,
+        motorsCommand,
+        NULL
+    );
 }
 
 /**
@@ -410,7 +403,7 @@ void setTorqueLimNeg (
  * @param torqueLimNeg_Nm Desired negative torque limit.
  */
 void setTorqueLimsAllProtected (
-    float torqueLimPos_Nm,
+    float torqueLimPos_Nm, 
     float torqueLimNeg_Nm
 ) {
     setTorqueLimsAllDistProtected(torqueLimPos_Nm, torqueLimNeg_Nm, NULL, NULL);
@@ -456,14 +449,10 @@ void setTorqueLimsAllDistProtected (
  * @param torqueLimNeg_Nm Desired negative torque limit.
  */
 void setTorqueLimsUnprotected (
-    motorLocation_t motor,
-    float torqueLimPos_Nm,
+    motorLocation_t motor, 
+    float torqueLimPos_Nm, 
     float torqueLimNeg_Nm
 ) {
-
-	TickType_t current_time = xTaskGetTickCount();
-		motor_command_update_timestamps[motor].torque_update_timestamp = current_time;
-
     if (motor >= MOTOR_LEN) {
         return;
     }
@@ -473,7 +462,7 @@ void setTorqueLimsUnprotected (
     torqueLimPos_Nm = fmaxf(torqueLimPos_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
     torqueLimNeg_Nm = fminf(torqueLimNeg_Nm, 0.0f); // ensures torqueLimNeg_Nm <= 0
 
-    motorSetpoints[motor].torqueLimPos_dpcnt = convertNmToAMKTorque(torqueLimPos_Nm);
+    motorSetpoints[motor].torqueLimPos_dpcnt = convertNmToAMKTorque(torqueLimPos_Nm); 
     motorSetpoints[motor].torqueLimNeg_dpcnt = convertNmToAMKTorque(torqueLimNeg_Nm);
 }
 
@@ -486,12 +475,7 @@ void setTorqueLimsUnprotected (
 void setVelocityInt16 (
     motorLocation_t motor,
     int16_t velocity_rpm
-
 ) {
-	TickType_t current_time = xTaskGetTickCount();
-	motor_command_update_timestamps[motor].velocity_update_timestamp = current_time;
-
-
     if (motor >= MOTOR_LEN) {
         return;
     }
@@ -552,7 +536,7 @@ void setVelocityFloatAll (
 
 /**
  * @brief Calculate the torque budget for power-aware traction and yaw rate control.
- *
+ * 
  * @return The torque upper- and lower-limits for a motor, which applies to every motor.
  */
 cmr_torque_limit_t getTorqueBudget() {
@@ -573,4 +557,3 @@ const cmr_canAMKSetpoints_t *getAMKSetpoints(motorLocation_t motor) {
 
     return (const cmr_canAMKSetpoints_t *) &(motorSetpoints[motor]);
 }
-
