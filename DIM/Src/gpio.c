@@ -195,22 +195,22 @@ static void XYActivate(void){
 	float sensorY = adcToVoltage(cmr_sensorListGetValue(&sensorList, SENSOR_CH_Y));
 	// Both sensors less than 0.5V
     // LEFT
-	if (sensorX <=0.5f && sensorY <=0.5f){
+	if (sensorX >= 4.5f){
 		gpioLRUDStates[LEFT] = true;
 	}else{
 		gpioLRUDStates[LEFT] = false;
 	}
-	if (sensorX<=4.5f && sensorX >=0.5f && sensorY <=0.5f){
+	if (sensorX<=1.0f){
 		gpioLRUDStates[RIGHT] = true;
 	}else{
 		gpioLRUDStates[RIGHT] = false;
 	}
-	if (sensorX <=0.5f && sensorY>=0.5f && sensorY <=4.5f){
+	if (sensorY >= 4.5f){
 		gpioLRUDStates[UP] = true;
 	}else{
 		gpioLRUDStates[UP] = false;
 	}
-	if (sensorX >=4.5f && sensorY >=4.5f){
+	if (sensorY <= 1.0f){
 		gpioLRUDStates[DOWN] = true;
 	}else{
 		gpioLRUDStates[DOWN] = false;
