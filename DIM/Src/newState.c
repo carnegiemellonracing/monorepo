@@ -398,7 +398,7 @@ static cmr_state getReqScreen(void) {
         case NORMAL:
             if(gpioLRUDStates[LEFT]) {
                 nextState = CONFIG;
-                gpioLRUDStates[LEFT] = false;
+				gpioLRUDStates[LEFT] = false;
             }
             else if(gpioLRUDStates[RIGHT]) {
                 nextState = RACING;
