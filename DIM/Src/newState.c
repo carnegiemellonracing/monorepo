@@ -385,7 +385,7 @@ static cmr_state getReqScreen(void) {
     switch (currState) {
         case INIT:
         	//initializes tft screen
-        	//tftUpdate(&tft);
+        	tftUpdate(&tft);
     		nextState = START;
 
             break;
@@ -396,7 +396,7 @@ static cmr_state getReqScreen(void) {
             else nextState = START;
             break;
         case NORMAL:
-            if(gpioLRUDStates[LEFT]) {
+            if(canLRUDStates[LEFT]) {
                 nextState = CONFIG;
 				//gpioLRUDStates[LEFT] = false;
             }
@@ -613,33 +613,33 @@ static void stateOutput() {
              /* Restarting the Display. */
             TickType_t lastWakeTime = xTaskGetTickCount();
     		//change pin of screen
-            //cmr_gpioWrite(0, 0);  // TODO figure out pin
+            cmr_gpioWrite(GPIO_PD_N, 0);  // TODO figure out pin
             vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
-            //cmr_gpioWrite(0, 1);
+            cmr_gpioWrite(GPIO_PD_N, 1);
             vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
 
             /* Initialize the display. */
-            //tftCmd(&tft, TFT_CMD_CLKEXT, 0x00);
-            //tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
-            //tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
+            tftCmd(&tft, TFT_CMD_CLKEXT, 0x00);
+            tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
+            tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
             break;
         case START:
             /* Display Startup Screen for fixed time */
-            //tftDLContentLoad(&tft, &tftDL_startup);
-            //tftDLWrite(&tft, &tftDL_startup);
-            //    vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
+            tftDLContentLoad(&tft, &tftDL_startup);
+            tftDLWrite(&tft, &tftDL_startup);
+            vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
             break;
         case NORMAL:
-            //drawRTDScreen(); //from something
+            drawRTDScreen(); //from something
             break;
         case CONFIG:
-            //drawConfigScreen();
+            drawConfigScreen();
             break;
         case dimStateERROR:
             drawErrorScreen();
             break;
         case RACING:
-            //drawRacingScreen();
+            drawRacingScreen();
             break;
     }
 	//TODO: Why is this called again?
@@ -729,6 +729,9 @@ uint8_t getLVSoC(float voltage, lv_battery_type_t battery_type) {
     return 0;
 }
 
+cmr_canState_t vsmStateGlobal;
+cmr_canState_t vsmStateGlobalReq;
+
 
 static void stateMachine(void *pvParameters){
     (void)pvParameters;
@@ -739,6 +742,10 @@ static void stateMachine(void *pvParameters){
     	//TODO: CALLED TWICE getReqScreen()?
         getReqScreen();
         stateOutput();
+		/* for testing
+		vsmStateGlobal = stateGetVSM();
+		vsmStateGlobalReq = stateGetVSMReq();
+		*/
         taskEXIT_CRITICAL();
 		vTaskDelayUntil(&lastWakeTime, stateMachine_period);
     }
