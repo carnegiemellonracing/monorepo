@@ -61,6 +61,9 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
                         .Speed = GPIO_SPEED_FREQ_LOW } },
 	[GPIO_LED_STATUS] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_9,
 					.Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL,
+					.Speed = GPIO_SPEED_FREQ_LOW } },
+	[GPIO_PD_N] = { .port = GPIOA, .init = { .Pin = GPIO_PIN_5,
+					.Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL,
 					.Speed = GPIO_SPEED_FREQ_LOW } }
 };
 
@@ -153,12 +156,16 @@ static void canLRUDdebounce (cmr_LRUD_index button){
 
 // master function for detecting and changing can button states, will be in gpio loop
 void canLRUDDetect(void){
+	//turn everything off
+	for(int i = 0; i< LRUDLen; i++){
+		canLRUDStates[i] = false;
+	}
 	XYActivate();
-	/*for(int i=0; i<LRUDLen; i++){
+	for(int i=0; i<LRUDLen; i++){
 		if(gpioLRUDStates[i] == true){
 			canLRUDdebounce(i);
 		}
-	}*/
+	}
 }
 
 /**
@@ -193,8 +200,8 @@ float sensorY;
 		*/
 //add can buttons to this
 static void XYActivate(void){
-	sensorX = adcToVoltage(cmr_sensorListGetValue(&sensorList, SENSOR_CH_X));
-	sensorY = adcToVoltage(cmr_sensorListGetValue(&sensorList, SENSOR_CH_Y));
+	float sensorX = adcToVoltage(cmr_sensorListGetValue(&sensorList, SENSOR_CH_X));
+	float sensorY = adcToVoltage(cmr_sensorListGetValue(&sensorList, SENSOR_CH_Y));
 	// Both sensors less than 0.5V
     // LEFT
 	if (sensorX >= 4.5f){

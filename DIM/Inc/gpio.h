@@ -20,9 +20,6 @@
  * @brief Represents a GPIO pin.
  */
 
-//Testing
-extern float sensorX;
-extern float sensorY;
 
 //TODO Fix gpio
 typedef enum {
@@ -36,6 +33,7 @@ typedef enum {
     GPIO_LED_IMD,
     GPIO_LED_BSPD,
 	GPIO_LED_STATUS,
+    GPIO_PD_N,
     GPIO_LEN /**< @brief Total GPIO pins. */
 } gpio_t;
 
