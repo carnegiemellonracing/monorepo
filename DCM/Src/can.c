@@ -547,6 +547,27 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_SETPOINT, &speedSetpoint, sizeof(speedSetpoint), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX200Hz_period_ms);
 
+        
+        // Forward AMK messages to vehicle CAN at 200Hz.
+        for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
+            // Do not transmit if we haven't received that message lately
+            if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
+
+            canTX(
+                CMR_CAN_BUS_VEH,
+                canTractiveRXMeta[i].canID,
+                (void *) &(canTractiveRXMeta[i].payload),
+                sizeof(cmr_canAMKActualValues1_t),
+                canTX200Hz_period_ms
+            );
+        }
+
+        // Send setpoints to vehicle CAN at 200Hz as well.
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_FL_SETPOINTS, amkSetpointsFL, sizeof(*amkSetpointsFL), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_FR_SETPOINTS, amkSetpointsFR, sizeof(*amkSetpointsFR), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_RL_SETPOINTS, amkSetpointsRL, sizeof(*amkSetpointsRL), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_RR_SETPOINTS, amkSetpointsRR, sizeof(*amkSetpointsRR), canTX200Hz_period_ms);
+
 //        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_POSITION, &posePos, sizeof(posePos), canTX200Hz_period_ms);
         //TODO: Fix error with padding (manual size 7)
         //canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_ORIENTATION, &poseOrient, sizeof(poseOrient), canTX200Hz_period_ms);
@@ -590,31 +611,6 @@ static void canTX5Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
 
     while (1) {
-
-        // Forward AMK messages to vehicle CAN at lower 5Hz rate
-        for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
-            // Do not transmit if we haven't received that message lately
-            if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
-
-            canTX(
-                CMR_CAN_BUS_VEH,
-                canTractiveRXMeta[i].canID,
-                (void *) &(canTractiveRXMeta[i].payload),
-                sizeof(cmr_canAMKActualValues1_t),
-                canTX5Hz_period_ms
-            );
-        }
-
-        const cmr_canAMKSetpoints_t *amkSetpointsFL = getAMKSetpoints(MOTOR_FL);
-        const cmr_canAMKSetpoints_t *amkSetpointsFR = getAMKSetpoints(MOTOR_FR);
-        const cmr_canAMKSetpoints_t *amkSetpointsRL = getAMKSetpoints(MOTOR_RL);
-        const cmr_canAMKSetpoints_t *amkSetpointsRR = getAMKSetpoints(MOTOR_RR);
-
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_FL_SETPOINTS, amkSetpointsFL, sizeof(*amkSetpointsFL), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_FR_SETPOINTS, amkSetpointsFR, sizeof(*amkSetpointsFR), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_RL_SETPOINTS, amkSetpointsRL, sizeof(*amkSetpointsRL), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_RR_SETPOINTS, amkSetpointsRR, sizeof(*amkSetpointsRR), canTX5Hz_period_ms);
-
 
         // Forward SBG Systems messages to vehicle CAN at lower 5Hz rate
         for (size_t i = 0; i < CANRX_DAQ_LEN; i++) {
