@@ -316,6 +316,7 @@ static void motorsCommand (
 
             // In all other states, disable inverters and do not reset errors
             default: {
+                mcCtrlOff();
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = 0;
                     motorSetpoints[i].velocity_rpm       = 0;
