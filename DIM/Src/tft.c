@@ -30,9 +30,6 @@
 /** @brief Display QuadSPI prescaler */
 #define TFT_QSPI_PRESCALER 2
 
-/** @brief Display startup time, in milliseconds. */
-#define TFT_STARTUP_MS 3000
-
 /** @brief Flag for indicating a write to the display. */
 #define TFT_WRITE_FLAG (1 << 23)
 
