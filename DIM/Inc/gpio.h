@@ -20,6 +20,10 @@
  * @brief Represents a GPIO pin.
  */
 
+//Testing
+extern float sensorX;
+extern float sensorY;
+
 //TODO Fix gpio
 typedef enum {
     //new pins

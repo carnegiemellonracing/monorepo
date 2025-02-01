@@ -183,6 +183,8 @@ static float adcToVoltage(uint32_t analog){
 }
 
 
+float sensorX;
+float sensorY;
 /* Reads ADC input and switch case based on voltage values and has corresponding states boolean variables
 		*Case 1: below 0.5V both
 		*Case 2: X between 0.5V and 4.5V and Y below 0.5V
@@ -191,8 +193,8 @@ static float adcToVoltage(uint32_t analog){
 		*/
 //add can buttons to this
 static void XYActivate(void){
-	float sensorX = adcToVoltage(cmr_sensorListGetValue(&sensorList, SENSOR_CH_X));
-	float sensorY = adcToVoltage(cmr_sensorListGetValue(&sensorList, SENSOR_CH_Y));
+	sensorX = adcToVoltage(cmr_sensorListGetValue(&sensorList, SENSOR_CH_X));
+	sensorY = adcToVoltage(cmr_sensorListGetValue(&sensorList, SENSOR_CH_Y));
 	// Both sensors less than 0.5V
     // LEFT
 	if (sensorX >= 4.5f){
