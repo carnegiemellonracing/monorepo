@@ -112,11 +112,12 @@ static void errorLEDs(void *pvParameters) {
  */
 int main(void) {
     // System initialization.
-    HAL_Init();
+     HAL_Init();
+    /*
     cmr_rccSystemClockEnable();
 
     // Peripheral configuration.
-    gpioInit();
+    gpioInit(); 
     canInit();
     adcInit();
     stateMachineInit();
@@ -139,4 +140,5 @@ int main(void) {
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");
+    */
 }
