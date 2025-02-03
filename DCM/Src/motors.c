@@ -294,11 +294,11 @@ static void motorsCommand (
 
             // Also reset errors in GLV_ON
             case CMR_CAN_GLV_ON: {
-            	// mcCtrlOff();
+            	mcCtrlOff();
                 
 
                 if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
-                    // mcCtrlOn();
+                    mcCtrlOn();
                 }
                 
             	// fansOff();
