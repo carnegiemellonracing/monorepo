@@ -143,6 +143,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_SOURCE_DIR}/Src/i2c.c
     ${CMAKE_SOURCE_DIR}/Src/lut_3d.c
+    ${CMAKE_SOURCE_DIR}/Src/lut.c
     ${CMAKE_SOURCE_DIR}/Src/main.c
     ${CMAKE_SOURCE_DIR}/Src/mc_power.c
     ${CMAKE_SOURCE_DIR}/Src/motor_efficiency.c

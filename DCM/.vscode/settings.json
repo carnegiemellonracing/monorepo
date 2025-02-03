@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "fans.h": "c"
+        "fans.h": "c",
+        "servo.h": "c",
+        "lut.h": "c",
+        "assert.h": "c"
     }
 }

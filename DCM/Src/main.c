@@ -22,6 +22,8 @@
 #include "motors.h"     // Board-specific motors interface
 #include "i2c.h"
 #include "servo.h"
+#include "lut_3d.h"
+#include "lut.h"
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -94,6 +96,33 @@ int main(void) {
     servoInit();
     motorsInit();
     sensorsInit();
+
+
+    // Tests for computing kappa.
+    kappaAndFx results_ref[256];
+    Fx_kappa_t results[256];
+    for(int i = 0; i < 256; i++)
+    {
+      results_ref[i] = getKappaFxGlobalMax(MOTOR_FL, i, true);
+      float alpha_deg = 0.0;
+
+      float Fz_N = get_fake_downforce(MOTOR_FL);
+      float target_Fx_N = getLUTMaxFx() * ((float) i) / ((float) UINT8_MAX);
+      results[i].Fx = target_Fx_N;
+      results[i].kappa = lut_get_kappa(alpha_deg, Fz_N, target_Fx_N);
+    }
+
+    // Test for computing maximum traction at given downforce.
+    float max_Fx_ref[FZ_DIM];
+    float max_Fx[FZ_DIM];
+    for(int i = 0; i < FZ_DIM; i++)
+    {
+      float Fz_N = FZ_MIN_N + FZ_SPACING_N * i;
+      max_Fx_ref[i] = getKappaFxGlobalMaxAtDownforce(0.4 * Fz_N, UINT8_MAX, true).Fx;
+
+      float alpha_deg = 0.0;
+      max_Fx[i] = lut_get_max_Fx_kappa(alpha_deg, Fz_N).Fx;
+    }
 
     cmr_taskInit(&statusLED_task, "statusLED", statusLED_priority, statusLED,
                 NULL);

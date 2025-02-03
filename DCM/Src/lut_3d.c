@@ -744,6 +744,64 @@ kappaAndFx getKappaFxGlobalMax (
     return result; /** @todo check value that gets returned */
 }
 
+/**
+ * @brief The LUT Kappa and Fx for the throttle input
+*/
+kappaAndFx getKappaFxGlobalMaxAtDownforce(
+    float downforce_N,
+    uint8_t throttlePos_u8,
+    bool assumeNoTurn
+) {
+
+    const float slipangle_deg = assumeNoTurn ? 0.0f : getSlipangle();
+
+    // Get the Fx requested associated with throttlePos_u8
+    const float target_Fx = LUT_max_fx * ((float) throttlePos_u8) / ((float) UINT8_MAX);
+    
+    // Covert the downforce to indexes for the LUT
+    uint32_t Fz_ind = (downforce_N - minDownforce_N) / downforceSpacing_N;
+    uint32_t Fz_ind_upp = Fz_ind + 1;
+    
+    // Ensure the Fz indices are within bounds
+    if (Fz_ind >= LUT_IDX_N_COLS_FZ) {
+        Fz_ind = LUT_IDX_N_COLS_FZ - 1;
+    }
+    if (Fz_ind_upp >= LUT_IDX_N_COLS_FZ) {
+        Fz_ind_upp = LUT_IDX_N_COLS_FZ - 1;
+    }
+
+    // Convert slip angle to indexes for the lUT
+    uint32_t slipangle_ind = (slipangle_deg - minSlipangle_deg) / slipangleSpacing_deg;
+    uint32_t slipangle_ind_upp = slipangle_ind + 1;
+
+    // Ensure the slip angle indices are within bounds
+    if (slipangle_ind >= LUT_IDX_N_ROWS_SLIPANGLE) {
+        slipangle_ind = LUT_IDX_N_ROWS_SLIPANGLE - 1;
+    }
+    if (slipangle_ind_upp >= LUT_IDX_N_ROWS_SLIPANGLE) {
+        slipangle_ind_upp = LUT_IDX_N_ROWS_SLIPANGLE - 1;
+    }
+
+    // Get interpolated kappa at the two slip angles
+    // NOTE: due to the nature of max Fx decreasing as slip angle increases, we need to interp on the upper slip angle first for this Fx correction to work
+	const kappaAndFx kappa_and_Fx_interped_upp = interpKappaIntuitive(slipangle_ind_upp, Fz_ind, Fz_ind_upp, target_Fx, downforce_N, minDownforce_N, downforceSpacing_N, LUT_Fx_spacing_N);
+	const float kappa_interped_upp = kappa_and_Fx_interped_upp.kappa;
+	const float Fx_achieved = kappa_and_Fx_interped_upp.Fx; // This Fx comes from a higher slipangle condition 
+	const float new_target_Fx = target_Fx - (Fx_achieved - target_Fx);
+	const kappaAndFx kappa_and_Fx_interped = interpKappaIntuitive(slipangle_ind, Fz_ind, Fz_ind_upp, new_target_Fx, downforce_N, minDownforce_N, downforceSpacing_N, LUT_Fx_spacing_N);
+	const float kappa_interped = kappa_and_Fx_interped.kappa;
+    const float Fx_interped = kappa_and_Fx_interped.Fx;
+
+    // Interpolate kappa between the slip angles
+    const float kappa_result = kappa_interped + (kappa_interped_upp - kappa_interped) * (slipangle_deg - (minSlipangle_deg + ((float) slipangle_ind) * slipangleSpacing_deg)) / slipangleSpacing_deg;
+    const float Fx_result = Fx_achieved + (Fx_interped - Fx_achieved) * (slipangle_deg - (minSlipangle_deg + ((float) slipangle_ind) * slipangleSpacing_deg)) / slipangleSpacing_deg; 
+    const kappaAndFx result = {
+        .kappa = kappa_result * LUT_granularity * getKappaScaleFactor(),
+        .Fx = Fx_result
+    };
+    return result; /** @todo check value that gets returned */
+}
+
 // ********* THROTTLE TORQUE MAPPING BELOW ********* //
 
 /**
