@@ -11,7 +11,7 @@ target_sources(HAL PUBLIC
 ${SOURCES}
 ${SOURCES_CMSIS}
 )
-if (${PROCESSOR_FAM} STREQUAL "H4XX")
+if (${PROCESSOR_FAM} STREQUAL "F4XX")
     target_sources(HAL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../CMSIS/system_stm32f4xx.c)
 endif()
 if (${PROCESSOR_FAM} STREQUAL "H7XX")
