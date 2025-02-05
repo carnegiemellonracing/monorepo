@@ -13,6 +13,7 @@
 
 #include <CMR/uart.h>    // Interface to implement
 #include <CMR/panic.h>
+#include <stdbool.h>
 
 #ifdef HAL_USART_MODULE_ENABLED
 #ifdef HAL_UART_MODULE_ENABLED

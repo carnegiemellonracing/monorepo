@@ -22,7 +22,8 @@ typedef enum {
     CMR_CANID_HEARTBEAT_CDC = 0x102,    /**< @brief CDC heartbeat. */
     CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x104,    /**< @brief DIM heartbeat. */
-    CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief PTC heatbeart.*/
+    CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief 
+ heatbeart.*/
 	CMR_CANID_HEARTBEAT_HVI = 0x106,
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
 
@@ -53,11 +54,13 @@ typedef enum {
     CMR_CANID_CDC_POSE_ORIENTATION = 0x292,         /**< @brief CDC (20e) roll/pitch/yaw real car position. */
     CMR_CANID_CDC_POSE_VELOCITY = 0x2A2,            /**< @brief CDC (20e) real car velocity. */
     CMR_CANID_CDC_POSE_ACCELERATION = 0x2B2,        /**< @brief CDC (20e) real car acceleration. */
+    CMR_CANID_CDC_POWER_SENSE = 0x305,
     CMR_CANID_CDC_RTC_DATA_OUT = 0x6A2,             /**< @brief CDC RTC data. */
     CMR_CANID_CDC_RTC_DATA_IN = 0x6B2,              /**< @brief CDC RTC data. */
     CMR_CANID_CDC_ODOMETER = 0x6C2,                 /**< @brief CDC Odometer data. */
     CMR_CANID_CDC_CONTROLS_STATUS = 0x6D2,          /**< @brief CDC controls status data. */
     CMR_CANID_CDC_POWER_UPDATE = 0x6E2,             /**< @brief DAQ Live to CDC - changing power limit. */
+    CMR_CANID_CDC_COULOMB_COUNTING = 0x6E3,
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
     CMR_CANID_CELL_BALANCE_ENABLE = 0x134,
@@ -66,11 +69,16 @@ typedef enum {
     CMR_CANID_FSM_POWER_DIAGNOSTICS = 0x553,    /**< @brief FSM power diagnostics. */
     CMR_CANID_SS_STATUS = 0x554,               /**< @brief Safety Circuit status. */
 
-    CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief PTC (fan board) cooling loop temps. */
-    CMR_CANID_PTC_LOOP_TEMPS_B = 0x234,        /**< @brief PTC (fan board) cooling loop temps. */
-    CMR_CANID_PTC_LOOP_TEMPS_C = 0x244,        /**< @brief PTC (fan board) cooling loop temps. */
-    CMR_CANID_PTC_FANS_PUMPS_STATUS = 0x314,   /**< @brief PTC (fan board) fans status */
-    CMR_CANID_PTC_POWER_DIAGNOSTICS = 0x534,   /**< @brief PTC (fan board) power diagnostics. */
+    CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief 
+ (fan board) cooling loop temps. */
+    CMR_CANID_PTC_LOOP_TEMPS_B = 0x234,        /**< @brief 
+ (fan board) cooling loop temps. */
+    CMR_CANID_PTC_LOOP_TEMPS_C = 0x244,        /**< @brief 
+ (fan board) cooling loop temps. */
+    CMR_CANID_PTC_FANS_PUMPS_STATUS = 0x314,   /**< @brief 
+ (fan board) fans status */
+    CMR_CANID_PTC_POWER_DIAGNOSTICS = 0x534,   /**< @brief 
+ (fan board) power diagnostics. */
 
     CMR_CANID_DIM_REQUEST = 0x235,              /**< @brief DIM state/gear request. */
     CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x535,    /**< @brief DIM power diagnostics. */
@@ -226,6 +234,16 @@ typedef enum {
     CMR_CANID_CONTROLS_DEBUG_RR = 0x7E3,        /**< @brief control algo testing data. */
     CMR_CANID_CONTROLS_DEBUG_RL = 0x7E4,        /**< @brief control algo testing data. */
     CMR_CANID_CONTROLS_PID_IO = 0x7E5,        /**< @brief control algo testing data. */
+
+   CMR_CANID_CONTROLS_SOLVER_INPUTS = 0x7E6, 
+   CMR_CANID_CONTROLS_SOLVER_OUTPUTS = 0x7F0,
+   CMR_CANID_CONTROLS_SOLVER_SETTINGS = 0x7EE,
+   CMR_CANID_CONTROLS_SOLVER_AUX = 0x7FF,
+
+   CMR_CANID_LOADCELL_FR = 0x7D0,
+   CMR_CANID_LOADCELL_RR = 0x7D1,
+   CMR_CANID_LOADCELL_FL = 0x7D2,
+   CMR_CANID_LOADCELL_RL = 0x7D3,
 
     CMR_CANID_FRONT_SLIP_RATIOS = 0x7E8,
     CMR_CANID_REAR_SLIP_RATIOS = 0x7E9,
