@@ -739,7 +739,6 @@ static void stateMachine(void *pvParameters){
     currState = INIT;
     while (1) {
         taskENTER_CRITICAL();
-    	//TODO: CALLED TWICE getReqScreen()?
         getReqScreen();
         stateOutput();
 		/* for testing
