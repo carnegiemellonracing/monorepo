@@ -26,6 +26,8 @@
 #include "daq.h"
 #include "safety_filter.h"
 
+#define CLAMP(val, lo, hi) (fminf(fmaxf(val, lo), hi))
+
 // ------------------------------------------------------------------------------------------------
 // Constants
 
@@ -380,17 +382,44 @@ static bool fastEnoughToRegen() {
 }
 
 /**
+ * Apply preemptive torque limits based on amount of total power exceeding the max power limit.
+ */
+void apply_preemptive_torque_limits(cmr_torqueDistributionNm_t* actual_torques) {
+    
+    const float omega_motor_FR = getMotorSpeed_radps(MOTOR_FR);
+    const float omega_motor_FL = getMotorSpeed_radps(MOTOR_FL);
+    const float omega_motor_RR = getMotorSpeed_radps(MOTOR_RR);
+    const float omega_motor_RL = getMotorSpeed_radps(MOTOR_RL);
+
+    const float power_FR = omega_motor_FR * actual_torques->fr;
+    const float power_FL = omega_motor_FL * actual_torques->fl;
+    const float power_RR = omega_motor_RR * actual_torques->rr;
+    const float power_RL = omega_motor_RL * actual_torques->rl;
+
+    const float total_power = power_FR  + power_FL + power_RR + power_RL;
+    if(total_power > power_upper_limit_W) {
+        const float scale_factor = power_upper_limit_W / total_power;
+        actual_torques->fl *= scale_factor;
+        actual_torques->fr *= scale_factor;
+        actual_torques->rl *= scale_factor;
+        actual_torques->rr *= scale_factor;
+    }
+
+}
+
+
+/**
  * @brief Sets both positive and negative torque limits for all motors with over/undervolt protection.
  * @note The Safety Filter (SF) is implemented here.
  * @warning This function should be called at a rate close to 200Hz due to its use of FIR filters
  *
- * @param torquesPos_Nm Max torques: upper-bounds the torque SF sends to each motor. NULL will be treated as zeros. MUST BE NON-NEGATIVE!
- * @param torquesNeg_Nm Min torques: lower-bounds the torque SF sends to each motor. NULL will be treated as zeros. MUST BE NON-POSITIVE!
+ * @param torquesPos_Nm_in Max torques: upper-bounds the torque SF sends to each motor. NULL will be treated as zeros. MUST BE NON-NEGATIVE!
+ * @param torquesNeg_Nm_in Min torques: lower-bounds the torque SF sends to each motor. NULL will be treated as zeros. MUST BE NON-POSITIVE!
  * @note The SF may decide to send any torque within the limits specified by torqueLimPosDist_Nm and torqueLimNegDist_Nm.
  */
 void setTorqueLimsProtected (
-    const cmr_torqueDistributionNm_t *torquesPos_Nm,
-    const cmr_torqueDistributionNm_t *torquesNeg_Nm
+    const cmr_torqueDistributionNm_t *torquesPos_Nm_in,
+    const cmr_torqueDistributionNm_t *torquesNeg_Nm_in
 ) {
     // ********* Local Parameters *********
 
@@ -398,6 +427,11 @@ void setTorqueLimsProtected (
      *  @warning Preemptive limiting is not yest thoroughly validated
      */
     static const bool apply_preemptive_limits = true;
+    static const bool apply_preemptive_limits_per_motor = true;
+
+    // Copy things for mutability.
+    cmr_torqueDistributionNm_t torquesPos_Nm = *torquesPos_Nm_in;
+    cmr_torqueDistributionNm_t torquesNeg_Nm = *torquesNeg_Nm_in;
 
     // ********* Time Keeping *********
 
@@ -412,7 +446,6 @@ void setTorqueLimsProtected (
 
     const float max_cell_voltage_V = getMaxCellVoltage();
     const float min_cell_voltage_V = getMinCellVoltage();
-    cmr_torque_limit_t preemptive_torque_limits = getPreemptiveTorqueLimits();
 
     // ********* Retroactive Limiting *********
 
@@ -468,8 +501,13 @@ void setTorqueLimsProtected (
     float all_wheels_final_min_torque = -maxTorque_Nm;
 
     if (apply_preemptive_limits) {
-        all_wheels_final_max_torque = fminf(all_wheels_final_max_torque, preemptive_torque_limits.max_torque);
-        all_wheels_final_min_torque = fmaxf(all_wheels_final_min_torque, preemptive_torque_limits.min_torque);
+        cmr_torque_limit_t preemptive_torque_limits = getPreemptiveTorqueLimits();
+        if(apply_preemptive_limits_per_motor) {
+            apply_preemptive_torque_limits(&torquesPos_Nm);
+        } else {
+            all_wheels_final_max_torque = fminf(all_wheels_final_max_torque, preemptive_torque_limits.max_torque);
+            all_wheels_final_min_torque = fmaxf(all_wheels_final_min_torque, preemptive_torque_limits.min_torque);
+        }
     }
 
     all_wheels_final_max_torque *= filtered_accel_torque_multiplier;
@@ -494,8 +532,8 @@ void setTorqueLimsProtected (
 
         // ********* Handle Requested Torque *********
 
-        const float requested_max_torque = fmaxf(getTorqueNmByIndex(torquesPos_Nm, motor), 0.0f); // ensures requested_max_torque >= 0
-        const float requested_min_torque = fminf(getTorqueNmByIndex(torquesNeg_Nm, motor), 0.0f); // ensures requested_min_torque <= 0
+        const float requested_max_torque = fmaxf(getTorqueNmByIndex(&torquesPos_Nm, motor), 0.0f); // ensures requested_max_torque >= 0
+        const float requested_min_torque = fminf(getTorqueNmByIndex(&torquesNeg_Nm, motor), 0.0f); // ensures requested_min_torque <= 0
 
         float final_max_torque = fminf(all_wheels_final_max_torque, requested_max_torque);
         float final_min_torque = fmaxf(all_wheels_final_min_torque, requested_min_torque);

@@ -51,6 +51,14 @@ typedef struct {
     float min_torque;
 } cmr_torque_limit_t;
 
+/** @brief Torque limits. */
+typedef struct {
+    cmr_torque_limit_t fl;
+    cmr_torque_limit_t fr;
+    cmr_torque_limit_t rl;
+    cmr_torque_limit_t rr;
+} cmr_all_torque_limit_t;
+
 // ------------------------------------------------------------------------------------------------
 // Public function declarations
 

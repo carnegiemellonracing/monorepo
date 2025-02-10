@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <CMR/can_ids.h>    // CMR CAN IDs
 
-void setTorqueLimsProtected ( const cmr_torqueDistributionNm_t *torquesPos_Nm, const cmr_torqueDistributionNm_t *torquesNeg_Nm);
+void setTorqueLimsProtected ( const cmr_torqueDistributionNm_t *torquesPos_Nm_in, const cmr_torqueDistributionNm_t *torquesNeg_Nm_in);
 cmr_torque_limit_t getPreemptiveTorqueLimits();
 void initRetroactiveLimitFilters();
 void resetRetroactiveLimitFilters();
