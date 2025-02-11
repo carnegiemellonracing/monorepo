@@ -1,4 +1,5 @@
 # `DIM-ESE`
+
 ## Driver Interface Module EVE Screen Editor Project
 
 This repository contains screens for the Driver Interface Module's (DIM) display.
@@ -46,4 +47,3 @@ then added in ESE's "Content" tab in the left sidebar.
 
 [ESE]: https://brtchip.com/eve-toolchains/#EVEScreenEditor
 [EAB]: https://brtchip.com/eve-toolchains/#EVEAssetBuilder
-
