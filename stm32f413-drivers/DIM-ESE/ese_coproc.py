@@ -319,11 +319,10 @@ class FT81x(object):
         return [data]
 
     # 4.44 (141)
-    #TODO add sfail and spass values
     def STENCIL_OP(self, sfail, spass):
         sfail = int(sfail)
         spass = int(spass)
-        data = (0x0B << 24) | (sfail << 3) | (spass << 0)
+        data = (0x0C << 24) | (sfail << 3) | (spass << 0)
         return [data]
 
     # 4.45 (143)
@@ -356,6 +355,23 @@ class FT81x(object):
         data = (0x2 << 30) | (x << 21) | (y << 12) | (handle << 7) | (cell << 0)
         return [data]
 
+    # 4.49 (147)
+    def VERTEX_FORMAT(self, frac):
+        frac = int(frac)
+        data = (0x27 << 24) | (frac << 0)
+        return [data]
+
+    # 4.50 (148)
+    def VERTEX_TRANSLATE_X(self, x):
+        x = int(x)
+        data = (0x2B << 24) | (x << 0)
+        return [data]
+
+    # 4.51 (149)
+    def VERTEX_TRANSLATE_Y(self, y):
+        y = int(y)
+        data = (0x2C << 24) | (y << 0)
+        return [data]
 
     #
     # Coprocessor commands (chapter 5).
@@ -396,6 +412,46 @@ class FT81x(object):
             'OPT_SOUND': 32
             }
 
+    # 5.11 (162)
+    def CMD_DLSTART(self, _):
+        return [0xffffff00]
+
+    # 5.12 (163)
+    def CMD_SWAP(self, _):
+        return [0xffffff01]
+
+    # 5.13 (164)
+    def CMD_COLDSTART(self, _):
+        return [0xffffff32]
+
+    # 5.14 (165)
+    def CMD_INTERRUPT(self, ms):
+        ms = int(ms)
+        return [0xffffff02, ms]
+
+    # 5.15 (166)
+    def CMD_APPEND(self, ptr, num):
+        ptr = int(ptr)
+        num = int(num)
+        return [0xffffff1e, ptr, num]
+
+    # 5.16 (167)
+    def CMD_REGREAD(self, ptr, result):
+        ptr = int(ptr)
+        result = int(result)
+        return [0xffffff19, ptr, result]
+
+    # 5.17 (168)
+    def CMD_MEMWRITE(self, ptr, num):
+        ptr = int(ptr)
+        num = int(num)
+        return [0xffffff1a, ptr, num]
+
+    # 5.18 (168)
+    def CMD_INFLATE(self, ptr):
+        ptr = int(ptr)
+        return [0xffffff22, ptr]
+
     # 5.19 (169)
     def CMD_LOADIMAGE(self, ptr, options):
         ptr = int(ptr)
@@ -404,6 +460,28 @@ class FT81x(object):
 
         return [0xffffff24, ptr, opts]
 
+    # 5.20 (170)
+    def CMD_MEDIAFIFO(self, ptr, size):
+        ptr = int(ptr)
+        size = int(size)
+        return [0xffffff39, ptr, size]
+
+    # 5.21 (171)
+    def CMD_PLAYVIDEO(self, opts):
+        opts = int(opts)
+        return [0xffffff3a, opts]
+
+    # 5.22 (172)
+    def CMD_VIDEOSTART(self, _):
+        return [0xffffff40]
+
+    # 5.23 (173)
+    def CMD_VIDEOFRAME(self, dst, ptr):
+        dst = int(dst)
+        ptr = int(ptr)
+        return [0xffffff41, dst, ptr]
+
+    
     # 5.30 (183)
     def CMD_FGCOLOR(self, c):
         c = int(c)

@@ -1,5 +1,4 @@
-# STM32F413 Drivers
-### (and FreeRTOS)
+# STM32F413 Drivers (and FreeRTOS)
 
 This repository contains drivers for various STM32F413 peripherals.
 
@@ -74,4 +73,3 @@ kept up-to-date with the CAN IDs and types defined in `CMR/can_ids.h` and
 `CMR/can_types.h`, respectively.
 
 [PCAN]: https://www.peak-system.com/PCAN-Explorer-5.249.0.html?&L=1
-
