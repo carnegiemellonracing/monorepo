@@ -37,6 +37,9 @@ static const uint32_t motorsCommand_priority = 6;
 /** @brief Motors command 200 Hz period (milliseconds) */
 static const TickType_t motorsCommand_period_ms = 5;
 
+/** @brief DAQ CAN Test period (milliseconds) */
+static const TickType_t can10Hz_period_ms = 100;
+
 
 /** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
 static const TickType_t TPOS_IMPLAUS_THRES_MS = 100;
@@ -157,6 +160,10 @@ static void motorsCommand (
     initRetroactiveLimitFilters();
 
     cmr_canState_t prevState = CMR_CAN_GLV_ON;
+    
+    /** @brief DAQ test type and HAL rand init **/
+    cmr_canDAQTest_t daqTest;
+    srand(HAL_GetTick());
 
     /** @brief Timer for temporarily blanking vel/torque commands 
      *         on transition to RTD. Without this, the inverter may have
@@ -332,6 +339,23 @@ static void motorsCommand (
             gear = reqDIM->requestedGear;
             resetRetroactiveLimitFilters();
             initControls();
+
+            // Generate new test ID
+            daqTest.test_id = (rand() % 0x7Fu) & 0x7Fu;
+
+            // Send message to start test on DAQ CAN
+            daqTest.test_status = 1;
+            canTX(
+              CMR_CAN_BUS_DAQ, CMR_CANID_TEST_ID, &daqTest, sizeof(daqTest), can10Hz_period_ms
+            );
+        }
+
+        if (prevState == CMR_CAN_RTD && heartbeatVSM->state == CMR_CAN_HV_EN) {
+            // Send message to stop test on DAQ CAN
+            daqTest.test_status = 0;
+            canTX(
+              CMR_CAN_BUS_DAQ, CMR_CANID_TEST_ID, &daqTest, sizeof(daqTest), can10Hz_period_ms
+            )
         }
 
         prevState = heartbeatVSM->state;
