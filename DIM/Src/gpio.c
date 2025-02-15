@@ -9,7 +9,6 @@
 
 #include <stm32f4xx_hal.h>  // HAL interface
 
-#include "state.h"
 #include "newState.h"
 
 bool gpioButtonStates[NUM_BUTTONS];
@@ -19,8 +18,6 @@ bool gpioLRUDStates[4];
 
 static const uint32_t gpioReadButtons_priority = 4;
 
-/** @brief Button input task period (milliseconds). */
-static const TickType_t gpioReadButtons_period = 10;
 
 /** @brief Button input task task. */
 static cmr_task_t gpioReadButtons_task;
@@ -53,21 +50,23 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_BUTTON_PUSH] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_4,
                         .Mode = GPIO_MODE_INPUT, .Pull = GPIO_PULLUP,
                         .Speed = GPIO_SPEED_FREQ_LOW } },
-	[GPIO_LED_AMS] = { .port = GPIOA, .init = { .Pin = GPIO_PIN_6,
+	[GPIO_LED_AMS] = { .port = GPIOB, .init = { .Pin = GPIO_PIN_14,
                        .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL,
                        .Speed = GPIO_SPEED_FREQ_LOW } },
-    [GPIO_LED_IMD] = { .port = GPIOA, .init = { .Pin = GPIO_PIN_7,
+    [GPIO_LED_IMD] = { .port = GPIOB, .init = { .Pin = GPIO_PIN_15,
                        .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL,
                        .Speed = GPIO_SPEED_FREQ_LOW } },
-    [GPIO_LED_BSPD] = { .port = GPIOA, .init = { .Pin = GPIO_PIN_8,
+    [GPIO_LED_BSPD] = { .port = GPIOB, .init = { .Pin = GPIO_PIN_13,
                         .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL,
                         .Speed = GPIO_SPEED_FREQ_LOW } },
+	[GPIO_LED_STATUS] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_9,
+					.Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL,
+					.Speed = GPIO_SPEED_FREQ_LOW } },
+	[GPIO_PD_N] = { .port = GPIOA, .init = { .Pin = GPIO_PIN_5,
+					.Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL,
+					.Speed = GPIO_SPEED_FREQ_LOW } }
 };
 
-static void Arising();
-static void Afalling();
-static void Brising();
-static void Bfalling();
 
 //Define the two variables that tracks rotary input
 volatile int RotaryA = 0;
@@ -75,8 +74,8 @@ volatile int RotaryB = 0;
 /**
 * @brief Adds Interrupt and Programs Callback Function
 */
-static volatile  int rotaryPosition = 0; //This keeps track of rotary position, the important variable, mod 8
-static volatile  int pastRotaryPosition = 0; //Keeps track of past rotary position, mod 8
+static volatile int rotaryPosition = 0; //This keeps track of rotary position, the important variable, mod 8
+static volatile int pastRotaryPosition = 0; //Keeps track of past rotary position, mod 8
 
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
@@ -157,6 +156,10 @@ static void canLRUDdebounce (cmr_LRUD_index button){
 
 // master function for detecting and changing can button states, will be in gpio loop
 void canLRUDDetect(void){
+	//turn everything off
+	for(int i = 0; i< LRUDLen; i++){
+		canLRUDStates[i] = false;
+	}
 	XYActivate();
 	for(int i=0; i<LRUDLen; i++){
 		if(gpioLRUDStates[i] == true){
@@ -180,13 +183,15 @@ static float adcToVoltage(uint32_t analog){
 		return -1;
 	}else{
 		//Scale analog to voltage between 0-5V
-		float finalVolt = (analog/4096) * 5;
+		float finalVolt = ((float)analog/4096.0) * 5.0;
 
 		return finalVolt;
 	}
 }
 
 
+float sensorX;
+float sensorY;
 /* Reads ADC input and switch case based on voltage values and has corresponding states boolean variables
 		*Case 1: below 0.5V both
 		*Case 2: X between 0.5V and 4.5V and Y below 0.5V
@@ -199,22 +204,22 @@ static void XYActivate(void){
 	float sensorY = adcToVoltage(cmr_sensorListGetValue(&sensorList, SENSOR_CH_Y));
 	// Both sensors less than 0.5V
     // LEFT
-	if (sensorX <=0.5f && sensorY <=0.5f){
+	if (sensorX >= 4.5f){
 		gpioLRUDStates[LEFT] = true;
 	}else{
 		gpioLRUDStates[LEFT] = false;
 	}
-	if (sensorX<=4.5f && sensorX >=0.5f && sensorY <=0.5f){
+	if (sensorX<=1.0f){
 		gpioLRUDStates[RIGHT] = true;
 	}else{
 		gpioLRUDStates[RIGHT] = false;
 	}
-	if (sensorX <=0.5f && sensorY>=0.5f && sensorY <=4.5f){
+	if (sensorY >= 4.5f){
 		gpioLRUDStates[UP] = true;
 	}else{
 		gpioLRUDStates[UP] = false;
 	}
-	if (sensorX >=4.5f && sensorY >=4.5f){
+	if (sensorY <= 1.0f){
 		gpioLRUDStates[DOWN] = true;
 	}else{
 		gpioLRUDStates[DOWN] = false;
@@ -227,8 +232,7 @@ static void XYActivate(void){
  */
 static void gpioReadButtons(void *pvParameters) {
     (void)pvParameters;
-    bool pressConfirmed = false;
-    TickType_t lastWakeTime = xTaskGetTickCount();
+	TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         // Direct assignment for CAN buttons
         for(int i=0; i<NUM_BUTTONS; i++){
@@ -236,6 +240,7 @@ static void gpioReadButtons(void *pvParameters) {
             canButtonStates[i] = (HAL_GPIO_ReadPin(gpioPinConfigs[i].port, gpioPinConfigs[i].init.Pin) == GPIO_PIN_RESET);
         }
 		canLRUDDetect();
+		vTaskDelayUntil(&lastWakeTime, 100);
     }
 }
 
