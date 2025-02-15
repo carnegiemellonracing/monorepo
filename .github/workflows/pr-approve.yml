@@ -1,0 +1,29 @@
+name: Pull Request Approved
+run-name: ${{ github.actor }} Clang-format 🚀
+on:
+  pull_request_review:
+    types: [submitted]
+
+defaults:
+  run:
+    shell: bash -leo pipefail {0}
+
+jobs:
+  format:
+    if: github.event.review.state == 'approved'
+    runs-on: [self-hosted,linux]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          # check out HEAD on the branch
+          ref: ${{ github.head_ref }}
+          # Feature just to grab the branch in newer version
+          fetch-depth: 0
+      - run: ${GITHUB_WORKSPACE}/.github/workflows/format.sh
+      # commit the changes (if there are any)
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5.0.1
+        with:
+          commit_message: 🎨 apply clang-format changes
