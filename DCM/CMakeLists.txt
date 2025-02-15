@@ -132,6 +132,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/adc.c
     ${CMAKE_SOURCE_DIR}/Src/brakelight.c
     ${CMAKE_SOURCE_DIR}/Src/can.c
+    ${CMAKE_SOURCE_DIR}/Src/movella.c
     ${CMAKE_SOURCE_DIR}/Src/cmr_error.c
     ${CMAKE_SOURCE_DIR}/Src/controls_helper.c
     ${CMAKE_SOURCE_DIR}/Src/controls.c
