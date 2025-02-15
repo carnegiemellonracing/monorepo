@@ -1024,6 +1024,43 @@ typedef struct {
     uint8_t status;                 /**< @brief Status bitmasks as AUTO_STATUS definition. */
 } cmr_canSBGAutomotive_t;
 
+// Endianness hell.
+typedef struct {
+    uint8_t msb;
+    uint8_t lsb;
+} big_endian_16_t;
+
+typedef struct {
+    big_endian_16_t q0;
+    big_endian_16_t q1;
+    big_endian_16_t q2;
+    big_endian_16_t q3;
+} cmr_canMovellaQuaternion_t;
+
+typedef struct {
+    big_endian_16_t yaw;
+    big_endian_16_t pitch;
+    big_endian_16_t roll;
+} cmr_canMovellaEulerAngles_t;
+
+typedef struct {
+    big_endian_16_t gyro_x;
+    big_endian_16_t gyro_y;
+    big_endian_16_t gyro_z;
+} cmr_canMovellaIMUGyro_t;
+
+typedef struct {
+    big_endian_16_t accel_x;
+    big_endian_16_t accel_y;
+    big_endian_16_t accel_z;
+} cmr_canMovellaIMUAccel_t;
+
+typedef struct {
+    big_endian_16_t vel_x;
+    big_endian_16_t vel_y;
+    big_endian_16_t vel_z;
+} cmr_canMovellaVelocity_t;
+
 // ------------------------------------------------------------------------------------------------
 // IZZIE Racing sensors
 

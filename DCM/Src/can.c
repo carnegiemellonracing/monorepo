@@ -28,6 +28,7 @@
 #include "controls_helper.h"
 #include "controls.h"
 #include "sensors.h"
+#include "movella.h"
 
 extern volatile uint8_t currentParameters[MAX_MENU_ITEMS];
 volatile uint8_t parametersFromDIM[MAX_MENU_ITEMS];
@@ -186,6 +187,26 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
 };
 
 cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
+    [CANRX_DAQ_MOVELLA_STATUS] = {
+        .canID = CMR_CANID_MOVELLA_STATUS,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_MOVELLA_QUATERNION] = {
+        .canID = CMR_CANID_MOVELLA_QUATERNION,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_MOVELLA_IMU_GYRO] = {
+        .canID = CMR_CANID_MOVELLA_IMU_GYRO,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_MOVELLA_IMU_ACCEL] = {
+        .canID = CMR_CANID_MOVELLA_IMU_ACCEL,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
     [CANRX_DAQ_SBG_STATUS_3] = {
         .canID = CMR_CANID_SBG_STATUS_3,
         .timeoutError_ms = 2000,
@@ -833,6 +854,7 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
             if (rxMetaArray[i].canID == canID) {
                 memcpy((void *) rxMetaArray[i].payload, data, dataLen);
                 rxMetaArray[i].lastReceived_ms = xTaskGetTickCountFromISR();
+                movella_parse(i, rxMetaArray[i].payload);
                 break;
             }
         }
