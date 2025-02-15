@@ -56,7 +56,13 @@ typedef enum {
  * @warning New messages MUST be added before `CAN_AUX_RX_LEN`.
  */
 typedef enum {
-    CANRX_DAQ_SBG_STATUS_3 = 0, /**< @brief SBG Status containing solution info. */
+    CANRX_DAQ_MOVELLA_STATUS = 0,
+    CANRX_DAQ_MOVELLA_QUATERNION,
+    CANRX_DAQ_MOVELLA_IMU_EULER_ANGLES,
+    CANRX_DAQ_MOVELLA_IMU_GYRO,
+    CANRX_DAQ_MOVELLA_IMU_ACCEL,
+    CANRX_DAQ_MOVELLA_VELOCITY,
+    CANRX_DAQ_SBG_STATUS_3,     /**< @brief SBG Status containing solution info. */
     CANRX_DAQ_SBG_POS,          /**< @brief EKF Position. */
     CANRX_DAQ_SBG_VEL,          /**< @brief EKF Velocity. */
     CANRX_DAQ_SBG_ORIENT,       /**< @brief EKF Orientation. */
