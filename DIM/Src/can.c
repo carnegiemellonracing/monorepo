@@ -641,7 +641,7 @@ static void sendFSMData(void) {
         .throttlePosition = throttlePosition,
         .brakePressureFront_PSI = brakePressureFront_PSI,
         .brakePedalPosition = brakePedalPosition,
-        .steeringWheelAngle_deg = steeringWheelAngle_deg
+        .steeringWheelAngle_millideg = steeringWheelAngle_deg
     };
 
     canTX(CMR_CANID_FSM_DATA, &msg, sizeof(msg), canTX100Hz_period_ms);
