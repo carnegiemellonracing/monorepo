@@ -49,10 +49,6 @@ static void status_LED() {
 	}
 }
 
-/**
- * @param vtherm_index ∈ ℕ, vtherm_index ∈ [0, 15]
- */
-
 
 
 static void post_ms_monitor() {
@@ -70,7 +66,6 @@ static void post_ms_monitor() {
 		int post_ms = cmr_gpioRead(GPIO_POST_MS);
 		if(!post_ms)
 			write_sleep(); // This line will kill itself
-
 		vTaskDelayUntil(&time_prev, post_ms_monitor_read_period_ms);
 	}
 }

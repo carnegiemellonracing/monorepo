@@ -16,9 +16,9 @@
 #define ADC_COUNT 4096L //assuming 12 bit adc
 #define GVCOUT 0.3 //(1.5V-->0.3)(3V-->0.6)
 #define GVSENSE 8 //assuming gain of 8
-
-//#define VC_TRANS(x)     ((unsigned int) (x * GVCOUT * FS_CNT * 1e6 / 65536))
-//#define VI_TRANS(x)     ((unsigned int) (x * GVSENSE * FS_CNT * 1e3 / 256))
+#define VTHERM_NUM 8
+#define VREF_THERM 3.3 //lowkey have no clue
+#define REISTOR 10000 //10k ohm resistor from temps. again idk!!!
 
 void getVoltages(void);
 void sendVoltages(uint16_t voltages[6]);
@@ -28,6 +28,7 @@ void sendBusVoltage(uint16_t voltages[6]);
 void AFE_SETUP(void);
 
 void getTemps(void);
+uint16_t tempConvert(uint16_t adc_value);
 void sendTemps(uint16_t temps[8]);
 void sendOvertempFlags(uint16_t temps[8]);
 
