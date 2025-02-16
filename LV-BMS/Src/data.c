@@ -15,9 +15,11 @@
 uint16_t cellVoltages[6];
 uint16_t cellTemps[8];
 signed char offset_corr[7];
-signed char offset_corr[7];
+signed char gain_corr[7];
 unsigned int vref_corr;
 uint16_t adc_sensen;
+uint8_t index;
+uint16_t cellTemps[16];
 
 bool setup = false;
 
@@ -123,9 +125,9 @@ void sendBusVoltage(uint16_t voltages[6]) {
     canTX(CAN_ID_LV_BMS_BUS_VOLTAGE, &totalVoltage, sizeof(totalVoltage), canTX10Hz_period_ms);
 }
 
-static uint32_t vtherm_read_index(uint32_t vtherm_index) {
+static uint32_t vtherm_read_index(uint16_t vtherm_index) {
 
-	int map[] = {4, 6, 7, 5, 2, 1, 0, 3, 3, 0, 1, 2, 5, 4, 2, 1};
+	int map[] = {4, 6, 7, 5, 2, 1, 0, 3, 3, 0, 1, 2, 5, 4, 2, 1}; //based on schematic
 	int sel_index = map[vtherm_index];
 
 	cmr_gpioWrite(GPIO_VTHERM_SEL0, sel_index & 0x1);
@@ -149,17 +151,24 @@ static uint32_t vtherm_read_index(uint32_t vtherm_index) {
 		vTaskDelayUntil(&time_prev, vtherm_read_period_ms);
 	}
 }*/
+//not sure how temp conversion works rn.
+uint16_t tempConvert(uint16_t adc_value) {
+    float voltage = (adc_value * VREF_THERM) / ADC_COUNT;
+    float resistance = (VREF_THERM * RESISTOR) / voltage - RESISTOR;
+
+    // Steinhart-Hart equation for NTC thermistor
+    float temperature = 1.0 / (A + B * log(resistance) + C * pow(log(resistance), 3)) - 273.15;
+
+    return (uint16_t)(temperature * 100.0);  //1/100 degree C
+}
 
 void getTemps(void) {
     // Implement
     for(uint32_t i = 0; i < VTHERM_NUM; i++) {
 			int temp = vtherm_read_index(i);
-			(void *)temp;
+			cellTemps[i] = tempConvert(temp);
 		}
-		int temp = vtherm_read_index(7);
-		int temp2 = vtherm_read_index(8);
-		int final = temp + temp2;
-		vTaskDelayUntil(&time_prev, vtherm_read_period_ms);
+        sendTemps(cellTemps)
 }
 
 // Sends cell temperatures (1-8) split into two CAN messages
@@ -188,8 +197,7 @@ void sendOvertempFlags(uint16_t temps[8]) {
 
 // Sends the bus current
 void sendCurrent(void) {
-    // Implement
     uint16_t sensep = ADC_read(ADC_AFE_VIOUT);
-    float current = (sensep - adc_sensen)*vref_corr/(ADC_COUNT*GVCOUT*1e3);
+    float current = float_to_uint16((sensep - adc_sensen)*vref_corr/(ADC_COUNT*GVCOUT*1e3));
     canTX(CAN_ID_LV_BMS_CURRENT, &current, sizeof(current), canTX10Hz_period_ms);
 }
