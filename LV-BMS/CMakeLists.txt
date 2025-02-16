@@ -13,7 +13,7 @@ include("cmake/gcc-arm-none-eabi.cmake")
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 
 # Core project settings
-project(DIM)
+project(LV-BMS)
 enable_language(C CXX ASM)
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
@@ -117,15 +117,8 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/adc.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/can.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/i2c.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/sensors.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/state.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/syscall.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/sysmem.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/tft.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/tftContent.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/tftDL.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/newState.c
 
 )
 

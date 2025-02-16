@@ -55,3 +55,11 @@ ExternalProject_Add(
         INSTALL_COMMAND ""
         BUILD_ALWAYS TRUE
 )
+
+ExternalProject_Add(
+        LV-BMS
+        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/LV-BMS
+        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/LV-BMS
+        INSTALL_COMMAND ""
+        BUILD_ALWAYS TRUE
+)
