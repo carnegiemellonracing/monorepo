@@ -1,6 +1,0 @@
-[submodule "stm32f413-drivers"]
-	path = stm32f413-drivers
-	url = git@github.com:carnegiemellonracing/stm32f413-drivers.git
-[submodule "DIM-ESE"]
-	path = DIM-ESE
-	url = https://github.com/carnegiemellonracing/DIM-ESE.git
