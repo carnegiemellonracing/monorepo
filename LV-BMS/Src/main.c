@@ -5,7 +5,7 @@
  * @author Carnegie Mellon Racing
  */
 
-#include <stm32l4xx_hal.h>  // HAL interface
+#include <stm32f4xx_hal.h>  // HAL interface
 
 #include <CMR/panic.h>  // cmr_panic()
 #include <CMR/rcc.h>    // RCC interface
