@@ -7,7 +7,7 @@
 
 #include <i2c.h>
 #include <stdbool.h>
-#include <stm32l431xx.h> // HAL interface
+#include <stm32f4xx.h>
 #define HAL_I2C_MODULE_ENABLED
 
 

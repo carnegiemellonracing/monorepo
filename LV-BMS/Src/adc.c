@@ -6,7 +6,7 @@
  */
 
 #include <stm32f4xx_hal.h> // HAL interface
-# include <stm32l4xx_hal_adc.h>
+# include <stm32f4xx_hal_adc.h>
 #include "adc.h"    // Interface to implement
 
 /**
