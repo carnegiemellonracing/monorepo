@@ -6,7 +6,7 @@
  */
 
 // ------------------------------------------------------------------------------------------------
-// Includes 
+// Includes
 
 #include "motors.h"         // Interface to implement
 #include <math.h>
@@ -160,12 +160,10 @@ static void motorsCommand (
     initRetroactiveLimitFilters();
 
     cmr_canState_t prevState = CMR_CAN_GLV_ON;
-    
+
     /** @brief DAQ test type and HAL rand init **/
     cmr_canDAQTest_t daqTest;
-    srand(HAL_GetTick());
-
-    /** @brief Timer for temporarily blanking vel/torque commands 
+    /** @brief Timer for temporarily blanking vel/torque commands
      *         on transition to RTD. Without this, the inverter may have
      *         non-zero torque/speed in the same message used to enable it,
      *         which would cause the inverter to refuse to enable.  */
@@ -213,7 +211,7 @@ static void motorsCommand (
                         dataFSM    -> throttlePosition,
                         dataFSM    -> brakePressureFront_PSI,
                         dataFSM    -> steeringWheelAngle_millideg);
-                              
+
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
             case CMR_CAN_RTD: {
@@ -272,7 +270,7 @@ static void motorsCommand (
                 // Throttle pos is used instead of torque requested bc torque
                 // requested is always 0 unless in RTD (this allows drivers to
                 // test DRS implementation without being in RTD)
-                
+
                 // set status so DIM can see
                 setControlsStatus(gear);
 
@@ -302,12 +300,12 @@ static void motorsCommand (
             // Also reset errors in GLV_ON
             case CMR_CAN_GLV_ON: {
             	mcCtrlOff();
-                
+
 
                 if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
                     mcCtrlOn();
                 }
-                
+
             	// fansOff();
             	// pumpsOff();
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
@@ -428,7 +426,7 @@ void setTorqueLimNeg (
  * @param torqueLimNeg_Nm Desired negative torque limit.
  */
 void setTorqueLimsAllProtected (
-    float torqueLimPos_Nm, 
+    float torqueLimPos_Nm,
     float torqueLimNeg_Nm
 ) {
     setTorqueLimsAllDistProtected(torqueLimPos_Nm, torqueLimNeg_Nm, NULL, NULL);
@@ -474,8 +472,8 @@ void setTorqueLimsAllDistProtected (
  * @param torqueLimNeg_Nm Desired negative torque limit.
  */
 void setTorqueLimsUnprotected (
-    motorLocation_t motor, 
-    float torqueLimPos_Nm, 
+    motorLocation_t motor,
+    float torqueLimPos_Nm,
     float torqueLimNeg_Nm
 ) {
     if (motor >= MOTOR_LEN) {
@@ -487,7 +485,7 @@ void setTorqueLimsUnprotected (
     torqueLimPos_Nm = fmaxf(torqueLimPos_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
     torqueLimNeg_Nm = fminf(torqueLimNeg_Nm, 0.0f); // ensures torqueLimNeg_Nm <= 0
 
-    motorSetpoints[motor].torqueLimPos_dpcnt = convertNmToAMKTorque(torqueLimPos_Nm); 
+    motorSetpoints[motor].torqueLimPos_dpcnt = convertNmToAMKTorque(torqueLimPos_Nm);
     motorSetpoints[motor].torqueLimNeg_dpcnt = convertNmToAMKTorque(torqueLimNeg_Nm);
 }
 
@@ -561,7 +559,7 @@ void setVelocityFloatAll (
 
 /**
  * @brief Calculate the torque budget for power-aware traction and yaw rate control.
- * 
+ *
  * @return The torque upper- and lower-limits for a motor, which applies to every motor.
  */
 cmr_torque_limit_t getTorqueBudget() {
