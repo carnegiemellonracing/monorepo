@@ -5,21 +5,20 @@
  * @author Carnegie Mellon Racing
  */
 
+#include "newState.h"
+
+#include <CMR/adc.h>  // ADC interface
+#include <CMR/can.h>  // CAN interface
+#include <CMR/can_types.h>
+#include <CMR/gpio.h>   // GPIO interface
+#include <CMR/panic.h>  // cmr_panic()
+#include <stdlib.h>
 #include <stm32f4xx_hal.h>  // HAL interface
 
-#include <CMR/panic.h>  // cmr_panic()
-#include <CMR/can.h>    // CAN interface
-#include <CMR/adc.h>    // ADC interface
-#include <CMR/gpio.h>   // GPIO interface
-#include <CMR/can_types.h>
-
-#include "gpio.h"       // Board-specific GPIO interface
-#include "can.h"        // Board-specific CAN interface
-#include "tft.h"        // TFT display interface.
-#include "newState.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <tftDL.h>
+#include "can.h"   // Board-specific CAN interface
+#include "gpio.h"  // Board-specific GPIO interface
+#include "tft.h"   // TFT display interface.
+#include "tftDL.h"
 
 static const uint32_t stateMachine_priority = 4;
 
@@ -694,23 +693,27 @@ uint8_t getLVSoC(float voltage, lv_battery_type_t battery_type) {
         num_items = LV_LIPO_LUT_NUM_ITEMS;
     } else {
         // unknown battery type - return 0%
+		cmr_panic("Unknown battery type");
         return 0;
     }
 
     for (size_t i = 0; i < num_items; i++) {
         if (lut[i].voltage == voltage) {
-            // if voltage equals voltage from lut, return soc
             return lut[i].SoC;
-        } else if (lut[i].voltage < voltage) {
+        }
+
+        if (lut[i].voltage < voltage) {
             // if voltage > voltage from lut, we have passed correct value
             if (i == 0) {
                 // if i == 0, then it must be higher than highest voltage
                 return 99;
-            } else {
-                // otherwise we do some linear extrapolation!
-                float result = (float)lut[i].SoC + ((voltage - lut[i].voltage) / (lut[i - 1].voltage - lut[i].voltage)) * ((float)(lut[i - 1].SoC - lut[i].SoC));
-                return min(99, ((uint8_t)result));
             }
+            // otherwise we do some linear extrapolation!
+            float result =
+                (float)lut[i].SoC + ((voltage - lut[i].voltage) /
+                                     (lut[i - 1].voltage - lut[i].voltage)) *
+                                        ((float)(lut[i - 1].SoC - lut[i].SoC));
+            return min(99, ((uint8_t)result));
         }
     }
     // if we get to end of loop, voltage is less than lowest voltage in lut
@@ -737,7 +740,6 @@ static void stateMachine(void *pvParameters){
 		vTaskDelayUntil(&lastWakeTime, stateMachine_period);
     }
 }
-//want to pack into cmr driver
 
 /**
  * @brief Initializes the state machine interface.

@@ -194,7 +194,7 @@ static void tftDL_barSetY(const tftDL_vert_bar_t *bar, uint32_t val) {
 
     uint32_t vertex = *bar->addr;
     // Create mask with 0s for y, and 1s for x
-    uint32_t mask = ((~((uint32_t)0)) << TFT_DL_VERTEX_Y_BIT);
+    uint32_t mask = (-1U << TFT_DL_VERTEX_Y_BIT);
     // vertex and mask to remove current y coord
     vertex &= mask;
     // replace zeros with new y coord (already in correct position)
@@ -221,9 +221,7 @@ static void tftDL_barSetX(const tftDL_horiz_bar_t *bar, uint32_t val) {
 
     uint32_t vertex = *bar->addr;
     // Create mask with 1s for y, and 0s for x
-    uint32_t mask = (~((~((uint32_t)0)) << TFT_DL_VERTEX_Y_BIT)) ^ ((1 << 31) >> 1);
-    // Someone verify this please -lmerino
-    // uint32_t mask = (~(-1U << TFT_DL_VERTEX_Y_BIT)) ^ ((1 << 31) >> 1);
+    uint32_t mask = ((1U << TFT_DL_VERTEX_Y_BIT)-1) ^ 0xC0000000;
     // vertex and mask to remove current x coord
     vertex &= mask;
     // replace zeros with new x coord (shifted to correct position)
@@ -653,7 +651,7 @@ static void tftDL_showAMKError(uint32_t strlocation, uint32_t colorLocation, uin
         case AMK_ENCODER_ERROR:
             snprintf(print_location, print_len, "ENCODER PROB");
             break;
-        case 3587:
+        case AMK_SYS_DIAG_4:
             snprintf(print_location, print_len, "SOFTWARE CAN");
             break;
         case AMK_DC_BUS_ERROR:
@@ -752,24 +750,15 @@ void setConfigContextString(int8_t scroll_index) {
     sprintf((char *)context_string_pointer, context_string);
 }
 
-// implements wraparound. Can't use modulo since it's min is not always 0. Could do (val % max-min) + min but that's less readable
+
 uint8_t configValueIncrementer(uint8_t value, uint8_t value_min, uint8_t value_max, bool up_requested, bool down_requested) {
-    uint8_t new_value = value;
     if (up_requested) {
-        if (value + 1 > value_max) {
-            new_value = value_min;
-        } else {
-            new_value++;
-        }
+        return (value >= value_max) ? value_min : value + 1;
     }
     if (down_requested) {
-        if (value - 1 < value_min) {
-            new_value = value_max;
-        } else {
-            new_value--;
-        }
+        return (value <= value_min) ? value_max : value - 1;
     }
-    return new_value;
+    return value;
 }
 
 void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_requested) {

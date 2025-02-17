@@ -94,7 +94,8 @@ typedef enum {
 /** @brief Represents a display command. */
 typedef enum {
     TFT_CMD_ACTIVE = 0x00, /**< @brief Enter "ACTIVE" mode (send twice). */
-    TFT_CMD_CLKEXT = 0x44  /**< @brief Use external clock. */
+    TFT_CMD_CLKEXT = 0x44,  /**< @brief Use external clock. */
+    TFT_CMD_INFLATE =  0xFFFFFF22
 } tftCmd_t;
 
 /** @brief Represents a display address. */
