@@ -120,9 +120,10 @@ int main(void) {
     gpioInit();
     // canInit();
     // adcInit();
+    tftInit();
     stateMachineInit();
     sensorsInit();
-    tftInit();
+
 
     cmr_taskInit(
         &statusLED_task,

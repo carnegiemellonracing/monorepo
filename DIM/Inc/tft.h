@@ -129,18 +129,20 @@ typedef enum {
     TFT_ADDR_SPI_WIDTH = 0x302188,
 
     // Clock configuration.
-    TFT_ADDR_PCLK_POL = 0x30206C, /**< @brief PCLK polarity. */
-    TFT_ADDR_PCLK = 0x302070,     /**< @brief PCLK frequency divider. */
+    TFT_ADDR_PCLK_POL = 0x30'206C, /**< @brief PCLK polarity. */
+    TFT_ADDR_PCLK = 0x30'2070,     /**< @brief PCLK frequency divider. */
 
     // Coprocessor registers.
-    TFT_ADDR_CMD_READ = 0x3020F8,  /**< @brief Coprocessor read pointer. */
-    TFT_ADDR_CMD_WRITE = 0x3020FC, /**< @brief Coprocessor write pointer. */
-    TFT_ADDR_CMD_DL = 0x302100,    /**< @brief Coprocessor DL RAM offset. */
+    TFT_ADDR_CMD_READ = 0x30'20F8,  /**< @brief Coprocessor read pointer. */
+    TFT_ADDR_CMD_WRITE = 0x30'20FC, /**< @brief Coprocessor write pointer. */
+    TFT_ADDR_CMD_DL = 0x30'2100,    /**< @brief Coprocessor DL RAM offset. */
 
     // RAM areas.
-    TFT_ADDR_RAM_G = 0x000000,  /**< @brief General purpose graphics RAM. */
-    TFT_ADDR_RAM_DL = 0x300000, /**< @brief Display list RAM. */
-    TFT_ADDR_RAM_CMD = 0x308000 /**< @brief Coprocessor command buffer. */
+    TFT_ADDR_RAM_G = 0x00'0000,  /**< @brief General purpose graphics RAM. */
+    TFT_ADDR_RAM_DL = 0x30'0000, /**< @brief Display list RAM. */
+    TFT_ADDR_RAM_REG = 0x30'2000, /**< @brief Registers */
+    TFT_ADDR_RAM_CMD = 0x30'8000, /**< @brief Coprocessor command buffer. */
+
 } tftAddr_t;
 
 /** @brief Represents a TFT display.  */
