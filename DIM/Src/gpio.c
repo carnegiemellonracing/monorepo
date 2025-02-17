@@ -16,7 +16,7 @@ bool gpioButtonStates[NUM_BUTTONS];
 bool canLRUDStates[4];
 bool gpioLRUDStates[4];
 
-static const uint32_t gpioReadButtons_priority = 4;
+static const uint32_t gpioReadButtons_priority = 5;
 
 
 /** @brief Button input task task. */

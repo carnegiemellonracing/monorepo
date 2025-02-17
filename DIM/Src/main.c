@@ -113,13 +113,13 @@ static void errorLEDs(void *pvParameters) {
 int main(void) {
     // System initialization.
      HAL_Init();
-     
+
     cmr_rccSystemClockEnable();
 
     // Peripheral configuration.
-    gpioInit(); 
-    canInit();
-    adcInit();
+    gpioInit();
+    // canInit();
+    // adcInit();
     stateMachineInit();
     sensorsInit();
     tftInit();

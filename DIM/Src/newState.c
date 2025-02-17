@@ -595,7 +595,7 @@ void stateDrsUpdate(void) {
 	state.drsMode = state.drsReq;
 }
 
-static void stateOutput() { 
+static void stateOutput() {
     //output
     switch(currState) {
         case INIT:
@@ -738,18 +738,18 @@ static void stateMachine(void *pvParameters){
     TickType_t lastWakeTime = xTaskGetTickCount();
     currState = INIT;
     while (1) {
-        taskENTER_CRITICAL();
+        // taskENTER_CRITICAL();
         getReqScreen();
         stateOutput();
 		/* for testing
 		vsmStateGlobal = stateGetVSM();
 		vsmStateGlobalReq = stateGetVSMReq();
 		*/
-        taskEXIT_CRITICAL();
+        // taskEXIT_CRITICAL();
 		vTaskDelayUntil(&lastWakeTime, stateMachine_period);
     }
 }
-//want to pack into cmr driver 
+//want to pack into cmr driver
 
 /**
  * @brief Initializes the state machine interface.
