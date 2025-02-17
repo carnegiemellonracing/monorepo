@@ -103,6 +103,7 @@ const tftDL_t tftDL_RTD = {
 static uint32_t tftDL_racingData[] = {
 #include <DIM-ESE/racing-screen.rawh>
 };
+
 /** @brief Complete data required to draw the
  * Racing Screen
  * Exposed to interface consumers. */
@@ -221,6 +222,8 @@ static void tftDL_barSetX(const tftDL_horiz_bar_t *bar, uint32_t val) {
     uint32_t vertex = *bar->addr;
     // Create mask with 1s for y, and 0s for x
     uint32_t mask = (~((~((uint32_t)0)) << TFT_DL_VERTEX_Y_BIT)) ^ ((1 << 31) >> 1);
+    // Someone verify this please -lmerino
+    // uint32_t mask = (~(-1U << TFT_DL_VERTEX_Y_BIT)) ^ ((1 << 31) >> 1);
     // vertex and mask to remove current x coord
     vertex &= mask;
     // replace zeros with new x coord (shifted to correct position)
@@ -641,19 +644,19 @@ static void tftDL_showAMKError(uint32_t strlocation, uint32_t colorLocation, uin
     const size_t print_len = 13;
     // Spaces are to align text, so each string has 12 characters followed by a \0
     switch (errorCode) {
-        case 2347:
+        case AMK_MOTOR_TEMP_ERROR:
             snprintf(print_location, print_len, "MOTOR TEMP  ");
             break;
-        case 2346:
+        case AMK_CONVERTER_TEMP_ERROR:
             snprintf(print_location, print_len, "IGBT TEMP   ");
             break;
-        case 2310:
+        case AMK_ENCODER_ERROR:
             snprintf(print_location, print_len, "ENCODER PROB");
             break;
         case 3587:
             snprintf(print_location, print_len, "SOFTWARE CAN");
             break;
-        case 1049:
+        case AMK_DC_BUS_ERROR:
             snprintf(print_location, print_len, "HV LOW VOLT ");
             break;
         default:

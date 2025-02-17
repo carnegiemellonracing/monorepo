@@ -196,14 +196,17 @@ int32_t getAverageWheelRPM(void) {
 	cmr_canRXMeta_t *metaAMK_FL_Act1 = canRXMeta + CANRX_AMK_FL_ACT_1;
 	volatile cmr_canAMKActualValues1_t *canAMK_FL_Act1 =
 		(void *)metaAMK_FL_Act1->payload;
+
 	// Front Right
 	cmr_canRXMeta_t *metaAMK_FR_Act1 = canRXMeta + CANRX_AMK_FR_ACT_1;
 	volatile cmr_canAMKActualValues1_t *canAMK_FR_Act1 =
 		(void *)metaAMK_FR_Act1->payload;
+
 	// Rear Left
 	cmr_canRXMeta_t *metaAMK_RL_Act1 = canRXMeta + CANRX_AMK_RL_ACT_1;
 	volatile cmr_canAMKActualValues1_t *canAMK_RL_Act1 =
 		(void *)metaAMK_RL_Act1->payload;
+
 	// Rear Right
 	cmr_canRXMeta_t *metaAMK_RR_Act1 = canRXMeta + CANRX_AMK_RR_ACT_1;
 	volatile cmr_canAMKActualValues1_t *canAMK_RR_Act1 =
@@ -241,14 +244,17 @@ int getMaxMotorTemp(void){
 	cmr_canRXMeta_t *metaAMK_FL_Act2 = canRXMeta + CANRX_AMK_FL_ACT_2;
 	volatile cmr_canAMKActualValues2_t *canAMK_FL_Act2 =
 		(void *)metaAMK_FL_Act2->payload;
+
 	// Front Right
 	cmr_canRXMeta_t *metaAMK_FR_Act2 = canRXMeta + CANRX_AMK_FR_ACT_2;
 	volatile cmr_canAMKActualValues2_t *canAMK_FR_Act2 =
 		(void *)metaAMK_FR_Act2->payload;
+
 	// Rear Left
 	cmr_canRXMeta_t *metaAMK_RL_Act2 = canRXMeta + CANRX_AMK_RL_ACT_2;
 	volatile cmr_canAMKActualValues2_t *canAMK_RL_Act2 =
 		(void *)metaAMK_RL_Act2->payload;
+
 	// Rear Right
 	cmr_canRXMeta_t *metaAMK_RR_Act2 = canRXMeta + CANRX_AMK_RR_ACT_2;
 	volatile cmr_canAMKActualValues2_t *canAMK_RR_Act2 =
@@ -503,20 +509,18 @@ void stateVSMUp() {
  */
 void stateVSMDown() {
 	cmr_canState_t vsmState = stateGetVSM();
-	if (state.vsmReq > vsmState) {
-		// Cancel state-up request.
-		state.vsmReq = vsmState;
-		return;
-	}
+        if (state.vsmReq > vsmState) {
+            // Cancel state-up request.
+            state.vsmReq = vsmState;
+            return;
+        }
 
-	if (
-		state.vsmReq == CMR_CAN_RTD &&
-		getAverageWheelRPM() > 5) {
-		// Only exit RTD when motor is basically stopped.
-		return;
-		}
+        if (state.vsmReq == CMR_CAN_RTD && getAverageWheelRPM() > 5) {
+            // Only exit RTD when motor is basically stopped.
+            return;
+        }
 
-	cmr_canState_t vsmReq = vsmState - 1;  // Decrement state.
+        cmr_canState_t vsmReq = vsmState - 1;  // Decrement state.
 	// Valid State
 	if (stateVSMReqIsValid(vsmState, vsmReq)) {
 		state.vsmReq = vsmReq;
@@ -605,6 +609,7 @@ static void stateOutput() {
             tftCmd(&tft, TFT_CMD_CLKEXT, 0x00);
             tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
             tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
+            vTaskDelayUntil(&lastWakeTime, 300);
             break;
         case START:
             /* Display Startup Screen for fixed time */
