@@ -129,9 +129,6 @@ cmr_canState_t stateGetVSMReq(void) {
 	return state.vsmReq;
 }
 
-
-
-
 /**
  * @brief Gets the current gear.
  *
@@ -140,7 +137,6 @@ cmr_canState_t stateGetVSMReq(void) {
 cmr_canGear_t stateGetGear(void) {
 	return state.gear;
 }
-
 /**
  * @brief Gets the requested gear.
  *
@@ -174,9 +170,7 @@ float getSpeedKmh() {
 	 *      (x rotations / 1min) * (18" * PI) *  (2.54*10^-5km/inch)
 	 *      (60min / 1hr) * (1/15.1 gear ratio)
 	 *      = x * 0.0057072960048526627892388896218624717297547517194475432371                                 */
-	float vehicleSpeed = (float)avgWheelRPM * 0.0057073f;
-
-	return vehicleSpeed;
+	return (float)avgWheelRPM * 0.0057073f;
 }
 
 /**
@@ -355,19 +349,10 @@ int getMCTemp(void)
  *
  * @return door state as integer
  */
-bool getDoorsState(void)
+bool DRSOpen(void)
 {
-	cmr_canRXMeta_t *meta_canCDCDRSStates_t = canRXMeta + CANRX_DRS_STATE;
-	volatile cmr_canCDCDRSStates_t *canCDCDRSState =
-		(void *) meta_canCDCDRSStates_t->payload;
-
-	int16_t doorState = canCDCDRSState->state;
-	if (doorState == 0)
-	{
-		return true;
-	}else{
-		return false;
-	}
+	volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t *)getPayload(CANRX_DRS_STATE);
+    return drsState->state == CMR_CAN_DRS_STATE_OPEN;
 }
 
 
@@ -385,12 +370,12 @@ static cmr_state getReqScreen(void) {
     switch (currState) {
         case INIT:
         	//initializes tft screen
-        	tftUpdate(&tft);
+        	// tftUpdate(&tft);
     		nextState = START;
 
             break;
         case START:
-            if(stateGetVSMReq() == CMR_CAN_GLV_ON) {
+            if(state.vsmReq == CMR_CAN_GLV_ON) {
                 nextState = NORMAL;
             }
             else nextState = START;
@@ -444,7 +429,7 @@ static cmr_state getReqScreen(void) {
             nextState = INIT;
             break;
         case RACING:
-            if(canLRUDStates[LEFT] && stateGetVSMReq() == CMR_CAN_GLV_ON) {
+            if(canLRUDStates[LEFT] && state.vsmReq == CMR_CAN_GLV_ON) {
                 nextState = CONFIG;
                 //canLRUDStates[LEFT] = false;
             }
@@ -567,15 +552,13 @@ void reqGear(void) {
 	int currentRotary = getRotaryPosition();
 
 	bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN));
-	if(canChangeGear && (currentRotary!=stateGetGear())){
+	if(canChangeGear && (currentRotary!=state.gear)){
 		if((currentRotary < pastRotary) || (currentRotary == 7 && pastRotary==0)){
 			//turned clockwise so gearup
-			requestedGear = stateGetGear() + 1;
+			state.gear++;
 			}
 		} else {
-				requestedGear = stateGetGear() - 1;
-
-		state.gearReq = requestedGear;
+			state.gear--;
 	}
 }
 

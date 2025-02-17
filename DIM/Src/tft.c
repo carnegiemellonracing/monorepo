@@ -118,7 +118,7 @@ void tftWrite(tft_t *tft, tftAddr_t addr, size_t len, const void *data) {
  */
 void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data) {
     const QSPI_CommandTypeDef cmd = {
-        .Instruction = 0,
+        .Instruction = 0, // Not used
         .Address = addr,
         .AlternateBytes = 0,
         .AddressSize = QSPI_ADDRESS_24_BITS,
@@ -223,13 +223,9 @@ void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait) {
         }
 
         // Wait for the command to finish.
-        while (
-            tftRead(
-                tft, TFT_ADDR_CMD_READ,
-                sizeof(tft->coCmdRd), &tft->coCmdRd),
-            tft->coCmdRd != coCmdWr) {
-            continue;
-        }
+        do {
+            tftRead(tft, TFT_ADDR_CMD_READ, sizeof(tft->coCmdRd), &tft->coCmdRd);
+        } while (tft->coCmdRd != coCmdWr);
     }
 }
 
@@ -247,6 +243,7 @@ static cmr_task_t tftUpdate_task;
  * @return Does not return.
  */
 void tftUpdate(void *pvParameters) {
+    (void) pvParameters;
     /** @brief Represents a display initialization value. */
     typedef struct {
         tftAddr_t addr; /**< @brief Address to initialize. */
@@ -274,8 +271,6 @@ void tftUpdate(void *pvParameters) {
         { .addr = TFT_ADDR_PCLK, .val = 5 }
     };
 
-    // Since this is global I dont think we need this
-    tft_t *tft = pvParameters;
 
 	TickType_t lastWakeTime = xTaskGetTickCount();
     /* Wait for display to initialize. */
@@ -283,23 +278,30 @@ void tftUpdate(void *pvParameters) {
 
     /* Ensure that Chip ID is read correctly */
     uint32_t chipID;
-    tftRead(tft, TFT_ADDR_CHIP_ID, sizeof(chipID), &chipID);
+    tftRead(&tft, TFT_ADDR_CHIP_ID, sizeof(chipID), &chipID);
     configASSERT(chipID == TFT_CHIP_ID);
 
+    /* Init Sequence*/
+    tftCmd(&tft, TFT_CMD_CLKEXT, 0x00);
+    tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
+    vTaskDelayUntil(&lastWakeTime, 300);
+
     /* Initialize Video Registers. */
-    for (size_t i = 0; i < sizeof(tftInits) / sizeof(tftInits[0]); i++) {
-        const tftInit_t *init = tftInits + i;
-        tftWrite(tft, init->addr, sizeof(init->val), &init->val);
+    size_t tftInitsLen = sizeof(tftInits) / sizeof(tftInits[0]);
+    for (size_t i = 0; i < tftInitsLen; i++) {
+        const tftInit_t *init = &tftInits[i];
+        tftWrite(&tft, init->addr, sizeof(init->val), &init->val);
     }
 
-    tft->inited = true;
+
+    tft.inited = true;
 
     /* Enable Faster Clock Rate now that initialization is complete */
-    cmr_qspiSetPrescaler(&tft->qspi, TFT_QSPI_PRESCALER);
+    cmr_qspiSetPrescaler(&tft.qspi, TFT_QSPI_PRESCALER);
 
     /* Display Startup Screen for fixed time */
-    tftDLContentLoad(tft, &tftDL_startup);
-    tftDLWrite(tft, &tftDL_startup);
+    tftDLContentLoad(&tft, &tftDL_startup);
+    tftDLWrite(&tft, &tftDL_startup);
     //    vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS); //TODO: Uncomment
 
     /* Update Screen Info from CAN Indefinitely
@@ -354,7 +356,7 @@ void drawRacingScreen(void){
         getACTemp(),
         getMCTemp(),
         hvSoC,
-        getDoorsState());
+        DRSOpen());
     // /* Write Display List to Screen */
     tftDLWrite(&tft, &tftDL_racing_screen);
 }
@@ -552,13 +554,11 @@ void drawRTDScreen(void){
     // 18000mV * 15 / 2000 as sent by HVC = 135
     bool ssOk = (bmsLV->safety_mV > 135);
 
-    volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t *)getPayload(CANRX_DRS_STATE);
-    bool drsOpen = (drsState->state == CMR_CAN_DRS_STATE_OPEN);
-
     /* Accumulator Temperature */
     int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC) / 10;
 
-    int32_t mcTemp_C, motorTemp_C = 0;
+    int32_t mcTemp_C = 0;
+    int32_t motorTemp_C = 0;
     cornerId_t hottest_motor;
 
     /* Temperature warnings */
@@ -578,7 +578,6 @@ void drawRTDScreen(void){
     bool yrcOn = ((bool)controlsStatus->yrcOn) && (!(0 & 0x02));
     bool tcOn = ((bool)controlsStatus->tcOn) && (!(0 & 0x04));
 
-    //line 716 tft.c
     /* Write Display List to Screen */
     tftDLWrite(&tft, &tftDL_RTD);
 }

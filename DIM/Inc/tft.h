@@ -100,7 +100,7 @@ typedef enum {
 /** @brief Represents a display address. */
 typedef enum {
     // Diagnostics.
-    TFT_ADDR_CHIP_ID = 0x0C0000, /**< @brief Chip identifier. */
+    TFT_ADDR_CHIP_ID = 0x0C'0000, /**< @brief Chip identifier. */
 
     // Video parameters.
     TFT_ADDR_HCYCLE = 0x30202C,  /**< @brief Horizontal cycle time. */
