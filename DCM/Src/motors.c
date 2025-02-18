@@ -353,7 +353,7 @@ static void motorsCommand (
             daqTest = daqTest && 0x7F; // Set MSB to zero
             canTX(
               CMR_CAN_BUS_DAQ, CMR_CANID_TEST_ID, &daqTest, sizeof(daqTest), can10Hz_period_ms
-            )
+            );
         }
 
         prevState = heartbeatVSM->state;
