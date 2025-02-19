@@ -188,7 +188,7 @@ static void tftDL_barSetY(const tftDL_vert_bar_t *bar, uint32_t val) {
     } else if (val > bar->maxVal) {
         y = bar->topY;
     } else {
-        uint32_t len = ((val - bar->minVal) * (uint32_t)(bar->botY - bar->topY)) / (bar->maxVal - bar->minVal);
+        uint32_t len = ((val - bar->minVal) * (bar->botY - bar->topY)) / (bar->maxVal - bar->minVal);
         y = bar->botY - len;
     }
 
@@ -215,7 +215,7 @@ static void tftDL_barSetX(const tftDL_horiz_bar_t *bar, uint32_t val) {
     } else if (val > bar->maxVal) {
         x = bar->rightX;
     } else {
-        uint32_t len = ((val - bar->minVal) * ((uint32_t)(bar->rightX - bar->leftX))) / (bar->maxVal - bar->minVal);
+        uint32_t len = ((val - bar->minVal) * (bar->rightX - bar->leftX)) / (bar->maxVal - bar->minVal);
         x = bar->leftX + len;
     }
 
