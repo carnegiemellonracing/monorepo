@@ -258,7 +258,7 @@ static void canTX1Hz(void *pvParameters) {
                 .config_val_4 = config_menu_main_array[16].value.value,
             };
 
-            cmr_canDIMCDCconfig_t config_message_array[num_config_packets] = {
+            cmr_canDIMCDCconfig_t config_message_array[NUM_CONFIG_PACKETS] = {
                 config0,
                 config1,
                 config2,
@@ -266,15 +266,15 @@ static void canTX1Hz(void *pvParameters) {
             };
 
             // calculate the correct CAN ID based on the current driver
-            uint32_t can_ids_config_driver[num_config_packets];
+            uint32_t can_ids_config_driver[NUM_CONFIG_PACKETS];
             uint8_t requested_driver = config_menu_main_array[DRIVER_PROFILE_INDEX].value.value;
-            uint32_t base_driver_canid = CMR_CANID_DIM_CONFIG0_DRV0 + (2 * requested_driver * num_config_packets);
-            for (int i = 0; i < num_config_packets; i++) {
+            uint32_t base_driver_canid = CMR_CANID_DIM_CONFIG0_DRV0 + (2 * requested_driver * NUM_CONFIG_PACKETS);
+            for (int i = 0; i < NUM_CONFIG_PACKETS; i++) {
                 can_ids_config_driver[i] = base_driver_canid + i;
             }
 
             /* Transmit new messages to cdc */
-            for (int i = 0; i < num_config_packets; i++) {
+            for (int i = 0; i < NUM_CONFIG_PACKETS; i++) {
                 canTX(
                     can_ids_config_driver[i],
                     &config_message_array[i],
@@ -313,9 +313,8 @@ void ramRxCallback(cmr_can_t *can1, uint16_t canID, const void *data, size_t dat
 }
 
 bool verifyData(uint8_t dim_config_data_array_starting_idx, int items_per_struct,  uint8_t *cdc_config_data_arr){
-    int config_idx = 0;
-    for (uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + items_per_struct; i++) {
-        if(config_menu_main_array[i].value.value != cdc_config_data_arr[config_idx++]){
+    for (uint8_t i = 0; i < items_per_struct; i++) {
+        if(config_menu_main_array[dim_config_data_array_starting_idx + i].value.value != cdc_config_data_arr[i]){
             return false;
         }
     }
@@ -324,25 +323,31 @@ bool verifyData(uint8_t dim_config_data_array_starting_idx, int items_per_struct
 
 void setConfigValues(uint8_t dim_config_data_array_starting_idx,
                      int items_per_struct, uint8_t *cdc_config_data_arr) {
-    int local_index = 0;
-    for (uint8_t i = dim_config_data_array_starting_idx;
-         i < dim_config_data_array_starting_idx + items_per_struct; i++) {
-        config_menu_main_array[i].value.value =
-            cdc_config_data_arr[local_index++];
+    for (uint8_t i = 0; i < items_per_struct; i++) {
+        config_menu_main_array[dim_config_data_array_starting_idx + i].value.value =
+            cdc_config_data_arr[i];
     }
 }
+
+bool correctDriverCanID(uint32_t canID) {
+    // calulcate the base canID for the requested driver from the CDC side
+    uint8_t requested_driver = config_menu_main_array[DRIVER_PROFILE_INDEX].value.value;
+    uint32_t base_driver_canid = CMR_CANID_CDC_CONFIG0_DRV0 + (2 * requested_driver * NUM_CONFIG_PACKETS);
+    return (canID >= base_driver_canid && canID < base_driver_canid + NUM_CONFIG_PACKETS);
+}
+
+static bool initialized = false;
 
 void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen) {
     // the gotten packet array keeps track of which of the config packets we've gotten
     // since they can be received out of order.
-    static bool gotten_packet[num_config_packets] = { 0 };
-    static bool initialized = false;
+    static bool gotten_packet[NUM_CONFIG_PACKETS] = { 0 };
     static int items_per_struct = 4;  // number of items in the struct. Probably not good to leave hardcoded
 
     // calculate what config packet this message is
-    int packet_number = (canID - CMR_CANID_CDC_CONFIG0_DRV0) % num_config_packets;
+    int packet_number = (canID - CMR_CANID_CDC_CONFIG0_DRV0) % NUM_CONFIG_PACKETS;
     // cast the data to the appropriate format
-    cmr_canDIMCDCconfig_t *cdc_config_data = (cmr_canDIMCDCconfig_t *)data;
+    cmr_canDIMCDCconfig_t *cdc_config_data = data;
     // cast the data to an array for easy indexing. Sly i know :P
     uint8_t *cdc_config_data_arr = (uint8_t *)cdc_config_data;
 
@@ -351,7 +356,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
     // Increment i by 1 because offset for driver index
     uint8_t dim_config_data_array_starting_idx = packet_number * items_per_struct + 1;
 
-    if (packet_number >= num_config_packets) {
+    if (packet_number >= NUM_CONFIG_PACKETS) {
         // time to shit yo pants bc some wack shit has happened.
         cmr_panic("Number of Packets >= Number of Configured Packets");
     }
@@ -359,7 +364,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
     /**** Cold Boot, await default parameters-- blindly read data if it's the first driver and set that to done ****/
     if (!initialized) {
         config_menu_main_array[DRIVER_PROFILE_INDEX].value.value = 0;  // Initialize to driver 0
-        if (((uint32_t)canID - CMR_CANID_CDC_CONFIG0_DRV0) < num_config_packets) {
+        if (((uint32_t)canID - CMR_CANID_CDC_CONFIG0_DRV0) < NUM_CONFIG_PACKETS) {
             // copy data over to local memory!
             setConfigValues(dim_config_data_array_starting_idx,
                             items_per_struct, cdc_config_data_arr);
@@ -370,13 +375,9 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
 
     /**** Update driver config. Same driver, new data ****/
     // if waiting to save -- make sure all data is same and then reset that
+    // calulcate the base canID for the requested driver from the CDC side
     else if (waiting_for_cdc_to_confirm_config) {
-        uint8_t requested_driver = config_menu_main_array[DRIVER_PROFILE_INDEX].value.value;
-        // calulcate the base canID for the requested driver from the CDC side
-        uint32_t requested_driver_cdc_canid = CMR_CANID_CDC_CONFIG0_DRV0 + (2 * requested_driver * num_config_packets);
-
-        // filter for only the right driver can ID
-        if ((canID - requested_driver_cdc_canid) < num_config_packets && canID >= requested_driver_cdc_canid) {
+        if(correctDriverCanID(canID)){
             // set appropriate config message rx flag if data matches
             gotten_packet[packet_number] = verifyData(dim_config_data_array_starting_idx, items_per_struct, cdc_config_data_arr);
         }
@@ -384,13 +385,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
 
     /**** Get New Driver Parameters. Blindly read them since only CDC knows the right values for new driver ****/
     else if (waiting_for_cdc_new_driver_config) {
-        // new requested driver is already in the config_main_menu
-        uint8_t requested_driver = config_menu_main_array[DRIVER_PROFILE_INDEX].value.value;
-        // calulcate the base canID for the requested driver from the CDC side
-        uint32_t requested_driver_cdc_canid = CMR_CANID_CDC_CONFIG0_DRV0 + (2 * requested_driver * num_config_packets);
-
-        // filter for only the right driver can ID based on the new requested driver
-        if ((canID - requested_driver_cdc_canid) < num_config_packets && canID >= requested_driver_cdc_canid) {
+        if (correctDriverCanID(canID)){
             // get the data and flush it to local memory
             setConfigValues(dim_config_data_array_starting_idx,
                             items_per_struct, cdc_config_data_arr);
@@ -401,7 +396,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
 
     // check if all config messages have been received
     bool all_packets_recieved = true;
-    for (uint8_t i = 0; i < num_config_packets; i++) {
+    for (uint8_t i = 0; i < NUM_CONFIG_PACKETS; i++) {
         all_packets_recieved &= gotten_packet[i];
     }
 
@@ -430,7 +425,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
         }
 
         // reset all packets rx for the next run
-        memset(gotten_packet, false, num_config_packets);
+        memset(gotten_packet, false, NUM_CONFIG_PACKETS);
 
         config_screen_update_confirmed = true;
     }
