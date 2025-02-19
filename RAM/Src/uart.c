@@ -422,7 +422,7 @@ void uartInit(void)
         &uart.port, USART1, &uartInit,
         GPIOA, GPIO_PIN_10,          /* rx */
         GPIOA, GPIO_PIN_9,           /* tx */
-        DMA2_Stream5, DMA_CHANNEL_4, /* See reference manual pp. 218/1324 https://www.st.com/resource/en/reference_manual/rm0430-stm32f413423-advanced-armbased-32bit-mcus-stmicroelectronics.pdf
+        DMA2_Stream5, DMA_CHANNEL_4, /* See reference manual pp. 218/1324 https://www.st.com/resource/en/reference_manual/rm0430-stm32f413423-advanced-armbased-32bit-mcus-stmicroelectronics.pdf */
         DMA2_Stream7, DMA_CHANNEL_4);
 
     cmr_taskInit(&uart.txTask, "UART TX", 2, uartTX_Task, NULL);
