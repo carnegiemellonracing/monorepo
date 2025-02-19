@@ -711,7 +711,7 @@ static void sendPowerDiagnostics(void) {
 
 void sendAcknowledgement(void) {
     cmr_canDIMAck_t ack = {
-        .acknowledge = (uint8_t) true
+        .acknowledge = 1
     };
 
     canTX(

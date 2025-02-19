@@ -178,43 +178,34 @@ void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait) {
     while (written < len) {
         // Calculate length to write.
         size_t wrLen = len - written;
+        size_t remLen = tftCoCmdRemLen(tft);
 
-        if (!wait) {
-            // Wait for free space to write the entire command.
-            size_t remLen;
-            do {
+        if (wait) {
+            // If no space, wait until enough space is available
+            while (remLen == 0) {
                 remLen = tftCoCmdRemLen(tft);
-            } while (remLen < wrLen);
-        } else {
-            // Write as much as possible.
-            size_t remLen = tftCoCmdRemLen(tft);
-            if (remLen == 0) {
-                continue;  // No space yet.
             }
-            if (wrLen > remLen) {
-                wrLen = remLen;
+        } else {
+            // Ensure there's enough space for the full command
+            while (remLen < wrLen) {
+                remLen = tftCoCmdRemLen(tft);
             }
         }
 
         tftWrite(
             tft, TFT_ADDR_RAM_CMD + tft->coCmdWr,
             wrLen, dataBuf + written);
-        if (wrLen % sizeof(uint32_t) != 0) {
-            // Round-up to word-aligned length.
-            wrLen /= sizeof(uint32_t);
-            wrLen++;
-            wrLen *= sizeof(uint32_t);
-        }
 
+        // Round-up to word-aligned length.
+        wrLen = (wrLen + sizeof(uint32_t)-1) & ~(sizeof(uint32_t)-1);
         written += wrLen;
 
         // Update the command write address.
-        uint16_t coCmdWr = tft->coCmdWr + wrLen;
-        if (coCmdWr >= TFT_RAM_CMD_SIZE) {
-            coCmdWr -= TFT_RAM_CMD_SIZE;
+        tft->coCmdWr += wrLen;
+        if (tft->coCmdWr >= TFT_RAM_CMD_SIZE) {
+            tft->coCmdWr -= TFT_RAM_CMD_SIZE;
         }
-        tftWrite(tft, TFT_ADDR_CMD_WRITE, sizeof(coCmdWr), &coCmdWr);
-        tft->coCmdWr = coCmdWr;
+        tftWrite(tft, TFT_ADDR_CMD_WRITE, sizeof(tft->coCmdWr), &tft->coCmdWr);
 
         if (!wait) {
             // No waiting; we must have written the whole buffer.
@@ -225,7 +216,7 @@ void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait) {
         // Wait for the command to finish.
         do {
             tftRead(tft, TFT_ADDR_CMD_READ, sizeof(tft->coCmdRd), &tft->coCmdRd);
-        } while (tft->coCmdRd != coCmdWr);
+        } while (tft->coCmdRd != tft->coCmdWr);
     }
 }
 

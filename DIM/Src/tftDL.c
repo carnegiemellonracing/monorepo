@@ -750,8 +750,8 @@ void tftDLWrite(tft_t *tft, const tftDL_t *tftDL) {
 void setConfigContextString(int8_t scroll_index) {
     char *context_string = config_menu_main_array[scroll_index].ESE_context_text_variable;
     uint32_t context_string_address_offset = ESE_CONTEXT_VAL;
-    uint32_t *context_string_pointer = (void *)(tftDL_configData + context_string_address_offset);
-    sprintf((char *)context_string_pointer, context_string);
+    char *context_string_pointer = (void *)(tftDL_configData + context_string_address_offset);
+    sprintf(context_string_pointer, "%s", context_string);
 }
 
 
@@ -768,7 +768,7 @@ uint8_t configValueIncrementer(uint8_t value, uint8_t value_min, uint8_t value_m
 void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_requested) {
     // calculate the varoius addresses to modify
     uint32_t value_address_offset = config_menu_main_array[scroll_index].ESE_value_variable;
-    uint32_t *value_address_pointer = (void *)(tftDL_configData + value_address_offset);
+    char *value_address_pointer = (void *)(tftDL_configData + value_address_offset);
 
     // lut for custom enum
     char **custom_enum_lut = config_menu_main_array[scroll_index].ESE_value_string_lut;
@@ -790,13 +790,13 @@ void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_r
             // treat it like an integer
         case integer:
             value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested);
-            snprintf((char *)value_address_pointer, 4, "%3d", value);
+            snprintf(value_address_pointer, 4, "%3d", value);
             break;
         case boolean:
             if (up_requested || down_requested) {
                 value = !value;
             }
-            sprintf((char *)value_address_pointer, config_boolean_string_lut[value]);
+            sprintf(value_address_pointer, config_boolean_string_lut[value]);
             break;
         case float_1_decimal:
             value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested);
@@ -804,14 +804,14 @@ void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_r
             buffer[0] = buffer[1];
             buffer[1] = buffer[2];
             buffer[2] = '.';
-            sprintf((char *)value_address_pointer, buffer);
+            sprintf(value_address_pointer, buffer);
             break;
         case float_2_decimal:
             value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested);
             snprintf(buffer, 5, "%4d", value);
             buffer[0] = buffer[1];
             buffer[1] = '.';
-            sprintf((char *)value_address_pointer, buffer);
+            sprintf(value_address_pointer, buffer);
             break;
         case custom_enum:
             // -1 since index off of 0
@@ -914,8 +914,9 @@ void tftDL_configUpdate() {
 
     // if there are no move requests, then check/implement selection values
     else if (config_increment_up_requested || config_increment_down_requested) {
-        if (config_increment_down_requested && config_increment_up_requested)
+        if (config_increment_down_requested && config_increment_up_requested){
             return;  // both are an error
+        }
 
         if (current_scroll_index == DRIVER_PROFILE_INDEX) {
             flush_config_screen_to_cdc = true;
@@ -927,8 +928,8 @@ void tftDL_configUpdate() {
             // Change driver
             setConfigIncrementValue(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
             waiting_for_cdc_new_driver_config = true;
+            // wait for the new driver to be selected
             while (waiting_for_cdc_new_driver_config) {
-                // wait for the new driver to be selected
             }
         } else {
             setConfigIncrementValue(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
@@ -943,37 +944,29 @@ void tftDL_configUpdate() {
             return;
         }
         // don't use paddles to change driver profile
-        if (current_scroll_index == DRIVER_PROFILE_INDEX) return;
+        if (current_scroll_index == DRIVER_PROFILE_INDEX){
+            return;
+        }
 
-        if (config_paddle_left_request > 0) {
+        if (config_paddle_left_request > 0 || config_paddle_right_request > 0) {
             // Handle left paddle request
             if (!paddle_prev_active) {
-                setConfigIncrementValue(current_scroll_index, false, true);
+                if (config_paddle_left_request > 0) {
+                    setConfigIncrementValue(current_scroll_index, false, true);
+                } else {
+                setConfigIncrementValue(current_scroll_index, true, false);
+                }
                 paddle_prev_active = true;
                 paddle_time_since_change = 0;
             } else {
                 paddle_time_since_change += 1;
-                float increment_freq = (float)config_paddle_left_request / (float)paddle_time_scale_factor;
-                // increment count relative to display update period (ie period of this function)
+                float increment_freq = config_paddle_left_request > 0 ? (float)config_paddle_left_request : (float)config_paddle_right_request;
+                increment_freq /= (float)paddle_time_scale_factor;
+
                 float increment_count = (float)TFT_UPDATE_PERIOD_MS / increment_freq;
+                // increment count relative to display update period (ie period of this function)
                 if ((float)paddle_time_since_change >= increment_count) {
                     setConfigIncrementValue(current_scroll_index, false, true);
-                    paddle_time_since_change = 0;
-                }
-            }
-        } else if (config_paddle_right_request > 0) {
-            // Handle right paddle request
-            if (!paddle_prev_active) {
-                setConfigIncrementValue(current_scroll_index, true, false);
-                paddle_prev_active = true;
-                paddle_time_since_change = 0;
-            } else {
-                paddle_time_since_change += 1;
-                float increment_freq = (float)config_paddle_right_request / (float)paddle_time_scale_factor;
-                // increment count relative to display update period (ie period of this function)
-                float increment_count = (float)TFT_UPDATE_PERIOD_MS / increment_freq;
-                if ((float)paddle_time_since_change >= increment_count) {
-                    setConfigIncrementValue(current_scroll_index, true, false);
                     paddle_time_since_change = 0;
                 }
             }
