@@ -177,7 +177,6 @@ static cmr_task_t canTX100Hz_task;
  */
 static void canTX100Hz(void *pvParameters) {
     (void)pvParameters;  // Placate compiler.
-	uint16_t REGEN_MIN = 0;
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendHeartbeat(lastWakeTime);

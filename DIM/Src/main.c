@@ -112,7 +112,7 @@ static void errorLEDs(void *pvParameters) {
  */
 int main(void) {
     // System initialization.
-     HAL_Init();
+    HAL_Init();
 
     cmr_rccSystemClockEnable();
 

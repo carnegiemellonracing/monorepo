@@ -605,10 +605,7 @@ static void stateOutput() {
             vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
 
             /* Initialize the display. */
-            tftCmd(&tft, TFT_CMD_CLKEXT, 0x00);
-            tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
-            tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
-            vTaskDelayUntil(&lastWakeTime, 300);
+            tftInitSequence();
             break;
         case START:
             /* Display Startup Screen for fixed time */

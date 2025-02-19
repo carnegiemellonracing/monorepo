@@ -282,9 +282,7 @@ void tftUpdate(void *pvParameters) {
     configASSERT(chipID == TFT_CHIP_ID);
 
     /* Init Sequence*/
-    tftCmd(&tft, TFT_CMD_CLKEXT, 0x00);
-    tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
-    vTaskDelayUntil(&lastWakeTime, 300);
+    tftInitSequence();
 
     /* Initialize Video Registers. */
     size_t tftInitsLen = sizeof(tftInits) / sizeof(tftInits[0]);
@@ -325,6 +323,11 @@ void tftUpdate(void *pvParameters) {
     */
 }
 
+void tftInitSequence() {
+    tftCmd(&tft, TFT_CMD_CLKEXT, 0x00);
+    tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
+    vTaskDelay(300);
+}
 
 /**
  * @brief Draws the Display Updated List to the Screen

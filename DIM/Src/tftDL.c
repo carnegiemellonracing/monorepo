@@ -566,6 +566,10 @@ void tftDL_RTDUpdate(
         case RR:
             rr_color_cmd = red;
             break;
+        default:
+            // We should never case on NONE or NUM_CORNERS
+            cmr_panic("Invalid corner ID");
+            break;
     }
     *fl_color = fl_color_cmd;
     *fr_color = fr_color_cmd;
