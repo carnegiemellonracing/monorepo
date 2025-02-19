@@ -8,9 +8,10 @@ This repository consolidates individual board codebases into a single, unified s
 
 - **DIM**: Driver Interface Module
 - **HVC**: High Voltage Controller
-- **PTC**: Powertrain Controller
+- **DCM**: Dynamic Controller Module
 - **RAM**: Remote Access Module
 - **VSM**: Vehicle Safety Module
+- **LV-BMS** : Low Voltage Batttery Management System
 
 ---
 
