@@ -312,6 +312,26 @@ void ramRxCallback(cmr_can_t *can1, uint16_t canID, const void *data, size_t dat
     }
 }
 
+bool verifyData(uint8_t dim_config_data_array_starting_idx, int items_per_struct,  uint8_t *cdc_config_data_arr){
+    int config_idx = 0;
+    for (uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + items_per_struct; i++) {
+        if(config_menu_main_array[i].value.value != cdc_config_data_arr[config_idx++]){
+            return false;
+        }
+    }
+    return true;
+}
+
+void setConfigValues(uint8_t dim_config_data_array_starting_idx,
+                     int items_per_struct, uint8_t *cdc_config_data_arr) {
+    int local_index = 0;
+    for (uint8_t i = dim_config_data_array_starting_idx;
+         i < dim_config_data_array_starting_idx + items_per_struct; i++) {
+        config_menu_main_array[i].value.value =
+            cdc_config_data_arr[local_index++];
+    }
+}
+
 void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen) {
     // the gotten packet array keeps track of which of the config packets we've gotten
     // since they can be received out of order.
@@ -340,11 +360,9 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
     if (!initialized) {
         config_menu_main_array[DRIVER_PROFILE_INDEX].value.value = 0;  // Initialize to driver 0
         if (((uint32_t)canID - CMR_CANID_CDC_CONFIG0_DRV0) < num_config_packets) {
-            int local_can_data_index = 0;
             // copy data over to local memory!
-            for (uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + items_per_struct; i++) {
-                config_menu_main_array[i].value.value = cdc_config_data_arr[local_can_data_index++];
-            }
+            setConfigValues(dim_config_data_array_starting_idx,
+                            items_per_struct, cdc_config_data_arr);
         }
         // mark the appropriate packet as recieved
         gotten_packet[packet_number] = true;
@@ -358,16 +376,9 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
         uint32_t requested_driver_cdc_canid = CMR_CANID_CDC_CONFIG0_DRV0 + (2 * requested_driver * num_config_packets);
 
         // filter for only the right driver can ID
-        if (((uint32_t)canID - requested_driver_cdc_canid) < num_config_packets && ((uint32_t)canID) >= requested_driver_cdc_canid) {
-            bool all_data_matches = true;
-
-            // get the data and check if all the data is the same
-            int local_index = 0;
-            for (uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + items_per_struct; i++) {
-                all_data_matches &= (config_menu_main_array[i].value.value == cdc_config_data_arr[local_index++]);
-            }
+        if ((canID - requested_driver_cdc_canid) < num_config_packets && canID >= requested_driver_cdc_canid) {
             // set appropriate config message rx flag if data matches
-            gotten_packet[packet_number] = all_data_matches;
+            gotten_packet[packet_number] = verifyData(dim_config_data_array_starting_idx, items_per_struct, cdc_config_data_arr);
         }
     }
 
@@ -379,12 +390,10 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
         uint32_t requested_driver_cdc_canid = CMR_CANID_CDC_CONFIG0_DRV0 + (2 * requested_driver * num_config_packets);
 
         // filter for only the right driver can ID based on the new requested driver
-        if (((uint32_t)canID - requested_driver_cdc_canid) < num_config_packets && ((uint32_t)canID) >= requested_driver_cdc_canid) {
+        if ((canID - requested_driver_cdc_canid) < num_config_packets && canID >= requested_driver_cdc_canid) {
             // get the data and flush it to local memory
-            int local_index = 0;
-            for (uint8_t i = dim_config_data_array_starting_idx; i < dim_config_data_array_starting_idx + items_per_struct; i++) {
-                config_menu_main_array[i].value.value = cdc_config_data_arr[local_index++];
-            }
+            setConfigValues(dim_config_data_array_starting_idx,
+                            items_per_struct, cdc_config_data_arr);
             // set appropriate config message rx flag if data matches
             gotten_packet[packet_number] = true;
         }
@@ -411,7 +420,9 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
                 exitConfigScreen();
             }
         }
-        if (flush_config_screen_to_cdc) flush_config_screen_to_cdc = false;
+        if (flush_config_screen_to_cdc) {
+            flush_config_screen_to_cdc = false;
+        }
         if (waiting_for_cdc_new_driver_config) {
             waiting_for_cdc_new_driver_config = false;
             // redraw all values
@@ -419,13 +430,12 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
         }
 
         // reset all packets rx for the next run
-        for (uint8_t i = 0; i < num_config_packets; i++) {
-            gotten_packet[i] = false;
-        }
+        memset(gotten_packet, false, num_config_packets);
 
         config_screen_update_confirmed = true;
     }
 }
+
 
 void canRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen) {
     if (canID == CMR_CANID_DIM_TEXT_WRITE) {
