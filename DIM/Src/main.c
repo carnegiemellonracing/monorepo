@@ -70,9 +70,7 @@ static void statusLED(void *pvParameters) {
 // * @return The VSM latch matrix.
 // */
 uint8_t getVSMlatchMatrix(void) {
-    cmr_canRXMeta_t *statusVSMMeta = canRXMeta + CANRX_VSM_STATUS;
-    volatile cmr_canVSMStatus_t *statusVSM =
-        (void *)statusVSMMeta->payload;
+    volatile cmr_canVSMStatus_t *statusVSM = getPayload(CANRX_VSM_STATUS);
 
     return statusVSM->latchMatrix;
 }

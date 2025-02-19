@@ -369,30 +369,15 @@ void drawRacingScreen(void){
  *
  */
 void drawErrorScreen(void) {
-    cmr_canRXMeta_t *metaVSMStatus = canRXMeta + CANRX_VSM_STATUS;
-    volatile cmr_canVSMStatus_t *canVSMStatus =
-        (void *)metaVSMStatus->payload;
+    volatile cmr_canVSMStatus_t *canVSMStat getPayload(CANRX_VSM_STATUS);
 
-    cmr_canRXMeta_t *metaHVCHeartbeat = canRXMeta + CANRX_HVC_HEARTBEAT;
-    volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat =
-        (void *)metaHVCHeartbeat->payload;
+    volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat  getPayload(CANRX_HVC_HEARTBEAT);
 
-    cmr_canRXMeta_t *metaAmkFLActualValues2 = canRXMeta + CANRX_AMK_FL_ACT_2;
-    volatile cmr_canAMKActualValues2_t *amkFLActualValues2 =
-        (void *)metaAmkFLActualValues2->payload;
-    cmr_canRXMeta_t *metaAmkFRActualValues2 = canRXMeta + CANRX_AMK_FR_ACT_2;
-    volatile cmr_canAMKActualValues2_t *amkFRActualValues2 =
-        (void *)metaAmkFRActualValues2->payload;
-    cmr_canRXMeta_t *metaAmkBLActualValues2 = canRXMeta + CANRX_AMK_RL_ACT_2;
-    volatile cmr_canAMKActualValues2_t *amkBLActualValues2 =
-        (void *)metaAmkBLActualValues2->payload;
-    cmr_canRXMeta_t *metaAmkBRActualValues2 = canRXMeta + CANRX_AMK_RR_ACT_2;
-    volatile cmr_canAMKActualValues2_t *amkBRActualValues2 =
-        (void *)metaAmkBRActualValues2->payload;
-
-    cmr_canRXMeta_t *metaBMSLowVoltage = canRXMeta + CANRX_HVC_LOW_VOLTAGE;
-    volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
-        (void *)metaBMSLowVoltage->payload;
+    volatile cmr_canAMKActualValues2_t *amkFLActualValues2 = getPayload(CANRX_AMK_FL_ACT_2);
+    volatile cmr_canAMKActualValues2_t *amkFRActualValues2 = getPayload(CANRX_AMK_FR_ACT_2);
+    volatile cmr_canAMKActualValues2_t *amkBLActualValues2 = getPayload(CANRX_AMK_RL_ACT_2);
+    volatile cmr_canAMKActualValues2_t *amkBRActualValues2 = getPayload(CANRX_AMK_RR_ACT_2);
+    volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus = getPayload(CANRX_HVC_LOW_VOLTAGE);
 
     tftDLContentLoad(&tft, &tftDL_error);
 
@@ -463,44 +448,21 @@ void drawRTDScreen(void){
     /* Setup the Required CAN info for Display */
     cmr_canRXMeta_t *metaMemoratorBroadcast = canRXMeta + CANRX_MEMORATOR_BROADCAST;
 
-    cmr_canRXMeta_t *metaCDCHeartbeat = canRXMeta + CANRX_CDC_HEARTBEAT;
 
-    cmr_canRXMeta_t *metaHVCPackVoltage = canRXMeta + CANRX_HVC_PACK_VOLTAGE;
-    volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage =
-        (void *)metaHVCPackVoltage->payload;
+    volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage = getPayload(CANRX_HVC_PACK_VOLTAGE);
 
-    cmr_canRXMeta_t *metaHVCPackTemps = canRXMeta + CANRX_HVC_PACK_TEMPS;
-    volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps =
-        (void *)metaHVCPackTemps->payload;
+    volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps = getPayload(CANRX_HVC_PACK_TEMPS);
 
-    cmr_canRXMeta_t *metaEMDvalues = canRXMeta + CANRX_EMD_VALUES;
-    volatile cmr_canEMDMeasurements_t *canEMDvalues =
-        (void *)metaEMDvalues->payload;
+    volatile cmr_canEMDMeasurements_t *canEMDvalues = getPayload(CANRX_EMD_VALUES);
 
-
-
-    cmr_canRXMeta_t *metaBMSLowVoltage = canRXMeta + CANRX_HVC_LOW_VOLTAGE;
-    volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
-        (void *)metaBMSLowVoltage->payload;
-
-    /* cmr_canRXMeta_t *metaPTCfLoopA = canRXMeta + CANRX_PTCf_LOOP_A_TEMPS;
-    volatile cmr_canPTCfLoopTemp_A_t *canPTCfLoopTemp_A = (void *) metaPTCfLoopA->payload;
-
-    cmr_canRXMeta_t *metaPTCfLoopB = canRXMeta + CANRX_PTCf_LOOP_B_TEMPS;
-    volatile cmr_canPTCfLoopTemp_B_t *canPTCfLoopTemp_B = (void *) metaPTCfLoopB->payload;
-
-    cmr_canRXMeta_t *metaPTCpLoopA = canRXMeta + CANRX_PTCp_LOOP_A_TEMPS;
-    volatile cmr_canPTCpLoopTemp_A_t *canPTCpLoopTemp_A = (void *) metaPTCpLoopA->payload;
-
-    cmr_canRXMeta_t *metaPTCpLoopB = canRXMeta + CANRX_PTCp_LOOP_B_TEMPS;
-    volatile cmr_canPTCpLoopTemp_B_t *canPTCpLoopTemp_B = (void *) metaPTCpLoopB->payload;*/
+    volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus = getPayload(CANRX_HVC_LOW_VOLTAGE);
 
     tftDLContentLoad(&tft, &tftDL_RTD);
 
     /* Memorator present? */
     // Wait to update if hasn't seen in 2 sec (2000 ms)
     memorator_status_t memoratorStatus = MEMORATOR_NOT_CONNECTED;
-    volatile cmr_canHeartbeat_t *cdcHeartbeat = (cmr_canHeartbeat_t *)metaCDCHeartbeat->payload;
+    volatile cmr_canHeartbeat_t *cdcHeartbeat = getPayload(CANRX_CDC_HEARTBEAT);
     if ((*(uint16_t *)(cdcHeartbeat->warning) & CMR_CAN_WARN_CDC_MEMORATOR_DAQ_TIMEOUT) != 0) {
         memoratorStatus = MEMORATOR_NOT_CONNECTED;
     }
