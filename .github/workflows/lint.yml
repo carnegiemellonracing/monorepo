@@ -32,5 +32,6 @@ jobs:
         uses: wearerequired/lint-action@v2.3.0
         with:
             clang_format: true
-            auto_fix : true
+            auto_fix : false
+            neutral_check_on_warning: true
           # Enable your linters here
