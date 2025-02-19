@@ -1165,6 +1165,8 @@ typedef struct {
 // ------------------------------------------------------------------------------------------------
 // DAQ Modules
 
+typedef uint8_t cmr_canDAQTest_t; /** @brief DAQ Test type. MSB is to start/stop bits, rest are test id **/
+
 typedef struct {
     int32_t HX711_force;     /**< @brief Force from HX711 */
     float NAU7802_force;   /**< @brief Force from NAU7802 */

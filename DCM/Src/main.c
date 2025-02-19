@@ -83,6 +83,7 @@ int main(void) {
   DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
     // System initialization.
     HAL_Init();
+    srand(HAL_GetTick());
     cmr_rccSystemClockEnable();
 
     // time_OSQPControls(0, 0, 0, 0, 0, 0, true, true, false, 0);
