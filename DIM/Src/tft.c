@@ -16,7 +16,7 @@
 #include "tftContent.h"  // Content interface
 #include "tftDL.h"       // Display list interface
 #include "CMR/can_types.h" //can_types
-#include "newState.h"    //New State Machine
+#include "state.h"    //New State Machine
 
 /** @brief Expected chip ID. */
 #define TFT_CHIP_ID 0x00011308

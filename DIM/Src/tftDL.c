@@ -14,7 +14,7 @@
 #include "can.h"         // Board-specific CAN interface
 #include "gpio.h"        // Board-specific CAN interface
 #include "tftContent.h"  // Content interface
-#include "newState.h"
+#include "state.h"
 
 // used to calculate increment frequency:
 // max paddle val (255) / max increment speed (20Hz)

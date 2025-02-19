@@ -24,7 +24,7 @@
 #include "gpio.h"       // For actionButtonPressed status
 
 #include "tftDL.h"      // For RAM buffer indices
-#include "newState.h"	// For new state machine
+#include "state.h"	// For new state machine
 
 // Config Screen update requested
 bool volatile flush_config_screen_to_cdc = false;
@@ -189,7 +189,7 @@ static void canTX100Hz(void *pvParameters) {
         for(int i=0; i<NUM_BUTTONS; i++){
             packed |= canButtonStates[i] << i;
         }
-        for(int i=0; i<LRUDLen; i++) {
+        for(int i=0; i<LRUD_LEN; i++) {
             LRUDpacked |= canLRUDStates[i] << i;
         }
         /* Transmit action button status */
@@ -619,8 +619,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
  * @brief Sends FSM data message.
  */
 static void sendFSMData(void) {
-    cmr_canRXMeta_t *heartbeatVSMMeta = &(canRXMeta[CANRX_HEARTBEAT_VSM]);
-    volatile cmr_canHeartbeat_t *heartbeatVSM = (void *)heartbeatVSMMeta->payload;
+    volatile cmr_canHeartbeat_t *heartbeatVSM = getPayload(CANRX_HEARTBEAT_VSM);
 
     uint8_t throttlePosition = throttleGetPos();
     uint8_t torqueRequested = 0;

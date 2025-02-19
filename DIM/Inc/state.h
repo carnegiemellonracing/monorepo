@@ -1,5 +1,5 @@
 /**
- * @file newState.h
+ * @file state.h
  * @brief DIM state interface.
  *
  * @author Carnegie Mellon Racing

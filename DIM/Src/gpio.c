@@ -10,7 +10,7 @@
 #include <CMR/gpio.h>   // GPIO interface
 #include <stm32f4xx_hal.h>  // HAL interface
 
-#include "newState.h"
+#include "state.h"
 
 bool gpioButtonStates[NUM_BUTTONS];
 
@@ -105,16 +105,15 @@ static void XYActivate(void);
 /*
 debouncing for button presses for LRUD
  */
-# define DEBOUNCE_DELAY 50 //TODO: in milliseconds, to change
+# define DEBOUNCE_DELAY 50
 static void canLRUDdebounce (cmr_LRUD_index button){
 	//set can state to false to switch it off
 	canLRUDStates[button] = false;
 	//delay by ((debounce delay time) / (time per tick)) ticks
-	vTaskDelay(DEBOUNCE_DELAY / portTICK_PERIOD_MS);
+	vTaskDelay(DEBOUNCE_DELAY);
 	XYActivate();
 	if (gpioLRUDStates[button] == true){
 		while(gpioLRUDStates[button] == true){
-			vTaskDelay(portTICK_PERIOD_MS);
 			XYActivate();
 		}
 		canLRUDStates[button] = true;
@@ -124,11 +123,11 @@ static void canLRUDdebounce (cmr_LRUD_index button){
 // master function for detecting and changing can button states, will be in gpio loop
 void canLRUDDetect(void){
 	//turn everything off
-	for(int i = 0; i< LRUDLen; i++){
+	for(int i = 0; i< LRUD_LEN; i++){
 		canLRUDStates[i] = false;
 	}
 	XYActivate();
-	for(int i=0; i<LRUDLen; i++){
+	for(int i=0; i<LRUD_LEN; i++){
 		if(gpioLRUDStates[i] == true){
 			canLRUDdebounce(i);
 		}
