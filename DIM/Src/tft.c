@@ -369,9 +369,9 @@ void drawRacingScreen(void){
  *
  */
 void drawErrorScreen(void) {
-    volatile cmr_canVSMStatus_t *canVSMStat getPayload(CANRX_VSM_STATUS);
+    volatile cmr_canVSMStatus_t *canVSMStatus = getPayload(CANRX_VSM_STATUS);
 
-    volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat  getPayload(CANRX_HVC_HEARTBEAT);
+    volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat = getPayload(CANRX_HVC_HEARTBEAT);
 
     volatile cmr_canAMKActualValues2_t *amkFLActualValues2 = getPayload(CANRX_AMK_FL_ACT_2);
     volatile cmr_canAMKActualValues2_t *amkFRActualValues2 = getPayload(CANRX_AMK_FR_ACT_2);
