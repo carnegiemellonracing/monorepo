@@ -21,7 +21,7 @@ extern volatile int BMBErrs[BOARD_NUM-1];
 #define BALANCE_DIS false
 #define TO_IGNORE 6
 
-static const temp_to_ignore[TO_IGNORE] = {2, 41, 98, 121, 123, 132};
+static const int temp_to_ignore[TO_IGNORE] = {2, 41, 98, 121, 123, 132};
 
 
 // Use array to ignore some broken thermistor channels
