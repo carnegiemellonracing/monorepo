@@ -168,26 +168,10 @@ static void XYActivate(void){
 	float sensorY = adcToVoltage(cmr_sensorListGetValue(&sensorList, SENSOR_CH_Y));
 	// Both sensors less than 0.5V
     // LEFT
-	if (sensorX >= 4.5f){
-		gpioLRUDStates[LEFT] = true;
-	}else{
-		gpioLRUDStates[LEFT] = false;
-	}
-	if (sensorX<=1.0f){
-		gpioLRUDStates[RIGHT] = true;
-	}else{
-		gpioLRUDStates[RIGHT] = false;
-	}
-	if (sensorY >= 4.5f){
-		gpioLRUDStates[UP] = true;
-	}else{
-		gpioLRUDStates[UP] = false;
-	}
-	if (sensorY <= 1.0f){
-		gpioLRUDStates[DOWN] = true;
-	}else{
-		gpioLRUDStates[DOWN] = false;
-	}
+	gpioLRUDStates[LEFT]  = (sensorX >= 4.5f);
+	gpioLRUDStates[RIGHT] = (sensorX <= 1.0f);
+	gpioLRUDStates[UP]    = (sensorY >= 4.5f);
+	gpioLRUDStates[DOWN]  = (sensorY <= 1.0f);
 }
 
 
@@ -201,7 +185,7 @@ static void gpioReadButtons(void *pvParameters) {
         // Direct assignment for CAN buttons
         for(int i=0; i<NUM_BUTTONS; i++){
 			//TODO: two button states
-            canButtonStates[i] = (HAL_GPIO_ReadPin(gpioPinConfigs[i].port, gpioPinConfigs[i].init.Pin) == GPIO_PIN_RESET);
+            canButtonStates[i] = (cmr_gpioRead(i) == GPIO_PIN_RESET);
         }
 		canLRUDDetect();
 		vTaskDelayUntil(&lastWakeTime, 100);
