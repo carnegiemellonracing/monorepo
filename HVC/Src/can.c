@@ -42,11 +42,6 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 25
     },
     [CANRX_EMD_MEASURE] = {
-        .canID = CMR_CANID_EMD_MEASUREMENT,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 25
-    },
-    [CANRX_EMD_MEASURE] = {   
         .canID = CMR_CANID_EMD_MEASUREMENT_RETX,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
@@ -100,7 +95,7 @@ static void canTX1Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
 
-        // BMB Temperature Status 
+        // BMB Temperature Status
         for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM - 1; bmb_index++) {
             sendBMSBMBStatusTemp(bmb_index);
         }
@@ -133,10 +128,10 @@ static void canTX10Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // BRUSA Charger decided by state machine 
+        // BRUSA Charger decided by state machine
         // sendBRUSAChargerControl();
 
-        // BMB Voltage Status 
+        // BMB Voltage Status
         for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
             sendBMSBMBStatusVoltage(bmb_index);
         }
@@ -422,7 +417,7 @@ static void sendBMSMinMaxCellVoltage(void) {
 
     uint8_t minCellVoltageBMBNum = 0;
 	uint8_t maxCellVoltageBMBNum = 0;
-	
+
 	uint8_t minCellVoltageIndex = 0;
 	uint8_t maxCellVoltageIndex = 0;
 
@@ -463,7 +458,7 @@ static void sendBMSMinMaxCellTemp(void) {
 
     uint8_t minCellTempBMBNum;
 	uint8_t maxCellTempBMBNum;
-	
+
 	uint8_t minCellTempIndex;
 	uint8_t maxCellTempIndex;
 
