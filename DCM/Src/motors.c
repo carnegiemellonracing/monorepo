@@ -14,6 +14,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <limits.h>
+#include <stdlib.h>
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/config_screen_helper.h>
 #include <CMR/fir_filter.h>
@@ -27,7 +28,7 @@
 #include "pumps.h"
 #include "fans.h"
 #include "constants.h"
-
+#include "controls.h"
 // ------------------------------------------------------------------------------------------------
 // Constants
 

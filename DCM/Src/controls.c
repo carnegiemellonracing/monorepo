@@ -73,7 +73,17 @@ static TickType_t previousTickCount;
 
 // ------------------------------------------------------------------------------------------------
 // Function implementations
-
+void setFastTorqueWithParallelRegen(uint8_t brakePressurePsi_u8, uint8_t throttlePos_u8);
+void setLaunchControl(
+	uint8_t throttlePos_u8,
+	uint8_t brakePressurePsi_u8,
+	int16_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
+	float leftRightBias_Nm, /** IGNORED UNLESS traction_control_mode (defined in the function) is TC_MODE_TORQUE */
+	bool assumeNoTurn,
+	bool ignoreYawRate,
+	bool allowRegen,
+	float critical_speed_mps
+);
 /** @brief initialize yaw rate control */
 static void initYawRateControl() {
     // read yrc_kp from DIM
