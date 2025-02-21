@@ -21,7 +21,7 @@ extern volatile int BMBErrs[BOARD_NUM-1];
 #define BALANCE_DIS false
 #define TO_IGNORE 6
 
-static const temp_to_ignore[TO_IGNORE] = {2, 41, 98, 121, 123, 132};
+static const int temp_to_ignore[TO_IGNORE] = {2, 41, 98, 121, 123, 132};
 
 
 // Use array to ignore some broken thermistor channels
@@ -129,7 +129,7 @@ void vBMBSampleTask(void *pvParameters) {
 
 // Lookup functions
 uint8_t getBMBMaxTempIndex(uint8_t bmb_index) {
-	int16_t maxTemp = 0xFFFF;
+	uint16_t maxTemp = 0xFFFF;
 	uint8_t cell_index = 0;
 	for (uint8_t i = 0; i < TEMP_CHANNELS; i++) {
 		int16_t temp = BMBData[bmb_index].cellTemperatures[i];
