@@ -2,21 +2,27 @@
     "version": 3,
     "configurePresets": [
         {
+            "name": "default",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "toolchainFile": "${sourceDir}/cmake/gcc-arm-none-eabi.cmake",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            }
+        },
+        {
             "name": "debug",
+            "inherits": "default",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             }
         },
         {
             "name": "static",
+            "inherits": "default",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Static"
-            }
-        },
-        {
-            "name": "release",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
             }
         }
     ],
@@ -27,8 +33,7 @@
         },
         {
             "name": "static",
-            "description": "",
-            "displayName": "",
+            "description": "Build for Static Analysis",
             "configurePreset": "static"
         }
     ]
