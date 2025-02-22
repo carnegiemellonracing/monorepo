@@ -122,7 +122,6 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/syscall.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/sysmem.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/tft.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/tftContent.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/tftDL.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/state.c
 

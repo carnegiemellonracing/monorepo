@@ -13,7 +13,6 @@
 #include "adc.h"         // GLV voltage
 #include "can.h"         // Board-specific CAN interface
 #include "gpio.h"        // Board-specific CAN interface
-#include "tftContent.h"  // Content interface
 #include "state.h"
 
 // used to calculate increment frequency:
