@@ -174,6 +174,12 @@ void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait) {
 
     const uint8_t *dataBuf = data;
     size_t written = 0;
+    uint32_t space;
+    tftRead(tft, TFT_ADDR_CMDB_SPACE, sizeof(space), &space);
+    if (len < space) {
+        tftWrite(tft, TFT_ADDR_CMDB_WRITE, len, dataBuf);
+        return;
+    }
 
     while (written < len) {
         // Calculate length to write.
