@@ -106,19 +106,6 @@ static void XYActivate(void);
 debouncing for button presses for LRUD
  */
 # define DEBOUNCE_DELAY 50
-static void canLRUDdebounce (cmr_LRUD_index button){
-	//set can state to false to switch it off
-	canLRUDStates[button] = false;
-	//delay by ((debounce delay time) / (time per tick)) ticks
-	vTaskDelay(DEBOUNCE_DELAY);
-	XYActivate();
-	if (gpioLRUDStates[button] == true){
-		while(gpioLRUDStates[button] == true){
-			XYActivate();
-		}
-		canLRUDStates[button] = true;
-	}
-}
 
 // master function for detecting and changing can button states, will be in gpio loop
 void canLRUDDetect(void){
@@ -129,7 +116,16 @@ void canLRUDDetect(void){
 	XYActivate();
 	for(int i=0; i<LRUD_LEN; i++){
 		if(gpioLRUDStates[i] == true){
-			canLRUDdebounce(i);
+			canLRUDStates[button] = false;
+			//delay by ((debounce delay time) / (time per tick)) ticks
+			vTaskDelay(DEBOUNCE_DELAY);
+			XYActivate();
+			if (gpioLRUDStates[button] == true){
+				while(gpioLRUDStates[button] == true){
+					XYActivate();
+				}
+				canLRUDStates[button] = true;
+			}
 		}
 	}
 }

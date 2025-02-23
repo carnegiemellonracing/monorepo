@@ -325,7 +325,6 @@ static cmr_state getReqScreen(void) {
     switch (currState) {
         case INIT:
         	//initializes tft screen
-        	// tftUpdate(&tft);
     		nextState = START;
 
             break;
@@ -333,7 +332,9 @@ static cmr_state getReqScreen(void) {
             if(state.vsmReq == CMR_CAN_GLV_ON) {
                 nextState = NORMAL;
             }
-            else nextState = START;
+            else {
+                nextState = START;
+            }
             break;
         case NORMAL:
             if(canLRUDStates[LEFT]) {
@@ -344,7 +345,9 @@ static cmr_state getReqScreen(void) {
                 nextState = RACING;
                 //canLRUDStates[RIGHT] = false;
             }
-            else nextState = NORMAL;
+            else {
+                nextState = NORMAL;
+            }
             break;
         case CONFIG:
             //look into how button move on screen on campus
@@ -378,7 +381,9 @@ static cmr_state getReqScreen(void) {
                 nextState = RACING;
                 //gpioButtonStates[SW2] = 0;
             }
-            else nextState = CONFIG;
+            else{
+                nextState = CONFIG;
+            }
             break;
         case dimStateERROR:
             nextState = INIT;
@@ -392,7 +397,9 @@ static cmr_state getReqScreen(void) {
                 nextState = NORMAL;
                 //canLRUDStates[RIGHT] = false;
             }
-            else nextState = RACING;
+            else {
+                nextState = RACING;
+            }
             break;
         default:
             nextState = INIT;
@@ -545,10 +552,8 @@ static void stateOutput() {
              /* Restarting the Display. */
             TickType_t lastWakeTime = xTaskGetTickCount();
     		//change pin of screen
-            cmr_gpioWrite(GPIO_PD_N, 0);  // TODO figure out pin
-            vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
+            cmr_gpioWrite(GPIO_PD_N, 0);
             cmr_gpioWrite(GPIO_PD_N, 1);
-            vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
             /* Initialize the display. */
             tftInitSequence();
             break;

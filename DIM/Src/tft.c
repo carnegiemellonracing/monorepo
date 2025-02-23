@@ -264,7 +264,6 @@ void tftUpdate(void *pvParameters) {
         { .addr = TFT_ADDR_VSIZE, .val = 548 },
         { .addr = TFT_ADDR_GPIOX_DIR, .val = (1 << 15) },
         { .addr = TFT_ADDR_GPIOX, .val = (1 << 15) },
-        { .addr = TFT_ADDR_PCLK, .val = 5 }
     };
 
 
@@ -294,29 +293,24 @@ void tftUpdate(void *pvParameters) {
     cmr_qspiSetPrescaler(&tft.qspi, TFT_QSPI_PRESCALER);
 
     /* Display Startup Screen for fixed time */
-    tftDLContentLoad(&tft, &tftDL_startup);
+    // tftDLContentLoad(&tft, &tftDL_startup);
     tftDLWrite(&tft, &tftDL_startup);
-    //    vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS); //TODO: Uncomment
-
-    /* Update Screen Info from CAN Indefinitely
-    while (1) {
-        vTaskDelayUntil(&lastWakeTime, TFT_UPDATE_PERIOD_MS);
-        if (inConfigScreen()) {
-            drawConfigScreen();
-        } else if ((stateGetVSMReq() == CMR_CAN_HV_EN) && (stateGetVSM() == CMR_CAN_ERROR)) {
-            drawSafetyScreen();
-        } else if (stateGetVSM() == CMR_CAN_ERROR) {
-            drawErrorScreen();
-        } else {
-        	//reset latching errors for ams as shown on screen
-        	prevOverVolt = false;
-        	prevUnderVolt = false;
-        	prevOverTemp = false;
-            // within drawRTDScreen, we decide if to draw testing or racing screen
-            drawRTDScreen();
-        }
+    uint8_t gpio_dir;
+    tftRead(&tft, TFT_ADDR_GPIOX_DIR, sizeof(gpio_dir), &gpio_dir);
+    uint8_t gpio;
+    tftRead(&tft, TFT_ADDR_GPIOX, sizeof(gpio), &gpio);
+    
+    const tftInit2_t tftInits2[] = {
+        { .addr = TFT_ADDR_GPIOX_DIR, .val = 0x80 | gpio_dir },
+        { .addr = TFT_ADDR_GPIOX, .val = 0x080 | gpio },
+        { .addr = TFT_ADDR_PCLK, .val = 5 },
+    };
+    size_t tftInits2Len = sizeof(tftInits2) / sizeof(tftInits2[0]);
+    for (size_t i = 0; i < tftInits2Len; i++) {
+        const tftInit2_t *init = &tftInits2[i];
+        tftWrite(&tft, init->addr, sizeof(init->val), &init->val);
     }
-    */
+
 }
 
 void tftInitSequence() {
