@@ -299,15 +299,15 @@ void tftUpdate(void *pvParameters) {
     tftRead(&tft, TFT_ADDR_GPIOX_DIR, sizeof(gpio_dir), &gpio_dir);
     uint8_t gpio;
     tftRead(&tft, TFT_ADDR_GPIOX, sizeof(gpio), &gpio);
-    
-    const tftInit2_t tftInits2[] = {
+
+    const tftInit_t tftInits2[] = {
         { .addr = TFT_ADDR_GPIOX_DIR, .val = 0x80 | gpio_dir },
         { .addr = TFT_ADDR_GPIOX, .val = 0x080 | gpio },
         { .addr = TFT_ADDR_PCLK, .val = 5 },
     };
     size_t tftInits2Len = sizeof(tftInits2) / sizeof(tftInits2[0]);
     for (size_t i = 0; i < tftInits2Len; i++) {
-        const tftInit2_t *init = &tftInits2[i];
+        const tftInit_t *init = &tftInits2[i];
         tftWrite(&tft, init->addr, sizeof(init->val), &init->val);
     }
 

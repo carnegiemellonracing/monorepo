@@ -116,15 +116,15 @@ void canLRUDDetect(void){
 	XYActivate();
 	for(int i=0; i<LRUD_LEN; i++){
 		if(gpioLRUDStates[i] == true){
-			canLRUDStates[button] = false;
+			canLRUDStates[i] = false;
 			//delay by ((debounce delay time) / (time per tick)) ticks
 			vTaskDelay(DEBOUNCE_DELAY);
 			XYActivate();
-			if (gpioLRUDStates[button] == true){
-				while(gpioLRUDStates[button] == true){
+			if (gpioLRUDStates[i] == true){
+				while(gpioLRUDStates[i] == true){
 					XYActivate();
 				}
-				canLRUDStates[button] = true;
+				canLRUDStates[i] = true;
 			}
 		}
 	}
