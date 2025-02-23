@@ -33,12 +33,6 @@ static uint32_t tftDL_startupData[] = {
 #include <DIM-ESE/startup-temp.rawh>
 };
 
-/** @brief Packets to send to the DL on startup.
- * See datasheet */
-static const tftContent_t *tftDL_startupContent[] = {
-    &tftContent_startup_lut,
-    &tftContent_startup
-};
 
 /** @brief Complete data required to draw the startup screen.
  * Exposed to interface consumers. */
@@ -46,8 +40,8 @@ const tftDL_t tftDL_startup = {
     .len = sizeof(tftDL_startupData),
     .data = tftDL_startupData,
 
-    .contentLen = sizeof(tftDL_startupContent) / sizeof(tftDL_startupContent[0]),
-    .content = tftDL_startupContent
+    .contentLen = 0,
+    .content = NULL
 };
 
 /** @brief GLV Screen */
