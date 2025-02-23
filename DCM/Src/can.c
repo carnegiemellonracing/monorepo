@@ -453,7 +453,7 @@ static void canTX100Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_AUX, &solver_aux, sizeof(cmr_can_solver_aux_t), canTX100Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_OUTPUTS, &solver_torques, sizeof(solver_torques), canTX100Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_SETTINGS, &solver_settings, sizeof(cmr_can_solver_settings_t), canTX100Hz_period_ms);
-        
+
 		// SF
 		const cmr_canCDCSafetyFilterStates_t *sfStatesInfo = getSafetyFilterInfo();
 		cmr_canCDCMotorPower_t *motorPowerInfo = getMotorPowerInfo();
@@ -547,7 +547,7 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_SETPOINT, &speedSetpoint, sizeof(speedSetpoint), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX200Hz_period_ms);
 
-        
+
         // Forward AMK messages to vehicle CAN at 200Hz.
         for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
             // Do not transmit if we haven't received that message lately
@@ -735,7 +735,7 @@ void dim_params_callback (cmr_can_t *canb_rx, uint16_t canID, const void *data, 
     // basic filter for wrong canids
     if(canID < CMR_CANID_DIM_CONFIG0_DRV0 || canID > CMR_CANID_CDC_CONFIG3_DRV3) return;
 
-    static bool gotten_packet[num_config_packets] = {0};
+    static bool gotten_packet[NUM_CONFIG_PACKETS] = {0};
     static TickType_t lastDriverChangeTime = 0;
     TickType_t currentTime = xTaskGetTickCount();
 
@@ -745,7 +745,7 @@ void dim_params_callback (cmr_can_t *canb_rx, uint16_t canID, const void *data, 
     // if (!(vsm_state == CMR_CAN_VSM_STATE_GLV_ON || vsm_state == CMR_CAN_VSM_STATE_HV_EN)) return;
 
     // calculate what config packet this message is
-    int packet_number = (canID - CMR_CANID_DIM_CONFIG0_DRV0) % num_config_packets;
+    int packet_number = (canID - CMR_CANID_DIM_CONFIG0_DRV0) % NUM_CONFIG_PACKETS;
 
     // calculate what config packet this message is and the driver
     cmr_driver_profile_t recievedDriver = getReceivedDriver(canID, &packet_number);
@@ -774,7 +774,7 @@ void dim_params_callback (cmr_can_t *canb_rx, uint16_t canID, const void *data, 
 
     // check if all config messages have been received
     bool all_packets_recieved = true;
-    for(uint8_t i = 0; i < num_config_packets; i++){
+    for(uint8_t i = 0; i < NUM_CONFIG_PACKETS; i++){
         all_packets_recieved &= gotten_packet[i];
     }
 
@@ -782,7 +782,7 @@ void dim_params_callback (cmr_can_t *canb_rx, uint16_t canID, const void *data, 
     if (all_packets_recieved == false) return;
 
     // Reset received flags
-    for(uint8_t i = 0; i < num_config_packets; i++){
+    for(uint8_t i = 0; i < NUM_CONFIG_PACKETS; i++){
         gotten_packet[i] = false;
     }
 
@@ -1149,7 +1149,7 @@ static void transmitCDC_DIMconfigMessages(){
         .config_val_4 = config_menu_main_array[16].value.value,
     };
 
-    cmr_canDIMCDCconfig_t config_message_array[num_config_packets] = {
+    cmr_canDIMCDCconfig_t config_message_array[NUM_CONFIG_PACKETS] = {
         config0,
         config1,
         config2,
@@ -1157,15 +1157,15 @@ static void transmitCDC_DIMconfigMessages(){
     };
 
     // calculate the correct CAN ID based on the current driver
-    uint32_t can_ids_config_driver[num_config_packets];
+    uint32_t can_ids_config_driver[NUM_CONFIG_PACKETS];
     // uint8_t requested_driver = config_menu_main_array[DRIVER_PROFILE_INDEX].value.value;
-    uint32_t base_driver_canid = CMR_CANID_CDC_CONFIG0_DRV0 + (2 * currentDriver * num_config_packets);
-    for(int i = 0; i < num_config_packets; i++){
+    uint32_t base_driver_canid = CMR_CANID_CDC_CONFIG0_DRV0 + (2 * currentDriver * NUM_CONFIG_PACKETS);
+    for(int i = 0; i < NUM_CONFIG_PACKETS; i++){
         can_ids_config_driver[i] = base_driver_canid + i;
     }
 
     /* Transmit new messages to DIM */
-    for(int i = 0; i < num_config_packets; i++){
+    for(int i = 0; i < NUM_CONFIG_PACKETS; i++){
         canTX(
             CMR_CAN_BUS_VEH,
             can_ids_config_driver[i],

@@ -30,6 +30,7 @@
 #define TFT_UPDATE_PERIOD_MS 20
 
 void tftUpdate(void *pvParameters);
+void tftInitSequence();
 void tftInit(void);
 void drawRacingScreen(void);
 void drawConfigScreen(void);
@@ -94,13 +95,14 @@ typedef enum {
 /** @brief Represents a display command. */
 typedef enum {
     TFT_CMD_ACTIVE = 0x00, /**< @brief Enter "ACTIVE" mode (send twice). */
-    TFT_CMD_CLKEXT = 0x44  /**< @brief Use external clock. */
+    TFT_CMD_CLKEXT = 0x44,  /**< @brief Use external clock. */
+    TFT_CMD_INFLATE =  0xFFFFFF22
 } tftCmd_t;
 
 /** @brief Represents a display address. */
 typedef enum {
     // Diagnostics.
-    TFT_ADDR_CHIP_ID = 0x0C0000, /**< @brief Chip identifier. */
+    TFT_ADDR_CHIP_ID = 0x0C'0000, /**< @brief Chip identifier. */
 
     // Video parameters.
     TFT_ADDR_HCYCLE = 0x30202C,  /**< @brief Horizontal cycle time. */
@@ -129,18 +131,22 @@ typedef enum {
     TFT_ADDR_SPI_WIDTH = 0x302188,
 
     // Clock configuration.
-    TFT_ADDR_PCLK_POL = 0x30206C, /**< @brief PCLK polarity. */
-    TFT_ADDR_PCLK = 0x302070,     /**< @brief PCLK frequency divider. */
+    TFT_ADDR_PCLK_POL = 0x30'206C, /**< @brief PCLK polarity. */
+    TFT_ADDR_PCLK = 0x30'2070,     /**< @brief PCLK frequency divider. */
 
     // Coprocessor registers.
-    TFT_ADDR_CMD_READ = 0x3020F8,  /**< @brief Coprocessor read pointer. */
-    TFT_ADDR_CMD_WRITE = 0x3020FC, /**< @brief Coprocessor write pointer. */
-    TFT_ADDR_CMD_DL = 0x302100,    /**< @brief Coprocessor DL RAM offset. */
+    TFT_ADDR_CMD_READ = 0x30'20F8,  /**< @brief Coprocessor read pointer. */
+    TFT_ADDR_CMD_WRITE = 0x30'20FC, /**< @brief Coprocessor write pointer. */
+    TFT_ADDR_CMD_DL = 0x30'2100,    /**< @brief Coprocessor DL RAM offset. */
+    TFT_ADDR_CMDB_SPACE = 0x302574,
+    TFT_ADDR_CMDB_WRITE = 0x302578,
 
     // RAM areas.
-    TFT_ADDR_RAM_G = 0x000000,  /**< @brief General purpose graphics RAM. */
-    TFT_ADDR_RAM_DL = 0x300000, /**< @brief Display list RAM. */
-    TFT_ADDR_RAM_CMD = 0x308000 /**< @brief Coprocessor command buffer. */
+    TFT_ADDR_RAM_G = 0x00'0000,  /**< @brief General purpose graphics RAM. */
+    TFT_ADDR_RAM_DL = 0x30'0000, /**< @brief Display list RAM. */
+    TFT_ADDR_RAM_REG = 0x30'2000, /**< @brief Registers */
+    TFT_ADDR_RAM_CMD = 0x30'8000, /**< @brief Coprocessor command buffer. */
+
 } tftAddr_t;
 
 /** @brief Represents a TFT display.  */
@@ -150,6 +156,7 @@ typedef struct {
     uint16_t coCmdRd; /**< @brief Coprocessor command read address. */
     uint16_t coCmdWr; /**< @brief Coprocessor command write address. */
 } tft_t;
+
 extern tft_t tft;
 
 void tftCmd(tft_t *tft, tftCmd_t cmd, uint8_t param);
@@ -158,5 +165,11 @@ void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data);
 
 void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait);
 
+/** @brief Forward declare exported content type. */
+typedef struct tftContent tftContent_t;
+
+extern const tftContent_t tftContent_startup;
+
+void tftContentLoad(tft_t *tft, const tftContent_t *tftContent);
 
 #endif /* TFT_H */

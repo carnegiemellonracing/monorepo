@@ -14,7 +14,7 @@
 #include "adc.h"        // Board-specific ADC interface
 #include "can.h"        // Board-specific CAN interface
 #include "gpio.h"       // Board-specific GPIO interface
-#include "newState.h"
+#include "state.h"
 #include "tft.h"
 
 /** @brief Status LED priority. */
@@ -70,9 +70,7 @@ static void statusLED(void *pvParameters) {
 // * @return The VSM latch matrix.
 // */
 uint8_t getVSMlatchMatrix(void) {
-    cmr_canRXMeta_t *statusVSMMeta = canRXMeta + CANRX_VSM_STATUS;
-    volatile cmr_canVSMStatus_t *statusVSM =
-        (void *)statusVSMMeta->payload;
+    volatile cmr_canVSMStatus_t *statusVSM = getPayload(CANRX_VSM_STATUS);
 
     return statusVSM->latchMatrix;
 }
@@ -112,17 +110,18 @@ static void errorLEDs(void *pvParameters) {
  */
 int main(void) {
     // System initialization.
-     HAL_Init();
-     
+    HAL_Init();
+
     cmr_rccSystemClockEnable();
 
     // Peripheral configuration.
-    gpioInit(); 
-    canInit();
-    adcInit();
+    gpioInit();
+    // canInit();
+    // adcInit();
+    tftInit();
     stateMachineInit();
     sensorsInit();
-    tftInit();
+
 
     cmr_taskInit(
         &statusLED_task,

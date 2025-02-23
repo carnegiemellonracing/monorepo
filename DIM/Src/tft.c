@@ -13,10 +13,9 @@
 
 #include "adc.h"
 #include "can.h"         // Board-specific CAN interface
-#include "tftContent.h"  // Content interface
 #include "tftDL.h"       // Display list interface
 #include "CMR/can_types.h" //can_types
-#include "newState.h"    //New State Machine
+#include "state.h"    //New State Machine
 
 /** @brief Expected chip ID. */
 #define TFT_CHIP_ID 0x00011308
@@ -118,7 +117,7 @@ void tftWrite(tft_t *tft, tftAddr_t addr, size_t len, const void *data) {
  */
 void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data) {
     const QSPI_CommandTypeDef cmd = {
-        .Instruction = 0,
+        .Instruction = 0, // Not used
         .Address = addr,
         .AlternateBytes = 0,
         .AddressSize = QSPI_ADDRESS_24_BITS,
@@ -174,47 +173,44 @@ void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait) {
 
     const uint8_t *dataBuf = data;
     size_t written = 0;
+    uint32_t space;
+    tftRead(tft, TFT_ADDR_CMDB_SPACE, sizeof(space), &space);
+    if (len < space) {
+        tftWrite(tft, TFT_ADDR_CMDB_WRITE, len, dataBuf);
+        return;
+    }
 
     while (written < len) {
         // Calculate length to write.
         size_t wrLen = len - written;
+        size_t remLen = tftCoCmdRemLen(tft);
 
-        if (!wait) {
-            // Wait for free space to write the entire command.
-            size_t remLen;
-            do {
+        if (wait) {
+            // If no space, wait until enough space is available
+            while (remLen == 0) {
                 remLen = tftCoCmdRemLen(tft);
-            } while (remLen < wrLen);
-        } else {
-            // Write as much as possible.
-            size_t remLen = tftCoCmdRemLen(tft);
-            if (remLen == 0) {
-                continue;  // No space yet.
             }
-            if (wrLen > remLen) {
-                wrLen = remLen;
+        } else {
+            // Ensure there's enough space for the full command
+            while (remLen < wrLen) {
+                remLen = tftCoCmdRemLen(tft);
             }
         }
 
         tftWrite(
             tft, TFT_ADDR_RAM_CMD + tft->coCmdWr,
             wrLen, dataBuf + written);
-        if (wrLen % sizeof(uint32_t) != 0) {
-            // Round-up to word-aligned length.
-            wrLen /= sizeof(uint32_t);
-            wrLen++;
-            wrLen *= sizeof(uint32_t);
-        }
 
+        // Round-up to word-aligned length.
+        wrLen = (wrLen + sizeof(uint32_t)-1) & ~(sizeof(uint32_t)-1);
         written += wrLen;
 
         // Update the command write address.
-        uint16_t coCmdWr = tft->coCmdWr + wrLen;
-        if (coCmdWr >= TFT_RAM_CMD_SIZE) {
-            coCmdWr -= TFT_RAM_CMD_SIZE;
+        tft->coCmdWr += wrLen;
+        if (tft->coCmdWr >= TFT_RAM_CMD_SIZE) {
+            tft->coCmdWr -= TFT_RAM_CMD_SIZE;
         }
-        tftWrite(tft, TFT_ADDR_CMD_WRITE, sizeof(coCmdWr), &coCmdWr);
-        tft->coCmdWr = coCmdWr;
+        tftWrite(tft, TFT_ADDR_CMD_WRITE, sizeof(tft->coCmdWr), &tft->coCmdWr);
 
         if (!wait) {
             // No waiting; we must have written the whole buffer.
@@ -223,13 +219,9 @@ void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait) {
         }
 
         // Wait for the command to finish.
-        while (
-            tftRead(
-                tft, TFT_ADDR_CMD_READ,
-                sizeof(tft->coCmdRd), &tft->coCmdRd),
-            tft->coCmdRd != coCmdWr) {
-            continue;
-        }
+        do {
+            tftRead(tft, TFT_ADDR_CMD_READ, sizeof(tft->coCmdRd), &tft->coCmdRd);
+        } while (tft->coCmdRd != tft->coCmdWr);
     }
 }
 
@@ -247,6 +239,7 @@ static cmr_task_t tftUpdate_task;
  * @return Does not return.
  */
 void tftUpdate(void *pvParameters) {
+    (void) pvParameters;
     /** @brief Represents a display initialization value. */
     typedef struct {
         tftAddr_t addr; /**< @brief Address to initialize. */
@@ -255,26 +248,24 @@ void tftUpdate(void *pvParameters) {
 
     /** @brief Display register initialization values. */
 	const tftInit_t tftInits[] = {
-        { .addr = TFT_ADDR_HCYCLE, .val = 928 },
-        { .addr = TFT_ADDR_HOFFSET, .val = 88 },
+        { .addr = TFT_ADDR_HCYCLE, .val = 480 },
+        { .addr = TFT_ADDR_HOFFSET, .val = 43 },
         { .addr = TFT_ADDR_HSYNC0, .val = 0 },
-        { .addr = TFT_ADDR_HSYNC1, .val = 48 },
-        { .addr = TFT_ADDR_VCYCLE, .val = 525 },
-        { .addr = TFT_ADDR_VOFFSET, .val = 32 },
+        { .addr = TFT_ADDR_HSYNC1, .val = 41 },
+        { .addr = TFT_ADDR_VCYCLE, .val = 292 },
+        { .addr = TFT_ADDR_VOFFSET, .val = 12 },
         { .addr = TFT_ADDR_VSYNC0, .val = 0 },
-        { .addr = TFT_ADDR_VSYNC1, .val = 3 },
+        { .addr = TFT_ADDR_VSYNC1, .val = 10 },
         { .addr = TFT_ADDR_SWIZZLE, .val = 0 },
         { .addr = TFT_ADDR_DITHER, .val = 1 },
-        { .addr = TFT_ADDR_PCLK_POL, .val = 0 },
+        { .addr = TFT_ADDR_PCLK_POL, .val = 1 },
         { .addr = TFT_ADDR_CSPREAD, .val = 1 },
-        { .addr = TFT_ADDR_HSIZE, .val = 800 },
-        { .addr = TFT_ADDR_VSIZE, .val = 480 },
+        { .addr = TFT_ADDR_HSIZE, .val = 480 },
+        { .addr = TFT_ADDR_VSIZE, .val = 548 },
         { .addr = TFT_ADDR_GPIOX_DIR, .val = (1 << 15) },
         { .addr = TFT_ADDR_GPIOX, .val = (1 << 15) },
-        { .addr = TFT_ADDR_PCLK, .val = 2 }
     };
 
-    tft_t *tft = pvParameters;
 
 	TickType_t lastWakeTime = xTaskGetTickCount();
     /* Wait for display to initialize. */
@@ -282,46 +273,51 @@ void tftUpdate(void *pvParameters) {
 
     /* Ensure that Chip ID is read correctly */
     uint32_t chipID;
-    tftRead(tft, TFT_ADDR_CHIP_ID, sizeof(chipID), &chipID);
+    tftRead(&tft, TFT_ADDR_CHIP_ID, sizeof(chipID), &chipID);
     configASSERT(chipID == TFT_CHIP_ID);
 
+    /* Init Sequence*/
+    tftInitSequence();
+
     /* Initialize Video Registers. */
-    for (size_t i = 0; i < sizeof(tftInits) / sizeof(tftInits[0]); i++) {
-        const tftInit_t *init = tftInits + i;
-        tftWrite(tft, init->addr, sizeof(init->val), &init->val);
+    size_t tftInitsLen = sizeof(tftInits) / sizeof(tftInits[0]);
+    for (size_t i = 0; i < tftInitsLen; i++) {
+        const tftInit_t *init = &tftInits[i];
+        tftWrite(&tft, init->addr, sizeof(init->val), &init->val);
     }
 
-    tft->inited = true;
+
+    tft.inited = true;
 
     /* Enable Faster Clock Rate now that initialization is complete */
-    cmr_qspiSetPrescaler(&tft->qspi, TFT_QSPI_PRESCALER);
+    cmr_qspiSetPrescaler(&tft.qspi, TFT_QSPI_PRESCALER);
 
     /* Display Startup Screen for fixed time */
-    tftDLContentLoad(tft, &tftDL_startup);
-    tftDLWrite(tft, &tftDL_startup);
-    //    vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS); //TODO: Uncomment
+    // tftDLContentLoad(&tft, &tftDL_startup);
+    tftDLWrite(&tft, &tftDL_startup);
+    uint8_t gpio_dir;
+    tftRead(&tft, TFT_ADDR_GPIOX_DIR, sizeof(gpio_dir), &gpio_dir);
+    uint8_t gpio;
+    tftRead(&tft, TFT_ADDR_GPIOX, sizeof(gpio), &gpio);
 
-    /* Update Screen Info from CAN Indefinitely
-    while (1) {
-        vTaskDelayUntil(&lastWakeTime, TFT_UPDATE_PERIOD_MS);
-        if (inConfigScreen()) {
-            drawConfigScreen();
-        } else if ((stateGetVSMReq() == CMR_CAN_HV_EN) && (stateGetVSM() == CMR_CAN_ERROR)) {
-            drawSafetyScreen();
-        } else if (stateGetVSM() == CMR_CAN_ERROR) {
-            drawErrorScreen();
-        } else {
-        	//reset latching errors for ams as shown on screen
-        	prevOverVolt = false;
-        	prevUnderVolt = false;
-        	prevOverTemp = false;
-            // within drawRTDScreen, we decide if to draw testing or racing screen
-            drawRTDScreen();
-        }
+    const tftInit_t tftInits2[] = {
+        { .addr = TFT_ADDR_GPIOX_DIR, .val = 0x80 | gpio_dir },
+        { .addr = TFT_ADDR_GPIOX, .val = 0x080 | gpio },
+        { .addr = TFT_ADDR_PCLK, .val = 5 },
+    };
+    size_t tftInits2Len = sizeof(tftInits2) / sizeof(tftInits2[0]);
+    for (size_t i = 0; i < tftInits2Len; i++) {
+        const tftInit_t *init = &tftInits2[i];
+        tftWrite(&tft, init->addr, sizeof(init->val), &init->val);
     }
-    */
+
 }
 
+void tftInitSequence() {
+    tftCmd(&tft, TFT_CMD_CLKEXT, 0x00);
+    tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
+    vTaskDelay(300);
+}
 
 /**
  * @brief Draws the Display Updated List to the Screen
@@ -353,7 +349,7 @@ void drawRacingScreen(void){
         getACTemp(),
         getMCTemp(),
         hvSoC,
-        getDoorsState());
+        DRSOpen());
     // /* Write Display List to Screen */
     tftDLWrite(&tft, &tftDL_racing_screen);
 }
@@ -363,30 +359,15 @@ void drawRacingScreen(void){
  *
  */
 void drawErrorScreen(void) {
-    cmr_canRXMeta_t *metaVSMStatus = canRXMeta + CANRX_VSM_STATUS;
-    volatile cmr_canVSMStatus_t *canVSMStatus =
-        (void *)metaVSMStatus->payload;
+    volatile cmr_canVSMStatus_t *canVSMStatus = getPayload(CANRX_VSM_STATUS);
 
-    cmr_canRXMeta_t *metaHVCHeartbeat = canRXMeta + CANRX_HVC_HEARTBEAT;
-    volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat =
-        (void *)metaHVCHeartbeat->payload;
+    volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat = getPayload(CANRX_HVC_HEARTBEAT);
 
-    cmr_canRXMeta_t *metaAmkFLActualValues2 = canRXMeta + CANRX_AMK_FL_ACT_2;
-    volatile cmr_canAMKActualValues2_t *amkFLActualValues2 =
-        (void *)metaAmkFLActualValues2->payload;
-    cmr_canRXMeta_t *metaAmkFRActualValues2 = canRXMeta + CANRX_AMK_FR_ACT_2;
-    volatile cmr_canAMKActualValues2_t *amkFRActualValues2 =
-        (void *)metaAmkFRActualValues2->payload;
-    cmr_canRXMeta_t *metaAmkBLActualValues2 = canRXMeta + CANRX_AMK_RL_ACT_2;
-    volatile cmr_canAMKActualValues2_t *amkBLActualValues2 =
-        (void *)metaAmkBLActualValues2->payload;
-    cmr_canRXMeta_t *metaAmkBRActualValues2 = canRXMeta + CANRX_AMK_RR_ACT_2;
-    volatile cmr_canAMKActualValues2_t *amkBRActualValues2 =
-        (void *)metaAmkBRActualValues2->payload;
-
-    cmr_canRXMeta_t *metaBMSLowVoltage = canRXMeta + CANRX_HVC_LOW_VOLTAGE;
-    volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
-        (void *)metaBMSLowVoltage->payload;
+    volatile cmr_canAMKActualValues2_t *amkFLActualValues2 = getPayload(CANRX_AMK_FL_ACT_2);
+    volatile cmr_canAMKActualValues2_t *amkFRActualValues2 = getPayload(CANRX_AMK_FR_ACT_2);
+    volatile cmr_canAMKActualValues2_t *amkBLActualValues2 = getPayload(CANRX_AMK_RL_ACT_2);
+    volatile cmr_canAMKActualValues2_t *amkBRActualValues2 = getPayload(CANRX_AMK_RR_ACT_2);
+    volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus = getPayload(CANRX_HVC_LOW_VOLTAGE);
 
     tftDLContentLoad(&tft, &tftDL_error);
 
@@ -457,44 +438,21 @@ void drawRTDScreen(void){
     /* Setup the Required CAN info for Display */
     cmr_canRXMeta_t *metaMemoratorBroadcast = canRXMeta + CANRX_MEMORATOR_BROADCAST;
 
-    cmr_canRXMeta_t *metaCDCHeartbeat = canRXMeta + CANRX_CDC_HEARTBEAT;
 
-    cmr_canRXMeta_t *metaHVCPackVoltage = canRXMeta + CANRX_HVC_PACK_VOLTAGE;
-    volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage =
-        (void *)metaHVCPackVoltage->payload;
+    volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage = getPayload(CANRX_HVC_PACK_VOLTAGE);
 
-    cmr_canRXMeta_t *metaHVCPackTemps = canRXMeta + CANRX_HVC_PACK_TEMPS;
-    volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps =
-        (void *)metaHVCPackTemps->payload;
+    volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps = getPayload(CANRX_HVC_PACK_TEMPS);
 
-    cmr_canRXMeta_t *metaEMDvalues = canRXMeta + CANRX_EMD_VALUES;
-    volatile cmr_canEMDMeasurements_t *canEMDvalues =
-        (void *)metaEMDvalues->payload;
+    volatile cmr_canEMDMeasurements_t *canEMDvalues = getPayload(CANRX_EMD_VALUES);
 
-
-
-    cmr_canRXMeta_t *metaBMSLowVoltage = canRXMeta + CANRX_HVC_LOW_VOLTAGE;
-    volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
-        (void *)metaBMSLowVoltage->payload;
-
-    /* cmr_canRXMeta_t *metaPTCfLoopA = canRXMeta + CANRX_PTCf_LOOP_A_TEMPS;
-    volatile cmr_canPTCfLoopTemp_A_t *canPTCfLoopTemp_A = (void *) metaPTCfLoopA->payload;
-
-    cmr_canRXMeta_t *metaPTCfLoopB = canRXMeta + CANRX_PTCf_LOOP_B_TEMPS;
-    volatile cmr_canPTCfLoopTemp_B_t *canPTCfLoopTemp_B = (void *) metaPTCfLoopB->payload;
-
-    cmr_canRXMeta_t *metaPTCpLoopA = canRXMeta + CANRX_PTCp_LOOP_A_TEMPS;
-    volatile cmr_canPTCpLoopTemp_A_t *canPTCpLoopTemp_A = (void *) metaPTCpLoopA->payload;
-
-    cmr_canRXMeta_t *metaPTCpLoopB = canRXMeta + CANRX_PTCp_LOOP_B_TEMPS;
-    volatile cmr_canPTCpLoopTemp_B_t *canPTCpLoopTemp_B = (void *) metaPTCpLoopB->payload;*/
+    volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus = getPayload(CANRX_HVC_LOW_VOLTAGE);
 
     tftDLContentLoad(&tft, &tftDL_RTD);
 
     /* Memorator present? */
     // Wait to update if hasn't seen in 2 sec (2000 ms)
     memorator_status_t memoratorStatus = MEMORATOR_NOT_CONNECTED;
-    volatile cmr_canHeartbeat_t *cdcHeartbeat = (cmr_canHeartbeat_t *)metaCDCHeartbeat->payload;
+    volatile cmr_canHeartbeat_t *cdcHeartbeat = getPayload(CANRX_CDC_HEARTBEAT);
     if ((*(uint16_t *)(cdcHeartbeat->warning) & CMR_CAN_WARN_CDC_MEMORATOR_DAQ_TIMEOUT) != 0) {
         memoratorStatus = MEMORATOR_NOT_CONNECTED;
     }
@@ -551,13 +509,11 @@ void drawRTDScreen(void){
     // 18000mV * 15 / 2000 as sent by HVC = 135
     bool ssOk = (bmsLV->safety_mV > 135);
 
-    volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t *)getPayload(CANRX_DRS_STATE);
-    bool drsOpen = (drsState->state == CMR_CAN_DRS_STATE_OPEN);
-
     /* Accumulator Temperature */
     int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC) / 10;
 
-    int32_t mcTemp_C, motorTemp_C = 0;
+    int32_t mcTemp_C = 0;
+    int32_t motorTemp_C = 0;
     cornerId_t hottest_motor;
 
     /* Temperature warnings */
@@ -577,7 +533,6 @@ void drawRTDScreen(void){
     bool yrcOn = ((bool)controlsStatus->yrcOn) && (!(0 & 0x02));
     bool tcOn = ((bool)controlsStatus->tcOn) && (!(0 & 0x04));
 
-    //line 716 tft.c
     /* Write Display List to Screen */
     tftDLWrite(&tft, &tftDL_RTD);
 }
@@ -617,4 +572,28 @@ void tftInit(void){
     cmr_taskInit(
         &tftUpdate_task, "tftUpdate", tftUpdate_priority,
         tftUpdate, &tft);
+}
+
+struct tftContent {
+    size_t len;          /**< @brief The content's length, in bytes. */
+    size_t addr;         /**< @brief The content's address in `RAM_G`. */
+    const uint8_t *data; /**< @brief The content. */
+};
+
+/**
+ * @brief Loads content in graphics memory.
+ *
+ * @param tft The display.
+ * @param tftContent The content.
+ */
+void tftContentLoad(tft_t *tft, const tftContent_t *tftContent) {
+    // Set up inflate coprocessor command.
+    uint32_t coCmdInflate[] = {
+        TFT_CMD_INFLATE,       // CMD_INFLATE
+        tftContent->addr  // Destination address.
+    };
+    tftCoCmd(tft, sizeof(coCmdInflate), coCmdInflate, false);
+
+    // Write compressed data.
+    tftCoCmd(tft, tftContent->len, tftContent->data, true);
 }

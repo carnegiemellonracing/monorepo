@@ -58,6 +58,32 @@ extern volatile bool redraw_new_driver_profiles;
 #define MESSAGE_INDEX 16
 #define MESSAGEDISPLAYLEN 21
 
+enum AMK_ERRORS{
+    AMK_DC_BUS_ERROR = 1049,
+    AMK_ENCODER_ERROR = 2310,
+    AMK_CONVERTER_TEMP_ERROR = 2346,
+    AMK_MOTOR_TEMP_ERROR = 2347,
+    AMK_SYS_DIAG_1 = 3584,
+    AMK_SYS_DIAG_2,
+    AMK_SYS_DIAG_3,
+    AMK_SYS_DIAG_4,
+    AMK_SYS_DIAG_5,
+    AMK_SYS_DIAG_6,
+    AMK_SYS_DIAG_7,
+    AMK_SYS_DIAG_8,
+    AMK_SYS_DIAG_9,
+    AMK_SYS_DIAG_10,
+    AMK_SYS_DIAG_11,
+    AMK_SYS_DIAG_12,
+    AMK_SYS_DIAG_13,
+    AMK_SYS_DIAG_14,
+    AMK_SYS_DIAG_15,
+    AMK_SYS_DIAG_16,
+    AMK_SYS_DIAG_17,
+    AMK_SYS_DIAG_18,
+    AMK_SYS_DIAG_19,
+};
+
 void tftDL_RTDUpdate(
     memorator_status_t memoratorStatus,
     SBG_status_t sbgStatus,

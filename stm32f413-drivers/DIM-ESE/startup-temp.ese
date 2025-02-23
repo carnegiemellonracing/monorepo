@@ -1,0 +1,25 @@
+{
+    "content": [
+    ],
+    "coprocessor": [
+        "CLEAR(1, 1, 1)",
+        "CMD_TEXT(218, 111, 28, OPT_CENTERY, \"Startup\")",
+        ""
+    ],
+    "displayList": [
+        ""
+    ],
+    "project": {
+        "device": 2066
+    },
+    "registers": {
+        "hSize": 480,
+        "hsf": 0,
+        "macro": [
+            "NOP()",
+            "NOP()"
+        ],
+        "rotate": 0,
+        "vSize": 272
+    }
+}

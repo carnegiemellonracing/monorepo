@@ -1,5 +1,5 @@
 /**
- * @file newState.h
+ * @file state.h
  * @brief DIM state interface.
  *
  * @author Carnegie Mellon Racing
@@ -13,10 +13,10 @@
 
 //states
 typedef enum {
-    INIT = 0, 
-    START = 1, 
-    NORMAL = 2, 
-    CONFIG = 3, 
+    INIT = 0,
+    START = 1,
+    NORMAL = 2,
+    CONFIG = 3,
     dimStateERROR = 4,
     RACING = 5
     //SAFETY
@@ -40,7 +40,7 @@ int getRequestedGear(void);
 int getMaxMotorTemp(void);
 int getACTemp(void);
 int getMCTemp(void);
-bool getDoorsState(void);
+bool DRSOpen(void);
 void exitConfigScreen();
 void stateGearUpdate(void);
 void stateDrsUpdate(void);
