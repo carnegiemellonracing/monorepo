@@ -73,7 +73,6 @@ static TickType_t previousTickCount;
 
 // ------------------------------------------------------------------------------------------------
 // Function implementations
-void setFastTorqueWithParallelRegen(uint8_t brakePressurePsi_u8, uint8_t throttlePos_u8);
 void setLaunchControl(
 	uint8_t throttlePos_u8,
 	uint8_t brakePressurePsi_u8,
