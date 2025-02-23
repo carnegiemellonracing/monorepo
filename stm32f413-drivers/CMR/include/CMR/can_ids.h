@@ -19,12 +19,11 @@
 typedef enum {
     CMR_CANID_HEARTBEAT_VSM = 0x100,    /**< @brief VSM heartbeat. */
     CMR_CANID_HEARTBEAT_HVC = 0x101,    /**< @brief HVC heartbeat. */
-    CMR_CANID_HEARTBEAT_CDC = 0x102,    /**< @brief CDC heartbeat. */
+    CMR_CANID_HEARTBEAT_DCM = 0x102,    /**< @brief CDC heartbeat. */
     CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x104,    /**< @brief DIM heartbeat. */
-    CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief 
- heatbeart.*/
-	CMR_CANID_HEARTBEAT_HVI = 0x106,
+    CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief PTC heatbeart.*/
+    CMR_CANID_HEARTBEAT_HVI = 0x106,
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
 
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
@@ -69,16 +68,11 @@ typedef enum {
     CMR_CANID_FSM_POWER_DIAGNOSTICS = 0x553,    /**< @brief FSM power diagnostics. */
     CMR_CANID_SS_STATUS = 0x554,               /**< @brief Safety Circuit status. */
 
-    CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief 
- (fan board) cooling loop temps. */
-    CMR_CANID_PTC_LOOP_TEMPS_B = 0x234,        /**< @brief 
- (fan board) cooling loop temps. */
-    CMR_CANID_PTC_LOOP_TEMPS_C = 0x244,        /**< @brief 
- (fan board) cooling loop temps. */
-    CMR_CANID_PTC_FANS_PUMPS_STATUS = 0x314,   /**< @brief 
- (fan board) fans status */
-    CMR_CANID_PTC_POWER_DIAGNOSTICS = 0x534,   /**< @brief 
- (fan board) power diagnostics. */
+    CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief (fan board) cooling loop temps. */
+    CMR_CANID_PTC_LOOP_TEMPS_B = 0x234,        /**< @brief (fan board) cooling loop temps. */
+    CMR_CANID_PTC_LOOP_TEMPS_C = 0x244,        /**< @brief (fan board) cooling loop temps. */
+    CMR_CANID_PTC_FANS_PUMPS_STATUS = 0x314,   /**< @brief (fan board) fans status */
+    CMR_CANID_PTC_POWER_DIAGNOSTICS = 0x534,   /**< @brief (fan board) power diagnostics. */
 
     CMR_CANID_DIM_REQUEST = 0x235,              /**< @brief DIM state/gear request. */
     CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x535,    /**< @brief DIM power diagnostics. */
@@ -136,7 +130,7 @@ typedef enum {
     CMR_CANID_AFC1_POWER_DIAGNOSTICS = 0x547,   /**< @brief AFC 1 power diagnostics. */
 
     CMR_CANID_DRS_STATE = 0x52C,                /**< @brief DRS state values.*/
-	CMR_CANID_SF_STATE = 0x52D,				/**< @brief Safety Filter state. */
+    CMR_CANID_SF_STATE = 0x52D,				/**< @brief Safety Filter state. */
     CMR_CANID_MOTORPOWER_STATE = 0x52E,				/**< @brief Motor Power state. */
 
     // FL
@@ -223,9 +217,9 @@ typedef enum {
     CMR_CANID_SBG_BODY_VEL = 0x729,             /**< @brief SBG_ECAN_MSG_EKF_VEL_BODY */
     CMR_CANID_SBG_AUTOMOTIVE = 0x72A,           /**< @brief SBG_ECAN_MSG_AUTO_TRACK_SLIP_CURV */
 
-    CMR_CANID_EMD_MEASUREMENT = 0x100,          /**< @brief EMD measurement for HV voltage/current. */
+    CMR_CANID_EMD_MEASUREMENT = 0x400,          /**< @brief EMD measurement for HV voltage/current. */
     CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */
-    CMR_CANID_EMD_STATUS = 0x400,               /**< @brief EMD status. */
+    CMR_CANID_EMD_STATUS = 0x402,               /**< @brief EMD status. */
 
     CMR_IZZIE_LOADCELL = 0x7F0,                 /**< @brief IZZIE Amp load data. */
     CMR_CANID_CONTROLS_DEBUG_GLOBAl = 0x7E0,    /**< @brief control algo testing data. */
@@ -235,7 +229,7 @@ typedef enum {
     CMR_CANID_CONTROLS_DEBUG_RL = 0x7E4,        /**< @brief control algo testing data. */
     CMR_CANID_CONTROLS_PID_IO = 0x7E5,        /**< @brief control algo testing data. */
 
-   CMR_CANID_CONTROLS_SOLVER_INPUTS = 0x7E6, 
+   CMR_CANID_CONTROLS_SOLVER_INPUTS = 0x7E6,
    CMR_CANID_CONTROLS_SOLVER_OUTPUTS = 0x7F0,
    CMR_CANID_CONTROLS_SOLVER_SETTINGS = 0x7EE,
    CMR_CANID_CONTROLS_SOLVER_AUX = 0x7FF,
@@ -245,36 +239,36 @@ typedef enum {
    CMR_CANID_LOADCELL_FL = 0x7D2,
    CMR_CANID_LOADCELL_RL = 0x7D3,
 
-    CMR_CANID_FRONT_SLIP_RATIOS = 0x7E8,
-    CMR_CANID_REAR_SLIP_RATIOS = 0x7E9,
-    CMR_CANID_FRONT_WHL_SETPOINTS = 0x7EA,
-    CMR_CANID_REAR_WHL_SETPOINTS = 0x7EB,
-    CMR_CANID_FRONT_WHL_VELS = 0x7EC,
-    CMR_CANID_REAR_WHL_VELS = 0x7ED,
+   CMR_CANID_FRONT_SLIP_RATIOS = 0x7E8,
+   CMR_CANID_REAR_SLIP_RATIOS = 0x7E9,
+   CMR_CANID_FRONT_WHL_SETPOINTS = 0x7EA,
+   CMR_CANID_REAR_WHL_SETPOINTS = 0x7EB,
+   CMR_CANID_FRONT_WHL_VELS = 0x7EC,
+   CMR_CANID_REAR_WHL_VELS = 0x7ED,
 
-    CMR_CANID_TEST_ID=0x777,
+   CMR_CANID_TEST_ID=0x777,
 
-	CMR_CANID_DRS_CONTROLS = 0x29C, 				/**< @brief DRS Motor Controls. */
+   CMR_CANID_DRS_CONTROLS = 0x29C, 				/**< @brief DRS Motor Controls. */
 
-    CMR_CANID_DAQ_0_LOADCELL = 0x650,           /**< @brief Load cell data for DAQ Board 0. */
-    CMR_CANID_DAQ_0_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 0. */
-    CMR_CANID_DAQ_0_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 0. */
-    CMR_CANID_DAQ_1_LOADCELL,                   /**< @brief Load cell data for DAQ Board 1. */
-    CMR_CANID_DAQ_1_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 1. */
-    CMR_CANID_DAQ_1_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 1. */
-    CMR_CANID_DAQ_2_LOADCELL,                   /**< @brief Load cell data for DAQ Board 2. */
-    CMR_CANID_DAQ_2_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 2. */
-    CMR_CANID_DAQ_2_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 2. */
-    CMR_CANID_DAQ_3_LOADCELL,                   /**< @brief Load cell data for DAQ Board 3. */
-    CMR_CANID_DAQ_3_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 3. */
-    CMR_CANID_DAQ_3_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 3. */
+   CMR_CANID_DAQ_0_LOADCELL = 0x650,           /**< @brief Load cell data for DAQ Board 0. */
+   CMR_CANID_DAQ_0_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 0. */
+   CMR_CANID_DAQ_0_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 0. */
+   CMR_CANID_DAQ_1_LOADCELL,                   /**< @brief Load cell data for DAQ Board 1. */
+   CMR_CANID_DAQ_1_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 1. */
+   CMR_CANID_DAQ_1_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 1. */
+   CMR_CANID_DAQ_2_LOADCELL,                   /**< @brief Load cell data for DAQ Board 2. */
+   CMR_CANID_DAQ_2_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 2. */
+   CMR_CANID_DAQ_2_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 2. */
+   CMR_CANID_DAQ_3_LOADCELL,                   /**< @brief Load cell data for DAQ Board 3. */
+   CMR_CANID_DAQ_3_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 3. */
+   CMR_CANID_DAQ_3_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 3. */
 
-    CMR_CANID_VSM_GIT = 0x7F1,
-	CMR_CANID_HVC_GIT,
-	CMR_CANID_PTC_GIT,
-	CMR_CANID_CDC_GIT,
-	CMR_CANID_DIM_GIT,
-	CMR_CANID_RAM_GIT,
+   CMR_CANID_VSM_GIT = 0x7F1,
+   CMR_CANID_HVC_GIT,
+   CMR_CANID_PTC_GIT,
+   CMR_CANID_CDC_GIT,
+   CMR_CANID_DIM_GIT,
+   CMR_CANID_RAM_GIT,
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */

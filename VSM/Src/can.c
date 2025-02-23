@@ -33,7 +33,7 @@ cmr_canRXMeta_t canRXMeta[] = {
         .warnFlag = CMR_CAN_WARN_VSM_HVC_TIMEOUT
     },
     [CANRX_HEARTBEAT_CDC] = {
-        .canID = CMR_CANID_HEARTBEAT_CDC,
+        .canID = CMR_CANID_HEARTBEAT_DCM,
         .timeoutError_ms = 100,
         .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
         .timeoutWarn_ms = 25,

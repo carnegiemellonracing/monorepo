@@ -79,7 +79,7 @@ cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_DRS_STATE] =           { .canID = CMR_CANID_DRS_STATE, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
     [CANRX_CDC_ODOMETER] =        { .canID = CMR_CANID_CDC_ODOMETER, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
     [CANRX_CDC_CONTROLS_STATUS] = { .canID = CMR_CANID_CDC_CONTROLS_STATUS, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
-    [CANRX_CDC_HEARTBEAT] =       { .canID = CMR_CANID_HEARTBEAT_CDC, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 }
+    [CANRX_CDC_HEARTBEAT] =       { .canID = CMR_CANID_HEARTBEAT_DCM, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 }
 };
 
 /** @brief Primary CAN interface. */
