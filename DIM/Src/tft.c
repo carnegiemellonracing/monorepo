@@ -169,17 +169,19 @@ static size_t tftCoCmdRemLen(tft_t *tft) {
  * enough space at the beginning.
  */
 void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait) {
-    configASSERT(wait || len < TFT_RAM_CMD_SIZE);
-
-    const uint8_t *dataBuf = data;
-    size_t written = 0;
+    // Bulk Write
     uint32_t space;
     tftRead(tft, TFT_ADDR_CMDB_SPACE, sizeof(space), &space);
     if (len < space) {
-        tftWrite(tft, TFT_ADDR_CMDB_WRITE, len, dataBuf);
+        tftWrite(tft, TFT_ADDR_CMDB_WRITE, len, data);
+        tftRead(tft, TFT_ADDR_CMD_READ, sizeof(tft->coCmdRd), &tft->coCmdRd);
+        tftRead(tft, TFT_ADDR_CMD_WRITE, sizeof(tft->coCmdWr), &tft->coCmdWr);
         return;
     }
 
+    configASSERT(wait || len < space);
+
+    size_t written = 0;
     while (written < len) {
         // Calculate length to write.
         size_t wrLen = len - written;
@@ -199,7 +201,7 @@ void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait) {
 
         tftWrite(
             tft, TFT_ADDR_RAM_CMD + tft->coCmdWr,
-            wrLen, dataBuf + written);
+            wrLen, (uint8_t*)data + written);
 
         // Round-up to word-aligned length.
         wrLen = (wrLen + sizeof(uint32_t)-1) & ~(sizeof(uint32_t)-1);

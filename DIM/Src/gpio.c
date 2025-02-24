@@ -180,8 +180,8 @@ static void gpioReadButtons(void *pvParameters) {
     while (1) {
         // Direct assignment for CAN buttons
         for(int i=0; i<NUM_BUTTONS; i++){
-			//TODO: two button states
-            canButtonStates[i] = (cmr_gpioRead(i) == GPIO_PIN_RESET);
+			// Active Low
+			canButtonStates[i] = !cmr_gpioRead(i);
         }
 		canLRUDDetect();
 		vTaskDelayUntil(&lastWakeTime, 100);

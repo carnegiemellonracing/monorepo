@@ -138,8 +138,8 @@ typedef enum {
     TFT_ADDR_CMD_READ = 0x30'20F8,  /**< @brief Coprocessor read pointer. */
     TFT_ADDR_CMD_WRITE = 0x30'20FC, /**< @brief Coprocessor write pointer. */
     TFT_ADDR_CMD_DL = 0x30'2100,    /**< @brief Coprocessor DL RAM offset. */
-    TFT_ADDR_CMDB_SPACE = 0x302574,
-    TFT_ADDR_CMDB_WRITE = 0x302578,
+    TFT_ADDR_CMDB_SPACE = 0x302574, /**< @brief Coprocessor command buffer space. */
+    TFT_ADDR_CMDB_WRITE = 0x302578, /**< @brief Coprocessor command buffer write address. */
 
     // RAM areas.
     TFT_ADDR_RAM_G = 0x00'0000,  /**< @brief General purpose graphics RAM. */
