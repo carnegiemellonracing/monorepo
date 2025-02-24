@@ -530,10 +530,10 @@ void drawRTDScreen(void){
 
     uint8_t hvSoC = 0;
 
-    volatile cmr_canCDCControlsStatus_t *controlsStatus = (volatile cmr_canCDCControlsStatus_t *)getPayload(CANRX_CDC_CONTROLS_STATUS);
+    volatile cmr_canCDCControlsStatus_t *controlsStatus = getPayload(CANRX_CDC_CONTROLS_STATUS);
 
-    bool yrcOn = ((bool)controlsStatus->yrcOn) && (!(0 & 0x02));
-    bool tcOn = ((bool)controlsStatus->tcOn) && (!(0 & 0x04));
+    bool yrcOn = (bool)controlsStatus->yrcOn;
+    bool tcOn =  (bool)controlsStatus->tcOn;
 
     /* Write Display List to Screen */
     tftDLWrite(&tft, &tftDL_RTD);
@@ -570,10 +570,9 @@ void tftInit(void){
         DMA2_Stream7, DMA_CHANNEL_3);
 
     tft.inited = false;
-
-    cmr_taskInit(
-        &tftUpdate_task, "tftUpdate", tftUpdate_priority,
-        tftUpdate, &tft);
+    // cmr_taskInit(
+    //     &tftUpdate_task, "tftUpdate", tftUpdate_priority,
+    //     tftUpdate, &tft);
 }
 
 struct tftContent {
