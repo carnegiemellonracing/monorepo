@@ -925,9 +925,10 @@ static uint32_t UTILS_GetPLLOutputFrequency(uint32_t PLL_InputFrequency, LL_UTIL
   assert_param(IS_LL_UTILS_PLLN_VALUE(UTILS_PLLInitStruct->PLLN));
   assert_param(IS_LL_UTILS_PLLP_VALUE(UTILS_PLLInitStruct->PLLP));
   assert_param(IS_LL_UTILS_FRACN_VALUE(UTILS_PLLInitStruct->FRACN));
-
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
   pllfreq = LL_RCC_CalcPLLClockFreq(PLL_InputFrequency, UTILS_PLLInitStruct->PLLM, UTILS_PLLInitStruct->PLLN, UTILS_PLLInitStruct->FRACN, UTILS_PLLInitStruct->PLLP);
-
+  #pragma GCC diagnostic pop
   return pllfreq;
 }
 

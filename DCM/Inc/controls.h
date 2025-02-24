@@ -55,10 +55,12 @@ void setEnduranceTestTorque(
 // Public functions
 
 void initControls();
+void integrateCurrent();
 void runControls(cmr_canGear_t gear, uint8_t throttlePos_u8, uint8_t brakePos_u8, uint8_t brakePressurePsi_u8,
     int16_t swAngle_deg, int32_t battVoltage_mV, int32_t battCurrent_mA, bool blank_command);
 void setControlsStatus(cmr_canGear_t gear);
-const volatile cmr_canCDCControlsStatus_t *getControlsStatus(); 
+const volatile cmr_canCDCControlsStatus_t *getControlsStatus();
+void setFastTorqueWithParallelRegen(uint8_t brakePressurePsi_u8, uint8_t throttlePos_u8);
 
 // ------------------------------------------------------------------------------------------------
 // Global variables

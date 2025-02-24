@@ -14,6 +14,7 @@
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
 #include <CMR/uart.h>       // CMR UART interface
+#include <stdlib.h>
 
 #include "gpio.h"       // Board-specific GPIO interface
 #include "can.h"        // Board-specific CAN interface

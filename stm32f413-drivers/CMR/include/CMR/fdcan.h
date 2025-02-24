@@ -89,7 +89,7 @@ struct cmr_can {
     cmr_canRXCallback_t rxCallback;
 };
 
-void cmr_canInit(
+void cmr_FDcanInit(
     cmr_can_t *can, FDCAN_GlobalTypeDef *instance,
     cmr_canBitRate_t bitRate,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,

@@ -69,7 +69,7 @@ void cmr_rccCANClockEnable(CAN_TypeDef *instance) {
  * @param instance The HAL CAN instance.
  */
 void cmr_rccCANClockEnable(FDCAN_GlobalTypeDef *instance) {
-	_platform_rccFDCanClockEnable(instance);
+	_platform_rccFDCanClockEnable();
 }
 #endif /* HAL_FDCAN_MODULE_ENABLED */
 
