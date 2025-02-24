@@ -34,7 +34,7 @@ include CMakeFiles/rules.ninja
 #############################################
 # Logical path to working directory; prefix for absolute paths.
 
-cmake_ninja_workdir = /Users/kavehfayyazi/monorepo/
+cmake_ninja_workdir = /Users/nidhivadlamudi/Desktop/CMR/monorepo/
 
 #############################################
 # Utility command for HVC
@@ -70,7 +70,7 @@ build DIM: phony CMakeFiles/DIM CMakeFiles/DIM-complete DIM/src/DIM-stamp/DIM-do
 # Utility command for edit_cache
 
 build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/ccmake -S/Users/kavehfayyazi/monorepo -B/Users/kavehfayyazi/monorepo
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/ccmake -S/Users/nidhivadlamudi/Desktop/CMR/monorepo -B/Users/nidhivadlamudi/Desktop/CMR/monorepo
   DESC = Running CMake cache editor...
   pool = console
   restat = 1
@@ -82,7 +82,7 @@ build edit_cache: phony CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake --regenerate-during-build -S/Users/kavehfayyazi/monorepo -B/Users/kavehfayyazi/monorepo
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake --regenerate-during-build -S/Users/nidhivadlamudi/Desktop/CMR/monorepo -B/Users/nidhivadlamudi/Desktop/CMR/monorepo
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -100,7 +100,7 @@ build CMakeFiles/HVC | ${cmake_ninja_workdir}CMakeFiles/HVC: phony CMakeFiles/HV
 # Custom command for CMakeFiles/HVC-complete
 
 build CMakeFiles/HVC-complete HVC/src/HVC-stamp/HVC-done | ${cmake_ninja_workdir}CMakeFiles/HVC-complete ${cmake_ninja_workdir}HVC/src/HVC-stamp/HVC-done: CUSTOM_COMMAND HVC/src/HVC-stamp/HVC-install HVC/src/HVC-stamp/HVC-mkdir HVC/src/HVC-stamp/HVC-download HVC/src/HVC-stamp/HVC-update HVC/src/HVC-stamp/HVC-patch HVC/src/HVC-stamp/HVC-configure HVC/src/HVC-stamp/HVC-build HVC/src/HVC-stamp/HVC-install
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E make_directory /Users/kavehfayyazi/monorepo/CMakeFiles && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/CMakeFiles/HVC-complete && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/HVC/src/HVC-stamp/HVC-done
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E make_directory /Users/nidhivadlamudi/Desktop/CMR/monorepo/CMakeFiles && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/CMakeFiles/HVC-complete && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/HVC/src/HVC-stamp/HVC-done
   DESC = Completed 'HVC'
   restat = 1
 
@@ -109,7 +109,7 @@ build CMakeFiles/HVC-complete HVC/src/HVC-stamp/HVC-done | ${cmake_ninja_workdir
 # Custom command for HVC/src/HVC-stamp/HVC-build
 
 build HVC/src/HVC-stamp/HVC-build | ${cmake_ninja_workdir}HVC/src/HVC-stamp/HVC-build: CUSTOM_COMMAND HVC/src/HVC-stamp/HVC-configure
-  COMMAND = cd /Users/kavehfayyazi/monorepo/HVC/src/HVC-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake --build .
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo/HVC/src/HVC-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake --build .
   DESC = Performing build step for 'HVC'
 
 
@@ -117,7 +117,7 @@ build HVC/src/HVC-stamp/HVC-build | ${cmake_ninja_workdir}HVC/src/HVC-stamp/HVC-
 # Custom command for HVC/src/HVC-stamp/HVC-configure
 
 build HVC/src/HVC-stamp/HVC-configure | ${cmake_ninja_workdir}HVC/src/HVC-stamp/HVC-configure: CUSTOM_COMMAND HVC/tmp/HVC-cfgcmd.txt HVC/src/HVC-stamp/HVC-patch
-  COMMAND = cd /Users/kavehfayyazi/monorepo/HVC/src/HVC-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -GNinja -S /Users/kavehfayyazi/monorepo/HVC -B /Users/kavehfayyazi/monorepo/HVC/src/HVC-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/HVC/src/HVC-stamp/HVC-configure
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo/HVC/src/HVC-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -GNinja -S /Users/nidhivadlamudi/Desktop/CMR/monorepo/HVC -B /Users/nidhivadlamudi/Desktop/CMR/monorepo/HVC/src/HVC-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/HVC/src/HVC-stamp/HVC-configure
   DESC = Performing configure step for 'HVC'
   restat = 1
 
@@ -126,7 +126,7 @@ build HVC/src/HVC-stamp/HVC-configure | ${cmake_ninja_workdir}HVC/src/HVC-stamp/
 # Custom command for HVC/src/HVC-stamp/HVC-download
 
 build HVC/src/HVC-stamp/HVC-download | ${cmake_ninja_workdir}HVC/src/HVC-stamp/HVC-download: CUSTOM_COMMAND HVC/src/HVC-stamp/HVC-source_dirinfo.txt HVC/src/HVC-stamp/HVC-mkdir
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/HVC/src/HVC-stamp/HVC-download
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/HVC/src/HVC-stamp/HVC-download
   DESC = No download step for 'HVC'
   restat = 1
 
@@ -135,7 +135,7 @@ build HVC/src/HVC-stamp/HVC-download | ${cmake_ninja_workdir}HVC/src/HVC-stamp/H
 # Custom command for HVC/src/HVC-stamp/HVC-install
 
 build HVC/src/HVC-stamp/HVC-install | ${cmake_ninja_workdir}HVC/src/HVC-stamp/HVC-install: CUSTOM_COMMAND HVC/src/HVC-stamp/HVC-build
-  COMMAND = cd /Users/kavehfayyazi/monorepo/HVC/src/HVC-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo/HVC/src/HVC-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append
   DESC = No install step for 'HVC'
 
 
@@ -143,7 +143,7 @@ build HVC/src/HVC-stamp/HVC-install | ${cmake_ninja_workdir}HVC/src/HVC-stamp/HV
 # Custom command for HVC/src/HVC-stamp/HVC-mkdir
 
 build HVC/src/HVC-stamp/HVC-mkdir | ${cmake_ninja_workdir}HVC/src/HVC-stamp/HVC-mkdir: CUSTOM_COMMAND
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -Dcfgdir= -P /Users/kavehfayyazi/monorepo/HVC/tmp/HVC-mkdirs.cmake && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/HVC/src/HVC-stamp/HVC-mkdir
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -Dcfgdir= -P /Users/nidhivadlamudi/Desktop/CMR/monorepo/HVC/tmp/HVC-mkdirs.cmake && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/HVC/src/HVC-stamp/HVC-mkdir
   DESC = Creating directories for 'HVC'
   restat = 1
 
@@ -152,7 +152,7 @@ build HVC/src/HVC-stamp/HVC-mkdir | ${cmake_ninja_workdir}HVC/src/HVC-stamp/HVC-
 # Custom command for HVC/src/HVC-stamp/HVC-patch
 
 build HVC/src/HVC-stamp/HVC-patch | ${cmake_ninja_workdir}HVC/src/HVC-stamp/HVC-patch: CUSTOM_COMMAND HVC/src/HVC-stamp/HVC-patch-info.txt HVC/src/HVC-stamp/HVC-update
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/HVC/src/HVC-stamp/HVC-patch
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/HVC/src/HVC-stamp/HVC-patch
   DESC = No patch step for 'HVC'
   restat = 1
 
@@ -161,7 +161,7 @@ build HVC/src/HVC-stamp/HVC-patch | ${cmake_ninja_workdir}HVC/src/HVC-stamp/HVC-
 # Custom command for HVC/src/HVC-stamp/HVC-update
 
 build HVC/src/HVC-stamp/HVC-update | ${cmake_ninja_workdir}HVC/src/HVC-stamp/HVC-update: CUSTOM_COMMAND HVC/src/HVC-stamp/HVC-update-info.txt HVC/src/HVC-stamp/HVC-download
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/HVC/src/HVC-stamp/HVC-update
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/HVC/src/HVC-stamp/HVC-update
   DESC = No update step for 'HVC'
   restat = 1
 
@@ -176,7 +176,7 @@ build CMakeFiles/PTC | ${cmake_ninja_workdir}CMakeFiles/PTC: phony CMakeFiles/PT
 # Custom command for CMakeFiles/PTC-complete
 
 build CMakeFiles/PTC-complete PTC/src/PTC-stamp/PTC-done | ${cmake_ninja_workdir}CMakeFiles/PTC-complete ${cmake_ninja_workdir}PTC/src/PTC-stamp/PTC-done: CUSTOM_COMMAND PTC/src/PTC-stamp/PTC-install PTC/src/PTC-stamp/PTC-mkdir PTC/src/PTC-stamp/PTC-download PTC/src/PTC-stamp/PTC-update PTC/src/PTC-stamp/PTC-patch PTC/src/PTC-stamp/PTC-configure PTC/src/PTC-stamp/PTC-build PTC/src/PTC-stamp/PTC-install
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E make_directory /Users/kavehfayyazi/monorepo/CMakeFiles && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/CMakeFiles/PTC-complete && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/PTC/src/PTC-stamp/PTC-done
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E make_directory /Users/nidhivadlamudi/Desktop/CMR/monorepo/CMakeFiles && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/CMakeFiles/PTC-complete && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/PTC/src/PTC-stamp/PTC-done
   DESC = Completed 'PTC'
   restat = 1
 
@@ -185,7 +185,7 @@ build CMakeFiles/PTC-complete PTC/src/PTC-stamp/PTC-done | ${cmake_ninja_workdir
 # Custom command for PTC/src/PTC-stamp/PTC-build
 
 build PTC/src/PTC-stamp/PTC-build | ${cmake_ninja_workdir}PTC/src/PTC-stamp/PTC-build: CUSTOM_COMMAND PTC/src/PTC-stamp/PTC-configure
-  COMMAND = cd /Users/kavehfayyazi/monorepo/PTC/src/PTC-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake --build .
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo/PTC/src/PTC-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake --build .
   DESC = Performing build step for 'PTC'
 
 
@@ -193,7 +193,7 @@ build PTC/src/PTC-stamp/PTC-build | ${cmake_ninja_workdir}PTC/src/PTC-stamp/PTC-
 # Custom command for PTC/src/PTC-stamp/PTC-configure
 
 build PTC/src/PTC-stamp/PTC-configure | ${cmake_ninja_workdir}PTC/src/PTC-stamp/PTC-configure: CUSTOM_COMMAND PTC/tmp/PTC-cfgcmd.txt PTC/src/PTC-stamp/PTC-patch
-  COMMAND = cd /Users/kavehfayyazi/monorepo/PTC/src/PTC-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -GNinja -S /Users/kavehfayyazi/monorepo/PTC -B /Users/kavehfayyazi/monorepo/PTC/src/PTC-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/PTC/src/PTC-stamp/PTC-configure
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo/PTC/src/PTC-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -GNinja -S /Users/nidhivadlamudi/Desktop/CMR/monorepo/PTC -B /Users/nidhivadlamudi/Desktop/CMR/monorepo/PTC/src/PTC-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/PTC/src/PTC-stamp/PTC-configure
   DESC = Performing configure step for 'PTC'
   restat = 1
 
@@ -202,7 +202,7 @@ build PTC/src/PTC-stamp/PTC-configure | ${cmake_ninja_workdir}PTC/src/PTC-stamp/
 # Custom command for PTC/src/PTC-stamp/PTC-download
 
 build PTC/src/PTC-stamp/PTC-download | ${cmake_ninja_workdir}PTC/src/PTC-stamp/PTC-download: CUSTOM_COMMAND PTC/src/PTC-stamp/PTC-source_dirinfo.txt PTC/src/PTC-stamp/PTC-mkdir
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/PTC/src/PTC-stamp/PTC-download
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/PTC/src/PTC-stamp/PTC-download
   DESC = No download step for 'PTC'
   restat = 1
 
@@ -211,7 +211,7 @@ build PTC/src/PTC-stamp/PTC-download | ${cmake_ninja_workdir}PTC/src/PTC-stamp/P
 # Custom command for PTC/src/PTC-stamp/PTC-install
 
 build PTC/src/PTC-stamp/PTC-install | ${cmake_ninja_workdir}PTC/src/PTC-stamp/PTC-install: CUSTOM_COMMAND PTC/src/PTC-stamp/PTC-build
-  COMMAND = cd /Users/kavehfayyazi/monorepo/PTC/src/PTC-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo/PTC/src/PTC-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append
   DESC = No install step for 'PTC'
 
 
@@ -219,7 +219,7 @@ build PTC/src/PTC-stamp/PTC-install | ${cmake_ninja_workdir}PTC/src/PTC-stamp/PT
 # Custom command for PTC/src/PTC-stamp/PTC-mkdir
 
 build PTC/src/PTC-stamp/PTC-mkdir | ${cmake_ninja_workdir}PTC/src/PTC-stamp/PTC-mkdir: CUSTOM_COMMAND
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -Dcfgdir= -P /Users/kavehfayyazi/monorepo/PTC/tmp/PTC-mkdirs.cmake && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/PTC/src/PTC-stamp/PTC-mkdir
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -Dcfgdir= -P /Users/nidhivadlamudi/Desktop/CMR/monorepo/PTC/tmp/PTC-mkdirs.cmake && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/PTC/src/PTC-stamp/PTC-mkdir
   DESC = Creating directories for 'PTC'
   restat = 1
 
@@ -228,7 +228,7 @@ build PTC/src/PTC-stamp/PTC-mkdir | ${cmake_ninja_workdir}PTC/src/PTC-stamp/PTC-
 # Custom command for PTC/src/PTC-stamp/PTC-patch
 
 build PTC/src/PTC-stamp/PTC-patch | ${cmake_ninja_workdir}PTC/src/PTC-stamp/PTC-patch: CUSTOM_COMMAND PTC/src/PTC-stamp/PTC-patch-info.txt PTC/src/PTC-stamp/PTC-update
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/PTC/src/PTC-stamp/PTC-patch
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/PTC/src/PTC-stamp/PTC-patch
   DESC = No patch step for 'PTC'
   restat = 1
 
@@ -237,7 +237,7 @@ build PTC/src/PTC-stamp/PTC-patch | ${cmake_ninja_workdir}PTC/src/PTC-stamp/PTC-
 # Custom command for PTC/src/PTC-stamp/PTC-update
 
 build PTC/src/PTC-stamp/PTC-update | ${cmake_ninja_workdir}PTC/src/PTC-stamp/PTC-update: CUSTOM_COMMAND PTC/src/PTC-stamp/PTC-update-info.txt PTC/src/PTC-stamp/PTC-download
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/PTC/src/PTC-stamp/PTC-update
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/PTC/src/PTC-stamp/PTC-update
   DESC = No update step for 'PTC'
   restat = 1
 
@@ -252,7 +252,7 @@ build CMakeFiles/RAM | ${cmake_ninja_workdir}CMakeFiles/RAM: phony CMakeFiles/RA
 # Custom command for CMakeFiles/RAM-complete
 
 build CMakeFiles/RAM-complete RAM/src/RAM-stamp/RAM-done | ${cmake_ninja_workdir}CMakeFiles/RAM-complete ${cmake_ninja_workdir}RAM/src/RAM-stamp/RAM-done: CUSTOM_COMMAND RAM/src/RAM-stamp/RAM-install RAM/src/RAM-stamp/RAM-mkdir RAM/src/RAM-stamp/RAM-download RAM/src/RAM-stamp/RAM-update RAM/src/RAM-stamp/RAM-patch RAM/src/RAM-stamp/RAM-configure RAM/src/RAM-stamp/RAM-build RAM/src/RAM-stamp/RAM-install
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E make_directory /Users/kavehfayyazi/monorepo/CMakeFiles && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/CMakeFiles/RAM-complete && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/RAM/src/RAM-stamp/RAM-done
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E make_directory /Users/nidhivadlamudi/Desktop/CMR/monorepo/CMakeFiles && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/CMakeFiles/RAM-complete && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/RAM/src/RAM-stamp/RAM-done
   DESC = Completed 'RAM'
   restat = 1
 
@@ -261,7 +261,7 @@ build CMakeFiles/RAM-complete RAM/src/RAM-stamp/RAM-done | ${cmake_ninja_workdir
 # Custom command for RAM/src/RAM-stamp/RAM-build
 
 build RAM/src/RAM-stamp/RAM-build | ${cmake_ninja_workdir}RAM/src/RAM-stamp/RAM-build: CUSTOM_COMMAND RAM/src/RAM-stamp/RAM-configure
-  COMMAND = cd /Users/kavehfayyazi/monorepo/RAM/src/RAM-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake --build .
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo/RAM/src/RAM-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake --build .
   DESC = Performing build step for 'RAM'
 
 
@@ -269,7 +269,7 @@ build RAM/src/RAM-stamp/RAM-build | ${cmake_ninja_workdir}RAM/src/RAM-stamp/RAM-
 # Custom command for RAM/src/RAM-stamp/RAM-configure
 
 build RAM/src/RAM-stamp/RAM-configure | ${cmake_ninja_workdir}RAM/src/RAM-stamp/RAM-configure: CUSTOM_COMMAND RAM/tmp/RAM-cfgcmd.txt RAM/src/RAM-stamp/RAM-patch
-  COMMAND = cd /Users/kavehfayyazi/monorepo/RAM/src/RAM-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -GNinja -S /Users/kavehfayyazi/monorepo/RAM -B /Users/kavehfayyazi/monorepo/RAM/src/RAM-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/RAM/src/RAM-stamp/RAM-configure
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo/RAM/src/RAM-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -GNinja -S /Users/nidhivadlamudi/Desktop/CMR/monorepo/RAM -B /Users/nidhivadlamudi/Desktop/CMR/monorepo/RAM/src/RAM-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/RAM/src/RAM-stamp/RAM-configure
   DESC = Performing configure step for 'RAM'
   restat = 1
 
@@ -278,7 +278,7 @@ build RAM/src/RAM-stamp/RAM-configure | ${cmake_ninja_workdir}RAM/src/RAM-stamp/
 # Custom command for RAM/src/RAM-stamp/RAM-download
 
 build RAM/src/RAM-stamp/RAM-download | ${cmake_ninja_workdir}RAM/src/RAM-stamp/RAM-download: CUSTOM_COMMAND RAM/src/RAM-stamp/RAM-source_dirinfo.txt RAM/src/RAM-stamp/RAM-mkdir
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/RAM/src/RAM-stamp/RAM-download
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/RAM/src/RAM-stamp/RAM-download
   DESC = No download step for 'RAM'
   restat = 1
 
@@ -287,7 +287,7 @@ build RAM/src/RAM-stamp/RAM-download | ${cmake_ninja_workdir}RAM/src/RAM-stamp/R
 # Custom command for RAM/src/RAM-stamp/RAM-install
 
 build RAM/src/RAM-stamp/RAM-install | ${cmake_ninja_workdir}RAM/src/RAM-stamp/RAM-install: CUSTOM_COMMAND RAM/src/RAM-stamp/RAM-build
-  COMMAND = cd /Users/kavehfayyazi/monorepo/RAM/src/RAM-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo/RAM/src/RAM-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append
   DESC = No install step for 'RAM'
 
 
@@ -295,7 +295,7 @@ build RAM/src/RAM-stamp/RAM-install | ${cmake_ninja_workdir}RAM/src/RAM-stamp/RA
 # Custom command for RAM/src/RAM-stamp/RAM-mkdir
 
 build RAM/src/RAM-stamp/RAM-mkdir | ${cmake_ninja_workdir}RAM/src/RAM-stamp/RAM-mkdir: CUSTOM_COMMAND
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -Dcfgdir= -P /Users/kavehfayyazi/monorepo/RAM/tmp/RAM-mkdirs.cmake && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/RAM/src/RAM-stamp/RAM-mkdir
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -Dcfgdir= -P /Users/nidhivadlamudi/Desktop/CMR/monorepo/RAM/tmp/RAM-mkdirs.cmake && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/RAM/src/RAM-stamp/RAM-mkdir
   DESC = Creating directories for 'RAM'
   restat = 1
 
@@ -304,7 +304,7 @@ build RAM/src/RAM-stamp/RAM-mkdir | ${cmake_ninja_workdir}RAM/src/RAM-stamp/RAM-
 # Custom command for RAM/src/RAM-stamp/RAM-patch
 
 build RAM/src/RAM-stamp/RAM-patch | ${cmake_ninja_workdir}RAM/src/RAM-stamp/RAM-patch: CUSTOM_COMMAND RAM/src/RAM-stamp/RAM-patch-info.txt RAM/src/RAM-stamp/RAM-update
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/RAM/src/RAM-stamp/RAM-patch
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/RAM/src/RAM-stamp/RAM-patch
   DESC = No patch step for 'RAM'
   restat = 1
 
@@ -313,7 +313,7 @@ build RAM/src/RAM-stamp/RAM-patch | ${cmake_ninja_workdir}RAM/src/RAM-stamp/RAM-
 # Custom command for RAM/src/RAM-stamp/RAM-update
 
 build RAM/src/RAM-stamp/RAM-update | ${cmake_ninja_workdir}RAM/src/RAM-stamp/RAM-update: CUSTOM_COMMAND RAM/src/RAM-stamp/RAM-update-info.txt RAM/src/RAM-stamp/RAM-download
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/RAM/src/RAM-stamp/RAM-update
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/RAM/src/RAM-stamp/RAM-update
   DESC = No update step for 'RAM'
   restat = 1
 
@@ -328,7 +328,7 @@ build CMakeFiles/VSM | ${cmake_ninja_workdir}CMakeFiles/VSM: phony CMakeFiles/VS
 # Custom command for CMakeFiles/VSM-complete
 
 build CMakeFiles/VSM-complete VSM/src/VSM-stamp/VSM-done | ${cmake_ninja_workdir}CMakeFiles/VSM-complete ${cmake_ninja_workdir}VSM/src/VSM-stamp/VSM-done: CUSTOM_COMMAND VSM/src/VSM-stamp/VSM-install VSM/src/VSM-stamp/VSM-mkdir VSM/src/VSM-stamp/VSM-download VSM/src/VSM-stamp/VSM-update VSM/src/VSM-stamp/VSM-patch VSM/src/VSM-stamp/VSM-configure VSM/src/VSM-stamp/VSM-build VSM/src/VSM-stamp/VSM-install
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E make_directory /Users/kavehfayyazi/monorepo/CMakeFiles && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/CMakeFiles/VSM-complete && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/VSM/src/VSM-stamp/VSM-done
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E make_directory /Users/nidhivadlamudi/Desktop/CMR/monorepo/CMakeFiles && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/CMakeFiles/VSM-complete && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/VSM/src/VSM-stamp/VSM-done
   DESC = Completed 'VSM'
   restat = 1
 
@@ -337,7 +337,7 @@ build CMakeFiles/VSM-complete VSM/src/VSM-stamp/VSM-done | ${cmake_ninja_workdir
 # Custom command for VSM/src/VSM-stamp/VSM-build
 
 build VSM/src/VSM-stamp/VSM-build | ${cmake_ninja_workdir}VSM/src/VSM-stamp/VSM-build: CUSTOM_COMMAND VSM/src/VSM-stamp/VSM-configure
-  COMMAND = cd /Users/kavehfayyazi/monorepo/VSM/src/VSM-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake --build .
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo/VSM/src/VSM-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake --build .
   DESC = Performing build step for 'VSM'
 
 
@@ -345,7 +345,7 @@ build VSM/src/VSM-stamp/VSM-build | ${cmake_ninja_workdir}VSM/src/VSM-stamp/VSM-
 # Custom command for VSM/src/VSM-stamp/VSM-configure
 
 build VSM/src/VSM-stamp/VSM-configure | ${cmake_ninja_workdir}VSM/src/VSM-stamp/VSM-configure: CUSTOM_COMMAND VSM/tmp/VSM-cfgcmd.txt VSM/src/VSM-stamp/VSM-patch
-  COMMAND = cd /Users/kavehfayyazi/monorepo/VSM/src/VSM-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -GNinja -S /Users/kavehfayyazi/monorepo/VSM -B /Users/kavehfayyazi/monorepo/VSM/src/VSM-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/VSM/src/VSM-stamp/VSM-configure
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo/VSM/src/VSM-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -GNinja -S /Users/nidhivadlamudi/Desktop/CMR/monorepo/VSM -B /Users/nidhivadlamudi/Desktop/CMR/monorepo/VSM/src/VSM-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/VSM/src/VSM-stamp/VSM-configure
   DESC = Performing configure step for 'VSM'
   restat = 1
 
@@ -354,7 +354,7 @@ build VSM/src/VSM-stamp/VSM-configure | ${cmake_ninja_workdir}VSM/src/VSM-stamp/
 # Custom command for VSM/src/VSM-stamp/VSM-download
 
 build VSM/src/VSM-stamp/VSM-download | ${cmake_ninja_workdir}VSM/src/VSM-stamp/VSM-download: CUSTOM_COMMAND VSM/src/VSM-stamp/VSM-source_dirinfo.txt VSM/src/VSM-stamp/VSM-mkdir
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/VSM/src/VSM-stamp/VSM-download
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/VSM/src/VSM-stamp/VSM-download
   DESC = No download step for 'VSM'
   restat = 1
 
@@ -363,7 +363,7 @@ build VSM/src/VSM-stamp/VSM-download | ${cmake_ninja_workdir}VSM/src/VSM-stamp/V
 # Custom command for VSM/src/VSM-stamp/VSM-install
 
 build VSM/src/VSM-stamp/VSM-install | ${cmake_ninja_workdir}VSM/src/VSM-stamp/VSM-install: CUSTOM_COMMAND VSM/src/VSM-stamp/VSM-build
-  COMMAND = cd /Users/kavehfayyazi/monorepo/VSM/src/VSM-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo/VSM/src/VSM-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append
   DESC = No install step for 'VSM'
 
 
@@ -371,7 +371,7 @@ build VSM/src/VSM-stamp/VSM-install | ${cmake_ninja_workdir}VSM/src/VSM-stamp/VS
 # Custom command for VSM/src/VSM-stamp/VSM-mkdir
 
 build VSM/src/VSM-stamp/VSM-mkdir | ${cmake_ninja_workdir}VSM/src/VSM-stamp/VSM-mkdir: CUSTOM_COMMAND
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -Dcfgdir= -P /Users/kavehfayyazi/monorepo/VSM/tmp/VSM-mkdirs.cmake && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/VSM/src/VSM-stamp/VSM-mkdir
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -Dcfgdir= -P /Users/nidhivadlamudi/Desktop/CMR/monorepo/VSM/tmp/VSM-mkdirs.cmake && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/VSM/src/VSM-stamp/VSM-mkdir
   DESC = Creating directories for 'VSM'
   restat = 1
 
@@ -380,7 +380,7 @@ build VSM/src/VSM-stamp/VSM-mkdir | ${cmake_ninja_workdir}VSM/src/VSM-stamp/VSM-
 # Custom command for VSM/src/VSM-stamp/VSM-patch
 
 build VSM/src/VSM-stamp/VSM-patch | ${cmake_ninja_workdir}VSM/src/VSM-stamp/VSM-patch: CUSTOM_COMMAND VSM/src/VSM-stamp/VSM-patch-info.txt VSM/src/VSM-stamp/VSM-update
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/VSM/src/VSM-stamp/VSM-patch
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/VSM/src/VSM-stamp/VSM-patch
   DESC = No patch step for 'VSM'
   restat = 1
 
@@ -389,7 +389,7 @@ build VSM/src/VSM-stamp/VSM-patch | ${cmake_ninja_workdir}VSM/src/VSM-stamp/VSM-
 # Custom command for VSM/src/VSM-stamp/VSM-update
 
 build VSM/src/VSM-stamp/VSM-update | ${cmake_ninja_workdir}VSM/src/VSM-stamp/VSM-update: CUSTOM_COMMAND VSM/src/VSM-stamp/VSM-update-info.txt VSM/src/VSM-stamp/VSM-download
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/VSM/src/VSM-stamp/VSM-update
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/VSM/src/VSM-stamp/VSM-update
   DESC = No update step for 'VSM'
   restat = 1
 
@@ -404,7 +404,7 @@ build CMakeFiles/DIM | ${cmake_ninja_workdir}CMakeFiles/DIM: phony CMakeFiles/DI
 # Custom command for CMakeFiles/DIM-complete
 
 build CMakeFiles/DIM-complete DIM/src/DIM-stamp/DIM-done | ${cmake_ninja_workdir}CMakeFiles/DIM-complete ${cmake_ninja_workdir}DIM/src/DIM-stamp/DIM-done: CUSTOM_COMMAND DIM/src/DIM-stamp/DIM-install DIM/src/DIM-stamp/DIM-mkdir DIM/src/DIM-stamp/DIM-download DIM/src/DIM-stamp/DIM-update DIM/src/DIM-stamp/DIM-patch DIM/src/DIM-stamp/DIM-configure DIM/src/DIM-stamp/DIM-build DIM/src/DIM-stamp/DIM-install
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E make_directory /Users/kavehfayyazi/monorepo/CMakeFiles && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/CMakeFiles/DIM-complete && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/DIM/src/DIM-stamp/DIM-done
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E make_directory /Users/nidhivadlamudi/Desktop/CMR/monorepo/CMakeFiles && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/CMakeFiles/DIM-complete && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/DIM/src/DIM-stamp/DIM-done
   DESC = Completed 'DIM'
   restat = 1
 
@@ -413,7 +413,7 @@ build CMakeFiles/DIM-complete DIM/src/DIM-stamp/DIM-done | ${cmake_ninja_workdir
 # Custom command for DIM/src/DIM-stamp/DIM-build
 
 build DIM/src/DIM-stamp/DIM-build | ${cmake_ninja_workdir}DIM/src/DIM-stamp/DIM-build: CUSTOM_COMMAND DIM/src/DIM-stamp/DIM-configure
-  COMMAND = cd /Users/kavehfayyazi/monorepo/DIM/src/DIM-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake --build .
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo/DIM/src/DIM-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake --build .
   DESC = Performing build step for 'DIM'
 
 
@@ -421,7 +421,7 @@ build DIM/src/DIM-stamp/DIM-build | ${cmake_ninja_workdir}DIM/src/DIM-stamp/DIM-
 # Custom command for DIM/src/DIM-stamp/DIM-configure
 
 build DIM/src/DIM-stamp/DIM-configure | ${cmake_ninja_workdir}DIM/src/DIM-stamp/DIM-configure: CUSTOM_COMMAND DIM/tmp/DIM-cfgcmd.txt DIM/src/DIM-stamp/DIM-patch
-  COMMAND = cd /Users/kavehfayyazi/monorepo/DIM/src/DIM-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -GNinja -S /Users/kavehfayyazi/monorepo/DIM -B /Users/kavehfayyazi/monorepo/DIM/src/DIM-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/DIM/src/DIM-stamp/DIM-configure
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo/DIM/src/DIM-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -GNinja -S /Users/nidhivadlamudi/Desktop/CMR/monorepo/DIM -B /Users/nidhivadlamudi/Desktop/CMR/monorepo/DIM/src/DIM-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/DIM/src/DIM-stamp/DIM-configure
   DESC = Performing configure step for 'DIM'
   restat = 1
 
@@ -430,7 +430,7 @@ build DIM/src/DIM-stamp/DIM-configure | ${cmake_ninja_workdir}DIM/src/DIM-stamp/
 # Custom command for DIM/src/DIM-stamp/DIM-download
 
 build DIM/src/DIM-stamp/DIM-download | ${cmake_ninja_workdir}DIM/src/DIM-stamp/DIM-download: CUSTOM_COMMAND DIM/src/DIM-stamp/DIM-source_dirinfo.txt DIM/src/DIM-stamp/DIM-mkdir
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/DIM/src/DIM-stamp/DIM-download
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/DIM/src/DIM-stamp/DIM-download
   DESC = No download step for 'DIM'
   restat = 1
 
@@ -439,7 +439,7 @@ build DIM/src/DIM-stamp/DIM-download | ${cmake_ninja_workdir}DIM/src/DIM-stamp/D
 # Custom command for DIM/src/DIM-stamp/DIM-install
 
 build DIM/src/DIM-stamp/DIM-install | ${cmake_ninja_workdir}DIM/src/DIM-stamp/DIM-install: CUSTOM_COMMAND DIM/src/DIM-stamp/DIM-build
-  COMMAND = cd /Users/kavehfayyazi/monorepo/DIM/src/DIM-build && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo/DIM/src/DIM-build && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append
   DESC = No install step for 'DIM'
 
 
@@ -447,7 +447,7 @@ build DIM/src/DIM-stamp/DIM-install | ${cmake_ninja_workdir}DIM/src/DIM-stamp/DI
 # Custom command for DIM/src/DIM-stamp/DIM-mkdir
 
 build DIM/src/DIM-stamp/DIM-mkdir | ${cmake_ninja_workdir}DIM/src/DIM-stamp/DIM-mkdir: CUSTOM_COMMAND
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -Dcfgdir= -P /Users/kavehfayyazi/monorepo/DIM/tmp/DIM-mkdirs.cmake && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/DIM/src/DIM-stamp/DIM-mkdir
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -Dcfgdir= -P /Users/nidhivadlamudi/Desktop/CMR/monorepo/DIM/tmp/DIM-mkdirs.cmake && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/DIM/src/DIM-stamp/DIM-mkdir
   DESC = Creating directories for 'DIM'
   restat = 1
 
@@ -456,7 +456,7 @@ build DIM/src/DIM-stamp/DIM-mkdir | ${cmake_ninja_workdir}DIM/src/DIM-stamp/DIM-
 # Custom command for DIM/src/DIM-stamp/DIM-patch
 
 build DIM/src/DIM-stamp/DIM-patch | ${cmake_ninja_workdir}DIM/src/DIM-stamp/DIM-patch: CUSTOM_COMMAND DIM/src/DIM-stamp/DIM-patch-info.txt DIM/src/DIM-stamp/DIM-update
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/DIM/src/DIM-stamp/DIM-patch
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/DIM/src/DIM-stamp/DIM-patch
   DESC = No patch step for 'DIM'
   restat = 1
 
@@ -465,7 +465,7 @@ build DIM/src/DIM-stamp/DIM-patch | ${cmake_ninja_workdir}DIM/src/DIM-stamp/DIM-
 # Custom command for DIM/src/DIM-stamp/DIM-update
 
 build DIM/src/DIM-stamp/DIM-update | ${cmake_ninja_workdir}DIM/src/DIM-stamp/DIM-update: CUSTOM_COMMAND DIM/src/DIM-stamp/DIM-update-info.txt DIM/src/DIM-stamp/DIM-download
-  COMMAND = cd /Users/kavehfayyazi/monorepo && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.17.0/CMake/bin/cmake -E touch /Users/kavehfayyazi/monorepo/DIM/src/DIM-stamp/DIM-update
+  COMMAND = cd /Users/nidhivadlamudi/Desktop/CMR/monorepo && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E echo_append && /opt/ST/STM32CubeCLT_1.16.0/CMake/bin/cmake -E touch /Users/nidhivadlamudi/Desktop/CMR/monorepo/DIM/src/DIM-stamp/DIM-update
   DESC = No update step for 'DIM'
   restat = 1
 
@@ -478,7 +478,7 @@ build DIM/src/DIM-stamp/DIM-update | ${cmake_ninja_workdir}DIM/src/DIM-stamp/DIM
 # =============================================================================
 
 #############################################
-# Folder: /Users/kavehfayyazi/monorepo
+# Folder: /Users/nidhivadlamudi/Desktop/CMR/monorepo
 
 build all: phony HVC PTC RAM VSM DIM
 
@@ -489,14 +489,14 @@ build all: phony HVC PTC RAM VSM DIM
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/CMakeCInformation.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/CMakeCXXInformation.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/CMakeCommonLanguageInclude.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/CMakeGenericSystem.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/CMakeInitializeConfigs.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/CMakeLanguageInformation.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/CMakeSystemSpecificInformation.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/CMakeSystemSpecificInitialize.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Compiler/AppleClang-C.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Compiler/AppleClang-CXX.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Compiler/CMakeCommonCompilerMacros.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Compiler/Clang.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Compiler/GNU.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/ExternalProject.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/ExternalProject/PatchInfo.txt.in /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/ExternalProject/RepositoryInfo.txt.in /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/ExternalProject/UpdateInfo.txt.in /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/ExternalProject/cfgcmd.txt.in /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/ExternalProject/mkdirs.cmake.in /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/ExternalProject/shared_internal_commands.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Platform/Apple-AppleClang-C.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Platform/Apple-AppleClang-CXX.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Platform/Apple-Clang-C.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Platform/Apple-Clang-CXX.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Platform/Apple-Clang.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Platform/Darwin-Initialize.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Platform/Darwin.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.28.1/CMakeCCompiler.cmake CMakeFiles/3.28.1/CMakeCXXCompiler.cmake CMakeFiles/3.28.1/CMakeSystem.cmake CMakeLists.txt DIM/tmp/DIM-mkdirs.cmake HVC/tmp/HVC-mkdirs.cmake PTC/tmp/PTC-mkdirs.cmake RAM/tmp/RAM-mkdirs.cmake VSM/tmp/VSM-mkdirs.cmake
+build build.ninja: RERUN_CMAKE | /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeCCompiler.cmake.in /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeCCompilerABI.c /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeCInformation.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeCXXCompiler.cmake.in /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeCXXCompilerABI.cpp /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeCXXInformation.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeCommonLanguageInclude.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeCompilerIdDetection.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeDetermineCCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeDetermineCXXCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeDetermineCompileFeatures.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeDetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeDetermineCompilerABI.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeDetermineCompilerId.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeDetermineSystem.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeFindBinUtils.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeGenericSystem.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeInitializeConfigs.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeLanguageInformation.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeNinjaFindMake.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeParseImplicitIncludeInfo.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeParseImplicitLinkInfo.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeParseLibraryArchitecture.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeSystem.cmake.in /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeSystemSpecificInformation.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeSystemSpecificInitialize.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeTestCCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeTestCXXCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeTestCompilerCommon.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/ADSP-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/ARMCC-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/ARMClang-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/AppleClang-C.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/AppleClang-CXX.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/AppleClang-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Borland-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Bruce-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/CMakeCommonCompilerMacros.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Clang-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Clang-DetermineCompilerInternal.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Clang.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Comeau-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Compaq-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Compaq-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Cray-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/CrayClang-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Embarcadero-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Fujitsu-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/FujitsuClang-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/GHS-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/GNU-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/GNU-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/GNU.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/HP-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/HP-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/IAR-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/IBMCPP-C-DetermineVersionInternal.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/IBMCPP-CXX-DetermineVersionInternal.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/IBMClang-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/IBMClang-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Intel-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/IntelLLVM-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/LCC-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/LCC-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/MSVC-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/NVHPC-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/NVIDIA-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/OpenWatcom-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/OrangeC-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/PGI-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/PathScale-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/SCO-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/SDCC-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/SunPro-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/SunPro-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/TI-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Tasking-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/TinyCC-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/VisualAge-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/VisualAge-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Watcom-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/XL-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/XL-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/XLClang-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/XLClang-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/zOS-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/zOS-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/ExternalProject.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/ExternalProject/PatchInfo.txt.in /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/ExternalProject/RepositoryInfo.txt.in /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/ExternalProject/UpdateInfo.txt.in /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/ExternalProject/cfgcmd.txt.in /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/ExternalProject/mkdirs.cmake.in /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/ExternalProject/shared_internal_commands.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Internal/FeatureTesting.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Platform/Generic.cmake CMakeCache.txt CMakeFiles/3.28.1/CMakeCCompiler.cmake CMakeFiles/3.28.1/CMakeCXXCompiler.cmake CMakeFiles/3.28.1/CMakeSystem.cmake CMakeLists.txt DIM/tmp/DIM-mkdirs.cmake HVC/tmp/HVC-mkdirs.cmake PTC/tmp/PTC-mkdirs.cmake RAM/tmp/RAM-mkdirs.cmake VSM/tmp/VSM-mkdirs.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/CMakeCInformation.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/CMakeCXXInformation.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/CMakeCommonLanguageInclude.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/CMakeGenericSystem.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/CMakeInitializeConfigs.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/CMakeLanguageInformation.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/CMakeSystemSpecificInformation.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/CMakeSystemSpecificInitialize.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Compiler/AppleClang-C.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Compiler/AppleClang-CXX.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Compiler/CMakeCommonCompilerMacros.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Compiler/Clang.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Compiler/GNU.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/ExternalProject.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/ExternalProject/PatchInfo.txt.in /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/ExternalProject/RepositoryInfo.txt.in /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/ExternalProject/UpdateInfo.txt.in /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/ExternalProject/cfgcmd.txt.in /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/ExternalProject/mkdirs.cmake.in /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/ExternalProject/shared_internal_commands.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Platform/Apple-AppleClang-C.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Platform/Apple-AppleClang-CXX.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Platform/Apple-Clang-C.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Platform/Apple-Clang-CXX.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Platform/Apple-Clang.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Platform/Darwin-Initialize.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Platform/Darwin.cmake /opt/ST/STM32CubeCLT_1.17.0/CMake/share/cmake-3.28/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.28.1/CMakeCCompiler.cmake CMakeFiles/3.28.1/CMakeCXXCompiler.cmake CMakeFiles/3.28.1/CMakeSystem.cmake CMakeLists.txt DIM/tmp/DIM-mkdirs.cmake HVC/tmp/HVC-mkdirs.cmake PTC/tmp/PTC-mkdirs.cmake RAM/tmp/RAM-mkdirs.cmake VSM/tmp/VSM-mkdirs.cmake: phony
+build /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeCCompiler.cmake.in /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeCCompilerABI.c /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeCInformation.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeCXXCompiler.cmake.in /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeCXXCompilerABI.cpp /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeCXXInformation.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeCommonLanguageInclude.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeCompilerIdDetection.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeDetermineCCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeDetermineCXXCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeDetermineCompileFeatures.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeDetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeDetermineCompilerABI.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeDetermineCompilerId.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeDetermineSystem.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeFindBinUtils.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeGenericSystem.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeInitializeConfigs.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeLanguageInformation.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeNinjaFindMake.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeParseImplicitIncludeInfo.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeParseImplicitLinkInfo.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeParseLibraryArchitecture.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeSystem.cmake.in /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeSystemSpecificInformation.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeSystemSpecificInitialize.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeTestCCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeTestCXXCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/CMakeTestCompilerCommon.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/ADSP-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/ARMCC-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/ARMClang-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/AppleClang-C.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/AppleClang-CXX.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/AppleClang-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Borland-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Bruce-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/CMakeCommonCompilerMacros.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Clang-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Clang-DetermineCompilerInternal.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Clang.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Comeau-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Compaq-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Compaq-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Cray-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/CrayClang-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Embarcadero-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Fujitsu-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/FujitsuClang-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/GHS-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/GNU-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/GNU-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/GNU.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/HP-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/HP-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/IAR-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/IBMCPP-C-DetermineVersionInternal.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/IBMCPP-CXX-DetermineVersionInternal.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/IBMClang-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/IBMClang-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Intel-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/IntelLLVM-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/LCC-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/LCC-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/MSVC-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/NVHPC-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/NVIDIA-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/OpenWatcom-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/OrangeC-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/PGI-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/PathScale-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/SCO-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/SDCC-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/SunPro-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/SunPro-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/TI-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Tasking-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/TinyCC-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/VisualAge-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/VisualAge-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/Watcom-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/XL-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/XL-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/XLClang-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/XLClang-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/zOS-C-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Compiler/zOS-CXX-DetermineCompiler.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/ExternalProject.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/ExternalProject/PatchInfo.txt.in /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/ExternalProject/RepositoryInfo.txt.in /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/ExternalProject/UpdateInfo.txt.in /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/ExternalProject/cfgcmd.txt.in /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/ExternalProject/mkdirs.cmake.in /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/ExternalProject/shared_internal_commands.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Internal/FeatureTesting.cmake /opt/ST/STM32CubeCLT_1.16.0/CMake/share/cmake-3.28/Modules/Platform/Generic.cmake CMakeCache.txt CMakeFiles/3.28.1/CMakeCCompiler.cmake CMakeFiles/3.28.1/CMakeCXXCompiler.cmake CMakeFiles/3.28.1/CMakeSystem.cmake CMakeLists.txt DIM/tmp/DIM-mkdirs.cmake HVC/tmp/HVC-mkdirs.cmake PTC/tmp/PTC-mkdirs.cmake RAM/tmp/RAM-mkdirs.cmake VSM/tmp/VSM-mkdirs.cmake: phony
 
 
 #############################################
