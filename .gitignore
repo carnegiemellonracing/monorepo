@@ -20,5 +20,5 @@ CMakeUserPresets.json
 .DS_Store
 gitcommit.h
 
-DIM-stamp/
+*-stamp/
 tmp/

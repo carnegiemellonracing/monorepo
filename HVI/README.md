@@ -1,10 +1,10 @@
-# Driver Interface Module
+# HVI Sense
 
 **NOTE**: This project uses [Git submodules][submodules].
 - When cloning this repository for the first time `git clone git@github.com:carnegiemellonracing/DIM.git --recursive`
 - When updating an existing clone: `git submodule update --init --recursive`
 
-This repository contains firmware for the Driver Interface Module.
+This repository contains firmware for the HVI Sense board to measure voltage and current coming from the accumulator.
 
 [submodules]: https://git-scm.com/book/en/v2/Git-Tools-Submodules
 
