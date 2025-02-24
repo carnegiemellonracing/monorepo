@@ -738,14 +738,14 @@ static void stateMachine(void *pvParameters){
     TickType_t lastWakeTime = xTaskGetTickCount();
     currState = INIT;
     while (1) {
-        taskENTER_CRITICAL();
+        //taskENTER_CRITICAL();
         getReqScreen();
         stateOutput();
 		/* for testing
 		vsmStateGlobal = stateGetVSM();
 		vsmStateGlobalReq = stateGetVSMReq();
 		*/
-        taskEXIT_CRITICAL();
+        //taskEXIT_CRITICAL();
 		vTaskDelayUntil(&lastWakeTime, stateMachine_period);
     }
 }
