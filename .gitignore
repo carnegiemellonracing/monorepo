@@ -19,3 +19,6 @@ CMakeUserPresets.json
 .vscode/settings.json
 .DS_Store
 gitcommit.h
+
+DIM-stamp/
+tmp/
