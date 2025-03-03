@@ -573,7 +573,7 @@ static void stateOutput() {
             drawErrorScreen();
             break;
         case RACING:
-            drawRacingScreen();
+            drawRacingScreen(); 
             break;
     }
 	//TODO: Why is this called again?
