@@ -107,24 +107,34 @@ debouncing for button presses for LRUD
  */
 # define DEBOUNCE_DELAY 50
 
+static uint32_t lastPress[LRUD_LEN] = {0};
+
+static bool lastState[LRUD_LEN] = {false};
+
 // master function for detecting and changing can button states, will be in gpio loop
 void canLRUDDetect(void){
-	//turn everything off
-	for(int i = 0; i< LRUD_LEN; i++){
-		canLRUDStates[i] = false;
-	}
+
 	XYActivate();
-	for(int i=0; i<LRUD_LEN; i++){
+
+	for(int i = 0; i < LRUD_LEN; i++){
 		if(gpioLRUDStates[i] == true){
-			canLRUDStates[i] = false;
-			//delay by ((debounce delay time) / (time per tick)) ticks
-			vTaskDelay(DEBOUNCE_DELAY);
-			XYActivate();
-			if (gpioLRUDStates[i] == true){
-				while(gpioLRUDStates[i] == true){
-					XYActivate();
+			if(lastState[i] == false)
+				//new press
+				lastState[i] = true;
+				lastPress[i] = xTaskGetTickCount();
+		}
+		else {
+			if(lastState[i] == true){
+				//pressed and release
+				if(xTaskGetTickCount() - lastPress[i] >= DEBOUNCE_DELAY){
+					//valid press
+					canLRUDStates[i] = true;
+				} else {
+					canLRUDStates[i] = false;
 				}
-				canLRUDStates[i] = true;
+				lastPress[i] = false;
+			} else {
+				canLRUDStates[i] = false;
 			}
 		}
 	}
