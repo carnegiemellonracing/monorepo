@@ -127,7 +127,7 @@ void canLRUDDetect(void){
 			if(lastState[i] == true){
 				//pressed and release
 				canLRUDStates[i] = (xTaskGetTickCount() - lastPress[i] >= DEBOUNCE_DELAY);
-				lastPress[i] = false;
+				lastState[i] = false;
 			} else {
 				canLRUDStates[i] = false;
 			}
