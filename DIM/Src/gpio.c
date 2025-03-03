@@ -117,14 +117,14 @@ void canLRUDDetect(void){
 	XYActivate();
 
 	for(int i = 0; i < LRUD_LEN; i++){
-		if(gpioLRUDStates[i] == true){
+		if(gpioLRUDStates[i]){
 			if(lastState[i] == false)
 				//new press
 				lastState[i] = true;
 				lastPress[i] = xTaskGetTickCount();
 		}
 		else {
-			if(lastState[i] == true){
+			if(lastState[i]){
 				//pressed and release
 				canLRUDStates[i] = (xTaskGetTickCount() - lastPress[i] >= DEBOUNCE_DELAY);
 				lastState[i] = false;
