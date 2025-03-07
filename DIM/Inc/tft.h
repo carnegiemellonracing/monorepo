@@ -163,7 +163,7 @@ void tftCmd(tft_t *tft, tftCmd_t cmd, uint8_t param);
 void tftWrite(tft_t *tft, tftAddr_t addr, size_t len, const void *data);
 void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data);
 
-void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait);
+void tftCoCmd(tft_t *tft, size_t len, const void *data);
 
 /** @brief Forward declare exported content type. */
 typedef struct tftContent tftContent_t;

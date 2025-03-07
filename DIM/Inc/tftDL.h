@@ -118,7 +118,6 @@ void tftDL_configUpdate();
 
 void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yellow, bool temp_red);
 
-void tftDLContentLoad(tft_t *tft, const tftDL_t *tftDL);
 void tftDLWrite(tft_t *tft, const tftDL_t *tftDL);
 
 #endif /* TFTDL_H */

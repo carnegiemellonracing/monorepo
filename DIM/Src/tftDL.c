@@ -23,9 +23,6 @@ static const float paddle_time_scale_factor = 255.0f / 20.0f;
 struct tftDL {
     size_t len;           /**< @brief Length of the display list, in bytes. */
     const uint32_t *data; /**< @brief The display list data. */
-
-    size_t contentLen;            /**< @brief Number of content items. */
-    const tftContent_t **content; /**< @brief Associated content. */
 };
 
 /** @brief Raw startup screen */
@@ -39,9 +36,6 @@ static uint32_t tftDL_startupData[] = {
 const tftDL_t tftDL_startup = {
     .len = sizeof(tftDL_startupData),
     .data = tftDL_startupData,
-
-    .contentLen = 0,
-    .content = NULL
 };
 
 /** @brief GLV Screen */
@@ -54,9 +48,6 @@ static uint32_t tftDL_errorData[] = {
 const tftDL_t tftDL_error = {
     .len = sizeof(tftDL_errorData),
     .data = tftDL_errorData,
-
-    .contentLen = 0,
-    .content = NULL
 };
 
 /** @brief Config Screen */
@@ -69,8 +60,6 @@ static uint32_t tftDL_configData[] = {
 const tftDL_t tftDL_config = {
     .len = sizeof(tftDL_configData),
     .data = tftDL_configData,
-    .contentLen = 0,
-    .content = NULL
 };
 
 /** @brief RTD Screen
@@ -87,9 +76,6 @@ static uint32_t tftDL_RTDData[] = {
 const tftDL_t tftDL_RTD = {
     .len = sizeof(tftDL_RTDData),
     .data = tftDL_RTDData,
-
-    .contentLen = 0,
-    .content = NULL
 };
 
 /** @brief Racing Screen */
@@ -103,9 +89,6 @@ static uint32_t tftDL_racingData[] = {
 const tftDL_t tftDL_racing_screen = {
     .len = sizeof(tftDL_racingData),
     .data = tftDL_racingData,
-
-    .contentLen = 0,
-    .content = NULL
 };
 
 static uint32_t tftDl_safetyData[] = {
@@ -114,10 +97,7 @@ static uint32_t tftDl_safetyData[] = {
 
 const tftDL_t tftDL_safety_screen = {
     .len = sizeof(tftDl_safetyData),
-    .data = tftDl_safetyData,
-
-    .contentLen = 0,
-    .content = NULL
+    .data = tftDl_safetyData
 };
 
 /** @brief Bitposition of Y-coordinate byte in vertices */
@@ -716,18 +696,6 @@ void tftDL_errorUpdate(
     tftDL_showAMKError(ESE_AMK_BR_STR, ESE_AMK_BR_COLOR, err->amkBRErrorCode);
 }
 
-/**
- * @brief Loads the display list's content into graphics memory.
- *
- * @param tft The display.
- * @param tftDL The display list.
- */
-void tftDLContentLoad(tft_t *tft, const tftDL_t *tftDL) {
-    for (size_t i = 0; i < tftDL->contentLen; i++) {
-        const tftContent_t *tftContent = tftDL->content[i];
-        tftContentLoad(tft, tftContent);
-    }
-}
 
 /**
  * @brief Writes a display list.
@@ -736,7 +704,7 @@ void tftDLContentLoad(tft_t *tft, const tftDL_t *tftDL) {
  * @param tftDL The display list.
  */
 void tftDLWrite(tft_t *tft, const tftDL_t *tftDL) {
-    tftCoCmd(tft, tftDL->len, tftDL->data, true);
+    tftCoCmd(tft, tftDL->len, tftDL->data);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////

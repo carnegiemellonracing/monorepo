@@ -559,7 +559,6 @@ static void stateOutput() {
             break;
         case START:
             /* Display Startup Screen for fixed time */
-            // tftDLContentLoad(&tft, &tftDL_startup);
             tftDLWrite(&tft, &tftDL_startup);
             vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
             break;
@@ -573,7 +572,7 @@ static void stateOutput() {
             drawErrorScreen();
             break;
         case RACING:
-            drawRacingScreen(); 
+            drawRacingScreen();
             break;
     }
 	//TODO: Why is this called again?

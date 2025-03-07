@@ -168,67 +168,16 @@ static size_t tftCoCmdRemLen(tft_t *tft) {
  * @param wait `true` to wait for partial writes to finish; `false` to wait for
  * enough space at the beginning.
  */
-void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait) {
+void tftCoCmd(tft_t *tft, size_t len, const void *data) {
     // Bulk Write
     uint32_t space;
-    tftRead(tft, TFT_ADDR_CMDB_SPACE, sizeof(space), &space);
-    if (len < space) {
-        tftWrite(tft, TFT_ADDR_CMDB_WRITE, len, data);
+    do {
+        tftRead(tft, TFT_ADDR_CMDB_SPACE, sizeof(space), &space);
+    } while (len < space);
 
-        do {
-            tftRead(tft, TFT_ADDR_CMD_READ, sizeof(tft->coCmdRd), &tft->coCmdRd);
-            tftRead(tft, TFT_ADDR_CMD_READ, sizeof(tft->coCmdWr), &tft->coCmdWr);
-        } while (tft->coCmdRd != tft->coCmdWr);
+    tftWrite(tft, TFT_ADDR_CMDB_WRITE, len, data);
 
-        return;
-    }
-
-    configASSERT(wait || len < space);
-
-    size_t written = 0;
-    while (written < len) {
-        // Calculate length to write.
-        size_t wrLen = len - written;
-        size_t remLen = tftCoCmdRemLen(tft);
-
-        if (wait) {
-            // If no space, wait until enough space is available
-            while (remLen == 0) {
-                remLen = tftCoCmdRemLen(tft);
-            }
-        } else {
-            // Ensure there's enough space for the full command
-            while (remLen < wrLen) {
-                remLen = tftCoCmdRemLen(tft);
-            }
-        }
-
-        tftWrite(
-            tft, TFT_ADDR_RAM_CMD + tft->coCmdWr,
-            wrLen, (uint8_t*)data + written);
-
-        // Round-up to word-aligned length.
-        wrLen = (wrLen + sizeof(uint32_t)-1) & ~(sizeof(uint32_t)-1);
-        written += wrLen;
-
-        // Update the command write address.
-        tft->coCmdWr += wrLen;
-        if (tft->coCmdWr >= TFT_RAM_CMD_SIZE) {
-            tft->coCmdWr -= TFT_RAM_CMD_SIZE;
-        }
-        tftWrite(tft, TFT_ADDR_CMD_WRITE, sizeof(tft->coCmdWr), &tft->coCmdWr);
-
-        if (!wait) {
-            // No waiting; we must have written the whole buffer.
-            configASSERT(written == wrLen);
-            break;
-        }
-
-        // Wait for the command to finish.
-        do {
-            tftRead(tft, TFT_ADDR_CMD_READ, sizeof(tft->coCmdRd), &tft->coCmdRd);
-        } while (tft->coCmdRd != tft->coCmdWr);
-    }
+    return;
 }
 
 /** @brief Display update priority. */
@@ -299,7 +248,6 @@ void tftUpdate(void *pvParameters) {
     cmr_qspiSetPrescaler(&tft.qspi, TFT_QSPI_PRESCALER);
 
     /* Display Startup Screen for fixed time */
-    // tftDLContentLoad(&tft, &tftDL_startup);
     tftDLWrite(&tft, &tftDL_startup);
     uint8_t gpio_dir;
     tftRead(&tft, TFT_ADDR_GPIOX_DIR, sizeof(gpio_dir), &gpio_dir);
@@ -330,7 +278,6 @@ void tftInitSequence() {
  *
  */
 void drawConfigScreen(void) {
-    tftDLContentLoad(&tft, &tftDL_config);
     tftDL_configUpdate();
     tftDLWrite(&tft, &tftDL_config);
 }
@@ -340,7 +287,6 @@ void drawConfigScreen(void) {
  *
  */
 void drawSafetyScreen(void) {
-    tftDLContentLoad(&tft, &tftDL_safety_screen);
     tftDLWrite(&tft, &tftDL_safety_screen);
 }
 
@@ -374,8 +320,6 @@ void drawErrorScreen(void) {
     volatile cmr_canAMKActualValues2_t *amkBLActualValues2 = getPayload(CANRX_AMK_RL_ACT_2);
     volatile cmr_canAMKActualValues2_t *amkBRActualValues2 = getPayload(CANRX_AMK_RR_ACT_2);
     volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus = getPayload(CANRX_HVC_LOW_VOLTAGE);
-
-    tftDLContentLoad(&tft, &tftDL_error);
 
     tft_errors_t err;
 
@@ -453,7 +397,6 @@ void drawRTDScreen(void){
 
     volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus = getPayload(CANRX_HVC_LOW_VOLTAGE);
 
-    tftDLContentLoad(&tft, &tftDL_RTD);
 
     /* Memorator present? */
     // Wait to update if hasn't seen in 2 sec (2000 ms)
@@ -584,21 +527,3 @@ struct tftContent {
     size_t addr;         /**< @brief The content's address in `RAM_G`. */
     const uint8_t *data; /**< @brief The content. */
 };
-
-/**
- * @brief Loads content in graphics memory.
- *
- * @param tft The display.
- * @param tftContent The content.
- */
-void tftContentLoad(tft_t *tft, const tftContent_t *tftContent) {
-    // Set up inflate coprocessor command.
-    uint32_t coCmdInflate[] = {
-        TFT_CMD_INFLATE,       // CMD_INFLATE
-        tftContent->addr  // Destination address.
-    };
-    tftCoCmd(tft, sizeof(coCmdInflate), coCmdInflate, false);
-
-    // Write compressed data.
-    tftCoCmd(tft, tftContent->len, tftContent->data, true);
-}
