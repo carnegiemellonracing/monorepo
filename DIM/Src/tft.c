@@ -137,27 +137,6 @@ void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data) {
 }
 
 /**
- * @brief Gets the number of available bytes in the coprocessor command buffer.
- *
- * @note Also updates the coprocessor read address.
- *
- * @param tft The display.
- *
- * @return The number of available bytes.
- */
-static size_t tftCoCmdRemLen(tft_t *tft) {
-    tftRead(tft, TFT_ADDR_CMD_READ, sizeof(tft->coCmdRd), &tft->coCmdRd);
-
-    size_t used = (tft->coCmdWr - tft->coCmdRd);
-    if (used >= TFT_RAM_CMD_SIZE) {
-        used -= TFT_RAM_CMD_SIZE;
-    }
-
-    // Maintain 1-word separation.
-    return (TFT_RAM_CMD_SIZE - sizeof(uint32_t)) - used;
-}
-
-/**
  * @brief Writes coprocessor commands to the display.
  *
  * @warning When `wait` is `false`, `len` MUST be less than `TFT_RAM_CMD_SIZE`!
