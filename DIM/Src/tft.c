@@ -174,8 +174,11 @@ void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait) {
     tftRead(tft, TFT_ADDR_CMDB_SPACE, sizeof(space), &space);
     if (len < space) {
         tftWrite(tft, TFT_ADDR_CMDB_WRITE, len, data);
-        tftRead(tft, TFT_ADDR_CMD_READ, sizeof(tft->coCmdRd), &tft->coCmdRd);
-        tftRead(tft, TFT_ADDR_CMD_WRITE, sizeof(tft->coCmdWr), &tft->coCmdWr);
+
+        do {
+            tftRead(tft, TFT_ADDR_CMD_READ, sizeof(tft->coCmdRd), &tft->coCmdRd);
+        } while (tft->coCmdRd != tft->coCmdWr);
+
         return;
     }
 
