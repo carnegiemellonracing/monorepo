@@ -724,7 +724,9 @@ typedef struct {
 } cmr_canFSMData_t;
 
 typedef struct {
-    /** @brief Steering wheel angle (-180 to 180 degrees). */
+    /** @brief Steering wheel angle (-180 to 180 degrees). 
+     * Calculated from ADC values using transfer function.
+    */
     int32_t steeringWheelAngle_millideg;
 } cmr_canFSMSWAngle_t;
 
