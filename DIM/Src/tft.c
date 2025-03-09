@@ -483,10 +483,10 @@ void tftInit(void){
 
     const cmr_qspiPinConfig_t pins = {
         .io = {
+            { .port = GPIOA, .pin = GPIO_PIN_6 },
+            { .port = GPIOA, .pin = GPIO_PIN_7 },
             { .port = GPIOC, .pin = GPIO_PIN_4 },
-            { .port = GPIOC, .pin = GPIO_PIN_5 },
-            { .port = GPIOB, .pin = GPIO_PIN_0 },
-            { .port = GPIOB, .pin = GPIO_PIN_10 } },
+            { .port = GPIOC, .pin = GPIO_PIN_5 } },
         .sck = { .port = GPIOB, .pin = GPIO_PIN_1 },
         .nss = { .port = GPIOC, .pin = GPIO_PIN_11 }
     };

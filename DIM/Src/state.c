@@ -556,6 +556,7 @@ static void stateOutput() {
             cmr_gpioWrite(GPIO_PD_N, 1);
             /* Initialize the display. */
             tftInitSequence();
+            tftUpdate();
             break;
         case START:
             /* Display Startup Screen for fixed time */
