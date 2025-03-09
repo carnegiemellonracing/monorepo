@@ -876,7 +876,7 @@ float getMaxKappaCurrentState (
 /**
  * @brief Get the kappa setpoint for brake parallel regen
 */
-float getBrakeKappa(motorLocation_t motor, uint8_t brakePressurePsi_u8, float deadband) {
+float getBrakeKappa(motorLocation_t motor, uin16_t brakePressurePsi_u8, float deadband) {
     //const bool parallelRegen = shouldActivateParallelRegen(); // make sure to set this to true for the branch
     float brake_kappa = 0.0f;
 
@@ -904,7 +904,7 @@ float getBrakeKappa(motorLocation_t motor, uint8_t brakePressurePsi_u8, float de
 /**
  * @brief Get the torque setpoint for brake parallel regen
 */
-int32_t getBrakeMaxTorque_mNm(motorLocation_t motor, uint8_t brakePressurePsi_u8) {
+int32_t getBrakeMaxTorque_mNm(motorLocation_t motor, uint16_t brakePressurePsi_u8) {
 
     float desired_brake_torque_Nm = 0.0f;
 

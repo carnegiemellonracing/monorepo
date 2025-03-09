@@ -31,7 +31,7 @@ static const uint8_t BPP_TPOS_IMPLAUS_THRES = UINT8_MAX / 4;
 /** @brief Throttle threshold for clearing brake implausibility. See FSAE rule EV.2.4. */
 static const uint8_t BPP_TPOS_CLEAR_THRES = UINT8_MAX / 20;
 /** @brief Threshold where brakes are considered to be actuated. */
-static const uint8_t BRAKE_ACTIVE_THRES_PSI = 40;
+static const uint16_t BRAKE_ACTIVE_THRES_PSI = 40;
 
 /** @brief 90 degree sw left lock adc value. */
 #define SWANGLE_90DEG_LEFT 1345
