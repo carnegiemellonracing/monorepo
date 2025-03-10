@@ -24,10 +24,10 @@ jobs:
     - name: Generate artifact with detailed report
       run: |
         mkdir -p reports
-        python scripts/find-unused-types.py --output  ${GITHUB_WORKSPACE}/reports/unused_types.txt
+        python scripts/find-unused-types.py --output  ${{ github.workspace }} /reports/unused_types.txt
         
     - name: Upload unused types report
       uses: actions/upload-artifact@v4
       with:
         name: unused-types-report
-        path: ${GITHUB_WORKSPACE}/reports/unused_types.txt
+        path: ${{ github.workspace }} /reports/unused_types.txt
