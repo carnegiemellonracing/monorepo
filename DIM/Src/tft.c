@@ -149,10 +149,10 @@ void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data) {
  */
 void tftCoCmd(tft_t *tft, size_t len, const void *data) {
     // Bulk Write
-    uint32_t space;
+    uint32_t space = -1;
     do {
         tftRead(tft, TFT_ADDR_CMDB_SPACE, sizeof(space), &space);
-    } while (len < space);
+    } while (space < len);
 
     tftWrite(tft, TFT_ADDR_CMDB_WRITE, len, data);
 
@@ -172,8 +172,7 @@ static cmr_task_t tftUpdate_task;
  *
  * @return Does not return.
  */
-void tftUpdate(void *pvParameters) {
-    (void) pvParameters;
+void tftUpdate() {
     /** @brief Represents a display initialization value. */
     typedef struct {
         tftAddr_t addr; /**< @brief Address to initialize. */
@@ -182,20 +181,20 @@ void tftUpdate(void *pvParameters) {
 
     /** @brief Display register initialization values. */
 	const tftInit_t tftInits[] = {
-        { .addr = TFT_ADDR_HCYCLE, .val = 480 },
-        { .addr = TFT_ADDR_HOFFSET, .val = 43 },
+        { .addr = TFT_ADDR_HCYCLE, .val = 928 },
+        { .addr = TFT_ADDR_HOFFSET, .val = 88 },
         { .addr = TFT_ADDR_HSYNC0, .val = 0 },
-        { .addr = TFT_ADDR_HSYNC1, .val = 41 },
-        { .addr = TFT_ADDR_VCYCLE, .val = 292 },
-        { .addr = TFT_ADDR_VOFFSET, .val = 12 },
+        { .addr = TFT_ADDR_HSYNC1, .val = 48 },
+        { .addr = TFT_ADDR_VCYCLE, .val = 525 },
+        { .addr = TFT_ADDR_VOFFSET, .val = 32 },
         { .addr = TFT_ADDR_VSYNC0, .val = 0 },
-        { .addr = TFT_ADDR_VSYNC1, .val = 10 },
+        { .addr = TFT_ADDR_VSYNC1, .val = 3 },
         { .addr = TFT_ADDR_SWIZZLE, .val = 0 },
         { .addr = TFT_ADDR_DITHER, .val = 1 },
         { .addr = TFT_ADDR_PCLK_POL, .val = 1 },
         { .addr = TFT_ADDR_CSPREAD, .val = 1 },
-        { .addr = TFT_ADDR_HSIZE, .val = 480 },
-        { .addr = TFT_ADDR_VSIZE, .val = 548 },
+        { .addr = TFT_ADDR_HSIZE, .val = 800 },
+        { .addr = TFT_ADDR_VSIZE, .val = 480 },
         { .addr = TFT_ADDR_GPIOX_DIR, .val = (1 << 15) },
         { .addr = TFT_ADDR_GPIOX, .val = (1 << 15) },
     };
@@ -211,7 +210,7 @@ void tftUpdate(void *pvParameters) {
     configASSERT(chipID == TFT_CHIP_ID);
 
     /* Init Sequence*/
-    tftInitSequence();
+    // tftInitSequence();
 
     /* Initialize Video Registers. */
     size_t tftInitsLen = sizeof(tftInits) / sizeof(tftInits[0]);
