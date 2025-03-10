@@ -1,0 +1,35 @@
+name: Find Unused Types
+
+on:
+  push:
+    branches: [ main ]
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  find-unused-types:
+    runs-on: self-hosted
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Run find-unused-types script
+      run: |
+        python scripts/find-unused-types.py --stdout
+      
+    - name: Generate artifact with detailed report
+      run: |
+        mkdir -p reports
+        python scripts/find-unused-types.py --output reports/unused_types.txt
+        
+    - name: Upload unused types report
+      uses: actions/upload-artifact@v3
+      with:
+        name: unused-types-report
+        path: reports/unused_types.txt
