@@ -20,7 +20,7 @@
 #define MC_YELLOW_THRESHOLD 48
 #define MC_RED_THRESHOLD 58
 /** @brief Display startup time, in milliseconds. */
-#define TFT_STARTUP_MS 3000
+#define TFT_STARTUP_MS 100
 
 /** @brief Display reset time, in milliseconds. */
 #define TFT_RESET_MS 50
@@ -29,7 +29,16 @@
 /** @brief Display update period. */
 #define TFT_UPDATE_PERIOD_MS 20
 
-void tftUpdate(void *pvParameters);
+/** @brief Represents a TFT display.  */
+typedef struct {
+    cmr_qspi_t qspi;  /**< @brief The display's QuadSPI port. */
+    bool inited;      /**< @brief `true` if the init sequence is done. */
+    uint16_t coCmdRd; /**< @brief Coprocessor command read address. */
+    uint16_t coCmdWr; /**< @brief Coprocessor command write address. */
+} tft_t;
+extern tft_t tft;
+
+void tftUpdate();
 void tftInitSequence();
 void tftInit(void);
 void drawRacingScreen(void);
@@ -149,15 +158,6 @@ typedef enum {
 
 } tftAddr_t;
 
-/** @brief Represents a TFT display.  */
-typedef struct {
-    cmr_qspi_t qspi;  /**< @brief The display's QuadSPI port. */
-    bool inited;      /**< @brief `true` if the init sequence is done. */
-    uint16_t coCmdRd; /**< @brief Coprocessor command read address. */
-    uint16_t coCmdWr; /**< @brief Coprocessor command write address. */
-} tft_t;
-
-extern tft_t tft;
 
 void tftCmd(tft_t *tft, tftCmd_t cmd, uint8_t param);
 void tftWrite(tft_t *tft, tftAddr_t addr, size_t len, const void *data);

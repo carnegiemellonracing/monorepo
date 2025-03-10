@@ -22,7 +22,7 @@
 static const uint32_t stateMachine_priority = 4;
 
 /** @brief Button input task period (milliseconds). */
-static const TickType_t stateMachine_period = 10;
+static const TickType_t stateMachine_period = 1000;
 
 /** @brief Button input task task. */
 static cmr_task_t stateMachine_task;
@@ -556,7 +556,7 @@ static void stateOutput() {
             cmr_gpioWrite(GPIO_PD_N, 1);
             /* Initialize the display. */
             tftInitSequence();
-            tftUpdate(&tft);
+            tftUpdate();
             break;
         case START:
             /* Display Startup Screen for fixed time */
@@ -564,7 +564,9 @@ static void stateOutput() {
             vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
             break;
         case NORMAL:
-            drawRTDScreen(); //from something
+            // drawRTDScreen(); //from somethingP
+            tftDLWrite(&tft, &tftDL_startup);
+            vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
             break;
         case CONFIG:
             drawConfigScreen();
