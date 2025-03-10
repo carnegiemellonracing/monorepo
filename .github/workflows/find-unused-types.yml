@@ -3,8 +3,6 @@ name: Find Unused Types
 on:
   push:
     branches: [ main ]
-  # Allow manual triggering
-  workflow_dispatch:
 
 jobs:
   find-unused-types:
@@ -29,7 +27,7 @@ jobs:
         python scripts/find-unused-types.py --output reports/unused_types.txt
         
     - name: Upload unused types report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: unused-types-report
         path: reports/unused_types.txt
