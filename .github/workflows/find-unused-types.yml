@@ -1,5 +1,5 @@
 name: Find Unused Types
-
+run-name: ${{ github.actor }}-${{github.repository}} CAN Analysis
 on:
   push:
     branches: [ main ]
@@ -24,10 +24,10 @@ jobs:
     - name: Generate artifact with detailed report
       run: |
         mkdir -p reports
-        python scripts/find-unused-types.py --output reports/unused_types.txt
+        python scripts/find-unused-types.py --output  ${GITHUB_WORKSPACE}/reports/unused_types.txt
         
     - name: Upload unused types report
       uses: actions/upload-artifact@v4
       with:
         name: unused-types-report
-        path: reports/unused_types.txt
+        path: scripts/reports/unused_types.txt
