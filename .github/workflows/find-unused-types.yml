@@ -30,4 +30,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: unused-types-report
-        path: scripts/reports/unused_types.txt
+        path: ${GITHUB_WORKSPACE}/reports/unused_types.txt
