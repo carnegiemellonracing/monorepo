@@ -8,6 +8,8 @@
 import json
 import re
 import argparse
+import os
+import sys
 
 #
 # FT81x commands.
@@ -481,7 +483,7 @@ class FT81x(object):
         ptr = int(ptr)
         return [0xffffff41, dst, ptr]
 
-    
+
     # 5.30 (183)
     def CMD_FGCOLOR(self, c):
         c = int(c)
@@ -583,57 +585,81 @@ class FT81x(object):
         if command in self.VARIABLE_OFFSETS:
             return self.VARIABLE_OFFSETS[command]
         else:
-            print(f"Unsupported use of @variable with command {command}!")
+            print(f"Unsupported use of @variable with command {command}!", file=sys.stderr)
             return -1
 
-parser = argparse.ArgumentParser()
-parser.add_argument("input_file",help = ".ese file")
-args = parser.parse_args()
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input_file", help=".ese file")
+    parser.add_argument("--output", "-o", help="Output file")
+    args = parser.parse_args()
 
-ft81x = FT81x()
+    ft81x = FT81x()
+    command_pattern = re.compile(r'(.+)\((.*)\)( +@variable +(\w+))?')
+    variables = []
+    unimplemented_cmds = 0
 
-command_pattern = re.compile(r'(.+)\((.*)\)( +@variable +(\w+))?')
+    # Determine output file path
+    if args.output:
+        output_file_path = args.output
+    else:
+        # Get the basename of the input file without extension
+        base_name = os.path.basename(args.input_file)
+        base_name_without_ext = os.path.splitext(base_name)[0]
 
-variables = []
+        # Create the output directory if it doesn't exist
+        output_dir = os.path.join("include", "DIM-ESE")
+        os.makedirs(output_dir, exist_ok=True)
 
-unimplemented_cmds = 0
+        # Set the output file path with .rawh extension
+        output_file_path = os.path.join(output_dir, base_name_without_ext + ".rawh")
 
-with open(args.input_file, 'r') as ese_project_file:
-    ese_project = json.load(ese_project_file)
+    # Process the ESE project file
+    with open(args.input_file, 'r') as ese_project_file:
+        ese_project = json.load(ese_project_file)
 
-    # Write display list start command.
-    print("0xffffff00, // CMD_DLSTART()")
+        # Open the output file
+        with open(output_file_path, 'w') as output_file:
+            # Write display list start command
+            output_file.write("0xffffff00, // CMD_DLSTART()\n")
 
-    data_offset = 1
+            data_offset = 1
 
-    for command in ese_project['coprocessor']:
-        command = command.strip()
-        matches = command_pattern.match(command)
-        if (matches == None):
-            continue
+            for command in ese_project['coprocessor']:
+                command = command.strip()
+                matches = command_pattern.match(command)
+                if (matches == None):
+                    continue
 
-        name = matches.group(1).strip()
-        args = list(map(str.strip, matches.group(2).split(',')))
-        try:
-            method = getattr(ft81x, name)
-        except AttributeError:
-            print(f"UNIMPLEMENTED: {command}")
-            unimplemented_cmds += 1
-            continue
+                name = matches.group(1).strip()
+                args = list(map(str.strip, matches.group(2).split(',')))
+                try:
+                    method = getattr(ft81x, name)
+                except AttributeError:
+                    print(f"UNIMPLEMENTED: {command}", file=sys.stderr)
+                    unimplemented_cmds += 1
+                    continue
 
-        if matches.group(4) is not None:
-            if ft81x.get_variable_offset(name) != -1:
-                variables.append(f"#define ESE_{matches.group(4)} {data_offset + ft81x.get_variable_offset(name)}")
+                if matches.group(4) is not None:
+                    if ft81x.get_variable_offset(name) != -1:
+                        variables.append(f"#define ESE_{matches.group(4)} {data_offset + ft81x.get_variable_offset(name)}")
 
-        for i, word in enumerate(method(*args)):
-            print(f"0x{word:08x},{(' // ' + command) if i == 0 else ''}")
-            data_offset += 1
-# Write display and swap commands.
-print('0x00000000, // DISPLAY()')
-print('0xffffff01, // CMD_DLSWAP()')
+                for i, word in enumerate(method(*args)):
+                    output_file.write(f"0x{word:08x},{(' // ' + command) if i == 0 else ''}\n")
+                    data_offset += 1
 
-for variable in variables:
-    print(variable)
+            # Write display and swap commands
+            output_file.write('0x00000000, // DISPLAY()\n')
+            output_file.write('0xffffff01, // CMD_DLSWAP()\n')
 
-if unimplemented_cmds != 0:
-    print(str(unimplemented_cmds) + ' unimplemented commands!')
+            # Write variable definitions
+            for variable in variables:
+                output_file.write(variable + '\n')
+
+            if unimplemented_cmds != 0:
+                print(str(unimplemented_cmds) + ' unimplemented commands!', file=sys.stderr)
+
+    print(f"Output written to {output_file_path}")
+
+if __name__ == "__main__":
+    main()
