@@ -3,23 +3,23 @@
     ],
     "coprocessor": [
         "CLEAR(1, 1, 1)",
-        "CMD_TEXT(218, 111, 28, OPT_CENTERY, \"Startup\")",
+        "CMD_TEXT(400, 240, 28, OPT_CENTER, \"Rio de Janeiro\")",
         ""
     ],
     "displayList": [
         ""
     ],
     "project": {
-        "device": 2066
+        "device": 2067
     },
     "registers": {
-        "hSize": 480,
+        "hSize": 800,
         "hsf": 0,
         "macro": [
             "NOP()",
             "NOP()"
         ],
         "rotate": 0,
-        "vSize": 272
+        "vSize": 480
     }
 }
