@@ -27,7 +27,7 @@ void AFE_SETUP(void){
     if(!setup){
         i2c_write_register(POWER_CTL, 0x0D); //should probbaly throw an error if i2c fails. 
                                                //This turns on the things we need to use btw(vcout,viout).
-        adc_sensen = adcRead(ADC_AFE_VIOUT);
+        adc_sensen = adc_read(ADC_AFE_VIOUT);
         i2c_write_register(CONFIG_1, 0x05); //sets gain to 8. put at 0x00 for 4. swtiches to sensep
 
         uint8_t reg_value;
@@ -67,7 +67,7 @@ void AFE_SETUP(void){
         gain_corr[6]   |= (((reg_value & 0x01) << 4) ^ 0x10) - 0x10; 
 
         vref_corr = VREF_NOM * (1000L + gain_corr[0]) + offset_corr[0];
-        adc_sensen = adcRead(ADC_AFE_VIOUT);
+        adc_sensen = adc_read(ADC_AFE_VIOUT);
 
         setup = true;
     }
@@ -80,7 +80,7 @@ void getVoltages(void) {
         i2c_write_and_validate(CELL_CTL, 0x10 | index);  
         vTaskDelay(pdMS_TO_TICKS(32));
             //reference data sheet for formula
-        cellVoltages[i] = float_to_uint16(((adcRead(ADC_AFE_VCOUT) * vref_corr + ADC_COUNT * offset_corr[index+1]) \
+        cellVoltages[i] = float_to_uint16(((adc_read(ADC_AFE_VCOUT) * vref_corr + ADC_COUNT * offset_corr[index+1]) \
                        * (1000L + gain_corr[index+1])) /(GVCOUT * ADC_COUNT * 1e6));
                        
     }
@@ -196,7 +196,7 @@ void sendOvertempFlags(uint16_t temps[8]) {
 
 // Sends the bus current
 void sendCurrent(void) {
-    uint16_t sensep = ADC_read(ADC_AFE_VIOUT);
+    uint16_t sensep = adc_read(ADC_AFE_VIOUT);
     float current = float_to_uint16((sensep - adc_sensen)*vref_corr/(ADC_COUNT*GVCOUT*1e3));
     canTX(CAN_ID_LV_BMS_CURRENT, &current, sizeof(current), canTX10Hz_period_ms);
 }
