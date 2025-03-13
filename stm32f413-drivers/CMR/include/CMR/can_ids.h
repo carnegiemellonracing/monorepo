@@ -22,9 +22,10 @@ typedef enum {
     CMR_CANID_HEARTBEAT_CDC = 0x102,    /**< @brief CDC heartbeat. */
     CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x104,    /**< @brief DIM heartbeat. */
-    CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief 
- heatbeart.*/
-	CMR_CANID_HEARTBEAT_HVI = 0x106,
+    CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief PTC heatbeart. */
+	 CMR_CANID_HEARTBEAT_HVI = 0x106,    /**< @brief HVI heatbeart. */
+    CMR_CANID_HEARTBEAT_HVI = 0x106,    /**< @brief HVI heatbeart. */
+    CMR_CANID_HEARTBEAT_LV_BMS = 0x107, /**< @brief LV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
 
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
@@ -283,11 +284,20 @@ typedef enum {
     CMR_CANID_DAQ_3_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 3. */
 
     CMR_CANID_VSM_GIT = 0x7F1,
-	CMR_CANID_HVC_GIT,
-	CMR_CANID_PTC_GIT,
-	CMR_CANID_CDC_GIT,
-	CMR_CANID_DIM_GIT,
-	CMR_CANID_RAM_GIT,
+	 CMR_CANID_HVC_GIT,
+	 CMR_CANID_PTC_GIT,
+	 CMR_CANID_CDC_GIT,
+	 CMR_CANID_DIM_GIT,
+	 CMR_CANID_RAM_GIT,
+
+    CAN_ID_LV_BMS_CELL_VOLTAGE_1_3 = 0x678,
+    CAN_ID_LV_BMS_CELL_VOLTAGE_4_6,
+    CAN_ID_LV_BMS_CELL_TEMP_1_4,
+    CAN_ID_LV_BMS_CELL_TEMP_5_8,
+    CAN_ID_LV_BMS_CELL_OVERVOLTAGE,
+    CAN_ID_LV_BMS_CELL_OVERTEMP,
+    CAN_ID_LV_BMS_BUS_VOLTAGE,
+    CAN_ID_LV_BMS_CURRENT,
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
