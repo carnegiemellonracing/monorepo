@@ -119,6 +119,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/i2c.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/data.c
 
 )
 
