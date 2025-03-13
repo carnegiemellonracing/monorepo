@@ -27,8 +27,8 @@ static const uint32_t VTHERM_NUM = 16;
 
 static const TickType_t adc_period_ms = 50;
 
-void adcInit(void);
-uint32_t adcRead(adc_channel_t ch);
+void adc_init(void);
+uint32_t adc_read(adc_channel_t ch);
 
 #endif /* ADC_H */
 
