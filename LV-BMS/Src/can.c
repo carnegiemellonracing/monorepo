@@ -16,6 +16,7 @@
 #include <CMR/tasks.h>  // Task interface
 
 #include <can.h>
+#include <data.h>
 // INTERFACES
 
 
