@@ -91,7 +91,6 @@ static void canTX10Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        initializeCorrectionVals();
         getVoltages(); 
         getTemps(); 
         sendCurrent(); 

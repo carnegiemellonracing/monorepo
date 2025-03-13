@@ -18,7 +18,7 @@
 #define GVSENSE 8 //assuming gain of 8
 #define VTHERM_NUM 8
 #define VREF_THERM 3.3 //lowkey have no clue
-#define REISTOR 10000 //10k ohm resistor from temps. again idk!!!
+#define RESISTOR 10000 //10k ohm resistor from temps. again idk!!!
 
 void getVoltages(void);
 void sendVoltages(uint16_t voltages[6]);
