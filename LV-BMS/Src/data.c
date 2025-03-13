@@ -11,6 +11,8 @@
 #include "adc.h"
 #include <CMR/tasks.h>
 #include "can.h"
+#include "gpio.h"
+#include <math.h>
 
 uint16_t cellVoltages[6];
 signed char offset_corr[7];
@@ -156,8 +158,8 @@ uint16_t tempConvert(uint16_t adc_value) {
     float resistance = (VREF_THERM * RESISTOR) / voltage - RESISTOR;
 
     // Steinhart-Hart equation for NTC thermistor
-    float temperature = 1.0 / (A + B * log(resistance) + C * pow(log(resistance), 3)) - 273.15;
-
+    //float temperature = 1.0 / (A + B * log(resistance) + C * pow(log(resistance), 3)) - 273.15;
+    float temperature = 30 //placeholder
     return (uint16_t)(temperature * 100.0);  //1/100 degree C
 }
 
