@@ -14,11 +14,11 @@
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
 
-#include <gpio.h>
-#include <adc.h>
-#include <i2c.h>
-#include <can.h>
-#include <data.h>
+#include "gpio.h"
+#include "adc.h"
+#include "i2c.h"
+#include "can.h"
+#include "data.h"
 
 /** @brief Status LED priority. */
 static const uint32_t status_LED_priority = 2;

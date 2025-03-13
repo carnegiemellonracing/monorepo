@@ -7,7 +7,7 @@
 
 #include <stm32f4xx_hal.h> // HAL interface
 # include <stm32f4xx_hal_adc.h>
-#include <adc.h>    // Interface to implement
+#include "adc.h"    // Interface to implement
 
 /**
  * @brief Board-specific ADC channel configuration.

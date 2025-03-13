@@ -6,20 +6,19 @@
  */
 
 #include <stdint.h>
-#include <can.c>
-#include <i2c.h>
-#include <data.h>
-#include <adc.h>
+#include "i2c.h"
+#include "data.h"
+#include "adc.h"
 #include <CMR/tasks.h>
+#include "can.h"
 
 uint16_t cellVoltages[6];
-uint16_t cellTemps[8];
 signed char offset_corr[7];
 signed char gain_corr[7];
 unsigned int vref_corr;
 uint16_t adc_sensen;
 uint8_t index;
-uint16_t cellTemps[16];
+uint16_t cellTemps[8];
 
 bool setup = false;
 
@@ -168,7 +167,7 @@ void getTemps(void) {
 			int temp = vtherm_read_index(i);
 			cellTemps[i] = tempConvert(temp);
 		}
-        sendTemps(cellTemps)
+        sendTemps(cellTemps);
 }
 
 // Sends cell temperatures (1-8) split into two CAN messages
