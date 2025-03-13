@@ -38,19 +38,19 @@ cmr_canRXMeta_t canRXMeta[] = {
 cmr_canHeartbeat_t heartbeat;
 
 /** @brief CAN 10 Hz TX priority. */
-static const uint32_t canTX10Hz_priority = 3;
+const uint32_t canTX10Hz_priority = 3;
 /** @brief CAN 10 Hz TX period (milliseconds). */
-static const TickType_t canTX10Hz_period_ms = 100;
+const TickType_t canTX10Hz_period_ms = 100;
 
 /** @brief CAN 100 Hz TX priority. */
-static const uint32_t canTX100Hz_priority = 5;
+const uint32_t canTX100Hz_priority = 5;
 /** @brief CAN 100 Hz TX period (milliseconds). */
-static const TickType_t canTX100Hz_period_ms = 10;
+const TickType_t canTX100Hz_period_ms = 10;
 
 /** @brief CAN 1 Hz TX priority. */
-static const uint32_t canTX1Hz_priority = 7;
+const uint32_t canTX1Hz_priority = 7;
 /** @brief CAN 1 Hz TX period (milliseconds). */
-static const TickType_t canTX1Hz_period_ms = 1000;
+const TickType_t canTX1Hz_period_ms = 1000;
 
 /** @brief CAN 10 Hz TX task. */
 static cmr_task_t canTX10Hz_task;
@@ -71,7 +71,7 @@ static cmr_can_t can;
  */
 static void sendHeartbeat(TickType_t lastWakeTime) {
     cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-    volatile cmr_canHeartbeat_t *heartbeatVSM = canGetPayload(CANRX_HEARTBEAT_VSM);
+    volatile cmr_canHeartbeat_t *heartbeatVSM = getPayload(CANRX_HEARTBEAT_VSM);
 
     heartbeat.state = heartbeatVSM->state;
 
@@ -169,7 +169,7 @@ void canInit(void) {
     );
 
     // CAN2 filters.
-    const cmr_canFilter_t canFilters[] = {
+const cmr_canFilter_t canFilters[] = {
         {
             .isMask = false,
             .rxFIFO = CAN_RX_FIFO0,
@@ -216,7 +216,7 @@ void canInit(void) {
  *
  * @return 0 on success, or a negative error code on timeout.
  */
-int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
+int canTX(cmr_canID_t id,const void *data, size_t len, TickType_t timeout) {
     return cmr_canTX(&can, id, data, len, timeout);
 }
 
