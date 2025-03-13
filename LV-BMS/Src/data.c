@@ -78,9 +78,10 @@ void AFE_SETUP(void){
 
 
 void getVoltages(void) {
+    TickType_t time_prev = xTaskGetTickCount();
     for (uint8_t i = 0; i < 6; i++) {
         i2c_write_and_validate(CELL_CTL, 0x10 | index);  
-        vTaskDelay(pdMS_TO_TICKS(32));
+        vTaskDelayUntil(&time_prev, 32);
             //reference data sheet for formula
         cellVoltages[i] = float_to_uint16(((adc_read(ADC_AFE_VCOUT) * vref_corr + ADC_COUNT * offset_corr[index+1]) \
                        * (1000L + gain_corr[index+1])) /(GVCOUT * ADC_COUNT * 1e6));
