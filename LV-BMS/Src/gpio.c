@@ -7,7 +7,7 @@
 
 #include <stm32f4xx_hal.h> // HAL interface
 #include <CMR/gpio.h> // GPIO interface
-#include <gpio.h>
+#include "gpio.h"
 
 /**
  * @brief Board-specific pin configuration.

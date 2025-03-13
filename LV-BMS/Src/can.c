@@ -15,8 +15,8 @@
 #include <stm32f4xx_hal_can.h> // HAL interface
 #include <CMR/tasks.h>  // Task interface
 
-#include <can.h>
-#include <data.h>
+#include "can.h"
+#include "data.h"
 // INTERFACES
 
 
