@@ -18,6 +18,7 @@
 #include <adc.h>
 #include <i2c.h>
 #include <can.h>
+#include <data.h>
 
 /** @brief Status LED priority. */
 static const uint32_t status_LED_priority = 2;
