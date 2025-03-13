@@ -32,7 +32,7 @@ cmr_canRXMeta_t canRXMeta[] = {
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
     }
-}
+};
 
 cmr_canHeartbeat_t heartbeat;
 
@@ -62,6 +62,40 @@ static cmr_task_t canTX1Hz_task;
 static cmr_can_t can;
 
 // Forward declarations 
+
+/**
+ * @brief Sets up LV-BMS heartbeat, checks for errors, then sends it
+ *
+ * @param lastWakeTime Pass in from canTX100Hz. Used to determine VSM timeout.
+ */
+static void sendHeartbeat(TickType_t lastWakeTime) {
+    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
+    volatile cmr_canHeartbeat_t *heartbeatVSM = canGetPayload(CANRX_HEARTBEAT_VSM);
+
+    heartbeat.state = heartbeatVSM->state;
+
+    uint16_t error = CMR_CAN_ERROR_NONE;
+
+    if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
+        error |= CMR_CAN_ERROR_VSM_TIMEOUT;
+    }
+
+    // Add errors Here ^
+
+    // If error exists, update heartbeat to error state (i.e. update its fields). See can_types.h for the fields.
+    if (error != CMR_CAN_ERROR_NONE) {
+        heartbeat.state = CMR_CAN_ERROR;
+    }
+    memcpy(&heartbeat.error, &error, sizeof(error));
+
+    uint16_t warning = CMR_CAN_WARN_NONE;
+    if (cmr_canRXMetaTimeoutWarn(heartbeatVSMMeta, lastWakeTime) < 0) {
+        warning |= CMR_CAN_WARN_VSM_TIMEOUT;
+    }
+    memcpy(&heartbeat.warning, &warning, sizeof(warning));
+
+    canTX(CMR_CANID_HEARTBEAT_LV_BMS, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
+}
 
 /**
  * @brief Task for sending CAN messages at 1 Hz.
@@ -198,38 +232,4 @@ volatile void *getPayload(canRX_t rxMsg) {
     cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
 
     return (void *)(&rxMeta->payload);
-}
-
-/**
- * @brief Sets up LV-BMS heartbeat, checks for errors, then sends it
- *
- * @param lastWakeTime Pass in from canTX100Hz. Used to determine VSM timeout.
- */
-static void sendHeartbeat(TickType_t lastWakeTime) {
-    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-    volatile cmr_canHeartbeat_t *heartbeatVSM = canGetPayload(CANRX_HEARTBEAT_VSM);
-
-    heartbeat.state = heartbeatVSM->state;
-
-    uint16_t error = CMR_CAN_ERROR_NONE;
-
-    if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
-        error |= CMR_CAN_ERROR_VSM_TIMEOUT;
-    }
-
-    // Add errors Here ^
-
-    // If error exists, update heartbeat to error state (i.e. update its fields). See can_types.h for the fields.
-    if (error != CMR_CAN_ERROR_NONE) {
-        heartbeat.state = CMR_CAN_ERROR;
-    }
-    memcpy(&heartbeat.error, &error, sizeof(error));
-
-    uint16_t warning = CMR_CAN_WARN_NONE;
-    if (cmr_canRXMetaTimeoutWarn(heartbeatVSMMeta, lastWakeTime) < 0) {
-        warning |= CMR_CAN_WARN_VSM_TIMEOUT;
-    }
-    memcpy(&heartbeat.warning, &warning, sizeof(warning));
-
-    canTX(CMR_CANID_HEARTBEAT_LV_BMS, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
 }
