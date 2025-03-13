@@ -35,7 +35,7 @@ void AFE_SETUP(void){
         uint8_t reg_value;
 
         for (index = 0; index < 7; index++) {
-            i2c_read_register(VREF_CAL + index, &reg_value) == 0; 
+            i2c_read_register(VREF_CAL + index, &reg_value); 
             offset_corr[index] = reg_value >> 4;   // Extract the upper 4 bits for offset
             gain_corr[index] = reg_value & 0x0F;  // Extract the lower 4 bits for gain
         }
@@ -159,7 +159,7 @@ uint16_t tempConvert(uint16_t adc_value) {
 
     // Steinhart-Hart equation for NTC thermistor
     //float temperature = 1.0 / (A + B * log(resistance) + C * pow(log(resistance), 3)) - 273.15;
-    float temperature = 30 //placeholder
+    float temperature = 30; //placeholder
     return (uint16_t)(temperature * 100.0);  //1/100 degree C
 }
 
