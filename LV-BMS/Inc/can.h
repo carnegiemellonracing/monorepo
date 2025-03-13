@@ -28,6 +28,16 @@ extern cmr_canHeartbeat_t heartbeat;
 
 void canInit(void);
 
+extern static const uint32_t canTX10Hz_priority = 3;
+extern static const TickType_t canTX10Hz_period_ms = 100;
+
+extern static const uint32_t canTX100Hz_priority = 5;
+
+extern static const TickType_t canTX100Hz_period_ms = 10;
+
+extern static const uint32_t canTX1Hz_priority = 7;
+extern static const TickType_t canTX1Hz_period_ms = 1000;
+
 int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 volatile void *getPayload(canRX_t rxMsg);
 
