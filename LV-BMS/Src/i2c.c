@@ -12,7 +12,7 @@
 
 
 void i2c_init() {
-	cmr_i2cInit(&i2c, I2C1, I2C_CLOCK_LOW, HOME_ADDR, GPIOC, GPIO_PIN_0, GPIOC, GPIO_PIN_1);
+	cmr_i2cInit(&i2c, I2C1, I2C_CLOCK_LOW, HOME_ADDR, GPIOB, GPIO_PIN_6, GPIOB, GPIO_PIN_7);
 }
 // functions return 0 = success, 1 = error.
 uint8_t i2c_read_register(uint8_t reg_address, uint8_t *value) {
