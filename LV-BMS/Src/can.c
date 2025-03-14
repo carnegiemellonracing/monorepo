@@ -48,7 +48,7 @@ const uint32_t canTX100Hz_priority = 5;
 const TickType_t canTX100Hz_period_ms = 10;
 
 /** @brief CAN 1 Hz TX priority. */
-const uint32_t canTX1Hz_priority = 7;
+const uint32_t canTX1Hz_priority = 6;
 /** @brief CAN 1 Hz TX period (milliseconds). */
 const TickType_t canTX1Hz_period_ms = 1000;
 

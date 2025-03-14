@@ -81,7 +81,7 @@ static void post_ms_monitor() {
 int main(void) {
     // System initialization.
     HAL_Init();
-    cmr_rccSystemClockEnable();
+    cmr_rccSystemInternalClockEnable();
 
     // Peripheral configuration.
     gpio_init();
