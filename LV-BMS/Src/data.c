@@ -14,7 +14,9 @@
 #include "gpio.h"
 #include <math.h>
 
+uint16_t rawCellVolts[6];
 uint16_t cellVoltages[6];
+uint8_t cellNum[6];
 signed char offset_corr[7];
 signed char gain_corr[7];
 unsigned int vref_corr;
@@ -31,14 +33,15 @@ void AFE_SETUP(void){
                                                //This turns on the things we need to use btw(vcout,viout).
         adc_sensen = adc_read(ADC_AFE_VIOUT);
         i2c_write_register(CONFIG_1, 0x05); //sets gain to 8. put at 0x00 for 4. swtiches to sensep
+        i2c_write_register(CONFIG_2, 0x01);
 
         uint8_t reg_value;
 
-        for (index = 0; index < 7; index++) {
-            i2c_read_register(VREF_CAL + index, &reg_value); 
-            offset_corr[index] = reg_value >> 4;   // Extract the upper 4 bits for offset
-            gain_corr[index] = reg_value & 0x0F;  // Extract the lower 4 bits for gain
-        }
+        // for (index = 0; index < 7; index++) {
+        //     i2c_read_register(VREF_CAL + index, &reg_value); 
+        //     offset_corr[index] = reg_value >> 4;   // Extract the upper 4 bits for offset
+        //     gain_corr[index] = reg_value & 0x0F;  // Extract the lower 4 bits for gain
+        // }
 
         // Read MSBs for VREF offset and gain corrections
         i2c_read_register(VREF_CAL_EXT, &reg_value);
@@ -80,14 +83,19 @@ void AFE_SETUP(void){
 void getVoltages(void) {
     TickType_t time_prev = xTaskGetTickCount();
     for (uint8_t i = 0; i < 6; i++) {
-        i2c_write_and_validate(CELL_CTL, 0x10 | index);  
+        i2c_write_and_validate(CELL_CTL, 0x10 | i);  
         vTaskDelayUntil(&time_prev, 32);
             //reference data sheet for formula
-        cellVoltages[i] = float_to_uint16(adc_read(ADC_AFE_VCOUT));
-        // cellVoltages[i] = float_to_uint16(((adc_read(ADC_AFE_VCOUT) * vref_corr + ADC_COUNT * offset_corr[index+1]) \
-        //                * (1000L + gain_corr[index+1])) /(GVCOUT * ADC_COUNT * 1e6));
+        cellVoltages[i] = adc_read(ADC_AFE_VCOUT);
+        cellNum[i] = read_cell_ctl();
+        uint16_t gc_out = 0.001 * gain_corr[i];
+        uint16_t oc_out = 0.001 * offset_corr[i];
+
+        rawCellVolts[i] = float_to_uint16(((adc_read(ADC_AFE_VCOUT) * vref_corr + ADC_COUNT * offset_corr[i+1])
+                       * (1000L + gain_corr[i+1])) /(GVCOUT * ADC_COUNT * 1e6));
                        
     }
+
     sendOvervoltageFlags(cellVoltages);
     sendVoltages(cellVoltages);
    

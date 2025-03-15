@@ -46,5 +46,6 @@ uint8_t set_measurement_mode(bool measure_sensep);
 
 // Optional Validation Function
 uint8_t i2c_write_and_validate(uint8_t reg_address, uint8_t value);
+uint8_t read_cell_ctl();
 
 #endif /* I2C_C_ */
