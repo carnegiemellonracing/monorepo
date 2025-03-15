@@ -2,24 +2,16 @@ cmake_minimum_required(VERSION 3.24)
 project(stm-drivers)
 
 if("${PROCESSOR}" STREQUAL "F413")
-    target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC STM32F413xx)
+    add_compile_definitions(STM32F413xx)
 elseif("${PROCESSOR}" STREQUAL "H725")
-    target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC STM32H725xx)
+    add_compile_definitions(STM32H725xx)
 endif()
 
 add_compile_definitions(${PROCESSOR})
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/DIM-ESE)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/CMR)
-add_library(stm-drivers STATIC)
 
-target_link_libraries(CMR PUBLIC DIM-ESE freertos_kernel HAL)
-target_link_libraries(stm-drivers
-    PUBLIC
-    CMR
-)
 
 # HAL integration
+add_library(stm-drivers STATIC)
 add_library(HAL)
 
 # Sources
@@ -32,7 +24,7 @@ if("${PROCESSOR_FAM}" STREQUAL "F4XX")
     file(GLOB CMSIS_DAP_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/DAP/Source/*.c)
     file(GLOB CMSIS_DSP_LIB_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/DSP/ComputeLibrary/Source/*.c)
     file(GLOB HAL_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/STM32F4xx_HAL_Driver/Src/*.c)
-
+    target_sources(HAL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c)
     set(PROCESSOR_SPECIFIC_INCLUDES
         ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/Device/ST/STM32F4xx/Include
         ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/DAP/Include
@@ -42,7 +34,7 @@ if("${PROCESSOR_FAM}" STREQUAL "F4XX")
 else()
     file(GLOB CMSIS_DEVICE_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/Device/ST/STM32H7xx/Source/*.c)
     file(GLOB HAL_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/STM32H7xx_HAL_Driver/Src/*.c)
-
+    target_sources(HAL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/Device/ST/STM32H7xx/Source/Templates/system_stm32h7xx.c)
     set(PROCESSOR_SPECIFIC_INCLUDES
         ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/Device/ST/STM32H7xx/Include
         ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/STM32H7xx_HAL_Driver/Inc
@@ -63,11 +55,18 @@ endif()
 target_include_directories(HAL PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/Include
     ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/Core/Include
-    #${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/Device/Include
     ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/DSP/Include
     ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/NN/Include
+    ${CMAKE_SOURCE_DIR}/Inc #stm32f4xx_hal_conf.h
     ${PROCESSOR_SPECIFIC_INCLUDES}
-    ${CMAKE_CURRENT_SOURCE_DIR}/
 )
 
 target_link_libraries(stm-drivers PUBLIC HAL)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/DIM-ESE)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/CMR)
+target_link_libraries(CMR PUBLIC DIM-ESE freertos_kernel HAL)
+target_link_libraries(stm-drivers
+    PUBLIC
+    CMR
+)
