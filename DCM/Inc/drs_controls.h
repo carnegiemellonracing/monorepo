@@ -21,7 +21,7 @@ void runDrsControls(
     cmr_canGear_t gear,
     cmr_canDrsMode_t drsMode,
     uint8_t throttlePos_u8,
-    uint8_t brakePressurePsi_u8,
+    uint16_t brakePressurePsi_u8,
     int16_t swAngle_deg
 );
 

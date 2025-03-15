@@ -48,7 +48,7 @@ static bool prev_button_pressed = false;
 
 // Forward declaration
 static void setAutoDrs(uint8_t throttle_pos,
-                        uint8_t brake_psi, 
+                        uint16_t brake_psi, 
                         int16_t swAngle_deg);
 
 /**
@@ -73,7 +73,7 @@ void runDrsControls(
     cmr_canGear_t gear,
     cmr_canDrsMode_t drsMode,
     uint8_t throttlePos_u8,
-    uint8_t brakePressurePsi_u8, 
+    uint16_t brakePressurePsi_u8, 
     int16_t swAngle_deg) {
 
     bool drs_button_pressed = (((volatile cmr_canDIMActions_t *)canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->buttons) & BUTTON_ACT;
@@ -153,12 +153,12 @@ void runDrsControls(
 }
 
 static void setAutoDrs(uint8_t throttle_pos,
-                    uint8_t brake_psi, 
+                    uint16_t brake_psi, 
                     int16_t swAngle_deg) {
 
     uint8_t swangle_threshold = SWANGLE_THRESHOLD;
     uint8_t throttle_threshold = THROTTLE_THRESHOLD;
-    uint8_t brake_threshold = BRAKE_THRESHOLD; 
+    uint16_t brake_threshold = BRAKE_THRESHOLD; 
     getProcessedValue(&swangle_threshold, DRS_SWANGLE_THRESH_INDEX, unsigned_integer);
     getProcessedValue(&throttle_threshold, DRS_THROTTLE_THRESH_INDEX, unsigned_integer);
     //getProcessedValue(&brake_threshold, DRS_BRAKE_THRESH_INDEX, unsigned_integer);
