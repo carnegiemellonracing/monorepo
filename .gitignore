@@ -18,5 +18,7 @@ _deps
 CMakeUserPresets.json
 .vscode/settings.json
 .DS_Store
-VSM/Inc/gitcommit.h
-PTC/Inc/gitcommit.h
+gitcommit.h
+
+*-stamp/
+tmp/

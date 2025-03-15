@@ -51,7 +51,8 @@ volatile cmr_canHVCMode_t hvcModeRequest = CMR_CAN_HVC_MODE_ERROR;
 /** @brief Time to wait for DCDC converter to enable. */
 static const TickType_t dcdcInitTime_ms = 50;
 
-/** @brief Minimum time to wait for PTC to spin cooling up/down. */
+/** @brief Minimum time to wait for 
+ to spin cooling up/down. */
 static const TickType_t minCoolingRampTime_ms = 1000;
 
 /** @brief Time to sound RTD buzzer. See rule EV.6.11.5.a. */

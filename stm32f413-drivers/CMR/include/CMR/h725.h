@@ -6,7 +6,7 @@
 #include <string.h>   // memcpy()
 #include <stdbool.h>  // bool
 
-#include "can.h"      // can types
+#include "fdcan.h"      // can types
 #include "adc.h"      // adc types
 #include "rcc.h"      // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
 #include "config.h"   // config types
@@ -16,6 +16,7 @@
 #ifdef HAL_FDCAN_MODULE_ENABLED
 
 uint32_t _platform_FDcanGPIOAF(FDCAN_GlobalTypeDef *instance, GPIO_TypeDef *port);
+void _platform_rccFDCanClockEnable();
 void _platform_canFilter(cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen);
 void _platform_FDCANInit(
     cmr_can_t *can, FDCAN_GlobalTypeDef *instance,

@@ -7,6 +7,7 @@
 
 #include <CMR/rcc.h>    // Interface to implement
 #include <CMR/panic.h>  // cmr_panic()
+#include <CMR/h725.h>
 
 #ifdef HAL_RCC_MODULE_ENABLED
 
@@ -68,7 +69,7 @@ void cmr_rccCANClockEnable(CAN_TypeDef *instance) {
  * @param instance The HAL CAN instance.
  */
 void cmr_rccCANClockEnable(FDCAN_GlobalTypeDef *instance) {
-	_platform_rccFDCanClockEnable(instance);
+	_platform_rccFDCanClockEnable();
 }
 #endif /* HAL_FDCAN_MODULE_ENABLED */
 

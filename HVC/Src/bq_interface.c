@@ -25,7 +25,11 @@ static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
 	BMBErrs[BMBIndex] = err;
 }
 
-void turnOn() {
+//Forward Declaration
+void byteDelay(uint8_t delay);
+void txToRxDelay(uint8_t delay);
+
+bool turnOn() {
 
 	HAL_Delay(100);
 	HAL_GPIO_WritePin(
@@ -395,7 +399,7 @@ void BMBInit() {
 	HAL_Delay(100);
 
 	//No idea lol
-	txToRxDelay();
+	// txToRxDelay();
 	HAL_Delay(100);
 	byteDelay(0x3F);
 	HAL_Delay(100);

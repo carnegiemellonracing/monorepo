@@ -13,8 +13,6 @@
 
 #include "adc.h"
 #include "can.h"         // Board-specific CAN interface
-#include "gpio.h"        // Board-specific GPIO interface
-#include "state.h"       // State interface
 #include "tftContent.h"  // Content interface
 #include "tftDL.h"       // Display list interface
 #include "CMR/can_types.h" //can_types
@@ -31,9 +29,6 @@
 
 /** @brief Display QuadSPI prescaler */
 #define TFT_QSPI_PRESCALER 2
-
-/** @brief Display startup time, in milliseconds. */
-#define TFT_STARTUP_MS 3000
 
 /** @brief Flag for indicating a write to the display. */
 #define TFT_WRITE_FLAG (1 << 23)
@@ -482,7 +477,6 @@ void drawRTDScreen(void){
     volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
         (void *)metaBMSLowVoltage->payload;
 
-    // PTC Temps
     /* cmr_canRXMeta_t *metaPTCfLoopA = canRXMeta + CANRX_PTCf_LOOP_A_TEMPS;
     volatile cmr_canPTCfLoopTemp_A_t *canPTCfLoopTemp_A = (void *) metaPTCfLoopA->payload;
 
@@ -580,8 +574,8 @@ void drawRTDScreen(void){
 
     volatile cmr_canCDCControlsStatus_t *controlsStatus = (volatile cmr_canCDCControlsStatus_t *)getPayload(CANRX_CDC_CONTROLS_STATUS);
 
-    bool yrcOn = ((bool)controlsStatus->yrcOn) && (!(switchValues & 0x02));
-    bool tcOn = ((bool)controlsStatus->tcOn) && (!(switchValues & 0x04));
+    bool yrcOn = ((bool)controlsStatus->yrcOn) && (!(0 & 0x02));
+    bool tcOn = ((bool)controlsStatus->tcOn) && (!(0 & 0x04));
 
     //line 716 tft.c
     /* Write Display List to Screen */
@@ -606,10 +600,10 @@ void tftInit(void){
 
     const cmr_qspiPinConfig_t pins = {
         .io = {
-            { .port = GPIOA, .pin = GPIO_PIN_6 },
-            { .port = GPIOA, .pin = GPIO_PIN_7 },
             { .port = GPIOC, .pin = GPIO_PIN_4 },
-            { .port = GPIOC, .pin = GPIO_PIN_5 } },
+            { .port = GPIOC, .pin = GPIO_PIN_5 },
+            { .port = GPIOB, .pin = GPIO_PIN_0 },
+            { .port = GPIOB, .pin = GPIO_PIN_10 } },
         .sck = { .port = GPIOB, .pin = GPIO_PIN_1 },
         .nss = { .port = GPIOC, .pin = GPIO_PIN_11 }
     };

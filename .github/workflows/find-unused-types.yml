@@ -1,0 +1,33 @@
+name: Find Unused Types
+run-name: ${{ github.actor }}-${{github.repository}} CAN Analysis
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  find-unused-types:
+    runs-on: self-hosted
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Run find-unused-types script
+      run: |
+        python scripts/find-unused-types.py --stdout
+      
+    - name: Generate artifact with detailed report
+      run: |
+        mkdir -p reports
+        python scripts/find-unused-types.py --output  ${{ github.workspace }}/reports/unused_types.txt
+        
+    - name: Upload unused types report
+      uses: actions/upload-artifact@v4
+      with:
+        name: unused-types-report
+        path: ${{ github.workspace }}/reports/unused_types.txt

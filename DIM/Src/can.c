@@ -18,10 +18,11 @@
 #include <math.h>       // powf()
 #include <string.h>     // memcpy()
 #include <CMR/config_screen_helper.h>
+#include <CMR/can_types.h>
 
 #include "adc.h"        // adcVSense, adcISense
 #include "gpio.h"       // For actionButtonPressed status
-#include "state.h"      // State interface
+
 #include "tftDL.h"      // For RAM buffer indices
 #include "newState.h"	// For new state machine
 
@@ -195,9 +196,8 @@ static void canTX100Hz(void *pvParameters) {
         /* Transmit action button status */
         cmr_canDIMActions_t actions = {
             .buttons = packed,
-            //.rotaryPos = rotaryPos,
 			.rotaryPos = getRotaryPosition(),
-            .switchValues = switchValues,
+            .switchValues = 0,
             .regenPercent = regenPercent,
             .paddle = paddle,
 			.LRUDButtons = LRUDpacked,
@@ -301,7 +301,7 @@ static void canTX1Hz(void *pvParameters) {
  * Character indices 60-72 inclusive are for the second note on the right side of the screen.
  * This corresponds to text->address 0x0F, 0x10, and 0x11.
  */
-void ramRxCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen) {
+void ramRxCallback(cmr_can_t *can1, uint16_t canID, const void *data, size_t dataLen) {
     if (canID == CMR_CANID_DIM_TEXT_WRITE) {
         cmr_canDIMTextWrite_t *text = (cmr_canDIMTextWrite_t *)data;
         if (dataLen == sizeof(cmr_canDIMTextWrite_t)) {
@@ -641,7 +641,7 @@ static void sendFSMData(void) {
         .throttlePosition = throttlePosition,
         .brakePressureFront_PSI = brakePressureFront_PSI,
         .brakePedalPosition = brakePedalPosition,
-        .steeringWheelAngle_deg = steeringWheelAngle_deg
+        .steeringWheelAngle_millideg = steeringWheelAngle_deg
     };
 
     canTX(CMR_CANID_FSM_DATA, &msg, sizeof(msg), canTX100Hz_period_ms);

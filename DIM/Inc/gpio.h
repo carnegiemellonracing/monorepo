@@ -20,6 +20,7 @@
  * @brief Represents a GPIO pin.
  */
 
+
 //TODO Fix gpio
 typedef enum {
     //new pins
@@ -31,6 +32,8 @@ typedef enum {
 	GPIO_LED_AMS,
     GPIO_LED_IMD,
     GPIO_LED_BSPD,
+	GPIO_LED_STATUS,
+    GPIO_PD_N,
     GPIO_LEN /**< @brief Total GPIO pins. */
 } gpio_t;
 

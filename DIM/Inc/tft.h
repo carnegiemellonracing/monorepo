@@ -19,6 +19,8 @@
 #define MOTOR_RED_THRESHOLD 115
 #define MC_YELLOW_THRESHOLD 48
 #define MC_RED_THRESHOLD 58
+/** @brief Display startup time, in milliseconds. */
+#define TFT_STARTUP_MS 3000
 
 /** @brief Display reset time, in milliseconds. */
 #define TFT_RESET_MS 50
