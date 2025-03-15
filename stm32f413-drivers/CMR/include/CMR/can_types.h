@@ -120,6 +120,8 @@ typedef enum {
     CMR_CAN_WARN_VSM_APC_TIMEOUT = (1 << 8),
     /** @brief VSM is rejecting DIM state request. */
     CMR_CAN_WARN_VSM_DIM_REQ_NAK = (1 << 7),
+        /** @brief HVI out of range */
+    CMR_CAN_WARN_VSM_HVI_RANGE = (1 << 6),
 
     /** @brief FSM throttle position implausibility (L/R difference > 10%). */
     CMR_CAN_WARN_FSM_TPOS_IMPLAUSIBLE = (1 << 15),
@@ -230,6 +232,8 @@ typedef enum {
 typedef enum {
     /** @brief No modules have timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_NONE = 0,
+        /** @brief HVI out of range. */
+    CMR_CAN_VSM_ERROR_SOURCE_HVI = (1 << 7),
     /** @brief At least one High Voltage Controller message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_HVC = (1 << 6),
     /** @brief At least one Central Dynamics Controller message has timed out. */
