@@ -46,7 +46,7 @@ static const uint8_t BRAKE_ACTIVE_THRES_PSI = 40;
 /**
  * @brief Mapping of sensor channels to ADC channels.
  */
-const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
+const adcChannels_t sensorsADCChannels[SENSOR_CH_LEN] = {
     [SENSOR_CH_HV] = ADC_VSENSE,
     [SENSOR_CH_CURRENT] = ADC_ISENSE,
     [SENSOR_CH_VREF] = ADC_VREF
@@ -111,10 +111,10 @@ static int32_t adcToUInt8(const cmr_sensor_t *sensor, uint32_t reading) {
  *
  * @return Voltage in centivolts.
  */
-static uint16_t adcToVoltage(const cmr_sensor_t *sensor, uint32_t reading) {
+static uint32_t adcToVoltage(const cmr_sensor_t *sensor, uint32_t reading) {
     (void)sensor;
 
-    uint16_t voltage = (V_TRANS_M*reading + (V_TRANS_B));
+    uint32_t voltage = (V_TRANS_M*reading + (V_TRANS_B));
 
     return voltage;
 }
@@ -128,10 +128,10 @@ static uint16_t adcToVoltage(const cmr_sensor_t *sensor, uint32_t reading) {
  *
  * @return Current in A.
  */
-static uint16_t adcToCurrent(const cmr_sensor_t *sensor, uint32_t reading) {
+static uint32_t adcToCurrent(const cmr_sensor_t *sensor, uint32_t reading) {
     (void)sensor;
 
-    uint16_t current = (uint16_t) reading;
+    uint32_t current = reading;
 
     return current;
 }
@@ -159,7 +159,7 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .readingMax = 4096,
         .outOfRange_pcnt = 10,
         .warnFlag = 0
-    }
+    },
     [SENSOR_CH_VREF] = {
         .conv = adcToVref,
         .sample = sampleADCSensor,

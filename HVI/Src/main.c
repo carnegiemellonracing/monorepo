@@ -16,6 +16,7 @@
 
 #include "adc.h"
 #include "gpio.h"
+#include "can.h"
 #include "sensors.h"
 
 /** @brief Status LED priority. */
