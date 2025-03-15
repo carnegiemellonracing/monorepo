@@ -76,6 +76,13 @@ uint8_t i2c_write_and_validate(uint8_t reg_address, uint8_t value) {
     return (read_value == value) ? 0 : 1;  // Success if values match
 }
 
+uint8_t read_cell_ctl() {
+	uint8_t cell_ctl;
+	if(cmr_i2cRX(&i2c, 0x21, &cell_ctl, 1, I2C_TIMEOUT))
+		return 0;
+	return cell_ctl;
+}
+
 /*previous shit
 uint8_t read_chip_id() {
 	uint8_t chip_id;
