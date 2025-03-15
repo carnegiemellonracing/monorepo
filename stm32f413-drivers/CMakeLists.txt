@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.24)
 project(stm-drivers)
 
+if("${PROCESSOR}" STREQUAL "F413")
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC STM32F413xx)
+elseif("${PROCESSOR}" STREQUAL "H725")
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC STM32H725xx)
+endif()
+
 add_compile_definitions(${PROCESSOR})
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/DIM-ESE)
