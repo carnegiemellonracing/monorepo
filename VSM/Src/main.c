@@ -54,7 +54,7 @@ static void statusLED() {
     while (1) {
       if(LEDerror()) {
         TickType_t currentTick = xTaskGetTickCount();
-        if (!flashed || currentTick - lastWakeTime >= 5000) {
+        if (!flashed || currentTick - lastFlashTime >= 5000) {
           cmr_gpioToggle(GPIO_OUT_LED_FLASH_RED);
           lastFlashTime = currentTick;
           flashed = true;
