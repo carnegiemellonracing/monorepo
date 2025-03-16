@@ -32,6 +32,21 @@ static const TickType_t statusLED_period_ms = 250;
 /** @brief Status LED task. */
 static cmr_task_t statusLED_task;
 
+static bool LEDerror(void *pvParameters){
+  (void) pvParameters;
+
+  TickType_t lastWakeTime = xTaskGetTickCount();
+  vsmStatus_t *vsmStatus = getPayload(CANRX_VSM_STATUS);
+  
+  if ((getBadModuleState(CANRX_HEARTBEAT_HVC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) || (cmr_gpioRead(GPIO_IN_IMD_ERR) == 1)) {
+    return true;
+    }
+  else{
+    return false;
+  }
+
+}
+
 /**
  * @brief Task for toggling the status LED.
  *
@@ -45,7 +60,7 @@ static void statusLED(void *pvParameters) {
     cmr_gpioWrite(GPIO_OUT_LED_FLASH_RED, 0);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
-    
+
     while (1) {
       if(LEDerror()){
         cmr_gpioToggle(GPIO_OUT_LED_FLASH_RED);
@@ -130,17 +145,6 @@ void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac)
   /* USER CODE BEGIN DAC1_MspInit 1 */
 
   /* USER CODE END DAC1_MspInit 1 */
-  }
-
-}
-
-static bool LEDerror(void *pvParameters){
-  TickType_t lastWakeTime = xTaskGetTickCount();
-  if ((getBadModuleState(CANRX_HEARTBEAT_HVC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) || (cmr_gpioRead(GPIO_IN_IMD_ERR) == 1)) {
-    return true;
-    }
-  else{
-    return false;
   }
 
 }
