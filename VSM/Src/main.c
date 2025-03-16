@@ -33,18 +33,8 @@ static const TickType_t statusLED_period_ms = 250;
 /** @brief Status LED task. */
 static cmr_task_t statusLED_task;
 
-static bool LEDerror() {
-
-  TickType_t lastWakeTime = xTaskGetTickCount();
-  const vsmStatus_t *vsmStatus = getCurrentStatus();
-  
-  if (cmr_gpioRead(GPIO_IN_SOFTWARE_ERR) == 1 || cmr_gpioRead(GPIO_IN_BSPD_ERR) == 1 || cmr_gpioRead(GPIO_IN_IMD_ERR) == 1) {
-    return true;
-    }
-  else{
-    return false;
-  }
-
+static bool LEDerror() {  
+  return cmr_gpioRead(GPIO_IN_SOFTWARE_ERR) == 1 || cmr_gpioRead(GPIO_IN_BSPD_ERR) == 1 || cmr_gpioRead(GPIO_IN_IMD_ERR) == 1;
 }
 
 /**
@@ -58,15 +48,24 @@ static void statusLED() {
     cmr_gpioWrite(GPIO_OUT_LED_FLASH_RED, 0);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
+    TickType_t lastFlashTime = lastWakeTime;
+    bool flashed = false;
 
     while (1) {
-      if(LEDerror()){
-        cmr_gpioToggle(GPIO_OUT_LED_FLASH_RED);
+      if(LEDerror()) {
+        TickType_t currentTick = xTaskGetTickCount();
+        if (!flashed || currentTick - lastWakeTime >= 5000) {
+          cmr_gpioToggle(GPIO_OUT_LED_FLASH_RED);
+          lastFlashTime = currentTick;
+          flashed = true;
+        }
+
         cmr_gpioWrite(GPIO_OUT_LED_GREEN, 0);
       }
       
       else {
         cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
+        flashed = false;
       }
 
       cmr_gpioToggle(GPIO_OUT_LED_STATUS);

@@ -25,7 +25,7 @@ const uint16_t brakePressureThreshold_PSI = 40;
 static const TickType_t badStateThres_ms = 50;
 
 // Forward declarations
-int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime);
+static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime);
 
 /**
  * @brief Checks for all errors and updates vsmStatus as needed.
@@ -226,7 +226,7 @@ void updateCurrentWarnings(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeT
  * @warning Using a non-heartbeat value of canRX_t will result in an undefined value.
  *
  * @return 0 when module state is correct, and -1 when incorrect. */
-int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime) {
+static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime) {
     bool wrongState = false;
 
     // Check HVC mode
