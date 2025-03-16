@@ -260,10 +260,6 @@ int cmr_canTX(
     if (result != pdTRUE) {
         return -1;
     }
-
-    uint16_t freeLevel = HAL_FDCAN_GetTxFifoFreeLevel(&can->handle);
-    int x = 0;
-
     if(HAL_FDCAN_GetTxFifoFreeLevel(&can->handle) == 0) {
     	FDCAN_ProtocolStatusTypeDef ProtocolStatus;
     	HAL_FDCAN_GetProtocolStatus(&can->handle, &ProtocolStatus);
@@ -278,10 +274,8 @@ int cmr_canTX(
 
 	FDCAN_ProtocolStatusTypeDef ProtocolStatus;
 	HAL_FDCAN_GetProtocolStatus(&can->handle, &ProtocolStatus);
-	x = 0;
 
     if (status != HAL_OK) {
-    	int x = HAL_FDCAN_GetError(&can->handle);
     	FDCAN_ProtocolStatusTypeDef ProtocolStatus;
     	HAL_FDCAN_GetProtocolStatus(&can->handle, &ProtocolStatus);
         cmr_panic("FDCAN Tx Failed!!");
@@ -295,7 +289,6 @@ int cmr_canTX(
 }
 
 void HAL_FDCAN_ErrorCallback(FDCAN_HandleTypeDef *handle) {
-	cmr_can_t *can = cmr_canFromHandle(handle);
 	uint32_t error = handle->ErrorCode;
 
 	if (error & (
