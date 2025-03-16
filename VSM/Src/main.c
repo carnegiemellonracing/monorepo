@@ -36,7 +36,7 @@ static bool LEDerror(void *pvParameters){
   (void) pvParameters;
 
   TickType_t lastWakeTime = xTaskGetTickCount();
-  vsmStatus_t *vsmStatus = getPayload(CANRX_VSM_STATUS);
+  vsmStatus_t *vsmStatus = getPayload(CANRX_VEH_HEARTBEAT_VSM);
   
   if ((getBadModuleState(CANRX_HEARTBEAT_HVC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) || (cmr_gpioRead(GPIO_IN_IMD_ERR) == 1)) {
     return true;
