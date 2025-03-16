@@ -9,6 +9,7 @@
 #define ERROR_H
 
 #include <CMR/tasks.h>  // TickType_t, taskENTER_CRITICAL(), taskEXIT_CRITICAL()
+#include <CMR/can.h>
 
 #include "state.h"      // vsmStatus_t
 
@@ -16,6 +17,6 @@ extern const uint16_t brakePressureThreshold_PSI;
 
 void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTime);
 void updateCurrentWarnings(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTime);
-static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime);
+int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime);
 
 #endif /* ERROR_H */

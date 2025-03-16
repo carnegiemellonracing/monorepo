@@ -25,7 +25,7 @@ const uint16_t brakePressureThreshold_PSI = 40;
 static const TickType_t badStateThres_ms = 50;
 
 // Forward declarations
-static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime);
+int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime);
 
 /**
  * @brief Checks for all errors and updates vsmStatus as needed.

@@ -19,6 +19,7 @@
 #include "adc.h"        // Board-specific ADC interface
 #include "sensors.h"    // Board-specific sensors interface
 #include "state.h"      // stateInit()
+#include "error.h"
 
 DAC_HandleTypeDef hdac1;
 
@@ -35,7 +36,7 @@ static cmr_task_t statusLED_task;
 static bool LEDerror() {
 
   TickType_t lastWakeTime = xTaskGetTickCount();
-  vsmStatus_t *vsmStatus = getCurrentStatus();
+  const vsmStatus_t *vsmStatus = getCurrentStatus();
   
   if ((getBadModuleState(CANRX_HEARTBEAT_HVC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) || (cmr_gpioRead(GPIO_IN_IMD_ERR) == 1)) {
     return true;
