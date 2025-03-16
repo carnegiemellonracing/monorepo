@@ -683,7 +683,7 @@ void _platform_configCommit(cmr_config_t *config) {
     size_t idx = 0;
     while (idx < config->cacheLen)
     {
-        if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, (uint32_t)(config->flashStart + idx),
+        if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, (uint32_t)(config->flashStart + idx),
                               config->cache[idx]) == HAL_OK)
         {
             idx++;
