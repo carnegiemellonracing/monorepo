@@ -226,7 +226,7 @@ void updateCurrentWarnings(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeT
  * @warning Using a non-heartbeat value of canRX_t will result in an undefined value.
  *
  * @return 0 when module state is correct, and -1 when incorrect. */
-static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime) {
+int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime) {
     bool wrongState = false;
 
     // Check HVC mode

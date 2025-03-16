@@ -9,9 +9,9 @@
 #define ERROR_H
 
 #include <CMR/tasks.h>  // TickType_t, taskENTER_CRITICAL(), taskEXIT_CRITICAL()
-#include <CMR/can.h>
 
 #include "state.h"      // vsmStatus_t
+#include "can.h"
 
 extern const uint16_t brakePressureThreshold_PSI;
 
