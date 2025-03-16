@@ -38,7 +38,7 @@ static bool LEDerror() {
   TickType_t lastWakeTime = xTaskGetTickCount();
   const vsmStatus_t *vsmStatus = getCurrentStatus();
   
-  if ((getBadModuleState(CANRX_HEARTBEAT_HVC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) || (cmr_gpioRead(GPIO_IN_IMD_ERR) == 1)) {
+  if (cmr_gpioRead(GPIO_IN_SOFTWARE_ERR) == 1 || cmr_gpioRead(GPIO_IN_BSPD_ERR) == 1 || cmr_gpioRead(GPIO_IN_IMD_ERR) == 1) {
     return true;
     }
   else{
@@ -68,6 +68,8 @@ static void statusLED() {
       else {
         cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
       }
+
+      cmr_gpioToggle(GPIO_OUT_LED_STATUS);
 
       vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
     }
