@@ -42,13 +42,21 @@ static cmr_task_t statusLED_task;
 static void statusLED(void *pvParameters) {
     (void) pvParameters;
 
-    cmr_gpioWrite(GPIO_OUT_LED_STATUS, 0);
+    cmr_gpioWrite(GPIO_OUT_LED_FLASH_RED, 0);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
+    
     while (1) {
-        cmr_gpioToggle(GPIO_OUT_LED_STATUS);
+      if(LEDerror()){
+        cmr_gpioToggle(GPIO_OUT_LED_FLASH_RED);
+        cmr_gpioWrite(GPIO_OUT_LED_GREEN, 0);
+      }
+      
+      else {
+        cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
+      }
 
-        vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
+      vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
     }
 }
 
@@ -122,6 +130,17 @@ void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac)
   /* USER CODE BEGIN DAC1_MspInit 1 */
 
   /* USER CODE END DAC1_MspInit 1 */
+  }
+
+}
+
+static bool LEDerror(void *pvParameters){
+  TickType_t lastWakeTime = xTaskGetTickCount();
+  if ((getBadModuleState(CANRX_HEARTBEAT_HVC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) || (cmr_gpioRead(GPIO_IN_IMD_ERR) == 1)) {
+    return true;
+    }
+  else{
+    return false;
   }
 
 }
