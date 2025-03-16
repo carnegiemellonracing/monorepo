@@ -37,7 +37,7 @@ static bool LEDerror() {
   TickType_t lastWakeTime = xTaskGetTickCount();
   vsmStatus_t *vsmStatus = getCurrentStatus();
   
-  if ((getBadModuleState(CANRX_HEARTBEAT_HVC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) || (cmr_gpioRead(GPIO_IN_IMD_ERR) == 1)) {
+  if ((getModuleState(CANRX_HEARTBEAT_HVC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) || (cmr_gpioRead(GPIO_IN_IMD_ERR) == 1)) {
     return true;
     }
   else{
