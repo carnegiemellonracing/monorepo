@@ -32,11 +32,10 @@ static const TickType_t statusLED_period_ms = 250;
 /** @brief Status LED task. */
 static cmr_task_t statusLED_task;
 
-static bool LEDerror(void *pvParameters){
-  (void) pvParameters;
+static bool LEDerror() {
 
   TickType_t lastWakeTime = xTaskGetTickCount();
-  vsmStatus_t *vsmStatus = getPayload(CANRX_VEH_HEARTBEAT_VSM);
+  vsmStatus_t *vsmStatus = getCurrentStatus();
   
   if ((getBadModuleState(CANRX_HEARTBEAT_HVC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) || (cmr_gpioRead(GPIO_IN_IMD_ERR) == 1)) {
     return true;
@@ -54,9 +53,7 @@ static bool LEDerror(void *pvParameters){
  *
  * @return Does not return.
  */
-static void statusLED(void *pvParameters) {
-    (void) pvParameters;
-
+static void statusLED() {
     cmr_gpioWrite(GPIO_OUT_LED_FLASH_RED, 0);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
