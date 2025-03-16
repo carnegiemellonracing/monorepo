@@ -233,10 +233,6 @@ void _platform_canFilter(
         //fix this
         uint32_t bank = i;
 
-        uint32_t filterMode = filter->isMask
-            ? FDCAN_FILTER_MASK
-            : FDCAN_FILTER_DUAL;
-
         // In 16 bit ID list mode, FilterIdHigh, FilterIdLow, FilterMaskIdHigh,
         // and FilterMaskIdLow all serve as a whitelist of left-aligned 11-bit
         // CAN IDs.
