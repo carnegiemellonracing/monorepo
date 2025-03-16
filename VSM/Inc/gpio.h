@@ -16,6 +16,8 @@
  */
 typedef enum {
     GPIO_OUT_LED_STATUS = 0,    /**< @brief Status LED. */
+    GPIO_OUT_LED_GREEN = 0,     /**< @brief Status LED when everything works. */
+    GPIO_OUT_LED_FLASH_RED = 0, /**< @brief Status LED when BMS or IMD Error. */
     GPIO_OUT_DCDC_EN,           /**< @brief DCDC converter enable signal. */
     GPIO_OUT_SOFTWARE_ERR,      /**< @brief Software error indicator. */
     GPIO_OUT_RTD_SIGNAL,        /**< @brief Ready-to-drive signal. */
@@ -28,4 +30,3 @@ typedef enum {
 void gpioInit(void);
 
 #endif /* GPIO_H */
-
