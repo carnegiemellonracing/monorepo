@@ -59,7 +59,7 @@ cmr_canRXMeta_t canRXMeta[] = {
         .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_VSM_DIM_TIMEOUT
-    }
+    },
     [CANRX_DIM_REQUEST] = {
         .canID = CMR_CANID_DIM_REQUEST,
         .timeoutError_ms = 500,

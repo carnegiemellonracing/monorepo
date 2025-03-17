@@ -1028,7 +1028,7 @@ void setTractionControl (
  * @brief Calculate the control action (left-right torque bias) of the yaw rate controller
  * @param swAngle_millideg Steering wheel angle
  */
-float getYawRateControlLeftRightBias(int16_t swAngle_millideg) {
+float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
     // ********* Local Parameters *********
 
     /** @brief Trust SBG velocities even if SBG reports that they're invalid
