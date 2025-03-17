@@ -632,19 +632,28 @@ static void sendFSMData(void) {
         torqueRequested = throttlePosition;
     }
 
-    uint8_t brakePressureFront_PSI = (uint8_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI);
-    int16_t steeringWheelAngle_deg = (int16_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG);
+    uint16_t brakePressureFront_PSI = (uint16_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI);
     uint8_t brakePedalPosition = (uint8_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPOS_U8);
 
     cmr_canFSMData_t msg = {
         .torqueRequested = torqueRequested,
         .throttlePosition = throttlePosition,
         .brakePressureFront_PSI = brakePressureFront_PSI,
-        .brakePedalPosition = brakePedalPosition,
-        .steeringWheelAngle_millideg = steeringWheelAngle_deg
+        .brakePedalPosition = brakePedalPosition
     };
 
     canTX(CMR_CANID_FSM_DATA, &msg, sizeof(msg), canTX100Hz_period_ms);
+}
+
+static void sendSWAngle(void) {
+
+    int32_t steeringWheelAngle_deg = (int32_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG);
+
+    cmr_canFSMSWAngle_t msg = {
+        .steeringWheelAngle_millideg = steeringWheelAngle_deg
+    };
+
+    canTX(CMR_CANID_FSM_SWANGLE, &msg, sizeof(msg), canTX100Hz_period_ms);
 }
 
 /**

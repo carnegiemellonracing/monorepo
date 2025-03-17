@@ -26,7 +26,7 @@
 
 extern const float braking_threshold_psi;
 
-extern const uint8_t brake_pressure_start;
+extern const uint16_t brake_pressure_start;
 extern const uint8_t paddle_pressure_start;
 
 // ------------------------------------------------------------------------------------------------
@@ -42,11 +42,11 @@ float getPackCurrent();
 float getHVISensePackPower();
 float getMaxCellVoltage();
 float getMinCellVoltage();
-float swAngleMillidegToSteeringAngleRad(int16_t swAngle_deg);
+float swAngleMillidegToSteeringAngleRad(int32_t swAngle_deg);
 bool canTrustSBGVelocity(bool ignore_valid_bit);
-bool setRegen(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM);
-float getRegenTorqueReq(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8);
-bool setPaddleRegen(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM, uint8_t paddle_pressure, uint8_t paddle_regen_strength);
-bool setParallelRegen(uint8_t throttlePos_u8, uint8_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM);
+bool setRegen(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM);
+float getRegenTorqueReq(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8);
+bool setPaddleRegen(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM, uint8_t paddle_pressure, uint8_t paddle_regen_strength);
+bool setParallelRegen(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM);
 
 #endif /* CONTROL_HELPER_H */
