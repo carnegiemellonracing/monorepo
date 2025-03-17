@@ -126,7 +126,7 @@ static uint32_t adcToVoltage(const cmr_sensor_t *sensor, uint32_t reading) {
  *
  * @param reading The ADC value to convert.
  *
- * @return Current in A.
+ * @return Current in dA.
  */
 static uint32_t adcToCurrent(const cmr_sensor_t *sensor, uint32_t reading) {
     (void)sensor;
