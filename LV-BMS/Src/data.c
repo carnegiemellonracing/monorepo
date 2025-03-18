@@ -33,7 +33,7 @@ void AFE_SETUP(void){
                                                //This turns on the things we need to use btw(vcout,viout).
         adc_sensen = adc_read(ADC_AFE_VIOUT);
         i2c_write_register(CONFIG_1, 0x05); //sets gain to 8. put at 0x00 for 4. swtiches to sensep
-        i2c_write_register(CONFIG_2, 0x01);
+        i2c_write_register(CONFIG_2, 0x00);
 
         uint8_t reg_value;
 

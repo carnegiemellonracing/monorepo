@@ -33,7 +33,7 @@ static cmr_adcChannel_t adc_channels[ADC_NUM] = {
         .value = 0
     },
 	[ADC_AFE_VCOUT] = {
-		.channel = ADC_CHANNEL_3,
+		.channel = ADC_CHANNEL_12,
 		.port = GPIOC,
 		.pin = GPIO_PIN_2,
 		.samplingTime = ADC_SAMPLETIME_15CYCLES,
