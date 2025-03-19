@@ -353,22 +353,22 @@ static cmr_state getReqScreen(void) {
             //look into how button move on screen on campus
             if(canLRUDStates[LEFT]) {
                 //move left on screen
-                //canLRUDStates[LEFT] = 0;
+                config_move_request = -1;
                 nextState = CONFIG;
             }
             else if(canLRUDStates[RIGHT]) {
                 //move right on screen
-                //canLRUDStates[RIGHT] = 0;
+                config_move_request = -1;
                 nextState = CONFIG;
             }
             else if(canLRUDStates[UP]) {
                 //move up on screen
-                //canLRUDStates[UP] = 0;
+                config_move_request = -CONFIG_SCREEN_NUM_COLS;
                 nextState = CONFIG;
             }
             else if(canLRUDStates[DOWN]) {
                 //move down on screen
-                //canLRUDStates[DOWN] = 0;
+                config_move_request = CONFIG_SCREEN_NUM_COLS;
                 nextState = CONFIG;
             }
     	//TODO: WHAT THE HELL IS THIS??
