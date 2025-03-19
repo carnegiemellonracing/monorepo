@@ -35,6 +35,11 @@ static const vector3 x_FR = { 0.837f, -0.65f, -0.3f };
 static const vector3 x_RL = { -0.713f, 0.65f, -0.3f };
 static const vector3 x_RR = { -0.713f, -0.65f, -0.3f };
 
+static const vector3 x_D_FL = { 0.837f, 0.65f, -0.3f };
+static const vector3 x_D_FR = { 0.837f, -0.65f, -0.3f };
+static const vector3 x_D_RL = { -0.713f, 0.65f, -0.3f };
+static const vector3 x_D_RR = { -0.713f, -0.65f, -0.3f };
+
 typedef struct {
     float w;
     float x;

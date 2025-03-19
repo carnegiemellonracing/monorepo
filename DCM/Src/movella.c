@@ -152,9 +152,9 @@ static void compute_slip(volatile movella_state_t *movella_state, volatile car_s
     car_state->slip_angle.body = atan2f(car_state->velocity.y, car_state->velocity.x);
     
     vector3 x_B_B_dot = { 
-        movella_state->velocity.x, 
-        movella_state->velocity.y, 
-        movella_state->velocity.z 
+        car_state->velocity.x, 
+        car_state->velocity.y, 
+        car_state->velocity.z 
     };
     matrix3x3 Omega_B = {
         {0.0f, -car_state->gyro.z, car_state->gyro.y},
@@ -177,6 +177,36 @@ static void compute_slip(volatile movella_state_t *movella_state, volatile car_s
     car_state->slip_angle.rl = atan2f(v_RL[1], v_RL[0]);
     car_state->slip_angle.rr = atan2f(v_RR[1], v_RR[0]);
 }
+
+// static void compute_slip_device(volatile movella_state_t *movella_state, volatile car_state_t *car_state) {
+//     car_state->slip_angle.body = atan2f(car_state->velocity.y, car_state->velocity.x);
+    
+//     vector3 x_D_D_dot = { 
+//         movella_state->velocity.x, 
+//         movella_state->velocity.y, 
+//         movella_state->velocity.z 
+//     };
+//     matrix3x3 Omega_D = {
+//         {0.0f, -movella_state->gyro.z, movella_state->gyro.y},
+//         {movella_state->gyro.z, 0.0f, -movella_state->gyro.x},
+//         {-movella_state->gyro.y, movella_state->gyro.x, 0.0f},
+//     };
+
+//     vector3 v_FL, v_FR, v_RL, v_RR;
+//     mat_vec_mult(Omega_D, x_D_FL, v_FL);
+//     mat_vec_mult(Omega_D, x_D_FR, v_FR);
+//     mat_vec_mult(Omega_D, x_D_RL, v_RL);
+//     mat_vec_mult(Omega_D, x_D_RR, v_RR);
+//     vec_add(x_D_D_dot, v_FL, v_FL);
+//     vec_add(x_D_D_dot, v_FR, v_FR);
+//     vec_add(x_D_D_dot, v_RL, v_RL);
+//     vec_add(x_D_D_dot, v_RR, v_RR);
+
+//     car_state->slip_angle.fl = atan2f(v_FL[1], v_FL[0]);
+//     car_state->slip_angle.fr = atan2f(v_FR[1], v_FR[0]);
+//     car_state->slip_angle.rl = atan2f(v_RL[1], v_RL[0]);
+//     car_state->slip_angle.rr = atan2f(v_RR[1], v_RR[0]);
+// }
 
 void movella_parse(uint16_t canID, volatile void *payload) {
     
