@@ -30,15 +30,17 @@ static const matrix3x3 R_BD = {
 };
 
 static const vector3 x_BD = { -0.5f, 0.0f, 0.2f };
+
+// Car COG frame
 static const vector3 x_FL = { 0.837f, 0.65f, -0.3f };
 static const vector3 x_FR = { 0.837f, -0.65f, -0.3f };
 static const vector3 x_RL = { -0.713f, 0.65f, -0.3f };
 static const vector3 x_RR = { -0.713f, -0.65f, -0.3f };
 
-static const vector3 x_D_FL = { 0.837f, 0.65f, -0.3f };
-static const vector3 x_D_FR = { 0.837f, -0.65f, -0.3f };
-static const vector3 x_D_RL = { -0.713f, 0.65f, -0.3f };
-static const vector3 x_D_RR = { -0.713f, -0.65f, -0.3f };
+static const vector3 x_D_FL = { x_FL[0] - x_BD[0], x_FL[1] - x_BD[1], x_FL[2] - x_BD[2] };
+static const vector3 x_D_FR = { x_FR[0] - x_BD[0], x_FR[1] - x_BD[1], x_FR[2] - x_BD[2] };
+static const vector3 x_D_RL = { x_RL[0] - x_BD[0], x_RL[1] - x_BD[1], x_RL[2] - x_BD[2] };
+static const vector3 x_D_RR = { x_RR[0] - x_BD[0], x_RR[1] - x_BD[1], x_RR[2] - x_BD[2] };
 
 typedef struct {
     float w;
@@ -153,6 +155,26 @@ typedef struct {
     } velocity;
 
     struct {
+        float x;
+        float y;
+    } fl_velocity;
+
+    struct {
+        float x;
+        float y;
+    } fr_velocity;
+
+    struct {
+        float x;
+        float y;
+    } rl_velocity;
+
+    struct {
+        float x;
+        float y;
+    } rr_velocity;
+
+    struct {
         float body;
         float fl;
         float fr;
@@ -171,5 +193,6 @@ static volatile car_state_t car_state;
 
 void movella_parse(uint16_t canID, volatile void *payload);
 void movella_test();
+void movella_random_test();
 
 #endif

@@ -101,7 +101,6 @@ static void transform_velocity_D4B(volatile movella_state_t *movella_state, vola
     movella_state->velocity.y = x_D_D_dot[1];
     movella_state->velocity.z = x_D_D_dot[2];
 
-    matrix3x3 temp;
     float gyro_x = movella_state->gyro.x;
     float gyro_y = movella_state->gyro.y;
     float gyro_z = movella_state->gyro.z;
@@ -121,7 +120,7 @@ static void transform_velocity_D4B(volatile movella_state_t *movella_state, vola
     mat_mult(R_D_dot, R_DB, temp1);
 
     vector3 temp2;
-    mat_vec_mult(temp, x_BD, temp2);
+    mat_vec_mult(temp1, x_BD, temp2);
 
     vector3 x_B_dot;
     vec_sub(x_D_dot, temp2, x_B_dot);
@@ -172,41 +171,59 @@ static void compute_slip(volatile movella_state_t *movella_state, volatile car_s
     vec_add(x_B_B_dot, v_RL, v_RL);
     vec_add(x_B_B_dot, v_RR, v_RR);
 
+    car_state->fl_velocity.x = v_FL[0];
+    car_state->fl_velocity.y = v_FL[1];
+    car_state->fr_velocity.x = v_FR[0];
+    car_state->fr_velocity.y = v_FR[1];
+    car_state->rl_velocity.x = v_RL[0];
+    car_state->rl_velocity.y = v_RL[1];
+    car_state->rr_velocity.x = v_RR[0];
+    car_state->rr_velocity.y = v_RR[1];
+
     car_state->slip_angle.fl = atan2f(v_FL[1], v_FL[0]);
     car_state->slip_angle.fr = atan2f(v_FR[1], v_FR[0]);
     car_state->slip_angle.rl = atan2f(v_RL[1], v_RL[0]);
     car_state->slip_angle.rr = atan2f(v_RR[1], v_RR[0]);
 }
 
-// static void compute_slip_device(volatile movella_state_t *movella_state, volatile car_state_t *car_state) {
-//     car_state->slip_angle.body = atan2f(car_state->velocity.y, car_state->velocity.x);
+static void compute_slip_device(volatile movella_state_t *movella_state, volatile car_state_t *car_state) {
+    car_state->slip_angle.body = atan2f(car_state->velocity.y, car_state->velocity.x);
     
-//     vector3 x_D_D_dot = { 
-//         movella_state->velocity.x, 
-//         movella_state->velocity.y, 
-//         movella_state->velocity.z 
-//     };
-//     matrix3x3 Omega_D = {
-//         {0.0f, -movella_state->gyro.z, movella_state->gyro.y},
-//         {movella_state->gyro.z, 0.0f, -movella_state->gyro.x},
-//         {-movella_state->gyro.y, movella_state->gyro.x, 0.0f},
-//     };
+    vector3 x_D_D_dot = { 
+        movella_state->velocity.x, 
+        movella_state->velocity.y, 
+        movella_state->velocity.z 
+    };
+    matrix3x3 Omega_D = {
+        {0.0f, -movella_state->gyro.z, movella_state->gyro.y},
+        {movella_state->gyro.z, 0.0f, -movella_state->gyro.x},
+        {-movella_state->gyro.y, movella_state->gyro.x, 0.0f},
+    };
 
-//     vector3 v_FL, v_FR, v_RL, v_RR;
-//     mat_vec_mult(Omega_D, x_D_FL, v_FL);
-//     mat_vec_mult(Omega_D, x_D_FR, v_FR);
-//     mat_vec_mult(Omega_D, x_D_RL, v_RL);
-//     mat_vec_mult(Omega_D, x_D_RR, v_RR);
-//     vec_add(x_D_D_dot, v_FL, v_FL);
-//     vec_add(x_D_D_dot, v_FR, v_FR);
-//     vec_add(x_D_D_dot, v_RL, v_RL);
-//     vec_add(x_D_D_dot, v_RR, v_RR);
+    vector3 v_FL, v_FR, v_RL, v_RR;
+    mat_vec_mult(Omega_D, x_D_FL, v_FL);
+    mat_vec_mult(Omega_D, x_D_FR, v_FR);
+    mat_vec_mult(Omega_D, x_D_RL, v_RL);
+    mat_vec_mult(Omega_D, x_D_RR, v_RR);
+    vec_add(x_D_D_dot, v_FL, v_FL);
+    vec_add(x_D_D_dot, v_FR, v_FR);
+    vec_add(x_D_D_dot, v_RL, v_RL);
+    vec_add(x_D_D_dot, v_RR, v_RR);
 
-//     car_state->slip_angle.fl = atan2f(v_FL[1], v_FL[0]);
-//     car_state->slip_angle.fr = atan2f(v_FR[1], v_FR[0]);
-//     car_state->slip_angle.rl = atan2f(v_RL[1], v_RL[0]);
-//     car_state->slip_angle.rr = atan2f(v_RR[1], v_RR[0]);
-// }
+    car_state->fl_velocity.x = v_FL[0];
+    car_state->fl_velocity.y = v_FL[1];
+    car_state->fr_velocity.x = v_FR[0];
+    car_state->fr_velocity.y = v_FR[1];
+    car_state->rl_velocity.x = v_RL[0];
+    car_state->rl_velocity.y = v_RL[1];
+    car_state->rr_velocity.x = v_RR[0];
+    car_state->rr_velocity.y = v_RR[1];
+
+    car_state->slip_angle.fl = atan2f(v_FL[1], v_FL[0]);
+    car_state->slip_angle.fr = atan2f(v_FR[1], v_FR[0]);
+    car_state->slip_angle.rl = atan2f(v_RL[1], v_RL[0]);
+    car_state->slip_angle.rr = atan2f(v_RR[1], v_RR[0]);
+}
 
 void movella_parse(uint16_t canID, volatile void *payload) {
     
@@ -307,6 +324,10 @@ void movella_test() {
     movella_state.global_velocity.y = 1.0;
     movella_state.global_velocity.z = 1.0;
 
+    movella_state.gyro.x = 0.0;
+    movella_state.gyro.y = 0.0;
+    movella_state.gyro.z = 1.0;
+
     movella_state.R[0][0] = 1.0;
     movella_state.R[0][1] = 0.0;
     movella_state.R[0][2] = 0.0;
@@ -318,5 +339,37 @@ void movella_test() {
     movella_state.R[2][2] = 1.0;
 
     transform_velocity_D4B(&movella_state, &car_state);
+    compute_slip(&movella_state, &car_state);
+    
+    car_state_t temp;
+    compute_slip_device(&movella_state, &temp);
+}
+
+void movella_random_test() {
+    
+    movella_state.global_velocity.x = 0.8;
+    movella_state.global_velocity.y = 1.2;
+    movella_state.global_velocity.z = -1.9;
+
+    movella_state.gyro.x = 0.3;
+    movella_state.gyro.y = -0.8;
+    movella_state.gyro.z = 1.2;
+
+    quaternion_t q = {
+        .w = 0.9829670809135851,
+        .x = 0.15280150797033248, 
+        .y = 0.09174319450720117, 
+        .z = 0.04483975093409589,
+    };
+    
+    quaternion_to_R(&q, movella_state.R);
+
+    car_state_t method_1;
+    transform_velocity_D4B(&movella_state, &method_1);
+    compute_slip(&movella_state, &method_1);
+    
+    car_state_t method_2;
+    compute_slip_device(&movella_state, &method_2);
+    compute_slip_device(&movella_state, &method_2);
 
 }

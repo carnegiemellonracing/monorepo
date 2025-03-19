@@ -880,6 +880,26 @@ typedef struct {
     big_endian_16_t vel_z;
 } cmr_canMovellaVelocity_t;
 
+typedef struct {
+    int16_t cog_x;
+    int16_t cog_y;
+    float slip_angle;
+} cmr_canCOGVelocity_t;
+
+typedef struct {
+    int16_t fl_x;
+    int16_t fl_y;
+    int16_t fr_x;
+    int16_t fr_y;
+} cmr_canFrontWheelVelocity_t;
+
+typedef struct {
+    int16_t rl_x;
+    int16_t rl_y;
+    int16_t rr_x;
+    int16_t rr_y;
+} cmr_canRearWheelVelocity_t;
+
 // ------------------------------------------------------------------------------------------------
 // IZZIE Racing sensors
 

@@ -79,7 +79,8 @@ static void statusLED(void *pvParameters) {
  */
 int main(void) {
 
-    movella_test();
+    // movella_test();
+    // movella_random_test();
 
    	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
     DWT->LAR = 0xC5ACCE55;

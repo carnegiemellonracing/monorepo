@@ -570,6 +570,11 @@ static void canTX200Hz(void *pvParameters) {
     cmr_canCDCPoseOrientation_t poseOrient;
     cmr_canCDCPoseVelocity_t poseVel;
 
+    cmr_canCOGVelocity_t cog_velocity;
+    cmr_canFrontWheelVelocity_t front_velocity;
+    cmr_canRearWheelVelocity_t rear_velocity;
+
+
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_FL_SETPOINTS, amkSetpointsFL, sizeof(*amkSetpointsFL), canTX200Hz_period_ms);
@@ -585,6 +590,24 @@ static void canTX200Hz(void *pvParameters) {
         daqPosePosition(&posePos);
         //daqPoseOrientation(&poseOrient);
         daqPoseVelocity(&poseVel);
+
+        cog_velocity.cog_x = car_state.velocity.x * 100.0;
+        cog_velocity.cog_y = car_state.velocity.y * 100.0;
+        cog_velocity.slip_angle = car_state.slip_angle.body;
+
+        front_velocity.fl_x = car_state.fl_velocity.x * 100.0;
+        front_velocity.fl_y = car_state.fl_velocity.y * 100.0;
+        front_velocity.fr_x = car_state.fr_velocity.x * 100.0;
+        front_velocity.fr_y = car_state.fr_velocity.y * 100.0;
+    
+        rear_velocity.rl_x = car_state.rl_velocity.x * 100.0;
+        rear_velocity.rl_y = car_state.rl_velocity.y * 100.0;
+        rear_velocity.rr_x = car_state.rr_velocity.x * 100.0;
+        rear_velocity.rr_y = car_state.rr_velocity.y * 100.0;
+
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COG_VELOCITY, &cog_velocity, sizeof(cog_velocity), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_FRONT_VELOCITY, &cog_velocity, sizeof(front_velocity), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_REAR_VELOCITY, &cog_velocity, sizeof(rear_velocity), canTX200Hz_period_ms);
 
         // Is data valid? Set it in the orientation/velocity messages
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX200Hz_period_ms);
