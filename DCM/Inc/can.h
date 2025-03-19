@@ -29,6 +29,12 @@ typedef enum {
     CANRX_VEH_VSM_SENSORS,          /**< @brief VSM Sensors */
 	CANRX_RTC_SET,
 	CANRX_HVI_SENSE,
+    CANRX_VEH_MOVELLA_STATUS,
+    CANRX_VEH_MOVELLA_QUATERNION,
+    CANRX_VEH_MOVELLA_IMU_EULER_ANGLES,
+    CANRX_VEH_MOVELLA_IMU_GYRO,
+    CANRX_VEH_MOVELLA_IMU_ACCEL,
+    CANRX_VEH_MOVELLA_VELOCITY,
     CANRX_VEH_LEN                   /**< @brief Number of periodic CAN messages. */
 } canVehicleRX_t;
 
