@@ -5,6 +5,10 @@
 #define TRANSFORM_RAW(message_index, raw_data) (scaling_constants[message_index] * (float) raw_data)
 #define GYRO_FREQ_HZ (200.0f)
 
+static inline float transform_raw(movella_message_t msg, float raw_data) {
+    return scaling_constants[msg] * raw_data;
+}
+
 typedef union {
     struct {
         uint8_t lsb;
@@ -16,7 +20,7 @@ typedef union {
 static int16_t parse_int16(volatile big_endian_16_t *big) {
     static int16_parser parser;
     parser.data.msb = big->msb;
-    parser.data.msb = big->lsb;
+    parser.data.lsb = big->lsb;
     return parser.parsed;
 } 
 
@@ -85,9 +89,19 @@ void mat_copy(matrix3x3 A, matrix3x3 result) {
 }
 
 static void transform_velocity_D4B(volatile movella_state_t *movella_state, volatile car_state_t *car_state) {
-    vector3 x_D_dot = { movella_state->velocity.x, movella_state->velocity.y, movella_state->velocity.z };
-    matrix3x3 temp;
+    vector3 x_D_dot = { movella_state->global_velocity.x, movella_state->global_velocity.y, movella_state->global_velocity.z };
+    matrix3x3 R_D;
+    mat_copy(movella_state->R, R_D);
+    matrix3x3 R_D_T;
+    mat_transpose(R_D, R_D_T);
+    vector3 x_D_D_dot;
+    mat_vec_mult(R_D_T, x_D_dot, x_D_D_dot);
 
+    movella_state->velocity.x = x_D_D_dot[0];
+    movella_state->velocity.y = x_D_D_dot[1];
+    movella_state->velocity.z = x_D_D_dot[2];
+
+    matrix3x3 temp;
     float gyro_x = movella_state->gyro.x;
     float gyro_y = movella_state->gyro.y;
     float gyro_z = movella_state->gyro.z;
@@ -97,8 +111,6 @@ static void transform_velocity_D4B(volatile movella_state_t *movella_state, vola
         {-gyro_y, gyro_x, 0.0},
     };
     
-    matrix3x3 R_D;
-    mat_copy(movella_state->R, R_D);
     matrix3x3 R_D_dot;
     mat_mult(R_D, Omega_D, R_D_dot);
 
@@ -166,7 +178,23 @@ static void compute_slip(volatile movella_state_t *movella_state, volatile car_s
     car_state->slip_angle.rr = atan2f(v_RR[1], v_RR[0]);
 }
 
-void movella_parse(canDaqRX_t movella_msg, volatile void* payload) {
+void movella_parse(uint16_t canID, volatile void *payload) {
+    
+    // volatile void* payload;
+
+    canDaqRX_t movella_msg;
+    bool msg_found = false;
+    for(movella_msg = CANRX_DAQ_MOVELLA_STATUS; movella_msg <= CANRX_DAQ_MOVELLA_VELOCITY; movella_msg++) {
+        if(canID == canDaqRXMeta[movella_msg].canID) {
+            msg_found = true;
+            // payload = canDaqRXMeta[movella_msg].payload;
+            break;
+        }
+    }
+
+    if(!msg_found) 
+        return;
+
     switch (movella_msg)
     {
     case CANRX_DAQ_MOVELLA_STATUS:
@@ -175,14 +203,14 @@ void movella_parse(canDaqRX_t movella_msg, volatile void* payload) {
 
     case CANRX_DAQ_MOVELLA_QUATERNION:
         volatile cmr_canMovellaQuaternion_t *quaternion = payload;
-        int16_t w = parse_int16(&quaternion->q0);
-        int16_t x = parse_int16(&quaternion->q1);
-        int16_t y = parse_int16(&quaternion->q2);
-        int16_t z = parse_int16(&quaternion->q3);
-        movella_state.quaternion.w = TRANSFORM_RAW(MOVELLA_QUATERNION, w);
-        movella_state.quaternion.x = TRANSFORM_RAW(MOVELLA_QUATERNION, x);
-        movella_state.quaternion.y = TRANSFORM_RAW(MOVELLA_QUATERNION, y);
-        movella_state.quaternion.z = TRANSFORM_RAW(MOVELLA_QUATERNION, z);
+        volatile int16_t w = parse_int16(&quaternion->q0);
+        volatile int16_t x = parse_int16(&quaternion->q1);
+        volatile int16_t y = parse_int16(&quaternion->q2);
+        volatile int16_t z = parse_int16(&quaternion->q3);
+        movella_state.quaternion.w = transform_raw(MOVELLA_QUATERNION, w);
+        movella_state.quaternion.x = transform_raw(MOVELLA_QUATERNION, x);
+        movella_state.quaternion.y = transform_raw(MOVELLA_QUATERNION, y);
+        movella_state.quaternion.z = transform_raw(MOVELLA_QUATERNION, z);
         quaternion_to_R(&movella_state.quaternion, movella_state.R);
         break;
 
@@ -191,28 +219,28 @@ void movella_parse(canDaqRX_t movella_msg, volatile void* payload) {
         int16_t yaw = parse_int16(&euler->yaw);
         int16_t pitch = parse_int16(&euler->pitch);
         int16_t roll = parse_int16(&euler->roll);
-        movella_state.euler_angles.yaw = TRANSFORM_RAW(MOVELLA_EULER_ANGLES, yaw);
-        movella_state.euler_angles.pitch = TRANSFORM_RAW(MOVELLA_EULER_ANGLES, pitch);
-        movella_state.euler_angles.roll = TRANSFORM_RAW(MOVELLA_EULER_ANGLES, roll);
+        movella_state.euler_angles.yaw = transform_raw(MOVELLA_EULER_ANGLES, yaw);
+        movella_state.euler_angles.pitch = transform_raw(MOVELLA_EULER_ANGLES, pitch);
+        movella_state.euler_angles.roll = transform_raw(MOVELLA_EULER_ANGLES, roll);
         break;
     
     case CANRX_DAQ_MOVELLA_IMU_GYRO:
         volatile cmr_canMovellaIMUGyro_t *gyro = payload;
-        int16_t gyro_x = parse_int16(&gyro->gyro_x);
-        int16_t gyro_y = parse_int16(&gyro->gyro_y);
-        int16_t gyro_z = parse_int16(&gyro->gyro_z);
+        volatile int16_t gyro_x = parse_int16(&gyro->gyro_x);
+        volatile int16_t gyro_y = parse_int16(&gyro->gyro_y);
+        volatile int16_t gyro_z = parse_int16(&gyro->gyro_z);
         movella_state.gyro.x_prev = movella_state.gyro.x;
         movella_state.gyro.y_prev = movella_state.gyro.y;
         movella_state.gyro.z_prev = movella_state.gyro.z;
-        movella_state.gyro.x = TRANSFORM_RAW(gyro_x, MOVELLA_IMU_GYRO);
-        movella_state.gyro.y = TRANSFORM_RAW(gyro_y, MOVELLA_IMU_GYRO);
-        movella_state.gyro.z = TRANSFORM_RAW(gyro_z, MOVELLA_IMU_GYRO);
+        movella_state.gyro.x = transform_raw(MOVELLA_IMU_GYRO, gyro_x);
+        movella_state.gyro.y = transform_raw(MOVELLA_IMU_GYRO, gyro_y);
+        movella_state.gyro.z = transform_raw(MOVELLA_IMU_GYRO, gyro_z);
         if(movella_state.gyro.inited) {
             movella_state.alpha.x = (movella_state.gyro.x - movella_state.gyro.x_prev) * GYRO_FREQ_HZ;
             movella_state.alpha.y = (movella_state.gyro.y - movella_state.gyro.y_prev) * GYRO_FREQ_HZ;
             movella_state.alpha.z = (movella_state.gyro.z - movella_state.gyro.z_prev) * GYRO_FREQ_HZ;
         } else {
-            movella_state.gyro.inited = false;
+            movella_state.gyro.inited = true;
         }
         break;
 
@@ -221,9 +249,9 @@ void movella_parse(canDaqRX_t movella_msg, volatile void* payload) {
         int16_t accel_x = parse_int16(&accel->accel_x);
         int16_t accel_y = parse_int16(&accel->accel_y);
         int16_t accel_z = parse_int16(&accel->accel_z);
-        movella_state.accel.x = TRANSFORM_RAW(accel_x, MOVELLA_IMU_ACCEL);
-        movella_state.accel.y = TRANSFORM_RAW(accel_y, MOVELLA_IMU_ACCEL);
-        movella_state.accel.z = TRANSFORM_RAW(accel_z, MOVELLA_IMU_ACCEL);
+        movella_state.accel.x = transform_raw(MOVELLA_IMU_ACCEL, accel_x);
+        movella_state.accel.y = transform_raw(MOVELLA_IMU_ACCEL, accel_y);
+        movella_state.accel.z = transform_raw(MOVELLA_IMU_ACCEL, accel_z);
         break;
     
     case CANRX_DAQ_MOVELLA_VELOCITY:
@@ -231,9 +259,9 @@ void movella_parse(canDaqRX_t movella_msg, volatile void* payload) {
         int16_t vel_x = parse_int16(&velocity->vel_x);
         int16_t vel_y = parse_int16(&velocity->vel_y);
         int16_t vel_z = parse_int16(&velocity->vel_z);
-        movella_state.velocity.x = TRANSFORM_RAW(vel_x, MOVELLA_VELOCITY);
-        movella_state.velocity.y = TRANSFORM_RAW(vel_y, MOVELLA_VELOCITY);
-        movella_state.velocity.z = TRANSFORM_RAW(vel_z, MOVELLA_VELOCITY);
+        movella_state.global_velocity.x = transform_raw(MOVELLA_VELOCITY, vel_x);
+        movella_state.global_velocity.y = transform_raw(MOVELLA_VELOCITY, vel_y);
+        movella_state.global_velocity.z = transform_raw(MOVELLA_VELOCITY, vel_z);
         transform_velocity_D4B(&movella_state, &car_state);
         compute_slip(&movella_state, &car_state);
         break;
@@ -241,4 +269,24 @@ void movella_parse(canDaqRX_t movella_msg, volatile void* payload) {
     default:
         break;
     }
+}
+
+void movella_test() {
+    
+    movella_state.global_velocity.x = 1.0;
+    movella_state.global_velocity.y = 1.0;
+    movella_state.global_velocity.z = 1.0;
+
+    movella_state.R[0][0] = 1.0;
+    movella_state.R[0][1] = 0.0;
+    movella_state.R[0][2] = 0.0;
+    movella_state.R[1][0] = 0.0;
+    movella_state.R[1][1] = 1.0;
+    movella_state.R[1][2] = 0.0;
+    movella_state.R[2][0] = 0.0;
+    movella_state.R[2][1] = 0.0;
+    movella_state.R[2][2] = 1.0;
+
+    transform_velocity_D4B(&movella_state, &car_state);
+
 }

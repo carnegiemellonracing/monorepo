@@ -13,7 +13,7 @@ typedef enum {
 } movella_message_t;
 
 static const float scaling_constants[MOVELLA_MESSAGE_NUM] = {
-    [MOVELLA_QUATERNION] = 1 / (float) (1U << 15 - 1),
+    [MOVELLA_QUATERNION] = 1 / (float) (1U << 16 - 1),
     [MOVELLA_EULER_ANGLES] = 1 / (float) (1U << 7),
     [MOVELLA_IMU_ACCEL] = 1 / (float) (1U << 8),
     [MOVELLA_IMU_GYRO] = 1 / (float) (1U << 9),
@@ -85,6 +85,12 @@ typedef struct {
         float y;
         float z;
     } velocity;
+    
+    struct {
+        float x;
+        float y;
+        float z;
+    } global_velocity;
 
     struct {
         uint8_t self_test:1;
@@ -158,6 +164,7 @@ static volatile movella_state_t movella_state = {
 };
 static volatile car_state_t car_state;
 
-void movella_parse(canDaqRX_t movella_msg, volatile void* payload);
+void movella_parse(uint16_t canID, volatile void *payload);
+void movella_test();
 
 #endif

@@ -131,7 +131,31 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
 	        .canID = CMR_CANID_HEARTBEAT_HVI,
 	        .timeoutError_ms = 100,
 	        .timeoutWarn_ms = 75
-	}
+	},
+    // Temporary.
+    [CANRX_VEH_MOVELLA_STATUS] = {
+        .canID = CMR_CANID_MOVELLA_STATUS,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    // Temporary.
+    [CANRX_VEH_MOVELLA_QUATERNION] = {
+        .canID = CMR_CANID_MOVELLA_QUATERNION,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    // Temporary.
+    [CANRX_VEH_MOVELLA_IMU_GYRO] = {
+        .canID = CMR_CANID_MOVELLA_IMU_GYRO,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    // Temporary.
+    [CANRX_VEH_MOVELLA_IMU_ACCEL] = {
+        .canID = CMR_CANID_MOVELLA_IMU_ACCEL,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
 };
 
 /** @brief Metadata for tractive CAN message reception. */
@@ -849,16 +873,25 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
         rxMetaArray = canTractiveRXMeta;
         rxMetaArrayLen = CANRX_TRAC_LEN;
     }
+
+    volatile void* payload;
     if (rxMetaArray != NULL) {
         for (uint32_t i = 0; i < rxMetaArrayLen; i++) {
             if (rxMetaArray[i].canID == canID) {
-                memcpy((void *) rxMetaArray[i].payload, data, dataLen);
+                payload = (void *) rxMetaArray[i].payload;
+                memcpy(payload, data, dataLen);
                 rxMetaArray[i].lastReceived_ms = xTaskGetTickCountFromISR();
-                movella_parse(i, rxMetaArray[i].payload);
                 break;
             }
         }
     }
+
+    uint16_t temp = canID & 0x770;
+    (void) temp;
+    if(temp == 0x770) {
+        movella_parse(canID, payload);
+    }
+
     uint32_t total_ticks = DWT->CYCCNT - au32_initial_ticks;
     uint32_t microsecs = total_ticks*1000000/HAL_RCC_GetHCLKFreq();
 }
