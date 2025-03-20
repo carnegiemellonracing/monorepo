@@ -232,6 +232,7 @@ typedef enum {
     CMR_CANID_MOVELLA_QUATERNION = 0x774,
     CMR_CANID_MOVELLA_IMU_GYRO = 0x776,
     CMR_CANID_MOVELLA_IMU_ACCEL = 0x77E,
+    CMR_CANID_MOVELLA_VELOCITY = 0x77D,
 
     CMR_CANID_EMD_MEASUREMENT = 0x100,          /**< @brief EMD measurement for HV voltage/current. */
     CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */

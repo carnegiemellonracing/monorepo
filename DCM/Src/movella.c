@@ -5,6 +5,13 @@
 #define TRANSFORM_RAW(message_index, raw_data) (scaling_constants[message_index] * (float) raw_data)
 #define GYRO_FREQ_HZ (200.0f)
 
+volatile movella_state_t movella_state = {
+    .gyro = {
+        .inited = false,
+    },
+};
+volatile car_state_t car_state;
+
 static inline float transform_raw(movella_message_t msg, float raw_data) {
     return scaling_constants[msg] * raw_data;
 }

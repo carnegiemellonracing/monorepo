@@ -184,12 +184,8 @@ typedef struct {
 
 } car_state_t;
 
-static volatile movella_state_t movella_state = {
-    .gyro = {
-        .inited = false,
-    },
-};
-static volatile car_state_t car_state;
+extern volatile movella_state_t movella_state;
+extern volatile car_state_t car_state;
 
 void movella_parse(uint16_t canID, volatile void *payload);
 void movella_test();
