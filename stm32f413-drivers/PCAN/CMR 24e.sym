@@ -1414,7 +1414,7 @@ DLC=8
 [IZZE_Loadcell_FR]
 ID=7D0h
 DLC=8
-Var=FR_Differential_Voltage signed 0,16 -m /u:uV
+Var=FR_Differential_Voltage signed 0,16 -h -m /u:uV
 Var=FR_Calibrated_Output signed 16,16 -m /u:N /f:0.1
 Var=FR_Internal_Temp signed 32,16 -m /u:c /f:0.1
 Var=FR_Opt_External_Temp signed 48,16 -m /u:c /f:0.1
@@ -1422,7 +1422,7 @@ Var=FR_Opt_External_Temp signed 48,16 -m /u:c /f:0.1
 [IZZE_Loadcell_RR]
 ID=7D1h
 DLC=8
-Var=RR_Differential_Voltage signed 0,16 -m /u:uV
+Var=RR_Differential_Voltage signed 0,16 -h -m /u:uV
 Var=RR_Calibrated_Output signed 16,16 -m /u:N /f:0.1
 Var=RR_Internal_Temp signed 32,16 -m /u:c /f:0.1
 Var=RR_Opt_External_Temp signed 48,16 -m /u:c /f:0.1
@@ -1430,7 +1430,7 @@ Var=RR_Opt_External_Temp signed 48,16 -m /u:c /f:0.1
 [IZZE_Loadcell_FL]
 ID=7D3h
 DLC=8
-Var=FL_Differential_Voltage signed 0,16 -m /u:uV
+Var=FL_Differential_Voltage signed 0,16 -h -m /u:uV
 Var=FL_Calibrated_Output signed 16,16 -m /u:N /f:0.1
 Var=FL_Internal_Temp signed 32,16 -m /u:c /f:0.1
 Var=FL_Opt_External_Temp signed 48,16 -m /u:c /f:0.1
@@ -1438,7 +1438,7 @@ Var=FL_Opt_External_Temp signed 48,16 -m /u:c /f:0.1
 [IZZE_Loadcell_RL]
 ID=7D2h
 DLC=8
-Var=RL_Differential_Voltage signed 0,16 -m /u:uV
+Var=RL_Differential_Voltage signed 0,16 -h -m /u:uV
 Var=RL_Calibrated_Output signed 16,16 -m /u:N /f:0.1
 Var=RL_Internal_Temp signed 32,16 -m /u:c /f:0.1
 Var=RL_Opt_External_Temp signed 48,16 -m /u:c /f:0.1
