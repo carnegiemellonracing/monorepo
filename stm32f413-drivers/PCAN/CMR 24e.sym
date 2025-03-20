@@ -2206,7 +2206,7 @@ ID=2C2h
 DLC=8
 Var=cog_x signed 0,16 /u:m/s /f:0.01
 Var=cog_y signed 16,16 /u:m/s /f:0.01
-Var=slip_angle float 16,32 /u:rad
+Var=slip_angle float 32,32 /u:rad
 
 [DCM_Front_Velocity]
 ID=2D2h
@@ -2222,7 +2222,7 @@ DLC=8
 Var=rl_x signed 0,16 /u:m/s /f:0.01
 Var=rl_y signed 16,16 /u:m/s /f:0.01
 Var=rr_x signed 32,16 /u:m/s /f:0.01
-Var=rr_y unsigned 48,16 /u:m/s /f:0.01
+Var=rr_y signed 48,16 /u:m/s /f:0.01
 
 [Movella_MTi860G_Status]
 ID=772h

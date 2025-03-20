@@ -156,6 +156,12 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
+    // Temporary.
+    [CANRX_DAQ_MOVELLA_VELOCITY] = {
+        .canID = CMR_CANID_MOVELLA_VELOCITY,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
 };
 
 /** @brief Metadata for tractive CAN message reception. */
@@ -228,6 +234,11 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
     },
     [CANRX_DAQ_MOVELLA_IMU_ACCEL] = {
         .canID = CMR_CANID_MOVELLA_IMU_ACCEL,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_MOVELLA_VELOCITY] = {
+        .canID = CMR_CANID_MOVELLA_VELOCITY,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
@@ -591,23 +602,23 @@ static void canTX200Hz(void *pvParameters) {
         //daqPoseOrientation(&poseOrient);
         daqPoseVelocity(&poseVel);
 
-        cog_velocity.cog_x = car_state.velocity.x * 100.0;
-        cog_velocity.cog_y = car_state.velocity.y * 100.0;
+        cog_velocity.cog_x = car_state.velocity.x * 100.0f;
+        cog_velocity.cog_y = car_state.velocity.y * 100.0f;
         cog_velocity.slip_angle = car_state.slip_angle.body;
 
-        front_velocity.fl_x = car_state.fl_velocity.x * 100.0;
-        front_velocity.fl_y = car_state.fl_velocity.y * 100.0;
-        front_velocity.fr_x = car_state.fr_velocity.x * 100.0;
-        front_velocity.fr_y = car_state.fr_velocity.y * 100.0;
+        front_velocity.fl_x = car_state.fl_velocity.x * 100.0f;
+        front_velocity.fl_y = car_state.fl_velocity.y * 100.0f;
+        front_velocity.fr_x = car_state.fr_velocity.x * 100.0f;
+        front_velocity.fr_y = car_state.fr_velocity.y * 100.0f;
     
-        rear_velocity.rl_x = car_state.rl_velocity.x * 100.0;
-        rear_velocity.rl_y = car_state.rl_velocity.y * 100.0;
-        rear_velocity.rr_x = car_state.rr_velocity.x * 100.0;
-        rear_velocity.rr_y = car_state.rr_velocity.y * 100.0;
+        rear_velocity.rl_x = car_state.rl_velocity.x * 100.0f;
+        rear_velocity.rl_y = car_state.rl_velocity.y * 100.0f;
+        rear_velocity.rr_x = car_state.rr_velocity.x * 100.0f;
+        rear_velocity.rr_y = car_state.rr_velocity.y * 100.0f;
 
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COG_VELOCITY, &cog_velocity, sizeof(cog_velocity), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_FRONT_VELOCITY, &cog_velocity, sizeof(front_velocity), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_REAR_VELOCITY, &cog_velocity, sizeof(rear_velocity), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_FRONT_VELOCITY, &front_velocity, sizeof(front_velocity), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_REAR_VELOCITY, &rear_velocity, sizeof(rear_velocity), canTX200Hz_period_ms);
 
         // Is data valid? Set it in the orientation/velocity messages
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX200Hz_period_ms);
@@ -897,7 +908,7 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
         rxMetaArrayLen = CANRX_TRAC_LEN;
     }
 
-    volatile void* payload;
+    volatile void* payload = NULL;
     if (rxMetaArray != NULL) {
         for (uint32_t i = 0; i < rxMetaArrayLen; i++) {
             if (rxMetaArray[i].canID == canID) {
