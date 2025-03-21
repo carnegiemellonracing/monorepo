@@ -25,7 +25,6 @@
 #include "servo.h"
 #include "lut_3d.h"
 #include "lut.h"
-#include "movella.h"
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -78,9 +77,6 @@ static void statusLED(void *pvParameters) {
  * @return Does not return.
  */
 int main(void) {
-
-    // movella_test();
-    // movella_random_test();
 
    	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
     DWT->LAR = 0xC5ACCE55;

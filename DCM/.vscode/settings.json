@@ -4,6 +4,7 @@
         "servo.h": "c",
         "lut.h": "c",
         "assert.h": "c",
-        "movella.h": "c"
+        "movella.h": "c",
+        "motors.h": "c"
     }
 }

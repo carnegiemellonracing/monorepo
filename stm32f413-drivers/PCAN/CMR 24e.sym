@@ -2251,3 +2251,8 @@ Var=no_rotation_update unsigned 27,2
 Var=representative_motion unsigned 29,1
 Var=clock_bias_estimation unsigned 30,1
 
+[DCM_PowerLimit]
+ID=6E4h
+DLC=4
+Var=PowerLimit float 0,32 /u:kW /f:0.001
+

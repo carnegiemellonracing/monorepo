@@ -29,6 +29,7 @@
 #include "controls.h"
 #include "sensors.h"
 #include "movella.h"
+#include "safety_filter.h"
 
 extern volatile uint8_t currentParameters[MAX_MENU_ITEMS];
 volatile uint8_t parametersFromDIM[MAX_MENU_ITEMS];
@@ -758,8 +759,15 @@ static void canTX1Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_ODOMETER, &odometer, sizeof(odometer), canTX1Hz_period_ms);
 
         cmr_canCDCControlsStatus_t *controlsStatus = getControlsStatus();
-
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_CONTROLS_STATUS, controlsStatus, sizeof(cmr_canCDCControlsStatus_t), canTX1Hz_period_ms);
+
+        cmr_canCDCPowerLimitLog_t power_limit = {
+            // If you don't #include "safety_filter.h",
+            // getPowerLimit_W() is 0!!!!!!!!!!! (╯°□°)╯ノ彡┻━┻
+            .power_limit_W = getPowerLimit_W(),
+        };
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_POWER_LOG, &power_limit, sizeof(power_limit), canTX1Hz_period_ms);
+
         // TODO: constantly send current parameters
         vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
     }
@@ -891,7 +899,7 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
 
     if(canID == CMR_CANID_CDC_POWER_UPDATE) {
     	cmr_canCDCPowerLimit_t *limit = (cmr_canCDCPowerLimit_t*) data;
-    	setPowerLimit(limit->powerLimit_kW);
+    	setPowerLimit_kW(limit->powerLimit_kW);
     }
 
     // Update the RX Meta array

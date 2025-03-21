@@ -276,7 +276,7 @@ static void set_optimal_control(
 
 	static optimizer_state_t optimizer_state;
 
-	optimizer_state.power_limit = getPowerLimit();
+	optimizer_state.power_limit = getPowerLimit_W();
 	optimizer_state.omegas[0] = wheel_fl_speed_radps;
 	optimizer_state.omegas[1] = wheel_fr_speed_radps;
 	optimizer_state.omegas[2] = wheel_rl_speed_radps;
@@ -711,30 +711,23 @@ static void update_whl_speed_setpoint (
 */
 static float getFFScheduleVelocity(float t_sec) {
 
-   float tMax = 6.4f; // limit time for safety reasons
-   float scheduleVelocity_mps = 0.0f;
+    float tMax = 6.4f; // limit time for safety reasons
+    float scheduleVelocity_mps = 0.0f;
 
-   if (t_sec < 0.0f) {
-       scheduleVelocity_mps = 0.0f;
-   } else if(t_sec < tMax) {
-//	uint8_t pedal_regen_strength = 0; This line times out mysteriously
-    float pedal_regen_strength = 0;
-   	getProcessedValue(&pedal_regen_strength, YRC_KP_INDEX, float_1_decimal);
+    if (t_sec < 0.0f) {
+        scheduleVelocity_mps = 0.0f;
+    } else if(t_sec < tMax) {
+        float scheduleVelocity_mps2 = 11.29;
+        float startingVel_mps = 0.0;
+        scheduleVelocity_mps = (scheduleVelocity_mps2 * t_sec) + startingVel_mps;
+        // 2023 Michigan EV fastest accel - 3.645s -> 11.29m/s^2 linear accel
+        // 2023 Michigan EV CMR's accel -> memorator data -> 8.63m/s^2 before
+    } else {
+        scheduleVelocity_mps = 0.0f;
+    }
 
-   	float scheduleVelocity_mps2 = ((float) pedal_regen_strength) * 0.8f + 6.f;
-   	float startingVel_mps = 0.0;
-   	getProcessedValue(&startingVel_mps, K_LIN_INDEX, float_1_decimal);
-       scheduleVelocity_mps = (scheduleVelocity_mps2 * t_sec) + (startingVel_mps);
-           // 2023 Michigan EV fastest accel - 3.645s -> 11.29m/s^2 linear accel
-           // 2023 Michigan EV CMR's accel -> memorator data -> 8.63m/s^2 before
-   } else {
-       scheduleVelocity_mps = 0.0f;
-   }
-
-   return scheduleVelocity_mps;
+    return scheduleVelocity_mps;
 }
-
-
 
 /**
 * @brief Launch control code. feedforward and uses LUT
@@ -751,6 +744,7 @@ void setLaunchControl(
 ){
 	static const float launch_control_speed_threshold_mps = 0.05f;
 	static const float launch_control_max_duration_s = 4.5;
+    static const bool use_solver = false;
 
 	bool action_button_pressed = false;
 	const float nonnegative_odometer_velocity_mps = motorSpeedToWheelLinearSpeed_mps(getTotalMotorSpeed_radps() * 0.25f);
@@ -779,9 +773,37 @@ void setLaunchControl(
 	}
 
     // Not braking, throttle engaged, no button pressed, launch control is active.
-    if (brakePressurePsi_u8 < braking_threshold_psi && throttlePos_u8 > 0 && !action_button_pressed && launchControlActive) {
+    bool ready_to_accel = brakePressurePsi_u8 < braking_threshold_psi && throttlePos_u8 > 0 && !action_button_pressed && launchControlActive;
+    if(false == ready_to_accel) {
+        return;
+    }
+
+    if (use_solver) {
         // swAngle_millideg = 0 means assume no turn.
         set_optimal_control((float) throttlePos_u8 / UINT8_MAX, 0, false);
+    } else {
+        TickType_t tick = xTaskGetTickCount();
+            float seconds = (float)(tick - startTickCount) * (0.001f); //convert Tick Count to Seconds
+
+        float scheduledBodyVel_mps = getFFScheduleVelocity(seconds);
+
+        float rearWhlVelocity_RL_mps = motorSpeedToWheelLinearSpeed_mps(getMotorSpeed_radps(MOTOR_RL));
+        float rearWhlVelocity_RR_mps = motorSpeedToWheelLinearSpeed_mps(getMotorSpeed_radps(MOTOR_RR));
+        float wheelVelocityRPM = maxFastSpeed_rpm;
+        float rearWhlAvgVelocity_mps = (rearWhlVelocity_RL_mps + rearWhlVelocity_RR_mps) / 2.0f;
+        float frontWhlTargetVelocity_mps = rearWhlAvgVelocity_mps * 1.3f;
+        float frontWheelVelocityRPM = gear_ratio * 60.0f * frontWhlTargetVelocity_mps / (2 * M_PI * effective_wheel_rad_m);
+
+        setVelocityFloat(MOTOR_FL, frontWheelVelocityRPM); // Converts rad/s to rpm
+        setVelocityFloat(MOTOR_FR, frontWheelVelocityRPM);
+        setVelocityFloat(MOTOR_RL, wheelVelocityRPM);
+        setVelocityFloat(MOTOR_RR, wheelVelocityRPM);
+
+        const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
+        cmr_torqueDistributionNm_t pos_torques_Nm = {.fl = reqTorque, .fr = reqTorque, .rl = reqTorque, .rr = reqTorque};
+        cmr_torqueDistributionNm_t neg_torques_Nm = {.fl = 0.0f, .fr = 0.0f, .rl = 0.0f, .rr = 0.0f};
+        setTorqueLimsProtected(&pos_torques_Nm, &neg_torques_Nm);
+        return;
     }
 }
 

@@ -470,6 +470,10 @@ typedef struct {
     uint8_t powerLimit_kW;
 } cmr_canCDCPowerLimit_t;
 
+typedef struct {
+    float power_limit_W;
+} cmr_canCDCPowerLimitLog_t;
+
 /** @brief Central Dynamics Controller Safety Filter states. */
 typedef struct {
 	float power_limit_max_violation_W;  /**< @brief the maximum amount in W the power hard-limit is violated, expect 0.0 */
