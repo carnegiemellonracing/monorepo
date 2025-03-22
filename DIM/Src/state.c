@@ -31,6 +31,9 @@ cmr_state nextState;
 
 cmr_state currState;
 
+// cmr_canGear_t reqGear;
+// cmr_canGear_t currGear;
+
 volatile int8_t config_move_request;
 
 
@@ -489,6 +492,7 @@ void stateVSMDown() {
 }
 
 
+
 void reqVSM(void) {
 	//So check state of the car and the pressing of up or down button, then based on the output
 	//update VstateVSMReq
@@ -515,18 +519,25 @@ void reqGear(void) {
 	int pastRotary = getPastRotaryPosition();
 	int currentRotary = getRotaryPosition();
 
-	bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN));
-	if(canChangeGear && (currentRotary!=state.gear)){
-		if((currentRotary < pastRotary) || (currentRotary == 7 && pastRotary==0)){
-			//turned clockwise so gearup
-			state.gear++;
-			}
-		} else {
-			state.gear--;
-	}
+	// bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN));
+    // bool canChangeGear = true;
+	// if(canChangeGear && (currentRotary!=state.gear)){
+	// 	if((currentRotary < pastRotary) || (currentRotary == 7 && pastRotary==0)){
+	// 		//turned clockwise so gearup
+	// 		state.gear++;
+	// 		}
+	// 	} else {
+	// 		state.gear--;
+	// }
+    bool canChangeGear = true;
+    if(canChangeGear && (pastRotary != currentRotary)) {
+        if(state.gearReq == 8) state.gearReq = 1;
+        else state.gearReq++;
+    }
 }
 
 //returns requested gear
+
 int getRequestedGear(void){
 	return requestedGear;
 }

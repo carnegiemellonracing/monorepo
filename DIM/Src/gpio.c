@@ -81,19 +81,25 @@ static volatile int pastRotaryPosition = 0; //Keeps track of past rotary positio
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	// Only handle GPIO_PIN_0 interrupts
-	if (GPIO_Pin != GPIO_PIN_6) {
-		return;
-	}
+	// if (GPIO_Pin != GPIO_PIN_6) {
+	// 	return;
+	// }
 
 	// Save current rotary position
 	pastRotaryPosition = rotaryPosition;
 
 	// Read current state of both encoder pins
-	int stateA = cmr_gpioRead(GPIO_BUTTON_A);
+	//AB CW
+	//BA CCW
+	// int stateA = cmr_gpioRead(GPIO_BUTTON_A);
 	int stateB = cmr_gpioRead(GPIO_BUTTON_B);
+	// int oldB = ;
+	 
+	// if 
 
 	// Update position based on encoder states
-	rotaryPosition += (stateA == stateB) ? 1 : -1;
+	// rotaryPosition += (stateA == stateB) ? 1 : -1;
+	rotaryPosition = stateB;
 
 	// Request gear change
 	reqGear();
@@ -212,6 +218,8 @@ int getPastRotaryPosition(){
  * @brief Initializes the GPIO interface.
  */
 void gpioInit(void) {
+	HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
     cmr_gpioPinInit(
         gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0]));
     cmr_taskInit(

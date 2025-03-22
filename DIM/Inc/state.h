@@ -78,6 +78,9 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq);
 // Declare the global variable
 extern cmr_state currState;
 extern cmr_state nextState;
+//testing
+// extern cmr_canGear_t currGear;
+// extern cmr_canGear_t reqGear;
 
 void stateMachineInit(void);
 

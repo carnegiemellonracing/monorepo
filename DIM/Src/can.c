@@ -120,9 +120,9 @@ static void canTX10Hz(void *pvParameters) {
         cmr_canState_t stateVSM = stateGetVSM();
         cmr_canState_t stateVSMReq = stateGetVSMReq();
         cmr_canGear_t gear = stateGetGear();
-        //cmr_canGear_t gearReq = stateGetGearReq();
+        cmr_canGear_t gearReq = stateGetGearReq();
 		//below is the new gear request mechanism can delete if wrong
-		cmr_canGear_t gearReq = getRequestedGear();
+		// cmr_canGear_t gearReq = getRequestedGear();
         cmr_canDrsMode_t drsMode = stateGetDrs();
         cmr_canDrsMode_t drsReq = stateGetDrsReq();
         cmr_canTestID_t test_id = {
