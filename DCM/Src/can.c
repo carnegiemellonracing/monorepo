@@ -158,7 +158,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .timeoutWarn_ms = 1000
     },
     // Temporary.
-    [CANRX_DAQ_MOVELLA_VELOCITY] = {
+    [CANRX_VEH_MOVELLA_VELOCITY] = {
         .canID = CMR_CANID_MOVELLA_VELOCITY,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000

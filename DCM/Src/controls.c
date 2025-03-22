@@ -438,7 +438,9 @@ void runControls (
             const bool allowRegen = false; // regen-braking is not allowed because it's meaningless in accel
             const float critical_speed_mps = 0.0f; // using a low value to prevent excessive wheel spin at low speeds
             const float leftRightBias_Nm = 0.0f; // YRC is not enabled for accel, so there should be no left-right torque bias
-            setLaunchControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, leftRightBias_Nm, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
+            // setLaunchControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, leftRightBias_Nm, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
+            // Dry testing only.
+            setLaunchControl(255, 0, 0, leftRightBias_Nm, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
             break;
         }
         case CMR_CAN_GEAR_TEST: {
@@ -743,7 +745,7 @@ void setLaunchControl(
 	float critical_speed_mps
 ){
 	static const float launch_control_speed_threshold_mps = 0.05f;
-	static const float launch_control_max_duration_s = 4.5;
+	static const float launch_control_max_duration_s = 5.0;
     static const bool use_solver = false;
 
 	bool action_button_pressed = false;
@@ -765,39 +767,34 @@ void setLaunchControl(
 		}
 	}
 
-	float time_s = (float)(xTaskGetTickCount() - startTickCount) * (0.001f);
+    // Not braking, throttle engaged, no button pressed, launch control is active.
+    bool ready_to_accel = brakePressurePsi_u8 < braking_threshold_psi && throttlePos_u8 > 0 && !action_button_pressed && launchControlActive;
+    if(false == ready_to_accel) {
+        setTorqueLimsAllProtected(0.0f, 0.0f);
+		setVelocityInt16All(0);
+        return;
+    }
+
+    float time_s = (float)(xTaskGetTickCount() - startTickCount) * (0.001f);
 	if(time_s >= launch_control_max_duration_s) {
 		setTorqueLimsAllProtected(0.0f, 0.0f);
 		setVelocityInt16All(0);
 		return;
 	}
 
-    // Not braking, throttle engaged, no button pressed, launch control is active.
-    bool ready_to_accel = brakePressurePsi_u8 < braking_threshold_psi && throttlePos_u8 > 0 && !action_button_pressed && launchControlActive;
-    if(false == ready_to_accel) {
-        return;
-    }
-
     if (use_solver) {
         // swAngle_millideg = 0 means assume no turn.
         set_optimal_control((float) throttlePos_u8 / UINT8_MAX, 0, false);
     } else {
         TickType_t tick = xTaskGetTickCount();
-            float seconds = (float)(tick - startTickCount) * (0.001f); //convert Tick Count to Seconds
+        float seconds = (float)(tick - startTickCount) * (0.001f); //convert Tick Count to Seconds
 
-        float scheduledBodyVel_mps = getFFScheduleVelocity(seconds);
-
-        float rearWhlVelocity_RL_mps = motorSpeedToWheelLinearSpeed_mps(getMotorSpeed_radps(MOTOR_RL));
-        float rearWhlVelocity_RR_mps = motorSpeedToWheelLinearSpeed_mps(getMotorSpeed_radps(MOTOR_RR));
-        float wheelVelocityRPM = maxFastSpeed_rpm;
-        float rearWhlAvgVelocity_mps = (rearWhlVelocity_RL_mps + rearWhlVelocity_RR_mps) / 2.0f;
-        float frontWhlTargetVelocity_mps = rearWhlAvgVelocity_mps * 1.3f;
-        float frontWheelVelocityRPM = gear_ratio * 60.0f * frontWhlTargetVelocity_mps / (2 * M_PI * effective_wheel_rad_m);
-
-        setVelocityFloat(MOTOR_FL, frontWheelVelocityRPM); // Converts rad/s to rpm
-        setVelocityFloat(MOTOR_FR, frontWheelVelocityRPM);
-        setVelocityFloat(MOTOR_RL, wheelVelocityRPM);
-        setVelocityFloat(MOTOR_RR, wheelVelocityRPM);
+        float scheduled_wheel_vel_mps = getFFScheduleVelocity(seconds);
+        float motor_rpm = gear_ratio * 60.0f * scheduled_wheel_vel_mps / (2 * M_PI * effective_wheel_rad_m);
+        setVelocityFloat(MOTOR_FL, motor_rpm);
+        setVelocityFloat(MOTOR_FR, motor_rpm);
+        setVelocityFloat(MOTOR_RL, motor_rpm);
+        setVelocityFloat(MOTOR_RR, motor_rpm);
 
         const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
         cmr_torqueDistributionNm_t pos_torques_Nm = {.fl = reqTorque, .fr = reqTorque, .rl = reqTorque, .rr = reqTorque};
