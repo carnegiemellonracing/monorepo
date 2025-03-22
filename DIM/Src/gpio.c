@@ -36,10 +36,10 @@ bool canButtonStates[NUM_BUTTONS];
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     // Change LRUD
 	//Delete LRUD
-	[GPIO_BUTTON_A] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_0,
+	[GPIO_BUTTON_A] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_6,
 					.Mode = GPIO_MODE_IT_RISING_FALLING, .Pull = GPIO_PULLUP,
 					.Speed = GPIO_SPEED_FREQ_LOW } },
-	[GPIO_BUTTON_B] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_1,
+	[GPIO_BUTTON_B] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_7,
 				.Mode = GPIO_MODE_IT_RISING_FALLING, .Pull = GPIO_PULLUP,
 				.Speed = GPIO_SPEED_FREQ_LOW } },
     [GPIO_BUTTON_SW1] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_2,
@@ -81,7 +81,7 @@ static volatile int pastRotaryPosition = 0; //Keeps track of past rotary positio
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	// Only handle GPIO_PIN_0 interrupts
-	if (GPIO_Pin != GPIO_PIN_0) {
+	if (GPIO_Pin != GPIO_PIN_6) {
 		return;
 	}
 
@@ -129,7 +129,7 @@ void canLRUDDetect(void){
 				canLRUDStates[i] = (xTaskGetTickCount() - lastPress[i] >= DEBOUNCE_DELAY);
 				lastState[i] = false;
 			} else {
-				canLRUDStates[i] = false;
+				// canLRUDStates[i] = false;
 			}
 		}
 	}

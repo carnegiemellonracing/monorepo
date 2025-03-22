@@ -35,6 +35,8 @@
 /** @brief Dummy cycles for reading data from the display. */
 #define TFT_READ_DUMMY_CYCLES 8
 
+
+
 /** @brief The display. */
 tft_t tft;
 
@@ -227,21 +229,22 @@ void tftUpdate() {
 
     /* Display Startup Screen for fixed time */
     tftDLWrite(&tft, &tftDL_startup);
-    uint8_t gpio_dir;
-    tftRead(&tft, TFT_ADDR_GPIOX_DIR, sizeof(gpio_dir), &gpio_dir);
-    uint8_t gpio;
-    tftRead(&tft, TFT_ADDR_GPIOX, sizeof(gpio), &gpio);
+    vTaskDelayUntil(&lastWakeTime, 3000); 
+    // uint8_t gpio_dir;
+    // tftRead(&tft, TFT_ADDR_GPIOX_DIR, sizeof(gpio_dir), &gpio_dir);
+    // uint8_t gpio;
+    // tftRead(&tft, TFT_ADDR_GPIOX, sizeof(gpio), &gpio);
 
-    const tftInit_t tftInits2[] = {
-        { .addr = TFT_ADDR_GPIOX_DIR, .val = 0x80 | gpio_dir },
-        { .addr = TFT_ADDR_GPIOX, .val = 0x080 | gpio },
-        { .addr = TFT_ADDR_PCLK, .val = 5 },
-    };
-    size_t tftInits2Len = sizeof(tftInits2) / sizeof(tftInits2[0]);
-    for (size_t i = 0; i < tftInits2Len; i++) {
-        const tftInit_t *init = &tftInits2[i];
-        tftWrite(&tft, init->addr, sizeof(init->val), &init->val);
-    }
+    // const tftInit_t tftInits2[] = {
+    //     { .addr = TFT_ADDR_GPIOX_DIR, .val = 0x80 | gpio_dir },
+    //     { .addr = TFT_ADDR_GPIOX, .val = 0x080 | gpio },
+    //     { .addr = TFT_ADDR_PCLK, .val = 5 },
+    // };
+    // size_t tftInits2Len = sizeof(tftInits2) / sizeof(tftInits2[0]);
+    // for (size_t i = 0; i < tftInits2Len; i++) {
+    //     const tftInit_t *init = &tftInits2[i];
+    //     tftWrite(&tft, init->addr, sizeof(init->val), &init->val);
+    // }
 
 }
 
@@ -258,6 +261,7 @@ void tftInitSequence() {
 void drawConfigScreen(void) {
     tftDL_configUpdate();
     tftDLWrite(&tft, &tftDL_config);
+    // vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
 }
 
 /**
@@ -266,6 +270,7 @@ void drawConfigScreen(void) {
  */
 void drawSafetyScreen(void) {
     tftDLWrite(&tft, &tftDL_safety_screen);
+    // vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
 }
 
  /** @brief Draws the motor, ac, cooling, etc. temps to the Screen
@@ -282,6 +287,7 @@ void drawRacingScreen(void){
         DRSOpen());
     // /* Write Display List to Screen */
     tftDLWrite(&tft, &tftDL_racing_screen);
+    // vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
 }
 
 /**
@@ -348,6 +354,7 @@ void drawErrorScreen(void) {
 
     /* Write Display List to Screen */
     tftDLWrite(&tft, &tftDL_error);
+    // vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
 }
 
 

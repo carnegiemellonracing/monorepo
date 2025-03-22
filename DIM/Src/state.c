@@ -404,6 +404,10 @@ static cmr_state getReqScreen(void) {
         default:
             nextState = INIT;
     }
+    //change all can states to false to deregister buttons
+    for(int i = 0; i < LRUD_LEN; i++){
+        canLRUDStates[i] = false;
+    }
 	return nextState;
 }
 
@@ -570,12 +574,15 @@ static void stateOutput() {
             break;
         case CONFIG:
             drawConfigScreen();
+            vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
             break;
         case dimStateERROR:
             drawErrorScreen();
+            vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
             break;
         case RACING:
             drawRacingScreen();
+            vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
             break;
     }
 	//TODO: Why is this called again?
@@ -679,7 +686,6 @@ static void stateMachine(void *pvParameters){
     currState = INIT;
     while (1) {
         // taskENTER_CRITICAL();
-        getReqScreen();
         stateOutput();
 		/* for testing
 		vsmStateGlobal = stateGetVSM();

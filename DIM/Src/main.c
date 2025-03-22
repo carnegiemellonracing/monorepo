@@ -116,8 +116,8 @@ int main(void) {
 
     // Peripheral configuration.
     gpioInit();
-    // canInit();
-    // adcInit();
+    canInit();
+    adcInit();
     tftInit();
     stateMachineInit();
     sensorsInit();

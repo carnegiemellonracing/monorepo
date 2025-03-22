@@ -27,7 +27,7 @@ struct tftDL {
 
 /** @brief Raw startup screen */
 static uint32_t tftDL_startupData[] = {
-#include <DIM-ESE/startup.rawh>
+#include <DIM-ESE/startup-temp.rawh>
 };
 
 
