@@ -73,6 +73,10 @@ typedef enum {
     TFT_ADDR_CMD_WRITE = 0x3020FC, /**< @brief Coprocessor write pointer. */
     TFT_ADDR_CMD_DL = 0x302100,    /**< @brief Coprocessor DL RAM offset. */
 
+     // Coprocessor registers.
+    TFT_ADDR_CMDB_SPACE = 0x302574, /**< @brief Coprocessor command buffer space. */
+    TFT_ADDR_CMDB_WRITE = 0x302578, /**< @brief Coprocessor command buffer write address. */
+
     // RAM areas.
     TFT_ADDR_RAM_G = 0x000000,  /**< @brief General purpose graphics RAM. */
     TFT_ADDR_RAM_DL = 0x300000, /**< @brief Display list RAM. */

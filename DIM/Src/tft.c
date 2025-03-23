@@ -175,68 +175,80 @@ static size_t tftCoCmdRemLen(tft_t *tft) {
  * @param wait `true` to wait for partial writes to finish; `false` to wait for
  * enough space at the beginning.
  */
-void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait) {
-    configASSERT(wait || len < TFT_RAM_CMD_SIZE);
+// void tftCoCmd1(tft_t *tft, size_t len, const void *data, bool wait) {
+//     configASSERT(wait || len < TFT_RAM_CMD_SIZE);
 
-    const uint8_t *dataBuf = data;
-    size_t written = 0;
+//     const uint8_t *dataBuf = data;
+//     size_t written = 0;
 
-    while (written < len) {
-        // Calculate length to write.
-        size_t wrLen = len - written;
+//     while (written < len) {
+//         // Calculate length to write.
+//         size_t wrLen = len - written;
 
-        if (!wait) {
-            // Wait for free space to write the entire command.
-            size_t remLen;
-            do {
-                remLen = tftCoCmdRemLen(tft);
-            } while (remLen < wrLen);
-        } else {
-            // Write as much as possible.
-            size_t remLen = tftCoCmdRemLen(tft);
-            if (remLen == 0) {
-                continue;  // No space yet.
-            }
-            if (wrLen > remLen) {
-                wrLen = remLen;
-            }
-        }
+//         if (!wait) {
+//             // Wait for free space to write the entire command.
+//             size_t remLen;
+//             do {
+//                 remLen = tftCoCmdRemLen(tft);
+//             } while (remLen < wrLen);
+//         } else {
+//             // Write as much as possible.
+//             size_t remLen = tftCoCmdRemLen(tft);
+//             if (remLen == 0) {
+//                 continue;  // No space yet.
+//             }
+//             if (wrLen > remLen) {
+//                 wrLen = remLen;
+//             }
+//         }
 
-        tftWrite(
-            tft, TFT_ADDR_RAM_CMD + tft->coCmdWr,
-            wrLen, dataBuf + written);
-        if (wrLen % sizeof(uint32_t) != 0) {
-            // Round-up to word-aligned length.
-            wrLen /= sizeof(uint32_t);
-            wrLen++;
-            wrLen *= sizeof(uint32_t);
-        }
+//         tftWrite(
+//             tft, TFT_ADDR_RAM_CMD + tft->coCmdWr,
+//             wrLen, dataBuf + written);
+//         if (wrLen % sizeof(uint32_t) != 0) {
+//             // Round-up to word-aligned length.
+//             wrLen /= sizeof(uint32_t);
+//             wrLen++;
+//             wrLen *= sizeof(uint32_t);
+//         }
 
-        written += wrLen;
+//         written += wrLen;
 
-        // Update the command write address.
-        uint16_t coCmdWr = tft->coCmdWr + wrLen;
-        if (coCmdWr >= TFT_RAM_CMD_SIZE) {
-            coCmdWr -= TFT_RAM_CMD_SIZE;
-        }
-        tftWrite(tft, TFT_ADDR_CMD_WRITE, sizeof(coCmdWr), &coCmdWr);
-        tft->coCmdWr = coCmdWr;
+//         // Update the command write address.
+//         uint16_t coCmdWr = tft->coCmdWr + wrLen;
+//         if (coCmdWr >= TFT_RAM_CMD_SIZE) {
+//             coCmdWr -= TFT_RAM_CMD_SIZE;
+//         }
+//         tftWrite(tft, TFT_ADDR_CMD_WRITE, sizeof(coCmdWr), &coCmdWr);
+//         tft->coCmdWr = coCmdWr;
 
-        if (!wait) {
-            // No waiting; we must have written the whole buffer.
-            configASSERT(written == wrLen);
-            break;
-        }
+//         if (!wait) {
+//             // No waiting; we must have written the whole buffer.
+//             configASSERT(written == wrLen);
+//             break;
+//         }
 
-        // Wait for the command to finish.
-        while (
-            tftRead(
-                tft, TFT_ADDR_CMD_READ,
-                sizeof(tft->coCmdRd), &tft->coCmdRd),
-            tft->coCmdRd != coCmdWr) {
-            continue;
-        }
-    }
+//         // Wait for the command to finish.
+//         while (
+//             tftRead(
+//                 tft, TFT_ADDR_CMD_READ,
+//                 sizeof(tft->coCmdRd), &tft->coCmdRd),
+//             tft->coCmdRd != coCmdWr) {
+//             continue;
+//         }
+//     }
+// }
+
+void tftCoCmd(tft_t *tft, size_t len, const void *data) {
+    // Bulk Write
+    uint32_t space = -1;
+    do {
+        tftRead(tft, TFT_ADDR_CMDB_SPACE, sizeof(space), &space);
+    } while (space < len);
+
+    tftWrite(tft, TFT_ADDR_CMDB_WRITE, len, data);
+
+    return;
 }
 
 /** @brief Display update priority. */

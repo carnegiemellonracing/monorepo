@@ -29,7 +29,7 @@ static cmr_task_t stateMachine_task;
 
 cmr_state nextState;
 
-cmr_state currState;
+extern cmr_state currState;
 
 // cmr_canGear_t reqGear;
 // cmr_canGear_t currGear;
