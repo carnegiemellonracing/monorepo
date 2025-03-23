@@ -13,12 +13,16 @@
 
 #include "adc.h"
 #include "can.h"         // Board-specific CAN interface
+#include "gpio.h"        // Board-specific GPIO interface
+#include "state.h"       // State interface
+#include "tftContent.h"  // Content interface
 #include "tftDL.h"       // Display list interface
-#include "CMR/can_types.h" //can_types
-#include "state.h"    //New State Machine
 
 /** @brief Expected chip ID. */
 #define TFT_CHIP_ID 0x00011308
+
+/** @brief Display reset time, in milliseconds. */
+#define TFT_RESET_MS 50
 
 /** @brief Display initialization QuadSPI prescaler. */
 #define TFT_INIT_QSPI_PRESCALER 32
@@ -29,21 +33,22 @@
 /** @brief Display QuadSPI prescaler */
 #define TFT_QSPI_PRESCALER 2
 
+/** @brief Display startup time, in milliseconds. */
+#define TFT_STARTUP_MS 3000
+
 /** @brief Flag for indicating a write to the display. */
 #define TFT_WRITE_FLAG (1 << 23)
 
 /** @brief Dummy cycles for reading data from the display. */
 #define TFT_READ_DUMMY_CYCLES 8
 
-
-
 /** @brief The display. */
-tft_t tft;
+static tft_t tft;
 
-void drawErrorScreen(void);
-void drawRTDScreen(void);
-void drawConfigScreen(void);
-void drawSafetyScreen(void);
+static void drawErrorScreen(void);
+static void drawRTDScreen(void);
+static void drawConfigScreen(void);
+static void drawSafetyScreen(void);
 
 /*Prev HVC errors to latch on display*/
 static bool prevOverVolt = false;
@@ -119,7 +124,7 @@ void tftWrite(tft_t *tft, tftAddr_t addr, size_t len, const void *data) {
  */
 void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data) {
     const QSPI_CommandTypeDef cmd = {
-        .Instruction = 0, // Not used
+        .Instruction = 0,
         .Address = addr,
         .AlternateBytes = 0,
         .AddressSize = QSPI_ADDRESS_24_BITS,
@@ -139,6 +144,27 @@ void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data) {
 }
 
 /**
+ * @brief Gets the number of available bytes in the coprocessor command buffer.
+ *
+ * @note Also updates the coprocessor read address.
+ *
+ * @param tft The display.
+ *
+ * @return The number of available bytes.
+ */
+static size_t tftCoCmdRemLen(tft_t *tft) {
+    tftRead(tft, TFT_ADDR_CMD_READ, sizeof(tft->coCmdRd), &tft->coCmdRd);
+
+    size_t used = (tft->coCmdWr - tft->coCmdRd);
+    if (used >= TFT_RAM_CMD_SIZE) {
+        used -= TFT_RAM_CMD_SIZE;
+    }
+
+    // Maintain 1-word separation.
+    return (TFT_RAM_CMD_SIZE - sizeof(uint32_t)) - used;
+}
+
+/**
  * @brief Writes coprocessor commands to the display.
  *
  * @warning When `wait` is `false`, `len` MUST be less than `TFT_RAM_CMD_SIZE`!
@@ -149,16 +175,68 @@ void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data) {
  * @param wait `true` to wait for partial writes to finish; `false` to wait for
  * enough space at the beginning.
  */
-void tftCoCmd(tft_t *tft, size_t len, const void *data) {
-    // Bulk Write
-    uint32_t space = -1;
-    do {
-        tftRead(tft, TFT_ADDR_CMDB_SPACE, sizeof(space), &space);
-    } while (space < len);
+void tftCoCmd(tft_t *tft, size_t len, const void *data, bool wait) {
+    configASSERT(wait || len < TFT_RAM_CMD_SIZE);
 
-    tftWrite(tft, TFT_ADDR_CMDB_WRITE, len, data);
+    const uint8_t *dataBuf = data;
+    size_t written = 0;
 
-    return;
+    while (written < len) {
+        // Calculate length to write.
+        size_t wrLen = len - written;
+
+        if (!wait) {
+            // Wait for free space to write the entire command.
+            size_t remLen;
+            do {
+                remLen = tftCoCmdRemLen(tft);
+            } while (remLen < wrLen);
+        } else {
+            // Write as much as possible.
+            size_t remLen = tftCoCmdRemLen(tft);
+            if (remLen == 0) {
+                continue;  // No space yet.
+            }
+            if (wrLen > remLen) {
+                wrLen = remLen;
+            }
+        }
+
+        tftWrite(
+            tft, TFT_ADDR_RAM_CMD + tft->coCmdWr,
+            wrLen, dataBuf + written);
+        if (wrLen % sizeof(uint32_t) != 0) {
+            // Round-up to word-aligned length.
+            wrLen /= sizeof(uint32_t);
+            wrLen++;
+            wrLen *= sizeof(uint32_t);
+        }
+
+        written += wrLen;
+
+        // Update the command write address.
+        uint16_t coCmdWr = tft->coCmdWr + wrLen;
+        if (coCmdWr >= TFT_RAM_CMD_SIZE) {
+            coCmdWr -= TFT_RAM_CMD_SIZE;
+        }
+        tftWrite(tft, TFT_ADDR_CMD_WRITE, sizeof(coCmdWr), &coCmdWr);
+        tft->coCmdWr = coCmdWr;
+
+        if (!wait) {
+            // No waiting; we must have written the whole buffer.
+            configASSERT(written == wrLen);
+            break;
+        }
+
+        // Wait for the command to finish.
+        while (
+            tftRead(
+                tft, TFT_ADDR_CMD_READ,
+                sizeof(tft->coCmdRd), &tft->coCmdRd),
+            tft->coCmdRd != coCmdWr) {
+            continue;
+        }
+    }
 }
 
 /** @brief Display update priority. */
@@ -174,7 +252,7 @@ static cmr_task_t tftUpdate_task;
  *
  * @return Does not return.
  */
-void tftUpdate() {
+static void tftUpdate(void *pvParameters) {
     /** @brief Represents a display initialization value. */
     typedef struct {
         tftAddr_t addr; /**< @brief Address to initialize. */
@@ -182,7 +260,7 @@ void tftUpdate() {
     } tftInit_t;
 
     /** @brief Display register initialization values. */
-	const tftInit_t tftInits[] = {
+    static const tftInit_t tftInits[] = {
         { .addr = TFT_ADDR_HCYCLE, .val = 928 },
         { .addr = TFT_ADDR_HOFFSET, .val = 88 },
         { .addr = TFT_ADDR_HSYNC0, .val = 0 },
@@ -193,117 +271,123 @@ void tftUpdate() {
         { .addr = TFT_ADDR_VSYNC1, .val = 3 },
         { .addr = TFT_ADDR_SWIZZLE, .val = 0 },
         { .addr = TFT_ADDR_DITHER, .val = 1 },
-        { .addr = TFT_ADDR_PCLK_POL, .val = 1 },
+        { .addr = TFT_ADDR_PCLK_POL, .val = 0 },
         { .addr = TFT_ADDR_CSPREAD, .val = 1 },
         { .addr = TFT_ADDR_HSIZE, .val = 800 },
         { .addr = TFT_ADDR_VSIZE, .val = 480 },
         { .addr = TFT_ADDR_GPIOX_DIR, .val = (1 << 15) },
         { .addr = TFT_ADDR_GPIOX, .val = (1 << 15) },
+        { .addr = TFT_ADDR_PCLK, .val = 2 }
     };
 
+    tft_t *tft = pvParameters;
 
-	TickType_t lastWakeTime = xTaskGetTickCount();
+    /* Restarting the Display. */
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    cmr_gpioWrite(GPIO_PD_N, 0);  // TODO figure out pin
+    vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
+    cmr_gpioWrite(GPIO_PD_N, 1);
+    vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
+
+    /* Initialize the display. */
+    tftCmd(tft, TFT_CMD_CLKEXT, 0x00);
+    tftCmd(tft, TFT_CMD_ACTIVE, 0x00);
+    tftCmd(tft, TFT_CMD_ACTIVE, 0x00);
+
     /* Wait for display to initialize. */
     vTaskDelayUntil(&lastWakeTime, TFT_INIT_MS);
 
     /* Ensure that Chip ID is read correctly */
     uint32_t chipID;
-    tftRead(&tft, TFT_ADDR_CHIP_ID, sizeof(chipID), &chipID);
+    tftRead(tft, TFT_ADDR_CHIP_ID, sizeof(chipID), &chipID);
     configASSERT(chipID == TFT_CHIP_ID);
 
-    /* Init Sequence*/
-    // tftInitSequence();
-
     /* Initialize Video Registers. */
-    size_t tftInitsLen = sizeof(tftInits) / sizeof(tftInits[0]);
-    for (size_t i = 0; i < tftInitsLen; i++) {
-        const tftInit_t *init = &tftInits[i];
-        tftWrite(&tft, init->addr, sizeof(init->val), &init->val);
+    for (size_t i = 0; i < sizeof(tftInits) / sizeof(tftInits[0]); i++) {
+        const tftInit_t *init = tftInits + i;
+        tftWrite(tft, init->addr, sizeof(init->val), &init->val);
     }
 
-
-    tft.inited = true;
+    tft->inited = true;
 
     /* Enable Faster Clock Rate now that initialization is complete */
-    cmr_qspiSetPrescaler(&tft.qspi, TFT_QSPI_PRESCALER);
+    cmr_qspiSetPrescaler(&tft->qspi, TFT_QSPI_PRESCALER);
 
     /* Display Startup Screen for fixed time */
-    tftDLWrite(&tft, &tftDL_startup);
-    vTaskDelayUntil(&lastWakeTime, 3000); 
-    // uint8_t gpio_dir;
-    // tftRead(&tft, TFT_ADDR_GPIOX_DIR, sizeof(gpio_dir), &gpio_dir);
-    // uint8_t gpio;
-    // tftRead(&tft, TFT_ADDR_GPIOX, sizeof(gpio), &gpio);
+    tftDLContentLoad(tft, &tftDL_startup);
+    tftDLWrite(tft, &tftDL_startup);
+    //    vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS); //TODO: Uncomment
 
-    // const tftInit_t tftInits2[] = {
-    //     { .addr = TFT_ADDR_GPIOX_DIR, .val = 0x80 | gpio_dir },
-    //     { .addr = TFT_ADDR_GPIOX, .val = 0x080 | gpio },
-    //     { .addr = TFT_ADDR_PCLK, .val = 5 },
-    // };
-    // size_t tftInits2Len = sizeof(tftInits2) / sizeof(tftInits2[0]);
-    // for (size_t i = 0; i < tftInits2Len; i++) {
-    //     const tftInit_t *init = &tftInits2[i];
-    //     tftWrite(&tft, init->addr, sizeof(init->val), &init->val);
-    // }
-
-}
-
-void tftInitSequence() {
-    tftCmd(&tft, TFT_CMD_CLKEXT, 0x00);
-    tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
-    vTaskDelay(300);
+    /* Update Screen Info from CAN Indefinitely */
+    while (1) {
+        vTaskDelayUntil(&lastWakeTime, TFT_UPDATE_PERIOD_MS);
+        if (true) {
+            drawRTDScreen();
+        } else if ((stateGetVSMReq() == CMR_CAN_HV_EN) && (stateGetVSM() == CMR_CAN_ERROR)) {
+            drawSafetyScreen();
+        } else if (stateGetVSM() == CMR_CAN_ERROR) {
+            drawErrorScreen();
+        } else {
+        	//reset latching errors for ams as shown on screen
+        	prevOverVolt = false;
+        	prevUnderVolt = false;
+        	prevOverTemp = false;
+            // within drawRTDScreen, we decide if to draw testing or racing screen
+            drawRTDScreen();
+        }
+    }
 }
 
 /**
  * @brief Draws the Display Updated List to the Screen
  *
  */
-void drawConfigScreen(void) {
+static void drawConfigScreen(void) {
+    tftDLContentLoad(&tft, &tftDL_config);
     tftDL_configUpdate();
     tftDLWrite(&tft, &tftDL_config);
-    // vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
 }
 
 /**
  * @brief Draws the Safety Circuit to the Screen
  *
  */
-void drawSafetyScreen(void) {
+static void drawSafetyScreen(void) {
+    tftDLContentLoad(&tft, &tftDL_safety_screen);
     tftDLWrite(&tft, &tftDL_safety_screen);
-    // vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
-}
-
- /** @brief Draws the motor, ac, cooling, etc. temps to the Screen
- *
- */
-void drawRacingScreen(void){
-	//TODO: Figure out what the heck this is
-	uint32_t hvSoC = 0;
-    tftDL_racingScreenUpdate(
-        getMaxMotorTemp(),
-        getACTemp(),
-        getMCTemp(),
-        hvSoC,
-        DRSOpen());
-    // /* Write Display List to Screen */
-    tftDLWrite(&tft, &tftDL_racing_screen);
-    // vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
 }
 
 /**
  * @brief Draws the Display Updated List to the Screen
  *
  */
-void drawErrorScreen(void) {
-    volatile cmr_canVSMStatus_t *canVSMStatus = getPayload(CANRX_VSM_STATUS);
+static void drawErrorScreen(void) {
+    cmr_canRXMeta_t *metaVSMStatus = canRXMeta + CANRX_VSM_STATUS;
+    volatile cmr_canVSMStatus_t *canVSMStatus =
+        (void *)metaVSMStatus->payload;
 
-    volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat = getPayload(CANRX_HVC_HEARTBEAT);
+    cmr_canRXMeta_t *metaHVCHeartbeat = canRXMeta + CANRX_HVC_HEARTBEAT;
+    volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat =
+        (void *)metaHVCHeartbeat->payload;
 
-    volatile cmr_canAMKActualValues2_t *amkFLActualValues2 = getPayload(CANRX_AMK_FL_ACT_2);
-    volatile cmr_canAMKActualValues2_t *amkFRActualValues2 = getPayload(CANRX_AMK_FR_ACT_2);
-    volatile cmr_canAMKActualValues2_t *amkBLActualValues2 = getPayload(CANRX_AMK_RL_ACT_2);
-    volatile cmr_canAMKActualValues2_t *amkBRActualValues2 = getPayload(CANRX_AMK_RR_ACT_2);
-    volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus = getPayload(CANRX_HVC_LOW_VOLTAGE);
+    cmr_canRXMeta_t *metaAmkFLActualValues2 = canRXMeta + CANRX_AMK_FL_ACT_2;
+    volatile cmr_canAMKActualValues2_t *amkFLActualValues2 =
+        (void *)metaAmkFLActualValues2->payload;
+    cmr_canRXMeta_t *metaAmkFRActualValues2 = canRXMeta + CANRX_AMK_FR_ACT_2;
+    volatile cmr_canAMKActualValues2_t *amkFRActualValues2 =
+        (void *)metaAmkFRActualValues2->payload;
+    cmr_canRXMeta_t *metaAmkBLActualValues2 = canRXMeta + CANRX_AMK_RL_ACT_2;
+    volatile cmr_canAMKActualValues2_t *amkBLActualValues2 =
+        (void *)metaAmkBLActualValues2->payload;
+    cmr_canRXMeta_t *metaAmkBRActualValues2 = canRXMeta + CANRX_AMK_RR_ACT_2;
+    volatile cmr_canAMKActualValues2_t *amkBRActualValues2 =
+        (void *)metaAmkBRActualValues2->payload;
+
+    cmr_canRXMeta_t *metaBMSLowVoltage = canRXMeta + CANRX_HVC_LOW_VOLTAGE;
+    volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
+        (void *)metaBMSLowVoltage->payload;
+
+    tftDLContentLoad(&tft, &tftDL_error);
 
     tft_errors_t err;
 
@@ -354,39 +438,161 @@ void drawErrorScreen(void) {
 
     /* Write Display List to Screen */
     tftDLWrite(&tft, &tftDL_error);
-    // vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
+}
+
+/**
+ * @brief computes max of 4 numbers
+ */
+int16_t findMax(int16_t a, int16_t b, int16_t c, int16_t d, uint8_t *index) {
+    int16_t maximum = a;
+    *index = 0;
+    if (b > maximum) {
+        maximum = b;
+        *index = 1;
+    }
+    if (c > maximum) {
+        maximum = c;
+        *index = 2;
+    }
+    if (d > maximum) {
+        maximum = d;
+        *index = 3;
+    }
+    return maximum;
+}
+
+/**
+ * @brief Computes the total current of a motor
+ * https://drive.google.com/file/d/1dyoIuW85M110q4x2OXapvWxm-WnFBys2/view pg76
+ */
+uint32_t computeCurrent_A(volatile cmr_canAMKActualValues1_t *canAMK_Act1) {
+    int32_t Iq_A = (int32_t)canAMK_Act1->torqueCurrent_raw;
+    int32_t Id_A = (int32_t)canAMK_Act1->magCurrent_raw;
+    uint32_t Is_A = sqrt(Iq_A * Iq_A + Id_A * Id_A);
+    return Is_A;
 }
 
 
+/**
+ * @brief gets temps from motors and inverters
+ * @returns mcTemp
+ * @returns motorTemp
+*/
 
+static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hottest) {
+    
+    // If we're in GLV, we don't want temps to latch on their prev vals
+	cmr_canState_t state = stateGetVSM();
+    if (state == CMR_CAN_GLV_ON) {
+        *mcTemp_C = 0;
+        *motorTemp_C = 0;
+        *hottest = NONE;
+        return;
+    }
 
+    // Front Left
+    // cmr_canRXMeta_t *metaAMK_FL_Act1 = canRXMeta + CANRX_AMK_FL_ACT_1;
+    // volatile cmr_canAMKActualValues1_t *canAMK_FL_Act1 =
+    //     (void *)metaAMK_FL_Act1->payload;
+    cmr_canRXMeta_t *metaAMK_FL_Act2 = canRXMeta + CANRX_AMK_FL_ACT_2;
+    volatile cmr_canAMKActualValues2_t *FL =
+        (void *)metaAMK_FL_Act2->payload;
+
+    // Front Right
+    // cmr_canRXMeta_t *metaAMK_FR_Act1 = canRXMeta + CANRX_AMK_FR_ACT_1;
+    // volatile cmr_canAMKActualValues1_t *canAMK_FR_Act1 =
+    //     (void *)metaAMK_FR_Act1->payload;
+    cmr_canRXMeta_t *metaAMK_FR_Act2 = canRXMeta + CANRX_AMK_FR_ACT_2;
+    volatile cmr_canAMKActualValues2_t *FR =
+        (void *)metaAMK_FR_Act2->payload;
+
+    // Rear Left
+    // cmr_canRXMeta_t *metaAMK_RL_Act1 = canRXMeta + CANRX_AMK_RL_ACT_1;
+    // volatile cmr_canAMKActualValues1_t *canAMK_RL_Act1 =
+    //     (void *)metaAMK_RL_Act1->payload;
+    cmr_canRXMeta_t *metaAMK_RL_Act2 = canRXMeta + CANRX_AMK_RL_ACT_2;
+    volatile cmr_canAMKActualValues2_t *RL =
+        (void *)metaAMK_RL_Act2->payload;
+
+    // Rear Right
+    // cmr_canRXMeta_t *metaAMK_RR_Act1 = canRXMeta + CANRX_AMK_RR_ACT_1;
+    // volatile cmr_canAMKActualValues1_t *canAMK_RR_Act1 =
+    //     (void *)metaAMK_RR_Act1->payload;
+    cmr_canRXMeta_t *metaAMK_RR_Act2 = canRXMeta + CANRX_AMK_RR_ACT_2;
+    volatile cmr_canAMKActualValues2_t *RR =
+        (void *)metaAMK_RR_Act2->payload;
+
+    /* Motor Temperature */
+    uint8_t hottest_motor_index = 0;
+    *motorTemp_C = findMax(FL->motorTemp_dC,
+                                  FR->motorTemp_dC,
+                                  RL->motorTemp_dC,
+                                  RR->motorTemp_dC, 
+                                  &hottest_motor_index) /
+                          10;
+    
+    // provide hottest motor as corner type
+    *hottest = (cornerId_t)(hottest_motor_index);
+
+    uint8_t hottest_mc_index = 0;
+    /* Motor Controller Temperature */
+    *mcTemp_C = findMax(FL->coldPlateTemp_dC,
+                               FR->coldPlateTemp_dC,
+                               RL->coldPlateTemp_dC,
+                               RR->coldPlateTemp_dC,
+                               &hottest_mc_index) /
+                       10;
+    
+    
+}
 
 /**
  * @brief Draws the Display Updated List to the Screen
  *
  */
-/**
- * @brief Draws the Display Updated List to the Screen
- *
- */
-void drawRTDScreen(void){
+static void drawRTDScreen(void) {
     /* Setup the Required CAN info for Display */
     cmr_canRXMeta_t *metaMemoratorBroadcast = canRXMeta + CANRX_MEMORATOR_BROADCAST;
 
+    cmr_canRXMeta_t *metaCDCHeartbeat = canRXMeta + CANRX_CDC_HEARTBEAT;
 
-    volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage = getPayload(CANRX_HVC_PACK_VOLTAGE);
+    cmr_canRXMeta_t *metaHVCPackVoltage = canRXMeta + CANRX_HVC_PACK_VOLTAGE;
+    volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage =
+        (void *)metaHVCPackVoltage->payload;
 
-    volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps = getPayload(CANRX_HVC_PACK_TEMPS);
+    cmr_canRXMeta_t *metaHVCPackTemps = canRXMeta + CANRX_HVC_PACK_TEMPS;
+    volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps =
+        (void *)metaHVCPackTemps->payload;
 
-    volatile cmr_canEMDMeasurements_t *canEMDvalues = getPayload(CANRX_EMD_VALUES);
+    cmr_canRXMeta_t *metaEMDvalues = canRXMeta + CANRX_EMD_VALUES;
+    volatile cmr_canEMDMeasurements_t *canEMDvalues =
+        (void *)metaEMDvalues->payload;
 
-    volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus = getPayload(CANRX_HVC_LOW_VOLTAGE);
 
+
+    cmr_canRXMeta_t *metaBMSLowVoltage = canRXMeta + CANRX_HVC_LOW_VOLTAGE;
+    volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
+        (void *)metaBMSLowVoltage->payload;
+
+    // PTC Temps
+    /* cmr_canRXMeta_t *metaPTCfLoopA = canRXMeta + CANRX_PTCf_LOOP_A_TEMPS;
+    volatile cmr_canPTCfLoopTemp_A_t *canPTCfLoopTemp_A = (void *) metaPTCfLoopA->payload;
+
+    cmr_canRXMeta_t *metaPTCfLoopB = canRXMeta + CANRX_PTCf_LOOP_B_TEMPS;
+    volatile cmr_canPTCfLoopTemp_B_t *canPTCfLoopTemp_B = (void *) metaPTCfLoopB->payload;
+
+    cmr_canRXMeta_t *metaPTCpLoopA = canRXMeta + CANRX_PTCp_LOOP_A_TEMPS;
+    volatile cmr_canPTCpLoopTemp_A_t *canPTCpLoopTemp_A = (void *) metaPTCpLoopA->payload;
+
+    cmr_canRXMeta_t *metaPTCpLoopB = canRXMeta + CANRX_PTCp_LOOP_B_TEMPS;
+    volatile cmr_canPTCpLoopTemp_B_t *canPTCpLoopTemp_B = (void *) metaPTCpLoopB->payload;*/
+
+    tftDLContentLoad(&tft, &tftDL_RTD);
 
     /* Memorator present? */
     // Wait to update if hasn't seen in 2 sec (2000 ms)
     memorator_status_t memoratorStatus = MEMORATOR_NOT_CONNECTED;
-    volatile cmr_canHeartbeat_t *cdcHeartbeat = getPayload(CANRX_CDC_HEARTBEAT);
+    volatile cmr_canHeartbeat_t *cdcHeartbeat = (cmr_canHeartbeat_t *)metaCDCHeartbeat->payload;
     if ((*(uint16_t *)(cdcHeartbeat->warning) & CMR_CAN_WARN_CDC_MEMORATOR_DAQ_TIMEOUT) != 0) {
         memoratorStatus = MEMORATOR_NOT_CONNECTED;
     }
@@ -443,12 +649,16 @@ void drawRTDScreen(void){
     // 18000mV * 15 / 2000 as sent by HVC = 135
     bool ssOk = (bmsLV->safety_mV > 135);
 
+    volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t *)getPayload(CANRX_DRS_STATE);
+    bool drsOpen = (drsState->state == CMR_CAN_DRS_STATE_OPEN);
+
     /* Accumulator Temperature */
     int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC) / 10;
 
-    int32_t mcTemp_C = 0;
-    int32_t motorTemp_C = 0;
+    int32_t mcTemp_C, motorTemp_C = 0;
     cornerId_t hottest_motor;
+
+    getAMKTemps(&mcTemp_C, &motorTemp_C, &hottest_motor);
 
     /* Temperature warnings */
     bool motorTemp_yellow = motorTemp_C >= MOTOR_YELLOW_THRESHOLD;
@@ -462,20 +672,57 @@ void drawRTDScreen(void){
 
     uint8_t hvSoC = 0;
 
-    volatile cmr_canCDCControlsStatus_t *controlsStatus = getPayload(CANRX_CDC_CONTROLS_STATUS);
+    volatile cmr_canCDCControlsStatus_t *controlsStatus = (volatile cmr_canCDCControlsStatus_t *)getPayload(CANRX_CDC_CONTROLS_STATUS);
 
-    bool yrcOn = (bool)controlsStatus->yrcOn;
-    bool tcOn =  (bool)controlsStatus->tcOn;
+    bool yrcOn = true;
+    bool tcOn = true;
+    //bool yrcOn = ((bool)controlsStatus->yrcOn) && (!(switchValues & 0x02));
+    //bool tcOn = ((bool)controlsStatus->tcOn) && (!(switchValues & 0x04));
 
-    /* Write Display List to Screen */
-    tftDLWrite(&tft, &tftDL_RTD);
+    if (true) {
+        tftDL_racingScreenUpdate(
+            motorTemp_C,
+            acTemp_C,
+            mcTemp_C,
+            hvSoC,
+            drsOpen);
+        // /* Write Display List to Screen */
+        tftDLWrite(&tft, &tftDL_racing_screen);
+    } else {
+        /* Update Display List*/
+        tftDL_RTDUpdate(memoratorStatus,
+                        sbgStatus,
+                        hvVoltage_mV,
+                        power_kW,
+                        speed_kmh,
+                        motorTemp_yellow,
+                        motorTemp_red,
+                        acTemp_yellow,
+                        acTemp_red,
+                        mcTemp_yellow,
+                        mcTemp_red,
+                        motorTemp_C,
+                        acTemp_C,
+                        mcTemp_C,
+                        (int32_t)glvVoltage,
+                        glvSoC,
+                        hvSoC,
+                        yrcOn,
+                        tcOn,
+                        ssOk,
+                        odometer_km,
+                        drsOpen,
+                        hottest_motor);
+
+        /* Write Display List to Screen */
+        tftDLWrite(&tft, &tftDL_RTD);
+    }
 }
-
 
 /**
  * @brief Initializes the display.
  */
-void tftInit(void){
+void tftInit(void) {
     const QSPI_InitTypeDef qspiInit = {
         .ClockPrescaler = TFT_INIT_QSPI_PRESCALER,
         .FifoThreshold = 4,
@@ -502,13 +749,8 @@ void tftInit(void){
         DMA2_Stream7, DMA_CHANNEL_3);
 
     tft.inited = false;
-    // cmr_taskInit(
-    //     &tftUpdate_task, "tftUpdate", tftUpdate_priority,
-    //     tftUpdate, &tft);
-}
 
-struct tftContent {
-    size_t len;          /**< @brief The content's length, in bytes. */
-    size_t addr;         /**< @brief The content's address in `RAM_G`. */
-    const uint8_t *data; /**< @brief The content. */
-};
+    cmr_taskInit(
+        &tftUpdate_task, "tftUpdate", tftUpdate_priority,
+        tftUpdate, &tft);
+}

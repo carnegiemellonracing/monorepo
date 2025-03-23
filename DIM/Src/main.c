@@ -11,8 +11,8 @@
 #include <CMR/panic.h>  // cmr_panic()
 #include <CMR/rcc.h>    // RCC interface
 
-#include "adc.h"        // Board-specific ADC interface
-#include "can.h"        // Board-specific CAN interface
+//#include "adc.h"        // Board-specific ADC interface
+//#include "can.h"        // Board-specific CAN interface
 #include "gpio.h"       // Board-specific GPIO interface
 #include "state.h"
 #include "tft.h"
@@ -116,11 +116,11 @@ int main(void) {
 
     // Peripheral configuration.
     gpioInit();
-    canInit();
-    adcInit();
+    //canInit();
+    //adcInit();
     tftInit();
-    stateMachineInit();
-    sensorsInit();
+    //stateMachineInit();
+    //sensorsInit();
 
 
     cmr_taskInit(

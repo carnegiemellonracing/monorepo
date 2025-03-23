@@ -32,6 +32,8 @@ extern volatile uint8_t config_paddle_right_request;
 #define MIN_PADDLE_VAL 50
 #define MAX_PADDLE_VAL 255
 
+#define TFT_STARTUP_MS 3000
+
 void reqVSM(void);
 
 void reqGear(void);

@@ -567,21 +567,20 @@ static void stateOutput() {
              /* Restarting the Display. */
             TickType_t lastWakeTime = xTaskGetTickCount();
     		//change pin of screen
-            cmr_gpioWrite(GPIO_PD_N, 0);
-            cmr_gpioWrite(GPIO_PD_N, 1);
             /* Initialize the display. */
-            tftInitSequence();
+            // tftInitSequence();
             tftUpdate();
             break;
         case START:
             /* Display Startup Screen for fixed time */
-            tftDLWrite(&tft, &tftDL_startup);
-            vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
+            //tftDLWrite(&tft, &tftDL_startup);
+            //drawConfigScreen();
+            //vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
             break;
         case NORMAL:
-            // drawRTDScreen(); //from somethingP
-            tftDLWrite(&tft, &tftDL_startup);
-            vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
+            drawRTDScreen(); //from somethingP
+            //tftDLWrite(&tft, &tftDL_startup);
+            //vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
             break;
         case CONFIG:
             drawConfigScreen();
@@ -695,9 +694,14 @@ static void stateMachine(void *pvParameters){
     (void)pvParameters;
     TickType_t lastWakeTime = xTaskGetTickCount();
     currState = INIT;
+    uint32_t test;
+    uint32_t space1 = 0;
     while (1) {
         // taskENTER_CRITICAL();
         stateOutput();
+        // tftRead(&tft, TFT_ADDR_CMD_READ, sizeof(test), &test);
+        // test = test & 0x00000FFF;
+        // tftRead(&tft, TFT_ADDR_CMDB_SPACE, sizeof(space1), &space1);
 		/* for testing
 		vsmStateGlobal = stateGetVSM();
 		vsmStateGlobalReq = stateGetVSMReq();

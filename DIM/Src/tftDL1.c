@@ -5,7 +5,7 @@
  * @author Carnegie Mellon Racing
  */
 
-
+#include "tftDL.h"  // Interface to implement
 
 #include <stdio.h>   // snprintf
 #include <string.h>  // memcpy()
@@ -13,9 +13,7 @@
 #include "adc.h"         // GLV voltage
 #include "can.h"         // Board-specific CAN interface
 #include "gpio.h"        // Board-specific CAN interface
-#include "state.h"       // State interface
-#include "tftContent.h"  // Content interface
-#include "tftDL.h"  // Interface to implement
+#include "state.h"
 
 // used to calculate increment frequency:
 // max paddle val (255) / max increment speed (20Hz)
@@ -25,31 +23,19 @@ static const float paddle_time_scale_factor = 255.0f / 20.0f;
 struct tftDL {
     size_t len;           /**< @brief Length of the display list, in bytes. */
     const uint32_t *data; /**< @brief The display list data. */
-
-    size_t contentLen;            /**< @brief Number of content items. */
-    const tftContent_t **content; /**< @brief Associated content. */
 };
 
 /** @brief Raw startup screen */
 static uint32_t tftDL_startupData[] = {
-#include <DIM-ESE/startup.rawh>
+#include <DIM-ESE/startup-temp.rawh>
 };
 
-/** @brief Packets to send to the DL on startup.
- * See datasheet */
-static const tftContent_t *tftDL_startupContent[] = {
-    &tftContent_startup_lut,
-    &tftContent_startup
-};
 
 /** @brief Complete data required to draw the startup screen.
  * Exposed to interface consumers. */
 const tftDL_t tftDL_startup = {
     .len = sizeof(tftDL_startupData),
     .data = tftDL_startupData,
-
-    .contentLen = sizeof(tftDL_startupContent) / sizeof(tftDL_startupContent[0]),
-    .content = tftDL_startupContent
 };
 
 /** @brief GLV Screen */
@@ -62,9 +48,6 @@ static uint32_t tftDL_errorData[] = {
 const tftDL_t tftDL_error = {
     .len = sizeof(tftDL_errorData),
     .data = tftDL_errorData,
-
-    .contentLen = 0,
-    .content = NULL
 };
 
 /** @brief Config Screen */
@@ -77,8 +60,6 @@ static uint32_t tftDL_configData[] = {
 const tftDL_t tftDL_config = {
     .len = sizeof(tftDL_configData),
     .data = tftDL_configData,
-    .contentLen = 0,
-    .content = NULL
 };
 
 /** @brief RTD Screen
@@ -95,24 +76,19 @@ static uint32_t tftDL_RTDData[] = {
 const tftDL_t tftDL_RTD = {
     .len = sizeof(tftDL_RTDData),
     .data = tftDL_RTDData,
-
-    .contentLen = 0,
-    .content = NULL
 };
 
 /** @brief Racing Screen */
 static uint32_t tftDL_racingData[] = {
 #include <DIM-ESE/racing-screen.rawh>
 };
+
 /** @brief Complete data required to draw the
  * Racing Screen
  * Exposed to interface consumers. */
 const tftDL_t tftDL_racing_screen = {
     .len = sizeof(tftDL_racingData),
     .data = tftDL_racingData,
-
-    .contentLen = 0,
-    .content = NULL
 };
 
 static uint32_t tftDl_safetyData[] = {
@@ -121,10 +97,7 @@ static uint32_t tftDl_safetyData[] = {
 
 const tftDL_t tftDL_safety_screen = {
     .len = sizeof(tftDl_safetyData),
-    .data = tftDl_safetyData,
-
-    .contentLen = 0,
-    .content = NULL
+    .data = tftDl_safetyData
 };
 
 /** @brief Bitposition of Y-coordinate byte in vertices */
@@ -188,13 +161,13 @@ static void tftDL_barSetY(const tftDL_vert_bar_t *bar, uint32_t val) {
     } else if (val > bar->maxVal) {
         y = bar->topY;
     } else {
-        uint32_t len = ((val - bar->minVal) * (uint32_t)(bar->botY - bar->topY)) / (bar->maxVal - bar->minVal);
+        uint32_t len = ((val - bar->minVal) * (bar->botY - bar->topY)) / (bar->maxVal - bar->minVal);
         y = bar->botY - len;
     }
 
     uint32_t vertex = *bar->addr;
     // Create mask with 0s for y, and 1s for x
-    uint32_t mask = ((~((uint32_t)0)) << TFT_DL_VERTEX_Y_BIT);
+    uint32_t mask = (-1U << TFT_DL_VERTEX_Y_BIT);
     // vertex and mask to remove current y coord
     vertex &= mask;
     // replace zeros with new y coord (already in correct position)
@@ -215,13 +188,13 @@ static void tftDL_barSetX(const tftDL_horiz_bar_t *bar, uint32_t val) {
     } else if (val > bar->maxVal) {
         x = bar->rightX;
     } else {
-        uint32_t len = ((val - bar->minVal) * ((uint32_t)(bar->rightX - bar->leftX))) / (bar->maxVal - bar->minVal);
+        uint32_t len = ((val - bar->minVal) * (bar->rightX - bar->leftX)) / (bar->maxVal - bar->minVal);
         x = bar->leftX + len;
     }
 
     uint32_t vertex = *bar->addr;
     // Create mask with 1s for y, and 0s for x
-    uint32_t mask = (~((~((uint32_t)0)) << TFT_DL_VERTEX_Y_BIT)) ^ ((1 << 31) >> 1);
+    uint32_t mask = ((1U << TFT_DL_VERTEX_Y_BIT)-1) ^ 0xC0000000;
     // vertex and mask to remove current x coord
     vertex &= mask;
     // replace zeros with new x coord (shifted to correct position)
@@ -415,6 +388,7 @@ void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yell
 /**
  * @brief Updates the ready-to-drive screen.
  *
+ * @param memoratorStatus
  * @param memoratorPresent Memorator present (based on heartbeat)
  * @param sbgStatus SBG INS Status
  * @param speed_mph Speed (from CDC)
@@ -437,12 +411,6 @@ void tftDL_RTDUpdate(
     int32_t hvVoltage_mV,
     int32_t power_kW,
     uint32_t speed_kmh,
-    bool motorTemp_yellow,
-    bool motorTemp_red,
-    bool acTemp_yellow,
-    bool acTemp_red,
-    bool mcTemp_yellow,
-    bool mcTemp_red,
     int32_t motorTemp_C,
     int32_t acTemp_C,
     int32_t mcTemp_C,
@@ -571,6 +539,10 @@ void tftDL_RTDUpdate(
         case RR:
             rr_color_cmd = red;
             break;
+        default:
+            // We should never case on NONE or NUM_CORNERS
+            cmr_panic("Invalid corner ID");
+            break;
     }
     *fl_color = fl_color_cmd;
     *fr_color = fr_color_cmd;
@@ -647,24 +619,24 @@ static void tftDL_showAMKError(uint32_t strlocation, uint32_t colorLocation, uin
     const size_t print_len = 13;
     // Spaces are to align text, so each string has 12 characters followed by a \0
     switch (errorCode) {
-        case 2347:
+        case AMK_MOTOR_TEMP_ERROR:
             snprintf(print_location, print_len, "MOTOR TEMP  ");
             break;
-        case 2346:
+        case AMK_CONVERTER_TEMP_ERROR:
             snprintf(print_location, print_len, "IGBT TEMP   ");
             break;
-        case 2310:
+        case AMK_ENCODER_ERROR:
             snprintf(print_location, print_len, "ENCODER PROB");
             break;
-        case 3587:
+        case AMK_SYS_DIAG_4:
             snprintf(print_location, print_len, "SOFTWARE CAN");
             break;
-        case 1049:
+        case AMK_DC_BUS_ERROR:
             snprintf(print_location, print_len, "HV LOW VOLT ");
             break;
         default:
             // No text, so display error number
-            snprintf(print_location, print_len, "%04d        ", errorCode);
+            snprintf(print_location, print_len, "%04d ", errorCode);
             break;
     }
     tftDL_showErrorState(colorLocation, errorCode != 0);
@@ -685,7 +657,7 @@ void tftDL_errorUpdate(
 
     snprintf(
         glvVoltage_V_str->buf, sizeof(glvVoltage_V_str->buf),
-        "%2uV", err->glvVoltage_V);
+        "%luV", err->glvVoltage_V);
 
     /* Timeouts */
     tftDL_showErrorState(ESE_PTC_COLOR, err->ptcTimeout);
@@ -724,18 +696,6 @@ void tftDL_errorUpdate(
     tftDL_showAMKError(ESE_AMK_BR_STR, ESE_AMK_BR_COLOR, err->amkBRErrorCode);
 }
 
-/**
- * @brief Loads the display list's content into graphics memory.
- *
- * @param tft The display.
- * @param tftDL The display list.
- */
-void tftDLContentLoad(tft_t *tft, const tftDL_t *tftDL) {
-    for (size_t i = 0; i < tftDL->contentLen; i++) {
-        const tftContent_t *tftContent = tftDL->content[i];
-        tftContentLoad(tft, tftContent);
-    }
-}
 
 /**
  * @brief Writes a display list.
@@ -744,41 +704,32 @@ void tftDLContentLoad(tft_t *tft, const tftDL_t *tftDL) {
  * @param tftDL The display list.
  */
 void tftDLWrite(tft_t *tft, const tftDL_t *tftDL) {
-    tftCoCmd(tft, tftDL->len, tftDL->data, true);
+    tftCoCmd(tft, tftDL->len, tftDL->data);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 void setConfigContextString(int8_t scroll_index) {
     char *context_string = config_menu_main_array[scroll_index].ESE_context_text_variable;
     uint32_t context_string_address_offset = ESE_CONTEXT_VAL;
-    uint32_t *context_string_pointer = (void *)(tftDL_configData + context_string_address_offset);
-    sprintf((char *)context_string_pointer, context_string);
+    char *context_string_pointer = (void *)(tftDL_configData + context_string_address_offset);
+    sprintf(context_string_pointer, "%s", context_string);
 }
 
-// implements wraparound. Can't use modulo since it's min is not always 0. Could do (val % max-min) + min but that's less readable
+
 uint8_t configValueIncrementer(uint8_t value, uint8_t value_min, uint8_t value_max, bool up_requested, bool down_requested) {
-    uint8_t new_value = value;
     if (up_requested) {
-        if (value + 1 > value_max) {
-            new_value = value_min;
-        } else {
-            new_value++;
-        }
+        return (value >= value_max) ? value_min : value + 1;
     }
     if (down_requested) {
-        if (value - 1 < value_min) {
-            new_value = value_max;
-        } else {
-            new_value--;
-        }
+        return (value <= value_min) ? value_max : value - 1;
     }
-    return new_value;
+    return value;
 }
 
 void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_requested) {
     // calculate the varoius addresses to modify
     uint32_t value_address_offset = config_menu_main_array[scroll_index].ESE_value_variable;
-    uint32_t *value_address_pointer = (void *)(tftDL_configData + value_address_offset);
+    char *value_address_pointer = (void *)(tftDL_configData + value_address_offset);
 
     // lut for custom enum
     char **custom_enum_lut = config_menu_main_array[scroll_index].ESE_value_string_lut;
@@ -800,13 +751,13 @@ void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_r
             // treat it like an integer
         case integer:
             value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested);
-            snprintf((char *)value_address_pointer, 4, "%3d", value);
+            snprintf(value_address_pointer, 4, "%3d", value);
             break;
         case boolean:
             if (up_requested || down_requested) {
                 value = !value;
             }
-            sprintf((char *)value_address_pointer, config_boolean_string_lut[value]);
+            sprintf(value_address_pointer, config_boolean_string_lut[value]);
             break;
         case float_1_decimal:
             value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested);
@@ -814,14 +765,14 @@ void setConfigIncrementValue(int8_t scroll_index, bool up_requested, bool down_r
             buffer[0] = buffer[1];
             buffer[1] = buffer[2];
             buffer[2] = '.';
-            sprintf((char *)value_address_pointer, buffer);
+            sprintf(value_address_pointer, buffer);
             break;
         case float_2_decimal:
             value = configValueIncrementer(value, value_min, value_max, up_requested, down_requested);
             snprintf(buffer, 5, "%4d", value);
             buffer[0] = buffer[1];
             buffer[1] = '.';
-            sprintf((char *)value_address_pointer, buffer);
+            sprintf(value_address_pointer, buffer);
             break;
         case custom_enum:
             // -1 since index off of 0
@@ -924,8 +875,9 @@ void tftDL_configUpdate() {
 
     // if there are no move requests, then check/implement selection values
     else if (config_increment_up_requested || config_increment_down_requested) {
-        if (config_increment_down_requested && config_increment_up_requested)
+        if (config_increment_down_requested && config_increment_up_requested){
             return;  // both are an error
+        }
 
         if (current_scroll_index == DRIVER_PROFILE_INDEX) {
             flush_config_screen_to_cdc = true;
@@ -937,8 +889,8 @@ void tftDL_configUpdate() {
             // Change driver
             setConfigIncrementValue(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
             waiting_for_cdc_new_driver_config = true;
+            // wait for the new driver to be selected
             while (waiting_for_cdc_new_driver_config) {
-                // wait for the new driver to be selected
             }
         } else {
             setConfigIncrementValue(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
@@ -953,37 +905,29 @@ void tftDL_configUpdate() {
             return;
         }
         // don't use paddles to change driver profile
-        if (current_scroll_index == DRIVER_PROFILE_INDEX) return;
+        if (current_scroll_index == DRIVER_PROFILE_INDEX){
+            return;
+        }
 
-        if (config_paddle_left_request > 0) {
+        if (config_paddle_left_request > 0 || config_paddle_right_request > 0) {
             // Handle left paddle request
             if (!paddle_prev_active) {
-                setConfigIncrementValue(current_scroll_index, false, true);
+                if (config_paddle_left_request > 0) {
+                    setConfigIncrementValue(current_scroll_index, false, true);
+                } else {
+                setConfigIncrementValue(current_scroll_index, true, false);
+                }
                 paddle_prev_active = true;
                 paddle_time_since_change = 0;
             } else {
                 paddle_time_since_change += 1;
-                float increment_freq = (float)config_paddle_left_request / (float)paddle_time_scale_factor;
-                // increment count relative to display update period (ie period of this function)
+                float increment_freq = config_paddle_left_request > 0 ? (float)config_paddle_left_request : (float)config_paddle_right_request;
+                increment_freq /= (float)paddle_time_scale_factor;
+
                 float increment_count = (float)TFT_UPDATE_PERIOD_MS / increment_freq;
+                // increment count relative to display update period (ie period of this function)
                 if ((float)paddle_time_since_change >= increment_count) {
                     setConfigIncrementValue(current_scroll_index, false, true);
-                    paddle_time_since_change = 0;
-                }
-            }
-        } else if (config_paddle_right_request > 0) {
-            // Handle right paddle request
-            if (!paddle_prev_active) {
-                setConfigIncrementValue(current_scroll_index, true, false);
-                paddle_prev_active = true;
-                paddle_time_since_change = 0;
-            } else {
-                paddle_time_since_change += 1;
-                float increment_freq = (float)config_paddle_right_request / (float)paddle_time_scale_factor;
-                // increment count relative to display update period (ie period of this function)
-                float increment_count = (float)TFT_UPDATE_PERIOD_MS / increment_freq;
-                if ((float)paddle_time_since_change >= increment_count) {
-                    setConfigIncrementValue(current_scroll_index, true, false);
                     paddle_time_since_change = 0;
                 }
             }
