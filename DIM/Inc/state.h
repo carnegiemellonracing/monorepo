@@ -49,6 +49,8 @@ void stateDrsUpdate(void);
 cmr_canState_t stateGetVSM(void);
 cmr_canState_t stateGetVSMReq(void);
 
+cmr_state getCurrState();
+
 cmr_canGear_t stateGetGear(void);
 cmr_canGear_t stateGetGearReq(void);
 

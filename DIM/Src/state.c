@@ -29,7 +29,7 @@ static cmr_task_t stateMachine_task;
 
 cmr_state nextState;
 
-extern cmr_state currState;
+cmr_state currState;
 
 // cmr_canGear_t reqGear;
 // cmr_canGear_t currGear;
@@ -378,7 +378,7 @@ static cmr_state getReqScreen(void) {
             else if(gpioButtonStates[SW1]) {
                 nextState = NORMAL;
                 //gpioButtonStates[SW1] = 0;
-                nextState = CONFIG;
+                //nextState = CONFIG;
             }
             else if(gpioButtonStates[SW2]) {
                 nextState = RACING;
@@ -553,48 +553,52 @@ void stateDrsUpdate(void) {
 	state.drsMode = state.drsReq;
 }
 
+cmr_state getCurrState() {
+    return currState;
+}
+
 static void stateOutput() {
     //output
-    switch(currState) {
-        case INIT:
-            //initialize buttons to 0
-			//also initializes all LRUD buttons to 0
-            for(int i=0; i<NUM_BUTTONS; i++){
-                //is it necessary to initialize the can buttons to 0 if they are just reading pins??
-                canButtonStates[i] = 0;
-                gpioButtonStates[i] = 0;
-            }
-             /* Restarting the Display. */
-            TickType_t lastWakeTime = xTaskGetTickCount();
-    		//change pin of screen
-            /* Initialize the display. */
-            // tftInitSequence();
-            tftUpdate();
-            break;
-        case START:
-            /* Display Startup Screen for fixed time */
-            //tftDLWrite(&tft, &tftDL_startup);
-            //drawConfigScreen();
-            //vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
-            break;
-        case NORMAL:
-            drawRTDScreen(); //from somethingP
-            //tftDLWrite(&tft, &tftDL_startup);
-            //vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
-            break;
-        case CONFIG:
-            drawConfigScreen();
-            vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
-            break;
-        case dimStateERROR:
-            drawErrorScreen();
-            vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
-            break;
-        case RACING:
-            drawRacingScreen();
-            vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
-            break;
-    }
+    // switch(currState) {
+    //     case INIT:
+    //         //initialize buttons to 0
+	// 		//also initializes all LRUD buttons to 0
+    //         for(int i=0; i<NUM_BUTTONS; i++){
+    //             //is it necessary to initialize the can buttons to 0 if they are just reading pins??
+    //             canButtonStates[i] = 0;
+    //             gpioButtonStates[i] = 0;
+    //         }
+    //          /* Restarting the Display. */
+    //         TickType_t lastWakeTime = xTaskGetTickCount();
+    // 		//change pin of screen
+    //         /* Initialize the display. */
+    //         // tftInitSequence();
+    //         tftUpdate();
+    //         break;
+    //     case START:
+    //         /* Display Startup Screen for fixed time */
+    //         //tftDLWrite(&tft, &tftDL_startup);
+    //         //drawConfigScreen();
+    //         //vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
+    //         break;
+    //     case NORMAL:
+    //         drawRTDScreen(); //from somethingP
+    //         //tftDLWrite(&tft, &tftDL_startup);
+    //         //vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
+    //         break;
+    //     case CONFIG:
+    //         drawConfigScreen();
+    //         vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
+    //         break;
+    //     case dimStateERROR:
+    //         drawErrorScreen();
+    //         vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
+    //         break;
+    //     case RACING:
+    //         drawRacingScreen();
+    //         vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
+    //         break;
+    // }
 	//TODO: Why is this called again?
     currState = getReqScreen();
 }
@@ -698,7 +702,8 @@ static void stateMachine(void *pvParameters){
     uint32_t space1 = 0;
     while (1) {
         // taskENTER_CRITICAL();
-        stateOutput();
+        // stateOutput();
+        currState = getReqScreen();
         // tftRead(&tft, TFT_ADDR_CMD_READ, sizeof(test), &test);
         // test = test & 0x00000FFF;
         // tftRead(&tft, TFT_ADDR_CMDB_SPACE, sizeof(space1), &space1);

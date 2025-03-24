@@ -326,27 +326,48 @@ static void tftUpdate(void *pvParameters) {
     cmr_qspiSetPrescaler(&tft->qspi, TFT_QSPI_PRESCALER);
 
     /* Display Startup Screen for fixed time */
-    tftDLContentLoad(tft, &tftDL_startup);
-    tftDLWrite(tft, &tftDL_startup);
+    // tftDLContentLoad(tft, &tftDL_startup);
+    // tftDLWrite(tft, &tftDL_startup);
     //    vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS); //TODO: Uncomment
 
     /* Update Screen Info from CAN Indefinitely */
     while (1) {
         vTaskDelayUntil(&lastWakeTime, TFT_UPDATE_PERIOD_MS);
-        if (true) {
-            drawRTDScreen();
-        } else if ((stateGetVSMReq() == CMR_CAN_HV_EN) && (stateGetVSM() == CMR_CAN_ERROR)) {
-            drawSafetyScreen();
-        } else if (stateGetVSM() == CMR_CAN_ERROR) {
-            drawErrorScreen();
-        } else {
-        	//reset latching errors for ams as shown on screen
-        	prevOverVolt = false;
-        	prevUnderVolt = false;
-        	prevOverTemp = false;
-            // within drawRTDScreen, we decide if to draw testing or racing screen
-            drawRTDScreen();
+        cmr_state state = getCurrState();
+        switch(state){
+            case NORMAL:
+                drawRTDScreen();
+                break;
+            case CONFIG:
+                drawConfigScreen();
+                break;
+            case RACING:
+                drawSafetyScreen();
+                break;
+            case dimStateERROR:
+                drawErrorScreen();
+                break;
+            default:
+                prevOverVolt = false;
+             	prevUnderVolt = false;
+             	prevOverTemp = false;
+                drawRTDScreen();
         }
+        
+        // if (true) {
+        //     drawRTDScreen();
+        // } else if ((stateGetVSMReq() == CMR_CAN_HV_EN) && (stateGetVSM() == CMR_CAN_ERROR)) {
+        //     drawSafetyScreen();
+        // } else if (stateGetVSM() == CMR_CAN_ERROR) {
+        //     drawErrorScreen();
+        // } else {
+        // 	//reset latching errors for ams as shown on screen
+        // 	prevOverVolt = false;
+        // 	prevUnderVolt = false;
+        // 	prevOverTemp = false;
+        //     // within drawRTDScreen, we decide if to draw testing or racing screen
+        //     drawRTDScreen();
+        // }
     }
 }
 
