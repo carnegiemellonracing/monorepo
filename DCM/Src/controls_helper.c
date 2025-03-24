@@ -9,7 +9,7 @@
 #include "motors.h"
 
 /** @brief  min brake pressure for starting to apply regen */
-const uint8_t brake_pressure_start = 50;
+const uint16_t brake_pressure_start = 50;
 
 /** @brief  min paddle pressure for starting to apply regen */
 const uint8_t paddle_pressure_start = 30;
@@ -90,7 +90,7 @@ float getMinCellVoltage() {
 /**
  * @brief Convert steering wheel angle to steering angle (the orientation of the front wheels)
  */
-float swAngleMillidegToSteeringAngleRad(int16_t swAngle_millideg) {
+float swAngleMillidegToSteeringAngleRad(int32_t swAngle_millideg) {
     float steering_angle_deg = ((float)swAngle_millideg); // convert steering wheel angle into steering angle SIKE BITCHED ALREADY GOT STEERING ANGLE
     float steering_angle_rad = steering_angle_deg * 0.001f * M_PI / 180.0f;
     return  steering_angle_rad; // convert to rads
@@ -113,7 +113,7 @@ bool canTrustSBGVelocity(bool ignore_valid_bit) {
 // REGEN SEGMENT
 
 // returns if regen was activated. Updates throttlePos_u8 in paddle regen
-bool setRegen(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM){
+bool setRegen(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM){
     // get the regen type
     uint8_t pedal_regen_strength = 0;
     //bool retval1 = getProcessedValue(&pedal_regen_strength, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
@@ -139,7 +139,7 @@ bool setRegen(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8, int32_t avgM
  * @brief returns a negative torque limit in Nm after paddle regen request,
  *        or changes value of requested throttle
 */
-float getRegenTorqueReq(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8){
+float getRegenTorqueReq(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8){
     // get the regen type
     uint8_t pedal_regen_strength = 0;
     bool retval1 = getProcessedValue(&pedal_regen_strength, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
@@ -174,7 +174,7 @@ float getRegenTorqueReq(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8){
     return 0.0f;
 }
 
-bool setPaddleRegen(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM, uint8_t paddle_pressure, uint8_t paddle_regen_strength) {
+bool setPaddleRegen(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM, uint8_t paddle_pressure, uint8_t paddle_regen_strength) {
     if (paddle_pressure < paddle_pressure_start) return false;
 
     float paddle_request = ((float)(paddle_pressure - paddle_pressure_start)) * (((float) paddle_regen_strength) / (100.0f));
@@ -209,7 +209,7 @@ static float test_local() {
 	return 42.42f;
 }
 
-bool setParallelRegen(uint8_t throttlePos_u8, uint8_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM) {
+bool setParallelRegen(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM) {
 
     // return if regen is not needed
     if (brakePressurePsi_u8 < braking_threshold_psi) {

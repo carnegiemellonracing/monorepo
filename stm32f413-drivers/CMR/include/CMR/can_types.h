@@ -592,12 +592,17 @@ typedef struct {
 typedef struct {
     uint8_t torqueRequested;            /**< @brief Torque requested (0-255). */
     uint8_t throttlePosition;           /**< @brief Throttle position (0-255). */
-    uint8_t brakePressureFront_PSI;     /**< @brief Front brake pressure. */
+    uint16_t brakePressureFront_PSI;     /**< @brief Front brake pressure. */
     uint8_t brakePedalPosition;         /**< @brief Brake pedal position (0-255). */
-
-    /** @brief Steering wheel angle (-180 to 180 degrees). */
-    int16_t steeringWheelAngle_millideg;
+    
 } cmr_canFSMData_t;
+
+typedef struct {
+    /** @brief Steering wheel angle (-180 to 180 degrees). 
+     * Calculated from ADC values using transfer function.
+    */
+    int32_t steeringWheelAngle_millideg;
+} cmr_canFSMSWAngle_t;
 
 /** @brief Front Sensor Module raw pedal positions. */
 typedef struct {

@@ -66,7 +66,7 @@ static volatile cmr_canCDCControlsStatus_t controlsStatus = {
 
 volatile cmr_canCDCKiloCoulombs_t coulombCounting;
 
-float getYawRateControlLeftRightBias(int16_t swAngle_millideg);
+float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 
 /** @brief Coulomb counting info **/
 static TickType_t previousTickCount;
@@ -75,8 +75,8 @@ static TickType_t previousTickCount;
 // Function implementations
 void setLaunchControl(
 	uint8_t throttlePos_u8,
-	uint8_t brakePressurePsi_u8,
-	int16_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
+	uint16_t brakePressurePsi_u8,
+	int32_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
 	float leftRightBias_Nm, /** IGNORED UNLESS traction_control_mode (defined in the function) is TC_MODE_TORQUE */
 	bool assumeNoTurn,
 	bool ignoreYawRate,
@@ -241,7 +241,7 @@ static inline void set_motor_speed_and_torque(
  */
 static void set_optimal_control(
 	float normalized_throttle,
-	int16_t swAngle_millideg,
+	int32_t swAngle_millideg,
     bool allow_regen
 ) {
 
@@ -371,8 +371,8 @@ void runControls (
     cmr_canGear_t gear,
     uint8_t throttlePos_u8,
     uint8_t brakePos_u8,
-    uint8_t brakePressurePsi_u8,
-    int16_t swAngle_millideg,
+    uint16_t brakePressurePsi_u8,
+    int32_t swAngle_millideg,
     int32_t battVoltage_mV,
     int32_t battCurrent_mA,
     bool blank_command )
@@ -562,7 +562,7 @@ void test_solver(uint8_t throttlePos_u8, uint8_t swAngle_millideg, bool clampbys
  */
 void setSlowTorque (
     uint8_t throttlePos_u8,
-    int16_t swAngle_millideg
+    int32_t swAngle_millideg
 ) {
     const float reqTorque = maxSlowTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
     setTorqueLimsAllProtected(reqTorque, 0.0f);
@@ -598,7 +598,7 @@ void setFastTorque (
     setVelocityInt16All(maxFastSpeed_rpm);
 }
 
-void setFastTorqueWithParallelRegen(uint8_t brakePressurePsi_u8, uint8_t throttlePos_u8)
+void setFastTorqueWithParallelRegen(uint16_t brakePressurePsi_u8, uint8_t throttlePos_u8)
 {
     if (brakePressurePsi_u8 >= braking_threshold_psi) {
         bool activateParallelRegen = false;
@@ -736,8 +736,8 @@ static float getFFScheduleVelocity(float t_sec) {
 */
 void setLaunchControl(
 	uint8_t throttlePos_u8,
-	uint8_t brakePressurePsi_u8,
-	int16_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
+	uint16_t brakePressurePsi_u8,
+	int32_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
 	float leftRightBias_Nm, /** IGNORED UNLESS traction_control_mode (defined in the function) is TC_MODE_TORQUE */
 	bool assumeNoTurn,
 	bool ignoreYawRate,
@@ -822,8 +822,8 @@ void setLaunchControl(
  */
 void setTractionControl (
     uint8_t throttlePos_u8,
-    uint8_t brakePressurePsi_u8,
-    int16_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
+    uint16_t brakePressurePsi_u8,
+    int32_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
     float leftRightBias_Nm, /** IGNORED UNLESS traction_control_mode (defined in the function) is TC_MODE_TORQUE */
     bool assumeNoTurn,
     bool ignoreYawRate,
@@ -1047,7 +1047,7 @@ void setTractionControl (
  * @brief Calculate the control action (left-right torque bias) of the yaw rate controller
  * @param swAngle_millideg Steering wheel angle
  */
-float getYawRateControlLeftRightBias(int16_t swAngle_millideg) {
+float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
     // ********* Local Parameters *********
 
     /** @brief Trust SBG velocities even if SBG reports that they're invalid
@@ -1099,8 +1099,8 @@ float getYawRateControlLeftRightBias(int16_t swAngle_millideg) {
  */
 void setYawRateControl (
     uint8_t throttlePos_u8,
-    uint8_t brakePressurePsi_u8,
-    int16_t swAngle_millideg,
+    uint16_t brakePressurePsi_u8,
+    int32_t swAngle_millideg,
     bool clampbyside
 ) {
     if (brakePressurePsi_u8 >= braking_threshold_psi) { // breaking
@@ -1182,8 +1182,8 @@ void setYawRateControl (
  */
 void setYawRateAndTractionControl (
     uint8_t throttlePos_u8,
-    uint8_t brakePressurePsi_u8,
-    int16_t swAngle_millideg, /* IGNORED FOR TC if assumeNoTurn is true */
+    uint16_t brakePressurePsi_u8,
+    int32_t swAngle_millideg, /* IGNORED FOR TC if assumeNoTurn is true */
     bool assumeNoTurn,
     bool ignoreYawRate,
     bool allowRegen,
@@ -1205,7 +1205,7 @@ void setYawRateAndTractionControl (
  */
 void setCruiseControlTorque (
     uint8_t throttlePos_u8,
-    uint8_t brakePressurePsi_u8,
+    uint16_t brakePressurePsi_u8,
     int32_t avgMotorSpeed_RPM
 ) {
     static bool cruiseControl = false;
@@ -1246,10 +1246,10 @@ void setEnduranceTorque (
     int32_t avgMotorSpeed_RPM,
     uint8_t throttlePos_u8,
     uint8_t brakePos_u8,
-    int16_t swAngle_millideg,
+    int32_t swAngle_millideg,
     int32_t battVoltage_V_hvc,
     int32_t battCurrent_A_hvc,
-    uint8_t brakePressurePsi_u8
+    uint16_t brakePressurePsi_u8
 ) {
     // if braking
     if (setRegen(&throttlePos_u8, brakePressurePsi_u8, avgMotorSpeed_RPM)){
@@ -1330,10 +1330,10 @@ void setEnduranceTestTorque(
     int32_t avgMotorSpeed_RPM,
     uint8_t throttlePos_u8,
     uint8_t brakePos_u8,
-    int16_t swAngle_millideg,
+    int32_t swAngle_millideg,
     int32_t battVoltage_mV,
     int32_t battCurrent_mA,
-    uint8_t brakePressurePsi_u8,
+    uint16_t brakePressurePsi_u8,
     bool clampbyside
 ) {
      // if braking
