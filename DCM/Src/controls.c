@@ -438,9 +438,9 @@ void runControls (
             const bool allowRegen = false; // regen-braking is not allowed because it's meaningless in accel
             const float critical_speed_mps = 0.0f; // using a low value to prevent excessive wheel spin at low speeds
             const float leftRightBias_Nm = 0.0f; // YRC is not enabled for accel, so there should be no left-right torque bias
-            // setLaunchControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, leftRightBias_Nm, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
+            setLaunchControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, leftRightBias_Nm, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
             // Dry testing only.
-            setLaunchControl(255, 0, 0, leftRightBias_Nm, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
+            // setLaunchControl(255, 0, 0, leftRightBias_Nm, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
             break;
         }
         case CMR_CAN_GEAR_TEST: {
