@@ -561,11 +561,11 @@ const cmr_canCDCMotorPower_t *getMotorPowerInfo(){
     return (const cmr_canCDCMotorPower_t*) &motorPower_state;
 }
 
-float getPowerLimit() {
+float getPowerLimit_W() {
 	return power_upper_limit_W;
 }
 
-void setPowerLimit(uint8_t limit) {
-	power_upper_limit_W = limit*1000.0f;
-	power_safety_margin_W = power_upper_limit_W*0.17f;
+void setPowerLimit_kW(uint8_t power_limit_kW) {
+	power_upper_limit_W = power_limit_kW * 1000.0f;
+	power_safety_margin_W = power_upper_limit_W * 0.17f;
 }

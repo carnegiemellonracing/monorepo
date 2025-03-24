@@ -54,6 +54,11 @@ typedef enum {
     CMR_CANID_CDC_POSE_ORIENTATION = 0x292,         /**< @brief CDC (20e) roll/pitch/yaw real car position. */
     CMR_CANID_CDC_POSE_VELOCITY = 0x2A2,            /**< @brief CDC (20e) real car velocity. */
     CMR_CANID_CDC_POSE_ACCELERATION = 0x2B2,        /**< @brief CDC (20e) real car acceleration. */
+    
+    CMR_CANID_CDC_COG_VELOCITY = 0x2C2,        /**< @brief CDC (20e) real car acceleration. */
+    CMR_CANID_CDC_FRONT_VELOCITY = 0x2D2,        /**< @brief CDC (20e) real car acceleration. */
+    CMR_CANID_CDC_REAR_VELOCITY = 0x2E2,        /**< @brief CDC (20e) real car acceleration. */
+    
     CMR_CANID_CDC_POWER_SENSE = 0x305,
     CMR_CANID_CDC_RTC_DATA_OUT = 0x6A2,             /**< @brief CDC RTC data. */
     CMR_CANID_CDC_RTC_DATA_IN = 0x6B2,              /**< @brief CDC RTC data. */
@@ -61,6 +66,7 @@ typedef enum {
     CMR_CANID_CDC_CONTROLS_STATUS = 0x6D2,          /**< @brief CDC controls status data. */
     CMR_CANID_CDC_POWER_UPDATE = 0x6E2,             /**< @brief DAQ Live to CDC - changing power limit. */
     CMR_CANID_CDC_COULOMB_COUNTING = 0x6E3,
+    CMR_CANID_CDC_POWER_LOG = 0x6E4,             /**< @brief DAQ Live to CDC - changing power limit. */
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
     CMR_CANID_CELL_BALANCE_ENABLE = 0x134,
@@ -222,6 +228,12 @@ typedef enum {
     CMR_CANID_SBG_IMU_GYRO = 0x712,             /**< @brief SBG_ECAN_LOG_IMU_GYRO */
     CMR_CANID_SBG_BODY_VEL = 0x729,             /**< @brief SBG_ECAN_MSG_EKF_VEL_BODY */
     CMR_CANID_SBG_AUTOMOTIVE = 0x72A,           /**< @brief SBG_ECAN_MSG_AUTO_TRACK_SLIP_CURV */
+
+    CMR_CANID_MOVELLA_STATUS = 0x772,
+    CMR_CANID_MOVELLA_QUATERNION = 0x774,
+    CMR_CANID_MOVELLA_IMU_GYRO = 0x776,
+    CMR_CANID_MOVELLA_IMU_ACCEL = 0x77E,
+    CMR_CANID_MOVELLA_VELOCITY = 0x77D,
 
     CMR_CANID_EMD_MEASUREMENT = 0x100,          /**< @brief EMD measurement for HV voltage/current. */
     CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */

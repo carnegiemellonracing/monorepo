@@ -470,6 +470,10 @@ typedef struct {
     uint8_t powerLimit_kW;
 } cmr_canCDCPowerLimit_t;
 
+typedef struct {
+    float power_limit_W;
+} cmr_canCDCPowerLimitLog_t;
+
 /** @brief Central Dynamics Controller Safety Filter states. */
 typedef struct {
 	float power_limit_max_violation_W;  /**< @brief the maximum amount in W the power hard-limit is violated, expect 0.0 */
@@ -842,6 +846,63 @@ typedef struct {
     uint16_t curvature_radius_m;    /**< @brief Curvature radius based on down rotation rate (meters times 10^2). */
     uint8_t status;                 /**< @brief Status bitmasks as AUTO_STATUS definition. */
 } cmr_canSBGAutomotive_t;
+
+// Endianness hell.
+typedef struct {
+    uint8_t msb;
+    uint8_t lsb;
+} big_endian_16_t;
+
+typedef struct {
+    big_endian_16_t q0;
+    big_endian_16_t q1;
+    big_endian_16_t q2;
+    big_endian_16_t q3;
+} cmr_canMovellaQuaternion_t;
+
+typedef struct {
+    big_endian_16_t yaw;
+    big_endian_16_t pitch;
+    big_endian_16_t roll;
+} cmr_canMovellaEulerAngles_t;
+
+typedef struct {
+    big_endian_16_t gyro_x;
+    big_endian_16_t gyro_y;
+    big_endian_16_t gyro_z;
+} cmr_canMovellaIMUGyro_t;
+
+typedef struct {
+    big_endian_16_t accel_x;
+    big_endian_16_t accel_y;
+    big_endian_16_t accel_z;
+} cmr_canMovellaIMUAccel_t;
+
+typedef struct {
+    big_endian_16_t vel_x;
+    big_endian_16_t vel_y;
+    big_endian_16_t vel_z;
+} cmr_canMovellaVelocity_t;
+
+typedef struct {
+    int16_t cog_x;
+    int16_t cog_y;
+    float slip_angle;
+} cmr_canCOGVelocity_t;
+
+typedef struct {
+    int16_t fl_x;
+    int16_t fl_y;
+    int16_t fr_x;
+    int16_t fr_y;
+} cmr_canFrontWheelVelocity_t;
+
+typedef struct {
+    int16_t rl_x;
+    int16_t rl_y;
+    int16_t rr_x;
+    int16_t rr_y;
+} cmr_canRearWheelVelocity_t;
 
 // ------------------------------------------------------------------------------------------------
 // IZZIE Racing sensors
