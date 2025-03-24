@@ -241,14 +241,14 @@ CAN_RX_FIFO_PENDING(1)
 
 int cmr_canTX(
     cmr_can_t *can,
-    uint16_t id, const void *data, size_t len,
+    uint16_t id, const void *data, uint8_t len,
     TickType_t timeout
 ) {
 	FDCAN_TxHeaderTypeDef txHeader = {
         .Identifier = id,
         .IdType = FDCAN_STANDARD_ID,
         .TxFrameType = FDCAN_DATA_FRAME,
-        .DataLength = len << 16, // shifted by 16 because of the FDCAN_DLC_BYTES definitions
+        .DataLength = len, // Doesn't get shifted by 16
         .ErrorStateIndicator = FDCAN_ESI_ACTIVE,
 		.BitRateSwitch = FDCAN_BRS_OFF,
 		.FDFormat = FDCAN_CLASSIC_CAN,
