@@ -338,13 +338,13 @@ void cmr_canInit(
  */
 int cmr_canTX(
     cmr_can_t *can,
-    uint16_t id, const void *data, uint8_t len,
+    uint32_t id, bool isExtended, const void *data, size_t len,
     TickType_t timeout
 ) {
     CAN_TxHeaderTypeDef txHeader = {
-        .StdId = id,
-        .ExtId = 0,
-        .IDE = CAN_ID_STD,
+        .StdId = (isExtended) ? 0 : id,
+        .ExtId = (isExtended) ? id : 0,
+        .IDE = (isExtended) ? CAN_ID_EXT : CAN_ID_STD,
         .RTR = CAN_RTR_DATA,
         .DLC = len,
         .TransmitGlobalTime = DISABLE
@@ -368,7 +368,6 @@ int cmr_canTX(
 
     return 0;
 }
-
 /**
  * @brief Enables (sets) bit(s) in a CAN field.
  *

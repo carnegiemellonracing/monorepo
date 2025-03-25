@@ -72,7 +72,7 @@ static void statusLED(void *pvParameters) {
 int main(void) {
     // System initialization.
     HAL_Init();
-    cmr_rccSystemClockEnable(false); // Use HSI - HSE seems broken
+    cmr_rccSystemClockEnable(); // Use HSI - HSE seems broken
 
     //Comment out lines 67, 69-71, 74 to program the MCU two if ever necessary
     // Peripheral configuration.

@@ -101,6 +101,12 @@ void cmr_canInit(
 typedef struct {
     bool isMask;        /**< @brief `true` to mask; `false` to whitelist. */
 
+    /**< @brief `true` to indicate extended CAN IDs (29-bit), false to
+     *          indicate standard CAN IDs (11-bit). Unfortunately this
+     *          means no mixing/matching in the same CAN filter.
+     */
+    bool isExtended;
+
     /**
      * @brief The CAN receive FIFO to configure (one of `CAN_RX_FIFOx` from
      * `stm32f4xx_hal_can.h`).
@@ -126,7 +132,10 @@ typedef struct {
      * If the above condition is true, the message is accepted into the
      * specified FIFO; otherwise, it is ignored.
      */
-    uint16_t ids[4];
+    union {
+        uint16_t standard[4];
+        uint32_t extended[2];
+    } ids;
 } cmr_canFilter_t;
 
 void cmr_canFilter(
@@ -135,7 +144,7 @@ void cmr_canFilter(
 
 int cmr_canTX(
     cmr_can_t *can,
-    uint16_t id, const void *data, uint8_t len,
+    uint32_t id, bool isExtended, const void *data, size_t len,
     TickType_t timeout
 );
 

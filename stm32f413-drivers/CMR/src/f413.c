@@ -203,17 +203,15 @@ CAN_FOREACH(CAN_INTERRUPT_CONFIG)
  * `CMR_CAN_FILTERBANKS`.
  */
 void _platform_canFilter(
-    cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen)
-{
-    if (filtersLen >= CMR_CAN_FILTERBANKS)
-    {
+    cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen
+) {
+    if (filtersLen >= CMR_CAN_FILTERBANKS) {
         cmr_panic("Too many filter banks!");
     }
 
     CAN_TypeDef *instance = can->handle.Instance;
 
-    for (size_t i = 0; i < filtersLen; i++)
-    {
+    for (size_t i = 0; i < filtersLen; i++) {
         const cmr_canFilter_t *filter = filters + i;
 
         uint32_t bank = i;
@@ -226,26 +224,46 @@ void _platform_canFilter(
             ? CAN_FILTERMODE_IDMASK
             : CAN_FILTERMODE_IDLIST;
 
-        // In 16 bit ID list mode, FilterIdHigh, FilterIdLow, FilterMaskIdHigh,
-        // and FilterMaskIdLow all serve as a whitelist of left-aligned 11-bit
-        // CAN IDs.
-        // See RM0430 32.7.4 Fig. 387.
-        const uint16_t CMR_CAN_ID_FILTER_SHIFT = 5;
         CAN_FilterTypeDef config = {
-            .FilterIdHigh           = filter->ids[0] << CMR_CAN_ID_FILTER_SHIFT,
-            .FilterIdLow            = filter->ids[1] << CMR_CAN_ID_FILTER_SHIFT,
-            .FilterMaskIdHigh       = filter->ids[2] << CMR_CAN_ID_FILTER_SHIFT,
-            .FilterMaskIdLow        = filter->ids[3] << CMR_CAN_ID_FILTER_SHIFT,
+             // FilterIdHigh/Low, FilterMaskIdHigh/Low defined below
             .FilterFIFOAssignment   = filter->rxFIFO,
             .FilterBank             = bank,
             .FilterMode             = filterMode,
-            .FilterScale            = CAN_FILTERSCALE_16BIT,
+            // FilterScale defined below
             .FilterActivation       = ENABLE,
             .SlaveStartFilterBank   = CMR_CAN_FILTERBANKS
         };
 
-        if (HAL_CAN_ConfigFilter(&can->handle, &config) != HAL_OK)
-        {
+        if (filter->isExtended) {
+            /*
+             * In 32-bit ID list mode, the high parts of the filter ID and mask
+             * take the upper 16-bits of the CAN ID, and the low parts of filter
+             * ID and mask contain the lower 13 bits, left aligned (shifted
+             * by 3). We also set the CAN_ID_EXT bit to indicate that this is an
+             * extended CAN ID.
+             */
+            const uint16_t CMR_CAN_EXTID_FILTER_SHIFT = 3;
+
+            config.FilterScale            = CAN_FILTERSCALE_32BIT;
+            config.FilterIdHigh           = (filter->ids.extended[0] >> 13) & 0xFFFF;
+            config.FilterIdLow            = ((filter->ids.extended[0] & 0x1FFF) << CMR_CAN_EXTID_FILTER_SHIFT) | CAN_ID_EXT;
+            config.FilterMaskIdHigh       = (filter->ids.extended[1] >> 13) & 0xFFFF;
+            config.FilterMaskIdLow        = ((filter->ids.extended[1] & 0x1FFF) << CMR_CAN_EXTID_FILTER_SHIFT) | CAN_ID_EXT;
+        } else {
+            // In 16 bit ID list mode, FilterIdHigh, FilterIdLow, FilterMaskIdHigh,
+            // and FilterMaskIdLow all serve as a whitelist of left-aligned 11-bit
+            // CAN IDs.
+            // See RM0430 32.7.4 Fig. 387.
+            const uint16_t CMR_CAN_ID_FILTER_SHIFT = 5;
+
+            config.FilterScale            = CAN_FILTERSCALE_16BIT;
+            config.FilterIdHigh           = filter->ids.standard[0] << CMR_CAN_ID_FILTER_SHIFT;
+            config.FilterIdLow            = filter->ids.standard[1] << CMR_CAN_ID_FILTER_SHIFT;
+            config.FilterMaskIdHigh       = filter->ids.standard[2] << CMR_CAN_ID_FILTER_SHIFT;
+            config.FilterMaskIdLow        = filter->ids.standard[3] << CMR_CAN_ID_FILTER_SHIFT;
+        }
+
+        if (HAL_CAN_ConfigFilter(&can->handle, &config) != HAL_OK) {
             cmr_panic("HAL_CAN_ConfigFilter() failed!");
         }
     }

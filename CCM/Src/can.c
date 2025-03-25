@@ -42,12 +42,12 @@ cmr_canRXMeta_t canVehicleRXMeta[] = {
     [CANRX_HVC_CELL_TEMPS] = {
         .canID = CMR_CANID_HVC_MINMAX_CELL_TEMPS,
         .timeoutError_ms = 2000,
-        .timeoutError_ms = 1500
+        .timeoutWarn_ms = 1500
     },
     [CANRX_HVC_CELL_VOLTAGE] = {
         .canID = CMR_CANID_HVC_MINMAX_CELL_VOLTAGE,
         .timeoutError_ms = 100,
-        .timeoutError_ms = 50
+        .timeoutWarn_ms = 50
     },
     [CANRX_CCM_COMMAND] = {
         .canID = CMR_CANID_CCM_COMMAND,

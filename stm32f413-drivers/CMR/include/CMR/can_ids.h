@@ -297,6 +297,11 @@ typedef enum {
     CAN_ID_LV_BMS_CELL_OVERTEMP,
     CAN_ID_LV_BMS_BUS_VOLTAGE,
     CAN_ID_LV_BMS_CURRENT,
+
+    CMR_CANID_CCM_COMMAND = 0x140,              /**< @brief CCM command, backup to UART interface */
+
+    CMR_CANID_DILONG_COMMAND = 0x1806E5F4,      /**< @brief DiLong charger command */
+    CMR_CANID_DILONG_STATE = 0x18FF50E5,        /**< @brief DiLong charger state */
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */

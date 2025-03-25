@@ -1074,4 +1074,51 @@ typedef struct {
 	uint32_t test_id;
 } cmr_canTestID_t;
 
+// ------------------------------------------------------------------------------------------------
+// DiLong charger definitions.
+
+/** @brief DiLong charger status bits. */
+typedef enum {
+    CMR_CAN_DILONG_STATUS_HARDWARE_FAILURE = (1 << 0), /**< @brief Charger hardware failure. */
+    CMR_CAN_DILONG_STATUS_CHARGER_OVERHEAT = (1 << 1), /**< @brief Charger overheated, protection engaged. */
+    CMR_CAN_DILONG_STATUS_INPUT_VOLTAGE = (1 << 2),    /**< @brief Input voltage error. */
+    CMR_CAN_DILONG_STATUS_START_STATE = (1 << 3),      /**< @brief Charger off (if set). */
+    CMR_CAN_DILONG_STATUS_COMM_TIMEOUT = (1 << 4),     /**< @brief Communication reception timeout. */
+} cmr_canDilongStatus_t;
+
+/** @brief DiLong charger state. */
+typedef struct {
+    uint8_t outputVoltageHigh; /**< @brief High byte of output voltage */
+    uint8_t outputVoltageLow;  /**< @brief Low byte of output voltage */
+    uint8_t outputCurrentHigh; /**< @brief High byte of output current */
+    uint8_t outputCurrentLow;  /**< @brief Low byte of output current */
+    uint8_t status_bv;         /**< @brief Charger status - see canDilongStatus_t */
+    uint8_t padding[3];        /**< @brief Required reserved data */
+} cmr_canDilongState_t;
+
+/** @brief DiLong command message. */
+typedef struct {
+    uint8_t maxVoltageHigh; /**< @brief High byte of max voltage */
+    uint8_t maxVoltageLow;  /**< @brief Low byte of max voltage */
+    uint8_t maxCurrentHigh; /**< @brief High byte of max current */
+    uint8_t maxCurrentLow;  /**< @brief Low byte of max current */
+    uint8_t chargerDisable; /**< @brief Set to enable charger protection */
+    uint8_t enableHeating;  /**< @brief Set to enable charger protection */
+    uint8_t padding[2];     /**< @brief Required reserved data */
+} cmr_canDilongCommand_t;
+
+// ------------------------------------------------------------------------------------------------
+// CCM definitions
+/** @brief CMR Charger Control Module modes. */
+typedef enum {
+    CMR_CAN_CCM_MODE_IDLE   = (1 << 0), /**< @brief Idle mode. */
+    CMR_CAN_CCM_MODE_RUN    = (1 << 1), /**< @brief Run mode for charging. */
+    CMR_CAN_CCM_MODE_RESET  = (1 << 2)  /**< @brief Reset errors. */
+} cmr_canCCMMode_t;
+
+/** @brief CMR Charger Control Module commands. */
+typedef struct {
+    uint8_t command;
+} cmr_canCCMCommand_t;
+
 #endif /* CMR_CAN_TYPES_H */
