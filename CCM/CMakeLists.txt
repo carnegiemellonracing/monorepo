@@ -121,7 +121,6 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/evse.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/fans.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/pilot_table.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/sensors.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/state.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/uart.c
