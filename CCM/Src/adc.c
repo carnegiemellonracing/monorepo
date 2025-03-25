@@ -64,7 +64,7 @@ void adcInit(void) {
     // ADC initialization and channel configuration.
     cmr_adcInit(
         &adc, ADC1,
-        adcChannels, sizeof(adcChannels) / sizeof(adcChannels[0])
+        adcChannels, sizeof(adcChannels) / sizeof(adcChannels[0]),10
     );
 }
 

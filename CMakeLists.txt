@@ -63,3 +63,11 @@ ExternalProject_Add(
         INSTALL_COMMAND ""
         BUILD_ALWAYS TRUE
 )
+
+ExternalProject_Add(
+        CCM
+        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/CCM
+        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/CCM
+        INSTALL_COMMAND ""
+        BUILD_ALWAYS TRUE
+)

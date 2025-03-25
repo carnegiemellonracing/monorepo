@@ -22,3 +22,5 @@ gitcommit.h
 
 *-stamp/
 tmp/
+
+*.ninja
