@@ -60,7 +60,7 @@ static int32_t adcToPilotDutyCycle(const cmr_sensor_t *sensor, uint32_t reading)
      */
     uint32_t voltage = reading * 8 / 10;
 
-    for (int i = 0; i < dutyCycleVoltages_len - 1; i++) {
+    for (size_t i = 0; i < dutyCycleVoltages_len - 1; i++) {
         if (dutyCycleVoltages[i].voltage <= voltage && dutyCycleVoltages[i + 1].voltage >= voltage) {
             uint32_t diff_x = dutyCycleVoltages[i + 1].voltage - dutyCycleVoltages[i].voltage;
             uint32_t diff_y = dutyCycleVoltages[i + 1].dutyCycle - dutyCycleVoltages[i].dutyCycle;
@@ -108,7 +108,7 @@ static int32_t adcToPilotVoltage(const cmr_sensor_t *sensor, uint32_t reading) {
 // assumes thermistor is on the high side
 float thermistorCalc(float B, float r1, float rTemp, float biasR, float vSense, float vBias) {
     float r2 = biasR * ((vBias / vSense) - 1);
-    float temp = (B * (rTemp + 273.15f)) / (B - ((rTemp + 273.15f) * log(r1/r2)));
+    float temp = (B * (rTemp + 273.15f)) / (B - ((rTemp + 273.15f) * logf(r1/r2)));
     return temp - 273.15f;
 }
 

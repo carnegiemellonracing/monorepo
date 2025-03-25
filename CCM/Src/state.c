@@ -61,25 +61,15 @@ static cmr_CCMState_t getNextState(TickType_t lastWakeTime_ms) {
     // Nothing is wrong, default nextState to error and begin state transition logic
     cmr_CCMState_t nextState = CMR_CCM_STATE_ERROR;
 
-    uint32_t pilotVoltage = cmr_sensorListGetValue(
-            &sensorList, SENSOR_CH_PILOT_VOLTAGE
-        );
-
     cmr_canRXMeta_t *metaChargerOneState = canChargerOneRXMeta + CANRX_CHARGER_ONE_STATE;
     cmr_canRXMeta_t *metaChargerTwoState = canChargerTwoRXMeta + CANRX_CHARGER_TWO_STATE;
 
-    cmr_canRXMeta_t *metaHVCHeartbeat = canVehicleRXMeta + CANRX_HVC_HEARTBEAT;
-    cmr_canRXMeta_t *metaCCMCommand = canVehicleRXMeta + CANRX_CCM_COMMAND;
 
-    volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat = (void *) metaHVCHeartbeat->payload;
+    volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat = canGetPayload(CANRX_HVC_HEARTBEAT);
     uint8_t hvcState = canHVCHeartbeat->hvcState;
     uint8_t hvcMode = canHVCHeartbeat->hvcMode;
 
-    volatile cmr_canCCMCommand_t *canCCMCommand = (void *) metaCCMCommand->payload;
-
-//    if (isChargerErrored(metaChargerOneState) || isChargerErrored(metaChargerTwoState)) {
-//        return CMR_CCM_STATE_ERROR;
-//    }
+    volatile cmr_canCCMCommand_t *canCCMCommand = canGetPayload(CANRX_CCM_COMMAND);
 
     taskENTER_CRITICAL();
 
@@ -169,7 +159,7 @@ static cmr_CCMState_t getNextState(TickType_t lastWakeTime_ms) {
                 hvcState == CMR_CAN_HVC_STATE_STANDBY ||
                 (requestedCommand == CMR_CCM_COMMAND_OFF) ||
                 (canCCMCommand->command == CMR_CAN_CCM_MODE_IDLE)) {
-                nextState = CMR_CAN_HVC_STATE_STANDBY;
+                nextState = CMR_CCM_STATE_STANDBY ;
             }
             else {
                 nextState = CMR_CCM_STATE_SLOW_CHARGE;
@@ -208,27 +198,21 @@ static void setStateOutputs() {
     switch (state) {
     case CMR_CCM_STATE_CLEAR_HVC:
         hvcModeRequest = CMR_CAN_HVC_MODE_ERROR;
-        cmr_gpioWrite(GPIO_CHARGE_ENABLE, 0);
         break;
     case CMR_CCM_STATE_IDLE_HVC:
         hvcModeRequest = CMR_CAN_HVC_MODE_IDLE;
-        cmr_gpioWrite(GPIO_CHARGE_ENABLE, 0);
         break;
     case CMR_CCM_STATE_CHARGE_REQ:
         hvcModeRequest = CMR_CAN_HVC_MODE_CHARGE;
-        cmr_gpioWrite(GPIO_CHARGE_ENABLE, 1);
         break;
     case CMR_CCM_STATE_CHARGE:
         hvcModeRequest = CMR_CAN_HVC_MODE_CHARGE;
-        cmr_gpioWrite(GPIO_CHARGE_ENABLE, 1);
         break;
     case CMR_CCM_STATE_SHUTDOWN:
         hvcModeRequest = CMR_CAN_HVC_MODE_CHARGE;
-        cmr_gpioWrite(GPIO_CHARGE_ENABLE, 1);
         break;
     default:
         hvcModeRequest = CMR_CAN_HVC_MODE_IDLE;
-        cmr_gpioWrite(GPIO_CHARGE_ENABLE, 0);
     }
     if (state != CMR_CCM_STATE_ERROR) {
     	cmr_gpioWrite(GPIO_CHARGE_ENABLE, 1);

@@ -47,6 +47,7 @@ void canInit(void);
 int canVehicleTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 int canChargerOneTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 int canChargerTwoTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
+void *canGetPayload(canRX_t rxMsg);
 
 #endif /* CAN_H */
 

@@ -36,7 +36,7 @@ typedef enum {
 
 /** @brief Periodic message reception metadata. */
 typedef struct {
-    const uint16_t canID;       /**< @brief Associated CAN ID. */
+    const uint32_t canID;       /**< @brief Associated CAN ID. */
 
     /** @brief Threshold period for timeout warning, in milliseconds. */
     const TickType_t timeoutWarn_ms;

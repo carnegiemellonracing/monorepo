@@ -331,3 +331,10 @@ int canChargerTwoTX(cmr_canID_t id, const void *data, size_t len, TickType_t tim
     return cmr_canTX(&canChargerTwo, id, true, data, len, timeout);
 }
 
+void *canGetPayload(canRX_t rxMsg) {
+    configASSERT(rxMsg < CANRX_LEN);
+
+    cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
+
+    return (void *)(&rxMeta->payload);
+}

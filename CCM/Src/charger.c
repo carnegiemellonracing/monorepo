@@ -111,7 +111,6 @@ static uint16_t getChargerVoltage(charger_t charger) {
  */
 static uint16_t getDesiredChargerCurrent(charger_t charger) {
 	volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage = (void *) canVehicleRXMeta[CANRX_HVC_PACK_VOLTAGE].payload;
-	int32_t voltage = canHVCPackVoltage->battVoltage_mV/MV_TO_V;
     int32_t pilotDuty = cmr_sensorListGetValue(&sensorList, SENSOR_CH_PILOT_DUTY);
     int32_t evse_max_current = (int32_t) getEvseCurrentLimit(pilotDuty);
 
@@ -147,7 +146,6 @@ static void setChargerCommand(charger_t charger, uint16_t maxVoltage_dV, uint16_
     }
 
     volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat = (void *) canVehicleRXMeta[CANRX_HVC_HEARTBEAT].payload;
-    uint8_t hvcState = canHVCHeartbeat->hvcState;
     uint8_t hvcMode = canHVCHeartbeat->hvcMode;
 
     if (hvcMode == CMR_CAN_HVC_MODE_ERROR) {
