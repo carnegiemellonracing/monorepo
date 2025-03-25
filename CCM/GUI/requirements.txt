@@ -1,0 +1,6 @@
+appdirs==1.4.4
+cbor2==5.2.0
+Pillow==8.2.0
+pygubu==0.10.9
+pygubu-designer==0.16
+pyserial==3.5

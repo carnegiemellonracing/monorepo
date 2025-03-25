@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "adc.h": "c",
+        "platform.h": "c",
+        "stm32f4xx_hal.h": "c",
+        "stm32f4xx_hal_rcc.h": "c",
+        "stm32f4xx.h": "c",
+        "f413.h": "c",
+        "can.h": "c",
+        "can_types.h": "c",
+        "tasks.h": "c",
+        "state.h": "c"
+    },
+    "cmake.configureOnOpen": false
+}

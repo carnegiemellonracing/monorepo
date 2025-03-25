@@ -1,0 +1,12 @@
+[Unit]
+Description=GUI for the charger
+
+[Service]
+Type=simple
+WorkingDirectory=/home/pi/CCMGui
+ExecStart=/home/pi/CCMGui/bin/python /home/pi/CCMGui/ChargerGUIV2.py
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=default.target
