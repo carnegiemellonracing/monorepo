@@ -2,5 +2,5 @@
 	path = RAM/cJSON
 	url = git@github.com:DaveGamble/cJSON.git
 [submodule "cn-cbor"]
-	path = RAM/cn-cbor
+	path = cn-cbor
 	url = git@github.com:carnegiemellonracing/cn-cbor.git

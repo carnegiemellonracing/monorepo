@@ -154,7 +154,7 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 add_compile_options(${cpu_PARAMS})
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../stm32f413-drivers ${CMAKE_BINARY_DIR}/stm32f413-drivers)
 set(coveralls OFF)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cn-cbor)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../cn-cbor ${CMAKE_BINARY_DIR}/cn-cbor)
 
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME} ${link_LIBS})
