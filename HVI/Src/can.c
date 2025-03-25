@@ -248,7 +248,7 @@ void canInit(void) {
  * @return 0 on success, or a negative error code on timeout.
  */
 int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
-    return cmr_canTX(&can, id, data, len, timeout);
+    return cmr_canTX(&can, id, false, data, len, timeout);
 }
 
 /**

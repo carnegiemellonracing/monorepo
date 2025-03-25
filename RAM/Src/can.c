@@ -387,6 +387,6 @@ int canTX(
     TickType_t timeout_ms
 ) {
     configASSERT(bus_id < CMR_CAN_BUS_NUM);
-    return cmr_canTX(&can[bus_id], id, data, len, timeout_ms);
+    return cmr_canTX(&can[bus_id], false, id, data, len, timeout_ms);
 }
 
