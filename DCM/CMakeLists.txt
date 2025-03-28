@@ -210,7 +210,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     -fanalyzer
     -fdiagnostics-format=sarif-file
     >
-    $<$<CONFIG:Debug>:-Og -g3 -ggdb>
+    $<$<CONFIG:Debug>:-g3 -ggdb>
     $<$<CONFIG:Release>:-Og -g0>
 )
 

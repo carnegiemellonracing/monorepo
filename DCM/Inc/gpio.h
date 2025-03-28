@@ -26,6 +26,10 @@ typedef enum {
 	GPIO_PUMP_ON,           /**< @brief Pump On LED. */
     GPIO_AUXILIARY_ENABLE,  /**< @brief Auxiliary Enable. */
 	GPIO_MTR_CTRL_ENABLE,   /**< @brief Motor Controller Power Enable */
+	GPIO_MC_EFUSE_AUTO,     /**< @brief Motor Controller eFuse Auto Reset
+	                                             (high=latching, low=autoreset*/
+	GPIO_DRS_ENABLE_1,
+	GPIO_DRS_ENABLE_2,
     GPIO_LEN  				/**< @brief Total GPIO pins. */
 } gpio_t;
 
