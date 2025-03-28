@@ -179,6 +179,14 @@ static void motorsCommand (
         volatile cmr_canHVCPackVoltage_t *voltageHVC   = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
         volatile cmr_canHVCPackCurrent_t *currentHVC   = canVehicleGetPayload(CANRX_VEH_CURRENT_HVC);
         volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+        cmr_canAMKActualValues2_t *inv1_temps = (cmr_canAMKActualValues2_t *) canGetPayload(CANRX_INV1_STATUS);
+        int16_t inv1MotorTemp_dC = inv1_temps->motorTemp_dC;
+        cmr_canAMKActualValues2_t *inv2_temps = (cmr_canAMKActualValues2_t *) canGetPayload(CANRX_INV2_STATUS);
+        int16_t inv2MotorTemp_dC = inv2_temps->motorTemp_dC;
+        cmr_canAMKActualValues2_t *inv3_temps = (cmr_canAMKActualValues2_t *) canGetPayload(CANRX_INV3_STATUS);
+        int16_t inv3MotorTemp_dC = inv3_temps->motorTemp_dC;
+        cmr_canAMKActualValues2_t *inv4_temps = (cmr_canAMKActualValues2_t *) canGetPayload(CANRX_INV4_STATUS);
+        int16_t inv4MotorTemp_dC = inv4_temps->motorTemp_dC;
 
         uint32_t throttle;
 

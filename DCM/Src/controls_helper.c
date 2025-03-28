@@ -255,7 +255,7 @@ bool setParallelRegen(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int3
     // this will overflow as brake pressure exceeds max regen pressure, that's why there is a clamp below
 
     // get brake kappa for each motor and then run the following if checks against maxfasttorque and the capping max regen force
-    // task: find deadband
+
     float regenTorque_FL = getBrakeMaxTorque_mNm(MOTOR_FL, brakePressurePsi_u8) * 0.001;
     float regenTorque_FR = getBrakeMaxTorque_mNm(MOTOR_FR, brakePressurePsi_u8) * 0.001;
     float regenTorque_RL = getBrakeMaxTorque_mNm(MOTOR_RL, brakePressurePsi_u8) * 0.001;
