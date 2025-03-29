@@ -25,7 +25,6 @@ extern cmr_sensorList_t sensorList;
 
 extern const adcChannels_t sensorsADCChannels[SENSOR_CH_LEN];
 
-
 void sensorsInit(void);
 
 #endif /* SENSORS_H */
