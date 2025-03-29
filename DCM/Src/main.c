@@ -26,6 +26,8 @@
 #include "lut_3d.h"
 #include "lut.h"
 
+#include "power_regulator.h"
+
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
 
@@ -77,6 +79,8 @@ static void statusLED(void *pvParameters) {
  * @return Does not return.
  */
 int main(void) {
+
+    power_regulator_test();
 
    	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
     DWT->LAR = 0xC5ACCE55;

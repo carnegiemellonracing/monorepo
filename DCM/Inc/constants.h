@@ -66,6 +66,6 @@ static const float ac_max_capacity_J = 7 * 3.6e6; // 7 kWh. Replace with more ac
 static const float power_regulator_ac_margin_percentage = 0.15;
 static const float power_regulator_ac_margin_J = ac_max_capacity_J * power_regulator_ac_margin_percentage;
 static const float endurance_half_length_m = 0.5 * 22e3; // 11 km.
-static const float odometer_scaling_factor = 1.0; // Slip compensation.
+static const float odometer_correction_factor = 1.0; // Slip compensation.
 
 #endif
