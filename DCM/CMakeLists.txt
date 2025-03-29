@@ -151,6 +151,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/motors_helper.c
     ${CMAKE_SOURCE_DIR}/Src/motors.c
     ${CMAKE_SOURCE_DIR}/Src/pumps.c
+    ${CMAKE_SOURCE_DIR}/Src/power_regulator.c
     ${CMAKE_SOURCE_DIR}/Src/safety_filter.c
     ${CMAKE_SOURCE_DIR}/Src/sensors.c
     ${CMAKE_SOURCE_DIR}/Src/servo.c
