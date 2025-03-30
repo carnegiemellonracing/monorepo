@@ -10,6 +10,8 @@
 #include <CMR/pwm.h>        // PWM interface
 #include <CMR/gpio.h>       // GPIO interface
 #include <CMR/can_types.h>  // CMR CAN types
+#include "constants.h"
+#include <math.h>
 
 /** @brief PWM driver state. */
 // static cmr_pwm_t servo_left_PWM;
@@ -31,6 +33,17 @@ void setServoQuiet() {
 }
 
 // process duty cycle (ratio of pwm signal)
+// when lift > drag, we want it to be OPEN
+// skidpad always closed
+// we want to check swangle but also velocity 
+// we want swangle and velocity to find the lateral g on the car
+// exceeds threshold of lateral g, then we open it and closed
+// braking - we want it CLOSED
+// power limited - OPEN
+// traction limited - CLOSED
+//    -- thresholding here: t limited at beg of accel, and during skidpad
+
+
 static uint32_t angleToDutyCycle (int angle) {
     // map angle to percentage duty cycle
     // between five and ten percent?
@@ -39,6 +52,36 @@ static uint32_t angleToDutyCycle (int angle) {
 }
 
 
+
+// math for relating swangle and velocity
+float calculate_latg(int16_t swAngle_millideg, float velocity_mps) {
+    
+    if (swAngle_millideg == 0) {
+        return 0.0f;
+    }
+
+    // accel = v^2 / r and the r comes from angle
+    float swangle_rad = (swAngle_millideg / 1000.0f) * (M_PI / 180.0f); // millideg to rad
+
+    // avoid div by 0 
+    if (fabsf(tanf(swangle_rad)) < 1e-4) {
+        return 0.0f;
+    }
+
+    // turning radius
+    float radius = wheelbase_m  / tanf(swangle_rad);
+
+    // lateral g = v^2 / r / 9.81
+    float lat_g = (velocity_mps * velocity_mps) / (radius * 9.81f);
+
+    return lat_g;
+}
+
+
+
+
+
+// take the swangle, and proportional to speed
 void setDRS(bool open) {
 
     // OR THE TARGET ANGLE ALSO COMES FROM SWANGLE
@@ -50,32 +93,6 @@ void setDRS(bool open) {
     cmr_gpioWrite(GPIO_DRS_ENABLE_1, 1);
     cmr_gpioWrite(GPIO_DRS_ENABLE_2, 1);
 }
-
-// static uint32_t dutyCycleToLeftDutyCycle (uint32_t duty_cycle) {
-//     return (duty_cycle == 0) ? DRS_MAX_DUTY_CYCLE: DRS_MAX_DUTY_CYCLE - duty_cycle;
-// }
-
-// static uint32_t dutyCycleToRightDutyCycle (uint32_t duty_cycle) {
-//     // Help with servo alignment in housing
-
-// 	return (duty_cycle == 0) ? DRS_MIN_DUTY_CYCLE - 3 : DRS_MIN_DUTY_CYCLE + duty_cycle - 4;
-// }
-
-// void setDrsPosition(uint32_t duty_cycle) {
-//     uint32_t right_duty_cycle = dutyCycleToRightDutyCycle(duty_cycle);
-//     uint32_t left_duty_cycle = dutyCycleToLeftDutyCycle(duty_cycle);
-//     drs_state.angle = (uint8_t) duty_cycle;
-//     drs_state.pwm_left = (uint8_t) left_duty_cycle;
-//     drs_state.pwm_right = (uint8_t) right_duty_cycle;
-//     cmr_pwmSetDutyCycle(&servo_right_PWM, right_duty_cycle);
-//     cmr_pwmSetDutyCycle(&servo_left_PWM, left_duty_cycle);
-
-//     // servo write angle limits are 80 to 145
-
-//     // set DCM DRS GPIO pins high
-//     cmr_gpioWrite(GPIO_DRS_ENABLE_1, 1);
-//     cmr_gpioWrite(GPIO_DRS_ENABLE_2, 1);
-// }
 
 /**
  * @brief Task for initialising the servos.
@@ -103,9 +120,4 @@ void servoInit() {
     cmr_pwmInit(&servo_pwm, &pwmPinConfigLeft);
     cmr_pwmInit(&servo_pwm, &pwmPinConfigRight);
     setDRS(false);
-
-    // cmr_pwmInit(&servo_left_PWM, &pwmPinConfigLeft);
-    // cmr_pwmInit(&servo_right_PWM, &pwmPinConfigRight);
-    // NEED TO UPDATE THIS BASED ON NEW DRS SET POSITION
-    //setDrsPosition(DRS_CLOSED_DUTY_CYCLE);
 }
