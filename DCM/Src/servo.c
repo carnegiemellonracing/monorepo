@@ -22,6 +22,9 @@ static cmr_pwm_t servo_pwm;
 #define DRS_CLOSED_ANGLE 80
 #define DRS_OPENED_ANGLE 145
 
+#define LAT_G_UPPER_THRESH 1.2
+#define LAT_G_LOWER_THRESH 0.8
+
 extern cmr_canCDCDRSStates_t drs_state;
 
 void setServoQuiet() {
@@ -78,10 +81,29 @@ float calculate_latg(int16_t swAngle_millideg, float velocity_mps) {
 }
 
 
+void processDRSControl(int16_t swAngle_millideg, float velocity_mps, bool braking, bool power_limited, 
+                       bool traction_limited, bool skidpad) 
+    {
+        float lat_g = calculate_latg(swAngle_millideg, velocity_mps);
+        bool opened = false;
+
+        // DRS IS CLOSED WHEN:
+        // braking, traction limited, skidpad, or G is past threshold
+        if (braking || traction_limited || skidpad || lat_g > LAT_G_UPPER_THRESH) {
+            opened = false;
+        }
+
+        // DRS IS OPENED WHEN:
+        // power limited 
+        // G is below threshold 
+        else if (power_limited && lat_g < LAT_G_LOWER_THRESH) {
+            opened = true;
+        }
+
+        setDRS(opened);
+    }
 
 
-
-// take the swangle, and proportional to speed
 void setDRS(bool open) {
 
     // OR THE TARGET ANGLE ALSO COMES FROM SWANGLE
