@@ -139,7 +139,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/optimizer/optimizer.c
     ${CMAKE_SOURCE_DIR}/optimizer/qform.c
     ${CMAKE_SOURCE_DIR}/Src/daq.c
-    ${CMAKE_SOURCE_DIR}/Src/drs_controls.c
+    ${CMAKE_SOURCE_DIR}/Src/drs.c
     ${CMAKE_SOURCE_DIR}/Src/fans.c
     ${CMAKE_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_SOURCE_DIR}/Src/i2c.c
@@ -153,7 +153,6 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/pumps.c
     ${CMAKE_SOURCE_DIR}/Src/safety_filter.c
     ${CMAKE_SOURCE_DIR}/Src/sensors.c
-    ${CMAKE_SOURCE_DIR}/Src/servo.c
     ${CMAKE_SOURCE_DIR}/Src/syscalls.c
     ${CMAKE_SOURCE_DIR}/Src/sysmem.c
 )

@@ -19,8 +19,7 @@
 #include <CMR/config_screen_helper.h>
 #include <CMR/fir_filter.h>
 // #include "controls_23e.h"
-#include "drs_controls.h"
-#include "servo.h"
+#include "drs.h"
 #include "can.h"
 #include "daq.h"
 #include "safety_filter.h"
@@ -215,12 +214,12 @@ static void motorsCommand (
 //			5
 //		);
 //         update DRS mode
-        drsMode = reqDIM->requestedDrsMode;
-        runDrsControls(reqDIM->requestedGear,
-                        drsMode,
-                        dataFSM    -> throttlePosition,
-                        dataFSM    -> brakePressureFront_PSI,
-                        swangleFSM    -> steeringWheelAngle_millideg);
+        // drsMode = reqDIM->requestedDrsMode;
+        // runDrsControls(reqDIM->requestedGear,
+        //                 drsMode,
+        //                 dataFSM    -> throttlePosition,
+        //                 dataFSM    -> brakePressureFront_PSI,
+        //                 dataFSM    -> steeringWheelAngle_millideg);
 
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
