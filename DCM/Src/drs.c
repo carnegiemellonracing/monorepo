@@ -1,11 +1,11 @@
 /**
- * @file servo.c
+ * @file drs.c
  * @brief Control DRS Servos
  *
  * @author Carnegie Mellon Racing
  */
 
-#include "servo.h"        // Board-specific CAN interface
+#include "drs.h"        // Board-specific CAN interface
 #include "gpio.h"       // Board-specific GPIO interface
 #include <CMR/pwm.h>        // PWM interface
 #include <CMR/gpio.h>       // GPIO interface
@@ -35,17 +35,6 @@ void setServoQuiet() {
     cmr_gpioWrite(GPIO_DRS_ENABLE_2, 0);
 }
 
-// process duty cycle (ratio of pwm signal)
-// when lift > drag, we want it to be OPEN
-// skidpad always closed
-// we want to check swangle but also velocity 
-// we want swangle and velocity to find the lateral g on the car
-// exceeds threshold of lateral g, then we open it and closed
-// braking - we want it CLOSED
-// power limited - OPEN
-// traction limited - CLOSED
-//    -- thresholding here: t limited at beg of accel, and during skidpad
-
 
 static uint32_t angleToDutyCycle (int angle) {
     // map angle to percentage duty cycle
@@ -53,8 +42,6 @@ static uint32_t angleToDutyCycle (int angle) {
     int percentDutyCycle = (angle / 270) * 100;
     return percentDutyCycle;
 }
-
-
 
 // math for relating swangle and velocity
 float calculate_latg(int16_t swAngle_millideg, float velocity_mps) {
@@ -106,9 +93,8 @@ void processDRSControl(int16_t swAngle_millideg, float velocity_mps, bool brakin
 
 void setDRS(bool open) {
 
-    // OR THE TARGET ANGLE ALSO COMES FROM SWANGLE
     int target_angle = open ? DRS_OPENED_ANGLE : DRS_CLOSED_ANGLE;
-    float duty_percent = angletoDutyCycle(target_angle);
+    float duty_percent = angleToDutyCycle(target_angle);
 
     cmr_pwmSetDutyCycle(&servo_pwm, duty_percent);
 
@@ -122,7 +108,7 @@ void setDRS(bool open) {
  * @return Does not return.
  */
 void servoInit() {
-    const cmr_pwmPinConfig_t pwmPinConfigLeft = { // GPIO A0
+    const cmr_pwmPinConfig_t pwmPinConfigServo = { // GPIO A0
         .port = GPIOA, 
         .pin = GPIO_PIN_1,
         .channel = TIM_CHANNEL_1,
@@ -130,16 +116,7 @@ void servoInit() {
         .period_ticks = 1000,
         .timer = TIM2
     };
-    const cmr_pwmPinConfig_t pwmPinConfigRight = { // GPIO A1
-        .port = GPIOA,
-        .pin = GPIO_PIN_2,
-        .channel = TIM_CHANNEL_2,
-        .presc = 107,
-        .period_ticks = 1000,
-        .timer = TIM2
-    };
 
-    cmr_pwmInit(&servo_pwm, &pwmPinConfigLeft);
-    cmr_pwmInit(&servo_pwm, &pwmPinConfigRight);
+    cmr_pwmInit(&servo_pwm, &pwmPinConfigServo);
     setDRS(false);
 }

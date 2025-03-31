@@ -24,7 +24,7 @@
 #include "motors.h" // cmr_canDTISetpoints_t
 #include "daq.h"
 #include "i2c.h"
-#include "drs_controls.h"
+#include "drs.h"
 #include "controls_helper.h"
 #include "controls.h"
 #include "sensors.h"
@@ -1016,8 +1016,8 @@ static void canTX5Hz(void *pvParameters) {
         }
 
         // Send DRS state and debug data
-        const cmr_canCDCDRSStates_t *drsStatesInfo = getDRSInfo();
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DRS_STATE, drsStatesInfo, sizeof(*drsStatesInfo), canTX5Hz_period_ms);
+        //const cmr_canCDCDRSStates_t *drsStatesInfo = getDRSInfo();
+        //canTX(CMR_CAN_BUS_VEH, CMR_CANID_DRS_STATE, drsStatesInfo, sizeof(*drsStatesInfo), canTX5Hz_period_ms);
 
         transmitCDC_DIMconfigMessages();
 

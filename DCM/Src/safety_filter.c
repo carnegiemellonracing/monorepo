@@ -20,8 +20,7 @@
 #include <CMR/config_screen_helper.h>
 #include <CMR/fir_filter.h>
 #include "controls.h"
-#include "drs_controls.h"
-#include "servo.h"
+#include "drs.h"
 #include "can.h"
 #include "daq.h"
 #include "safety_filter.h"

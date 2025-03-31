@@ -1,5 +1,5 @@
 /**
- * @file servo.h
+ * @file drs.h
  * @brief DRS Servo Interface
  *
  * @author Carnegie Mellon Racing
@@ -8,8 +8,8 @@
 // ------------------------------------------------------------------------------------------------
 // Includes
 
-#ifndef SERVO_H
-#define SERVO_H
+#ifndef DRS_H
+#define DRS_H
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -17,18 +17,22 @@
 #include <CMR/can_types.h>
 
 // ------------------------------------------------------------------------------------------------
-// Defintions 
+// Definitions 
 
 #define DRS_DUTY_CYCLE_RANGE 8
-#define DRS_MAX_DUTY_CYCLE 96
-#define DRS_MIN_DUTY_CYCLE (DRS_MAX_DUTY_CYCLE - DRS_DUTY_CYCLE_RANGE)
+#define DRS_CLOSED_ANGLE 80
+#define DRS_OPENED_ANGLE 145
 
-#define DRS_OPEN_DUTY_CYCLE (DRS_DUTY_CYCLE_RANGE)  
-#define DRS_CLOSED_DUTY_CYCLE (0)
+#define LAT_G_UPPER_THRESH 1.2
+#define LAT_G_LOWER_THRESH 0.8
 
 // ------------------------------------------------------------------------------------------------
 // Public function declarations
 void servoInit(void);
 void setServoQuiet(void);
-void setDrsPosition(uint32_t angle);
+static uint32_t angleToDutyCycle (int angle);
+float calculate_latg(int16_t swAngle_millideg, float velocity_mps);
+void processDRSControl(int16_t swAngle_millideg, float velocity_mps, bool braking, bool power_limited, 
+    bool traction_limited, bool skidpad);
+void setDRS(bool open);
 #endif
