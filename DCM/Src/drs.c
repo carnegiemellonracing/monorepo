@@ -49,6 +49,7 @@ uint32_t angleToDutyCycle (int angle) {
 float calculate_latg(int16_t swAngle_millideg, float velocity_mps) {
 
     // just need to multiply yaw rate thing with velocity
+
     
     if (swAngle_millideg == 0) {
         return 0.0f;
