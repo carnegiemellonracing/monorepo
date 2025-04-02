@@ -189,6 +189,7 @@ extern volatile car_state_t car_state;
 
 void movella_parse(uint16_t canID, volatile void *payload);
 void movella_test();
+float movella_get_velocity();
 void movella_random_test();
 
 #endif

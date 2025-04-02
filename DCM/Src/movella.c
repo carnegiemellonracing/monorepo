@@ -31,6 +31,11 @@ static int16_t parse_int16(volatile big_endian_16_t *big) {
     return parser.parsed;
 } 
 
+float movella_get_velocity() {
+    return sqrtf((movella_state.global_velocity.x * movella_state.global_velocity.x) +
+        (movella_state.global_velocity.y * movella_state.global_velocity.y));
+}
+
 static void quaternion_to_R(volatile quaternion_t *quaternion, volatile float R[3][3]) {
     float w = quaternion->w, x = quaternion->x, y = quaternion->y, z = quaternion->z;
 

@@ -12,7 +12,8 @@
 #include <CMR/can_types.h>  // CMR CAN types
 #include "constants.h"
 #include <math.h>
-#include "controls.h"
+#include "movella.h"
+#include "safety_filter.h"
 
 /** @brief PWM driver state. */
 // static cmr_pwm_t servo_left_PWM;
@@ -25,7 +26,6 @@ static cmr_pwm_t servo_pwm;
 
 #define LAT_G_UPPER_THRESH 1.2
 #define LAT_G_LOWER_THRESH 0.8
-#define PACK_POWER_LIMIT 200
 
 extern cmr_canCDCDRSStates_t drs_state;
 
@@ -79,31 +79,34 @@ bool is_power_limited()
     const float pack_power_W = pack_voltage_V * pack_current_A;
 
     // exceeds power limit threshold 
-    if (pack_power_W > PACK_POWER_LIMIT) {
+    if (pack_power_W > (0.8 * getPowerLimit_W)()) {
         return true;
     }
     return false;
 
 }
 
-void processDRSControl(int16_t swAngle_millideg, float velocity_mps, bool braking, bool power_limited, 
+void processDRSControl(int16_t swAngle_millideg, bool braking, 
                        bool traction_limited, bool skidpad) 
     {
-        float lat_g = calculate_latg(swAngle_millideg, velocity_mps);
-        bool opened = false;
+        float lat_g = calculate_latg(swAngle_millideg, movella_get_velocity());
+
+        
+        // DRS IS OPENED WHEN:
+        // power limited 
+        // G is below threshold
+        bool opened = true;
 
         // DRS IS CLOSED WHEN:
         // braking, traction limited, skidpad, or G is past threshold
-        if (braking || traction_limited || skidpad || lat_g > LAT_G_UPPER_THRESH) {
+        if (braking || skidpad) {
             opened = false;
         }
 
-        // DRS IS OPENED WHEN:
-        // power limited 
-        // G is below threshold 
-        else if (power_limited && lat_g < LAT_G_LOWER_THRESH) {
-            opened = true;
+        else if (!(is_power_limited()) && lat_g > LAT_G_UPPER_THRESH) {
+            opened = false;
         }
+
 
         setDRS(opened);
     }
