@@ -24,6 +24,7 @@
 // ------------------------------------------------------------------------------------------------
 // Gear functions forward declarations
 
+const float calculate_yaw_rate_setpoint_radps (int16_t swAngle_millideg);
 void setSlowTorque(uint8_t throttlePos_u8, int32_t swAngle_millideg);
 void setFastTorque(uint8_t throttlePos_u8);
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
