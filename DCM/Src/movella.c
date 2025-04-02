@@ -16,6 +16,26 @@ static inline float transform_raw(movella_message_t msg, float raw_data) {
     return scaling_constants[msg] * raw_data;
 }
 
+typedef union {
+    struct {
+        uint8_t lsb;
+        uint8_t msb;
+    } data;
+    int16_t parsed;
+} int16_parser;
+
+static int16_t parse_int16(volatile big_endian_16_t *big) {
+    static int16_parser parser;
+    parser.data.msb = big->msb;
+    parser.data.lsb = big->lsb;
+    return parser.parsed;
+} 
+
+float movella_get_velocity() {
+    return sqrtf((movella_state.global_velocity.x * movella_state.global_velocity.x) +
+        (movella_state.global_velocity.y * movella_state.global_velocity.y));
+}
+
 static void quaternion_to_R(volatile quaternion_t *quaternion, volatile float R[3][3]) {
     float w = quaternion->w, x = quaternion->x, y = quaternion->y, z = quaternion->z;
 
