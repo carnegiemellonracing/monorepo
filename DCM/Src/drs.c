@@ -14,6 +14,7 @@
 #include <math.h>
 #include "movella.h"
 #include "safety_filter.h"
+#include "controls.h"
 
 /** @brief PWM driver state. */
 // static cmr_pwm_t servo_left_PWM;
@@ -46,29 +47,11 @@ uint32_t angleToDutyCycle (int angle) {
 }
 
 // math for relating swangle and velocity
-float calculate_latg(int16_t swAngle_millideg, float velocity_mps) {
-
-    // just need to multiply yaw rate thing with velocity
-
-    
+float calculate_latg(int16_t swAngle_millideg) {
     if (swAngle_millideg == 0) {
         return 0.0f;
     }
-
-    // accel = v^2 / r and the r comes from angle
-    float swangle_rad = (swAngle_millideg / 1000.0f) * (M_PI / 180.0f); // millideg to rad
-
-    // avoid div by 0 
-    if (fabsf(tanf(swangle_rad)) < 1e-4) {
-        return 0.0f;
-    }
-
-    // turning radius 
-    float radius = wheelbase_m  / tanf(swangle_rad);
-
-    // lateral g = v^2 / r / 9.81
-    float lat_g = (velocity_mps * velocity_mps) / (radius * 9.81f);
-
+    float lat_g = (calculate_yaw_rate_setpoint_radps(swAngle_millideg) * movella_get_velocity());
     return lat_g;
 }
 
@@ -89,7 +72,7 @@ bool is_power_limited()
 void processDRSControl(int16_t swAngle_millideg, bool braking, 
                        bool traction_limited, bool skidpad) 
     {
-        float lat_g = calculate_latg(swAngle_millideg, movella_get_velocity());
+        float lat_g = calculate_latg(swAngle_millideg);
 
         
         // DRS IS OPENED WHEN:
