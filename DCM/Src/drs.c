@@ -12,6 +12,7 @@
 #include <CMR/can_types.h>  // CMR CAN types
 #include "constants.h"
 #include <math.h>
+#include "controls.h"
 
 /** @brief PWM driver state. */
 // static cmr_pwm_t servo_left_PWM;
@@ -24,6 +25,7 @@ static cmr_pwm_t servo_pwm;
 
 #define LAT_G_UPPER_THRESH 1.2
 #define LAT_G_LOWER_THRESH 0.8
+#define PACK_POWER_LIMIT 200
 
 extern cmr_canCDCDRSStates_t drs_state;
 
@@ -36,7 +38,7 @@ void setServoQuiet() {
 }
 
 
-static uint32_t angleToDutyCycle (int angle) {
+uint32_t angleToDutyCycle (int angle) {
     // map angle to percentage duty cycle
     // between five and ten percent?
     int percentDutyCycle = (angle / 270) * 100;
@@ -45,6 +47,8 @@ static uint32_t angleToDutyCycle (int angle) {
 
 // math for relating swangle and velocity
 float calculate_latg(int16_t swAngle_millideg, float velocity_mps) {
+
+    // just need to multiply yaw rate thing with velocity
     
     if (swAngle_millideg == 0) {
         return 0.0f;
@@ -58,7 +62,7 @@ float calculate_latg(int16_t swAngle_millideg, float velocity_mps) {
         return 0.0f;
     }
 
-    // turning radius
+    // turning radius 
     float radius = wheelbase_m  / tanf(swangle_rad);
 
     // lateral g = v^2 / r / 9.81
@@ -67,6 +71,19 @@ float calculate_latg(int16_t swAngle_millideg, float velocity_mps) {
     return lat_g;
 }
 
+bool is_power_limited()
+{
+    const float pack_voltage_V = getPackVoltage();
+    const float pack_current_A = getPackCurrent();
+    const float pack_power_W = pack_voltage_V * pack_current_A;
+
+    // exceeds power limit threshold 
+    if (pack_power_W > PACK_POWER_LIMIT) {
+        return true;
+    }
+    return false;
+
+}
 
 void processDRSControl(int16_t swAngle_millideg, float velocity_mps, bool braking, bool power_limited, 
                        bool traction_limited, bool skidpad) 

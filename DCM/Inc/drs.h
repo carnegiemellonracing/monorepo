@@ -30,7 +30,7 @@
 // Public function declarations
 void servoInit(void);
 void setServoQuiet(void);
-static uint32_t angleToDutyCycle (int angle);
+uint32_t angleToDutyCycle(int angle);
 float calculate_latg(int16_t swAngle_millideg, float velocity_mps);
 void processDRSControl(int16_t swAngle_millideg, float velocity_mps, bool braking, bool power_limited, 
     bool traction_limited, bool skidpad);
