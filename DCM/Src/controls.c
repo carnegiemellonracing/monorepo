@@ -627,6 +627,34 @@ void setFastTorqueWithParallelRegen(uint16_t brakePressurePsi_u8, uint8_t thrott
 }
 
 /**
+ * @brief Calculates yaw rate setpoint
+ *
+ * @param steering_ang_fl Steering angle of the front-left wheel
+ * @param steering_ang_fr Steering angle of the front-right wheel
+ * @param longitudinal_velocity_mps The longitudinal velocity of the vehicle
+ * @param lateral_velocity_mps The lateral velocity of the vehicle
+ * @param yaw_rate_radps_sae The yaw rate of the vehicle in SAE coordinates (a right turn is positive)
+*/
+
+const float calculate_yaw_rate_setpoint_radps (int16_t swAngle_millideg)
+{
+    static const float natural_understeer_gradient = 0.011465f; //rad/g
+    // get sensor data
+    const volatile cmr_canSBGBodyVelocity_t *body_vels = canDAQGetPayload(CANRX_DAQ_SBG_BODY_VEL);
+    const volatile cmr_canSBGIMUGyro_t *body_gyro = canDAQGetPayload(CANRX_DAQ_SBG_IMU_GYRO);
+    const float forward_velocity_nonnegative_mps = fmaxf(((float)(body_vels->velocity_forward)) * 1e-2f, 0.0f); // velocity_forward is in (m/s times 100)
+    const float yaw_rate_radps_sae = ((float)(body_gyro->gyro_z_rads)) * 1e-3f; // gyro_z_rads is in (rad/s times 1000)
+
+    float steering_angle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
+    const float distance_between_axles_m = chassis_a + chassis_b;
+
+    const float yaw_rate_setpoint_radps = steering_angle_rad * forward_velocity_nonnegative_mps /
+        (distance_between_axles_m + forward_velocity_nonnegative_mps * forward_velocity_nonnegative_mps * natural_understeer_gradient);
+
+    return yaw_rate_setpoint_radps;
+}
+
+/**
  * @brief Calculates the relative speeds between each wheel and the ground
  *
  * @param steering_ang_fl Steering angle of the front-left wheel
@@ -1064,18 +1092,11 @@ float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
      *        "Therefore, by tuning K_ug, we can impose a neutral, understeering or oversteering behavior" (Kissai et. al., 2020, p.5)
      *  @note Increasing this value decreases yaw rate setpoint, especially when linear velocity is high
      */
-    static const float natural_understeer_gradient = 0.011465f; //rad/g
 
-    // get sensor data
-    const volatile cmr_canSBGBodyVelocity_t *body_vels = canDAQGetPayload(CANRX_DAQ_SBG_BODY_VEL);
     const volatile cmr_canSBGIMUGyro_t *body_gyro = canDAQGetPayload(CANRX_DAQ_SBG_IMU_GYRO);
-    const float forward_velocity_nonnegative_mps = fmaxf(((float)(body_vels->velocity_forward)) * 1e-2f, 0.0f); // velocity_forward is in (m/s times 100)
     const float yaw_rate_radps_sae = ((float)(body_gyro->gyro_z_rads)) * 1e-3f; // gyro_z_rads is in (rad/s times 1000)
 
-    float steering_angle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
-    const float distance_between_axles_m = chassis_a + chassis_b;
-    const float yaw_rate_setpoint_radps = steering_angle_rad * forward_velocity_nonnegative_mps /
-        (distance_between_axles_m + forward_velocity_nonnegative_mps * forward_velocity_nonnegative_mps * natural_understeer_gradient);
+    const float yaw_rate_setpoint_radps = calculate_yaw_rate_setpoint_radps (swAngle_millideg);
 
     yrcDebug.controls_target_yaw_rate = (int16_t)(1000.0f * yaw_rate_setpoint_radps);
     yrcDebug.controls_current_yaw_rate = (int16_t)(1000.0f * yaw_rate_radps_sae);
