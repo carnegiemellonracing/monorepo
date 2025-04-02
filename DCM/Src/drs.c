@@ -79,7 +79,7 @@ bool is_power_limited()
     const float pack_power_W = pack_voltage_V * pack_current_A;
 
     // exceeds power limit threshold 
-    if (pack_power_W > (0.8 * getPowerLimit_W)()) {
+    if (pack_power_W > (0.8 * getPowerLimit_W())) {
         return true;
     }
     return false;

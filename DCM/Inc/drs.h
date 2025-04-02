@@ -32,7 +32,7 @@ void servoInit(void);
 void setServoQuiet(void);
 uint32_t angleToDutyCycle(int angle);
 float calculate_latg(int16_t swAngle_millideg, float velocity_mps);
-void processDRSControl(int16_t swAngle_millideg, float velocity_mps, bool braking, bool power_limited, 
+void processDRSControl(int16_t swAngle_millideg, bool braking, 
     bool traction_limited, bool skidpad);
 void setDRS(bool open);
 #endif
