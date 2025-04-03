@@ -57,13 +57,13 @@ static void statusLED(void *pvParameters) {
   while (1) {
     cmr_gpioToggle(GPIO_LED_STATUS);
 
-    cmr_canVSMSensors_t *vsmSensors = canVehicleGetPayload(CANRX_VSM_SENSORS);
+    // cmr_canVSMSensors_t *vsmSensors = canVehicleGetPayload(CANRX_VSM_SENSORS);
 
-    if (vsmSensors->brakePressureRear_PSI > brakeLightThreshold_PSI) {
-            cmr_gpioWrite(GPIO_BRKLT_ENABLE, 1);
-        } else {
-            cmr_gpioWrite(GPIO_BRKLT_ENABLE, 0);
-        }
+    // if (vsmSensors->brakePressureRear_PSI > brakeLightThreshold_PSI) {
+    //         cmr_gpioWrite(GPIO_BRKLT_ENABLE, 1);
+    //     } else {
+    //         cmr_gpioWrite(GPIO_BRKLT_ENABLE, 0);
+    //     }
 
     vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
   }
