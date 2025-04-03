@@ -18,9 +18,9 @@
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_LED_STATUS] = { //same as IND BLUE on schematic (no change)
-        .port = GPIOB,
+        .port = GPIOA,
         .init = {
-            .Pin = GPIO_PIN_12,
+            .Pin = GPIO_PIN_0,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
