@@ -2120,10 +2120,10 @@ Var=Dirty_RAM unsigned 32,8
 [Movella_MTi680G_Quaternion]
 ID=774h
 DLC=8
-Var=Q0 signed 0,16 -m /f:3.05185094759972E-005 /max:1 /d:0
-Var=Q1 signed 16,16 -m /f:3.05185094759972E-005
-Var=Q2 signed 32,16 -m /f:3.05185094759972E-005 /max:1 /d:0
-Var=Q3 signed 48,16 -m /f:3.05185094759972E-005
+Var=w signed 0,16 -m /f:3.05185094759972E-005 /max:1 /d:0
+Var=x signed 16,16 -m /f:3.05185094759972E-005
+Var=y signed 32,16 -m /f:3.05185094759972E-005 /max:1 /d:0
+Var=z signed 48,16 -m /f:3.05185094759972E-005
 
 [Movella_Mti680G_GroupCounter]
 ID=771h
@@ -2147,12 +2147,12 @@ Var=AccZ signed 32,16 -m /u:m/s^2 /f:0.00390625 /d:0
 [Movella_MTi680G_Temperature]
 ID=779h
 DLC=2
-Var=Temperature signed 0,16 -m /u:�C /f:0.00390625 /d:0
+Var=Temperature signed 0,16 -m /u:"deg C" /f:0.00390625
 
 [Movella_MTi680G_BaroPressure]
 ID=77Ah
 DLC=4
-Var=Pressure unsigned 0,32 -m /u:Pa /f:3.051757E-005 /max:131071.965072873 /d:0
+Var=Pressure unsigned 0,32 -m /u:Pa
 
 [Movella_MTi680G_SampleTime]
 ID=770h
