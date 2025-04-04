@@ -79,12 +79,13 @@ Var=VSM_ERR_latchBSPD bit 24,1
 
 [VSM_Sensors]
 ID=200h
-DLC=8
+DLC=6
 CycleTime=5
 Timeout=100
 Var=VSM_brakePressureRear unsigned 0,16 /u:PSI
 Var=VSM_hallEffect signed 16,16 /u:A /f:0.01 /p:2
-Var=VSM_HE_CoulombCount float 32,32 /u:C /p:3
+Var=VSM_SafetyIn unsigned 32,8 /u:dV
+Var=VSM_SafetyOut unsigned 40,8 /u:dV
 
 [VSM_LatchedStatus]
 ID=510h	// Timeout matrix
