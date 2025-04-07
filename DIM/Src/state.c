@@ -499,7 +499,7 @@ void reqVSM(void) {
 	if (((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN)) && (gpioLRUDStates[UP])){
 		stateVSMUp();
 	}
-	if (((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN)) && (gpioLRUDStates[DOWN])){
+	if (((stateGetVSM() == CMR_CAN_RTD) || (stateGetVSM() == CMR_CAN_HV_EN)) && (gpioLRUDStates[DOWN])){
 		stateVSMDown();
 	}
 }
