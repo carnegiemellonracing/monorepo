@@ -712,7 +712,7 @@ static void drawRTDScreen(void) {
     //bool yrcOn = ((bool)controlsStatus->yrcOn) && (!(switchValues & 0x02));
     //bool tcOn = ((bool)controlsStatus->tcOn) && (!(switchValues & 0x04));
 
-    if (true) {
+    if (getCurrState() == RACING) {
         tftDL_racingScreenUpdate(
             motorTemp_C,
             acTemp_C,
