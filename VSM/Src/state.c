@@ -320,7 +320,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             if (dimRequestedState == CMR_CAN_RTD) {
                 if (
                     throttlePosition <= 5 &&
-                    brakePressureRear_PSI >= brakePressureThreshold_PSI
+                    brakePressureRear_PSI >= 0
                 ) {
                     nextState = CMR_CAN_VSM_STATE_RTD;
                 } else {

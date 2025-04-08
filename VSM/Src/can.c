@@ -53,13 +53,13 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_VSM_DIM_TIMEOUT
     },
-    [CANRX_FSM_SWANGLE] = {
-        .canID = CMR_CANID_FSM_SWANGLE,
-        .timeoutError_ms = 100,
-        .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
-        .timeoutWarn_ms = 25,
-        .warnFlag = CMR_CAN_WARN_VSM_DIM_TIMEOUT
-    },
+    // [CANRX_FSM_SWANGLE] = {
+    //     .canID = CMR_CANID_FSM_SWANGLE,
+    //     .timeoutError_ms = 100,
+    //     .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
+    //     .timeoutWarn_ms = 25,
+    //     .warnFlag = CMR_CAN_WARN_VSM_DIM_TIMEOUT
+    // },
     [CANRX_DIM_REQUEST] = {
         .canID = CMR_CANID_DIM_REQUEST,
         .timeoutError_ms = 500,
