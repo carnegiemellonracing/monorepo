@@ -99,7 +99,6 @@ typedef enum {
 
 typedef enum {
     CANRX_HEARTBEAT_VSM = 0,    /**< @brief VSM heartbeat. */
-    CANRX_VSM_STATUS,           /**< @brief VSM status. */
     CANRX_VSM_SENSORS,          /**< @brief VSM sensors. */
     CANRX_FSM_DATA,             /**< @brief FSM data. */
     CANRX_FSM_SWANGLE,
