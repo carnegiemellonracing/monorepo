@@ -16,7 +16,7 @@
 #include "sensors.h"    // sensorChannel_t, sensors[]
 
 /** @brief Required brake pressure to transition into RTD. */
-const uint16_t brakePressureThreshold_PSI = 40;
+const uint16_t brakePressureThreshold_PSI = 0;
 
 /**
  * @brief Modules will be considered in the wrong state this many millisec
