@@ -178,7 +178,7 @@ static void motorsCommand (
         volatile cmr_canFSMSWAngle_t     *swangleFSM   = canVehicleGetPayload(CANRX_VEH_SWANGLE_FSM);
         volatile cmr_canHVCPackVoltage_t *voltageHVC   = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
         volatile cmr_canHVCPackCurrent_t *currentHVC   = canVehicleGetPayload(CANRX_VEH_CURRENT_HVC);
-        volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+        volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VSM_STATUS);
 
         uint32_t throttle;
 
@@ -303,10 +303,9 @@ static void motorsCommand (
             case CMR_CAN_GLV_ON: {
             	mcCtrlOff();
 
-
                 if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
                     mcCtrlOn();
-                }
+                } else
 
             	// fansOff();
             	// pumpsOff();

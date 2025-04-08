@@ -63,6 +63,13 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
     },
+    [CANRX_VSM_STATUS] = {
+        .canID = CMR_CANID_VSM_STATUS, 
+        .timeoutError_ms = 50, 
+        .timeoutWarn_ms = 25,
+        .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT, 
+        .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
+    },
     [CANRX_VEH_DATA_FSM] = {
         .canID = CMR_CANID_FSM_DATA,
         .timeoutError_ms = 50,
@@ -560,6 +567,16 @@ static void canTX100Hz(void *pvParameters) {
             canTX100Hz_period_ms
         );
 
+        // for (size_t i = 0; i<= CANRX_TRAC_INV_RR_ACT2; i++) {
+        //     if (cmr_canRXMetaTimeoutError(&canTractiveGetMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
+        //     canTX(
+        //         CMR_CAN_BUS_VEH, 
+        //         canTractiveRXMeta[i].canID, 
+        //         (void *)&(canTractiveRXMeta[i].payload), 
+        //         sizeof(cmr_canAMKActualValues1_t), 
+        //         canTX100Hz_period_ms
+        //     );
+        // }
 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
@@ -643,24 +660,24 @@ static void canTX200Hz(void *pvParameters) {
 
 
         // Forward AMK messages to vehicle CAN at 200Hz.
-        for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
-            // Do not transmit if we haven't received that message lately
-            if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
+        // for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
+        //     // Do not transmit if we haven't received that message lately
+        //     if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
 
-            canTX(
-                CMR_CAN_BUS_VEH,
-                canTractiveRXMeta[i].canID,
-                (void *) &(canTractiveRXMeta[i].payload),
-                sizeof(cmr_canAMKActualValues1_t),
-                canTX200Hz_period_ms
-            );
-        }
+        //     canTX(
+        //         CMR_CAN_BUS_VEH,
+        //         canTractiveRXMeta[i].canID,
+        //         (void *) &(canTractiveRXMeta[i].payload),
+        //         sizeof(cmr_canAMKActualValues1_t),
+        //         canTX200Hz_period_ms
+        //     );
+        // }
 
-        // Send setpoints to vehicle CAN at 200Hz as well.
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_FL_SETPOINTS, amkSetpointsFL, sizeof(*amkSetpointsFL), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_FR_SETPOINTS, amkSetpointsFR, sizeof(*amkSetpointsFR), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_RL_SETPOINTS, amkSetpointsRL, sizeof(*amkSetpointsRL), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_RR_SETPOINTS, amkSetpointsRR, sizeof(*amkSetpointsRR), canTX200Hz_period_ms);
+        // // Send setpoints to vehicle CAN at 200Hz as well.
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_FL_SETPOINTS, amkSetpointsFL, sizeof(*amkSetpointsFL), canTX200Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_FR_SETPOINTS, amkSetpointsFR, sizeof(*amkSetpointsFR), canTX200Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_RL_SETPOINTS, amkSetpointsRL, sizeof(*amkSetpointsRL), canTX200Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_RR_SETPOINTS, amkSetpointsRR, sizeof(*amkSetpointsRR), canTX200Hz_period_ms);
 
 //        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_POSITION, &posePos, sizeof(posePos), canTX200Hz_period_ms);
         //TODO: Fix error with padding (manual size 7)

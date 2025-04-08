@@ -19,8 +19,9 @@
  */
 typedef enum {
     CANRX_VEH_HEARTBEAT_VSM = 0,    /**< @brief VSM heartbeat. */
+    CANRX_VSM_STATUS,
     CANRX_VEH_DATA_FSM,             /**< @brief FSM data. */
-    CANRX_VEH_SWANGLE_FSM,
+    CANRX_VEH_SWANGLE_FSM,          /**< @brief VSM status */
     CANRX_VEH_REQUEST_DIM,          /**< @brief DIM state and gear request. */
     CANRX_VEH_VOLTAGE_HVC,          /**< @brief HVC pack voltage. */
     CANRX_VEH_CURRENT_HVC,          /**< @brief HVC pack current. */
