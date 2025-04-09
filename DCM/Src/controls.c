@@ -565,12 +565,12 @@ void setSlowTorque (
     int32_t swAngle_millideg
 ) {
     const float reqTorque = maxSlowTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
-    setTorqueLimsAllProtected(reqTorque, 0.0f);
+    // setTorqueLimsAllProtected(reqTorque, 0.0f);
 
-    // setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
-    // setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
-    // setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
-    // setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
 
     // Testing motors one by one
 //    motorLocation_t active_motor = MOTOR_FR;
