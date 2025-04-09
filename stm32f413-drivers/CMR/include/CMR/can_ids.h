@@ -23,9 +23,9 @@ typedef enum {
     CMR_CANID_HEARTBEAT_CDC = 0x102,    /**< @brief CDC heartbeat. */
     CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x104,    /**< @brief DIM heartbeat. */
-    CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief
- heatbeart.*/
-	CMR_CANID_HEARTBEAT_HVI = 0x106,
+    CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief PTC heatbeart. */
+	CMR_CANID_HEARTBEAT_HVI = 0x106,    /**< @brief HVI heatbeart. */
+    CMR_CANID_HEARTBEAT_LV_BMS = 0x107, /**< @brief LV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
 
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
@@ -55,6 +55,11 @@ typedef enum {
     CMR_CANID_CDC_POSE_ORIENTATION = 0x292,         /**< @brief CDC (20e) roll/pitch/yaw real car position. */
     CMR_CANID_CDC_POSE_VELOCITY = 0x2A2,            /**< @brief CDC (20e) real car velocity. */
     CMR_CANID_CDC_POSE_ACCELERATION = 0x2B2,        /**< @brief CDC (20e) real car acceleration. */
+
+    CMR_CANID_CDC_COG_VELOCITY = 0x2C2,        /**< @brief CDC (20e) real car acceleration. */
+    CMR_CANID_CDC_FRONT_VELOCITY = 0x2D2,        /**< @brief CDC (20e) real car acceleration. */
+    CMR_CANID_CDC_REAR_VELOCITY = 0x2E2,        /**< @brief CDC (20e) real car acceleration. */
+
     CMR_CANID_CDC_POWER_SENSE = 0x305,
     CMR_CANID_CDC_RTC_DATA_OUT = 0x6A2,             /**< @brief CDC RTC data. */
     CMR_CANID_CDC_RTC_DATA_IN = 0x6B2,              /**< @brief CDC RTC data. */
@@ -62,9 +67,11 @@ typedef enum {
     CMR_CANID_CDC_CONTROLS_STATUS = 0x6D2,          /**< @brief CDC controls status data. */
     CMR_CANID_CDC_POWER_UPDATE = 0x6E2,             /**< @brief DAQ Live to CDC - changing power limit. */
     CMR_CANID_CDC_COULOMB_COUNTING = 0x6E3,
+    CMR_CANID_CDC_POWER_LOG = 0x6E4,             /**< @brief DAQ Live to CDC - changing power limit. */
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
     CMR_CANID_CELL_BALANCE_ENABLE = 0x134,
+    CMR_CANID_FSM_SWANGLE = 0x135,
     CMR_CANID_FSM_PEDALS_ADC = 0x533,           /**< @brief FSM raw pedal positions. */
     CMR_CANID_FSM_SENSORS_ADC = 0x543,          /**< @brief FSM raw sensors. */
     CMR_CANID_FSM_POWER_DIAGNOSTICS = 0x553,    /**< @brief FSM power diagnostics. */
@@ -223,6 +230,12 @@ typedef enum {
     CMR_CANID_SBG_BODY_VEL = 0x729,             /**< @brief SBG_ECAN_MSG_EKF_VEL_BODY */
     CMR_CANID_SBG_AUTOMOTIVE = 0x72A,           /**< @brief SBG_ECAN_MSG_AUTO_TRACK_SLIP_CURV */
 
+    CMR_CANID_MOVELLA_STATUS = 0x772,
+    CMR_CANID_MOVELLA_QUATERNION = 0x774,
+    CMR_CANID_MOVELLA_IMU_GYRO = 0x776,
+    CMR_CANID_MOVELLA_IMU_ACCEL = 0x77E,
+    CMR_CANID_MOVELLA_VELOCITY = 0x77D,
+
     CMR_CANID_EMD_MEASUREMENT = 0x100,          /**< @brief EMD measurement for HV voltage/current. */
     CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */
     CMR_CANID_EMD_STATUS = 0x400,               /**< @brief EMD status. */
@@ -270,11 +283,20 @@ typedef enum {
     CMR_CANID_DAQ_3_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 3. */
 
     CMR_CANID_VSM_GIT = 0x7F1,
-	CMR_CANID_HVC_GIT,
-	CMR_CANID_PTC_GIT,
-	CMR_CANID_CDC_GIT,
-	CMR_CANID_DIM_GIT,
-	CMR_CANID_RAM_GIT,
+	 CMR_CANID_HVC_GIT,
+	 CMR_CANID_PTC_GIT,
+	 CMR_CANID_CDC_GIT,
+	 CMR_CANID_DIM_GIT,
+	 CMR_CANID_RAM_GIT,
+
+    CAN_ID_LV_BMS_CELL_VOLTAGE_1_3 = 0x678,
+    CAN_ID_LV_BMS_CELL_VOLTAGE_4_6,
+    CAN_ID_LV_BMS_CELL_TEMP_1_4,
+    CAN_ID_LV_BMS_CELL_TEMP_5_8,
+    CAN_ID_LV_BMS_CELL_OVERVOLTAGE,
+    CAN_ID_LV_BMS_CELL_OVERTEMP,
+    CAN_ID_LV_BMS_BUS_VOLTAGE,
+    CAN_ID_LV_BMS_CURRENT,
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */

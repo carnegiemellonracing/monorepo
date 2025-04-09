@@ -24,13 +24,6 @@ typedef enum {
     CMR_CAN_CLEAR_ERROR     /**< @brief Request to clear error. */
 } cmr_canState_t;
 
-/** @brief Fan states. */
-typedef enum {
-    CMR_CAN_FAN_OFF,    /**< @brief Fan turned off. */
-    CMR_CAN_FAN_LOW,    /**< @brief Fan at low speed. */
-    CMR_CAN_FAN_HIGH    /**< @brief Fan at high speed. */
-} cmr_canFanState_t;
-
 /** @brief Standard CAN heartbeat. */
 typedef struct {
     uint8_t state;          /**< @brief Board state. */
@@ -74,13 +67,13 @@ typedef enum {
     /** @brief AFC DCDC #2 temperature out-of-range. */
     CMR_CAN_ERROR_AFC_DCDC2_TEMP = (1 << 10),
 
-    /** @brief 
+    /** @brief
  fan current out-of-range. */
     CMR_CAN_ERROR_PTC_FAN_CURRENT = (1 << 15),
-    /** @brief 
+    /** @brief
  fan/pump driver IC temperature out-of-range. */
     CMR_CAN_ERROR_PTC_DRIVERS_TEMP = (1 << 14),
-    /** @brief 
+    /** @brief
  water temperature out-of-range. */
     CMR_CAN_ERROR_PTC_WATER_TEMP = (1 << 13),
     //power errors(shunt resistor), water over heating errors, oil overheatin errors
@@ -190,23 +183,6 @@ typedef enum {
     CMR_CAN_DRSM_UNKNOWN
 } cmr_canDrsMode_t;
 
-/** @brief Safety Circuit status states. */
-typedef enum {
-    CMR_CAN_SS_STATE_CLEAR = 0,   /**< @brief Not tripped state. */
-    CMR_CAN_SS_STATE_MODULE,      /**< @brief Module tripped state. */
-    CMR_CAN_SS_STATE_COCKPIT,     /**< @brief Cockpit tripped state. */
-    CMR_CAN_SS_STATE_FRHUB,       /**< @brief FRHub tripped state. */
-    CMR_CAN_SS_STATE_INERTIA,     /**< @brief Inertia tripped state. */
-    CMR_CAN_SS_STATE_FLHUB,       /**< @brief FLHub tripped state. */
-    CMR_CAN_SS_STATE_BOTS,        /**< @brief Bots tripped state. */
-    CMR_CAN_SS_STATE_LEN          /**< @brief Number of SS states. */
-} cmr_canSSState_t;
-
-/** @brief Safety circuit state. */
-typedef struct {
-    uint8_t state;  /**< @brief SS state. See cmr_canSSState_t. */
-} cmr_canSSStatus_t;
-
 // ------------------------------------------------------------------------------------------------
 // Vehicle Safety Module
 
@@ -238,7 +214,7 @@ typedef enum {
     CMR_CAN_VSM_ERROR_SOURCE_FSM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_DIM = (1 << 3),
-    /** @brief At least one 
+    /** @brief At least one
  message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_PTC = (1 << 2),
     /** @brief At least one Auxiliary Power Controller message has timed out. */
@@ -385,18 +361,6 @@ typedef enum {
     CMR_CAN_HVC_ERROR_LV_UNDERVOLT = 0x2000,    /**< @brief Shutdown circuit/AIR voltage too low. */
 } cmr_canHVCError_t;
 
-/** @brief High Voltage Controller relay status bit vector definitions. */
-typedef enum {
-    CMR_CAN_HVC_RELAY_STATUS_DISCHARGE_CLOSED   = (1 << 0), /**<@ brief Discharge relay closed. */
-    CMR_CAN_HVC_RELAY_STATUS_PRECHARGE_CLOSED   = (1 << 1), /**<@ brief Precharge relay closed. */
-    CMR_CAN_HVC_RELAY_STATUS_AIR_NEG_CLOSED     = (1 << 2), /**<@ brief Negative AIR closed. */
-    CMR_CAN_HVC_RELAY_STATUS_AIR_POS_CLOSED     = (1 << 3), /**<@ brief Positive AIR closed. */
-    CMR_CAN_HVC_RELAY_STATUS_DISCHARGE_ERROR    = (1 << 4), /**<@ brief Discharge error. */
-    CMR_CAN_HVC_RELAY_STATUS_PRECHARGE_ERROR    = (1 << 5), /**<@ brief Precharge error. */
-    CMR_CAN_HVC_RELAY_STATUS_AIR_NEG_ERROR      = (1 << 6), /**<@ brief Negative AIR error. */
-    CMR_CAN_HVC_RELAY_STATUS_AIR_POS_ERROR      = (1 << 7), /**<@ brief Positive AIR error. */
-} cmr_canHVCRelayStatus_t;
-
 /** @brief High Voltage Controller heartbeat (does not follow universal structure). */
 typedef struct {
     uint16_t errorStatus;   /**< @brief Current HVC errors. See cmr_canHVCError_t. */
@@ -476,95 +440,7 @@ typedef struct {
 } cmr_canPowerSense_t;
 
 // ------------------------------------------------------------------------------------------------
-// Accumulator Fan Controller
-
-/** @brief Accumulator Fan Controller fan status. */
-typedef struct {
-    uint8_t acFanState;    /**< @brief Accumulator fan states. */
-    uint8_t dcdcFanState;   /**< @brief DCDC fan state. */
-} cmr_canAFCFanStatus_t;
-
-/** @brief Accumulator Fan Controller temperatures. */
-typedef struct {
-    uint8_t driverTemp_C[3];    /**< @brief Driver IC temperatures (C). */
-    uint8_t dcdcTemp_C[2];      /**< @brief DCDC temperatures (C). */
-} cmr_canAFCDriverTemps_t;
-
-/** @brief Accumulator Fan Controller power diagnostics. */
-typedef struct {
-    uint16_t busVoltage_mV;     /**< @brief Low-voltage bus voltage (mV). */
-    uint16_t busCurrent_mA;     /**< @brief Low-voltage bus current (mA). */
-    uint16_t fansCurrent_mA;    /**< @brief Total fans current (mA). */
-} cmr_canAFCPowerDiagnostics_t;
-
-// ------------------------------------------------------------------------------------------------
-// Auxiliary Power Controller
-
-/** @brief Auxiliary Power Controller battery status. */
-typedef struct {
-    uint16_t bat1Voltage_mV;    /**< @brief Voltage across battery 1. */
-    uint16_t bat2Voltage_mV;    /**< @brief Voltage across battery 2. */
-    uint16_t bat3Voltage_mV;    /**< @brief Voltage across battery 3. */
-    uint16_t bat4Voltage_mV;    /**< @brief Voltage across battery 4. */
-    uint16_t bat5Voltage_mV;    /**< @brief Voltage across battery 5. */
-    uint16_t bat6Voltage_mV;    /**< @brief Voltage across battery 6. */
-} cmr_canAPCBatteryStatus_t;
-
-/** @brief Auxiliary Power Controller temperatures. */
-typedef struct {
-    uint8_t batTemp_C[3];    /**< @brief Battery temperatures (C). */
-} cmr_canAPCBatteryTemps_t;
-
-/** @brief Auxiliary Power Controller power diagnostics. */
-typedef struct {
-    int32_t batCurrent_mA;     /**< @brief Battery current draw (mA). */
-} cmr_canAPCBatteryDiagnostics_t;
-
-
-// ------------------------------------------------------------------------------------------------
 // Central Dynamics Controller (19e)
-
-/** @brief Central Dynamics Controller wheel speeds. */
-typedef struct {
-    uint16_t frontLeft;     /**< @brief Front left wheel speed (RPM). */
-    uint16_t frontRight;    /**< @brief Front right wheel speed (RPM). */
-    uint16_t backLeft;      /**< @brief Back left wheel speed (RPM). */
-    uint16_t backRight;     /**< @brief Back right wheel speed (RPM). */
-} cmr_canCDCWheelSpeeds_t;
-
-/** @brief Central Dynamics Controller 
- brake solenoid command. */
-typedef struct {
-    uint8_t solenoidEnable;     /**< @brief Enable the solenoid (disable the brakes). */
-} cmr_canCDCSolenoidPTC_t;
-
-/** @brief Central Dynamics Controller motor data. */
-typedef struct {
-    int16_t torque_dNm;     /**< @brief Commanded torque (deci-Newton-meters). */
-    int16_t speed_rpm;      /**< @brief Motor speed (RPM). */
-    int16_t current_dA;     /**< @brief DC bus current (deci-Amps). */
-    int16_t voltage_dV;     /**< @brief DC bus voltage (deci-Volts). */
-} cmr_canCDCMotorData_t;
-
-/** @brief Central Dynamics Controller motor faults. */
-typedef struct {
-    uint32_t post;  /**< @brief Power-on-self-test faults. */
-    uint32_t run;   /**< @brief Run faults. */
-} cmr_canCDCMotorFaults_t;
-
-/** @brief Central Dynamics Controller motor phase currents. */
-typedef struct {
-    int16_t phaseA; /**< @brief Current in the phase A cable (Amps * 10). */
-    int16_t phaseB; /**< @brief Current in the phase B cable (Amps * 10). */
-    int16_t phaseC; /**< @brief Current in the phase C cable (Amps * 10). */
-} cmr_canCDCMotorPhaseCurrents_t;
-
-/** @brief Central Dynamics Controller IMU accelerations. */
-typedef struct {
-    int16_t longitudinal;   /**< @brief Longitudinal Acceleration where full scale is +/- 2g (positive Forward). */
-    int16_t lateral;        /**< @brief Lateral Acceleration where full scale is +/- 2g (positive Left). */
-    int16_t vertical;       /**< @brief Vertical Acceleration where full scale is +/- 2g (positive Down). */
-} cmr_canCDCIMUAcceleration_t;
 
 /** @brief Central Dynamics Controller DRS states. */
 typedef struct {
@@ -593,6 +469,10 @@ typedef struct {
 typedef struct {
     uint8_t powerLimit_kW;
 } cmr_canCDCPowerLimit_t;
+
+typedef struct {
+    float power_limit_W;
+} cmr_canCDCPowerLimitLog_t;
 
 /** @brief Central Dynamics Controller Safety Filter states. */
 typedef struct {
@@ -649,12 +529,6 @@ typedef struct {
     int16_t lateralVel_mps;         /**< @brief Velocity of the car in the right direction (m/s * 100). */
     int16_t verticalVel_mps;        /**< @brief Velocity of the car in the down direction (m/s * 100). */
 } cmr_canCDCPoseVelocity_t;
-
-typedef struct {
-    int16_t longitudinalAccel_mps2;    /**< @brief Acceleration of the car in the forward direction (m/s^2 * 100). */
-    int16_t lateralAccel_mps2;         /**< @brief Acceleration of the car in the right direction (m/s^2 * 100). */
-    int16_t verticalAccel_mps2;        /**< @brief Acceleration of the car in the down direction (m/s^2 * 100). */
-} cmr_canCDCPoseAcceleration_t;
 
 // ------------------------------------------------------------------------------------------------
 // Driver Interface Module
@@ -718,12 +592,17 @@ typedef struct {
 typedef struct {
     uint8_t torqueRequested;            /**< @brief Torque requested (0-255). */
     uint8_t throttlePosition;           /**< @brief Throttle position (0-255). */
-    uint8_t brakePressureFront_PSI;     /**< @brief Front brake pressure. */
+    uint16_t brakePressureFront_PSI;     /**< @brief Front brake pressure. */
     uint8_t brakePedalPosition;         /**< @brief Brake pedal position (0-255). */
-
-    /** @brief Steering wheel angle (-180 to 180 degrees). */
-    int16_t steeringWheelAngle_millideg;
+    
 } cmr_canFSMData_t;
+
+typedef struct {
+    /** @brief Steering wheel angle (-180 to 180 degrees). 
+     * Calculated from ADC values using transfer function.
+    */
+    int32_t steeringWheelAngle_millideg;
+} cmr_canFSMSWAngle_t;
 
 /** @brief Front Sensor Module raw pedal positions. */
 typedef struct {
@@ -747,50 +626,11 @@ typedef struct {
 // ------------------------------------------------------------------------------------------------
 // Powertrain Thermal Controller
 
-/** @brief Powertrain Thermal Controller fan/pump status. */
-typedef struct {
-    uint8_t fan1DutyCycle_pcnt;              /**< @brief Fan 1 state. */
-    uint8_t fan2DutyCycle_pcnt;              /**< @brief Fan 2 state. */
-    uint8_t pump1DutyCycle_pcnt;             /**< @brief Pump 1 state. */
-    uint8_t pump2DutyCycle_pcnt;             /**< @brief Pump 2 state. */
-} cmr_canPTCDriverStatus_t;
-
-/** @brief Powertrain Thermal Controller cooling loop temperature status. */
-typedef struct {
-    uint16_t temp1_dC;            /**< @brief Temp 1 */
-    uint16_t temp2_dC;            /**< @brief Temp 2 */
-    uint16_t temp3_dC;            /**< @brief Temp 3 */
-    uint16_t temp4_dC;            /**< @brief Temp 4 */  //These are placeholders for more useful names
-} cmr_canPTCLoopTemp_A_t;
-typedef struct {
-    uint16_t temp5_dC;            /**< @brief Temp 5 */
-    uint16_t temp6_dC;            /**< @brief Temp 6 */
-    uint16_t temp7_dC;            /**< @brief Temp 7 */
-    uint16_t temp8_dC;            /**< @brief Temp 8 */
-} cmr_canPTCLoopTemp_B_t;
-typedef struct {
-    uint16_t temp9_dC;            /**< @brief Temp 9 */
-} cmr_canPTCLoopTemp_C_t;
-
-/** @brief Standard CAN 
- State. */
-typedef struct {
-    uint8_t state;          /**< @brief 
- state. */
-} cmr_canPTCState_t;
-
 /** @brief Standard Git committed State. */
 typedef struct {
 	uint32_t commitHash;
 	uint8_t dirtyFlash;
 } cmr_canGitFlashStatus;
-
-/** @brief Powertrain Thermal Controller voltage diagnostics. */
-typedef struct {
-    uint16_t logicVoltage_mV;   /**< @brief Logic voltage (mV). */
-    uint16_t loadVoltage_mV;    /**< @brief Load voltage (mV). */
-    uint16_t loadCurrent_mA;    /**< @brief Load current (ma). */
-} cmr_canPTCPowerDiagnostics_t;
 
 // ------------------------------------------------------------------------------------------------
 // AMK Motor controller definitions.
@@ -846,18 +686,6 @@ typedef struct {
     int32_t instantCurrent_mA; /**< @brief Instant Current (mA). */
     int32_t averageCurrent_mA; /**< @brief Average Current (mA). */
 } cmr_canBMSPackCurrent_t;
-
-/* Might modify these for future use.
-typedef struct __attribute__((__packed__)) BMSCalc1_t {
-    int32_t openCircuitVoltageMV;
-    uint16_t stateOfChargeMAH;
-} BMSCalc1_t;
-
-typedef struct BMSCalc2_t {
-    uint32_t internalResistanceUO;
-    int32_t maxCurrentDrawMAH;
-} BMSCalc2_t;
-*/
 
 typedef struct {
 	uint8_t maxVoltIndex;        /**< @brief Max BMB cell voltage index. */
@@ -1024,6 +852,63 @@ typedef struct {
     uint8_t status;                 /**< @brief Status bitmasks as AUTO_STATUS definition. */
 } cmr_canSBGAutomotive_t;
 
+// Endianness hell.
+typedef struct {
+    uint8_t msb;
+    uint8_t lsb;
+} big_endian_16_t;
+
+typedef struct {
+    big_endian_16_t q0;
+    big_endian_16_t q1;
+    big_endian_16_t q2;
+    big_endian_16_t q3;
+} cmr_canMovellaQuaternion_t;
+
+typedef struct {
+    big_endian_16_t yaw;
+    big_endian_16_t pitch;
+    big_endian_16_t roll;
+} cmr_canMovellaEulerAngles_t;
+
+typedef struct {
+    big_endian_16_t gyro_x;
+    big_endian_16_t gyro_y;
+    big_endian_16_t gyro_z;
+} cmr_canMovellaIMUGyro_t;
+
+typedef struct {
+    big_endian_16_t accel_x;
+    big_endian_16_t accel_y;
+    big_endian_16_t accel_z;
+} cmr_canMovellaIMUAccel_t;
+
+typedef struct {
+    big_endian_16_t vel_x;
+    big_endian_16_t vel_y;
+    big_endian_16_t vel_z;
+} cmr_canMovellaVelocity_t;
+
+typedef struct {
+    int16_t cog_x;
+    int16_t cog_y;
+    float slip_angle;
+} cmr_canCOGVelocity_t;
+
+typedef struct {
+    int16_t fl_x;
+    int16_t fl_y;
+    int16_t fr_x;
+    int16_t fr_y;
+} cmr_canFrontWheelVelocity_t;
+
+typedef struct {
+    int16_t rl_x;
+    int16_t rl_y;
+    int16_t rr_x;
+    int16_t rr_y;
+} cmr_canRearWheelVelocity_t;
+
 // ------------------------------------------------------------------------------------------------
 // IZZIE Racing sensors
 
@@ -1168,28 +1053,11 @@ typedef struct {
 typedef uint8_t cmr_canDAQTest_t; /** @brief DAQ Test type. MSB is to start/stop bits, rest are test id **/
 
 typedef struct {
-    int32_t HX711_force;     /**< @brief Force from HX711 */
-    float NAU7802_force;   /**< @brief Force from NAU7802 */
-} cmr_canDAQLoadCell_t;
-
-typedef struct {
-    uint16_t thermistor_0_tmp_dC; /**< @brief Temperature on thermistor 0 in dC */
-    uint16_t thermistor_1_tmp_dC; /**< @brief Temperature on thermistor 1 in dC */
-    uint16_t thermistor_2_tmp_dC; /**< @brief Resistance on thermistor 2 in dC */
-    uint16_t thermistor_3_tmp_dC; /**< @brief Resistance on thermistor 3 in dC */
-} cmr_canDAQThermistor_t;
-
-typedef struct {
     uint16_t linpot_front_mm;       /**< @brief Front damper length in mm */
     uint16_t linpot_front_adc;      /**< @brief Front linpot ADC Value */
     uint16_t linpot_rear_mm;        /**< @brief Rear damper length in mm */
     uint16_t linpot_rear_adc;       /**< @brief Rear linpot ADC Value */
 } cmr_canDAQLinpot_t;
-
-typedef struct {
-    int32_t HX711_debug;     /**< @brief Debug for HX711 - 0 if no errors */
-    int32_t NAU7802_debug;   /**< @brief Debug for NAU7802 - 0 if no errors */
-} cmr_canDAQDebug_t;
 
 typedef struct {
     int16_t differential_voltage_uv;

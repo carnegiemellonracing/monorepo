@@ -14,6 +14,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <limits.h>
+#include <stdlib.h>
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/config_screen_helper.h>
 #include <CMR/fir_filter.h>
@@ -27,7 +28,7 @@
 #include "pumps.h"
 #include "fans.h"
 #include "constants.h"
-
+#include "controls.h"
 // ------------------------------------------------------------------------------------------------
 // Constants
 
@@ -174,9 +175,10 @@ static void motorsCommand (
         volatile cmr_canHeartbeat_t      *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
         volatile cmr_canDIMRequest_t     *reqDIM       = canVehicleGetPayload(CANRX_VEH_REQUEST_DIM);
         volatile cmr_canFSMData_t        *dataFSM      = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
+        volatile cmr_canFSMSWAngle_t     *swangleFSM   = canVehicleGetPayload(CANRX_VEH_SWANGLE_FSM);
         volatile cmr_canHVCPackVoltage_t *voltageHVC   = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
         volatile cmr_canHVCPackCurrent_t *currentHVC   = canVehicleGetPayload(CANRX_VEH_CURRENT_HVC);
-        volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+        volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VSM_STATUS);
 
         uint32_t throttle;
 
@@ -210,7 +212,7 @@ static void motorsCommand (
                         drsMode,
                         dataFSM    -> throttlePosition,
                         dataFSM    -> brakePressureFront_PSI,
-                        dataFSM    -> steeringWheelAngle_millideg);
+                        swangleFSM    -> steeringWheelAngle_millideg);
 
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
@@ -251,7 +253,7 @@ static void motorsCommand (
                 		    dataFSM    -> torqueRequested,
                             dataFSM    -> brakePedalPosition,
                             dataFSM    -> brakePressureFront_PSI,
-                            dataFSM    -> steeringWheelAngle_millideg,
+                            swangleFSM    -> steeringWheelAngle_millideg,
                             voltageHVC -> hvVoltage_mV,
                             currentHVC -> instantCurrent_mA,
                             blank_command);
@@ -301,10 +303,9 @@ static void motorsCommand (
             case CMR_CAN_GLV_ON: {
             	mcCtrlOff();
 
-
                 if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
                     mcCtrlOn();
-                }
+                } else
 
             	// fansOff();
             	// pumpsOff();

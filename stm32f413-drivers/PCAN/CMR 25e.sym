@@ -5,28 +5,28 @@ Title="CMR 23e"
 {ENUMS}
 // This is for the EMD
 enum VtSig_Gain(0="x1", 1="x2", 2="x4", 3="x8", 4="x16", 5="x32")
-enum SBG_Solution_Status_Mode(0="Uninitialized", 1="Vertical_Gyro_Only", 
+enum SBG_Solution_Status_Mode(0="Uninitialized", 1="Vertical_Gyro_Only",
   2="Orientation_Only", 3="Nav_Velocity", 4="Full_Nav")
 enum Fan_State(0="FAN_OFF", 1="FAN_LOW", 2="FAN_HIGH")
-enum State(0="UNKNOWN", 1="GLV_ON", 2="HV_EN", 3="RTD", 4="ERROR", 
+enum State(0="UNKNOWN", 1="GLV_ON", 2="HV_EN", 3="RTD", 4="ERROR",
   5="CLEAR_ERROR")
-enum Gear(0="UNKNOWN", 1="SLOW", 2="FAST", 3="ENDURANCE", 4="AUTO-X", 
+enum Gear(0="UNKNOWN", 1="SLOW", 2="FAST", 3="ENDURANCE", 4="AUTO-X",
   5="SKIDPAD", 6="ACCEL", 7="TEST", 8="REVERSE")
-enum VSMState(0="ERROR", 1="CLEAR_ERROR", 2="GLV_ON", 3="REQ_PRECHARGE", 
-  4="RUN_BMS", 5="DCDC_EN", 6="INVERTER_EN", 7="HV_EN", 8="RTD", 
+enum VSMState(0="ERROR", 1="CLEAR_ERROR", 2="GLV_ON", 3="REQ_PRECHARGE",
+  4="RUN_BMS", 5="DCDC_EN", 6="INVERTER_EN", 7="HV_EN", 8="RTD",
   9="COOLING_OFF", 10="DCDC_OFF")
 enum HVCMode(0="ERROR", 1="IDLE", 2="START", 4="RUN", 8="CHARGE")
-enum HVCState(0="ERROR", 1="DISCHARGE", 2="STANDBY", 3="DRIVE_PRECHARGE", 
-  4="DRIVE_PRECHARGE_COMPLETE", 5="DRIVE", 6="CHARGE_PRECHARGE", 
-  7="CHARGE_PRECHARGE_COMPLETE", 8="CHARGE_TRICKLE", 
-  9="CHARGE_CONSTANT_CURRENT", 10="CHARGE_CONSTANT_VOLTAGE", 11="CLEAR_ERROR", 
+enum HVCState(0="ERROR", 1="DISCHARGE", 2="STANDBY", 3="DRIVE_PRECHARGE",
+  4="DRIVE_PRECHARGE_COMPLETE", 5="DRIVE", 6="CHARGE_PRECHARGE",
+  7="CHARGE_PRECHARGE_COMPLETE", 8="CHARGE_TRICKLE",
+  9="CHARGE_CONSTANT_CURRENT", 10="CHARGE_CONSTANT_VOLTAGE", 11="CLEAR_ERROR",
   12="UNKNOWN")
 enum FanState(0="OFF", 1="LOW", 2="HIGH")
 enum PumpState(0="OFF", 1="ON")
 enum CoolingState(0="OFF", 1="LOW", 2="HIGH")
-enum DRS_MODE(0="DRS_CLOSED", 1="DRS_OPEN", 2="DRS_TOGGLE", 3="DRS_HOLD", 
+enum DRS_MODE(0="DRS_CLOSED", 1="DRS_OPEN", 2="DRS_TOGGLE", 3="DRS_HOLD",
   4="DRS_AUTO", 5="DRS_UNKNOWN")
-enum CCMState(0="ERROR", 1="CLEAR_ERROR", 2="CLEAR_HVC", 3="IDLE_HVC", 
+enum CCMState(0="ERROR", 1="CLEAR_ERROR", 2="CLEAR_HVC", 3="IDLE_HVC",
   4="STANDBY", 5="CHARGE_REQ", 6="CHARGE", 7="SLOW_CHARGE", 8="SHUTDOWN")
 enum HVC_Balance_State(0="BALANCE_DIS", 1="BALANCE_EN")
 
@@ -79,13 +79,12 @@ Var=VSM_ERR_latchBSPD bit 24,1
 
 [VSM_Sensors]
 ID=200h
-DLC=6
+DLC=8
 CycleTime=5
 Timeout=100
 Var=VSM_brakePressureRear unsigned 0,16 /u:PSI
 Var=VSM_hallEffect signed 16,16 /u:A /f:0.01 /p:2
-Var=VSM_SafetyIn unsigned 32,8 /u:dV
-Var=VSM_SafetyOut unsigned 40,8 /u:dV
+Var=VSM_HE_CoulombCount float 32,32 /u:C /p:3
 
 [VSM_LatchedStatus]
 ID=510h	// Timeout matrix
@@ -2033,10 +2032,11 @@ Var=CCM_ChargerVoltage unsigned 8,16 /u:dV
 Var=CCM_ChargerCurrent unsigned 24,16 /u:dA
 Var=CCM_ChargerDisabled unsigned 40,8
 
-[DIM_TEST_FLAG]
+[DAQ_AUTO_TEST]
 ID=777h
-DLC=4
-Var=TEST_FLAG float 0,32
+DLC=1
+Var=TEST_STATUS bit 7,1	// 1- START TEST, 0 - STOP TEST
+Var=TEST_ID unsigned 0,7	// Randomly generated test id sent everytime the car states up
 
 [CDC_CONTROLS_SOLVER_INFO]
 ID=7E6h
@@ -2113,3 +2113,142 @@ Timeout=2000
 Var=Commit_Hash_RAM unsigned 0,32 -h
 Var=Dirty_RAM unsigned 32,8
 
+[DAQ_PI_RL_MLX]
+ID=671h
+DLC=2
+Var=RL_AVG_TIRE_TEMP signed 0,16 /u:C /f:0.01
+
+[DAQ_PI_RL_VL53]
+ID=672h
+DLC=2
+Var=RL_LINE_HEIGHT unsigned 0,16 /u:mm
+
+[DAQ_PI_RL_NAU1]
+ID=673h
+DLC=3
+Var=RL_ADC1 unsigned 0,24
+
+[DAQ_PI_RL_NAU2]
+ID=674h
+DLC=3
+Var=RL_ADC2 unsigned 0,24
+
+[DAQ_PI_RL_ELPM75]
+ID=675h
+DLC=2
+Var=RL_LINPOT unsigned 0,12
+
+[DAQ_PI_RL_THERM_1]
+ID=676h
+DLC=2
+Var=RL_TEMP_1 unsigned 0,12
+
+[DAQ_PI_RL_THERM_2]
+ID=677h
+DLC=2
+Var=RL_TEMP_2 unsigned 0,12
+
+[DAQ_PI_RR_MLX]
+ID=678h
+DLC=2
+Var=RR_AVG_TIRE_TEMP signed 0,16 /u:C /f:0.01
+
+[DAQ_PI_RR_VL53]
+ID=679h
+DLC=2
+Var=RR_LINE_HEIGHT unsigned 0,16 /u:mm
+
+[DAQ_PI_RR_NAU1]
+ID=680h
+DLC=3
+Var=RR_ADC1 unsigned 0,24
+
+[DAQ_PI_RR_NAU2]
+ID=681h
+DLC=3
+Var=RR_ADC2 unsigned 0,24
+
+[DAQ_PI_RR_ELPM75]
+ID=682h
+DLC=2
+Var=RR_LINPOT unsigned 0,12
+
+[DAQ_PI_RR_THERM_1]
+ID=683h
+DLC=2
+Var=RR_TEMP_1 unsigned 0,12
+
+[DAQ_PI_RR_THERM_2]
+ID=684h
+DLC=2
+Var=RR_TEMP_2 unsigned 0,12
+
+[DAQ_PI_FL_MLX]
+ID=685h
+DLC=2
+Var=FL_AVG_TIRE_TEMP signed 0,16 /u:C /f:0.01
+
+[DAQ_PI_FL_VL53]
+ID=686h
+DLC=2
+Var=FL_LINE_HEIGHT unsigned 0,16 /u:mm
+
+[DAQ_PI_FL_NAU1]
+ID=687h
+DLC=3
+Var=FL_ADC1 unsigned 0,24
+
+[DAQ_PI_FL_NAU2]
+ID=688h
+DLC=3
+Var=FL_ADC2 unsigned 0,24
+
+[DAQ_PI_FL_ELPM75]
+ID=689h
+DLC=2
+Var=FL_LINPOT unsigned 0,12
+
+[DAQ_PI_FL_THERM_1]
+ID=690h
+DLC=2
+Var=FL_TEMP_1 unsigned 0,12
+
+[DAQ_PI_FL_THERM_2]
+ID=691h
+DLC=2
+Var=FL_TEMP_2 unsigned 0,12
+
+[DAQ_PI_FR_MLX]
+ID=692h
+DLC=2
+Var=FR_AVG_TIRE_TEMP signed 0,16 /u:C /f:0.01
+
+[DAQ_PI_FR_VL53]
+ID=693h
+DLC=2
+Var=FR_LINE_HEIGHT unsigned 0,16 /u:mm
+
+[DAQ_PI_FR_NAU1]
+ID=694h
+DLC=3
+Var=FR_ADC1 unsigned 0,24
+
+[DAQ_PI_FR_NAU2]
+ID=695h
+DLC=3
+Var=FR_ADC2 unsigned 0,24
+
+[DAQ_PI_FR_ELPM75]
+ID=696h
+DLC=2
+Var=FR_LINPOT unsigned 0,12
+
+[DAQ_PI_FR_THERM_1]
+ID=697h
+DLC=2
+Var=FR_TEMP_1 unsigned 0,12
+
+[DAQ_PI_FR_THERM_2]
+ID=698h
+DLC=2
+Var=FR_TEMP_2 unsigned 0,12

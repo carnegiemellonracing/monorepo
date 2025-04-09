@@ -66,14 +66,23 @@ static volatile cmr_canCDCControlsStatus_t controlsStatus = {
 
 volatile cmr_canCDCKiloCoulombs_t coulombCounting;
 
-float getYawRateControlLeftRightBias(int16_t swAngle_millideg);
+float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 
 /** @brief Coulomb counting info **/
 static TickType_t previousTickCount;
 
 // ------------------------------------------------------------------------------------------------
 // Function implementations
-
+void setLaunchControl(
+	uint8_t throttlePos_u8,
+	uint16_t brakePressurePsi_u8,
+	int32_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
+	float leftRightBias_Nm, /** IGNORED UNLESS traction_control_mode (defined in the function) is TC_MODE_TORQUE */
+	bool assumeNoTurn,
+	bool ignoreYawRate,
+	bool allowRegen,
+	float critical_speed_mps
+);
 /** @brief initialize yaw rate control */
 static void initYawRateControl() {
     // read yrc_kp from DIM
@@ -232,7 +241,7 @@ static inline void set_motor_speed_and_torque(
  */
 static void set_optimal_control(
 	float normalized_throttle,
-	int16_t swAngle_millideg,
+	int32_t swAngle_millideg,
     bool allow_regen
 ) {
 
@@ -267,7 +276,7 @@ static void set_optimal_control(
 
 	static optimizer_state_t optimizer_state;
 
-	optimizer_state.power_limit = getPowerLimit();
+	optimizer_state.power_limit = getPowerLimit_W();
 	optimizer_state.omegas[0] = wheel_fl_speed_radps;
 	optimizer_state.omegas[1] = wheel_fr_speed_radps;
 	optimizer_state.omegas[2] = wheel_rl_speed_radps;
@@ -362,8 +371,8 @@ void runControls (
     cmr_canGear_t gear,
     uint8_t throttlePos_u8,
     uint8_t brakePos_u8,
-    uint8_t brakePressurePsi_u8,
-    int16_t swAngle_millideg,
+    uint16_t brakePressurePsi_u8,
+    int32_t swAngle_millideg,
     int32_t battVoltage_mV,
     int32_t battCurrent_mA,
     bool blank_command )
@@ -430,6 +439,8 @@ void runControls (
             const float critical_speed_mps = 0.0f; // using a low value to prevent excessive wheel spin at low speeds
             const float leftRightBias_Nm = 0.0f; // YRC is not enabled for accel, so there should be no left-right torque bias
             setLaunchControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, leftRightBias_Nm, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
+            // Dry testing only.
+            // setLaunchControl(255, 0, 0, leftRightBias_Nm, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
             break;
         }
         case CMR_CAN_GEAR_TEST: {
@@ -551,15 +562,15 @@ void test_solver(uint8_t throttlePos_u8, uint8_t swAngle_millideg, bool clampbys
  */
 void setSlowTorque (
     uint8_t throttlePos_u8,
-    int16_t swAngle_millideg
+    int32_t swAngle_millideg
 ) {
     const float reqTorque = maxSlowTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
-    setTorqueLimsAllProtected(reqTorque, 0.0f);
+    // setTorqueLimsAllProtected(reqTorque, 0.0f);
 
-    // setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
-    // setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
-    // setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
-    // setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
 
     // Testing motors one by one
 //    motorLocation_t active_motor = MOTOR_FR;
@@ -587,7 +598,7 @@ void setFastTorque (
     setVelocityInt16All(maxFastSpeed_rpm);
 }
 
-void setFastTorqueWithParallelRegen(uint8_t brakePressurePsi_u8, uint8_t throttlePos_u8)
+void setFastTorqueWithParallelRegen(uint16_t brakePressurePsi_u8, uint8_t throttlePos_u8)
 {
     if (brakePressurePsi_u8 >= braking_threshold_psi) {
         bool activateParallelRegen = false;
@@ -702,38 +713,31 @@ static void update_whl_speed_setpoint (
 */
 static float getFFScheduleVelocity(float t_sec) {
 
-   float tMax = 6.4f; // limit time for safety reasons
-   float scheduleVelocity_mps = 0.0f;
+    float tMax = 6.4f; // limit time for safety reasons
+    float scheduleVelocity_mps = 0.0f;
 
-   if (t_sec < 0.0f) {
-       scheduleVelocity_mps = 0.0f;
-   } else if(t_sec < tMax) {
-//	uint8_t pedal_regen_strength = 0; This line times out mysteriously
-    float pedal_regen_strength = 0;
-   	getProcessedValue(&pedal_regen_strength, YRC_KP_INDEX, float_1_decimal);
+    if (t_sec < 0.0f) {
+        scheduleVelocity_mps = 0.0f;
+    } else if(t_sec < tMax) {
+        float scheduleVelocity_mps2 = 11.29;
+        float startingVel_mps = 0.0;
+        scheduleVelocity_mps = (scheduleVelocity_mps2 * t_sec) + startingVel_mps;
+        // 2023 Michigan EV fastest accel - 3.645s -> 11.29m/s^2 linear accel
+        // 2023 Michigan EV CMR's accel -> memorator data -> 8.63m/s^2 before
+    } else {
+        scheduleVelocity_mps = 0.0f;
+    }
 
-   	float scheduleVelocity_mps2 = ((float) pedal_regen_strength) * 0.8f + 6.f;
-   	float startingVel_mps = 0.0;
-   	getProcessedValue(&startingVel_mps, K_LIN_INDEX, float_1_decimal);
-       scheduleVelocity_mps = (scheduleVelocity_mps2 * t_sec) + (startingVel_mps);
-           // 2023 Michigan EV fastest accel - 3.645s -> 11.29m/s^2 linear accel
-           // 2023 Michigan EV CMR's accel -> memorator data -> 8.63m/s^2 before
-   } else {
-       scheduleVelocity_mps = 0.0f;
-   }
-
-   return scheduleVelocity_mps;
+    return scheduleVelocity_mps;
 }
-
-
 
 /**
 * @brief Launch control code. feedforward and uses LUT
 */
 void setLaunchControl(
 	uint8_t throttlePos_u8,
-	uint8_t brakePressurePsi_u8,
-	int16_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
+	uint16_t brakePressurePsi_u8,
+	int32_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
 	float leftRightBias_Nm, /** IGNORED UNLESS traction_control_mode (defined in the function) is TC_MODE_TORQUE */
 	bool assumeNoTurn,
 	bool ignoreYawRate,
@@ -741,7 +745,8 @@ void setLaunchControl(
 	float critical_speed_mps
 ){
 	static const float launch_control_speed_threshold_mps = 0.05f;
-	static const float launch_control_max_duration_s = 4.5;
+	static const float launch_control_max_duration_s = 5.0;
+    static const bool use_solver = false;
 
 	bool action_button_pressed = false;
 	const float nonnegative_odometer_velocity_mps = motorSpeedToWheelLinearSpeed_mps(getTotalMotorSpeed_radps() * 0.25f);
@@ -762,17 +767,40 @@ void setLaunchControl(
 		}
 	}
 
-	float time_s = (float)(xTaskGetTickCount() - startTickCount) * (0.001f);
+    // Not braking, throttle engaged, no button pressed, launch control is active.
+    bool ready_to_accel = brakePressurePsi_u8 < braking_threshold_psi && throttlePos_u8 > 0 && !action_button_pressed && launchControlActive;
+    if(false == ready_to_accel) {
+        setTorqueLimsAllProtected(0.0f, 0.0f);
+		setVelocityInt16All(0);
+        return;
+    }
+
+    float time_s = (float)(xTaskGetTickCount() - startTickCount) * (0.001f);
 	if(time_s >= launch_control_max_duration_s) {
 		setTorqueLimsAllProtected(0.0f, 0.0f);
 		setVelocityInt16All(0);
 		return;
 	}
 
-    // Not braking, throttle engaged, no button pressed, launch control is active.
-    if (brakePressurePsi_u8 < braking_threshold_psi && throttlePos_u8 > 0 && !action_button_pressed && launchControlActive) {
+    if (use_solver) {
         // swAngle_millideg = 0 means assume no turn.
         set_optimal_control((float) throttlePos_u8 / UINT8_MAX, 0, false);
+    } else {
+        TickType_t tick = xTaskGetTickCount();
+        float seconds = (float)(tick - startTickCount) * (0.001f); //convert Tick Count to Seconds
+
+        float scheduled_wheel_vel_mps = getFFScheduleVelocity(seconds);
+        float motor_rpm = gear_ratio * 60.0f * scheduled_wheel_vel_mps / (2 * M_PI * effective_wheel_rad_m);
+        setVelocityFloat(MOTOR_FL, motor_rpm);
+        setVelocityFloat(MOTOR_FR, motor_rpm);
+        setVelocityFloat(MOTOR_RL, motor_rpm);
+        setVelocityFloat(MOTOR_RR, motor_rpm);
+
+        const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
+        cmr_torqueDistributionNm_t pos_torques_Nm = {.fl = reqTorque, .fr = reqTorque, .rl = reqTorque, .rr = reqTorque};
+        cmr_torqueDistributionNm_t neg_torques_Nm = {.fl = 0.0f, .fr = 0.0f, .rl = 0.0f, .rr = 0.0f};
+        setTorqueLimsProtected(&pos_torques_Nm, &neg_torques_Nm);
+        return;
     }
 }
 
@@ -794,8 +822,8 @@ void setLaunchControl(
  */
 void setTractionControl (
     uint8_t throttlePos_u8,
-    uint8_t brakePressurePsi_u8,
-    int16_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
+    uint16_t brakePressurePsi_u8,
+    int32_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
     float leftRightBias_Nm, /** IGNORED UNLESS traction_control_mode (defined in the function) is TC_MODE_TORQUE */
     bool assumeNoTurn,
     bool ignoreYawRate,
@@ -1019,7 +1047,7 @@ void setTractionControl (
  * @brief Calculate the control action (left-right torque bias) of the yaw rate controller
  * @param swAngle_millideg Steering wheel angle
  */
-float getYawRateControlLeftRightBias(int16_t swAngle_millideg) {
+float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
     // ********* Local Parameters *********
 
     /** @brief Trust SBG velocities even if SBG reports that they're invalid
@@ -1071,8 +1099,8 @@ float getYawRateControlLeftRightBias(int16_t swAngle_millideg) {
  */
 void setYawRateControl (
     uint8_t throttlePos_u8,
-    uint8_t brakePressurePsi_u8,
-    int16_t swAngle_millideg,
+    uint16_t brakePressurePsi_u8,
+    int32_t swAngle_millideg,
     bool clampbyside
 ) {
     if (brakePressurePsi_u8 >= braking_threshold_psi) { // breaking
@@ -1154,8 +1182,8 @@ void setYawRateControl (
  */
 void setYawRateAndTractionControl (
     uint8_t throttlePos_u8,
-    uint8_t brakePressurePsi_u8,
-    int16_t swAngle_millideg, /* IGNORED FOR TC if assumeNoTurn is true */
+    uint16_t brakePressurePsi_u8,
+    int32_t swAngle_millideg, /* IGNORED FOR TC if assumeNoTurn is true */
     bool assumeNoTurn,
     bool ignoreYawRate,
     bool allowRegen,
@@ -1177,7 +1205,7 @@ void setYawRateAndTractionControl (
  */
 void setCruiseControlTorque (
     uint8_t throttlePos_u8,
-    uint8_t brakePressurePsi_u8,
+    uint16_t brakePressurePsi_u8,
     int32_t avgMotorSpeed_RPM
 ) {
     static bool cruiseControl = false;
@@ -1218,10 +1246,10 @@ void setEnduranceTorque (
     int32_t avgMotorSpeed_RPM,
     uint8_t throttlePos_u8,
     uint8_t brakePos_u8,
-    int16_t swAngle_millideg,
+    int32_t swAngle_millideg,
     int32_t battVoltage_V_hvc,
     int32_t battCurrent_A_hvc,
-    uint8_t brakePressurePsi_u8
+    uint16_t brakePressurePsi_u8
 ) {
     // if braking
     if (setRegen(&throttlePos_u8, brakePressurePsi_u8, avgMotorSpeed_RPM)){
@@ -1302,10 +1330,10 @@ void setEnduranceTestTorque(
     int32_t avgMotorSpeed_RPM,
     uint8_t throttlePos_u8,
     uint8_t brakePos_u8,
-    int16_t swAngle_millideg,
+    int32_t swAngle_millideg,
     int32_t battVoltage_mV,
     int32_t battCurrent_mA,
-    uint8_t brakePressurePsi_u8,
+    uint16_t brakePressurePsi_u8,
     bool clampbyside
 ) {
      // if braking

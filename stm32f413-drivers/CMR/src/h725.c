@@ -233,10 +233,6 @@ void _platform_canFilter(
         //fix this
         uint32_t bank = i;
 
-        uint32_t filterMode = filter->isMask
-            ? FDCAN_FILTER_MASK
-            : FDCAN_FILTER_DUAL;
-
         // In 16 bit ID list mode, FilterIdHigh, FilterIdLow, FilterMaskIdHigh,
         // and FilterMaskIdLow all serve as a whitelist of left-aligned 11-bit
         // CAN IDs.
@@ -601,7 +597,7 @@ void _platform_adcPoll(cmr_adc_t *adc, uint32_t adcTimeout) {
                     f(FLASH_SECTOR_4, 0x08080000, 0x20000)                                          \
                         f(FLASH_SECTOR_5, 0x080A0000, 0x20000)                                      \
                             f(FLASH_SECTOR_6, 0x080C0000, 0x20000)                                  \
-                                f(FLASH_SECTOR_7, 0x080E0000, 0x20000)                              
+                                f(FLASH_SECTOR_7, 0x080E0000, 0x20000)
 
 static void *getSectorBase(uint32_t sector)
 {
@@ -683,7 +679,7 @@ void _platform_configCommit(cmr_config_t *config) {
     size_t idx = 0;
     while (idx < config->cacheLen)
     {
-        if (HAL_FLASH_Program(TYPEPROGRAM_WORD, (uint32_t)(config->flashStart + idx),
+        if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, (uint32_t)(config->flashStart + idx),
                               config->cache[idx]) == HAL_OK)
         {
             idx++;

@@ -28,6 +28,8 @@
 #include "controls_helper.h"
 #include "controls.h"
 #include "sensors.h"
+#include "movella.h"
+#include "safety_filter.h"
 
 extern volatile uint8_t currentParameters[MAX_MENU_ITEMS];
 volatile uint8_t parametersFromDIM[MAX_MENU_ITEMS];
@@ -61,8 +63,22 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
     },
+    [CANRX_VSM_STATUS] = {
+        .canID = CMR_CANID_VSM_STATUS,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25,
+        .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
+    },
     [CANRX_VEH_DATA_FSM] = {
         .canID = CMR_CANID_FSM_DATA,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25,
+        .errorFlag = CMR_CAN_ERROR_NONE,
+        .warnFlag = CMR_CAN_WARN_NONE
+    },
+    [CANRX_VEH_SWANGLE_FSM] = {
+        .canID = CMR_CANID_FSM_SWANGLE,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_NONE,
@@ -130,7 +146,37 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
 	        .canID = CMR_CANID_HEARTBEAT_HVI,
 	        .timeoutError_ms = 100,
 	        .timeoutWarn_ms = 75
-	}
+	},
+    // Temporary.
+    [CANRX_VEH_MOVELLA_STATUS] = {
+        .canID = CMR_CANID_MOVELLA_STATUS,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    // Temporary.
+    [CANRX_VEH_MOVELLA_QUATERNION] = {
+        .canID = CMR_CANID_MOVELLA_QUATERNION,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    // Temporary.
+    [CANRX_VEH_MOVELLA_IMU_GYRO] = {
+        .canID = CMR_CANID_MOVELLA_IMU_GYRO,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    // Temporary.
+    [CANRX_VEH_MOVELLA_IMU_ACCEL] = {
+        .canID = CMR_CANID_MOVELLA_IMU_ACCEL,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    // Temporary.
+    [CANRX_VEH_MOVELLA_VELOCITY] = {
+        .canID = CMR_CANID_MOVELLA_VELOCITY,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
 };
 
 /** @brief Metadata for tractive CAN message reception. */
@@ -186,6 +232,31 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
 };
 
 cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
+    [CANRX_DAQ_MOVELLA_STATUS] = {
+        .canID = CMR_CANID_MOVELLA_STATUS,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_MOVELLA_QUATERNION] = {
+        .canID = CMR_CANID_MOVELLA_QUATERNION,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_MOVELLA_IMU_GYRO] = {
+        .canID = CMR_CANID_MOVELLA_IMU_GYRO,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_MOVELLA_IMU_ACCEL] = {
+        .canID = CMR_CANID_MOVELLA_IMU_ACCEL,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_MOVELLA_VELOCITY] = {
+        .canID = CMR_CANID_MOVELLA_VELOCITY,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
     [CANRX_DAQ_SBG_STATUS_3] = {
         .canID = CMR_CANID_SBG_STATUS_3,
         .timeoutError_ms = 2000,
@@ -327,6 +398,13 @@ cmr_canRXMeta_t canRXMeta[] = {
     },
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 50,
+        .errorFlag = CMR_CAN_ERROR_NONE,
+        .warnFlag = CMR_CAN_WARN_NONE
+    },
+    [CANRX_FSM_SWANGLE] = {
+        .canID = CMR_CANID_FSM_SWANGLE,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 50,
         .errorFlag = CMR_CAN_ERROR_NONE,
@@ -488,8 +566,6 @@ static void canTX100Hz(void *pvParameters) {
             sizeof(heartbeat),
             canTX100Hz_period_ms
         );
-
-
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
 }
@@ -525,6 +601,11 @@ static void canTX200Hz(void *pvParameters) {
     cmr_canCDCPoseOrientation_t poseOrient;
     cmr_canCDCPoseVelocity_t poseVel;
 
+    cmr_canCOGVelocity_t cog_velocity;
+    cmr_canFrontWheelVelocity_t front_velocity;
+    cmr_canRearWheelVelocity_t rear_velocity;
+
+
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_FL_SETPOINTS, amkSetpointsFL, sizeof(*amkSetpointsFL), canTX200Hz_period_ms);
@@ -540,6 +621,24 @@ static void canTX200Hz(void *pvParameters) {
         daqPosePosition(&posePos);
         //daqPoseOrientation(&poseOrient);
         daqPoseVelocity(&poseVel);
+        
+        cog_velocity.cog_x = car_state.velocity.x * 100.0f;
+        cog_velocity.cog_y = car_state.velocity.y * 100.0f;
+        cog_velocity.slip_angle = car_state.slip_angle.body;
+
+        front_velocity.fl_x = car_state.fl_velocity.x * 100.0f;
+        front_velocity.fl_y = car_state.fl_velocity.y * 100.0f;
+        front_velocity.fr_x = car_state.fr_velocity.x * 100.0f;
+        front_velocity.fr_y = car_state.fr_velocity.y * 100.0f;
+
+        rear_velocity.rl_x = car_state.rl_velocity.x * 100.0f;
+        rear_velocity.rl_y = car_state.rl_velocity.y * 100.0f;
+        rear_velocity.rr_x = car_state.rr_velocity.x * 100.0f;
+        rear_velocity.rr_y = car_state.rr_velocity.y * 100.0f;
+
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COG_VELOCITY, &cog_velocity, sizeof(cog_velocity), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_FRONT_VELOCITY, &front_velocity, sizeof(front_velocity), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_REAR_VELOCITY, &rear_velocity, sizeof(rear_velocity), canTX200Hz_period_ms);
 
         // Is data valid? Set it in the orientation/velocity messages
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX200Hz_period_ms);
@@ -549,18 +648,18 @@ static void canTX200Hz(void *pvParameters) {
 
 
         // Forward AMK messages to vehicle CAN at 200Hz.
-        for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
-            // Do not transmit if we haven't received that message lately
-            if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
+        // for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
+        //     // Do not transmit if we haven't received that message lately
+        //     if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
 
-            canTX(
-                CMR_CAN_BUS_VEH,
-                canTractiveRXMeta[i].canID,
-                (void *) &(canTractiveRXMeta[i].payload),
-                sizeof(cmr_canAMKActualValues1_t),
-                canTX200Hz_period_ms
-            );
-        }
+        //     canTX(
+        //         CMR_CAN_BUS_VEH,
+        //         canTractiveRXMeta[i].canID,
+        //         (void *) &(canTractiveRXMeta[i].payload),
+        //         sizeof(cmr_canAMKActualValues1_t),
+        //         canTX200Hz_period_ms
+        //     );
+        // }
 
         // Send setpoints to vehicle CAN at 200Hz as well.
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_FL_SETPOINTS, amkSetpointsFL, sizeof(*amkSetpointsFL), canTX200Hz_period_ms);
@@ -679,8 +778,15 @@ static void canTX1Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_ODOMETER, &odometer, sizeof(odometer), canTX1Hz_period_ms);
 
         cmr_canCDCControlsStatus_t *controlsStatus = getControlsStatus();
-
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_CONTROLS_STATUS, controlsStatus, sizeof(cmr_canCDCControlsStatus_t), canTX1Hz_period_ms);
+
+        cmr_canCDCPowerLimitLog_t power_limit = {
+            // If you don't #include "safety_filter.h",
+            // getPowerLimit_W() is 0!!!!!!!!!!! (╯°□°)╯ノ彡┻━┻
+            .power_limit_W = getPowerLimit_W(),
+        };
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_POWER_LOG, &power_limit, sizeof(power_limit), canTX1Hz_period_ms);
+
         // TODO: constantly send current parameters
         vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
     }
@@ -812,7 +918,7 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
 
     if(canID == CMR_CANID_CDC_POWER_UPDATE) {
     	cmr_canCDCPowerLimit_t *limit = (cmr_canCDCPowerLimit_t*) data;
-    	setPowerLimit(limit->powerLimit_kW);
+    	setPowerLimit_kW(limit->powerLimit_kW);
     }
 
     // Update the RX Meta array
@@ -828,15 +934,25 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
         rxMetaArray = canTractiveRXMeta;
         rxMetaArrayLen = CANRX_TRAC_LEN;
     }
+
+    volatile void* payload = NULL;
     if (rxMetaArray != NULL) {
         for (uint32_t i = 0; i < rxMetaArrayLen; i++) {
             if (rxMetaArray[i].canID == canID) {
-                memcpy((void *) rxMetaArray[i].payload, data, dataLen);
+                payload = (void *) rxMetaArray[i].payload;
+                memcpy(payload, data, dataLen);
                 rxMetaArray[i].lastReceived_ms = xTaskGetTickCountFromISR();
                 break;
             }
         }
     }
+
+    uint16_t temp = canID & 0x770;
+    (void) temp;
+    if(temp == 0x770) {
+        movella_parse(canID, payload);
+    }
+
     uint32_t total_ticks = DWT->CYCCNT - au32_initial_ticks;
     uint32_t microsecs = total_ticks*1000000/HAL_RCC_GetHCLKFreq();
 }
