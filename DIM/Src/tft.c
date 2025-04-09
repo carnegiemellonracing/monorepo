@@ -164,81 +164,6 @@ static size_t tftCoCmdRemLen(tft_t *tft) {
     return (TFT_RAM_CMD_SIZE - sizeof(uint32_t)) - used;
 }
 
-/**
- * @brief Writes coprocessor commands to the display.
- *
- * @warning When `wait` is `false`, `len` MUST be less than `TFT_RAM_CMD_SIZE`!
- *
- * @param tft The display.
- * @param len The length of the command.
- * @param data The command's data.
- * @param wait `true` to wait for partial writes to finish; `false` to wait for
- * enough space at the beginning.
- */
-// void tftCoCmd1(tft_t *tft, size_t len, const void *data, bool wait) {
-//     configASSERT(wait || len < TFT_RAM_CMD_SIZE);
-
-//     const uint8_t *dataBuf = data;
-//     size_t written = 0;
-
-//     while (written < len) {
-//         // Calculate length to write.
-//         size_t wrLen = len - written;
-
-//         if (!wait) {
-//             // Wait for free space to write the entire command.
-//             size_t remLen;
-//             do {
-//                 remLen = tftCoCmdRemLen(tft);
-//             } while (remLen < wrLen);
-//         } else {
-//             // Write as much as possible.
-//             size_t remLen = tftCoCmdRemLen(tft);
-//             if (remLen == 0) {
-//                 continue;  // No space yet.
-//             }
-//             if (wrLen > remLen) {
-//                 wrLen = remLen;
-//             }
-//         }
-
-//         tftWrite(
-//             tft, TFT_ADDR_RAM_CMD + tft->coCmdWr,
-//             wrLen, dataBuf + written);
-//         if (wrLen % sizeof(uint32_t) != 0) {
-//             // Round-up to word-aligned length.
-//             wrLen /= sizeof(uint32_t);
-//             wrLen++;
-//             wrLen *= sizeof(uint32_t);
-//         }
-
-//         written += wrLen;
-
-//         // Update the command write address.
-//         uint16_t coCmdWr = tft->coCmdWr + wrLen;
-//         if (coCmdWr >= TFT_RAM_CMD_SIZE) {
-//             coCmdWr -= TFT_RAM_CMD_SIZE;
-//         }
-//         tftWrite(tft, TFT_ADDR_CMD_WRITE, sizeof(coCmdWr), &coCmdWr);
-//         tft->coCmdWr = coCmdWr;
-
-//         if (!wait) {
-//             // No waiting; we must have written the whole buffer.
-//             configASSERT(written == wrLen);
-//             break;
-//         }
-
-//         // Wait for the command to finish.
-//         while (
-//             tftRead(
-//                 tft, TFT_ADDR_CMD_READ,
-//                 sizeof(tft->coCmdRd), &tft->coCmdRd),
-//             tft->coCmdRd != coCmdWr) {
-//             continue;
-//         }
-//     }
-// }
-
 void tftCoCmd(tft_t *tft, size_t len, const void *data) {
     // Bulk Write
     uint32_t space = -1;
@@ -353,7 +278,7 @@ static void tftUpdate(void *pvParameters) {
              	prevOverTemp = false;
                 drawRTDScreen();
         }
-        
+
         // if (true) {
         //     drawRTDScreen();
         // } else if ((stateGetVSMReq() == CMR_CAN_HV_EN) && (stateGetVSM() == CMR_CAN_ERROR)) {
@@ -513,7 +438,7 @@ uint32_t computeCurrent_A(volatile cmr_canAMKActualValues1_t *canAMK_Act1) {
 */
 
 static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hottest) {
-    
+
     // If we're in GLV, we don't want temps to latch on their prev vals
 	cmr_canState_t state = stateGetVSM();
     if (state == CMR_CAN_GLV_ON) {
@@ -560,10 +485,10 @@ static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hot
     *motorTemp_C = findMax(FL->motorTemp_dC,
                                   FR->motorTemp_dC,
                                   RL->motorTemp_dC,
-                                  RR->motorTemp_dC, 
+                                  RR->motorTemp_dC,
                                   &hottest_motor_index) /
                           10;
-    
+
     // provide hottest motor as corner type
     *hottest = (cornerId_t)(hottest_motor_index);
 
@@ -575,8 +500,8 @@ static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hot
                                RR->coldPlateTemp_dC,
                                &hottest_mc_index) /
                        10;
-    
-    
+
+
 }
 
 /**
