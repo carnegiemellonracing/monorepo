@@ -84,8 +84,6 @@ int cmr_canRXMetaTimeoutError(const cmr_canRXMeta_t *meta, TickType_t now_ms) {
     );
 }
 
-//TODO: INTEGRATE WITH F4
-
 /**
  * @brief Searches for the receive metadata associated with the given CAN ID.
  *
@@ -440,84 +438,6 @@ static void cmr_canRXPendingCallback(CAN_HandleTypeDef *handle, uint32_t fifo) {
 CAN_RX_FIFO_PENDING(0)
 CAN_RX_FIFO_PENDING(1)
 #undef CAN_RX_FIFO_PENDING
-
-/**
- * @brief Initializes a CAN interface.
- *
- * @warning It is undefined behavior to initialize the same HAL CAN instance
- * more than once!
- * @warning This driver assumes a 48 MHz APB1 peripheral clock frequency!
- *
- * @param can The interface to initialize.
- * @param instance The HAL CAN instance (`CANx` from `stm32f413xx.h`).
- * @param bitRate The CAN bit rate to use.
- * @param rxMeta Metadata for periodic messages to receive.
- * @param rxMetaLen Number of periodic receive messages.
- * @param rxCallback Callback for other messages received, or `NULL` to ignore.
- * @param rxPort Receiving GPIO port (`GPIOx` from `stm32f413xx.h`).
- * @param rxPin Receiving GPIO pin (`GPIO_PIN_x` from `stm32f4xx_hal_gpio.h`).
- * @param txPort Transmitting GPIO port.
- * @param txPin Transmitting GPIO pin.
- */
-void cmr_canInit(
-    cmr_can_t *can, CAN_TypeDef *instance,
-    cmr_canBitRate_t bitRate,
-    cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
-    cmr_canRXCallback_t rxCallback,
-    GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
-) {
-    /* Do any platform-specific initialization */
-    _platform_canInit(
-        can, instance,
-        bitRate,
-        rxMeta, rxMetaLen,
-        rxCallback,
-        rxPort, rxPin,
-        txPort, txPin
-    );
-
-    cmr_rccCANClockEnable(instance);
-    cmr_rccGPIOClockEnable(rxPort);
-    cmr_rccGPIOClockEnable(txPort);
-
-    // Configure CAN RX pin.
-    GPIO_InitTypeDef pinConfig = {
-        .Pin = rxPin,
-        .Mode = GPIO_MODE_AF_PP,
-        .Pull = GPIO_NOPULL,
-        .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
-        .Alternate = cmr_canGPIOAF(instance, rxPort)
-    };
-    HAL_GPIO_Init(rxPort, &pinConfig);
-
-    // Configure CAN TX pin.
-    pinConfig.Pin = txPin;
-    pinConfig.Alternate = cmr_canGPIOAF(instance, txPort);
-    HAL_GPIO_Init(txPort, &pinConfig);
-
-    if (HAL_CAN_Init(&can->handle) != HAL_OK) {
-        cmr_panic("HAL_CAN_Init() failed!");
-    }
-
-    if (HAL_CAN_Start(&can->handle) != HAL_OK) {
-        cmr_panic("HAL_CAN_Start() failed!");
-    }
-
-    if (HAL_CAN_ActivateNotification(
-            &can->handle,
-            CAN_IT_TX_MAILBOX_EMPTY |
-            CAN_IT_RX_FIFO0_MSG_PENDING |
-            CAN_IT_RX_FIFO1_MSG_PENDING |
-            CAN_IT_ERROR_WARNING |
-            CAN_IT_ERROR_PASSIVE |
-            CAN_IT_BUSOFF |
-            CAN_IT_LAST_ERROR_CODE |
-            CAN_IT_ERROR
-    )) {
-        cmr_panic("HAL_CAN_ActivateNotification() failed!");
-    }
-}
 
 
 /**

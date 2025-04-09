@@ -54,11 +54,11 @@ typedef enum {
     CMR_CANID_CDC_POSE_ORIENTATION = 0x292,         /**< @brief CDC (20e) roll/pitch/yaw real car position. */
     CMR_CANID_CDC_POSE_VELOCITY = 0x2A2,            /**< @brief CDC (20e) real car velocity. */
     CMR_CANID_CDC_POSE_ACCELERATION = 0x2B2,        /**< @brief CDC (20e) real car acceleration. */
-    
+
     CMR_CANID_CDC_COG_VELOCITY = 0x2C2,        /**< @brief CDC (20e) real car acceleration. */
     CMR_CANID_CDC_FRONT_VELOCITY = 0x2D2,        /**< @brief CDC (20e) real car acceleration. */
     CMR_CANID_CDC_REAR_VELOCITY = 0x2E2,        /**< @brief CDC (20e) real car acceleration. */
-    
+
     CMR_CANID_CDC_POWER_SENSE = 0x305,
     CMR_CANID_CDC_RTC_DATA_OUT = 0x6A2,             /**< @brief CDC RTC data. */
     CMR_CANID_CDC_RTC_DATA_IN = 0x6B2,              /**< @brief CDC RTC data. */
@@ -76,15 +76,15 @@ typedef enum {
     CMR_CANID_FSM_POWER_DIAGNOSTICS = 0x553,    /**< @brief FSM power diagnostics. */
     CMR_CANID_SS_STATUS = 0x554,               /**< @brief Safety Circuit status. */
 
-    CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief 
+    CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief
  (fan board) cooling loop temps. */
-    CMR_CANID_PTC_LOOP_TEMPS_B = 0x234,        /**< @brief 
+    CMR_CANID_PTC_LOOP_TEMPS_B = 0x234,        /**< @brief
  (fan board) cooling loop temps. */
-    CMR_CANID_PTC_LOOP_TEMPS_C = 0x244,        /**< @brief 
+    CMR_CANID_PTC_LOOP_TEMPS_C = 0x244,        /**< @brief
  (fan board) cooling loop temps. */
-    CMR_CANID_PTC_FANS_PUMPS_STATUS = 0x314,   /**< @brief 
+    CMR_CANID_PTC_FANS_PUMPS_STATUS = 0x314,   /**< @brief
  (fan board) fans status */
-    CMR_CANID_PTC_POWER_DIAGNOSTICS = 0x534,   /**< @brief 
+    CMR_CANID_PTC_POWER_DIAGNOSTICS = 0x534,   /**< @brief
  (fan board) power diagnostics. */
 
     CMR_CANID_DIM_REQUEST = 0x235,              /**< @brief DIM state/gear request. */
@@ -236,9 +236,9 @@ typedef enum {
     CMR_CANID_MOVELLA_IMU_ACCEL = 0x77E,
     CMR_CANID_MOVELLA_VELOCITY = 0x77D,
 
-    CMR_CANID_EMD_MEASUREMENT = 0x100,          /**< @brief EMD measurement for HV voltage/current. */
-    CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */
     CMR_CANID_EMD_STATUS = 0x400,               /**< @brief EMD status. */
+    CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */
+    CMR_CANID_EMD_MEASUREMENT = 0x402,          /**< @brief EMD measurement for HV voltage/current. */
 
     CMR_IZZIE_LOADCELL = 0x7F0,                 /**< @brief IZZIE Amp load data. */
     CMR_CANID_CONTROLS_DEBUG_GLOBAl = 0x7E0,    /**< @brief control algo testing data. */
@@ -248,7 +248,7 @@ typedef enum {
     CMR_CANID_CONTROLS_DEBUG_RL = 0x7E4,        /**< @brief control algo testing data. */
     CMR_CANID_CONTROLS_PID_IO = 0x7E5,        /**< @brief control algo testing data. */
 
-   CMR_CANID_CONTROLS_SOLVER_INPUTS = 0x7E6, 
+   CMR_CANID_CONTROLS_SOLVER_INPUTS = 0x7E6,
    CMR_CANID_CONTROLS_SOLVER_OUTPUTS = 0x7F0,
    CMR_CANID_CONTROLS_SOLVER_SETTINGS = 0x7EE,
    CMR_CANID_CONTROLS_SOLVER_AUX = 0x7FF,
