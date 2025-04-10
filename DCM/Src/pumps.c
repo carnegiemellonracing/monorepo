@@ -104,8 +104,11 @@ void pumpsOn() {
     pump_2_State = (pump_2_State < 100) ? pump_2_State : 100;
 
     // duty cycle is inverted because of MOSFETS
-    cmr_pwmSetDutyCycle(&pump_1_PWM, (uint32_t) 100-pump_1_State);
-    cmr_pwmSetDutyCycle(&pump_2_PWM, (uint32_t) 100-pump_2_State);
+    // cmr_pwmSetDutyCycle(&pump_1_PWM, (uint32_t) 100-pump_1_State);
+    // cmr_pwmSetDutyCycle(&pump_2_PWM, (uint32_t) 100-pump_2_State);
+
+    cmr_gpioWrite(GPIO_PUMP_LEFT, 1);
+    cmr_gpioWrite(GPIO_PUMP_RIGHT, 1);
     
     if (pump_1_State >= 50 || pump_2_State >= 50) {
         cmr_gpioWrite(GPIO_PUMP_ON, 1);
@@ -118,9 +121,11 @@ void pumpsOff() {
     pump_1_State = 0;
     pump_2_State = 0;
     // duty cycle is inverted because of MOSFETS
-    // we want them to be off when without AC
-    cmr_pwmSetDutyCycle(&pump_1_PWM, 100-pump_1_State);
-    cmr_pwmSetDutyCycle(&pump_2_PWM, 100-pump_2_State);
+    // // we want them to be off when without AC
+    // cmr_pwmSetDutyCycle(&pump_1_PWM, 100-pump_1_State);
+    // cmr_pwmSetDutyCycle(&pump_2_PWM, 100-pump_2_State);
+    cmr_gpioWrite(GPIO_PUMP_LEFT, 0);
+    cmr_gpioWrite(GPIO_PUMP_RIGHT, 0);
     cmr_gpioWrite(GPIO_PUMP_ON, 0);
 }
 

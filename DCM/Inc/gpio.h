@@ -19,6 +19,8 @@ typedef enum {
     GPIO_FRAM_WP,           /**< @brief FRAM Write Protect Pin */
 	GPIO_BRKLT_ENABLE,      /**< @brief Brakelight Enable. */
 	GPIO_FAN_ON,            /**< @brief Fan On LED. */
+	GPIO_PUMP_LEFT,
+	GPIO_PUMP_RIGHT,
 	GPIO_PUMP_ON,           /**< @brief Pump On LED. */
     GPIO_AUXILIARY_ENABLE,  /**< @brief Auxiliary Enable. */
 	GPIO_MTR_CTRL_ENABLE,   /**< @brief Motor Controller Power Enable */
