@@ -954,7 +954,6 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
     }
 
     uint32_t total_ticks = DWT->CYCCNT - au32_initial_ticks;
-    uint32_t microsecs = total_ticks*1000000/HAL_RCC_GetHCLKFreq();
 }
 
 /**
@@ -962,30 +961,24 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
  */
 void canInit(void) {
     // Vehicle CAN initialization - CAN1
-	cmr_FDcanInit(
-		&(can[CMR_CAN_BUS_VEH]), FDCAN2, CMR_CAN_BITRATE_500K,
-		NULL, 0,
-		&conditionalCallback,
-		GPIOB, GPIO_PIN_12,     // CAN1 RX port/pin.
-		GPIOB, GPIO_PIN_13      // CAN1 TX port/pin.
+    cmr_FDcanInit(&can[CMR_CAN_BUS_VEH], FDCAN2, CMR_CAN_BITRATE_500K, NULL,
+                  0, &conditionalCallback, GPIOB,
+                  GPIO_PIN_12,        // CAN1 RX port/pin.
+                  GPIOB, GPIO_PIN_13  // CAN1 TX port/pin.
     );
 
     // Tractive CAN initialization. - CAN3
-	cmr_FDcanInit(
-		&(can[CMR_CAN_BUS_DAQ]), FDCAN3, CMR_CAN_BITRATE_500K,
-		NULL, 0,
-		&conditionalCallback,
-		GPIOD, GPIO_PIN_12,     // CAN3 RX port/pin.
-		GPIOD, GPIO_PIN_13      // CAN3 TX port/pin.
-	);
+    cmr_FDcanInit(&(can[CMR_CAN_BUS_DAQ]), FDCAN3, CMR_CAN_BITRATE_500K, NULL,
+                  0, &conditionalCallback, GPIOD,
+                  GPIO_PIN_12,        // CAN3 RX port/pin.
+                  GPIOD, GPIO_PIN_13  // CAN3 TX port/pin.
+    );
 
     // DAQ CAN init. - CAN2
-    cmr_FDcanInit(
-        &(can[CMR_CAN_BUS_TRAC]), FDCAN1, CMR_CAN_BITRATE_500K,
-        NULL, 0,
-        &conditionalCallback,
-        GPIOA, GPIO_PIN_11,      // CAN2 RX port/pin.
-        GPIOA, GPIO_PIN_12       // CAN2 TX port/pin.
+    cmr_FDcanInit(&can[CMR_CAN_BUS_TRAC], FDCAN1, CMR_CAN_BITRATE_500K, NULL,
+                  0, &conditionalCallback, GPIOA,
+                  GPIO_PIN_11,        // CAN2 RX port/pin.
+                  GPIOA, GPIO_PIN_12  // CAN2 TX port/pin.
     );
 
     // Vehicle CAN filters.
@@ -995,91 +988,61 @@ void canInit(void) {
             .rxFIFO = FDCAN_RX_FIFO1,
 
             // Match all even IDs (bottom bit 0, all others don't care).
-            .ids = {
-                0x000, 0x000,
-                0x001, 0x001
-            }
+            .ids = {0x000,0x000}
         },
-	{
+
+        {
             .isMask = false,
             .rxFIFO = FDCAN_RX_FIFO0,
-            .ids = {
-                CMR_CANID_CDC_RTC_DATA_IN,
-				CMR_CANID_CDC_RTC_DATA_IN,
-				CMR_CANID_CDC_RTC_DATA_IN, /* 3 repeated ID's */
-                CMR_CANID_VSM_SENSORS
-            }
-	}
+            .ids = {CMR_CANID_CDC_RTC_DATA_IN,
+                    CMR_CANID_VSM_SENSORS}
+        }
     };
 
-    cmr_canFilter(
-        &(can[CMR_CAN_BUS_VEH]), canVehicleFilters, sizeof(canVehicleFilters) / sizeof(canVehicleFilters[0])
-    );
+    cmr_canFilter(&(can[CMR_CAN_BUS_VEH]), canVehicleFilters,
+                  sizeof(canVehicleFilters) / sizeof(canVehicleFilters[0]));
 
     // Tractive CAN filters.
     const cmr_canFilter_t canTractiveFilters[] = {
-        {
-            .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO0,
-            .ids = {
-                CMR_CANID_AMK_1_ACT_1,
-                CMR_CANID_AMK_1_ACT_2,
-                CMR_CANID_AMK_2_ACT_1,
-                CMR_CANID_AMK_2_ACT_2
-            }
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO0,
+         .ids = {CMR_CANID_AMK_1_ACT_1, CMR_CANID_AMK_1_ACT_2,
+                 CMR_CANID_AMK_2_ACT_1, CMR_CANID_AMK_2_ACT_2}
         },
 
-        {
-            .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO1,
-            .ids = {
-                CMR_CANID_AMK_3_ACT_1,
-                CMR_CANID_AMK_3_ACT_2,
-                CMR_CANID_AMK_4_ACT_1,
-                CMR_CANID_AMK_4_ACT_2
-            }
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO1,
+         .ids = {CMR_CANID_AMK_3_ACT_1, CMR_CANID_AMK_3_ACT_2,
+                 CMR_CANID_AMK_4_ACT_1, CMR_CANID_AMK_4_ACT_2}
         },
 
-        {
-            .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO1,
-            .ids = {
-                CMR_CANID_HEARTBEAT_HVI,
-                CMR_CANID_HEARTBEAT_HVI,
-                CMR_CANID_HEARTBEAT_HVI,
-                CMR_CANID_HEARTBEAT_HVI
-            }
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO1,
+         .ids = {CMR_CANID_HEARTBEAT_HVI, CMR_CANID_HEARTBEAT_HVI}
         }
     };
-    cmr_canFilter(
-        &(can[CMR_CAN_BUS_TRAC]), canTractiveFilters, sizeof(canTractiveFilters) / sizeof(canTractiveFilters[0])
-    );
+
+    cmr_canFilter(&(can[CMR_CAN_BUS_TRAC]), canTractiveFilters,
+                  sizeof(canTractiveFilters) / sizeof(canTractiveFilters[0]));
 
     // DAQ CAN filters.
     const cmr_canFilter_t canDaqFilters[] = {
-        {
-            .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO0,
+        {.isMask = true,
+         .rxFIFO = FDCAN_RX_FIFO0,
 
-            // Match all even IDs (bottom bit 0, all others don't care).
-            .ids = {
-                0x000, 0x000,
-                0x001, 0x001
-            }
-        }, {
-            .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO1,
+         // Match all even IDs (bottom bit 0, all others don't care).
+         .ids = {0x000, 0x001}
+        },
+        {.isMask = true,
+         .rxFIFO = FDCAN_RX_FIFO1,
 
-            // Match all odd IDs (bottom bit 1, all others don't care).
-            .ids = {
-                0x001, 0x001,
-                0x001, 0x001
-            }
+         // Match all odd IDs (bottom bit 1, all others don't care).
+         .ids = {0x001, 0x001}
         }
     };
-    cmr_canFilter(
-        &(can[CMR_CAN_BUS_DAQ]), canDaqFilters, sizeof(canDaqFilters) / sizeof(canDaqFilters[0])
-    );
+
+    cmr_canFilter(&(can[CMR_CAN_BUS_DAQ]), canDaqFilters,
+                  sizeof(canDaqFilters) / sizeof(canDaqFilters[0]));
 
     // Task initialization.
 
@@ -1135,11 +1098,6 @@ void canInit(void) {
 int ABC = 0;
 int canTX(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
     configASSERT(bus < CMR_CAN_BUS_NUM);
-
-    // RAM parsing
-    // int ret = parseData((uint32_t) bus, id, data, len);
-    // configASSERT(ret == 0);
-    // (void) ret;
 
     return cmr_canTX(&(can[bus]), id, data, len, timeout);
 }
