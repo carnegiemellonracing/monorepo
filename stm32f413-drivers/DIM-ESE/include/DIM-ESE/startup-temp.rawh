@@ -1,0 +1,11 @@
+0xffffff00, // CMD_DLSTART()
+0x26000007, // CLEAR(1, 1, 1)
+0xffffff0c, // CMD_TEXT(400, 240, 28, OPT_CENTER, "Rio de Janeiro")
+0x00f00190,
+0x0600001c,
+0x206f6952,
+0x4a206564,
+0x69656e61,
+0x00006f72,
+0x00000000, // DISPLAY()
+0xffffff01, // CMD_DLSWAP()

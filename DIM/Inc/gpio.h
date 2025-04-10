@@ -60,7 +60,7 @@ typedef enum {
 	RIGHT,
 	UP,
 	DOWN,
-	LRUDLen,
+	LRUD_LEN,
 } cmr_LRUD_index;
 
 extern bool gpioLRUDStates[4];

@@ -14,6 +14,7 @@
  *  all CAN message addresses. Ours is set to this value.
  */
 #define CMR_CANID_RMS_OFFSET    0x3A0
+#define NUM_CONFIG_PACKETS 4
 
 /** @brief CAN IDs. */
 typedef enum {
@@ -23,7 +24,7 @@ typedef enum {
     CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x104,    /**< @brief DIM heartbeat. */
     CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief PTC heatbeart. */
-	 CMR_CANID_HEARTBEAT_HVI = 0x106,    /**< @brief HVI heatbeart. */
+	CMR_CANID_HEARTBEAT_HVI = 0x106,    /**< @brief HVI heatbeart. */
     CMR_CANID_HEARTBEAT_LV_BMS = 0x107, /**< @brief LV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
 
@@ -54,11 +55,11 @@ typedef enum {
     CMR_CANID_CDC_POSE_ORIENTATION = 0x292,         /**< @brief CDC (20e) roll/pitch/yaw real car position. */
     CMR_CANID_CDC_POSE_VELOCITY = 0x2A2,            /**< @brief CDC (20e) real car velocity. */
     CMR_CANID_CDC_POSE_ACCELERATION = 0x2B2,        /**< @brief CDC (20e) real car acceleration. */
-    
+
     CMR_CANID_CDC_COG_VELOCITY = 0x2C2,        /**< @brief CDC (20e) real car acceleration. */
     CMR_CANID_CDC_FRONT_VELOCITY = 0x2D2,        /**< @brief CDC (20e) real car acceleration. */
     CMR_CANID_CDC_REAR_VELOCITY = 0x2E2,        /**< @brief CDC (20e) real car acceleration. */
-    
+
     CMR_CANID_CDC_POWER_SENSE = 0x305,
     CMR_CANID_CDC_RTC_DATA_OUT = 0x6A2,             /**< @brief CDC RTC data. */
     CMR_CANID_CDC_RTC_DATA_IN = 0x6B2,              /**< @brief CDC RTC data. */
@@ -76,15 +77,15 @@ typedef enum {
     CMR_CANID_FSM_POWER_DIAGNOSTICS = 0x553,    /**< @brief FSM power diagnostics. */
     CMR_CANID_SS_STATUS = 0x554,               /**< @brief Safety Circuit status. */
 
-    CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief 
+    CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief
  (fan board) cooling loop temps. */
-    CMR_CANID_PTC_LOOP_TEMPS_B = 0x234,        /**< @brief 
+    CMR_CANID_PTC_LOOP_TEMPS_B = 0x234,        /**< @brief
  (fan board) cooling loop temps. */
-    CMR_CANID_PTC_LOOP_TEMPS_C = 0x244,        /**< @brief 
+    CMR_CANID_PTC_LOOP_TEMPS_C = 0x244,        /**< @brief
  (fan board) cooling loop temps. */
-    CMR_CANID_PTC_FANS_PUMPS_STATUS = 0x314,   /**< @brief 
+    CMR_CANID_PTC_FANS_PUMPS_STATUS = 0x314,   /**< @brief
  (fan board) fans status */
-    CMR_CANID_PTC_POWER_DIAGNOSTICS = 0x534,   /**< @brief 
+    CMR_CANID_PTC_POWER_DIAGNOSTICS = 0x534,   /**< @brief
  (fan board) power diagnostics. */
 
     CMR_CANID_DIM_REQUEST = 0x235,              /**< @brief DIM state/gear request. */
@@ -99,7 +100,6 @@ typedef enum {
      * first and then cdc config packets in ascending order. This is imperative to maintaining
      * code modularity :)
     */
-    num_config_packets = 4,                     /**< @brief in the enum but actually just a count of num of packets. */
     CMR_CANID_DIM_CONFIG0_DRV0 = 0x600,         /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG1_DRV0,                 /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG2_DRV0,                 /**< @brief DIM config request */
@@ -248,7 +248,7 @@ typedef enum {
     CMR_CANID_CONTROLS_DEBUG_RL = 0x7E4,        /**< @brief control algo testing data. */
     CMR_CANID_CONTROLS_PID_IO = 0x7E5,        /**< @brief control algo testing data. */
 
-   CMR_CANID_CONTROLS_SOLVER_INPUTS = 0x7E6, 
+   CMR_CANID_CONTROLS_SOLVER_INPUTS = 0x7E6,
    CMR_CANID_CONTROLS_SOLVER_OUTPUTS = 0x7F0,
    CMR_CANID_CONTROLS_SOLVER_SETTINGS = 0x7EE,
    CMR_CANID_CONTROLS_SOLVER_AUX = 0x7FF,

@@ -1,5 +1,5 @@
 /**
- * @file newState.h
+ * @file state.h
  * @brief DIM state interface.
  *
  * @author Carnegie Mellon Racing
@@ -13,10 +13,10 @@
 
 //states
 typedef enum {
-    INIT = 0, 
-    START = 1, 
-    NORMAL = 2, 
-    CONFIG = 3, 
+    INIT = 0,
+    START = 1,
+    NORMAL = 2,
+    CONFIG = 3,
     dimStateERROR = 4,
     RACING = 5
     //SAFETY
@@ -32,6 +32,8 @@ extern volatile uint8_t config_paddle_right_request;
 #define MIN_PADDLE_VAL 50
 #define MAX_PADDLE_VAL 255
 
+#define TFT_STARTUP_MS 3000
+
 void reqVSM(void);
 
 void reqGear(void);
@@ -40,12 +42,14 @@ int getRequestedGear(void);
 int getMaxMotorTemp(void);
 int getACTemp(void);
 int getMCTemp(void);
-bool getDoorsState(void);
+bool DRSOpen(void);
 void exitConfigScreen();
 void stateGearUpdate(void);
 void stateDrsUpdate(void);
 cmr_canState_t stateGetVSM(void);
 cmr_canState_t stateGetVSMReq(void);
+
+cmr_state getCurrState();
 
 cmr_canGear_t stateGetGear(void);
 cmr_canGear_t stateGetGearReq(void);
@@ -78,6 +82,9 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq);
 // Declare the global variable
 extern cmr_state currState;
 extern cmr_state nextState;
+//testing
+// extern cmr_canGear_t currGear;
+// extern cmr_canGear_t reqGear;
 
 void stateMachineInit(void);
 
