@@ -123,10 +123,18 @@ void canLRUDDetect(void){
 	XYActivate();
 
 	for(int i = 0; i < LRUD_LEN; i++){
+		bool pressed = true;
 		if(gpioLRUDStates[i]){
 			if(lastState[i] == false)
 				//new press
-				lastState[i] = true;
+				TickType_t press = xTaskGetTickCount();
+				while(xTaskGetTickCount() - press <= 3000){
+					if(!gpioLRUDStates[i]) {
+						lastState[i] = false;
+						return;
+					}
+				}
+				lastState[i] = true;gih
 				lastPress[i] = xTaskGetTickCount();
 		}
 		else {
