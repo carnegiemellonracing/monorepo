@@ -5,26 +5,24 @@
  * @author Carnegie Mellon Racing
  */
 
-#include <stm32f4xx_hal.h>  // HAL interface
+#include "state.h"
 
-#include <CMR/panic.h>  // cmr_panic()
-#include <CMR/can.h>    // CAN interface
-#include <CMR/adc.h>    // ADC interface
-#include <CMR/gpio.h>   // GPIO interface
+#include <CMR/adc.h>  // ADC interface
+#include <CMR/can.h>  // CAN interface
 #include <CMR/can_types.h>
-
-#include "gpio.h"       // Board-specific GPIO interface
-#include "can.h"        // Board-specific CAN interface
-#include "tft.h"        // TFT display interface.
-#include "newState.h"
+#include <CMR/gpio.h>   // GPIO interface
+#include <CMR/panic.h>  // cmr_panic()
 #include <stdlib.h>
-#include <stdio.h>
-#include <tftDL.h>
+
+#include "can.h"   // Board-specific CAN interface
+#include "gpio.h"  // Board-specific GPIO interface
+#include "tft.h"   // TFT display interface.
+#include "tftDL.h"
 
 static const uint32_t stateMachine_priority = 4;
 
 /** @brief Button input task period (milliseconds). */
-static const TickType_t stateMachine_period = 10;
+static const TickType_t stateMachine_period = 1000;
 
 /** @brief Button input task task. */
 static cmr_task_t stateMachine_task;
@@ -33,10 +31,13 @@ cmr_state nextState;
 
 cmr_state currState;
 
+// cmr_canGear_t reqGear;
+// cmr_canGear_t currGear;
+
 volatile int8_t config_move_request;
 
 
-
+#define max(a,b) ((a) > (b) ? (a) : (b))
 
 #define min(a, b) __extension__\
 ({ __typeof__ (a) _a = (a); \
@@ -112,11 +113,8 @@ void exitConfigScreen() {
  * @return The VSM state.
  */
 cmr_canState_t stateGetVSM(void) {
-	cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-	volatile cmr_canHeartbeat_t *heartbeatVSM =
-		(void *)heartbeatVSMMeta->payload;
-
-	return heartbeatVSM->state;
+	cmr_canHeartbeat_t *payload = getPayload(CANRX_HEARTBEAT_VSM);
+	return payload->state;
 }
 
 
@@ -129,9 +127,6 @@ cmr_canState_t stateGetVSMReq(void) {
 	return state.vsmReq;
 }
 
-
-
-
 /**
  * @brief Gets the current gear.
  *
@@ -140,7 +135,6 @@ cmr_canState_t stateGetVSMReq(void) {
 cmr_canGear_t stateGetGear(void) {
 	return state.gear;
 }
-
 /**
  * @brief Gets the requested gear.
  *
@@ -174,9 +168,7 @@ float getSpeedKmh() {
 	 *      (x rotations / 1min) * (18" * PI) *  (2.54*10^-5km/inch)
 	 *      (60min / 1hr) * (1/15.1 gear ratio)
 	 *      = x * 0.0057072960048526627892388896218624717297547517194475432371                                 */
-	float vehicleSpeed = (float)avgWheelRPM * 0.0057073f;
-
-	return vehicleSpeed;
+	return (float)avgWheelRPM * 0.0057073f;
 }
 
 /**
@@ -199,21 +191,16 @@ float getOdometer() {
 int32_t getAverageWheelRPM(void) {
 	/* Get CAN data */
 	// Front Left
-	cmr_canRXMeta_t *metaAMK_FL_Act1 = canRXMeta + CANRX_AMK_FL_ACT_1;
-	volatile cmr_canAMKActualValues1_t *canAMK_FL_Act1 =
-		(void *)metaAMK_FL_Act1->payload;
+	cmr_canAMKActualValues1_t *canAMK_FL_Act1 = getPayload(CANRX_AMK_FL_ACT_1);
+
 	// Front Right
-	cmr_canRXMeta_t *metaAMK_FR_Act1 = canRXMeta + CANRX_AMK_FR_ACT_1;
-	volatile cmr_canAMKActualValues1_t *canAMK_FR_Act1 =
-		(void *)metaAMK_FR_Act1->payload;
+	cmr_canAMKActualValues1_t *canAMK_FR_Act1 = getPayload(CANRX_AMK_FR_ACT_1);
+
 	// Rear Left
-	cmr_canRXMeta_t *metaAMK_RL_Act1 = canRXMeta + CANRX_AMK_RL_ACT_1;
-	volatile cmr_canAMKActualValues1_t *canAMK_RL_Act1 =
-		(void *)metaAMK_RL_Act1->payload;
+	cmr_canAMKActualValues1_t *canAMK_RL_Act1 = getPayload(CANRX_AMK_RL_ACT_1);
+
 	// Rear Right
-	cmr_canRXMeta_t *metaAMK_RR_Act1 = canRXMeta + CANRX_AMK_RR_ACT_1;
-	volatile cmr_canAMKActualValues1_t *canAMK_RR_Act1 =
-		(void *)metaAMK_RR_Act1->payload;
+	cmr_canAMKActualValues1_t *canAMK_RR_Act1 = getPayload(CANRX_AMK_RL_ACT_1);
 
 	/* Extract wheel speeds */
 	int32_t frontLeftRPM = (canAMK_FL_Act1->velocity_rpm);  // Motor direction reversed on left side
@@ -244,21 +231,16 @@ bool getAcknowledgeButton(void) {
 int getMaxMotorTemp(void){
 	/* Get CAN data */
 	// Front Left
-	cmr_canRXMeta_t *metaAMK_FL_Act2 = canRXMeta + CANRX_AMK_FL_ACT_2;
-	volatile cmr_canAMKActualValues2_t *canAMK_FL_Act2 =
-		(void *)metaAMK_FL_Act2->payload;
+	cmr_canAMKActualValues2_t *canAMK_FL_Act2 = getPayload(CANRX_AMK_FL_ACT_2);
+
 	// Front Right
-	cmr_canRXMeta_t *metaAMK_FR_Act2 = canRXMeta + CANRX_AMK_FR_ACT_2;
-	volatile cmr_canAMKActualValues2_t *canAMK_FR_Act2 =
-		(void *)metaAMK_FR_Act2->payload;
+	cmr_canAMKActualValues2_t *canAMK_FR_Act2 = getPayload(CANRX_AMK_FR_ACT_2);
+
 	// Rear Left
-	cmr_canRXMeta_t *metaAMK_RL_Act2 = canRXMeta + CANRX_AMK_RL_ACT_2;
-	volatile cmr_canAMKActualValues2_t *canAMK_RL_Act2 =
-		(void *)metaAMK_RL_Act2->payload;
+	cmr_canAMKActualValues2_t *canAMK_RL_Act2 = getPayload(CANRX_AMK_RL_ACT_2);
+
 	// Rear Right
-	cmr_canRXMeta_t *metaAMK_RR_Act2 = canRXMeta + CANRX_AMK_RR_ACT_2;
-	volatile cmr_canAMKActualValues2_t *canAMK_RR_Act2 =
-		(void *)metaAMK_RR_Act2->payload;
+	cmr_canAMKActualValues2_t *canAMK_RR_Act2 = getPayload(CANRX_AMK_RR_ACT_2);
 
 	/* Extract motor temperatures */
 	int32_t frontLeftTemp = canAMK_FL_Act2->motorTemp_dC;
@@ -269,17 +251,7 @@ int getMaxMotorTemp(void){
 	/* Return highest motor temperature*/
 	int32_t maxTemp = frontLeftTemp;
 
-	if( maxTemp < frontRightTemp ){
-		maxTemp = frontRightTemp;
-	}
-	if (maxTemp < rearLeftTemp )
-	{
-		maxTemp = rearLeftTemp;
-	}
-	if (maxTemp < rearRightTemp )
-	{
-		maxTemp = rearRightTemp;
-	}
+	maxTemp = max(max(max(maxTemp, frontRightTemp), rearLeftTemp), rearRightTemp);
 /* conversion from dC to C*/
 	return maxTemp / 10;
 
@@ -294,9 +266,7 @@ int getMaxMotorTemp(void){
  */
 int getACTemp(void)
 {
-	cmr_canRXMeta_t *metaHVCPackTemps = canRXMeta + CANRX_HVC_PACK_TEMPS;
-	volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps =
-		(void *)metaHVCPackTemps->payload;
+	volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps = getPayload(CANRX_HVC_PACK_TEMPS);
 	int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC) / 10;
 	return acTemp_C;
 }
@@ -309,21 +279,13 @@ int getACTemp(void)
  */
 int getMCTemp(void)
 {
-	cmr_canRXMeta_t *metaAMK_FL_Act2 = canRXMeta + CANRX_AMK_FL_ACT_2;
-	volatile cmr_canAMKActualValues2_t *canAMK_FL_Act2 =
-		(void *)metaAMK_FL_Act2->payload;
+	cmr_canAMKActualValues2_t *canAMK_FL_Act2 = getPayload(CANRX_AMK_FL_ACT_2);
 	// Front Right
-	cmr_canRXMeta_t *metaAMK_FR_Act2 = canRXMeta + CANRX_AMK_FR_ACT_2;
-	volatile cmr_canAMKActualValues2_t *canAMK_FR_Act2 =
-		(void *)metaAMK_FR_Act2->payload;
+	cmr_canAMKActualValues2_t *canAMK_FR_Act2 = getPayload(CANRX_AMK_FR_ACT_2);
 	// Rear Left
-	cmr_canRXMeta_t *metaAMK_RL_Act2 = canRXMeta + CANRX_AMK_RL_ACT_2;
-	volatile cmr_canAMKActualValues2_t *canAMK_RL_Act2 =
-		(void *)metaAMK_RL_Act2->payload;
+	cmr_canAMKActualValues2_t *canAMK_RL_Act2 = getPayload(CANRX_AMK_RL_ACT_2);
 	// Rear Right
-	cmr_canRXMeta_t *metaAMK_RR_Act2 = canRXMeta + CANRX_AMK_RR_ACT_2;
-	volatile cmr_canAMKActualValues2_t *canAMK_RR_Act2 =
-		(void *)metaAMK_RR_Act2->payload;
+	cmr_canAMKActualValues2_t *canAMK_RR_Act2 = getPayload(CANRX_AMK_RR_ACT_2);
 	int32_t frontLeftMCTemp = canAMK_FL_Act2->motorTemp_dC;
 	int32_t frontRightMCTemp = canAMK_FR_Act2->motorTemp_dC;
 	int32_t rearLeftMCTemp = canAMK_RL_Act2->motorTemp_dC;
@@ -332,17 +294,7 @@ int getMCTemp(void)
 	/* Return highest motor temperature*/
 	int32_t maxTemp = frontLeftMCTemp;
 
-	if( maxTemp < frontRightMCTemp ){
-		maxTemp = frontRightMCTemp;
-	}
-	if (maxTemp < rearLeftMCTemp )
-	{
-		maxTemp = rearLeftMCTemp;
-	}
-	if (maxTemp < rearRightMCTemp )
-	{
-		maxTemp = rearRightMCTemp;
-	}
+	maxTemp = max(max(max(maxTemp, frontRightMCTemp), rearLeftMCTemp), rearRightMCTemp);
 	return maxTemp / 10;
 }
 
@@ -355,19 +307,10 @@ int getMCTemp(void)
  *
  * @return door state as integer
  */
-bool getDoorsState(void)
+bool DRSOpen(void)
 {
-	cmr_canRXMeta_t *meta_canCDCDRSStates_t = canRXMeta + CANRX_DRS_STATE;
-	volatile cmr_canCDCDRSStates_t *canCDCDRSState =
-		(void *) meta_canCDCDRSStates_t->payload;
-
-	int16_t doorState = canCDCDRSState->state;
-	if (doorState == 0)
-	{
-		return true;
-	}else{
-		return false;
-	}
+	volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t *)getPayload(CANRX_DRS_STATE);
+    return drsState->state == CMR_CAN_DRS_STATE_OPEN;
 }
 
 
@@ -385,15 +328,16 @@ static cmr_state getReqScreen(void) {
     switch (currState) {
         case INIT:
         	//initializes tft screen
-        	tftUpdate(&tft);
     		nextState = START;
 
             break;
         case START:
-            if(stateGetVSMReq() == CMR_CAN_GLV_ON) {
+            if(state.vsmReq == CMR_CAN_GLV_ON) {
                 nextState = NORMAL;
             }
-            else nextState = START;
+            else {
+                nextState = START;
+            }
             break;
         case NORMAL:
             if(canLRUDStates[LEFT]) {
@@ -404,47 +348,51 @@ static cmr_state getReqScreen(void) {
                 nextState = RACING;
                 //canLRUDStates[RIGHT] = false;
             }
-            else nextState = NORMAL;
+            else {
+                nextState = NORMAL;
+            }
             break;
         case CONFIG:
             //look into how button move on screen on campus
             if(canLRUDStates[LEFT]) {
                 //move left on screen
-                //canLRUDStates[LEFT] = 0;
+                config_move_request = -1;
                 nextState = CONFIG;
             }
             else if(canLRUDStates[RIGHT]) {
                 //move right on screen
-                //canLRUDStates[RIGHT] = 0;
+                config_move_request = 1;
                 nextState = CONFIG;
             }
             else if(canLRUDStates[UP]) {
                 //move up on screen
-                //canLRUDStates[UP] = 0;
+                config_move_request = -CONFIG_SCREEN_NUM_COLS;
                 nextState = CONFIG;
             }
             else if(canLRUDStates[DOWN]) {
                 //move down on screen
-                //canLRUDStates[DOWN] = 0;
+                config_move_request = CONFIG_SCREEN_NUM_COLS;
                 nextState = CONFIG;
             }
     	//TODO: WHAT THE HELL IS THIS??
             else if(gpioButtonStates[SW1]) {
                 nextState = NORMAL;
                 //gpioButtonStates[SW1] = 0;
-                nextState = CONFIG;
+                //nextState = CONFIG;
             }
             else if(gpioButtonStates[SW2]) {
                 nextState = RACING;
                 //gpioButtonStates[SW2] = 0;
             }
-            else nextState = CONFIG;
+            else{
+                nextState = CONFIG;
+            }
             break;
         case dimStateERROR:
             nextState = INIT;
             break;
         case RACING:
-            if(canLRUDStates[LEFT] && stateGetVSMReq() == CMR_CAN_GLV_ON) {
+            if(canLRUDStates[LEFT] && state.vsmReq == CMR_CAN_GLV_ON) {
                 nextState = CONFIG;
                 //canLRUDStates[LEFT] = false;
             }
@@ -452,10 +400,16 @@ static cmr_state getReqScreen(void) {
                 nextState = NORMAL;
                 //canLRUDStates[RIGHT] = false;
             }
-            else nextState = RACING;
+            else {
+                nextState = RACING;
+            }
             break;
         default:
             nextState = INIT;
+    }
+    //change all can states to false to deregister buttons
+    for(int i = 0; i < LRUD_LEN; i++){
+        canLRUDStates[i] = false;
     }
 	return nextState;
 }
@@ -518,20 +472,18 @@ void stateVSMUp() {
  */
 void stateVSMDown() {
 	cmr_canState_t vsmState = stateGetVSM();
-	if (state.vsmReq > vsmState) {
-		// Cancel state-up request.
-		state.vsmReq = vsmState;
-		return;
-	}
+        if (state.vsmReq > vsmState) {
+            // Cancel state-up request.
+            state.vsmReq = vsmState;
+            return;
+        }
 
-	if (
-		state.vsmReq == CMR_CAN_RTD &&
-		getAverageWheelRPM() > 5) {
-		// Only exit RTD when motor is basically stopped.
-		return;
-		}
+        if (state.vsmReq == CMR_CAN_RTD && getAverageWheelRPM() > 5) {
+            // Only exit RTD when motor is basically stopped.
+            return;
+        }
 
-	cmr_canState_t vsmReq = vsmState - 1;  // Decrement state.
+        cmr_canState_t vsmReq = vsmState - 1;  // Decrement state.
 	// Valid State
 	if (stateVSMReqIsValid(vsmState, vsmReq)) {
 		state.vsmReq = vsmReq;
@@ -540,13 +492,14 @@ void stateVSMDown() {
 }
 
 
+
 void reqVSM(void) {
 	//So check state of the car and the pressing of up or down button, then based on the output
 	//update VstateVSMReq
 	if (((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN)) && (gpioLRUDStates[UP])){
 		stateVSMUp();
 	}
-	if (((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN)) && (gpioLRUDStates[DOWN])){
+	if (((stateGetVSM() == CMR_CAN_RTD) || (stateGetVSM() == CMR_CAN_HV_EN)) && (gpioLRUDStates[DOWN])){
 		stateVSMDown();
 	}
 }
@@ -566,20 +519,25 @@ void reqGear(void) {
 	int pastRotary = getPastRotaryPosition();
 	int currentRotary = getRotaryPosition();
 
-	bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN));
-	if(canChangeGear && (currentRotary!=stateGetGear())){
-		if((currentRotary < pastRotary) || (currentRotary == 7 && pastRotary==0)){
-			//turned clockwise so gearup
-			requestedGear = stateGetGear() + 1;
-			}
-		} else {
-				requestedGear = stateGetGear() - 1;
-
-		state.gearReq = requestedGear;
-	}
+	// bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN));
+    // bool canChangeGear = true;
+	// if(canChangeGear && (currentRotary!=state.gear)){
+	// 	if((currentRotary < pastRotary) || (currentRotary == 7 && pastRotary==0)){
+	// 		//turned clockwise so gearup
+	// 		state.gear++;
+	// 		}
+	// 	} else {
+	// 		state.gear--;
+	// }
+    bool canChangeGear = true;
+    if(canChangeGear && (pastRotary != currentRotary)) {
+        if(state.gearReq == 8) state.gearReq = 1;
+        else state.gearReq++;
+    }
 }
 
 //returns requested gear
+
 int getRequestedGear(void){
 	return requestedGear;
 }
@@ -595,53 +553,52 @@ void stateDrsUpdate(void) {
 	state.drsMode = state.drsReq;
 }
 
-static void stateOutput() { 
-    //output
-    switch(currState) {
-        case INIT:
-            //initialize buttons to 0
-			//also initializes all LRUD buttons to 0
-            for(int i=0; i<NUM_BUTTONS; i++){
-                //is it necessary to initialize the can buttons to 0 if they are just reading pins??
-                canButtonStates[i] = 0;
-                gpioButtonStates[i] = 0;
-            }
-    		for (int i=0; i<LRUDLen; i++) {
-    			canButtonStates[i] = 0;
-    			gpioButtonStates[i] = 0;
-    		}
-             /* Restarting the Display. */
-            TickType_t lastWakeTime = xTaskGetTickCount();
-    		//change pin of screen
-            cmr_gpioWrite(GPIO_PD_N, 0);  // TODO figure out pin
-            vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
-            cmr_gpioWrite(GPIO_PD_N, 1);
-            vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
+cmr_state getCurrState() {
+    return currState;
+}
 
-            /* Initialize the display. */
-            tftCmd(&tft, TFT_CMD_CLKEXT, 0x00);
-            tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
-            tftCmd(&tft, TFT_CMD_ACTIVE, 0x00);
-            break;
-        case START:
-            /* Display Startup Screen for fixed time */
-            tftDLContentLoad(&tft, &tftDL_startup);
-            tftDLWrite(&tft, &tftDL_startup);
-            vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
-            break;
-        case NORMAL:
-            drawRTDScreen(); //from something
-            break;
-        case CONFIG:
-            drawConfigScreen();
-            break;
-        case dimStateERROR:
-            drawErrorScreen();
-            break;
-        case RACING:
-            drawRacingScreen();
-            break;
-    }
+static void stateOutput() {
+    //output
+    // switch(currState) {
+    //     case INIT:
+    //         //initialize buttons to 0
+	// 		//also initializes all LRUD buttons to 0
+    //         for(int i=0; i<NUM_BUTTONS; i++){
+    //             //is it necessary to initialize the can buttons to 0 if they are just reading pins??
+    //             canButtonStates[i] = 0;
+    //             gpioButtonStates[i] = 0;
+    //         }
+    //          /* Restarting the Display. */
+    //         TickType_t lastWakeTime = xTaskGetTickCount();
+    // 		//change pin of screen
+    //         /* Initialize the display. */
+    //         // tftInitSequence();
+    //         tftUpdate();
+    //         break;
+    //     case START:
+    //         /* Display Startup Screen for fixed time */
+    //         //tftDLWrite(&tft, &tftDL_startup);
+    //         //drawConfigScreen();
+    //         //vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
+    //         break;
+    //     case NORMAL:
+    //         drawRTDScreen(); //from somethingP
+    //         //tftDLWrite(&tft, &tftDL_startup);
+    //         //vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
+    //         break;
+    //     case CONFIG:
+    //         drawConfigScreen();
+    //         vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
+    //         break;
+    //     case dimStateERROR:
+    //         drawErrorScreen();
+    //         vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
+    //         break;
+    //     case RACING:
+    //         drawRacingScreen();
+    //         vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
+    //         break;
+    // }
 	//TODO: Why is this called again?
     currState = getReqScreen();
 }
@@ -706,23 +663,27 @@ uint8_t getLVSoC(float voltage, lv_battery_type_t battery_type) {
         num_items = LV_LIPO_LUT_NUM_ITEMS;
     } else {
         // unknown battery type - return 0%
+		cmr_panic("Unknown battery type");
         return 0;
     }
 
     for (size_t i = 0; i < num_items; i++) {
         if (lut[i].voltage == voltage) {
-            // if voltage equals voltage from lut, return soc
             return lut[i].SoC;
-        } else if (lut[i].voltage < voltage) {
+        }
+
+        if (lut[i].voltage < voltage) {
             // if voltage > voltage from lut, we have passed correct value
             if (i == 0) {
                 // if i == 0, then it must be higher than highest voltage
                 return 99;
-            } else {
-                // otherwise we do some linear extrapolation!
-                float result = (float)lut[i].SoC + ((voltage - lut[i].voltage) / (lut[i - 1].voltage - lut[i].voltage)) * ((float)(lut[i - 1].SoC - lut[i].SoC));
-                return min(99, ((uint8_t)result));
             }
+            // otherwise we do some linear extrapolation!
+            float result =
+                (float)lut[i].SoC + ((voltage - lut[i].voltage) /
+                                     (lut[i - 1].voltage - lut[i].voltage)) *
+                                        ((float)(lut[i - 1].SoC - lut[i].SoC));
+            return min(99, ((uint8_t)result));
         }
     }
     // if we get to end of loop, voltage is less than lowest voltage in lut
@@ -737,19 +698,23 @@ static void stateMachine(void *pvParameters){
     (void)pvParameters;
     TickType_t lastWakeTime = xTaskGetTickCount();
     currState = INIT;
+    uint32_t test;
+    uint32_t space1 = 0;
     while (1) {
-        //taskENTER_CRITICAL();
-        getReqScreen();
-        stateOutput();
+        // taskENTER_CRITICAL();
+        // stateOutput();
+        currState = getReqScreen();
+        // tftRead(&tft, TFT_ADDR_CMD_READ, sizeof(test), &test);
+        // test = test & 0x00000FFF;
+        // tftRead(&tft, TFT_ADDR_CMDB_SPACE, sizeof(space1), &space1);
 		/* for testing
 		vsmStateGlobal = stateGetVSM();
 		vsmStateGlobalReq = stateGetVSMReq();
 		*/
-        //taskEXIT_CRITICAL();
+        // taskEXIT_CRITICAL();
 		vTaskDelayUntil(&lastWakeTime, stateMachine_period);
     }
 }
-//want to pack into cmr driver 
 
 /**
  * @brief Initializes the state machine interface.

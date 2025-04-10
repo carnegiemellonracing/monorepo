@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.rawh": "c",
+        "tftcontent.h": "c"
+    }
+}

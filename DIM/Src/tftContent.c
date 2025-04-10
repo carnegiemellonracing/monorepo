@@ -16,7 +16,7 @@ struct tftContent {
 
 /** @brief Startup image lookup table data. */
 static const uint8_t tftContent_startup_lut_data[] = {
-#include <DIM-ESE/content/startup.lut.binh>
+#include <startup.lut.binh>
 };
 
 /** @brief Startup image lookup table. */
@@ -28,7 +28,7 @@ const tftContent_t tftContent_startup_lut = {
 
 /** @brief Startup image data. */
 static const uint8_t tftContent_startup_data[] = {
-#include <DIM-ESE/content/startup.binh>
+#include <startup.binh>
 };
 
 /** @brief Startup image. */

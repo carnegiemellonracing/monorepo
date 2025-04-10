@@ -65,7 +65,9 @@ add_library(freertos_config INTERFACE)
 target_include_directories(freertos_config SYSTEM
     INTERFACE
     ${CMAKE_SOURCE_DIR}/Inc
-    ${CMAKE_SOURCE_DIR}/../stm32f413-drivers/CMR/include) # The config file directory
+    ${CMAKE_SOURCE_DIR}/../stm32f413-drivers/CMR/include # The config file directory
+    ${CMAKE_SOURCE_DIR}/../stm32f413-drivers/DIM-ESE/include
+    ${CMAKE_SOURCE_DIR}/../stm32f413-drivers/DIM-ESE/content) # The config file directory
 target_compile_definitions(freertos_config
     INTERFACE
     configASSERT
@@ -122,9 +124,9 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/syscall.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/sysmem.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/tft.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/tftContent.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/tftDL.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/newState.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/state.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/tftContent.c
 
 )
 
