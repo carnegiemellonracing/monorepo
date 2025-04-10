@@ -223,7 +223,7 @@ static void cmr_canRXPendingCallback(FDCAN_HandleTypeDef *handle, uint32_t fifo)
     cmr_can_t *can = cmr_canFromHandle(handle);
 
     // shift by 16 because datalength lives in upper 16 bits of msg.DataLength
-    cmr_canRXData(can, msg.Identifier, data, msg.DataLength >> 16);
+    cmr_canRXData(can, msg.Identifier, data, msg.DataLength);
 }
 
 #define CAN_RX_FIFO_PENDING(fifo) \

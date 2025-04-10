@@ -983,7 +983,7 @@ void canInit(void) {
             .rxFIFO = FDCAN_RX_FIFO1,
 
             // Match all even IDs (bottom bit 0, all others don't care).
-            .ids = {0x000,0x001}
+            .ids = {0x000,0x000}
         },
 
         {
