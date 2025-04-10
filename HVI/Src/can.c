@@ -79,7 +79,7 @@ static void calcPower(cmr_canHVIHeartbeat_t *heartbeat) {
 
     heartbeat->packVoltage_cV = voltage;
     heartbeat->packCurrent_dA = current;
-    heartbeat->packPower_W = power;   
+    heartbeat->packPower_W = 0;   
 }
 
 /**
