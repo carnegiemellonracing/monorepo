@@ -532,6 +532,7 @@ static void canTX100Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_OUTPUTS, &solver_torques, sizeof(solver_torques), canTX100Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_SETTINGS, &solver_settings, sizeof(cmr_can_solver_settings_t), canTX100Hz_period_ms);
 
+
 		// SF
 		const cmr_canCDCSafetyFilterStates_t *sfStatesInfo = getSafetyFilterInfo();
 		cmr_canCDCMotorPower_t *motorPowerInfo = getMotorPowerInfo();
@@ -731,6 +732,19 @@ static void canTX5Hz(void *pvParameters) {
 
             if (canID == CMR_CANID_EMD_MEASUREMENT) {
                 canID = CMR_CANID_EMD_MEASUREMENT_RETX;
+            }
+
+            for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
+                // Do not transmit if we haven't received that message lately
+                if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
+    
+                canTX(
+                    CMR_CAN_BUS_VEH,
+                    canTractiveRXMeta[i].canID,
+                    (void *) &(canTractiveRXMeta[i].payload),
+                    sizeof(cmr_canAMKActualValues1_t),
+                    canTX5Hz_period_ms
+                );
             }
 
 //            canTX(
