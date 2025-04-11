@@ -734,19 +734,6 @@ static void canTX5Hz(void *pvParameters) {
                 canID = CMR_CANID_EMD_MEASUREMENT_RETX;
             }
 
-            for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
-                // Do not transmit if we haven't received that message lately
-                if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
-    
-                canTX(
-                    CMR_CAN_BUS_VEH,
-                    canTractiveRXMeta[i].canID,
-                    (void *) &(canTractiveRXMeta[i].payload),
-                    sizeof(cmr_canAMKActualValues1_t),
-                    canTX5Hz_period_ms
-                );
-            }
-
 //            canTX(
 //                CMR_CAN_BUS_VEH,
 //                canID,
@@ -763,7 +750,21 @@ static void canTX5Hz(void *pvParameters) {
         transmitCDC_DIMconfigMessages();
 
         vTaskDelayUntil(&lastWakeTime, canTX5Hz_period_ms);
+
+        for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
+            // Do not transmit if we haven't received that message lately
+            if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
+    
+            canTX(
+                CMR_CAN_BUS_VEH,
+                canTractiveRXMeta[i].canID,
+                (void *) &(canTractiveRXMeta[i].payload),
+                sizeof(cmr_canAMKActualValues1_t),
+                canTX5Hz_period_ms
+            );
+        }
     }
+
 }
 
 /** @brief CAN 1 Hz TX priority. */
@@ -1021,18 +1022,22 @@ void canInit(void) {
         {.isMask = false,
          .rxFIFO = FDCAN_RX_FIFO0,
          .ids = {CMR_CANID_AMK_1_ACT_1, CMR_CANID_AMK_1_ACT_2,
-                 CMR_CANID_AMK_2_ACT_1, CMR_CANID_AMK_2_ACT_2}
+                 }
         },
 
         {.isMask = false,
          .rxFIFO = FDCAN_RX_FIFO1,
-         .ids = {CMR_CANID_AMK_3_ACT_1, CMR_CANID_AMK_3_ACT_2,
-                 CMR_CANID_AMK_4_ACT_1, CMR_CANID_AMK_4_ACT_2}
+         .ids = {CMR_CANID_AMK_2_ACT_1, CMR_CANID_AMK_2_ACT_2,}
         },
 
         {.isMask = false,
+        .rxFIFO = FDCAN_RX_FIFO1,
+        .ids = {CMR_CANID_AMK_3_ACT_1, CMR_CANID_AMK_3_ACT_2,}
+        },
+        
+        {.isMask = false,
          .rxFIFO = FDCAN_RX_FIFO1,
-         .ids = {CMR_CANID_HEARTBEAT_HVI, CMR_CANID_HEARTBEAT_HVI}
+         .ids = {CMR_CANID_AMK_4_ACT_1, CMR_CANID_AMK_4_ACT_2}
         }
     };
 
