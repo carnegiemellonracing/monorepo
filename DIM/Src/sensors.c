@@ -220,31 +220,33 @@ static int32_t adcToAvgBusCurrent_mA(const cmr_sensor_t *sensor, uint32_t readin
 static uint32_t sampleTPOSDiff(const cmr_sensor_t *sensor) {
     (void)sensor;  // Placate compiler.
 
-    /** @brief Last plausible time. */
-    static TickType_t lastPlausible = 0;
-    TickType_t now = xTaskGetTickCount();
+    return 0;
 
-    uint32_t diff;
-    uint32_t leftPosition = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_L_U8);
-    uint32_t rightPosition = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_R_U8);
-    if (leftPosition > rightPosition) {
-        diff = leftPosition - rightPosition;
-    } else {
-        diff = rightPosition - leftPosition;
-    }
+    // /** @brief Last plausible time. */
+    // static TickType_t lastPlausible = 0;
+    // TickType_t now = xTaskGetTickCount();
 
-    if (diff < TPOS_IMPLAUS_THRES) {
-        // Still plausible; move on.
-        lastPlausible = now;
-        return 0;
-    }
+    // uint32_t diff;
+    // uint32_t leftPosition = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_L_U8);
+    // uint32_t rightPosition = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_R_U8);
+    // if (leftPosition > rightPosition) {
+    //     diff = leftPosition - rightPosition;
+    // } else {
+    //     diff = rightPosition - leftPosition;
+    // }
 
-    if (now - lastPlausible < TPOS_IMPLAUS_THRES_MS) {
-        // Threshold not elapsed; move on.
-        return 0;
-    }
+    // if (diff < TPOS_IMPLAUS_THRES) {
+    //     // Still plausible; move on.
+    //     lastPlausible = now;
+    //     return 0;
+    // }
 
-    return 1;  // Implausible!
+    // if (now - lastPlausible < TPOS_IMPLAUS_THRES_MS) {
+    //     // Threshold not elapsed; move on.
+    //     return 0;
+    // }
+
+    // return 1;  // Implausible!
 }
 
 /**
