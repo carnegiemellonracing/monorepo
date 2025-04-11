@@ -368,7 +368,10 @@ static void set_optimal_control(
 	// areq can be either expressed in torque or actual accel. Both ways are equivalent. Here uses actual accel.
 	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
 	optimizer_state.mreq = getYawRateControlLeftRightBias(swAngle_millideg);
-	optimizer_state.theta = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
+    
+	optimizer_state.theta_left = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
+    optimizer_state.theta_right = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
+
 	solve(&optimizer_state);
 
 	// Logging solver outputs, x1000 to make it more intuitive.
