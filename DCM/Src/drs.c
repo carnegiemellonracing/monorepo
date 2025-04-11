@@ -1,4 +1,4 @@
-/**
+    \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/**
  * @file drs.c
  * @brief Control DRS Servos
  *
@@ -90,7 +90,6 @@ void processDRSControl(int16_t swAngle_millideg, bool braking,
             opened = false;
         }
 
-
         setDRS(opened);
     }
 
@@ -103,7 +102,7 @@ void setDRS(bool open) {
     cmr_pwmSetDutyCycle(&servo_pwm, duty_percent);
 
     cmr_gpioWrite(GPIO_DRS_ENABLE_1, 1);
-    cmr_gpioWrite(GPIO_DRS_ENABLE_2, 1);
+    cmr_gpioWrite(GPIO_DRS_ENABLE_2, 1); // only one pin? 
 }
 
 /**
