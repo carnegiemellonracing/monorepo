@@ -211,7 +211,18 @@ CAN_FOREACH(CAN_INTERRUPT_CONFIG)
     HAL_NVIC_EnableIRQ(IT1);
 }
 
-
+/**
+* 2. FDCAN_FILTER_DUAL:
+*    - Accepts messages with IDs exactly matching either FilterID1 OR FilterID2
+*    - Example: FilterID1=0x100, FilterID2=0x200 accepts only IDs 0x100 and 0x200
+*
+* 3. FDCAN_FILTER_MASK:
+*    - Accepts messages where (received_id & FilterID2) == (FilterID1 & FilterID2)
+*    - FilterID1 is the ID to match
+*    - FilterID2 is the mask that specifies which bits to compare (1=compare, 0=ignore)
+*    - Example: FilterID1=0x100, FilterID2=0x7F0 compares only bits 4-10
+*               This would accept IDs like 0x100, 0x101, ..., 0x10F
+*/
 /**
  * @brief Configures a filter bank with 4 CAN IDs to filter.
  *
@@ -228,31 +239,31 @@ void _platform_canFilter(
     }
 
     for (size_t i = 0; i < filtersLen; i++) {
-        const cmr_canFilter_t *filter = filters + i;
+        const cmr_canFilter_t *filter = &filters[i];
 
-        //fix this
-        uint32_t bank = i;
+        // Determine filter configuration based on rxFIFO
+        uint32_t filterConfig = (filter->rxFIFO == FDCAN_RX_FIFO0) ?
+                               FDCAN_FILTER_TO_RXFIFO0 : FDCAN_FILTER_TO_RXFIFO1;
 
-        // In 16 bit ID list mode, FilterIdHigh, FilterIdLow, FilterMaskIdHigh,
-        // and FilterMaskIdLow all serve as a whitelist of left-aligned 11-bit
-        // CAN IDs.
-        // See RM0430 32.7.4 Fig. 387.
-        const uint16_t CMR_CAN_ID_FILTER_SHIFT = 5; //TODO: Why is this here?
-        uint32_t filter_config = (filter->rxFIFO == FDCAN_RX_FIFO0) ? FDCAN_FILTER_TO_RXFIFO0 : FDCAN_FILTER_TO_RXFIFO1;
-        for (int i = 0; i < 2; i++) { // H7 can only do 2, so make a filter from the top that includes the other 2
-            uint32_t actual_bank = (i == 0) ? bank : (127-bank);
-            FDCAN_FilterTypeDef config = {
-                .FilterID1              = filter->ids[2*i+0] << CMR_CAN_ID_FILTER_SHIFT,
-                .FilterID2              = filter->ids[2*i+1] << CMR_CAN_ID_FILTER_SHIFT,
-                .FilterConfig           = filter_config,
-                .FilterIndex            = actual_bank, //TODO: Is this the same thing?
-                .FilterType             = FDCAN_FILTER_DUAL,
-                .IdType                 = FDCAN_STANDARD_ID,
-            };
+        // Determine filter type based on isMask
+        uint32_t filterType = filter->isMask ? FDCAN_FILTER_MASK : FDCAN_FILTER_DUAL;
 
-            if (HAL_FDCAN_ConfigFilter(&can->handle, &config) != HAL_OK) {
-                cmr_panic("HAL_FDCAN_ConfigFilter() failed!");
-            }
+        // Use IDs directly without shifting
+        uint32_t id1 = filter->ids[0];
+        uint32_t id2 = filter->ids[1];
+
+        FDCAN_FilterTypeDef config = {
+            .IdType = FDCAN_STANDARD_ID,
+            .FilterIndex = i,
+            .FilterType = filterType,
+            .FilterConfig = filterConfig,
+            .FilterID1 = id1,
+            .FilterID2 = id2,
+            .IsCalibrationMsg = 0
+        };
+
+        if (HAL_FDCAN_ConfigFilter(&can->handle, &config) != HAL_OK) {
+            cmr_panic("HAL_FDCAN_ConfigFilter() failed!");
         }
     }
 }
@@ -343,25 +354,6 @@ void _platform_rccSystemClockEnable(void)  {
 	  {
 	    cmr_panic("clock init failed!");
 	  }
-
-//	  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
-//
-//	  /** Initializes the peripherals clock
-//	  */
-//	  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_FDCAN;
-//	  PeriphClkInitStruct.PLL2.PLL2M = 4;
-//	  PeriphClkInitStruct.PLL2.PLL2N = 32;
-//	  PeriphClkInitStruct.PLL2.PLL2P = 2;
-//	  PeriphClkInitStruct.PLL2.PLL2Q = 2;
-//	  PeriphClkInitStruct.PLL2.PLL2R = 2;
-//	  PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL2VCIRANGE_2;
-//	  PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOWIDE;
-//	  PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
-//	  PeriphClkInitStruct.FdcanClockSelection = RCC_FDCANCLKSOURCE_PLL2;
-//	  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
-//	  {
-//		  cmr_panic("clock init failed!");
-//	  }
 }
 
 /**
