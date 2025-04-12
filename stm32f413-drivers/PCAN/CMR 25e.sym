@@ -371,7 +371,7 @@ Var=FSM_brakePosADC unsigned 32,16
 
 [FSM_SensorsADC]
 ID=543h
-DLC=0
+DLC=4
 CycleTime=100
 Timeout=1000
 Var=FSM_brakePressureFrontADC unsigned 0,16
@@ -2394,6 +2394,6 @@ Var=FR_TEMP_2 unsigned 0,12
 [FSM_Swangle]
 ID=135h
 DLC=8
-Var=SwangleLeft signed 0,32 /u:Deg /min:-50 /max:50
-Var=SwangleRight signed 32,32 /min:-50 /max:50
+Var=SwangleRight signed 0,32 /u:deg /f:0.001
+Var=SwangleLeft signed 32,32 /u:deg /f:0.001
 
