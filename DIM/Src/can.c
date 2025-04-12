@@ -97,6 +97,7 @@ static cmr_task_t canTX10Hz_task;
 // Forward declarations
 static void sendHeartbeat(TickType_t lastWakeTime);
 static void sendFSMData(void);
+static void sendSWAngle(void);
 static void sendFSMPedalsADC(void);
 static void sendFSMSensorsADC(void);
 static void sendPowerDiagnostics(void);
@@ -154,6 +155,7 @@ static void canTX10Hz(void *pvParameters) {
 
         sendFSMPedalsADC();
         sendFSMSensorsADC();
+        
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -181,6 +183,7 @@ static void canTX100Hz(void *pvParameters) {
     while (1) {
         sendHeartbeat(lastWakeTime);
         sendFSMData();
+        sendSWAngle();
         // Calculate integer regenPercent from regenStep
     	uint8_t paddle = adcRead(ADC_PADDLE);
     	uint8_t regenPercent = (uint8_t)((adcRead(ADC_PADDLE) / 255.0) * 100.0);
@@ -650,10 +653,12 @@ static void sendFSMData(void) {
 
 static void sendSWAngle(void) {
 
-    int32_t steeringWheelAngle_deg = (int32_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG);
-
+    int32_t steeringWheelAngle_deg_FL = (int32_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG_FL);
+    int32_t steeringWheelAngle_deg_FR = (int32_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG_FR);
+ 
     cmr_canFSMSWAngle_t msg = {
-        .steeringWheelAngle_millideg = steeringWheelAngle_deg
+        .steeringWheelAngle_millideg_FL = steeringWheelAngle_deg_FL,
+        .steeringWheelAngle_millideg_FR = steeringWheelAngle_deg_FR
     };
 
     canTX(CMR_CANID_FSM_SWANGLE, &msg, sizeof(msg), canTX100Hz_period_ms);
@@ -682,7 +687,7 @@ static void sendFSMPedalsADC(void) {
 static void sendFSMSensorsADC(void) {
     cmr_canFSMSensorsADC_t msg = {
         .brakePressureFrontADC = adcRead(sensorsADCChannels[SENSOR_CH_BPRES_PSI]),
-        .steeringWheelAngleADC = adcRead(sensorsADCChannels[SENSOR_CH_SWANGLE_DEG])
+        .steeringWheelAngleADC = adcRead(ADC_SWANGLE)
     };
     if (msg.steeringWheelAngleADC < 10) {
         msg.steeringWheelAngleADC = 4096;

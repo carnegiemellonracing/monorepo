@@ -208,11 +208,13 @@ static void motorsCommand (
 //		);
 //         update DRS mode
         drsMode = reqDIM->requestedDrsMode;
-        runDrsControls(reqDIM->requestedGear,
-                        drsMode,
-                        dataFSM    -> throttlePosition,
-                        dataFSM    -> brakePressureFront_PSI,
-                        swangleFSM    -> steeringWheelAngle_millideg);
+
+        int32_t steeringWheelAngle_millideg = (swangleFSM->steeringWheelAngle_millideg_FL + swangleFSM->steeringWheelAngle_millideg_FR) / 2;
+        // runDrsControls(reqDIM->requestedGear,
+        //                 drsMode,
+        //                 dataFSM    -> throttlePosition,
+        //                 dataFSM    -> brakePressureFront_PSI
+        //                 );
 
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
@@ -253,7 +255,8 @@ static void motorsCommand (
                 		    dataFSM    -> torqueRequested,
                             dataFSM    -> brakePedalPosition,
                             dataFSM    -> brakePressureFront_PSI,
-                            swangleFSM    -> steeringWheelAngle_millideg,
+                            swangleFSM->steeringWheelAngle_millideg_FL,
+                            swangleFSM->steeringWheelAngle_millideg_FR,
                             voltageHVC -> hvVoltage_mV,
                             currentHVC -> instantCurrent_mA,
                             blank_command);

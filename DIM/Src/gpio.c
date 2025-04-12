@@ -42,10 +42,10 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 	[GPIO_BUTTON_B] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_7,
 				.Mode = GPIO_MODE_IT_RISING_FALLING, .Pull = GPIO_PULLUP,
 				.Speed = GPIO_SPEED_FREQ_LOW } },
-    [GPIO_BUTTON_SW1] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_2,
+    [GPIO_BUTTON_SW1] = { .port = GPIOB, .init = { .Pin = GPIO_PIN_4,
                         .Mode = GPIO_MODE_INPUT, .Pull = GPIO_PULLUP,
                         .Speed = GPIO_SPEED_FREQ_LOW } },
-    [GPIO_BUTTON_SW2] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_3,
+    [GPIO_BUTTON_SW2] = { .port = GPIOB, .init = { .Pin = GPIO_PIN_5,
                         .Mode = GPIO_MODE_INPUT, .Pull = GPIO_PULLUP,
                         .Speed = GPIO_SPEED_FREQ_LOW } },
     [GPIO_BUTTON_PUSH] = { .port = GPIOC, .init = { .Pin = GPIO_PIN_4,
@@ -123,9 +123,20 @@ void canLRUDDetect(void){
 	XYActivate();
 
 	for(int i = 0; i < LRUD_LEN; i++){
+		bool pressed = true;
 		if(gpioLRUDStates[i]){
 			if(lastState[i] == false)
 				//new press
+				if(getCurrState() != CONFIG)
+				{	
+					TickType_t press = xTaskGetTickCount();
+					while(xTaskGetTickCount() - press <= 1000){
+						if(!gpioLRUDStates[i]) {
+							lastState[i] = false;
+							return;
+						}
+					}
+				}
 				lastState[i] = true;
 				lastPress[i] = xTaskGetTickCount();
 		}

@@ -46,7 +46,8 @@ const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
     [SENSOR_CH_TPOS_R_U8] = ADC_TPOS_R,
     [SENSOR_CH_BPOS_U8] = ADC_BPRES,
     [SENSOR_CH_BPRES_PSI] = ADC_BPRES,
-    [SENSOR_CH_SWANGLE_DEG] = ADC_SWANGLE,
+    [SENSOR_CH_SWANGLE_DEG_FL] = ADC_SWANGLE,
+    [SENSOR_CH_SWANGLE_DEG_FR] = ADC_SWANGLE,
 	[SENSOR_CH_X] = ADC_X,
 	[SENSOR_CH_Y] = ADC_Y,
     [SENSOR_CH_TPOS_IMPLAUS] = ADC_LEN  // Not an ADC channel!
@@ -151,6 +152,38 @@ static int32_t adcToSwangle(const cmr_sensor_t *sensor, uint32_t reading) {
     return (int32_t)swangle_deg;
 }
 
+static int32_t adcToYaw_FL(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void) sensor;
+
+    // millideg
+    if(reading >= 2130){
+        float swangle_millideg = ((-0.0145f * (float)reading)+30.4f) * 1000;
+        int32_t retval = (int32_t)swangle_millideg;
+        return retval;
+    }
+    else {
+        float swangle_millideg = ((-0.0217f * (float)reading)+44.7f) * 1000;
+        int32_t retval = (int32_t)swangle_millideg;
+        return retval;
+    }
+}
+
+static int32_t adcToYaw_FR(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void) sensor;
+
+    // millideg
+    if(reading >= 2040){
+        float swangle_millideg = ((-0.0214f * (float)reading)+44.1f) * 1000;
+        int32_t retval = (int32_t)swangle_millideg;
+        return retval;
+    }
+    else{
+        float swangle_millideg = ((-0.0165f * (float)reading)+33.6f) * 1000;
+        int32_t retval = (int32_t)swangle_millideg;
+        return retval;
+    }
+}
+
 /**
  * @brief Converts a raw ADC value into a low-voltage bus voltage.
  *
@@ -220,31 +253,33 @@ static int32_t adcToAvgBusCurrent_mA(const cmr_sensor_t *sensor, uint32_t readin
 static uint32_t sampleTPOSDiff(const cmr_sensor_t *sensor) {
     (void)sensor;  // Placate compiler.
 
-    /** @brief Last plausible time. */
-    static TickType_t lastPlausible = 0;
-    TickType_t now = xTaskGetTickCount();
+    return 0;
 
-    uint32_t diff;
-    uint32_t leftPosition = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_L_U8);
-    uint32_t rightPosition = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_R_U8);
-    if (leftPosition > rightPosition) {
-        diff = leftPosition - rightPosition;
-    } else {
-        diff = rightPosition - leftPosition;
-    }
+    // /** @brief Last plausible time. */
+    // static TickType_t lastPlausible = 0;
+    // TickType_t now = xTaskGetTickCount();
 
-    if (diff < TPOS_IMPLAUS_THRES) {
-        // Still plausible; move on.
-        lastPlausible = now;
-        return 0;
-    }
+    // uint32_t diff;
+    // uint32_t leftPosition = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_L_U8);
+    // uint32_t rightPosition = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_R_U8);
+    // if (leftPosition > rightPosition) {
+    //     diff = leftPosition - rightPosition;
+    // } else {
+    //     diff = rightPosition - leftPosition;
+    // }
 
-    if (now - lastPlausible < TPOS_IMPLAUS_THRES_MS) {
-        // Threshold not elapsed; move on.
-        return 0;
-    }
+    // if (diff < TPOS_IMPLAUS_THRES) {
+    //     // Still plausible; move on.
+    //     lastPlausible = now;
+    //     return 0;
+    // }
 
-    return 1;  // Implausible!
+    // if (now - lastPlausible < TPOS_IMPLAUS_THRES_MS) {
+    //     // Threshold not elapsed; move on.
+    //     return 0;
+    // }
+
+    // return 1;  // Implausible!
 }
 
 /**
@@ -291,7 +326,8 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     [SENSOR_CH_TPOS_R_U8] = { .conv = adcToUInt8, .sample = sampleADCSensor, .readingMin = 500, .readingMax = 1943, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_TPOS_R },
     [SENSOR_CH_BPOS_U8] = { .conv = adcToUInt8, .sample = sampleADCSensor, .readingMin = 365, .readingMax = 1651, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_BPOS },
     [SENSOR_CH_BPRES_PSI] = { .conv = adcToBPres_PSI, .sample = sampleADCSensor, .readingMin = 0, .readingMax = CMR_ADC_MAX, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_BPRES },
-    [SENSOR_CH_SWANGLE_DEG] = { .conv = adcToSwangle, .sample = sampleADCSensorSwangle, .readingMin = SWANGLE_90DEG_LEFT, .readingMax = SWANGLE_90DEG_RIGHT, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_SWANGLE },
+    [SENSOR_CH_SWANGLE_DEG_FL] = { .conv = adcToYaw_FL, .sample = sampleADCSensorSwangle, .readingMin = SWANGLE_90DEG_LEFT, .readingMax = SWANGLE_90DEG_RIGHT, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_SWANGLE },
+    [SENSOR_CH_SWANGLE_DEG_FR] = { .conv = adcToYaw_FR, .sample = sampleADCSensorSwangle, .readingMin = SWANGLE_90DEG_LEFT, .readingMax = SWANGLE_90DEG_RIGHT, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_SWANGLE },
     [SENSOR_CH_VOLTAGE_MV] = {
         .conv = adcToBusVoltage_mV,
         .sample = sampleADCSensor,
