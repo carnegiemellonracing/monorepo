@@ -684,7 +684,7 @@ static void sendFSMPedalsADC(void) {
 static void sendFSMSensorsADC(void) {
     cmr_canFSMSensorsADC_t msg = {
         .brakePressureFrontADC = adcRead(sensorsADCChannels[SENSOR_CH_BPRES_PSI]),
-        .steeringWheelAngleADC = adcRead(sensorsADCChannels[SENSOR_CH_SWANGLE_DEG])
+        .steeringWheelAngleADC = adcRead(ADC_SWANGLE)
     };
     if (msg.steeringWheelAngleADC < 10) {
         msg.steeringWheelAngleADC = 4096;
