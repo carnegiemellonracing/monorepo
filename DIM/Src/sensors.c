@@ -152,18 +152,20 @@ static int32_t adcToSwangle(const cmr_sensor_t *sensor, uint32_t reading) {
     return (int32_t)swangle_deg;
 }
 
-static float adcToYaw_FL(const cmr_sensor_t *sensor, uint32_t reading) {
+static int32_t adcToYaw_FL(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 
-    if(reading >= 2130) return (-0.0145f * (float)reading)+30.4f;
-    else return (-0.0217f * (float)reading)+44.7f;
+    // millideg
+    if(reading >= 2130) return (int32_t)(((-0.0145f * (float)reading)+30.4f) * 1000);
+    else return (int32_t)(((-0.0217f * (float)reading)+44.7f) * 1000);
 }
 
 static float adcToYaw_FR(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 
-    if(reading >= 2040) return (-0.0165f * (float)reading)+33.6f;
-    else return (-0.0227f * (float)reading)+47.5f;
+    // millideg
+    if(reading >= 2040) return (int32_t)(((-0.0214f * (float)reading)+44.1f) * 1000);
+    else return (int32_t)(((-0.0165f * (float)reading)+33.6f) * 1000);
 }
 
 /**
