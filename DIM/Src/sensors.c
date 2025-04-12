@@ -127,8 +127,17 @@ static int32_t adcToUInt8(const cmr_sensor_t *sensor, uint32_t reading) {
 static int32_t adcToBPres_PSI(const cmr_sensor_t *sensor, uint32_t reading) {
     (void)sensor;  // Placate compiler.
 
-    // Temporarily just rescale raw 12-bit value to 8 bits
-    return (int32_t)(reading >> 4);
+    static const uint32_t offset = 360;     // 0.333 V offset
+
+    (void) sensor;  // Placate compiler.
+
+    if (reading < offset) {
+        // Clamp to 0.
+        reading = offset;
+    }
+
+    uint32_t brakePres_PSI = (reading - offset) * 1450 / 3313;
+    return (int32_t) brakePres_PSI;
 }
 
 /**
