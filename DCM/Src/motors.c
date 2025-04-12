@@ -217,7 +217,7 @@ static void motorsCommand (
                         drsMode,
                         dataFSM    -> throttlePosition,
                         dataFSM    -> brakePressureFront_PSI,
-                        swangleFSM    -> steeringWheelAngle_millideg);
+                        steeringWheelAngle_millideg);
         gear = reqDIM->requestedGear;
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
@@ -313,7 +313,8 @@ static void motorsCommand (
                     255,
                     dataFSM    -> brakePedalPosition,
                     dataFSM    -> brakePressureFront_PSI,
-                    swangleFSM    -> steeringWheelAngle_millideg,
+                    swangleFSM    -> steeringWheelAngle_millideg_FL,
+                    swangleFSM    -> steeringWheelAngle_millideg_FR,
                     voltageHVC -> hvVoltage_mV,
                     currentHVC -> instantCurrent_mA,
                     false);

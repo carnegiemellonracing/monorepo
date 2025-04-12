@@ -439,7 +439,7 @@ static void set_optimal_control_with_regen(
 
     float throttle = (float)throttlePos_u8 / UINT8_MAX;
     float combined_request = throttle - paddle_request; // [0, 1].
-    set_optimal_control(combined_request, swAngle_millideg, true);
+    set_optimal_control(combined_request, swAngle_millideg, swAngle_millideg, true);
 }
 
 /**
