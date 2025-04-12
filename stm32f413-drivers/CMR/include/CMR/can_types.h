@@ -601,7 +601,9 @@ typedef struct {
     /** @brief Steering wheel angle (-180 to 180 degrees). 
      * Calculated from ADC values using transfer function.
     */
-    int32_t steeringWheelAngle_millideg;
+    int32_t steeringWheelAngle_millideg_FR;
+    int32_t steeringWheelAngle_millideg_FL;
+
 } cmr_canFSMSWAngle_t;
 
 /** @brief Front Sensor Module raw pedal positions. */
