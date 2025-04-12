@@ -369,8 +369,8 @@ static void set_optimal_control(
 	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
 	optimizer_state.mreq = getYawRateControlLeftRightBias(swAngle_millideg);
     
-	optimizer_state.theta_left = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
-    optimizer_state.theta_right = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
+	optimizer_state.theta_left = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
+    optimizer_state.theta_right = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
 
 	solve(&optimizer_state);
 
