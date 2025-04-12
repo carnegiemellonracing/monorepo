@@ -20,6 +20,7 @@
 #include "safety_filter.h"
 #include "CMR/can_types.h"
 #include "../optimizer/optimizer.h"
+#include "movella.h"
 
 #define PI 3.1415926535897932384626
 
@@ -1093,49 +1094,41 @@ void setTractionControl (
     setTorqueLimsProtected(&pos_torques_Nm, &neg_torques_Nm);
 }
 
+float get_optimal_yaw_rate(float swangle_rad, float velocity_x_mps) {
+    
+    static const float natural_understeer_gradient = 0.011465f; //rad/g
+
+    const float distance_between_axles_m = chassis_a + chassis_b;
+    const float yaw_rate_setpoint_radps = swangle_rad * velocity_x_mps /
+        (distance_between_axles_m + velocity_x_mps * velocity_x_mps * natural_understeer_gradient);
+    
+    return yaw_rate_setpoint_radps;
+}
+
 /**
  * @brief Calculate the control action (left-right torque bias) of the yaw rate controller
  * @param swAngle_millideg Steering wheel angle
  */
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
-    // ********* Local Parameters *********
 
-    /** @brief Trust SBG velocities even if SBG reports that they're invalid
-     *  @warning If set to false, TC will fall back to Fast Mode when SBG velocities are invalid
-     *  @note We might want to set this to false for comp but true for testing and data collection
-     */
-    static const bool trust_sbg_vels_when_invalid = false;
-
-    /** @brief Natural, uncontrolled, steady-state understeer gradient
-     *  @note The formula is:
-     *        (W_f/C_af - W_r/C_ar) / g
-     *        although we measure this value experimentally
-     *  @note Some literature suggest that this value could be tuned for different steering responses:
-     *        "Therefore, by tuning K_ug, we can impose a neutral, understeering or oversteering behavior" (Kissai et. al., 2020, p.5)
-     *  @note Increasing this value decreases yaw rate setpoint, especially when linear velocity is high
-     */
-    static const float natural_understeer_gradient = 0.011465f; //rad/g
-
-    // get sensor data
-    const volatile cmr_canSBGBodyVelocity_t *body_vels = canDAQGetPayload(CANRX_DAQ_SBG_BODY_VEL);
-    const volatile cmr_canSBGIMUGyro_t *body_gyro = canDAQGetPayload(CANRX_DAQ_SBG_IMU_GYRO);
-    const float forward_velocity_nonnegative_mps = fmaxf(((float)(body_vels->velocity_forward)) * 1e-2f, 0.0f); // velocity_forward is in (m/s times 100)
-    const float yaw_rate_radps_sae = ((float)(body_gyro->gyro_z_rads)) * 1e-3f; // gyro_z_rads is in (rad/s times 1000)
-
-    float steering_angle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
-    const float distance_between_axles_m = chassis_a + chassis_b;
-    const float yaw_rate_setpoint_radps = steering_angle_rad * forward_velocity_nonnegative_mps /
-        (distance_between_axles_m + forward_velocity_nonnegative_mps * forward_velocity_nonnegative_mps * natural_understeer_gradient);
-
-    yrcDebug.controls_target_yaw_rate = (int16_t)(1000.0f * yaw_rate_setpoint_radps);
-    yrcDebug.controls_current_yaw_rate = (int16_t)(1000.0f * yaw_rate_radps_sae);
-    if (!canTrustSBGVelocity(trust_sbg_vels_when_invalid)) {
-        yrcDebug.controls_pid = -1.0f; // SBG velocity can't be trusted
-        return 0.0f;
+    float velocity_x_mps;
+    if(movella_state.status.gnss_fix) {
+        velocity_x_mps = movella_state.velocity.x;
+        yrcDebug.controls_bias = 1;
+    } else {
+        velocity_x_mps = getTotalMotorSpeed_radps() * 0.25f * effective_wheel_rad_m;
+        yrcDebug.controls_bias = -1;
     }
-    yrcDebug.controls_pid = yrc_kp;
-    const float left_right_bias = yrc_kp * (yaw_rate_radps_sae - yaw_rate_setpoint_radps);
+    
+    const float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
+    const float actual_yaw_rate_radps_sae = movella_state.gyro.z;
+    const float optimal_yaw_rate_radps = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
 
+    yrcDebug.controls_current_yaw_rate = (int16_t)(1000.0f * actual_yaw_rate_radps_sae);
+    yrcDebug.controls_target_yaw_rate = (int16_t)(1000.0f * optimal_yaw_rate_radps);
+    yrcDebug.controls_pid = yrc_kp;
+    
+    const float left_right_bias = yrc_kp * (actual_yaw_rate_radps_sae - optimal_yaw_rate_radps);
     return left_right_bias;
 }
 
