@@ -650,10 +650,12 @@ static void sendFSMData(void) {
 
 static void sendSWAngle(void) {
 
-    int32_t steeringWheelAngle_deg = (int32_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG);
-
+    int32_t steeringWheelAngle_deg_FL = (int32_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG_FL);
+    int32_t steeringWheelAngle_deg_FR = (int32_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG_FR);
+ 
     cmr_canFSMSWAngle_t msg = {
-        .steeringWheelAngle_millideg = steeringWheelAngle_deg
+        .steeringWheelAngle_millideg_FL = steeringWheelAngle_deg_FL,
+        .steeringWheelAngle_millideg_FR = steeringWheelAngle_deg_FR
     };
 
     canTX(CMR_CANID_FSM_SWANGLE, &msg, sizeof(msg), canTX100Hz_period_ms);

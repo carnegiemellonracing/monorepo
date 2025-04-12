@@ -46,7 +46,8 @@ const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
     [SENSOR_CH_TPOS_R_U8] = ADC_TPOS_R,
     [SENSOR_CH_BPOS_U8] = ADC_BPRES,
     [SENSOR_CH_BPRES_PSI] = ADC_BPRES,
-    [SENSOR_CH_SWANGLE_DEG] = ADC_SWANGLE,
+    [SENSOR_CH_SWANGLE_DEG_FL] = ADC_SWANGLE,
+    [SENSOR_CH_SWANGLE_DEG_FR] = ADC_SWANGLE,
 	[SENSOR_CH_X] = ADC_X,
 	[SENSOR_CH_Y] = ADC_Y,
     [SENSOR_CH_TPOS_IMPLAUS] = ADC_LEN  // Not an ADC channel!
@@ -149,6 +150,20 @@ static int32_t adcToSwangle(const cmr_sensor_t *sensor, uint32_t reading) {
     double swangle_deg = (reading * 0.016f)-17.2f;
 
     return (int32_t)swangle_deg;
+}
+
+static float adcToYaw_FL(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void) sensor;
+
+    if(reading >= 2130) return (-0.0145f * (float)reading)+30.4f;
+    else return (-0.0217f * (float)reading)+44.7f;
+}
+
+static float adcToYaw_FR(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void) sensor;
+
+    if(reading >= 2040) return (-0.0165f * (float)reading)+33.6f;
+    else return (-0.0227f * (float)reading)+47.5f;
 }
 
 /**
@@ -293,7 +308,8 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     [SENSOR_CH_TPOS_R_U8] = { .conv = adcToUInt8, .sample = sampleADCSensor, .readingMin = 500, .readingMax = 1943, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_TPOS_R },
     [SENSOR_CH_BPOS_U8] = { .conv = adcToUInt8, .sample = sampleADCSensor, .readingMin = 365, .readingMax = 1651, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_BPOS },
     [SENSOR_CH_BPRES_PSI] = { .conv = adcToBPres_PSI, .sample = sampleADCSensor, .readingMin = 0, .readingMax = CMR_ADC_MAX, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_BPRES },
-    [SENSOR_CH_SWANGLE_DEG] = { .conv = adcToSwangle, .sample = sampleADCSensorSwangle, .readingMin = SWANGLE_90DEG_LEFT, .readingMax = SWANGLE_90DEG_RIGHT, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_SWANGLE },
+    [SENSOR_CH_SWANGLE_DEG_FL] = { .conv = adcToYaw_FL, .sample = sampleADCSensorSwangle, .readingMin = SWANGLE_90DEG_LEFT, .readingMax = SWANGLE_90DEG_RIGHT, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_SWANGLE },
+    [SENSOR_CH_SWANGLE_DEG_FR] = { .conv = adcToYaw_FR, .sample = sampleADCSensorSwangle, .readingMin = SWANGLE_90DEG_LEFT, .readingMax = SWANGLE_90DEG_RIGHT, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_SWANGLE },
     [SENSOR_CH_VOLTAGE_MV] = {
         .conv = adcToBusVoltage_mV,
         .sample = sampleADCSensor,
