@@ -213,12 +213,12 @@ static void motorsCommand (
         drsMode = reqDIM->requestedDrsMode;
 
         int32_t steeringWheelAngle_millideg = (swangleFSM->steeringWheelAngle_millideg_FL + swangleFSM->steeringWheelAngle_millideg_FR) / 2;
-        // runDrsControls(reqDIM->requestedGear,
-        //                 drsMode,
-        //                 dataFSM    -> throttlePosition,
-        //                 dataFSM    -> brakePressureFront_PSI
-        //                 );
-
+        runDrsControls(reqDIM->requestedGear,
+                        drsMode,
+                        dataFSM    -> throttlePosition,
+                        dataFSM    -> brakePressureFront_PSI,
+                        swangleFSM    -> steeringWheelAngle_millideg);
+        gear = reqDIM->requestedGear;
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
             case CMR_CAN_RTD: {
@@ -308,6 +308,15 @@ static void motorsCommand (
             // Also reset errors in GLV_ON
             case CMR_CAN_GLV_ON: {
             	mcCtrlOff();
+
+                runControls(gear,
+                    255,
+                    dataFSM    -> brakePedalPosition,
+                    dataFSM    -> brakePressureFront_PSI,
+                    swangleFSM    -> steeringWheelAngle_millideg,
+                    voltageHVC -> hvVoltage_mV,
+                    currentHVC -> instantCurrent_mA,
+                    false);
 
                 if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
                     mcCtrlOn();

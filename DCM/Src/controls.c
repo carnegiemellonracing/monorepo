@@ -826,7 +826,7 @@ void setLaunchControl(
 	static const float launch_control_max_duration_s = 5.0;
     static const bool use_solver = false;
 
-	bool action_button_pressed = false;
+	bool action_button_pressed = false; 
 	const float nonnegative_odometer_velocity_mps = motorSpeedToWheelLinearSpeed_mps(getTotalMotorSpeed_radps() * 0.25f);
 	if (nonnegative_odometer_velocity_mps < launch_control_speed_threshold_mps) { // odometer velocity is below the launch control threshold
 		action_button_pressed = (((volatile cmr_canDIMActions_t *)(canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON)))->buttons) & BUTTON_ACT;
@@ -846,7 +846,8 @@ void setLaunchControl(
 	}
 
     // Not braking, throttle engaged, no button pressed, launch control is active.
-    bool ready_to_accel = brakePressurePsi_u8 < braking_threshold_psi && throttlePos_u8 > 0 && !action_button_pressed && launchControlActive;
+    // bool ready_to_accel = brakePressurePsi_u8 < braking_threshold_psi && throttlePos_u8 > 0 && !action_button_pressed && launchControlActive;
+    bool ready_to_accel = throttlePos_u8 > 0 && !action_button_pressed && launchControlActive;
     if(false == ready_to_accel) {
         //setTorqueLimsAllProtected(0.0f, 0.0f);
         setTorqueLimsUnprotected(MOTOR_FL, 0.0, 0.0f);
