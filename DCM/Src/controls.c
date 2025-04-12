@@ -21,6 +21,8 @@
 #include "CMR/can_types.h"
 #include "../optimizer/optimizer.h"
 #include "movella.h"
+#include "lut.h"
+#include "constants.h"
 
 #define PI 3.1415926535897932384626
 
@@ -271,6 +273,20 @@ static inline void set_motor_speed_and_torque(
 }
 
 /**
+ * @brief Return downforce given motor location
+ */
+static float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
+    float downforce_N;
+    if (use_true_downforce && (&canDaqRXMeta[loadIndex], xTaskGetTickCount()) == 0) {
+        volatile cmr_canIZZELoadCell_t *downforcePayload = (volatile cmr_canIZZELoadCell_t*) canDAQGetPayload(loadIndex);
+        downforce_N = downforcePayload->force_output_N;
+    } else {
+        downforce_N = car_mass_kg * 9.81 * 0.25f;
+    }
+    return downforce_N;
+}
+
+/**
  * @param normalized_throttle A value in [-1, 1].
  * In [0, 1] if without regen.
  */
@@ -295,11 +311,17 @@ static void set_optimal_control(
 	float wheel_fr_speed_radps = getMotorSpeed_radps(MOTOR_FR);
 	float wheel_rl_speed_radps = getMotorSpeed_radps(MOTOR_RL);
 	float wheel_rr_speed_radps = getMotorSpeed_radps(MOTOR_RR);
+    
+	// float tractive_cap_fl = getKappaFxGlobalMax(MOTOR_FL, UINT8_MAX, true).Fx;
+	// float tractive_cap_fr = getKappaFxGlobalMax(MOTOR_FR, UINT8_MAX, true).Fx;
+	// float tractive_cap_rl = getKappaFxGlobalMax(MOTOR_RL, UINT8_MAX, true).Fx;
+	// float tractive_cap_rr = getKappaFxGlobalMax(MOTOR_RR, UINT8_MAX, true).Fx;
 
-	float tractive_cap_fl = getKappaFxGlobalMax(MOTOR_FL, UINT8_MAX, true).Fx;
-	float tractive_cap_fr = getKappaFxGlobalMax(MOTOR_FR, UINT8_MAX, true).Fx;
-	float tractive_cap_rl = getKappaFxGlobalMax(MOTOR_RL, UINT8_MAX, true).Fx;
-	float tractive_cap_rr = getKappaFxGlobalMax(MOTOR_RR, UINT8_MAX, true).Fx;
+    bool use_true_downforce = true;
+    float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce)).Fx;
+    float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce)).Fx;
+    float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce)).Fx;
+    float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce)).Fx;
 
 	// The most naive approach is to convert force to torque linearly, ignoring rolling resistance and any inefficiency.
 	float torque_limit_fl = tractive_cap_fl * effective_wheel_rad_m / gear_ratio;

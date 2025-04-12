@@ -60,6 +60,6 @@ static const double wheelbase_m = 1.55f;
 static const double trackwidth_m = 1.30f;
 static const double half_wheelbase_m = wheelbase_m * 0.5f;
 static const double half_trackwidth_m= trackwidth_m * 0.5f;
-static const double car_mass_kg = 370.0f;
+static const double car_mass_kg = 280.0f;
 
 #endif
