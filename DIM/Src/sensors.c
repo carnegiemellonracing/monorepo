@@ -156,16 +156,32 @@ static int32_t adcToYaw_FL(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 
     // millideg
-    if(reading >= 2130) return (int32_t)(((-0.0145f * (float)reading)+30.4f) * 1000);
-    else return (int32_t)(((-0.0217f * (float)reading)+44.7f) * 1000);
+    if(reading >= 2130){
+        float swangle_millideg = ((-0.0145f * (float)reading)+30.4f) * 1000;
+        int32_t retval = (int32_t)swangle_millideg;
+        return retval;
+    }
+    else {
+        float swangle_millideg = ((-0.0217f * (float)reading)+44.7f) * 1000;
+        int32_t retval = (int32_t)swangle_millideg;
+        return retval;
+    }
 }
 
-static float adcToYaw_FR(const cmr_sensor_t *sensor, uint32_t reading) {
+static int32_t adcToYaw_FR(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 
     // millideg
-    if(reading >= 2040) return (int32_t)(((-0.0214f * (float)reading)+44.1f) * 1000);
-    else return (int32_t)(((-0.0165f * (float)reading)+33.6f) * 1000);
+    if(reading >= 2040){
+        float swangle_millideg = ((-0.0214f * (float)reading)+44.1f) * 1000;
+        int32_t retval = (int32_t)swangle_millideg;
+        return retval;
+    }
+    else{
+        float swangle_millideg = ((-0.0165f * (float)reading)+33.6f) * 1000;
+        int32_t retval = (int32_t)swangle_millideg;
+        return retval;
+    }
 }
 
 /**
