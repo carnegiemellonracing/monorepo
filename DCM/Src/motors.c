@@ -257,8 +257,8 @@ static void motorsCommand (
                 		    dataFSM    -> torqueRequested,
                             dataFSM    -> brakePedalPosition,
                             dataFSM    -> brakePressureFront_PSI,
-                            swangleFSM->steeringWheelAngle_millideg_FL,
-                            swangleFSM->steeringWheelAngle_millideg_FR,
+                            -swangleFSM->steeringWheelAngle_millideg_FL,
+                            -swangleFSM->steeringWheelAngle_millideg_FR,
                             voltageHVC -> hvVoltage_mV,
                             currentHVC -> instantCurrent_mA,
                             blank_command);

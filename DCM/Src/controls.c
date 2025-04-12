@@ -89,8 +89,8 @@ void setLaunchControl(
 /** @brief initialize yaw rate control */
 static void initYawRateControl() {
     // read yrc_kp from DIM
-    yrc_kp = 0.0f;
-    getProcessedValue(&yrc_kp, YRC_KP_INDEX, float_1_decimal);
+    yrc_kp = 1.0f;
+    // getProcessedValue(&yrc_kp, YRC_KP_INDEX, float_1_decimal);
 
     yrc_kp = yrc_kp*100.0f;
     // yrc_kp = 200;
@@ -534,7 +534,7 @@ void runControls (
         case CMR_CAN_GEAR_TEST: {
             // set_optimal_control_with_regen(throttlePos_u8, swAngle_millideg);
             float target_speed_mps = 5.0f;
-            getProcessedValue(&target_speed_mps, FFLAUNCH_FEEDBACK_INDEX, float_1_decimal);
+            // getProcessedValue(&target_speed_mps, FFLAUNCH_FEEDBACK_INDEX, float_1_decimal);
             set_slow_motor_speed(target_speed_mps, false);
             break;
         }
