@@ -666,11 +666,11 @@ void setFastTorque (
     uint8_t throttlePos_u8
 ) {
     const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
-    setTorqueLimsAllProtected(reqTorque, 0.0f);
-//    setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
-//    setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
-//    setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
-//    setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
+//    setTorqueLimsAllProtected(reqTorque, 0.0f);
+   setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
+   setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
+   setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
+   setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
     setVelocityInt16All(maxFastSpeed_rpm);
 }
 
@@ -848,14 +848,21 @@ void setLaunchControl(
     // Not braking, throttle engaged, no button pressed, launch control is active.
     bool ready_to_accel = brakePressurePsi_u8 < braking_threshold_psi && throttlePos_u8 > 0 && !action_button_pressed && launchControlActive;
     if(false == ready_to_accel) {
-        setTorqueLimsAllProtected(0.0f, 0.0f);
+        //setTorqueLimsAllProtected(0.0f, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_FL, 0.0, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_FR, 0.0, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RR, 0.0, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RL, 0.0, 0.0f);
 		setVelocityInt16All(0);
         return;
     }
 
     float time_s = (float)(xTaskGetTickCount() - startTickCount) * (0.001f);
 	if(time_s >= launch_control_max_duration_s) {
-		setTorqueLimsAllProtected(0.0f, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_FL, 0.0, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_FR, 0.0, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RR, 0.0, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RL, 0.0, 0.0f);
 		setVelocityInt16All(0);
 		return;
 	}
@@ -877,7 +884,10 @@ void setLaunchControl(
         const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
         cmr_torqueDistributionNm_t pos_torques_Nm = {.fl = reqTorque, .fr = reqTorque, .rl = reqTorque, .rr = reqTorque};
         cmr_torqueDistributionNm_t neg_torques_Nm = {.fl = 0.0f, .fr = 0.0f, .rl = 0.0f, .rr = 0.0f};
-        setTorqueLimsProtected(&pos_torques_Nm, &neg_torques_Nm);
+        setTorqueLimsUnprotected(MOTOR_FL, pos_torques_Nm.fl, neg_torques_Nm.fl);
+        setTorqueLimsUnprotected(MOTOR_FR, pos_torques_Nm.fr, neg_torques_Nm.fr);
+        setTorqueLimsUnprotected(MOTOR_RR, pos_torques_Nm.rr, neg_torques_Nm.rr);
+        setTorqueLimsUnprotected(MOTOR_RL, pos_torques_Nm.rl, neg_torques_Nm.rl);
         return;
     }
 }
