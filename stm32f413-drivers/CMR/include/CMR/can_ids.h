@@ -147,24 +147,25 @@ typedef enum {
     CMR_CANID_MOTORPOWER_STATE = 0x52E,				/**< @brief Motor Power state. */
 
     // FL
+    CMR_CANID_AMK_4_ACT_1 = 0x288,              /**< @brief AMK Inverter 4 actual values 1.*/
+    CMR_CANID_AMK_4_ACT_2 = 0x28A,              /**< @brief AMK Inverter 4 actual values 2.*/
+    CMR_CANID_AMK_4_SETPOINTS = 0x189,
+
+    // BR
     CMR_CANID_AMK_1_ACT_1 = 0x283,              /**< @brief AMK Inverter 1 actual values 1.*/
     CMR_CANID_AMK_1_ACT_2 = 0x285,              /**< @brief AMK Inverter 1 actual values 2.*/
     CMR_CANID_AMK_1_SETPOINTS = 0x184,          /**< @brief AMK Inverter 1 setpoints.*/
 
-    // BR
+    // FR
     CMR_CANID_AMK_2_ACT_1 = 0x284,              /**< @brief AMK Inverter 2 actual values 1.*/
     CMR_CANID_AMK_2_ACT_2 = 0x286,              /**< @brief AMK Inverter 2 actual values 2.*/
     CMR_CANID_AMK_2_SETPOINTS = 0x185,          /**< @brief AMK Inverter 2 setpoints.*/
 
-    // FR
+    // BL
     CMR_CANID_AMK_3_ACT_1 = 0x287,              /**< @brief AMK Inverter 3 actual values 1.*/
     CMR_CANID_AMK_3_ACT_2 = 0x289,              /**< @brief AMK Inverter 3 actual values 2.*/
     CMR_CANID_AMK_3_SETPOINTS = 0x188,          /**< @brief AMK Inverter 3 setpoints.*/
 
-    // BL
-    CMR_CANID_AMK_4_ACT_1 = 0x288,              /**< @brief AMK Inverter 4 actual values 1.*/
-    CMR_CANID_AMK_4_ACT_2 = 0x28A,              /**< @brief AMK Inverter 4 actual values 2.*/
-    CMR_CANID_AMK_4_SETPOINTS = 0x189,          /**< @brief AMK Inverter 4 setpoints.*/
 
     CMR_CANID_RMS_TEMPA = 0x000 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set A. */
     CMR_CANID_RMS_TEMPB = 0x001 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set B. */

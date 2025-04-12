@@ -793,7 +793,7 @@ static float getFFScheduleVelocity(float t_sec) {
     float scheduleVelocity_mps = 0.0f;
 
     float scheduleVelocity_mps2 = 11.29;
-    getProcessedValue(&scheduleVelocity_mps2, K_EFF_INDEX, float_1_decimal);
+    // getProcessedValue(&scheduleVelocity_mps2, K_EFF_INDEX, float_1_decimal);
 
     if (t_sec < 0.0f) {
         scheduleVelocity_mps = 0.0f;
