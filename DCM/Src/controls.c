@@ -286,7 +286,7 @@ static float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
         float angle = get_load_cell_angle_rad(loadIndex);
         downforce_N = downforcePayload->force_output_N / sinf(angle);
     } else {
-        downforce_N = car_mass_kg * 9.81f * 0.25f;
+        downforce_N = (float) car_mass_kg * 9.81f * 0.25f;
     }
     return downforce_N;
 }
@@ -535,7 +535,7 @@ void runControls (
             // set_optimal_control_with_regen(throttlePos_u8, swAngle_millideg);
             float target_speed_mps = 5.0f;
             getProcessedValue(&target_speed_mps, FFLAUNCH_FEEDBACK_INDEX, float_1_decimal);
-            set_slow_motor_speed(target_speed_mps, true);
+            set_slow_motor_speed(target_speed_mps, false);
             break;
         }
 
