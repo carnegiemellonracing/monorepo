@@ -272,6 +272,10 @@ static inline void set_motor_speed_and_torque(
     }
 }
 
+static float get_load_cell_angle_rad(canDaqRX_t loadIndex) {
+    return 30.0 / 180.0 * PI;
+}
+
 /**
  * @brief Return downforce given motor location
  */
@@ -279,9 +283,10 @@ static float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
     float downforce_N;
     if (use_true_downforce && (&canDaqRXMeta[loadIndex], xTaskGetTickCount()) == 0) {
         volatile cmr_canIZZELoadCell_t *downforcePayload = (volatile cmr_canIZZELoadCell_t*) canDAQGetPayload(loadIndex);
-        downforce_N = downforcePayload->force_output_N;
+        float angle = get_load_cell_angle_rad(loadIndex);
+        downforce_N = downforcePayload->force_output_N / sinf(angle);
     } else {
-        downforce_N = car_mass_kg * 9.81 * 0.25f;
+        downforce_N = car_mass_kg * 9.81f * 0.25f;
     }
     return downforce_N;
 }
