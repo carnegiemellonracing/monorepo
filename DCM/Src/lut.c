@@ -196,6 +196,9 @@ float lut_get_kappa(const float alpha_degree, const float Fz_N, const float Fx_N
 Fx_kappa_t lut_get_max_Fx_kappa(const float alpha_degree, const float Fz_N)
 {
     float adjusted_Fz_N = Fz_N * lut_get_Fz_scaling_factor();
+    // Ensures nonnegativity.
+    adjusted_Fz_N = MAX(adjusted_Fz_N, 0.0f);
+
     // Since downforce is shrunken by this operation,
     // the minimum downforce supported by LUT needs to be at most 
     // our minimum downforce * scaling factor.

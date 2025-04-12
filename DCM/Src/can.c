@@ -1131,8 +1131,8 @@ int canTX(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t len, Tick
 volatile void *canVehicleGetPayload(canVehicleRX_t msg) {
     return &(canVehicleRXMeta[msg].payload);
 }
-
 /**
+
  * @brief Gets a pointer to a tractive CAN payload.
  *
  * @param msg The desired tractive CAN message.

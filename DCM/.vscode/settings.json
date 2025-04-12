@@ -5,6 +5,7 @@
         "lut.h": "c",
         "assert.h": "c",
         "movella.h": "c",
-        "motors.h": "c"
+        "motors.h": "c",
+        "*.rawh": "c"
     }
 }

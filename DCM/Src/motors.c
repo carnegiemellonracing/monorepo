@@ -182,6 +182,9 @@ static void motorsCommand (
 
         uint32_t throttle;
 
+        float target_speed_mps = 5.0f;
+        getProcessedValue(&target_speed_mps, FFLAUNCH_FEEDBACK_INDEX, float_1_decimal);    
+
         //transmit Coulombs using HVI sense
         integrateCurrent();
 
@@ -210,12 +213,11 @@ static void motorsCommand (
         drsMode = reqDIM->requestedDrsMode;
 
         int32_t steeringWheelAngle_millideg = (swangleFSM->steeringWheelAngle_millideg_FL + swangleFSM->steeringWheelAngle_millideg_FR) / 2;
-        // runDrsControls(reqDIM->requestedGear,
-        //                 drsMode,
-        //                 dataFSM    -> throttlePosition,
-        //                 dataFSM    -> brakePressureFront_PSI
-        //                 );
-
+        runDrsControls(reqDIM->requestedGear,
+                        drsMode,
+                        dataFSM    -> throttlePosition,
+                        dataFSM    -> brakePressureFront_PSI,
+                        steeringWheelAngle_millideg);
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
             case CMR_CAN_RTD: {
