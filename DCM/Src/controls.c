@@ -241,9 +241,12 @@ static inline void set_motor_speed_and_torque(
  */
 static void set_optimal_control(
 	float normalized_throttle,
-	int32_t swAngle_millideg,
+	int32_t swAngle_millideg_FL,
+    int32_t swAngle_millideg_FR,
     bool allow_regen
 ) {
+
+    int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
 
     if (true == allow_regen) {
         assert(-1.0f <= normalized_throttle && normalized_throttle <= 1.0f);
@@ -372,12 +375,14 @@ void runControls (
     uint8_t throttlePos_u8,
     uint8_t brakePos_u8,
     uint16_t brakePressurePsi_u8,
-    int32_t swAngle_millideg,
+    int32_t swAngle_millideg_FL,
+    int32_t swAngle_millideg_FR,
     int32_t battVoltage_mV,
     int32_t battCurrent_mA,
     bool blank_command )
 {
 
+    int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
     integrateCurrent();
     if (blank_command) {
         setTorqueLimsAllProtected(0.0f, 0.0f);
@@ -429,7 +434,7 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_SKIDPAD: {
-        	set_optimal_control((float)throttlePos_u8 / UINT8_MAX, swAngle_millideg, false);
+        	set_optimal_control((float)throttlePos_u8 / UINT8_MAX, swAngle_millideg_FL, swAngle_millideg_FR, false);
             break;
         }
         case CMR_CAN_GEAR_ACCEL: {
@@ -459,7 +464,7 @@ void runControls (
 
             float throttle = (float)throttlePos_u8 / UINT8_MAX;
             float combined_request = throttle - paddle_request; // [0, 1].
-            set_optimal_control(combined_request, swAngle_millideg, true);
+            set_optimal_control(combined_request, swAngle_millideg_FL, swAngle_millideg_FR, true);
             break;
         }
 
@@ -784,7 +789,7 @@ void setLaunchControl(
 
     if (use_solver) {
         // swAngle_millideg = 0 means assume no turn.
-        set_optimal_control((float) throttlePos_u8 / UINT8_MAX, 0, false);
+        set_optimal_control((float) throttlePos_u8 / UINT8_MAX, 0, 0, false);
     } else {
         TickType_t tick = xTaskGetTickCount();
         float seconds = (float)(tick - startTickCount) * (0.001f); //convert Tick Count to Seconds
