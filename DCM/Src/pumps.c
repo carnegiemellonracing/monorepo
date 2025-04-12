@@ -107,14 +107,15 @@ void pumpsOn() {
     // cmr_pwmSetDutyCycle(&pump_1_PWM, (uint32_t) 100-pump_1_State);
     // cmr_pwmSetDutyCycle(&pump_2_PWM, (uint32_t) 100-pump_2_State);
 
-    cmr_gpioWrite(GPIO_PUMP_LEFT, 1);
-    cmr_gpioWrite(GPIO_PUMP_RIGHT, 1);
+    cmr_gpioWrite(GPIO_PUMP_LEFT, 0);
+    cmr_gpioWrite(GPIO_PUMP_RIGHT, 0);
+    cmr_gpioWrite(GPIO_PUMP_ON, 0);
     
-    if (pump_1_State >= 50 || pump_2_State >= 50) {
-        cmr_gpioWrite(GPIO_PUMP_ON, 1);
-    } else {
-        cmr_gpioWrite(GPIO_PUMP_ON, 0);
-    }
+    // if (pump_1_State >= 50 || pump_2_State >= 50) {
+    //     cmr_gpioWrite(GPIO_PUMP_ON, 1);
+    // } else {
+    //     cmr_gpioWrite(GPIO_PUMP_ON, 0);
+    // }
 }
 
 void pumpsOff() {
@@ -124,8 +125,8 @@ void pumpsOff() {
     // // we want them to be off when without AC
     // cmr_pwmSetDutyCycle(&pump_1_PWM, 100-pump_1_State);
     // cmr_pwmSetDutyCycle(&pump_2_PWM, 100-pump_2_State);
-    cmr_gpioWrite(GPIO_PUMP_LEFT, 0);
-    cmr_gpioWrite(GPIO_PUMP_RIGHT, 0);
-    cmr_gpioWrite(GPIO_PUMP_ON, 0);
+    cmr_gpioWrite(GPIO_PUMP_LEFT, 1);
+    cmr_gpioWrite(GPIO_PUMP_RIGHT, 1);
+    cmr_gpioWrite(GPIO_PUMP_ON, 1);
 }
 

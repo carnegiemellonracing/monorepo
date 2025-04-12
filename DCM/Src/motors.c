@@ -219,7 +219,7 @@ static void motorsCommand (
             case CMR_CAN_RTD: {
             	mcCtrlOn();
             	// fansOn();
-            	// pumpsOn();
+            	pumpsOn();
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv = CMR_CAN_AMK_CTRL_HV_EN  |
                                                    CMR_CAN_AMK_CTRL_INV_ON |
@@ -283,7 +283,7 @@ static void motorsCommand (
             case CMR_CAN_HV_EN: {
             	mcCtrlOn();
             	// fansOn();
-            	// pumpsOn();
+            	pumpsOn();
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = CMR_CAN_AMK_CTRL_HV_EN |
                                                            CMR_CAN_AMK_CTRL_ERR_RESET;
@@ -308,7 +308,7 @@ static void motorsCommand (
                 } else
 
             	// fansOff();
-            	// pumpsOff();
+            	pumpsOff();
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = CMR_CAN_AMK_CTRL_ERR_RESET;
                     motorSetpoints[i].velocity_rpm       = 0;
@@ -322,6 +322,7 @@ static void motorsCommand (
 
             // In all other states, disable inverters and do not reset errors
             default: {
+                pumpsOff();
                 mcCtrlOff();
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = 0;
