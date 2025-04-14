@@ -273,7 +273,17 @@ static inline void set_motor_speed_and_torque(
 }
 
 static float get_load_cell_angle_rad(canDaqRX_t loadIndex) {
-    return 30.0 / 180.0 * PI;
+    switch (loadIndex)
+    {
+    case CANRX_DAQ_LOAD_FL:
+    case CANRX_DAQ_LOAD_FR:
+        return 30.0f / 180.0f * PI;
+    case CANRX_DAQ_LOAD_RL:
+    case CANRX_DAQ_LOAD_RR:
+        return 35.0f / 180.0f * PI;
+    default:
+        return 0.0f;
+    }
 }
 
 /**
@@ -281,10 +291,11 @@ static float get_load_cell_angle_rad(canDaqRX_t loadIndex) {
  */
 static float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
     float downforce_N;
-    if (use_true_downforce && (&canDaqRXMeta[loadIndex], xTaskGetTickCount()) == 0) {
+    bool not_timeout = cmr_canRXMetaTimeoutWarn(&canDaqRXMeta[loadIndex],  xTaskGetTickCount()) == 0;
+    if (use_true_downforce && not_timeout) {
         volatile cmr_canIZZELoadCell_t *downforcePayload = (volatile cmr_canIZZELoadCell_t*) canDAQGetPayload(loadIndex);
         float angle = get_load_cell_angle_rad(loadIndex);
-        downforce_N = downforcePayload->force_output_N / sinf(angle);
+        downforce_N = downforcePayload->force_output_N * sinf(angle);
     } else {
         downforce_N = (float) car_mass_kg * 9.81f * 0.25f;
     }
