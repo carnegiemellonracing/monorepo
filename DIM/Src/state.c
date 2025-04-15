@@ -357,8 +357,8 @@ static cmr_state getReqScreen(void) {
             //look into how button move on screen on campus
             if(canLRUDStates[LEFT]) {
                 //move left on screen
-                config_move_request = -1;
-                nextState = CONFIG;
+                // config_move_request = -1;
+                nextState = NORMAL;
             }
             else if(canLRUDStates[RIGHT]) {
                 //move right on screen
@@ -392,7 +392,7 @@ static cmr_state getReqScreen(void) {
             }
             break;
         case dimStateERROR:
-            nextState = INIT;
+            nextState = dimStateERROR;
             break;
         case RACING:
             if(canLRUDStates[LEFT] && state.vsmReq == CMR_CAN_GLV_ON) {
