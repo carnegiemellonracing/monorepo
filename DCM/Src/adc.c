@@ -17,17 +17,17 @@
  */
 static cmr_adcChannel_t adcChannels[ADC_LEN] = {
     [ADC_LINPOT1] = {
-        .channel = ADC_CHANNEL_8,
+        .channel = ADC_CHANNEL_7,
         .port = GPIOF,
-        .pin = GPIO_PIN_6,
-        .samplingTime = ADC_SAMPLETIME_1CYCLE_5,
+        .pin = GPIO_PIN_8,
+        .samplingTime = ADC3_SAMPLETIME_12CYCLES_5,
         .value = 0
     },
     [ADC_LINPOT2] = {
-        .channel = ADC_CHANNEL_3,
+        .channel = ADC_CHANNEL_2,
         .port = GPIOF,
-        .pin = GPIO_PIN_7,
-        .samplingTime = ADC_SAMPLETIME_1CYCLE_5,
+        .pin = GPIO_PIN_9,
+        .samplingTime = ADC3_SAMPLETIME_12CYCLES_5,
         .value = 0
     }
 };
