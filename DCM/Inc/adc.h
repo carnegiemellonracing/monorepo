@@ -16,8 +16,8 @@
  * @warning New channels MUST be added before `ADC_LEN`.
  */
 typedef enum {
-  ADC_VSENSE = 0, /**< @brief Board voltage sense. */
-  ADC_ISENSE,     /**< @brief Board current sense. */
+  ADC_LINPOT1,
+  ADC_LINPOT2,
   ADC_LEN         /**< @brief Total ADC channels. */
 } adcChannel_t;
 

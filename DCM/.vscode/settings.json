@@ -6,6 +6,15 @@
         "assert.h": "c",
         "movella.h": "c",
         "motors.h": "c",
-        "*.rawh": "c"
+        "*.rawh": "c",
+        "complex": "c",
+        "functional": "c",
+        "system_error": "c",
+        "type_traits": "c",
+        "xlocnum": "c",
+        "xtr1common": "c",
+        "array": "c",
+        "tuple": "c",
+        "utility": "c"
     }
 }

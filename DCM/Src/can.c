@@ -526,6 +526,12 @@ static void canTX100Hz(void *pvParameters) {
             heartbeat.state = CMR_CAN_ERROR;
         }
 
+        cmr_canDAQLinpot_t linpots;
+        linpots.linpot_front_adc = adcRead(ADC_LINPOT1);
+        linpots.linpot_rear_adc = adcRead(ADC_LINPOT2);
+
+        canTX(CMR_CAN_BUS_VEH, 0x658, &linpots, sizeof(cmr_canDAQLinpot_t), canTX100Hz_period_ms);
+
         // Solver
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_INPUTS, &solver_inputs, sizeof(cmr_can_solver_inputs_t), canTX100Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_AUX, &solver_aux, sizeof(cmr_can_solver_aux_t), canTX100Hz_period_ms);

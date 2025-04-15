@@ -489,6 +489,7 @@ void _platform_rccADCClockEnable(ADC_TypeDef *instance) {
 
 	if(HAL_RCC_ADC_CLK_ENABLED == 0) {
 		__HAL_RCC_ADC12_CLK_ENABLE();
+        __HAL_RCC_ADC3_CLK_ENABLE();
 		HAL_RCC_ADC_CLK_ENABLED++;
 	}
 }
@@ -563,7 +564,7 @@ void _platform_adcPoll(cmr_adc_t *adc, uint32_t adcTimeout) {
         HAL_ADC_PollForConversion(&adc->handle, adcTimeout);
         channel->value = HAL_ADC_GetValue(&adc->handle);
     }
-}
+}   
 #endif /* HAL_ADC_MODULE_ENABLED */
 
 
