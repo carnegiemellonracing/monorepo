@@ -102,7 +102,14 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	rotaryPosition = stateB;
 
 	// Request gear change
-	reqGear();
+	if(getCurrState() != CONFIG) {
+		reqGear();
+	}
+	else
+	{
+		config_increment_up_requested = true;
+		config_increment_down_requested = false;
+	}
 }
 
 //declaration for use
@@ -125,6 +132,7 @@ void canLRUDDetect(void){
 	for(int i = 0; i < LRUD_LEN; i++){
 		bool pressed = true;
 		if(gpioLRUDStates[i]){
+			bool pressed = true;
 			if(lastState[i] == false)
 				//new press
 				if(getCurrState() != CONFIG)
