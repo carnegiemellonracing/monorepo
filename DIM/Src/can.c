@@ -41,6 +41,8 @@ bool volatile waiting_for_cdc_to_confirm_config = false;
 // letting the DIM know that it has received all the config screen values for a new driver
 bool volatile config_screen_values_received_for_new_driver = false;
 
+bool paddle_is_pressed = false;
+
 // Size of text buffer from RAM
 #define RAMBUFLEN 64
 
@@ -189,6 +191,17 @@ static void canTX100Hz(void *pvParameters) {
     	uint8_t regenPercent = (uint8_t)((adcRead(ADC_PADDLE) / 255.0) * 100.0);
         uint8_t packed = 0;
         uint8_t LRUDpacked = 0;
+        if(getCurrState() == CONFIG){
+            if(paddle > 0){ // TODO: replace with actual ADC value for unpressed
+                paddle_is_pressed = true;
+            }
+            else {
+                if(paddle_is_pressed){
+                    config_increment_down_requested = true;
+                    paddle_is_pressed = false;
+                }
+            }
+        }
         for(int i=0; i<NUM_BUTTONS; i++){
             packed |= canButtonStates[i] << i;
         }
