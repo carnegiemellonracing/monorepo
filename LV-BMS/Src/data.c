@@ -14,8 +14,9 @@
 #include "gpio.h"
 #include <math.h>
 
-uint16_t rawCellVolts[6];
-uint16_t cellVoltages[6];
+uint16_t sendVolt[6];
+float rawCellVolts[6];
+float cellVoltages[6];
 uint8_t cellNum[6];
 signed char offset_corr[7];
 signed char gain_corr[7];
@@ -87,17 +88,23 @@ void getVoltages(void) {
         vTaskDelayUntil(&time_prev, 32);
             //reference data sheet for formula
         cellVoltages[i] = adc_read(ADC_AFE_VCOUT);
-        cellNum[i] = read_cell_ctl();
-        uint16_t gc_out = 0.001 * gain_corr[i];
-        uint16_t oc_out = 0.001 * offset_corr[i];
+        //cellNum[i] = read_cell_ctl();
+        // gc_out = 0.001 * gain_corr[i];
+        //uint16_t oc_out = 0.001 * offset_corr[i];
 
-        rawCellVolts[i] = float_to_uint16(((adc_read(ADC_AFE_VCOUT) * vref_corr + ADC_COUNT * offset_corr[i+1])
-                       * (1000L + gain_corr[i+1])) /(GVCOUT * ADC_COUNT * 1e6));
+        // uint16_t tmepskdj = cellVoltages[i]/ADC_COUNT;
+
+        rawCellVolts[i] = ((float)(cellVoltages[i])/(float)(ADC_COUNT)) * 11.0;
+        sendVolt[i] = float_to_uint16(rawCellVolts[i]);
+        
+
+        //rawCellVolts[i] = float_to_uint16(((adc_read(ADC_AFE_VCOUT) * vref_corr + ADC_COUNT * offset_corr[i+1])
+                       //* (1000L + gain_corr[i+1])) /(GVCOUT * ADC_COUNT * 1e6));
                        
     }
 
-    sendOvervoltageFlags(cellVoltages);
-    sendVoltages(cellVoltages);
+    sendOvervoltageFlags(sendVolt);
+    sendVoltages(sendVolt);
    
 }
 
