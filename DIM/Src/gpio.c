@@ -6,6 +6,7 @@
  */
 
 #include "gpio.h"  // Interface to implement
+#include "adc.h"
 
 #include <CMR/gpio.h>   // GPIO interface
 #include <stm32f4xx_hal.h>  // HAL interface
@@ -208,6 +209,8 @@ static void gpioReadButtons(void *pvParameters) {
     (void)pvParameters;
 	TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
+		uint8_t paddle = adcRead(ADC_PADDLE);
+		if (paddle > 50 ) config_increment_up_requested = true;
         // Direct assignment for CAN buttons
         for(int i=0; i<NUM_BUTTONS; i++){
 			// Active Low

@@ -18,6 +18,7 @@
 #include "gpio.h"  // Board-specific GPIO interface
 #include "tft.h"   // TFT display interface.
 #include "tftDL.h"
+#include "adc.h"
 
 static const uint32_t stateMachine_priority = 4;
 
@@ -377,13 +378,17 @@ static cmr_state getReqScreen(void) {
             }
     	//TODO: WHAT THE HELL IS THIS??
             else if(gpioButtonStates[SW1]) {
+            // else if(canLRUDStates[LEFT]) {
                 nextState = NORMAL;
                 flush_config_screen_to_cdc = true;
+                // exitConfigScreen();
 
                 //gpioButtonStates[SW1] = 0;
                 //nextState = CONFIG;
             }
             else if(gpioButtonStates[SW2]) {
+                flush_config_screen_to_cdc = true;
+                // exitConfigScreen();
                 nextState = RACING;
                 //gpioButtonStates[SW2] = 0;
             }
@@ -539,6 +544,7 @@ void reqGear(void) {
 	// }
     bool canChangeGear = true;
     if(canChangeGear && (pastRotary != currentRotary)) {
+        if( currState == CONFIG) config_increment_down_requested = true;
         if(state.gearReq == 8) state.gearReq = 1;
         else state.gearReq++;
     }
