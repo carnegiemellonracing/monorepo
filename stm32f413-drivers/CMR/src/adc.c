@@ -99,9 +99,9 @@ void cmr_adcInit(
         cmr_panic("HAL_ADC_Init() failed!");
     }
 
-    #ifdef F413
+    
     cmr_adcConfigChannels(adc);
-    #endif /* F413 */
+    
 
     cmr_adcSample_period_ms = samplePeriod_ms;
     cmr_taskInit(
