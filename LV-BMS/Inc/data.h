@@ -12,7 +12,7 @@
 
 // Converts float to uint16 (scale by 100)
 #define float_to_uint16(value) ((uint16_t)((value) * 100.0f))
-#define VREF_NOM 1.5  
+#define VREF_NOM 1.5 
 #define ADC_COUNT 4096L //assuming 12 bit adc
 #define GVCOUT 0.3 //(1.5V-->0.3)(3V-->0.6)
 #define GVSENSE 8 //assuming gain of 8
