@@ -1076,4 +1076,10 @@ typedef struct {
 	uint32_t test_id;
 } cmr_canTestID_t;
 
+typedef struct {
+    uint16_t cell1;
+    uint16_t cell2;
+    uint16_t cell3;
+} cmr_canLVBMS_Voltage;
+
 #endif /* CMR_CAN_TYPES_H */
