@@ -2397,3 +2397,16 @@ DLC=8
 Var=SwangleRight signed 0,32 /u:deg /f:0.001
 Var=SwangleLeft signed 32,32 /u:deg /f:0.001
 
+[LV_BMS_Voltages1]
+ID=7F7h
+DLC=6
+Var=Cell1 signed 0,16, /u:cV
+Var=Cell2 signed 16,16, /u:cV
+Var=Cell3 signed 32,16, /u:cV
+
+[LV_BMS_Voltages2]
+ID=7F8h
+DLC=6
+Var=Cell4 signed 0,16, /u:cV
+Var=Cell5 signed 16,16, /u:cV
+Var=Cell6 signed 32,16, /u:cV

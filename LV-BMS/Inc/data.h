@@ -21,7 +21,7 @@
 #define RESISTOR 10000 //10k ohm resistor from temps. again idk!!!
 
 void getVoltages(void);
-void sendVoltages(uint16_t voltages[6]);
+void sendVoltages();
 void sendOvervoltageFlags(uint16_t voltages[6]);
 void sendBusVoltage(uint16_t voltages[6]);
 
