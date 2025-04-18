@@ -860,6 +860,22 @@ typedef struct {
     uint8_t lsb;
 } big_endian_16_t;
 
+
+typedef union {
+    struct {
+        uint8_t lsb;
+        uint8_t msb;
+    } data;
+    int16_t parsed;
+} int16_parser;
+
+static int16_t parse_int16(volatile big_endian_16_t *big) {
+    static int16_parser parser;
+    parser.data.msb = big->msb;
+    parser.data.lsb = big->lsb;
+    return parser.parsed;
+} 
+
 typedef struct {
     big_endian_16_t q0;
     big_endian_16_t q1;
@@ -1062,10 +1078,10 @@ typedef struct {
 } cmr_canDAQLinpot_t;
 
 typedef struct {
-    int16_t differential_voltage_uv;
-    int16_t force_output_N;
-    int16_t internal_temp;
-    int16_t external_temp;
+    big_endian_16_t differential_voltage_uv;
+    big_endian_16_t force_output_N;
+    big_endian_16_t internal_temp;
+    big_endian_16_t external_temp;
 } cmr_canIZZELoadCell_t;
 
 typedef struct {

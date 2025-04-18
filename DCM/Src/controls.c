@@ -24,7 +24,7 @@
 #include "lut.h"
 #include "constants.h"
 
-#define PI 3.1415926535897932384626
+#define PI 3.1415926535897932384626f
 
 #define X1000_INT16(x) ((int16_t)((float)x * 1000.0f))
 
@@ -295,7 +295,8 @@ static float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
     if (use_true_downforce && not_timeout) {
         volatile cmr_canIZZELoadCell_t *downforcePayload = (volatile cmr_canIZZELoadCell_t*) canDAQGetPayload(loadIndex);
         float angle = get_load_cell_angle_rad(loadIndex);
-        downforce_N = downforcePayload->force_output_N * sinf(angle);
+        volatile int16_t raw = parse_int16(&downforcePayload->force_output_N);
+        downforce_N = (float) raw * 0.1f * sinf(angle);
     } else {
         downforce_N = (float) car_mass_kg * 9.81f * 0.25f;
     }
@@ -436,7 +437,7 @@ static void set_optimal_control(
     }
 }
 
-static void set_optimal_control_with_regen(
+void set_optimal_control_with_regen(
 	int throttlePos_u8,
 	int32_t swAngle_millideg_FL,
 	int32_t swAngle_millideg_FR
