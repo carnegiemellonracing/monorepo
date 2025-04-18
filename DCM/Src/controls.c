@@ -564,13 +564,13 @@ void runControls (
         case CMR_CAN_GEAR_ENDURANCE: {
             // set_optimal_control_with_regen(throttlePos_u8, swAngle_millideg_FL, swAngle_millideg_FR);
             // setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
-            // set_regen(throttlePos_u8);
-            float avgMotorSpeed_RPM = getTotalMotorSpeed_rpm()* 0.25f;
-            uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
-            uint8_t paddle_regen_strength_raw = 100;
-            float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
-            uint8_t throttlePos_u8_temp = throttlePos_u8;
-            setPaddleRegen(&throttlePos_u8_temp, brakePressurePsi_u8, avgMotorSpeed_RPM, paddle_pressure, paddle_regen_strength);
+            set_regen(throttlePos_u8);
+            // float avgMotorSpeed_RPM = getTotalMotorSpeed_rpm()* 0.25f;
+            // uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
+            // uint8_t paddle_regen_strength_raw = 100;
+            // float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
+            // uint8_t throttlePos_u8_temp = throttlePos_u8;
+            // setPaddleRegen(&throttlePos_u8_temp, brakePressurePsi_u8, avgMotorSpeed_RPM, paddle_pressure, paddle_regen_strength);
             break;
         }
         case CMR_CAN_GEAR_AUTOX: {
@@ -599,10 +599,10 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_TEST: {
-            // set_optimal_control_with_regen(throttlePos_u8, swAngle_millideg_FL, swAngle_millideg_FR);
-            float target_speed_mps = 5.0f;
+            set_optimal_control_with_regen(throttlePos_u8, swAngle_millideg_FL, swAngle_millideg_FR);
+            // float target_speed_mps = 5.0f;
             // getProcessedValue(&target_speed_mps, FFLAUNCH_FEEDBACK_INDEX, float_1_decimal);
-            set_slow_motor_speed(target_speed_mps, false);
+            // set_slow_motor_speed(target_speed_mps, false);
             break;
         }
 

@@ -53,9 +53,9 @@ float getPackVoltage() {
 
     // If HVI Sense hasn't timed out, use it. Otherwise, use batt voltage
     float measured_voltage_V = batt_voltage_V;
-    if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[CANRX_TRAC_HVI_SENSE], xTaskGetTickCount()) == 0) {
-        measured_voltage_V = hv_voltage_V;
-    }
+    // if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[CANRX_TRAC_HVI_SENSE], xTaskGetTickCount()) == 0) {
+    //     measured_voltage_V = hv_voltage_V;
+    // }
 
     return measured_voltage_V;
 }
