@@ -109,15 +109,22 @@ void getVoltages(void) {
 }
 
 // Sends cell voltages (1-6) split into two CAN messages
-void sendVoltages(uint16_t voltages[6]) {
+void sendVoltages() {
     uint16_t data1[3], data2[3];
 
     // Split voltages into two groups
-    memcpy(data1, voltages, 3 * sizeof(uint16_t));     // Voltages 1-3
-    memcpy(data2, &voltages[3], 3 * sizeof(uint16_t)); // Voltages 4-6
 
-    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_1_3, data1, sizeof(data1), canTX10Hz_period_ms);
-    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_4_6, data2, sizeof(data2), canTX10Hz_period_ms);
+    cmr_canLVBMS_Voltage cell1_3;
+    cmr_canLVBMS_Voltage cell4_6;
+    cell1_3.cell1 = sendVolt[0];
+    cell1_3.cell2 = sendVolt[1];
+    cell1_3.cell3 = sendVolt[2];
+    cell4_6.cell1 = sendVolt[3];
+    cell4_6.cell2 = sendVolt[4];
+    cell4_6.cell3 = sendVolt[5];
+
+    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_1_3, &cell1_3, sizeof(cell1_3), canTX10Hz_period_ms);
+    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_4_6, &cell4_6, sizeof(cell4_6), canTX10Hz_period_ms);
 }
 
 // Sends overvoltage flags
