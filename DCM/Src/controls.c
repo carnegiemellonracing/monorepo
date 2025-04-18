@@ -438,12 +438,13 @@ static void set_optimal_control(
 
 static void set_optimal_control_with_regen(
 	int throttlePos_u8,
-	int32_t swAngle_millideg
+	int32_t swAngle_millideg_FL,
+	int32_t swAngle_millideg_FR
 ) {
     uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
 
     uint8_t paddle_regen_strength_raw = 100;
-    getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
+    // getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
     float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
 
     float paddle_request = 0.0f;
@@ -454,7 +455,7 @@ static void set_optimal_control_with_regen(
 
     float throttle = (float)throttlePos_u8 / UINT8_MAX;
     float combined_request = throttle - paddle_request; // [0, 1].
-    set_optimal_control(combined_request, swAngle_millideg, swAngle_millideg, true);
+    set_optimal_control(combined_request, swAngle_millideg_FL, swAngle_millideg_FR, true);
 }
 
 /**
@@ -518,7 +519,8 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_ENDURANCE: {
-            setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
+            set_optimal_control_with_regen(throttlePos_u8, swAngle_millideg_FL, swAngle_millideg_FR);
+            // setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
             break;
         }
         case CMR_CAN_GEAR_AUTOX: {
@@ -547,7 +549,7 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_TEST: {
-            // set_optimal_control_with_regen(throttlePos_u8, swAngle_millideg);
+            // set_optimal_control_with_regen(throttlePos_u8, swAngle_millideg_FL, swAngle_millideg_FR);
             float target_speed_mps = 5.0f;
             // getProcessedValue(&target_speed_mps, FFLAUNCH_FEEDBACK_INDEX, float_1_decimal);
             set_slow_motor_speed(target_speed_mps, false);
