@@ -277,10 +277,10 @@ static float get_load_cell_angle_rad(canDaqRX_t loadIndex) {
     {
     case CANRX_DAQ_LOAD_FL:
     case CANRX_DAQ_LOAD_FR:
-        return 30.0f / 180.0f * PI;
+        return 35.0f / 180.0f * PI;
     case CANRX_DAQ_LOAD_RL:
     case CANRX_DAQ_LOAD_RR:
-        return 35.0f / 180.0f * PI;
+        return 30.0f / 180.0f * PI;
     default:
         return 0.0f;
     }
@@ -378,10 +378,11 @@ static void set_optimal_control(
 	const float thoeretical_mass_accel = maxTorque_continuous_stall_Nm * MOTOR_LEN * gear_ratio / effective_wheel_rad_m / car_mass_kg;
 	// areq can be either expressed in torque or actual accel. Both ways are equivalent. Here uses actual accel.
 	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
-	optimizer_state.mreq = getYawRateControlLeftRightBias(swAngle_millideg);
+    // Solver treats Mreq as around -z axis.
+	optimizer_state.mreq = -getYawRateControlLeftRightBias(swAngle_millideg);
     
-	optimizer_state.theta_left = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
-    optimizer_state.theta_right = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
+	optimizer_state.theta_left = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
+    optimizer_state.theta_right = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
 
 	solve(&optimizer_state);
 
@@ -1173,7 +1174,7 @@ float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
     }
     
     const float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
-    const float actual_yaw_rate_radps_sae = -movella_state.gyro.z;
+    const float actual_yaw_rate_radps_sae = movella_state.gyro.z;
     const float optimal_yaw_rate_radps = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
 
     yrcDebug.controls_current_yaw_rate = (int16_t)(1000.0f * actual_yaw_rate_radps_sae);
