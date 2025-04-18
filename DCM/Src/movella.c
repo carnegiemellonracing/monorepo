@@ -237,7 +237,8 @@ void movella_parse(uint16_t canID, volatile void *payload) {
     switch (movella_msg)
     {
     case CANRX_DAQ_MOVELLA_STATUS:
-        
+        volatile cmr_canMovellaStatus_t *status = payload;
+        movella_state.status = *status;
         break;
 
     case CANRX_DAQ_MOVELLA_QUATERNION:

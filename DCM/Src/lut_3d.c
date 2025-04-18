@@ -144,7 +144,7 @@ static float getDownforce(motorLocation_t motor) {
 			// If we have valid loadcell data, use loadcell as downforce
 			if (cmr_canRXMetaTimeoutWarn(&canDaqRXMeta[loadIndex],  xTaskGetTickCount()) == 0) {
 				volatile cmr_canIZZELoadCell_t *downforcePayload = (volatile cmr_canIZZELoadCell_t*) canDAQGetPayload(loadIndex);
-				downforce_N = downforcePayload->force_output_N;
+				downforce_N = parse_int16(&downforcePayload->force_output_N);
 			}
 		} else {
 			const float frontAngle_rad = ((float) M_PI) / 4;

@@ -908,6 +908,34 @@ typedef struct {
 } cmr_canMovellaVelocity_t;
 
 typedef struct {
+    uint8_t self_test:1;
+    uint8_t filter_valid:1;
+    uint8_t gnss_fix:1;
+    uint8_t no_rotation_update:2;
+    uint8_t representative_motion:1;
+    uint8_t clock_bias_estimation:1;
+    uint8_t reserved_1:1;
+    uint8_t clipflag_acc_x:1;
+    uint8_t clipflag_acc_y:1;
+    uint8_t clipflag_acc_z:1;
+    uint8_t clipflag_gyr_x:1;
+    uint8_t clipflag_gyr_y:1;
+    uint8_t clipflag_gyr_z:1;
+    uint8_t clipflag_mag_x:1;
+    uint8_t clipflag_mag_y:1;
+    uint8_t clipflag_mag_z:1;
+    uint8_t reserved_2:2;
+    uint8_t clipping_indication:1;
+    uint8_t reserved_3:1;
+    uint8_t sync_in_marker:1;
+    uint8_t sync_out_marker:1;
+    uint8_t filter_mode:3;
+    uint8_t have_gnss_time_pulse:1;
+    uint8_t rtk_status:2;
+    uint8_t reserved_4:3;
+} cmr_canMovellaStatus_t;
+
+typedef struct {
     int16_t cog_x;
     int16_t cog_y;
     float slip_angle;
