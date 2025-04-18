@@ -345,6 +345,18 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .canID = CMR_CANID_HEARTBEAT_MEMORATOR,
         .timeoutError_ms = 5000,
         .timeoutWarn_ms = 3000
+    },
+    [CANRX_DAQ_LV_BMS_CELL_VOLTAGE_1_3] = {
+        .canID = CAN_ID_LV_BMS_CELL_VOLTAGE_1_3,
+        .timeoutError_ms = 400,
+        .timeoutWarn_ms = 400,
+        .errorFlag = CMR_CAN_ERROR
+    },
+    [CANRX_DAQ_LV_BMS_CELL_VOLTAGE_4_6] = {
+        .canID = CAN_ID_LV_BMS_CELL_VOLTAGE_4_6,
+        .timeoutError_ms = 400,
+        .timeoutWarn_ms = 400,
+        .errorFlag = CMR_CAN_ERROR
     }
 };
 
@@ -523,6 +535,9 @@ static void canTX100Hz(void *pvParameters) {
         updateErrorsWarnings(&heartbeat, lastWakeTime);
 
         if (heartbeat.error[0] != 0 || heartbeat.error[1] != 0) {
+            heartbeat.state = CMR_CAN_ERROR;
+        }
+        else if(cmr_canRXMetaTimeoutError(&(canDaqRXMeta[CANRX_DAQ_LV_BMS_CELL_VOLTAGE_1_3]), lastWakeTime) < 0 || cmr_canRXMetaTimeoutError(&(canDaqRXMeta[CANRX_DAQ_LV_BMS_CELL_VOLTAGE_4_6]), lastWakeTime) < 0) {
             heartbeat.state = CMR_CAN_ERROR;
         }
 

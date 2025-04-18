@@ -144,6 +144,13 @@ static void updateWarnings(cmr_canWarn_t *warnings, TickType_t lastWakeTime) {
         }
     }
 
+    // DAQ CAN timeout warnings
+    for (size_t i = 0; i < CANRX_DAQ_LEN; i++) {
+        if (cmr_canRXMetaTimeoutWarn(&(canDaqRXMeta[i]), lastWakeTime) < 0) {
+            *warnings |= canDaqRXMeta[i].warnFlag;
+        }
+    }
+
     if (cmr_canRXMetaTimeoutWarn(&(canDaqRXMeta[CANRX_DAQ_MEMORATOR_BROADCAST]), lastWakeTime) < 0) {
         *warnings |= CMR_CAN_WARN_CDC_MEMORATOR_DAQ_TIMEOUT;
     }

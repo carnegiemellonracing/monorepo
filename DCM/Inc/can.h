@@ -85,6 +85,8 @@ typedef enum {
     CANRX_DAQ_LINPOTS_LEFTS,    /**< @brief front left load cell/newtons. */
     CANRX_DAQ_LINPOTS_RIGHTS,   /**< @brief front right load cell/newtons. */
     CANRX_DAQ_MEMORATOR_BROADCAST,
+    CANRX_DAQ_LV_BMS_CELL_VOLTAGE_1_3,
+    CANRX_DAQ_LV_BMS_CELL_VOLTAGE_4_6,
     CANRX_DAQ_LEN               /**< @brief Number of periodic CAN messages. */
 } canDaqRX_t;
 
