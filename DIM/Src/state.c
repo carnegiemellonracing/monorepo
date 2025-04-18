@@ -358,8 +358,8 @@ static cmr_state getReqScreen(void) {
             //look into how button move on screen on campus
             if(canLRUDStates[LEFT]) {
                 //move left on screen
-                // config_move_request = -1;
-                nextState = NORMAL;
+                config_move_request = -1;
+                nextState = CONFIG;
             }
             else if(canLRUDStates[RIGHT]) {
                 //move right on screen
@@ -377,7 +377,7 @@ static cmr_state getReqScreen(void) {
                 nextState = CONFIG;
             }
     	//TODO: WHAT THE HELL IS THIS??
-            else if(gpioButtonStates[SW1]) {
+            else if(cmr_gpioRead(GPIO_BUTTON_SW1)) {
             // else if(canLRUDStates[LEFT]) {
                 nextState = NORMAL;
                 flush_config_screen_to_cdc = true;
@@ -386,7 +386,7 @@ static cmr_state getReqScreen(void) {
                 //gpioButtonStates[SW1] = 0;
                 //nextState = CONFIG;
             }
-            else if(gpioButtonStates[SW2]) {
+            else if(cmr_gpioRead(GPIO_BUTTON_SW2)) {
                 flush_config_screen_to_cdc = true;
                 // exitConfigScreen();
                 nextState = RACING;
@@ -397,7 +397,7 @@ static cmr_state getReqScreen(void) {
             }
             break;
         case dimStateERROR:
-            nextState = dimStateERROR;
+            nextState = INIT;
             break;
         case RACING:
             if(canLRUDStates[LEFT] && state.vsmReq == CMR_CAN_GLV_ON) {
