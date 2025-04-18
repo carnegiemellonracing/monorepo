@@ -104,7 +104,7 @@ void getVoltages(void) {
     }
 
     sendOvervoltageFlags(sendVolt);
-    sendVoltages(sendVolt);
+    sendVoltages();
    
 }
 
