@@ -360,11 +360,14 @@ static cmr_state getReqScreen(void) {
                 //move left on screen
                 config_move_request = -1;
                 nextState = CONFIG;
+                // nextState = NORMAL;
+                // flush_config_screen_to_cdc = true;
             }
             else if(canLRUDStates[RIGHT]) {
                 //move right on screen
-                config_move_request = 1;
-                nextState = CONFIG;
+                // config_move_request = 1;
+                nextState = NORMAL;
+                flush_config_screen_to_cdc = true;
             }
             else if(canLRUDStates[UP]) {
                 //move up on screen
@@ -377,21 +380,21 @@ static cmr_state getReqScreen(void) {
                 nextState = CONFIG;
             }
     	//TODO: WHAT THE HELL IS THIS??
-            else if(cmr_gpioRead(GPIO_BUTTON_SW1)) {
-            // else if(canLRUDStates[LEFT]) {
-                nextState = NORMAL;
-                flush_config_screen_to_cdc = true;
-                // exitConfigScreen();
+            // else if(cmr_gpioRead(GPIO_BUTTON_SW1)) {
+            // // else if(canLRUDStates[LEFT]) {
+            //     nextState = NORMAL;
+            //     flush_config_screen_to_cdc = true;
+            //     // exitConfigScreen();
 
-                //gpioButtonStates[SW1] = 0;
-                //nextState = CONFIG;
-            }
-            else if(cmr_gpioRead(GPIO_BUTTON_SW2)) {
-                flush_config_screen_to_cdc = true;
-                // exitConfigScreen();
-                nextState = RACING;
-                //gpioButtonStates[SW2] = 0;
-            }
+            //     //gpioButtonStates[SW1] = 0;
+            //     //nextState = CONFIG;
+            // }
+            // else if(cmr_gpioRead(GPIO_BUTTON_SW2)) {
+            //     flush_config_screen_to_cdc = true;
+            //     // exitConfigScreen();
+            //     nextState = RACING;
+            //     //gpioButtonStates[SW2] = 0;
+            // }
             else{
                 nextState = CONFIG;
             }

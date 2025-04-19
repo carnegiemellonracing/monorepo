@@ -187,7 +187,7 @@ static void canTX100Hz(void *pvParameters) {
         sendFSMData();
         sendSWAngle();
         // Calculate integer regenPercent from regenStep
-    	uint8_t paddle = adcRead(ADC_PADDLE);
+    	uint8_t paddle = (uint8_t)((adcRead(ADC_PADDLE) / 4096.0) * 255.0);
     	uint8_t regenPercent = (uint8_t)((adcRead(ADC_PADDLE) / 255.0) * 100.0);
         uint8_t packed = 0;
         uint8_t LRUDpacked = 0;
