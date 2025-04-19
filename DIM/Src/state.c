@@ -18,6 +18,7 @@
 #include "gpio.h"  // Board-specific GPIO interface
 #include "tft.h"   // TFT display interface.
 #include "tftDL.h"
+#include "adc.h"
 
 static const uint32_t stateMachine_priority = 4;
 
@@ -342,6 +343,7 @@ static cmr_state getReqScreen(void) {
         case NORMAL:
             if(canLRUDStates[LEFT]) {
                 nextState = CONFIG;
+                flush_config_screen_to_cdc = false;
 				//gpioLRUDStates[LEFT] = false;
             }
             else if(canLRUDStates[RIGHT]) {
@@ -358,11 +360,14 @@ static cmr_state getReqScreen(void) {
                 //move left on screen
                 config_move_request = -1;
                 nextState = CONFIG;
+                // nextState = NORMAL;
+                // flush_config_screen_to_cdc = true;
             }
             else if(canLRUDStates[RIGHT]) {
                 //move right on screen
-                config_move_request = 1;
-                nextState = CONFIG;
+                // config_move_request = 1;
+                nextState = NORMAL;
+                flush_config_screen_to_cdc = true;
             }
             else if(canLRUDStates[UP]) {
                 //move up on screen
@@ -375,15 +380,21 @@ static cmr_state getReqScreen(void) {
                 nextState = CONFIG;
             }
     	//TODO: WHAT THE HELL IS THIS??
-            else if(gpioButtonStates[SW1]) {
-                nextState = NORMAL;
-                //gpioButtonStates[SW1] = 0;
-                //nextState = CONFIG;
-            }
-            else if(gpioButtonStates[SW2]) {
-                nextState = RACING;
-                //gpioButtonStates[SW2] = 0;
-            }
+            // else if(cmr_gpioRead(GPIO_BUTTON_SW1)) {
+            // // else if(canLRUDStates[LEFT]) {
+            //     nextState = NORMAL;
+            //     flush_config_screen_to_cdc = true;
+            //     // exitConfigScreen();
+
+            //     //gpioButtonStates[SW1] = 0;
+            //     //nextState = CONFIG;
+            // }
+            // else if(cmr_gpioRead(GPIO_BUTTON_SW2)) {
+            //     flush_config_screen_to_cdc = true;
+            //     // exitConfigScreen();
+            //     nextState = RACING;
+            //     //gpioButtonStates[SW2] = 0;
+            // }
             else{
                 nextState = CONFIG;
             }
@@ -394,6 +405,7 @@ static cmr_state getReqScreen(void) {
         case RACING:
             if(canLRUDStates[LEFT] && state.vsmReq == CMR_CAN_GLV_ON) {
                 nextState = CONFIG;
+                flush_config_screen_to_cdc = false;
                 //canLRUDStates[LEFT] = false;
             }
             else if(canLRUDStates[RIGHT]) {
@@ -535,6 +547,7 @@ void reqGear(void) {
 	// }
     bool canChangeGear = true;
     if(canChangeGear && (pastRotary != currentRotary)) {
+        if( currState == CONFIG) config_increment_down_requested = true;
         if(state.gearReq == 8) state.gearReq = 1;
         else state.gearReq++;
     }

@@ -216,31 +216,31 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 100,
     },
-    [PLACEHOLDER_1_INDEX] = {
-        .name = "Placeholder 1",
+    [LAUNCH_SLOPE_INDEX] = {
+        .name = "Launch Slope (m/s^2)",
         .ESE_background_color_variable = ESE_PLACEHOLDER_1_BOX,
         .ESE_value_color_variable = ESE_PLACEHOLDER_1_COLOR,
         .ESE_value_variable = ESE_PLACEHOLDER_1_VAL,
         .ESE_context_text_variable = "Configurable uint8_t",
         .value = {
-            .type = unsigned_integer,
+            .type = float_1_decimal,
             .value = 0
         },
         .min = 0,
         .max = 255,
     },
-    [PLACEHOLDER_2_INDEX] = {
-        .name = "Placeholder 2",
+    [SLOW_SPEED_INDEX] = {
+        .name = "Slow Speed (m/s)",
         .ESE_background_color_variable = ESE_PLACEHOLDER_2_BOX,
         .ESE_value_color_variable = ESE_PLACEHOLDER_2_COLOR,
         .ESE_value_variable = ESE_PLACEHOLDER_2_VAL,
         .ESE_context_text_variable = "Configurable uint8_t",
         .value = {
-            .type = unsigned_integer,
+            .type = float_1_decimal,
             .value = 0
         },
         .min = 0,
-        .max = 255,
+        .max = 100,
     }
 };
 
