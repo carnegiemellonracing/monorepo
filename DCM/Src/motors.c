@@ -58,6 +58,9 @@ static const uint32_t RIGHT_MAX = 3769;
 /** @brief Motors command 200 Hz task. */
 static cmr_task_t motorsCommand_task;
 
+/** @brief DAQ test type and HAL rand init **/
+cmr_canDAQTest_t daqTest;
+
 /** @brief Vehicle gear. */
 static cmr_canGear_t gear = CMR_CAN_GEAR_SLOW;
 
@@ -90,6 +93,10 @@ static cmr_canAMKSetpoints_t motorSetpoints[MOTOR_LEN] = {
         .torqueLimNeg_dpcnt = 0
     },
 };
+
+cmr_canDAQTest_t getDAQTest() {
+    return daqTest;
+}
 
 // ------------------------------------------------------------------------------------------------
 // Private functions
@@ -162,8 +169,6 @@ static void motorsCommand (
 
     cmr_canState_t prevState = CMR_CAN_GLV_ON;
 
-    /** @brief DAQ test type and HAL rand init **/
-    cmr_canDAQTest_t daqTest;
     /** @brief Timer for temporarily blanking vel/torque commands
      *         on transition to RTD. Without this, the inverter may have
      *         non-zero torque/speed in the same message used to enable it,
@@ -351,17 +356,17 @@ static void motorsCommand (
 
             // Send message to start test on DAQ CAN
             daqTest = daqTest | 0x80; // Set MSB to one
-            canTX(
-              CMR_CAN_BUS_DAQ, CMR_CANID_TEST_ID, &daqTest, sizeof(daqTest), can10Hz_period_ms
-            );
+            // canTX(
+            //   CMR_CAN_BUS_DAQ, CMR_CANID_TEST_ID, &daqTest, sizeof(daqTest), can10Hz_period_ms
+            // );
         }
 
         if (prevState == CMR_CAN_RTD && heartbeatVSM->state == CMR_CAN_HV_EN) {
             // Send message to stop test on DAQ CAN
             daqTest = daqTest & 0x7F; // Set MSB to zero
-            canTX(
-              CMR_CAN_BUS_DAQ, CMR_CANID_TEST_ID, &daqTest, sizeof(daqTest), can10Hz_period_ms
-            );
+            // canTX(
+            //   CMR_CAN_BUS_DAQ, CMR_CANID_TEST_ID, &daqTest, sizeof(daqTest), can10Hz_period_ms
+            // );
         }
 
         prevState = heartbeatVSM->state;
