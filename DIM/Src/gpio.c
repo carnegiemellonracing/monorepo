@@ -131,13 +131,12 @@ void canLRUDDetect(void){
 	XYActivate();
 
 	for(int i = 0; i < LRUD_LEN; i++){
-		bool pressed = true;
 		if(gpioLRUDStates[i]){
-			bool pressed = true;
-			if(lastState[i] == false)
+			if(lastState[i] == false){
 				//new press
 				if(getCurrState() != CONFIG)
 				{	
+					
 					TickType_t press = xTaskGetTickCount();
 					while(xTaskGetTickCount() - press <= 1000){
 						if(!gpioLRUDStates[i]) {
@@ -145,13 +144,15 @@ void canLRUDDetect(void){
 							return;
 						}
 					}
+
 				}
 				lastState[i] = true;
 				lastPress[i] = xTaskGetTickCount();
+			}
 		}
 		else {
 			if(lastState[i]){
-				//pressed and release
+				// pressed and release
 				canLRUDStates[i] = (xTaskGetTickCount() - lastPress[i] >= DEBOUNCE_DELAY);
 				lastState[i] = false;
 			} else {
