@@ -900,11 +900,7 @@ void setLaunchControl(
 
     float time_s = (float)(xTaskGetTickCount() - startTickCount) * (0.001f);
 	if(time_s >= launch_control_max_duration_s) {
-        setTorqueLimsUnprotected(MOTOR_FL, 0.0, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_FR, 0.0, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_RR, 0.0, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_RL, 0.0, 0.0f);
-		setVelocityInt16All(0);
+        setSlowTorque(throttlePos_u8, swAngle_millideg);
 		return;
 	}
 
