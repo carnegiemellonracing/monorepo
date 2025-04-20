@@ -341,10 +341,10 @@ static void set_optimal_control(
 	float torque_limit_rl = tractive_cap_rl * effective_wheel_rad_m / gear_ratio;
 	float torque_limit_rr = tractive_cap_rr * effective_wheel_rad_m / gear_ratio;
 
-	torque_limit_fl = fminf(tractive_cap_fl, maxTorque_continuous_stall_Nm);
-	torque_limit_fr = fminf(tractive_cap_fr, maxTorque_continuous_stall_Nm);
-	torque_limit_rl = fminf(tractive_cap_rl, maxTorque_continuous_stall_Nm);
-	torque_limit_rr = fminf(tractive_cap_rr, maxTorque_continuous_stall_Nm);
+	torque_limit_fl = fminf(torque_limit_fl, maxTorque_continuous_stall_Nm);
+	torque_limit_fr = fminf(torque_limit_fr, maxTorque_continuous_stall_Nm);
+	torque_limit_rl = fminf(torque_limit_rl, maxTorque_continuous_stall_Nm);
+	torque_limit_rr = fminf(torque_limit_rr, maxTorque_continuous_stall_Nm);
 
 	static optimizer_state_t optimizer_state;
 
