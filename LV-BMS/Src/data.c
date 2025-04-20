@@ -14,8 +14,9 @@
 #include "gpio.h"
 #include <math.h>
 
-uint16_t rawCellVolts[6];
-uint16_t cellVoltages[6];
+uint16_t sendVolt[6];
+float rawCellVolts[6];
+float cellVoltages[6];
 uint8_t cellNum[6];
 signed char offset_corr[7];
 signed char gain_corr[7];
@@ -87,30 +88,43 @@ void getVoltages(void) {
         vTaskDelayUntil(&time_prev, 32);
             //reference data sheet for formula
         cellVoltages[i] = adc_read(ADC_AFE_VCOUT);
-        cellNum[i] = read_cell_ctl();
-        uint16_t gc_out = 0.001 * gain_corr[i];
-        uint16_t oc_out = 0.001 * offset_corr[i];
+        //cellNum[i] = read_cell_ctl();
+        // gc_out = 0.001 * gain_corr[i];
+        //uint16_t oc_out = 0.001 * offset_corr[i];
 
-        rawCellVolts[i] = float_to_uint16(((adc_read(ADC_AFE_VCOUT) * vref_corr + ADC_COUNT * offset_corr[i+1])
-                       * (1000L + gain_corr[i+1])) /(GVCOUT * ADC_COUNT * 1e6));
+        // uint16_t tmepskdj = cellVoltages[i]/ADC_COUNT;
+
+        rawCellVolts[i] = ((float)(cellVoltages[i])/(float)(ADC_COUNT)) * 11.0;
+        sendVolt[i] = float_to_uint16(rawCellVolts[i]);
+        
+
+        //rawCellVolts[i] = float_to_uint16(((adc_read(ADC_AFE_VCOUT) * vref_corr + ADC_COUNT * offset_corr[i+1])
+                       //* (1000L + gain_corr[i+1])) /(GVCOUT * ADC_COUNT * 1e6));
                        
     }
 
-    sendOvervoltageFlags(cellVoltages);
-    sendVoltages(cellVoltages);
+    sendOvervoltageFlags(sendVolt);
+    sendVoltages();
    
 }
 
 // Sends cell voltages (1-6) split into two CAN messages
-void sendVoltages(uint16_t voltages[6]) {
+void sendVoltages() {
     uint16_t data1[3], data2[3];
 
     // Split voltages into two groups
-    memcpy(data1, voltages, 3 * sizeof(uint16_t));     // Voltages 1-3
-    memcpy(data2, &voltages[3], 3 * sizeof(uint16_t)); // Voltages 4-6
 
-    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_1_3, data1, sizeof(data1), canTX10Hz_period_ms);
-    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_4_6, data2, sizeof(data2), canTX10Hz_period_ms);
+    cmr_canLVBMS_Voltage cell1_3;
+    cmr_canLVBMS_Voltage cell4_6;
+    cell1_3.cell1 = sendVolt[0];
+    cell1_3.cell2 = sendVolt[1];
+    cell1_3.cell3 = sendVolt[2];
+    cell4_6.cell1 = sendVolt[3];
+    cell4_6.cell2 = sendVolt[4];
+    cell4_6.cell3 = sendVolt[5];
+
+    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_1_3, &cell1_3, sizeof(cell1_3), canTX10Hz_period_ms);
+    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_4_6, &cell4_6, sizeof(cell4_6), canTX10Hz_period_ms);
 }
 
 // Sends overvoltage flags
