@@ -27,3 +27,5 @@ tmp/
 
 *.dsk
 *.dsk~
+
+*.peproj~
