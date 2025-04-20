@@ -213,11 +213,12 @@ static void motorsCommand (
         drsMode = reqDIM->requestedDrsMode;
 
         int32_t steeringWheelAngle_millideg = (swangleFSM->steeringWheelAngle_millideg_FL + swangleFSM->steeringWheelAngle_millideg_FR) / 2;
-        runDrsControls(reqDIM->requestedGear,
-                        drsMode,
-                        dataFSM    -> throttlePosition,
-                        dataFSM    -> brakePressureFront_PSI,
-                        steeringWheelAngle_millideg);
+        // runDrsControls(reqDIM->requestedGear,
+        //                 drsMode,
+        //                 dataFSM    -> throttlePosition,
+        //                 dataFSM    -> brakePressureFront_PSI
+        //                 );
+
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
             case CMR_CAN_RTD: {

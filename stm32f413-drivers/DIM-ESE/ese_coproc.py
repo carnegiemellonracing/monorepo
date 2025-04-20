@@ -939,7 +939,7 @@ def main():
         base_name_without_ext = os.path.splitext(base_name)[0]
 
         # Create the output directory if it doesn't exist
-        output_dir = os.path.join("include", "DIM-ESE")
+        output_dir = os.path.join("stm32f413-drivers", "DIM-ESE", "include", "DIM-ESE")
         os.makedirs(output_dir, exist_ok=True)
 
         # Set the output file path with .rawh extension

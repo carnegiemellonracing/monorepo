@@ -371,7 +371,7 @@ Var=FSM_brakePosADC unsigned 32,16
 
 [FSM_SensorsADC]
 ID=543h
-DLC=4
+DLC=0
 CycleTime=100
 Timeout=1000
 Var=FSM_brakePressureFrontADC unsigned 0,16
