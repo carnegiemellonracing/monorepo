@@ -445,7 +445,7 @@ void set_optimal_control_with_regen(
     uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
 
     uint8_t paddle_regen_strength_raw = 100;
-    // getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
+    getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
     float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
 
     float paddle_request = 0.0f;
@@ -463,7 +463,7 @@ static void set_regen(uint8_t throttlePos_u8) {
     uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
 
     uint8_t paddle_regen_strength_raw = 100;
-    // getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
+    getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
     float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
 
     float paddle_request = 0.0f;
@@ -563,15 +563,8 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_ENDURANCE: {
-            // set_optimal_control_with_regen(throttlePos_u8, swAngle_millideg_FL, swAngle_millideg_FR);
             // setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
             set_regen(throttlePos_u8);
-            // float avgMotorSpeed_RPM = getTotalMotorSpeed_rpm()* 0.25f;
-            // uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
-            // uint8_t paddle_regen_strength_raw = 100;
-            // float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
-            // uint8_t throttlePos_u8_temp = throttlePos_u8;
-            // setPaddleRegen(&throttlePos_u8_temp, brakePressurePsi_u8, avgMotorSpeed_RPM, paddle_pressure, paddle_regen_strength);
             break;
         }
         case CMR_CAN_GEAR_AUTOX: {
@@ -579,9 +572,10 @@ void runControls (
             // const bool ignoreYawRate = false; // TC takes yaw rate into account to prevent the vehicle from stopping unintendedly when turning at low speeds
             // const bool allowRegen = true; // regen-braking is allowed to protect the AC by keeping charge level high
             // const float critical_speed_mps = 5.0f; // using a high value to prevent the vehicle from stopping unintendedly when turning at low speeds
-            const bool clampbyside = true;
-            setYawRateControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, clampbyside);
+            // const bool clampbyside = true;
+            // setYawRateControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, clampbyside);
             //setYawRateAndTractionControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
+            set_optimal_control_with_regen(throttlePos_u8, swAngle_millideg_FL, swAngle_millideg_FR);
             break;
         }
         case CMR_CAN_GEAR_SKIDPAD: {
@@ -600,10 +594,9 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_TEST: {
-            set_optimal_control_with_regen(throttlePos_u8, swAngle_millideg_FL, swAngle_millideg_FR);
-            // float target_speed_mps = 5.0f;
-            // getProcessedValue(&target_speed_mps, FFLAUNCH_FEEDBACK_INDEX, float_1_decimal);
-            // set_slow_motor_speed(target_speed_mps, false);
+            float target_speed_mps = 5.0f;
+            getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
+            set_slow_motor_speed(target_speed_mps, false);
             break;
         }
 
@@ -845,7 +838,7 @@ static float getFFScheduleVelocity(float t_sec) {
     float scheduleVelocity_mps = 0.0f;
 
     float scheduleVelocity_mps2 = 11.29;
-    getProcessedValue(&scheduleVelocity_mps2, K_EFF_INDEX, float_1_decimal);
+    getProcessedValue(&scheduleVelocity_mps2, LAUNCH_SLOPE_INDEX, float_1_decimal);
 
     if (t_sec < 0.0f) {
         scheduleVelocity_mps = 0.0f;

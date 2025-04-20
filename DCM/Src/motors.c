@@ -181,11 +181,6 @@ static void motorsCommand (
         volatile cmr_canHVCPackCurrent_t *currentHVC   = canVehicleGetPayload(CANRX_VEH_CURRENT_HVC);
         volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VSM_STATUS);
 
-        uint32_t throttle;
-
-        float target_speed_mps = 5.0f;
-        getProcessedValue(&target_speed_mps, FFLAUNCH_FEEDBACK_INDEX, float_1_decimal);    
-
         //transmit Coulombs using HVI sense
         integrateCurrent();
 
@@ -214,15 +209,12 @@ static void motorsCommand (
         drsMode = reqDIM->requestedDrsMode;
 
         int32_t steeringWheelAngle_millideg = (swangleFSM->steeringWheelAngle_millideg_FL + swangleFSM->steeringWheelAngle_millideg_FR) / 2;
-        runDrsControls(reqDIM->requestedGear,
-                        drsMode,
-                        dataFSM    -> throttlePosition,
-                        dataFSM    -> brakePressureFront_PSI,
-                        steeringWheelAngle_millideg);
-                
-        volatile float scheduleVelocity_mps2 = 11.29;
-        getProcessedValue(&scheduleVelocity_mps2, K_EFF_INDEX, float_1_decimal);
-                        
+        // runDrsControls(reqDIM->requestedGear,
+        //                 drsMode,
+        //                 dataFSM    -> throttlePosition,
+        //                 dataFSM    -> brakePressureFront_PSI,
+        //                 steeringWheelAngle_millideg);
+
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
             case CMR_CAN_RTD: {
