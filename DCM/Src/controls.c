@@ -177,11 +177,6 @@ const volatile cmr_canCDCControlsStatus_t *getControlsStatus() {
     return (const cmr_canCDCControlsStatus_t*) &controlsStatus;
 }
 
-// Placeholder for now.
-static float get_motor_regen_capacity(float wheelspeed_radps) {
-    return -maxTorque_continuous_stall_Nm;
-}
-
 // For sensor validation.
 static void set_slow_motor_speed(float speed_mps, bool rear_only) {
     speed_mps = fmaxf(speed_mps, 0.0f);
@@ -360,10 +355,10 @@ static void set_optimal_control(
 	optimizer_state.omegas[3] = wheel_rr_speed_radps;
 
     if(true == allow_regen) {
-        optimizer_state.variable_profile[0].lower = get_motor_regen_capacity(wheel_fl_speed_radps);
-        optimizer_state.variable_profile[1].lower = get_motor_regen_capacity(wheel_fr_speed_radps);
-        optimizer_state.variable_profile[2].lower = get_motor_regen_capacity(wheel_rl_speed_radps);
-        optimizer_state.variable_profile[3].lower = get_motor_regen_capacity(wheel_rr_speed_radps);
+        optimizer_state.variable_profile[0].lower = fmaxf(-torque_limit_fl, getMotorRegenerativeCapacity(wheel_fl_speed_radps));
+        optimizer_state.variable_profile[1].lower = fmaxf(-torque_limit_fr, getMotorRegenerativeCapacity(wheel_fr_speed_radps));
+        optimizer_state.variable_profile[2].lower = fmaxf(-torque_limit_rl, getMotorRegenerativeCapacity(wheel_rl_speed_radps));
+        optimizer_state.variable_profile[3].lower = fmaxf(-torque_limit_rr, getMotorRegenerativeCapacity(wheel_rr_speed_radps));
     } else {
         optimizer_state.variable_profile[0].lower = 0.0;
         optimizer_state.variable_profile[1].lower = 0.0;
