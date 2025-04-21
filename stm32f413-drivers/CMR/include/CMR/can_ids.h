@@ -24,7 +24,7 @@ typedef enum {
     CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x104,    /**< @brief DIM heartbeat. */
     CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief PTC heatbeart. */
-	CMR_CANID_HEARTBEAT_HVI = 0x106,    /**< @brief HVI heatbeart. */
+    CMR_CANID_HEARTBEAT_HVI = 0x106,    /**< @brief HVI heatbeart. */
     CMR_CANID_HEARTBEAT_LV_BMS = 0x107, /**< @brief LV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
 
@@ -77,16 +77,11 @@ typedef enum {
     CMR_CANID_FSM_POWER_DIAGNOSTICS = 0x553,    /**< @brief FSM power diagnostics. */
     CMR_CANID_SS_STATUS = 0x554,               /**< @brief Safety Circuit status. */
 
-    CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief
- (fan board) cooling loop temps. */
-    CMR_CANID_PTC_LOOP_TEMPS_B = 0x234,        /**< @brief
- (fan board) cooling loop temps. */
-    CMR_CANID_PTC_LOOP_TEMPS_C = 0x244,        /**< @brief
- (fan board) cooling loop temps. */
-    CMR_CANID_PTC_FANS_PUMPS_STATUS = 0x314,   /**< @brief
- (fan board) fans status */
-    CMR_CANID_PTC_POWER_DIAGNOSTICS = 0x534,   /**< @brief
- (fan board) power diagnostics. */
+    CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief (fan board) cooling loop temps. */
+    CMR_CANID_PTC_LOOP_TEMPS_B = 0x234,        /**< @brief (fan board) cooling loop temps. */
+    CMR_CANID_PTC_LOOP_TEMPS_C = 0x244,        /**< @brief (fan board) cooling loop temps. */
+    CMR_CANID_PTC_FANS_PUMPS_STATUS = 0x314,   /**< @brief (fan board) fans status */
+    CMR_CANID_PTC_POWER_DIAGNOSTICS = 0x534,   /**< @brief (fan board) power diagnostics. */
 
     CMR_CANID_DIM_REQUEST = 0x235,              /**< @brief DIM state/gear request. */
     CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x535,    /**< @brief DIM power diagnostics. */
@@ -284,11 +279,11 @@ typedef enum {
     CMR_CANID_DAQ_3_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 3. */
 
     CMR_CANID_VSM_GIT = 0x7F1,
-	 CMR_CANID_HVC_GIT,
-	 CMR_CANID_PTC_GIT,
-	 CMR_CANID_CDC_GIT,
-	 CMR_CANID_DIM_GIT,
-	 CMR_CANID_RAM_GIT,
+	CMR_CANID_HVC_GIT,
+	CMR_CANID_PTC_GIT,
+	CMR_CANID_CDC_GIT,
+	CMR_CANID_DIM_GIT,
+	CMR_CANID_RAM_GIT,
 
     CAN_ID_LV_BMS_CELL_VOLTAGE_1_3 = 0x7F7,
     CAN_ID_LV_BMS_CELL_VOLTAGE_4_6,
