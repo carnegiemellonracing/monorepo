@@ -1082,4 +1082,9 @@ typedef struct {
     uint16_t cell3;
 } cmr_canLVBMS_Voltage;
 
+// temporary for 25e while linpots are wired into DCM
+typedef struct {
+    uint16_t adc;
+} cmr_DAQLinpot_t;
+
 #endif /* CMR_CAN_TYPES_H */
