@@ -192,7 +192,7 @@ static void canTX100Hz(void *pvParameters) {
         uint8_t packed = 0;
         uint8_t LRUDpacked = 0;
         if(getCurrState() == CONFIG){
-            if(paddle > 0){ // TODO: replace with actual ADC value for unpressed
+            if(paddle > 10){ // TODO: replace with actual ADC value for unpressed
                 paddle_is_pressed = true;
             }
             else {

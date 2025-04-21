@@ -377,7 +377,7 @@ static cmr_state getReqScreen(void) {
                 nextState = CONFIG;
             }
     	//TODO: WHAT THE HELL IS THIS??
-            else if(cmr_gpioRead(GPIO_BUTTON_SW1)) {
+            else if(!cmr_gpioRead(GPIO_BUTTON_SW1)) {
             // else if(canLRUDStates[LEFT]) {
                 nextState = NORMAL;
                 flush_config_screen_to_cdc = true;
@@ -386,7 +386,7 @@ static cmr_state getReqScreen(void) {
                 //gpioButtonStates[SW1] = 0;
                 //nextState = CONFIG;
             }
-            else if(cmr_gpioRead(GPIO_BUTTON_SW2)) {
+            else if(false) {
                 flush_config_screen_to_cdc = true;
                 // exitConfigScreen();
                 nextState = RACING;
