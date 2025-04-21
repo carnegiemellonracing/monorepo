@@ -2035,12 +2035,6 @@ Var=CCM_ChargerVoltage unsigned 8,16 /u:dV
 Var=CCM_ChargerCurrent unsigned 24,16 /u:dA
 Var=CCM_ChargerDisabled unsigned 40,8
 
-[DAQ_AUTO_TEST]
-ID=777h
-DLC=1
-Var=TEST_STATUS bit 7,1	// 1- START TEST, 0 - STOP TEST
-Var=TEST_ID unsigned 0,7	// Randomly generated test id sent everytime the car states up
-
 [CDC_Solver_Inputs]
 ID=7E6h
 DLC=8
@@ -2396,4 +2390,12 @@ ID=135h
 DLC=8
 Var=SwangleRight signed 0,32 /u:deg /f:0.001
 Var=SwangleLeft signed 32,32 /u:deg /f:0.001
+
+[DAQ_TEST_ID]
+ID=777h
+DLC=2
+CycleTime=1000
+Timeout=5000
+Var=Test_ID unsigned 0,15
+Var=Test_Running bit 15,1
 
