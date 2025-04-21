@@ -336,12 +336,17 @@ static void set_optimal_control(
     float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
     float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
 
-    const float motor_resistance_Nm = 1.5f;
+    static const float motor_resistance_Nm[MOTOR_LEN] = {
+        [MOTOR_FL] = 0.75f,
+        [MOTOR_FR] = 0.4f,
+        [MOTOR_RL] = 0.75f,
+        [MOTOR_RR] = 0.4f,
+    };
 	// The most naive approach is to convert force to torque linearly, ignoring rolling resistance and any inefficiency.
-	float torque_limit_fl = tractive_cap_fl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm;
-	float torque_limit_fr = tractive_cap_fr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm;
-	float torque_limit_rl = tractive_cap_rl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm;
-	float torque_limit_rr = tractive_cap_rr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm;
+	float torque_limit_fl = tractive_cap_fl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FL];
+	float torque_limit_fr = tractive_cap_fr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FR];
+	float torque_limit_rl = tractive_cap_rl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RL];
+	float torque_limit_rr = tractive_cap_rr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RR];
 
 	torque_limit_fl = fminf(torque_limit_fl, maxTorque_continuous_stall_Nm);
 	torque_limit_fr = fminf(torque_limit_fr, maxTorque_continuous_stall_Nm);
