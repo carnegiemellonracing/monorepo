@@ -193,10 +193,10 @@ static void set_slow_motor_speed(float speed_mps, bool rear_only) {
         torquesPos_Nm.rl = maxSlowTorque_Nm;
         torquesPos_Nm.rr = maxSlowTorque_Nm;
     } else {
-        setVelocityInt16(MOTOR_FL, (int16_t) target_rpm);
+        setVelocityInt16(MOTOR_FL, (int16_t) 0);
         setVelocityInt16(MOTOR_FR, (int16_t) target_rpm);
-        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
-        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
+        setVelocityInt16(MOTOR_RL, (int16_t) 0);
+        setVelocityInt16(MOTOR_RR, (int16_t) 0);
         torquesPos_Nm.fl = maxSlowTorque_Nm;
         torquesPos_Nm.fr = maxSlowTorque_Nm;
         torquesPos_Nm.rl = maxSlowTorque_Nm;
