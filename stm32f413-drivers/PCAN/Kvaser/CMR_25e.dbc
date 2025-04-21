@@ -1608,11 +1608,6 @@ SG_ CCM_ChargerCurrent : 24|16@1+ (1,0) [0|65535] "dA" Vector__XXX
 SG_ CCM_ChargerDisabled : 40|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1911 DAQ_AUTO_TEST: 1 Vector__XXX
-SG_ TEST_STATUS : 7|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ TEST_ID : 0|7@1+ (1,0) [0|127] "" Vector__XXX
-
-
 BO_ 2022 CDC_Solver_Inputs: 8 Vector__XXX
 SG_ Moment_REQ : 0|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
 SG_ Lin_Accel_REQ : 32|32@1- (1,0) [-3.4E038|3.4E038] "" Vector__XXX
@@ -1898,6 +1893,11 @@ SG_ SwangleRight : 0|32@1- (0.001,0) [-2147483.648|2147483.647] "deg" Vector__XX
 SG_ SwangleLeft : 32|32@1- (0.001,0) [-2147483.648|2147483.647] "deg" Vector__XXX
 
 
+BO_ 1911 DAQ_TEST_ID: 2 Vector__XXX
+SG_ Test_ID : 0|15@1+ (1,0) [0|32767] "" Vector__XXX
+SG_ Test_Running : 15|1@1+ (1,0) [0|1] "" Vector__XXX
+
+
 CM_ BO_ 1296 "Timeout matrix";
 CM_ BO_ 644 "Set ID based on wiring";
 CM_ SG_ 644 AMK_FR_TorqueCurrent "Mysterious scaling factor.";
@@ -1932,8 +1932,6 @@ CM_ BO_ 2031 "This CAN id is used for communication between the energy meter and
 CM_ SG_ 1952 squelch "0 for listen, 1 - 8 for transmit";
 CM_ SG_ 1698 RTC_Error "For interpreting this, see comments in code.";
 CM_ SG_ 1714 RTC_Error_In "For interpreting this, see comments in code.";
-CM_ SG_ 1911 TEST_STATUS "1- START TEST, 0 - STOP TEST";
-CM_ SG_ 1911 TEST_ID "Randomly generated test id sent everytime the car states up";
 CM_ SG_ 1904 Movella_SampleTime "10kHz ticks";
 
 BA_DEF_  "BusType" STRING ;
@@ -2072,6 +2070,7 @@ BA_ "GenMsgCycleTime" BO_ 2035 1000;
 BA_ "GenMsgCycleTime" BO_ 2036 1000;
 BA_ "GenMsgCycleTime" BO_ 2037 1000;
 BA_ "GenMsgCycleTime" BO_ 2038 1000;
+BA_ "GenMsgCycleTime" BO_ 1911 1000;
 
 BA_ "GenSigStartValue" SG_ 256 VSM_state 0;
 BA_ "GenSigStartValue" SG_ 256 VSM_ERR_moduleTimeout 0;
@@ -3032,8 +3031,6 @@ BA_ "GenSigStartValue" SG_ 263 CCM_state 0;
 BA_ "GenSigStartValue" SG_ 263 CCM_ChargerVoltage 0;
 BA_ "GenSigStartValue" SG_ 263 CCM_ChargerCurrent 0;
 BA_ "GenSigStartValue" SG_ 263 CCM_ChargerDisabled 0;
-BA_ "GenSigStartValue" SG_ 1911 TEST_STATUS 0;
-BA_ "GenSigStartValue" SG_ 1911 TEST_ID 0;
 BA_ "GenSigStartValue" SG_ 2022 Moment_REQ 0;
 BA_ "GenSigStartValue" SG_ 2022 Lin_Accel_REQ 0;
 BA_ "GenSigStartValue" SG_ 2032 Torque_FL 0;
@@ -3151,6 +3148,8 @@ BA_ "GenSigStartValue" SG_ 1687 FR_TEMP_1 0;
 BA_ "GenSigStartValue" SG_ 1688 FR_TEMP_2 0;
 BA_ "GenSigStartValue" SG_ 309 SwangleRight 0;
 BA_ "GenSigStartValue" SG_ 309 SwangleLeft 0;
+BA_ "GenSigStartValue" SG_ 1911 Test_ID 0;
+BA_ "GenSigStartValue" SG_ 1911 Test_Running 0;
 
 
 VAL_ 256 VSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
