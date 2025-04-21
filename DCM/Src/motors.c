@@ -352,10 +352,10 @@ static void motorsCommand (
             initControls();
 
             // Generate new test ID
-            daqTest = (rand() % 0x7Fu) & 0x7Fu;
+            daqTest = (rand() % 0x7FFFu) & 0x7FFFu;
 
             // Send message to start test on DAQ CAN
-            daqTest = daqTest | 0x80; // Set MSB to one
+            daqTest = daqTest | 0x8000; // Set MSB to one
             // canTX(
             //   CMR_CAN_BUS_DAQ, CMR_CANID_TEST_ID, &daqTest, sizeof(daqTest), can10Hz_period_ms
             // );
@@ -363,7 +363,7 @@ static void motorsCommand (
 
         if (prevState == CMR_CAN_RTD && heartbeatVSM->state == CMR_CAN_HV_EN) {
             // Send message to stop test on DAQ CAN
-            daqTest = daqTest & 0x7F; // Set MSB to zero
+            daqTest = daqTest & 0x7FFF; // Set MSB to zero
             // canTX(
             //   CMR_CAN_BUS_DAQ, CMR_CANID_TEST_ID, &daqTest, sizeof(daqTest), can10Hz_period_ms
             // );

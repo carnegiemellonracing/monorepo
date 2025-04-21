@@ -1052,7 +1052,7 @@ typedef struct {
 // ------------------------------------------------------------------------------------------------
 // DAQ Modules
 
-typedef uint8_t cmr_canDAQTest_t; /** @brief DAQ Test type. MSB is to start/stop bits, rest are test id **/
+typedef uint16_t cmr_canDAQTest_t; /** @brief DAQ Test type. MSB is to start/stop bits, rest are test id **/
 
 typedef struct {
     uint16_t linpot_front_mm;       /**< @brief Front damper length in mm */
