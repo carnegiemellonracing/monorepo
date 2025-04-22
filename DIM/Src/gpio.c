@@ -211,7 +211,7 @@ static void gpioReadButtons(void *pvParameters) {
 	TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
 		uint8_t paddle = adcRead(ADC_PADDLE);
-		if (paddle > 50 ) config_increment_up_requested = true;
+		if (paddle > 100) config_increment_down_requested = true;
         // Direct assignment for CAN buttons
         for(int i=0; i<NUM_BUTTONS; i++){
 			// Active Low

@@ -544,7 +544,7 @@ void reqGear(void) {
 	// }
     bool canChangeGear = true;
     if(canChangeGear && (pastRotary != currentRotary)) {
-        if( currState == CONFIG) config_increment_down_requested = true;
+        if(currState == CONFIG) config_increment_up_requested = true;
         if(state.gearReq == 8) state.gearReq = 1;
         else state.gearReq++;
     }
