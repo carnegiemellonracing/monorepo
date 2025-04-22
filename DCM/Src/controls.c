@@ -362,10 +362,10 @@ static void set_optimal_control(
 	optimizer_state.omegas[3] = wheel_rr_speed_radps;
 
     if(true == allow_regen) {
-        optimizer_state.variable_profile[0].lower = fmaxf(-torque_limit_fl, getMotorRegenerativeCapacity(wheel_fl_speed_radps));
-        optimizer_state.variable_profile[1].lower = fmaxf(-torque_limit_fr, getMotorRegenerativeCapacity(wheel_fr_speed_radps));
-        optimizer_state.variable_profile[2].lower = fmaxf(-torque_limit_rl, getMotorRegenerativeCapacity(wheel_rl_speed_radps));
-        optimizer_state.variable_profile[3].lower = fmaxf(-torque_limit_rr, getMotorRegenerativeCapacity(wheel_rr_speed_radps));
+        optimizer_state.variable_profile[0].lower = fmaxf(-torque_limit_fl + motor_resistance_Nm[MOTOR_FL], getMotorRegenerativeCapacity(wheel_fl_speed_radps));
+        optimizer_state.variable_profile[1].lower = fmaxf(-torque_limit_fr + motor_resistance_Nm[MOTOR_FR], getMotorRegenerativeCapacity(wheel_fr_speed_radps));
+        optimizer_state.variable_profile[2].lower = fmaxf(-torque_limit_rl + motor_resistance_Nm[MOTOR_RL], getMotorRegenerativeCapacity(wheel_rl_speed_radps));
+        optimizer_state.variable_profile[3].lower = fmaxf(-torque_limit_rr + motor_resistance_Nm[MOTOR_RR], getMotorRegenerativeCapacity(wheel_rr_speed_radps));
     } else {
         optimizer_state.variable_profile[0].lower = 0.0;
         optimizer_state.variable_profile[1].lower = 0.0;
