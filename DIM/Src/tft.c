@@ -707,6 +707,7 @@ void tftInit(void) {
         DMA2_Stream7, DMA_CHANNEL_3);
 
     tft.inited = false;
+    dim_first_time_config_screen = true;
 
     cmr_taskInit(
         &tftUpdate_task, "tftUpdate", tftUpdate_priority,
