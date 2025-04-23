@@ -330,7 +330,7 @@ static void set_optimal_control(
 	// float tractive_cap_rr = getKappaFxGlobalMax(MOTOR_RR, UINT8_MAX, true).Fx;
 
     const float corner_weight_Nm = 80.0f;
-    bool use_true_downforce = false;
+    bool use_true_downforce = true;
     float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
     float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
     float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
@@ -845,7 +845,7 @@ static float getFFScheduleVelocity(float t_sec) {
     if (t_sec < 0.0f) {
         scheduleVelocity_mps = 0.0f;
     } else if(t_sec < tMax) {
-        float startingVel_mps = 0.0;
+        float startingVel_mps = 1.0;
         scheduleVelocity_mps = (scheduleVelocity_mps2 * t_sec) + startingVel_mps;
         // 2023 Michigan EV fastest accel - 3.645s -> 11.29m/s^2 linear accel
         // 2023 Michigan EV CMR's accel -> memorator data -> 8.63m/s^2 before
@@ -920,10 +920,16 @@ void setLaunchControl(
 
         float scheduled_wheel_vel_mps = getFFScheduleVelocity(seconds);
         float motor_rpm = gear_ratio * 60.0f * scheduled_wheel_vel_mps / (2 * M_PI * effective_wheel_rad_m);
-        setVelocityFloat(MOTOR_FL, motor_rpm);
-        setVelocityFloat(MOTOR_FR, motor_rpm);
+
         setVelocityFloat(MOTOR_RL, motor_rpm);
         setVelocityFloat(MOTOR_RR, motor_rpm);
+
+        setVelocityFloat(MOTOR_FL, motor_rpm);
+        setVelocityFloat(MOTOR_FR, motor_rpm);
+        
+        // int16_t clamp_rpm = (getMotorSpeed_rpm(MOTOR_RL) + getMotorSpeed_rpm(MOTOR_RR)) / 2;
+        // setVelocityInt16(MOTOR_FL, clamp_rpm);
+        // setVelocityInt16(MOTOR_FR, clamp_rpm);
 
         const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
         cmr_torqueDistributionNm_t pos_torques_Nm = {.fl = reqTorque, .fr = reqTorque, .rl = reqTorque, .rr = reqTorque};
