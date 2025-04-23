@@ -283,6 +283,10 @@ typedef enum {
     CMR_CANID_DAQ_3_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 3. */
     CMR_CANID_DAQ_3_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 3. */
 
+    // DAQ linpots
+    CMR_CANID_LINPOT_FR = 0x696,
+    CMR_CANID_LINPOT_FL = 0x689,
+
     CMR_CANID_VSM_GIT = 0x7F1,
 	 CMR_CANID_HVC_GIT,
 	 CMR_CANID_PTC_GIT,

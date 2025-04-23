@@ -1076,4 +1076,12 @@ typedef struct {
 	uint32_t test_id;
 } cmr_canTestID_t;
 
+
+// temp struct with more values
+typedef struct {
+    uint16_t adc; 
+    uint16_t adc_val_1;
+    uint16_t adc_val_2;
+} cmr_DAQLinpot_t;
+
 #endif /* CMR_CAN_TYPES_H */
