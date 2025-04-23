@@ -328,7 +328,7 @@ static void set_optimal_control(
         assert(0.0f <= normalized_throttle && normalized_throttle <= 1.0f);
     }
 
-    load_solver_settings();
+    // load_solver_settings();
 
 	float wheel_fl_speed_radps = getMotorSpeed_radps(MOTOR_FL);
 	float wheel_fr_speed_radps = getMotorSpeed_radps(MOTOR_FR);
@@ -373,10 +373,10 @@ static void set_optimal_control(
 	optimizer_state.omegas[3] = wheel_rr_speed_radps;
 
     if(true == allow_regen) {
-        optimizer_state.variable_profile[0].lower = fmaxf(-torque_limit_fl + motor_resistance_Nm[MOTOR_FL], getMotorRegenerativeCapacity(wheel_fl_speed_radps));
-        optimizer_state.variable_profile[1].lower = fmaxf(-torque_limit_fr + motor_resistance_Nm[MOTOR_FR], getMotorRegenerativeCapacity(wheel_fr_speed_radps));
-        optimizer_state.variable_profile[2].lower = fmaxf(-torque_limit_rl + motor_resistance_Nm[MOTOR_RL], getMotorRegenerativeCapacity(wheel_rl_speed_radps));
-        optimizer_state.variable_profile[3].lower = fmaxf(-torque_limit_rr + motor_resistance_Nm[MOTOR_RR], getMotorRegenerativeCapacity(wheel_rr_speed_radps));
+        optimizer_state.variable_profile[0].lower = fmaxf(-torque_limit_fl + motor_resistance_Nm[MOTOR_FL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FL)));
+        optimizer_state.variable_profile[1].lower = fmaxf(-torque_limit_fr + motor_resistance_Nm[MOTOR_FR], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FR)));
+        optimizer_state.variable_profile[2].lower = fmaxf(-torque_limit_rl + motor_resistance_Nm[MOTOR_RL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RL)));
+        optimizer_state.variable_profile[3].lower = fmaxf(-torque_limit_rr + motor_resistance_Nm[MOTOR_RR], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RR)));
     } else {
         optimizer_state.variable_profile[0].lower = 0.0;
         optimizer_state.variable_profile[1].lower = 0.0;
@@ -462,10 +462,10 @@ void set_optimal_control_with_regen(
 	int32_t swAngle_millideg_FL,
 	int32_t swAngle_millideg_FR
 ) {
-    uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
+    uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
 
     uint8_t paddle_regen_strength_raw = 100;
-    getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
+    // getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
     float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
 
     float paddle_request = 0.0f;
@@ -1219,7 +1219,9 @@ float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
         velocity_x_mps = movella_state.velocity.x;
         yrcDebug.controls_bias = 1;
     } else {
-        velocity_x_mps = getTotalMotorSpeed_radps() * 0.25f * effective_wheel_rad_m;
+        velocity_x_mps = 0.0f;
+        // This causes oscillations!
+        // velocity_x_mps = getTotalMotorSpeed_radps() * 0.25f * effective_wheel_rad_m;
         yrcDebug.controls_bias = -1;
     }
     
