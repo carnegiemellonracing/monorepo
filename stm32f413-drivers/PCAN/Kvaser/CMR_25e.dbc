@@ -970,7 +970,7 @@ SG_ LED_driver_defect : 33|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ Save_charging_mode : 32|1@1+ (1,0) [0|1] "" Vector__XXX
 
 
-BO_ 647 AMK_FR_Actual_Values_1: 8 Vector__XXX
+BO_ 644 AMK_FR_Actual_Values_1: 8 Vector__XXX
 SG_ AMK_FR_Status_Reserved : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_FR_Status_SystemReady : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_FR_Status_Error : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -985,14 +985,14 @@ SG_ AMK_FR_TorqueCurrent : 32|16@1- (0.001701171875,0) [-55.744|55.742298828125]
 SG_ AMK_FR_MagnetizingCurrent : 48|16@1- (0.001701171875,0) [-55.744|55.742298828125] "Nm" Vector__XXX
 
 
-BO_ 649 AMK_FR_Actual_Values_2: 8 Vector__XXX
+BO_ 646 AMK_FR_Actual_Values_2: 8 Vector__XXX
 SG_ AMK_FR_TempMotor : 0|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_FR_TempInverter : 16|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_FR_ErrorInfo : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
 SG_ AMK_FR_TempIGBT : 48|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 
 
-BO_ 392 AMK_FR_Setpoints_1: 8 Vector__XXX
+BO_ 389 AMK_FR_Setpoints_1: 8 Vector__XXX
 SG_ AMK_FR_Control_Reserved1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_FR_Control_InverterOn : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_FR_Control_DcOn : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1004,7 +1004,7 @@ SG_ AMK_FR_TorqueLimitPositiv : 32|16@1- (0.0098,0) [-321.1264|321.1166] "Nm" Ve
 SG_ AMK_FR_TorqueLimitNegativ : 48|16@1- (0.0098,0) [-321.1264|321.1166] "Nm" Vector__XXX
 
 
-BO_ 643 AMK_FL_Actual_Values_1: 8 Vector__XXX
+BO_ 648 AMK_FL_Actual_Values_1: 8 Vector__XXX
 SG_ AMK_FL_Status_Reserved : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_FL_Status_SystemReady : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_FL_Status_Error : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1019,14 +1019,14 @@ SG_ AMK_FL_TorqueCurrent : 32|16@1- (0.001701171875,0) [-55.744|55.742298828125]
 SG_ AMK_FL_MagnetizingCurrent : 48|16@1- (0.001701171875,0) [-55.744|55.742298828125] "Nm" Vector__XXX
 
 
-BO_ 645 AMK_FL_Actual_Values_2: 8 Vector__XXX
+BO_ 650 AMK_FL_Actual_Values_2: 8 Vector__XXX
 SG_ AMK_FL_TempMotor : 0|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_FL_TempInverter : 16|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_FL_ErrorInfo : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
 SG_ AMK_FL_TempIGBT : 48|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 
 
-BO_ 388 AMK_FL_Setpoints_1: 8 Vector__XXX
+BO_ 393 AMK_FL_Setpoints_1: 8 Vector__XXX
 SG_ AMK_FL_Control_Reserved1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_FL_Control_InverterOn : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_FL_Control_DcOn : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1038,7 +1038,7 @@ SG_ AMK_FL_TorqueLimitPositiv : 32|16@1- (0.0098,0) [-321.1264|321.1166] "Nm" Ve
 SG_ AMK_FL_TorqueLimitNegativ : 48|16@1- (0.0098,0) [-321.1264|321.1166] "Nm" Vector__XXX
 
 
-BO_ 648 AMK_BL_Actual_Values_1: 8 Vector__XXX
+BO_ 647 AMK_BL_Actual_Values_1: 8 Vector__XXX
 SG_ AMK_BL_Status_Reserved : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_BL_Status_SystemReady : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_BL_Status_Error : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1053,14 +1053,14 @@ SG_ AMK_BL_TorqueCurrent : 32|16@1- (0.001701171875,0) [-55.744|55.742298828125]
 SG_ AMK_BL_MagnetizingCurrent : 48|16@1- (0.001701171875,0) [-55.744|55.742298828125] "Nm" Vector__XXX
 
 
-BO_ 650 AMK_BL_Actual_Values_2: 8 Vector__XXX
+BO_ 649 AMK_BL_Actual_Values_2: 8 Vector__XXX
 SG_ AMK_BL_TempMotor : 0|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_BL_TempInverter : 16|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_BL_ErrorInfo : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
 SG_ AMK_BL_TempIGBT : 48|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 
 
-BO_ 393 AMK_BL_Setpoints_1: 8 Vector__XXX
+BO_ 392 AMK_BL_Setpoints_1: 8 Vector__XXX
 SG_ AMK_BL_Control_Reserved1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_BL_Control_InverterOn : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_BL_Control_DcOn : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1072,7 +1072,7 @@ SG_ AMK_BL_TorqueLimitPositiv : 32|16@1- (0.0098,0) [-321.1264|321.1166] "Nm" Ve
 SG_ AMK_BL_TorqueLimitNegativ : 48|16@1- (0.0098,0) [-321.1264|321.1166] "Nm" Vector__XXX
 
 
-BO_ 644 AMK_BR_Actual_Values_1: 8 Vector__XXX
+BO_ 643 AMK_BR_Actual_Values_1: 8 Vector__XXX
 SG_ AMK_BR_Status_Reserved : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_BR_Status_SystemReady : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_BR_Status_Error : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1087,14 +1087,14 @@ SG_ AMK_BR_TorqueCurrent : 32|16@1- (0.001701171875,0) [-55.744|55.742298828125]
 SG_ AMK_BR_MagnetizingCurrent : 48|16@1- (0.001701171875,0) [-55.744|55.742298828125] "Nm" Vector__XXX
 
 
-BO_ 646 AMK_BR_Actual_Values_2: 8 Vector__XXX
+BO_ 645 AMK_BR_Actual_Values_2: 8 Vector__XXX
 SG_ AMK_BR_TempMotor : 0|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_BR_TempInverter : 16|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 SG_ AMK_BR_ErrorInfo : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
 SG_ AMK_BR_TempIGBT : 48|16@1- (0.1,0) [-3276.8|3276.7] "'C" Vector__XXX
 
 
-BO_ 389 AMK_BR_Setpoints_1: 8 Vector__XXX
+BO_ 388 AMK_BR_Setpoints_1: 8 Vector__XXX
 SG_ AMK_BR_Control_Reserved1 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AMK_BR_Control_InverterOn : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AMK_BR_Control_DcOn : 9|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1133,7 +1133,7 @@ SG_ FR_Internal_Temp : 39|16@0- (0.1,0) [-3276.8|3276.7] "c" Vector__XXX
 SG_ FR_Opt_External_Temp : 55|16@0- (0.1,0) [-3276.8|3276.7] "c" Vector__XXX
 
 
-BO_ 2001 IZZE_Loadcell_RR: 8 Vector__XXX
+BO_ 2002 IZZE_Loadcell_RR: 8 Vector__XXX
 SG_ RR_Differential_Voltage : 7|16@0- (1,0) [-32768|32767] "uV" Vector__XXX
 SG_ RR_Calibrated_Output : 23|16@0- (0.1,0) [-3276.8|3276.7] "N" Vector__XXX
 SG_ RR_Internal_Temp : 39|16@0- (0.1,0) [-3276.8|3276.7] "c" Vector__XXX
@@ -1147,7 +1147,7 @@ SG_ FL_Internal_Temp : 39|16@0- (0.1,0) [-3276.8|3276.7] "c" Vector__XXX
 SG_ FL_Opt_External_Temp : 55|16@0- (0.1,0) [-3276.8|3276.7] "c" Vector__XXX
 
 
-BO_ 2002 IZZE_Loadcell_RL: 8 Vector__XXX
+BO_ 2001 IZZE_Loadcell_RL: 8 Vector__XXX
 SG_ RL_Differential_Voltage : 7|16@0- (1,0) [-32768|32767] "uV" Vector__XXX
 SG_ RL_Calibrated_Output : 23|16@0- (0.1,0) [-3276.8|3276.7] "N" Vector__XXX
 SG_ RL_Internal_Temp : 39|16@0- (0.1,0) [-3276.8|3276.7] "c" Vector__XXX
@@ -1481,114 +1481,6 @@ SG_ Data2 : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ Data3 : 32|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 1616 DAQ_FR_STRAIN_0: 8 Vector__XXX
-SG_ FR_FORCE_0 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
-SG_ FR_FORCE_1 : 32|32@1- (1,0) [-2147483648|2147483647] "N" Vector__XXX
-
-
-BO_ 1617 DAQ_FR_STRAIN_1: 8 Vector__XXX
-SG_ FR_FORCE_2 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
-SG_ FR_FORCE_3 : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
-
-
-BO_ 1618 DAQ_FR_THERM: 8 Vector__XXX
-SG_ FR_THERM_0 : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ FR_THERM_1 : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
-SG_ FR_THERM_2 : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ FR_THERM_3 : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
-
-
-BO_ 1619 DAQ_FR_DAMPER: 8 Vector__XXX
-SG_ FR_DAMPER_MM : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-SG_ FR_DAMPER_ADC : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-
-
-BO_ 1620 DAQ_FR_ANEMOMETER: 8 Vector__XXX
-SG_ FR_AIRSPEED_MPH : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-SG_ FR_AIRSPEED_ADC : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-
-
-BO_ 1621 DAQ_RR_STRAIN_0: 8 Vector__XXX
-SG_ RR_FORCE_0 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
-SG_ RR_FORCE_1 : 32|32@1- (1,0) [-2147483648|2147483647] "N" Vector__XXX
-
-
-BO_ 1622 DAQ_RR_STRAIN_1: 8 Vector__XXX
-SG_ RR_FORCE_2 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
-SG_ RR_FORCE_3 : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
-
-
-BO_ 1623 DAQ_RR_THERM: 8 Vector__XXX
-SG_ RR_THERM_0 : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ RR_THERM_1 : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
-SG_ RR_THERM_2 : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ RR_THERM_3 : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
-
-
-BO_ 1624 DAQ_RR_DAMPER: 8 Vector__XXX
-SG_ RR_DAMPER_MM : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-SG_ RR_DAMPER_ADC : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-
-
-BO_ 1625 DAQ_RR_ANEMOMETER: 8 Vector__XXX
-SG_ RR_AIRSPEED_MPH : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-SG_ RR_AIRSPEED_ADC : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-
-
-BO_ 1626 DAQ_RL_STRAIN_0: 8 Vector__XXX
-SG_ RL_FORCE_0 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
-SG_ RL_FORCE_1 : 32|32@1- (1,0) [-2147483648|2147483647] "N" Vector__XXX
-
-
-BO_ 1627 DAQ_RL_STRAIN_1: 8 Vector__XXX
-SG_ RL_FORCE_2 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
-SG_ RL_FORCE_3 : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
-
-
-BO_ 1628 DAQ_RL_THERM: 8 Vector__XXX
-SG_ RL_THERM_0 : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ RL_THERM_1 : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
-SG_ RL_THERM_2 : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ RL_THERM_3 : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
-
-
-BO_ 1629 DAQ_RL_DAMPER: 8 Vector__XXX
-SG_ RL_DAMPER_MM : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-SG_ RL_DAMPER_ADC : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-
-
-BO_ 1630 DAQ_RL_ANEMOMETER: 8 Vector__XXX
-SG_ RL_AIRSPEED_MPH : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-SG_ RL_AIRSPEED_ADC : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-
-
-BO_ 1631 DAQ_FL_STRAIN_0: 8 Vector__XXX
-SG_ FL_FORCE_0 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
-SG_ FL_FORCE_1 : 32|32@1- (1,0) [-2147483648|2147483647] "N" Vector__XXX
-
-
-BO_ 1632 DAQ_FL_STRAIN_1: 8 Vector__XXX
-SG_ FL_FORCE_2 : 0|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
-SG_ FL_FORCE_3 : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
-
-
-BO_ 1633 DAQ_FL_THERM: 8 Vector__XXX
-SG_ FL_THERM_0 : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ FL_THERM_1 : 16|16@1- (1,0) [-32768|32767] "" Vector__XXX
-SG_ FL_THERM_2 : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
-SG_ FL_THERM_3 : 48|16@1+ (1,0) [0|65535] "" Vector__XXX
-
-
-BO_ 1634 DAQ_FL_DAMPER: 8 Vector__XXX
-SG_ FL_DAMPER_MM : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-SG_ FL_DAMPER_ADC : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-
-
-BO_ 1635 DAQ_FL_ANEMOMETER: 8 Vector__XXX
-SG_ FL_AIRSPEED_MPH : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-SG_ FL_AIRSPEED_ADC : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
-
-
 BO_ 265 Memorator_Heartbeat: 1 Vector__XXX
 SG_ State : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 
@@ -1665,69 +1557,69 @@ SG_ Dirty_RAM : 32|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
 BO_ 1908 Movella_MTi680G_Quaternion: 8 Vector__XXX
-SG_ w : 7|16@0- (3.05185094759972E-005,0) [-1.00003051850948|1] "" Vector__XXX
-SG_ x : 23|16@0- (3.05185094759972E-005,0) [-1.00003051850948|1] "" Vector__XXX
-SG_ y : 39|16@0- (3.05185094759972E-005,0) [-1.00003051850948|1] "" Vector__XXX
-SG_ z : 55|16@0- (3.05185094759972E-005,0) [-1.00003051850948|1] "" Vector__XXX
+SG_ Movella_w : 7|16@0- (3.05185094759972E-005,0) [-1.00003051850948|1] "" Vector__XXX
+SG_ Movella_x : 23|16@0- (3.05185094759972E-005,0) [-1.00003051850948|1] "" Vector__XXX
+SG_ Movella_y : 39|16@0- (3.05185094759972E-005,0) [-1.00003051850948|1] "" Vector__XXX
+SG_ Movella_z : 55|16@0- (3.05185094759972E-005,0) [-1.00003051850948|1] "" Vector__XXX
 
 
 BO_ 1905 Movella_Mti680G_GroupCounter: 2 Vector__XXX
-SG_ GroupCounter : 7|16@0+ (1,0) [0|65535] "" Vector__XXX
+SG_ Movella_GroupCounter : 7|16@0+ (1,0) [0|65535] "" Vector__XXX
 
 
 BO_ 1909 Movella_MTi680G_EulerAngles: 6 Vector__XXX
-SG_ Roll : 7|16@0- (0.0078125,0) [-256|255.9921875] "deg" Vector__XXX
-SG_ Pitch : 23|16@0- (0.0078125,0) [-256|255.9921875] "deg" Vector__XXX
-SG_ Yaw : 39|16@0- (0.0078125,0) [-256|255.9921875] "deg" Vector__XXX
+SG_ Movella_Roll : 7|16@0- (0.0078125,0) [-256|255.9921875] "deg" Vector__XXX
+SG_ Movella_Pitch : 23|16@0- (0.0078125,0) [-256|255.9921875] "deg" Vector__XXX
+SG_ Movella_Yaw : 39|16@0- (0.0078125,0) [-256|255.9921875] "deg" Vector__XXX
 
 
 BO_ 1918 Movella_MTi680G_Acceleration: 6 Vector__XXX
-SG_ AccX : 7|16@0- (0.00390625,0) [-128|127.99609375] "m/s^2" Vector__XXX
-SG_ AccY : 23|16@0- (0.00390625,0) [-128|127.99609375] "m/s^2" Vector__XXX
-SG_ AccZ : 39|16@0- (0.00390625,0) [-128|127.99609375] "m/s^2" Vector__XXX
+SG_ Movella_AccX : 7|16@0- (0.00390625,0) [-128|127.99609375] "m/s^2" Vector__XXX
+SG_ Movella_AccY : 23|16@0- (0.00390625,0) [-128|127.99609375] "m/s^2" Vector__XXX
+SG_ Movella_AccZ : 39|16@0- (0.00390625,0) [-128|127.99609375] "m/s^2" Vector__XXX
 
 
 BO_ 1913 Movella_MTi680G_Temperature: 2 Vector__XXX
-SG_ Temperature : 7|16@0- (0.00390625,0) [-128|127.99609375] "deg C" Vector__XXX
+SG_ Movella_Temperature : 7|16@0- (0.00390625,0) [-128|127.99609375] "deg C" Vector__XXX
 
 
 BO_ 1914 Movella_MTi680G_BaroPressure: 4 Vector__XXX
-SG_ Pressure : 7|32@0+ (1,0) [0|4294967295] "Pa" Vector__XXX
+SG_ Movella_Pressure : 7|32@0+ (1,0) [0|4294967295] "Pa" Vector__XXX
 
 
 BO_ 1904 Movella_MTi680G_SampleTime: 4 Vector__XXX
-SG_ SampleTime : 7|32@0+ (1,0) [0|4294967295] "" Vector__XXX
+SG_ Movella_SampleTime : 7|32@0+ (1,0) [0|4294967295] "" Vector__XXX
 
 
 BO_ 1910 Movella_MTi680G_RateOfTurn: 6 Vector__XXX
-SG_ GyroX : 7|16@0- (0.001953125,0) [-64|63.998046875] "rad/s" Vector__XXX
-SG_ GyroY : 23|16@0- (0.001953125,0) [-64|63.998046875] "rad/s" Vector__XXX
-SG_ GyroZ : 39|16@0- (0.001953125,0) [-64|63.998046875] "rad/s" Vector__XXX
+SG_ Movella_GyroX : 7|16@0- (0.001953125,0) [-64|63.998046875] "rad/s" Vector__XXX
+SG_ Movella_GyroY : 23|16@0- (0.001953125,0) [-64|63.998046875] "rad/s" Vector__XXX
+SG_ Movella_GyroZ : 39|16@0- (0.001953125,0) [-64|63.998046875] "rad/s" Vector__XXX
 
 
 BO_ 1912 Movella_MTi680G_MagneticField: 6 Vector__XXX
-SG_ MagX : 7|16@0- (0.0009765625,0) [-32|31.9990234375] "a.u." Vector__XXX
-SG_ MagY : 23|16@0- (0.0009765625,0) [-32|31.9990234375] "a.u." Vector__XXX
-SG_ MagZ : 39|16@0- (0.0009765625,0) [-32|31.9990234375] "a.u." Vector__XXX
+SG_ Movella_MagX : 7|16@0- (0.0009765625,0) [-32|31.9990234375] "a.u." Vector__XXX
+SG_ Movella_MagY : 23|16@0- (0.0009765625,0) [-32|31.9990234375] "a.u." Vector__XXX
+SG_ Movella_MagZ : 39|16@0- (0.0009765625,0) [-32|31.9990234375] "a.u." Vector__XXX
 
 
 BO_ 1917 Movella_MTi680G_Velocity: 6 Vector__XXX
-SG_ VelX : 7|16@0- (0.015625,0) [-512|511.984375] "m/s" Vector__XXX
-SG_ VelY : 23|16@0- (0.015625,0) [-512|511.984375] "m/s" Vector__XXX
-SG_ VelZ : 39|16@0- (0.015625,0) [-512|511.984375] "m/s" Vector__XXX
+SG_ Movella_VelX : 7|16@0- (0.015625,0) [-512|511.984375] "m/s" Vector__XXX
+SG_ Movella_VelY : 23|16@0- (0.015625,0) [-512|511.984375] "m/s" Vector__XXX
+SG_ Movella_VelZ : 39|16@0- (0.015625,0) [-512|511.984375] "m/s" Vector__XXX
 
 
 BO_ 121 Movella_MTi680G_GnssStatus: 5 Vector__XXX
-SG_ FixType : 7|8@0+ (1,0) [0|255] "" Vector__XXX
-SG_ NumSv : 15|8@0+ (1,0) [0|255] "" Vector__XXX
-SG_ Flags : 23|8@0+ (1,0) [0|255] "" Vector__XXX
-SG_ Valid : 31|8@0+ (1,0) [0|255] "" Vector__XXX
-SG_ NumSvs : 32|1@0+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_FixType : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+SG_ Movella_NumSv : 15|8@0+ (1,0) [0|255] "" Vector__XXX
+SG_ Movella_Flags : 23|8@0+ (1,0) [0|255] "" Vector__XXX
+SG_ Movella_Valid : 31|8@0+ (1,0) [0|255] "" Vector__XXX
+SG_ Movella_NumSvs : 32|1@0+ (1,0) [0|1] "" Vector__XXX
 
 
 BO_ 1915 Movella_MTi680G_Coordinates: 8 Vector__XXX
-SG_ Latitude : 7|32@0- (5.96046447753906E-008,0) [-128|127.999999940395] "deg" Vector__XXX
-SG_ Longitude : 39|32@0- (1.19209289550781E-007,0) [-255.999999999999|255.99999988079] "deg" Vector__XXX
+SG_ Movella_Latitude : 7|32@0- (5.96046447753906E-008,0) [-128|127.999999940395] "deg" Vector__XXX
+SG_ Movella_Longitude : 39|32@0- (1.19209289550781E-007,0) [-255.999999999999|255.99999988079] "deg" Vector__XXX
 
 
 BO_ 706 DCM_COG_Velocity: 8 Vector__XXX
@@ -1751,180 +1643,136 @@ SG_ rr_y : 48|16@1- (0.01,0) [-327.68|327.67] "m/s" Vector__XXX
 
 
 BO_ 1906 Movella_MTi860G_Status: 4 Vector__XXX
-SG_ have_gnss_time_pulse : 2|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ fitler_mode : 0|2@1+ (1,0) [0|3] "" Vector__XXX
-SG_ rtk_status : 3|2@1+ (1,0) [0|3] "" Vector__XXX
-SG_ clipflag_mag_z : 8|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ clipping_indication : 11|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ sync_in_marker : 13|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ sync_out_marker : 14|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ filter_mode_2 : 15|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ clipflag_acc_x : 16|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ clipflag_acc_y : 17|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ clipflag_acc_z : 18|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ clipflag_gyr_x : 19|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ clipflag_gyr_y : 20|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ clipflag_gyr_z : 21|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ clipflag_mag_x : 22|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ clipflag_mag_y : 23|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ self_test : 24|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ filter_valid : 25|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ gnss_fix : 26|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ no_rotation_update : 27|2@1+ (1,0) [0|3] "" Vector__XXX
-SG_ representative_motion : 29|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ clock_bias_estimation : 30|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_have_gnss_time_pulse : 2|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_fitler_mode : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+SG_ Movella_rtk_status : 3|2@1+ (1,0) [0|3] "" Vector__XXX
+SG_ Movella_clipflag_mag_z : 8|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_clipping_indication : 11|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_sync_in_marker : 13|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_sync_out_marker : 14|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_filter_mode_2 : 15|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_clipflag_acc_x : 16|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_clipflag_acc_y : 17|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_clipflag_acc_z : 18|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_clipflag_gyr_x : 19|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_clipflag_gyr_y : 20|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_clipflag_gyr_z : 21|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_clipflag_mag_x : 22|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_clipflag_mag_y : 23|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_self_test : 24|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_filter_valid : 25|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_gnss_fix : 26|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_no_rotation_update : 27|2@1+ (1,0) [0|3] "" Vector__XXX
+SG_ Movella_representative_motion : 29|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ Movella_clock_bias_estimation : 30|1@1+ (1,0) [0|1] "" Vector__XXX
 
 
 BO_ 1764 DCM_PowerLimit: 4 Vector__XXX
 SG_ PowerLimit : 0|32@1- (0.001,0) [-3.4E035|3.4E035] "kW" Vector__XXX
 
 
-BO_ 1649 DAQ_PI_RL_MLX: 2 Vector__XXX
-SG_ RL_AVG_TIRE_TEMP : 0|16@1- (0.01,0) [-327.68|327.67] "C" Vector__XXX
-
-
-BO_ 1650 DAQ_PI_RL_VL53: 2 Vector__XXX
-SG_ RL_LINE_HEIGHT : 0|16@1+ (1,0) [0|65535] "mm" Vector__XXX
-
-
-BO_ 1651 DAQ_PI_RL_NAU1: 3 Vector__XXX
-SG_ RL_ADC1 : 0|24@1+ (1,0) [0|16777215] "" Vector__XXX
-
-
-BO_ 1652 DAQ_PI_RL_NAU2: 3 Vector__XXX
-SG_ RL_ADC2 : 0|24@1+ (1,0) [0|16777215] "" Vector__XXX
-
-
-BO_ 1653 DAQ_PI_RL_ELPM75: 2 Vector__XXX
-SG_ RL_LINPOT : 0|12@1+ (1,0) [0|4095] "" Vector__XXX
-
-
-BO_ 1654 DAQ_PI_RL_THERM_1: 2 Vector__XXX
-SG_ RL_TEMP_1 : 0|12@1+ (1,0) [0|4095] "" Vector__XXX
-
-
-BO_ 1655 DAQ_PI_RL_THERM_2: 2 Vector__XXX
-SG_ RL_TEMP_2 : 0|12@1+ (1,0) [0|4095] "" Vector__XXX
-
-
-BO_ 1656 DAQ_PI_RR_MLX: 2 Vector__XXX
-SG_ RR_AVG_TIRE_TEMP : 0|16@1- (0.01,0) [-327.68|327.67] "C" Vector__XXX
-
-
-BO_ 1657 DAQ_PI_RR_VL53: 2 Vector__XXX
-SG_ RR_LINE_HEIGHT : 0|16@1+ (1,0) [0|65535] "mm" Vector__XXX
-
-
-BO_ 1664 DAQ_PI_RR_NAU1: 3 Vector__XXX
-SG_ RR_ADC1 : 0|24@1+ (1,0) [0|16777215] "" Vector__XXX
-
-
-BO_ 1665 DAQ_PI_RR_NAU2: 3 Vector__XXX
-SG_ RR_ADC2 : 0|24@1+ (1,0) [0|16777215] "" Vector__XXX
-
-
-BO_ 1666 DAQ_PI_RR_ELPM75: 2 Vector__XXX
-SG_ RR_LINPOT : 0|12@1+ (1,0) [0|4095] "" Vector__XXX
-
-
-BO_ 1667 DAQ_PI_RR_THERM_1: 2 Vector__XXX
-SG_ RR_TEMP_1 : 0|12@1+ (1,0) [0|4095] "" Vector__XXX
-
-
-BO_ 1668 DAQ_PI_RR_THERM_2: 2 Vector__XXX
-SG_ RR_TEMP_2 : 0|12@1+ (1,0) [0|4095] "" Vector__XXX
-
-
-BO_ 1669 DAQ_PI_FL_MLX: 2 Vector__XXX
-SG_ FL_AVG_TIRE_TEMP : 0|16@1- (0.01,0) [-327.68|327.67] "C" Vector__XXX
-
-
-BO_ 1670 DAQ_PI_FL_VL53: 2 Vector__XXX
-SG_ FL_LINE_HEIGHT : 0|16@1+ (1,0) [0|65535] "mm" Vector__XXX
-
-
-BO_ 1671 DAQ_PI_FL_NAU1: 3 Vector__XXX
-SG_ FL_ADC1 : 0|24@1+ (1,0) [0|16777215] "" Vector__XXX
-
-
-BO_ 1672 DAQ_PI_FL_NAU2: 3 Vector__XXX
-SG_ FL_ADC2 : 0|24@1+ (1,0) [0|16777215] "" Vector__XXX
-
-
-BO_ 1673 DAQ_PI_FL_ELPM75: 2 Vector__XXX
-SG_ FL_LINPOT : 0|12@1+ (1,0) [0|4095] "" Vector__XXX
-
-
-BO_ 1680 DAQ_PI_FL_THERM_1: 2 Vector__XXX
-SG_ FL_TEMP_1 : 0|12@1+ (1,0) [0|4095] "" Vector__XXX
-
-
-BO_ 1681 DAQ_PI_FL_THERM_2: 2 Vector__XXX
-SG_ FL_TEMP_2 : 0|12@1+ (1,0) [0|4095] "" Vector__XXX
-
-
-BO_ 1682 DAQ_PI_FR_MLX: 2 Vector__XXX
-SG_ FR_AVG_TIRE_TEMP : 0|16@1- (0.01,0) [-327.68|327.67] "C" Vector__XXX
-
-
-BO_ 1683 DAQ_PI_FR_VL53: 2 Vector__XXX
-SG_ FR_LINE_HEIGHT : 0|16@1+ (1,0) [0|65535] "mm" Vector__XXX
-
-
-BO_ 1684 DAQ_PI_FR_NAU1: 3 Vector__XXX
-SG_ FR_ADC1 : 0|24@1+ (1,0) [0|16777215] "" Vector__XXX
-
-
-BO_ 1685 DAQ_PI_FR_NAU2: 3 Vector__XXX
-SG_ FR_ADC2 : 0|24@1+ (1,0) [0|16777215] "" Vector__XXX
-
-
-BO_ 1686 DAQ_PI_FR_ELPM75: 2 Vector__XXX
-SG_ FR_LINPOT : 0|12@1+ (1,0) [0|4095] "" Vector__XXX
-
-
-BO_ 1687 DAQ_PI_FR_THERM_1: 2 Vector__XXX
-SG_ FR_TEMP_1 : 0|12@1+ (1,0) [0|4095] "" Vector__XXX
-
-
-BO_ 1688 DAQ_PI_FR_THERM_2: 2 Vector__XXX
-SG_ FR_TEMP_2 : 0|12@1+ (1,0) [0|4095] "" Vector__XXX
-
-
 BO_ 309 FSM_Swangle: 8 Vector__XXX
-SG_ SwangleLeft : 0|32@1- (1,0) [-50|50] "Deg" Vector__XXX
-SG_ SwangleRight : 32|32@1- (1,0) [-50|50] "" Vector__XXX
+SG_ SwangleRight : 0|32@1- (0.001,0) [-2147483.648|2147483.647] "deg" Vector__XXX
+SG_ SwangleLeft : 32|32@1- (0.001,0) [-2147483.648|2147483.647] "deg" Vector__XXX
+
+
+BO_ 2039 LV_BMS_Voltages1: 6 Vector__XXX
+SG_ Cell1 : 0|16@1- (1,0) [-32768|32767] "cV" Vector__XXX
+SG_ Cell2 : 16|16@1- (1,0) [-32768|32767] "cV" Vector__XXX
+SG_ Cell3 : 32|16@1- (1,0) [-32768|32767] "cV" Vector__XXX
+
+
+BO_ 2040 LV_BMS_Voltages2: 6 Vector__XXX
+SG_ Cell4 : 0|16@1- (1,0) [-32768|32767] "cV" Vector__XXX
+SG_ Cell5 : 16|16@1- (1,0) [-32768|32767] "cV" Vector__XXX
+SG_ Cell6 : 32|16@1- (1,0) [-32768|32767] "cV" Vector__XXX
+
+
+BO_ 1632 DAQ_PI_RL_MLX: 2 Vector__XXX
+SG_ RL_Avg_Tire_Temp : 0|16@1+ (0.1,0) [0|6553.5] "C" Vector__XXX
+
+
+BO_ 1633 DAQ_PI_RL_ADC: 6 Vector__XXX
+SG_ RL_Linpot : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ RL_ADC1 : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ RL_ADC2 : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
+
+
+BO_ 1634 DAQ_PI_RL_VL: 2 Vector__XXX
+SG_ RL_RideHeight : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+
+
+BO_ 1648 DAQ_PI_FL_MLX: 2 Vector__XXX
+SG_ FL_Avg_Tire_Temp : 0|16@1+ (0.1,0) [0|6553.5] "C" Vector__XXX
+
+
+BO_ 1649 DAQ_PI_FL_ADC: 6 Vector__XXX
+SG_ FL_Linpot : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ FL_ADC1 : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ FL_ADC2 : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
+
+
+BO_ 1650 DAQ_PI_FL_VL: 2 Vector__XXX
+SG_ FL_RideHeight : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+
+
+BO_ 1664 DAQ_PI_FR_MLX: 2 Vector__XXX
+SG_ FR_Avg_Tire_Temp : 0|16@1+ (0.1,0) [0|6553.5] "C" Vector__XXX
+
+
+BO_ 1665 DAQ_PI_FR_ADC: 6 Vector__XXX
+SG_ FR_Linpot : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ FR_ADC1 : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ FR_ADC2 : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
+
+
+BO_ 1666 DAQ_PI_FR_VL: 2 Vector__XXX
+SG_ FR_RideHeight : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+
+
+BO_ 1680 DAQ_PI_RR_MLX: 2 Vector__XXX
+SG_ RR_Avg_Tire_Temp : 0|16@1+ (0.1,0) [0|6553.5] "C" Vector__XXX
+
+
+BO_ 1681 DAQ_PI_RR_ADC: 6 Vector__XXX
+SG_ RR_Linpot : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ RR_ADC1 : 16|16@1+ (1,0) [0|65535] "" Vector__XXX
+SG_ RR_ADC2 : 32|16@1+ (1,0) [0|65535] "" Vector__XXX
+
+
+BO_ 1682 DAQ_PI_RR_VL: 2 Vector__XXX
+SG_ RR_RideHeight : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
 
 
 CM_ BO_ 1296 "Timeout matrix";
-CM_ BO_ 647 "Set ID based on wiring";
-CM_ SG_ 647 AMK_FR_TorqueCurrent "Mysterious scaling factor.";
-CM_ SG_ 647 AMK_FR_MagnetizingCurrent "Mysterious scaling factor.";
-CM_ BO_ 649 "Set ID based on wiring";
-CM_ BO_ 392 "Set ID based on wiring";
-CM_ SG_ 392 AMK_FR_TorqueLimitPositiv "Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.";
-CM_ SG_ 392 AMK_FR_TorqueLimitNegativ "Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.";
-CM_ BO_ 643 "Set ID based on wiring";
-CM_ SG_ 643 AMK_FL_TorqueCurrent "Mysterious scaling factor.";
-CM_ SG_ 643 AMK_FL_MagnetizingCurrent "Mysterious scaling factor.";
-CM_ BO_ 645 "Set ID based on wiring";
-CM_ BO_ 388 "Set ID based on wiring";
-CM_ SG_ 388 AMK_FL_TorqueLimitPositiv "Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.";
-CM_ SG_ 388 AMK_FL_TorqueLimitNegativ "Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.";
-CM_ BO_ 648 "Set ID based on wiring";
-CM_ SG_ 648 AMK_BL_TorqueCurrent "Mysterious scaling factor.";
-CM_ SG_ 648 AMK_BL_MagnetizingCurrent "Mysterious scaling factor.";
-CM_ BO_ 650 "Set ID based on wiring";
-CM_ BO_ 393 "Set ID based on wiring";
-CM_ SG_ 393 AMK_BL_TorqueLimitPositiv "Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.";
-CM_ SG_ 393 AMK_BL_TorqueLimitNegativ "Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.";
 CM_ BO_ 644 "Set ID based on wiring";
-CM_ SG_ 644 AMK_BR_TorqueCurrent "Mysterious scaling factor.";
-CM_ SG_ 644 AMK_BR_MagnetizingCurrent "Mysterious scaling factor.";
+CM_ SG_ 644 AMK_FR_TorqueCurrent "Mysterious scaling factor.";
+CM_ SG_ 644 AMK_FR_MagnetizingCurrent "Mysterious scaling factor.";
 CM_ BO_ 646 "Set ID based on wiring";
 CM_ BO_ 389 "Set ID based on wiring";
-CM_ SG_ 389 AMK_BR_TorqueLimitPositiv "Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.";
-CM_ SG_ 389 AMK_BR_TorqueLimitNegativ "Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.";
+CM_ SG_ 389 AMK_FR_TorqueLimitPositiv "Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.";
+CM_ SG_ 389 AMK_FR_TorqueLimitNegativ "Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.";
+CM_ BO_ 648 "Set ID based on wiring";
+CM_ SG_ 648 AMK_FL_TorqueCurrent "Mysterious scaling factor.";
+CM_ SG_ 648 AMK_FL_MagnetizingCurrent "Mysterious scaling factor.";
+CM_ BO_ 650 "Set ID based on wiring";
+CM_ BO_ 393 "Set ID based on wiring";
+CM_ SG_ 393 AMK_FL_TorqueLimitPositiv "Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.";
+CM_ SG_ 393 AMK_FL_TorqueLimitNegativ "Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.";
+CM_ BO_ 647 "Set ID based on wiring";
+CM_ SG_ 647 AMK_BL_TorqueCurrent "Mysterious scaling factor.";
+CM_ SG_ 647 AMK_BL_MagnetizingCurrent "Mysterious scaling factor.";
+CM_ BO_ 649 "Set ID based on wiring";
+CM_ BO_ 392 "Set ID based on wiring";
+CM_ SG_ 392 AMK_BL_TorqueLimitPositiv "Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.";
+CM_ SG_ 392 AMK_BL_TorqueLimitNegativ "Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.";
+CM_ BO_ 643 "Set ID based on wiring";
+CM_ SG_ 643 AMK_BR_TorqueCurrent "Mysterious scaling factor.";
+CM_ SG_ 643 AMK_BR_MagnetizingCurrent "Mysterious scaling factor.";
+CM_ BO_ 645 "Set ID based on wiring";
+CM_ BO_ 388 "Set ID based on wiring";
+CM_ SG_ 388 AMK_BR_TorqueLimitPositiv "Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.";
+CM_ SG_ 388 AMK_BR_TorqueLimitNegativ "Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.";
 CM_ BO_ 2023 "This CAN id is used for communication between the energy meter and the download tool.";
 CM_ BO_ 2031 "This CAN id is used for communication between the energy meter and the download tool.";
 CM_ SG_ 1952 squelch "0 for listen, 1 - 8 for transmit";
@@ -1932,7 +1780,7 @@ CM_ SG_ 1698 RTC_Error "For interpreting this, see comments in code.";
 CM_ SG_ 1714 RTC_Error_In "For interpreting this, see comments in code.";
 CM_ SG_ 1911 TEST_STATUS "1- START TEST, 0 - STOP TEST";
 CM_ SG_ 1911 TEST_ID "Randomly generated test id sent everytime the car states up";
-CM_ SG_ 1904 SampleTime "10kHz ticks";
+CM_ SG_ 1904 Movella_SampleTime "10kHz ticks";
 
 BA_DEF_  "BusType" STRING ;
 BA_DEF_ BO_  "GenMsgCycleTime" INT 0 65535;
@@ -2014,18 +1862,18 @@ BA_ "GenMsgCycleTime" BO_ 924 100;
 BA_ "GenMsgCycleTime" BO_ 925 1000;
 BA_ "GenMsgCycleTime" BO_ 926 100;
 BA_ "GenMsgCycleTime" BO_ 927 1000;
+BA_ "GenMsgCycleTime" BO_ 644 5;
+BA_ "GenMsgCycleTime" BO_ 646 5;
+BA_ "GenMsgCycleTime" BO_ 389 1;
+BA_ "GenMsgCycleTime" BO_ 648 5;
+BA_ "GenMsgCycleTime" BO_ 650 5;
+BA_ "GenMsgCycleTime" BO_ 393 1;
 BA_ "GenMsgCycleTime" BO_ 647 5;
 BA_ "GenMsgCycleTime" BO_ 649 5;
 BA_ "GenMsgCycleTime" BO_ 392 1;
 BA_ "GenMsgCycleTime" BO_ 643 5;
 BA_ "GenMsgCycleTime" BO_ 645 5;
 BA_ "GenMsgCycleTime" BO_ 388 1;
-BA_ "GenMsgCycleTime" BO_ 648 5;
-BA_ "GenMsgCycleTime" BO_ 650 5;
-BA_ "GenMsgCycleTime" BO_ 393 1;
-BA_ "GenMsgCycleTime" BO_ 644 5;
-BA_ "GenMsgCycleTime" BO_ 646 5;
-BA_ "GenMsgCycleTime" BO_ 389 1;
 BA_ "GenMsgCycleTime" BO_ 2021 100;
 BA_ "GenMsgCycleTime" BO_ 1698 1000;
 BA_ "GenMsgCycleTime" BO_ 1714 1000;
@@ -2070,6 +1918,18 @@ BA_ "GenMsgCycleTime" BO_ 2035 1000;
 BA_ "GenMsgCycleTime" BO_ 2036 1000;
 BA_ "GenMsgCycleTime" BO_ 2037 1000;
 BA_ "GenMsgCycleTime" BO_ 2038 1000;
+BA_ "GenMsgCycleTime" BO_ 1632 125;
+BA_ "GenMsgCycleTime" BO_ 1633 5;
+BA_ "GenMsgCycleTime" BO_ 1634 50;
+BA_ "GenMsgCycleTime" BO_ 1648 125;
+BA_ "GenMsgCycleTime" BO_ 1649 5;
+BA_ "GenMsgCycleTime" BO_ 1650 50;
+BA_ "GenMsgCycleTime" BO_ 1664 125;
+BA_ "GenMsgCycleTime" BO_ 1665 5;
+BA_ "GenMsgCycleTime" BO_ 1666 50;
+BA_ "GenMsgCycleTime" BO_ 1680 125;
+BA_ "GenMsgCycleTime" BO_ 1681 5;
+BA_ "GenMsgCycleTime" BO_ 1682 50;
 
 BA_ "GenSigStartValue" SG_ 256 VSM_state 0;
 BA_ "GenSigStartValue" SG_ 256 VSM_ERR_moduleTimeout 0;
@@ -2665,106 +2525,106 @@ BA_ "GenSigStartValue" SG_ 1316 Command_out_of_range 0;
 BA_ "GenSigStartValue" SG_ 1316 Ctrl_msg_inactive 0;
 BA_ "GenSigStartValue" SG_ 1316 LED_driver_defect 0;
 BA_ "GenSigStartValue" SG_ 1316 Save_charging_mode 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_Reserved 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_SystemReady 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_Error 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_Warn 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_QuitDcOn 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_DcOn 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_QuitInvOn 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_FR_Status_Derating 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_FR_ActualVelocity 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_FR_TorqueCurrent 0;
-BA_ "GenSigStartValue" SG_ 647 AMK_FR_MagnetizingCurrent 0;
-BA_ "GenSigStartValue" SG_ 649 AMK_FR_TempMotor 0;
-BA_ "GenSigStartValue" SG_ 649 AMK_FR_TempInverter 0;
-BA_ "GenSigStartValue" SG_ 649 AMK_FR_ErrorInfo 0;
-BA_ "GenSigStartValue" SG_ 649 AMK_FR_TempIGBT 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_FR_Control_Reserved1 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_FR_Control_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_FR_Control_DcOn 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_FR_Control_Enable 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_FR_Control_ErrorReset 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_FR_Control_Reserved2 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_FR_TargetVelocity 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_FR_TorqueLimitPositiv 0;
-BA_ "GenSigStartValue" SG_ 392 AMK_FR_TorqueLimitNegativ 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_Reserved 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_SystemReady 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_Error 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_Warn 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_QuitDcOn 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_DcOn 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_QuitInvOn 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FL_Status_Derating 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FL_ActualVelocity 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FL_TorqueCurrent 0;
-BA_ "GenSigStartValue" SG_ 643 AMK_FL_MagnetizingCurrent 0;
-BA_ "GenSigStartValue" SG_ 645 AMK_FL_TempMotor 0;
-BA_ "GenSigStartValue" SG_ 645 AMK_FL_TempInverter 0;
-BA_ "GenSigStartValue" SG_ 645 AMK_FL_ErrorInfo 0;
-BA_ "GenSigStartValue" SG_ 645 AMK_FL_TempIGBT 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FL_Control_Reserved1 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FL_Control_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FL_Control_DcOn 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FL_Control_Enable 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FL_Control_ErrorReset 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FL_Control_Reserved2 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FL_TargetVelocity 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FL_TorqueLimitPositiv 0;
-BA_ "GenSigStartValue" SG_ 388 AMK_FL_TorqueLimitNegativ 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_Reserved 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_SystemReady 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_Error 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_Warn 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_QuitDcOn 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_DcOn 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_QuitInvOn 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BL_Status_Derating 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BL_ActualVelocity 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BL_TorqueCurrent 0;
-BA_ "GenSigStartValue" SG_ 648 AMK_BL_MagnetizingCurrent 0;
-BA_ "GenSigStartValue" SG_ 650 AMK_BL_TempMotor 0;
-BA_ "GenSigStartValue" SG_ 650 AMK_BL_TempInverter 0;
-BA_ "GenSigStartValue" SG_ 650 AMK_BL_ErrorInfo 0;
-BA_ "GenSigStartValue" SG_ 650 AMK_BL_TempIGBT 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_BL_Control_Reserved1 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_BL_Control_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_BL_Control_DcOn 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_BL_Control_Enable 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_BL_Control_ErrorReset 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_BL_Control_Reserved2 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_BL_TargetVelocity 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_BL_TorqueLimitPositiv 0;
-BA_ "GenSigStartValue" SG_ 393 AMK_BL_TorqueLimitNegativ 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_Reserved 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_SystemReady 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_Error 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_Warn 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_QuitDcOn 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_DcOn 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_QuitInvOn 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BR_Status_Derating 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BR_ActualVelocity 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BR_TorqueCurrent 0;
-BA_ "GenSigStartValue" SG_ 644 AMK_BR_MagnetizingCurrent 0;
-BA_ "GenSigStartValue" SG_ 646 AMK_BR_TempMotor 0;
-BA_ "GenSigStartValue" SG_ 646 AMK_BR_TempInverter 0;
-BA_ "GenSigStartValue" SG_ 646 AMK_BR_ErrorInfo 0;
-BA_ "GenSigStartValue" SG_ 646 AMK_BR_TempIGBT 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BR_Control_Reserved1 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BR_Control_InverterOn 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BR_Control_DcOn 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BR_Control_Enable 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BR_Control_ErrorReset 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BR_Control_Reserved2 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BR_TargetVelocity 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BR_TorqueLimitPositiv 0;
-BA_ "GenSigStartValue" SG_ 389 AMK_BR_TorqueLimitNegativ 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_FR_Status_Reserved 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_FR_Status_SystemReady 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_FR_Status_Error 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_FR_Status_Warn 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_FR_Status_QuitDcOn 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_FR_Status_DcOn 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_FR_Status_QuitInvOn 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_FR_Status_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_FR_Status_Derating 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_FR_ActualVelocity 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_FR_TorqueCurrent 0;
+BA_ "GenSigStartValue" SG_ 644 AMK_FR_MagnetizingCurrent 0;
+BA_ "GenSigStartValue" SG_ 646 AMK_FR_TempMotor 0;
+BA_ "GenSigStartValue" SG_ 646 AMK_FR_TempInverter 0;
+BA_ "GenSigStartValue" SG_ 646 AMK_FR_ErrorInfo 0;
+BA_ "GenSigStartValue" SG_ 646 AMK_FR_TempIGBT 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_FR_Control_Reserved1 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_FR_Control_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_FR_Control_DcOn 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_FR_Control_Enable 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_FR_Control_ErrorReset 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_FR_Control_Reserved2 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_FR_TargetVelocity 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_FR_TorqueLimitPositiv 0;
+BA_ "GenSigStartValue" SG_ 389 AMK_FR_TorqueLimitNegativ 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_Reserved 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_SystemReady 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_Error 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_Warn 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_QuitDcOn 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_DcOn 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_QuitInvOn 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_Status_Derating 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_ActualVelocity 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_TorqueCurrent 0;
+BA_ "GenSigStartValue" SG_ 648 AMK_FL_MagnetizingCurrent 0;
+BA_ "GenSigStartValue" SG_ 650 AMK_FL_TempMotor 0;
+BA_ "GenSigStartValue" SG_ 650 AMK_FL_TempInverter 0;
+BA_ "GenSigStartValue" SG_ 650 AMK_FL_ErrorInfo 0;
+BA_ "GenSigStartValue" SG_ 650 AMK_FL_TempIGBT 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_Reserved1 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_DcOn 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_Enable 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_ErrorReset 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_Control_Reserved2 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_TargetVelocity 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_TorqueLimitPositiv 0;
+BA_ "GenSigStartValue" SG_ 393 AMK_FL_TorqueLimitNegativ 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_Reserved 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_SystemReady 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_Error 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_Warn 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_QuitDcOn 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_DcOn 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_QuitInvOn 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_BL_Status_Derating 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_BL_ActualVelocity 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_BL_TorqueCurrent 0;
+BA_ "GenSigStartValue" SG_ 647 AMK_BL_MagnetizingCurrent 0;
+BA_ "GenSigStartValue" SG_ 649 AMK_BL_TempMotor 0;
+BA_ "GenSigStartValue" SG_ 649 AMK_BL_TempInverter 0;
+BA_ "GenSigStartValue" SG_ 649 AMK_BL_ErrorInfo 0;
+BA_ "GenSigStartValue" SG_ 649 AMK_BL_TempIGBT 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_BL_Control_Reserved1 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_BL_Control_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_BL_Control_DcOn 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_BL_Control_Enable 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_BL_Control_ErrorReset 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_BL_Control_Reserved2 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_BL_TargetVelocity 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_BL_TorqueLimitPositiv 0;
+BA_ "GenSigStartValue" SG_ 392 AMK_BL_TorqueLimitNegativ 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_Reserved 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_SystemReady 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_Error 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_Warn 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_QuitDcOn 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_DcOn 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_QuitInvOn 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_Status_Derating 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_ActualVelocity 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_TorqueCurrent 0;
+BA_ "GenSigStartValue" SG_ 643 AMK_BR_MagnetizingCurrent 0;
+BA_ "GenSigStartValue" SG_ 645 AMK_BR_TempMotor 0;
+BA_ "GenSigStartValue" SG_ 645 AMK_BR_TempInverter 0;
+BA_ "GenSigStartValue" SG_ 645 AMK_BR_ErrorInfo 0;
+BA_ "GenSigStartValue" SG_ 645 AMK_BR_TempIGBT 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_BR_Control_Reserved1 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_BR_Control_InverterOn 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_BR_Control_DcOn 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_BR_Control_Enable 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_BR_Control_ErrorReset 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_BR_Control_Reserved2 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_BR_TargetVelocity 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_BR_TorqueLimitPositiv 0;
+BA_ "GenSigStartValue" SG_ 388 AMK_BR_TorqueLimitNegativ 0;
 BA_ "GenSigStartValue" SG_ 2021 controls_current_yaw_rate 0;
 BA_ "GenSigStartValue" SG_ 2021 controls_target_yaw_rate 0;
 BA_ "GenSigStartValue" SG_ 2021 controls_pid 0;
@@ -2777,18 +2637,18 @@ BA_ "GenSigStartValue" SG_ 2000 FR_Differential_Voltage 0;
 BA_ "GenSigStartValue" SG_ 2000 FR_Calibrated_Output 0;
 BA_ "GenSigStartValue" SG_ 2000 FR_Internal_Temp 0;
 BA_ "GenSigStartValue" SG_ 2000 FR_Opt_External_Temp 0;
-BA_ "GenSigStartValue" SG_ 2001 RR_Differential_Voltage 0;
-BA_ "GenSigStartValue" SG_ 2001 RR_Calibrated_Output 0;
-BA_ "GenSigStartValue" SG_ 2001 RR_Internal_Temp 0;
-BA_ "GenSigStartValue" SG_ 2001 RR_Opt_External_Temp 0;
+BA_ "GenSigStartValue" SG_ 2002 RR_Differential_Voltage 0;
+BA_ "GenSigStartValue" SG_ 2002 RR_Calibrated_Output 0;
+BA_ "GenSigStartValue" SG_ 2002 RR_Internal_Temp 0;
+BA_ "GenSigStartValue" SG_ 2002 RR_Opt_External_Temp 0;
 BA_ "GenSigStartValue" SG_ 2003 FL_Differential_Voltage 0;
 BA_ "GenSigStartValue" SG_ 2003 FL_Calibrated_Output 0;
 BA_ "GenSigStartValue" SG_ 2003 FL_Internal_Temp 0;
 BA_ "GenSigStartValue" SG_ 2003 FL_Opt_External_Temp 0;
-BA_ "GenSigStartValue" SG_ 2002 RL_Differential_Voltage 0;
-BA_ "GenSigStartValue" SG_ 2002 RL_Calibrated_Output 0;
-BA_ "GenSigStartValue" SG_ 2002 RL_Internal_Temp 0;
-BA_ "GenSigStartValue" SG_ 2002 RL_Opt_External_Temp 0;
+BA_ "GenSigStartValue" SG_ 2001 RL_Differential_Voltage 0;
+BA_ "GenSigStartValue" SG_ 2001 RL_Calibrated_Output 0;
+BA_ "GenSigStartValue" SG_ 2001 RL_Internal_Temp 0;
+BA_ "GenSigStartValue" SG_ 2001 RL_Opt_External_Temp 0;
 BA_ "GenSigStartValue" SG_ 1952 frequency 0;
 BA_ "GenSigStartValue" SG_ 1952 padding 0;
 BA_ "GenSigStartValue" SG_ 1952 volume 0;
@@ -2974,54 +2834,6 @@ BA_ "GenSigStartValue" SG_ 772 BMB13_Error 0;
 BA_ "GenSigStartValue" SG_ 772 BMB14_Error 0;
 BA_ "GenSigStartValue" SG_ 772 BMB15_Error 0;
 BA_ "GenSigStartValue" SG_ 1317 Address 0;
-BA_ "GenSigStartValue" SG_ 1616 FR_FORCE_0 0;
-BA_ "GenSigStartValue" SG_ 1616 FR_FORCE_1 0;
-BA_ "GenSigStartValue" SG_ 1617 FR_FORCE_2 0;
-BA_ "GenSigStartValue" SG_ 1617 FR_FORCE_3 0;
-BA_ "GenSigStartValue" SG_ 1618 FR_THERM_0 0;
-BA_ "GenSigStartValue" SG_ 1618 FR_THERM_1 0;
-BA_ "GenSigStartValue" SG_ 1618 FR_THERM_2 0;
-BA_ "GenSigStartValue" SG_ 1618 FR_THERM_3 0;
-BA_ "GenSigStartValue" SG_ 1619 FR_DAMPER_MM 0;
-BA_ "GenSigStartValue" SG_ 1619 FR_DAMPER_ADC 0;
-BA_ "GenSigStartValue" SG_ 1620 FR_AIRSPEED_MPH 0;
-BA_ "GenSigStartValue" SG_ 1620 FR_AIRSPEED_ADC 0;
-BA_ "GenSigStartValue" SG_ 1621 RR_FORCE_0 0;
-BA_ "GenSigStartValue" SG_ 1621 RR_FORCE_1 0;
-BA_ "GenSigStartValue" SG_ 1622 RR_FORCE_2 0;
-BA_ "GenSigStartValue" SG_ 1622 RR_FORCE_3 0;
-BA_ "GenSigStartValue" SG_ 1623 RR_THERM_0 0;
-BA_ "GenSigStartValue" SG_ 1623 RR_THERM_1 0;
-BA_ "GenSigStartValue" SG_ 1623 RR_THERM_2 0;
-BA_ "GenSigStartValue" SG_ 1623 RR_THERM_3 0;
-BA_ "GenSigStartValue" SG_ 1624 RR_DAMPER_MM 0;
-BA_ "GenSigStartValue" SG_ 1624 RR_DAMPER_ADC 0;
-BA_ "GenSigStartValue" SG_ 1625 RR_AIRSPEED_MPH 0;
-BA_ "GenSigStartValue" SG_ 1625 RR_AIRSPEED_ADC 0;
-BA_ "GenSigStartValue" SG_ 1626 RL_FORCE_0 0;
-BA_ "GenSigStartValue" SG_ 1626 RL_FORCE_1 0;
-BA_ "GenSigStartValue" SG_ 1627 RL_FORCE_2 0;
-BA_ "GenSigStartValue" SG_ 1627 RL_FORCE_3 0;
-BA_ "GenSigStartValue" SG_ 1628 RL_THERM_0 0;
-BA_ "GenSigStartValue" SG_ 1628 RL_THERM_1 0;
-BA_ "GenSigStartValue" SG_ 1628 RL_THERM_2 0;
-BA_ "GenSigStartValue" SG_ 1628 RL_THERM_3 0;
-BA_ "GenSigStartValue" SG_ 1629 RL_DAMPER_MM 0;
-BA_ "GenSigStartValue" SG_ 1629 RL_DAMPER_ADC 0;
-BA_ "GenSigStartValue" SG_ 1630 RL_AIRSPEED_MPH 0;
-BA_ "GenSigStartValue" SG_ 1630 RL_AIRSPEED_ADC 0;
-BA_ "GenSigStartValue" SG_ 1631 FL_FORCE_0 0;
-BA_ "GenSigStartValue" SG_ 1631 FL_FORCE_1 0;
-BA_ "GenSigStartValue" SG_ 1632 FL_FORCE_2 0;
-BA_ "GenSigStartValue" SG_ 1632 FL_FORCE_3 0;
-BA_ "GenSigStartValue" SG_ 1633 FL_THERM_0 0;
-BA_ "GenSigStartValue" SG_ 1633 FL_THERM_1 0;
-BA_ "GenSigStartValue" SG_ 1633 FL_THERM_2 0;
-BA_ "GenSigStartValue" SG_ 1633 FL_THERM_3 0;
-BA_ "GenSigStartValue" SG_ 1634 FL_DAMPER_MM 0;
-BA_ "GenSigStartValue" SG_ 1634 FL_DAMPER_ADC 0;
-BA_ "GenSigStartValue" SG_ 1635 FL_AIRSPEED_MPH 0;
-BA_ "GenSigStartValue" SG_ 1635 FL_AIRSPEED_ADC 0;
 BA_ "GenSigStartValue" SG_ 265 State 0;
 BA_ "GenSigStartValue" SG_ 262 HVI_Current 0;
 BA_ "GenSigStartValue" SG_ 262 HVI_Voltage 0;
@@ -3055,36 +2867,36 @@ BA_ "GenSigStartValue" SG_ 2037 Commit_Hash_DIM 0;
 BA_ "GenSigStartValue" SG_ 2037 Dirty_DIM 0;
 BA_ "GenSigStartValue" SG_ 2038 Commit_Hash_RAM 0;
 BA_ "GenSigStartValue" SG_ 2038 Dirty_RAM 0;
-BA_ "GenSigStartValue" SG_ 1908 w 0;
-BA_ "GenSigStartValue" SG_ 1908 x 0;
-BA_ "GenSigStartValue" SG_ 1908 y 0;
-BA_ "GenSigStartValue" SG_ 1908 z 0;
-BA_ "GenSigStartValue" SG_ 1905 GroupCounter 0;
-BA_ "GenSigStartValue" SG_ 1909 Roll 0;
-BA_ "GenSigStartValue" SG_ 1909 Pitch 0;
-BA_ "GenSigStartValue" SG_ 1909 Yaw 0;
-BA_ "GenSigStartValue" SG_ 1918 AccX 0;
-BA_ "GenSigStartValue" SG_ 1918 AccY 0;
-BA_ "GenSigStartValue" SG_ 1918 AccZ 0;
-BA_ "GenSigStartValue" SG_ 1913 Temperature 0;
-BA_ "GenSigStartValue" SG_ 1914 Pressure 0;
-BA_ "GenSigStartValue" SG_ 1904 SampleTime 0;
-BA_ "GenSigStartValue" SG_ 1910 GyroX 0;
-BA_ "GenSigStartValue" SG_ 1910 GyroY 0;
-BA_ "GenSigStartValue" SG_ 1910 GyroZ 0;
-BA_ "GenSigStartValue" SG_ 1912 MagX 0;
-BA_ "GenSigStartValue" SG_ 1912 MagY 0;
-BA_ "GenSigStartValue" SG_ 1912 MagZ 0;
-BA_ "GenSigStartValue" SG_ 1917 VelX 0;
-BA_ "GenSigStartValue" SG_ 1917 VelY 0;
-BA_ "GenSigStartValue" SG_ 1917 VelZ 0;
-BA_ "GenSigStartValue" SG_ 121 FixType 0;
-BA_ "GenSigStartValue" SG_ 121 NumSv 0;
-BA_ "GenSigStartValue" SG_ 121 Flags 0;
-BA_ "GenSigStartValue" SG_ 121 Valid 0;
-BA_ "GenSigStartValue" SG_ 121 NumSvs 0;
-BA_ "GenSigStartValue" SG_ 1915 Latitude 0;
-BA_ "GenSigStartValue" SG_ 1915 Longitude 0;
+BA_ "GenSigStartValue" SG_ 1908 Movella_w 0;
+BA_ "GenSigStartValue" SG_ 1908 Movella_x 0;
+BA_ "GenSigStartValue" SG_ 1908 Movella_y 0;
+BA_ "GenSigStartValue" SG_ 1908 Movella_z 0;
+BA_ "GenSigStartValue" SG_ 1905 Movella_GroupCounter 0;
+BA_ "GenSigStartValue" SG_ 1909 Movella_Roll 0;
+BA_ "GenSigStartValue" SG_ 1909 Movella_Pitch 0;
+BA_ "GenSigStartValue" SG_ 1909 Movella_Yaw 0;
+BA_ "GenSigStartValue" SG_ 1918 Movella_AccX 0;
+BA_ "GenSigStartValue" SG_ 1918 Movella_AccY 0;
+BA_ "GenSigStartValue" SG_ 1918 Movella_AccZ 0;
+BA_ "GenSigStartValue" SG_ 1913 Movella_Temperature 0;
+BA_ "GenSigStartValue" SG_ 1914 Movella_Pressure 0;
+BA_ "GenSigStartValue" SG_ 1904 Movella_SampleTime 0;
+BA_ "GenSigStartValue" SG_ 1910 Movella_GyroX 0;
+BA_ "GenSigStartValue" SG_ 1910 Movella_GyroY 0;
+BA_ "GenSigStartValue" SG_ 1910 Movella_GyroZ 0;
+BA_ "GenSigStartValue" SG_ 1912 Movella_MagX 0;
+BA_ "GenSigStartValue" SG_ 1912 Movella_MagY 0;
+BA_ "GenSigStartValue" SG_ 1912 Movella_MagZ 0;
+BA_ "GenSigStartValue" SG_ 1917 Movella_VelX 0;
+BA_ "GenSigStartValue" SG_ 1917 Movella_VelY 0;
+BA_ "GenSigStartValue" SG_ 1917 Movella_VelZ 0;
+BA_ "GenSigStartValue" SG_ 121 Movella_FixType 0;
+BA_ "GenSigStartValue" SG_ 121 Movella_NumSv 0;
+BA_ "GenSigStartValue" SG_ 121 Movella_Flags 0;
+BA_ "GenSigStartValue" SG_ 121 Movella_Valid 0;
+BA_ "GenSigStartValue" SG_ 121 Movella_NumSvs 0;
+BA_ "GenSigStartValue" SG_ 1915 Movella_Latitude 0;
+BA_ "GenSigStartValue" SG_ 1915 Movella_Longitude 0;
 BA_ "GenSigStartValue" SG_ 706 cog_x 0;
 BA_ "GenSigStartValue" SG_ 706 cog_y 0;
 BA_ "GenSigStartValue" SG_ 706 slip_angle 0;
@@ -3096,59 +2908,57 @@ BA_ "GenSigStartValue" SG_ 738 rl_x 0;
 BA_ "GenSigStartValue" SG_ 738 rl_y 0;
 BA_ "GenSigStartValue" SG_ 738 rr_x 0;
 BA_ "GenSigStartValue" SG_ 738 rr_y 0;
-BA_ "GenSigStartValue" SG_ 1906 have_gnss_time_pulse 0;
-BA_ "GenSigStartValue" SG_ 1906 fitler_mode 0;
-BA_ "GenSigStartValue" SG_ 1906 rtk_status 0;
-BA_ "GenSigStartValue" SG_ 1906 clipflag_mag_z 0;
-BA_ "GenSigStartValue" SG_ 1906 clipping_indication 0;
-BA_ "GenSigStartValue" SG_ 1906 sync_in_marker 0;
-BA_ "GenSigStartValue" SG_ 1906 sync_out_marker 0;
-BA_ "GenSigStartValue" SG_ 1906 filter_mode_2 0;
-BA_ "GenSigStartValue" SG_ 1906 clipflag_acc_x 0;
-BA_ "GenSigStartValue" SG_ 1906 clipflag_acc_y 0;
-BA_ "GenSigStartValue" SG_ 1906 clipflag_acc_z 0;
-BA_ "GenSigStartValue" SG_ 1906 clipflag_gyr_x 0;
-BA_ "GenSigStartValue" SG_ 1906 clipflag_gyr_y 0;
-BA_ "GenSigStartValue" SG_ 1906 clipflag_gyr_z 0;
-BA_ "GenSigStartValue" SG_ 1906 clipflag_mag_x 0;
-BA_ "GenSigStartValue" SG_ 1906 clipflag_mag_y 0;
-BA_ "GenSigStartValue" SG_ 1906 self_test 0;
-BA_ "GenSigStartValue" SG_ 1906 filter_valid 0;
-BA_ "GenSigStartValue" SG_ 1906 gnss_fix 0;
-BA_ "GenSigStartValue" SG_ 1906 no_rotation_update 0;
-BA_ "GenSigStartValue" SG_ 1906 representative_motion 0;
-BA_ "GenSigStartValue" SG_ 1906 clock_bias_estimation 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_have_gnss_time_pulse 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_fitler_mode 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_rtk_status 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_clipflag_mag_z 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_clipping_indication 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_sync_in_marker 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_sync_out_marker 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_filter_mode_2 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_clipflag_acc_x 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_clipflag_acc_y 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_clipflag_acc_z 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_clipflag_gyr_x 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_clipflag_gyr_y 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_clipflag_gyr_z 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_clipflag_mag_x 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_clipflag_mag_y 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_self_test 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_filter_valid 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_gnss_fix 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_no_rotation_update 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_representative_motion 0;
+BA_ "GenSigStartValue" SG_ 1906 Movella_clock_bias_estimation 0;
 BA_ "GenSigStartValue" SG_ 1764 PowerLimit 0;
-BA_ "GenSigStartValue" SG_ 1649 RL_AVG_TIRE_TEMP 0;
-BA_ "GenSigStartValue" SG_ 1650 RL_LINE_HEIGHT 0;
-BA_ "GenSigStartValue" SG_ 1651 RL_ADC1 0;
-BA_ "GenSigStartValue" SG_ 1652 RL_ADC2 0;
-BA_ "GenSigStartValue" SG_ 1653 RL_LINPOT 0;
-BA_ "GenSigStartValue" SG_ 1654 RL_TEMP_1 0;
-BA_ "GenSigStartValue" SG_ 1655 RL_TEMP_2 0;
-BA_ "GenSigStartValue" SG_ 1656 RR_AVG_TIRE_TEMP 0;
-BA_ "GenSigStartValue" SG_ 1657 RR_LINE_HEIGHT 0;
-BA_ "GenSigStartValue" SG_ 1664 RR_ADC1 0;
-BA_ "GenSigStartValue" SG_ 1665 RR_ADC2 0;
-BA_ "GenSigStartValue" SG_ 1666 RR_LINPOT 0;
-BA_ "GenSigStartValue" SG_ 1667 RR_TEMP_1 0;
-BA_ "GenSigStartValue" SG_ 1668 RR_TEMP_2 0;
-BA_ "GenSigStartValue" SG_ 1669 FL_AVG_TIRE_TEMP 0;
-BA_ "GenSigStartValue" SG_ 1670 FL_LINE_HEIGHT 0;
-BA_ "GenSigStartValue" SG_ 1671 FL_ADC1 0;
-BA_ "GenSigStartValue" SG_ 1672 FL_ADC2 0;
-BA_ "GenSigStartValue" SG_ 1673 FL_LINPOT 0;
-BA_ "GenSigStartValue" SG_ 1680 FL_TEMP_1 0;
-BA_ "GenSigStartValue" SG_ 1681 FL_TEMP_2 0;
-BA_ "GenSigStartValue" SG_ 1682 FR_AVG_TIRE_TEMP 0;
-BA_ "GenSigStartValue" SG_ 1683 FR_LINE_HEIGHT 0;
-BA_ "GenSigStartValue" SG_ 1684 FR_ADC1 0;
-BA_ "GenSigStartValue" SG_ 1685 FR_ADC2 0;
-BA_ "GenSigStartValue" SG_ 1686 FR_LINPOT 0;
-BA_ "GenSigStartValue" SG_ 1687 FR_TEMP_1 0;
-BA_ "GenSigStartValue" SG_ 1688 FR_TEMP_2 0;
-BA_ "GenSigStartValue" SG_ 309 SwangleLeft 0;
 BA_ "GenSigStartValue" SG_ 309 SwangleRight 0;
+BA_ "GenSigStartValue" SG_ 309 SwangleLeft 0;
+BA_ "GenSigStartValue" SG_ 2039 Cell1 0;
+BA_ "GenSigStartValue" SG_ 2039 Cell2 0;
+BA_ "GenSigStartValue" SG_ 2039 Cell3 0;
+BA_ "GenSigStartValue" SG_ 2040 Cell4 0;
+BA_ "GenSigStartValue" SG_ 2040 Cell5 0;
+BA_ "GenSigStartValue" SG_ 2040 Cell6 0;
+BA_ "GenSigStartValue" SG_ 1632 RL_Avg_Tire_Temp 0;
+BA_ "GenSigStartValue" SG_ 1633 RL_Linpot 0;
+BA_ "GenSigStartValue" SG_ 1633 RL_ADC1 0;
+BA_ "GenSigStartValue" SG_ 1633 RL_ADC2 0;
+BA_ "GenSigStartValue" SG_ 1634 RL_RideHeight 0;
+BA_ "GenSigStartValue" SG_ 1648 FL_Avg_Tire_Temp 0;
+BA_ "GenSigStartValue" SG_ 1649 FL_Linpot 0;
+BA_ "GenSigStartValue" SG_ 1649 FL_ADC1 0;
+BA_ "GenSigStartValue" SG_ 1649 FL_ADC2 0;
+BA_ "GenSigStartValue" SG_ 1650 FL_RideHeight 0;
+BA_ "GenSigStartValue" SG_ 1664 FR_Avg_Tire_Temp 0;
+BA_ "GenSigStartValue" SG_ 1665 FR_Linpot 0;
+BA_ "GenSigStartValue" SG_ 1665 FR_ADC1 0;
+BA_ "GenSigStartValue" SG_ 1665 FR_ADC2 0;
+BA_ "GenSigStartValue" SG_ 1666 FR_RideHeight 0;
+BA_ "GenSigStartValue" SG_ 1680 RR_Avg_Tire_Temp 0;
+BA_ "GenSigStartValue" SG_ 1681 RR_Linpot 0;
+BA_ "GenSigStartValue" SG_ 1681 RR_ADC1 0;
+BA_ "GenSigStartValue" SG_ 1681 RR_ADC2 0;
+BA_ "GenSigStartValue" SG_ 1682 RR_RideHeight 0;
 
 
 VAL_ 256 VSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
@@ -3168,7 +2978,7 @@ VAL_ 1024 EMD_VoltageGain 0 "x1" 1 "x2" 2 "x4" 3 "x8" 4 "x16" 5 "x32" ;
 VAL_ 1024 EMD_CurrentGain 0 "x1" 1 "x2" 2 "x4" 3 "x8" 4 "x16" 5 "x32" ;
 VAL_ 263 CCM_state 0 "ERROR" 1 "CLEAR_ERROR" 2 "CLEAR_HVC" 3 "IDLE_HVC" 4 "STANDBY" 5 "CHARGE_REQ" 6 "CHARGE" 7 "SLOW_CHARGE" 8 "SHUTDOWN" ;
 VAL_ 308 Enable 0 "BALANCE_DIS" 1 "BALANCE_EN" ;
-VAL_ 1906 fitler_mode 0 "Without GNSS (filter profile is in VRU mode)" 1 "Coasting mode (GNSS has been lost <60 sec ago)" 3 "With GNSS (default mode)" ;
+VAL_ 1906 Movella_fitler_mode 0 "Without GNSS (filter profile is in VRU mode)" 1 "Coasting mode (GNSS has been lost <60 sec ago)" 3 "With GNSS (default mode)" ;
 
 SIG_VALTYPE_ 512 VSM_HE_CoulombCount : 1;
 SIG_VALTYPE_ 642 CDC_Latitude : 1;

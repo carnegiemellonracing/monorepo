@@ -53,9 +53,9 @@ float getPackVoltage() {
 
     // If HVI Sense hasn't timed out, use it. Otherwise, use batt voltage
     float measured_voltage_V = batt_voltage_V;
-    if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[CANRX_TRAC_HVI_SENSE], xTaskGetTickCount()) == 0) {
-        measured_voltage_V = hv_voltage_V;
-    }
+    // if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[CANRX_TRAC_HVI_SENSE], xTaskGetTickCount()) == 0) {
+    //     measured_voltage_V = hv_voltage_V;
+    // }
 
     return measured_voltage_V;
 }
@@ -190,7 +190,7 @@ bool setPaddleRegen(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8, int32
 
 
     float reqTorque = maxFastTorque_Nm * pedal_request / ((float)(UINT8_MAX));
-    float recuperative_limit = -21.0f;//getMotorRegenerativeCapacity(avgMotorSpeed_RPM);
+    float recuperative_limit = getMotorRegenerativeCapacity(avgMotorSpeed_RPM);
 
     // Requested recuperation that is less than the maximum-power regen point possible
     if (reqTorque > recuperative_limit) {
@@ -221,7 +221,7 @@ bool setParallelRegen(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int3
 
     // DIM requested regen_force_multiplier
     uint8_t regen_force_multiplier_int8 = 80;//0;
-    ret_val &= getProcessedValue(&regen_force_multiplier_int8, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
+    // ret_val &= getProcessedValue(&regen_force_multiplier_int8, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
 
     // process the max regen force requested:
     float regen_force_multiplier_f = (float)regen_force_multiplier_int8 / 100.0f;

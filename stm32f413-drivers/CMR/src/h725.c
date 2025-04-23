@@ -489,6 +489,7 @@ void _platform_rccADCClockEnable(ADC_TypeDef *instance) {
 
 	if(HAL_RCC_ADC_CLK_ENABLED == 0) {
 		__HAL_RCC_ADC12_CLK_ENABLE();
+        __HAL_RCC_ADC3_CLK_ENABLE();
 		HAL_RCC_ADC_CLK_ENABLED++;
 	}
 }
@@ -532,8 +533,9 @@ void _platform_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance, cmr_adcChannel_t *
             // This will allow conversion of a series of channels one at a time.
             .Init = {
             		.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1,
-            		.Resolution = ADC_RESOLUTION_16B,
+            		.Resolution = ADC_RESOLUTION_12B,
             		.ScanConvMode = ADC_SCAN_ENABLE,
+                    .DataAlign = ADC3_DATAALIGN_RIGHT,
             		.EOCSelection = ADC_EOC_SINGLE_CONV,
             		.LowPowerAutoWait = DISABLE,
             		.ContinuousConvMode = DISABLE,
@@ -542,6 +544,8 @@ void _platform_adcInit(cmr_adc_t *adc, ADC_TypeDef *instance, cmr_adcChannel_t *
             		.NbrOfDiscConversion = 1,
             		.ExternalTrigConv = ADC_SOFTWARE_START,
             		.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE,
+                    .DMAContinuousRequests = DISABLE,
+                    .SamplingMode = ADC_SAMPLING_MODE_NORMAL,
             		.ConversionDataManagement = ADC_CONVERSIONDATA_DR,
             		.Overrun = ADC_OVR_DATA_PRESERVED,
             		.LeftBitShift = ADC_LEFTBITSHIFT_NONE,
@@ -563,7 +567,7 @@ void _platform_adcPoll(cmr_adc_t *adc, uint32_t adcTimeout) {
         HAL_ADC_PollForConversion(&adc->handle, adcTimeout);
         channel->value = HAL_ADC_GetValue(&adc->handle);
     }
-}
+}   
 #endif /* HAL_ADC_MODULE_ENABLED */
 
 

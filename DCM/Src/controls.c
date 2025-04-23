@@ -24,7 +24,7 @@
 #include "lut.h"
 #include "constants.h"
 
-#define PI 3.1415926535897932384626
+#define PI 3.1415926535897932384626f
 
 #define X1000_INT16(x) ((int16_t)((float)x * 1000.0f))
 
@@ -177,11 +177,6 @@ const volatile cmr_canCDCControlsStatus_t *getControlsStatus() {
     return (const cmr_canCDCControlsStatus_t*) &controlsStatus;
 }
 
-// Placeholder for now.
-static float get_motor_regen_capacity(float wheelspeed_radps) {
-    return -maxTorque_continuous_stall_Nm;
-}
-
 // For sensor validation.
 static void set_slow_motor_speed(float speed_mps, bool rear_only) {
     speed_mps = fmaxf(speed_mps, 0.0f);
@@ -277,10 +272,17 @@ static float get_load_cell_angle_rad(canDaqRX_t loadIndex) {
     {
     case CANRX_DAQ_LOAD_FL:
     case CANRX_DAQ_LOAD_FR:
+<<<<<<< HEAD
         return 30.0f / 180.0f * PI;
     case CANRX_DAQ_LOAD_RL:
     case CANRX_DAQ_LOAD_RR:
         return 35.0f / 180.0f * PI;
+=======
+        return 35.0f / 180.0f * PI;
+    case CANRX_DAQ_LOAD_RL:
+    case CANRX_DAQ_LOAD_RR:
+        return 30.0f / 180.0f * PI;
+>>>>>>> d672c7872c5e4d3a77d4aa7b726a5958ead24984
     default:
         return 0.0f;
     }
@@ -295,7 +297,12 @@ static float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
     if (use_true_downforce && not_timeout) {
         volatile cmr_canIZZELoadCell_t *downforcePayload = (volatile cmr_canIZZELoadCell_t*) canDAQGetPayload(loadIndex);
         float angle = get_load_cell_angle_rad(loadIndex);
+<<<<<<< HEAD
         downforce_N = downforcePayload->force_output_N * sinf(angle);
+=======
+        volatile int16_t raw = parse_int16(&downforcePayload->force_output_N);
+        downforce_N = (float) raw * 0.1f * sinf(angle);
+>>>>>>> d672c7872c5e4d3a77d4aa7b726a5958ead24984
     } else {
         downforce_N = (float) car_mass_kg * 9.81f * 0.25f;
     }
@@ -333,22 +340,29 @@ static void set_optimal_control(
 	// float tractive_cap_rl = getKappaFxGlobalMax(MOTOR_RL, UINT8_MAX, true).Fx;
 	// float tractive_cap_rr = getKappaFxGlobalMax(MOTOR_RR, UINT8_MAX, true).Fx;
 
-    bool use_true_downforce = true;
-    float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce)).Fx;
-    float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce)).Fx;
-    float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce)).Fx;
-    float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce)).Fx;
+    const float corner_weight_Nm = 80.0f;
+    bool use_true_downforce = false;
+    float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
+    float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
+    float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
+    float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
 
+    static const float motor_resistance_Nm[MOTOR_LEN] = {
+        [MOTOR_FL] = 0.75f,
+        [MOTOR_FR] = 0.4f,
+        [MOTOR_RL] = 0.75f,
+        [MOTOR_RR] = 0.4f,
+    };
 	// The most naive approach is to convert force to torque linearly, ignoring rolling resistance and any inefficiency.
-	float torque_limit_fl = tractive_cap_fl * effective_wheel_rad_m / gear_ratio;
-	float torque_limit_fr = tractive_cap_fr * effective_wheel_rad_m / gear_ratio;
-	float torque_limit_rl = tractive_cap_rl * effective_wheel_rad_m / gear_ratio;
-	float torque_limit_rr = tractive_cap_rr * effective_wheel_rad_m / gear_ratio;
+	float torque_limit_fl = tractive_cap_fl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FL];
+	float torque_limit_fr = tractive_cap_fr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FR];
+	float torque_limit_rl = tractive_cap_rl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RL];
+	float torque_limit_rr = tractive_cap_rr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RR];
 
-	torque_limit_fl = fminf(tractive_cap_fl, maxTorque_continuous_stall_Nm);
-	torque_limit_fr = fminf(tractive_cap_fr, maxTorque_continuous_stall_Nm);
-	torque_limit_rl = fminf(tractive_cap_rl, maxTorque_continuous_stall_Nm);
-	torque_limit_rr = fminf(tractive_cap_rr, maxTorque_continuous_stall_Nm);
+	torque_limit_fl = fminf(torque_limit_fl, maxTorque_continuous_stall_Nm);
+	torque_limit_fr = fminf(torque_limit_fr, maxTorque_continuous_stall_Nm);
+	torque_limit_rl = fminf(torque_limit_rl, maxTorque_continuous_stall_Nm);
+	torque_limit_rr = fminf(torque_limit_rr, maxTorque_continuous_stall_Nm);
 
 	static optimizer_state_t optimizer_state;
 
@@ -359,10 +373,10 @@ static void set_optimal_control(
 	optimizer_state.omegas[3] = wheel_rr_speed_radps;
 
     if(true == allow_regen) {
-        optimizer_state.variable_profile[0].lower = get_motor_regen_capacity(wheel_fl_speed_radps);
-        optimizer_state.variable_profile[1].lower = get_motor_regen_capacity(wheel_fr_speed_radps);
-        optimizer_state.variable_profile[2].lower = get_motor_regen_capacity(wheel_rl_speed_radps);
-        optimizer_state.variable_profile[3].lower = get_motor_regen_capacity(wheel_rr_speed_radps);
+        optimizer_state.variable_profile[0].lower = fmaxf(-torque_limit_fl + motor_resistance_Nm[MOTOR_FL], getMotorRegenerativeCapacity(wheel_fl_speed_radps));
+        optimizer_state.variable_profile[1].lower = fmaxf(-torque_limit_fr + motor_resistance_Nm[MOTOR_FR], getMotorRegenerativeCapacity(wheel_fr_speed_radps));
+        optimizer_state.variable_profile[2].lower = fmaxf(-torque_limit_rl + motor_resistance_Nm[MOTOR_RL], getMotorRegenerativeCapacity(wheel_rl_speed_radps));
+        optimizer_state.variable_profile[3].lower = fmaxf(-torque_limit_rr + motor_resistance_Nm[MOTOR_RR], getMotorRegenerativeCapacity(wheel_rr_speed_radps));
     } else {
         optimizer_state.variable_profile[0].lower = 0.0;
         optimizer_state.variable_profile[1].lower = 0.0;
@@ -378,10 +392,18 @@ static void set_optimal_control(
 	const float thoeretical_mass_accel = maxTorque_continuous_stall_Nm * MOTOR_LEN * gear_ratio / effective_wheel_rad_m / car_mass_kg;
 	// areq can be either expressed in torque or actual accel. Both ways are equivalent. Here uses actual accel.
 	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
+<<<<<<< HEAD
 	optimizer_state.mreq = getYawRateControlLeftRightBias(swAngle_millideg);
     
 	optimizer_state.theta_left = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
     optimizer_state.theta_right = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
+=======
+    // Solver treats Mreq as around -z axis.
+	optimizer_state.mreq = -getYawRateControlLeftRightBias(swAngle_millideg);
+    
+	optimizer_state.theta_left = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
+    optimizer_state.theta_right = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
+>>>>>>> d672c7872c5e4d3a77d4aa7b726a5958ead24984
 
 	solve(&optimizer_state);
 
@@ -435,9 +457,10 @@ static void set_optimal_control(
     }
 }
 
-static void set_optimal_control_with_regen(
+void set_optimal_control_with_regen(
 	int throttlePos_u8,
-	int32_t swAngle_millideg
+	int32_t swAngle_millideg_FL,
+	int32_t swAngle_millideg_FR
 ) {
     uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
 
@@ -453,7 +476,50 @@ static void set_optimal_control_with_regen(
 
     float throttle = (float)throttlePos_u8 / UINT8_MAX;
     float combined_request = throttle - paddle_request; // [0, 1].
-    set_optimal_control(combined_request, swAngle_millideg, swAngle_millideg, true);
+    set_optimal_control(combined_request, swAngle_millideg_FL, swAngle_millideg_FR, true);
+}
+
+static void set_regen(uint8_t throttlePos_u8) {
+    uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
+
+    uint8_t paddle_regen_strength_raw = 100;
+    getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
+    float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
+
+    float paddle_request = 0.0f;
+    if (paddle_pressure > paddle_pressure_start) {
+        paddle_request = ((float)(paddle_pressure - paddle_pressure_start)) / (UINT8_MAX - paddle_pressure_start);
+        paddle_request *= paddle_regen_strength; // [0, 1].
+    }
+
+    float throttle = (float)throttlePos_u8 / UINT8_MAX;
+    float combined_request = throttle - paddle_request; // [0, 1].
+
+    static cmr_torqueDistributionNm_t torquesPos_Nm;
+	static cmr_torqueDistributionNm_t torquesNeg_Nm;
+
+    float torque_request_Nm = combined_request * maxFastTorque_Nm;
+    float torque_request_fl_Nm;
+    float torque_request_fr_Nm;
+    float torque_request_rl_Nm;
+    float torque_request_rr_Nm;
+    if(torque_request_Nm < 0) {
+        torque_request_fl_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FL)), torque_request_Nm);
+        torque_request_fr_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FR)), torque_request_Nm);
+        torque_request_rl_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RL)), torque_request_Nm);
+        torque_request_rr_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RR)), torque_request_Nm);
+    } else {
+        torque_request_fl_Nm = torque_request_Nm;
+        torque_request_fr_Nm = torque_request_Nm;
+        torque_request_rl_Nm = torque_request_Nm;
+        torque_request_rr_Nm = torque_request_Nm;
+    }
+
+    set_motor_speed_and_torque(MOTOR_FL, torque_request_fl_Nm, &torquesPos_Nm, &torquesNeg_Nm);
+    set_motor_speed_and_torque(MOTOR_FR, torque_request_fr_Nm, &torquesPos_Nm, &torquesNeg_Nm);
+    set_motor_speed_and_torque(MOTOR_RL, torque_request_rl_Nm, &torquesPos_Nm, &torquesNeg_Nm);
+    set_motor_speed_and_torque(MOTOR_RR, torque_request_rr_Nm, &torquesPos_Nm, &torquesNeg_Nm);
+    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
 }
 
 /**
@@ -517,7 +583,8 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_ENDURANCE: {
-            setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
+            // setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
+            set_regen(throttlePos_u8);
             break;
         }
         case CMR_CAN_GEAR_AUTOX: {
@@ -525,9 +592,10 @@ void runControls (
             // const bool ignoreYawRate = false; // TC takes yaw rate into account to prevent the vehicle from stopping unintendedly when turning at low speeds
             // const bool allowRegen = true; // regen-braking is allowed to protect the AC by keeping charge level high
             // const float critical_speed_mps = 5.0f; // using a high value to prevent the vehicle from stopping unintendedly when turning at low speeds
-            const bool clampbyside = true;
-            setYawRateControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, clampbyside);
+            // const bool clampbyside = true;
+            // setYawRateControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, clampbyside);
             //setYawRateAndTractionControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
+            set_optimal_control_with_regen(throttlePos_u8, swAngle_millideg_FL, swAngle_millideg_FR);
             break;
         }
         case CMR_CAN_GEAR_SKIDPAD: {
@@ -546,9 +614,12 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_TEST: {
-            // set_optimal_control_with_regen(throttlePos_u8, swAngle_millideg);
             float target_speed_mps = 5.0f;
+<<<<<<< HEAD
             // getProcessedValue(&target_speed_mps, FFLAUNCH_FEEDBACK_INDEX, float_1_decimal);
+=======
+            getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
+>>>>>>> d672c7872c5e4d3a77d4aa7b726a5958ead24984
             set_slow_motor_speed(target_speed_mps, false);
             break;
         }
@@ -691,23 +762,7 @@ void setFastTorque (
 void setFastTorqueWithParallelRegen(uint16_t brakePressurePsi_u8, uint8_t throttlePos_u8)
 {
     if (brakePressurePsi_u8 >= braking_threshold_psi) {
-        bool activateParallelRegen = false;
-
-        volatile cmr_canRXMeta_t *timeoutMsg = canVehicleGetMeta(CANRX_VEH_DIM_ACTION_BUTTON);
-        if(cmr_canRXMetaTimeoutError(timeoutMsg, xTaskGetTickCount()) != (-1)) {
-
-            volatile cmr_canDIMActions_t *actions = (cmr_canDIMActions_t*)(timeoutMsg->payload);
-
-            uint8_t switches = actions->switchValues;
-            if(switches % 2 == 0) {
-                activateParallelRegen = true;
-            } else {
-                activateParallelRegen = false;
-            }
-        }
-
-        if (activateParallelRegen)
-            setParallelRegen(throttlePos_u8, brakePressurePsi_u8, 0);
+        setParallelRegen(throttlePos_u8, brakePressurePsi_u8, 0);
     }
     else {
         const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
@@ -807,7 +862,7 @@ static float getFFScheduleVelocity(float t_sec) {
     float scheduleVelocity_mps = 0.0f;
 
     float scheduleVelocity_mps2 = 11.29;
-    // getProcessedValue(&scheduleVelocity_mps2, K_EFF_INDEX, float_1_decimal);
+    getProcessedValue(&scheduleVelocity_mps2, LAUNCH_SLOPE_INDEX, float_1_decimal);
 
     if (t_sec < 0.0f) {
         scheduleVelocity_mps = 0.0f;
@@ -874,11 +929,7 @@ void setLaunchControl(
 
     float time_s = (float)(xTaskGetTickCount() - startTickCount) * (0.001f);
 	if(time_s >= launch_control_max_duration_s) {
-        setTorqueLimsUnprotected(MOTOR_FL, 0.0, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_FR, 0.0, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_RR, 0.0, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_RL, 0.0, 0.0f);
-		setVelocityInt16All(0);
+        setSlowTorque(throttlePos_u8, swAngle_millideg);
 		return;
 	}
 
@@ -1173,7 +1224,7 @@ float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
     }
     
     const float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
-    const float actual_yaw_rate_radps_sae = -movella_state.gyro.z;
+    const float actual_yaw_rate_radps_sae = movella_state.gyro.z;
     const float optimal_yaw_rate_radps = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
 
     yrcDebug.controls_current_yaw_rate = (int16_t)(1000.0f * actual_yaw_rate_radps_sae);

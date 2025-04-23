@@ -16,18 +16,18 @@
  * @see `CMR/adc.h` for various initialization values.
  */
 static cmr_adcChannel_t adcChannels[ADC_LEN] = {
-    [ADC_VSENSE] = {
-        .channel = ADC_CHANNEL_10,
-        .port = GPIOC,
-        .pin = GPIO_PIN_0,
-        .samplingTime = ADC_SAMPLETIME_1CYCLE_5,
+    [ADC_LINPOT1] = {
+        .channel = ADC_CHANNEL_7,
+        .port = GPIOF,
+        .pin = GPIO_PIN_8,
+        .samplingTime = ADC3_SAMPLETIME_12CYCLES_5,
         .value = 0
     },
-    [ADC_ISENSE] = {
-        .channel = ADC_CHANNEL_11,
-        .port = GPIOC,
-        .pin = GPIO_PIN_1,
-        .samplingTime = ADC_SAMPLETIME_1CYCLE_5,
+    [ADC_LINPOT2] = {
+        .channel = ADC_CHANNEL_2,
+        .port = GPIOF,
+        .pin = GPIO_PIN_9,
+        .samplingTime = ADC3_SAMPLETIME_12CYCLES_5,
         .value = 0
     }
 };
@@ -41,7 +41,7 @@ static cmr_adc_t adc;
 void adcInit(void) {
     // ADC initialization and channel configuration.
     cmr_adcInit(
-        &adc, ADC1,
+        &adc, ADC3,
         adcChannels, sizeof(adcChannels) / sizeof(adcChannels[0]),
         10
     );

@@ -29,6 +29,7 @@
 #include "fans.h"
 #include "constants.h"
 #include "controls.h"
+
 // ------------------------------------------------------------------------------------------------
 // Constants
 
@@ -180,11 +181,6 @@ static void motorsCommand (
         volatile cmr_canHVCPackCurrent_t *currentHVC   = canVehicleGetPayload(CANRX_VEH_CURRENT_HVC);
         volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VSM_STATUS);
 
-        uint32_t throttle;
-
-        float target_speed_mps = 5.0f;
-        getProcessedValue(&target_speed_mps, FFLAUNCH_FEEDBACK_INDEX, float_1_decimal);    
-
         //transmit Coulombs using HVI sense
         integrateCurrent();
 
@@ -213,11 +209,12 @@ static void motorsCommand (
         drsMode = reqDIM->requestedDrsMode;
 
         int32_t steeringWheelAngle_millideg = (swangleFSM->steeringWheelAngle_millideg_FL + swangleFSM->steeringWheelAngle_millideg_FR) / 2;
-        runDrsControls(reqDIM->requestedGear,
-                        drsMode,
-                        dataFSM    -> throttlePosition,
-                        dataFSM    -> brakePressureFront_PSI,
-                        steeringWheelAngle_millideg);
+        // runDrsControls(reqDIM->requestedGear,
+        //                 drsMode,
+        //                 dataFSM    -> throttlePosition,
+        //                 dataFSM    -> brakePressureFront_PSI,
+        //                 steeringWheelAngle_millideg);
+
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
             case CMR_CAN_RTD: {
@@ -314,6 +311,7 @@ static void motorsCommand (
 
             	// fansOff();
             	pumpsOff();
+
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = CMR_CAN_AMK_CTRL_ERR_RESET;
                     motorSetpoints[i].velocity_rpm       = 0;
@@ -329,6 +327,9 @@ static void motorsCommand (
             default: {
                 pumpsOff();
                 mcCtrlOff();
+
+                set_optimal_control_with_regen(128, 10000, 10000); 
+
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = 0;
                     motorSetpoints[i].velocity_rpm       = 0;

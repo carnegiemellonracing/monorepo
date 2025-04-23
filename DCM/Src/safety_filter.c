@@ -440,7 +440,8 @@ void setTorqueLimsProtected (
     const float falloff_factor_by_cell_voltage_drop = getCellVoltageDropFalloffFactor(min_cell_voltage_V);
 
     // limit temperature
-    const float falloff_factor_by_temperature = getTemperatureFalloffFactor();
+    // const float falloff_factor_by_temperature = getTemperatureFalloffFactor();
+    const float falloff_factor_by_temperature = 1.0f;
 
     // compute torque multipliers
     const float accel_torque_multiplier = falloff_factor_by_pack_power * falloff_factor_by_cell_voltage_drop ;// falloff_factor_by_temperature;
