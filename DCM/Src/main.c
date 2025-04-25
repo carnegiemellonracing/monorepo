@@ -25,6 +25,7 @@
 #include "servo.h"
 #include "lut_3d.h"
 #include "lut.h"
+#include "brakelight.h"
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -98,7 +99,7 @@ int main(void) {
     servoInit();
     motorsInit();
     sensorsInit();
-
+    brakelightInit();
 
     // Tests for computing kappa.
     kappaAndFx results_ref[256];

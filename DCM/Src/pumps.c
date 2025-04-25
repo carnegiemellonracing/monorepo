@@ -109,6 +109,7 @@ void pumpsOn() {
     // cmr_pwmSetDutyCycle(&pump_2_PWM, (uint32_t) 100-pump_2_State);
 
     cmr_gpioWrite(GPIO_PUMP_LEFT, 0);
+    // cmr_gpioWrite(GPIO_PUMP_RIGHT, 0);
     if(MAX(inv1MotorTemp_dC, MAX(inv2MotorTemp_dC, MAX(inv3MotorTemp_dC, inv4MotorTemp_dC))) > 75) {
         cmr_gpioWrite(GPIO_PUMP_RIGHT, 0);
     }

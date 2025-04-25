@@ -33,7 +33,8 @@ void brakelight(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        if (vsmSensors->brakePressureRear_PSI > brakeLightThreshold_PSI) {
+        // if (vsmSensors->brakePressureRear_PSI > brakeLightThreshold_PSI) {
+        if(vsmSensors->brakePressureRear_PSI >= 0) {
             cmr_gpioWrite(GPIO_BRKLT_ENABLE, 1);
         } else {
             cmr_gpioWrite(GPIO_BRKLT_ENABLE, 0);

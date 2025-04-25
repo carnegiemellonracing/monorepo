@@ -272,17 +272,10 @@ static float get_load_cell_angle_rad(canDaqRX_t loadIndex) {
     {
     case CANRX_DAQ_LOAD_FL:
     case CANRX_DAQ_LOAD_FR:
-<<<<<<< HEAD
         return 30.0f / 180.0f * PI;
     case CANRX_DAQ_LOAD_RL:
     case CANRX_DAQ_LOAD_RR:
         return 35.0f / 180.0f * PI;
-=======
-        return 35.0f / 180.0f * PI;
-    case CANRX_DAQ_LOAD_RL:
-    case CANRX_DAQ_LOAD_RR:
-        return 30.0f / 180.0f * PI;
->>>>>>> d672c7872c5e4d3a77d4aa7b726a5958ead24984
     default:
         return 0.0f;
     }
@@ -297,12 +290,8 @@ static float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
     if (use_true_downforce && not_timeout) {
         volatile cmr_canIZZELoadCell_t *downforcePayload = (volatile cmr_canIZZELoadCell_t*) canDAQGetPayload(loadIndex);
         float angle = get_load_cell_angle_rad(loadIndex);
-<<<<<<< HEAD
-        downforce_N = downforcePayload->force_output_N * sinf(angle);
-=======
-        volatile int16_t raw = parse_int16(&downforcePayload->force_output_N);
-        downforce_N = (float) raw * 0.1f * sinf(angle);
->>>>>>> d672c7872c5e4d3a77d4aa7b726a5958ead24984
+        // downforce_N = (float)(downforcePayload->force_output_N) * sinf(angle);
+        downforce_N = 0.0;
     } else {
         downforce_N = (float) car_mass_kg * 9.81f * 0.25f;
     }
@@ -392,18 +381,10 @@ static void set_optimal_control(
 	const float thoeretical_mass_accel = maxTorque_continuous_stall_Nm * MOTOR_LEN * gear_ratio / effective_wheel_rad_m / car_mass_kg;
 	// areq can be either expressed in torque or actual accel. Both ways are equivalent. Here uses actual accel.
 	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
-<<<<<<< HEAD
 	optimizer_state.mreq = getYawRateControlLeftRightBias(swAngle_millideg);
     
 	optimizer_state.theta_left = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
     optimizer_state.theta_right = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
-=======
-    // Solver treats Mreq as around -z axis.
-	optimizer_state.mreq = -getYawRateControlLeftRightBias(swAngle_millideg);
-    
-	optimizer_state.theta_left = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
-    optimizer_state.theta_right = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
->>>>>>> d672c7872c5e4d3a77d4aa7b726a5958ead24984
 
 	solve(&optimizer_state);
 
@@ -615,11 +596,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_TEST: {
             float target_speed_mps = 5.0f;
-<<<<<<< HEAD
             // getProcessedValue(&target_speed_mps, FFLAUNCH_FEEDBACK_INDEX, float_1_decimal);
-=======
-            getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
->>>>>>> d672c7872c5e4d3a77d4aa7b726a5958ead24984
             set_slow_motor_speed(target_speed_mps, false);
             break;
         }

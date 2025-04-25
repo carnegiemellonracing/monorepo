@@ -198,7 +198,6 @@ static void canTX200Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        sendVSMSensors();
 
         vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
     }

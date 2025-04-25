@@ -1028,12 +1028,12 @@ void canInit(void) {
             .ids = {0x000,0x000}
         },
 
-        {
-            .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO0,
-            .ids = {CMR_CANID_CDC_RTC_DATA_IN,
-                    CMR_CANID_VSM_SENSORS}
-        }
+        // {
+        //     .isMask = false,
+        //     .rxFIFO = FDCAN_RX_FIFO0,
+        //     .ids = {CMR_CANID_CDC_RTC_DATA_IN,
+        //             CMR_CANID_VSM_SENSORS}
+        // }
     };
 
     cmr_canFilter(&(can[CMR_CAN_BUS_VEH]), canVehicleFilters,
