@@ -35,6 +35,8 @@ static cmr_task_t statusLED_task;
 
 static bool glvReached = false;
 
+uint16_t LED_Red_State = 0;
+
 static bool LEDerror() {  
   return (GPIO_IN_SOFTWARE_ERR) == 1 || cmr_gpioRead(GPIO_IN_BSPD_ERR) == 1 || cmr_gpioRead(GPIO_IN_IMD_ERR) == 1;
 }
@@ -47,7 +49,8 @@ static bool LEDerror() {
  * @return Does not return.
  */
 static void statusLED() {
-    cmr_gpioWrite(GPIO_OUT_LED_FLASH_RED, 0);
+    cmr_pwmSetDutyCycle(&LED_Red, 0);
+    LED_Red_State = 0;
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     TickType_t lastFlashTime = lastWakeTime;
@@ -62,16 +65,23 @@ static void statusLED() {
         if (LEDerror()) {
         TickType_t currentTick = xTaskGetTickCount();
         if (!flashed || currentTick - lastFlashTime >= 5000) {
-          cmr_gpioToggle(GPIO_OUT_LED_FLASH_RED);
+          if(LED_Red_State = 0) {
+            cmr_pwmSetDutyCycle(&LED_Red, 100);
+            LED_Red_State = 1;
+          }
+          else {
+            cmr_pwmSetDutyCycle(&LED_Red, 0);
+            LED_Red_State = 0;
+          }
           lastFlashTime = currentTick;
           flashed = true;
         }
 
-        cmr_gpioWrite(GPIO_OUT_LED_GREEN, 0);
+        cmr_pwmSetDutyCycle(&LED_Green, 0);
        }
       
         else if (getCurrentState() != CMR_CAN_VSM_STATE_ERROR) {
-          cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
+          cmr_pwmSetDutyCycle(&LED_Green, 100);
           flashed = false;
         }
       }

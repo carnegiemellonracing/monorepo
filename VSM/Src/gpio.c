@@ -9,6 +9,7 @@
 #include <FreeRTOS.h>   // configASSERT()
 
 #include <CMR/gpio.h>   // GPIO interface
+#include <CMR/pwm.h>
 
 #include "gpio.h"   // Interface to implement
 
@@ -25,26 +26,6 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         .port = GPIOB,
         .init = {
             .Pin = GPIO_PIN_4,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-
-    [GPIO_OUT_LED_GREEN] = {
-        .port = GPIOA,
-        .init = {
-            .Pin = GPIO_PIN_10,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-
-    [GPIO_OUT_LED_FLASH_RED] = {
-        .port = GPIOA,
-        .init = {
-            .Pin = GPIO_PIN_9,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
@@ -112,6 +93,24 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     }
 };
 
+const cmr_pwmPinConfig_t pwmPinConfig1 = {
+    .port = GPIOA,
+    .pin = GPIO_PIN_9,
+    .channel = TIM_CHANNEL_2,
+    .presc = 24,
+    .period_ticks = 40000,
+    .timer = TIM1
+};
+
+const cmr_pwmPinConfig_t pwmPinConfig2 = {
+    .port = GPIOA,
+    .pin = GPIO_PIN_10,
+    .channel = TIM_CHANNEL_3,
+    .presc = 24,
+    .period_ticks = 40000,
+    .timer = TIM1
+};
+
 /**
  * @brief Initializes the GPIO interface.
  */
@@ -119,6 +118,9 @@ void gpioInit(void) {
     cmr_gpioPinInit(
         gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0])
     );
+
+    cmr_pwmInit(&LED_Red, &pwmPinConfig1);
+    cmr_pwmInit(&LED_Green, &pwmPinConfig2);
 
     cmr_gpioWrite(GPIO_OUT_DCDC_EN, 0);
     cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
