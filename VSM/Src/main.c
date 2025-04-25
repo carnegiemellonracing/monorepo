@@ -88,6 +88,8 @@ static void MX_DAC1_Init(void)
   }
   /* USER CODE BEGIN DAC1_Init 2 */
   HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
+  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
+
 
   /* USER CODE END DAC1_Init 2 */
 
@@ -102,6 +104,7 @@ static void MX_DAC1_Init(void)
 void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
+  GPIO_InitTypeDef GPIO_InitStruct2 = {0};
   if(hdac->Instance==DAC1)
   {
   /* USER CODE BEGIN DAC1_MspInit 0 */
@@ -118,6 +121,10 @@ void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac)
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    GPIO_InitStruct2.Pin = GPIO_PIN_4;
+    GPIO_InitStruct2.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct2.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct2);
 
   /* USER CODE BEGIN DAC1_MspInit 1 */
 
@@ -141,6 +148,7 @@ int main(void) {
     HAL_DAC_MspInit(&hdac1);
     MX_DAC1_Init();
     HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, 1899);
+    HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 1899);
 
     // Peripheral configuration.
     gpioInit();
