@@ -19,6 +19,7 @@
 #include "adc.h"        // Board-specific ADC interface
 #include "sensors.h"    // Board-specific sensors interface
 #include "state.h"      // stateInit()
+#include "error.h"
 
 DAC_HandleTypeDef hdac1;
 
@@ -32,6 +33,12 @@ static const TickType_t statusLED_period_ms = 250;
 /** @brief Status LED task. */
 static cmr_task_t statusLED_task;
 
+static bool glvReached = false;
+
+static bool LEDerror() {  
+  return (GPIO_IN_SOFTWARE_ERR) == 1 || cmr_gpioRead(GPIO_IN_BSPD_ERR) == 1 || cmr_gpioRead(GPIO_IN_IMD_ERR) == 1;
+}
+
 /**
  * @brief Task for toggling the status LED.
  *
@@ -39,16 +46,39 @@ static cmr_task_t statusLED_task;
  *
  * @return Does not return.
  */
-static void statusLED(void *pvParameters) {
-    (void) pvParameters;
-
-    cmr_gpioWrite(GPIO_OUT_LED_STATUS, 0);
+static void statusLED() {
+    cmr_gpioWrite(GPIO_OUT_LED_FLASH_RED, 0);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        cmr_gpioToggle(GPIO_OUT_LED_STATUS);
+    TickType_t lastFlashTime = lastWakeTime;
+    bool flashed = false;
 
-        vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
+    while (1) {
+      if (getCurrentState() == CMR_CAN_VSM_STATE_GLV_ON) {
+        glvReached = true;
+      }
+
+      if (glvReached) {
+        if (LEDerror()) {
+        TickType_t currentTick = xTaskGetTickCount();
+        if (!flashed || currentTick - lastFlashTime >= 5000) {
+          cmr_gpioToggle(GPIO_OUT_LED_FLASH_RED);
+          lastFlashTime = currentTick;
+          flashed = true;
+        }
+
+        cmr_gpioWrite(GPIO_OUT_LED_GREEN, 0);
+       }
+      
+        else if (getCurrentState() != CMR_CAN_VSM_STATE_ERROR) {
+          cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
+          flashed = false;
+        }
+      }
+
+      cmr_gpioToggle(GPIO_OUT_LED_STATUS);
+
+      vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
     }
 }
 
