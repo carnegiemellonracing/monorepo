@@ -29,12 +29,11 @@ static cmr_task_t brakelight_task;
 void brakelight(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-    volatile cmr_canVSMSensors_t *vsmSensors = canGetPayload(CANRX_VSM_SENSORS);
+    volatile cmr_canVSMSensors_t *vsmSensors = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // if (vsmSensors->brakePressureRear_PSI > brakeLightThreshold_PSI) {
-        if(vsmSensors->brakePressureRear_PSI >= 0) {
+        if (vsmSensors->brakePressureRear_PSI > brakeLightThreshold_PSI) {
             cmr_gpioWrite(GPIO_BRKLT_ENABLE, 1);
         } else {
             cmr_gpioWrite(GPIO_BRKLT_ENABLE, 0);
