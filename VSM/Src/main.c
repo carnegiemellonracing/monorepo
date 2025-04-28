@@ -79,7 +79,7 @@ static void statusLED(void *pvParameters) {
       if (glvReached) {
         if (LEDerror()) {
         TickType_t currentTick = xTaskGetTickCount();
-        if (!flashed || currentTick - lastFlashTime >= 300) {
+        if (!flashed || currentTick - lastFlashTime >= 150) {
           if(LED_Red_State == 0) {
             cmr_pwmSetDutyCycle(&LED_Red, 15);
             LED_Red_State = 1;

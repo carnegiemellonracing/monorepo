@@ -54,9 +54,6 @@ static void statusLED(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     for (;;) {
         vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
-        cmr_gpioWrite(GPIO_LED_AMS, toggle);
-        cmr_gpioWrite(GPIO_LED_IMD, toggle);
-        cmr_gpioWrite(GPIO_LED_BSPD, toggle);
         cmr_gpioWrite(GPIO_LED_STATUS, toggle);
         toggle = !toggle;
     }
@@ -97,9 +94,9 @@ static void errorLEDs(void *pvParameters) {
         cmr_gpioWrite(GPIO_LED_IMD, latch & CMR_CAN_VSM_LATCH_IMD);
         cmr_gpioWrite(GPIO_LED_AMS, latch & CMR_CAN_VSM_LATCH_AMS);
         cmr_gpioWrite(GPIO_LED_BSPD, latch & CMR_CAN_VSM_LATCH_BSPD);
-
     }
 }
+
 
 /**
  * @brief Firmware entry point.
