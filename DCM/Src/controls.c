@@ -861,7 +861,7 @@ static void update_whl_speed_setpoint (
 static float getFFScheduleVelocity(float t_sec) {
 
     float tMax = 6.4f; // limit time for safety reasons
-    float scheduleVelocity_mps = 0.0f;
+    float scheduleVelocity_mps = 1.0f;
 
     float scheduleVelocity_mps2 = 12.1;
     // getProcessedValue(&scheduleVelocity_mps2, LAUNCH_SLOPE_INDEX, float_1_decimal);
