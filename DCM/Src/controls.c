@@ -562,11 +562,13 @@ void runControls (
         }
         case CMR_CAN_GEAR_FAST: {
             setFastTorque(throttlePos_u8);
+            // set_fast_torque_with_slew(throttlePos_u8, 29.0f);
             break;
         }
         case CMR_CAN_GEAR_ENDURANCE: {
             // setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
             set_regen(throttlePos_u8);
+            // set_regen_with_slew(throttlePos_u8, 29.0f);
             break;
         }
         case CMR_CAN_GEAR_AUTOX: {
@@ -596,9 +598,10 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_TEST: {
-            float target_speed_mps = 5.0f;
-            getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
-            set_slow_motor_speed(target_speed_mps, false);
+            // float target_speed_mps = 5.0f;
+            // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
+            // set_slow_motor_speed(target_speed_mps, false);
+            set_fast_torque_with_slew(throttlePos_u8, 360);
             break;
         }
 
@@ -737,6 +740,27 @@ void setFastTorque (
     setVelocityInt16All(maxFastSpeed_rpm);
 }
 
+void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew) {
+    const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
+    
+    if(reqTorque > 0.0f) {
+        int16_t fl_rpm = getMotorSpeed_rpm(MOTOR_FL);
+        int16_t fr_rpm = getMotorSpeed_rpm(MOTOR_FR);
+        int16_t rl_rpm = getMotorSpeed_rpm(MOTOR_RL);
+        int16_t rr_rpm = getMotorSpeed_rpm(MOTOR_RR);
+        setVelocityFloat(MOTOR_FL, fl_rpm + slew);
+        setVelocityFloat(MOTOR_FR, fr_rpm + slew);
+        setVelocityFloat(MOTOR_RL, rl_rpm + slew);
+        setVelocityFloat(MOTOR_RR, rr_rpm + slew);
+    } else {
+        setVelocityInt16All(maxFastSpeed_rpm);
+    }
+    setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
+}
+
 void setFastTorqueWithParallelRegen(uint16_t brakePressurePsi_u8, uint8_t throttlePos_u8)
 {
     if (brakePressurePsi_u8 >= braking_threshold_psi) {
@@ -839,8 +863,8 @@ static float getFFScheduleVelocity(float t_sec) {
     float tMax = 6.4f; // limit time for safety reasons
     float scheduleVelocity_mps = 0.0f;
 
-    float scheduleVelocity_mps2 = 11.29;
-    getProcessedValue(&scheduleVelocity_mps2, LAUNCH_SLOPE_INDEX, float_1_decimal);
+    float scheduleVelocity_mps2 = 12.1;
+    // getProcessedValue(&scheduleVelocity_mps2, LAUNCH_SLOPE_INDEX, float_1_decimal);
 
     if (t_sec < 0.0f) {
         scheduleVelocity_mps = 0.0f;

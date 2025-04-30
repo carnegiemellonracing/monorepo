@@ -619,7 +619,7 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_FR_SETPOINTS, amkSetpointsFR, sizeof(*amkSetpointsFR), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_RL_SETPOINTS, amkSetpointsRL, sizeof(*amkSetpointsRL), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_RR_SETPOINTS, amkSetpointsRR, sizeof(*amkSetpointsRR), canTX200Hz_period_ms);
-
+        
         daqWheelSpeedFeedback(&speedFeedback);
         daqWheelTorqueFeedback(&torqueFeedback);
         daqWheelSpeedSetpoints(&speedSetpoint);
