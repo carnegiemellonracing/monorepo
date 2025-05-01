@@ -35,6 +35,8 @@ static cmr_pwm_t pump_2_PWM;
 #define PUMP_INVERTER_STATE_LOW 30
 #define PUMP_INVERTER_STATE_HIGH 100
 
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
 
 //extern cmr_sensor_t *sensors;
 
@@ -108,7 +110,12 @@ void pumpsOn() {
     // cmr_pwmSetDutyCycle(&pump_2_PWM, (uint32_t) 100-pump_2_State);
 
     cmr_gpioWrite(GPIO_PUMP_LEFT, 0);
-    cmr_gpioWrite(GPIO_PUMP_RIGHT, 0);
+    if(MAX(inv1MotorTemp_dC, MAX(inv2MotorTemp_dC, MAX(inv3MotorTemp_dC, inv4MotorTemp_dC))) > 750) {
+         cmr_gpioWrite(GPIO_PUMP_RIGHT, 0);
+     }
+     else {
+         cmr_gpioWrite(GPIO_PUMP_RIGHT, 1);
+     }
     cmr_gpioWrite(GPIO_PUMP_ON, 0);
     
     // if (pump_1_State >= 50 || pump_2_State >= 50) {
