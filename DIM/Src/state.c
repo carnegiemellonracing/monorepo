@@ -505,7 +505,7 @@ void stateVSMDown() {
 void reqVSM(void) {
 	//So check state of the car and the pressing of up or down button, then based on the output
 	//update VstateVSMReq
-	if (((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN)) && (canLRUDStates[UP])){
+	if (((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN) || (stateGetVSM() == CMR_CAN_ERROR) || (stateGetVSM() == CMR_CAN_UNKNOWN)) && (canLRUDStates[UP])){
 		if(getCurrState() != CONFIG){
             stateVSMUp();
         }
