@@ -631,7 +631,7 @@ void integrateCurrent() {
 		previousTickCount = xTaskGetTickCount();
         coulombCounting.KCoulombs = 0.001f;
 	}else{
-        const float packCurrent_kA = getPackCurrent()*0.001f;
+        const float packCurrent_kA = (getPackCurrent() + 1)*0.001f;
         const TickType_t currentTick = xTaskGetTickCount();
         coulombCounting.KCoulombs += ((currentTick-previousTickCount)*0.001f)*packCurrent_kA;
         previousTickCount = currentTick;

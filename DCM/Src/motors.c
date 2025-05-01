@@ -325,6 +325,7 @@ static void motorsCommand (
 
             // In all other states, disable inverters and do not reset errors
             default: {
+                pumpsOn();
                 pumpsOff();
                 mcCtrlOff();
 
