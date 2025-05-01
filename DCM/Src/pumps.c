@@ -109,7 +109,12 @@ void pumpsOn() {
     // cmr_pwmSetDutyCycle(&pump_1_PWM, (uint32_t) 100-pump_1_State);
     // cmr_pwmSetDutyCycle(&pump_2_PWM, (uint32_t) 100-pump_2_State);
 
-    cmr_gpioWrite(GPIO_PUMP_LEFT, 0);
+    if(MAX(inv1IgbtTemp_dC, MAX(inv2IgbtTemp_dC, MAX(inv3IgbtTemp_dC, inv4IgbtTemp_dC))) > 400) {
+         cmr_gpioWrite(GPIO_PUMP_LEFT, 0);
+     }
+     else {
+         cmr_gpioWrite(GPIO_PUMP_LEFT, 1);
+     }
     if(MAX(inv1MotorTemp_dC, MAX(inv2MotorTemp_dC, MAX(inv3MotorTemp_dC, inv4MotorTemp_dC))) > 750) {
          cmr_gpioWrite(GPIO_PUMP_RIGHT, 0);
      }
