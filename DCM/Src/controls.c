@@ -603,10 +603,10 @@ void set_optimal_control_with_regen(
 }
 
 static void set_regen(uint8_t throttlePos_u8) {
-    uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
+    uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
 
-    uint8_t paddle_regen_strength_raw = 100;
-    getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
+    uint8_t paddle_regen_strength_raw = 90;
+    // getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
     float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
 
     float paddle_request = 0.0f;
