@@ -1105,8 +1105,8 @@ void setLaunchControl(
         float clamp_rpm = (float) (getMotorSpeed_rpm(MOTOR_RL) + getMotorSpeed_rpm(MOTOR_RR)) * 0.5f;
         // 12Nm torque * 67.5N traction per Nm / 1600N downforce * 0.11 max slip ratio = 0.0556875
         // 1.11 / 1.0556875 = 1.051447516
-        setVelocityFloat(MOTOR_FL, clamp_rpm * 1.05145f);
-        setVelocityFloat(MOTOR_FR, clamp_rpm * 1.05145f);
+        setVelocityFloat(MOTOR_FL, clamp_rpm * 1.07f);
+        setVelocityFloat(MOTOR_FR, clamp_rpm * 1.07f);
 
         // Go crazy.
         // motor_rpm = 20000.0f;
