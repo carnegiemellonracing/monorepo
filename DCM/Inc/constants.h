@@ -18,7 +18,7 @@ static const int16_t maxSpeed_rpm = 20000;
 /** @brief Maximum motor torque in slow gear */
 static const float maxSlowTorque_Nm = 5.0f;
 
-static const float maxTorque_continuous_stall_Nm = 13.8f;
+static const float maxTorque_continuous_stall_Nm = 21.0f;
 
 /** @brief Maximum motor torque in fast gear */
 static const float maxFastTorque_Nm = maxTorque_continuous_stall_Nm; 

@@ -369,23 +369,23 @@ cmr_canRXMeta_t canRXMeta[] = {
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
     },
     [CANRX_INV1_STATUS] = {
-        .canID = CMR_CANID_AMK_1_ACT_2,
+        .canID = CMR_CANID_AMK_FL_ACT_2,
         .timeoutError_ms = 800, // Send error if data not received within 4 cycles, or 800 ms
         .timeoutWarn_ms = 400, // Send warning if data not received within 2 cycles, or 400 ms
         // CAN transmitting frequency = 5 Hz, so ? s = 1 / 5 Hz = 0.2 s = 200ms
     },
     [CANRX_INV2_STATUS] = {
-        .canID = CMR_CANID_AMK_2_ACT_2,
+        .canID = CMR_CANID_AMK_FR_ACT_2,
         .timeoutError_ms = 800,
         .timeoutWarn_ms = 400,
     },
     [CANRX_INV3_STATUS] = {
-        .canID = CMR_CANID_AMK_3_ACT_2,
+        .canID = CMR_CANID_AMK_RL_ACT_2,
         .timeoutError_ms = 800,
         .timeoutWarn_ms = 400,
     },
     [CANRX_INV4_STATUS] = {
-        .canID = CMR_CANID_AMK_4_ACT_2,
+        .canID = CMR_CANID_AMK_RR_ACT_2,
         .timeoutError_ms = 800,
         .timeoutWarn_ms = 400,
     },
@@ -619,7 +619,7 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_FR_SETPOINTS, amkSetpointsFR, sizeof(*amkSetpointsFR), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_RL_SETPOINTS, amkSetpointsRL, sizeof(*amkSetpointsRL), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_RR_SETPOINTS, amkSetpointsRR, sizeof(*amkSetpointsRR), canTX200Hz_period_ms);
-
+        
         daqWheelSpeedFeedback(&speedFeedback);
         daqWheelTorqueFeedback(&torqueFeedback);
         daqWheelSpeedSetpoints(&speedSetpoint);
@@ -1027,23 +1027,23 @@ void canInit(void) {
     const cmr_canFilter_t canTractiveFilters[] = {
         {.isMask = false,
          .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_AMK_1_ACT_1, CMR_CANID_AMK_1_ACT_2,
+         .ids = {CMR_CANID_AMK_FL_ACT_1, CMR_CANID_AMK_FL_ACT_2,
                  }
         },
 
         {.isMask = false,
          .rxFIFO = FDCAN_RX_FIFO1,
-         .ids = {CMR_CANID_AMK_2_ACT_1, CMR_CANID_AMK_2_ACT_2,}
+         .ids = {CMR_CANID_AMK_FR_ACT_1, CMR_CANID_AMK_FR_ACT_2,}
         },
 
         {.isMask = false,
         .rxFIFO = FDCAN_RX_FIFO1,
-        .ids = {CMR_CANID_AMK_3_ACT_1, CMR_CANID_AMK_3_ACT_2,}
+        .ids = {CMR_CANID_AMK_RL_ACT_1, CMR_CANID_AMK_RL_ACT_2,}
         },
         
         {.isMask = false,
          .rxFIFO = FDCAN_RX_FIFO1,
-         .ids = {CMR_CANID_AMK_4_ACT_1, CMR_CANID_AMK_4_ACT_2}
+         .ids = {CMR_CANID_AMK_RR_ACT_1, CMR_CANID_AMK_RR_ACT_2}
         }
     };
 

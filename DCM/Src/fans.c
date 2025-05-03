@@ -96,13 +96,13 @@ void fansOn() {
     // linear in between
 
     // Get motor temperatures for each inverter.
-    cmr_canAMKActualValues2_t *inv1_temps = (cmr_canAMKActualValues2_t *) canGetPayload(CANRX_INV1_STATUS);
+    cmr_canAMKActualValues2_t *inv1_temps = (cmr_canAMKActualValues2_t *) canTractiveGetPayload(CANRX_TRAC_INV_FL_ACT2);
     int16_t inv1MotorTemp_dC = inv1_temps->motorTemp_dC;
-    cmr_canAMKActualValues2_t *inv2_temps = (cmr_canAMKActualValues2_t *) canGetPayload(CANRX_INV2_STATUS);
+    cmr_canAMKActualValues2_t *inv2_temps = (cmr_canAMKActualValues2_t *) canTractiveGetPayload(CANRX_TRAC_INV_FR_ACT2);
     int16_t inv2MotorTemp_dC = inv2_temps->motorTemp_dC;
-    cmr_canAMKActualValues2_t *inv3_temps = (cmr_canAMKActualValues2_t *) canGetPayload(CANRX_INV3_STATUS);
+    cmr_canAMKActualValues2_t *inv3_temps = (cmr_canAMKActualValues2_t *) canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT2);
     int16_t inv3MotorTemp_dC = inv3_temps->motorTemp_dC;
-    cmr_canAMKActualValues2_t *inv4_temps = (cmr_canAMKActualValues2_t *) canGetPayload(CANRX_INV4_STATUS);
+    cmr_canAMKActualValues2_t *inv4_temps = (cmr_canAMKActualValues2_t *) canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT2);
     int16_t inv4MotorTemp_dC = inv4_temps->motorTemp_dC;\
 
     int16_t motor_temp_avg = (inv1MotorTemp_dC + inv2MotorTemp_dC + inv3MotorTemp_dC + inv4MotorTemp_dC) / 4;
