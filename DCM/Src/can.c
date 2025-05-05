@@ -468,6 +468,13 @@ static void canTX10Hz(void *pvParameters) {
         //powersense is dead, voltage * HVI current
         powerSense.packPower_W = getPackVoltage() * getPackCurrent();
 
+        
+        cmr_canDAQTherm_t therms;
+        therms.therm_1 = adcRead(ADC_THERM1);
+        therms.therm_2 = adcRead(ADC_THERM2);
+
+        canTX(CMR_CAN_BUS_VEH, 0x659, &therms, sizeof(cmr_canDAQTherm_t), canTX10Hz_period_ms);
+
         // Is data valid? Set it in the orientation/velocity messages
 //        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX10Hz_period_ms);
 //        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK, &torqueFeedback, sizeof(torqueFeedback), canTX10Hz_period_ms);
@@ -526,11 +533,11 @@ static void canTX100Hz(void *pvParameters) {
             heartbeat.state = CMR_CAN_ERROR;
         }
 
-        cmr_canDAQLinpot_t linpots;
-        linpots.linpot_front_adc = adcRead(ADC_LINPOT1);
-        linpots.linpot_rear_adc = adcRead(ADC_LINPOT2);
+        cmr_canDAQTherm_t linpots;
+        linpots.therm_1 = adcRead(ADC_LINPOT1);
+        linpots.therm_2 = adcRead(ADC_LINPOT2);
 
-        canTX(CMR_CAN_BUS_VEH, 0x658, &linpots, sizeof(cmr_canDAQLinpot_t), canTX100Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, 0x658, &linpots, sizeof(cmr_canDAQTherm_t), canTX100Hz_period_ms);
 
         // Solver
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_INPUTS, &solver_inputs, sizeof(cmr_can_solver_inputs_t), canTX100Hz_period_ms);

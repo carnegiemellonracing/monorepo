@@ -112,16 +112,16 @@ static uint8_t getBrakeRegenStrength() {
 static float getLinpotDownforce(canDaqRX_t leftRight, bool fronts, float springConstant, float pushrodAngle) {
     float downforce_N = carWeight_N / 4.0f;
     if (cmr_canRXMetaTimeoutWarn(&canDaqRXMeta[leftRight],  xTaskGetTickCount()) == 0) {
-        volatile cmr_canDAQLinpot_t *linpotPayload = (volatile cmr_canDAQLinpot_t*) canDAQGetPayload(leftRight);
-        const float springNominalLength_mm = 225.0f;
-        float linpot_mm = 0.0f;
-        if (fronts) {
-            linpot_mm = springNominalLength_mm - ((float) linpotPayload->linpot_front_mm);
-        } else {
-            linpot_mm = springNominalLength_mm - ((float) linpotPayload->linpot_rear_mm);
-        }
-        float springForce_N = springConstant * linpot_mm; // TODO: check units
-        downforce_N = springForce_N * cosf(pushrodAngle) / 4.0f;
+        // volatile cmr_canDAQLinpot_t *linpotPayload = (volatile cmr_canDAQLinpot_t*) canDAQGetPayload(leftRight);
+        // const float springNominalLength_mm = 225.0f;
+        // float linpot_mm = 0.0f;
+        // if (fronts) {
+        //     linpot_mm = springNominalLength_mm - ((float) linpotPayload->linpot_front_mm);
+        // } else {
+        //     linpot_mm = springNominalLength_mm - ((float) linpotPayload->linpot_rear_mm);
+        // }
+        // float springForce_N = springConstant * linpot_mm; // TODO: check units
+        // downforce_N = springForce_N * cosf(pushrodAngle) / 4.0f;
     }
     return downforce_N;
 }

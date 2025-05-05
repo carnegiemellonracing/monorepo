@@ -18,6 +18,8 @@
 typedef enum {
   ADC_LINPOT1,
   ADC_LINPOT2,
+  ADC_THERM1,
+  ADC_THERM2,
   ADC_LEN         /**< @brief Total ADC channels. */
 } adcChannel_t;
 

@@ -1115,11 +1115,9 @@ typedef struct {
 typedef uint8_t cmr_canDAQTest_t; /** @brief DAQ Test type. MSB is to start/stop bits, rest are test id **/
 
 typedef struct {
-    uint16_t linpot_front_mm;       /**< @brief Front damper length in mm */
-    uint16_t linpot_front_adc;      /**< @brief Front linpot ADC Value */
-    uint16_t linpot_rear_mm;        /**< @brief Rear damper length in mm */
-    uint16_t linpot_rear_adc;       /**< @brief Rear linpot ADC Value */
-} cmr_canDAQLinpot_t;
+    uint32_t therm_1;       /**< @brief Front damper length in mm */
+    uint32_t therm_2;        /**< @brief Rear damper length in mm */
+} cmr_canDAQTherm_t;
 
 typedef struct {
     big_endian_16_t differential_voltage_uv;
