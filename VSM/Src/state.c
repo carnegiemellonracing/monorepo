@@ -297,11 +297,11 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             if (
                 // TODO: change back before comp so that don't unnecessarily error out
                 ((amk1Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
-                    !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_1]), lastWakeTime_ms)) &&
+                    !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_1]), lastWakeTime_ms)) ||
                 ((amk2Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
-                    !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_2]), lastWakeTime_ms)) &&
+                    !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_2]), lastWakeTime_ms)) ||
                 ((amk3Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
-                    !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_3]), lastWakeTime_ms)) &&
+                    !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_3]), lastWakeTime_ms)) ||
                 ((amk4Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
                     !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_4]), lastWakeTime_ms))
                 )
@@ -320,7 +320,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             if (dimRequestedState == CMR_CAN_RTD) {
                 if (
                     throttlePosition <= 5 &&
-                    brakePressureRear_PSI >= 0
+                    brakePressureRear_PSI >= 40
                 ) {
                     nextState = CMR_CAN_VSM_STATE_RTD;
                 } else {

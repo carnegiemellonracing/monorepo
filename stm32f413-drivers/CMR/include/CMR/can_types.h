@@ -109,8 +109,8 @@ typedef enum {
     CMR_CAN_WARN_VSM_DIM_TIMEOUT = (1 << 11),
     /** @brief VSM hasn't received PTCf heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_PTC_TIMEOUT = (1 << 10),
-    /** @brief VSM hasn't received APC heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_APC_TIMEOUT = (1 << 8),
+    /** @brief VSM hasn't received HVI heartbeat for 25 ms. */
+    CMR_CAN_WARN_VSM_HVI_TIMEOUT = (1 << 8),
     /** @brief VSM is rejecting DIM state request. */
     CMR_CAN_WARN_VSM_DIM_REQ_NAK = (1 << 7),
 
@@ -217,8 +217,8 @@ typedef enum {
     /** @brief At least one
  message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_PTC = (1 << 2),
-    /** @brief At least one Auxiliary Power Controller message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_APC = (1 << 0)
+    /** @brief HVI Timeout. */
+    CMR_CAN_VSM_ERROR_SOURCE_HVI = (1 << 0)
 } cmr_canVSMErrorSource_t;
 
 /** @brief Bit definitions for latchMatrix in cmr_canVSMErrors_t. */
