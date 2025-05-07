@@ -341,15 +341,24 @@ static cmr_state getReqScreen(void) {
             }
             break;
         case NORMAL:
-            if(canLRUDStates[LEFT]) {
+            // if(canLRUDStates[LEFT]) {
+            //     nextState = CONFIG;
+            //     flush_config_screen_to_cdc = false;
+			// 	//gpioLRUDStates[LEFT] = false;
+            // }
+            if(!cmr_gpioRead(GPIO_BUTTON_SW1)) {
+            // else if(canLRUDStates[LEFT]) {
                 nextState = CONFIG;
                 flush_config_screen_to_cdc = false;
-				//gpioLRUDStates[LEFT] = false;
+                // exitConfigScreen();
+
+                //gpioButtonStates[SW1] = 0;
+                //nextState = CONFIG;
             }
-            else if(canLRUDStates[RIGHT]) {
-                nextState = RACING;
-                //canLRUDStates[RIGHT] = false;
-            }
+            // else if(canLRUDStates[RIGHT]) {
+            //     nextState = RACING;
+            //     //canLRUDStates[RIGHT] = false;
+            // }
             else {
                 nextState = NORMAL;
             }
@@ -386,12 +395,12 @@ static cmr_state getReqScreen(void) {
                 //gpioButtonStates[SW1] = 0;
                 //nextState = CONFIG;
             }
-            else if(false) {
-                flush_config_screen_to_cdc = true;
-                // exitConfigScreen();
-                nextState = RACING;
-                //gpioButtonStates[SW2] = 0;
-            }
+            // else if(false) {
+            //     flush_config_screen_to_cdc = true;
+            //     // exitConfigScreen();
+            //     nextState = RACING;
+            //     //gpioButtonStates[SW2] = 0;
+            // }
             else{
                 nextState = CONFIG;
             }
@@ -399,20 +408,20 @@ static cmr_state getReqScreen(void) {
         case dimStateERROR:
             nextState = INIT;
             break;
-        case RACING:
-            if(canLRUDStates[LEFT] && state.vsmReq == CMR_CAN_GLV_ON) {
-                nextState = CONFIG;
-                flush_config_screen_to_cdc = false;
-                //canLRUDStates[LEFT] = false;
-            }
-            else if(canLRUDStates[RIGHT]) {
-                nextState = NORMAL;
-                //canLRUDStates[RIGHT] = false;
-            }
-            else {
-                nextState = RACING;
-            }
-            break;
+        // case RACING:
+        //     if(canLRUDStates[LEFT] && state.vsmReq == CMR_CAN_GLV_ON) {
+        //         nextState = CONFIG;
+        //         flush_config_screen_to_cdc = false;
+        //         //canLRUDStates[LEFT] = false;
+        //     }
+        //     else if(canLRUDStates[RIGHT]) {
+        //         nextState = NORMAL;
+        //         //canLRUDStates[RIGHT] = false;
+        //     }
+        //     else {
+        //         nextState = RACING;
+        //     }
+        //     break;
         default:
             nextState = INIT;
     }
