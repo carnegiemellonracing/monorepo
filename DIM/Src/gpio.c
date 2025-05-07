@@ -144,6 +144,9 @@ void canLRUDDetect(void){
 							return;
 						}
 					}
+					while(gpioLRUDStates[i]) {
+						continue;
+					}
 
 				}
 				lastState[i] = true;
