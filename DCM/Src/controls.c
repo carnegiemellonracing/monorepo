@@ -1241,11 +1241,11 @@ void setLaunchControl(
             neg_torques_Nm.rr = 0.0f;
             setVelocityInt16All(maxFastSpeed_rpm);
             
-            setTorqueLimsUnprotected(MOTOR_FL, pos_torques_Nm.fl, neg_torques_Nm.fl);
-            setTorqueLimsUnprotected(MOTOR_FR, pos_torques_Nm.fr, neg_torques_Nm.fr);
-            setTorqueLimsUnprotected(MOTOR_RL, pos_torques_Nm.rl, neg_torques_Nm.rl);
-            setTorqueLimsUnprotected(MOTOR_RR, pos_torques_Nm.rr, neg_torques_Nm.rr);
-            // setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
+            // setTorqueLimsUnprotected(MOTOR_FL, pos_torques_Nm.fl, neg_torques_Nm.fl);
+            // setTorqueLimsUnprotected(MOTOR_FR, pos_torques_Nm.fr, neg_torques_Nm.fr);
+            // setTorqueLimsUnprotected(MOTOR_RL, pos_torques_Nm.rl, neg_torques_Nm.rl);
+            // setTorqueLimsUnprotected(MOTOR_RR, pos_torques_Nm.rr, neg_torques_Nm.rr);
+            setTorqueLimsProtected(&pos_torques_Nm, &neg_torques_Nm);
             break;
         }
     }
