@@ -1100,8 +1100,8 @@ void setLaunchControl(
         // setVelocityInt16(MOTOR_FR, clamp_rpm);
 
         // Feedforward with front clamping with multiplier.
-        setVelocityFloat(MOTOR_RL, motor_rpm);
-        setVelocityFloat(MOTOR_RR, motor_rpm);
+        setVelocityFloat(MOTOR_RL, maxFastSpeed_rpm);
+        setVelocityFloat(MOTOR_RR, maxFastSpeed_rpm);
         float clamp_rpm = (float) (getMotorSpeed_rpm(MOTOR_RL) + getMotorSpeed_rpm(MOTOR_RR)) * 0.5f;
         // 12Nm torque * 67.5N traction per Nm / 1600N downforce * 0.11 max slip ratio = 0.0556875
         // 1.11 / 1.0556875 = 1.051447516
