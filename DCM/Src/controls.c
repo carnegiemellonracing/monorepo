@@ -594,6 +594,44 @@ void set_optimal_control_with_regen(
     set_optimal_control(combined_request, swAngle_millideg_FL, swAngle_millideg_FR, true);
 }
 
+
+static float apply_traction_control(motorLocation_t motor, float torque_Nm, bool use_true_downforce) {
+
+    canDaqRX_t loadcell_index;
+    switch(motor) {
+        case MOTOR_FL:
+            loadcell_index = CANRX_DAQ_LOAD_FL;
+            break;
+        case MOTOR_FR:
+            loadcell_index = CANRX_DAQ_LOAD_FR;
+            break;
+        case MOTOR_RL:
+            loadcell_index = CANRX_DAQ_LOAD_RL;
+            break;
+        case MOTOR_RR:
+            loadcell_index = CANRX_DAQ_LOAD_RR;
+            break;
+    }
+    float tractive_cap_N = lut_get_max_Fx_kappa(0.0, get_downforce(loadcell_index, use_true_downforce) + corner_weight_Nm).Fx;
+    float tractive_cap_Nm = tractive_cap_N * effective_wheel_rad_m / gear_ratio;
+    torque_Nm = fminf(tractive_cap_Nm + motor_resistance_Nm[motor], torque_Nm);
+    torque_Nm = fmaxf(-tractive_cap_Nm + motor_resistance_Nm[motor], torque_Nm);
+    return torque_Nm;
+}
+
+static void apply_all_traction_control(
+    const cmr_torqueDistributionNm_t *torques_Nm, 
+    bool use_true_downforce
+){
+    static cmr_torqueDistributionNm_t torquesPos_Nm;
+	static cmr_torqueDistributionNm_t torquesNeg_Nm;
+    set_motor_speed_and_torque(MOTOR_FL, apply_traction_control(MOTOR_FL, torques_Nm->fl, use_true_downforce), &torquesPos_Nm, &torquesNeg_Nm);
+    set_motor_speed_and_torque(MOTOR_FR, apply_traction_control(MOTOR_FR, torques_Nm->fr, use_true_downforce), &torquesPos_Nm, &torquesNeg_Nm);
+    set_motor_speed_and_torque(MOTOR_RL, apply_traction_control(MOTOR_RL, torques_Nm->rl, use_true_downforce), &torquesPos_Nm, &torquesNeg_Nm);
+    set_motor_speed_and_torque(MOTOR_RR, apply_traction_control(MOTOR_RR, torques_Nm->rr, use_true_downforce), &torquesPos_Nm, &torquesNeg_Nm);
+    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
+}
+
 static void set_regen(uint8_t throttlePos_u8, bool traction_control) {
     uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
 
@@ -1170,7 +1208,7 @@ void setLaunchControl(
         }     
         case TORQUE_CONTROL:
         {
-            bool use_true_downforce = false;
+            bool use_true_downforce = true;
             float throttle = (float) throttlePos_u8 / UINT8_MAX;
             float req_torque_Nm = maxTorque_continuous_stall_Nm * throttle;
 
