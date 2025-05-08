@@ -757,7 +757,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_ENDURANCE: {
             // setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
-            set_regen(throttlePos_u8, false);
+            set_regen(throttlePos_u8, true);
             // set_regen_with_slew(throttlePos_u8, 29.0f);
             break;
         }
@@ -1152,7 +1152,7 @@ void setLaunchControl(
 
     float time_s = (float)(xTaskGetTickCount() - startTickCount) * (0.001f);
 	if(time_s >= launch_control_max_duration_s) {
-        setFastTorque(throttlePos_u8);
+        setFastTorque(throttlePos_u8, false);
 		return;
 	} 
 
@@ -1211,6 +1211,10 @@ void setLaunchControl(
             bool use_true_downforce = true;
             float throttle = (float) throttlePos_u8 / UINT8_MAX;
             float req_torque_Nm = maxTorque_continuous_stall_Nm * throttle;
+            float req_torque_fl_Nm = req_torque_Nm;
+            float req_torque_fr_Nm = req_torque_Nm;
+            float req_torque_rl_Nm = req_torque_Nm;
+            float req_torque_rr_Nm = req_torque_Nm;
 
             float tractive_cap_fl_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
             float tractive_cap_fr_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
@@ -1222,15 +1226,15 @@ void setLaunchControl(
             float torque_limit_rl_Nm = tractive_cap_rl_N * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RL];
             float torque_limit_rr_Nm = tractive_cap_rr_N * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RR];
 
-            torque_limit_fl_Nm = fminf(torque_limit_fl_Nm, req_torque_Nm);
-            torque_limit_fr_Nm = fminf(torque_limit_fr_Nm, req_torque_Nm);
-            torque_limit_rl_Nm = fminf(torque_limit_rl_Nm, req_torque_Nm);
-            torque_limit_rr_Nm = fminf(torque_limit_rr_Nm, req_torque_Nm);
+            req_torque_fl_Nm = fminf(torque_limit_fl_Nm, req_torque_fl_Nm);
+            req_torque_fr_Nm = fminf(torque_limit_fr_Nm, req_torque_fr_Nm);
+            req_torque_rl_Nm = fminf(torque_limit_rl_Nm, req_torque_rl_Nm);
+            req_torque_rr_Nm = fminf(torque_limit_rr_Nm, req_torque_rr_Nm);
 
-            pos_torques_Nm.fl = torque_limit_fl_Nm;
-            pos_torques_Nm.fr = torque_limit_fr_Nm;
-            pos_torques_Nm.rl = torque_limit_rl_Nm;
-            pos_torques_Nm.rr = torque_limit_rr_Nm;
+            pos_torques_Nm.fl = req_torque_fl_Nm;
+            pos_torques_Nm.fr = req_torque_fr_Nm;
+            pos_torques_Nm.rl = req_torque_rl_Nm;
+            pos_torques_Nm.rr = req_torque_rr_Nm;
             neg_torques_Nm.fl = 0.0f;
             neg_torques_Nm.fr = 0.0f;
             neg_torques_Nm.rl = 0.0f;
