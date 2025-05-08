@@ -178,6 +178,8 @@ static Fx_kappa_t lut_get_max_Fx_kappa_raw(float alpha_degree, float Fz_N)
 }
 
 static float lut_get_Fz_scaling_factor() {
+    float Fz_scale_factor = 1.0f;
+    const bool retVal = getProcessedValue(&Fz_scale_factor, TC_LUT_X_SCALE_INDEX, float_2_decimal);
     return 0.5f;
 }
 

@@ -69,6 +69,12 @@ static volatile cmr_canCDCControlsStatus_t controlsStatus = {
 
 volatile cmr_canCDCKiloCoulombs_t coulombCounting;
 
+typedef enum {
+    SOLVER = 0,
+    FEEDFORWARD,
+    TORQUE_CONTROL,
+} launch_mode_t;
+
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 
 /** @brief Coulomb counting info **/
@@ -336,12 +342,6 @@ static void set_optimal_control(
     float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
     float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
 
-    static const float motor_resistance_Nm[MOTOR_LEN] = {
-        [MOTOR_FL] = 0.75f,
-        [MOTOR_FR] = 0.4f,
-        [MOTOR_RL] = 0.75f,
-        [MOTOR_RR] = 0.4f,
-    };
 	// The most naive approach is to convert force to torque linearly, ignoring rolling resistance and any inefficiency.
 	float torque_limit_fl = tractive_cap_fl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FL];
 	float torque_limit_fr = tractive_cap_fr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FR];
@@ -477,12 +477,6 @@ static void set_optimal_control_launch_hybrid(
     float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
     float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
 
-    static const float motor_resistance_Nm[MOTOR_LEN] = {
-        [MOTOR_FL] = 0.75f,
-        [MOTOR_FR] = 0.4f,
-        [MOTOR_RL] = 0.75f,
-        [MOTOR_RR] = 0.4f,
-    };
 	// The most naive approach is to convert force to torque linearly, ignoring rolling resistance and any inefficiency.
 	float torque_limit_fl = tractive_cap_fl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FL];
 	float torque_limit_fr = tractive_cap_fr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FR];
@@ -1002,10 +996,10 @@ static void update_whl_speed_setpoint (
 static float getFFScheduleVelocity(float t_sec) {
 
     float tMax = 6.4f; // limit time for safety reasons
-    float scheduleVelocity_mps = 1.0f;
+    float scheduleVelocity_mps = 0.0f;
 
     float scheduleVelocity_mps2 = 12.1;
-    // getProcessedValue(&scheduleVelocity_mps2, LAUNCH_SLOPE_INDEX, float_1_decimal);
+    getProcessedValue(&scheduleVelocity_mps2, LAUNCH_SLOPE_INDEX, float_1_decimal);
 
     if (t_sec < 0.0f) {
         scheduleVelocity_mps = 0.0f;
@@ -1074,59 +1068,97 @@ void setLaunchControl(
 	if(time_s >= launch_control_max_duration_s) {
         setFastTorque(throttlePos_u8);
 		return;
-	}
+	} 
 
-    if (use_solver) {
-        // swAngle_millideg = 0 means assume no turn.
-        set_optimal_control_launch_hybrid((float) throttlePos_u8 / UINT8_MAX, 0, 0, false);
-    } else {
-        TickType_t tick = xTaskGetTickCount();
-        float seconds = (float)(tick - startTickCount) * (0.001f); //convert Tick Count to Seconds
+    static cmr_torqueDistributionNm_t pos_torques_Nm;
+    static cmr_torqueDistributionNm_t neg_torques_Nm;
 
-        float scheduled_wheel_vel_mps = getFFScheduleVelocity(seconds);
-        float motor_rpm = gear_ratio * 60.0f * scheduled_wheel_vel_mps / (2 * M_PI * effective_wheel_rad_m);
+    static const launch_mode_t launch_mode = TORQUE_CONTROL;
 
-        // Feedforward only.
-        // setVelocityFloat(MOTOR_RL, motor_rpm);
-        // setVelocityFloat(MOTOR_RR, motor_rpm);
-        // setVelocityFloat(MOTOR_FL, motor_rpm);
-        // setVelocityFloat(MOTOR_FR, motor_rpm);
+    switch(launch_mode) {
+        case SOLVER:
+        {
+            // swAngle_millideg = 0 means assume no turn.
+            set_optimal_control((float) throttlePos_u8 / UINT8_MAX, 0, 0, false);
+            break;
+        }
+        case FEEDFORWARD:
+        {
+            TickType_t tick = xTaskGetTickCount();
+            float seconds = (float)(tick - startTickCount) * (0.001f); //convert Tick Count to Seconds
         
-        // Feedforward with front clamping.
-        // setVelocityFloat(MOTOR_RL, motor_rpm);
-        // setVelocityFloat(MOTOR_RR, motor_rpm);
-        // int16_t clamp_rpm = (getMotorSpeed_rpm(MOTOR_RL) + getMotorSpeed_rpm(MOTOR_RR)) / 2;
-        // setVelocityInt16(MOTOR_FL, clamp_rpm);
-        // setVelocityInt16(MOTOR_FR, clamp_rpm);
+            float scheduled_wheel_vel_mps = getFFScheduleVelocity(seconds);
+            float motor_rpm = gear_ratio * 60.0f * scheduled_wheel_vel_mps / (2 * M_PI * effective_wheel_rad_m);
+            
+            // Feedforward with front clamping with multiplier.
+            setVelocityFloat(MOTOR_RL, maxFastSpeed_rpm);
+            setVelocityFloat(MOTOR_RR, maxFastSpeed_rpm);
+            float clamp_rpm = (float) (getMotorSpeed_rpm(MOTOR_RL) + getMotorSpeed_rpm(MOTOR_RR)) * 0.5f;
+            // 12Nm torque * 67.5N traction per Nm / 1600N downforce * 0.11 max slip ratio = 0.0556875
+            // 1.11 / 1.0556875 = 1.051447516
+            setVelocityFloat(MOTOR_FL, clamp_rpm * 1.07f);
+            setVelocityFloat(MOTOR_FR, clamp_rpm * 1.07f);
+            
+            // Feedforward only.
+            // setVelocityFloat(MOTOR_FL, motor_rpm);
+            // setVelocityFloat(MOTOR_FR, motor_rpm);
+            // setVelocityFloat(MOTOR_RL, motor_rpm);
+            // setVelocityFloat(MOTOR_RR, motor_rpm);
+        
+            const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
+            pos_torques_Nm.fl = reqTorque;
+            pos_torques_Nm.fr = reqTorque;
+            pos_torques_Nm.rl = reqTorque;
+            pos_torques_Nm.rr = reqTorque;
+            neg_torques_Nm.fl = 0.0f;
+            neg_torques_Nm.fr = 0.0f;
+            neg_torques_Nm.rl = 0.0f;
+            neg_torques_Nm.rr = 0.0f;
+            setTorqueLimsUnprotected(MOTOR_FL, pos_torques_Nm.fl, neg_torques_Nm.fl);
+            setTorqueLimsUnprotected(MOTOR_FR, pos_torques_Nm.fr, neg_torques_Nm.fr);
+            setTorqueLimsUnprotected(MOTOR_RR, pos_torques_Nm.rr, neg_torques_Nm.rr);
+            setTorqueLimsUnprotected(MOTOR_RL, pos_torques_Nm.rl, neg_torques_Nm.rl);
+            break;
+        }     
+        case TORQUE_CONTROL:
+        {
+            bool use_true_downforce = false;
+            float throttle = (float) throttlePos_u8 / UINT8_MAX;
 
-        // Feedforward with front clamping with multiplier.
-        setVelocityFloat(MOTOR_RL, maxFastSpeed_rpm);
-        setVelocityFloat(MOTOR_RR, maxFastSpeed_rpm);
-        float clamp_rpm = (float) (getMotorSpeed_rpm(MOTOR_RL) + getMotorSpeed_rpm(MOTOR_RR)) * 0.5f;
-        // 12Nm torque * 67.5N traction per Nm / 1600N downforce * 0.11 max slip ratio = 0.0556875
-        // 1.11 / 1.0556875 = 1.051447516
-        setVelocityFloat(MOTOR_FL, clamp_rpm * 1.07f);
-        setVelocityFloat(MOTOR_FR, clamp_rpm * 1.07f);
+            float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce)).Fx;
+            float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce)).Fx;
+            float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce)).Fx;
+            float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce)).Fx;
 
-        // Go crazy.
-        // motor_rpm = 20000.0f;
-        // setVelocityFloat(MOTOR_RL, motor_rpm);
-        // setVelocityFloat(MOTOR_RR, motor_rpm);
-        // setVelocityFloat(MOTOR_FL, motor_rpm);
-        // setVelocityFloat(MOTOR_FR, motor_rpm);
-        // const float reqTorque = maxFastTorque_Nm;
+            float torque_limit_fl = tractive_cap_fl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FL];
+            float torque_limit_fr = tractive_cap_fr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FR];
+            float torque_limit_rl = tractive_cap_rl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RL];
+            float torque_limit_rr = tractive_cap_rr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RR];
 
-        const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
+            torque_limit_fl = fminf(tractive_cap_fl, maxTorque_continuous_stall_Nm * throttle);
+            torque_limit_fr = fminf(tractive_cap_fr, maxTorque_continuous_stall_Nm * throttle);
+            torque_limit_rl = fminf(tractive_cap_rl, maxTorque_continuous_stall_Nm * throttle);
+            torque_limit_rr = fminf(tractive_cap_rr, maxTorque_continuous_stall_Nm * throttle);
 
-        cmr_torqueDistributionNm_t pos_torques_Nm = {.fl = reqTorque, .fr = reqTorque, .rl = reqTorque, .rr = reqTorque};
-        cmr_torqueDistributionNm_t neg_torques_Nm = {.fl = 0.0f, .fr = 0.0f, .rl = 0.0f, .rr = 0.0f};
-        // setTorqueLimsUnprotected(MOTOR_FL, pos_torques_Nm.fl, neg_torques_Nm.fl);
-        // setTorqueLimsUnprotected(MOTOR_FR, pos_torques_Nm.fr, neg_torques_Nm.fr);
-        // setTorqueLimsUnprotected(MOTOR_RR, pos_torques_Nm.rr, neg_torques_Nm.rr);
-        // setTorqueLimsUnprotected(MOTOR_RL, pos_torques_Nm.rl, neg_torques_Nm.rl);
-        setTorqueLimsProtected(&pos_torques_Nm, &neg_torques_Nm);
-        return;
+            pos_torques_Nm.fl = torque_limit_fl;
+            pos_torques_Nm.fr = torque_limit_fr;
+            pos_torques_Nm.rl = torque_limit_rl;
+            pos_torques_Nm.rr = torque_limit_rr;
+            neg_torques_Nm.fl = 0.0f;
+            neg_torques_Nm.fr = 0.0f;
+            neg_torques_Nm.rl = 0.0f;
+            neg_torques_Nm.rr = 0.0f;
+            setVelocityInt16All(maxFastSpeed_rpm);
+            
+            setTorqueLimsUnprotected(MOTOR_FL, pos_torques_Nm.fl, neg_torques_Nm.fl);
+            setTorqueLimsUnprotected(MOTOR_FR, pos_torques_Nm.fr, neg_torques_Nm.fr);
+            setTorqueLimsUnprotected(MOTOR_RL, pos_torques_Nm.rl, neg_torques_Nm.rl);
+            setTorqueLimsUnprotected(MOTOR_RR, pos_torques_Nm.rr, neg_torques_Nm.rr);
+            // setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
+            break;
+        }
     }
+
 }
 
 /**
