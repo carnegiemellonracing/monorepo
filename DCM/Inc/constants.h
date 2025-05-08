@@ -63,7 +63,7 @@ static const double half_wheelbase_m = wheelbase_m * 0.5f;
 static const double half_trackwidth_m= trackwidth_m * 0.5f;
 static const double car_mass_kg = 280.0f;
 
-static const double motor_resistance_Nm[MOTOR_LEN] = {
+static const float motor_resistance_Nm[MOTOR_LEN] = {
     [MOTOR_FL] = 0.5f,
     [MOTOR_FR] = 0.5f,
     [MOTOR_RL] = 0.5f,
