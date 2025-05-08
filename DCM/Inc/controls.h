@@ -25,7 +25,7 @@
 // Gear functions forward declarations
 
 void setSlowTorque(uint8_t throttlePos_u8, int32_t swAngle_millideg);
-void setFastTorque(uint8_t throttlePos_u8);
+void setFastTorque(uint8_t throttlePos_u8, bool traction_control);
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 void setTractionControl(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t swAngle_millideg, float leftRightBias_Nm,
     bool assumeNoTurn, bool ignoreYawRate, bool allowRegen, float critical_speed_mps);

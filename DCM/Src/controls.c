@@ -335,7 +335,6 @@ static void set_optimal_control(
 	// float tractive_cap_rl = getKappaFxGlobalMax(MOTOR_RL, UINT8_MAX, true).Fx;
 	// float tractive_cap_rr = getKappaFxGlobalMax(MOTOR_RR, UINT8_MAX, true).Fx;
 
-    const float corner_weight_Nm = 80.0f;
     bool use_true_downforce = true;
     float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
     float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
@@ -470,7 +469,6 @@ static void set_optimal_control_launch_hybrid(
 	// float tractive_cap_rl = getKappaFxGlobalMax(MOTOR_RL, UINT8_MAX, true).Fx;
 	// float tractive_cap_rr = getKappaFxGlobalMax(MOTOR_RR, UINT8_MAX, true).Fx;
 
-    const float corner_weight_Nm = 80.0f;
     bool use_true_downforce = true;
     float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
     float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
@@ -596,7 +594,7 @@ void set_optimal_control_with_regen(
     set_optimal_control(combined_request, swAngle_millideg_FL, swAngle_millideg_FR, true);
 }
 
-static void set_regen(uint8_t throttlePos_u8) {
+static void set_regen(uint8_t throttlePos_u8, bool traction_control) {
     uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
 
     uint8_t paddle_regen_strength_raw = 50;
@@ -630,6 +628,33 @@ static void set_regen(uint8_t throttlePos_u8) {
         torque_request_fr_Nm = torque_request_Nm;
         torque_request_rl_Nm = torque_request_Nm;
         torque_request_rr_Nm = torque_request_Nm;
+    }
+
+    if(traction_control) {
+        bool use_true_downforce = false;
+        float throttle = (float) throttlePos_u8 / UINT8_MAX;
+        float req_torque_Nm = maxTorque_continuous_stall_Nm * throttle;
+
+        float tractive_cap_fl_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
+        float tractive_cap_fr_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
+        float tractive_cap_rl_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
+        float tractive_cap_rr_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
+
+        float torque_limit_fl_Nm = tractive_cap_fl_N * effective_wheel_rad_m / gear_ratio;
+        float torque_limit_fr_Nm = tractive_cap_fr_N * effective_wheel_rad_m / gear_ratio;
+        float torque_limit_rl_Nm = tractive_cap_rl_N * effective_wheel_rad_m / gear_ratio;
+        float torque_limit_rr_Nm = tractive_cap_rr_N * effective_wheel_rad_m / gear_ratio;
+
+        torque_limit_fl_Nm = fminf(torque_limit_fl_Nm + motor_resistance_Nm[MOTOR_FL], req_torque_Nm);
+        torque_limit_fr_Nm = fminf(torque_limit_fr_Nm + motor_resistance_Nm[MOTOR_FR], req_torque_Nm);
+        torque_limit_rl_Nm = fminf(torque_limit_rl_Nm + motor_resistance_Nm[MOTOR_RL], req_torque_Nm);
+        torque_limit_rr_Nm = fminf(torque_limit_rr_Nm + motor_resistance_Nm[MOTOR_RR], req_torque_Nm);
+       
+        torque_limit_fl_Nm = fmaxf(-torque_limit_fl_Nm + motor_resistance_Nm[MOTOR_FL], req_torque_Nm);
+        torque_limit_fr_Nm = fmaxf(-torque_limit_fr_Nm + motor_resistance_Nm[MOTOR_FR], req_torque_Nm);
+        torque_limit_rl_Nm = fmaxf(-torque_limit_rl_Nm + motor_resistance_Nm[MOTOR_RL], req_torque_Nm);
+        torque_limit_rr_Nm = fmaxf(-torque_limit_rr_Nm + motor_resistance_Nm[MOTOR_RR], req_torque_Nm);
+        
     }
 
     set_motor_speed_and_torque(MOTOR_FL, torque_request_fl_Nm, &torquesPos_Nm, &torquesNeg_Nm);
@@ -696,13 +721,13 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_FAST: {
-            setFastTorque(throttlePos_u8);
+            setFastTorque(throttlePos_u8, true);
             // set_fast_torque_with_slew(throttlePos_u8, 29.0f);
             break;
         }
         case CMR_CAN_GEAR_ENDURANCE: {
             // setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
-            set_regen(throttlePos_u8);
+            set_regen(throttlePos_u8, false);
             // set_regen_with_slew(throttlePos_u8, 29.0f);
             break;
         }
@@ -864,15 +889,46 @@ void setSlowTorque (
  * @param throttlePos_u8 Throttle position, 0-255.
  */
 void setFastTorque (
-    uint8_t throttlePos_u8
+    uint8_t throttlePos_u8,
+    bool traction_control
 ) {
-    const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
-//    setTorqueLimsAllProtected(reqTorque, 0.0f);
-   setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
-   setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
-   setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
-   setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
+    const float req_torque_Nm = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
+
+    float req_torque_fl_Nm = req_torque_Nm;
+    float req_torque_fr_Nm = req_torque_Nm;
+    float req_torque_rl_Nm = req_torque_Nm;
+    float req_torque_rr_Nm = req_torque_Nm;
+
+    if(traction_control) {
+        
+        float tractive_cap_fl_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
+        float tractive_cap_fr_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
+        float tractive_cap_rl_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
+        float tractive_cap_rr_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
+
+        float torque_limit_fl_Nm = tractive_cap_fl_N * effective_wheel_rad_m / gear_ratio;
+        float torque_limit_fr_Nm = tractive_cap_fr_N * effective_wheel_rad_m / gear_ratio;
+        float torque_limit_rl_Nm = tractive_cap_rl_N * effective_wheel_rad_m / gear_ratio;
+        float torque_limit_rr_Nm = tractive_cap_rr_N * effective_wheel_rad_m / gear_ratio;
+
+        req_torque_fl_Nm = fminf(torque_limit_fl_Nm + motor_resistance_Nm[MOTOR_FL], req_torque_Nm);
+        req_torque_fr_Nm = fminf(torque_limit_fr_Nm + motor_resistance_Nm[MOTOR_FR], req_torque_Nm);
+        req_torque_rl_Nm = fminf(torque_limit_rl_Nm + motor_resistance_Nm[MOTOR_RL], req_torque_Nm);
+        req_torque_rr_Nm = fminf(torque_limit_rr_Nm + motor_resistance_Nm[MOTOR_RR], req_torque_Nm);
+       
+        req_torque_fl_Nm = fmaxf(-torque_limit_fl_Nm + motor_resistance_Nm[MOTOR_FL], req_torque_fl_Nm);
+        req_torque_fr_Nm = fmaxf(-torque_limit_fr_Nm + motor_resistance_Nm[MOTOR_FR], req_torque_fr_Nm);
+        req_torque_rl_Nm = fmaxf(-torque_limit_rl_Nm + motor_resistance_Nm[MOTOR_RL], req_torque_rl_Nm);
+        req_torque_rr_Nm = fmaxf(-torque_limit_rr_Nm + motor_resistance_Nm[MOTOR_RR], req_torque_rr_Nm);
+    }
+
+    setTorqueLimsUnprotected(MOTOR_FL, req_torque_fl_Nm, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_FR, req_torque_fr_Nm, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_RR, req_torque_rl_Nm, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_RL, req_torque_rr_Nm, 0.0f);
     setVelocityInt16All(maxFastSpeed_rpm);
+//    setTorqueLimsAllProtected(req_torque_Nm, 0.0f);
+
 }
 
 void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew) {
@@ -1124,26 +1180,27 @@ void setLaunchControl(
         {
             bool use_true_downforce = false;
             float throttle = (float) throttlePos_u8 / UINT8_MAX;
+            float req_torque_Nm = maxTorque_continuous_stall_Nm * throttle;
 
-            float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce)).Fx;
-            float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce)).Fx;
-            float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce)).Fx;
-            float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce)).Fx;
+            float tractive_cap_fl_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
+            float tractive_cap_fr_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
+            float tractive_cap_rl_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
+            float tractive_cap_rr_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
 
-            float torque_limit_fl = tractive_cap_fl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FL];
-            float torque_limit_fr = tractive_cap_fr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FR];
-            float torque_limit_rl = tractive_cap_rl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RL];
-            float torque_limit_rr = tractive_cap_rr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RR];
+            float torque_limit_fl_Nm = tractive_cap_fl_N * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FL];
+            float torque_limit_fr_Nm = tractive_cap_fr_N * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FR];
+            float torque_limit_rl_Nm = tractive_cap_rl_N * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RL];
+            float torque_limit_rr_Nm = tractive_cap_rr_N * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RR];
 
-            torque_limit_fl = fminf(tractive_cap_fl, maxTorque_continuous_stall_Nm * throttle);
-            torque_limit_fr = fminf(tractive_cap_fr, maxTorque_continuous_stall_Nm * throttle);
-            torque_limit_rl = fminf(tractive_cap_rl, maxTorque_continuous_stall_Nm * throttle);
-            torque_limit_rr = fminf(tractive_cap_rr, maxTorque_continuous_stall_Nm * throttle);
+            torque_limit_fl_Nm = fminf(torque_limit_fl_Nm, req_torque_Nm);
+            torque_limit_fr_Nm = fminf(torque_limit_fr_Nm, req_torque_Nm);
+            torque_limit_rl_Nm = fminf(torque_limit_rl_Nm, req_torque_Nm);
+            torque_limit_rr_Nm = fminf(torque_limit_rr_Nm, req_torque_Nm);
 
-            pos_torques_Nm.fl = torque_limit_fl;
-            pos_torques_Nm.fr = torque_limit_fr;
-            pos_torques_Nm.rl = torque_limit_rl;
-            pos_torques_Nm.rr = torque_limit_rr;
+            pos_torques_Nm.fl = torque_limit_fl_Nm;
+            pos_torques_Nm.fr = torque_limit_fr_Nm;
+            pos_torques_Nm.rl = torque_limit_rl_Nm;
+            pos_torques_Nm.rr = torque_limit_rr_Nm;
             neg_torques_Nm.fl = 0.0f;
             neg_torques_Nm.fr = 0.0f;
             neg_torques_Nm.rl = 0.0f;
@@ -1229,7 +1286,7 @@ void setTractionControl (
 
     if (!canTrustSBGVelocity(trust_sbg_vels_when_invalid)) { // SBG velocity can't be trusted
         // fall back to fast mode
-        setFastTorque(throttlePos_u8); // set torque and velocity setpoints as if we're in fast mode
+        setFastTorque(throttlePos_u8, true); // set torque and velocity setpoints as if we're in fast mode
 
         // set wheelspeed setpoints to NAN
         frontWhlSetpoints.omega_FL = NAN;

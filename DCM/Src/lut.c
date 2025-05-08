@@ -6,6 +6,8 @@
 #include "lut.h"
 #include <math.h>
 #include <assert.h>
+#include <stdint.h>
+#include <CMR/config_screen_helper.h>
 
 typedef struct
 {

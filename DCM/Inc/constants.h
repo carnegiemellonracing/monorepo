@@ -70,4 +70,6 @@ static const double motor_resistance_Nm[MOTOR_LEN] = {
     [MOTOR_RR] = 0.5f,
 };
 
+static const float corner_weight_Nm = 12.0 * 9.8f;
+
 #endif

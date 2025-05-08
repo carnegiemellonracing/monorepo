@@ -17,6 +17,9 @@
         "tuple": "c",
         "utility": "c",
         "optimizer.h": "c",
-        "can_types.h": "c"
+        "can_types.h": "c",
+        "config_screen_helper.h": "c",
+        "stdint.h": "c",
+        "stdint-gcc.h": "c"
     }
 }
