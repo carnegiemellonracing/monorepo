@@ -2234,3 +2234,9 @@ DLC=2
 CycleTime=50
 Timeout=200
 Var=RR_RideHeight unsigned 0,16
+
+[DCM_CoulombCount]
+ID=6E3h
+DLC=4
+Var=coulomb float 0,32 /u:C
+
