@@ -109,15 +109,15 @@ static void load_solver_settings() {
 
 	// Hot fix: interpret raw k_lin and k_yaw values as integers.
 	if(getProcessedValue(&k_lin, K_LIN_INDEX, float_1_decimal)) {
-		solver_set_k_lin(k_lin); // [0, 25.5].
+		solver_set_k_lin(k_lin * 10.0f); // [0, 255.0].
 	}
 
 	if(getProcessedValue(&k_yaw, K_YAW_INDEX, float_1_decimal)) {
-		solver_set_k_yaw(k_yaw); // [0, 25.5].
+		solver_set_k_yaw(k_yaw * 0.1f); // [0, 2.55].
 	}
 
     if(getProcessedValue(&k_tie, K_TIE_INDEX, float_1_decimal)) {
-        solver_set_k_tie(k_tie); // [0, 25.5].
+        solver_set_k_tie(k_tie * 0.01f); // [0, 0.255].
     }
 }
 
@@ -605,8 +605,8 @@ void set_optimal_control_with_regen(
 static void set_regen(uint8_t throttlePos_u8) {
     uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
 
-    uint8_t paddle_regen_strength_raw = 90;
-    // getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
+    uint8_t paddle_regen_strength_raw = 50;
+    getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
     float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
 
     float paddle_request = 0.0f;
@@ -1390,9 +1390,10 @@ float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
         velocity_x_mps = movella_state.velocity.x;
         yrcDebug.controls_bias = 1;
     } else {
-        velocity_x_mps = 0.0f;
+        // return 0.0f;
+        // velocity_x_mps = 0.0f;
         // This causes oscillations!
-        // velocity_x_mps = getTotalMotorSpeed_radps() * 0.25f * effective_wheel_rad_m;
+        velocity_x_mps = getTotalMotorSpeed_radps() * 0.25f * effective_wheel_rad_m;
         yrcDebug.controls_bias = -1;
     }
     

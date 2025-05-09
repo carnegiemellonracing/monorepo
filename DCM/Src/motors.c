@@ -303,6 +303,7 @@ static void motorsCommand (
 
             // Also reset errors in GLV_ON
             case CMR_CAN_GLV_ON: {
+                pumpsOn();
             	mcCtrlOff();
 
                 if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
@@ -310,7 +311,7 @@ static void motorsCommand (
                 } else
 
             	// fansOff();
-            	pumpsOff();
+            	//pumpsOff();
 
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = CMR_CAN_AMK_CTRL_ERR_RESET;
