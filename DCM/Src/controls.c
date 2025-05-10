@@ -190,8 +190,7 @@ static void set_slow_motor_speed(float speed_mps, bool rear_only) {
     float target_rpm = speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
     cmr_torqueDistributionNm_t torquesPos_Nm;
     if(rear_only) {
-        setVelocityInt16(MOTOR_FL, 0);
-        setVelocityInt16(MOTOR_FR, 0);
+    setVelocityInt16(MOTOR_FL, 0);
         setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
         setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
         torquesPos_Nm.fl = 0.0f;
@@ -199,8 +198,7 @@ static void set_slow_motor_speed(float speed_mps, bool rear_only) {
         torquesPos_Nm.rl = maxSlowTorque_Nm;
         torquesPos_Nm.rr = maxSlowTorque_Nm;
     } else {
-        setVelocityInt16(MOTOR_FL, (int16_t) target_rpm);
-        setVelocityInt16(MOTOR_FR, (int16_t) target_rpm);
+    setVelocityInt16(MOTOR_FL, (int16_t) target_rpm);
         setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
         setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
         torquesPos_Nm.fl = maxSlowTorque_Nm;
@@ -226,8 +224,7 @@ static inline void set_motor_speed_and_torque(
     if(val > 0.0) {
         switch (motor)
         {
-            case MOTOR_FL:
-                torquesPos_Nm->fl = val;
+        case MOTOR_FL:
                 torquesNeg_Nm->fl = 0.0f;
                 break;
             case MOTOR_FR:
@@ -250,8 +247,7 @@ static inline void set_motor_speed_and_torque(
     } else {
         switch (motor)
         {
-            case MOTOR_FL:
-                torquesPos_Nm->fl = 0.0f;
+        case MOTOR_FL:
                 torquesNeg_Nm->fl = val;
                 break;
             case MOTOR_FR:
@@ -325,191 +321,34 @@ static void set_optimal_control(
 
     // load_solver_settings();
 
-	float wheel_fl_speed_radps = getMotorSpeed_radps(MOTOR_FL);
-	float wheel_fr_speed_radps = getMotorSpeed_radps(MOTOR_FR);
-	float wheel_rl_speed_radps = getMotorSpeed_radps(MOTOR_RL);
-	float wheel_rr_speed_radps = getMotorSpeed_radps(MOTOR_RR);
-    
-	// float tractive_cap_fl = getKappaFxGlobalMax(MOTOR_FL, UINT8_MAX, true).Fx;
-	// float tractive_cap_fr = getKappaFxGlobalMax(MOTOR_FR, UINT8_MAX, true).Fx;
-	// float tractive_cap_rl = getKappaFxGlobalMax(MOTOR_RL, UINT8_MAX, true).Fx;
-	// float tractive_cap_rr = getKappaFxGlobalMax(MOTOR_RR, UINT8_MAX, true).Fx;
+	static optimizer_state_t optimizer_state;
 
     bool use_true_downforce = true;
-    float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
-    float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
-    float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
-    float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
-
-	// The most naive approach is to convert force to torque linearly, ignoring rolling resistance and any inefficiency.
-	float torque_limit_fl = tractive_cap_fl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FL];
-	float torque_limit_fr = tractive_cap_fr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FR];
-	float torque_limit_rl = tractive_cap_rl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RL];
-	float torque_limit_rr = tractive_cap_rr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RR];
-
-	torque_limit_fl = fminf(torque_limit_fl, maxTorque_continuous_stall_Nm);
-	torque_limit_fr = fminf(torque_limit_fr, maxTorque_continuous_stall_Nm);
-	torque_limit_rl = fminf(torque_limit_rl, maxTorque_continuous_stall_Nm);
-	torque_limit_rr = fminf(torque_limit_rr, maxTorque_continuous_stall_Nm);
-
-	static optimizer_state_t optimizer_state;
+    optimizer_state.variable_profile[0].upper = get_positive_limit_Nm(MOTOR_FL, use_true_downforce);
+    optimizer_state.variable_profile[1].upper = get_positive_limit_Nm(MOTOR_FR, use_true_downforce);
+    optimizer_state.variable_profile[2].upper = get_positive_limit_Nm(MOTOR_RL, use_true_downforce);
+    optimizer_state.variable_profile[3].upper = get_positive_limit_Nm(MOTOR_RR, use_true_downforce);
+    if(true == allow_regen) {
+        optimizer_state.variable_profile[0].lower = get_regen_limit_Nm(MOTOR_FL, use_true_downforce);
+        optimizer_state.variable_profile[1].lower = get_regen_limit_Nm(MOTOR_FR, use_true_downforce);
+        optimizer_state.variable_profile[2].lower = get_regen_limit_Nm(MOTOR_RL, use_true_downforce);
+        optimizer_state.variable_profile[3].lower = get_regen_limit_Nm(MOTOR_RR, use_true_downforce);
+    } else {
+        optimizer_state.variable_profile[0].lower = 0.0;
+        optimizer_state.variable_profile[1].lower = 0.0;
+        optimizer_state.variable_profile[2].lower = 0.0;
+        optimizer_state.variable_profile[3].lower = 0.0;
+    }
 
 	optimizer_state.power_limit = getPowerLimit_W();
-	optimizer_state.omegas[0] = wheel_fl_speed_radps;
-	optimizer_state.omegas[1] = wheel_fr_speed_radps;
-	optimizer_state.omegas[2] = wheel_rl_speed_radps;
-	optimizer_state.omegas[3] = wheel_rr_speed_radps;
-
-    if(true == allow_regen) {
-        optimizer_state.variable_profile[0].lower = fmaxf(-torque_limit_fl + motor_resistance_Nm[MOTOR_FL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FL)));
-        optimizer_state.variable_profile[1].lower = fmaxf(-torque_limit_fr + motor_resistance_Nm[MOTOR_FR], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FR)));
-        optimizer_state.variable_profile[2].lower = fmaxf(-torque_limit_rl + motor_resistance_Nm[MOTOR_RL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RL)));
-        optimizer_state.variable_profile[3].lower = fmaxf(-torque_limit_rr + motor_resistance_Nm[MOTOR_RR], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RR)));
-    } else {
-        optimizer_state.variable_profile[0].lower = 0.0;
-        optimizer_state.variable_profile[1].lower = 0.0;
-        optimizer_state.variable_profile[2].lower = 0.0;
-        optimizer_state.variable_profile[3].lower = 0.0;
-    }
-
-	optimizer_state.variable_profile[0].upper = torque_limit_fl;
-	optimizer_state.variable_profile[1].upper = torque_limit_fr;
-	optimizer_state.variable_profile[2].upper = torque_limit_rl;
-	optimizer_state.variable_profile[3].upper = torque_limit_rr;
-
-	const float thoeretical_mass_accel = maxTorque_continuous_stall_Nm * MOTOR_LEN * gear_ratio / effective_wheel_rad_m / car_mass_kg;
-	// areq can be either expressed in torque or actual accel. Both ways are equivalent. Here uses actual accel.
-	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
-    // Solver treats Mreq as around -z axis.
-	optimizer_state.mreq = -getYawRateControlLeftRightBias(swAngle_millideg);
-    
-	optimizer_state.theta_left = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
-    optimizer_state.theta_right = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
-
-	solve(&optimizer_state);
-
-	// Logging solver outputs, x1000 to make it more intuitive.
-	solver_torques.frontLeft_Nm = X1000_INT16(optimizer_state.optimal_assignment[0].val);
-	solver_torques.frontRight_Nm = X1000_INT16(optimizer_state.optimal_assignment[1].val);
-	solver_torques.rearLeft_Nm = X1000_INT16(optimizer_state.optimal_assignment[2].val);
-	solver_torques.rearRight_Nm = X1000_INT16(optimizer_state.optimal_assignment[3].val);
-
-    // Logging solver inputs.
-	solver_inputs.lin_accel_Nm = optimizer_state.areq;
-	solver_inputs.moment_req_Nm = optimizer_state.mreq;
-
-    // Logging solver aux.
-	solver_aux.combined_normalized_throttle = X1000_INT16(normalized_throttle);
-	solver_aux.allow_regen = allow_regen;
-
-    // Logging solver settings.
-	solver_settings.k_lin = X1000_INT16(solver_get_k_lin());
-	solver_settings.k_yaw = X1000_INT16(solver_get_k_yaw());
-	solver_settings.k_tie = X1000_INT16(solver_get_k_tie());
-
-	static cmr_torqueDistributionNm_t torquesPos_Nm;
-	static cmr_torqueDistributionNm_t torquesNeg_Nm;
-
-    if(true == allow_regen) {
-
-        set_motor_speed_and_torque(MOTOR_FL, optimizer_state.optimal_assignment[0].val, &torquesPos_Nm, &torquesNeg_Nm);
-        set_motor_speed_and_torque(MOTOR_FR, optimizer_state.optimal_assignment[1].val, &torquesPos_Nm, &torquesNeg_Nm);
-        set_motor_speed_and_torque(MOTOR_RL, optimizer_state.optimal_assignment[2].val, &torquesPos_Nm, &torquesNeg_Nm);
-        set_motor_speed_and_torque(MOTOR_RR, optimizer_state.optimal_assignment[3].val, &torquesPos_Nm, &torquesNeg_Nm);
-        setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
-        // The API for setting speeds and torques is not optimal.
-        // It should allow setting velocities the same way as setting torques, by passing a struct.
-
-    } else {
-
-        torquesPos_Nm.fl = optimizer_state.optimal_assignment[0].val;
-        torquesPos_Nm.fr = optimizer_state.optimal_assignment[1].val;
-        torquesPos_Nm.rl = optimizer_state.optimal_assignment[2].val;
-        torquesPos_Nm.rr = optimizer_state.optimal_assignment[3].val;
-
-        torquesNeg_Nm.fl = 0.0f;
-        torquesNeg_Nm.fr = 0.0f;
-        torquesNeg_Nm.rl = 0.0f;
-        torquesNeg_Nm.rr = 0.0f;
-
-        setVelocityInt16All(maxFastSpeed_rpm);
-	    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
-
-    }
-}
-
-/**
- * @param normalized_throttle A value in [-1, 1].
- * In [0, 1] if without regen.
- */
-static void set_optimal_control_launch_hybrid(
-	float normalized_throttle,
-	int32_t swAngle_millideg_FL,
-    int32_t swAngle_millideg_FR,
-    bool allow_regen
-) {
-
-    int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
-
-    if (true == allow_regen) {
-        assert(-1.0f <= normalized_throttle && normalized_throttle <= 1.0f);
-    } else {
-        assert(0.0f <= normalized_throttle && normalized_throttle <= 1.0f);
-    }
-
-    // load_solver_settings();
-
-	float wheel_fl_speed_radps = getMotorSpeed_radps(MOTOR_FL);
-	float wheel_fr_speed_radps = getMotorSpeed_radps(MOTOR_FR);
+    float wheel_fl_speed_radps = getMotorSpeed_radps(MOTOR_FL);
+    float wheel_fr_speed_radps = getMotorSpeed_radps(MOTOR_FR);
 	float wheel_rl_speed_radps = getMotorSpeed_radps(MOTOR_RL);
 	float wheel_rr_speed_radps = getMotorSpeed_radps(MOTOR_RR);
-    
-	// float tractive_cap_fl = getKappaFxGlobalMax(MOTOR_FL, UINT8_MAX, true).Fx;
-	// float tractive_cap_fr = getKappaFxGlobalMax(MOTOR_FR, UINT8_MAX, true).Fx;
-	// float tractive_cap_rl = getKappaFxGlobalMax(MOTOR_RL, UINT8_MAX, true).Fx;
-	// float tractive_cap_rr = getKappaFxGlobalMax(MOTOR_RR, UINT8_MAX, true).Fx;
-
-    bool use_true_downforce = true;
-    float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
-    float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
-    float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
-    float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
-
-	// The most naive approach is to convert force to torque linearly, ignoring rolling resistance and any inefficiency.
-	float torque_limit_fl = tractive_cap_fl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FL];
-	float torque_limit_fr = tractive_cap_fr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FR];
-	float torque_limit_rl = tractive_cap_rl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RL];
-	float torque_limit_rr = tractive_cap_rr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RR];
-
-	torque_limit_fl = fminf(torque_limit_fl, maxTorque_continuous_stall_Nm);
-	torque_limit_fr = fminf(torque_limit_fr, maxTorque_continuous_stall_Nm);
-	torque_limit_rl = fminf(torque_limit_rl, maxTorque_continuous_stall_Nm);
-	torque_limit_rr = fminf(torque_limit_rr, maxTorque_continuous_stall_Nm);
-
-	static optimizer_state_t optimizer_state;
-
-	optimizer_state.power_limit = 1e9;
 	optimizer_state.omegas[0] = wheel_fl_speed_radps;
 	optimizer_state.omegas[1] = wheel_fr_speed_radps;
 	optimizer_state.omegas[2] = wheel_rl_speed_radps;
 	optimizer_state.omegas[3] = wheel_rr_speed_radps;
-
-    if(true == allow_regen) {
-        optimizer_state.variable_profile[0].lower = fmaxf(-torque_limit_fl + motor_resistance_Nm[MOTOR_FL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FL)));
-        optimizer_state.variable_profile[1].lower = fmaxf(-torque_limit_fr + motor_resistance_Nm[MOTOR_FR], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FR)));
-        optimizer_state.variable_profile[2].lower = fmaxf(-torque_limit_rl + motor_resistance_Nm[MOTOR_RL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RL)));
-        optimizer_state.variable_profile[3].lower = fmaxf(-torque_limit_rr + motor_resistance_Nm[MOTOR_RR], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RR)));
-    } else {
-        optimizer_state.variable_profile[0].lower = 0.0;
-        optimizer_state.variable_profile[1].lower = 0.0;
-        optimizer_state.variable_profile[2].lower = 0.0;
-        optimizer_state.variable_profile[3].lower = 0.0;
-    }
-
-	optimizer_state.variable_profile[0].upper = torque_limit_fl;
-	optimizer_state.variable_profile[1].upper = torque_limit_fr;
-	optimizer_state.variable_profile[2].upper = torque_limit_rl;
-	optimizer_state.variable_profile[3].upper = torque_limit_rr;
 
 	const float thoeretical_mass_accel = maxTorque_continuous_stall_Nm * MOTOR_LEN * gear_ratio / effective_wheel_rad_m / car_mass_kg;
 	// areq can be either expressed in torque or actual accel. Both ways are equivalent. Here uses actual accel.
@@ -544,32 +383,13 @@ static void set_optimal_control_launch_hybrid(
 	static cmr_torqueDistributionNm_t torquesPos_Nm;
 	static cmr_torqueDistributionNm_t torquesNeg_Nm;
 
-    if(true == allow_regen) {
-
-        set_motor_speed_and_torque(MOTOR_FL, optimizer_state.optimal_assignment[0].val, &torquesPos_Nm, &torquesNeg_Nm);
-        set_motor_speed_and_torque(MOTOR_FR, optimizer_state.optimal_assignment[1].val, &torquesPos_Nm, &torquesNeg_Nm);
-        set_motor_speed_and_torque(MOTOR_RL, optimizer_state.optimal_assignment[2].val, &torquesPos_Nm, &torquesNeg_Nm);
-        set_motor_speed_and_torque(MOTOR_RR, optimizer_state.optimal_assignment[3].val, &torquesPos_Nm, &torquesNeg_Nm);
-        setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
-        // The API for setting speeds and torques is not optimal.
-        // It should allow setting velocities the same way as setting torques, by passing a struct.
-
-    } else {
-
-        torquesPos_Nm.fl = optimizer_state.optimal_assignment[0].val;
-        torquesPos_Nm.fr = optimizer_state.optimal_assignment[1].val;
-        torquesPos_Nm.rl = optimizer_state.optimal_assignment[2].val;
-        torquesPos_Nm.rr = optimizer_state.optimal_assignment[3].val;
-
-        torquesNeg_Nm.fl = 0.0f;
-        torquesNeg_Nm.fr = 0.0f;
-        torquesNeg_Nm.rl = 0.0f;
-        torquesNeg_Nm.rr = 0.0f;
-
-        setVelocityInt16All(maxFastSpeed_rpm);
-	    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
-
-    }
+    // The API for setting speeds and torques is not optimal.
+    // It should allow setting velocities the same way as setting torques, by passing a struct.
+    set_motor_speed_and_torque(MOTOR_FL, optimizer_state.optimal_assignment[0].val, &torquesPos_Nm, &torquesNeg_Nm);
+    set_motor_speed_and_torque(MOTOR_FR, optimizer_state.optimal_assignment[1].val, &torquesPos_Nm, &torquesNeg_Nm);
+    set_motor_speed_and_torque(MOTOR_RL, optimizer_state.optimal_assignment[2].val, &torquesPos_Nm, &torquesNeg_Nm);
+    set_motor_speed_and_torque(MOTOR_RR, optimizer_state.optimal_assignment[3].val, &torquesPos_Nm, &torquesNeg_Nm);
+    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
 }
 
 void set_optimal_control_with_regen(
@@ -594,13 +414,10 @@ void set_optimal_control_with_regen(
     set_optimal_control(combined_request, swAngle_millideg_FL, swAngle_millideg_FR, true);
 }
 
-
-static float apply_traction_control(motorLocation_t motor, float torque_Nm, bool use_true_downforce) {
-
+static float get_tractive_cap_N(motorLocation_t motor, bool use_true_downforce) {
     canDaqRX_t loadcell_index;
     switch(motor) {
-        case MOTOR_FL:
-            loadcell_index = CANRX_DAQ_LOAD_FL;
+    case MOTOR_FL:
             break;
         case MOTOR_FR:
             loadcell_index = CANRX_DAQ_LOAD_FR;
@@ -613,13 +430,51 @@ static float apply_traction_control(motorLocation_t motor, float torque_Nm, bool
             break;
     }
     float tractive_cap_N = lut_get_max_Fx_kappa(0.0, get_downforce(loadcell_index, use_true_downforce) + corner_weight_Nm).Fx;
+    return tractive_cap_N;
+}
+
+static float get_tractive_positive_limit_Nm(motorLocation_t motor, bool use_true_downforce) {
+    float tractive_cap_N = get_tractive_cap_N(motor, use_true_downforce);
     float tractive_cap_Nm = tractive_cap_N * effective_wheel_rad_m / gear_ratio;
-    torque_Nm = fminf(tractive_cap_Nm + motor_resistance_Nm[motor], torque_Nm);
-    torque_Nm = fmaxf(-tractive_cap_Nm + motor_resistance_Nm[motor], torque_Nm);
+    float tractive_positive_limit_Nm = tractive_cap_Nm + motor_resistance_Nm[motor];
+    return tractive_positive_limit_Nm;
+}
+
+static float get_tractive_regen_limit_Nm(motorLocation_t motor, bool use_true_downforce) {
+    float tractive_cap_N = get_tractive_cap_N(motor, use_true_downforce);
+    float tractive_cap_Nm = tractive_cap_N * effective_wheel_rad_m / gear_ratio;
+    float tractive_regen_limit_Nm = -tractive_cap_Nm + motor_resistance_Nm[motor] + rolling_resistance_Nm[motor];
+    // Make sure this is nonpositive.
+    tractive_regen_limit_Nm = fminf(tractive_regen_limit_Nm, 0.0f);
+    return tractive_regen_limit_Nm;
+}
+
+static float apply_tractive_limit(motorLocation_t motor, float torque_Nm, bool use_true_downforce) {
+    float tractive_positive_limit_Nm = get_tractive_positive_limit_Nm(motor, use_true_downforce);
+    float tractive_regen_limit_Nm = get_tractive_regen_limit_Nm(motor, use_true_downforce);
+    torque_Nm = fminf(tractive_positive_limit_Nm, torque_Nm);
+    torque_Nm = fmaxf(tractive_regen_limit_Nm, torque_Nm);
     return torque_Nm;
 }
 
-static void apply_all_traction_control(
+static float get_motor_positive_limit_Nm(motorLocation_t motor) {
+    // TODO: Implement AMK torque-speed curve here.
+    return maxTorque_continuous_stall_Nm;
+}
+
+static float get_motor_regen_limit_Nm(motorLocation_t motor) {
+    return getMotorRegenerativeCapacity(getMotorSpeed_rpm(motor));
+}
+
+static float apply_motor_limit(motorLocation_t motor, float torque_Nm) {
+    float motor_positive_torque_limit = get_motor_positive_limit_Nm(motor);
+    float motor_regen_torque_limit = get_motor_regen_limit_Nm(motor);
+    torque_Nm = fminf(torque_Nm, motor_positive_torque_limit);
+    torque_Nm = fmaxf(torque_Nm, motor_regen_torque_limit);
+    return torque_Nm;
+}
+
+static void apply_all_tractive_limit(
     const cmr_torqueDistributionNm_t *torques_Nm, 
     bool use_true_downforce
 ){
@@ -630,6 +485,20 @@ static void apply_all_traction_control(
     set_motor_speed_and_torque(MOTOR_RL, apply_traction_control(MOTOR_RL, torques_Nm->rl, use_true_downforce), &torquesPos_Nm, &torquesNeg_Nm);
     set_motor_speed_and_torque(MOTOR_RR, apply_traction_control(MOTOR_RR, torques_Nm->rr, use_true_downforce), &torquesPos_Nm, &torquesNeg_Nm);
     setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
+}
+
+static float get_positive_limit_Nm(motorLocation_t motor, bool use_true_downforce) {
+    float motor_positive_torque_limit_Nm = get_motor_positive_limit_Nm(motor);
+    float tractive_positive_limit_Nm = get_tractive_positive_limit_Nm(motor, use_true_downforce);
+    float positive_torque_limit_Nm = fminf(motor_positive_torque_limit_Nm, tractive_positive_limit_Nm);
+    return positive_torque_limit_Nm;
+}
+
+static float get_regen_limit_Nm(motorLocation_t motor, bool use_true_downforce) {
+    float motor_regen_torque_limit_Nm = get_motor_regen_limit_Nm(motor);
+    float tractive_regen_limit_Nm = get_tractive_regen_limit_Nm(motor, use_true_downforce);
+    float regen_torque_limit_Nm = fmaxf(motor_regen_torque_limit_Nm, tractive_regen_limit_Nm);
+    return regen_torque_limit_Nm;
 }
 
 static void set_regen(uint8_t throttlePos_u8, bool traction_control) {
@@ -652,39 +521,17 @@ static void set_regen(uint8_t throttlePos_u8, bool traction_control) {
 	static cmr_torqueDistributionNm_t torquesNeg_Nm;
 
     float torque_req_Nm = combined_request * maxFastTorque_Nm;
-    float torque_req_fl_Nm = torque_req_Nm;
-    float torque_req_fr_Nm = torque_req_Nm;
-    float torque_req_rl_Nm = torque_req_Nm;
-    float torque_req_rr_Nm = torque_req_Nm;
-    if(torque_req_Nm < 0) {
-        torque_req_fl_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FL)), torque_req_fl_Nm);
-        torque_req_fr_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FR)), torque_req_fr_Nm);
-        torque_req_rl_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RL)), torque_req_rl_Nm);
-        torque_req_rr_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RR)), torque_req_rr_Nm);
-    }
-
+    float torque_req_fl_Nm = apply_motor_limit(MOTOR_FL, torque_req_Nm);
+    float torque_req_fr_Nm = apply_motor_limit(MOTOR_FR, torque_req_Nm);
+    float torque_req_rl_Nm = apply_motor_limit(MOTOR_RL, torque_req_Nm);
+    float torque_req_rr_Nm = apply_motor_limit(MOTOR_RR, torque_req_Nm);
+    
     if(traction_control) {
         bool use_true_downforce = true;
-
-        float tractive_cap_fl_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
-        float tractive_cap_fr_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
-        float tractive_cap_rl_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
-        float tractive_cap_rr_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
-
-        float tractive_cap_fl_Nm = tractive_cap_fl_N * effective_wheel_rad_m / gear_ratio;
-        float tractive_cap_fr_Nm = tractive_cap_fr_N * effective_wheel_rad_m / gear_ratio;
-        float tractive_cap_rl_Nm = tractive_cap_rl_N * effective_wheel_rad_m / gear_ratio;
-        float tractive_cap_rr_Nm = tractive_cap_rr_N * effective_wheel_rad_m / gear_ratio;
-
-        torque_req_fl_Nm = fminf(tractive_cap_fl_Nm + motor_resistance_Nm[MOTOR_FL], torque_req_fl_Nm);
-        torque_req_fr_Nm = fminf(tractive_cap_fr_Nm + motor_resistance_Nm[MOTOR_FR], torque_req_fr_Nm);
-        torque_req_rl_Nm = fminf(tractive_cap_rl_Nm + motor_resistance_Nm[MOTOR_RL], torque_req_rl_Nm);
-        torque_req_rr_Nm = fminf(tractive_cap_rr_Nm + motor_resistance_Nm[MOTOR_RR], torque_req_rr_Nm); 
-
-        torque_req_fl_Nm = fmaxf(-tractive_cap_fl_Nm + motor_resistance_Nm[MOTOR_FL], torque_req_fl_Nm);
-        torque_req_fr_Nm = fmaxf(-tractive_cap_fr_Nm + motor_resistance_Nm[MOTOR_FR], torque_req_fr_Nm);
-        torque_req_rl_Nm = fmaxf(-tractive_cap_rl_Nm + motor_resistance_Nm[MOTOR_RL], torque_req_rl_Nm);
-        torque_req_rr_Nm = fmaxf(-tractive_cap_rr_Nm + motor_resistance_Nm[MOTOR_RR], torque_req_rr_Nm); 
+        torque_req_fl_Nm = apply_traction_limit(MOTOR_FL, torque_req_fl_Nm, use_true_downforce);
+        torque_req_fr_Nm = apply_traction_limit(MOTOR_FR, torque_req_fl_Nm, use_true_downforce);
+        torque_req_rl_Nm = apply_traction_limit(MOTOR_RL, torque_req_fl_Nm, use_true_downforce);
+        torque_req_rr_Nm = apply_traction_limit(MOTOR_RR, torque_req_fl_Nm, use_true_downforce);
     }
 
     set_motor_speed_and_torque(MOTOR_FL, torque_req_fl_Nm, &torquesPos_Nm, &torquesNeg_Nm);
@@ -860,8 +707,7 @@ void test_solver(uint8_t throttlePos_u8, uint8_t swAngle_millideg, bool clampbys
 		float frontWhlTargetVelocity_mps = rearWhlAvgVelocity_mps + 0.1f;
 		float frontWheelVelocityRPM = gear_ratio * 60.0f * frontWhlTargetVelocity_mps / (2 * M_PI * effective_wheel_rad_m);
 
-		setVelocityFloat(MOTOR_FL, wheelVelocityRPM); // Converts rad/s to rpm
-		setVelocityFloat(MOTOR_FR, wheelVelocityRPM);
+    setVelocityFloat(MOTOR_FL, wheelVelocityRPM); // Converts rad/s to rpm
 		setVelocityFloat(MOTOR_RL, wheelVelocityRPM);
 		setVelocityFloat(MOTOR_RR, wheelVelocityRPM);
 
@@ -878,8 +724,7 @@ void test_solver(uint8_t throttlePos_u8, uint8_t swAngle_millideg, bool clampbys
 		float clamped_FL_RPM = fminf(rearWhlVelocity_RL_RPM*1.12f     , (rearWhlVelocity_RR_RPM)*1.12f+3000) + 0.1f;
 		float clamped_FR_RPM = fminf((rearWhlVelocity_RL_RPM*1.12f)+3000, rearWhlVelocity_RR_RPM*1.12f) + 0.1f;//why? slip ratio vibes
 
-		setVelocityFloat(MOTOR_FL, clamped_FL_RPM); // Converts rad/s to rpm
-		setVelocityFloat(MOTOR_FR, clamped_FR_RPM);
+    setVelocityFloat(MOTOR_FL, clamped_FL_RPM); // Converts rad/s to rpm
 		setVelocityFloat(MOTOR_RL, wheelVelocityRPM);
 		setVelocityFloat(MOTOR_RR, wheelVelocityRPM);
 	}
@@ -899,8 +744,7 @@ void setSlowTorque (
     const float reqTorque = maxSlowTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
     // setTorqueLimsAllProtected(reqTorque, 0.0f);
 
-    setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
-    setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
+setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
 
@@ -941,19 +785,16 @@ void setFastTorque (
         float torque_limit_rl_Nm = tractive_cap_rl_N * effective_wheel_rad_m / gear_ratio;
         float torque_limit_rr_Nm = tractive_cap_rr_N * effective_wheel_rad_m / gear_ratio;
 
-        req_torque_fl_Nm = fminf(torque_limit_fl_Nm + motor_resistance_Nm[MOTOR_FL], req_torque_Nm);
-        req_torque_fr_Nm = fminf(torque_limit_fr_Nm + motor_resistance_Nm[MOTOR_FR], req_torque_Nm);
+    req_torque_fl_Nm = fminf(torque_limit_fl_Nm + motor_resistance_Nm[MOTOR_FL], req_torque_Nm);
         req_torque_rl_Nm = fminf(torque_limit_rl_Nm + motor_resistance_Nm[MOTOR_RL], req_torque_Nm);
         req_torque_rr_Nm = fminf(torque_limit_rr_Nm + motor_resistance_Nm[MOTOR_RR], req_torque_Nm);
        
-        req_torque_fl_Nm = fmaxf(-torque_limit_fl_Nm + motor_resistance_Nm[MOTOR_FL], req_torque_fl_Nm);
-        req_torque_fr_Nm = fmaxf(-torque_limit_fr_Nm + motor_resistance_Nm[MOTOR_FR], req_torque_fr_Nm);
+    req_torque_fl_Nm = fmaxf(-torque_limit_fl_Nm + motor_resistance_Nm[MOTOR_FL], req_torque_fl_Nm);
         req_torque_rl_Nm = fmaxf(-torque_limit_rl_Nm + motor_resistance_Nm[MOTOR_RL], req_torque_rl_Nm);
         req_torque_rr_Nm = fmaxf(-torque_limit_rr_Nm + motor_resistance_Nm[MOTOR_RR], req_torque_rr_Nm);
     }
 
-    setTorqueLimsUnprotected(MOTOR_FL, req_torque_fl_Nm, 0.0f);
-    setTorqueLimsUnprotected(MOTOR_FR, req_torque_fr_Nm, 0.0f);
+setTorqueLimsUnprotected(MOTOR_FL, req_torque_fl_Nm, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RR, req_torque_rl_Nm, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RL, req_torque_rr_Nm, 0.0f);
     setVelocityInt16All(maxFastSpeed_rpm);
@@ -965,19 +806,16 @@ void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew) {
     const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
     
     if(reqTorque > 0.0f) {
-        int16_t fl_rpm = getMotorSpeed_rpm(MOTOR_FL);
-        int16_t fr_rpm = getMotorSpeed_rpm(MOTOR_FR);
+    int16_t fl_rpm = getMotorSpeed_rpm(MOTOR_FL);
         int16_t rl_rpm = getMotorSpeed_rpm(MOTOR_RL);
         int16_t rr_rpm = getMotorSpeed_rpm(MOTOR_RR);
-        setVelocityFloat(MOTOR_FL, fl_rpm + slew);
-        setVelocityFloat(MOTOR_FR, fr_rpm + slew);
+    setVelocityFloat(MOTOR_FL, fl_rpm + slew);
         setVelocityFloat(MOTOR_RL, rl_rpm + slew);
         setVelocityFloat(MOTOR_RR, rr_rpm + slew);
     } else {
         setVelocityInt16All(maxFastSpeed_rpm);
     }
-    setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
-    setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
+setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
 }
@@ -1142,8 +980,7 @@ void setLaunchControl(
     bool ready_to_accel = throttlePos_u8 > 0 && !action_button_pressed && launchControlActive;
     if(false == ready_to_accel) {
         //setTorqueLimsAllProtected(0.0f, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_FL, 0.0, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_FR, 0.0, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_FL, 0.0, 0.0f);
         setTorqueLimsUnprotected(MOTOR_RR, 0.0, 0.0f);
         setTorqueLimsUnprotected(MOTOR_RL, 0.0, 0.0f);
 		setVelocityInt16All(0);
@@ -1182,12 +1019,10 @@ void setLaunchControl(
             float clamp_rpm = (float) (getMotorSpeed_rpm(MOTOR_RL) + getMotorSpeed_rpm(MOTOR_RR)) * 0.5f;
             // 12Nm torque * 67.5N traction per Nm / 1600N downforce * 0.11 max slip ratio = 0.0556875
             // 1.11 / 1.0556875 = 1.051447516
-            setVelocityFloat(MOTOR_FL, clamp_rpm * 1.07f);
-            setVelocityFloat(MOTOR_FR, clamp_rpm * 1.07f);
+        setVelocityFloat(MOTOR_FL, clamp_rpm * 1.07f);
             
             // Feedforward only.
-            // setVelocityFloat(MOTOR_FL, motor_rpm);
-            // setVelocityFloat(MOTOR_FR, motor_rpm);
+        // setVelocityFloat(MOTOR_FL, motor_rpm);
             // setVelocityFloat(MOTOR_RL, motor_rpm);
             // setVelocityFloat(MOTOR_RR, motor_rpm);
         
@@ -1200,8 +1035,7 @@ void setLaunchControl(
             neg_torques_Nm.fr = 0.0f;
             neg_torques_Nm.rl = 0.0f;
             neg_torques_Nm.rr = 0.0f;
-            setTorqueLimsUnprotected(MOTOR_FL, pos_torques_Nm.fl, neg_torques_Nm.fl);
-            setTorqueLimsUnprotected(MOTOR_FR, pos_torques_Nm.fr, neg_torques_Nm.fr);
+        setTorqueLimsUnprotected(MOTOR_FL, pos_torques_Nm.fl, neg_torques_Nm.fl);
             setTorqueLimsUnprotected(MOTOR_RR, pos_torques_Nm.rr, neg_torques_Nm.rr);
             setTorqueLimsUnprotected(MOTOR_RL, pos_torques_Nm.rl, neg_torques_Nm.rl);
             break;
@@ -1221,8 +1055,7 @@ void setLaunchControl(
             float tractive_cap_rl_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
             float tractive_cap_rr_N = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
 
-            float torque_limit_fl_Nm = tractive_cap_fl_N * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FL];
-            float torque_limit_fr_Nm = tractive_cap_fr_N * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FR];
+        float torque_limit_fl_Nm = tractive_cap_fl_N * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FL];
             float torque_limit_rl_Nm = tractive_cap_rl_N * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RL];
             float torque_limit_rr_Nm = tractive_cap_rr_N * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RR];
 
@@ -1241,8 +1074,7 @@ void setLaunchControl(
             neg_torques_Nm.rr = 0.0f;
             setVelocityInt16All(maxFastSpeed_rpm);
             
-            // setTorqueLimsUnprotected(MOTOR_FL, pos_torques_Nm.fl, neg_torques_Nm.fl);
-            // setTorqueLimsUnprotected(MOTOR_FR, pos_torques_Nm.fr, neg_torques_Nm.fr);
+        // setTorqueLimsUnprotected(MOTOR_FL, pos_torques_Nm.fl, neg_torques_Nm.fl);
             // setTorqueLimsUnprotected(MOTOR_RL, pos_torques_Nm.rl, neg_torques_Nm.rl);
             // setTorqueLimsUnprotected(MOTOR_RR, pos_torques_Nm.rr, neg_torques_Nm.rr);
             setTorqueLimsProtected(&pos_torques_Nm, &neg_torques_Nm);
@@ -1371,22 +1203,19 @@ void setTractionControl (
         switch (traction_control_mode) {
             default: // default to torque-mapped mode if traction_control_mode is not valid
             case TC_MODE_TORQUE: { // torque-mapped mode, retrieve the local max slip ratio setpoints
-                frontSlipRatios.slipRatio_FL = getMaxKappaCurrentState(MOTOR_FL, assumeNoTurn);
-                frontSlipRatios.slipRatio_FR = getMaxKappaCurrentState(MOTOR_FR, assumeNoTurn);
+            frontSlipRatios.slipRatio_FL = getMaxKappaCurrentState(MOTOR_FL, assumeNoTurn);
                 rearSlipRatios.slipRatio_RL = getMaxKappaCurrentState(MOTOR_RL, assumeNoTurn);
                 rearSlipRatios.slipRatio_RR = getMaxKappaCurrentState(MOTOR_RR, assumeNoTurn);
             } break;
 
             case TC_MODE_FX_GLOBAL_MAX: { // maps max throttle to the global max Fx of the LUT
-                frontSlipRatios.slipRatio_FL = getKappaFxGlobalMax(MOTOR_FL, throttlePos_u8, assumeNoTurn).kappa;
-                frontSlipRatios.slipRatio_FR = getKappaFxGlobalMax(MOTOR_FR, throttlePos_u8, assumeNoTurn).kappa;
+            frontSlipRatios.slipRatio_FL = getKappaFxGlobalMax(MOTOR_FL, throttlePos_u8, assumeNoTurn).kappa;
                 rearSlipRatios.slipRatio_RL = getKappaFxGlobalMax(MOTOR_RL, throttlePos_u8, assumeNoTurn).kappa;
                 rearSlipRatios.slipRatio_RR = getKappaFxGlobalMax(MOTOR_RR, throttlePos_u8, assumeNoTurn).kappa;
             } break;
 
             case TC_MODE_FX_LOCAL_MAX: { // maps max throttle to the max Fx available at the current state
-                float traction_fl = getTraction(MOTOR_FL, throttlePos_u8, ASSUME_NO_TURN);
-                float traction_fr = getTraction(MOTOR_FR, throttlePos_u8, ASSUME_NO_TURN);
+            float traction_fl = getTraction(MOTOR_FL, throttlePos_u8, ASSUME_NO_TURN);
                 float traction_rl = getTraction(MOTOR_RL, throttlePos_u8, ASSUME_NO_TURN);
                 float traction_rr = getTraction(MOTOR_RR, throttlePos_u8, ASSUME_NO_TURN);
 
@@ -1399,8 +1228,7 @@ void setTractionControl (
                     traction_rr = min_traction_back;
                 }
 
-                frontSlipRatios.slipRatio_FL = getKappaByFx(MOTOR_FL, throttlePos_u8, traction_fl, ASSUME_NO_TURN);
-                frontSlipRatios.slipRatio_FR = getKappaByFx(MOTOR_FR, throttlePos_u8, traction_fr, ASSUME_NO_TURN);
+            frontSlipRatios.slipRatio_FL = getKappaByFx(MOTOR_FL, throttlePos_u8, traction_fl, ASSUME_NO_TURN);
                 rearSlipRatios.slipRatio_RL = getKappaByFx(MOTOR_RL, throttlePos_u8, traction_rl, ASSUME_NO_TURN);
                 rearSlipRatios.slipRatio_RR = getKappaByFx(MOTOR_RR, throttlePos_u8, traction_rr, ASSUME_NO_TURN);
             } break;
@@ -1446,8 +1274,7 @@ void setTractionControl (
         }
     } else if (allowRegen && brakePressurePsi_u8 >= braking_threshold_psi) { // regen-breaking
         // calculate slip ratios for breaking
-        frontSlipRatios.slipRatio_FL = getBrakeKappa(MOTOR_FL, brakePressurePsi_u8, braking_threshold_psi);
-        frontSlipRatios.slipRatio_FR = getBrakeKappa(MOTOR_FR, brakePressurePsi_u8, braking_threshold_psi);
+    frontSlipRatios.slipRatio_FL = getBrakeKappa(MOTOR_FL, brakePressurePsi_u8, braking_threshold_psi);
         rearSlipRatios.slipRatio_RL = getBrakeKappa(MOTOR_RL, brakePressurePsi_u8, braking_threshold_psi);
         rearSlipRatios.slipRatio_RR = getBrakeKappa(MOTOR_RR, brakePressurePsi_u8, braking_threshold_psi);
 
@@ -1482,8 +1309,7 @@ void setTractionControl (
     }
 
     // set velocities
-    setVelocityFloat(MOTOR_FL, frontWhlSetpoints.omega_FL * gear_ratio * 60.0f / (2.0f * M_PI)); // Converts rad/s to rpm
-    setVelocityFloat(MOTOR_FR, frontWhlSetpoints.omega_FR * gear_ratio * 60.0f / (2.0f * M_PI));
+setVelocityFloat(MOTOR_FL, frontWhlSetpoints.omega_FL * gear_ratio * 60.0f / (2.0f * M_PI)); // Converts rad/s to rpm
     setVelocityFloat(MOTOR_RL, rearWhlSetpoints.omega_RL * gear_ratio * 60.0f / (2.0f * M_PI));
     setVelocityFloat(MOTOR_RR, rearWhlSetpoints.omega_RR * gear_ratio * 60.0f / (2.0f * M_PI));
 
@@ -1584,8 +1410,7 @@ void setYawRateControl (
         float frontWhlTargetVelocity_mps = rearWhlAvgVelocity_mps + 0.1f;
         float frontWheelVelocityRPM = gear_ratio * 60.0f * frontWhlTargetVelocity_mps / (2 * M_PI * effective_wheel_rad_m);
 
-        setVelocityFloat(MOTOR_FL, wheelVelocityRPM); // Converts rad/s to rpm
-        setVelocityFloat(MOTOR_FR, wheelVelocityRPM);
+    setVelocityFloat(MOTOR_FL, wheelVelocityRPM); // Converts rad/s to rpm
         setVelocityFloat(MOTOR_RL, wheelVelocityRPM);
         setVelocityFloat(MOTOR_RR, wheelVelocityRPM);
 
@@ -1602,8 +1427,7 @@ void setYawRateControl (
         float clamped_FL_RPM = fminf(rearWhlVelocity_RL_RPM*1.12f     , (rearWhlVelocity_RR_RPM)*1.12f+3000) + 0.1f;
         float clamped_FR_RPM = fminf((rearWhlVelocity_RL_RPM*1.12f)+3000, rearWhlVelocity_RR_RPM*1.12f) + 0.1f;//why? slip ratio vibes
 
-        setVelocityFloat(MOTOR_FL, clamped_FL_RPM); // Converts rad/s to rpm
-        setVelocityFloat(MOTOR_FR, clamped_FR_RPM);
+    setVelocityFloat(MOTOR_FL, clamped_FL_RPM); // Converts rad/s to rpm
         setVelocityFloat(MOTOR_RL, wheelVelocityRPM);
         setVelocityFloat(MOTOR_RR, wheelVelocityRPM);
     }

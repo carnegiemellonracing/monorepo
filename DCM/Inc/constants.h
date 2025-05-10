@@ -63,11 +63,21 @@ static const double half_wheelbase_m = wheelbase_m * 0.5f;
 static const double half_trackwidth_m= trackwidth_m * 0.5f;
 static const double car_mass_kg = 280.0f;
 
+// Torque loss in power train, due to:
+// bearings, dynamic seal, gearset.
 static const float motor_resistance_Nm[MOTOR_LEN] = {
     [MOTOR_FL] = 0.5f,
     [MOTOR_FR] = 0.5f,
     [MOTOR_RL] = 0.5f,
     [MOTOR_RR] = 0.5f,
+};
+
+// Torque loss due to tire rolling resistance.
+static const float rolling_resistance_Nm[MOTOR_LEN] = {
+    [MOTOR_FL] = 0.125f,
+    [MOTOR_FR] = 0.125f,
+    [MOTOR_RL] = 0.125f,
+    [MOTOR_RR] = 0.125f,
 };
 
 static const float corner_weight_Nm = 12.0 * 9.8f;
