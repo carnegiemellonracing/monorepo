@@ -91,7 +91,7 @@ void setLaunchControl(
 static void initYawRateControl() {
     // read yrc_kp from DIM
     yrc_kp = 1.0f;
-    // getProcessedValue(&yrc_kp, YRC_KP_INDEX, float_1_decimal);
+    getProcessedValue(&yrc_kp, YRC_KP_INDEX, float_1_decimal);
 
     yrc_kp = yrc_kp*100.0f;
     // yrc_kp = 200;
@@ -183,9 +183,10 @@ const volatile cmr_canCDCControlsStatus_t *getControlsStatus() {
 static void set_motor_speed(uint8_t throttlePos_u8, float speed_mps, bool rear_only) {
     float throttle = (float)throttlePos_u8 / UINT8_MAX;
     float req_torque_Nm = throttle * maxFastTorque_Nm;
-    
-    speed_mps = fmaxf(speed_mps, 0.0f);
-    speed_mps = fminf(speed_mps, 20.0f);
+    const float min_speed_mps = 0.0f;
+    const float max_speed_mps = 20.0f;
+    speed_mps = fmaxf(speed_mps, min_speed_mps);
+    speed_mps = fminf(speed_mps, max_speed_mps);
     float target_rpm = speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
     cmr_torqueDistributionNm_t torquesPos_Nm;
     if(rear_only) {
@@ -218,10 +219,12 @@ static void set_motor_speed(uint8_t throttlePos_u8, float speed_mps, bool rear_o
 
 static void set_manual_cruise_control(uint8_t throttlePos_u8) {
     static bool prev_button = false;
+    const float max_speed_mps = 20.0f;
     volatile cmr_canDIMActions_t *actions = (volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON);
-    bool button = (actions->buttons & BUTTON_ACK) != 0;
+    bool button = (actions->buttons & BUTTON_ACT) != 0;
     if(prev_button == false && button == true) {
         manual_cruise_control_speed += 1.0f;
+        manual_cruise_control_speed = fminf(manual_cruise_control_speed, max_speed_mps);
     }
     prev_button = button;
     set_motor_speed(throttlePos_u8, manual_cruise_control_speed, false);
@@ -353,10 +356,10 @@ static void set_optimal_control(
     float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
 
     static const float motor_resistance_Nm[MOTOR_LEN] = {
-        [MOTOR_FL] = 0.75f,
-        [MOTOR_FR] = 0.4f,
-        [MOTOR_RL] = 0.75f,
-        [MOTOR_RR] = 0.4f,
+        [MOTOR_FL] = 0.5f,
+        [MOTOR_FR] = 0.5f,
+        [MOTOR_RL] = 0.5f,
+        [MOTOR_RR] = 0.5f,
     };
 	// The most naive approach is to convert force to torque linearly, ignoring rolling resistance and any inefficiency.
 	float torque_limit_fl = tractive_cap_fl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FL];
@@ -1421,7 +1424,7 @@ float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
     yrcDebug.controls_target_yaw_rate = (int16_t)(1000.0f * optimal_yaw_rate_radps);
     yrcDebug.controls_pid = yrc_kp;
     
-    const float left_right_bias = yrc_kp * (actual_yaw_rate_radps_sae - optimal_yaw_rate_radps);
+    const float left_right_bias = yrc_kp * (optimal_yaw_rate_radps - actual_yaw_rate_radps_sae);
     return left_right_bias;
 }
 
