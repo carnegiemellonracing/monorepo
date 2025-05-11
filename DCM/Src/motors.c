@@ -330,7 +330,7 @@ static void motorsCommand (
                 pumpsOff();
                 mcCtrlOff();
 
-                set_optimal_control_with_regen(128, 10000, 10000); 
+                set_optimal_control_with_regen(50, 10000, 10000); 
 
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = 0;

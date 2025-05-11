@@ -37,10 +37,10 @@ void compute_moment_weights(optimizer_state_t *state) {
     double temp = gear_ratio / effective_wheel_rad_m;
     double theta_left = state->theta_left;
     double theta_right = state->theta_right;
-    state->moment_weights[0] = (half_wheelbase_m * sin(theta_left) + half_trackwidth_m * cos(theta_left)) * temp;
-    state->moment_weights[1] = (half_wheelbase_m * sin(theta_right) - half_trackwidth_m * cos(theta_right)) * temp;
-    state->moment_weights[2] = half_trackwidth_m * temp;
-    state->moment_weights[3] = -half_trackwidth_m * temp;
+    state->moment_weights[0] = (half_wheelbase_m * sin(theta_left) - half_trackwidth_m * cos(theta_left)) * temp;
+    state->moment_weights[1] = (half_wheelbase_m * sin(theta_right) + half_trackwidth_m * cos(theta_right)) * temp;
+    state->moment_weights[2] = -half_trackwidth_m * temp;
+    state->moment_weights[3] = half_trackwidth_m * temp;
 }
 
 /**

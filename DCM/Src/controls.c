@@ -400,11 +400,11 @@ static void set_optimal_control(
 	const float thoeretical_mass_accel = maxTorque_continuous_stall_Nm * MOTOR_LEN * gear_ratio / effective_wheel_rad_m / car_mass_kg;
 	// areq can be either expressed in torque or actual accel. Both ways are equivalent. Here uses actual accel.
 	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
+
     // Solver treats Mreq as around -z axis.
-	optimizer_state.mreq = -getYawRateControlLeftRightBias(swAngle_millideg);
-    
-	optimizer_state.theta_left = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
-    optimizer_state.theta_right = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
+	optimizer_state.mreq = getYawRateControlLeftRightBias(swAngle_millideg);
+	optimizer_state.theta_left = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
+    optimizer_state.theta_right = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
 
 	solve(&optimizer_state);
 
@@ -1392,9 +1392,9 @@ float get_optimal_yaw_rate(float swangle_rad, float velocity_x_mps) {
     static const float natural_understeer_gradient = 0.011465f; //rad/g
 
     const float distance_between_axles_m = chassis_a + chassis_b;
-    const float yaw_rate_setpoint_radps = swangle_rad * velocity_x_mps /
-        (distance_between_axles_m + velocity_x_mps * velocity_x_mps * natural_understeer_gradient);
-    
+    // const float yaw_rate_setpoint_radps = swangle_rad * velocity_x_mps /
+    //     (distance_between_axles_m + velocity_x_mps * velocity_x_mps * natural_understeer_gradient);
+    const float yaw_rate_setpoint_radps = swangle_rad * velocity_x_mps / distance_between_axles_m;
     return yaw_rate_setpoint_radps;
 }
 
@@ -1409,10 +1409,7 @@ float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
         velocity_x_mps = movella_state.velocity.x;
         yrcDebug.controls_bias = 1;
     } else {
-        // return 0.0f;
-        // velocity_x_mps = 0.0f;
-        // This causes oscillations!
-        velocity_x_mps = getTotalMotorSpeed_radps() * 0.25f * effective_wheel_rad_m;
+        velocity_x_mps = getTotalMotorSpeed_radps() * 0.25f / gear_ratio * effective_wheel_rad_m;
         yrcDebug.controls_bias = -1;
     }
     
