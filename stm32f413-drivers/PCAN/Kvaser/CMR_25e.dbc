@@ -1744,6 +1744,16 @@ BO_ 1682 DAQ_PI_RR_VL: 2 Vector__XXX
 SG_ RR_RideHeight : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
 
 
+BO_ 1624 DAQ_Therm1: 8 Vector__XXX
+SG_ Therm_1_1 : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+SG_ Therm_1_2 : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+
+
+BO_ 1625 DAQ_Therm2: 8 Vector__XXX
+SG_ Therm_2_1 : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+SG_ Therm_2_2 : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+
+
 CM_ BO_ 1296 "Timeout matrix";
 CM_ BO_ 644 "Set ID based on wiring";
 CM_ SG_ 644 AMK_FR_TorqueCurrent "Mysterious scaling factor.";
@@ -1930,6 +1940,8 @@ BA_ "GenMsgCycleTime" BO_ 1666 50;
 BA_ "GenMsgCycleTime" BO_ 1680 125;
 BA_ "GenMsgCycleTime" BO_ 1681 5;
 BA_ "GenMsgCycleTime" BO_ 1682 50;
+BA_ "GenMsgCycleTime" BO_ 1624 100;
+BA_ "GenMsgCycleTime" BO_ 1625 100;
 
 BA_ "GenSigStartValue" SG_ 256 VSM_state 0;
 BA_ "GenSigStartValue" SG_ 256 VSM_ERR_moduleTimeout 0;
@@ -2959,6 +2971,10 @@ BA_ "GenSigStartValue" SG_ 1681 RR_Linpot 0;
 BA_ "GenSigStartValue" SG_ 1681 RR_ADC1 0;
 BA_ "GenSigStartValue" SG_ 1681 RR_ADC2 0;
 BA_ "GenSigStartValue" SG_ 1682 RR_RideHeight 0;
+BA_ "GenSigStartValue" SG_ 1624 Therm_1_1 0;
+BA_ "GenSigStartValue" SG_ 1624 Therm_1_2 0;
+BA_ "GenSigStartValue" SG_ 1625 Therm_2_1 0;
+BA_ "GenSigStartValue" SG_ 1625 Therm_2_2 0;
 
 
 VAL_ 256 VSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;

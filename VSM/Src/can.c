@@ -73,22 +73,22 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 250,
     },
     [CANRX_INVERTER_1] = {
-        .canID = CMR_CANID_AMK_1_ACT_1,
+        .canID = CMR_CANID_AMK_FL_ACT_1,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
     },
     [CANRX_INVERTER_2] = {
-        .canID = CMR_CANID_AMK_2_ACT_1,
+        .canID = CMR_CANID_AMK_FR_ACT_1,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
     },
     [CANRX_INVERTER_3] = {
-        .canID = CMR_CANID_AMK_3_ACT_1,
+        .canID = CMR_CANID_AMK_RL_ACT_1,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
     },
     [CANRX_INVERTER_4] = {
-        .canID = CMR_CANID_AMK_4_ACT_1,
+        .canID = CMR_CANID_AMK_RR_ACT_1,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
     }
@@ -267,8 +267,8 @@ void canInit(void) {
                 CMR_CANID_FSM_DATA,
                 CMR_CANID_FSM_SWANGLE,
                 CMR_CANID_DIM_REQUEST,
-                CMR_CANID_AMK_1_ACT_1,
-                CMR_CANID_AMK_2_ACT_1
+                CMR_CANID_AMK_FL_ACT_1,
+                CMR_CANID_AMK_FR_ACT_1
             }
         },
 
@@ -289,10 +289,10 @@ void canInit(void) {
             .isMask = false,
             .rxFIFO = CAN_RX_FIFO1,
             .ids = {
-                CMR_CANID_AMK_3_ACT_1,
-                CMR_CANID_AMK_4_ACT_1,
-                CMR_CANID_AMK_3_ACT_1,
-                CMR_CANID_AMK_4_ACT_1
+                CMR_CANID_AMK_RL_ACT_1,
+                CMR_CANID_AMK_RR_ACT_1,
+                CMR_CANID_AMK_RL_ACT_1,
+                CMR_CANID_AMK_RR_ACT_1
             }
         },
     };

@@ -860,6 +860,22 @@ typedef struct {
     uint8_t lsb;
 } big_endian_16_t;
 
+
+typedef union {
+    struct {
+        uint8_t lsb;
+        uint8_t msb;
+    } data;
+    int16_t parsed;
+} int16_parser;
+
+static int16_t parse_int16(volatile big_endian_16_t *big) {
+    static int16_parser parser;
+    parser.data.msb = big->msb;
+    parser.data.lsb = big->lsb;
+    return parser.parsed;
+} 
+
 typedef struct {
     big_endian_16_t q0;
     big_endian_16_t q1;
@@ -890,6 +906,50 @@ typedef struct {
     big_endian_16_t vel_y;
     big_endian_16_t vel_z;
 } cmr_canMovellaVelocity_t;
+
+typedef struct {
+    
+    // https://mtidocs.movella.com/messages$XDI_StatusWord
+    
+    // Bits 24-31.
+    // LSBit first.
+    uint8_t filter_mode_1:2;
+    uint8_t have_gnss_time_pulse:1;
+    uint8_t rtk_status:2;
+    uint8_t reserved_4:3;
+    
+    // Bits 16-23.
+    // LSBit first.
+    uint8_t clipflag_mag_z:1;
+    uint8_t reserved_2:2;
+    uint8_t clipping_indication:1;
+    uint8_t reserved_3:1;
+    uint8_t sync_in_marker:1;
+    uint8_t sync_out_marker:1;
+    uint8_t filter_mode_2:1;
+
+    // Bits 8-15.
+    // LSBit first.
+    uint8_t clipflag_acc_x:1;
+    uint8_t clipflag_acc_y:1;
+    uint8_t clipflag_acc_z:1;
+    uint8_t clipflag_gyr_x:1;
+    uint8_t clipflag_gyr_y:1;
+    uint8_t clipflag_gyr_z:1;
+    uint8_t clipflag_mag_x:1;
+    uint8_t clipflag_mag_y:1;
+    
+    // Bits 0-7.
+    // LSBit first.
+    uint8_t self_test:1;
+    uint8_t filter_valid:1;
+    uint8_t gnss_fix:1;
+    uint8_t no_rotation_update:2;
+    uint8_t representative_motion:1;
+    uint8_t clock_bias_estimation:1;
+    uint8_t reserved_1:1;
+
+} cmr_canMovellaStatus_t;
 
 typedef struct {
     int16_t cog_x;
@@ -1055,17 +1115,15 @@ typedef struct {
 typedef uint8_t cmr_canDAQTest_t; /** @brief DAQ Test type. MSB is to start/stop bits, rest are test id **/
 
 typedef struct {
-    uint16_t linpot_front_mm;       /**< @brief Front damper length in mm */
-    uint16_t linpot_front_adc;      /**< @brief Front linpot ADC Value */
-    uint16_t linpot_rear_mm;        /**< @brief Rear damper length in mm */
-    uint16_t linpot_rear_adc;       /**< @brief Rear linpot ADC Value */
-} cmr_canDAQLinpot_t;
+    uint32_t therm_1;       /**< @brief Front damper length in mm */
+    uint32_t therm_2;        /**< @brief Rear damper length in mm */
+} cmr_canDAQTherm_t;
 
 typedef struct {
-    int16_t differential_voltage_uv;
-    int16_t force_output_N;
-    int16_t internal_temp;
-    int16_t external_temp;
+    big_endian_16_t differential_voltage_uv;
+    big_endian_16_t force_output_N;
+    big_endian_16_t internal_temp;
+    big_endian_16_t external_temp;
 } cmr_canIZZELoadCell_t;
 
 typedef struct {

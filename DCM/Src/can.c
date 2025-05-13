@@ -369,23 +369,23 @@ cmr_canRXMeta_t canRXMeta[] = {
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
     },
     [CANRX_INV1_STATUS] = {
-        .canID = CMR_CANID_AMK_1_ACT_2,
+        .canID = CMR_CANID_AMK_FL_ACT_2,
         .timeoutError_ms = 800, // Send error if data not received within 4 cycles, or 800 ms
         .timeoutWarn_ms = 400, // Send warning if data not received within 2 cycles, or 400 ms
         // CAN transmitting frequency = 5 Hz, so ? s = 1 / 5 Hz = 0.2 s = 200ms
     },
     [CANRX_INV2_STATUS] = {
-        .canID = CMR_CANID_AMK_2_ACT_2,
+        .canID = CMR_CANID_AMK_FR_ACT_2,
         .timeoutError_ms = 800,
         .timeoutWarn_ms = 400,
     },
     [CANRX_INV3_STATUS] = {
-        .canID = CMR_CANID_AMK_3_ACT_2,
+        .canID = CMR_CANID_AMK_RL_ACT_2,
         .timeoutError_ms = 800,
         .timeoutWarn_ms = 400,
     },
     [CANRX_INV4_STATUS] = {
-        .canID = CMR_CANID_AMK_4_ACT_2,
+        .canID = CMR_CANID_AMK_RR_ACT_2,
         .timeoutError_ms = 800,
         .timeoutWarn_ms = 400,
     },
@@ -468,6 +468,13 @@ static void canTX10Hz(void *pvParameters) {
         //powersense is dead, voltage * HVI current
         powerSense.packPower_W = getPackVoltage() * getPackCurrent();
 
+        
+        cmr_canDAQTherm_t therms;
+        therms.therm_1 = adcRead(ADC_THERM1);
+        therms.therm_2 = adcRead(ADC_THERM2);
+
+        canTX(CMR_CAN_BUS_VEH, 0x659, &therms, sizeof(cmr_canDAQTherm_t), canTX10Hz_period_ms);
+
         // Is data valid? Set it in the orientation/velocity messages
 //        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX10Hz_period_ms);
 //        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK, &torqueFeedback, sizeof(torqueFeedback), canTX10Hz_period_ms);
@@ -526,11 +533,11 @@ static void canTX100Hz(void *pvParameters) {
             heartbeat.state = CMR_CAN_ERROR;
         }
 
-        cmr_canDAQLinpot_t linpots;
-        linpots.linpot_front_adc = adcRead(ADC_LINPOT1);
-        linpots.linpot_rear_adc = adcRead(ADC_LINPOT2);
+        cmr_canDAQTherm_t linpots;
+        linpots.therm_1 = adcRead(ADC_LINPOT1);
+        linpots.therm_2 = adcRead(ADC_LINPOT2);
 
-        canTX(CMR_CAN_BUS_VEH, 0x658, &linpots, sizeof(cmr_canDAQLinpot_t), canTX100Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, 0x658, &linpots, sizeof(cmr_canDAQTherm_t), canTX100Hz_period_ms);
 
         // Solver
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_INPUTS, &solver_inputs, sizeof(cmr_can_solver_inputs_t), canTX100Hz_period_ms);
@@ -619,7 +626,7 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_FR_SETPOINTS, amkSetpointsFR, sizeof(*amkSetpointsFR), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_RL_SETPOINTS, amkSetpointsRL, sizeof(*amkSetpointsRL), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_RR_SETPOINTS, amkSetpointsRR, sizeof(*amkSetpointsRR), canTX200Hz_period_ms);
-
+        
         daqWheelSpeedFeedback(&speedFeedback);
         daqWheelTorqueFeedback(&torqueFeedback);
         daqWheelSpeedSetpoints(&speedSetpoint);
@@ -1027,23 +1034,23 @@ void canInit(void) {
     const cmr_canFilter_t canTractiveFilters[] = {
         {.isMask = false,
          .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_AMK_1_ACT_1, CMR_CANID_AMK_1_ACT_2,
+         .ids = {CMR_CANID_AMK_FL_ACT_1, CMR_CANID_AMK_FL_ACT_2,
                  }
         },
 
         {.isMask = false,
          .rxFIFO = FDCAN_RX_FIFO1,
-         .ids = {CMR_CANID_AMK_2_ACT_1, CMR_CANID_AMK_2_ACT_2,}
+         .ids = {CMR_CANID_AMK_FR_ACT_1, CMR_CANID_AMK_FR_ACT_2,}
         },
 
         {.isMask = false,
         .rxFIFO = FDCAN_RX_FIFO1,
-        .ids = {CMR_CANID_AMK_3_ACT_1, CMR_CANID_AMK_3_ACT_2,}
+        .ids = {CMR_CANID_AMK_RL_ACT_1, CMR_CANID_AMK_RL_ACT_2,}
         },
         
         {.isMask = false,
          .rxFIFO = FDCAN_RX_FIFO1,
-         .ids = {CMR_CANID_AMK_4_ACT_1, CMR_CANID_AMK_4_ACT_2}
+         .ids = {CMR_CANID_AMK_RR_ACT_1, CMR_CANID_AMK_RR_ACT_2}
         }
     };
 

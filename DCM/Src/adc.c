@@ -29,7 +29,22 @@ static cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .pin = GPIO_PIN_9,
         .samplingTime = ADC3_SAMPLETIME_12CYCLES_5,
         .value = 0
+    },
+    [ADC_THERM1] = {
+        .channel = ADC_CHANNEL_8,
+        .port = GPIOF,
+        .pin = GPIO_PIN_6,
+        .samplingTime = ADC3_SAMPLETIME_12CYCLES_5,
+        .value = 0
+    },
+    [ADC_THERM2] = {
+        .channel = ADC_CHANNEL_3,
+        .port = GPIOF,
+        .pin = GPIO_PIN_7,
+        .samplingTime = ADC3_SAMPLETIME_12CYCLES_5,
+        .value = 0
     }
+
 };
 
 /** @brief Primary ADC. */

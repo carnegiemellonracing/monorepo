@@ -2234,3 +2234,19 @@ DLC=2
 CycleTime=50
 Timeout=200
 Var=RR_RideHeight unsigned 0,16
+
+[DAQ_Therm1]
+ID=658h
+DLC=8
+CycleTime=100
+Timeout=200
+Var=Therm_1_1 unsigned 0,32
+Var=Therm_1_2 unsigned 32,32
+
+[DAQ_Therm2]
+ID=659h
+CycleTime=100
+Timeout=200
+Var=Therm_2_1 unsigned 0,32
+Var=Therm_2_2 unsigned 32,32
+
