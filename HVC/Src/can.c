@@ -482,11 +482,11 @@ static void sendBMSMinMaxCellTemp(void) {
         }
     }
     float xMin = (4.7f*((float)minCellTemp)/1000.0f)* 1000.0f / ((5.0f - (((float)minCellTemp)/1000.0f)) );
-    float temp_minTemp = (1/(0.00335348f + (0.00030662f*log((xMin)/10000.0f)) + powf(0.00000837316f*log(xMin/10000.0f), 2))) - 273.15;
+    float temp_minTemp = (1/(0.00335348f + (0.00030662f*logf((xMin)/10000.0f)) + powf(0.00000837316f*logf(xMin/10000.0f), 2))) - 273.15;
     minCellTemp = (int16_t) (temp_minTemp * 10.0f);
 
     float xMax = (4.7f*((float)maxCellTemp)/1000.0f) * 1000.0f / ((5.0f - (((float)maxCellTemp)/1000.0f)));
-	float temp_maxTemp = (1/(0.00335348f + (0.00030662f*log((xMax)/10000.0f)) + powf(0.00000837316f*log(xMax/10000.0f), 2))) - 273.15;
+	float temp_maxTemp = (1/(0.00335348f + (0.00030662f*logf((xMax)/10000.0f)) + powf(0.00000837316f*logf(xMax/10000.0f), 2))) - 273.15;
 	maxCellTemp = (int16_t) (temp_maxTemp * 10.0f);
     //currently swapped because the min logic reading only voltage
     cmr_canBMSMinMaxCellTemperature_t BMSBMBMinMaxTemperature = {

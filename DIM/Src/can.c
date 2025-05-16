@@ -157,7 +157,7 @@ static void canTX10Hz(void *pvParameters) {
 
         sendFSMPedalsADC();
         sendFSMSensorsADC();
-        
+
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -316,7 +316,7 @@ static void canTX1Hz(void *pvParameters) {
  * Character indices 60-72 inclusive are for the second note on the right side of the screen.
  * This corresponds to text->address 0x0F, 0x10, and 0x11.
  */
-void ramRxCallback(cmr_can_t *can1, uint16_t canID, const void *data, size_t dataLen) {
+void ramRxCallback(uint16_t canID, const void *data, size_t dataLen) {
     if (canID == CMR_CANID_DIM_TEXT_WRITE) {
         cmr_canDIMTextWrite_t *text = (cmr_canDIMTextWrite_t *)data;
         if (dataLen == sizeof(cmr_canDIMTextWrite_t)) {
@@ -450,7 +450,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
 
 void canRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen) {
     if (canID == CMR_CANID_DIM_TEXT_WRITE) {
-        ramRxCallback(can, canID, data, dataLen);
+        ramRxCallback(canID, data, dataLen);
     }
     // make sure its a valid can id for config.
     if (canID >= CMR_CANID_CDC_CONFIG0_DRV0 &&
@@ -668,7 +668,7 @@ static void sendSWAngle(void) {
 
     int32_t steeringWheelAngle_deg_FL = (int32_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG_FL);
     int32_t steeringWheelAngle_deg_FR = (int32_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG_FR);
- 
+
     cmr_canFSMSWAngle_t msg = {
         .steeringWheelAngle_millideg_FL = steeringWheelAngle_deg_FL,
         .steeringWheelAngle_millideg_FR = steeringWheelAngle_deg_FR

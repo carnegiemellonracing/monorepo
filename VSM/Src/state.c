@@ -51,7 +51,7 @@ volatile cmr_canHVCMode_t hvcModeRequest = CMR_CAN_HVC_MODE_ERROR;
 /** @brief Time to wait for DCDC converter to enable. */
 static const TickType_t dcdcInitTime_ms = 50;
 
-/** @brief Minimum time to wait for 
+/** @brief Minimum time to wait for
  to spin cooling up/down. */
 static const TickType_t minCoolingRampTime_ms = 1000;
 
@@ -292,7 +292,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
 
             break;
         }
-        
+
         case CMR_CAN_VSM_STATE_INVERTER_EN: {
             if (
                 // TODO: change back before comp so that don't unnecessarily error out
@@ -318,14 +318,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         case CMR_CAN_VSM_STATE_HV_EN: {
             // T6
             if (dimRequestedState == CMR_CAN_RTD) {
-                if (
-                    throttlePosition <= 5 &&
-                    brakePressureRear_PSI >= 0
-                ) {
-                    nextState = CMR_CAN_VSM_STATE_RTD;
-                } else {
-                    nextState = CMR_CAN_VSM_STATE_HV_EN;
-                }
+                nextState = throttlePosition <= 5 ? CMR_CAN_VSM_STATE_RTD : CMR_CAN_VSM_STATE_COOLING_OFF;
             }
             // T12
             else if (dimRequestedState == CMR_CAN_HV_EN)

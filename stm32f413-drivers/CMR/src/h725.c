@@ -127,11 +127,8 @@ uint32_t _platform_FDcanGPIOAF(FDCAN_GlobalTypeDef *instance, GPIO_TypeDef *port
 
 void _platform_FDCANInit(
     cmr_can_t *can, FDCAN_GlobalTypeDef *instance,
-    cmr_canBitRate_t bitRate,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
-    cmr_canRXCallback_t rxCallback,
-    GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
+    cmr_canRXCallback_t rxCallback
 ) {
     *can = (cmr_can_t) {
         .handle = {
@@ -276,7 +273,6 @@ void _platform_canFilter(
 
 void _platform_rccFDCanClockEnable() {
 	if(HAL_RCC_FDCAN_CLK_ENABLED == 0) {
-		GPIO_InitTypeDef GPIO_InitStruct = {0};
 		RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 	    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_FDCAN;
 	    PeriphClkInitStruct.FdcanClockSelection = RCC_FDCANCLKSOURCE_HSE;
@@ -466,12 +462,6 @@ static uint32_t HAL_RCC_ADC_CLK_ENABLED=0;
 
 void _platform_rccADCClockEnable(ADC_TypeDef *instance) {
 	RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
-	  /* USER CODE BEGIN ADC1_MspInit 0 */
-
-	  /* USER CODE END ADC1_MspInit 0 */
-
-	  /** Initializes the peripherals clock
-	  */
 	 PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_ADC;
 	    PeriphClkInitStruct.PLL3.PLL3M = 2;
 	    PeriphClkInitStruct.PLL3.PLL3N = 15;
@@ -567,7 +557,7 @@ void _platform_adcPoll(cmr_adc_t *adc, uint32_t adcTimeout) {
         HAL_ADC_PollForConversion(&adc->handle, adcTimeout);
         channel->value = HAL_ADC_GetValue(&adc->handle);
     }
-}   
+}
 #endif /* HAL_ADC_MODULE_ENABLED */
 
 
@@ -764,7 +754,6 @@ void _platform_i2cInit(cmr_i2c_t *i2c, I2C_TypeDef *instance, uint32_t clockSpee
 }
 
 void _platform_i2cClockInit(I2C_TypeDef *instance) {
-	GPIO_InitTypeDef GPIO_InitStruct = {0};
 	RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 	switch ((uintptr_t) instance) {
 	        case I2C1_BASE:

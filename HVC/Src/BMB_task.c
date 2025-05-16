@@ -107,7 +107,7 @@ void vBMBSampleTask(void *pvParameters) {
 			xLastWakeTime = xTaskGetTickCount();
 			vTaskDelayUntil(&xLastWakeTime, 10);
 
-			uint8_t err = pollAllVoltageData();
+			pollAllVoltageData();
 
 			xLastWakeTime = xTaskGetTickCount();
 			vTaskDelayUntil(&xLastWakeTime, 10);

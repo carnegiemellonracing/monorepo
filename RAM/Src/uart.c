@@ -209,7 +209,6 @@ static void handle_command(cn_cbor *command)
         data = cn_cbor_mapget_string(msg, "data");
         bus = cn_cbor_mapget_string(msg, "bus");
         num_ids = cn_cbor_mapget_string(msg, "num_ids");
-        cn_cbor *arr = cn_cbor_mapget_string(msg, "config_ids");
 
         if (
             (id != NULL &&
@@ -222,12 +221,12 @@ static void handle_command(cn_cbor *command)
             if ((uint16_t)id->v.uint == CMR_CANID_DIM_TEXT_WRITE)
             {
                 const size_t sizePerMessage = 4;
-                for (size_t i = 0; i < data->length; i += sizePerMessage)
+                for (int i = 0; i < data->length; i += sizePerMessage)
                 {
                     cmr_canDIMTextWrite_t canData = (cmr_canDIMTextWrite_t){
                         .address = i / sizePerMessage,
                         .data = {0}};
-                    for (size_t j = 0; j < sizePerMessage; j++)
+                    for (int j = 0; j < sizePerMessage; j++)
                     {
                         if (i + j < data->length)
                         {

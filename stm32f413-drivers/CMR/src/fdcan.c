@@ -165,11 +165,8 @@ void cmr_FDcanInit(
     /* Do any platform-specific initialization */
 	_platform_FDCANInit(
         can, instance,
-        bitRate,
         rxMeta, rxMetaLen,
-        rxCallback,
-        rxPort, rxPin,
-        txPort, txPin
+        rxCallback
     );
 
     cmr_rccCANClockEnable(instance);

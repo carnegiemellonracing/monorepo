@@ -112,9 +112,7 @@ void _platform_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
     cmr_canBitRate_t bitRate,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
-    cmr_canRXCallback_t rxCallback,
-    GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
+    cmr_canRXCallback_t rxCallback
 ) {
     *can = (cmr_can_t) {
         .handle = {

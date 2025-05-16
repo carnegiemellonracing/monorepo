@@ -430,8 +430,6 @@ uint8_t pollAllVoltageData() {
 
 		//TODO add tx error handler
 
-		int x= 0;
-
 		// Critical section used so UART RX is not preempted
 		taskENTER_CRITICAL();
 		uart_sendCommand(&read_voltage);
@@ -721,13 +719,12 @@ void cellBalancing(bool set, uint16_t thresh) {
 			.data = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 			.crc = {0x00, 0x00}
 		};
-		cmr_uart_result_t res;
-		res = uart_sendCommand(&balance_register);
+		uart_sendCommand(&balance_register);
 
 		balance_register.registerAddress = CB_CELL7_CTRL;
-		res = uart_sendCommand(&balance_register);
+		uart_sendCommand(&balance_register);
 	}
-	res = uart_sendCommand(&enable);
+	uart_sendCommand(&enable);
 }
 
 void writeLED(bool set) {

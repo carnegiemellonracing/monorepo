@@ -13,7 +13,7 @@
 #include "can.h"
 #include "gpio.h"
 #include <math.h>
-
+#include <string.h>
 uint16_t sendVolt[6];
 float rawCellVolts[6];
 float cellVoltages[6];
@@ -22,7 +22,6 @@ signed char offset_corr[7];
 signed char gain_corr[7];
 unsigned int vref_corr;
 uint16_t adc_sensen;
-uint8_t index;
 uint16_t cellTemps[8];
 
 bool setup = false;
@@ -30,7 +29,7 @@ bool setup = false;
 
 void AFE_SETUP(void){
     if(!setup){
-        i2c_write_register(POWER_CTL, 0x0D); //should probbaly throw an error if i2c fails. 
+        i2c_write_register(POWER_CTL, 0x0D); //should probbaly throw an error if i2c fails.
                                                //This turns on the things we need to use btw(vcout,viout).
         adc_sensen = adc_read(ADC_AFE_VIOUT);
         i2c_write_register(CONFIG_1, 0x05); //sets gain to 8. put at 0x00 for 4. swtiches to sensep
@@ -39,7 +38,7 @@ void AFE_SETUP(void){
         uint8_t reg_value;
 
         // for (index = 0; index < 7; index++) {
-        //     i2c_read_register(VREF_CAL + index, &reg_value); 
+        //     i2c_read_register(VREF_CAL + index, &reg_value);
         //     offset_corr[index] = reg_value >> 4;   // Extract the upper 4 bits for offset
         //     gain_corr[index] = reg_value & 0x0F;  // Extract the lower 4 bits for gain
         // }
@@ -51,7 +50,7 @@ void AFE_SETUP(void){
 
         // Read MSBs for VC1 and VC2 offset and gain corrections
         i2c_read_register(VC_CAL_EXT_1, &reg_value);
-   
+
         offset_corr[1] |= (((reg_value & 0x80) >> 3) ^ 0x10) - 0x10;
         gain_corr[1]   |= (((reg_value & 0x40) >> 2) ^ 0x10) - 0x10;
 
@@ -64,13 +63,13 @@ void AFE_SETUP(void){
         gain_corr[3]   |= (((reg_value & 0x40) >> 2) ^ 0x10) - 0x10;
 
         offset_corr[4] |= (((reg_value & 0x20) >> 1) ^ 0x10) - 0x10;
-        gain_corr[4]   |= (((reg_value & 0x10)) ^ 0x10) - 0x10;     
+        gain_corr[4]   |= (((reg_value & 0x10)) ^ 0x10) - 0x10;
 
-        offset_corr[5] |= (((reg_value & 0x08) << 1) ^ 0x10) - 0x10; 
-        gain_corr[5]   |= (((reg_value & 0x04) << 2) ^ 0x10) - 0x10; 
+        offset_corr[5] |= (((reg_value & 0x08) << 1) ^ 0x10) - 0x10;
+        gain_corr[5]   |= (((reg_value & 0x04) << 2) ^ 0x10) - 0x10;
 
-        offset_corr[6] |= (((reg_value & 0x02) << 3) ^ 0x10) - 0x10; 
-        gain_corr[6]   |= (((reg_value & 0x01) << 4) ^ 0x10) - 0x10; 
+        offset_corr[6] |= (((reg_value & 0x02) << 3) ^ 0x10) - 0x10;
+        gain_corr[6]   |= (((reg_value & 0x01) << 4) ^ 0x10) - 0x10;
 
         vref_corr = VREF_NOM * (1000L + gain_corr[0]) + offset_corr[0];
         adc_sensen = adc_read(ADC_AFE_VIOUT);
@@ -84,7 +83,7 @@ void AFE_SETUP(void){
 void getVoltages(void) {
     TickType_t time_prev = xTaskGetTickCount();
     for (uint8_t i = 0; i < 6; i++) {
-        i2c_write_and_validate(CELL_CTL, 0x10 | i);  
+        i2c_write_and_validate(CELL_CTL, 0x10 | i);
         vTaskDelayUntil(&time_prev, 32);
             //reference data sheet for formula
         cellVoltages[i] = adc_read(ADC_AFE_VCOUT);
@@ -94,24 +93,22 @@ void getVoltages(void) {
 
         // uint16_t tmepskdj = cellVoltages[i]/ADC_COUNT;
 
-        rawCellVolts[i] = ((float)(cellVoltages[i])/(float)(ADC_COUNT)) * 11.0;
+        rawCellVolts[i] = ((float)(cellVoltages[i])/(float)(ADC_COUNT)) * 11.0f;
         sendVolt[i] = float_to_uint16(rawCellVolts[i]);
-        
+
 
         //rawCellVolts[i] = float_to_uint16(((adc_read(ADC_AFE_VCOUT) * vref_corr + ADC_COUNT * offset_corr[i+1])
                        //* (1000L + gain_corr[i+1])) /(GVCOUT * ADC_COUNT * 1e6));
-                       
+
     }
 
     sendOvervoltageFlags(sendVolt);
     sendVoltages();
-   
+
 }
 
 // Sends cell voltages (1-6) split into two CAN messages
 void sendVoltages() {
-    uint16_t data1[3], data2[3];
-
     // Split voltages into two groups
 
     cmr_canLVBMS_Voltage cell1_3;
@@ -211,7 +208,7 @@ void sendTemps(uint16_t temps[8]) {
 // Sends overtemperature flags (derived from temperature data)
 void sendOvertempFlags(uint16_t temps[8]) {
     uint8_t flag = 0;
-    
+
     for (int i = 0; i < 8; i++) {
         if (temps[i] > 6000) flag |= (1 << i);
     }
