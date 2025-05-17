@@ -1,0 +1,36 @@
+name: Static Analysis
+run-name: ${{ github.actor }}-${{github.repository}} Static Analysis
+
+on:
+    workflow_dispatch:
+    schedule:
+      - cron: "0 4 * * *"   # <=== Change this value
+
+jobs:
+  build:
+    runs-on: self-hosted
+    permissions:
+      security-events: write # Required to upload SARIF files
+      actions: read          # Recommended for checkout action
+      contents: read         # Recommended for checkout action
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4.2.2
+        with:
+          submodules: true
+
+      - name: Build Project
+        uses: threeal/cmake-action@v2.1.0
+        with:
+            options: CMAKE_BUILD_TYPE=Static
+
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        if: success() # or always() to upload even if previous steps fail
+        with:
+          # Path to SARIF file or directory containing SARIF files.
+          # Adjust this path if your SARIF files are located elsewhere.
+          sarif_file: build/static
+          # You can optionally specify a category for the results,
+          # especially if you have multiple analysis tools.
+          # category: my-static-analysis-tool
