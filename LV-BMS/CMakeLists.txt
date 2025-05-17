@@ -174,8 +174,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>:>
     $<$<COMPILE_LANGUAGE:ASM>:-x assembler-with-cpp -MMD -MP>
     $<$<CONFIG:Static>:
-    -fanalyzer
-    -fdump-analyzer
+    -fdiagnostics-format=sarif-file
     >
     $<$<CONFIG:Debug>:-Og -g3 -ggdb>
     $<$<CONFIG:Release>:-Og -g0>
@@ -193,8 +192,8 @@ target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
     -Wl,--start-group
     -lc
     -lm
-    -lstdc++
-    -lsupc++
+    # -lstdc++
+    # -lsupc++
     -Wl,--end-group
     -Wl,-z,max-page-size=8 # Allow good software remapping across address space (with proper GCC section making)
     -Wl,--print-memory-usage
