@@ -1,5 +1,5 @@
 /**
- * @file can.h
+ * @file fdcan.h
  * @brief Controller Area Network interface. NOTE: This is called fdcan.h but is simply a classic CAN implementation on
  * top of the H7's FDCAN Peripheral. No hardware FDCAN features are configured
  *
@@ -72,7 +72,6 @@ typedef void (*cmr_canRXCallback_t)(
     cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen
 );
 
-#ifdef H725
 
 struct cmr_can {
 	FDCAN_HandleTypeDef handle;       /**< @brief HAL CAN handle. */
@@ -89,7 +88,7 @@ struct cmr_can {
     cmr_canRXCallback_t rxCallback;
 };
 
-void cmr_canInit(
+void cmr_FDcanInit(
     cmr_can_t *can, FDCAN_GlobalTypeDef *instance,
     cmr_canBitRate_t bitRate,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
@@ -111,50 +110,6 @@ uint32_t cmr_canGPIOAF(FDCAN_GlobalTypeDef *instance, GPIO_TypeDef *port);
 
 /* Platform-specific external dependencies (don't expose to application code) */
 extern uint32_t _platform_FDcanGPIOAF(FDCAN_GlobalTypeDef *instance, GPIO_TypeDef *port);
-
-#else
-
-struct cmr_can {
-    CAN_HandleTypeDef handle;       /**< @brief HAL CAN handle. */
-    SemaphoreHandle_t txSem;        /**< @brief Transmit counting semaphore. */
-    StaticSemaphore_t txSemBuf;     /**< @brief Transmit semaphore buffer. */
-
-    /** @brief Metadata for periodic messages to receive. */
-    cmr_canRXMeta_t *rxMeta;
-
-    /** @brief Number of periodic receive messages. */
-    size_t rxMetaLen;
-
-    /** @brief Callback for other messages received, or `NULL` to ignore. */
-    cmr_canRXCallback_t rxCallback;
-};
-
-void cmr_canInit(
-    cmr_can_t *can, CAN_TypeDef *instance,
-    cmr_canBitRate_t bitRate,
-    cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
-    cmr_canRXCallback_t rxCallback,
-    GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
-);
-
-extern void _platform_canInit(
-    cmr_can_t *can, CAN_TypeDef *instance,
-    cmr_canBitRate_t bitRate,
-    cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
-    cmr_canRXCallback_t rxCallback,
-    GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
-);
-
-uint32_t cmr_canGPIOAF(CAN_TypeDef *instance, GPIO_TypeDef *port);
-
-/* Platform-specific external dependencies (don't expose to application code) */
-extern uint32_t _platform_canGPIOAF(CAN_TypeDef *instance, GPIO_TypeDef *port);
-
-
-#endif
-
 
 
 /**
@@ -188,7 +143,7 @@ typedef struct {
      * If the above condition is true, the message is accepted into the
      * specified FIFO; otherwise, it is ignored.
      */
-    uint16_t ids[4];
+    uint16_t ids[2];
 } cmr_canFilter_t;
 
 void cmr_canFilter(
@@ -197,7 +152,7 @@ void cmr_canFilter(
 
 int cmr_canTX(
     cmr_can_t *can,
-    uint16_t id, const void *data, size_t len,
+    uint16_t id, const void *data, uint8_t len,
     TickType_t timeout
 );
 

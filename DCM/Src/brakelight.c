@@ -29,7 +29,7 @@ static cmr_task_t brakelight_task;
 void brakelight(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-    volatile cmr_canVSMSensors_t *vsmSensors = canGetPayload(CANRX_VSM_SENSORS);
+    volatile cmr_canVSMSensors_t *vsmSensors = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {

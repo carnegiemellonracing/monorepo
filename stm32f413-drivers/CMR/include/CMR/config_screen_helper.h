@@ -45,8 +45,8 @@ typedef enum {
     K_EFF_INDEX,
     DRS_THROTTLE_THRESH_INDEX,
     DRS_SWANGLE_THRESH_INDEX,
-    PLACEHOLDER_1_INDEX,
-    PLACEHOLDER_2_INDEX,
+    LAUNCH_SLOPE_INDEX,
+    SLOW_SPEED_INDEX,
     MAX_MENU_ITEMS // The elements in the config array
 } config_menu_main_array_index_t;
 

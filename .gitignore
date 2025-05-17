@@ -19,3 +19,13 @@ CMakeUserPresets.json
 .vscode/settings.json
 .DS_Store
 gitcommit.h
+
+*.ninja
+*-stamp/
+tmp/
+**/.vscode/settings.json
+
+*.dsk
+*.dsk~
+
+*.peproj~

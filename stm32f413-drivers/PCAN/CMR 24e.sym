@@ -29,6 +29,9 @@ enum DRS_MODE(0="DRS_CLOSED", 1="DRS_OPEN", 2="DRS_TOGGLE", 3="DRS_HOLD",
 enum CCMState(0="ERROR", 1="CLEAR_ERROR", 2="CLEAR_HVC", 3="IDLE_HVC", 
   4="STANDBY", 5="CHARGE_REQ", 6="CHARGE", 7="SLOW_CHARGE", 8="SHUTDOWN")
 enum HVC_Balance_State(0="BALANCE_DIS", 1="BALANCE_EN")
+enum MovellaFilterMode(0="Without GNSS (filter profile is in VRU mode)", 
+  1="Coasting mode (GNSS has been lost <60 sec ago)", 
+  3="With GNSS (default mode)")
 
 {SENDRECEIVE}
 
@@ -1238,8 +1241,8 @@ Var=AMK_FR_Status_QuitInvOn bit 13,1
 Var=AMK_FR_Status_InverterOn bit 14,1
 Var=AMK_FR_Status_Derating bit 15,1
 Var=AMK_FR_ActualVelocity signed 16,16 /u:rpm /p:4
-Var=AMK_FR_TorqueCurrent signed 32,16 /u:"Raw torque unit"
-Var=AMK_FR_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
+Var=AMK_FR_TorqueCurrent signed 32,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
+Var=AMK_FR_MagnetizingCurrent signed 48,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
 
 [AMK_FR_Actual_Values_2]
 ID=289h	// Set ID based on wiring
@@ -1261,8 +1264,8 @@ Var=AMK_FR_Control_Enable bit 10,1
 Var=AMK_FR_Control_ErrorReset bit 11,1
 Var=AMK_FR_Control_Reserved2 unsigned 12,4
 Var=AMK_FR_TargetVelocity signed 16,16 /u:rpm /p:2
-Var=AMK_FR_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
-Var=AMK_FR_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_FR_TorqueLimitPositiv signed 32,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
+Var=AMK_FR_TorqueLimitNegativ signed 48,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
 
 [AMK_FL_Actual_Values_1]
 ID=283h	// Set ID based on wiring
@@ -1278,8 +1281,8 @@ Var=AMK_FL_Status_QuitInvOn bit 13,1
 Var=AMK_FL_Status_InverterOn bit 14,1
 Var=AMK_FL_Status_Derating bit 15,1
 Var=AMK_FL_ActualVelocity signed 16,16 /u:rpm /p:4
-Var=AMK_FL_TorqueCurrent signed 32,16 /u:"Raw torque unit"
-Var=AMK_FL_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
+Var=AMK_FL_TorqueCurrent signed 32,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
+Var=AMK_FL_MagnetizingCurrent signed 48,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
 
 [AMK_FL_Actual_Values_2]
 ID=285h	// Set ID based on wiring
@@ -1301,8 +1304,8 @@ Var=AMK_FL_Control_Enable bit 10,1
 Var=AMK_FL_Control_ErrorReset bit 11,1
 Var=AMK_FL_Control_Reserved2 unsigned 12,4
 Var=AMK_FL_TargetVelocity signed 16,16 /u:rpm /p:2
-Var=AMK_FL_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
-Var=AMK_FL_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_FL_TorqueLimitPositiv signed 32,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
+Var=AMK_FL_TorqueLimitNegativ signed 48,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
 
 [AMK_BL_Actual_Values_1]
 ID=288h	// Set ID based on wiring
@@ -1318,8 +1321,8 @@ Var=AMK_BL_Status_QuitInvOn bit 13,1
 Var=AMK_BL_Status_InverterOn bit 14,1
 Var=AMK_BL_Status_Derating bit 15,1
 Var=AMK_BL_ActualVelocity signed 16,16 /u:rpm /p:4
-Var=AMK_BL_TorqueCurrent signed 32,16 /u:"Raw torque unit"
-Var=AMK_BL_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
+Var=AMK_BL_TorqueCurrent signed 32,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
+Var=AMK_BL_MagnetizingCurrent signed 48,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
 
 [AMK_BL_Actual_Values_2]
 ID=28Ah	// Set ID based on wiring
@@ -1341,8 +1344,8 @@ Var=AMK_BL_Control_Enable bit 10,1
 Var=AMK_BL_Control_ErrorReset bit 11,1
 Var=AMK_BL_Control_Reserved2 unsigned 12,4
 Var=AMK_BL_TargetVelocity signed 16,16 /u:rpm /p:2
-Var=AMK_BL_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
-Var=AMK_BL_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_BL_TorqueLimitPositiv signed 32,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
+Var=AMK_BL_TorqueLimitNegativ signed 48,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
 
 [AMK_BR_Actual_Values_1]
 ID=284h	// Set ID based on wiring
@@ -1358,8 +1361,8 @@ Var=AMK_BR_Status_QuitInvOn bit 13,1
 Var=AMK_BR_Status_InverterOn bit 14,1
 Var=AMK_BR_Status_Derating bit 15,1
 Var=AMK_BR_ActualVelocity signed 16,16 /u:rpm /p:4
-Var=AMK_BR_TorqueCurrent signed 32,16 /u:"Raw torque unit"
-Var=AMK_BR_MagnetizingCurrent signed 48,16 /u:"Raw current unit"
+Var=AMK_BR_TorqueCurrent signed 32,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
+Var=AMK_BR_MagnetizingCurrent signed 48,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
 
 [AMK_BR_Actual_Values_2]
 ID=286h	// Set ID based on wiring
@@ -1378,11 +1381,11 @@ Var=AMK_BR_Control_Reserved1 unsigned 0,8
 Var=AMK_BR_Control_InverterOn bit 8,1
 Var=AMK_BR_Control_DcOn bit 9,1
 Var=AMK_BR_Control_Enable bit 10,1
-Var=AMK_RR_Control_ErrorReset bit 11,1
-Var=AMK_RR_Control_Reserved2 unsigned 12,4
-Var=AMK_RR_TargetVelocity signed 16,16 /u:rpm /p:2
-Var=AMK_RR_TorqueLimitPositiv signed 32,16 /u:"% Mn" /f:0.1 /p:4
-Var=AMK_RR_TorqueLimitNegativ signed 48,16 /u:"% Mn" /f:0.1 /p:4
+Var=AMK_BR_Control_ErrorReset bit 11,1
+Var=AMK_BR_Control_Reserved2 unsigned 12,4
+Var=AMK_BR_TargetVelocity signed 16,16 /u:rpm /p:2
+Var=AMK_BR_TorqueLimitPositiv signed 32,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
+Var=AMK_BR_TorqueLimitNegativ signed 48,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
 
 [CDC_CONTROLS_PID]
 ID=7E5h
@@ -2037,13 +2040,13 @@ ID=777h
 DLC=4
 Var=TEST_FLAG float 0,32
 
-[CDC_CONTROLS_SOLVER_INFO]
+[CDC_Solver_Inputs]
 ID=7E6h
 DLC=8
 Var=Moment_REQ float 0,32
 Var=Lin_Accel_REQ float 32,32
 
-[CDC_CONTROLS_SOLVER_TORQUES]
+[CDC_Solver_Outputs]
 ID=7F0h
 DLC=8
 Var=Torque_FL signed 0,16
@@ -2051,10 +2054,12 @@ Var=Torque_FR signed 16,16
 Var=Torque_RL signed 32,16
 Var=Torque_RR signed 48,16
 
-[CDC_CONTROLS_SOLVER_CONVERGENCE]
+[CDC_Solver_Settings]
 ID=7EEh
-DLC=4
-Var=non_convergence_counter unsigned 0,32
+DLC=6
+Var=k_lin unsigned 0,16 /u:Unit
+Var=k_yaw unsigned 16,16 /u:Unit
+Var=k_tie unsigned 32,16 /u:Unit
 
 [HVC_Balance_Command]
 ID=134h
@@ -2111,4 +2116,143 @@ CycleTime=1000
 Timeout=2000
 Var=Commit_Hash_RAM unsigned 0,32 -h
 Var=Dirty_RAM unsigned 32,8
+
+[Movella_MTi680G_Quaternion]
+ID=774h
+DLC=8
+Var=w signed 0,16 -m /f:3.05185094759972E-005 /max:1 /d:0
+Var=x signed 16,16 -m /f:3.05185094759972E-005
+Var=y signed 32,16 -m /f:3.05185094759972E-005 /max:1 /d:0
+Var=z signed 48,16 -m /f:3.05185094759972E-005
+
+[Movella_Mti680G_GroupCounter]
+ID=771h
+DLC=2
+Var=GroupCounter unsigned 0,16 -m
+
+[Movella_MTi680G_EulerAngles]
+ID=775h
+DLC=6
+Var=Roll signed 0,16 -m /u:deg /f:0.0078125 /d:0
+Var=Pitch signed 16,16 -m /u:deg /f:0.0078125 /d:0
+Var=Yaw signed 32,16 -m /u:deg /f:0.0078125 /d:0
+
+[Movella_MTi680G_Acceleration]
+ID=77Eh
+DLC=6
+Var=AccX signed 0,16 -m /u:m/s^2 /f:0.00390625 /d:0
+Var=AccY signed 16,16 -m /u:m/s^2 /f:0.00390625 /d:0
+Var=AccZ signed 32,16 -m /u:m/s^2 /f:0.00390625 /d:0
+
+[Movella_MTi680G_Temperature]
+ID=779h
+DLC=2
+Var=Temperature signed 0,16 -m /u:"deg C" /f:0.00390625
+
+[Movella_MTi680G_BaroPressure]
+ID=77Ah
+DLC=4
+Var=Pressure unsigned 0,32 -m /u:Pa
+
+[Movella_MTi680G_SampleTime]
+ID=770h
+DLC=4
+Var=SampleTime unsigned 0,32 -m	// 10kHz ticks
+
+[Movella_MTi680G_RateOfTurn]
+ID=776h
+DLC=6
+Var=GyroX signed 0,16 -m /u:rad/s /f:0.001953125 /d:0
+Var=GyroY signed 16,16 -m /u:rad/s /f:0.001953125 /d:0
+Var=GyroZ signed 32,16 -m /u:rad/s /f:0.001953125 /d:0
+
+[Movella_MTi680G_MagneticField]
+ID=778h
+DLC=6
+Var=MagX signed 0,16 -m /u:a.u. /f:0.0009765625 /d:0
+Var=MagY signed 16,16 -m /u:a.u. /f:0.0009765625 /d:0
+Var=MagZ signed 32,16 -m /u:a.u. /f:0.0009765625 /d:0
+
+[Movella_MTi680G_Velocity]
+ID=77Dh
+DLC=6
+Var=VelX signed 0,16 -m /u:m/s /f:0.015625 /d:0
+Var=VelY signed 16,16 -m /u:m/s /f:0.015625 /d:0
+Var=VelZ signed 32,16 -m /u:m/s /f:0.015625 /d:0
+
+[Movella_MTi680G_GnssStatus]
+ID=079h
+DLC=5
+Var=FixType unsigned 0,8 -m
+Var=NumSv unsigned 8,8 -m
+Var=Flags unsigned 16,8 -m
+Var=Valid unsigned 24,8 -m
+Var=NumSvs bit 39,1 -m
+
+[Movella_MTi680G_Coordinates]
+ID=77Bh
+DLC=8
+Var=Latitude signed 0,32 -m /u:deg /f:5.96046447753906E-008 /max:127.999999940395 /d:0
+Var=Longitude signed 32,32 -m /u:deg /f:1.19209289550781E-007 /min:-255.999999999999 /max:255.99999988079 /d:0
+
+[CDC_Trolls]
+ID=7FFh
+DLC=8
+Var=forward_velocity_nonnegative_mps float 0,32	// trolling
+Var=yaw_rate_radps_sae float 32,32	// also trolling
+
+[DCM_COG_Velocity]
+ID=2C2h
+DLC=8
+Var=cog_x signed 0,16 /u:m/s /f:0.01
+Var=cog_y signed 16,16 /u:m/s /f:0.01
+Var=slip_angle float 32,32 /u:rad
+
+[DCM_Front_Velocity]
+ID=2D2h
+DLC=8
+Var=fl_x signed 0,16 /u:m/s /f:0.01
+Var=fl_y signed 16,16 /u:m/s /f:0.01
+Var=fr_x signed 32,16 /u:m/s /f:0.01
+Var=fr_y signed 48,16 /u:m/s /f:0.01
+
+[DCM_Rear_Velocity]
+ID=2E2h
+DLC=8
+Var=rl_x signed 0,16 /u:m/s /f:0.01
+Var=rl_y signed 16,16 /u:m/s /f:0.01
+Var=rr_x signed 32,16 /u:m/s /f:0.01
+Var=rr_y signed 48,16 /u:m/s /f:0.01
+
+[Movella_MTi860G_Status]
+ID=772h
+DLC=4
+Color=008000h
+Var=have_gnss_time_pulse unsigned 2,1
+Var=fitler_mode unsigned 0,2 /e:MovellaFilterMode
+Var=rtk_status unsigned 3,2
+Var=clipflag_mag_z unsigned 8,1
+Var=clipping_indication unsigned 11,1
+Var=sync_in_marker unsigned 13,1
+Var=sync_out_marker unsigned 14,1
+Var=filter_mode_2 unsigned 15,1
+Var=clipflag_acc_x unsigned 16,1
+Var=clipflag_acc_y unsigned 17,1
+Var=clipflag_acc_z unsigned 18,1
+Var=clipflag_gyr_x unsigned 19,1
+Var=clipflag_gyr_y unsigned 20,1
+Var=clipflag_gyr_z unsigned 21,1
+Var=clipflag_mag_x unsigned 22,1
+Var=clipflag_mag_y unsigned 23,1
+Var=self_test unsigned 24,1
+Var=filter_valid unsigned 25,1
+Var=gnss_fix unsigned 26,1
+Var=no_rotation_update unsigned 27,2
+Var=representative_motion unsigned 29,1
+Var=clock_bias_estimation unsigned 30,1
+
+[DCM_PowerLimit]
+ID=6E4h
+DLC=4
+Var=PowerLimit float 0,32 /u:kW /f:0.001
 

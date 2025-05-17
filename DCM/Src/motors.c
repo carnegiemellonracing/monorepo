@@ -14,6 +14,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <limits.h>
+#include <stdlib.h>
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/config_screen_helper.h>
 #include <CMR/fir_filter.h>
@@ -27,6 +28,7 @@
 #include "pumps.h"
 #include "fans.h"
 #include "constants.h"
+#include "controls.h"
 
 // ------------------------------------------------------------------------------------------------
 // Constants
@@ -174,11 +176,10 @@ static void motorsCommand (
         volatile cmr_canHeartbeat_t      *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
         volatile cmr_canDIMRequest_t     *reqDIM       = canVehicleGetPayload(CANRX_VEH_REQUEST_DIM);
         volatile cmr_canFSMData_t        *dataFSM      = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
+        volatile cmr_canFSMSWAngle_t     *swangleFSM   = canVehicleGetPayload(CANRX_VEH_SWANGLE_FSM);
         volatile cmr_canHVCPackVoltage_t *voltageHVC   = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
         volatile cmr_canHVCPackCurrent_t *currentHVC   = canVehicleGetPayload(CANRX_VEH_CURRENT_HVC);
-        volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
-
-        uint32_t throttle;
+        volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VSM_STATUS);
 
         //transmit Coulombs using HVI sense
         integrateCurrent();
@@ -206,18 +207,20 @@ static void motorsCommand (
 //		);
 //         update DRS mode
         drsMode = reqDIM->requestedDrsMode;
-        runDrsControls(reqDIM->requestedGear,
-                        drsMode,
-                        dataFSM    -> throttlePosition,
-                        dataFSM    -> brakePressureFront_PSI,
-                        dataFSM    -> steeringWheelAngle_millideg);
+
+        int32_t steeringWheelAngle_millideg = (swangleFSM->steeringWheelAngle_millideg_FL + swangleFSM->steeringWheelAngle_millideg_FR) / 2;
+        // runDrsControls(reqDIM->requestedGear,
+        //                 drsMode,
+        //                 dataFSM    -> throttlePosition,
+        //                 dataFSM    -> brakePressureFront_PSI,
+        //                 steeringWheelAngle_millideg);
 
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
             case CMR_CAN_RTD: {
             	mcCtrlOn();
             	// fansOn();
-            	// pumpsOn();
+            	pumpsOn();
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv = CMR_CAN_AMK_CTRL_HV_EN  |
                                                    CMR_CAN_AMK_CTRL_INV_ON |
@@ -251,7 +254,8 @@ static void motorsCommand (
                 		    dataFSM    -> torqueRequested,
                             dataFSM    -> brakePedalPosition,
                             dataFSM    -> brakePressureFront_PSI,
-                            dataFSM    -> steeringWheelAngle_millideg,
+                            swangleFSM->steeringWheelAngle_millideg_FL,
+                            swangleFSM->steeringWheelAngle_millideg_FR,
                             voltageHVC -> hvVoltage_mV,
                             currentHVC -> instantCurrent_mA,
                             blank_command);
@@ -281,7 +285,7 @@ static void motorsCommand (
             case CMR_CAN_HV_EN: {
             	mcCtrlOn();
             	// fansOn();
-            	// pumpsOn();
+            	pumpsOn();
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = CMR_CAN_AMK_CTRL_HV_EN |
                                                            CMR_CAN_AMK_CTRL_ERR_RESET;
@@ -301,13 +305,13 @@ static void motorsCommand (
             case CMR_CAN_GLV_ON: {
             	mcCtrlOff();
 
-
                 if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
                     mcCtrlOn();
-                }
+                } else
 
             	// fansOff();
-            	// pumpsOff();
+            	pumpsOff();
+
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = CMR_CAN_AMK_CTRL_ERR_RESET;
                     motorSetpoints[i].velocity_rpm       = 0;
@@ -321,7 +325,12 @@ static void motorsCommand (
 
             // In all other states, disable inverters and do not reset errors
             default: {
+                pumpsOn();
+                pumpsOff();
                 mcCtrlOff();
+
+                set_optimal_control_with_regen(128, 10000, 10000); 
+
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = 0;
                     motorSetpoints[i].velocity_rpm       = 0;

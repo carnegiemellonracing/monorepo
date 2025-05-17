@@ -252,9 +252,10 @@ static float getCellVoltageDropFalloffFactor (
  * @warning This is CRITICAL for rule-compliance, as it imposes the upper limit on cell temperature
  */
 static float getTemperatureFalloffFactor() {
-    volatile cmr_canHVCPackMinMaxCellTemps_t *cellTemps = canVehicleGetPayload(CANRX_VEH_PACK_CELL_TEMP);
-    const float maxCellTemp_C = ((float)(cellTemps->maxCellTemp_dC)) * 1e-1f;
-    return getFalloffFactorByUpperLimit(maxCellTemp_C, temperature_upper_limit_C, temperature_safety_margin_C);
+    // volatile cmr_canHVCPackMinMaxCellTemps_t *cellTemps = canVehicleGetPayload(CANRX_VEH_PACK_CELL_TEMP);
+    // const float maxCellTemp_C = ((float)(cellTemps->maxCellTemp_dC)) * 1e-1f;
+    // return getFalloffFactorByUpperLimit(maxCellTemp_C, temperature_upper_limit_C, temperature_safety_margin_C);
+    return 1.0f;
 }
 
 static float getMaxVoltageDrop (
@@ -436,8 +437,10 @@ void setTorqueLimsProtected (
     const float falloff_factor_by_pack_voltage_rise = getPackVoltageRiseFalloffFactor(pack_voltage_V);
 
     // limit cell voltage
-    const float falloff_factor_by_cell_voltage_rise = getCellVoltageRiseFalloffFactor(max_cell_voltage_V);
-    const float falloff_factor_by_cell_voltage_drop = getCellVoltageDropFalloffFactor(min_cell_voltage_V);
+    // const float falloff_factor_by_cell_voltage_rise = getCellVoltageRiseFalloffFactor(max_cell_voltage_V);
+    // const float falloff_factor_by_cell_voltage_drop = getCellVoltageDropFalloffFactor(min_cell_voltage_V);
+    const float falloff_factor_by_cell_voltage_rise = 1.0f;
+    const float falloff_factor_by_cell_voltage_drop = 1.0f;
 
     // limit temperature
     const float falloff_factor_by_temperature = getTemperatureFalloffFactor();
@@ -561,11 +564,11 @@ const cmr_canCDCMotorPower_t *getMotorPowerInfo(){
     return (const cmr_canCDCMotorPower_t*) &motorPower_state;
 }
 
-float getPowerLimit() {
+float getPowerLimit_W() {
 	return power_upper_limit_W;
 }
 
-void setPowerLimit(uint8_t limit) {
-	power_upper_limit_W = limit*1000.0f;
-	power_safety_margin_W = power_upper_limit_W*0.17f;
+void setPowerLimit_kW(uint8_t power_limit_kW) {
+	power_upper_limit_W = power_limit_kW * 1000.0f;
+	power_safety_margin_W = power_upper_limit_W * 0.17f;
 }

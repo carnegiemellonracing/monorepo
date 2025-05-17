@@ -14,6 +14,7 @@
  *  all CAN message addresses. Ours is set to this value.
  */
 #define CMR_CANID_RMS_OFFSET    0x3A0
+#define NUM_CONFIG_PACKETS 4
 
 /** @brief CAN IDs. */
 typedef enum {
@@ -22,9 +23,9 @@ typedef enum {
     CMR_CANID_HEARTBEAT_CDC = 0x102,    /**< @brief CDC heartbeat. */
     CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x104,    /**< @brief DIM heartbeat. */
-    CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief 
- heatbeart.*/
-	CMR_CANID_HEARTBEAT_HVI = 0x106,
+    CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief PTC heatbeart. */
+    CMR_CANID_HEARTBEAT_HVI = 0x106,    /**< @brief HVI heatbeart. */
+    CMR_CANID_HEARTBEAT_LV_BMS = 0x107, /**< @brief LV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
 
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
@@ -54,6 +55,11 @@ typedef enum {
     CMR_CANID_CDC_POSE_ORIENTATION = 0x292,         /**< @brief CDC (20e) roll/pitch/yaw real car position. */
     CMR_CANID_CDC_POSE_VELOCITY = 0x2A2,            /**< @brief CDC (20e) real car velocity. */
     CMR_CANID_CDC_POSE_ACCELERATION = 0x2B2,        /**< @brief CDC (20e) real car acceleration. */
+
+    CMR_CANID_CDC_COG_VELOCITY = 0x2C2,        /**< @brief CDC (20e) real car acceleration. */
+    CMR_CANID_CDC_FRONT_VELOCITY = 0x2D2,        /**< @brief CDC (20e) real car acceleration. */
+    CMR_CANID_CDC_REAR_VELOCITY = 0x2E2,        /**< @brief CDC (20e) real car acceleration. */
+
     CMR_CANID_CDC_POWER_SENSE = 0x305,
     CMR_CANID_CDC_RTC_DATA_OUT = 0x6A2,             /**< @brief CDC RTC data. */
     CMR_CANID_CDC_RTC_DATA_IN = 0x6B2,              /**< @brief CDC RTC data. */
@@ -61,24 +67,21 @@ typedef enum {
     CMR_CANID_CDC_CONTROLS_STATUS = 0x6D2,          /**< @brief CDC controls status data. */
     CMR_CANID_CDC_POWER_UPDATE = 0x6E2,             /**< @brief DAQ Live to CDC - changing power limit. */
     CMR_CANID_CDC_COULOMB_COUNTING = 0x6E3,
+    CMR_CANID_CDC_POWER_LOG = 0x6E4,             /**< @brief DAQ Live to CDC - changing power limit. */
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
     CMR_CANID_CELL_BALANCE_ENABLE = 0x134,
+    CMR_CANID_FSM_SWANGLE = 0x135,
     CMR_CANID_FSM_PEDALS_ADC = 0x533,           /**< @brief FSM raw pedal positions. */
     CMR_CANID_FSM_SENSORS_ADC = 0x543,          /**< @brief FSM raw sensors. */
     CMR_CANID_FSM_POWER_DIAGNOSTICS = 0x553,    /**< @brief FSM power diagnostics. */
     CMR_CANID_SS_STATUS = 0x554,               /**< @brief Safety Circuit status. */
 
-    CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief 
- (fan board) cooling loop temps. */
-    CMR_CANID_PTC_LOOP_TEMPS_B = 0x234,        /**< @brief 
- (fan board) cooling loop temps. */
-    CMR_CANID_PTC_LOOP_TEMPS_C = 0x244,        /**< @brief 
- (fan board) cooling loop temps. */
-    CMR_CANID_PTC_FANS_PUMPS_STATUS = 0x314,   /**< @brief 
- (fan board) fans status */
-    CMR_CANID_PTC_POWER_DIAGNOSTICS = 0x534,   /**< @brief 
- (fan board) power diagnostics. */
+    CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief (fan board) cooling loop temps. */
+    CMR_CANID_PTC_LOOP_TEMPS_B = 0x234,        /**< @brief (fan board) cooling loop temps. */
+    CMR_CANID_PTC_LOOP_TEMPS_C = 0x244,        /**< @brief (fan board) cooling loop temps. */
+    CMR_CANID_PTC_FANS_PUMPS_STATUS = 0x314,   /**< @brief (fan board) fans status */
+    CMR_CANID_PTC_POWER_DIAGNOSTICS = 0x534,   /**< @brief (fan board) power diagnostics. */
 
     CMR_CANID_DIM_REQUEST = 0x235,              /**< @brief DIM state/gear request. */
     CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x535,    /**< @brief DIM power diagnostics. */
@@ -92,7 +95,6 @@ typedef enum {
      * first and then cdc config packets in ascending order. This is imperative to maintaining
      * code modularity :)
     */
-    num_config_packets = 4,                     /**< @brief in the enum but actually just a count of num of packets. */
     CMR_CANID_DIM_CONFIG0_DRV0 = 0x600,         /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG1_DRV0,                 /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG2_DRV0,                 /**< @brief DIM config request */
@@ -140,24 +142,23 @@ typedef enum {
     CMR_CANID_MOTORPOWER_STATE = 0x52E,				/**< @brief Motor Power state. */
 
     // FL
-    CMR_CANID_AMK_1_ACT_1 = 0x283,              /**< @brief AMK Inverter 1 actual values 1.*/
-    CMR_CANID_AMK_1_ACT_2 = 0x285,              /**< @brief AMK Inverter 1 actual values 2.*/
-    CMR_CANID_AMK_1_SETPOINTS = 0x184,          /**< @brief AMK Inverter 1 setpoints.*/
+    CMR_CANID_AMK_FL_ACT_1 = 0x288,              /**< @brief AMK Inverter 4 actual values 1.*/
+    CMR_CANID_AMK_FL_ACT_2 = 0x28A,              /**< @brief AMK Inverter 4 actual values 2.*/
+    CMR_CANID_AMK_FL_SETPOINTS = 0x189,
 
-    // BR
-    CMR_CANID_AMK_2_ACT_1 = 0x284,              /**< @brief AMK Inverter 2 actual values 1.*/
-    CMR_CANID_AMK_2_ACT_2 = 0x286,              /**< @brief AMK Inverter 2 actual values 2.*/
-    CMR_CANID_AMK_2_SETPOINTS = 0x185,          /**< @brief AMK Inverter 2 setpoints.*/
-
-    // FR
-    CMR_CANID_AMK_3_ACT_1 = 0x287,              /**< @brief AMK Inverter 3 actual values 1.*/
-    CMR_CANID_AMK_3_ACT_2 = 0x289,              /**< @brief AMK Inverter 3 actual values 2.*/
-    CMR_CANID_AMK_3_SETPOINTS = 0x188,          /**< @brief AMK Inverter 3 setpoints.*/
-
-    // BL
-    CMR_CANID_AMK_4_ACT_1 = 0x288,              /**< @brief AMK Inverter 4 actual values 1.*/
-    CMR_CANID_AMK_4_ACT_2 = 0x28A,              /**< @brief AMK Inverter 4 actual values 2.*/
-    CMR_CANID_AMK_4_SETPOINTS = 0x189,          /**< @brief AMK Inverter 4 setpoints.*/
+    CMR_CANID_AMK_FR_ACT_1 = 0x284,              /**< @brief AMK Inverter 2 actual values 1.*/
+    CMR_CANID_AMK_FR_ACT_2 = 0x286,              /**< @brief AMK Inverter 2 actual values 2.*/
+    CMR_CANID_AMK_FR_SETPOINTS = 0x185,          /**< @brief AMK Inverter 2 setpoints.*/
+    
+    // RL
+    CMR_CANID_AMK_RL_ACT_1 = 0x287,              /**< @brief AMK Inverter 3 actual values 1.*/
+    CMR_CANID_AMK_RL_ACT_2 = 0x289,              /**< @brief AMK Inverter 3 actual values 2.*/
+    CMR_CANID_AMK_RL_SETPOINTS = 0x188,          /**< @brief AMK Inverter 3 setpoints.*/
+    
+    // RR
+    CMR_CANID_AMK_RR_ACT_1 = 0x283,              /**< @brief AMK Inverter 1 actual values 1.*/
+    CMR_CANID_AMK_RR_ACT_2 = 0x285,              /**< @brief AMK Inverter 1 actual values 2.*/
+    CMR_CANID_AMK_RR_SETPOINTS = 0x184,          /**< @brief AMK Inverter 1 setpoints.*/
 
     CMR_CANID_RMS_TEMPA = 0x000 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set A. */
     CMR_CANID_RMS_TEMPB = 0x001 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set B. */
@@ -223,9 +224,15 @@ typedef enum {
     CMR_CANID_SBG_BODY_VEL = 0x729,             /**< @brief SBG_ECAN_MSG_EKF_VEL_BODY */
     CMR_CANID_SBG_AUTOMOTIVE = 0x72A,           /**< @brief SBG_ECAN_MSG_AUTO_TRACK_SLIP_CURV */
 
-    CMR_CANID_EMD_MEASUREMENT = 0x100,          /**< @brief EMD measurement for HV voltage/current. */
-    CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */
+    CMR_CANID_MOVELLA_STATUS = 0x772,
+    CMR_CANID_MOVELLA_QUATERNION = 0x774,
+    CMR_CANID_MOVELLA_IMU_GYRO = 0x776,
+    CMR_CANID_MOVELLA_IMU_ACCEL = 0x77E,
+    CMR_CANID_MOVELLA_VELOCITY = 0x77D,
+
     CMR_CANID_EMD_STATUS = 0x400,               /**< @brief EMD status. */
+    CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */
+    CMR_CANID_EMD_MEASUREMENT = 0x402,          /**< @brief EMD measurement for HV voltage/current. */
 
     CMR_IZZIE_LOADCELL = 0x7F0,                 /**< @brief IZZIE Amp load data. */
     CMR_CANID_CONTROLS_DEBUG_GLOBAl = 0x7E0,    /**< @brief control algo testing data. */
@@ -235,15 +242,15 @@ typedef enum {
     CMR_CANID_CONTROLS_DEBUG_RL = 0x7E4,        /**< @brief control algo testing data. */
     CMR_CANID_CONTROLS_PID_IO = 0x7E5,        /**< @brief control algo testing data. */
 
-   CMR_CANID_CONTROLS_SOLVER_INPUTS = 0x7E6, 
-   CMR_CANID_CONTROLS_SOLVER_OUTPUTS = 0x7F0,
-   CMR_CANID_CONTROLS_SOLVER_SETTINGS = 0x7EE,
-   CMR_CANID_CONTROLS_SOLVER_AUX = 0x7FF,
+    CMR_CANID_CONTROLS_SOLVER_INPUTS = 0x7E6,
+    CMR_CANID_CONTROLS_SOLVER_OUTPUTS = 0x7F0,
+    CMR_CANID_CONTROLS_SOLVER_SETTINGS = 0x7EE,
+    CMR_CANID_CONTROLS_SOLVER_AUX = 0x7FF,
 
-   CMR_CANID_LOADCELL_FR = 0x7D0,
-   CMR_CANID_LOADCELL_RR = 0x7D1,
-   CMR_CANID_LOADCELL_FL = 0x7D2,
-   CMR_CANID_LOADCELL_RL = 0x7D3,
+    CMR_CANID_LOADCELL_FL = 0x7D3,
+    CMR_CANID_LOADCELL_FR = 0x7D0,
+    CMR_CANID_LOADCELL_RL = 0x7D1,
+    CMR_CANID_LOADCELL_RR = 0x7D2,
 
     CMR_CANID_FRONT_SLIP_RATIOS = 0x7E8,
     CMR_CANID_REAR_SLIP_RATIOS = 0x7E9,
@@ -275,6 +282,15 @@ typedef enum {
 	CMR_CANID_CDC_GIT,
 	CMR_CANID_DIM_GIT,
 	CMR_CANID_RAM_GIT,
+
+    CAN_ID_LV_BMS_CELL_VOLTAGE_1_3 = 0x7F7,
+    CAN_ID_LV_BMS_CELL_VOLTAGE_4_6,
+    CAN_ID_LV_BMS_CELL_TEMP_1_4,
+    CAN_ID_LV_BMS_CELL_TEMP_5_8,
+    CAN_ID_LV_BMS_CELL_OVERVOLTAGE,
+    CAN_ID_LV_BMS_CELL_OVERTEMP,
+    CAN_ID_LV_BMS_BUS_VOLTAGE,
+    CAN_ID_LV_BMS_CURRENT,
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */

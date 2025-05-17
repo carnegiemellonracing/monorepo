@@ -19,7 +19,9 @@
  */
 typedef enum {
     CANRX_VEH_HEARTBEAT_VSM = 0,    /**< @brief VSM heartbeat. */
+    CANRX_VSM_STATUS,
     CANRX_VEH_DATA_FSM,             /**< @brief FSM data. */
+    CANRX_VEH_SWANGLE_FSM,          /**< @brief VSM status */
     CANRX_VEH_REQUEST_DIM,          /**< @brief DIM state and gear request. */
     CANRX_VEH_VOLTAGE_HVC,          /**< @brief HVC pack voltage. */
     CANRX_VEH_CURRENT_HVC,          /**< @brief HVC pack current. */
@@ -29,6 +31,12 @@ typedef enum {
     CANRX_VEH_VSM_SENSORS,          /**< @brief VSM Sensors */
 	CANRX_RTC_SET,
 	CANRX_HVI_SENSE,
+    CANRX_VEH_MOVELLA_STATUS,
+    CANRX_VEH_MOVELLA_QUATERNION,
+    CANRX_VEH_MOVELLA_IMU_EULER_ANGLES,
+    CANRX_VEH_MOVELLA_IMU_GYRO,
+    CANRX_VEH_MOVELLA_IMU_ACCEL,
+    CANRX_VEH_MOVELLA_VELOCITY,
     CANRX_VEH_LEN                   /**< @brief Number of periodic CAN messages. */
 } canVehicleRX_t;
 
@@ -56,7 +64,13 @@ typedef enum {
  * @warning New messages MUST be added before `CAN_AUX_RX_LEN`.
  */
 typedef enum {
-    CANRX_DAQ_SBG_STATUS_3 = 0, /**< @brief SBG Status containing solution info. */
+    CANRX_DAQ_MOVELLA_STATUS = 0,
+    CANRX_DAQ_MOVELLA_QUATERNION,
+    CANRX_DAQ_MOVELLA_IMU_EULER_ANGLES,
+    CANRX_DAQ_MOVELLA_IMU_GYRO,
+    CANRX_DAQ_MOVELLA_IMU_ACCEL,
+    CANRX_DAQ_MOVELLA_VELOCITY,
+    CANRX_DAQ_SBG_STATUS_3,     /**< @brief SBG Status containing solution info. */
     CANRX_DAQ_SBG_POS,          /**< @brief EKF Position. */
     CANRX_DAQ_SBG_VEL,          /**< @brief EKF Velocity. */
     CANRX_DAQ_SBG_ORIENT,       /**< @brief EKF Orientation. */
@@ -85,9 +99,9 @@ typedef enum {
 
 typedef enum {
     CANRX_HEARTBEAT_VSM = 0,    /**< @brief VSM heartbeat. */
-    CANRX_VSM_STATUS,           /**< @brief VSM status. */
     CANRX_VSM_SENSORS,          /**< @brief VSM sensors. */
     CANRX_FSM_DATA,             /**< @brief FSM data. */
+    CANRX_FSM_SWANGLE,
     CANRX_HVC_MINMAX_TEMPS,     /**< @brief HVC min/max cell temps. */
     CANRX_INV1_STATUS,          /**< @brief Inverter 1 temp. */
     CANRX_INV2_STATUS,          /**< @brief Inverter 2 temp. */

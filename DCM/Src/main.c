@@ -14,6 +14,7 @@
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
 #include <CMR/uart.h>       // CMR UART interface
+#include <stdlib.h>
 
 #include "gpio.h"       // Board-specific GPIO interface
 #include "can.h"        // Board-specific CAN interface
@@ -24,6 +25,7 @@
 #include "servo.h"
 #include "lut_3d.h"
 #include "lut.h"
+#include "brakelight.h"
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -56,13 +58,13 @@ static void statusLED(void *pvParameters) {
   while (1) {
     cmr_gpioToggle(GPIO_LED_STATUS);
 
-    cmr_canVSMSensors_t *vsmSensors = canVehicleGetPayload(CANRX_VSM_SENSORS);
+    // cmr_canVSMSensors_t *vsmSensors = canVehicleGetPayload(CANRX_VSM_SENSORS);
 
-    if (vsmSensors->brakePressureRear_PSI > brakeLightThreshold_PSI) {
-            cmr_gpioWrite(GPIO_BRKLT_ENABLE, 1);
-        } else {
-            cmr_gpioWrite(GPIO_BRKLT_ENABLE, 0);
-        }
+    // if (vsmSensors->brakePressureRear_PSI > brakeLightThreshold_PSI) {
+    //         cmr_gpioWrite(GPIO_BRKLT_ENABLE, 1);
+    //     } else {
+    //         cmr_gpioWrite(GPIO_BRKLT_ENABLE, 0);
+    //     }
 
     vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
   }
@@ -78,9 +80,9 @@ static void statusLED(void *pvParameters) {
 int main(void) {
 
    	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-  DWT->LAR = 0xC5ACCE55;
-  DWT->CYCCNT = 0;
-  DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+    DWT->LAR = 0xC5ACCE55;
+    DWT->CYCCNT = 0;
+    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
     // System initialization.
     HAL_Init();
     srand(HAL_GetTick());
@@ -97,6 +99,7 @@ int main(void) {
     servoInit();
     motorsInit();
     sensorsInit();
+    brakelightInit();
 
 
     // Tests for computing kappa.

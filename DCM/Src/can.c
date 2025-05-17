@@ -28,6 +28,8 @@
 #include "controls_helper.h"
 #include "controls.h"
 #include "sensors.h"
+#include "movella.h"
+#include "safety_filter.h"
 
 extern volatile uint8_t currentParameters[MAX_MENU_ITEMS];
 volatile uint8_t parametersFromDIM[MAX_MENU_ITEMS];
@@ -61,8 +63,22 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
     },
+    [CANRX_VSM_STATUS] = {
+        .canID = CMR_CANID_VSM_STATUS,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25,
+        .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
+    },
     [CANRX_VEH_DATA_FSM] = {
         .canID = CMR_CANID_FSM_DATA,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25,
+        .errorFlag = CMR_CAN_ERROR_NONE,
+        .warnFlag = CMR_CAN_WARN_NONE
+    },
+    [CANRX_VEH_SWANGLE_FSM] = {
+        .canID = CMR_CANID_FSM_SWANGLE,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_NONE,
@@ -130,7 +146,37 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
 	        .canID = CMR_CANID_HEARTBEAT_HVI,
 	        .timeoutError_ms = 100,
 	        .timeoutWarn_ms = 75
-	}
+	},
+    // Temporary.
+    [CANRX_VEH_MOVELLA_STATUS] = {
+        .canID = CMR_CANID_MOVELLA_STATUS,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    // Temporary.
+    [CANRX_VEH_MOVELLA_QUATERNION] = {
+        .canID = CMR_CANID_MOVELLA_QUATERNION,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    // Temporary.
+    [CANRX_VEH_MOVELLA_IMU_GYRO] = {
+        .canID = CMR_CANID_MOVELLA_IMU_GYRO,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    // Temporary.
+    [CANRX_VEH_MOVELLA_IMU_ACCEL] = {
+        .canID = CMR_CANID_MOVELLA_IMU_ACCEL,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    // Temporary.
+    [CANRX_VEH_MOVELLA_VELOCITY] = {
+        .canID = CMR_CANID_MOVELLA_VELOCITY,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
 };
 
 /** @brief Metadata for tractive CAN message reception. */
@@ -186,6 +232,31 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
 };
 
 cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
+    [CANRX_DAQ_MOVELLA_STATUS] = {
+        .canID = CMR_CANID_MOVELLA_STATUS,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_MOVELLA_QUATERNION] = {
+        .canID = CMR_CANID_MOVELLA_QUATERNION,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_MOVELLA_IMU_GYRO] = {
+        .canID = CMR_CANID_MOVELLA_IMU_GYRO,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_MOVELLA_IMU_ACCEL] = {
+        .canID = CMR_CANID_MOVELLA_IMU_ACCEL,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_MOVELLA_VELOCITY] = {
+        .canID = CMR_CANID_MOVELLA_VELOCITY,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
     [CANRX_DAQ_SBG_STATUS_3] = {
         .canID = CMR_CANID_SBG_STATUS_3,
         .timeoutError_ms = 2000,
@@ -298,23 +369,23 @@ cmr_canRXMeta_t canRXMeta[] = {
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
     },
     [CANRX_INV1_STATUS] = {
-        .canID = CMR_CANID_AMK_1_ACT_2,
+        .canID = CMR_CANID_AMK_FL_ACT_2,
         .timeoutError_ms = 800, // Send error if data not received within 4 cycles, or 800 ms
         .timeoutWarn_ms = 400, // Send warning if data not received within 2 cycles, or 400 ms
         // CAN transmitting frequency = 5 Hz, so ? s = 1 / 5 Hz = 0.2 s = 200ms
     },
     [CANRX_INV2_STATUS] = {
-        .canID = CMR_CANID_AMK_2_ACT_2,
+        .canID = CMR_CANID_AMK_FR_ACT_2,
         .timeoutError_ms = 800,
         .timeoutWarn_ms = 400,
     },
     [CANRX_INV3_STATUS] = {
-        .canID = CMR_CANID_AMK_3_ACT_2,
+        .canID = CMR_CANID_AMK_RL_ACT_2,
         .timeoutError_ms = 800,
         .timeoutWarn_ms = 400,
     },
     [CANRX_INV4_STATUS] = {
-        .canID = CMR_CANID_AMK_4_ACT_2,
+        .canID = CMR_CANID_AMK_RR_ACT_2,
         .timeoutError_ms = 800,
         .timeoutWarn_ms = 400,
     },
@@ -327,6 +398,13 @@ cmr_canRXMeta_t canRXMeta[] = {
     },
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 50,
+        .errorFlag = CMR_CAN_ERROR_NONE,
+        .warnFlag = CMR_CAN_WARN_NONE
+    },
+    [CANRX_FSM_SWANGLE] = {
+        .canID = CMR_CANID_FSM_SWANGLE,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 50,
         .errorFlag = CMR_CAN_ERROR_NONE,
@@ -390,6 +468,13 @@ static void canTX10Hz(void *pvParameters) {
         //powersense is dead, voltage * HVI current
         powerSense.packPower_W = getPackVoltage() * getPackCurrent();
 
+        
+        cmr_canDAQTherm_t therms;
+        therms.therm_1 = adcRead(ADC_THERM1);
+        therms.therm_2 = adcRead(ADC_THERM2);
+
+        canTX(CMR_CAN_BUS_VEH, 0x659, &therms, sizeof(cmr_canDAQTherm_t), canTX10Hz_period_ms);
+
         // Is data valid? Set it in the orientation/velocity messages
 //        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX10Hz_period_ms);
 //        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK, &torqueFeedback, sizeof(torqueFeedback), canTX10Hz_period_ms);
@@ -448,12 +533,19 @@ static void canTX100Hz(void *pvParameters) {
             heartbeat.state = CMR_CAN_ERROR;
         }
 
+        cmr_canDAQTherm_t linpots;
+        linpots.therm_1 = adcRead(ADC_LINPOT1);
+        linpots.therm_2 = adcRead(ADC_LINPOT2);
+
+        canTX(CMR_CAN_BUS_VEH, 0x658, &linpots, sizeof(cmr_canDAQTherm_t), canTX100Hz_period_ms);
+
         // Solver
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_INPUTS, &solver_inputs, sizeof(cmr_can_solver_inputs_t), canTX100Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_AUX, &solver_aux, sizeof(cmr_can_solver_aux_t), canTX100Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_OUTPUTS, &solver_torques, sizeof(solver_torques), canTX100Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_SETTINGS, &solver_settings, sizeof(cmr_can_solver_settings_t), canTX100Hz_period_ms);
-        
+
+
 		// SF
 		const cmr_canCDCSafetyFilterStates_t *sfStatesInfo = getSafetyFilterInfo();
 		cmr_canCDCMotorPower_t *motorPowerInfo = getMotorPowerInfo();
@@ -488,8 +580,6 @@ static void canTX100Hz(void *pvParameters) {
             sizeof(heartbeat),
             canTX100Hz_period_ms
         );
-
-
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
 }
@@ -525,13 +615,18 @@ static void canTX200Hz(void *pvParameters) {
     cmr_canCDCPoseOrientation_t poseOrient;
     cmr_canCDCPoseVelocity_t poseVel;
 
+    cmr_canCOGVelocity_t cog_velocity;
+    cmr_canFrontWheelVelocity_t front_velocity;
+    cmr_canRearWheelVelocity_t rear_velocity;
+
+
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_FL_SETPOINTS, amkSetpointsFL, sizeof(*amkSetpointsFL), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_FR_SETPOINTS, amkSetpointsFR, sizeof(*amkSetpointsFR), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_RL_SETPOINTS, amkSetpointsRL, sizeof(*amkSetpointsRL), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_RR_SETPOINTS, amkSetpointsRR, sizeof(*amkSetpointsRR), canTX200Hz_period_ms);
-
+        
         daqWheelSpeedFeedback(&speedFeedback);
         daqWheelTorqueFeedback(&torqueFeedback);
         daqWheelSpeedSetpoints(&speedSetpoint);
@@ -540,6 +635,24 @@ static void canTX200Hz(void *pvParameters) {
         daqPosePosition(&posePos);
         //daqPoseOrientation(&poseOrient);
         daqPoseVelocity(&poseVel);
+        
+        cog_velocity.cog_x = car_state.velocity.x * 100.0f;
+        cog_velocity.cog_y = car_state.velocity.y * 100.0f;
+        cog_velocity.slip_angle = car_state.slip_angle.body;
+
+        front_velocity.fl_x = car_state.fl_velocity.x * 100.0f;
+        front_velocity.fl_y = car_state.fl_velocity.y * 100.0f;
+        front_velocity.fr_x = car_state.fr_velocity.x * 100.0f;
+        front_velocity.fr_y = car_state.fr_velocity.y * 100.0f;
+
+        rear_velocity.rl_x = car_state.rl_velocity.x * 100.0f;
+        rear_velocity.rl_y = car_state.rl_velocity.y * 100.0f;
+        rear_velocity.rr_x = car_state.rr_velocity.x * 100.0f;
+        rear_velocity.rr_y = car_state.rr_velocity.y * 100.0f;
+
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COG_VELOCITY, &cog_velocity, sizeof(cog_velocity), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_FRONT_VELOCITY, &front_velocity, sizeof(front_velocity), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_REAR_VELOCITY, &rear_velocity, sizeof(rear_velocity), canTX200Hz_period_ms);
 
         // Is data valid? Set it in the orientation/velocity messages
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX200Hz_period_ms);
@@ -547,26 +660,26 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_SETPOINT, &speedSetpoint, sizeof(speedSetpoint), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX200Hz_period_ms);
 
-        
-        // Forward AMK messages to vehicle CAN at 200Hz.
-        for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
-            // Do not transmit if we haven't received that message lately
-            if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
 
-            canTX(
-                CMR_CAN_BUS_VEH,
-                canTractiveRXMeta[i].canID,
-                (void *) &(canTractiveRXMeta[i].payload),
-                sizeof(cmr_canAMKActualValues1_t),
-                canTX200Hz_period_ms
-            );
-        }
+        // Forward AMK messages to vehicle CAN at 200Hz.
+        // for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
+        //     // Do not transmit if we haven't received that message lately
+        //     if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
+
+        //     canTX(
+        //         CMR_CAN_BUS_VEH,
+        //         canTractiveRXMeta[i].canID,
+        //         (void *) &(canTractiveRXMeta[i].payload),
+        //         sizeof(cmr_canAMKActualValues1_t),
+        //         canTX200Hz_period_ms
+        //     );
+        // }
 
         // Send setpoints to vehicle CAN at 200Hz as well.
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_FL_SETPOINTS, amkSetpointsFL, sizeof(*amkSetpointsFL), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_FR_SETPOINTS, amkSetpointsFR, sizeof(*amkSetpointsFR), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_RL_SETPOINTS, amkSetpointsRL, sizeof(*amkSetpointsRL), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_RR_SETPOINTS, amkSetpointsRR, sizeof(*amkSetpointsRR), canTX200Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_FL_SETPOINTS, amkSetpointsFL, sizeof(*amkSetpointsFL), canTX200Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_FR_SETPOINTS, amkSetpointsFR, sizeof(*amkSetpointsFR), canTX200Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_RL_SETPOINTS, amkSetpointsRL, sizeof(*amkSetpointsRL), canTX200Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_RR_SETPOINTS, amkSetpointsRR, sizeof(*amkSetpointsRR), canTX200Hz_period_ms);
 
 //        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_POSITION, &posePos, sizeof(posePos), canTX200Hz_period_ms);
         //TODO: Fix error with padding (manual size 7)
@@ -650,7 +763,21 @@ static void canTX5Hz(void *pvParameters) {
         transmitCDC_DIMconfigMessages();
 
         vTaskDelayUntil(&lastWakeTime, canTX5Hz_period_ms);
+
+        for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
+            // Do not transmit if we haven't received that message lately
+            if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
+    
+            canTX(
+                CMR_CAN_BUS_VEH,
+                canTractiveRXMeta[i].canID,
+                (void *) &(canTractiveRXMeta[i].payload),
+                sizeof(cmr_canAMKActualValues1_t),
+                canTX5Hz_period_ms
+            );
+        }
     }
+
 }
 
 /** @brief CAN 1 Hz TX priority. */
@@ -679,8 +806,15 @@ static void canTX1Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_ODOMETER, &odometer, sizeof(odometer), canTX1Hz_period_ms);
 
         cmr_canCDCControlsStatus_t *controlsStatus = getControlsStatus();
-
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_CONTROLS_STATUS, controlsStatus, sizeof(cmr_canCDCControlsStatus_t), canTX1Hz_period_ms);
+
+        cmr_canCDCPowerLimitLog_t power_limit = {
+            // If you don't #include "safety_filter.h",
+            // getPowerLimit_W() is 0!!!!!!!!!!! (╯°□°)╯ノ彡┻━┻
+            .power_limit_W = getPowerLimit_W(),
+        };
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_POWER_LOG, &power_limit, sizeof(power_limit), canTX1Hz_period_ms);
+
         // TODO: constantly send current parameters
         vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
     }
@@ -735,7 +869,7 @@ void dim_params_callback (cmr_can_t *canb_rx, uint16_t canID, const void *data, 
     // basic filter for wrong canids
     if(canID < CMR_CANID_DIM_CONFIG0_DRV0 || canID > CMR_CANID_CDC_CONFIG3_DRV3) return;
 
-    static bool gotten_packet[num_config_packets] = {0};
+    static bool gotten_packet[NUM_CONFIG_PACKETS] = {0};
     static TickType_t lastDriverChangeTime = 0;
     TickType_t currentTime = xTaskGetTickCount();
 
@@ -745,7 +879,7 @@ void dim_params_callback (cmr_can_t *canb_rx, uint16_t canID, const void *data, 
     // if (!(vsm_state == CMR_CAN_VSM_STATE_GLV_ON || vsm_state == CMR_CAN_VSM_STATE_HV_EN)) return;
 
     // calculate what config packet this message is
-    int packet_number = (canID - CMR_CANID_DIM_CONFIG0_DRV0) % num_config_packets;
+    int packet_number = (canID - CMR_CANID_DIM_CONFIG0_DRV0) % NUM_CONFIG_PACKETS;
 
     // calculate what config packet this message is and the driver
     cmr_driver_profile_t recievedDriver = getReceivedDriver(canID, &packet_number);
@@ -774,7 +908,7 @@ void dim_params_callback (cmr_can_t *canb_rx, uint16_t canID, const void *data, 
 
     // check if all config messages have been received
     bool all_packets_recieved = true;
-    for(uint8_t i = 0; i < num_config_packets; i++){
+    for(uint8_t i = 0; i < NUM_CONFIG_PACKETS; i++){
         all_packets_recieved &= gotten_packet[i];
     }
 
@@ -782,7 +916,7 @@ void dim_params_callback (cmr_can_t *canb_rx, uint16_t canID, const void *data, 
     if (all_packets_recieved == false) return;
 
     // Reset received flags
-    for(uint8_t i = 0; i < num_config_packets; i++){
+    for(uint8_t i = 0; i < NUM_CONFIG_PACKETS; i++){
         gotten_packet[i] = false;
     }
 
@@ -812,7 +946,7 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
 
     if(canID == CMR_CANID_CDC_POWER_UPDATE) {
     	cmr_canCDCPowerLimit_t *limit = (cmr_canCDCPowerLimit_t*) data;
-    	setPowerLimit(limit->powerLimit_kW);
+    	setPowerLimit_kW(limit->powerLimit_kW);
     }
 
     // Update the RX Meta array
@@ -828,17 +962,26 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
         rxMetaArray = canTractiveRXMeta;
         rxMetaArrayLen = CANRX_TRAC_LEN;
     }
+
+    volatile void* payload = NULL;
     if (rxMetaArray != NULL) {
         for (uint32_t i = 0; i < rxMetaArrayLen; i++) {
             if (rxMetaArray[i].canID == canID) {
-                memcpy((void *) rxMetaArray[i].payload, data, dataLen);
+                payload = (void *) rxMetaArray[i].payload;
+                memcpy(payload, data, dataLen);
                 rxMetaArray[i].lastReceived_ms = xTaskGetTickCountFromISR();
                 break;
             }
         }
     }
+
+    uint16_t temp = canID & 0x770;
+    (void) temp;
+    if(temp == 0x770) {
+        movella_parse(canID, payload);
+    }
+
     uint32_t total_ticks = DWT->CYCCNT - au32_initial_ticks;
-    uint32_t microsecs = total_ticks*1000000/HAL_RCC_GetHCLKFreq();
 }
 
 /**
@@ -846,30 +989,24 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
  */
 void canInit(void) {
     // Vehicle CAN initialization - CAN1
-	cmr_FDcanInit(
-		&(can[CMR_CAN_BUS_VEH]), FDCAN2, CMR_CAN_BITRATE_500K,
-		NULL, 0,
-		&conditionalCallback,
-		GPIOB, GPIO_PIN_12,     // CAN1 RX port/pin.
-		GPIOB, GPIO_PIN_13      // CAN1 TX port/pin.
+    cmr_FDcanInit(&can[CMR_CAN_BUS_VEH], FDCAN2, CMR_CAN_BITRATE_500K, NULL,
+                  0, &conditionalCallback, GPIOB,
+                  GPIO_PIN_12,        // CAN1 RX port/pin.
+                  GPIOB, GPIO_PIN_13  // CAN1 TX port/pin.
     );
 
     // Tractive CAN initialization. - CAN3
-	cmr_FDcanInit(
-		&(can[CMR_CAN_BUS_DAQ]), FDCAN3, CMR_CAN_BITRATE_500K,
-		NULL, 0,
-		&conditionalCallback,
-		GPIOD, GPIO_PIN_12,     // CAN3 RX port/pin.
-		GPIOD, GPIO_PIN_13      // CAN3 TX port/pin.
-	);
+    cmr_FDcanInit(&(can[CMR_CAN_BUS_DAQ]), FDCAN3, CMR_CAN_BITRATE_500K, NULL,
+                  0, &conditionalCallback, GPIOD,
+                  GPIO_PIN_12,        // CAN3 RX port/pin.
+                  GPIOD, GPIO_PIN_13  // CAN3 TX port/pin.
+    );
 
     // DAQ CAN init. - CAN2
-    cmr_FDcanInit(
-        &(can[CMR_CAN_BUS_TRAC]), FDCAN1, CMR_CAN_BITRATE_500K,
-        NULL, 0,
-        &conditionalCallback,
-        GPIOA, GPIO_PIN_11,      // CAN2 RX port/pin.
-        GPIOA, GPIO_PIN_12       // CAN2 TX port/pin.
+    cmr_FDcanInit(&can[CMR_CAN_BUS_TRAC], FDCAN1, CMR_CAN_BITRATE_500K, NULL,
+                  0, &conditionalCallback, GPIOA,
+                  GPIO_PIN_11,        // CAN2 RX port/pin.
+                  GPIOA, GPIO_PIN_12  // CAN2 TX port/pin.
     );
 
     // Vehicle CAN filters.
@@ -879,91 +1016,65 @@ void canInit(void) {
             .rxFIFO = FDCAN_RX_FIFO1,
 
             // Match all even IDs (bottom bit 0, all others don't care).
-            .ids = {
-                0x000, 0x000,
-                0x001, 0x001
-            }
+            .ids = {0x000,0x000}
         },
-	{
+
+        {
             .isMask = false,
             .rxFIFO = FDCAN_RX_FIFO0,
-            .ids = {
-                CMR_CANID_CDC_RTC_DATA_IN,
-				CMR_CANID_CDC_RTC_DATA_IN,
-				CMR_CANID_CDC_RTC_DATA_IN, /* 3 repeated ID's */
-                CMR_CANID_VSM_SENSORS
-            }
-	}
+            .ids = {CMR_CANID_CDC_RTC_DATA_IN,
+                    CMR_CANID_VSM_SENSORS}
+        }
     };
 
-    cmr_canFilter(
-        &(can[CMR_CAN_BUS_VEH]), canVehicleFilters, sizeof(canVehicleFilters) / sizeof(canVehicleFilters[0])
-    );
+    cmr_canFilter(&(can[CMR_CAN_BUS_VEH]), canVehicleFilters,
+                  sizeof(canVehicleFilters) / sizeof(canVehicleFilters[0]));
 
     // Tractive CAN filters.
     const cmr_canFilter_t canTractiveFilters[] = {
-        {
-            .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO0,
-            .ids = {
-                CMR_CANID_AMK_1_ACT_1,
-                CMR_CANID_AMK_1_ACT_2,
-                CMR_CANID_AMK_2_ACT_1,
-                CMR_CANID_AMK_2_ACT_2
-            }
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO0,
+         .ids = {CMR_CANID_AMK_FL_ACT_1, CMR_CANID_AMK_FL_ACT_2,
+                 }
         },
 
-        {
-            .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO1,
-            .ids = {
-                CMR_CANID_AMK_3_ACT_1,
-                CMR_CANID_AMK_3_ACT_2,
-                CMR_CANID_AMK_4_ACT_1,
-                CMR_CANID_AMK_4_ACT_2
-            }
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO1,
+         .ids = {CMR_CANID_AMK_FR_ACT_1, CMR_CANID_AMK_FR_ACT_2,}
         },
 
-        {
-            .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO1,
-            .ids = {
-                CMR_CANID_HEARTBEAT_HVI,
-                CMR_CANID_HEARTBEAT_HVI,
-                CMR_CANID_HEARTBEAT_HVI,
-                CMR_CANID_HEARTBEAT_HVI
-            }
+        {.isMask = false,
+        .rxFIFO = FDCAN_RX_FIFO1,
+        .ids = {CMR_CANID_AMK_RL_ACT_1, CMR_CANID_AMK_RL_ACT_2,}
+        },
+        
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO1,
+         .ids = {CMR_CANID_AMK_RR_ACT_1, CMR_CANID_AMK_RR_ACT_2}
         }
     };
-    cmr_canFilter(
-        &(can[CMR_CAN_BUS_TRAC]), canTractiveFilters, sizeof(canTractiveFilters) / sizeof(canTractiveFilters[0])
-    );
+
+    cmr_canFilter(&(can[CMR_CAN_BUS_TRAC]), canTractiveFilters,
+                  sizeof(canTractiveFilters) / sizeof(canTractiveFilters[0]));
 
     // DAQ CAN filters.
     const cmr_canFilter_t canDaqFilters[] = {
-        {
-            .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO0,
+        {.isMask = true,
+         .rxFIFO = FDCAN_RX_FIFO0,
 
-            // Match all even IDs (bottom bit 0, all others don't care).
-            .ids = {
-                0x000, 0x000,
-                0x001, 0x001
-            }
-        }, {
-            .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO1,
+         // Match all even IDs (bottom bit 0, all others don't care).
+         .ids = {0x000, 0x001}
+        },
+        {.isMask = true,
+         .rxFIFO = FDCAN_RX_FIFO1,
 
-            // Match all odd IDs (bottom bit 1, all others don't care).
-            .ids = {
-                0x001, 0x001,
-                0x001, 0x001
-            }
+         // Match all odd IDs (bottom bit 1, all others don't care).
+         .ids = {0x001, 0x001}
         }
     };
-    cmr_canFilter(
-        &(can[CMR_CAN_BUS_DAQ]), canDaqFilters, sizeof(canDaqFilters) / sizeof(canDaqFilters[0])
-    );
+
+    cmr_canFilter(&(can[CMR_CAN_BUS_DAQ]), canDaqFilters,
+                  sizeof(canDaqFilters) / sizeof(canDaqFilters[0]));
 
     // Task initialization.
 
@@ -1020,11 +1131,6 @@ int ABC = 0;
 int canTX(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
     configASSERT(bus < CMR_CAN_BUS_NUM);
 
-    // RAM parsing
-    // int ret = parseData((uint32_t) bus, id, data, len);
-    // configASSERT(ret == 0);
-    // (void) ret;
-
     return cmr_canTX(&(can[bus]), id, data, len, timeout);
 }
 
@@ -1038,8 +1144,8 @@ int canTX(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t len, Tick
 volatile void *canVehicleGetPayload(canVehicleRX_t msg) {
     return &(canVehicleRXMeta[msg].payload);
 }
-
 /**
+
  * @brief Gets a pointer to a tractive CAN payload.
  *
  * @param msg The desired tractive CAN message.
@@ -1149,7 +1255,7 @@ static void transmitCDC_DIMconfigMessages(){
         .config_val_4 = config_menu_main_array[16].value.value,
     };
 
-    cmr_canDIMCDCconfig_t config_message_array[num_config_packets] = {
+    cmr_canDIMCDCconfig_t config_message_array[NUM_CONFIG_PACKETS] = {
         config0,
         config1,
         config2,
@@ -1157,15 +1263,15 @@ static void transmitCDC_DIMconfigMessages(){
     };
 
     // calculate the correct CAN ID based on the current driver
-    uint32_t can_ids_config_driver[num_config_packets];
+    uint32_t can_ids_config_driver[NUM_CONFIG_PACKETS];
     // uint8_t requested_driver = config_menu_main_array[DRIVER_PROFILE_INDEX].value.value;
-    uint32_t base_driver_canid = CMR_CANID_CDC_CONFIG0_DRV0 + (2 * currentDriver * num_config_packets);
-    for(int i = 0; i < num_config_packets; i++){
+    uint32_t base_driver_canid = CMR_CANID_CDC_CONFIG0_DRV0 + (2 * currentDriver * NUM_CONFIG_PACKETS);
+    for(int i = 0; i < NUM_CONFIG_PACKETS; i++){
         can_ids_config_driver[i] = base_driver_canid + i;
     }
 
     /* Transmit new messages to DIM */
-    for(int i = 0; i < num_config_packets; i++){
+    for(int i = 0; i < NUM_CONFIG_PACKETS; i++){
         canTX(
             CMR_CAN_BUS_VEH,
             can_ids_config_driver[i],

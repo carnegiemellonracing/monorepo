@@ -9,8 +9,8 @@
 #define CONTROLS_H
 
 #define ASSUME_NO_TURN true
-#define BUTTON_ACT 0b00000001
 #define BUTTON_ACK 0b10000000
+#define BUTTON_ACT 0b00000100
 #define BUTTON_PTT 0b100000
 #define BUTTON_SCRN 0b10000
 
@@ -24,30 +24,30 @@
 // ------------------------------------------------------------------------------------------------
 // Gear functions forward declarations
 
-void setSlowTorque(uint8_t throttlePos_u8, int16_t swAngle_deg);
+void setSlowTorque(uint8_t throttlePos_u8, int32_t swAngle_millideg);
 void setFastTorque(uint8_t throttlePos_u8);
-float getYawRateControlLeftRightBias(int16_t swAngle_millideg);
-void setTractionControl(uint8_t throttlePos_u8, uint8_t brakePressurePsi_u8, int16_t swAngle_deg, float leftRightBias_Nm,
+float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
+void setTractionControl(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t swAngle_millideg, float leftRightBias_Nm,
     bool assumeNoTurn, bool ignoreYawRate, bool allowRegen, float critical_speed_mps);
 void setYawRateControl (
     uint8_t throttlePos_u8,
-    uint8_t brakePressurePsi_u8,
-    int16_t swAngle_deg,
+    uint16_t brakePressurePsi_u8,
+    int32_t swAngle_deg,
     bool clampbyside
 );
-void setYawRateAndTractionControl(uint8_t throttlePos_u8, uint8_t brakePressurePsi_u8, int16_t swAngle_deg,
+void setYawRateAndTractionControl(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t swAngle_millideg,
     bool assumeNoTurn, bool ignoreYawRate, bool allowRegen, float critical_speed_mps);
-void setCruiseControlTorque(uint8_t throttlePos_u8, uint8_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM);
-void setEnduranceTorque(int32_t avgMotorSpeed_RPM, uint8_t throttlePos_u8, uint8_t brakePos_u8, int16_t swAngle_deg,
-    int32_t battVoltage_mV, int32_t battCurrent_mA, uint8_t brakePressurePsi_u8);
+void setCruiseControlTorque(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM);
+void setEnduranceTorque(int32_t avgMotorSpeed_RPM, uint8_t throttlePos_u8, uint8_t brakePos_u8, int32_t swAngle_millideg,
+    int32_t battVoltage_mV, int32_t battCurrent_mA, uint16_t brakePressurePsi_u8);
 void setEnduranceTestTorque(
     int32_t avgMotorSpeed_RPM,
     uint8_t throttlePos_u8,
     uint8_t brakePos_u8,
-    int16_t swAngle_deg,
+    int32_t swAngle_millideg,
     int32_t battVoltage_mV,
     int32_t battCurrent_mA,
-    uint8_t brakePressurePsi_u8,
+    uint16_t brakePressurePsi_u8,
     bool clampbyside
 );
 
@@ -55,10 +55,17 @@ void setEnduranceTestTorque(
 // Public functions
 
 void initControls();
-void runControls(cmr_canGear_t gear, uint8_t throttlePos_u8, uint8_t brakePos_u8, uint8_t brakePressurePsi_u8,
-    int16_t swAngle_deg, int32_t battVoltage_mV, int32_t battCurrent_mA, bool blank_command);
+void integrateCurrent();
+void runControls(cmr_canGear_t gear, uint8_t throttlePos_u8, uint8_t brakePos_u8, uint16_t brakePressurePsi_u8,
+    int32_t swAngle_millideg_FL, int32_t swAngle_millideg_FR, int32_t battVoltage_mV, int32_t battCurrent_mA, bool blank_command);
 void setControlsStatus(cmr_canGear_t gear);
-const volatile cmr_canCDCControlsStatus_t *getControlsStatus(); 
+const volatile cmr_canCDCControlsStatus_t *getControlsStatus();
+void setFastTorqueWithParallelRegen(uint16_t brakePressurePsi_u8, uint8_t throttlePos_u8);
+void set_optimal_control_with_regen(
+	int throttlePos_u8,
+	int32_t swAngle_millideg_FL,
+	int32_t swAngle_millideg_FR
+);
 
 // ------------------------------------------------------------------------------------------------
 // Global variables

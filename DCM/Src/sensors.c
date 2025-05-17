@@ -20,8 +20,8 @@
  * @brief Mapping of sensor channels to ADC channels.
  */
 const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
-    [SENSOR_CH_VOLTAGE_CV]  = ADC_VSENSE,
-    [SENSOR_CH_AVG_CURRENT_DA]  = ADC_ISENSE
+    [SENSOR_CH_VOLTAGE_CV]  = ADC_LINPOT1,
+    [SENSOR_CH_AVG_CURRENT_DA]  = ADC_LINPOT2
 };
 
 /** @brief forward declaration */
