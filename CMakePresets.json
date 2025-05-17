@@ -24,27 +24,6 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Static"
             }
-        },
-        {
-            "name": "relWithDebInfo",
-            "inherits": "default",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
-            }
-        },
-        {
-            "name": "release",
-            "inherits": "default",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
-            }
-        },
-        {
-            "name": "minSizeRel",
-            "inherits": "default",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "MinSizeRel"
-            }
         }
     ],
     "buildPresets": [
@@ -53,21 +32,8 @@
             "configurePreset": "debug"
         },
         {
-            "name": "relWithDebInfo",
-            "configurePreset": "relWithDebInfo"
-        },
-        {
-            "name": "release",
-            "configurePreset": "release"
-        },
-        {
-            "name": "minSizeRel",
-            "configurePreset": "minSizeRel"
-        },
-        {
             "name": "static",
-            "description": "",
-            "displayName": "",
+            "description": "Build for Static Analysis",
             "configurePreset": "static"
         }
     ]

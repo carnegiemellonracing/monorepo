@@ -304,12 +304,16 @@ SG_ DIM_requestDriver : 24|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
 BO_ 1301 DIM_Actions: 6 Vector__XXX
-SG_ DIM_action1ButtonPressed : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_action2ButtonPressed : 8|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_drsButtonPressed : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ DIM_launchButton : 3|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ DIM_rotaryPos : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ DIM_switches : 16|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ DIM_regenPercent : 24|8@1+ (1,0) [0|255] "percent" Vector__XXX
-SG_ DIM_paddleLeft : 32|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ DIM_paddleRight : 40|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ DIM_paddle : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ DIM_left : 40|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ DIM_actionButton : 2|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ DIM_right : 41|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ DIM_up : 42|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ DIM_down : 43|1@1+ (1,0) [0|1] "" Vector__XXX
 
 
 BO_ 1349 DIM_Acknowledge: 4 Vector__XXX
@@ -2158,12 +2162,16 @@ BA_ "GenSigStartValue" SG_ 565 DIM_requestState 0;
 BA_ "GenSigStartValue" SG_ 565 DIM_requestGear 0;
 BA_ "GenSigStartValue" SG_ 565 DIM_requestDRSMode 0;
 BA_ "GenSigStartValue" SG_ 565 DIM_requestDriver 0;
-BA_ "GenSigStartValue" SG_ 1301 DIM_action1ButtonPressed 0;
-BA_ "GenSigStartValue" SG_ 1301 DIM_action2ButtonPressed 0;
-BA_ "GenSigStartValue" SG_ 1301 DIM_drsButtonPressed 0;
+BA_ "GenSigStartValue" SG_ 1301 DIM_launchButton 0;
+BA_ "GenSigStartValue" SG_ 1301 DIM_rotaryPos 0;
+BA_ "GenSigStartValue" SG_ 1301 DIM_switches 0;
 BA_ "GenSigStartValue" SG_ 1301 DIM_regenPercent 0;
-BA_ "GenSigStartValue" SG_ 1301 DIM_paddleLeft 0;
-BA_ "GenSigStartValue" SG_ 1301 DIM_paddleRight 0;
+BA_ "GenSigStartValue" SG_ 1301 DIM_paddle 0;
+BA_ "GenSigStartValue" SG_ 1301 DIM_left 0;
+BA_ "GenSigStartValue" SG_ 1301 DIM_actionButton 0;
+BA_ "GenSigStartValue" SG_ 1301 DIM_right 0;
+BA_ "GenSigStartValue" SG_ 1301 DIM_up 0;
+BA_ "GenSigStartValue" SG_ 1301 DIM_down 0;
 BA_ "GenSigStartValue" SG_ 1349 DIM_Acknowledge 0;
 BA_ "GenSigStartValue" SG_ 261 PTC_state 0;
 BA_ "GenSigStartValue" SG_ 261 PTC_ERR_VSMTimeout 0;
