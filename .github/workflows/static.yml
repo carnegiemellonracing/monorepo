@@ -2,6 +2,7 @@ name: Static Analysis
 run-name: ${{ github.actor }}-${{github.repository}} Static Analysis
 
 on:
+    workflow_dispatch:
     schedule:
       - cron: "0 4 * * *"   # <=== Change this value
 
