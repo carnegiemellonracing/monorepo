@@ -28,9 +28,5 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         if: success() # or always() to upload even if previous steps fail
         with:
-          # Path to SARIF file or directory containing SARIF files.
-          # Adjust this path if your SARIF files are located elsewhere.
-          sarif_file: ${{ github.workspace }}/build/static
-          # You can optionally specify a category for the results,
-          # especially if you have multiple analysis tools.
-          # category: my-static-analysis-tool
+          # TODO runner doesn't create the static folder inside build
+          sarif_file: ${{ github.workspace }}/build
