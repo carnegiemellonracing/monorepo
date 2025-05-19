@@ -170,6 +170,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     -ffunction-sections # Place each function in its own section in .text
     -fdata-sections
     -fstack-usage
+    -Wimplicit-function-declaration
     >
     $<$<COMPILE_LANGUAGE:CXX>:>
     $<$<COMPILE_LANGUAGE:ASM>:-x assembler-with-cpp -MMD -MP>
