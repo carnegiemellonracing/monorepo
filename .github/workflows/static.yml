@@ -39,3 +39,4 @@ jobs:
         with:
           # TODO runner doesn't create the static folder inside build
           sarif_file: ${{ github.workspace }}/build
+          category: gcc-analysis
