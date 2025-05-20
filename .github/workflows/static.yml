@@ -4,7 +4,7 @@ run-name: ${{ github.actor }}-${{github.repository}} Static Analysis
 on:
     workflow_dispatch:
     schedule:
-      - cron: "0 4 * * *"   # <=== Change this value
+      - cron: "0 8 * * *"   # 8am GMT 4am EST daily
 
 jobs:
   build:

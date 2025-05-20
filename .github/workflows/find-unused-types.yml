@@ -19,12 +19,12 @@ jobs:
 
     - name: Run find-unused-types script
       run: |
-        python scripts/find-unused-types.py --stdout
+        python scripts/find_unused_types.py --stdout
 
     - name: Generate artifact with detailed report
       run: |
         mkdir -p reports
-        python scripts/find-unused-types.py --output  ${{ github.workspace }}/reports/unused_types.txt
+        python scripts/find_unused_types.py --output  ${{ github.workspace }}/reports/unused_types.txt
 
     - name: Upload unused types report
       uses: actions/upload-artifact@v4
