@@ -51,5 +51,5 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         if: success()
         with:
-          sarif_file: ${{ github.workspace }}/build/sarif
+          sarif_file: ${{ github.workspace }}/build/sarif/merged_results.sarif
           category: gcc-analysis
