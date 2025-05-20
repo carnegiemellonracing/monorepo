@@ -138,6 +138,52 @@ def merge_sarif_in_dir(input_dir: Path, output_file: Path):
 
     final_runs_list = list(merged_runs_map.values())
 
+    # Helper function for URI cleaning (can be nested or module-level)
+    def _apply_uri_cleaning_to_location(loc_obj):
+        if not loc_obj:
+            return
+        physical_loc = loc_obj.get("physicalLocation")
+        if not physical_loc:
+            return # Cannot clean URI if physicalLocation is missing
+
+        artifact_location = physical_loc.get("artifactLocation")
+        if artifact_location and "uri" in artifact_location and isinstance(artifact_location["uri"], str):
+            pass # URI cleaning logic can be added here if needed in the future
+
+    # Process final_runs_list to clean URIs and filter locations missing physicalLocation
+    for run_item in final_runs_list:
+        for result_item in run_item.get("results", []):
+            # Process direct locations of a result (only URI cleaning)
+            for loc in result_item.get("locations", []):
+                _apply_uri_cleaning_to_location(loc)
+
+            # Process relatedLocations (filter if physicalLocation is missing, then clean URI)
+            if "relatedLocations" in result_item:
+                valid_related_locations = []
+                for rloc in result_item["relatedLocations"]: # rloc is a location object
+                    if rloc.get("physicalLocation"):
+                        _apply_uri_cleaning_to_location(rloc)
+                        valid_related_locations.append(rloc)
+                    else:
+                        print(f"[!] Warning: A relatedLocation in result was removed due to missing physicalLocation. Result details (partial): {json.dumps(result_item.get('message', {}),ensure_ascii=False)[:200]}")
+                result_item["relatedLocations"] = valid_related_locations
+
+            # Process codeFlows (filter if physicalLocation is missing in a codeFlowLocation's location, then clean URI)
+            if "codeFlows" in result_item:
+                for cflow in result_item["codeFlows"]:
+                    if "threadFlows" in cflow:
+                        for tflow in cflow["threadFlows"]:
+                            if "locations" in tflow: # This is an array of codeFlowLocation objects
+                                valid_cfloc_wrappers = []
+                                for cfloc_wrapper in tflow["locations"]:
+                                    loc_in_cf = cfloc_wrapper.get("location")
+                                    if loc_in_cf and loc_in_cf.get("physicalLocation"):
+                                        _apply_uri_cleaning_to_location(loc_in_cf)
+                                        valid_cfloc_wrappers.append(cfloc_wrapper)
+                                    else:
+                                        print(f"[!] Warning: A codeFlowLocation was removed due to missing physicalLocation. Result details (partial): {json.dumps(result_item.get('message', {}),ensure_ascii=False)[:200]}")
+                                tflow["locations"] = valid_cfloc_wrappers
+
     merged_sarif_output = {
         "$schema": final_schema or "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
         "version": final_version or "2.1.0",
