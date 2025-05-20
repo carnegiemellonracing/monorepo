@@ -30,7 +30,7 @@ jobs:
           regex: '"startColumn": 0'
           replacement: '"startColumn": 1'
           flags: "g"
-          include: '**/*.sarif'
+          include: '.*\\\\.sarif$' # Corrected regex to match files ending with .sarif
           path: 'build' # Assumes SARIF files are generated within the 'build' directory
           encoding: 'utf8'
 
