@@ -103,18 +103,12 @@ uint32_t _platform_canGPIOAF(CAN_TypeDef *instance, GPIO_TypeDef *port)
  * @param rxMeta Metadata for periodic messages to receive.
  * @param rxMetaLen Number of periodic receive messages.
  * @param rxCallback Callback for other messages received, or `NULL` to ignore.
- * @param rxPort Receiving GPIO port (`GPIOx` from `stm32f413xx.h`).
- * @param rxPin Receiving GPIO pin (`GPIO_PIN_x` from `stm32f4xx_hal_gpio.h`).
- * @param txPort Transmitting GPIO port.
- * @param txPin Transmitting GPIO pin.
  */
 void _platform_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
     cmr_canBitRate_t bitRate,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
-    cmr_canRXCallback_t rxCallback,
-    GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
+    cmr_canRXCallback_t rxCallback
 ) {
     *can = (cmr_can_t) {
         .handle = {

@@ -127,11 +127,8 @@ uint32_t _platform_FDcanGPIOAF(FDCAN_GlobalTypeDef *instance, GPIO_TypeDef *port
 
 void _platform_FDCANInit(
     cmr_can_t *can, FDCAN_GlobalTypeDef *instance,
-    cmr_canBitRate_t bitRate,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
-    cmr_canRXCallback_t rxCallback,
-    GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
+    cmr_canRXCallback_t rxCallback
 ) {
     *can = (cmr_can_t) {
         .handle = {
@@ -567,7 +564,7 @@ void _platform_adcPoll(cmr_adc_t *adc, uint32_t adcTimeout) {
         HAL_ADC_PollForConversion(&adc->handle, adcTimeout);
         channel->value = HAL_ADC_GetValue(&adc->handle);
     }
-}   
+}
 #endif /* HAL_ADC_MODULE_ENABLED */
 
 

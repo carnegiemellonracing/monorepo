@@ -37,7 +37,7 @@ static bool glvReached = false;
 
 uint16_t LED_Red_State = 0;
 
-static bool LEDerror() {  
+static bool LEDerror() {
   return cmr_gpioRead(GPIO_IN_SOFTWARE_ERR) == 1 || cmr_gpioRead(GPIO_IN_IMD_ERR) == 1;
 }
 
@@ -49,6 +49,7 @@ static bool LEDerror() {
  * @return Does not return.
  */
 static void statusLED(void *pvParameters) {
+    (void)pvParameters;
     // cmr_pwmSetDutyCycle(&LED_Red, 0);
     // cmr_pwmSetDutyCycle(&LED_Red, 1);
     // // cmr_pwmSetDutyCycle(&LED_Red, 30);
@@ -96,7 +97,7 @@ static void statusLED(void *pvParameters) {
         cmr_pwmSetDutyCycle(&LED_Green, 0);
         // cmr_gpioWrite(GPIO_OUT_LED_GREEN, 0);
        }
-      
+
         else if (getCurrentState() != CMR_CAN_VSM_STATE_ERROR) {
           cmr_pwmSetDutyCycle(&LED_Green, 15);
           cmr_pwmSetDutyCycle(&LED_Red, 0);
@@ -132,7 +133,7 @@ static void MX_DAC1_Init(void)
   /* USER CODE BEGIN DAC1_Init 1 */
 
   /* USER CODE END DAC1_Init 1 */
-  /** DAC Initialization 
+  /** DAC Initialization
   */
   hdac1.Instance = DAC1;
   if (HAL_DAC_Init(&hdac1) != HAL_OK)
@@ -140,7 +141,7 @@ static void MX_DAC1_Init(void)
 //    Error_Handler();
 	  cmr_panic("init failed");
   }
-  /** DAC channel OUT1 config 
+  /** DAC channel OUT1 config
   */
   sConfig.DAC_Trigger = DAC_TRIGGER_NONE;
   sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
@@ -181,10 +182,10 @@ void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac)
   /* USER CODE END DAC1_MspInit 0 */
     /* Peripheral clock enable */
 	__HAL_RCC_DAC_CLK_ENABLE();
-  
+
     __HAL_RCC_GPIOA_CLK_ENABLE();
-    /**DAC1 GPIO Configuration    
-    PA4     ------> DAC1_OUT1 
+    /**DAC1 GPIO Configuration
+    PA4     ------> DAC1_OUT1
     */
     GPIO_InitStruct.Pin = GPIO_PIN_5;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
@@ -214,7 +215,7 @@ int main(void) {
     // System initialization.
     HAL_Init();
     cmr_rccSystemClockEnable();
-    
+
     HAL_DAC_MspInit(&hdac1);
     MX_DAC1_Init();
     HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, 360);

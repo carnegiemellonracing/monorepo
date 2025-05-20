@@ -510,10 +510,18 @@ void stateVSMDown() {
 }
 
 
-
+/**
+* @brief Request Gear Change
+*
+* Clockwise is negative, counterclockwise is positive
+* Turn clockwise is Gearup, counterclockwise is Geardown
+* Request gear change if necessary
+*
+*/
 void reqVSM(void) {
 
-    if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM == CMR_CAN_CLEAR_ERROR) {
+    cmr_canState_t vsmState = stateGetVSM();
+    if(vsmState == CMR_CAN_ERROR || vsmState == CMR_CAN_CLEAR_ERROR) {
         state.vsmReq = CMR_CAN_GLV_ON;
     }
     else {
@@ -530,14 +538,6 @@ void reqVSM(void) {
 //keeps track of requested gear
 static volatile int requestedGear;
 
-/**
-* @brief Request Gear Change
-*
-* Clockwise is negative, counterclockwise is positive
-* Turn clockwise is Gearup, counterclockwise is Geardown
-* Request gear change if necessary
-*
-*/
 void reqGear(void) {
 	int pastRotary = getPastRotaryPosition();
 	int currentRotary = getRotaryPosition();
@@ -553,10 +553,12 @@ void reqGear(void) {
 	// 		state.gear--;
 	// }
     bool canChangeGear = true;
-    if(canChangeGear && (pastRotary != currentRotary)) {
-        if(currState == CONFIG) config_increment_up_requested = true;
-        if(state.gearReq == 8) state.gearReq = 1;
-        else state.gearReq++;
+    if (canChangeGear && (pastRotary != currentRotary)) {
+        if (currState == CONFIG) {
+            config_increment_up_requested = true;
+        }
+        // (x % 8) == (x & 7)
+        state.gearReq = (state.gearReq & 7) + 1;
     }
 }
 
