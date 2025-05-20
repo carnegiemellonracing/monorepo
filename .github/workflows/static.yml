@@ -24,9 +24,19 @@ jobs:
         with:
             options: CMAKE_BUILD_TYPE=Static
 
+      - name: File Regex Replace
+        uses: mingjun97/file-regex-replace@v1
+        with:
+          regex: '"startColumn": 0'
+          replacement: '"startColumn": 1'
+          flags: "g"
+          include: '**/*.sarif'
+          path: 'build' # Assumes SARIF files are generated within the 'build' directory
+          encoding: 'utf8'
+
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v3
-        if: success() # or always() to upload even if previous steps fail
+        if: success()
         with:
           # TODO runner doesn't create the static folder inside build
           sarif_file: ${{ github.workspace }}/build
