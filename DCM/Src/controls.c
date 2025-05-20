@@ -70,6 +70,7 @@ static volatile cmr_canCDCControlsStatus_t controlsStatus = {
 volatile cmr_canCDCKiloCoulombs_t coulombCounting;
 
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
+void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew);
 
 /** @brief Coulomb counting info **/
 static TickType_t previousTickCount;
@@ -323,7 +324,7 @@ static void set_optimal_control(
 	float wheel_fr_speed_radps = getMotorSpeed_radps(MOTOR_FR);
 	float wheel_rl_speed_radps = getMotorSpeed_radps(MOTOR_RL);
 	float wheel_rr_speed_radps = getMotorSpeed_radps(MOTOR_RR);
-    
+
 	// float tractive_cap_fl = getKappaFxGlobalMax(MOTOR_FL, UINT8_MAX, true).Fx;
 	// float tractive_cap_fr = getKappaFxGlobalMax(MOTOR_FR, UINT8_MAX, true).Fx;
 	// float tractive_cap_rl = getKappaFxGlobalMax(MOTOR_RL, UINT8_MAX, true).Fx;
@@ -383,7 +384,7 @@ static void set_optimal_control(
 	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
     // Solver treats Mreq as around -z axis.
 	optimizer_state.mreq = -getYawRateControlLeftRightBias(swAngle_millideg);
-    
+
 	optimizer_state.theta_left = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
     optimizer_state.theta_right = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
 
@@ -464,7 +465,7 @@ static void set_optimal_control_launch_hybrid(
 	float wheel_fr_speed_radps = getMotorSpeed_radps(MOTOR_FR);
 	float wheel_rl_speed_radps = getMotorSpeed_radps(MOTOR_RL);
 	float wheel_rr_speed_radps = getMotorSpeed_radps(MOTOR_RR);
-    
+
 	// float tractive_cap_fl = getKappaFxGlobalMax(MOTOR_FL, UINT8_MAX, true).Fx;
 	// float tractive_cap_fr = getKappaFxGlobalMax(MOTOR_FR, UINT8_MAX, true).Fx;
 	// float tractive_cap_rl = getKappaFxGlobalMax(MOTOR_RL, UINT8_MAX, true).Fx;
@@ -524,7 +525,7 @@ static void set_optimal_control_launch_hybrid(
 	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
     // Solver treats Mreq as around -z axis.
 	optimizer_state.mreq = -getYawRateControlLeftRightBias(swAngle_millideg);
-    
+
 	optimizer_state.theta_left = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
     optimizer_state.theta_right = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
 
@@ -883,7 +884,7 @@ void setFastTorque (
 
 void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew) {
     const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
-    
+
     if(reqTorque > 0.0f) {
         int16_t fl_rpm = getMotorSpeed_rpm(MOTOR_FL);
         int16_t fr_rpm = getMotorSpeed_rpm(MOTOR_FR);
@@ -1038,7 +1039,7 @@ void setLaunchControl(
 	static const float launch_control_max_duration_s = 5.0;
     static const bool use_solver = false;
 
-	bool action_button_pressed = false; 
+	bool action_button_pressed = false;
 	const float nonnegative_odometer_velocity_mps = motorSpeedToWheelLinearSpeed_mps(getTotalMotorSpeed_radps() * 0.25f);
 	if (nonnegative_odometer_velocity_mps < launch_control_speed_threshold_mps) { // odometer velocity is below the launch control threshold
 		action_button_pressed = (((volatile cmr_canDIMActions_t *)(canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON)))->buttons) & BUTTON_ACT;
@@ -1091,7 +1092,7 @@ void setLaunchControl(
         // setVelocityFloat(MOTOR_RR, motor_rpm);
         // setVelocityFloat(MOTOR_FL, motor_rpm);
         // setVelocityFloat(MOTOR_FR, motor_rpm);
-        
+
         // Feedforward with front clamping.
         // setVelocityFloat(MOTOR_RL, motor_rpm);
         // setVelocityFloat(MOTOR_RR, motor_rpm);
@@ -1368,13 +1369,13 @@ void setTractionControl (
 }
 
 float get_optimal_yaw_rate(float swangle_rad, float velocity_x_mps) {
-    
+
     static const float natural_understeer_gradient = 0.011465f; //rad/g
 
     const float distance_between_axles_m = chassis_a + chassis_b;
     const float yaw_rate_setpoint_radps = swangle_rad * velocity_x_mps /
         (distance_between_axles_m + velocity_x_mps * velocity_x_mps * natural_understeer_gradient);
-    
+
     return yaw_rate_setpoint_radps;
 }
 
@@ -1394,7 +1395,7 @@ float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
         // velocity_x_mps = getTotalMotorSpeed_radps() * 0.25f * effective_wheel_rad_m;
         yrcDebug.controls_bias = -1;
     }
-    
+
     const float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
     const float actual_yaw_rate_radps_sae = movella_state.gyro.z;
     const float optimal_yaw_rate_radps = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
@@ -1402,7 +1403,7 @@ float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
     yrcDebug.controls_current_yaw_rate = (int16_t)(1000.0f * actual_yaw_rate_radps_sae);
     yrcDebug.controls_target_yaw_rate = (int16_t)(1000.0f * optimal_yaw_rate_radps);
     yrcDebug.controls_pid = yrc_kp;
-    
+
     const float left_right_bias = yrc_kp * (actual_yaw_rate_radps_sae - optimal_yaw_rate_radps);
     return left_right_bias;
 }
