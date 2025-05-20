@@ -24,15 +24,12 @@ jobs:
         with:
             options: CMAKE_BUILD_TYPE=Static
 
-      - name: File Regex Replace
-        uses: mingjun97/file-regex-replace@v1
+      - name: Find and Replace
+        uses: jacobtomlinson/gha-find-replace@v3
         with:
-          regex: '"startColumn": 0'
-          replacement: '"startColumn": 1'
-          flags: "g"
-          include: '.*\\\\.sarif$' # Corrected regex to match files ending with .sarif
-          path: 'build' # Assumes SARIF files are generated within the 'build' directory
-          encoding: 'utf8'
+          find: "startColumn: 0,"
+          replace: "startColumn: 1,"
+          regex: false
 
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v3
