@@ -27,8 +27,10 @@ jobs:
       - name: Find and Replace
         uses: jacobtomlinson/gha-find-replace@v3
         with:
-          find: "startColumn: 0,"
-          replace: "startColumn: 1,"
+          find: '"startColumn": 0,'
+          replace: '"startColumn": 1,'
+          include: "**sarif"
+          exclude: . # Do not modify this file
           regex: false
 
       - name: Upload SARIF results
