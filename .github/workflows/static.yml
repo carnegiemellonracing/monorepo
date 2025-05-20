@@ -23,8 +23,22 @@ jobs:
         uses: threeal/cmake-action@v2.1.0
         with:
             options: CMAKE_BUILD_TYPE=Static
+            # Keep parity with how vscode handles builds
+            build-dir: ${{ github.workspace }}/build/static
 
-      - name: Find and Replace
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install SARIF tools
+        run: pip install sarif-tools
+
+      - name: Merge SARIF files
+        run: python scripts/merge_sarif.py
+
+        # This find and replace can be removed once we transition to GCC 15 unless the fix is backported
+      - name: Fix SARIF schema compatibility
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           find: '"startColumn": 0,'
@@ -37,6 +51,5 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         if: success()
         with:
-          # TODO runner doesn't create the static folder inside build
-          sarif_file: ${{ github.workspace }}/build
+          sarif_file: ${{ github.workspace }}/build/sarif
           category: gcc-analysis
