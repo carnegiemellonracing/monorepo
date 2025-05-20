@@ -87,7 +87,7 @@ def merge_sarif_in_dir(input_dir: Path, output_file: Path):
                 merged_runs_map[tool_identity_key] = copy.deepcopy(current_run_item)
                 # Ensure essential lists/dicts are present
                 merged_runs_map[tool_identity_key].setdefault("results", [])
-                merged_runs_map[tool_identity_key].setdefault("artifacts", [])
+                merged_runs_map[tool_identity_key].setdefault("artifacts", []) # Ensure artifacts list exists
                 merged_runs_map[tool_identity_key].setdefault("invocations", [])
                 merged_runs_map[tool_identity_key].setdefault("originalUriBaseIds", {})
                 # Ensure tool.driver.rules list exists for aggregation
@@ -95,7 +95,31 @@ def merge_sarif_in_dir(input_dir: Path, output_file: Path):
             else:
                 target_run_for_tool = merged_runs_map[tool_identity_key]
                 target_run_for_tool["results"].extend(current_run_item.get("results", []))
-                target_run_for_tool.setdefault("artifacts", []).extend(current_run_item.get("artifacts", []))
+
+                # --- Artifact merging logic with de-duplication ---
+                target_artifacts_list = target_run_for_tool.setdefault("artifacts", [])
+                # Store existing artifact URIs in a set for efficient lookup for URI-based artifacts
+                existing_artifact_uris = {
+                    art.get("location", {}).get("uri")
+                    for art in target_artifacts_list
+                    if art.get("location", {}).get("uri") is not None
+                }
+
+                for new_artifact_candidate in current_run_item.get("artifacts", []):
+                    candidate_uri = new_artifact_candidate.get("location", {}).get("uri")
+
+                    if candidate_uri is not None:  # Artifact has a URI
+                        if candidate_uri not in existing_artifact_uris:
+                            target_artifacts_list.append(new_artifact_candidate)
+                            existing_artifact_uris.add(candidate_uri)
+                        # Else: URI already exists, it's a duplicate based on URI, skip.
+                    else:  # Artifact does not have a URI
+                        # De-duplicate URI-less artifacts by checking for object equality.
+                        # This relies on the artifact (dict) being comparable.
+                        if new_artifact_candidate not in target_artifacts_list:
+                            target_artifacts_list.append(new_artifact_candidate)
+                # --- End of artifact merging logic ---
+
                 target_run_for_tool.setdefault("invocations", []).extend(current_run_item.get("invocations", []))
                 target_run_for_tool.setdefault("originalUriBaseIds", {}).update(current_run_item.get("originalUriBaseIds", {}))
 
