@@ -127,6 +127,7 @@ bool turnOn() {
 //	if(res != UART_SUCCESS) {
 //		return false;
 //	}
+	return true;
 }
 
 /** Auto Address Function

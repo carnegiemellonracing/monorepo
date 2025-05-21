@@ -218,7 +218,7 @@ static inline void set_motor_speed_and_torque(
     cmr_torqueDistributionNm_t *torquesPos_Nm,
     cmr_torqueDistributionNm_t *torquesNeg_Nm
 ) {
-    if(val > 0.0) {
+    if(val > 0.0f) {
         switch (motor)
         {
             case MOTOR_FL:
@@ -694,7 +694,7 @@ void runControls (
     *      (x rotations / 1min) * (16" * PI) *  (2.54*10^-5km/inch)
     *      (1min / 60sec) * (1sec/1000ms) * (5ms period) * (1/13.93 gear ratio)
     *      = x * 7.6378514861 × 10^-9 */
-    odometer_km += ((float)avgMotorSpeed_RPM) * 7.6378514861e-9;
+    odometer_km += ((float)avgMotorSpeed_RPM) * 7.6378514861e-9f;
     /** @todo check floating point granularity for potential issues with adding small numbers repeatedly to large numbers */
 
     switch (gear) {
@@ -766,9 +766,9 @@ void runControls (
  */
 void integrateCurrent() {
     const cmr_canRXMeta_t *timeoutMsg = canVehicleGetMeta(CANRX_HVI_SENSE);
-    if(cmr_canRXMetaTimeoutError(timeoutMsg, xTaskGetTickCount()) == (-1))
+    if(cmr_canRXMetaTimeoutError(timeoutMsg, xTaskGetTickCount()) == (-1)){
         return;
-
+    }
 	if(coulombCounting.KCoulombs == 0.0f){
 		previousTickCount = xTaskGetTickCount();
         coulombCounting.KCoulombs = 0.001f;

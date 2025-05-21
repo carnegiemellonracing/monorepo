@@ -21,7 +21,7 @@ static const float maxSlowTorque_Nm = 5.0f;
 static const float maxTorque_continuous_stall_Nm = 21.0f;
 
 /** @brief Maximum motor torque in fast gear */
-static const float maxFastTorque_Nm = maxTorque_continuous_stall_Nm; 
+static const float maxFastTorque_Nm = maxTorque_continuous_stall_Nm;
 
 /** @brief Maximum motor speed in slow gear. Roughly 10 MPH.
  *  @details WolframAlpha query: (convert 10mph to meters/second) /
@@ -56,10 +56,10 @@ static const float gear_ratio = 13.93; //updated for 24e
 static const float effective_wheel_dia_m = 0.43; /** @brief effective wheel diameter */
 static const float effective_wheel_rad_m = effective_wheel_dia_m * 0.5f; /** @brief effective wheel radius */
 
-static const double wheelbase_m = 1.55f;
-static const double trackwidth_m = 1.30f;
-static const double half_wheelbase_m = wheelbase_m * 0.5f;
-static const double half_trackwidth_m= trackwidth_m * 0.5f;
-static const double car_mass_kg = 280.0f;
+static const float wheelbase_m = 1.55f;
+static const float trackwidth_m = 1.30f;
+static const float half_wheelbase_m = wheelbase_m * 0.5f;
+static const float half_trackwidth_m= trackwidth_m * 0.5f;
+static const float car_mass_kg = 280.0f;
 
 #endif

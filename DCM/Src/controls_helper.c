@@ -1,12 +1,14 @@
-#include "constants.h"
-
 #include "controls_helper.h"
-#include "lut_3d.h"
-#include "safety_filter.h"
-#include <stdint.h>
-#include <stdbool.h>
+
 #include <math.h>
+#include <stdbool.h>
+#include <stdint.h>
+
+#include "can.h"
+#include "constants.h"
+#include "lut_3d.h"
 #include "motors.h"
+#include "safety_filter.h"
 
 /** @brief  min brake pressure for starting to apply regen */
 const uint16_t brake_pressure_start = 50;
@@ -65,7 +67,7 @@ float getPackCurrent() {
 //    volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
 //    return ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
 	volatile cmr_canHVIHeartbeat_t *HVISense = canVehicleGetPayload(CANRX_HVI_SENSE);
-	return (((float)(HVISense->packCurrent_dA)) * 1e-1f) + 1.25; // convert to amps
+	return (((float)(HVISense->packCurrent_dA)) * 1e-1f) + 1.25f; // convert to amps
 }
 
 /** @brief returns the pack power measured by HVISense */
