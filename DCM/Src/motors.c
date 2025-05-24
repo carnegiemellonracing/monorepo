@@ -568,15 +568,6 @@ void setVelocityFloatAll (
 }
 
 /**
- * @brief Calculate the torque budget for power-aware traction and yaw rate control.
- *
- * @return The torque upper- and lower-limits for a motor, which applies to every motor.
- */
-cmr_torque_limit_t getTorqueBudget() {
-	return getPreemptiveTorqueLimits();
-}
-
-/**
  * @brief Gets a read-only pointer to specified AMK inverter setpoints.
  *
  * @param motor Which motor to get setpoints for.

@@ -611,6 +611,7 @@ static void canTX200Hz(void *pvParameters) {
     cmr_canCDCWheelVelocity_t speedSetpoint;
     cmr_canCDCWheelTorque_t torqueSetpoint;
 
+    // OBSOLETE, REMOVE FROM CAN
     cmr_canCDCPosePosition_t posePos;
     cmr_canCDCPoseOrientation_t poseOrient;
     cmr_canCDCPoseVelocity_t poseVel;
