@@ -44,6 +44,22 @@ void compute_moment_weights(optimizer_state_t *state) {
     state->moment_weights[3] = half_trackwidth_m * temp;
 }
 
+
+/**
+ * Generates weights for front-rear moment bias.
+ * @note Only considers longitudinal force.
+ * new, work in progress
+ */
+void compute_frontrear_weights (optimizer_state_t *state) {
+    double temp = gear_ratio / effective_wheel_rad_m;
+
+    state->frontrear_weights[0] = -chassis_a * temp; // FL
+    state->frontrear_weights[1] = -chassis_a * temp; // FR 
+    state->frontrear_weights[2] = chassis_b * temp; // RL 
+    state->frontrear_weights[3] = chassis_b * temp; // RR
+}
+
+
 /**
  * Generates weights for front-rear moment bias.
  * @note Only considers longitudinal force.
