@@ -40,16 +40,13 @@ elseif(CMAKE_HOST_UNIX)
     )
 endif()
 # Core MCU flags, CPU type, instruction set and FPU setup
-set(cpu_PARAMS
 
-    # Other parameters
-    # -mthumb
-    # -mcpu, -mfloat, -mfloat-abi, ...
+
+set(cpu_PARAMS
     -mcpu=cortex-m4
     -mthumb
     -mfpu=fpv4-sp-d16
     -mfloat-abi=hard
-
 )
 
 
