@@ -1,0 +1,11 @@
+prefix=C:/Program Files (x86)/RAM
+exec_prefix=C:/Program Files (x86)/RAM/bin
+libdir=C:/Program Files (x86)/RAM/lib
+includedir=C:/Program Files (x86)/RAM/include
+
+Name: cn-cbor
+Description: A constrained node implementation of CBOR in C
+URL: https://github.com/cabo/cn-cbor
+Version: 0.1.0
+Libs: -L${libdir} -lcn-cbor
+Cflags: -I${includedir}
