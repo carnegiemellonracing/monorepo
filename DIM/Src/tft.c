@@ -562,6 +562,13 @@ static void drawRTDScreen(void) {
         }
     }
 
+    /*Check if HVC heartbeat is present */
+
+    cmr_canHVCHeartbeat_t *canHVCHeartbeat = (cmr_canHVCHeartbeat_t*)getPayload(CANRX_HVC_HEARTBEAT);
+    bool HVCtimeout = canHVCHeartbeat->errorStatus == CMR_CAN_HVC_ERROR_CAN_TIMEOUT || 
+                        canHVCHeartbeat->errorStatus == CMR_CAN_HVC_ERROR_BMB_TIMEOUT;
+    if (canHVCHeartbeat -> errorStatus == )
+
     /* GPS present? */
     // Checks broadcast from CDC to see status of SBG
     cmr_canRXMeta_t *metaSBGStatus = canRXMeta + CANRX_SBG_STATUS_3;
