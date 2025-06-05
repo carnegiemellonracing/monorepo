@@ -562,26 +562,33 @@ static void drawRTDScreen(void) {
         }
     }
 
-    /* GPS present? */
-    // Checks broadcast from CDC to see status of SBG
-    cmr_canRXMeta_t *metaSBGStatus = canRXMeta + CANRX_SBG_STATUS_3;
-    // Check timeout
-    bool sbgConnected = cmr_canRXMetaTimeoutWarn(metaSBGStatus, xTaskGetTickCount()) == 0;
-    volatile cmr_canSBGStatus3_t *sbgPayload = (void *)metaSBGStatus->payload;
-    SBG_status_t sbgStatus = SBG_STATUS_NOT_CONNECTED;
-    if (sbgConnected) {
-        sbgStatus = SBG_STATUS_WORKING_NO_POS_FOUND;
-        uint32_t solutionStatus = sbgPayload->solution_status;
-        // solution mode is first 4 bits of solution status
-        uint32_t solutionStatusMode = solutionStatus & 0xF;
-        // Get bits 4 through 7
-        solutionStatus = solutionStatus & 0xF0;
-        uint32_t solutionMask = CMR_CAN_SBG_SOL_ATTITUDE_VALID | CMR_CAN_SBG_SOL_HEADING_VALID | CMR_CAN_SBG_SOL_VELOCITY_VALID | CMR_CAN_SBG_SOL_POSITION_VALID;
-        if (solutionStatusMode == CMR_CAN_SBG_SOL_MODE_NAV_POSITION && solutionStatus == solutionMask) {
-            // Got fix on position
-            sbgStatus = SBG_STATUS_WORKING_POS_FOUND;
-        }
-    }
+    /*Check if HVC heartbeat is present */
+
+    cmr_canRXMeta_t *HVC_timeout_monitor = canRXMeta + CANRX_MEMORATOR_BROADCAST;
+
+    bool HVCtimeout = (cmr_canRXMetaTimeoutError(HVC_timeout_monitor, xTaskGetTickCount()) >= 0);
+    
+
+    // /* GPS present? */
+    // // Checks broadcast from CDC to see status of SBG
+    // cmr_canRXMeta_t *metaSBGStatus = canRXMeta + CANRX_SBG_STATUS_3;
+    // // Check timeout
+    // bool sbgConnected = cmr_canRXMetaTimeoutWarn(metaSBGStatus, xTaskGetTickCount()) == 0;
+    // volatile cmr_canSBGStatus3_t *sbgPayload = (void *)metaSBGStatus->payload;
+    // SBG_status_t sbgStatus = SBG_STATUS_NOT_CONNECTED;
+    // if (sbgConnected) {
+    //     sbgStatus = SBG_STATUS_WORKING_NO_POS_FOUND;
+    //     uint32_t solutionStatus = sbgPayload->solution_status;
+    //     // solution mode is first 4 bits of solution status
+    //     uint32_t solutionStatusMode = solutionStatus & 0xF;
+    //     // Get bits 4 through 7
+    //     solutionStatus = solutionStatus & 0xF0;
+    //     uint32_t solutionMask = CMR_CAN_SBG_SOL_ATTITUDE_VALID | CMR_CAN_SBG_SOL_HEADING_VALID | CMR_CAN_SBG_SOL_VELOCITY_VALID | CMR_CAN_SBG_SOL_POSITION_VALID;
+    //     if (solutionStatusMode == CMR_CAN_SBG_SOL_MODE_NAV_POSITION && solutionStatus == solutionMask) {
+    //         // Got fix on position
+    //         sbgStatus = SBG_STATUS_WORKING_POS_FOUND;
+    //     }
+    // }
 
     /* Pack Voltage */
     int32_t hvVoltage_mV = canHVCPackVoltage->battVoltage_mV;
@@ -649,7 +656,7 @@ static void drawRTDScreen(void) {
     } else {
         /* Update Display List*/
         tftDL_RTDUpdate(memoratorStatus,
-                        sbgStatus,
+                        HVCtimeout,
                         hvVoltage_mV,
                         power_kW,
                         speed_kmh,

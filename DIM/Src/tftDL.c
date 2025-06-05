@@ -416,7 +416,7 @@ void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yell
  * @brief Updates the ready-to-drive screen.
  *
  * @param memoratorPresent Memorator present (based on heartbeat)
- * @param sbgStatus SBG INS Status
+ * @param HVCtimeout indicates if there is a timeout on HVC
  * @param speed_mph Speed (from CDC)
  * @param hvVoltage_mV Pack Voltage (from HVC)
  * @param power_kW Electrical power dissipation
@@ -433,7 +433,8 @@ void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yell
  */
 void tftDL_RTDUpdate(
     memorator_status_t memoratorStatus,
-    SBG_status_t sbgStatus,
+    // SBG_status_t sbgStatus,
+    bool HVCtimeout,
     int32_t hvVoltage_mV,
     int32_t power_kW,
     uint32_t speed_kmh,
@@ -528,23 +529,28 @@ void tftDL_RTDUpdate(
     *radio_color = radio_color_cmd;
 
     /* GPS color */
-    uint32_t *gps_color = (void *)(tftDL_RTDData + ESE_GPS_TEXT_COLOR);
-    uint32_t gps_color_cmd;
-    switch (sbgStatus) {
-        case SBG_STATUS_WORKING_POS_FOUND:
-            // GPS working and position found
-            gps_color_cmd = green;
-            break;
-        case SBG_STATUS_WORKING_NO_POS_FOUND:
-            // GPS connected, not working
-            gps_color_cmd = yellow;
-            break;
-        case SBG_STATUS_NOT_CONNECTED:
-        default:
-            // GPS not connected
-            gps_color_cmd = red;
+    uint32_t *hvc_color = (void *)(tftDL_RTDData + ESE_HVC_TEXT_COLOR);
+    uint32_t hvc_color_cmd;
+    // switch (sbgStatus) {
+    //     case SBG_STATUS_WORKING_POS_FOUND:
+    //         // GPS working and position found
+    //         gps_color_cmd = green;
+    //         break;
+    //     case SBG_STATUS_WORKING_NO_POS_FOUND:
+    //         // GPS connected, not working
+    //         gps_color_cmd = yellow;
+    //         break;
+    //     case SBG_STATUS_NOT_CONNECTED:
+    //     default:
+    //         // GPS not connected
+    //         gps_color_cmd = red;
+    // }
+    if(HVCtimeout){
+        hvc_color_cmd = red;
+    } else {
+        hvc_color_cmd = green;
     }
-    *gps_color = gps_color_cmd;
+    *hvc_color = hvc_color_cmd;
 
     tftDL_showStates(tftDL_RTDData, ESE_STATE_STR, ESE_VSM_STATE_COLOR, ESE_GEAR_STR, ESE_DRS_MODE_STR, false);
     tftDL_showRAMMsg(tftDL_RTDData, ESE_RAM_LAST_LAP_STR, ESE_RAM_TARGET_LAP_STR, ESE_RAM_MSG_STR);
