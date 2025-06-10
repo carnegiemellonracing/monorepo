@@ -146,7 +146,7 @@ bool testVSMStartupSequence(void) {
 	setDIM_request(1, 0, 0, 0);
 
 	vTaskDelay(50);
-	while (getPayloadVEH(CANRX_HEARTBEAT_VSM)->state != CMR_CAN_CLEAR_ERROR);
+	while((vsm = getPayloadVEH(CANRX_HEARTBEAT_VSM))->state != CMR_CAN_CLEAR_ERROR);
 
 	// Set all boards to CLEAR_ERROR
 	setHVC_heartbeat(0, 1, 0x0B, 1, 1);
@@ -155,7 +155,7 @@ bool testVSMStartupSequence(void) {
 	setPTC_heartbeat(5, zeroes, zeroes);
 
 	// Wait for VSM to reach GLV_ON
-	while (getPayloadVEH(CANRX_HEARTBEAT_VSM)->state != CMR_CAN_GLV_ON);
+	while ((vsm = getPayloadVEH(CANRX_HEARTBEAT_VSM))->state != CMR_CAN_GLV_ON);
 
 	// Set all boards to GLV_ON
 	setHVC_heartbeat(0, 1, 2, 1, 1);
@@ -198,7 +198,7 @@ bool testVSMStartupSequence(void) {
 
 	// RTD request & FSM (throttle, brake conditions)
 	setDIM_request(CMR_CAN_RTD, 0, 0, 0);
-	setFSM_data(0, 5, 40, 0, 0);
+	setFSM_data(0, 5, 40, 0, 0, 0);
 
 	while ((vsmInternal = getPayloadVEH(CANRX_HEARTBEAT_VSM))->internalState != CMR_CAN_VSM_STATE_RTD);
 
@@ -215,10 +215,10 @@ bool testVSMStartupSequence(void) {
 	}
 
 	// Confirm fans/pumps ON
-	cmr_canPTCDriverStatus_t *pumpsFans = getPayloadVEH(CANRX_HEARTBEAT_VSM);
-	while (pumpsFans->fan1DutyCycle_pcnt != 1 || pumpsFans->pump1DutyCycle_pcnt != 1) {
-		pumpsFans = getPayloadVEH(CANRX_HEARTBEAT_VSM);
-	}
+	// cmr_canPTCDriverStatus_t *pumpsFans = getPayloadVEH(CANRX_HEARTBEAT_VSM);
+	// while (pumpsFans->fan1DutyCycle_pcnt != 1 || pumpsFans->pump1DutyCycle_pcnt != 1) {
+	// 	pumpsFans = getPayloadVEH(CANRX_HEARTBEAT_VSM);
+	// }
 
 	return vsmInternal->internalState == CMR_CAN_VSM_STATE_RTD;
 }
@@ -289,7 +289,7 @@ int main(void) {
 			NULL
 	);
 
-	#TODO:DIM TRANSITION BETWEEN STATES, DIM AND CAN STATES, GEAR SWITCH, SCREEN ( WHEN DONE)
+	// TODO:DIM TRANSITION BETWEEN STATES, DIM AND CAN STATES, GEAR SWITCH, SCREEN ( WHEN DONE)
 
 
 

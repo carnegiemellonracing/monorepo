@@ -64,7 +64,7 @@ void setFSM_heartbeat(uint8_t state);
 void setPTC_heartbeat(uint8_t state, uint8_t *error, uint8_t *warning);
 void setDIM_heartbeat(uint8_t state, uint8_t *error, uint8_t *warning);
 void setCDC_heartbeat(uint8_t state, uint8_t *error, uint8_t *warning);
-void setFSM_data(uint8_t torqueRequested, uint8_t throttlePosition, uint8_t brakePressureFront_PSI, uint8_t brakePedalPosition, int16_t steeringWheelAngle_deg);
+void setFSM_data(uint8_t torqueRequested, uint8_t throttlePosition, uint16_t brakePressureFront_PSI, uint8_t brakePedalPosition, int32_t steeringWheelAngle_deg_FL, int32_t steeringWheelAngle_deg_FR);
 void setDIM_request(uint8_t requestedState, uint8_t requestedGear, uint8_t requestedDrsMode, uint8_t requestedDriver);
 void setinverter1(uint16_t status_bv, int16_t velocity_rpm, int16_t torqueCurrent_raw, int16_t magCurrent_raw);
 void setinverter2(uint16_t status_bv, int16_t velocity_rpm, int16_t torqueCurrent_raw, int16_t magCurrent_raw);
