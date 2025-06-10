@@ -4,7 +4,7 @@ set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 list(APPEND CMAKE_MODULE_PATH "{{sr:cmake_path}}")
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
-include("${CMAKE_SOURCE_DIR}/../../cmake/gcc-arm-none-eabi.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/gcc-arm-none-eabi.cmake")
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 
 project(DIM_HITL)
@@ -46,8 +46,8 @@ set(symbols_SYMB
 add_library(freertos_config INTERFACE)
 target_include_directories(freertos_config SYSTEM
     INTERFACE
-    ${CMAKE_SOURCE_DIR}/Inc
-    ${CMAKE_SOURCE_DIR}/../../stm32f413-drivers/CMR/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../stm32f413-drivers/CMR/include
 )
 target_compile_definitions(freertos_config INTERFACE
     configASSERT
@@ -67,7 +67,10 @@ set(link_LIBS
     stm-drivers
 )
 
-set(linker_script_SRC)
+get_filename_component(MONOREPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE)
+set(linker_script_SRC "${MONOREPO_ROOT}/DIM/stm32f413rgtx_FLASH.ld")
+
+message(STATUS "Linker script path: ${linker_script_SRC}")
 
 set (compiler_OPTS)
 
@@ -79,7 +82,7 @@ set(compiler_OPTS
 set(linker_OPTS)
 
 
-include("${CMAKE_SOURCE_DIR}/../../cmake/vscode_generated.cmake")
+#include("${CMAKE_SOURCE_DIR}/../../cmake/vscode_generated.cmake")
 
 link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 
@@ -89,7 +92,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/i2c.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/pwm.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
-    ${CMAKE_SOURCE_DIR}/../../DIM/Startup/startup_stm32f413rgtx.s
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../DIM/Startup/startup_stm32f413rgtx.s
 )
 
 
@@ -98,7 +101,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     $<$<COMPILE_LANGUAGE:C>: ${include_c_DIRS}>
     $<$<COMPILE_LANGUAGE:CXX>: ${include_cxx_DIRS}>
     $<$<COMPILE_LANGUAGE:ASM>: ${include_asm_DIRS}>
-    ${CMAKE_SOURCE_DIR}/../../stmdrivers/CMR/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../stmdrivers/CMR/include
 )
 
 # Add project symbols (macros)

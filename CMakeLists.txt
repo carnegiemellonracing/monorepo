@@ -72,6 +72,18 @@ ExternalProject_Add(
 )
 
 ExternalProject_Add(
+    DIM_HITL
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/DIM_HITL
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/HITL/DIM
+    INSTALL_COMMAND ""
+    BUILD_ALWAYS TRUE
+    CMAKE_ARGS
+        -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/cmake/gcc-arm-none-eabi.cmake
+)
+
+
+ExternalProject_Add(
     HVC_HITL
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/HVC_HITL
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/HITL/HVC
@@ -82,16 +94,6 @@ ExternalProject_Add(
         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/cmake/gcc-arm-none-eabi.cmake
 )
 
-# ExternalProject_Add(
-#     DIM_HITL
-#     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/DIM_HITL
-#     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/HITL/DIM
-#     INSTALL_COMMAND ""
-#     BUILD_ALWAYS TRUE
-#     CMAKE_ARGS
-#         -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-#         -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/cmake/gcc-arm-none-eabi.cmake
-# )
 #[===[
 ExternalProject_Add(
     DCM_HITL
