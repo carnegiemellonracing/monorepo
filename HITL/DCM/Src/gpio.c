@@ -3,6 +3,7 @@
 #include <stm32h7xx_hal.h>  // HAL interface
 #include <FreeRTOS.h>   // configASSERT()
 
+#include <CMR/gpio.h>
 #include "gpio.h"   // Interface to implement
 
 

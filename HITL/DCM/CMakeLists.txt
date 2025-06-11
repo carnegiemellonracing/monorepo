@@ -38,7 +38,7 @@ set(include_cxx_DIRS)
 set(include_asm_DIRS)
 
 set(symbols_SYMB
-    STM32H713xx
+    STM32H725xx
     ${PROCESSOR}
     DISABLE_PRECOMPILE_HEADERS_HITL
 )
@@ -103,6 +103,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     $<$<COMPILE_LANGUAGE:ASM>: ${include_asm_DIRS}>
     ${CMAKE_CURRENT_SOURCE_DIR}/../../stmdrivers/CMR/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../../DCM/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Inc
 )
 
 # Add project symbols (macros)
