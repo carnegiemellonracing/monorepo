@@ -248,7 +248,7 @@ bool testClearErrorState(void) {
 
 	// dim request for RTD sets along with other throttle and brake pos condition sets VSM to RTD
 	setDIM_request(CMR_CAN_RTD, 0, 0, 0);
-	setFSM_data(0, 5, 40, 0, 0); // throttlePosition = 0, brakePressureThreshold_PSI = 40
+	setFSM_data(0, 5, 40, 0, 0, 0); // throttlePosition = 0, brakePressureThreshold_PSI = 40
 
 	vsmInternal = getPayloadVEH(CANRX_HEARTBEAT_VSM);
 	internalState = vsmInternal->internalState;

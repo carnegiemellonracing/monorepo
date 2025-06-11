@@ -32,7 +32,8 @@ static cmr_canHeartbeat_t FSM_heartbeat = {.state =0 ,.error ={0,0},.warning ={0
 static cmr_canHeartbeat_t PTC_heartbeat = {.state =0 ,.error ={0,0},.warning ={0,0}};
 static cmr_canHeartbeat_t DIM_heartbeat = {.state =0 ,.error ={0,0},.warning ={0,0}};
 static cmr_canHeartbeat_t CDC_heartbeat = {.state =0 ,.error ={0,0},.warning ={0,0}};
-static cmr_canFSMData_t FSM_data = {.torqueRequested = 0, .throttlePosition = 0, .brakePressureFront_PSI = 0, .brakePedalPosition = 0, .steeringWheelAngle_deg = 0};
+static cmr_canFSMData_t FSM_data = {.torqueRequested = 0, .throttlePosition = 0, .brakePressureFront_PSI = 0, .brakePedalPosition = 0};
+static cmr_canFSMSWAngle_t SWAngle_data = {.steeringWheelAngle_millideg_FL = 0, .steeringWheelAngle_millideg_FR = 0};
 static cmr_canDIMRequest_t DIM_request = {.requestedState = 0, .requestedGear = 0, .requestedDrsMode = 0, .requestedDriver = 0};
 static cmr_canAMKActualValues1_t inverter1 = {.status_bv = 0, .velocity_rpm = 0, .torqueCurrent_raw = 0, .magCurrent_raw = 0};
 static cmr_canAMKActualValues1_t inverter2 = {.status_bv = 0, .velocity_rpm = 0, .torqueCurrent_raw = 0, .magCurrent_raw = 0};
@@ -163,12 +164,13 @@ void setCDC_heartbeat(uint8_t state, uint8_t *error, uint8_t *warning) {
     memcpy(&CDC_heartbeat.warning, &warnings, sizeof(CDC_heartbeat.warning));
 }
 
-void setFSM_data(uint8_t torqueRequested, uint8_t throttlePosition, uint8_t brakePressureFront_PSI, uint8_t brakePedalPosition, int16_t steeringWheelAngle_deg) {
+void setFSM_data(uint8_t torqueRequested, uint8_t throttlePosition, uint16_t brakePressureFront_PSI, uint8_t brakePedalPosition, int32_t steeringWheelAngle_millideg_FL, int32_t steeringWheelAngle_millideg_FR) {
     FSM_data.torqueRequested = torqueRequested;
     FSM_data.throttlePosition = throttlePosition;
     FSM_data.brakePressureFront_PSI = brakePressureFront_PSI;
     FSM_data.brakePedalPosition = brakePedalPosition;
-    FSM_data.steeringWheelAngle_deg = steeringWheelAngle_deg;
+    SWAngle_data.steeringWheelAngle_millideg_FL = steeringWheelAngle_millideg_FL;
+    SWAngle_data.steeringWheelAngle_millideg_FL = steeringWheelAngle_millideg_FR;
 }
 
 void setDIM_request(uint8_t requestedState, uint8_t requestedGear, uint8_t requestedDrsMode, uint8_t requestedDriver) {
@@ -291,10 +293,10 @@ static void canTX100Hz(void *pvParameters) {
     	cmr_canTX(&veh_can, CMR_CANID_HEARTBEAT_PTC, &PTC_heartbeat, sizeof(PTC_heartbeat), 100);
     	cmr_canTX(&veh_can, CMR_CANID_FSM_DATA, &FSM_data, sizeof(FSM_data), 100);
     	cmr_canTX(&veh_can, CMR_CANID_DIM_REQUEST, &DIM_request, sizeof(DIM_request), 100);
-    	cmr_canTX(&veh_can, CMR_CANID_AMK_1_ACT_1, &inverter1, sizeof(inverter1), 100);
-    	cmr_canTX(&veh_can, CMR_CANID_AMK_2_ACT_1, &inverter2, sizeof(inverter1), 100);
-    	cmr_canTX(&veh_can, CMR_CANID_AMK_3_ACT_1, &inverter3, sizeof(inverter1), 100);
-    	cmr_canTX(&veh_can, CMR_CANID_AMK_4_ACT_1, &inverter4, sizeof(inverter1), 100);
+    	cmr_canTX(&veh_can, CMR_CANID_AMK_RR_ACT_1, &inverter1, sizeof(inverter1), 100);
+    	cmr_canTX(&veh_can, CMR_CANID_AMK_FR_ACT_1, &inverter2, sizeof(inverter1), 100);
+    	cmr_canTX(&veh_can, CMR_CANID_AMK_RL_ACT_1, &inverter3, sizeof(inverter1), 100);
+    	cmr_canTX(&veh_can, CMR_CANID_AMK_FL_ACT_1, &inverter4, sizeof(inverter1), 100);
 
 
         // send VSM heartbeat
