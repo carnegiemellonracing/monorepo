@@ -16,8 +16,26 @@
  */
 
 typedef enum { // to be changed per what the pins are
-	DIGITAL_IN_24V_MCU1_MC,
-	DIGITAL_IN_24V_MCU2_BRAKELIGHT,
+    DIGITAL_OUT_5V_MCU = 0,    /**< @brief Status LED. */
+    DIGITAL_OUT_24V_MCU,
+    GPIO_MCU1,
+    GPIO_MCU2,
+    GPIO_MCU3,
+    GPIO_MCU4,
+    GPIO_MCU5,
+    GPIO_MCU6,
+    GPIO_MCU7,
+    GPIO_MCU8,
+    DIGITAL_IN_3V3_MCU1,
+    DIGITAL_IN_3V3_MCU2,
+    DIGITAL_IN_3V3_MCU3,
+    DIGITAL_IN_3V3_MCU4,
+    DIGITAL_IN_3V3_MCU5,
+    DIGITAL_IN_24V_MCU1,
+    DIGITAL_IN_24V_MCU2,
+    DIGITAL_IN_24V_MCU3,
+    DIGITAL_IN_24V_MCU4,
+    DIGITAL_IN_24V_MCU5,
     GPIO_LEN    /**< @brief Total GPIO pins. */
 } gpio_t;
 

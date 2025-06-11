@@ -7,7 +7,7 @@ message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/gcc-arm-none-eabi.cmake")
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 
-project(PTC_HITL)
+project(CCM_HITL)
 enable_language(C CXX ASM)
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
@@ -40,7 +40,7 @@ set(include_asm_DIRS)
 set(symbols_SYMB
     STM32F413xx
     ${PROCESSOR}
-    PTC_HITL
+    DISABLE_PRECOMPILE_HEADERS_HITL
 )
 
 add_library(freertos_config INTERFACE)
@@ -67,7 +67,10 @@ set(link_LIBS
     stm-drivers
 )
 
-set(linker_script_SRC)
+get_filename_component(MONOREPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE)
+set(linker_script_SRC "${MONOREPO_ROOT}/VSM/stm32f413rgtx_FLASH.ld")
+
+message(STATUS "Linker script path: ${linker_script_SRC}")
 
 set (compiler_OPTS)
 
@@ -79,7 +82,7 @@ set(compiler_OPTS
 set(linker_OPTS)
 
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/vscode_generated.cmake")
+#include("${CMAKE_SOURCE_DIR}/../../cmake/vscode_generated.cmake")
 
 link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 
@@ -88,10 +91,8 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/i2c.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/pwm.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/syscall.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/sysmem.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../PTC/Startup/startup_stm32f413rgtx.s
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../CCM/Startup/startup_stm32f413rgtx.s
 )
 
 

@@ -13,7 +13,7 @@ bool i2cInit(void) {
             I2C_CLOCK_LOW, 0,
                 GPIOB, GPIO_PIN_6, // clock but change pins per schem
                 GPIOB, GPIO_PIN_7); // data but change pins per schem
-	
+
     return true;
 }
 
@@ -59,7 +59,7 @@ uint16_t i2c_readI2CADC2(uint8_t channel) {
     if(cmr_i2cRX(&hitl_i2c, ADC2_ADDR, &data, 2, I2C_TIMEOUT) != 0) {
         return false;
     }
-    
+
     return data[1] << 8 | data[0];
 }
 

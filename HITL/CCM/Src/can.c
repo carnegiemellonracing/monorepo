@@ -11,9 +11,11 @@
  * @author Carnegie Mellon Racing
  */
 
+
 #include <string.h>     // memcpy()
 #include <CMR/tasks.h>  // Task interface
-#include "can.h"      // Interface to implement
+#include <CMR/can.h>
+#include "can.h"  // Interface to implement
 
 /** @brief Primary CAN interface. */
 static cmr_can_t veh_can;
@@ -21,69 +23,47 @@ static cmr_can_t daq_can;
 static cmr_can_t trac_can;
 
 
-
 // -------------- DEFINE STATIC VARIABLES TO BE CHANGED (WITH GETTERS AND SETTERS) HERE -------------- //
-static cmr_canVSMSensors_t sensors = {.brakePressureRear_PSI = 0,
-        							  .hallEffect_cA = 0,
-									  .coulombCount_C = 0.0
-};
 
+//typedef enum {
+//    HITL_CCM_START_SLOW_CHARGE = 0,
+//    HITL_CCM_LEN
+//}  hitl_bench_t;
 
-static cmr_canHeartbeat_t VSMHeartbeat;
-
-static cmr_canVSMStatus_t VSMStatus = {.internalState = CMR_CAN_VSM_STATE_GLV_ON,
-									   .badStateMatrix = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-									   .latchMatrix = CMR_CAN_VSM_LATCH_NONE,
-									   .moduleTimeoutMatrix = CMR_CAN_VSM_ERROR_SOURCE_NONE
-};
-
-static cmr_canAMKActualValues2_t inv1 = {.coldPlateTemp_dC = 0,
-		                                 .motorTemp_dC = 0,
-										 .errorCode = 0,
-										 .igbtTemp_dC = 0
-
-};
-static cmr_canAMKActualValues2_t inv2 = {.coldPlateTemp_dC = 0,
-		                                 .motorTemp_dC = 0,
-										 .errorCode = 0,
-										 .igbtTemp_dC = 0
-
-};
-static cmr_canAMKActualValues2_t inv3 = {.coldPlateTemp_dC = 0,
-		                                 .motorTemp_dC = 0,
-										 .errorCode = 0,
-										 .igbtTemp_dC = 0
-
-};
-static cmr_canAMKActualValues2_t inv4 = {.coldPlateTemp_dC = 0,
-		                                 .motorTemp_dC = 0,
-										 .errorCode = 0,
-										 .igbtTemp_dC = 0
-
-};
-static cmr_canFSMData_t fsmData = {.brakePedalPosition = 0,
-								   .brakePressureFront_PSI = 0,
-								   .steeringWheelAngle_deg = 0,
-								   .throttlePosition = 0,
-								   .steeringWheelAngle_deg = 0
-};
-static cmr_canBMSMinMaxCellTemperature_t AC_Temps = {.maxCellTemp_C = 0,
-													 .minCellTemp_C = 0,
-													 .minTempBMBNum = 0,
-													 .maxTempBMBNum = 0,
-													 .maxTempCellNum = 0,
-													 .minTempCellNum = 0
-};
 // --------------------------------------------------------------------------------------------------- //
 
-
+//cmr_canRXMeta_t canRXMeta_ChargerOne[] = {
+//    [CANRX_CHARGER_ONE_COMMAND] = {
+//        .canID = CMR_CANID_DILONG_COMMAND,
+//        .timeoutError_ms = 50,
+//        .timeoutWarn_ms = 25
+//    }
+//};
+//
+//cmr_canRXMeta_t canRXMeta_ChargerTwo[] = {
+//    [CANRX_CHARGER_TWO_COMMAND] = {
+//        .canID = CMR_CANID_DILONG_COMMAND,
+//        .timeoutError_ms = 50,
+//        .timeoutWarn_ms = 25
+//    }
+//};
 
 cmr_canRXMeta_t canRXMeta_VEH[] = {
     [CANRX_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
-    }, // and more (refer to VSM repo CAN file) i.e. vsm status, sensors, etc.
+    }, 
+    [CANRX_HVC_COMMAND] = {
+        .canID = CMR_CANID_HVC_COMMAND,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_CCM_HEARTBEAT] = {
+        .canID = CMR_CANID_HEARTBEAT_FSM,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    }// and more (refer to VSM repo CAN file) i.e. vsm status, sensors, etc.
 };
 
 cmr_canRXMeta_t canRXMeta_DAQ[] = {
@@ -103,65 +83,76 @@ cmr_canRXMeta_t canRXMeta_TRAC[] = {
 };
 
 int canTX_VEH(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
-    return cmr_canTX(&veh_can, id, data, len, timeout);
+    return cmr_canTX(&veh_can, id, false, data, len, timeout);
 }
 
 int canTX_DAQ(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
-    return cmr_canTX(&daq_can, id, data, len, timeout);
+    return cmr_canTX(&daq_can, id, false, data, len, timeout);
 }
 
 int canTX_TRAC(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
-    return cmr_canTX(&trac_can, id, data, len, timeout);
+    return cmr_canTX(&trac_can, id, false, data, len, timeout);
 }
 
 
 // -------------- DEFINE CAN MESSAGE CONSTRUCTION FUNCTIONS HERE -------------- //
-void setVSMHeartbeat(uint8_t state) {
-	VSMHeartbeat.state = state;
-	uint8_t errors[2] = {0, 0};
-	uint8_t warnings[2] = {0, 0};
 
-    memcpy(&VSMHeartbeat.error, &errors, sizeof(VSMHeartbeat.error));
-    memcpy(&VSMHeartbeat.warning, &warnings, sizeof(VSMHeartbeat.warning));
+/**
+* since we are going to use other functions to set the values in the message 
+* struct, then initiallize all of them to 0 for now
+**/
 
+// Vehicle CAN Messages Structs (from can_types.h)
+static cmr_canHVCHeartbeat_t HVCHeartbeat ={
+        .errorStatus = 0,
+        .hvcMode = 0,
+        .hvcState = 0,
+        .relayStatus = 0, 
+        .uptime_s = 1
+    };
+static cmr_canHVCPackVoltage_t HVCPackVoltage = {
+        .battVoltage_mV = 0, 
+        .hvVoltage_mV = 0 
+};
+static cmr_canHVCPackMinMaxCellTemps_t HVCPackMinMaxCellTemps = {
+        .minCellTemp_dC = 0, 
+        .maxCellTemp_dC = 0, 
+        .minTempBMBIndex = 0, 
+        .minTempCellIndex = 0, 
+        .maxTempBMBIndex = 0, 
+        .maxTempCellIndex = 0 
+};
+static cmr_canHVCPackMinMaxCellVolages_t HVCPackMinMaxCellVolages = {
+        .minCellVoltage_mV = 0, 
+        .maxCellVoltage_mV = 0, 
+        .minCellVoltBMB = 0, 
+        .minVoltIndex = 0, 
+        .maxCellVoltBMB = 0, 
+        .maxVoltIndex = 0 
+};
+static cmr_canCCMCommand_t CCMCommand = {
+        .command = 0 
+};
+
+
+//// Charger CAN Messages
+//static cmr_canDilongState_t ChargerOneStates;
+//static cmr_canDilongState_t ChargerTwoStates;
+
+// Construction Function
+void setHVCHeartbeat(uint8_t state, uint8_t mode){
+    HVCHeartbeat.hvcState = state;
+    HVCHeartbeat.hvcMode = mode;
 }
 
-void setVSMStatus(uint16_t internalState) {
-	VSMStatus.internalState = internalState;
-}
-
-void setACTemps(uint8_t min, uint8_t max) {
-	AC_Temps.minCellTemp_C = min;
-	AC_Temps.maxCellTemp_C = max;
-}
-
-void setIGBT1Temp(uint8_t temp)
-{
-	inv2.igbtTemp_dC = temp;
-}
-void setIGBT2Temp(uint8_t temp)
-{
-	inv2.igbtTemp_dC = temp;
-}
-void setIGBT3Temp(uint8_t temp)
-{
-	inv2.igbtTemp_dC = temp;
-}
-void setIGBT4Temp(uint8_t temp)
-{
-	inv2.igbtTemp_dC = temp;
-}
-
-void setBrakePressure(uint16_t brakePressure) {
-	sensors.brakePressureRear_PSI = brakePressure;
+// I know the naming is confusion, but that's what it says in can_types.h
+void setCCMCommand(uint8_t mode){
+    CCMCommand.command = mode;
 }
 
 // ---------------------------------------------------------------------------- //
 
-/** @brief CAN Tx function */
-int canTX(cmr_can_t bus, cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
-    return cmr_canTX(&bus, id, data, len, timeout);
-}
+
 
 
 /** @brief CAN 1 Hz TX priority. */
@@ -188,43 +179,7 @@ static void canTX1Hz(void *pvParameters) {
 
         // insert 1Hz messages
 
-    	// send bms pack temps
-        canTX(veh_can, CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE, &AC_Temps, sizeof(AC_Temps), canTX1Hz_period_ms);
         vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
-    }
-}
-
-
-/** @brief CAN 5 Hz TX priority. */
-static const uint32_t canTX5Hz_priority = 2;
-/** @brief CAN 5 Hz TX period (milliseconds). */
-static const TickType_t canTX5Hz_period_ms = 100;
-/** @brief CAN 5 Hz TX task. */
-static cmr_task_t canTX5Hz_task;
-
-
-/**
- * @brief Task for sending CAN messages at 5 Hz.
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void canTX5Hz(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-
-        // insert 5Hz messages
-
-    	// send inverter temps
-        canTX(veh_can, CMR_CANID_AMK_1_ACT_2, &inv1, sizeof(inv1), canTX5Hz_period_ms);
-        canTX(veh_can, CMR_CANID_AMK_2_ACT_2, &inv2, sizeof(inv2), canTX5Hz_period_ms);
-        canTX(veh_can, CMR_CANID_AMK_3_ACT_2, &inv3, sizeof(inv3), canTX5Hz_period_ms);
-        canTX(veh_can, CMR_CANID_AMK_4_ACT_2, &inv4, sizeof(inv4), canTX5Hz_period_ms);
-
-        vTaskDelayUntil(&lastWakeTime, canTX5Hz_period_ms);
     }
 }
 
@@ -273,14 +228,10 @@ static void canTX100Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         
+        canTX_VEH(CMR_CANID_HEARTBEAT_HVC, &HVCHeartbeat, sizeof(HVCHeartbeat), canTX100Hz_period_ms);
+        canTX_VEH(CMR_CANID_CCM_COMMAND, &CCMCommand, sizeof(CCMCommand), canTX100Hz_period_ms);
         // insert 100Hz messages
         // send VSM heartbeat
-        canTX(veh_can, CMR_CANID_HEARTBEAT_VSM, &VSMHeartbeat, sizeof(VSMHeartbeat), canTX100Hz_period_ms);
-        // send VSM status
-        canTX(veh_can, CMR_CANID_VSM_STATUS, &VSMStatus, sizeof(VSMStatus), canTX100Hz_period_ms);
-        // send FSM
-        canTX(veh_can, CMR_CANID_FSM_DATA, &fsmData, sizeof(fsmData), canTX100Hz_period_ms);
-
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
 }
@@ -310,8 +261,6 @@ static void canTX200Hz(void *pvParameters) {
 
         // insert 200Hz messages
 
-    	//send VSM sensors
-        canTX(veh_can, CMR_CANID_VSM_SENSORS, &sensors, sizeof(sensors), canTX200Hz_period_ms);
         vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
     }
 }
@@ -384,13 +333,6 @@ void canInit(void) {
         "CAN TX 1Hz",
         canTX1Hz_priority,
         canTX1Hz,
-        NULL
-    );
-    cmr_taskInit(
-    	&canTX5Hz_task,
-        "CAN TX 5Hz",
-        canTX5Hz_priority,
-        canTX5Hz,
         NULL
     );
     cmr_taskInit(

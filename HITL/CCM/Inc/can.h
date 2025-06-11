@@ -24,6 +24,8 @@ typedef enum {
 
 typedef enum {
     CANRX_HEARTBEAT_VSM = 0,  /**< @brief VSM heartbeat. */
+	CANRX_HVC_COMMAND,
+	CANRX_CCM_HEARTBEAT,
     CANRX_LEN_VEH     /**< @brief Number of periodic CAN messages. */
 } canRX_VEH_t;
 
@@ -32,33 +34,30 @@ typedef enum {
     CANRX_LEN_TRAC    /**< @brief Number of periodic CAN messages. */
 } canRX_TRAC_t;
 
-
+typedef enum {
+    CANRX_MAX_VOLTAGE_HIGH = 0,
+    CANRX_MAX_VOLTAGE_LOW,
+    CANRX_MAX_CURRENT_HIGH,
+    CANRX_MAX_CURRENT_LOW,
+    CANRX_CHARGER_DISABLE,
+    CANRX_ENABLE_HEATING
+} canRX_canDilongCommand_t;
 
 extern cmr_canRXMeta_t canRXMeta_DAQ[];
 extern cmr_canRXMeta_t canRXMeta_VEH[];
 extern cmr_canRXMeta_t canRXMeta_TRAC[];
+extern cmr_canRXMeta_t canRXMeta_canDilongCommand[];
+
+// message modifying function
+void setHVCHeartbeat(uint8_t state, uint8_t mode);
+void setCCMCommand(uint8_t mode);
 
 void canInit(void);
-
-void setVSMHeartbeat(uint8_t state);
-
-void setVSMStatus(uint16_t internalState);
-
-void setACTemps(uint8_t min, uint8_t max);
-
-void setBrakePressure(uint16_t brakePressure);
-
-void setIGBT1Temp(uint8_t temp);
-void setIGBT2Temp(uint8_t temp);
-void setIGBT3Temp(uint8_t temp);
-void setIGBT4Temp(uint8_t temp);
-
-
-int canTX(cmr_can_t bus, cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 
 int canTX_DAQ(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 int canTX_VEH(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 int canTX_TRAC(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
+int canTX_Dilong(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 
 void *getPayloadDAQ(canRX_DAQ_t rxMsg);
 void *getPayloadVEH(canRX_VEH_t rxMsg);
