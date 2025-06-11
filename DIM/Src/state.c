@@ -512,7 +512,6 @@ void stateVSMDown() {
 
 
 void reqVSM(void) {
-
     if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM == CMR_CAN_CLEAR_ERROR) {
         state.vsmReq = CMR_CAN_GLV_ON;
     }
@@ -523,7 +522,7 @@ void reqVSM(void) {
             } else if (canLRUDStates[DOWN]) {
                 stateVSMDown();
             }
-        }
+        }  
     }
 }
 
