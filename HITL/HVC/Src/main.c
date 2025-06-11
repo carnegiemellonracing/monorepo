@@ -228,7 +228,7 @@ static void testbenchTask(void *pvParameters) {
 	TickType_t lastWakeTime = xTaskGetTickCount();
 	while (1) {
 //		testRTD();
-		testClearErrorState();
+//		testClearErrorState();
 //		testDCM();
 		vTaskDelayUntil(&lastWakeTime, 1000); // sets 1Hz frequency (every 1000 ms)
 	}
