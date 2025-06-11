@@ -1,6 +1,7 @@
 
 
-#include <stm32h7xx_hal.h>  // HAL interface
+// #include "stm32f4xx_hal_conf.h"
+#include <stm32h7xx_hal_conf.h>  // HAL interface
 #include <FreeRTOS.h>   // configASSERT()
 
 #include <CMR/gpio.h>

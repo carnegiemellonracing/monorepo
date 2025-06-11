@@ -23,6 +23,21 @@ static cmr_can_t trac_can;
 
 // -------------- DEFINE STATIC VARIABLES TO BE CHANGED (WITH GETTERS AND SETTERS) HERE -------------- //
 
+static cmr_canHVCHeartbeat_t HVC_heartbeat = {.errorStatus = 0, .hvcMode = 0, .hvcState = 0, .relayStatus = 0, .uptime_s = 0};
+static cmr_canHVIHeartbeat_t HVI_heartbeat = {.packCurrent_dA =0 ,.packVoltage_cV =0,.packPower_W = 0};
+static cmr_canHeartbeat_t FSM_heartbeat = {.state =0 ,.error ={0,0},.warning ={0,0}};
+static cmr_canHeartbeat_t PTC_heartbeat = {.state =0 ,.error ={0,0},.warning ={0,0}};
+static cmr_canHeartbeat_t DIM_heartbeat = {.state =0 ,.error ={0,0},.warning ={0,0}};
+static cmr_canHeartbeat_t CDC_heartbeat = {.state =0 ,.error ={0,0},.warning ={0,0}};
+static cmr_canFSMData_t FSM_data = {.torqueRequested = 0, .throttlePosition = 0, .brakePressureFront_PSI = 0, .brakePedalPosition = 0};
+static cmr_canFSMSWAngle_t SWAngle_data = {.steeringWheelAngle_millideg_FL = 0, .steeringWheelAngle_millideg_FR = 0};
+static cmr_canDIMRequest_t DIM_request = {.requestedState = 0, .requestedGear = 0, .requestedDrsMode = 0, .requestedDriver = 0};
+static cmr_canAMKActualValues1_t inverter1 = {.status_bv = 0, .velocity_rpm = 0, .torqueCurrent_raw = 0, .magCurrent_raw = 0};
+static cmr_canAMKActualValues1_t inverter2 = {.status_bv = 0, .velocity_rpm = 0, .torqueCurrent_raw = 0, .magCurrent_raw = 0};
+static cmr_canAMKActualValues1_t inverter3 = {.status_bv = 0, .velocity_rpm = 0, .torqueCurrent_raw = 0, .magCurrent_raw = 0};
+static cmr_canAMKActualValues1_t inverter4 = {.status_bv = 0, .velocity_rpm = 0, .torqueCurrent_raw = 0, .magCurrent_raw = 0};
+
+
 
 // --------------------------------------------------------------------------------------------------- //
 
@@ -66,6 +81,100 @@ int canTX_TRAC(cmr_canID_t id, const void *data, size_t len, TickType_t timeout)
 
 
 // -------------- DEFINE CAN MESSAGE CONSTRUCTION FUNCTIONS HERE -------------- //
+
+void setHVC_heartbeat(uint16_t errorStatus, uint8_t hvcMode, uint8_t hvcState, uint8_t relayStatus, uint8_t uptime_s) {
+    HVC_heartbeat.errorStatus = errorStatus;
+    HVC_heartbeat.hvcMode = hvcMode;
+    HVC_heartbeat.hvcState = hvcState;
+    HVC_heartbeat.relayStatus = relayStatus;
+    HVC_heartbeat.uptime_s = uptime_s;
+}
+
+void setHVI_heartbeat(int16_t packCurrent_dA, uint16_t packVoltage_cV, int32_t packPower_W) {
+    HVI_heartbeat.packCurrent_dA = packCurrent_dA;
+    HVI_heartbeat.packVoltage_cV = packVoltage_cV;
+    HVI_heartbeat.packPower_W = packPower_W;
+}
+
+void setFSM_heartbeat(uint8_t state) {
+    FSM_heartbeat.state = state;
+    uint8_t errors[2] = {0,0};
+    uint8_t warnings[2] = {0,0};
+
+    memcpy(&FSM_heartbeat.error, &errors, sizeof(FSM_heartbeat.error));
+    memcpy(&FSM_heartbeat.warning, &warnings, sizeof(FSM_heartbeat.warning));
+}
+
+void setPTC_heartbeat(uint8_t state, uint8_t *error, uint8_t *warning) {
+    PTC_heartbeat.state = state;
+    uint8_t errors[2] = {0,0};
+    uint8_t warnings[2] = {0,0};
+
+    memcpy(&PTC_heartbeat.error, &errors, sizeof(PTC_heartbeat.error));
+    memcpy(&PTC_heartbeat.warning, &warnings, sizeof(PTC_heartbeat.warning));
+}
+
+void setDIM_heartbeat(uint8_t state, uint8_t *error, uint8_t *warning) {
+    DIM_heartbeat.state = state;
+    uint8_t errors[2] = {0,0};
+    uint8_t warnings[2] = {0,0};
+
+    memcpy(&DIM_heartbeat.error, &errors, sizeof(DIM_heartbeat.error));
+    memcpy(&DIM_heartbeat.warning, &warnings, sizeof(DIM_heartbeat.warning));
+}
+
+void setCDC_heartbeat(uint8_t state, uint8_t *error, uint8_t *warning) {
+    CDC_heartbeat.state = state;
+    uint8_t errors[2] = {0,0};
+    uint8_t warnings[2] = {0,0};
+
+    memcpy(&CDC_heartbeat.error, &errors, sizeof(CDC_heartbeat.error));
+    memcpy(&CDC_heartbeat.warning, &warnings, sizeof(CDC_heartbeat.warning));
+}
+
+void setFSM_data(uint8_t torqueRequested, uint8_t throttlePosition, uint16_t brakePressureFront_PSI, uint8_t brakePedalPosition, int32_t steeringWheelAngle_millideg_FL, int32_t steeringWheelAngle_millideg_FR) {
+    FSM_data.torqueRequested = torqueRequested;
+    FSM_data.throttlePosition = throttlePosition;
+    FSM_data.brakePressureFront_PSI = brakePressureFront_PSI;
+    FSM_data.brakePedalPosition = brakePedalPosition;
+    SWAngle_data.steeringWheelAngle_millideg_FL = steeringWheelAngle_millideg_FL;
+    SWAngle_data.steeringWheelAngle_millideg_FR = steeringWheelAngle_millideg_FR;
+}
+
+void setDIM_request(uint8_t requestedState, uint8_t requestedGear, uint8_t requestedDrsMode, uint8_t requestedDriver) {
+    DIM_request.requestedState = requestedState;
+    DIM_request.requestedGear = requestedGear;
+    DIM_request.requestedDrsMode = requestedDrsMode;
+    DIM_request.requestedDriver = requestedDriver;
+}
+
+void setinverter1(uint16_t status_bv, int16_t velocity_rpm, int16_t torqueCurrent_raw, int16_t magCurrent_raw) {
+    inverter1.status_bv = status_bv;
+    inverter1.velocity_rpm = velocity_rpm;
+    inverter1.torqueCurrent_raw = torqueCurrent_raw;
+    inverter1.magCurrent_raw = magCurrent_raw;
+}
+
+void setinverter2(uint16_t status_bv, int16_t velocity_rpm, int16_t torqueCurrent_raw, int16_t magCurrent_raw) {
+    inverter2.status_bv = status_bv;
+    inverter2.velocity_rpm = velocity_rpm;
+    inverter2.torqueCurrent_raw = torqueCurrent_raw;
+    inverter2.magCurrent_raw = magCurrent_raw;
+}
+
+void setinverter3(uint16_t status_bv, int16_t velocity_rpm, int16_t torqueCurrent_raw, int16_t magCurrent_raw) {
+    inverter3.status_bv = status_bv;
+    inverter3.velocity_rpm = velocity_rpm;
+    inverter3.torqueCurrent_raw = torqueCurrent_raw;
+    inverter3.magCurrent_raw = magCurrent_raw;
+}
+
+void setinverter4(uint16_t status_bv, int16_t velocity_rpm, int16_t torqueCurrent_raw, int16_t magCurrent_raw) {
+    inverter4.status_bv = status_bv;
+    inverter4.velocity_rpm = velocity_rpm;
+    inverter4.torqueCurrent_raw = torqueCurrent_raw;
+    inverter4.magCurrent_raw = magCurrent_raw;
+}
 
 
 // ---------------------------------------------------------------------------- //
@@ -218,24 +327,24 @@ void *getPayloadTRAC(canRX_TRAC_t rxMsg) {
  */
 void canInit(void) {
     // CAN2 initialization.
-    cmr_canInit(
-        &daq_can, CAN1,
+    cmr_FDcanInit(
+        &daq_can, FDCAN1,
 		CMR_CAN_BITRATE_500K,
         canRXMeta_DAQ, sizeof(canRXMeta_VEH) / sizeof(canRXMeta_VEH[0]),
         NULL,
         GPIOA, GPIO_PIN_11,     // CAN2 RX port/pin.
         GPIOA, GPIO_PIN_12      // CAN2 TX port/pin.
     );
-    cmr_canInit(
-        &veh_can, CAN2,
+    cmr_FDcanInit(
+        &veh_can, FDCAN2,
 		CMR_CAN_BITRATE_500K,
         canRXMeta_VEH, sizeof(canRXMeta_VEH) / sizeof(canRXMeta_VEH[0]),
         NULL,
         GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
         GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
     );
-    cmr_canInit(
-        &trac_can, CAN3,
+    cmr_FDcanInit(
+        &trac_can, FDCAN3,
 		CMR_CAN_BITRATE_500K,
         canRXMeta_TRAC, sizeof(canRXMeta_VEH) / sizeof(canRXMeta_VEH[0]),
         NULL,

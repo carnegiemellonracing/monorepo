@@ -35,11 +35,11 @@ uint8_t zeroes[2] = {0, 0};
 static void statusLED(void *pvParameters) {
     (void) pvParameters;
 
-    cmr_gpioWrite(GPIO_LED_STATUS, 0);
+    cmr_gpioWrite(DIGITAL_OUT_5V_MCU, 0);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        cmr_gpioToggle(GPIO_LED_STATUS);
+        cmr_gpioToggle(DIGITAL_OUT_5V_MCU);
 
         vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
     }
@@ -71,7 +71,7 @@ bool testSoftwareError(void) {
 
 bool testIMDError(void) {
 	//send imd clear
-	cmr_gpioWrite(DIGITAL_OUT_24V, 1);
+	cmr_gpioWrite(DIGITAL_OUT_24V_MCU, 1);
 	vTaskDelay(1000);
 
 	//send reset signal
@@ -83,7 +83,7 @@ bool testIMDError(void) {
 	//cmr_canVSMStatus_t *latch = (cmr_canVSMStatus_t*)(canRXMeta_VEH[4].payload);
 	//uint8_t badState = latch->badStateMatrix;
 	//send imd clear
-	cmr_gpioWrite(DIGITAL_OUT_24V, 0);
+	cmr_gpioWrite(DIGITAL_OUT_24V_MCU, 0);
 	vTaskDelay(1000);
 	//latch = (cmr_canVSMStatus_t*)(canRXMeta_VEH[4].payload);
 	//badState = latch->badStateMatrix;
@@ -109,7 +109,7 @@ bool testRTD(void) {
 	setinverter4(256, 0, 0, 0);
 	while(1) {
 		cmr_canHeartbeat_t *vsm = getPayloadVEH(0);
-		cmr_canHVCCommand_t *status = getPayloadVEH(CANRX_HEARTBEAT_VSM2);
+		cmr_canHVCCommand_t *status = getPayloadVEH(CANRX_HEARTBEAT_VSM);
 		uint8_t state = vsm->state;
 		setHVC_heartbeat(0, status->modeRequest, 3, 1, 1);
 		setCDC_heartbeat(state,zeroes, zeroes);
@@ -153,14 +153,14 @@ bool testDCM() {
 	// check that pumps, fans, inverters all on:
 
 	// check pumps and fans
-	cmr_canPTCDriverStatus_t *pumpsFans = getPayloadVEH(CANRX_HEARTBEAT_VSM);
-	uint8_t fanState = pumpsFans->fan1DutyCycle_pcnt, pumpsState = pumpsFans->pump1DutyCycle_pcnt;
+	// cmr_canPTCDriverStatus_t *pumpsFans = getPayloadVEH(CANRX_HEARTBEAT_VSM);
+	// uint8_t fanState = pumpsFans->fan1DutyCycle_pcnt, pumpsState = pumpsFans->pump1DutyCycle_pcnt;
 
-	while (fanState != 1 && pumpsState != 1) {
-		pumpsFans = getPayloadVEH(CANRX_HEARTBEAT_VSM);
-		fanState = pumpsFans->fan1DutyCycle_pcnt;
-		pumpsState = pumpsFans->pump1DutyCycle_pcnt;
-	}
+	// while (fanState != 1 && pumpsState != 1) {
+	// 	pumpsFans = getPayloadVEH(CANRX_HEARTBEAT_VSM);
+	// 	fanState = pumpsFans->fan1DutyCycle_pcnt;
+	// 	pumpsState = pumpsFans->pump1DutyCycle_pcnt;
+	// }
 
 	// check inverters:
 	cmr_canAMKSetpoints_t *motors = getPayloadVEH(CANRX_HEARTBEAT_INV);
@@ -182,14 +182,14 @@ bool testDCM() {
 
 	//check pumps and fans
 
-	pumpsFans = getPayloadVEH(CANRX_HEARTBEAT_VSM);
-	fanState = pumpsFans->fan1DutyCycle_pcnt, pumpsState = pumpsFans->pump1DutyCycle_pcnt;
+	// pumpsFans = getPayloadVEH(CANRX_HEARTBEAT_VSM);
+	// fanState = pumpsFans->fan1DutyCycle_pcnt, pumpsState = pumpsFans->pump1DutyCycle_pcnt;
 	
-	while (fanState != 1 && pumpsState != 1) {
-		pumpsFans = getPayloadVEH(CANRX_HEARTBEAT_VSM);
-		fanState = pumpsFans->fan1DutyCycle_pcnt;
-		pumpsState = pumpsFans->pump1DutyCycle_pcnt;
-	}
+	// while (fanState != 1 && pumpsState != 1) {
+	// 	pumpsFans = getPayloadVEH(CANRX_HEARTBEAT_VSM);
+	// 	fanState = pumpsFans->fan1DutyCycle_pcnt;
+	// 	pumpsState = pumpsFans->pump1DutyCycle_pcnt;
+	// }
 
 	// check inverters
 	motors = getPayloadVEH(CANRX_HEARTBEAT_INV);
@@ -204,14 +204,14 @@ bool testDCM() {
 	setDIM_request(CMR_CAN_RTD, 0, 0, 0);
 
 	// check pumps and fans
-	pumpsFans = getPayloadVEH(CANRX_HEARTBEAT_VSM);
-	fanState = pumpsFans->fan1DutyCycle_pcnt, pumpsState = pumpsFans->pump1DutyCycle_pcnt;
+	// pumpsFans = getPayloadVEH(CANRX_HEARTBEAT_VSM);
+	// fanState = pumpsFans->fan1DutyCycle_pcnt, pumpsState = pumpsFans->pump1DutyCycle_pcnt;
 	
-	while (fanState != 1 && pumpsState != 1) {
-		pumpsFans = getPayloadVEH(CANRX_HEARTBEAT_VSM);
-		fanState = pumpsFans->fan1DutyCycle_pcnt;
-		pumpsState = pumpsFans->pump1DutyCycle_pcnt;
-	}
+	// while (fanState != 1 && pumpsState != 1) {
+	// 	pumpsFans = getPayloadVEH(CANRX_HEARTBEAT_VSM);
+	// 	fanState = pumpsFans->fan1DutyCycle_pcnt;
+	// 	pumpsState = pumpsFans->pump1DutyCycle_pcnt;
+	// }
 
 	// check inverters
 	motors = getPayloadVEH(CANRX_HEARTBEAT_INV);

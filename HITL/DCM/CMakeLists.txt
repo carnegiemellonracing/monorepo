@@ -102,8 +102,8 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>: ${include_cxx_DIRS}>
     $<$<COMPILE_LANGUAGE:ASM>: ${include_asm_DIRS}>
     ${CMAKE_CURRENT_SOURCE_DIR}/../../stmdrivers/CMR/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../DCM/Inc
-    ${CMAKE_CURRENT_SOURCE_DIR}/Inc
+    # ${CMAKE_CURRENT_SOURCE_DIR}/../../DCM/Inc
+    # ${CMAKE_CURRENT_SOURCE_DIR}/Inc
 )
 
 # Add project symbols (macros)
