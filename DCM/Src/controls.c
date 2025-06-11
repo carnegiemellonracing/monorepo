@@ -35,6 +35,7 @@
 /** @brief Yaw rate control kp */
 volatile cmr_can_controls_pid_debug_t yrcDebug;
 static float yrc_kp;
+static float yrc_kp_frontrear;
 
 /** @brief CAN data for traction control */
 volatile cmr_can_front_slip_ratio_data_t frontSlipRatios;
@@ -403,6 +404,7 @@ static void set_optimal_control(
 
     // Solver treats Mreq as around -z axis.
 	optimizer_state.mreq = getYawRateControlLeftRightBias(swAngle_millideg);
+    optimizer_state.frrq = getYawRateControlFrontRearBias(swAngle_millideg);
 	optimizer_state.theta_left = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
     optimizer_state.theta_right = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
 
@@ -926,4 +928,31 @@ float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
     
     const float left_right_bias = yrc_kp * (optimal_yaw_rate_radps - actual_yaw_rate_radps_sae);
     return left_right_bias;
+}
+
+
+/**
+ * @brief Calculate the control action (front-rear torque bias) of the yaw rate controller
+ * @param swAngle_millideg Steering wheel angle
+ */
+float getYawRateControlFrontRearBias(int32_t swAngle_millideg) {
+    
+    float velocity_x_mps;
+
+    if(movella_state.status.gnss_fix) {
+        velocity_x_mps = movella_state.velocity.x;
+        yrcDebug.controls_bias = 1;
+    } else {
+        velocity_x_mps = getTotalMotorSpeed_radps() * 0.25f / gear_ratio * effective_wheel_rad_m;
+        yrcDebug.controls_bias = -1;
+    }
+    
+    const float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
+    const float actual_yaw_rate_radps_sae = movella_state.gyro.z;
+    const float optimal_yaw_rate_radps = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
+
+    yrcDebug.controls_current_yaw_rate = (int16_t)(1000.0f * actual_yaw_rate_radps_sae);
+    yrcDebug.controls_target_yaw_rate = (int16_t)(1000.0f * optimal_yaw_rate_radps);
+    
+    return yrc_kp_frontrear * (optimal_yaw_rate_radps - actual_yaw_rate_radps_sae);
 }

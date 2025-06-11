@@ -25,11 +25,13 @@ typedef struct {
 typedef struct {
     double areq;
     double mreq;
+    double frrq;
     double theta_left;
     double theta_right;
     double accel_weights[NUM_VARS];
     double moment_weights[NUM_VARS];
     double diagonal_weights[NUM_VARS];
+    double frontrear_weights[NUM_VARS];
     double omegas[NUM_VARS];
     double power_limit;
     int dim;

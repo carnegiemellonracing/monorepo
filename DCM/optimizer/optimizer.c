@@ -16,6 +16,7 @@
 
 static double k_lin = 80.0;
 static double k_yaw = 0.30;
+static double k_frontrear = 0.30; // NEW FOR FRONTREAR
 static double k_tie = 0.008;
 
 /**
@@ -42,6 +43,21 @@ void compute_moment_weights(optimizer_state_t *state) {
     state->moment_weights[2] = -half_trackwidth_m * temp;
     state->moment_weights[3] = half_trackwidth_m * temp;
 }
+
+/**
+ * Generates weights for front-rear moment bias.
+ * @note Only considers longitudinal force.
+ * new, work in progress
+ */
+void compute_frontrear_weights (optimizer_state_t *state) {
+    double temp = gear_ratio / effective_wheel_rad_m;
+
+    state->frontrear_weights[0] = -chassis_a * temp; // FL
+    state->frontrear_weights[1] = -chassis_a * temp; // FR 
+    state->frontrear_weights[2] = chassis_b * temp; // RL 
+    state->frontrear_weights[3] = chassis_b * temp; // RR
+}
+
 
 /**
  * Generates weights for computing longitudinal acceleration.
@@ -146,6 +162,7 @@ void solve_one_case(optimizer_state_t *state) {
 
     compose_error_qform_addto(vp, state->accel_weights, state->areq, k_lin, &state->qform, NUM_VARS);
     compose_error_qform_addto(vp, state->moment_weights, state->mreq, k_yaw, &state->qform, NUM_VARS);
+    compose_error_qform_addto(vp, state->frontrear_weights, state->frrq, k_frontrear, &state->qform, NUM_VARS); // front rear add
     compose_diagonal_qform_addto(vp, state->diagonal_weights, &state->qform, dim, NUM_VARS);
 
     find_optimum(&state->qform, dim, state->optimum.content, state->Qinv);
