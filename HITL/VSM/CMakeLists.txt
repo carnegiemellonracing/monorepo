@@ -7,7 +7,7 @@ message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/gcc-arm-none-eabi.cmake")
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 
-project(DCM_HITL)
+project(VSM_HITL)
 enable_language(C CXX ASM)
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
@@ -26,8 +26,8 @@ set(cpu_PARAMS
     -mfloat-abi=hard
 )
 
-set(PROCESSOR H725)
-set(PROCESSOR_FAM H7XX)
+set(PROCESSOR F413)
+set(PROCESSOR_FAM F4XX)
 
 set(include_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/Inc
@@ -38,7 +38,7 @@ set(include_cxx_DIRS)
 set(include_asm_DIRS)
 
 set(symbols_SYMB
-    STM32H713xx
+    STM32F413xx
     ${PROCESSOR}
     DISABLE_PRECOMPILE_HEADERS_HITL
 )
@@ -68,11 +68,11 @@ set(link_LIBS
 )
 
 get_filename_component(MONOREPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE)
-set(linker_script_SRC "${MONOREPO_ROOT}/DCM/STM32H725ZGTX_FLASH.ld")
+set(linker_script_SRC "${MONOREPO_ROOT}/VSM/stm32f413rgtx_FLASH.ld")
 
 message(STATUS "Linker script path: ${linker_script_SRC}")
-set (compiler_OPTS)
 
+set (compiler_OPTS)
 
 set(compiler_OPTS
     -mfp16-format=ieee
@@ -92,7 +92,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/i2c.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/pwm.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../DCM/Startup/startup_stm32h725xx.s
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../VSM/Startup/startup_stm32f413rgtx.s
 )
 
 
@@ -102,7 +102,6 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>: ${include_cxx_DIRS}>
     $<$<COMPILE_LANGUAGE:ASM>: ${include_asm_DIRS}>
     ${CMAKE_CURRENT_SOURCE_DIR}/../../stmdrivers/CMR/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../DCM/Inc
 )
 
 # Add project symbols (macros)
