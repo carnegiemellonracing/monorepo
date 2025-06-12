@@ -81,7 +81,7 @@ static void calcPower(cmr_canHVIHeartbeat_t *heartbeat) {
     heartbeat->packCurrent_dA = current;
     heartbeat->packPower_W = power;   
 
-	uint16_t voltageRaw, currentRaw, voltage;
+	uint16_t voltageRaw, currentRaw;
 	voltageRaw = adcRead(ADC_VSENSE);
 	currentRaw = adcRead(ADC_ISENSE);
 }
