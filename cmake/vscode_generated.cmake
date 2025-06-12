@@ -17,7 +17,7 @@ set(cpu_PARAMS ${cpu_PARAMS}
 
 # Linker script
 set(linker_script_SRC ${linker_script_SRC}
-    ${CMAKE_CURRENT_SOURCE_DIR}/stm32f413rgtx_FLASH.ld
+    ${CMAKE_SOURCE_DIR}/stm32f413rgtx_FLASH.ld
 )
 
 # Sources
