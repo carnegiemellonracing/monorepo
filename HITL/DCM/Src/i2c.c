@@ -121,19 +121,19 @@ void resetClock() {
     pinConfig.Mode = GPIO_MODE_INPUT;
     HAL_GPIO_Init(GPIOB, &pinConfig);
 
-    TickType_t lastWakeTime = xTaskGetTickCount();
+    // TickType_t lastWakeTime = xTaskGetTickCount();
 
     for (int i = 0; i < 10; i++) {
         HAL_GPIO_WritePin(
             GPIOB, GPIO_PIN_7,
             GPIO_PIN_RESET
         );
-    	VTaskDelayUntil(&lastWakeTime, 5000);
+    	// VTaskDelayUntil(&lastWakeTime, 5000);
         HAL_GPIO_WritePin(
             GPIOB, GPIO_PIN_7,
             GPIO_PIN_SET
         );
-        VTaskDelayUntil(&lastWakeTime, 5000);
+        // VTaskDelayUntil(&lastWakeTime, 5000);
     }
 
     pinConfig.Pin = GPIO_PIN_7; //clock
