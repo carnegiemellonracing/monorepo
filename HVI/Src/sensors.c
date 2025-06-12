@@ -111,10 +111,10 @@ static int32_t adcToUInt8(const cmr_sensor_t *sensor, uint32_t reading) {
  *
  * @return Voltage in centivolts.
  */
-static uint32_t adcToVoltage(const cmr_sensor_t *sensor, uint32_t reading) {
+static int32_t adcToVoltage(const cmr_sensor_t *sensor, int32_t reading) {
     (void)sensor;
 
-    uint32_t voltage = reading;
+    int32_t voltage = reading;
     // uint32_t voltage = V_TRANS_M * reading + V_TRANS_B;
 
     return voltage;
@@ -129,17 +129,17 @@ static uint32_t adcToVoltage(const cmr_sensor_t *sensor, uint32_t reading) {
  *
  * @return Current in dA.
  */
-static uint32_t adcToCurrent(const cmr_sensor_t *sensor, uint32_t reading) {
+static int32_t adcToCurrent(const cmr_sensor_t *sensor, int32_t reading) {
     (void)sensor;
 
-    uint32_t current = (uint32_t) (((0.143) * (float)reading - 294.0) * 10.0);
+    int32_t current = (int32_t) (((0.143) * (float)reading - 294.0) * 10.0);
     return current;
 }
 
-static uint16_t adcToVref(const cmr_sensor_t *sensor, uint32_t reading) {
+static int32_t adcToVref(const cmr_sensor_t *sensor, int32_t reading) {
     (void)sensor;
 
-    uint16_t vref = (uint16_t) reading;
+    int32_t vref = (int32_t) reading;
 
     return vref;
 }
