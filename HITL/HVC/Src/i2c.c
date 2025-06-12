@@ -33,7 +33,7 @@ uint16_t i2c_readI2CADC1(uint8_t channel) {
     }
 
     // read-addressing to retrieve voltage
-    if(cmr_i2cRX(&hitl_i2c, ADC1_ADDR, &data, 2, I2C_TIMEOUT) != 0) {
+    if(cmr_i2cRX(&hitl_i2c, ADC1_ADDR, (uint8_t*)&data, 2, I2C_TIMEOUT) != 0) {
         return false;
     }
 
@@ -56,7 +56,7 @@ uint16_t i2c_readI2CADC2(uint8_t channel) {
     }
 
     // read-addressing to retrieve voltage
-    if(cmr_i2cRX(&hitl_i2c, ADC2_ADDR, &data, 2, I2C_TIMEOUT) != 0) {
+    if(cmr_i2cRX(&hitl_i2c, ADC2_ADDR, (uint8_t*)&data, 2, I2C_TIMEOUT) != 0) {
         return false;
     }
 
@@ -73,7 +73,7 @@ bool i2c_writeI2CDAC1(uint8_t channel, uint8_t value) {
     command[1] = value;
     command[2] = 0;
 
-    if(cmr_i2cTX(&hitl_i2c, DAC1_ADDR, &command, sizeof(command), I2C_TIMEOUT) != 0) {
+    if(cmr_i2cTX(&hitl_i2c, DAC1_ADDR, (uint8_t*)&command, sizeof(command), I2C_TIMEOUT) != 0) {
         return false;
     }
 
@@ -85,7 +85,7 @@ bool i2c_writeExtRefDAC1() {
     uint8_t command[1];
     command[0] = (0b0111 << 4) | 0b1111;
 
-    if(cmr_i2cTX(&hitl_i2c, DAC1_ADDR, &command, sizeof(command), I2C_TIMEOUT) != 0) {
+    if(cmr_i2cTX(&hitl_i2c, DAC1_ADDR, (uint8_t*)&command, sizeof(command), I2C_TIMEOUT) != 0) {
         return false;
     }
 
@@ -101,7 +101,7 @@ bool i2c_writeI2CDAC2(uint8_t channel, uint8_t value) {
 	    command[1] = value;
 	    command[2] = 0;
 
-	    if(cmr_i2cTX(&hitl_i2c, DAC2_ADDR, &command, sizeof(command), I2C_TIMEOUT) != 0) {
+	    if(cmr_i2cTX(&hitl_i2c, DAC2_ADDR, (uint8_t*)&command, sizeof(command), I2C_TIMEOUT) != 0) {
 	        return false;
 	    }
 
@@ -121,17 +121,19 @@ void resetClock() {
     pinConfig.Mode = GPIO_MODE_INPUT;
     HAL_GPIO_Init(GPIOB, &pinConfig);
 
+    TickType_t lastWakeTime = xTaskGetTickCount();
+
     for (int i = 0; i < 10; i++) {
         HAL_GPIO_WritePin(
             GPIOB, GPIO_PIN_7,
             GPIO_PIN_RESET
         );
-    	delayus(5);
+    	VTaskDelayUntil(&lastWakeTime, 5000);
         HAL_GPIO_WritePin(
             GPIOB, GPIO_PIN_7,
             GPIO_PIN_SET
         );
-        delayus(5);
+        VTaskDelayUntil(&lastWakeTime, 5000);
     }
 
     pinConfig.Pin = GPIO_PIN_7; //clock

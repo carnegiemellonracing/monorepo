@@ -24,8 +24,8 @@ uint16_t i2c_readI2CADC1(uint8_t channel) {
     // bit 3: internal voltage reference on/off
     // bit 2: A/D converter on/off
     // bits 0-1: unused
-    uint8_t command = (1 << 7) | (channel << 4) | 0b0100;
     uint8_t data[2];
+    uint8_t command = (1 << 7) | (channel << 4) | 0b0100;
 
     // write-addressing to set slave ADC and channel
     if(cmr_i2cTX(&hitl_i2c, ADC1_ADDR, &command, 1, I2C_TIMEOUT) != 0) {
@@ -33,11 +33,11 @@ uint16_t i2c_readI2CADC1(uint8_t channel) {
     }
 
     // read-addressing to retrieve voltage
-    if(cmr_i2cRX(&hitl_i2c, ADC1_ADDR, &data, 2, I2C_TIMEOUT) != 0) {
+    if(cmr_i2cRX(&hitl_i2c, ADC1_ADDR, (uint8_t*)&data, 2, I2C_TIMEOUT) != 0) {
         return false;
     }
 
-    return data[1] << 8 | data[0];
+    return ((data[0] & 0xF) << 8 | data[1]);
 }
 
 uint16_t i2c_readI2CADC2(uint8_t channel) {
@@ -56,7 +56,7 @@ uint16_t i2c_readI2CADC2(uint8_t channel) {
     }
 
     // read-addressing to retrieve voltage
-    if(cmr_i2cRX(&hitl_i2c, ADC2_ADDR, &data, 2, I2C_TIMEOUT) != 0) {
+    if(cmr_i2cRX(&hitl_i2c, ADC2_ADDR, (uint8_t*)&data, 2, I2C_TIMEOUT) != 0) {
         return false;
     }
 
@@ -66,14 +66,26 @@ uint16_t i2c_readI2CADC2(uint8_t channel) {
 
 // channel: 0 to 7 inclusive representing DACs A through H
 // value: 0 to 4096
-bool i2c_writeI2CDAC1(uint8_t channel, uint16_t value) {
+bool i2c_writeI2CDAC1(uint8_t channel, uint8_t value) {
 
     uint8_t command[3];
     command[0] = (0b0011 << 4) | channel;
-    command[1] = 0xFF & (value >> 4);
-    command[2] = ((value & 0xF) << 4);
+    command[1] = value;
+    command[2] = 0;
 
-    if(cmr_i2cTX(&hitl_i2c, DAC1_ADDR, &command, 1, I2C_TIMEOUT) != 0) {
+    if(cmr_i2cTX(&hitl_i2c, DAC1_ADDR, (uint8_t*)&command, sizeof(command), I2C_TIMEOUT) != 0) {
+        return false;
+    }
+
+    return true;
+}
+
+bool i2c_writeExtRefDAC1() {
+
+    uint8_t command[1];
+    command[0] = (0b0111 << 4) | 0b1111;
+
+    if(cmr_i2cTX(&hitl_i2c, DAC1_ADDR, (uint8_t*)&command, sizeof(command), I2C_TIMEOUT) != 0) {
         return false;
     }
 
@@ -82,18 +94,18 @@ bool i2c_writeI2CDAC1(uint8_t channel, uint16_t value) {
 
 // channel: 0 to 7 inclusive representing DACs A through H
 // value: 0 to 4096
-bool i2c_writeI2CDAC2(uint8_t channel, uint16_t value) {
+bool i2c_writeI2CDAC2(uint8_t channel, uint8_t value) {
 
-    uint8_t command[3];
-    command[0] = (0b0011 << 4) | channel;
-    command[1] = (value >> 4);
-    command[2] = ((value & 0xF) << 4);
+	 uint8_t command[3];
+	    command[0] = (0b0011 << 4) | channel;
+	    command[1] = value;
+	    command[2] = 0;
 
-    if(cmr_i2cTX(&hitl_i2c, DAC2_ADDR, &command, 1, I2C_TIMEOUT) != 0) {
-        return false;
-    }
+	    if(cmr_i2cTX(&hitl_i2c, DAC2_ADDR, (uint8_t*)&command, sizeof(command), I2C_TIMEOUT) != 0) {
+	        return false;
+	    }
 
-    return true;
+	    return true;
 }
 
 void resetClock() {
@@ -109,17 +121,19 @@ void resetClock() {
     pinConfig.Mode = GPIO_MODE_INPUT;
     HAL_GPIO_Init(GPIOB, &pinConfig);
 
+    TickType_t lastWakeTime = xTaskGetTickCount();
+
     for (int i = 0; i < 10; i++) {
         HAL_GPIO_WritePin(
             GPIOB, GPIO_PIN_7,
             GPIO_PIN_RESET
         );
-    	delayus(5);
+    	VTaskDelayUntil(&lastWakeTime, 5000);
         HAL_GPIO_WritePin(
             GPIOB, GPIO_PIN_7,
             GPIO_PIN_SET
         );
-        delayus(5);
+        VTaskDelayUntil(&lastWakeTime, 5000);
     }
 
     pinConfig.Pin = GPIO_PIN_7; //clock
