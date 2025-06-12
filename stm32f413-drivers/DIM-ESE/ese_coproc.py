@@ -8,6 +8,8 @@
 import json
 import re
 import argparse
+import os
+import sys
 
 #
 # FT81x commands.
@@ -481,7 +483,75 @@ class FT81x(object):
         ptr = int(ptr)
         return [0xffffff41, dst, ptr]
 
-    
+    # 5.24 (173) - CMD_MEMCRC - compute a CRC-32 for memory
+    def CMD_MEMCRC(self, ptr, num, result):
+        ptr = int(ptr)
+        num = int(num)
+        result = int(result)
+        return [0xffffff18, ptr, num, result]
+
+    # 5.25 (174) - CMD_MEMZERO - write zero to a block of memory
+    def CMD_MEMZERO(self, ptr, num):
+        ptr = int(ptr)
+        num = int(num)
+        return [0xffffff1c, ptr, num]
+
+    # 5.26 (175) - CMD_MEMSET - fill memory with a byte value
+    def CMD_MEMSET(self, ptr, value, num):
+        ptr = int(ptr)
+        value = int(value)
+        num = int(num)
+        return [0xffffff1b, ptr, value, num]
+
+    # 5.27 (176) - CMD_MEMCPY - copy a block of memory
+    def CMD_MEMCPY(self, dest, src, num):
+        dest = int(dest)
+        src = int(src)
+        num = int(num)
+        return [0xffffff1d, dest, src, num]
+
+    # 5.28 (176) - CMD_BUTTON - draw a button
+    def CMD_BUTTON(self, x, y, w, h, font, options, s):
+        x = int(x)
+        y = int(y)
+        w = int(w)
+        h = int(h)
+        font = int(font)
+        s = bytearray(FT81x.string_pattern.match(s).group(1), 'utf8')
+        s.append(0)  # NUL-terminate
+
+        opts = self.get_options(options)
+
+        data = [0xffffff0d, (y << 16) | (x << 0), (h << 16) | (w << 0),
+                (opts << 16) | (font << 0)]
+
+        # Encode string into 4-byte word groups
+        for i in range(0, len(s), 4):
+            word = 0
+            for j in range(4):
+                char = s[i + j] if i + j < len(s) else 0
+                word |= (char << (j * 8))
+            data.append(word)
+
+        return data
+
+    # 5.29 (179) - CMD_CLOCK - draw an analog clock
+    def CMD_CLOCK(self, x, y, r, options, h, m, s, ms):
+        x = int(x)
+        y = int(y)
+        r = int(r)
+        h = int(h)
+        m = int(m)
+        s = int(s)
+        ms = int(ms)
+
+        opts = self.get_options(options)
+
+        data = [0xffffff14, (y << 16) | (x << 0), (opts << 16) | (r << 0),
+                (m << 16) | (h << 0), (ms << 16) | (s << 0)]
+
+        return data
+
     # 5.30 (183)
     def CMD_FGCOLOR(self, c):
         c = int(c)
@@ -491,6 +561,11 @@ class FT81x(object):
     def CMD_BGCOLOR(self,c):
         c = int(c)
         return [0xffffff09, c]
+
+    # 5.32 (185) - CMD_GRADCOLOR - set the 3D button highlight color
+    def CMD_GRADCOLOR(self, c):
+        c = int(c)
+        return [0xffffff34, c]
 
     # 5.33 (187)
     def CMD_GAUGE(self, x, y, r, options, major, minor, val, gauge_range):
@@ -508,6 +583,43 @@ class FT81x(object):
              ((major << 16) | (minor << 0)), ((val << 16) | (gauge_range))]
        return data
 
+    # 5.34 (193) - CMD_GRADIENT - draw a smooth color gradient
+    def CMD_GRADIENT(self, x0, y0, rgb0, x1, y1, rgb1):
+        x0 = int(x0)
+        y0 = int(y0)
+        rgb0 = int(rgb0)
+        x1 = int(x1)
+        y1 = int(y1)
+        rgb1 = int(rgb1)
+
+        return [0xffffff0b, (y0 << 16) | (x0 << 0), rgb0,
+                (y1 << 16) | (x1 << 0), rgb1]
+
+    # 5.35 (196) - CMD_KEYS - draw a row of keys
+    def CMD_KEYS(self, x, y, w, h, font, options, s):
+        x = int(x)
+        y = int(y)
+        w = int(w)
+        h = int(h)
+        font = int(font)
+        s = bytearray(FT81x.string_pattern.match(s).group(1), 'utf8')
+        s.append(0)  # NUL-terminate
+
+        opts = self.get_options(options)
+
+        data = [0xffffff0e, (y << 16) | (x << 0), (h << 16) | (w << 0),
+                (opts << 16) | (font << 0)]
+
+        # Encode string into 4-byte word groups
+        for i in range(0, len(s), 4):
+            word = 0
+            for j in range(4):
+                char = s[i + j] if i + j < len(s) else 0
+                word |= (char << (j * 8))
+            data.append(word)
+
+        return data
+
     # 5.36 (200)
     def CMD_PROGRESS(self, x, y, w, h, options, val, progress_range):
        #range is a keyword in Python
@@ -523,6 +635,77 @@ class FT81x(object):
               ((options << 16) | (val << 0)), progress_range]
 
        return data
+
+    # 5.37 (203) - CMD_SCROLLBAR - draw a scroll bar
+    def CMD_SCROLLBAR(self, x, y, w, h, options, val, size, range):
+        x = int(x)
+        y = int(y)
+        w = int(w)
+        h = int(h)
+        val = int(val)
+        size = int(size)
+        range = int(range)
+
+        opts = self.get_options(options)
+
+        data = [0xffffff11, (y << 16) | (x << 0), (h << 16) | (w << 0),
+                (val << 16) | (opts << 0), (range << 16) | (size << 0)]
+
+        return data
+
+    # 5.38 (205) - CMD_SLIDER - draw a slider
+    def CMD_SLIDER(self, x, y, w, h, options, val, range):
+        x = int(x)
+        y = int(y)
+        w = int(w)
+        h = int(h)
+        val = int(val)
+        range = int(range)
+
+        opts = self.get_options(options)
+
+        data = [0xffffff10, (y << 16) | (x << 0), (h << 16) | (w << 0),
+                (val << 16) | (opts << 0), range]
+
+        return data
+
+    # 5.39 (207) - CMD_DIAL - draw a rotary dial control
+    def CMD_DIAL(self, x, y, r, options, val):
+        x = int(x)
+        y = int(y)
+        r = int(r)
+        val = int(val)
+
+        opts = self.get_options(options)
+
+        data = [0xffffff2d, (y << 16) | (x << 0), (opts << 16) | (r << 0), val]
+
+        return data
+
+    # 5.40 (210) - CMD_TOGGLE - draw a toggle switch
+    def CMD_TOGGLE(self, x, y, w, font, options, state, s):
+        x = int(x)
+        y = int(y)
+        w = int(w)
+        font = int(font)
+        state = int(state)
+        s = bytearray(FT81x.string_pattern.match(s).group(1), 'utf8')
+        s.append(0)  # NUL-terminate
+
+        opts = self.get_options(options)
+
+        data = [0xffffff12, (y << 16) | (x << 0), (font << 16) | (w << 0),
+                (state << 16) | (opts << 0)]
+
+        # Encode string into 4-byte word groups
+        for i in range(0, len(s), 4):
+            word = 0
+            for j in range(4):
+                char = s[i + j] if i + j < len(s) else 0
+                word |= (char << (j * 8))
+            data.append(word)
+
+        return data
 
     # 5.41 (213)
     def CMD_TEXT(self, x, y, font, options, s):
@@ -546,6 +729,114 @@ class FT81x(object):
 
         return data
 
+    # 5.42 (216) - CMD_SETBASE - Set the base for number output
+    def CMD_SETBASE(self, b):
+        b = int(b)
+        return [0xffffff38, b]
+
+    # 5.43 (217) - CMD_NUMBER - draw number
+    def CMD_NUMBER(self, x, y, font, options, n):
+        x = int(x)
+        y = int(y)
+        font = int(font)
+        n = int(n)
+
+        opts = self.get_options(options)
+
+        data = [0xffffff2e, (y << 16) | (x << 0), (opts << 16) | (font << 0), n]
+
+        return data
+
+    # 5.44 (220) - CMD_LOADIDENTITY - Set the current matrix to the identity matrix
+    def CMD_LOADIDENTITY(self, _):
+        return [0xffffff26]
+
+    # 5.45 (220) - CMD_SETMATRIX - write the current matrix to the display list
+    def CMD_SETMATRIX(self, _):
+        return [0xffffff2a]
+
+    # 5.46 (221) - CMD_GETMATRIX - retrieves the current matrix coefficients
+    def CMD_GETMATRIX(self, a, b, c, d, e, f):
+        a = int(a)
+        b = int(b)
+        c = int(c)
+        d = int(d)
+        e = int(e)
+        f = int(f)
+        return [0xffffff33, a, b, c, d, e, f]
+
+    # 5.47 (222) - CMD_GETPTR - get the end memory address of data inflated by CMD_INFLATE
+    def CMD_GETPTR(self, result):
+        result = int(result)
+        return [0xffffff23, result]
+
+    # 5.48 (223) - CMD_GETPROPS - get the image properties decompressed by CMD_LOADIMAGE
+    def CMD_GETPROPS(self, ptr, width, height):
+        ptr = int(ptr)
+        width = int(width)
+        height = int(height)
+        return [0xffffff25, ptr, width, height]
+
+    # 5.49 (223) - CMD_SCALE - apply a scale to the current matrix
+    def CMD_SCALE(self, sx, sy):
+        sx = int(sx)
+        sy = int(sy)
+        return [0xffffff28, sx, sy]
+
+    # 5.50 (225) - CMD_ROTATE - apply a rotation to the current matrix
+    def CMD_ROTATE(self, a):
+        a = int(a)
+        return [0xffffff29, a]
+
+    # 5.51 (226) - CMD_TRANSLATE - apply a translation to the current matrix
+    def CMD_TRANSLATE(self, tx, ty):
+        tx = int(tx)
+        ty = int(ty)
+        return [0xffffff27, tx, ty]
+
+    # 5.52 (227) - CMD_CALIBRATE - execute the touch screen calibration routine
+    def CMD_CALIBRATE(self, result):
+        result = int(result)
+        return [0xffffff15, result]
+
+    # 5.53 (228) - CMD_SETROTATE - Rotate the screen
+    def CMD_SETROTATE(self, r):
+        r = int(r)
+        return [0xffffff36, r]
+
+    # 5.54 (229) - CMD_SPINNER - start an animated spinner
+    def CMD_SPINNER(self, x, y, style, scale):
+        x = int(x)
+        y = int(y)
+        style = int(style)
+        scale = int(scale)
+        return [0xffffff16, (y << 16) | (x << 0), (scale << 16) | (style << 0)]
+
+    # 5.55 (233) - CMD_SCREENSAVER - start an animated screensaver
+    def CMD_SCREENSAVER(self, _):
+        return [0xffffff2f]
+
+    # 5.56 (234) - CMD_SKETCH - start a continuous sketch update
+    def CMD_SKETCH(self, x, y, w, h, ptr, format):
+        x = int(x)
+        y = int(y)
+        w = int(w)
+        h = int(h)
+        ptr = int(ptr)
+        format = FT81x.BITMAP_FORMATS[format] if isinstance(format, str) else int(format)
+
+        return [0xffffff30, (y << 16) | (x << 0), (h << 16) | (w << 0), ptr, format]
+
+    # 5.57 (236) - CMD_STOP - stop any of spinner, screensaver or sketch
+    def CMD_STOP(self, _):
+        return [0xffffff17]
+
+    # 5.58 (237) - CMD_SETFONT - set up a custom font
+    def CMD_SETFONT(self, font, ptr):
+        font = int(font)
+        ptr = int(ptr)
+        return [0xffffff2b, font, ptr]
+
     # 5.59 (238)
     def CMD_SETFONT2(self, font, ptr, firstchar):
         font = int(font)
@@ -554,12 +845,46 @@ class FT81x(object):
 
         return [0xffffff3b, font, ptr, firstchar]
 
+    # 5.60 (239) - CMD_SETSCRATCH - set the scratch bitmap for widget use
+    def CMD_SETSCRATCH(self, handle):
+        handle = int(handle)
+        return [0xffffff3c, handle]
+
     # 5.61 (239)
     def CMD_ROMFONT(self, font, romslot):
         font = int(font)
         romslot = int(romslot)
 
         return [0xffffff3f, font, romslot]
+
+    # 5.62 (240) - CMD_TRACK - track touches for a graphics object
+    def CMD_TRACK(self, x, y, w, h, tag):
+        x = int(x)
+        y = int(y)
+        w = int(w)
+        h = int(h)
+        tag = int(tag)
+
+        return [0xffffff2c, (y << 16) | (x << 0), (h << 16) | (w << 0), tag]
+
+    # 5.63 (245) - CMD_SNAPSHOT - take a snapshot of the current screen
+    def CMD_SNAPSHOT(self, ptr):
+        ptr = int(ptr)
+        return [0xffffff1f, ptr]
+
+    # 5.64 (246) - CMD_SNAPSHOT2 - take a snapshot of part of the current screen
+    def CMD_SNAPSHOT2(self, fmt, ptr, x, y, w, h):
+        if isinstance(fmt, str):
+            fmt = FT81x.BITMAP_FORMATS[fmt]
+        else:
+            fmt = int(fmt)
+        ptr = int(ptr)
+        x = int(x)
+        y = int(y)
+        w = int(w)
+        h = int(h)
+
+        return [0xffffff37, fmt, ptr, (y << 16) | (x << 0), (h << 16) | (w << 0)]
 
     # 5.65 (248-249)
     def CMD_SETBITMAP(self, addr, fmt, width, height):
@@ -570,70 +895,102 @@ class FT81x(object):
 
         return [0xffffff43, addr, (width << 16) | (fmt << 0), height]
 
+    # 5.66 (249) - CMD_LOGO - play FTDI logo animation
+    def CMD_LOGO(self, _):
+        return [0xffffff31]
+
     VARIABLE_OFFSETS = {
             # Please keep alphabetized
             'CLEAR_COLOR_RGB': 0,
+            'CMD_BUTTON': 4,
+            'CMD_KEYS': 4,
+            'CMD_NUMBER': 3,
             'CMD_TEXT': 3,
+            'CMD_TOGGLE': 4,
             'COLOR_RGB': 0,
             'VERTEX2F' : 0,
             'VERTEX2II': 0,
         }
-
+    
     def get_variable_offset(self, command):
         if command in self.VARIABLE_OFFSETS:
             return self.VARIABLE_OFFSETS[command]
         else:
-            print(f"Unsupported use of @variable with command {command}!")
+            print(f"Unsupported use of @variable with command {command}!", file=sys.stderr)
             return -1
 
-parser = argparse.ArgumentParser()
-parser.add_argument("input_file",help = ".ese file")
-args = parser.parse_args()
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input_file", help=".ese file")
+    parser.add_argument("--output", "-o", help="Output file")
+    args = parser.parse_args()
 
-ft81x = FT81x()
+    ft81x = FT81x()
+    command_pattern = re.compile(r'(.+)\((.*)\)( +@variable +(\w+))?')
+    variables = []
+    unimplemented_cmds = 0
 
-command_pattern = re.compile(r'(.+)\((.*)\)( +@variable +(\w+))?')
+    # Determine output file path
+    if args.output:
+        output_file_path = args.output
+    else:
+        # Get the basename of the input file without extension
+        base_name = os.path.basename(args.input_file)
+        base_name_without_ext = os.path.splitext(base_name)[0]
 
-variables = []
+        # Create the output directory if it doesn't exist
+        output_dir = os.path.join("stm32f413-drivers", "DIM-ESE", "include", "DIM-ESE")
+        os.makedirs(output_dir, exist_ok=True)
 
-unimplemented_cmds = 0
+        # Set the output file path with .rawh extension
+        output_file_path = os.path.join(output_dir, base_name_without_ext + ".rawh")
 
-with open(args.input_file, 'r') as ese_project_file:
-    ese_project = json.load(ese_project_file)
+    # Process the ESE project file
+    with open(args.input_file, 'r') as ese_project_file:
+        ese_project = json.load(ese_project_file)
 
-    # Write display list start command.
-    print("0xffffff00, // CMD_DLSTART()")
+        # Open the output file
+        with open(output_file_path, 'w') as output_file:
+            # Write display list start command
+            output_file.write("0xffffff00, // CMD_DLSTART()\n")
 
-    data_offset = 1
+            data_offset = 1
 
-    for command in ese_project['coprocessor']:
-        command = command.strip()
-        matches = command_pattern.match(command)
-        if (matches == None):
-            continue
+            for command in ese_project['coprocessor']:
+                command = command.strip()
+                matches = command_pattern.match(command)
+                if (matches == None):
+                    continue
 
-        name = matches.group(1).strip()
-        args = list(map(str.strip, matches.group(2).split(',')))
-        try:
-            method = getattr(ft81x, name)
-        except AttributeError:
-            print(f"UNIMPLEMENTED: {command}")
-            unimplemented_cmds += 1
-            continue
+                name = matches.group(1).strip()
+                args = list(map(str.strip, matches.group(2).split(',')))
+                try:
+                    method = getattr(ft81x, name)
+                except AttributeError:
+                    print(f"UNIMPLEMENTED: {command}", file=sys.stderr)
+                    unimplemented_cmds += 1
+                    continue
 
-        if matches.group(4) is not None:
-            if ft81x.get_variable_offset(name) != -1:
-                variables.append(f"#define ESE_{matches.group(4)} {data_offset + ft81x.get_variable_offset(name)}")
+                if matches.group(4) is not None:
+                    if ft81x.get_variable_offset(name) != -1:
+                        variables.append(f"#define ESE_{matches.group(4)} {data_offset + ft81x.get_variable_offset(name)}")
 
-        for i, word in enumerate(method(*args)):
-            print(f"0x{word:08x},{(' // ' + command) if i == 0 else ''}")
-            data_offset += 1
-# Write display and swap commands.
-print('0x00000000, // DISPLAY()')
-print('0xffffff01, // CMD_DLSWAP()')
+                for i, word in enumerate(method(*args)):
+                    output_file.write(f"0x{word:08x},{(' // ' + command) if i == 0 else ''}\n")
+                    data_offset += 1
 
-for variable in variables:
-    print(variable)
+            # Write display and swap commands
+            output_file.write('0x00000000, // DISPLAY()\n')
+            output_file.write('0xffffff01, // CMD_DLSWAP()\n')
 
-if unimplemented_cmds != 0:
-    print(str(unimplemented_cmds) + ' unimplemented commands!')
+            # Write variable definitions
+            for variable in variables:
+                output_file.write(variable + '\n')
+
+            if unimplemented_cmds != 0:
+                print(str(unimplemented_cmds) + ' unimplemented commands!', file=sys.stderr)
+
+    print(f"Output written to {output_file_path}")
+
+if __name__ == "__main__":
+    main()

@@ -19,7 +19,8 @@ typedef enum {
     SENSOR_CH_TPOS_R_U8,      /**< @brief Right throttle position sensor. */
     SENSOR_CH_BPOS_U8,        /**< @brief Brake pedal position sensor. */
     SENSOR_CH_BPRES_PSI,      /**< @brief Brake pressure sensor. */
-    SENSOR_CH_SWANGLE_DEG,    /**< @brief Steering angle sensor. */
+    SENSOR_CH_SWANGLE_DEG_FL,    /**< @brief Steering angle sensor. */
+    SENSOR_CH_SWANGLE_DEG_FR,
     SENSOR_CH_VOLTAGE_MV,     /**< @brief Board voltage rail. */
     SENSOR_CH_AVG_CURRENT_MA, /**< @brief Board average current draw. */
     SENSOR_CH_TPOS_IMPLAUS,   /**< @brief Throttle implausibility. */

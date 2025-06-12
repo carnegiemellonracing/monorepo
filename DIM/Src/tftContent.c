@@ -16,7 +16,7 @@ struct tftContent {
 
 /** @brief Startup image lookup table data. */
 static const uint8_t tftContent_startup_lut_data[] = {
-#include <DIM-ESE/content/startup.lut.binh>
+#include <startup.lut.binh>
 };
 
 /** @brief Startup image lookup table. */
@@ -28,7 +28,7 @@ const tftContent_t tftContent_startup_lut = {
 
 /** @brief Startup image data. */
 static const uint8_t tftContent_startup_data[] = {
-#include <DIM-ESE/content/startup.binh>
+#include <startup.binh>
 };
 
 /** @brief Startup image. */
@@ -50,8 +50,8 @@ void tftContentLoad(tft_t *tft, const tftContent_t *tftContent) {
         0xFFFFFF22,       // CMD_INFLATE
         tftContent->addr  // Destination address.
     };
-    tftCoCmd(tft, sizeof(coCmdInflate), coCmdInflate, false);
+    tftCoCmd(tft, sizeof(coCmdInflate), coCmdInflate);
 
     // Write compressed data.
-    tftCoCmd(tft, tftContent->len, tftContent->data, true);
+    tftCoCmd(tft, tftContent->len, tftContent->data);
 }

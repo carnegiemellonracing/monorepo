@@ -112,16 +112,16 @@ static uint8_t getBrakeRegenStrength() {
 static float getLinpotDownforce(canDaqRX_t leftRight, bool fronts, float springConstant, float pushrodAngle) {
     float downforce_N = carWeight_N / 4.0f;
     if (cmr_canRXMetaTimeoutWarn(&canDaqRXMeta[leftRight],  xTaskGetTickCount()) == 0) {
-        volatile cmr_canDAQLinpot_t *linpotPayload = (volatile cmr_canDAQLinpot_t*) canDAQGetPayload(leftRight);
-        const float springNominalLength_mm = 225.0f;
-        float linpot_mm = 0.0f;
-        if (fronts) {
-            linpot_mm = springNominalLength_mm - ((float) linpotPayload->linpot_front_mm);
-        } else {
-            linpot_mm = springNominalLength_mm - ((float) linpotPayload->linpot_rear_mm);
-        }
-        float springForce_N = springConstant * linpot_mm; // TODO: check units
-        downforce_N = springForce_N * cosf(pushrodAngle) / 4.0f;
+        // volatile cmr_canDAQLinpot_t *linpotPayload = (volatile cmr_canDAQLinpot_t*) canDAQGetPayload(leftRight);
+        // const float springNominalLength_mm = 225.0f;
+        // float linpot_mm = 0.0f;
+        // if (fronts) {
+        //     linpot_mm = springNominalLength_mm - ((float) linpotPayload->linpot_front_mm);
+        // } else {
+        //     linpot_mm = springNominalLength_mm - ((float) linpotPayload->linpot_rear_mm);
+        // }
+        // float springForce_N = springConstant * linpot_mm; // TODO: check units
+        // downforce_N = springForce_N * cosf(pushrodAngle) / 4.0f;
     }
     return downforce_N;
 }
@@ -144,7 +144,7 @@ static float getDownforce(motorLocation_t motor) {
 			// If we have valid loadcell data, use loadcell as downforce
 			if (cmr_canRXMetaTimeoutWarn(&canDaqRXMeta[loadIndex],  xTaskGetTickCount()) == 0) {
 				volatile cmr_canIZZELoadCell_t *downforcePayload = (volatile cmr_canIZZELoadCell_t*) canDAQGetPayload(loadIndex);
-				downforce_N = downforcePayload->force_output_N;
+				downforce_N = parse_int16(&downforcePayload->force_output_N);
 			}
 		} else {
 			const float frontAngle_rad = ((float) M_PI) / 4;
@@ -876,7 +876,7 @@ float getMaxKappaCurrentState (
 /**
  * @brief Get the kappa setpoint for brake parallel regen
 */
-float getBrakeKappa(motorLocation_t motor, uint8_t brakePressurePsi_u8, float deadband) {
+float getBrakeKappa(motorLocation_t motor, uint16_t brakePressurePsi_u8, float deadband) {
     //const bool parallelRegen = shouldActivateParallelRegen(); // make sure to set this to true for the branch
     float brake_kappa = 0.0f;
 
@@ -904,7 +904,7 @@ float getBrakeKappa(motorLocation_t motor, uint8_t brakePressurePsi_u8, float de
 /**
  * @brief Get the torque setpoint for brake parallel regen
 */
-int32_t getBrakeMaxTorque_mNm(motorLocation_t motor, uint8_t brakePressurePsi_u8) {
+int32_t getBrakeMaxTorque_mNm(motorLocation_t motor, uint16_t brakePressurePsi_u8) {
 
     float desired_brake_torque_Nm = 0.0f;
 

@@ -5,7 +5,7 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "tftDL.h"  // Interface to implement
+
 
 #include <stdio.h>   // snprintf
 #include <string.h>  // memcpy()
@@ -13,8 +13,9 @@
 #include "adc.h"         // GLV voltage
 #include "can.h"         // Board-specific CAN interface
 #include "gpio.h"        // Board-specific CAN interface
+#include "state.h"       // State interface
 #include "tftContent.h"  // Content interface
-#include "newState.h"
+#include "tftDL.h"  // Interface to implement
 
 // used to calculate increment frequency:
 // max paddle val (255) / max increment speed (20Hz)
@@ -414,7 +415,6 @@ void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yell
 /**
  * @brief Updates the ready-to-drive screen.
  *
- * @param memoratorStatus
  * @param memoratorPresent Memorator present (based on heartbeat)
  * @param sbgStatus SBG INS Status
  * @param speed_mph Speed (from CDC)
@@ -437,6 +437,12 @@ void tftDL_RTDUpdate(
     int32_t hvVoltage_mV,
     int32_t power_kW,
     uint32_t speed_kmh,
+    bool motorTemp_yellow,
+    bool motorTemp_red,
+    bool acTemp_yellow,
+    bool acTemp_red,
+    bool mcTemp_yellow,
+    bool mcTemp_red,
     int32_t motorTemp_C,
     int32_t acTemp_C,
     int32_t mcTemp_C,
@@ -658,7 +664,7 @@ static void tftDL_showAMKError(uint32_t strlocation, uint32_t colorLocation, uin
             break;
         default:
             // No text, so display error number
-            snprintf(print_location, print_len, "%04d ", errorCode);
+            snprintf(print_location, print_len, "%04d        ", errorCode);
             break;
     }
     tftDL_showErrorState(colorLocation, errorCode != 0);
@@ -679,7 +685,7 @@ void tftDL_errorUpdate(
 
     snprintf(
         glvVoltage_V_str->buf, sizeof(glvVoltage_V_str->buf),
-        "%luV", err->glvVoltage_V);
+        "%2uV", err->glvVoltage_V);
 
     /* Timeouts */
     tftDL_showErrorState(ESE_PTC_COLOR, err->ptcTimeout);
@@ -738,7 +744,7 @@ void tftDLContentLoad(tft_t *tft, const tftDL_t *tftDL) {
  * @param tftDL The display list.
  */
 void tftDLWrite(tft_t *tft, const tftDL_t *tftDL) {
-    tftCoCmd(tft, tftDL->len, tftDL->data, true);
+    tftCoCmd(tft, tftDL->len, tftDL->data);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////

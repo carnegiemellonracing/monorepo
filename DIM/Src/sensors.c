@@ -24,14 +24,14 @@
 /** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
 static const TickType_t TPOS_IMPLAUS_THRES_MS = 100;
 /** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
-static const uint32_t TPOS_IMPLAUS_THRES = UINT8_MAX / 10;
+static const uint32_t TPOS_IMPLAUS_THRES = 50;
 
 /** @brief Throttle threshold for brake implausibility. See FSAE rule EV.2.4. */
 static const uint8_t BPP_TPOS_IMPLAUS_THRES = UINT8_MAX / 4;
 /** @brief Throttle threshold for clearing brake implausibility. See FSAE rule EV.2.4. */
 static const uint8_t BPP_TPOS_CLEAR_THRES = UINT8_MAX / 20;
 /** @brief Threshold where brakes are considered to be actuated. */
-static const uint8_t BRAKE_ACTIVE_THRES_PSI = 40;
+static const uint16_t BRAKE_ACTIVE_THRES_PSI = 40;
 
 /** @brief 90 degree sw left lock adc value. */
 #define SWANGLE_90DEG_LEFT 1345
@@ -46,7 +46,8 @@ const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
     [SENSOR_CH_TPOS_R_U8] = ADC_TPOS_R,
     [SENSOR_CH_BPOS_U8] = ADC_BPRES,
     [SENSOR_CH_BPRES_PSI] = ADC_BPRES,
-    [SENSOR_CH_SWANGLE_DEG] = ADC_SWANGLE,
+    [SENSOR_CH_SWANGLE_DEG_FL] = ADC_SWANGLE,
+    [SENSOR_CH_SWANGLE_DEG_FR] = ADC_SWANGLE,
 	[SENSOR_CH_X] = ADC_X,
 	[SENSOR_CH_Y] = ADC_Y,
     [SENSOR_CH_TPOS_IMPLAUS] = ADC_LEN  // Not an ADC channel!
@@ -126,8 +127,17 @@ static int32_t adcToUInt8(const cmr_sensor_t *sensor, uint32_t reading) {
 static int32_t adcToBPres_PSI(const cmr_sensor_t *sensor, uint32_t reading) {
     (void)sensor;  // Placate compiler.
 
-    // Temporarily just rescale raw 12-bit value to 8 bits
-    return (int32_t)(reading >> 4);
+    static const uint32_t offset = 360;     // 0.333 V offset
+
+    (void) sensor;  // Placate compiler.
+
+    if (reading < offset) {
+        // Clamp to 0.
+        reading = offset;
+    }
+
+    uint32_t brakePres_PSI = (reading - offset) * 1450 / 3313;
+    return (int32_t) brakePres_PSI;
 }
 
 /**
@@ -149,6 +159,38 @@ static int32_t adcToSwangle(const cmr_sensor_t *sensor, uint32_t reading) {
     double swangle_deg = (reading * 0.016f)-17.2f;
 
     return (int32_t)swangle_deg;
+}
+
+static int32_t adcToYaw_FL(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void) sensor;
+
+    // millideg
+    if(reading >= 2130){
+        float swangle_millideg = ((-0.0145f * (float)reading)+30.4f) * 1000;
+        int32_t retval = (int32_t)swangle_millideg;
+        return retval;
+    }
+    else {
+        float swangle_millideg = ((-0.0217f * (float)reading)+44.7f) * 1000;
+        int32_t retval = (int32_t)swangle_millideg;
+        return retval;
+    }
+}
+
+static int32_t adcToYaw_FR(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void) sensor;
+
+    // millideg
+    if(reading >= 2040){
+        float swangle_millideg = ((-0.0214f * (float)reading)+44.1f) * 1000;
+        int32_t retval = (int32_t)swangle_millideg;
+        return retval;
+    }
+    else{
+        float swangle_millideg = ((-0.0165f * (float)reading)+33.6f) * 1000;
+        int32_t retval = (int32_t)swangle_millideg;
+        return retval;
+    }
 }
 
 /**
@@ -284,14 +326,15 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     [SENSOR_CH_TPOS_L_U8] = {
         .conv = adcToUInt8,
         .sample = sampleADCSensor,
-        .readingMin = 890,
-        .readingMax = 3757,
+        .readingMin = 200,
+        .readingMax = 2320,
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_FSM_TPOS_L },
-    [SENSOR_CH_TPOS_R_U8] = { .conv = adcToUInt8, .sample = sampleADCSensor, .readingMin = 500, .readingMax = 1943, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_TPOS_R },
+    [SENSOR_CH_TPOS_R_U8] = { .conv = adcToUInt8, .sample = sampleADCSensor, .readingMin = 200, .readingMax = 2280, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_TPOS_R },
     [SENSOR_CH_BPOS_U8] = { .conv = adcToUInt8, .sample = sampleADCSensor, .readingMin = 365, .readingMax = 1651, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_BPOS },
     [SENSOR_CH_BPRES_PSI] = { .conv = adcToBPres_PSI, .sample = sampleADCSensor, .readingMin = 0, .readingMax = CMR_ADC_MAX, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_BPRES },
-    [SENSOR_CH_SWANGLE_DEG] = { .conv = adcToSwangle, .sample = sampleADCSensorSwangle, .readingMin = SWANGLE_90DEG_LEFT, .readingMax = SWANGLE_90DEG_RIGHT, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_SWANGLE },
+    [SENSOR_CH_SWANGLE_DEG_FL] = { .conv = adcToYaw_FL, .sample = sampleADCSensorSwangle, .readingMin = SWANGLE_90DEG_LEFT, .readingMax = SWANGLE_90DEG_RIGHT, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_SWANGLE },
+    [SENSOR_CH_SWANGLE_DEG_FR] = { .conv = adcToYaw_FR, .sample = sampleADCSensorSwangle, .readingMin = SWANGLE_90DEG_LEFT, .readingMax = SWANGLE_90DEG_RIGHT, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_SWANGLE },
     [SENSOR_CH_VOLTAGE_MV] = {
         .conv = adcToBusVoltage_mV,
         .sample = sampleADCSensor,

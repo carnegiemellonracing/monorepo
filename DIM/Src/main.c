@@ -11,10 +11,10 @@
 #include <CMR/panic.h>  // cmr_panic()
 #include <CMR/rcc.h>    // RCC interface
 
-#include "adc.h"        // Board-specific ADC interface
-#include "can.h"        // Board-specific CAN interface
+//#include "adc.h"        // Board-specific ADC interface
+//#include "can.h"        // Board-specific CAN interface
 #include "gpio.h"       // Board-specific GPIO interface
-#include "newState.h"
+#include "state.h"
 #include "tft.h"
 
 /** @brief Status LED priority. */
@@ -54,9 +54,6 @@ static void statusLED(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     for (;;) {
         vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
-        cmr_gpioWrite(GPIO_LED_AMS, toggle);
-        cmr_gpioWrite(GPIO_LED_IMD, toggle);
-        cmr_gpioWrite(GPIO_LED_BSPD, toggle);
         cmr_gpioWrite(GPIO_LED_STATUS, toggle);
         toggle = !toggle;
     }
@@ -70,9 +67,7 @@ static void statusLED(void *pvParameters) {
 // * @return The VSM latch matrix.
 // */
 uint8_t getVSMlatchMatrix(void) {
-    cmr_canRXMeta_t *statusVSMMeta = canRXMeta + CANRX_VSM_STATUS;
-    volatile cmr_canVSMStatus_t *statusVSM =
-        (void *)statusVSMMeta->payload;
+    volatile cmr_canVSMStatus_t *statusVSM = getPayload(CANRX_VSM_STATUS);
 
     return statusVSM->latchMatrix;
 }
@@ -98,10 +93,11 @@ static void errorLEDs(void *pvParameters) {
         latch = getVSMlatchMatrix();
         cmr_gpioWrite(GPIO_LED_IMD, latch & CMR_CAN_VSM_LATCH_IMD);
         cmr_gpioWrite(GPIO_LED_AMS, latch & CMR_CAN_VSM_LATCH_AMS);
-        cmr_gpioWrite(GPIO_LED_BSPD, latch & CMR_CAN_VSM_LATCH_BSPD);
+        cmr_gpioWrite(GPIO_LED_BSPD, latch & CMR_CAN_VSM_LATCH_IMD);
 
     }
 }
+
 
 /**
  * @brief Firmware entry point.
@@ -112,17 +108,18 @@ static void errorLEDs(void *pvParameters) {
  */
 int main(void) {
     // System initialization.
-     HAL_Init();
-     
+    HAL_Init();
+
     cmr_rccSystemClockEnable();
 
     // Peripheral configuration.
-    gpioInit(); 
-    //canInit();
-    //adcInit();
+    gpioInit();
+    canInit();
+    adcInit();
+    tftInit();
     stateMachineInit();
     sensorsInit();
-    tftInit();
+
 
     cmr_taskInit(
         &statusLED_task,

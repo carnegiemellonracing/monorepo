@@ -9,7 +9,7 @@
 #include "motors.h"
 
 /** @brief  min brake pressure for starting to apply regen */
-const uint8_t brake_pressure_start = 50;
+const uint16_t brake_pressure_start = 50;
 
 /** @brief  min paddle pressure for starting to apply regen */
 const uint8_t paddle_pressure_start = 30;
@@ -53,9 +53,9 @@ float getPackVoltage() {
 
     // If HVI Sense hasn't timed out, use it. Otherwise, use batt voltage
     float measured_voltage_V = batt_voltage_V;
-    if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[CANRX_TRAC_HVI_SENSE], xTaskGetTickCount()) == 0) {
-        measured_voltage_V = hv_voltage_V;
-    }
+    // if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[CANRX_TRAC_HVI_SENSE], xTaskGetTickCount()) == 0) {
+    //     measured_voltage_V = hv_voltage_V;
+    // }
 
     return measured_voltage_V;
 }
@@ -65,7 +65,7 @@ float getPackCurrent() {
 //    volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
 //    return ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
 	volatile cmr_canHVIHeartbeat_t *HVISense = canVehicleGetPayload(CANRX_HVI_SENSE);
-	return ((float)(HVISense->packCurrent_dA)) * 1e-1f; // convert to amps
+	return (((float)(HVISense->packCurrent_dA)) * 1e-1f) + 1.25; // convert to amps
 }
 
 /** @brief returns the pack power measured by HVISense */
@@ -90,7 +90,7 @@ float getMinCellVoltage() {
 /**
  * @brief Convert steering wheel angle to steering angle (the orientation of the front wheels)
  */
-float swAngleMillidegToSteeringAngleRad(int16_t swAngle_millideg) {
+float swAngleMillidegToSteeringAngleRad(int32_t swAngle_millideg) {
     float steering_angle_deg = ((float)swAngle_millideg); // convert steering wheel angle into steering angle SIKE BITCHED ALREADY GOT STEERING ANGLE
     float steering_angle_rad = steering_angle_deg * 0.001f * M_PI / 180.0f;
     return  steering_angle_rad; // convert to rads
@@ -113,7 +113,7 @@ bool canTrustSBGVelocity(bool ignore_valid_bit) {
 // REGEN SEGMENT
 
 // returns if regen was activated. Updates throttlePos_u8 in paddle regen
-bool setRegen(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM){
+bool setRegen(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM){
     // get the regen type
     uint8_t pedal_regen_strength = 0;
     //bool retval1 = getProcessedValue(&pedal_regen_strength, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
@@ -139,7 +139,7 @@ bool setRegen(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8, int32_t avgM
  * @brief returns a negative torque limit in Nm after paddle regen request,
  *        or changes value of requested throttle
 */
-float getRegenTorqueReq(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8){
+float getRegenTorqueReq(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8){
     // get the regen type
     uint8_t pedal_regen_strength = 0;
     bool retval1 = getProcessedValue(&pedal_regen_strength, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
@@ -174,7 +174,7 @@ float getRegenTorqueReq(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8){
     return 0.0f;
 }
 
-bool setPaddleRegen(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM, uint8_t paddle_pressure, uint8_t paddle_regen_strength) {
+bool setPaddleRegen(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM, uint8_t paddle_pressure, uint8_t paddle_regen_strength) {
     if (paddle_pressure < paddle_pressure_start) return false;
 
     float paddle_request = ((float)(paddle_pressure - paddle_pressure_start)) * (((float) paddle_regen_strength) / (100.0f));
@@ -190,7 +190,7 @@ bool setPaddleRegen(uint8_t *throttlePos_u8, uint8_t brakePressurePsi_u8, int32_
 
 
     float reqTorque = maxFastTorque_Nm * pedal_request / ((float)(UINT8_MAX));
-    float recuperative_limit = -21.0f;//getMotorRegenerativeCapacity(avgMotorSpeed_RPM);
+    float recuperative_limit = getMotorRegenerativeCapacity(avgMotorSpeed_RPM);
 
     // Requested recuperation that is less than the maximum-power regen point possible
     if (reqTorque > recuperative_limit) {
@@ -209,7 +209,7 @@ static float test_local() {
 	return 42.42f;
 }
 
-bool setParallelRegen(uint8_t throttlePos_u8, uint8_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM) {
+bool setParallelRegen(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM) {
 
     // return if regen is not needed
     if (brakePressurePsi_u8 < braking_threshold_psi) {
@@ -221,7 +221,7 @@ bool setParallelRegen(uint8_t throttlePos_u8, uint8_t brakePressurePsi_u8, int32
 
     // DIM requested regen_force_multiplier
     uint8_t regen_force_multiplier_int8 = 80;//0;
-    ret_val &= getProcessedValue(&regen_force_multiplier_int8, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
+    // ret_val &= getProcessedValue(&regen_force_multiplier_int8, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
 
     // process the max regen force requested:
     float regen_force_multiplier_f = (float)regen_force_multiplier_int8 / 100.0f;

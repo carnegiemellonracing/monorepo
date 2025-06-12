@@ -45,7 +45,7 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 25
     },
-    [CANRX_EMD_MEASURE] = {   
+    [CANRX_EMD_MEASURE] = {
         .canID = CMR_CANID_EMD_MEASUREMENT_RETX,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
@@ -79,7 +79,11 @@ static void calcPower(cmr_canHVIHeartbeat_t *heartbeat) {
 
     heartbeat->packVoltage_cV = voltage;
     heartbeat->packCurrent_dA = current;
-    heartbeat->packPower_W = 0;   
+    heartbeat->packPower_W = power;   
+
+	uint16_t voltageRaw, currentRaw, voltage;
+	voltageRaw = adcRead(ADC_VSENSE);
+	currentRaw = adcRead(ADC_ISENSE);
 }
 
 /**

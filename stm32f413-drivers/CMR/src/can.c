@@ -338,7 +338,7 @@ void cmr_canInit(
  */
 int cmr_canTX(
     cmr_can_t *can,
-    uint16_t id, const void *data, size_t len,
+    uint16_t id, const void *data, uint8_t len,
     TickType_t timeout
 ) {
     CAN_TxHeaderTypeDef txHeader = {

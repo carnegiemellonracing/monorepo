@@ -39,6 +39,13 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .errorFlag = CMR_CAN_ERROR_NONE,
         .warnFlag = CMR_CAN_WARN_NONE
     },
+    [CANRX_VEH_SWANGLE_FSM] = {
+        .canID = CMR_CANID_FSM_SWANGLE,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25,
+        .errorFlag = CMR_CAN_ERROR_NONE,
+        .warnFlag = CMR_CAN_WARN_NONE
+    },
     [CANRX_VEH_REQUEST_DIM] = {
         .canID = CMR_CANID_DIM_REQUEST,
         .timeoutError_ms = UINT32_MAX,
@@ -107,49 +114,49 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
 /** @brief Metadata for tractive CAN message reception. */
 cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
     [CANRX_TRAC_INV_FL_ACT1] = {
-        .canID = CMR_CANID_AMK_1_ACT_1,
+        .canID = CMR_CANID_AMK_FL_ACT_1,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_AMK_FL | CMR_CAN_WARN_CDC_AMK_TIMEOUT
     },
     [CANRX_TRAC_INV_FL_ACT2] = {
-        .canID = CMR_CANID_AMK_1_ACT_2,
+        .canID = CMR_CANID_AMK_FL_ACT_2,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_AMK_FL | CMR_CAN_WARN_CDC_AMK_TIMEOUT
     },
     [CANRX_TRAC_INV_FR_ACT1] = {
-        .canID = CMR_CANID_AMK_3_ACT_1,
+        .canID = CMR_CANID_AMK_FR_ACT_1,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_AMK_FR | CMR_CAN_WARN_CDC_AMK_TIMEOUT
     },
     [CANRX_TRAC_INV_FR_ACT2] = {
-        .canID = CMR_CANID_AMK_3_ACT_2,
+        .canID = CMR_CANID_AMK_FR_ACT_2,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_AMK_FR | CMR_CAN_WARN_CDC_AMK_TIMEOUT
     },
     [CANRX_TRAC_INV_RL_ACT1] = {
-        .canID = CMR_CANID_AMK_4_ACT_1,
+        .canID = CMR_CANID_AMK_RL_ACT_1,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_AMK_RL | CMR_CAN_WARN_CDC_AMK_TIMEOUT
     },
     [CANRX_TRAC_INV_RL_ACT2] = {
-        .canID = CMR_CANID_AMK_4_ACT_2,
+        .canID = CMR_CANID_AMK_RL_ACT_2,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_AMK_RL | CMR_CAN_WARN_CDC_AMK_TIMEOUT
     },
     [CANRX_TRAC_INV_RR_ACT1] = {
-        .canID = CMR_CANID_AMK_2_ACT_1,
+        .canID = CMR_CANID_AMK_RR_ACT_1,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_AMK_RR | CMR_CAN_WARN_CDC_AMK_TIMEOUT
     },
     [CANRX_TRAC_INV_RR_ACT2] = {
-        .canID = CMR_CANID_AMK_2_ACT_2,
+        .canID = CMR_CANID_AMK_RR_ACT_2,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_AMK_RR | CMR_CAN_WARN_CDC_AMK_TIMEOUT

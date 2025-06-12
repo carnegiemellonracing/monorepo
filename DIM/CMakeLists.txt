@@ -65,7 +65,9 @@ add_library(freertos_config INTERFACE)
 target_include_directories(freertos_config SYSTEM
     INTERFACE
     ${CMAKE_SOURCE_DIR}/Inc
-    ${CMAKE_SOURCE_DIR}/../stm32f413-drivers/CMR/include) # The config file directory
+    ${CMAKE_SOURCE_DIR}/../stm32f413-drivers/CMR/include # The config file directory
+    ${CMAKE_SOURCE_DIR}/../stm32f413-drivers/DIM-ESE/include
+    ${CMAKE_SOURCE_DIR}/../stm32f413-drivers/DIM-ESE/content) # The config file directory
 target_compile_definitions(freertos_config
     INTERFACE
     configASSERT
@@ -122,9 +124,9 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/syscall.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/sysmem.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/tft.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/tftContent.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/tftDL.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/newState.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/state.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/tftContent.c
 
 )
 
@@ -164,14 +166,13 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     -Wall
     -Wshadow
     -Wextra
-    -Wpedantic
     -Wformat-overflow # Detects buffer overflow (sprintf, snprintf, etc.)
     -Wformat-truncation # Detects buffer truncation (sprintf, snprintf, etc.)
     -Wdouble-promotion # Doubles do not natively use the FPU on a Cortex-M4F
     -fno-common # Do not allow common global symbols
     -Wundef # Detects undefined macros which would silently evaluate to 0
+    -Wimplicit-function-declaration
     $<$<COMPILE_LANGUAGE:C>:
-    -O0
     -ffunction-sections # Place each function in its own section in .text
     -fdata-sections
     -fstack-usage
@@ -180,7 +181,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     $<$<COMPILE_LANGUAGE:ASM>:-x assembler-with-cpp -MMD -MP>
     $<$<CONFIG:Static>:
     -fanalyzer
-    -fdump-analyzer
+    -fdiagnostics-format=sarif-file
     >
     $<$<CONFIG:Debug>:-Og -g3 -ggdb>
     $<$<CONFIG:Release>:-Og -g0>

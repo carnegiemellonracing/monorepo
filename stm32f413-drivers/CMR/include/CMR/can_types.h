@@ -109,8 +109,8 @@ typedef enum {
     CMR_CAN_WARN_VSM_DIM_TIMEOUT = (1 << 11),
     /** @brief VSM hasn't received PTCf heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_PTC_TIMEOUT = (1 << 10),
-    /** @brief VSM hasn't received APC heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_APC_TIMEOUT = (1 << 8),
+    /** @brief VSM hasn't received HVI heartbeat for 25 ms. */
+    CMR_CAN_WARN_VSM_HVI_TIMEOUT = (1 << 8),
     /** @brief VSM is rejecting DIM state request. */
     CMR_CAN_WARN_VSM_DIM_REQ_NAK = (1 << 7),
 
@@ -217,8 +217,8 @@ typedef enum {
     /** @brief At least one
  message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_PTC = (1 << 2),
-    /** @brief At least one Auxiliary Power Controller message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_APC = (1 << 0)
+    /** @brief HVI Timeout. */
+    CMR_CAN_VSM_ERROR_SOURCE_HVI = (1 << 0)
 } cmr_canVSMErrorSource_t;
 
 /** @brief Bit definitions for latchMatrix in cmr_canVSMErrors_t. */
@@ -470,6 +470,10 @@ typedef struct {
     uint8_t powerLimit_kW;
 } cmr_canCDCPowerLimit_t;
 
+typedef struct {
+    float power_limit_W;
+} cmr_canCDCPowerLimitLog_t;
+
 /** @brief Central Dynamics Controller Safety Filter states. */
 typedef struct {
 	float power_limit_max_violation_W;  /**< @brief the maximum amount in W the power hard-limit is violated, expect 0.0 */
@@ -588,12 +592,19 @@ typedef struct {
 typedef struct {
     uint8_t torqueRequested;            /**< @brief Torque requested (0-255). */
     uint8_t throttlePosition;           /**< @brief Throttle position (0-255). */
-    uint8_t brakePressureFront_PSI;     /**< @brief Front brake pressure. */
+    uint16_t brakePressureFront_PSI;     /**< @brief Front brake pressure. */
     uint8_t brakePedalPosition;         /**< @brief Brake pedal position (0-255). */
-
-    /** @brief Steering wheel angle (-180 to 180 degrees). */
-    int16_t steeringWheelAngle_millideg;
+    
 } cmr_canFSMData_t;
+
+typedef struct {
+    /** @brief Steering wheel angle (-180 to 180 degrees). 
+     * Calculated from ADC values using transfer function.
+    */
+    int32_t steeringWheelAngle_millideg_FR;
+    int32_t steeringWheelAngle_millideg_FL;
+
+} cmr_canFSMSWAngle_t;
 
 /** @brief Front Sensor Module raw pedal positions. */
 typedef struct {
@@ -843,6 +854,123 @@ typedef struct {
     uint8_t status;                 /**< @brief Status bitmasks as AUTO_STATUS definition. */
 } cmr_canSBGAutomotive_t;
 
+// Endianness hell.
+typedef struct {
+    uint8_t msb;
+    uint8_t lsb;
+} big_endian_16_t;
+
+
+typedef union {
+    struct {
+        uint8_t lsb;
+        uint8_t msb;
+    } data;
+    int16_t parsed;
+} int16_parser;
+
+static int16_t parse_int16(volatile big_endian_16_t *big) {
+    static int16_parser parser;
+    parser.data.msb = big->msb;
+    parser.data.lsb = big->lsb;
+    return parser.parsed;
+} 
+
+typedef struct {
+    big_endian_16_t q0;
+    big_endian_16_t q1;
+    big_endian_16_t q2;
+    big_endian_16_t q3;
+} cmr_canMovellaQuaternion_t;
+
+typedef struct {
+    big_endian_16_t yaw;
+    big_endian_16_t pitch;
+    big_endian_16_t roll;
+} cmr_canMovellaEulerAngles_t;
+
+typedef struct {
+    big_endian_16_t gyro_x;
+    big_endian_16_t gyro_y;
+    big_endian_16_t gyro_z;
+} cmr_canMovellaIMUGyro_t;
+
+typedef struct {
+    big_endian_16_t accel_x;
+    big_endian_16_t accel_y;
+    big_endian_16_t accel_z;
+} cmr_canMovellaIMUAccel_t;
+
+typedef struct {
+    big_endian_16_t vel_x;
+    big_endian_16_t vel_y;
+    big_endian_16_t vel_z;
+} cmr_canMovellaVelocity_t;
+
+typedef struct {
+    
+    // https://mtidocs.movella.com/messages$XDI_StatusWord
+    
+    // Bits 24-31.
+    // LSBit first.
+    uint8_t filter_mode_1:2;
+    uint8_t have_gnss_time_pulse:1;
+    uint8_t rtk_status:2;
+    uint8_t reserved_4:3;
+    
+    // Bits 16-23.
+    // LSBit first.
+    uint8_t clipflag_mag_z:1;
+    uint8_t reserved_2:2;
+    uint8_t clipping_indication:1;
+    uint8_t reserved_3:1;
+    uint8_t sync_in_marker:1;
+    uint8_t sync_out_marker:1;
+    uint8_t filter_mode_2:1;
+
+    // Bits 8-15.
+    // LSBit first.
+    uint8_t clipflag_acc_x:1;
+    uint8_t clipflag_acc_y:1;
+    uint8_t clipflag_acc_z:1;
+    uint8_t clipflag_gyr_x:1;
+    uint8_t clipflag_gyr_y:1;
+    uint8_t clipflag_gyr_z:1;
+    uint8_t clipflag_mag_x:1;
+    uint8_t clipflag_mag_y:1;
+    
+    // Bits 0-7.
+    // LSBit first.
+    uint8_t self_test:1;
+    uint8_t filter_valid:1;
+    uint8_t gnss_fix:1;
+    uint8_t no_rotation_update:2;
+    uint8_t representative_motion:1;
+    uint8_t clock_bias_estimation:1;
+    uint8_t reserved_1:1;
+
+} cmr_canMovellaStatus_t;
+
+typedef struct {
+    int16_t cog_x;
+    int16_t cog_y;
+    float slip_angle;
+} cmr_canCOGVelocity_t;
+
+typedef struct {
+    int16_t fl_x;
+    int16_t fl_y;
+    int16_t fr_x;
+    int16_t fr_y;
+} cmr_canFrontWheelVelocity_t;
+
+typedef struct {
+    int16_t rl_x;
+    int16_t rl_y;
+    int16_t rr_x;
+    int16_t rr_y;
+} cmr_canRearWheelVelocity_t;
+
 // ------------------------------------------------------------------------------------------------
 // IZZIE Racing sensors
 
@@ -987,17 +1115,15 @@ typedef struct {
 typedef uint8_t cmr_canDAQTest_t; /** @brief DAQ Test type. MSB is to start/stop bits, rest are test id **/
 
 typedef struct {
-    uint16_t linpot_front_mm;       /**< @brief Front damper length in mm */
-    uint16_t linpot_front_adc;      /**< @brief Front linpot ADC Value */
-    uint16_t linpot_rear_mm;        /**< @brief Rear damper length in mm */
-    uint16_t linpot_rear_adc;       /**< @brief Rear linpot ADC Value */
-} cmr_canDAQLinpot_t;
+    uint32_t therm_1;       /**< @brief Front damper length in mm */
+    uint32_t therm_2;        /**< @brief Rear damper length in mm */
+} cmr_canDAQTherm_t;
 
 typedef struct {
-    int16_t differential_voltage_uv;
-    int16_t force_output_N;
-    int16_t internal_temp;
-    int16_t external_temp;
+    big_endian_16_t differential_voltage_uv;
+    big_endian_16_t force_output_N;
+    big_endian_16_t internal_temp;
+    big_endian_16_t external_temp;
 } cmr_canIZZELoadCell_t;
 
 typedef struct {
@@ -1007,5 +1133,11 @@ typedef struct {
 typedef struct {
 	uint32_t test_id;
 } cmr_canTestID_t;
+
+typedef struct {
+    uint16_t cell1;
+    uint16_t cell2;
+    uint16_t cell3;
+} cmr_canLVBMS_Voltage;
 
 #endif /* CMR_CAN_TYPES_H */
