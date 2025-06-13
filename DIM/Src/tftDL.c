@@ -571,6 +571,8 @@ void tftDL_RTDUpdate(
         case RR:
             rr_color_cmd = red;
             break;
+        default:
+            break;
     }
     *fl_color = fl_color_cmd;
     *fr_color = fr_color_cmd;
@@ -685,7 +687,7 @@ void tftDL_errorUpdate(
 
     snprintf(
         glvVoltage_V_str->buf, sizeof(glvVoltage_V_str->buf),
-        "%2uV", err->glvVoltage_V);
+        "%2luV", err->glvVoltage_V);
 
     /* Timeouts */
     tftDL_showErrorState(ESE_PTC_COLOR, err->ptcTimeout);
