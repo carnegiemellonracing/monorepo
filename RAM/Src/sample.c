@@ -8,17 +8,18 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "sample.h"                         /* Interface */
-#include "parser.h"                         /* MAX_SIGNALS */
-#include "uart.h"                           /* transmit freq */
-#include "config.h"                         /* downsampling params */
-#include <stdlib.h>                         /* NULL */
-#include <stdint.h>                         /* Usual suspects */
-#include <string.h>                         /* memory calls */
-#include <math.h>                           /* round() */
-#include <cn-cbor/cn-cbor.h>                /* CBOR encoding */
-#include "FreeRTOSConfig.h"                 /* configASSERT */
+#include "sample.h" /* Interface */
 
+#include <cn-cbor/cn-cbor.h> /* CBOR encoding */
+#include <math.h>            /* round() */
+#include <stdint.h>          /* Usual suspects */
+#include <stdlib.h>          /* NULL */
+#include <string.h>          /* memory calls */
+
+#include "FreeRTOSConfig.h" /* configASSERT */
+#include "config.h"         /* downsampling params */
+#include "parser.h"         /* MAX_SIGNALS */
+#include "uart.h"           /* transmit freq */
 
 /**
  *  @brief Look up table for the maximum send counts on each signal according to
@@ -27,12 +28,8 @@
  *
  */
 const int count_freq_map[SAMPLE_NUM_FREQS] = {
-    [SAMPLE_0HZ] = 0,
-    [SAMPLE_1HZ] = 1,
-    [SAMPLE_5HZ] = 5,
-    [SAMPLE_10HZ] = 10,
-    [SAMPLE_50HZ] = 50,
-    [SAMPLE_100HZ] = 100,
+    [SAMPLE_0HZ] = 0,   [SAMPLE_1HZ] = 1,   [SAMPLE_5HZ] = 5,
+    [SAMPLE_10HZ] = 10, [SAMPLE_50HZ] = 50, [SAMPLE_100HZ] = 100,
 };
 
 sample_data_t raw_sample_data[MAX_SIGNALS];
@@ -54,11 +51,7 @@ static cn_cbor *msg;
 static cn_cbor_errback err;
 
 static ssize_t pack_msg(void) {
-    return cn_cbor_encoder_write(
-        raw_msg, 0,
-        sizeof(raw_msg),
-        msg
-    );
+    return cn_cbor_encoder_write(raw_msg, 0, sizeof(raw_msg), msg);
 }
 
 size_t worst_case_length(enum signal_sample_freq *allowance) {
@@ -66,16 +59,14 @@ size_t worst_case_length(enum signal_sample_freq *allowance) {
                                       * byte maps with keys <= 255
                                       * (probably always
                                       * going to be the case). */
-   size_t packed_len = 2;           /* CBOR starts with a
-                                     * 2-header byte sequence */
-   for (int i = 0; i < MAX_SIGNALS; i++) {
+    size_t packed_len = 2;           /* CBOR starts with a
+                                      * 2-header byte sequence */
+    for (int i = 0; i < MAX_SIGNALS; i++) {
         /* For our message structure, we send  */
-        size_t availible_length = \
-            raw_sample_data[i].count * raw_sample_data[i].len;
-        size_t capped_length = count_freq_map[allowance[i]] * \
-            raw_sample_data[i].len;
+        size_t available_length = raw_sample_data[i].count * raw_sample_data[i].len;
+        size_t capped_length = count_freq_map[allowance[i]] * raw_sample_data[i].len;
 
-        if (availible_length == 0) {
+        if (available_length == 0) {
             /* Don't need to pay overhead for 0 byte vectors */
             continue;
         }
@@ -83,8 +74,8 @@ size_t worst_case_length(enum signal_sample_freq *allowance) {
         /* There is a hard limit imposed on this signal's representation in the
          * sample vector, but we might not yet meet that; Use whichever is
          * smaller to calculate the length thus far. */
-        if (availible_length <= capped_length) {
-            packed_len += availible_length;
+        if (available_length <= capped_length) {
+            packed_len += available_length;
         } else {
             packed_len += capped_length;
         }
@@ -92,7 +83,7 @@ size_t worst_case_length(enum signal_sample_freq *allowance) {
         /* Factor in the overhead for a given integer key:bytestring value
          * pair. */
         packed_len += byte_string_overhead;
-   }
+    }
 
     return packed_len;
 }
@@ -127,8 +118,9 @@ void downsample(void) {
     /* Current cutoff for each signal being sampled in this packet */
     enum signal_sample_freq sample_freq_allowance[MAX_SIGNALS];
     for (size_t i = 0; i < MAX_SIGNALS; i++) {
-        enum signal_sample_freq sig_cutoff = (enum signal_sample_freq) \
-                current_settings.signal_cfg[i].sample_cutoff_freq;
+        enum signal_sample_freq sig_cutoff =
+            (enum signal_sample_freq)current_settings.signal_cfg[i]
+                .sample_cutoff_freq;
         configASSERT(sig_cutoff < SAMPLE_NUM_FREQS);
         /* Update the allowance */
         sample_freq_allowance[i] = sig_cutoff;
@@ -139,11 +131,8 @@ void downsample(void) {
     /* Start at the highest frequency we can ingest at.
      * @warning this does not automatically reflect its true value,
      * MAX_SAMPLEVEC_LEN/MIN_SAMPLE_LENGTH/tx_freq_dhz */
-    for (
-        enum signal_sample_freq current_level = SAMPLE_100HZ;
-        current_level > SAMPLE_0HZ;
-        current_level--
-    ) {
+    for (enum signal_sample_freq current_level = SAMPLE_100HZ;
+         current_level > SAMPLE_0HZ; current_level--) {
         for (size_t i = 0; i < MAX_SIGNALS; i++) {
             if (worst_case_length(sample_freq_allowance) < MAX_MESSAGE_LEN) {
                 break;
@@ -152,8 +141,9 @@ void downsample(void) {
                 continue;
             }
 
-            enum signal_sample_freq sig_cutoff = (enum signal_sample_freq) \
-                current_settings.signal_cfg[i].sample_cutoff_freq;
+            enum signal_sample_freq sig_cutoff =
+                (enum signal_sample_freq)current_settings.signal_cfg[i]
+                    .sample_cutoff_freq;
             configASSERT(sig_cutoff < SAMPLE_NUM_FREQS);
 
             /* Math on enums is pretty terrible, but it makes sense here. */
@@ -193,11 +183,12 @@ void downsample(void) {
          * keep index 0, increment to index 210/50, round this to get the index
          * to actually keep, and continue. At the end, we'll end up with very
          * close to (but never more than) 50 samples. */
-        float float_increment = ((float) sample->count) / ((float) count_allowance);
+        float float_increment =
+            ((float)sample->count) / ((float)count_allowance);
 
         /* If our allowance was too generous, use real_index~~float_index */
-        if (float_increment < 1.f) {
-            float_increment = 1.f;
+        if (float_increment < 1.0f) {
+            float_increment = 1.0f;
         }
 
         /* Time to actually cull samples. Outputs are in the reduced
@@ -205,13 +196,9 @@ void downsample(void) {
         /* Could memmove as we go, but I think this is simpler to understand. */
         uint8_t temp_samplevec[MAX_SAMPLEVEC_LEN];
         int new_samplevec_len = 0;
-        for (
-            float fidx = 0.f;
-            ;
-            fidx += float_increment
-        ) {
+        for (float fidx = 0.f;; fidx += float_increment) {
             /* Get the adjusted floating value. */
-            int real_idx = (int) round(fidx);
+            int real_idx = (int)round(fidx);
 
             /* We may or may not have exactly the right number of samples,
              * But we'll a) be pretty close, and b) certainly not go over. */
@@ -220,11 +207,8 @@ void downsample(void) {
             }
 
             /* Copy this sample value over to save it */
-            memcpy(
-                &temp_samplevec[sample->len * new_samplevec_len],
-                &sample->values[sample->len * real_idx],
-                sample->len
-            );
+            memcpy(&temp_samplevec[sample->len * new_samplevec_len],
+                   &sample->values[sample->len * real_idx], sample->len);
             new_samplevec_len++;
         }
 
@@ -248,19 +232,17 @@ void sampleClearMsg(void) {
  * @return ssize_t The (new) length of raw_msg
  */
 ssize_t sampleFmtMsg(void) {
-//    downsample();
+    //    downsample();
 
     for (size_t i = 0; i < MAX_SIGNALS; i++) {
         if (raw_sample_data[i].count) {
-        	cn_cbor *data = cn_cbor_data_create(
+            cn_cbor *data = cn_cbor_data_create(
                 raw_sample_data[i].values,
-                raw_sample_data[i].count * raw_sample_data[i].len,
-                &err
-            );
+                raw_sample_data[i].count * raw_sample_data[i].len, &err);
 
             /* TODO handle properly */
             configASSERT(data != NULL);
-            int64_t kind = (int64_t) i;
+            int64_t kind = (int64_t)i;
 
             /* Key is unique by virtue of monotonicity of i */
             bool ret = cn_cbor_mapput_int(msg, kind, data, &err);
@@ -286,19 +268,19 @@ ssize_t sampleFmtMsg(void) {
  */
 void addSample(struct sample *s) {
     for (int i = 0; i < s->values_parsed; i++) {
-        struct sample_data *store = &raw_sample_data[s->sig[i].kind];
-        if (store->count >= MAX_SAMPLEVEC_LEN / s->sig[i].len) {
+        struct sample_info currSample = s->sig[i];
+        struct sample_data *store = &raw_sample_data[currSample.kind];
+        if (store->count >= MAX_SAMPLEVEC_LEN / currSample.len) {
             /* Uh oh */
             return;
         }
 
-        void *data_fill_pt = &store->values[store->count * s->sig[i].len];
-        memcpy(data_fill_pt, &s->v[i], s->sig[i].len);
-        store->len = s->sig[i].len;
+        void *data_fill_pt = &store->values[store->count * currSample.len];
+        memcpy(data_fill_pt, &s->v[i], currSample.len);
+        store->len = currSample.len;
         store->count++;
     }
 }
-
 /**
  * @brief Initialize the sample manager (CBOR things)
  */

@@ -64,15 +64,6 @@ void set_default_settings(void) {
 }
 
 /**
- * @brief Check current_settings for any out-of-ranges.
- *
- * @note Panics on failure.
- *
- */
-static void validate_settings() {
-}
-
-/**
  * @brief Commit current settings to flash after validating
  *
  * @note Copies the (unexposed) canary in to make sure
@@ -81,7 +72,6 @@ static void validate_settings() {
 void commit_settings(void) {
     xSemaphoreTake(cfg_lock, portMAX_DELAY);
     memcpy(current_settings.canary, CANARY, sizeof(current_settings.canary));
-    validate_settings();
     cmr_configCommit(&cfg);
     xSemaphoreGive(cfg_lock);
 }

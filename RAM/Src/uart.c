@@ -117,38 +117,42 @@ static void uartRX_Task(void *pvParameters)
 {
     (void)pvParameters;
     TickType_t last_wake = xTaskGetTickCount();
-    struct
-    {
+    typedef struct {
         cmr_uartMsg_t msg;
         uint8_t buf[200];
         size_t bytes_present;
-    } rx[NUM_RX_BUFFERS] = {
+    } RxBuffer;
+
+    RxBuffer rx[NUM_RX_BUFFERS] = {
         [0 ... NUM_RX_BUFFERS - 1] = {
             .bytes_present = 0,
+            // .msg and .buf are zero-initialized implicitly (if static/global)
         },
     };
+
 
     while (1)
     {
         // QUESTION why cant you do NUM_RX_BUFFERS
         for (size_t i = 0; i < NUM_RX_BUFFERS; i++)
         {
-            size_t space_left = sizeof(rx[i].buf) - rx[i].bytes_present;
-            cmr_uartMsgInit(&rx[i].msg);
+            RxBuffer curr = rx[i];
+            size_t space_left = sizeof(curr.buf) - curr.bytes_present;
+            cmr_uartMsgInit(&curr.msg);
             cmr_uartRX(
-                &uart.port, &rx[i].msg,
-                rx[i].buf + rx[i].bytes_present, space_left,
+                &uart.port, &curr.msg,
+                curr.buf + curr.bytes_present, space_left,
                 CMR_UART_RXOPTS_IDLEABORT);
-            size_t rxLen = cmr_uartMsgWait(&rx[i].msg);
-            rx[i].bytes_present += rxLen;
+            size_t rxLen = cmr_uartMsgWait(&curr.msg);
+            curr.bytes_present += rxLen;
 
             /* Try to parse out a cbor structure from the received data.
              * We may have been sent back-to-back, so assume the worst. */
             cn_cbor *command = NULL;
             size_t bytes_parsed;
-            for (size_t buflen = 1; buflen <= rx[i].bytes_present; buflen++)
+            for (size_t buflen = 1; buflen <= curr.bytes_present; buflen++)
             {
-                command = cn_cbor_decode(rx[i].buf, buflen, &err);
+                command = cn_cbor_decode(curr.buf, buflen, &err);
                 if (command != NULL)
                 {
                     bytes_parsed = buflen;
@@ -156,11 +160,11 @@ static void uartRX_Task(void *pvParameters)
                 }
             }
 
-            if (command == NULL && rx[i].bytes_present == sizeof(rx[i].buf))
+            if (command == NULL && curr.bytes_present == sizeof(curr.buf))
             {
                 /* If we didn't parse a command out, and our buffer is full,
                  * drop the buffer and continue on with our lives */
-                rx[i].bytes_present = 0;
+                curr.bytes_present = 0;
                 continue;
             }
             else if (command == NULL)
@@ -173,10 +177,10 @@ static void uartRX_Task(void *pvParameters)
             /* We have a valid command after parsing some number of bytes.
              * Consume that number of bytes, and make use of the command. */
             memmove(
-                rx[i].buf,
-                rx[i].buf + bytes_parsed,
-                rx[i].bytes_present - bytes_parsed);
-            rx[i].bytes_present -= bytes_parsed;
+                curr.buf,
+                curr.buf + bytes_parsed,
+                curr.bytes_present - bytes_parsed);
+            curr.bytes_present -= bytes_parsed;
 
             handle_command(command);
 

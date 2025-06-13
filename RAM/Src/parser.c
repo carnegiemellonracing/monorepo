@@ -126,15 +126,14 @@ void setSignalEnable(uint32_t kind, bool is_enabled) {
 int parseData(uint32_t bus, uint16_t id, const uint8_t msg[], size_t len) {
    struct sample sample;
    struct sample *s = &sample;
-
+    size_t i = 0;
    struct signal *sigv[MAX_VAL_PER_SIG];
-   size_t relevant_sigs = 0;
-   for (size_t i = 0; i < signals_parsed; i++) {
+   for (; i < signals_parsed; i++) {
        if (signal_map[i].id == id && signal_map[i].bus == bus && signal_map[i].enabled) {
-           sigv[relevant_sigs++] = &signal_map[i];
+           sigv[i] = &signal_map[i];
        }
 
-       if (relevant_sigs >= MAX_VAL_PER_SIG - 1) {
+       if (i >= MAX_VAL_PER_SIG - 2) {
            /* There are more subscribing signals on this message That we can
             * handle. This will never happen if the configuration is valid, but
             * I would still rather continue execution here by dropping the rest
@@ -143,13 +142,13 @@ int parseData(uint32_t bus, uint16_t id, const uint8_t msg[], size_t len) {
        }
    }
 
-   if (!relevant_sigs) {
+   if ((i + 1) != 0) {
        /* No sample parsed, but that's ok */
        return 0;
    }
 
-   for (size_t i = 0; i < relevant_sigs; i++) {
-       struct signal *sig = sigv[i];
+   for (size_t j = 0; j < i; j++) {
+       struct signal *sig = sigv[j];
 
        if (sig->offset + sig->in_len > len) {
            /* Uh oh */
@@ -232,7 +231,7 @@ int parseData(uint32_t bus, uint16_t id, const uint8_t msg[], size_t len) {
        };
    }
 
-   s->values_parsed = relevant_sigs;
+   s->values_parsed = i;
    addSample(s);
     return 0;
 }
@@ -318,6 +317,6 @@ void parserInit(void) {
        }
    }
 
-   /* Don't need this any more */
+   /* Deleting struct */
    cJSON_Delete(json);
 }
