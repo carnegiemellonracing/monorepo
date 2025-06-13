@@ -454,22 +454,21 @@ static void handle_pull_command(cn_cbor *pull, struct param_pair *response_data,
  * @param signal_en Signal enable CBOR object
  */
 static void handle_signal_enable_command(cn_cbor *signal_en) {
-    if (signal_en->type != CN_CBOR_BYTES && signal_en->type != CN_CBOR_TEXT) {
+    // Early validation
+    if (!signal_en ||
+        (signal_en->type != CN_CBOR_BYTES && signal_en->type != CN_CBOR_TEXT)) {
         return;
     }
 
-    uint32_t max_signals = MIN((uint32_t)signal_en->length, MAX_SIGNALS);
-    for (uint32_t i = 0; i < max_signals; i++) {
-        bool enable_signal = false;
+    const uint8_t *data = (signal_en->type == CN_CBOR_BYTES)
+                              ? signal_en->v.bytes
+                              : (const uint8_t *)signal_en->v.str;
 
-        if (signal_en->type == CN_CBOR_BYTES) {
-            enable_signal = (bool)signal_en->v.bytes[i];
-        } else {
-            enable_signal = (bool)signal_en->v.str[i];
-        }
+    uint32_t signal_count = MIN((uint32_t)signal_en->length, MAX_SIGNALS);
 
-        if (enable_signal) {
-            setSignalEnable(i, enable_signal);
+    for (uint32_t i = 0; i < signal_count; i++) {
+        if (data[i]) {  // Non-zero values enable the signal
+            setSignalEnable(i, true);
         }
     }
 }
@@ -482,29 +481,33 @@ static void handle_signal_enable_command(cn_cbor *signal_en) {
  * @param response_num_pairs Number of response pairs
  */
 static void send_response_packet(cn_cbor *response_packet,
-                                 struct param_pair *response_data,
+                                 const struct param_pair *response_data,
                                  int response_num_pairs) {
     static uint8_t response_buffer[MAX_MESSAGE_LEN];
+    cn_cbor_errback err = CN_CBOR_NO_ERROR;
 
-    if (response_num_pairs > 0) {
-        /* We have response data to include */
+    if (!response_packet || response_num_pairs < 0) {
+        return;
+    }
+
+    if (response_num_pairs > 0 && response_data) {
+        size_t data_size = response_num_pairs * sizeof(struct param_pair);
         cn_cbor *formatted_response_data = cn_cbor_data_create(
-            (uint8_t *)response_data,
-            response_num_pairs * sizeof(struct param_pair), &err);
+            (const uint8_t *)response_data, data_size, &err);
 
-        if (formatted_response_data) {
+        if (formatted_response_data && err == CN_CBOR_NO_ERROR) {
             cn_cbor_mapput_string(response_packet, "params",
                                   formatted_response_data, &err);
         }
     }
 
-    ssize_t ret = cn_cbor_encoder_write(
+    ssize_t encoded_size = cn_cbor_encoder_write(
         response_buffer, 0, sizeof(response_buffer), response_packet);
 
-    if (ret > 0) {
-        cmr_uartMsg_t txMsg;
-        cmr_uartMsgInit(&txMsg);
-        cmr_uartTX(&uart.port, &txMsg, response_buffer, ret);
-        cmr_uartMsgWait(&txMsg);
+    if (encoded_size > 0) {
+        cmr_uartMsg_t tx_msg;
+        cmr_uartMsgInit(&tx_msg);
+        cmr_uartTX(&uart.port, &tx_msg, response_buffer, encoded_size);
+        cmr_uartMsgWait(&tx_msg);
     }
 }
