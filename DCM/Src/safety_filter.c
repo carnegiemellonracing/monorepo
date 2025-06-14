@@ -446,8 +446,8 @@ void setTorqueLimsProtected (
     const float falloff_factor_by_temperature = getTemperatureFalloffFactor();
 
     // compute torque multipliers
-    const float accel_torque_multiplier = falloff_factor_by_pack_power * falloff_factor_by_cell_voltage_drop ;// falloff_factor_by_temperature;
-    const float regen_torque_multiplier = falloff_factor_by_cell_voltage_rise;// * falloff_factor_by_temperature;
+    const float accel_torque_multiplier = falloff_factor_by_pack_power * falloff_factor_by_cell_voltage_drop * falloff_factor_by_temperature;
+    const float regen_torque_multiplier = falloff_factor_by_cell_voltage_rise * falloff_factor_by_temperature;
 
     float filtered_accel_torque_multiplier = accel_torque_multiplier;
     filtered_accel_torque_multiplier = cmr_fir_filter_update(&accel_torque_multiplier_filter_state, accel_torque_multiplier);
