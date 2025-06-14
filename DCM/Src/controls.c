@@ -403,16 +403,9 @@ static void set_optimal_control(
 	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
 
     // Solver treats Mreq as around -z axis.
-<<<<<<< HEAD
-	optimizer_state.mreq = -getYawRateControlLeftRightBias(swAngle_millideg);
-
-	optimizer_state.theta_left = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
-    optimizer_state.theta_right = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
-=======
 	optimizer_state.mreq = getYawRateControlLeftRightBias(swAngle_millideg);
 	optimizer_state.theta_left = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
     optimizer_state.theta_right = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
->>>>>>> fix/post_hybrid_track_testings
 
 	solve(&optimizer_state);
 
@@ -1400,15 +1393,9 @@ float get_optimal_yaw_rate(float swangle_rad, float velocity_x_mps) {
     static const float natural_understeer_gradient = 0.011465f; //rad/g
 
     const float distance_between_axles_m = chassis_a + chassis_b;
-<<<<<<< HEAD
-    const float yaw_rate_setpoint_radps = swangle_rad * velocity_x_mps /
-        (distance_between_axles_m + velocity_x_mps * velocity_x_mps * natural_understeer_gradient);
-
-=======
     // const float yaw_rate_setpoint_radps = swangle_rad * velocity_x_mps /
     //     (distance_between_axles_m + velocity_x_mps * velocity_x_mps * natural_understeer_gradient);
     const float yaw_rate_setpoint_radps = swangle_rad * velocity_x_mps / distance_between_axles_m;
->>>>>>> fix/post_hybrid_track_testings
     return yaw_rate_setpoint_radps;
 }
 
@@ -1434,13 +1421,8 @@ float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
     yrcDebug.controls_current_yaw_rate = (int16_t)(1000.0f * actual_yaw_rate_radps_sae);
     yrcDebug.controls_target_yaw_rate = (int16_t)(1000.0f * optimal_yaw_rate_radps);
     yrcDebug.controls_pid = yrc_kp;
-<<<<<<< HEAD
-
-    const float left_right_bias = yrc_kp * (actual_yaw_rate_radps_sae - optimal_yaw_rate_radps);
-=======
     
     const float left_right_bias = yrc_kp * (optimal_yaw_rate_radps - actual_yaw_rate_radps_sae);
->>>>>>> fix/post_hybrid_track_testings
     return left_right_bias;
 }
 

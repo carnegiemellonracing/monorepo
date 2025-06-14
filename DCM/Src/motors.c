@@ -334,12 +334,8 @@ static void motorsCommand (
                 pumpsOn();
                 pumpsOff();
                 mcCtrlOff();
-<<<<<<< HEAD
-                set_optimal_control_with_regen(128, 10000, 10000);
-=======
 
                 set_optimal_control_with_regen(50, 10000, 10000); 
->>>>>>> fix/post_hybrid_track_testings
 
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = 0;
