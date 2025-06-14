@@ -117,6 +117,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/adc.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/can.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/sensors.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
 )
 
