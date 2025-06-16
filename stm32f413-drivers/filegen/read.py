@@ -27,4 +27,4 @@ with open(file, "r") as f: # open("canids_post.h", "w") as out:
 
 
 with open("stm32f413-drivers/filegen/canids_post.h", "w") as f:
-    f.write("\n".join(lines)) 
+    f.write("".join(lines)) 

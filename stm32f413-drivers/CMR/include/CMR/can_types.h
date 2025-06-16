@@ -503,7 +503,7 @@ typedef struct {
     int16_t frontRight_rpm; /**< @brief Wheel speed on 20e (rpm * 10). */
     int16_t rearLeft_rpm;   /**< @brief Wheel speed on 20e (rpm * 10). */
     int16_t rearRight_rpm;  /**< @brief Wheel speed on 20e (rpm * 10). */
-} cmr_canCDCWheelVelocity_t;
+} cmr_canCDCWheelVelocity;
 
 typedef struct {
     int16_t frontLeft_Nm;   /**< @brief Wheel torque on 20e (Nm * 10). */
@@ -593,9 +593,9 @@ typedef struct {
     uint8_t torqueRequested;            /**< @brief Torque requested (0-255). */
     uint8_t throttlePosition;           /**< @brief Throttle position (0-255). */
     uint16_t brakePressureFront_PSI;     /**< @brief Front brake pressure. */
-    uint8_t brakePedalPosition;         /**< @brief Brake pedal position (0-255). */
+    uint8_t brakePedalPosition_percent;         /**< @brief Brake pedal position (0-255). */
     
-} cmr_canFSMData_t;
+} cmr_canFSMData_t; 
 
 typedef struct {
     /** @brief Steering wheel angle (-180 to 180 degrees). 
@@ -611,7 +611,7 @@ typedef struct {
     uint16_t throttleLeftADC;   /**< @brief Raw left throttle value. */
     uint16_t throttleRightADC;  /**< @brief Raw right throttle value. */
     uint16_t brakePedalADC;     /**< @brief Raw brake pedal value. */
-} cmr_canFSMPedalsADC_t;
+} cmr_canFSMPedalsADC_t; 
 
 /** @brief Front Sensor Module raw sensors. */
 typedef struct {
