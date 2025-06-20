@@ -349,7 +349,7 @@ static void set_optimal_control(
 	// float tractive_cap_rr = getKappaFxGlobalMax(MOTOR_RR, UINT8_MAX, true).Fx;
 
     const float corner_weight_Nm = 80.0f;
-    bool use_true_downforce = true;
+    bool use_true_downforce = false;
     float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
     float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
     float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
@@ -1124,8 +1124,8 @@ void setLaunchControl(
         float clamp_rpm = (float) (getMotorSpeed_rpm(MOTOR_RL) + getMotorSpeed_rpm(MOTOR_RR)) * 0.5f;
         // 12Nm torque * 67.5N traction per Nm / 1600N downforce * 0.11 max slip ratio = 0.0556875
         // 1.11 / 1.0556875 = 1.051447516
-        setVelocityFloat(MOTOR_FL, clamp_rpm * 1.07f);
-        setVelocityFloat(MOTOR_FR, clamp_rpm * 1.07f);
+        setVelocityFloat(MOTOR_FL, clamp_rpm * 1.14f);
+        setVelocityFloat(MOTOR_FR, clamp_rpm * 1.14f);
 
         // Go crazy.
         // motor_rpm = 20000.0f;

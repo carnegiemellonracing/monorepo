@@ -32,7 +32,7 @@
 /** @brief Max amount of power the car should draw
  *  @warning Safety margins MUST BE STRICTLY POSITIVE
  */
-float power_upper_limit_W = 80000.0f; //michigan power limit
+float power_upper_limit_W = 78000.0f; //michigan power limit
 float power_safety_margin_W = 14000.0f;
 
 /** @brief Max temperature of the hottest cell
@@ -418,7 +418,7 @@ void setTorqueLimsProtected (
     // ********* Retroactive Limiting *********
 
     // limit power
-    const float falloff_factor_by_pack_power = 1;
+    const float falloff_factor_by_pack_power = getPackPowerFalloffFactor(pack_power_W);
     if (falloff_factor_by_pack_power == 0.0f) { // measured power over hard limit
         const float power_limit_violation_W = pack_current_A * pack_voltage_V - power_upper_limit_W;
         sf_state.power_limit_max_violation_W = fmaxf(sf_state.power_limit_max_violation_W, power_limit_violation_W);
