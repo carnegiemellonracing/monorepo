@@ -72,7 +72,7 @@
         "CMR_CANID_VSM_STATUS": "cmr_canVSMStatus_t"
     },
     "summary": {
-        "files_processed": 2795,
+        "files_processed": 2653,
         "files_with_matches": 7,
         "total_canids": 70
     }
