@@ -892,11 +892,11 @@ void setFastTorque (
     uint8_t throttlePos_u8
 ) {
     const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
-//    setTorqueLimsAllProtected(reqTorque, 0.0f);
-   setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
-   setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
-   setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
-   setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
+   setTorqueLimsAllProtected(reqTorque, 0.0f);
+//    setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
+//    setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
+//    setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
+//    setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
     setVelocityInt16All(maxFastSpeed_rpm);
 }
 
@@ -1119,20 +1119,20 @@ void setLaunchControl(
         // setVelocityInt16(MOTOR_FR, clamp_rpm);
 
         // Feedforward with front clamping with multiplier.
-        setVelocityFloat(MOTOR_RL, maxFastSpeed_rpm);
-        setVelocityFloat(MOTOR_RR, maxFastSpeed_rpm);
-        float clamp_rpm = (float) (getMotorSpeed_rpm(MOTOR_RL) + getMotorSpeed_rpm(MOTOR_RR)) * 0.5f;
+        // setVelocityFloat(MOTOR_RL, maxFastSpeed_rpm);
+        // setVelocityFloat(MOTOR_RR, maxFastSpeed_rpm);
+        // float clamp_rpm = (float) (getMotorSpeed_rpm(MOTOR_RL) + getMotorSpeed_rpm(MOTOR_RR)) * 0.5f;
         // 12Nm torque * 67.5N traction per Nm / 1600N downforce * 0.11 max slip ratio = 0.0556875
         // 1.11 / 1.0556875 = 1.051447516
-        setVelocityFloat(MOTOR_FL, clamp_rpm * 1.14f);
-        setVelocityFloat(MOTOR_FR, clamp_rpm * 1.14f);
+        // setVelocityFloat(MOTOR_FR, clamp_rpm * 1.07f + 1000.0f);
+        // setVelocityFloat(MOTOR_FL, clamp_rpm * 1.07f + 1000.0f);
 
         // Go crazy.
         // motor_rpm = 20000.0f;
-        // setVelocityFloat(MOTOR_RL, motor_rpm);
-        // setVelocityFloat(MOTOR_RR, motor_rpm);
-        // setVelocityFloat(MOTOR_FL, motor_rpm);
-        // setVelocityFloat(MOTOR_FR, motor_rpm);
+        setVelocityFloat(MOTOR_RL, motor_rpm);
+        setVelocityFloat(MOTOR_RR, motor_rpm);
+        setVelocityFloat(MOTOR_FL, motor_rpm);
+        setVelocityFloat(MOTOR_FR, motor_rpm);
         // const float reqTorque = maxFastTorque_Nm;
 
         const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
