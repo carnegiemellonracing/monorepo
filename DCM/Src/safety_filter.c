@@ -575,6 +575,9 @@ float getPowerLimit_W() {
 }
 
 void setPowerLimit_kW(uint8_t power_limit_kW) {
+    if(power_limit_kW < 5) {
+        return;
+    }
 	power_upper_limit_W = power_limit_kW * 1000.0f;
+    power_safety_margin_W = power_upper_limit_W * 0.17f;
 }
-power_safety_margin_W = power_upper_limit_W * 0.17f;
