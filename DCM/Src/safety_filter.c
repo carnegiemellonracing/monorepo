@@ -29,6 +29,8 @@
 // ------------------------------------------------------------------------------------------------
 // Constants
 
+#define FIX_RETRO_LIMIT (1)
+
 /** @brief Max amount of power the car should draw
  *  @warning Safety margins MUST BE STRICTLY POSITIVE
  */
@@ -208,7 +210,11 @@ static float getFalloffFactorByLowerLimit (
 static float getPackPowerFalloffFactor (
     float measured_pack_power_W
 ) {
+#if (FIX_RETRO_LIMIT == 1)
+    return getFalloffFactorByUpperLimit(measured_pack_power_W, 73000.0f, 16000.0f);
+#else
     return getFalloffFactorByUpperLimit(measured_pack_power_W, power_upper_limit_W, power_safety_margin_W);
+#endif
 }
 
 /**
@@ -570,5 +576,5 @@ float getPowerLimit_W() {
 
 void setPowerLimit_kW(uint8_t power_limit_kW) {
 	power_upper_limit_W = power_limit_kW * 1000.0f;
-	power_safety_margin_W = power_upper_limit_W * 0.17f;
 }
+power_safety_margin_W = power_upper_limit_W * 0.17f;
