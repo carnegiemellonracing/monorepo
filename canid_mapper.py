@@ -3,13 +3,13 @@ import json
 import re
 from collections import defaultdict
 
-# Configuration
+# Run file with "python canid_mapper.py" in terminal
+
 ROOT_DIR = "."
-CANID_PREFIX = "CMR_CANID_"
+CANID_PREFIXES = ["CMR_CANID_", "CAN_ID_"]
 OUTPUT_FILE = "canid_type_map.json"
 
-# Regex patterns - Updated to handle both 4 and 5 argument canTX calls
-# Also handles sizeof(*variable), sizeof(variable), and sizeof(struct->member)
+# Handle both 4 and 5 argument canTX calls
 CANTX_PATTERN_5_ARGS = re.compile(
     r'canTX\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^,]+)\s*,\s*sizeof\s*\(\s*([^)]+)\s*\)\s*(?:,\s*[^)]+)?\s*\)',
     re.MULTILINE | re.DOTALL
@@ -44,6 +44,17 @@ MEMBER_DECLARATION_PATTERN = re.compile(
     re.MULTILINE
 )
 
+# Pattern to find numerical constant definitions; includes TickType_t
+CONST_DEFINITION_PATTERN = re.compile(
+    r'(?:#define\s+([a-zA-Z0-9_]+)\s+([0-9]+))|(?:(?:static\s+)?(?:const\s+)?(?:int|uint32_t|uint16_t|uint8_t|unsigned|long|TickType_t)\s+([a-zA-Z0-9_]+)\s*=\s*([0-9]+))',
+    re.MULTILINE
+)
+
+def is_canid(arg):
+    """Check if an argument matches any of the CAN ID prefixes"""
+    arg = arg.strip()
+    return any(arg.startswith(prefix) for prefix in CANID_PREFIXES)
+
 def extract_variable_types(content):
     """Extract variable name to type mappings from file content"""
     var_to_type = {}
@@ -59,7 +70,6 @@ def extract_struct_member_types(content):
     """Extract struct_name.member_name to type mappings from file content"""
     member_to_type = {}
     
-    # Find struct definitions and their members
     struct_matches = STRUCT_CONTENT_PATTERN.findall(content)
     for struct_content, struct_name in struct_matches:
         # Find all cmr_*_t members within this struct
@@ -73,9 +83,28 @@ def extract_struct_member_types(content):
     
     return member_to_type
 
+def extract_constant_definitions(content):
+    """Extract constant definitions from file content"""
+    constants = {}
+    
+    # Find #define and variable constant definitions
+    matches = CONST_DEFINITION_PATTERN.findall(content)
+    for define_name, define_value, var_name, var_value in matches:
+        if define_name and define_value:
+            try:
+                constants[define_name] = int(define_value)
+            except ValueError:
+                constants[define_name] = define_value
+        elif var_name and var_value:
+            try:
+                constants[var_name] = int(var_value)
+            except ValueError:
+                constants[var_name] = var_value
+    
+    return constants
+
 def parse_sizeof_argument(sizeof_arg):
     """Parse sizeof argument to extract the key for type lookup"""
-    # Clean up the argument
     sizeof_arg = sizeof_arg.strip()
     
     # Handle different sizeof patterns:
@@ -92,106 +121,168 @@ def parse_sizeof_argument(sizeof_arg):
     if '->' in sizeof_arg:
         parts = sizeof_arg.split('->')
         if len(parts) >= 2:
-            return parts[-1].strip()  # Return the member name
+            return parts[-1].strip()
     
     # Handle struct.member
     if '.' in sizeof_arg:
         parts = sizeof_arg.split('.')
         if len(parts) >= 2:
-            return parts[-1].strip()  # Return the member name
+            return parts[-1].strip()
     
-    # Just a variable name
     return sizeof_arg
+
+def resolve_constant_value(constant_name, local_constants, global_constants):
+    """Resolve a constant name to its numerical value"""
+    constant_name = constant_name.strip()
+    
+    # Try to parse as integer first (in case it's already a number)
+    try:
+        return int(constant_name)
+    except ValueError:
+        pass
+    
+    # Check local constants first
+    if constant_name in local_constants:
+        value = local_constants[constant_name]
+        # If it's already an integer, return it
+        if isinstance(value, int):
+            return value
+        # If it's a string that can be converted to int, convert it
+        try:
+            return int(value)
+        except (ValueError, TypeError):
+            return value
+    
+    # Then check global constants
+    if constant_name in global_constants:
+        value = global_constants[constant_name]
+        # If it's already an integer, return it
+        if isinstance(value, int):
+            return value
+        # If it's a string that can be converted to int, convert it
+        try:
+            return int(value)
+        except (ValueError, TypeError):
+            return value
+    
+    return constant_name
 
 def resolve_sizeof_type(sizeof_arg, local_var_types, global_var_types, local_struct_members, global_struct_members):
     """Resolve the type from sizeof argument, prioritizing local then global mappings"""
-    # Parse the sizeof argument to get the lookup key
     lookup_key = parse_sizeof_argument(sizeof_arg)
     
-    # If it's already a type (starts with cmr_ and ends with _t)
     if lookup_key.startswith('cmr_') and lookup_key.endswith('_t'):
         return lookup_key, True
     
-    # First check local file variable mapping
     if lookup_key in local_var_types:
         return local_var_types[lookup_key], True
     
-    # Then check local struct member mapping
     if lookup_key in local_struct_members:
         return local_struct_members[lookup_key], True
     
-    # Then check global variable mapping
     if lookup_key in global_var_types:
         return global_var_types[lookup_key], True
     
-    # Finally check global struct member mapping
     if lookup_key in global_struct_members:
         return global_struct_members[lookup_key], True
     
-    # If we can't resolve it, return the original argument
     return sizeof_arg, False
 
-def extract_canids_from_file(filepath, global_var_types, global_struct_members):
-    """Extract CAN IDs and their types from a single file"""
+def extract_canids_from_file(filepath, global_var_types, global_struct_members, global_constants):
+    """Extract CAN IDs, types, cycleTime, and timeout from a single file"""
     try:
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             content = f.read()
         
-        # Extract local mappings from this file
         local_var_types = extract_variable_types(content)
         local_struct_members = extract_struct_member_types(content)
+        local_constants = extract_constant_definitions(content)
         
         result = {}
         
-        # First try 5-argument pattern: canTX(bus, canid, &var, sizeof(type), period)
-        matches_5_args = CANTX_PATTERN_5_ARGS.findall(content)
-        for arg1, arg2, arg3, sizeof_arg in matches_5_args:
-            # Clean up arguments
+        # Find all canTX calls with 5 arguments
+        CAN_CALL_5_ARGS_FULL = re.compile(
+            r'canTX\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^,]+)\s*,\s*sizeof\s*\(\s*([^)]+)\s*\)\s*,\s*([^)]+)\s*\)',
+            re.MULTILINE | re.DOTALL
+        )
+        
+        for match in CAN_CALL_5_ARGS_FULL.finditer(content):
+            arg1, arg2, arg3, sizeof_arg, period = match.groups()
             arg1 = arg1.strip()
             arg2 = arg2.strip()
             arg3 = arg3.strip()
             sizeof_arg = sizeof_arg.strip()
-            
-            # In 5-arg pattern, CAN ID is typically in second position
+            period = period.strip()
+
+            # Determine CAN ID
             canid = None
-            if arg2.startswith(CANID_PREFIX):
-                canid = arg2
-            elif arg1.startswith(CANID_PREFIX):
+            if is_canid(arg1):
                 canid = arg1
-            elif arg3.startswith(CANID_PREFIX):
+            elif is_canid(arg2):
+                canid = arg2
+            elif is_canid(arg3):
                 canid = arg3
-            
+
             if canid:
-                resolved_type, was_resolved = resolve_sizeof_type(
+                resolved_type, _ = resolve_sizeof_type(
                     sizeof_arg, local_var_types, global_var_types, local_struct_members, global_struct_members
                 )
-                result[canid] = resolved_type
+                
+                cycle_time = resolve_constant_value(period, local_constants, global_constants)
+                
+                if isinstance(cycle_time, int):
+                    time_out = 5 * cycle_time
+                else:
+                    time_out = f"5*{cycle_time}"
+                
+                result[canid] = {
+                    "type": resolved_type,
+                    "cycleTime": cycle_time,
+                    "timeOut": time_out
+                }
+
+        # Find all canTX calls with 4 arguments
+        CAN_CALL_4_ARGS_FULL = re.compile(
+            r'canTX\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*sizeof\s*\(\s*([^)]+)\s*\)\s*,\s*([^)]+)\s*\)',
+            re.MULTILINE | re.DOTALL
+        )
         
-        # Then try 4-argument pattern: canTX(canid, &var, sizeof(type), period)
-        matches_4_args = CANTX_PATTERN_4_ARGS.findall(content)
-        for arg1, arg2, sizeof_arg in matches_4_args:
-            # Clean up arguments
+        for match in CAN_CALL_4_ARGS_FULL.finditer(content):
+            arg1, arg2, sizeof_arg, period = match.groups()
             arg1 = arg1.strip()
             arg2 = arg2.strip()
             sizeof_arg = sizeof_arg.strip()
-            
-            # Check if CAN ID is in first or second argument
+            period = period.strip()
+
             canid = None
-            if arg1.startswith(CANID_PREFIX):
+            if is_canid(arg1):
                 canid = arg1
-            elif arg2.startswith(CANID_PREFIX):
+            elif is_canid(arg2):
                 canid = arg2
             
-            if canid and canid not in result:  # Don't overwrite 5-arg matches
-                resolved_type, was_resolved = resolve_sizeof_type(
+            if canid and canid not in result:
+                resolved_type, _ = resolve_sizeof_type(
                     sizeof_arg, local_var_types, global_var_types, local_struct_members, global_struct_members
                 )
-                result[canid] = resolved_type
-        
+                
+                cycle_time = resolve_constant_value(period, local_constants, global_constants)
+                
+                if isinstance(cycle_time, int):
+                    time_out = 5 * cycle_time
+                else:
+                    time_out = f"5*{cycle_time}"
+                
+                result[canid] = {
+                    "type": resolved_type,
+                    "cycleTime": cycle_time,
+                    "timeOut": time_out
+                }
+
         return result
     except Exception as e:
         print(f"Error processing {filepath}: {e}")
         return {}
+
 
 def find_all_c_files(root_dir):
     """Find all C/C++ files in the directory tree"""
@@ -205,8 +296,8 @@ def find_all_c_files(root_dir):
 def main():
     print("CAN ID to Type Mapper...")
     print(f"Root directory: {os.path.abspath(ROOT_DIR)}")
+    print(f"CAN ID prefixes: {', '.join(CANID_PREFIXES)}")
     
-    # Find all C files
     c_files = find_all_c_files(ROOT_DIR)
     print(f"Found {len(c_files)} C/C++ files to process")
     
@@ -214,25 +305,27 @@ def main():
         print(" No C/C++ files found!")
         return
     
-    # PHASE 1: Build global mappings from all files
-    print("\n Phase 1: Building global type mappings...")
+    print("\n Building global type mappings")
     global_var_types = {}
     global_struct_members = {}
+    global_constants = {}
     
     for filepath in c_files:
         try:
             with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
                 content = f.read()
             
-            # Extract variable types
             var_types = extract_variable_types(content)
             for var_name, type_name in var_types.items():
                 global_var_types[var_name] = type_name
             
-            # Extract struct member types
             struct_members = extract_struct_member_types(content)
             for member_name, type_name in struct_members.items():
                 global_struct_members[member_name] = type_name
+            
+            constants = extract_constant_definitions(content)
+            for const_name, const_value in constants.items():
+                global_constants[const_name] = const_value
                 
         except Exception as e:
             continue
@@ -240,23 +333,24 @@ def main():
     print(f" Built global mapping:")
     print(f"   Variables: {len(global_var_types)}")
     print(f"   Struct members: {len(global_struct_members)}")
+    print(f"   Constants: {len(global_constants)}")
     
-    # PHASE 2: Extract CAN IDs using local-first then global mappings
-    print("\n🔍 Phase 2: Extracting CAN IDs...")
-    canid_to_type = {}
+    
+    # Extract CAN IDs using local-first then global mappings
+    print("\n Extracting CAN IDs")
+    canid_to_info = {}
     files_processed = 0
     files_with_matches = 0
     
     # Process each file for canTX calls
     for filepath in c_files:
-        result = extract_canids_from_file(filepath, global_var_types, global_struct_members)
+        result = extract_canids_from_file(filepath, global_var_types, global_struct_members, global_constants)
         
         if result:
             files_with_matches += 1
-            print(f"📁 {os.path.basename(filepath)}: {len(result)} CAN IDs")
+            print(f" {os.path.basename(filepath)}: {len(result)} CAN IDs")
         
-        # Merge results
-        canid_to_type.update(result)
+        canid_to_info.update(result)
         files_processed += 1
         
         if files_processed % 100 == 0:
@@ -264,11 +358,12 @@ def main():
     
     # Save results
     output_data = {
-        "canid_to_type": canid_to_type,
+        "canid_to_info": canid_to_info,
         "summary": {
             "files_processed": files_processed,
             "files_with_matches": files_with_matches,
-            "total_canids": len(canid_to_type)
+            "total_canids": len(canid_to_info),
+            "prefixes_used": CANID_PREFIXES
         }
     }
     
@@ -278,13 +373,13 @@ def main():
     print(f"\n Results:")
     print(f"   Files processed: {files_processed}")
     print(f"   Files with CAN IDs: {files_with_matches}")
-    print(f"   Total CAN IDs found: {len(canid_to_type)}")
+    print(f"   Total CAN IDs found: {len(canid_to_info)}")
     
-    # Show all results
-    if canid_to_type:
+    # Show all results with type, cycleTime, and timeOut
+    if canid_to_info:
         print(f"\n CAN ID Mappings:")
-        for canid, type_name in sorted(canid_to_type.items()):
-            print(f"   {canid} -> {type_name}")
+        for canid, info in sorted(canid_to_info.items()):
+            print(f"   {canid} -> {info['type']}, {info['cycleTime']}, {info['timeOut']}")
     else:
         print("\n No CAN IDs found.")
     
