@@ -6,7 +6,7 @@ num = 0;
 
 lines = [] 
 
-with open(file, "r") as f: # open("canids_post.h", "w") as out: 
+with open(file, "r") as f:
     for line in f: 
         if "}" in line: #dumb way to look at only ids.... can't think of another rn
             atIDs = False 
@@ -18,7 +18,7 @@ with open(file, "r") as f: # open("canids_post.h", "w") as out:
                 line = line.split(",")[0] 
                 line += " = " + hex(num + 1) + ",\n" 
                 num += 1 
-            if "+" in line: #ummmm 
+            if "+ CMR" in line: #hard coded offset for now
                 line = line.split("=")[0] 
                 line += "= " + hex(num + 928) + ",\n" 
         if "enum" in line: #can also use { to parallel 
