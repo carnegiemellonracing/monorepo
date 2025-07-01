@@ -12,13 +12,13 @@ def id2hex(id):
                 hex = re.search(r"0x[0-9A-Fa-f]+", line) 
                 return hex.group()
 
-def add_mapper_data(canid, cantype, cycletime, timeout):
+def add_mapper_data(canid, cantype, cycletime, timeout, structlines):
         name = re.findall(r'cmr_can(\w+)_t',cantype)
         lines.append("["+name[0]+"]")
         if id2hex(canid):
-            lines.append("ID:"+id2hex(canid)) 
-        lines.append("CycleTime="+str(cycletime))
-        lines.append("TimeOut="+str(timeout))
+            structlines.append("ID:"+id2hex(canid)) 
+        structlines.append("CycleTime="+str(cycletime))
+        structlines.append("TimeOut="+str(timeout))
 
 def get_cantypes_data(cantype):
     print(cantype)
@@ -31,7 +31,7 @@ def get_cantypes_data(cantype):
                 return re.findall(r'\b((?:u)?int\d+_t|float)\s+(\w+)\b', fields) 
 
 
-def format_fields(matches):
+def format_fields(matches, structlines):
     atbit = 0
     size = None
     for vartype, name in matches:
@@ -47,11 +47,11 @@ def format_fields(matches):
                 #technically unnecessary check, all others should be float
                 size = 32 
         if size:
-            lines.append("Var="+name+" "+vartype+ " " +str(atbit)+","+str(size))
+            structlines.append("Var="+name+" "+vartype+ " " +str(atbit)+","+str(size))
             atbit+=int(size)
         else:
-            lines.append("Issue with type of field")
-    lines.insert(-6, "DLC="+str(int(atbit/8))) 
+            structlines.append("Issue with type of field")
+    return str(int(atbit/8))
 
 
 def main():
@@ -67,18 +67,22 @@ def main():
             if re.fullmatch(r'(cmr_[a-zA-Z0-9_]*_t)', cantype):
                 #valid can type in dict 
                 print("found valid can type "+cantype+" starting search\n")
-                add_mapper_data(canid, cantype, cycletime, timeout)
+                structlines = []
+                add_mapper_data(canid, cantype, cycletime, timeout, structlines)
                 print("successfully parsed mapper data\n")
                 matches = get_cantypes_data(cantype)
                 print("finished parsing fields in can_types.h\n")
                 if matches:
-                    format_fields(matches)
+                    dlc = format_fields(matches, structlines)
+                    structlines.insert(1, "DLC="+dlc)
                     print("formatted fields\n")
                 else:
-                    lines.append("error with this struct in can_types.h")
+                    structlines.append("error with this struct in can_types.h")
+                for line in structlines:
+                    lines.append(line)
                 lines.append("\n")
                 
-                        
+
     
     with open("stm32f413-drivers/filegen/symv1.sym", "w") as file:
         file.write("\n".join(lines))
