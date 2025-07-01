@@ -1,3 +1,5 @@
+#TODO: add factor and units and figure out weird structs :( 
+#TODO: what to do with the repeated structs (no id) hvc bmb
 import re
 import json
 
@@ -23,10 +25,12 @@ def add_mapper_data(canid, cantype, cycletime, timeout):
 def get_cantypes_data(cantype):
     print(cantype)
     with open("stm32f413-drivers/CMR/include/CMR/can_types.h", "r") as structf: 
+        #find all struct declarations
         structs = re.findall(r'typedef\s+struct\s*\{([\s\S]*?)\}\s*(cmr_can\w+)\s*;', structf.read())
-        for field, name in structs:
-            if re.match(cantype, name): 
-                return re.findall(r'\b((?:u)?int\d+_t|float)\s+(\w+)\b', field) 
+        for fields, name in structs:
+            if re.search(name, cantype): 
+                #find struct declaration with the right can type 
+                return re.findall(r'\b((?:u)?int\d+_t|float)\s+(\w+)\b', fields) 
 
 
 def format_fields(matches):
@@ -62,6 +66,7 @@ def main():
             cycletime = canids[canid]['cycleTime']
             timeout = canids[canid]['timeOut']
             if re.fullmatch(r'(cmr_[a-zA-Z0-9_]*_t)', cantype):
+                #valid can type in dict 
                 print("found valid can type "+cantype+" starting search\n")
                 add_mapper_data(canid, cantype, cycletime, timeout)
                 print("successfully parsed mapper data\n")

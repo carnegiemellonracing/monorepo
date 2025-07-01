@@ -149,14 +149,20 @@ Var=err unsigned 48,8
 ID:0x232
 CycleTime=5
 TimeOut=25
-error with this struct in can_types.h
+Var=frontLeft_rpm signed 0,16
+Var=frontRight_rpm signed 16,16
+Var=rearLeft_rpm signed 32,16
+Var=rearRight_rpm signed 48,16
 
 
 [CDCWheelVelocity]
 ID:0x252
 CycleTime=5
 TimeOut=25
-error with this struct in can_types.h
+Var=frontLeft_rpm signed 0,16
+Var=frontRight_rpm signed 16,16
+Var=rearLeft_rpm signed 32,16
+Var=rearRight_rpm signed 48,16
 
 
 [CDCWheelTorque]
