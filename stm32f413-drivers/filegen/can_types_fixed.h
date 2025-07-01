@@ -397,8 +397,7 @@ typedef struct {
     uint16_t reserved_1:2; 
     uint16_t relay:1; 
     uint16_t lv_undervolt:1; 
-    uint16_t :0; //align w padding? 
-    //uint16_t reserved_2:2; 
+    uint16_t reserved_2:2; 
     uint8_t hvcMode; 
     uint8_t hvcState; 
     uint8_t dischargeClosed:1; 
@@ -611,8 +610,7 @@ typedef struct {
     uint8_t reserved:2;
     uint8_t actionButton:1; 
     uint8_t launchButton:1; 
-    uint8_t :0;
-    //uint8_t reserved_1:4; 
+    uint8_t reserved_1:4; 
     uint8_t rotaryPos; 
     uint8_t switchValues; 
     uint8_t regenPercent; 
@@ -741,12 +739,12 @@ typedef struct {
 
 /** @brief AMK motor controller command message. */
 typedef struct {
-    uint16_t reserved1:8; 
+    uint16_t amk_fr_controls_reserved1:8; 
     uint16_t inverteron:1;
     uint16_t dcon:1;
     uint16_t enable:1;
     uint16_t errorreset:1;
-    uint16_t reserved2:4;
+    uint16_t amk_fr_controls_reserved2:4;
     int16_t velocity_rpm;       /**< @brief Velocity setpoint (RPM). */
     int16_t torqueLimPos_dpcnt; /**< @brief Positive torque limit in 0.1% of 9.8 Nm (nominal torque). */
     int16_t torqueLimNeg_dpcnt; /**< @brief Negative torque limit in 0.1% of 9.8 Nm (nominal torque). */
@@ -892,7 +890,7 @@ typedef struct {
     uint32_t pressure_used:1;
     uint32_t zupt_used:1;
     uint32_t align_valid:1;
-    uint32_t :0;
+    uint32_t reserved:4;
     uint16_t heave_status;      /**< @brief Heave status bit vector. */
 } cmr_canSBGStatus3_t;
 

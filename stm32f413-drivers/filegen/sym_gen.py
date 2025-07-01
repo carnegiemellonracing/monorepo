@@ -1,5 +1,3 @@
-#TODO: add factor and units and figure out weird structs :( 
-#TODO: what to do with the repeated structs (no id) hvc bmb
 import re
 import json
 
@@ -13,7 +11,7 @@ def id2hex(id):
             if id in line:
                 hex = re.search(r"0x[0-9A-Fa-f]+", line) 
                 return hex.group()
-            
+
 def add_mapper_data(canid, cantype, cycletime, timeout):
         name = re.findall(r'cmr_can(\w+)_t',cantype)
         lines.append("["+name[0]+"]")
@@ -53,6 +51,7 @@ def format_fields(matches):
             atbit+=int(size)
         else:
             lines.append("Issue with type of field")
+    lines.insert(-6, "DLC="+str(int(atbit/8))) 
 
 
 def main():
