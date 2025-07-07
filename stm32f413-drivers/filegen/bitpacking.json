@@ -1,0 +1,12 @@
+{
+    "cmr_canHVCBMBErrors_t": {
+        "BMB1_2_Errs": 2,
+        "BMB3_4_Errs": 2,
+        "BMB5_6_Errs": 2, 
+        "BMB7_8_Errs": 2,
+        "BMB8_10_Errs": 2,
+        "BMB11_12_Errs": 2, 
+        "BMB13_14_Errs": 2,
+        "BMB15_16_Errs": 2  
+    }
+}
