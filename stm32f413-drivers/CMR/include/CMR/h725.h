@@ -20,11 +20,8 @@ void _platform_rccFDCanClockEnable();
 void _platform_canFilter(cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen);
 void _platform_FDCANInit(
     cmr_can_t *can, FDCAN_GlobalTypeDef *instance,
-    cmr_canBitRate_t bitRate,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
-    cmr_canRXCallback_t rxCallback,
-    GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
+    cmr_canRXCallback_t rxCallback
 );
 
 

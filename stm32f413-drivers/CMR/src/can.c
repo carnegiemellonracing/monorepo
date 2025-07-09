@@ -278,9 +278,7 @@ void cmr_canInit(
         can, instance,
         bitRate,
         rxMeta, rxMetaLen,
-        rxCallback,
-        rxPort, rxPin,
-        txPort, txPin
+        rxCallback
     );
 
     cmr_rccCANClockEnable(instance);
