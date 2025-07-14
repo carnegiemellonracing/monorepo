@@ -373,7 +373,7 @@
         "CMR_CANID_VSM_LATCHED_STATUS": {
             "cycleTime": 10000,
             "timeOut": 50000,
-            "type": "cmr_canVSMLatchedStatus_t"
+            "type": "vsmStatus->canVSMLatchedStatus"
         },
         "CMR_CANID_VSM_POWER_DIAGNOSTICS": {
             "cycleTime": 100,
@@ -392,7 +392,10 @@
         }
     },
     "summary": {
-        "files_processed": 2796,
+        "canrx_prefixes_used": [
+            "CANRX_"
+        ],
+        "files_processed": 2792,
         "files_with_matches": 8,
         "prefixes_used": [
             "CMR_CANID_",
