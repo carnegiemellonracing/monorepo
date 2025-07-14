@@ -92,7 +92,7 @@ def main():
     with open("stm32f413-drivers/CMR/include/CMR/can_types.h", "r") as structf: 
         #find all struct declarations
         structs = re.findall(r'typedef\s+struct\s*\{([\s\S]*?)\}\s*(cmr_can\w+)\s*;', structf.read())
-    with open("canid_type_map.json", "r") as file: 
+    with open("stm32f413-drivers/filegen/canid_type_map.json", "r") as file: 
         json_obj = json.load(file)
         canids = json_obj['canid_to_info']
         for canid in canids:
