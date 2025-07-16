@@ -147,31 +147,26 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
 	        .timeoutError_ms = 100,
 	        .timeoutWarn_ms = 75
 	},
-    // Temporary.
     [CANRX_VEH_MOVELLA_STATUS] = {
         .canID = CMR_CANID_MOVELLA_STATUS,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
-    // Temporary.
     [CANRX_VEH_MOVELLA_QUATERNION] = {
         .canID = CMR_CANID_MOVELLA_QUATERNION,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
-    // Temporary.
     [CANRX_VEH_MOVELLA_IMU_GYRO] = {
         .canID = CMR_CANID_MOVELLA_IMU_GYRO,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
-    // Temporary.
     [CANRX_VEH_MOVELLA_IMU_ACCEL] = {
         .canID = CMR_CANID_MOVELLA_IMU_ACCEL,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
-    // Temporary.
     [CANRX_VEH_MOVELLA_VELOCITY] = {
         .canID = CMR_CANID_MOVELLA_VELOCITY,
         .timeoutError_ms = 2000,
@@ -257,48 +252,6 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
-    [CANRX_DAQ_SBG_STATUS_3] = {
-        .canID = CMR_CANID_SBG_STATUS_3,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_POS] = {
-        .canID = CMR_CANID_SBG_EKF_POS,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_VEL] = {
-        .canID = CMR_CANID_SBG_EKF_VEL,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_BODY_VEL] = {
-        .canID = CMR_CANID_SBG_BODY_VEL,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_ORIENT] = {
-        .canID = CMR_CANID_SBG_EKF_ORIENT,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_IMU_ACCEL] = {
-        .canID = CMR_CANID_SBG_IMU_ACCEL,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_IMU_GYRO] = {
-        .canID = CMR_CANID_SBG_IMU_GYRO,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_SLIPANGLE] = {
-	    .canID  = CMR_CANID_SBG_AUTOMOTIVE,
-        .timeoutError_ms = 1000,
-        .timeoutWarn_ms = 750,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .warnFlag = CMR_CAN_WARN_NONE
-	},
 	[CANRX_DAQ_LOAD_FL] = {
         .canID  = CMR_CANID_LOADCELL_FL,
         .timeoutError_ms = 500,
@@ -348,77 +301,6 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
     }
 };
 
-/**
- * @brief CAN periodic message receive metadata
- *
- * @note Indexed by `canRX_t`.
- */
-cmr_canRXMeta_t canRXMeta[] = {
-    [CANRX_HEARTBEAT_VSM] = {
-        .canID = CMR_CANID_HEARTBEAT_VSM,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 25,
-        .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
-        .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
-    },
-    [CANRX_VSM_STATUS] = {
-        .canID = CMR_CANID_VSM_STATUS,
-        .timeoutError_ms = 50,
-        .timeoutWarn_ms = 25,
-        .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
-        .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
-    },
-    [CANRX_INV1_STATUS] = {
-        .canID = CMR_CANID_AMK_FL_ACT_2,
-        .timeoutError_ms = 800, // Send error if data not received within 4 cycles, or 800 ms
-        .timeoutWarn_ms = 400, // Send warning if data not received within 2 cycles, or 400 ms
-        // CAN transmitting frequency = 5 Hz, so ? s = 1 / 5 Hz = 0.2 s = 200ms
-    },
-    [CANRX_INV2_STATUS] = {
-        .canID = CMR_CANID_AMK_FR_ACT_2,
-        .timeoutError_ms = 800,
-        .timeoutWarn_ms = 400,
-    },
-    [CANRX_INV3_STATUS] = {
-        .canID = CMR_CANID_AMK_RL_ACT_2,
-        .timeoutError_ms = 800,
-        .timeoutWarn_ms = 400,
-    },
-    [CANRX_INV4_STATUS] = {
-        .canID = CMR_CANID_AMK_RR_ACT_2,
-        .timeoutError_ms = 800,
-        .timeoutWarn_ms = 400,
-    },
-    [CANRX_VSM_SENSORS] = {
-        .canID = CMR_CANID_VSM_SENSORS,
-        .timeoutError_ms = 500,
-        .timeoutWarn_ms = 250,
-        .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
-        .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
-    },
-    [CANRX_FSM_DATA] = {
-        .canID = CMR_CANID_FSM_DATA,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 50,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .warnFlag = CMR_CAN_WARN_NONE
-    },
-    [CANRX_FSM_SWANGLE] = {
-        .canID = CMR_CANID_FSM_SWANGLE,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 50,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .warnFlag = CMR_CAN_WARN_NONE
-    },
-    [CANRX_HVC_MINMAX_TEMPS] = {
-        .canID = CMR_CANID_HVC_MINMAX_CELL_TEMPS,
-        .timeoutError_ms = 5000,
-        .timeoutWarn_ms = 2500,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .warnFlag = CMR_CAN_WARN_NONE
-    }
-};
-
 /** @brief CAN interfaces - Vehicle, DAQ, and Tractive */
 static cmr_can_t can[CMR_CAN_BUS_NUM];
 
@@ -448,10 +330,6 @@ static void canTX10Hz(void *pvParameters) {
     cmr_canCDCWheelVelocity_t speedSetpoint;
     cmr_canCDCWheelTorque_t torqueSetpoint;
 
-    cmr_canCDCPosePosition_t posePos;
-    cmr_canCDCPoseOrientation_t poseOrient;
-    cmr_canCDCPoseVelocity_t poseVel;
-
     cmr_canPowerSense_t powerSense;
 
     while (1) {
@@ -459,16 +337,12 @@ static void canTX10Hz(void *pvParameters) {
         daqWheelTorqueFeedback(&torqueFeedback);
         daqWheelSpeedSetpoints(&speedSetpoint);
         daqWheelTorqueSetpoints(&torqueSetpoint);
-        daqPosePosition(&posePos);
-        daqPoseOrientation(&poseOrient);
-        daqPoseVelocity(&poseVel);
 
         powerSense.packCurrent_dA = getCurrent();
         powerSense.packVoltage_cV = getVoltage();
         //powersense is dead, voltage * HVI current
         powerSense.packPower_W = getPackVoltage() * getPackCurrent();
 
-        
         cmr_canDAQTherm_t therms;
         therms.therm_1 = adcRead(ADC_THERM1);
         therms.therm_2 = adcRead(ADC_THERM2);
@@ -476,15 +350,15 @@ static void canTX10Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_VEH, 0x659, &therms, sizeof(cmr_canDAQTherm_t), canTX10Hz_period_ms);
 
         // Is data valid? Set it in the orientation/velocity messages
-//        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX10Hz_period_ms);
-//        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK, &torqueFeedback, sizeof(torqueFeedback), canTX10Hz_period_ms);
-//        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_SETPOINT, &speedSetpoint, sizeof(speedSetpoint), canTX10Hz_period_ms);
-//        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX10Hz_period_ms);
+        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX10Hz_period_ms);
+        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK, &torqueFeedback, sizeof(torqueFeedback), canTX10Hz_period_ms);
+        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_SETPOINT, &speedSetpoint, sizeof(speedSetpoint), canTX10Hz_period_ms);
+        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX10Hz_period_ms);
         //canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_POSITION, &posePos, sizeof(posePos), canTX10Hz_period_ms);
 
-        //TODO: Fix error with padding (manual size 7)
-        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_ORIENTATION, &poseOrient, sizeof(poseOrient), canTX10Hz_period_ms);
-        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_VELOCITY, &poseVel, sizeof(poseVel), canTX10Hz_period_ms);
+        // //TODO: Fix error with padding (manual size 7)
+        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_ORIENTATION, &poseOrient, sizeof(poseOrient), canTX10Hz_period_ms);
+        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_VELOCITY, &poseVel, sizeof(poseVel), canTX10Hz_period_ms);
 
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_FRONT_SLIP_RATIOS, &frontSlipRatios, sizeof(frontSlipRatios), canTX10Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_REAR_SLIP_RATIOS, &rearSlipRatios, sizeof(rearSlipRatios), canTX10Hz_period_ms);
