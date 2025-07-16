@@ -141,5 +141,5 @@ typedef enum {
 /** @brief Coprocessor command buffer RAM size, in bytes. */
 #define TFT_RAM_CMD_SIZE (4 * 1024)
 
-
+void tftCoCmd(tft_t *tft, size_t len, const void *data);
 #endif /* TFT_H */

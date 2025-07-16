@@ -341,15 +341,24 @@ static cmr_state getReqScreen(void) {
             }
             break;
         case NORMAL:
-            if(canLRUDStates[LEFT]) {
+            // if(canLRUDStates[LEFT]) {
+            //     nextState = CONFIG;
+            //     flush_config_screen_to_cdc = false;
+			// 	//gpioLRUDStates[LEFT] = false;
+            // }
+            if(!cmr_gpioRead(GPIO_BUTTON_SW1)) {
+            // else if(canLRUDStates[LEFT]) {
                 nextState = CONFIG;
                 flush_config_screen_to_cdc = false;
-				//gpioLRUDStates[LEFT] = false;
+                // exitConfigScreen();
+
+                //gpioButtonStates[SW1] = 0;
+                //nextState = CONFIG;
             }
-            else if(canLRUDStates[RIGHT]) {
-                nextState = RACING;
-                //canLRUDStates[RIGHT] = false;
-            }
+            // else if(canLRUDStates[RIGHT]) {
+            //     nextState = RACING;
+            //     //canLRUDStates[RIGHT] = false;
+            // }
             else {
                 nextState = NORMAL;
             }
@@ -377,7 +386,7 @@ static cmr_state getReqScreen(void) {
                 nextState = CONFIG;
             }
     	//TODO: WHAT THE HELL IS THIS??
-            else if(cmr_gpioRead(GPIO_BUTTON_SW1)) {
+            else if(!cmr_gpioRead(GPIO_BUTTON_SW1)) {
             // else if(canLRUDStates[LEFT]) {
                 nextState = NORMAL;
                 flush_config_screen_to_cdc = true;
@@ -386,12 +395,12 @@ static cmr_state getReqScreen(void) {
                 //gpioButtonStates[SW1] = 0;
                 //nextState = CONFIG;
             }
-            else if(cmr_gpioRead(GPIO_BUTTON_SW2)) {
-                flush_config_screen_to_cdc = true;
-                // exitConfigScreen();
-                nextState = RACING;
-                //gpioButtonStates[SW2] = 0;
-            }
+            // else if(false) {
+            //     flush_config_screen_to_cdc = true;
+            //     // exitConfigScreen();
+            //     nextState = RACING;
+            //     //gpioButtonStates[SW2] = 0;
+            // }
             else{
                 nextState = CONFIG;
             }
@@ -399,20 +408,20 @@ static cmr_state getReqScreen(void) {
         case dimStateERROR:
             nextState = INIT;
             break;
-        case RACING:
-            if(canLRUDStates[LEFT] && state.vsmReq == CMR_CAN_GLV_ON) {
-                nextState = CONFIG;
-                flush_config_screen_to_cdc = false;
-                //canLRUDStates[LEFT] = false;
-            }
-            else if(canLRUDStates[RIGHT]) {
-                nextState = NORMAL;
-                //canLRUDStates[RIGHT] = false;
-            }
-            else {
-                nextState = RACING;
-            }
-            break;
+        // case RACING:
+        //     if(canLRUDStates[LEFT] && state.vsmReq == CMR_CAN_GLV_ON) {
+        //         nextState = CONFIG;
+        //         flush_config_screen_to_cdc = false;
+        //         //canLRUDStates[LEFT] = false;
+        //     }
+        //     else if(canLRUDStates[RIGHT]) {
+        //         nextState = NORMAL;
+        //         //canLRUDStates[RIGHT] = false;
+        //     }
+        //     else {
+        //         nextState = RACING;
+        //     }
+        //     break;
         default:
             nextState = INIT;
     }
@@ -503,18 +512,19 @@ void stateVSMDown() {
 
 
 void reqVSM(void) {
-	//So check state of the car and the pressing of up or down button, then based on the output
-	//update VstateVSMReq
-	if (((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN)) && (canLRUDStates[UP])){
-		if(getCurrState() != CONFIG){
-            stateVSMUp();
+
+    if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM == CMR_CAN_CLEAR_ERROR) {
+        state.vsmReq = CMR_CAN_GLV_ON;
+    }
+    else {
+        if (getCurrState() != CONFIG) {
+            if (canLRUDStates[UP]) {
+                stateVSMUp();
+            } else if (canLRUDStates[DOWN]) {
+                stateVSMDown();
+            }
         }
-	}
-	if (((stateGetVSM() == CMR_CAN_RTD) || (stateGetVSM() == CMR_CAN_HV_EN)) && (canLRUDStates[DOWN])){
-		if(getCurrState() != CONFIG){
-            stateVSMDown();
-        }
-	}
+    }
 }
 
 //keeps track of requested gear
@@ -544,7 +554,7 @@ void reqGear(void) {
 	// }
     bool canChangeGear = true;
     if(canChangeGear && (pastRotary != currentRotary)) {
-        if( currState == CONFIG) config_increment_down_requested = true;
+        if(currState == CONFIG) config_increment_up_requested = true;
         if(state.gearReq == 8) state.gearReq = 1;
         else state.gearReq++;
     }

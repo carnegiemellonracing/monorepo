@@ -27,8 +27,8 @@
 cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_HEARTBEAT_HVC] = {
         .canID = CMR_CANID_HEARTBEAT_HVC,
-        .timeoutError_ms = 1000,
-        .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
+        .timeoutError_ms = 20000,
+        .errorFlag = CMR_CAN_ERROR_NONE,
         .timeoutWarn_ms = 750,
         .warnFlag = CMR_CAN_WARN_VSM_HVC_TIMEOUT
     },
@@ -45,6 +45,13 @@ cmr_canRXMeta_t canRXMeta[] = {
         .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_VSM_DIM_TIMEOUT
+    },
+    [CANRX_HEARTBEAT_HVI] = {
+        .canID = CMR_CANID_HEARTBEAT_HVI,
+        .timeoutError_ms = 100,
+        .errorFlag = CMR_CAN_ERROR_VSM_MODULE_STATE,
+        .timeoutWarn_ms = 25,
+        .warnFlag = CMR_CAN_WARN_VSM_HVI_TIMEOUT
     },
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
@@ -96,7 +103,7 @@ cmr_canRXMeta_t canRXMeta[] = {
  * @note Indexed by `canRX_t`.
  */
 const cmr_canVSMErrorSource_t vsmErrorSourceFlags[] = {
-    [CANRX_HEARTBEAT_HVC]       = CMR_CAN_VSM_ERROR_SOURCE_HVC,
+    [CANRX_HEARTBEAT_HVC]       = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_HEARTBEAT_CDC]       = CMR_CAN_VSM_ERROR_SOURCE_CDC,
     [CANRX_HEARTBEAT_DIM]       = CMR_CAN_VSM_ERROR_SOURCE_DIM,
     [CANRX_FSM_DATA]            = CMR_CAN_VSM_ERROR_SOURCE_DIM,
@@ -198,7 +205,7 @@ static void canTX200Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        sendVSMSensors();
+        // sendVSMSensors();
 
         vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
     }

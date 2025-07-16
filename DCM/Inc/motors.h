@@ -39,5 +39,6 @@ void setVelocityInt16All(int16_t velocity_rpm);
 void setVelocityFloatAll(float velocity_rpm);
 cmr_torque_limit_t getTorqueBudget();
 const cmr_canAMKSetpoints_t *getAMKSetpoints(motorLocation_t motor);
+cmr_canDAQTest_t getDAQTest();
 
 #endif /* MOTORS_H */

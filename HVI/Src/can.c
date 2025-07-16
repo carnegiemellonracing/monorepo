@@ -42,7 +42,7 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 25
     },
-    [CANRX_EMD_MEASURE] = {   
+    [CANRX_EMD_MEASURE] = {
         .canID = CMR_CANID_EMD_MEASUREMENT_RETX,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
@@ -66,9 +66,7 @@ static cmr_task_t canTX1Hz_task;
 
 /** @brief calc that power bitch */
 static void calcPower(cmr_canHVIHeartbeat_t *heartbeat) {
-	uint16_t vRefRaw, voltageRaw, currentRaw, voltage;
-	int16_t current;
-	int32_t power;
+	uint16_t voltageRaw, currentRaw, voltage;
 	voltageRaw = adcRead(ADC_VSENSE);
 	currentRaw = adcRead(ADC_ISENSE);
 	// erm power sensing tonight queen?
