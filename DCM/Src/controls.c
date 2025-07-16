@@ -78,13 +78,6 @@ static TickType_t previousTickCount;
 
 // ------------------------------------------------------------------------------------------------
 // Function implementations
-void setLaunchControl(
-    uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8,
-    int32_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
-    float leftRightBias_Nm, /** IGNORED UNLESS traction_control_mode (defined in
-                               the function) is TC_MODE_TORQUE */
-    bool assumeNoTurn, bool ignoreYawRate, bool allowRegen,
-    float critical_speed_mps);
 /** @brief initialize yaw rate control */
 static void initYawRateControl() {
     // read yrc_kp from DIM
@@ -735,8 +728,7 @@ void setFastTorqueWithParallelRegen(uint16_t brakePressurePsi_u8, uint8_t thrott
  * @param yaw_rate_radps_sae The yaw rate of the vehicle in SAE coordinates (a
  * right turn is positive)
  */
-static void
-update_whl_vels_and_angles(  // HELPFUL IF WE WANT TO MODEL LATERAL FORCES
+static void update_whl_vels_and_angles(  // HELPFUL IF WE WANT TO MODEL LATERAL FORCES
     float steering_ang_fl, float steering_ang_fr,
     float longitudinal_velocity_mps, float lateral_velocity_mps,
     float yaw_rate_radps_sae) {
