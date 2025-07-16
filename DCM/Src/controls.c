@@ -660,9 +660,7 @@ void integrateCurrent() {
  * @param throttlePos_u8 Throttle position, 0-255.
  */
 void setSlowTorque(uint8_t throttlePos_u8, int32_t swAngle_millideg) {
-    const float reqTorque =
-        maxSlowTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
-    // setTorqueLimsAllProtected(reqTorque, 0.0f);
+    const float reqTorque = maxSlowTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
 
     setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
     setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
