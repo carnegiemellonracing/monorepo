@@ -498,8 +498,7 @@ static void set_optimal_control(float normalized_throttle,
     }
 }
 
-float get_combined_request(int throttlePos_u8, int32_t swAngle_millideg_FL,
-                           int32_t swAngle_millideg_FR) {
+float get_combined_request(int throttlePos_u8) {
     uint8_t paddle_pressure =
         ((volatile cmr_canDIMActions_t *)canVehicleGetPayload(
              CANRX_VEH_DIM_ACTION_BUTTON))
@@ -524,27 +523,9 @@ float get_combined_request(int throttlePos_u8, int32_t swAngle_millideg_FL,
 }
 
 static void set_regen(uint8_t throttlePos_u8) {
-    uint8_t paddle_pressure =
-        ((volatile cmr_canDIMActions_t *)canVehicleGetPayload(
-             CANRX_VEH_DIM_ACTION_BUTTON))
-            ->regenPercent;
+    float combined_request = get_combined_request(throttlePos_u8)
 
-    uint8_t paddle_regen_strength_raw = 50;
-    getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX,
-                      unsigned_integer);
-    float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
-
-    float paddle_request = 0.0f;
-    if (paddle_pressure > paddle_pressure_start) {
-        paddle_request = ((float)(paddle_pressure - paddle_pressure_start)) /
-                         (UINT8_MAX - paddle_pressure_start);
-        paddle_request *= paddle_regen_strength;  // [0, 1].
-    }
-
-    float throttle = (float)throttlePos_u8 / UINT8_MAX;
-    float combined_request = throttle - paddle_request;  // [0, 1].
-
-    static cmr_torqueDistributionNm_t torquesPos_Nm;
+        static cmr_torqueDistributionNm_t torquesPos_Nm;
     static cmr_torqueDistributionNm_t torquesNeg_Nm;
 
     float torque_request_Nm = combined_request * maxFastTorque_Nm;
@@ -666,10 +647,8 @@ void runControls(cmr_canGear_t gear, uint8_t throttlePos_u8,
             // setYawRateAndTractionControl(throttlePos_u8, brakePressurePsi_u8,
             // swAngle_millideg, assumeNoTurn, ignoreYawRate, allowRegen,
             // critical_speed_mps);
-            set_optimal_control(
-                get_combined_request(throttlePos_u8, swAngle_millideg_FL,
-                                     swAngle_millideg_FR),
-                swAngle_millideg_FL, swAngle_millideg_FR, true);
+            set_optimal_control(get_combined_request(throttlePos_u8),
+                                swAngle_millideg_FL, swAngle_millideg_FR, true);
             break;
         }
         case CMR_CAN_GEAR_SKIDPAD: {
