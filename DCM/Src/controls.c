@@ -523,9 +523,9 @@ float get_combined_request(int throttlePos_u8) {
 }
 
 static void set_regen(uint8_t throttlePos_u8) {
-    float combined_request = get_combined_request(throttlePos_u8)
+    float combined_request = get_combined_request(throttlePos_u8);
 
-        static cmr_torqueDistributionNm_t torquesPos_Nm;
+    static cmr_torqueDistributionNm_t torquesPos_Nm;
     static cmr_torqueDistributionNm_t torquesNeg_Nm;
 
     float torque_request_Nm = combined_request * maxFastTorque_Nm;
