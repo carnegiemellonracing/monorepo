@@ -518,7 +518,7 @@ float get_combined_request(int throttlePos_u8, int32_t swAngle_millideg_FL,
     }
 
     float throttle = (float)throttlePos_u8 / UINT8_MAX;
-    float combined_request = throttle - paddle_request;  // [0, 1].
+    float combined_request = throttle - paddle_request;  // [-1, 1].
 
     return combined_request;
 }
