@@ -26,6 +26,8 @@
 
 #define PI 3.1415926535897932384626f
 #define G 9.81f
+#define DAQ_PUSHROD_ANGLE_FR 35.0f
+#define DAQ_PUSHROD_ANGLE_RR 30.0f
 
 #define X1000_INT16(x) ((int16_t)((float)x * 1000.0f))
 
@@ -230,10 +232,10 @@ static float get_load_cell_angle_rad(canDaqRX_t loadIndex) {
     switch (loadIndex) {
         case CANRX_DAQ_LOAD_FL:
         case CANRX_DAQ_LOAD_FR:
-            return 35.0f / 180.0f * PI;
+            return DAQ_PUSHROD_ANGLE_FR / 180.0f * PI;
         case CANRX_DAQ_LOAD_RL:
         case CANRX_DAQ_LOAD_RR:
-            return 30.0f / 180.0f * PI;
+            return DAQ_PUSHROD_ANGLE_RR / 180.0f * PI;
         default:
             return 0.0f;
     }
@@ -280,11 +282,6 @@ static void set_optimal_control(float normalized_throttle,
 	float wheel_fr_speed_radps = getMotorSpeed_radps(MOTOR_FR);
 	float wheel_rl_speed_radps = getMotorSpeed_radps(MOTOR_RL);
 	float wheel_rr_speed_radps = getMotorSpeed_radps(MOTOR_RR);
-
-	// float tractive_cap_fl = getKappaFxGlobalMax(MOTOR_FL, UINT8_MAX, true).Fx;
-	// float tractive_cap_fr = getKappaFxGlobalMax(MOTOR_FR, UINT8_MAX, true).Fx;
-	// float tractive_cap_rl = getKappaFxGlobalMax(MOTOR_RL, UINT8_MAX, true).Fx;
-	// float tractive_cap_rr = getKappaFxGlobalMax(MOTOR_RR, UINT8_MAX, true).Fx;
 
     const float corner_weight_Nm = 80.0f;
     bool use_true_downforce = true;
@@ -377,7 +374,6 @@ static void set_optimal_control(float normalized_throttle,
 
     // Solver treats Mreq as around -z axis.
 	optimizer_state.mreq = -getYawRateControlLeftRightBias(swAngle_millideg);
-
 	optimizer_state.theta_left = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
     optimizer_state.theta_right = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
 
