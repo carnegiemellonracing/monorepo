@@ -70,6 +70,13 @@ typedef enum {
     CANRX_DAQ_MOVELLA_IMU_GYRO,
     CANRX_DAQ_MOVELLA_IMU_ACCEL,
     CANRX_DAQ_MOVELLA_VELOCITY,
+    CANRX_DAQ_SBG_STATUS_3,     /**< @brief SBG Status containing solution info. */
+    CANRX_DAQ_SBG_POS,          /**< @brief EKF Position. */
+    CANRX_DAQ_SBG_VEL,          /**< @brief EKF Velocity. */
+    CANRX_DAQ_SBG_ORIENT,       /**< @brief EKF Orientation. */
+    CANRX_DAQ_SBG_IMU_ACCEL,    /**< @brief IMU Acceleration. */
+    CANRX_DAQ_SBG_IMU_GYRO,     /**< @brief IMU Gyro rate. */
+    CANRX_DAQ_SBG_BODY_VEL,     /**< @brief Body Velocity. */
     CANRX_DAQ_LOAD_FL,          /**< @brief front left load cell/newtons. */
     CANRX_DAQ_LOAD_FR,          /**< @brief front right load cell/newtons. */
     CANRX_DAQ_LOAD_RL,          /**< @brief rear left load cell/newtons. */
