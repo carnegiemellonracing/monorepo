@@ -122,7 +122,6 @@ volatile void *canDAQGetPayload(canDaqRX_t msg);
 cmr_canRXMeta_t *canVehicleGetMeta(canVehicleRX_t msg);
 cmr_canRXMeta_t *canTractiveGetMeta(canTractiveRX_t msg);
 cmr_canRXMeta_t *canDAQGetMeta(canDaqRX_t msg);
-void *canGetPayload(canRX_t rxMsg);
 
 float canEmdHvVoltage();
 float canEmdHvCurrent();

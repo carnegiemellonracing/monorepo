@@ -700,14 +700,6 @@ static void canTX1Hz(void *pvParameters) {
     }
 }
 
-void *canGetPayload(canRX_t rxMsg) {
-    configASSERT(rxMsg < CANRX_LEN);
-
-    cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
-
-    return (void *)(&rxMeta->payload);
-}
-
 /**
  * @brief Get the Received Driver profile number
  *
