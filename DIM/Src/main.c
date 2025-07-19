@@ -94,7 +94,6 @@ static void errorLEDs(void *pvParameters) {
         cmr_gpioWrite(GPIO_LED_IMD, latch & CMR_CAN_VSM_LATCH_BSPD);
         cmr_gpioWrite(GPIO_LED_AMS, latch & CMR_CAN_VSM_LATCH_AMS);
         cmr_gpioWrite(GPIO_LED_BSPD, latch & CMR_CAN_VSM_LATCH_IMD);
-
     }
 }
 

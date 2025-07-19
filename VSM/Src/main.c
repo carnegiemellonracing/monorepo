@@ -38,7 +38,7 @@ static bool glvReached = false;
 uint16_t LED_Red_State = 0;
 
 static bool LEDerror() {  
-  return cmr_gpioRead(GPIO_IN_SOFTWARE_ERR) == 1 || cmr_gpioRead(GPIO_IN_IMD_ERR) == 1;
+  return cmr_gpioRead(GPIO_IN_SOFTWARE_ERR) == 1 || cmr_gpioRead(GPIO_IN_BSPD_ERR) == 1 || cmr_gpioRead(GPIO_IN_IMD_ERR) == 1;
 }
 
 /**
