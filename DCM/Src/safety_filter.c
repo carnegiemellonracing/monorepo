@@ -418,7 +418,7 @@ void setTorqueLimsProtected (
     // ********* Retroactive Limiting *********
 
     // limit power
-    const float falloff_factor_by_pack_power = getPackPowerFalloffFactor(pack_power_W);
+    const float falloff_factor_by_pack_power = 1;
     if (falloff_factor_by_pack_power == 0.0f) { // measured power over hard limit
         const float power_limit_violation_W = pack_current_A * pack_voltage_V - power_upper_limit_W;
         sf_state.power_limit_max_violation_W = fmaxf(sf_state.power_limit_max_violation_W, power_limit_violation_W);
@@ -446,8 +446,8 @@ void setTorqueLimsProtected (
     const float falloff_factor_by_temperature = getTemperatureFalloffFactor();
 
     // compute torque multipliers
-    const float accel_torque_multiplier = falloff_factor_by_pack_power * falloff_factor_by_cell_voltage_drop ;// falloff_factor_by_temperature;
-    const float regen_torque_multiplier = falloff_factor_by_cell_voltage_rise;// * falloff_factor_by_temperature;
+    const float accel_torque_multiplier = falloff_factor_by_pack_power * falloff_factor_by_cell_voltage_drop * falloff_factor_by_temperature;
+    const float regen_torque_multiplier = falloff_factor_by_cell_voltage_rise * falloff_factor_by_temperature;
 
     float filtered_accel_torque_multiplier = accel_torque_multiplier;
     filtered_accel_torque_multiplier = cmr_fir_filter_update(&accel_torque_multiplier_filter_state, accel_torque_multiplier);

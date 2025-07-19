@@ -65,7 +65,7 @@ float getPackCurrent() {
 //    volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
 //    return ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
 	volatile cmr_canHVIHeartbeat_t *HVISense = canVehicleGetPayload(CANRX_HVI_SENSE);
-	return (((float)(HVISense->packCurrent_dA)) * 1e-1f) + 1.25; // convert to amps
+	return (((float)(HVISense->packCurrent_dA)) * 1e-1f); // convert to amps
 }
 
 /** @brief returns the pack power measured by HVISense */
