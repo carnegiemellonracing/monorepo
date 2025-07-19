@@ -384,10 +384,6 @@ static void canTX10Hz(void *pvParameters) {
         daqWheelSpeedSetpoints(&speedSetpoint);
         daqWheelTorqueSetpoints(&torqueSetpoint);
 
-        daqPosePosition(&posePos);
-        daqPoseOrientation(&poseOrient);
-        daqPoseVelocity(&poseVel);
-
         powerSense.packCurrent_dA = getCurrent();
         powerSense.packVoltage_cV = getVoltage();
         //powersense is dead, voltage * HVI current
@@ -556,10 +552,6 @@ static void canTX200Hz(void *pvParameters) {
         daqWheelTorqueFeedback(&torqueFeedback);
         daqWheelSpeedSetpoints(&speedSetpoint);
         daqWheelTorqueSetpoints(&torqueSetpoint);
-
-        daqPosePosition(&posePos);
-        //daqPoseOrientation(&poseOrient);
-        daqPoseVelocity(&poseVel);
         
         cog_velocity.cog_x = car_state.velocity.x * 100.0f;
         cog_velocity.cog_y = car_state.velocity.y * 100.0f;

@@ -853,7 +853,7 @@ void setLaunchControl(
 
     if (use_solver) {
         // swAngle_millideg = 0 means assume no turn.
-        set_optimal_control_launch_hybrid((float)throttlePos_u8 / UINT8_MAX, 0,
+        set_optimal_control((float)throttlePos_u8 / UINT8_MAX, 0,
                                           0, false);
     } else {
         TickType_t tick = xTaskGetTickCount();
@@ -946,12 +946,6 @@ float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
     const float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
     const float actual_yaw_rate_radps_sae = movella_state.gyro.z;
     const float optimal_yaw_rate_radps = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
-
-    const float swangle_rad =
-        swAngleMillidegToSteeringAngleRad(swAngle_millideg);
-    const float actual_yaw_rate_radps_sae = movella_state.gyro.z;
-    const float optimal_yaw_rate_radps =
-        get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
 
     yrcDebug.controls_current_yaw_rate =
         (int16_t)(1000.0f * actual_yaw_rate_radps_sae);
