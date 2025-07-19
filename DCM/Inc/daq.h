@@ -16,10 +16,6 @@ void daqWheelTorqueFeedback(cmr_canCDCWheelTorque_t *torqueFeedback);
 void daqWheelSpeedSetpoints(cmr_canCDCWheelVelocity_t *speedSetpoint);
 void daqWheelTorqueSetpoints(cmr_canCDCWheelTorque_t *torqueSetpoint);
 
-void daqPosePosition(cmr_canCDCPosePosition_t *posePos);
-void daqPoseOrientation(cmr_canCDCPoseOrientation_t *poseOrient);
-void daqPoseVelocity(cmr_canCDCPoseVelocity_t *poseVel);
-
 float carVelocityToWheelRPM(float vel);
 float carVelocityToMotorRPM(float vel);
 float wheelRPMToCarVelocity(float wheelRPM);

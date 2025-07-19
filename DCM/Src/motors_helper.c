@@ -223,22 +223,6 @@ float getTorqueNmByIndex(const cmr_torqueDistributionNm_t *torques_Nm, size_t mo
     }
 }
 
-/** @brief get the max torque in cmr_torqueDistributionNm_t */
-float getTorqueNmMax(const cmr_torqueDistributionNm_t *torques_Nm) {
-    if (torques_Nm == NULL) {
-        return 0.0f;
-    }
-    return fmaxf(fmaxf(torques_Nm->fl, torques_Nm->fr), fmaxf(torques_Nm->rl, torques_Nm->rr));
-}
-
-/** @brief get the min torque in cmr_torqueDistributionNm_t */
-float getTorqueNmMin(const cmr_torqueDistributionNm_t *torques_Nm) {
-    if (torques_Nm == NULL) {
-        return 0.0f;
-    }
-    return fminf(fminf(torques_Nm->fl, torques_Nm->fr), fminf(torques_Nm->rl, torques_Nm->rr));
-}
-
 /**
  * @brief Given a motor RPM, return the maximum-power regenerative torque possible
  *

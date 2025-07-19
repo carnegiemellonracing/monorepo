@@ -37,6 +37,13 @@ void setYawRateControl (
 );
 void setYawRateAndTractionControl(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t swAngle_millideg,
     bool assumeNoTurn, bool ignoreYawRate, bool allowRegen, float critical_speed_mps);
+void setLaunchControl(
+    uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8,
+    int32_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
+    float leftRightBias_Nm, /** IGNORED UNLESS traction_control_mode (defined in
+                               the function) is TC_MODE_TORQUE */
+    bool assumeNoTurn, bool ignoreYawRate, bool allowRegen,
+    float critical_speed_mps);
 void setCruiseControlTorque(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM);
 void setEnduranceTorque(int32_t avgMotorSpeed_RPM, uint8_t throttlePos_u8, uint8_t brakePos_u8, int32_t swAngle_millideg,
     int32_t battVoltage_mV, int32_t battCurrent_mA, uint16_t brakePressurePsi_u8);

@@ -65,7 +65,7 @@ float getPackCurrent() {
 //    volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
 //    return ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
 	volatile cmr_canHVIHeartbeat_t *HVISense = canVehicleGetPayload(CANRX_HVI_SENSE);
-	return (((float)(HVISense->packCurrent_dA)) * 1e-1f) + 1.25; // convert to amps
+	return (((float)(HVISense->packCurrent_dA)) * 1e-1f); // convert to amps
 }
 
 /** @brief returns the pack power measured by HVISense */
@@ -94,84 +94,6 @@ float swAngleMillidegToSteeringAngleRad(int32_t swAngle_millideg) {
     float steering_angle_deg = ((float)swAngle_millideg); // convert steering wheel angle into steering angle SIKE BITCHED ALREADY GOT STEERING ANGLE
     float steering_angle_rad = steering_angle_deg * 0.001f * M_PI / 180.0f;
     return  steering_angle_rad; // convert to rads
-}
-
-/**
- * @brief Determine whether or not the SBG sensor's velocity readings could be trusted
- *
- * @param ignore_valid_bit Whether or not to ignore the sensor's reported validity of its velocity readings
- */
-bool canTrustSBGVelocity(bool ignore_valid_bit) {
-    const volatile cmr_canSBGStatus3_t *sbg_status = canDAQGetPayload(CANRX_DAQ_SBG_STATUS_3);
-    const uint32_t sbg_soln_status = sbg_status->solution_status;
-    const uint32_t sbg_vel_valid = sbg_soln_status & CMR_CAN_SBG_SOL_VELOCITY_VALID;
-    const bool sbg_timeout = cmr_canRXMetaTimeoutError(&canDaqRXMeta[CANRX_DAQ_SBG_STATUS_3], xTaskGetTickCount()) != 0;
-
-    return true;//!sbg_timeout && (sbg_vel_valid || ignore_valid_bit);
-}
-
-// REGEN SEGMENT
-
-// returns if regen was activated. Updates throttlePos_u8 in paddle regen
-bool setRegen(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM){
-    // get the regen type
-    uint8_t pedal_regen_strength = 0;
-    //bool retval1 = getProcessedValue(&pedal_regen_strength, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
-
-    uint8_t paddle_regen_strength = 100;//0;
-    //bool retval2 = getProcessedValue(&paddle_regen_strength, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
-//
-//    if (!retval1 || !retval2) {
-//        return false;
-//    }
-
-    uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
-
-    if (pedal_regen_strength > 0 && brakePressurePsi_u8 >= brake_pressure_start) {
-        return setParallelRegen(*throttlePos_u8, brakePressurePsi_u8, avgMotorSpeed_RPM);
-    } else if (paddle_regen_strength > 0 && paddle_pressure >= paddle_pressure_start) {
-        return setPaddleRegen(throttlePos_u8, brakePressurePsi_u8, avgMotorSpeed_RPM, paddle_pressure, paddle_regen_strength);
-    }
-    return false;
-}
-
-/**
- * @brief returns a negative torque limit in Nm after paddle regen request,
- *        or changes value of requested throttle
-*/
-float getRegenTorqueReq(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8){
-    // get the regen type
-    uint8_t pedal_regen_strength = 0;
-    bool retval1 = getProcessedValue(&pedal_regen_strength, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
-
-    uint8_t paddle_regen_strength = 100;//0;
-    //bool retval2 = getProcessedValue(&paddle_regen_strength, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
-
-//    if (!retval1 || !retval2) {
-//        return 0.0f;
-//    }
-
-    uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
-
-    if (paddle_regen_strength > 0 && paddle_pressure >= paddle_pressure_start) {
-
-        float paddle_request = ((float)(paddle_pressure - paddle_pressure_start)) * (((float) paddle_regen_strength) / (100.0f));
-        float pedal_request = ((float)(*throttlePos_u8)) - paddle_request;
-
-        if (pedal_request >= 0.0f) {
-            *throttlePos_u8 = (uint8_t) pedal_request;
-            return 0.0;
-        }
-
-        // Regen due to paddles
-        *throttlePos_u8 = 0;
-
-        float reqTorque = maxFastTorque_Nm * pedal_request / ((float)(UINT8_MAX));
-        float avgMotorSpeed_RPM = getTotalMotorSpeed_rpm()* 0.25f;
-        float recuperative_limit = getMotorRegenerativeCapacity(avgMotorSpeed_RPM);
-        return fmaxf(reqTorque, recuperative_limit);
-    }
-    return 0.0f;
 }
 
 bool setPaddleRegen(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM, uint8_t paddle_pressure, uint8_t paddle_regen_strength) {
@@ -221,7 +143,6 @@ bool setParallelRegen(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int3
 
     // DIM requested regen_force_multiplier
     uint8_t regen_force_multiplier_int8 = 80;//0;
-    // ret_val &= getProcessedValue(&regen_force_multiplier_int8, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
 
     // process the max regen force requested:
     float regen_force_multiplier_f = (float)regen_force_multiplier_int8 / 100.0f;
@@ -243,36 +164,13 @@ bool setParallelRegen(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int3
         return false;
     }
 
-    // ******* END DIM CONFIG SETTINGS *********
-
-
-    // get regen limit
-    // what is this recuperative limit shit
-
-    //float recuperative_limit = getMotorRegenerativeCapacity(avgMotorSpeed_RPM);
-    // yes but where is this value coming from???
-
     // this will overflow as brake pressure exceeds max regen pressure, that's why there is a clamp below
 
     // get brake kappa for each motor and then run the following if checks against maxfasttorque and the capping max regen force
-    // task: find deadband
     float regenTorque_FL = getBrakeMaxTorque_mNm(MOTOR_FL, brakePressurePsi_u8) * 0.001;
     float regenTorque_FR = getBrakeMaxTorque_mNm(MOTOR_FR, brakePressurePsi_u8) * 0.001;
     float regenTorque_RL = getBrakeMaxTorque_mNm(MOTOR_RL, brakePressurePsi_u8) * 0.001;
     float regenTorque_RR = getBrakeMaxTorque_mNm(MOTOR_RR, brakePressurePsi_u8) * 0.001;
-
-    // debugging code
-    float debug = test();
-    float debug_local = test_local();
-    float temp = getKappaByFx(MOTOR_FL, throttlePos_u8, 300.0f, true);
-
-    // clamp torque to the scaled maximum
-
-    // clamp to maintain within recuperative limit
-    // regenTorque_FL = fminf(regenTorque_FL, -recuperative_limit);
-    // regenTorque_FR = fminf(regenTorque_FR, -recuperative_limit);
-    // regenTorque_RL = fminf(regenTorque_RL, -recuperative_limit);
-    // regenTorque_RR = fminf(regenTorque_RR, -recuperative_limit);
 
     cmr_torqueDistributionNm_t neg_torques = {
         .fl = regenTorque_FL,
@@ -280,13 +178,8 @@ bool setParallelRegen(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int3
         .rl = regenTorque_RL,
         .rr = regenTorque_RR,
     };
-
-    // send torques!!
     setTorqueLimsProtected(NULL, &neg_torques);
-
-    // stop goin
     setVelocityInt16All(0);
-
 
     return true;
 }

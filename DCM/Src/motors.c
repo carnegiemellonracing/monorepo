@@ -189,27 +189,7 @@ static void motorsCommand (
         //transmit Coulombs using HVI sense
         integrateCurrent();
 
-//        uint32_t torqueRequestedL = adcToUInt8(MCP3202_read(0), LEFT_MIN, LEFT_MAX);
-//        uint32_t torqueRequestedR = adcToUInt8(MCP3202_read(1), RIGHT_MIN, RIGHT_MAX);
-//
-//        if(sampleTPOSDiff(torqueRequestedL, torqueRequestedR)) {
-//        	throttle = 0;
-//        }
-//        else {
-//        	throttle = (torqueRequestedL + torqueRequestedR)/2;
-//        }
 
-//        uint32_t pedal_messages[2] = {
-//			torqueRequestedL,
-//			torqueRequestedR
-//        };
-//        canTX(
-//			CMR_CAN_BUS_VEH,
-//			0x715,
-//			(void *) pedal_messages,
-//			8,
-//			5
-//		);
 //         update DRS mode
         drsMode = reqDIM->requestedDrsMode;
 
@@ -243,12 +223,6 @@ static void motorsCommand (
 						motorSetpoints[i].torqueLimNeg_dpcnt = 0;
 					}
 				}
-
-//                for (size_t i = 0; i < MOTOR_LEN; i++) {
-//                    motorSetpoints[i].velocity_rpm = 300;
-//                    motorSetpoints[i].torqueLimPos_dpcnt = 40;
-//                    motorSetpoints[i].torqueLimNeg_dpcnt = -40;
-//                }
 
                 uint32_t au32_initial_ticks = DWT->CYCCNT;
 
@@ -308,6 +282,7 @@ static void motorsCommand (
 
             // Also reset errors in GLV_ON
             case CMR_CAN_GLV_ON: {
+                pumpsOn();
             	mcCtrlOff();
 
                 if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
@@ -315,7 +290,7 @@ static void motorsCommand (
                 } else
 
             	// fansOff();
-            	pumpsOff();
+            	//pumpsOff();
 
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = CMR_CAN_AMK_CTRL_ERR_RESET;
@@ -442,6 +417,7 @@ void setTorqueLimsAllProtected (
     float torqueLimPos_Nm,
     float torqueLimNeg_Nm
 ) {
+    // TODO: REWRITE MAYBE WITHOUT DIST
     setTorqueLimsAllDistProtected(torqueLimPos_Nm, torqueLimNeg_Nm, NULL, NULL);
 }
 
@@ -568,15 +544,6 @@ void setVelocityFloatAll (
     for (size_t motor = 0; motor < MOTOR_LEN; motor++) {
         setVelocityFloat(motor, velocity_rpm);
     }
-}
-
-/**
- * @brief Calculate the torque budget for power-aware traction and yaw rate control.
- *
- * @return The torque upper- and lower-limits for a motor, which applies to every motor.
- */
-cmr_torque_limit_t getTorqueBudget() {
-	return getPreemptiveTorqueLimits();
 }
 
 /**

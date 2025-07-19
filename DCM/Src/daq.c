@@ -84,55 +84,6 @@ void daqWheelTorqueSetpoints(cmr_canCDCWheelTorque_t *torqueSetpoint) {
     torqueSetpoint->rearRight_Nm =  getMotorTorqueRequest(MOTOR_RR);
 }
 
-void daqPosePosition(cmr_canCDCPosePosition_t *posePos) {
-    volatile cmr_canSBGEKFPosition_t *sbgPos = canDAQGetPayload(CANRX_DAQ_SBG_POS);
-
-    posePos->latitude_deg = ((float) sbgPos->latitude) / 10000000;
-    posePos->longitude_deg = ((float) sbgPos->longitude) / 10000000;
-}
-
-float daqPoseOrientationRadToDeg(int16_t rad) {
-    // 360 / (2*pi) / 10^4
-    static const float RAD104_TO_DEG = 0.005729577;
-
-    return ((float) rad) * RAD104_TO_DEG;
-}
-
-float daqPoseOrientationRad(int16_t rad) {
-    // 360 / (2*pi) / 10^4
-    static const float RAD_TO_DEG = 57.29577;
-
-    return ((float) rad) * RAD_TO_DEG;
-}
-
-void daqPoseOrientation(cmr_canCDCPoseOrientation_t *poseOrient) {
-    volatile cmr_canSBGEKFOrient_t *sbgOrient = canDAQGetPayload(CANRX_DAQ_SBG_ORIENT);
-
-    poseOrient->roll_deg = (int16_t) (daqPoseOrientationRadToDeg(sbgOrient->roll) * 10);
-    poseOrient->pitch_deg = (int16_t) (daqPoseOrientationRadToDeg(sbgOrient->pitch) * 10);
-    poseOrient->yaw_deg = (int16_t) (daqPoseOrientationRadToDeg(sbgOrient->yaw) * 10);
-
-    volatile cmr_canSBGEKFVelocity_t *sbgVel = canDAQGetPayload(CANRX_DAQ_SBG_VEL);
-    // Perform transformations on car's velocity by using complex numbers as
-    // a stand-in for a 2D vector. In the NED (North-East-Down) coordinate
-    // frame, real->north, imag->east. Then in the car reference frame,
-    // forward->real, right->imag.
-    float vel_n_ned = ((float) sbgVel->velocity_n) / 100;
-    float vel_e_ned = ((float) sbgVel->velocity_e) / 100;
-    float complex velocity_ned = vel_n_ned + vel_e_ned * I;
-    float slip_ang = cargf(velocity_ned);
-
-    poseOrient->velocity_deg = (int16_t) (daqPoseOrientationRad(slip_ang) * 10);
-}
-
-void daqPoseVelocity(cmr_canCDCPoseVelocity_t *poseVel) {
-    volatile cmr_canSBGBodyVelocity_t *sbgBodyVel = canDAQGetPayload(CANRX_DAQ_SBG_BODY_VEL);
-
-    poseVel->longitudinalVel_mps = sbgBodyVel->velocity_forward;
-    poseVel->lateralVel_mps = sbgBodyVel->velocity_right;
-    poseVel->verticalVel_mps = sbgBodyVel->velocity_down;
-}
-
 float carVelocityToWheelRPM(float vel) {
     return (vel / (effective_wheel_dia_m * M_PI)) * 60.0f;
 }

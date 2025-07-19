@@ -38,6 +38,9 @@ typedef struct {
     float rr;
 } cmr_loadDistribution_t;
 
+// HAVE AN ARRAY OF LENGTH MOTORLEN AND INDEX MOTOR
+// SET INDEX INTO TORQUE DISTRIBUTION
+
 typedef struct {
     float fl;
     float fr;
@@ -62,8 +65,6 @@ float getMinMotorSpeed_radps();
 float getMotorPower(motorLocation_t motor, float pack_voltage_V);
 float getLoadByIndex(const cmr_loadDistribution_t *loads, size_t motor);
 float getTorqueNmByIndex(const cmr_torqueDistributionNm_t *torques_Nm, size_t motor);
-float getTorqueNmMax(const cmr_torqueDistributionNm_t *torques_Nm);
-float getTorqueNmMin(const cmr_torqueDistributionNm_t *torques_Nm);
 float getMotorRegenerativeCapacity(int32_t rpm);
 bool overVoltProtection();
 
