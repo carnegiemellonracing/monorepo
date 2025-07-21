@@ -3,7 +3,7 @@ import json
 
 output = "stm32f413-drivers/filegen/symv1.sym"
 symlines = [] 
-repeat_names = {} #name, number of times repeated 
+repeat_names = {} #canid, number of times repeated 
 
 def id2hex(id):
     #uses canids_post.h to map id(from canid_type_map) to the hex number
@@ -13,10 +13,10 @@ def id2hex(id):
                 hex = re.search(r"0x[0-9A-Fa-f]+", line) 
                 return hex.group().split("x")[1]
 
-def add_mapper_data(canid, cantype, cycletime, timeout, structlines):
-        name = re.findall(r'cmr_can(\w+)_t',cantype)
-        if cantype in repeat_names:
-            repeat_num = repeat_names[cantype]
+def add_mapper_data(canid, cycletime, timeout, structlines):
+        name = re.findall(r'CMR_CANID_(\w+)',canid) 
+        if canid in repeat_names:
+            repeat_num = repeat_names[canid]
             if repeat_num > 0:
                 symlines.append("["+name[0]+str(repeat_num)+"]")
             else:
@@ -34,7 +34,7 @@ def get_cantypes_data(cantype, structs):
             #find struct declaration with the right can type 
             return re.findall(r'\b((?:u)?int\d+_t|float)\s+(\w+)\b', fields) 
         
-def format_bitpacking(vartype, name, size, packed_num, atbit, structlines):
+def format_bitpacking_1(vartype, name, size, packed_num, atbit, structlines):
 #packed_num is the number of fields packed into var
     packed_size = int(size/packed_num)
     for i in range (0, packed_num):
@@ -42,14 +42,29 @@ def format_bitpacking(vartype, name, size, packed_num, atbit, structlines):
         atbit+=packed_size
     return atbit
 
+def format_bitpacking_2(vartype, atbit, packedinfo, structlines):
+    for littlename in packedinfo:
+        if littlename.startswith("empty"):
+            atbit+=packedinfo[littlename]
+            continue
+        else:
+            structlines.append("Var="+littlename+" "+vartype+" "+str(atbit)+","+str(packedinfo[littlename]))
+            atbit+=packedinfo[littlename]
+    return atbit
+
 def format_fields(cantype, matches, structlines):
     atbit = 0
     size = None
     bitpacking = None
+    bptype = 0 
     with open("stm32f413-drivers/filegen/bitpacking.json", "r") as file:
         bfile = json.load(file) 
-        if cantype in bfile:
-            bitpacking = bfile[cantype]
+        if cantype in bfile["type1"]:
+            bitpacking = bfile["type1"][cantype]
+            bptype=1
+        elif cantype in bfile["type2"]:
+            bitpacking = bfile["type2"][cantype]
+            bptype=2
     for vartype, name in matches:
         findsize = re.search(r'\d+', vartype)
         if findsize:
@@ -64,8 +79,12 @@ def format_fields(cantype, matches, structlines):
                 size = 32 
         if bitpacking and name in bitpacking:
             #this field is bitpacked
-            atbit = format_bitpacking(vartype, name, size, bitpacking[name], atbit, structlines)
-            continue
+            if(bptype==1):
+                atbit = format_bitpacking_1(vartype, name, size, bitpacking[name], atbit, structlines)
+                continue
+            if(bptype==2):
+                atbit = format_bitpacking_2(vartype, atbit, bitpacking[name], structlines)
+                continue
         if size:
             structlines.append("Var="+name+" "+vartype+ " " +str(atbit)+","+str(size))
             atbit+=int(size)
@@ -73,18 +92,16 @@ def format_fields(cantype, matches, structlines):
             structlines.append("Issue with type of field")
     return str(int(atbit/8))
 
-def check_repeat(cantype):
-    #print("in check repeat\n")
-    can_name = re.findall(r'cmr_can(\w+)_t',cantype)
+def check_repeat(canid):
+    can_name = re.findall(r'CMR_CANID_(\w+)',canid)
     for line in symlines: 
-        if can_name[0] in line:
-            #print("found a repeat\n")
+        if can_name and can_name[0] in line:
             line = line.split("]")[0] + "0]" #??
-            if cantype not in repeat_names:
-                repeat_names[cantype]=1
+            if canid not in repeat_names:
+                repeat_names[canid]=1
                 break
             else:
-                repeat_names[cantype]+=1 
+                repeat_names[canid]+=1 
                 break
 
 
@@ -98,14 +115,14 @@ def main():
         for canid in canids:
             #go through each can id dict 
             cantype = canids[canid]['type']
-            check_repeat(cantype)
             cycletime = canids[canid]['cycleTime']
             timeout = canids[canid]['timeOut']
             if re.fullmatch(r'(cmr_[a-zA-Z0-9_]*_t)', cantype):
+                check_repeat(canid)
                 #valid can type in dict 
                 structlines = []
                 #look at mapper json for data
-                add_mapper_data(canid, cantype, cycletime, timeout, structlines)
+                add_mapper_data(canid, cycletime, timeout, structlines)
                 #find and format the correct struct in cantypes.h 
                 matches = get_cantypes_data(cantype, structs)
                 if matches: 

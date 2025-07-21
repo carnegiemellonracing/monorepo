@@ -1,4 +1,4 @@
-[AMKSetpoints]
+[AMK_FL_SETPOINTS]
 ID:189
 DLC=8
 CycleTime=5
@@ -9,7 +9,7 @@ Var=torqueLimPos_dpcnt signed 32,16
 Var=torqueLimNeg_dpcnt signed 48,16
 
 
-[AMKSetpoints1]
+[AMK_FR_SETPOINTS]
 ID:185
 DLC=8
 CycleTime=5
@@ -20,7 +20,7 @@ Var=torqueLimPos_dpcnt signed 32,16
 Var=torqueLimNeg_dpcnt signed 48,16
 
 
-[AMKSetpoints2]
+[AMK_RL_SETPOINTS]
 ID:188
 DLC=8
 CycleTime=5
@@ -31,7 +31,7 @@ Var=torqueLimPos_dpcnt signed 32,16
 Var=torqueLimNeg_dpcnt signed 48,16
 
 
-[AMKSetpoints3]
+[AMK_RR_SETPOINTS]
 ID:184
 DLC=8
 CycleTime=5
@@ -42,7 +42,7 @@ Var=torqueLimPos_dpcnt signed 32,16
 Var=torqueLimNeg_dpcnt signed 48,16
 
 
-[COGVelocity]
+[CDC_COG_VELOCITY]
 ID:2C2
 DLC=8
 CycleTime=5
@@ -52,7 +52,7 @@ Var=cog_y signed 16,16
 Var=slip_angle float 32,32
 
 
-[CDCControlsStatus]
+[CDC_CONTROLS_STATUS]
 ID:6D2
 DLC=2
 CycleTime=1000
@@ -61,7 +61,7 @@ Var=tcOn unsigned 0,8
 Var=yrcOn unsigned 8,8
 
 
-[CDCKiloCoulombs]
+[CDC_COULOMB_COUNTING]
 ID:6E3
 DLC=4
 CycleTime=100
@@ -69,7 +69,7 @@ TimeOut=500
 Var=KCoulombs float 0,32
 
 
-[FrontWheelVelocity]
+[CDC_FRONT_VELOCITY]
 ID:2D2
 DLC=8
 CycleTime=5
@@ -80,7 +80,7 @@ Var=fr_x signed 32,16
 Var=fr_y signed 48,16
 
 
-[CDCOdometer]
+[CDC_ODOMETER]
 ID:6C2
 DLC=4
 CycleTime=1000
@@ -88,7 +88,7 @@ TimeOut=5000
 Var=odometer_km float 0,32
 
 
-[CDCPoseOrientation]
+[CDC_POSE_ORIENTATION]
 ID:292
 DLC=8
 CycleTime=5
@@ -99,7 +99,7 @@ Var=yaw_deg signed 32,16
 Var=velocity_deg signed 48,16
 
 
-[CDCPosePosition]
+[CDC_POSE_POSITION]
 ID:282
 DLC=8
 CycleTime=5
@@ -108,7 +108,7 @@ Var=latitude_deg float 0,32
 Var=longitude_deg float 32,32
 
 
-[CDCPoseVelocity]
+[CDC_POSE_VELOCITY]
 ID:2A2
 DLC=6
 CycleTime=5
@@ -118,7 +118,7 @@ Var=lateralVel_mps signed 16,16
 Var=verticalVel_mps signed 32,16
 
 
-[CDCPowerLimitLog]
+[CDC_POWER_LOG]
 ID:6E4
 DLC=4
 CycleTime=1000
@@ -126,7 +126,7 @@ TimeOut=5000
 Var=power_limit_W float 0,32
 
 
-[PowerSense]
+[CDC_POWER_SENSE]
 ID:305
 DLC=8
 CycleTime=100
@@ -136,7 +136,7 @@ Var=packVoltage_cV unsigned 16,16
 Var=packPower_W signed 32,32
 
 
-[RearWheelVelocity]
+[CDC_REAR_VELOCITY]
 ID:2E2
 DLC=8
 CycleTime=5
@@ -147,7 +147,7 @@ Var=rr_x signed 32,16
 Var=rr_y signed 48,16
 
 
-[_rtc_data]
+[CDC_RTC_DATA_OUT]
 ID:6A2
 DLC=7
 CycleTime=1000
@@ -161,7 +161,7 @@ Var=year unsigned 40,8
 Var=err unsigned 48,8
 
 
-[CDCWheelVelocity]
+[CDC_WHEEL_SPEED_FEEDBACK]
 ID:232
 DLC=8
 CycleTime=5
@@ -172,7 +172,7 @@ Var=rearLeft_rpm signed 32,16
 Var=rearRight_rpm signed 48,16
 
 
-[CDCWheelVelocity1]
+[CDC_WHEEL_SPEED_SETPOINT]
 ID:252
 DLC=8
 CycleTime=5
@@ -183,7 +183,7 @@ Var=rearLeft_rpm signed 32,16
 Var=rearRight_rpm signed 48,16
 
 
-[CDCWheelTorque]
+[CDC_WHEEL_TORQUE_FEEDBACK]
 ID:262
 DLC=8
 CycleTime=5
@@ -194,7 +194,7 @@ Var=rearLeft_Nm signed 32,16
 Var=rearRight_Nm signed 48,16
 
 
-[CDCWheelTorque1]
+[CDC_WHEEL_TORQUE_SETPOINT]
 ID:272
 DLC=8
 CycleTime=5
@@ -205,7 +205,7 @@ Var=rearLeft_Nm signed 32,16
 Var=rearRight_Nm signed 48,16
 
 
-[_controls_pid_debug]
+[CONTROLS_PID_IO]
 ID:7E5
 DLC=8
 CycleTime=5
@@ -216,7 +216,7 @@ Var=controls_bias signed 32,16
 Var=controls_pid signed 48,16
 
 
-[_solver_aux]
+[CONTROLS_SOLVER_AUX]
 ID:7FF
 DLC=3
 CycleTime=10
@@ -225,7 +225,7 @@ Var=combined_normalized_throttle signed 0,16
 Var=placeholder unsigned 16,8
 
 
-[_solver_inputs]
+[CONTROLS_SOLVER_INPUTS]
 ID:7E6
 DLC=8
 CycleTime=10
@@ -234,7 +234,7 @@ Var=moment_req_Nm float 0,32
 Var=lin_accel_Nm float 32,32
 
 
-[CDCWheelTorque2]
+[CONTROLS_SOLVER_OUTPUTS]
 ID:7F0
 DLC=8
 CycleTime=10
@@ -245,7 +245,7 @@ Var=rearLeft_Nm signed 32,16
 Var=rearRight_Nm signed 48,16
 
 
-[_solver_settings]
+[CONTROLS_SOLVER_SETTINGS]
 ID:7EE
 DLC=6
 CycleTime=10
@@ -255,7 +255,7 @@ Var=k_yaw unsigned 16,16
 Var=k_tie unsigned 32,16
 
 
-[DIMAck]
+[DIM_ACKNOWLEDGE]
 ID:545
 DLC=1
 CycleTime=100
@@ -263,20 +263,24 @@ TimeOut=500
 Var=acknowledge unsigned 0,8
 
 
-[DIMActions]
+[DIM_ACTIONS]
 ID:515
 DLC=6
 CycleTime=10
 TimeOut=50
-Var=buttons unsigned 0,8
+Var=action_button unsigned 2,1
+Var=launch_button unsigned 3,1
 Var=rotaryPos unsigned 8,8
 Var=switchValues unsigned 16,8
 Var=regenPercent unsigned 24,8
 Var=paddle unsigned 32,8
-Var=LRUDButtons unsigned 40,8
+Var=left unsigned 40,1
+Var=right unsigned 41,1
+Var=up unsigned 42,1
+Var=down unsigned 43,1
 
 
-[DIMPowerDiagnostics]
+[DIM_POWER_DIAGNOSTICS]
 ID:535
 DLC=4
 CycleTime=100
@@ -285,7 +289,7 @@ Var=busVoltage_mV unsigned 0,16
 Var=busCurrent_mA unsigned 16,16
 
 
-[DIMRequest]
+[DIM_REQUEST]
 ID:235
 DLC=4
 CycleTime=100
@@ -296,7 +300,7 @@ Var=requestedDrsMode unsigned 16,8
 Var=requestedDriver unsigned 24,8
 
 
-[CDCDRSStates]
+[DRS_STATE]
 ID:52C
 DLC=4
 CycleTime=100
@@ -307,7 +311,7 @@ Var=pwm_left unsigned 16,8
 Var=pwm_right unsigned 24,8
 
 
-[_front_slip_ratio_data]
+[FRONT_SLIP_RATIOS]
 ID:7E8
 DLC=8
 CycleTime=100
@@ -316,7 +320,7 @@ Var=slipRatio_FL float 0,32
 Var=slipRatio_FR float 32,32
 
 
-[_front_slip_ratio_data1]
+[FRONT_WHL_SETPOINTS]
 ID:7EA
 DLC=8
 CycleTime=100
@@ -325,7 +329,7 @@ Var=slipRatio_FL float 0,32
 Var=slipRatio_FR float 32,32
 
 
-[_front_whl_velocity]
+[FRONT_WHL_VELS]
 ID:7EC
 DLC=8
 CycleTime=100
@@ -334,7 +338,7 @@ Var=v_whl_fl float 0,32
 Var=v_whl_fr float 32,32
 
 
-[FSMSensorsADC]
+[FSM_DATA]
 ID:133
 DLC=4
 CycleTime=10
@@ -343,7 +347,7 @@ Var=brakePressureFrontADC unsigned 0,16
 Var=steeringWheelAngleADC unsigned 16,16
 
 
-[FSMSensorsADC1]
+[FSM_PEDALS_ADC]
 ID:533
 DLC=4
 CycleTime=100
@@ -352,7 +356,7 @@ Var=brakePressureFrontADC unsigned 0,16
 Var=steeringWheelAngleADC unsigned 16,16
 
 
-[FSMPowerDiagnostics]
+[FSM_POWER_DIAGNOSTICS]
 ID:553
 DLC=4
 CycleTime=100
@@ -361,7 +365,7 @@ Var=busVoltage_mV unsigned 0,16
 Var=busCurrent_mA unsigned 16,16
 
 
-[FSMSensorsADC2]
+[FSM_SENSORS_ADC]
 ID:543
 DLC=4
 CycleTime=100
@@ -370,7 +374,7 @@ Var=brakePressureFrontADC unsigned 0,16
 Var=steeringWheelAngleADC unsigned 16,16
 
 
-[FSMSensorsADC3]
+[FSM_SWANGLE]
 ID:135
 DLC=4
 CycleTime=10
@@ -379,7 +383,7 @@ Var=brakePressureFrontADC unsigned 0,16
 Var=steeringWheelAngleADC unsigned 16,16
 
 
-[Heartbeat]
+[HEARTBEAT_CDC]
 ID:102
 DLC=3
 CycleTime=10
@@ -389,7 +393,7 @@ Var=error unsigned 8,8
 Var=warning unsigned 16,8
 
 
-[Heartbeat1]
+[HEARTBEAT_DIM]
 ID:104
 DLC=3
 CycleTime=10
@@ -399,7 +403,7 @@ Var=error unsigned 8,8
 Var=warning unsigned 16,8
 
 
-[Heartbeat2]
+[HEARTBEAT_FSM]
 ID:103
 DLC=3
 CycleTime=10
@@ -409,7 +413,7 @@ Var=error unsigned 8,8
 Var=warning unsigned 16,8
 
 
-[HVCHeartbeat]
+[HEARTBEAT_HVC]
 ID:101
 DLC=6
 CycleTime=10
@@ -421,7 +425,7 @@ Var=relayStatus unsigned 32,8
 Var=uptime_s unsigned 40,8
 
 
-[HVIHeartbeat]
+[HEARTBEAT_HVI]
 ID:106
 DLC=8
 CycleTime=100
@@ -431,7 +435,7 @@ Var=packVoltage_cV unsigned 16,16
 Var=packPower_W signed 32,32
 
 
-[Heartbeat3]
+[HEARTBEAT_LV_BMS]
 ID:107
 DLC=3
 CycleTime=10
@@ -441,7 +445,7 @@ Var=error unsigned 8,8
 Var=warning unsigned 16,8
 
 
-[Heartbeat4]
+[HEARTBEAT_VSM]
 ID:100
 DLC=3
 CycleTime=10
@@ -451,7 +455,7 @@ Var=error unsigned 8,8
 Var=warning unsigned 16,8
 
 
-[BMSBMBStatusTemp]
+[HVC_BMB_0_STATUS_TEMP]
 CycleTime=1000
 DLC=6
 TimeOut=5000
@@ -461,25 +465,25 @@ Var=maxCellTemp_C signed 16,16
 Var=minCellTemp_C signed 32,16
 
 
-[HVCBMB_Temp0]
+[HVC_BMB_0_STATUS_TEMP_0]
 CycleTime=1000
 TimeOut=5000
 error with this struct in can_types.h
 
 
-[HVCBMB_Temp1]
+[HVC_BMB_0_STATUS_TEMP_1]
 CycleTime=1000
 TimeOut=5000
 error with this struct in can_types.h
 
 
-[HVCBMB_Temp2]
+[HVC_BMB_0_STATUS_TEMP_2]
 CycleTime=1000
 TimeOut=5000
 error with this struct in can_types.h
 
 
-[BMSBMBStatusVoltage]
+[HVC_BMB_0_STATUS_VOLTAGE]
 CycleTime=100
 DLC=6
 TimeOut=500
@@ -489,25 +493,25 @@ Var=maxCellVoltage_mV unsigned 16,16
 Var=minCellVoltage_mV unsigned 32,16
 
 
-[HVCBMB_Voltage0]
+[HVC_BMB_0_STATUS_VOLTAGE_0]
 CycleTime=1000
 TimeOut=5000
 error with this struct in can_types.h
 
 
-[HVCBMB_Voltage1]
+[HVC_BMB_0_STATUS_VOLTAGE_1]
 CycleTime=1000
 TimeOut=5000
 error with this struct in can_types.h
 
 
-[HVCBMB_Voltage2]
+[HVC_BMB_0_STATUS_VOLTAGE_2]
 CycleTime=1000
 TimeOut=5000
 error with this struct in can_types.h
 
 
-[HVCBMBErrors]
+[HVC_BMB_STATUS_ERRORS]
 ID:304
 DLC=8
 CycleTime=10
@@ -520,7 +524,8 @@ Var=BMB5_6_Errs0 unsigned 16,4
 Var=BMB5_6_Errs1 unsigned 20,4
 Var=BMB7_8_Errs0 unsigned 24,4
 Var=BMB7_8_Errs1 unsigned 28,4
-Var=BMB9_10_Errs unsigned 32,8
+Var=BMB9_10_Errs0 unsigned 32,4
+Var=BMB9_10_Errs1 unsigned 36,4
 Var=BMB11_12_Errs0 unsigned 40,4
 Var=BMB11_12_Errs1 unsigned 44,4
 Var=BMB13_14_Errs0 unsigned 48,4
@@ -529,7 +534,7 @@ Var=BMB15_16_Errs0 unsigned 56,4
 Var=BMB15_16_Errs1 unsigned 60,4
 
 
-[HVCCommand]
+[HVC_COMMAND]
 ID:130
 DLC=1
 CycleTime=10
@@ -537,7 +542,7 @@ TimeOut=50
 Var=modeRequest unsigned 0,8
 
 
-[BMSLowVoltage]
+[HVC_LOW_VOLTAGE]
 ID:303
 DLC=4
 CycleTime=10
@@ -548,7 +553,7 @@ Var=safety_mV unsigned 16,8
 Var=iDCDC_mA unsigned 24,8
 
 
-[BMSMinMaxCellTemperature]
+[HVC_MIN_MAX_CELL_TEMPERATURE]
 ID:311
 DLC=8
 CycleTime=100
@@ -561,7 +566,7 @@ Var=maxTempBMBNum unsigned 48,8
 Var=maxTempCellNum unsigned 56,8
 
 
-[BMSMinMaxCellVoltage]
+[HVC_MIN_MAX_CELL_VOLTAGE]
 ID:310
 DLC=8
 CycleTime=10
@@ -574,7 +579,7 @@ Var=maxVoltageBMBNum unsigned 48,8
 Var=maxVoltageCellNum unsigned 56,8
 
 
-[BMSPackCurrent]
+[HVC_PACK_CURRENT]
 ID:302
 DLC=8
 CycleTime=10
@@ -583,7 +588,7 @@ Var=instantCurrent_mA signed 0,32
 Var=averageCurrent_mA signed 32,32
 
 
-[HVCPackVoltage]
+[HVC_PACK_VOLTAGE]
 ID:301
 DLC=8
 CycleTime=10
@@ -592,7 +597,7 @@ Var=battVoltage_mV signed 0,32
 Var=hvVoltage_mV signed 32,32
 
 
-[CDCMotorPower]
+[MOTORPOWER_STATE]
 ID:52E
 DLC=8
 CycleTime=5
@@ -603,7 +608,7 @@ Var=motor_power_RL unsigned 32,16
 Var=motor_power_RR unsigned 48,16
 
 
-[_rear_slip_ratio_data]
+[REAR_SLIP_RATIOS]
 ID:7E9
 DLC=8
 CycleTime=100
@@ -612,7 +617,7 @@ Var=slipRatio_RL float 0,32
 Var=slipRatio_RR float 32,32
 
 
-[_rear_whl_speed_setpoint]
+[REAR_WHL_SETPOINTS]
 ID:7EB
 DLC=8
 CycleTime=100
@@ -621,7 +626,7 @@ Var=omega_RL float 0,32
 Var=omega_RR float 32,32
 
 
-[_rear_whl_velocity]
+[REAR_WHL_VELS]
 ID:7ED
 DLC=8
 CycleTime=100
@@ -630,7 +635,7 @@ Var=v_whl_rl float 0,32
 Var=v_whl_rr float 32,32
 
 
-[CDCSafetyFilterStates]
+[SF_STATE]
 ID:52D
 DLC=8
 CycleTime=10
@@ -642,7 +647,7 @@ Var=under_voltage_count unsigned 48,8
 Var=over_temp_count unsigned 56,8
 
 
-[TestID]
+[TEST_ID]
 ID:777
 DLC=4
 CycleTime=100
@@ -650,17 +655,7 @@ TimeOut=500
 Var=test_id unsigned 0,32
 
 
-[VSMLatchedStatus]
-ID:510
-DLC=3
-CycleTime=10000
-TimeOut=50000
-Var=moduleTimeoutMatrix unsigned 0,8
-Var=badStateMatrix unsigned 8,8
-Var=latchMatrix unsigned 16,8
-
-
-[VSMPowerDiagnostics]
+[VSM_POWER_DIAGNOSTICS]
 ID:530
 DLC=4
 CycleTime=100
@@ -669,7 +664,7 @@ Var=busVoltage_mV unsigned 0,16
 Var=busCurrent_mA unsigned 16,16
 
 
-[VSMPowerDiagnostics1]
+[VSM_SENSORS]
 ID:200
 DLC=4
 CycleTime=5
@@ -678,7 +673,7 @@ Var=busVoltage_mV unsigned 0,16
 Var=busCurrent_mA unsigned 16,16
 
 
-[VSMStatus]
+[VSM_STATUS]
 ID:110
 DLC=4
 CycleTime=10

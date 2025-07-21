@@ -1,12 +1,31 @@
 {
-    "cmr_canHVCBMBErrors_t": {
-        "BMB1_2_Errs": 2,
-        "BMB3_4_Errs": 2,
-        "BMB5_6_Errs": 2, 
-        "BMB7_8_Errs": 2,
-        "BMB8_10_Errs": 2,
-        "BMB11_12_Errs": 2, 
-        "BMB13_14_Errs": 2,
-        "BMB15_16_Errs": 2  
+    "type1":{
+        "cmr_canHVCBMBErrors_t": {
+            "BMB1_2_Errs": 2,
+            "BMB3_4_Errs": 2,
+            "BMB5_6_Errs": 2, 
+            "BMB7_8_Errs": 2,
+            "BMB9_10_Errs": 2,
+            "BMB11_12_Errs": 2, 
+            "BMB13_14_Errs": 2,
+            "BMB15_16_Errs": 2  
+        }
+    },
+    "type2":{
+        "cmr_canDIMActions_t":{
+            "buttons":{
+                "empty1":2,
+                "action_button":1,
+                "launch_button":1,
+                "empty2":4
+            },
+            "LRUDButtons":{
+                "left":1,
+                "right":1,
+                "up":1,
+                "down":1,
+                "empty":4
+            }
+        }
     }
-}
+} 
