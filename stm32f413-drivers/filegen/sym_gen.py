@@ -4,6 +4,7 @@ import json
 output = "stm32f413-drivers/filegen/symv1.sym"
 symlines = [] 
 repeat_names = {} #canid, number of times repeated 
+units = ["mps"]
 
 def id2hex(id):
     #uses canids_post.h to map id(from canid_type_map) to the hex number
@@ -38,7 +39,11 @@ def format_bitpacking_1(vartype, name, size, packed_num, atbit, structlines):
 #packed_num is the number of fields packed into var
     packed_size = int(size/packed_num)
     for i in range (0, packed_num):
-        structlines.append("Var="+name+str(i)+" "+vartype+ " " +str(atbit)+","+str(packed_size))
+        appendstr="Var="+name+str(i)+" "+vartype+ " " +str(atbit)+","+str(packed_size)
+        unit = add_units(name)
+        if unit:
+            appendstr+=unit
+        structlines.append(appendstr)
         atbit+=packed_size
     return atbit
 
@@ -48,7 +53,11 @@ def format_bitpacking_2(vartype, atbit, packedinfo, structlines):
             atbit+=packedinfo[littlename]
             continue
         else:
-            structlines.append("Var="+littlename+" "+vartype+" "+str(atbit)+","+str(packedinfo[littlename]))
+            appendstr = "Var="+littlename+" "+vartype+" "+str(atbit)+","+str(packedinfo[littlename])
+            unit = add_units(littlename) 
+            if unit:
+                appendstr+=unit 
+            structlines.append(appendstr)
             atbit+=packedinfo[littlename]
     return atbit
 
@@ -64,7 +73,7 @@ def format_fields(cantype, matches, structlines):
             bptype=1
         elif cantype in bfile["type2"]:
             bitpacking = bfile["type2"][cantype]
-            bptype=2
+            bptype=2 #HVC heartbeat needs to be added 
     for vartype, name in matches:
         findsize = re.search(r'\d+', vartype)
         if findsize:
@@ -86,11 +95,21 @@ def format_fields(cantype, matches, structlines):
                 atbit = format_bitpacking_2(vartype, atbit, bitpacking[name], structlines)
                 continue
         if size:
-            structlines.append("Var="+name+" "+vartype+ " " +str(atbit)+","+str(size))
+            appendstr = "Var="+name+" "+vartype+ " " +str(atbit)+","+str(size)
+            units = add_units(name)
+            if units:
+                appendstr+=units
+            structlines.append(appendstr)
             atbit+=int(size)
         else:
             structlines.append("Issue with type of field")
     return str(int(atbit/8))
+
+def add_units(name):
+    for unit in units:
+        if name.endswith(unit):
+            print("adding unit to"+name)
+            return " /u:"+unit
 
 def check_repeat(canid):
     can_name = re.findall(r'CMR_CANID_(\w+)',canid)
@@ -106,7 +125,7 @@ def check_repeat(canid):
 
 
 def main():
-    with open("stm32f413-drivers/CMR/include/CMR/can_types.h", "r") as structf: 
+    with open("stm32f413-drivers/filegen/can_types_new.h", "r") as structf: 
         #find all struct declarations
         structs = re.findall(r'typedef\s+struct\s*\{([\s\S]*?)\}\s*(cmr_can\w+)\s*;', structf.read())
     with open("stm32f413-drivers/filegen/canid_type_map.json", "r") as file: 

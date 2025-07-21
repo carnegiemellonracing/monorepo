@@ -952,8 +952,8 @@ typedef struct {
 } cmr_canMovellaStatus_t;
 
 typedef struct {
-    int16_t cog_x; //f:0.01
-    int16_t cog_y; //f:0.01
+    int16_t cog_x_mps; //f:0.01
+    int16_t cog_y_mps; //f:0.01
     float slip_angle;
 } cmr_canCOGVelocity_t;
 

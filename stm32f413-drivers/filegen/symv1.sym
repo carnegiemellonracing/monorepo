@@ -47,8 +47,8 @@ ID:2C2
 DLC=8
 CycleTime=5
 TimeOut=25
-Var=cog_x signed 0,16
-Var=cog_y signed 16,16
+Var=cog_x_mps signed 0,16 /u:mps
+Var=cog_y_mps signed 16,16 /u:mps
 Var=slip_angle float 32,32
 
 
@@ -113,9 +113,9 @@ ID:2A2
 DLC=6
 CycleTime=5
 TimeOut=25
-Var=longitudinalVel_mps signed 0,16
-Var=lateralVel_mps signed 16,16
-Var=verticalVel_mps signed 32,16
+Var=longitudinalVel_mps signed 0,16 /u:mps
+Var=lateralVel_mps signed 16,16 /u:mps
+Var=verticalVel_mps signed 32,16 /u:mps
 
 
 [CDC_POWER_LOG]
