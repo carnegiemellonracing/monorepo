@@ -25,7 +25,7 @@ def add_mapper_data(canid, cycletime, timeout, structlines):
         else:
             symlines.append("["+name[0]+"]")
         if id2hex(canid):
-            structlines.append("ID:"+id2hex(canid)) 
+            structlines.append("ID="+id2hex(canid)) 
         structlines.append("CycleTime="+str(cycletime))
         structlines.append("TimeOut="+str(timeout))
 
@@ -35,7 +35,7 @@ def get_cantypes_data(cantype, structs):
             #find struct declaration with the right can type 
             return re.findall(r'\b((?:u)?int\d+_t|float)\s+(\w+)\b', fields) 
         
-def format_bitpacking_1(vartype, name, size, packed_num, atbit, structlines):
+def format_bitpacking_1(vartype, name, size, packed_num, atbit, structlines, field_params=None):
 #packed_num is the number of fields packed into var
     packed_size = int(size/packed_num)
     for i in range (0, packed_num):
@@ -43,11 +43,14 @@ def format_bitpacking_1(vartype, name, size, packed_num, atbit, structlines):
         unit = add_units(name)
         if unit:
             appendstr+=unit
+        # Add field-specific parameters if available
+        if field_params and name in field_params:
+            appendstr += format_field_params(field_params[name])
         structlines.append(appendstr)
         atbit+=packed_size
     return atbit
 
-def format_bitpacking_2(vartype, atbit, packedinfo, structlines):
+def format_bitpacking_2(vartype, atbit, packedinfo, structlines, field_params=None):
     for littlename in packedinfo:
         if littlename.startswith("empty"):
             atbit+=packedinfo[littlename]
@@ -57,11 +60,29 @@ def format_bitpacking_2(vartype, atbit, packedinfo, structlines):
             unit = add_units(littlename) 
             if unit:
                 appendstr+=unit 
+            # Add field-specific parameters if available
+            if field_params and littlename in field_params:
+                appendstr += format_field_params(field_params[littlename])
             structlines.append(appendstr)
             atbit+=packedinfo[littlename]
     return atbit
 
-def format_fields(cantype, matches, structlines):
+def format_field_params(params):
+    """Format field-specific parameters like f, p, e, etc."""
+    param_str = ""
+    if 'f' in params:
+        param_str += f" /f:{params['f']}"
+    if 'p' in params:
+        param_str += f" /p:{params['p']}"
+    if 'e' in params:
+        param_str += f" /e:{params['e']}"
+    if 'min' in params:
+        param_str += f" /min:{params['min']}"
+    if 'max' in params:
+        param_str += f" /max:{params['max']}"
+    return param_str
+
+def format_fields(cantype, matches, structlines, field_params=None):
     atbit = 0
     size = None
     bitpacking = None
@@ -89,16 +110,19 @@ def format_fields(cantype, matches, structlines):
         if bitpacking and name in bitpacking:
             #this field is bitpacked
             if(bptype==1):
-                atbit = format_bitpacking_1(vartype, name, size, bitpacking[name], atbit, structlines)
+                atbit = format_bitpacking_1(vartype, name, size, bitpacking[name], atbit, structlines, field_params)
                 continue
             if(bptype==2):
-                atbit = format_bitpacking_2(vartype, atbit, bitpacking[name], structlines)
+                atbit = format_bitpacking_2(vartype, atbit, bitpacking[name], structlines, field_params)
                 continue
         if size:
             appendstr = "Var="+name+" "+vartype+ " " +str(atbit)+","+str(size)
             units = add_units(name)
             if units:
                 appendstr+=units
+            # Add field-specific parameters if available
+            if field_params and name in field_params:
+                appendstr += format_field_params(field_params[name])
             structlines.append(appendstr)
             atbit+=int(size)
         else:
@@ -123,6 +147,13 @@ def check_repeat(canid):
                 repeat_names[canid]+=1 
                 break
 
+def extract_field_params(canid_data):
+    """Extract field-specific parameters from the canid data"""
+    field_params = {}
+    for key, value in canid_data.items():
+        if key not in ['cycleTime', 'timeOut', 'type'] and isinstance(value, dict):
+            field_params[key] = value
+    return field_params if field_params else None
 
 def main():
     with open("stm32f413-drivers/filegen/can_types_new.h", "r") as structf: 
@@ -133,9 +164,14 @@ def main():
         canids = json_obj['canid_to_info']
         for canid in canids:
             #go through each can id dict 
-            cantype = canids[canid]['type']
-            cycletime = canids[canid]['cycleTime']
-            timeout = canids[canid]['timeOut']
+            canid_data = canids[canid]
+            cantype = canid_data['type']
+            cycletime = canid_data['cycleTime']
+            timeout = canid_data['timeOut']
+            
+            # Extract field-specific parameters
+            field_params = extract_field_params(canid_data)
+            
             if re.fullmatch(r'(cmr_[a-zA-Z0-9_]*_t)', cantype):
                 check_repeat(canid)
                 #valid can type in dict 
@@ -145,7 +181,7 @@ def main():
                 #find and format the correct struct in cantypes.h 
                 matches = get_cantypes_data(cantype, structs)
                 if matches: 
-                    dlc = format_fields(cantype, matches, structlines)
+                    dlc = format_fields(cantype, matches, structlines, field_params)
                     structlines.insert(1, "DLC="+dlc)
                 else:
                     structlines.append("error with this struct in can_types.h")
