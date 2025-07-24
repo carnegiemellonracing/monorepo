@@ -31,12 +31,9 @@ cmr_canState_t vsmToCANState[] = {
     [CMR_CAN_VSM_STATE_GLV_ON]          = CMR_CAN_GLV_ON,
     [CMR_CAN_VSM_STATE_REQ_PRECHARGE]   = CMR_CAN_GLV_ON,
     [CMR_CAN_VSM_STATE_RUN_BMS]         = CMR_CAN_GLV_ON,
-    [CMR_CAN_VSM_STATE_DCDC_EN]         = CMR_CAN_GLV_ON,
     [CMR_CAN_VSM_STATE_INVERTER_EN]     = CMR_CAN_GLV_ON,
     [CMR_CAN_VSM_STATE_HV_EN]           = CMR_CAN_HV_EN,
     [CMR_CAN_VSM_STATE_RTD]             = CMR_CAN_RTD,
-    [CMR_CAN_VSM_STATE_COOLING_OFF]     = CMR_CAN_GLV_ON,
-    [CMR_CAN_VSM_STATE_DCDC_OFF]        = CMR_CAN_GLV_ON,
 };
 
 /** @brief Last time that vehicle state was changed */
@@ -47,13 +44,6 @@ volatile cmr_canHVCMode_t hvcModeRequest = CMR_CAN_HVC_MODE_ERROR;
 
 // ------------------------------------------------------------------------------------------------
 // Static globals
-
-/** @brief Time to wait for DCDC converter to enable. */
-static const TickType_t dcdcInitTime_ms = 50;
-
-/** @brief Minimum time to wait for 
- to spin cooling up/down. */
-static const TickType_t minCoolingRampTime_ms = 1000;
 
 /** @brief Time to sound RTD buzzer. See rule EV.6.11.5.a. */
 static const TickType_t rtdBuzzerTime_ms = 1500;
@@ -262,30 +252,11 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             if ((hvcHeartbeat->hvcMode == CMR_CAN_HVC_MODE_RUN) &&
                 (dimRequestedState == CMR_CAN_HV_EN)
             ) {
-                nextState = CMR_CAN_VSM_STATE_DCDC_EN;
+                nextState = CMR_CAN_VSM_STATE_INVERTER_EN;
             }
             else if (dimRequestedState == CMR_CAN_HV_EN) {
                 nextState = CMR_CAN_VSM_STATE_RUN_BMS;
             }
-            else if (dimRequestedState == CMR_CAN_GLV_ON) {
-                nextState = CMR_CAN_VSM_STATE_GLV_ON;
-            }
-
-            break;
-        }
-
-        case CMR_CAN_VSM_STATE_DCDC_EN: {
-            if ((hvcHeartbeat->hvcMode == CMR_CAN_HVC_MODE_RUN) &&
-                (dimRequestedState == CMR_CAN_HV_EN)) {
-                // T5
-                if (lastWakeTime_ms >= lastStateChangeTime_ms + dcdcInitTime_ms) {
-                    nextState = CMR_CAN_VSM_STATE_INVERTER_EN;
-                }
-                else {
-                    nextState = CMR_CAN_VSM_STATE_DCDC_EN;
-                }
-            }
-
             else if (dimRequestedState == CMR_CAN_GLV_ON) {
                 nextState = CMR_CAN_VSM_STATE_GLV_ON;
             }
@@ -332,12 +303,6 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             {
                 nextState = CMR_CAN_VSM_STATE_HV_EN;
             }
-            // Ignore improper cooling state for minCoolingRampTime_ms
-            else if ((lastWakeTime_ms < lastStateChangeTime_ms + minCoolingRampTime_ms) &&
-                     (dimRequestedState == CMR_CAN_HV_EN)
-            ) {
-                nextState = CMR_CAN_VSM_STATE_HV_EN;
-            }
             // T8
             else if (dimRequestedState == CMR_CAN_GLV_ON) {
                 nextState = CMR_CAN_VSM_STATE_GLV_ON;
@@ -352,28 +317,9 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             {
                 nextState = CMR_CAN_VSM_STATE_RTD;
             }
-            // Ignore improper cooling state for minCoolingRampTime_ms
-            else if ((lastWakeTime_ms < lastStateChangeTime_ms + minCoolingRampTime_ms) &&
-                     (dimRequestedState == CMR_CAN_RTD)
-            ) {
-                nextState = CMR_CAN_VSM_STATE_RTD;
-            }
             // T7
             else if (dimRequestedState == CMR_CAN_HV_EN) {
                 nextState = CMR_CAN_VSM_STATE_HV_EN;
-            }
-
-            break;
-        }
-
-        case CMR_CAN_VSM_STATE_DCDC_OFF: {
-            // T10
-            if (hvcHeartbeat->hvcMode == CMR_CAN_HVC_MODE_IDLE) {
-                nextState = CMR_CAN_VSM_STATE_GLV_ON;
-            }
-
-            else {
-                nextState = CMR_CAN_VSM_STATE_DCDC_OFF;
             }
 
             break;
@@ -399,55 +345,40 @@ static void setStateOutputs(TickType_t lastWakeTime_ms) {
     switch (vsmStatus.canVSMStatus.internalState) {
         case CMR_CAN_VSM_STATE_ERROR:
             cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
-            cmr_gpioWrite(GPIO_OUT_DCDC_EN, 0);
             hvcModeRequest = CMR_CAN_HVC_MODE_IDLE;
             break;
 
         case CMR_CAN_VSM_STATE_CLEAR_ERROR:
             cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
-            cmr_gpioWrite(GPIO_OUT_DCDC_EN, 0);
             hvcModeRequest = CMR_CAN_HVC_MODE_ERROR;
             break;
 
         case CMR_CAN_VSM_STATE_GLV_ON:
             cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
-            cmr_gpioWrite(GPIO_OUT_DCDC_EN, 0);
             hvcModeRequest = CMR_CAN_HVC_MODE_IDLE;
             break;
 
         case CMR_CAN_VSM_STATE_REQ_PRECHARGE:
             cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
-            cmr_gpioWrite(GPIO_OUT_DCDC_EN, 0);
             hvcModeRequest = CMR_CAN_HVC_MODE_START;
             break;
 
         case CMR_CAN_VSM_STATE_RUN_BMS:
             cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
-            cmr_gpioWrite(GPIO_OUT_DCDC_EN, 0);
-            hvcModeRequest = CMR_CAN_HVC_MODE_RUN;
-            break;
-
-        case CMR_CAN_VSM_STATE_DCDC_EN:
-            cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
-            cmr_gpioWrite(GPIO_OUT_DCDC_EN, 1);
             hvcModeRequest = CMR_CAN_HVC_MODE_RUN;
             break;
 
         case CMR_CAN_VSM_STATE_INVERTER_EN:
             cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
-            cmr_gpioWrite(GPIO_OUT_DCDC_EN, 1);
             hvcModeRequest = CMR_CAN_HVC_MODE_RUN;
             break;
 
         case CMR_CAN_VSM_STATE_HV_EN:
             cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
-            cmr_gpioWrite(GPIO_OUT_DCDC_EN, 1);
             hvcModeRequest = CMR_CAN_HVC_MODE_RUN;
             break;
 
         case CMR_CAN_VSM_STATE_RTD:
-            cmr_gpioWrite(GPIO_OUT_DCDC_EN, 1);
-
             // Enable RTD buzzer for the first rtdBuzzerTime_ms after getting into RTD
             if (lastWakeTime_ms < lastStateChangeTime_ms + rtdBuzzerTime_ms) {
                 cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 1);
@@ -459,21 +390,8 @@ static void setStateOutputs(TickType_t lastWakeTime_ms) {
             hvcModeRequest = CMR_CAN_HVC_MODE_RUN;
             break;
 
-        case CMR_CAN_VSM_STATE_COOLING_OFF:
-            cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
-            cmr_gpioWrite(GPIO_OUT_DCDC_EN, 1);
-            hvcModeRequest = CMR_CAN_HVC_MODE_RUN;
-            break;
-
-        case CMR_CAN_VSM_STATE_DCDC_OFF:
-            cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
-            cmr_gpioWrite(GPIO_OUT_DCDC_EN, 0);
-            hvcModeRequest = CMR_CAN_HVC_MODE_IDLE;
-            break;
-
         default:
             cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
-            cmr_gpioWrite(GPIO_OUT_DCDC_EN, 0);
             hvcModeRequest = CMR_CAN_HVC_MODE_IDLE;
             break;
 

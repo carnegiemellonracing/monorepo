@@ -74,11 +74,6 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
         badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_DIM;
     }
 
-    // if (getBadModuleState(CANRX_HEARTBEAT_HVI, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
-    //     heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
-    //     badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_HVI;
-    // }
-
     // Set software latch in the event of BMS voltage or temperature errors.
     // See rule EV 5.1.10.
     cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
@@ -270,26 +265,9 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
                 break;
             }
 
-            case CMR_CAN_VSM_STATE_DCDC_EN: // Fallthrough
             case CMR_CAN_VSM_STATE_INVERTER_EN:
             case CMR_CAN_VSM_STATE_HV_EN:
             case CMR_CAN_VSM_STATE_RTD:
-            case CMR_CAN_VSM_STATE_COOLING_OFF: {
-                if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
-                    wrongState = true;
-                }
-
-                break;
-            }
-
-            case CMR_CAN_VSM_STATE_DCDC_OFF: {
-                if ((hvcMode != CMR_CAN_HVC_MODE_RUN)
-                 && (hvcMode != CMR_CAN_HVC_MODE_IDLE)) {
-                    wrongState = true;
-                }
-
-                break;
-            }
 
             default: {
                 cmr_panic("Invalid VSM state");
