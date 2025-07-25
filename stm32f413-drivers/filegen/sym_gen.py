@@ -19,13 +19,13 @@ def add_mapper_data(canid, cycletime, timeout, structlines):
         if canid in repeat_names:
             repeat_num = repeat_names[canid]
             if repeat_num > 0:
-                symlines.append("["+name[0]+str(repeat_num)+"]")
+                structlines.append("["+name[0]+str(repeat_num)+"]")
             else:
-                symlines.append("["+name[0]+"]")
+                structlines.append("["+name[0]+"]")
         else:
-            symlines.append("["+name[0]+"]")
-        if id2hex(canid):
-            structlines.append("ID="+id2hex(canid)) 
+            structlines.append("["+name[0]+"]")
+        if id2hex(name[0]):
+            structlines.append("ID="+id2hex(name[0])) 
         structlines.append("CycleTime="+str(cycletime))
         structlines.append("TimeOut="+str(timeout))
 
@@ -173,6 +173,7 @@ def main():
             field_params = extract_field_params(canid_data)
             
             if re.fullmatch(r'(cmr_[a-zA-Z0-9_]*_t)', cantype):
+                found = True 
                 check_repeat(canid)
                 #valid can type in dict 
                 structlines = []
@@ -184,11 +185,13 @@ def main():
                     dlc = format_fields(cantype, matches, structlines, field_params)
                     structlines.insert(1, "DLC="+dlc)
                 else:
-                    structlines.append("error with this struct in can_types.h")
+                    found = False
+                    #structlines.append("error with this struct in can_types.h")
                 #add all formatted data to symbol file 
-                for line in structlines:
-                    symlines.append(line)
-                symlines.append("\n") 
+                if found:
+                    for line in structlines:
+                        symlines.append(line) 
+                    symlines.append("\n") 
     #write into symbol file 
     with open("stm32f413-drivers/filegen/symv1.sym", "w") as file:
         file.write("\n".join(symlines))
