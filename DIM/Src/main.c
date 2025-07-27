@@ -82,18 +82,18 @@ uint8_t getVSMlatchMatrix(void) {
 static void errorLEDs(void *pvParameters) {
     (void)pvParameters;
 
-    cmr_gpioWrite(GPIO_LED_IMD, 0);
-    cmr_gpioWrite(GPIO_LED_AMS, 0);
     cmr_gpioWrite(GPIO_LED_BSPD, 0);
+    cmr_gpioWrite(GPIO_LED_AMS, 0);
+    cmr_gpioWrite(GPIO_LED_IMD, 0);
 
     uint8_t latch = getVSMlatchMatrix();
     for (;;) {
         TickType_t lastWakeTime = xTaskGetTickCount();
         vTaskDelayUntil(&lastWakeTime, errorLEDs_period_ms);
         latch = getVSMlatchMatrix();
-        cmr_gpioWrite(GPIO_LED_IMD, latch & CMR_CAN_VSM_LATCH_IMD);
-        cmr_gpioWrite(GPIO_LED_AMS, latch & CMR_CAN_VSM_LATCH_AMS);
-        cmr_gpioWrite(GPIO_LED_BSPD, latch & CMR_CAN_VSM_LATCH_BSPD);
+        cmr_gpioWrite(GPIO_LED_BSPD, latch & CMR_CAN_VSM_LATCH_IMD);
+        cmr_gpioWrite(GPIO_LED_IMD, latch & CMR_CAN_VSM_LATCH_AMS);
+        cmr_gpioWrite(GPIO_LED_AMS, latch & CMR_CAN_VSM_LATCH_BSPD);
 
     }
 }
