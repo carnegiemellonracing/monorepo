@@ -68,12 +68,9 @@ void runControls(cmr_canGear_t gear, uint8_t throttlePos_u8, uint8_t brakePos_u8
 void setControlsStatus(cmr_canGear_t gear);
 const volatile cmr_canCDCControlsStatus_t *getControlsStatus();
 void setFastTorqueWithParallelRegen(uint16_t brakePressurePsi_u8, uint8_t throttlePos_u8);
-static void set_optimal_control(
-	float throttlePos,
-	int32_t swAngle_millideg_FL,
-	int32_t swAngle_millideg_FR,
-    bool allow_regen
-);
+static void set_optimal_control(float normalized_throttle,
+    int32_t swAngle_millideg_FL,
+    int32_t swAngle_millideg_FR, bool allow_regen);
 
 // ------------------------------------------------------------------------------------------------
 // Global variables
