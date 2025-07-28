@@ -1140,4 +1140,13 @@ typedef struct {
     uint16_t cell3;
 } cmr_canLVBMS_Voltage;
 
+// ------------------------------------------------------------------------------------------------
+// logging types
+
+typedef struct {
+    uint8_t errorCode;
+    uint8_t fileHash;
+    uint16_t lineNumber;
+} cmr_canLogging_t;
+
 #endif /* CMR_CAN_TYPES_H */

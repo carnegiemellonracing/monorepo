@@ -10,6 +10,42 @@
     },
     "tasks": [
         {
+            "label": "Build + Flash",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Update Logging Directory",
+                "CMake: clean rebuild",
+                "CubeProg: Flash project (SWD)",
+            ]
+        },
+
+        {
+            "type": "shell",
+            "label": "Update Logging Directory",
+            "command": "python3",
+            "args": [
+                "${workspaceFolder}/scripts/errorLogging/update.py"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Updates error logging to include new enums"
+        },
+
+
+        {
+            "type": "cmake",
+            "label": "CMake: clean rebuild",
+            "command": "cleanRebuild",
+            "targets": [
+                "all"
+            ],
+            "preset": "${command:cmake.activeBuildPresetName}",
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "CMake template clean rebuild task"
+        },
+
+        {
             "type": "shell",
             "label": "CubeProg: Flash project (SWD)",
             "command": "STM32_Programmer_CLI",
@@ -28,26 +64,7 @@
             },
             "problemMatcher": []
         },
-        {
-            "label": "Build + Flash",
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "CMake: clean rebuild",
-                "CubeProg: Flash project (SWD)",
-            ]
-        },
-                {
-            "type": "cmake",
-            "label": "CMake: clean rebuild",
-            "command": "cleanRebuild",
-            "targets": [
-                "all"
-            ],
-            "preset": "${command:cmake.activeBuildPresetName}",
-            "group": "build",
-            "problemMatcher": [],
-            "detail": "CMake template clean rebuild task"
-        },
+
         {
             "type": "shell",
             "label": "CubeProg: List all available communication interfaces",

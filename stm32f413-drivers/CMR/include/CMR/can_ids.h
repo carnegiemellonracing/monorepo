@@ -18,6 +18,9 @@
 
 /** @brief CAN IDs. */
 typedef enum {
+
+    CAN_ID_LOGGING = 0x001,             /**< @Logging CAN ID. */
+
     CMR_CANID_HEARTBEAT_VSM = 0x100,    /**< @brief VSM heartbeat. */
     CMR_CANID_HEARTBEAT_HVC = 0x101,    /**< @brief HVC heartbeat. */
     CMR_CANID_HEARTBEAT_CDC = 0x102,    /**< @brief CDC heartbeat. */
