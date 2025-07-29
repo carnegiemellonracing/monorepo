@@ -40,9 +40,6 @@ def format_bitpacking_1(vartype, name, size, packed_num, atbit, structlines, fie
     packed_size = int(size/packed_num)
     for i in range (0, packed_num):
         appendstr="Var="+name+str(i)+" "+vartype+ " " +str(atbit)+","+str(packed_size)
-        unit = add_units(name)
-        if unit:
-            appendstr+=unit
         # Add field-specific parameters if available
         if field_params and name in field_params:
             appendstr += format_field_params(field_params[name])
@@ -57,9 +54,6 @@ def format_bitpacking_2(vartype, atbit, packedinfo, structlines, field_params=No
             continue
         else:
             appendstr = "Var="+littlename+" "+vartype+" "+str(atbit)+","+str(packedinfo[littlename])
-            unit = add_units(littlename) 
-            if unit:
-                appendstr+=unit 
             # Add field-specific parameters if available
             if field_params and littlename in field_params:
                 appendstr += format_field_params(field_params[littlename])
@@ -68,8 +62,10 @@ def format_bitpacking_2(vartype, atbit, packedinfo, structlines, field_params=No
     return atbit
 
 def format_field_params(params):
-    """Format field-specific parameters like f, p, e, etc."""
+    """Format field-specific parameters like u, f, p, e, etc."""
     param_str = ""
+    if 'u' in params:
+        param_str += f" /u:{params['u']}"
     if 'f' in params:
         param_str += f" /f:{params['f']}"
     if 'p' in params:
@@ -117,9 +113,6 @@ def format_fields(cantype, matches, structlines, field_params=None):
                 continue
         if size:
             appendstr = "Var="+name+" "+vartype+ " " +str(atbit)+","+str(size)
-            units = add_units(name)
-            if units:
-                appendstr+=units
             # Add field-specific parameters if available
             if field_params and name in field_params:
                 appendstr += format_field_params(field_params[name])
@@ -128,12 +121,6 @@ def format_fields(cantype, matches, structlines, field_params=None):
         else:
             structlines.append("Issue with type of field")
     return str(int(atbit/8))
-
-def add_units(name):
-    for unit in units:
-        if name.endswith(unit):
-            print("adding unit to"+name)
-            return " /u:"+unit
 
 def check_repeat(canid):
     can_name = re.findall(r'CMR_CANID_(\w+)',canid)

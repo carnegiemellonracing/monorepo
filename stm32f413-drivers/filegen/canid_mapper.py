@@ -1,154 +1,386 @@
-#!/usr/bin/env python3
-"""
-Script to update CAN ID JSON file with additional fields (f, p, e, min, max, state)
-by parsing can_types_new file and matching struct types.
-"""
-
+import os
 import json
 import re
-import os
-import sys
+from collections import defaultdict
 
-# Configuration
-INPUT_JSON = "stm32f413-drivers/filegen/canid_type_map.json"  # Your existing JSON file
-CAN_TYPES_FILE = "stm32f413-drivers/filegen/can_types_new.h"  # File containing the struct definitions
+# Run file with "python canid_mapper.py" in terminal
+
+ROOT_DIR = "."
+CANID_PREFIXES = ["CMR_CANID_", "CAN_ID_"]
 OUTPUT_FILE = "stm32f413-drivers/filegen/canid_type_map.json"
 
-def parse_can_types_file(file_path):
-    """Parse the can_types file and extract struct definitions with field attributes."""
-    structs = {}
-    
-    try:
-        with open(file_path, 'r') as f:
-            content = f.read()
-    except FileNotFoundError:
-        print(f"Error: Could not find can_types file: {file_path}")
-        return structs
-    
-    # Find all typedef struct definitions
-    struct_pattern = r'typedef\s+struct\s*\{(.*?)\}\s*(\w+);'
-    matches = re.findall(struct_pattern, content, re.DOTALL)
-    
-    for struct_body, struct_name in matches:
-        fields = {}
-        
-        # Find all field definitions with potential attributes
-        field_pattern = r'(\w+(?:\s+\w+)*)\s+(\w+)(?:\[.*?\])?;\s*(?://(.*))?'
-        field_matches = re.findall(field_pattern, struct_body)
-        
-        for field_type, field_name, comment in field_matches:
-            field_info = {}
-            
-            if comment:
-                # Parse comment for attributes like f:, p:, e:, etc.
-                # Look for patterns like f:0.001, e:State, p:100, min:0, max:255
-                attr_patterns = {
-                    'f': r'f:([\d.-]+)',
-                    'p': r'p:([\d.-]+)', 
-                    'e': r'e:(\w+)',
-                    'min': r'min:([\d.-]+)',
-                    'max': r'max:([\d.-]+)',
-                    'state': r'state:(\w+)'
-                }
-                
-                for attr, pattern in attr_patterns.items():
-                    match = re.search(pattern, comment)
-                    if match:
-                        value = match.group(1)
-                        # Try to convert to number if possible
-                        try:
-                            if '.' in value:
-                                field_info[attr] = float(value)
-                            else:
-                                field_info[attr] = int(value)
-                        except ValueError:
-                            field_info[attr] = value
-            
-            if field_info:  # Only add if we found attributes
-                fields[field_name] = field_info
-        
-        if fields:  # Only add struct if it has fields with attributes
-            structs[struct_name] = fields
-    
-    return structs
+# Handle both 4 and 5 argument canTX calls
+CANTX_PATTERN_5_ARGS = re.compile(
+    r'canTX\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^,]+)\s*,\s*sizeof\s*\(\s*([^)]+)\s*\)\s*(?:,\s*[^)]+)?\s*\)',
+    re.MULTILINE | re.DOTALL
+)
 
-def update_json_file(json_file_path, can_types_data, output_file_path):
-    """Update the JSON file with additional fields from can_types data."""
+CANTX_PATTERN_4_ARGS = re.compile(
+    r'canTX\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*sizeof\s*\(\s*([^)]+)\s*\)\s*(?:,\s*[^)]+)?\s*\)',
+    re.MULTILINE | re.DOTALL
+)
+
+# Pattern to find variable declarations of cmr_*_t types (including pointers)
+VAR_DECLARATION_PATTERN = re.compile(
+    r'(?:const\s+)?(cmr_[a-zA-Z0-9_]*_t)\s*\*?\s*([a-zA-Z0-9_]+)\s*(?:=|;)',
+    re.MULTILINE
+)
+
+# Pattern to find struct member declarations like "cmr_type_t memberName;" inside structs
+STRUCT_MEMBER_PATTERN = re.compile(
+    r'typedef\s+struct\s*\{[^}]*?(cmr_[a-zA-Z0-9_]*_t)\s+([a-zA-Z0-9_]+)\s*;[^}]*\}\s*([a-zA-Z0-9_]+)\s*;',
+    re.MULTILINE | re.DOTALL
+)
+
+# More specific pattern for struct members
+STRUCT_CONTENT_PATTERN = re.compile(
+    r'typedef\s+struct\s*\{([^}]+)\}\s*([a-zA-Z0-9_]+)\s*;',
+    re.MULTILINE | re.DOTALL
+)
+
+# Pattern to find individual member declarations within struct content
+MEMBER_DECLARATION_PATTERN = re.compile(
+    r'(cmr_[a-zA-Z0-9_]*_t)\s+([a-zA-Z0-9_]+)\s*;',
+    re.MULTILINE
+)
+
+# Pattern to find numerical constant definitions; includes TickType_t
+CONST_DEFINITION_PATTERN = re.compile(
+    r'(?:#define\s+([a-zA-Z0-9_]+)\s+([0-9]+))|(?:(?:static\s+)?(?:const\s+)?(?:int|uint32_t|uint16_t|uint8_t|unsigned|long|TickType_t)\s+([a-zA-Z0-9_]+)\s*=\s*([0-9]+))',
+    re.MULTILINE
+)
+
+def extract_base_canid(arg):
+    """Extract base CAN ID from expressions that might contain arithmetic"""
+    arg = arg.strip()
     
-    # Read existing JSON
+    # Look for CAN ID at the start of the expression
+    for prefix in CANID_PREFIXES:
+        if arg.startswith(prefix):
+            # Find the CAN ID part (alphanumeric and underscores only)
+            match = re.match(r'([A-Z_][A-Z0-9_]*)', arg)
+            if match:
+                return match.group(1)
+    
+    return None
+
+def is_canid(arg):
+    """Check if an argument contains a CAN ID and extract the base ID"""
+    return extract_base_canid(arg) is not None
+
+def get_canid_from_arg(arg):
+    """Get the actual CAN ID from an argument (handling arithmetic expressions)"""
+    return extract_base_canid(arg)
+
+def extract_variable_types(content):
+    """Extract variable name to type mappings from file content"""
+    var_to_type = {}
+    
+    # Find regular variable declarations (including const and pointer variants)
+    matches = VAR_DECLARATION_PATTERN.findall(content)
+    for type_name, var_name in matches:
+        var_to_type[var_name] = type_name
+    
+    return var_to_type
+
+def extract_struct_member_types(content):
+    """Extract struct_name.member_name to type mappings from file content"""
+    member_to_type = {}
+    
+    struct_matches = STRUCT_CONTENT_PATTERN.findall(content)
+    for struct_content, struct_name in struct_matches:
+        # Find all cmr_*_t members within this struct
+        member_matches = MEMBER_DECLARATION_PATTERN.findall(struct_content)
+        for member_type, member_name in member_matches:
+            # Store as both struct_name.member_name and just member_name
+            full_member_name = f"{struct_name}.{member_name}"
+            member_to_type[full_member_name] = member_type
+            # Also store just the member name for cases where struct name is variable
+            member_to_type[member_name] = member_type
+    
+    return member_to_type
+
+def extract_constant_definitions(content):
+    """Extract constant definitions from file content"""
+    constants = {}
+    
+    # Find #define and variable constant definitions
+    matches = CONST_DEFINITION_PATTERN.findall(content)
+    for define_name, define_value, var_name, var_value in matches:
+        if define_name and define_value:
+            try:
+                constants[define_name] = int(define_value)
+            except ValueError:
+                constants[define_name] = define_value
+        elif var_name and var_value:
+            try:
+                constants[var_name] = int(var_value)
+            except ValueError:
+                constants[var_name] = var_value
+    
+    return constants
+
+def parse_sizeof_argument(sizeof_arg):
+    """Parse sizeof argument to extract the key for type lookup"""
+    sizeof_arg = sizeof_arg.strip()
+    
+    # Handle different sizeof patterns:
+    # sizeof(*variable) -> variable
+    # sizeof(variable) -> variable  
+    # sizeof(struct->member) -> member
+    # sizeof(variable->member) -> member
+    
+    # Remove leading * if present
+    if sizeof_arg.startswith('*'):
+        sizeof_arg = sizeof_arg[1:].strip()
+    
+    # Handle struct->member or variable->member
+    if '->' in sizeof_arg:
+        parts = sizeof_arg.split('->')
+        if len(parts) >= 2:
+            return parts[-1].strip()
+    
+    # Handle struct.member
+    if '.' in sizeof_arg:
+        parts = sizeof_arg.split('.')
+        if len(parts) >= 2:
+            return parts[-1].strip()
+    
+    return sizeof_arg
+
+def resolve_constant_value(constant_name, local_constants, global_constants):
+    """Resolve a constant name to its numerical value"""
+    constant_name = constant_name.strip()
+    
+    # Try to parse as integer first (in case it's already a number)
     try:
-        with open(json_file_path, 'r') as f:
-            data = json.load(f)
-    except FileNotFoundError:
-        print(f"Error: Could not find JSON file: {json_file_path}")
-        return False
-    except json.JSONDecodeError as e:
-        print(f"Error: Invalid JSON in file {json_file_path}: {e}")
-        return False
+        return int(constant_name)
+    except ValueError:
+        pass
     
-    if 'canid_to_info' not in data:
-        print("Error: JSON file doesn't contain 'canid_to_info' section")
-        return False
+    # Check local constants first
+    if constant_name in local_constants:
+        value = local_constants[constant_name]
+        # If it's already an integer, return it
+        if isinstance(value, int):
+            return value
+        # If it's a string that can be converted to int, convert it
+        try:
+            return int(value)
+        except (ValueError, TypeError):
+            return value
     
-    # Update each CAN ID entry
-    updated_count = 0
-    for canid, canid_info in data['canid_to_info'].items():
-        if 'type' in canid_info:
-            struct_type = canid_info['type']
+    # Then check global constants
+    if constant_name in global_constants:
+        value = global_constants[constant_name]
+        # If it's already an integer, return it
+        if isinstance(value, int):
+            return value
+        # If it's a string that can be converted to int, convert it
+        try:
+            return int(value)
+        except (ValueError, TypeError):
+            return value
+    
+    return constant_name
+
+def resolve_sizeof_type(sizeof_arg, local_var_types, global_var_types, local_struct_members, global_struct_members):
+    """Resolve the type from sizeof argument, prioritizing local then global mappings"""
+    lookup_key = parse_sizeof_argument(sizeof_arg)
+    
+    if lookup_key.startswith('cmr_') and lookup_key.endswith('_t'):
+        return lookup_key, True
+    
+    if lookup_key in local_var_types:
+        return local_var_types[lookup_key], True
+    
+    if lookup_key in local_struct_members:
+        return local_struct_members[lookup_key], True
+    
+    if lookup_key in global_var_types:
+        return global_var_types[lookup_key], True
+    
+    if lookup_key in global_struct_members:
+        return global_struct_members[lookup_key], True
+    
+    return sizeof_arg, False
+
+def calculate_cycle_time_and_timeout(cycle_time_value):
+    """Calculate cycle time and timeout (timeout = 5 * cycle_time)"""
+    if isinstance(cycle_time_value, int):
+        time_out = 5 * cycle_time_value
+    else:
+        time_out = f"5*{cycle_time_value}"
+    
+    return cycle_time_value, time_out
+
+def extract_canids_from_file(filepath, global_var_types, global_struct_members, global_constants):
+    """Extract CAN IDs, types, cycleTime, and timeout from a single file"""
+    try:
+        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+        
+        local_var_types = extract_variable_types(content)
+        local_struct_members = extract_struct_member_types(content)
+        local_constants = extract_constant_definitions(content)
+        
+        result = {}
+        
+        # Find all canTX calls with 5 arguments
+        CAN_CALL_5_ARGS_FULL = re.compile(
+            r'canTX\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^,]+)\s*,\s*sizeof\s*\(\s*([^)]+)\s*\)\s*,\s*([^)]+)\s*\)',
+            re.MULTILINE | re.DOTALL
+        )
+        
+        for match in CAN_CALL_5_ARGS_FULL.finditer(content):
+            arg1, arg2, arg3, sizeof_arg, period = match.groups()
+            arg1 = arg1.strip()
+            arg2 = arg2.strip()
+            arg3 = arg3.strip()
+            sizeof_arg = sizeof_arg.strip()
+            period = period.strip()
+
+            # Determine CAN ID - extract base CAN ID from expressions
+            canid = None
+            if is_canid(arg1):
+                canid = get_canid_from_arg(arg1)
+            elif is_canid(arg2):
+                canid = get_canid_from_arg(arg2)
+            elif is_canid(arg3):
+                canid = get_canid_from_arg(arg3)
+
+            if canid:
+                resolved_type, _ = resolve_sizeof_type(
+                    sizeof_arg, local_var_types, global_var_types, local_struct_members, global_struct_members
+                )
+                
+                cycle_time = resolve_constant_value(period, local_constants, global_constants)
+                cycle_time, time_out = calculate_cycle_time_and_timeout(cycle_time)
+                
+                result[canid] = {
+                    "type": resolved_type,
+                    "cycleTime": cycle_time,
+                    "timeOut": time_out
+                }
+
+        # Find all canTX calls with 4 arguments
+        CAN_CALL_4_ARGS_FULL = re.compile(
+            r'canTX\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*sizeof\s*\(\s*([^)]+)\s*\)\s*,\s*([^)]+)\s*\)',
+            re.MULTILINE | re.DOTALL
+        )
+        
+        for match in CAN_CALL_4_ARGS_FULL.finditer(content):
+            arg1, arg2, sizeof_arg, period = match.groups()
+            arg1 = arg1.strip()
+            arg2 = arg2.strip()
+            sizeof_arg = sizeof_arg.strip()
+            period = period.strip()
+
+            canid = None
+            if is_canid(arg1):
+                canid = get_canid_from_arg(arg1)
+            elif is_canid(arg2):
+                canid = get_canid_from_arg(arg2)
             
-            # Look for matching struct in can_types_data
-            if struct_type in can_types_data:
-                # Add the field attributes to the CAN ID info
-                canid_info.update(can_types_data[struct_type])
-                updated_count += 1
-                print(f"Updated {canid} (type: {struct_type})")
-    
-    # Create output directory if it doesn't exist
-    os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
-    
-    # Write updated JSON to output file
-    try:
-        with open(output_file_path, 'w') as f:
-            json.dump(data, f, indent=4, sort_keys=True)
-        print(f"\nSuccessfully updated JSON file: {output_file_path}")
-        print(f"Total CAN IDs updated: {updated_count}")
-        return True
+            if canid and canid not in result:
+                resolved_type, _ = resolve_sizeof_type(
+                    sizeof_arg, local_var_types, global_var_types, local_struct_members, global_struct_members
+                )
+                
+                cycle_time = resolve_constant_value(period, local_constants, global_constants)
+                cycle_time, time_out = calculate_cycle_time_and_timeout(cycle_time)
+                
+                result[canid] = {
+                    "type": resolved_type,
+                    "cycleTime": cycle_time,
+                    "timeOut": time_out
+                }
+
+        return result
     except Exception as e:
-        print(f"Error writing output file: {e}")
-        return False
+        return {}
+
+def find_all_c_files(root_dir):
+    """Find all C/C++ files in the directory tree"""
+    c_files = []
+    for root, dirs, files in os.walk(root_dir):
+        for filename in files:
+            if filename.endswith(('.c', '.cpp', '.cc', '.cxx', '.h', '.hpp', '.hh', '.hxx')):
+                c_files.append(os.path.join(root, filename))
+    return c_files
+
+def build_global_mappings(c_files):
+    """Build global type mappings from all files"""
+    global_var_types = {}
+    global_struct_members = {}
+    global_constants = {}
+    
+    for filepath in c_files:
+        try:
+            with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+            
+            # Skip files that don't contain relevant content
+            if not any(prefix in content for prefix in CANID_PREFIXES):
+                continue
+                
+            var_types = extract_variable_types(content)
+            global_var_types.update(var_types)
+            
+            struct_members = extract_struct_member_types(content)
+            global_struct_members.update(struct_members)
+            
+            constants = extract_constant_definitions(content)
+            global_constants.update(constants)
+                
+        except Exception as e:
+            continue
+    
+    return global_var_types, global_struct_members, global_constants
 
 def main():
-    """Main function."""
-    print("CAN ID JSON Updater")
-    print("=" * 50)
+    c_files = find_all_c_files(ROOT_DIR)
     
-    # Check if files exist
-    if not os.path.exists(INPUT_JSON):
-        print(f"Error: Input JSON file not found: {INPUT_JSON}")
-        sys.exit(1)
+    if not c_files:
+        print("No C/C++ files found!")
+        return
     
-    if not os.path.exists(CAN_TYPES_FILE):
-        print(f"Error: CAN types file not found: {CAN_TYPES_FILE}")
-        print("Please make sure the can_types_new.h file is in the current directory")
-        sys.exit(1)
+    # Build global mappings
+    global_var_types, global_struct_members, global_constants = build_global_mappings(c_files)
     
-    # Parse can_types file
-    print(f"Parsing CAN types from: {CAN_TYPES_FILE}")
-    can_types_data = parse_can_types_file(CAN_TYPES_FILE)
-    print(f"Found {len(can_types_data)} struct definitions with attributes")
+    # Extract CAN IDs from all files
+    canid_to_info = {}
+    files_with_matches = 0
     
-    if not can_types_data:
-        print("No struct definitions with attributes found!")
-        sys.exit(1)
+    for filepath in c_files:
+        result = extract_canids_from_file(filepath, global_var_types, global_struct_members, global_constants)
+        
+        if result:
+            files_with_matches += 1
+        
+        canid_to_info.update(result)
     
-    # Update JSON file
-    print(f"\nReading JSON from: {INPUT_JSON}")
-    success = update_json_file(INPUT_JSON, can_types_data, OUTPUT_FILE)
+    # Save results
+    output_data = {
+        "canid_to_info": canid_to_info,
+        "summary": {
+            "files_processed": len(c_files),
+            "files_with_matches": files_with_matches,
+            "total_canids": len(canid_to_info),
+            "prefixes_used": CANID_PREFIXES
+        }
+    }
     
-    if not success:
-        sys.exit(1)
+    with open(OUTPUT_FILE, 'w') as f:
+        json.dump(output_data, f, indent=4, sort_keys=True)
     
-    print("\nDone!")
+    # Final summary
+    print(f"Results:")
+    print(f"  Files processed: {len(c_files)}")
+    print(f"  Files with CAN IDs: {files_with_matches}")
+    print(f"  Total CAN IDs found: {len(canid_to_info)}")
+    
+    print(f"\nSaved to {OUTPUT_FILE}")
 
 if __name__ == "__main__":
     main()
