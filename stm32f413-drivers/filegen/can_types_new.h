@@ -255,10 +255,10 @@ typedef struct {
 /** @brief Vehicle Safety Module sensor data. */
 /** @brief Vehicle Safety Module sensor data. */
 typedef struct {
-    uint16_t brakePressureRear_PSI;     /**< @brief Rear brake pressure (pounds-per-square-inch). */
-    int16_t hallEffect_cA;     //f:0.01, p:2 /**< @brief Hall effect current (centi-Amps). */
-    uint8_t safetyIn_dV;        /**< @brief Safety circuit input voltage (deci-Volts). */
-    uint8_t safetyOut_dV;       /**< @brief Safety circuit output voltage (deci-Volts). */
+    uint16_t brakePressureRear_PSI;     //u: PSI /**< @brief Rear brake pressure (pounds-per-square-inch). */
+    int16_t hallEffect_cA;     //u:cA, f:0.01, p:2 /**< @brief Hall effect current (centi-Amps). */
+    uint8_t safetyIn_dV;       //u: dV /**< @brief Safety circuit input voltage (deci-Volts). */
+    uint8_t safetyOut_dV;      //u: dV /**< @brief Safety circuit output voltage (deci-Volts). */
 } cmr_canVSMSensors_t;
 
 /** @brief Vehicle Safety Module latched error status. */
@@ -279,8 +279,8 @@ typedef struct {
 
 /** @brief Vehicle Safety Module power diagnostics. */
 typedef struct {
-    uint16_t busVoltage_mV;     /**< @brief Low-voltage bus voltage (mV). */
-    uint16_t busCurrent_mA;     /**< @brief Low-voltage bus current (mA). */
+    uint16_t busVoltage_mV;     //u: mV /**< @brief Low-voltage bus voltage (mV). */
+    uint16_t busCurrent_mA;     //u: mA /**< @brief Low-voltage bus current (mA). */
 } cmr_canVSMPowerDiagnostics_t;
 
 // ------------------------------------------------------------------------------------------------
@@ -367,7 +367,7 @@ typedef struct {
     uint8_t hvcMode;        /**< @brief Current HVC operating mode. See cmr_canHVCMode_t. */
     uint8_t hvcState;       /**< @brief Current internal HVC state. See cmr_canHVCState_t. */
     uint8_t relayStatus;    /**< @brief Status of AIRs. See cmr_canHVCRelayStatus_t. */
-    uint8_t uptime_s;       /**< @brief HVC uptime in seconds. */
+    uint8_t uptime_s;       //u: s /**< @brief HVC uptime in seconds. */
 } cmr_canHVCHeartbeat_t;
 
 /** @brief High Voltage Controller command. */
@@ -383,14 +383,14 @@ typedef struct {
 
 /** @brief High Voltage Controller pack voltages. */
 typedef struct {
-    int32_t battVoltage_mV;    //f:0.001, p:3 /**< @brief Voltage measured across battery. */
-    int32_t hvVoltage_mV;      //f:0.001, p:3 /**< @brief Voltage outside accumulator. */
+    int32_t battVoltage_mV;    //u: mV, f:0.001, p:3 /**< @brief Voltage measured across battery. */
+    int32_t hvVoltage_mV;      //u: mV, f:0.001, p:3 /**< @brief Voltage outside accumulator. */
 } cmr_canHVCPackVoltage_t;
 
 /** @brief High Voltage Controller pack overall min and max cell temperatures. */
 typedef struct {
-    uint16_t minCellTemp_dC;    /**< @brief Pack min cell temp in dC (tenth of degree C). */
-    uint16_t maxCellTemp_dC;    /**< @brief Pack max cell temp in dC (tenth of degree C). */
+    uint16_t minCellTemp_dC;    //u: dC /**< @brief Pack min cell temp in dC (tenth of degree C). */
+    uint16_t maxCellTemp_dC;    //u: dC /**< @brief Pack max cell temp in dC (tenth of degree C). */
     uint8_t minTempBMBIndex;    /**< @brief BMB index of coldest cell. */
     uint8_t minTempCellIndex;   /**< @brief Index of coldest cell. */
     uint8_t maxTempBMBIndex;    /**< @brief BMB index of hottest cell. */
@@ -399,8 +399,8 @@ typedef struct {
 
 /** @brief High Voltage Controller pack overall min and max cell voltages. */
 typedef struct {
-    uint16_t minCellVoltage_mV; /**< @brief Min BMB cell voltage (mV). */
-    uint16_t maxCellVoltage_mV; /**< @brief Max BMB cell voltage (mV). */
+    uint16_t minCellVoltage_mV; //u: mV /**< @brief Min BMB cell voltage (mV). */
+    uint16_t maxCellVoltage_mV; //u: mV /**< @brief Max BMB cell voltage (mV). */
     uint8_t minCellVoltBMB;     /**< @brief */
     uint8_t minVoltIndex;       /**< @brief Min BMB cell voltage index. */
     uint8_t maxCellVoltBMB;     /**< @brief */
@@ -409,8 +409,8 @@ typedef struct {
 
 /** @brief High Voltage Controller pack currents. */
 typedef struct {
-    int32_t instantCurrent_mA;  /**< @brief Instantaneous current measurement. */
-    int32_t avgCurrent_mA;      /**< @brief (Not working) rolling average of current. */
+    int32_t instantCurrent_mA;  //u: mA /**< @brief Instantaneous current measurement. */
+    int32_t avgCurrent_mA;      //u: mA /**< @brief (Not working) rolling average of current. */
 } cmr_canHVCPackCurrent_t;
 
 /** @brief High Voltage Controller BMB errors. */
@@ -427,16 +427,16 @@ typedef struct {
 
 //HV_I Sense Board CAN Types
 typedef struct {
-    int16_t packCurrent_dA; //f:0.1, p:1
-    uint16_t packVoltage_cV; //f:0.01, p:2
-    int32_t packPower_W; //f:0.001, p:3
+    int16_t packCurrent_dA; //u: dA, f:0.1, p:1
+    uint16_t packVoltage_cV; //u: cV, f:0.01, p:2
+    int32_t packPower_W; //u: W, f:0.001, p:3
 } cmr_canHVIHeartbeat_t;
 
 //Power Sense Board CAN Types
 typedef struct {
-    int16_t packCurrent_dA;
-    uint16_t packVoltage_cV;
-    int32_t packPower_W;
+    int16_t packCurrent_dA; //u: dA
+    uint16_t packVoltage_cV; //u: cV
+    int32_t packPower_W; //u: W
 } cmr_canPowerSense_t;
 
 // ------------------------------------------------------------------------------------------------
@@ -457,7 +457,7 @@ typedef enum {
 
 /** @brief Central Dynamics Controller */
 typedef struct {
-    float odometer_km;      /**< @brief Odometer in km*/
+    float odometer_km;      //u: km /**< @brief Odometer in km*/
 } cmr_canCDCOdometer_t;
 
 typedef struct {
@@ -467,17 +467,17 @@ typedef struct {
 
 /** @brief New power limit from DAQ live during endurance. */
 typedef struct {
-    uint8_t powerLimit_kW; //f:0.001
+    uint8_t powerLimit_kW; //u: kW, f:0.001
 } cmr_canCDCPowerLimit_t;
 
 typedef struct {
-    float power_limit_W;
+    float power_limit_W; //u: W
 } cmr_canCDCPowerLimitLog_t;
 
 /** @brief Central Dynamics Controller Safety Filter states. */
 typedef struct {
-	float power_limit_max_violation_W;  /**< @brief the maximum amount in W the power hard-limit is violated, expect 0.0 */
-	uint8_t longest_power_violation_ms; /**< @brief counts the number of clock cycles when power is over the hard limit, expect <2*/
+	float power_limit_max_violation_W;  //u: W /**< @brief the maximum amount in W the power hard-limit is violated, expect 0.0 */
+	uint8_t longest_power_violation_ms; //u: ms /**< @brief counts the number of clock cycles when power is over the hard limit, expect <2*/
     uint8_t over_voltage_count;         /**< @brief incremented when pack voltage exceeds 590 */
     uint8_t under_voltage_count;        /**< @brief incremented when pack voltage under 365 */
     uint8_t over_temp_count;            /**<@brief incremented when pack temperature exceeds the hard limit, expect 0>*/
@@ -499,35 +499,35 @@ typedef struct {
 
 /** @brief CDC wheel speeds (used for setpoint and actual). */
 typedef struct {
-    int16_t frontLeft_rpm;  //f:0.1 /**< @brief Wheel speed on 20e (rpm * 10). */
-    int16_t frontRight_rpm; //f:0.1 /**< @brief Wheel speed on 20e (rpm * 10). */
-    int16_t rearLeft_rpm;   //f:0.1 /**< @brief Wheel speed on 20e (rpm * 10). */
-    int16_t rearRight_rpm;  //f:0.1 /**< @brief Wheel speed on 20e (rpm * 10). */
+    int16_t frontLeft_rpm;  //u: rpm, f:0.1 /**< @brief Wheel speed on 20e (rpm * 10). */
+    int16_t frontRight_rpm; //u: rpm, f:0.1 /**< @brief Wheel speed on 20e (rpm * 10). */
+    int16_t rearLeft_rpm;   //u: rpm, f:0.1 /**< @brief Wheel speed on 20e (rpm * 10). */
+    int16_t rearRight_rpm;  //u: rpm, f:0.1 /**< @brief Wheel speed on 20e (rpm * 10). */
 } cmr_canCDCWheelVelocity;
 
 typedef struct {
-    int16_t frontLeft_Nm;   //f:0.1 /**< @brief Wheel torque on 20e (Nm * 10). */
-    int16_t frontRight_Nm;  //f:0.1 /**< @brief Wheel speed on 20e (Nm * 10). */
-    int16_t rearLeft_Nm;    //f:0.1 /**< @brief Wheel speed on 20e (Nm * 10). */
-    int16_t rearRight_Nm;   //f:0.1 /**< @brief Wheel speed on 20e (Nm * 10). */
+    int16_t frontLeft_Nm;   //u: Nm, f:0.1 /**< @brief Wheel torque on 20e (Nm * 10). */
+    int16_t frontRight_Nm;  //u: Nm, f:0.1 /**< @brief Wheel speed on 20e (Nm * 10). */
+    int16_t rearLeft_Nm;    //u: Nm, f:0.1 /**< @brief Wheel speed on 20e (Nm * 10). */
+    int16_t rearRight_Nm;   //u: Nm, f:0.1 /**< @brief Wheel speed on 20e (Nm * 10). */
 } cmr_canCDCWheelTorque_t;
 
 typedef struct {
-    float latitude_deg;     /**< @brief Position of car on earth. */
-    float longitude_deg;    /**< @brief Position of car on earth. */
+    float latitude_deg;     //u: deg /**< @brief Position of car on earth. */
+    float longitude_deg;    //u: deg /**< @brief Position of car on earth. */
 } cmr_canCDCPosePosition_t;
 
 typedef struct {
-    int16_t roll_deg;       //f:0.1 /**< @brief Roll of the car (deg * 10). */
-    int16_t pitch_deg;      //f:0.1 /**< @brief Pitch of the car (deg * 10). */
-    int16_t yaw_deg;        //f:0.1 /**< @brief Yaw of the car (deg * 10). */
-    int16_t velocity_deg;   //f:0.1 /**< @brief Velocity vector of the car (deg * 10). */
+    int16_t roll_deg;       //u: deg, f:0.1 /**< @brief Roll of the car (deg * 10). */
+    int16_t pitch_deg;      //u: deg, f:0.1 /**< @brief Pitch of the car (deg * 10). */
+    int16_t yaw_deg;        //u: deg, f:0.1 /**< @brief Yaw of the car (deg * 10). */
+    int16_t velocity_deg;   //u: deg, f:0.1 /**< @brief Velocity vector of the car (deg * 10). */
 } cmr_canCDCPoseOrientation_t;
 
 typedef struct {
-    int16_t longitudinalVel_mps;    //f:0.01 /**< @brief Velocity of the car in the forward direction (m/s * 100). */
-    int16_t lateralVel_mps;         //f:0.01 /**< @brief Velocity of the car in the right direction (m/s * 100). */
-    int16_t verticalVel_mps;        //f:0.01 /**< @brief Velocity of the car in the down direction (m/s * 100). */
+    int16_t longitudinalVel_mps;    //u: mps, f:0.01 /**< @brief Velocity of the car in the forward direction (m/s * 100). */
+    int16_t lateralVel_mps;         //u: mps, f:0.01 /**< @brief Velocity of the car in the right direction (m/s * 100). */
+    int16_t verticalVel_mps;        //u: mps, f:0.01 /**< @brief Velocity of the car in the down direction (m/s * 100). */
 } cmr_canCDCPoseVelocity_t;
 
 // ------------------------------------------------------------------------------------------------
@@ -543,8 +543,8 @@ typedef struct {
 
 /** @brief Driver Interface Module power diagnostics. */
 typedef struct {
-    uint16_t busVoltage_mV;     /**< @brief Low-voltage bus voltage (mV). */
-    uint16_t busCurrent_mA;     /**< @brief Low-voltage bus current (mA). */
+    uint16_t busVoltage_mV;     //u: mV /**< @brief Low-voltage bus voltage (mV). */
+    uint16_t busCurrent_mA;     //u: mA /**< @brief Low-voltage bus current (mA). */
 } cmr_canDIMPowerDiagnostics_t;
 
 /** @brief Driver Interface Module text write command. This is
@@ -592,8 +592,8 @@ typedef struct {
 typedef struct {
     uint8_t torqueRequested;            /**< @brief Torque requested (0-255). */
     uint8_t throttlePosition;           /**< @brief Throttle position (0-255). */
-    uint16_t brakePressureFront_PSI;     /**< @brief Front brake pressure. */
-    uint8_t brakePedalPosition_percent;         /**< @brief Brake pedal position (0-255). */
+    uint16_t brakePressureFront_PSI;    //u: PSI /**< @brief Front brake pressure. */
+    uint8_t brakePedalPosition_percent; //u: % /**< @brief Brake pedal position (0-255). */
     
 } cmr_canFSMData_t; 
 
@@ -601,8 +601,8 @@ typedef struct {
     /** @brief Steering wheel angle (-180 to 180 degrees). 
      * Calculated from ADC values using transfer function.
     */
-    int32_t steeringWheelAngle_millideg_FR; //f:0.001
-    int32_t steeringWheelAngle_millideg_FL; //f:0.001
+    int32_t steeringWheelAngle_millideg_FR; //u: deg, f:0.001
+    int32_t steeringWheelAngle_millideg_FL; //u: deg, f:0.001
 
 } cmr_canFSMSWAngle_t;
 
@@ -621,8 +621,8 @@ typedef struct {
 
 /** @brief Front Sensor Module power diagnostics. */
 typedef struct {
-    uint16_t busVoltage_mV;     /**< @brief Low-voltage bus voltage (mV). */
-    uint16_t busCurrent_mA;     /**< @brief Low-voltage bus current (mA). */
+    uint16_t busVoltage_mV;     //u: mV /**< @brief Low-voltage bus voltage (mV). */
+    uint16_t busCurrent_mA;     //u: mA /**< @brief Low-voltage bus current (mA). */
 } cmr_canFSMPowerDiagnostics_t;
 
 // ------------------------------------------------------------------------------------------------
@@ -660,52 +660,52 @@ typedef enum {
 /** @brief AMK motor controller status and velocity. */
 typedef struct {
     uint16_t status_bv;         /**< @brief Status bit vector. See cmr_canAMKStatus_t. */
-    int16_t velocity_rpm;       //p:4 /**< @brief Motor velocity (RPM). */
+    int16_t velocity_rpm;       //u: rpm, p:4 /**< @brief Motor velocity (RPM). */
     int16_t torqueCurrent_raw;  //f:0.001701171875 /**< @brief Raw value for torque producing current. */
     int16_t magCurrent_raw;     //f:0.001701171875 /**< @brief Raw value for magnetizing current. */
 } cmr_canAMKActualValues1_t;
 
 /** @brief AMK motor controller temperatures and error code. */
 typedef struct {
-    int16_t motorTemp_dC;       //f:0.1, p:2 /**< @brief Motor temperature in dC (0.1 C). */
-    int16_t coldPlateTemp_dC;   //f:0.1, p:2 /**< @brief Cold plate temperature in dC (0.1 C). */
+    int16_t motorTemp_dC;       //u: dC, f:0.1, p:2 /**< @brief Motor temperature in dC (0.1 C). */
+    int16_t coldPlateTemp_dC;   //u: dC, f:0.1, p:2 /**< @brief Cold plate temperature in dC (0.1 C). */
     uint16_t errorCode;         /**< @brief Inverter error code. */
-    int16_t igbtTemp_dC;        //f:0.1, p:2 /**< @brief IGBT temperature in dC (0.1 C). */
+    int16_t igbtTemp_dC;        //u: dC, f:0.1, p:2 /**< @brief IGBT temperature in dC (0.1 C). */
 } cmr_canAMKActualValues2_t;
 
 /** @brief AMK motor controller command message. */
 typedef struct {
     uint16_t control_bv;        /**< @brief Control bit vector. See cmr_canAMKControl_t. */
-    int16_t velocity_rpm;       //p:2 /**< @brief Velocity setpoint (RPM). */
-    int16_t torqueLimPos_dpcnt; //f:0.0098, p:4 /**< @brief Positive torque limit in 0.1% of 9.8 Nm (nominal torque). */
-    int16_t torqueLimNeg_dpcnt; //f:0.0098, p:4 /**< @brief Negative torque limit in 0.1% of 9.8 Nm (nominal torque). */
+    int16_t velocity_rpm;       //u: rpm, p:2 /**< @brief Velocity setpoint (RPM). */
+    int16_t torqueLimPos_dpcnt; //u: Nm, f:0.0098, p:4 /**< @brief Positive torque limit in 0.1% of 9.8 Nm (nominal torque). */
+    int16_t torqueLimNeg_dpcnt; //u: Nm, f:0.0098, p:4 /**< @brief Negative torque limit in 0.1% of 9.8 Nm (nominal torque). */
 } cmr_canAMKSetpoints_t;
 
 // ------------------------------------------------------------------------------------------------
 // Battery Management System
 
 typedef struct {
-    int32_t instantCurrent_mA; /**< @brief Instant Current (mA). */
-    int32_t averageCurrent_mA; /**< @brief Average Current (mA). */
+    int32_t instantCurrent_mA; //u: mA, /**< @brief Instant Current (mA). */
+    int32_t averageCurrent_mA; //u: mA, /**< @brief Average Current (mA). */
 } cmr_canBMSPackCurrent_t;
 
 typedef struct {
 	uint8_t maxVoltIndex;        /**< @brief Max BMB cell voltage index. */
     uint8_t minVoltIndex;        /**< @brief Min BMB cell voltage index. */
-    uint16_t maxCellVoltage_mV;  /**< @brief Max BMB cell voltage (mV). */
-    uint16_t minCellVoltage_mV;  /**< @brief Min BMB cell voltage (mV). */
+    uint16_t maxCellVoltage_mV;  //u: mV /**< @brief Max BMB cell voltage (mV). */
+    uint16_t minCellVoltage_mV;  //u: mV /**< @brief Min BMB cell voltage (mV). */
 } cmr_canBMSBMBStatusVoltage_t;
 
 typedef struct {
 	uint8_t maxTempIndex;        /**< @brief Max BMB cell temp index. */
 	uint8_t minTempIndex;        /**< @brief Min BMB cell temp index. */
-    int16_t maxCellTemp_C;       /**< @brief Max BMB cell temp (C). */
-    int16_t minCellTemp_C;       /**< @brief Min BMB cell temp (C). */
+    int16_t maxCellTemp_C;       //u: C /**< @brief Max BMB cell temp (C). */
+    int16_t minCellTemp_C;       //u: C /**< @brief Min BMB cell temp (C). */
 } cmr_canBMSBMBStatusTemp_t;
 
 typedef struct {
-	uint16_t minCellVoltage_mV;  /**< @brief Min pack cell voltage (mV). */
-	uint16_t maxCellVoltage_mV;  /**< @brief Max pack cell voltage (mV). */
+	uint16_t minCellVoltage_mV;  //u: mV /**< @brief Min pack cell voltage (mV). */
+	uint16_t maxCellVoltage_mV;  //u: mV /**< @brief Max pack cell voltage (mV). */
 	uint8_t minVoltageBMBNum;    /**< @brief Min pack cell voltage BMB number. */
 	uint8_t minVoltageCellNum;   /**< @brief Min pack cell voltage cell number. */
 	uint8_t maxVoltageBMBNum;    /**< @brief Max pack cell voltage BMB number. */
@@ -713,8 +713,8 @@ typedef struct {
 } cmr_canBMSMinMaxCellVoltage_t;
 
 typedef struct {
-    uint16_t minCellTemp_C;      /**< @brief Min pack cell temp (C). */
-    uint16_t maxCellTemp_C;      /**< @brief Max pack cell temp (C). */
+    uint16_t minCellTemp_C;      //u: C /**< @brief Min pack cell temp (C). */
+    uint16_t maxCellTemp_C;      //u: C /**< @brief Max pack cell temp (C). */
     uint8_t minTempBMBNum;       /**< @brief Min pack cell temp BMB number. */
     uint8_t minTempCellNum;      /**< @brief Min pack cell temp cell number. */
     uint8_t maxTempBMBNum;       /**< @brief Max pack cell temp BMB number. */
@@ -722,10 +722,10 @@ typedef struct {
 } cmr_canBMSMinMaxCellTemperature_t;
 
 typedef struct {
-    uint8_t vbatt_mV;       //f:0.1333333 /**< @brief LV battery voltage (mV). */
-    uint8_t vAIR_mV;        //f:0.1333333 /**< @brief AIR voltage (mV). */
-    uint8_t safety_mV;      //f:0.1333333 /**< @brief Safety circuit voltage (mA). */
-	uint8_t iDCDC_mA;       //f:0.1333333 /**< @brief DCDC current (mA). */
+    uint8_t vbatt_mV;       //u: mV, f:0.1333333 /**< @brief LV battery voltage (mV). */
+    uint8_t vAIR_mV;        //u: mV, f:0.1333333 /**< @brief AIR voltage (mV). */
+    uint8_t safety_mV;      //u: mV, f:0.1333333 /**< @brief Safety circuit voltage (mA). */
+	uint8_t iDCDC_mA;       //u: mA, f:0.1333333 /**< @brief DCDC current (mA). */
 } cmr_canBMSLowVoltage_t;
 
 // BRUSA Charger Structs
@@ -841,16 +841,16 @@ typedef struct {
 
 /** @brief SBG Systems IMU Gyro. */
 typedef struct {
-    int16_t gyro_x_rads;        /**< @brief Roll rate around the Car Forward Direction (rad/s times 1000). */
-    int16_t gyro_y_rads;        /**< @brief Roll rate around the Car Right Direction (rad/s times 1000). */
-    int16_t gyro_z_rads;        /**< @brief Roll rate around the Car Down Direction (rad/s times 1000). */
+    int16_t gyro_x_rads;        //u: rad /**< @brief Roll rate around the Car Forward Direction (rad/s times 1000). */
+    int16_t gyro_y_rads;        //u: rad /**< @brief Roll rate around the Car Right Direction (rad/s times 1000). */
+    int16_t gyro_z_rads;        //u: rad /**< @brief Roll rate around the Car Down Direction (rad/s times 1000). */
 } cmr_canSBGIMUGyro_t;
 
 /** @brief SBG Systems automotive data. */
 typedef struct {
-    int16_t angle_track_rad;        /**< @brief Track course angle/direction of travel (rad times 10^4). */
-    int16_t angle_slip_rad;         /**< @brief Vehicle slip angle (rad times 10^4). */
-    uint16_t curvature_radius_m;    /**< @brief Curvature radius based on down rotation rate (meters times 10^2). */
+    int16_t angle_track_rad;        //u: rad /**< @brief Track course angle/direction of travel (rad times 10^4). */
+    int16_t angle_slip_rad;         //u: rad /**< @brief Vehicle slip angle (rad times 10^4). */
+    uint16_t curvature_radius_m;    //u: m /**< @brief Curvature radius based on down rotation rate (meters times 10^2). */
     uint8_t status;                 /**< @brief Status bitmasks as AUTO_STATUS definition. */
 } cmr_canSBGAutomotive_t;
 
@@ -952,8 +952,8 @@ typedef struct {
 } cmr_canMovellaStatus_t;
 
 typedef struct {
-    int16_t cog_x_mps; //f:0.01
-    int16_t cog_y_mps; //f:0.01
+    int16_t cog_x_mps; //u: mps, f:0.01
+    int16_t cog_y_mps; //u: mps, f:0.01
     float slip_angle;
 } cmr_canCOGVelocity_t;
 
@@ -976,7 +976,7 @@ typedef struct {
 
 /** @brief IZZIE Racing loadcell sensors. Big Endian*/
 typedef struct {
-    int16_t delta_voltage;        /**< @brief differential voltage in the wheatstone bridge */
+    int16_t delta_voltage;        //u: V /**< @brief differential voltage in the wheatstone bridge */
     int16_t calibrated_output_f;  /**< @brief force output from the loadcell. */
     int16_t internal_temp;        /**< @brief amp's internal temp */
     int16_t external_temp;        /**< @brief amp's external temp */
@@ -985,7 +985,7 @@ typedef struct {
 
 /** @brief IZZIE Racing loadcell sensors. */
 typedef struct {
-    int16_t delta_voltage;        /**< @brief differential voltage in the wheatstone bridge */
+    int16_t delta_voltage;        //u: V /**< @brief differential voltage in the wheatstone bridge */
     int16_t calibrated_output_f;  /**< @brief force output from the loadcell. */
     int16_t internal_temp;        /**< @brief amp's internal temp */
     int16_t external_temp;        /**< @brief amp's external temp */
@@ -1084,8 +1084,8 @@ typedef struct
 
 typedef struct
 {
-    float moment_req_Nm;
-    float lin_accel_Nm;
+    float moment_req_Nm; //u: Nm
+    float lin_accel_Nm; //u: Nm
 } cmr_can_solver_inputs_t;
 
 typedef struct
@@ -1105,8 +1105,8 @@ typedef struct {
 // SAE Provided EMD definitions
 
 typedef struct {
-    int32_t current;    /**< @brief Current (amps * 2^16). */
-    int32_t voltage;    /**< @brief Voltage (volts * 2^16). */
+    int32_t current;    //u: A /**< @brief Current (amps * 2^16). */
+    int32_t voltage;    //u: V /**< @brief Voltage (volts * 2^16). */
 } cmr_canEMDMeasurements_t;
 
 // ------------------------------------------------------------------------------------------------
