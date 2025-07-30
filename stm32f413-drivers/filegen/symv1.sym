@@ -205,6 +205,17 @@ Var=rearLeft_Nm signed 32,16 /u:Nm /f:0.1
 Var=rearRight_Nm signed 48,16 /u:Nm /f:0.1
 
 
+[CONTROLS_PID_IO]
+DLC=8
+ID=7E5
+CycleTime=5
+TimeOut=25
+Var=controls_current_yaw_rate signed 0,16 /f:0.01 /p:2
+Var=controls_target_yaw_rate signed 16,16 /f:0.01 /p:2
+Var=controls_bias signed 32,16 /f:0.01 /p:2
+Var=controls_pid signed 48,16 /f:0.01 /p:2
+
+
 [CONTROLS_SOLVER_AUX]
 DLC=3
 ID=7FF
@@ -221,6 +232,17 @@ CycleTime=10
 TimeOut=50
 Var=moment_req_Nm float 0,32 /u:Nm
 Var=lin_accel_Nm float 32,32 /u:Nm
+
+
+[CONTROLS_SOLVER_OUTPUTS]
+DLC=8
+ID=7F0
+CycleTime=10
+TimeOut=50
+Var=frontLeft_Nm signed 0,16 /u:Nm /f:0.1
+Var=frontRight_Nm signed 16,16 /u:Nm /f:0.1
+Var=rearLeft_Nm signed 32,16 /u:Nm /f:0.1
+Var=rearRight_Nm signed 48,16 /u:Nm /f:0.1
 
 
 [CONTROLS_SOLVER_SETTINGS]
@@ -287,6 +309,33 @@ Var=state unsigned 0,8
 Var=angle unsigned 8,8
 Var=pwm_left unsigned 16,8
 Var=pwm_right unsigned 24,8
+
+
+[FRONT_SLIP_RATIOS]
+DLC=8
+ID=7E8
+CycleTime=100
+TimeOut=500
+Var=slipRatio_FL float 0,32
+Var=slipRatio_FR float 32,32
+
+
+[FRONT_WHL_SETPOINTS]
+DLC=8
+ID=7EA
+CycleTime=100
+TimeOut=500
+Var=slipRatio_FL float 0,32
+Var=slipRatio_FR float 32,32
+
+
+[FRONT_WHL_VELS]
+DLC=8
+ID=7EC
+CycleTime=100
+TimeOut=500
+Var=v_whl_fl float 0,32
+Var=v_whl_fr float 32,32
 
 
 [FSM_DATA]
@@ -525,6 +574,33 @@ Var=motor_power_RL unsigned 32,16
 Var=motor_power_RR unsigned 48,16
 
 
+[REAR_SLIP_RATIOS]
+DLC=8
+ID=7E9
+CycleTime=100
+TimeOut=500
+Var=slipRatio_RL float 0,32
+Var=slipRatio_RR float 32,32
+
+
+[REAR_WHL_SETPOINTS]
+DLC=8
+ID=7EB
+CycleTime=100
+TimeOut=500
+Var=omega_RL float 0,32
+Var=omega_RR float 32,32
+
+
+[REAR_WHL_VELS]
+DLC=8
+ID=7ED
+CycleTime=100
+TimeOut=500
+Var=v_whl_rl float 0,32
+Var=v_whl_rr float 32,32
+
+
 [SF_STATE]
 DLC=8
 ID=52D
@@ -545,6 +621,16 @@ TimeOut=500
 Var=test_id unsigned 0,32
 
 
+[VSM_LATCHED_STATUS]
+DLC=3
+ID=510
+CycleTime=10000
+TimeOut=50000
+Var=moduleTimeoutMatrix unsigned 0,8
+Var=badStateMatrix unsigned 8,8
+Var=latchMatrix unsigned 16,8
+
+
 [VSM_POWER_DIAGNOSTICS]
 DLC=4
 ID=530
@@ -561,4 +647,15 @@ CycleTime=5
 TimeOut=25
 Var=busVoltage_mV unsigned 0,16 /u:mV
 Var=busCurrent_mA unsigned 16,16 /u:mA
+
+
+[VSM_STATUS]
+DLC=4
+ID=110
+CycleTime=10
+TimeOut=50
+Var=internalState unsigned 0,8 /e:VSMState
+Var=moduleTimeoutMatrix unsigned 8,8
+Var=badStateMatrix unsigned 16,8
+Var=latchMatrix unsigned 24,8
 

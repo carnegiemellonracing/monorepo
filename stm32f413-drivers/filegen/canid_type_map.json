@@ -310,9 +310,25 @@
             "type": "cmr_canCDCWheelTorque_t"
         },
         "CMR_CANID_CONTROLS_PID_IO": {
+            "controls_bias": {
+                "f": 0.01,
+                "p": 2
+            },
+            "controls_current_yaw_rate": {
+                "f": 0.01,
+                "p": 2
+            },
+            "controls_pid": {
+                "f": 0.01,
+                "p": 2
+            },
+            "controls_target_yaw_rate": {
+                "f": 0.01,
+                "p": 2
+            },
             "cycleTime": 5,
             "timeOut": 25,
-            "type": "yrcDebug"
+            "type": "cmr_can_controls_pid_debug_t"
         },
         "CMR_CANID_CONTROLS_SOLVER_AUX": {
             "cycleTime": 10,
@@ -332,8 +348,24 @@
         },
         "CMR_CANID_CONTROLS_SOLVER_OUTPUTS": {
             "cycleTime": 10,
+            "frontLeft_Nm": {
+                "f": 0.1,
+                "u": "Nm"
+            },
+            "frontRight_Nm": {
+                "f": 0.1,
+                "u": "Nm"
+            },
+            "rearLeft_Nm": {
+                "f": 0.1,
+                "u": "Nm"
+            },
+            "rearRight_Nm": {
+                "f": 0.1,
+                "u": "Nm"
+            },
             "timeOut": 50,
-            "type": "solver_torques"
+            "type": "cmr_canCDCWheelTorque_t"
         },
         "CMR_CANID_CONTROLS_SOLVER_SETTINGS": {
             "cycleTime": 10,
@@ -383,17 +415,17 @@
         "CMR_CANID_FRONT_SLIP_RATIOS": {
             "cycleTime": 100,
             "timeOut": 500,
-            "type": "frontSlipRatios"
+            "type": "cmr_can_front_slip_ratio_data_t"
         },
         "CMR_CANID_FRONT_WHL_SETPOINTS": {
             "cycleTime": 100,
             "timeOut": 500,
-            "type": "frontSlipRatios"
+            "type": "cmr_can_front_slip_ratio_data_t"
         },
         "CMR_CANID_FRONT_WHL_VELS": {
             "cycleTime": 100,
             "timeOut": 500,
-            "type": "frontWhlVelocities"
+            "type": "cmr_can_front_whl_velocity_t"
         },
         "CMR_CANID_FSM_DATA": {
             "cycleTime": 10,
@@ -494,7 +526,7 @@
             "timeOut": 50,
             "type": "cmr_canHeartbeat_t"
         },
-        "CMR_CANID_HVC_BMB_0_STATUS_TEMP": {
+        "CMR_CANID_HVC_BMB_0_STATUS_TEMP + (bmb_index << 1)": {
             "cycleTime": 1000,
             "maxCellTemp_C": {
                 "u": "C"
@@ -505,22 +537,22 @@
             "timeOut": 5000,
             "type": "cmr_canBMSBMBStatusTemp_t"
         },
-        "CMR_CANID_HVC_BMB_0_STATUS_TEMP_0": {
+        "CMR_CANID_HVC_BMB_0_STATUS_TEMP_0 + (bmbIndex << 4)": {
             "cycleTime": 1000,
             "timeOut": 5000,
             "type": "cmr_canHVCBMB_Temp0_t"
         },
-        "CMR_CANID_HVC_BMB_0_STATUS_TEMP_1": {
+        "CMR_CANID_HVC_BMB_0_STATUS_TEMP_1 + (bmbIndex << 4)": {
             "cycleTime": 1000,
             "timeOut": 5000,
             "type": "cmr_canHVCBMB_Temp1_t"
         },
-        "CMR_CANID_HVC_BMB_0_STATUS_TEMP_2": {
+        "CMR_CANID_HVC_BMB_0_STATUS_TEMP_2 + (bmbIndex << 4)": {
             "cycleTime": 1000,
             "timeOut": 5000,
             "type": "cmr_canHVCBMB_Temp2_t"
         },
-        "CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE": {
+        "CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE + (bmb_index << 1)": {
             "cycleTime": 100,
             "maxCellVoltage_mV": {
                 "u": "mV"
@@ -531,17 +563,17 @@
             "timeOut": 500,
             "type": "cmr_canBMSBMBStatusVoltage_t"
         },
-        "CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE_0": {
+        "CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE_0 + (bmbIndex << 4)": {
             "cycleTime": 1000,
             "timeOut": 5000,
             "type": "cmr_canHVCBMB_Voltage0_t"
         },
-        "CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE_1": {
+        "CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE_1 + (bmbIndex << 4)": {
             "cycleTime": 1000,
             "timeOut": 5000,
             "type": "cmr_canHVCBMB_Voltage1_t"
         },
-        "CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE_2": {
+        "CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE_2 + (bmbIndex << 4)": {
             "cycleTime": 1000,
             "timeOut": 5000,
             "type": "cmr_canHVCBMB_Voltage2_t"
@@ -636,17 +668,17 @@
         "CMR_CANID_REAR_SLIP_RATIOS": {
             "cycleTime": 100,
             "timeOut": 500,
-            "type": "rearSlipRatios"
+            "type": "cmr_can_rear_slip_ratio_data_t"
         },
         "CMR_CANID_REAR_WHL_SETPOINTS": {
             "cycleTime": 100,
             "timeOut": 500,
-            "type": "rearWhlSetpoints"
+            "type": "cmr_can_rear_whl_speed_setpoint_t"
         },
         "CMR_CANID_REAR_WHL_VELS": {
             "cycleTime": 100,
             "timeOut": 500,
-            "type": "rearWhlVelocities"
+            "type": "cmr_can_rear_whl_velocity_t"
         },
         "CMR_CANID_SF_STATE": {
             "cycleTime": 10,
@@ -667,7 +699,7 @@
         "CMR_CANID_VSM_LATCHED_STATUS": {
             "cycleTime": 10000,
             "timeOut": 50000,
-            "type": "vsmStatus->canVSMLatchedStatus"
+            "type": "cmr_canVSMLatchedStatus_t"
         },
         "CMR_CANID_VSM_POWER_DIAGNOSTICS": {
             "busCurrent_mA": {
@@ -693,12 +725,15 @@
         },
         "CMR_CANID_VSM_STATUS": {
             "cycleTime": 10,
+            "internalState": {
+                "e": "VSMState"
+            },
             "timeOut": 50,
-            "type": "vsmStatus->canVSMStatus"
+            "type": "cmr_canVSMStatus_t"
         }
     },
     "summary": {
-        "files_processed": 2810,
+        "files_processed": 2796,
         "files_with_matches": 8,
         "prefixes_used": [
             "CMR_CANID_",
