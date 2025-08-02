@@ -888,16 +888,15 @@ void setSlowTorque (
  *
  * @param throttlePos_u8 Throttle position, 0-255.
  */
-void setFastTorque (
-    uint8_t throttlePos_u8
-) {
+void setFastTorque (uint8_t throttlePos_u8) {
     const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
-   setTorqueLimsAllProtected(reqTorque, 0.0f);
-//    setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
-//    setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
-//    setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
-//    setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
-    setVelocityInt16All(maxFastSpeed_rpm);
+   //setTorqueLimsAllProtected(reqTorque, 0.0f);
+   
+   setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
+   setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
+   setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
+   setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
+   setVelocityInt16All(maxFastSpeed_rpm);
 }
 
 void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew) {

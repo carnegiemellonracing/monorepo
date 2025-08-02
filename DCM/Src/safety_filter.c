@@ -34,7 +34,7 @@
 /** @brief Max amount of power the car should draw
  *  @warning Safety margins MUST BE STRICTLY POSITIVE
  */
-float power_upper_limit_W = 73000.0f; //michigan power limit
+float power_upper_limit_W = 110000.0f; //michigan power limit
 float power_safety_margin_W = 16000.0f;
 
 /** @brief Max temperature of the hottest cell
