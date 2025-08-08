@@ -202,7 +202,7 @@ typedef enum {
     CMR_CAN_VSM_STATE_LEN               /**< @brief Number of VSM states. */
 } cmr_canVSMState_t;
 
-/** @brief Bit definitions for timeoutMatrix and badStateMatrix in cmr_canVSMErrors_t. */
+/** @brief Bit definitions for timeoutMatrix in cmr_canVSMErrors_t. */
 typedef enum {
     /** @brief No modules have timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_NONE = 0,
@@ -228,7 +228,7 @@ typedef enum {
     /** @brief Software error latch is active. */
     CMR_CAN_VSM_LATCH_SOFTWARE = (1 << 2),
     /** @brief AMS errors use software error latch. */
-    CMR_CAN_VSM_LATCH_AMS = CMR_CAN_VSM_LATCH_SOFTWARE,
+    CMR_CAN_VSM_LATCH_AMS = (1<<2),
     /** @brief IMD error latch is active. */
     CMR_CAN_VSM_LATCH_IMD = (1 << 1),
     /** @brief BSPD error latch is active. */
@@ -240,17 +240,14 @@ typedef struct {
     uint8_t internalState;  //e:VSMState /**< @brief VSM internal state. See cmr_canVSMState_t. */
     /**
      * @brief Matrix of modules for which at least one message exceeded its error timeout.
-     * Bits defined by cmr_canVSMErrorSource_t.
      */
-    uint8_t moduleTimeoutMatrix;
+    uint8_t moduleTimeoutMatrix; //see cmr_canVSMErrorSource_t 
     /**
      * @brief Matrix of modules that are in the wrong state.
-     * Bits defined by cmr_canVSMErrorSource_t.
      */
-    uint8_t badStateMatrix;
-    /** @brief Matrix of active error latches. Bits defined by cmr_canVSMLatch_t. */
-    uint8_t latchMatrix;
-} cmr_canVSMStatus_t;
+    uint8_t badStateMatrix; //see cmr_canVSMErrorSource_t 
+    uint8_t latchMatrix; //see cmr_canVSMLatch_t  
+} cmr_canVSMStatus_t; 
 
 /** @brief Vehicle Safety Module sensor data. */
 /** @brief Vehicle Safety Module sensor data. */
@@ -265,16 +262,14 @@ typedef struct {
 typedef struct {
     /**
      * @brief Matrix of modules for which at least one message exceeded its error timeout.
-     * Bits defined by cmr_canVSMErrorSource_t.
      */
-    uint8_t moduleTimeoutMatrix;
+    uint8_t moduleTimeoutMatrix; //see cmr_canVSMErrorSource_t 
     /**
      * @brief Matrix of modules that are in the wrong state.
-     * Bits defined by cmr_canVSMErrorSource_t.
      */
-    uint8_t badStateMatrix;
-    /** @brief Matrix of active error latches. Bits defined by cmr_canVSMLatch_t. */
-    uint8_t latchMatrix;
+    uint8_t badStateMatrix; //see cmr_canVSMErrorSource_t. 
+    /** @brief Matrix of active error latches. */
+    uint8_t latchMatrix; //see cmr_canVSMLatch_t 
 } cmr_canVSMLatchedStatus_t;
 
 /** @brief Vehicle Safety Module power diagnostics. */
@@ -413,17 +408,22 @@ typedef struct {
     int32_t avgCurrent_mA;      //u: mA /**< @brief (Not working) rolling average of current. */
 } cmr_canHVCPackCurrent_t;
 
+typedef enum{
+    UPPER_BMB = (15<<0),
+    LOWER_BMB = (15<<4)
+} cmr_canBMBErr_t; 
+
 /** @brief High Voltage Controller BMB errors. */
 typedef struct {
-    uint8_t BMB1_2_Errs;  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
-    uint8_t BMB3_4_Errs;  /**< @brief Errors for BMB3&4 (BMB3 = higher 4 bits). */
-    uint8_t BMB5_6_Errs;  /**< @brief Errors for BMB5&6 (BMB5 = higher 4 bits). */
-    uint8_t BMB7_8_Errs;  /**< @brief Errors for BMB7&8 (BMB7 = higher 4 bits). */
-    uint8_t BMB9_10_Errs;  /**< @brief Errors for BMB9&10 (BMB9 = higher 4 bits). */
-    uint8_t BMB11_12_Errs;  /**< @brief Errors for BMB11&12 (BMB11 = higher 4 bits). */
-    uint8_t BMB13_14_Errs;  /**< @brief Errors for BMB13&14 (BMB13 = higher 4 bits). */
-    uint8_t BMB15_16_Errs;  /**< @brief Errors for BMB15&16 (BMB15 = higher 4 bits). */
-} cmr_canHVCBMBErrors_t;
+    uint8_t BMB1_2_Errs;  /**see cmr_canBMBErr_t< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
+    uint8_t BMB3_4_Errs;  /**see cmr_canBMBErr_t< @brief Errors for BMB3&4 (BMB3 = higher 4 bits). */
+    uint8_t BMB5_6_Errs;  /**see cmr_canBMBErr_t<  @brief Errors for BMB5&6 (BMB5 = higher 4 bits). */
+    uint8_t BMB7_8_Errs;  /**see cmr_canBMBErr_t< @brief Errors for BMB7&8 (BMB7 = higher 4 bits). */
+    uint8_t BMB9_10_Errs;  /**see cmr_canBMBErr_t< @brief Errors for BMB9&10 (BMB9 = higher 4 bits). */
+    uint8_t BMB11_12_Errs;  /**see cmr_canBMBErr_t< @brief Errors for BMB11&12 (BMB11 = higher 4 bits). */
+    uint8_t BMB13_14_Errs;  /**see cmr_canBMBErr_t< @brief Errors for BMB13&14 (BMB13 = higher 4 bits). */
+    uint8_t BMB15_16_Errs;  /**see cmr_canBMBErr_t< @brief Errors for BMB15&16 (BMB15 = higher 4 bits). */
+} cmr_canHVCBMBErrors_t; 
 
 //HV_I Sense Board CAN Types
 typedef struct {
@@ -556,13 +556,25 @@ typedef struct {
     uint8_t data[4];            /**< @brief Data to write. */
 } cmr_canDIMTextWrite_t;
 
+typedef enum {
+    DIM_ACTIONBUTTON = (1<<2),
+    DIM_LAUNCHBUTTON = (1<<3), 
+} cmr_canDIMButtons_t; 
+
+typedef enum {
+    DIM_LEFT = (1<<0), 
+    DIM_RIGHT = (1<<1),
+    DIM_UP = (1<<2), 
+    DIM_DOWN = (1<<3)
+} cmr_canLRUDButtons_t; 
+
 typedef struct {
-    uint8_t buttons;                 /**< @brief Button states packed into an uint8_t. {drs,0,1,2,up,down,left,right}*/
+    uint8_t buttons;                 /**see cmr_canDIMButtons_t < @brief Button states packed into an uint8_t. {drs,0,1,2,up,down,left,right}*/
     uint8_t rotaryPos;
     uint8_t switchValues;
     uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
     uint8_t paddle;            /**< @brief Between 0 and 255 for paddle pos*/
-    uint8_t LRUDButtons;     /**< @brief LRUD Button States, packed into an uint8_t*/
+    uint8_t LRUDButtons;     /**see cmr_canLRUDButtons_t < @brief LRUD Button States, packed into an uint8_t*/
 } cmr_canDIMActions_t;
 
 /** @brief DIM sends message to acknowledge radio message

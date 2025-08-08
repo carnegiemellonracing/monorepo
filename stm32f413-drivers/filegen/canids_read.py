@@ -1,12 +1,12 @@
 import re 
-file = "stm32f413-drivers/CMR/include/CMR/can_ids.h" #FIX 
+canidfile = "stm32f413-drivers/CMR/include/CMR/can_ids.h" #FIX 
 atIDs = False 
 num = 0; 
 
 
 lines = [] 
 
-with open(file, "r") as f:
+with open(canidfile, "r") as f:
     for line in f: 
         if "}" in line: #dumb way to look at only ids.... can't think of another rn
             atIDs = False 
