@@ -2,6 +2,9 @@
 
 #include "controls_helper.h"
 #include "lut_3d.h"
+#include "../optimizer/optimizer.h"
+#include "controls.h"
+#include "lut.h"
 #include "safety_filter.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -95,6 +98,108 @@ float swAngleMillidegToSteeringAngleRad(int32_t swAngle_millideg) {
     float steering_angle_rad = steering_angle_deg * 0.001f * M_PI / 180.0f;
     return  steering_angle_rad; // convert to rads
 }
+
+float get_load_cell_angle_rad(canDaqRX_t loadIndex) {
+    switch (loadIndex) {
+        case CANRX_DAQ_LOAD_FL:
+        case CANRX_DAQ_LOAD_FR:
+            return DAQ_PUSHROD_ANGLE_FR / 180.0f * PI;
+        case CANRX_DAQ_LOAD_RL:
+        case CANRX_DAQ_LOAD_RR:
+            return DAQ_PUSHROD_ANGLE_RR / 180.0f * PI;
+        default:
+            return 0.0f;
+    }
+}
+
+/**
+ * @brief Return downforce given motor location
+ */
+float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
+    float downforce_N;
+    bool not_timeout = cmr_canRXMetaTimeoutWarn(&canDaqRXMeta[loadIndex],
+                                                xTaskGetTickCount()) == 0;
+    if (use_true_downforce && not_timeout) {
+        volatile cmr_canIZZELoadCell_t *downforcePayload =
+            (volatile cmr_canIZZELoadCell_t *)canDAQGetPayload(loadIndex);
+        float angle = get_load_cell_angle_rad(loadIndex);
+        volatile int16_t raw = parse_int16(&downforcePayload->force_output_N);
+        downforce_N = (float)raw * 0.1f * sinf(angle);
+    } else {
+        downforce_N = (float) car_mass_kg * G * 0.25f;
+        // downforce car mass * g * 1/4 every motor
+    }
+    return downforce_N;
+}
+
+// OPTIMAL CONTROL HELPERS
+void get_tractive_capabilities(float *cap_fl, float *cap_fr, float *cap_rl, float *cap_rr, bool use_true_downforce) {
+    
+    const float corner_weight_Nm = 80.0f;
+    *cap_fl = lut_get_max_Fx_kappa(0.0f, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
+    *cap_fr = lut_get_max_Fx_kappa(0.0f, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
+    *cap_rl = lut_get_max_Fx_kappa(0.0f, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
+    *cap_rr = lut_get_max_Fx_kappa(0.0f, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
+}
+
+// converting force to torque linearly ignoring rolling resistance + inefficiencies
+void compute_torque_limits(float cap_fl, float cap_fr, float cap_rl, float cap_rr,
+    float *lim_fl, float *lim_fr, float *lim_rl, float *lim_rr) {
+
+        const float r = effective_wheel_rad_m;
+        const float g = gear_ratio;
+        static const float motor_resistance = 0.5f;
+        
+        *lim_fl = fminf(cap_fl * r / g + motor_resistance, maxTorque_continuous_stall_Nm);
+        *lim_fr = fminf(cap_fr * r / g + motor_resistance, maxTorque_continuous_stall_Nm);
+        *lim_rl = fminf(cap_rl * r / g + motor_resistance, maxTorque_continuous_stall_Nm);
+        *lim_rr = fminf(cap_rr * r / g + motor_resistance, maxTorque_continuous_stall_Nm);
+}
+
+// preparing optimizer state
+void load_optimizer_state(optimizer_state_t *state, float normalized_throttle, int32_t swAngle_millideg_FL, int32_t swAngle_millideg_FR, float lim_fl, float lim_fr,
+    float lim_rl, float lim_rr, bool allow_regen) {
+
+    int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
+
+    float vel_fl = getMotorSpeed_radps(MOTOR_FL);
+    float vel_fr = getMotorSpeed_radps(MOTOR_FR);
+    float vel_rl = getMotorSpeed_radps(MOTOR_RL);
+    float vel_rr = getMotorSpeed_radps(MOTOR_RR);
+
+    state->power_limit = getPowerLimit_W();
+    state->omegas[0] = vel_fl;
+    state->omegas[1] = vel_fr;
+    state->omegas[2] = vel_rl;
+    state->omegas[3] = vel_rr;
+
+    const float resist = 0.5f;
+    const float throttle_accel = maxTorque_continuous_stall_Nm * MOTOR_LEN * gear_ratio / effective_wheel_rad_m / car_mass_kg;
+    state->areq = normalized_throttle * throttle_accel;
+
+    float mreq = -getYawRateControlLeftRightBias(swAngle_millideg);
+    state->mreq = mreq;
+    state->theta_left = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
+    state->theta_right = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
+
+    float regen[4];
+    for (int i = 0; i < 4; i++) {
+        regen[i] = getMotorRegenerativeCapacity(getMotorSpeed_rpm(i));
+    }
+
+    for (int i = 0; i < 4; i++) {
+        float torque_limit = (&lim_fl)[i];
+        float regen_limit = regen[i];
+
+        float lower = allow_regen ? fmaxf(-torque_limit + resist, regen_limit) : 0.0f;
+
+        state->variable_profile[i].lower = lower;
+        state->variable_profile[i].upper = torque_limit;
+    }
+}
+
+
+// REGEN CODE FOLLOWS
 
 bool setPaddleRegen(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM, uint8_t paddle_pressure, uint8_t paddle_regen_strength) {
     if (paddle_pressure < paddle_pressure_start) return false;
