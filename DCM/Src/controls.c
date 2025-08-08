@@ -226,7 +226,6 @@ static inline void set_motor_speed_and_torque(
  * In [0, 1] if without regen.
  */
 void set_optimal_control(float normalized_throttle, int32_t swAngle_millideg_FL, int32_t swAngle_millideg_FR, bool allow_regen) {
-    int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
 
     // verify limits of throttle
     if (allow_regen) {
@@ -414,7 +413,7 @@ void runControls(cmr_canGear_t gear, uint8_t throttlePos_u8,
 
     switch (gear) {
         case CMR_CAN_GEAR_SLOW: {
-            setSlowTorque(throttlePos_u8, swAngle_millideg);
+            setSlowTorque(throttlePos_u8);
             break;
         }
         case CMR_CAN_GEAR_FAST: {
@@ -523,7 +522,7 @@ void integrateCurrent() {
  *
  * @param throttlePos_u8 Throttle position, 0-255.
  */
-void setSlowTorque(uint8_t throttlePos_u8, int32_t swAngle_millideg) {
+void setSlowTorque(uint8_t throttlePos_u8) {
     const float reqTorque = maxSlowTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
 
     setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
