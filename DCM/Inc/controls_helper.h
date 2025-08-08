@@ -10,6 +10,8 @@
 #include "can.h"
 #include "daq.h"
 #include "motors.h"
+#include "assert.h"
+#include "constants.h"
 
 // ------------------------------------------------------------------------------------------------
 // Macro functions
@@ -49,6 +51,13 @@ float getHVISensePackPower();
 float getMaxCellVoltage();
 float getMinCellVoltage();
 float swAngleMillidegToSteeringAngleRad(int32_t swAngle_deg);
+
+void set_torque_field(cmr_torqueDistributionNm_t *torques, motorLocation_t motor, float value);
+
+void set_motor_speed_and_torque(
+    motorLocation_t motor, float val,
+    cmr_torqueDistributionNm_t *torquesPos_Nm,
+    cmr_torqueDistributionNm_t *torquesNeg_Nm);
 
 float get_load_cell_angle_rad(canDaqRX_t loadIndex);
 

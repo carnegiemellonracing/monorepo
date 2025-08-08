@@ -170,57 +170,6 @@ const volatile cmr_canCDCControlsStatus_t *getControlsStatus() {
     return (const cmr_canCDCControlsStatus_t *)&controlsStatus;
 }
 
-static inline void set_motor_speed_and_torque(
-    motorLocation_t motor, float val, cmr_torqueDistributionNm_t *torquesPos_Nm,
-    cmr_torqueDistributionNm_t *torquesNeg_Nm) {
-    if (val > 0.0) {
-        switch (motor) {
-            case MOTOR_FL:
-                torquesPos_Nm->fl = val;
-                torquesNeg_Nm->fl = 0.0f;
-                break;
-            case MOTOR_FR:
-                torquesPos_Nm->fr = val;
-                torquesNeg_Nm->fr = 0.0f;
-                break;
-            case MOTOR_RL:
-                torquesPos_Nm->rl = val;
-                torquesNeg_Nm->rl = 0.0f;
-                break;
-            case MOTOR_RR:
-                torquesPos_Nm->rr = val;
-                torquesNeg_Nm->rr = 0.0f;
-                break;
-            default:
-                assert(false);
-        }
-        setVelocityInt16(motor, maxFastSpeed_rpm);
-
-    } else {
-        switch (motor) {
-            case MOTOR_FL:
-                torquesPos_Nm->fl = 0.0f;
-                torquesNeg_Nm->fl = val;
-                break;
-            case MOTOR_FR:
-                torquesPos_Nm->fr = 0.0f;
-                torquesNeg_Nm->fr = val;
-                break;
-            case MOTOR_RL:
-                torquesPos_Nm->rl = 0.0f;
-                torquesNeg_Nm->rl = val;
-                break;
-            case MOTOR_RR:
-                torquesPos_Nm->rr = 0.0f;
-                torquesNeg_Nm->rr = val;
-                break;
-            default:
-                assert(false);
-        }
-        setVelocityInt16(motor, 0);
-    }
-}
-
 /**
  * @param normalized_throttle A value in [-1, 1].
  * In [0, 1] if without regen.

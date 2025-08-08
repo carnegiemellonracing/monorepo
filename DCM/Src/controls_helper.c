@@ -99,6 +99,37 @@ float swAngleMillidegToSteeringAngleRad(int32_t swAngle_millideg) {
     return  steering_angle_rad; // convert to rads
 }
 
+
+// MOTOR SPEED AND TORQUE CONDENSED
+void set_torque_field(cmr_torqueDistributionNm_t *torques, motorLocation_t motor, float value) {
+    switch (motor) {
+        case MOTOR_FL: torques->fl = value; break;
+        case MOTOR_FR: torques->fr = value; break;
+        case MOTOR_RL: torques->rl = value; break;
+        case MOTOR_RR: torques->rr = value; break;
+        default: assert(false); break;
+    }
+}
+
+void set_motor_speed_and_torque(
+    motorLocation_t motor, float val,
+    cmr_torqueDistributionNm_t *torquesPos_Nm,
+    cmr_torqueDistributionNm_t *torquesNeg_Nm) {
+
+    if (val > 0.0f) {
+        set_torque_field(torquesPos_Nm, motor, val);
+        set_torque_field(torquesNeg_Nm, motor, 0.0f);
+        setVelocityInt16(motor, maxFastSpeed_rpm);
+    } else {
+        set_torque_field(torquesPos_Nm, motor, 0.0f);
+        set_torque_field(torquesNeg_Nm, motor, val);
+        setVelocityInt16(motor, 0);
+    }
+}
+
+
+
+// NEEDED FOR DOWNFORCE
 float get_load_cell_angle_rad(canDaqRX_t loadIndex) {
     switch (loadIndex) {
         case CANRX_DAQ_LOAD_FL:
