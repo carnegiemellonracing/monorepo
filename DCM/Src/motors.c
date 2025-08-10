@@ -418,7 +418,23 @@ void setTorqueLimsAllProtected (
     float torqueLimNeg_Nm
 ) {
     // TODO: REWRITE MAYBE WITHOUT DIST
-    setTorqueLimsAllDistProtected(torqueLimPos_Nm, torqueLimNeg_Nm, NULL, NULL);
+    // rewritten, check builds
+    const cmr_torqueDistributionNm_t pos = {
+        .fl = torqueLimPos_Nm,
+        .fr = torqueLimPos_Nm,
+        .rl = torqueLimPos_Nm,
+        .rr = torqueLimPos_Nm
+    };
+    const cmr_torqueDistributionNm_t neg = {
+        .fl = torqueLimNeg_Nm,
+        .fr = torqueLimNeg_Nm,
+        .rl = torqueLimNeg_Nm,
+        .rr = torqueLimNeg_Nm
+    };
+
+    setTorqueLimsProtected(&pos, &neg);
+
+    //setTorqueLimsAllDistProtected(torqueLimPos_Nm, torqueLimNeg_Nm, NULL, NULL);
 }
 
 /**
