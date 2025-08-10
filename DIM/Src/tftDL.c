@@ -16,6 +16,8 @@
 #include "state.h"       // State interface
 #include "tftContent.h"  // Content interface
 #include "tftDL.h"  // Interface to implement
+#include "tft1.h"
+#include "tft.h"
 
 // used to calculate increment frequency:
 // max paddle val (255) / max increment speed (20Hz)

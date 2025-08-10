@@ -16,6 +16,7 @@
 #include "gpio.h"        // Board-specific GPIO interface
 #include "state.h"       // State interface
 #include "tftContent.h"  // Content interface
+#include "tft1.h"
 #include "tftDL.h"       // Display list interface
 
 /** @brief Expected chip ID. */
