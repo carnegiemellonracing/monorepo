@@ -438,38 +438,6 @@ void setTorqueLimsAllProtected (
 }
 
 /**
- * @brief Sets both positive and negative torque limits for all motors with over/undervolt protection.
- * @deprecated Please use setTorqueLimsProtected instead if possible
- * @note This is a wrapper of setTorqueLimsProtected
- *
- * @param torqueLimPos_Nm Max torque: upper-bounds the torque SF sends to the motors. MUST BE NON-NEGATIVE!
- * @param torqueLimNeg_Nm Min torque: lower-bounds the torque SF sends to the motors. MUST BE NON-POSITIVE!
- * @note The SF may decide to send any torque within the limits specified by torqueLimPos_Nm and torqueLimNeg_Nm.
- * @param distPos Coefficients that are multiplied onto torqueLimPos_Nm for each motor. NULL is treated as an even distribution. MUST BE NON-NEGATIVE!
- * @param distNeg Coefficients that are multiplied onto torqueLimNeg_Nm for each motor. NULL is treated as an even distribution. MUST BE NON-NEGATIVE!
- */
-void setTorqueLimsAllDistProtected (
-    float torqueLimPos_Nm,
-    float torqueLimNeg_Nm,
-    const cmr_loadDistribution_t *distPos,
-    const cmr_loadDistribution_t *distNeg
-) {
-    const cmr_torqueDistributionNm_t torquesPos_Nm = {
-        .fl = getLoadByIndex(distPos, MOTOR_FL) * torqueLimPos_Nm,
-        .fr = getLoadByIndex(distPos, MOTOR_FR) * torqueLimPos_Nm,
-        .rl = getLoadByIndex(distPos, MOTOR_RL) * torqueLimPos_Nm,
-        .rr = getLoadByIndex(distPos, MOTOR_RR) * torqueLimPos_Nm
-    };
-    const cmr_torqueDistributionNm_t torquesNeg_Nm = {
-        .fl = getLoadByIndex(distNeg, MOTOR_FL) * torqueLimNeg_Nm,
-        .fr = getLoadByIndex(distNeg, MOTOR_FR) * torqueLimNeg_Nm,
-        .rl = getLoadByIndex(distNeg, MOTOR_RL) * torqueLimNeg_Nm,
-        .rr = getLoadByIndex(distNeg, MOTOR_RR) * torqueLimNeg_Nm
-    };
-    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
-}
-
-/**
  * @brief Sets both positive and negative torque limits for a motor.
  *
  * @param motor Which motor to set torque limits for.
