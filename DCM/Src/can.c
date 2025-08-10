@@ -171,49 +171,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .canID = CMR_CANID_MOVELLA_VELOCITY,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_STATUS_3] = {
-        .canID = CMR_CANID_SBG_STATUS_3,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_POS] = {
-        .canID = CMR_CANID_SBG_EKF_POS,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_VEL] = {
-        .canID = CMR_CANID_SBG_EKF_VEL,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_BODY_VEL] = {
-        .canID = CMR_CANID_SBG_BODY_VEL,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_ORIENT] = {
-        .canID = CMR_CANID_SBG_EKF_ORIENT,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_IMU_ACCEL] = {
-        .canID = CMR_CANID_SBG_IMU_ACCEL,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_IMU_GYRO] = {
-        .canID = CMR_CANID_SBG_IMU_GYRO,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SBG_SLIPANGLE] = {
-	    .canID  = CMR_CANID_SBG_AUTOMOTIVE,
-        .timeoutError_ms = 1000,
-        .timeoutWarn_ms = 750,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .warnFlag = CMR_CAN_WARN_NONE
-	}
+    }
 };
 
 /** @brief Metadata for tractive CAN message reception. */
@@ -372,10 +330,6 @@ static void canTX10Hz(void *pvParameters) {
     cmr_canCDCWheelVelocity_t speedSetpoint;
     cmr_canCDCWheelTorque_t torqueSetpoint;
 
-    cmr_canCDCPosePosition_t posePos;
-    cmr_canCDCPoseOrientation_t poseOrient;
-    cmr_canCDCPoseVelocity_t poseVel;
-
     cmr_canPowerSense_t powerSense;
 
     while (1) {
@@ -396,15 +350,10 @@ static void canTX10Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_VEH, 0x659, &therms, sizeof(cmr_canDAQTherm_t), canTX10Hz_period_ms);
 
         // Is data valid? Set it in the orientation/velocity messages
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX10Hz_period_ms);
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK, &torqueFeedback, sizeof(torqueFeedback), canTX10Hz_period_ms);
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_SETPOINT, &speedSetpoint, sizeof(speedSetpoint), canTX10Hz_period_ms);
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX10Hz_period_ms);
-        //canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_POSITION, &posePos, sizeof(posePos), canTX10Hz_period_ms);
-
-        // //TODO: Fix error with padding (manual size 7)
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_ORIENTATION, &poseOrient, sizeof(poseOrient), canTX10Hz_period_ms);
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_VELOCITY, &poseVel, sizeof(poseVel), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK, &torqueFeedback, sizeof(torqueFeedback), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_SETPOINT, &speedSetpoint, sizeof(speedSetpoint), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX10Hz_period_ms);
 
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_FRONT_SLIP_RATIOS, &frontSlipRatios, sizeof(frontSlipRatios), canTX10Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_REAR_SLIP_RATIOS, &rearSlipRatios, sizeof(rearSlipRatios), canTX10Hz_period_ms);
@@ -531,11 +480,6 @@ static void canTX200Hz(void *pvParameters) {
     cmr_canCDCWheelVelocity_t speedSetpoint;
     cmr_canCDCWheelTorque_t torqueSetpoint;
 
-    // OBSOLETE, REMOVE FROM CAN
-    cmr_canCDCPosePosition_t posePos;
-    cmr_canCDCPoseOrientation_t poseOrient;
-    cmr_canCDCPoseVelocity_t poseVel;
-
     cmr_canCOGVelocity_t cog_velocity;
     cmr_canFrontWheelVelocity_t front_velocity;
     cmr_canRearWheelVelocity_t rear_velocity;
@@ -598,11 +542,6 @@ static void canTX200Hz(void *pvParameters) {
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_RL_SETPOINTS, amkSetpointsRL, sizeof(*amkSetpointsRL), canTX200Hz_period_ms);
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_RR_SETPOINTS, amkSetpointsRR, sizeof(*amkSetpointsRR), canTX200Hz_period_ms);
 
-//        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_POSITION, &posePos, sizeof(posePos), canTX200Hz_period_ms);
-        //TODO: Fix error with padding (manual size 7)
-        //canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_ORIENTATION, &poseOrient, sizeof(poseOrient), canTX200Hz_period_ms);
-        //canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_VELOCITY, &poseVel, sizeof(poseVel), canTX200Hz_period_ms);
-
         // YRC
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_PID_IO, &yrcDebug, sizeof(yrcDebug), canTX200Hz_period_ms);
 
@@ -656,8 +595,8 @@ static void canTX5Hz(void *pvParameters) {
 
             // 7 messages in RX stuct are 6 bytes long except position message and EMD message
             size_t message_size = (
-                (i == CANRX_DAQ_SBG_POS || (i >= CANRX_DAQ_LOAD_FL && i <= CANRX_DAQ_LOAD_RR) || (i >= CANRX_DAQ_LINPOTS_LEFTS && i <= CANRX_DAQ_LINPOTS_RIGHTS)) ?
-                8 : ((i == CANRX_DAQ_SBG_SLIPANGLE) ? 7 : 6)
+                ((i >= CANRX_DAQ_LOAD_FL && i <= CANRX_DAQ_LOAD_RR) || (i >= CANRX_DAQ_LINPOTS_LEFTS && i <= CANRX_DAQ_LINPOTS_RIGHTS)) ?
+                8 : 6
             );
 
             if (canID == CMR_CANID_EMD_MEASUREMENT) {
