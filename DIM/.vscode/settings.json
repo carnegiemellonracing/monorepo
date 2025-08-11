@@ -2,6 +2,7 @@
     "files.associations": {
         "*.rawh": "c",
         "tftcontent.h": "c",
-        "stdbool.h": "c"
+        "stdbool.h": "c",
+        "timing.h": "c"
     }
 }

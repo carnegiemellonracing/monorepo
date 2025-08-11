@@ -1,0 +1,12 @@
+Timing Task                    	6612888		<1%
+IDLE                           	1488338047		86%
+statusLED                      	67276		<1%
+errorLEDs                      	77687		<1%
+tftUpdate                      	14984614		<1%
+ADC sample                     	5257126		<1%
+sensor update                  	4766831		<1%
+CAN TX 100Hz                   	16282176		<1%
+gpioReadButtons                	189600175		10%
+CAN TX 1Hz                     	166777		<1%
+CAN TX 10Hz                    	2031412		<1%
+stateMachine                   	19586		<1%

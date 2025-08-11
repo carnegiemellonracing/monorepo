@@ -2658,7 +2658,7 @@
 #endif
 
 #ifndef configGENERATE_RUN_TIME_STATS
-    #define configGENERATE_RUN_TIME_STATS    0
+    #define configGENERATE_RUN_TIME_STATS    1
 #endif
 
 #if ( configGENERATE_RUN_TIME_STATS == 1 )
@@ -2740,7 +2740,7 @@
 #endif
 
 #ifndef configUSE_STATS_FORMATTING_FUNCTIONS
-    #define configUSE_STATS_FORMATTING_FUNCTIONS    0
+    #define configUSE_STATS_FORMATTING_FUNCTIONS    1
 #endif
 
 #ifndef portASSERT_IF_INTERRUPT_PRIORITY_INVALID
@@ -2748,7 +2748,7 @@
 #endif
 
 #ifndef configUSE_TRACE_FACILITY
-    #define configUSE_TRACE_FACILITY    0
+    #define configUSE_TRACE_FACILITY    1
 #endif
 
 #ifndef mtCOVERAGE_TEST_MARKER

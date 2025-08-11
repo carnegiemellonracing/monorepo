@@ -15,7 +15,29 @@
 //#include "can.h"        // Board-specific CAN interface
 #include "gpio.h"       // Board-specific GPIO interface
 #include "state.h"
+#include "timing.h"
 #include "tft.h"
+
+/** @brief Starts up timing 
+ * 
+ *  @note this function is used in Free RTOS
+*/
+void configureTimerForRunTimeStats(void)
+{
+    /* Enable DWT and cycle counter */
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+    DWT->CYCCNT = 0;
+    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+}
+
+/** @brief Gives current time 
+ *  
+ * @note this function is used in Free RTOS
+*/
+uint32_t getRunTimeCounterValue(void)
+{
+    return DWT->CYCCNT;  // returns number of CPU cycles since startup
+}
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -118,6 +140,7 @@ int main(void) {
     tftInit();
     stateMachineInit();
     sensorsInit();
+    timingInit();
 
 
     cmr_taskInit(

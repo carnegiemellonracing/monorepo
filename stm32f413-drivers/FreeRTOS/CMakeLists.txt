@@ -241,6 +241,7 @@ add_subdirectory(portable)
 target_sources(freertos_kernel PRIVATE
     croutine.c
     event_groups.c
+    portable/MemMang/heap_4.c
     list.c
     queue.c
     # stream_buffer.c
