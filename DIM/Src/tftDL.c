@@ -16,7 +16,6 @@
 #include "state.h"       // State interface
 #include "tftContent.h"  // Content interface
 #include "tftDL.h"  // Interface to implement
-#include "tft1.h"
 #include "tft.h"
 
 // used to calculate increment frequency:
@@ -379,19 +378,19 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
  * Sets at top and 2 notes on right side
  */
 void tftDL_showRAMMsg(uint32_t *file_addr, uint32_t prev_lap_loc, uint32_t targ_lap_loc, uint32_t msg_loc) {
-    struct {
-        char buf[TIMEDISPLAYLEN];
-    } *prev_time_str = (void *)(file_addr + prev_lap_loc);
-    // Removed get_test_message_id()
-    // sprintf(prev_time_str->buf, "%07x", get_test_message_id());
+    // struct {
+    //     char buf[TIMEDISPLAYLEN];
+    // } *prev_time_str = (void *)(file_addr + prev_lap_loc);
+    // // Removed get_test_message_id()
+    // // sprintf(prev_time_str->buf, "%07x", get_test_message_id());
 
-    sprintf(prev_time_str->buf, (void *)&(RAMBUF[PREV_TIME_INDEX]), TIMEDISPLAYLEN);
-    //memcpy((void *)prev_time_str->buf, (void *)&(RAMBUF[PREV_TIME_INDEX]), TIMEDISPLAYLEN);
-    struct {
-        char buf[TIMEDISPLAYLEN];
-    } *target_time_str = (void *)(file_addr + targ_lap_loc);
+    // sprintf(prev_time_str->buf, (void *)&(RAMBUF[PREV_TIME_INDEX]), TIMEDISPLAYLEN);
+    // //memcpy((void *)prev_time_str->buf, (void *)&(RAMBUF[PREV_TIME_INDEX]), TIMEDISPLAYLEN);
+    // struct {
+    //     char buf[TIMEDISPLAYLEN];
+    // } *target_time_str = (void *)(file_addr + targ_lap_loc);
 
-    memcpy((void *)target_time_str->buf, (void *)&(RAMBUF[TARGET_TIME_INDEX]), TIMEDISPLAYLEN);
+    // memcpy((void *)target_time_str->buf, (void *)&(RAMBUF[TARGET_TIME_INDEX]), TIMEDISPLAYLEN);
     struct {
         char buf[MESSAGEDISPLAYLEN];
     } *ramMsg_str = (void *)(file_addr + msg_loc);
@@ -548,8 +547,15 @@ void tftDL_RTDUpdate(
     }
     *gps_color = gps_color_cmd;
 
+
+    cmr_canHVCPackMinMaxCellVolages_t* packVoltagesStruct = getPackVoltages();
+
+    /* Pack Voltages */
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_RAM_MIN_CELL, 5, "%4ld", packVoltagesStruct->minCellVoltage_mV);
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_RAM_MAX_CELL, 5, "%4ld", packVoltagesStruct->maxCellVoltage_mV);
+
     tftDL_showStates(tftDL_RTDData, ESE_STATE_STR, ESE_VSM_STATE_COLOR, ESE_GEAR_STR, ESE_DRS_MODE_STR, false);
-    tftDL_showRAMMsg(tftDL_RTDData, ESE_RAM_LAST_LAP_STR, ESE_RAM_TARGET_LAP_STR, ESE_RAM_MSG_STR);
+    tftDL_showRAMMsg(tftDL_RTDData, ESE_RAM_MIN_CELL, ESE_RAM_MAX_CELL, ESE_RAM_MSG_STR);
 
 
     uint32_t *fl_color = (void *)(tftDL_RTDData + ESE_RTD_FL_COLOR);
@@ -687,7 +693,7 @@ void tftDL_errorUpdate(
 
     snprintf(
         glvVoltage_V_str->buf, sizeof(glvVoltage_V_str->buf),
-        "%2uV", err->glvVoltage_V);
+        "%2lu", err->glvVoltage_V);
 
     /* Timeouts */
     tftDL_showErrorState(ESE_PTC_COLOR, err->ptcTimeout);

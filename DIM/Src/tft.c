@@ -16,7 +16,6 @@
 #include "gpio.h"        // Board-specific GPIO interface
 #include "state.h"       // State interface
 #include "tftContent.h"  // Content interface
-#include "tft1.h"
 #include "tftDL.h"       // Display list interface
 
 /** @brief Expected chip ID. */
@@ -46,15 +45,19 @@
 /** @brief The display. */
 static tft_t tft;
 
-static void drawErrorScreen(void);
-static void drawRTDScreen(void);
-static void drawConfigScreen(void);
-static void drawSafetyScreen(void);
-
 /*Prev HVC errors to latch on display*/
 static bool prevOverVolt = false;
 static bool prevUnderVolt = false;
 static bool prevOverTemp = false;
+
+//forward declarations
+static void drawConfigScreen(void);
+static void drawSafetyScreen(void);
+static void drawErrorScreen(void);
+static void drawRTDScreen(void);
+static void drawRacingScreen(void);
+
+
 
 /**
  * @brief Sends a command to the display.

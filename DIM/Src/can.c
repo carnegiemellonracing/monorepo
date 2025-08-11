@@ -81,7 +81,8 @@ cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_DRS_STATE] =           { .canID = CMR_CANID_DRS_STATE, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
     [CANRX_CDC_ODOMETER] =        { .canID = CMR_CANID_CDC_ODOMETER, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
     [CANRX_CDC_CONTROLS_STATUS] = { .canID = CMR_CANID_CDC_CONTROLS_STATUS, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
-    [CANRX_CDC_HEARTBEAT] =       { .canID = CMR_CANID_HEARTBEAT_CDC, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 }
+    [CANRX_CDC_HEARTBEAT] =       { .canID = CMR_CANID_HEARTBEAT_CDC, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
+    [CANRX_PACK_CELL_VOLTAGES] =  { .canID = CMR_CANID_HVC_MINMAX_CELL_VOLTAGE, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 }
 };
 
 /** @brief Primary CAN interface. */
@@ -502,7 +503,7 @@ void canInit(void) {
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV2, CMR_CANID_CDC_CONFIG1_DRV2, CMR_CANID_CDC_CONFIG2_DRV2, CMR_CANID_CDC_CONFIG3_DRV2 } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV3, CMR_CANID_CDC_CONFIG1_DRV3, CMR_CANID_CDC_CONFIG2_DRV3, CMR_CANID_CDC_CONFIG3_DRV3 } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT } },
-        { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_VSM_SENSORS, CMR_CANID_VSM_SENSORS, CMR_CANID_HVC_LOW_VOLTAGE, CMR_CANID_DRS_STATE } }
+        { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_VSM_SENSORS, CMR_CANID_HVC_MINMAX_CELL_VOLTAGE, CMR_CANID_HVC_LOW_VOLTAGE, CMR_CANID_DRS_STATE } }
     };
 
     cmr_canFilter(
@@ -746,4 +747,9 @@ void sendAcknowledgement(void) {
         &ack,
         sizeof(cmr_canDIMAck_t),
         canTX10Hz_period_ms);
+}
+
+cmr_canHVCPackMinMaxCellVolages_t* getPackVoltages(void){
+    cmr_canHVCPackMinMaxCellVolages_t* packVoltagesStruct = getPayload(CANRX_PACK_CELL_VOLTAGES);
+    return packVoltagesStruct;
 }
