@@ -497,6 +497,7 @@ void setVelocityFloat (
     motorLocation_t motor,
     float velocity_rpm
 ) {
+    // this is rounding down - but make it explicit cast
     velocity_rpm = fminf(velocity_rpm, (float)INT16_MAX);
     velocity_rpm = fmaxf(velocity_rpm, (float)INT16_MIN);
     setVelocityInt16(motor, (int16_t)velocity_rpm);

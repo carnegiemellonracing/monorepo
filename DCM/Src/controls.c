@@ -501,7 +501,7 @@ void setFastTorque(uint8_t throttlePos_u8) {
     setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
-    setVelocityInt16All(maxFastSpeed_rpm);
+    setVelocityInt16All(maxFastSpeed_rpm); // CHANGE THIS TO FLOAT?
 }
 
 void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew) {
