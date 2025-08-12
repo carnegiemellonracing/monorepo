@@ -4,8 +4,8 @@ ID=189
 CycleTime=5
 TimeOut=25
 Var=control_bv unsigned 0,16
-Var=velocity_rpm signed 16,16 /u:rpm /p:2
-Var=torqueLimPos_dpcnt signed 32,16 /u:Nm /f:0.0098 /p:4
+Var=velocity_rpm signed 16,16
+Var=torqueLimPos_dpcnt signed 32,16 /u:rpm /f:0.0098 /p:2
 Var=torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
 
 
@@ -15,8 +15,8 @@ ID=185
 CycleTime=5
 TimeOut=25
 Var=control_bv unsigned 0,16
-Var=velocity_rpm signed 16,16 /u:rpm /p:2
-Var=torqueLimPos_dpcnt signed 32,16 /u:Nm /f:0.0098 /p:4
+Var=velocity_rpm signed 16,16
+Var=torqueLimPos_dpcnt signed 32,16 /u:rpm /f:0.0098 /p:2
 Var=torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
 
 
@@ -26,8 +26,8 @@ ID=188
 CycleTime=5
 TimeOut=25
 Var=control_bv unsigned 0,16
-Var=velocity_rpm signed 16,16 /u:rpm /p:2
-Var=torqueLimPos_dpcnt signed 32,16 /u:Nm /f:0.0098 /p:4
+Var=velocity_rpm signed 16,16
+Var=torqueLimPos_dpcnt signed 32,16 /u:rpm /f:0.0098 /p:2
 Var=torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
 
 
@@ -37,8 +37,8 @@ ID=184
 CycleTime=5
 TimeOut=25
 Var=control_bv unsigned 0,16
-Var=velocity_rpm signed 16,16 /u:rpm /p:2
-Var=torqueLimPos_dpcnt signed 32,16 /u:Nm /f:0.0098 /p:4
+Var=velocity_rpm signed 16,16
+Var=torqueLimPos_dpcnt signed 32,16 /u:rpm /f:0.0098 /p:2
 Var=torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
 
 
@@ -614,21 +614,11 @@ Var=over_temp_count unsigned 56,8
 
 
 [TEST_ID]
-DLC=4
+DLC=1
 ID=777
 CycleTime=100
 TimeOut=500
-Var=test_id unsigned 0,32
-
-
-[VSM_LATCHED_STATUS]
-DLC=3
-ID=510
-CycleTime=10000
-TimeOut=50000
-Var=moduleTimeoutMatrix unsigned 0,8
-Var=badStateMatrix unsigned 8,8
-Var=latchMatrix unsigned 16,8
+Var=test_id unsigned 0,8
 
 
 [VSM_POWER_DIAGNOSTICS]

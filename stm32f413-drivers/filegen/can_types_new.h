@@ -696,10 +696,10 @@ typedef enum {
 
 /** @brief AMK motor controller command message. */
 typedef struct {
-    uint16_t control_bv;        /**< @brief Control bit vector. Flag: cmr_canAMKSetpointsControl_t. See cmr_canAMKControl_t. */
-    int16_t velocity_rpm;       //u: rpm, p:2 /**< @brief Velocity setpoint (RPM). */
-    int16_t torqueLimPos_dpcnt; //u: Nm, f:0.0098, p:4 /**< @brief Positive torque limit in 0.1% of 9.8 Nm (nominal torque). */
-    int16_t torqueLimNeg_dpcnt; //u: Nm, f:0.0098, p:4 /**< @brief Negative torque limit in 0.1% of 9.8 Nm (nominal torque). */
+    uint16_t control_bv;        /**< @brief Control bit vector. Flag: cmr_canAMKSetpointsControl_t. See cmr_canAMKControl_t */
+    int16_t velocity_rpm;       //u: rpm, p:2 /**< @brief Velocity setpoint (RPM) */
+    int16_t torqueLimPos_dpcnt; //u: Nm, f:0.0098, p:4 /**< @brief Positive torque limit in 0.1% of 9.8 Nm (nominal torque) */
+    int16_t torqueLimNeg_dpcnt; //u: Nm, f:0.0098, p:4 /**< @brief Negative torque limit in 0.1% of 9.8 Nm (nominal torque) */
 } cmr_canAMKSetpoints_t;
 
 // ------------------------------------------------------------------------------------------------

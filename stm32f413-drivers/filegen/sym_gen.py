@@ -32,13 +32,13 @@ def numbercanids():
                 atIDs = True 
             lines.append(line) 
 
-    with open("stm32f413-drivers/filegen/canids_post.h", "w") as f:
+    with open("stm32f413-drivers/filegen/can_ids.h", "w") as f:
         f.write("".join(lines)) 
 
 def id2hex(id):
-    #uses canids_post.h to map id(from canid_type_map) to the hex number
+    #uses can_ids.h to map id(from canid_type_map) to the hex number
     numbercanids() 
-    with open("stm32f413-drivers/filegen/canids_post.h", "r") as file:
+    with open("stm32f413-drivers/filegen/can_ids.h", "r") as file:
         for line in file:
             if id in line:
                 hex = re.search(r"0x[0-9A-Fa-f]+", line) 
