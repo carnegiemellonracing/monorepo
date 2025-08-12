@@ -237,16 +237,16 @@ typedef enum {
 
 /** @brief Vehicle Safety Module state and error status. */
 typedef struct {
-    uint8_t internalState;  //e:VSMState /**< @brief VSM internal state. See cmr_canVSMState_t. */
+    uint8_t internalState;  //e:VSMState /**< @brief VSM internal state. Flag: cmr_canVSMState_t */
     /**
      * @brief Matrix of modules for which at least one message exceeded its error timeout.
      */
-    uint8_t moduleTimeoutMatrix; //see cmr_canVSMErrorSource_t 
+    uint8_t moduleTimeoutMatrix; //Flag: cmr_canVSMErrorSource_t 
     /**
      * @brief Matrix of modules that are in the wrong state.
      */
-    uint8_t badStateMatrix; //see cmr_canVSMErrorSource_t 
-    uint8_t latchMatrix; //see cmr_canVSMLatch_t  
+    uint8_t badStateMatrix; //Flag: cmr_canVSMErrorSource_t 
+    uint8_t latchMatrix; //Flag: cmr_canVSMLatch_t  
 } cmr_canVSMStatus_t; 
 
 /** @brief Vehicle Safety Module sensor data. */
@@ -263,13 +263,13 @@ typedef struct {
     /**
      * @brief Matrix of modules for which at least one message exceeded its error timeout.
      */
-    uint8_t moduleTimeoutMatrix; //see cmr_canVSMErrorSource_t 
+    uint8_t moduleTimeoutMatrix; //Flag: cmr_canVSMErrorSource_t 
     /**
      * @brief Matrix of modules that are in the wrong state.
      */
-    uint8_t badStateMatrix; //see cmr_canVSMErrorSource_t. 
+    uint8_t badStateMatrix; //Flag: cmr_canVSMErrorSource_t. 
     /** @brief Matrix of active error latches. */
-    uint8_t latchMatrix; //see cmr_canVSMLatch_t 
+    uint8_t latchMatrix; //Flag: cmr_canVSMLatch_t 
 } cmr_canVSMLatchedStatus_t;
 
 /** @brief Vehicle Safety Module power diagnostics. */
@@ -358,16 +358,16 @@ typedef enum {
 
 /** @brief High Voltage Controller heartbeat (does not follow universal structure). */
 typedef struct {
-    uint16_t errorStatus;   /**< @brief Current HVC errors. See cmr_canHVCError_t. */
-    uint8_t hvcMode;        /**< @brief Current HVC operating mode. See cmr_canHVCMode_t. */
-    uint8_t hvcState;       /**< @brief Current internal HVC state. See cmr_canHVCState_t. */
-    uint8_t relayStatus;    /**< @brief Status of AIRs. See cmr_canHVCRelayStatus_t. */
+    uint16_t errorStatus;   /**< @brief Current HVC errors. Flag: cmr_canHVCError_t. */
+    uint8_t hvcMode;        /**< @brief Current HVC operating mode. Flag: cmr_canHVCMode_t. */
+    uint8_t hvcState;       /**< @brief Current internal HVC state. Flag: cmr_canHVCState_t. */
+    uint8_t relayStatus;    /**< @brief Status of AIRs. Flag: cmr_canHVCRelayStatus_t. */
     uint8_t uptime_s;       //u: s /**< @brief HVC uptime in seconds. */
 } cmr_canHVCHeartbeat_t;
 
 /** @brief High Voltage Controller command. */
 typedef struct {
-    uint8_t modeRequest;    //e:HVCMode /**< @brief HVC operating mode request. See cmr_canHVCMode_t. */
+    uint8_t modeRequest;    //e:HVCMode /**< @brief HVC operating mode request. Flag: cmr_canHVCMode_t. */
 } cmr_canHVCCommand_t;
 
 /** @brief High Voltage Controller Balance Command. */
@@ -415,14 +415,14 @@ typedef enum{
 
 /** @brief High Voltage Controller BMB errors. */
 typedef struct {
-    uint8_t BMB1_2_Errs;  /**see cmr_canBMBErr_t< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
-    uint8_t BMB3_4_Errs;  /**see cmr_canBMBErr_t< @brief Errors for BMB3&4 (BMB3 = higher 4 bits). */
-    uint8_t BMB5_6_Errs;  /**see cmr_canBMBErr_t<  @brief Errors for BMB5&6 (BMB5 = higher 4 bits). */
-    uint8_t BMB7_8_Errs;  /**see cmr_canBMBErr_t< @brief Errors for BMB7&8 (BMB7 = higher 4 bits). */
-    uint8_t BMB9_10_Errs;  /**see cmr_canBMBErr_t< @brief Errors for BMB9&10 (BMB9 = higher 4 bits). */
-    uint8_t BMB11_12_Errs;  /**see cmr_canBMBErr_t< @brief Errors for BMB11&12 (BMB11 = higher 4 bits). */
-    uint8_t BMB13_14_Errs;  /**see cmr_canBMBErr_t< @brief Errors for BMB13&14 (BMB13 = higher 4 bits). */
-    uint8_t BMB15_16_Errs;  /**see cmr_canBMBErr_t< @brief Errors for BMB15&16 (BMB15 = higher 4 bits). */
+    uint8_t BMB1_2_Errs;  /**Flag: cmr_canBMBErr_t< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
+    uint8_t BMB3_4_Errs;  /**Flag: cmr_canBMBErr_t< @brief Errors for BMB3&4 (BMB3 = higher 4 bits). */
+    uint8_t BMB5_6_Errs;  /**Flag: cmr_canBMBErr_t<  @brief Errors for BMB5&6 (BMB5 = higher 4 bits). */
+    uint8_t BMB7_8_Errs;  /**Flag: cmr_canBMBErr_t< @brief Errors for BMB7&8 (BMB7 = higher 4 bits). */
+    uint8_t BMB9_10_Errs;  /**Flag: cmr_canBMBErr_t< @brief Errors for BMB9&10 (BMB9 = higher 4 bits). */
+    uint8_t BMB11_12_Errs;  /**Flag: cmr_canBMBErr_t< @brief Errors for BMB11&12 (BMB11 = higher 4 bits). */
+    uint8_t BMB13_14_Errs;  /**Flag: cmr_canBMBErr_t< @brief Errors for BMB13&14 (BMB13 = higher 4 bits). */
+    uint8_t BMB15_16_Errs;  /**Flag: cmr_canBMBErr_t< @brief Errors for BMB15&16 (BMB15 = higher 4 bits). */
 } cmr_canHVCBMBErrors_t; 
 
 //HV_I Sense Board CAN Types
@@ -569,12 +569,12 @@ typedef enum {
 } cmr_canLRUDButtons_t; 
 
 typedef struct {
-    uint8_t buttons;                 /**see cmr_canDIMButtons_t < @brief Button states packed into an uint8_t. {drs,0,1,2,up,down,left,right}*/
+    uint8_t buttons;                 /**Flag: cmr_canDIMButtons_t < @brief Button states packed into an uint8_t. {drs,0,1,2,up,down,left,right}*/
     uint8_t rotaryPos;
     uint8_t switchValues;
     uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
     uint8_t paddle;            /**< @brief Between 0 and 255 for paddle pos*/
-    uint8_t LRUDButtons;     /**see cmr_canLRUDButtons_t < @brief LRUD Button States, packed into an uint8_t*/
+    uint8_t LRUDButtons;     /**Flag: cmr_canLRUDButtons_t < @brief LRUD Button States, packed into an uint8_t*/
 } cmr_canDIMActions_t;
 
 /** @brief DIM sends message to acknowledge radio message
@@ -671,7 +671,7 @@ typedef enum {
 
 /** @brief AMK motor controller status and velocity. */
 typedef struct {
-    uint16_t status_bv;         /**< @brief Status bit vector. See cmr_canAMKStatus_t. */
+    uint16_t status_bv;         /**< @brief Status bit vector. Flag: cmr_canAMKStatus_t. */
     int16_t velocity_rpm;       //u: rpm, p:4 /**< @brief Motor velocity (RPM). */
     int16_t torqueCurrent_raw;  //f:0.001701171875 /**< @brief Raw value for torque producing current. */
     int16_t magCurrent_raw;     //f:0.001701171875 /**< @brief Raw value for magnetizing current. */

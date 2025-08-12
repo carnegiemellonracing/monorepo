@@ -7,7 +7,8 @@ from collections import defaultdict
 
 ROOT_DIR = "."
 CANID_PREFIXES = ["CMR_CANID_", "CAN_ID_"]
-OUTPUT_FILE = "canid_type_map.json"
+CANRX_PREFIXES = ["CANRX_"]
+OUTPUT_FILE = "stm32f413-drivers/filegen/canid_type_map.json"
 
 # Handle both 4 and 5 argument canTX calls
 CANTX_PATTERN_5_ARGS = re.compile(
@@ -50,10 +51,39 @@ CONST_DEFINITION_PATTERN = re.compile(
     re.MULTILINE
 )
 
+# Pattern to find CANRX array definitions and their entries
+CANRX_ARRAY_PATTERN = re.compile(
+    r'cmr_canRXMeta_t\s+([a-zA-Z0-9_]+)\s*\[[^\]]+\]\s*=\s*\{([^}]+)\}',
+    re.MULTILINE | re.DOTALL
+)
+
+# Pattern to find individual CANRX entries within the array
+CANRX_ENTRY_PATTERN = re.compile(
+    r'\[\s*([A-Z_]+)\s*\]\s*=\s*\{[^}]*\.canID\s*=\s*([A-Z_]+)[^}]*\.timeoutError_ms\s*=\s*([0-9]+)[^}]*\}',
+    re.MULTILINE | re.DOTALL
+)
+
+# Updated patterns for *getPayload* calls - more specific to match "getPayload" or "___GetPayload"
+CANRX_GETPAYLOAD_PATTERN = re.compile(
+    r'(?:volatile\s+)?(cmr_[a-zA-Z0-9_]*_t)\s*\*\s*[a-zA-Z0-9_]+\s*=\s*(?:\([^)]*\))?\s*(?:[a-zA-Z0-9_]*GetPayload|getPayload)\s*\(\s*([A-Z_]+)\s*\)',
+    re.MULTILINE | re.DOTALL
+)
+
+# Alternative pattern for explicit casting - updated to match specific naming
+CANRX_GETPAYLOAD_CAST_PATTERN = re.compile(
+    r'(?:volatile\s+)?[a-zA-Z0-9_*\s]+\s*=\s*\(\s*(cmr_[a-zA-Z0-9_]*_t)\s*\*\s*\)\s*(?:[a-zA-Z0-9_]*GetPayload|getPayload)\s*\(\s*([A-Z_]+)\s*\)',
+    re.MULTILINE | re.DOTALL
+)
+
 def is_canid(arg):
     """Check if an argument matches any of the CAN ID prefixes"""
     arg = arg.strip()
     return any(arg.startswith(prefix) for prefix in CANID_PREFIXES)
+
+def is_canrx(arg):
+    """Check if an argument matches any of the CANRX prefixes"""
+    arg = arg.strip()
+    return any(arg.startswith(prefix) for prefix in CANRX_PREFIXES)
 
 def extract_variable_types(content):
     """Extract variable name to type mappings from file content"""
@@ -102,6 +132,59 @@ def extract_constant_definitions(content):
                 constants[var_name] = var_value
     
     return constants
+
+def extract_canrx_mappings(content):
+    """Extract CANRX to CAN ID mappings and timeout info from array definitions"""
+    canrx_to_canid = {}
+    canrx_to_timeout = {}
+    
+    # Skip if no CANRX arrays in content
+    if 'cmr_canRXMeta_t' not in content:
+        return canrx_to_canid, canrx_to_timeout
+    
+    # Find CANRX array definitions
+    array_matches = CANRX_ARRAY_PATTERN.findall(content)
+    for array_name, array_content in array_matches:
+        # Find individual entries within the array
+        entry_matches = CANRX_ENTRY_PATTERN.findall(array_content)
+        for canrx_key, canid, timeout_error_ms in entry_matches:
+            canrx_key = canrx_key.strip()
+            canid = canid.strip()
+            timeout_error_ms = timeout_error_ms.strip()
+            
+            if is_canrx(canrx_key) and is_canid(canid):
+                canrx_to_canid[canrx_key] = canid
+                try:
+                    timeout_val = int(timeout_error_ms)
+                    canrx_to_timeout[canrx_key] = timeout_val
+                except ValueError:
+                    canrx_to_timeout[canrx_key] = timeout_error_ms
+    
+    return canrx_to_canid, canrx_to_timeout
+
+def extract_canrx_type_mappings(content):
+    """Extract CANRX to type mappings from *getPayload* calls"""
+    canrx_to_type = {}
+    
+    # Skip if no getPayload calls in content
+    if 'getPayload' not in content and 'GetPayload' not in content:
+        return canrx_to_type
+    
+    # Pattern 1: Direct assignment with type declaration
+    matches = CANRX_GETPAYLOAD_PATTERN.findall(content)
+    for type_name, canrx_key in matches:
+        canrx_key = canrx_key.strip()
+        if is_canrx(canrx_key):
+            canrx_to_type[canrx_key] = type_name
+    
+    # Pattern 2: Explicit casting
+    cast_matches = CANRX_GETPAYLOAD_CAST_PATTERN.findall(content)
+    for type_name, canrx_key in cast_matches:
+        canrx_key = canrx_key.strip()
+        if is_canrx(canrx_key):
+            canrx_to_type[canrx_key] = type_name
+    
+    return canrx_to_type
 
 def parse_sizeof_argument(sizeof_arg):
     """Parse sizeof argument to extract the key for type lookup"""
@@ -188,7 +271,23 @@ def resolve_sizeof_type(sizeof_arg, local_var_types, global_var_types, local_str
     
     return sizeof_arg, False
 
-def extract_canids_from_file(filepath, global_var_types, global_struct_members, global_constants):
+def calculate_cycle_time_and_timeout(cycle_time_value):
+    """Calculate cycle time and timeout (timeout = 5 * cycle_time)"""
+    if isinstance(cycle_time_value, int):
+        time_out = 5 * cycle_time_value
+    else:
+        time_out = f"5*{cycle_time_value}"
+    
+    return cycle_time_value, time_out
+
+
+def clean_canid(raw_canid):
+    """Remove bit-shifts, additions, and offsets from CAN ID expressions."""
+    # Keep only the first token that looks like a CAN ID
+    return re.split(r'\s|\+|\-', raw_canid.strip())[0]
+
+
+def extract_canids_from_file(filepath, global_var_types, global_struct_members, global_constants, global_canrx_mappings, global_canrx_timeouts, global_canrx_types):
     """Extract CAN IDs, types, cycleTime, and timeout from a single file"""
     try:
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
@@ -197,6 +296,8 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
         local_var_types = extract_variable_types(content)
         local_struct_members = extract_struct_member_types(content)
         local_constants = extract_constant_definitions(content)
+        local_canrx_mappings, local_canrx_timeouts = extract_canrx_mappings(content)
+        local_canrx_types = extract_canrx_type_mappings(content)
         
         result = {}
         
@@ -217,11 +318,11 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
             # Determine CAN ID
             canid = None
             if is_canid(arg1):
-                canid = arg1
+                canid = clean_canid(arg1)
             elif is_canid(arg2):
-                canid = arg2
+                canid = clean_canid(arg2)
             elif is_canid(arg3):
-                canid = arg3
+                canid = clean_canid(arg3)
 
             if canid:
                 resolved_type, _ = resolve_sizeof_type(
@@ -229,11 +330,7 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
                 )
                 
                 cycle_time = resolve_constant_value(period, local_constants, global_constants)
-                
-                if isinstance(cycle_time, int):
-                    time_out = 5 * cycle_time
-                else:
-                    time_out = f"5*{cycle_time}"
+                cycle_time, time_out = calculate_cycle_time_and_timeout(cycle_time)
                 
                 result[canid] = {
                     "type": resolved_type,
@@ -256,9 +353,9 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
 
             canid = None
             if is_canid(arg1):
-                canid = arg1
+                canid = clean_canid(arg1)
             elif is_canid(arg2):
-                canid = arg2
+                canid = clean_canid(arg2)
             
             if canid and canid not in result:
                 resolved_type, _ = resolve_sizeof_type(
@@ -266,11 +363,7 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
                 )
                 
                 cycle_time = resolve_constant_value(period, local_constants, global_constants)
-                
-                if isinstance(cycle_time, int):
-                    time_out = 5 * cycle_time
-                else:
-                    time_out = f"5*{cycle_time}"
+                cycle_time, time_out = calculate_cycle_time_and_timeout(cycle_time)
                 
                 result[canid] = {
                     "type": resolved_type,
@@ -278,11 +371,33 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
                     "timeOut": time_out
                 }
 
+        # Handle CANRX mappings
+        all_canrx_mappings = {**global_canrx_mappings, **local_canrx_mappings}
+        all_canrx_timeouts = {**global_canrx_timeouts, **local_canrx_timeouts}
+        all_canrx_types = {**global_canrx_types, **local_canrx_types}
+        
+        # For each CANRX that has a type mapping, find its CAN ID and map type to ID
+        for canrx_key, canrx_type in all_canrx_types.items():
+            if canrx_key in all_canrx_mappings:
+                canid = all_canrx_mappings[canrx_key]
+                # Only add if not already found via canTX
+                if canid not in result:
+                    # Get timeout and calculate cycle time (timeout / 5)
+                    timeout_val = all_canrx_timeouts.get(canrx_key, "N/A")
+                    if isinstance(timeout_val, int):
+                        cycle_time = timeout_val / 5
+                    else:
+                        cycle_time = "N/A"
+                    
+                    result[canid] = {
+                        "type": canrx_type,
+                        "cycleTime": cycle_time,
+                        "timeOut": timeout_val
+                    }
+
         return result
     except Exception as e:
-        print(f"Error processing {filepath}: {e}")
         return {}
-
 
 def find_all_c_files(root_dir):
     """Find all C/C++ files in the directory tree"""
@@ -293,84 +408,92 @@ def find_all_c_files(root_dir):
                 c_files.append(os.path.join(root, filename))
     return c_files
 
-def main():
-    print("CAN ID to Type Mapper...")
-    print(f"Root directory: {os.path.abspath(ROOT_DIR)}")
-    print(f"CAN ID prefixes: {', '.join(CANID_PREFIXES)}")
-    
-    c_files = find_all_c_files(ROOT_DIR)
-    print(f"Found {len(c_files)} C/C++ files to process")
-    
-    if not c_files:
-        print(" No C/C++ files found!")
-        return
-    
-    print("\n Building global type mappings")
+def build_global_mappings(c_files):
+    """Build global type mappings from all files"""
     global_var_types = {}
     global_struct_members = {}
     global_constants = {}
+    global_canrx_mappings = {}
+    global_canrx_timeouts = {}
+    global_canrx_types = {}
     
     for filepath in c_files:
         try:
             with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
                 content = f.read()
             
+            # Skip files that don't contain relevant content
+            if not any(prefix in content for prefix in CANID_PREFIXES + CANRX_PREFIXES):
+                continue
+                
             var_types = extract_variable_types(content)
-            for var_name, type_name in var_types.items():
-                global_var_types[var_name] = type_name
+            global_var_types.update(var_types)
             
             struct_members = extract_struct_member_types(content)
-            for member_name, type_name in struct_members.items():
-                global_struct_members[member_name] = type_name
+            global_struct_members.update(struct_members)
             
             constants = extract_constant_definitions(content)
-            for const_name, const_value in constants.items():
-                global_constants[const_name] = const_value
+            global_constants.update(constants)
+            
+            canrx_mappings, canrx_timeouts = extract_canrx_mappings(content)
+            global_canrx_mappings.update(canrx_mappings)
+            global_canrx_timeouts.update(canrx_timeouts)
+            
+            canrx_types = extract_canrx_type_mappings(content)
+            global_canrx_types.update(canrx_types)
                 
         except Exception as e:
             continue
     
+    return global_var_types, global_struct_members, global_constants, global_canrx_mappings, global_canrx_timeouts, global_canrx_types
+
+def main():
+    c_files = find_all_c_files(ROOT_DIR)
     
-    # Extract CAN IDs using local-first then global mappings
-    print("\n Extracting CAN IDs")
+    if not c_files:
+        print("No C/C++ files found!")
+        return
+    
+    # Build global mappings
+    global_var_types, global_struct_members, global_constants, global_canrx_mappings, global_canrx_timeouts, global_canrx_types = build_global_mappings(c_files)
+    
+    # Extract CAN IDs from all files
     canid_to_info = {}
-    files_processed = 0
     files_with_matches = 0
     
-    # Process each file for canTX calls
     for filepath in c_files:
-        result = extract_canids_from_file(filepath, global_var_types, global_struct_members, global_constants)
+        result = extract_canids_from_file(filepath, global_var_types, global_struct_members, global_constants, global_canrx_mappings, global_canrx_timeouts, global_canrx_types)
         
         if result:
             files_with_matches += 1
         
         canid_to_info.update(result)
-        files_processed += 1
-        
     
     # Save results
     output_data = {
         "canid_to_info": canid_to_info,
         "summary": {
-            "files_processed": files_processed,
+            "files_processed": len(c_files),
             "files_with_matches": files_with_matches,
             "total_canids": len(canid_to_info),
-            "prefixes_used": CANID_PREFIXES
+            "prefixes_used": CANID_PREFIXES,
+            "canrx_prefixes_used": CANRX_PREFIXES
         }
     }
     
     with open(OUTPUT_FILE, 'w') as f:
         json.dump(output_data, f, indent=4, sort_keys=True)
     
-    print(f"\n Results:")
-    print(f"   Files processed: {files_processed}")
-    print(f"   Files with CAN IDs: {files_with_matches}")
-    print(f"   Total CAN IDs found: {len(canid_to_info)}")
+    # Final summary
+    print(f"Results:")
+    print(f"  Files processed: {len(c_files)}")
+    print(f"  Files with CAN IDs: {files_with_matches}")
+    print(f"  Total CAN IDs found: {len(canid_to_info)}")
     
     if not(canid_to_info):
-        print("\n No CAN IDs found.")
+        print("\nNo CAN IDs found.")
     
-    print(f"\n Saved to {OUTPUT_FILE}")
+    print(f"\nSaved to {OUTPUT_FILE}")
 
 if __name__ == "__main__":
     main()
