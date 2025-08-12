@@ -685,9 +685,18 @@ typedef struct {
     int16_t igbtTemp_dC;        //u: dC, f:0.1, p:2 /**< @brief IGBT temperature in dC (0.1 C). */
 } cmr_canAMKActualValues2_t;
 
+typedef enum {
+    CMR_CAN_AMK_CTRL_RESERVED1   = 0x00FF,        /**< Bits 0–7: Reserved1 */
+    CMR_CAN_AMK_CTRL_INV_ON      = (1U << 8),     /**< Bit 8: Inverter on command */
+    CMR_CAN_AMK_CTRL_DC_ON       = (1U << 9),     /**< Bit 9: HV DC link on */
+    CMR_CAN_AMK_CTRL_ENABLE      = (1U << 10),    /**< Bit 10: Motor enable */
+    CMR_CAN_AMK_CTRL_ERR_RESET   = (1U << 11),    /**< Bit 11: Error reset */
+    CMR_CAN_AMK_CTRL_RESERVED2   = (0xF << 12)    /**< Bits 12–15: Reserved2 */
+} cmr_canAMKSetpointsControl_t;
+
 /** @brief AMK motor controller command message. */
 typedef struct {
-    uint16_t control_bv;        /**< @brief Control bit vector. See cmr_canAMKControl_t. */
+    uint16_t control_bv;        /**< @brief Control bit vector. Flag: cmr_canAMKSetpointsControl_t. See cmr_canAMKControl_t. */
     int16_t velocity_rpm;       //u: rpm, p:2 /**< @brief Velocity setpoint (RPM). */
     int16_t torqueLimPos_dpcnt; //u: Nm, f:0.0098, p:4 /**< @brief Positive torque limit in 0.1% of 9.8 Nm (nominal torque). */
     int16_t torqueLimNeg_dpcnt; //u: Nm, f:0.0098, p:4 /**< @brief Negative torque limit in 0.1% of 9.8 Nm (nominal torque). */

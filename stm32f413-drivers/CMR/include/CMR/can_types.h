@@ -1131,7 +1131,7 @@ typedef struct {
 } cmr_canMemoratorHeartbeat_t;
 
 typedef struct {
-	uint32_t test_id;
+	uint8_t test_id;
 } cmr_canTestID_t;
 
 typedef struct {

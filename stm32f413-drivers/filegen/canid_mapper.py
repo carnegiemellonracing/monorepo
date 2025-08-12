@@ -367,12 +367,7 @@ def main():
     print(f"   Files with CAN IDs: {files_with_matches}")
     print(f"   Total CAN IDs found: {len(canid_to_info)}")
     
-    # Show all results with type, cycleTime, and timeOut
-    if canid_to_info:
-        print(f"\n CAN ID Mappings:")
-        for canid, info in sorted(canid_to_info.items()):
-            print(f"   {canid} -> {info['type']}, {info['cycleTime']}, {info['timeOut']}")
-    else:
+    if not(canid_to_info):
         print("\n No CAN IDs found.")
     
     print(f"\n Saved to {OUTPUT_FILE}")
