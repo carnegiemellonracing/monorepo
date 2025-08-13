@@ -1,2 +1,13 @@
 BasedOnStyle: Google
-IndentWidth: '4'
+IndentWidth: 4
+UseTab: Never
+ColumnLimit: 100
+AccessModifierOffset: -4
+AlignAfterOpenBracket: Align
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+BreakBeforeBraces: Attach
+IndentCaseLabels: true
+SpaceAfterCStyleCast: true
+SpaceBeforeParens: ControlStatements
