@@ -222,7 +222,8 @@ static void canTX100Hz(void *pvParameters) {
             CMR_CANID_DIM_ACTIONS,
             &actions, sizeof(actions),
             canTX100Hz_period_ms);
-
+        sendOCV_Button();
+        sendMission();
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
 }
@@ -708,6 +709,34 @@ static void sendFSMSensorsADC(void) {
     }
 
     canTX(CMR_CANID_FSM_SENSORS_ADC, &msg, sizeof(msg), canTX10Hz_period_ms);
+}
+
+/**
+ * @brief Send out OCV button read over CAN
+ * 
+ */
+static void sendOCV_Button() {
+    bool OCV_status = getOCV();
+	canTX(
+		CMR_CANID_AMI_OCV_BUTTON,
+		&OCV_status,
+		sizeof(bool),
+		canTX100Hz_period_ms
+	);
+}
+
+/**
+ * @brief Send out AMI mission over CAN
+ * 
+ */
+static void sendMission() {
+    mission_t mission = getMission(); //figure out later
+	canTX(
+		CMR_CANID_AMI_CURR_MISSION,
+		&mission,
+		sizeof(mission_t),
+		canTX100Hz_period_ms
+	);
 }
 
 /**
