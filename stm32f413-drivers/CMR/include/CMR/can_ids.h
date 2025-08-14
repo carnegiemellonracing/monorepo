@@ -220,16 +220,16 @@ typedef enum {
     CMR_CANID_HVC_BMB_14_STATUS_TEMP = 0x39D,
     CMR_CANID_HVC_BMB_15_STATUS_TEMP = 0x39F,
 
-    CMR_CANID_SBG_STATUS_1 = 0x700,             /**< @brief SBG_ECAN_LOG_STATUS_01 */
-    CMR_CANID_SBG_STATUS_2 = 0x701,             /**< @brief SBG_ECAN_LOG_STATUS_02 */
-    CMR_CANID_SBG_STATUS_3 = 0x702,             /**< @brief SBG_ECAN_LOG_STATUS_03 */
-    CMR_CANID_SBG_EKF_ORIENT = 0x722,           /**< @brief SBG_ECAN_LOG_EKF_EULER */
-    CMR_CANID_SBG_EKF_POS = 0x724,              /**< @brief SBG_ECAN_LOG_EKF_POS */
-    CMR_CANID_SBG_EKF_VEL = 0x727,              /**< @brief SBG_ECAN_LOG_EKF_VEL */
-    CMR_CANID_SBG_IMU_ACCEL = 0x711,            /**< @brief SBG_ECAN_LOG_IMU_ACCEL */
-    CMR_CANID_SBG_IMU_GYRO = 0x712,             /**< @brief SBG_ECAN_LOG_IMU_GYRO */
-    CMR_CANID_SBG_BODY_VEL = 0x729,             /**< @brief SBG_ECAN_MSG_EKF_VEL_BODY */
-    CMR_CANID_SBG_AUTOMOTIVE = 0x72A,           /**< @brief SBG_ECAN_MSG_AUTO_TRACK_SLIP_CURV */
+   //  CMR_CANID_SBG_STATUS_1 = 0x700,             /**< @brief SBG_ECAN_LOG_STATUS_01 */
+   //  CMR_CANID_SBG_STATUS_2 = 0x701,             /**< @brief SBG_ECAN_LOG_STATUS_02 */
+   //  CMR_CANID_SBG_STATUS_3 = 0x702,             /**< @brief SBG_ECAN_LOG_STATUS_03 */
+   //  CMR_CANID_SBG_EKF_ORIENT = 0x722,           /**< @brief SBG_ECAN_LOG_EKF_EULER */
+   //  CMR_CANID_SBG_EKF_POS = 0x724,              /**< @brief SBG_ECAN_LOG_EKF_POS */
+   //  CMR_CANID_SBG_EKF_VEL = 0x727,              /**< @brief SBG_ECAN_LOG_EKF_VEL */
+   //  CMR_CANID_SBG_IMU_ACCEL = 0x711,            /**< @brief SBG_ECAN_LOG_IMU_ACCEL */
+   //  CMR_CANID_SBG_IMU_GYRO = 0x712,             /**< @brief SBG_ECAN_LOG_IMU_GYRO */
+   //  CMR_CANID_SBG_BODY_VEL = 0x729,             /**< @brief SBG_ECAN_MSG_EKF_VEL_BODY */
+   //  CMR_CANID_SBG_AUTOMOTIVE = 0x72A,           /**< @brief SBG_ECAN_MSG_AUTO_TRACK_SLIP_CURV */
 
     CMR_CANID_MOVELLA_STATUS = 0x772,
     CMR_CANID_MOVELLA_QUATERNION = 0x774,
@@ -298,6 +298,15 @@ typedef enum {
     CAN_ID_LV_BMS_CELL_OVERTEMP,
     CAN_ID_LV_BMS_BUS_VOLTAGE,
     CAN_ID_LV_BMS_CURRENT,
+
+    CMR_CANID_MAXON_STATUS_WORD = 0x250,
+	 CMR_CANID_MAXON_CONTROL_WORD = 0x201,
+	 CMR_CANID_MAXON_VELOCITY_CAN_ID = 0x281,
+	 CMR_CANID_CAN_MASTER = 0x00,
+	 CMR_CANID_MAXON_HEARTBEAT = 0x701,
+	 CMR_CANID_AMI_OCV_BUTTON = 0x167,
+	 CMR_CANID_AMI_CURR_MISSION = 0x168
+
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
