@@ -60,6 +60,37 @@ static void statusLED(void *pvParameters) {
     }
 }
 
+uint32_t DWT_Delay_Init(void)
+{
+    /* Disable TRC */
+    CoreDebug->DEMCR &= ~CoreDebug_DEMCR_TRCENA_Msk; // ~0x01000000;
+    /* Enable TRC */
+    CoreDebug->DEMCR |=  CoreDebug_DEMCR_TRCENA_Msk; // 0x01000000;
+ 
+    /* Disable clock cycle counter */
+    DWT->CTRL &= ~DWT_CTRL_CYCCNTENA_Msk; //~0x00000001;
+    /* Enable  clock cycle counter */
+    DWT->CTRL |=  DWT_CTRL_CYCCNTENA_Msk; //0x00000001;
+ 
+    /* Reset the clock cycle counter value */
+    DWT->CYCCNT = 0;
+ 
+    /* 3 NO OPERATION instructions */
+    __ASM volatile ("NOP");
+    __ASM volatile ("NOP");
+    __ASM volatile ("NOP");
+ 
+    /* Check if clock cycle counter has started */
+    if(DWT->CYCCNT)
+    {
+       return 0; /*clock cycle counter started*/
+    }
+    else
+    {
+      return 1; /*clock cycle counter not started*/
+    }
+}
+
 /* Debug Exception and Monitor Control Register base address */
 #define DEMCR                 *((volatile uint32_t*) 0xE000EDFCu)
 
@@ -75,15 +106,29 @@ static void statusLED(void *pvParameters) {
  * @return Does not return.
  */
 int main(void) {
+	// Enable TRCENA
+//	DEMCR |= ( 1 << 24);
+//	// Enable stimulus port 0
+//	ITM_TRACE_EN |= ( 1 << 0);
+
+//    // System initialization.
+//    uint32_t *ACTLR = (uint32_t *)0xE000E008;
+//
+//
+//    *ACTLR |= 2; // disable write buffering
+
+    // System initialization.
+
 	HAL_Init();
     cmr_rccSystemClockEnable();
     // cmr_rccSystemInternalClockEnable();
+    DWT_Delay_Init();
 
     // Peripheral configuration.
     gpioInit();
-    //BMBInit();
-    adcInit();
-    sensorsInit();
+    BMBInit();
+    //adcInit();
+    //sensorsInit();
     canInit();
 
     //init fan task
@@ -98,13 +143,13 @@ int main(void) {
         NULL
     );
 //BMB_task
-    // cmr_taskInit(
-    //     &bmbSample_task,
-    //     "BMB Sample Task",
-    //     bmbSample_priority,
-    //     vBMBSampleTask,
-    //     NULL
-    // );
+    cmr_taskInit(
+        &bmbSample_task,
+        "BMB Sample Task",
+        bmbSample_priority,
+        vBMBSampleTask,
+        NULL
+    );
 
     // State Task
     cmr_taskInit(

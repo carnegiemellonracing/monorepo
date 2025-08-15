@@ -20,6 +20,9 @@ typedef enum {
 	SENSOR_CH_SAFETY         = 2,
 	SENSOR_CH_VSENSE         = 3,
 	SENSOR_CH_ISENSE         = 4,
+	SENSOR_CH_HV,  /**< @brief Voltage */
+    SENSOR_CH_CURRENT,      /**< @brief Current */
+    SENSOR_CH_VREF,        /**< @brief VREF */
 	SENSOR_CH_LEN     /**< @brief Total ADC channels. */
 } sensorChannel_t;
 

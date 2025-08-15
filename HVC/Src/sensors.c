@@ -6,19 +6,54 @@
  */
 
 #include <stdlib.h>
+#include <CMR/gpio.h>   // GPIO interface
+#include <CMR/tasks.h>  // Task interface
+#include <math.h>       // tanh()
 
 #include "sensors.h"
 #include "adc.h"
+#include "can.h"   // Board-specific CAN interface
+#include "gpio.h"  // Board-specific GPIO interface
+
+
+/** @brief Number of samples for current measurement rolling average. */
+#define BUS_CURRENT_SAMPLES 10
+
+/** @brief Slope for voltage sense transfer function */
+#define V_TRANS_M 19.506
+/** @brief Intercept for voltage sense transfer function */
+#define V_TRANS_B -8313.3
+
+/** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
+static const TickType_t TPOS_IMPLAUS_THRES_MS = 100;
+/** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
+static const uint32_t TPOS_IMPLAUS_THRES = UINT8_MAX / 10;
+
+/** @brief Throttle threshold for brake implausibility. See FSAE rule EV.2.4. */
+static const uint8_t BPP_TPOS_IMPLAUS_THRES = UINT8_MAX / 4;
+/** @brief Throttle threshold for clearing brake implausibility. See FSAE rule EV.2.4. */
+static const uint8_t BPP_TPOS_CLEAR_THRES = UINT8_MAX / 20;
+/** @brief Threshold where brakes are considered to be actuated. */
+static const uint8_t BRAKE_ACTIVE_THRES_PSI = 40;
+
+/** @brief 90 degree sw left lock adc value. */
+#define SWANGLE_90DEG_LEFT 1345
+/** @brief -90 degree sw RIGHT lock adc value. */
+#define SWANGLE_90DEG_RIGHT 3155
+
 
 /**
  * @brief Mapping of sensor channels to ADC channels.
  */
 static const adcChannels_t sensorsADCCHANNELS[SENSOR_CH_LEN] = {
-    [SENSOR_CH_V24V]       = ADC_V24V,
+    //[SENSOR_CH_V24V]       = ADC_V24V,
+	[SENSOR_CH_VREF] = ADC_V24V, 
 	[SENSOR_CH_AIR_POWER]  = ADC_AIR_POWER,
 	[SENSOR_CH_SAFETY]     = ADC_SAFETY,
-	[SENSOR_CH_VSENSE]     = ADC_VSENSE,
-	[SENSOR_CH_ISENSE]     = ADC_ISENSE
+	// [SENSOR_CH_VSENSE]     = ADC_VSENSE,
+	[SENSOR_CH_HV] = ADC_VSENSE, 
+	//[SENSOR_CH_ISENSE]     = ADC_ISENSE
+	[SENSOR_CH_CURRENT] = ADC_ISENSE
 };
 
 /** @brief forward declaration */
@@ -93,6 +128,56 @@ static int32_t ADCtoA_HV(const cmr_sensor_t *sensor, uint32_t reading) {
 	return (((int32_t) reading) >> 2);
 }
 
+/**
+ * 
+ * HVI conversion functions
+ * 
+ */
+
+
+/**
+ * @brief Converts a raw ADC value to voltage in centivolts.
+ *
+ * @param sensor The sensor to read.
+ *
+ * @param reading The ADC value to convert.
+ *
+ * @return Voltage in centivolts.
+ */
+static int32_t adcToVoltage(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void)sensor;
+
+    int32_t voltage = reading;
+    // uint32_t voltage = V_TRANS_M * reading + V_TRANS_B;
+
+    return voltage;
+}
+
+/**
+ * @brief Converts a raw ADC value into a current.
+ *
+ * @param sensor The sensor to read.
+ *
+ * @param reading The ADC value to convert.
+ *
+ * @return Current in dA.
+ */
+static int32_t adcToCurrent(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void)sensor;
+
+    int32_t current = (int32_t) (((0.143) * (float)reading - 294.0) * 10.0);
+    return current;
+}
+
+static int32_t adcToVref(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void)sensor;
+
+    int32_t vref = (int32_t) reading;
+
+    return vref;
+}
+
+
 static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 	[SENSOR_CH_V24V] = {
 		.conv = ADCtoMV_24v,
@@ -103,7 +188,16 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		// TODO check adc bits
 		.outOfRange_pcnt = 10,
 		//.warnFlag = What errors to use?
-	},
+	}, 
+	//from hvi 
+	// [SENSOR_CH_VREF] = {
+    //     .conv = adcToVref,
+    //     .sample = sampleADCSensor,
+    //     .readingMin = 0,
+    //     .readingMax = 4096,
+    //     .outOfRange_pcnt = 10,
+    //     .warnFlag = 0
+    // }, 
 	[SENSOR_CH_AIR_POWER] = {
 		.conv = ADCtoMV_24v,
 		.sample = sampleADCSensor,
@@ -120,22 +214,39 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		.outOfRange_pcnt = 10,
 		//.warnFlag = What errors to use?
 	},
-    [SENSOR_CH_VSENSE] = {
-		.conv = ADCtoMV_HV,
+	//taken out bc repeat from hvi 
+    // [SENSOR_CH_VSENSE] = {
+	// 	.conv = ADCtoMV_HV,
+	// 	.sample = sampleADCSensor,
+	// 	//.readingMin = ?,
+	// 	//.readingMax = ?,
+	// 	.outOfRange_pcnt = 10,
+	// 	//.warnFlag = What errors to use?
+	// },
+	[SENSOR_CH_HV] = {
+		.conv = adcToVoltage,
 		.sample = sampleADCSensor,
-		//.readingMin = ?,
-		//.readingMax = ?,
-		.outOfRange_pcnt = 10,
-		//.warnFlag = What errors to use?
-	},
-    [SENSOR_CH_ISENSE] = {
-		.conv = NULL,
-		.sample = sampleADCSensor,
-		//.readingMin = ?,
-		//.readingMax = ?,
-		.outOfRange_pcnt = 10,
-		//.warnFlag = What errors to use?
-	},
+		.readingMin = 0,
+		.readingMax = 4096,
+		.outOfRange_pcnt = 10, 
+		.warnFlag = 0 }, 
+	//taken out bc repeat from hvi 
+    // [SENSOR_CH_ISENSE] = {
+	// 	.conv = NULL,
+	// 	.sample = sampleADCSensor,
+	// 	//.readingMin = ?,
+	// 	//.readingMax = ?,
+	// 	.outOfRange_pcnt = 10,
+	// 	//.warnFlag = What errors to use?
+	// },
+	[SENSOR_CH_CURRENT] = {
+        .conv = adcToCurrent,
+        .sample = sampleADCSensor,
+        .readingMin = 0,
+        .readingMax = 4096,
+        .outOfRange_pcnt = 10,
+        .warnFlag = 0 
+    },
 };
 
 /** @brief Sensors update priority. */

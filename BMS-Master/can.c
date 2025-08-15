@@ -20,11 +20,6 @@
 #include "sensors.h"  // HVC Values
 #include "math.h"
 
-/** @brief Slope for voltage sense transfer function */
-#define V_TRANS_M 19.506
-/** @brief Intercept for voltage sense transfer function */
-#define V_TRANS_B -8313.3
-
 /** @brief Struct to identify stale commands. */
 extern ReceiveMeta_t BMSCommandReceiveMeta;
 
@@ -36,7 +31,7 @@ extern volatile int BMBErrs[BOARD_NUM];
  * @note Indexed by `canRX_t`.
  */
 cmr_canRXMeta_t canRXMeta[] = {
-    [CANRX_HEARTBEAT_VSM] = {
+    [CANRX_HEARTBEAT_VSM] = { //not needed? 
         .canID = CMR_CANID_HEARTBEAT_VSM,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
@@ -47,6 +42,11 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 25
     },
     [CANRX_EMD_MEASURE] = {
+        .canID = CMR_CANID_EMD_MEASUREMENT,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 25
+    },
+    [CANRX_EMD_MEASURE] = {   
         .canID = CMR_CANID_EMD_MEASUREMENT_RETX,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
@@ -56,28 +56,27 @@ cmr_canRXMeta_t canRXMeta[] = {
 		.timeoutError_ms = 50,
 		.timeoutWarn_ms = 25
     },
-	// [CANRX_BALANCE_COMMAND] = {
-	// 	.canID = CMR_CANID_CELL_BALANCE_ENABLE,
-	// 	.timeoutError_ms = 50,
-	// 	.timeoutWarn_ms = 25
-	// }
+	[CANRX_BALANCE_COMMAND] = {
+		.canID = CMR_CANID_CELL_BALANCE_ENABLE,
+		.timeoutError_ms = 50,
+		.timeoutWarn_ms = 25
+	}
 };
 
 /** @brief Primary CAN interface. */
 static cmr_can_t can;
 
 // Forward declarations
-static void sendHeartbeat(TickType_t lastWakeTime);
+//static void sendHeartbeat(TickType_t lastWakeTime);
 static void sendHVCPackVoltage(void);
-static void sendBMSPackCurrent(void);
-// static void sendBMSBMBStatusErrors(void);
-// static void sendBMSBMBStatusVoltage(uint8_t bmb_index);
-// static void sendBMSBMBStatusTemp(uint8_t bmb_index);
-// static void sendBMSMinMaxCellVoltage(void);
-// static void sendBMSMinMaxCellTemp(void);
-// static void sendBMSLowVoltage(void);
-// static void sendAllBMBVoltages(void);
-// static void calcPower(cmr_canHVIHeartbeat_t *heartbeat); 
+//static void sendBMSPackCurrent(void);
+static void sendBMSBMBStatusErrors(void);
+static void sendBMSBMBStatusVoltage(uint8_t bmb_index);
+static void sendBMSBMBStatusTemp(uint8_t bmb_index);
+static void sendBMSMinMaxCellVoltage(void);
+static void sendBMSMinMaxCellTemp(void);
+static void sendBMSLowVoltage(void);
+static void sendAllBMBVoltages(void);
 
 /** @brief CAN 1 Hz TX priority. */
 static const uint32_t canTX1Hz_priority = 4;
@@ -101,13 +100,13 @@ static void canTX1Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
 
-        // BMB Temperature Status
+        // BMB Temperature Status 
         for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM - 1; bmb_index++) {
-            //sendBMSBMBStatusTemp(bmb_index);
+            sendBMSBMBStatusTemp(bmb_index);
         }
-        //sendBMSMinMaxCellTemp();
+        sendBMSMinMaxCellTemp();
 
-       //sendAllBMBVoltages();
+        sendAllBMBVoltages();
 
         vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
     }
@@ -132,19 +131,15 @@ static cmr_task_t canTX10Hz_task;
 static void canTX10Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-    cmr_canHVIHeartbeat_t heartbeat;
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // BRUSA Charger decided by state machine
+        // BRUSA Charger decided by state machine 
         // sendBRUSAChargerControl();
 
-        // BMB Voltage Status
+        // BMB Voltage Status 
         for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
-            //sendBMSBMBStatusVoltage(bmb_index);
+            sendBMSBMBStatusVoltage(bmb_index);
         }
-
-        calcPower(&heartbeat);
-    	canTX(CMR_CANID_HEARTBEAT_HVI, &heartbeat, sizeof(heartbeat), canTX10Hz_period_ms);
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -184,7 +179,7 @@ static void canTX200Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        //sendBMSMinMaxCellVoltage();
+        sendBMSMinMaxCellVoltage();
 
         vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
     }
@@ -200,10 +195,10 @@ static void canTX100Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendHeartbeat(lastWakeTime);
-        sendHVCPackVoltage();
+        //sendHVCPackVoltage();
         //sendBMSPackCurrent();
-        //sendBMSLowVoltage();
-        //sendBMSBMBStatusErrors();
+        sendBMSLowVoltage();
+        sendBMSBMBStatusErrors();
 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
@@ -305,72 +300,72 @@ volatile void *getPayload(canRX_t rxMsg) {
  *
  * @param lastWakeTime Pass in from canTX100Hz. Used to update lastStateChangeTime and errors/warnings.
  */
-static void sendHeartbeat(TickType_t lastWakeTime) {
-    cmr_canHVCState_t currentState = getState();
-    cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
-    currentError = checkErrors(currentState);
+// static void sendHeartbeat(TickType_t lastWakeTime) {
+//     cmr_canHVCState_t currentState = getState();
+//     cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
+//     currentError = checkErrors(currentState);
 
-    cmr_canHVCHeartbeat_t HVCHeartbeat = {
-        .errorStatus = currentError,
-        .hvcMode = CMR_CAN_HVC_MODE_ERROR,
-        .hvcState = currentState,
-        .relayStatus = getRelayStatus(),
-        .uptime_s = 0,
-    };
+//     cmr_canHVCHeartbeat_t HVCHeartbeat = {
+//         .errorStatus = currentError,
+//         .hvcMode = CMR_CAN_HVC_MODE_ERROR,
+//         .hvcState = currentState,
+//         .relayStatus = getRelayStatus(),
+//         .uptime_s = lastWakeTime / 1000,
+//     };
 
-    switch (currentState) {
-        case CMR_CAN_HVC_STATE_DISCHARGE: // S1
-            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_IDLE;
-            break;
-        case CMR_CAN_HVC_STATE_STANDBY: // S2
-            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_IDLE;
-            break;
-        case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE: // S3
-            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_START;
-            break;
-        case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE: // S4
-            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_START;
-            break;
-        case CMR_CAN_HVC_STATE_DRIVE: // S5
-            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_RUN;
-            break;
-        case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE: // S6
-            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
-            break;
-        case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE: // S7
-            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
-            break;
-        case CMR_CAN_HVC_STATE_CHARGE_TRICKLE: // S8
-            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
-            break;
-        case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT: // S9
-            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
-            break;
-        case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE: // S10
-            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
-            break;
-        case CMR_CAN_HVC_STATE_ERROR: // S0
-            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_ERROR;
-            break;
-        case CMR_CAN_HVC_STATE_CLEAR_ERROR: // S11
-            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_ERROR;
-            break;
-        case CMR_CAN_HVC_STATE_UNKNOWN:
-        default:
-            HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_ERROR;
-            break;
-    }
+//     switch (currentState) {
+//         case CMR_CAN_HVC_STATE_DISCHARGE: // S1
+//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_IDLE;
+//             break;
+//         case CMR_CAN_HVC_STATE_STANDBY: // S2
+//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_IDLE;
+//             break;
+//         case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE: // S3
+//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_START;
+//             break;
+//         case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE: // S4
+//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_START;
+//             break;
+//         case CMR_CAN_HVC_STATE_DRIVE: // S5
+//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_RUN;
+//             break;
+//         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE: // S6
+//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
+//             break;
+//         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE: // S7
+//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
+//             break;
+//         case CMR_CAN_HVC_STATE_CHARGE_TRICKLE: // S8
+//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
+//             break;
+//         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT: // S9
+//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
+//             break;
+//         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE: // S10
+//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
+//             break;
+//         case CMR_CAN_HVC_STATE_ERROR: // S0
+//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_ERROR;
+//             break;
+//         case CMR_CAN_HVC_STATE_CLEAR_ERROR: // S11
+//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_ERROR;
+//             break;
+//         case CMR_CAN_HVC_STATE_UNKNOWN:
+//         default:
+//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_ERROR;
+//             break;
+//     }
 
-    canTX(CMR_CANID_HEARTBEAT_HVC, &HVCHeartbeat, sizeof(HVCHeartbeat), canTX100Hz_period_ms);
-}
+//     canTX(CMR_CANID_HEARTBEAT_HVC, &HVCHeartbeat, sizeof(HVCHeartbeat), canTX100Hz_period_ms);
+// }
 
 static void sendHVCPackVoltage(void) {
-    //int32_t bVolt = getBattMillivolts();
-    int32_t hvVolt = getHVmillivolts();
+    int32_t bVolt = getBattMillivolts();
+    //int32_t hvVolt = getHVmillivolts();
 
     cmr_canHVCPackVoltage_t HVCPackVoltage = {
-        .battVoltage_mV = -1, //placeholder, change struct later 
-        .hvVoltage_mV = hvVolt,
+        .battVoltage_mV = bVolt,
+        .hvVoltage_mV = -1, //placeholder, change struct later 
     };
 
     canTX(CMR_CANID_HVC_PACK_VOLTAGE, &HVCPackVoltage, sizeof(HVCPackVoltage), canTX100Hz_period_ms);
@@ -389,141 +384,141 @@ static void sendHVCPackVoltage(void) {
 //     canTX(CMR_CANID_HVC_PACK_CURRENT, &BMSPackCurrent, sizeof(BMSPackCurrent), canTX100Hz_period_ms);
 // }
 
-// static void sendBMSBMBStatusVoltage(uint8_t bmb_index) {
-//     uint8_t maxIndex = getBMBMaxVoltIndex(bmb_index);
-//     uint8_t minIndex = getBMBMinVoltIndex(bmb_index);
-//     uint16_t maxVoltage = getBMBVoltage(bmb_index, maxIndex);
-//     uint16_t minVoltage = getBMBVoltage(bmb_index, minIndex);
+static void sendBMSBMBStatusVoltage(uint8_t bmb_index) {
+    uint8_t maxIndex = getBMBMaxVoltIndex(bmb_index);
+    uint8_t minIndex = getBMBMinVoltIndex(bmb_index);
+    uint16_t maxVoltage = getBMBVoltage(bmb_index, maxIndex);
+    uint16_t minVoltage = getBMBVoltage(bmb_index, minIndex);
 
-//     cmr_canBMSBMBStatusVoltage_t BMSBMBStatusVoltage = {
-//         .maxVoltIndex = maxIndex,
-//         .minVoltIndex = minIndex,
-//         .maxCellVoltage_mV = maxVoltage,
-//         .minCellVoltage_mV = minVoltage,
-//     };
+    cmr_canBMSBMBStatusVoltage_t BMSBMBStatusVoltage = {
+        .maxVoltIndex = maxIndex,
+        .minVoltIndex = minIndex,
+        .maxCellVoltage_mV = maxVoltage,
+        .minCellVoltage_mV = minVoltage,
+    };
 
-//     canTX(CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE + (bmb_index << 1), &BMSBMBStatusVoltage, sizeof(BMSBMBStatusVoltage), canTX10Hz_period_ms);
-// }
+    canTX(CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE + (bmb_index << 1), &BMSBMBStatusVoltage, sizeof(BMSBMBStatusVoltage), canTX10Hz_period_ms);
+}
 
-// static void sendBMSBMBStatusTemp(uint8_t bmb_index) {
-//     uint8_t maxIndex = getBMBMaxTempIndex(bmb_index);
-//     uint8_t minIndex = getBMBMinTempIndex(bmb_index);
-//     int16_t maxTemp = getBMBTemp(bmb_index, maxIndex);
-//     int16_t minTemp = getBMBTemp(bmb_index, minIndex);
+static void sendBMSBMBStatusTemp(uint8_t bmb_index) {
+    uint8_t maxIndex = getBMBMaxTempIndex(bmb_index);
+    uint8_t minIndex = getBMBMinTempIndex(bmb_index);
+    int16_t maxTemp = getBMBTemp(bmb_index, maxIndex);
+    int16_t minTemp = getBMBTemp(bmb_index, minIndex);
 
-//     cmr_canBMSBMBStatusTemp_t BMSBMBStatusTemp = {
-//         .maxTempIndex = maxIndex,
-//         .minTempIndex = minIndex,
-//         .maxCellTemp_C = maxTemp,
-//         .minCellTemp_C = minTemp,
-//     };
+    cmr_canBMSBMBStatusTemp_t BMSBMBStatusTemp = {
+        .maxTempIndex = maxIndex,
+        .minTempIndex = minIndex,
+        .maxCellTemp_C = maxTemp,
+        .minCellTemp_C = minTemp,
+    };
 
-//     canTX(CMR_CANID_HVC_BMB_0_STATUS_TEMP + (bmb_index << 1), &BMSBMBStatusTemp, sizeof(BMSBMBStatusTemp), canTX1Hz_period_ms);
-// }
+    canTX(CMR_CANID_HVC_BMB_0_STATUS_TEMP + (bmb_index << 1), &BMSBMBStatusTemp, sizeof(BMSBMBStatusTemp), canTX1Hz_period_ms);
+}
 
-// static void sendBMSMinMaxCellVoltage(void) {
-//     uint16_t minCellVoltage = UINT16_MAX;
-//     uint16_t maxCellVoltage = 0;
+static void sendBMSMinMaxCellVoltage(void) {
+    uint16_t minCellVoltage = UINT16_MAX;
+    uint16_t maxCellVoltage = 0;
 
-//     uint8_t minCellVoltageBMBNum = 0;
-// 	uint8_t maxCellVoltageBMBNum = 0;
+    uint8_t minCellVoltageBMBNum = 0;
+	uint8_t maxCellVoltageBMBNum = 0;
+	
+	uint8_t minCellVoltageIndex = 0;
+	uint8_t maxCellVoltageIndex = 0;
 
-// 	uint8_t minCellVoltageIndex = 0;
-// 	uint8_t maxCellVoltageIndex = 0;
+    for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
+        uint8_t maxIndex = getBMBMaxVoltIndex(bmb_index);
+        uint8_t minIndex = getBMBMinVoltIndex(bmb_index);
+        uint16_t maxVoltage = getBMBVoltage(bmb_index, maxIndex);
+        uint16_t minVoltage = getBMBVoltage(bmb_index, minIndex);
 
-//     for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
-//         uint8_t maxIndex = getBMBMaxVoltIndex(bmb_index);
-//         uint8_t minIndex = getBMBMinVoltIndex(bmb_index);
-//         uint16_t maxVoltage = getBMBVoltage(bmb_index, maxIndex);
-//         uint16_t minVoltage = getBMBVoltage(bmb_index, minIndex);
+        if (maxVoltage > maxCellVoltage) {
+            maxCellVoltage = maxVoltage;
+            maxCellVoltageBMBNum = bmb_index;
+            maxCellVoltageIndex = maxIndex;
+        }
 
-//         if (maxVoltage > maxCellVoltage) {
-//             maxCellVoltage = maxVoltage;
-//             maxCellVoltageBMBNum = bmb_index;
-//             maxCellVoltageIndex = maxIndex;
-//         }
+        if (minVoltage < minCellVoltage) {
+            minCellVoltage = minVoltage;
+            minCellVoltageBMBNum = bmb_index;
+            minCellVoltageIndex = minIndex;
+        }
+    }
 
-//         if (minVoltage < minCellVoltage) {
-//             minCellVoltage = minVoltage;
-//             minCellVoltageBMBNum = bmb_index;
-//             minCellVoltageIndex = minIndex;
-//         }
-//     }
+    cmr_canBMSMinMaxCellVoltage_t BMSBMBMinMaxVoltage = {
+        .minCellVoltage_mV = minCellVoltage,
+        .maxCellVoltage_mV = maxCellVoltage,
+        .minVoltageBMBNum = minCellVoltageBMBNum,
+        .maxVoltageBMBNum = maxCellVoltageBMBNum,
+        .minVoltageCellNum = minCellVoltageIndex,
+        .maxVoltageCellNum = maxCellVoltageIndex,
+    };
 
-//     cmr_canBMSMinMaxCellVoltage_t BMSBMBMinMaxVoltage = {
-//         .minCellVoltage_mV = minCellVoltage,
-//         .maxCellVoltage_mV = maxCellVoltage,
-//         .minVoltageBMBNum = minCellVoltageBMBNum,
-//         .maxVoltageBMBNum = maxCellVoltageBMBNum,
-//         .minVoltageCellNum = minCellVoltageIndex,
-//         .maxVoltageCellNum = maxCellVoltageIndex,
-//     };
+    canTX(CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE, &BMSBMBMinMaxVoltage, sizeof(BMSBMBMinMaxVoltage), canTX200Hz_period_ms);
+}
 
-//     canTX(CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE, &BMSBMBMinMaxVoltage, sizeof(BMSBMBMinMaxVoltage), canTX200Hz_period_ms);
-// }
+static void sendBMSMinMaxCellTemp(void) {
+    uint16_t minCellTemp = UINT16_MAX;
+    uint16_t maxCellTemp = 0;
 
-// static void sendBMSMinMaxCellTemp(void) {
-//     uint16_t minCellTemp = UINT16_MAX;
-//     uint16_t maxCellTemp = 0;
+    uint8_t minCellTempBMBNum;
+	uint8_t maxCellTempBMBNum;
+	
+	uint8_t minCellTempIndex;
+	uint8_t maxCellTempIndex;
 
-//     uint8_t minCellTempBMBNum;
-// 	uint8_t maxCellTempBMBNum;
+    for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
+        uint8_t maxIndex = getBMBMaxTempIndex(bmb_index);
+        uint8_t minIndex = getBMBMinTempIndex(bmb_index);
+        uint16_t maxTemp = getBMBTemp(bmb_index, maxIndex);
+        uint16_t minTemp = getBMBTemp(bmb_index, minIndex);
 
-// 	uint8_t minCellTempIndex;
-// 	uint8_t maxCellTempIndex;
+        //bmb 2 channel 13, bmb 7 channel 0, bmb 8 channel 9/11, bmb 9 channel 6
+        if ((maxTemp > maxCellTemp)) {
+            maxCellTemp = maxTemp;
+            maxCellTempBMBNum = bmb_index;
+            maxCellTempIndex = maxIndex;
+        }
 
-//     for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
-//         uint8_t maxIndex = getBMBMaxTempIndex(bmb_index);
-//         uint8_t minIndex = getBMBMinTempIndex(bmb_index);
-//         uint16_t maxTemp = getBMBTemp(bmb_index, maxIndex);
-//         uint16_t minTemp = getBMBTemp(bmb_index, minIndex);
+        if (minTemp < minCellTemp) {
+            minCellTemp = minTemp;
+            minCellTempBMBNum = bmb_index;
+            minCellTempIndex = minIndex;
+        }
+    }
+    float xMin = (4.7f*((float)minCellTemp)/1000.0f)* 1000.0f / ((5.0f - (((float)minCellTemp)/1000.0f)) );
+    float temp_minTemp = (1/(0.00335348f + (0.00030662f*log((xMin)/10000.0f)) + powf(0.00000837316f*log(xMin/10000.0f), 2))) - 273.15;
+    minCellTemp = (int16_t) (temp_minTemp * 10.0f);
 
-//         //bmb 2 channel 13, bmb 7 channel 0, bmb 8 channel 9/11, bmb 9 channel 6
-//         if ((maxTemp > maxCellTemp)) {
-//             maxCellTemp = maxTemp;
-//             maxCellTempBMBNum = bmb_index;
-//             maxCellTempIndex = maxIndex;
-//         }
+    float xMax = (4.7f*((float)maxCellTemp)/1000.0f) * 1000.0f / ((5.0f - (((float)maxCellTemp)/1000.0f)));
+	float temp_maxTemp = (1/(0.00335348f + (0.00030662f*log((xMax)/10000.0f)) + powf(0.00000837316f*log(xMax/10000.0f), 2))) - 273.15;
+	maxCellTemp = (int16_t) (temp_maxTemp * 10.0f);
+    //currently swapped because the min logic reading only voltage
+    cmr_canBMSMinMaxCellTemperature_t BMSBMBMinMaxTemperature = {
+        .minCellTemp_C = maxCellTemp,
+        .maxCellTemp_C = minCellTemp,
+        .minTempBMBNum = maxCellTempBMBNum,
+        .maxTempBMBNum = minCellTempBMBNum,
+        .minTempCellNum = maxCellTempIndex,
+        .maxTempCellNum = minCellTempIndex,
+    };
 
-//         if (minTemp < minCellTemp) {
-//             minCellTemp = minTemp;
-//             minCellTempBMBNum = bmb_index;
-//             minCellTempIndex = minIndex;
-//         }
-//     }
-//     float xMin = (4.7f*((float)minCellTemp)/1000.0f)* 1000.0f / ((5.0f - (((float)minCellTemp)/1000.0f)) );
-//     float temp_minTemp = (1/(0.00335348f + (0.00030662f*log((xMin)/10000.0f)) + powf(0.00000837316f*log(xMin/10000.0f), 2))) - 273.15;
-//     minCellTemp = (int16_t) (temp_minTemp * 10.0f);
+    canTX(CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE, &BMSBMBMinMaxTemperature, sizeof(BMSBMBMinMaxTemperature), canTX10Hz_period_ms);
+}
 
-//     float xMax = (4.7f*((float)maxCellTemp)/1000.0f) * 1000.0f / ((5.0f - (((float)maxCellTemp)/1000.0f)));
-// 	float temp_maxTemp = (1/(0.00335348f + (0.00030662f*log((xMax)/10000.0f)) + powf(0.00000837316f*log(xMax/10000.0f), 2))) - 273.15;
-// 	maxCellTemp = (int16_t) (temp_maxTemp * 10.0f);
-//     //currently swapped because the min logic reading only voltage
-//     cmr_canBMSMinMaxCellTemperature_t BMSBMBMinMaxTemperature = {
-//         .minCellTemp_C = maxCellTemp,
-//         .maxCellTemp_C = minCellTemp,
-//         .minTempBMBNum = maxCellTempBMBNum,
-//         .maxTempBMBNum = minCellTempBMBNum,
-//         .minTempCellNum = maxCellTempIndex,
-//         .maxTempCellNum = minCellTempIndex,
-//     };
+static void sendBMSLowVoltage(void) {
+    cmr_canBMSLowVoltage_t BMSLowVoltage = {
+        .safety_mV = (getSafetymillivolts()*15)/2000, // Convert mA to 2/15th mA //TODO: Gustav change this back?
+        .iDCDC_mA = 0,
+        .vAIR_mV = (getAIRmillivolts()*15)/2000, // Convert mV to 2/15th V
+        .vbatt_mV= (getLVmillivolts()*15/2000), // Convert mV to 2/15th V
+    };
+    (void) BMSLowVoltage;
 
-//     canTX(CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE, &BMSBMBMinMaxTemperature, sizeof(BMSBMBMinMaxTemperature), canTX10Hz_period_ms);
-// }
+    canTX(CMR_CANID_HVC_LOW_VOLTAGE, &BMSLowVoltage, sizeof(BMSLowVoltage), canTX100Hz_period_ms);
+}
 
-// static void sendBMSLowVoltage(void) {
-//     cmr_canBMSLowVoltage_t BMSLowVoltage = {
-//         .safety_mV = (getSafetymillivolts()*15)/2000, // Convert mA to 2/15th mA //TODO: Gustav change this back?
-//         .iDCDC_mA = 0,
-//         .vAIR_mV = (getAIRmillivolts()*15)/2000, // Convert mV to 2/15th V
-//         .vbatt_mV= (getLVmillivolts()*15/2000), // Convert mV to 2/15th V
-//     };
-//     (void) BMSLowVoltage;
-
-//     canTX(CMR_CANID_HVC_LOW_VOLTAGE, &BMSLowVoltage, sizeof(BMSLowVoltage), canTX100Hz_period_ms);
-// }
-
-// static void sendBMSBMBStatusErrors(void) {
+static void sendBMSBMBStatusErrors(void) {
 	//TODO Update status error sending
 //	cmr_canHVCBMBErrors_t errs = {
 //			.BMB1_2_Errs = (BMBErrs[0] << 4) | BMBErrs[1],
@@ -537,9 +532,9 @@ static void sendHVCPackVoltage(void) {
 //	};
 
 //	canTX(CMR_CANID_HVC_BMB_STATUS_ERRORS, &errs, sizeof(cmr_canHVCBMBErrors_t), canTX100Hz_period_ms);
-//}
+}
 
-//static void sendAllBMBVoltages(void) {
+static void sendAllBMBVoltages(void) {
 //    for (int bmbIndex = 0; bmbIndex < BOARD_NUM; bmbIndex++) {
 //        BMB_Data_t *data = getBMBData(bmbIndex);
 //        cmr_canHVCBMB_Voltage0_t volt0 = {
@@ -584,25 +579,4 @@ static void sendHVCPackVoltage(void) {
 //        canTX(CMR_CANID_HVC_BMB_0_STATUS_TEMP_1 + (bmbIndex << 4), &temp1, sizeof(temp1), canTX1Hz_period_ms);
 //        canTX(CMR_CANID_HVC_BMB_0_STATUS_TEMP_2 + (bmbIndex << 4), &temp2, sizeof(temp2), canTX1Hz_period_ms);
 //    }
-//}
-
-
-/** @brief calc that power bitch */
-static void calcPower(cmr_canHVIHeartbeat_t *heartbeat) {
-	int32_t power;
-    int16_t voltage;
-    uint16_t current;
-
-    voltage = cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV);
-    current = cmr_sensorListGetValue(&sensorList, SENSOR_CH_CURRENT);
-    power = (voltage * 100) * (current * 10);
-
-    heartbeat->packVoltage_cV = voltage;
-    heartbeat->packCurrent_dA = current;
-    heartbeat->packPower_W = power;   
-
-	uint16_t voltageRaw, currentRaw;
-	voltageRaw = adcRead(ADC_VSENSE);
-	currentRaw = adcRead(ADC_ISENSE);
 }
-
