@@ -432,6 +432,135 @@ void BMBInit() {
 	cellBalancingSetup();
 }
 
+static bool ringArch(uint8_t bmbnum){
+
+	//reverse base direction to talk to ones "above" broken one 
+	uart_command_t set_dir = {
+		.readWrite = SINGLE_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0x00,
+		.registerAddress = CONTROL1,
+		.data = {0x80}, //set dirsel to 1 (bit 7) 
+		.crc = {0x00, 0x00}
+	};	
+	res = uart_sendCommand(&set_dir);
+	if(res != UART_SUCCESS) {
+		return false;
+	} 
+
+	//clear comm_ctrl for reverse ones
+	uart_command_t set_reverse_devices = {
+		.readWrite = BROADCAST_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0xFF, //not used!!!
+		.registerAddress = COMM_CTRL,
+		.data = {0x00},
+		.crc = {0x00, 0x00}
+	};
+	res = uart_sendCommand(&set_reverse_devices);
+	if(res != UART_SUCCESS) {
+		return false;
+	}
+
+	//change dirsel for reverse ones 
+	set_reverse_devices.registerAddress = CONTROL1; 
+	set_reverse_devices.data = {0x80}; 
+	res = uart_sendCommand(&set_reverse_devices);
+	if(res != UART_SUCCESS) {
+		return false;
+	}
+
+	//redo autoaddress but wo OTP sync 
+	
+	//broadcast write to enable autoaddressing
+	uart_command_t enableAutoaddress = {
+			.readWrite = BROADCAST_WRITE,
+			.dataLen = 1,
+			.deviceAddress = 0xFF, //not used!!!
+			.registerAddress = CONTROL1,
+			.data = {0x81}, //make sure dirsel is still 1 
+			.crc = {0x00, 0x00}
+	};
+
+	res = uart_sendCommand(&enableAutoaddress);
+	if(res != UART_SUCCESS) {
+		return false;
+	}
+	// HAL_Delay(10);
+	DWT_Delay_ms(10);
+
+	//set all the addresses of the boards in DIR1_ADDR
+	uart_command_t set_addr = {
+			.readWrite = BROADCAST_WRITE,
+			.dataLen = 1,
+			.deviceAddress = 0xFF, //not used!!!
+			.registerAddress = DIR1_ADDR,
+			.data = {0x00},
+			.crc = {0x00, 0x00}
+	};
+	for(int i = 0; i < BOARD_NUM-bmbnum; i++) { //not sure about upper bound 
+		res = uart_sendCommand(&set_addr);
+		if(res != UART_SUCCESS) {
+			return false;
+		}
+		set_addr.data[0]++;
+		// HAL_Delay(10);
+		DWT_Delay_ms(10);
+	}
+
+	//Set all devices as stack devices first
+	uart_command_t set_stack_devices = {
+		.readWrite = BROADCAST_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0xFF, //not used!!!
+		.registerAddress = COMM_CTRL,
+		.data = {0x02},
+		.crc = {0x00, 0x00}
+	};
+	res = uart_sendCommand(&set_stack_devices);
+	if(res != UART_SUCCESS) {
+		return false;
+	}
+	// HAL_Delay(10);
+	DWT_Delay_ms(10);
+
+	//fix ToS 
+	uart_command_t set_top_stack = {
+		.readWrite = SINGLE_WRITE,
+		.dataLen = 1,
+		.deviceAddress = bmbnum+1,
+		.registerAddress = COMM_CTRL,
+		.data = {0x03},
+		.crc = {0x00, 0x00}
+	};	
+	if(bmbnum != BOARD_NUM-1){ //broken one is not top of stack 
+		//set bmb "above" broken one as ToS for dirsel = 1 
+		res = uart_sendCommand(&set_top_stack);
+		if(res != UART_SUCCESS) {
+			return false;
+		}
+
+		//reset current ToS to non ToS device 
+		set_top_stack.deviceAddress = BOARD_NUM-1; 
+		set_top_stack.data = {0x02}; 
+		res = uart_sendCommand(&set_top_stack);
+		if(res != UART_SUCCESS) {
+			return false;
+		}
+	} 
+
+	if(bmbnum!=1){ //broken one is not bottom of stack 
+		//set bmb "under" broken one as ToS for dirsel = 0 
+		set_top_stack.deviceAddress = bmbnum-1; 
+		set_top_stack.data = {0x03}; 
+		res = uart_sendCommand(&set_top_stack);
+		if(res != UART_SUCCESS) {
+			return false;
+		} 
+	} 
+
+}
+
 static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
 	//formula from TI's code
 	//Bitwise OR high byte shifted by 8 and low byte, apply scaling factor
@@ -468,7 +597,8 @@ uint8_t pollAllVoltageData() {
 				BMBTimeoutCount[i-1]+=1;
 				DWT_Delay_ms(10000);
 				RXTurnOnInit();
-				BMBInit();
+				//BMBInit(); //switch directions instead of just BMB init again 
+				ringArch(i); //or should it be i+1 
 				taskEXIT_CRITICAL();
 				return i;
 			}
