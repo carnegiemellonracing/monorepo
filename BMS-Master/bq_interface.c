@@ -21,6 +21,10 @@ extern volatile int BMBErrs[BOARD_NUM];
 //Fill in data to this array
 BMB_Data_t BMBData[BOARD_NUM];
 
+//whether or not ring architecture enabled 
+bool ringarch = false; 
+uint8_t broken_dev_addr = 12; 
+
 static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
 	BMBErrs[BMBIndex] = err;
 }
@@ -316,6 +320,9 @@ bool enableMainADC() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
+	if(ringarch){
+		sendRingArch(adcMsg); 
+	}
 	return true;
 }
 
@@ -334,6 +341,9 @@ bool enableNumCells() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
+	if(ringarch){
+		sendRingArch(active_cell); 
+	}
 	return true;
 }
 
@@ -348,6 +358,9 @@ bool enableGPIOPins() {
 			.crc = {0x00, 0x00}
 	};
 	cmr_uart_result_t res = uart_sendCommand(&enable_tsref);
+	if(ringarch){
+		sendRingArch(enable_tsref); 
+	}
 	if(res != UART_SUCCESS) {
 		return false;
 	}
@@ -365,10 +378,17 @@ bool enableGPIOPins() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
+	if(ringarch){
+		sendRingArch(enable_gpio); 
+	}
+
 	enable_gpio.registerAddress = GPIO_CONF4;
 	res = uart_sendCommand(&enable_gpio);
 	if(res != UART_SUCCESS) {
 		return false;
+	}
+	if(ringarch){
+		sendRingArch(enable_gpio); 
 	}
 
 
@@ -378,6 +398,9 @@ bool enableGPIOPins() {
 	res = uart_sendCommand(&enable_gpio);
 	if(res != UART_SUCCESS) {
 		return false;
+	}
+	if(ringarch){
+		sendRingArch(enable_gpio); 
 	}
 
 	return true;
@@ -395,6 +418,9 @@ void enableTimeout() {
 			.crc = {0x00, 0x00}
 	};
 	uart_sendCommand(&enable_timeout);
+	if(ringarch){
+		sendRingArch(enable_timeout); 
+	}
 }
 
 // Init function for all BMBs
@@ -432,9 +458,8 @@ void BMBInit() {
 	cellBalancingSetup();
 }
 
-static bool ringArch(uint8_t bmbnum){
-
-	//reverse base direction to talk to ones "above" broken one 
+static bool reverseBase(){
+	//flip dirsel of base device  
 	uart_command_t set_dir = {
 		.readWrite = SINGLE_WRITE,
 		.dataLen = 1,
@@ -447,6 +472,34 @@ static bool ringArch(uint8_t bmbnum){
 	if(res != UART_SUCCESS) {
 		return false;
 	} 
+}
+
+static void forwardBase(){
+	//flip dirsel of base device  
+	uart_command_t set_dir = {
+		.readWrite = SINGLE_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0x00,
+		.registerAddress = CONTROL1,
+		.data = {0x00}, //set dirsel to 0 (bit 7) might need to be 01?? 
+		.crc = {0x00, 0x00}
+	};	
+	res = uart_sendCommand(&set_dir);
+	if(res != UART_SUCCESS) {
+		return false;
+	} 
+}
+
+static void sendRingArch(uart_command_t cmd){
+	reverseBase(); 
+	uart_sendCommand(&cmd);
+	forwardBase(); 
+}
+
+static bool ringArch(uint8_t bmbnum){
+
+	//reverse base direction to talk to ones "above" broken one 
+	reverseBase(); 
 
 	//clear comm_ctrl for reverse ones
 	uart_command_t set_reverse_devices = {
@@ -498,7 +551,7 @@ static bool ringArch(uint8_t bmbnum){
 			.data = {0x00},
 			.crc = {0x00, 0x00}
 	};
-	for(int i = 0; i < BOARD_NUM-bmbnum; i++) { //not sure about upper bound 
+	for(int i = BOARD_NUM-1; i > bmbnum; i--) { 
 		res = uart_sendCommand(&set_addr);
 		if(res != UART_SUCCESS) {
 			return false;
@@ -528,7 +581,7 @@ static bool ringArch(uint8_t bmbnum){
 	uart_command_t set_top_stack = {
 		.readWrite = SINGLE_WRITE,
 		.dataLen = 1,
-		.deviceAddress = bmbnum+1,
+		.deviceAddress = BOARD_NUM-1 - bmbnum; 
 		.registerAddress = COMM_CTRL,
 		.data = {0x03},
 		.crc = {0x00, 0x00}
@@ -538,26 +591,22 @@ static bool ringArch(uint8_t bmbnum){
 		res = uart_sendCommand(&set_top_stack);
 		if(res != UART_SUCCESS) {
 			return false;
-		}
-
-		//reset current ToS to non ToS device 
-		set_top_stack.deviceAddress = BOARD_NUM-1; 
-		set_top_stack.data = {0x02}; 
-		res = uart_sendCommand(&set_top_stack);
-		if(res != UART_SUCCESS) {
-			return false;
-		}
+		} 
 	} 
 
 	if(bmbnum!=1){ //broken one is not bottom of stack 
 		//set bmb "under" broken one as ToS for dirsel = 0 
 		set_top_stack.deviceAddress = bmbnum-1; 
-		set_top_stack.data = {0x03}; 
 		res = uart_sendCommand(&set_top_stack);
 		if(res != UART_SUCCESS) {
 			return false;
 		} 
 	} 
+
+	//reset base dirsel 
+	forwardBase(); 
+
+	return true; 
 
 }
 
@@ -571,22 +620,24 @@ static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
 //return voltage data
 uint8_t pollAllVoltageData() {
 	uart_command_t read_voltage = {
-			.readWrite = STACK_READ,
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!
-			.registerAddress = TOP_CELL,
-			.data = {VSENSE_CHANNELS*2-1}, //reading high and low for cell 0-VSENSE_CHANNELS
-			.crc = {0xFF, 0xFF}
-		};
+		.readWrite = STACK_READ,
+		.dataLen = 1,
+		.deviceAddress = 0xFF, //not used!
+		.registerAddress = TOP_CELL,
+		.data = {VSENSE_CHANNELS*2-1}, //reading high and low for cell 0-VSENSE_CHANNELS
+		.crc = {0xFF, 0xFF}
+	};
 
-		uart_response_t response[BOARD_NUM-1];
+	uart_response_t response[BOARD_NUM-1];
 
-		//TODO add tx error handler
+	//TODO add tx error handler
 
-		int x= 0;
+	int x= 0;
 
-		// Critical section used so UART RX is not preempted
-		taskENTER_CRITICAL();
+	// Critical section used so UART RX is not preempted
+	taskENTER_CRITICAL();
+
+	if(!ringarch){
 		uart_sendCommand(&read_voltage);
 		//loop through each BMB and channel
 		for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
@@ -596,41 +647,86 @@ uint8_t pollAllVoltageData() {
 				setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
 				BMBTimeoutCount[i-1]+=1;
 				DWT_Delay_ms(10000);
-				RXTurnOnInit();
-				//BMBInit(); //switch directions instead of just BMB init again 
-				ringArch(i); //or should it be i+1 
+				RXTurnOnInit(); 
+				if(!ringarch){
+					//first broken one, go to ring architecture 
+					ringarch = ringArch(i); //should it be i-1? 
+					broken_dev_addr = i; 
+				} else {
+					BMBInit(); 
+				}
 				taskEXIT_CRITICAL();
 				return i;
 			}
 		}
-		taskEXIT_CRITICAL();
-
-		// Handle writing data separately from receive so you don't miss a byte
-		for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
-			for(uint8_t j = 0; j < VSENSE_CHANNELS; j++) {
-				uint8_t high_byte_data = response[i].data[2*j];
-				uint8_t low_byte_data = response[i].data[2*j+1];
-
-				BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = calculateVoltage(high_byte_data, low_byte_data);
-				if(i == 1 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				} else if(i == 4 && (VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				} else if(i == 5 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				} else if(i == 3 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				}
-				if(i == 3 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-									BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
-								}
-				if(i == 4 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
-				}
+	} else {
+		reverseBase(); 
+		uart_sendCommand(&read_voltage); 
+		//assuming stack read gives highest addr back first, and want response in order from low to high
+		//read bmbs after broken one 
+		for(int i = broken_dev_addr+1; i<BOARD_NUM-1; i++){
+			uint8_t status = uart_receiveResponse(&response[i-1], 27);
+			if(status != 0) {
+				setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
+				BMBTimeoutCount[i-1]+=1;
+				DWT_Delay_ms(10000);
+				RXTurnOnInit(); 
+				BMBInit(); 
+				taskEXIT_CRITICAL();
+				return i;
 			}
 		}
 
-		return 0;
+		//read bmbs before broken one 
+		forwardBase(); 
+		uart_sendCommand(&read_voltage); 
+		for(int i = broken_dev_addr-1; i>=1; i--){
+			uint8_t status = uart_receiveResponse(&response[i-1], 27);
+			if(status != 0) {
+				setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
+				BMBTimeoutCount[i-1]+=1;
+				DWT_Delay_ms(10000);
+				RXTurnOnInit(); 
+				BMBInit(); 
+				taskEXIT_CRITICAL();
+				return i;
+			}
+		}
+	}
+	taskEXIT_CRITICAL();
+
+	// Handle writing data separately from receive so you don't miss a byte
+	for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
+		//skip broken one 
+		if(ringarch){
+			if(i==broken_dev_addr){
+				continue; 
+			}
+		}
+		for(uint8_t j = 0; j < VSENSE_CHANNELS; j++) {
+			uint8_t high_byte_data = response[i].data[2*j];
+			uint8_t low_byte_data = response[i].data[2*j+1];
+
+			BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = calculateVoltage(high_byte_data, low_byte_data);
+			if(i == 1 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+				BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
+			} else if(i == 4 && (VSENSE_CHANNELS-j-1 == 13)) {
+				BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
+			} else if(i == 5 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+				BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
+			} else if(i == 3 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+				BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
+			}
+			if(i == 3 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+								BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
+							}
+			if(i == 4 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+				BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
+			}
+		}
+	}
+
+	return 0;
 }
 
 bool setMuxOutput(uint8_t channel) {
@@ -663,6 +759,10 @@ bool setMuxOutput(uint8_t channel) {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
+
+	if(ringarch){
+		sendRingArch(enable_gpio); 
+	}
 	return true;
 }
 
@@ -684,24 +784,63 @@ void pollAllTemperatureData(int channel) {
 	};
 
 	taskENTER_CRITICAL();
-	uart_sendCommand(&read_therms);
 
 	uart_response_t response[BOARD_NUM-1];
 
 
+	if(!ringarch){
+		uart_sendCommand(&read_therms);
+		for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
+			if(uart_receiveResponse(&response[i-1], 7) != UART_FAILURE) {
+					//loop through each GPIO channel
+				setBMBErr(i-1, BMB_TEMP_READ_ERROR);
+				BMBTimeoutCount[i-1]+=1;
+				if(!ringarch){
+						//first broken one, go to ring architecture 
+						ringarch = ringArch(i); //should it be i-1? 
+						broken_dev_addr = i; 
+					} else {
+						BMBInit(); 
+				}
+				return;
+			}
+		}
+	} else {
+		reverseBase(); 
+		uart_sendCommand(&read_voltage); 
+		//assuming stack read gives highest addr back first, and want response in order from low to high
+		//read bmbs after broken one 
+		for(int i = broken_dev_addr+1; i<BOARD_NUM-1; i++){
+			if(uart_receiveResponse(&response[i-1], 7) != UART_FAILURE) {
+					//loop through each GPIO channel
+				setBMBErr(i-1, BMB_TEMP_READ_ERROR); 
+				BMBTimeoutCount[i-1]+=1;
+				BMBInit(); 
+				return;
+			}
+		}
 
-	for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
-		if(uart_receiveResponse(&response[i-1], 7) != UART_FAILURE) {
-				//loop through each GPIO channel
-			setBMBErr(i-1, BMB_TEMP_READ_ERROR);
-			BMBTimeoutCount[i-1]+=1;
-			return;
+		//read bmbs before broken one 
+		forwardBase(); 
+		uart_sendCommand(&read_voltage); 
+		for(int i = broken_dev_addr-1; i>=1; i--){
+			if(uart_receiveResponse(&response[i-1], 7) != UART_FAILURE) {
+					//loop through each GPIO channel
+				setBMBErr(i-1, BMB_TEMP_READ_ERROR);
+				BMBTimeoutCount[i-1]+=1;
+				BMBInit(); 
+				return;
+			}
 		}
 	}
 	taskEXIT_CRITICAL();
 
 
 	for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
+		if(ringarch && broken_dev_addr = i){
+			continue; 
+		}
+		
 		for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; k++) {
 			uint8_t high_byte_data = response[i].data[2*k];
 			uint8_t low_byte_data = response[i].data[2*k+1];
@@ -741,8 +880,16 @@ void cellBalancingSetup() {
 	cmr_uart_result_t res;
 	res = uart_sendCommand(&balance_register);
 
+	if(ringarch){
+		sendRingArch(balance_register); 
+	}
+
 	balance_register.registerAddress = CB_CELL7_CTRL;
 	res = uart_sendCommand(&balance_register);
+
+	if(ringarch){
+		sendRingArch(balance_register); 
+	}
 
 	//set duty cycle to switch between even and odd cells
 	uart_command_t duty_cycle = {
@@ -754,6 +901,10 @@ void cellBalancingSetup() {
 		.crc = {0x00, 0x00}
 	};
 	res = uart_sendCommand(&duty_cycle);
+
+	if(ringarch){
+		sendRingArch(duty_cycle); 
+	}
 
 	//set UV stuff for stopping balancing to default at 4.2 volts
 	uart_command_t UV = {
@@ -784,15 +935,39 @@ bool getBalDone() {
 	};
 	bool shitter = false;
 	uart_sendCommand(&getBalDone);
-	uart_response_t response[BOARD_NUM-1];
-	for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
-		uint8_t status = uart_receiveResponse(&response[i-1], 2);
-		if(status != 0) {
-			shitter = false;
+	if(!ringarch){
+		uart_response_t response[BOARD_NUM-1];
+		for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
+			uint8_t status = uart_receiveResponse(&response[i-1], 2);
+			if(status != 0) {
+				shitter = false;
+			}
+			else if(i != 7 && (response[i-1].data[0] != 0 || response[i-1].data[1] != 0)) {
+				shitter = true;
+			}
 		}
-		else if(i != 7 && (response[i-1].data[0] != 0 || response[i-1].data[1] != 0)) {
-			shitter = true;
+	} else {
+		uart_response_t forward_response[broken_dev_addr-1]; 
+		for(uint8_t i = broken_dev_addr-1; i>=1; i--){
+			uint8_t status = uart_receiveResponse(&response[i-1], 2);
+			if(status != 0) {
+				shitter = false;
+			}
+			else if(i != 7 && (response[i-1].data[0] != 0 || response[i-1].data[1] != 0)) {
+				shitter = true;
+			}
 		}
+		uart_response_t reverse_response[BOARD_NUM-1 - broken_dev_addr]; 
+		//does this loop need to be backwards?  
+		for(uint8_t i = 0; i< BOARD_NUM-1 - broken_dev_addr; i++){
+			uint8_t status = uart_receiveResponse(&response[i-1], 2);
+			if(status != 0) {
+				shitter = false;
+			}
+			else if(i != 7 && (response[i-1].data[0] != 0 || response[i-1].data[1] != 0)) {
+				shitter = true;
+			}
+		} 
 	}
 	return shitter;
 
@@ -817,6 +992,11 @@ void cellBalancing(bool set, uint16_t thresh) {
 		}
 		//board index by 0 but don't send to interface chip
 		for(int i = 0; i < BOARD_NUM-1; i++) {
+			//skip broken one 
+			if(ringarch && broken_dev_addr==i){
+				continue; 
+			}
+
 			thresh = 0;
 			for(int j = 0; j < VSENSE_CHANNELS; j++) {
 				if(BMBData[i].cellVoltages[j] > thresh) {
@@ -838,6 +1018,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 				}
 			}
 			res = uart_sendCommand(&balance_register);
+
 			balance_register.registerAddress = CB_CELL7_CTRL;
 			for(int j = 0; j < 7; j++) {
 				balance_register.data[j] = 0x04;
@@ -847,7 +1028,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 					balance_register.data[6-j] = 0x00;
 				}
 			}
-			res = uart_sendCommand(&balance_register);
+			res = uart_sendCommand(&balance_register); 
 		}
 		//set duty cycle to switch between even and odd cells
 //		uart_command_t duty_cycle = {
@@ -896,11 +1077,20 @@ void cellBalancing(bool set, uint16_t thresh) {
 		};
 		cmr_uart_result_t res;
 		res = uart_sendCommand(&balance_register);
+		if(ringarch){
+			sendRingArch(balance_register); 
+		} 
 
 		balance_register.registerAddress = CB_CELL7_CTRL;
 		res = uart_sendCommand(&balance_register);
+		if(ringarch){
+			sendRingArch(balance_register); 
+		}
 	}
 	res = uart_sendCommand(&enable);
+	if(ringarch){
+		sendRingArch(enable); 
+	}
 }
 
 void writeLED(bool set) {
@@ -914,6 +1104,10 @@ void writeLED(bool set) {
 			.crc = {0x00, 0x00}
 	};
 	uart_sendCommand(&write_led);
+
+	if(ringarch){
+		sendRingArch(write_led); 
+	}
 }
 
 void disableTimeout() {
@@ -940,6 +1134,10 @@ void byteDelay(uint8_t delay) {
 			.crc = {0x00, 0x00}
 	};
 	uart_sendCommand(&byte_delay);
+
+	if(ringarch){
+		sendRingArch(byte_delay); 
+	}
 }
 
 void txToRxDelay(uint8_t delay) {
@@ -974,6 +1172,10 @@ void twoStop() {
 			.crc = {0x00, 0x00}
 	};
 	uart_sendCommand(&two_stop_stack);
+
+	if(ringarch){
+		sendRingArch(two_stop_stack); 
+	}
 }
 
 
