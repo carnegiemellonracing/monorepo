@@ -474,7 +474,7 @@ static bool reverseBase(){
 	} 
 }
 
-static void forwardBase(){
+static bool forwardBase(){
 	//flip dirsel of base device  
 	uart_command_t set_dir = {
 		.readWrite = SINGLE_WRITE,
@@ -664,7 +664,7 @@ uint8_t pollAllVoltageData() {
 		uart_sendCommand(&read_voltage); 
 		//assuming stack read gives highest addr back first, and want response in order from low to high
 		//read bmbs after broken one 
-		for(int i = broken_dev_addr+1; i<BOARD_NUM-1; i++){
+		for(int i = broken_dev_addr+1; i<=BOARD_NUM-1; i++){
 			uint8_t status = uart_receiveResponse(&response[i-1], 27);
 			if(status != 0) {
 				setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
@@ -810,7 +810,7 @@ void pollAllTemperatureData(int channel) {
 		uart_sendCommand(&read_voltage); 
 		//assuming stack read gives highest addr back first, and want response in order from low to high
 		//read bmbs after broken one 
-		for(int i = broken_dev_addr+1; i<BOARD_NUM-1; i++){
+		for(int i = broken_dev_addr+1; i=<BOARD_NUM-1; i++){
 			if(uart_receiveResponse(&response[i-1], 7) != UART_FAILURE) {
 					//loop through each GPIO channel
 				setBMBErr(i-1, BMB_TEMP_READ_ERROR); 
@@ -840,7 +840,7 @@ void pollAllTemperatureData(int channel) {
 		if(ringarch && broken_dev_addr = i){
 			continue; 
 		}
-		
+
 		for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; k++) {
 			uint8_t high_byte_data = response[i].data[2*k];
 			uint8_t low_byte_data = response[i].data[2*k+1];
@@ -934,9 +934,9 @@ bool getBalDone() {
 		.crc = {0x00, 0x00}
 	};
 	bool shitter = false;
-	uart_sendCommand(&getBalDone);
+	uart_response_t response[BOARD_NUM-1];
 	if(!ringarch){
-		uart_response_t response[BOARD_NUM-1];
+		uart_sendCommand(&getBalDone); 
 		for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
 			uint8_t status = uart_receiveResponse(&response[i-1], 2);
 			if(status != 0) {
@@ -947,8 +947,24 @@ bool getBalDone() {
 			}
 		}
 	} else {
-		uart_response_t forward_response[broken_dev_addr-1]; 
-		for(uint8_t i = broken_dev_addr-1; i>=1; i--){
+		reverseBase(); 
+		uart_sendCommand(&getBalDone); 
+		//assuming stack read gives highest addr back first, and want response in order from low to high
+		//read bmbs after broken one 
+		for(int i = broken_dev_addr+1; i<=BOARD_NUM-1; i++){
+			uint8_t status = uart_receiveResponse(&response[i-1], 2);
+			if(status != 0) {
+				shitter = false;
+			}
+			else if(i != 7 && (response[i-1].data[0] != 0 || response[i-1].data[1] != 0)) {
+				shitter = true; 
+			}
+		}
+
+		//read bmbs before broken one 
+		forwardBase(); 
+		uart_sendCommand(&getBalDone); 
+		for(int i = broken_dev_addr-1; i>=1; i--){
 			uint8_t status = uart_receiveResponse(&response[i-1], 2);
 			if(status != 0) {
 				shitter = false;
@@ -957,17 +973,6 @@ bool getBalDone() {
 				shitter = true;
 			}
 		}
-		uart_response_t reverse_response[BOARD_NUM-1 - broken_dev_addr]; 
-		//does this loop need to be backwards?  
-		for(uint8_t i = 0; i< BOARD_NUM-1 - broken_dev_addr; i++){
-			uint8_t status = uart_receiveResponse(&response[i-1], 2);
-			if(status != 0) {
-				shitter = false;
-			}
-			else if(i != 7 && (response[i-1].data[0] != 0 || response[i-1].data[1] != 0)) {
-				shitter = true;
-			}
-		} 
 	}
 	return shitter;
 
