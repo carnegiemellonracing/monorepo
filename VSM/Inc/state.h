@@ -24,17 +24,10 @@ typedef struct {
     cmr_canState_t dimRequestReject;    /**< @brief Rejected DIM state request. */
 } vsmStatus_t;
 
-/** @brief Cooling states. */
-typedef enum {
-    COOLING_STATE_ERROR,    /**< Cooling system has an error. */
-    COOLING_STATE_OFF,      /**< Cooling system is off. */
-    COOLING_STATE_LOW,      /**< Cooling system is running at low power. */
-    COOLING_STATE_HIGH      /**< Cooling system is running at full capacity. */
-} coolingState_t;
-
 extern cmr_canState_t vsmToCANState[];
 extern volatile TickType_t lastStateChangeTime_ms;
 extern volatile cmr_canHVCMode_t hvcModeRequest;
+extern volatile bool ASMS;
 
 void stateInit(void);
 cmr_canVSMState_t getCurrentState(void);

@@ -18,6 +18,7 @@
 #include "can.h"        // Interface to implement
 #include "sensors.h"    // sensorChannel_t
 #include "state.h"      // getCurrentErrors(), getCurrentWarnings()
+#include <Maxon/maxonControl.h> //Maxon controller
 
 /**
  * @brief CAN periodic message receive metadata
@@ -46,6 +47,13 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_VSM_DIM_TIMEOUT
     },
+    [CANRX_HEARTBEAT_AIM] = {
+				.canID = CMR_CANID_HEARTBEAT_AIM,
+				.timeoutError_ms = 100,
+				.errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
+				.timeoutWarn_ms = 25,
+				.warnFlag = CMR_CAN_WARN_VSM_AIM_TIMEOUT
+	},
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
         .timeoutError_ms = 100,
@@ -84,7 +92,28 @@ cmr_canRXMeta_t canRXMeta[] = {
         .canID = CMR_CANID_AMK_RR_ACT_1,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
-    }
+    },
+    [CANRX_RES] = {
+            .canID = CMR_CANID_AS_RES,
+            .timeoutError_ms = 100,
+            .timeoutWarn_ms = 25,
+            .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT
+    },
+    [CANRX_AS_PRESSURE_READING] = {
+            .canID = CMR_CANID_AS_PRESSURE_READINGS,
+            .timeoutError_ms = 100,
+            .timeoutWarn_ms = 25,
+    },
+    [CANRX_MAXON_HEARTBEAT] = {
+            .canID = CMR_CANID_MAXON_HEARTBEAT,
+            .timeoutError_ms = 100,
+            .timeoutWarn_ms = 25,
+    },
+    [CANRX_MAXON_STATUS_WORD] = {
+            .canID = CMR_CANID_MAXON_STATUS_WORD,
+            .timeoutError_ms = 100,
+            .timeoutWarn_ms = 25,
+    },
 };
 
 /**
@@ -99,12 +128,17 @@ const cmr_canVSMErrorSource_t vsmErrorSourceFlags[] = {
     [CANRX_HEARTBEAT_HVC]       = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_HEARTBEAT_CDC]       = CMR_CAN_VSM_ERROR_SOURCE_CDC,
     [CANRX_HEARTBEAT_DIM]       = CMR_CAN_VSM_ERROR_SOURCE_DIM,
+    [CANRX_HEARTBEAT_AIM]       = CMR_CAN_VSM_ERROR_SOURCE_AIM,
     [CANRX_FSM_DATA]            = CMR_CAN_VSM_ERROR_SOURCE_DIM,
     [CANRX_DIM_REQUEST]         = CMR_CAN_VSM_ERROR_SOURCE_NONE, // Don't timeout based on DIM requests
     [CANRX_INVERTER_1]          = CMR_CAN_VSM_ERROR_SOURCE_NONE, // Don't timeout inverter here
     [CANRX_INVERTER_2]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_INVERTER_3]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_INVERTER_4]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
+    [CANRX_RES]                 = CMR_CAN_VSM_ERROR_SOURCE_NONE,
+    [CANRX_AS_PRESSURE_READING] = CMR_CAN_VSM_ERROR_SOURCE_AIM,
+    [CANRX_MAXON_HEARTBEAT]     = CMR_CAN_VSM_ERROR_SOURCE_NONE,
+    [CANRX_MAXON_STATUS_WORD]   = CMR_CAN_VSM_ERROR_SOURCE_NONE
 };
 
 /** @brief CAN 10 Hz TX priority. */
@@ -160,6 +194,20 @@ static void canTX10Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendPowerDiagnostics();
+        
+        //sets Maxon state based on VSM state
+		if (getCurrentState() == CMR_CAN_VSM_STATE_GLV_ON){
+            switchToMaxonstate(CMR_MAXON_READY_TO_SWITCH_ON);
+        }
+		else if (getCurrentState() == CMR_CAN_VSM_STATE_AS_READY){
+            switchToMaxonstate(CMR_MAXON_SWITCHED_ON);
+        }
+		else if (getCurrentState() == CMR_CAN_VSM_STATE_AS_DRIVING){
+            switchToMaxonstate(CMR_MAXON_OPERATION_ENABLED);
+        }
+		else if (getCurrentState() == CMR_CAN_VSM_STATE_AS_EMERGENCY){
+            switchToMaxonstate(CMR_MAXON_QUICK_STOP_ACTIVE);
+        }
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -258,12 +306,23 @@ void canInit(void) {
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_FSM_DATA,
-                CMR_CANID_FSM_SWANGLE,
+                CMR_CANID_FSM_SWANGLE, //commented out?
                 CMR_CANID_DIM_REQUEST,
                 CMR_CANID_AMK_FL_ACT_1,
                 CMR_CANID_AMK_FR_ACT_1
             }
         },
+
+        {
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO0,
+            .ids = {
+                    CMR_CANID_AS_RES,
+                    CMR_CANID_AS_RES,
+                    CMR_CANID_AUTONOMOUS_ACTION,
+                    CMR_CANID_AUTONOMOUS_ACTION
+            }
+		},
 
         // ----------------------------------------------------------------------------------------
         // RX FIFO 1
@@ -288,10 +347,22 @@ void canInit(void) {
                 CMR_CANID_AMK_RR_ACT_1
             }
         },
+        {
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO1,
+            .ids = {
+                    CMR_CANID_AS_PRESSURE_READINGS,
+                    CMR_CANID_MAXON_STATUS_WORD,
+                    CMR_CANID_MAXON_HEARTBEAT,
+                    CMR_CANID_MAXON_HEARTBEAT
+            }
+		},
     };
     cmr_canFilter(
         &can, canFilters, sizeof(canFilters) / sizeof(canFilters[0])
     );
+
+    maxonInit(&can, &canRXMeta[CANRX_MAXON_HEARTBEAT], &canRXMeta[CANRX_MAXON_STATUS_WORD]);
 
     // Task initialization.
     cmr_taskInit(
@@ -371,7 +442,29 @@ cmr_canState_t getModuleState(canRX_t module) {
     }
 
     cmr_canHeartbeat_t *heartbeat = getPayload(module);
-    return (cmr_canState_t)(heartbeat->state);
+    uint8_t state = heartbeat->state;
+
+    //if AIM heartbeat we remove the ASMS bit which is the
+	// most significant bit using bit wise operators
+	if(module == CANRX_HEARTBEAT_AIM){
+		uint8_t mask = (uint8_t)(~(3 << 6));  // Ensures proper wrapping
+		state = (state & mask);
+	}
+
+    return (cmr_canState_t)(state);
+}
+
+/**
+ * @brief Gets the ASMS from the AIM heartbeat
+ * 
+ * @return true iff ASMS is on and we are in autonomous mode
+ */
+bool getASMSState() {
+
+	cmr_canHeartbeat_t *heartbeat = getPayload(CANRX_HEARTBEAT_AIM);
+	uint8_t state = heartbeat->state;
+
+	return (bool)(state >> 7);
 }
 
 /**

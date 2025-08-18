@@ -52,16 +52,6 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     //     }
     // },
 
-    [GPIO_OUT_DCDC_EN] = {
-        .port = GPIOA,
-        .init = {
-            .Pin = GPIO_PIN_4,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-
     [GPIO_OUT_SOFTWARE_ERR] = {
         .port = GPIOA,
         .init = {
@@ -105,7 +95,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_IN_IMD_ERR] = {
         .port = GPIOB,
         .init = {
-            .Pin = GPIO_PIN_6,
+            .Pin = GPIO_PIN_8,
             .Mode = GPIO_MODE_INPUT,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
@@ -144,7 +134,6 @@ void gpioInit(void) {
     cmr_pwmSetDutyCycle(&LED_Red, 0);
     cmr_pwmSetDutyCycle(&LED_Green, 0);
 
-    cmr_gpioWrite(GPIO_OUT_DCDC_EN, 0);
     cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
     cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 0);
 }

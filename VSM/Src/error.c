@@ -26,7 +26,7 @@ static const TickType_t badStateThres_ms = 50;
 
 // Forward declarations
 static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime);
-
+static bool getASEmergency();
 /**
  * @brief Checks for all errors and updates vsmStatus as needed.
  *
@@ -47,7 +47,8 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     for (canRX_t i = 0; i < CANRX_LEN; i++) {
         cmr_canRXMeta_t *rxMeta = &(canRXMeta[i]);
 
-        if (cmr_canRXMetaTimeoutError(rxMeta, lastWakeTime) < 0) {
+        if (cmr_canRXMetaTimeoutError(rxMeta, lastWakeTime) < 0
+            && i != CANRX_RES) {
             heartbeatErrors |= rxMeta->errorFlag;
             moduleTimeoutMatrix |= vsmErrorSourceFlags[i];
         }
@@ -77,12 +78,15 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     // Set software latch in the event of BMS voltage or temperature errors.
     // See rule EV 5.1.10.
     cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
-
-    if (/*(cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), lastWakeTime) != 0)
+    //cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
+    if (/*(cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), lastWakeTime) != 0) not commented out in 24a
      ||*/ (hvcHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_PACK_OVERVOLT)
      || (hvcHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERVOLT)
      || (hvcHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERTEMP)) {
 
+        cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
+    }
+    else if (getASEmergency()){
         cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
     }
     else {
@@ -265,9 +269,23 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
                 break;
             }
 
-            case CMR_CAN_VSM_STATE_INVERTER_EN:
+            case CMR_CAN_VSM_STATE_INVERTER_EN: //Fallthrough
             case CMR_CAN_VSM_STATE_HV_EN:
             case CMR_CAN_VSM_STATE_RTD:
+            case CMR_CAN_VSM_STATE_AS_READY:
+            case CMR_CAN_VSM_STATE_AS_DRIVING:
+            case CMR_CAN_VSM_STATE_AS_FINISHED:
+            case CMR_CAN_VSM_STATE_AS_EMERGENCY: {
+                if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
+                    wrongState = true;
+                }
+
+                break;
+            }
+
+            // case CMR_CAN_VSM_STATE_INVERTER_EN:
+            // case CMR_CAN_VSM_STATE_HV_EN:
+            // case CMR_CAN_VSM_STATE_RTD: 25e, fall thru to default but seems unimplemented
 
             default: {
                 cmr_panic("Invalid VSM state");
@@ -294,4 +312,11 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
     }
 
     return 0;
+}
+
+/**
+ * @brief Check if Autonomous Systems are in emergency state*/
+
+static bool getASEmergency(){
+    return false;
 }
