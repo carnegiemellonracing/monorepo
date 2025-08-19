@@ -1,11 +1,10 @@
 import re
 import json
+import math 
 
 output = "stm32f413-drivers/filegen/symv1.sym"
 symlines = [] 
 repeat_names = {} #canid, number of times repeated 
-units = ["mps"]
-
 
 def numbercanids():
     #for can id file numbering 
@@ -64,34 +63,34 @@ def get_cantypes_data(cantype, structs):
         if re.search(name, cantype): 
             #find struct declaration with the right can type 
             return re.findall(r'\b((?:u)?int\d+_t|float)\s+(\w+)\b', fields) 
-        
-def format_bitpacking_1(vartype, name, size, packed_num, atbit, structlines, field_params=None):
-#packed_num is the number of fields packed into var
-    packed_size = int(size/packed_num)
-    for i in range (0, packed_num):
-        appendstr="Var="+name+str(i)+" "+vartype+ " " +str(atbit)+","+str(packed_size)
-        # Add field-specific parameters if available
-        if field_params and name in field_params:
-            appendstr += format_field_params(field_params[name])
-        structlines.append(appendstr)
-        atbit+=packed_size
-    return atbit
 
-def format_bitpacking_2(vartype, atbit, packedinfo, structlines, field_params=None):
-    for littlename in packedinfo:
-        if littlename.startswith("empty"):
-            atbit+=packedinfo[littlename]
-            continue
-        else:
-            appendstr = "Var="+littlename+" "+vartype+" "+str(atbit)+","+str(packedinfo[littlename])
-            # Add field-specific parameters if available
-            if field_params and littlename in field_params:
-                appendstr += format_field_params(field_params[littlename])
-            structlines.append(appendstr)
-            atbit+=packedinfo[littlename]
-    return atbit
+def format_bitpacking(structname, structlines, atbit, enums):
+    for enumfields, name in enums:
+        if name == structname: 
+            packed_fields = re.findall(r'(?:CMR_CAN_)?(\w+)\s*=\s*\(?\s*(0x[\da-fA-F]+|\d+)\s*[a-zA-Z]*\s*\)?\s*(?:\(?\s*<<\s*(\d+)\s*\)?)?', enumfields) 
+            for name, size, position in packed_fields:
+                print("in loop with "+name)
+                if "0x" in size: 
+                    size = int(size.split("0x")[1], 16) 
+                if int(size) == 0: 
+                    continue 
+                realsize = int(math.log(int(size), 2)) + 1
+                if position: 
+                    print("normal bitpacking case") 
+                    #totalsize+=realsize 
+                else:
+                    binary = bin(size)[2:] 
+                    binary = binary[::-1]
+                    position = atbit 
+                    for i, c in enumerate(binary):
+                        if c == '1':
+                            position = i 
+                structlines.append("Var="+name.lower()+" bit "+str(atbit+int(position))+","+str(realsize)) 
+                    #atbit+=realsize 
 
-def format_field_params(params):
+
+
+def format_field_params(params): 
     """Format field-specific parameters like u, f, p, e, etc."""
     param_str = ""
     if 'u' in params:
@@ -108,40 +107,33 @@ def format_field_params(params):
         param_str += f" /max:{params['max']}"
     return param_str
 
-def format_fields(cantype, matches, structlines, field_params=None):
+def format_fields(cantype, matches, structlines, enums, field_params=None):
     atbit = 0
     size = None
-    bitpacking = None
-    bptype = 0 
-    with open("stm32f413-drivers/filegen/bitpacking.json", "r") as file:
-        bfile = json.load(file) 
-        if cantype in bfile["type1"]:
-            bitpacking = bfile["type1"][cantype]
-            bptype=1
-        elif cantype in bfile["type2"]:
-            bitpacking = bfile["type2"][cantype]
-            bptype=2 #HVC heartbeat needs to be added 
+
     for vartype, name in matches:
+        print("doing "+vartype+name)
         findsize = re.search(r'\d+', vartype)
         if findsize:
             size = int(findsize.group())
             if vartype.startswith('u'):
                 vartype = 'unsigned'
             else: 
-                vartype = 'signed'
+                vartype = 'signed' 
         else:
             if vartype == 'float':
                 #technically unnecessary check, all others should be float
                 size = 32 
-        if bitpacking and name in bitpacking:
-            #this field is bitpacked
-            if(bptype==1):
-                atbit = format_bitpacking_1(vartype, name, size, bitpacking[name], atbit, structlines, field_params)
-                continue
-            if(bptype==2):
-                atbit = format_bitpacking_2(vartype, atbit, bitpacking[name], structlines, field_params)
-                continue
+        #check if field is bitpacked
+        if field_params and name in field_params:
+            if 'enumstruct' in field_params[name]:
+                print("in bitpacked part")
+                format_bitpacking(field_params[name]['enumstruct'], structlines, atbit, enums); 
+                atbit+=int(size) 
+                continue 
+        #add in field if not bitpacked 
         if size:
+            print("in not bitpacked part")
             appendstr = "Var="+name+" "+vartype+ " " +str(atbit)+","+str(size)
             # Add field-specific parameters if available
             if field_params and name in field_params:
@@ -151,18 +143,6 @@ def format_fields(cantype, matches, structlines, field_params=None):
         else:
             structlines.append("Issue with type of field")
     return str(int(atbit/8))
-
-def check_repeat(canid):
-    can_name = re.findall(r'CMR_CANID_(\w+)',canid)
-    for line in symlines: 
-        if can_name and can_name[0] in line:
-            line = line.split("]")[0] + "0]" #??
-            if canid not in repeat_names:
-                repeat_names[canid]=1
-                break
-            else:
-                repeat_names[canid]+=1 
-                break
 
 def extract_field_params(canid_data):
     """Extract field-specific parameters from the canid data"""
@@ -175,7 +155,9 @@ def extract_field_params(canid_data):
 def main():
     with open("stm32f413-drivers/filegen/can_types_new.h", "r") as structf: 
         #find all struct declarations
-        structs = re.findall(r'typedef\s+struct\s*\{([\s\S]*?)\}\s*(cmr_can\w+)\s*;', structf.read())
+        cantypes = structf.read()
+        structs = re.findall(r'typedef\s+struct\s*\{([\s\S]*?)\}\s*(cmr_can\w+)\s*;', cantypes)
+        enums = re.findall(r'typedef\s+enum\s*\{([\s\S]*?)\}\s*(cmr_can\w+)\s*;', cantypes)
     with open("stm32f413-drivers/filegen/canid_type_map.json", "r") as file: 
         json_obj = json.load(file)
         canids = json_obj['canid_to_info']
@@ -191,7 +173,7 @@ def main():
             
             if re.fullmatch(r'(cmr_[a-zA-Z0-9_]*_t)', cantype):
                 found = True 
-                check_repeat(canid)
+                #check_repeat(canid)
                 #valid can type in dict 
                 structlines = []
                 #look at mapper json for data
@@ -199,7 +181,7 @@ def main():
                 #find and format the correct struct in cantypes.h 
                 matches = get_cantypes_data(cantype, structs)
                 if matches: 
-                    dlc = format_fields(cantype, matches, structlines, field_params)
+                    dlc = format_fields(cantype, matches, structlines, enums, field_params)
                     structlines.insert(1, "DLC="+dlc)
                 else:
                     found = False

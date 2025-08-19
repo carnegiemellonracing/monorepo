@@ -237,7 +237,7 @@ typedef enum {
 
 /** @brief Vehicle Safety Module state and error status. */
 typedef struct {
-    uint8_t internalState;  //e:VSMState /**< @brief VSM internal state. Flag: cmr_canVSMState_t */
+    uint8_t internalState;  //e:VSMState /**< @brief VSM internal state. enum in cmr_canVSMState_t */
     /**
      * @brief Matrix of modules for which at least one message exceeded its error timeout.
      */
@@ -337,37 +337,37 @@ typedef enum {
     CMR_CAN_HVC_ERROR_NONE = 0x0000,    /**< @brief No errors detected. */
 
     // Pack errors
-    CMR_CAN_HVC_ERROR_PACK_UNDERVOLT   = 0x0001,    /**< @brief Pack voltage too low. */
-    CMR_CAN_HVC_ERROR_PACK_OVERVOLT    = 0x0002,    /**< @brief Pack voltage too high. */
-    CMR_CAN_HVC_ERROR_PACK_OVERCURRENT = 0x0008,    /**< @brief Pack current too high. */
+    CMR_CAN_HVC_ERROR_PACK_UNDERVOLT   = (1<<0),    /**< @brief Pack voltage too low. */
+    CMR_CAN_HVC_ERROR_PACK_OVERVOLT    = (1<<1),    /**< @brief Pack voltage too high. */
+    CMR_CAN_HVC_ERROR_PACK_OVERCURRENT = (1<<3),    /**< @brief Pack current too high. */
 
     // Cell errors
-    CMR_CAN_HVC_ERROR_CELL_UNDERVOLT = 0x0010,  /**< @brief At least one cell is undervoltage. */
-    CMR_CAN_HVC_ERROR_CELL_OVERVOLT  = 0x0020,  /**< @brief At least one cell is overvoltage. */
-    CMR_CAN_HVC_ERROR_CELL_OVERTEMP  = 0x0040,  /**< @brief At least one cell has overheated. */
-    CMR_CAN_HVC_ERROR_BMB_FAULT      = 0x0080,  /**< @brief At least one BMB has faulted. */
+    CMR_CAN_HVC_ERROR_CELL_UNDERVOLT = (1<<4),  /**< @brief At least one cell is undervoltage. */
+    CMR_CAN_HVC_ERROR_CELL_OVERVOLT  = (1<<5),  /**< @brief At least one cell is overvoltage. */
+    CMR_CAN_HVC_ERROR_CELL_OVERTEMP  = (1<<6),  /**< @brief At least one cell has overheated. */
+    CMR_CAN_HVC_ERROR_BMB_FAULT      = (1<<7),  /**< @brief At least one BMB has faulted. */
 
     // Communication errors
-    CMR_CAN_HVC_ERROR_BMB_TIMEOUT = 0x0100, /**< @brief BMB has timed out. */
-    CMR_CAN_HVC_ERROR_CAN_TIMEOUT = 0x0200, /**< @brief HVC command timed out. */
+    CMR_CAN_HVC_ERROR_BMB_TIMEOUT = (1<<8), /**< @brief BMB has timed out. */ 
+    CMR_CAN_HVC_ERROR_CAN_TIMEOUT = (1<<9), /**< @brief HVC command timed out. */
 
     // Other errors
-    CMR_CAN_HVC_ERROR_RELAY        = 0x1000,    /**< @brief Fault with AIRs. */
-    CMR_CAN_HVC_ERROR_LV_UNDERVOLT = 0x2000,    /**< @brief Shutdown circuit/AIR voltage too low. */
+    CMR_CAN_HVC_ERROR_RELAY        = (1<<12),    /**< @brief Fault with AIRs. */
+    CMR_CAN_HVC_ERROR_LV_UNDERVOLT = (1<<13),    /**< @brief Shutdown circuit/AIR voltage too low. */
 } cmr_canHVCError_t;
 
 /** @brief High Voltage Controller heartbeat (does not follow universal structure). */
 typedef struct {
-    uint16_t errorStatus;   /**< @brief Current HVC errors. Flag: cmr_canHVCError_t. */
-    uint8_t hvcMode;        /**< @brief Current HVC operating mode. Flag: cmr_canHVCMode_t. */
-    uint8_t hvcState;       /**< @brief Current internal HVC state. Flag: cmr_canHVCState_t. */
-    uint8_t relayStatus;    /**< @brief Status of AIRs. Flag: cmr_canHVCRelayStatus_t. */
+    uint16_t errorStatus;   //Flag: cmr_canHVCError_t/**< @brief Current HVC errors. */
+    uint8_t hvcMode;        //Flag: cmr_canHVCMode_t. /**< @brief Current HVC operating mode. */
+    uint8_t hvcState;       //Flag(not bitpacked?): cmr_canHVCState_t /**< @brief Current internal HVC state. */
+    uint8_t relayStatus;    //Flag(not implemented yet): cmr_canHVCRelayStatus_t /**< @brief Status of AIRs. */
     uint8_t uptime_s;       //u: s /**< @brief HVC uptime in seconds. */
 } cmr_canHVCHeartbeat_t;
 
 /** @brief High Voltage Controller command. */
 typedef struct {
-    uint8_t modeRequest;    //e:HVCMode /**< @brief HVC operating mode request. Flag: cmr_canHVCMode_t. */
+    uint8_t modeRequest;    //e:HVCMode Flag: cmr_canHVCMode_t. /**< @brief HVC operating mode request. */
 } cmr_canHVCCommand_t;
 
 /** @brief High Voltage Controller Balance Command. */
@@ -415,14 +415,14 @@ typedef enum{
 
 /** @brief High Voltage Controller BMB errors. */
 typedef struct {
-    uint8_t BMB1_2_Errs;  /**Flag: cmr_canBMBErr_t< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
-    uint8_t BMB3_4_Errs;  /**Flag: cmr_canBMBErr_t< @brief Errors for BMB3&4 (BMB3 = higher 4 bits). */
-    uint8_t BMB5_6_Errs;  /**Flag: cmr_canBMBErr_t<  @brief Errors for BMB5&6 (BMB5 = higher 4 bits). */
-    uint8_t BMB7_8_Errs;  /**Flag: cmr_canBMBErr_t< @brief Errors for BMB7&8 (BMB7 = higher 4 bits). */
-    uint8_t BMB9_10_Errs;  /**Flag: cmr_canBMBErr_t< @brief Errors for BMB9&10 (BMB9 = higher 4 bits). */
-    uint8_t BMB11_12_Errs;  /**Flag: cmr_canBMBErr_t< @brief Errors for BMB11&12 (BMB11 = higher 4 bits). */
-    uint8_t BMB13_14_Errs;  /**Flag: cmr_canBMBErr_t< @brief Errors for BMB13&14 (BMB13 = higher 4 bits). */
-    uint8_t BMB15_16_Errs;  /**Flag: cmr_canBMBErr_t< @brief Errors for BMB15&16 (BMB15 = higher 4 bits). */
+    uint8_t BMB1_2_Errs;  //Flag: cmr_canBMBErr_t  /**< @brief Errors for BMB1&2 (BMB1 = higher 4 bits). */
+    uint8_t BMB3_4_Errs;  //Flag: cmr_canBMBErr_t /**< @brief Errors for BMB3&4 (BMB3 = higher 4 bits). */
+    uint8_t BMB5_6_Errs;  //Flag: cmr_canBMBErr_t /**<  @brief Errors for BMB5&6 (BMB5 = higher 4 bits). */
+    uint8_t BMB7_8_Errs;  //Flag: cmr_canBMBErr_t /**< @brief Errors for BMB7&8 (BMB7 = higher 4 bits). */
+    uint8_t BMB9_10_Errs;  //Flag: cmr_canBMBErr_t /**< @brief Errors for BMB9&10 (BMB9 = higher 4 bits). */
+    uint8_t BMB11_12_Errs;  //Flag: cmr_canBMBErr_t /**< @brief Errors for BMB11&12 (BMB11 = higher 4 bits). */
+    uint8_t BMB13_14_Errs;  //Flag: cmr_canBMBErr_t /**< @brief Errors for BMB13&14 (BMB13 = higher 4 bits). */
+    uint8_t BMB15_16_Errs;  //Flag: cmr_canBMBErr_t/**< @brief Errors for BMB15&16 (BMB15 = higher 4 bits). */
 } cmr_canHVCBMBErrors_t; 
 
 //HV_I Sense Board CAN Types
@@ -569,12 +569,12 @@ typedef enum {
 } cmr_canLRUDButtons_t; 
 
 typedef struct {
-    uint8_t buttons;                 /**Flag: cmr_canDIMButtons_t < @brief Button states packed into an uint8_t. {drs,0,1,2,up,down,left,right}*/
+    uint8_t buttons;                 //Flag: cmr_canDIMButtons_t < @brief Button states packed into an uint8_t. {drs,0,1,2,up,down,left,right}
     uint8_t rotaryPos;
-    uint8_t switchValues;
+    uint8_t switchValues; 
     uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
     uint8_t paddle;            /**< @brief Between 0 and 255 for paddle pos*/
-    uint8_t LRUDButtons;     /**Flag: cmr_canLRUDButtons_t < @brief LRUD Button States, packed into an uint8_t*/
+    uint8_t LRUDButtons;     // Flag: cmr_canLRUDButtons_t /** < @brief LRUD Button States, packed into an uint8_t*/
 } cmr_canDIMActions_t;
 
 /** @brief DIM sends message to acknowledge radio message
@@ -671,8 +671,8 @@ typedef enum {
 
 /** @brief AMK motor controller status and velocity. */
 typedef struct {
-    uint16_t status_bv;         /**< @brief Status bit vector. Flag: cmr_canAMKStatus_t. */
-    int16_t velocity_rpm;       //u: rpm, p:4 /**< @brief Motor velocity (RPM). */
+    uint16_t status_bv;         //Flag: cmr_canAMKStatus_t /**<@brief Status bit vector */
+    int16_t velocity_rpm;       //u: rpm, p:4 /**< @brief Motor velocity (RPM). */ 
     int16_t torqueCurrent_raw;  //f:0.001701171875 /**< @brief Raw value for torque producing current. */
     int16_t magCurrent_raw;     //f:0.001701171875 /**< @brief Raw value for magnetizing current. */
 } cmr_canAMKActualValues1_t;
@@ -696,7 +696,7 @@ typedef enum {
 
 /** @brief AMK motor controller command message. */
 typedef struct {
-    uint16_t control_bv;        /**< @brief Control bit vector. Flag: cmr_canAMKSetpointsControl_t. See cmr_canAMKControl_t */
+    uint16_t control_bv;        //Flag: cmr_canAMKSetpointsControl_t /**< @brief Control bit vector.  See cmr_canAMKControl_t */
     int16_t velocity_rpm;       //u: rpm, p:2 /**< @brief Velocity setpoint (RPM) */
     int16_t torqueLimPos_dpcnt; //u: Nm, f:0.0098, p:4 /**< @brief Positive torque limit in 0.1% of 9.8 Nm (nominal torque) */
     int16_t torqueLimNeg_dpcnt; //u: Nm, f:0.0098, p:4 /**< @brief Negative torque limit in 0.1% of 9.8 Nm (nominal torque) */
