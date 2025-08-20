@@ -478,36 +478,54 @@
         },
         "CMR_CANID_HEARTBEAT_CDC": {
             "cycleTime": 10,
+            "error": {
+                "enumstruct": "cmr_canVSMHeartbeatErr_t"
+            },
             "state": {
                 "e": "State"
             },
             "timeOut": 50,
-            "type": "cmr_canHeartbeat_t"
+            "type": "cmr_canHeartbeat_t",
+            "warning": {
+                "enumstruct": "cmr_canVSMHeartbeatWrn_t"
+            }
         },
         "CMR_CANID_HEARTBEAT_DIM": {
             "cycleTime": 10,
+            "error": {
+                "enumstruct": "cmr_canVSMHeartbeatErr_t" 
+            },
             "state": {
                 "e": "State"
             },
             "timeOut": 50,
-            "type": "cmr_canHeartbeat_t"
+            "type": "cmr_canHeartbeat_t",
+            "warning": {
+                "enumstruct": "cmr_canVSMHeartbeatWrn_t"
+            }
         },
         "CMR_CANID_HEARTBEAT_FSM": {
             "cycleTime": 10,
+            "error": {
+                "enumstruct": "cmr_canVSMHeartbeatErr_t"
+            },
             "state": {
                 "e": "State"
             },
             "timeOut": 50,
-            "type": "cmr_canHeartbeat_t"
+            "type": "cmr_canHeartbeat_t",
+            "warning": {
+                "enumstruct": "cmr_canVSMHeartbeatWrn_t"
+            }
         },
         "CMR_CANID_HEARTBEAT_HVC": {
             "cycleTime": 10,
             "errorStatus": {
-                "enumstruct": "cmr_canHVCError_t" 
+                "enumstruct": "cmr_canHVCError_t"
             },
-            "hvcMode": { 
-                "enumstruct": "cmr_canHVCMode_t" 
-            }, 
+            "hvcMode": {
+                "enumstruct": "cmr_canHVCMode_t"
+            },
             "timeOut": 50,
             "type": "cmr_canHVCHeartbeat_t",
             "uptime_s": {
@@ -536,19 +554,31 @@
         },
         "CMR_CANID_HEARTBEAT_LV_BMS": {
             "cycleTime": 10,
+            "error": {
+                "enumstruct": "cmr_canVSMHeartbeatErr_t"
+            },
             "state": {
                 "e": "State"
             },
             "timeOut": 50,
-            "type": "cmr_canHeartbeat_t"
+            "type": "cmr_canHeartbeat_t",
+            "warning": {
+                "enumstruct": "cmr_canVSMHeartbeatWrn_t"
+            }
         },
         "CMR_CANID_HEARTBEAT_VSM": {
             "cycleTime": 10,
+            "error": {
+                "enumstruct": "cmr_canVSMHeartbeatErr_t"
+            },
             "state": {
                 "e": "State"
             },
             "timeOut": 50,
-            "type": "cmr_canHeartbeat_t"
+            "type": "cmr_canHeartbeat_t",
+            "warning": {
+                "enumstruct": "cmr_canVSMHeartbeatWrn_t"
+            }
         },
         "CMR_CANID_HVC_BMB_0_STATUS_TEMP": {
             "cycleTime": 1000,
@@ -772,7 +802,7 @@
             "timeOut": 25,
             "type": "cmr_canVSMPowerDiagnostics_t"
         },
-        "CMR_CANID_VSM_STATUS": { 
+        "CMR_CANID_VSM_STATUS": {
             "badStateMatrix": {
                 "enumstruct": "cmr_canVSMErrorSource_t"
             },
@@ -787,7 +817,7 @@
                 "enumstruct": "cmr_canVSMErrorSource_t"
             },
             "timeOut": 50,
-            "type": "cmr_canVSMStatus_t" 
+            "type": "cmr_canVSMStatus_t"
         }
     },
     "summary": {

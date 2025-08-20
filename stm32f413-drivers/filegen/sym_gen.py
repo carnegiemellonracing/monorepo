@@ -4,7 +4,6 @@ import math
 
 output = "stm32f413-drivers/filegen/symv1.sym"
 symlines = [] 
-repeat_names = {} #canid, number of times repeated 
 
 def numbercanids():
     #for can id file numbering 
@@ -45,14 +44,7 @@ def id2hex(id):
 
 def add_mapper_data(canid, cycletime, timeout, structlines):
         name = re.findall(r'CMR_CANID_(\w+)',canid) 
-        if canid in repeat_names:
-            repeat_num = repeat_names[canid]
-            if repeat_num > 0:
-                structlines.append("["+name[0]+str(repeat_num)+"]")
-            else:
-                structlines.append("["+name[0]+"]")
-        else:
-            structlines.append("["+name[0]+"]")
+        structlines.append("["+name[0]+"]")
         if id2hex(name[0]):
             structlines.append("ID="+id2hex(name[0])) 
         structlines.append("CycleTime="+str(cycletime))
@@ -64,21 +56,21 @@ def get_cantypes_data(cantype, structs):
             #find struct declaration with the right can type 
             return re.findall(r'\b((?:u)?int\d+_t|float)\s+(\w+)\b', fields) 
 
-def format_bitpacking(structname, structlines, atbit, enums):
+
+
+def format_bitpacking(structname, structlines, atbit, enums): 
+    print("searching for"+ structname)
     for enumfields, name in enums:
         if name == structname: 
+            print("found struct"+name) 
             packed_fields = re.findall(r'(?:CMR_CAN_)?(\w+)\s*=\s*\(?\s*(0x[\da-fA-F]+|\d+)\s*[a-zA-Z]*\s*\)?\s*(?:\(?\s*<<\s*(\d+)\s*\)?)?', enumfields) 
-            for name, size, position in packed_fields:
-                print("in loop with "+name)
+            for name, size, position in packed_fields: 
                 if "0x" in size: 
                     size = int(size.split("0x")[1], 16) 
                 if int(size) == 0: 
                     continue 
                 realsize = int(math.log(int(size), 2)) + 1
-                if position: 
-                    print("normal bitpacking case") 
-                    #totalsize+=realsize 
-                else:
+                if not position: 
                     binary = bin(size)[2:] 
                     binary = binary[::-1]
                     position = atbit 
@@ -86,8 +78,7 @@ def format_bitpacking(structname, structlines, atbit, enums):
                         if c == '1':
                             position = i 
                 structlines.append("Var="+name.lower()+" bit "+str(atbit+int(position))+","+str(realsize)) 
-                    #atbit+=realsize 
-
+                #atbit+=realsize 
 
 
 def format_field_params(params): 
@@ -107,12 +98,11 @@ def format_field_params(params):
         param_str += f" /max:{params['max']}"
     return param_str
 
-def format_fields(cantype, matches, structlines, enums, field_params=None):
+def format_fields(canid, matches, structlines, enums, field_params=None):
     atbit = 0
     size = None
 
-    for vartype, name in matches:
-        print("doing "+vartype+name)
+    for vartype, name in matches: 
         findsize = re.search(r'\d+', vartype)
         if findsize:
             size = int(findsize.group())
@@ -124,23 +114,40 @@ def format_fields(cantype, matches, structlines, enums, field_params=None):
             if vartype == 'float':
                 #technically unnecessary check, all others should be float
                 size = 32 
-        #check if field is bitpacked
-        if field_params and name in field_params:
-            if 'enumstruct' in field_params[name]:
-                print("in bitpacked part")
-                format_bitpacking(field_params[name]['enumstruct'], structlines, atbit, enums); 
+        #check if field is bitpacked 
+        if "HEARTBEAT" not in canid: 
+            #field is not from a heartbeat struct 
+            if field_params and name in field_params: 
+                if 'enumstruct' in field_params[name]: 
+                    format_bitpacking(field_params[name]['enumstruct'], structlines, atbit, enums); 
+                    atbit+=int(size) 
+                    continue 
+        else:
+            print(canid) 
+            #field is a heartbeat struct
+            if "error" in name:
+                print("doing error field" + name)
+                board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
+                boardname = board.group(1) 
+                format_bitpacking("cmr_can"+boardname+"HeartbeatErr_t", structlines, atbit, enums); 
+                atbit+=int(size) 
+                continue 
+            elif "warning" in name: 
+                print("doing warning field" + name) 
+                board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
+                boardname = board.group(1) 
+                format_bitpacking("cmr_can"+boardname+"HeartbeatWrn_t", structlines, atbit, enums); 
                 atbit+=int(size) 
                 continue 
         #add in field if not bitpacked 
-        if size:
-            print("in not bitpacked part")
+        if size: 
             appendstr = "Var="+name+" "+vartype+ " " +str(atbit)+","+str(size)
             # Add field-specific parameters if available
             if field_params and name in field_params:
                 appendstr += format_field_params(field_params[name])
             structlines.append(appendstr)
             atbit+=int(size)
-        else:
+        else: 
             structlines.append("Issue with type of field")
     return str(int(atbit/8))
 
@@ -181,7 +188,7 @@ def main():
                 #find and format the correct struct in cantypes.h 
                 matches = get_cantypes_data(cantype, structs)
                 if matches: 
-                    dlc = format_fields(cantype, matches, structlines, enums, field_params)
+                    dlc = format_fields(canid, matches, structlines, enums, field_params) 
                     structlines.insert(1, "DLC="+dlc)
                 else:
                     found = False
@@ -193,8 +200,7 @@ def main():
                     symlines.append("\n") 
     #write into symbol file 
     with open("stm32f413-drivers/filegen/symv1.sym", "w") as file:
-        file.write("\n".join(symlines))
-    print(repeat_names)
+        file.write("\n".join(symlines)) 
     print("done") 
 
 if __name__ == "__main__":

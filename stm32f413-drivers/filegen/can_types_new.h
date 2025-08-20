@@ -26,9 +26,9 @@ typedef enum {
 
 /** @brief Standard CAN heartbeat. */
 typedef struct {
-    uint8_t state;         //e:State    /**< @brief Board state. */
-    uint8_t error[2];      /**< @brief Error matrix. */
-    uint8_t warning[2];    /**< @brief Warning matrix. */
+    uint8_t state;         //e:State   /**< @brief Board state. */
+    uint8_t error[2];     //Flag: cmr_canVSMHeartbeatErr_t //Flag: cmr_canDIMHeartbeatErr_t   /**< @brief Error matrix. */ 
+    uint8_t warning[2];    //Flag: cmr_canVSMHeartbeatWrn_t  /**< @brief Warning matrix. */ 
 } cmr_canHeartbeat_t;
 
 /** @brief Heartbeat error matrix bit fields. */
@@ -234,6 +234,27 @@ typedef enum {
     /** @brief BSPD error latch is active. */
     CMR_CAN_VSM_LATCH_BSPD = (1 << 0),
 } cmr_canVSMLatch_t;
+
+typedef enum{
+    CMR_CAN_VSM_ERR_BRAKEPRESSOOR = (1<<0),
+    CMR_CAN_VSM_ERR_HALLEFFECTOOR = (1<<1),
+    CMR_CAN_VSM_ERR_DCDCFAULT = (1<<2),
+    CMR_CAN_VSM_ERR_LATCHEDERROR = (1<<3),
+    CMR_CAN_VSM_ERR_MODULE_STATE = (1<<4), 
+    CMR_CAN_VSM_ERR_MODULE_TIMEOUT = (1<<5) 
+} cmr_canVSMHeartbeatErr_t; 
+
+typedef enum {
+    CMR_CAN_VSM_WRN_VOLTAGEOOR = (1<<0),
+    CMR_CAN_VSM_WRN_CURRENTOOR = (1<<1), 
+    CMR_CAN_VSM_WRN_DIM_REQ_NAK = (1<<6),
+    CMR_CAN_VSM_WRN_HVI_TIMEOUT = (1<<7),
+    CMR_CAN_VSM_WRN_PTC_TIMEOUT = (1<<9),
+    CMR_CAN_VSM_WRN_DIM_TIMEOUT = (1<<10),
+    CMR_CAN_VSM_WRN_FSM_TIMEOUT = (1<<11),
+    CMR_CAN_VSM_WRN_CDC_TIMEOUT = (1<<12),
+    CMR_CAN_VSM_WRN_HVC_TIMEOUT = (1<<13) 
+} cmr_canVSMHeartbeatWrn_t; 
 
 /** @brief Vehicle Safety Module state and error status. */
 typedef struct {
@@ -532,6 +553,10 @@ typedef struct {
 
 // ------------------------------------------------------------------------------------------------
 // Driver Interface Module
+
+typedef enum{
+    CMR_CAN_DIM_ERR_VSM_TIMEOUT = (1<<0) 
+} cmr_canDIMHeartbeatErr_t; 
 
 /** @brief Driver Interface Module state/gear request. */
 typedef struct {

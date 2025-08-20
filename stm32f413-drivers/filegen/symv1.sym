@@ -409,8 +409,6 @@ ID=102
 CycleTime=10
 TimeOut=50
 Var=state unsigned 0,8 /e:State
-Var=error unsigned 8,8
-Var=warning unsigned 16,8
 
 
 [HEARTBEAT_DIM]
@@ -419,8 +417,7 @@ ID=104
 CycleTime=10
 TimeOut=50
 Var=state unsigned 0,8 /e:State
-Var=error unsigned 8,8
-Var=warning unsigned 16,8
+Var=dim_err_vsm_timeout bit 8,1
 
 
 [HEARTBEAT_FSM]
@@ -429,8 +426,6 @@ ID=103
 CycleTime=10
 TimeOut=50
 Var=state unsigned 0,8 /e:State
-Var=error unsigned 8,8
-Var=warning unsigned 16,8
 
 
 [HEARTBEAT_HVC]
@@ -438,21 +433,7 @@ DLC=6
 ID=101
 CycleTime=10
 TimeOut=50
-Var=hvc_error_pack_undervolt bit 0,1
-Var=hvc_error_pack_overvolt bit 1,1
-Var=hvc_error_pack_overcurrent bit 3,1
-Var=hvc_error_cell_undervolt bit 4,1
-Var=hvc_error_cell_overvolt bit 5,1
-Var=hvc_error_cell_overtemp bit 6,1
-Var=hvc_error_bmb_fault bit 7,1
-Var=hvc_error_bmb_timeout bit 8,1
-Var=hvc_error_can_timeout bit 9,1
-Var=hvc_error_relay bit 12,1
-Var=hvc_error_lv_undervolt bit 13,1
-Var=hvc_mode_idle bit 16,1
-Var=hvc_mode_start bit 17,1
-Var=hvc_mode_run bit 18,1
-Var=hvc_mode_charge bit 19,1
+Var=hvcMode unsigned 16,8
 Var=hvcState unsigned 24,8
 Var=relayStatus unsigned 32,8
 Var=uptime_s unsigned 40,8 /u:s
@@ -474,8 +455,6 @@ ID=107
 CycleTime=10
 TimeOut=50
 Var=state unsigned 0,8 /e:State
-Var=error unsigned 8,8
-Var=warning unsigned 16,8
 
 
 [HEARTBEAT_VSM]
@@ -484,8 +463,21 @@ ID=100
 CycleTime=10
 TimeOut=50
 Var=state unsigned 0,8 /e:State
-Var=error unsigned 8,8
-Var=warning unsigned 16,8
+Var=vsm_err_brakepressoor bit 8,1
+Var=vsm_err_halleffectoor bit 9,1
+Var=vsm_err_dcdcfault bit 10,1
+Var=vsm_err_latchederror bit 11,1
+Var=vsm_err_module_state bit 12,1
+Var=vsm_err_module_timeout bit 13,1
+Var=vsm_wrn_voltageoor bit 16,1
+Var=vsm_wrn_currentoor bit 17,1
+Var=vsm_wrn_dim_req_nak bit 22,1
+Var=vsm_wrn_hvi_timeout bit 23,1
+Var=vsm_wrn_ptc_timeout bit 25,1
+Var=vsm_wrn_dim_timeout bit 26,1
+Var=vsm_wrn_fsm_timeout bit 27,1
+Var=vsm_wrn_cdc_timeout bit 28,1
+Var=vsm_wrn_hvc_timeout bit 29,1
 
 
 [HVC_BMB_0_STATUS_TEMP]
