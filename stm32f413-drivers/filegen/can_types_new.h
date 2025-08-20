@@ -226,7 +226,7 @@ typedef enum {
     /** @brief No error latches are active. */
     CMR_CAN_VSM_LATCH_NONE = 0,
     /** @brief Software error latch is active. */
-    CMR_CAN_VSM_LATCH_SOFTWARE = (1 << 2),
+    CMR_CAN_VSM_LATCH_SOFTWARE = (1 << 3),
     /** @brief AMS errors use software error latch. */
     CMR_CAN_VSM_LATCH_AMS = (1<<2),
     /** @brief IMD error latch is active. */
@@ -381,7 +381,7 @@ typedef enum {
 typedef struct {
     uint16_t errorStatus;   //Flag: cmr_canHVCError_t/**< @brief Current HVC errors. */
     uint8_t hvcMode;        //Flag: cmr_canHVCMode_t. /**< @brief Current HVC operating mode. */
-    uint8_t hvcState;       //Flag(not bitpacked?): cmr_canHVCState_t /**< @brief Current internal HVC state. */
+    uint8_t hvcState;       /**< @brief Current internal HVC state. */
     uint8_t relayStatus;    //Flag(not implemented yet): cmr_canHVCRelayStatus_t /**< @brief Status of AIRs. */
     uint8_t uptime_s;       //u: s /**< @brief HVC uptime in seconds. */
 } cmr_canHVCHeartbeat_t;
@@ -594,11 +594,11 @@ typedef enum {
 } cmr_canLRUDButtons_t; 
 
 typedef struct {
-    uint8_t buttons;                 //Flag: cmr_canDIMButtons_t < @brief Button states packed into an uint8_t. {drs,0,1,2,up,down,left,right}
+    uint8_t buttons;         //Flag: cmr_canDIMButtons_t < @brief Button states packed into an uint8_t. {drs,0,1,2,up,down,left,right}
     uint8_t rotaryPos;
     uint8_t switchValues; 
-    uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
-    uint8_t paddle;            /**< @brief Between 0 and 255 for paddle pos*/
+    uint8_t regenPercent;    /**< @brief Integer percentage for regen. */
+    uint8_t paddle;          /**< @brief Between 0 and 255 for paddle pos*/
     uint8_t LRUDButtons;     // Flag: cmr_canLRUDButtons_t /** < @brief LRUD Button States, packed into an uint8_t*/
 } cmr_canDIMActions_t;
 

@@ -78,7 +78,7 @@ Var=VSM_ERR_HVCState bit 22,1
 Var=VSM_ERR_latchBSPD bit 24,1
 Var=VSM_ERR_latchIMD bit 25,1
 Var=VSM_ERR_latchAMS bit 26,1
-Var=VSM_ERR_latchSoftware bit 26,1
+Var=VSM_ERR_latchSoftware bit 27,1
 
 [VSM_Sensors]
 ID=200h
