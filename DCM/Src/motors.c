@@ -42,17 +42,6 @@ static const TickType_t motorsCommand_period_ms = 5;
 /** @brief DAQ CAN Test period (milliseconds) */
 static const TickType_t can10Hz_period_ms = 100;
 
-
-/** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
-static const TickType_t TPOS_IMPLAUS_THRES_MS = 100;
-/** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
-static const uint32_t TPOS_IMPLAUS_THRES = UINT8_MAX / 10;
-
-static const uint32_t LEFT_MIN = 450;
-static const uint32_t LEFT_MAX = 1869;
-static const uint32_t RIGHT_MIN = 800;
-static const uint32_t RIGHT_MAX = 3769;
-
 // ------------------------------------------------------------------------------------------------
 // Globals
 
@@ -70,25 +59,21 @@ static cmr_canGear_t gear = CMR_CAN_GEAR_SLOW;
  */
 static cmr_canAMKSetpoints_t motorSetpoints[MOTOR_LEN] = {
     [MOTOR_FL] = {
-        .control_bv         = 0,
         .velocity_rpm       = 0,
         .torqueLimPos_dpcnt = 0,
         .torqueLimNeg_dpcnt = 0
     },
     [MOTOR_FR] = {
-        .control_bv         = 0,
         .velocity_rpm       = 0,
         .torqueLimPos_dpcnt = 0,
         .torqueLimNeg_dpcnt = 0
     },
     [MOTOR_RL] = {
-        .control_bv         = 0,
         .velocity_rpm       = 0,
         .torqueLimPos_dpcnt = 0,
         .torqueLimNeg_dpcnt = 0
     },
     [MOTOR_RR] = {
-        .control_bv         = 0,
         .velocity_rpm       = 0,
         .torqueLimPos_dpcnt = 0,
         .torqueLimNeg_dpcnt = 0
@@ -101,54 +86,6 @@ cmr_canDAQTest_t getDAQTest() {
 
 // ------------------------------------------------------------------------------------------------
 // Private functions
-
-static uint32_t sampleTPOSDiff(uint32_t left, uint32_t right) {
-
-    /** @brief Last plausible time. */
-    static TickType_t lastPlausible = 0;
-    TickType_t now = xTaskGetTickCount();
-
-    uint32_t diff;
-    if (left > right) {
-        diff = left - right;
-    } else {
-        diff = right - left;
-    }
-
-    if (diff < TPOS_IMPLAUS_THRES) {
-        // Still plausible; move on.
-        lastPlausible = now;
-        return 0;
-    }
-
-    if (now - lastPlausible < TPOS_IMPLAUS_THRES_MS) {
-        // Threshold not elapsed; move on.
-        return 0;
-    }
-
-    return 1;   // Implausible!
-}
-
-static int32_t adcToUInt8(uint32_t reading, uint32_t readingMin, uint32_t readingMax) {
-    int32_t sensorVal = 0;
-    if (reading >= readingMax) {
-        sensorVal = UINT8_MAX;
-    }
-    else if (reading <= readingMin) {
-        sensorVal = 0;
-    } else {
-        uint32_t sensorRange = readingMax - readingMin;
-        uint32_t readingFromZero = reading - readingMin;
-        // If UINT8_MAX * readingFromZero will overflow, do division first
-        if (UINT32_MAX / readingFromZero < UINT8_MAX) {
-            sensorVal = readingFromZero / sensorRange * UINT8_MAX;
-        } else {
-            sensorVal = UINT8_MAX * readingFromZero / sensorRange;
-        }
-    }
-
-    return sensorVal;
-}
 
 /**
  * @brief Task for setting motors command.
@@ -189,27 +126,6 @@ static void motorsCommand (
         //transmit Coulombs using HVI sense
         integrateCurrent();
 
-//        uint32_t torqueRequestedL = adcToUInt8(MCP3202_read(0), LEFT_MIN, LEFT_MAX);
-//        uint32_t torqueRequestedR = adcToUInt8(MCP3202_read(1), RIGHT_MIN, RIGHT_MAX);
-//
-//        if(sampleTPOSDiff(torqueRequestedL, torqueRequestedR)) {
-//        	throttle = 0;
-//        }
-//        else {
-//        	throttle = (torqueRequestedL + torqueRequestedR)/2;
-//        }
-
-//        uint32_t pedal_messages[2] = {
-//			torqueRequestedL,
-//			torqueRequestedR
-//        };
-//        canTX(
-//			CMR_CAN_BUS_VEH,
-//			0x715,
-//			(void *) pedal_messages,
-//			8,
-//			5
-//		);
 //         update DRS mode
         drsMode = reqDIM->requestedDrsMode;
 
@@ -226,12 +142,8 @@ static void motorsCommand (
             	mcCtrlOn();
             	// fansOn();
             	pumpsOn();
-                for (size_t i = 0; i < MOTOR_LEN; i++) {
-                    motorSetpoints[i].control_bv = CMR_CAN_AMK_CTRL_HV_EN  |
-                                                   CMR_CAN_AMK_CTRL_INV_ON |
-                                                   CMR_CAN_AMK_CTRL_INV_EN;
-                }
 
+                /** Drive Enable Initialized in can.c.  */
 
                 // Blip (100ms) control message to zero torque/speed after transitioning
                 // from HV_EN to RTD to make sure inverters receive clean enable
@@ -292,8 +204,6 @@ static void motorsCommand (
             	// fansOn();
             	pumpsOn();
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
-                    motorSetpoints[i].control_bv         = CMR_CAN_AMK_CTRL_HV_EN |
-                                                           CMR_CAN_AMK_CTRL_ERR_RESET;
                     motorSetpoints[i].velocity_rpm       = 0;
                     motorSetpoints[i].torqueLimPos_dpcnt = 0;
                     motorSetpoints[i].torqueLimNeg_dpcnt = 0;
@@ -318,7 +228,6 @@ static void motorsCommand (
             	pumpsOff();
 
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
-                    motorSetpoints[i].control_bv         = CMR_CAN_AMK_CTRL_ERR_RESET;
                     motorSetpoints[i].velocity_rpm       = 0;
                     motorSetpoints[i].torqueLimPos_dpcnt = 0;
                     motorSetpoints[i].torqueLimNeg_dpcnt = 0;
@@ -336,7 +245,6 @@ static void motorsCommand (
                 set_optimal_control_with_regen(128, 10000, 10000);
 
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
-                    motorSetpoints[i].control_bv         = 0;
                     motorSetpoints[i].velocity_rpm       = 0;
                     motorSetpoints[i].torqueLimPos_dpcnt = 0;
                     motorSetpoints[i].torqueLimNeg_dpcnt = 0;
@@ -569,6 +477,7 @@ void setVelocityFloatAll (
         setVelocityFloat(motor, velocity_rpm);
     }
 }
+
 
 /**
  * @brief Calculate the torque budget for power-aware traction and yaw rate control.

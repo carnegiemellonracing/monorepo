@@ -46,16 +46,34 @@ typedef enum {
  * @warning New messages MUST be added before `CANRX_TRAC_LEN`.
  */
 typedef enum {
-    CANRX_TRAC_INV_FL_ACT1 = 0, /**< @brief Front left inverter actual values 1. */
-    CANRX_TRAC_INV_FL_ACT2,     /**< @brief Front left inverter actual values 2. */
-    CANRX_TRAC_INV_FR_ACT1,     /**< @brief Front right inverter actual values 1. */
-    CANRX_TRAC_INV_FR_ACT2,     /**< @brief Front right inverter actual values 2. */
-    CANRX_TRAC_INV_RL_ACT1,     /**< @brief Rear left inverter actual values 1. */
-    CANRX_TRAC_INV_RL_ACT2,     /**< @brief Rear left inverter actual values 2. */
-    CANRX_TRAC_INV_RR_ACT1,     /**< @brief Rear right inverter actual values 1. */
-    CANRX_TRAC_INV_RR_ACT2,     /**< @brief Rear right inverter actual values 2. */
-    CANRX_TRAC_HVI_SENSE,       /**< @brief High voltage, current, and power sense in inverters. */
-    CANRX_TRAC_LEN              /**< @brief Number of periodic CAN messages. */
+    /** <@brief 4 messages packets sent from each inverter (FR, FL, RR, RL):
+     * ACT1 (Actual Values 1) = ERPM, Duty, Input Voltage
+     * ACT2 (Actual Values 2) = AC Current, DC Current
+     * ACT3 (Actual Values 3) = Controller Temp, Motor Temp, Fault code
+     * ACT4 (Actual Values 4) = Id, Iq values
+    */
+    CANRX_TRAC_FL_INV_ACT1 = 0,       
+    CANRX_TRAC_FL_INV_ACT2,           
+    CANRX_TRAC_FL_INV_ACT3,           
+    CANRX_TRAC_FL_INV_ACT4,
+
+    CANRX_TRAC_FR_INV_ACT1,
+    CANRX_TRAC_FR_INV_ACT2,           
+    CANRX_TRAC_FR_INV_ACT3,           
+    CANRX_TRAC_FR_INV_ACT4, 
+
+    CANRX_TRAC_RR_INV_ACT1,
+    CANRX_TRAC_RR_INV_ACT2,           
+    CANRX_TRAC_RR_INV_ACT3,           
+    CANRX_TRAC_RR_INV_ACT4,
+
+    CANRX_TRAC_RL_INV_ACT1,
+    CANRX_TRAC_RL_INV_ACT2,           
+    CANRX_TRAC_RL_INV_ACT3,           
+    CANRX_TRAC_RL_INV_ACT4,
+
+    CANRX_TRAC_HVI_SENSE,             /**< @brief High voltage, current, and power sense in inverters. */
+    CANRX_TRAC_LEN                    /**< @brief Number of periodic CAN messages. */
 } canTractiveRX_t;
 
 /**
@@ -103,10 +121,6 @@ typedef enum {
     CANRX_FSM_DATA,             /**< @brief FSM data. */
     CANRX_FSM_SWANGLE,
     CANRX_HVC_MINMAX_TEMPS,     /**< @brief HVC min/max cell temps. */
-    CANRX_INV1_STATUS,          /**< @brief Inverter 1 temp. */
-    CANRX_INV2_STATUS,          /**< @brief Inverter 2 temp. */
-    CANRX_INV3_STATUS,          /**< @brief Inverter 3 temp. */
-    CANRX_INV4_STATUS,          /**< @brief Inverter 4 temp. */
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 

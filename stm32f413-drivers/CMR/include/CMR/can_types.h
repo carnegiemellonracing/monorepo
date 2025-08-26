@@ -143,17 +143,17 @@ typedef enum {
     CMR_CAN_WARN_FSM_SS_BOTS = (1 << 8),
 
     /** @brief CDC Front left motor controller is warning source. */
-    CMR_CAN_WARN_CDC_AMK_FL = (1 << 15),
+    CMR_CAN_WARN_CDC_DTI_FL = (1 << 15),
     /** @brief CDC Front right motor controller is warning source. */
-    CMR_CAN_WARN_CDC_AMK_FR = (1 << 14),
+    CMR_CAN_WARN_CDC_DTI_FR = (1 << 14),
     /** @brief CDC Rear left motor controller is warning source. */
-    CMR_CAN_WARN_CDC_AMK_RL = (1 << 13),
+    CMR_CAN_WARN_CDC_DTI_RL = (1 << 13),
     /** @brief CDC Rear right motor controller is warning source. */
-    CMR_CAN_WARN_CDC_AMK_RR = (1 << 12),
+    CMR_CAN_WARN_CDC_DTI_RR = (1 << 12),
     /** @brief CDC Motor controller has an error. */
-    CMR_CAN_WARN_CDC_AMK_ERROR = (1 << 11),
+    CMR_CAN_WARN_CDC_DTI_ERROR = (1 << 11),
     /** @brief CDC Motor controller has timed out. */
-    CMR_CAN_WARN_CDC_AMK_TIMEOUT = (1 << 10),
+    CMR_CAN_WARN_CDC_DTI_TIMEOUT = (1 << 10),
     CMR_CAN_WARN_CDC_MEMORATOR_DAQ_TIMEOUT = (1 << 9)
 } cmr_canWarn_t;
 
@@ -649,33 +649,36 @@ typedef enum {
     CMR_CAN_AMK_STATUS_DERATING_EN  = (1 << 15)     /**< @brief Protective torque derating enabled. */
 } cmr_canAMKStatus_t;
 
-/** @brief AMK motor controller control bits. */
-typedef enum {
-    CMR_CAN_AMK_CTRL_INV_ON     = (1 << 8),     /**< @brief Inverter on command. */
-    CMR_CAN_AMK_CTRL_HV_EN      = (1 << 9),     /**< @brief HV enable command. */
-    CMR_CAN_AMK_CTRL_INV_EN     = (1 << 10),    /**< @brief Inverter enable command. */
-    CMR_CAN_AMK_CTRL_ERR_RESET  = (1 << 11)     /**< @brief Inverter error reset command. */
-} cmr_canAMKControl_t;
-
-/** @brief AMK motor controller status and velocity. */
+/** @brief DTI motor controller electrical rpm, duty_cycle, input_voltage. */
 typedef struct {
-    uint16_t status_bv;         /**< @brief Status bit vector. See cmr_canAMKStatus_t. */
-    int16_t velocity_rpm;       /**< @brief Motor velocity (RPM). */
-    int16_t torqueCurrent_raw;  /**< @brief Raw value for torque producing current. */
-    int16_t magCurrent_raw;     /**< @brief Raw value for magnetizing current. */
-} cmr_canAMKActualValues1_t;
+    uint16_t erpm;              /**< Electrical RPM. Equation: ERPM = Motor RPM * number of the motor pole pairs. */
+    int16_t duty_cycle;         /**< @brief Sign represents if the motor is running(positive) current or regenerating (negative) current. Value multiplied by 10.*/
+    uint16_t input_voltage;     /**< @brief Input DC voltage. */
+} cmr_canDTIActualValues1_t;
+//Better naming convention 
+//Add other messages 
 
-/** @brief AMK motor controller temperatures and error code. */
+/** @brief DTI motor controller ac and dc current values. */
 typedef struct {
-    int16_t motorTemp_dC;       /**< @brief Motor temperature in dC (0.1 C). */
-    int16_t coldPlateTemp_dC;   /**< @brief Cold plate temperature in dC (0.1 C). */
-    uint16_t errorCode;         /**< @brief Inverter error code. */
-    int16_t igbtTemp_dC;        /**< @brief IGBT temperature in dC (0.1 C). */
-} cmr_canAMKActualValues2_t;
+    int16_t ac_current;         /**< Motor current. Sign represents if the motor is running(positive) current or regenerating (negative) current. Value multiplied by 10.*/
+    int16_t dc_current;         /**< Current on DC side. */
+} cmr_canDTIActualValues2_t;
+
+/** @brief DTI motor controller temperature, motor temperature, fault code. */
+typedef struct {
+    uint16_t ctlr_temp;         /**< Controller temperature. The value is multiplied by 10. */
+    uint16_t motor_temp;        /**< Motor temperature. The value is multiplied by 10. */
+    uint16_t fault_code;        /**< If fault occurs that prevents motor actuating, this value shows the fault code. */
+} cmr_canDTIActualValues3_t;
+
+/** @brief DTI motor controller Id, Iq values. */
+typedef struct {
+    int16_t id;         /**< FOC algorithm component Id. Value multiplied by 100 */
+    int16_t iq;        /**< FOC algorithm component Iq. Value multiplied by 100. */
+} cmr_canDTIActualValues4_t;
 
 /** @brief AMK motor controller command message. */
 typedef struct {
-    uint16_t control_bv;        /**< @brief Control bit vector. See cmr_canAMKControl_t. */
     int16_t velocity_rpm;       /**< @brief Velocity setpoint (RPM). */
     int16_t torqueLimPos_dpcnt; /**< @brief Positive torque limit in 0.1% of 9.8 Nm (nominal torque). */
     int16_t torqueLimNeg_dpcnt; /**< @brief Negative torque limit in 0.1% of 9.8 Nm (nominal torque). */

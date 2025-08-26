@@ -4,19 +4,19 @@
 cmake_minimum_required(VERSION 3.5)
 
 file(MAKE_DIRECTORY
-  "/Users/kavehfayyazi/monorepo/VSM"
-  "/Users/kavehfayyazi/monorepo/VSM/src/VSM-build"
-  "/Users/kavehfayyazi/monorepo/VSM"
-  "/Users/kavehfayyazi/monorepo/VSM/tmp"
-  "/Users/kavehfayyazi/monorepo/VSM/src/VSM-stamp"
-  "/Users/kavehfayyazi/monorepo/VSM/src"
-  "/Users/kavehfayyazi/monorepo/VSM/src/VSM-stamp"
+  "/Users/anvitanadgir/Documents/GitHub/monorepo/VSM"
+  "/Users/anvitanadgir/Documents/GitHub/monorepo/VSM/src/VSM-build"
+  "/Users/anvitanadgir/Documents/GitHub/monorepo/VSM"
+  "/Users/anvitanadgir/Documents/GitHub/monorepo/VSM/tmp"
+  "/Users/anvitanadgir/Documents/GitHub/monorepo/VSM/src/VSM-stamp"
+  "/Users/anvitanadgir/Documents/GitHub/monorepo/VSM/src"
+  "/Users/anvitanadgir/Documents/GitHub/monorepo/VSM/src/VSM-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "/Users/kavehfayyazi/monorepo/VSM/src/VSM-stamp/${subDir}")
+    file(MAKE_DIRECTORY "/Users/anvitanadgir/Documents/GitHub/monorepo/VSM/src/VSM-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "/Users/kavehfayyazi/monorepo/VSM/src/VSM-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "/Users/anvitanadgir/Documents/GitHub/monorepo/VSM/src/VSM-stamp${cfgdir}") # cfgdir has leading slash
 endif()

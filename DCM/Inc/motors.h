@@ -1,6 +1,6 @@
 /**
  * @file motors.c
- * @brief AMK quad-inverter interface.
+ * @brief DTI inverter interface.
  *
  * @author Carnegie Mellon Racing
  */

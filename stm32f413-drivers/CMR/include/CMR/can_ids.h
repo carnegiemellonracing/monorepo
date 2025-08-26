@@ -138,27 +138,66 @@ typedef enum {
     CMR_CANID_AFC1_POWER_DIAGNOSTICS = 0x547,   /**< @brief AFC 1 power diagnostics. */
 
     CMR_CANID_DRS_STATE = 0x52C,                /**< @brief DRS state values.*/
-	CMR_CANID_SF_STATE = 0x52D,				/**< @brief Safety Filter state. */
-    CMR_CANID_MOTORPOWER_STATE = 0x52E,				/**< @brief Motor Power state. */
+	CMR_CANID_SF_STATE = 0x52D,				    /**< @brief Safety Filter state. */
+    CMR_CANID_MOTORPOWER_STATE = 0x52E,		    /**< @brief Motor Power state. */
+
+    // Drive Enable CANID (Placeholder CANID)
+    CMR_CANID_DTI_DRIVE_EN = 0x000,
 
     // FL
-    CMR_CANID_AMK_FL_ACT_1 = 0x288,              /**< @brief AMK Inverter 4 actual values 1.*/
-    CMR_CANID_AMK_FL_ACT_2 = 0x28A,              /**< @brief AMK Inverter 4 actual values 2.*/
-    CMR_CANID_AMK_FL_SETPOINTS = 0x189,
+    CMR_CANID_DTI_FL_ACT_1 = 0x288,             /* Inverter Number to be Detailed */
+    CMR_CANID_DTI_FL_ACT_2 = 0x28A,
+    CMR_CANID_DTI_FL_ACT_3 = 0x28B,
+    CMR_CANID_DTI_FL_ACT_4 = 0x28C,
+    CMR_CANID_DTI_FL_VELOCITY = 0x189,
+    /** Placeholder CANIDs for TorqueLimPos and Neg Messages */
+    /** 0x01 Set Current
+        0x02 Set Brake current
+        0x03 Set ERPM
+        0x04 Set Position
+        0x05 Set Relative current
+        0x06 Set relative brake current
+        0x07 Set digital output Sets an output to HIGH or LOW
+        0x08 Set maximum AC current
 
-    CMR_CANID_AMK_FR_ACT_1 = 0x284,              /**< @brief AMK Inverter 2 actual values 1.*/
-    CMR_CANID_AMK_FR_ACT_2 = 0x286,              /**< @brief AMK Inverter 2 actual values 2.*/
-    CMR_CANID_AMK_FR_SETPOINTS = 0x185,          /**< @brief AMK Inverter 2 setpoints.*/
-    
-    // RL
-    CMR_CANID_AMK_RL_ACT_1 = 0x287,              /**< @brief AMK Inverter 3 actual values 1.*/
-    CMR_CANID_AMK_RL_ACT_2 = 0x289,              /**< @brief AMK Inverter 3 actual values 2.*/
-    CMR_CANID_AMK_RL_SETPOINTS = 0x188,          /**< @brief AMK Inverter 3 setpoints.*/
-    
+        Limiting command
+
+        0x09 Set maximum AC brake current
+        0x0A Set maximum DC current
+        0x0B Set maximum DC brake current
+        0x0C Drive enable */
+    CMR_CANID_DTI_FL_TORLIMPOS = 0x000,
+    CMR_CANID_DTI_FL_TORLIMNEG = 0x000,
+
+    // FR
+    CMR_CANID_DTI_FR_ACT_1 = 0x284,
+    CMR_CANID_DTI_FR_ACT_2 = 0x286,
+    CMR_CANID_DTI_FR_ACT_3 = 0x28D,
+    CMR_CANID_DTI_FR_ACT_4 = 0x28E,
+    CMR_CANID_DTI_FR_VELOCITY = 0x185,
+    /** Placeholder CANIDs for TorqueLimPos and Neg Messages */
+    CMR_CANID_DTI_FR_TORLIMPOS = 0x000,
+    CMR_CANID_DTI_FR_TORLIMNEG = 0x000,
+
     // RR
-    CMR_CANID_AMK_RR_ACT_1 = 0x283,              /**< @brief AMK Inverter 1 actual values 1.*/
-    CMR_CANID_AMK_RR_ACT_2 = 0x285,              /**< @brief AMK Inverter 1 actual values 2.*/
-    CMR_CANID_AMK_RR_SETPOINTS = 0x184,          /**< @brief AMK Inverter 1 setpoints.*/
+    CMR_CANID_DTI_RR_ACT_1 = 0x283,
+    CMR_CANID_DTI_RR_ACT_2 = 0x285,
+    CMR_CANID_DTI_RR_ACT_3 = 0x287,
+    CMR_CANID_DTI_RR_ACT_4 = 0x289,
+    CMR_CANID_DTI_RR_VELOCITY = 0x184,
+    /** Placeholder CANIDs for TorqueLimPos and Neg Messages */
+    CMR_CANID_DTI_RR_TORLIMPOS = 0x000,
+    CMR_CANID_DTI_RR_TORLIMNEG = 0x000,
+
+    // RL
+    CMR_CANID_DTI_RL_ACT_1 = 0x290,
+    CMR_CANID_DTI_RL_ACT_2 = 0x291,
+    CMR_CANID_DTI_RL_ACT_3 = 0x292,
+    CMR_CANID_DTI_RL_ACT_4 = 0x293,
+    CMR_CANID_DTI_RL_VELOCITY = 0x188,
+    /** Placeholder CANIDs for TorqueLimPos and Neg Messages */
+    CMR_CANID_DTI_RL_TORLIMPOS = 0x000,
+    CMR_CANID_DTI_RL_TORLIMNEG = 0x000,
 
     CMR_CANID_RMS_TEMPA = 0x000 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set A. */
     CMR_CANID_RMS_TEMPB = 0x001 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set B. */
@@ -171,7 +210,6 @@ typedef enum {
     CMR_CANID_RMS_COMMAND = 0x020 + CMR_CANID_RMS_OFFSET,       /**< @brief RMS command. */
     CMR_CANID_RMS_PARAM_REQ = 0x021 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS parameter request. */
     CMR_CANID_RMS_PARAM_RES = 0x022 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS parameter response. */
-
 
     // BMS CAN Structs
     CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE = 0x310,                  /**< @brief HVC Max/Min Cell Voltage. */

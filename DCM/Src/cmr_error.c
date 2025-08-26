@@ -217,32 +217,32 @@ static void updateWarnings(cmr_canWarn_t *warnings, TickType_t lastWakeTime) {
  *
  * @return None.
  */
-// static void updateAMKErrors(void) {
-//     volatile cmr_canAMKActualValues1_t *amkAct1FL = canTractiveGetPayload(CANRX_TRAC_INV_FL_ACT1);
-//     volatile cmr_canAMKActualValues1_t *amkAct1FR = canTractiveGetPayload(CANRX_TRAC_INV_FR_ACT1);
-//     volatile cmr_canAMKActualValues1_t *amkAct1RL = canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT1);
-//     volatile cmr_canAMKActualValues1_t *amkAct1RR = canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT1);
+static void updateAMKErrors(void) {
+    volatile cmr_canAMKActualValues1_t *amkAct1FL = canTractiveGetPayload(CANRX_TRAC_INV_FL_ACT1);
+    volatile cmr_canAMKActualValues1_t *amkAct1FR = canTractiveGetPayload(CANRX_TRAC_INV_FR_ACT1);
+    volatile cmr_canAMKActualValues1_t *amkAct1RL = canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT1);
+    volatile cmr_canAMKActualValues1_t *amkAct1RR = canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT1);
 
-//     // Clear error statuses
-//     for (size_t i = 0; i < MOTOR_LEN; i++) {
-//         amkErrors[i] = false;
-//     }
+    // Clear error statuses
+    for (size_t i = 0; i < MOTOR_LEN; i++) {
+        amkErrors[i] = false;
+    }
 
-//     volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+    volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
 
-//     // Set error statuses as needed
-//     if (heartbeatVSM->state == CMR_CAN_HV_EN || heartbeatVSM->state == CMR_CAN_RTD) {
-//         if (amkAct1FL->status_bv & CMR_CAN_AMK_STATUS_ERROR) {
-//             amkErrors[MOTOR_FL] = true;
-//         }
-//         if (amkAct1FR->status_bv & CMR_CAN_AMK_STATUS_ERROR) {
-//             amkErrors[MOTOR_FR] = true;
-//         }
-//         if (amkAct1RL->status_bv & CMR_CAN_AMK_STATUS_ERROR) {
-//             amkErrors[MOTOR_RL] = true;
-//         }
-//         if (amkAct1RR->status_bv & CMR_CAN_AMK_STATUS_ERROR) {
-//             amkErrors[MOTOR_RR] = true;
-//         }
-//      }
-// }
+    // Set error statuses as needed
+    if (heartbeatVSM->state == CMR_CAN_HV_EN || heartbeatVSM->state == CMR_CAN_RTD) {
+        if (amkAct1FL->status_bv & CMR_CAN_AMK_STATUS_ERROR) {
+            amkErrors[MOTOR_FL] = true;
+        }
+        if (amkAct1FR->status_bv & CMR_CAN_AMK_STATUS_ERROR) {
+            amkErrors[MOTOR_FR] = true;
+        }
+        if (amkAct1RL->status_bv & CMR_CAN_AMK_STATUS_ERROR) {
+            amkErrors[MOTOR_RL] = true;
+        }
+        if (amkAct1RR->status_bv & CMR_CAN_AMK_STATUS_ERROR) {
+            amkErrors[MOTOR_RR] = true;
+        }
+     }
+}
