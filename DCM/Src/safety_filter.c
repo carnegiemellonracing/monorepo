@@ -421,7 +421,7 @@ void setTorqueLimsProtected (
     const TickType_t current_time = xTaskGetTickCount();
     static TickType_t last_power_non_violation_time = 0; // for measuring limit violation durations
 
-    // ********* Preemptive Limiting *********
+    // ********* pack and cell measurements (for retroactive) *********
 
     const float pack_voltage_V = getPackVoltage();
     const float pack_current_A = getPackCurrent();
@@ -431,7 +431,7 @@ void setTorqueLimsProtected (
     const float min_cell_voltage_V = getMinCellVoltage();
     cmr_torque_limit_t preemptive_torque_limits = getPreemptiveTorqueLimits();
 
-    // ********* Retroactive Limiting *********
+    // ********* Retroactive Limiting (computing multipliers) *********
 
     // limit power
     const float falloff_factor_by_pack_power = getPackPowerFalloffFactor(pack_power_W);
@@ -467,7 +467,7 @@ void setTorqueLimsProtected (
 
     float filtered_accel_torque_multiplier = accel_torque_multiplier;
     filtered_accel_torque_multiplier = cmr_fir_filter_update(&accel_torque_multiplier_filter_state, accel_torque_multiplier);
-    filtered_accel_torque_multiplier = fmaxf(filtered_accel_torque_multiplier, 0.0f); // ensures filtered_accel_torque_multiplier >= 0
+    filtered_accel_torque_multiplier = clamp_range(filtered_accel_torque_multiplier, 0.0f, 1.0f); // ensures filtered_accel_torque_multiplier >= 0
 //    if(accel_torque_multiplier == 1.0f){
 //    	filtered_accel_torque_multiplier = 1.0f;
 //    }
@@ -475,13 +475,32 @@ void setTorqueLimsProtected (
 
     float filtered_regen_torque_multiplier = regen_torque_multiplier;
     filtered_regen_torque_multiplier = cmr_fir_filter_update(&regen_torque_multiplier_filter_state, regen_torque_multiplier);
-    filtered_regen_torque_multiplier = fmaxf(filtered_regen_torque_multiplier, 0.0f); // ensures filtered_regen_torque_multiplier >= 0
+    filtered_regen_torque_multiplier = clamp_range(filtered_regen_torque_multiplier, 0.0f, 1.0f); // ensures filtered_regen_torque_multiplier >= 0
 
-//   if(regen_torque_multiplier == 1.0f){
-//    	filte red_regen_torque_multiplier = 1.0f;
-//    }
-    filtered_regen_torque_multiplier = fminf(filtered_regen_torque_multiplier, 1.0f); // ensures filtered_regen_torque_multiplier <= 1
 
+    // GLOBAL POWER BASED SCALING 
+    float Plim_W = power_upper_limit_W - power_safety_margin_W;
+
+    // instaneous req pack power from positive (discharge) request
+    // p_est = (sum_i Treq_pos_i * omega_i) / efficienices
+    float total_eff = inverter_efficiency * motor_efficiency * efficiency_multiplier;
+    float power_eps_W = 50.0f; // div by zero error safety? 
+
+    float P_est_W = 0.0f;
+    for (size_t m = 0; m < MOTOR_LEN; m++) {
+        const float Treq_pos_Nm = clamp_upto_min(getTorqueNmByIndex(torquesPos_Nm, m), 0.0f);
+        const float omega_radps = fabsf(getMotorSpeed_radps(m));
+        P_est_W += Treq_pos_Nm * omega_radps;
+    }
+
+    P_est_W /= fmaxf(total_eff, 1e-3f); // div 
+
+    float scale_global = 1.0f;
+    if (P_est_W > Plim_W) {
+        scale_global = clamp01(Plim_W / fmaxf(P_est_W, power_eps_W));
+    }
+    
+    // REST AS NORMAL 
     // apply limits
     float all_wheels_final_max_torque = maxTorque_Nm;
     float all_wheels_final_min_torque = -maxTorque_Nm;
