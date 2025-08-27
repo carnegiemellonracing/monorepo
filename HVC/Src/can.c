@@ -365,7 +365,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 }
 
 static void sendHVCPackVoltage(void) {
-    //int32_t bVolt = getBattMillivolts();
+    int32_t bVolt = getBattMillivolts();
     int32_t hvVolt = getHVmillivolts();
 
     cmr_canHVCPackVoltage_t HVCPackVoltage = {
@@ -376,18 +376,18 @@ static void sendHVCPackVoltage(void) {
     canTX(CMR_CANID_HVC_PACK_VOLTAGE, &HVCPackVoltage, sizeof(HVCPackVoltage), canTX100Hz_period_ms);
 }
 
-// static void sendBMSPackCurrent(void) {
-//     int32_t instantCurrent = getHVmilliamps();
-//     // int32_t avgCurrent = getCurrentAverage(); // TODO: Gustav change this back
-//     int32_t avgCurrent = instantCurrent;
+static void sendBMSPackCurrent(void) {
+    int32_t instantCurrent = getHVmilliamps();
+    // int32_t avgCurrent = getCurrentAverage(); // TODO: Gustav change this back
+    int32_t avgCurrent = instantCurrent;
 
-//     cmr_canBMSPackCurrent_t BMSPackCurrent = {
-//         .instantCurrent_mA = instantCurrent,
-//         .averageCurrent_mA = avgCurrent,
-//     };
+    cmr_canBMSPackCurrent_t BMSPackCurrent = {
+        .instantCurrent_mA = instantCurrent,
+        .averageCurrent_mA = avgCurrent,
+    };
 
-//     canTX(CMR_CANID_HVC_PACK_CURRENT, &BMSPackCurrent, sizeof(BMSPackCurrent), canTX100Hz_period_ms);
-// }
+    canTX(CMR_CANID_HVC_PACK_CURRENT, &BMSPackCurrent, sizeof(BMSPackCurrent), canTX100Hz_period_ms);
+}
 
 // static void sendBMSBMBStatusVoltage(uint8_t bmb_index) {
 //     uint8_t maxIndex = getBMBMaxVoltIndex(bmb_index);
