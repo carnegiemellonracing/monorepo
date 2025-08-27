@@ -3,14 +3,14 @@ import json
 import re
 from collections import defaultdict
 
-# Run file with "python canid_mapper.py" in terminal
+#Can run file with "python canid_mapper.py" in terminal
 
 ROOT_DIR = "."
 CANID_PREFIXES = ["CMR_CANID_", "CAN_ID_"]
 CANRX_PREFIXES = ["CANRX_"]
 OUTPUT_FILE = "stm32f413-drivers/filegen/canid_type_map.json"
 
-# Handle both 4 and 5 argument canTX calls
+#Handle both 4 and 5 argument canTX calls
 CANTX_PATTERN_5_ARGS = re.compile(
     r'canTX\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^,]+)\s*,\s*sizeof\s*\(\s*([^)]+)\s*\)\s*(?:,\s*[^)]+)?\s*\)',
     re.MULTILINE | re.DOTALL
@@ -21,73 +21,73 @@ CANTX_PATTERN_4_ARGS = re.compile(
     re.MULTILINE | re.DOTALL
 )
 
-# Pattern to find variable declarations of cmr_*_t types (including pointers)
+#Pattern to find variable declarations of cmr_*_t types (including pointers)
 VAR_DECLARATION_PATTERN = re.compile(
     r'(?:const\s+)?(cmr_[a-zA-Z0-9_]*_t)\s*\*?\s*([a-zA-Z0-9_]+)\s*(?:=|;)',
     re.MULTILINE
 )
 
-# Pattern to find struct member declarations like "cmr_type_t memberName;" inside structs
+#Pattern to find struct member declarations like "cmr_type_t memberName;" inside structs
 STRUCT_MEMBER_PATTERN = re.compile(
     r'typedef\s+struct\s*\{[^}]*?(cmr_[a-zA-Z0-9_]*_t)\s+([a-zA-Z0-9_]+)\s*;[^}]*\}\s*([a-zA-Z0-9_]+)\s*;',
     re.MULTILINE | re.DOTALL
 )
 
-# More specific pattern for struct members
+#More specific pattern for struct members
 STRUCT_CONTENT_PATTERN = re.compile(
     r'typedef\s+struct\s*\{([^}]+)\}\s*([a-zA-Z0-9_]+)\s*;',
     re.MULTILINE | re.DOTALL
 )
 
-# Pattern to find individual member declarations within struct content
+#Pattern to find individual member declarations within struct content
 MEMBER_DECLARATION_PATTERN = re.compile(
     r'(cmr_[a-zA-Z0-9_]*_t)\s+([a-zA-Z0-9_]+)\s*;',
     re.MULTILINE
 )
 
-# Pattern to find numerical constant definitions; includes TickType_t
+#Pattern to find numerical constant definitions; includes TickType_t
 CONST_DEFINITION_PATTERN = re.compile(
     r'(?:#define\s+([a-zA-Z0-9_]+)\s+([0-9]+))|(?:(?:static\s+)?(?:const\s+)?(?:int|uint32_t|uint16_t|uint8_t|unsigned|long|TickType_t)\s+([a-zA-Z0-9_]+)\s*=\s*([0-9]+))',
     re.MULTILINE
 )
 
-# Pattern to find CANRX array definitions and their entries
+#Pattern to find CANRX array definitions and their entries
 CANRX_ARRAY_PATTERN = re.compile(
     r'cmr_canRXMeta_t\s+([a-zA-Z0-9_]+)\s*\[[^\]]+\]\s*=\s*\{([^}]+)\}',
     re.MULTILINE | re.DOTALL
 )
 
-# Pattern to find individual CANRX entries within the array
+#Better pattern to find individual CANRX entries within arrays
 CANRX_ENTRY_PATTERN = re.compile(
-    r'\[\s*([A-Z_]+)\s*\]\s*=\s*\{[^}]*\.canID\s*=\s*([A-Z_]+)[^}]*\.timeoutError_ms\s*=\s*([0-9]+)[^}]*\}',
+    r'\[\s*([A-Z_]+)\s*\]\s*=\s*\{[^}]*\.canID\s*=\s*([A-Z_]+)[^}]*(?:\.timeoutError_ms\s*=\s*([0-9]+))?[^}]*\}',
     re.MULTILINE | re.DOTALL
 )
 
-# Comprehensive getPayload patterns - covers multiple variations
+#Comprehensive getPayload patterns - covers multiple variations
 GETPAYLOAD_PATTERNS = [
-    # Pattern 1: Direct assignment with type declaration
+    #pattern 1: Direct assignment with type declaration
     re.compile(
         r'(?:volatile\s+)?(?:const\s+)?(cmr_\w+_t)\s*\*\s*\w+\s*=\s*(?:\w*[gG]et[pP]ayload|getPayload)\s*\(\s*(CANRX_\w+)\s*\)',
         re.IGNORECASE | re.MULTILINE
     ),
-    # Pattern 2: Direct assignment without volatile/const
+    #pattern 2: Direct assignment without volatile/const
     re.compile(
         r'(cmr_\w+_t)\s*\*\s*\w+\s*=\s*(?:\w*[gG]et[pP]ayload|getPayload)\s*\(\s*(CANRX_\w+)\s*\)',
         re.IGNORECASE | re.MULTILINE
     ),
-    # Pattern 3: Type casting with getPayload
+    #pattern 3: Type casting with getPayload
     re.compile(
         r'\(\s*(?:volatile\s+)?(?:const\s+)?(cmr_\w+_t)\s*\*\s*\)\s*(?:\w*[gG]et[pP]ayload|getPayload)\s*\(\s*(CANRX_\w+)\s*\)',
         re.IGNORECASE | re.MULTILINE
     ),
-    # Pattern 4: Assignment with type casting
+    #pattern 4: Assignment with type casting
     re.compile(
         r'(?:volatile\s+)?(?:const\s+)?(cmr_\w+_t)\s*\*\s*\w+\s*=\s*\(\s*(?:volatile\s+)?(?:const\s+)?cmr_\w+_t\s*\*\s*\)\s*(?:\w*[gG]et[pP]ayload|getPayload)\s*\(\s*(CANRX_\w+)\s*\)',
         re.IGNORECASE | re.MULTILINE
     )
 ]
 
-# Pattern for indirect payload access (for pattern 5 from original script)
+#Pattern for indirect payload access (for pattern 5 from original script)
 INDIRECT_PAYLOAD_PATTERN = re.compile(
     r'(?:volatile\s+)?(?:const\s+)?(cmr_\w+_t)\s*\*\s*\w+\s*=\s*\([^)]+\)\s*\w+->payload',
     re.IGNORECASE | re.MULTILINE
@@ -98,7 +98,7 @@ META_PATTERN = re.compile(
     re.IGNORECASE | re.MULTILINE
 )
 
-# Enhanced CANRX array pattern for better matching
+#Better CANRX array pattern for better matching
 CANRX_DEFINITION_PATTERN = re.compile(
     r'\[(\w*CANRX_\w+)\]\s*=\s*\{[^}]*?\.canID\s*=\s*((?:CMR_CANID_|CAN_ID_)\w+)',
     re.IGNORECASE | re.MULTILINE | re.DOTALL
@@ -118,7 +118,7 @@ def extract_variable_types(content):
     """Extract variable name to type mappings from file content"""
     var_to_type = {}
     
-    # Find regular variable declarations (including const and pointer variants)
+    #Find regular variable declarations (including const and pointer variants)
     matches = VAR_DECLARATION_PATTERN.findall(content)
     for type_name, var_name in matches:
         var_to_type[var_name] = type_name
@@ -131,13 +131,13 @@ def extract_struct_member_types(content):
     
     struct_matches = STRUCT_CONTENT_PATTERN.findall(content)
     for struct_content, struct_name in struct_matches:
-        # Find all cmr_*_t members within this struct
+        #Find all cmr_*_t members within this struct
         member_matches = MEMBER_DECLARATION_PATTERN.findall(struct_content)
         for member_type, member_name in member_matches:
-            # Store as both struct_name.member_name and just member_name
+            #Store as both struct_name.member_name and just member_name
             full_member_name = f"{struct_name}.{member_name}"
             member_to_type[full_member_name] = member_type
-            # Also store just the member name for cases where struct name is variable
+            #Also store just the member name for cases where struct name is variable
             member_to_type[member_name] = member_type
     
     return member_to_type
@@ -146,7 +146,7 @@ def extract_constant_definitions(content):
     """Extract constant definitions from file content"""
     constants = {}
     
-    # Find #define and variable constant definitions
+    #Find #define and variable constant definitions
     matches = CONST_DEFINITION_PATTERN.findall(content)
     for define_name, define_value, var_name, var_value in matches:
         if define_name and define_value:
@@ -167,64 +167,70 @@ def extract_canrx_mappings(content):
     canrx_to_canid = {}
     canrx_to_timeout = {}
     
-    # Skip if no CANRX arrays in content
     if 'cmr_canRXMeta_t' not in content:
         return canrx_to_canid, canrx_to_timeout
     
-    # Find CANRX array definitions
+    #Multi-line pattern matching for better coverage
+    lines = content.split('\n')
+    current_canrx = None
+    
+    for i, line in enumerate(lines):
+        #Look for CANRX array entry start
+        canrx_match = re.search(r'\[\s*(CANRX_\w+)\s*\]\s*=\s*\{', line, re.IGNORECASE)
+        if canrx_match:
+            current_canrx = canrx_match.group(1)
+            
+            #Look ahead up to 20 lines for the closing brace
+            for j in range(i, min(i + 20, len(lines))):
+                #Look for .canID assignment
+                canid_match = re.search(r'\.canID\s*=\s*((?:CMR_CANID_|CAN_ID_)\w+)', lines[j], re.IGNORECASE)
+                if canid_match:
+                    can_id = canid_match.group(1)
+                    if is_canrx(current_canrx) and is_canid(can_id):
+                        canrx_to_canid[current_canrx] = can_id
+                
+                timeout_match = re.search(r'\.timeoutError_ms\s*=\s*([0-9]+)', lines[j], re.IGNORECASE)
+                if timeout_match:
+                    try:
+                        timeout_val = int(timeout_match.group(1))
+                        if current_canrx and is_canrx(current_canrx):
+                            canrx_to_timeout[current_canrx] = timeout_val
+                    except ValueError:
+                        pass
+                        
+                if '}' in lines[j] and j > i:
+                    break
+    
+    #try the original patterns as backup
     array_matches = CANRX_ARRAY_PATTERN.findall(content)
     for array_name, array_content in array_matches:
-        # Find individual entries within the array
+        #find individual entries within the array
         entry_matches = CANRX_ENTRY_PATTERN.findall(array_content)
-        for canrx_key, canid, timeout_error_ms in entry_matches:
-            canrx_key = canrx_key.strip()
-            canid = canid.strip()
-            timeout_error_ms = timeout_error_ms.strip()
-            
-            if is_canrx(canrx_key) and is_canid(canid):
-                canrx_to_canid[canrx_key] = canid
-                try:
-                    timeout_val = int(timeout_error_ms)
-                    canrx_to_timeout[canrx_key] = timeout_val
-                except ValueError:
-                    canrx_to_timeout[canrx_key] = timeout_error_ms
+        for match in entry_matches:
+            if len(match) == 3:
+                canrx_key, canid, timeout_error_ms = match
+                canrx_key = canrx_key.strip()
+                canid = canid.strip()
+                timeout_error_ms = timeout_error_ms.strip()
+                
+                if is_canrx(canrx_key) and is_canid(canid):
+                    if canrx_key not in canrx_to_canid:
+                        canrx_to_canid[canrx_key] = canid
+                    if timeout_error_ms and canrx_key not in canrx_to_timeout:
+                        try:
+                            timeout_val = int(timeout_error_ms)
+                            canrx_to_timeout[canrx_key] = timeout_val
+                        except ValueError:
+                            canrx_to_timeout[canrx_key] = timeout_error_ms
     
-    # Also try the enhanced pattern for broader matching
+    #better pattern for broader matching
     enhanced_matches = CANRX_DEFINITION_PATTERN.findall(content)
     for canrx_name, can_id in enhanced_matches:
         canrx_name = canrx_name.strip()
         can_id = can_id.strip()
         if is_canrx(canrx_name) and is_canid(can_id):
-            if canrx_name not in canrx_to_canid:  # Don't override if already found
+            if canrx_name not in canrx_to_canid:
                 canrx_to_canid[canrx_name] = can_id
-    
-    # Multi-line pattern matching for better coverage
-    lines = content.split('\n')
-    current_canrx = None
-    
-    for i, line in enumerate(lines):
-        canrx_match = re.search(r'\[(\w*CANRX_\w+)\]\s*=\s*\{', line, re.IGNORECASE)
-        if canrx_match:
-            current_canrx = canrx_match.group(1)
-            
-            for j in range(i, min(i + 20, len(lines))):
-                canid_match = re.search(r'\.canID\s*=\s*((?:CMR_CANID_|CAN_ID_)\w+)', lines[j], re.IGNORECASE)
-                if canid_match:
-                    can_id = canid_match.group(1)
-                    if current_canrx not in canrx_to_canid and is_canrx(current_canrx) and is_canid(can_id):
-                        canrx_to_canid[current_canrx] = can_id
-                    break
-                
-                timeout_match = re.search(r'\.timeoutError_ms\s*=\s*([0-9]+)', lines[j], re.IGNORECASE)
-                if timeout_match and current_canrx not in canrx_to_timeout:
-                    try:
-                        timeout_val = int(timeout_match.group(1))
-                        canrx_to_timeout[current_canrx] = timeout_val
-                    except ValueError:
-                        pass
-                        
-                if '}' in lines[j]:
-                    break
     
     return canrx_to_canid, canrx_to_timeout
 
@@ -232,11 +238,10 @@ def extract_canrx_type_mappings(content):
     """Extract CANRX to type mappings from *getPayload* calls using comprehensive patterns"""
     canrx_to_type = {}
     
-    # Skip if no getPayload calls in content
     if 'getPayload' not in content and 'GetPayload' not in content:
         return canrx_to_type
     
-    # Apply all getPayload patterns
+    #Apply all getPayload patterns
     for pattern in GETPAYLOAD_PATTERNS:
         matches = pattern.findall(content)
         for match in matches:
@@ -246,19 +251,16 @@ def extract_canrx_type_mappings(content):
                 if is_canrx(canrx_key):
                     canrx_to_type[canrx_key] = type_name
     
-    # Handle indirect payload access (Pattern 5 from original script)
+    #Handle indirect payload access
     indirect_matches = INDIRECT_PAYLOAD_PATTERN.findall(content)
     if indirect_matches:
-        # Find meta variable to CANRX mappings
         meta_matches = META_PATTERN.findall(content)
         meta_to_canrx = {}
         for meta_var, canrx_name in meta_matches:
             meta_to_canrx[meta_var] = canrx_name
         
-        # Match indirect payload access with meta variables
+        #Match indirect payload access with meta variables
         for type_name in indirect_matches:
-            # This is a simplified approach - in practice, would need more sophisticated matching
-            # to connect the payload access back to the specific meta variable
             pass
     
     return canrx_to_type
@@ -267,23 +269,23 @@ def parse_sizeof_argument(sizeof_arg):
     """Parse sizeof argument to extract the key for type lookup"""
     sizeof_arg = sizeof_arg.strip()
     
-    # Handle different sizeof patterns:
+    #Handle different sizeof patterns:
     # sizeof(*variable) -> variable
     # sizeof(variable) -> variable  
     # sizeof(struct->member) -> member
     # sizeof(variable->member) -> member
     
-    # Remove leading * if present
+    #Remove leading * if present
     if sizeof_arg.startswith('*'):
         sizeof_arg = sizeof_arg[1:].strip()
     
-    # Handle struct->member or variable->member
+    #Handle struct->member or variable->member
     if '->' in sizeof_arg:
         parts = sizeof_arg.split('->')
         if len(parts) >= 2:
             return parts[-1].strip()
     
-    # Handle struct.member
+    #Handle struct.member
     if '.' in sizeof_arg:
         parts = sizeof_arg.split('.')
         if len(parts) >= 2:
@@ -295,31 +297,27 @@ def resolve_constant_value(constant_name, local_constants, global_constants):
     """Resolve a constant name to its numerical value"""
     constant_name = constant_name.strip()
     
-    # Try to parse as integer first (in case it's already a number)
+    #Try to parse as int first (in case it's alr a number)
     try:
         return int(constant_name)
     except ValueError:
         pass
     
-    # Check local constants first
+    #Check local constants first
     if constant_name in local_constants:
         value = local_constants[constant_name]
-        # If it's already an integer, return it
         if isinstance(value, int):
             return value
-        # If it's a string that can be converted to int, convert it
         try:
             return int(value)
         except (ValueError, TypeError):
             return value
     
-    # Then check global constants
+    #check global constants
     if constant_name in global_constants:
         value = global_constants[constant_name]
-        # If it's already an integer, return it
         if isinstance(value, int):
             return value
-        # If it's a string that can be converted to int, convert it
         try:
             return int(value)
         except (ValueError, TypeError):
@@ -359,7 +357,7 @@ def calculate_cycle_time_and_timeout(cycle_time_value):
 
 def clean_canid(raw_canid):
     """Remove bit-shifts, additions, and offsets from CAN ID expressions."""
-    # Keep only the first token that looks like a CAN ID
+    #Keep only the first token that looks like a CAN ID
     return re.split(r'\s|\+|\-', raw_canid.strip())[0]
 
 def extract_canids_from_file(filepath, global_var_types, global_struct_members, global_constants, global_canrx_mappings, global_canrx_timeouts, global_canrx_types):
@@ -376,7 +374,7 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
         
         result = {}
         
-        # Find all canTX calls with 5 arguments
+        #Find all canTX calls with 5 arguments
         CAN_CALL_5_ARGS_FULL = re.compile(
             r'canTX\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^,]+)\s*,\s*sizeof\s*\(\s*([^)]+)\s*\)\s*,\s*([^)]+)\s*\)',
             re.MULTILINE | re.DOTALL
@@ -390,7 +388,6 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
             sizeof_arg = sizeof_arg.strip()
             period = period.strip()
 
-            # Determine CAN ID
             canid = None
             if is_canid(arg1):
                 canid = clean_canid(arg1)
@@ -410,10 +407,11 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
                 result[canid] = {
                     "type": resolved_type,
                     "cycleTime": cycle_time,
-                    "timeOut": time_out
+                    "timeOut": time_out,
+                    "source": "canTX"
                 }
 
-        # Find all canTX calls with 4 arguments
+        #Find all canTX calls with 4 arguments
         CAN_CALL_4_ARGS_FULL = re.compile(
             r'canTX\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*sizeof\s*\(\s*([^)]+)\s*\)\s*,\s*([^)]+)\s*\)',
             re.MULTILINE | re.DOTALL
@@ -443,25 +441,27 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
                 result[canid] = {
                     "type": resolved_type,
                     "cycleTime": cycle_time,
-                    "timeOut": time_out
+                    "timeOut": time_out,
+                    "source": "canTX"
                 }
 
-        # Handle CANRX mappings - merge local and global mappings
-        # Only add CANRX mappings if canTX info is not already present
+        #Handle CANRX mappings - merge local and global mappings
         all_canrx_mappings = {**global_canrx_mappings, **local_canrx_mappings}
         all_canrx_timeouts = {**global_canrx_timeouts, **local_canrx_timeouts}
         all_canrx_types = {**global_canrx_types, **local_canrx_types}
         
-        # For each CANRX that has a type mapping, find its CAN ID and map type to ID
-        # ONLY if not already found via canTX (canTX has priority)
+        #For each CANRX w/ type mapping, find its CAN ID and map type to ID
         for canrx_key, canrx_type in all_canrx_types.items():
             if canrx_key in all_canrx_mappings:
                 canid = all_canrx_mappings[canrx_key]
-                # Only add if not already found via canTX
-                if canid not in result:
-                    # Get timeout and calculate cycle time (timeout / 5)
+                
+                #Check if we already have this CAN ID from canTX
+                if canid in result:
+                    continue
+                else:
+                    #No canTX info, use CANRX info
                     timeout_val = all_canrx_timeouts.get(canrx_key, "N/A")
-                    if isinstance(timeout_val, int):
+                    if isinstance(timeout_val, int) and timeout_val > 0:
                         cycle_time = timeout_val / 5
                     else:
                         cycle_time = "N/A"
@@ -469,7 +469,9 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
                     result[canid] = {
                         "type": canrx_type,
                         "cycleTime": cycle_time,
-                        "timeOut": timeout_val
+                        "timeOut": timeout_val,
+                        "source": "canRX",
+                        "canrx_key": canrx_key
                     }
 
         return result
@@ -499,7 +501,7 @@ def build_global_mappings(c_files):
             with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
                 content = f.read()
             
-            # Skip files that don't contain relevant content
+            #Skip files without relevant content
             if not any(prefix in content for prefix in CANID_PREFIXES + CANRX_PREFIXES):
                 continue
                 
@@ -531,19 +533,9 @@ def main():
         print("No C/C++ files found!")
         return
     
-    # Build global mappings
-    print("Building global mappings...")
+    #Build global mappings
     global_var_types, global_struct_members, global_constants, global_canrx_mappings, global_canrx_timeouts, global_canrx_types = build_global_mappings(c_files)
-    
-    print(f"Global mappings built:")
-    print(f"  Variable types: {len(global_var_types)}")
-    print(f"  Struct members: {len(global_struct_members)}")
-    print(f"  Constants: {len(global_constants)}")
-    print(f"  CANRX mappings: {len(global_canrx_mappings)}")
-    print(f"  CANRX types: {len(global_canrx_types)}")
-    
-    # Extract CAN IDs from all files
-    print("Processing files for CAN IDs...")
+    #Extract CAN IDs from all files
     canid_to_info = {}
     files_with_matches = 0
     
@@ -553,20 +545,35 @@ def main():
         if result:
             files_with_matches += 1
         
-        canid_to_info.update(result)
+        #Update result, but keep existing canTX info if present
+        for canid, info in result.items():
+            if canid not in canid_to_info:
+                canid_to_info[canid] = info
+            elif info.get("source") == "canTX" and canid_to_info[canid].get("source") == "canRX":
+                #Replace canRX info with canTX info (canTX has priority)
+                canid_to_info[canid] = info
     
-    # Create output directory if it doesn't exist
+    #Clean up the output - remove source and canrx_key fields for final output
+    cleaned_canid_to_info = {}
+    for canid, info in canid_to_info.items():
+        cleaned_info = {
+            "type": info["type"],
+            "cycleTime": info["cycleTime"],
+            "timeOut": info["timeOut"]
+        }
+        cleaned_canid_to_info[canid] = cleaned_info
+    
+    #Create output directory if it doesn't exist
     output_dir = os.path.dirname(OUTPUT_FILE)
     if output_dir and not os.path.exists(output_dir):
         os.makedirs(output_dir)
     
-    # Save results
     output_data = {
-        "canid_to_info": canid_to_info,
+        "canid_to_info": cleaned_canid_to_info,
         "summary": {
             "files_processed": len(c_files),
             "files_with_matches": files_with_matches,
-            "total_canids": len(canid_to_info),
+            "total_canids": len(cleaned_canid_to_info),
             "prefixes_used": CANID_PREFIXES,
             "canrx_prefixes_used": CANRX_PREFIXES,
             "global_mappings": {
@@ -574,6 +581,7 @@ def main():
                 "struct_members": len(global_struct_members),
                 "constants": len(global_constants),
                 "canrx_mappings": len(global_canrx_mappings),
+                "canrx_timeouts": len(global_canrx_timeouts),
                 "canrx_types": len(global_canrx_types)
             }
         }
@@ -582,38 +590,24 @@ def main():
     with open(OUTPUT_FILE, 'w') as f:
         json.dump(output_data, f, indent=4, sort_keys=True)
     
-    # Final summary
-    print(f"\nResults:")
-    print(f"  Files processed: {len(c_files)}")
-    print(f"  Files with CAN IDs: {files_with_matches}")
-    print(f"  Total CAN IDs found: {len(canid_to_info)}")
-    
-    # Count canTX vs canRX mappings for better reporting
+    #Count canTX vs canRX mappings for summary
     cantx_count = 0
     canrx_count = 0
-    for canid, info in canid_to_info.items():
+    
+    for canid, info in cleaned_canid_to_info.items():
         cycle_time = info.get('cycleTime', 'N/A')
         timeout = info.get('timeOut', 'N/A')
         
-        # If we have numeric cycleTime and calculated timeout (5*cycleTime), it's from canTX
+        #If we have numeric cycleTime and calculated timeout (5*cycleTime), it's likely from canTX
         if (isinstance(cycle_time, (int, float)) and 
             isinstance(timeout, (int, float)) and 
-            timeout == 5 * cycle_time):
+            abs(timeout - 5 * cycle_time) < 0.01):  #Allow for floating point precision
             cantx_count += 1
         else:
             canrx_count += 1
     
-    print(f"  CAN TX mappings: {cantx_count}")
-    print(f"  CAN RX mappings: {canrx_count}")
-    
-    if canid_to_info:
-        print(f"\nSample mappings:")
-        for i, (canid, info) in enumerate(list(canid_to_info.items())[:5]):
-            print(f"  {canid}: {info}")
-    else:
-        print("\nNo CAN IDs found.")
-    
-    print(f"\nSaved to {OUTPUT_FILE}")
+    #Summary output
+    print(f"Processed {len(c_files)} files, found {len(cleaned_canid_to_info)} CAN IDs ({cantx_count} TX, {canrx_count} RX) -> {OUTPUT_FILE}")
 
 if __name__ == "__main__":
     main()
