@@ -110,6 +110,28 @@ static float regen_torque_multiplier_filter_buf[TORQUE_MULTIPLIER_FILTER_LEN];
 static cmr_fir_filter_state_t accel_torque_multiplier_filter_state;
 static cmr_fir_filter_state_t regen_torque_multiplier_filter_state;
 
+// clamp helpers 
+static inline float clamp01(float x) {
+    if (x < 0.0f) return 0.0f;
+    if (x > 1.0f) return 1.0f;
+
+    return x;
+}
+
+static inline float clamp_upto_min(float x, float lo) {
+    return (x < lo) ? lo : x;
+}
+
+static inline float clamp_upto_max(float x, float hi) {
+    return (x > hi) ? hi : x;
+}
+
+static inline float clamp_range(float x, float lo, float hi) {
+    if (x < lo) return lo;
+    if (x > hi) return hi;
+    return x;
+}
+
 
 // ------------------------------------------------------------------------------------------------
 // Globals
@@ -338,12 +360,6 @@ cmr_torque_limit_t getPreemptiveTorqueLimits
 () {
     const float max_power_W = power_upper_limit_W - power_safety_margin_W;
     const float measured_total_motor_speed = getTotalMotorSpeed_radps() + wheel_speed_sum_offset;
-
-    // legacy cell-voltage-based preemptive limiting
-//    const float max_voltage_drop_V = getMaxVoltageDrop(min_cell_voltage_V, pack_current_A);
-//    const float min_voltage_drop_V = getMinVoltageDrop(max_cell_voltage_V, pack_current_A);
-//    const float max_power_W = getMaxPowerFromVoltageDrop(max_voltage_drop_V, pack_voltage_V);
-//    const float min_power_W = getMinPowerFromVoltageDrop(min_voltage_drop_V, pack_voltage_V);
 
     cmr_torque_limit_t torque_limits;
     const float efficiency = inverter_efficiency * motor_efficiency * efficiency_multiplier;
