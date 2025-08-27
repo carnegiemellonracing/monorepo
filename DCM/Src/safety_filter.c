@@ -118,11 +118,11 @@ static inline float clamp01(float x) {
     return x;
 }
 
-static inline float clamp_upto_min(float x, float lo) {
+static inline float clamp_min(float x, float lo) {
     return (x < lo) ? lo : x;
 }
 
-static inline float clamp_upto_max(float x, float hi) {
+static inline float clamp_max(float x, float hi) {
     return (x > hi) ? hi : x;
 }
 
@@ -488,7 +488,7 @@ void setTorqueLimsProtected (
 
     float P_est_W = 0.0f;
     for (size_t m = 0; m < MOTOR_LEN; m++) {
-        const float Treq_pos_Nm = clamp_upto_min(getTorqueNmByIndex(torquesPos_Nm, m), 0.0f);
+        const float Treq_pos_Nm = clamp_min(getTorqueNmByIndex(torquesPos_Nm, m), 0.0f);
         const float omega_radps = fabsf(getMotorSpeed_radps(m));
         P_est_W += Treq_pos_Nm * omega_radps;
     }
@@ -499,7 +499,7 @@ void setTorqueLimsProtected (
     if (P_est_W > Plim_W) {
         scale_global = clamp01(Plim_W / fmaxf(P_est_W, power_eps_W));
     }
-    
+
     // REST AS NORMAL 
     // apply limits
     float all_wheels_final_max_torque = maxTorque_Nm;
@@ -532,7 +532,11 @@ void setTorqueLimsProtected (
 
         // ********* Handle Requested Torque *********
 
-        const float requested_max_torque = fmaxf(getTorqueNmByIndex(torquesPos_Nm, motor), 0.0f); // ensures requested_max_torque >= 0
+        // const float requested_max_torque = fmaxf(getTorqueNmByIndex(torquesPos_Nm, motor), 0.0f); // ensures requested_max_torque >= 0
+
+        const float requested_max_torque_raw = clamp_min(getTorqueNmByIndex(torquesPos_Nm, motor), 0.0f);
+        const float requested_max_torque = requested_max_torque_raw * scale_global; // scaling applied
+
         const float requested_min_torque = fminf(getTorqueNmByIndex(torquesNeg_Nm, motor), 0.0f); // ensures requested_min_torque <= 0
 
         float final_max_torque = fminf(all_wheels_final_max_torque, requested_max_torque);
