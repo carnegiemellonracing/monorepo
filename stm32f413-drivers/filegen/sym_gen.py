@@ -115,7 +115,7 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
                 #technically unnecessary check, all others should be float
                 size = 32 
         #check if field is bitpacked 
-        if "HEARTBEAT" not in canid: 
+        if "HEARTBEAT" not in canid or "HVC" in canid: 
             #field is not from a heartbeat struct 
             if field_params and name in field_params: 
                 if 'enumstruct' in field_params[name]: 

@@ -377,12 +377,23 @@ typedef enum {
     CMR_CAN_HVC_ERROR_LV_UNDERVOLT = (1<<13),    /**< @brief Shutdown circuit/AIR voltage too low. */
 } cmr_canHVCError_t;
 
+typedef enum {
+    CMR_CAN_HVC_RELAYSTATUS_DISCHARGE_CLOSED = (1<<0),
+    CMR_CAN_HVC_RELAYSTATUS_PRECHARGE_CLOSED = (1<<1),
+    CMR_CAN_HVC_RELAYSTATUS_NEGAIR_CLOSED = (1<<2),
+    CMR_CAN_HVC_RELAYSTATUS_POSAIR_CLOSED = (1<<3),
+    CMR_CAN_HVC_RELAYSTATUS_DISCHARGE_ERROR = (1<<4),
+    CMR_CAN_HVC_RELAYSTATUS_PRECHARGE_ERROR = (1<<5),
+    CMR_CAN_HVC_RELAYSTATUS_NEGAIR_ERROR = (1<<6),
+    CMR_CAN_HVC_RELAYSTATUS_POSAIR_ERROR = (1<<7) 
+} cmr_canHVCRelayStatus_t; 
+
 /** @brief High Voltage Controller heartbeat (does not follow universal structure). */
 typedef struct {
-    uint16_t errorStatus;   //Flag: cmr_canHVCError_t/**< @brief Current HVC errors. */
+    uint16_t errorStatus;   //Flag: cmr_canHVCError_t /**< @brief Current HVC errors. */
     uint8_t hvcMode;        //Flag: cmr_canHVCMode_t. /**< @brief Current HVC operating mode. */
     uint8_t hvcState;       /**< @brief Current internal HVC state. */
-    uint8_t relayStatus;    //Flag(not implemented yet): cmr_canHVCRelayStatus_t /**< @brief Status of AIRs. */
+    uint8_t relayStatus;    //Flag: cmr_canHVCRelayStatus_t /**< @brief Status of AIRs. */
     uint8_t uptime_s;       //u: s /**< @brief HVC uptime in seconds. */
 } cmr_canHVCHeartbeat_t;
 
@@ -676,6 +687,7 @@ typedef struct {
 
 /** @brief AMK motor controller status bits. */
 typedef enum {
+    CMR_CAN_AMK_RESERVED = (0xFF<<0), 
     CMR_CAN_AMK_STATUS_SYSTEM_READY = (1 << 8),     /**< @brief System ready. */
     CMR_CAN_AMK_STATUS_ERROR        = (1 << 9),     /**< @brief Error is present. */
     CMR_CAN_AMK_STATUS_WARNING      = (1 << 10),    /**< @brief Warning is present. */
@@ -832,6 +844,13 @@ typedef enum {
                                                             (attitude, velocity, position). Absolute position is provided. */
 } cmr_canSBGSolutionStatusMode_t;
 
+typedef enum{
+    CMR_CAN_SBG_AUTO_TRACK_VALID = (1<<0),
+    CMR_CAN_SBG_AUTO_SLIP_VALID = (1<<1),
+    CMR_CAN_SBG_AUTO_CURVATURE_VALID = (1<<2) 
+
+} cmr_canSBGAutomotiveStatus_t; 
+
 /** @brief SBG Systems Status (part 1). */
 typedef struct {
     uint32_t timestamp;         /**< @brief Timestamp in microseconds. */
@@ -847,7 +866,7 @@ typedef struct {
 
 /** @brief SBG Systems Status (part 3). */
 typedef struct {
-    uint32_t solution_status;   /**< @brief Solution status bit vector. */
+    uint32_t solution_status;   //Flag: cmr_canSBGSolutionStatus_t /**< @brief Solution status bit vector. */
     uint16_t heave_status;      /**< @brief Heave status bit vector. */
 } cmr_canSBGStatus3_t;
 
@@ -897,7 +916,7 @@ typedef struct {
     int16_t angle_track_rad;        //u: rad /**< @brief Track course angle/direction of travel (rad times 10^4). */
     int16_t angle_slip_rad;         //u: rad /**< @brief Vehicle slip angle (rad times 10^4). */
     uint16_t curvature_radius_m;    //u: m /**< @brief Curvature radius based on down rotation rate (meters times 10^2). */
-    uint8_t status;                 /**< @brief Status bitmasks as AUTO_STATUS definition. */
+    uint8_t status;                 //Flag: cmr_canSBGAutomotiveStatus_t /**< @brief Status bitmasks as AUTO_STATUS definition. */
 } cmr_canSBGAutomotive_t;
 
 // Endianness hell.

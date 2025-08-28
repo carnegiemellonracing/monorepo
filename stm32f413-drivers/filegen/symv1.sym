@@ -1,3 +1,33 @@
+[AMK_FL_ACT_1]
+DLC=8
+ID=288
+CycleTime=20.0
+TimeOut=100
+Var=amk_reserved bit 0,8
+Var=amk_status_system_ready bit 8,1
+Var=amk_status_error bit 9,1
+Var=amk_status_warning bit 10,1
+Var=amk_status_hv_en_ack bit 11,1
+Var=amk_status_hv_en bit 12,1
+Var=amk_status_inv_en_ack bit 13,1
+Var=amk_status_inv_en bit 14,1
+Var=amk_status_derating_en bit 15,1
+Var=velocity_rpm signed 16,16 /u:rpm /p:4
+Var=torqueCurrent_raw signed 32,16 /f:0.001701171875
+Var=magCurrent_raw signed 48,16 /f:0.001701171875
+
+
+[AMK_FL_ACT_2]
+DLC=8
+ID=28A
+CycleTime=20.0
+TimeOut=100
+Var=motorTemp_dC signed 0,16 /u:dC /f:0.1 /p:2
+Var=coldPlateTemp_dC signed 16,16 /u:dC /f:0.1 /p:2
+Var=errorCode unsigned 32,16
+Var=igbtTemp_dC signed 48,16 /u:dC /f:0.1 /p:2
+
+
 [AMK_FL_SETPOINTS]
 DLC=8
 ID=189
@@ -12,6 +42,36 @@ Var=amk_ctrl_reserved2 bit 12,4
 Var=velocity_rpm signed 16,16 /u:rpm /p:2
 Var=torqueLimPos_dpcnt signed 32,16 /u:Nm /f:0.0098 /p:4
 Var=torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
+
+
+[AMK_FR_ACT_1]
+DLC=8
+ID=284
+CycleTime=20.0
+TimeOut=100
+Var=amk_reserved bit 0,8
+Var=amk_status_system_ready bit 8,1
+Var=amk_status_error bit 9,1
+Var=amk_status_warning bit 10,1
+Var=amk_status_hv_en_ack bit 11,1
+Var=amk_status_hv_en bit 12,1
+Var=amk_status_inv_en_ack bit 13,1
+Var=amk_status_inv_en bit 14,1
+Var=amk_status_derating_en bit 15,1
+Var=velocity_rpm signed 16,16 /u:rpm /p:4
+Var=torqueCurrent_raw signed 32,16 /f:0.001701171875
+Var=magCurrent_raw signed 48,16 /f:0.001701171875
+
+
+[AMK_FR_ACT_2]
+DLC=8
+ID=286
+CycleTime=20.0
+TimeOut=100
+Var=motorTemp_dC signed 0,16 /u:dC /f:0.1 /p:2
+Var=coldPlateTemp_dC signed 16,16 /u:dC /f:0.1 /p:2
+Var=errorCode unsigned 32,16
+Var=igbtTemp_dC signed 48,16 /u:dC /f:0.1 /p:2
 
 
 [AMK_FR_SETPOINTS]
@@ -30,6 +90,36 @@ Var=torqueLimPos_dpcnt signed 32,16 /u:Nm /f:0.0098 /p:4
 Var=torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
 
 
+[AMK_RL_ACT_1]
+DLC=8
+ID=287
+CycleTime=20.0
+TimeOut=100
+Var=amk_reserved bit 0,8
+Var=amk_status_system_ready bit 8,1
+Var=amk_status_error bit 9,1
+Var=amk_status_warning bit 10,1
+Var=amk_status_hv_en_ack bit 11,1
+Var=amk_status_hv_en bit 12,1
+Var=amk_status_inv_en_ack bit 13,1
+Var=amk_status_inv_en bit 14,1
+Var=amk_status_derating_en bit 15,1
+Var=velocity_rpm signed 16,16 /u:rpm /p:4
+Var=torqueCurrent_raw signed 32,16 /f:0.001701171875
+Var=magCurrent_raw signed 48,16 /f:0.001701171875
+
+
+[AMK_RL_ACT_2]
+DLC=8
+ID=289
+CycleTime=20.0
+TimeOut=100
+Var=motorTemp_dC signed 0,16 /u:dC /f:0.1 /p:2
+Var=coldPlateTemp_dC signed 16,16 /u:dC /f:0.1 /p:2
+Var=errorCode unsigned 32,16
+Var=igbtTemp_dC signed 48,16 /u:dC /f:0.1 /p:2
+
+
 [AMK_RL_SETPOINTS]
 DLC=8
 ID=188
@@ -44,6 +134,36 @@ Var=amk_ctrl_reserved2 bit 12,4
 Var=velocity_rpm signed 16,16 /u:rpm /p:2
 Var=torqueLimPos_dpcnt signed 32,16 /u:Nm /f:0.0098 /p:4
 Var=torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
+
+
+[AMK_RR_ACT_1]
+DLC=8
+ID=283
+CycleTime=20.0
+TimeOut=100
+Var=amk_reserved bit 0,8
+Var=amk_status_system_ready bit 8,1
+Var=amk_status_error bit 9,1
+Var=amk_status_warning bit 10,1
+Var=amk_status_hv_en_ack bit 11,1
+Var=amk_status_hv_en bit 12,1
+Var=amk_status_inv_en_ack bit 13,1
+Var=amk_status_inv_en bit 14,1
+Var=amk_status_derating_en bit 15,1
+Var=velocity_rpm signed 16,16 /u:rpm /p:4
+Var=torqueCurrent_raw signed 32,16 /f:0.001701171875
+Var=magCurrent_raw signed 48,16 /f:0.001701171875
+
+
+[AMK_RR_ACT_2]
+DLC=8
+ID=285
+CycleTime=20.0
+TimeOut=100
+Var=motorTemp_dC signed 0,16 /u:dC /f:0.1 /p:2
+Var=coldPlateTemp_dC signed 16,16 /u:dC /f:0.1 /p:2
+Var=errorCode unsigned 32,16
+Var=igbtTemp_dC signed 48,16 /u:dC /f:0.1 /p:2
 
 
 [AMK_RR_SETPOINTS]
@@ -225,6 +345,14 @@ Var=rearLeft_Nm signed 32,16 /u:Nm /f:0.1
 Var=rearRight_Nm signed 48,16 /u:Nm /f:0.1
 
 
+[CELL_BALANCE_ENABLE]
+DLC=2
+ID=134
+CycleTime=10.0
+TimeOut=50
+Var=threshold unsigned 0,16
+
+
 [CONTROLS_PID_IO]
 DLC=8
 ID=7E5
@@ -331,6 +459,15 @@ Var=pwm_left unsigned 16,8
 Var=pwm_right unsigned 24,8
 
 
+[EMD_MEASUREMENT]
+DLC=8
+ID=401
+CycleTime=20.0
+TimeOut=100
+Var=current signed 0,32 /u:A
+Var=voltage signed 32,32 /u:V
+
+
 [FRONT_SLIP_RATIOS]
 DLC=8
 ID=7E8
@@ -433,9 +570,30 @@ DLC=6
 ID=101
 CycleTime=10
 TimeOut=50
-Var=hvcMode unsigned 16,8
+Var=hvc_error_pack_undervolt bit 0,1
+Var=hvc_error_pack_overvolt bit 1,1
+Var=hvc_error_pack_overcurrent bit 3,1
+Var=hvc_error_cell_undervolt bit 4,1
+Var=hvc_error_cell_overvolt bit 5,1
+Var=hvc_error_cell_overtemp bit 6,1
+Var=hvc_error_bmb_fault bit 7,1
+Var=hvc_error_bmb_timeout bit 8,1
+Var=hvc_error_can_timeout bit 9,1
+Var=hvc_error_relay bit 12,1
+Var=hvc_error_lv_undervolt bit 13,1
+Var=hvc_mode_idle bit 16,1
+Var=hvc_mode_start bit 17,1
+Var=hvc_mode_run bit 18,1
+Var=hvc_mode_charge bit 19,1
 Var=hvcState unsigned 24,8
-Var=relayStatus unsigned 32,8
+Var=hvc_relaystatus_discharge_closed bit 32,1
+Var=hvc_relaystatus_precharge_closed bit 33,1
+Var=hvc_relaystatus_negair_closed bit 34,1
+Var=hvc_relaystatus_posair_closed bit 35,1
+Var=hvc_relaystatus_discharge_error bit 36,1
+Var=hvc_relaystatus_precharge_error bit 37,1
+Var=hvc_relaystatus_negair_error bit 38,1
+Var=hvc_relaystatus_posair_error bit 39,1
 Var=uptime_s unsigned 40,8 /u:s
 
 
@@ -455,6 +613,21 @@ ID=107
 CycleTime=10
 TimeOut=50
 Var=state unsigned 0,8 /e:State
+
+
+[HEARTBEAT_MEMORATOR]
+DLC=8
+ID=109
+CycleTime=400.0
+TimeOut=2000
+Var=BMB1_2_Errs unsigned 0,8
+Var=BMB3_4_Errs unsigned 8,8
+Var=BMB5_6_Errs unsigned 16,8
+Var=BMB7_8_Errs unsigned 24,8
+Var=BMB9_10_Errs unsigned 32,8
+Var=BMB11_12_Errs unsigned 40,8
+Var=BMB13_14_Errs unsigned 48,8
+Var=BMB15_16_Errs unsigned 56,8
 
 
 [HEARTBEAT_VSM]
@@ -547,6 +720,32 @@ Var=safety_mV unsigned 16,8 /u:mV /f:0.1333333
 Var=iDCDC_mA unsigned 24,8 /u:mA /f:0.1333333
 
 
+[HVC_MINMAX_CELL_TEMPS]
+DLC=8
+ID=311
+CycleTime=20.0
+TimeOut=100
+Var=minCellTemp_dC unsigned 0,16 /u:dC
+Var=maxCellTemp_dC unsigned 16,16 /u:dC
+Var=minTempBMBIndex unsigned 32,8
+Var=minTempCellIndex unsigned 40,8
+Var=maxTempBMBIndex unsigned 48,8
+Var=maxTempCellIndex unsigned 56,8
+
+
+[HVC_MINMAX_CELL_VOLTAGE]
+DLC=8
+ID=310
+CycleTime=20.0
+TimeOut=100
+Var=minCellVoltage_mV unsigned 0,16 /u:mV
+Var=maxCellVoltage_mV unsigned 16,16 /u:mV
+Var=minCellVoltBMB unsigned 32,8
+Var=minVoltIndex unsigned 40,8
+Var=maxCellVoltBMB unsigned 48,8
+Var=maxVoltIndex unsigned 56,8
+
+
 [HVC_MIN_MAX_CELL_TEMPERATURE]
 DLC=8
 ID=311
@@ -602,6 +801,30 @@ Var=motor_power_RL unsigned 32,16
 Var=motor_power_RR unsigned 48,16
 
 
+[PTC_LOOP_TEMPS_A]
+DLC=4
+ID=224
+CycleTime=10.0
+TimeOut=50
+Var=internalState unsigned 0,8 /e:VSMState
+Var=vsm_error_source_hvc bit 14,1
+Var=vsm_error_source_cdc bit 13,1
+Var=vsm_error_source_fsm bit 12,1
+Var=vsm_error_source_dim bit 11,1
+Var=vsm_error_source_ptc bit 10,1
+Var=vsm_error_source_hvi bit 8,1
+Var=vsm_error_source_hvc bit 22,1
+Var=vsm_error_source_cdc bit 21,1
+Var=vsm_error_source_fsm bit 20,1
+Var=vsm_error_source_dim bit 19,1
+Var=vsm_error_source_ptc bit 18,1
+Var=vsm_error_source_hvi bit 16,1
+Var=vsm_latch_software bit 27,1
+Var=vsm_latch_ams bit 26,1
+Var=vsm_latch_imd bit 25,1
+Var=vsm_latch_bspd bit 24,1
+
+
 [REAR_SLIP_RATIOS]
 DLC=8
 ID=7E9
@@ -629,6 +852,95 @@ Var=v_whl_rl float 0,32
 Var=v_whl_rr float 32,32
 
 
+[SBG_AUTOMOTIVE]
+DLC=7
+ID=72A
+CycleTime=200.0
+TimeOut=1000
+Var=angle_track_rad signed 0,16 /u:rad
+Var=angle_slip_rad signed 16,16 /u:rad
+Var=curvature_radius_m unsigned 32,16 /u:m
+Var=sbg_auto_track_valid bit 48,1
+Var=sbg_auto_slip_valid bit 49,1
+Var=sbg_auto_curvature_valid bit 50,1
+
+
+[SBG_BODY_VEL]
+DLC=6
+ID=729
+CycleTime=400.0
+TimeOut=2000
+Var=velocity_forward signed 0,16
+Var=velocity_right signed 16,16
+Var=velocity_down signed 32,16
+
+
+[SBG_EKF_ORIENT]
+DLC=6
+ID=722
+CycleTime=400.0
+TimeOut=2000
+Var=roll signed 0,16
+Var=pitch signed 16,16
+Var=yaw signed 32,16
+
+
+[SBG_EKF_POS]
+DLC=8
+ID=724
+CycleTime=400.0
+TimeOut=2000
+Var=latitude signed 0,32
+Var=longitude signed 32,32
+
+
+[SBG_EKF_VEL]
+DLC=6
+ID=727
+CycleTime=400.0
+TimeOut=2000
+Var=velocity_n signed 0,16
+Var=velocity_e signed 16,16
+Var=velocity_d signed 32,16
+
+
+[SBG_IMU_GYRO]
+DLC=6
+ID=712
+CycleTime=400.0
+TimeOut=2000
+Var=gyro_x_rads signed 0,16 /u:rad
+Var=gyro_y_rads signed 16,16 /u:rad
+Var=gyro_z_rads signed 32,16 /u:rad
+
+
+[SBG_STATUS_3]
+DLC=6
+ID=702
+CycleTime=400.0
+TimeOut=2000
+Var=sbg_sol_attitude_valid bit 4,1
+Var=sbg_sol_heading_valid bit 5,1
+Var=sbg_sol_velocity_valid bit 6,1
+Var=sbg_sol_position_valid bit 7,1
+Var=sbg_sol_vert_ref_used bit 8,1
+Var=sbg_sol_mag_ref_used bit 9,1
+Var=sbg_sol_gps1_vel_used bit 10,1
+Var=sbg_sol_gps1_pos_used bit 11,1
+Var=sbg_sol_gps1_hdt_used bit 13,1
+Var=sbg_sol_gps2_vel_used bit 14,1
+Var=sbg_sol_gps2_pos_used bit 15,1
+Var=sbg_sol_gps2_hdt_used bit 17,1
+Var=sbg_sol_odo_used bit 18,1
+Var=sbg_sol_dvl_bt_used bit 19,1
+Var=sbg_sol_dvl_wt_used bit 20,1
+Var=sbg_sol_usbl_used bit 24,1
+Var=sbg_sol_pressure_used bit 25,1
+Var=sbg_sol_zupt_used bit 26,1
+Var=sbg_sol_align_valid bit 27,1
+Var=heave_status unsigned 32,16
+
+
 [SF_STATE]
 DLC=8
 ID=52D
@@ -641,12 +953,27 @@ Var=under_voltage_count unsigned 48,8
 Var=over_temp_count unsigned 56,8
 
 
-[TEST_ID]
-DLC=1
-ID=777
-CycleTime=100
-TimeOut=500
-Var=test_id unsigned 0,8
+[VSM_LATCHED_STATUS]
+DLC=3
+ID=510
+CycleTime=10000
+TimeOut=50000
+Var=vsm_error_source_hvc bit 6,1
+Var=vsm_error_source_cdc bit 5,1
+Var=vsm_error_source_fsm bit 4,1
+Var=vsm_error_source_dim bit 3,1
+Var=vsm_error_source_ptc bit 2,1
+Var=vsm_error_source_hvi bit 0,1
+Var=vsm_error_source_hvc bit 14,1
+Var=vsm_error_source_cdc bit 13,1
+Var=vsm_error_source_fsm bit 12,1
+Var=vsm_error_source_dim bit 11,1
+Var=vsm_error_source_ptc bit 10,1
+Var=vsm_error_source_hvi bit 8,1
+Var=vsm_latch_software bit 19,1
+Var=vsm_latch_ams bit 18,1
+Var=vsm_latch_imd bit 17,1
+Var=vsm_latch_bspd bit 16,1
 
 
 [VSM_POWER_DIAGNOSTICS]
@@ -685,7 +1012,7 @@ Var=vsm_error_source_fsm bit 20,1
 Var=vsm_error_source_dim bit 19,1
 Var=vsm_error_source_ptc bit 18,1
 Var=vsm_error_source_hvi bit 16,1
-Var=vsm_latch_software bit 26,1
+Var=vsm_latch_software bit 27,1
 Var=vsm_latch_ams bit 26,1
 Var=vsm_latch_imd bit 25,1
 Var=vsm_latch_bspd bit 24,1
