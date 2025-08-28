@@ -283,13 +283,21 @@ def parse_sizeof_argument(sizeof_arg):
     if '->' in sizeof_arg:
         parts = sizeof_arg.split('->')
         if len(parts) >= 2:
-            return parts[-1].strip()
+            member_name = parts[-1].strip()
+            # If the member name looks like a type (starts with 'can'), return it directly
+            if member_name.startswith('can') or member_name.startswith('cmr_'):
+                return member_name
+            return member_name
     
     #Handle struct.member
     if '.' in sizeof_arg:
         parts = sizeof_arg.split('.')
         if len(parts) >= 2:
-            return parts[-1].strip()
+            member_name = parts[-1].strip()
+            # If the member name looks like a type (starts with 'can'), return it directly
+            if member_name.startswith('can') or member_name.startswith('cmr_'):
+                return member_name
+            return member_name
     
     return sizeof_arg
 
@@ -329,8 +337,15 @@ def resolve_sizeof_type(sizeof_arg, local_var_types, global_var_types, local_str
     """Resolve the type from sizeof argument, prioritizing local then global mappings"""
     lookup_key = parse_sizeof_argument(sizeof_arg)
     
+    # If the lookup key is already a proper type name, return it
     if lookup_key.startswith('cmr_') and lookup_key.endswith('_t'):
         return lookup_key, True
+    
+    # If it's a member name that looks like it should be converted to proper type format
+    if lookup_key.startswith('can') and not lookup_key.startswith('can_'):
+        # Convert canVSMLatchedStatus -> cmr_canVSMLatchedStatus_t
+        proper_type = f"cmr_{lookup_key}_t"
+        return proper_type, True
     
     if lookup_key in local_var_types:
         return local_var_types[lookup_key], True
@@ -344,7 +359,8 @@ def resolve_sizeof_type(sizeof_arg, local_var_types, global_var_types, local_str
     if lookup_key in global_struct_members:
         return global_struct_members[lookup_key], True
     
-    return sizeof_arg, False
+    # If no mapping found, return the lookup key itself (could be a direct member name)
+    return lookup_key, False
 
 def calculate_cycle_time_and_timeout(cycle_time_value):
     """Calculate cycle time and timeout (timeout = 5 * cycle_time)"""

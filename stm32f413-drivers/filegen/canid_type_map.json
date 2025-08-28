@@ -478,7 +478,7 @@
         "CMR_CANID_VSM_LATCHED_STATUS": {
             "cycleTime": 10000,
             "timeOut": 50000,
-            "type": "vsmStatus->canVSMLatchedStatus"
+            "type": "cmr_canVSMLatchedStatus_t"
         },
         "CMR_CANID_VSM_POWER_DIAGNOSTICS": {
             "cycleTime": 100,
