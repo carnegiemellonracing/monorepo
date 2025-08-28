@@ -701,7 +701,7 @@
                 "enumstruct": "cmr_canHVCRelayStatus_t"
             },
             "timeOut": 50,
-            "type": "cmr_canHVCHeartbeat_t", 
+            "type": "cmr_canHVCHeartbeat_t",
             "uptime_s": {
                 "u": "s"
             }

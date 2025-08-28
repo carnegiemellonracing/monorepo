@@ -709,7 +709,7 @@ typedef enum {
 /** @brief AMK motor controller status and velocity. */
 typedef struct {
     uint16_t status_bv;         //Flag: cmr_canAMKStatus_t /**<@brief Status bit vector */
-    int16_t velocity_rpm;       //u: rpm, p:4 /**< @brief Motor velocity (RPM). */ 
+    int16_t velocity_rpm;       //p:4 /** u: rpm < @brief Motor velocity (RPM). */ 
     int16_t torqueCurrent_raw;  //f:0.001701171875 /**< @brief Raw value for torque producing current. */
     int16_t magCurrent_raw;     //f:0.001701171875 /**< @brief Raw value for magnetizing current. */
 } cmr_canAMKActualValues1_t;
