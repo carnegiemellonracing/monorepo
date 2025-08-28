@@ -194,8 +194,8 @@ static void canTX100Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        sendHeartbeat(lastWakeTime);
-        //sendHVCPackVoltage();
+        //sendHeartbeat(lastWakeTime);
+        sendHVCPackVoltage();
         //sendBMSPackCurrent();
         sendBMSLowVoltage();
         sendBMSBMBStatusErrors();
