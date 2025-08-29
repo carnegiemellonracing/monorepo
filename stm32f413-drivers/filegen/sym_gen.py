@@ -58,7 +58,7 @@ def get_cantypes_data(cantype, structs):
 
 
 
-def format_bitpacking(structname, structlines, atbit, enums): 
+def format_bitpacking(structname, structlines, atbit, vartype, enums): 
     print("searching for"+ structname)
     for enumfields, name in enums:
         if name == structname: 
@@ -77,7 +77,10 @@ def format_bitpacking(structname, structlines, atbit, enums):
                     for i, c in enumerate(binary):
                         if c == '1':
                             position = i 
-                structlines.append("Var="+name.lower()+" bit "+str(atbit+int(position))+","+str(realsize)) 
+                            break
+                if realsize == 1:
+                    vartype = "bit" 
+                structlines.append("Var="+name.lower()+" "+vartype+" "+str(atbit+int(position))+","+str(realsize)) 
                 #atbit+=realsize 
 
 
@@ -119,7 +122,7 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
             #field is not from a heartbeat struct 
             if field_params and name in field_params: 
                 if 'enumstruct' in field_params[name]: 
-                    format_bitpacking(field_params[name]['enumstruct'], structlines, atbit, enums); 
+                    format_bitpacking(field_params[name]['enumstruct'], structlines, atbit, vartype, enums); 
                     atbit+=int(size) 
                     continue 
         else:
@@ -129,14 +132,14 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
                 print("doing error field" + name)
                 board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
                 boardname = board.group(1) 
-                format_bitpacking("cmr_can"+boardname+"HeartbeatErr_t", structlines, atbit, enums); 
+                format_bitpacking("cmr_can"+boardname+"HeartbeatErr_t", structlines, atbit, vartype, enums); 
                 atbit+=int(size) 
                 continue 
             elif "warning" in name: 
                 print("doing warning field" + name) 
                 board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
                 boardname = board.group(1) 
-                format_bitpacking("cmr_can"+boardname+"HeartbeatWrn_t", structlines, atbit, enums); 
+                format_bitpacking("cmr_can"+boardname+"HeartbeatWrn_t", structlines, atbit, vartype, enums); 
                 atbit+=int(size) 
                 continue 
         #add in field if not bitpacked 
