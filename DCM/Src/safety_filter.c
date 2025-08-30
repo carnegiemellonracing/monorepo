@@ -481,10 +481,10 @@ void setTorqueLimsProtected (
     // GLOBAL POWER BASED SCALING 
     float Plim_W = power_upper_limit_W - power_safety_margin_W;
 
-    // instaneous req pack power from positive (discharge) request
+    // instaneous req pack power from positive request
     // p_est = (sum_i Treq_pos_i * omega_i) / efficienices
     float total_eff = inverter_efficiency * motor_efficiency * efficiency_multiplier;
-    float power_eps_W = 50.0f; // div by zero error safety? 
+    //float power_safety_W = 50.0f; // div by zero error safety? 
 
     float P_est_W = 0.0f;
     for (size_t m = 0; m < MOTOR_LEN; m++) {
