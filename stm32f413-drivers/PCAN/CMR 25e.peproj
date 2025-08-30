@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PCANExplorerProject Version="5.0" Name="CMR 25e">
     <Connections AutoReset="0" IgnoreRTRLength="0" ProcessRTR="1">
-        <Connection Bus="3" Enabled="1" Protocol="0" ErrorFrames="1" CalcBusLoad="1" SymbolsFileName="CMR 25e.sym" BitRate="28" Connection="CAN@pcan_usb" Name="DAQ_CAN"/>
+        <Connection Bus="1" Enabled="0" Protocol="0" SymbolsFileName="CMR 25e.sym" BitRate="28" Connection="VEH_CAN@pcan_usb" Name="VEH_CAN"/>
+        <Connection Bus="2" Enabled="0" Protocol="0" CalcBusLoad="1" SymbolsFileName="CMR 25e.sym" BitRate="28" Connection="TRAC_CAN@pcan_usb" Name="TRAC_CAN"/>
+        <Connection Bus="4" Enabled="0" Protocol="0" SymbolsFileName="CMR 25e.sym" BitRate="28" Connection="DAQ_CAN@pcan_usb" Name="DAQ_CAN1"/>
     </Connections>
     <MessageFilters>
         <MessageFilter Name="Filter1">
@@ -9,7 +11,7 @@
         </MessageFilter>
     </MessageFilters>
     <TransmitList>
-        <TransmitListItem Bus="3" CanId="256" Type="0" DLC="5" Data="01" CycleTime="10" IsPaused="1" Creator="User"/>
+        <TransmitListItem Bus="0" CanId="256" Type="0" DLC="5" Data="01" CycleTime="10" IsPaused="1" Creator="User"/>
     </TransmitList>
     <Files>
         <File RelativePath="CMR 25e.sym"/>
