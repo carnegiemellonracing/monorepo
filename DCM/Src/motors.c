@@ -59,24 +59,24 @@ static cmr_canGear_t gear = CMR_CAN_GEAR_SLOW;
  */
 static cmr_canAMKSetpoints_t motorSetpoints[MOTOR_LEN] = {
     [MOTOR_FL] = {
-        .velocity_rpm       = 0,
-        .torqueLimPos_dpcnt = 0,
-        .torqueLimNeg_dpcnt = 0
+        .velocity_rpm = 0,
+        .torqueLimPos = 0,
+        .torqueLimNeg = 0
     },
     [MOTOR_FR] = {
-        .velocity_rpm       = 0,
-        .torqueLimPos_dpcnt = 0,
-        .torqueLimNeg_dpcnt = 0
+        .velocity_rpm = 0,
+        .torqueLimPos = 0,
+        .torqueLimNeg = 0
     },
     [MOTOR_RL] = {
-        .velocity_rpm       = 0,
-        .torqueLimPos_dpcnt = 0,
-        .torqueLimNeg_dpcnt = 0
+        .velocity_rpm = 0,
+        .torqueLimPos = 0,
+        .torqueLimNeg = 0
     },
     [MOTOR_RR] = {
-        .velocity_rpm       = 0,
-        .torqueLimPos_dpcnt = 0,
-        .torqueLimNeg_dpcnt = 0
+        .velocity_rpm = 0,
+        .torqueLimPos = 0,
+        .torqueLimNeg = 0
     },
 };
 
@@ -151,15 +151,15 @@ static void motorsCommand (
                 if (blank_command) {
 					for (size_t i = 0; i < MOTOR_LEN; i++) {
 						motorSetpoints[i].velocity_rpm = 0;
-						motorSetpoints[i].torqueLimPos_dpcnt = 0;
-						motorSetpoints[i].torqueLimNeg_dpcnt = 0;
+						motorSetpoints[i].torqueLimPos = 0;
+						motorSetpoints[i].torqueLimNeg = 0;
 					}
 				}
 
 //                for (size_t i = 0; i < MOTOR_LEN; i++) {
 //                    motorSetpoints[i].velocity_rpm = 300;
-//                    motorSetpoints[i].torqueLimPos_dpcnt = 40;
-//                    motorSetpoints[i].torqueLimNeg_dpcnt = -40;
+//                    motorSetpoints[i].torqueLimPos = 40;
+//                    motorSetpoints[i].torqueLimNeg = -40;
 //                }
 
                 uint32_t au32_initial_ticks = DWT->CYCCNT;
@@ -205,8 +205,8 @@ static void motorsCommand (
             	pumpsOn();
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].velocity_rpm       = 0;
-                    motorSetpoints[i].torqueLimPos_dpcnt = 0;
-                    motorSetpoints[i].torqueLimNeg_dpcnt = 0;
+                    motorSetpoints[i].torqueLimPos = 0;
+                    motorSetpoints[i].torqueLimNeg = 0;
                 }
 
                 // set status so DIM can see
@@ -229,8 +229,8 @@ static void motorsCommand (
 
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].velocity_rpm       = 0;
-                    motorSetpoints[i].torqueLimPos_dpcnt = 0;
-                    motorSetpoints[i].torqueLimNeg_dpcnt = 0;
+                    motorSetpoints[i].torqueLimPos = 0;
+                    motorSetpoints[i].torqueLimNeg = 0;
                 }
                 // set status so DIM can see
                 setControlsStatus(reqDIM->requestedGear);
@@ -246,8 +246,8 @@ static void motorsCommand (
 
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].velocity_rpm       = 0;
-                    motorSetpoints[i].torqueLimPos_dpcnt = 0;
-                    motorSetpoints[i].torqueLimNeg_dpcnt = 0;
+                    motorSetpoints[i].torqueLimPos = 0;
+                    motorSetpoints[i].torqueLimNeg = 0;
                 }
                 break;
             }
@@ -319,7 +319,7 @@ void setTorqueLimPos (
     }
 
     torqueLimPos_Nm = fmaxf(torqueLimPos_Nm, 0.0f);
-    motorSetpoints[motor].torqueLimPos_dpcnt = convertNmToAMKTorque(torqueLimPos_Nm);
+    motorSetpoints[motor].torqueLimPos = convertNmToAMKTorque(torqueLimPos_Nm);
 }
 
 /**
@@ -337,7 +337,7 @@ void setTorqueLimNeg (
     }
 
     torqueLimNeg_Nm = fminf(torqueLimNeg_Nm, 0.0f);
-    motorSetpoints[motor].torqueLimNeg_dpcnt = convertNmToAMKTorque(torqueLimNeg_Nm);
+    motorSetpoints[motor].torqueLimNeg = convertNmToAMKTorque(torqueLimNeg_Nm);
 }
 
 /**
@@ -406,8 +406,8 @@ void setTorqueLimsUnprotected (
     torqueLimPos_Nm = fmaxf(torqueLimPos_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
     torqueLimNeg_Nm = fminf(torqueLimNeg_Nm, 0.0f); // ensures torqueLimNeg_Nm <= 0
 
-    motorSetpoints[motor].torqueLimPos_dpcnt = convertNmToAMKTorque(torqueLimPos_Nm);
-    motorSetpoints[motor].torqueLimNeg_dpcnt = convertNmToAMKTorque(torqueLimNeg_Nm);
+    motorSetpoints[motor].torqueLimPos = convertNmToAMKTorque(torqueLimPos_Nm);
+    motorSetpoints[motor].torqueLimNeg = convertNmToAMKTorque(torqueLimNeg_Nm);
 }
 
 /**
@@ -478,6 +478,34 @@ void setVelocityFloatAll (
     }
 }
 
+/**
+ * @brief Sets torque setpoint for a motor.
+ *
+ * @param motor Which motor to set torque for.
+ * @param torque Desired torque.
+ */
+void setTorque(
+    motorLocation_t motor,
+    float torque
+){
+    motorSetpoints[motor].torque = torque;
+}
+
+/**
+ * @brief Initiates Torque Mode.
+ */
+void initiateTorqueMode()
+{
+    isTorqueMode = true;
+}
+
+/**
+ * @brief Disables Torque Mode.
+ */
+void disableTorqueMode()
+{
+    isTorqueMode = false;
+}
 
 /**
  * @brief Calculate the torque budget for power-aware traction and yaw rate control.
@@ -489,16 +517,16 @@ cmr_torque_limit_t getTorqueBudget() {
 }
 
 /**
- * @brief Gets a read-only pointer to specified AMK inverter setpoints.
+ * @brief Gets a read-only pointer to specified DTI inverter setpoints.
  *
  * @param motor Which motor to get setpoints for.
  *
  * @return Read-only pointer to requested setpoints.
  */
-const cmr_canAMKSetpoints_t *getAMKSetpoints(motorLocation_t motor) {
+const cmr_canDTISetpoints_t *getDTISetpoints(motorLocation_t motor) {
     if (motor >= MOTOR_LEN) {
         return NULL;
     }
 
-    return (const cmr_canAMKSetpoints_t *) &(motorSetpoints[motor]);
+    return (const cmr_canDTISetpoints_t *) &(motorSetpoints[motor]);
 }

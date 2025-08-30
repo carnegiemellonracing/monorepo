@@ -181,102 +181,205 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
 
 /** @brief Metadata for tractive CAN message reception. */
 cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
-    [CANRX_TRAC_FL_INV_ACT1] = {
-        .canID = CMR_CANID_DTI_FL_ACT_1,
+    /* Front Left Inverter (Node ID 0x00) */
+    [CANRX_TRAC_FL_CONTROL_STATUS] = {
+        .canID = CMR_CANID_DTI_FL_CONTROL_STATUS,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_FL_INV_ACT2] = {
-        .canID = CMR_CANID_DTI_FL_ACT_2,
+    [CANRX_TRAC_FL_ERPM] = {
+        .canID = CMR_CANID_DTI_FL_ERPM,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_FL_INV_ACT3] = {
-        .canID = CMR_CANID_DTI_FL_ACT_3,
+    [CANRX_TRAC_FL_CURRENT] = {
+        .canID = CMR_CANID_DTI_FL_CURRENT,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_FL_INV_ACT4] = {
-        .canID = CMR_CANID_DTI_FL_ACT_4,
+    [CANRX_TRAC_FL_TEMPFAULT] = {
+        .canID = CMR_CANID_DTI_FL_TEMPFAULT,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_FR_INV_ACT1] = {
-        .canID = CMR_CANID_DTI_FR_ACT_1,
+    [CANRX_TRAC_FL_IDIQ] = {
+        .canID = CMR_CANID_DTI_FL_IDIQ,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_FL_IO_STATUS] = {
+        .canID = CMR_CANID_DTI_FL_IO_STATUS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_FL_ACLIMS] = {
+        .canID = CMR_CANID_DTI_FL_ACLIMS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_FL_DCLIMS] = {
+        .canID = CMR_CANID_DTI_FL_DCLIMS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+
+    /* Front Right Inverter (Node ID 0x01) */
+    [CANRX_TRAC_FR_CONTROL_STATUS] = {
+        .canID = CMR_CANID_DTI_FR_CONTROL_STATUS,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_FR_INV_ACT2] = {
-        .canID = CMR_CANID_DTI_FR_ACT_2,
+    [CANRX_TRAC_FR_ERPM] = {
+        .canID = CMR_CANID_DTI_FR_ERPM,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_FR_INV_ACT3] = {
-        .canID = CMR_CANID_DTI_FR_ACT_3,
+    [CANRX_TRAC_FR_CURRENT] = {
+        .canID = CMR_CANID_DTI_FR_CURRENT,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_FR_INV_ACT4] = {
-        .canID = CMR_CANID_DTI_FR_ACT_4,
+    [CANRX_TRAC_FR_TEMPFAULT] = {
+        .canID = CMR_CANID_DTI_FR_TEMPFAULT,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_RR_INV_ACT1] = {
-        .canID = CMR_CANID_DTI_RR_ACT_1,
+    [CANRX_TRAC_FR_IDIQ] = {
+        .canID = CMR_CANID_DTI_FR_IDIQ,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_FR_IO_STATUS] = {
+        .canID = CMR_CANID_DTI_FR_IO_STATUS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_FR_ACLIMS] = {
+        .canID = CMR_CANID_DTI_FR_ACLIMS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_FR_DCLIMS] = {
+        .canID = CMR_CANID_DTI_FR_DCLIMS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+
+    /* Rear Right Inverter (Node ID 0x02) */
+    [CANRX_TRAC_RR_CONTROL_STATUS] = {
+        .canID = CMR_CANID_DTI_RR_CONTROL_STATUS,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_RR_INV_ACT2] = {
-        .canID = CMR_CANID_DTI_RR_ACT_2,
+    [CANRX_TRAC_RR_ERPM] = {
+        .canID = CMR_CANID_DTI_RR_ERPM,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_RR_INV_ACT3] = {
-        .canID = CMR_CANID_DTI_RR_ACT_3,
+    [CANRX_TRAC_RR_CURRENT] = {
+        .canID = CMR_CANID_DTI_RR_CURRENT,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_RR_INV_ACT4] = {
-        .canID = CMR_CANID_DTI_RR_ACT_4,
+    [CANRX_TRAC_RR_TEMPFAULT] = {
+        .canID = CMR_CANID_DTI_RR_TEMPFAULT,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_RL_INV_ACT1] = {
-        .canID = CMR_CANID_DTI_RL_ACT_1,
+    [CANRX_TRAC_RR_IDIQ] = {
+        .canID = CMR_CANID_DTI_RR_IDIQ,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RR_IO_STATUS] = {
+        .canID = CMR_CANID_DTI_RR_IO_STATUS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RR_ACLIMS] = {
+        .canID = CMR_CANID_DTI_RR_ACLIMS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RR_DCLIMS] = {
+        .canID = CMR_CANID_DTI_RR_DCLIMS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+
+    /* Rear Left Inverter (Node ID 0x03) */
+    [CANRX_TRAC_RL_CONTROL_STATUS] = {
+        .canID = CMR_CANID_DTI_RL_CONTROL_STATUS,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_RL_INV_ACT2] = {
-        .canID = CMR_CANID_DTI_RL_ACT_2,
+    [CANRX_TRAC_RL_ERPM] = {
+        .canID = CMR_CANID_DTI_RL_ERPM,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_RL_INV_ACT3] = {
-        .canID = CMR_CANID_DTI_RL_ACT_3,
+    [CANRX_TRAC_RL_CURRENT] = {
+        .canID = CMR_CANID_DTI_RL_CURRENT,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_RL_INV_ACT4] = {
-        .canID = CMR_CANID_DTI_RL_ACT_4,
+    [CANRX_TRAC_RL_TEMPFAULT] = {
+        .canID = CMR_CANID_DTI_RL_TEMPFAULT,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
-    }
+    },
+    [CANRX_TRAC_RL_IDIQ] = {
+        .canID = CMR_CANID_DTI_RL_IDIQ,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RL_IO_STATUS] = {
+        .canID = CMR_CANID_DTI_RL_IO_STATUS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RL_ACLIMS] = {
+        .canID = CMR_CANID_DTI_RL_ACLIMS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RL_DCLIMS] = {
+        .canID = CMR_CANID_DTI_RL_DCLIMS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
 };
 
 cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
@@ -470,6 +573,11 @@ static void canTX10Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
 
+    const cmr_canDTISetpoints_t *dtiSetpointsFL = getDTISetpoints(MOTOR_FL);
+    const cmr_canDTISetpoints_t *dtiSetpointsFR = getDTISetpoints(MOTOR_FR);
+    const cmr_canDTISetpoints_t *dtiSetpointsRL = getDTISetpoints(MOTOR_RL);
+    const cmr_canDTISetpoints_t *dtiSetpointsRR = getDTISetpoints(MOTOR_RR);
+
     cmr_canCDCWheelVelocity_t speedFeedback;
     cmr_canCDCWheelTorque_t torqueFeedback;
     cmr_canCDCWheelVelocity_t speedSetpoint;
@@ -499,6 +607,18 @@ static void canTX10Hz(void *pvParameters) {
         cmr_canDAQTherm_t therms;
         therms.therm_1 = adcRead(ADC_THERM1);
         therms.therm_2 = adcRead(ADC_THERM2);
+
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_TORLIMPOS, &(dtiSetpointsFL->torqueLimPos), sizeof(int16_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_TORLIMNEG, &(dtiSetpointsFL->torqueLimNeg), sizeof(int16_t), canTX10Hz_period_ms);
+
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_TORLIMPOS, &(dtiSetpointsFR->torqueLimPos), sizeof(int16_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_TORLIMNEG, &(dtiSetpointsFR->torqueLimNeg), sizeof(int16_t), canTX10Hz_period_ms);
+
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_TORLIMPOS, &(dtiSetpointsRR->torqueLimPos), sizeof(int16_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_TORLIMNEG, &(dtiSetpointsRR->torqueLimNeg), sizeof(int16_t), canTX10Hz_period_ms);
+
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_TORLIMPOS, &(dtiSetpointsRL->torqueLimPos), sizeof(int16_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_TORLIMNEG, &(dtiSetpointsRL->torqueLimNeg), sizeof(int16_t), canTX10Hz_period_ms);
 
         canTX(CMR_CAN_BUS_VEH, 0x659, &therms, sizeof(cmr_canDAQTherm_t), canTX10Hz_period_ms);
 
@@ -627,10 +747,12 @@ static cmr_task_t canTX200Hz_task;
 static void canTX200Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-    const cmr_canAMKSetpoints_t *amkSetpointsFL = getAMKSetpoints(MOTOR_FL);
-    const cmr_canAMKSetpoints_t *amkSetpointsFR = getAMKSetpoints(MOTOR_FR);
-    const cmr_canAMKSetpoints_t *amkSetpointsRL = getAMKSetpoints(MOTOR_RL);
-    const cmr_canAMKSetpoints_t *amkSetpointsRR = getAMKSetpoints(MOTOR_RR);
+    volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+
+    const cmr_canDTISetpoints_t *dtiSetpointsFL = getDTISetpoints(MOTOR_FL);
+    const cmr_canDTISetpoints_t *dtiSetpointsFR = getDTISetpoints(MOTOR_FR);
+    const cmr_canDTISetpoints_t *dtiSetpointsRL = getDTISetpoints(MOTOR_RL);
+    const cmr_canDTISetpoints_t *dtiSetpointsRR = getDTISetpoints(MOTOR_RR);
 
     cmr_canCDCWheelVelocity_t speedFeedback;
     cmr_canCDCWheelTorque_t torqueFeedback;
@@ -649,28 +771,24 @@ static void canTX200Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        /** Drive Enable CAN Message sent periodically (PacketID: 0x0C) */
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
+        if (heartbeatVSM->state == CMR_CAN_HV_EN){
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
+        }
 
-        /** Velocity, torqueLimNeg, torqueLimPos sent for FL */ //SIZE OF THAT FIELD
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_VELOCITY, setVelocity(amkSetpointsFL), sizeof(int*), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_TORLIMPOS, setTorqueLimPos(amkSetpointsFL), sizeof(int*), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_TORLIMNEG, setTorqueLimNeg(amkSetpointsFL), sizeof(int*), canTX200Hz_period_ms);
-
-        /** Velocity, torqueLimNeg, torqueLimPos sent for FR */ //loop through a list of node ids
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_VELOCITY, setVelocity(amkSetpointsFR), sizeof(int*), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_TORLIMPOS, setTorqueLimPos(amkSetpointsFR), sizeof(int*), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_TORLIMNEG, setTorqueLimNeg(amkSetpointsFR), sizeof(int*), canTX200Hz_period_ms);
-
-        /** Velocity, torqueLimNeg, torqueLimPos sent for RL */
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_VELOCITY, setVelocity(amkSetpointsRL), sizeof(int*), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_TORLIMPOS, setTorqueLimPos(amkSetpointsRL), sizeof(int*), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_TORLIMNEG, setTorqueLimNeg(amkSetpointsRL), sizeof(int*), canTX200Hz_period_ms);
-
-        /** Velocity, torqueLimNeg, torqueLimPos sent for RR */
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_VELOCITY, setVelocity(amkSetpointsRR), sizeof(int*), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_TORLIMPOS, setTorqueLimPos(amkSetpointsRR), sizeof(int*), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_TORLIMNEG, setTorqueLimNeg(amkSetpointsRR), sizeof(int*), canTX200Hz_period_ms);
+        if (isTorqueMode){
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_TORQUE, &(dtiSetpointsFL->torque), sizeof(int16_t), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_TORQUE, &(dtiSetpointsFR->torque), sizeof(int16_t), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_TORQUE, &(dtiSetpointsRL->torque), sizeof(int16_t), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_TORQUE, &(dtiSetpointsRR->torque), sizeof(int16_t), canTX200Hz_period_ms);
+        } else {
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_VELOCITY, &(dtiSetpointsFL->velocity_rpm), sizeof(int16_t), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_VELOCITY, &(dtiSetpointsFR->velocity_rpm), sizeof(int16_t), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_VELOCITY, &(dtiSetpointsRL->velocity_rpm), sizeof(int16_t), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_VELOCITY, &(dtiSetpointsRR->velocity_rpm), sizeof(int16_t), canTX200Hz_period_ms);
+        }
         
         daqWheelSpeedFeedback(&speedFeedback);
         daqWheelTorqueFeedback(&torqueFeedback);

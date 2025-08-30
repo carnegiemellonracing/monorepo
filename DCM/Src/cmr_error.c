@@ -16,12 +16,12 @@
 #include "motors.h"         // motorLocation_t
 
 /** @brief Inverter error status tracking. Indexed by 'motorLocation_t'. */
-// static bool amkErrors[MOTOR_LEN] = {
-//     [MOTOR_FL] = false,
-//     [MOTOR_FR] = false,
-//     [MOTOR_RL] = false,
-//     [MOTOR_RR] = false,
-// };
+static bool dtiErrors[MOTOR_LEN] = {
+    [MOTOR_FL] = false,
+    [MOTOR_FR] = false,
+    [MOTOR_RL] = false,
+    [MOTOR_RR] = false,
+};
 
 /** @brief Inverter timeout tracking. Indexed by 'motorLocation_t'. */
 // static bool amkTimeouts[MOTOR_LEN] = {
@@ -35,7 +35,7 @@
 static void updateErrors(cmr_canError_t *errors, TickType_t lastWakeTime);
 static void updateWarnings(cmr_canWarn_t *warnings, TickType_t lastWakeTime);
 static void updateAMKTimeouts(TickType_t lastWakeTime);
-static void updateAMKErrors(void);
+static void updateDTIErrors(void);
 
 /**
  * @brief Assembles error and warning vectors and copies into heartbeat.
@@ -217,11 +217,11 @@ static void updateWarnings(cmr_canWarn_t *warnings, TickType_t lastWakeTime) {
  *
  * @return None.
  */
-static void updateAMKErrors(void) {
-    volatile cmr_canAMKActualValues1_t *amkAct1FL = canTractiveGetPayload(CANRX_TRAC_INV_FL_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1FR = canTractiveGetPayload(CANRX_TRAC_INV_FR_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1RL = canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1RR = canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT1);
+static void updateDTIErrors(void) {
+    volatile cmr_canDTI_TX_TempFault_t *dtiTempFaultFL = canTractiveGetPayload(CMR_CANID_DTI_FL_TEMPFAULT);
+    volatile cmr_canDTI_TX_TempFault_t *dtiTempFaultFR = canTractiveGetPayload(CMR_CANID_DTI_FR_TEMPFAULT);
+    volatile cmr_canDTI_TX_TempFault_t *dtiTempFaultRL = canTractiveGetPayload(CMR_CANID_DTI_RL_TEMPFAULT);
+    volatile cmr_canDTI_TX_TempFault_t *dtiTempFaultRR = canTractiveGetPayload(CMR_CANID_DTI_RR_TEMPFAULT);
 
     // Clear error statuses
     for (size_t i = 0; i < MOTOR_LEN; i++) {
@@ -232,17 +232,17 @@ static void updateAMKErrors(void) {
 
     // Set error statuses as needed
     if (heartbeatVSM->state == CMR_CAN_HV_EN || heartbeatVSM->state == CMR_CAN_RTD) {
-        if (amkAct1FL->status_bv & CMR_CAN_AMK_STATUS_ERROR) {
-            amkErrors[MOTOR_FL] = true;
+        if (dtiTempFaultFL->fault_code != 0) {
+            dtiErrors[MOTOR_FL] = true;
         }
-        if (amkAct1FR->status_bv & CMR_CAN_AMK_STATUS_ERROR) {
-            amkErrors[MOTOR_FR] = true;
+        if (dtiTempFaultFR->fault_code != 0) {
+            dtiErrors[MOTOR_FR] = true;
         }
-        if (amkAct1RL->status_bv & CMR_CAN_AMK_STATUS_ERROR) {
-            amkErrors[MOTOR_RL] = true;
+        if (dtiTempFaultRL->fault_code != 0) {
+            dtiErrors[MOTOR_RL] = true;
         }
-        if (amkAct1RR->status_bv & CMR_CAN_AMK_STATUS_ERROR) {
-            amkErrors[MOTOR_RR] = true;
+        if (dtiTempFaultRR->fault_code != 0) {
+            dtiErrors[MOTOR_RR] = true;
         }
      }
 }

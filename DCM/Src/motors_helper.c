@@ -42,72 +42,144 @@ int16_t convertNmToAMKTorque (float torque_Nm) {
     return (int16_t) (torque_Nm / torqueIncrement_Nm);
 }
 /**
- * @brief Retrieve actual values 1 (ERPM, duty cycle, voltage) for DTI inverter
+ * @brief Retrieve ERPM, duty cycle, voltage for DTI inverter
  */
-volatile cmr_canDTIActualValues1_t *getDTIActualValues1(motorLocation_t motor) {
+volatile cmr_canDTI_TX_Erpm_t *getDTIErpm(motorLocation_t motor) {
     switch (motor) {
         case MOTOR_FL:
-            return canTractiveGetPayload(CMR_CANID_DTI_FL_ACT_1);
+            return canTractiveGetPayload(CMR_CANID_DTI_FL_ERPM);
         case MOTOR_FR:
-            return canTractiveGetPayload(CMR_CANID_DTI_FR_ACT_1);
+            return canTractiveGetPayload(CMR_CANID_DTI_FR_ERPM);
         case MOTOR_RL:
-            return canTractiveGetPayload(CMR_CANID_DTI_RL_ACT_1);
+            return canTractiveGetPayload(CMR_CANID_DTI_RL_ERPM);
         case MOTOR_RR:
-            return canTractiveGetPayload(CMR_CANID_DTI_RR_ACT_1);
+            return canTractiveGetPayload(CMR_CANID_DTI_RR_ERPM);
         default:
             return NULL;
     }
 }
 
 /**
- * @brief Retrieve actual values 2 (AC and DC current) for DTI inverter
+ * @brief Retrieve AC and DC current for DTI inverter
  */
-volatile cmr_canDTIActualValues2_t *getDTIActualValues2(motorLocation_t motor) {
+volatile cmr_canDTI_TX_Current_t *getDTICurrent(motorLocation_t motor) {
     switch (motor) {
         case MOTOR_FL:
-            return canTractiveGetPayload(CMR_CANID_DTI_FL_ACT_2);
+            return canTractiveGetPayload(CMR_CANID_DTI_FL_CURRENT);
         case MOTOR_FR:
-            return canTractiveGetPayload(CMR_CANID_DTI_FR_ACT_2);
+            return canTractiveGetPayload(CMR_CANID_DTI_FR_CURRENT);
         case MOTOR_RL:
-            return canTractiveGetPayload(CMR_CANID_DTI_RL_ACT_2);
+            return canTractiveGetPayload(CMR_CANID_DTI_RL_CURRENT);
         case MOTOR_RR:
-            return canTractiveGetPayload(CMR_CANID_DTI_RR_ACT_2);
+            return canTractiveGetPayload(CMR_CANID_DTI_RR_CURRENT);
         default:
             return NULL;
     }
 }
 
 /**
- * @brief Retrieve actual values 3 (temperatures, fault code) for DTI inverter
+ * @brief Retrieve controller/motor temperatures and fault code for DTI inverter
  */
-volatile cmr_canDTIActualValues3_t *getDTIActualValues3(motorLocation_t motor) {
+volatile cmr_canDTI_TX_TempFault_t *getDTITempFault(motorLocation_t motor) {
     switch (motor) {
         case MOTOR_FL:
-            return canTractiveGetPayload(CMR_CANID_DTI_FL_ACT_3);
+            return canTractiveGetPayload(CMR_CANID_DTI_FL_TEMPFAULT);
         case MOTOR_FR:
-            return canTractiveGetPayload(CMR_CANID_DTI_FR_ACT_3);
+            return canTractiveGetPayload(CMR_CANID_DTI_FR_TEMPFAULT);
         case MOTOR_RL:
-            return canTractiveGetPayload(CMR_CANID_DTI_RL_ACT_3);
+            return canTractiveGetPayload(CMR_CANID_DTI_RL_TEMPFAULT);
         case MOTOR_RR:
-            return canTractiveGetPayload(CMR_CANID_DTI_RR_ACT_3);
+            return canTractiveGetPayload(CMR_CANID_DTI_RR_TEMPFAULT);
         default:
             return NULL;
     }
 }
 
 /**
- * @brief Retrieve actual values 4 (Id, Iq) for DTI inverter
+ * @brief Retrieve Id, Iq values for DTI inverter
  */
-volatile cmr_canDTIActualValues4_t *getDTIActualValues4(motorLocation_t motor) {
+volatile cmr_canDTI_TX_IdIq_t *getDTIIdIq(motorLocation_t motor) {
     switch (motor) {
         case MOTOR_FL:
-            return canTractiveGetPayload(CMR_CANID_DTI_FL_ACT_4);
+            return canTractiveGetPayload(CMR_CANID_DTI_FL_IDIQ);
         case MOTOR_FR:
-            return canTractiveGetPayload(CMR_CANID_DTI_FR_ACT_4);
+            return canTractiveGetPayload(CMR_CANID_DTI_FR_IDIQ);
         case MOTOR_RL:
-            return canTractiveGetPayload(CMR_CANID_DTI_RL_ACT_4);
+            return canTractiveGetPayload(CMR_CANID_DTI_RL_IDIQ);
         case MOTOR_RR:
-            return canTractiveGetPayload(CMR_CANID_DTI_RR_ACT_4);
+            return canTractiveGetPayload(CMR_CANID_DTI_RR_IDIQ);
+        default:
+            return NULL;
+    }
+}
+
+/**
+ * @brief Retrieve configured and available AC current limits for DTI inverter
+ */
+volatile cmr_canDTI_TX_ACLimits_t *getDTIACLimits(motorLocation_t motor) {
+    switch (motor) {
+        case MOTOR_FL:
+            return canTractiveGetPayload(CMR_CANID_DTI_FL_ACLIMS);
+        case MOTOR_FR:
+            return canTractiveGetPayload(CMR_CANID_DTI_FR_ACLIMS);
+        case MOTOR_RL:
+            return canTractiveGetPayload(CMR_CANID_DTI_RL_ACLIMS);
+        case MOTOR_RR:
+            return canTractiveGetPayload(CMR_CANID_DTI_RR_ACLIMS);
+        default:
+            return NULL;
+    }
+}
+
+/**
+ * @brief Retrieve configured and available DC current limits for DTI inverter
+ */
+volatile cmr_canDTI_TX_DCLimits_t *getDTIDCLimits(motorLocation_t motor) {
+    switch (motor) {
+        case MOTOR_FL:
+            return canTractiveGetPayload(CMR_CANID_DTI_FL_DCLIMS);
+        case MOTOR_FR:
+            return canTractiveGetPayload(CMR_CANID_DTI_FR_DCLIMS);
+        case MOTOR_RL:
+            return canTractiveGetPayload(CMR_CANID_DTI_RL_DCLIMS);
+        case MOTOR_RR:
+            return canTractiveGetPayload(CMR_CANID_DTI_RR_DCLIMS);
+        default:
+            return NULL;
+    }
+}
+
+/**
+ * @brief Retrieve control mode, target Iq, motor position, and still flag for DTI inverter
+ */
+volatile cmr_canDTI_TX_ControlStatus_t *getDTIControlStatus(motorLocation_t motor) {
+    switch (motor) {
+        case MOTOR_FL:
+            return canTractiveGetPayload(CMR_CANID_DTI_FL_CONTROL_STATUS);
+        case MOTOR_FR:
+            return canTractiveGetPayload(CMR_CANID_DTI_FR_CONTROL_STATUS);
+        case MOTOR_RL:
+            return canTractiveGetPayload(CMR_CANID_DTI_RL_CONTROL_STATUS);
+        case MOTOR_RR:
+            return canTractiveGetPayload(CMR_CANID_DTI_RR_CONTROL_STATUS);
+        default:
+            return NULL;
+    }
+}
+
+/**
+ * @brief Retrieve throttle, brake, digital I/Os, drive enable, limit status for DTI inverter
+ */
+volatile cmr_canDTI_TX_IOStatus_t *getDTIIOStatus(motorLocation_t motor) {
+    switch (motor) {
+        case MOTOR_FL:
+            return canTractiveGetPayload(CMR_CANID_DTI_FL_IO_STATUS);
+        case MOTOR_FR:
+            return canTractiveGetPayload(CMR_CANID_DTI_FR_IO_STATUS);
+        case MOTOR_RL:
+            return canTractiveGetPayload(CMR_CANID_DTI_RL_IO_STATUS);
+        case MOTOR_RR:
+            return canTractiveGetPayload(CMR_CANID_DTI_RR_IO_STATUS);
         default:
             return NULL;
     }
@@ -322,16 +394,3 @@ bool overVoltProtection() {
     }
     return true;
 }
-
-int *setVelocity(cmr_canAMKSetpoints_t *motor_setpoints){
-    return &(motor_setpoints->velocity_rpm);
-} 
-
-int *setTorqueLimPos(cmr_canAMKSetpoints_t *motor_setpoints){
-    return &motor_setpoints->torqueLimPos_dpcnt;
-}
-
-int *setTorqueLimNeg(cmr_canAMKSetpoints_t *motor_setpoints){
-    return &motor_setpoints->torqueLimNeg_dpcnt;
-}
-

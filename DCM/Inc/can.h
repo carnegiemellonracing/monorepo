@@ -46,31 +46,41 @@ typedef enum {
  * @warning New messages MUST be added before `CANRX_TRAC_LEN`.
  */
 typedef enum {
-    /** <@brief 4 messages packets sent from each inverter (FR, FL, RR, RL):
-     * ACT1 (Actual Values 1) = ERPM, Duty, Input Voltage
-     * ACT2 (Actual Values 2) = AC Current, DC Current
-     * ACT3 (Actual Values 3) = Controller Temp, Motor Temp, Fault code
-     * ACT4 (Actual Values 4) = Id, Iq values
-    */
-    CANRX_TRAC_FL_INV_ACT1 = 0,       
-    CANRX_TRAC_FL_INV_ACT2,           
-    CANRX_TRAC_FL_INV_ACT3,           
-    CANRX_TRAC_FL_INV_ACT4,
+    CANRX_TRAC_FL_ERPM = 0,
+    CANRX_TRAC_FL_CURRENT,
+    CANRX_TRAC_FL_TEMPFAULT,
+    CANRX_TRAC_FL_IDIQ,
+    CANRX_TRAC_FL_ACLIMS,
+    CANRX_TRAC_FL_DCLIMS,
+    CANRX_TRAC_FL_CONTROL_STATUS,
+    CANRX_TRAC_FL_IO_STATUS,
 
-    CANRX_TRAC_FR_INV_ACT1,
-    CANRX_TRAC_FR_INV_ACT2,           
-    CANRX_TRAC_FR_INV_ACT3,           
-    CANRX_TRAC_FR_INV_ACT4, 
+    CANRX_TRAC_FR_ERPM,
+    CANRX_TRAC_FR_CURRENT,
+    CANRX_TRAC_FR_TEMPFAULT,
+    CANRX_TRAC_FR_IDIQ,
+    CANRX_TRAC_FR_ACLIMS,
+    CANRX_TRAC_FR_DCLIMS,
+    CANRX_TRAC_FR_CONTROL_STATUS,
+    CANRX_TRAC_FR_IO_STATUS,
 
-    CANRX_TRAC_RR_INV_ACT1,
-    CANRX_TRAC_RR_INV_ACT2,           
-    CANRX_TRAC_RR_INV_ACT3,           
-    CANRX_TRAC_RR_INV_ACT4,
+    CANRX_TRAC_RR_ERPM,
+    CANRX_TRAC_RR_CURRENT,
+    CANRX_TRAC_RR_TEMPFAULT,
+    CANRX_TRAC_RR_IDIQ,
+    CANRX_TRAC_RR_ACLIMS,
+    CANRX_TRAC_RR_DCLIMS,
+    CANRX_TRAC_RR_CONTROL_STATUS,
+    CANRX_TRAC_RR_IO_STATUS,
 
-    CANRX_TRAC_RL_INV_ACT1,
-    CANRX_TRAC_RL_INV_ACT2,           
-    CANRX_TRAC_RL_INV_ACT3,           
-    CANRX_TRAC_RL_INV_ACT4,
+    CANRX_TRAC_RL_ERPM,
+    CANRX_TRAC_RL_CURRENT,
+    CANRX_TRAC_RL_TEMPFAULT,
+    CANRX_TRAC_RL_IDIQ,
+    CANRX_TRAC_RL_ACLIMS,
+    CANRX_TRAC_RL_DCLIMS,
+    CANRX_TRAC_RL_CONTROL_STATUS,
+    CANRX_TRAC_RL_IO_STATUS,
 
     CANRX_TRAC_HVI_SENSE,             /**< @brief High voltage, current, and power sense in inverters. */
     CANRX_TRAC_LEN                    /**< @brief Number of periodic CAN messages. */
