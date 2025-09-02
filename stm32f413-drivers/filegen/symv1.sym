@@ -732,7 +732,7 @@ CycleTime=100
 TimeOut=500
 Var=requestedState unsigned 0,8 /e:State
 Var=requestedGear unsigned 8,8 /e:Gear
-Var=requestedDrsMode unsigned 16,8 /e:DRS_MODE
+Var=requestedDrsMode unsigned 16,8 /e:DrsMode
 Var=requestedDriver unsigned 24,8
 
 

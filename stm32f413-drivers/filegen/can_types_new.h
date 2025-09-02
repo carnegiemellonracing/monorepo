@@ -573,7 +573,7 @@ typedef enum{
 typedef struct {
     uint8_t requestedState;     //e:State /**< @brief Requested state. */
     uint8_t requestedGear;      //e:Gear /**< @brief Requested gear. */
-    uint8_t requestedDrsMode;   //e:DRS_MODE /**< @brief Requested DRS mode. */
+    uint8_t requestedDrsMode;   //e:DrsMode /**< @brief Requested DRS mode. */
     uint8_t requestedDriver;    /**< @brief Requested Driver for Config Screen. */
 } cmr_canDIMRequest_t;
 

@@ -574,7 +574,7 @@
         "CMR_CANID_DIM_REQUEST": {
             "cycleTime": 100,
             "requestedDrsMode": {
-                "e": "DRS_MODE"
+                "e": "DrsMode"
             },
             "requestedGear": {
                 "e": "Gear"
