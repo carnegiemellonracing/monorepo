@@ -162,6 +162,23 @@ def extract_field_params(canid_data):
             field_params[key] = value
     return field_params if field_params else None
 
+def extract_numeric_value(value):
+    """Extract numeric value from string that might contain variable names or comments"""
+    if isinstance(value, (int, float)):
+        return int(value)
+    
+    # Convert to string if not already
+    value_str = str(value)
+    
+    # Look for numeric values in the string
+    numeric_match = re.search(r'\b(\d+)\b', value_str)
+    if numeric_match:
+        return int(numeric_match.group(1))
+    
+    # If no numeric value found, return 0 as default
+    print(f"Warning: Could not extract numeric value from '{value_str}', using 0")
+    return 0
+
 def main():
     with open("stm32f413-drivers/filegen/can_types_new.h", "r") as structf: 
         #find all struct declarations
@@ -175,8 +192,8 @@ def main():
             #go through each can id dict 
             canid_data = canids[canid]
             cantype = canid_data['type']
-            cycletime = canid_data['cycleTime']
-            timeout = canid_data['timeOut']
+            cycletime = extract_numeric_value(canid_data['cycleTime'])  # Extract and convert to integer
+            timeout = extract_numeric_value(canid_data['timeOut'])      # Extract and convert to integer
             
             # Extract field-specific parameters
             field_params = extract_field_params(canid_data)

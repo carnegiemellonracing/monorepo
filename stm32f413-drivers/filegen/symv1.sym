@@ -289,7 +289,7 @@ enum Warn(0="NONE", 1="VSM_TIMEOUT", 2="BUS_VOLTAGE", 4="BUS_CURRENT",
 [AMK_FL_ACT_1]
 DLC=8
 ID=288
-CycleTime=20.0
+CycleTime=20
 TimeOut=100
 Var=amk_reserved unsigned 0,8
 Var=amk_status_system_ready bit 8,1
@@ -308,7 +308,7 @@ Var=magCurrent_raw signed 48,16 /f:0.001701171875
 [AMK_FL_ACT_2]
 DLC=8
 ID=28A
-CycleTime=20.0
+CycleTime=20
 TimeOut=100
 Var=motorTemp_dC signed 0,16 /u:dC /f:0.1 /p:2
 Var=coldPlateTemp_dC signed 16,16 /u:dC /f:0.1 /p:2
@@ -335,7 +335,7 @@ Var=torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
 [AMK_FR_ACT_1]
 DLC=8
 ID=284
-CycleTime=20.0
+CycleTime=20
 TimeOut=100
 Var=amk_reserved unsigned 0,8
 Var=amk_status_system_ready bit 8,1
@@ -354,7 +354,7 @@ Var=magCurrent_raw signed 48,16 /f:0.001701171875
 [AMK_FR_ACT_2]
 DLC=8
 ID=286
-CycleTime=20.0
+CycleTime=20
 TimeOut=100
 Var=motorTemp_dC signed 0,16 /u:dC /f:0.1 /p:2
 Var=coldPlateTemp_dC signed 16,16 /u:dC /f:0.1 /p:2
@@ -381,7 +381,7 @@ Var=torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
 [AMK_RL_ACT_1]
 DLC=8
 ID=287
-CycleTime=20.0
+CycleTime=20
 TimeOut=100
 Var=amk_reserved unsigned 0,8
 Var=amk_status_system_ready bit 8,1
@@ -400,7 +400,7 @@ Var=magCurrent_raw signed 48,16 /f:0.001701171875
 [AMK_RL_ACT_2]
 DLC=8
 ID=289
-CycleTime=20.0
+CycleTime=20
 TimeOut=100
 Var=motorTemp_dC signed 0,16 /u:dC /f:0.1 /p:2
 Var=coldPlateTemp_dC signed 16,16 /u:dC /f:0.1 /p:2
@@ -427,7 +427,7 @@ Var=torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
 [AMK_RR_ACT_1]
 DLC=8
 ID=283
-CycleTime=20.0
+CycleTime=20
 TimeOut=100
 Var=amk_reserved unsigned 0,8
 Var=amk_status_system_ready bit 8,1
@@ -446,7 +446,7 @@ Var=magCurrent_raw signed 48,16 /f:0.001701171875
 [AMK_RR_ACT_2]
 DLC=8
 ID=285
-CycleTime=20.0
+CycleTime=20
 TimeOut=100
 Var=motorTemp_dC signed 0,16 /u:dC /f:0.1 /p:2
 Var=coldPlateTemp_dC signed 16,16 /u:dC /f:0.1 /p:2
@@ -636,7 +636,7 @@ Var=rearRight_Nm signed 48,16 /u:Nm /f:0.1
 [CELL_BALANCE_ENABLE]
 DLC=2
 ID=134
-CycleTime=10.0
+CycleTime=10
 TimeOut=50
 Var=threshold unsigned 0,16
 
@@ -750,7 +750,7 @@ Var=pwm_right unsigned 24,8
 [EMD_MEASUREMENT]
 DLC=8
 ID=401
-CycleTime=20.0
+CycleTime=20
 TimeOut=100
 Var=current signed 0,32 /u:A
 Var=voltage signed 32,32 /u:V
@@ -906,7 +906,7 @@ Var=state unsigned 0,8 /e:State
 [HEARTBEAT_MEMORATOR]
 DLC=8
 ID=109
-CycleTime=400.0
+CycleTime=400
 TimeOut=2000
 Var=BMB1_2_Errs unsigned 0,8
 Var=BMB3_4_Errs unsigned 8,8
@@ -1011,7 +1011,7 @@ Var=iDCDC_mA unsigned 24,8 /u:mA /f:0.1333333
 [HVC_MINMAX_CELL_TEMPS]
 DLC=8
 ID=311
-CycleTime=20.0
+CycleTime=20
 TimeOut=100
 Var=minCellTemp_dC unsigned 0,16 /u:dC
 Var=maxCellTemp_dC unsigned 16,16 /u:dC
@@ -1024,7 +1024,7 @@ Var=maxTempCellIndex unsigned 56,8
 [HVC_MINMAX_CELL_VOLTAGE]
 DLC=8
 ID=310
-CycleTime=20.0
+CycleTime=20
 TimeOut=100
 Var=minCellVoltage_mV unsigned 0,16 /u:mV
 Var=maxCellVoltage_mV unsigned 16,16 /u:mV
@@ -1092,7 +1092,7 @@ Var=motor_power_RR unsigned 48,16
 [PTC_LOOP_TEMPS_A]
 DLC=4
 ID=224
-CycleTime=10.0
+CycleTime=10
 TimeOut=50
 Var=internalState unsigned 0,8 /e:VSMState
 Var=vsm_error_source_hvc bit 14,1
@@ -1143,7 +1143,7 @@ Var=v_whl_rr float 32,32
 [SBG_AUTOMOTIVE]
 DLC=7
 ID=72A
-CycleTime=200.0
+CycleTime=200
 TimeOut=1000
 Var=angle_track_rad signed 0,16 /u:rad
 Var=angle_slip_rad signed 16,16 /u:rad
@@ -1156,7 +1156,7 @@ Var=sbg_auto_curvature_valid bit 50,1
 [SBG_BODY_VEL]
 DLC=6
 ID=729
-CycleTime=400.0
+CycleTime=400
 TimeOut=2000
 Var=velocity_forward signed 0,16
 Var=velocity_right signed 16,16
@@ -1166,7 +1166,7 @@ Var=velocity_down signed 32,16
 [SBG_EKF_ORIENT]
 DLC=6
 ID=722
-CycleTime=400.0
+CycleTime=400
 TimeOut=2000
 Var=roll signed 0,16
 Var=pitch signed 16,16
@@ -1176,7 +1176,7 @@ Var=yaw signed 32,16
 [SBG_EKF_POS]
 DLC=8
 ID=724
-CycleTime=400.0
+CycleTime=400
 TimeOut=2000
 Var=latitude signed 0,32
 Var=longitude signed 32,32
@@ -1185,7 +1185,7 @@ Var=longitude signed 32,32
 [SBG_EKF_VEL]
 DLC=6
 ID=727
-CycleTime=400.0
+CycleTime=400
 TimeOut=2000
 Var=velocity_n signed 0,16
 Var=velocity_e signed 16,16
@@ -1195,7 +1195,7 @@ Var=velocity_d signed 32,16
 [SBG_IMU_GYRO]
 DLC=6
 ID=712
-CycleTime=400.0
+CycleTime=400
 TimeOut=2000
 Var=gyro_x_rads signed 0,16 /u:rad
 Var=gyro_y_rads signed 16,16 /u:rad
@@ -1205,7 +1205,7 @@ Var=gyro_z_rads signed 32,16 /u:rad
 [SBG_STATUS_3]
 DLC=6
 ID=702
-CycleTime=400.0
+CycleTime=400
 TimeOut=2000
 Var=sbg_sol_attitude_valid bit 4,1
 Var=sbg_sol_heading_valid bit 5,1
