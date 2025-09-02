@@ -380,6 +380,7 @@
         "CMR_CANID_CDC_POWER_LOG": {
             "cycleTime": 1000,
             "power_limit_W": {
+                "f": 0.001,
                 "u": "W"
             },
             "timeOut": 5000,

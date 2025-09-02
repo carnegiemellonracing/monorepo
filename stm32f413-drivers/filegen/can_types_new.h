@@ -503,7 +503,7 @@ typedef struct {
 } cmr_canCDCPowerLimit_t;
 
 typedef struct {
-    float power_limit_W; //u: W
+    float power_limit_W; //u: W f:0.001
 } cmr_canCDCPowerLimitLog_t;
 
 /** @brief Central Dynamics Controller Safety Filter states. */

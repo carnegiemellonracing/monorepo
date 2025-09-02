@@ -551,7 +551,7 @@ ID=6E4h
 DLC=4
 CycleTime=1000
 TimeOut=5000
-Var=power_limit_W float 0,32 /u:W
+Var=power_limit_W float 0,32 /u:W /f:0.001
 
 
 [CDC_POWER_SENSE]
