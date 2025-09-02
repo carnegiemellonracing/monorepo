@@ -96,17 +96,36 @@ def extract_enums_from_file(filepath):
     
     return enums
 
-def format_enum_for_symbol_file(enum_name, enum_values):
-    """Format an enum for the symbol file"""
+def format_enum_for_symbol_file(enum_name, enum_values, max_line_len=70):
+    """Format an enum for the symbol file with line wrapping if too long"""
     sorted_items = sorted(enum_values.items())
     
     formatted_values = []
     for value, name in sorted_items:
         formatted_values.append(f'{value}="{name}"')
     
-    values_str = ', '.join(formatted_values)
+    # Start with "enum X("
+    prefix = f'enum {enum_name}('
+    lines = [prefix]
     
-    return f'enum {enum_name}({values_str})'
+    for i, val in enumerate(formatted_values):
+        # Add comma before item except the first
+        if i > 0:
+            candidate = lines[-1] + ', ' + val
+        else:
+            candidate = lines[-1] + val
+        
+        # If candidate line exceeds max length, start new line
+        if len(candidate) > max_line_len and i > 0:
+            lines[-1] = lines[-1] + ','  # close previous line with comma
+            lines.append('    ' + val)   # indent wrapped line
+        else:
+            lines[-1] = candidate
+    
+    # Close with ")"
+    lines[-1] = lines[-1] + ')'
+    
+    return '\n'.join(lines)
 
 def find_header_files(root_dir):
     """Find all header files in the directory tree"""
