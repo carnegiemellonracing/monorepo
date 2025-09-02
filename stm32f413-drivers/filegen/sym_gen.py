@@ -46,7 +46,7 @@ def add_mapper_data(canid, cycletime, timeout, structlines):
         name = re.findall(r'CMR_CANID_(\w+)',canid) 
         structlines.append("["+name[0]+"]")
         if id2hex(name[0]):
-            structlines.append("ID="+id2hex(name[0])) 
+            structlines.append("ID="+id2hex(name[0])+"h")  
         structlines.append("CycleTime="+str(cycletime))
         structlines.append("TimeOut="+str(timeout))
 
