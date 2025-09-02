@@ -867,8 +867,7 @@
         "CMR_CANID_HVC_COMMAND": {
             "cycleTime": 10,
             "modeRequest": {
-                "e": "HVCMode",
-                "enumstruct": "cmr_canHVCMode_t"
+                "e": "HVCMode"
             },
             "timeOut": 50,
             "type": "cmr_canHVCCommand_t"

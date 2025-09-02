@@ -991,10 +991,7 @@ ID=130h
 DLC=1
 CycleTime=10
 TimeOut=50
-Var=hvc_mode_idle1 bit 0,1
-Var=hvc_mode_start1 bit 1,1
-Var=hvc_mode_run1 bit 2,1
-Var=hvc_mode_charge1 bit 3,1
+Var=modeRequest unsigned 0,8 /e:HVCMode
 
 
 [HVC_LOW_VOLTAGE]

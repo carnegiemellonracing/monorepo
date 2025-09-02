@@ -399,7 +399,7 @@ typedef struct {
 
 /** @brief High Voltage Controller command. */
 typedef struct {
-    uint8_t modeRequest;    //e:HVCMode Flag: cmr_canHVCMode_t. /**< @brief HVC operating mode request. */
+    uint8_t modeRequest;    //e:HVCMode Flag(taken out for now): cmr_canHVCMode_t. /**< @brief HVC operating mode request. */
 } cmr_canHVCCommand_t;
 
 /** @brief High Voltage Controller Balance Command. */
