@@ -4,6 +4,7 @@ import math
 
 output = "stm32f413-drivers/filegen/symv1.sym"
 symlines = [] 
+used_varnames = [] 
 
 def numbercanids():
     #for can id file numbering 
@@ -56,6 +57,16 @@ def get_cantypes_data(cantype, structs):
             #find struct declaration with the right can type 
             return re.findall(r'\b((?:u)?int\d+_t|float)\s+(\w+)\b', fields) 
 
+def check_repeat_varname(name):
+    used_varnames.append(name)
+    repeat_num = 0
+    for varname in used_varnames:
+        if name == varname:
+            repeat_num+=1
+    if repeat_num!=0:
+        print(name+"repeats"+str(repeat_num) + "times") 
+        return name+str(repeat_num)
+    return name 
 
 
 def format_bitpacking(structname, structlines, atbit, vartype, enums): 
@@ -76,6 +87,7 @@ def format_bitpacking(structname, structlines, atbit, vartype, enums):
                         if c == '1':
                             position = i 
                             break
+                name = check_repeat_varname(name) 
                 if realsize == 1:
                     structlines.append("Var="+name.lower()+" bit "+str(atbit+int(position))+","+str(realsize)) 
                 else: 
@@ -140,6 +152,7 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
                 continue 
         #add in field if not bitpacked 
         if size: 
+            name = check_repeat_varname(name) 
             appendstr = "Var="+name+" "+vartype+ " " +str(atbit)+","+str(size)
             # Add field-specific parameters if available
             if field_params and name in field_params:
@@ -184,7 +197,7 @@ def main():
     with open("stm32f413-drivers/filegen/canid_type_map.json", "r") as file: 
         json_obj = json.load(file)
         canids = json_obj['canid_to_info']
-        for canid in canids:
+        for canid in canids: 
             #go through each can id dict 
             canid_data = canids[canid]
             cantype = canid_data['type']
