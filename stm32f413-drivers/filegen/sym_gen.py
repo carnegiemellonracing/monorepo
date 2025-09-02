@@ -209,7 +209,7 @@ def main():
                 matches = get_cantypes_data(cantype, structs)
                 if matches: 
                     dlc = format_fields(canid, matches, structlines, enums, field_params) 
-                    structlines.insert(1, "DLC="+dlc)
+                    structlines.insert(2, "DLC="+dlc)
                 else:
                     found = False
                     #structlines.append("error with this struct in can_types.h")
