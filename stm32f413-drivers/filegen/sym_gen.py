@@ -5,6 +5,7 @@ import math
 output = "stm32f413-drivers/filegen/symv1.sym"
 symlines = [] 
 used_varnames = [] 
+used_canids = [] #delete once canids fixed, shouldn't need 
 
 def numbercanids():
     #for can id file numbering 
@@ -208,6 +209,12 @@ def main():
             field_params = extract_field_params(canid_data)
             
             if re.fullmatch(r'(cmr_[a-zA-Z0-9_]*_t)', cantype):
+                #check repeat, delete once canids fixed 
+                id_num = id2hex(canid)
+                if id_num in used_canids:
+                    continue
+                used_canids.append(id_num) 
+
                 found = True 
                 #check_repeat(canid)
                 #valid can type in dict 

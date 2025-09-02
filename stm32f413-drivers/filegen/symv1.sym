@@ -1034,32 +1034,6 @@ Var=maxCellVoltBMB unsigned 48,8
 Var=maxVoltIndex1 unsigned 56,8
 
 
-[HVC_MIN_MAX_CELL_TEMPERATURE]
-ID=311h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=minCellTemp_C1 unsigned 0,16
-Var=maxCellTemp_C1 unsigned 16,16
-Var=minTempBMBNum unsigned 32,8
-Var=minTempCellNum unsigned 40,8
-Var=maxTempBMBNum unsigned 48,8
-Var=maxTempCellNum unsigned 56,8
-
-
-[HVC_MIN_MAX_CELL_VOLTAGE]
-ID=310h
-DLC=8
-CycleTime=10
-TimeOut=50
-Var=minCellVoltage_mV2 unsigned 0,16
-Var=maxCellVoltage_mV2 unsigned 16,16
-Var=minVoltageBMBNum unsigned 32,8
-Var=minVoltageCellNum unsigned 40,8
-Var=maxVoltageBMBNum unsigned 48,8
-Var=maxVoltageCellNum unsigned 56,8
-
-
 [HVC_PACK_CURRENT]
 ID=302h
 DLC=8
