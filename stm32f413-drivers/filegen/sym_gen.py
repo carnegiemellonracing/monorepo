@@ -58,11 +58,11 @@ def get_cantypes_data(cantype, structs):
             return re.findall(r'\b((?:u)?int\d+_t|float)\s+(\w+)\b', fields) 
 
 def check_repeat_varname(name):
-    used_varnames.append(name)
     repeat_num = 0
     for varname in used_varnames:
         if name == varname:
             repeat_num+=1
+    used_varnames.append(name)
     if repeat_num!=0:
         print(name+"repeats"+str(repeat_num) + "times") 
         return name+str(repeat_num)
