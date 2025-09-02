@@ -59,10 +59,8 @@ def get_cantypes_data(cantype, structs):
 
 
 def format_bitpacking(structname, structlines, atbit, vartype, enums): 
-    print("searching for"+ structname)
     for enumfields, name in enums:
         if name == structname: 
-            print("found struct"+name) 
             packed_fields = re.findall(r'(?:CMR_CAN_)?(\w+)\s*=\s*\(?\s*(0x[\da-fA-F]+|\d+)\s*[a-zA-Z]*\s*\)?\s*(?:\(?\s*<<\s*(\d+)\s*\)?)?', enumfields) 
             for name, size, position in packed_fields: 
                 if "0x" in size: 
@@ -79,8 +77,9 @@ def format_bitpacking(structname, structlines, atbit, vartype, enums):
                             position = i 
                             break
                 if realsize == 1:
-                    vartype = "bit" 
-                structlines.append("Var="+name.lower()+" "+vartype+" "+str(atbit+int(position))+","+str(realsize)) 
+                    structlines.append("Var="+name.lower()+" bit "+str(atbit+int(position))+","+str(realsize)) 
+                else: 
+                    structlines.append("Var="+name.lower()+" "+vartype+" "+str(atbit+int(position))+","+str(realsize)) 
                 #atbit+=realsize 
 
 
@@ -126,17 +125,14 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
                     atbit+=int(size) 
                     continue 
         else:
-            print(canid) 
             #field is a heartbeat struct
             if "error" in name:
-                print("doing error field" + name)
                 board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
                 boardname = board.group(1) 
                 format_bitpacking("cmr_can"+boardname+"HeartbeatErr_t", structlines, atbit, vartype, enums); 
                 atbit+=int(size) 
                 continue 
             elif "warning" in name: 
-                print("doing warning field" + name) 
                 board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
                 boardname = board.group(1) 
                 format_bitpacking("cmr_can"+boardname+"HeartbeatWrn_t", structlines, atbit, vartype, enums); 
