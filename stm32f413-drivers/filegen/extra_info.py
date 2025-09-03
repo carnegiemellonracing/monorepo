@@ -89,7 +89,7 @@ def parse_can_types_file(file_path):
                         'min': r'min:\s*([\d.-]+)',
                         'max': r'max:\s*([\d.-]+)',
                         'state': r'state:\s*(\w+)',
-                        'enumstruct': r'(?i)Flag:\s*(cmr_\w+_t)'
+                        'enumstruct': r'(?i)\bflag\b:\s*(cmr_can\w+_t(?:\s+cmr_can\w+_t)*)'
                     }
                     
                     for attr, pattern in attr_patterns.items():
@@ -212,7 +212,7 @@ def parse_can_types_file_improved(file_path):
                         'min': r'min:\s*([\d.-]+)',
                         'max': r'max:\s*([\d.-]+)',
                         'state': r'state:\s*(\w+)',
-                        'enumstruct': r'Flag:\s*(cmr_\w+_t)' 
+                        'enumstruct': r'(?i)\bflag\b:\s*(cmr_can\w+_t(?:\s+cmr_can\w+_t)*)' 
                     }
                     
                     for attr, pattern in attr_patterns.items():

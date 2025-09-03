@@ -27,8 +27,8 @@ typedef enum {
 /** @brief Standard CAN heartbeat. */
 typedef struct {
     uint8_t state;         //e:State   /**< @brief Board state. */
-    uint8_t error[2];     //Flag: cmr_canVSMHeartbeatErr_t //Flag: cmr_canDIMHeartbeatErr_t   /**< @brief Error matrix. */ 
-    uint8_t warning[2];    //Flag: cmr_canVSMHeartbeatWrn_t  /**< @brief Warning matrix. */ 
+    uint8_t error[2];     //Flag:cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t  /**< @brief Error matrix. */ 
+    uint8_t warning[2];    //Flag:cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t  /**< @brief Warning matrix. */ 
 } cmr_canHeartbeat_t;
 
 /** @brief Heartbeat error matrix bit fields. */
@@ -236,24 +236,24 @@ typedef enum {
 } cmr_canVSMLatch_t;
 
 typedef enum{
-    CMR_CAN_VSM_ERR_BRAKEPRESSOOR = (1<<0),
-    CMR_CAN_VSM_ERR_HALLEFFECTOOR = (1<<1),
-    CMR_CAN_VSM_ERR_DCDCFAULT = (1<<2),
-    CMR_CAN_VSM_ERR_LATCHEDERROR = (1<<3),
-    CMR_CAN_VSM_ERR_MODULE_STATE = (1<<4), 
-    CMR_CAN_VSM_ERR_MODULE_TIMEOUT = (1<<5) 
+    CMR_CAN_VSM_ERR_BRAKEPRESSOOR = (1<<10),
+    CMR_CAN_VSM_ERR_HALLEFFECTOOR = (1<<11),
+    CMR_CAN_VSM_ERR_DCDCFAULT = (1<<12),
+    CMR_CAN_VSM_ERR_LATCHEDERROR = (1<<13),
+    CMR_CAN_VSM_ERR_MODULE_STATE = (1<<14), 
+    CMR_CAN_VSM_ERR_MODULE_TIMEOUT = (1<<15) 
 } cmr_canVSMHeartbeatErr_t; 
 
 typedef enum {
-    CMR_CAN_VSM_WRN_VOLTAGEOOR = (1<<0),
-    CMR_CAN_VSM_WRN_CURRENTOOR = (1<<1), 
-    CMR_CAN_VSM_WRN_DIM_REQ_NAK = (1<<6),
-    CMR_CAN_VSM_WRN_HVI_TIMEOUT = (1<<7),
-    CMR_CAN_VSM_WRN_PTC_TIMEOUT = (1<<9),
-    CMR_CAN_VSM_WRN_DIM_TIMEOUT = (1<<10),
-    CMR_CAN_VSM_WRN_FSM_TIMEOUT = (1<<11),
-    CMR_CAN_VSM_WRN_CDC_TIMEOUT = (1<<12),
-    CMR_CAN_VSM_WRN_HVC_TIMEOUT = (1<<13) 
+    CMR_CAN_VSM_WRN_VOLTAGEOOR = (1<<1),
+    CMR_CAN_VSM_WRN_CURRENTOOR = (1<<2), 
+    CMR_CAN_VSM_WRN_DIM_REQ_NAK = (1<<7),
+    CMR_CAN_VSM_WRN_HVI_TIMEOUT = (1<<8),
+    CMR_CAN_VSM_WRN_PTC_TIMEOUT = (1<<10),
+    CMR_CAN_VSM_WRN_DIM_TIMEOUT = (1<<11),
+    CMR_CAN_VSM_WRN_FSM_TIMEOUT = (1<<12),
+    CMR_CAN_VSM_WRN_CDC_TIMEOUT = (1<<13),
+    CMR_CAN_VSM_WRN_HVC_TIMEOUT = (1<<14) 
 } cmr_canVSMHeartbeatWrn_t; 
 
 /** @brief Vehicle Safety Module state and error status. */
@@ -474,6 +474,22 @@ typedef struct {
 // ------------------------------------------------------------------------------------------------
 // Central Dynamics Controller (19e)
 
+typedef enum{
+    CMR_CAN_CDC_ERR_VSM_TIMEOUT = (1<<0),
+    CMR_CAN_CDC_ERR_AMKALLERROR = (1<<15) 
+} cmr_canCDCHeartbeatErr_t; 
+
+typedef enum {
+    CMR_CAN_CDC_WRN_VSM_TIMEOUT = (1<<0),
+    CMR_CAN_CDC_WRN_MEMORATOR_TIMEOUT  = (1<<9), 
+    CMR_CAN_CDC_WRN_AMK_TIMEOUT = (1<<10), 
+    CMR_CAN_CDC_WRN_AMK_ERROR = (1<<11),
+    CMR_CAN_CDC_WRN_AMK_SRC_RR = (1<<12), 
+    CMR_CAN_CDC_WRN_AMK_SRC_RL = (1<<13),
+    CMR_CAN_CDC_WRN_AMK_SRC_FR = (1<<14),
+    CMR_CAN_CDC_WRN_AMK_SRC_FL = (1<<15)
+} cmr_canCDCHeartbeatWrn_t; 
+
 /** @brief Central Dynamics Controller DRS states. */
 typedef struct {
     uint8_t state;          /**< @brief DRS current control state (open or closed position). */
@@ -635,6 +651,30 @@ typedef struct {
 
 // ------------------------------------------------------------------------------------------------
 // Front Sensor Module
+
+
+typedef enum {
+    CMR_CAN_FSM_ERROR_VSM_TIMEOUT = (1 << 0),
+} cmr_canFSMHeartbeatErr_t;
+
+typedef enum {
+    CMR_CAN_FSM_WRN_VSM_TIMEOUT = (1<<0),
+    CMR_CAN_FSM_WRN_VOLTAGE_OOR  = (1<<1), 
+    CMR_CAN_FSM_WRN_CURRENT_OOR = (1<<2), 
+    CMR_CAN_FSM_WRN_BRAKE_POSITION_OOR = (1<<11),
+    CMR_CAN_FSM_WRN_LEFT_TPOS_OOR = (1<<12), 
+    CMR_CAN_FSM_WRN_RIGHT_TPOS_OOR = (1<<13), 
+    CMR_CAN_FSM_WRN_BPP_FAULT = (1<<14),
+    CMR_CAN_FSM_WRN_TPOS_IMPLAUSIBLE = (1<<15),
+    CMR_CAN_FSM_WRN_SS_MODULE = (1<<3), 
+    CMR_CAN_FSM_WRN_SS_COCKPIT = (1<<4), 
+    CMR_CAN_FSM_WRN_SS_FR_HUB = (1<<5), 
+    CMR_CAN_FSM_WRN_SS_INERTIA = (1<<6), 
+    CMR_CAN_FSM_WRN_SS_FL_HUB = (1<<7), 
+    CMR_CAN_FSM_WRN_SS_BOTS = (1<<8), 
+    CMR_CAN_FSM_WRN_BRAKE_PRESSURE_OOR = (1<<10),  
+    CMR_CAN_FSM_WRN_SW_ANGLE_OOR = (1<<9)
+} cmr_canFSMHeartbeatWrn_t; 
 
 /** @brief Front Sensor Module data. */
 typedef struct {

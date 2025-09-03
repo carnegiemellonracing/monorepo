@@ -17,7 +17,7 @@ def numbercanids():
         for line in f: 
             if "}" in line: #dumb way to look at only ids.... can't think of another rn
                 atIDs = False 
-            if bool(atIDs) and "CAN" and "ID" in line: #we should standardize can id names ... 
+            if bool(atIDs) and "CAN_ID" in line or "CANID" in line: #we should standardize can id names ... 
                 findnum = re.search(r"0x[0-9A-Fa-f]+", line) 
                 if findnum: #if a hex number is in line  
                     num = int(findnum.group(), 16) 
@@ -46,7 +46,13 @@ def id2hex(id):
 
 def add_mapper_data(canid, cycletime, timeout, structlines):
         name = re.findall(r'CMR_CANID_(\w+)',canid) 
-        structlines.append("["+name[0]+"]")
+        if "HEARTBEAT" not in name[0]: 
+            structlines.append("["+name[0]+"]")
+        else:
+            print("heartbeat") 
+            board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
+            boardname = board.group(1) 
+            structlines.append("["+boardname+"_HEARTBEAT]") 
         if id2hex(name[0]):
             structlines.append("ID="+id2hex(name[0])+"h")  
         structlines.append("CycleTime="+str(cycletime))
@@ -64,8 +70,7 @@ def check_repeat_varname(name):
         if name == varname:
             repeat_num+=1
     used_varnames.append(name)
-    if repeat_num!=0:
-        print(name+"repeats"+str(repeat_num) + "times") 
+    if repeat_num!=0: 
         return name+str(repeat_num)
     return name 
 
@@ -81,6 +86,7 @@ def format_bitpacking(structname, structlines, atbit, vartype, enums):
                     continue 
                 realsize = int(math.log(int(size), 2)) + 1
                 if not position: 
+                    print(name+str(size))
                     binary = bin(size)[2:] 
                     binary = binary[::-1]
                     position = atbit 
@@ -130,27 +136,24 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
                 #technically unnecessary check, all others should be float
                 size = 32 
         #check if field is bitpacked 
-        if "HEARTBEAT" not in canid or "HVC" in canid: 
-            #field is not from a heartbeat struct 
-            if field_params and name in field_params: 
-                if 'enumstruct' in field_params[name]: 
-                    format_bitpacking(field_params[name]['enumstruct'], structlines, atbit, vartype, enums); 
+        if field_params and name in field_params:
+            if 'enumstruct' in field_params[name]:
+                flags = field_params[name]['enumstruct'].split()
+                #not a heartbeat struct, normally bitpacked 
+                if len(flags) == 1:
+                    format_bitpacking(flags[0], structlines, atbit, vartype, enums); 
                     atbit+=int(size) 
                     continue 
-        else:
-            #field is a heartbeat struct
-            if "error" in name:
-                board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
-                boardname = board.group(1) 
-                format_bitpacking("cmr_can"+boardname+"HeartbeatErr_t", structlines, atbit, vartype, enums); 
-                atbit+=int(size) 
-                continue 
-            elif "warning" in name: 
-                board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
-                boardname = board.group(1) 
-                format_bitpacking("cmr_can"+boardname+"HeartbeatWrn_t", structlines, atbit, vartype, enums); 
-                atbit+=int(size) 
-                continue 
+                #heartbeat logic 
+                else:
+                    board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
+                    boardname = board.group(1) 
+                    for flag in flags:
+                        if boardname in flag:
+                            format_bitpacking(flag, structlines, atbit, vartype, enums); 
+                            atbit+=int(size)*2 #lowkey hardcoded but I think heartbeat is the only array 
+                            break 
+                    continue 
         #add in field if not bitpacked 
         if size: 
             name = check_repeat_varname(name) 
