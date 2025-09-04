@@ -24,17 +24,17 @@ static bool dtiErrors[MOTOR_LEN] = {
 };
 
 /** @brief Inverter timeout tracking. Indexed by 'motorLocation_t'. */
-// static bool amkTimeouts[MOTOR_LEN] = {
-//     [MOTOR_FL] = false,
-//     [MOTOR_FR] = false,
-//     [MOTOR_RL] = false,
-//     [MOTOR_RR] = false,
-// };
+static bool dtiTimeouts[MOTOR_LEN] = {
+    [MOTOR_FL] = false,
+    [MOTOR_FR] = false,
+    [MOTOR_RL] = false,
+    [MOTOR_RR] = false,
+};
 
 // Forward declarations
 static void updateErrors(cmr_canError_t *errors, TickType_t lastWakeTime);
 static void updateWarnings(cmr_canWarn_t *warnings, TickType_t lastWakeTime);
-static void updateAMKTimeouts(TickType_t lastWakeTime);
+static void updateDTITimeouts(TickType_t lastWakeTime);
 static void updateDTIErrors(void);
 
 /**
@@ -51,8 +51,8 @@ void updateErrorsWarnings(cmr_canHeartbeat_t *heartbeat, TickType_t lastWakeTime
     cmr_canError_t errors = CMR_CAN_ERROR_NONE;
     cmr_canWarn_t warnings = CMR_CAN_WARN_NONE;
 
-    // updateAMKErrors();
-    // updateAMKTimeouts(lastWakeTime);
+    updateDTIErrors();
+    updateDTITimeouts(lastWakeTime);
 
     updateErrors(&errors, lastWakeTime);
     updateWarnings(&warnings, lastWakeTime);
@@ -106,10 +106,10 @@ static void updateErrors(cmr_canError_t *errors, TickType_t lastWakeTime) {
     }
 
     // ALL inverters either errored or timed out
-    // if ((amkErrors[MOTOR_FL] || amkTimeouts[MOTOR_FL]) &&
-    //     (amkErrors[MOTOR_FR] || amkTimeouts[MOTOR_FR]) &&
-    //     (amkErrors[MOTOR_RL] || amkTimeouts[MOTOR_RL]) &&
-    //     (amkErrors[MOTOR_RR] || amkTimeouts[MOTOR_RR])) {
+    // if ((dtiErrors[MOTOR_FL] || dtiTimeouts[MOTOR_FL]) &&
+    //     (dtiErrors[MOTOR_FR] || dtiTimeouts[MOTOR_FR]) &&
+    //     (dtiErrors[MOTOR_RL] || dtiTimeouts[MOTOR_RL]) &&
+    //     (dtiErrors[MOTOR_RR] || dtiTimeouts[MOTOR_RR])) {
 
     //     *errors |= CMR_CAN_ERROR_CDC_AMK_ALL;
     // }
@@ -174,43 +174,93 @@ static void updateWarnings(cmr_canWarn_t *warnings, TickType_t lastWakeTime) {
  *
  * @return None.
  */
-// static void updateAMKTimeouts(TickType_t lastWakeTime) {
-//     cmr_canRXMeta_t *amkAct1MetaFL = canTractiveGetMeta(CANRX_TRAC_INV_FL_ACT1);
-//     cmr_canRXMeta_t *amkAct2MetaFL = canTractiveGetMeta(CANRX_TRAC_INV_FL_ACT2);
-//     cmr_canRXMeta_t *amkAct1MetaFR = canTractiveGetMeta(CANRX_TRAC_INV_FR_ACT1);
-//     cmr_canRXMeta_t *amkAct2MetaFR = canTractiveGetMeta(CANRX_TRAC_INV_FR_ACT2);
-//     cmr_canRXMeta_t *amkAct1MetaRL = canTractiveGetMeta(CANRX_TRAC_INV_RL_ACT1);
-//     cmr_canRXMeta_t *amkAct2MetaRL = canTractiveGetMeta(CANRX_TRAC_INV_RL_ACT2);
-//     cmr_canRXMeta_t *amkAct1MetaRR = canTractiveGetMeta(CANRX_TRAC_INV_RR_ACT1);
-//     cmr_canRXMeta_t *amkAct2MetaRR = canTractiveGetMeta(CANRX_TRAC_INV_RR_ACT2);
+static void updateDTITimeouts(TickType_t lastWakeTime) {
+    cmr_canRXMeta_t *dtiErpmFL = canTractiveGetMeta(CANRX_TRAC_FL_ERPM);
+    cmr_canRXMeta_t *dtiCurrentFL = canTractiveGetMeta(CANRX_TRAC_FL_CURRENT);
+    cmr_canRXMeta_t *dtiTempFaultFL = canTractiveGetMeta(CANRX_TRAC_FL_TEMPFAULT);
+    cmr_canRXMeta_t *dtiIdIqFL = canTractiveGetMeta(CANRX_TRAC_FL_IDIQ);
+    cmr_canRXMeta_t *dtiACLimsFL = canTractiveGetMeta(CANRX_TRAC_FL_ACLIMS);
+    cmr_canRXMeta_t *dtiDCLimsFL = canTractiveGetMeta(CANRX_TRAC_FL_DCLIMS);
+    cmr_canRXMeta_t *dtiControlStatusFL = canTractiveGetMeta(CANRX_TRAC_FL_CONTROL_STATUS);
+    cmr_canRXMeta_t *dtiIOStatusFL = canTractiveGetMeta(CANRX_TRAC_FL_IO_STATUS);
 
-//     // Clear timeouts
-//     for (size_t i = 0; i < MOTOR_LEN; i++) {
-//         amkTimeouts[i] = false;
-//     }
+    cmr_canRXMeta_t *dtiErpmFR = canTractiveGetMeta(CANRX_TRAC_FR_ERPM);
+    cmr_canRXMeta_t *dtiCurrentFR = canTractiveGetMeta(CANRX_TRAC_FR_CURRENT);
+    cmr_canRXMeta_t *dtiTempFaultFR = canTractiveGetMeta(CANRX_TRAC_FR_TEMPFAULT);
+    cmr_canRXMeta_t *dtiIdIqFR = canTractiveGetMeta(CANRX_TRAC_FR_IDIQ);
+    cmr_canRXMeta_t *dtiACLimsFR = canTractiveGetMeta(CANRX_TRAC_FR_ACLIMS);
+    cmr_canRXMeta_t *dtiDCLimsFR = canTractiveGetMeta(CANRX_TRAC_FR_DCLIMS);
+    cmr_canRXMeta_t *dtiControlStatusFR = canTractiveGetMeta(CANRX_TRAC_FR_CONTROL_STATUS);
+    cmr_canRXMeta_t *dtiIOStatusFR = canTractiveGetMeta(CANRX_TRAC_FR_IO_STATUS);
 
-//     volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+    cmr_canRXMeta_t *dtiErpmRR = canTractiveGetMeta(CANRX_TRAC_RR_ERPM);
+    cmr_canRXMeta_t *dtiCurrentRR = canTractiveGetMeta(CANRX_TRAC_RR_CURRENT);
+    cmr_canRXMeta_t *dtiTempFaultRR = canTractiveGetMeta(CANRX_TRAC_RR_TEMPFAULT);
+    cmr_canRXMeta_t *dtiIdIqRR = canTractiveGetMeta(CANRX_TRAC_RR_IDIQ);
+    cmr_canRXMeta_t *dtiACLimsRR = canTractiveGetMeta(CANRX_TRAC_RR_ACLIMS);
+    cmr_canRXMeta_t *dtiDCLimsRR = canTractiveGetMeta(CANRX_TRAC_RR_DCLIMS);
+    cmr_canRXMeta_t *dtiControlStatusRR = canTractiveGetMeta(CANRX_TRAC_RR_CONTROL_STATUS);
+    cmr_canRXMeta_t *dtiIOStatusRR = canTractiveGetMeta(CANRX_TRAC_RR_IO_STATUS);
 
-//     // Set timeouts as needed
-//     if (heartbeatVSM->state == CMR_CAN_HV_EN || heartbeatVSM->state == CMR_CAN_RTD) {
-//         if (cmr_canRXMetaTimeoutError(amkAct1MetaFL, lastWakeTime) < 0 ||
-//             cmr_canRXMetaTimeoutError(amkAct2MetaFL, lastWakeTime) < 0) {
-//             amkTimeouts[MOTOR_FL] = true;
-//         }
-//         if (cmr_canRXMetaTimeoutError(amkAct1MetaFR, lastWakeTime) < 0 ||
-//             cmr_canRXMetaTimeoutError(amkAct2MetaFR, lastWakeTime) < 0) {
-//             amkTimeouts[MOTOR_FR] = true;
-//         }
-//         if (cmr_canRXMetaTimeoutError(amkAct1MetaRL, lastWakeTime) < 0 ||
-//             cmr_canRXMetaTimeoutError(amkAct2MetaRL, lastWakeTime) < 0) {
-//             amkTimeouts[MOTOR_RL] = true;
-//         }
-//         if (cmr_canRXMetaTimeoutError(amkAct1MetaRR, lastWakeTime) < 0 ||
-//             cmr_canRXMetaTimeoutError(amkAct2MetaRR, lastWakeTime) < 0) {
-//             amkTimeouts[MOTOR_RR] = true;
-//         }
-//     }
-// }
+    cmr_canRXMeta_t *dtiErpmRL = canTractiveGetMeta(CANRX_TRAC_RL_ERPM);
+    cmr_canRXMeta_t *dtiCurrentRL = canTractiveGetMeta(CANRX_TRAC_RL_CURRENT);
+    cmr_canRXMeta_t *dtiTempFaultRL = canTractiveGetMeta(CANRX_TRAC_RL_TEMPFAULT);
+    cmr_canRXMeta_t *dtiIdIqRL = canTractiveGetMeta(CANRX_TRAC_RL_IDIQ);
+    cmr_canRXMeta_t *dtiACLimsRL = canTractiveGetMeta(CANRX_TRAC_RL_ACLIMS);
+    cmr_canRXMeta_t *dtiDCLimsRL = canTractiveGetMeta(CANRX_TRAC_RL_DCLIMS);
+    cmr_canRXMeta_t *dtiControlStatusRL = canTractiveGetMeta(CANRX_TRAC_RL_CONTROL_STATUS);
+    cmr_canRXMeta_t *dtiIOStatusRL = canTractiveGetMeta(CANRX_TRAC_RL_IO_STATUS);
+    // Clear timeouts
+    for (size_t i = 0; i < MOTOR_LEN; i++) {
+        dtiTimeouts[i] = false;
+    }
+
+    volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+
+    // Set timeouts as needed
+    if (heartbeatVSM->state == CMR_CAN_HV_EN || heartbeatVSM->state == CMR_CAN_RTD) {
+        if (cmr_canRXMetaTimeoutError(dtiErpmFL, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiCurrentFL, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiTempFaultFL, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiIdIqFL, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiACLimsFL, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiDCLimsFL, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiControlStatusFL, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiIOStatusFL, lastWakeTime) < 0) {
+            dtiTimeouts[MOTOR_FL] = true;
+        }
+        if (cmr_canRXMetaTimeoutError(dtiErpmFR, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiCurrentFR, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiTempFaultFR, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiIdIqFR, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiACLimsFR, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiDCLimsFR, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiControlStatusFR, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiIOStatusFR, lastWakeTime) < 0) {
+            dtiTimeouts[MOTOR_FR] = true;
+        }
+        if (cmr_canRXMetaTimeoutError(dtiErpmRR, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiCurrentRR, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiTempFaultRR, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiIdIqRR, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiACLimsRR, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiDCLimsRR, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiControlStatusRR, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiIOStatusRR, lastWakeTime) < 0) {
+            dtiTimeouts[MOTOR_RR] = true;
+        }
+        if (cmr_canRXMetaTimeoutError(dtiErpmRL, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiCurrentRL, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiTempFaultRL, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiIdIqRL, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiACLimsRL, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiDCLimsRL, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiControlStatusRL, lastWakeTime) < 0 ||
+            cmr_canRXMetaTimeoutError(dtiIOStatusRL, lastWakeTime) < 0) {
+            dtiTimeouts[MOTOR_RL] = true;
+        }
+    }
+}
 
 /**
  * @brief Updates AMK inverter error status flags.

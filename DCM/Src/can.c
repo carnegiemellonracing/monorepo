@@ -573,11 +573,6 @@ static void canTX10Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
 
-    const cmr_canDTISetpoints_t *dtiSetpointsFL = getDTISetpoints(MOTOR_FL);
-    const cmr_canDTISetpoints_t *dtiSetpointsFR = getDTISetpoints(MOTOR_FR);
-    const cmr_canDTISetpoints_t *dtiSetpointsRL = getDTISetpoints(MOTOR_RL);
-    const cmr_canDTISetpoints_t *dtiSetpointsRR = getDTISetpoints(MOTOR_RR);
-
     cmr_canCDCWheelVelocity_t speedFeedback;
     cmr_canCDCWheelTorque_t torqueFeedback;
     cmr_canCDCWheelVelocity_t speedSetpoint;
@@ -607,18 +602,6 @@ static void canTX10Hz(void *pvParameters) {
         cmr_canDAQTherm_t therms;
         therms.therm_1 = adcRead(ADC_THERM1);
         therms.therm_2 = adcRead(ADC_THERM2);
-
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_TORLIMPOS, &(dtiSetpointsFL->torqueLimPos), sizeof(int16_t), canTX10Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_TORLIMNEG, &(dtiSetpointsFL->torqueLimNeg), sizeof(int16_t), canTX10Hz_period_ms);
-
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_TORLIMPOS, &(dtiSetpointsFR->torqueLimPos), sizeof(int16_t), canTX10Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_TORLIMNEG, &(dtiSetpointsFR->torqueLimNeg), sizeof(int16_t), canTX10Hz_period_ms);
-
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_TORLIMPOS, &(dtiSetpointsRR->torqueLimPos), sizeof(int16_t), canTX10Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_TORLIMNEG, &(dtiSetpointsRR->torqueLimNeg), sizeof(int16_t), canTX10Hz_period_ms);
-
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_TORLIMPOS, &(dtiSetpointsRL->torqueLimPos), sizeof(int16_t), canTX10Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_TORLIMNEG, &(dtiSetpointsRL->torqueLimNeg), sizeof(int16_t), canTX10Hz_period_ms);
 
         canTX(CMR_CAN_BUS_VEH, 0x659, &therms, sizeof(cmr_canDAQTherm_t), canTX10Hz_period_ms);
 
@@ -777,6 +760,18 @@ static void canTX200Hz(void *pvParameters) {
             canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
             canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
         }
+
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_TORLIMPOS, &(dtiSetpointsFL->torqueLimPos), sizeof(int16_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_TORLIMNEG, &(dtiSetpointsFL->torqueLimNeg), sizeof(int16_t), canTX10Hz_period_ms);
+
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_TORLIMPOS, &(dtiSetpointsFR->torqueLimPos), sizeof(int16_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_TORLIMNEG, &(dtiSetpointsFR->torqueLimNeg), sizeof(int16_t), canTX10Hz_period_ms);
+
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_TORLIMPOS, &(dtiSetpointsRR->torqueLimPos), sizeof(int16_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_TORLIMNEG, &(dtiSetpointsRR->torqueLimNeg), sizeof(int16_t), canTX10Hz_period_ms);
+
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_TORLIMPOS, &(dtiSetpointsRL->torqueLimPos), sizeof(int16_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_TORLIMNEG, &(dtiSetpointsRL->torqueLimNeg), sizeof(int16_t), canTX10Hz_period_ms);
 
         if (isTorqueMode){
             canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_TORQUE, &(dtiSetpointsFL->torque), sizeof(int16_t), canTX200Hz_period_ms);
