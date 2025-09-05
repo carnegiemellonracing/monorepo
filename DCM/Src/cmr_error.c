@@ -225,7 +225,7 @@ static void updateDTIErrors(void) {
 
     // Clear error statuses
     for (size_t i = 0; i < MOTOR_LEN; i++) {
-        amkErrors[i] = false;
+        dtiErrors[i] = false;
     }
 
     volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);

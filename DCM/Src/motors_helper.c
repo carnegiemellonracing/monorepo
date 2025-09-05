@@ -34,7 +34,7 @@ const float rpm_to_mV_factor = 0.026587214972f;
  *
  * @return Torque in AMK format.
  */
-int16_t convertNmToAMKTorque (float torque_Nm) {
+int16_t convertNmToDTITorque (float torque_Nm) {
     // clamp torque to the motor's output range
     torque_Nm = fminf(maxTorque_Nm, torque_Nm);
     torque_Nm = fmaxf(-maxTorque_Nm, torque_Nm);
