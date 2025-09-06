@@ -57,26 +57,30 @@ static cmr_canGear_t gear = CMR_CAN_GEAR_SLOW;
 /** @brief Setpoints for each inverter
  *  @note Indexed by motorLocation_t
  */
-static cmr_canAMKSetpoints_t motorSetpoints[MOTOR_LEN] = {
+static cmr_canDTISetpoints_t motorSetpoints[MOTOR_LEN] = {
     [MOTOR_FL] = {
         .velocity_rpm = 0,
         .torqueLimPos = 0,
-        .torqueLimNeg = 0
+        .torqueLimNeg = 0,
+        .torque = 0
     },
     [MOTOR_FR] = {
         .velocity_rpm = 0,
         .torqueLimPos = 0,
-        .torqueLimNeg = 0
+        .torqueLimNeg = 0,
+        .torque = 0
     },
     [MOTOR_RL] = {
         .velocity_rpm = 0,
         .torqueLimPos = 0,
-        .torqueLimNeg = 0
+        .torqueLimNeg = 0,
+        .torque = 0
     },
     [MOTOR_RR] = {
         .velocity_rpm = 0,
         .torqueLimPos = 0,
-        .torqueLimNeg = 0
+        .torqueLimNeg = 0,
+        .torque = 0
     },
 };
 

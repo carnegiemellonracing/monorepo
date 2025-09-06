@@ -79,7 +79,7 @@ static void updateErrors(cmr_canError_t *errors, TickType_t lastWakeTime) {
     static cmr_canState_t prevStateVSM = CMR_CAN_ERROR;
     volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
 
-    // Reset AMK timeouts upon transition to HV_EN to prevent immediate timeout error
+    // Reset DTI timeouts upon transition to HV_EN to prevent immediate timeout error
     if (prevStateVSM == CMR_CAN_GLV_ON && heartbeatVSM->state == CMR_CAN_HV_EN) {
         for (size_t i = 0; i < CANRX_TRAC_LEN; i++) {
             canTractiveRXMeta[i].lastReceived_ms = lastWakeTime;
@@ -96,7 +96,7 @@ static void updateErrors(cmr_canError_t *errors, TickType_t lastWakeTime) {
         }
     }
 
-    // Tractive CAN timeout errors (only occur in HV_EN and RTD when AMK is on)
+    // Tractive CAN timeout errors (only occur in HV_EN and RTD when DTI is on)
     if (heartbeatVSM->state == CMR_CAN_HV_EN || heartbeatVSM->state == CMR_CAN_RTD) {
         for (size_t i = 0; i < CANRX_TRAC_LEN; i++) {
             if (cmr_canRXMetaTimeoutError(&(canTractiveRXMeta[i]), lastWakeTime) < 0) {
@@ -168,7 +168,7 @@ static void updateWarnings(cmr_canWarn_t *warnings, TickType_t lastWakeTime) {
 }
 
 /**
- * @brief Updates AMK inverter timeout status flags.
+ * @brief Updates DTI inverter timeout status flags.
  *
  * @param lastWakeTime Current time.
  *
@@ -263,7 +263,7 @@ static void updateDTITimeouts(TickType_t lastWakeTime) {
 }
 
 /**
- * @brief Updates AMK inverter error status flags.
+ * @brief Updates DTI inverter error status flags.
  *
  * @return None.
  */

@@ -379,7 +379,7 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
-    },
+    }
 };
 
 cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {

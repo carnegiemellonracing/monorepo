@@ -677,16 +677,16 @@ void runControls (
         return;
     }
 
-    volatile cmr_canAMKActualValues1_t *amkAct1FL = canTractiveGetPayload(CANRX_TRAC_INV_FL_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1FR = canTractiveGetPayload(CANRX_TRAC_INV_FR_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1RL = canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1RR = canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT1);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FL = canTractiveGetPayload(CANRX_TRAC_FL_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FR = canTractiveGetPayload(CANRX_TRAC_FR_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RL = canTractiveGetPayload(CANRX_TRAC_RL_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RR = canTractiveGetPayload(CANRX_TRAC_RR_ERPM);
 
     const int32_t avgMotorSpeed_RPM = (
-        + (int32_t)(amkAct1FL->velocity_rpm)
-        + (int32_t)(amkAct1FR->velocity_rpm)
-        + (int32_t)(amkAct1RL->velocity_rpm)
-        + (int32_t)(amkAct1RR->velocity_rpm)
+        + (int32_t)(dtiERPM_FL->erpm / pole_pairs)
+        + (int32_t)(dtiERPM_FR->erpm / pole_pairs)
+        + (int32_t)(dtiERPM_RL->erpm / pole_pairs)
+        + (int32_t)(dtiERPM_RR->erpm / pole_pairs)
     ) / MOTOR_LEN;
 
     // Update odometer

@@ -42,27 +42,27 @@ int16_t getMotorTorqueRequest(motorLocation_t motor) {
 
 void daqWheelSpeedFeedback(cmr_canCDCWheelVelocity_t *speedFeedback) {
 
-    volatile cmr_canAMKActualValues1_t *amkAct1FL = canTractiveGetPayload(CANRX_TRAC_INV_FL_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1FR = canTractiveGetPayload(CANRX_TRAC_INV_FR_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1RL = canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1RR = canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT1);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FL = canTractiveGetPayload(CANRX_TRAC_FL_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FR = canTractiveGetPayload(CANRX_TRAC_FR_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RL = canTractiveGetPayload(CANRX_TRAC_RL_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RR = canTractiveGetPayload(CANRX_TRAC_RR_ERPM);
 
-    speedFeedback->frontLeft_rpm =  amkAct1FL->velocity_rpm;
-    speedFeedback->frontRight_rpm = amkAct1FR->velocity_rpm;
-    speedFeedback->rearLeft_rpm =   amkAct1RL->velocity_rpm;
-    speedFeedback->rearRight_rpm =  amkAct1RR->velocity_rpm;
+    speedFeedback->frontLeft_rpm =  dtiERPM_FL->erpm / pole_pairs;
+    speedFeedback->frontRight_rpm = dtiERPM_FR->erpm / pole_pairs;
+    speedFeedback->rearLeft_rpm =   dtiERPM_RL->erpm / pole_pairs;
+    speedFeedback->rearRight_rpm =  dtiERPM_RR->erpm / pole_pairs;
 }
 
 void daqWheelTorqueFeedback(cmr_canCDCWheelTorque_t *torqueFeedback) {
-    volatile cmr_canAMKActualValues1_t *amkAct1FL = canTractiveGetPayload(CANRX_TRAC_INV_FL_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1FR = canTractiveGetPayload(CANRX_TRAC_INV_FR_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1RL = canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1RR = canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT1);
+    volatile cmr_canDTI_TX_Current_t *dtiCurrentFL = canTractiveGetPayload(CANRX_TRAC_FL_CURRENT);
+    volatile cmr_canDTI_TX_Current_t *dtiCurrentFR = canTractiveGetPayload(CANRX_TRAC_FR_CURRENT);
+    volatile cmr_canDTI_TX_Current_t *dtiCurrentRL = canTractiveGetPayload(CANRX_TRAC_RL_CURRENT);
+    volatile cmr_canDTI_TX_Current_t *dtiCurrentRR = canTractiveGetPayload(CANRX_TRAC_RR_CURRENT);
 
-    torqueFeedback->frontLeft_Nm =  amkAct1FL->torqueCurrent_raw;
-    torqueFeedback->frontRight_Nm = amkAct1FR->torqueCurrent_raw;
-    torqueFeedback->rearLeft_Nm =   amkAct1RL->torqueCurrent_raw;
-    torqueFeedback->rearRight_Nm =  amkAct1RR->torqueCurrent_raw;
+    torqueFeedback->frontLeft_Nm =  dtiCurrentFL->ac_current;
+    torqueFeedback->frontRight_Nm = dtiCurrentFR->ac_current;
+    torqueFeedback->rearLeft_Nm =   dtiCurrentRL->ac_current;
+    torqueFeedback->rearRight_Nm =  dtiCurrentRR->ac_current;
 }
 
 void daqWheelSpeedSetpoints(cmr_canCDCWheelVelocity_t *speedSetpoint) {

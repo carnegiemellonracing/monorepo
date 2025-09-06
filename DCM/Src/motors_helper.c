@@ -18,6 +18,7 @@
 // Constants
 
 /** @brief AMK Torque command increment (Newton-meters). */
+// TODO: check value for DTIs
 const float torqueIncrement_Nm = 0.0098f;
 
 /** @brief Constant factor for transforming motor RPM to induced voltage.
@@ -27,12 +28,12 @@ const float torqueIncrement_Nm = 0.0098f;
 const float rpm_to_mV_factor = 0.026587214972f;
 
 /**
- * @brief Converts floating point torque into AMK format
+ * @brief Converts floating point torque into DTI format
  *        (0.1% increments of 9.8 Nm).
  *
  * @param torque_Nm Torque as a floating point value.
  *
- * @return Torque in AMK format.
+ * @return Torque in DTI format.
  */
 int16_t convertNmToDTITorque (float torque_Nm) {
     // clamp torque to the motor's output range
