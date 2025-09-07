@@ -80,7 +80,7 @@ typedef enum {
     CANRX_HVC_HEARTBEAT,       /**< @brief HVC Error. */
     CANRX_HVC_BMB_STATUS,      /**< @brief HVC BMB Status */
     CANRX_MEMORATOR_BROADCAST, /**< @brief Memorator broadcast. */
-    CANRX_SBG_STATUS_3,        /**< @brief INS Status 3 */
+    CANRX_MOVELLA_STATUS,        /**< @brief INS Status 3 */
     CANRX_EMD_VALUES,          /**< @brief EMD Values for HV voltages and current */
     CANRX_VSM_SENSORS,
     CANRX_HVC_LOW_VOLTAGE, /**< @brief HVC Low Voltage for Safety Circuit Status*/

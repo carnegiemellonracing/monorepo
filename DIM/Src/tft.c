@@ -568,23 +568,16 @@ static void drawRTDScreen(void) {
 
     /* GPS present? */
     // Checks broadcast from CDC to see status of SBG
-    cmr_canRXMeta_t *metaSBGStatus = canRXMeta + CANRX_SBG_STATUS_3;
+    cmr_canRXMeta_t *metaMovellaStatus = canRXMeta + CANRX_MOVELLA_STATUS;
     // Check timeout
-    bool sbgConnected = cmr_canRXMetaTimeoutWarn(metaSBGStatus, xTaskGetTickCount()) == 0;
-    volatile cmr_canSBGStatus3_t *sbgPayload = (void *)metaSBGStatus->payload;
-    SBG_status_t sbgStatus = SBG_STATUS_NOT_CONNECTED;
-    if (sbgConnected) {
-        sbgStatus = SBG_STATUS_WORKING_NO_POS_FOUND;
-        uint32_t solutionStatus = sbgPayload->solution_status;
-        // solution mode is first 4 bits of solution status
-        uint32_t solutionStatusMode = solutionStatus & 0xF;
-        // Get bits 4 through 7
-        solutionStatus = solutionStatus & 0xF0;
-        uint32_t solutionMask = CMR_CAN_SBG_SOL_ATTITUDE_VALID | CMR_CAN_SBG_SOL_HEADING_VALID | CMR_CAN_SBG_SOL_VELOCITY_VALID | CMR_CAN_SBG_SOL_POSITION_VALID;
-        if (solutionStatusMode == CMR_CAN_SBG_SOL_MODE_NAV_POSITION && solutionStatus == solutionMask) {
-            // Got fix on position
-            sbgStatus = SBG_STATUS_WORKING_POS_FOUND;
-        }
+    bool movellaConnected = cmr_canRXMetaTimeoutWarn(metaMovellaStatus, xTaskGetTickCount()) == 0;
+    volatile cmr_canMovellaStatus_t *movellaPayload = (void *)metaMovellaStatus->payload;
+    uint8_t movellaStatus = 0;
+    if (movellaConnected) {
+        movellaStatus = movellaPayload->gnss_fix;
+    }
+    else {
+        movellaStatus = 0;
     }
 
     /* Pack Voltage */
@@ -653,7 +646,7 @@ static void drawRTDScreen(void) {
     } else {
         /* Update Display List*/
         tftDL_RTDUpdate(memoratorStatus,
-                        sbgStatus,
+                        movellaStatus,
                         hvVoltage_mV,
                         power_kW,
                         speed_kmh,
