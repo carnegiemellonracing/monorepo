@@ -434,7 +434,7 @@ void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yell
  */
 void tftDL_RTDUpdate(
     memorator_status_t memoratorStatus,
-    cmr_canMovellaStatus_t movellaStatus,
+    uint8_t movellaStatus,
     int32_t hvVoltage_mV,
     int32_t power_kW,
     uint32_t speed_kmh,
@@ -531,7 +531,7 @@ void tftDL_RTDUpdate(
     /* GPS color */
     uint32_t *gps_color = (void *)(tftDL_RTDData + ESE_GPS_TEXT_COLOR);
     uint32_t gps_color_cmd;
-    switch (movellaStatus->gnss_fix) {
+    switch (movellaStatus) {
         case 1:
             // GPS working and position found
             gps_color_cmd = green;
