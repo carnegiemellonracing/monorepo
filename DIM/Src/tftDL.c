@@ -417,7 +417,7 @@ void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yell
  * @brief Updates the ready-to-drive screen.
  *
  * @param memoratorPresent Memorator present (based on heartbeat)
- * @param sbgStatus SBG INS Status
+ * @param movellaStatus Movella Status
  * @param speed_mph Speed (from CDC)
  * @param hvVoltage_mV Pack Voltage (from HVC)
  * @param power_kW Electrical power dissipation
@@ -434,7 +434,7 @@ void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yell
  */
 void tftDL_RTDUpdate(
     memorator_status_t memoratorStatus,
-    SBG_status_t sbgStatus,
+    cmr_canMovellaStatus_t movellaStatus,
     int32_t hvVoltage_mV,
     int32_t power_kW,
     uint32_t speed_kmh,
@@ -531,16 +531,15 @@ void tftDL_RTDUpdate(
     /* GPS color */
     uint32_t *gps_color = (void *)(tftDL_RTDData + ESE_GPS_TEXT_COLOR);
     uint32_t gps_color_cmd;
-    switch (sbgStatus) {
-        case SBG_STATUS_WORKING_POS_FOUND:
+    switch (movellaStatus->gnss_fix) {
+        case 1:
             // GPS working and position found
             gps_color_cmd = green;
             break;
-        case SBG_STATUS_WORKING_NO_POS_FOUND:
+        case 0:
             // GPS connected, not working
-            gps_color_cmd = yellow;
+            gps_color_cmd = red;
             break;
-        case SBG_STATUS_NOT_CONNECTED:
         default:
             // GPS not connected
             gps_color_cmd = red;
