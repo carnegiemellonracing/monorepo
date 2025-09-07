@@ -619,6 +619,7 @@ static void canTX200Hz(void *pvParameters) {
     cmr_canFrontWheelVelocity_t front_velocity;
     cmr_canRearWheelVelocity_t rear_velocity;
 
+    cmr_canMovellaStatus_t *movellaStatus = canDAQGetPayload(CANRX_DAQ_MOVELLA_STATUS);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
@@ -650,6 +651,7 @@ static void canTX200Hz(void *pvParameters) {
         rear_velocity.rr_x = car_state.rr_velocity.x * 100.0f;
         rear_velocity.rr_y = car_state.rr_velocity.y * 100.0f;
 
+
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COG_VELOCITY, &cog_velocity, sizeof(cog_velocity), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_FRONT_VELOCITY, &front_velocity, sizeof(front_velocity), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_REAR_VELOCITY, &rear_velocity, sizeof(rear_velocity), canTX200Hz_period_ms);
@@ -660,7 +662,9 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_SETPOINT, &speedSetpoint, sizeof(speedSetpoint), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX200Hz_period_ms);
 
-
+        // Forward Movella status to Vehicle CAN at 200Hz.
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOVELLA_STATUS, movellaStatus, sizeof(cmr_canMovellaStatus_t), canTX200Hz_period_ms);
+    
         // Forward AMK messages to vehicle CAN at 200Hz.
         // for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
         //     // Do not transmit if we haven't received that message lately
