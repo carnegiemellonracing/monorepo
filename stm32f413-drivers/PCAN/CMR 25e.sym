@@ -82,12 +82,13 @@ Var=VSM_ERR_latchBSPD bit 24,1
 
 [VSM_Sensors]
 ID=200h
-DLC=8
+DLC=6
 CycleTime=5
 Timeout=100
 Var=VSM_brakePressureRear unsigned 0,16 /u:PSI
 Var=VSM_hallEffect signed 16,16 /u:A /f:0.01 /p:2
-Var=VSM_HE_CoulombCount float 32,32 /u:C /p:3
+Var=VSM_safetyIn unsigned 32,8 /u:dV
+Var=VSM_safetyOut unsigned 40,8 /u:dV
 
 [VSM_LatchedStatus]
 ID=510h	// Timeout matrix
@@ -358,14 +359,6 @@ Var=FSM_torqueReq unsigned 0,8
 Var=FSM_throttlePos unsigned 8,8
 Var=FSM_brakePressureFront unsigned 16,16 /u:PSI
 Var=FSM_brakePedalPos unsigned 32,8 /u:%
-
-[FSM_Swangle]
-ID=135h
-DLC=8
-CycleTime=10
-Timeout=100
-Var=FSM_steeringWheelAngle_FL signed 0,32 /u:deg
-Var=FSM_steeringWheelAngle_FR signed 32,32 /u:deg
 
 [FSM_PedalsADC]
 ID=533h
