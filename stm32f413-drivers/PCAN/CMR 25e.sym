@@ -351,7 +351,7 @@ Var=FSM_WRN_SWAngleOOR bit 33,1
 
 [FSM_Data]
 ID=133h
-DLC=5
+DLC=6
 CycleTime=10
 Timeout=100
 Var=FSM_torqueReq unsigned 0,8
