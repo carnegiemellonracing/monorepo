@@ -295,70 +295,6 @@ volatile void *getPayload(canRX_t rxMsg) {
     return (void *)(&rxMeta->payload);
 }
 
-/**
- * @brief Sets up HVC CAN heartbeat with current errors and warnings, then sends it.
- *
- * @param lastWakeTime Pass in from canTX100Hz. Used to update lastStateChangeTime and errors/warnings.
- */
-// static void sendHeartbeat(TickType_t lastWakeTime) {
-//     cmr_canHVCState_t currentState = getState();
-//     cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
-//     currentError = checkErrors(currentState);
-
-//     cmr_canHVCHeartbeat_t HVCHeartbeat = {
-//         .errorStatus = currentError,
-//         .hvcMode = CMR_CAN_HVC_MODE_ERROR,
-//         .hvcState = currentState,
-//         .relayStatus = getRelayStatus(),
-//         .uptime_s = lastWakeTime / 1000,
-//     };
-
-//     switch (currentState) {
-//         case CMR_CAN_HVC_STATE_DISCHARGE: // S1
-//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_IDLE;
-//             break;
-//         case CMR_CAN_HVC_STATE_STANDBY: // S2
-//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_IDLE;
-//             break;
-//         case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE: // S3
-//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_START;
-//             break;
-//         case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE: // S4
-//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_START;
-//             break;
-//         case CMR_CAN_HVC_STATE_DRIVE: // S5
-//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_RUN;
-//             break;
-//         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE: // S6
-//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
-//             break;
-//         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE: // S7
-//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
-//             break;
-//         case CMR_CAN_HVC_STATE_CHARGE_TRICKLE: // S8
-//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
-//             break;
-//         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT: // S9
-//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
-//             break;
-//         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE: // S10
-//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_CHARGE;
-//             break;
-//         case CMR_CAN_HVC_STATE_ERROR: // S0
-//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_ERROR;
-//             break;
-//         case CMR_CAN_HVC_STATE_CLEAR_ERROR: // S11
-//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_ERROR;
-//             break;
-//         case CMR_CAN_HVC_STATE_UNKNOWN:
-//         default:
-//             HVCHeartbeat.hvcMode = CMR_CAN_HVC_MODE_ERROR;
-//             break;
-//     }
-
-//     canTX(CMR_CANID_HEARTBEAT_HVC, &HVCHeartbeat, sizeof(HVCHeartbeat), canTX100Hz_period_ms);
-// }
-
 static void sendHVCPackVoltage(void) {
     int32_t bVolt = getBattMillivolts();
     //int32_t hvVolt = getHVmillivolts();
@@ -371,18 +307,6 @@ static void sendHVCPackVoltage(void) {
     canTX(CMR_CANID_HVC_PACK_VOLTAGE, &HVCPackVoltage, sizeof(HVCPackVoltage), canTX100Hz_period_ms);
 }
 
-// static void sendBMSPackCurrent(void) {
-//     int32_t instantCurrent = getHVmilliamps();
-//     // int32_t avgCurrent = getCurrentAverage(); // TODO: Gustav change this back
-//     int32_t avgCurrent = instantCurrent;
-
-//     cmr_canBMSPackCurrent_t BMSPackCurrent = {
-//         .instantCurrent_mA = instantCurrent,
-//         .averageCurrent_mA = avgCurrent,
-//     };
-
-//     canTX(CMR_CANID_HVC_PACK_CURRENT, &BMSPackCurrent, sizeof(BMSPackCurrent), canTX100Hz_period_ms);
-// }
 
 static void sendBMSBMBStatusVoltage(uint8_t bmb_index) {
     uint8_t maxIndex = getBMBMaxVoltIndex(bmb_index);

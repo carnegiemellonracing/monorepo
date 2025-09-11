@@ -46,13 +46,11 @@ static const uint8_t BRAKE_ACTIVE_THRES_PSI = 40;
  * @brief Mapping of sensor channels to ADC channels.
  */
 static const adcChannels_t sensorsADCCHANNELS[SENSOR_CH_LEN] = {
-    //[SENSOR_CH_V24V]       = ADC_V24V,
-	[SENSOR_CH_VREF] = ADC_V24V, 
+    [SENSOR_CH_V24V]       = ADC_V24V,
+	//[SENSOR_CH_VREF] = ADC_V24V, //keep, from hvi 
 	[SENSOR_CH_AIR_POWER]  = ADC_AIR_POWER,
 	[SENSOR_CH_SAFETY]     = ADC_SAFETY,
-	// [SENSOR_CH_VSENSE]     = ADC_VSENSE,
 	[SENSOR_CH_HV] = ADC_VSENSE, 
-	//[SENSOR_CH_ISENSE]     = ADC_ISENSE
 	[SENSOR_CH_CURRENT] = ADC_ISENSE
 };
 
@@ -179,7 +177,7 @@ static int32_t adcToVref(const cmr_sensor_t *sensor, uint32_t reading) {
 
 
 static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
-	[SENSOR_CH_V24V] = {
+	[SENSOR_CH_V24V] = { //hvc 
 		.conv = ADCtoMV_24v,
 		.sample = sampleADCSensor,
 		.readingMin = 0,
@@ -189,16 +187,7 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		.outOfRange_pcnt = 10,
 		//.warnFlag = What errors to use?
 	}, 
-	//from hvi 
-	// [SENSOR_CH_VREF] = {
-    //     .conv = adcToVref,
-    //     .sample = sampleADCSensor,
-    //     .readingMin = 0,
-    //     .readingMax = 4096,
-    //     .outOfRange_pcnt = 10,
-    //     .warnFlag = 0
-    // }, 
-	[SENSOR_CH_AIR_POWER] = {
+	[SENSOR_CH_AIR_POWER] = { //hvc 
 		.conv = ADCtoMV_24v,
 		.sample = sampleADCSensor,
 		.readingMin = 0,
@@ -206,7 +195,7 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		.outOfRange_pcnt = 10,
 		//.warnFlag = What errors to use?
 	},
-	[SENSOR_CH_SAFETY] = {
+	[SENSOR_CH_SAFETY] = { //hvc 
 		.conv = ADCtoMV_24v,
 		.sample = sampleADCSensor,
 		//.readingMin = ?,
@@ -214,32 +203,14 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		.outOfRange_pcnt = 10,
 		//.warnFlag = What errors to use?
 	},
-	//taken out bc repeat from hvi 
-    // [SENSOR_CH_VSENSE] = {
-	// 	.conv = ADCtoMV_HV,
-	// 	.sample = sampleADCSensor,
-	// 	//.readingMin = ?,
-	// 	//.readingMax = ?,
-	// 	.outOfRange_pcnt = 10,
-	// 	//.warnFlag = What errors to use?
-	// },
-	[SENSOR_CH_HV] = {
+	[SENSOR_CH_HV] = { //hvi 
 		.conv = adcToVoltage,
 		.sample = sampleADCSensor,
 		.readingMin = 0,
 		.readingMax = 4096,
 		.outOfRange_pcnt = 10, 
 		.warnFlag = 0 }, 
-	//taken out bc repeat from hvi 
-    // [SENSOR_CH_ISENSE] = {
-	// 	.conv = NULL,
-	// 	.sample = sampleADCSensor,
-	// 	//.readingMin = ?,
-	// 	//.readingMax = ?,
-	// 	.outOfRange_pcnt = 10,
-	// 	//.warnFlag = What errors to use?
-	// },
-	[SENSOR_CH_CURRENT] = {
+	[SENSOR_CH_CURRENT] = { //hvi 
         .conv = adcToCurrent,
         .sample = sampleADCSensor,
         .readingMin = 0,

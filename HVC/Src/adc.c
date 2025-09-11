@@ -23,7 +23,7 @@ cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
-    //adc_vref copied from hvi 
+    //adc_vref copied from hvi NEEDS TO BE UNCOMMENTED DONT DELETE 
     // [ADC_VREF] = { 
 	// 	 .channel = ADC_CHANNEL_12,
 	// 	 .port = GPIOC,
