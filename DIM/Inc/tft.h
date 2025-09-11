@@ -103,10 +103,10 @@ typedef struct {
     bool hvcBMBFault;        /**< @brief Has a BMB raised a fault? */
     uint16_t hvcErrorNum;    /**< @brief Give the error number,
                               * So the driver can relay even if the error is not accounted for above. */
-    uint16_t amkFLErrorCode; /**< @brief AMK FL Error Code */
-    uint16_t amkFRErrorCode; /**< @brief AMK FR Error Code */
-    uint16_t amkBLErrorCode; /**< @brief AMK BL Error Code */
-    uint16_t amkBRErrorCode; /**< @brief AMK BR Error Code */
+    uint16_t dtiFLErrorCode; /**< @brief DTI FL Error Code */
+    uint16_t dtiFRErrorCode; /**< @brief DTI FR Error Code */
+    uint16_t dtiRLErrorCode; /**< @brief DTI RL Error Code */
+    uint16_t dtiRRErrorCode; /**< @brief DTI RR Error Code */
     uint32_t glvVoltage_V;   /**< @brief GLV Voltage in Volts */
 } tft_errors_t;
 

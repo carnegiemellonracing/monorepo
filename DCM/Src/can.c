@@ -819,19 +819,19 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX200Hz_period_ms);
 
 
-        // Forward AMK messages to vehicle CAN at 200Hz.
-        // for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
-        //     // Do not transmit if we haven't received that message lately
-        //     if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
+        // Forward DTI messages to vehicle CAN at 200Hz.
+        for (size_t i = 0; i <= CANRX_TRAC_LEN; i++) {
+            // Do not transmit if we haven't received that message lately
+            if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
 
-        //     canTX(
-        //         CMR_CAN_BUS_VEH,
-        //         canTractiveRXMeta[i].canID,
-        //         (void *) &(canTractiveRXMeta[i].payload),
-        //         sizeof(cmr_canAMKActualValues1_t),
-        //         canTX200Hz_period_ms
-        //     );
-        // }
+            canTX(
+                CMR_CAN_BUS_VEH,
+                canTractiveRXMeta[i].canID,
+                (void *) &(canTractiveRXMeta[i].payload),
+                sizeof(canTractiveRXMeta[i].payload),
+                canTX200Hz_period_ms
+            );
+        }
 
         // Send setpoints to vehicle CAN at 200Hz as well.
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_FL_SETPOINTS, amkSetpointsFL, sizeof(*amkSetpointsFL), canTX200Hz_period_ms);
@@ -924,45 +924,19 @@ static void canTX5Hz(void *pvParameters) {
 
         // forward DTI messages to Vehicle CAN
 
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FL_ERPM, &(canTractiveRXMeta[0].payload), sizeof(cmr_canDTI_TX_Erpm_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FR_ERPM, &(canTractiveRXMeta[8].payload), sizeof(cmr_canDTI_TX_Erpm_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RL_ERPM, &(canTractiveRXMeta[16].payload), sizeof(cmr_canDTI_TX_Erpm_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RR_ERPM, &(canTractiveRXMeta[24].payload), sizeof(cmr_canDTI_TX_Erpm_t), canTX5Hz_period_ms);
-        
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FL_CURRENT, &(canTractiveRXMeta[1].payload), sizeof(cmr_canDTI_TX_Current_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FR_CURRENT, &(canTractiveRXMeta[9].payload), sizeof(cmr_canDTI_TX_Current_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RL_CURRENT, &(canTractiveRXMeta[17].payload), sizeof(cmr_canDTI_TX_Current_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RR_CURRENT, &(canTractiveRXMeta[25].payload), sizeof(cmr_canDTI_TX_Current_t), canTX5Hz_period_ms);
-        
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FL_TEMPFAULT, &(canTractiveRXMeta[2].payload), sizeof(cmr_canDTI_TX_TempFault_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FR_TEMPFAULT, &(canTractiveRXMeta[10].payload), sizeof(cmr_canDTI_TX_TempFault_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RL_TEMPFAULT, &(canTractiveRXMeta[18].payload), sizeof(cmr_canDTI_TX_TempFault_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RR_TEMPFAULT, &(canTractiveRXMeta[26].payload), sizeof(cmr_canDTI_TX_TempFault_t), canTX5Hz_period_ms);
-        
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FL_IDIQ, &(canTractiveRXMeta[3].payload), sizeof(cmr_canDTI_TX_IdIq_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FR_IDIQ, &(canTractiveRXMeta[11].payload), sizeof(cmr_canDTI_TX_IdIq_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RL_IDIQ, &(canTractiveRXMeta[19].payload), sizeof(cmr_canDTI_TX_IdIq_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RR_IDIQ, &(canTractiveRXMeta[27].payload), sizeof(cmr_canDTI_TX_IdIq_t), canTX5Hz_period_ms);
-        
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FL_ACLIMS, &(canTractiveRXMeta[4].payload), sizeof(cmr_canDTI_TX_ACLimits_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FR_ACLIMS, &(canTractiveRXMeta[12].payload), sizeof(cmr_canDTI_TX_ACLimits_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RL_ACLIMS, &(canTractiveRXMeta[20].payload), sizeof(cmr_canDTI_TX_ACLimits_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RR_ACLIMS, &(canTractiveRXMeta[28].payload), sizeof(cmr_canDTI_TX_ACLimits_t), canTX5Hz_period_ms);
-        
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FL_DCLIMS, &(canTractiveRXMeta[5].payload), sizeof(cmr_canDTI_TX_DCLimits_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FR_DCLIMS, &(canTractiveRXMeta[13].payload), sizeof(cmr_canDTI_TX_DCLimits_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RL_DCLIMS, &(canTractiveRXMeta[21].payload), sizeof(cmr_canDTI_TX_DCLimits_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RR_DCLIMS, &(canTractiveRXMeta[29].payload), sizeof(cmr_canDTI_TX_DCLimits_t), canTX5Hz_period_ms);
-        
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FL_CONTROL_STATUS, &(canTractiveRXMeta[6].payload), sizeof(cmr_canDTI_TX_ControlStatus_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FR_CONTROL_STATUS, &(canTractiveRXMeta[14].payload), sizeof(cmr_canDTI_TX_ControlStatus_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RL_CONTROL_STATUS, &(canTractiveRXMeta[22].payload), sizeof(cmr_canDTI_TX_ControlStatus_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RR_CONTROL_STATUS, &(canTractiveRXMeta[30].payload), sizeof(cmr_canDTI_TX_ControlStatus_t), canTX5Hz_period_ms);
+        // Forward DTI messages to vehicle CAN at 200Hz.
+        for (size_t i = 0; i <= CANRX_TRAC_LEN; i++) {
+            // Do not transmit if we haven't received that message lately
+            if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
 
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FL_IO_STATUS, &(canTractiveRXMeta[7].payload), sizeof(cmr_canDTI_TX_IOStatus_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FR_IO_STATUS, &(canTractiveRXMeta[15].payload), sizeof(cmr_canDTI_TX_IOStatus_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RL_IO_STATUS, &(canTractiveRXMeta[23].payload), sizeof(cmr_canDTI_TX_IOStatus_t), canTX5Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RR_IO_STATUS, &(canTractiveRXMeta[31].payload), sizeof(cmr_canDTI_TX_IOStatus_t), canTX5Hz_period_ms);
+            canTX(
+                CMR_CAN_BUS_VEH,
+                canTractiveRXMeta[i].canID,
+                (void *) &(canTractiveRXMeta[i].payload),
+                sizeof(canTractiveRXMeta[i].payload),
+                canTX5Hz_period_ms
+            );
+        }
     }
 
 }
