@@ -62,14 +62,38 @@ extern volatile bool redraw_new_driver_profiles;
 typedef enum {
     CANRX_HEARTBEAT_VSM = 0,   /**< @brief VSM heartbeat. */
     CANRX_HVC_PACK_VOLTAGE,    /**< @brief BMS pack voltage. */
-    CANRX_AMK_FL_ACT_1,        /**< @brief AMK FL status*/
-    CANRX_AMK_FR_ACT_1,        /**< @brief AMK FR status*/
-    CANRX_AMK_RL_ACT_1,        /**< @brief AMK BL status*/
-    CANRX_AMK_RR_ACT_1,        /**< @brief AMK BR status*/
-    CANRX_AMK_FL_ACT_2,        /**< @brief AMK FL Temps*/
-    CANRX_AMK_FR_ACT_2,        /**< @brief AMK FR Temps*/
-    CANRX_AMK_RL_ACT_2,        /**< @brief AMK BL Temps*/
-    CANRX_AMK_RR_ACT_2,        /**< @brief AMK BR Temps*/
+    CANRX_DTI_FL_CONTROL_STATUS,
+    CANRX_DTI_FL_ERPM,
+    CANRX_DTI_FL_CURRENT,
+    CANRX_DTI_FL_TEMPFAULT,
+    CANRX_DTI_FL_IDIQ,
+    CANRX_DTI_FL_IO_STATUS,
+    CANRX_DTI_FL_ACLIMS,
+    CANRX_DTI_FL_DCLIMS,
+    CANRX_DTI_FR_CONTROL_STATUS,
+    CANRX_DTI_FR_ERPM,
+    CANRX_DTI_FR_CURRENT,
+    CANRX_DTI_FR_TEMPFAULT,
+    CANRX_DTI_FR_IDIQ,
+    CANRX_DTI_FR_IO_STATUS,
+    CANRX_DTI_FR_ACLIMS,
+    CANRX_DTI_FR_DCLIMS,
+    CANRX_DTI_RL_CONTROL_STATUS,
+    CANRX_DTI_RL_ERPM,
+    CANRX_DTI_RL_CURRENT,
+    CANRX_DTI_RL_TEMPFAULT,
+    CANRX_DTI_RL_IDIQ,
+    CANRX_DTI_RL_IO_STATUS,
+    CANRX_DTI_RL_ACLIMS,
+    CANRX_DTI_RL_DCLIMS,
+    CANRX_DTI_RR_CONTROL_STATUS,
+    CANRX_DTI_RR_ERPM,
+    CANRX_DTI_RR_CURRENT,
+    CANRX_DTI_RR_TEMPFAULT,
+    CANRX_DTI_RR_IDIQ,
+    CANRX_DTI_RR_IO_STATUS,
+    CANRX_DTI_RR_ACLIMS,
+    CANRX_DTI_RR_DCLIMS,
     CANRX_HVC_PACK_TEMPS,      /**< @brief HVC cell temps. */
     CANRX_VSM_STATUS,          /**< @brief VSM status */
     CANRX_PTCf_LOOP_A_TEMPS,   /**< @brief PTCf Loop A temps */

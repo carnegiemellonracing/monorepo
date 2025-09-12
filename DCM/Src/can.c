@@ -21,7 +21,7 @@
 
 #include "can.h"    // Interface to implement
 #include "adc.h"    // adcVSense, adcISense
-#include "motors.h" // cmr_canAMKSetpoints_t
+#include "motors.h" // cmr_canDTISetpoints_t
 #include "daq.h"
 #include "i2c.h"
 #include "drs_controls.h"
@@ -379,7 +379,7 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
-    },
+    }
 };
 
 cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
@@ -819,19 +819,19 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX200Hz_period_ms);
 
 
-        // Forward AMK messages to vehicle CAN at 200Hz.
-        // for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
-        //     // Do not transmit if we haven't received that message lately
-        //     if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
+        // Forward DTI messages to vehicle CAN at 200Hz.
+        for (size_t i = 0; i <= CANRX_TRAC_LEN; i++) {
+            // Do not transmit if we haven't received that message lately
+            if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
 
-        //     canTX(
-        //         CMR_CAN_BUS_VEH,
-        //         canTractiveRXMeta[i].canID,
-        //         (void *) &(canTractiveRXMeta[i].payload),
-        //         sizeof(cmr_canAMKActualValues1_t),
-        //         canTX200Hz_period_ms
-        //     );
-        // }
+            canTX(
+                CMR_CAN_BUS_VEH,
+                canTractiveRXMeta[i].canID,
+                (void *) &(canTractiveRXMeta[i].payload),
+                sizeof(canTractiveRXMeta[i].payload),
+                canTX200Hz_period_ms
+            );
+        }
 
         // Send setpoints to vehicle CAN at 200Hz as well.
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_AMK_FL_SETPOINTS, amkSetpointsFL, sizeof(*amkSetpointsFL), canTX200Hz_period_ms);
@@ -922,15 +922,18 @@ static void canTX5Hz(void *pvParameters) {
 
         vTaskDelayUntil(&lastWakeTime, canTX5Hz_period_ms);
 
-        for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
+        // forward DTI messages to Vehicle CAN
+
+        // Forward DTI messages to vehicle CAN at 200Hz.
+        for (size_t i = 0; i <= CANRX_TRAC_LEN; i++) {
             // Do not transmit if we haven't received that message lately
             if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
-    
+
             canTX(
                 CMR_CAN_BUS_VEH,
                 canTractiveRXMeta[i].canID,
                 (void *) &(canTractiveRXMeta[i].payload),
-                sizeof(cmr_canAMKActualValues1_t),
+                sizeof(canTractiveRXMeta[i].payload),
                 canTX5Hz_period_ms
             );
         }
@@ -1193,25 +1196,76 @@ void canInit(void) {
 
     // Tractive CAN filters.
     const cmr_canFilter_t canTractiveFilters[] = {
+        // FL CAN IDs
         {.isMask = false,
          .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_AMK_FL_ACT_1, CMR_CANID_AMK_FL_ACT_2,
-                 }
+         .ids = {CMR_CANID_DTI_FL_CONTROL_STATUS, CMR_CANID_DTI_FL_ERPM,}
+        },
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO0,
+         .ids = {CMR_CANID_DTI_FL_CURRENT, CMR_CANID_DTI_FL_TEMPFAULT,}
+        },
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO0,
+         .ids = {CMR_CANID_DTI_FL_IDIQ, CMR_CANID_DTI_FL_IO_STATUS,}
+        },
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO0,
+         .ids = {CMR_CANID_DTI_FL_ACLIMS, CMR_CANID_DTI_FL_DCLIMS,}
         },
 
+        // FR CAN IDs
         {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO1,
-         .ids = {CMR_CANID_AMK_FR_ACT_1, CMR_CANID_AMK_FR_ACT_2,}
+         .rxFIFO = FDCAN_RX_FIFO0,
+         .ids = {CMR_CANID_DTI_FR_CONTROL_STATUS, CMR_CANID_DTI_FR_ERPM,}
+        },
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO0,
+         .ids = {CMR_CANID_DTI_FR_CURRENT, CMR_CANID_DTI_FR_TEMPFAULT,}
+        },
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO0,
+         .ids = {CMR_CANID_DTI_FR_IDIQ, CMR_CANID_DTI_FR_IO_STATUS,}
+        },
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO0,
+         .ids = {CMR_CANID_DTI_FR_ACLIMS, CMR_CANID_DTI_FR_DCLIMS,}
         },
 
+        // RL CAN IDs
         {.isMask = false,
-        .rxFIFO = FDCAN_RX_FIFO1,
-        .ids = {CMR_CANID_AMK_RL_ACT_1, CMR_CANID_AMK_RL_ACT_2,}
+         .rxFIFO = FDCAN_RX_FIFO0,
+         .ids = {CMR_CANID_DTI_RL_CONTROL_STATUS, CMR_CANID_DTI_RL_ERPM,}
         },
-        
         {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO1,
-         .ids = {CMR_CANID_AMK_RR_ACT_1, CMR_CANID_AMK_RR_ACT_2}
+         .rxFIFO = FDCAN_RX_FIFO0,
+         .ids = {CMR_CANID_DTI_RL_CURRENT, CMR_CANID_DTI_RL_TEMPFAULT,}
+        },
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO0,
+         .ids = {CMR_CANID_DTI_RL_IDIQ, CMR_CANID_DTI_RL_IO_STATUS,}
+        },
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO0,
+         .ids = {CMR_CANID_DTI_RL_ACLIMS, CMR_CANID_DTI_RL_DCLIMS,}
+        },
+
+        // RR CAN IDs
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO0,
+         .ids = {CMR_CANID_DTI_RR_CONTROL_STATUS, CMR_CANID_DTI_RR_ERPM,}
+        },
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO0,
+         .ids = {CMR_CANID_DTI_RR_CURRENT, CMR_CANID_DTI_RR_TEMPFAULT,}
+        },
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO0,
+         .ids = {CMR_CANID_DTI_RR_IDIQ, CMR_CANID_DTI_RR_IO_STATUS,}
+        },
+        {.isMask = false,
+         .rxFIFO = FDCAN_RX_FIFO0,
+         .ids = {CMR_CANID_DTI_RR_ACLIMS, CMR_CANID_DTI_RR_DCLIMS,}
         }
     };
 

@@ -45,6 +45,9 @@ volatile int8_t config_move_request;
 __typeof__ (b) _b = (b); \
 _a < _b ? _a : _b; })
 
+#define POLE_PAIRS 4
+#define MOTOR_LEN 4
+
 /** @brief declaration of config screen variables */
 extern volatile bool flush_config_screen_to_cdc;
 /** @brief declaration of config screen variables */
@@ -191,28 +194,20 @@ float getOdometer() {
  */
 int32_t getAverageWheelRPM(void) {
 	/* Get CAN data */
-	// Front Left
-	cmr_canAMKActualValues1_t *canAMK_FL_Act1 = getPayload(CANRX_AMK_FL_ACT_1);
 
-	// Front Right
-	cmr_canAMKActualValues1_t *canAMK_FR_Act1 = getPayload(CANRX_AMK_FR_ACT_1);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FL = canTractiveGetPayload(CANRX_DTI_FL_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FR = canTractiveGetPayload(CANRX_DTI_FR_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RL = canTractiveGetPayload(CANRX_DTI_RL_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RR = canTractiveGetPayload(CANRX_DTI_RR_ERPM);
 
-	// Rear Left
-	cmr_canAMKActualValues1_t *canAMK_RL_Act1 = getPayload(CANRX_AMK_RL_ACT_1);
-
-	// Rear Right
-	cmr_canAMKActualValues1_t *canAMK_RR_Act1 = getPayload(CANRX_AMK_RL_ACT_1);
-
-	/* Extract wheel speeds */
-	int32_t frontLeftRPM = (canAMK_FL_Act1->velocity_rpm);  // Motor direction reversed on left side
-	int32_t frontRightRPM = canAMK_FR_Act1->velocity_rpm;
-	int32_t rearLeftRPM = (canAMK_RL_Act1->velocity_rpm);  // Motor direction reversed on left side
-	int32_t rearRightRPM = canAMK_RR_Act1->velocity_rpm;
-
-	/* Compute average */
-	int32_t average = (frontLeftRPM + frontRightRPM + rearLeftRPM + rearRightRPM) / 4;
-
-	return average;
+    const int32_t avgMotorSpeed_RPM = (
+        + (int32_t)(dtiERPM_FL->erpm / POLE_PAIRS)
+        + (int32_t)(dtiERPM_FR->erpm / POLE_PAIRS)
+        + (int32_t)(dtiERPM_RL->erpm / POLE_PAIRS)
+        + (int32_t)(dtiERPM_RR->erpm / POLE_PAIRS)
+    ) / MOTOR_LEN;
+	
+    return avgMotorSpeed_RPM;
 }
 
 
@@ -232,22 +227,23 @@ bool getAcknowledgeButton(void) {
 int getMaxMotorTemp(void){
 	/* Get CAN data */
 	// Front Left
-	cmr_canAMKActualValues2_t *canAMK_FL_Act2 = getPayload(CANRX_AMK_FL_ACT_2);
+	cmr_canDTI_TX_TempFault_t *canDTI_FL_temp = getPayload(CANRX_DTI_FL_TEMPFAULT);
 
 	// Front Right
-	cmr_canAMKActualValues2_t *canAMK_FR_Act2 = getPayload(CANRX_AMK_FR_ACT_2);
+	cmr_canDTI_TX_TempFault_t *canDTI_FR_temp = getPayload(CANRX_DTI_FR_TEMPFAULT);
 
 	// Rear Left
-	cmr_canAMKActualValues2_t *canAMK_RL_Act2 = getPayload(CANRX_AMK_RL_ACT_2);
+	cmr_canDTI_TX_TempFault_t *canDTI_RL_temp = getPayload(CANRX_DTI_RL_TEMPFAULT);
 
 	// Rear Right
-	cmr_canAMKActualValues2_t *canAMK_RR_Act2 = getPayload(CANRX_AMK_RR_ACT_2);
+	cmr_canDTI_TX_TempFault_t *canDTI_RR_temp = getPayload(CANRX_DTI_RR_TEMPFAULT);
 
 	/* Extract motor temperatures */
-	int32_t frontLeftTemp = canAMK_FL_Act2->motorTemp_dC;
-	int32_t frontRightTemp = canAMK_FR_Act2->motorTemp_dC;
-	int32_t rearLeftTemp = canAMK_RL_Act2->motorTemp_dC;
-	int32_t rearRightTemp = canAMK_RR_Act2->motorTemp_dC;
+    //TODO: does this need to be int32_t or int16_t?? and what is multiplied by 10?
+	int32_t frontLeftTemp = canDTI_FL_temp->motor_temp;
+	int32_t frontRightTemp = canDTI_FR_temp->motor_temp;
+	int32_t rearLeftTemp = canDTI_RL_temp->motor_temp;
+	int32_t rearRightTemp = canDTI_RR_temp->motor_temp;
 
 	/* Return highest motor temperature*/
 	int32_t maxTemp = frontLeftTemp;
@@ -280,17 +276,25 @@ int getACTemp(void)
  */
 int getMCTemp(void)
 {
-	cmr_canAMKActualValues2_t *canAMK_FL_Act2 = getPayload(CANRX_AMK_FL_ACT_2);
+	/* Get CAN data */
+	// Front Left
+	cmr_canDTI_TX_TempFault_t *canDTI_FL_temp = getPayload(CANRX_DTI_FL_TEMPFAULT);
+
 	// Front Right
-	cmr_canAMKActualValues2_t *canAMK_FR_Act2 = getPayload(CANRX_AMK_FR_ACT_2);
+	cmr_canDTI_TX_TempFault_t *canDTI_FR_temp = getPayload(CANRX_DTI_FR_TEMPFAULT);
+
 	// Rear Left
-	cmr_canAMKActualValues2_t *canAMK_RL_Act2 = getPayload(CANRX_AMK_RL_ACT_2);
+	cmr_canDTI_TX_TempFault_t *canDTI_RL_temp = getPayload(CANRX_DTI_RL_TEMPFAULT);
+
 	// Rear Right
-	cmr_canAMKActualValues2_t *canAMK_RR_Act2 = getPayload(CANRX_AMK_RR_ACT_2);
-	int32_t frontLeftMCTemp = canAMK_FL_Act2->motorTemp_dC;
-	int32_t frontRightMCTemp = canAMK_FR_Act2->motorTemp_dC;
-	int32_t rearLeftMCTemp = canAMK_RL_Act2->motorTemp_dC;
-	int32_t rearRightMCTemp = canAMK_RR_Act2->motorTemp_dC;
+	cmr_canDTI_TX_TempFault_t *canDTI_RR_temp = getPayload(CANRX_DTI_RR_TEMPFAULT);
+
+    //TODO: does this need to be int32_t or int16_t?? and what is multiplied by 10?
+    // is this controller temp?
+	int32_t frontLeftMCTemp = canDTI_FL_temp->ctlr_temp;
+	int32_t frontRightMCTemp = canDTI_FR_temp->ctlr_temp;
+	int32_t rearLeftMCTemp = canDTI_RL_temp->ctlr_temp;
+	int32_t rearRightMCTemp = canDTI_RR_temp->ctlr_temp;
 
 	/* Return highest motor temperature*/
 	int32_t maxTemp = frontLeftMCTemp;

@@ -113,58 +113,204 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
 
 /** @brief Metadata for tractive CAN message reception. */
 cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
-    [CANRX_TRAC_INV_FL_ACT1] = {
-        .canID = CMR_CANID_AMK_FL_ACT_1,
+    /* Front Left Inverter (Node ID 0x00) */
+    [CANRX_TRAC_FL_CONTROL_STATUS] = {
+        .canID = CMR_CANID_DTI_FL_CONTROL_STATUS,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_AMK_FL | CMR_CAN_WARN_CDC_AMK_TIMEOUT
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_INV_FL_ACT2] = {
-        .canID = CMR_CANID_AMK_FL_ACT_2,
+    [CANRX_TRAC_FL_ERPM] = {
+        .canID = CMR_CANID_DTI_FL_ERPM,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_AMK_FL | CMR_CAN_WARN_CDC_AMK_TIMEOUT
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_INV_FR_ACT1] = {
-        .canID = CMR_CANID_AMK_FR_ACT_1,
+    [CANRX_TRAC_FL_CURRENT] = {
+        .canID = CMR_CANID_DTI_FL_CURRENT,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_AMK_FR | CMR_CAN_WARN_CDC_AMK_TIMEOUT
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_INV_FR_ACT2] = {
-        .canID = CMR_CANID_AMK_FR_ACT_2,
+    [CANRX_TRAC_FL_TEMPFAULT] = {
+        .canID = CMR_CANID_DTI_FL_TEMPFAULT,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_AMK_FR | CMR_CAN_WARN_CDC_AMK_TIMEOUT
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_INV_RL_ACT1] = {
-        .canID = CMR_CANID_AMK_RL_ACT_1,
+    [CANRX_TRAC_FL_IDIQ] = {
+        .canID = CMR_CANID_DTI_FL_IDIQ,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_AMK_RL | CMR_CAN_WARN_CDC_AMK_TIMEOUT
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_INV_RL_ACT2] = {
-        .canID = CMR_CANID_AMK_RL_ACT_2,
+    [CANRX_TRAC_FL_IO_STATUS] = {
+        .canID = CMR_CANID_DTI_FL_IO_STATUS,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_AMK_RL | CMR_CAN_WARN_CDC_AMK_TIMEOUT
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_INV_RR_ACT1] = {
-        .canID = CMR_CANID_AMK_RR_ACT_1,
+    [CANRX_TRAC_FL_ACLIMS] = {
+        .canID = CMR_CANID_DTI_FL_ACLIMS,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_AMK_RR | CMR_CAN_WARN_CDC_AMK_TIMEOUT
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_INV_RR_ACT2] = {
-        .canID = CMR_CANID_AMK_RR_ACT_2,
+    [CANRX_TRAC_FL_DCLIMS] = {
+        .canID = CMR_CANID_DTI_FL_DCLIMS,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_AMK_RR | CMR_CAN_WARN_CDC_AMK_TIMEOUT
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_TRAC_HVI_SENSE] = {
-        .canID = CMR_CANID_HEARTBEAT_HVI,
+
+    /* Front Right Inverter (Node ID 0x01) */
+    [CANRX_TRAC_FR_CONTROL_STATUS] = {
+        .canID = CMR_CANID_DTI_FR_CONTROL_STATUS,
         .timeoutError_ms = 100,
-        .timeoutWarn_ms = 75
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_FR_ERPM] = {
+        .canID = CMR_CANID_DTI_FR_ERPM,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_FR_CURRENT] = {
+        .canID = CMR_CANID_DTI_FR_CURRENT,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_FR_TEMPFAULT] = {
+        .canID = CMR_CANID_DTI_FR_TEMPFAULT,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_FR_IDIQ] = {
+        .canID = CMR_CANID_DTI_FR_IDIQ,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_FR_IO_STATUS] = {
+        .canID = CMR_CANID_DTI_FR_IO_STATUS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_FR_ACLIMS] = {
+        .canID = CMR_CANID_DTI_FR_ACLIMS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_FR_DCLIMS] = {
+        .canID = CMR_CANID_DTI_FR_DCLIMS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+
+    /* Rear Right Inverter (Node ID 0x02) */
+    [CANRX_TRAC_RR_CONTROL_STATUS] = {
+        .canID = CMR_CANID_DTI_RR_CONTROL_STATUS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RR_ERPM] = {
+        .canID = CMR_CANID_DTI_RR_ERPM,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RR_CURRENT] = {
+        .canID = CMR_CANID_DTI_RR_CURRENT,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RR_TEMPFAULT] = {
+        .canID = CMR_CANID_DTI_RR_TEMPFAULT,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RR_IDIQ] = {
+        .canID = CMR_CANID_DTI_RR_IDIQ,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RR_IO_STATUS] = {
+        .canID = CMR_CANID_DTI_RR_IO_STATUS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RR_ACLIMS] = {
+        .canID = CMR_CANID_DTI_RR_ACLIMS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RR_DCLIMS] = {
+        .canID = CMR_CANID_DTI_RR_DCLIMS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+
+    /* Rear Left Inverter (Node ID 0x03) */
+    [CANRX_TRAC_RL_CONTROL_STATUS] = {
+        .canID = CMR_CANID_DTI_RL_CONTROL_STATUS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RL_ERPM] = {
+        .canID = CMR_CANID_DTI_RL_ERPM,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RL_CURRENT] = {
+        .canID = CMR_CANID_DTI_RL_CURRENT,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RL_TEMPFAULT] = {
+        .canID = CMR_CANID_DTI_RL_TEMPFAULT,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RL_IDIQ] = {
+        .canID = CMR_CANID_DTI_RL_IDIQ,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RL_IO_STATUS] = {
+        .canID = CMR_CANID_DTI_RL_IO_STATUS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RL_ACLIMS] = {
+        .canID = CMR_CANID_DTI_RL_ACLIMS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_RL_DCLIMS] = {
+        .canID = CMR_CANID_DTI_RL_DCLIMS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     }
 };
 

@@ -61,22 +61,26 @@ static cmr_canDTISetpoints_t motorSetpoints[MOTOR_LEN] = {
     [MOTOR_FL] = {
         .velocity_rpm = 0,
         .torqueLimPos = 0,
-        .torqueLimNeg = 0
+        .torqueLimNeg = 0,
+        .torque = 0
     },
     [MOTOR_FR] = {
         .velocity_rpm = 0,
         .torqueLimPos = 0,
-        .torqueLimNeg = 0
+        .torqueLimNeg = 0,
+        .torque = 0
     },
     [MOTOR_RL] = {
         .velocity_rpm = 0,
         .torqueLimPos = 0,
-        .torqueLimNeg = 0
+        .torqueLimNeg = 0,
+        .torque = 0
     },
     [MOTOR_RR] = {
         .velocity_rpm = 0,
         .torqueLimPos = 0,
-        .torqueLimNeg = 0
+        .torqueLimNeg = 0,
+        .torque = 0
     },
 };
 
@@ -319,7 +323,7 @@ void setTorqueLimPos (
     }
 
     torqueLimPos_Nm = fmaxf(torqueLimPos_Nm, 0.0f);
-    motorSetpoints[motor].torqueLimPos = convertNmToAMKTorque(torqueLimPos_Nm);
+    motorSetpoints[motor].torqueLimPos = convertNmToDTITorque(torqueLimPos_Nm);
 }
 
 /**
@@ -337,7 +341,7 @@ void setTorqueLimNeg (
     }
 
     torqueLimNeg_Nm = fminf(torqueLimNeg_Nm, 0.0f);
-    motorSetpoints[motor].torqueLimNeg = convertNmToAMKTorque(torqueLimNeg_Nm);
+    motorSetpoints[motor].torqueLimNeg = convertNmToDTITorque(torqueLimNeg_Nm);
 }
 
 /**
@@ -406,8 +410,8 @@ void setTorqueLimsUnprotected (
     torqueLimPos_Nm = fmaxf(torqueLimPos_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
     torqueLimNeg_Nm = fminf(torqueLimNeg_Nm, 0.0f); // ensures torqueLimNeg_Nm <= 0
 
-    motorSetpoints[motor].torqueLimPos = convertNmToAMKTorque(torqueLimPos_Nm);
-    motorSetpoints[motor].torqueLimNeg = convertNmToAMKTorque(torqueLimNeg_Nm);
+    motorSetpoints[motor].torqueLimPos = convertNmToDTITorque(torqueLimPos_Nm);
+    motorSetpoints[motor].torqueLimNeg = convertNmToDTITorque(torqueLimNeg_Nm);
 }
 
 /**

@@ -4,21 +4,20 @@
 #include <stdint.h>
 
 /** @brief Maximum motor torque
- * motor datasheet: "maximum torque 'Mmax': 21 Nm"
+ * motor datasheet: "Peak Torque - 31.6 Nm"
 */
-static const float maxTorque_Nm = 21.0f;
+static const float maxTorque_Nm = 31.6f;
 
 /** @brief Maximum motor speed
- * motor datasheet: "no-load-speed 'No': 18617"
- * motor datasheet: "mech. speed limit 'Nmax': 20000"
- * AMK racing kit summary p.16: "Speed setpoint values are limited to 30000 rpm"
+ * motor datasheet: "Nominal Speed - 13250 rpm"
+ * motor datasheet: "Maximum Speed - 20000 rpm"
 */
 static const int16_t maxSpeed_rpm = 20000;
 
 /** @brief Maximum motor torque in slow gear */
 static const float maxSlowTorque_Nm = 5.0f;
 
-static const float maxTorque_continuous_stall_Nm = 21.0f;
+static const float maxTorque_continuous_stall_Nm = 31.6f;
 
 /** @brief Maximum motor torque in fast gear */
 static const float maxFastTorque_Nm = maxTorque_continuous_stall_Nm; 
@@ -61,5 +60,7 @@ static const double trackwidth_m = 1.30f;
 static const double half_wheelbase_m = wheelbase_m * 0.5f;
 static const double half_trackwidth_m= trackwidth_m * 0.5f;
 static const double car_mass_kg = 280.0f;
+
+static const uint16_t pole_pairs = 4;
 
 #endif

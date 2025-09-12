@@ -4,6 +4,6 @@
 
 method=source_dir
 command=
-source_dir=/Users/anvitanadgir/Documents/GitHub/monorepo/VSM
+source_dir=/Users/nidhivadlamudi/Desktop/CMR/monorepo/VSM
 work_dir=
 
