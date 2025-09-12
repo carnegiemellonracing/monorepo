@@ -84,7 +84,7 @@ typedef enum {
     // fan turn on at 56 starting 58 turn it to max
 
     /** @brief CDC All motor controllers have errored or timed out. */
-    CMR_CAN_ERROR_CDC_AMK_ALL = (1 << 15)
+    CMR_CAN_ERROR_CDC_DTI_ALL = (1 << 15)
 } cmr_canError_t;
 
 /** @brief Heartbeat warning matrix bit fields. */

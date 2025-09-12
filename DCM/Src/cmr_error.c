@@ -106,13 +106,13 @@ static void updateErrors(cmr_canError_t *errors, TickType_t lastWakeTime) {
     }
 
     // ALL inverters either errored or timed out
-    // if ((dtiErrors[MOTOR_FL] || dtiTimeouts[MOTOR_FL]) &&
-    //     (dtiErrors[MOTOR_FR] || dtiTimeouts[MOTOR_FR]) &&
-    //     (dtiErrors[MOTOR_RL] || dtiTimeouts[MOTOR_RL]) &&
-    //     (dtiErrors[MOTOR_RR] || dtiTimeouts[MOTOR_RR])) {
+    if ((dtiErrors[MOTOR_FL] || dtiTimeouts[MOTOR_FL]) &&
+        (dtiErrors[MOTOR_FR] || dtiTimeouts[MOTOR_FR]) &&
+        (dtiErrors[MOTOR_RL] || dtiTimeouts[MOTOR_RL]) &&
+        (dtiErrors[MOTOR_RR] || dtiTimeouts[MOTOR_RR])) {
 
-    //     *errors |= CMR_CAN_ERROR_CDC_AMK_ALL;
-    // }
+        *errors |= CMR_CAN_ERROR_CDC_DTI_ALL;
+    }
 
     prevStateVSM = heartbeatVSM->state;
 }
@@ -149,22 +149,22 @@ static void updateWarnings(cmr_canWarn_t *warnings, TickType_t lastWakeTime) {
     }
 
     // Individual inverter errors
-    // if (amkErrors[MOTOR_FL]) {
-    //     *warnings |= CMR_CAN_WARN_CDC_AMK_ERROR;
-    //     *warnings |= CMR_CAN_WARN_CDC_AMK_FL;
-    // }
-    // if (amkErrors[MOTOR_FR]) {
-    //     *warnings |= CMR_CAN_WARN_CDC_AMK_ERROR;
-    //     *warnings |= CMR_CAN_WARN_CDC_AMK_FR;
-    // }
-    // if (amkErrors[MOTOR_RL]) {
-    //     *warnings |= CMR_CAN_WARN_CDC_AMK_ERROR;
-    //     *warnings |= CMR_CAN_WARN_CDC_AMK_RL;
-    // }
-    // if (amkErrors[MOTOR_RR]) {
-    //     *warnings |= CMR_CAN_WARN_CDC_AMK_ERROR;
-    //     *warnings |= CMR_CAN_WARN_CDC_AMK_RR;
-    // }
+    if (dtiErrors[MOTOR_FL]) {
+        *warnings |= CMR_CAN_WARN_CDC_DTI_ERROR;
+        *warnings |= CMR_CAN_WARN_CDC_DTI_FL;
+    }
+    if (dtiErrors[MOTOR_FR]) {
+        *warnings |= CMR_CAN_WARN_CDC_DTI_ERROR;
+        *warnings |= CMR_CAN_WARN_CDC_DTI_FR;
+    }
+    if (dtiErrors[MOTOR_RL]) {
+        *warnings |= CMR_CAN_WARN_CDC_DTI_ERROR;
+        *warnings |= CMR_CAN_WARN_CDC_DTI_RL;
+    }
+    if (dtiErrors[MOTOR_RR]) {
+        *warnings |= CMR_CAN_WARN_CDC_DTI_ERROR;
+        *warnings |= CMR_CAN_WARN_CDC_DTI_RR;
+    }
 }
 
 /**
@@ -268,10 +268,10 @@ static void updateDTITimeouts(TickType_t lastWakeTime) {
  * @return None.
  */
 static void updateDTIErrors(void) {
-    volatile cmr_canDTI_TX_TempFault_t *dtiTempFaultFL = canTractiveGetPayload(CMR_CANID_DTI_FL_TEMPFAULT);
-    volatile cmr_canDTI_TX_TempFault_t *dtiTempFaultFR = canTractiveGetPayload(CMR_CANID_DTI_FR_TEMPFAULT);
-    volatile cmr_canDTI_TX_TempFault_t *dtiTempFaultRL = canTractiveGetPayload(CMR_CANID_DTI_RL_TEMPFAULT);
-    volatile cmr_canDTI_TX_TempFault_t *dtiTempFaultRR = canTractiveGetPayload(CMR_CANID_DTI_RR_TEMPFAULT);
+    volatile cmr_canDTI_TX_TempFault_t *dtiTempFaultFL = canTractiveGetPayload(CANRX_TRAC_FL_TEMPFAULT);
+    volatile cmr_canDTI_TX_TempFault_t *dtiTempFaultFR = canTractiveGetPayload(CANRX_TRAC_FR_TEMPFAULT);
+    volatile cmr_canDTI_TX_TempFault_t *dtiTempFaultRL = canTractiveGetPayload(CANRX_TRAC_RL_TEMPFAULT);
+    volatile cmr_canDTI_TX_TempFault_t *dtiTempFaultRR = canTractiveGetPayload(CANRX_TRAC_RR_TEMPFAULT);
 
     // Clear error statuses
     for (size_t i = 0; i < MOTOR_LEN; i++) {

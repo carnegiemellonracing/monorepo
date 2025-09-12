@@ -24,7 +24,7 @@ typedef struct {
     float min_torque;
 } cmr_torque_limit_t;
 
-/* Global Variable to */ 
+/* Global Variable to Initiate/Disable Torque Mode*/ 
 extern bool isTorqueMode = false;
 
 // ------------------------------------------------------------------------------------------------
