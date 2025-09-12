@@ -71,7 +71,7 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 255,
     },
-    [YRC_PERS] = {
+    [YRC_PERS_INDEX] = {
         .name = "YRC Persist Bias",
         .ESE_background_color_variable = ESE_YRC_PERS_BOX,
         .ESE_value_color_variable = ESE_YRC_PERS_COLOR,
