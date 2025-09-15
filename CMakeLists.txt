@@ -8,6 +8,20 @@ project(25e)
 # Needed for ExternalProject_Add
 include(ExternalProject)
 
+set(SCRIPTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/stm32f413-drivers/filegen")
+
+add_custom_target(run_codegen_scripts ALL
+    COMMAND python "${SCRIPTS_DIR}/canid_mapper.py" > nul
+    COMMAND python "${SCRIPTS_DIR}/extra_info.py" > nul
+    COMMAND python "${SCRIPTS_DIR}/sym_gen.py" > nul
+    COMMAND python "${SCRIPTS_DIR}/enum_generator.py" > nul
+    COMMAND python "${SCRIPTS_DIR}/merge_can_signals.py" > nul
+    
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Running code generation scripts..."
+    VERBATIM
+)
+
 ExternalProject_Add(
     HVC
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/HVC
