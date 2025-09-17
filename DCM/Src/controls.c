@@ -1735,3 +1735,30 @@ void setEnduranceTestTorque(
         setVelocityInt16All(0);
     }
 }
+
+float calculatePersistentYRCmreq(float left_right_bias) {
+    int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
+    float bias_margin = 2.0f; // tbd
+
+    float velocity_x_mps = movella_state.velocity.x;
+
+    float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
+    float actual_yaw_rate_radps_sae = movella_state.gyro.z;
+    float optimal_yaw_rate_radps = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
+
+    // Calculate scaling factor
+    float persistent_bias_factor;
+    float percent_difference = (actual_yaw_rate_radps_sae - optimal_yaw_rate_radps) / (actual_yaw_rate_radps_sae);
+    if (abs(percent_difference) >= bias_margin || percent_difference > 0) {
+        persistent_bias_factor = 0;
+    }
+    else if (percent_difference <= 0) {
+        persistent_bias_factor = (bias_margin + percent_difference) / bias_margin; // keeps ratio between 0-1
+    }
+
+    // Calculate total moment
+    float kp_mreq = yrc_kp * (actual_yaw_rate_radps_sae - optimal_yaw_rate_radps);
+    float persistent_bias_mreq = left_right_bias * persistent_bias_factor * actual_yaw_rate_radps_sae;
+
+    return kp_mreq + persistent_bias_mreq;
+}
