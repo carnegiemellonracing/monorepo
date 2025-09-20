@@ -189,27 +189,7 @@ static void motorsCommand (
         //transmit Coulombs using HVI sense
         integrateCurrent();
 
-//        uint32_t torqueRequestedL = adcToUInt8(MCP3202_read(0), LEFT_MIN, LEFT_MAX);
-//        uint32_t torqueRequestedR = adcToUInt8(MCP3202_read(1), RIGHT_MIN, RIGHT_MAX);
-//
-//        if(sampleTPOSDiff(torqueRequestedL, torqueRequestedR)) {
-//        	throttle = 0;
-//        }
-//        else {
-//        	throttle = (torqueRequestedL + torqueRequestedR)/2;
-//        }
 
-//        uint32_t pedal_messages[2] = {
-//			torqueRequestedL,
-//			torqueRequestedR
-//        };
-//        canTX(
-//			CMR_CAN_BUS_VEH,
-//			0x715,
-//			(void *) pedal_messages,
-//			8,
-//			5
-//		);
 //         update DRS mode
         drsMode = reqDIM->requestedDrsMode;
 
@@ -243,12 +223,6 @@ static void motorsCommand (
 						motorSetpoints[i].torqueLimNeg_dpcnt = 0;
 					}
 				}
-
-//                for (size_t i = 0; i < MOTOR_LEN; i++) {
-//                    motorSetpoints[i].velocity_rpm = 300;
-//                    motorSetpoints[i].torqueLimPos_dpcnt = 40;
-//                    motorSetpoints[i].torqueLimNeg_dpcnt = -40;
-//                }
 
                 uint32_t au32_initial_ticks = DWT->CYCCNT;
 
@@ -308,6 +282,7 @@ static void motorsCommand (
 
             // Also reset errors in GLV_ON
             case CMR_CAN_GLV_ON: {
+                pumpsOn();
             	mcCtrlOff();
 
                 if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
@@ -315,7 +290,7 @@ static void motorsCommand (
                 } else
 
             	// fansOff();
-            	pumpsOff();
+            	//pumpsOff();
 
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = CMR_CAN_AMK_CTRL_ERR_RESET;
@@ -333,7 +308,7 @@ static void motorsCommand (
                 pumpsOn();
                 pumpsOff();
                 mcCtrlOff();
-                set_optimal_control_with_regen(128, 10000, 10000);
+                //set_optimal_control(128, 10000, 10000, false);
 
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = 0;
@@ -442,39 +417,24 @@ void setTorqueLimsAllProtected (
     float torqueLimPos_Nm,
     float torqueLimNeg_Nm
 ) {
-    setTorqueLimsAllDistProtected(torqueLimPos_Nm, torqueLimNeg_Nm, NULL, NULL);
-}
+    // TODO: REWRITE MAYBE WITHOUT DIST
+    // rewritten, check builds
+    const cmr_torqueDistributionNm_t pos = {
+        .fl = torqueLimPos_Nm,
+        .fr = torqueLimPos_Nm,
+        .rl = torqueLimPos_Nm,
+        .rr = torqueLimPos_Nm
+    };
+    const cmr_torqueDistributionNm_t neg = {
+        .fl = torqueLimNeg_Nm,
+        .fr = torqueLimNeg_Nm,
+        .rl = torqueLimNeg_Nm,
+        .rr = torqueLimNeg_Nm
+    };
 
-/**
- * @brief Sets both positive and negative torque limits for all motors with over/undervolt protection.
- * @deprecated Please use setTorqueLimsProtected instead if possible
- * @note This is a wrapper of setTorqueLimsProtected
- *
- * @param torqueLimPos_Nm Max torque: upper-bounds the torque SF sends to the motors. MUST BE NON-NEGATIVE!
- * @param torqueLimNeg_Nm Min torque: lower-bounds the torque SF sends to the motors. MUST BE NON-POSITIVE!
- * @note The SF may decide to send any torque within the limits specified by torqueLimPos_Nm and torqueLimNeg_Nm.
- * @param distPos Coefficients that are multiplied onto torqueLimPos_Nm for each motor. NULL is treated as an even distribution. MUST BE NON-NEGATIVE!
- * @param distNeg Coefficients that are multiplied onto torqueLimNeg_Nm for each motor. NULL is treated as an even distribution. MUST BE NON-NEGATIVE!
- */
-void setTorqueLimsAllDistProtected (
-    float torqueLimPos_Nm,
-    float torqueLimNeg_Nm,
-    const cmr_loadDistribution_t *distPos,
-    const cmr_loadDistribution_t *distNeg
-) {
-    const cmr_torqueDistributionNm_t torquesPos_Nm = {
-        .fl = getLoadByIndex(distPos, MOTOR_FL) * torqueLimPos_Nm,
-        .fr = getLoadByIndex(distPos, MOTOR_FR) * torqueLimPos_Nm,
-        .rl = getLoadByIndex(distPos, MOTOR_RL) * torqueLimPos_Nm,
-        .rr = getLoadByIndex(distPos, MOTOR_RR) * torqueLimPos_Nm
-    };
-    const cmr_torqueDistributionNm_t torquesNeg_Nm = {
-        .fl = getLoadByIndex(distNeg, MOTOR_FL) * torqueLimNeg_Nm,
-        .fr = getLoadByIndex(distNeg, MOTOR_FR) * torqueLimNeg_Nm,
-        .rl = getLoadByIndex(distNeg, MOTOR_RL) * torqueLimNeg_Nm,
-        .rr = getLoadByIndex(distNeg, MOTOR_RR) * torqueLimNeg_Nm
-    };
-    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
+    setTorqueLimsProtected(&pos, &neg);
+
+    //setTorqueLimsAllDistProtected(torqueLimPos_Nm, torqueLimNeg_Nm, NULL, NULL);
 }
 
 /**
@@ -537,6 +497,7 @@ void setVelocityFloat (
     motorLocation_t motor,
     float velocity_rpm
 ) {
+    // this is rounding down - but make it explicit cast
     velocity_rpm = fminf(velocity_rpm, (float)INT16_MAX);
     velocity_rpm = fmaxf(velocity_rpm, (float)INT16_MIN);
     setVelocityInt16(motor, (int16_t)velocity_rpm);
@@ -568,15 +529,6 @@ void setVelocityFloatAll (
     for (size_t motor = 0; motor < MOTOR_LEN; motor++) {
         setVelocityFloat(motor, velocity_rpm);
     }
-}
-
-/**
- * @brief Calculate the torque budget for power-aware traction and yaw rate control.
- *
- * @return The torque upper- and lower-limits for a motor, which applies to every motor.
- */
-cmr_torque_limit_t getTorqueBudget() {
-	return getPreemptiveTorqueLimits();
 }
 
 /**

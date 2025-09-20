@@ -97,19 +97,6 @@ typedef enum {
     CMR_CAN_BUS_NUM,            /**< @brief Number of busses in use */
 } cmr_canBusID_t;
 
-typedef enum {
-    CANRX_HEARTBEAT_VSM = 0,    /**< @brief VSM heartbeat. */
-    CANRX_VSM_SENSORS,          /**< @brief VSM sensors. */
-    CANRX_FSM_DATA,             /**< @brief FSM data. */
-    CANRX_FSM_SWANGLE,
-    CANRX_HVC_MINMAX_TEMPS,     /**< @brief HVC min/max cell temps. */
-    CANRX_INV1_STATUS,          /**< @brief Inverter 1 temp. */
-    CANRX_INV2_STATUS,          /**< @brief Inverter 2 temp. */
-    CANRX_INV3_STATUS,          /**< @brief Inverter 3 temp. */
-    CANRX_INV4_STATUS,          /**< @brief Inverter 4 temp. */
-    CANRX_LEN     /**< @brief Number of periodic CAN messages. */
-} canRX_t;
-
 /** @brief Number of bits in a CAN ID. */
 #define CAN_ID_BITS 11
 
@@ -142,7 +129,6 @@ volatile void *canDAQGetPayload(canDaqRX_t msg);
 cmr_canRXMeta_t *canVehicleGetMeta(canVehicleRX_t msg);
 cmr_canRXMeta_t *canTractiveGetMeta(canTractiveRX_t msg);
 cmr_canRXMeta_t *canDAQGetMeta(canDaqRX_t msg);
-void *canGetPayload(canRX_t rxMsg);
 
 float canEmdHvVoltage();
 float canEmdHvCurrent();

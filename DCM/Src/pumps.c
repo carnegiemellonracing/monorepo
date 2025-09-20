@@ -55,6 +55,11 @@ void pumpsOff();
  */
 
 void pumpsOn() {
+
+    cmr_gpioWrite(GPIO_PUMP_LEFT, 1);
+    cmr_gpioWrite(GPIO_PUMP_RIGHT, 1);
+    return;
+
     //int accum_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_1) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_2)) / 2;
     // Below: revision - using CAN to get data from HVC
     //Next line's citation: from what nsaizan wrote in this file above

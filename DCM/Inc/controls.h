@@ -24,7 +24,7 @@
 // ------------------------------------------------------------------------------------------------
 // Gear functions forward declarations
 
-void setSlowTorque(uint8_t throttlePos_u8, int32_t swAngle_millideg);
+void setSlowTorque(uint8_t throttlePos_u8);
 void setFastTorque(uint8_t throttlePos_u8);
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 void setTractionControl(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t swAngle_millideg, float leftRightBias_Nm,
@@ -37,6 +37,13 @@ void setYawRateControl (
 );
 void setYawRateAndTractionControl(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t swAngle_millideg,
     bool assumeNoTurn, bool ignoreYawRate, bool allowRegen, float critical_speed_mps);
+void setLaunchControl(
+    uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8,
+    int32_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
+    float leftRightBias_Nm, /** IGNORED UNLESS traction_control_mode (defined in
+                               the function) is TC_MODE_TORQUE */
+    bool assumeNoTurn, bool ignoreYawRate, bool allowRegen,
+    float critical_speed_mps);
 void setCruiseControlTorque(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM);
 void setEnduranceTorque(int32_t avgMotorSpeed_RPM, uint8_t throttlePos_u8, uint8_t brakePos_u8, int32_t swAngle_millideg,
     int32_t battVoltage_mV, int32_t battCurrent_mA, uint16_t brakePressurePsi_u8);
@@ -61,11 +68,7 @@ void runControls(cmr_canGear_t gear, uint8_t throttlePos_u8, uint8_t brakePos_u8
 void setControlsStatus(cmr_canGear_t gear);
 const volatile cmr_canCDCControlsStatus_t *getControlsStatus();
 void setFastTorqueWithParallelRegen(uint16_t brakePressurePsi_u8, uint8_t throttlePos_u8);
-void set_optimal_control_with_regen(
-	int throttlePos_u8,
-	int32_t swAngle_millideg_FL,
-	int32_t swAngle_millideg_FR
-);
+void set_optimal_control(float normalized_throttle, int32_t swAngle_millideg_FL, int32_t swAngle_millideg_FR, bool allow_regen);
 
 // ------------------------------------------------------------------------------------------------
 // Global variables

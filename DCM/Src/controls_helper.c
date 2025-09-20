@@ -2,6 +2,9 @@
 
 #include "controls_helper.h"
 #include "lut_3d.h"
+#include "../optimizer/optimizer.h"
+#include "controls.h"
+#include "lut.h"
 #include "safety_filter.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -65,7 +68,7 @@ float getPackCurrent() {
 //    volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
 //    return ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
 	volatile cmr_canHVIHeartbeat_t *HVISense = canVehicleGetPayload(CANRX_HVI_SENSE);
-	return (((float)(HVISense->packCurrent_dA)) * 1e-1f) + 1.25; // convert to amps
+	return (((float)(HVISense->packCurrent_dA)) * 1e-1f); // convert to amps
 }
 
 /** @brief returns the pack power measured by HVISense */
@@ -96,83 +99,138 @@ float swAngleMillidegToSteeringAngleRad(int32_t swAngle_millideg) {
     return  steering_angle_rad; // convert to rads
 }
 
+
+// MOTOR SPEED AND TORQUE CONDENSED
+void set_torque_field(cmr_torqueDistributionNm_t *torques, motorLocation_t motor, float value) {
+    switch (motor) {
+        case MOTOR_FL: torques->fl = value; break;
+        case MOTOR_FR: torques->fr = value; break;
+        case MOTOR_RL: torques->rl = value; break;
+        case MOTOR_RR: torques->rr = value; break;
+        default: assert(false); break;
+    }
+}
+
+void set_motor_speed_and_torque(
+    motorLocation_t motor, float val,
+    cmr_torqueDistributionNm_t *torquesPos_Nm,
+    cmr_torqueDistributionNm_t *torquesNeg_Nm) {
+
+    if (val > 0.0f) {
+        set_torque_field(torquesPos_Nm, motor, val);
+        set_torque_field(torquesNeg_Nm, motor, 0.0f);
+        setVelocityInt16(motor, maxFastSpeed_rpm);
+    } else {
+        set_torque_field(torquesPos_Nm, motor, 0.0f);
+        set_torque_field(torquesNeg_Nm, motor, val);
+        setVelocityInt16(motor, 0);
+    }
+}
+
+
+
+// NEEDED FOR DOWNFORCE
+float get_load_cell_angle_rad(canDaqRX_t loadIndex) {
+    switch (loadIndex) {
+        case CANRX_DAQ_LOAD_FL:
+        case CANRX_DAQ_LOAD_FR:
+            return DAQ_PUSHROD_ANGLE_FR / 180.0f * PI;
+        case CANRX_DAQ_LOAD_RL:
+        case CANRX_DAQ_LOAD_RR:
+            return DAQ_PUSHROD_ANGLE_RR / 180.0f * PI;
+        default:
+            return 0.0f;
+    }
+}
+
 /**
- * @brief Determine whether or not the SBG sensor's velocity readings could be trusted
- *
- * @param ignore_valid_bit Whether or not to ignore the sensor's reported validity of its velocity readings
+ * @brief Return downforce given motor location
  */
-bool canTrustSBGVelocity(bool ignore_valid_bit) {
-    const volatile cmr_canSBGStatus3_t *sbg_status = canDAQGetPayload(CANRX_DAQ_SBG_STATUS_3);
-    const uint32_t sbg_soln_status = sbg_status->solution_status;
-    const uint32_t sbg_vel_valid = sbg_soln_status & CMR_CAN_SBG_SOL_VELOCITY_VALID;
-    const bool sbg_timeout = cmr_canRXMetaTimeoutError(&canDaqRXMeta[CANRX_DAQ_SBG_STATUS_3], xTaskGetTickCount()) != 0;
-
-    return true;//!sbg_timeout && (sbg_vel_valid || ignore_valid_bit);
-}
-
-// REGEN SEGMENT
-
-// returns if regen was activated. Updates throttlePos_u8 in paddle regen
-bool setRegen(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM){
-    // get the regen type
-    uint8_t pedal_regen_strength = 0;
-    //bool retval1 = getProcessedValue(&pedal_regen_strength, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
-
-    uint8_t paddle_regen_strength = 100;//0;
-    //bool retval2 = getProcessedValue(&paddle_regen_strength, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
-//
-//    if (!retval1 || !retval2) {
-//        return false;
-//    }
-
-    uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
-
-    if (pedal_regen_strength > 0 && brakePressurePsi_u8 >= brake_pressure_start) {
-        return setParallelRegen(*throttlePos_u8, brakePressurePsi_u8, avgMotorSpeed_RPM);
-    } else if (paddle_regen_strength > 0 && paddle_pressure >= paddle_pressure_start) {
-        return setPaddleRegen(throttlePos_u8, brakePressurePsi_u8, avgMotorSpeed_RPM, paddle_pressure, paddle_regen_strength);
+float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
+    float downforce_N;
+    bool not_timeout = cmr_canRXMetaTimeoutWarn(&canDaqRXMeta[loadIndex],
+                                                xTaskGetTickCount()) == 0;
+    if (use_true_downforce && not_timeout) {
+        volatile cmr_canIZZELoadCell_t *downforcePayload =
+            (volatile cmr_canIZZELoadCell_t *)canDAQGetPayload(loadIndex);
+        float angle = get_load_cell_angle_rad(loadIndex);
+        volatile int16_t raw = parse_int16(&downforcePayload->force_output_N);
+        downforce_N = (float)raw * 0.1f * sinf(angle);
+    } else {
+        downforce_N = (float) car_mass_kg * G * 0.25f;
+        // downforce car mass * g * 1/4 every motor
     }
-    return false;
+    return downforce_N;
 }
 
-/**
- * @brief returns a negative torque limit in Nm after paddle regen request,
- *        or changes value of requested throttle
-*/
-float getRegenTorqueReq(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8){
-    // get the regen type
-    uint8_t pedal_regen_strength = 0;
-    bool retval1 = getProcessedValue(&pedal_regen_strength, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
+// OPTIMAL CONTROL HELPERS
+void get_tractive_capabilities(float *cap_fl, float *cap_fr, float *cap_rl, float *cap_rr, bool use_true_downforce) {
+    
+    const float corner_weight_Nm = 80.0f;
+    *cap_fl = lut_get_max_Fx_kappa(0.0f, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
+    *cap_fr = lut_get_max_Fx_kappa(0.0f, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
+    *cap_rl = lut_get_max_Fx_kappa(0.0f, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
+    *cap_rr = lut_get_max_Fx_kappa(0.0f, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
+}
 
-    uint8_t paddle_regen_strength = 100;//0;
-    //bool retval2 = getProcessedValue(&paddle_regen_strength, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
+// converting force to torque linearly ignoring rolling resistance + inefficiencies
+void compute_torque_limits(float cap_fl, float cap_fr, float cap_rl, float cap_rr,
+    float *lim_fl, float *lim_fr, float *lim_rl, float *lim_rr) {
 
-//    if (!retval1 || !retval2) {
-//        return 0.0f;
-//    }
+        const float r = effective_wheel_rad_m;
+        const float g = gear_ratio;
+        static const float motor_resistance = 0.5f;
+        
+        *lim_fl = fminf(cap_fl * r / g + motor_resistance, maxTorque_continuous_stall_Nm);
+        *lim_fr = fminf(cap_fr * r / g + motor_resistance, maxTorque_continuous_stall_Nm);
+        *lim_rl = fminf(cap_rl * r / g + motor_resistance, maxTorque_continuous_stall_Nm);
+        *lim_rr = fminf(cap_rr * r / g + motor_resistance, maxTorque_continuous_stall_Nm);
+}
 
-    uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->paddle;
+// preparing optimizer state
+void load_optimizer_state(optimizer_state_t *state, float normalized_throttle, int32_t swAngle_millideg_FL, int32_t swAngle_millideg_FR, float lim_fl, float lim_fr,
+    float lim_rl, float lim_rr, bool allow_regen) {
 
-    if (paddle_regen_strength > 0 && paddle_pressure >= paddle_pressure_start) {
+    int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
 
-        float paddle_request = ((float)(paddle_pressure - paddle_pressure_start)) * (((float) paddle_regen_strength) / (100.0f));
-        float pedal_request = ((float)(*throttlePos_u8)) - paddle_request;
+    float vel_fl = getMotorSpeed_radps(MOTOR_FL);
+    float vel_fr = getMotorSpeed_radps(MOTOR_FR);
+    float vel_rl = getMotorSpeed_radps(MOTOR_RL);
+    float vel_rr = getMotorSpeed_radps(MOTOR_RR);
 
-        if (pedal_request >= 0.0f) {
-            *throttlePos_u8 = (uint8_t) pedal_request;
-            return 0.0;
-        }
+    state->power_limit = getPowerLimit_W();
+    state->omegas[0] = vel_fl;
+    state->omegas[1] = vel_fr;
+    state->omegas[2] = vel_rl;
+    state->omegas[3] = vel_rr;
 
-        // Regen due to paddles
-        *throttlePos_u8 = 0;
+    const float resist = 0.5f;
+    const float throttle_accel = maxTorque_continuous_stall_Nm * MOTOR_LEN * gear_ratio / effective_wheel_rad_m / car_mass_kg;
+    state->areq = normalized_throttle * throttle_accel;
 
-        float reqTorque = maxFastTorque_Nm * pedal_request / ((float)(UINT8_MAX));
-        float avgMotorSpeed_RPM = getTotalMotorSpeed_rpm()* 0.25f;
-        float recuperative_limit = getMotorRegenerativeCapacity(avgMotorSpeed_RPM);
-        return fmaxf(reqTorque, recuperative_limit);
+    float mreq = -getYawRateControlLeftRightBias(swAngle_millideg);
+    state->mreq = mreq;
+    state->theta_left = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
+    state->theta_right = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
+
+    float regen[4];
+    for (int i = 0; i < 4; i++) {
+        regen[i] = getMotorRegenerativeCapacity(getMotorSpeed_rpm(i));
     }
-    return 0.0f;
+
+    for (int i = 0; i < 4; i++) {
+        float torque_limit = (&lim_fl)[i];
+        float regen_limit = regen[i];
+
+        float lower = allow_regen ? fmaxf(-torque_limit + resist, regen_limit) : 0.0f;
+
+        state->variable_profile[i].lower = lower;
+        state->variable_profile[i].upper = torque_limit;
+    }
 }
+
+
+// REGEN CODE FOLLOWS
 
 bool setPaddleRegen(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM, uint8_t paddle_pressure, uint8_t paddle_regen_strength) {
     if (paddle_pressure < paddle_pressure_start) return false;
@@ -221,7 +279,6 @@ bool setParallelRegen(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int3
 
     // DIM requested regen_force_multiplier
     uint8_t regen_force_multiplier_int8 = 80;//0;
-    // ret_val &= getProcessedValue(&regen_force_multiplier_int8, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
 
     // process the max regen force requested:
     float regen_force_multiplier_f = (float)regen_force_multiplier_int8 / 100.0f;
@@ -243,36 +300,13 @@ bool setParallelRegen(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int3
         return false;
     }
 
-    // ******* END DIM CONFIG SETTINGS *********
-
-
-    // get regen limit
-    // what is this recuperative limit shit
-
-    //float recuperative_limit = getMotorRegenerativeCapacity(avgMotorSpeed_RPM);
-    // yes but where is this value coming from???
-
     // this will overflow as brake pressure exceeds max regen pressure, that's why there is a clamp below
 
     // get brake kappa for each motor and then run the following if checks against maxfasttorque and the capping max regen force
-    // task: find deadband
     float regenTorque_FL = getBrakeMaxTorque_mNm(MOTOR_FL, brakePressurePsi_u8) * 0.001;
     float regenTorque_FR = getBrakeMaxTorque_mNm(MOTOR_FR, brakePressurePsi_u8) * 0.001;
     float regenTorque_RL = getBrakeMaxTorque_mNm(MOTOR_RL, brakePressurePsi_u8) * 0.001;
     float regenTorque_RR = getBrakeMaxTorque_mNm(MOTOR_RR, brakePressurePsi_u8) * 0.001;
-
-    // debugging code
-    float debug = test();
-    float debug_local = test_local();
-    float temp = getKappaByFx(MOTOR_FL, throttlePos_u8, 300.0f, true);
-
-    // clamp torque to the scaled maximum
-
-    // clamp to maintain within recuperative limit
-    // regenTorque_FL = fminf(regenTorque_FL, -recuperative_limit);
-    // regenTorque_FR = fminf(regenTorque_FR, -recuperative_limit);
-    // regenTorque_RL = fminf(regenTorque_RL, -recuperative_limit);
-    // regenTorque_RR = fminf(regenTorque_RR, -recuperative_limit);
 
     cmr_torqueDistributionNm_t neg_torques = {
         .fl = regenTorque_FL,
@@ -280,13 +314,8 @@ bool setParallelRegen(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int3
         .rl = regenTorque_RL,
         .rr = regenTorque_RR,
     };
-
-    // send torques!!
     setTorqueLimsProtected(NULL, &neg_torques);
-
-    // stop goin
     setVelocityInt16All(0);
-
 
     return true;
 }
