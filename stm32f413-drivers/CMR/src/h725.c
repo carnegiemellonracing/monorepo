@@ -500,7 +500,7 @@ ADC_ChannelConfTypeDef _platform_adcChannelConfig(const cmr_adcChannel_t *channe
         .Rank = rank,  // HAL needs Rank to be from 1 to 16
         .SamplingTime = channel->samplingTime,
         .Offset = 0,     // reserved, set to 0
-        .SingleDiff = ADC_SINGLE_ENDED,
+        .SingleDiff = channel->differential ? ADC_DIFFERENTIAL_ENDED : ADC_SINGLE_ENDED,
         .OffsetNumber = ADC_OFFSET_NONE
     };
 
