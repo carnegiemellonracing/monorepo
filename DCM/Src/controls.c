@@ -35,6 +35,7 @@
 /** @brief Yaw rate control kp */
 volatile cmr_can_controls_pid_debug_t yrcDebug;
 static float yrc_kp;
+static float yrc_pers;
 
 /** @brief CAN data for traction control */
 volatile cmr_can_front_slip_ratio_data_t frontSlipRatios;
@@ -92,17 +93,19 @@ static void initYawRateControl() {
     // read yrc_kp from DIM
     yrc_kp = 1.0f;
     getProcessedValue(&yrc_kp, YRC_KP_INDEX, float_1_decimal);
-
-    yrc_kp = yrc_kp*100.0f;
+    yrc_pers = 1.0f;
+    getProcessedValue(&yrc_pers, YRC_PERS_INDEX, float_1_decimal);
+    // we should be multiplying
+    yrc_pers = yrc_pers * 100.0f;
+    yrc_kp = yrc_kp * 100.0f;
     // yrc_kp = 200;
-    //yrcDebug = getPidDebug();
+    // yrcDebug = getPidDebug();
     yrcDebug.controls_pid = yrc_kp;
     // set yrc_ki to 0 because we don't aim to eliminate steady-state error
-    //REMOVE const float yrc_ki = 0.0f;
-
-    // disable derivate separation because no significant derivative kick was observed
-    // steering angle and the car's yaw seem to have similar timescales
-    //REMOVE const bool enable_derivative_separation = false;
+    // REMOVE const float yrc_ki = 0.0f;
+    // disable derivate separation because no significant derivative kick was
+    // observed steering angle and the car's yaw seem to have similar timescales
+    // REMOVE const bool enable_derivative_separation = false;
 }
 
 static void load_solver_settings() {
@@ -1397,31 +1400,53 @@ float get_optimal_yaw_rate(float swangle_rad, float velocity_x_mps) {
     return yaw_rate_setpoint_radps;
 }
 
+// code
 /**
- * @brief Calculate the control action (left-right torque bias) of the yaw rate controller
+ * @brief Calculate the control action (left-right torque bias) of the yaw rate
+ * controller
  * @param swAngle_millideg Steering wheel angle
  */
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
-
     float velocity_x_mps;
-    if(movella_state.status.gnss_fix) {
+    if (movella_state.status.gnss_fix) {
         velocity_x_mps = movella_state.velocity.x;
         yrcDebug.controls_bias = 1;
     } else {
-        velocity_x_mps = getTotalMotorSpeed_radps() * 0.25f / gear_ratio * effective_wheel_rad_m;
+        velocity_x_mps = getTotalMotorSpeed_radps() * 0.25f / gear_ratio *
+                         effective_wheel_rad_m;
         yrcDebug.controls_bias = -1;
     }
-    
     const float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
     const float actual_yaw_rate_radps_sae = movella_state.gyro.z;
     const float optimal_yaw_rate_radps = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
-
-    yrcDebug.controls_current_yaw_rate = (int16_t)(1000.0f * actual_yaw_rate_radps_sae);
-    yrcDebug.controls_target_yaw_rate = (int16_t)(1000.0f * optimal_yaw_rate_radps);
+    yrcDebug.controls_current_yaw_rate =
+        (int16_t)(1000.0f * actual_yaw_rate_radps_sae);
+    yrcDebug.controls_target_yaw_rate =
+        (int16_t)(1000.0f * optimal_yaw_rate_radps);
     yrcDebug.controls_pid = yrc_kp;
-    
-    const float left_right_bias = yrc_kp * (optimal_yaw_rate_radps - actual_yaw_rate_radps_sae);
+    const float left_right_bias = yrc_kp * (actual_yaw_rate_radps_sae - optimal_yaw_rate_radps);
     return left_right_bias;
+}
+float calculatePersistentYRCmreq(float left_right_bias, int32_t swAngle_millideg_FL, int32_t swAngle_millideg_FR) {
+    int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
+    float bias_margin = 2.0f; // tbd
+    float velocity_x_mps = movella_state.velocity.x;
+    float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
+    float actual_yaw_rate_radps_sae = movella_state.gyro.z;
+    float optimal_yaw_rate_radps = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
+    // Calculate scaling factor
+    float persistent_bias_factor = yrc_pers;
+    float percent_difference = (actual_yaw_rate_radps_sae - optimal_yaw_rate_radps) / (actual_yaw_rate_radps_sae);
+    if (abs(percent_difference) >= bias_margin || percent_difference > 0) {
+        persistent_bias_factor = 0;
+    }
+    else if (percent_difference <= 0) {
+        persistent_bias_factor = (bias_margin + percent_difference) / bias_margin; // keeps ratio between 0-1
+    }
+    // Calculate total moment
+    float kp_mreq = yrc_kp * (actual_yaw_rate_radps_sae - optimal_yaw_rate_radps);
+    float persistent_bias_mreq = left_right_bias * persistent_bias_factor * actual_yaw_rate_radps_sae;
+    return kp_mreq + persistent_bias_mreq;
 }
 
 
