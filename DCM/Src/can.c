@@ -229,7 +229,7 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_AMK_RR | CMR_CAN_WARN_CDC_AMK_TIMEOUT
     }
-};
+}; 
 
 cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
     [CANRX_DAQ_MOVELLA_STATUS] = {
@@ -239,6 +239,11 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
     },
     [CANRX_DAQ_MOVELLA_QUATERNION] = {
         .canID = CMR_CANID_MOVELLA_QUATERNION,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_MOVELLA_IMU_EULER_ANGLES] = {
+        .canID = CMR_CANID_MOVELLA_EULER_ANGLES,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
