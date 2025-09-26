@@ -16,7 +16,6 @@
 #include "constants.h"
 #include "controls.h"
 #include "motors.h"
-#include "lut_3d.h"
 #include "safety_filter.h"
 #include "CMR/can_types.h"
 #include "../optimizer/optimizer.h"
@@ -1166,228 +1165,228 @@ void setLaunchControl(
  *                           If this value is too low, the vehicle might not respont to throttle when stationary.
  *                           If this value is too high, there might be excessive wheelspin.
  */
-void setTractionControl (
-    uint8_t throttlePos_u8,
-    uint16_t brakePressurePsi_u8,
-    int32_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
-    float leftRightBias_Nm, /** IGNORED UNLESS traction_control_mode (defined in the function) is TC_MODE_TORQUE */
-    bool assumeNoTurn,
-    bool ignoreYawRate,
-    bool allowRegen,
-    float critical_speed_mps
-) {
-    // ********* Local Parameters *********
+// void setTractionControl (
+//     uint8_t throttlePos_u8,
+//     uint16_t brakePressurePsi_u8,
+//     int32_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
+//     float leftRightBias_Nm, /** IGNORED UNLESS traction_control_mode (defined in the function) is TC_MODE_TORQUE */
+//     bool assumeNoTurn,
+//     bool ignoreYawRate,
+//     bool allowRegen,
+//     float critical_speed_mps
+// ) {
+//     // ********* Local Parameters *********
 
-    typedef enum {
-        TC_MODE_TORQUE,          /** @brief Map throttle and left-right bias to motor torque, APPLIES leftRightBias_Nm */
-        TC_MODE_FX_GLOBAL_MAX,   /** @brief Map max throttle to the global max Fx in the LUT, IGNORES leftRightBias_Nm  */
-        TC_MODE_FX_LOCAL_MAX     /** @brief Map max throttle to the max Fx available at the current state, IGNORES leftRightBias_Nm  */
-    } traction_control_mode_t;
-    static const traction_control_mode_t traction_control_mode = TC_MODE_TORQUE;
+//     typedef enum {
+//         TC_MODE_TORQUE,          /** @brief Map throttle and left-right bias to motor torque, APPLIES leftRightBias_Nm */
+//         TC_MODE_FX_GLOBAL_MAX,   /** @brief Map max throttle to the global max Fx in the LUT, IGNORES leftRightBias_Nm  */
+//         TC_MODE_FX_LOCAL_MAX     /** @brief Map max throttle to the max Fx available at the current state, IGNORES leftRightBias_Nm  */
+//     } traction_control_mode_t;
+//     static const traction_control_mode_t traction_control_mode = TC_MODE_TORQUE;
 
-    /** @brief Trust SBG velocities even if SBG reports that they're invalid
-     *  @warning If set to false, TC will fall back to Fast Mode when SBG velocities are invalid
-     *  @note We might want to set this to false for comp but true for testing and data collection
-     */
-    static const bool trust_sbg_vels_when_invalid = true;
+//     /** @brief Trust SBG velocities even if SBG reports that they're invalid
+//      *  @warning If set to false, TC will fall back to Fast Mode when SBG velocities are invalid
+//      *  @note We might want to set this to false for comp but true for testing and data collection
+//      */
+//     static const bool trust_sbg_vels_when_invalid = true;
 
-    /** @brief Ease in torque based on throttle position, ignored if traction_control_mode is TC_MODE_TORQUE */
-    static const bool ease_in_torque = false;
+//     /** @brief Ease in torque based on throttle position, ignored if traction_control_mode is TC_MODE_TORQUE */
+//     static const bool ease_in_torque = false;
 
-    /** @brief Torque saturation point, IGNORED if ease_in_torque is false or traction_control_mode is TC_MODE_TORQUE
-     *  @note For example, 0.25 will raise the torque limit to max when throttle is more than 25%
-     */
-    static const float ease_in_torque_saturation_point = 0.25f;
+//     /** @brief Torque saturation point, IGNORED if ease_in_torque is false or traction_control_mode is TC_MODE_TORQUE
+//      *  @note For example, 0.25 will raise the torque limit to max when throttle is more than 25%
+//      */
+//     static const float ease_in_torque_saturation_point = 0.25f;
 
-    /** @brief The speed threshold above which the launch button is ignored
-     *  @note Compared against wheelspeed, so this behavior doesn't depend on SBG data
-     */
-    static const float launch_control_speed_threshold_mps = 0.05f;
+//     /** @brief The speed threshold above which the launch button is ignored
+//      *  @note Compared against wheelspeed, so this behavior doesn't depend on SBG data
+//      */
+//     static const float launch_control_speed_threshold_mps = 0.05f;
 
-    // ********* Steering Angle *********
+//     // ********* Steering Angle *********
 
-    if (assumeNoTurn) {
-        swAngle_millideg = 0;
-    }
-    const float steering_angle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
+//     if (assumeNoTurn) {
+//         swAngle_millideg = 0;
+//     }
+//     const float steering_angle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
 
-    // ********* SBG Data: Vehicle Velocity and Yaw Rate *********
+//     // ********* SBG Data: Vehicle Velocity and Yaw Rate *********
 
-    const volatile cmr_canSBGBodyVelocity_t *body_vels = canDAQGetPayload(CANRX_DAQ_SBG_BODY_VEL);
-    const volatile cmr_canSBGIMUGyro_t *body_gyro = canDAQGetPayload(CANRX_DAQ_SBG_IMU_GYRO);
+//     const volatile cmr_canSBGBodyVelocity_t *body_vels = canDAQGetPayload(CANRX_DAQ_SBG_BODY_VEL);
+//     const volatile cmr_canSBGIMUGyro_t *body_gyro = canDAQGetPayload(CANRX_DAQ_SBG_IMU_GYRO);
 
-    if (!canTrustSBGVelocity(trust_sbg_vels_when_invalid)) { // SBG velocity can't be trusted
-        // fall back to fast mode
-        setFastTorque(throttlePos_u8); // set torque and velocity setpoints as if we're in fast mode
+//     if (!canTrustSBGVelocity(trust_sbg_vels_when_invalid)) { // SBG velocity can't be trusted
+//         // fall back to fast mode
+//         setFastTorque(throttlePos_u8); // set torque and velocity setpoints as if we're in fast mode
 
-        // set wheelspeed setpoints to NAN
-        frontWhlSetpoints.omega_FL = NAN;
-        frontWhlSetpoints.omega_FR = NAN;
-        rearWhlSetpoints.omega_RL = NAN;
-        rearWhlSetpoints.omega_RR = NAN;
+//         // set wheelspeed setpoints to NAN
+//         frontWhlSetpoints.omega_FL = NAN;
+//         frontWhlSetpoints.omega_FR = NAN;
+//         rearWhlSetpoints.omega_RL = NAN;
+//         rearWhlSetpoints.omega_RR = NAN;
 
-        // set slip ratio setpoints to NAN
-        frontSlipRatios.slipRatio_FL = NAN;
-        frontSlipRatios.slipRatio_FR = NAN;
-        rearSlipRatios.slipRatio_RL = NAN;
-        rearSlipRatios.slipRatio_RR = NAN;
+//         // set slip ratio setpoints to NAN
+//         frontSlipRatios.slipRatio_FL = NAN;
+//         frontSlipRatios.slipRatio_FR = NAN;
+//         rearSlipRatios.slipRatio_RL = NAN;
+//         rearSlipRatios.slipRatio_RR = NAN;
 
-        return; // skip the rest of TC
-    }
+//         return; // skip the rest of TC
+//     }
 
-    const float forward_velocity_nonnegative_mps = fmax(((float)(body_vels->velocity_forward)) * 1e-2f, 0.0f); // velocity_forward is in (m/s times 100)
-    const float right_velocity_mps = ((float)(body_vels->velocity_right)) * 1e-2f; // velocity_right is in (m/s times 100)
-    const float yaw_rate_radps_sae = ignoreYawRate ? 0.0f : ((float)(body_gyro->gyro_z_rads)) * 1e-3f; // gyro_z_rads is in (rad/s times 1000)
+//     const float forward_velocity_nonnegative_mps = fmax(((float)(body_vels->velocity_forward)) * 1e-2f, 0.0f); // velocity_forward is in (m/s times 100)
+//     const float right_velocity_mps = ((float)(body_vels->velocity_right)) * 1e-2f; // velocity_right is in (m/s times 100)
+//     const float yaw_rate_radps_sae = ignoreYawRate ? 0.0f : ((float)(body_gyro->gyro_z_rads)) * 1e-3f; // gyro_z_rads is in (rad/s times 1000)
 
-    // ********* Wheelspeed and Torque Setpoints *********
+//     // ********* Wheelspeed and Torque Setpoints *********
 
-    // clear wheelspeed setpoints
-    frontWhlSetpoints.omega_FL = 0.0f;
-    frontWhlSetpoints.omega_FR = 0.0f;
-    rearWhlSetpoints.omega_RL = 0.0f;
-    rearWhlSetpoints.omega_RR = 0.0f;
+//     // clear wheelspeed setpoints
+//     frontWhlSetpoints.omega_FL = 0.0f;
+//     frontWhlSetpoints.omega_FR = 0.0f;
+//     rearWhlSetpoints.omega_RL = 0.0f;
+//     rearWhlSetpoints.omega_RR = 0.0f;
 
-    // clear slip ratios setpoints
-    frontSlipRatios.slipRatio_FL = 0.0f;
-    frontSlipRatios.slipRatio_FR = 0.0f;
-    rearSlipRatios.slipRatio_RL = 0.0f;
-    rearSlipRatios.slipRatio_RR = 0.0f;
+//     // clear slip ratios setpoints
+//     frontSlipRatios.slipRatio_FL = 0.0f;
+//     frontSlipRatios.slipRatio_FR = 0.0f;
+//     rearSlipRatios.slipRatio_RL = 0.0f;
+//     rearSlipRatios.slipRatio_RR = 0.0f;
 
-    cmr_torqueDistributionNm_t pos_torques_Nm = {.fl = 0.0f, .fr = 0.0f, .rl = 0.0f, .rr = 0.0f};
-    cmr_torqueDistributionNm_t neg_torques_Nm = {.fl = 0.0f, .fr = 0.0f, .rl = 0.0f, .rr = 0.0f};
+//     cmr_torqueDistributionNm_t pos_torques_Nm = {.fl = 0.0f, .fr = 0.0f, .rl = 0.0f, .rr = 0.0f};
+//     cmr_torqueDistributionNm_t neg_torques_Nm = {.fl = 0.0f, .fr = 0.0f, .rl = 0.0f, .rr = 0.0f};
 
-    // launch control
-    bool inhibit_throttle = false;
-    const float nonnegative_odometer_velocity_mps = motorSpeedToWheelLinearSpeed_mps(getTotalMotorSpeed_radps() * 0.25f);
-    if (nonnegative_odometer_velocity_mps < launch_control_speed_threshold_mps) { // odometer velocity is below the launch control threshold
-        const bool action1_button_pressed = (((volatile cmr_canDIMActions_t *)(canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON)))->buttons) & BUTTON_ACT;
-        inhibit_throttle = action1_button_pressed; // inhibit throttle if action1 is pressed
-    }
+//     // launch control
+//     bool inhibit_throttle = false;
+//     const float nonnegative_odometer_velocity_mps = motorSpeedToWheelLinearSpeed_mps(getTotalMotorSpeed_radps() * 0.25f);
+//     if (nonnegative_odometer_velocity_mps < launch_control_speed_threshold_mps) { // odometer velocity is below the launch control threshold
+//         const bool action1_button_pressed = (((volatile cmr_canDIMActions_t *)(canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON)))->buttons) & BUTTON_ACT;
+//         inhibit_throttle = action1_button_pressed; // inhibit throttle if action1 is pressed
+//     }
 
-    if (brakePressurePsi_u8 < braking_threshold_psi && throttlePos_u8 > 0 && !inhibit_throttle) { // not breaking and throttle is not neutral or inhibited
-        // calculate slip ratio setpoints
-        switch (traction_control_mode) {
-            default: // default to torque-mapped mode if traction_control_mode is not valid
-            case TC_MODE_TORQUE: { // torque-mapped mode, retrieve the local max slip ratio setpoints
-                frontSlipRatios.slipRatio_FL = getMaxKappaCurrentState(MOTOR_FL, assumeNoTurn);
-                frontSlipRatios.slipRatio_FR = getMaxKappaCurrentState(MOTOR_FR, assumeNoTurn);
-                rearSlipRatios.slipRatio_RL = getMaxKappaCurrentState(MOTOR_RL, assumeNoTurn);
-                rearSlipRatios.slipRatio_RR = getMaxKappaCurrentState(MOTOR_RR, assumeNoTurn);
-            } break;
+//     if (brakePressurePsi_u8 < braking_threshold_psi && throttlePos_u8 > 0 && !inhibit_throttle) { // not breaking and throttle is not neutral or inhibited
+//         // calculate slip ratio setpoints
+//         switch (traction_control_mode) {
+//             default: // default to torque-mapped mode if traction_control_mode is not valid
+//             case TC_MODE_TORQUE: { // torque-mapped mode, retrieve the local max slip ratio setpoints
+//                 frontSlipRatios.slipRatio_FL = getMaxKappaCurrentState(MOTOR_FL, assumeNoTurn);
+//                 frontSlipRatios.slipRatio_FR = getMaxKappaCurrentState(MOTOR_FR, assumeNoTurn);
+//                 rearSlipRatios.slipRatio_RL = getMaxKappaCurrentState(MOTOR_RL, assumeNoTurn);
+//                 rearSlipRatios.slipRatio_RR = getMaxKappaCurrentState(MOTOR_RR, assumeNoTurn);
+//             } break;
 
-            case TC_MODE_FX_GLOBAL_MAX: { // maps max throttle to the global max Fx of the LUT
-                frontSlipRatios.slipRatio_FL = getKappaFxGlobalMax(MOTOR_FL, throttlePos_u8, assumeNoTurn).kappa;
-                frontSlipRatios.slipRatio_FR = getKappaFxGlobalMax(MOTOR_FR, throttlePos_u8, assumeNoTurn).kappa;
-                rearSlipRatios.slipRatio_RL = getKappaFxGlobalMax(MOTOR_RL, throttlePos_u8, assumeNoTurn).kappa;
-                rearSlipRatios.slipRatio_RR = getKappaFxGlobalMax(MOTOR_RR, throttlePos_u8, assumeNoTurn).kappa;
-            } break;
+//             case TC_MODE_FX_GLOBAL_MAX: { // maps max throttle to the global max Fx of the LUT
+//                 frontSlipRatios.slipRatio_FL = getKappaFxGlobalMax(MOTOR_FL, throttlePos_u8, assumeNoTurn).kappa;
+//                 frontSlipRatios.slipRatio_FR = getKappaFxGlobalMax(MOTOR_FR, throttlePos_u8, assumeNoTurn).kappa;
+//                 rearSlipRatios.slipRatio_RL = getKappaFxGlobalMax(MOTOR_RL, throttlePos_u8, assumeNoTurn).kappa;
+//                 rearSlipRatios.slipRatio_RR = getKappaFxGlobalMax(MOTOR_RR, throttlePos_u8, assumeNoTurn).kappa;
+//             } break;
 
-            case TC_MODE_FX_LOCAL_MAX: { // maps max throttle to the max Fx available at the current state
-                float traction_fl = getTraction(MOTOR_FL, throttlePos_u8, ASSUME_NO_TURN);
-                float traction_fr = getTraction(MOTOR_FR, throttlePos_u8, ASSUME_NO_TURN);
-                float traction_rl = getTraction(MOTOR_RL, throttlePos_u8, ASSUME_NO_TURN);
-                float traction_rr = getTraction(MOTOR_RR, throttlePos_u8, ASSUME_NO_TURN);
+//             case TC_MODE_FX_LOCAL_MAX: { // maps max throttle to the max Fx available at the current state
+//                 float traction_fl = getTraction(MOTOR_FL, throttlePos_u8, ASSUME_NO_TURN);
+//                 float traction_fr = getTraction(MOTOR_FR, throttlePos_u8, ASSUME_NO_TURN);
+//                 float traction_rl = getTraction(MOTOR_RL, throttlePos_u8, ASSUME_NO_TURN);
+//                 float traction_rr = getTraction(MOTOR_RR, throttlePos_u8, ASSUME_NO_TURN);
 
-                if (assumeNoTurn) { // ignore lateral load transfer
-                    const float min_traction_front = fminf(traction_fl, traction_fr);
-                    const float min_traction_back = fminf(traction_rl, traction_rr);
-                    traction_fl = min_traction_front;
-                    traction_fr = min_traction_front;
-                    traction_rl = min_traction_back;
-                    traction_rr = min_traction_back;
-                }
+//                 if (assumeNoTurn) { // ignore lateral load transfer
+//                     const float min_traction_front = fminf(traction_fl, traction_fr);
+//                     const float min_traction_back = fminf(traction_rl, traction_rr);
+//                     traction_fl = min_traction_front;
+//                     traction_fr = min_traction_front;
+//                     traction_rl = min_traction_back;
+//                     traction_rr = min_traction_back;
+//                 }
 
-                frontSlipRatios.slipRatio_FL = getKappaByFx(MOTOR_FL, throttlePos_u8, traction_fl, ASSUME_NO_TURN);
-                frontSlipRatios.slipRatio_FR = getKappaByFx(MOTOR_FR, throttlePos_u8, traction_fr, ASSUME_NO_TURN);
-                rearSlipRatios.slipRatio_RL = getKappaByFx(MOTOR_RL, throttlePos_u8, traction_rl, ASSUME_NO_TURN);
-                rearSlipRatios.slipRatio_RR = getKappaByFx(MOTOR_RR, throttlePos_u8, traction_rr, ASSUME_NO_TURN);
-            } break;
-        }
+//                 frontSlipRatios.slipRatio_FL = getKappaByFx(MOTOR_FL, throttlePos_u8, traction_fl, ASSUME_NO_TURN);
+//                 frontSlipRatios.slipRatio_FR = getKappaByFx(MOTOR_FR, throttlePos_u8, traction_fr, ASSUME_NO_TURN);
+//                 rearSlipRatios.slipRatio_RL = getKappaByFx(MOTOR_RL, throttlePos_u8, traction_rl, ASSUME_NO_TURN);
+//                 rearSlipRatios.slipRatio_RR = getKappaByFx(MOTOR_RR, throttlePos_u8, traction_rr, ASSUME_NO_TURN);
+//             } break;
+//         }
 
-        // write wheelspeed setpoints to frontWhlSetpoints and rearWhlSetpoints
-        update_whl_speed_setpoint (
-            frontSlipRatios.slipRatio_FL, frontSlipRatios.slipRatio_FR, rearSlipRatios.slipRatio_RL, rearSlipRatios.slipRatio_RR,
-            steering_angle_rad, steering_angle_rad,
-            forward_velocity_nonnegative_mps, right_velocity_mps, yaw_rate_radps_sae,
-            critical_speed_mps
-        );
+//         // write wheelspeed setpoints to frontWhlSetpoints and rearWhlSetpoints
+//         update_whl_speed_setpoint (
+//             frontSlipRatios.slipRatio_FL, frontSlipRatios.slipRatio_FR, rearSlipRatios.slipRatio_RL, rearSlipRatios.slipRatio_RR,
+//             steering_angle_rad, steering_angle_rad,
+//             forward_velocity_nonnegative_mps, right_velocity_mps, yaw_rate_radps_sae,
+//             critical_speed_mps
+//         );
 
-        // calculate torque limits
-        // leave negative torques at 0 if not breaking for better robustness against sensor noise
-        // set positive torques according to throttle position and left-right bias (only in torque-mapped mode)
-        switch (traction_control_mode) {
-            default: // default to torque-mapped mode if traction_control_mode is not valid
-            case TC_MODE_TORQUE: { // torque-mapped mode, retrieve the local max slip ratio setpoints
-                const float throttle_pos_torque_Nm = maxFastTorque_Nm * (((float)throttlePos_u8) / ((float)(UINT8_MAX)));
-                leftRightBias_Nm = fminf(leftRightBias_Nm, throttle_pos_torque_Nm); // ensures throttle_pos_torque_Nm <= throttle_pos_torque_Nm
-                leftRightBias_Nm = fmaxf(leftRightBias_Nm, -throttle_pos_torque_Nm); // ensures throttle_pos_torque_Nm >= -throttle_pos_torque_Nm
-                const float left_pos_torque_Nm = fmaxf(throttle_pos_torque_Nm - leftRightBias_Nm, 0.0f);
-                const float right_pos_torque_Nm = fmaxf(throttle_pos_torque_Nm + leftRightBias_Nm, 0.0f);
-                pos_torques_Nm.fl = left_pos_torque_Nm;
-                pos_torques_Nm.fr = right_pos_torque_Nm;
-                pos_torques_Nm.rl = left_pos_torque_Nm;
-                pos_torques_Nm.rr = right_pos_torque_Nm;
-            } break;
+//         // calculate torque limits
+//         // leave negative torques at 0 if not breaking for better robustness against sensor noise
+//         // set positive torques according to throttle position and left-right bias (only in torque-mapped mode)
+//         switch (traction_control_mode) {
+//             default: // default to torque-mapped mode if traction_control_mode is not valid
+//             case TC_MODE_TORQUE: { // torque-mapped mode, retrieve the local max slip ratio setpoints
+//                 const float throttle_pos_torque_Nm = maxFastTorque_Nm * (((float)throttlePos_u8) / ((float)(UINT8_MAX)));
+//                 leftRightBias_Nm = fminf(leftRightBias_Nm, throttle_pos_torque_Nm); // ensures throttle_pos_torque_Nm <= throttle_pos_torque_Nm
+//                 leftRightBias_Nm = fmaxf(leftRightBias_Nm, -throttle_pos_torque_Nm); // ensures throttle_pos_torque_Nm >= -throttle_pos_torque_Nm
+//                 const float left_pos_torque_Nm = fmaxf(throttle_pos_torque_Nm - leftRightBias_Nm, 0.0f);
+//                 const float right_pos_torque_Nm = fmaxf(throttle_pos_torque_Nm + leftRightBias_Nm, 0.0f);
+//                 pos_torques_Nm.fl = left_pos_torque_Nm;
+//                 pos_torques_Nm.fr = right_pos_torque_Nm;
+//                 pos_torques_Nm.rl = left_pos_torque_Nm;
+//                 pos_torques_Nm.rr = right_pos_torque_Nm;
+//             } break;
 
-            case TC_MODE_FX_GLOBAL_MAX: // maps max throttle to the global max Fx of the LUT
-            case TC_MODE_FX_LOCAL_MAX: { // maps max throttle to the max Fx available at the current state
-                float throttle_pos_torque_Nm = maxFastTorque_Nm;
-                if (ease_in_torque) { // ease in torque based on throttle position
-                    throttle_pos_torque_Nm *= ((float)throttlePos_u8) / ((float)(UINT8_MAX)) / ease_in_torque_saturation_point;
-                    throttle_pos_torque_Nm = fminf(throttle_pos_torque_Nm, maxFastTorque_Nm); // saturate at maxFastTorque_Nm
-                }
-                pos_torques_Nm.fl = throttle_pos_torque_Nm;
-                pos_torques_Nm.fr = throttle_pos_torque_Nm;
-                pos_torques_Nm.rl = throttle_pos_torque_Nm;
-                pos_torques_Nm.rr = throttle_pos_torque_Nm;
-            } break;
-        }
-    } else if (allowRegen && brakePressurePsi_u8 >= braking_threshold_psi) { // regen-breaking
-        // calculate slip ratios for breaking
-        frontSlipRatios.slipRatio_FL = getBrakeKappa(MOTOR_FL, brakePressurePsi_u8, braking_threshold_psi);
-        frontSlipRatios.slipRatio_FR = getBrakeKappa(MOTOR_FR, brakePressurePsi_u8, braking_threshold_psi);
-        rearSlipRatios.slipRatio_RL = getBrakeKappa(MOTOR_RL, brakePressurePsi_u8, braking_threshold_psi);
-        rearSlipRatios.slipRatio_RR = getBrakeKappa(MOTOR_RR, brakePressurePsi_u8, braking_threshold_psi);
+//             case TC_MODE_FX_GLOBAL_MAX: // maps max throttle to the global max Fx of the LUT
+//             case TC_MODE_FX_LOCAL_MAX: { // maps max throttle to the max Fx available at the current state
+//                 float throttle_pos_torque_Nm = maxFastTorque_Nm;
+//                 if (ease_in_torque) { // ease in torque based on throttle position
+//                     throttle_pos_torque_Nm *= ((float)throttlePos_u8) / ((float)(UINT8_MAX)) / ease_in_torque_saturation_point;
+//                     throttle_pos_torque_Nm = fminf(throttle_pos_torque_Nm, maxFastTorque_Nm); // saturate at maxFastTorque_Nm
+//                 }
+//                 pos_torques_Nm.fl = throttle_pos_torque_Nm;
+//                 pos_torques_Nm.fr = throttle_pos_torque_Nm;
+//                 pos_torques_Nm.rl = throttle_pos_torque_Nm;
+//                 pos_torques_Nm.rr = throttle_pos_torque_Nm;
+//             } break;
+//         }
+//     } else if (allowRegen && brakePressurePsi_u8 >= braking_threshold_psi) { // regen-breaking
+//         // calculate slip ratios for breaking
+//         frontSlipRatios.slipRatio_FL = getBrakeKappa(MOTOR_FL, brakePressurePsi_u8, braking_threshold_psi);
+//         frontSlipRatios.slipRatio_FR = getBrakeKappa(MOTOR_FR, brakePressurePsi_u8, braking_threshold_psi);
+//         rearSlipRatios.slipRatio_RL = getBrakeKappa(MOTOR_RL, brakePressurePsi_u8, braking_threshold_psi);
+//         rearSlipRatios.slipRatio_RR = getBrakeKappa(MOTOR_RR, brakePressurePsi_u8, braking_threshold_psi);
 
-        // write wheelspeed setpoints to frontWhlSetpoints and rearWhlSetpoints
-        update_whl_speed_setpoint (
-            frontSlipRatios.slipRatio_FL, frontSlipRatios.slipRatio_FR, rearSlipRatios.slipRatio_RL, rearSlipRatios.slipRatio_RR,
-            steering_angle_rad, steering_angle_rad,
-            forward_velocity_nonnegative_mps, right_velocity_mps, yaw_rate_radps_sae,
-            critical_speed_mps
-        );
+//         // write wheelspeed setpoints to frontWhlSetpoints and rearWhlSetpoints
+//         update_whl_speed_setpoint (
+//             frontSlipRatios.slipRatio_FL, frontSlipRatios.slipRatio_FR, rearSlipRatios.slipRatio_RL, rearSlipRatios.slipRatio_RR,
+//             steering_angle_rad, steering_angle_rad,
+//             forward_velocity_nonnegative_mps, right_velocity_mps, yaw_rate_radps_sae,
+//             critical_speed_mps
+//         );
 
-        // calculate torque limits
-        // leave positive torques at 0 when breaking to avoid going against the mechanical breaks
-        // set negative torques according to left-right bias
-        const float brake_neg_torque_Nm = -maxFastTorque_Nm; /** @todo allow configuration of regen torque via DIM */
-        // WHY???
-        leftRightBias_Nm = fminf(leftRightBias_Nm, -brake_neg_torque_Nm); // ensures leftRightBias_Nm <= -brake_neg_torque_Nm
-        leftRightBias_Nm = fmaxf(leftRightBias_Nm, brake_neg_torque_Nm); // ensures leftRightBias_Nm >= brake_neg_torque_Nm
-        const float left_neg_torque_Nm = fminf(brake_neg_torque_Nm - leftRightBias_Nm, 0.0f);
-        const float right_neg_torque_Nm = fminf(brake_neg_torque_Nm + leftRightBias_Nm, 0.0f);
-        neg_torques_Nm.fl = left_neg_torque_Nm;
-        neg_torques_Nm.fr = right_neg_torque_Nm;
-        neg_torques_Nm.rl = left_neg_torque_Nm;
-        neg_torques_Nm.rr = right_neg_torque_Nm;
-    } else { // neutral throttle and breaks
-        // clear wheelspeed setpoints
-        frontWhlSetpoints.omega_FL = 0.0f;
-        frontWhlSetpoints.omega_FR = 0.0f;
-        rearWhlSetpoints.omega_RL = 0.0f;
-        rearWhlSetpoints.omega_RR = 0.0f;
-        // leave positive and negative torques at 0
-    }
+//         // calculate torque limits
+//         // leave positive torques at 0 when breaking to avoid going against the mechanical breaks
+//         // set negative torques according to left-right bias
+//         const float brake_neg_torque_Nm = -maxFastTorque_Nm; /** @todo allow configuration of regen torque via DIM */
+//         // WHY???
+//         leftRightBias_Nm = fminf(leftRightBias_Nm, -brake_neg_torque_Nm); // ensures leftRightBias_Nm <= -brake_neg_torque_Nm
+//         leftRightBias_Nm = fmaxf(leftRightBias_Nm, brake_neg_torque_Nm); // ensures leftRightBias_Nm >= brake_neg_torque_Nm
+//         const float left_neg_torque_Nm = fminf(brake_neg_torque_Nm - leftRightBias_Nm, 0.0f);
+//         const float right_neg_torque_Nm = fminf(brake_neg_torque_Nm + leftRightBias_Nm, 0.0f);
+//         neg_torques_Nm.fl = left_neg_torque_Nm;
+//         neg_torques_Nm.fr = right_neg_torque_Nm;
+//         neg_torques_Nm.rl = left_neg_torque_Nm;
+//         neg_torques_Nm.rr = right_neg_torque_Nm;
+//     } else { // neutral throttle and breaks
+//         // clear wheelspeed setpoints
+//         frontWhlSetpoints.omega_FL = 0.0f;
+//         frontWhlSetpoints.omega_FR = 0.0f;
+//         rearWhlSetpoints.omega_RL = 0.0f;
+//         rearWhlSetpoints.omega_RR = 0.0f;
+//         // leave positive and negative torques at 0
+//     }
 
-    // set velocities
-    setVelocityFloat(MOTOR_FL, frontWhlSetpoints.omega_FL * gear_ratio * 60.0f / (2.0f * M_PI)); // Converts rad/s to rpm
-    setVelocityFloat(MOTOR_FR, frontWhlSetpoints.omega_FR * gear_ratio * 60.0f / (2.0f * M_PI));
-    setVelocityFloat(MOTOR_RL, rearWhlSetpoints.omega_RL * gear_ratio * 60.0f / (2.0f * M_PI));
-    setVelocityFloat(MOTOR_RR, rearWhlSetpoints.omega_RR * gear_ratio * 60.0f / (2.0f * M_PI));
+//     // set velocities
+//     setVelocityFloat(MOTOR_FL, frontWhlSetpoints.omega_FL * gear_ratio * 60.0f / (2.0f * M_PI)); // Converts rad/s to rpm
+//     setVelocityFloat(MOTOR_FR, frontWhlSetpoints.omega_FR * gear_ratio * 60.0f / (2.0f * M_PI));
+//     setVelocityFloat(MOTOR_RL, rearWhlSetpoints.omega_RL * gear_ratio * 60.0f / (2.0f * M_PI));
+//     setVelocityFloat(MOTOR_RR, rearWhlSetpoints.omega_RR * gear_ratio * 60.0f / (2.0f * M_PI));
 
-    // set torques
-    setTorqueLimsProtected(&pos_torques_Nm, &neg_torques_Nm);
-}
+//     // set torques
+//     setTorqueLimsProtected(&pos_torques_Nm, &neg_torques_Nm);
+// }
 
 float get_optimal_yaw_rate(float swangle_rad, float velocity_x_mps) {
     
