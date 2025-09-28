@@ -14,6 +14,11 @@
 // ------------------------------------------------------------------------------------------------
 // Common enums and structs
 
+typedef enum {
+    CMR_CAN_BALANCE_DIS = 0,
+    CMR_CAN_BALANCE_EN = 1
+} cmr_canHVC_Balance_State_t;
+
 /** @brief Node states. */
 typedef enum {
     CMR_CAN_UNKNOWN = 0,    /**< @brief Current state unknown. */
