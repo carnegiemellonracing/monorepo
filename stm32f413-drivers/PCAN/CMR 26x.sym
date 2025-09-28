@@ -762,15 +762,6 @@ Var=CDC_FRWheel_Torque_Setpoint signed 16,16 /u:Nm /f:0.1
 Var=CDC_RLWheel_Torque_Setpoint signed 32,16 /u:Nm /f:0.1
 Var=CDC_RRWheel_Torque_Setpoint signed 48,16 /u:Nm /f:0.1
 
-[CELL_BALANCE_ENABLE]
-ID=134h
-DLC=2
-CycleTime=10
-TimeOut=50
-Var=threshold unsigned 0,16
-Var=Enable unsigned 0,8 /max:1 /e:HVC_Balance_State
-Var=Threshold unsigned 16,16 /u:mV /min:2450 /max:4280
-
 [CONTROLS_PID_IO]
 ID=7E5h
 DLC=8
