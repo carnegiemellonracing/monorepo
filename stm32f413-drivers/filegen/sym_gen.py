@@ -62,7 +62,7 @@ def get_cantypes_data(cantype, structs):
     for fields, name in structs:
         if re.search(name, cantype): 
             #find struct declaration with the right can type 
-            return re.findall(r'\b((?:u)?int\d+_t|float)\s+(\w+)\b', fields) 
+            return re.findall(r'\b((?:u)?int\d+_t|float|bool)\s+(\w+)\b', fields) 
 
 def check_repeat_varname(name):
     repeat_num = 0
@@ -75,7 +75,7 @@ def check_repeat_varname(name):
     return name 
 
 
-def format_bitpacking(structname, structlines, atbit, vartype, enums): 
+def format_bitpacking(canid, structname, structlines, atbit, vartype, enums): 
     for enumfields, name in enums:
         if name == structname: 
             packed_fields = re.findall(r'(?:CMR_CAN_)?(\w+)\s*=\s*\(?\s*(0x[\da-fA-F]+|\d+)\s*[a-zA-Z]*\s*\)?\s*(?:\(?\s*<<\s*(\d+)\s*\)?)?', enumfields) 
@@ -95,10 +95,11 @@ def format_bitpacking(structname, structlines, atbit, vartype, enums):
                             position = i 
                             break
                 name = check_repeat_varname(name) 
+                can_name = re.findall(r'CMR_CANID_(\w+)',canid) 
                 if realsize == 1:
-                    structlines.append("Var="+name.lower()+" bit "+str(atbit+int(position))+","+str(realsize)) 
+                    structlines.append("Var="+can_name[0]+"_"+name.lower()+" bit "+str(atbit+int(position))+","+str(realsize)) 
                 else: 
-                    structlines.append("Var="+name.lower()+" "+vartype+" "+str(atbit+int(position))+","+str(realsize)) 
+                    structlines.append("Var="+can_name[0]+"_"+name.lower()+" "+vartype+" "+str(atbit+int(position))+","+str(realsize)) 
                 #atbit+=realsize 
 
 
@@ -135,13 +136,15 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
             if vartype == 'float':
                 #technically unnecessary check, all others should be float
                 size = 32 
+            elif vartype == 'bool':
+                size = 8 
         #check if field is bitpacked 
         if field_params and name in field_params:
             if 'enumstruct' in field_params[name]:
                 flags = field_params[name]['enumstruct'].split()
                 #not a heartbeat struct, normally bitpacked 
                 if len(flags) == 1:
-                    format_bitpacking(flags[0], structlines, atbit, vartype, enums); 
+                    format_bitpacking(canid, flags[0], structlines, atbit, vartype, enums); 
                     atbit+=int(size) 
                     continue 
                 #heartbeat logic 
@@ -150,14 +153,15 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
                     boardname = board.group(1) 
                     for flag in flags:
                         if boardname in flag:
-                            format_bitpacking(flag, structlines, atbit, vartype, enums); 
+                            format_bitpacking(canid, flag, structlines, atbit, vartype, enums); 
                             atbit+=int(size)*2 #lowkey hardcoded but I think heartbeat is the only array 
                             break 
                     continue 
         #add in field if not bitpacked 
         if size: 
             name = check_repeat_varname(name) 
-            appendstr = "Var="+name+" "+vartype+ " " +str(atbit)+","+str(size)
+            can_name = re.findall(r'CMR_CANID_(\w+)',canid) 
+            appendstr = "Var="+can_name[0]+"_"+name+" "+vartype+ " " +str(atbit)+","+str(size)
             # Add field-specific parameters if available
             if field_params and name in field_params:
                 appendstr += format_field_params(field_params[name])
