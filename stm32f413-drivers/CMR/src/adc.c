@@ -50,7 +50,7 @@ static void cmr_adcConfigChannels(cmr_adc_t *adc) {
             cmr_panic("Invalid ADC channel!");
         }
 
-        #ifdef (F413)
+        #ifdef F413
             if (channel->differential) {
                 cmr_panic("F413 does not support differential ADC");
             }
