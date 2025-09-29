@@ -18,14 +18,14 @@ static void dacPinConfig(cmr_dacPinConfig_t*);
 DAC_HandleTypeDef hdac1;
 
 
-dacInit(uint16* pins, size_t dacConfigsLen){
+cmr_dacInit(uint16* pins, size_t dacConfigsLen){
     MX_DAC1_Init();
     for (uint8_t i=0; i<dacConfigsLen; i++){
-        dacPinConfig(pins[i])
+        dacPinConfig(pins[i]);
     }
 } 
 
-void dacSetValue(uint16_t pin, uint16_t voltage_mV){
+void cmr_dacSetValue(uint16_t pin, uint16_t voltage_mV){
     uint32_t voltage_mV_32Bits = (uint32_t) voltage_mV;
     voltage_12Bits = voltage_mV_32Bits * (4095)/ 3300;
 
@@ -48,6 +48,7 @@ static void dacPinConfig(uint16_t pin){
     GPIO_InitTypeDef GPIO_InitStruct = {0};
     if(hdac->Instance==DAC1)
     {
+        //Note DAC are only on port A
         __HAL_RCC_DAC_CLK_ENABLE();
         __HAL_RCC_GPIOA_CLK_ENABLE();
 
@@ -62,7 +63,7 @@ static void dacPinConfig(uint16_t pin){
     }
 
     if (pin == 5){
-        HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
+        HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
     }
 
 }
