@@ -93,5 +93,4 @@ static void MX_DAC1_Init(void)
 
 }
 
-#endif HAL_DAC_MODULE_ENABLED
-
+#endif /* HAL_DAC_MODULE_ENABLED */ 

@@ -17,5 +17,5 @@ simply input an array of [4,5]
 void cmr_dacInit(uint16_t* pins, size_t dacConfigsLen);
 void cmr_dacSetValue(uint16_t pin, uint16_t voltage_mV);
 
-#endif HAL_DAC_MODULE_ENABLED
+#endif /* HAL_DAC_MODULE_ENABLED */ 
 
