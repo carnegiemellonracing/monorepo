@@ -58,14 +58,14 @@ uint16_t pump_2_State;
 cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
     [CANRX_VEH_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
-        .timeoutError_ms = 50,
+        .timeoutError_ms = 250,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
     },
     [CANRX_VSM_STATUS] = {
         .canID = CMR_CANID_VSM_STATUS,
-        .timeoutError_ms = 50,
+        .timeoutError_ms = 250,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
@@ -356,7 +356,7 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
 cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
-        .timeoutError_ms = 100,
+        .timeoutError_ms = 250,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
@@ -519,6 +519,7 @@ static void canTX100Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+    cmr_canMovellaStatus_t *movellaStatus = canDAQGetPayload(CANRX_DAQ_MOVELLA_STATUS);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
@@ -545,7 +546,6 @@ static void canTX100Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_OUTPUTS, &solver_torques, sizeof(solver_torques), canTX100Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_SETTINGS, &solver_settings, sizeof(cmr_can_solver_settings_t), canTX100Hz_period_ms);
 
-
 		// SF
 		const cmr_canCDCSafetyFilterStates_t *sfStatesInfo = getSafetyFilterInfo();
 		cmr_canCDCMotorPower_t *motorPowerInfo = getMotorPowerInfo();
@@ -560,6 +560,8 @@ static void canTX100Hz(void *pvParameters) {
 		canTX(CMR_CAN_BUS_DAQ, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX100Hz_period_ms); //motor power
 		//canTX(CMR_CAN_BUS_TRAC, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
 
+        // Forward Movella status to Vehicle CAN at 100Hz.
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOVELLA_STATUS, movellaStatus, sizeof(cmr_canMovellaStatus_t), canTX100Hz_period_ms);
 
         //debug code for sending rxmeta receive to current time difference
 //        uint16_t arr[2];
@@ -619,6 +621,7 @@ static void canTX200Hz(void *pvParameters) {
     cmr_canFrontWheelVelocity_t front_velocity;
     cmr_canRearWheelVelocity_t rear_velocity;
 
+    // cmr_canMovellaStatus_t *movellaStatus = canDAQGetPayload(CANRX_DAQ_MOVELLA_STATUS);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
@@ -650,6 +653,7 @@ static void canTX200Hz(void *pvParameters) {
         rear_velocity.rr_x = car_state.rr_velocity.x * 100.0f;
         rear_velocity.rr_y = car_state.rr_velocity.y * 100.0f;
 
+
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COG_VELOCITY, &cog_velocity, sizeof(cog_velocity), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_FRONT_VELOCITY, &front_velocity, sizeof(front_velocity), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_REAR_VELOCITY, &rear_velocity, sizeof(rear_velocity), canTX200Hz_period_ms);
@@ -660,7 +664,9 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_SETPOINT, &speedSetpoint, sizeof(speedSetpoint), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX200Hz_period_ms);
 
-
+        // // Forward Movella status to Vehicle CAN at 200Hz.
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOVELLA_STATUS, movellaStatus, sizeof(cmr_canMovellaStatus_t), canTX200Hz_period_ms);
+    
         // Forward AMK messages to vehicle CAN at 200Hz.
         // for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
         //     // Do not transmit if we haven't received that message lately
