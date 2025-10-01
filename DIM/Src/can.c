@@ -157,7 +157,7 @@ static void canTX10Hz(void *pvParameters) {
 
         sendFSMPedalsADC();
         sendFSMSensorsADC();
-        
+
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -187,21 +187,21 @@ static void canTX100Hz(void *pvParameters) {
         sendFSMData();
         sendSWAngle();
         // Calculate integer regenPercent from regenStep
-    	uint8_t paddle = (uint8_t)((adcRead(ADC_PADDLE) / 4096.0) * 255.0);
+    	uint8_t paddle = (uint8_t) ((adcRead(ADC_PADDLE) - 16.062) / 3694.43) * 255.0;
     	uint8_t regenPercent = (uint8_t)((adcRead(ADC_PADDLE) / 255.0) * 100.0);
         uint8_t packed = 0;
         uint8_t LRUDpacked = 0;
-        if(getCurrState() == CONFIG){
-            if(paddle > 0){ // TODO: replace with actual ADC value for unpressed
-                paddle_is_pressed = true;
-            }
-            else {
-                if(paddle_is_pressed){
-                    config_increment_down_requested = true;
-                    paddle_is_pressed = false;
-                }
-            }
-        }
+        // if(getCurrState() == CONFIG){
+        //     if(paddle > 50){
+        //         paddle_is_pressed = true;
+        //     }
+        //     else {
+        //         if(paddle_is_pressed){
+        //             config_increment_down_requested = true;
+        //             paddle_is_pressed = false;
+        //         }
+        //     }
+        // }
         for(int i=0; i<NUM_BUTTONS; i++){
             packed |= canButtonStates[i] << i;
         }
@@ -668,7 +668,7 @@ static void sendSWAngle(void) {
 
     int32_t steeringWheelAngle_deg_FL = (int32_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG_FL);
     int32_t steeringWheelAngle_deg_FR = (int32_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG_FR);
- 
+
     cmr_canFSMSWAngle_t msg = {
         .steeringWheelAngle_millideg_FL = steeringWheelAngle_deg_FL,
         .steeringWheelAngle_millideg_FR = steeringWheelAngle_deg_FR

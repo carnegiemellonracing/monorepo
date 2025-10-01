@@ -16,6 +16,7 @@
 
 #include "adc.h"
 #include "gpio.h"
+#include "can.h"
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;

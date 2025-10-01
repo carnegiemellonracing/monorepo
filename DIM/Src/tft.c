@@ -143,27 +143,6 @@ void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data) {
     cmr_qspiRX(&tft->qspi, &cmd, data);
 }
 
-/**
- * @brief Gets the number of available bytes in the coprocessor command buffer.
- *
- * @note Also updates the coprocessor read address.
- *
- * @param tft The display.
- *
- * @return The number of available bytes.
- */
-static size_t tftCoCmdRemLen(tft_t *tft) {
-    tftRead(tft, TFT_ADDR_CMD_READ, sizeof(tft->coCmdRd), &tft->coCmdRd);
-
-    size_t used = (tft->coCmdWr - tft->coCmdRd);
-    if (used >= TFT_RAM_CMD_SIZE) {
-        used -= TFT_RAM_CMD_SIZE;
-    }
-
-    // Maintain 1-word separation.
-    return (TFT_RAM_CMD_SIZE - sizeof(uint32_t)) - used;
-}
-
 void tftCoCmd(tft_t *tft, size_t len, const void *data) {
     // Bulk Write
     uint32_t space = -1;
@@ -707,6 +686,7 @@ void tftInit(void) {
         DMA2_Stream7, DMA_CHANNEL_3);
 
     tft.inited = false;
+    dim_first_time_config_screen = true;
 
     cmr_taskInit(
         &tftUpdate_task, "tftUpdate", tftUpdate_priority,

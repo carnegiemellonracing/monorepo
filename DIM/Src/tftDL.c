@@ -744,7 +744,7 @@ void tftDLContentLoad(tft_t *tft, const tftDL_t *tftDL) {
  * @param tftDL The display list.
  */
 void tftDLWrite(tft_t *tft, const tftDL_t *tftDL) {
-    tftCoCmd(tft, tftDL->len, tftDL->data, true);
+    tftCoCmd(tft, tftDL->len, tftDL->data);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////

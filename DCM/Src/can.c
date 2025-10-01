@@ -804,7 +804,12 @@ static void canTX1Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     TickType_t lastWakeTime = xTaskGetTickCount();
+
     while (1) {
+
+        cmr_canDAQTest_t daqTest = getDAQTest();
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_TEST_ID, &daqTest, sizeof(daqTest), canTX1Hz_period_ms);
+
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_RTC_DATA_OUT, &time, sizeof(time), canTX1Hz_period_ms);
         cmr_canCDCOdometer_t odometer = (cmr_canCDCOdometer_t) {
             .odometer_km = odometer_km
@@ -824,8 +829,6 @@ static void canTX1Hz(void *pvParameters) {
         // TODO: constantly send current parameters
         vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
     }
-
-
 }
 
 void *canGetPayload(canRX_t rxMsg) {
