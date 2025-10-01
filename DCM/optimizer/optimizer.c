@@ -15,7 +15,7 @@
 #define MINIMUM_K_VALUE (0.005f) // Prevent numerical instability.
 
 static double k_lin = 80.0;
-static double k_yaw = 0.15;
+static double k_yaw = 0.30;
 static double k_tie = 0.008;
 
 /**
@@ -35,11 +35,12 @@ void compute_accel_weights(optimizer_state_t *state) {
  */
 void compute_moment_weights(optimizer_state_t *state) {
     double temp = gear_ratio / effective_wheel_rad_m;
-    double theta = state->theta;
-    state->moment_weights[0] = (half_wheelbase_m * sin(theta) + half_trackwidth_m * cos(theta)) * temp;
-    state->moment_weights[1] = (half_wheelbase_m * sin(theta) - half_trackwidth_m * cos(theta)) * temp;
-    state->moment_weights[2] = half_trackwidth_m * temp;
-    state->moment_weights[3] = -half_trackwidth_m * temp;
+    double theta_left = state->theta_left;
+    double theta_right = state->theta_right;
+    state->moment_weights[0] = (half_wheelbase_m * sin(theta_left) - half_trackwidth_m * cos(theta_left)) * temp;
+    state->moment_weights[1] = (half_wheelbase_m * sin(theta_right) + half_trackwidth_m * cos(theta_right)) * temp;
+    state->moment_weights[2] = -half_trackwidth_m * temp;
+    state->moment_weights[3] = half_trackwidth_m * temp;
 }
 
 /**

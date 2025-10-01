@@ -341,7 +341,13 @@ static cmr_state getReqScreen(void) {
             }
             break;
         case NORMAL:
-            if(canLRUDStates[LEFT]) {
+            // if(canLRUDStates[LEFT]) {
+            //     nextState = CONFIG;
+            //     flush_config_screen_to_cdc = false;
+			// 	//gpioLRUDStates[LEFT] = false;
+            // }
+            if(!cmr_gpioRead(GPIO_BUTTON_SW1)) {
+            // else if(canLRUDStates[LEFT]) {
                 nextState = CONFIG;
                 flush_config_screen_to_cdc = false;
 				//gpioLRUDStates[LEFT] = false;
@@ -350,6 +356,10 @@ static cmr_state getReqScreen(void) {
                 nextState = RACING;
                 //canLRUDStates[RIGHT] = false;
             }
+            // else if(canLRUDStates[RIGHT]) {
+            //     nextState = RACING;
+            //     //canLRUDStates[RIGHT] = false;
+            // }
             else {
                 nextState = NORMAL;
             }

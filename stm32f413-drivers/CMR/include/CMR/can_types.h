@@ -109,8 +109,8 @@ typedef enum {
     CMR_CAN_WARN_VSM_DIM_TIMEOUT = (1 << 11),
     /** @brief VSM hasn't received PTCf heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_PTC_TIMEOUT = (1 << 10),
-    /** @brief VSM hasn't received APC heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_APC_TIMEOUT = (1 << 8),
+    /** @brief VSM hasn't received HVI heartbeat for 25 ms. */
+    CMR_CAN_WARN_VSM_HVI_TIMEOUT = (1 << 8),
     /** @brief VSM is rejecting DIM state request. */
     CMR_CAN_WARN_VSM_DIM_REQ_NAK = (1 << 7),
 
@@ -217,8 +217,8 @@ typedef enum {
     /** @brief At least one
  message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_PTC = (1 << 2),
-    /** @brief At least one Auxiliary Power Controller message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_APC = (1 << 0)
+    /** @brief HVI Timeout. */
+    CMR_CAN_VSM_ERROR_SOURCE_HVI = (1 << 0)
 } cmr_canVSMErrorSource_t;
 
 /** @brief Bit definitions for latchMatrix in cmr_canVSMErrors_t. */
@@ -860,6 +860,22 @@ typedef struct {
     uint8_t lsb;
 } big_endian_16_t;
 
+
+typedef union {
+    struct {
+        uint8_t lsb;
+        uint8_t msb;
+    } data;
+    int16_t parsed;
+} int16_parser;
+
+static int16_t parse_int16(volatile big_endian_16_t *big) {
+    static int16_parser parser;
+    parser.data.msb = big->msb;
+    parser.data.lsb = big->lsb;
+    return parser.parsed;
+} 
+
 typedef struct {
     big_endian_16_t q0;
     big_endian_16_t q1;
@@ -1099,17 +1115,15 @@ typedef struct {
 typedef uint8_t cmr_canDAQTest_t; /** @brief DAQ Test type. MSB is to start/stop bits, rest are test id **/
 
 typedef struct {
-    uint16_t linpot_front_mm;       /**< @brief Front damper length in mm */
-    uint16_t linpot_front_adc;      /**< @brief Front linpot ADC Value */
-    uint16_t linpot_rear_mm;        /**< @brief Rear damper length in mm */
-    uint16_t linpot_rear_adc;       /**< @brief Rear linpot ADC Value */
-} cmr_canDAQLinpot_t;
+    uint32_t therm_1;       /**< @brief Front damper length in mm */
+    uint32_t therm_2;        /**< @brief Rear damper length in mm */
+} cmr_canDAQTherm_t;
 
 typedef struct {
-    int16_t differential_voltage_uv;
-    int16_t force_output_N;
-    int16_t internal_temp;
-    int16_t external_temp;
+    big_endian_16_t differential_voltage_uv;
+    big_endian_16_t force_output_N;
+    big_endian_16_t internal_temp;
+    big_endian_16_t external_temp;
 } cmr_canIZZELoadCell_t;
 
 typedef struct {
@@ -1119,5 +1133,11 @@ typedef struct {
 typedef struct {
 	uint32_t test_id;
 } cmr_canTestID_t;
+
+typedef struct {
+    uint16_t cell1;
+    uint16_t cell2;
+    uint16_t cell3;
+} cmr_canLVBMS_Voltage;
 
 #endif /* CMR_CAN_TYPES_H */

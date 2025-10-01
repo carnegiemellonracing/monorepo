@@ -247,9 +247,13 @@ float getTorqueNmMin(const cmr_torqueDistributionNm_t *torques_Nm) {
 float getMotorRegenerativeCapacity(int32_t rpm) {
     static const float RPM_TO_LOWER_LIMIT = -0.02621878;
 
+    if(rpm <= 0) {
+        return 0.0f;
+    }
+    
     float limit = rpm * RPM_TO_LOWER_LIMIT;
-    if (limit < -maxTorque_Nm) {
-        limit = -maxTorque_Nm;
+    if (limit < -maxTorque_continuous_stall_Nm) {
+        limit = -maxTorque_continuous_stall_Nm;
     }
 
     if (overVoltProtection()) {

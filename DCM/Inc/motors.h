@@ -18,33 +18,6 @@
 // ------------------------------------------------------------------------------------------------
 // Type definitions
 
-/** @brief Location-based CAN IDs for inverters. */
-typedef enum {
-    /*
-    FR: AMK1 - 0x184, 0x283, 0x285
-    RL: AMK2 - 0x185, 0x284, 0x286
-    RR: AMK3 - 0x188, 0x287, 0x289
-    FL: AMK4 - 0x189, 0x288, 0x28A
-    */
-
-
-    CMR_CANID_AMK_FR_ACT_1      = CMR_CANID_AMK_1_ACT_1,
-    CMR_CANID_AMK_FR_ACT_2      = CMR_CANID_AMK_1_ACT_2,
-    CMR_CANID_AMK_FR_SETPOINTS  = CMR_CANID_AMK_1_SETPOINTS,
-
-    CMR_CANID_AMK_RR_ACT_1      = CMR_CANID_AMK_3_ACT_1,
-    CMR_CANID_AMK_RR_ACT_2      = CMR_CANID_AMK_3_ACT_2,
-    CMR_CANID_AMK_RR_SETPOINTS  = CMR_CANID_AMK_3_SETPOINTS,
-
-    CMR_CANID_AMK_FL_ACT_1      = CMR_CANID_AMK_4_ACT_1,
-    CMR_CANID_AMK_FL_ACT_2      = CMR_CANID_AMK_4_ACT_2,
-    CMR_CANID_AMK_FL_SETPOINTS  = CMR_CANID_AMK_4_SETPOINTS,
-
-    CMR_CANID_AMK_RL_ACT_1      = CMR_CANID_AMK_2_ACT_1,
-    CMR_CANID_AMK_RL_ACT_2      = CMR_CANID_AMK_2_ACT_2,
-    CMR_CANID_AMK_RL_SETPOINTS  = CMR_CANID_AMK_2_SETPOINTS
-} amkCANID_t;
-
 /** @brief Torque limits. */
 typedef struct {
     float max_torque;

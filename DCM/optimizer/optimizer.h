@@ -25,7 +25,8 @@ typedef struct {
 typedef struct {
     double areq;
     double mreq;
-    double theta;
+    double theta_left;
+    double theta_right;
     double accel_weights[NUM_VARS];
     double moment_weights[NUM_VARS];
     double diagonal_weights[NUM_VARS];

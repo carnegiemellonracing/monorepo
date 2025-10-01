@@ -188,8 +188,8 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     -Wdouble-promotion # Doubles do not natively use the FPU on a Cortex-M4F
     -fno-common # Do not allow common global symbols
     -Wundef # Detects undefined macros which would silently evaluate to 0
+    -Wimplicit-function-declaration
     $<$<COMPILE_LANGUAGE:C>:
-    -O0
     -ffunction-sections # Place each function in its own section in .text
     -fdata-sections
     -fstack-usage
@@ -198,7 +198,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     $<$<COMPILE_LANGUAGE:ASM>:-x assembler-with-cpp -MMD -MP>
     $<$<CONFIG:Static>:
     -fanalyzer
-    -fdump-analyzer
+    -fdiagnostics-format=sarif-file
     >
     $<$<CONFIG:Debug>:-Og -g3 -ggdb>
     $<$<CONFIG:Release>:-Og -g0>

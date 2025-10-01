@@ -35,6 +35,8 @@ static cmr_pwm_t pump_2_PWM;
 #define PUMP_INVERTER_STATE_LOW 30
 #define PUMP_INVERTER_STATE_HIGH 100
 
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
 
 //extern cmr_sensor_t *sensors;
 
@@ -53,6 +55,11 @@ void pumpsOff();
  */
 
 void pumpsOn() {
+
+    cmr_gpioWrite(GPIO_PUMP_LEFT, 1);
+    cmr_gpioWrite(GPIO_PUMP_RIGHT, 1);
+    return;
+
     //int accum_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_1) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_2)) / 2;
     // Below: revision - using CAN to get data from HVC
     //Next line's citation: from what nsaizan wrote in this file above
@@ -62,13 +69,13 @@ void pumpsOn() {
     // linear in between
 
     // Get igbt temperatures for each inverter.
-    cmr_canAMKActualValues2_t *inv1_temps = (cmr_canAMKActualValues2_t *) canGetPayload(CANRX_INV1_STATUS);
+    cmr_canAMKActualValues2_t *inv1_temps = (cmr_canAMKActualValues2_t *) canTractiveGetPayload(CANRX_TRAC_INV_FL_ACT2);
     int16_t inv1MotorTemp_dC = inv1_temps->motorTemp_dC;
-    cmr_canAMKActualValues2_t *inv2_temps = (cmr_canAMKActualValues2_t *) canGetPayload(CANRX_INV2_STATUS);
+    cmr_canAMKActualValues2_t *inv2_temps = (cmr_canAMKActualValues2_t *) canTractiveGetPayload(CANRX_TRAC_INV_FR_ACT2);
     int16_t inv2MotorTemp_dC = inv2_temps->motorTemp_dC;
-    cmr_canAMKActualValues2_t *inv3_temps = (cmr_canAMKActualValues2_t *) canGetPayload(CANRX_INV3_STATUS);
+    cmr_canAMKActualValues2_t *inv3_temps = (cmr_canAMKActualValues2_t *) canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT2);
     int16_t inv3MotorTemp_dC = inv3_temps->motorTemp_dC;
-    cmr_canAMKActualValues2_t *inv4_temps = (cmr_canAMKActualValues2_t *) canGetPayload(CANRX_INV4_STATUS);
+    cmr_canAMKActualValues2_t *inv4_temps = (cmr_canAMKActualValues2_t *) canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT2);
     int16_t inv4MotorTemp_dC = inv4_temps->motorTemp_dC;
 
     int16_t motor_temp_avg = (inv1MotorTemp_dC + inv2MotorTemp_dC + inv3MotorTemp_dC + inv4MotorTemp_dC) / 4;
@@ -107,8 +114,18 @@ void pumpsOn() {
     // cmr_pwmSetDutyCycle(&pump_1_PWM, (uint32_t) 100-pump_1_State);
     // cmr_pwmSetDutyCycle(&pump_2_PWM, (uint32_t) 100-pump_2_State);
 
-    cmr_gpioWrite(GPIO_PUMP_LEFT, 0);
-    cmr_gpioWrite(GPIO_PUMP_RIGHT, 0);
+    if(MAX(inv1IgbtTemp_dC, MAX(inv2IgbtTemp_dC, MAX(inv3IgbtTemp_dC, inv4IgbtTemp_dC))) > 400) {
+         cmr_gpioWrite(GPIO_PUMP_LEFT, 0);
+     }
+     else {
+         cmr_gpioWrite(GPIO_PUMP_LEFT, 1);
+     }
+    if(MAX(inv1MotorTemp_dC, MAX(inv2MotorTemp_dC, MAX(inv3MotorTemp_dC, inv4MotorTemp_dC))) > 750) {
+         cmr_gpioWrite(GPIO_PUMP_RIGHT, 0);
+     }
+     else {
+         cmr_gpioWrite(GPIO_PUMP_RIGHT, 1);
+     }
     cmr_gpioWrite(GPIO_PUMP_ON, 0);
     
     // if (pump_1_State >= 50 || pump_2_State >= 50) {

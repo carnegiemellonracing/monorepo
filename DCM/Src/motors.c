@@ -29,6 +29,7 @@
 #include "fans.h"
 #include "constants.h"
 #include "controls.h"
+
 // ------------------------------------------------------------------------------------------------
 // Constants
 
@@ -185,11 +186,6 @@ static void motorsCommand (
         volatile cmr_canHVCPackCurrent_t *currentHVC   = canVehicleGetPayload(CANRX_VEH_CURRENT_HVC);
         volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VSM_STATUS);
 
-        uint32_t throttle;
-
-        float target_speed_mps = 5.0f;
-        getProcessedValue(&target_speed_mps, FFLAUNCH_FEEDBACK_INDEX, float_1_decimal);    
-
         //transmit Coulombs using HVI sense
         integrateCurrent();
 
@@ -312,6 +308,7 @@ static void motorsCommand (
 
             // Also reset errors in GLV_ON
             case CMR_CAN_GLV_ON: {
+                pumpsOn();
             	mcCtrlOff();
 
                 if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
@@ -319,7 +316,8 @@ static void motorsCommand (
                 } else
 
             	// fansOff();
-            	pumpsOff();
+            	//pumpsOff();
+
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = CMR_CAN_AMK_CTRL_ERR_RESET;
                     motorSetpoints[i].velocity_rpm       = 0;
@@ -333,8 +331,12 @@ static void motorsCommand (
 
             // In all other states, disable inverters and do not reset errors
             default: {
+                pumpsOn();
                 pumpsOff();
                 mcCtrlOff();
+
+                set_optimal_control_with_regen(50, 10000, 10000);
+
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].control_bv         = 0;
                     motorSetpoints[i].velocity_rpm       = 0;

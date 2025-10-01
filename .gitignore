@@ -24,3 +24,8 @@ gitcommit.h
 *-stamp/
 tmp/
 **/.vscode/settings.json
+
+*.dsk
+*.dsk~
+
+*.peproj~

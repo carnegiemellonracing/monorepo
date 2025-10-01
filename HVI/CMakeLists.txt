@@ -156,7 +156,6 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     -Wall
     -Wshadow
     -Wextra
-    -Wpedantic
     -Wformat-overflow # Detects buffer overflow (sprintf, snprintf, etc.)
     -Wformat-truncation # Detects buffer truncation (sprintf, snprintf, etc.)
     -Wdouble-promotion # Doubles do not natively use the FPU on a Cortex-M4F
@@ -167,12 +166,13 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     -ffunction-sections # Place each function in its own section in .text
     -fdata-sections
     -fstack-usage
+    -Wimplicit-function-declaration
     >
     $<$<COMPILE_LANGUAGE:CXX>:>
     $<$<COMPILE_LANGUAGE:ASM>:-x assembler-with-cpp -MMD -MP>
     $<$<CONFIG:Static>:
     -fanalyzer
-    -fdump-analyzer
+    -fdiagnostics-format=sarif-file
     >
     $<$<CONFIG:Debug>:-Og -g3 -ggdb>
     $<$<CONFIG:Release>:-Og -g0>

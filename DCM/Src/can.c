@@ -58,14 +58,14 @@ uint16_t pump_2_State;
 cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
     [CANRX_VEH_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
-        .timeoutError_ms = 50,
+        .timeoutError_ms = 250,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
     },
     [CANRX_VSM_STATUS] = {
         .canID = CMR_CANID_VSM_STATUS,
-        .timeoutError_ms = 50,
+        .timeoutError_ms = 250,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
@@ -356,7 +356,7 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
 cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
-        .timeoutError_ms = 100,
+        .timeoutError_ms = 250,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
@@ -369,23 +369,23 @@ cmr_canRXMeta_t canRXMeta[] = {
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
     },
     [CANRX_INV1_STATUS] = {
-        .canID = CMR_CANID_AMK_1_ACT_2,
+        .canID = CMR_CANID_AMK_FL_ACT_2,
         .timeoutError_ms = 800, // Send error if data not received within 4 cycles, or 800 ms
         .timeoutWarn_ms = 400, // Send warning if data not received within 2 cycles, or 400 ms
         // CAN transmitting frequency = 5 Hz, so ? s = 1 / 5 Hz = 0.2 s = 200ms
     },
     [CANRX_INV2_STATUS] = {
-        .canID = CMR_CANID_AMK_2_ACT_2,
+        .canID = CMR_CANID_AMK_FR_ACT_2,
         .timeoutError_ms = 800,
         .timeoutWarn_ms = 400,
     },
     [CANRX_INV3_STATUS] = {
-        .canID = CMR_CANID_AMK_3_ACT_2,
+        .canID = CMR_CANID_AMK_RL_ACT_2,
         .timeoutError_ms = 800,
         .timeoutWarn_ms = 400,
     },
     [CANRX_INV4_STATUS] = {
-        .canID = CMR_CANID_AMK_4_ACT_2,
+        .canID = CMR_CANID_AMK_RR_ACT_2,
         .timeoutError_ms = 800,
         .timeoutWarn_ms = 400,
     },
@@ -468,6 +468,13 @@ static void canTX10Hz(void *pvParameters) {
         //powersense is dead, voltage * HVI current
         powerSense.packPower_W = getPackVoltage() * getPackCurrent();
 
+        
+        cmr_canDAQTherm_t therms;
+        therms.therm_1 = adcRead(ADC_THERM1);
+        therms.therm_2 = adcRead(ADC_THERM2);
+
+        canTX(CMR_CAN_BUS_VEH, 0x659, &therms, sizeof(cmr_canDAQTherm_t), canTX10Hz_period_ms);
+
         // Is data valid? Set it in the orientation/velocity messages
 //        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX10Hz_period_ms);
 //        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK, &torqueFeedback, sizeof(torqueFeedback), canTX10Hz_period_ms);
@@ -512,6 +519,7 @@ static void canTX100Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+    cmr_canMovellaStatus_t *movellaStatus = canDAQGetPayload(CANRX_DAQ_MOVELLA_STATUS);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
@@ -526,18 +534,17 @@ static void canTX100Hz(void *pvParameters) {
             heartbeat.state = CMR_CAN_ERROR;
         }
 
-        cmr_canDAQLinpot_t linpots;
-        linpots.linpot_front_adc = adcRead(ADC_LINPOT1);
-        linpots.linpot_rear_adc = adcRead(ADC_LINPOT2);
+        cmr_canDAQTherm_t linpots;
+        linpots.therm_1 = adcRead(ADC_LINPOT1);
+        linpots.therm_2 = adcRead(ADC_LINPOT2);
 
-        canTX(CMR_CAN_BUS_VEH, 0x658, &linpots, sizeof(cmr_canDAQLinpot_t), canTX100Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, 0x658, &linpots, sizeof(cmr_canDAQTherm_t), canTX100Hz_period_ms);
 
         // Solver
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_INPUTS, &solver_inputs, sizeof(cmr_can_solver_inputs_t), canTX100Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_AUX, &solver_aux, sizeof(cmr_can_solver_aux_t), canTX100Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_OUTPUTS, &solver_torques, sizeof(solver_torques), canTX100Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_SETTINGS, &solver_settings, sizeof(cmr_can_solver_settings_t), canTX100Hz_period_ms);
-
 
 		// SF
 		const cmr_canCDCSafetyFilterStates_t *sfStatesInfo = getSafetyFilterInfo();
@@ -553,6 +560,8 @@ static void canTX100Hz(void *pvParameters) {
 		canTX(CMR_CAN_BUS_DAQ, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX100Hz_period_ms); //motor power
 		//canTX(CMR_CAN_BUS_TRAC, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
 
+        // Forward Movella status to Vehicle CAN at 100Hz.
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOVELLA_STATUS, movellaStatus, sizeof(cmr_canMovellaStatus_t), canTX100Hz_period_ms);
 
         //debug code for sending rxmeta receive to current time difference
 //        uint16_t arr[2];
@@ -612,6 +621,7 @@ static void canTX200Hz(void *pvParameters) {
     cmr_canFrontWheelVelocity_t front_velocity;
     cmr_canRearWheelVelocity_t rear_velocity;
 
+    // cmr_canMovellaStatus_t *movellaStatus = canDAQGetPayload(CANRX_DAQ_MOVELLA_STATUS);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
@@ -619,7 +629,7 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_FR_SETPOINTS, amkSetpointsFR, sizeof(*amkSetpointsFR), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_RL_SETPOINTS, amkSetpointsRL, sizeof(*amkSetpointsRL), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_RR_SETPOINTS, amkSetpointsRR, sizeof(*amkSetpointsRR), canTX200Hz_period_ms);
-
+        
         daqWheelSpeedFeedback(&speedFeedback);
         daqWheelTorqueFeedback(&torqueFeedback);
         daqWheelSpeedSetpoints(&speedSetpoint);
@@ -643,6 +653,7 @@ static void canTX200Hz(void *pvParameters) {
         rear_velocity.rr_x = car_state.rr_velocity.x * 100.0f;
         rear_velocity.rr_y = car_state.rr_velocity.y * 100.0f;
 
+
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COG_VELOCITY, &cog_velocity, sizeof(cog_velocity), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_FRONT_VELOCITY, &front_velocity, sizeof(front_velocity), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_REAR_VELOCITY, &rear_velocity, sizeof(rear_velocity), canTX200Hz_period_ms);
@@ -653,7 +664,9 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_SETPOINT, &speedSetpoint, sizeof(speedSetpoint), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX200Hz_period_ms);
 
-
+        // // Forward Movella status to Vehicle CAN at 200Hz.
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOVELLA_STATUS, movellaStatus, sizeof(cmr_canMovellaStatus_t), canTX200Hz_period_ms);
+    
         // Forward AMK messages to vehicle CAN at 200Hz.
         // for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
         //     // Do not transmit if we haven't received that message lately
@@ -1030,23 +1043,23 @@ void canInit(void) {
     const cmr_canFilter_t canTractiveFilters[] = {
         {.isMask = false,
          .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_AMK_1_ACT_1, CMR_CANID_AMK_1_ACT_2,
+         .ids = {CMR_CANID_AMK_FL_ACT_1, CMR_CANID_AMK_FL_ACT_2,
                  }
         },
 
         {.isMask = false,
          .rxFIFO = FDCAN_RX_FIFO1,
-         .ids = {CMR_CANID_AMK_2_ACT_1, CMR_CANID_AMK_2_ACT_2,}
+         .ids = {CMR_CANID_AMK_FR_ACT_1, CMR_CANID_AMK_FR_ACT_2,}
         },
 
         {.isMask = false,
         .rxFIFO = FDCAN_RX_FIFO1,
-        .ids = {CMR_CANID_AMK_3_ACT_1, CMR_CANID_AMK_3_ACT_2,}
+        .ids = {CMR_CANID_AMK_RL_ACT_1, CMR_CANID_AMK_RL_ACT_2,}
         },
         
         {.isMask = false,
          .rxFIFO = FDCAN_RX_FIFO1,
-         .ids = {CMR_CANID_AMK_4_ACT_1, CMR_CANID_AMK_4_ACT_2}
+         .ids = {CMR_CANID_AMK_RR_ACT_1, CMR_CANID_AMK_RR_ACT_2}
         }
     };
 

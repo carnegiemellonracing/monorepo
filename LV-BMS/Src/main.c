@@ -40,7 +40,8 @@ static cmr_task_t post_ms_monitor_task;
  * @return Does not return.
  */
 
-static void status_LED() {
+static void status_LED(void *pvParameters) {
+	(void) pvParameters;
 	cmr_gpioWrite(GPIO_LED, 0);
 
 	TickType_t time_prev = xTaskGetTickCount();
@@ -52,7 +53,8 @@ static void status_LED() {
 
 
 
-static void post_ms_monitor() {
+static void post_ms_monitor(void *pvParameters) {
+	(void) pvParameters;
 	TickType_t time_prev = xTaskGetTickCount();
 //	while(true) {
 ////		int post_ms = cmr_gpioRead(GPIO_POST_MS);

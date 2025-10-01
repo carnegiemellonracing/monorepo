@@ -98,6 +98,7 @@ static void errorLEDs(void *pvParameters) {
     }
 }
 
+
 /**
  * @brief Firmware entry point.
  *

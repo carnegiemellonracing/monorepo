@@ -95,8 +95,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	// int stateA = cmr_gpioRead(GPIO_BUTTON_A);
 	int stateB = cmr_gpioRead(GPIO_BUTTON_B);
 	// int oldB = ;
-	 
-	// if 
+
+	// if
 
 	// Update position based on encoder states
 	// rotaryPosition += (stateA == stateB) ? 1 : -1;

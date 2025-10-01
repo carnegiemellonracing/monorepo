@@ -27,8 +27,8 @@
 cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_HEARTBEAT_HVC] = {
         .canID = CMR_CANID_HEARTBEAT_HVC,
-        .timeoutError_ms = 1000,
-        .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
+        .timeoutError_ms = 20000,
+        .errorFlag = CMR_CAN_ERROR_NONE,
         .timeoutWarn_ms = 750,
         .warnFlag = CMR_CAN_WARN_VSM_HVC_TIMEOUT
     },
@@ -45,6 +45,13 @@ cmr_canRXMeta_t canRXMeta[] = {
         .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_VSM_DIM_TIMEOUT
+    },
+    [CANRX_HEARTBEAT_HVI] = {
+        .canID = CMR_CANID_HEARTBEAT_HVI,
+        .timeoutError_ms = 100,
+        .errorFlag = CMR_CAN_ERROR_VSM_MODULE_STATE,
+        .timeoutWarn_ms = 25,
+        .warnFlag = CMR_CAN_WARN_VSM_HVI_TIMEOUT
     },
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
@@ -66,22 +73,22 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 250,
     },
     [CANRX_INVERTER_1] = {
-        .canID = CMR_CANID_AMK_1_ACT_1,
+        .canID = CMR_CANID_AMK_FL_ACT_1,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
     },
     [CANRX_INVERTER_2] = {
-        .canID = CMR_CANID_AMK_2_ACT_1,
+        .canID = CMR_CANID_AMK_FR_ACT_1,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
     },
     [CANRX_INVERTER_3] = {
-        .canID = CMR_CANID_AMK_3_ACT_1,
+        .canID = CMR_CANID_AMK_RL_ACT_1,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
     },
     [CANRX_INVERTER_4] = {
-        .canID = CMR_CANID_AMK_4_ACT_1,
+        .canID = CMR_CANID_AMK_RR_ACT_1,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
     }
@@ -96,7 +103,7 @@ cmr_canRXMeta_t canRXMeta[] = {
  * @note Indexed by `canRX_t`.
  */
 const cmr_canVSMErrorSource_t vsmErrorSourceFlags[] = {
-    [CANRX_HEARTBEAT_HVC]       = CMR_CAN_VSM_ERROR_SOURCE_HVC,
+    [CANRX_HEARTBEAT_HVC]       = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_HEARTBEAT_CDC]       = CMR_CAN_VSM_ERROR_SOURCE_CDC,
     [CANRX_HEARTBEAT_DIM]       = CMR_CAN_VSM_ERROR_SOURCE_DIM,
     [CANRX_FSM_DATA]            = CMR_CAN_VSM_ERROR_SOURCE_DIM,
@@ -198,7 +205,7 @@ static void canTX200Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        sendVSMSensors();
+        // sendVSMSensors();
 
         vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
     }
@@ -260,8 +267,8 @@ void canInit(void) {
                 CMR_CANID_FSM_DATA,
                 CMR_CANID_FSM_SWANGLE,
                 CMR_CANID_DIM_REQUEST,
-                CMR_CANID_AMK_1_ACT_1,
-                CMR_CANID_AMK_2_ACT_1
+                CMR_CANID_AMK_FL_ACT_1,
+                CMR_CANID_AMK_FR_ACT_1
             }
         },
 
@@ -282,10 +289,10 @@ void canInit(void) {
             .isMask = false,
             .rxFIFO = CAN_RX_FIFO1,
             .ids = {
-                CMR_CANID_AMK_3_ACT_1,
-                CMR_CANID_AMK_4_ACT_1,
-                CMR_CANID_AMK_3_ACT_1,
-                CMR_CANID_AMK_4_ACT_1
+                CMR_CANID_AMK_RL_ACT_1,
+                CMR_CANID_AMK_RR_ACT_1,
+                CMR_CANID_AMK_RL_ACT_1,
+                CMR_CANID_AMK_RR_ACT_1
             }
         },
     };

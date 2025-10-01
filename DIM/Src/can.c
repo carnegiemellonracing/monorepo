@@ -57,14 +57,14 @@ char RAMBUF[RAMBUFLEN];
 cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_HEARTBEAT_VSM] =       { .canID = CMR_CANID_HEARTBEAT_VSM,.timeoutError_ms = 50,.timeoutWarn_ms = 25 },
     [CANRX_HVC_PACK_VOLTAGE] =    { .canID = CMR_CANID_HVC_PACK_VOLTAGE, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
-    [CANRX_AMK_FL_ACT_1] =        { .canID = CMR_CANID_AMK_1_ACT_1, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
-    [CANRX_AMK_FR_ACT_1] =        { .canID = CMR_CANID_AMK_3_ACT_1, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
-    [CANRX_AMK_RL_ACT_1] =        { .canID = CMR_CANID_AMK_4_ACT_1, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
-    [CANRX_AMK_RR_ACT_1] =        { .canID = CMR_CANID_AMK_2_ACT_1, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
-    [CANRX_AMK_FL_ACT_2] =        { .canID = CMR_CANID_AMK_1_ACT_2, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
-    [CANRX_AMK_FR_ACT_2] =        { .canID = CMR_CANID_AMK_3_ACT_2, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
-    [CANRX_AMK_RL_ACT_2] =        { .canID = CMR_CANID_AMK_4_ACT_2, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
-    [CANRX_AMK_RR_ACT_2] =        { .canID = CMR_CANID_AMK_2_ACT_2, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
+    [CANRX_AMK_FL_ACT_1] =        { .canID = CMR_CANID_AMK_FL_ACT_1, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
+    [CANRX_AMK_FR_ACT_1] =        { .canID = CMR_CANID_AMK_FR_ACT_1, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
+    [CANRX_AMK_RL_ACT_1] =        { .canID = CMR_CANID_AMK_RL_ACT_1, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
+    [CANRX_AMK_RR_ACT_1] =        { .canID = CMR_CANID_AMK_RR_ACT_1, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
+    [CANRX_AMK_FL_ACT_2] =        { .canID = CMR_CANID_AMK_FL_ACT_2, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
+    [CANRX_AMK_FR_ACT_2] =        { .canID = CMR_CANID_AMK_FR_ACT_2, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
+    [CANRX_AMK_RL_ACT_2] =        { .canID = CMR_CANID_AMK_RL_ACT_2, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
+    [CANRX_AMK_RR_ACT_2] =        { .canID = CMR_CANID_AMK_RR_ACT_2, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_HVC_PACK_TEMPS] =      { .canID = CMR_CANID_HVC_MINMAX_CELL_TEMPS, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_VSM_STATUS] =          { .canID = CMR_CANID_VSM_STATUS, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_PTCf_LOOP_A_TEMPS] =   { .canID = CMR_CANID_PTC_LOOP_TEMPS_A, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
@@ -158,7 +158,7 @@ static void canTX10Hz(void *pvParameters) {
 
         sendFSMPedalsADC();
         sendFSMSensorsADC();
-        
+
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -496,8 +496,8 @@ void canInit(void) {
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_MOVELLA_STATUS, CMR_CANID_CDC_ODOMETER, CMR_CANID_DIM_TEXT_WRITE, CMR_CANID_CDC_CONTROLS_STATUS } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_AFC1_DRIVER_TEMPS, CMR_CANID_HVC_MINMAX_CELL_TEMPS, CMR_CANID_VSM_STATUS, CMR_CANID_HEARTBEAT_MEMORATOR } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_PTC_LOOP_TEMPS_A, CMR_CANID_PTC_LOOP_TEMPS_B, CMR_CANID_PTC_LOOP_TEMPS_C, CMR_CANID_PTC_LOOP_TEMPS_B } },
-        { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_AMK_1_ACT_1, CMR_CANID_AMK_2_ACT_1, CMR_CANID_AMK_3_ACT_1, CMR_CANID_AMK_4_ACT_1 } },
-        { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_AMK_1_ACT_2, CMR_CANID_AMK_2_ACT_2, CMR_CANID_AMK_3_ACT_2, CMR_CANID_AMK_4_ACT_2 } },
+        { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_AMK_FL_ACT_1, CMR_CANID_AMK_FR_ACT_1, CMR_CANID_AMK_RL_ACT_1, CMR_CANID_AMK_RR_ACT_1 } },
+        { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_AMK_FL_ACT_2, CMR_CANID_AMK_FR_ACT_2, CMR_CANID_AMK_RL_ACT_2, CMR_CANID_AMK_RR_ACT_2 } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV0, CMR_CANID_CDC_CONFIG1_DRV0, CMR_CANID_CDC_CONFIG2_DRV0, CMR_CANID_CDC_CONFIG3_DRV0 } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV1, CMR_CANID_CDC_CONFIG1_DRV1, CMR_CANID_CDC_CONFIG2_DRV1, CMR_CANID_CDC_CONFIG3_DRV1 } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV2, CMR_CANID_CDC_CONFIG1_DRV2, CMR_CANID_CDC_CONFIG2_DRV2, CMR_CANID_CDC_CONFIG3_DRV2 } },
@@ -669,7 +669,7 @@ static void sendSWAngle(void) {
 
     int32_t steeringWheelAngle_deg_FL = (int32_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG_FL);
     int32_t steeringWheelAngle_deg_FR = (int32_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG_FR);
- 
+
     cmr_canFSMSWAngle_t msg = {
         .steeringWheelAngle_millideg_FL = steeringWheelAngle_deg_FL,
         .steeringWheelAngle_millideg_FR = steeringWheelAngle_deg_FR

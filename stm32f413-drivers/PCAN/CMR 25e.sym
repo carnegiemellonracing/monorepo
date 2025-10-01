@@ -52,7 +52,7 @@ Var=VSM_WRN_CDCTimeout bit 37,1
 Var=VSM_WRN_FSMTimeout bit 36,1
 Var=VSM_WRN_DIMTimeout bit 35,1
 Var=VSM_WRN_PTCTimeout bit 34,1
-Var=VSM_WRN_APCTimeout bit 32,1
+Var=VSM_WRN_HVITimeout bit 32,1
 Var=VSM_WRN_DIMReqNAK bit 31,1
 Var=VSM_WRN_VoltageOOR bit 25,1
 Var=VSM_WRN_CurrentOOR bit 26,1
@@ -68,7 +68,7 @@ Var=VSM_ERR_CDCTimeout bit 13,1
 Var=VSM_ERR_FSMTimeout bit 12,1
 Var=VSM_ERR_DIMTimeout bit 11,1
 Var=VSM_ERR_PTCTimeout bit 10,1
-Var=VSM_ERR_APCTimeout bit 8,1
+Var=VSM_ERR_HVITimeout bit 8,1
 Var=VSM_ERR_HVCState bit 22,1
 Var=VSM_ERR_CDCState bit 21,1
 Var=VSM_ERR_FSMState bit 20,1
@@ -100,7 +100,7 @@ Var=VSM_latched_ERR_FSMTimeout bit 5,1
 Var=VSM_latched_ERR_PTCTimeout bit 4,1
 Var=VSM_latched_ERR_DIMTimeout bit 3,1
 Var=VSM_latched_ERR_PTCfTimeout bit 2,1
-Var=VSM_latched_ERR_APCTimeout bit 0,1
+Var=VSM_latched_ERR_HVITimeout bit 0,1
 Var=VSM_latched_ERR_HVCState bit 15,1
 Var=VSM_latched_ERR_CDCState bit 14,1
 Var=VSM_latched_ERR_FSMState bit 13,1
@@ -416,12 +416,16 @@ ID=515h
 DLC=6
 CycleTime=100
 Timeout=1000
-Var=DIM_action1ButtonPressed unsigned 0,8
-Var=DIM_action2ButtonPressed unsigned 8,8
-Var=DIM_drsButtonPressed unsigned 16,8
+Var=DIM_launchButton unsigned 3,1
+Var=DIM_rotaryPos unsigned 8,8
+Var=DIM_switches unsigned 16,8
 Var=DIM_regenPercent unsigned 24,8 /u:percent
-Var=DIM_paddleLeft unsigned 32,8
-Var=DIM_paddleRight unsigned 40,8
+Var=DIM_paddle unsigned 32,8
+Var=DIM_left unsigned 40,1
+Var=DIM_actionButton unsigned 2,1
+Var=DIM_right unsigned 41,1
+Var=DIM_up unsigned 42,1
+Var=DIM_down unsigned 43,1
 
 [DIM_Acknowledge]
 ID=545h
@@ -1228,7 +1232,7 @@ Var=LED_driver_defect unsigned 33,1
 Var=Save_charging_mode unsigned 32,1
 
 [AMK_FR_Actual_Values_1]
-ID=287h	// Set ID based on wiring
+ID=284h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FR_Status_Reserved unsigned 0,8
@@ -1245,7 +1249,7 @@ Var=AMK_FR_TorqueCurrent signed 32,16 /u:Nm /f:0.001701171875	// Mysterious scal
 Var=AMK_FR_MagnetizingCurrent signed 48,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
 
 [AMK_FR_Actual_Values_2]
-ID=289h	// Set ID based on wiring
+ID=286h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FR_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1254,7 +1258,7 @@ Var=AMK_FR_ErrorInfo unsigned 32,16
 Var=AMK_FR_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_FR_Setpoints_1]
-ID=188h	// Set ID based on wiring
+ID=185h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_FR_Control_Reserved1 unsigned 0,8
@@ -1268,7 +1272,7 @@ Var=AMK_FR_TorqueLimitPositiv signed 32,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1
 Var=AMK_FR_TorqueLimitNegativ signed 48,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
 
 [AMK_FL_Actual_Values_1]
-ID=283h	// Set ID based on wiring
+ID=288h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FL_Status_Reserved unsigned 0,8
@@ -1285,7 +1289,7 @@ Var=AMK_FL_TorqueCurrent signed 32,16 /u:Nm /f:0.001701171875	// Mysterious scal
 Var=AMK_FL_MagnetizingCurrent signed 48,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
 
 [AMK_FL_Actual_Values_2]
-ID=285h	// Set ID based on wiring
+ID=28Ah	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_FL_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1294,7 +1298,7 @@ Var=AMK_FL_ErrorInfo unsigned 32,16
 Var=AMK_FL_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_FL_Setpoints_1]
-ID=184h	// Set ID based on wiring
+ID=189h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_FL_Control_Reserved1 unsigned 0,8
@@ -1308,7 +1312,7 @@ Var=AMK_FL_TorqueLimitPositiv signed 32,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1
 Var=AMK_FL_TorqueLimitNegativ signed 48,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
 
 [AMK_BL_Actual_Values_1]
-ID=288h	// Set ID based on wiring
+ID=287h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BL_Status_Reserved unsigned 0,8
@@ -1325,7 +1329,7 @@ Var=AMK_BL_TorqueCurrent signed 32,16 /u:Nm /f:0.001701171875	// Mysterious scal
 Var=AMK_BL_MagnetizingCurrent signed 48,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
 
 [AMK_BL_Actual_Values_2]
-ID=28Ah	// Set ID based on wiring
+ID=289h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BL_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1334,7 +1338,7 @@ Var=AMK_BL_ErrorInfo unsigned 32,16
 Var=AMK_BL_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_BL_Setpoints_1]
-ID=189h	// Set ID based on wiring
+ID=188h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_BL_Control_Reserved1 unsigned 0,8
@@ -1348,7 +1352,7 @@ Var=AMK_BL_TorqueLimitPositiv signed 32,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1
 Var=AMK_BL_TorqueLimitNegativ signed 48,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
 
 [AMK_BR_Actual_Values_1]
-ID=284h	// Set ID based on wiring
+ID=283h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BR_Status_Reserved unsigned 0,8
@@ -1365,7 +1369,7 @@ Var=AMK_BR_TorqueCurrent signed 32,16 /u:Nm /f:0.001701171875	// Mysterious scal
 Var=AMK_BR_MagnetizingCurrent signed 48,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
 
 [AMK_BR_Actual_Values_2]
-ID=286h	// Set ID based on wiring
+ID=285h	// Set ID based on wiring
 DLC=8
 CycleTime=5
 Var=AMK_BR_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
@@ -1374,7 +1378,7 @@ Var=AMK_BR_ErrorInfo unsigned 32,16
 Var=AMK_BR_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
 
 [AMK_BR_Setpoints_1]
-ID=185h	// Set ID based on wiring
+ID=184h	// Set ID based on wiring
 DLC=8
 CycleTime=1
 Var=AMK_BR_Control_Reserved1 unsigned 0,8
@@ -1885,134 +1889,6 @@ Var=Data1 char 16,8
 Var=Data2 char 24,8
 Var=Data3 char 32,8
 
-[DAQ_FR_STRAIN_0]
-ID=650h
-DLC=8
-Var=FR_FORCE_0 signed 0,32
-Var=FR_FORCE_1 signed 32,32 /u:N
-
-[DAQ_FR_STRAIN_1]
-ID=651h
-DLC=8
-Var=FR_FORCE_2 signed 0,32
-Var=FR_FORCE_3 signed 32,32
-
-[DAQ_FR_THERM]
-ID=652h
-DLC=8
-Var=FR_THERM_0 unsigned 0,16
-Var=FR_THERM_1 signed 16,16
-Var=FR_THERM_2 unsigned 32,16
-Var=FR_THERM_3 unsigned 48,16
-
-[DAQ_FR_DAMPER]
-ID=653h
-DLC=8
-Var=FR_DAMPER_MM unsigned 0,32
-Var=FR_DAMPER_ADC unsigned 32,32
-
-[DAQ_FR_ANEMOMETER]
-ID=654h
-DLC=8
-Var=FR_AIRSPEED_MPH unsigned 0,32
-Var=FR_AIRSPEED_ADC unsigned 32,32
-
-[DAQ_RR_STRAIN_0]
-ID=655h
-DLC=8
-Var=RR_FORCE_0 signed 0,32
-Var=RR_FORCE_1 signed 32,32 /u:N
-
-[DAQ_RR_STRAIN_1]
-ID=656h
-DLC=8
-Var=RR_FORCE_2 signed 0,32
-Var=RR_FORCE_3 signed 32,32
-
-[DAQ_RR_THERM]
-ID=657h
-DLC=8
-Var=RR_THERM_0 unsigned 0,16 -h
-Var=RR_THERM_1 signed 16,16
-Var=RR_THERM_2 unsigned 32,16
-Var=RR_THERM_3 unsigned 48,16
-
-[DAQ_RR_DAMPER]
-ID=658h
-DLC=8
-Var=RR_DAMPER_MM unsigned 0,32
-Var=RR_DAMPER_ADC unsigned 32,32
-
-[DAQ_RR_ANEMOMETER]
-ID=659h
-DLC=8
-Var=RR_AIRSPEED_MPH unsigned 0,32
-Var=RR_AIRSPEED_ADC unsigned 32,32
-
-[DAQ_RL_STRAIN_0]
-ID=65Ah
-DLC=8
-Var=RL_FORCE_0 signed 0,32
-Var=RL_FORCE_1 signed 32,32 /u:N
-
-[DAQ_RL_STRAIN_1]
-ID=65Bh
-DLC=8
-Var=RL_FORCE_2 signed 0,32
-Var=RL_FORCE_3 signed 32,32
-
-[DAQ_RL_THERM]
-ID=65Ch
-DLC=8
-Var=RL_THERM_0 unsigned 0,16
-Var=RL_THERM_1 signed 16,16
-Var=RL_THERM_2 unsigned 32,16
-Var=RL_THERM_3 unsigned 48,16
-
-[DAQ_RL_DAMPER]
-ID=65Dh
-DLC=8
-Var=RL_DAMPER_MM unsigned 0,32
-Var=RL_DAMPER_ADC unsigned 32,32
-
-[DAQ_RL_ANEMOMETER]
-ID=65Eh
-DLC=8
-Var=RL_AIRSPEED_MPH unsigned 0,32
-Var=RL_AIRSPEED_ADC unsigned 32,32
-
-[DAQ_FL_STRAIN_0]
-ID=65Fh
-DLC=8
-Var=FL_FORCE_0 signed 0,32
-Var=FL_FORCE_1 signed 32,32 /u:N
-
-[DAQ_FL_STRAIN_1]
-ID=660h
-DLC=8
-Var=FL_FORCE_2 signed 0,32
-Var=FL_FORCE_3 signed 32,32
-
-[DAQ_FL_THERM]
-ID=661h
-DLC=8
-Var=FL_THERM_0 unsigned 0,16
-Var=FL_THERM_1 signed 16,16
-Var=FL_THERM_2 unsigned 32,16
-Var=FL_THERM_3 unsigned 48,16
-
-[DAQ_FL_DAMPER]
-ID=662h
-DLC=8
-Var=FL_DAMPER_MM unsigned 0,32
-Var=FL_DAMPER_ADC unsigned 32,32
-
-[DAQ_FL_ANEMOMETER]
-ID=663h
-DLC=8
-Var=FL_AIRSPEED_MPH unsigned 0,32
-Var=FL_AIRSPEED_ADC unsigned 32,32
-
 [Memorator_Heartbeat]
 ID=109h
 DLC=1
@@ -2251,149 +2127,130 @@ ID=6E4h
 DLC=4
 Var=PowerLimit float 0,32 /u:kW /f:0.001
 
-[DAQ_PI_RL_MLX]
-ID=671h
-DLC=2
-Var=RL_AVG_TIRE_TEMP signed 0,16 /u:C /f:0.01
-
-[DAQ_PI_RL_VL53]
-ID=672h
-DLC=2
-Var=RL_LINE_HEIGHT unsigned 0,16 /u:mm
-
-[DAQ_PI_RL_NAU1]
-ID=673h
-DLC=3
-Var=RL_ADC1 unsigned 0,24
-
-[DAQ_PI_RL_NAU2]
-ID=674h
-DLC=3
-Var=RL_ADC2 unsigned 0,24
-
-[DAQ_PI_RL_ELPM75]
-ID=675h
-DLC=2
-Var=RL_LINPOT unsigned 0,12
-
-[DAQ_PI_RL_THERM_1]
-ID=676h
-DLC=2
-Var=RL_TEMP_1 unsigned 0,12
-
-[DAQ_PI_RL_THERM_2]
-ID=677h
-DLC=2
-Var=RL_TEMP_2 unsigned 0,12
-
-[DAQ_PI_RR_MLX]
-ID=678h
-DLC=2
-Var=RR_AVG_TIRE_TEMP signed 0,16 /u:C /f:0.01
-
-[DAQ_PI_RR_VL53]
-ID=679h
-DLC=2
-Var=RR_LINE_HEIGHT unsigned 0,16 /u:mm
-
-[DAQ_PI_RR_NAU1]
-ID=680h
-DLC=3
-Var=RR_ADC1 unsigned 0,24
-
-[DAQ_PI_RR_NAU2]
-ID=681h
-DLC=3
-Var=RR_ADC2 unsigned 0,24
-
-[DAQ_PI_RR_ELPM75]
-ID=682h
-DLC=2
-Var=RR_LINPOT unsigned 0,12
-
-[DAQ_PI_RR_THERM_1]
-ID=683h
-DLC=2
-Var=RR_TEMP_1 unsigned 0,12
-
-[DAQ_PI_RR_THERM_2]
-ID=684h
-DLC=2
-Var=RR_TEMP_2 unsigned 0,12
-
-[DAQ_PI_FL_MLX]
-ID=685h
-DLC=2
-Var=FL_AVG_TIRE_TEMP signed 0,16 /u:C /f:0.01
-
-[DAQ_PI_FL_VL53]
-ID=686h
-DLC=2
-Var=FL_LINE_HEIGHT unsigned 0,16 /u:mm
-
-[DAQ_PI_FL_NAU1]
-ID=687h
-DLC=3
-Var=FL_ADC1 unsigned 0,24
-
-[DAQ_PI_FL_NAU2]
-ID=688h
-DLC=3
-Var=FL_ADC2 unsigned 0,24
-
-[DAQ_PI_FL_ELPM75]
-ID=689h
-DLC=2
-Var=FL_LINPOT unsigned 0,12
-
-[DAQ_PI_FL_THERM_1]
-ID=690h
-DLC=2
-Var=FL_TEMP_1 unsigned 0,12
-
-[DAQ_PI_FL_THERM_2]
-ID=691h
-DLC=2
-Var=FL_TEMP_2 unsigned 0,12
-
-[DAQ_PI_FR_MLX]
-ID=692h
-DLC=2
-Var=FR_AVG_TIRE_TEMP signed 0,16 /u:C /f:0.01
-
-[DAQ_PI_FR_VL53]
-ID=693h
-DLC=2
-Var=FR_LINE_HEIGHT unsigned 0,16 /u:mm
-
-[DAQ_PI_FR_NAU1]
-ID=694h
-DLC=3
-Var=FR_ADC1 unsigned 0,24
-
-[DAQ_PI_FR_NAU2]
-ID=695h
-DLC=3
-Var=FR_ADC2 unsigned 0,24
-
-[DAQ_PI_FR_ELPM75]
-ID=696h
-DLC=2
-Var=FR_LINPOT unsigned 0,12
-
-[DAQ_PI_FR_THERM_1]
-ID=697h
-DLC=2
-Var=FR_TEMP_1 unsigned 0,12
-
-[DAQ_PI_FR_THERM_2]
-ID=698h
-DLC=2
-Var=FR_TEMP_2 unsigned 0,12
-
 [FSM_Swangle]
 ID=135h
 DLC=8
 Var=SwangleRight signed 0,32 /u:deg /f:0.001
 Var=SwangleLeft signed 32,32 /u:deg /f:0.001
+
+[LV_BMS_Voltages1]
+ID=7F7h
+DLC=6
+Var=Cell1 signed 0,16 /u:cV
+Var=Cell2 signed 16,16 /u:cV
+Var=Cell3 signed 32,16 /u:cV
+
+[LV_BMS_Voltages2]
+ID=7F8h
+DLC=6
+Var=Cell4 signed 0,16 /u:cV
+Var=Cell5 signed 16,16 /u:cV
+Var=Cell6 signed 32,16 /u:cV
+
+[DAQ_PI_RL_MLX]
+ID=660h
+DLC=2
+CycleTime=125
+Timeout=1000
+Var=RL_Avg_Tire_Temp unsigned 0,16 /u:C /f:0.1
+
+[DAQ_PI_RL_ADC]
+ID=661h
+DLC=6
+CycleTime=5
+Timeout=25
+Var=RL_Linpot unsigned 0,16
+Var=RL_ADC1 unsigned 16,16
+Var=RL_ADC2 unsigned 32,16
+
+[DAQ_PI_RL_VL]
+ID=662h
+DLC=2
+CycleTime=50
+Timeout=200
+Var=RL_RideHeight unsigned 0,16
+
+[DAQ_PI_FL_MLX]
+ID=670h
+DLC=2
+CycleTime=125
+Timeout=1000
+Var=FL_Avg_Tire_Temp unsigned 0,16 /u:C /f:0.1
+
+[DAQ_PI_FL_ADC]
+ID=671h
+DLC=6
+CycleTime=5
+Timeout=25
+Var=FL_Linpot unsigned 0,16
+Var=FL_ADC1 unsigned 16,16
+Var=FL_ADC2 unsigned 32,16
+
+[DAQ_PI_FL_VL]
+ID=672h
+DLC=2
+CycleTime=50
+Timeout=200
+Var=FL_RideHeight unsigned 0,16
+
+[DAQ_PI_FR_MLX]
+ID=680h
+DLC=2
+CycleTime=125
+Timeout=1000
+Var=FR_Avg_Tire_Temp unsigned 0,16 /u:C /f:0.1
+
+[DAQ_PI_FR_ADC]
+ID=681h
+DLC=6
+CycleTime=5
+Timeout=25
+Var=FR_Linpot unsigned 0,16
+Var=FR_ADC1 unsigned 16,16
+Var=FR_ADC2 unsigned 32,16
+
+[DAQ_PI_FR_VL]
+ID=682h
+DLC=2
+CycleTime=50
+Timeout=200
+Var=FR_RideHeight unsigned 0,16
+
+[DAQ_PI_RR_MLX]
+ID=690h
+DLC=2
+CycleTime=125
+Timeout=1000
+Var=RR_Avg_Tire_Temp unsigned 0,16 /u:C /f:0.1
+
+[DAQ_PI_RR_ADC]
+ID=691h
+DLC=6
+CycleTime=5
+Timeout=25
+Var=RR_Linpot unsigned 0,16
+Var=RR_ADC1 unsigned 16,16
+Var=RR_ADC2 unsigned 32,16
+
+[DAQ_PI_RR_VL]
+ID=692h
+DLC=2
+CycleTime=50
+Timeout=200
+Var=RR_RideHeight unsigned 0,16
+
+[DAQ_Therm1]
+ID=658h
+DLC=8
+CycleTime=100
+Timeout=200
+Var=Therm_1_1 unsigned 0,32
+Var=Therm_1_2 unsigned 32,32
+
+[DAQ_Therm2]
+ID=659h
+CycleTime=100
+Timeout=200
+Var=Therm_2_1 unsigned 0,32
+Var=Therm_2_2 unsigned 32,32
 
