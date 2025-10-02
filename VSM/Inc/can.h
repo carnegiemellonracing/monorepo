@@ -46,6 +46,7 @@ int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 void *getPayload(canRX_t rxMsg);
 cmr_canState_t getModuleState(canRX_t module);
 bool getASMSState(void);
+void sendFirstError(bool detectedFirstError, uint16_t line);
 
 #endif /* CAN_H */
 

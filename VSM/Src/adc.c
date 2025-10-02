@@ -57,7 +57,7 @@ void adcInit(void) {
     cmr_adcInit(
         &adc, ADC1,
         adcChannels, sizeof(adcChannels) / sizeof(adcChannels[0]),
-        5
+        20
     );
 }
 

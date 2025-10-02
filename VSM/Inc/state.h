@@ -27,7 +27,6 @@ typedef struct {
 extern cmr_canState_t vsmToCANState[];
 extern volatile TickType_t lastStateChangeTime_ms;
 extern volatile cmr_canHVCMode_t hvcModeRequest;
-extern volatile bool ASMS;
 
 void stateInit(void);
 cmr_canVSMState_t getCurrentState(void);

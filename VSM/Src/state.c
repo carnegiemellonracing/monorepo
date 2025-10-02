@@ -34,6 +34,7 @@ cmr_canState_t vsmToCANState[] = {
     [CMR_CAN_VSM_STATE_REQ_PRECHARGE]   = CMR_CAN_GLV_ON,
     [CMR_CAN_VSM_STATE_RUN_BMS]         = CMR_CAN_GLV_ON,
     [CMR_CAN_VSM_STATE_INVERTER_EN]     = CMR_CAN_GLV_ON,
+    [CMR_CAN_VSM_STATE_BRAKE_TEST]      = CMR_CAN_GLV_ON,
     [CMR_CAN_VSM_STATE_HV_EN]           = CMR_CAN_HV_EN,
     [CMR_CAN_VSM_STATE_RTD]             = CMR_CAN_RTD,
     [CMR_CAN_VSM_STATE_AS_READY]        = CMR_CAN_AS_READY,
@@ -105,6 +106,7 @@ static bool vehicleStill();
 static bool getVehicleFinished(bool vehicleStill);
 static bool getRESGo();
 static bool RESTriggered();
+static bool passBrakeTest();
 
 // ------------------------------------------------------------------------------------------------
 // Interface functions
@@ -256,14 +258,27 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
 
         case CMR_CAN_VSM_STATE_GLV_ON: {
             // T2
-            if (dimRequestedState == CMR_CAN_HV_EN || dimRequestedState == CMR_CAN_AS_READY) {
-                nextState = CMR_CAN_VSM_STATE_REQ_PRECHARGE;
+            if ((dimRequestedState == CMR_CAN_HV_EN || dimRequestedState == CMR_CAN_AS_READY) &&
+                getASMSState()){
+                nextState = CMR_CAN_VSM_STATE_BRAKE_TEST;
             }
             // T11
             else if (dimRequestedState == CMR_CAN_GLV_ON) {
                 nextState = CMR_CAN_VSM_STATE_GLV_ON;
             }
 
+            break;
+        }
+
+        case CMR_CAN_VSM_STATE_BRAKE_TEST: {
+            if (passBrakeTest()){
+                if (dimRequestedState == CMR_CAN_HV_EN || dimRequestedState == CMR_CAN_AS_READY) {
+                    nextState = CMR_CAN_VSM_STATE_REQ_PRECHARGE;
+                }
+            }
+            else if (dimRequestedState == CMR_CAN_GLV_ON){
+                nextState = CMR_CAN_VSM_STATE_GLV_ON;
+            }
             break;
         }
 
@@ -302,17 +317,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         }
         
         case CMR_CAN_VSM_STATE_INVERTER_EN: {
-            if (
-                // TODO: change back before comp so that don't unnecessarily error out
-                ((amk1Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
-                    !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_1]), lastWakeTime_ms)) ||
-                ((amk2Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
-                    !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_2]), lastWakeTime_ms)) ||
-                ((amk3Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
-                    !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_3]), lastWakeTime_ms)) ||
-                ((amk4Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
-                    !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_4]), lastWakeTime_ms))
-                ){
+            if (checkInverters()){
                 //if (!EBSActive() && AutonomousClear() && brakePressureRear_PSI >= brakePressureThreshold_PSI) {
                 // if (true){
                 //     nextState = CMR_CAN_VSM_STATE_AS_READY;
@@ -405,7 +410,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             if (!EBSActive() && !AutonomousClear()){
                 nextState = CMR_CAN_VSM_STATE_ERROR;
             }
-            else if (getVeichleFinished(veichleStill) && !RESTriggered() && (lastWakeTime_ms > lastStateChangeTime_ms + AS_FINISHED_TIME)){
+            else if (getVehicleFinished(vehicleStill) && !RESTriggered() && (lastWakeTime_ms > lastStateChangeTime_ms + AS_FINISHED_TIME)){
                 nextState = CMR_CAN_VSM_STATE_ERROR;
             }
             else{
@@ -471,7 +476,7 @@ static void setStateOutputs(TickType_t lastWakeTime_ms) {
             hvcModeRequest = CMR_CAN_HVC_MODE_ERROR;
             break;
 
-        case CMR_CAN_VSM_STATE_AS_FINISHED:
+        case CMR_CAN_VSM_STATE_AS_FINISHED: //Fallthrough
         case CMR_CAN_VSM_STATE_GLV_ON:
             cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
             hvcModeRequest = CMR_CAN_HVC_MODE_IDLE;
@@ -588,7 +593,7 @@ static inline bool AutonomousClear(){
 /**
  * @brief Checks if EBS is trying to brake
  */
-static inline bool EBSActive(){
+static inline bool EBSActive(){ //brake test
 	return false;
 //    cmr_canDVPressureReadings_t* pressureReading = (cmr_canDVPressureReadings_t*) getPayload(CANRX_AS_PRESSURE_READING);
 //    return pressureReading->ebsPressurePercentofThreshold > 100;
@@ -598,18 +603,18 @@ static inline bool EBSActive(){
 /**
  * @brief Check if autonomous mission has finshed.  
  */
-static inline bool getMissionFinished(){
+static inline bool getMissionFinished(){ //can from compute
     return false;
 }
 
 /**
- * @brief Check if veichle is finished
+ * @brief Check if vehicle is finished
  * 
- * @note Veichle still passed in as a parameters since it is computed once
+ * @note Vehicle still passed in as a parameters since it is computed once
  *       per hot loop and is somewhat expensive to compute  
  */
-static bool getVeichleFinished(bool veichleStill){
-    return veichleStill && getMissionFinished();
+static bool getVehicleFinished(bool vehicleStill){
+    return vehicleStill && getMissionFinished();
 }
 
 
@@ -618,14 +623,23 @@ static bool getVeichleFinished(bool veichleStill){
  */
 static inline bool getRESGo() {
 	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
-    return (data[0] & 4);
+    return (data[0] & 1); //Getting ASSI_state_ready bit
 }
 
 /**
  * @brief Checks if RES is activated
- * @todo IMPLEMENT
+ * @todo VERIFY
  */
 static inline bool RESTriggered(){
 	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
-	return !(data[0] & 1);
+	return (data[0] & 3); //Getting ASSI_state_res_triggered bit
+}
+
+/**
+ * @brief Checks if Brake Test passed
+ * @todo VERIFY
+ */
+static inline bool passBrakeTest(){
+    uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
+    return (data[1] & 3); //Getting AMI_state_braketest bit
 }

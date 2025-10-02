@@ -24,9 +24,15 @@ const uint16_t brakePressureThreshold_PSI = 40;
  */
 static const TickType_t badStateThres_ms = 50;
 
+/**
+ * @brief If first error has been detected, latch. Reset if in GLV_ON
+ */
+static bool detectedFirstError = false;
+
 // Forward declarations
 static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime);
 static bool getASEmergency();
+
 /**
  * @brief Checks for all errors and updates vsmStatus as needed.
  *
@@ -59,7 +65,6 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     cmr_sensorListGetFlags(&sensorList, NULL, &heartbeatErrors);
 
     // Check for improper states
-    // TODO probably make this less repetitive
     if (getBadModuleState(CANRX_HEARTBEAT_HVC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
         badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_HVC;
@@ -147,8 +152,7 @@ static bool dimRequestIsValid(
         !dimRequestTimeout &&
         dimRequestedState == getCurrentStatus()->dimRequestReject
     ) {
-        // A state was marked as rejected, but the DIM is still requesting it.
-        // Reject the request.
+        // Reject request, in case of continued DIM requests for a marked-rejected state
         return false;
     }
 
@@ -238,6 +242,7 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
             case CMR_CAN_VSM_STATE_CLEAR_ERROR: {
                 if ((hvcMode != CMR_CAN_HVC_MODE_IDLE)
                  && (hvcMode != CMR_CAN_HVC_MODE_ERROR)) {
+                    sendFirstError(detectedFirstError, __LINE__);
                     wrongState = true;
                 }
 
@@ -246,6 +251,7 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
 
             case CMR_CAN_VSM_STATE_GLV_ON: {
                 if (hvcMode != CMR_CAN_HVC_MODE_IDLE) {
+                    sendFirstError(detectedFirstError, __LINE__);
                     wrongState = true;
                 }
 
@@ -254,6 +260,7 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
             case CMR_CAN_VSM_STATE_REQ_PRECHARGE: {
                 if ((hvcMode != CMR_CAN_HVC_MODE_IDLE)
                  && (hvcMode != CMR_CAN_HVC_MODE_START)) {
+                    sendFirstError(detectedFirstError, __LINE__);
                     wrongState = true;
                 }
 
@@ -263,6 +270,7 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
             case CMR_CAN_VSM_STATE_RUN_BMS: {
                 if ((hvcMode != CMR_CAN_HVC_MODE_START)
                  && (hvcMode != CMR_CAN_HVC_MODE_RUN)) {
+                    sendFirstError(detectedFirstError, __LINE__);
                     wrongState = true;
                 }
 
@@ -277,6 +285,7 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
             case CMR_CAN_VSM_STATE_AS_FINISHED:
             case CMR_CAN_VSM_STATE_AS_EMERGENCY: {
                 if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
+                    sendFirstError(detectedFirstError, __LINE__);
                     wrongState = true;
                 }
 
@@ -288,6 +297,7 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
             // case CMR_CAN_VSM_STATE_RTD: 25e, fall thru to default but seems unimplemented
 
             default: {
+                sendFirstError(detectedFirstError, __LINE__);
                 cmr_panic("Invalid VSM state");
                 break;
             }
@@ -319,4 +329,36 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
 
 static bool getASEmergency(){
     return false;
+}
+
+/**
+ * @brief Check all inverters if endurance mode. Else, check RR inverter*/
+
+static bool checkInverters(){
+    // TODO: change back before comp so that don't unnecessarily error out
+    cmr_canState_t dimRequestedGear = (cmr_canState_t)(dimRequest->requestedGear);
+    if (dimRequestedGear == CMR_CAN_GEAR_ENDURANCE){
+        if (((amk1Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
+            !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_1]), lastWakeTime_ms)) ||
+        ((amk2Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
+            !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_2]), lastWakeTime_ms)) ||
+        ((amk3Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
+            !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_3]), lastWakeTime_ms)) ||
+        ((amk4Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
+            !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_4]), lastWakeTime_ms))){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    else{
+        if (((amk1Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
+            !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_1]), lastWakeTime_ms))){
+                return true
+        }
+        else{
+            return false;
+        }
+    }
 }

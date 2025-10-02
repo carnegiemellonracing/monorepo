@@ -22,6 +22,10 @@ typedef enum {
     CMR_CAN_RTD,            /**< @brief Ready to drive. */
     CMR_CAN_ERROR,          /**< @brief Error has occurred. */
     CMR_CAN_CLEAR_ERROR     /**< @brief Request to clear error. */
+    CMR_CAN_AS_READY,       /**< @brief Autonomous ready mode */
+    CMR_CAN_AS_DRIVING,     /**< @brief Autonomous driving mode */
+	CMR_CAN_AS_FINISHED,    /**< @brief Autonomous finished mode */
+	CMR_CAN_AS_EMERGENCY     /**< @brief Autonomous emergency mode */
 } cmr_canState_t;
 
 /** @brief Standard CAN heartbeat. */
@@ -194,12 +198,15 @@ typedef enum {
     CMR_CAN_VSM_STATE_REQ_PRECHARGE,    /**< @brief Request accumulator isolation relay precharge. */
     CMR_CAN_VSM_STATE_RUN_BMS,          /**< @brief Run Battery Management System. */
     CMR_CAN_VSM_STATE_DCDC_EN,          /**< @brief Enable DCDC converters. */
-    CMR_CAN_VSM_STATE_INVERTER_EN,      /**< #brief Enable inverter logic power. */
+    CMR_CAN_VSM_STATE_INVERTER_EN,      /**< @brief Enable inverter logic power. */
+    CMR_CAN_VSM_STATE_BRAKE_TEST,       /**< @brief Check if brakes work*/
     CMR_CAN_VSM_STATE_HV_EN,            /**< @brief Enable high voltage system. */
     CMR_CAN_VSM_STATE_RTD,              /**< @brief Ready to drive. */
-    CMR_CAN_VSM_STATE_COOLING_OFF,      /**< @brief Disable powertrain cooling system. */
-    CMR_CAN_VSM_STATE_DCDC_OFF,         /**< @brief Disable DCDC converters. */
-    CMR_CAN_VSM_STATE_LEN               /**< @brief Number of VSM states. */
+    CMR_CAN_VSM_STATE_LEN,              /**< @brief Number of VSM states. */
+    CMR_CAN_VSM_STATE_AS_READY,               /**< @brief Autonomous ready*/
+    CMR_CAN_VSM_STATE_AS_DRIVING,             /**< @brief Autonomous driving*/
+    CMR_CAN_VSM_STATE_AS_FINISHED,            /**< @brief Autonomous finished*/
+    CMR_CAN_VSM_STATE_AS_EMERGENCY            /**< @brief Autonomous emergency*/
 } cmr_canVSMState_t;
 
 /** @brief Bit definitions for timeoutMatrix and badStateMatrix in cmr_canVSMErrors_t. */
@@ -214,9 +221,10 @@ typedef enum {
     CMR_CAN_VSM_ERROR_SOURCE_FSM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_DIM = (1 << 3),
-    /** @brief At least one
- message has timed out. */
+    /** @brief At least one message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_PTC = (1 << 2),
+    /** @brief At least one Vehicle Safety Module message has timed out */
+    CMR_CAN_VSM_ERROR_SOURCE_AIM = (1 << 1),
     /** @brief HVI Timeout. */
     CMR_CAN_VSM_ERROR_SOURCE_HVI = (1 << 0)
 } cmr_canVSMErrorSource_t;
