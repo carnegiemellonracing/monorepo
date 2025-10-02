@@ -630,15 +630,6 @@ static void canTX200Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        
-        // 2 wheel drive
-        // amkSetpointsRL->torqueLimNeg_dpcnt = 0;
-        // amkSetpointsRL->torqueLimPos_dpcnt = 0;
-        // amkSetpointsRL->velocity_rpm = 0;
-        // amkSetpointsRR->torqueLimNeg_dpcnt = 0;
-        // amkSetpointsRR->torqueLimPos_dpcnt = 0;
-        // amkSetpointsRR->velocity_rpm = 0;
-
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_FL_SETPOINTS, amkSetpointsFL, sizeof(*amkSetpointsFL), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_FR_SETPOINTS, amkSetpointsFR, sizeof(*amkSetpointsFR), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_RL_SETPOINTS, amkSetpointsRL, sizeof(*amkSetpointsRL), canTX200Hz_period_ms);

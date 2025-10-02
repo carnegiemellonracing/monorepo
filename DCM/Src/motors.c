@@ -221,17 +221,13 @@ static void motorsCommand (
             	mcCtrlOn();
             	// fansOn();
             	pumpsOn();
-                // for (size_t i = 0; i < MOTOR_LEN; i++) {
-                //     motorSetpoints[i].control_bv = CMR_CAN_AMK_CTRL_HV_EN  |
-                //                                    CMR_CAN_AMK_CTRL_INV_ON |
-                //                                    CMR_CAN_AMK_CTRL_INV_EN;
-                // }
-                motorSetpoints[MOTOR_FL].control_bv = CMR_CAN_AMK_CTRL_HV_EN  |
+                for (size_t i = 0; i < MOTOR_LEN; i++) {
+                    motorSetpoints[i].control_bv = CMR_CAN_AMK_CTRL_HV_EN  |
                                                    CMR_CAN_AMK_CTRL_INV_ON |
                                                    CMR_CAN_AMK_CTRL_INV_EN;
-                motorSetpoints[MOTOR_FR].control_bv = CMR_CAN_AMK_CTRL_HV_EN  |
-                                                   CMR_CAN_AMK_CTRL_INV_ON |
-                                                   CMR_CAN_AMK_CTRL_INV_EN;
+                }
+
+
                 // Blip (100ms) control message to zero torque/speed after transitioning
                 // from HV_EN to RTD to make sure inverters receive clean enable
                 const bool blank_command = (lastHvenTime + 100 > xTaskGetTickCount());
@@ -290,11 +286,9 @@ static void motorsCommand (
             	mcCtrlOn();
             	// fansOn();
             	pumpsOn();
-                motorSetpoints[MOTOR_FL].control_bv         = CMR_CAN_AMK_CTRL_HV_EN |
-                                                           CMR_CAN_AMK_CTRL_ERR_RESET;
-                motorSetpoints[MOTOR_FR].control_bv         = CMR_CAN_AMK_CTRL_HV_EN |
-                                                           CMR_CAN_AMK_CTRL_ERR_RESET;
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
+                    motorSetpoints[i].control_bv         = CMR_CAN_AMK_CTRL_HV_EN |
+                                                           CMR_CAN_AMK_CTRL_ERR_RESET;
                     motorSetpoints[i].velocity_rpm       = 0;
                     motorSetpoints[i].torqueLimPos_dpcnt = 0;
                     motorSetpoints[i].torqueLimNeg_dpcnt = 0;
