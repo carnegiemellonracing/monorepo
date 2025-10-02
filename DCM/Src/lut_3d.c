@@ -75,7 +75,7 @@ float getLUTMaxFx() {
  */
 static float getKappaScaleFactor() {
     float xScaleFactor = 1.0f;
-    const bool retVal = getProcessedValue(&xScaleFactor, TC_LUT_Y_SCALE_INDEX, float_2_decimal);
+    const bool retVal = getProcessedValue(&xScaleFactor, TC_LUT_X_SCALE_INDEX, float_2_decimal);
     if (retVal) {
         return 0.85f;//xScaleFactor;
     }
