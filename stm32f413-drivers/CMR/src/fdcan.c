@@ -375,33 +375,28 @@ CAN_TX_MAILBOX_CALLBACK(2)
 #undef CAN_TX_MAILBOX_CALLBACK
 
 /**
- * @brief HAL CAN error callback.
+ * @brief Check if the bus is off and if so initiates a bus reset
  *
- * @warning Called from an interrupt handler!
- * @warning The handle must have been configured through this library!
+ * @param hfdcan FDCan Handle
  */
-void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *handle) {
-    cmr_can_t *can = cmr_canFromHandle(handle);
-
-    uint32_t error = handle->ErrorCode;
-    if (error & (
-            HAL_CAN_ERROR_TX_ALST0 |
-            HAL_CAN_ERROR_TX_ALST1 |
-            HAL_CAN_ERROR_TX_ALST2 |
-            HAL_CAN_ERROR_TX_TERR0 |
-            HAL_CAN_ERROR_TX_TERR1 |
-            HAL_CAN_ERROR_TX_TERR2
-    )) {
-        // Transmit error; drop semaphore.
-        BaseType_t higherWoken;
-        if (xSemaphoreGiveFromISR(can->txSem, &higherWoken) != pdTRUE) {
-            cmr_panic("TX semaphore released too many times!");
-        }
-        portYIELD_FROM_ISR(higherWoken);
+void CAN_bus_off_check_reset(FDCAN_HandleTypeDef *hfdcan) {
+    FDCAN_ProtocolStatusTypeDef protocolStatus = {};
+    HAL_FDCAN_GetProtocolStatus(hfdcan, &protocolStatus);
+    if (protocolStatus.BusOff) {
+        CLEAR_BIT(hfdcan->Instance->CCCR, FDCAN_CCCR_INIT);
     }
+}
 
-    // Clear errors.
-    handle->ErrorCode = 0;
+/**
+ * @brief Overrides the weak error callback and calls CAN_bus_off_check_reset
+ *
+ * @param hfdcan FDCan Handle
+ * @param ErrorStatusITs the error status bit vector
+ */
+void HAL_FDCAN_ErrorStatusCallback(FDCAN_HandleTypeDef *hfdcan, uint32_t ErrorStatusITs) {
+    if ((ErrorStatusITs & FDCAN_IT_BUS_OFF) != RESET) {
+        CAN_bus_off_check_reset(hfdcan);
+    }
 }
 
 /**
