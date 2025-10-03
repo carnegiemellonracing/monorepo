@@ -55,21 +55,15 @@ cmr_canRXMeta_t canRXMeta[] = {
 		.canID = CMR_CANID_HEARTBEAT_HVI,
 		.timeoutError_ms = 50,
 		.timeoutWarn_ms = 25
-    },
-	[CANRX_BALANCE_COMMAND] = {
-		.canID = CMR_CANID_CELL_BALANCE_ENABLE,
-		.timeoutError_ms = 50,
-		.timeoutWarn_ms = 25
-	}
+    } 
 };
 
 /** @brief Primary CAN interface. */
 static cmr_can_t can;
 
 // Forward declarations
-//static void sendHeartbeat(TickType_t lastWakeTime);
-static void sendHVCPackVoltage(void);
-//static void sendBMSPackCurrent(void);
+static void sendHeartbeat(TickType_t lastWakeTime);
+static void sendHVCPackVoltage(void); 
 static void sendBMSBMBStatusErrors(void);
 static void sendBMSBMBStatusVoltage(uint8_t bmb_index);
 static void sendBMSBMBStatusTemp(uint8_t bmb_index);
