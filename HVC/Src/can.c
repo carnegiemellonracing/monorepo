@@ -25,10 +25,6 @@
 /** @brief Intercept for voltage sense transfer function */
 #define V_TRANS_B -8313.3
 
-/** @brief Struct to identify stale commands. */
-extern ReceiveMeta_t BMSCommandReceiveMeta;
-
-extern volatile int BMBErrs[BOARD_NUM];
 
 /**
  * @brief CAN periodic message receive metadata
@@ -69,7 +65,6 @@ static cmr_can_t can;
 // Forward declarations
 static void sendHeartbeat(TickType_t lastWakeTime);
 static void sendHVCPackVoltage(void);
-static void sendBMSPackCurrent(void);
 static void calcPower(cmr_canHVIHeartbeat_t *heartbeat); 
 
 /** @brief CAN 1 Hz TX priority. */
@@ -93,15 +88,6 @@ static void canTX1Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-
-        // BMB Temperature Status
-        for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM - 1; bmb_index++) {
-            //sendBMSBMBStatusTemp(bmb_index);
-        }
-        //sendBMSMinMaxCellTemp();
-
-       //sendAllBMBVoltages();
-
         vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
     }
 }
@@ -130,11 +116,6 @@ static void canTX10Hz(void *pvParameters) {
     while (1) {
         // BRUSA Charger decided by state machine
         // sendBRUSAChargerControl();
-
-        // BMB Voltage Status
-        for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
-            //sendBMSBMBStatusVoltage(bmb_index);
-        }
 
         calcPower(&heartbeat);
     	canTX(CMR_CANID_HEARTBEAT_HVI, &heartbeat, sizeof(heartbeat), canTX10Hz_period_ms);
@@ -383,7 +364,7 @@ static void calcPower(cmr_canHVIHeartbeat_t *heartbeat) {
     heartbeat->packCurrent_dA = current;
     heartbeat->packPower_W = power;   
 
-	uint16_t voltageRaw, currentRaw;
+    uint16_t voltageRaw, currentRaw;
 	voltageRaw = adcRead(ADC_VSENSE);
 	currentRaw = adcRead(ADC_ISENSE);
 }

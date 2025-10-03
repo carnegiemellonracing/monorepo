@@ -24,18 +24,6 @@
 /** @brief Intercept for voltage sense transfer function */
 #define V_TRANS_B -8313.3
 
-/** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
-static const TickType_t TPOS_IMPLAUS_THRES_MS = 100;
-/** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
-static const uint32_t TPOS_IMPLAUS_THRES = UINT8_MAX / 10;
-
-/** @brief Throttle threshold for brake implausibility. See FSAE rule EV.2.4. */
-static const uint8_t BPP_TPOS_IMPLAUS_THRES = UINT8_MAX / 4;
-/** @brief Throttle threshold for clearing brake implausibility. See FSAE rule EV.2.4. */
-static const uint8_t BPP_TPOS_CLEAR_THRES = UINT8_MAX / 20;
-/** @brief Threshold where brakes are considered to be actuated. */
-static const uint8_t BRAKE_ACTIVE_THRES_PSI = 40;
-
 /** @brief 90 degree sw left lock adc value. */
 #define SWANGLE_90DEG_LEFT 1345
 /** @brief -90 degree sw RIGHT lock adc value. */
@@ -109,22 +97,6 @@ static int32_t ADCtoMV_HV(const cmr_sensor_t *sensor, uint32_t reading) {
 	return (((int32_t) reading) * 268 - 426400);
 }
 
-/**
- * @brief Converts a raw ADC value into HV current
- *
- * @param sensor The sensor to read.
- *
- * @param reading The ADC value to convert.
- *
- * @return Current in A.
- */
-// HV current goes through shunt resistor of 1m
-// Max current of 250A, means max Vdiff of 250mV
-static int32_t ADCtoA_HV(const cmr_sensor_t *sensor, uint32_t reading) {
-    (void) sensor;
-	// TODO: Figure out this transfer function
-	return (((int32_t) reading) >> 2);
-}
 
 /**
  * 
@@ -163,17 +135,10 @@ static int32_t adcToVoltage(const cmr_sensor_t *sensor, uint32_t reading) {
 static int32_t adcToCurrent(const cmr_sensor_t *sensor, uint32_t reading) {
     (void)sensor;
 
-    int32_t current = (int32_t) (((0.143) * (float)reading - 294.0) * 10.0);
+    int32_t current = (int32_t) (((0.143) * (double)reading - 294.0) * 10.0);
     return current;
 }
 
-static int32_t adcToVref(const cmr_sensor_t *sensor, uint32_t reading) {
-    (void)sensor;
-
-    int32_t vref = (int32_t) reading;
-
-    return vref;
-}
 
 
 static cmr_sensor_t sensors[SENSOR_CH_LEN] = {

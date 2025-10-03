@@ -58,7 +58,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                     nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE;
                     lastPrechargeTime = xTaskGetTickCount();
             } else {
-                nextState = CMR_CAN_HVC_STATE_STANDBY;
+                nextState = CMR_CAN_HVC_STATE_STANDBY; 
             }
             break;
         case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE: // S3
@@ -66,7 +66,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                   HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN)) {
                 //T6: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (abs((getBattMillivolts()) - (((uint32_t)hvi_heartbeat->packVoltage_cV))*10) < 30000) {
+            } else if (abs((getHVmillivolts()) - (((int32_t)hvi_heartbeat->packVoltage_cV))*10) < 30000) {
                 //T2: HV rails are precharged to within 30000mV
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE;
                 lastPrechargeTime = xTaskGetTickCount();
