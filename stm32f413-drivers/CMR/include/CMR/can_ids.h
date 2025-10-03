@@ -32,7 +32,7 @@ typedef enum {
     CMR_CANID_VSM_SENSORS = 0x200,              /**< @brief VSM sensor data. */
     CMR_CANID_VSM_LATCHED_STATUS = 0x510,       /**< @brief VSM latched status. */
     CMR_CANID_VSM_POWER_DIAGNOSTICS = 0x530,    /**< @brief VSM power diagnostics. */
-    CMR_CANID_VSM_FIRST_ERROR = 0x10a,           /**< @brief VSM first error state */
+    CMR_CANID_VSM_FIRST_ERROR = 0x10a,          /**< @brief VSM first error state */
 
     CMR_CANID_HVC_COMMAND = 0x130,              /**< @brief HVC command, sent by VSM. */
     CMR_CANID_HVC_PACK_VOLTAGE = 0x301,         /**< @brief HVC pack voltage. */
@@ -294,7 +294,7 @@ typedef enum {
     CAN_ID_LV_BMS_CURRENT,
 
     //AS
-    CMR_CANID_AS_RES = 0x182,                   /**< @brief Autonomous RES (remote E-stop) @todo uh shouldn't this be 0x502*/
+    CMR_CANID_AS_RES = 0x182,                   /**< @brief Autonomous RES (remote E-stop)*/
     CMR_CANID_AUTONOMOUS_ACTION = 0x190,        /**< @brief Autonomous Action*/
     CMR_CANID_AS_PRESSURE_READINGS = 0x191,     /**< @brief Autonomous Pressure Readings for Tank and EBS*/
     CMR_CANID_AS_RACK_DISPLACMENT = 0x192,      /**< @brief Rack Displacement Mesurment*/

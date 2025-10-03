@@ -258,9 +258,11 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
 
         case CMR_CAN_VSM_STATE_GLV_ON: {
             // T2
-            if ((dimRequestedState == CMR_CAN_HV_EN || dimRequestedState == CMR_CAN_AS_READY) &&
-                getASMSState()){
+            if (dimRequestedState == CMR_CAN_AS_READY && getASMSState()){
                 nextState = CMR_CAN_VSM_STATE_BRAKE_TEST;
+            }
+            else if (dimRequestedState == CMR_CAN_HV_EN){
+                nextState = CMR_CAN_VSM_STATE_REQ_PRECHARGE;
             }
             // T11
             else if (dimRequestedState == CMR_CAN_GLV_ON) {
@@ -271,8 +273,8 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         }
 
         case CMR_CAN_VSM_STATE_BRAKE_TEST: {
-            if (passBrakeTest()){
-                if (dimRequestedState == CMR_CAN_HV_EN || dimRequestedState == CMR_CAN_AS_READY) {
+            if (getBrakeStatus()){
+                if ((dimRequestedState == CMR_CAN_AS_READY) && getASMSState()) {
                     nextState = CMR_CAN_VSM_STATE_REQ_PRECHARGE;
                 }
             }
@@ -622,24 +624,22 @@ static bool getVehicleFinished(bool vehicleStill){
  * @brief Checks if RES is giving a go ahead
  */
 static inline bool getRESGo() {
-	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
+	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES)); //change back
     return (data[0] & 1); //Getting ASSI_state_ready bit
 }
 
 /**
- * @brief Checks if RES is activated
- * @todo VERIFY
+ * @brief Checks if RES is giving a go ahead
  */
-static inline bool RESTriggered(){
+static inline bool getRESGo() {
 	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
-	return (data[0] & 3); //Getting ASSI_state_res_triggered bit
+    return (data[0] & 4);
 }
 
 /**
- * @brief Checks if Brake Test passed
- * @todo VERIFY
+ * @brief Checks if RES is activated
  */
-static inline bool passBrakeTest(){
-    uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
-    return (data[1] & 3); //Getting AMI_state_braketest bit
+static inline bool RESTriggered(){
+	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
+	return !(data[0] & 1);
 }
