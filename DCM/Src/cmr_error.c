@@ -281,18 +281,14 @@ static void updateDTIErrors(void) {
     volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
 
     // Set error statuses as needed
-    if (heartbeatVSM->state == CMR_CAN_HV_EN || heartbeatVSM->state == CMR_CAN_RTD) {
-        if (dtiTempFaultFL->fault_code != 0) {
-            dtiErrors[MOTOR_FL] = true;
-        }
-        if (dtiTempFaultFR->fault_code != 0) {
-            dtiErrors[MOTOR_FR] = true;
-        }
-        if (dtiTempFaultRL->fault_code != 0) {
-            dtiErrors[MOTOR_RL] = true;
-        }
-        if (dtiTempFaultRR->fault_code != 0) {
-            dtiErrors[MOTOR_RR] = true;
-        }
+    if (heartbeatVSM->state == CMR_CAN_HV_EN || 
+        heartbeatVSM->state == CMR_CAN_RTD || 
+        heartbeatVSM->state == CMR_CAN_AS_READY ||
+        heartbeatVSM->state == CMR_CAN_AS_DRIVING) {
+
+        dtiErrors[MOTOR_FL] = !!(dtiTempFaultFL->fault_code);
+        dtiErrors[MOTOR_RL] = !!(dtiTempFaultRL->fault_code);
+        dtiErrors[MOTOR_FR] = !!(dtiTempFaultFR->fault_code);
+        dtiErrors[MOTOR_RR] = !!(dtiTempFaultRR->fault_code);
      }
 }

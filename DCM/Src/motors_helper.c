@@ -48,13 +48,13 @@ int16_t convertNmToDTITorque (float torque_Nm) {
 volatile cmr_canDTI_TX_Erpm_t *getDTIErpm(motorLocation_t motor) {
     switch (motor) {
         case MOTOR_FL:
-            return canTractiveGetPayload(CMR_CANID_DTI_FL_ERPM);
+            return canTractiveGetPayload(CANRX_TRAC_FL_ERPM);
         case MOTOR_FR:
-            return canTractiveGetPayload(CMR_CANID_DTI_FR_ERPM);
+            return canTractiveGetPayload(CANRX_TRAC_FR_ERPM);
         case MOTOR_RL:
-            return canTractiveGetPayload(CMR_CANID_DTI_RL_ERPM);
+            return canTractiveGetPayload(CANRX_TRAC_RL_ERPM);
         case MOTOR_RR:
-            return canTractiveGetPayload(CMR_CANID_DTI_RR_ERPM);
+            return canTractiveGetPayload(CANRX_TRAC_RR_ERPM);
         default:
             return NULL;
     }
@@ -66,13 +66,13 @@ volatile cmr_canDTI_TX_Erpm_t *getDTIErpm(motorLocation_t motor) {
 volatile cmr_canDTI_TX_Current_t *getDTICurrent(motorLocation_t motor) {
     switch (motor) {
         case MOTOR_FL:
-            return canTractiveGetPayload(CMR_CANID_DTI_FL_CURRENT);
+            return canTractiveGetPayload(CANRX_TRAC_FL_CURRENT);
         case MOTOR_FR:
-            return canTractiveGetPayload(CMR_CANID_DTI_FR_CURRENT);
+            return canTractiveGetPayload(CANRX_TRAC_FR_CURRENT);
         case MOTOR_RL:
-            return canTractiveGetPayload(CMR_CANID_DTI_RL_CURRENT);
+            return canTractiveGetPayload(CANRX_TRAC_RL_CURRENT);
         case MOTOR_RR:
-            return canTractiveGetPayload(CMR_CANID_DTI_RR_CURRENT);
+            return canTractiveGetPayload(CANRX_TRAC_RR_CURRENT);
         default:
             return NULL;
     }
@@ -84,13 +84,13 @@ volatile cmr_canDTI_TX_Current_t *getDTICurrent(motorLocation_t motor) {
 volatile cmr_canDTI_TX_TempFault_t *getDTITempFault(motorLocation_t motor) {
     switch (motor) {
         case MOTOR_FL:
-            return canTractiveGetPayload(CMR_CANID_DTI_FL_TEMPFAULT);
+            return canTractiveGetPayload(CANRX_TRAC_FL_TEMPFAULT);
         case MOTOR_FR:
-            return canTractiveGetPayload(CMR_CANID_DTI_FR_TEMPFAULT);
+            return canTractiveGetPayload(CANRX_TRAC_FR_TEMPFAULT);
         case MOTOR_RL:
-            return canTractiveGetPayload(CMR_CANID_DTI_RL_TEMPFAULT);
+            return canTractiveGetPayload(CANRX_TRAC_RL_TEMPFAULT);
         case MOTOR_RR:
-            return canTractiveGetPayload(CMR_CANID_DTI_RR_TEMPFAULT);
+            return canTractiveGetPayload(CANRX_TRAC_RR_TEMPFAULT);
         default:
             return NULL;
     }
@@ -102,13 +102,13 @@ volatile cmr_canDTI_TX_TempFault_t *getDTITempFault(motorLocation_t motor) {
 volatile cmr_canDTI_TX_IdIq_t *getDTIIdIq(motorLocation_t motor) {
     switch (motor) {
         case MOTOR_FL:
-            return canTractiveGetPayload(CMR_CANID_DTI_FL_IDIQ);
+            return canTractiveGetPayload(CANRX_TRAC_FL_IDIQ);
         case MOTOR_FR:
-            return canTractiveGetPayload(CMR_CANID_DTI_FR_IDIQ);
+            return canTractiveGetPayload(CANRX_TRAC_FR_IDIQ);
         case MOTOR_RL:
-            return canTractiveGetPayload(CMR_CANID_DTI_RL_IDIQ);
+            return canTractiveGetPayload(CANRX_TRAC_RL_IDIQ);
         case MOTOR_RR:
-            return canTractiveGetPayload(CMR_CANID_DTI_RR_IDIQ);
+            return canTractiveGetPayload(CANRX_TRAC_RR_IDIQ);
         default:
             return NULL;
     }
@@ -120,13 +120,13 @@ volatile cmr_canDTI_TX_IdIq_t *getDTIIdIq(motorLocation_t motor) {
 volatile cmr_canDTI_TX_ACLimits_t *getDTIACLimits(motorLocation_t motor) {
     switch (motor) {
         case MOTOR_FL:
-            return canTractiveGetPayload(CMR_CANID_DTI_FL_ACLIMS);
+            return canTractiveGetPayload(CANRX_TRAC_FL_ACLIMS);
         case MOTOR_FR:
-            return canTractiveGetPayload(CMR_CANID_DTI_FR_ACLIMS);
+            return canTractiveGetPayload(CANRX_TRAC_FR_ACLIMS);
         case MOTOR_RL:
-            return canTractiveGetPayload(CMR_CANID_DTI_RL_ACLIMS);
+            return canTractiveGetPayload(CANRX_TRAC_RL_ACLIMS);
         case MOTOR_RR:
-            return canTractiveGetPayload(CMR_CANID_DTI_RR_ACLIMS);
+            return canTractiveGetPayload(CANRX_TRAC_RR_ACLIMS);
         default:
             return NULL;
     }
@@ -138,13 +138,13 @@ volatile cmr_canDTI_TX_ACLimits_t *getDTIACLimits(motorLocation_t motor) {
 volatile cmr_canDTI_TX_DCLimits_t *getDTIDCLimits(motorLocation_t motor) {
     switch (motor) {
         case MOTOR_FL:
-            return canTractiveGetPayload(CMR_CANID_DTI_FL_DCLIMS);
+            return canTractiveGetPayload(CANRX_TRAC_FL_DCLIMS);
         case MOTOR_FR:
-            return canTractiveGetPayload(CMR_CANID_DTI_FR_DCLIMS);
+            return canTractiveGetPayload(CANRX_TRAC_FR_DCLIMS);
         case MOTOR_RL:
-            return canTractiveGetPayload(CMR_CANID_DTI_RL_DCLIMS);
+            return canTractiveGetPayload(CANRX_TRAC_RL_DCLIMS);
         case MOTOR_RR:
-            return canTractiveGetPayload(CMR_CANID_DTI_RR_DCLIMS);
+            return canTractiveGetPayload(CANRX_TRAC_RR_DCLIMS);
         default:
             return NULL;
     }
@@ -156,13 +156,13 @@ volatile cmr_canDTI_TX_DCLimits_t *getDTIDCLimits(motorLocation_t motor) {
 volatile cmr_canDTI_TX_ControlStatus_t *getDTIControlStatus(motorLocation_t motor) {
     switch (motor) {
         case MOTOR_FL:
-            return canTractiveGetPayload(CMR_CANID_DTI_FL_CONTROL_STATUS);
+            return canTractiveGetPayload(CANRX_TRAC_FL_CONTROL_STATUS);
         case MOTOR_FR:
-            return canTractiveGetPayload(CMR_CANID_DTI_FR_CONTROL_STATUS);
+            return canTractiveGetPayload(CANRX_TRAC_FR_CONTROL_STATUS);
         case MOTOR_RL:
-            return canTractiveGetPayload(CMR_CANID_DTI_RL_CONTROL_STATUS);
+            return canTractiveGetPayload(CANRX_TRAC_RL_CONTROL_STATUS);
         case MOTOR_RR:
-            return canTractiveGetPayload(CMR_CANID_DTI_RR_CONTROL_STATUS);
+            return canTractiveGetPayload(CANRX_TRAC_RR_CONTROL_STATUS);
         default:
             return NULL;
     }
@@ -174,13 +174,13 @@ volatile cmr_canDTI_TX_ControlStatus_t *getDTIControlStatus(motorLocation_t moto
 volatile cmr_canDTI_TX_IOStatus_t *getDTIIOStatus(motorLocation_t motor) {
     switch (motor) {
         case MOTOR_FL:
-            return canTractiveGetPayload(CMR_CANID_DTI_FL_IO_STATUS);
+            return canTractiveGetPayload(CANRX_TRAC_FL_IO_STATUS);
         case MOTOR_FR:
-            return canTractiveGetPayload(CMR_CANID_DTI_FR_IO_STATUS);
+            return canTractiveGetPayload(CANRX_TRAC_FR_IO_STATUS);
         case MOTOR_RL:
-            return canTractiveGetPayload(CMR_CANID_DTI_RL_IO_STATUS);
+            return canTractiveGetPayload(CANRX_TRAC_RL_IO_STATUS);
         case MOTOR_RR:
-            return canTractiveGetPayload(CMR_CANID_DTI_RR_IO_STATUS);
+            return canTractiveGetPayload(CANRX_TRAC_RR_IO_STATUS);
         default:
             return NULL;
     }
@@ -194,13 +194,13 @@ volatile cmr_canDTI_TX_IOStatus_t *getDTIIOStatus(motorLocation_t motor) {
 bool isMotorDataValid(motorLocation_t motor) {
     switch (motor) {
         case MOTOR_FL:
-            return cmr_canRXMetaTimeoutWarn(&canTractiveRXMeta[CANRX_TRAC_INV_FL_ACT1], xTaskGetTickCount()) >= 0;
+            return cmr_canRXMetaTimeoutWarn(&canTractiveRXMeta[CANRX_TRAC_FL_ERPM], xTaskGetTickCount()) >= 0;
         case MOTOR_FR:
-            return cmr_canRXMetaTimeoutWarn(&canTractiveRXMeta[CANRX_TRAC_INV_FR_ACT1], xTaskGetTickCount()) >= 0;
+            return cmr_canRXMetaTimeoutWarn(&canTractiveRXMeta[CANRX_TRAC_FR_ERPM], xTaskGetTickCount()) >= 0;
         case MOTOR_RL:
-            return cmr_canRXMetaTimeoutWarn(&canTractiveRXMeta[CANRX_TRAC_INV_RL_ACT1], xTaskGetTickCount()) >= 0;
+            return cmr_canRXMetaTimeoutWarn(&canTractiveRXMeta[CANRX_TRAC_RL_ERPM], xTaskGetTickCount()) >= 0;
         case MOTOR_RR:
-            return cmr_canRXMetaTimeoutWarn(&canTractiveRXMeta[CANRX_TRAC_INV_RR_ACT1], xTaskGetTickCount()) >= 0;
+            return cmr_canRXMetaTimeoutWarn(&canTractiveRXMeta[CANRX_TRAC_RR_ERPM], xTaskGetTickCount()) >= 0;
         default:
             return false;
     }
@@ -394,4 +394,18 @@ bool overVoltProtection() {
         return false;
     }
     return true;
+}
+
+int16_t transferFn(int16_t torqueLower, int16_t torqueUpper, int16_t currLower, 
+                   int16_t currUpper, int16_t torque){
+  return (currUpper-currLower) * (torque - torqueLower) / (torqueUpper - torqueLower) + currLower;
+}
+
+int32_t torqueToCurrent(torque_Nm){ 
+    /* Placeholder values- need some clarification regarding limits for torque*/
+    return transferFn(0, 1, -2, 3, torque_Nm); 
+}
+
+void setCurr(cmr_canDTISetpoints_t motorSetPoints){
+    motorSetPoints->ac_current = torqueToCurrent(motorSetPoints->torque);
 }

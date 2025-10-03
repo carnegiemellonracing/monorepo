@@ -21,7 +21,9 @@ typedef enum {
     CMR_CAN_HV_EN,          /**< @brief High voltage enabled. */
     CMR_CAN_RTD,            /**< @brief Ready to drive. */
     CMR_CAN_ERROR,          /**< @brief Error has occurred. */
-    CMR_CAN_CLEAR_ERROR     /**< @brief Request to clear error. */
+    CMR_CAN_CLEAR_ERROR,    /**< @brief Request to clear error. */
+    CMR_CAN_AS_READY,       /**< @brief Driverless systems enables. */
+    CMR_CAN_AS_DRIVING      /**< @brief Ready to drive for autonomous systems.*/
 } cmr_canState_t;
 
 /** @brief Standard CAN heartbeat. */
@@ -701,6 +703,7 @@ typedef struct {
     int16_t torqueLimPos;       /**< @brief Positive torque limit. */
     int16_t torqueLimNeg;       /**< @brief Negative torque limit. */
     int16_t torque;
+    int16_t ac_current;
 } cmr_canDTISetpoints_t;
 
 // ------------------------------------------------------------------------------------------------

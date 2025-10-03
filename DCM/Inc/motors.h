@@ -25,7 +25,7 @@ typedef struct {
 } cmr_torque_limit_t;
 
 /* Global Variable to Initiate/Disable Torque Mode*/ 
-extern bool isTorqueMode = false;
+bool isTorqueMode = false;
 
 // ------------------------------------------------------------------------------------------------
 // Public function declarations
