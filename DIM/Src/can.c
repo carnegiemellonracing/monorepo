@@ -190,17 +190,6 @@ static void canTX100Hz(void *pvParameters) {
     	uint8_t regenPercent = (uint8_t)((adcRead(ADC_PADDLE) / 255.0) * 100.0);
         uint8_t packed = 0;
         uint8_t LRUDpacked = 0;
-        // if(getCurrState() == CONFIG){
-        //     if(paddle > 50){
-        //         paddle_is_pressed = true;
-        //     }
-        //     else {
-        //         if(paddle_is_pressed){
-        //             config_increment_down_requested = true;
-        //             paddle_is_pressed = false;
-        //         }
-        //     }
-        // }
         for(int i=0; i<NUM_BUTTONS; i++){
             packed |= canButtonStates[i] << i;
         }
@@ -592,6 +581,24 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
         .state = vsmState
     };
 
+    volatile cmr_canHeartbeat_t *AIM_Heartbeat = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+	cmr_canHeartbeat_t toSend;
+	memcpy(&toSend, AIM_Heartbeat,sizeof(cmr_canHeartbeat_t)); //memcpy since it is volatile and could update
+
+	if (toSend.error[0] != 0 || toSend.error[1] != 0) {
+		toSend.state = CMR_CAN_ERROR;
+	}
+
+    if(getASMS()){
+        uint8_t mask = 1 << 7;
+        toSend.state = toSend.state | mask;
+    }
+
+    if(getEAB()){
+        uint8_t mask = 1 << 6;
+        toSend.state = toSend.state | mask;
+    }
+
     cmr_canWarn_t warning = CMR_CAN_WARN_NONE;
     cmr_canError_t error = CMR_CAN_ERROR_NONE;
 
@@ -630,6 +637,12 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
         &heartbeat,
         sizeof(heartbeat),
         canTX100Hz_period_ms);
+	canTX(
+		CMR_CANID_HEARTBEAT_AIM,
+		&toSend,
+		sizeof(*AIM_Heartbeat),
+		canTX100Hz_period_ms
+	);
 }
 
 /**

@@ -173,17 +173,12 @@ typedef enum {
     CMR_CAN_GEAR_TEST,          /**< @brief Test mode (for experimentation) */
     CMR_CAN_GEAR_REVERSE = 8,   /**< @brief Reverse mode */
 
-    /**< @brief Unknown Gear State */
     CMR_CAN_MISSION_ACCEL = 9,  /**< @brief Acceleration-mission mode (DV) */
     CMR_CAN_MISSION_SKIDPAD,    /**< @brief Skidpad-mission mode (DV) */
     CMR_CAN_MISSION_AUTOX,      /**< @brief Autocross-mission mode (DV) */
     CMR_CAN_MISSION_TRACKD,     /**< @brief Trackdrive-mission mode (DV) */
-    CMR_CAN_MISSION_EBS,        /**< @brief EBS-mission mode (DV) */
-    CMR_CAN_MISSION_NSP,        /**< @brief NSP-mission mode (DV) */
-    CMR_CAN_MISSION_MANUAL,     /**< @brief Manual */
-    CMR_CAN_MISSION_MUSIC,      /**< @brief Music */
-    CMR_CAN_MISSION_FIREW,      /**< @brief Firewall */
-    CMR_CAN_MISSION_MONKEY = 18,/**< @brief Monkey */
+    CMR_CAN_MISSION_INSPECTION, /**< @brief NSP-mission mode (DV) */
+    CMR_CAN_MISSION_EBS = 14,   /**< @brief EBS-mission mode (DV) */
 
     CMR_CAN_GEAR_LEN
 } cmr_canGear_t;

@@ -174,7 +174,6 @@ bool getASMS(){
  * @return 1 iff EAB is on
  */
 bool getEAB(){
-//	return true;
 	return cmr_gpioRead(GPIO_EAB_ON);
 }
 

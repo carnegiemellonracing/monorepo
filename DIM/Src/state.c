@@ -330,7 +330,7 @@ static cmr_state getReqScreen(void) {
             }
             break;
         case NORMAL:
-            if(cmr_gpioRead(GPIO_CTRL_SWITCH)) {
+            if(cmr_gpioRead(GPIO_CTRL_SWITCH) && stateGetVSM() == CMR_CAN_GLV_ON && stateGetVSM() == CMR_CAN_HV_EN) {
                 nextState = CONFIG;
                 flush_config_screen_to_cdc = false;
             }
@@ -403,8 +403,7 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
 			return (vsmReq == CMR_CAN_GLV_ON);
 		case CMR_CAN_GLV_ON:
 			return (vsmReq == CMR_CAN_GLV_ON) ||
-				   (vsmReq == CMR_CAN_HV_EN) ||
-                   (vsmReq == CMR_CAN_AS_READY);
+				   (vsmReq == CMR_CAN_HV_EN);
 		case CMR_CAN_HV_EN:
 			return (vsmReq == CMR_CAN_GLV_ON) ||
 				   (vsmReq == CMR_CAN_HV_EN) ||
@@ -416,16 +415,6 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
 			return (vsmReq == CMR_CAN_GLV_ON);
 		case CMR_CAN_CLEAR_ERROR:
 			return (vsmReq == CMR_CAN_GLV_ON);
-        case CMR_CAN_AS_READY:
-			return (vsmReq == CMR_CAN_AS_READY) ||
-				   (vsmReq == CMR_CAN_AS_DRIVING);
-		case CMR_CAN_AS_DRIVING:
-			return (vsmReq == CMR_CAN_AS_DRIVING) ||
-                   (vsmReq == CMR_CAN_AS_FINISHED);
-		case CMR_CAN_AS_FINISHED:
-			return (vsmReq == CMR_CAN_GLV_ON);
-		case CMR_CAN_AS_EMERGENCY:
-			return (vsmReq == CMR_CAN_GLV_ON);
 		default:
 			break;
 	}
@@ -434,10 +423,22 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
 }
 
 
+void EABStateUp() {
+	cmr_canVSMState_t vsmState = stateGetVSM();
+	if(getEAB() && getASMS() && vsmState == CMR_CAN_GLV_ON) {
+		state.vsmReq = CMR_CAN_AS_READY;
+	}
+}
+
 /**
  * @brief Handles VSM state up.
  */
 void stateVSMUp() {
+
+    if(getASMS()) {
+        return;
+    }
+
 	cmr_canState_t vsmState = stateGetVSM();
 	if (state.vsmReq < vsmState) {
 		// Cancel state-down request.
@@ -445,32 +446,10 @@ void stateVSMUp() {
 		return;
 	}
 
-    cmr_canState_t vsmReq;
+    cmr_canState_t vsmReq = ((vsmState == CMR_CAN_UNKNOWN) || (vsmState == CMR_CAN_ERROR))
+                                ? CMR_CAN_GLV_ON
+                                : vsmState + 1;
 
-    if((vsmState == CMR_CAN_UNKNOWN) || (vsmState == CMR_CAN_ERROR)) {
-        vsmReq = CMR_CAN_GLV_ON;
-    }
-    else {
-        if(getASMS()) {
-            if(vsmState == CMR_CAN_GLV_ON) {
-                vsmReq = CMR_CAN_AS_READY;
-            }
-            else if(vsmState == CMR_CAN_AS_FINISHED) {
-                vsmReq = vsmState;
-            }
-            else {
-                vsmReq = vsmState + 1;
-            }
-        }
-        else {
-            if(vsmState == CMR_CAN_RTD) {
-                vsmReq = vsmState;
-            }
-            else {
-                vsmReq = vsmState + 1;
-            }
-        }
-    }
 	if (!stateVSMReqIsValid(vsmState, vsmReq)) {
 		return;  // Invalid requested state.
 	}
@@ -481,6 +460,11 @@ void stateVSMUp() {
  * @brief Handles VSM state down request.
  */
 void stateVSMDown() {
+
+    if(getASMS()) {
+        return;
+    }
+
 	cmr_canState_t vsmState = stateGetVSM();
         if (state.vsmReq > vsmState) {
             // Cancel state-up request.
@@ -503,6 +487,11 @@ void stateVSMDown() {
 
 
 void reqVSM(void) {
+
+    if(getASMS() && stateGetVSM() == CMR_CAN_GLV_ON) {
+        EABStateUp();
+    }
+    
     if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM == CMR_CAN_CLEAR_ERROR) {
         state.vsmReq = CMR_CAN_GLV_ON;
     }
@@ -530,15 +519,14 @@ static volatile int requestedGear;
 */
 void reqGear(void) {
     bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) 
-                       || (stateGetVSM() == CMR_CAN_HV_EN)
-                       || (stateGetVSM() == CMR_CAN_AS_READY));
+                       || (stateGetVSM() == CMR_CAN_HV_EN));
     if(getASMS()) {
         if(canChangeGear && canButtonStates[RIGHT]) {
-            if(state.gearReq == 18) state.gearReq = 9;
+            if(state.gearReq == 14) state.gearReq = 9;
             else state.gearReq++;
         }
         else if(canChangeGear && canButtonStates[LEFT]) {
-            if(state.gearReq == 9) state.gearReq = 18;
+            if(state.gearReq == 9) state.gearReq = 14;
             else state.gearReq--;
         }
     }
