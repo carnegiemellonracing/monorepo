@@ -26,4 +26,5 @@ cmr_canHVCState_t getState(void);
 // Task functions
 void vSetStateTask(void *pvParameters);
 
+
 #endif /* STATE_TASK_H_ */

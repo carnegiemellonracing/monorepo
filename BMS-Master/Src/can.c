@@ -436,6 +436,28 @@ static void sendBMSLowVoltage(void) {
     canTX(CMR_CANID_HVC_LOW_VOLTAGE, &BMSLowVoltage, sizeof(BMSLowVoltage), canTX100Hz_period_ms);
 }
 
+
+/**
+ * @brief Sets up BMS Master CAN heartbeat with current errors and warnings, then sends it.
+ *
+ * @param lastWakeTime Pass in from canTX100Hz. Used to update lastStateChangeTime and errors/warnings.
+ */
+static void sendHeartbeat(TickType_t lastWakeTime) {
+    cmr_canHVCState_t currentState = getState();
+    cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
+    currentError = checkErrors(currentState);
+
+    cmr_canHeartbeat_t BMSMHeartbeat = {
+        //.state = //add error states to can_types.h? or just use existing HVC errors 
+        .error = 
+        .warning = 
+    };
+
+
+    canTX(CMR_CANID_HEARTBEAT_HVC, &HVCHeartbeat, sizeof(HVCHeartbeat), canTX100Hz_period_ms);
+}
+
+
 static void sendBMSBMBStatusErrors(void) {
 	//TODO Update status error sending
 //	cmr_canHVCBMBErrors_t errs = {

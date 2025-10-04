@@ -35,8 +35,6 @@ static const uint32_t minShutdownCiruitVoltageMV = 14000;
 cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState);
 void clearErrorReg(void);
 
-// Error output signals
-void clearHardwareFault(bool assertClear);
 
 void setErrorReg(cmr_canHVCError_t errorCode);
 cmr_canHVCError_t getErrorReg(void);

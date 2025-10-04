@@ -189,6 +189,16 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
     return nextState;
 }
 
+static void clearHardwareFault(bool assertClear) {
+    // Set GPIO pin low (asserted) if
+    // assertClear, high (deasserted) otherwise
+    if (assertClear) {
+        cmr_gpioWrite(GPIO_CLEAR_FAULT_L, 0);
+    } else {
+        cmr_gpioWrite(GPIO_CLEAR_FAULT_L, 1);
+    }
+}
+
 static cmr_canHVCState_t setStateOutput(){
 
     //Note: For relay action, set all opens before closes to avoid shorts
