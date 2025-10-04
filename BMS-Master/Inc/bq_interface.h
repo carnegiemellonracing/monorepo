@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "bms_error.h"
+#include "BMB_task.h"
 
 
 //register address definitions
@@ -323,16 +324,10 @@
 #define DEBUG_OTP_DED_BLK		0x7A1
 
 #define BOARD_NUM 11
-#define VSENSE_CHANNELS 14
-#define TEMP_CHANNELS 14
 
 //TODO change this
 #define CELL_BALANCING_LOW_VOLTAGE 3.9
 
-typedef struct BMB_Data_t{
-    uint16_t cellVoltages[VSENSE_CHANNELS];
-    int16_t cellTemperatures[TEMP_CHANNELS];
-} BMB_Data_t;
 
 #define TOP_CELL VCELL14_HI
 #define NUM_GPIO_CHANNELS 4

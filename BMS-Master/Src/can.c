@@ -53,7 +53,12 @@ cmr_canRXMeta_t canRXMeta[] = {
 		.canID = CMR_CANID_HV_SENSORS,
 		.timeoutError_ms = 50,
 		.timeoutWarn_ms = 25
-    } 
+    },
+    [CANRX_HEARTBEAT_HVC] = {
+        .canID = CMR_CANID_HEARTBEAT_HVC,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25 
+    }
 };
 
 /** @brief Primary CAN interface. */
@@ -66,7 +71,6 @@ static void sendBMSBMBStatusVoltage(uint8_t bmb_index);
 static void sendBMSBMBStatusTemp(uint8_t bmb_index);
 static void sendBMSMinMaxCellVoltage(void);
 static void sendBMSMinMaxCellTemp(void);
-static void sendBMSLowVoltage(void);
 static void sendAllBMBVoltages(void);
 
 /** @brief CAN 1 Hz TX priority. */
@@ -188,7 +192,6 @@ static void canTX100Hz(void *pvParameters) {
         sendHeartbeat(lastWakeTime);
         //sendHVCPackVoltage();
         //sendBMSPackCurrent();
-        sendBMSLowVoltage();
         sendBMSBMBStatusErrors();
 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
@@ -412,18 +415,6 @@ static void sendBMSMinMaxCellTemp(void) {
     canTX(CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE, &BMSBMBMinMaxTemperature, sizeof(BMSBMBMinMaxTemperature), canTX10Hz_period_ms);
 }
 
-static void sendBMSLowVoltage(void) {
-    cmr_canBMSLowVoltage_t BMSLowVoltage = {
-        .safety_mV = (getSafetymillivolts()*15)/2000, // Convert mA to 2/15th mA //TODO: Gustav change this back?
-        .iDCDC_mA = 0,
-        .vAIR_mV = (getAIRmillivolts()*15)/2000, // Convert mV to 2/15th V
-        .vbatt_mV= (getLVmillivolts()*15/2000), // Convert mV to 2/15th V
-    };
-    (void) BMSLowVoltage;
-
-    canTX(CMR_CANID_HVC_LOW_VOLTAGE, &BMSLowVoltage, sizeof(BMSLowVoltage), canTX100Hz_period_ms);
-}
-
 
 /**
  * @brief Sets up BMS Master CAN heartbeat with current errors and warnings, then sends it.
@@ -431,7 +422,8 @@ static void sendBMSLowVoltage(void) {
  * @param lastWakeTime Pass in from canTX100Hz. Used to update lastStateChangeTime and errors/warnings.
  */
 static void sendHeartbeat(TickType_t lastWakeTime) {
-    cmr_canHVCState_t currentState = getState();
+    cmr_canHVCHeartbeat_t *hvcheartbeat = getPayload(CANRX_HEARTBEAT_HVC); 
+    cmr_canHVCState_t currentState = hvcheartbeat->hvcState; 
     cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
     currentError = checkBMSMErrors(currentState);
 

@@ -25,6 +25,7 @@ typedef enum {
     CANRX_EMD_MEASURE,
 	CANRX_HVI_COMMAND,
 	CANRX_BALANCE_COMMAND,
+    CANRX_HEARTBEAT_HVC, 
     CANRX_LEN,     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 

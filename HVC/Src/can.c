@@ -70,6 +70,7 @@ static cmr_can_t can;
 // Forward declarations
 static void sendHeartbeat(TickType_t lastWakeTime);
 static void sendHVCPower(); 
+static void sendBMSLowVoltage(void);
 
 /** @brief CAN 1 Hz TX priority. */
 static const uint32_t canTX1Hz_priority = 4;
@@ -176,6 +177,7 @@ static void canTX100Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendHeartbeat(lastWakeTime);
+        sendBMSLowVoltage();
 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
@@ -357,5 +359,17 @@ static void sendHVCPower() {
 	currentRaw = adcRead(ADC_ISENSE);
 
     canTX(CMR_CANID_HV_SENSORS, &hv_sensors, sizeof(hv_sensors), canTX10Hz_period_ms);
+}
+
+static void sendBMSLowVoltage(void) {
+    cmr_canBMSLowVoltage_t BMSLowVoltage = {
+        .safety_mV = (getSafetymillivolts()*15)/2000, // Convert mA to 2/15th mA //TODO: Gustav change this back?
+        .iDCDC_mA = 0,
+        .vAIR_mV = (getAIRmillivolts()*15)/2000, // Convert mV to 2/15th V
+        .vbatt_mV= (getLVmillivolts()*15/2000), // Convert mV to 2/15th V
+    };
+    (void) BMSLowVoltage;
+
+    canTX(CMR_CANID_HVC_LOW_VOLTAGE, &BMSLowVoltage, sizeof(BMSLowVoltage), canTX100Hz_period_ms);
 }
 

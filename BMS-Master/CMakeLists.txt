@@ -119,11 +119,12 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/bq_interface.c
     ${CMAKE_SOURCE_DIR}/Src/can.c
     ${CMAKE_SOURCE_DIR}/Src/crc.c
+    ${CMAKE_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_SOURCE_DIR}/Src/main.c
     ${CMAKE_SOURCE_DIR}/Src/syscalls.c
     ${CMAKE_SOURCE_DIR}/Src/sysmem.c
     ${CMAKE_SOURCE_DIR}/Src/uart.c
-    ${CMAKE_SOURCE_DIR}/Src/watchdog.c
+    ${CMAKE_SOURCE_DIR}/Src/watchdog.c  
 )
 
 # Add sources to executable
