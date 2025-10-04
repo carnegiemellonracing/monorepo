@@ -92,7 +92,7 @@ def format_bitpacking(canid, structname, structlines, atbit, vartype, enums):
                         if c == '1':
                             position = i 
                             break
-                #name = check_repeat_varname(name) 
+                name = check_repeat_varname(name) 
                 if realsize == 1:
                     structlines.append("Var="+name.lower()+" bit "+str(atbit+int(position))+","+str(realsize)) 
                 else: 
@@ -156,9 +156,9 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
                     continue 
         #add in field if not bitpacked 
         if size: 
-            #name = check_repeat_varname(name) 
+            name = check_repeat_varname(name) 
             can_name = re.findall(r'CMR_CANID_(\w+)',canid) 
-            append_can_name = can_name[0].split("_")[0] 
+            append_can_name = can_name[0].split("_")[0]+"_"+can_name[0].split("_")[1]
             if "HEARTBEAT" in canid:
                 print("hi") 
                 board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
