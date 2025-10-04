@@ -21,7 +21,11 @@ typedef enum {
     CMR_CAN_HV_EN,          /**< @brief High voltage enabled. */
     CMR_CAN_RTD,            /**< @brief Ready to drive. */
     CMR_CAN_ERROR,          /**< @brief Error has occurred. */
-    CMR_CAN_CLEAR_ERROR     /**< @brief Request to clear error. */
+    CMR_CAN_CLEAR_ERROR,     /**< @brief Request to clear error. */
+    CMR_CAN_AS_READY,       /**< @brief Autonomous ready mode */
+    CMR_CAN_AS_DRIVING,     /**< @brief Autonomous driving mode */
+	CMR_CAN_AS_FINISHED,    /**< @brief Autonomous finished mode */
+	CMR_CAN_AS_EMERGENCY    /**< @brief Autonomous emergency mode */
 } cmr_canState_t;
 
 /** @brief Standard CAN heartbeat. */
@@ -167,7 +171,20 @@ typedef enum {
     CMR_CAN_GEAR_SKIDPAD,       /**< @brief Skidpad-event mode */
     CMR_CAN_GEAR_ACCEL,         /**< @brief Acceleration-event mode */
     CMR_CAN_GEAR_TEST,          /**< @brief Test mode (for experimentation) */
-    CMR_CAN_GEAR_REVERSE,       /**< @brief Reverse mode */
+    CMR_CAN_GEAR_REVERSE = 8,   /**< @brief Reverse mode */
+
+    /**< @brief Unknown Gear State */
+    CMR_CAN_MISSION_ACCEL = 9,  /**< @brief Acceleration-mission mode (DV) */
+    CMR_CAN_MISSION_SKIDPAD,    /**< @brief Skidpad-mission mode (DV) */
+    CMR_CAN_MISSION_AUTOX,      /**< @brief Autocross-mission mode (DV) */
+    CMR_CAN_MISSION_TRACKD,     /**< @brief Trackdrive-mission mode (DV) */
+    CMR_CAN_MISSION_EBS,        /**< @brief EBS-mission mode (DV) */
+    CMR_CAN_MISSION_NSP,        /**< @brief NSP-mission mode (DV) */
+    CMR_CAN_MISSION_MANUAL,     /**< @brief Manual */
+    CMR_CAN_MISSION_MUSIC,      /**< @brief Music */
+    CMR_CAN_MISSION_FIREW,      /**< @brief Firewall */
+    CMR_CAN_MISSION_MONKEY = 18,/**< @brief Monkey */
+
     CMR_CAN_GEAR_LEN
 } cmr_canGear_t;
 

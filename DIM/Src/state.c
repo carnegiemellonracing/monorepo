@@ -32,9 +32,6 @@ cmr_state nextState;
 
 cmr_state currState;
 
-// cmr_canGear_t reqGear;
-// cmr_canGear_t currGear;
-
 volatile int8_t config_move_request;
 
 
@@ -539,8 +536,6 @@ static volatile int requestedGear;
 *
 */
 void reqGear(void) {
-	int pastRotary = getPastRotaryPosition();
-	int currentRotary = getRotaryPosition();
 
 	// bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN));
     // bool canChangeGear = true;
@@ -552,8 +547,30 @@ void reqGear(void) {
 	// 	} else {
 	// 		state.gear--;
 	// }
-    bool canChangeGear = true;
-    if(canChangeGear && (pastRotary != currentRotary)) {
+    bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) 
+                       || (stateGetVSM() == CMR_CAN_HV_EN)
+                       || (stateGetVSM() == CMR_CAN_AS_READY));
+    if(getASMS()) {
+        if(canChangeGear && canButtonStates[RIGHT]) {
+            if(state.gearReq == 18) state.gearReq = 9;
+            else state.gearReq++;
+        }
+        else if(canChangeGear && canButtonStates[LEFT]) {
+            if(state.gearReq == 9) state.gearReq = 18;
+            else state.gearReq--;
+        }
+    }
+    else {
+        if(canChangeGear && canButtonStates[RIGHT]) {
+            if(state.gearReq == 8) state.gearReq = 1;
+            else state.gearReq++;
+        }
+        else if(canChangeGear && canButtonStates[LEFT]) {
+            if(state.gearReq == 1) state.gearReq = 8;
+            else state.gearReq--;
+        }
+    }
+    if(canChangeGear && canButtonStates[LEFT]) {
         if(currState == CONFIG) config_increment_up_requested = true;
         if(state.gearReq == 8) state.gearReq = 1;
         else state.gearReq++;

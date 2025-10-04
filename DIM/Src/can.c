@@ -206,9 +206,6 @@ static void canTX100Hz(void *pvParameters) {
         for(int i=0; i<NUM_BUTTONS; i++){
             packed |= canButtonStates[i] << i;
         }
-        for(int i=0; i<LRUD_LEN; i++) {
-            LRUDpacked |= canLRUDStates[i] << i;
-        }
         /* Transmit action button status */
         cmr_canDIMActions_t actions = {
             .buttons = packed,

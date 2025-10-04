@@ -12,27 +12,25 @@
 #include <FreeRTOS.h>  // FreeRTOS API
 #include <stdbool.h>
 
-#define NUM_BUTTONS 8 //number of buttons
-#define NUM_ROTARY_POSITION 14 // number of rotary positions
-#define PUSH_BUTTONS 4
+#define NUM_BUTTONS 6
 
 /**
  * @brief Represents a GPIO pin.
  */
-
-
-//TODO Fix gpio
 typedef enum {
-    //new pins
-    GPIO_BUTTON_A = 0,
-    GPIO_BUTTON_B,
-    GPIO_BUTTON_SW1,
-    GPIO_BUTTON_SW2,
-    GPIO_BUTTON_PUSH,
-	GPIO_LED_AMS,
-    GPIO_LED_IMD,
-    GPIO_LED_BSPD,
-	GPIO_LED_STATUS,
+    GPIO_BUTTON_UP = 0, /**< @brief Dashboard Up Button */
+    GPIO_BUTTON_DOWN, /**< @brief Dashboard Down Button */
+    GPIO_BUTTON_LEFT, /**< @brief Dashboard Left Button */
+    GPIO_BUTTON_RIGHT, /**< @brief Dashboard Right Button */
+    GPIO_CTRL_SWITCH, /**< @brief Dashboard Switch */
+    GPIO_BUTTON_SW_LEFT, /**< @brief Steering Wheel Left Button */
+    GPIO_BUTTON_SW_RIGHT, /**< @brief Steering Wheel Right Button */
+	GPIO_LED_AMS, /**< @brief AMS Error LED */
+    GPIO_LED_IMD, /**< @brief IMD Error LED */
+    GPIO_LED_BSPD, /**< @brief BSPD Error LED */
+    GPIO_ASMS_ON, /**< @brief AS Master Switch On/Off */
+    GPIO_EAB_ON, /**< @brief External Activation Button On/Off */
+	GPIO_LED_STATUS, /**< @brief Status LED */
     GPIO_PD_N,
     GPIO_LEN /**< @brief Total GPIO pins. */
 } gpio_t;
@@ -40,18 +38,15 @@ typedef enum {
 
 //gpio button indices
 typedef enum {
-    A = 0,
-    B,
-    SW1,
-    SW2,
-    PUSH,
+    UP = 0,
+    DOWN,
+    LEFT,
+    RIGHT,
+    SW_LEFT,
+    SW_RIGHT
 } cmr_gpio_button_index;
 
 extern bool gpioButtonStates[NUM_BUTTONS];
-
-//does it matter which .h file this global variable is in??
-//can button indices
-
 extern bool canButtonStates[NUM_BUTTONS];
 
 //Left right up down indexes
@@ -73,15 +68,7 @@ void canLRUDDetect(void);
  */
 void gpioInit(void);
 
-
-/**
-* @brief gets rotary position
-*/
-int getRotaryPosition(void);
-
-/**
-* @brief gets past rotation position
-*/
-int getPastRotaryPosition(void);
+bool getASMS(void);
+bool getEAB(void);
 
 #endif /* GPIO_H */
