@@ -64,6 +64,27 @@ static void statusLED(void *pvParameters) {
 #define ITM_STIMULUS_PORT0    *((volatile uint32_t*) 0xE0000000u)
 #define ITM_TRACE_EN          *((volatile uint32_t*) 0xE0000E00u)
 
+static void statusLEDInit(){
+    cmr_taskInit(
+        &statusLED_task,
+        "statusLED",
+        statusLED_priority,
+        statusLED,
+        NULL
+    );
+
+}
+
+static void stateInit(){
+    cmr_taskInit(
+        &setState_task,
+        "Set State Task",
+        setState_priority,
+        vSetStateTask,
+        NULL
+    );
+}
+
 /**
  * @brief Firmware entry point.
  *
@@ -87,30 +108,10 @@ int main(void) {
     //fanInit();
     //wwdgInit();
 
-    cmr_taskInit(
-        &statusLED_task,
-        "statusLED",
-        statusLED_priority,
-        statusLED,
-        NULL
-    );
-//BMB_task
-    // cmr_taskInit(
-    //     &bmbSample_task,
-    //     "BMB Sample Task",
-    //     bmbSample_priority,
-    //     vBMBSampleTask,
-    //     NULL
-    // );
+    statusLEDInit(); 
 
     // State Task
-    cmr_taskInit(
-        &setState_task,
-        "Set State Task",
-        setState_priority,
-        vSetStateTask,
-        NULL
-    );
+    stateInit(); 
 
 
     vTaskStartScheduler();

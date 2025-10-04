@@ -96,6 +96,26 @@ uint32_t DWT_Delay_Init(void)
 #define ITM_STIMULUS_PORT0    *((volatile uint32_t*) 0xE0000000u)
 #define ITM_TRACE_EN          *((volatile uint32_t*) 0xE0000E00u)
 
+static void BMBtaskInit(){
+     cmr_taskInit(
+        &bmbSample_task,
+        "BMB Sample Task",
+        bmbSample_priority,
+        vBMBSampleTask,
+        NULL
+    );
+}
+
+static void statusLEDInit(){
+     cmr_taskInit(
+        &statusLED_task,
+        "statusLED",
+        statusLED_priority,
+        statusLED,
+        NULL
+    );
+}
+
 /**
  * @brief Firmware entry point.
  *
@@ -125,29 +145,11 @@ int main(void) {
     // Peripheral configuration.
     gpioInit();
     BMBInit();
-    //adcInit();
-    //sensorsInit();
     canInit();
 
-    //init fan task
-    //fanInit();
-    //wwdgInit();
+    statusLEDInit();
 
-    cmr_taskInit(
-        &statusLED_task,
-        "statusLED",
-        statusLED_priority,
-        statusLED,
-        NULL
-    );
-//BMB_task
-    cmr_taskInit(
-        &bmbSample_task,
-        "BMB Sample Task",
-        bmbSample_priority,
-        vBMBSampleTask,
-        NULL
-    );
+    BMBtaskInit(); 
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

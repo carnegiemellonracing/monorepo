@@ -16,7 +16,7 @@
 /** @brief Array indexes for sensor value calibration array. */
 typedef enum {
 	SENSOR_CH_V24V           = 0,
-	SENSOR_CH_AIR_POWER      = 1,
+	SENSOR_CH_AIR_POWER      = 1, 
 	SENSOR_CH_SAFETY         = 2,
 	SENSOR_CH_VSENSE         = 3,
 	SENSOR_CH_ISENSE         = 4,
