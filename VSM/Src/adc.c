@@ -37,13 +37,27 @@ static cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
-    [ADC_ISENSE] = {
+    [ADC_ISENSE] = { //@todo remove? 
         .channel = ADC_CHANNEL_8,
         .port = GPIOB,
         .pin = GPIO_PIN_0,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
+    [ADC_SSIN] = { //@todo verify right channel
+        .channel = ADC_CHANNEL_17,
+        .port = GPIOD,
+        .pin = GPIO_PIN_7,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    },
+    [ADC_SSOUT] = { //@todo verify right channel
+        .channel = ADC_CHANNEL_18,
+        .port = GPIOE,
+        .pin = GPIO_PIN_4,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
+        .value = 0
+    }
 };
 
 /** @brief Primary ADC. */

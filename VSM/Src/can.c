@@ -516,8 +516,8 @@ static void sendVSMSensors(void) {
     cmr_canVSMSensors_t msg = {
         .brakePressureRear_PSI = cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI),
         .hallEffect_cA = cmr_sensorListGetValue(&sensorList, SENSOR_CH_HALL_EFFECT_CA),
-        .safetyIn_dV = 0,   // TODO
-        .safetyOut_dV = 0   // TODO
+        .safetyIn_V = 11 * cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_IN),
+        .safetyOut_V = 11 * cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_OUT)
     };
 
     canTX(CMR_CANID_VSM_SENSORS, &msg, sizeof(msg), canTX200Hz_period_ms);

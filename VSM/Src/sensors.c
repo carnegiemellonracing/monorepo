@@ -14,11 +14,14 @@
 cmr_sensor_t sensors[SENSOR_CH_LEN];
 
 /** @brief Mapping of ADC channels to sensors. */
-static const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
+static const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] =
+{
     [SENSOR_CH_HALL_EFFECT_CA] = ADC_HALL_EFFECT,
     [SENSOR_CH_BPRES_PSI]      = ADC_REAR_BRAKE_PRES,
     [SENSOR_CH_VOLTAGE_MV]     = ADC_VSENSE,
-    [SENSOR_CH_CURRENT_MA]     = ADC_ISENSE
+    [SENSOR_CH_CURRENT_MA]     = ADC_ISENSE,
+    [SENSOR_CH_SS_IN]          = ADC_SSIN,
+    [SENSOR_CH_SS_OUT]         = ADC_SSOUT
 };
 
 /**

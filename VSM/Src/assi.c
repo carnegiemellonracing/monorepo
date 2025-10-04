@@ -38,7 +38,7 @@ static void assiControl(void *pvParameters) {
     /* 96 * 10 ** 6 hz / ((1 * 10 ** 4) * (3.2 * 10 ** 3)) = 3.2 hz */
     const cmr_pwmPinConfig_t pwmPinConfig1 = {
         .port = GPIOA,
-        .pin = GPIO_PIN_7,
+        .pin = GPIO_PIN_8,
         .channel = TIM_CHANNEL_2,
         .presc = 10000,
         .period_ticks = 3200,
