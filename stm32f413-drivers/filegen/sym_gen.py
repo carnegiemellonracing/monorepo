@@ -76,7 +76,7 @@ def check_repeat_varname(name):
 def create_prefix(name, canid):
     can_name = re.findall(r'CMR_CANID_(\w+)',canid) 
     append_can_name = can_name[0].split("_")[1]+"_"+name 
-    if len(name)+len(append_can_name) >= 35:
+    if len(append_can_name) >= 35:
         print("too long")
         return name
     if "HEARTBEAT" in canid: 
