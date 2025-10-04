@@ -75,12 +75,14 @@ def check_repeat_varname(name):
 
 def create_prefix(name, canid):
     can_name = re.findall(r'CMR_CANID_(\w+)',canid) 
-    append_can_name = can_name[0].split("_")[1]
-    if "HEARTBEAT" in canid:
-        print("hi") 
+    append_can_name = can_name[0].split("_")[1]+"_"+name 
+    if len(name)+len(append_can_name) >= 35:
+        print("too long")
+        return name
+    if "HEARTBEAT" in canid: 
         board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
         boardname = board.group(1) 
-        append_can_name = boardname+"_HEARTBEAT" 
+        append_can_name = boardname+"_HEARTBEAT"+name 
     return append_can_name 
 
 
@@ -105,9 +107,9 @@ def format_bitpacking(canid, structname, structlines, atbit, vartype, enums):
                 name = check_repeat_varname(name) 
                 append_can_name = create_prefix(name, canid) 
                 if realsize == 1:
-                    structlines.append("Var="+append_can_name+"_"+name.lower()+" bit "+str(atbit+int(position))+","+str(realsize)) 
+                    structlines.append("Var="+append_can_name+" bit "+str(atbit+int(position))+","+str(realsize)) 
                 else: 
-                    structlines.append("Var="+append_can_name+"_"+name.lower()+" "+vartype+" "+str(atbit+int(position))+","+str(realsize)) 
+                    structlines.append("Var="+append_can_name+" "+vartype+" "+str(atbit+int(position))+","+str(realsize)) 
                 #atbit+=realsize 
 
 
@@ -170,7 +172,7 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
         if size: 
             name = check_repeat_varname(name) 
             append_can_name = create_prefix(name, canid) 
-            appendstr = "Var="+append_can_name+"_"+name+" "+vartype+ " " +str(atbit)+","+str(size)
+            appendstr = "Var="+append_can_name+" "+vartype+ " " +str(atbit)+","+str(size)
             # Add field-specific parameters if available
             if field_params and name in field_params:
                 appendstr += format_field_params(field_params[name])
