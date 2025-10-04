@@ -619,11 +619,13 @@ static bool getVehicleFinished(bool vehicleStill){
 }
 
 /**
- * @brief Checks if RES is giving a go ahead
+ * @brief Go-signal for switching from “Ready” to “Autonomous” state 
+ * 
+ * More: https://doc.fs-quiz.eu/FSG2017_DV_Technical_Specifications_v1.0.pdf
  */
 static inline bool getRESGo() {
 	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
-    return (data[0] & 4);
+    return (data[0] & CMR_CAN_RES_GO);
 }
 
 /**
@@ -631,5 +633,5 @@ static inline bool getRESGo() {
  */
 static inline bool RESTriggered(){
 	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
-	return !(data[0] & 1);
+	return !(data[0] & CMR_CAN_RES_TRIG);
 }

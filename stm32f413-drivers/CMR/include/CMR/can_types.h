@@ -240,8 +240,16 @@ typedef enum {
     /** @brief IMD error latch is active. */
     CMR_CAN_VSM_LATCH_IMD = (1 << 1),
     /** @brief BSPD error latch is active. */
-    CMR_CAN_VSM_LATCH_BSPD = (1 << 0),
+    CMR_CAN_VSM_LATCH_BSPD = (1 << 0)
 } cmr_canVSMLatch_t;
+
+/** @brief Bit definitions for RES*/
+typedef enum {
+    /** @brief RES go-ahead*/
+    CMR_CAN_RES_GO = (1 << 2),
+    /** @brief E-Stop is signalized*/
+    CMR_CAN_RES_TRIG = (1 << 0)
+} cmr_canRES_t;
 
 /** @brief Vehicle Safety Module state and error status. */
 typedef struct {
