@@ -167,6 +167,22 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		.outOfRange_pcnt = 10,
 		//.warnFlag = What errors to use?
 	},
+    [SENSOR_CH_VSENSE] = {
+		.conv = ADCtoMV_HV,
+		.sample = sampleADCSensor,
+		//.readingMin = ?,
+		//.readingMax = ?,
+		.outOfRange_pcnt = 10,
+		//.warnFlag = What errors to use?
+	},
+    [SENSOR_CH_ISENSE] = {
+		.conv = NULL,
+		.sample = sampleADCSensor,
+		//.readingMin = ?,
+		//.readingMax = ?,
+		.outOfRange_pcnt = 10,
+		//.warnFlag = What errors to use?
+	},
 	[SENSOR_CH_SAFETY] = { //hvc 
 		.conv = ADCtoMV_24v,
 		.sample = sampleADCSensor,
@@ -268,4 +284,16 @@ int32_t getHVmillivolts(){
 
 int32_t getHVmilliamps(){
     return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_ISENSE));
+}
+
+int32_t getHVIvoltage(){
+    return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV));
+}
+
+int32_t getHVIcurrent(){
+    return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_CURRENT)); 
+}
+
+int32_t getHVIvref(){
+    return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_VREF)); 
 }
