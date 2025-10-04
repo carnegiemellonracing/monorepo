@@ -135,17 +135,14 @@ void canLRUDDetect(void){
 			if(lastState[i] == false){
 				//new press
 				if(getCurrState() != CONFIG)
-				{
-
+				{	
+					
 					TickType_t press = xTaskGetTickCount();
 					while(xTaskGetTickCount() - press <= 1000){
 						if(!gpioLRUDStates[i]) {
 							lastState[i] = false;
 							return;
 						}
-					}
-					while(gpioLRUDStates[i]) {
-						continue;
 					}
 
 				}

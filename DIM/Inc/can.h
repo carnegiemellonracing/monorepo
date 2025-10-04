@@ -80,7 +80,7 @@ typedef enum {
     CANRX_HVC_HEARTBEAT,       /**< @brief HVC Error. */
     CANRX_HVC_BMB_STATUS,      /**< @brief HVC BMB Status */
     CANRX_MEMORATOR_BROADCAST, /**< @brief Memorator broadcast. */
-    CANRX_SBG_STATUS_3,        /**< @brief INS Status 3 */
+    CANRX_MOVELLA_STATUS,        /**< @brief INS Status 3 */
     CANRX_EMD_VALUES,          /**< @brief EMD Values for HV voltages and current */
     CANRX_VSM_SENSORS,
     CANRX_HVC_LOW_VOLTAGE, /**< @brief HVC Low Voltage for Safety Circuit Status*/
@@ -88,6 +88,7 @@ typedef enum {
     CANRX_CDC_ODOMETER,
     CANRX_CDC_CONTROLS_STATUS,
     CANRX_CDC_HEARTBEAT,
+    CANRX_PACK_CELL_VOLTAGES,  /**< @brief Pack Cell Voltages for min and Max Cell */
     CANRX_LEN /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 
@@ -103,7 +104,7 @@ uint8_t throttleGetPos(void);
 
 float canEmdHvVoltage(cmr_canEMDMeasurements_t emd_vals);
 float canEmdHvCurrent(cmr_canEMDMeasurements_t emd_vals);
-
+cmr_canHVCPackMinMaxCellVolages_t* getPackVoltages(void);
 void sendAcknowledgement(void);
 
 #endif /* CAN_H */

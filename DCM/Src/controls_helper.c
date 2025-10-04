@@ -1,7 +1,5 @@
 #include "constants.h"
-
 #include "controls_helper.h"
-#include "lut_3d.h"
 #include "safety_filter.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -209,84 +207,84 @@ static float test_local() {
 	return 42.42f;
 }
 
-bool setParallelRegen(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM) {
+// bool setParallelRegen(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM) {
 
-    // return if regen is not needed
-    if (brakePressurePsi_u8 < braking_threshold_psi) {
-        setVelocityInt16All(0);
-        return false;
-    }
+//     // return if regen is not needed
+//     if (brakePressurePsi_u8 < braking_threshold_psi) {
+//         setVelocityInt16All(0);
+//         return false;
+//     }
 
-    bool ret_val = true;
+//     bool ret_val = true;
 
-    // DIM requested regen_force_multiplier
-    uint8_t regen_force_multiplier_int8 = 80;//0;
-    // ret_val &= getProcessedValue(&regen_force_multiplier_int8, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
+//     // DIM requested regen_force_multiplier
+//     uint8_t regen_force_multiplier_int8 = 80;//0;
+//     // ret_val &= getProcessedValue(&regen_force_multiplier_int8, PEDAL_REGEN_STRENGTH_INDEX, unsigned_integer);
 
-    // process the max regen force requested:
-    float regen_force_multiplier_f = (float)regen_force_multiplier_int8 / 100.0f;
+//     // process the max regen force requested:
+//     float regen_force_multiplier_f = (float)regen_force_multiplier_int8 / 100.0f;
 
-    // clamping multiplier from DIM
-    if (regen_force_multiplier_f > 1.0) {
-        regen_force_multiplier_f = 1.0;
-    }
+//     // clamping multiplier from DIM
+//     if (regen_force_multiplier_f > 1.0) {
+//         regen_force_multiplier_f = 1.0;
+//     }
 
-    // process regen button max force:
-    // float dim_regen_buttons_f = (float)dim_regen_buttons / 100.0f;
+//     // process regen button max force:
+//     // float dim_regen_buttons_f = (float)dim_regen_buttons / 100.0f;
 
-    if(ret_val == false) {
-        setVelocityInt16All(0);
-        return false;
-    }
-    if (regen_force_multiplier_int8 == 0) {
-        setVelocityInt16All(0);
-        return false;
-    }
+//     if(ret_val == false) {
+//         setVelocityInt16All(0);
+//         return false;
+//     }
+//     if (regen_force_multiplier_int8 == 0) {
+//         setVelocityInt16All(0);
+//         return false;
+//     }
 
-    // ******* END DIM CONFIG SETTINGS *********
-
-
-    // get regen limit
-    // what is this recuperative limit shit
-
-    //float recuperative_limit = getMotorRegenerativeCapacity(avgMotorSpeed_RPM);
-    // yes but where is this value coming from???
-
-    // this will overflow as brake pressure exceeds max regen pressure, that's why there is a clamp below
-
-    // get brake kappa for each motor and then run the following if checks against maxfasttorque and the capping max regen force
-    // task: find deadband
-    float regenTorque_FL = getBrakeMaxTorque_mNm(MOTOR_FL, brakePressurePsi_u8) * 0.001;
-    float regenTorque_FR = getBrakeMaxTorque_mNm(MOTOR_FR, brakePressurePsi_u8) * 0.001;
-    float regenTorque_RL = getBrakeMaxTorque_mNm(MOTOR_RL, brakePressurePsi_u8) * 0.001;
-    float regenTorque_RR = getBrakeMaxTorque_mNm(MOTOR_RR, brakePressurePsi_u8) * 0.001;
-
-    // debugging code
-    float debug = test();
-    float debug_local = test_local();
-    float temp = getKappaByFx(MOTOR_FL, throttlePos_u8, 300.0f, true);
-
-    // clamp torque to the scaled maximum
-
-    // clamp to maintain within recuperative limit
-    // regenTorque_FL = fminf(regenTorque_FL, -recuperative_limit);
-    // regenTorque_FR = fminf(regenTorque_FR, -recuperative_limit);
-    // regenTorque_RL = fminf(regenTorque_RL, -recuperative_limit);
-    // regenTorque_RR = fminf(regenTorque_RR, -recuperative_limit);
-
-    cmr_torqueDistributionNm_t neg_torques = {
-        .fl = regenTorque_FL,
-        .fr = regenTorque_FR,
-        .rl = regenTorque_RL,
-        .rr = regenTorque_RR,
-    };
-
-    // send torques!!
-    setTorqueLimsProtected(NULL, &neg_torques);
-
-    // stop goin
-    setVelocityInt16All(0);
+//     // ******* END DIM CONFIG SETTINGS *********
 
 
-    return true;
-}
+//     // get regen limit
+//     // what is this recuperative limit shit
+
+//     //float recuperative_limit = getMotorRegenerativeCapacity(avgMotorSpeed_RPM);
+//     // yes but where is this value coming from???
+
+//     // this will overflow as brake pressure exceeds max regen pressure, that's why there is a clamp below
+
+//     // get brake kappa for each motor and then run the following if checks against maxfasttorque and the capping max regen force
+//     // task: find deadband
+//     float regenTorque_FL = getBrakeMaxTorque_mNm(MOTOR_FL, brakePressurePsi_u8) * 0.001;
+//     float regenTorque_FR = getBrakeMaxTorque_mNm(MOTOR_FR, brakePressurePsi_u8) * 0.001;
+//     float regenTorque_RL = getBrakeMaxTorque_mNm(MOTOR_RL, brakePressurePsi_u8) * 0.001;
+//     float regenTorque_RR = getBrakeMaxTorque_mNm(MOTOR_RR, brakePressurePsi_u8) * 0.001;
+
+//     // debugging code
+//     float debug = test();
+//     float debug_local = test_local();
+//     float temp = getKappaByFx(MOTOR_FL, throttlePos_u8, 300.0f, true);
+
+//     // clamp torque to the scaled maximum
+
+//     // clamp to maintain within recuperative limit
+//     // regenTorque_FL = fminf(regenTorque_FL, -recuperative_limit);
+//     // regenTorque_FR = fminf(regenTorque_FR, -recuperative_limit);
+//     // regenTorque_RL = fminf(regenTorque_RL, -recuperative_limit);
+//     // regenTorque_RR = fminf(regenTorque_RR, -recuperative_limit);
+
+//     cmr_torqueDistributionNm_t neg_torques = {
+//         .fl = regenTorque_FL,
+//         .fr = regenTorque_FR,
+//         .rl = regenTorque_RL,
+//         .rr = regenTorque_RR,
+//     };
+
+//     // send torques!!
+//     setTorqueLimsProtected(NULL, &neg_torques);
+
+//     // stop goin
+//     setVelocityInt16All(0);
+
+
+//     return true;
+// }

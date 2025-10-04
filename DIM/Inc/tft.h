@@ -10,7 +10,8 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <CMR/qspi.h>
+#include <CMR/qspi.h>  // QuadSPI interface
+#include <stdbool.h>
 /** @brief setting the thresholds for the backgrounds to turn yellow and red*/
 #define AC_YELLOW_THRESHOLD 55
 #define AC_RED_THRESHOLD 57
@@ -18,21 +19,23 @@
 #define MOTOR_RED_THRESHOLD 115
 #define MC_YELLOW_THRESHOLD 48
 #define MC_RED_THRESHOLD 58
+/** @brief Display startup time, in milliseconds. */
+#define TFT_STARTUP_MS 300
+
+/** @brief Display reset time, in milliseconds. */
+#define TFT_RESET_MS 50
+
 
 /** @brief Display update period. */
 #define TFT_UPDATE_PERIOD_MS 20
 
+/** @brief Represents a TFT display.  */
 typedef struct {
     cmr_qspi_t qspi;  /**< @brief The display's QuadSPI port. */
     bool inited;      /**< @brief `true` if the init sequence is done. */
     uint16_t coCmdRd; /**< @brief Coprocessor command read address. */
     uint16_t coCmdWr; /**< @brief Coprocessor command write address. */
 } tft_t;
-
-typedef enum {
-    TFT_CMD_ACTIVE = 0x00, /**< @brief Enter "ACTIVE" mode (send twice). */
-    TFT_CMD_CLKEXT = 0x44  /**< @brief Use external clock. */
-} tftCmd_t;
 
 typedef enum {
     // Diagnostics.
@@ -83,6 +86,7 @@ typedef enum {
     TFT_ADDR_RAM_CMD = 0x308000 /**< @brief Coprocessor command buffer. */
 } tftAddr_t;
 
+void tftInitSequence();
 void tftInit(void);
 
 /** @brief All of the errors to be drawn on-screen
@@ -131,7 +135,6 @@ typedef enum {
     NONE
 } cornerId_t;
 
-
 /** @brief General purpose graphics RAM size, in bytes. */
 #define TFT_RAM_G_SIZE (1024 * 1024)
 
@@ -141,5 +144,25 @@ typedef enum {
 /** @brief Coprocessor command buffer RAM size, in bytes. */
 #define TFT_RAM_CMD_SIZE (4 * 1024)
 
+/** @brief Represents a display command. */
+typedef enum {
+    TFT_CMD_ACTIVE = 0x00, /**< @brief Enter "ACTIVE" mode (send twice). */
+    TFT_CMD_CLKEXT = 0x44,  /**< @brief Use external clock. */
+    TFT_CMD_INFLATE =  0xFFFFFF22
+} tftCmd_t;
+
+
+void tftCmd(tft_t *tft, tftCmd_t cmd, uint8_t param);
+void tftWrite(tft_t *tft, tftAddr_t addr, size_t len, const void *data);
+void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data);
+
 void tftCoCmd(tft_t *tft, size_t len, const void *data);
+
+/** @brief Forward declare exported content type. */
+typedef struct tftContent tftContent_t;
+
+extern const tftContent_t tftContent_startup;
+
+void tftContentLoad(tft_t *tft, const tftContent_t *tftContent);
+
 #endif /* TFT_H */

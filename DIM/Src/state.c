@@ -350,10 +350,11 @@ static cmr_state getReqScreen(void) {
             // else if(canLRUDStates[LEFT]) {
                 nextState = CONFIG;
                 flush_config_screen_to_cdc = false;
-                // exitConfigScreen();
-
-                //gpioButtonStates[SW1] = 0;
-                //nextState = CONFIG;
+				//gpioLRUDStates[LEFT] = false;
+            }
+            else if(canLRUDStates[RIGHT]) {
+                nextState = RACING;
+                //canLRUDStates[RIGHT] = false;
             }
             // else if(canLRUDStates[RIGHT]) {
             //     nextState = RACING;
@@ -395,12 +396,12 @@ static cmr_state getReqScreen(void) {
                 //gpioButtonStates[SW1] = 0;
                 //nextState = CONFIG;
             }
-            // else if(false) {
-            //     flush_config_screen_to_cdc = true;
-            //     // exitConfigScreen();
-            //     nextState = RACING;
-            //     //gpioButtonStates[SW2] = 0;
-            // }
+            else if(false) {
+                flush_config_screen_to_cdc = true;
+                // exitConfigScreen();
+                nextState = RACING;
+                //gpioButtonStates[SW2] = 0;
+            }
             else{
                 nextState = CONFIG;
             }
@@ -408,20 +409,20 @@ static cmr_state getReqScreen(void) {
         case dimStateERROR:
             nextState = INIT;
             break;
-        // case RACING:
-        //     if(canLRUDStates[LEFT] && state.vsmReq == CMR_CAN_GLV_ON) {
-        //         nextState = CONFIG;
-        //         flush_config_screen_to_cdc = false;
-        //         //canLRUDStates[LEFT] = false;
-        //     }
-        //     else if(canLRUDStates[RIGHT]) {
-        //         nextState = NORMAL;
-        //         //canLRUDStates[RIGHT] = false;
-        //     }
-        //     else {
-        //         nextState = RACING;
-        //     }
-        //     break;
+        case RACING:
+            if(canLRUDStates[LEFT] && state.vsmReq == CMR_CAN_GLV_ON) {
+                nextState = CONFIG;
+                flush_config_screen_to_cdc = false;
+                //canLRUDStates[LEFT] = false;
+            }
+            else if(canLRUDStates[RIGHT]) {
+                nextState = NORMAL;
+                //canLRUDStates[RIGHT] = false;
+            }
+            else {
+                nextState = RACING;
+            }
+            break;
         default:
             nextState = INIT;
     }
@@ -512,7 +513,6 @@ void stateVSMDown() {
 
 
 void reqVSM(void) {
-
     if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM == CMR_CAN_CLEAR_ERROR) {
         state.vsmReq = CMR_CAN_GLV_ON;
     }
@@ -523,7 +523,7 @@ void reqVSM(void) {
             } else if (canLRUDStates[DOWN]) {
                 stateVSMDown();
             }
-        }
+        }  
     }
 }
 
