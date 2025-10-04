@@ -65,7 +65,7 @@ static const TickType_t canTX1Hz_period_ms = 1000;
 static cmr_task_t canTX1Hz_task;
 
 /** @brief calc that power bitch */
-static void calcPower(cmr_canHVIHeartbeat_t *heartbeat) {
+static void calcPower(cmr_canHVSense_t *heartbeat) {
 	uint16_t voltageRaw, currentRaw, voltage;
 	voltageRaw = adcRead(ADC_VSENSE);
 	currentRaw = adcRead(ADC_ISENSE);
@@ -113,11 +113,11 @@ static cmr_task_t canTX10Hz_task;
  */
 static void canTX10Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
-    cmr_canHVIHeartbeat_t heartbeat;
+    cmr_canHVSense_t heartbeat;
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
     	calcPower(&heartbeat);
-    	canTX(CMR_CANID_HEARTBEAT_HVI, &heartbeat, sizeof(heartbeat), canTX10Hz_period_ms);
+    	canTX(CMR_CANID_HV_SENSORS, &heartbeat, sizeof(heartbeat), canTX10Hz_period_ms);
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
 }

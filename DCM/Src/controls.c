@@ -1607,7 +1607,7 @@ void setEnduranceTorque (
         float power_limit_start_derate_W = power_limit_W - 10000.0f;
         power_limit_start_derate_W = fmaxf(power_limit_start_derate_W, 0.0f); // clamp to zero in case of negative value due to lower than 10kw limit
 
-        volatile cmr_canHVIHeartbeat_t *HVISense = canTractiveGetPayload(CANRX_TRAC_HVI_SENSE);
+        volatile cmr_canHVSense_t *HVISense = canTractiveGetPayload(CANRX_TRAC_HVI_SENSE);
         const float hv_voltage_V = ((float)(HVISense->packVoltage_cV)) * 1e-2f; // convert to volts
 
         volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
@@ -1678,7 +1678,7 @@ void setEnduranceTestTorque(
         float power_limit_start_derate_W = power_limit_W - 5000.0f;
         power_limit_start_derate_W = fmaxf(power_limit_start_derate_W, 0.0f); // clamp to zero in case of negative value due to lower than 10kw limit
 
-        volatile cmr_canHVIHeartbeat_t *HVISense = canTractiveGetPayload(CANRX_TRAC_HVI_SENSE);
+        volatile cmr_canHVSense_t *HVISense = canTractiveGetPayload(CANRX_TRAC_HVI_SENSE);
         const float hv_voltage_V = ((float)(HVISense->packVoltage_cV)) * 1e-2f; // convert to volts
 
         volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);

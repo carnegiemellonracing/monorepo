@@ -411,12 +411,12 @@ typedef struct {
     uint8_t BMB15_16_Errs;  /**< @brief Errors for BMB15&16 (BMB15 = higher 4 bits). */
 } cmr_canHVCBMBErrors_t;
 
-//HV_I Sense Board CAN Types
+//HVC Sensors CAN Types
 typedef struct {
     int16_t packCurrent_dA;
     uint16_t packVoltage_cV;
     int32_t packPower_W;
-} cmr_canHVIHeartbeat_t;
+} cmr_canHVSense_t;
 
 //Power Sense Board CAN Types
 typedef struct {

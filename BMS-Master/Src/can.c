@@ -50,7 +50,7 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 25
     },
 	[CANRX_HVI_COMMAND] = {
-		.canID = CMR_CANID_HEARTBEAT_HVI,
+		.canID = CMR_CANID_HV_SENSORS,
 		.timeoutError_ms = 50,
 		.timeoutWarn_ms = 25
     } 
@@ -216,7 +216,7 @@ void canInit(void) {
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_HEARTBEAT_VSM,
-				CMR_CANID_HEARTBEAT_HVI,
+				CMR_CANID_HV_SENSORS,
                 CMR_CANID_HVC_COMMAND,
 				CMR_CANID_CELL_BALANCE_ENABLE
             }

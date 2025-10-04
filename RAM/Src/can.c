@@ -162,7 +162,7 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .warnFlag = CMR_CAN_WARN_CDC_AMK_RR | CMR_CAN_WARN_CDC_AMK_TIMEOUT
     },
     [CANRX_TRAC_HVI_SENSE] = {
-        .canID = CMR_CANID_HEARTBEAT_HVI,
+        .canID = CMR_CANID_HV_SENSORS,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75
     }

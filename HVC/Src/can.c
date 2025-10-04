@@ -48,7 +48,7 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 25
     },
 	[CANRX_HVI_COMMAND] = {
-		.canID = CMR_CANID_HEARTBEAT_HVI,
+		.canID = CMR_CANID_HV_SENSORS,
 		.timeoutError_ms = 50,
 		.timeoutWarn_ms = 25
     },
@@ -69,8 +69,7 @@ static cmr_can_t can;
 
 // Forward declarations
 static void sendHeartbeat(TickType_t lastWakeTime);
-static void sendHVCPackVoltage(void);
-static void calcPower(cmr_canHVIHeartbeat_t *heartbeat); 
+static void sendHVCPower(); 
 
 /** @brief CAN 1 Hz TX priority. */
 static const uint32_t canTX1Hz_priority = 4;
@@ -116,14 +115,12 @@ static cmr_task_t canTX10Hz_task;
 static void canTX10Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-    cmr_canHVIHeartbeat_t heartbeat;
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         // BRUSA Charger decided by state machine
         // sendBRUSAChargerControl();
 
-        calcPower(&heartbeat);
-    	canTX(CMR_CANID_HEARTBEAT_HVI, &heartbeat, sizeof(heartbeat), canTX10Hz_period_ms);
+        sendHVCPower();
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -179,10 +176,6 @@ static void canTX100Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendHeartbeat(lastWakeTime);
-        sendHVCPackVoltage();
-        //sendBMSPackCurrent();
-        //sendBMSLowVoltage();
-        //sendBMSBMBStatusErrors();
 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
@@ -209,7 +202,7 @@ void canInit(void) {
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_HEARTBEAT_VSM,
-				CMR_CANID_HEARTBEAT_HVI,
+				CMR_CANID_HV_SENSORS,
                 CMR_CANID_HVC_COMMAND,
 				CMR_CANID_CELL_BALANCE_ENABLE
             }
@@ -343,20 +336,8 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     canTX(CMR_CANID_HEARTBEAT_HVC, &HVCHeartbeat, sizeof(HVCHeartbeat), canTX100Hz_period_ms);
 }
 
-static void sendHVCPackVoltage(void) {
-    //int32_t bVolt = getBattMillivolts();
-    int32_t hvVolt = getHVmillivolts();
-
-    cmr_canHVCPackVoltage_t HVCPackVoltage = {
-        .battVoltage_mV = -1, //placeholder, change struct later 
-        .hvVoltage_mV = hvVolt,
-    };
-
-    canTX(CMR_CANID_HVC_PACK_VOLTAGE, &HVCPackVoltage, sizeof(HVCPackVoltage), canTX100Hz_period_ms);
-}
-
 /** @brief calc that power bitch */
-static void calcPower(cmr_canHVIHeartbeat_t *heartbeat) {
+static void sendHVCPower() {
 	int32_t power;
     int16_t voltage;
     uint16_t current;
@@ -365,12 +346,16 @@ static void calcPower(cmr_canHVIHeartbeat_t *heartbeat) {
     current = cmr_sensorListGetValue(&sensorList, SENSOR_CH_CURRENT);
     power = (voltage * 100) * (current * 10);
 
-    heartbeat->packVoltage_cV = voltage;
-    heartbeat->packCurrent_dA = current;
-    heartbeat->packPower_W = power;   
+    cmr_canHVSense_t *hv_sensors; 
+
+    hv_sensors->packVoltage_cV = voltage;
+    hv_sensors->packCurrent_dA = current;
+    hv_sensors->packPower_W = power;   
 
     uint16_t voltageRaw, currentRaw;
 	voltageRaw = adcRead(ADC_VSENSE);
 	currentRaw = adcRead(ADC_ISENSE);
+
+    canTX(CMR_CANID_HV_SENSORS, &hv_sensors, sizeof(hv_sensors), canTX10Hz_period_ms);
 }
 

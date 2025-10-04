@@ -43,14 +43,14 @@ cmr_canHVCError_t checkBMSMErrors(cmr_canHVCState_t currentState){
        // E7
        errorFlags |= CMR_CAN_HVC_ERROR_PACK_UNDERVOLT;
    }
-    if(getCurrentInstant() > maxPackCurrentInstantMA) {
-        // E8
-        errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
-    }
-   if(getCurrentAverage() > maxPackCurrentAverageMA) {
-       // E9
-       errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
-   }
+//     if(getCurrentInstant() > maxPackCurrentInstantMA) {
+//         // E8
+//         errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
+//     }
+//    if(getCurrentAverage() > maxPackCurrentAverageMA) {
+//        // E9
+//        errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
+//    }
     errorRegister = errorFlags;
     
     return errorFlags;

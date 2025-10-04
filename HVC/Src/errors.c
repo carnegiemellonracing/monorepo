@@ -7,7 +7,7 @@ static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_STATE_ERROR;
 
 cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
     cmr_canHVCError_t errorFlags = CMR_CAN_HVC_ERROR_NONE;
-    if(checkHVCCommandTimeout()) { //HVC 
+    if(checkHVCCommandTimeout()) { 
         // TODO E1 check the timeout field of the command mes sage meta data
         errorFlags |= CMR_CAN_HVC_ERROR_CAN_TIMEOUT;
     } 
@@ -40,7 +40,7 @@ cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
         errorFlags |= CMR_CAN_HVC_ERROR_LV_UNDERVOLT;
     }
 
-    // Cut relay power if we have an error //HVC? 
+    // Cut relay power if we have an error 
     if (errorFlags != CMR_CAN_HVC_ERROR_NONE) {
         cmr_gpioWrite(GPIO_BMB_FAULT_L, 0); 
     } else {

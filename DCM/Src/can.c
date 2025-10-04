@@ -143,7 +143,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .warnFlag = CMR_CAN_WARN_NONE
     },
 	[CANRX_HVI_SENSE] = {
-	        .canID = CMR_CANID_HEARTBEAT_HVI,
+	        .canID = CMR_CANID_HV_SENSORS,
 	        .timeoutError_ms = 100,
 	        .timeoutWarn_ms = 75
 	},
@@ -695,7 +695,7 @@ static void canTX200Hz(void *pvParameters) {
                 CMR_CAN_BUS_VEH,
                 canTractiveRXMeta[CANRX_TRAC_HVI_SENSE].canID,
                 (void *) &(canTractiveRXMeta[CANRX_TRAC_HVI_SENSE].payload),
-                sizeof(cmr_canHVIHeartbeat_t),
+                sizeof(cmr_canHVSense_t),
                 canTX200Hz_period_ms
             );
         }

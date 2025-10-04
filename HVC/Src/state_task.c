@@ -42,7 +42,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
 
     // Getting HVC Command
     volatile cmr_canHVCCommand_t *HVCCommand = getPayload(CANRX_HVC_COMMAND);
-	volatile cmr_canHVIHeartbeat_t *hvi_heartbeat = getPayload(CANRX_HVI_COMMAND);
+	volatile cmr_canHVSense_t *hvi_heartbeat = getPayload(CANRX_HVI_COMMAND);
 
     //Getting BMB data
     volatile cmr_canBMSMinMaxCellVoltage_t *BMSMData = getPayload(CANRX_BMSM_DATA); 
