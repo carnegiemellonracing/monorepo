@@ -36,5 +36,9 @@ int32_t getAIRmillivolts();
 int32_t getSafetymillivolts();
 int32_t getHVmillivolts();
 int32_t getHVmilliamps();
+int32_t getHVIvoltage(); 
+int32_t getHVIcurrent(); 
+int32_t getHVIvref(); 
+
 
 #endif /* SENSORS_H_ */
