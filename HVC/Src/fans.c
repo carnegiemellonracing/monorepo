@@ -61,6 +61,8 @@ static void fanControl(void *pvParameters) {
 
     cmr_pwmInit(&fan_PWM, &pwmPinConfig1);
 
+    cmr_canBMSMinMaxCellTemperature_t *BMSData = getPayload(CANRX_BMSM_TEMP_DATA); 
+
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
     	cmr_canHVCState_t state = getState();
@@ -70,7 +72,7 @@ static void fanControl(void *pvParameters) {
             case CMR_CAN_HVC_MODE_RUN:
             {
 
-                uint16_t accum_temp = getPackMaxCellTemp();
+                uint16_t accum_temp = BMSData->maxCellTemp_C; 
                 // Use the temperature of the hottest cell as the AC's temperature
                 // if accumtemp < 56 remain at low speed
                 // if accumtemp > 58 remain at high speed

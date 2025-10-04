@@ -99,13 +99,12 @@ int main(void) {
 
     // Peripheral configuration.
     gpioInit();
-    //BMBInit();
     adcInit();
     sensorsInit();
     canInit();
 
     //init fan task
-    //fanInit();
+    fanInit();
     //wwdgInit();
 
     statusLEDInit(); 

@@ -52,11 +52,16 @@ cmr_canRXMeta_t canRXMeta[] = {
 		.timeoutError_ms = 50,
 		.timeoutWarn_ms = 25
     },
-    [CANRX_BMSM_DATA] = {
+    [CANRX_BMSM_VOLTAGE_DATA] = {
         .canID = CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
-    }
+    },
+    [CANRX_BMSM_TEMP_DATA] = {
+        .canID = CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE, 
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    },
 	// [CANRX_BALANCE_COMMAND] = {
 	// 	.canID = CMR_CANID_CELL_BALANCE_ENABLE,
 	// 	.timeoutError_ms = 50,

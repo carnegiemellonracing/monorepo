@@ -45,7 +45,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
 	volatile cmr_canHVSense_t *hvi_heartbeat = getPayload(CANRX_HVI_COMMAND);
 
     //Getting BMB data
-    volatile cmr_canBMSMinMaxCellVoltage_t *BMSMData = getPayload(CANRX_BMSM_DATA); 
+    volatile cmr_canBMSMinMaxCellVoltage_t *BMSMData = getPayload(CANRX_BMSM_VOLTAGE_DATA); 
 
     switch (currentState) {
         case CMR_CAN_HVC_STATE_DISCHARGE: // S1
