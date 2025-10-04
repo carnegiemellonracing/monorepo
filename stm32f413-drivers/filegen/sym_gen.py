@@ -49,7 +49,6 @@ def add_mapper_data(canid, cycletime, timeout, structlines):
         if "HEARTBEAT" not in name[0]: 
             structlines.append("["+name[0]+"]")
         else:
-            print("heartbeat") 
             board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
             boardname = board.group(1) 
             structlines.append("["+boardname+"_HEARTBEAT]") 
@@ -86,7 +85,6 @@ def format_bitpacking(canid, structname, structlines, atbit, vartype, enums):
                     continue 
                 realsize = int(math.log(int(size), 2)) + 1
                 if not position: 
-                    print(name+str(size))
                     binary = bin(size)[2:] 
                     binary = binary[::-1]
                     position = atbit 
@@ -160,8 +158,9 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
         if size: 
             #name = check_repeat_varname(name) 
             can_name = re.findall(r'CMR_CANID_(\w+)',canid) 
-            append_can_name = can_name[0] 
-            if "HEARTBEAT" in can_name:
+            append_can_name = can_name[0].split("_")[0] 
+            if "HEARTBEAT" in canid:
+                print("hi") 
                 board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
                 boardname = board.group(1) 
                 append_can_name = boardname+"_HEARTBEAT" 
