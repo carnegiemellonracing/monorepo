@@ -1138,6 +1138,14 @@ typedef struct {
     uint16_t cell1;
     uint16_t cell2;
     uint16_t cell3;
+    uint16_t cell4;
 } cmr_canLVBMS_Voltage;
+
+typedef struct {
+    uint16_t cell1;
+    uint16_t cell2;
+    uint16_t cell3;
+    uint16_t cell4;
+} cmr_canLVBMS_Temperature;
 
 #endif /* CMR_CAN_TYPES_H */

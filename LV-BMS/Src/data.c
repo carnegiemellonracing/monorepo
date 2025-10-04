@@ -19,7 +19,7 @@
 
 uint16_t sendVolt[6];
 float rawCellVolts[6];
-float cellVoltages[6];
+float cellVoltages[8];
 uint8_t cellNum[6];
 signed char offset_corr[7];
 signed char gain_corr[7];
@@ -81,33 +81,54 @@ void AFE_SETUP(void){
     }
 }
 
+static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
+	//formula from TI's code
+	//Bitwise OR high byte shifted by 8 and low byte, apply scaling factor
+
+	return (uint16_t) (0.19073*((((uint16_t)msb << 8) | lsb)));
+}
 
 
 void getVoltages(void) {
     TickType_t time_prev = xTaskGetTickCount();
-    for (uint8_t i = 0; i < 6; i++) {
-        i2c_write_and_validate(CELL_CTL, 0x10 | i);
-        vTaskDelayUntil(&time_prev, 32);
-            //reference data sheet for formula
-        cellVoltages[i] = adc_read(ADC_AFE_VCOUT);
-        //cellNum[i] = read_cell_ctl();
-        // gc_out = 0.001 * gain_corr[i];
-        //uint16_t oc_out = 0.001 * offset_corr[i];
+     uart_command_t read_voltage = {
+			.readWrite = STACK_READ,
+			.dataLen = 1,
+			.deviceAddress = 0xFF, //not used!
+			.registerAddress = TOP_CELL,
+			.data = {VSENSE_CHANNELS*2-1}, //reading high and low for cell 0-VSENSE_CHANNELS
+			.crc = {0xFF, 0xFF}
+		};
+    
+    taskENTER_CRITICAL();
 
-        // uint16_t tmepskdj = cellVoltages[i]/ADC_COUNT;
+    uart_sendCommand(&read_voltage);
+    uart_response_t response;
 
-        rawCellVolts[i] = ((float)(cellVoltages[i])/(float)(ADC_COUNT)) * 11.0f;
-        sendVolt[i] = float_to_uint16(rawCellVolts[i]);
-
-
-        //rawCellVolts[i] = float_to_uint16(((adc_read(ADC_AFE_VCOUT) * vref_corr + ADC_COUNT * offset_corr[i+1])
-                       //* (1000L + gain_corr[i+1])) /(GVCOUT * ADC_COUNT * 1e6));
-
+    uint8_t status = uart_receiveResponse(&response, 27);
+    if(status != 0) {
+        //setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
+        //BMBTimeoutCount[i-1]+=1;
+        DWT_Delay_ms(10000);
+        RXTurnOnInit();
+        BMBInit();
+        taskEXIT_CRITICAL();
+        return i;
     }
 
-    sendOvervoltageFlags(sendVolt);
-    sendVoltages();
+    taskEXIT_CRITICAL();
 
+
+    for(uint8_t j = 0; j < VSENSE_CHANNELS; j++) {
+        uint8_t high_byte_data = response[i].data[2*j];
+        uint8_t low_byte_data = response[i].data[2*j+1];
+        cellVoltages[VSENSE_CHANNELS-j-1] = calculateVoltage(high_byte_data, low_byte_data);
+    }
+
+    vTaskDelayUntil(&time_prev, 32);
+
+    sendOvervoltageFlags(cellVoltages);
+    sendVoltages();
 }
 
 // Sends cell voltages (1-6) split into two CAN messages
@@ -115,17 +136,19 @@ void sendVoltages() {
 
     // Split voltages into two groups
 
-    cmr_canLVBMS_Voltage cell1_3;
-    cmr_canLVBMS_Voltage cell4_6;
-    cell1_3.cell1 = sendVolt[0];
-    cell1_3.cell2 = sendVolt[1];
-    cell1_3.cell3 = sendVolt[2];
-    cell4_6.cell1 = sendVolt[3];
-    cell4_6.cell2 = sendVolt[4];
-    cell4_6.cell3 = sendVolt[5];
+    cmr_canLVBMS_Voltage cell1_4;
+    cmr_canLVBMS_Voltage cell5_8;
+    cell1_4.cell1 = sendVolt[0];
+    cell1_4.cell2 = sendVolt[1];
+    cell1_4.cell3 = sendVolt[2];
+    cell1_4.cell4 = sendVolt[3];
+    cell5_8.cell1 = sendVolt[4];
+    cell5_8.cell2 = sendVolt[5];
+    cell5_8.cell3 = sendVolt[6];
+    cell5_8.cell4 = sendVolt[7];
 
-    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_1_3, &cell1_3, sizeof(cell1_3), canTX10Hz_period_ms);
-    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_4_6, &cell4_6, sizeof(cell4_6), canTX10Hz_period_ms);
+    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_1_3, &cell1_4, sizeof(cell1_3), canTX10Hz_period_ms);
+    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_4_6, &cell5_8, sizeof(cell4_6), canTX10Hz_period_ms);
 }
 
 // Sends overvoltage flags
