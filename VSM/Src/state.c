@@ -106,7 +106,6 @@ static bool vehicleStill();
 static bool getVehicleFinished(bool vehicleStill);
 static bool getRESGo();
 static bool RESTriggered();
-static bool passBrakeTest();
 
 // ------------------------------------------------------------------------------------------------
 // Interface functions
@@ -617,15 +616,6 @@ static inline bool getMissionFinished(){ //can from compute
  */
 static bool getVehicleFinished(bool vehicleStill){
     return vehicleStill && getMissionFinished();
-}
-
-
-/**
- * @brief Checks if RES is giving a go ahead
- */
-static inline bool getRESGo() {
-	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES)); //change back
-    return (data[0] & 1); //Getting ASSI_state_ready bit
 }
 
 /**
