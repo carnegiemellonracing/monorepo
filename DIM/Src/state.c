@@ -317,17 +317,9 @@ static cmr_state getReqScreen(void) {
     	nextState = dimStateERROR;
     	return nextState;
     }
-    /*case if we use safety screen
-    if(stateGetVSM() == CMR_CAN_ERROR) {
-        if(stateGetVSMReq() == CMR_CAN_HV_EN) return SAFETY;
-        return dimStateERROR;
-    }
-    */
     switch (currState) {
         case INIT:
-        	//initializes tft screen
     		nextState = START;
-
             break;
         case START:
             if(state.vsmReq == CMR_CAN_GLV_ON) {
@@ -338,31 +330,18 @@ static cmr_state getReqScreen(void) {
             }
             break;
         case NORMAL:
-            // if(canLRUDStates[LEFT]) {
-            //     nextState = CONFIG;
-            //     flush_config_screen_to_cdc = false;
-			// 	//gpioLRUDStates[LEFT] = false;
-            // }
-            if(!cmr_gpioRead(GPIO_BUTTON_SW1)) {
-            // else if(canLRUDStates[LEFT]) {
+            if(cmr_gpioRead(GPIO_CTRL_SWITCH)) {
                 nextState = CONFIG;
                 flush_config_screen_to_cdc = false;
-				//gpioLRUDStates[LEFT] = false;
             }
-            else if(canLRUDStates[RIGHT]) {
+            else if(canButtonStates[RIGHT] && stateGetVSM() == CMR_CAN_RTD) {
                 nextState = RACING;
-                //canLRUDStates[RIGHT] = false;
             }
-            // else if(canLRUDStates[RIGHT]) {
-            //     nextState = RACING;
-            //     //canLRUDStates[RIGHT] = false;
-            // }
             else {
                 nextState = NORMAL;
             }
             break;
         case CONFIG:
-            //look into how button move on screen on campus
             if(canLRUDStates[LEFT]) {
                 //move left on screen
                 config_move_request = -1;
@@ -383,21 +362,9 @@ static cmr_state getReqScreen(void) {
                 config_move_request = CONFIG_SCREEN_NUM_COLS;
                 nextState = CONFIG;
             }
-    	//TODO: WHAT THE HELL IS THIS??
-            else if(!cmr_gpioRead(GPIO_BUTTON_SW1)) {
-            // else if(canLRUDStates[LEFT]) {
+            else if(!cmr_gpioRead(GPIO_CTRL_SWITCH)) {
                 nextState = NORMAL;
                 flush_config_screen_to_cdc = true;
-                // exitConfigScreen();
-
-                //gpioButtonStates[SW1] = 0;
-                //nextState = CONFIG;
-            }
-            else if(false) {
-                flush_config_screen_to_cdc = true;
-                // exitConfigScreen();
-                nextState = RACING;
-                //gpioButtonStates[SW2] = 0;
             }
             else{
                 nextState = CONFIG;
@@ -407,14 +374,8 @@ static cmr_state getReqScreen(void) {
             nextState = INIT;
             break;
         case RACING:
-            if(canLRUDStates[LEFT] && state.vsmReq == CMR_CAN_GLV_ON) {
-                nextState = CONFIG;
-                flush_config_screen_to_cdc = false;
-                //canLRUDStates[LEFT] = false;
-            }
-            else if(canLRUDStates[RIGHT]) {
+            if(canButtonStates[LEFT] && stateGetVSM() == CMR_CAN_RTD) {
                 nextState = NORMAL;
-                //canLRUDStates[RIGHT] = false;
             }
             else {
                 nextState = RACING;
@@ -442,7 +403,8 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
 			return (vsmReq == CMR_CAN_GLV_ON);
 		case CMR_CAN_GLV_ON:
 			return (vsmReq == CMR_CAN_GLV_ON) ||
-				   (vsmReq == CMR_CAN_HV_EN);
+				   (vsmReq == CMR_CAN_HV_EN) ||
+                   (vsmReq == CMR_CAN_AS_READY);
 		case CMR_CAN_HV_EN:
 			return (vsmReq == CMR_CAN_GLV_ON) ||
 				   (vsmReq == CMR_CAN_HV_EN) ||
@@ -453,6 +415,16 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
 		case CMR_CAN_ERROR:
 			return (vsmReq == CMR_CAN_GLV_ON);
 		case CMR_CAN_CLEAR_ERROR:
+			return (vsmReq == CMR_CAN_GLV_ON);
+        case CMR_CAN_AS_READY:
+			return (vsmReq == CMR_CAN_AS_READY) ||
+				   (vsmReq == CMR_CAN_AS_DRIVING);
+		case CMR_CAN_AS_DRIVING:
+			return (vsmReq == CMR_CAN_AS_DRIVING) ||
+                   (vsmReq == CMR_CAN_AS_FINISHED);
+		case CMR_CAN_AS_FINISHED:
+			return (vsmReq == CMR_CAN_GLV_ON);
+		case CMR_CAN_AS_EMERGENCY:
 			return (vsmReq == CMR_CAN_GLV_ON);
 		default:
 			break;
@@ -473,13 +445,35 @@ void stateVSMUp() {
 		return;
 	}
 
-	cmr_canState_t vsmReq = ((vsmState == CMR_CAN_UNKNOWN) || (vsmState == CMR_CAN_ERROR))
-								? (CMR_CAN_GLV_ON)  // Unknown state; request GLV_ON.
-								: (vsmState + 1);   // Increment state.
+    cmr_canState_t vsmReq;
+
+    if((vsmState == CMR_CAN_UNKNOWN) || (vsmState == CMR_CAN_ERROR)) {
+        vsmReq = CMR_CAN_GLV_ON;
+    }
+    else {
+        if(getASMS()) {
+            if(vsmState == CMR_CAN_GLV_ON) {
+                vsmReq = CMR_CAN_AS_READY;
+            }
+            else if(vsmState == CMR_CAN_AS_FINISHED) {
+                vsmReq = vsmState;
+            }
+            else {
+                vsmReq = vsmState + 1;
+            }
+        }
+        else {
+            if(vsmState == CMR_CAN_RTD) {
+                vsmReq = vsmState;
+            }
+            else {
+                vsmReq = vsmState + 1;
+            }
+        }
+    }
 	if (!stateVSMReqIsValid(vsmState, vsmReq)) {
 		return;  // Invalid requested state.
 	}
-
 	state.vsmReq = vsmReq;
 }
 
@@ -498,7 +492,6 @@ void stateVSMDown() {
             // Only exit RTD when motor is basically stopped.
             return;
         }
-
         cmr_canState_t vsmReq = vsmState - 1;  // Decrement state.
 	// Valid State
 	if (stateVSMReqIsValid(vsmState, vsmReq)) {
@@ -515,9 +508,9 @@ void reqVSM(void) {
     }
     else {
         if (getCurrState() != CONFIG) {
-            if (canLRUDStates[UP]) {
+            if (canButtonStates[UP]) {
                 stateVSMUp();
-            } else if (canLRUDStates[DOWN]) {
+            } else if (canButtonStates[DOWN]) {
                 stateVSMDown();
             }
         }  
@@ -536,17 +529,6 @@ static volatile int requestedGear;
 *
 */
 void reqGear(void) {
-
-	// bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN));
-    // bool canChangeGear = true;
-	// if(canChangeGear && (currentRotary!=state.gear)){
-	// 	if((currentRotary < pastRotary) || (currentRotary == 7 && pastRotary==0)){
-	// 		//turned clockwise so gearup
-	// 		state.gear++;
-	// 		}
-	// 	} else {
-	// 		state.gear--;
-	// }
     bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) 
                        || (stateGetVSM() == CMR_CAN_HV_EN)
                        || (stateGetVSM() == CMR_CAN_AS_READY));
@@ -570,17 +552,6 @@ void reqGear(void) {
             else state.gearReq--;
         }
     }
-    if(canChangeGear && canButtonStates[LEFT]) {
-        if(currState == CONFIG) config_increment_up_requested = true;
-        if(state.gearReq == 8) state.gearReq = 1;
-        else state.gearReq++;
-    }
-}
-
-//returns requested gear
-
-int getRequestedGear(void){
-	return requestedGear;
 }
 
 /**
