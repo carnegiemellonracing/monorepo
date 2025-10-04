@@ -139,6 +139,13 @@ static int32_t adcToCurrent(const cmr_sensor_t *sensor, uint32_t reading) {
     return current;
 }
 
+static int32_t adcToVref(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void)sensor;
+
+    int32_t vref = (int32_t) reading;
+
+    return vref;
+}
 
 
 static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
@@ -183,6 +190,14 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .outOfRange_pcnt = 10,
         .warnFlag = 0 
     },
+    [SENSOR_CH_VREF] = {
+        .conv = adcToVref,
+        .sample = sampleADCSensor,
+        .readingMin = 0,
+        .readingMax = 4096,
+        .outOfRange_pcnt = 10,
+        .warnFlag = 0
+    }
 };
 
 /** @brief Sensors update priority. */
