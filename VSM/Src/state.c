@@ -318,7 +318,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         }
         
         case CMR_CAN_VSM_STATE_INVERTER_EN: {
-            if (checkInverters()){
+            if (invertersPass()){
                 //if (!EBSActive() && AutonomousClear() && brakePressureRear_PSI >= brakePressureThreshold_PSI) {
                 // if (true){
                 //     nextState = CMR_CAN_VSM_STATE_AS_READY;
@@ -365,6 +365,20 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             break;
         }
 
+        case CMR_CAN_VSM_STATE_RTD: {
+            // T13
+            if (dimRequestedState == CMR_CAN_RTD)
+            {
+                nextState = CMR_CAN_VSM_STATE_RTD;
+            }
+            // T7
+            else if (dimRequestedState == CMR_CAN_HV_EN) {
+                nextState = CMR_CAN_VSM_STATE_HV_EN;
+            }
+
+            break;
+        }
+
         case CMR_CAN_VSM_STATE_AS_READY: {
             // if (!EBSActive() && !AutonomousClear()){
             //     nextState = CMR_CAN_VSM_STATE_GLV_ON;
@@ -394,11 +408,11 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
 
         case CMR_CAN_VSM_STATE_AS_DRIVING: {
             //T13
-            if (!RESTriggered() && getASMSState()){
-                nextState = CMR_CAN_VSM_STATE_AS_DRIVING;
-            }
-            else if (getVehicleFinished(vehicleStill)){
+            if (getVehicleFinished(vehicleStill) && getASMSState()){
                 nextState = CMR_CAN_VSM_STATE_AS_FINISHED;
+            }
+            else if (!RESTriggered() && getASMSState()){
+                nextState = CMR_CAN_VSM_STATE_AS_DRIVING;
             }
             else{
                 nextState = CMR_CAN_VSM_STATE_ERROR;
@@ -435,20 +449,6 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             break;
         }
 
-        case CMR_CAN_VSM_STATE_RTD: {
-            // T13
-            if (dimRequestedState == CMR_CAN_RTD)
-            {
-                nextState = CMR_CAN_VSM_STATE_RTD;
-            }
-            // T7
-            else if (dimRequestedState == CMR_CAN_HV_EN) {
-                nextState = CMR_CAN_VSM_STATE_HV_EN;
-            }
-
-            break;
-        }
-
         default: {
             nextState = CMR_CAN_VSM_STATE_ERROR;
             break;
@@ -477,7 +477,8 @@ static void setStateOutputs(TickType_t lastWakeTime_ms) {
             hvcModeRequest = CMR_CAN_HVC_MODE_ERROR;
             break;
 
-        case CMR_CAN_VSM_STATE_AS_FINISHED: //Fallthrough
+        case CMR_CAN_VSM_STATE_BRAKE_TEST: //Fallthrough
+        case CMR_CAN_VSM_STATE_AS_FINISHED:
         case CMR_CAN_VSM_STATE_GLV_ON:
             cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
             hvcModeRequest = CMR_CAN_HVC_MODE_IDLE;

@@ -417,9 +417,7 @@ int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
  * @return Pointer to payload, or NULL if rxMsg is invalid.
  */
 void *getPayload(canRX_t rxMsg) {
-    if (rxMsg >= CANRX_LEN) {
-        return NULL; // TODO switch to configassert
-    }
+    configASSERT(rxMsg >= CANRX_LEN);
 
     cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
 
@@ -437,9 +435,7 @@ void *getPayload(canRX_t rxMsg) {
  * @return State of the module when valid, otherwise CMR_CAN_STATE_UNKNOWN.
  */
 cmr_canState_t getModuleState(canRX_t module) {
-    if ((module >= CANRX_LEN) || (module == CANRX_HEARTBEAT_HVC)) {
-        return CMR_CAN_UNKNOWN; // TODO switch to configassert
-    }
+    configASSERT((module >= CANRX_LEN) || (module == CANRX_HEARTBEAT_HVC));
 
     cmr_canHeartbeat_t *heartbeat = getPayload(module);
     uint8_t state = heartbeat->state;
@@ -587,6 +583,6 @@ void sendFirstError(bool detectedFirstError, uint16_t line) {
         data[0] = (uint8_t)(line & 0xFF);
         data[1] = (uint8_t)((line >> 8) & 0xFF);
 
-        canTX(CMR_CANID_VSM_FIRST_ERROR, data, 2, canTX100Hz_period_ms); //idk what to put for timeout
+        canTX(CMR_CANID_VSM_FIRST_ERROR, data, 2, canTX100Hz_period_ms); //timeout?
     }
 }

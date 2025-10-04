@@ -69,7 +69,6 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     if (getBadModuleState(CANRX_HEARTBEAT_HVC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
         badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_HVC;
-        sendFirstError(detectedFirstError, __LINE__);
     }
 
     if (getBadModuleState(CANRX_HEARTBEAT_CDC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
@@ -337,9 +336,9 @@ static bool getASEmergency(){
 }
 
 /**
- * @brief Check all inverters if endurance mode. Else, check RR inverter*/
-
-static bool checkInverters(){
+ * @brief Check all inverters if endurance mode. Else, check RR inverter
+*/
+static bool invertersPass(){
     // TODO: change back before comp so that don't unnecessarily error out
     cmr_canState_t dimRequestedGear = (cmr_canState_t)(dimRequest->requestedGear);
     if (dimRequestedGear == CMR_CAN_GEAR_ENDURANCE){
