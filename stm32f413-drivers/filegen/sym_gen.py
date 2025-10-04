@@ -80,7 +80,7 @@ def create_prefix(name, canid):
         board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
         boardname = board.group(1) 
         append_can_name = boardname+"_HEARTBEAT_"+name 
-    if len(append_can_name) >= 35:
+    if len(append_can_name) >= 30:
         print("too long")
         return name
     return append_can_name 
