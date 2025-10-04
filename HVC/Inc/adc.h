@@ -21,6 +21,7 @@ typedef enum {
 	ADC_SAFETY          = 2,
 	ADC_VSENSE,
 	ADC_ISENSE,
+	ADC_VREF, 
 	ADC_LEN     /**< @brief Total ADC channels. */
 } adcChannels_t;
 

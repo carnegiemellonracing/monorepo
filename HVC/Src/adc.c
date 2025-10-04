@@ -23,14 +23,13 @@ cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
-    //adc_vref copied from hvi NEEDS TO BE UNCOMMENTED DONT DELETE 
-    // [ADC_VREF] = { 
-	// 	 .channel = ADC_CHANNEL_12,
-	// 	 .port = GPIOC,
-	// 	 .pin = GPIO_PIN_2,
-	// 	 .samplingTime = ADC_SAMPLETIME_15CYCLES,
-	// 	 .value = 0
-	// }, 
+    [ADC_VREF] = { 
+		 .channel = ADC_CHANNEL_12, //repeat channel? 
+		 .port = GPIOC,
+		 .pin = GPIO_PIN_2,
+		 .samplingTime = ADC_SAMPLETIME_15CYCLES,
+		 .value = 0
+	}, 
     [ADC_AIR_POWER] = {
         .channel = ADC_CHANNEL_11,
         .port = GPIOC,
@@ -48,7 +47,7 @@ cmr_adcChannel_t adcChannels[ADC_LEN] = {
     [ADC_VSENSE] = {
         .channel = ADC_CHANNEL_1,
         .port = GPIOA,
-        .pin = GPIO_PIN_1,
+        .pin = GPIO_PIN_1, //repeat GPIO? (alr happens in HVC) 
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },

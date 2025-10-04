@@ -35,7 +35,7 @@
  */
 static const adcChannels_t sensorsADCCHANNELS[SENSOR_CH_LEN] = {
     [SENSOR_CH_V24V]       = ADC_V24V,
-	//[SENSOR_CH_VREF] = ADC_V24V, //keep, from hvi 
+	[SENSOR_CH_VREF] = ADC_V24V, //keep, from hvi 
 	[SENSOR_CH_AIR_POWER]  = ADC_AIR_POWER,
 	[SENSOR_CH_SAFETY]     = ADC_SAFETY,
 	[SENSOR_CH_HV] = ADC_VSENSE, 
