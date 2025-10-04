@@ -57,6 +57,7 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
             && i != CANRX_RES) {
             heartbeatErrors |= rxMeta->errorFlag;
             moduleTimeoutMatrix |= vsmErrorSourceFlags[i];
+            sendFirstError(detectedFirstError, __LINE__);
         }
     }
 
@@ -68,16 +69,19 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     if (getBadModuleState(CANRX_HEARTBEAT_HVC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
         badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_HVC;
+        sendFirstError(detectedFirstError, __LINE__);
     }
 
     if (getBadModuleState(CANRX_HEARTBEAT_CDC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
         badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_CDC;
+        sendFirstError(detectedFirstError, __LINE__);
     }
 
     if (getBadModuleState(CANRX_HEARTBEAT_DIM, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
         badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_DIM;
+        sendFirstError(detectedFirstError, __LINE__);
     }
 
     // Set software latch in the event of BMS voltage or temperature errors.
@@ -102,14 +106,17 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     if (cmr_gpioRead(GPIO_IN_SOFTWARE_ERR) == 1) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
         latchMatrix |= CMR_CAN_VSM_LATCH_SOFTWARE;
+        sendFirstError(detectedFirstError, __LINE__);
     }
     if (cmr_gpioRead(GPIO_IN_IMD_ERR) == 1) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
         latchMatrix |= CMR_CAN_VSM_LATCH_IMD;
+        sendFirstError(detectedFirstError, __LINE__);
     }
     if (cmr_gpioRead(GPIO_IN_BSPD_ERR) == 1) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
         latchMatrix |= CMR_CAN_VSM_LATCH_BSPD;
+        sendFirstError(detectedFirstError, __LINE__);
     }
 
     // Update vsmErrors struct
@@ -202,6 +209,7 @@ void updateCurrentWarnings(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeT
 
         if (cmr_canRXMetaTimeoutWarn(rxMeta, lastWakeTime) < 0) {
             heartbeatWarnings |= rxMeta->warnFlag;
+            sendFirstError(detectedFirstError, __LINE__);
         }
     }
 
@@ -211,6 +219,7 @@ void updateCurrentWarnings(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeT
     // Check for invalid DIM requests.
     if (!dimRequestIsValid(vsmStatus, lastWakeTime)) {
         heartbeatWarnings |= CMR_CAN_WARN_VSM_DIM_REQ_NAK;
+        sendFirstError(detectedFirstError, __LINE__);
     }
 
     vsmStatus->heartbeatWarnings = heartbeatWarnings;
@@ -292,10 +301,6 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
                 break;
             }
 
-            // case CMR_CAN_VSM_STATE_INVERTER_EN:
-            // case CMR_CAN_VSM_STATE_HV_EN:
-            // case CMR_CAN_VSM_STATE_RTD: 25e, fall thru to default but seems unimplemented
-
             default: {
                 sendFirstError(detectedFirstError, __LINE__);
                 cmr_panic("Invalid VSM state");
@@ -349,6 +354,7 @@ static bool checkInverters(){
             return true;
         }
         else{
+            sendFirstError(detectedFirstError, __LINE__);
             return false;
         }
     }
@@ -358,6 +364,7 @@ static bool checkInverters(){
                 return true
         }
         else{
+            sendFirstError(detectedFirstError, __LINE__);
             return false;
         }
     }
