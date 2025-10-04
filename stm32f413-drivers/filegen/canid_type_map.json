@@ -969,23 +969,6 @@
             "timeOut": 25,
             "type": "cmr_canCDCMotorPower_t"
         },
-        "CMR_CANID_PTC_LOOP_TEMPS_A": {
-            "badStateMatrix": {
-                "enumstruct": "cmr_canVSMErrorSource_t"
-            },
-            "cycleTime": 10.0,
-            "internalState": {
-                "e": "VSMState"
-            },
-            "latchMatrix": {
-                "enumstruct": "cmr_canVSMLatch_t"
-            },
-            "moduleTimeoutMatrix": {
-                "enumstruct": "cmr_canVSMErrorSource_t"
-            },
-            "timeOut": 50,
-            "type": "cmr_canVSMStatus_t"
-        },
         "CMR_CANID_REAR_SLIP_RATIOS": {
             "cycleTime": 100,
             "timeOut": 500,

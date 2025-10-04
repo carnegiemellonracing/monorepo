@@ -176,6 +176,22 @@ typedef enum {
     CMR_CAN_GEAR_LEN
 } cmr_canGear_t;
 
+
+typedef enum{
+    x1=0,
+    x2,
+    x4,
+    x8,
+    x16,
+    x32
+}cmr_canVTSig_Gain_t; 
+
+typedef enum{
+    Without_GNSS_filter_profile_is_in_VRU_mode = 0,
+    Coasting_mode_GNSS_has_been_lost_less_than_60_sec_ago =1,
+    With_GNSS_default_mode = 3 
+} cmr_canMovellaFilterMode_t; 
+
 /** @brief Represents the car's current DRS mode (). */
 typedef enum {
     CMR_CAN_DRSM_QUIET = 0,
