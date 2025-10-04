@@ -1,29 +1,31 @@
-#include "Inc/errors.h"
+#include "errors.h"
 
 
-static bool checkCommandTimeout();
+static bool checkHVCCommandTimeout();
 
-cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
+static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_STATE_ERROR;
+
+cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
     cmr_canHVCError_t errorFlags = CMR_CAN_HVC_ERROR_NONE;
-    if(checkCommandTimeout()) { //HVC 
+    if(checkHVCCommandTimeout()) { //HVC 
         // TODO E1 check the timeout field of the command mes sage meta data
         errorFlags |= CMR_CAN_HVC_ERROR_CAN_TIMEOUT;
     } 
-    if(getCurrentInstant() > maxPackCurrentInstantMA) {
-        // E8
-        errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
-    }
-   if(getCurrentAverage() > maxPackCurrentAverageMA) {
-       // E9
-       errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
-   }
+//     if(getCurrentInstant() > maxPackCurrentInstantMA) {
+//         // E8
+//         errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
+//     }
+//    if(getCurrentAverage() > maxPackCurrentAverageMA) {
+//        // E9
+//        errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
+//    }
     if(checkRelayPowerFault() && (getState() != CMR_CAN_HVC_STATE_ERROR && getState() != CMR_CAN_HVC_STATE_CLEAR_ERROR)) {//(getRelayStatus() & 0xAA) != 0xAA) {
         // TODO look into the AIR_Fault_L signal, it might be necessary to confirm this is not active
         // before looking at relay status, otherwise we could be in dead lock trying to clear errors.
-        errorFlags |= BMS_ERROR_CODE_RELAY; //HVC 
+        //errorFlags |= BMS_ERROR_CODE_RELAY; 
     }
 
-    if( //HVC 
+    if( 
     	(currentState == CMR_CAN_HVC_STATE_DRIVE_PRECHARGE ||
         currentState == CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE ||
         currentState == CMR_CAN_HVC_STATE_DRIVE ||
@@ -49,8 +51,20 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
     return errorFlags;
 }
 
+void clearHVCErrorReg() {
+    errorRegister = CMR_CAN_HVC_ERROR_NONE;
+}
 
-static bool checkCommandTimeout() {
+void setHVCErrorReg(cmr_canHVCError_t errorCode){
+    errorRegister = errorCode;
+}
+
+cmr_canHVCError_t getHVCErrorReg(){
+    return errorRegister;
+}
+
+
+static bool checkHVCCommandTimeout() {
     // CAN error if HVC Command has timed out after 50ms
     // TODO: latch can error?
     TickType_t lastWakeTime = xTaskGetTickCount();

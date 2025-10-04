@@ -14,7 +14,7 @@
 /* Drivers */
 #include <CMR/can_types.h>
 #include "bms_relay.h"
-//#include "bms_error.h"
+#include "errors.h"
 #include "can.h"
 #include "sensors.h"
 

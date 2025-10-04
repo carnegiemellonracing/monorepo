@@ -5,6 +5,7 @@
  *      Author: vamsi
  */
 #include "state_task.h"
+#include "errors.h"
 #include <stdlib.h>
 
 static cmr_canHVCState_t currentState = CMR_CAN_HVC_STATE_ERROR;
@@ -43,6 +44,9 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
     volatile cmr_canHVCCommand_t *HVCCommand = getPayload(CANRX_HVC_COMMAND);
 	volatile cmr_canHVIHeartbeat_t *hvi_heartbeat = getPayload(CANRX_HVI_COMMAND);
 
+    //Getting BMB data
+    volatile cmr_canBMSMinMaxCellVoltage_t *BMSMData = getPayload(CANRX_BMSM_DATA); 
+
     switch (currentState) {
         case CMR_CAN_HVC_STATE_DISCHARGE: // S1
         	// TODO: WAIT FOR HV VOLTAGE TO GO DOWN
@@ -66,10 +70,10 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                   HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN)) {
                 //T6: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (abs((getHVmillivolts()) - (((int32_t)hvi_heartbeat->packVoltage_cV))*10) < 30000) {
+            } else if (abs((BMSMData->battVoltage_mV) - (((int32_t)hvi_heartbeat->packVoltage_cV))*10) < 30000) {
                 //T2: HV rails are precharged to within 30000mV
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE;
-                lastPrechargeTime = xTaskGetTickCount();
+                lastPrechargeTime = xTaskGetTickCount(); 
             } else {
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE;
             }
@@ -101,7 +105,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 //T18: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (abs((getBattMillivolts()) - (((uint32_t)hvi_heartbeat->packVoltage_cV))*10) < 30000) {
+            } else if (abs((BMSMData->battVoltage_mV) - (((uint32_t)hvi_heartbeat->packVoltage_cV))*10) < 30000) {
             	lastPrechargeTime = xTaskGetTickCount();
                 //T10: HV rails are precharged
                 nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE;
@@ -113,7 +117,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 // T17: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (true || abs(getBattMillivolts() - getHVmillivolts()) < 5000) {
+            } else if (true || abs(BMSMData->battVoltage_mV - getHVmillivolts()) < 5000) {
                 // T11: Contactors are closed
                 nextState = CMR_CAN_HVC_STATE_CHARGE_TRICKLE;
             } else {
@@ -123,7 +127,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
         }
         case CMR_CAN_HVC_STATE_CHARGE_TRICKLE: // S8
             // find lowest cell voltage among all BMBs
-            packMinCellVoltage = getPackMinCellVoltage();
+            packMinCellVoltage = BMSMData->minCellVoltage_mV; 
 
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 // T16: Mode requested is not CHARGE
@@ -137,7 +141,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             break;
         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT: // S9
             // find highest cell voltage among all BMBs
-            packMaxCellVoltage = getPackMaxCellVoltage();
+            packMaxCellVoltage = BMSMData->maxCellVoltage_mV; 
 
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 // T15: Mode requested is not CHARGE
@@ -153,7 +157,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             break;
         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE: // S10
             // find lowest cell voltage among all BMBs
-            packMinCellVoltage = getPackMinCellVoltage();
+            packMinCellVoltage = BMSMData->minCellVoltage_mV; 
 
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE || packMinCellVoltage >= 4145) {
                 //T14: Mode requested is not CHARGE or all cells fully charged
@@ -290,7 +294,7 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_NEG_RELAY, OPEN);
             setRelay(PRECHARGE_RELAY, OPEN);
             setRelay(DISCHARGE_RELAY, CLOSED);
-            clearErrorReg();
+            clearHVCErrorReg();
             clearHardwareFault(true);
             break;
         case CMR_CAN_HVC_STATE_UNKNOWN:
@@ -343,7 +347,7 @@ void vSetStateTask(void *pvParameters) {
         //taskEXIT_CRITICAL();
 
 
-        currentError = checkErrors(currentState);
+        currentError = checkHVCErrors(currentState);
         nextState = getNextState(currentError);
 
         currentState = nextState;

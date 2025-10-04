@@ -11,8 +11,8 @@
 #include <CMR/can.h>        // CMR CAN interface
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/can_ids.h>    // CMR CAN IDs
-#include "state_task.h"
 #include "BMB_task.h"
+#include "bms_error.h" 
 
 /**
  * @brief CAN receive metadata indices.

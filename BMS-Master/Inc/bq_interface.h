@@ -10,6 +10,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "bms_error.h"
 
 
 //register address definitions

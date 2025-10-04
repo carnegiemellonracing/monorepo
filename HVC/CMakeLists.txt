@@ -117,6 +117,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/adc.c
     ${CMAKE_SOURCE_DIR}/Src/bms_relay.c
     ${CMAKE_SOURCE_DIR}/Src/can.c
+    ${CMAKE_SOURCE_DIR}/Src/errors.c
     ${CMAKE_SOURCE_DIR}/Src/fans.c
     ${CMAKE_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_SOURCE_DIR}/Src/main.c

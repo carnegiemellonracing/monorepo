@@ -18,9 +18,14 @@ typedef struct ReceiveMeta_t {
     uint8_t wrongStateFlag;
 } ReceiveMeta_t;
 
+cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState);
+void clearHVCErrorReg(void);
 
-cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState);
+void setHVCErrorReg(cmr_canHVCError_t errorCode);
+cmr_canHVCError_t getHVCErrorReg(void);
 
 
 // Heartbeat timeout	
 #define HEARTBEAT_TIMEOUT	50		// Periods of 10ms
+
+#endif /* BMS_ERROR_H_ */

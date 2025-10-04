@@ -23,7 +23,8 @@ typedef enum {
     CANRX_HVC_COMMAND,
     CANRX_EMD_MEASURE,
 	CANRX_HVI_COMMAND,
-	CANRX_BALANCE_COMMAND,
+    CANRX_BMSM_DATA, 
+	//CANRX_BALANCE_COMMAND,
     CANRX_LEN,     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 

@@ -6,9 +6,7 @@
  */
 
 #include "BMB_task.h"
-#include "gpio.h"
 #include "can.h"
-#include "state_task.h"
 #include <stdbool.h>
 #include <math.h>               // math.h
 

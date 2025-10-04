@@ -16,8 +16,6 @@
 #include <CMR/tasks.h>  // Task interface
 
 #include "can.h"      // Interface to implement
-#include "adc.h"      // adcVSense, adcISense
-#include "sensors.h"  // HVC Values
 #include "math.h"
 
 /** @brief Struct to identify stale commands. */
@@ -63,7 +61,6 @@ static cmr_can_t can;
 
 // Forward declarations
 static void sendHeartbeat(TickType_t lastWakeTime);
-static void sendHVCPackVoltage(void); 
 static void sendBMSBMBStatusErrors(void);
 static void sendBMSBMBStatusVoltage(uint8_t bmb_index);
 static void sendBMSBMBStatusTemp(uint8_t bmb_index);
@@ -289,18 +286,6 @@ volatile void *getPayload(canRX_t rxMsg) {
     return (void *)(&rxMeta->payload);
 }
 
-static void sendHVCPackVoltage(void) {
-    int32_t bVolt = getBattMillivolts();
-    //int32_t hvVolt = getHVmillivolts();
-
-    cmr_canHVCPackVoltage_t HVCPackVoltage = {
-        .battVoltage_mV = bVolt,
-        .hvVoltage_mV = -1, //placeholder, change struct later 
-    };
-
-    canTX(CMR_CANID_HVC_PACK_VOLTAGE, &HVCPackVoltage, sizeof(HVCPackVoltage), canTX100Hz_period_ms);
-}
-
 
 static void sendBMSBMBStatusVoltage(uint8_t bmb_index) {
     uint8_t maxIndex = getBMBMaxVoltIndex(bmb_index);
@@ -363,6 +348,8 @@ static void sendBMSMinMaxCellVoltage(void) {
         }
     }
 
+    int32_t bVolt = getBattMillivolts();
+
     cmr_canBMSMinMaxCellVoltage_t BMSBMBMinMaxVoltage = {
         .minCellVoltage_mV = minCellVoltage,
         .maxCellVoltage_mV = maxCellVoltage,
@@ -370,6 +357,7 @@ static void sendBMSMinMaxCellVoltage(void) {
         .maxVoltageBMBNum = maxCellVoltageBMBNum,
         .minVoltageCellNum = minCellVoltageIndex,
         .maxVoltageCellNum = maxCellVoltageIndex,
+        .battVoltage_mV = bVolt, 
     };
 
     canTX(CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE, &BMSBMBMinMaxVoltage, sizeof(BMSBMBMinMaxVoltage), canTX200Hz_period_ms);
@@ -445,16 +433,14 @@ static void sendBMSLowVoltage(void) {
 static void sendHeartbeat(TickType_t lastWakeTime) {
     cmr_canHVCState_t currentState = getState();
     cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
-    currentError = checkErrors(currentState);
+    currentError = checkBMSMErrors(currentState);
 
-    cmr_canHeartbeat_t BMSMHeartbeat = {
-        //.state = //add error states to can_types.h? or just use existing HVC errors 
-        .error = 
-        .warning = 
+    cmr_canBMSMHeartbeat_t BMSMHeartbeat = {
+        .errorStatus = currentError
     };
 
 
-    canTX(CMR_CANID_HEARTBEAT_HVC, &HVCHeartbeat, sizeof(HVCHeartbeat), canTX100Hz_period_ms);
+    canTX(CMR_CANID_HEARTBEAT_BMSM, &BMSMHeartbeat, sizeof(BMSMHeartbeat), canTX100Hz_period_ms);
 }
 
 

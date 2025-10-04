@@ -370,6 +370,11 @@ typedef struct {
     uint8_t uptime_s;       /**< @brief HVC uptime in seconds. */
 } cmr_canHVCHeartbeat_t;
 
+/** @brief BMS Master heartbeat (does not follow universal structure). */
+typedef struct {
+    uint16_t errorStatus;   /**< @brief Current BMS errors. See cmr_canHVCError_t. */
+} cmr_canBMSMHeartbeat_t;
+
 /** @brief High Voltage Controller command. */
 typedef struct {
     uint8_t modeRequest;    /**< @brief HVC operating mode request. See cmr_canHVCMode_t. */
@@ -387,25 +392,6 @@ typedef struct {
     int32_t hvVoltage_mV;      /**< @brief Voltage outside accumulator. */
 } cmr_canHVCPackVoltage_t;
 
-/** @brief High Voltage Controller pack overall min and max cell temperatures. */
-typedef struct {
-    uint16_t minCellTemp_dC;    /**< @brief Pack min cell temp in dC (tenth of degree C). */
-    uint16_t maxCellTemp_dC;    /**< @brief Pack max cell temp in dC (tenth of degree C). */
-    uint8_t minTempBMBIndex;    /**< @brief BMB index of coldest cell. */
-    uint8_t minTempCellIndex;   /**< @brief Index of coldest cell. */
-    uint8_t maxTempBMBIndex;    /**< @brief BMB index of hottest cell. */
-    uint8_t maxTempCellIndex;   /**< @brief Index of hottest cell. */
-} cmr_canHVCPackMinMaxCellTemps_t;
-
-/** @brief High Voltage Controller pack overall min and max cell voltages. */
-typedef struct {
-    uint16_t minCellVoltage_mV; /**< @brief Min BMB cell voltage (mV). */
-    uint16_t maxCellVoltage_mV; /**< @brief Max BMB cell voltage (mV). */
-    uint8_t minCellVoltBMB;     /**< @brief */
-    uint8_t minVoltIndex;       /**< @brief Min BMB cell voltage index. */
-    uint8_t maxCellVoltBMB;     /**< @brief */
-    uint8_t maxVoltIndex;       /**< @brief Max BMB cell voltage index. */
-} cmr_canHVCPackMinMaxCellVolages_t;
 
 /** @brief High Voltage Controller pack currents. */
 typedef struct {
@@ -710,6 +696,7 @@ typedef struct {
 	uint8_t minVoltageCellNum;   /**< @brief Min pack cell voltage cell number. */
 	uint8_t maxVoltageBMBNum;    /**< @brief Max pack cell voltage BMB number. */
 	uint8_t maxVoltageCellNum;   /**< @brief Max pack cell voltage cell number. */
+    int32_t battVoltage_mV; 
 } cmr_canBMSMinMaxCellVoltage_t;
 
 typedef struct {

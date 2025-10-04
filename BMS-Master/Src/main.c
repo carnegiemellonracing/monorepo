@@ -13,10 +13,8 @@
 
 #include "gpio.h"   // Board-specific GPIO interface
 #include "can.h"    // Board-specific CAN interface
-#include "adc.h"    // Board-specific ADC interface
 #include "bms_error.h"
 #include "watchdog.h"   // Board-specific Watchdog interface
-#include "fans.h" // Board-specific Fan interface
 #include "bq_interface.h"
 
 /** @brief Status LED priority. */
@@ -150,16 +148,6 @@ int main(void) {
         vBMBSampleTask,
         NULL
     );
-
-    // State Task
-    cmr_taskInit(
-        &setState_task,
-        "Set State Task",
-        setState_priority,
-        vSetStateTask,
-        NULL
-    );
-
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

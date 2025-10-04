@@ -7,7 +7,6 @@
 
 #include "bms_error.h"
 
-static bool checkCommandTimeout();
 static bool checkBMBTimeout();
 
 volatile int BMBTimeoutCount[BOARD_NUM] = { 0 };
@@ -17,7 +16,7 @@ volatile int BMBErrs[BOARD_NUM] = { 0 };
 // error checking becomes its own task
 static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_STATE_ERROR;
 
-cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
+cmr_canHVCError_t checkBMSMErrors(cmr_canHVCState_t currentState){
     cmr_canHVCError_t errorFlags = CMR_CAN_HVC_ERROR_NONE; 
     if(checkBMBTimeout()) { //BMSM 
         // TODO E2 devise a UART monitor system
@@ -58,15 +57,15 @@ cmr_canHVCError_t checkErrors(cmr_canHVCState_t currentState){
 }
 
 
-void clearErrorReg() {
+void clearBMSMErrorReg() {
     errorRegister = CMR_CAN_HVC_ERROR_NONE;
 }
 
-void setErrorReg(cmr_canHVCError_t errorCode){
+void setBMSMErrorReg(cmr_canHVCError_t errorCode){
     errorRegister = errorCode;
 }
 
-cmr_canHVCError_t getErrorReg(){
+cmr_canHVCError_t getBMSMErrorReg(){
     return errorRegister;
 }
 

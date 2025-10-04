@@ -52,6 +52,11 @@ cmr_canRXMeta_t canRXMeta[] = {
 		.timeoutError_ms = 50,
 		.timeoutWarn_ms = 25
     },
+    [CANRX_BMSM_DATA] = {
+        .canID = CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25
+    }
 	// [CANRX_BALANCE_COMMAND] = {
 	// 	.canID = CMR_CANID_CELL_BALANCE_ENABLE,
 	// 	.timeoutError_ms = 50,
@@ -282,7 +287,7 @@ volatile void *getPayload(canRX_t rxMsg) {
 static void sendHeartbeat(TickType_t lastWakeTime) {
     cmr_canHVCState_t currentState = getState();
     cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
-    currentError = checkErrors(currentState);
+    currentError = checkHVCErrors(currentState);
 
     cmr_canHVCHeartbeat_t HVCHeartbeat = {
         .errorStatus = currentError,

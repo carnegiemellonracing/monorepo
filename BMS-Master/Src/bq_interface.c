@@ -5,9 +5,7 @@
  *      Author: sidsr
  */
 #include "bq_interface.h"
-#include "state_task.h"
 #include "uart.h"
-#include "gpio.h"
 #include <CMR/uart.h>
 #include <stm32f4xx_hal.h>
 #include <stdbool.h>
