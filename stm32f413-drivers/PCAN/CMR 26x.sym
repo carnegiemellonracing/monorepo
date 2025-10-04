@@ -628,7 +628,7 @@ ID=134h
 DLC=3
 CycleTime=10
 TimeOut=50
-Var=CELL_BALANCE_balanceRequest bool 0,8 /e:HVC_Balance_State
+Var=CELL_BALANCE_balanceRequest unsigned 0,8 /e:HVC_Balance_State
 Var=CELL_BALANCE_threshold unsigned 8,16
 
 [CONTROLS_PID_IO]
@@ -647,7 +647,7 @@ DLC=4
 CycleTime=10
 TimeOut=50
 Var=CONTROLS_SOLVER_combined_normalized_throttle signed 0,16
-Var=CONTROLS_SOLVER_allow_regen bool 16,8
+Var=CONTROLS_SOLVER_allow_regen unsigned 16,8
 Var=CONTROLS_SOLVER_placeholder unsigned 24,8
 
 [CONTROLS_SOLVER_INPUTS]

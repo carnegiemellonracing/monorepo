@@ -134,6 +134,7 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
                 #technically unnecessary check, all others should be float
                 size = 32 
             elif vartype == 'bool':
+                vartype = 'unsigned'
                 size = 8 
         #check if field is bitpacked 
         if field_params and name in field_params:
