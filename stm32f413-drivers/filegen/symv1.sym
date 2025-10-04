@@ -309,496 +309,496 @@ ID=288h
 DLC=8
 CycleTime=20
 TimeOut=100
-Var=AMK_FL_amk_reserved unsigned 0,8
-Var=AMK_FL_amk_status_system_ready bit 8,1
-Var=AMK_FL_amk_status_error bit 9,1
-Var=AMK_FL_amk_status_warning bit 10,1
-Var=AMK_FL_amk_status_hv_en_ack bit 11,1
-Var=AMK_FL_amk_status_hv_en bit 12,1
-Var=AMK_FL_amk_status_inv_en_ack bit 13,1
-Var=AMK_FL_amk_status_inv_en bit 14,1
-Var=AMK_FL_amk_status_derating_en bit 15,1
-Var=AMK_FL_velocity_rpm signed 16,16 /u:rpm /p:4
-Var=AMK_FL_torqueCurrent_raw signed 32,16 /f:0.001701171875
-Var=AMK_FL_magCurrent_raw signed 48,16 /f:0.001701171875
+Var=FL_amk_reserved unsigned 0,8
+Var=FL_amk_status_system_ready bit 8,1
+Var=FL_amk_status_error bit 9,1
+Var=FL_amk_status_warning bit 10,1
+Var=FL_amk_status_hv_en_ack bit 11,1
+Var=FL_amk_status_hv_en bit 12,1
+Var=FL_amk_status_inv_en_ack bit 13,1
+Var=FL_amk_status_inv_en bit 14,1
+Var=FL_amk_status_derating_en bit 15,1
+Var=FL_velocity_rpm signed 16,16 /u:rpm /p:4
+Var=FL_torqueCurrent_raw signed 32,16 /f:0.001701171875
+Var=FL_magCurrent_raw signed 48,16 /f:0.001701171875
 
 [AMK_FL_ACT_2]
 ID=28Ah
 DLC=8
 CycleTime=20
 TimeOut=100
-Var=AMK_FL_motorTemp_dC signed 0,16 /u:dC /f:0.1 /p:2
-Var=AMK_FL_coldPlateTemp_dC signed 16,16 /u:dC /f:0.1 /p:2
-Var=AMK_FL_errorCode unsigned 32,16
-Var=AMK_FL_igbtTemp_dC signed 48,16 /u:dC /f:0.1 /p:2
+Var=FL_motorTemp_dC signed 0,16 /u:dC /f:0.1 /p:2
+Var=FL_coldPlateTemp_dC signed 16,16 /u:dC /f:0.1 /p:2
+Var=FL_errorCode unsigned 32,16
+Var=FL_igbtTemp_dC signed 48,16 /u:dC /f:0.1 /p:2
 
 [AMK_FL_SETPOINTS]
 ID=189h
 DLC=8
 CycleTime=5
 TimeOut=25
-Var=AMK_FL_amk_ctrl_reserved1 unsigned 0,8
-Var=AMK_FL_amk_ctrl_inv_on bit 8,1
-Var=AMK_FL_amk_ctrl_dc_on bit 9,1
-Var=AMK_FL_amk_ctrl_enable bit 10,1
-Var=AMK_FL_amk_ctrl_err_reset bit 11,1
-Var=AMK_FL_amk_ctrl_reserved2 unsigned 12,4
-Var=AMK_FL_velocity_rpm1 signed 16,16
-Var=AMK_FL_torqueLimPos_dpcnt signed 32,16 /u:Nm /f:0.0098 /p:4
-Var=AMK_FL_torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
+Var=FL_amk_ctrl_reserved1 unsigned 0,8
+Var=FL_amk_ctrl_inv_on bit 8,1
+Var=FL_amk_ctrl_dc_on bit 9,1
+Var=FL_amk_ctrl_enable bit 10,1
+Var=FL_amk_ctrl_err_reset bit 11,1
+Var=FL_amk_ctrl_reserved2 unsigned 12,4
+Var=FL_velocity_rpm1 signed 16,16
+Var=FL_torqueLimPos_dpcnt signed 32,16 /u:Nm /f:0.0098 /p:4
+Var=FL_torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
 
 [AMK_FR_ACT_1]
 ID=284h
 DLC=8
 CycleTime=20
 TimeOut=100
-Var=AMK_FR_amk_reserved1 unsigned 0,8
-Var=AMK_FR_amk_status_system_ready1 bit 8,1
-Var=AMK_FR_amk_status_error1 bit 9,1
-Var=AMK_FR_amk_status_warning1 bit 10,1
-Var=AMK_FR_amk_status_hv_en_ack1 bit 11,1
-Var=AMK_FR_amk_status_hv_en1 bit 12,1
-Var=AMK_FR_amk_status_inv_en_ack1 bit 13,1
-Var=AMK_FR_amk_status_inv_en1 bit 14,1
-Var=AMK_FR_amk_status_derating_en1 bit 15,1
-Var=AMK_FR_velocity_rpm2 signed 16,16
-Var=AMK_FR_torqueCurrent_raw1 signed 32,16
-Var=AMK_FR_magCurrent_raw1 signed 48,16
+Var=FR_amk_reserved1 unsigned 0,8
+Var=FR_amk_status_system_ready1 bit 8,1
+Var=FR_amk_status_error1 bit 9,1
+Var=FR_amk_status_warning1 bit 10,1
+Var=FR_amk_status_hv_en_ack1 bit 11,1
+Var=FR_amk_status_hv_en1 bit 12,1
+Var=FR_amk_status_inv_en_ack1 bit 13,1
+Var=FR_amk_status_inv_en1 bit 14,1
+Var=FR_amk_status_derating_en1 bit 15,1
+Var=FR_velocity_rpm2 signed 16,16
+Var=FR_torqueCurrent_raw1 signed 32,16
+Var=FR_magCurrent_raw1 signed 48,16
 
 [AMK_FR_ACT_2]
 ID=286h
 DLC=8
 CycleTime=20
 TimeOut=100
-Var=AMK_FR_motorTemp_dC1 signed 0,16
-Var=AMK_FR_coldPlateTemp_dC1 signed 16,16
-Var=AMK_FR_errorCode1 unsigned 32,16
-Var=AMK_FR_igbtTemp_dC1 signed 48,16
+Var=FR_motorTemp_dC1 signed 0,16
+Var=FR_coldPlateTemp_dC1 signed 16,16
+Var=FR_errorCode1 unsigned 32,16
+Var=FR_igbtTemp_dC1 signed 48,16
 
 [AMK_FR_SETPOINTS]
 ID=185h
 DLC=8
 CycleTime=5
 TimeOut=25
-Var=AMK_FR_amk_ctrl_reserved11 unsigned 0,8
-Var=AMK_FR_amk_ctrl_inv_on1 bit 8,1
-Var=AMK_FR_amk_ctrl_dc_on1 bit 9,1
-Var=AMK_FR_amk_ctrl_enable1 bit 10,1
-Var=AMK_FR_amk_ctrl_err_reset1 bit 11,1
-Var=AMK_FR_amk_ctrl_reserved21 unsigned 12,4
-Var=AMK_FR_velocity_rpm3 signed 16,16
-Var=AMK_FR_torqueLimPos_dpcnt1 signed 32,16
-Var=AMK_FR_torqueLimNeg_dpcnt1 signed 48,16
+Var=FR_amk_ctrl_reserved11 unsigned 0,8
+Var=FR_amk_ctrl_inv_on1 bit 8,1
+Var=FR_amk_ctrl_dc_on1 bit 9,1
+Var=FR_amk_ctrl_enable1 bit 10,1
+Var=FR_amk_ctrl_err_reset1 bit 11,1
+Var=FR_amk_ctrl_reserved21 unsigned 12,4
+Var=FR_velocity_rpm3 signed 16,16
+Var=FR_torqueLimPos_dpcnt1 signed 32,16
+Var=FR_torqueLimNeg_dpcnt1 signed 48,16
 
 [AMK_RL_ACT_1]
 ID=287h
 DLC=8
 CycleTime=20
 TimeOut=100
-Var=AMK_RL_amk_reserved2 unsigned 0,8
-Var=AMK_RL_amk_status_system_ready2 bit 8,1
-Var=AMK_RL_amk_status_error2 bit 9,1
-Var=AMK_RL_amk_status_warning2 bit 10,1
-Var=AMK_RL_amk_status_hv_en_ack2 bit 11,1
-Var=AMK_RL_amk_status_hv_en2 bit 12,1
-Var=AMK_RL_amk_status_inv_en_ack2 bit 13,1
-Var=AMK_RL_amk_status_inv_en2 bit 14,1
-Var=AMK_RL_amk_status_derating_en2 bit 15,1
-Var=AMK_RL_velocity_rpm4 signed 16,16
-Var=AMK_RL_torqueCurrent_raw2 signed 32,16
-Var=AMK_RL_magCurrent_raw2 signed 48,16
+Var=RL_amk_reserved2 unsigned 0,8
+Var=RL_amk_status_system_ready2 bit 8,1
+Var=RL_amk_status_error2 bit 9,1
+Var=RL_amk_status_warning2 bit 10,1
+Var=RL_amk_status_hv_en_ack2 bit 11,1
+Var=RL_amk_status_hv_en2 bit 12,1
+Var=RL_amk_status_inv_en_ack2 bit 13,1
+Var=RL_amk_status_inv_en2 bit 14,1
+Var=RL_amk_status_derating_en2 bit 15,1
+Var=RL_velocity_rpm4 signed 16,16
+Var=RL_torqueCurrent_raw2 signed 32,16
+Var=RL_magCurrent_raw2 signed 48,16
 
 [AMK_RL_ACT_2]
 ID=289h
 DLC=8
 CycleTime=20
 TimeOut=100
-Var=AMK_RL_motorTemp_dC2 signed 0,16
-Var=AMK_RL_coldPlateTemp_dC2 signed 16,16
-Var=AMK_RL_errorCode2 unsigned 32,16
-Var=AMK_RL_igbtTemp_dC2 signed 48,16
+Var=RL_motorTemp_dC2 signed 0,16
+Var=RL_coldPlateTemp_dC2 signed 16,16
+Var=RL_errorCode2 unsigned 32,16
+Var=RL_igbtTemp_dC2 signed 48,16
 
 [AMK_RL_SETPOINTS]
 ID=188h
 DLC=8
 CycleTime=5
 TimeOut=25
-Var=AMK_RL_amk_ctrl_reserved12 unsigned 0,8
-Var=AMK_RL_amk_ctrl_inv_on2 bit 8,1
-Var=AMK_RL_amk_ctrl_dc_on2 bit 9,1
-Var=AMK_RL_amk_ctrl_enable2 bit 10,1
-Var=AMK_RL_amk_ctrl_err_reset2 bit 11,1
-Var=AMK_RL_amk_ctrl_reserved22 unsigned 12,4
-Var=AMK_RL_velocity_rpm5 signed 16,16
-Var=AMK_RL_torqueLimPos_dpcnt2 signed 32,16
-Var=AMK_RL_torqueLimNeg_dpcnt2 signed 48,16
+Var=RL_amk_ctrl_reserved12 unsigned 0,8
+Var=RL_amk_ctrl_inv_on2 bit 8,1
+Var=RL_amk_ctrl_dc_on2 bit 9,1
+Var=RL_amk_ctrl_enable2 bit 10,1
+Var=RL_amk_ctrl_err_reset2 bit 11,1
+Var=RL_amk_ctrl_reserved22 unsigned 12,4
+Var=RL_velocity_rpm5 signed 16,16
+Var=RL_torqueLimPos_dpcnt2 signed 32,16
+Var=RL_torqueLimNeg_dpcnt2 signed 48,16
 
 [AMK_RR_ACT_1]
 ID=283h
 DLC=8
 CycleTime=20
 TimeOut=100
-Var=AMK_RR_amk_reserved3 unsigned 0,8
-Var=AMK_RR_amk_status_system_ready3 bit 8,1
-Var=AMK_RR_amk_status_error3 bit 9,1
-Var=AMK_RR_amk_status_warning3 bit 10,1
-Var=AMK_RR_amk_status_hv_en_ack3 bit 11,1
-Var=AMK_RR_amk_status_hv_en3 bit 12,1
-Var=AMK_RR_amk_status_inv_en_ack3 bit 13,1
-Var=AMK_RR_amk_status_inv_en3 bit 14,1
-Var=AMK_RR_amk_status_derating_en3 bit 15,1
-Var=AMK_RR_velocity_rpm6 signed 16,16
-Var=AMK_RR_torqueCurrent_raw3 signed 32,16
-Var=AMK_RR_magCurrent_raw3 signed 48,16
+Var=RR_amk_reserved3 unsigned 0,8
+Var=RR_amk_status_system_ready3 bit 8,1
+Var=RR_amk_status_error3 bit 9,1
+Var=RR_amk_status_warning3 bit 10,1
+Var=RR_amk_status_hv_en_ack3 bit 11,1
+Var=RR_amk_status_hv_en3 bit 12,1
+Var=RR_amk_status_inv_en_ack3 bit 13,1
+Var=RR_amk_status_inv_en3 bit 14,1
+Var=RR_amk_status_derating_en3 bit 15,1
+Var=RR_velocity_rpm6 signed 16,16
+Var=RR_torqueCurrent_raw3 signed 32,16
+Var=RR_magCurrent_raw3 signed 48,16
 
 [AMK_RR_ACT_2]
 ID=285h
 DLC=8
 CycleTime=20
 TimeOut=100
-Var=AMK_RR_motorTemp_dC3 signed 0,16
-Var=AMK_RR_coldPlateTemp_dC3 signed 16,16
-Var=AMK_RR_errorCode3 unsigned 32,16
-Var=AMK_RR_igbtTemp_dC3 signed 48,16
+Var=RR_motorTemp_dC3 signed 0,16
+Var=RR_coldPlateTemp_dC3 signed 16,16
+Var=RR_errorCode3 unsigned 32,16
+Var=RR_igbtTemp_dC3 signed 48,16
 
 [AMK_RR_SETPOINTS]
 ID=184h
 DLC=8
 CycleTime=5
 TimeOut=25
-Var=AMK_RR_amk_ctrl_reserved13 unsigned 0,8
-Var=AMK_RR_amk_ctrl_inv_on3 bit 8,1
-Var=AMK_RR_amk_ctrl_dc_on3 bit 9,1
-Var=AMK_RR_amk_ctrl_enable3 bit 10,1
-Var=AMK_RR_amk_ctrl_err_reset3 bit 11,1
-Var=AMK_RR_amk_ctrl_reserved23 unsigned 12,4
-Var=AMK_RR_velocity_rpm7 signed 16,16
-Var=AMK_RR_torqueLimPos_dpcnt3 signed 32,16
-Var=AMK_RR_torqueLimNeg_dpcnt3 signed 48,16
+Var=RR_amk_ctrl_reserved13 unsigned 0,8
+Var=RR_amk_ctrl_inv_on3 bit 8,1
+Var=RR_amk_ctrl_dc_on3 bit 9,1
+Var=RR_amk_ctrl_enable3 bit 10,1
+Var=RR_amk_ctrl_err_reset3 bit 11,1
+Var=RR_amk_ctrl_reserved23 unsigned 12,4
+Var=RR_velocity_rpm7 signed 16,16
+Var=RR_torqueLimPos_dpcnt3 signed 32,16
+Var=RR_torqueLimNeg_dpcnt3 signed 48,16
 
 [CDC_COG_VELOCITY]
 ID=2C2h
 DLC=8
 CycleTime=5
 TimeOut=25
-Var=CDC_COG_cog_x_mps signed 0,16 /u:mps /f:0.01
-Var=CDC_COG_cog_y_mps signed 16,16 /u:mps /f:0.01
-Var=CDC_COG_slip_angle float 32,32
+Var=COG_cog_x_mps signed 0,16 /u:mps /f:0.01
+Var=COG_cog_y_mps signed 16,16 /u:mps /f:0.01
+Var=COG_slip_angle float 32,32
 
 [CDC_CONTROLS_STATUS]
 ID=6D2h
 DLC=2
 CycleTime=1000
 TimeOut=5000
-Var=CDC_CONTROLS_tcOn unsigned 0,8
-Var=CDC_CONTROLS_yrcOn unsigned 8,8
+Var=CONTROLS_tcOn unsigned 0,8
+Var=CONTROLS_yrcOn unsigned 8,8
 
 [CDC_COULOMB_COUNTING]
 ID=6E3h
 DLC=4
 CycleTime=100
 TimeOut=500
-Var=CDC_COULOMB_KCoulombs float 0,32
+Var=COULOMB_KCoulombs float 0,32
 
 [CDC_FRONT_VELOCITY]
 ID=2D2h
 DLC=8
 CycleTime=5
 TimeOut=25
-Var=CDC_FRONT_fl_x signed 0,16 /f:0.01
-Var=CDC_FRONT_fl_y signed 16,16 /f:0.01
-Var=CDC_FRONT_fr_x signed 32,16 /f:0.01
-Var=CDC_FRONT_fr_y signed 48,16 /f:0.01
+Var=FRONT_fl_x signed 0,16 /f:0.01
+Var=FRONT_fl_y signed 16,16 /f:0.01
+Var=FRONT_fr_x signed 32,16 /f:0.01
+Var=FRONT_fr_y signed 48,16 /f:0.01
 
 [CDC_ODOMETER]
 ID=6C2h
 DLC=4
 CycleTime=1000
 TimeOut=5000
-Var=CDC_ODOMETER_odometer_km float 0,32 /u:km
+Var=ODOMETER_odometer_km float 0,32 /u:km
 
 [CDC_POSE_ORIENTATION]
 ID=292h
 DLC=8
 CycleTime=5
 TimeOut=25
-Var=CDC_POSE_roll_deg signed 0,16 /u:deg /f:0.1
-Var=CDC_POSE_pitch_deg signed 16,16 /u:deg /f:0.1
-Var=CDC_POSE_yaw_deg signed 32,16 /u:deg /f:0.1
-Var=CDC_POSE_velocity_deg signed 48,16 /u:deg /f:0.1
+Var=POSE_roll_deg signed 0,16 /u:deg /f:0.1
+Var=POSE_pitch_deg signed 16,16 /u:deg /f:0.1
+Var=POSE_yaw_deg signed 32,16 /u:deg /f:0.1
+Var=POSE_velocity_deg signed 48,16 /u:deg /f:0.1
 
 [CDC_POSE_POSITION]
 ID=282h
 DLC=8
 CycleTime=5
 TimeOut=25
-Var=CDC_POSE_latitude_deg float 0,32 /u:deg
-Var=CDC_POSE_longitude_deg float 32,32 /u:deg
+Var=POSE_latitude_deg float 0,32 /u:deg
+Var=POSE_longitude_deg float 32,32 /u:deg
 
 [CDC_POSE_VELOCITY]
 ID=2A2h
 DLC=6
 CycleTime=5
 TimeOut=25
-Var=CDC_POSE_longitudinalVel_mps signed 0,16 /u:mps /f:0.01
-Var=CDC_POSE_lateralVel_mps signed 16,16 /u:mps /f:0.01
-Var=CDC_POSE_verticalVel_mps signed 32,16 /u:mps /f:0.01
+Var=POSE_longitudinalVel_mps signed 0,16 /u:mps /f:0.01
+Var=POSE_lateralVel_mps signed 16,16 /u:mps /f:0.01
+Var=POSE_verticalVel_mps signed 32,16 /u:mps /f:0.01
 
 [CDC_POWER_LOG]
 ID=6E4h
 DLC=4
 CycleTime=1000
 TimeOut=5000
-Var=CDC_POWER_power_limit_W float 0,32 /u:W /f:0.001
+Var=POWER_power_limit_W float 0,32 /u:W /f:0.001
 
 [CDC_POWER_SENSE]
 ID=305h
 DLC=8
 CycleTime=100
 TimeOut=500
-Var=CDC_POWER_packCurrent_dA signed 0,16 /u:dA
-Var=CDC_POWER_packVoltage_cV unsigned 16,16 /u:cV
-Var=CDC_POWER_packPower_W signed 32,32 /u:W
+Var=POWER_packCurrent_dA signed 0,16 /u:dA
+Var=POWER_packVoltage_cV unsigned 16,16 /u:cV
+Var=POWER_packPower_W signed 32,32 /u:W
 
 [CDC_REAR_VELOCITY]
 ID=2E2h
 DLC=8
 CycleTime=5
 TimeOut=25
-Var=CDC_REAR_rl_x signed 0,16 /f:0.01
-Var=CDC_REAR_rl_y signed 16,16 /f:0.01
-Var=CDC_REAR_rr_x signed 32,16 /f:0.01
-Var=CDC_REAR_rr_y signed 48,16 /f:0.01
+Var=REAR_rl_x signed 0,16 /f:0.01
+Var=REAR_rl_y signed 16,16 /f:0.01
+Var=REAR_rr_x signed 32,16 /f:0.01
+Var=REAR_rr_y signed 48,16 /f:0.01
 
 [CDC_RTC_DATA_OUT]
 ID=6A2h
 DLC=7
 CycleTime=1000
 TimeOut=5000
-Var=CDC_RTC_seconds unsigned 0,8
-Var=CDC_RTC_minutes unsigned 8,8
-Var=CDC_RTC_hours unsigned 16,8
-Var=CDC_RTC_date unsigned 24,8
-Var=CDC_RTC_month unsigned 32,8
-Var=CDC_RTC_year unsigned 40,8
-Var=CDC_RTC_err unsigned 48,8
+Var=RTC_seconds unsigned 0,8
+Var=RTC_minutes unsigned 8,8
+Var=RTC_hours unsigned 16,8
+Var=RTC_date unsigned 24,8
+Var=RTC_month unsigned 32,8
+Var=RTC_year unsigned 40,8
+Var=RTC_err unsigned 48,8
 
 [CDC_WHEEL_SPEED_FEEDBACK]
 ID=232h
 DLC=8
 CycleTime=5
 TimeOut=25
-Var=CDC_WHEEL_frontLeft_rpm signed 0,16
-Var=CDC_WHEEL_frontRight_rpm signed 16,16
-Var=CDC_WHEEL_rearLeft_rpm signed 32,16
-Var=CDC_WHEEL_rearRight_rpm signed 48,16
+Var=WHEEL_frontLeft_rpm signed 0,16
+Var=WHEEL_frontRight_rpm signed 16,16
+Var=WHEEL_rearLeft_rpm signed 32,16
+Var=WHEEL_rearRight_rpm signed 48,16
 
 [CDC_WHEEL_SPEED_SETPOINT]
 ID=252h
 DLC=8
 CycleTime=5
 TimeOut=25
-Var=CDC_WHEEL_frontLeft_rpm1 signed 0,16
-Var=CDC_WHEEL_frontRight_rpm1 signed 16,16
-Var=CDC_WHEEL_rearLeft_rpm1 signed 32,16
-Var=CDC_WHEEL_rearRight_rpm1 signed 48,16
+Var=WHEEL_frontLeft_rpm1 signed 0,16
+Var=WHEEL_frontRight_rpm1 signed 16,16
+Var=WHEEL_rearLeft_rpm1 signed 32,16
+Var=WHEEL_rearRight_rpm1 signed 48,16
 
 [CDC_WHEEL_TORQUE_FEEDBACK]
 ID=262h
 DLC=8
 CycleTime=5
 TimeOut=25
-Var=CDC_WHEEL_frontLeft_Nm signed 0,16 /u:Nm /f:0.1
-Var=CDC_WHEEL_frontRight_Nm signed 16,16 /u:Nm /f:0.1
-Var=CDC_WHEEL_rearLeft_Nm signed 32,16 /u:Nm /f:0.1
-Var=CDC_WHEEL_rearRight_Nm signed 48,16 /u:Nm /f:0.1
+Var=WHEEL_frontLeft_Nm signed 0,16 /u:Nm /f:0.1
+Var=WHEEL_frontRight_Nm signed 16,16 /u:Nm /f:0.1
+Var=WHEEL_rearLeft_Nm signed 32,16 /u:Nm /f:0.1
+Var=WHEEL_rearRight_Nm signed 48,16 /u:Nm /f:0.1
 
 [CDC_WHEEL_TORQUE_SETPOINT]
 ID=272h
 DLC=8
 CycleTime=5
 TimeOut=25
-Var=CDC_WHEEL_frontLeft_Nm1 signed 0,16
-Var=CDC_WHEEL_frontRight_Nm1 signed 16,16
-Var=CDC_WHEEL_rearLeft_Nm1 signed 32,16
-Var=CDC_WHEEL_rearRight_Nm1 signed 48,16
+Var=WHEEL_frontLeft_Nm1 signed 0,16
+Var=WHEEL_frontRight_Nm1 signed 16,16
+Var=WHEEL_rearLeft_Nm1 signed 32,16
+Var=WHEEL_rearRight_Nm1 signed 48,16
 
 [CELL_BALANCE_ENABLE]
 ID=134h
 DLC=3
 CycleTime=10
 TimeOut=50
-Var=CELL_BALANCE_balanceRequest unsigned 0,8 /e:HVC_Balance_State
-Var=CELL_BALANCE_threshold unsigned 8,16
+Var=BALANCE_balanceRequest unsigned 0,8 /e:HVC_Balance_State
+Var=BALANCE_threshold unsigned 8,16
 
 [CONTROLS_PID_IO]
 ID=7E5h
 DLC=8
 CycleTime=5
 TimeOut=25
-Var=CONTROLS_PID_controls_current_yaw_rate signed 0,16 /f:0.01 /p:2
-Var=CONTROLS_PID_controls_target_yaw_rate signed 16,16 /f:0.01 /p:2
-Var=CONTROLS_PID_controls_bias signed 32,16 /f:0.01 /p:2
-Var=CONTROLS_PID_controls_pid signed 48,16 /f:0.01 /p:2
+Var=PID_controls_current_yaw_rate signed 0,16 /f:0.01 /p:2
+Var=PID_controls_target_yaw_rate signed 16,16 /f:0.01 /p:2
+Var=PID_controls_bias signed 32,16 /f:0.01 /p:2
+Var=PID_controls_pid signed 48,16 /f:0.01 /p:2
 
 [CONTROLS_SOLVER_AUX]
 ID=7FFh
 DLC=4
 CycleTime=10
 TimeOut=50
-Var=CONTROLS_SOLVER_combined_normalized_throttle signed 0,16
-Var=CONTROLS_SOLVER_allow_regen unsigned 16,8
-Var=CONTROLS_SOLVER_placeholder unsigned 24,8
+Var=SOLVER_combined_normalized_throttle signed 0,16
+Var=SOLVER_allow_regen unsigned 16,8
+Var=SOLVER_placeholder unsigned 24,8
 
 [CONTROLS_SOLVER_INPUTS]
 ID=7E6h
 DLC=8
 CycleTime=10
 TimeOut=50
-Var=CONTROLS_SOLVER_moment_req_Nm float 0,32 /u:Nm
-Var=CONTROLS_SOLVER_lin_accel_Nm float 32,32 /u:Nm
+Var=SOLVER_moment_req_Nm float 0,32 /u:Nm
+Var=SOLVER_lin_accel_Nm float 32,32 /u:Nm
 
 [CONTROLS_SOLVER_OUTPUTS]
 ID=7F0h
 DLC=8
 CycleTime=10
 TimeOut=50
-Var=CONTROLS_SOLVER_frontLeft_Nm2 signed 0,16
-Var=CONTROLS_SOLVER_frontRight_Nm2 signed 16,16
-Var=CONTROLS_SOLVER_rearLeft_Nm2 signed 32,16
-Var=CONTROLS_SOLVER_rearRight_Nm2 signed 48,16
+Var=SOLVER_frontLeft_Nm2 signed 0,16
+Var=SOLVER_frontRight_Nm2 signed 16,16
+Var=SOLVER_rearLeft_Nm2 signed 32,16
+Var=SOLVER_rearRight_Nm2 signed 48,16
 
 [CONTROLS_SOLVER_SETTINGS]
 ID=7EEh
 DLC=6
 CycleTime=10
 TimeOut=50
-Var=CONTROLS_SOLVER_k_lin unsigned 0,16
-Var=CONTROLS_SOLVER_k_yaw unsigned 16,16
-Var=CONTROLS_SOLVER_k_tie unsigned 32,16
+Var=SOLVER_k_lin unsigned 0,16
+Var=SOLVER_k_yaw unsigned 16,16
+Var=SOLVER_k_tie unsigned 32,16
 
 [DIM_ACKNOWLEDGE]
 ID=545h
 DLC=1
 CycleTime=100
 TimeOut=500
-Var=DIM_ACKNOWLEDGE_acknowledge unsigned 0,8
+Var=ACKNOWLEDGE_acknowledge unsigned 0,8
 
 [DIM_ACTIONS]
 ID=515h
 DLC=6
 CycleTime=10
 TimeOut=50
-Var=DIM_ACTIONS_dim_actionbutton bit 2,1
-Var=DIM_ACTIONS_dim_launchbutton bit 3,1
-Var=DIM_ACTIONS_rotaryPos unsigned 8,8
-Var=DIM_ACTIONS_switchValues unsigned 16,8
-Var=DIM_ACTIONS_regenPercent unsigned 24,8
-Var=DIM_ACTIONS_paddle unsigned 32,8
-Var=DIM_ACTIONS_dim_left bit 40,1
-Var=DIM_ACTIONS_dim_right bit 41,1
-Var=DIM_ACTIONS_dim_up bit 42,1
-Var=DIM_ACTIONS_dim_down bit 43,1
+Var=ACTIONS_dim_actionbutton bit 2,1
+Var=ACTIONS_dim_launchbutton bit 3,1
+Var=ACTIONS_rotaryPos unsigned 8,8
+Var=ACTIONS_switchValues unsigned 16,8
+Var=ACTIONS_regenPercent unsigned 24,8
+Var=ACTIONS_paddle unsigned 32,8
+Var=ACTIONS_dim_left bit 40,1
+Var=ACTIONS_dim_right bit 41,1
+Var=ACTIONS_dim_up bit 42,1
+Var=ACTIONS_dim_down bit 43,1
 
 [DIM_POWER_DIAGNOSTICS]
 ID=535h
 DLC=4
 CycleTime=100
 TimeOut=500
-Var=DIM_POWER_busVoltage_mV unsigned 0,16 /u:mV
-Var=DIM_POWER_busCurrent_mA unsigned 16,16 /u:mA
+Var=POWER_busVoltage_mV unsigned 0,16 /u:mV
+Var=POWER_busCurrent_mA unsigned 16,16 /u:mA
 
 [DIM_REQUEST]
 ID=235h
 DLC=4
 CycleTime=100
 TimeOut=500
-Var=DIM_REQUEST_requestedState unsigned 0,8 /e:State
-Var=DIM_REQUEST_requestedGear unsigned 8,8 /e:Gear
-Var=DIM_REQUEST_requestedDrsMode unsigned 16,8 /e:DrsMode
-Var=DIM_REQUEST_requestedDriver unsigned 24,8
+Var=REQUEST_requestedState unsigned 0,8 /e:State
+Var=REQUEST_requestedGear unsigned 8,8 /e:Gear
+Var=REQUEST_requestedDrsMode unsigned 16,8 /e:DrsMode
+Var=REQUEST_requestedDriver unsigned 24,8
 
 [DRS_STATE]
 ID=52Ch
 DLC=4
 CycleTime=100
 TimeOut=500
-Var=DRS_STATE_state unsigned 0,8
-Var=DRS_STATE_angle unsigned 8,8
-Var=DRS_STATE_pwm_left unsigned 16,8
-Var=DRS_STATE_pwm_right unsigned 24,8
+Var=STATE_state unsigned 0,8
+Var=STATE_angle unsigned 8,8
+Var=STATE_pwm_left unsigned 16,8
+Var=STATE_pwm_right unsigned 24,8
 
 [EMD_MEASUREMENT]
 ID=401h
 DLC=8
 CycleTime=20
 TimeOut=100
-Var=EMD_MEASUREMENT_current signed 0,32 /u:A
-Var=EMD_MEASUREMENT_voltage signed 32,32 /u:V
+Var=MEASUREMENT_current signed 0,32 /u:A
+Var=MEASUREMENT_voltage signed 32,32 /u:V
 
 [FRONT_SLIP_RATIOS]
 ID=7E8h
 DLC=8
 CycleTime=100
 TimeOut=500
-Var=FRONT_SLIP_slipRatio_FL float 0,32
-Var=FRONT_SLIP_slipRatio_FR float 32,32
+Var=SLIP_slipRatio_FL float 0,32
+Var=SLIP_slipRatio_FR float 32,32
 
 [FRONT_WHL_SETPOINTS]
 ID=7EAh
 DLC=8
 CycleTime=100
 TimeOut=500
-Var=FRONT_WHL_slipRatio_FL1 float 0,32
-Var=FRONT_WHL_slipRatio_FR1 float 32,32
+Var=WHL_slipRatio_FL1 float 0,32
+Var=WHL_slipRatio_FR1 float 32,32
 
 [FRONT_WHL_VELS]
 ID=7ECh
 DLC=8
 CycleTime=100
 TimeOut=500
-Var=FRONT_WHL_v_whl_fl float 0,32
-Var=FRONT_WHL_v_whl_fr float 32,32
+Var=WHL_v_whl_fl float 0,32
+Var=WHL_v_whl_fr float 32,32
 
 [FSM_DATA]
 ID=133h
 DLC=4
 CycleTime=10
 TimeOut=50
-Var=FSM_DATA_brakePressureFrontADC unsigned 0,16
-Var=FSM_DATA_steeringWheelAngleADC unsigned 16,16
+Var=DATA_brakePressureFrontADC unsigned 0,16
+Var=DATA_steeringWheelAngleADC unsigned 16,16
 
 [FSM_PEDALS_ADC]
 ID=533h
 DLC=4
 CycleTime=100
 TimeOut=500
-Var=FSM_PEDALS_brakePressureFrontADC1 unsigned 0,16
-Var=FSM_PEDALS_steeringWheelAngleADC1 unsigned 16,16
+Var=PEDALS_brakePressureFrontADC1 unsigned 0,16
+Var=PEDALS_steeringWheelAngleADC1 unsigned 16,16
 
 [FSM_POWER_DIAGNOSTICS]
 ID=553h
 DLC=4
 CycleTime=100
 TimeOut=500
-Var=FSM_POWER_busVoltage_mV1 unsigned 0,16
-Var=FSM_POWER_busCurrent_mA1 unsigned 16,16
+Var=POWER_busVoltage_mV1 unsigned 0,16
+Var=POWER_busCurrent_mA1 unsigned 16,16
 
 [FSM_SENSORS_ADC]
 ID=543h
 DLC=4
 CycleTime=100
 TimeOut=500
-Var=FSM_SENSORS_brakePressureFrontADC2 unsigned 0,16
-Var=FSM_SENSORS_steeringWheelAngleADC2 unsigned 16,16
+Var=SENSORS_brakePressureFrontADC2 unsigned 0,16
+Var=SENSORS_steeringWheelAngleADC2 unsigned 16,16
 
 [FSM_SWANGLE]
 ID=135h
 DLC=4
 CycleTime=10
 TimeOut=50
-Var=FSM_SWANGLE_brakePressureFrontADC3 unsigned 0,16
-Var=FSM_SWANGLE_steeringWheelAngleADC3 unsigned 16,16
+Var=SWANGLE_brakePressureFrontADC3 unsigned 0,16
+Var=SWANGLE_steeringWheelAngleADC3 unsigned 16,16
 
 [CDC_HEARTBEAT]
 ID=102h
@@ -945,310 +945,310 @@ ID=381h
 DLC=6
 CycleTime=1000
 TimeOut=5000
-Var=HVC_BMB_maxTempIndex unsigned 0,8
-Var=HVC_BMB_minTempIndex unsigned 8,8
-Var=HVC_BMB_maxCellTemp_C signed 16,16 /u:C
-Var=HVC_BMB_minCellTemp_C signed 32,16 /u:C
+Var=BMB_maxTempIndex unsigned 0,8
+Var=BMB_minTempIndex unsigned 8,8
+Var=BMB_maxCellTemp_C signed 16,16 /u:C
+Var=BMB_minCellTemp_C signed 32,16 /u:C
 
 [HVC_BMB_0_STATUS_VOLTAGE]
 ID=380h
 DLC=6
 CycleTime=100
 TimeOut=500
-Var=HVC_BMB_maxVoltIndex unsigned 0,8
-Var=HVC_BMB_minVoltIndex unsigned 8,8
-Var=HVC_BMB_maxCellVoltage_mV unsigned 16,16 /u:mV
-Var=HVC_BMB_minCellVoltage_mV unsigned 32,16 /u:mV
+Var=BMB_maxVoltIndex unsigned 0,8
+Var=BMB_minVoltIndex unsigned 8,8
+Var=BMB_maxCellVoltage_mV unsigned 16,16 /u:mV
+Var=BMB_minCellVoltage_mV unsigned 32,16 /u:mV
 
 [HVC_BMB_STATUS_ERRORS]
 ID=304h
 DLC=8
 CycleTime=10
 TimeOut=50
-Var=HVC_BMB_upper_bmb8 unsigned 0,4
-Var=HVC_BMB_lower_bmb8 unsigned 4,4
-Var=HVC_BMB_upper_bmb9 unsigned 8,4
-Var=HVC_BMB_lower_bmb9 unsigned 12,4
-Var=HVC_BMB_upper_bmb10 unsigned 16,4
-Var=HVC_BMB_lower_bmb10 unsigned 20,4
-Var=HVC_BMB_upper_bmb11 unsigned 24,4
-Var=HVC_BMB_lower_bmb11 unsigned 28,4
-Var=HVC_BMB_upper_bmb12 unsigned 32,4
-Var=HVC_BMB_lower_bmb12 unsigned 36,4
-Var=HVC_BMB_upper_bmb13 unsigned 40,4
-Var=HVC_BMB_lower_bmb13 unsigned 44,4
-Var=HVC_BMB_upper_bmb14 unsigned 48,4
-Var=HVC_BMB_lower_bmb14 unsigned 52,4
-Var=HVC_BMB_upper_bmb15 unsigned 56,4
-Var=HVC_BMB_lower_bmb15 unsigned 60,4
+Var=BMB_upper_bmb8 unsigned 0,4
+Var=BMB_lower_bmb8 unsigned 4,4
+Var=BMB_upper_bmb9 unsigned 8,4
+Var=BMB_lower_bmb9 unsigned 12,4
+Var=BMB_upper_bmb10 unsigned 16,4
+Var=BMB_lower_bmb10 unsigned 20,4
+Var=BMB_upper_bmb11 unsigned 24,4
+Var=BMB_lower_bmb11 unsigned 28,4
+Var=BMB_upper_bmb12 unsigned 32,4
+Var=BMB_lower_bmb12 unsigned 36,4
+Var=BMB_upper_bmb13 unsigned 40,4
+Var=BMB_lower_bmb13 unsigned 44,4
+Var=BMB_upper_bmb14 unsigned 48,4
+Var=BMB_lower_bmb14 unsigned 52,4
+Var=BMB_upper_bmb15 unsigned 56,4
+Var=BMB_lower_bmb15 unsigned 60,4
 
 [HVC_COMMAND]
 ID=130h
 DLC=1
 CycleTime=10
 TimeOut=50
-Var=HVC_COMMAND_modeRequest unsigned 0,8 /e:HVCMode
+Var=COMMAND_modeRequest unsigned 0,8 /e:HVCMode
 
 [HVC_LOW_VOLTAGE]
 ID=303h
 DLC=4
 CycleTime=10
 TimeOut=50
-Var=HVC_LOW_vbatt_mV unsigned 0,8 /u:mV /f:0.1333333
-Var=HVC_LOW_vAIR_mV unsigned 8,8 /u:mV /f:0.1333333
-Var=HVC_LOW_safety_mV unsigned 16,8 /u:mV /f:0.1333333
-Var=HVC_LOW_iDCDC_mA unsigned 24,8 /u:mA /f:0.1333333
+Var=LOW_vbatt_mV unsigned 0,8 /u:mV /f:0.1333333
+Var=LOW_vAIR_mV unsigned 8,8 /u:mV /f:0.1333333
+Var=LOW_safety_mV unsigned 16,8 /u:mV /f:0.1333333
+Var=LOW_iDCDC_mA unsigned 24,8 /u:mA /f:0.1333333
 
 [HVC_MINMAX_CELL_TEMPS]
 ID=311h
 DLC=8
 CycleTime=20
 TimeOut=100
-Var=HVC_MINMAX_minCellTemp_dC unsigned 0,16 /u:dC
-Var=HVC_MINMAX_maxCellTemp_dC unsigned 16,16 /u:dC
-Var=HVC_MINMAX_minTempBMBIndex unsigned 32,8
-Var=HVC_MINMAX_minTempCellIndex unsigned 40,8
-Var=HVC_MINMAX_maxTempBMBIndex unsigned 48,8
-Var=HVC_MINMAX_maxTempCellIndex unsigned 56,8
+Var=MINMAX_minCellTemp_dC unsigned 0,16 /u:dC
+Var=MINMAX_maxCellTemp_dC unsigned 16,16 /u:dC
+Var=MINMAX_minTempBMBIndex unsigned 32,8
+Var=MINMAX_minTempCellIndex unsigned 40,8
+Var=MINMAX_maxTempBMBIndex unsigned 48,8
+Var=MINMAX_maxTempCellIndex unsigned 56,8
 
 [HVC_MINMAX_CELL_VOLTAGE]
 ID=310h
 DLC=8
 CycleTime=20
 TimeOut=100
-Var=HVC_MINMAX_minCellVoltage_mV1 unsigned 0,16
-Var=HVC_MINMAX_maxCellVoltage_mV1 unsigned 16,16
-Var=HVC_MINMAX_minCellVoltBMB unsigned 32,8
-Var=HVC_MINMAX_minVoltIndex1 unsigned 40,8
-Var=HVC_MINMAX_maxCellVoltBMB unsigned 48,8
-Var=HVC_MINMAX_maxVoltIndex1 unsigned 56,8
+Var=MINMAX_minCellVoltage_mV1 unsigned 0,16
+Var=MINMAX_maxCellVoltage_mV1 unsigned 16,16
+Var=MINMAX_minCellVoltBMB unsigned 32,8
+Var=MINMAX_minVoltIndex1 unsigned 40,8
+Var=MINMAX_maxCellVoltBMB unsigned 48,8
+Var=MINMAX_maxVoltIndex1 unsigned 56,8
 
 [HVC_PACK_CURRENT]
 ID=302h
 DLC=8
 CycleTime=10
 TimeOut=50
-Var=HVC_PACK_instantCurrent_mA signed 0,32 /u:mA
-Var=HVC_PACK_averageCurrent_mA signed 32,32 /u:mA
+Var=PACK_instantCurrent_mA signed 0,32 /u:mA
+Var=PACK_averageCurrent_mA signed 32,32 /u:mA
 
 [HVC_PACK_VOLTAGE]
 ID=301h
 DLC=8
 CycleTime=10
 TimeOut=50
-Var=HVC_PACK_battVoltage_mV signed 0,32 /u:mV /f:0.001 /p:3
-Var=HVC_PACK_hvVoltage_mV signed 32,32 /u:mV /f:0.001 /p:3
+Var=PACK_battVoltage_mV signed 0,32 /u:mV /f:0.001 /p:3
+Var=PACK_hvVoltage_mV signed 32,32 /u:mV /f:0.001 /p:3
 
 [MOTORPOWER_STATE]
 ID=52Eh
 DLC=8
 CycleTime=5
 TimeOut=25
-Var=MOTORPOWER_STATE_motor_power_FL unsigned 0,16
-Var=MOTORPOWER_STATE_motor_power_FR unsigned 16,16
-Var=MOTORPOWER_STATE_motor_power_RL unsigned 32,16
-Var=MOTORPOWER_STATE_motor_power_RR unsigned 48,16
+Var=STATE_motor_power_FL unsigned 0,16
+Var=STATE_motor_power_FR unsigned 16,16
+Var=STATE_motor_power_RL unsigned 32,16
+Var=STATE_motor_power_RR unsigned 48,16
 
 [PTC_LOOP_TEMPS_A]
 ID=224h
 DLC=4
 CycleTime=10
 TimeOut=50
-Var=PTC_LOOP_internalState unsigned 0,8 /e:VSMState
-Var=PTC_LOOP_vsm_error_source_hvc bit 14,1
-Var=PTC_LOOP_vsm_error_source_cdc bit 13,1
-Var=PTC_LOOP_vsm_error_source_fsm bit 12,1
-Var=PTC_LOOP_vsm_error_source_dim bit 11,1
-Var=PTC_LOOP_vsm_error_source_ptc bit 10,1
-Var=PTC_LOOP_vsm_error_source_hvi bit 8,1
-Var=PTC_LOOP_vsm_error_source_hvc1 bit 22,1
-Var=PTC_LOOP_vsm_error_source_cdc1 bit 21,1
-Var=PTC_LOOP_vsm_error_source_fsm1 bit 20,1
-Var=PTC_LOOP_vsm_error_source_dim1 bit 19,1
-Var=PTC_LOOP_vsm_error_source_ptc1 bit 18,1
-Var=PTC_LOOP_vsm_error_source_hvi1 bit 16,1
-Var=PTC_LOOP_vsm_latch_software bit 27,1
-Var=PTC_LOOP_vsm_latch_ams bit 26,1
-Var=PTC_LOOP_vsm_latch_imd bit 25,1
-Var=PTC_LOOP_vsm_latch_bspd bit 24,1
+Var=LOOP_internalState unsigned 0,8 /e:VSMState
+Var=LOOP_vsm_error_source_hvc bit 14,1
+Var=LOOP_vsm_error_source_cdc bit 13,1
+Var=LOOP_vsm_error_source_fsm bit 12,1
+Var=LOOP_vsm_error_source_dim bit 11,1
+Var=LOOP_vsm_error_source_ptc bit 10,1
+Var=LOOP_vsm_error_source_hvi bit 8,1
+Var=LOOP_vsm_error_source_hvc1 bit 22,1
+Var=LOOP_vsm_error_source_cdc1 bit 21,1
+Var=LOOP_vsm_error_source_fsm1 bit 20,1
+Var=LOOP_vsm_error_source_dim1 bit 19,1
+Var=LOOP_vsm_error_source_ptc1 bit 18,1
+Var=LOOP_vsm_error_source_hvi1 bit 16,1
+Var=LOOP_vsm_latch_software bit 27,1
+Var=LOOP_vsm_latch_ams bit 26,1
+Var=LOOP_vsm_latch_imd bit 25,1
+Var=LOOP_vsm_latch_bspd bit 24,1
 
 [REAR_SLIP_RATIOS]
 ID=7E9h
 DLC=8
 CycleTime=100
 TimeOut=500
-Var=REAR_SLIP_slipRatio_RL float 0,32
-Var=REAR_SLIP_slipRatio_RR float 32,32
+Var=SLIP_slipRatio_RL float 0,32
+Var=SLIP_slipRatio_RR float 32,32
 
 [REAR_WHL_SETPOINTS]
 ID=7EBh
 DLC=8
 CycleTime=100
 TimeOut=500
-Var=REAR_WHL_omega_RL float 0,32
-Var=REAR_WHL_omega_RR float 32,32
+Var=WHL_omega_RL float 0,32
+Var=WHL_omega_RR float 32,32
 
 [REAR_WHL_VELS]
 ID=7EDh
 DLC=8
 CycleTime=100
 TimeOut=500
-Var=REAR_WHL_v_whl_rl float 0,32
-Var=REAR_WHL_v_whl_rr float 32,32
+Var=WHL_v_whl_rl float 0,32
+Var=WHL_v_whl_rr float 32,32
 
 [SBG_AUTOMOTIVE]
 ID=72Ah
 DLC=7
 CycleTime=200
 TimeOut=1000
-Var=SBG_AUTOMOTIVE_angle_track_rad signed 0,16 /u:rad
-Var=SBG_AUTOMOTIVE_angle_slip_rad signed 16,16 /u:rad
-Var=SBG_AUTOMOTIVE_curvature_radius_m unsigned 32,16 /u:m
-Var=SBG_AUTOMOTIVE_sbg_auto_track_valid bit 48,1
-Var=SBG_AUTOMOTIVE_sbg_auto_slip_valid bit 49,1
-Var=SBG_AUTOMOTIVE_sbg_auto_curvature_valid bit 50,1
+Var=AUTOMOTIVE_angle_track_rad signed 0,16 /u:rad
+Var=AUTOMOTIVE_angle_slip_rad signed 16,16 /u:rad
+Var=AUTOMOTIVE_curvature_radius_m unsigned 32,16 /u:m
+Var=AUTOMOTIVE_sbg_auto_track_valid bit 48,1
+Var=AUTOMOTIVE_sbg_auto_slip_valid bit 49,1
+Var=AUTOMOTIVE_sbg_auto_curvature_valid bit 50,1
 
 [SBG_BODY_VEL]
 ID=729h
 DLC=6
 CycleTime=400
 TimeOut=2000
-Var=SBG_BODY_velocity_forward signed 0,16
-Var=SBG_BODY_velocity_right signed 16,16
-Var=SBG_BODY_velocity_down signed 32,16
+Var=BODY_velocity_forward signed 0,16
+Var=BODY_velocity_right signed 16,16
+Var=BODY_velocity_down signed 32,16
 
 [SBG_EKF_ORIENT]
 ID=722h
 DLC=6
 CycleTime=400
 TimeOut=2000
-Var=SBG_EKF_roll signed 0,16
-Var=SBG_EKF_pitch signed 16,16
-Var=SBG_EKF_yaw signed 32,16
+Var=EKF_roll signed 0,16
+Var=EKF_pitch signed 16,16
+Var=EKF_yaw signed 32,16
 
 [SBG_EKF_POS]
 ID=724h
 DLC=8
 CycleTime=400
 TimeOut=2000
-Var=SBG_EKF_latitude signed 0,32
-Var=SBG_EKF_longitude signed 32,32
+Var=EKF_latitude signed 0,32
+Var=EKF_longitude signed 32,32
 
 [SBG_EKF_VEL]
 ID=727h
 DLC=6
 CycleTime=400
 TimeOut=2000
-Var=SBG_EKF_velocity_n signed 0,16
-Var=SBG_EKF_velocity_e signed 16,16
-Var=SBG_EKF_velocity_d signed 32,16
+Var=EKF_velocity_n signed 0,16
+Var=EKF_velocity_e signed 16,16
+Var=EKF_velocity_d signed 32,16
 
 [SBG_IMU_GYRO]
 ID=712h
 DLC=6
 CycleTime=400
 TimeOut=2000
-Var=SBG_IMU_gyro_x_rads signed 0,16 /u:rad
-Var=SBG_IMU_gyro_y_rads signed 16,16 /u:rad
-Var=SBG_IMU_gyro_z_rads signed 32,16 /u:rad
+Var=IMU_gyro_x_rads signed 0,16 /u:rad
+Var=IMU_gyro_y_rads signed 16,16 /u:rad
+Var=IMU_gyro_z_rads signed 32,16 /u:rad
 
 [SBG_STATUS_3]
 ID=702h
 DLC=6
 CycleTime=400
 TimeOut=2000
-Var=SBG_STATUS_sbg_sol_attitude_valid bit 4,1
-Var=SBG_STATUS_sbg_sol_heading_valid bit 5,1
-Var=SBG_STATUS_sbg_sol_velocity_valid bit 6,1
-Var=SBG_STATUS_sbg_sol_position_valid bit 7,1
-Var=SBG_STATUS_sbg_sol_vert_ref_used bit 8,1
-Var=SBG_STATUS_sbg_sol_mag_ref_used bit 9,1
-Var=SBG_STATUS_sbg_sol_gps1_vel_used bit 10,1
-Var=SBG_STATUS_sbg_sol_gps1_pos_used bit 11,1
-Var=SBG_STATUS_sbg_sol_gps1_hdt_used bit 13,1
-Var=SBG_STATUS_sbg_sol_gps2_vel_used bit 14,1
-Var=SBG_STATUS_sbg_sol_gps2_pos_used bit 15,1
-Var=SBG_STATUS_sbg_sol_gps2_hdt_used bit 17,1
-Var=SBG_STATUS_sbg_sol_odo_used bit 18,1
-Var=SBG_STATUS_sbg_sol_dvl_bt_used bit 19,1
-Var=SBG_STATUS_sbg_sol_dvl_wt_used bit 20,1
-Var=SBG_STATUS_sbg_sol_usbl_used bit 24,1
-Var=SBG_STATUS_sbg_sol_pressure_used bit 25,1
-Var=SBG_STATUS_sbg_sol_zupt_used bit 26,1
-Var=SBG_STATUS_sbg_sol_align_valid bit 27,1
-Var=SBG_STATUS_heave_status unsigned 32,16
+Var=STATUS_sbg_sol_attitude_valid bit 4,1
+Var=STATUS_sbg_sol_heading_valid bit 5,1
+Var=STATUS_sbg_sol_velocity_valid bit 6,1
+Var=STATUS_sbg_sol_position_valid bit 7,1
+Var=STATUS_sbg_sol_vert_ref_used bit 8,1
+Var=STATUS_sbg_sol_mag_ref_used bit 9,1
+Var=STATUS_sbg_sol_gps1_vel_used bit 10,1
+Var=STATUS_sbg_sol_gps1_pos_used bit 11,1
+Var=STATUS_sbg_sol_gps1_hdt_used bit 13,1
+Var=STATUS_sbg_sol_gps2_vel_used bit 14,1
+Var=STATUS_sbg_sol_gps2_pos_used bit 15,1
+Var=STATUS_sbg_sol_gps2_hdt_used bit 17,1
+Var=STATUS_sbg_sol_odo_used bit 18,1
+Var=STATUS_sbg_sol_dvl_bt_used bit 19,1
+Var=STATUS_sbg_sol_dvl_wt_used bit 20,1
+Var=STATUS_sbg_sol_usbl_used bit 24,1
+Var=STATUS_sbg_sol_pressure_used bit 25,1
+Var=STATUS_sbg_sol_zupt_used bit 26,1
+Var=STATUS_sbg_sol_align_valid bit 27,1
+Var=STATUS_heave_status unsigned 32,16
 
 [SF_STATE]
 ID=52Dh
 DLC=8
 CycleTime=10
 TimeOut=50
-Var=SF_STATE_power_limit_max_violation_W float 0,32 /u:W
-Var=SF_STATE_longest_power_violation_ms unsigned 32,8 /u:ms
-Var=SF_STATE_over_voltage_count unsigned 40,8
-Var=SF_STATE_under_voltage_count unsigned 48,8
-Var=SF_STATE_over_temp_count unsigned 56,8
+Var=STATE_power_limit_max_violation_W float 0,32 /u:W
+Var=STATE_longest_power_violation_ms unsigned 32,8 /u:ms
+Var=STATE_over_voltage_count unsigned 40,8
+Var=STATE_under_voltage_count unsigned 48,8
+Var=STATE_over_temp_count unsigned 56,8
 
 [VSM_LATCHED_STATUS]
 ID=510h
 DLC=3
 CycleTime=10000
 TimeOut=50000
-Var=VSM_LATCHED_vsm_error_source_hvc2 bit 6,1
-Var=VSM_LATCHED_vsm_error_source_cdc2 bit 5,1
-Var=VSM_LATCHED_vsm_error_source_fsm2 bit 4,1
-Var=VSM_LATCHED_vsm_error_source_dim2 bit 3,1
-Var=VSM_LATCHED_vsm_error_source_ptc2 bit 2,1
-Var=VSM_LATCHED_vsm_error_source_hvi2 bit 0,1
-Var=VSM_LATCHED_vsm_error_source_hvc3 bit 14,1
-Var=VSM_LATCHED_vsm_error_source_cdc3 bit 13,1
-Var=VSM_LATCHED_vsm_error_source_fsm3 bit 12,1
-Var=VSM_LATCHED_vsm_error_source_dim3 bit 11,1
-Var=VSM_LATCHED_vsm_error_source_ptc3 bit 10,1
-Var=VSM_LATCHED_vsm_error_source_hvi3 bit 8,1
-Var=VSM_LATCHED_vsm_latch_software1 bit 19,1
-Var=VSM_LATCHED_vsm_latch_ams1 bit 18,1
-Var=VSM_LATCHED_vsm_latch_imd1 bit 17,1
-Var=VSM_LATCHED_vsm_latch_bspd1 bit 16,1
+Var=LATCHED_vsm_error_source_hvc2 bit 6,1
+Var=LATCHED_vsm_error_source_cdc2 bit 5,1
+Var=LATCHED_vsm_error_source_fsm2 bit 4,1
+Var=LATCHED_vsm_error_source_dim2 bit 3,1
+Var=LATCHED_vsm_error_source_ptc2 bit 2,1
+Var=LATCHED_vsm_error_source_hvi2 bit 0,1
+Var=LATCHED_vsm_error_source_hvc3 bit 14,1
+Var=LATCHED_vsm_error_source_cdc3 bit 13,1
+Var=LATCHED_vsm_error_source_fsm3 bit 12,1
+Var=LATCHED_vsm_error_source_dim3 bit 11,1
+Var=LATCHED_vsm_error_source_ptc3 bit 10,1
+Var=LATCHED_vsm_error_source_hvi3 bit 8,1
+Var=LATCHED_vsm_latch_software1 bit 19,1
+Var=LATCHED_vsm_latch_ams1 bit 18,1
+Var=LATCHED_vsm_latch_imd1 bit 17,1
+Var=LATCHED_vsm_latch_bspd1 bit 16,1
 
 [VSM_POWER_DIAGNOSTICS]
 ID=530h
 DLC=4
 CycleTime=100
 TimeOut=500
-Var=VSM_POWER_busVoltage_mV2 unsigned 0,16
-Var=VSM_POWER_busCurrent_mA2 unsigned 16,16
+Var=POWER_busVoltage_mV2 unsigned 0,16
+Var=POWER_busCurrent_mA2 unsigned 16,16
 
 [VSM_SENSORS]
 ID=200h
 DLC=4
 CycleTime=5
 TimeOut=25
-Var=VSM_SENSORS_busVoltage_mV3 unsigned 0,16
-Var=VSM_SENSORS_busCurrent_mA3 unsigned 16,16
+Var=SENSORS_busVoltage_mV3 unsigned 0,16
+Var=SENSORS_busCurrent_mA3 unsigned 16,16
 
 [VSM_STATUS]
 ID=110h
 DLC=4
 CycleTime=10
 TimeOut=50
-Var=VSM_STATUS_internalState1 unsigned 0,8
-Var=VSM_STATUS_vsm_error_source_hvc4 bit 14,1
-Var=VSM_STATUS_vsm_error_source_cdc4 bit 13,1
-Var=VSM_STATUS_vsm_error_source_fsm4 bit 12,1
-Var=VSM_STATUS_vsm_error_source_dim4 bit 11,1
-Var=VSM_STATUS_vsm_error_source_ptc4 bit 10,1
-Var=VSM_STATUS_vsm_error_source_hvi4 bit 8,1
-Var=VSM_STATUS_vsm_error_source_hvc5 bit 22,1
-Var=VSM_STATUS_vsm_error_source_cdc5 bit 21,1
-Var=VSM_STATUS_vsm_error_source_fsm5 bit 20,1
-Var=VSM_STATUS_vsm_error_source_dim5 bit 19,1
-Var=VSM_STATUS_vsm_error_source_ptc5 bit 18,1
-Var=VSM_STATUS_vsm_error_source_hvi5 bit 16,1
-Var=VSM_STATUS_vsm_latch_software2 bit 27,1
-Var=VSM_STATUS_vsm_latch_ams2 bit 26,1
-Var=VSM_STATUS_vsm_latch_imd2 bit 25,1
-Var=VSM_STATUS_vsm_latch_bspd2 bit 24,1
+Var=STATUS_internalState1 unsigned 0,8
+Var=STATUS_vsm_error_source_hvc4 bit 14,1
+Var=STATUS_vsm_error_source_cdc4 bit 13,1
+Var=STATUS_vsm_error_source_fsm4 bit 12,1
+Var=STATUS_vsm_error_source_dim4 bit 11,1
+Var=STATUS_vsm_error_source_ptc4 bit 10,1
+Var=STATUS_vsm_error_source_hvi4 bit 8,1
+Var=STATUS_vsm_error_source_hvc5 bit 22,1
+Var=STATUS_vsm_error_source_cdc5 bit 21,1
+Var=STATUS_vsm_error_source_fsm5 bit 20,1
+Var=STATUS_vsm_error_source_dim5 bit 19,1
+Var=STATUS_vsm_error_source_ptc5 bit 18,1
+Var=STATUS_vsm_error_source_hvi5 bit 16,1
+Var=STATUS_vsm_latch_software2 bit 27,1
+Var=STATUS_vsm_latch_ams2 bit 26,1
+Var=STATUS_vsm_latch_imd2 bit 25,1
+Var=STATUS_vsm_latch_bspd2 bit 24,1
 
 [CDC_MotorTemps]
 ID=512h

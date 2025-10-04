@@ -75,7 +75,7 @@ def check_repeat_varname(name):
 
 def create_prefix(name, canid):
     can_name = re.findall(r'CMR_CANID_(\w+)',canid) 
-    append_can_name = can_name[0].split("_")[0]+"_"+can_name[0].split("_")[1]
+    append_can_name = can_name[0].split("_")[1]
     if "HEARTBEAT" in canid:
         print("hi") 
         board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
