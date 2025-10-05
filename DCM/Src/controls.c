@@ -404,7 +404,13 @@ static void set_optimal_control(
 	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
 
     // Solver treats Mreq as around -z axis.
-	optimizer_state.mreq = getYawRateControlLeftRightBias(swAngle_millideg);
+
+    float mreq_base = getYawRateControlLeftRightBias(swAngle_millideg);
+    float mreq = calculatePersistentYRCmreq(mreq_base, swAngle_millideg_FL, swAngle_millideg_FR);
+    //float mreq = getYawRateControlLeftRightBias(swAngle_millideg);
+
+    optimizer_state.mreq = mreq;
+
 	optimizer_state.theta_left = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
     optimizer_state.theta_right = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
 
@@ -1426,24 +1432,67 @@ float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
     const float left_right_bias = yrc_kp * (actual_yaw_rate_radps_sae - optimal_yaw_rate_radps);
     return left_right_bias;
 }
+
+// float calculatePersistentYRCmreq(float left_right_bias,
+//                                  int32_t swAngle_millideg_FL,
+//                                  int32_t swAngle_millideg_FR)
+// {
+//     int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
+
+//     float velocity_x_mps = movella_state.velocity.x;
+//     float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
+
+//     float yaw_act = movella_state.gyro.z;
+
+//     float yaw_des = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
+
+
+//     float kp_mreq = yrc_kp * (yaw_des - yaw_act);
+
+//     // margin as relative error (e.g., 0.2 = 20%)
+//     const float bias_margin = 0.20f;
+
+//     const float eps = 1e-3f;
+//     // use desired yaw in the denominator, guard near zero
+//     float percent_difference = (yaw_act - yaw_des) / fmaxf(fabsf(yaw_des), eps);
+
+//     float persistent_bias_factor = yrc_pers; // gain from dim
+//     if (fabsf(percent_difference) >= bias_margin) {
+//         persistent_bias_factor = 0.0f;
+//     } else {
+//         // scale from 1 at zero error down to 0 at the margin
+//         float s = 1.0f - fabsf(percent_difference) / bias_margin;
+//         persistent_bias_factor = yrc_pers * s;
+//     }
+
+//     float persistent_bias_mreq = left_right_bias * persistent_bias_factor * yaw_des;
+
+//     return kp_mreq + persistent_bias_mreq;
+// }
+
+
+
 float calculatePersistentYRCmreq(float left_right_bias, int32_t swAngle_millideg_FL, int32_t swAngle_millideg_FR) {
+    
     int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
-    float bias_margin = 2.0f; // tbd
+    float bias_margin = 100.0f; // tbd
     float velocity_x_mps = movella_state.velocity.x;
     float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
     float actual_yaw_rate_radps_sae = movella_state.gyro.z;
+
     float optimal_yaw_rate_radps = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
     // Calculate scaling factor
     float persistent_bias_factor = yrc_pers;
-    float percent_difference = (actual_yaw_rate_radps_sae - optimal_yaw_rate_radps) / (actual_yaw_rate_radps_sae);
-    if (abs(percent_difference) >= bias_margin || percent_difference > 0) {
+    float percent_difference = (optimal_yaw_rate_radps - actual_yaw_rate_radps_sae) / (actual_yaw_rate_radps_sae);
+
+    if (fabsf(percent_difference) >= bias_margin || percent_difference > 0) {
         persistent_bias_factor = 0;
     }
     else if (percent_difference <= 0) {
         persistent_bias_factor = (bias_margin + percent_difference) / bias_margin; // keeps ratio between 0-1
     }
     // Calculate total moment
-    float kp_mreq = yrc_kp * (actual_yaw_rate_radps_sae - optimal_yaw_rate_radps);
+    float kp_mreq = yrc_kp * (optimal_yaw_rate_radps - actual_yaw_rate_radps_sae);
     float persistent_bias_mreq = left_right_bias * persistent_bias_factor * actual_yaw_rate_radps_sae;
     return kp_mreq + persistent_bias_mreq;
 }
