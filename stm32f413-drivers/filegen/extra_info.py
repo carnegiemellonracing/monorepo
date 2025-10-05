@@ -11,7 +11,7 @@ import sys
 
 # Configuration
 INPUT_JSON = "stm32f413-drivers/filegen/canid_type_map.json"  # Your existing JSON file
-CAN_TYPES_FILE = "stm32f413-drivers/filegen/can_types_new.h"  # File containing the struct definitions
+CAN_TYPES_FILE = "stm32f413-drivers/CMR/include/CMR/can_types.h"  # File containing the struct definitions
 OUTPUT_FILE = "stm32f413-drivers/filegen/canid_type_map.json"
 
 def parse_can_types_file(file_path):

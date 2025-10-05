@@ -208,7 +208,7 @@ def extract_numeric_value(value):
     return 0
 
 def main():
-    with open("stm32f413-drivers/filegen/can_types_new.h", "r") as structf: 
+    with open("stm32f413-drivers/CMR/include/CMR/can_types.h", "r") as structf: 
         #find all struct declarations
         cantypes = structf.read()
         structs = re.findall(r'typedef\s+struct\s*\{([\s\S]*?)\}\s*(cmr_can\w+)\s*;', cantypes)

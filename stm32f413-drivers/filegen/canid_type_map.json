@@ -969,6 +969,23 @@
             "timeOut": 25,
             "type": "cmr_canCDCMotorPower_t"
         },
+        "CMR_CANID_PTC_LOOP_TEMPS_A": {
+            "badStateMatrix": {
+                "enumstruct": "cmr_canVSMErrorSource_t"
+            },
+            "cycleTime": 10.0,
+            "internalState": {
+                "e": "VSMState"
+            },
+            "latchMatrix": {
+                "enumstruct": "cmr_canVSMLatch_t"
+            },
+            "moduleTimeoutMatrix": {
+                "enumstruct": "cmr_canVSMErrorSource_t"
+            },
+            "timeOut": 50,
+            "type": "cmr_canVSMStatus_t"
+        },
         "CMR_CANID_REAR_SLIP_RATIOS": {
             "cycleTime": 100,
             "timeOut": 500,
@@ -1055,8 +1072,8 @@
             "type": "cmr_canCDCSafetyFilterStates_t"
         },
         "CMR_CANID_TEST_ID": {
-            "cycleTime": 1000,
-            "timeOut": 5000,
+            "cycleTime": "can10Hz_period_ms\n            //",
+            "timeOut": "5*can10Hz_period_ms\n            //",
             "type": "cmr_canDAQTest_t"
         },
         "CMR_CANID_VSM_LATCHED_STATUS": {
@@ -1117,8 +1134,8 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2786,
-        "files_with_matches": 2786,
+        "files_processed": 2679,
+        "files_with_matches": 2679,
         "global_mappings": {
             "canrx_mappings": 98,
             "canrx_timeouts": 97,
