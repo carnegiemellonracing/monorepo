@@ -543,7 +543,7 @@ void runControls(cmr_canGear_t gear, uint8_t throttlePos_u8,
 
     switch (gear) {
         case CMR_CAN_GEAR_SLOW: {
-            setSlowTorque(throttlePos_u8, swAngle_millideg);
+            setSlowTorque(throttlePos_u8);
             break;
         }
         case CMR_CAN_GEAR_FAST: {
@@ -652,7 +652,7 @@ void integrateCurrent() {
  *
  * @param throttlePos_u8 Throttle position, 0-255.
  */
-void setSlowTorque(uint8_t throttlePos_u8, int32_t swAngle_millideg) {
+void setSlowTorque(uint8_t throttlePos_u8) {
     const float reqTorque = maxSlowTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
 
     setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
