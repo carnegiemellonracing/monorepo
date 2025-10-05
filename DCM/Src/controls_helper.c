@@ -14,34 +14,8 @@ const uint16_t brake_pressure_start = 50;
 /** @brief  min paddle pressure for starting to apply regen */
 const uint8_t paddle_pressure_start = 30;
 
-/** @brief the ratio between swangle (steering wheel angle) and steering angle
- *  @todo steering angle should be linear to the readings of the swangle sensor, before the nonlinearity correction
-*/
-const float swangle_per_steering_angle = (112.0f - (-84.0f)) / 40.0f;
-
 // ------------------------------------------------------------------------------------------------
 // Functions
-
-/**
- * @brief returns requested moment Nm given torques and steering_angle_deg
- * @param torque_req four torques
- * @param steering_angle_deg steering anlge
-*/
-float Mz_calc(cmr_torqueDistributionNm_t *torque_req, float steering_angle_deg)
-{
-    //TODO degrees or radians?? I think should be radians
-	float sangle = sin(steering_angle_deg);
-	float cangle = cos(steering_angle_deg);
-
-    //calculates Mz Nm from four torques
-	return (gear_ratio / effective_wheel_rad_m)
-            * (torque_req->fl * chassis_a * sangle
-            + torque_req->fl * (chassis_w_f * 0.5f)  * cangle
-            + torque_req->fr * chassis_b * sangle
-            - torque_req->fr * (chassis_w_f * 0.5f) * cangle
-            + torque_req->rl * (chassis_w_r * 0.5f)
-            - torque_req->rr * (chassis_w_r * 0.5f));
-}
 
 /** @brief returns the pack voltage */
 float getPackVoltage() {

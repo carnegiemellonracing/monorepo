@@ -36,7 +36,6 @@ extern const uint8_t paddle_pressure_start;
 // ------------------------------------------------------------------------------------------------
 // helper functions
 
-float Mz_calc(cmr_torqueDistributionNm_t *torque_req, float steering_angle_deg);
 float getPackVoltage();
 float getPackCurrent();
 float getHVISensePackPower();
