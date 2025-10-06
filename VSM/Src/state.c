@@ -257,7 +257,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
 
         case CMR_CAN_VSM_STATE_GLV_ON: {
             // T2
-            if (dimRequestedState == CMR_CAN_AS_READY && getASMSState()){
+            if (dimRequestedState == CMR_CAN_AS_READY && getASMSState()){ //dim is reading eab from can
                 nextState = CMR_CAN_VSM_STATE_BRAKE_TEST;
             }
             else if (dimRequestedState == CMR_CAN_HV_EN){
@@ -564,7 +564,7 @@ static void stateUpdate(void *pvParameters) {
 /**
  * @brief Checks if possible for Autonomous Braking System to Deploy
  */
-static inline bool getBrakeStatus(){
+static inline bool getBrakeStatus(){ //pulse test (AIM)
     cmr_canDVPressureReadings_t* pressureReading = (cmr_canDVPressureReadings_t*) getPayload(CANRX_AS_PRESSURE_READING);
     return pressureReading->tankPressurePercentofThreshold > 100;
 }
