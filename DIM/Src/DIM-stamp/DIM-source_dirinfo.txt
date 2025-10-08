@@ -4,6 +4,6 @@
 
 method=source_dir
 command=
-source_dir=/Users/ayushgarg/Documents/GutHub/monorepo/DIM
+source_dir=/Users/johnli/CMR/monorepo/DIM
 work_dir=
 
