@@ -4,19 +4,19 @@
 cmake_minimum_required(VERSION 3.5)
 
 file(MAKE_DIRECTORY
-  "/Users/ayushgarg/Documents/GutHub/monorepo/HVC"
-  "/Users/ayushgarg/Documents/GutHub/monorepo/HVC/src/HVC-build"
-  "/Users/ayushgarg/Documents/GutHub/monorepo/HVC"
-  "/Users/ayushgarg/Documents/GutHub/monorepo/HVC/tmp"
-  "/Users/ayushgarg/Documents/GutHub/monorepo/HVC/src/HVC-stamp"
-  "/Users/ayushgarg/Documents/GutHub/monorepo/HVC/src"
-  "/Users/ayushgarg/Documents/GutHub/monorepo/HVC/src/HVC-stamp"
+  "/Users/johnli/CMR/monorepo/HVC"
+  "/Users/johnli/CMR/monorepo/HVC/src/HVC-build"
+  "/Users/johnli/CMR/monorepo/HVC"
+  "/Users/johnli/CMR/monorepo/HVC/tmp"
+  "/Users/johnli/CMR/monorepo/HVC/src/HVC-stamp"
+  "/Users/johnli/CMR/monorepo/HVC/src"
+  "/Users/johnli/CMR/monorepo/HVC/src/HVC-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "/Users/ayushgarg/Documents/GutHub/monorepo/HVC/src/HVC-stamp/${subDir}")
+    file(MAKE_DIRECTORY "/Users/johnli/CMR/monorepo/HVC/src/HVC-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "/Users/ayushgarg/Documents/GutHub/monorepo/HVC/src/HVC-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "/Users/johnli/CMR/monorepo/HVC/src/HVC-stamp${cfgdir}") # cfgdir has leading slash
 endif()

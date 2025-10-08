@@ -4,19 +4,19 @@
 cmake_minimum_required(VERSION 3.5)
 
 file(MAKE_DIRECTORY
-  "/Users/ayushgarg/Documents/GutHub/monorepo/DIM"
-  "/Users/ayushgarg/Documents/GutHub/monorepo/DIM/src/DIM-build"
-  "/Users/ayushgarg/Documents/GutHub/monorepo/DIM"
-  "/Users/ayushgarg/Documents/GutHub/monorepo/DIM/tmp"
-  "/Users/ayushgarg/Documents/GutHub/monorepo/DIM/src/DIM-stamp"
-  "/Users/ayushgarg/Documents/GutHub/monorepo/DIM/src"
-  "/Users/ayushgarg/Documents/GutHub/monorepo/DIM/src/DIM-stamp"
+  "/Users/johnli/CMR/monorepo/DIM"
+  "/Users/johnli/CMR/monorepo/DIM/src/DIM-build"
+  "/Users/johnli/CMR/monorepo/DIM"
+  "/Users/johnli/CMR/monorepo/DIM/tmp"
+  "/Users/johnli/CMR/monorepo/DIM/src/DIM-stamp"
+  "/Users/johnli/CMR/monorepo/DIM/src"
+  "/Users/johnli/CMR/monorepo/DIM/src/DIM-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "/Users/ayushgarg/Documents/GutHub/monorepo/DIM/src/DIM-stamp/${subDir}")
+    file(MAKE_DIRECTORY "/Users/johnli/CMR/monorepo/DIM/src/DIM-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "/Users/ayushgarg/Documents/GutHub/monorepo/DIM/src/DIM-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "/Users/johnli/CMR/monorepo/DIM/src/DIM-stamp${cfgdir}") # cfgdir has leading slash
 endif()
