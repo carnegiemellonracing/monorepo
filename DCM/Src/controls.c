@@ -129,7 +129,7 @@ void initControls() {
 	launchControlButtonPressed = false;
 	launchControlActive = false;
 	coulombCounting.KCoulombs = 0.0f;
-    manual_cruise_control_speed = 1.0;
+    manual_cruise_control_speed = 0.0; // start at 0 m/s
 }
 
 /** @brief update controlsStatus to be displayed on DIM */
@@ -187,22 +187,22 @@ static void set_motor_speed(uint8_t throttlePos_u8, float speed_mps, bool rear_o
     const float max_speed_mps = 20.0f;
     speed_mps = fmaxf(speed_mps, min_speed_mps);
     speed_mps = fminf(speed_mps, max_speed_mps);
-    float target_rpm = speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
+    float target_rpm_original = speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
     cmr_torqueDistributionNm_t torquesPos_Nm;
     if(rear_only) {
         setVelocityInt16(MOTOR_FL, 0);
         setVelocityInt16(MOTOR_FR, 0);
-        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
-        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
+        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm_original);
+        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm_original);
         torquesPos_Nm.fl = 0.0f;
         torquesPos_Nm.fr = 0.0f;
         torquesPos_Nm.rl = req_torque_Nm;
         torquesPos_Nm.rr = req_torque_Nm;
     } else {
-        setVelocityInt16(MOTOR_FL, (int16_t) target_rpm);
-        setVelocityInt16(MOTOR_FR, (int16_t) target_rpm);
-        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
-        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
+        setVelocityInt16(MOTOR_FL, (int16_t) target_rpm_original);
+        setVelocityInt16(MOTOR_FR, (int16_t) target_rpm_original);
+        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm_original);
+        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm_original);
         torquesPos_Nm.fl = req_torque_Nm;
         torquesPos_Nm.fr = req_torque_Nm;
         torquesPos_Nm.rl = req_torque_Nm;
@@ -217,11 +217,14 @@ static void set_motor_speed(uint8_t throttlePos_u8, float speed_mps, bool rear_o
     setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
 }
 
+// CRUISE CONTROL CODE
 static void set_throttle_percentage(uint8_t throttlePos_u8, bool rear_only) {
    float throttle = (float)throttlePos_u8 / UINT8_MAX;
+
    float req_torque_Nm = throttle * maxFastTorque_Nm;
-   float target_speed_mps = 20.0f;
+   float target_speed_mps = 10.0f; // check this 
    float target_rpm = target_speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
+
    cmr_torqueDistributionNm_t torquesPos_Nm;
    if(rear_only) {
        setVelocityInt16(MOTOR_FL, 0);
@@ -251,57 +254,130 @@ static void set_throttle_percentage(uint8_t throttlePos_u8, bool rear_only) {
    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
 }
 
-static void set_motor_speed_for_circle(int32_t swangle_millideg, uint8_t throttlePos_u8, float speed_mps, bool rear_only) {
-   float steering_angle_rad = swAngleMillidegToSteeringAngleRad(swangle_millideg);
-   double turn_radius_m = wheelbase_m/tan(steering_angle_rad);
-   float throttle = (float)throttlePos_u8 / UINT8_MAX;
-   float req_torque_Nm = throttle * maxFastTorque_Nm;
+static void set_motor_speed_for_circle(int32_t swAngle_millideg, uint8_t throttlePos_u8, float speed_mps, bool rear_only) {
+    
+   float steering_angle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
+   const float eps = 0.0001f; // small angle guard
 
-   speed_mps = fmaxf(speed_mps, 0.0f);
-   speed_mps = fminf(speed_mps, 20.0f);
+   // STRAIGHT LINE HANDLING
+   if (fabsf(steering_angle_rad) < eps) {
+        float throttle = (float)throttlePos_u8 / UINT8_MAX;
+        float req_torque_Nm = throttle * maxFastTorque_Nm;
+
+        speed_mps = fmaxf(speed_mps, 0.0f);
+        speed_mps = fminf(speed_mps, 20.0f);
+        
+        float target_rpm = speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
+
+        cmr_torqueDistributionNm_t torquesPos_Nm;
+        if(rear_only) {
+            setVelocityInt16(MOTOR_FL, 0);
+            setVelocityInt16(MOTOR_FR, 0);
+            setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
+            setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
+            torquesPos_Nm.fl = 0.0f;
+            torquesPos_Nm.fr = 0.0f;
+            torquesPos_Nm.rl = req_torque_Nm;
+            torquesPos_Nm.rr = req_torque_Nm;
+        } else {
+            setVelocityInt16(MOTOR_FL, (int16_t) target_rpm);
+            setVelocityInt16(MOTOR_FR, (int16_t) target_rpm);
+            setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
+            setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
+            torquesPos_Nm.fl = req_torque_Nm;
+            torquesPos_Nm.fr = req_torque_Nm;
+            torquesPos_Nm.rl = req_torque_Nm;
+            torquesPos_Nm.rr = req_torque_Nm;
+        }
+
+        cmr_torqueDistributionNm_t torquesNeg_Nm = {
+            .fl = 0.0f,
+            .fr = 0.0f,
+            .rl = 0.0f,
+            .rr = 0.0f,
+        };
+
+        setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
+        return;
+
+        bool right_turn = steering_angle_rad < 0;
+
+        double turn_radius_m = wheelbase_m/tan(steering_angle_rad);
+        float R = fabsf((float)turn_radius_m);
+        
+        // prevent inside-wheel reversal on very tight turns
+        float R_min = 0.6f * trackwidth_m;
+        if (R < R_min) R = R_min;
+        
+        // clamp speed and get base rpm
+        speed_mps = fmaxf(speed_mps, 0.0f);
+        speed_mps = fminf(speed_mps, 20.0f);
+        float target_rpm = speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
+
+        // path radii for each wheel
+        // fix this later... 
+
+
+
+
+
+   }
+
+
+   double turn_radius_m = wheelbase_m/tan(steering_angle_rad);
+
+
    float target_rpm = speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
    cmr_torqueDistributionNm_t torquesPos_Nm;
-   if(steering_angle_rad>0) {
-       if(rear_only) {
-       setVelocityInt16(MOTOR_FL, 0);
-       setVelocityInt16(MOTOR_FR, 0);
-       setVelocityInt16(MOTOR_RL, (int16_t) target_rpm * (turn_radius_m - trackwidth_m / 2) / turn_radius_m);
-       setVelocityInt16(MOTOR_RR, (int16_t) target_rpm * (turn_radius_m + trackwidth_m / 2) / turn_radius_m);
-       torquesPos_Nm.fl = 0.0f;
-       torquesPos_Nm.fr = 0.0f;
-       torquesPos_Nm.rl = req_torque_Nm;
-       torquesPos_Nm.rr = req_torque_Nm;
-       } else {
-       setVelocityInt16(MOTOR_FL, (int16_t) target_rpm * sqrt(pow(turn_radius_m - trackwidth_m / 2 , 2) + pow(wheelbase_m , 2)) / turn_radius_m);
-       setVelocityInt16(MOTOR_FR, (int16_t) target_rpm * sqrt(pow(turn_radius_m + trackwidth_m / 2 , 2) + pow(wheelbase_m , 2)) / turn_radius_m);
-       setVelocityInt16(MOTOR_RL, (int16_t) target_rpm * (turn_radius_m - trackwidth_m / 2) / turn_radius_m);
-       setVelocityInt16(MOTOR_RR, (int16_t) target_rpm * (turn_radius_m + trackwidth_m / 2) / turn_radius_m);
-       torquesPos_Nm.fl = req_torque_Nm;
-       torquesPos_Nm.fr = req_torque_Nm;
-       torquesPos_Nm.rl = req_torque_Nm;
-       torquesPos_Nm.rr = req_torque_Nm;
-       }
-   } else {
-       if(rear_only) {
-       setVelocityInt16(MOTOR_FL, 0);
-       setVelocityInt16(MOTOR_FR, 0);
-       setVelocityInt16(MOTOR_RL, (int16_t) target_rpm * (turn_radius_m + trackwidth_m / 2) / turn_radius_m);
-       setVelocityInt16(MOTOR_RR, (int16_t) target_rpm * (turn_radius_m - trackwidth_m / 2) / turn_radius_m);
-       torquesPos_Nm.fl = 0.0f;
-       torquesPos_Nm.fr = 0.0f;
-       torquesPos_Nm.rl = req_torque_Nm;
-       torquesPos_Nm.rr = req_torque_Nm;
-       } else {
-       setVelocityInt16(MOTOR_FL, (int16_t) target_rpm * sqrt(pow(turn_radius_m + trackwidth_m / 2 , 2) + pow(wheelbase_m , 2)) / turn_radius_m);
-       setVelocityInt16(MOTOR_FR, (int16_t) target_rpm * sqrt(pow(turn_radius_m - trackwidth_m / 2 , 2) + pow(wheelbase_m , 2)) / turn_radius_m);
-       setVelocityInt16(MOTOR_RL, (int16_t) target_rpm * (turn_radius_m + trackwidth_m / 2) / turn_radius_m);
-       setVelocityInt16(MOTOR_RR, (int16_t) target_rpm * (turn_radius_m - trackwidth_m / 2) / turn_radius_m);
-       torquesPos_Nm.fl = req_torque_Nm;
-       torquesPos_Nm.fr = req_torque_Nm;
-       torquesPos_Nm.rl = req_torque_Nm;
-       torquesPos_Nm.rr = req_torque_Nm;
-       }
-   }
+
+   
+//    if(steering_angle_rad>0) { // LEFT TURN 
+
+//        if(rear_only) { 
+//        setVelocityInt16(MOTOR_FL, 0);
+//        setVelocityInt16(MOTOR_FR, 0);
+//        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm * (turn_radius_m - trackwidth_m / 2) / turn_radius_m);
+//        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm * (turn_radius_m + trackwidth_m / 2) / turn_radius_m);
+//        torquesPos_Nm.fl = 0.0f;
+//        torquesPos_Nm.fr = 0.0f;
+//        torquesPos_Nm.rl = req_torque_Nm;
+//        torquesPos_Nm.rr = req_torque_Nm;
+
+//        } else {
+//        setVelocityInt16(MOTOR_FL, (int16_t) target_rpm * sqrt(pow(turn_radius_m - trackwidth_m / 2 , 2) + pow(wheelbase_m , 2)) / turn_radius_m);
+//        setVelocityInt16(MOTOR_FR, (int16_t) target_rpm * sqrt(pow(turn_radius_m + trackwidth_m / 2 , 2) + pow(wheelbase_m , 2)) / turn_radius_m);
+//        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm * (turn_radius_m - trackwidth_m / 2) / turn_radius_m);
+//        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm * (turn_radius_m + trackwidth_m / 2) / turn_radius_m);
+//        torquesPos_Nm.fl = req_torque_Nm;
+//        torquesPos_Nm.fr = req_torque_Nm;
+//        torquesPos_Nm.rl = req_torque_Nm;
+//        torquesPos_Nm.rr = req_torque_Nm;
+//        }
+
+//    } else { // RIGHT TURN 
+
+//        if(rear_only) {
+//        setVelocityInt16(MOTOR_FL, 0);
+//        setVelocityInt16(MOTOR_FR, 0);
+//        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm * (turn_radius_m + trackwidth_m / 2) / turn_radius_m);
+//        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm * (turn_radius_m - trackwidth_m / 2) / turn_radius_m);
+//        torquesPos_Nm.fl = 0.0f;
+//        torquesPos_Nm.fr = 0.0f;
+//        torquesPos_Nm.rl = req_torque_Nm;
+//        torquesPos_Nm.rr = req_torque_Nm;
+
+//        } else {
+//        setVelocityInt16(MOTOR_FL, (int16_t) target_rpm * sqrt(pow(turn_radius_m + trackwidth_m / 2 , 2) + pow(wheelbase_m, 2)) / turn_radius_m);
+//        setVelocityInt16(MOTOR_FR, (int16_t) target_rpm * sqrt(pow(turn_radius_m - trackwidth_m / 2 , 2) + pow(wheelbase_m, 2)) / turn_radius_m);
+//        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm * (turn_radius_m + trackwidth_m / 2) / turn_radius_m);
+//        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm * (turn_radius_m - trackwidth_m / 2) / turn_radius_m);
+//        torquesPos_Nm.fl = req_torque_Nm;
+//        torquesPos_Nm.fr = req_torque_Nm;
+//        torquesPos_Nm.rl = req_torque_Nm;
+//        torquesPos_Nm.rr = req_torque_Nm;
+//        }
+//    }
+
    cmr_torqueDistributionNm_t torquesNeg_Nm = {
        .fl = 0.0f,
        .fr = 0.0f,
@@ -311,8 +387,11 @@ static void set_motor_speed_for_circle(int32_t swangle_millideg, uint8_t throttl
    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
 }
 
-static void set_manual_cruise_control(uint8_t throttlePos_u8) {
+// actuates with dim steering button
+static void set_manual_cruise_control(uint8_t throttlePos_u8, int32_t swAngle_millideg_FL, int32_t swAngle_millideg_FR) {
     static bool prev_button = false;
+    int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
+
     const float max_speed_mps = 20.0f;
     volatile cmr_canDIMActions_t *actions = (volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON);
     bool button = (actions->buttons & BUTTON_ACT) != 0;
@@ -321,7 +400,12 @@ static void set_manual_cruise_control(uint8_t throttlePos_u8) {
         manual_cruise_control_speed = fminf(manual_cruise_control_speed, max_speed_mps);
     }
     prev_button = button;
-    set_motor_speed(throttlePos_u8, manual_cruise_control_speed, false);
+    // ALL THE CRUISE CONTROL FUNCTIONS HERE
+    set_throttle_percentage(throttlePos_u8, true);
+    // set_motor_speed_for_circle(swAngle_millideg, throttlePos_u8, manual_cruise_control_speed, false);
+
+
+    // set_motor_speed(throttlePos_u8, manual_cruise_control_speed, false);
 }
 
 static inline void set_motor_speed_and_torque(
@@ -855,7 +939,7 @@ void runControls (
             // float target_speed_mps = 5.0f;
             // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
             // set_motor_speed(throttlePos_u8, target_speed_mps, false);
-            set_manual_cruise_control(throttlePos_u8);
+            set_manual_cruise_control(throttlePos_u8, swAngle_millideg_FL, swAngle_millideg_FR);
             break;
         }
 
