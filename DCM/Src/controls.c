@@ -218,11 +218,11 @@ static void set_motor_speed(uint8_t throttlePos_u8, float speed_mps, bool rear_o
 }
 
 // CRUISE CONTROL CODE
-static void set_throttle_percentage(uint8_t throttlePos_u8, bool rear_only) {
+static void set_throttle_percentage(uint8_t throttlePos_u8, float target_speed, bool rear_only) {
    float throttle = (float)throttlePos_u8 / UINT8_MAX;
 
    float req_torque_Nm = throttle * maxFastTorque_Nm;
-   float target_speed_mps = 10.0f; // check this 
+   float target_speed_mps = target_speed;
    float target_rpm = target_speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
 
    cmr_torqueDistributionNm_t torquesPos_Nm;
@@ -401,7 +401,7 @@ static void set_manual_cruise_control(uint8_t throttlePos_u8, int32_t swAngle_mi
     }
     prev_button = button;
     // ALL THE CRUISE CONTROL FUNCTIONS HERE
-    set_throttle_percentage(throttlePos_u8, true);
+    set_throttle_percentage(throttlePos_u8, manual_cruise_control_speed, true);
     // set_motor_speed_for_circle(swAngle_millideg, throttlePos_u8, manual_cruise_control_speed, false);
 
 
