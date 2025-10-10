@@ -254,138 +254,138 @@ static void set_throttle_percentage(uint8_t throttlePos_u8, bool rear_only) {
    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
 }
 
-static void set_motor_speed_for_circle(int32_t swAngle_millideg, uint8_t throttlePos_u8, float speed_mps, bool rear_only) {
+// static void set_motor_speed_for_circle(int32_t swAngle_millideg, uint8_t throttlePos_u8, float speed_mps, bool rear_only) {
     
-   float steering_angle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
-   const float eps = 0.0001f; // small angle guard
+//    float steering_angle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
+//    const float eps = 0.0001f; // small angle guard
 
-   // STRAIGHT LINE HANDLING
-   if (fabsf(steering_angle_rad) < eps) {
-        float throttle = (float)throttlePos_u8 / UINT8_MAX;
-        float req_torque_Nm = throttle * maxFastTorque_Nm;
+//    // STRAIGHT LINE HANDLING
+//    if (fabsf(steering_angle_rad) < eps) {
+//         float throttle = (float)throttlePos_u8 / UINT8_MAX;
+//         float req_torque_Nm = throttle * maxFastTorque_Nm;
 
-        speed_mps = fmaxf(speed_mps, 0.0f);
-        speed_mps = fminf(speed_mps, 20.0f);
+//         speed_mps = fmaxf(speed_mps, 0.0f);
+//         speed_mps = fminf(speed_mps, 20.0f);
         
-        float target_rpm = speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
+//         float target_rpm = speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
 
-        cmr_torqueDistributionNm_t torquesPos_Nm;
-        if(rear_only) {
-            setVelocityInt16(MOTOR_FL, 0);
-            setVelocityInt16(MOTOR_FR, 0);
-            setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
-            setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
-            torquesPos_Nm.fl = 0.0f;
-            torquesPos_Nm.fr = 0.0f;
-            torquesPos_Nm.rl = req_torque_Nm;
-            torquesPos_Nm.rr = req_torque_Nm;
-        } else {
-            setVelocityInt16(MOTOR_FL, (int16_t) target_rpm);
-            setVelocityInt16(MOTOR_FR, (int16_t) target_rpm);
-            setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
-            setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
-            torquesPos_Nm.fl = req_torque_Nm;
-            torquesPos_Nm.fr = req_torque_Nm;
-            torquesPos_Nm.rl = req_torque_Nm;
-            torquesPos_Nm.rr = req_torque_Nm;
-        }
+//         cmr_torqueDistributionNm_t torquesPos_Nm;
+//         if(rear_only) {
+//             setVelocityInt16(MOTOR_FL, 0);
+//             setVelocityInt16(MOTOR_FR, 0);
+//             setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
+//             setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
+//             torquesPos_Nm.fl = 0.0f;
+//             torquesPos_Nm.fr = 0.0f;
+//             torquesPos_Nm.rl = req_torque_Nm;
+//             torquesPos_Nm.rr = req_torque_Nm;
+//         } else {
+//             setVelocityInt16(MOTOR_FL, (int16_t) target_rpm);
+//             setVelocityInt16(MOTOR_FR, (int16_t) target_rpm);
+//             setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
+//             setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
+//             torquesPos_Nm.fl = req_torque_Nm;
+//             torquesPos_Nm.fr = req_torque_Nm;
+//             torquesPos_Nm.rl = req_torque_Nm;
+//             torquesPos_Nm.rr = req_torque_Nm;
+//         }
 
-        cmr_torqueDistributionNm_t torquesNeg_Nm = {
-            .fl = 0.0f,
-            .fr = 0.0f,
-            .rl = 0.0f,
-            .rr = 0.0f,
-        };
+//         cmr_torqueDistributionNm_t torquesNeg_Nm = {
+//             .fl = 0.0f,
+//             .fr = 0.0f,
+//             .rl = 0.0f,
+//             .rr = 0.0f,
+//         };
 
-        setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
-        return;
+//         setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
+//         return;
 
-        bool right_turn = steering_angle_rad < 0;
+//         bool right_turn = steering_angle_rad < 0;
 
-        double turn_radius_m = wheelbase_m/tan(steering_angle_rad);
-        float R = fabsf((float)turn_radius_m);
+//         double turn_radius_m = wheelbase_m/tan(steering_angle_rad);
+//         float R = fabsf((float)turn_radius_m);
         
-        // prevent inside-wheel reversal on very tight turns
-        float R_min = 0.6f * trackwidth_m;
-        if (R < R_min) R = R_min;
+//         // prevent inside-wheel reversal on very tight turns
+//         float R_min = 0.6f * trackwidth_m;
+//         if (R < R_min) R = R_min;
         
-        // clamp speed and get base rpm
-        speed_mps = fmaxf(speed_mps, 0.0f);
-        speed_mps = fminf(speed_mps, 20.0f);
-        float target_rpm = speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
+//         // clamp speed and get base rpm
+//         speed_mps = fmaxf(speed_mps, 0.0f);
+//         speed_mps = fminf(speed_mps, 20.0f);
+//         float target_rpm = speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
 
-        // path radii for each wheel
-        // fix this later... 
-
-
+//         // path radii for each wheel
+//         // fix this later... 
 
 
 
-   }
 
 
-   double turn_radius_m = wheelbase_m/tan(steering_angle_rad);
-
-
-   float target_rpm = speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
-   cmr_torqueDistributionNm_t torquesPos_Nm;
-
-   
-//    if(steering_angle_rad>0) { // LEFT TURN 
-
-//        if(rear_only) { 
-//        setVelocityInt16(MOTOR_FL, 0);
-//        setVelocityInt16(MOTOR_FR, 0);
-//        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm * (turn_radius_m - trackwidth_m / 2) / turn_radius_m);
-//        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm * (turn_radius_m + trackwidth_m / 2) / turn_radius_m);
-//        torquesPos_Nm.fl = 0.0f;
-//        torquesPos_Nm.fr = 0.0f;
-//        torquesPos_Nm.rl = req_torque_Nm;
-//        torquesPos_Nm.rr = req_torque_Nm;
-
-//        } else {
-//        setVelocityInt16(MOTOR_FL, (int16_t) target_rpm * sqrt(pow(turn_radius_m - trackwidth_m / 2 , 2) + pow(wheelbase_m , 2)) / turn_radius_m);
-//        setVelocityInt16(MOTOR_FR, (int16_t) target_rpm * sqrt(pow(turn_radius_m + trackwidth_m / 2 , 2) + pow(wheelbase_m , 2)) / turn_radius_m);
-//        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm * (turn_radius_m - trackwidth_m / 2) / turn_radius_m);
-//        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm * (turn_radius_m + trackwidth_m / 2) / turn_radius_m);
-//        torquesPos_Nm.fl = req_torque_Nm;
-//        torquesPos_Nm.fr = req_torque_Nm;
-//        torquesPos_Nm.rl = req_torque_Nm;
-//        torquesPos_Nm.rr = req_torque_Nm;
-//        }
-
-//    } else { // RIGHT TURN 
-
-//        if(rear_only) {
-//        setVelocityInt16(MOTOR_FL, 0);
-//        setVelocityInt16(MOTOR_FR, 0);
-//        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm * (turn_radius_m + trackwidth_m / 2) / turn_radius_m);
-//        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm * (turn_radius_m - trackwidth_m / 2) / turn_radius_m);
-//        torquesPos_Nm.fl = 0.0f;
-//        torquesPos_Nm.fr = 0.0f;
-//        torquesPos_Nm.rl = req_torque_Nm;
-//        torquesPos_Nm.rr = req_torque_Nm;
-
-//        } else {
-//        setVelocityInt16(MOTOR_FL, (int16_t) target_rpm * sqrt(pow(turn_radius_m + trackwidth_m / 2 , 2) + pow(wheelbase_m, 2)) / turn_radius_m);
-//        setVelocityInt16(MOTOR_FR, (int16_t) target_rpm * sqrt(pow(turn_radius_m - trackwidth_m / 2 , 2) + pow(wheelbase_m, 2)) / turn_radius_m);
-//        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm * (turn_radius_m + trackwidth_m / 2) / turn_radius_m);
-//        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm * (turn_radius_m - trackwidth_m / 2) / turn_radius_m);
-//        torquesPos_Nm.fl = req_torque_Nm;
-//        torquesPos_Nm.fr = req_torque_Nm;
-//        torquesPos_Nm.rl = req_torque_Nm;
-//        torquesPos_Nm.rr = req_torque_Nm;
-//        }
 //    }
 
-   cmr_torqueDistributionNm_t torquesNeg_Nm = {
-       .fl = 0.0f,
-       .fr = 0.0f,
-       .rl = 0.0f,
-       .rr = 0.0f,
-   };
-   setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
-}
+
+//    double turn_radius_m = wheelbase_m/tan(steering_angle_rad);
+
+
+//    float target_rpm = speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
+//    cmr_torqueDistributionNm_t torquesPos_Nm;
+
+   
+// //    if(steering_angle_rad>0) { // LEFT TURN 
+
+// //        if(rear_only) { 
+// //        setVelocityInt16(MOTOR_FL, 0);
+// //        setVelocityInt16(MOTOR_FR, 0);
+// //        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm * (turn_radius_m - trackwidth_m / 2) / turn_radius_m);
+// //        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm * (turn_radius_m + trackwidth_m / 2) / turn_radius_m);
+// //        torquesPos_Nm.fl = 0.0f;
+// //        torquesPos_Nm.fr = 0.0f;
+// //        torquesPos_Nm.rl = req_torque_Nm;
+// //        torquesPos_Nm.rr = req_torque_Nm;
+
+// //        } else {
+// //        setVelocityInt16(MOTOR_FL, (int16_t) target_rpm * sqrt(pow(turn_radius_m - trackwidth_m / 2 , 2) + pow(wheelbase_m , 2)) / turn_radius_m);
+// //        setVelocityInt16(MOTOR_FR, (int16_t) target_rpm * sqrt(pow(turn_radius_m + trackwidth_m / 2 , 2) + pow(wheelbase_m , 2)) / turn_radius_m);
+// //        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm * (turn_radius_m - trackwidth_m / 2) / turn_radius_m);
+// //        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm * (turn_radius_m + trackwidth_m / 2) / turn_radius_m);
+// //        torquesPos_Nm.fl = req_torque_Nm;
+// //        torquesPos_Nm.fr = req_torque_Nm;
+// //        torquesPos_Nm.rl = req_torque_Nm;
+// //        torquesPos_Nm.rr = req_torque_Nm;
+// //        }
+
+// //    } else { // RIGHT TURN 
+
+// //        if(rear_only) {
+// //        setVelocityInt16(MOTOR_FL, 0);
+// //        setVelocityInt16(MOTOR_FR, 0);
+// //        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm * (turn_radius_m + trackwidth_m / 2) / turn_radius_m);
+// //        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm * (turn_radius_m - trackwidth_m / 2) / turn_radius_m);
+// //        torquesPos_Nm.fl = 0.0f;
+// //        torquesPos_Nm.fr = 0.0f;
+// //        torquesPos_Nm.rl = req_torque_Nm;
+// //        torquesPos_Nm.rr = req_torque_Nm;
+
+// //        } else {
+// //        setVelocityInt16(MOTOR_FL, (int16_t) target_rpm * sqrt(pow(turn_radius_m + trackwidth_m / 2 , 2) + pow(wheelbase_m, 2)) / turn_radius_m);
+// //        setVelocityInt16(MOTOR_FR, (int16_t) target_rpm * sqrt(pow(turn_radius_m - trackwidth_m / 2 , 2) + pow(wheelbase_m, 2)) / turn_radius_m);
+// //        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm * (turn_radius_m + trackwidth_m / 2) / turn_radius_m);
+// //        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm * (turn_radius_m - trackwidth_m / 2) / turn_radius_m);
+// //        torquesPos_Nm.fl = req_torque_Nm;
+// //        torquesPos_Nm.fr = req_torque_Nm;
+// //        torquesPos_Nm.rl = req_torque_Nm;
+// //        torquesPos_Nm.rr = req_torque_Nm;
+// //        }
+// //    }
+
+//    cmr_torqueDistributionNm_t torquesNeg_Nm = {
+//        .fl = 0.0f,
+//        .fr = 0.0f,
+//        .rl = 0.0f,
+//        .rr = 0.0f,
+//    };
+//    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
+// }
 
 // actuates with dim steering button
 static void set_manual_cruise_control(uint8_t throttlePos_u8, int32_t swAngle_millideg_FL, int32_t swAngle_millideg_FR) {
