@@ -799,120 +799,250 @@ static float getFFScheduleVelocity(float t_sec) {
     return scheduleVelocity_mps;
 }
 
-/**
- * @brief Launch control code. feedforward and uses LUT
- */
+
+// REFACTORED ACCEL
 void setLaunchControl(
-    uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8,
-    int32_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
-    float leftRightBias_Nm, /** IGNORED UNLESS traction_control_mode (defined in
-                               the function) is TC_MODE_TORQUE */
-    bool assumeNoTurn, bool ignoreYawRate, bool allowRegen,
-    float critical_speed_mps) {
-    static const float launch_control_speed_threshold_mps = 0.05f;
-    static const float launch_control_max_duration_s = 5.0;
+	uint8_t throttlePos_u8,
+	uint16_t brakePressurePsi_u8,
+	int32_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
+	float leftRightBias_Nm, /** IGNORED UNLESS traction_control_mode (defined in the function) is TC_MODE_TORQUE */
+	bool assumeNoTurn,
+	bool ignoreYawRate,
+	bool allowRegen,
+	float critical_speed_mps
+){
+	static const float launch_control_speed_threshold_mps = 0.05f;
+	static const float launch_control_max_duration_s = 5.0;
     static const bool use_solver = false;
 
 	bool action_button_pressed = false;
 	const float nonnegative_odometer_velocity_mps = motorSpeedToWheelLinearSpeed_mps(getTotalMotorSpeed_radps() * 0.25f);
-	if (nonnegative_odometer_velocity_mps < launch_control_speed_threshold_mps) { // odometer velocity is below the launch control threshold
-		action_button_pressed = (((volatile cmr_canDIMActions_t *)(canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON)))->buttons) & BUTTON_ACT;
 
-        if (action_button_pressed) {
-            launchControlButtonPressed = true;
-        }
+    typedef enum {
+        LAUNCH_IDLE,
+        LAUNCH_READY,
+        LAUNCH_GO
+    } launch_control_state_t; // launch control state machine
 
-        if (launchControlButtonPressed && !action_button_pressed) {
-            if (!launchControlActive) {
-                startTickCount = xTaskGetTickCount();
-                launchControlActive = true;
+    static launch_control_state_t LC_state = LAUNCH_IDLE;
+    launchControlButtonPressed = false; // this latches the launch button in case the launch button is accidnetally released between ticks (functionally replaces )
+
+    switch(LC_state) {
+        case LAUNCH_IDLE: // initial state and fail safe for if launch doesnt work
+            if(nonnegative_odometer_velocity_mps < launch_control_speed_threshold_mps) { //odometer vel is below launch control threshold
+            	action_button_pressed = (((volatile cmr_canDIMActions_t *)(canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON)))->buttons) & BUTTON_ACT;
+                if(action_button_pressed) {
+                    launchControlButtonPressed = true;
+                    LC_state = LAUNCH_READY; // changes state to check and double check for the action button (and quit if necessary)
+                } else {
+                    launchControlButtonPressed = false;
+                }
             }
-        }
-    }
+            setTorqueLimsUnprotected(MOTOR_FL, 0.0, 0.0f); // turns all motors off. So, if anythign goes back to idle ever, the motors will just turn off
+            setTorqueLimsUnprotected(MOTOR_FR, 0.0, 0.0f);
+            setTorqueLimsUnprotected(MOTOR_RR, 0.0, 0.0f);
+            setTorqueLimsUnprotected(MOTOR_RL, 0.0, 0.0f);
+            setVelocityInt16All(0);
+            break;
+            
+        case LAUNCH_READY:
+            // waits for button release for teh state change
+            if (!(nonnegative_odometer_velocity_mps < launch_control_speed_threshold_mps)) { //OH NO THE CAR IS MOVING LEAAAVE
+                LC_state = LAUNCH_IDLE; 
+                launchControlButtonPressed = false;
+                break; // QUIT AND GO HOME FELLAS DA CAR IS MOVING
+            }
 
-    // Not braking, throttle engaged, no button pressed, launch control is
-    // active. bool ready_to_accel = brakePressurePsi_u8 < braking_threshold_psi
-    // && throttlePos_u8 > 0 && !action_button_pressed && launchControlActive;
-    bool ready_to_accel =
-        throttlePos_u8 > 0 && !action_button_pressed && launchControlActive;
-    if (false == ready_to_accel) {
-        // setTorqueLimsAllProtected(0.0f, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_FL, 0.0, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_FR, 0.0, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_RR, 0.0, 0.0f);
-        setTorqueLimsUnprotected(MOTOR_RL, 0.0, 0.0f);
-        setVelocityInt16All(0);
-        return;
-    }
+            action_button_pressed = (((volatile cmr_canDIMActions_t *)(canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON)))->buttons) & BUTTON_ACT; // double check for the nex ttick
+ 
+            if(!action_button_pressed && throttlePos_u8 > 0 && launchControlButtonPressed) { //the whoel laucncontrolbuttonpressed is a bit redudnant but its a global variable so im guessing its needed
+                startTickCount = xTaskGetTickCount(); //counts timer for accel!!!
+                launchControlButtonPressed = false; // turns it off for future runs
+                LC_state = LAUNCH_GO; // GOTTA GO FAST
+            }
+            setTorqueLimsUnprotected(MOTOR_FL, 0.0, 0.0f); // Car shouldn't move in ready, this is just an inbetween state that ensures the car doesnt move -> kept it here as a safe control
+            setTorqueLimsUnprotected(MOTOR_FR, 0.0, 0.0f);
+            setTorqueLimsUnprotected(MOTOR_RR, 0.0, 0.0f);
+            setTorqueLimsUnprotected(MOTOR_RL, 0.0, 0.0f);
+            setVelocityInt16All(0);
+            break;
+        case LAUNCH_GO:
+            float time_s = (float)(xTaskGetTickCount() - startTickCount) * (0.001f);
+            if(time_s >= launch_control_max_duration_s) {
+                setSlowTorque(throttlePos_u8);
+                LC_state = LAUNCH_IDLE; //time's up! sets the state back womp womp
+                return; // exits the code and hands control to setslowtorque
+            }
+            if (use_solver) {
+                // swAngle_millideg = 0 means assume no turn.
+                set_optimal_control_launch_hybrid((float) throttlePos_u8 / UINT8_MAX, 0, 0, false);
+            } else {
+                TickType_t tick = xTaskGetTickCount();
+                float seconds = (float)(tick - startTickCount) * (0.001f); //convert Tick Count to Seconds
 
-    float time_s = (float)(xTaskGetTickCount() - startTickCount) * (0.001f);
-    if (time_s >= launch_control_max_duration_s) {
-        setFastTorque(throttlePos_u8);
-        return;
-    }
+                float scheduled_wheel_vel_mps = getFFScheduleVelocity(seconds);
+                float motor_rpm = gear_ratio * 60.0f * scheduled_wheel_vel_mps / (2 * M_PI * effective_wheel_rad_m);
 
-    if (use_solver) {
-        // swAngle_millideg = 0 means assume no turn.
-        set_optimal_control((float)throttlePos_u8 / UINT8_MAX, 0,
-                                          0, false);
-    } else {
-        TickType_t tick = xTaskGetTickCount();
-        float seconds = (float)(tick - startTickCount) *
-                        (0.001f);  // convert Tick Count to Seconds
+                // Feedforward only.
+                // setVelocityFloat(MOTOR_RL, motor_rpm);
+                // setVelocityFloat(MOTOR_RR, motor_rpm);
+                // setVelocityFloat(MOTOR_FL, motor_rpm);
+                // setVelocityFloat(MOTOR_FR, motor_rpm);
 
-        float scheduled_wheel_vel_mps = getFFScheduleVelocity(seconds);
-        float motor_rpm = gear_ratio * 60.0f * scheduled_wheel_vel_mps /
-                          (2 * M_PI * effective_wheel_rad_m);
+                // Feedforward with front clamping.
+                // setVelocityFloat(MOTOR_RL, motor_rpm);
+                // setVelocityFloat(MOTOR_RR, motor_rpm);
+                // int16_t clamp_rpm = (getMotorSpeed_rpm(MOTOR_RL) + getMotorSpeed_rpm(MOTOR_RR)) / 2;
+                // setVelocityInt16(MOTOR_FL, clamp_rpm);
+                // setVelocityInt16(MOTOR_FR, clamp_rpm);
 
-        // Feedforward only.
-        // setVelocityFloat(MOTOR_RL, motor_rpm);
-        // setVelocityFloat(MOTOR_RR, motor_rpm);
-        // setVelocityFloat(MOTOR_FL, motor_rpm);
-        // setVelocityFloat(MOTOR_FR, motor_rpm);
+                // Feedforward with front clamping with multiplier.
+                setVelocityFloat(MOTOR_RL, motor_rpm);
+                setVelocityFloat(MOTOR_RR, motor_rpm);
+                float clamp_rpm = (float) (getMotorSpeed_rpm(MOTOR_RL) + getMotorSpeed_rpm(MOTOR_RR)) * 0.5f;
+                // 12Nm torque * 67.5N traction per Nm / 1600N downforce * 0.11 max slip ratio = 0.0556875
+                // 1.11 / 1.0556875 = 1.051447516
+                setVelocityFloat(MOTOR_FL, clamp_rpm * 1.07f);
+                setVelocityFloat(MOTOR_FR, clamp_rpm * 1.07f);
 
-        // Feedforward with front clamping.
-        // setVelocityFloat(MOTOR_RL, motor_rpm);
-        // setVelocityFloat(MOTOR_RR, motor_rpm);
-        // int16_t clamp_rpm = (getMotorSpeed_rpm(MOTOR_RL) +
-        // getMotorSpeed_rpm(MOTOR_RR)) / 2; setVelocityInt16(MOTOR_FL,
-        // clamp_rpm); setVelocityInt16(MOTOR_FR, clamp_rpm);
+                // Go crazy.
+                // motor_rpm = 20000.0f;
+                // setVelocityFloat(MOTOR_RL, motor_rpm);
+                // setVelocityFloat(MOTOR_RR, motor_rpm);
+                // setVelocityFloat(MOTOR_FL, motor_rpm);
+                // setVelocityFloat(MOTOR_FR, motor_rpm);
+                // const float reqTorque = maxFastTorque_Nm;
 
-        // Feedforward with front clamping with multiplier.
-        setVelocityFloat(MOTOR_RL, maxFastSpeed_rpm);
-        setVelocityFloat(MOTOR_RR, maxFastSpeed_rpm);
-        float clamp_rpm =
-            (float)(getMotorSpeed_rpm(MOTOR_RL) + getMotorSpeed_rpm(MOTOR_RR)) *
-            0.5f;
-        // 12Nm torque * 67.5N traction per Nm / 1600N downforce * 0.11 max slip
-        // ratio = 0.0556875 1.11 / 1.0556875 = 1.051447516
-        setVelocityFloat(MOTOR_FL, clamp_rpm * 1.07f);
-        setVelocityFloat(MOTOR_FR, clamp_rpm * 1.07f);
+                const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
 
-        // Go crazy.
-        // motor_rpm = 20000.0f;
-        // setVelocityFloat(MOTOR_RL, motor_rpm);
-        // setVelocityFloat(MOTOR_RR, motor_rpm);
-        // setVelocityFloat(MOTOR_FL, motor_rpm);
-        // setVelocityFloat(MOTOR_FR, motor_rpm);
-        // const float reqTorque = maxFastTorque_Nm;
-
-        const float reqTorque =
-            maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
-
-        cmr_torqueDistributionNm_t pos_torques_Nm = {
-            .fl = reqTorque, .fr = reqTorque, .rl = reqTorque, .rr = reqTorque};
-        cmr_torqueDistributionNm_t neg_torques_Nm = {
-            .fl = 0.0f, .fr = 0.0f, .rl = 0.0f, .rr = 0.0f};
-        // setTorqueLimsUnprotected(MOTOR_FL, pos_torques_Nm.fl,
-        // neg_torques_Nm.fl); setTorqueLimsUnprotected(MOTOR_FR,
-        // pos_torques_Nm.fr, neg_torques_Nm.fr);
-        // setTorqueLimsUnprotected(MOTOR_RR, pos_torques_Nm.rr,
-        // neg_torques_Nm.rr); setTorqueLimsUnprotected(MOTOR_RL,
-        // pos_torques_Nm.rl, neg_torques_Nm.rl);
-        setTorqueLimsProtected(&pos_torques_Nm, &neg_torques_Nm);
-        return;
+                cmr_torqueDistributionNm_t pos_torques_Nm = {.fl = reqTorque, .fr = reqTorque, .rl = reqTorque, .rr = reqTorque};
+                cmr_torqueDistributionNm_t neg_torques_Nm = {.fl = 0.0f, .fr = 0.0f, .rl = 0.0f, .rr = 0.0f};
+                setTorqueLimsUnprotected(MOTOR_FL, pos_torques_Nm.fl, neg_torques_Nm.fl);
+                setTorqueLimsUnprotected(MOTOR_FR, pos_torques_Nm.fr, neg_torques_Nm.fr);
+                setTorqueLimsUnprotected(MOTOR_RR, pos_torques_Nm.rr, neg_torques_Nm.rr);
+                setTorqueLimsUnprotected(MOTOR_RL, pos_torques_Nm.rl, neg_torques_Nm.rl);
+                return;
+            }
     }
 }
+
+
+
+
+// /**
+//  * @brief Launch control code. feedforward and uses LUT
+//  */
+// void setLaunchControl(
+//     uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8,
+//     int32_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
+//     float leftRightBias_Nm, /** IGNORED UNLESS traction_control_mode (defined in
+//                                the function) is TC_MODE_TORQUE */
+//     bool assumeNoTurn, bool ignoreYawRate, bool allowRegen,
+//     float critical_speed_mps) {
+//     static const float launch_control_speed_threshold_mps = 0.05f;
+//     static const float launch_control_max_duration_s = 5.0;
+//     static const bool use_solver = false;
+
+// 	bool action_button_pressed = false;
+// 	const float nonnegative_odometer_velocity_mps = motorSpeedToWheelLinearSpeed_mps(getTotalMotorSpeed_radps() * 0.25f);
+// 	if (nonnegative_odometer_velocity_mps < launch_control_speed_threshold_mps) { // odometer velocity is below the launch control threshold
+// 		action_button_pressed = (((volatile cmr_canDIMActions_t *)(canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON)))->buttons) & BUTTON_ACT;
+
+//         if (action_button_pressed) {
+//             launchControlButtonPressed = true;
+//         }
+
+//         if (launchControlButtonPressed && !action_button_pressed) {
+//             if (!launchControlActive) {
+//                 startTickCount = xTaskGetTickCount();
+//                 launchControlActive = true;
+//             }
+//         }
+//     }
+
+//     // Not braking, throttle engaged, no button pressed, launch control is
+//     // active. bool ready_to_accel = brakePressurePsi_u8 < braking_threshold_psi
+//     // && throttlePos_u8 > 0 && !action_button_pressed && launchControlActive;
+//     bool ready_to_accel =
+//         throttlePos_u8 > 0 && !action_button_pressed && launchControlActive;
+//     if (false == ready_to_accel) {
+//         // setTorqueLimsAllProtected(0.0f, 0.0f);
+//         setTorqueLimsUnprotected(MOTOR_FL, 0.0, 0.0f);
+//         setTorqueLimsUnprotected(MOTOR_FR, 0.0, 0.0f);
+//         setTorqueLimsUnprotected(MOTOR_RR, 0.0, 0.0f);
+//         setTorqueLimsUnprotected(MOTOR_RL, 0.0, 0.0f);
+//         setVelocityInt16All(0);
+//         return;
+//     }
+
+//     float time_s = (float)(xTaskGetTickCount() - startTickCount) * (0.001f);
+//     if (time_s >= launch_control_max_duration_s) {
+//         setFastTorque(throttlePos_u8);
+//         return;
+//     }
+
+//     if (use_solver) {
+//         // swAngle_millideg = 0 means assume no turn.
+//         set_optimal_control((float)throttlePos_u8 / UINT8_MAX, 0,
+//                                           0, false);
+//     } else {
+//         TickType_t tick = xTaskGetTickCount();
+//         float seconds = (float)(tick - startTickCount) *
+//                         (0.001f);  // convert Tick Count to Seconds
+
+//         float scheduled_wheel_vel_mps = getFFScheduleVelocity(seconds);
+//         float motor_rpm = gear_ratio * 60.0f * scheduled_wheel_vel_mps /
+//                           (2 * M_PI * effective_wheel_rad_m);
+
+//         // Feedforward only.
+//         // setVelocityFloat(MOTOR_RL, motor_rpm);
+//         // setVelocityFloat(MOTOR_RR, motor_rpm);
+//         // setVelocityFloat(MOTOR_FL, motor_rpm);
+//         // setVelocityFloat(MOTOR_FR, motor_rpm);
+
+//         // Feedforward with front clamping.
+//         // setVelocityFloat(MOTOR_RL, motor_rpm);
+//         // setVelocityFloat(MOTOR_RR, motor_rpm);
+//         // int16_t clamp_rpm = (getMotorSpeed_rpm(MOTOR_RL) +
+//         // getMotorSpeed_rpm(MOTOR_RR)) / 2; setVelocityInt16(MOTOR_FL,
+//         // clamp_rpm); setVelocityInt16(MOTOR_FR, clamp_rpm);
+
+//         // Feedforward with front clamping with multiplier.
+//         setVelocityFloat(MOTOR_RL, maxFastSpeed_rpm);
+//         setVelocityFloat(MOTOR_RR, maxFastSpeed_rpm);
+//         float clamp_rpm =
+//             (float)(getMotorSpeed_rpm(MOTOR_RL) + getMotorSpeed_rpm(MOTOR_RR)) *
+//             0.5f;
+//         // 12Nm torque * 67.5N traction per Nm / 1600N downforce * 0.11 max slip
+//         // ratio = 0.0556875 1.11 / 1.0556875 = 1.051447516
+//         setVelocityFloat(MOTOR_FL, clamp_rpm * 1.07f);
+//         setVelocityFloat(MOTOR_FR, clamp_rpm * 1.07f);
+
+//         // Go crazy.
+//         // motor_rpm = 20000.0f;
+//         // setVelocityFloat(MOTOR_RL, motor_rpm);
+//         // setVelocityFloat(MOTOR_RR, motor_rpm);
+//         // setVelocityFloat(MOTOR_FL, motor_rpm);
+//         // setVelocityFloat(MOTOR_FR, motor_rpm);
+//         // const float reqTorque = maxFastTorque_Nm;
+
+//         const float reqTorque =
+//             maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
+
+//         cmr_torqueDistributionNm_t pos_torques_Nm = {
+//             .fl = reqTorque, .fr = reqTorque, .rl = reqTorque, .rr = reqTorque};
+//         cmr_torqueDistributionNm_t neg_torques_Nm = {
+//             .fl = 0.0f, .fr = 0.0f, .rl = 0.0f, .rr = 0.0f};
+//         // setTorqueLimsUnprotected(MOTOR_FL, pos_torques_Nm.fl,
+//         // neg_torques_Nm.fl); setTorqueLimsUnprotected(MOTOR_FR,
+//         // pos_torques_Nm.fr, neg_torques_Nm.fr);
+//         // setTorqueLimsUnprotected(MOTOR_RR, pos_torques_Nm.rr,
+//         // neg_torques_Nm.rr); setTorqueLimsUnprotected(MOTOR_RL,
+//         // pos_torques_Nm.rl, neg_torques_Nm.rl);
+//         setTorqueLimsProtected(&pos_torques_Nm, &neg_torques_Nm);
+//         return;
+//     }
+// }
 
 float get_optimal_yaw_rate(float swangle_rad, float velocity_x_mps) {
 
