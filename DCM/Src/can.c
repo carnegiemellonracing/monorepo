@@ -733,21 +733,20 @@ static void canTX200Hz(void *pvParameters) {
 
     volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
 
-    const cmr_canDTISetpoints_t *dtiSetpointsFL = getDTISetpoints(MOTOR_FL);
-    const cmr_canDTISetpoints_t *dtiSetpointsFR = getDTISetpoints(MOTOR_FR);
-    const cmr_canDTISetpoints_t *dtiSetpointsRL = getDTISetpoints(MOTOR_RL);
-    const cmr_canDTISetpoints_t *dtiSetpointsRR = getDTISetpoints(MOTOR_RR);
+    const cmr_canDTISetpoints_t *dtiSetpointsFL = getDTI_RXMessage(MOTOR_FL);
+    const cmr_canDTISetpoints_t *dtiSetpointsFR = getDTI_RXMessage(MOTOR_FR);
+    const cmr_canDTISetpoints_t *dtiSetpointsRL = getDTI_RXMessage(MOTOR_RL);
+    const cmr_canDTISetpoints_t *dtiSetpointsRR = getDTI_RXMessage(MOTOR_RR);
 
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultFL = getDTITempFault(MOTOR_FL);
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultFR = getDTITempFault(MOTOR_FR);
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultRL = getDTITempFault(MOTOR_RL);
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultRR = getDTITempFault(MOTOR_RR);
 
-    // only have torque in the modifiable struct, have variables in can.c itself that can convert it and then send it
-    int16_t currFL = torqueToCurrent
-    int16_t currFR = 
-    int16_t currRL = 
-    int16_t currRL = 
+    int16_t currFL = torqueToCurrent(dtiSetpointsFL->torque_mNm);
+    int16_t currFR = torqueToCurrent(dtiSetpointsFR->torque_mNm);
+    int16_t currRL = torqueToCurrent(dtiSetpointsRL->torque_mNm);
+    int16_t currRR = torqueToCurrent(dtiSetpointsFR->torque_mNm);
 
     cmr_canCDCWheelVelocity_t speedFeedback;
     cmr_canCDCWheelTorque_t torqueFeedback;
@@ -789,10 +788,10 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_TORLIMNEG, &(dtiSetpointsRL->torqueLimNeg_mNm), sizeof(int16_t), canTX200Hz_period_ms);
 
         if (isTorqueMode){
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_CURRENT, &(dtiSetpointsFL->ac_current), sizeof(int16_t), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_CURRENT, &(dtiSetpointsFR->ac_current), sizeof(int16_t), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_CURRENT, &(dtiSetpointsRL->ac_current), sizeof(int16_t), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_CURRENT, &(dtiSetpointsRR->ac_current), sizeof(int16_t), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_CURRENT, &(currFL), sizeof(int16_t), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_CURRENT, &(currFR), sizeof(int16_t), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_CURRENT, &(currRL), sizeof(int16_t), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_CURRENT, &(currRR), sizeof(int16_t), canTX200Hz_period_ms);
         } else {
             canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_VELOCITY, &(dtiSetpointsFL->velocity_rpm), sizeof(int16_t), canTX200Hz_period_ms);
             canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_VELOCITY, &(dtiSetpointsFR->velocity_rpm), sizeof(int16_t), canTX200Hz_period_ms);

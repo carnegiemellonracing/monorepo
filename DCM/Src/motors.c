@@ -84,6 +84,37 @@ static cmr_canDTISetpoints_t motorSetpoints[MOTOR_LEN] = {
     },
 };
 
+static cmr_canDTI_RX_Message_t DTI_RXMessage[MOTOR_LEN] = {
+    [MOTOR_FL] = {
+        .velocity_rpm = 0,
+        .torqueLimPos_mNm = 0,
+        .torqueLimNeg_mNm = 0,
+        .torque_mNm = 0, 
+        .ACCurrent_deciAmps = 0
+    },
+    [MOTOR_FR] = {
+        .velocity_rpm = 0,
+        .torqueLimPos_mNm = 0,
+        .torqueLimNeg_mNm = 0,
+        .torque_mNm = 0, 
+        .ACCurrent_deciAmps = 0
+    },
+    [MOTOR_RL] = {
+        .velocity_rpm = 0,
+        .torqueLimPos_mNm = 0,
+        .torqueLimNeg_mNm = 0,
+        .torque_mNm = 0, 
+        .ACCurrent_deciAmps = 0
+    },
+    [MOTOR_RR] = {
+        .velocity_rpm = 0,
+        .torqueLimPos_mNm = 0,
+        .torqueLimNeg_mNm = 0,
+        .torque_mNm = 0, 
+        .ACCurrent_deciAmps = 0
+    },
+};
+
 cmr_canDAQTest_t getDAQTest() {
     return daqTest;
 }

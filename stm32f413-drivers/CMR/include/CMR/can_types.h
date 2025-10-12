@@ -699,11 +699,21 @@ typedef struct {
 
 /** @brief DTI controls-facing motor setpoints struct.*/
 typedef struct {
-    int16_t velocity_rpm;           /**< @brief Velocity setpoint (RPM). */
-    int16_t torqueLimPos_mNm;       /**< @brief Positive torque limit. */
-    int16_t torqueLimNeg_mNm;       /**< @brief Negative torque limit. */
-    int16_t torque_mNm; 
+    float velocity_rpm;           /**< @brief Velocity setpoint (RPM). */
+    float torqueLimPos_mNm;       /**< @brief Positive torque limit. */
+    float torqueLimNeg_mNm;       /**< @brief Negative torque limit. */
+    float torque_mNm; 
 } cmr_canDTISetpoints_t;
+
+/** @brief DTI motor controller message TX over CAN.*/
+typedef struct{
+    int16_t velocity_rpm; 
+    int16_t torqueLimPos_mNm;
+    int16_t torqueLimNeg_mNm;
+    int16_t torque_mNm;
+    int16_t ACCurrent_deciAmps;        
+} cmr_canDTI_RX_Message_t;
+
 // ------------------------------------------------------------------------------------------------
 // Battery Management System
 
