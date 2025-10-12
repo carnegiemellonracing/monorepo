@@ -697,15 +697,13 @@ typedef struct {
     uint16_t limit_status;      /**< Bitmask for overvoltage, overcurrent, temp, etc. */
 } cmr_canDTI_TX_IOStatus_t;
 
-/** @brief DTI motor controller command message. */
+/** @brief DTI controls-facing motor setpoints struct.*/
 typedef struct {
-    int16_t velocity_rpm;       /**< @brief Velocity setpoint (RPM). */
-    int16_t torqueLimPos;       /**< @brief Positive torque limit. */
-    int16_t torqueLimNeg;       /**< @brief Negative torque limit. */
-    int16_t torque;
-    int16_t ac_current;
+    int16_t velocity_rpm;           /**< @brief Velocity setpoint (RPM). */
+    int16_t torqueLimPos_mNm;       /**< @brief Positive torque limit. */
+    int16_t torqueLimNeg_mNm;       /**< @brief Negative torque limit. */
+    int16_t torque_mNm; 
 } cmr_canDTISetpoints_t;
-
 // ------------------------------------------------------------------------------------------------
 // Battery Management System
 

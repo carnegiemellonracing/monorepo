@@ -18,7 +18,6 @@
 // Constants
 
 /** @brief AMK Torque command increment (Newton-meters). */
-// TODO: check value for DTIs
 const float torqueIncrement_Nm = 0.0098f;
 
 /** @brief Constant factor for transforming motor RPM to induced voltage.
@@ -26,6 +25,8 @@ const float torqueIncrement_Nm = 0.0098f;
  *  @details See motor manual page 37
  */
 const float rpm_to_mV_factor = 0.026587214972f;
+
+#define CLAMP(x, min, max) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)));
 
 /**
  * @brief Converts floating point torque into DTI format
@@ -396,16 +397,45 @@ bool overVoltProtection() {
     return true;
 }
 
-int16_t transferFn(int16_t torqueLower, int16_t torqueUpper, int16_t currLower, 
-                   int16_t currUpper, int16_t torque){
-  return (currUpper-currLower) * (torque - torqueLower) / (torqueUpper - torqueLower) + currLower;
+int16_t transferFn(float torqueLower, float torqueUpper, 
+                   int16_t currLower, int16_t currUpper, float torque){
+  return (currUpper - currLower) * (torque - torqueLower) / 
+         (torqueUpper - torqueLower) + currLower;
 }
 
-int32_t torqueToCurrent(torque_Nm){ 
-    /* Placeholder values- need some clarification regarding limits for torque*/
-    return transferFn(0, 1, -2, 3, torque_Nm); 
-}
+int16_t torqueToCurrent(float torque_Nm){ 
+    int16_t sign = 1;
 
-void setCurr(cmr_canDTISetpoints_t motorSetPoints){
-    motorSetPoints->ac_current = torqueToCurrent(motorSetPoints->torque);
+    float torqueLower, torqueUpper;
+    int16_t currLower, currUpper;
+
+    if (torque_Nm < 0) {
+        sign = -1;
+        torque_Nm = -torque_Nm; 
+    }
+
+    torque_Nm = CLAMP(torque_Nm, minTorqueLUTVal_Nm, maxTorque_Nm);
+
+    int i;
+    for (i = 0; i < DTI_LUT_MAX_INDEX + 1; i++) {
+        if (torque_Nm <= DTI_torque_current_LUT[i].torque_Nm) {
+            break;
+        }
+    }
+
+    if (i == DTI_LUT_MAX_INDEX) { 
+        torqueLower = DTI_torque_current_LUT[i - 1].torque_Nm;
+        torqueUpper = DTI_torque_current_LUT[i].torque_Nm;
+        currLower = DTI_torque_current_LUT[i - 1].current_Arms;
+        currUpper = DTI_torque_current_LUT[i].current_Arms;
+    } else {
+        torqueLower = DTI_torque_current_LUT[i].torque_Nm;
+        torqueUpper = DTI_torque_current_LUT[i + 1].torque_Nm;
+        currLower = DTI_torque_current_LUT[i].current_Arms;
+        currUpper = DTI_torque_current_LUT[i + 1].current_Arms;
+    }
+
+    return sign * 10 * transferFn(torqueLower, torqueUpper, 
+                                  currLower, currUpper, 
+                                  torque_Nm); 
 }

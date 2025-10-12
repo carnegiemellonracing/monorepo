@@ -7,6 +7,7 @@
  * motor datasheet: "Peak Torque - 31.6 Nm"
 */
 static const float maxTorque_Nm = 31.6f;
+static const float minTorqueLUTVal_Nm = 2.6f;
 
 /** @brief Maximum motor speed
  * motor datasheet: "Nominal Speed - 13250 rpm"
@@ -62,5 +63,27 @@ static const double half_trackwidth_m= trackwidth_m * 0.5f;
 static const double car_mass_kg = 280.0f;
 
 static const uint16_t pole_pairs = 4;
+
+typedef struct {
+    int16_t current_Arms;  
+    float torque_Nm;    
+} MotorData;
+
+static const MotorData DTI_torque_current_LUT[13] = {
+    {5, 2.6f},
+    {11, 5.6f},
+    {16, 8.2f},
+    {21, 10.6f},
+    {26, 13.1f},
+    {31, 15.5f},
+    {36, 17.9f},
+    {41, 20.4f},
+    {46, 22.7f},
+    {51, 25.0f},
+    {56, 27.3f},
+    {61, 29.5f},
+    {66, 31.6f}
+};
+static const int16_t DTI_LUT_MAX_INDEX = 12;
 
 #endif
