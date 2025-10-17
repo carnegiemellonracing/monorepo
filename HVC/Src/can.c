@@ -77,31 +77,6 @@ static void sendHeartbeat(TickType_t lastWakeTime);
 static void sendHVCPower(); 
 static void sendBMSLowVoltage(void);
 
-/** @brief CAN 1 Hz TX priority. */
-static const uint32_t canTX1Hz_priority = 4;
-
-/** @brief CAN 10 Hz TX period (milliseconds). */
-static const TickType_t canTX1Hz_period_ms = 1000;
-
-/** @brief CAN 10 Hz TX task. */
-static cmr_task_t canTX1Hz_task;
-
-/**
- * @brief Task for sending CAN messages at 10 Hz.
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void canTX1Hz(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
-    }
-}
-
 /** @brief CAN 10 Hz TX priority. */
 static const uint32_t canTX10Hz_priority = 4;
 
@@ -133,15 +108,6 @@ static void canTX10Hz(void *pvParameters) {
 }
 
 /** @brief CAN 100 Hz TX priority. */
-static const uint32_t canTX200Hz_priority = 5;
-
-/** @brief CAN 100 Hz TX period (milliseconds). */
-static const TickType_t canTX200Hz_period_ms = 10;
-
-/** @brief CAN 100 Hz TX task. */
-static cmr_task_t canTX200Hz_task;
-
-/** @brief CAN 100 Hz TX priority. */
 static const uint32_t canTX100Hz_priority = 5;
 
 /** @brief CAN 100 Hz TX period (milliseconds). */
@@ -149,28 +115,6 @@ static const TickType_t canTX100Hz_period_ms = 10;
 
 /** @brief CAN 100 Hz TX task. */
 static cmr_task_t canTX100Hz_task;
-
-/**
- * @brief Task for sending CAN messages at 200 Hz.
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void canTX200Hz(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
-
-//    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-//    volatile cmr_canHeartbeat_t *heartbeatVSM =
-//        (void *) heartbeatVSMMeta->payload;
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        //sendBMSMinMaxCellVoltage();
-
-        vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
-    }
-}
 
 static void canTX100Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
@@ -221,24 +165,10 @@ void canInit(void) {
 
     // Task initialization.
     cmr_taskInit(
-        &canTX1Hz_task,
-        "CAN TX 1Hz",
-        canTX1Hz_priority,
-        canTX1Hz,
-        NULL
-    );
-    cmr_taskInit(
         &canTX10Hz_task,
         "CAN TX 10Hz",
         canTX10Hz_priority,
         canTX10Hz,
-        NULL
-    );
-    cmr_taskInit(
-        &canTX200Hz_task,
-        "CAN TX 200Hz",
-        canTX200Hz_priority,
-        canTX200Hz,
         NULL
     );
     cmr_taskInit(
@@ -349,8 +279,8 @@ static void sendHVCPower() {
     int16_t voltage;
     uint16_t current;
 
-    voltage = cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV);
-    current = cmr_sensorListGetValue(&sensorList, SENSOR_CH_CURRENT);
+    voltage = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VSENSE); 
+    current = cmr_sensorListGetValue(&sensorList, SENSOR_CH_ISENSE); 
     power = (voltage * 100) * (current * 10);
 
     cmr_canHVSense_t *hv_sensors; 

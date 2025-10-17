@@ -57,12 +57,6 @@ static void statusLED(void *pvParameters) {
     }
 }
 
-/* Debug Exception and Monitor Control Register base address */
-#define DEMCR                 *((volatile uint32_t*) 0xE000EDFCu)
-
-/* ITM register addresses */
-#define ITM_STIMULUS_PORT0    *((volatile uint32_t*) 0xE0000000u)
-#define ITM_TRACE_EN          *((volatile uint32_t*) 0xE0000E00u)
 
 static void statusLEDInit(){
     cmr_taskInit(

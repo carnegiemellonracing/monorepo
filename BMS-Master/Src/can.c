@@ -100,7 +100,7 @@ static void canTX1Hz(void *pvParameters) {
             sendBMSBMBStatusTemp(bmb_index);
         }
         sendBMSMinMaxCellTemp();
-
+        //send all cells temp and voltage 
         sendAllBMBVoltages();
 
         vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);

@@ -83,11 +83,10 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                   HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN)) {
                 //T7: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if ((HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN) &&
-            		true) {
+            } else if (HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN) {
 //                        abs(getBattMillivolts() - getHVmillivolts()) < 30000) {
                 // T3: Contactors are closed and RUN mode is requested
-                nextState = CMR_CAN_HVC_STATE_DRIVE;
+                nextState = CMR_CAN_HVC_STATE_DRIVE; 
             } else {
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE;
             }
@@ -116,7 +115,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE: {// S7
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 // T17: Mode requested is not CHARGE
-                nextState = CMR_CAN_HVC_STATE_DISCHARGE;
+                nextState = CMR_CAN_HVC_STATE_DISCHARGE; 
             } else if (true || abs(BMSMData->battVoltage_mV - getHVmillivolts()) < 5000) {
                 // T11: Contactors are closed
                 nextState = CMR_CAN_HVC_STATE_CHARGE_TRICKLE;

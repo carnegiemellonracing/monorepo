@@ -38,8 +38,8 @@ static const adcChannels_t sensorsADCCHANNELS[SENSOR_CH_LEN] = {
 	[SENSOR_CH_VREF] = ADC_V24V, //keep, from hvi 
 	[SENSOR_CH_AIR_POWER]  = ADC_AIR_POWER,
 	[SENSOR_CH_SAFETY]     = ADC_SAFETY,
-	[SENSOR_CH_HV] = ADC_VSENSE, 
-	[SENSOR_CH_CURRENT] = ADC_ISENSE
+	[SENSOR_CH_VSENSE] = ADC_VSENSE, 
+	[SENSOR_CH_ISENSE] = ADC_ISENSE
 };
 
 /** @brief forward declaration */
@@ -191,21 +191,6 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		.outOfRange_pcnt = 10,
 		//.warnFlag = What errors to use?
 	},
-	[SENSOR_CH_HV] = { //hvi 
-		.conv = adcToVoltage,
-		.sample = sampleADCSensor,
-		.readingMin = 0,
-		.readingMax = 4096,
-		.outOfRange_pcnt = 10, 
-		.warnFlag = 0 }, 
-	[SENSOR_CH_CURRENT] = { //hvi 
-        .conv = adcToCurrent,
-        .sample = sampleADCSensor,
-        .readingMin = 0,
-        .readingMax = 4096,
-        .outOfRange_pcnt = 10,
-        .warnFlag = 0 
-    },
     [SENSOR_CH_VREF] = {
         .conv = adcToVref,
         .sample = sampleADCSensor,
@@ -220,7 +205,7 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 static const uint32_t sensorsUpdate_priority = 1;
 
 /** @brief Sensors update period (milliseconds). */
-static const TickType_t sensorsUpdate_period_ms = 50;
+static const TickType_t sensorsUpdate_period_ms = 5;
 
 /** @brief Sensors update task. */
 static cmr_task_t sensorsUpdate_task;
@@ -237,10 +222,7 @@ static void sensorsUpdate(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        vTaskDelayUntil(&lastWakeTime, sensorsUpdate_period_ms);
-
         cmr_sensorListUpdate(&sensorList);
-
         vTaskDelayUntil(&lastWakeTime, sensorsUpdate_period_ms);
     }
 }
@@ -286,13 +268,6 @@ int32_t getHVmilliamps(){
     return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_ISENSE));
 }
 
-int32_t getHVIvoltage(){
-    return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV));
-}
-
-int32_t getHVIcurrent(){
-    return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_CURRENT)); 
-}
 
 int32_t getHVIvref(){
     return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_VREF)); 

@@ -15,14 +15,12 @@
 
 /** @brief Array indexes for sensor value calibration array. */
 typedef enum {
-	SENSOR_CH_V24V           = 0,
-	SENSOR_CH_AIR_POWER      = 1, 
-	SENSOR_CH_SAFETY         = 2,
-	SENSOR_CH_VSENSE         = 3,
-	SENSOR_CH_ISENSE         = 4,
-	SENSOR_CH_HV,  /**< @brief Voltage */
-    SENSOR_CH_CURRENT,      /**< @brief Current */
-    SENSOR_CH_VREF,        /**< @brief VREF */
+	SENSOR_CH_V24V           = 0, /** @brief LV Battery voltage */
+	SENSOR_CH_AIR_POWER      = 1, /** @brief Voltage on AIR coil */
+	SENSOR_CH_SAFETY         = 2, /** @brief Safety Circuit Input Voltage */
+	SENSOR_CH_VSENSE         = 3, /** @brief TS Voltage */
+	SENSOR_CH_ISENSE         = 4, /** @brief TS Current */ 
+    SENSOR_CH_VREF,        /**< @brief Hall Effect Reference Voltage */ 
 	SENSOR_CH_LEN     /**< @brief Total ADC channels. */
 } sensorChannel_t;
 

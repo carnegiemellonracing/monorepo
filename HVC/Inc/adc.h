@@ -5,8 +5,7 @@
  * @author Carnegie Mellon Racing
  */
 
-#ifndef ADC_H
-#define ADC_H
+#pragma once 
 
 #include <CMR/adc.h>    // ADC interface
 
@@ -31,5 +30,3 @@ extern cmr_adcChannel_t adcChannels[ADC_LEN];
 void adcInit(void);
 
 uint32_t adcRead(adcChannels_t ch);
-
-#endif /* ADC_H */
