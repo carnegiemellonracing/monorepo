@@ -325,6 +325,7 @@ void cmr_canInit(
     }
 }
 
+
 /**
  * @brief Queues a CAN message for transmission.
  *
@@ -349,6 +350,51 @@ int cmr_canTX(
         .DLC = len,
         .TransmitGlobalTime = DISABLE
     };
+
+    return cmr_canHeaderTX(can, txHeader);
+}
+
+
+/**
+ * @brief Queues an extended CAN message for transmission.
+ *
+ * @param can The CAN interface to send on.
+ * @param id The message's CAN ID.
+ * @param data The data to send.
+ * @param len The data's length, in bytes.
+ * @param timeout The timeout.
+ *
+ * @return 0 on success, or a negative error code on timeout.
+ */
+int cmr_extendedCanTX(
+    cmr_can_t *can,
+    uint16_t id, const void *data, uint8_t len,
+    TickType_t timeout
+) {
+    CAN_TxHeaderTypeDef txHeader = {
+        .StdId = 0,
+        .ExtId = id,
+        .IDE = CAN_ID_EXT,
+        .RTR = CAN_RTR_DATA,
+        .DLC = len,
+        .TransmitGlobalTime = DISABLE
+    };
+
+    return cmr_canHeaderTX(can, txHeader);
+}
+
+/**
+ * @brief Queues a CAN Tx Header for transmission.
+ *
+ * @param can The CAN interface to send on.
+ * @param txHeader The tx Header of the message we want to send
+ *
+ * @return 0 on success, or a negative error code on timeout.
+ */
+int cmr_canHeaderTX(
+    cmr_can_t *can,
+    CAN_TxHeaderTypeDef txHeader
+) {
 
     // Attempt to reserve a mailbox.
     BaseType_t result = xSemaphoreTake(can->txSem, timeout);
