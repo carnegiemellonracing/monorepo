@@ -163,7 +163,8 @@ typedef enum {
 
 /** @brief Represents the car's current driving mode (gear). */
 typedef enum {
-    CMR_CAN_GEAR_UNKNOWN = 0,   /**< @brief Unknown Gear State */
+    CMR_CAN_GEAR_MIN = 0,
+    CMR_CAN_GEAR_UNKNOWN,   /**< @brief Unknown Gear State */
     CMR_CAN_GEAR_SLOW,          /**< @brief Slow mode */
     CMR_CAN_GEAR_FAST,          /**< @brief Fast simple mode */
     CMR_CAN_GEAR_ENDURANCE,     /**< @brief Endurance-event mode */
@@ -171,15 +172,18 @@ typedef enum {
     CMR_CAN_GEAR_SKIDPAD,       /**< @brief Skidpad-event mode */
     CMR_CAN_GEAR_ACCEL,         /**< @brief Acceleration-event mode */
     CMR_CAN_GEAR_TEST,          /**< @brief Test mode (for experimentation) */
-    CMR_CAN_GEAR_REVERSE = 8,   /**< @brief Reverse mode */
+    CMR_CAN_GEAR_REVERSE,   /**< @brief Reverse mode */
+    CMR_CAN_GEAR_MAX,
 
-    CMR_CAN_MISSION_ACCEL = 9,  /**< @brief Acceleration-mission mode (DV) */
-    CMR_CAN_MISSION_SKIDPAD,    /**< @brief Skidpad-mission mode (DV) */
-    CMR_CAN_MISSION_AUTOX,      /**< @brief Autocross-mission mode (DV) */
-    CMR_CAN_MISSION_TRACKD,     /**< @brief Trackdrive-mission mode (DV) */
-    CMR_CAN_MISSION_INSPECTION, /**< @brief NSP-mission mode (DV) */
-    CMR_CAN_MISSION_EBS = 14,   /**< @brief EBS-mission mode (DV) */
-
+    CMR_CAN_GEAR_DV_MISSION_MIN,
+    CMR_CAN_GEAR_DV_MISSION_MANUAL, /**< @brief Manual-mission mode (DV) */
+    CMR_CAN_GEAR_DV_MISSION_ACCEL,  /**< @brief Acceleration-mission mode (DV) */
+    CMR_CAN_GEAR_DV_MISSION_SKIDPAD,    /**< @brief Skidpad-mission mode (DV) */
+    CMR_CAN_GEAR_DV_MISSION_AUTOX,      /**< @brief Autocross-mission mode (DV) */
+    CMR_CAN_GEAR_DV_MISSION_TRACKD,     /**< @brief Trackdrive-mission mode (DV) */
+    CMR_CAN_GEAR_DV_MISSION_INSPECTION, /**< @brief Inspection-mission mode (DV) */
+    CMR_CAN_GEAR_DV_MISSION_EBS,   /**< @brief EBS-mission mode (DV) */
+    CMR_CAN_GEAR_DV_MISSION_MAX,
     CMR_CAN_GEAR_LEN
 } cmr_canGear_t;
 

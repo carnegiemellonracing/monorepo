@@ -82,7 +82,8 @@ cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_CDC_ODOMETER] =        { .canID = CMR_CANID_CDC_ODOMETER, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
     [CANRX_CDC_CONTROLS_STATUS] = { .canID = CMR_CANID_CDC_CONTROLS_STATUS, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
     [CANRX_CDC_HEARTBEAT] =       { .canID = CMR_CANID_HEARTBEAT_CDC, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
-    [CANRX_PACK_CELL_VOLTAGES] =  { .canID = CMR_CANID_HVC_MINMAX_CELL_VOLTAGE, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 }
+    [CANRX_PACK_CELL_VOLTAGES] =  { .canID = CMR_CANID_HVC_MINMAX_CELL_VOLTAGE, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
+    [CANRX_EAB_STATUS] =          { .canID = CMR_CANID_EAB_STATUS, .timeoutError_ms = 100, .timeoutWarn_ms = 50 }
 };
 
 /** @brief Primary CAN interface. */
@@ -191,7 +192,7 @@ static void canTX100Hz(void *pvParameters) {
         uint8_t packed = 0;
         uint8_t LRUDpacked = 0;
         for(int i=0; i<NUM_BUTTONS; i++){
-            packed |= canButtonStates[i] << i;
+            packed |= gpioButtonStates[i] << i;
         }
         /* Transmit action button status */
         cmr_canDIMActions_t actions = {

@@ -47,7 +47,6 @@ typedef enum {
 } cmr_gpio_button_index;
 
 extern bool gpioButtonStates[NUM_BUTTONS];
-extern bool canButtonStates[NUM_BUTTONS];
 
 //Left right up down indexes
 typedef enum {

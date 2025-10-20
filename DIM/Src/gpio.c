@@ -14,7 +14,6 @@
 #include "state.h"
 
 bool gpioButtonStates[NUM_BUTTONS];
-bool canButtonStates[NUM_BUTTONS];
 
 static const uint32_t gpioReadButtons_priority = 5;
 
@@ -174,7 +173,8 @@ bool getASMS(){
  * @return 1 iff EAB is on
  */
 bool getEAB(){
-	return cmr_gpioRead(GPIO_EAB_ON);
+	uint8_t eabStatus = (uint8_t)getPayload(CANRX_EAB_STATUS);
+	return (eabStatus == 1);
 }
 
 /* Debouncing for button presses. */
@@ -182,27 +182,6 @@ bool getEAB(){
 
 static uint32_t lastPress[NUM_BUTTONS] = {0};
 static bool lastState[NUM_BUTTONS] = {false};
-
-/* Detecting Button States */
-void canButtonDetect(void) {
-	for(int i = 0; i < NUM_BUTTONS; i++) {
-		if(gpioButtonStates[i]) {
-			if(lastState[i] == false) {
-				lastState[i] = true;
-				lastPress[i] = xTaskGetTickCount();
-			}
-		}
-		else {
-			if(lastState[i]){
-				// pressed and release
-				canButtonStates[i] = (xTaskGetTickCount() - lastPress[i] >= DEBOUNCE_DELAY);
-				lastState[i] = false;
-			} else {
-				canButtonStates[i] = false;
-			}
-		}
-	}
-}
 
 /**
  * @brief Converts analog ADC to 0-3.3V, then scales that to 0-5V

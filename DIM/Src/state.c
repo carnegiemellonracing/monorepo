@@ -312,7 +312,7 @@ bool DRSOpen(void)
 }
 
 
-static cmr_state getReqScreen(void) {
+static cmr_state getNextState(void) {
     if(stateGetVSM() == CMR_CAN_ERROR){
     	nextState = dimStateERROR;
     	return nextState;
@@ -334,7 +334,7 @@ static cmr_state getReqScreen(void) {
                 nextState = CONFIG;
                 flush_config_screen_to_cdc = false;
             }
-            else if(canButtonStates[RIGHT] && stateGetVSM() == CMR_CAN_RTD) {
+            else if(gpioButtonStates[RIGHT] && stateGetVSM() == CMR_CAN_RTD) {
                 nextState = RACING;
             }
             else {
@@ -374,7 +374,7 @@ static cmr_state getReqScreen(void) {
             nextState = INIT;
             break;
         case RACING:
-            if(canButtonStates[LEFT] && stateGetVSM() == CMR_CAN_RTD) {
+            if(gpioButtonStates[LEFT] && stateGetVSM() == CMR_CAN_RTD) {
                 nextState = NORMAL;
             }
             else {
@@ -494,16 +494,15 @@ void reqVSM(void) {
     
     if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM == CMR_CAN_CLEAR_ERROR) {
         state.vsmReq = CMR_CAN_GLV_ON;
+        return;
     }
-    else {
-        if (getCurrState() != CONFIG) {
-            if (canButtonStates[UP]) {
-                stateVSMUp();
-            } else if (canButtonStates[DOWN]) {
-                stateVSMDown();
-            }
-        }  
-    }
+    if (getCurrState() != CONFIG) {
+        if (gpioButtonStates[UP]) {
+            stateVSMUp();
+        } else if (gpioButtonStates[DOWN]) {
+            stateVSMDown();
+        }
+    } 
 }
 
 //keeps track of requested gear
@@ -521,22 +520,30 @@ void reqGear(void) {
     bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) 
                        || (stateGetVSM() == CMR_CAN_HV_EN));
     if(getASMS()) {
-        if(canChangeGear && canButtonStates[RIGHT]) {
-            if(state.gearReq == 14) state.gearReq = 9;
+        if(canChangeGear && gpioButtonStates[RIGHT]) {
+            if(state.gearReq == CMR_CAN_GEAR_DV_MISSION_MAX - 1) {
+                state.gearReq = CMR_CAN_GEAR_DV_MISSION_MIN + 1;
+            }
             else state.gearReq++;
         }
-        else if(canChangeGear && canButtonStates[LEFT]) {
-            if(state.gearReq == 9) state.gearReq = 14;
+        else if(canChangeGear && gpioButtonStates[LEFT]) {
+            if(state.gearReq == CMR_CAN_GEAR_DV_MISSION_MIN + 1) {
+                state.gearReq = CMR_CAN_GEAR_DV_MISSION_MAX - 1;
+            }
             else state.gearReq--;
         }
     }
     else {
-        if(canChangeGear && canButtonStates[RIGHT]) {
-            if(state.gearReq == 8) state.gearReq = 1;
+        if(canChangeGear && gpioButtonStates[RIGHT]) {
+            if(state.gearReq == CMR_CAN_GEAR_MAX - 1) {
+                state.gearReq = CMR_CAN_GEAR_MIN + 1;
+            }
             else state.gearReq++;
         }
-        else if(canChangeGear && canButtonStates[LEFT]) {
-            if(state.gearReq == 1) state.gearReq = 8;
+        else if(canChangeGear && gpioButtonStates[LEFT]) {
+            if(state.gearReq == CMR_CAN_GEAR_MIN + 1) {
+                state.gearReq = CMR_CAN_GEAR_MAX - 1;
+            }
             else state.gearReq--;
         }
     }
@@ -556,54 +563,6 @@ void stateDrsUpdate(void) {
 cmr_state getCurrState() {
     return currState;
 }
-
-static void stateOutput() {
-    //output
-    // switch(currState) {
-    //     case INIT:
-    //         //initialize buttons to 0
-	// 		//also initializes all LRUD buttons to 0
-    //         for(int i=0; i<NUM_BUTTONS; i++){
-    //             //is it necessary to initialize the can buttons to 0 if they are just reading pins??
-    //             canButtonStates[i] = 0;
-    //             gpioButtonStates[i] = 0;
-    //         }
-    //          /* Restarting the Display. */
-    //         TickType_t lastWakeTime = xTaskGetTickCount();
-    // 		//change pin of screen
-    //         /* Initialize the display. */
-    //         // tftInitSequence();
-    //         tftUpdate();
-    //         break;
-    //     case START:
-    //         /* Display Startup Screen for fixed time */
-    //         //tftDLWrite(&tft, &tftDL_startup);
-    //         //drawConfigScreen();
-    //         //vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
-    //         break;
-    //     case NORMAL:
-    //         drawRTDScreen(); //from somethingP
-    //         //tftDLWrite(&tft, &tftDL_startup);
-    //         //vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
-    //         break;
-    //     case CONFIG:
-    //         drawConfigScreen();
-    //         vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
-    //         break;
-    //     case dimStateERROR:
-    //         drawErrorScreen();
-    //         vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
-    //         break;
-    //     case RACING:
-    //         drawRacingScreen();
-    //         vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
-    //         break;
-    // }
-	//TODO: Why is this called again?
-    currState = getReqScreen();
-}
-
-
 
 /**
  * @brief Struct for voltage SoC lookup table
@@ -702,8 +661,7 @@ static void stateMachine(void *pvParameters){
     uint32_t space1 = 0;
     while (1) {
         // taskENTER_CRITICAL();
-        // stateOutput();
-        currState = getReqScreen();
+        currState = getNextState();
         // tftRead(&tft, TFT_ADDR_CMD_READ, sizeof(test), &test);
         // test = test & 0x00000FFF;
         // tftRead(&tft, TFT_ADDR_CMDB_SPACE, sizeof(space1), &space1);
