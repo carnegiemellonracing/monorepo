@@ -441,30 +441,22 @@ CAN_RX_FIFO_PENDING(1)
 
 
 /**
- * @brief Queues a CAN message for transmission.
+ * @brief Queues a CAN Tx Header for transmission.
  *
  * @param can The CAN interface to send on.
- * @param id The message's CAN ID.
- * @param data The data to send.
- * @param len The data's length, in bytes.
+ * @param txHeader The tx Header of the message we want to send 
+ * @param data The data we need to send
  * @param timeout The timeout.
  *
  * @return 0 on success, or a negative error code on timeout.
  */
-int cmr_canTX(
+int cmr_canHeaderTX(
     cmr_can_t *can,
-    uint16_t id, const void *data, size_t len,
+    CAN_TxHeaderTypeDef txHeader,
+    const void *data,
     TickType_t timeout
 ) {
-    CAN_TxHeaderTypeDef txHeader = {
-        .StdId = id,
-        .ExtId = 0,
-        .IDE = CAN_ID_STD,
-        .RTR = CAN_RTR_DATA,
-        .DLC = len,
-        .TransmitGlobalTime = DISABLE
-    };
-
+    //Attempt to reserve mailbox
     BaseType_t result = xSemaphoreTake(can->txSem, timeout);
 	if (result != pdTRUE) {
 		return -1;
@@ -485,6 +477,63 @@ int cmr_canTX(
 }
 
 /**
+ * @brief Queues a CAN message for transmission.
+ *
+ * @param can The CAN interface to send on.
+ * @param id The message's CAN ID.
+ * @param data The data to send.
+ * @param len The data's length, in bytes.
+ * @param timeout The timeout.
+ *
+ * @return 0 on success, or a negative error code on timeout.
+ */
+int cmr_canTX(
+    cmr_can_t *can,
+    uint16_t id, const void *data, uint8_t len,
+    TickType_t timeout
+) {
+    CAN_TxHeaderTypeDef txHeader = {
+        .StdId = id,
+        .ExtId = 0,
+        .IDE = CAN_ID_STD,
+        .RTR = CAN_RTR_DATA,
+        .DLC = len,
+        .TransmitGlobalTime = DISABLE
+    };
+
+    return cmr_canHeaderTX(can, txHeader, data, timeout);
+}
+
+
+/**
+ * @brief Queues an extended CAN message for transmission.
+ *
+ * @param can The CAN interface to send on.
+ * @param id The message's CAN ID.
+ * @param data The data to send.
+ * @param len The data's length, in bytes.
+ * @param timeout The timeout.
+ *
+ * @return 0 on success, or a negative error code on timeout.
+ */
+int cmr_extendedCanTX(
+    cmr_can_t *can,
+    uint16_t id, const void *data, uint8_t len,
+    TickType_t timeout
+) {
+    CAN_TxHeaderTypeDef txHeader = {
+        .StdId = 0,
+        .ExtId = id,
+        .IDE = CAN_ID_EXT,
+        .RTR = CAN_RTR_DATA,
+        .DLC = len,
+        .TransmitGlobalTime = DISABLE
+    };
+
+    return cmr_canHeaderTX(can, txHeader, data, timeout);
+}
+
+/**
  * @brief Determines the GPIO alternate function for the given CAN interface.
  *
  * @param can The CAN interface.
@@ -495,8 +544,6 @@ int cmr_canTX(
 uint32_t cmr_canGPIOAF(CAN_TypeDef *instance, GPIO_TypeDef *port) {
     return _platform_canGPIOAF(instance, port);
 }
-
-
 
 #endif
 
