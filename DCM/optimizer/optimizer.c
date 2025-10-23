@@ -18,6 +18,8 @@ static double k_lin = 80.0;
 static double k_yaw = 0.30;
 static double k_tie = 0.008;
 
+static double k_power = 0.000; // tunable, new 
+
 /**
  * Computes 1/2 x^T Q x + q x + c.
  */
@@ -52,6 +54,16 @@ void load_diagonal_weights(optimizer_state_t *state) {
     state->diagonal_weights[1] = k_tie;
     state->diagonal_weights[2] = k_tie;
     state->diagonal_weights[3] = k_tie;
+}
+
+
+// *****NEW*****
+/// loads power weights
+void load_power_weights(const optimizer_state_t *state, double power_diag[4], double k_power) {
+    for (int i = 0; i < 4; i++) {
+        double w = state->omegas[i];
+        power_diag[i] = k_power * (w * w);
+    }
 }
 
 static inline bool box_variable_is_valid(box_variable_t *v, double value) {
