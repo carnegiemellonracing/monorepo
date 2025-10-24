@@ -424,7 +424,7 @@ void BMBInit() {
 	DWT_Delay_ms(100);
 
 	//No idea lol
-	txToRxDelay();
+	txToRxDelay(100);
 	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 	byteDelay(0x3F);
