@@ -120,3 +120,11 @@ void gpioInit(void) {
     );
 }
 
+void RXTurnOnInit(void) {
+    const cmr_gpioPinConfig_t *pinConfig = &gpioPinConfigs[10];
+
+	HAL_GPIO_Init(
+		pinConfig->port,
+		(GPIO_InitTypeDef *) &pinConfig->init
+	);
+}
