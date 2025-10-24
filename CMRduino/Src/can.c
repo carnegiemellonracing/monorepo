@@ -86,6 +86,16 @@ static void canTX10Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
 
+        uint8_t x = 5;
+        canTX(CMR_CANID_HEARTBEAT_VSM, &x, sizeof(x), canTX10Hz_period_ms);
+        
+        // cmr_canCubeMarsSpeedLoop_t set_speed = {
+        //     .speed_erpm = 5000
+        // };
+        // canExtendedTX(CMR_CANID_EXTENDED_CUBEMARS_SET_RPM, (void*)&set_speed, sizeof(set_speed), canTX10Hz_period_ms);
+        // vTaskDelayUntil(&lastWakeTime, 5000);
+        // set_speed.speed_erpm = 0;
+        // canExtendedTX(CMR_CANID_EXTENDED_CUBEMARS_SET_RPM, (void*)&set_speed, sizeof(set_speed), canTX10Hz_period_ms);
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
 }
@@ -268,9 +278,7 @@ int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
  * @return 0 on success, or a negative error code on timeout.
  */
 int canExtendedTX(cmr_canExtendedID_t id, const void *data, size_t len, TickType_t timeout) {
-
-
-    return cmr_canExtendedTX(&can, id, data, len, timeout);
+    return cmr_canExtendedTX(id, data, len, timeout);
 }
 
 /**

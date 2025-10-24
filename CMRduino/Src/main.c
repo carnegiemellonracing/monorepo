@@ -47,6 +47,8 @@ static bool LEDerror() {
 static void statusLED(void *pvParameters) {
     (void) pvParameters;
     static bool toggle = true;
+    volatile cmr_canCubeMarsData_t *x = (cmr_canCubeMarsData_t*)getPayload(CANRX_CUBEMARS_DATA);
+
     cmr_gpioWrite(GPIO_LED_STATUS, 0);
     TickType_t lastWakeTime = xTaskGetTickCount();
     for (;;) {
