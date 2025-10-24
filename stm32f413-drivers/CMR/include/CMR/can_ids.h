@@ -27,7 +27,7 @@ typedef enum {
     CMR_CANID_HV_SENSORS = 0x106,    /**< @brief High Voltage sensors on HVC */
     CMR_CANID_HEARTBEAT_LV_BMS = 0x107, /**< @brief LV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
-    CMR_CANID_HEARTBEAT_BMSM = 0x108, 
+    CMR_CANID_HEARTBEAT_HV_BMS = 0x108, 
 
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
     CMR_CANID_VSM_SENSORS = 0x200,              /**< @brief VSM sensor data. */

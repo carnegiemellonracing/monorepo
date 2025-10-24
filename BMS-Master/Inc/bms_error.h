@@ -28,12 +28,12 @@ static const int32_t maxPackCurrentInstantMA = 400000;
 static const int32_t maxPackCurrentAverageMA = 110000;
 static const uint32_t minShutdownCiruitVoltageMV = 14000;
 
-cmr_canHVCError_t checkBMSMErrors(cmr_canHVCState_t currentState);
-void clearBMSMErrorReg(void);
+cmr_canHVCError_t checkHVBMSErrors(cmr_canHVCState_t currentState);
+void clearHVBMSErrorReg(void);
 
 
-void setBMSMErrorReg(cmr_canHVCError_t errorCode);
-cmr_canHVCError_t getBMSMErrorReg(void);
+void setHVBMSErrorReg(cmr_canHVCError_t errorCode);
+cmr_canHVCError_t getHVBMSErrorReg(void);
 
 // Heartbeat timeout	
 #define HEARTBEAT_TIMEOUT	50		// Periods of 10ms

@@ -268,7 +268,6 @@ int32_t getHVmilliamps(){
     return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_ISENSE));
 }
 
-
 int32_t getHVIvref(){
     return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_VREF)); 
 }

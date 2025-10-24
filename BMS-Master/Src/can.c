@@ -49,16 +49,15 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
-	[CANRX_HVI_COMMAND] = {
-		.canID = CMR_CANID_HV_SENSORS,
-		.timeoutError_ms = 50,
-		.timeoutWarn_ms = 25
-    },
     [CANRX_HEARTBEAT_HVC] = {
         .canID = CMR_CANID_HEARTBEAT_HVC,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25 
-    }
+    },
+    [CANRX_HEARTBEAT_VSM] = { 
+        .canID = CMR_CANID_HEARTBEAT_VSM,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25 },
 };
 
 /** @brief Primary CAN interface. */
@@ -425,14 +424,17 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     cmr_canHVCHeartbeat_t *hvcheartbeat = getPayload(CANRX_HEARTBEAT_HVC); 
     cmr_canHVCState_t currentState = hvcheartbeat->hvcState; 
     cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
-    currentError = checkBMSMErrors(currentState);
+    currentError = checkHVBMSErrors(currentState);
 
-    cmr_canBMSMHeartbeat_t BMSMHeartbeat = {
-        .errorStatus = currentError
-    };
+    cmr_canHeartbeat_t *vsm_heartbeat = getPayload(CANRX_HEARTBEAT_VSM);
 
+    cmr_canHeartbeat_t HVBMSHeartbeat = {
+        .state = vsm_heartbeat->state 
+        .warning = CMR_CAN_WARN_NONE 
+    }; 
 
-    canTX(CMR_CANID_HEARTBEAT_BMSM, &BMSMHeartbeat, sizeof(BMSMHeartbeat), canTX100Hz_period_ms);
+    memcpy(&HVBMSHeartbeat.error, &currentError, sizeof(HVBMSHeartbeat.error)); 
+    canTX(CMR_CANID_HEARTBEAT_HV_BMS, &HVBMSHeartbeat, sizeof(HVBMSHeartbeat), canTX100Hz_period_ms);
 }
 
 

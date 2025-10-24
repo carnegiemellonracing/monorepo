@@ -42,7 +42,6 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
 
     // Getting HVC Command
     volatile cmr_canHVCCommand_t *HVCCommand = getPayload(CANRX_HVC_COMMAND);
-	volatile cmr_canHVSense_t *hvi_heartbeat = getPayload(CANRX_HVI_COMMAND);
 
     //Getting BMB data
     volatile cmr_canBMSMinMaxCellVoltage_t *BMSMData = getPayload(CANRX_BMSM_VOLTAGE_DATA); 
@@ -70,7 +69,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                   HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN)) {
                 //T6: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (abs((BMSMData->battVoltage_mV) - (((int32_t)hvi_heartbeat->packVoltage_cV))*10) < 30000) {
+            } else if (abs((BMSMData->battVoltage_mV) - (getHVmillivolts()) < 30000)) {
                 //T2: HV rails are precharged to within 30000mV
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE;
                 lastPrechargeTime = xTaskGetTickCount(); 
@@ -104,12 +103,12 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 //T18: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (abs((BMSMData->battVoltage_mV) - (((uint32_t)hvi_heartbeat->packVoltage_cV))*10) < 30000) {
+            } else if (abs((BMSMData->battVoltage_mV) - ((uint32_t)getHVmillivolts()) < 30000)) { 
             	lastPrechargeTime = xTaskGetTickCount();
                 //T10: HV rails are precharged
                 nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE;
             } else {
-                nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE;
+                nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE; 
             }
             break;
         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE: {// S7

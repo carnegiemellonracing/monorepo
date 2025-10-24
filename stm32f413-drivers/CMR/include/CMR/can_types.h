@@ -370,10 +370,6 @@ typedef struct {
     uint8_t uptime_s;       /**< @brief HVC uptime in seconds. */
 } cmr_canHVCHeartbeat_t;
 
-/** @brief BMS Master heartbeat (does not follow universal structure). */
-typedef struct {
-    uint16_t errorStatus;   /**< @brief Current BMS errors. See cmr_canHVCError_t. */
-} cmr_canBMSMHeartbeat_t;
 
 /** @brief High Voltage Controller command. */
 typedef struct {
