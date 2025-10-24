@@ -138,6 +138,11 @@ int cmr_canTX(
     uint16_t id, const void *data, uint8_t len,
     TickType_t timeout
 );
+int cmr_canExtendedTX(
+    cmr_can_t *can,
+    uint32_t id, const void *data, uint8_t len,
+    TickType_t timeout
+);
 
 void cmr_canFieldEnable(uint8_t *field, const void *value, size_t len);
 void cmr_canFieldDisable(uint8_t *field, const void *value, size_t len);
