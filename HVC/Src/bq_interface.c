@@ -21,6 +21,10 @@ extern volatile int BMBErrs[BOARD_NUM];
 //Fill in data to this array
 BMB_Data_t BMBData[BOARD_NUM];
 
+// forward declaration
+void txToRxDelay(uint8_t delay);
+void byteDelay(uint8_t delay);
+
 static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
 	BMBErrs[BMBIndex] = err;
 }
@@ -92,7 +96,7 @@ void turnOn() {
 	};
 	res = uart_sendCommand(&sendWake);
 	if(res != UART_SUCCESS) {
-		return false;
+		return;
 	}
 
 	// HAL_Delay(1000);
@@ -111,7 +115,7 @@ void turnOn() {
 		};
 		res = uart_sendCommand(&hardReset);
 		if(res != UART_SUCCESS) {
-			return false;
+			return;
 		}
 
 		// HAL_Delay(200);
@@ -129,7 +133,7 @@ void turnOn() {
 
 	res = uart_sendCommand(&sendShutdown);
 	if(res != UART_SUCCESS) {
-		return false;
+		return;
 	}
 
 	// HAL_Delay(1000);

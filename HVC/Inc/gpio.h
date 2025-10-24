@@ -32,6 +32,7 @@ typedef enum {
 } gpio_t;
 
 void gpioInit(void);
+void RXTurnOnInit(void);
 
 #endif /* GPIO_H */
 
