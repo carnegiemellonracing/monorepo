@@ -21,67 +21,41 @@ extern volatile int BMBErrs[BOARD_NUM];
 //Fill in data to this array
 BMB_Data_t BMBData[BOARD_NUM];
 
-// forward declaration
-void txToRxDelay(uint8_t delay);
-void byteDelay(uint8_t delay);
-
 static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
 	BMBErrs[BMBIndex] = err;
-}
-
-__STATIC_INLINE void DWT_Delay_us(volatile uint32_t au32_microseconds)
-{
-  uint32_t au32_initial_ticks = DWT->CYCCNT;
-  uint32_t au32_ticks = (HAL_RCC_GetHCLKFreq() / 1000000);
-  au32_microseconds *= au32_ticks;
-  while ((DWT->CYCCNT - au32_initial_ticks) < au32_microseconds-au32_ticks);
-}
-
-__STATIC_INLINE void DWT_Delay_ms(volatile uint32_t au32_milliseconds)
-{
-  uint32_t au32_initial_ticks = DWT->CYCCNT;
-  uint32_t au32_ticks = (HAL_RCC_GetHCLKFreq() / 1000);
-  au32_milliseconds *= au32_ticks;
-  while ((DWT->CYCCNT - au32_initial_ticks) < au32_milliseconds);
 }
 
 void turnOn() {
 
 
 	//Turn On Ping
-	// HAL_Delay(100);
-	DWT_Delay_ms(100);
+	HAL_Delay(100);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_SET
 	);
-	// HAL_Delay(100);
-	DWT_Delay_ms(100);
+	HAL_Delay(100);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_RESET
 	);
-	// HAL_Delay(3);
-	DWT_Delay_ms(3);
+	HAL_Delay(3);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_SET
 	);
-	// HAL_Delay(5);
-	DWT_Delay_ms(5);
+	HAL_Delay(5);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_RESET
 	);
-	// HAL_Delay(3);
-	DWT_Delay_ms(3);
+	HAL_Delay(3);
 	HAL_GPIO_WritePin(
 			GPIOB, GPIO_PIN_13,
 		GPIO_PIN_SET
 	);
 
-	// HAL_Delay(100);
-	DWT_Delay_ms(100);
+	HAL_Delay(100);
 	uartInit();
 
 	cmr_uart_result_t res;
@@ -96,11 +70,10 @@ void turnOn() {
 	};
 	res = uart_sendCommand(&sendWake);
 	if(res != UART_SUCCESS) {
-		return;
+		return false;
 	}
 
-	// HAL_Delay(1000);
-	DWT_Delay_ms(1000);
+	HAL_Delay(1000);
 
 	autoAddr();
 
@@ -115,11 +88,10 @@ void turnOn() {
 		};
 		res = uart_sendCommand(&hardReset);
 		if(res != UART_SUCCESS) {
-			return;
+			return false;
 		}
 
-		// HAL_Delay(200);
-		DWT_Delay_ms(200);
+		HAL_Delay(200);
 	}
 
 	uart_command_t sendShutdown = {
@@ -133,11 +105,10 @@ void turnOn() {
 
 	res = uart_sendCommand(&sendShutdown);
 	if(res != UART_SUCCESS) {
-		return;
+		return false;
 	}
 
-	// HAL_Delay(1000);
-	DWT_Delay_ms(1000);
+	HAL_Delay(1000);
 
 
 }
@@ -171,8 +142,7 @@ bool autoAddr() {
 		if(res != UART_SUCCESS) {
 			return false;
 		}
-		// HAL_Delay(10);
-		DWT_Delay_ms(10);
+		HAL_Delay(10);
 	}
 
 	//broadcast write to enable autoaddressing
@@ -191,8 +161,7 @@ bool autoAddr() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
-	// HAL_Delay(10);
-	DWT_Delay_ms(10);
+	HAL_Delay(10);
 
 	//set all the addresses of the boards in DIR0_ADDR
 	uart_command_t set_addr = {
@@ -209,8 +178,7 @@ bool autoAddr() {
 			return false;
 		}
 		set_addr.data[0]++;
-		// HAL_Delay(10);
-		DWT_Delay_ms(10);
+		HAL_Delay(10);
 	}
 
 	//Set all devices as stack devices first
@@ -226,8 +194,7 @@ bool autoAddr() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
-	// HAL_Delay(10);
-	DWT_Delay_ms(10);
+	HAL_Delay(10);
 
 	uart_command_t set_comm_ctrl = {
 		.readWrite = SINGLE_WRITE,
@@ -248,8 +215,7 @@ bool autoAddr() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
-	// HAL_Delay(10);
-	DWT_Delay_ms(10);
+	HAL_Delay(10);
 
 	// Resync OTP registers with dummy reads
 	otpSync.readWrite = STACK_READ;
@@ -261,8 +227,7 @@ bool autoAddr() {
 		if(res != UART_SUCCESS) {
 			return false;
 		}
-		// HAL_Delay(10);
-		DWT_Delay_ms(10);
+		HAL_Delay(10);
 	}
 
 	// COMMENTED OUT CODE THAT IS USED FOR SANITY CHECKING AUTOADDRESSING
@@ -404,35 +369,26 @@ void enableTimeout() {
 // Init function for all BMBs
 void BMBInit() {
 	turnOn();
-	// HAL_Delay(1000);
-	DWT_Delay_ms(1000);
+	HAL_Delay(1000);
 	autoAddr();
-	// HAL_Delay(100);
-	DWT_Delay_ms(100);
+	HAL_Delay(100);
 	enableNumCells();
-	// HAL_Delay(100);
-	DWT_Delay_ms(100);
+	HAL_Delay(100);
 	enableGPIOPins();
-	// HAL_Delay(100);
-	DWT_Delay_ms(100);
+	HAL_Delay(100);
 	enableMainADC();
-	// HAL_Delay(100);
-	DWT_Delay_ms(100);
+	HAL_Delay(100);
 	enableTimeout();
 	//disableTimeout();
-	// HAL_Delay(100);
-	DWT_Delay_ms(100);
+	HAL_Delay(100);
 
 	//No idea lol
-	txToRxDelay(100);
-	// HAL_Delay(100);
-	DWT_Delay_ms(100);
+	txToRxDelay();
+	HAL_Delay(100);
 	byteDelay(0x3F);
-	// HAL_Delay(100);
-	DWT_Delay_ms(100);
+	HAL_Delay(100);
 
-	// HAL_Delay(100);
-	DWT_Delay_ms(100);
+	HAL_Delay(100);
 	cellBalancingSetup();
 }
 
@@ -468,11 +424,8 @@ uint8_t pollAllVoltageData() {
 
 			uint8_t status = uart_receiveResponse(&response[i-1], 27);
 			if(status != 0) {
-				//setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
-				//BMBTimeoutCount[i-1]+=1;
-				DWT_Delay_ms(10000);
-				RXTurnOnInit();
-				BMBInit();
+				setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
+				BMBTimeoutCount[i-1]+=1;
 				taskEXIT_CRITICAL();
 				return i;
 			}
@@ -484,21 +437,8 @@ uint8_t pollAllVoltageData() {
 			for(uint8_t j = 0; j < VSENSE_CHANNELS; j++) {
 				uint8_t high_byte_data = response[i].data[2*j];
 				uint8_t low_byte_data = response[i].data[2*j+1];
-
 				BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = calculateVoltage(high_byte_data, low_byte_data);
 				if(i == 1 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				} else if(i == 3 && (VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				} else if(i == 4 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				} else if(i == 2 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				}
-				if(i == 2 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-									BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
-								}
-				if(i == 3 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
 					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
 				}
 			}
@@ -565,7 +505,7 @@ void pollAllTemperatureData(int channel) {
 
 
 	for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
-		if(uart_receiveResponse(&response[i-1], 7) == UART_FAILURE) {
+		if(uart_receiveResponse(&response[i-1], 7) != UART_FAILURE) {
 				//loop through each GPIO channel
 			setBMBErr(i-1, BMB_TEMP_READ_ERROR);
 			BMBTimeoutCount[i-1]+=1;
@@ -672,6 +612,35 @@ bool getBalDone() {
 
 }
 
+/**
+ * @brief Compute parity of which set of cells to balance (odd or even).
+ * 
+ * @param voltages Cell voltages, from BMBData.
+ * @param thresh Balance threshold
+ * @return Parity to balance (0 for even cells, 1 for odd cells)
+ */
+static uint8_t getBalanceParity(uint16_t *voltages, uint16_t thresh) {
+	// figure out if odd or even cells have the thresh
+	uint32_t even_sum = 0;
+	uint32_t odd_sum = 0;
+	uint8_t cell;
+	
+	// choose parity w.r.t. IRL BMB (1-indexed) as opposed to SW (0-indexed)
+	for (cell = 0; cell < VSENSE_CHANNELS; cell += 2) {
+		if (voltages[cell] > thresh) {
+			odd_sum += voltages[cell] - thresh;
+		}
+		if (voltages[cell+1] > thresh) {
+			even_sum += voltages[cell+1] - thresh;
+		}
+	}
+
+	return (odd_sum > even_sum);
+}
+
+/**
+ * @brief Manual cell balancing. 
+ */
 void cellBalancing(bool set, uint16_t thresh) {
 	cmr_uart_result_t res;
 
@@ -680,60 +649,57 @@ void cellBalancing(bool set, uint16_t thresh) {
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = BAL_CTRL2,
-		.data = {0x03},
+		.data = {0x02},	// manual
 		.crc = {0x00, 0x00}
 	};
 
-
-	if(set) {
-		if(thresh >= 4250 || thresh <= 2450) {
+	if (set) {
+		if (thresh >= 4250 || thresh <= 2450) {
 			thresh = 3700;
 		}
-		//board index by 0 but don't send to interface chip
+
+		// board index by 0 but don't send to interface chip
 		for(int i = 0; i < BOARD_NUM-1; i++) {
-			thresh = 0;
-			for(int j = 0; j < VSENSE_CHANNELS; j++) {
-				if(BMBData[i].cellVoltages[j] > thresh) {
-					thresh = BMBData[i].cellVoltages[j];
-				}
-			}
-			thresh = thresh - 10;
+			// selections for cells--0x04 to balance for 5 minute intervals
+			uint8_t cell_selects[] = {0x04, 0x00, 0x04, 0x00, 0x04, 0x00, 0x04, 0x00};
+
+			// determine if we balance even or odd cells
+			uint8_t parity = getBalanceParity(BMBData[i].cellVoltages, thresh);
+
+			// two writes needed (maximum write len is 8 bytes)
 			uart_command_t balance_register = {
 				.readWrite = SINGLE_WRITE,
 				.dataLen = VSENSE_CHANNELS/2,
 				.deviceAddress = i+1,
 				.registerAddress = CB_CELL14_CTRL,
-				.data = {0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04},
+				.data = &cell_selects[parity],
 				.crc = {0x00, 0x00}
 			};
-			for(int j = 13; j > 6; j--) {
-				if(BMBData[i].cellVoltages[j] < thresh) {
-					balance_register.data[13-j] = 0x00;
+
+			// disable selected cells below threshold (7 channels, [14:8])
+			for (int j = parity; j < 7; j += 2) {
+				if (BMBData[i].cellVoltages[13-j] < thresh) {
+					balance_register.data[j] = 0x00;
 				}
 			}
 			res = uart_sendCommand(&balance_register);
-			balance_register.registerAddress = CB_CELL7_CTRL;
-			for(int j = 0; j < 7; j++) {
-				balance_register.data[j] = 0x04;
+
+			// change to other cell selection (odd number of cells => parity swap)
+			parity ^= 1;
+			// manually copy (data not assignable)
+			for (int j = 0; j < 7; j++) {
+				balance_register.data[j] = cell_selects[parity+j];
 			}
-			for(int j = 6; j >=0 ; j--) {
-				if(BMBData[i].cellVoltages[j] < thresh) {
-					balance_register.data[6-j] = 0x00;
+
+			// disable selected cells below threshold (7 channels, [7:1])
+			for (int j = parity; j < 7; j += 2) {
+				if (BMBData[i].cellVoltages[6-j] < thresh) {
+					balance_register.data[j] = 0x00;
 				}
 			}
 			res = uart_sendCommand(&balance_register);
 		}
-		//set duty cycle to switch between even and odd cells
-//		uart_command_t duty_cycle = {
-//			.readWrite = STACK_WRITE,
-//			.dataLen = 1,
-//			.deviceAddress = 0xFF, //not used!
-//			.registerAddress = BAL_CTRL1,
-//			.data = {0x01}, //TODO what is this value supposed to be?
-//			.crc = {0x00, 0x00}
-//		};
-//		res = uart_sendCommand(&duty_cycle);
-
+		
 		//see bq datasheet in register VCB_DONE_THRESH, maps threshold in 25 mv increments
 		//between 245 mV and 4000 mV
 		uint8_t threshIndex = (uint8_t)((thresh - 2450)/25.0) + 1;
@@ -747,7 +713,6 @@ void cellBalancing(bool set, uint16_t thresh) {
 			.data = {0x1},
 			.crc = {0x00, 0x00}
 		};
-		enable.data[0] = 0x03;
 //		res = uart_sendCommand(&UV);
 //		TickType_t lastTime = xTaskGetTickCount();
 //		vTaskDelayUntil(&lastTime, 1);
@@ -757,9 +722,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 //		res = uart_sendCommand(&UV);
 //		lastTime = xTaskGetTickCount();
 //		vTaskDelayUntil(&lastTime, 1);
-
-	}
-	else {
+	} else {
 		uart_command_t balance_register = {
 			.readWrite = STACK_WRITE,
 			.dataLen = VSENSE_CHANNELS/2,
@@ -768,7 +731,6 @@ void cellBalancing(bool set, uint16_t thresh) {
 			.data = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 			.crc = {0x00, 0x00}
 		};
-		cmr_uart_result_t res;
 		res = uart_sendCommand(&balance_register);
 
 		balance_register.registerAddress = CB_CELL7_CTRL;

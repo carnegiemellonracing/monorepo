@@ -321,7 +321,7 @@
 #define DEBUG_OTP_SEC_BLK		0x7A0
 #define DEBUG_OTP_DED_BLK		0x7A1
 
-#define BOARD_NUM 10
+#define BOARD_NUM 2
 #define VSENSE_CHANNELS 14
 #define TEMP_CHANNELS 14
 
