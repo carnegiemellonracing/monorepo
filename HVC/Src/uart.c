@@ -106,7 +106,7 @@ uint8_t uart_receiveResponse(uart_response_t *response, uint8_t expected_bytes) 
 	}
 	response->deviceAddress = deviceAddr;
 
-	uint8_t registerValues[2] = {0};
+	uint8_t registerValues[2];
 	retv = uart_getChar(&uart, &registerValues[0]);
 	if(retv != UART_SUCCESS) {
 		return 3;
@@ -154,10 +154,10 @@ uint8_t uart_receiveResponse(uart_response_t *response, uint8_t expected_bytes) 
 cmr_uart_result_t uart_sendCommand(const uart_command_t *command) {
 	int dummy;
 	//uart_getChar(&uart, &dummy);
-	uint8_t message[128] = {0};
+	uint8_t message[128];
 	uint8_t currByte = 0;
 
-	uint8_t initByte = ((command->readWrite) << 4) | ((0x07 & (command->dataLen-1)));
+	uint8_t initByte = ((command->readWrite) << 4) | ((0x07 & (command->dataLen)-1));
 	message[currByte] = initByte;
 	currByte++;
 

@@ -21,46 +21,70 @@ extern volatile int BMBErrs[BOARD_NUM];
 //Fill in data to this array
 BMB_Data_t BMBData[BOARD_NUM];
 
+// forward declaration
+void txToRxDelay(uint8_t delay);
+void byteDelay(uint8_t delay);
+
 static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
 	BMBErrs[BMBIndex] = err;
 }
 
-//Forward Declaration
-void byteDelay(uint8_t delay);
-void txToRxDelay(uint8_t delay);
+__STATIC_INLINE void DWT_Delay_us(volatile uint32_t au32_microseconds)
+{
+  uint32_t au32_initial_ticks = DWT->CYCCNT;
+  uint32_t au32_ticks = (HAL_RCC_GetHCLKFreq() / 1000000);
+  au32_microseconds *= au32_ticks;
+  while ((DWT->CYCCNT - au32_initial_ticks) < au32_microseconds-au32_ticks);
+}
 
-bool turnOn() {
+__STATIC_INLINE void DWT_Delay_ms(volatile uint32_t au32_milliseconds)
+{
+  uint32_t au32_initial_ticks = DWT->CYCCNT;
+  uint32_t au32_ticks = (HAL_RCC_GetHCLKFreq() / 1000);
+  au32_milliseconds *= au32_ticks;
+  while ((DWT->CYCCNT - au32_initial_ticks) < au32_milliseconds);
+}
 
-	HAL_Delay(100);
+void turnOn() {
+
+
+	//Turn On Ping
+	// HAL_Delay(100);
+	DWT_Delay_ms(100);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_SET
 	);
-	//TickType_t xLastWakeTime = xTaskGetTickCount();
-	HAL_Delay(100);
-	//vTaskDelayUntil(&xLastWakeTime, 2.5);
+	// HAL_Delay(100);
+	DWT_Delay_ms(100);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_RESET
 	);
-	HAL_Delay(3);
+	// HAL_Delay(3);
+	DWT_Delay_ms(3);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_SET
 	);
-	HAL_Delay(5);
+	// HAL_Delay(5);
+	DWT_Delay_ms(5);
+	HAL_GPIO_WritePin(
+		GPIOB, GPIO_PIN_13,
+		GPIO_PIN_RESET
+	);
+	// HAL_Delay(3);
+	DWT_Delay_ms(3);
 	HAL_GPIO_WritePin(
 			GPIOB, GPIO_PIN_13,
-			GPIO_PIN_RESET
-		);
-		HAL_Delay(3);
-		HAL_GPIO_WritePin(
-				GPIOB, GPIO_PIN_13,
-			GPIO_PIN_SET
-		);
-	//pinConfig.Alternate = GPIO_AF11_UART5;
-	HAL_Delay(100);
+		GPIO_PIN_SET
+	);
+
+	// HAL_Delay(100);
+	DWT_Delay_ms(100);
 	uartInit();
+
+	cmr_uart_result_t res;
 
 	uart_command_t sendWake = {
 			.readWrite = SINGLE_WRITE,
@@ -70,12 +94,33 @@ bool turnOn() {
 			.data = {0x20},
 			.crc = {0x00, 0x00}
 	};
-	cmr_uart_result_t res = uart_sendCommand(&sendWake);
+	res = uart_sendCommand(&sendWake);
 	if(res != UART_SUCCESS) {
-		return false;
+		return;
 	}
 
-	HAL_Delay(100);
+	// HAL_Delay(1000);
+	DWT_Delay_ms(1000);
+
+	autoAddr();
+
+	for (int i = BOARD_NUM - 1; i >= 0; i--) {
+		uart_command_t hardReset = {
+				.readWrite = SINGLE_WRITE,
+				.dataLen = 1,
+				.deviceAddress = i,
+				.registerAddress = CONTROL2,
+				.data = {0x02},
+				.crc = {0x00, 0x00}
+		};
+		res = uart_sendCommand(&hardReset);
+		if(res != UART_SUCCESS) {
+			return;
+		}
+
+		// HAL_Delay(200);
+		DWT_Delay_ms(200);
+	}
 
 	uart_command_t sendShutdown = {
 			.readWrite = BROADCAST_WRITE,
@@ -88,45 +133,13 @@ bool turnOn() {
 
 	res = uart_sendCommand(&sendShutdown);
 	if(res != UART_SUCCESS) {
-		return false;
+		return;
 	}
 
-	HAL_Delay(100);
-//
+	// HAL_Delay(1000);
+	DWT_Delay_ms(1000);
 
-	res = uart_sendCommand(&sendWake);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
 
-	HAL_Delay(100);
-
-	uart_command_t softReset = {
-			.readWrite = BROADCAST_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF,
-			.registerAddress = CONTROL1,
-			.data = {0x02},
-			.crc = {0x00, 0x00}
-	};
-
-	res = uart_sendCommand(&softReset);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
-
-	uart_command_t hardReset = {
-			.readWrite = BROADCAST_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF,
-			.registerAddress = CONTROL2,
-			.data = {0x02},
-			.crc = {0x00, 0x00}
-	};
-//	res = uart_sendCommand(&hardReset);
-//	if(res != UART_SUCCESS) {
-//		return false;
-//	}
 }
 
 /** Auto Address Function
@@ -158,7 +171,8 @@ bool autoAddr() {
 		if(res != UART_SUCCESS) {
 			return false;
 		}
-		HAL_Delay(10);
+		// HAL_Delay(10);
+		DWT_Delay_ms(10);
 	}
 
 	//broadcast write to enable autoaddressing
@@ -177,7 +191,8 @@ bool autoAddr() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
-	HAL_Delay(10);
+	// HAL_Delay(10);
+	DWT_Delay_ms(10);
 
 	//set all the addresses of the boards in DIR0_ADDR
 	uart_command_t set_addr = {
@@ -194,7 +209,8 @@ bool autoAddr() {
 			return false;
 		}
 		set_addr.data[0]++;
-		HAL_Delay(10);
+		// HAL_Delay(10);
+		DWT_Delay_ms(10);
 	}
 
 	//Set all devices as stack devices first
@@ -210,7 +226,8 @@ bool autoAddr() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
-	HAL_Delay(10);
+	// HAL_Delay(10);
+	DWT_Delay_ms(10);
 
 	uart_command_t set_comm_ctrl = {
 		.readWrite = SINGLE_WRITE,
@@ -231,7 +248,8 @@ bool autoAddr() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
-	HAL_Delay(10);
+	// HAL_Delay(10);
+	DWT_Delay_ms(10);
 
 	// Resync OTP registers with dummy reads
 	otpSync.readWrite = STACK_READ;
@@ -243,7 +261,8 @@ bool autoAddr() {
 		if(res != UART_SUCCESS) {
 			return false;
 		}
-		HAL_Delay(10);
+		// HAL_Delay(10);
+		DWT_Delay_ms(10);
 	}
 
 	// COMMENTED OUT CODE THAT IS USED FOR SANITY CHECKING AUTOADDRESSING
@@ -376,7 +395,7 @@ void enableTimeout() {
 			.dataLen = 1,
 			.deviceAddress = 0xFF, //not used!
 			.registerAddress = COMM_TIMEOUT_CONF,
-			.data = {0x0A},
+			.data = {0x0B},
 			.crc = {0x00, 0x00}
 	};
 	uart_sendCommand(&enable_timeout);
@@ -385,26 +404,35 @@ void enableTimeout() {
 // Init function for all BMBs
 void BMBInit() {
 	turnOn();
-	HAL_Delay(1000);
+	// HAL_Delay(1000);
+	DWT_Delay_ms(1000);
 	autoAddr();
-	HAL_Delay(100);
+	// HAL_Delay(100);
+	DWT_Delay_ms(100);
 	enableNumCells();
-	HAL_Delay(100);
+	// HAL_Delay(100);
+	DWT_Delay_ms(100);
 	enableGPIOPins();
-	HAL_Delay(100);
+	// HAL_Delay(100);
+	DWT_Delay_ms(100);
 	enableMainADC();
-	HAL_Delay(100);
+	// HAL_Delay(100);
+	DWT_Delay_ms(100);
 	enableTimeout();
 	//disableTimeout();
-	HAL_Delay(100);
+	// HAL_Delay(100);
+	DWT_Delay_ms(100);
 
 	//No idea lol
-	// txToRxDelay();
-	HAL_Delay(100);
+	txToRxDelay(100);
+	// HAL_Delay(100);
+	DWT_Delay_ms(100);
 	byteDelay(0x3F);
-	HAL_Delay(100);
+	// HAL_Delay(100);
+	DWT_Delay_ms(100);
 
-	HAL_Delay(100);
+	// HAL_Delay(100);
+	DWT_Delay_ms(100);
 	cellBalancingSetup();
 }
 
@@ -426,7 +454,7 @@ uint8_t pollAllVoltageData() {
 			.crc = {0xFF, 0xFF}
 		};
 
-		uart_response_t response[BOARD_NUM-1] = {0};
+		uart_response_t response[BOARD_NUM-1];
 
 		//TODO add tx error handler
 
@@ -440,8 +468,11 @@ uint8_t pollAllVoltageData() {
 
 			uint8_t status = uart_receiveResponse(&response[i-1], 27);
 			if(status != 0) {
-				setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
-				BMBTimeoutCount[i-1]+=1;
+				//setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
+				//BMBTimeoutCount[i-1]+=1;
+				DWT_Delay_ms(10000);
+				RXTurnOnInit();
+				BMBInit();
 				taskEXIT_CRITICAL();
 				return i;
 			}
@@ -453,7 +484,23 @@ uint8_t pollAllVoltageData() {
 			for(uint8_t j = 0; j < VSENSE_CHANNELS; j++) {
 				uint8_t high_byte_data = response[i].data[2*j];
 				uint8_t low_byte_data = response[i].data[2*j+1];
+
 				BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = calculateVoltage(high_byte_data, low_byte_data);
+				if(i == 1 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
+				} else if(i == 3 && (VSENSE_CHANNELS-j-1 == 13)) {
+					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
+				} else if(i == 4 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
+				} else if(i == 2 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
+				}
+				if(i == 2 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+									BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
+								}
+				if(i == 3 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
+				}
 			}
 		}
 
@@ -513,12 +560,12 @@ void pollAllTemperatureData(int channel) {
 	taskENTER_CRITICAL();
 	uart_sendCommand(&read_therms);
 
-	uart_response_t response[BOARD_NUM-1] = {0};
+	uart_response_t response[BOARD_NUM-1];
 
 
 
 	for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
-		if(uart_receiveResponse(&response[i-1], 7) != UART_FAILURE) {
+		if(uart_receiveResponse(&response[i-1], 7) == UART_FAILURE) {
 				//loop through each GPIO channel
 			setBMBErr(i-1, BMB_TEMP_READ_ERROR);
 			BMBTimeoutCount[i-1]+=1;
@@ -611,7 +658,7 @@ bool getBalDone() {
 	};
 	bool shitter = false;
 	uart_sendCommand(&getBalDone);
-	uart_response_t response[BOARD_NUM-1] = {0};
+	uart_response_t response[BOARD_NUM-1];
 	for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
 		uint8_t status = uart_receiveResponse(&response[i-1], 2);
 		if(status != 0) {
@@ -644,13 +691,13 @@ void cellBalancing(bool set, uint16_t thresh) {
 		}
 		//board index by 0 but don't send to interface chip
 		for(int i = 0; i < BOARD_NUM-1; i++) {
-//			thresh = 0;
-//			for(int j = 0; j < VSENSE_CHANNELS; j++) {
-//				if(BMBData[i].cellVoltages[j] > thresh) {
-//					thresh = BMBData[i].cellVoltages[j];
-//				}
-//			}
-//			thresh = thresh - 10;
+			thresh = 0;
+			for(int j = 0; j < VSENSE_CHANNELS; j++) {
+				if(BMBData[i].cellVoltages[j] > thresh) {
+					thresh = BMBData[i].cellVoltages[j];
+				}
+			}
+			thresh = thresh - 10;
 			uart_command_t balance_register = {
 				.readWrite = SINGLE_WRITE,
 				.dataLen = VSENSE_CHANNELS/2,
