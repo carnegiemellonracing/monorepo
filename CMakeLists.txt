@@ -70,3 +70,11 @@ ExternalProject_Add(
         BUILD_ALWAYS TRUE
         CMAKE_ARGS -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
 )
+
+ExternalProject_Add(
+        CMRduino
+        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/CMRduino
+        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/CMRduino
+        INSTALL_COMMAND ""
+        BUILD_ALWAYS TRUE
+)
