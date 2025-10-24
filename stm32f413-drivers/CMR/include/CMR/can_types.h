@@ -1141,6 +1141,30 @@ typedef struct {
 } cmr_canLVBMS_Voltage;
 
 typedef struct {
+    uint8_t data[4];
+} cmr_canCubeMarsDutyCycle_t;
+
+typedef struct {
+    int32_t current_mA; // mA, -60000 ~ 60000
+} cmr_canCubeMarsCurrentLoop_t;
+
+typedef struct {
+    uint32_t current_mA; // mA, 0 ~ 60000
+} cmr_canCubeMarsCurrentBrake_t;
+
+typedef struct {
+    int32_t speed_erpm; // erpm, -100000 ~ 100000
+} cmr_canCubeMarsSpeedLoop_t;
+
+typedef struct {
+    int32_t position_deg; // -36000 deg ~ 36000 deg
+} cmr_canCubeMarsPositionLoop_t;
+
+typedef struct {
+    uint8_t origin; // 0 (set temporary origin) or 1 (permanent zero point)
+} cmr_canCubeMarsSetOrigin_t;
+
+typedef struct {
     int32_t position_deg; // -36000 deg ~ 36000 deg
     int16_t speed_erpm; // erpm, -327680 ~ 327680
     int16_t accel_erpm_s; // 1 unit = 10 erpm / s^2, 0 ~ 32767
