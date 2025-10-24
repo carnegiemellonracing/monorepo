@@ -346,6 +346,23 @@ int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
 }
 
 /**
+ * @brief Sends an Extended CAN message with the given ID.
+ *
+ * @param bus The CAN bus to transmit over.
+ * @param id The Extended ID for the message.
+ * @param data The data to send.
+ * @param len The data's length, in bytes.
+ * @param timeout The timeout, in ticks.
+ *
+ * @return 0 on success, or a negative error code on timeout.
+ */
+int canExtendedTX(cmr_canBusID_t bus, cmr_canExtendedID_t id, const void *data, size_t len, TickType_t timeout) {
+    configASSERT(bus < CMR_CAN_BUS_NUM);
+
+    return cmr_canExtendedTX(&(can[bus]), id, data, len, timeout);
+}
+
+/**
  * @brief Gets a pointer to the payload of a received CAN message.
  *
  * @param rxMsg The message to get the payload of.
