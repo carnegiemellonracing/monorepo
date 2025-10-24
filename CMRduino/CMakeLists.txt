@@ -127,13 +127,9 @@ link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
     # Project sources
-    ${CMAKE_SOURCE_DIR}/Src/adc.c
     ${CMAKE_SOURCE_DIR}/Src/can.c
     ${CMAKE_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_SOURCE_DIR}/Src/main.c
-    ${CMAKE_SOURCE_DIR}/Src/error.c
-    ${CMAKE_SOURCE_DIR}/Src/state.c
-    ${CMAKE_SOURCE_DIR}/Src/sensors.c
     ${CMAKE_SOURCE_DIR}/Src/syscall.c
     ${CMAKE_SOURCE_DIR}/Src/sysmem.c
 

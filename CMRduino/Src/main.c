@@ -16,10 +16,6 @@
 
 #include "gpio.h"       // Board-specific GPIO interface
 #include "can.h"        // Board-specific CAN interface
-#include "adc.h"        // Board-specific ADC interface
-#include "sensors.h"    // Board-specific sensors interface
-#include "state.h"      // stateInit()
-#include "error.h"
 
 DAC_HandleTypeDef hdac1;
 
@@ -74,7 +70,7 @@ int main(void) {
 
     // Peripheral configuration.
     gpioInit();
-    // canInit();
+    canInit();
 
     cmr_taskInit(
         &statusLED_task,

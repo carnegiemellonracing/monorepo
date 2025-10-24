@@ -18,17 +18,7 @@
  * @warning New messages MUST be added before `CANRX_LEN`.
  */
 typedef enum {
-    CANRX_HEARTBEAT_HVC = 0,  /**< @brief HVC heartbeat. */
-    CANRX_HEARTBEAT_CDC,      /**< @brief CDC heartbeat. */
-    CANRX_HEARTBEAT_DIM,      /**< @brief DIM heartbeat. */
-    CANRX_HEARTBEAT_HVI,      /**< @brief HVI heartbeat. */  
-    CANRX_FSM_DATA,           /**< @brief FSM data. */
-    CANRX_FSM_SWANGLE,
-    CANRX_DIM_REQUEST,        /**< @brief DIM state request. */
-    CANRX_INVERTER_1,         /**< @brief Inverter1 status */
-    CANRX_INVERTER_2,         /**< @brief Inverter2 status */
-    CANRX_INVERTER_3,         /**< @brief Inverter3 status */
-    CANRX_INVERTER_4,         /**< @brief Inverter4 status */
+    CANRX_CUBEMARS_DATA = 0,
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 
