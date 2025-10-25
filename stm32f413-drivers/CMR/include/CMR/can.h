@@ -139,7 +139,6 @@ int cmr_canTX(
     TickType_t timeout
 );
 int cmr_canExtendedTX(
-    cmr_can_t *can,
     uint32_t id, const void *data, uint8_t len,
     TickType_t timeout
 );
