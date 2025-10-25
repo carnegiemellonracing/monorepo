@@ -396,10 +396,10 @@ static void canTX10Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_VEH, 0x659, &therms, sizeof(cmr_canDAQTherm_t), canTX10Hz_period_ms);
 
         // Is data valid? Set it in the orientation/velocity messages
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX10Hz_period_ms);
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK, &torqueFeedback, sizeof(torqueFeedback), canTX10Hz_period_ms);
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_SETPOINT, &speedSetpoint, sizeof(speedSetpoint), canTX10Hz_period_ms);
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX10Hz_period_ms);
+    //    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX10Hz_period_ms);
+    //    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK, &torqueFeedback, sizeof(torqueFeedback), canTX10Hz_period_ms);
+    //    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_SETPOINT, &speedSetpoint, sizeof(speedSetpoint), canTX10Hz_period_ms);
+    //    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX10Hz_period_ms);
         //canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_POSITION, &posePos, sizeof(posePos), canTX10Hz_period_ms);
 
         // //TODO: Fix error with padding (manual size 7)
@@ -526,6 +526,11 @@ static void canTX200Hz(void *pvParameters) {
     const cmr_canAMKSetpoints_t *amkSetpointsRL = getAMKSetpoints(MOTOR_RL);
     const cmr_canAMKSetpoints_t *amkSetpointsRR = getAMKSetpoints(MOTOR_RR);
 
+    const cmr_canAMKActualValues1_t* const amkAct1FL = canTractiveGetPayload(CANRX_TRAC_INV_FL_ACT1);
+    const cmr_canAMKActualValues1_t* const amkAct1FR = canTractiveGetPayload(CANRX_TRAC_INV_FR_ACT1);
+    const cmr_canAMKActualValues1_t* const amkAct1RL = canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT1);
+    const cmr_canAMKActualValues1_t* const amkAct1RR = canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT1);
+
     cmr_canCDCWheelVelocity_t speedFeedback;
     cmr_canCDCWheelTorque_t torqueFeedback;
     cmr_canCDCWheelVelocity_t speedSetpoint;
@@ -547,6 +552,11 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_FR_SETPOINTS, amkSetpointsFR, sizeof(*amkSetpointsFR), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_RL_SETPOINTS, amkSetpointsRL, sizeof(*amkSetpointsRL), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_RR_SETPOINTS, amkSetpointsRR, sizeof(*amkSetpointsRR), canTX200Hz_period_ms);
+
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_AMK_FL_ACT_1, amkAct1FL, sizeof(cmr_canAMKActualValues1_t), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_AMK_FR_ACT_1, amkAct1FR, sizeof(cmr_canAMKActualValues1_t), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_AMK_RL_ACT_1, amkAct1RL, sizeof(cmr_canAMKActualValues1_t), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_AMK_RR_ACT_1, amkAct1RR, sizeof(cmr_canAMKActualValues1_t), canTX200Hz_period_ms);
         
         daqWheelSpeedFeedback(&speedFeedback);
         daqWheelTorqueFeedback(&torqueFeedback);
@@ -726,6 +736,8 @@ static void canTX1Hz(void *pvParameters) {
             .odometer_km = odometer_km
         };
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_ODOMETER, &odometer, sizeof(odometer), canTX1Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_ODOMETER, &odometer, sizeof(odometer), canTX1Hz_period_ms);
+
 
         cmr_canCDCControlsStatus_t *controlsStatus = getControlsStatus();
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_CONTROLS_STATUS, controlsStatus, sizeof(cmr_canCDCControlsStatus_t), canTX1Hz_period_ms);
