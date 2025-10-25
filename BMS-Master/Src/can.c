@@ -430,8 +430,10 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 
     cmr_canHeartbeat_t HVBMSHeartbeat = {
         .state = vsm_heartbeat->state 
-        .warning = CMR_CAN_WARN_NONE 
     }; 
+
+    cmr_canWarn_t warning = CMR_CAN_WARN_NONE;
+    cmr_canError_t error = CMR_CAN_ERROR_NONE;
 
     memcpy(&HVBMSHeartbeat.error, &currentError, sizeof(HVBMSHeartbeat.error)); 
     canTX(CMR_CANID_HEARTBEAT_HV_BMS, &HVBMSHeartbeat, sizeof(HVBMSHeartbeat), canTX100Hz_period_ms);

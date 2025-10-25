@@ -14,7 +14,6 @@
 #include "gpio.h"   // Board-specific GPIO interface
 #include "can.h"    // Board-specific CAN interface
 #include "adc.h"    // Board-specific ADC interface
-#include "fans.h" // Board-specific Fan interface
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -96,9 +95,7 @@ int main(void) {
     adcInit();
     sensorsInit();
     canInit();
-
-    //init fan task
-    fanInit();
+    
     //wwdgInit();
 
     statusLEDInit(); 
