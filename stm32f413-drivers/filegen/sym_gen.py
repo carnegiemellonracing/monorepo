@@ -2,7 +2,7 @@ import re
 import json
 import math 
 
-output = "stm32f413-drivers/filegen/symv1.sym"
+output = "stm32f413-drivers/PCAN/CMR 26x.sym"
 symlines = [] 
 used_varnames = [] 
 used_canids = [] #delete once canids fixed, shouldn't need 
@@ -81,7 +81,7 @@ def create_prefix(name, canid):
         boardname = board.group(1) 
         append_can_name = boardname+"_HEARTBEAT_"+name 
     if len(append_can_name) >= 30:
-        print("too long")
+        #print("too long")
         return name
     return append_can_name 
 
@@ -253,7 +253,7 @@ def main():
                         symlines.append(line) 
                     symlines.append("\n") 
     #write into symbol file 
-    with open("stm32f413-drivers/filegen/symv1.sym", "w") as file:
+    with open("stm32f413-drivers/PCAN/CMR 26x.sym", "w") as file:
         file.write("\n".join(symlines)) 
     print("done") 
 

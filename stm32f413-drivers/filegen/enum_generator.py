@@ -57,17 +57,32 @@ def extract_enums_from_file(filepath):
                         if value_part.startswith('(') and value_part.endswith(')'):
                             value_part = value_part[1:-1]
                         
-                        if value_part.startswith('0x'):
+                        if value_part.startswith('0x') or value_part.startswith('0X'):
                             current_value = int(value_part, 16)
                         elif '<<' in value_part:
-                            #Handle bit shifts like (1 << 0)
-                            shift_match = re.match(r'1\s*<<\s*(\d+)', value_part)
+                            #Handle bit shifts like (1 << 0) or (0xF << 12)
+                            shift_match = re.match(r'(0x[0-9a-fA-F]+|0X[0-9a-fA-F]+|\d+)U?\s*<<\s*(\d+)', value_part)
                             if shift_match:
-                                current_value = 1 << int(shift_match.group(1))
+                                base_value = shift_match.group(1)
+                                shift_amount = int(shift_match.group(2))
+                                # Parse base value (could be hex or decimal)
+                                if base_value.startswith('0x') or base_value.startswith('0X'):
+                                    base = int(base_value, 16)
+                                else:
+                                    base = int(base_value.rstrip('U'))
+                                current_value = base << shift_amount
                             else:
-                                current_value = int(value_part)
+                                # Try to evaluate it directly
+                                try:
+                                    current_value = eval(value_part.replace('U', ''))
+                                except:
+                                    current_value = int(value_part)
                         else:
-                            current_value = int(value_part)
+                            # Handle plain integers with optional U suffix
+                            try:
+                                current_value = int(value_part.rstrip('U'))
+                            except ValueError:
+                                current_value = int(value_part)
                     except ValueError:
                         continue
                 else:
@@ -128,19 +143,28 @@ def format_enum_for_symbol_file(enum_name, enum_values, max_line_len=70):
     return '\n'.join(lines)
 
 def find_header_files(root_dir):
-    """Find all header files in the directory tree"""
+    """Find all header files in the directory tree, filtering for can_types.h only"""
     header_files = []
     for root, dirs, files in os.walk(root_dir):
         for filename in files:
-            if filename.endswith(('.h', '.hpp', '.hh', '.hxx')):
+            # Only process files named can_types.h
+            if filename == 'can_types.h':
                 header_files.append(os.path.join(root, filename))
     return header_files
 
-def generate_symbol_enums(root_dir=".", output_file="stm32f413-drivers/filegen/symv1.sym"):
+def generate_symbol_enums(root_dir=".", output_file="stm32f413-drivers/PCAN/CMR 26x.sym"):
     """Generate enum definitions and prepend to existing symbol file"""
     
-    #Find all header files
+    #Find all can_types.h files
     header_files = find_header_files(root_dir)
+    
+    if not header_files:
+        print("No can_types.h files found!")
+        return
+    
+    print(f"Found {len(header_files)} can_types.h file(s):")
+    for f in header_files:
+        print(f"  {f}")
     
     all_enums = {}
     
@@ -178,7 +202,6 @@ def generate_symbol_enums(root_dir=".", output_file="stm32f413-drivers/filegen/s
     
     final_content_parts.extend([
         '// ========== AUTO-GENERATED ENUMS ==========',
-        '// Generated from C header files',
         '',
         '{ENUMS}'
     ])

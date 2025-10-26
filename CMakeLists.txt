@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.24)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
 set(CMAKE_SYSTEM_NAME               Generic)
 set(CMAKE_SYSTEM_PROCESSOR          arm)
+
 project(25e)
 
 # Needed for ExternalProject_Add
@@ -10,17 +11,43 @@ include(ExternalProject)
 
 set(SCRIPTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/stm32f413-drivers/filegen")
 
-add_custom_target(run_codegen_scripts ALL
-    COMMAND python "${SCRIPTS_DIR}/canid_mapper.py" > nul
-    COMMAND python "${SCRIPTS_DIR}/extra_info.py" > nul
-    COMMAND python "${SCRIPTS_DIR}/sym_gen.py" > nul
-    COMMAND python "${SCRIPTS_DIR}/enum_generator.py" > nul
-    COMMAND python "${SCRIPTS_DIR}/merge_can_signals.py" > nul
-    
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMENT "Running code generation scripts..."
-    VERBATIM
-)
+find_package(Python COMPONENTS Interpreter QUIET)
+
+if(Python_FOUND)
+    execute_process(
+        COMMAND ${Python_EXECUTABLE} -c "import json, re"
+        RESULT_VARIABLE PYTHON_DEPS_CHECK
+        OUTPUT_QUIET
+        ERROR_QUIET
+    )
+    if(PYTHON_DEPS_CHECK EQUAL 0)
+        set(PYTHON_DEPS_AVAILABLE TRUE)
+    else()
+        set(PYTHON_DEPS_AVAILABLE FALSE)
+    endif()
+else()
+    set(PYTHON_DEPS_AVAILABLE FALSE)
+endif()
+
+if(PYTHON_DEPS_AVAILABLE)
+    add_custom_target(run_codegen_scripts ALL
+        COMMAND ${Python_EXECUTABLE} "${SCRIPTS_DIR}/canid_mapper.py"
+        COMMAND ${Python_EXECUTABLE} "${SCRIPTS_DIR}/extra_info.py"
+        COMMAND ${Python_EXECUTABLE} "${SCRIPTS_DIR}/sym_gen.py"
+        COMMAND ${Python_EXECUTABLE} "${SCRIPTS_DIR}/enum_generator.py"
+        COMMAND ${Python_EXECUTABLE} "${SCRIPTS_DIR}/merge_can_signals.py"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Running code generation scripts"
+        VERBATIM
+    )
+else()
+    add_custom_target(run_codegen_scripts
+        COMMAND ${CMAKE_COMMAND} -E echo "WARNING: Symbol files not generated - Python or dependencies missing."
+        COMMENT "Skipping code generation scripts"
+        VERBATIM
+    )
+endif()
+
 
 ExternalProject_Add(
     HVC

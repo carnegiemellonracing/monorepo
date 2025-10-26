@@ -572,7 +572,7 @@ typedef struct {
     int16_t frontRight_rpm; //u: rpm, f:0.1 /**< @brief Wheel speed on 20e (rpm * 10). */
     int16_t rearLeft_rpm;   //u: rpm, f:0.1 /**< @brief Wheel speed on 20e (rpm * 10). */
     int16_t rearRight_rpm;  //u: rpm, f:0.1 /**< @brief Wheel speed on 20e (rpm * 10). */
-} cmr_canCDCWheelVelocity;
+} cmr_canCDCWheelVelocity_t;
 
 typedef struct {
     int16_t frontLeft_Nm;   //u: Nm, f:0.1 /**< @brief Wheel torque on 20e (Nm * 10). */
@@ -759,14 +759,6 @@ typedef enum {
     CMR_CAN_AMK_STATUS_DERATING_EN  = (1 << 15)     /**< @brief Protective torque derating enabled. */
 } cmr_canAMKStatus_t;
 
-/** @brief AMK motor controller control bits. */
-typedef enum {
-    CMR_CAN_AMK_CTRL_INV_ON     = (1 << 8),     /**< @brief Inverter on command. */
-    CMR_CAN_AMK_CTRL_HV_EN      = (1 << 9),     /**< @brief HV enable command. */
-    CMR_CAN_AMK_CTRL_INV_EN     = (1 << 10),    /**< @brief Inverter enable command. */
-    CMR_CAN_AMK_CTRL_ERR_RESET  = (1 << 11)     /**< @brief Inverter error reset command. */
-} cmr_canAMKControl_t;
-
 /** @brief AMK motor controller status and velocity. */
 typedef struct {
     uint16_t status_bv;         //flag: cmr_canAMKStatus_t /**<@brief Status bit vector */
@@ -784,17 +776,15 @@ typedef struct {
 } cmr_canAMKActualValues2_t;
 
 typedef enum {
-    CMR_CAN_AMK_CTRL_RESERVED1   = 0x00FF,        /**< Bits 0–7: Reserved1 */
-    CMR_CAN_AMK_CTRL_INV_ON      = (1U << 8),     /**< Bit 8: Inverter on command */
-    CMR_CAN_AMK_CTRL_DC_ON       = (1U << 9),     /**< Bit 9: HV DC link on */
-    CMR_CAN_AMK_CTRL_ENABLE      = (1U << 10),    /**< Bit 10: Motor enable */
-    CMR_CAN_AMK_CTRL_ERR_RESET   = (1U << 11),    /**< Bit 11: Error reset */
-    CMR_CAN_AMK_CTRL_RESERVED2   = (0xF << 12)    /**< Bits 12–15: Reserved2 */
-} cmr_canAMKSetpointsControl_t;
+    CMR_CAN_AMK_CTRL_INV_ON     = (1 << 8),     /**< @brief Inverter on command. */
+    CMR_CAN_AMK_CTRL_HV_EN      = (1 << 9),     /**< @brief HV enable command. */
+    CMR_CAN_AMK_CTRL_INV_EN     = (1 << 10),    /**< @brief Inverter enable command. */
+    CMR_CAN_AMK_CTRL_ERR_RESET  = (1 << 11)     /**< @brief Inverter error reset command. */
+} cmr_canAMKControl_t;
 
 /** @brief AMK motor controller command message. */
 typedef struct {
-    uint16_t control_bv;        //Flag: cmr_canAMKSetpointsControl_t /**< @brief Control bit vector.  See cmr_canAMKControl_t */
+    uint16_t control_bv;        //Flag: cmr_canAMKControl_t /**< @brief Control bit vector.*/
     int16_t velocity_rpm;       //u: rpm, p:2 /**< @brief Velocity setpoint (RPM) */
     int16_t torqueLimPos_dpcnt; //u: Nm, f:0.0098, p:4 /**< @brief Positive torque limit in 0.1% of 9.8 Nm (nominal torque) */
     int16_t torqueLimNeg_dpcnt; //u: Nm, f:0.0098, p:4 /**< @brief Negative torque limit in 0.1% of 9.8 Nm (nominal torque) */

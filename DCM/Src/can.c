@@ -636,8 +636,8 @@ static void canTX200Hz(void *pvParameters) {
         //daqPoseOrientation(&poseOrient);
         daqPoseVelocity(&poseVel);
         
-        cog_velocity.cog_x = car_state.velocity.x * 100.0f;
-        cog_velocity.cog_y = car_state.velocity.y * 100.0f;
+        cog_velocity.cog_x_mps = car_state.velocity.x * 100.0f;
+        cog_velocity.cog_y_mps = car_state.velocity.y * 100.0f;
         cog_velocity.slip_angle = car_state.slip_angle.body;
 
         front_velocity.fl_x = car_state.fl_velocity.x * 100.0f;

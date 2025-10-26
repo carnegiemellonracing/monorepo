@@ -257,7 +257,7 @@ static void motorsCommand (
 
                 runControls(gear,
                 		    dataFSM    -> torqueRequested,
-                            dataFSM    -> brakePedalPosition,
+                            dataFSM    -> brakePedalPosition_percent,
                             dataFSM    -> brakePressureFront_PSI,
                             swangleFSM->steeringWheelAngle_millideg_FL,
                             swangleFSM->steeringWheelAngle_millideg_FR,

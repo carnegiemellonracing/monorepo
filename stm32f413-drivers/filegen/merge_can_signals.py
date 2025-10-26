@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 CAN Signal Merger Script
-Merges messages from CMR 25e.sym into symv1.sym based on CAN ID.
-Only adds messages with CAN IDs that don't already exist in symv1.
+Merges messages from CMR 25e.sym into CMR 26x.sym based on CAN ID.
+Only adds messages with CAN IDs that don't already exist in 26x sym.
 """
 
 import re
@@ -98,32 +98,30 @@ def parse_sym_file(file_path: str) -> Dict[str, Dict]:
 
 def merge_signals(symv1_path: str, cmr25e_path: str, output_path: str = None) -> None:
     """
-    Merge messages from CMR 25e.sym into symv1.sym based on CAN ID.
-    Only adds messages whose CAN ID doesn't already exist in symv1.
+    Merge messages from CMR 25e.sym into CMR 26x.sym based on CAN ID.
+    Only adds messages whose CAN ID doesn't already exist in 26x sym.
     
     Args:
-        symv1_path: Path to symv1.sym file
+        symv1_path: Path to CMR 26x.sym file
         cmr25e_path: Path to CMR 25e.sym file  
-        output_path: Output file path (defaults to symv1_merged.sym)
+        output_path: Output file path
     """
-    if output_path is None:
-        output_path = "symv1_merged.sym"
     
-    print("Parsing symv1.sym...")
+    print("Parsing CMR 26x.sym...")
     symv1_messages = parse_sym_file(symv1_path)
     
     print("Parsing CMR 25e.sym...")
     cmr25e_messages = parse_sym_file(cmr25e_path)
     
     if not symv1_messages:
-        print("Error: No messages found in symv1.sym")
+        print("Error: No messages found in CMR 26x.sym")
         return
     
     if not cmr25e_messages:
         print("Error: No messages found in CMR 25e.sym")
         return
     
-    print(f"Found {len(symv1_messages)} messages in symv1.sym")
+    print(f"Found {len(symv1_messages)} messages in CMR 26x.sym")
     print(f"Found {len(cmr25e_messages)} messages in CMR 25e.sym")
     
     existing_can_ids = set()
@@ -134,7 +132,7 @@ def merge_signals(symv1_path: str, cmr25e_path: str, output_path: str = None) ->
         else:
             print(f"Warning: No CAN ID found for message {msg_name}")
     
-    print(f"Found {len(existing_can_ids)} unique CAN IDs in symv1.sym")
+    print(f"Found {len(existing_can_ids)} unique CAN IDs in CMR 26x.sym")
     
     new_messages = []
     skipped_messages = []
@@ -201,12 +199,12 @@ def main():
     print("CAN Signal Merger")
     print("="*50)
     
-    symv1_path = os.path.join("stm32f413-drivers", "filegen", "symv1.sym")
+    symv1_path = os.path.join("stm32f413-drivers", "PCAN", "CMR 26x.sym")
     cmr25e_path = os.path.join("stm32f413-drivers", "PCAN", "CMR 25e.sym")
-    output_path = os.path.join("stm32f413-drivers", "filegen", "symv1.sym")
+    output_path = os.path.join("stm32f413-drivers", "PCAN", "CMR 26x.sym")
     
     print(f"Source files:")
-    print(f"  symv1.sym: {symv1_path}")
+    print(f"  CMR 26x.sym: {symv1_path}")
     print(f"  CMR 25e.sym: {cmr25e_path}")
     print(f"Output file: {output_path}")
     

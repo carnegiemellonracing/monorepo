@@ -170,67 +170,37 @@ def extract_canrx_mappings(content):
     if 'cmr_canRXMeta_t' not in content:
         return canrx_to_canid, canrx_to_timeout
     
-    #Multi-line pattern matching for better coverage
-    lines = content.split('\n')
-    current_canrx = None
+    # Improved pattern that captures complete entries
+    # This pattern looks for the ENTIRE entry block from [ to }
+    COMPLETE_ENTRY_PATTERN = re.compile(
+        r'\[\s*(CANRX_\w+)\s*\]\s*=\s*\{([^}]+)\}',
+        re.IGNORECASE | re.MULTILINE
+    )
     
-    for i, line in enumerate(lines):
-        #Look for CANRX array entry start
-        canrx_match = re.search(r'\[\s*(CANRX_\w+)\s*\]\s*=\s*\{', line, re.IGNORECASE)
-        if canrx_match:
-            current_canrx = canrx_match.group(1)
-            
-            #Look ahead up to 20 lines for the closing brace
-            for j in range(i, min(i + 20, len(lines))):
-                #Look for .canID assignment
-                canid_match = re.search(r'\.canID\s*=\s*((?:CMR_CANID_|CAN_ID_)\w+)', lines[j], re.IGNORECASE)
-                if canid_match:
-                    can_id = canid_match.group(1)
-                    if is_canrx(current_canrx) and is_canid(can_id):
-                        canrx_to_canid[current_canrx] = can_id
-                
-                timeout_match = re.search(r'\.timeoutError_ms\s*=\s*([0-9]+)', lines[j], re.IGNORECASE)
-                if timeout_match:
-                    try:
-                        timeout_val = int(timeout_match.group(1))
-                        if current_canrx and is_canrx(current_canrx):
-                            canrx_to_timeout[current_canrx] = timeout_val
-                    except ValueError:
-                        pass
-                        
-                if '}' in lines[j] and j > i:
-                    break
+    matches = COMPLETE_ENTRY_PATTERN.findall(content)
     
-    #try the original patterns as backup
-    array_matches = CANRX_ARRAY_PATTERN.findall(content)
-    for array_name, array_content in array_matches:
-        #find individual entries within the array
-        entry_matches = CANRX_ENTRY_PATTERN.findall(array_content)
-        for match in entry_matches:
-            if len(match) == 3:
-                canrx_key, canid, timeout_error_ms = match
-                canrx_key = canrx_key.strip()
-                canid = canid.strip()
-                timeout_error_ms = timeout_error_ms.strip()
-                
-                if is_canrx(canrx_key) and is_canid(canid):
-                    if canrx_key not in canrx_to_canid:
-                        canrx_to_canid[canrx_key] = canid
-                    if timeout_error_ms and canrx_key not in canrx_to_timeout:
-                        try:
-                            timeout_val = int(timeout_error_ms)
-                            canrx_to_timeout[canrx_key] = timeout_val
-                        except ValueError:
-                            canrx_to_timeout[canrx_key] = timeout_error_ms
-    
-    #better pattern for broader matching
-    enhanced_matches = CANRX_DEFINITION_PATTERN.findall(content)
-    for canrx_name, can_id in enhanced_matches:
-        canrx_name = canrx_name.strip()
-        can_id = can_id.strip()
-        if is_canrx(canrx_name) and is_canid(can_id):
-            if canrx_name not in canrx_to_canid:
-                canrx_to_canid[canrx_name] = can_id
+    for canrx_key, entry_content in matches:
+        canrx_key = canrx_key.strip()
+        
+        # Only process if it's a valid CANRX key
+        if not is_canrx(canrx_key):
+            continue
+        
+        # Extract canID from within THIS specific entry
+        canid_match = re.search(r'\.canID\s*=\s*((?:CMR_CANID_|CAN_ID_)\w+)', entry_content, re.IGNORECASE)
+        if canid_match:
+            can_id = canid_match.group(1).strip()
+            if is_canid(can_id):
+                canrx_to_canid[canrx_key] = can_id
+        
+        # Extract timeout from within THIS specific entry
+        timeout_match = re.search(r'\.timeoutError_ms\s*=\s*([0-9]+)', entry_content, re.IGNORECASE)
+        if timeout_match:
+            try:
+                timeout_val = int(timeout_match.group(1))
+                canrx_to_timeout[canrx_key] = timeout_val
+            except ValueError:
+                pass
     
     return canrx_to_canid, canrx_to_timeout
 
@@ -569,6 +539,16 @@ def main():
                 #Replace canRX info with canTX info (canTX has priority)
                 canid_to_info[canid] = info
     
+    #Count canTX vs canRX mappings BEFORE cleaning (when source field still exists)
+    cantx_count = 0
+    canrx_count = 0
+    
+    for canid, info in canid_to_info.items():
+        if info.get("source") == "canTX":
+            cantx_count += 1
+        elif info.get("source") == "canRX":
+            canrx_count += 1
+    
     #Clean up the output - remove source and canrx_key fields for final output
     cleaned_canid_to_info = {}
     for canid, info in canid_to_info.items():
@@ -605,22 +585,6 @@ def main():
     
     with open(OUTPUT_FILE, 'w') as f:
         json.dump(output_data, f, indent=4, sort_keys=True)
-    
-    #Count canTX vs canRX mappings for summary
-    cantx_count = 0
-    canrx_count = 0
-    
-    for canid, info in cleaned_canid_to_info.items():
-        cycle_time = info.get('cycleTime', 'N/A')
-        timeout = info.get('timeOut', 'N/A')
-        
-        #If we have numeric cycleTime and calculated timeout (5*cycleTime), it's likely from canTX
-        if (isinstance(cycle_time, (int, float)) and 
-            isinstance(timeout, (int, float)) and 
-            abs(timeout - 5 * cycle_time) < 0.01):  #Allow for floating point precision
-            cantx_count += 1
-        else:
-            canrx_count += 1
     
     #Summary output
     print(f"Processed {len(c_files)} files, found {len(cleaned_canid_to_info)} CAN IDs ({cantx_count} TX, {canrx_count} RX) -> {OUTPUT_FILE}")
