@@ -1058,8 +1058,8 @@
             "type": "cmr_canCDCSafetyFilterStates_t"
         },
         "CMR_CANID_TEST_ID": {
-            "cycleTime": "can10Hz_period_ms\n            //",
-            "timeOut": "5*can10Hz_period_ms\n            //",
+            "cycleTime": 1000,
+            "timeOut": 5000,
             "type": "cmr_canDAQTest_t"
         },
         "CMR_CANID_VSM_LATCHED_STATUS": {
@@ -1120,8 +1120,8 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2678,
-        "files_with_matches": 2678,
+        "files_processed": 2783,
+        "files_with_matches": 2783,
         "global_mappings": {
             "canrx_mappings": 95,
             "canrx_timeouts": 94,
