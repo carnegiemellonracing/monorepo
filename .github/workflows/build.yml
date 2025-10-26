@@ -4,6 +4,8 @@ run-name: ${{ github.actor }}-${{github.repository}} Build 🚀
 
 on:
   push:
+    branches:
+      - '**'
   pull_request:
     branches: [ "main" ]
 
