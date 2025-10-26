@@ -112,6 +112,8 @@ def format_bitpacking(canid, structname, structlines, atbit, vartype, enums):
                     structlines.append("Var="+append_can_name+" "+vartype+" "+str(atbit+int(position))+","+str(realsize)) 
                 #atbit+=realsize 
 
+    print("BUILD ERROR!!!"); 
+
 
 def format_field_params(params): 
     """Format field-specific parameters like u, f, p, e, etc."""
