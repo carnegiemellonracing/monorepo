@@ -659,7 +659,7 @@ static void sendFSMData(void) {
         .torqueRequested = torqueRequested,
         .throttlePosition = throttlePosition,
         .brakePressureFront_PSI = brakePressureFront_PSI,
-        .brakePedalPosition = brakePedalPosition
+        .brakePedalPosition_percent = brakePedalPosition
     };
 
     canTX(CMR_CANID_FSM_DATA, &msg, sizeof(msg), canTX100Hz_period_ms);

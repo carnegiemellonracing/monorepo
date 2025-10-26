@@ -1,0 +1,476 @@
+doing uint16_tcontrol_bv
+in bitpacked part
+foundcmr_canAMKSetpointsControl_t
+[('AMK_CTRL_RESERVED1', '0x00FF', '')]
+in loop with AMK_CTRL_RESERVED1
+doing int16_tvelocity_rpm
+in not bitpacked part
+doing int16_ttorqueLimPos_dpcnt
+in not bitpacked part
+doing int16_ttorqueLimNeg_dpcnt
+in not bitpacked part
+doing uint16_tcontrol_bv
+in bitpacked part
+foundcmr_canAMKSetpointsControl_t
+[('AMK_CTRL_RESERVED1', '0x00FF', '')]
+in loop with AMK_CTRL_RESERVED1
+doing int16_tvelocity_rpm
+in not bitpacked part
+doing int16_ttorqueLimPos_dpcnt
+in not bitpacked part
+doing int16_ttorqueLimNeg_dpcnt
+in not bitpacked part
+doing uint16_tcontrol_bv
+in bitpacked part
+foundcmr_canAMKSetpointsControl_t
+[('AMK_CTRL_RESERVED1', '0x00FF', '')]
+in loop with AMK_CTRL_RESERVED1
+doing int16_tvelocity_rpm
+in not bitpacked part
+doing int16_ttorqueLimPos_dpcnt
+in not bitpacked part
+doing int16_ttorqueLimNeg_dpcnt
+in not bitpacked part
+doing uint16_tcontrol_bv
+in bitpacked part
+foundcmr_canAMKSetpointsControl_t
+[('AMK_CTRL_RESERVED1', '0x00FF', '')]
+in loop with AMK_CTRL_RESERVED1
+doing int16_tvelocity_rpm
+in not bitpacked part
+doing int16_ttorqueLimPos_dpcnt
+in not bitpacked part
+doing int16_ttorqueLimNeg_dpcnt
+in not bitpacked part
+doing int16_tcog_x_mps
+in not bitpacked part
+doing int16_tcog_y_mps
+in not bitpacked part
+doing floatslip_angle
+in not bitpacked part
+doing uint8_ttcOn
+in not bitpacked part
+doing uint8_tyrcOn
+in not bitpacked part
+doing floatKCoulombs
+in not bitpacked part
+doing int16_tfl_x
+in not bitpacked part
+doing int16_tfl_y
+in not bitpacked part
+doing int16_tfr_x
+in not bitpacked part
+doing int16_tfr_y
+in not bitpacked part
+doing floatodometer_km
+in not bitpacked part
+doing int16_troll_deg
+in not bitpacked part
+doing int16_tpitch_deg
+in not bitpacked part
+doing int16_tyaw_deg
+in not bitpacked part
+doing int16_tvelocity_deg
+in not bitpacked part
+doing floatlatitude_deg
+in not bitpacked part
+doing floatlongitude_deg
+in not bitpacked part
+doing int16_tlongitudinalVel_mps
+in not bitpacked part
+doing int16_tlateralVel_mps
+in not bitpacked part
+doing int16_tverticalVel_mps
+in not bitpacked part
+doing floatpower_limit_W
+in not bitpacked part
+doing int16_tpackCurrent_dA
+in not bitpacked part
+doing uint16_tpackVoltage_cV
+in not bitpacked part
+doing int32_tpackPower_W
+in not bitpacked part
+doing int16_trl_x
+in not bitpacked part
+doing int16_trl_y
+in not bitpacked part
+doing int16_trr_x
+in not bitpacked part
+doing int16_trr_y
+in not bitpacked part
+doing uint8_tseconds
+in not bitpacked part
+doing uint8_tminutes
+in not bitpacked part
+doing uint8_thours
+in not bitpacked part
+doing uint8_tdate
+in not bitpacked part
+doing uint8_tmonth
+in not bitpacked part
+doing uint8_tyear
+in not bitpacked part
+doing uint8_terr
+in not bitpacked part
+doing int16_tfrontLeft_rpm
+in not bitpacked part
+doing int16_tfrontRight_rpm
+in not bitpacked part
+doing int16_trearLeft_rpm
+in not bitpacked part
+doing int16_trearRight_rpm
+in not bitpacked part
+doing int16_tfrontLeft_rpm
+in not bitpacked part
+doing int16_tfrontRight_rpm
+in not bitpacked part
+doing int16_trearLeft_rpm
+in not bitpacked part
+doing int16_trearRight_rpm
+in not bitpacked part
+doing int16_tfrontLeft_Nm
+in not bitpacked part
+doing int16_tfrontRight_Nm
+in not bitpacked part
+doing int16_trearLeft_Nm
+in not bitpacked part
+doing int16_trearRight_Nm
+in not bitpacked part
+doing int16_tfrontLeft_Nm
+in not bitpacked part
+doing int16_tfrontRight_Nm
+in not bitpacked part
+doing int16_trearLeft_Nm
+in not bitpacked part
+doing int16_trearRight_Nm
+in not bitpacked part
+doing int16_tcontrols_current_yaw_rate
+in not bitpacked part
+doing int16_tcontrols_target_yaw_rate
+in not bitpacked part
+doing int16_tcontrols_bias
+in not bitpacked part
+doing int16_tcontrols_pid
+in not bitpacked part
+doing int16_tcombined_normalized_throttle
+in not bitpacked part
+doing uint8_tplaceholder
+in not bitpacked part
+doing floatmoment_req_Nm
+in not bitpacked part
+doing floatlin_accel_Nm
+in not bitpacked part
+doing int16_tfrontLeft_Nm
+in not bitpacked part
+doing int16_tfrontRight_Nm
+in not bitpacked part
+doing int16_trearLeft_Nm
+in not bitpacked part
+doing int16_trearRight_Nm
+in not bitpacked part
+doing uint16_tk_lin
+in not bitpacked part
+doing uint16_tk_yaw
+in not bitpacked part
+doing uint16_tk_tie
+in not bitpacked part
+doing uint8_tacknowledge
+in not bitpacked part
+doing uint8_tbuttons
+in bitpacked part
+foundcmr_canDIMButtons_t
+[]
+doing uint8_trotaryPos
+in not bitpacked part
+doing uint8_tswitchValues
+in not bitpacked part
+doing uint8_tregenPercent
+in not bitpacked part
+doing uint8_tpaddle
+in not bitpacked part
+doing uint8_tLRUDButtons
+in bitpacked part
+foundcmr_canLRUDButtons_t
+[]
+doing uint16_tbusVoltage_mV
+in not bitpacked part
+doing uint16_tbusCurrent_mA
+in not bitpacked part
+doing uint8_trequestedState
+in not bitpacked part
+doing uint8_trequestedGear
+in not bitpacked part
+doing uint8_trequestedDrsMode
+in not bitpacked part
+doing uint8_trequestedDriver
+in not bitpacked part
+doing uint8_tstate
+in not bitpacked part
+doing uint8_tangle
+in not bitpacked part
+doing uint8_tpwm_left
+in not bitpacked part
+doing uint8_tpwm_right
+in not bitpacked part
+doing floatslipRatio_FL
+in not bitpacked part
+doing floatslipRatio_FR
+in not bitpacked part
+doing floatslipRatio_FL
+in not bitpacked part
+doing floatslipRatio_FR
+in not bitpacked part
+doing floatv_whl_fl
+in not bitpacked part
+doing floatv_whl_fr
+in not bitpacked part
+doing uint16_tbrakePressureFrontADC
+in not bitpacked part
+doing uint16_tsteeringWheelAngleADC
+in not bitpacked part
+doing uint16_tbrakePressureFrontADC
+in not bitpacked part
+doing uint16_tsteeringWheelAngleADC
+in not bitpacked part
+doing uint16_tbusVoltage_mV
+in not bitpacked part
+doing uint16_tbusCurrent_mA
+in not bitpacked part
+doing uint16_tbrakePressureFrontADC
+in not bitpacked part
+doing uint16_tsteeringWheelAngleADC
+in not bitpacked part
+doing uint16_tbrakePressureFrontADC
+in not bitpacked part
+doing uint16_tsteeringWheelAngleADC
+in not bitpacked part
+doing uint8_tstate
+in not bitpacked part
+doing uint8_terror
+in not bitpacked part
+doing uint8_twarning
+in not bitpacked part
+doing uint8_tstate
+in not bitpacked part
+doing uint8_terror
+in not bitpacked part
+doing uint8_twarning
+in not bitpacked part
+doing uint8_tstate
+in not bitpacked part
+doing uint8_terror
+in not bitpacked part
+doing uint8_twarning
+in not bitpacked part
+doing uint16_terrorStatus
+in bitpacked part
+foundcmr_canHVCError_t
+[('HVC_ERROR_NONE', '0x0000', ''), ('HVC_ERROR_PACK_UNDERVOLT', '0x0001', ''), ('HVC_ERROR_PACK_OVERVOLT', '0x0002', ''), ('HVC_ERROR_PACK_OVERCURRENT', '0x0008', ''), ('HVC_ERROR_CELL_UNDERVOLT', '0x0010', ''), ('HVC_ERROR_CELL_OVERVOLT', '0x0020', ''), ('HVC_ERROR_CELL_OVERTEMP', '0x0040', ''), ('HVC_ERROR_BMB_FAULT', '0x0080', ''), ('HVC_ERROR_BMB_TIMEOUT', '0x0100', ''), ('HVC_ERROR_CAN_TIMEOUT', '0x0200', ''), ('HVC_ERROR_RELAY', '0x1000', ''), ('HVC_ERROR_LV_UNDERVOLT', '0x2000', '')]
+in loop with HVC_ERROR_NONE
+in loop with HVC_ERROR_PACK_UNDERVOLT
+in loop with HVC_ERROR_PACK_OVERVOLT
+in loop with HVC_ERROR_PACK_OVERCURRENT
+in loop with HVC_ERROR_CELL_UNDERVOLT
+in loop with HVC_ERROR_CELL_OVERVOLT
+in loop with HVC_ERROR_CELL_OVERTEMP
+in loop with HVC_ERROR_BMB_FAULT
+in loop with HVC_ERROR_BMB_TIMEOUT
+in loop with HVC_ERROR_CAN_TIMEOUT
+in loop with HVC_ERROR_RELAY
+in loop with HVC_ERROR_LV_UNDERVOLT
+doing uint8_thvcMode
+in bitpacked part
+foundcmr_canHVCMode_t
+[('HVC_MODE_ERROR', '0', '')]
+in loop with HVC_MODE_ERROR
+doing uint8_thvcState
+in bitpacked part
+foundcmr_canHVCState_t
+[('HVC_STATE_ERROR', '0x00', ''), ('HVC_STATE_CLEAR_ERROR', '0x0B', ''), ('HVC_STATE_UNKNOWN', '0x0C', ''), ('HVC_STATE_DISCHARGE', '0x01', ''), ('HVC_STATE_STANDBY', '0x02', ''), ('HVC_STATE_DRIVE_PRECHARGE', '0x03', ''), ('HVC_STATE_DRIVE_PRECHARGE_COMPLETE', '0x04', ''), ('HVC_STATE_DRIVE', '0x05', ''), ('HVC_STATE_CHARGE_PRECHARGE', '0x06', ''), ('HVC_STATE_CHARGE_PRECHARGE_COMPLETE', '0x07', ''), ('HVC_STATE_CHARGE_TRICKLE', '0x08', ''), ('HVC_STATE_CHARGE_CONSTANT_CURRENT', '0x09', ''), ('HVC_STATE_CHARGE_CONSTANT_VOLTAGE', '0x0A', '')]
+in loop with HVC_STATE_ERROR
+in loop with HVC_STATE_CLEAR_ERROR
+in loop with HVC_STATE_UNKNOWN
+in loop with HVC_STATE_DISCHARGE
+in loop with HVC_STATE_STANDBY
+in loop with HVC_STATE_DRIVE_PRECHARGE
+in loop with HVC_STATE_DRIVE_PRECHARGE_COMPLETE
+in loop with HVC_STATE_DRIVE
+in loop with HVC_STATE_CHARGE_PRECHARGE
+in loop with HVC_STATE_CHARGE_PRECHARGE_COMPLETE
+in loop with HVC_STATE_CHARGE_TRICKLE
+in loop with HVC_STATE_CHARGE_CONSTANT_CURRENT
+in loop with HVC_STATE_CHARGE_CONSTANT_VOLTAGE
+doing uint8_trelayStatus
+in not bitpacked part
+doing uint8_tuptime_s
+in not bitpacked part
+doing int16_tpackCurrent_dA
+in not bitpacked part
+doing uint16_tpackVoltage_cV
+in not bitpacked part
+doing int32_tpackPower_W
+in not bitpacked part
+doing uint8_tstate
+in not bitpacked part
+doing uint8_terror
+in not bitpacked part
+doing uint8_twarning
+in not bitpacked part
+doing uint8_tstate
+in not bitpacked part
+doing uint8_terror
+in not bitpacked part
+doing uint8_twarning
+in not bitpacked part
+doing uint8_tmaxTempIndex
+in not bitpacked part
+doing uint8_tminTempIndex
+in not bitpacked part
+doing int16_tmaxCellTemp_C
+in not bitpacked part
+doing int16_tminCellTemp_C
+in not bitpacked part
+doing uint8_tmaxVoltIndex
+in not bitpacked part
+doing uint8_tminVoltIndex
+in not bitpacked part
+doing uint16_tmaxCellVoltage_mV
+in not bitpacked part
+doing uint16_tminCellVoltage_mV
+in not bitpacked part
+doing uint8_tBMB1_2_Errs
+in bitpacked part
+foundcmr_canBMBErr_t
+[]
+doing uint8_tBMB3_4_Errs
+in bitpacked part
+foundcmr_canBMBErr_t
+[]
+doing uint8_tBMB5_6_Errs
+in bitpacked part
+foundcmr_canBMBErr_t
+[]
+doing uint8_tBMB7_8_Errs
+in bitpacked part
+foundcmr_canBMBErr_t
+[]
+doing uint8_tBMB9_10_Errs
+in bitpacked part
+foundcmr_canBMBErr_t
+[]
+doing uint8_tBMB11_12_Errs
+in bitpacked part
+foundcmr_canBMBErr_t
+[]
+doing uint8_tBMB13_14_Errs
+in bitpacked part
+foundcmr_canBMBErr_t
+[]
+doing uint8_tBMB15_16_Errs
+in bitpacked part
+foundcmr_canBMBErr_t
+[]
+doing uint8_tmodeRequest
+in bitpacked part
+foundcmr_canHVCMode_t
+[('HVC_MODE_ERROR', '0', '')]
+in loop with HVC_MODE_ERROR
+doing uint8_tvbatt_mV
+in not bitpacked part
+doing uint8_tvAIR_mV
+in not bitpacked part
+doing uint8_tsafety_mV
+in not bitpacked part
+doing uint8_tiDCDC_mA
+in not bitpacked part
+doing uint16_tminCellTemp_C
+in not bitpacked part
+doing uint16_tmaxCellTemp_C
+in not bitpacked part
+doing uint8_tminTempBMBNum
+in not bitpacked part
+doing uint8_tminTempCellNum
+in not bitpacked part
+doing uint8_tmaxTempBMBNum
+in not bitpacked part
+doing uint8_tmaxTempCellNum
+in not bitpacked part
+doing uint16_tminCellVoltage_mV
+in not bitpacked part
+doing uint16_tmaxCellVoltage_mV
+in not bitpacked part
+doing uint8_tminVoltageBMBNum
+in not bitpacked part
+doing uint8_tminVoltageCellNum
+in not bitpacked part
+doing uint8_tmaxVoltageBMBNum
+in not bitpacked part
+doing uint8_tmaxVoltageCellNum
+in not bitpacked part
+doing int32_tinstantCurrent_mA
+in not bitpacked part
+doing int32_taverageCurrent_mA
+in not bitpacked part
+doing int32_tbattVoltage_mV
+in not bitpacked part
+doing int32_thvVoltage_mV
+in not bitpacked part
+doing uint16_tmotor_power_FL
+in not bitpacked part
+doing uint16_tmotor_power_FR
+in not bitpacked part
+doing uint16_tmotor_power_RL
+in not bitpacked part
+doing uint16_tmotor_power_RR
+in not bitpacked part
+doing floatslipRatio_RL
+in not bitpacked part
+doing floatslipRatio_RR
+in not bitpacked part
+doing floatomega_RL
+in not bitpacked part
+doing floatomega_RR
+in not bitpacked part
+doing floatv_whl_rl
+in not bitpacked part
+doing floatv_whl_rr
+in not bitpacked part
+doing floatpower_limit_max_violation_W
+in not bitpacked part
+doing uint8_tlongest_power_violation_ms
+in not bitpacked part
+doing uint8_tover_voltage_count
+in not bitpacked part
+doing uint8_tunder_voltage_count
+in not bitpacked part
+doing uint8_tover_temp_count
+in not bitpacked part
+doing uint8_ttest_id
+in not bitpacked part
+doing uint16_tbusVoltage_mV
+in not bitpacked part
+doing uint16_tbusCurrent_mA
+in not bitpacked part
+doing uint16_tbusVoltage_mV
+in not bitpacked part
+doing uint16_tbusCurrent_mA
+in not bitpacked part
+doing uint8_tinternalState
+in not bitpacked part
+doing uint8_tmoduleTimeoutMatrix
+in bitpacked part
+foundcmr_canVSMErrorSource_t
+[('VSM_ERROR_SOURCE_NONE', '0', '')]
+in loop with VSM_ERROR_SOURCE_NONE
+doing uint8_tbadStateMatrix
+in bitpacked part
+foundcmr_canVSMErrorSource_t
+[('VSM_ERROR_SOURCE_NONE', '0', '')]
+in loop with VSM_ERROR_SOURCE_NONE
+doing uint8_tlatchMatrix
+in bitpacked part
+foundcmr_canVSMLatch_t
+[('VSM_LATCH_NONE', '0', '')]
+in loop with VSM_LATCH_NONE
+{}
+done
