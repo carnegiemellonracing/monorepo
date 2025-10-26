@@ -88,10 +88,10 @@ def create_prefix(name, canid):
 
 
 def format_bitpacking(canid, structname, structlines, atbit, vartype, enums):
-    found = False
+    #found = False
     for enumfields, name in enums:
         if name == structname: 
-            found = True
+            #found = True
             packed_fields = re.findall(r'(?:CMR_CAN_)?(\w+)\s*=\s*\(?\s*(0x[\da-fA-F]+|\d+)\s*[a-zA-Z]*\s*\)?\s*(?:\(?\s*<<\s*(\d+)\s*\)?)?', enumfields) 
             for name, size, position in packed_fields: 
                 if "0x" in size: 
@@ -114,10 +114,11 @@ def format_bitpacking(canid, structname, structlines, atbit, vartype, enums):
                 else: 
                     structlines.append("Var="+append_can_name+" "+vartype+" "+str(atbit+int(position))+","+str(realsize)) 
                 #atbit+=realsize 
+            return 
 
-    if not found:
-        print(f"BUILD ERROR: Referencing a flag enum that doesn't exist for CAN ID {canid}!")
-        sys.exit(1) 
+    #if not found:
+    print(f"BUILD ERROR: Referencing a flag enum that doesn't exist for CAN ID {canid}!")
+    sys.exit(1) 
 
 
 def format_field_params(params): 
