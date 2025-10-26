@@ -17,15 +17,16 @@
 #include "gpio.h"
 #include "i2c.h"
 
-uint16_t sendVolt[6];
-float rawCellVolts[6];
-float cellVoltages[8];
-uint8_t cellNum[6];
-signed char offset_corr[7];
-signed char gain_corr[7];
+const size_t cell_num = 7
+uint16_t sendVolt[cell_num];
+float rawCellVolts[cell_num];
+float cellVoltages[cell_num];
+uint8_t cellNum[cell_num];
+signed char offset_corr[cell_num];
+signed char gain_corr[cell_num];
 unsigned int vref_corr;
 uint16_t adc_sensen;
-uint16_t cellTemps[8];
+uint16_t cellTemps[cell_num];
 
 bool setup = false;
 
@@ -92,7 +93,7 @@ static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
 void getVoltages(void) {
     TickType_t time_prev = xTaskGetTickCount();
      uart_command_t read_voltage = {
-			.readWrite = STACK_READ,
+			.readWrite = SINGLE_READ,
 			.dataLen = 1,
 			.deviceAddress = 0xFF, //not used!
 			.registerAddress = TOP_CELL,
@@ -137,26 +138,25 @@ void sendVoltages() {
     // Split voltages into two groups
 
     cmr_canLVBMS_Voltage cell1_4;
-    cmr_canLVBMS_Voltage cell5_8;
+    cmr_canLVBMS_Voltage cell5_7;
     cell1_4.cell1 = sendVolt[0];
     cell1_4.cell2 = sendVolt[1];
     cell1_4.cell3 = sendVolt[2];
     cell1_4.cell4 = sendVolt[3];
-    cell5_8.cell1 = sendVolt[4];
-    cell5_8.cell2 = sendVolt[5];
-    cell5_8.cell3 = sendVolt[6];
-    cell5_8.cell4 = sendVolt[7];
+    cell5_7.cell1 = sendVolt[4];
+    cell5_7.cell2 = sendVolt[5];
+    cell5_7.cell3 = sendVolt[6];
 
     canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_1_3, &cell1_4, sizeof(cell1_3), canTX10Hz_period_ms);
-    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_4_6, &cell5_8, sizeof(cell4_6), canTX10Hz_period_ms);
+    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_4_6, &cell5_7, sizeof(cell5_7), canTX10Hz_period_ms);
 }
 
 // Sends overvoltage flags
-void sendOvervoltageFlags(uint16_t voltages[6]) {
+void sendOvervoltageFlags(uint16_t voltages[cell_num]) {
     uint8_t flag = 0;
     uint8_t overVolt = 0; // TBD
 
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < cell_num; i++) {
         if (voltages[i] > overVolt) flag |= (1 << i);
     }
 
@@ -164,10 +164,10 @@ void sendOvervoltageFlags(uint16_t voltages[6]) {
 }
 
 // Sends bus voltage derived from cell voltages
-void sendBusVoltage(uint16_t voltages[6]) {
+void sendBusVoltage(uint16_t voltages[cell_num]) {
     uint16_t totalVoltage = 0;
 
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < cell_num; i++) {
         totalVoltage += voltages[i];
     }
 
@@ -211,22 +211,71 @@ uint16_t tempConvert(uint16_t adc_value) {
     return (uint16_t)(temperature * 100.0f);  //1/100 degree C
 }
 
-void getTemps(void) {
-    // Implement
-    for(uint32_t i = 0; i < VTHERM_NUM; i++) {
-			int temp = vtherm_read_index(i);
-			cellTemps[i] = tempConvert(temp);
+
+void pollAllTemperatureData(int channel) {
+	for(uint8_t i = 0; i < cell_num; i++) {
+		if(uart_receiveResponse(&response[i], cell_num) == UART_FAILURE) {
+				//loop through each GPIO channel
+			setBMBErr(i, BMB_TEMP_READ_ERROR);
+			BMBTimeoutCount[i]+=1;
+			return;
 		}
-        sendTemps(cellTemps);
+	}
+	taskEXIT_CRITICAL();
+	return;
+}
+
+
+
+
+void getTemps(void) {
+    uart_command_t read_therms = {
+		.readWrite = SINGLE_READ,
+		.dataLen = 1,
+		.deviceAddress = 0xFF, //not used!
+		.registerAddress = GPIO5_HI,
+		.data = {0x07},
+		.crc = {0xFF, 0xFF}
+	};
+
+    taskENTER_CRITICAL();
+	uart_sendCommand(&read_therms);
+
+    uart_response_t response;
+
+    if(uart_receiveResponse(&response, cell_num) == UART_FAILURE) {
+            //loop through each GPIO channel
+        setBMBErr(i, BMB_TEMP_READ_ERROR);
+        BMBTimeoutCount[i]+=1;
+        return;
+    }
+
+
+    taskEXIT_CRITICAL();
+
+    for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; k++) {
+        uint8_t high_byte_data = response.data[2*k];
+        uint8_t low_byte_data = response.data[2*k+1];
+        size_t index = (4*channel) + k;
+        //TODO: make sure this is matching the thermistor indices properly
+
+        BMBData.cellTemperatures[index] = calculateTemp(high_byte_data, low_byte_data);
+    }
+
+    for(uint32_t i = 0; i < VTHERM_NUM; i++) {
+		int temp = vtherm_read_index(i);
+		cellTemps[i] = tempConvert(temp);
+	}
+    sendTemps(cellTemps);
 }
 
 // Sends cell temperatures (1-8) split into two CAN messages
 void sendTemps(uint16_t temps[8]) {
-    uint16_t data1[4], data2[4];
+    uint16_t data1[4], data2[3];
 
     // Split temperatures into two groups
     memcpy(data1, temps, 4 * sizeof(uint16_t));     // Temps 1-4
-    memcpy(data2, &temps[4], 4 * sizeof(uint16_t)); // Temps 5-8
+    memcpy(data2, &temps[4], 3 * sizeof(uint16_t)); // Temps 5-8
 
     canTX(CAN_ID_LV_BMS_CELL_TEMP_1_4, data1, sizeof(data1), canTX10Hz_period_ms);
     canTX(CAN_ID_LV_BMS_CELL_TEMP_5_8, data2, sizeof(data2), canTX10Hz_period_ms);
