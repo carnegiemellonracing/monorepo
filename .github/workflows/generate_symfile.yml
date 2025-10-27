@@ -7,7 +7,6 @@ on:
 
 jobs:
   run-symfilegen:
-    if: ${{ exists('.github/workflows/generate_symfile.yml') }}
     runs-on: ubuntu-latest
 
     steps:
