@@ -19,10 +19,11 @@ jobs:
           python-version: '3.10'
 
       - name: Run symbol file generation scripts
+        working-directory: stm32f413-drivers/filegen
         run: |
           echo "Running symbol file scripts in sequence"
-          python "${{ github.workspace }}/scripts/canid_mapper.py"
-          python "${{ github.workspace }}/scripts/extra_info.py"
-          python "${{ github.workspace }}/scripts/sym_gen.py"
-          python "${{ github.workspace }}/scripts/enum_generator.py"
-          python "${{ github.workspace }}/scripts/merge_can_signals.py"
+          python canid_mapper.py
+          python extra_info.py
+          python sym_gen.py
+          python merge_can_signals.py
+          python enum_generator.py
