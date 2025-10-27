@@ -972,6 +972,11 @@
             "timeOut": 25,
             "type": "cmr_canCDCMotorPower_t"
         },
+        "CMR_CANID_MOVELLA_STATUS": {
+            "cycleTime": 5,
+            "timeOut": 25,
+            "type": "cmr_canMovellaStatus_t"
+        },
         "CMR_CANID_REAR_SLIP_RATIOS": {
             "cycleTime": 100,
             "timeOut": 500,
@@ -986,23 +991,6 @@
             "cycleTime": 100,
             "timeOut": 500,
             "type": "cmr_can_rear_whl_velocity_t"
-        },
-        "CMR_CANID_SBG_AUTOMOTIVE": {
-            "angle_slip_rad": {
-                "u": "rad"
-            },
-            "angle_track_rad": {
-                "u": "rad"
-            },
-            "curvature_radius_m": {
-                "u": "m"
-            },
-            "cycleTime": 200.0,
-            "status": {
-                "enumstruct": "cmr_canSBGAutomotiveStatus_t"
-            },
-            "timeOut": 1000,
-            "type": "cmr_canSBGAutomotive_t"
         },
         "CMR_CANID_SBG_BODY_VEL": {
             "cycleTime": 400.0,
@@ -1120,13 +1108,13 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2783,
-        "files_with_matches": 2783,
+        "files_processed": 2782,
+        "files_with_matches": 2782,
         "global_mappings": {
-            "canrx_mappings": 95,
-            "canrx_timeouts": 94,
-            "canrx_types": 54,
-            "constants": 223,
+            "canrx_mappings": 96,
+            "canrx_timeouts": 95,
+            "canrx_types": 55,
+            "constants": 217,
             "struct_members": 0,
             "variable_types": 286
         },

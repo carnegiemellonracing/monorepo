@@ -34,8 +34,8 @@ if(PYTHON_DEPS_AVAILABLE)
         COMMAND ${Python_EXECUTABLE} "${SCRIPTS_DIR}/canid_mapper.py"
         COMMAND ${Python_EXECUTABLE} "${SCRIPTS_DIR}/extra_info.py"
         COMMAND ${Python_EXECUTABLE} "${SCRIPTS_DIR}/sym_gen.py"
-        COMMAND ${Python_EXECUTABLE} "${SCRIPTS_DIR}/enum_generator.py"
         COMMAND ${Python_EXECUTABLE} "${SCRIPTS_DIR}/merge_can_signals.py"
+        COMMAND ${Python_EXECUTABLE} "${SCRIPTS_DIR}/enum_generator.py"
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Running code generation scripts"
         VERBATIM
