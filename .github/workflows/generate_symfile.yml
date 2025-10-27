@@ -24,14 +24,14 @@ jobs:
           python-version: '3.10'
 
       - name: Run symbol file generation scripts
-        working-directory: stm32f413-drivers/filegen
         run: |
           echo "Running symbol file scripts in sequence"
-          python canid_mapper.py
-          python extra_info.py
-          python sym_gen.py
-          python merge_can_signals.py
-          python enum_generator.py
+          echo "Running symbol file scripts in sequence"
+          python stm32f413-drivers/filegen/canid_mapper.py
+          python stm32f413-drivers/filegen/extra_info.py
+          python stm32f413-drivers/filegen/sym_gen.py
+          python stm32f413-drivers/filegen/merge_can_signals.py
+          python stm32f413-drivers/filegen/enum_generator.py
 
       - name: Commit and push generated .sym file
         run: |
