@@ -1,12 +1,3 @@
-/**
- * @file controls.c
- * @brief Vehicle control loops.
- *
- * @author Carnegie Mellon Racing
- */
-
-// ------------------------------------------------------------------------------------------------
-// Includes
 
 
 #include <stdint.h>
@@ -34,6 +25,7 @@
 /** @brief Yaw rate control kp */
 volatile cmr_can_controls_pid_debug_t yrcDebug;
 static float yrc_kp;
+static float yrc_pers;
 
 /** @brief CAN data for traction control */
 volatile cmr_can_front_slip_ratio_data_t frontSlipRatios;
@@ -68,6 +60,7 @@ static volatile cmr_canCDCControlsStatus_t controlsStatus = {
 
 volatile cmr_canCDCKiloCoulombs_t coulombCounting;
 static float manual_cruise_control_speed;
+static float manual_cruise_control_speed;
 
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew);
@@ -92,17 +85,19 @@ static void initYawRateControl() {
     // read yrc_kp from DIM
     yrc_kp = 1.0f;
     getProcessedValue(&yrc_kp, YRC_KP_INDEX, float_1_decimal);
-
-    yrc_kp = yrc_kp*100.0f;
+    yrc_pers = 1.0f;
+    getProcessedValue(&yrc_pers, YRC_PERS_INDEX, float_1_decimal);
+    // we should be multiplying
+    yrc_pers = yrc_pers * 100.0f;
+    yrc_kp = yrc_kp * 100.0f;
     // yrc_kp = 200;
-    //yrcDebug = getPidDebug();
+    // yrcDebug = getPidDebug();
     yrcDebug.controls_pid = yrc_kp;
     // set yrc_ki to 0 because we don't aim to eliminate steady-state error
-    //REMOVE const float yrc_ki = 0.0f;
-
-    // disable derivate separation because no significant derivative kick was observed
-    // steering angle and the car's yaw seem to have similar timescales
-    //REMOVE const bool enable_derivative_separation = false;
+    // REMOVE const float yrc_ki = 0.0f;
+    // disable derivate separation because no significant derivative kick was
+    // observed steering angle and the car's yaw seem to have similar timescales
+    // REMOVE const bool enable_derivative_separation = false;
 }
 
 static void load_solver_settings() {
@@ -111,13 +106,16 @@ static void load_solver_settings() {
 	// Hot fix: interpret raw k_lin and k_yaw values as integers.
 	if(getProcessedValue(&k_lin, K_LIN_INDEX, float_1_decimal)) {
 		solver_set_k_lin(k_lin * 10.0f); // [0, 255.0].
+		solver_set_k_lin(k_lin * 10.0f); // [0, 255.0].
 	}
 
 	if(getProcessedValue(&k_yaw, K_YAW_INDEX, float_1_decimal)) {
 		solver_set_k_yaw(k_yaw * 0.1f); // [0, 2.55].
+		solver_set_k_yaw(k_yaw * 0.1f); // [0, 2.55].
 	}
 
     if(getProcessedValue(&k_tie, K_TIE_INDEX, float_1_decimal)) {
+        solver_set_k_tie(k_tie * 0.01f); // [0, 0.255].
         solver_set_k_tie(k_tie * 0.01f); // [0, 0.255].
     }
 }
@@ -129,6 +127,7 @@ void initControls() {
 	launchControlButtonPressed = false;
 	launchControlActive = false;
 	coulombCounting.KCoulombs = 0.0f;
+    manual_cruise_control_speed = 1.0;
     manual_cruise_control_speed = 1.0;
 }
 
@@ -187,6 +186,13 @@ static void set_motor_speed(uint8_t throttlePos_u8, float speed_mps, bool rear_o
     const float max_speed_mps = 20.0f;
     speed_mps = fmaxf(speed_mps, min_speed_mps);
     speed_mps = fminf(speed_mps, max_speed_mps);
+static void set_motor_speed(uint8_t throttlePos_u8, float speed_mps, bool rear_only) {
+    float throttle = (float)throttlePos_u8 / UINT8_MAX;
+    float req_torque_Nm = throttle * maxFastTorque_Nm;
+    const float min_speed_mps = 0.0f;
+    const float max_speed_mps = 20.0f;
+    speed_mps = fmaxf(speed_mps, min_speed_mps);
+    speed_mps = fminf(speed_mps, max_speed_mps);
     float target_rpm = speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
     cmr_torqueDistributionNm_t torquesPos_Nm;
     if(rear_only) {
@@ -198,11 +204,17 @@ static void set_motor_speed(uint8_t throttlePos_u8, float speed_mps, bool rear_o
         torquesPos_Nm.fr = 0.0f;
         torquesPos_Nm.rl = req_torque_Nm;
         torquesPos_Nm.rr = req_torque_Nm;
+        torquesPos_Nm.rl = req_torque_Nm;
+        torquesPos_Nm.rr = req_torque_Nm;
     } else {
         setVelocityInt16(MOTOR_FL, (int16_t) target_rpm);
         setVelocityInt16(MOTOR_FR, (int16_t) target_rpm);
         setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
         setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
+        torquesPos_Nm.fl = req_torque_Nm;
+        torquesPos_Nm.fr = req_torque_Nm;
+        torquesPos_Nm.rl = req_torque_Nm;
+        torquesPos_Nm.rr = req_torque_Nm;
         torquesPos_Nm.fl = req_torque_Nm;
         torquesPos_Nm.fr = req_torque_Nm;
         torquesPos_Nm.rl = req_torque_Nm;
@@ -215,6 +227,19 @@ static void set_motor_speed(uint8_t throttlePos_u8, float speed_mps, bool rear_o
         .rr = 0.0f,
     };
     setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
+}
+
+static void set_manual_cruise_control(uint8_t throttlePos_u8) {
+    static bool prev_button = false;
+    const float max_speed_mps = 20.0f;
+    volatile cmr_canDIMActions_t *actions = (volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON);
+    bool button = (actions->buttons & BUTTON_ACT) != 0;
+    if(prev_button == false && button == true) {
+        manual_cruise_control_speed += 1.0f;
+        manual_cruise_control_speed = fminf(manual_cruise_control_speed, max_speed_mps);
+    }
+    prev_button = button;
+    set_motor_speed(throttlePos_u8, manual_cruise_control_speed, false);
 }
 
 static void set_manual_cruise_control(uint8_t throttlePos_u8) {
@@ -350,12 +375,17 @@ static void set_optimal_control(
 
     const float corner_weight_Nm = 80.0f;
     bool use_true_downforce = false;
+    bool use_true_downforce = false;
     float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
     float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
     float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
     float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
 
     static const float motor_resistance_Nm[MOTOR_LEN] = {
+        [MOTOR_FL] = 0.5f,
+        [MOTOR_FR] = 0.5f,
+        [MOTOR_RL] = 0.5f,
+        [MOTOR_RR] = 0.5f,
         [MOTOR_FL] = 0.5f,
         [MOTOR_FR] = 0.5f,
         [MOTOR_RL] = 0.5f,
@@ -401,8 +431,18 @@ static void set_optimal_control(
 	// areq can be either expressed in torque or actual accel. Both ways are equivalent. Here uses actual accel.
 	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
 
+
     // Solver treats Mreq as around -z axis.
 	optimizer_state.mreq = getYawRateControlLeftRightBias(swAngle_millideg);
+	optimizer_state.theta_left = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
+    optimizer_state.theta_right = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
+
+    float mreq_base = getYawRateControlLeftRightBias(swAngle_millideg);
+    float mreq = calculatePersistentYRCmreq(mreq_base, swAngle_millideg_FL, swAngle_millideg_FR);
+    //float mreq = getYawRateControlLeftRightBias(swAngle_millideg);
+
+    optimizer_state.mreq = mreq;
+
 	optimizer_state.theta_left = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
     optimizer_state.theta_right = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
 
@@ -970,6 +1010,76 @@ static void update_whl_vels_and_angles (
 }
 
 /**
+ * @brief Calculates the wheel speed setpoints
+ *
+ * @param slip_ratio_* The slip ratio of a wheel
+ * @param steering_ang_fl Steering angle of the front-left wheel
+ * @param steering_ang_fr Steering angle of the front-right wheel
+ * @param longitudinal_velocity_mps The longitudinal velocity of the vehicle
+ * @param lateral_velocity_mps The lateral velocity of the vehicle
+ * @param yaw_rate_radps_sae The yaw rate of the vehicle in SAE coordinates (a right turn is positive)
+ * @param critical_speed_mps The value added to the linear speed of each wheel
+*/
+static void update_whl_speed_setpoint (
+    float slip_ratio_fl,
+    float slip_ratio_fr,
+    float slip_ratio_rl,
+    float slip_ratio_rr,
+    float steering_ang_fl,
+    float steering_ang_fr,
+    float longitudinal_velocity_mps,
+    float lateral_velocity_mps,
+    float yaw_rate_radps_sae,
+    float critical_speed_mps
+) {
+    update_whl_vels_and_angles(steering_ang_fl, steering_ang_fr, longitudinal_velocity_mps, lateral_velocity_mps, yaw_rate_radps_sae);
+
+    // ensure that critical_speed_mps is nonnegative
+    critical_speed_mps = fmaxf(critical_speed_mps, 0.0f);
+
+    // ensure that the linear velocity of each wheel is nonnegative
+    const float V_fl = fmaxf(frontWhlVelocities.v_whl_fl, 0.0f);
+    const float V_fr = fmaxf(frontWhlVelocities.v_whl_fr, 0.0f);
+    const float V_rl = fmaxf(rearWhlVelocities.v_whl_rl, 0.0f);
+    const float V_rr = fmaxf(rearWhlVelocities.v_whl_rr, 0.0f);
+
+    // use the definition of slip ratio to calculate wheel speeds
+    frontWhlSetpoints.omega_FL = ((V_fl + critical_speed_mps) * slip_ratio_fl + V_fl) / effective_wheel_rad_m;
+    frontWhlSetpoints.omega_FR = ((V_fr + critical_speed_mps) * slip_ratio_fr + V_fr) / effective_wheel_rad_m;
+    rearWhlSetpoints.omega_RL = ((V_rl + critical_speed_mps) * slip_ratio_rl + V_rl) / effective_wheel_rad_m;
+    rearWhlSetpoints.omega_RR = ((V_rr + critical_speed_mps) * slip_ratio_rr + V_rr) / effective_wheel_rad_m;
+}
+
+/**
+* @brief velocity schedule -- target vehicle velocity given elapsed accel time
+*
+* @param t_sec elapsed accel time (sec)
+*
+* @return the target vehicle velocity (m/s)
+*/
+static float getFFScheduleVelocity(float t_sec) {
+
+    float tMax = 6.4f; // limit time for safety reasons
+    float scheduleVelocity_mps = 1.0f;
+
+    float scheduleVelocity_mps2 = 12.1;
+    // getProcessedValue(&scheduleVelocity_mps2, LAUNCH_SLOPE_INDEX, float_1_decimal);
+
+    if (t_sec < 0.0f) {
+        scheduleVelocity_mps = 0.0f;
+    } else if(t_sec < tMax) {
+        float startingVel_mps = 5.0f;
+        scheduleVelocity_mps = (scheduleVelocity_mps2 * t_sec) + startingVel_mps;
+        // 2023 Michigan EV fastest accel - 3.645s -> 11.29m/s^2 linear accel
+        // 2023 Michigan EV CMR's accel -> memorator data -> 8.63m/s^2 before
+    } else {
+        scheduleVelocity_mps = 0.0f;
+    }
+
+    return scheduleVelocity_mps;
+}
+
+/**
 * @brief Launch control code. feedforward and uses LUT
 */
 void setLaunchControl(
@@ -1327,30 +1437,96 @@ float get_optimal_yaw_rate(float swangle_rad, float velocity_x_mps) {
     return yaw_rate_setpoint_radps;
 }
 
+// code
 /**
- * @brief Calculate the control action (left-right torque bias) of the yaw rate controller
+ * @brief Calculate the control action (left-right torque bias) of the yaw rate
+ * controller
  * @param swAngle_millideg Steering wheel angle
  */
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
-
     float velocity_x_mps;
-    if(movella_state.status.gnss_fix) {
+    if (movella_state.status.gnss_fix) {
         velocity_x_mps = movella_state.velocity.x;
         yrcDebug.controls_bias = 1;
     } else {
-        velocity_x_mps = getTotalMotorSpeed_radps() * 0.25f / gear_ratio * effective_wheel_rad_m;
+        velocity_x_mps = getTotalMotorSpeed_radps() * 0.25f / gear_ratio *
+                         effective_wheel_rad_m;
         yrcDebug.controls_bias = -1;
     }
-
     const float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
     const float actual_yaw_rate_radps_sae = movella_state.gyro.z;
     const float optimal_yaw_rate_radps = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
-
-    yrcDebug.controls_current_yaw_rate = (int16_t)(1000.0f * actual_yaw_rate_radps_sae);
-    yrcDebug.controls_target_yaw_rate = (int16_t)(1000.0f * optimal_yaw_rate_radps);
+    yrcDebug.controls_current_yaw_rate =
+        (int16_t)(1000.0f * actual_yaw_rate_radps_sae);
+    yrcDebug.controls_target_yaw_rate =
+        (int16_t)(1000.0f * optimal_yaw_rate_radps);
     yrcDebug.controls_pid = yrc_kp;
-    const float left_right_bias = yrc_kp * (optimal_yaw_rate_radps - actual_yaw_rate_radps_sae);
+    const float left_right_bias = yrc_kp * (actual_yaw_rate_radps_sae - optimal_yaw_rate_radps);
     return left_right_bias;
+}
+
+// float calculatePersistentYRCmreq(float left_right_bias,
+//                                  int32_t swAngle_millideg_FL,
+//                                  int32_t swAngle_millideg_FR)
+// {
+//     int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
+
+//     float velocity_x_mps = movella_state.velocity.x;
+//     float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
+
+//     float yaw_act = movella_state.gyro.z;
+
+//     float yaw_des = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
+
+
+//     float kp_mreq = yrc_kp * (yaw_des - yaw_act);
+
+//     // margin as relative error (e.g., 0.2 = 20%)
+//     const float bias_margin = 0.20f;
+
+//     const float eps = 1e-3f;
+//     // use desired yaw in the denominator, guard near zero
+//     float percent_difference = (yaw_act - yaw_des) / fmaxf(fabsf(yaw_des), eps);
+
+//     float persistent_bias_factor = yrc_pers; // gain from dim
+//     if (fabsf(percent_difference) >= bias_margin) {
+//         persistent_bias_factor = 0.0f;
+//     } else {
+//         // scale from 1 at zero error down to 0 at the margin
+//         float s = 1.0f - fabsf(percent_difference) / bias_margin;
+//         persistent_bias_factor = yrc_pers * s;
+//     }
+
+//     float persistent_bias_mreq = left_right_bias * persistent_bias_factor * yaw_des;
+
+//     return kp_mreq + persistent_bias_mreq;
+// }
+
+
+
+float calculatePersistentYRCmreq(float left_right_bias, int32_t swAngle_millideg_FL, int32_t swAngle_millideg_FR) {
+    
+    int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
+    float bias_margin = 100.0f; // tbd
+    float velocity_x_mps = movella_state.velocity.x;
+    float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
+    float actual_yaw_rate_radps_sae = movella_state.gyro.z;
+
+    float optimal_yaw_rate_radps = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
+    // Calculate scaling factor
+    float persistent_bias_factor = yrc_pers;
+    float percent_difference = (optimal_yaw_rate_radps - actual_yaw_rate_radps_sae) / (actual_yaw_rate_radps_sae);
+
+    if (fabsf(percent_difference) >= bias_margin || percent_difference > 0) {
+        persistent_bias_factor = 0;
+    }
+    else if (percent_difference <= 0) {
+        persistent_bias_factor = (bias_margin + percent_difference) / bias_margin; // keeps ratio between 0-1
+    }
+    // Calculate total moment
+    float kp_mreq = yrc_kp * (optimal_yaw_rate_radps - actual_yaw_rate_radps_sae);
+    float persistent_bias_mreq = left_right_bias * persistent_bias_factor * actual_yaw_rate_radps_sae;
+    return kp_mreq + persistent_bias_mreq;
 }
 
 

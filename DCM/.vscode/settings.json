@@ -17,6 +17,7 @@
         "tuple": "c",
         "utility": "c",
         "optimizer.h": "c",
-        "can_types.h": "c"
+        "can_types.h": "c",
+        "can_ids.h": "c"
     }
 }

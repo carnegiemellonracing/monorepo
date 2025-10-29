@@ -1,18 +1,13 @@
 #ifndef CONFIG_SCREEN_HELPER_H
 #define CONFIG_SCREEN_HELPER_H
-
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
-
 __attribute__((unused)) static uint32_t this_stops_the_compiler_from_complaining[] = {
 #include <DIM-ESE/config.rawh>
 };
-
-
 #define NOT_SELECTED_MENU_COLOR 0x04000000
 #define SELECTED_MENU_COLOR 0x04AA0000
-
 typedef enum{
     float_1_decimal,
     float_2_decimal,
@@ -28,7 +23,6 @@ typedef enum{
     Tony,
     num_values_driver_enum
 } cmr_driver_profile_t;
-
 typedef enum {
     DRIVER_PROFILE_INDEX,
     POWER_LIM_INDEX,
@@ -49,14 +43,10 @@ typedef enum {
     SLOW_SPEED_INDEX,
     MAX_MENU_ITEMS // The elements in the config array
 } config_menu_main_array_index_t;
-
-
 /*************** Various on screen string luts ***************/
 extern char* config_boolean_string_lut[2];
 extern char* config_driver_string_lut[4];
 /************************************************************/
-
-
 /**
  * @brief the value struct for the config menu
  *
@@ -71,7 +61,6 @@ typedef struct{
     cmr_config_type_t type;
     uint8_t value;
 }cmr_config_value_t;
-
 typedef struct {
     char *name;
     int32_t ESE_background_color_variable;
@@ -83,11 +72,12 @@ typedef struct {
     size_t ESE_string_len;
     uint8_t min; // these will have to be converted at the time of initing
     uint8_t max; // these will have to be converted at the time of initing;
-}config_menu_item_t;
+} config_menu_item_t;
 
 extern volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS];
+
 
 //////// HELPER FUNCTIONS /////////////////
 bool getProcessedValue(void* returnPointer, int index, cmr_config_type_t expected_type);
 
-#endif
+#endif /* CONFIG_SCREEN_HELPER_H */
