@@ -186,6 +186,9 @@ static void set_motor_speed(uint8_t throttlePos_u8, float speed_mps, bool rear_o
     const float max_speed_mps = 20.0f;
     speed_mps = fmaxf(speed_mps, min_speed_mps);
     speed_mps = fminf(speed_mps, max_speed_mps);
+
+}
+
 static void set_motor_speed(uint8_t throttlePos_u8, float speed_mps, bool rear_only) {
     float throttle = (float)throttlePos_u8 / UINT8_MAX;
     float req_torque_Nm = throttle * maxFastTorque_Nm;
