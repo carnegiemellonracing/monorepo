@@ -619,8 +619,8 @@ static void canTX200Hz(void *pvParameters) {
     const cmr_canAMKActualValues1_t* const amkAct1RL = canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT1);
     const cmr_canAMKActualValues1_t* const amkAct1RR = canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT1);
 
-    const cmr_canFSMSWAngle_t *swangleFSM = canVehicleGetPayload(CANRX_VEH_SWANGLE_FSM);
-    const cmr_canFSMData_t *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
+    const cmr_canFSMSWAngle_t const *swangleFSM = canVehicleGetPayload(CANRX_VEH_SWANGLE_FSM);
+    const cmr_canFSMData_t const *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
 
     cmr_canCDCWheelVelocity_t speedFeedback;
     cmr_canCDCWheelTorque_t torqueFeedback;

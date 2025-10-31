@@ -189,48 +189,48 @@ static void set_motor_speed(uint8_t throttlePos_u8, float speed_mps, bool rear_o
 
 }
 
-static void set_motor_speed(uint8_t throttlePos_u8, float speed_mps, bool rear_only) {
-    float throttle = (float)throttlePos_u8 / UINT8_MAX;
-    float req_torque_Nm = throttle * maxFastTorque_Nm;
-    const float min_speed_mps = 0.0f;
-    const float max_speed_mps = 20.0f;
-    speed_mps = fmaxf(speed_mps, min_speed_mps);
-    speed_mps = fminf(speed_mps, max_speed_mps);
-    float target_rpm = speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
-    cmr_torqueDistributionNm_t torquesPos_Nm;
-    if(rear_only) {
-        setVelocityInt16(MOTOR_FL, 0);
-        setVelocityInt16(MOTOR_FR, 0);
-        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
-        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
-        torquesPos_Nm.fl = 0.0f;
-        torquesPos_Nm.fr = 0.0f;
-        torquesPos_Nm.rl = req_torque_Nm;
-        torquesPos_Nm.rr = req_torque_Nm;
-        torquesPos_Nm.rl = req_torque_Nm;
-        torquesPos_Nm.rr = req_torque_Nm;
-    } else {
-        setVelocityInt16(MOTOR_FL, (int16_t) target_rpm);
-        setVelocityInt16(MOTOR_FR, (int16_t) target_rpm);
-        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
-        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
-        torquesPos_Nm.fl = req_torque_Nm;
-        torquesPos_Nm.fr = req_torque_Nm;
-        torquesPos_Nm.rl = req_torque_Nm;
-        torquesPos_Nm.rr = req_torque_Nm;
-        torquesPos_Nm.fl = req_torque_Nm;
-        torquesPos_Nm.fr = req_torque_Nm;
-        torquesPos_Nm.rl = req_torque_Nm;
-        torquesPos_Nm.rr = req_torque_Nm;
-    }
-	cmr_torqueDistributionNm_t torquesNeg_Nm = {
-        .fl = 0.0f,
-        .fr = 0.0f,
-        .rl = 0.0f,
-        .rr = 0.0f,
-    };
-    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
-}
+// static void set_motor_speed(uint8_t throttlePos_u8, float speed_mps, bool rear_only) {
+//     float throttle = (float)throttlePos_u8 / UINT8_MAX;
+//     float req_torque_Nm = throttle * maxFastTorque_Nm;
+//     const float min_speed_mps = 0.0f;
+//     const float max_speed_mps = 20.0f;
+//     speed_mps = fmaxf(speed_mps, min_speed_mps);
+//     speed_mps = fminf(speed_mps, max_speed_mps);
+//     float target_rpm = speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
+//     cmr_torqueDistributionNm_t torquesPos_Nm;
+//     if(rear_only) {
+//         setVelocityInt16(MOTOR_FL, 0);
+//         setVelocityInt16(MOTOR_FR, 0);
+//         setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
+//         setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
+//         torquesPos_Nm.fl = 0.0f;
+//         torquesPos_Nm.fr = 0.0f;
+//         torquesPos_Nm.rl = req_torque_Nm;
+//         torquesPos_Nm.rr = req_torque_Nm;
+//         torquesPos_Nm.rl = req_torque_Nm;
+//         torquesPos_Nm.rr = req_torque_Nm;
+//     } else {
+//         setVelocityInt16(MOTOR_FL, (int16_t) target_rpm);
+//         setVelocityInt16(MOTOR_FR, (int16_t) target_rpm);
+//         setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
+//         setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
+//         torquesPos_Nm.fl = req_torque_Nm;
+//         torquesPos_Nm.fr = req_torque_Nm;
+//         torquesPos_Nm.rl = req_torque_Nm;
+//         torquesPos_Nm.rr = req_torque_Nm;
+//         torquesPos_Nm.fl = req_torque_Nm;
+//         torquesPos_Nm.fr = req_torque_Nm;
+//         torquesPos_Nm.rl = req_torque_Nm;
+//         torquesPos_Nm.rr = req_torque_Nm;
+//     }
+// 	cmr_torqueDistributionNm_t torquesNeg_Nm = {
+//         .fl = 0.0f,
+//         .fr = 0.0f,
+//         .rl = 0.0f,
+//         .rr = 0.0f,
+//     };
+//     setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
+// }
 
 static void set_manual_cruise_control(uint8_t throttlePos_u8) {
     static bool prev_button = false;
@@ -245,18 +245,6 @@ static void set_manual_cruise_control(uint8_t throttlePos_u8) {
     set_motor_speed(throttlePos_u8, manual_cruise_control_speed, false);
 }
 
-static void set_manual_cruise_control(uint8_t throttlePos_u8) {
-    static bool prev_button = false;
-    const float max_speed_mps = 20.0f;
-    volatile cmr_canDIMActions_t *actions = (volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON);
-    bool button = (actions->buttons & BUTTON_ACT) != 0;
-    if(prev_button == false && button == true) {
-        manual_cruise_control_speed += 1.0f;
-        manual_cruise_control_speed = fminf(manual_cruise_control_speed, max_speed_mps);
-    }
-    prev_button = button;
-    set_motor_speed(throttlePos_u8, manual_cruise_control_speed, false);
-}
 
 static inline void set_motor_speed_and_torque(
     motorLocation_t motor,
@@ -377,7 +365,6 @@ static void set_optimal_control(
 	// float tractive_cap_rr = getKappaFxGlobalMax(MOTOR_RR, UINT8_MAX, true).Fx;
 
     const float corner_weight_Nm = 80.0f;
-    bool use_true_downforce = false;
     bool use_true_downforce = false;
     float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
     float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
