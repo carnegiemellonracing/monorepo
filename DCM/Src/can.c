@@ -84,6 +84,13 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .errorFlag = CMR_CAN_ERROR_NONE,
         .warnFlag = CMR_CAN_WARN_NONE
     },
+    [CANRX_VEH_PEDALS_FSM] = {
+        .canID = CMR_CANID_FSM_PEDALS_ADC,
+        .timeoutError_ms = 50,
+        .timeoutWarn_ms = 25,
+        .errorFlag = CMR_CAN_ERROR_NONE,
+        .warnFlag = CMR_CAN_WARN_NONE
+    },
     [CANRX_VEH_REQUEST_DIM] = {
         .canID = CMR_CANID_DIM_REQUEST,
         .timeoutError_ms = UINT32_MAX,
@@ -177,6 +184,20 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
+    [CANRX_VEH_LINPOTS_RIGHTS] = {
+        .canID  = 0x658,
+        .timeoutError_ms = 500,
+        .timeoutWarn_ms = 250,
+        .errorFlag = CMR_CAN_ERROR_NONE,
+        .warnFlag = CMR_CAN_WARN_NONE
+	},
+    [CANRX_VEH_LINPOTS_LEFTS] = {
+        .canID  = 0x659,
+        .timeoutError_ms = 500,
+        .timeoutWarn_ms = 250,
+        .errorFlag = CMR_CAN_ERROR_NONE,
+        .warnFlag = CMR_CAN_WARN_NONE
+	}
 };
 
 /** @brief Metadata for tractive CAN message reception. */
@@ -327,20 +348,6 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
 	},
 	[CANRX_DAQ_LOAD_RR] = {
         .canID  = CMR_CANID_LOADCELL_RR,
-        .timeoutError_ms = 500,
-        .timeoutWarn_ms = 250,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .warnFlag = CMR_CAN_WARN_NONE
-	},
-    [CANRX_DAQ_LINPOTS_RIGHTS] = {
-        .canID  = CMR_CANID_DAQ_0_THERMISTOR,
-        .timeoutError_ms = 500,
-        .timeoutWarn_ms = 250,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .warnFlag = CMR_CAN_WARN_NONE
-	},
-    [CANRX_DAQ_LINPOTS_LEFTS] = {
-        .canID  = CMR_CANID_DAQ_3_THERMISTOR,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
         .errorFlag = CMR_CAN_ERROR_NONE,
@@ -539,11 +546,19 @@ static void canTX100Hz(void *pvParameters) {
             heartbeat.state = CMR_CAN_ERROR;
         }
 
-        cmr_canDAQTherm_t linpots;
-        linpots.therm_1 = adcRead(ADC_LINPOT1);
-        linpots.therm_2 = adcRead(ADC_LINPOT2);
+        cmr_canDAQTherm_t linpots1;
+        linpots1.therm_1 = adcRead(ADC_LINPOT1);
+        linpots1.therm_2 = adcRead(ADC_LINPOT2);
 
-        canTX(CMR_CAN_BUS_VEH, 0x658, &linpots, sizeof(cmr_canDAQTherm_t), canTX100Hz_period_ms);
+        cmr_canDAQTherm_t linpots2;
+        linpots2.therm_1 = adcRead(ADC_THERM1);
+        linpots2.therm_2 = adcRead(ADC_THERM2);
+
+        canTX(CMR_CAN_BUS_VEH, 0x658, &linpots1, sizeof(cmr_canDAQTherm_t), canTX100Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, 0x659, &linpots2, sizeof(cmr_canDAQTherm_t), canTX100Hz_period_ms);
+
+        canTX(CMR_CAN_BUS_DAQ, 0x658, &linpots1, sizeof(cmr_canDAQTherm_t), canTX100Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, 0x659, &linpots2, sizeof(cmr_canDAQTherm_t), canTX100Hz_period_ms);
 
         // Solver
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_INPUTS, &solver_inputs, sizeof(cmr_can_solver_inputs_t), canTX100Hz_period_ms);
@@ -614,13 +629,14 @@ static void canTX200Hz(void *pvParameters) {
     const cmr_canAMKSetpoints_t *amkSetpointsRR = getAMKSetpoints(MOTOR_RR);
 
     // NEW
-    const cmr_canAMKActualValues1_t* const amkAct1FL = canTractiveGetPayload(CANRX_TRAC_INV_FL_ACT1);
-    const cmr_canAMKActualValues1_t* const amkAct1FR = canTractiveGetPayload(CANRX_TRAC_INV_FR_ACT1);
-    const cmr_canAMKActualValues1_t* const amkAct1RL = canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT1);
-    const cmr_canAMKActualValues1_t* const amkAct1RR = canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT1);
+    const cmr_canAMKActualValues1_t *amkAct1FL = canTractiveGetPayload(CANRX_TRAC_INV_FL_ACT1);
+    const cmr_canAMKActualValues1_t *amkAct1FR = canTractiveGetPayload(CANRX_TRAC_INV_FR_ACT1);
+    const cmr_canAMKActualValues1_t *amkAct1RL = canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT1);
+    const cmr_canAMKActualValues1_t *amkAct1RR = canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT1);
 
-    const cmr_canFSMSWAngle_t const *swangleFSM = canVehicleGetPayload(CANRX_VEH_SWANGLE_FSM);
-    const cmr_canFSMData_t const *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
+    const cmr_canFSMSWAngle_t *swangleFSM = canVehicleGetPayload(CANRX_VEH_SWANGLE_FSM);
+    const cmr_canFSMData_t *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
+    const cmr_canFSMPedalsADC_t *pedalsFSM = canVehicleGetPayload(CANRX_VEH_PEDALS_FSM);
 
     cmr_canCDCWheelVelocity_t speedFeedback;
     cmr_canCDCWheelTorque_t torqueFeedback;
@@ -644,13 +660,14 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_RL_SETPOINTS, amkSetpointsRL, sizeof(*amkSetpointsRL), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AMK_RR_SETPOINTS, amkSetpointsRR, sizeof(*amkSetpointsRR), canTX200Hz_period_ms);
 
-        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_AMK_FL_ACT_1, amkAct1FL, sizeof(cmr_canAMKActualValues1_t), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_AMK_FR_ACT_1, amkAct1FR, sizeof(cmr_canAMKActualValues1_t), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_AMK_RL_ACT_1, amkAct1RL, sizeof(cmr_canAMKActualValues1_t), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_AMK_RR_ACT_1, amkAct1RR, sizeof(cmr_canAMKActualValues1_t), canTX200Hz_period_ms);
+        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_AMK_FL_ACT_1, amkAct1FL, sizeof(cmr_canAMKActualValues1_t), canTX200Hz_period_ms);
+        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_AMK_FR_ACT_1, amkAct1FR, sizeof(cmr_canAMKActualValues1_t), canTX200Hz_period_ms);
+        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_AMK_RL_ACT_1, amkAct1RL, sizeof(cmr_canAMKActualValues1_t), canTX200Hz_period_ms);
+        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_AMK_RR_ACT_1, amkAct1RR, sizeof(cmr_canAMKActualValues1_t), canTX200Hz_period_ms);
 
-        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_FSM_SWANGLE, swangleFSM, sizeof(cmr_canFSMSWAngle_t), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_FSM_DATA, dataFSM, sizeof(cmr_canFSMData_t), canTX200Hz_period_ms);
+        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_FSM_SWANGLE, swangleFSM, sizeof(cmr_canFSMSWAngle_t), canTX200Hz_period_ms);
+        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_FSM_DATA, dataFSM, sizeof(cmr_canFSMData_t), canTX200Hz_period_ms);
+        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_FSM_PEDALS_ADC, pedalsFSM, sizeof(cmr_canFSMData_t), canTX200Hz_period_ms);
         
         daqWheelSpeedFeedback(&speedFeedback);
         daqWheelTorqueFeedback(&torqueFeedback);

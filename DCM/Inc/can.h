@@ -22,6 +22,7 @@ typedef enum {
     CANRX_VSM_STATUS,
     CANRX_VEH_DATA_FSM,             /**< @brief FSM data. */
     CANRX_VEH_SWANGLE_FSM,          /**< @brief VSM status */
+    CANRX_VEH_PEDALS_FSM,
     CANRX_VEH_REQUEST_DIM,          /**< @brief DIM state and gear request. */
     CANRX_VEH_VOLTAGE_HVC,          /**< @brief HVC pack voltage. */
     CANRX_VEH_CURRENT_HVC,          /**< @brief HVC pack current. */
@@ -37,6 +38,8 @@ typedef enum {
     CANRX_VEH_MOVELLA_IMU_GYRO,
     CANRX_VEH_MOVELLA_IMU_ACCEL,
     CANRX_VEH_MOVELLA_VELOCITY,
+    CANRX_VEH_LINPOTS_RIGHTS,
+    CANRX_VEH_LINPOTS_LEFTS,
     CANRX_VEH_LEN                   /**< @brief Number of periodic CAN messages. */
 } canVehicleRX_t;
 
