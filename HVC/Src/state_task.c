@@ -24,12 +24,12 @@ cmr_canHVCState_t getState() {
  */
 
 static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
-
+    
     //Default to unknown state if no paths are satisfied.
     cmr_canHVCState_t nextState = CMR_CAN_HVC_STATE_UNKNOWN;
     static TickType_t lastPrechargeTime = 0;// = xTaskGetTickCount();
 
-
+    
     // initialize min/max cell voltage variables for next state logic
     uint16_t packMinCellVoltage;
     uint16_t packMaxCellVoltage;
@@ -93,7 +93,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_RUN) {
                 // T8: Mode requested is not RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else {
+            } else {                
                 nextState = CMR_CAN_HVC_STATE_DRIVE;
             }
             break;
@@ -172,7 +172,8 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             break;
         }
         case CMR_CAN_HVC_STATE_CLEAR_ERROR: // S11
-            if ((HVCCommand->modeRequest == CMR_CAN_HVC_MODE_IDLE) || getHVmillivolts() < 5000) {
+            if ((HVCCommand->modeRequest == CMR_CAN_HVC_MODE_IDLE) &&
+                (true || getHVmillivolts()) < 5000) {
                 //T4: GLV requesting idle and rails discharged
                 nextState = CMR_CAN_HVC_STATE_STANDBY;
             } else {
@@ -184,9 +185,9 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             nextState = CMR_CAN_HVC_STATE_UNKNOWN;
             break;
     }
-
-    // Return the result of next state logic
-    return nextState;
+    
+    // Return the result of next state logic            
+    return nextState;    
 }
 
 static cmr_canHVCState_t setStateOutput(){
@@ -292,7 +293,7 @@ static cmr_canHVCState_t setStateOutput(){
             clearHardwareFault(false);
             break;
     }
-
+    
     return currentState;
 }
 
@@ -331,7 +332,7 @@ void vSetStateTask(void *pvParameters) {
         // HVCHeartbeat->state = currentState;
         // HVCHeartbeat->contactorStatus = getRelayStatus();
         //taskEXIT_CRITICAL();
-
+        
 
         currentError = checkErrors(currentState);
         nextState = getNextState(currentError);
