@@ -186,6 +186,7 @@ static void motorsCommand (
         volatile cmr_canHVCPackCurrent_t *currentHVC   = canVehicleGetPayload(CANRX_VEH_CURRENT_HVC);
         volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VSM_STATUS);
 
+
         //transmit Coulombs using HVI sense
         integrateCurrent();
 

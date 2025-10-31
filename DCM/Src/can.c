@@ -619,6 +619,9 @@ static void canTX200Hz(void *pvParameters) {
     const cmr_canAMKActualValues1_t* const amkAct1RL = canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT1);
     const cmr_canAMKActualValues1_t* const amkAct1RR = canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT1);
 
+    const cmr_canFSMSWAngle_t *swangleFSM = canVehicleGetPayload(CANRX_VEH_SWANGLE_FSM);
+    const cmr_canFSMData_t *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
+
     cmr_canCDCWheelVelocity_t speedFeedback;
     cmr_canCDCWheelTorque_t torqueFeedback;
     cmr_canCDCWheelVelocity_t speedSetpoint;
@@ -645,6 +648,9 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_AMK_FR_ACT_1, amkAct1FR, sizeof(cmr_canAMKActualValues1_t), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_AMK_RL_ACT_1, amkAct1RL, sizeof(cmr_canAMKActualValues1_t), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_AMK_RR_ACT_1, amkAct1RR, sizeof(cmr_canAMKActualValues1_t), canTX200Hz_period_ms);
+
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_FSM_SWANGLE, swangleFSM, sizeof(cmr_canFSMSWAngle_t), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_FSM_DATA, dataFSM, sizeof(cmr_canFSMData_t), canTX200Hz_period_ms);
         
         daqWheelSpeedFeedback(&speedFeedback);
         daqWheelTorqueFeedback(&torqueFeedback);
