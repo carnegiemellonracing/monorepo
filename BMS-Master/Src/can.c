@@ -72,6 +72,7 @@ static void sendBMSMinMaxCellVoltage(void);
 static void sendBMSMinMaxCellTemp(void);
 static void sendAllBMBVoltages(void);
 static void sendHVBMSPackVoltage(void); 
+static void checkClearErr(void); 
 
 /** @brief CAN 1 Hz TX priority. */
 static const uint32_t canTX1Hz_priority = 4;
@@ -141,15 +142,6 @@ static void canTX10Hz(void *pvParameters) {
 }
 
 /** @brief CAN 100 Hz TX priority. */
-static const uint32_t canTX200Hz_priority = 5;
-
-/** @brief CAN 100 Hz TX period (milliseconds). */
-static const TickType_t canTX200Hz_period_ms = 10;
-
-/** @brief CAN 100 Hz TX task. */
-static cmr_task_t canTX200Hz_task;
-
-/** @brief CAN 100 Hz TX priority. */
 static const uint32_t canTX100Hz_priority = 5;
 
 /** @brief CAN 100 Hz TX period (milliseconds). */
@@ -158,6 +150,34 @@ static const TickType_t canTX100Hz_period_ms = 10;
 /** @brief CAN 100 Hz TX task. */
 static cmr_task_t canTX100Hz_task;
 
+
+static void canTX100Hz(void *pvParameters) {
+    (void) pvParameters;    // Placate compiler.
+
+//    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
+//    volatile cmr_canHeartbeat_t *heartbeatVSM =
+//        (void *) heartbeatVSMMeta->payload;
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
+        sendHeartbeat(lastWakeTime);
+        //sendHVCPackVoltage();
+        //sendBMSPackCurrent();
+        sendBMSBMBStatusErrors();
+        checkClearErr(); 
+        vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
+    }
+}
+
+
+/** @brief CAN 100 Hz TX priority. */
+static const uint32_t canTX200Hz_priority = 5;
+
+/** @brief CAN 100 Hz TX period (milliseconds). */
+static const TickType_t canTX200Hz_period_ms = 10;
+
+/** @brief CAN 100 Hz TX task. */
+static cmr_task_t canTX200Hz_task;
 /**
  * @brief Task for sending CAN messages at 200 Hz.
  *
@@ -181,23 +201,6 @@ static void canTX200Hz(void *pvParameters) {
     }
 }
 
-static void canTX100Hz(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
-
-//    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-//    volatile cmr_canHeartbeat_t *heartbeatVSM =
-//        (void *) heartbeatVSMMeta->payload;
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        sendHeartbeat(lastWakeTime);
-        //sendHVCPackVoltage();
-        //sendBMSPackCurrent();
-        sendBMSBMBStatusErrors();
-
-        vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
-    }
-}
 
 /**
  * @brief Initializes the CAN interface.
@@ -433,7 +436,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     cmr_canHVCHeartbeat_t *hvcheartbeat = getPayload(CANRX_HEARTBEAT_HVC); 
     cmr_canHVCState_t currentState = hvcheartbeat->hvcState; 
     cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
-    currentError = checkHVBMSErrors(currentState);
+    currentError = getHVBMSErrorReg();
 
     cmr_canHeartbeat_t *vsm_heartbeat = getPayload(CANRX_HEARTBEAT_VSM);
 
@@ -446,6 +449,14 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 
     memcpy(&HVBMSHeartbeat.error, &currentError, sizeof(HVBMSHeartbeat.error)); 
     canTX(CMR_CANID_HEARTBEAT_HV_BMS, &HVBMSHeartbeat, sizeof(HVBMSHeartbeat), canTX100Hz_period_ms);
+}
+
+static void checkClearErr(void){
+    cmr_canHVCHeartbeat_t *hvcheartbeat = getPayload(CANRX_HEARTBEAT_HVC); 
+    if(hvcheartbeat->hvcState==CMR_CAN_HVC_STATE_CLEAR_ERROR){
+        clearHVBMSErrorReg(); 
+    }
+
 }
 
 

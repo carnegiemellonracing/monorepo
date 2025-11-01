@@ -16,8 +16,8 @@ volatile int BMBErrs[BOARD_NUM] = { 0 };
 // error checking becomes its own task
 static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_STATE_ERROR;
 
-cmr_canHVCError_t checkHVBMSErrors(cmr_canHVCState_t currentState){
-    cmr_canHVCError_t errorFlags = CMR_CAN_HVC_ERROR_NONE; 
+void checkHVBMSErrors(cmr_canHVCState_t currentState){
+    cmr_canHVCError_t errorFlags = errorRegister; 
     if(checkBMBTimeout()) { //BMSM 
         // TODO E2 devise a UART monitor system
         errorFlags |= CMR_CAN_HVC_ERROR_BMB_TIMEOUT; /**< @brief BMB has timed out. */
@@ -33,7 +33,7 @@ cmr_canHVCError_t checkHVBMSErrors(cmr_canHVCState_t currentState){
     }
     if(getPackMinCellVoltage() < 2400) {
         // TODO E5 create structures for cell voltage data and stats (min/max)
-       errorFlags |= CMR_CAN_HVC_ERROR_CELL_UNDERVOLT;
+       errorFlags |= CMR_CAN_HVC_ERROR_CELL_UNDERVOLT; 
     }
    if((getBattMillivolts()) > maxPackVoltageMV) {
        // E6

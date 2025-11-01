@@ -28,7 +28,7 @@ static const int32_t maxPackCurrentInstantMA = 400000;
 static const int32_t maxPackCurrentAverageMA = 110000;
 static const uint32_t minShutdownCiruitVoltageMV = 14000;
 
-cmr_canHVCError_t checkHVBMSErrors(cmr_canHVCState_t currentState);
+void checkHVBMSErrors(cmr_canHVCState_t currentState);
 void clearHVBMSErrorReg(void);
 
 

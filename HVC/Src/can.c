@@ -60,7 +60,7 @@ cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_HVBMS_MINMAX_TEMP] = {
         .canID = CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE, 
         .timeoutError_ms = 50,
-        .timeoutWarn_ms = 25
+        .timeoutWarn_ms = 25 
     }, 
     [CANRX_HEARTBEAT_HVBMS] = { 
         .canID = CMR_CANID_HEARTBEAT_HV_BMS, 
@@ -106,8 +106,6 @@ static void canTX10Hz(void *pvParameters) {
         // BRUSA Charger decided by state machine
         // sendBRUSAChargerControl();
 
-        sendHVCPower();
-
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
 }
@@ -136,6 +134,38 @@ static void canTX100Hz(void *pvParameters) {
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
 }
+
+/** @brief CAN 100 Hz TX priority. */
+static const uint32_t canTX200Hz_priority = 5;
+
+/** @brief CAN 100 Hz TX period (milliseconds). */
+static const TickType_t canTX200Hz_period_ms = 10;
+
+/** @brief CAN 100 Hz TX task. */
+static cmr_task_t canTX200Hz_task; 
+
+/**
+ * @brief Task for sending CAN messages at 200 Hz.
+ *
+ * @param pvParameters Ignored.
+ *
+ * @return Does not return.
+ */
+static void canTX200Hz(void *pvParameters) {
+    (void) pvParameters;    // Placate compiler.
+
+//    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
+//    volatile cmr_canHeartbeat_t *heartbeatVSM =
+//        (void *) heartbeatVSMMeta->payload;
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
+        sendHVCPower(); 
+
+        vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
+    }
+}
+
 
 /**
  * @brief Initializes the CAN interface.
@@ -282,7 +312,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 static void sendHVCPower() {
 	int32_t power;
     int16_t voltage;
-    uint16_t current;
+    int16_t current;
 
     voltage = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VSENSE); 
     current = cmr_sensorListGetValue(&sensorList, SENSOR_CH_ISENSE); 
@@ -298,7 +328,7 @@ static void sendHVCPower() {
 	voltageRaw = adcRead(ADC_VSENSE);
 	currentRaw = adcRead(ADC_ISENSE);
 
-    canTX(CMR_CANID_HV_SENSORS, &hv_sensors, sizeof(hv_sensors), canTX10Hz_period_ms);
+    canTX(CMR_CANID_HV_SENSORS, &hv_sensors, sizeof(hv_sensors), canTX200Hz_period_ms);
 }
 
 static void sendBMSLowVoltage(void) {
