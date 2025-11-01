@@ -43,8 +43,11 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
     // Getting HVC Command
     volatile cmr_canHVCCommand_t *HVCCommand = getPayload(CANRX_HVC_COMMAND);
 
-    //Getting BMB data
-    volatile cmr_canBMSMinMaxCellVoltage_t *HVBMSData = getPayload(CANRX_HVBMS_VOLTAGE_DATA); 
+    //Getting BMB Min Max voltage data
+    volatile cmr_canBMSMinMaxCellVoltage_t *HVBMSMinMaxVolt = getPayload(CANRX_HVBMS_MINMAX_VOLTAGE); 
+
+    //Getting BMB pack voltage 
+    volatile cmr_canHVBMSPackVoltage_t *HVBMSPackVoltage = getPayload(CANRX_HVBMS_PACKVOLT); 
 
     switch (currentState) {
         case CMR_CAN_HVC_STATE_DISCHARGE: // S1
@@ -69,7 +72,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                   HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN)) {
                 //T6: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (abs((HVBMSData->battVoltage_mV) - (getHVmillivolts()) < 30000)) {
+            } else if (abs((HVBMSPackVoltage->battVoltage_mV) - (getHVmillivolts()) < 30000)) {
                 //T2: HV rails are precharged to within 30000mV
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE;
                 lastPrechargeTime = xTaskGetTickCount(); 
@@ -103,7 +106,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 //T18: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (abs((HVBMSData->battVoltage_mV) - ((uint32_t)getHVmillivolts()) < 30000)) { 
+            } else if (abs((HVBMSPackVoltage->battVoltage_mV) - ((uint32_t)getHVmillivolts()) < 30000)) { 
             	lastPrechargeTime = xTaskGetTickCount();
                 //T10: HV rails are precharged
                 nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE;
@@ -115,7 +118,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 // T17: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE; 
-            } else if (true || abs(HVBMSData->battVoltage_mV - getHVmillivolts()) < 5000) {
+            } else if (true || abs(HVBMSPackVoltage->battVoltage_mV - getHVmillivolts()) < 5000) {
                 // T11: Contactors are closed
                 nextState = CMR_CAN_HVC_STATE_CHARGE_TRICKLE;
             } else {
@@ -125,7 +128,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
         }
         case CMR_CAN_HVC_STATE_CHARGE_TRICKLE: // S8
             // find lowest cell voltage among all BMBs
-            packMinCellVoltage = HVBMSData->minCellVoltage_mV; 
+            packMinCellVoltage = HVBMSMinMaxVolt->minCellVoltage_mV; 
 
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 // T16: Mode requested is not CHARGE
@@ -139,7 +142,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             break;
         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT: // S9
             // find highest cell voltage among all BMBs
-            packMaxCellVoltage = HVBMSData->maxCellVoltage_mV; 
+            packMaxCellVoltage = HVBMSMinMaxVolt->maxCellVoltage_mV; 
 
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 // T15: Mode requested is not CHARGE
@@ -155,7 +158,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             break;
         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE: // S10
             // find lowest cell voltage among all BMBs
-            packMinCellVoltage = HVBMSData->minCellVoltage_mV; 
+            packMinCellVoltage = HVBMSMinMaxVolt->minCellVoltage_mV; 
 
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE || packMinCellVoltage >= 4145) {
                 //T14: Mode requested is not CHARGE or all cells fully charged

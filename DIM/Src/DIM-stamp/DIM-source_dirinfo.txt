@@ -4,6 +4,6 @@
 
 method=source_dir
 command=
-source_dir=/Users/jeffreyshen/Desktop/Vscode/monorepo/DIM
+source_dir=/Users/sophia/Downloads/monorepo/DIM
 work_dir=
 

@@ -691,9 +691,12 @@ typedef struct {
 	uint8_t minVoltageBMBNum;    /**< @brief Min pack cell voltage BMB number. */
 	uint8_t minVoltageCellNum;   /**< @brief Min pack cell voltage cell number. */
 	uint8_t maxVoltageBMBNum;    /**< @brief Max pack cell voltage BMB number. */
-	uint8_t maxVoltageCellNum;   /**< @brief Max pack cell voltage cell number. */
-    int32_t battVoltage_mV; 
+	uint8_t maxVoltageCellNum;   /**< @brief Max pack cell voltage cell number. */ 
 } cmr_canBMSMinMaxCellVoltage_t;
+
+typedef struct {
+    uint32_t battVoltage_mV; 
+} cmr_canHVBMSPackVoltage_t; 
 
 typedef struct {
     uint16_t minCellTemp_C;      /**< @brief Min pack cell temp (C). */

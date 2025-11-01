@@ -4,6 +4,6 @@
 
 method=source_dir
 command=
-source_dir=/Users/kavehfayyazi/monorepo/VSM
+source_dir=/Users/sophia/Downloads/monorepo/VSM
 work_dir=
 

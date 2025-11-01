@@ -71,6 +71,7 @@ static void sendBMSBMBStatusTemp(uint8_t bmb_index);
 static void sendBMSMinMaxCellVoltage(void);
 static void sendBMSMinMaxCellTemp(void);
 static void sendAllBMBVoltages(void);
+static void sendHVBMSPackVoltage(void); 
 
 /** @brief CAN 1 Hz TX priority. */
 static const uint32_t canTX1Hz_priority = 4;
@@ -174,6 +175,7 @@ static void canTX200Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendBMSMinMaxCellVoltage();
+        sendHVBMSPackVoltage(); 
 
         vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
     }
@@ -350,19 +352,26 @@ static void sendBMSMinMaxCellVoltage(void) {
         }
     }
 
-    int32_t bVolt = getBattMillivolts();
-
     cmr_canBMSMinMaxCellVoltage_t BMSBMBMinMaxVoltage = {
         .minCellVoltage_mV = minCellVoltage,
         .maxCellVoltage_mV = maxCellVoltage,
         .minVoltageBMBNum = minCellVoltageBMBNum,
         .maxVoltageBMBNum = maxCellVoltageBMBNum,
         .minVoltageCellNum = minCellVoltageIndex,
-        .maxVoltageCellNum = maxCellVoltageIndex,
-        .battVoltage_mV = bVolt, 
+        .maxVoltageCellNum = maxCellVoltageIndex
     };
 
     canTX(CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE, &BMSBMBMinMaxVoltage, sizeof(BMSBMBMinMaxVoltage), canTX200Hz_period_ms);
+}
+
+static void sendHVBMSPackVoltage(void){
+    uint32_t battvolt = getBattMillivolts();
+    
+    cmr_canHVBMSPackVoltage_t bmsbattvoltage = {
+        .battVoltage_mV = battvolt
+    }; 
+
+    canTX(CMR_CANID_HVC_PACK_VOLTAGE, &bmsbattvoltage, sizeof(bmsbattvoltage), canTX200Hz_period_ms);  
 }
 
 static void sendBMSMinMaxCellTemp(void) {
