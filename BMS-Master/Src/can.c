@@ -307,7 +307,7 @@ static void sendBMSBMBStatusVoltage(uint8_t bmb_index) {
         .minCellVoltage_mV = minVoltage,
     };
 
-    canTX(CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE + (bmb_index << 1), &BMSBMBStatusVoltage, sizeof(BMSBMBStatusVoltage), canTX10Hz_period_ms);
+    canTX(CMR_CANID_HVBMS_BMB_0_STATUS_VOLTAGE + (bmb_index << 1), &BMSBMBStatusVoltage, sizeof(BMSBMBStatusVoltage), canTX10Hz_period_ms);
 }
 
 static void sendBMSBMBStatusTemp(uint8_t bmb_index) {
@@ -323,7 +323,7 @@ static void sendBMSBMBStatusTemp(uint8_t bmb_index) {
         .minCellTemp_C = minTemp,
     };
 
-    canTX(CMR_CANID_HVC_BMB_0_STATUS_TEMP + (bmb_index << 1), &BMSBMBStatusTemp, sizeof(BMSBMBStatusTemp), canTX1Hz_period_ms);
+    canTX(CMR_CANID_HVBMS_BMB_0_STATUS_TEMP + (bmb_index << 1), &BMSBMBStatusTemp, sizeof(BMSBMBStatusTemp), canTX1Hz_period_ms);
 }
 
 static void sendBMSMinMaxCellVoltage(void) {
@@ -364,7 +364,7 @@ static void sendBMSMinMaxCellVoltage(void) {
         .maxVoltageCellNum = maxCellVoltageIndex
     };
 
-    canTX(CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE, &BMSBMBMinMaxVoltage, sizeof(BMSBMBMinMaxVoltage), canTX200Hz_period_ms);
+    canTX(CMR_CANID_HVBMS_MIN_MAX_CELL_VOLTAGE, &BMSBMBMinMaxVoltage, sizeof(BMSBMBMinMaxVoltage), canTX200Hz_period_ms);
 }
 
 static void sendHVBMSPackVoltage(void){
@@ -374,7 +374,7 @@ static void sendHVBMSPackVoltage(void){
         .battVoltage_mV = battvolt
     }; 
 
-    canTX(CMR_CANID_HVC_PACK_VOLTAGE, &bmsbattvoltage, sizeof(bmsbattvoltage), canTX200Hz_period_ms);  
+    canTX(CMR_CANID_HVBMS_PACK_VOLTAGE, &bmsbattvoltage, sizeof(bmsbattvoltage), canTX200Hz_period_ms);  
 }
 
 static void sendBMSMinMaxCellTemp(void) {
@@ -423,7 +423,7 @@ static void sendBMSMinMaxCellTemp(void) {
         .maxTempCellNum = minCellTempIndex,
     };
 
-    canTX(CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE, &BMSBMBMinMaxTemperature, sizeof(BMSBMBMinMaxTemperature), canTX10Hz_period_ms);
+    canTX(CMR_CANID_HVBMS_MIN_MAX_CELL_TEMPERATURE, &BMSBMBMinMaxTemperature, sizeof(BMSBMBMinMaxTemperature), canTX10Hz_period_ms);
 }
 
 
@@ -514,11 +514,11 @@ static void sendAllBMBVoltages(void) {
 //            .cellTemp11_dC = data->cellTemperatures[11]
 //        };
 //
-//        canTX(CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE_0 + (bmbIndex << 4), &volt0, sizeof(volt0), canTX1Hz_period_ms);
-//        canTX(CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE_1 + (bmbIndex << 4), &volt1, sizeof(volt1), canTX1Hz_period_ms);
-//        canTX(CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE_2 + (bmbIndex << 4), &volt2, sizeof(volt2), canTX1Hz_period_ms);
-//        canTX(CMR_CANID_HVC_BMB_0_STATUS_TEMP_0 + (bmbIndex << 4), &temp0, sizeof(temp0), canTX1Hz_period_ms);
-//        canTX(CMR_CANID_HVC_BMB_0_STATUS_TEMP_1 + (bmbIndex << 4), &temp1, sizeof(temp1), canTX1Hz_period_ms);
-//        canTX(CMR_CANID_HVC_BMB_0_STATUS_TEMP_2 + (bmbIndex << 4), &temp2, sizeof(temp2), canTX1Hz_period_ms);
+//        canTX(CMR_CANID_HVBMS_BMB_0_STATUS_VOLTAGE_0 + (bmbIndex << 4), &volt0, sizeof(volt0), canTX1Hz_period_ms);
+//        canTX(CMR_CANID_HVBMS_BMB_0_STATUS_VOLTAGE_1 + (bmbIndex << 4), &volt1, sizeof(volt1), canTX1Hz_period_ms);
+//        canTX(CMR_CANID_HVBMS_BMB_0_STATUS_VOLTAGE_2 + (bmbIndex << 4), &volt2, sizeof(volt2), canTX1Hz_period_ms);
+//        canTX(CMR_CANID_HVBMS_BMB_0_STATUS_TEMP_0 + (bmbIndex << 4), &temp0, sizeof(temp0), canTX1Hz_period_ms);
+//        canTX(CMR_CANID_HVBMS_BMB_0_STATUS_TEMP_1 + (bmbIndex << 4), &temp1, sizeof(temp1), canTX1Hz_period_ms);
+//        canTX(CMR_CANID_HVBMS_BMB_0_STATUS_TEMP_2 + (bmbIndex << 4), &temp2, sizeof(temp2), canTX1Hz_period_ms);
 //    }
 }

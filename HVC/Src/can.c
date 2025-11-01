@@ -48,17 +48,17 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 25
     },
     [CANRX_HVBMS_MINMAX_VOLTAGE] = {
-        .canID = CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE,
+        .canID = CMR_CANID_HVBMS_MIN_MAX_CELL_VOLTAGE,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25
     },
     [CANRX_HVBMS_PACKVOLT] = {
-        .canID = CMR_CANID_HVC_PACK_VOLTAGE,
+        .canID = CMR_CANID_HVBMS_PACK_VOLTAGE,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25 
     }, 
     [CANRX_HVBMS_MINMAX_TEMP] = {
-        .canID = CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE, 
+        .canID = CMR_CANID_HVBMS_MIN_MAX_CELL_TEMPERATURE, 
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25 
     }, 

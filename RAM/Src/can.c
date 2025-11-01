@@ -54,7 +54,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .warnFlag = CMR_CAN_WARN_NONE
     },
     [CANRX_VEH_VOLTAGE_HVC] = {
-        .canID = CMR_CANID_HVC_PACK_VOLTAGE,
+        .canID = CMR_CANID_HVBMS_PACK_VOLTAGE,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_NONE,

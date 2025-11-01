@@ -35,7 +35,7 @@ typedef enum {
     CMR_CANID_VSM_POWER_DIAGNOSTICS = 0x530,    /**< @brief VSM power diagnostics. */
 
     CMR_CANID_HVC_COMMAND = 0x130,              /**< @brief HVC command, sent by VSM. */
-    CMR_CANID_HVC_PACK_VOLTAGE = 0x301,         /**< @brief HVC pack voltage. */
+    CMR_CANID_HVBMS_PACK_VOLTAGE = 0x301,         /**< @brief HVC pack voltage. */
     CMR_CANID_HVC_MINMAX_CELL_VOLTAGE = 0x310,  /**< @brief HVC pack min and max cell voltages*/
     CMR_CANID_HVC_MINMAX_CELL_TEMPS = 0x311,    /**< @brief HVC pack min and max cell temps. */
     CMR_CANID_HVC_PACK_CURRENT = 0x302,         /**< @brief HVC pack current. */
@@ -175,13 +175,13 @@ typedef enum {
 
 
     // BMS CAN Structs
-    CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE = 0x310,                  /**< @brief HVC Max/Min Cell Voltage. */
-    CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE = 0x311,              /**< @brief HVC Max/Min Cell Temperature. */
+    CMR_CANID_HVBMS_MIN_MAX_CELL_VOLTAGE = 0x310,                  /**< @brief HVC Max/Min Cell Voltage. */
+    CMR_CANID_HVBMS_MIN_MAX_CELL_TEMPERATURE = 0x311,              /**< @brief HVC Max/Min Cell Temperature. */
     CMR_CANID_HVC_LOW_VOLTAGE = 0x303,                           /**< @brief HVC Low Voltage. */
     CMR_CANID_HVC_BMB_STATUS_ERRORS = 0x304,
     CMR_CANID_HVC_BRUSA_MSG = 0x528,                             /**< @brief HVC Brusa message. */
 
-    CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE = 0x380,                    /**< @brief HVC BMB Voltage: Message ID is BMB number << 1*/
+    CMR_CANID_HVBMS_BMB_0_STATUS_VOLTAGE = 0x380,                    /**< @brief HVC BMB Voltage: Message ID is BMB number << 1*/
     CMR_CANID_HVC_BMB_1_STATUS_VOLTAGE = 0x382,
     CMR_CANID_HVC_BMB_2_STATUS_VOLTAGE = 0x384,
     CMR_CANID_HVC_BMB_3_STATUS_VOLTAGE = 0x386,
@@ -197,7 +197,7 @@ typedef enum {
     CMR_CANID_HVC_BMB_13_STATUS_VOLTAGE = 0x39A,
     CMR_CANID_HVC_BMB_14_STATUS_VOLTAGE = 0x39C,
     CMR_CANID_HVC_BMB_15_STATUS_VOLTAGE = 0x39E,
-    CMR_CANID_HVC_BMB_0_STATUS_TEMP = 0x381,                       /**< @brief HVC BMB Temperature: Message ID is BMB number << 1 + 1*/
+    CMR_CANID_HVBMS_BMB_0_STATUS_TEMP = 0x381,                       /**< @brief HVC BMB Temperature: Message ID is BMB number << 1 + 1*/
     CMR_CANID_HVC_BMB_1_STATUS_TEMP = 0x383,
     CMR_CANID_HVC_BMB_2_STATUS_TEMP = 0x385,
     CMR_CANID_HVC_BMB_3_STATUS_TEMP = 0x387,
