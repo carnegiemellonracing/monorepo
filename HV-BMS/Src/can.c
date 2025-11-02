@@ -477,48 +477,63 @@ static void sendBMSBMBStatusErrors(void) {
 }
 
 static void sendAllBMBVoltages(void) {
-//    for (int bmbIndex = 0; bmbIndex < BOARD_NUM; bmbIndex++) {
-//        BMB_Data_t *data = getBMBData(bmbIndex);
-//        cmr_canHVCBMB_Voltage0_t volt0 = {
-//            .cellVoltage0_mV = data->cellVoltages[0],
-//            .cellVoltage1_mV = data->cellVoltages[1],
-//            .cellVoltage2_mV = data->cellVoltages[2],
-//            .cellVoltage3_mV = data->cellVoltages[3]
-//        };
-//        cmr_canHVCBMB_Voltage1_t volt1 = {
-//            .cellVoltage4_mV = data->cellVoltages[4],
-//            .cellVoltage5_mV = data->cellVoltages[5],
-//            .cellVoltage6_mV = data->cellVoltages[6],
-//            .cellVoltage7_mV = data->cellVoltages[7]
-//        };
-//        cmr_canHVCBMB_Voltage2_t volt2 = {
-//            .cellVoltage8_mV = data->cellVoltages[8]
-//        };
-//
-//        cmr_canHVCBMB_Temp0_t temp0 = {
-//            .cellTemp0_dC = data->cellTemperatures[0],
-//            .cellTemp1_dC = data->cellTemperatures[1],
-//            .cellTemp2_dC = data->cellTemperatures[2],
-//            .cellTemp3_dC = data->cellTemperatures[3]
-//        };
-//        cmr_canHVCBMB_Temp1_t temp1 = {
-//            .cellTemp4_dC = data->cellTemperatures[4],
-//            .cellTemp5_dC = data->cellTemperatures[5],
-//            .cellTemp6_dC = data->cellTemperatures[6],
-//            .cellTemp7_dC = data->cellTemperatures[7]
-//        };
-//        cmr_canHVCBMB_Temp2_t temp2 = {
-//            .cellTemp8_dC = data->cellTemperatures[8],
-//            .cellTemp9_dC = data->cellTemperatures[9],
-//            .cellTemp10_dC = data->cellTemperatures[10],
-//            .cellTemp11_dC = data->cellTemperatures[11]
-//        };
-//
-//        canTX(CMR_CANID_HVBMS_BMB_0_STATUS_VOLTAGE_0 + (bmbIndex << 4), &volt0, sizeof(volt0), canTX1Hz_period_ms);
-//        canTX(CMR_CANID_HVBMS_BMB_0_STATUS_VOLTAGE_1 + (bmbIndex << 4), &volt1, sizeof(volt1), canTX1Hz_period_ms);
-//        canTX(CMR_CANID_HVBMS_BMB_0_STATUS_VOLTAGE_2 + (bmbIndex << 4), &volt2, sizeof(volt2), canTX1Hz_period_ms);
-//        canTX(CMR_CANID_HVBMS_BMB_0_STATUS_TEMP_0 + (bmbIndex << 4), &temp0, sizeof(temp0), canTX1Hz_period_ms);
-//        canTX(CMR_CANID_HVBMS_BMB_0_STATUS_TEMP_1 + (bmbIndex << 4), &temp1, sizeof(temp1), canTX1Hz_period_ms);
-//        canTX(CMR_CANID_HVBMS_BMB_0_STATUS_TEMP_2 + (bmbIndex << 4), &temp2, sizeof(temp2), canTX1Hz_period_ms);
-//    }
+   for (int bmbIndex = 0; bmbIndex < BOARD_NUM; bmbIndex++) {
+       BMB_Data_t *data = getBMBData(bmbIndex);
+       cmr_canHVBMS_BMB_CellVoltages_t volt0 = {
+           .cellVoltage0_mV = data->cellVoltages[0],
+           .cellVoltage1_mV = data->cellVoltages[1],
+           .cellVoltage2_mV = data->cellVoltages[2],
+           .cellVoltage3_mV = data->cellVoltages[3]
+       };
+       cmr_canHVBMS_BMB_CellVoltages_t volt1 = {
+           .cellVoltage0_mV = data->cellVoltages[4],
+           .cellVoltage1_mV = data->cellVoltages[5],
+           .cellVoltage2_mV = data->cellVoltages[6],
+           .cellVoltage3_mV = data->cellVoltages[7] 
+       };
+       cmr_canHVBMS_BMB_CellVoltages_t volt2 = {
+           .cellVoltage0_mV = data->cellVoltages[8],  
+           .cellVoltage1_mV = data->cellVoltages[9], 
+           .cellVoltage2_mV = data->cellVoltages[10],
+           .cellVoltage3_mV = data->cellVoltages[11]
+       };
+       cmr_canHVBMS_BMB_CellVoltages_t volt3 = {
+            .cellVoltage_0_mV = data->cellVoltages[12], 
+            .cellVoltage_1_mV = data->cellVoltages[13],
+            .cellVoltage_2_mV = data->cellVoltages[14] 
+       }; 
+
+       cmr_canHVBMS_BMB_CellTemps_t temp0 = {
+           .cellTemp0_dC = data->cellTemperatures[0],
+           .cellTemp1_dC = data->cellTemperatures[1],
+           .cellTemp2_dC = data->cellTemperatures[2],
+           .cellTemp3_dC = data->cellTemperatures[3]
+       };
+       cmr_canHVBMS_BMB_CellTemps_t temp1 = {
+           .cellTemp0_dC = data->cellTemperatures[4],
+           .cellTemp1_dC = data->cellTemperatures[5],
+           .cellTemp2_dC = data->cellTemperatures[6],
+           .cellTemp3_dC = data->cellTemperatures[7] 
+       };
+       cmr_canHVBMS_BMB_CellTemps_t temp2 = { 
+           .cellTemp0_dC = data->cellTemperatures[8], 
+           .cellTemp1_dC = data->cellTemperatures[9],
+           .cellTemp2_dC = data->cellTemperatures[10],
+           .cellTemp3_dC = data->cellTemperatures[11] 
+       };
+       cmr_canHVBMS_BMB_CellTemps_t temp3 = {
+            .cellTemp0_mV = data->cellTemperatures[12],
+            .cellTemp1_mV = data->cellTemperatures[13],
+            .cellTemp2_mV = data->cellTemperatures[14] 
+       }; 
+
+       canTX(CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_0_3 + bmbIndex, &volt0, sizeof(volt0), canTX1Hz_period_ms);
+       canTX(CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_4_7 + bmbIndex, &volt1, sizeof(volt1), canTX1Hz_period_ms);
+       canTX(CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_8_11 + bmbIndex, &volt2, sizeof(volt2), canTX1Hz_period_ms);
+       canTX(CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_12_14 + bmbIndex, &volt3, sizeof(volt3), canTX1Hz_period_ms);
+       canTX(CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_0_3 + bmbIndex, &temp0, sizeof(temp0), canTX1Hz_period_ms);
+       canTX(CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_4_7 + bmbIndex, &temp1, sizeof(temp1), canTX1Hz_period_ms);
+       canTX(CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_8_11 + bmbIndex, &temp2, sizeof(temp2), canTX1Hz_period_ms);
+       canTX(CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_12_14 + bmbIndex, &temp3, sizeof(temp3), canTX1Hz_period_ms);
+   }
 }

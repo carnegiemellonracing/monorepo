@@ -480,21 +480,6 @@ uint8_t pollAllVoltageData() {
 				uint8_t low_byte_data = response[i].data[2*j+1];
 
 				BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = calculateVoltage(high_byte_data, low_byte_data);
-				if(i == 1 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				} else if(i == 4 && (VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				} else if(i == 5 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				} else if(i == 3 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				}
-				if(i == 3 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-									BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
-								}
-				if(i == 4 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
-				}
 			}
 		}
 
@@ -574,19 +559,7 @@ void pollAllTemperatureData(int channel) {
 			uint8_t high_byte_data = response[i].data[2*k];
 			uint8_t low_byte_data = response[i].data[2*k+1];
 			size_t index = (4*channel) + k;
-			//TODO: make sure this is matching the thermistor indices properly
-
-			if (index == 3 || index == 10) {
-				continue;
-			}
-
-			if (index > 10) {
-				index--;
-			}
-
-			if (index > 3) {
-				index--;
-			}
+			//TODO: make sure this is matching the thermistor indices properly 
 
 			BMBData[i].cellTemperatures[index] = calculateTemp(high_byte_data, low_byte_data);
 		}

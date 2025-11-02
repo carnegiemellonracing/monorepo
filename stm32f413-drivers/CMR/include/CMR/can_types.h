@@ -407,6 +407,20 @@ typedef struct {
     uint8_t BMB15_16_Errs;  /**< @brief Errors for BMB15&16 (BMB15 = higher 4 bits). */
 } cmr_canHVCBMBErrors_t;
 
+typedef struct {
+    uint16_t cellVoltage0_mV;
+    uint16_t cellVoltage1_mV;
+    uint16_t cellVoltage2_mV;
+    uint16_t cellVoltage3_mV;
+} cmr_can_HVBMS_BMB_CellVoltages_t; 
+
+typedef struct {
+    int16_t cellTemp0_dC; 
+    int16_t cellTemp1_dC; 
+    int16_t cellTemp2_dC;
+    int16_t cellTemp3_dC;  
+} cmr_can_HVBMS_BMB_CellTemps_t; 
+
 //HVC Sensors CAN Types
 typedef struct {
     int16_t packCurrent_dA;
