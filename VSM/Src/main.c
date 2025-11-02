@@ -20,6 +20,7 @@
 #include "sensors.h"    // Board-specific sensors interface
 #include "state.h"      // stateInit()
 #include "error.h"
+#include "assi.h"
 
 DAC_HandleTypeDef hdac1;
 
@@ -226,7 +227,8 @@ int main(void) {
     adcInit();
     sensorsInit();
     stateInit();
-
+    assiInit();
+    
     cmr_taskInit(
         &statusLED_task,
         "statusLED",

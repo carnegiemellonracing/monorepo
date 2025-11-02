@@ -24,6 +24,14 @@ typedef struct {
     cmr_canState_t dimRequestReject;    /**< @brief Rejected DIM state request. */
 } vsmStatus_t;
 
+/** @brief Struct to contain the states of the brake test for autonomous */
+typedef enum {
+    BRAKE_TEST_NOT_STARTED = 0,
+    BRAKE_TEST_RUNNING,
+    BRAKE_TEST_PASSED,
+    BRAKE_TEST_FAILED
+} brakeTestState_t;
+
 extern cmr_canState_t vsmToCANState[];
 extern volatile TickType_t lastStateChangeTime_ms;
 extern volatile cmr_canHVCMode_t hvcModeRequest;

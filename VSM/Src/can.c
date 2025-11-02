@@ -453,7 +453,7 @@ cmr_canState_t getModuleState(canRX_t module) {
 /**
  * @brief Gets the ASMS from the AIM heartbeat 
  * 
- * @return true iff ASMS is on and we are in autonomous mode
+ * @return true iff ASMS is on and in autonomous mode
  */
 bool getASMSState() {
 
@@ -512,8 +512,8 @@ static void sendVSMSensors(void) {
     cmr_canVSMSensors_t msg = {
         .brakePressureRear_PSI = cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI),
         .hallEffect_cA = cmr_sensorListGetValue(&sensorList, SENSOR_CH_HALL_EFFECT_CA),
-        .safetyIn_V = 11 * cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_IN),
-        .safetyOut_V = 11 * cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_OUT)
+        .safetyIn_V = cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_IN),
+        .safetyOut_V = cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_OUT)
     };
 
     canTX(CMR_CANID_VSM_SENSORS, &msg, sizeof(msg), canTX200Hz_period_ms);
@@ -566,23 +566,18 @@ static void sendPowerDiagnostics(void) {
 /**
  * @brief Sends the first error state detected
  */
-void sendFirstError(bool detectedFirstError, uint16_t line) {
+static void sendFirstError(uint8_t error_code) {
+    static bool detectedFirstError = false;
 
     cmr_canVSMState_t state = vsmStatus.canVSMStatus.internalState;
-    // Reset latch if system returns to GLV_ON
-    if (state == CMR_CAN_VSM_STATE_GLV_ON) {
-        detectedFirstError = false;
-        return;
-    }
-
+    
     // Read first error
     if (!detectedFirstError) {
         detectedFirstError = true;
 
-        uint8_t data[2];
-        data[0] = (uint8_t)(line & 0xFF);
-        data[1] = (uint8_t)((line >> 8) & 0xFF);
-
-        canTX(CMR_CANID_VSM_FIRST_ERROR, data, 2, canTX100Hz_period_ms); //timeout?
+        canTX(CMR_CANID_VSM_FIRST_ERROR, error_code, sizeof(error_code), canTX100Hz_period_ms);
+        return;
     }
+
+    return;
 }

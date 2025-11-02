@@ -63,6 +63,21 @@ static const TickType_t ASEmergencyBuzzerTime_ms = 9000;
  */
 static const TickType_t ASEmergencySwitchingTime_ms = 100;
 
+/** @brief ASState flag. Keeps track of the "true" ASMS State. Set during GLV_ON only. 
+ */
+static const bool ASState = true;
+
+/** @brief Autonomous brake test state is not started at the beginning*/
+static brakeTestState_t brakeTestState = BRAKE_TEST_NOT_STARTED;
+/** @brief Start time of the brake test  */
+static TickType_t brakeTestStartTime = 0;
+/** @brief Time to detect pressure rise (3 seconds) @todo time*/
+static const TickType_t brakeTestTimeout = 3000;
+/** @brief Expected pressure increase for working brakes @todo threshold*/
+static const uint16_t brakePressureRiseThreshold = 50;
+/** @brief Brake pressure at the start of the brake test*/
+static int32_t initialBrakePressure = 0;
+
 /** @brief Current Vehicle Safety Module state and errors. */
 static volatile vsmStatus_t vsmStatus = {
     .heartbeatErrors = CMR_CAN_ERROR_NONE,
@@ -176,14 +191,15 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
     updateErrorsAndWarnings(lastWakeTime_ms);
 
     //If RES triggered stop everything
-    if(RESTriggered() && getASMSState()){
+    if(RESTriggered() && ASState){
         return CMR_CAN_VSM_STATE_AS_EMERGENCY;
     }
 
     // TE (Immediately return error if anything is wrong)
     if ((vsmStatus.heartbeatErrors != CMR_CAN_ERROR_NONE)
      || (vsmStatus.canVSMStatus.moduleTimeoutMatrix != CMR_CAN_VSM_ERROR_SOURCE_NONE)
-     || (vsmStatus.canVSMStatus.latchMatrix != CMR_CAN_VSM_LATCH_NONE)) {
+     || (vsmStatus.canVSMStatus.latchMatrix != CMR_CAN_VSM_LATCH_NONE)
+     || (ASState != getASMSState())) {
         return CMR_CAN_VSM_STATE_ERROR;
     }
 
@@ -222,7 +238,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                         (amk3Actual->velocity_rpm == 0) && (amk4Actual->velocity_rpm == 0);
     
     //If need to go to AS Emergency do so immediatly
-    if(EBSActive() && !getVehicleFinished(vehicleStill) && getASMSState()){
+    if(EBSActive() && !getVehicleFinished(vehicleStill) && ASState){
         return CMR_CAN_VSM_STATE_AS_EMERGENCY;
     }
 
@@ -247,17 +263,20 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                 (dimRequestedState == CMR_CAN_GLV_ON)
             ) {
                 nextState = CMR_CAN_VSM_STATE_GLV_ON;
+                detectedFirstError = false; // Reset error latch if system returns to GLV_ON
             }
             else {
                 nextState = CMR_CAN_VSM_STATE_CLEAR_ERROR;
             }
-
             break;
         }
 
         case CMR_CAN_VSM_STATE_GLV_ON: {
             // T2
-            if (dimRequestedState == CMR_CAN_AS_READY && getASMSState()){
+            ASState = getASMSState();
+            if (dimRequestedState == CMR_CAN_AS_READY
+                && ASState && getMissionSelected()){
+                brakeTestState = BRAKE_TEST_NOT_STARTED;
                 nextState = CMR_CAN_VSM_STATE_BRAKE_TEST;
             }
             else if (dimRequestedState == CMR_CAN_HV_EN){
@@ -272,13 +291,24 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         }
 
         case CMR_CAN_VSM_STATE_BRAKE_TEST: {
-            if (getBrakeStatus()){
-                if ((dimRequestedState == CMR_CAN_AS_READY) && getASMSState()) {
-                    nextState = CMR_CAN_VSM_STATE_REQ_PRECHARGE;
-                }
+            if (!getMissionSelected()){ //If not in autonomous mission, state down
+                brakeTestState = BRAKE_TEST_NOT_STARTED;
+                nextState = CMR_CAN_VSM_STATE_GLV_ON;
+            }
+            else if (brakeTestState == BRAKE_TEST_FAILED){ //Failed brake test, thenerror state
+                nextState = CMR_CAN_VSM_STATE_ERROR;
+            }
+            else if (brakeTestState == BRAKE_TEST_PASSED  
+                    && ASState
+                    && dimRequestedState == CMR_CAN_AS_READY){ //Passed brake test, then go into precharge
+                        nextState = CMR_CAN_VSM_STATE_REQ_RECHARGE;
             }
             else if (dimRequestedState == CMR_CAN_GLV_ON){
+                brakeTestState = BRAKE_TEST_NOT_STARTED;
                 nextState = CMR_CAN_VSM_STATE_GLV_ON;
+            }
+            else{
+                nextState = CMR_CAN_VSM_STATE_BRAKE_TEST;
             }
             break;
         }
@@ -323,7 +353,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                 // if (true){
                 //     nextState = CMR_CAN_VSM_STATE_AS_READY;
                 // } else
-                if (getASMSState()){ //Trying to enter DV mode but failed previous conditions
+                if (ASState){ //Trying to enter DV mode but failed previous conditions
                     nextState = CMR_CAN_VSM_STATE_AS_READY;
                     //nextState = CMR_CAN_VSM_STATE_GLV_ON;
                 }
@@ -388,7 +418,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             // }
 
             //T6
-            if (getRESGo() && getASMSState()){
+            if (getRESGo() && ASState){
                 if (lastWakeTime_ms > lastStateChangeTime_ms + AS_WAKEUP_TIME){
                     nextState = CMR_CAN_VSM_STATE_AS_DRIVING;
                 }
@@ -396,7 +426,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                     nextState = CMR_CAN_VSM_STATE_AS_READY;
                 }
             }
-            else if (dimRequestedState == CMR_CAN_AS_READY && getASMSState()){
+            else if (dimRequestedState == CMR_CAN_AS_READY && ASState){
                 nextState = CMR_CAN_VSM_STATE_AS_READY;
             }
             //T8
@@ -408,10 +438,10 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
 
         case CMR_CAN_VSM_STATE_AS_DRIVING: {
             //T13
-            if (getVehicleFinished(vehicleStill) && getASMSState()){
+            if (getVehicleFinished(vehicleStill) && ASState){
                 nextState = CMR_CAN_VSM_STATE_AS_FINISHED;
             }
-            else if (!RESTriggered() && getASMSState()){
+            else if (!RESTriggered() && ASState){
                 nextState = CMR_CAN_VSM_STATE_AS_DRIVING;
             }
             else{
@@ -425,7 +455,8 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             if (!EBSActive() && !AutonomousClear()){
                 nextState = CMR_CAN_VSM_STATE_ERROR;
             }
-            else if (getVehicleFinished(vehicleStill) && !RESTriggered() && (lastWakeTime_ms > lastStateChangeTime_ms + AS_FINISHED_TIME)){
+            else if (getVehicleFinished(vehicleStill) && !RESTriggered()
+                    && (lastWakeTime_ms > lastStateChangeTime_ms + AS_FINISHED_TIME)){
                 nextState = CMR_CAN_VSM_STATE_ERROR;
             }
             else{
@@ -547,6 +578,10 @@ static void stateUpdate(void *pvParameters) {
 
     TickType_t lastWakeTime_ms = xTaskGetTickCount();
     while (1) {
+        if (vsmStatus.canVSMStatus.internalState == CMR_CAN_VSM_STATE_BRAKE_TEST) {
+            (void)getBrakeStatus();
+        }
+
         cmr_canVSMState_t nextState = getNextState(lastWakeTime_ms);
 
         if (nextState != lastState) {
@@ -565,8 +600,36 @@ static void stateUpdate(void *pvParameters) {
  * @brief Checks if possible for Autonomous Braking System to Deploy
  */
 static inline bool getBrakeStatus(){
-    cmr_canDVPressureReadings_t* pressureReading = (cmr_canDVPressureReadings_t*) getPayload(CANRX_AS_PRESSURE_READING);
-    return pressureReading->tankPressurePercentofThreshold > 100;
+
+    switch (brakeTestState) {
+        case BRAKE_TEST_NOT_STARTED:{ //read initial value
+            initialBrakePressure = brakePressureRear_PSI;
+            brakeTestStartTime = xTaskGetTickCount();
+
+            cmr_gpioWrite() //Uh.. how do i actuate the solenoids
+
+            brakeTestState = BRAKE_TEST_RUNNING;
+            return false;
+        }
+        case BRAKE_TEST_RUNNING: {
+            if (xTaskGetTickCount() - brakeTestStartTime > brakeTestTimeout) { //timeout
+                brakeTestState = BRAKE_TEST_FAILED;
+                cmr_gpioWrite(GPIO_OUT_BRAKE_SOLENOID, 0);
+                return false;
+            }
+
+            if (brakePressure > initialBrakePressure + brakePressureRiseThreshold) { //passed
+                brakeTestState = BRAKE_TEST_PASSED;
+                cmr_gpioWrite(GPIO_OUT_BRAKE_SOLENOID, 0);
+                return true;
+            }
+
+            return false
+        }
+        case BRAKE_TEST_PASSED: {
+            return true;
+        }
+    }
 }
 
 /**
@@ -589,7 +652,7 @@ static inline bool TSActive(){
  * that the car can continue being in AS Ready or AS Driving
  */
 static inline bool AutonomousClear(){
-    return getASMSState() && getBrakeStatus() && getMissionSelected() && TSActive();
+    return ASState && getBrakeStatus() && getMissionSelected() && TSActive();
 }
 
 /**

@@ -100,6 +100,16 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
+    },
+
+    [GPIO_IN_EBS_ACTIVATED] = {
+        .port = GPIOB,
+        .init = {
+            .Pin = GPIO_PIN_12, /** @todo implement */
+            .Mode = GPIO_MODE_INPUT,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
     }
 };
 

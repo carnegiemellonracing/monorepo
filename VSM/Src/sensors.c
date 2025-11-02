@@ -181,7 +181,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_BUS_VOLTAGE
     },
-    [SENSOR_CH_SS_IN] = {
+    [SENSOR_CH_SS_OUT] = {
         .conv = adcToBusCurrent_mA,
         .sample = sampleADCSensor,
         .readingMin = 250,  // 10 mA
