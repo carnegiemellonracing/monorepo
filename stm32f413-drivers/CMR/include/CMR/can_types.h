@@ -187,6 +187,12 @@ typedef enum {
     CMR_CAN_GEAR_LEN
 } cmr_canGear_t;
 
+typedef enum {
+    CMR_CAN_DV_MODE_SLOW = 0,
+    CMR_CAN_DV_MODE_NORMAL,
+    CMR_CAN_DV_MODE_FAST
+} cmr_canDVMode_t;
+
 /** @brief Represents the car's current DRS mode (). */
 typedef enum {
     CMR_CAN_DRSM_QUIET = 0,
@@ -555,6 +561,7 @@ typedef struct {
     uint8_t requestedGear;      /**< @brief Requested gear. */
     uint8_t requestedDrsMode;   /**< @brief Requested DRS mode. */
     uint8_t requestedDriver;    /**< @brief Requested Driver for Config Screen. */
+    uint8_t requestedDVCtrl;
 } cmr_canDIMRequest_t;
 
 /** @brief Driver Interface Module power diagnostics. */
@@ -573,12 +580,12 @@ typedef struct {
 } cmr_canDIMTextWrite_t;
 
 typedef struct {
-    uint8_t buttons;                 /**< @brief Button states packed into an uint8_t. {drs,0,1,2,up,down,left,right}*/
+    uint8_t buttonStates;      /**< @brief Button states packed into an uint8_t. {drs,0,1,2,up,down,left,right}*/
     uint8_t rotaryPos;
-    uint8_t switchValues;
-    uint8_t regenPercent;            /**< @brief Integer percentage for regen. */
-    uint8_t paddle;            /**< @brief Between 0 and 255 for paddle pos*/
-    uint8_t LRUDButtons;     /**< @brief LRUD Button States, packed into an uint8_t*/
+    uint8_t regenPercent;            
+    uint8_t paddle;            
+    uint8_t controlsStatus;
+    uint8_t dvControlMode;
 } cmr_canDIMActions_t;
 
 /** @brief DIM sends message to acknowledge radio message

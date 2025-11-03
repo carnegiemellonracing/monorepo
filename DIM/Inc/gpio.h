@@ -29,7 +29,6 @@ typedef enum {
     GPIO_LED_IMD, /**< @brief IMD Error LED */
     GPIO_LED_BSPD, /**< @brief BSPD Error LED */
     GPIO_ASMS_ON, /**< @brief AS Master Switch On/Off */
-    GPIO_EAB_ON, /**< @brief External Activation Button On/Off */
 	GPIO_LED_STATUS, /**< @brief Status LED */
     GPIO_PD_N,
     GPIO_LEN /**< @brief Total GPIO pins. */
@@ -48,17 +47,7 @@ typedef enum {
 
 extern bool gpioButtonStates[NUM_BUTTONS];
 
-//Left right up down indexes
-typedef enum {
-	LEFT = 0,
-	RIGHT,
-	UP,
-	DOWN,
-	LRUD_LEN,
-} cmr_LRUD_index;
-
 extern bool gpioLRUDStates[4];
-extern bool canLRUDStates[4];
 
 void canLRUDDetect(void);
 

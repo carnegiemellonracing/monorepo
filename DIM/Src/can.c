@@ -122,12 +122,16 @@ static void canTX10Hz(void *pvParameters) {
         /* if DIM is requesting a state/gear change
          * send this request to VSM */
 		reqVSM();
+        reqGear();
+        reqDRS();
         cmr_canState_t stateVSM = stateGetVSM();
         cmr_canState_t stateVSMReq = stateGetVSMReq();
         cmr_canGear_t gear = stateGetGear();
         cmr_canGear_t gearReq = stateGetGearReq();
         cmr_canDrsMode_t drsMode = stateGetDrs();
         cmr_canDrsMode_t drsReq = stateGetDrsReq();
+        cmr_canDVMode_t dvMode = stateGetDVMode();
+        cmr_canDVMode_t dvReq = stateGetDVReq();
         cmr_canTestID_t test_id = {
         	.test_id = get_test_message_id()
         };
@@ -142,7 +146,8 @@ static void canTX10Hz(void *pvParameters) {
                 .requestedState = stateVSMReq,
                 .requestedGear = gearReq,
                 .requestedDrsMode = drsReq,
-                .requestedDriver = (uint8_t)config_menu_main_array[DRIVER_PROFILE_INDEX].value.value
+                .requestedDriver = (uint8_t)config_menu_main_array[DRIVER_PROFILE_INDEX].value.value,
+                .requestedDVCtrl = dvReq
             };
             canTX(
                 CMR_CANID_DIM_REQUEST,
@@ -152,6 +157,7 @@ static void canTX10Hz(void *pvParameters) {
             previousDriverReq = config_menu_main_array[DRIVER_PROFILE_INDEX].value.value;
             stateGearUpdate();
             stateDrsUpdate();
+            stateDVCtrlUpdate();
         }
         sendPowerDiagnostics();
 
@@ -190,18 +196,17 @@ static void canTX100Hz(void *pvParameters) {
     	uint8_t paddle = (uint8_t) ((adcRead(ADC_PADDLE) - 16.062) / 3694.43) * 255.0;
     	uint8_t regenPercent = (uint8_t)((adcRead(ADC_PADDLE) / 255.0) * 100.0);
         uint8_t packed = 0;
-        uint8_t LRUDpacked = 0;
+        uint8_t ctrlOn = cmr_gpioRead(GPIO_CTRL_SWITCH);
+        uint8_t dvCtrlMode = stateGetDVMode;
         for(int i=0; i<NUM_BUTTONS; i++){
             packed |= gpioButtonStates[i] << i;
         }
         /* Transmit action button status */
         cmr_canDIMActions_t actions = {
-            .buttons = packed,
-			.rotaryPos = getRotaryPosition(),
-            .switchValues = 0,
+            .buttonStates = packed,
             .regenPercent = regenPercent,
-            .paddle = paddle,
-			.LRUDButtons = LRUDpacked,
+            .controlsStatus = ctrlOn,
+			.dvControlMode = dvCtrlMode
         };
         canTX(
             CMR_CANID_DIM_ACTIONS,
@@ -582,7 +587,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
         .state = vsmState
     };
 
-    volatile cmr_canHeartbeat_t *AIM_Heartbeat = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+    volatile cmr_canHeartbeat_t *AIM_Heartbeat = canVehicleGetPayload(CANRX_HEARTBEAT_VSM);
 	cmr_canHeartbeat_t toSend;
 	memcpy(&toSend, AIM_Heartbeat,sizeof(cmr_canHeartbeat_t)); //memcpy since it is volatile and could update
 

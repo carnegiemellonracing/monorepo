@@ -18,8 +18,8 @@ typedef enum {
     NORMAL = 2,
     CONFIG = 3,
     dimStateERROR = 4,
-    RACING = 5
-    //SAFETY
+    RACING = 5,
+    AUTON = 6
 } cmr_state;
 
 /** @brief declaration of config screen variables */
@@ -45,6 +45,7 @@ bool DRSOpen(void);
 void exitConfigScreen();
 void stateGearUpdate(void);
 void stateDrsUpdate(void);
+void stateDVCtrlUpdate(void);
 cmr_canState_t stateGetVSM(void);
 cmr_canState_t stateGetVSMReq(void);
 
@@ -55,6 +56,9 @@ cmr_canGear_t stateGetGearReq(void);
 
 cmr_canDrsMode_t stateGetDrs(void);
 cmr_canDrsMode_t stateGetDrsReq(void);
+
+cmr_canDVMode_t stateGetDVMode(void);
+cmr_canDVMode_t stateGetDVReq(void);
 
 uint32_t get_test_message_id();
 

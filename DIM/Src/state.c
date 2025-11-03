@@ -42,6 +42,8 @@ volatile int8_t config_move_request;
 __typeof__ (b) _b = (b); \
 _a < _b ? _a : _b; })
 
+#define NUM_DV_MODES 3
+
 /** @brief declaration of config screen variables */
 extern volatile bool flush_config_screen_to_cdc;
 /** @brief declaration of config screen variables */
@@ -78,6 +80,8 @@ static volatile struct {
 	cmr_canGear_t gearReq;    /**< @brief Requested gear. */
 	cmr_canDrsMode_t drsMode; /**< @brief Current DRS Mode. */
 	cmr_canDrsMode_t drsReq;  /**< @brief Requested DRS Mode. */
+    cmr_canDVMode_t dvCtrlMode;
+    cmr_canDVMode_t dvCtrlReq;
 } state = {
 	.vsmReq = CMR_CAN_GLV_ON,
 	.gear = CMR_CAN_GEAR_SLOW,
@@ -148,6 +152,14 @@ cmr_canDrsMode_t stateGetDrs(void) {
 
 cmr_canDrsMode_t stateGetDrsReq(void) {
 	return state.drsReq;
+}
+
+cmr_canDVMode_t stateGetDVMode(void) {
+	return state.dvCtrlMode;
+}
+
+cmr_canDVMode_t stateGetDVReq(void) {
+	return state.dvCtrlReq;
 }
 
 static uint32_t test_message_id = 0;
@@ -312,6 +324,7 @@ bool DRSOpen(void)
 }
 
 
+
 static cmr_state getNextState(void) {
     if(stateGetVSM() == CMR_CAN_ERROR){
     	nextState = dimStateERROR;
@@ -330,7 +343,10 @@ static cmr_state getNextState(void) {
             }
             break;
         case NORMAL:
-            if(cmr_gpioRead(GPIO_CTRL_SWITCH) && stateGetVSM() == CMR_CAN_GLV_ON && stateGetVSM() == CMR_CAN_HV_EN) {
+            if(getASMS()) {
+                nextState = AUTON;
+            }
+            else if(cmr_gpioRead(GPIO_CTRL_SWITCH) && (stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)) {
                 nextState = CONFIG;
                 flush_config_screen_to_cdc = false;
             }
@@ -342,22 +358,22 @@ static cmr_state getNextState(void) {
             }
             break;
         case CONFIG:
-            if(canLRUDStates[LEFT]) {
+            if(gpioButtonStates[LEFT]) {
                 //move left on screen
                 config_move_request = -1;
                 nextState = CONFIG;
             }
-            else if(canLRUDStates[RIGHT]) {
+            else if(gpioButtonStates[RIGHT]) {
                 //move right on screen
                 config_move_request = 1;
                 nextState = CONFIG;
             }
-            else if(canLRUDStates[UP]) {
+            else if(gpioButtonStates[UP]) {
                 //move up on screen
                 config_move_request = -CONFIG_SCREEN_NUM_COLS;
                 nextState = CONFIG;
             }
-            else if(canLRUDStates[DOWN]) {
+            else if(gpioButtonStates[DOWN]) {
                 //move down on screen
                 config_move_request = CONFIG_SCREEN_NUM_COLS;
                 nextState = CONFIG;
@@ -370,9 +386,6 @@ static cmr_state getNextState(void) {
                 nextState = CONFIG;
             }
             break;
-        case dimStateERROR:
-            nextState = INIT;
-            break;
         case RACING:
             if(gpioButtonStates[LEFT] && stateGetVSM() == CMR_CAN_RTD) {
                 nextState = NORMAL;
@@ -381,12 +394,21 @@ static cmr_state getNextState(void) {
                 nextState = RACING;
             }
             break;
+        case AUTON:
+            if(!getASMS()) {
+                if(!(stateGetVSM() == CMR_CAN_AS_READY || stateGetVSM() == CMR_CAN_AS_DRIVING || 
+                stateGetVSM() == CMR_CAN_AS_FINISHED || stateGetVSM() == CMR_CAN_AS_EMERGENCY)) {
+                    nextState = NORMAL;
+                }
+            }
+            else {
+                nextState = AUTON;
+            }
+        case dimStateERROR:
+            nextState = INIT;
+            break;
         default:
             nextState = INIT;
-    }
-    //change all can states to false to deregister buttons
-    for(int i = 0; i < LRUD_LEN; i++){
-        canLRUDStates[i] = false;
     }
 	return nextState;
 }
@@ -490,6 +512,7 @@ void reqVSM(void) {
 
     if(getASMS() && stateGetVSM() == CMR_CAN_GLV_ON) {
         EABStateUp();
+        return;
     }
     
     if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM == CMR_CAN_CLEAR_ERROR) {
@@ -502,6 +525,7 @@ void reqVSM(void) {
         } else if (gpioButtonStates[DOWN]) {
             stateVSMDown();
         }
+        return;
     } 
 }
 
@@ -519,7 +543,7 @@ static volatile int requestedGear;
 void reqGear(void) {
     bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) 
                        || (stateGetVSM() == CMR_CAN_HV_EN));
-    if(getASMS()) {
+    if(getASMS() && cmr_gpioRead(GPIO_CTRL_SWITCH)) {
         if(canChangeGear && gpioButtonStates[RIGHT]) {
             if(state.gearReq == CMR_CAN_GEAR_DV_MISSION_MAX - 1) {
                 state.gearReq = CMR_CAN_GEAR_DV_MISSION_MIN + 1;
@@ -533,7 +557,7 @@ void reqGear(void) {
             else state.gearReq--;
         }
     }
-    else {
+    else if (!getASMS()) {
         if(canChangeGear && gpioButtonStates[RIGHT]) {
             if(state.gearReq == CMR_CAN_GEAR_MAX - 1) {
                 state.gearReq = CMR_CAN_GEAR_MIN + 1;
@@ -549,6 +573,26 @@ void reqGear(void) {
     }
 }
 
+void reqDRS(void) {
+    if(gpioButtonStates[SW_RIGHT]) {
+        state.drsReq = CMR_CAN_DRS_STATE_OPEN;
+    }
+    else {
+        state.drsReq = CMR_CAN_DRS_STATE_CLOSED;
+    }
+}
+
+void reqDVCtrl(void) {
+    if(cmr_gpioRead(GPIO_CTRL_SWITCH)) {
+        if(gpioButtonStates[RIGHT]) {
+            state.dvCtrlReq = (state.dvCtrlMode + 1) % NUM_DV_MODES;
+        }
+        else if(gpioButtonStates[LEFT]) {
+            state.dvCtrlReq = (state.dvCtrlMode - 1) % NUM_DV_MODES;
+        }
+    }
+}
+
 /**
  * @brief Updates the gear to be the requested gear.
  */
@@ -558,6 +602,10 @@ void stateGearUpdate(void) {
 
 void stateDrsUpdate(void) {
 	state.drsMode = state.drsReq;
+}
+
+void stateDVCtrlUpdate(void) {
+    state.dvCtrlMode = state.dvCtrlReq;
 }
 
 cmr_state getCurrState() {
