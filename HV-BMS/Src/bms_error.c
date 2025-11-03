@@ -53,10 +53,6 @@ void clearHVBMSErrorReg() {
     errorRegister = CMR_CAN_HVC_ERROR_NONE;
 }
 
-void setHVBMSErrorReg(cmr_canHVCError_t errorCode){
-    errorRegister = errorCode;
-}
-
 cmr_canHVCError_t getHVBMSErrorReg(){
     return errorRegister;
 }

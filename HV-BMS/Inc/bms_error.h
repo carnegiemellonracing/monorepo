@@ -23,16 +23,12 @@ typedef struct ReceiveMeta_t {
 
 // AC Thresholds
 static const int32_t maxPackVoltageMV = 600000;
-static const int32_t minPackVoltageMV = 360000;
-static const int32_t maxPackCurrentInstantMA = 400000;
-static const int32_t maxPackCurrentAverageMA = 110000;
+static const int32_t minPackVoltageMV = 360000; 
 static const uint32_t minShutdownCiruitVoltageMV = 14000;
 
 void checkHVBMSErrors(cmr_canHVCState_t currentState);
 void clearHVBMSErrorReg(void);
 
-
-void setHVBMSErrorReg(cmr_canHVCError_t errorCode);
 cmr_canHVCError_t getHVBMSErrorReg(void);
 
 // Heartbeat timeout	

@@ -12,6 +12,8 @@ static cmr_canHVCState_t currentState = CMR_CAN_HVC_STATE_ERROR;
 
 #define PRECHARGE_THRESH 57000
 
+static bool cellBalancing = false; 
+
 /*
  * External Accessor Functions
  */
@@ -110,10 +112,15 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             	lastPrechargeTime = xTaskGetTickCount();
                 //T10: HV rails are precharged
                 nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE;
+                if(!cellBalancing){
+                    enableCellBalancing();
+                    cellBalancing = true; 
+                } 
             } else {
                 nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE; 
+                stopCellBalancing(); 
+                cellBalancing = false; 
             }
-            enableCellBalancing(); 
             break;
         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE: {// S7
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
@@ -125,7 +132,6 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             } else {
                 nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE;
             }
-            stopCellBalancing(); 
             break;
         }
         case CMR_CAN_HVC_STATE_CHARGE_TRICKLE: // S8
@@ -151,10 +157,14 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
             } else if (packMaxCellVoltage >= 4280) {
                 // T13: Maximum cell voltage > 4.15V, begin balancing
-                // TODO: may have to update CCM
-//                nextState = CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE;
-                nextState = CMR_CAN_HVC_STATE_ERROR; // not balancing for now
+                if(!cellBalancing){
+                    enableCellBalancing(); 
+                    cellBalancing = true; 
+                } 
+                nextState = CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT; 
             } else {
+                stopCellBalancing(); 
+                cellBalancing = false; 
                 nextState = CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT;
             }
             break;

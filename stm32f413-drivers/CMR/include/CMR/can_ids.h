@@ -24,7 +24,6 @@ typedef enum {
     CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x104,    /**< @brief DIM heartbeat. */
     CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief PTC heatbeart. */
-    CMR_CANID_HV_SENSORS = 0x106,    /**< @brief High Voltage sensors on HVC */
     CMR_CANID_HEARTBEAT_LV_BMS = 0x107, /**< @brief LV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
     CMR_CANID_HEARTBEAT_HV_BMS = 0x108, 
@@ -179,6 +178,7 @@ typedef enum {
     CMR_CANID_HVBMS_MIN_MAX_CELL_TEMPERATURE = 0x311,              /**< @brief HVC Max/Min Cell Temperature. */
     CMR_CANID_HVC_LOW_VOLTAGE = 0x303,                           /**< @brief HVC Low Voltage. */
     CMR_CANID_HVC_BMB_STATUS_ERRORS = 0x304,
+    CMR_CANID_HV_SENSORS = 0x306, 
     CMR_CANID_HVC_BRUSA_MSG = 0x528,                             /**< @brief HVC Brusa message. */
 
     CMR_CANID_HVBMS_BMB_0_STATUS_VOLTAGE = 0x380,                    /**< @brief HVC BMB Voltage: Message ID is BMB number << 1*/

@@ -37,6 +37,7 @@ int32_t getHVmilliamps();
 int32_t getHVIvoltage(); 
 int32_t getHVIcurrent(); 
 int32_t getHVIvref(); 
+int32_t getHVmilliamps_avg(); 
 
 
 #endif /* SENSORS_H_ */

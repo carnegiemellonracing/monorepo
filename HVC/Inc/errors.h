@@ -9,6 +9,9 @@
 #include "state_task.h"
 #include "can.h"
 
+static const int32_t maxPackCurrentInstantMA = 400000;
+static const int32_t maxPackCurrentAverageMA = 110000;
+
 // Receive mailbox metadata struct
 typedef struct ReceiveMeta_t {
     uint16_t missCount;
@@ -21,7 +24,6 @@ typedef struct ReceiveMeta_t {
 cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState);
 void clearHVCErrorReg(void);
 
-void setHVCErrorReg(cmr_canHVCError_t errorCode);
 cmr_canHVCError_t getHVCErrorReg(void);
 
 
