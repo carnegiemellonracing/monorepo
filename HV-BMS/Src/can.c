@@ -58,6 +58,11 @@ cmr_canRXMeta_t canRXMeta[] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25 },
+    [CANRX_BALANCE_COMMAND] = {
+		.canID = CMR_CANID_CELL_BALANCE_ENABLE,
+		.timeoutError_ms = 50,
+		.timeoutWarn_ms = 25
+	}
 };
 
 /** @brief Primary CAN interface. */

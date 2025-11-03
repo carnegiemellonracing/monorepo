@@ -113,6 +113,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             } else {
                 nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE; 
             }
+            enableCellBalancing(); 
             break;
         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE: {// S7
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
@@ -124,6 +125,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             } else {
                 nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE;
             }
+            stopCellBalancing(); 
             break;
         }
         case CMR_CAN_HVC_STATE_CHARGE_TRICKLE: // S8
@@ -357,3 +359,25 @@ void vSetStateTask(void *pvParameters) {
         vTaskDelayUntil(&xLastWakeTime, xPeriod);
     }
 }
+
+/** @brief CAN 100 Hz TX period (milliseconds). */
+static const TickType_t canTX100Hz_period_ms = 10;
+
+void enableCellBalancing(void) {
+    cmr_canHVCBalanceCommand_t balance = {
+        .balanceRequest = true, 
+        .threshold = 0, //placeholder 
+    }; 
+
+    canTX(CMR_CANID_CELL_BALANCE_ENABLE, &balance, sizeof(balance), canTX100Hz_period_ms); 
+} 
+
+void stopCellBalancing(void) {
+    cmr_canHVCBalanceCommand_t balance = {
+        .balanceRequest = false, 
+        .threshold = 0, //placeholder 
+    }; 
+
+    canTX(CMR_CANID_CELL_BALANCE_ENABLE, &balance, sizeof(balance), canTX100Hz_period_ms); 
+}
+

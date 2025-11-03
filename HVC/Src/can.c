@@ -67,11 +67,6 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 50, 
         .timeoutWarn_ms = 25
     }, 
-	// [CANRX_BALANCE_COMMAND] = {
-	// 	.canID = CMR_CANID_CELL_BALANCE_ENABLE,
-	// 	.timeoutError_ms = 50,
-	// 	.timeoutWarn_ms = 25
-	// }
 };
 
 /** @brief Primary CAN interface. */
@@ -129,7 +124,7 @@ static void canTX100Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendHeartbeat(lastWakeTime);
-        sendBMSLowVoltage();
+        sendBMSLowVoltage(); 
 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
@@ -342,4 +337,3 @@ static void sendBMSLowVoltage(void) {
 
     canTX(CMR_CANID_HVC_LOW_VOLTAGE, &BMSLowVoltage, sizeof(BMSLowVoltage), canTX100Hz_period_ms);
 }
-
