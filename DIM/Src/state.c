@@ -404,6 +404,7 @@ static cmr_state getNextState(void) {
             else {
                 nextState = AUTON;
             }
+            break;
         case dimStateERROR:
             nextState = INIT;
             break;
