@@ -164,8 +164,8 @@ bool getASMS(){
  * @return 1 iff EAB is on
  */
 bool getEAB(){
-	uint8_t eabStatus = (uint8_t)getPayload(CANRX_EAB_STATUS);
-	return (eabStatus == 1);
+	uint8_t *eabStatus = (uint8_t*)getPayload(CANRX_EAB_STATUS);
+	return (*eabStatus == 1);
 }
 
 /* Debouncing for button presses. */

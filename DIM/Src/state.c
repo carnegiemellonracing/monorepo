@@ -358,7 +358,11 @@ static cmr_state getNextState(void) {
             }
             break;
         case CONFIG:
-            if(gpioButtonStates[LEFT]) {
+            if(!cmr_gpioRead(GPIO_CTRL_SWITCH)) {
+                nextState = NORMAL;
+                flush_config_screen_to_cdc = true;
+            }
+            else if(gpioButtonStates[LEFT]) {
                 //move left on screen
                 config_move_request = -1;
                 nextState = CONFIG;
@@ -378,16 +382,15 @@ static cmr_state getNextState(void) {
                 config_move_request = CONFIG_SCREEN_NUM_COLS;
                 nextState = CONFIG;
             }
-            else if(!cmr_gpioRead(GPIO_CTRL_SWITCH)) {
-                nextState = NORMAL;
-                flush_config_screen_to_cdc = true;
-            }
             else{
                 nextState = CONFIG;
             }
             break;
         case RACING:
             if(gpioButtonStates[LEFT] && stateGetVSM() == CMR_CAN_RTD) {
+                nextState = NORMAL;
+            }
+            else if(stateGetVSM() != CMR_CAN_RTD) {
                 nextState = NORMAL;
             }
             else {
@@ -400,9 +403,12 @@ static cmr_state getNextState(void) {
                 stateGetVSM() == CMR_CAN_AS_FINISHED || stateGetVSM() == CMR_CAN_AS_EMERGENCY)) {
                     nextState = NORMAL;
                 }
+                else {
+                    nextState = AUTON;
+                }
             }
             else {
-                nextState = AUTON;
+                nextState = NORMAL;
             }
             break;
         case dimStateERROR:
