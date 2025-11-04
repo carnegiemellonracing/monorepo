@@ -84,9 +84,9 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
 
     if (/*(cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), lastWakeTime) != 0)
-     ||*/ (hvcHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_PACK_OVERVOLT)
-     || (hvcHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERVOLT)
-     || (hvcHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERTEMP)) {
+     ||*/ (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_PACK_OVERVOLT)
+     || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT)
+     || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_CELL_OVERTEMP)) {
 
         cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
     }

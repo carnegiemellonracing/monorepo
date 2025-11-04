@@ -342,18 +342,18 @@ typedef enum {
     CMR_CAN_HVC_ERROR_NONE = 0x0000,    /**< @brief No errors detected. */
 
     // Pack errors
-    CMR_CAN_HVC_ERROR_PACK_UNDERVOLT   = 0x0001,    /**< @brief Pack voltage too low. */
-    CMR_CAN_HVC_ERROR_PACK_OVERVOLT    = 0x0002,    /**< @brief Pack voltage too high. */
+    CMR_CAN_HVBMS_ERROR_PACK_UNDERVOLT   = 0x0001,    /**< @brief Pack voltage too low. */
+    CMR_CAN_HVBMS_ERROR_PACK_OVERVOLT    = 0x0002,    /**< @brief Pack voltage too high. */
     CMR_CAN_HVC_ERROR_PACK_OVERCURRENT = 0x0008,    /**< @brief Pack current too high. */
 
     // Cell errors
-    CMR_CAN_HVC_ERROR_CELL_UNDERVOLT = 0x0010,  /**< @brief At least one cell is undervoltage. */
-    CMR_CAN_HVC_ERROR_CELL_OVERVOLT  = 0x0020,  /**< @brief At least one cell is overvoltage. */
-    CMR_CAN_HVC_ERROR_CELL_OVERTEMP  = 0x0040,  /**< @brief At least one cell has overheated. */
+    CMR_CAN_HVBMS_ERROR_CELL_UNDERVOLT = 0x0010,  /**< @brief At least one cell is undervoltage. */
+    CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT  = 0x0020,  /**< @brief At least one cell is overvoltage. */
+    CMR_CAN_HVBMS_ERROR_CELL_OVERTEMP  = 0x0040,  /**< @brief At least one cell has overheated. */
     CMR_CAN_HVC_ERROR_BMB_FAULT      = 0x0080,  /**< @brief At least one BMB has faulted. */
 
     // Communication errors
-    CMR_CAN_HVC_ERROR_BMB_TIMEOUT = 0x0100, /**< @brief BMB has timed out. */
+    CMR_CAN_HVBMS_ERROR_BMB_TIMEOUT = 0x0100, /**< @brief BMB has timed out. */
     CMR_CAN_HVC_ERROR_CAN_TIMEOUT = 0x0200, /**< @brief HVC command timed out. */
 
     // Other errors

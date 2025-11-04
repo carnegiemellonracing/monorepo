@@ -42,11 +42,6 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 200,
         .timeoutWarn_ms = 25
     },
-    [CANRX_EMD_MEASURE] = {
-        .canID = CMR_CANID_EMD_MEASUREMENT_RETX,
-        .timeoutError_ms = 50,
-        .timeoutWarn_ms = 25
-    },
     [CANRX_HVBMS_MINMAX_VOLTAGE] = {
         .canID = CMR_CANID_HVBMS_MIN_MAX_CELL_VOLTAGE,
         .timeoutError_ms = 50,

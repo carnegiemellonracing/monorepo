@@ -21,7 +21,6 @@
 typedef enum {
     CANRX_HEARTBEAT_VSM = 0,  /**< @brief VSM heartbeat. */
     CANRX_HVC_COMMAND,
-    CANRX_EMD_MEASURE,
     CANRX_HVBMS_MINMAX_VOLTAGE, 
     CANRX_HVBMS_PACKVOLT, 
     CANRX_HVBMS_MINMAX_TEMP, 

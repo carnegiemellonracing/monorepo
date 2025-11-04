@@ -39,16 +39,6 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 200,
         .timeoutWarn_ms = 25
     },
-    [CANRX_EMD_MEASURE] = {
-        .canID = CMR_CANID_EMD_MEASUREMENT,
-        .timeoutError_ms = 100,
-        .timeoutWarn_ms = 25
-    },
-    [CANRX_EMD_MEASURE] = {   
-        .canID = CMR_CANID_EMD_MEASUREMENT_RETX,
-        .timeoutError_ms = 50,
-        .timeoutWarn_ms = 25
-    },
     [CANRX_HEARTBEAT_HVC] = {
         .canID = CMR_CANID_HEARTBEAT_HVC,
         .timeoutError_ms = 50,
@@ -166,8 +156,6 @@ static void canTX100Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendHeartbeat(lastWakeTime);
-        //sendHVCPackVoltage();
-        //sendBMSPackCurrent();
         sendBMSBMBStatusErrors();
         checkClearErr(); 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);

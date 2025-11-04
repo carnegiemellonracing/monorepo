@@ -347,19 +347,19 @@ static void drawErrorScreen(void) {
 
     /* HVC Errors */
     /* Latch errors so we know what the issue is after AMS fault*/
-    err.overVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVC_ERROR_CELL_OVERVOLT)) | prevOverVolt;
+    err.overVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT)) | prevOverVolt;
     if(err.overVolt) {
     	prevOverVolt = true;
     }
-    err.underVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVC_ERROR_CELL_UNDERVOLT)) | prevUnderVolt;
+    err.underVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVBMS_ERROR_CELL_UNDERVOLT)) | prevUnderVolt;
     if(err.underVolt) {
 		prevUnderVolt = true;
 	}
-    err.hvcoverTemp = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVC_ERROR_CELL_OVERTEMP))  | prevOverTemp;
+    err.hvcoverTemp = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVBMS_ERROR_CELL_OVERTEMP))  | prevOverTemp;
     if(err.hvcoverTemp) {
 		prevOverTemp = true;
 	}
-    err.hvcBMBTimeout = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_TIMEOUT);
+    err.hvcBMBTimeout = (canHVCHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_BMB_TIMEOUT);
     err.hvcBMBFault = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_FAULT);
     err.hvcErrorNum = (canHVCHeartbeat->errorStatus);
 
