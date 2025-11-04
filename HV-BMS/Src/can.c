@@ -429,7 +429,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     cmr_canHVCHeartbeat_t *hvcheartbeat = getPayload(CANRX_HEARTBEAT_HVC); 
     cmr_canHVCState_t currentState = hvcheartbeat->hvcState; 
     cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
-    currentError = getHVBMSErrorReg();
+    currentError = checkHVBMSErrorReg();
 
     cmr_canHeartbeat_t *vsm_heartbeat = getPayload(CANRX_HEARTBEAT_VSM);
 

@@ -16,7 +16,7 @@ volatile int BMBErrs[BOARD_NUM] = { 0 };
 // error checking becomes its own task
 static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_STATE_ERROR;
 
-void checkHVBMSErrors(cmr_canHVCState_t currentState){
+cmr_canHVCError_t checkHVBMSErrors(){
     cmr_canHVCError_t errorFlags = errorRegister; 
     if(checkBMBTimeout()) { //BMSM 
         // TODO E2 devise a UART monitor system
