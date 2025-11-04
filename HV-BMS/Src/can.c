@@ -429,7 +429,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     cmr_canHVCHeartbeat_t *hvcheartbeat = getPayload(CANRX_HEARTBEAT_HVC); 
     cmr_canHVCState_t currentState = hvcheartbeat->hvcState; 
     cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
-    currentError = checkHVBMSErrorReg();
+    currentError = checkHVBMSErrors();
 
     cmr_canHeartbeat_t *vsm_heartbeat = getPayload(CANRX_HEARTBEAT_VSM);
 
@@ -472,52 +472,52 @@ static void sendBMSBMBStatusErrors(void) {
 static void sendAllBMBVoltages(void) {
    for (int bmbIndex = 0; bmbIndex < BOARD_NUM; bmbIndex++) {
        BMB_Data_t *data = getBMBData(bmbIndex);
-       cmr_canHVBMS_BMB_CellVoltages_t volt0 = {
+       cmr_can_HVBMS_BMB_CellVoltages_t volt0 = {
            .cellVoltage0_mV = data->cellVoltages[0],
            .cellVoltage1_mV = data->cellVoltages[1],
            .cellVoltage2_mV = data->cellVoltages[2],
            .cellVoltage3_mV = data->cellVoltages[3]
        };
-       cmr_canHVBMS_BMB_CellVoltages_t volt1 = {
+       cmr_can_HVBMS_BMB_CellVoltages_t volt1 = {
            .cellVoltage0_mV = data->cellVoltages[4],
            .cellVoltage1_mV = data->cellVoltages[5],
            .cellVoltage2_mV = data->cellVoltages[6],
            .cellVoltage3_mV = data->cellVoltages[7] 
        };
-       cmr_canHVBMS_BMB_CellVoltages_t volt2 = {
+       cmr_can_HVBMS_BMB_CellVoltages_t volt2 = {
            .cellVoltage0_mV = data->cellVoltages[8],  
            .cellVoltage1_mV = data->cellVoltages[9], 
            .cellVoltage2_mV = data->cellVoltages[10],
            .cellVoltage3_mV = data->cellVoltages[11]
        };
-       cmr_canHVBMS_BMB_CellVoltages_t volt3 = {
-            .cellVoltage_0_mV = data->cellVoltages[12], 
-            .cellVoltage_1_mV = data->cellVoltages[13],
-            .cellVoltage_2_mV = data->cellVoltages[14] 
+       cmr_can_HVBMS_BMB_CellVoltages_t volt3 = {
+            .cellVoltage0_mV = data->cellVoltages[12], 
+            .cellVoltage1_mV = data->cellVoltages[13],
+            .cellVoltage2_mV = data->cellVoltages[14] 
        }; 
 
-       cmr_canHVBMS_BMB_CellTemps_t temp0 = {
+       cmr_can_HVBMS_BMB_CellTemps_t temp0 = {
            .cellTemp0_dC = data->cellTemperatures[0],
            .cellTemp1_dC = data->cellTemperatures[1],
            .cellTemp2_dC = data->cellTemperatures[2],
            .cellTemp3_dC = data->cellTemperatures[3]
        };
-       cmr_canHVBMS_BMB_CellTemps_t temp1 = {
+       cmr_can_HVBMS_BMB_CellTemps_t temp1 = {
            .cellTemp0_dC = data->cellTemperatures[4],
            .cellTemp1_dC = data->cellTemperatures[5],
            .cellTemp2_dC = data->cellTemperatures[6],
            .cellTemp3_dC = data->cellTemperatures[7] 
        };
-       cmr_canHVBMS_BMB_CellTemps_t temp2 = { 
+       cmr_can_HVBMS_BMB_CellTemps_t temp2 = { 
            .cellTemp0_dC = data->cellTemperatures[8], 
            .cellTemp1_dC = data->cellTemperatures[9],
            .cellTemp2_dC = data->cellTemperatures[10],
            .cellTemp3_dC = data->cellTemperatures[11] 
        };
-       cmr_canHVBMS_BMB_CellTemps_t temp3 = {
-            .cellTemp0_mV = data->cellTemperatures[12],
-            .cellTemp1_mV = data->cellTemperatures[13],
-            .cellTemp2_mV = data->cellTemperatures[14] 
+       cmr_can_HVBMS_BMB_CellTemps_t temp3 = {
+            .cellTemp0_dC = data->cellTemperatures[12],
+            .cellTemp1_dC = data->cellTemperatures[13],
+            .cellTemp2_dC = data->cellTemperatures[14] 
        }; 
 
        canTX(CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_0_3 + bmbIndex, &volt0, sizeof(volt0), canTX1Hz_period_ms);
