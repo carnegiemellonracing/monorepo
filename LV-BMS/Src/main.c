@@ -90,7 +90,7 @@ int main(void) {
 	adc_init();
 	i2c_init();
 	canInit();
-	AFE_SETUP();
+	// AFE_SETUP();
 
 //	while(1) {
 //

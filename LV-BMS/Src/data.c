@@ -8,79 +8,36 @@
 #include "data.h"
 
 #include <CMR/tasks.h>
+#include <CMR/uart.h>
 #include <math.h>
 #include <stdint.h>
 #include <string.h>
 
 #include "adc.h"
+#include "bq_interface.h"
 #include "can.h"
 #include "gpio.h"
 #include "i2c.h"
+#include "uart.h"
 
-const size_t cell_num = 7
-uint16_t sendVolt[cell_num];
-float rawCellVolts[cell_num];
-float cellVoltages[cell_num];
-uint8_t cellNum[cell_num];
-signed char offset_corr[cell_num];
-signed char gain_corr[cell_num];
+#define CELL_NUM 7
+#define VSENSE_CHANNELS 14
+#define TEMP_CHANNELS 14
+#define TOP_CELL VCELL14_HI
+#define NUM_GPIO_CHANNELS 4
+
+uint16_t sendVolt[CELL_NUM];
+float rawCellVolts[CELL_NUM];
+float cellVoltages[CELL_NUM];
+uint8_t cellNum[CELL_NUM];
+signed char offset_corr[CELL_NUM];
+signed char gain_corr[CELL_NUM];
 unsigned int vref_corr;
 uint16_t adc_sensen;
-uint16_t cellTemps[cell_num];
+uint16_t cellTemps[CELL_NUM];
 
 bool setup = false;
 
-
-void AFE_SETUP(void){
-    if(!setup){
-        i2c_write_register(POWER_CTL, 0x0D); //should probbaly throw an error if i2c fails.
-                                               //This turns on the things we need to use btw(vcout,viout).
-        adc_sensen = adc_read(ADC_AFE_VIOUT);
-        i2c_write_register(CONFIG_1, 0x05); //sets gain to 8. put at 0x00 for 4. swtiches to sensep
-        i2c_write_register(CONFIG_2, 0x00);
-
-        uint8_t reg_value;
-
-        // for (index = 0; index < 7; index++) {
-        //     i2c_read_register(VREF_CAL + index, &reg_value);
-        //     offset_corr[index] = reg_value >> 4;   // Extract the upper 4 bits for offset
-        //     gain_corr[index] = reg_value & 0x0F;  // Extract the lower 4 bits for gain
-        // }
-
-        // Read MSBs for VREF offset and gain corrections
-        i2c_read_register(VREF_CAL_EXT, &reg_value);
-        offset_corr[0] |= (((reg_value & 0x06) << 3) ^ 0x20) - 0x20;
-        gain_corr[0]   |= (((reg_value & 0x01) << 4) ^ 0x10) - 0x10;
-
-        // Read MSBs for VC1 and VC2 offset and gain corrections
-        i2c_read_register(VC_CAL_EXT_1, &reg_value);
-
-        offset_corr[1] |= (((reg_value & 0x80) >> 3) ^ 0x10) - 0x10;
-        gain_corr[1]   |= (((reg_value & 0x40) >> 2) ^ 0x10) - 0x10;
-
-        offset_corr[2] |= (((reg_value & 0x20) >> 1) ^ 0x10) - 0x10;
-        gain_corr[2]   |= (((reg_value & 0x10)) ^ 0x10) - 0x10;
-
-        // Read MSBs for VC3, VC4, VC5, and VC6 offset and gain corrections
-        i2c_read_register(VC_CAL_EXT_2, &reg_value);
-        offset_corr[3] |= (((reg_value & 0x80) >> 3) ^ 0x10) - 0x10;
-        gain_corr[3]   |= (((reg_value & 0x40) >> 2) ^ 0x10) - 0x10;
-
-        offset_corr[4] |= (((reg_value & 0x20) >> 1) ^ 0x10) - 0x10;
-        gain_corr[4]   |= (((reg_value & 0x10)) ^ 0x10) - 0x10;
-
-        offset_corr[5] |= (((reg_value & 0x08) << 1) ^ 0x10) - 0x10;
-        gain_corr[5]   |= (((reg_value & 0x04) << 2) ^ 0x10) - 0x10;
-
-        offset_corr[6] |= (((reg_value & 0x02) << 3) ^ 0x10) - 0x10;
-        gain_corr[6]   |= (((reg_value & 0x01) << 4) ^ 0x10) - 0x10;
-
-        vref_corr = VREF_NOM * (1000L + gain_corr[0]) + offset_corr[0];
-        adc_sensen = adc_read(ADC_AFE_VIOUT);
-
-        setup = true;
-    }
-}
 
 static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
 	//formula from TI's code
@@ -90,7 +47,7 @@ static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
 }
 
 
-void getVoltages(void) {
+uint8_t getVoltages(void) {
     TickType_t time_prev = xTaskGetTickCount();
      uart_command_t read_voltage = {
 			.readWrite = SINGLE_READ,
@@ -108,35 +65,23 @@ void getVoltages(void) {
 
     uint8_t status = uart_receiveResponse(&response, 27);
     if(status != 0) {
-        //setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
-        //BMBTimeoutCount[i-1]+=1;
-        DWT_Delay_ms(10000);
-        RXTurnOnInit();
-        BMBInit();
+        return 1;
         taskEXIT_CRITICAL();
-        return i;
     }
 
     taskEXIT_CRITICAL();
 
 
     for(uint8_t j = 0; j < VSENSE_CHANNELS; j++) {
-        uint8_t high_byte_data = response[i].data[2*j];
-        uint8_t low_byte_data = response[i].data[2*j+1];
+        uint8_t high_byte_data = response.data[2*j];
+        uint8_t low_byte_data = response.data[2*j+1];
         cellVoltages[VSENSE_CHANNELS-j-1] = calculateVoltage(high_byte_data, low_byte_data);
     }
 
     vTaskDelayUntil(&time_prev, 32);
 
     sendOvervoltageFlags(cellVoltages);
-    sendVoltages();
-}
-
-// Sends cell voltages (1-6) split into two CAN messages
-void sendVoltages() {
-
-    // Split voltages into two groups
-
+    
     cmr_canLVBMS_Voltage cell1_4;
     cmr_canLVBMS_Voltage cell5_7;
     cell1_4.cell1 = sendVolt[0];
@@ -147,31 +92,33 @@ void sendVoltages() {
     cell5_7.cell2 = sendVolt[5];
     cell5_7.cell3 = sendVolt[6];
 
-    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_1_3, &cell1_4, sizeof(cell1_3), canTX10Hz_period_ms);
-    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_4_6, &cell5_7, sizeof(cell5_7), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_CELL_VOLTAGE_1_4, &cell1_4, sizeof(cell1_4), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_CELL_VOLTAGE_5_7, &cell5_7, sizeof(cell5_7), canTX10Hz_period_ms);
+    return 0;
 }
 
+
 // Sends overvoltage flags
-void sendOvervoltageFlags(uint16_t voltages[cell_num]) {
+void sendOvervoltageFlags(uint16_t voltages[CELL_NUM]) {
     uint8_t flag = 0;
     uint8_t overVolt = 0; // TBD
 
-    for (int i = 0; i < cell_num; i++) {
+    for (int i = 0; i < CELL_NUM; i++) {
         if (voltages[i] > overVolt) flag |= (1 << i);
     }
 
-    canTX(CAN_ID_LV_BMS_CELL_OVERVOLTAGE, &flag, sizeof(flag), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_CELL_OVERVOLTAGE, &flag, sizeof(flag), canTX10Hz_period_ms);
 }
 
 // Sends bus voltage derived from cell voltages
-void sendBusVoltage(uint16_t voltages[cell_num]) {
+void sendBusVoltage(uint16_t voltages[CELL_NUM]) {
     uint16_t totalVoltage = 0;
 
-    for (int i = 0; i < cell_num; i++) {
+    for (int i = 0; i < CELL_NUM; i++) {
         totalVoltage += voltages[i];
     }
 
-    canTX(CAN_ID_LV_BMS_BUS_VOLTAGE, &totalVoltage, sizeof(totalVoltage), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_BUS_VOLTAGE, &totalVoltage, sizeof(totalVoltage), canTX10Hz_period_ms);
 }
 
 static uint32_t vtherm_read_index(uint16_t vtherm_index) {
@@ -212,22 +159,9 @@ uint16_t tempConvert(uint16_t adc_value) {
 }
 
 
-void pollAllTemperatureData(int channel) {
-	for(uint8_t i = 0; i < cell_num; i++) {
-		if(uart_receiveResponse(&response[i], cell_num) == UART_FAILURE) {
-				//loop through each GPIO channel
-			setBMBErr(i, BMB_TEMP_READ_ERROR);
-			return;
-		}
-	}
-	taskEXIT_CRITICAL();
-	return;
-}
 
 
-
-
-void getTemps(void) {
+uint8_t getTemps(int channel) {
     uart_command_t read_therms = {
 		.readWrite = SINGLE_READ,
 		.dataLen = 1,
@@ -242,15 +176,11 @@ void getTemps(void) {
 
     uart_response_t response;
 
-    if(uart_receiveResponse(&response, cell_num) == UART_FAILURE) {
-            //loop through each GPIO channel
-        setBMBErr(i, BMB_TEMP_READ_ERROR);
-        BMBTimeoutCount[i]+=1;
-        return;
+    if(uart_receiveResponse(&response, CELL_NUM) == UART_FAILURE) {
+        return 1;
     }
 
-
-    taskEXIT_CRITICAL();
+	taskEXIT_CRITICAL();
 
     for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; k++) {
         uint8_t high_byte_data = response.data[2*k];
@@ -258,26 +188,19 @@ void getTemps(void) {
         size_t index = (4*channel) + k;
         //TODO: make sure this is matching the thermistor indices properly
 
-        BMBData.cellTemperatures[index] = calculateTemp(high_byte_data, low_byte_data);
+        cellTemps[index] = calculateTemp(high_byte_data, low_byte_data);
     }
 
-    for(uint32_t i = 0; i < VTHERM_NUM; i++) {
-		int temp = vtherm_read_index(i);
-		cellTemps[i] = tempConvert(temp);
-	}
-    sendTemps(cellTemps);
-}
-
-// Sends cell temperatures (1-8) split into two CAN messages
-void sendTemps(uint16_t temps[8]) {
     uint16_t data1[4], data2[3];
 
     // Split temperatures into two groups
-    memcpy(data1, temps, 4 * sizeof(uint16_t));     // Temps 1-4
-    memcpy(data2, &temps[4], 3 * sizeof(uint16_t)); // Temps 5-8
+    memcpy(data1, cellTemps, 4 * sizeof(uint16_t));     // Temps 1-4
+    memcpy(data2, &cellTemps[4], 3 * sizeof(uint16_t)); // Temps 5-7
 
-    canTX(CAN_ID_LV_BMS_CELL_TEMP_1_4, data1, sizeof(data1), canTX10Hz_period_ms);
-    canTX(CAN_ID_LV_BMS_CELL_TEMP_5_8, data2, sizeof(data2), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_CELL_TEMP_1_4, data1, sizeof(data1), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_CELL_TEMP_5_7, data2, sizeof(data2), canTX10Hz_period_ms);
+ 
+    return 0;
 }
 
 // Sends overtemperature flags (derived from temperature data)
@@ -289,12 +212,12 @@ void sendOvertempFlags(uint16_t temps[8]) {
     }
 
     // Send CAN messages
-    canTX(CAN_ID_LV_BMS_CELL_OVERTEMP, &flag, sizeof(flag), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_CELL_OVERTEMP, &flag, sizeof(flag), canTX10Hz_period_ms);
 }
 
 // Sends the bus current
 void sendCurrent(void) {
     uint16_t sensep = adc_read(ADC_AFE_VIOUT);
     float current = float_to_uint16((sensep - adc_sensen)*vref_corr/(ADC_COUNT*GVCOUT*1e3));
-    canTX(CAN_ID_LV_BMS_CURRENT, &current, sizeof(current), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_CURRENT, &current, sizeof(current), canTX10Hz_period_ms);
 }

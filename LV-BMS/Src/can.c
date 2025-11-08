@@ -126,11 +126,28 @@ static void canTX10Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        getVoltages(); 
-        getTemps(); 
-        sendCurrent(); 
-        
-        vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
+        // Loop through the 4 different MUX channels and select a different one
+		// We still monitor all voltages each channel switch
+		for(uint8_t j = 0; j < 4; j++) {
+			// Small delays put between all transaction
+
+			setMuxOutput(j);
+			lastWakeTime = xTaskGetTickCount();
+			vTaskDelayUntil(&lastWakeTime, 10);
+
+			uint8_t err = getVoltages();
+
+			lastWakeTime = xTaskGetTickCount();
+			vTaskDelayUntil(&lastWakeTime, 10);
+
+			getTemps(j);
+
+			lastWakeTime = xTaskGetTickCount();
+			vTaskDelayUntil(&lastWakeTime, 10);
+
+			lastWakeTime = xTaskGetTickCount();
+			vTaskDelayUntil(&lastWakeTime, 100);
+		}
     }
 }
 

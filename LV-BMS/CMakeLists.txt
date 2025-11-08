@@ -115,12 +115,16 @@ link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 add_executable(${CMAKE_PROJECT_NAME}
     # Project sources
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/adc.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/bq_interface.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/can.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/crc.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/i2c.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/data.c
-
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/uart.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/syscall.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/sysmem.c
 )
 
 # Add sources to executable
