@@ -54,9 +54,17 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
     switch (currentState) {
         case CMR_CAN_HVC_STATE_DISCHARGE: // S1
         	// TODO: WAIT FOR HV VOLTAGE TO GO DOWN
+            if(cellBalancing){
+                stopCellBalancing(); 
+                cellBalancing = false; 
+            }
             nextState = CMR_CAN_HVC_STATE_STANDBY;
             break;
         case CMR_CAN_HVC_STATE_STANDBY: // S23
+            if(cellBalancing){
+                stopCellBalancing(); 
+                cellBalancing = false; 
+            }
             if (HVCCommand->modeRequest == CMR_CAN_HVC_MODE_START) {
                 //T1: START mode requested
             		nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE;
@@ -107,18 +115,18 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE: // S6
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 //T18: Mode requested is not CHARGE
-                nextState = CMR_CAN_HVC_STATE_DISCHARGE;
+                nextState = CMR_CAN_HVC_STATE_DISCHARGE; 
             } else if (abs((HVBMSPackVoltage->battVoltage_mV) - ((uint32_t)getHVmillivolts()) < 30000)) { 
             	lastPrechargeTime = xTaskGetTickCount();
                 //T10: HV rails are precharged
-                nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE;
+                nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE; 
+                //should only enable once even without wrapping 
                 if(!cellBalancing){
                     enableCellBalancing();
                     cellBalancing = true; 
                 } 
             } else {
                 nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE; 
-                stopCellBalancing(); 
                 cellBalancing = false; 
             }
             break;
@@ -156,15 +164,9 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                 // T15: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
             } else if (packMaxCellVoltage >= 4280) {
-                // T13: Maximum cell voltage > 4.15V, begin balancing
-                if(!cellBalancing){
-                    enableCellBalancing(); 
-                    cellBalancing = true; 
-                } 
-                nextState = CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT; 
+                // T13: Maximum cell voltage > 4.15V, reached max cell voltage cannot continue charging 
+                nextState = CMR_CAN_HVC_STATE_DISCHARGE; //discharge 
             } else {
-                stopCellBalancing(); 
-                cellBalancing = false; 
                 nextState = CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT;
             }
             break;
@@ -180,6 +182,10 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             }
             break;
         case CMR_CAN_HVC_STATE_ERROR: { // S0
+            if(cellBalancing){
+                stopCellBalancing(); 
+                cellBalancing = false; 
+            }
             if (HVCCommand->modeRequest == CMR_CAN_HVC_MODE_ERROR) {
                 //T19: GLV acknowledged error, move to clear error
                 nextState = CMR_CAN_HVC_STATE_CLEAR_ERROR;
@@ -374,9 +380,11 @@ void vSetStateTask(void *pvParameters) {
 static const TickType_t canTX100Hz_period_ms = 10;
 
 void enableCellBalancing(void) {
+    cmr_canBMSMinMaxCellVoltage_t *voltagedata = getPayload(CANRX_HVBMS_MINMAX_VOLTAGE); 
+
     cmr_canHVCBalanceCommand_t balance = {
         .balanceRequest = true, 
-        .threshold = 0, //placeholder 
+        .threshold = voltagedata->minCellVoltage_mV, //placeholder 
     }; 
 
     canTX(CMR_CANID_CELL_BALANCE_ENABLE, &balance, sizeof(balance), canTX100Hz_period_ms); 

@@ -44,7 +44,7 @@ bool getBalance(uint16_t *thresh) {
 		return false;
 	}
 	volatile cmr_canHVCBalanceCommand_t *balanceCommand = getPayload(CANRX_BALANCE_COMMAND);
-	*thresh = balanceCommand->threshold;
+	*thresh = balanceCommand->threshold; 
 	return balanceCommand->balanceRequest;
 }
 

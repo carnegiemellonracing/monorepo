@@ -272,12 +272,3 @@ int32_t getHVIvref(){
     return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_VREF)); 
 }
 
-int32_t getHVmilliamps_avg(){
-    int32_t total = 0; 
-    for(int i=0; i<50; i++){
-        TickType_t lastWakeTime = xTaskGetTickCount();
-        total += ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_ISENSE)); 
-        vTaskDelayUntil(&lastWakeTime, 5); //delay 5 ms between readings 
-    }   
-    return total/50; 
-}

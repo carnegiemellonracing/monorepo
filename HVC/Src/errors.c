@@ -15,10 +15,6 @@ cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
         // E8
         errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
     }
-   if(getHVmilliamps_avg() > maxPackCurrentAverageMA) {
-       // E9
-       errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
-   }
     if(checkRelayPowerFault() && (getState() != CMR_CAN_HVC_STATE_ERROR && getState() != CMR_CAN_HVC_STATE_CLEAR_ERROR)) {//(getRelayStatus() & 0xAA) != 0xAA) {
         // TODO look into the AIR_Fault_L signal, it might be necessary to confirm this is not active
         // before looking at relay status, otherwise we could be in dead lock trying to clear errors.
@@ -66,7 +62,7 @@ cmr_canHVCError_t getHVCErrorReg(){
 static bool checkHVCCommandTimeout() {
     // CAN error if HVC Command has timed out after 50ms
     // TODO: latch can error?
-    TickType_t lastWakeTime = xTaskGetTickCount();
+    TickType_t lastWakeTime = xTaskGetTickCount(); 
     bool hvc_commmand_error = (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HVC_COMMAND]), lastWakeTime) < 0);
 
 	return hvc_commmand_error;
