@@ -217,7 +217,6 @@ void pollAllTemperatureData(int channel) {
 		if(uart_receiveResponse(&response[i], cell_num) == UART_FAILURE) {
 				//loop through each GPIO channel
 			setBMBErr(i, BMB_TEMP_READ_ERROR);
-			BMBTimeoutCount[i]+=1;
 			return;
 		}
 	}

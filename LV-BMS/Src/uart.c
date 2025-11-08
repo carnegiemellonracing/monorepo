@@ -1,242 +1,222 @@
-/**
- * @file uart.c
- * @brief Board-specific UART implementation for LV-BMS.
+/*
+ * uart.c
  *
- * @author Carnegie Mellon Racing
+ *  Created on: Jul 26, 2020
+ *      Author: vamsi
  */
 
-#include "uart.h"
-#include <string.h>
-#include <stdint.h>
+#include <CMR/tasks.h>      // CMR task interface
+#include <CMR/config.h>     // CMR configuration interface
+#include <CMR/panic.h>      // bad things
+#include <CMR/uart.h>
 
-/** @brief UART interface for voltage and temperature monitoring. */
-static cmr_uart_t uart_voltage_temp;
+#include "uart.h"       // Interface to implement
+#include "crc.h"
 
-/** @brief UART message for communication. */
-static cmr_uartMsg_t uart_msg;
+//-----------------------------------------------------------------------------
+// GLOBAL VARIABLE DEFINITIONS                                                |
+//-----------------------------------------------------------------------------
 
-/** @brief UART configuration. */
-static const UART_InitTypeDef uart_config = {
-    .BaudRate = 115200,
-    .WordLength = UART_WORDLENGTH_8B,
-    .StopBits = UART_STOPBITS_1,
-    .Parity = UART_PARITY_NONE,
-    .Mode = UART_MODE_TX_RX,
-    .HwFlowCtl = UART_HWCONTROL_NONE,
-    .OverSampling = UART_OVERSAMPLING_16
-};
+//-----------------------------------------------------------------------------
+// STATIC VARIABLE DEFINITIONS                                                |
+//-----------------------------------------------------------------------------
 
-/**
- * @brief Initializes the UART interface.
+static cmr_uart_t uart;
+
+//-----------------------------------------------------------------------------
+// STATIC HELPER FUNCTION PROTOTYPES                                          |
+//-----------------------------------------------------------------------------
+static cmr_uart_result_t uart_getChar(cmr_uart_t *uart, uint8_t *c);
+static cmr_uart_result_t uart_sendMessage(cmr_uart_t *uart, uint8_t message[], uint16_t messageLength);
+//-----------------------------------------------------------------------------
+// GLOBAL INTERFACE FUNCTIONS                                                 |
+//-----------------------------------------------------------------------------
+/** UART Init
+ * This function will initialize the uart.
  */
-void uart_init(void) {
-    // Initialize UART message
-    cmr_uartMsgInit(&uart_msg);
-    
-    // Initialize UART interface (using USART1 for voltage/temperature monitoring)
-    cmr_uart_polling_init(
-        &uart_voltage_temp,
-        USART1,
-        &uart_config,
-        GPIOA, GPIO_PIN_10,  // RX pin
-        GPIOA, GPIO_PIN_9     // TX pin
-    );
+void uartInit(void) {
+	const UART_InitTypeDef uartInit = {
+			.BaudRate = BQ_BAUD_RATE,
+			.WordLength = UART_WORDLENGTH_8B,
+			.StopBits = UART_STOPBITS_1,
+			.Parity = UART_PARITY_NONE,
+			.HwFlowCtl = UART_HWCONTROL_NONE,
+			.Mode = UART_MODE_TX_RX,
+			.OverSampling = UART_OVERSAMPLING_16
+	};
+
+	cmr_uart_polling_init(
+			&uart, UART5, &uartInit,
+			GPIOB, GPIO_PIN_12,     /* rx */
+			GPIOB, GPIO_PIN_13      /* tx */
+	);
+
+	return;
 }
 
-/**
- * @brief Requests voltage data from external sensor.
- * 
- * @return 0 on success, 1 on error
- */
-uint8_t uart_request_voltages(void) {
-    uart_message_t msg;
-    msg.header.msg_type = UART_MSG_REQUEST_VOLTAGES;
-    msg.header.length = 0;
-    msg.header.checksum = uart_calculate_checksum((uint8_t*)&msg.header, sizeof(msg.header));
-    
-    cmr_uart_result_t result = cmr_uart_pollingTX(
-        &uart_voltage_temp,
-        (uint8_t*)&msg,
-        sizeof(msg.header)
-    );
-    
-    return (result == UART_SUCCESS) ? 0 : 1;
+void readUartTest() {
+	char c;
+	char arr[100];
+	int i = 0;
+	while(uart_getChar(&uart, &c) != UART_FAILURE) {
+		arr[i] = c;
+		i++;
+	}
+	return;
 }
 
-/**
- * @brief Requests temperature data from external sensor.
- * 
- * @return 0 on success, 1 on error
+/** UART Receive Response
+ * This helper function will receive a response and store the result
+ * in the input uart_response_t object using the given USART
+ * @param response A pointer to the USART object we are receiving from
+ * @param expected_bytes length of bytes you expect
+ * @return The status of the UART result (success or failure)
  */
-uint8_t uart_request_temperatures(void) {
-    uart_message_t msg;
-    msg.header.msg_type = UART_MSG_REQUEST_TEMPS;
-    msg.header.length = 0;
-    msg.header.checksum = uart_calculate_checksum((uint8_t*)&msg.header, sizeof(msg.header));
-    
-    cmr_uart_result_t result = cmr_uart_pollingTX(
-        &uart_voltage_temp,
-        (uint8_t*)&msg,
-        sizeof(msg.header)
-    );
-    
-    return (result == UART_SUCCESS) ? 0 : 1;
+uint8_t uart_receiveResponse(uart_response_t *response, uint8_t expected_bytes) {
+
+	cmr_uart_result_t retvTotal = UART_SUCCESS;
+	cmr_uart_result_t retv = UART_SUCCESS;
+	uint8_t fakeBuffer[100];
+	uint8_t responseLen;
+	retv = uart_getChar(&uart, &responseLen);
+	if(retv != UART_SUCCESS) {
+		return 1;
+	}
+
+	response->len_bytes = responseLen;
+
+	if(responseLen != expected_bytes) {
+		for(size_t i = 0; i < 30; i++) {
+			uint8_t resp;
+			retv = uart_getChar(&uart, &resp);
+			if (retv != UART_SUCCESS) {
+				return responseLen;
+			}
+
+			fakeBuffer[i] = resp;
+		}
+
+		return responseLen + 100;
+	}
+
+	uint8_t deviceAddr;
+	retv = uart_getChar(&uart, &deviceAddr);
+	if(retv != UART_SUCCESS) {
+		return 2;
+	}
+	response->deviceAddress = deviceAddr;
+
+	uint8_t registerValues[2];
+	retv = uart_getChar(&uart, &registerValues[0]);
+	if(retv != UART_SUCCESS) {
+		return 3;
+	}
+	retv = uart_getChar(&uart, &registerValues[1]);
+	if(retv != UART_SUCCESS) {
+		return 4;
+	}
+	response->registerAddress = (((uint16_t)registerValues[0])<<8) | ((uint16_t)registerValues[1]);
+
+	uint8_t c = 0;
+	uint16_t receivedIndex = 0;
+	while((receivedIndex < responseLen+1) && (retvTotal == UART_SUCCESS)) {
+
+		retv = uart_getChar(&uart, &c);
+		if(retv != UART_SUCCESS) {
+			return 5;
+		}
+		response->data[receivedIndex] = c;
+		receivedIndex++;
+	}
+
+	retv = uart_getChar(&uart, &response->crc[0]);
+	if(retv != UART_SUCCESS) {
+		return 6;
+	}
+	retv = uart_getChar(&uart, &response->crc[1]);
+	if(retv != UART_SUCCESS) {
+		return 7;
+	}
+
+
+
+	return 0;
 }
 
-/**
- * @brief Requests current data from external sensor.
- * 
- * @return 0 on success, 1 on error
+/** UART Send Command
+ * This helper function will take an input command and pack it into a Byte
+ * array that can be sent over UART. Additionally, it returns via reference
+ * whether or not this input command expects a response based on the message.
+ * @param command A reference to the desired command
+ * @param message A buffer to hold the message generated by the given command
+ * @return The result of the command send
  */
-uint8_t uart_request_current(void) {
-    uart_message_t msg;
-    msg.header.msg_type = UART_MSG_REQUEST_CURRENT;
-    msg.header.length = 0;
-    msg.header.checksum = uart_calculate_checksum((uint8_t*)&msg.header, sizeof(msg.header));
-    
-    cmr_uart_result_t result = cmr_uart_pollingTX(
-        &uart_voltage_temp,
-        (uint8_t*)&msg,
-        sizeof(msg.header)
-    );
-    
-    return (result == UART_SUCCESS) ? 0 : 1;
+cmr_uart_result_t uart_sendCommand(const uart_command_t *command) {
+	int dummy;
+	//uart_getChar(&uart, &dummy);
+	uint8_t message[128];
+	uint8_t currByte = 0;
+
+	uint8_t initByte = ((command->readWrite) << 4) | ((0x07 & (command->dataLen)-1));
+	message[currByte] = initByte;
+	currByte++;
+
+	//append device address
+	if(command->deviceAddress != 0xFF) {
+		message[currByte] = command->deviceAddress;
+		currByte++;
+	}
+
+
+	//append register addresses
+	message[currByte] = (uint8_t)(command->registerAddress >> 8);
+	currByte++;
+	message[currByte] = (uint8_t)(command->registerAddress & 0xFF);
+	currByte++;
+
+	// Put the individual bytes into the message
+	for(int i = 0; i < command->dataLen; i++) {
+		message[currByte] = command->data[i];
+		currByte++;
+	}
+
+	// Calculate the CRC and put at the end of the message
+	uint16_t crc = calculateCRC(message, currByte);
+	message[currByte] = (crc) & 0x00FF;
+	currByte++;
+	message[currByte] = (crc >> 8) & 0x00FF;
+	currByte++;
+
+	uint8_t buff = 0;
+	HAL_UART_Receive(&(uart.handle), &buff, 1, 0);
+
+	cmr_uart_result_t res;
+	__HAL_UART_CLEAR_OREFLAG(&(uart.handle));
+	res = uart_sendMessage(&uart, message, currByte);
+	return res;
 }
 
-/**
- * @brief Receives voltage data from UART.
- * 
- * @param voltage_data Pointer to store voltage data
- * @return 0 on success, 1 on error
+
+/** UART Get Char
+ * This helper function will attempt to read one byte from the RX line and
+ * store the value of the read character c into the passed reference
+ * @param uart A pointer to the UART object we are reading from
+ * @param c A reference to the location we want to store the read character
+ * @return The status of the UART result (success or failure)
  */
-uint8_t uart_receive_voltages(uart_voltage_data_t *voltage_data) {
-    uart_message_t msg;
-    
-    // Receive message header
-    cmr_uart_result_t result = cmr_uart_pollingRX(
-        &uart_voltage_temp,
-        (uint8_t*)&msg.header,
-        sizeof(msg.header)
-    );
-    
-    if (result != UART_SUCCESS) {
-        return 1;
-    }
-    
-    // Verify message type
-    if (msg.header.msg_type != UART_MSG_RESPONSE_VOLTAGES) {
-        return 1;
-    }
-    
-    // Verify checksum
-    uint8_t calculated_checksum = uart_calculate_checksum((uint8_t*)&msg.header, sizeof(msg.header) - 1);
-    if (calculated_checksum != msg.header.checksum) {
-        return 1;
-    }
-    
-    // Receive voltage data
-    result = cmr_uart_pollingRX(
-        &uart_voltage_temp,
-        (uint8_t*)voltage_data,
-        sizeof(uart_voltage_data_t)
-    );
-    
-    return (result == UART_SUCCESS) ? 0 : 1;
+static cmr_uart_result_t uart_getChar(cmr_uart_t *uart, uint8_t *c) {
+	return cmr_uart_pollingRX(uart, c, 1);
 }
 
-/**
- * @brief Receives temperature data from UART.
- * 
- * @param temp_data Pointer to store temperature data
- * @return 0 on success, 1 on error
+/** UART Send Message
+ * This helper function will send the message stored in the input message array
+ * up to the number of bytes specified by the input messageLength using the
+ * given USART
+ * @param uart A pointer to the USART object we are sending from
+ * @param message The array containing the bytes we want to send
+ * @param messageLength The number of bytes from message to send
+ * @return The status of the UART result (success or failure)
  */
-uint8_t uart_receive_temperatures(uart_temp_data_t *temp_data) {
-    uart_message_t msg;
-    
-    // Receive message header
-    cmr_uart_result_t result = cmr_uart_pollingRX(
-        &uart_voltage_temp,
-        (uint8_t*)&msg.header,
-        sizeof(msg.header)
-    );
-    
-    if (result != UART_SUCCESS) {
-        return 1;
-    }
-    
-    // Verify message type
-    if (msg.header.msg_type != UART_MSG_RESPONSE_TEMPS) {
-        return 1;
-    }
-    
-    // Verify checksum
-    uint8_t calculated_checksum = uart_calculate_checksum((uint8_t*)&msg.header, sizeof(msg.header) - 1);
-    if (calculated_checksum != msg.header.checksum) {
-        return 1;
-    }
-    
-    // Receive temperature data
-    result = cmr_uart_pollingRX(
-        &uart_voltage_temp,
-        (uint8_t*)temp_data,
-        sizeof(uart_temp_data_t)
-    );
-    
-    return (result == UART_SUCCESS) ? 0 : 1;
-}
-
-/**
- * @brief Receives current data from UART.
- * 
- * @param current_data Pointer to store current data
- * @return 0 on success, 1 on error
- */
-uint8_t uart_receive_current(uart_current_data_t *current_data) {
-    uart_message_t msg;
-    
-    // Receive message header
-    cmr_uart_result_t result = cmr_uart_pollingRX(
-        &uart_voltage_temp,
-        (uint8_t*)&msg.header,
-        sizeof(msg.header)
-    );
-    
-    if (result != UART_SUCCESS) {
-        return 1;
-    }
-    
-    // Verify message type
-    if (msg.header.msg_type != UART_MSG_RESPONSE_CURRENT) {
-        return 1;
-    }
-    
-    // Verify checksum
-    uint8_t calculated_checksum = uart_calculate_checksum((uint8_t*)&msg.header, sizeof(msg.header) - 1);
-    if (calculated_checksum != msg.header.checksum) {
-        return 1;
-    }
-    
-    // Receive current data
-    result = cmr_uart_pollingRX(
-        &uart_voltage_temp,
-        (uint8_t*)current_data,
-        sizeof(uart_current_data_t)
-    );
-    
-    return (result == UART_SUCCESS) ? 0 : 1;
-}
-
-/**
- * @brief Calculates simple checksum for UART message.
- * 
- * @param data Pointer to data
- * @param length Data length
- * @return Calculated checksum
- */
-uint8_t uart_calculate_checksum(const uint8_t *data, uint8_t length) {
-    uint8_t checksum = 0;
-    for (uint8_t i = 0; i < length; i++) {
-        checksum ^= data[i];
-    }
-    return checksum;
+static cmr_uart_result_t uart_sendMessage(cmr_uart_t *uart, uint8_t message[], uint16_t messageLength) {
+	return cmr_uart_pollingTX(uart, message, messageLength);
 }
