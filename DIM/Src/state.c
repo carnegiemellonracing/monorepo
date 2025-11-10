@@ -408,7 +408,7 @@ static cmr_state getNextState(void) {
                 }
             }
             else {
-                nextState = NORMAL;
+                nextState = AUTON;
             }
             break;
         case dimStateERROR:
