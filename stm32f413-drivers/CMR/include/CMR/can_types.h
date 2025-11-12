@@ -1179,4 +1179,9 @@ typedef struct {
                        // 6 - mosfet overtemp, 7 - motor stall.
 } cmr_canCubeMarsData_t;
 
+typedef struct{
+    uint32_t latency;
+    uint32_t clock_timestamp;
+}cmr_canClockSyncData_t;
+
 #endif /* CMR_CAN_TYPES_H */

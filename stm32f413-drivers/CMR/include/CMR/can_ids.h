@@ -292,6 +292,10 @@ typedef enum {
     CAN_ID_LV_BMS_CELL_OVERTEMP,
     CAN_ID_LV_BMS_BUS_VOLTAGE,
     CAN_ID_LV_BMS_CURRENT,
+    
+    CAN_ID_PERC_CLK_SYNC = 0x66,
+
+
 } cmr_canID_t;
 
 typedef enum {

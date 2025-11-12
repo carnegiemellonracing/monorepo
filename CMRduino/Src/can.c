@@ -18,6 +18,13 @@
 
 #include "can.h"        // Interface to implement
 
+
+// Size of text buffer from RAM
+#define RAMBUFLEN 64
+
+/** @brief Text buffer from RAM - used to display messages to driver */
+char RAMBUF[RAMBUFLEN];
+
 /**
  * @brief CAN periodic message receive metadata
  *
@@ -100,6 +107,43 @@ static void canTX10Hz(void *pvParameters) {
     }
 }
 
+
+void ramRxCallback(cmr_can_t *can1, uint16_t canID, const void *data, size_t dataLen) {
+    if (canID == CMR_CANID_DIM_TEXT_WRITE) {
+        cmr_canDIMTextWrite_t *text = (cmr_canDIMTextWrite_t *)data;
+        if (dataLen == sizeof(cmr_canDIMTextWrite_t)) {
+            uint16_t index = ((uint16_t)text->address) << 2;
+            if (index < RAMBUFLEN) {
+                memcpy(RAMBUF + index, &(text->data), 4);
+            }
+        }
+    }
+}
+
+
+void csRxCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen){
+    if (canID == CMR_CANID_DIM_TEXT_WRITE ) {
+        cmr_canDIMTextWrite_t *text = (cmr_canDIMTextWrite_t *)data;
+        if (da)
+
+
+    }
+}
+
+
+
+void canRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen) {
+    if (canID == CMR_CANID_DIM_TEXT_WRITE) {
+        csRxCallback(can, canID, data, dataLen);
+    }
+    // make sure its a valid can id for config.
+    if (canID >= CMR_CANID_CDC_CONFIG0_DRV0 &&
+        canID <= CMR_CANID_CDC_CONFIG3_DRV3) {
+        cdcRXCallback(can, canID, data, dataLen);
+    }
+}
+
+
 /**
  * @brief Task for sending CAN messages at 100 Hz.
  *
@@ -159,7 +203,7 @@ void canInit(void) {
         &can, CAN2,
         CMR_CAN_BITRATE_500K,
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
-        NULL,
+        NULL, // the address of the canRxCallback
         GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
         GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
     );
