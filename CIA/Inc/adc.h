@@ -16,12 +16,12 @@
  * @warning New channels MUST be added before `ADC_LEN`.
  */
 typedef enum {
-    ADC_AMP_IN_1 = 0,
-    ADC_AMP_IN_2,
-    ADC_AMP_IN_3,
-    ADC_AMP_IN_4,
-    ADC_AMP_IN_5,
-    ADC_NTC_IN,
+    ADC_AMP_1 = 0,
+    ADC_AMP_2,
+    ADC_AMP_3,
+    ADC_AMP_4,
+    ADC_AMP_5,
+    ADC_THERM,
     ADC_LEN         /**< @brief Total ADC channels. */
 } adcChannel_t;
 
