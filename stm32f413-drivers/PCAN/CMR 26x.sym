@@ -154,8 +154,8 @@ Var=FL_magCurrent_raw signed 48,16 /f:0.001701171875
 [AMK_FL_ACT_2]
 ID=28Ah
 DLC=8
-CycleTime=10
-TimeOut=50
+CycleTime=20
+TimeOut=100
 Var=FL_motorTemp_dC signed 0,16 /u:dC /f:0.1 /p:2
 Var=FL_coldPlateTemp_dC signed 16,16 /u:dC /f:0.1 /p:2
 Var=FL_errorCode unsigned 32,16
@@ -177,8 +177,8 @@ Var=FL_torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
 [AMK_FR_ACT_1]
 ID=284h
 DLC=8
-CycleTime=10
-TimeOut=50
+CycleTime=20
+TimeOut=100
 Var=FR_AMK_RESERVED1 unsigned 0,8
 Var=FR_AMK_STATUS_SYSTEM_READY1 bit 8,1
 Var=FR_AMK_STATUS_ERROR1 bit 9,1
@@ -195,8 +195,8 @@ Var=FR_magCurrent_raw1 signed 48,16
 [AMK_FR_ACT_2]
 ID=286h
 DLC=8
-CycleTime=10
-TimeOut=50
+CycleTime=20
+TimeOut=100
 Var=FR_motorTemp_dC1 signed 0,16
 Var=FR_coldPlateTemp_dC1 signed 16,16
 Var=FR_errorCode1 unsigned 32,16
@@ -218,8 +218,8 @@ Var=FR_torqueLimNeg_dpcnt1 signed 48,16
 [AMK_RL_ACT_1]
 ID=287h
 DLC=8
-CycleTime=10
-TimeOut=50
+CycleTime=20
+TimeOut=100
 Var=RL_AMK_RESERVED2 unsigned 0,8
 Var=RL_AMK_STATUS_SYSTEM_READY2 bit 8,1
 Var=RL_AMK_STATUS_ERROR2 bit 9,1
@@ -236,8 +236,8 @@ Var=RL_magCurrent_raw2 signed 48,16
 [AMK_RL_ACT_2]
 ID=289h
 DLC=8
-CycleTime=10
-TimeOut=50
+CycleTime=20
+TimeOut=100
 Var=RL_motorTemp_dC2 signed 0,16
 Var=RL_coldPlateTemp_dC2 signed 16,16
 Var=RL_errorCode2 unsigned 32,16
@@ -259,8 +259,8 @@ Var=RL_torqueLimNeg_dpcnt2 signed 48,16
 [AMK_RR_ACT_1]
 ID=283h
 DLC=8
-CycleTime=100
-TimeOut=500
+CycleTime=20
+TimeOut=100
 Var=RR_AMK_RESERVED3 unsigned 0,8
 Var=RR_AMK_STATUS_SYSTEM_READY3 bit 8,1
 Var=RR_AMK_STATUS_ERROR3 bit 9,1
@@ -277,8 +277,8 @@ Var=RR_magCurrent_raw3 signed 48,16
 [AMK_RR_ACT_2]
 ID=285h
 DLC=8
-CycleTime=10
-TimeOut=50
+CycleTime=20
+TimeOut=100
 Var=RR_motorTemp_dC3 signed 0,16
 Var=RR_coldPlateTemp_dC3 signed 16,16
 Var=RR_errorCode3 unsigned 32,16
@@ -808,8 +808,8 @@ Var=LOW_iDCDC_mA unsigned 24,8 /u:mA /f:0.1333333
 [HVC_MINMAX_CELL_TEMPS]
 ID=311h
 DLC=8
-CycleTime=10
-TimeOut=50
+CycleTime=20
+TimeOut=100
 Var=MINMAX_minCellTemp_dC unsigned 0,16 /u:dC
 Var=MINMAX_maxCellTemp_dC unsigned 16,16 /u:dC
 Var=MINMAX_minTempBMBIndex unsigned 32,8
@@ -820,8 +820,8 @@ Var=MINMAX_maxTempCellIndex unsigned 56,8
 [HVC_MINMAX_CELL_VOLTAGE]
 ID=310h
 DLC=8
-CycleTime=800
-TimeOut=4000
+CycleTime=20
+TimeOut=100
 Var=MINMAX_minCellVoltage_mV1 unsigned 0,16
 Var=MINMAX_maxCellVoltage_mV1 unsigned 16,16
 Var=MINMAX_minCellVoltBMB unsigned 32,8
@@ -991,13 +991,6 @@ Var=longest_power_violation_ms unsigned 32,8 /u:ms
 Var=STATE_over_voltage_count unsigned 40,8
 Var=STATE_under_voltage_count unsigned 48,8
 Var=STATE_over_temp_count unsigned 56,8
-
-[TEST_ID]
-ID=777h
-DLC=1
-CycleTime=100
-TimeOut=500
-Var=ID_test_id unsigned 0,8
 
 [VSM_LATCHED_STATUS]
 ID=510h
@@ -2205,6 +2198,12 @@ Var=Data3 char 32,8
 ID=109h
 DLC=1
 Var=State unsigned 0,8
+
+[DAQ_AUTO_TEST]
+ID=777h
+DLC=1
+Var=TEST_ID unsigned 0,7	// Randomly generated test id sent everytime the car states up
+Var=TEST_STATUS bit 7,1	// 1- START TEST, 0 - STOP TEST
 
 [VSM_Git]
 ID=7F1h

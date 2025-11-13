@@ -121,12 +121,12 @@ volatile void *canGetPayload(canRX_t msg) {
 static void sendCIAData() {
 	volatile cmr_canCIAData_t *CIA_data = (cmr_canCIAData_t*)canGetPayload(CANRX_HEARTBEAT_VSM);
 
-    CIA_data->data[0] = adcRead(ADC_AMP_IN_1);
-    CIA_data->data[1] = adcRead(ADC_AMP_IN_2);
-    CIA_data->data[2] = adcRead(ADC_AMP_IN_3);
-    CIA_data->data[3] = adcRead(ADC_AMP_IN_4);
-    CIA_data->data[4] = adcRead(ADC_AMP_IN_5);
-    CIA_data->data[5] = adcRead(ADC_NTC_IN);
+    CIA_data->data[0] = adcRead(ADC_AMP_1);
+    CIA_data->data[1] = adcRead(ADC_AMP_2);
+    CIA_data->data[2] = adcRead(ADC_AMP_3);
+    CIA_data->data[3] = adcRead(ADC_AMP_4);
+    CIA_data->data[4] = adcRead(ADC_AMP_5);
+    CIA_data->data[5] = adcRead(ADC_THERM);
 
 	canTX(
 		CMR_CANID_CIA_DATA,
