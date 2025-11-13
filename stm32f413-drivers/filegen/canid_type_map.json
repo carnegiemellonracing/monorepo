@@ -514,6 +514,11 @@
             "timeOut": 50,
             "type": "cmr_canHVCBalanceCommand_t"
         },
+        "CMR_CANID_CIA_DATA": {
+            "cycleTime": 5,
+            "timeOut": 25,
+            "type": "cmr_canCIAData_t"
+        },
         "CMR_CANID_CONTROLS_PID_IO": {
             "controls_bias": {
                 "f": 0.01,
@@ -1046,8 +1051,8 @@
             "type": "cmr_canCDCSafetyFilterStates_t"
         },
         "CMR_CANID_TEST_ID": {
-            "cycleTime": 1000,
-            "timeOut": 5000,
+            "cycleTime": "can10Hz_period_ms\n            //",
+            "timeOut": "5*can10Hz_period_ms\n            //",
             "type": "cmr_canDAQTest_t"
         },
         "CMR_CANID_VSM_LATCHED_STATUS": {
@@ -1108,20 +1113,20 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2782,
-        "files_with_matches": 2782,
+        "files_processed": 2887,
+        "files_with_matches": 2887,
         "global_mappings": {
             "canrx_mappings": 96,
             "canrx_timeouts": 95,
             "canrx_types": 55,
-            "constants": 217,
+            "constants": 216,
             "struct_members": 0,
-            "variable_types": 286
+            "variable_types": 287
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 97
+        "total_canids": 98
     }
 }

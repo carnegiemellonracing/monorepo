@@ -291,6 +291,8 @@ typedef enum {
     CAN_ID_LV_BMS_CELL_OVERTEMP = 0x7fc,
     CAN_ID_LV_BMS_BUS_VOLTAGE = 0x7fd,
     CAN_ID_LV_BMS_CURRENT = 0x7fe,
+
+    CMR_CANID_CIA_DATA = 0x431
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */

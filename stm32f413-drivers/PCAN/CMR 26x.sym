@@ -452,6 +452,13 @@ TimeOut=50
 Var=BALANCE_balanceRequest unsigned 0,8 /e:HVC_Balance_State
 Var=BALANCE_threshold unsigned 8,16
 
+[CIA_DATA]
+ID=431h
+DLC=1
+CycleTime=5
+TimeOut=25
+Var=DATA_data unsigned 0,8
+
 [CONTROLS_PID_IO]
 ID=7E5h
 DLC=8
