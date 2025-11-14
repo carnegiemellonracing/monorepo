@@ -263,57 +263,86 @@ static void set_throttle_percentage(uint8_t throttlePos_u8, bool rear_only, floa
 }
 
 static void set_motor_speed_for_circle(int32_t swangle_millideg, float speed_mps) {
+    
     float steering_angle_rad = swAngleMillidegToSteeringAngleRad(swangle_millideg);
-    if(fabs(steering_angle_rad) < 0.1){
+    
+    // basically straight do nothing
+    if(fabs(steering_angle_rad) < 0.1f){
         return;
     }
-    float target_turn_radius_m = ((double) wheelbase_m) / tan(steering_angle_rad);
+
+    // bicycle model turn radius
+
+    float target_turn_radius_m = ((float) wheelbase_m) / tanf(steering_angle_rad);
+    
+    // clamps
     speed_mps = fmaxf(speed_mps, 0.0f);
     speed_mps = fminf(speed_mps, 10.0f);
+    
+    //init 
     cmr_torqueDistributionNm_t circleTorquesPos_Nm;
     circleTorquesPos_Nm.fr = 0.0f;
     circleTorquesPos_Nm.fl = 0.0f;
-    static bool running = true;
-    volatile cmr_canDIMActions_t *actions = (volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON);
-    while(running) {
-        float total_velocity_mps = sqrt(pow(movella_state.velocity.x, 2) + pow(movella_state.velocity.y, 2));
-        float realized_turn_radius_m;
-        if(total_velocity_mps < 0.1f || movella_state.gyro.z < 0.1f) {
-            realized_turn_radius_m = target_turn_radius_m;
-        }else{
-            realized_turn_radius_m = total_velocity_mps / movella_state.gyro.z;
-        }
-        float radius_error_m = target_turn_radius_m - realized_turn_radius_m;
-        float speed_error_mps = speed_mps - total_velocity_mps;
+    circleTorquesPos_Nm.rl = 0.0f;
+    circleTorquesPos_Nm.rr = 0.0f;
 
-        float torque_diff_Nm = 0.1f * radius_error_m;
-        float base_torque_Nm = 5.0f * speed_error_mps;
+    
 
-        circleTorquesPos_Nm.rr = base_torque_Nm - torque_diff_Nm;
-        circleTorquesPos_Nm.rl = base_torque_Nm + torque_diff_Nm;
+    // movella states 
+    float vx = movella_state.velocity.x;
+    float vy = movella_state.velocity.y;
+    float yaw_rate_radps = movella_state.gyro.z;
 
-        circleTorquesPos_Nm.rr = fmaxf(circleTorquesPos_Nm.rr, 0.0f);
-        circleTorquesPos_Nm.rl = fmaxf(circleTorquesPos_Nm.rl, 0.0f);
-        if(fabs(movella_state.velocity.y / movella_state.velocity.x) > 0.07) {
-            circleTorquesPos_Nm.rr = 0.0f;
-            circleTorquesPos_Nm.rl = 0.0f;
-        }
-        cmr_torqueDistributionNm_t circleTorquesNeg_Nm = {
-            .fl = 0.0f,
-            .fr = 0.0f,
-            .rl = 0.0f,
-            .rr = 0.0f,
-        };
-        //Use button input to stop the loop
-        bool button = (actions->buttons & BUTTON_ACT) != 0;
-        if(button == true) {
-            running = false;
-            circleTorquesPos_Nm.rr = 0.0f;
-            circleTorquesPos_Nm.rl = 0.0f;
-        }
-        setTorqueLimsProtected(&circleTorquesPos_Nm, &circleTorquesNeg_Nm);
+    float total_velocity_mps = sqrtf(vx * vx + vy * vy);
+
+    float realized_turn_radius_m;
+
+    if(total_velocity_mps < 0.1f || fabsf(yaw_rate_radps) < 0.1f) {
+        // too small to calc turn radius, for safety
+        realized_turn_radius_m = target_turn_radius_m;
+    } else {
+        realized_turn_radius_m = total_velocity_mps / yaw_rate_radps;
     }
-}
+
+    float radius_error_m = target_turn_radius_m - realized_turn_radius_m;
+    float speed_error_mps = speed_mps - total_velocity_mps;
+
+    // linear gains here 
+    float torque_diff_Nm = 0.1f * radius_error_m;
+    float base_torque_Nm = 5.0f * speed_error_mps;
+
+    // rear torques 
+    float T_rr = base_torque_Nm - torque_diff_Nm;
+    float T_rl = base_torque_Nm + torque_diff_Nm;
+
+    // clamping 
+    T_rr = fmaxf(T_rr, 0.0f);
+    T_rl = fmaxf(T_rl, 0.0f);
+
+    // more safety clamps to just max torque
+    T_rr = fminf(T_rr, maxFastTorque_Nm);
+    T_rl = fminf(T_rl, maxFastTorque_Nm);
+
+    // slip ratio checks?
+    
+    volatile cmr_canDIMActions_t *actions = (volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON);
+
+    bool button = (actions->buttons & BUTTON_ACT) != 0;
+        if(button) {
+            circleTorquesPos_Nm.rr = 0.0f;
+            circleTorquesPos_Nm.rl = 0.0f;
+        }
+    
+    cmr_torqueDistributionNm_t circleTorquesNeg_Nm = {
+        .fl = 0.0f,
+        .fr = 0.0f,
+        .rl = 0.0f,
+        .rr = 0.0f,
+    };
+
+    setTorqueLimsProtected(&circleTorquesPos_Nm, &circleTorquesNeg_Nm);
+    }
+
 
 static void set_manual_cruise_control(uint8_t throttlePos_u8) {
     static bool prev_button = false;
@@ -868,6 +897,7 @@ void runControls (
             // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
             // set_motor_speed(throttlePos_u8, target_speed_mps, false);
             set_manual_cruise_control(throttlePos_u8);
+            //set_motor_speed_for_circle(swAngle_millideg, 5.0f);
             break;
         }
 
@@ -1766,77 +1796,77 @@ void setEnduranceTorque (
     }
 }
 
-void setEnduranceTestTorque(
-    int32_t avgMotorSpeed_RPM,
-    uint8_t throttlePos_u8,
-    uint8_t brakePos_u8,
-    int32_t swAngle_millideg,
-    int32_t battVoltage_mV,
-    int32_t battCurrent_mA,
-    uint16_t brakePressurePsi_u8,
-    bool clampbyside
-) {
-     // if braking
-    if (setRegen(&throttlePos_u8, brakePressurePsi_u8, avgMotorSpeed_RPM)){
-        return;
-    }
+// void setEnduranceTestTorque(
+//     int32_t avgMotorSpeed_RPM,
+//     uint8_t throttlePos_u8,
+//     uint8_t brakePos_u8,
+//     int32_t swAngle_millideg,
+//     int32_t battVoltage_mV,
+//     int32_t battCurrent_mA,
+//     uint16_t brakePressurePsi_u8,
+//     bool clampbyside
+// ) {
+//      // if braking
+//     if (setRegen(&throttlePos_u8, brakePressurePsi_u8, avgMotorSpeed_RPM)){
+//         return;
+//     }
 
-    // Requested torque that may be positive or negative
-    float reqTorque = maxFastTorque_Nm * ((float)throttlePos_u8) / ((float)UINT8_MAX);
-    const float recuperative_limit = getMotorRegenerativeCapacity(avgMotorSpeed_RPM);
+//     // Requested torque that may be positive or negative
+//     float reqTorque = maxFastTorque_Nm * ((float)throttlePos_u8) / ((float)UINT8_MAX);
+//     const float recuperative_limit = getMotorRegenerativeCapacity(avgMotorSpeed_RPM);
 
-    // Accelerative torque requested
-    if (reqTorque >= 0) {
-        // apply power limit. Simply scale power down linearly in the last 5kW of power
-        uint8_t power_limit_kW = 150; // uint8, must be between 0 and 255, inclusive
-        const bool ret_val = getProcessedValue(&power_limit_kW, POWER_LIM_INDEX, unsigned_integer);
-        (void)ret_val; // placate compiler
-        if (power_limit_kW == 0) {
-            power_limit_kW = 1; // lower-bound the power limit by 1kW to avoid divide-by-zero
-        }
+//     // Accelerative torque requested
+//     if (reqTorque >= 0) {
+//         // apply power limit. Simply scale power down linearly in the last 5kW of power
+//         uint8_t power_limit_kW = 150; // uint8, must be between 0 and 255, inclusive
+//         const bool ret_val = getProcessedValue(&power_limit_kW, POWER_LIM_INDEX, unsigned_integer);
+//         (void)ret_val; // placate compiler
+//         if (power_limit_kW == 0) {
+//             power_limit_kW = 1; // lower-bound the power limit by 1kW to avoid divide-by-zero
+//         }
 
-        const float power_limit_W = ((float)power_limit_kW) * 1e3f;
-        float power_limit_start_derate_W = power_limit_W - 5000.0f;
-        power_limit_start_derate_W = fmaxf(power_limit_start_derate_W, 0.0f); // clamp to zero in case of negative value due to lower than 10kw limit
+//         const float power_limit_W = ((float)power_limit_kW) * 1e3f;
+//         float power_limit_start_derate_W = power_limit_W - 5000.0f;
+//         power_limit_start_derate_W = fmaxf(power_limit_start_derate_W, 0.0f); // clamp to zero in case of negative value due to lower than 10kw limit
 
-        volatile cmr_canHVIHeartbeat_t *HVISense = canTractiveGetPayload(CANRX_TRAC_HVI_SENSE);
-        const float hv_voltage_V = ((float)(HVISense->packVoltage_cV)) * 1e-2f; // convert to volts
+//         volatile cmr_canHVIHeartbeat_t *HVISense = canTractiveGetPayload(CANRX_TRAC_HVI_SENSE);
+//         const float hv_voltage_V = ((float)(HVISense->packVoltage_cV)) * 1e-2f; // convert to volts
 
-        volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
-        const float currentA = ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
-        // apply power limit.
-        const float power_consumed_W = hv_voltage_V * currentA;
+//         volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
+//         const float currentA = ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
+//         // apply power limit.
+//         const float power_consumed_W = hv_voltage_V * currentA;
 
-        if (power_consumed_W > power_limit_start_derate_W) {
-            float power_derate_multiplier = (power_consumed_W - power_limit_start_derate_W) / (power_limit_W - power_limit_start_derate_W);
-            // backup in case of hysterisis in the AC or latency in the system
-            power_derate_multiplier = fminf(power_derate_multiplier, 1.0f);
-            power_derate_multiplier = fmaxf(power_derate_multiplier, 0.0f);
-            reqTorque *= 1.0f - power_derate_multiplier;
-        }
+//         if (power_consumed_W > power_limit_start_derate_W) {
+//             float power_derate_multiplier = (power_consumed_W - power_limit_start_derate_W) / (power_limit_W - power_limit_start_derate_W);
+//             // backup in case of hysterisis in the AC or latency in the system
+//             power_derate_multiplier = fminf(power_derate_multiplier, 1.0f);
+//             power_derate_multiplier = fmaxf(power_derate_multiplier, 0.0f);
+//             reqTorque *= 1.0f - power_derate_multiplier;
+//         }
 
-        reqTorque = fminf(reqTorque, maxFastTorque_Nm);
-        reqTorque = fmaxf(reqTorque, 0.0f);
+//         reqTorque = fminf(reqTorque, maxFastTorque_Nm);
+//         reqTorque = fmaxf(reqTorque, 0.0f);
 
-        // Adjust throttle so that traction control commands reqTorque (after power limit calc) to the motors
-        uint8_t adjustedThrottlePos_u8 = (uint8_t)(fminf(fmaxf((reqTorque * ((float)UINT8_MAX) / maxFastTorque_Nm), 0.0f), (float)UINT8_MAX));
-        const bool assumeNoTurn = true; // TC is not allowed to behave left-right asymmetrically due to the lack of testing
-        const bool ignoreYawRate = false; // TC takes yaw rate into account to prevent the vehicle from stopping unintendedly when turning at low speeds
-        const bool allowRegen = true; // regen-braking is allowed to protect the AC by keeping charge level high
-        const float critical_speed_mps = 5.0f; // using a high value to prevent the vehicle from stopping unintendedly when turning at low speeds
-        if (brakePressurePsi_u8 < braking_threshold_psi)
-        	// setFastTorque(adjustedThrottlePos_u8);
-            setYawRateControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, clampbyside);
-        //setYawRateAndTractionControl(adjustedThrottlePos_u8, brakePressurePsi_u8, swAngle_millideg, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
-    }
-    // Requested recuperation that is less than the maximum-power regen point possible
-    else if (reqTorque > recuperative_limit) {
-        setTorqueLimsAllProtected(0.0f, reqTorque);
-        setVelocityInt16All(0);
-    }
-    // Requested recuperation is even more negative than the limit
-    else {
-        setTorqueLimsAllProtected(0.0f, recuperative_limit);
-        setVelocityInt16All(0);
-    }
-}
+//         // Adjust throttle so that traction control commands reqTorque (after power limit calc) to the motors
+//         uint8_t adjustedThrottlePos_u8 = (uint8_t)(fminf(fmaxf((reqTorque * ((float)UINT8_MAX) / maxFastTorque_Nm), 0.0f), (float)UINT8_MAX));
+//         const bool assumeNoTurn = true; // TC is not allowed to behave left-right asymmetrically due to the lack of testing
+//         const bool ignoreYawRate = false; // TC takes yaw rate into account to prevent the vehicle from stopping unintendedly when turning at low speeds
+//         const bool allowRegen = true; // regen-braking is allowed to protect the AC by keeping charge level high
+//         const float critical_speed_mps = 5.0f; // using a high value to prevent the vehicle from stopping unintendedly when turning at low speeds
+//         if (brakePressurePsi_u8 < braking_threshold_psi)
+//         	// setFastTorque(adjustedThrottlePos_u8);
+//             setYawRateControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, clampbyside);
+//         //setYawRateAndTractionControl(adjustedThrottlePos_u8, brakePressurePsi_u8, swAngle_millideg, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
+//     }
+//     // Requested recuperation that is less than the maximum-power regen point possible
+//     else if (reqTorque > recuperative_limit) {
+//         setTorqueLimsAllProtected(0.0f, reqTorque);
+//         setVelocityInt16All(0);
+//     }
+//     // Requested recuperation is even more negative than the limit
+//     else {
+//         setTorqueLimsAllProtected(0.0f, recuperative_limit);
+//         setVelocityInt16All(0);
+//     }
+// }
