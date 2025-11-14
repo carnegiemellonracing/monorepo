@@ -108,32 +108,35 @@ static void canTX10Hz(void *pvParameters) {
 }
 
 
-void ramRxCallback(cmr_can_t *can1, uint16_t canID, const void *data, size_t dataLen) {
-    if (canID == CMR_CANID_DIM_TEXT_WRITE) {
-        cmr_canDIMTextWrite_t *text = (cmr_canDIMTextWrite_t *)data;
-        if (dataLen == sizeof(cmr_canDIMTextWrite_t)) {
-            uint16_t index = ((uint16_t)text->address) << 2;
-            if (index < RAMBUFLEN) {
-                memcpy(RAMBUF + index, &(text->data), 4);
-            }
-        }
-    }
-}
-
+// void ramRxCallback(cmr_can_t *can1, uint16_t canID, const void *data, size_t dataLen) {
+//     if (canID == CMR_CANID_DIM_TEXT_WRITE) {
+//         cmr_canDIMTextWrite_t *text = (cmr_canDIMTextWrite_t *)data;
+//         if (dataLen == sizeof(cmr_canDIMTextWrite_t)) {
+//             uint16_t index = ((uint16_t)text->address) << 2;
+//             if (index < RAMBUFLEN) {
+//                 memcpy(RAMBUF + index, &(text->data), 4);
+//             }
+//         }
+//     }
+// }
 
 void csRxCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen){
-    if (canID == CMR_CANID_DIM_TEXT_WRITE ) {
-        cmr_canDIMTextWrite_t *text = (cmr_canDIMTextWrite_t *)data;
-        if (da)
+    if (canID == 0x66) {
+        cmr_canClockSyncData_t *text = (cmr_canClockSyncData_t *)data;
+        uint8_t clock_timestamp = text->clock_timestamp;
+        uint32_t timestamp = (uint32_t)clock_timestamp[0] | (uint32_t)clock_timestamp[1] << 8 | 
+                             (uint32_t)clock_timestamp[2] << 16 | (uint32_t)clock_timestamp[3] << 24;
+        
+        uint8_t latency_data = text->latency;
+        uint32_t latency = (uint32_t)lantency_data[0] | (uint32_t)lantency_data[1] << 8 | 
+                             (uint32_t)lantency_data[2] << 16 | (uint32_t)lantency_data[3] << 24;
 
-
+        // xTaskNotifyFromISR(__task,latency);
     }
 }
 
-
-
 void canRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen) {
-    if (canID == CMR_CANID_DIM_TEXT_WRITE) {
+    if (canID == 0x66) {
         csRxCallback(can, canID, data, dataLen);
     }
     // make sure its a valid can id for config.
@@ -248,6 +251,13 @@ void canInit(void) {
                 0x104,
                 0x7FC, // upper 9 bits must match
                 0x7FC
+            }
+        },
+        { // 4 messages at 100 Hz
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO1,
+            .ids = {
+                0x066
             }
         },
         {

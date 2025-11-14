@@ -1180,8 +1180,8 @@ typedef struct {
 } cmr_canCubeMarsData_t;
 
 typedef struct{
-    uint32_t latency;
-    uint32_t clock_timestamp;
+    uint8_t latency[4];
+    uint8_t clock_timestamp[4];
 }cmr_canClockSyncData_t;
 
 #endif /* CMR_CAN_TYPES_H */
