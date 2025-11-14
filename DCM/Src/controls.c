@@ -263,57 +263,87 @@ static void set_throttle_percentage(uint8_t throttlePos_u8, bool rear_only, floa
 }
 
 static void set_motor_speed_for_circle(int32_t swangle_millideg, float speed_mps) {
+    
     float steering_angle_rad = swAngleMillidegToSteeringAngleRad(swangle_millideg);
-    if(fabs(steering_angle_rad) < 0.1){
+    
+    // basically straight do nothing
+    if(fabs(steering_angle_rad) < 0.1f){
         return;
     }
-    float target_turn_radius_m = ((double) wheelbase_m) / tan(steering_angle_rad);
+
+    // bicycle model turn radius
+
+    float target_turn_radius_m = ((float) wheelbase_m) / tanf(steering_angle_rad);
+    
+    // clamps
     speed_mps = fmaxf(speed_mps, 0.0f);
     speed_mps = fminf(speed_mps, 10.0f);
+    
+    //init 
     cmr_torqueDistributionNm_t circleTorquesPos_Nm;
     circleTorquesPos_Nm.fr = 0.0f;
     circleTorquesPos_Nm.fl = 0.0f;
-    static bool running = true;
-    volatile cmr_canDIMActions_t *actions = (volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON);
-    while(running) {
-        float total_velocity_mps = sqrt(pow(movella_state.velocity.x, 2) + pow(movella_state.velocity.y, 2));
-        float realized_turn_radius_m;
-        if(total_velocity_mps < 0.1f || movella_state.gyro.z < 0.1f) {
-            realized_turn_radius_m = target_turn_radius_m;
-        }else{
-            realized_turn_radius_m = total_velocity_mps / movella_state.gyro.z;
-        }
-        float radius_error_m = target_turn_radius_m - realized_turn_radius_m;
-        float speed_error_mps = speed_mps - total_velocity_mps;
+    circleTorquesPos_Nm.rl = 0.0f;
+    circleTorquesPos_Nm.rr = 0.0f;
 
-        float torque_diff_Nm = 0.1f * radius_error_m;
-        float base_torque_Nm = 5.0f * speed_error_mps;
+    
 
-        circleTorquesPos_Nm.rr = base_torque_Nm - torque_diff_Nm;
-        circleTorquesPos_Nm.rl = base_torque_Nm + torque_diff_Nm;
+    // movella states 
+    float vx = movella_state.velocity.x;
+    float vy = movella_state.velocity.y;
+    float yaw_rate_radps = movella_state.gyro.z;
 
-        circleTorquesPos_Nm.rr = fmaxf(circleTorquesPos_Nm.rr, 0.0f);
-        circleTorquesPos_Nm.rl = fmaxf(circleTorquesPos_Nm.rl, 0.0f);
-        if(fabs(movella_state.velocity.y / movella_state.velocity.x) > 0.07) {
-            circleTorquesPos_Nm.rr = 0.0f;
-            circleTorquesPos_Nm.rl = 0.0f;
-        }
-        cmr_torqueDistributionNm_t circleTorquesNeg_Nm = {
-            .fl = 0.0f,
-            .fr = 0.0f,
-            .rl = 0.0f,
-            .rr = 0.0f,
-        };
-        //Use button input to stop the loop
-        bool button = (actions->buttons & BUTTON_ACT) != 0;
-        if(button == true) {
-            running = false;
-            circleTorquesPos_Nm.rr = 0.0f;
-            circleTorquesPos_Nm.rl = 0.0f;
-        }
-        setTorqueLimsProtected(&circleTorquesPos_Nm, &circleTorquesNeg_Nm);
+    float total_velocity_mps = sqrtf(vx * vx + vy * vy);
+
+    float realized_turn_radius_m;
+
+    if(total_velocity_mps < 0.1f || fabsf(yaw_rate_radps) < 0.1f) {
+        // too small to calc turn radius, for safety
+        realized_turn_radius_m = target_turn_radius_m;
+    } else {
+        realized_turn_radius_m = total_velocity_mps / yaw_rate_radps;
     }
+
+    float radius_error_m = target_turn_radius_m - realized_turn_radius_m;
+    float speed_error_mps = speed_mps - total_velocity_mps;
+
+    // linear gains here 
+    float torque_diff_Nm = 0.1f * radius_error_m;
+    float base_torque_Nm = 5.0f * speed_error_mps;
+
+    // rear torques 
+    float T_rr = base_torque_Nm - torque_diff_Nm;
+    float T_rl = base_torque_Nm + torque_diff_Nm;
+
+    // clamping 
+    T_rr = fmaxf(T_rr, 0.0f);
+    T_rl = fmaxf(T_rl, 0.0f);
+
+    // more safety clamps to just max torque
+    T_rr = fminf(T_rr, maxFastTorque_Nm);
+    T_rl = fminf(T_rl, maxFastTorque_Nm);
+
+    // slip ratio checks?
+    
+    volatile cmr_canDIMActions_t *actions = (volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON);
+
+    bool button = (actions->buttons & BUTTON_ACT) != 0;
+        if(button) {
+            circleTorquesPos_Nm.rr = 0.0f;
+            circleTorquesPos_Nm.rl = 0.0f;
+        }
+    
+    cmr_torqueDistributionNm_t circleTorquesNeg_Nm = {
+        .fl = 0.0f,
+        .fr = 0.0f,
+        .rl = 0.0f,
+        .rr = 0.0f,
+    };
+
+    setTorqueLimsProtected(&circleTorquesPos_Nm, &circleTorquesNeg_Nm);
+
 }
+
 
 static void set_manual_cruise_control(uint8_t throttlePos_u8) {
     static bool prev_button = false;
@@ -868,6 +898,7 @@ void runControls (
             // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
             // set_motor_speed(throttlePos_u8, target_speed_mps, false);
             set_manual_cruise_control(throttlePos_u8);
+            //set_motor_speed_for_circle(swAngle_millideg_FL, 5.0f);
             break;
         }
 
