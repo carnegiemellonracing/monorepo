@@ -26,6 +26,7 @@
 
 void setSlowTorque(uint8_t throttlePos_u8, int32_t swAngle_millideg);
 void setFastTorque(uint8_t throttlePos_u8);
+void setFastTorqueWithBias(uint8_t throttlePos_u8, float front_fraction, float rear_fraction);
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 float calculatePersistentYRCmreq(float left_right_bias, int32_t swAngle_millideg_FL, int32_t swAngle_millideg_FR);
 void setTractionControl(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t swAngle_millideg, float leftRightBias_Nm,

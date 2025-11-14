@@ -752,6 +752,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_FAST: {
             setFastTorque(throttlePos_u8);
+            setFastTorqueWithBias(throttlePos_u8, torque_front_fraction, torque_rear_fraction);
             // set_fast_torque_with_slew(throttlePos_u8, 29.0f);
             break;
         }
@@ -911,6 +912,26 @@ void setSlowTorque (
 //    }
 //
     setVelocityInt16All(maxSlowSpeed_rpm);
+}
+
+
+void setFastTorqueWithBias(uint8_t throttlePos_u8, float front_fraction, float rear_fraction) {
+    const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
+
+    // original total of 4 * reqtorque now becomes frac * (4 * reqtorque), so perwheel is (frac * 4) / 2
+
+    const float front_scale = 2.0f * front_fraction;
+    const float rear_scale = 2.0f * rear_fraction;
+
+    const float front_torque = reqTorque * front_scale;
+    const float rear_torque = reqTorque * rear_scale;
+
+    setTorqueLimsUnprotected(MOTOR_FL, front_torque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_FR, front_torque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_RR, rear_torque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_RL, rear_torque, 0.0f);
+    setVelocityInt16All(maxFastSpeed_rpm);
+
 }
 
 /**

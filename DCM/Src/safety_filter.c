@@ -85,7 +85,9 @@ const float braking_threshold_psi = 40.0f;
 static const float braking_threshold_offset_psi = 10.0f; // increase threshold by 10 PSI for drivers that leave their foot on the break pedal
 
 /** @brief Threshold of the vehicle speed below which regen-braking is not allowed */
-static const float regen_speed_threshold_kmph = 0.0f;
+static const float regen_speed_threshold_kmph = 5.0f;
+
+// THIS NEEDS TO BE BETWEEN 0 AND 5^^^ RULES COMPLIANT
 
 
 

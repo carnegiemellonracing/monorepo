@@ -62,4 +62,8 @@ static const double half_wheelbase_m = wheelbase_m * 0.5f;
 static const double half_trackwidth_m= trackwidth_m * 0.5f;
 static const double car_mass_kg = 280.0f;
 
+// fun little torque splits for testing
+static const float torque_front_fraction = 0.4f;
+static const float torque_rear_fraction = 0.6f;
+
 #endif
