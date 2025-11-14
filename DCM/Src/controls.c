@@ -217,6 +217,51 @@ static void set_motor_speed(uint8_t throttlePos_u8, float speed_mps, bool rear_o
     setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
 }
 
+// CRUISE CONTROL FUNCTIONS
+static void set_throttle_percentage(uint8_t throttlePos_u8, bool rear_only, float target_speed_mps) {
+    const float max_speed_mps = 20.0f;
+    target_speed_mps = fmaxf(target_speed_mps, 0.0f);
+    target_speed_mps = fminf(target_speed_mps, max_speed_mps);
+
+    float throttle = (float)throttlePos_u8 / UINT8_MAX;
+    float req_torque_Nm = throttle * maxFastTorque_Nm;
+    float target_rpm = target_speed_mps / (PI * effective_wheel_dia_m) * gear_ratio * 60.0f;
+    
+    cmr_torqueDistributionNm_t torquesPos_Nm;
+    
+    if(rear_only) {
+        torquesPos_Nm.fl = 0.0f;
+        torquesPos_Nm.fr = 0.0f;
+        torquesPos_Nm.rl = req_torque_Nm;
+        torquesPos_Nm.rr = req_torque_Nm;
+
+        setVelocityInt16(MOTOR_FL, 0);
+        setVelocityInt16(MOTOR_FR, 0);
+        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
+        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
+
+    } else {
+        setVelocityInt16(MOTOR_FL, (int16_t) target_rpm);
+        setVelocityInt16(MOTOR_FR, (int16_t) target_rpm);
+        setVelocityInt16(MOTOR_RL, (int16_t) target_rpm);
+        setVelocityInt16(MOTOR_RR, (int16_t) target_rpm);
+       
+        torquesPos_Nm.fl = req_torque_Nm;
+        torquesPos_Nm.fr = req_torque_Nm;
+        torquesPos_Nm.rl = req_torque_Nm;
+        torquesPos_Nm.rr = req_torque_Nm;
+    }
+
+    cmr_torqueDistributionNm_t torquesNeg_Nm = {
+       .fl = 0.0f,
+       .fr = 0.0f,
+       .rl = 0.0f,
+       .rr = 0.0f,
+    };
+
+    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
+}
+
 static void set_motor_speed_for_circle(int32_t swangle_millideg, float speed_mps) {
     float steering_angle_rad = swAngleMillidegToSteeringAngleRad(swangle_millideg);
     if(fabs(steering_angle_rad) < 0.1){
@@ -274,13 +319,21 @@ static void set_manual_cruise_control(uint8_t throttlePos_u8) {
     static bool prev_button = false;
     const float max_speed_mps = 20.0f;
     volatile cmr_canDIMActions_t *actions = (volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON);
+    
     bool button = (actions->buttons & BUTTON_ACT) != 0;
-    if(prev_button == false && button == true) {
+    if (!prev_button && button) {
         manual_cruise_control_speed += 1.0f;
-        manual_cruise_control_speed = fminf(manual_cruise_control_speed, max_speed_mps);
+        if (manual_cruise_control_speed > max_speed_mps) {
+            manual_cruise_control_speed = max_speed_mps;
+        }
     }
+
     prev_button = button;
-    set_motor_speed(throttlePos_u8, manual_cruise_control_speed, false);
+
+    // rear only is currently false - so this goes to all rn
+
+    set_throttle_percentage(throttlePos_u8, false, manual_cruise_control_speed);
+    // set_motor_speed(throttlePos_u8, manual_cruise_control_speed, false);
 }
 
 static inline void set_motor_speed_and_torque(
