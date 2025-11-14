@@ -122,16 +122,22 @@ static void canTX10Hz(void *pvParameters) {
 
 void csRxCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen){
     if (canID == 0x66) {
+
         cmr_canClockSyncData_t *text = (cmr_canClockSyncData_t *)data;
-        uint8_t clock_timestamp = text->clock_timestamp;
+
+        uint8_t clock_timestamp[4];
+        uint8_t latency_data[4];
+
+        memcpy(clock_timestamp, text->clock_timestamp, sizeof(clock_timestamp));
+        memcpy(latency_data, text->latency, sizeof(latency_data));
+        
         uint32_t timestamp = (uint32_t)clock_timestamp[0] | (uint32_t)clock_timestamp[1] << 8 | 
                              (uint32_t)clock_timestamp[2] << 16 | (uint32_t)clock_timestamp[3] << 24;
         
-        uint8_t latency_data = text->latency;
         uint32_t latency = (uint32_t)lantency_data[0] | (uint32_t)lantency_data[1] << 8 | 
                              (uint32_t)lantency_data[2] << 16 | (uint32_t)lantency_data[3] << 24;
 
-        // xTaskNotifyFromISR(__task,latency);
+        xTaskNotifyFromISR(__task,latency);
     }
 }
 
