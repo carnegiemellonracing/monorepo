@@ -24,6 +24,7 @@
 #include "motors.h" // cmr_canAMKSetpoints_t
 #include "daq.h"
 #include "i2c.h"
+#include "drs_controls.h"
 #include "controls_helper.h"
 #include "controls.h"
 #include "sensors.h"

@@ -26,9 +26,6 @@
 
 void setSlowTorque(uint8_t throttlePos_u8, int32_t swAngle_millideg);
 void setFastTorque(uint8_t throttlePos_u8);
-static void set_throttle_percentage(uint8_t throttlePos_u8, bool rear_only, float target_speed_mps);
-static void set_motor_speed_for_circle(int32_t swangle_millideg, float speed_mps) {
-
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 void setTractionControl(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t swAngle_millideg, float leftRightBias_Nm,
     bool assumeNoTurn, bool ignoreYawRate, bool allowRegen, float critical_speed_mps);
