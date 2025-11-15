@@ -16,6 +16,7 @@
 
 #include "gpio.h"       // Board-specific GPIO interface
 #include "can.h"        // Board-specific CAN interface
+#include "task_trigger.h"
 
 DAC_HandleTypeDef hdac1;
 
@@ -73,6 +74,8 @@ int main(void) {
     // Peripheral configuration.
     gpioInit();
     canInit();
+
+    cameraTriggerInit(10);
 
     cmr_taskInit(
         &statusLED_task,

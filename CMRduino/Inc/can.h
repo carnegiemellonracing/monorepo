@@ -12,6 +12,7 @@
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/can_ids.h>    // CMR CAN IDs
 
+#include "task_trigger.h"
 /**
  * @brief CAN receive metadata indices.
  *

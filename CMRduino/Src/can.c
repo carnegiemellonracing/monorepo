@@ -134,10 +134,19 @@ void csRxCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataL
         uint32_t timestamp = (uint32_t)clock_timestamp[0] | (uint32_t)clock_timestamp[1] << 8 | 
                              (uint32_t)clock_timestamp[2] << 16 | (uint32_t)clock_timestamp[3] << 24;
         
-        uint32_t latency = (uint32_t)lantency_data[0] | (uint32_t)lantency_data[1] << 8 | 
-                             (uint32_t)lantency_data[2] << 16 | (uint32_t)lantency_data[3] << 24;
+        int32_t latency = (uint32_t)latency_data[0] | (uint32_t)latency_data[1] << 8 | 
+                             (uint32_t)latency_data[2] << 16 | (uint32_t)latency_data[3] << 24;
+        
+        uint32_t delay_ms;
+        if (latency >= 0) {
+            delay_ms = (uint32_t)latency;
+        } else {
+            delay_ms = (uint32_t)(50 + latency);
+        }
 
-        xTaskNotifyFromISR(__task,latency);
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        delayCameraTrigger(delay_ms, &xHigherPriorityTaskWoken);
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 }
 
