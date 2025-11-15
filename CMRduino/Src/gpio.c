@@ -71,6 +71,15 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
+    [GPIO_OUT_CAMERA_TRIGGER] = {
+        .port = GPIOC,  // todo port
+        .init = {
+            .Pin = GPIO_PIN_7,  // TODO: pin
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_HIGH  // High speed for camera trigger
+        }
+    },
 
     [GPIO_OUT_RTD_SIGNAL] = {
         .port = GPIOC,
@@ -147,5 +156,6 @@ void gpioInit(void) {
     cmr_gpioWrite(GPIO_OUT_DCDC_EN, 0);
     cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
     cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 0);
+    cmr_gpioWrite(GPIO_OUT_CAMERA_TRIGGER, 0);
 }
 

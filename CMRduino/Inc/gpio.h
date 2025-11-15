@@ -24,6 +24,7 @@ typedef enum {
     GPIO_OUT_SOFTWARE_ERR,      /**< @brief Software error indicator. */
     GPIO_OUT_RTD_SIGNAL,        /**< @brief Ready-to-drive signal. */
     GPIO_IN_SOFTWARE_ERR,       /**< @brief Software error latch input signal. */
+    GPIO_OUT_CAMERA_TRIGGER,
     GPIO_IN_BSPD_ERR,           /**< @brief BSPD latch input signal. */
     GPIO_IN_IMD_ERR,            /**< @brief IMD latch input signal. */
     GPIO_LEN                    /**< @brief Total GPIO pins. */
