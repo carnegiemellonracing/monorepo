@@ -18,6 +18,7 @@
 #include "can.h"        // Interface to implement
 #include "sensors.h"    // sensorChannel_t
 #include "state.h"      // getCurrentErrors(), getCurrentWarnings()
+#include "gitcommit.h"
 
 /**
  * @brief CAN periodic message receive metadata
@@ -114,6 +115,11 @@ const cmr_canVSMErrorSource_t vsmErrorSourceFlags[] = {
     [CANRX_INVERTER_4]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
 };
 
+/** @brief CAN 1 Hz TX priority. */
+static const uint32_t canTX1Hz_priority = 7;
+/** @brief CAN 10 Hz TX period (milliseconds). */
+static const TickType_t canTX1Hz_period_ms = 1000;
+
 /** @brief CAN 10 Hz TX priority. */
 static const uint32_t canTX10Hz_priority = 3;
 /** @brief CAN 10 Hz TX period (milliseconds). */
@@ -134,6 +140,8 @@ static const uint32_t canTXLatchedStatus_priority = 1;
 /** @brief CAN latched status TX period (milliseconds). */
 static const TickType_t canTXLatchedStatus_period_ms = 10000;
 
+/** @brief CAN 1 Hz TX task. */
+static cmr_task_t canTX1Hz_task;
 /** @brief CAN 10 Hz TX task. */
 static cmr_task_t canTX10Hz_task;
 /** @brief CAN 100 Hz TX task. */
@@ -161,6 +169,25 @@ static void sendPowerDiagnostics(void);
  *
  * @return Does not return.
  */
+
+static void canTX1Hz(void *pvParameters) {
+    (void) pvParameters;    // Placate compiler.
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
+        sendPowerDiagnostics();
+
+        cmr_canGitFlashStatus gitStatus = {
+            .commitHash = GIT_INFO,
+            .dirtyFlash = IS_UNCOMMITTED
+        };
+
+        canTX(CMR_CANID_VSM_GIT, &gitStatus, sizeof(gitStatus), canTX1Hz_period_ms);
+
+        vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
+    }
+}
+
 static void canTX10Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
