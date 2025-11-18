@@ -116,7 +116,7 @@ const cmr_canVSMErrorSource_t vsmErrorSourceFlags[] = {
 };
 
 /** @brief CAN 1 Hz TX priority. */
-static const uint32_t canTX1Hz_priority = 7;
+static const uint32_t canTX1Hz_priority = 5;
 /** @brief CAN 10 Hz TX period (milliseconds). */
 static const TickType_t canTX1Hz_period_ms = 1000;
 
@@ -328,6 +328,13 @@ void canInit(void) {
     );
 
     // Task initialization.
+    cmr_taskInit(
+        &canTX1Hz_task,
+        "CAN TX 1Hz",
+        canTX1Hz_priority,
+        canTX1Hz,
+        NULL
+    );
     cmr_taskInit(
         &canTX10Hz_task,
         "CAN TX 10Hz",
