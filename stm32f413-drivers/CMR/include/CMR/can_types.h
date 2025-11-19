@@ -1257,7 +1257,7 @@ typedef struct {
 } cmr_canLVBMS_Voltage;
 
 typedef struct {
-    uint8_t data[6];
+    uint32_t data;
 } cmr_canCIAData_t;
 
 #endif /* CMR_CAN_TYPES_H */
