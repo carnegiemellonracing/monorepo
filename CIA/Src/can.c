@@ -122,9 +122,18 @@ static void sendCIAData() {
 	cmr_canCIAData_t CIA_data;
     CIA_data.data = adcRead(ADC_THERM);
 
+    cmr_canCIAData_t CIA_load2;
+    CIA_load2.data = adcRead(ADC_AMP_2);
+
 	canTX(
-		CMR_CANID_CIA_DATA,
+		CMR_CANID_CIA_THERM,
 		&CIA_data,
+		sizeof(cmr_canCIAData_t),
+		canTX200Hz_period_ms
+	);
+    canTX(
+		CMR_CANID_CIA_LOAD_2,
+		&CIA_load2,
 		sizeof(cmr_canCIAData_t),
 		canTX200Hz_period_ms
 	);
