@@ -454,10 +454,10 @@ Var=BALANCE_threshold unsigned 8,16
 
 [CIA_DATA]
 ID=431h
-DLC=1
+DLC=4
 CycleTime=5
 TimeOut=25
-Var=DATA_data unsigned 0,8
+Var=DATA_data unsigned 0,32
 
 [CONTROLS_PID_IO]
 ID=7E5h
