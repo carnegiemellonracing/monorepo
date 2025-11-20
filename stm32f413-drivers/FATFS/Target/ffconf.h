@@ -23,7 +23,7 @@
 / Additional user header to be used
 /-----------------------------------------------------------------------------*/
 #include "bsp_driver_sd.h"
-#include "main.h"
+// #include "main.h" // Why is this needed?
 #include "stm32f4xx_hal.h"
 
 /*-----------------------------------------------------------------------------/
