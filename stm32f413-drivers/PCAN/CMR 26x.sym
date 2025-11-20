@@ -848,38 +848,6 @@ Var=STATE_motor_power_FR unsigned 16,16
 Var=STATE_motor_power_RL unsigned 32,16
 Var=STATE_motor_power_RR unsigned 48,16
 
-[MOVELLA_STATUS]
-ID=772h
-DLC=26
-CycleTime=5
-TimeOut=25
-Var=STATUS_filter_mode_1 unsigned 0,8
-Var=STATUS_have_gnss_time_pulse unsigned 8,8
-Var=STATUS_rtk_status unsigned 16,8
-Var=STATUS_reserved_4 unsigned 24,8
-Var=STATUS_clipflag_mag_z unsigned 32,8
-Var=STATUS_reserved_2 unsigned 40,8
-Var=STATUS_clipping_indication unsigned 48,8
-Var=STATUS_reserved_3 unsigned 56,8
-Var=STATUS_sync_in_marker unsigned 64,8
-Var=STATUS_sync_out_marker unsigned 72,8
-Var=STATUS_filter_mode_2 unsigned 80,8
-Var=STATUS_clipflag_acc_x unsigned 88,8
-Var=STATUS_clipflag_acc_y unsigned 96,8
-Var=STATUS_clipflag_acc_z unsigned 104,8
-Var=STATUS_clipflag_gyr_x unsigned 112,8
-Var=STATUS_clipflag_gyr_y unsigned 120,8
-Var=STATUS_clipflag_gyr_z unsigned 128,8
-Var=STATUS_clipflag_mag_x unsigned 136,8
-Var=STATUS_clipflag_mag_y unsigned 144,8
-Var=STATUS_self_test unsigned 152,8
-Var=STATUS_filter_valid unsigned 160,8
-Var=STATUS_gnss_fix unsigned 168,8
-Var=STATUS_no_rotation_update unsigned 176,8
-Var=STATUS_representative_motion unsigned 184,8
-Var=STATUS_clock_bias_estimation unsigned 192,8
-Var=STATUS_reserved_1 unsigned 200,8
-
 [REAR_SLIP_RATIOS]
 ID=7E9h
 DLC=8
@@ -2323,6 +2291,33 @@ ID=77Bh
 DLC=8
 Var=Movella_Latitude signed 0,32 -m /u:deg /f:5.96046447753906E-008 /max:127.999999940395 /d:0
 Var=Movella_Longitude signed 32,32 -m /u:deg /f:1.19209289550781E-007 /min:-255.999999999999 /max:255.99999988079 /d:0
+
+[Movella_MTi860G_Status]
+ID=772h
+DLC=4
+Color=008000h
+Var=Movella_fitler_mode unsigned 0,2 /e:MovellaFilterMode
+Var=Movella_have_gnss_time_pulse unsigned 2,1
+Var=Movella_rtk_status unsigned 3,2
+Var=Movella_clipflag_mag_z unsigned 8,1
+Var=Movella_clipping_indication unsigned 11,1
+Var=Movella_sync_in_marker unsigned 13,1
+Var=Movella_sync_out_marker unsigned 14,1
+Var=Movella_filter_mode_2 unsigned 15,1
+Var=Movella_clipflag_acc_x unsigned 16,1
+Var=Movella_clipflag_acc_y unsigned 17,1
+Var=Movella_clipflag_acc_z unsigned 18,1
+Var=Movella_clipflag_gyr_x unsigned 19,1
+Var=Movella_clipflag_gyr_y unsigned 20,1
+Var=Movella_clipflag_gyr_z unsigned 21,1
+Var=Movella_clipflag_mag_x unsigned 22,1
+Var=Movella_clipflag_mag_y unsigned 23,1
+Var=Movella_self_test unsigned 24,1
+Var=Movella_filter_valid unsigned 25,1
+Var=Movella_gnss_fix unsigned 26,1
+Var=Movella_no_rotation_update unsigned 27,2
+Var=Movella_representative_motion unsigned 29,1
+Var=Movella_clock_bias_estimation unsigned 30,1
 
 [LV_BMS_Voltages1]
 ID=7F7h

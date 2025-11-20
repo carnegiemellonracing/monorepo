@@ -225,7 +225,9 @@ def main():
         json_obj = json.load(file)
         canids = json_obj['canid_to_info']
         for canid in canids: 
-            #go through each can id dict 
+            #go through each can id dict
+            if canid == "CMR_CANID_MOVELLA_STATUS":
+                continue  #skip this canid for now, will pull from 25e.sym
             canid_data = canids[canid]
             cantype = canid_data['type']
             cycletime = extract_numeric_value(canid_data['cycleTime'])  # Extract and convert to integer
