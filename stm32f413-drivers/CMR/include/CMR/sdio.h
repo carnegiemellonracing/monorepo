@@ -44,11 +44,8 @@ typedef struct {
     SD_HandleTypeDef handle; /**< @brief HAL SDIO/SDMMC handle. */
     DMA_HandleTypeDef txDMA; /**< @brief DMA handle for SDIO Tx. */
 
-    cmr_sdioPinConfig_t
-        pins; /**< @brief SDIO pin mapping (D0..D3, CLK, CMD, DET). */
-
-    SemaphoreHandle_t doneSem; /**< @brief Semaphore for transfer completion. */
-    StaticSemaphore_t doneSemBuf; /**< @brief Static buffer for semaphore. */
+    // cmr_sdioPinConfig_t
+    //     pins; /**< @brief SDIO pin mapping (D0..D3, CLK, CMD, DET). */
 
     FATFS fs; /**< @brief FatFS object. */
 } cmr_sdio_t;
