@@ -293,7 +293,11 @@ typedef enum {
     CAN_ID_LV_BMS_CURRENT = 0x7fe,
 
     CMR_CANID_CIA_THERM = 0x431,
-    CMR_CANID_CIA_LOAD_2 = 0x432
+    CMR_CANID_CIA_LOAD_1 = 0x432,
+    CMR_CANID_CIA_LOAD_2 = 0x433,
+    CMR_CANID_CIA_LOAD_3 = 0x434,
+    CMR_CANID_CIA_LOAD_4 = 0x435,
+    CMR_CANID_CIA_LOAD_5 = 0x435,
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
