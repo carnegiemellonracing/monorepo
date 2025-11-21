@@ -128,7 +128,8 @@ static void canTX200Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-
+        uint8_t hi = 1;
+        canTX(0x2, &hi, sizeof(hi), canTX200Hz_period_ms);
         vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
     }
 }
@@ -286,7 +287,7 @@ int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
  * @return 0 on success, or a negative error code on timeout.
  */
 int canExtendedTX(cmr_canExtendedID_t id, const void *data, size_t len, TickType_t timeout) {
-    return cmr_canExtendedTX(id, data, len, timeout);
+    return cmr_canExtendedTX(&can, id, data, len, timeout);
 }
 
 /**

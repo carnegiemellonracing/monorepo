@@ -16,6 +16,7 @@
 
 #include "gpio.h"       // Board-specific GPIO interface
 #include "can.h"        // Board-specific CAN interface
+#include "steering.h"
 
 DAC_HandleTypeDef hdac1;
 
@@ -81,6 +82,8 @@ int main(void) {
         statusLED,
         NULL
     );
+    
+    maxonControlInit();
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

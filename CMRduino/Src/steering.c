@@ -22,6 +22,8 @@
 /** @brief pdControl task. */
 static cmr_task_t maxonControlTask;
 
+static cmr_task_t inspectionMission;
+
 /** @brief pdControl period (milliseconds). */
 static const TickType_t maxonControlPeriod_ms = 10;
 
@@ -69,7 +71,7 @@ static void maxonControl(void *pvParameters) {
         //     targetPosition = (float) canGetSteeringPosition();
         // }
         cmr_canCubeMarsData_t *data = (cmr_canCubeMarsData_t*)getPayload(CANRX_CUBEMARS_DATA);
-        int16_t position = data->position_deg;
+        int32_t position = data->position_deg;
         if(!startMission) {
             if(position == centerPosition) {
                 startMission = true;
@@ -87,10 +89,53 @@ static void maxonControl(void *pvParameters) {
         // currPosition = clampSteeringADCVal(currPosition);
         // targetPosition = clampSteeringADCVal(targetPosition);
 
-
         sendCubeMarsVelocity(rpmToERPM((int)computeControlAction(targetPosition, currPosition)));
         previousTickCount = lastWakeTime;
         vTaskDelayUntil(&lastWakeTime, maxonControlPeriod_ms);
+    }
+}
+
+static void inspectionMissionControl(void *pvParameters) {
+    (void) pvParameters;
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    float targetPosition, currPosition;
+    const float T = 5.0f;
+    const float dt = 0.002f;
+    const float A_deg = 4.25f * 360.0f;
+
+    float t = 0.0f;
+
+    while(1) {
+        cmr_canCubeMarsData_t *data = (cmr_canCubeMarsData_t*)getPayload(CANRX_CUBEMARS_DATA);
+        int32_t position = data->position_deg;
+        if(!startMission) {
+            if(position == centerPosition) {
+                startMission = true;
+                cmr_canCubeMarsSetOrigin_t origin = {
+                    .origin = 1
+                };
+                canExtendedTX(CMR_CANID_EXTENDED_CUBEMARS_SET_ORIGIN_HERE, &origin, sizeof(origin), 2);
+            } else {
+                cmr_canCubeMarsPositionLoop_t pos = {
+                    .position_deg = centerPosition * 10000
+                };
+                canExtendedTX(CMR_CANID_EXTENDED_CUBEMARS_SET_POS, &pos, sizeof(pos), 2);
+            }
+        } else {
+
+            float pos_deg = A_deg * sinf(2.0f * M_PI * t/T);
+            int32_t set_pos = (int32_t)(pos_deg * 10000.0f);
+            cmr_canCubeMarsPositionLoop_t pos = {
+                .position_deg = set_pos
+            };
+            canExtendedTX(CMR_CANID_EXTENDED_CUBEMARS_SET_POS, &pos, sizeof(pos), 2);
+
+            t += dt;
+            if(t >= T) t-= T;
+        }
+
+        vTaskDelayUntil(&lastWakeTime, 2);
     }
 }
 
@@ -200,9 +245,9 @@ void maxonControlInit(){
     }
 
     cmr_taskInit(
-        &maxonControlTask,
+        &inspectionMission,
         "maxonControl",
         maxonControlPriority,
-        maxonControl,
+        inspectionMissionControl,
         NULL);
 }
