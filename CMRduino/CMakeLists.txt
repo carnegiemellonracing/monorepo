@@ -130,6 +130,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/can.c
     ${CMAKE_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_SOURCE_DIR}/Src/main.c
+    ${CMAKE_SOURCE_DIR}/Src/steering.c
     ${CMAKE_SOURCE_DIR}/Src/syscall.c
     ${CMAKE_SOURCE_DIR}/Src/sysmem.c
 

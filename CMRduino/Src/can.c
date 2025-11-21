@@ -150,18 +150,26 @@ static void canTXLatchedStatus(void *pvParameters) {
     }
 }
 
+int sendCubeMarsVelocity(int velocity){
+    int newVelo = velocity;
+    cmr_canCubeMarsSpeedLoop_t speed = {
+        .speed_erpm = velocity
+    };
+    return canExtendedTX(CMR_CANID_EXTENDED_CUBEMARS_SET_RPM, &speed, sizeof(speed), canTX10Hz_period_ms);
+}
+
 /**
  * @brief Initializes the CAN interface.
  */
 void canInit(void) {
     // CAN2 initialization.
     cmr_canInit(
-        &can, CAN2,
+        &can, CAN1,
         CMR_CAN_BITRATE_500K,
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
         NULL,
-        GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
-        GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
+        GPIOA, GPIO_PIN_11,     // CAN2 RX port/pin.
+        GPIOA, GPIO_PIN_12     // CAN2 TX port/pin.
     );
 
     // CAN2 filters, balanced across each RX FIFO
