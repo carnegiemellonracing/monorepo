@@ -62,6 +62,11 @@ static const double half_wheelbase_m = wheelbase_m * 0.5f;
 static const double half_trackwidth_m= trackwidth_m * 0.5f;
 static const double car_mass_kg = 280.0f;
 
+// aero downforce
+static const double wing_area = 1.028833;
+static const double Cl = 3;
+static const double rho = 1.225;
+
 // fun little torque splits for testing
 static const float torque_front_fraction = 0.4f;
 static const float torque_rear_fraction = 0.6f;

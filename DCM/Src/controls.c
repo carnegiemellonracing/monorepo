@@ -328,7 +328,13 @@ static float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
         volatile int16_t raw = parse_int16(&downforcePayload->force_output_N);
         downforce_N = (float) raw * 0.1f * sinf(angle);
     } else {
-        downforce_N = (float) car_mass_kg * 9.81f * 0.25f;
+        float speed = 0.0f;
+        for (size_t i = 0; i < MOTOR_LEN; i++) {
+        	speed += getMotorSpeed_radps(i);
+        }
+        speed = motorSpeedToWheelLinearSpeed_mps(speed / MOTOR_LEN);
+
+        downforce_N = (float) 0.5f * rho * wing_area * Cl * speed * speed * 0.25f;
     }
     return downforce_N;
 }
