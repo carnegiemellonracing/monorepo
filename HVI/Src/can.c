@@ -15,11 +15,14 @@
 
 #include <CMR/tasks.h>  // Task interface
 #include <CMR/can.h>
+#include <CMR/can_types.h>
 
 #include <stm32f4xx_hal.h>  // HAL interface
 
 #include "can.h"      // Interface to implement
 #include "adc.h"      // adcVSense, adcISense
+#include "sensors.h"
+#include "CMR/sensors.h"
 
 /** @brief Slope for voltage sense transfer function */
 #define V_TRANS_M 19.506
@@ -66,16 +69,21 @@ static cmr_task_t canTX1Hz_task;
 
 /** @brief calc that power bitch */
 static void calcPower(cmr_canHVIHeartbeat_t *heartbeat) {
-	uint16_t voltageRaw, currentRaw, voltage;
+	int32_t power;
+    int16_t voltage;
+    uint16_t current;
+
+    voltage = cmr_sensorListGetValue(&sensorList, SENSOR_CH_HV);
+    current = cmr_sensorListGetValue(&sensorList, SENSOR_CH_CURRENT);
+    power = (voltage * 100) * (current * 10);
+
+    heartbeat->packVoltage_cV = voltage;
+    heartbeat->packCurrent_dA = current;
+    heartbeat->packPower_W = power;   
+
+	uint16_t voltageRaw, currentRaw;
 	voltageRaw = adcRead(ADC_VSENSE);
 	currentRaw = adcRead(ADC_ISENSE);
-	// erm power sensing tonight queen?
-	heartbeat->packCurrent_dA = currentRaw;
-	heartbeat->packPower_W = 0;
-
-	// centivolts my beloved
-	voltage = (V_TRANS_M*voltageRaw + (V_TRANS_B));
-	heartbeat->packVoltage_cV = voltage;
 }
 
 /**

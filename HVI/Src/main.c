@@ -17,6 +17,7 @@
 #include "adc.h"
 #include "gpio.h"
 #include "can.h"
+#include "sensors.h"
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -67,6 +68,7 @@ int main(void) {
     gpioInit();
     adcInit();
     canInit();
+    sensorsInit();
 
     cmr_taskInit(
         &statusLED_task,
