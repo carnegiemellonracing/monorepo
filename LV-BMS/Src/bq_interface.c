@@ -439,69 +439,6 @@ static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
 	return (uint16_t) (0.19073*((((uint16_t)msb << 8) | lsb)));
 }
 
-//return voltage data
-// uint8_t pollAllVoltageData() {
-// 	uart_command_t read_voltage = {
-// 			.readWrite = STACK_READ,
-// 			.dataLen = 1,
-// 			.deviceAddress = 0xFF, //not used!
-// 			.registerAddress = TOP_CELL,
-// 			.data = {VSENSE_CHANNELS*2-1}, //reading high and low for cell 0-VSENSE_CHANNELS
-// 			.crc = {0xFF, 0xFF}
-// 		};
-
-// 		uart_response_t response[BOARD_NUM-1];
-
-// 		//TODO add tx error handler
-
-// 		int x= 0;
-
-// 		// Critical section used so UART RX is not preempted
-// 		taskENTER_CRITICAL();
-// 		uart_sendCommand(&read_voltage);
-// 		//loop through each BMB and channel
-// 		for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
-
-// 			uint8_t status = uart_receiveResponse(&response[i-1], 27);
-// 			if(status != 0) {
-// 				//setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
-// 				//BMBTimeoutCount[i-1]+=1;
-// 				DWT_Delay_ms(10000);
-// 				RXTurnOnInit();
-// 				BMBInit();
-// 				taskEXIT_CRITICAL();
-// 				return i;
-// 			}
-// 		}
-// 		taskEXIT_CRITICAL();
-
-// 		// Handle writing data separately from receive so you don't miss a byte
-// 		for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
-// 			for(uint8_t j = 0; j < VSENSE_CHANNELS; j++) {
-// 				uint8_t high_byte_data = response[i].data[2*j];
-// 				uint8_t low_byte_data = response[i].data[2*j+1];
-
-// 				BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = calculateVoltage(high_byte_data, low_byte_data);
-// 				if(i == 1 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-// 					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-// 				} else if(i == 3 && (VSENSE_CHANNELS-j-1 == 13)) {
-// 					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-// 				} else if(i == 4 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-// 					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-// 				} else if(i == 2 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-// 					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-// 				}
-// 				if(i == 2 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-// 									BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
-// 								}
-// 				if(i == 3 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-// 					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
-// 				}
-// 			}
-// 		}
-
-// 		return 0;
-// }
 
 bool setMuxOutput(uint8_t channel) {
 	uint8_t data;
@@ -543,58 +480,8 @@ int16_t calculateTemp(uint8_t msb, uint8_t lsb) {
     return (voltage_mv);
 }
 
-// void pollAllTemperatureData(int channel) {
-// 	uart_command_t read_therms = {
-// 		.readWrite = STACK_READ,
-// 		.dataLen = 1,
-// 		.deviceAddress = 0xFF, //not used!
-// 		.registerAddress = GPIO5_HI,
-// 		.data = {0x07},
-// 		.crc = {0xFF, 0xFF}
-// 	};
-
-// 	taskENTER_CRITICAL();
-// 	uart_sendCommand(&read_therms);
-
-// 	uart_response_t response[BOARD_NUM-1];
 
 
-
-// 	for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
-// 		if(uart_receiveResponse(&response[i-1], 7) == UART_FAILURE) {
-// 				//loop through each GPIO channel
-// 			// setBMBErr(i-1, BMB_TEMP_READ_ERROR);
-// 			BMBTimeoutCount[i-1]+=1;
-// 			return;
-// 		}
-// 	}
-// 	taskEXIT_CRITICAL();
-
-
-// 	for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
-// 		for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; k++) {
-// 			uint8_t high_byte_data = response[i].data[2*k];
-// 			uint8_t low_byte_data = response[i].data[2*k+1];
-// 			size_t index = (4*channel) + k;
-// 			//TODO: make sure this is matching the thermistor indices properly
-
-// 			if (index == 3 || index == 10) {
-// 				continue;
-// 			}
-
-// 			if (index > 10) {
-// 				index--;
-// 			}
-
-// 			if (index > 3) {
-// 				index--;
-// 			}
-
-// 			BMBData[i].cellTemperatures[index] = calculateTemp(high_byte_data, low_byte_data);
-// 		}
-// 	}
-// 	return;
-// }
 
 void cellBalancingSetup() {
 	//set up cell balancing timers
@@ -719,16 +606,6 @@ void cellBalancing(bool set, uint16_t thresh) {
 			}
 			res = uart_sendCommand(&balance_register);
 		}
-		//set duty cycle to switch between even and odd cells
-//		uart_command_t duty_cycle = {
-//			.readWrite = STACK_WRITE,
-//			.dataLen = 1,
-//			.deviceAddress = 0xFF, //not used!
-//			.registerAddress = BAL_CTRL1,
-//			.data = {0x01}, //TODO what is this value supposed to be?
-//			.crc = {0x00, 0x00}
-//		};
-//		res = uart_sendCommand(&duty_cycle);
 
 		//see bq datasheet in register VCB_DONE_THRESH, maps threshold in 25 mv increments
 		//between 245 mV and 4000 mV

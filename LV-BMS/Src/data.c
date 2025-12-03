@@ -50,7 +50,7 @@ static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
 uint8_t getVoltages(void) {
     TickType_t time_prev = xTaskGetTickCount();
      uart_command_t read_voltage = {
-			.readWrite = SINGLE_READ,
+			.readWrite = BROADCAST_READ,
 			.dataLen = 1,
 			.deviceAddress = 0xFF, //not used!
 			.registerAddress = TOP_CELL,
@@ -77,8 +77,6 @@ uint8_t getVoltages(void) {
         uint8_t low_byte_data = response.data[2*j+1];
         cellVoltages[VSENSE_CHANNELS-j-1] = calculateVoltage(high_byte_data, low_byte_data);
     }
-
-    vTaskDelayUntil(&time_prev, 32);
 
     sendOvervoltageFlags(cellVoltages);
     
@@ -123,15 +121,6 @@ void sendBusVoltage(uint16_t voltages[CELL_NUM]) {
 
 static uint32_t vtherm_read_index(uint16_t vtherm_index) {
 
-	int map[] = {4, 6, 7, 5, 2, 1, 0, 3, 3, 0, 1, 2, 5, 4, 2, 1}; //based on schematic
-	int sel_index = map[vtherm_index];
-
-	cmr_gpioWrite(GPIO_VTHERM_SEL0, sel_index & 0x1);
-	cmr_gpioWrite(GPIO_VTHERM_SEL1, sel_index & 0x2);
-	cmr_gpioWrite(GPIO_VTHERM_SEL2, sel_index & 0x4);
-	if(vtherm_index < 0x8)
-		return adc_read(ADC_VTHERM_PIN1);
-	return adc_read(ADC_VTHERM_PIN2);
 }
 
 /*static void vtherm_read(const adc_channel_t ch) {
@@ -163,7 +152,7 @@ uint16_t tempConvert(uint16_t adc_value) {
 
 uint8_t getTemps(int channel) {
     uart_command_t read_therms = {
-		.readWrite = SINGLE_READ,
+		.readWrite = BROADCAST_READ,
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = GPIO5_HI,

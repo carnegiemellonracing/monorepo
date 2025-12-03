@@ -98,21 +98,6 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     canTX(CMR_CANID_HEARTBEAT_LV_BMS, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
 }
 
-/**
- * @brief Task for sending CAN messages at 1 Hz.
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void canTX1Hz(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
-    }
-}
 
 /**
  * @brief Task for sending CAN messages at 10 Hz.
