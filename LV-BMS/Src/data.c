@@ -24,7 +24,7 @@
 #define VSENSE_CHANNELS 14
 #define TEMP_CHANNELS 14
 #define TOP_CELL VCELL14_HI
-#define NUM_GPIO_CHANNELS 4
+#define NUM_GPIO_CHANNELS 2
 
 uint16_t sendVolt[CELL_NUM];
 float rawCellVolts[CELL_NUM];
@@ -119,23 +119,6 @@ void sendBusVoltage(uint16_t voltages[CELL_NUM]) {
     canTX(CMR_CANID_LVBMS_BUS_VOLTAGE, &totalVoltage, sizeof(totalVoltage), canTX10Hz_period_ms);
 }
 
-static uint32_t vtherm_read_index(uint16_t vtherm_index) {
-
-}
-
-/*static void vtherm_read(const adc_channel_t ch) {
-	TickType_t time_prev = xTaskGetTickCount();
-	while(true) {
-		for(uint32_t i = 0; i < VTHERM_NUM; i++) {
-			int temp = vtherm_read_index(i);
-			(void *)temp;
-		}
-		int temp = vtherm_read_index(7);
-		int temp2 = vtherm_read_index(8);
-		temp + temp2;
-		vTaskDelayUntil(&time_prev, vtherm_read_period_ms);
-	}
-}*/
 //not sure how temp conversion works rn.
 uint16_t tempConvert(uint16_t adc_value) {
     float voltage = (adc_value * VREF_THERM) / ADC_COUNT;
@@ -174,10 +157,13 @@ uint8_t getTemps(int channel) {
     for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; k++) {
         uint8_t high_byte_data = response.data[2*k];
         uint8_t low_byte_data = response.data[2*k+1];
-        size_t index = (4*channel) + k;
+        size_t index = (4*k) + channel;
+       
         //TODO: make sure this is matching the thermistor indices properly
-
-        cellTemps[index] = calculateTemp(high_byte_data, low_byte_data);
+        if (index < CELL_NUM) {
+            cellTemps[index] = calculateTemp(high_byte_data, low_byte_data);
+        }
+        
     }
 
     uint16_t data1[4], data2[3];
