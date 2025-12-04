@@ -133,7 +133,7 @@ uint8_t getBMBMaxTempIndex(uint8_t bmb_index) {
 	int16_t maxTemp = 0xFFFF;
 	uint8_t cell_index = 0;
 	for (uint8_t i = 0; i < TEMP_CHANNELS; i++) {
-		int16_t temp = BMBData[bmb_index].cellTemperatures[i];
+		int16_t temp = BMBData[bmb_index].cellTemperaturesVoltageReading[i];
 		if ((temp > maxTemp) && !check_to_ignore(bmb_index, i)) {
 			maxTemp = temp;
 			cell_index = i;
@@ -146,7 +146,7 @@ uint8_t getBMBMinTempIndex(uint8_t bmb_index) {
 	int16_t minTemp = 0x7FFF;
 	uint8_t cell_index = 0;
 	for (uint8_t i = 0; i < TEMP_CHANNELS; i++) {
-		int16_t temp = BMBData[bmb_index].cellTemperatures[i];
+		int16_t temp = BMBData[bmb_index].cellTemperaturesVoltageReading[i];
 		if (temp < minTemp && !check_to_ignore(bmb_index, i)) {
 			minTemp = temp;
 			cell_index = i;
@@ -159,7 +159,7 @@ uint8_t getBMBMaxVoltIndex(uint8_t bmb_index) {
 	uint16_t maxVoltage = 0;
 	uint8_t cell_index = 0;
 	for (uint8_t i = 0; i < VSENSE_CHANNELS; i++) {
-		uint16_t voltage = BMBData[bmb_index].cellVoltages[i];
+		uint16_t voltage = BMBData[bmb_index].cellTemperaturesVoltageReading[i];
 		if ((voltage > maxVoltage) && (voltage != 3456)) {
 			maxVoltage = voltage;
 			cell_index = i;
@@ -184,7 +184,7 @@ uint8_t getBMBMinVoltIndex(uint8_t bmb_index) {
 // Accessor Functions
 
 int16_t getBMBTemp(uint8_t bmb_index, uint8_t cell_index) {
-	return BMBData[bmb_index].cellTemperatures[cell_index];
+	return BMBData[bmb_index].cellTemperaturesVoltageReading[cell_index];
 }
 
 uint16_t getBMBVoltage(uint8_t bmb_index, uint8_t cell_index) {
@@ -235,7 +235,7 @@ uint16_t getPackMaxCellTemp() {
 	for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
 		// find highest cell temp on current BMB, update packMaxCellTemp if needed
 		maxCellTempIndex = getBMBMaxTempIndex(bmb_index);
-		maxCellTemp = BMBData[bmb_index].cellTemperatures[maxCellTempIndex];
+		maxCellTemp = BMBData[bmb_index].cellTemperaturesVoltageReading[maxCellTempIndex];
 
 		if (maxCellTemp > packMaxCellTemp) {
 			packMaxCellTemp = maxCellTemp;
@@ -253,7 +253,7 @@ uint16_t getPackMinCellTemp() {
 	for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
 		// find lowest cell temp on current BMB, update packMinCellTemp if needed
 		minCellTempIndex = getBMBMinTempIndex(bmb_index);
-		minCellTemp = BMBData[bmb_index].cellTemperatures[minCellTempIndex];
+		minCellTemp = BMBData[bmb_index].cellTemperaturesVoltageReading[minCellTempIndex];
 
 		if (minCellTemp < packMinCellTemp) {
 			packMinCellTemp = minCellTemp;
@@ -313,7 +313,7 @@ void getBMSMinMaxCellTemperature(
 	for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
 		// find lowest cell temp on current BMB
 		minCellTempIndex = getBMBMinTempIndex(bmb_index);
-		minCellTemp = BMBData[bmb_index].cellTemperatures[minCellTempIndex];
+		minCellTemp = BMBData[bmb_index].cellTemperaturesVoltageReading[minCellTempIndex];
 
 		// update struct if needed
 		if (minCellTemp < BMSMinMaxCellTemp->minCellTemp_C) {
@@ -324,7 +324,7 @@ void getBMSMinMaxCellTemperature(
 
 		// find highest cell temp on current BMB
 		maxCellTempIndex = getBMBMaxTempIndex(bmb_index);
-		maxCellTemp = BMBData[bmb_index].cellTemperatures[maxCellTempIndex];
+		maxCellTemp = BMBData[bmb_index].cellTemperaturesVoltageReading[maxCellTempIndex];
 
 		// update struct if needed
 		if (maxCellTemp > BMSMinMaxCellTemp->maxCellTemp_C) {

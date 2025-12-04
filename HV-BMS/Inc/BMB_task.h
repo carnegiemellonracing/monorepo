@@ -19,12 +19,12 @@
 
 #define CELL_MAX_VOLTAGE_HI 4250
 #define CELL_MAX_VOLTAGE_LO 4150
-#define VSENSE_CHANNELS 14
-#define TEMP_CHANNELS 14
+#define VSENSE_CHANNELS 9
+#define TEMP_CHANNELS 9
 
 typedef struct BMB_Data_t{
     uint16_t cellVoltages[VSENSE_CHANNELS];
-    int16_t cellTemperatures[TEMP_CHANNELS];
+    int16_t cellTemperaturesVoltageReading[TEMP_CHANNELS];
 } BMB_Data_t;
 
 void vBMBSampleTask(void* pvParameters);

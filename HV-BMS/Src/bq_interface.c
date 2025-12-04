@@ -6,9 +6,12 @@
  */
 #include "bq_interface.h"
 #include "uart.h"
+#include "gpio.h"
 #include <CMR/uart.h>
 #include <stm32f4xx_hal.h>
 #include <stdbool.h>
+#include <string.h> // memcpy
+
 
 #define SINGLE_DEVICE true
 #define MULTIPLE_DEVICE false
@@ -39,8 +42,14 @@ __STATIC_INLINE void DWT_Delay_ms(volatile uint32_t au32_milliseconds)
   while ((DWT->CYCCNT - au32_initial_ticks) < au32_milliseconds);
 }
 
-void turnOn() {
+//forward declarations
+static inline bool sendUartStackWrite(  uint16_t registerAddress, 
+										uint8_t* data, 
+										uint8_t dataLen);
+void txToRxDelay(uint8_t delay);
+void byteDelay(uint8_t delay);
 
+bool turnOn() {
 
 	//Turn On Ping
 	// HAL_Delay(100);
@@ -133,7 +142,7 @@ void turnOn() {
 	// HAL_Delay(1000);
 	DWT_Delay_ms(1000);
 
-
+	return true;
 }
 
 /** Auto Address Function
@@ -337,49 +346,28 @@ bool enableNumCells() {
 
 // Enable all GPIO registers and TSREF for thermistor biasing
 bool enableGPIOPins() {
-	uart_command_t enable_tsref = {
-			.readWrite = STACK_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!
-			.registerAddress = CONTROL2,
-			.data = {0x01}, //enable TSREF for NTC Thermistor Biasing
-			.crc = {0x00, 0x00}
-	};
-	cmr_uart_result_t res = uart_sendCommand(&enable_tsref);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
 
-	//enable GPIO inputs
-	uart_command_t enable_gpio = {
-			.readWrite = STACK_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!
-			.registerAddress = GPIO_CONF3,
-			.data = {0x12},
-			.crc = {0x00, 0x00}
-	};
-	res = uart_sendCommand(&enable_gpio);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
-	enable_gpio.registerAddress = GPIO_CONF4;
-	res = uart_sendCommand(&enable_gpio);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
+    //enableTSref
+    uint8_t dataToSend = 0x01;
+    if (!sendUartStackWrite(CONTROL2, &dataToSend, 1))
+        return false;
 
+    // configures GPIO 5 and 6 as analog input
+    dataToSend = 0x12;
+    if (!sendUartStackWrite(GPIO_CONF3, &dataToSend, 1))
+        return false;
 
-	//enable MUX outputs as low initially
-	enable_gpio.registerAddress = GPIO_CONF2;
-	enable_gpio.data[0] = 0x2D;
-	res = uart_sendCommand(&enable_gpio);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
+    // configures GPIO 7 and 8 as analog input
+    dataToSend = 0x12;
+    if (!sendUartStackWrite(GPIO_CONF4, &dataToSend, 1))
+        return false;
+
+    //enable MUX outputs as low initially
+    dataToSend = 0x2D;
+    if (!sendUartStackWrite(GPIO_CONF2, &dataToSend, 1))
+      return false;
 
 	return true;
-
 }
 
 // Enable command timeout so BQ sleeps turns off when car is off
@@ -417,8 +405,9 @@ void BMBInit() {
 	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 
-	//No idea lol
-	txToRxDelay();
+	//Unsure about this value. I believe it should not matter much
+	txToRxDelay(10);
+
 	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 	byteDelay(0x3F);
@@ -439,28 +428,24 @@ static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
 
 //return voltage data
 uint8_t pollAllVoltageData() {
+  uint8_t toReadLen = VSENSE_CHANNELS*2-1;
 	uart_command_t read_voltage = {
 			.readWrite = STACK_READ,
 			.dataLen = 1,
 			.deviceAddress = 0xFF, //not used!
 			.registerAddress = TOP_CELL,
-			.data = {VSENSE_CHANNELS*2-1}, //reading high and low for cell 0-VSENSE_CHANNELS
+			.data = {toReadLen}, //reading high and low for cell 0-VSENSE_CHANNELS
 			.crc = {0xFF, 0xFF}
 		};
 
 		uart_response_t response[BOARD_NUM-1];
-
-		//TODO add tx error handler
-
-		int x= 0;
-
 		// Critical section used so UART RX is not preempted
 		taskENTER_CRITICAL();
 		uart_sendCommand(&read_voltage);
 		//loop through each BMB and channel
 		for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
 
-			uint8_t status = uart_receiveResponse(&response[i-1], 27);
+			uint8_t status = uart_receiveResponse(&response[i-1], toReadLen);
 			if(status != 0) {
 				setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
 				BMBTimeoutCount[i-1]+=1;
@@ -504,25 +489,22 @@ bool setMuxOutput(uint8_t channel) {
 	default:
 		return false;
 	}
-	uart_command_t enable_gpio = {
-			.readWrite = STACK_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!
-			.registerAddress = GPIO_CONF2,
-			.data = {data},
-			.crc = {0x00, 0x00}
-	};
-	cmr_uart_result_t res = uart_sendCommand(&enable_gpio);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
+
+    // set the Mux output
+    if (!sendUartStackWrite(GPIO_CONF2, &data, 1))
+    	return false;
+    
 	return true;
 }
 
-static int16_t calculateTemp(uint8_t msb, uint8_t lsb) {
+// For efficiency we choose to do as little computation as possible here and 
+// just compute voltage. To convert from voltage to temperature we would need
+// to do the Steinhart equation which is very expensive. However, since the
+// Steinhart is strictly decreasing we are able to simply probe the voltage
+// values for the hottest and coldest cells. The transfer function should be 
+// on PCAN to convert to temperature for easy viewing
+static int16_t calculateTempVoltageReading(uint8_t msb, uint8_t lsb) {
 	int16_t voltage_mv = (uint16_t)((0.15259) * (((int16_t) msb << 8) | lsb));
-//    uint32_t resistance_centiOhm = (47 * voltage_mv) / (5000 - voltage_mv); // Calculate the resistance of thermistor
-//    uint32_t temp = (resistance_centiOhm*resistance_centiOhm) * 46 - (resistance_centiOhm) * 11303 + 905666;
     return (voltage_mv);
 }
 
@@ -541,8 +523,6 @@ void pollAllTemperatureData(int channel) {
 
 	uart_response_t response[BOARD_NUM-1];
 
-
-
 	for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
 		if(uart_receiveResponse(&response[i-1], 7) != UART_FAILURE) {
 				//loop through each GPIO channel
@@ -553,21 +533,23 @@ void pollAllTemperatureData(int channel) {
 	}
 	taskEXIT_CRITICAL();
 
-
 	for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
 		for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; k++) {
+            uint8_t cellNum = CHANNEL_GPIO_TO_CELL_MAP[channel][k];
+            if (cellNum == 255)
+                continue;
+
 			uint8_t high_byte_data = response[i].data[2*k];
 			uint8_t low_byte_data = response[i].data[2*k+1];
-			size_t index = (4*channel) + k;
-			//TODO: make sure this is matching the thermistor indices properly 
+            int16_t cellTempVoltageReading = calculateTempVoltageReading(high_byte_data, low_byte_data);
 
-			BMBData[i].cellTemperatures[index] = calculateTemp(high_byte_data, low_byte_data);
+			BMBData[i].cellTemperaturesVoltageReading[cellNum] = cellTempVoltageReading;
 		}
 	}
 	return;
 }
 
-void cellBalancingSetup() {
+bool cellBalancingSetup() {
 	//set up cell balancing timers
 	//done in two sets because max register write is 8 :(
 
@@ -818,4 +800,37 @@ void twoStop() {
 }
 
 
+/**
+ * @brief Send a UART "stack write" command to the device.
+ *
+ * Constructs a STACK_WRITE uart_command_t with the provided register
+ * address and data payload, then transmits it over UART.
+ *
+ * @note I (Ayush Garg) added this function during 2025 to clean up code
+ * that I write although there is much legacy code that does not utilize
+ * this helper function
+ *
+ * @param registerAddress 16-bit register address to write to.
+ * @param data            Pointer to the data buffer to be written.
+ * @param dataLen         Number of bytes in the data buffer.
+ *
+ * @return true if the UART command was sent successfully (UART_SUCCESS),
+ *         false otherwise.
+ */
+static inline bool sendUartStackWrite(  uint16_t registerAddress, 
+										uint8_t* data, 
+										uint8_t dataLen) {
+	uart_command_t stackWriteCmd = {
+        .readWrite = STACK_WRITE,
+        .dataLen = dataLen,
+        .deviceAddress = 0xFF, //not used!
+        .registerAddress = registerAddress,
+        .crc = {0x00, 0x00}
+	};
+
+  memcpy(stackWriteCmd.data, data, dataLen);
+
+	cmr_uart_result_t res = uart_sendCommand(&stackWriteCmd);
+    return (res == UART_SUCCESS);
+}
 

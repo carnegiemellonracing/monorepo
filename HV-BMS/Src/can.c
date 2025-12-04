@@ -497,27 +497,27 @@ static void sendAllBMBVoltages(void) {
        }; 
 
        cmr_can_HVBMS_BMB_CellTemps_t temp0 = {
-           .cellTemp0_dC = data->cellTemperatures[0],
-           .cellTemp1_dC = data->cellTemperatures[1],
-           .cellTemp2_dC = data->cellTemperatures[2],
-           .cellTemp3_dC = data->cellTemperatures[3]
+           .cellTemp0_dC = data->cellTemperaturesVoltageReading[0],
+           .cellTemp1_dC = data->cellTemperaturesVoltageReading[1],
+           .cellTemp2_dC = data->cellTemperaturesVoltageReading[2],
+           .cellTemp3_dC = data->cellTemperaturesVoltageReading[3]
        };
        cmr_can_HVBMS_BMB_CellTemps_t temp1 = {
-           .cellTemp0_dC = data->cellTemperatures[4],
-           .cellTemp1_dC = data->cellTemperatures[5],
-           .cellTemp2_dC = data->cellTemperatures[6],
-           .cellTemp3_dC = data->cellTemperatures[7] 
+           .cellTemp0_dC = data->cellTemperaturesVoltageReading[4],
+           .cellTemp1_dC = data->cellTemperaturesVoltageReading[5],
+           .cellTemp2_dC = data->cellTemperaturesVoltageReading[6],
+           .cellTemp3_dC = data->cellTemperaturesVoltageReading[7] 
        };
        cmr_can_HVBMS_BMB_CellTemps_t temp2 = { 
-           .cellTemp0_dC = data->cellTemperatures[8], 
-           .cellTemp1_dC = data->cellTemperatures[9],
-           .cellTemp2_dC = data->cellTemperatures[10],
-           .cellTemp3_dC = data->cellTemperatures[11] 
+           .cellTemp0_dC = data->cellTemperaturesVoltageReading[8], 
+           .cellTemp1_dC = data->cellTemperaturesVoltageReading[9],
+           .cellTemp2_dC = data->cellTemperaturesVoltageReading[10],
+           .cellTemp3_dC = data->cellTemperaturesVoltageReading[11] 
        };
        cmr_can_HVBMS_BMB_CellTemps_t temp3 = {
-            .cellTemp0_dC = data->cellTemperatures[12],
-            .cellTemp1_dC = data->cellTemperatures[13],
-            .cellTemp2_dC = data->cellTemperatures[14] 
+            .cellTemp0_dC = data->cellTemperaturesVoltageReading[12],
+            .cellTemp1_dC = data->cellTemperaturesVoltageReading[13],
+            .cellTemp2_dC = data->cellTemperaturesVoltageReading[14] 
        }; 
 
        canTX(CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_0_3 + bmbIndex, &volt0, sizeof(volt0), canTX1Hz_period_ms);
