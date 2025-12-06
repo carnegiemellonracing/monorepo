@@ -31,27 +31,42 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-
-    // [GPIO_OUT_LED_GREEN] = {
-    //     .port = GPIOA,
-    //     .init = {
-    //         .Pin = GPIO_PIN_10,
-    //         .Mode = GPIO_MODE_OUTPUT_PP,
-    //         .Pull = GPIO_NOPULL,
-    //         .Speed = GPIO_SPEED_FREQ_LOW
-    //     }
-    // },
-
-    // [GPIO_OUT_LED_FLASH_RED] = {
-    //     .port = GPIOA,
-    //     .init = {
-    //         .Pin = GPIO_PIN_9,
-    //         .Mode = GPIO_MODE_OUTPUT_PP,
-    //         .Pull = GPIO_NOPULL,
-    //         .Speed = GPIO_SPEED_FREQ_LOW
-    //     }
-    // },
-
+    [GPIO_OUT_LED_GREEN] = {
+        .port = GPIOA,
+        .init = {
+            .Pin = GPIO_PIN_10,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_OUT_LED_RED] = {
+        .port = GPIOA,
+        .init = {
+            .Pin = GPIO_PIN_9,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_OUT_LED_YELLOW] = {
+        .port = GPIOA,
+        .init = {
+            .Pin = GPIO_PIN_12,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_OUT_LED_BLUE] = {
+        .port = GPIOB,
+        .init = {
+            .Pin = GPIO_PIN_10,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
     [GPIO_OUT_SOFTWARE_ERR] = {
         .port = GPIOA,
         .init = {
@@ -61,7 +76,6 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-
     [GPIO_OUT_RTD_SIGNAL] = {
         .port = GPIOC,
         .init = {
@@ -71,7 +85,6 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-
     [GPIO_IN_SOFTWARE_ERR] = {
         .port = GPIOB,
         .init = {
@@ -81,8 +94,16 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-
     [GPIO_IN_BSPD_ERR] = {
+        .port = GPIOB,
+        .init = {
+            .Pin = GPIO_PIN_6,
+            .Mode = GPIO_MODE_INPUT,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_IN_IMD_ERR] = {
         .port = GPIOB,
         .init = {
             .Pin = GPIO_PIN_7,
@@ -91,17 +112,15 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-
-    [GPIO_IN_IMD_ERR] = {
-        .port = GPIOB,
+    [GPIO_IN_EAB] = {
+        .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_8,
+            .Pin = GPIO_PIN_7,
             .Mode = GPIO_MODE_INPUT,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-
     [GPIO_IN_EBS_ACTIVATED] = {
         .port = GPIOB,
         .init = {

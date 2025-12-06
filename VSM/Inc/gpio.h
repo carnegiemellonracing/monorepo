@@ -18,8 +18,10 @@
  */
 typedef enum {
     GPIO_OUT_LED_STATUS = 0,    /**< @brief Status LED. */
-    // GPIO_OUT_LED_GREEN,
-    // GPIO_OUT_LED_FLASH_RED,
+    GPIO_OUT_LED_GREEN,
+    GPIO_OUT_LED_RED,
+    GPIO_OUT_LED_BLUE,
+    GPIO_OUT_LED_YELLOW,
     GPIO_OUT_DCDC_EN,           /**< @brief DCDC converter enable signal. */
     GPIO_OUT_SOFTWARE_ERR,      /**< @brief Software error indicator. */
     GPIO_OUT_RTD_SIGNAL,        /**< @brief Ready-to-drive signal. */
