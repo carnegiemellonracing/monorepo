@@ -323,7 +323,7 @@
 #define DEBUG_OTP_SEC_BLK		0x7A0
 #define DEBUG_OTP_DED_BLK		0x7A1
 
-#define BOARD_NUM 11
+#define BOARD_NUM 3
 
 //TODO change this
 #define CELL_BALANCING_LOW_VOLTAGE 3.9
@@ -331,14 +331,6 @@
 
 #define TOP_CELL VCELL9_HI
 #define NUM_GPIO_CHANNELS 4
-
-
-// CHANNEL_GPIO_TO_CELL_MAP[i][j] yields the corresponding cell number for 
-// ith mux setting and the jth GPIO channel. We choose to zero index the cell nums
-uint8_t CHANNEL_GPIO_TO_CELL_MAP [4][NUM_GPIO_CHANNELS]  = {{6, 3, 1, 255},
-                                                            {255, 255, 0, 5},
-                                                            {255, 255, 4, 255},
-                                                            {7, 8, 255, 2}};
 
 bool autoAddr();
 bool enableMainADC();
