@@ -20,23 +20,24 @@
 #include "i2c.h"
 #include "uart.h"
 
-#define CELL_NUM 7
-#define VSENSE_CHANNELS 14
-#define TEMP_CHANNELS 14
-#define TOP_CELL VCELL14_HI
-#define NUM_GPIO_CHANNELS 2
-
-uint16_t sendVolt[CELL_NUM];
-float rawCellVolts[CELL_NUM];
-float cellVoltages[CELL_NUM];
-uint8_t cellNum[CELL_NUM];
+// uint16_t sendVolt[CELL_NUM];
+uint16_t cellVoltages[CELL_NUM];
+uint16_t cellTemps[CELL_NUM];
+// uint8_t cellNum[CELL_NUM];
 signed char offset_corr[CELL_NUM];
 signed char gain_corr[CELL_NUM];
 unsigned int vref_corr;
 uint16_t adc_sensen;
-uint16_t cellTemps[CELL_NUM];
 
 bool setup = false;
+
+uint16_t getTempData(uint8_t index) {
+	return cellTemps[index];
+}
+
+uint16_t getVoltageData(uint8_t index) {
+	return cellVoltages[index];
+}
 
 
 static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
@@ -54,7 +55,7 @@ uint8_t getVoltages(void) {
 			.dataLen = 1,
 			.deviceAddress = 0xFF, //not used!
 			.registerAddress = TOP_CELL,
-			.data = {VSENSE_CHANNELS*2-1}, //reading high and low for cell 0-VSENSE_CHANNELS
+			.data = {CELL_NUM*2-1}, //reading high and low for cell 0-CELL_NUM
 			.crc = {0xFF, 0xFF}
 		};
     
@@ -72,26 +73,14 @@ uint8_t getVoltages(void) {
     taskEXIT_CRITICAL();
 
 
-    for(uint8_t j = 0; j < VSENSE_CHANNELS; j++) {
+    for(uint8_t j = 0; j < CELL_NUM; j++) {
         uint8_t high_byte_data = response.data[2*j];
         uint8_t low_byte_data = response.data[2*j+1];
-        cellVoltages[VSENSE_CHANNELS-j-1] = calculateVoltage(high_byte_data, low_byte_data);
+        cellVoltages[CELL_NUM-j-1] = calculateVoltage(high_byte_data, low_byte_data);
     }
 
-    sendOvervoltageFlags(cellVoltages);
-    
-    cmr_canLVBMS_Voltage cell1_4;
-    cmr_canLVBMS_Voltage cell5_7;
-    cell1_4.cell1 = sendVolt[0];
-    cell1_4.cell2 = sendVolt[1];
-    cell1_4.cell3 = sendVolt[2];
-    cell1_4.cell4 = sendVolt[3];
-    cell5_7.cell1 = sendVolt[4];
-    cell5_7.cell2 = sendVolt[5];
-    cell5_7.cell3 = sendVolt[6];
+    sendOvervoltageFlags(getVoltageData);
 
-    canTX(CMR_CANID_LVBMS_CELL_VOLTAGE_1_4, &cell1_4, sizeof(cell1_4), canTX10Hz_period_ms);
-    canTX(CMR_CANID_LVBMS_CELL_VOLTAGE_5_7, &cell5_7, sizeof(cell5_7), canTX10Hz_period_ms);
     return 0;
 }
 
@@ -102,7 +91,7 @@ void sendOvervoltageFlags(uint16_t voltages[CELL_NUM]) {
     uint8_t overVolt = 0; // TBD
 
     for (int i = 0; i < CELL_NUM; i++) {
-        if (voltages[i] > overVolt) flag |= (1 << i);
+        if (cellVoltages[i] > overVolt) flag |= (1 << i);
     }
 
     canTX(CMR_CANID_LVBMS_CELL_OVERVOLTAGE, &flag, sizeof(flag), canTX10Hz_period_ms);
@@ -138,7 +127,7 @@ uint8_t getTemps(int channel) {
 		.readWrite = BROADCAST_READ,
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
-		.registerAddress = GPIO5_HI,
+		.registerAddress = GPIO1_HI,
 		.data = {0x07},
 		.crc = {0xFF, 0xFF}
 	};
@@ -165,15 +154,6 @@ uint8_t getTemps(int channel) {
         }
         
     }
-
-    uint16_t data1[4], data2[3];
-
-    // Split temperatures into two groups
-    memcpy(data1, cellTemps, 4 * sizeof(uint16_t));     // Temps 1-4
-    memcpy(data2, &cellTemps[4], 3 * sizeof(uint16_t)); // Temps 5-7
-
-    canTX(CMR_CANID_LVBMS_CELL_TEMP_1_4, data1, sizeof(data1), canTX10Hz_period_ms);
-    canTX(CMR_CANID_LVBMS_CELL_TEMP_5_7, data2, sizeof(data2), canTX10Hz_period_ms);
  
     return 0;
 }

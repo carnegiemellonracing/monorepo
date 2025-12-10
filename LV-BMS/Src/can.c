@@ -47,17 +47,10 @@ const uint32_t canTX100Hz_priority = 5;
 /** @brief CAN 100 Hz TX period (milliseconds). */
 const TickType_t canTX100Hz_period_ms = 10;
 
-/** @brief CAN 1 Hz TX priority. */
-const uint32_t canTX1Hz_priority = 6;
-/** @brief CAN 1 Hz TX period (milliseconds). */
-const TickType_t canTX1Hz_period_ms = 1000;
-
 /** @brief CAN 10 Hz TX task. */
 static cmr_task_t canTX10Hz_task;
 /** @brief CAN 100 Hz TX task. */
 static cmr_task_t canTX100Hz_task;
-/** @brief CAN 1 Hz TX task. */
-static cmr_task_t canTX1Hz_task;
 
 /** @brief Primary CAN interface. */
 static cmr_can_t can;
@@ -98,6 +91,34 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     canTX(CMR_CANID_HEARTBEAT_LV_BMS, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
 }
 
+void sendVoltages() {
+    cmr_canLVBMS_Voltage cell1_4;
+    cmr_canLVBMS_Voltage cell5_7;
+    cell1_4.cell1 = getVoltageData(0);
+    cell1_4.cell2 = getVoltageData(1);
+    cell1_4.cell3 = getVoltageData(2);
+    cell1_4.cell4 = getVoltageData(3);
+    cell5_7.cell1 = getVoltageData(4);
+    cell5_7.cell2 = getVoltageData(5);
+    cell5_7.cell3 = getVoltageData(6);
+    canTX(CMR_CANID_LVBMS_CELL_VOLTAGE_1_4, &cell1_4, sizeof(cell1_4), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_CELL_VOLTAGE_5_7, &cell5_7, sizeof(cell5_7), canTX10Hz_period_ms);
+}
+
+void sendTemps() {
+    cmr_canLVBMS_Temperature cell1_4;
+    cmr_canLVBMS_Temperature cell5_7;
+    cell1_4.cell1 = getTempData(0);
+    cell1_4.cell2 = getTempData(1);
+    cell1_4.cell3 = getTempData(2);
+    cell1_4.cell4 = getTempData(3);
+    cell5_7.cell1 = getTempData(4);
+    cell5_7.cell2 = getTempData(5);
+    cell5_7.cell3 = getTempData(6);
+    canTX(CMR_CANID_LVBMS_CELL_TEMP_1_4, &cell1_4, sizeof(cell1_4), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_CELL_TEMP_5_7, &cell5_7, sizeof(cell5_7), canTX10Hz_period_ms);
+}
+
 
 /**
  * @brief Task for sending CAN messages at 10 Hz.
@@ -110,6 +131,7 @@ static void canTX10Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     TickType_t lastWakeTime = xTaskGetTickCount();
+    TickType_t taskStartTime = xTaskGetTickCount();
     while (1) {
         // Loop through the 4 different MUX channels and select a different one
 		// We still monitor all voltages each channel switch
@@ -131,8 +153,10 @@ static void canTX10Hz(void *pvParameters) {
 			vTaskDelayUntil(&lastWakeTime, 10);
 
 			lastWakeTime = xTaskGetTickCount();
-			vTaskDelayUntil(&lastWakeTime, 100);
 		}
+        sendVoltages();
+        sendTemps();
+        vTaskDelayUntil(&taskStartTime, 100);
     }
 }
 
@@ -166,8 +190,8 @@ void canInit(void) {
 		CMR_CAN_BITRATE_500K,
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
         NULL,
-        GPIOA, GPIO_PIN_11,     // CAN1 RX port/pin.
-        GPIOA, GPIO_PIN_12      // CAN1 TX port/pin.
+        GPIOB, GPIO_PIN_12,     // CAN1 RX port/pin.
+        GPIOB, GPIO_PIN_13      // CAN1 TX port/pin.
     );
 
     // CAN2 filters.
@@ -185,13 +209,6 @@ const cmr_canFilter_t canFilters[] = {
     );
 
     // Task initialization.
-    cmr_taskInit(
-        &canTX1Hz_task,
-        "CAN TX 1Hz",
-        canTX1Hz_priority,
-        canTX1Hz,
-        NULL
-    );
     cmr_taskInit(
         &canTX10Hz_task,
         "CAN TX 10Hz",

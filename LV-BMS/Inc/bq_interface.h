@@ -321,20 +321,19 @@
 #define DEBUG_OTP_SEC_BLK		0x7A0
 #define DEBUG_OTP_DED_BLK		0x7A1
 
-#define BOARD_NUM 10
-#define VSENSE_CHANNELS 14
-#define TEMP_CHANNELS 14
+#define BOARD_NUM 1
+#define CELL_NUM 7
 
 //TODO change this
 #define CELL_BALANCING_LOW_VOLTAGE 3.9
 
 typedef struct BMB_Data_t{
-    uint16_t cellVoltages[VSENSE_CHANNELS];
-    int16_t cellTemperatures[TEMP_CHANNELS];
+    uint16_t cellVoltages[CELL_NUM];
+    int16_t cellTemperatures[CELL_NUM];
 } BMB_Data_t;
 
-#define TOP_CELL VCELL14_HI
-#define NUM_GPIO_CHANNELS 4
+#define TOP_CELL VCELL7_HI
+#define NUM_GPIO_CHANNELS 2
 
 
 

@@ -153,7 +153,7 @@ bool autoAddr() {
 
 	// Dummy write to sync OTP addresses
 	uart_command_t otpSync = {
-		.readWrite = STACK_WRITE,
+		.readWrite = BROADCAST_WRITE,
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!!!
 		.registerAddress = OTP_ECC_DATAIN1,
@@ -248,7 +248,7 @@ bool autoAddr() {
 	DWT_Delay_ms(10);
 
 	// Resync OTP registers with dummy reads
-	otpSync.readWrite = STACK_READ;
+	otpSync.readWrite = BROADCAST_READ;
 	otpSync.data[0] = 0;
 
 	for(int i = 0; i < 8; i++) {
@@ -304,7 +304,7 @@ bool autoAddr() {
  */
 bool enableMainADC() {
 	uart_command_t adcMsg = {
-		.readWrite = STACK_WRITE,
+		.readWrite = BROADCAST_WRITE,
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = ADC_CTRL1,
@@ -322,11 +322,11 @@ bool enableMainADC() {
 // Enable however many cells are in series in one segment
 bool enableNumCells() {
 	uart_command_t active_cell = {
-		.readWrite = STACK_WRITE,
+		.readWrite = BROADCAST_WRITE,
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = ACTIVE_CELL,
-		.data = {VSENSE_CHANNELS-0x06},
+		.data = {CELL_NUM-0x06},
 		.crc = {0x00, 0x00}
 	};
 	cmr_uart_result_t res;
@@ -340,7 +340,7 @@ bool enableNumCells() {
 // Enable all GPIO registers and TSREF for thermistor biasing
 bool enableGPIOPins() {
 	uart_command_t enable_tsref = {
-			.readWrite = STACK_WRITE,
+			.readWrite = BROADCAST_WRITE,
 			.dataLen = 1,
 			.deviceAddress = 0xFF, //not used!
 			.registerAddress = CONTROL2,
@@ -354,18 +354,13 @@ bool enableGPIOPins() {
 
 	//enable GPIO inputs
 	uart_command_t enable_gpio = {
-			.readWrite = STACK_WRITE,
+			.readWrite = BROADCAST_WRITE,
 			.dataLen = 1,
 			.deviceAddress = 0xFF, //not used!
-			.registerAddress = GPIO_CONF3,
+			.registerAddress = GPIO_CONF1,
 			.data = {0x12},
 			.crc = {0x00, 0x00}
 	};
-	res = uart_sendCommand(&enable_gpio);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
-	enable_gpio.registerAddress = GPIO_CONF4;
 	res = uart_sendCommand(&enable_gpio);
 	if(res != UART_SUCCESS) {
 		return false;
@@ -387,7 +382,7 @@ bool enableGPIOPins() {
 // Enable command timeout so BQ sleeps turns off when car is off
 void enableTimeout() {
 	uart_command_t enable_timeout = {
-			.readWrite = STACK_WRITE,
+			.readWrite = BROADCAST_WRITE,
 			.dataLen = 1,
 			.deviceAddress = 0xFF, //not used!
 			.registerAddress = COMM_TIMEOUT_CONF,
@@ -459,7 +454,7 @@ bool setMuxOutput(uint8_t channel) {
 		return false;
 	}
 	uart_command_t enable_gpio = {
-			.readWrite = STACK_WRITE,
+			.readWrite = BROADCAST_WRITE,
 			.dataLen = 1,
 			.deviceAddress = 0xFF, //not used!
 			.registerAddress = GPIO_CONF2,
@@ -488,8 +483,8 @@ void cellBalancingSetup() {
 	//done in two sets because max register write is 8 :(
 
 	uart_command_t balance_register = {
-		.readWrite = STACK_WRITE,
-		.dataLen = VSENSE_CHANNELS/2,
+		.readWrite = BROADCAST_WRITE,
+		.dataLen = CELL_NUM/2,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = CB_CELL14_CTRL,
 		.data = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
@@ -503,7 +498,7 @@ void cellBalancingSetup() {
 
 	//set duty cycle to switch between even and odd cells
 	uart_command_t duty_cycle = {
-		.readWrite = STACK_WRITE,
+		.readWrite = BROADCAST_WRITE,
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = BAL_CTRL1,
@@ -514,7 +509,7 @@ void cellBalancingSetup() {
 
 	//set UV stuff for stopping balancing to default at 4.2 volts
 	uart_command_t UV = {
-		.readWrite = STACK_WRITE,
+		.readWrite = BROADCAST_WRITE,
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = VCB_DONE_THRESH,
@@ -532,7 +527,7 @@ void cellBalancingSetup() {
 
 bool getBalDone() {
 	uart_command_t getBalDone = {
-		.readWrite = STACK_READ,
+		.readWrite = BROADCAST_READ,
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = CB_COMPLETE1,
@@ -559,7 +554,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 	cmr_uart_result_t res;
 
 	uart_command_t enable = {
-		.readWrite = STACK_WRITE,
+		.readWrite = BROADCAST_WRITE,
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = BAL_CTRL2,
@@ -575,7 +570,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 		//board index by 0 but don't send to interface chip
 		for(int i = 0; i < BOARD_NUM-1; i++) {
 			thresh = 0;
-			for(int j = 0; j < VSENSE_CHANNELS; j++) {
+			for(int j = 0; j < CELL_NUM; j++) {
 				if(BMBData[i].cellVoltages[j] > thresh) {
 					thresh = BMBData[i].cellVoltages[j];
 				}
@@ -583,7 +578,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 			thresh = thresh - 10;
 			uart_command_t balance_register = {
 				.readWrite = SINGLE_WRITE,
-				.dataLen = VSENSE_CHANNELS/2,
+				.dataLen = CELL_NUM/2,
 				.deviceAddress = i+1,
 				.registerAddress = CB_CELL14_CTRL,
 				.data = {0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04},
@@ -613,7 +608,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 
 		//set UV stuff for stopping balancing based on parameter
 		uart_command_t UV = {
-			.readWrite = STACK_WRITE,
+			.readWrite = BROADCAST_WRITE,
 			.dataLen = 1,
 			.deviceAddress = 0xFF, //not used!
 			.registerAddress = VCB_DONE_THRESH,
@@ -634,8 +629,8 @@ void cellBalancing(bool set, uint16_t thresh) {
 	}
 	else {
 		uart_command_t balance_register = {
-			.readWrite = STACK_WRITE,
-			.dataLen = VSENSE_CHANNELS/2,
+			.readWrite = BROADCAST_WRITE,
+			.dataLen = CELL_NUM/2,
 			.deviceAddress = 0xFF, //not used!
 			.registerAddress = CB_CELL14_CTRL,
 			.data = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
@@ -653,7 +648,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 void writeLED(bool set) {
 	uint8_t enableLed = set ? 0 : 1;
 	uart_command_t write_led = {
-			.readWrite = STACK_WRITE,
+			.readWrite = BROADCAST_WRITE,
 			.dataLen = 1,
 			.deviceAddress = 0xFF, //not used!
 			.registerAddress = GPIO_CONF1,
@@ -679,7 +674,7 @@ void byteDelay(uint8_t delay) {
 	if (delay > 0x3F) return;
 
 	uart_command_t byte_delay = {
-			.readWrite = STACK_WRITE,
+			.readWrite = BROADCAST_WRITE,
 			.dataLen = 1,
 			.deviceAddress = 0xFF,
 			.registerAddress = 0x29,
@@ -713,7 +708,7 @@ void twoStop() {
 	uart_sendCommand(&two_stop_single);
 
 	uart_command_t two_stop_stack = {
-			.readWrite = STACK_WRITE,
+			.readWrite = BROADCAST_WRITE,
 			.dataLen = 1,
 			.deviceAddress = 0xFF,
 			.registerAddress = 0x02,
