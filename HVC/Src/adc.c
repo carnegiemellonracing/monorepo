@@ -45,16 +45,16 @@ cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .value = 0
     },
     [ADC_VSENSE] = {
-        .channel = ADC_CHANNEL_1,
-        .port = GPIOA,
+        .channel = ADC_CHANNEL_9,
+        .port = GPIOB,
         .pin = GPIO_PIN_1, //repeat GPIO? (alr happens in HVC) 
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_ISENSE] = {
-        .channel = ADC_CHANNEL_2,
-        .port = GPIOA,
-        .pin = GPIO_PIN_2,
+        .channel = ADC_CHANNEL_8,
+        .port = GPIOB,
+        .pin = GPIO_PIN_0,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     }
