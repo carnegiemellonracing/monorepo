@@ -64,6 +64,7 @@ target_include_directories(HAL PUBLIC
 target_link_libraries(stm-drivers PUBLIC HAL)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/DIM-ESE)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/FATFS)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/CMR)
 target_link_libraries(CMR PUBLIC DIM-ESE freertos_kernel HAL)
 target_link_libraries(stm-drivers
