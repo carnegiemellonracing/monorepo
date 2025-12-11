@@ -7,6 +7,8 @@
 #pragma once
 
 #include <stdint.h>     /* integer types */
+#include <stm32f4xx_hal.h>  // HAL interface
+
 
 void memoratorWrite(    uint16_t ID, 
                         uint32_t timeStamp,
@@ -14,3 +16,5 @@ void memoratorWrite(    uint16_t ID,
                         uint8_t* data);
 
 void memoratorInit(void);
+void HAL_SD_MspInit(SD_HandleTypeDef* hsd);
+

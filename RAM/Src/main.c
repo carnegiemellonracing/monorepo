@@ -13,15 +13,16 @@
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
 
+
 #include "can.h"    // Board-specific CAN interface
 #include "config.h" // Previous flash configuration
+#include "fatfs.h"   // middleware for file system provided by ST
 #include "gpio.h"   // Board-specific GPIO interface
 #include "memorator.h"   // Board-specific GPIO interface
 #include "parser.h" // JSON configuration
 #include "sample.h" // CBOR encoding
 #include "statusLED.h"   // Board-specific statusLED interface
 #include "uart.h"   // Board-specific UART interface
-
 
 
 /**
@@ -40,7 +41,7 @@ int main(void) {
     // Peripheral configuration.
     // uartInit();
     gpioInit();
-    canInit();
+    // canInit();
     statusLEDInit();
     memoratorInit();
 
