@@ -13,42 +13,15 @@
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
 
-#include "parser.h" // JSON configuration
-#include "sample.h" // CBOR encoding
+#include "can.h"    // Board-specific CAN interface
 #include "config.h" // Previous flash configuration
 #include "gpio.h"   // Board-specific GPIO interface
-#include "can.h"    // Board-specific CAN interface
+#include "parser.h" // JSON configuration
+#include "sample.h" // CBOR encoding
+#include "statusLED.h"   // Board-specific statusLED interface
 #include "uart.h"   // Board-specific UART interface
 
-/** @brief Status LED priority. */
-static const uint32_t statusLED_priority = 2;
 
-/** @brief Status LED period (milliseconds). */
-static const TickType_t statusLED_period_ms = 250;
-
-/** @brief Status LED task. */
-static cmr_task_t statusLED_task;
-
-/**
- * @brief Task for toggling the status LED.
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void statusLED(void *pvParameters) {
-    (void) pvParameters;
-
-    cmr_gpioWrite(GPIO_LED_STATUS, 0);
-    char c = 'x';
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-           cmr_gpioToggle(GPIO_LED_STATUS);
-           canTX(2, 0x100, &c, 1, 100);
-
-        vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
-    }
-}
 
 /**
  * @brief Firmware entry point.
@@ -63,24 +36,17 @@ int main(void) {
     cmr_rccSystemClockEnable();
 
     // Peripheral configuration.
-    uartInit();
+    // uartInit();
     gpioInit();
     canInit();
+    statusLEDInit();
 
-    // Load in JSON configuration
-    parserInit();
-    // Set up CBOR encoder
-    sampleInit();
-    // Pull in previous configuration
-    configInit();
-
-    cmr_taskInit(
-        &statusLED_task,
-        "statusLED",
-        statusLED_priority,
-        statusLED,
-        NULL
-    );
+    // // Load in JSON configuration
+    // parserInit();
+    // // Set up CBOR encoder
+    // sampleInit();
+    // // Pull in previous configuration
+    // configInit();
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

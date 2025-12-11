@@ -126,6 +126,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/parser.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/sample.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/statusLED.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/syscall.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/sysmem.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/uart.c
