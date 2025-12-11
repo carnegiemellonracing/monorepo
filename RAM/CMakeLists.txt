@@ -124,6 +124,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/config.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/memorator.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/parser.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/sample.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/statusLED.c

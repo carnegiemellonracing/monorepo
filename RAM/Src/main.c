@@ -16,6 +16,7 @@
 #include "can.h"    // Board-specific CAN interface
 #include "config.h" // Previous flash configuration
 #include "gpio.h"   // Board-specific GPIO interface
+#include "memorator.h"   // Board-specific GPIO interface
 #include "parser.h" // JSON configuration
 #include "sample.h" // CBOR encoding
 #include "statusLED.h"   // Board-specific statusLED interface
@@ -35,11 +36,13 @@ int main(void) {
     HAL_Init();
     cmr_rccSystemClockEnable();
 
+
     // Peripheral configuration.
     // uartInit();
     gpioInit();
     canInit();
     statusLEDInit();
+    memoratorInit();
 
     // // Load in JSON configuration
     // parserInit();

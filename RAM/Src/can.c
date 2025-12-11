@@ -15,6 +15,8 @@
 
 #include "can.h"        // Interface to implement
 #include "parser.h"     // parser ingestation
+#include "memorator.h"     // parser ingestation
+
 
 /** @brief CAN interfaces */
 static cmr_can_t can[CMR_CAN_BUS_NUM];
@@ -294,6 +296,10 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
     }
 };
 
+void canRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen) {
+    memoratorWrite(canID, xTaskGetTickCount(), dataLen,  data);
+}
+
 /**
  * @brief Initializes the CAN interface.
  */
@@ -303,7 +309,7 @@ void canInit(void) {
         &can[CMR_CAN_BUS_VEH], CAN3,
         CMR_CAN_BITRATE_500K,
         canVehicleRXMeta, CANRX_VEH_LEN,
-        NULL,
+        canRXCallback,
         GPIOA, GPIO_PIN_8,     // CAN3 RX port/pin.
         GPIOB, GPIO_PIN_4      // CAN3 TX port/pin.
     );
@@ -313,7 +319,7 @@ void canInit(void) {
         &can[CMR_CAN_BUS_DAQ], CAN2,
         CMR_CAN_BITRATE_500K,
         canDaqRXMeta, CANRX_DAQ_LEN,
-        NULL,
+        canRXCallback,
         GPIOB, GPIO_PIN_12,    // CAN2 RX port/pin.
         GPIOB, GPIO_PIN_13     // CAN2 TX port/pin.
     );
@@ -322,7 +328,7 @@ void canInit(void) {
 		&can[CMR_CAN_BUS_TRAC], CAN1,
 		CMR_CAN_BITRATE_500K,
 		canTractiveRXMeta, CANRX_TRAC_LEN,
-		NULL,
+		canRXCallback,
 		GPIOB, GPIO_PIN_8,    // CAN1 RX port/pin.
 		GPIOB, GPIO_PIN_9     // CAN1 TX port/pin.
 	);
