@@ -21,13 +21,14 @@ extern volatile int BMBErrs[BOARD_NUM-1];
 #define BALANCE_DIS false
 #define TO_IGNORE 6
 
-static const int temp_to_ignore[TO_IGNORE] = {2, 41, 98, 121, 123, 132};
-
+static const uint8_t temp_to_ignore[] = { 2, 3, 4, 7, 11, 16, 17, 21, 22, 23, 26, 29, 30, 31, 32,
+		33, 35, 36, 39, 45, 46, 49, 56, 58, 59, 60, 63, 65, 70, 71, 73, 74, 75, 77, 80, 81, 82, 83,
+		84, 87, 88, 90, 91, 95, 96, 101, 102, 105, 107, 111, 112, 115, 116, 119, 120, 124};
 
 // Use array to ignore some broken thermistor channels
 
 bool check_to_ignore(uint8_t bmb_index, uint8_t channel) {
-	for(int i = 0; i < TO_IGNORE; i++) {
+	for(int i = 0; i < sizeof(temp_to_ignore); i++) {
 		if(bmb_index*14 + channel == temp_to_ignore[i]) {
 			return true;
 		}
@@ -129,7 +130,7 @@ void vBMBSampleTask(void *pvParameters) {
 
 // Lookup functions
 uint8_t getBMBMaxTempIndex(uint8_t bmb_index) {
-	uint16_t maxTemp = 0xFFFF;
+	int16_t maxTemp = 0xFFFF;
 	uint8_t cell_index = 0;
 	for (uint8_t i = 0; i < TEMP_CHANNELS; i++) {
 		int16_t temp = BMBData[bmb_index].cellTemperatures[i];
@@ -159,7 +160,7 @@ uint8_t getBMBMaxVoltIndex(uint8_t bmb_index) {
 	uint8_t cell_index = 0;
 	for (uint8_t i = 0; i < VSENSE_CHANNELS; i++) {
 		uint16_t voltage = BMBData[bmb_index].cellVoltages[i];
-		if (voltage > maxVoltage) {
+		if ((voltage > maxVoltage) && (voltage != 3456)) {
 			maxVoltage = voltage;
 			cell_index = i;
 		}
@@ -172,7 +173,7 @@ uint8_t getBMBMinVoltIndex(uint8_t bmb_index) {
 	uint8_t cell_index = 0;
 	for (uint8_t i = 0; i < VSENSE_CHANNELS; i++) {
 		uint16_t voltage = BMBData[bmb_index].cellVoltages[i];
-		if (voltage < minVoltage) {
+		if ((voltage < minVoltage) && (voltage != 3456)) {
 			minVoltage = voltage;
 			cell_index = i;
 		}

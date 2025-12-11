@@ -2,8 +2,7 @@ name: Find Unused Types
 run-name: ${{ github.actor }}-${{github.repository}} CAN Analysis
 on:
   push:
-    branches: [ main ]
-
+  
 jobs:
   find-unused-types:
     runs-on: self-hosted

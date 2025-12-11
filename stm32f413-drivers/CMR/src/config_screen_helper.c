@@ -71,15 +71,15 @@ volatile config_menu_item_t config_menu_main_array[MAX_MENU_ITEMS] = {
         .min = 0,
         .max = 255,
     },
-    [TC_LUT_Y_SCALE_INDEX] = {
-        .name = "TC LUT Horiz Scl",
-        .ESE_background_color_variable = ESE_TC_LUT_Y_SCALE_BOX,
-        .ESE_value_color_variable = ESE_TC_LUT_Y_SCALE_COLOR,
-        .ESE_value_variable = ESE_TC_LUT_Y_SCALE_VAL,
-        .ESE_context_text_variable = "Traction Control LUT Horiz Scale",
+    [YRC_PERS_INDEX] = {
+        .name = "YRC Persist Bias",
+        .ESE_background_color_variable = ESE_YRC_PERS_BOX,
+        .ESE_value_color_variable = ESE_YRC_PERS_COLOR,
+        .ESE_value_variable = ESE_YRC_PERS_VAL,
+        .ESE_context_text_variable = "YRC persistent bias constant",
         .value = {
             .type = float_2_decimal,
-            .value = 100
+            .value = 0.5
         },
         .min = 0,
         .max = 255,

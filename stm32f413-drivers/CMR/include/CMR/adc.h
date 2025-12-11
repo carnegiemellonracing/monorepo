@@ -15,6 +15,7 @@
 
 #include <stddef.h>     // size_t
 #include <stdint.h>     // uint32_t
+#include <stdbool.h>    // bool
 
 #ifdef HAL_ADC_MODULE_ENABLED
 /** @brief Number of channels per ADC. */
@@ -48,6 +49,9 @@ typedef struct {
 
     /** @brief The most recently-sampled value. */
     volatile uint32_t value;
+
+    /** @brief Is this ADC differential */
+    const bool differential;
 } cmr_adcChannel_t;
 
 /**

@@ -53,7 +53,7 @@ static const int32_t gear_ratio_top = 8784;
 static const int32_t gear_ratio_bot = 621;
 
 static const float gear_ratio = 13.93; //updated for 24e
-static const float effective_wheel_dia_m = 0.43; /** @brief effective wheel diameter */
+static const float effective_wheel_dia_m = 0.41; /** @brief effective wheel diameter */
 static const float effective_wheel_rad_m = effective_wheel_dia_m * 0.5f; /** @brief effective wheel radius */
 
 static const double wheelbase_m = 1.55f;

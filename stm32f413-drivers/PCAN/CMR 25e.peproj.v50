@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PCANExplorerProject Version="5.0" Name="CMR 25e">
+    <Connections AutoReset="0" IgnoreRTRLength="0" ProcessRTR="1">
+        <Connection Bus="3" Enabled="1" Protocol="0" ErrorFrames="1" CalcBusLoad="1" SymbolsFileName="CMR 25e.sym" BitRate="28" Connection="CAN@pcan_usb" Name="DAQ_CAN"/>
+    </Connections>
+    <MessageFilters>
+        <MessageFilter Name="Filter1">
+            <MessageFilterItem Type="0" Bus="0" ID11From="257" ID11To="257"/>
+        </MessageFilter>
+    </MessageFilters>
+    <TransmitList>
+        <TransmitListItem Bus="3" CanId="256" Type="0" DLC="5" Data="01" CycleTime="10" IsPaused="1" Creator="User"/>
+    </TransmitList>
+    <Files>
+        <File RelativePath="CMR 25e.sym"/>
+    </Files>
+</PCANExplorerProject>

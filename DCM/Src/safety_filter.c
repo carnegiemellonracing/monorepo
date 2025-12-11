@@ -29,11 +29,13 @@
 // ------------------------------------------------------------------------------------------------
 // Constants
 
+#define FIX_RETRO_LIMIT (1)
+
 /** @brief Max amount of power the car should draw
  *  @warning Safety margins MUST BE STRICTLY POSITIVE
  */
-float power_upper_limit_W = 80000.0f; //michigan power limit
-float power_safety_margin_W = 14000.0f;
+float power_upper_limit_W = 110000.0f; //michigan power limit
+float power_safety_margin_W = 16000.0f;
 
 /** @brief Max temperature of the hottest cell
  *  @warning Safety margins MUST BE STRICTLY POSITIVE
@@ -208,7 +210,11 @@ static float getFalloffFactorByLowerLimit (
 static float getPackPowerFalloffFactor (
     float measured_pack_power_W
 ) {
+#if (FIX_RETRO_LIMIT == 1)
+    return getFalloffFactorByUpperLimit(measured_pack_power_W, 73000.0f, 16000.0f);
+#else
     return getFalloffFactorByUpperLimit(measured_pack_power_W, power_upper_limit_W, power_safety_margin_W);
+#endif
 }
 
 /**
@@ -446,8 +452,8 @@ void setTorqueLimsProtected (
     const float falloff_factor_by_temperature = getTemperatureFalloffFactor();
 
     // compute torque multipliers
-    const float accel_torque_multiplier = falloff_factor_by_pack_power * falloff_factor_by_cell_voltage_drop ;// falloff_factor_by_temperature;
-    const float regen_torque_multiplier = falloff_factor_by_cell_voltage_rise;// * falloff_factor_by_temperature;
+    const float accel_torque_multiplier = falloff_factor_by_pack_power * falloff_factor_by_cell_voltage_drop * falloff_factor_by_temperature;
+    const float regen_torque_multiplier = falloff_factor_by_cell_voltage_rise * falloff_factor_by_temperature;
 
     float filtered_accel_torque_multiplier = accel_torque_multiplier;
     filtered_accel_torque_multiplier = cmr_fir_filter_update(&accel_torque_multiplier_filter_state, accel_torque_multiplier);
@@ -569,6 +575,9 @@ float getPowerLimit_W() {
 }
 
 void setPowerLimit_kW(uint8_t power_limit_kW) {
+    if(power_limit_kW < 5) {
+        return;
+    }
 	power_upper_limit_W = power_limit_kW * 1000.0f;
-	power_safety_margin_W = power_upper_limit_W * 0.17f;
+    power_safety_margin_W = power_upper_limit_W * 0.17f;
 }
