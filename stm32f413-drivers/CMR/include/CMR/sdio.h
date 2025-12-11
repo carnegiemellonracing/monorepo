@@ -8,12 +8,15 @@
 #ifndef CMR_SD_H
 #define CMR_SD_H
 
+#include "platform.h"
+
 #ifdef HAL_SD_MODULE_ENABLED
 #ifdef HAL_DMA_MODULE_ENABLED
 
 #include <FreeRTOS.h>  // FreeRTOS interface
 #include <semphr.h>    // Semaphore interface
 #include <stdbool.h>
+#include <ff.h>
 
 /** @brief Represents a single SDIO pin. */
 typedef struct {

@@ -23,7 +23,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/src/panic.c
 ${CMAKE_CURRENT_SOURCE_DIR}/src/pwm.c
 ${CMAKE_CURRENT_SOURCE_DIR}/src/qspi.c
 ${CMAKE_CURRENT_SOURCE_DIR}/src/rcc.c
-# ${CMAKE_CURRENT_SOURCE_DIR}/src/sdio.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/sdio.c
 ${CMAKE_CURRENT_SOURCE_DIR}/src/sensors.c
 ${CMAKE_CURRENT_SOURCE_DIR}/src/spi.c
 ${CMAKE_CURRENT_SOURCE_DIR}/src/tasks.c
@@ -32,6 +32,6 @@ ${CMAKE_CURRENT_SOURCE_DIR}/src/watchdog.c
 )
 
 
-if(TARGET_F413 AND TARGET_RAM)
+# if(TARGET_F413)
     target_link_libraries(CMR PUBLIC FATFS)
-endif()
+# endif()

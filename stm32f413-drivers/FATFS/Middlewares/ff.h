@@ -17,7 +17,6 @@
 / by use of this software.
 /----------------------------------------------------------------------------*/
 
-
 #ifndef _FATFS
 #define _FATFS	68300	/* Revision ID */
 

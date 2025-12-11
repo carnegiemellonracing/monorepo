@@ -7,7 +7,7 @@
 
 #include <CMR/sdio.h>  // Interface to implement
 
-#include "platform.h"  // HAL_SD_MODULE_ENABLED, HAL_DMA_MODULE_ENABLED
+#include <CMR/platform.h>  // HAL_SD_MODULE_ENABLED, HAL_DMA_MODULE_ENABLED
                        // SPI_HandleTypeDef, SPI_TypeDef, SPI_InitTypeDef,
                        // DMA_HandleTypeDef, DMA_Stream_TypeDef
 
