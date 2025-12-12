@@ -60,6 +60,7 @@ __weak uint8_t BSP_SD_Init(void)
   /* HAL SD initialization */
   sd_state = HAL_SD_Init(&hsd);
 <<<<<<< HEAD
+<<<<<<< HEAD
 
   // CODE ADDED BY CMR
   if (cmr_SDIO_pinCount == 4 && sd_state == MSD_OK)
@@ -76,6 +77,8 @@ __weak uint8_t BSP_SD_Init(void)
       sd_state = MSD_ERROR;
     }
   }
+=======
+>>>>>>> 78cfd58a (DMA and FATFS Works)
 
   return sd_state;
 }
@@ -316,6 +319,7 @@ __weak uint8_t BSP_SD_IsDetected(void)
   __IO uint8_t status = SD_PRESENT;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   /* USER CODE BEGIN 1 */
   /* user code can be inserted here */
   /* USER CODE END 1 */
@@ -325,6 +329,11 @@ __weak uint8_t BSP_SD_IsDetected(void)
     status = SD_NOT_PRESENT;
   }
 >>>>>>> 191775f8 (added fatfs files)
+=======
+  /* USER CODE BEGIN 1 */
+  /* user code can be inserted here */
+  /* USER CODE END 1 */
+>>>>>>> 78cfd58a (DMA and FATFS Works)
 
   return status;
 }
