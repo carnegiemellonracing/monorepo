@@ -72,7 +72,6 @@ target_include_directories(FATFS PUBLIC
 target_sources(FATFS PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/App/fatfs.c
     ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/Target/bsp_driver_sd.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/Target/fatfs_platform.c
     ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/Target/sd_diskio.c
     ${CMAKE_CURRENT_SOURCE_DIR}/MiddleWares/Third_Party/FatFs/src/diskio.c
     ${CMAKE_CURRENT_SOURCE_DIR}/MiddleWares/Third_Party/FatFs/src/ff_gen_drv.c
