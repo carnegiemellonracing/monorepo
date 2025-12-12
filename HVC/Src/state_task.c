@@ -348,7 +348,7 @@ void vSetStateTask(void *pvParameters) {
     cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
 
     cmr_gpioWrite(GPIO_CLEAR_FAULT_L, 0);
-    cmr_gpioWrite(GPIO_BMB_FAULT_L, 1);
+    // cmr_gpioWrite(GPIO_BMB_FAULT_L, 1);
     cmr_gpioWrite(GPIO_AIR_POSITIVE_EN, 1);
     cmr_gpioWrite(GPIO_AIR_NEGATIVE_EN, 1);
 
@@ -359,17 +359,18 @@ void vSetStateTask(void *pvParameters) {
         // Ask Deepak ab getting rid of this
         //Critical block so that the contents of the heartbeat are consistent
         //taskENTER_CRITICAL();
-        setStateOutput();
-        // HVCHeartbeat->errorStatus = __REVSH(currentError);
-        // HVCHeartbeat->state = currentState;
-        // HVCHeartbeat->contactorStatus = getRelayStatus();
-        //taskEXIT_CRITICAL();
+        // setStateOutput();
+        // // HVCHeartbeat->errorStatus = __REVSH(currentError);
+        // // HVCHeartbeat->state = currentState;
+        // // HVCHeartbeat->contactorStatus = getRelayStatus();
+        // //taskEXIT_CRITICAL();
 
 
-        currentError = checkHVCErrors(currentState);
-        nextState = getNextState(currentError);
+        // currentError = checkHVCErrors(currentState);
+        // nextState = getNextState(currentError);
 
-        currentState = nextState;
+        // currentState = nextState;
+        setRelay(AIR_POS_RELAY, OPEN);
 
         // Delay until next period
         vTaskDelayUntil(&xLastWakeTime, xPeriod);

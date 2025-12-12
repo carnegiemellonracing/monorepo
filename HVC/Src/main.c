@@ -92,9 +92,9 @@ int main(void) {
 
     // Peripheral configuration.
     gpioInit();
-    adcInit();
-    sensorsInit();
-    canInit();
+    // adcInit();
+    // sensorsInit();
+    // canInit();
     
     //wwdgInit();
 

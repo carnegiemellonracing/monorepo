@@ -39,12 +39,6 @@ cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
     cmr_canHeartbeat_t *hvbms_heartbeat = getPayload(CANRX_HEARTBEAT_HVBMS); 
     errorFlags |= (cmr_canHVCError_t)hvbms_heartbeat->error; 
 
-    // Cut relay power if we have an error 
-    if (errorFlags != CMR_CAN_HVC_ERROR_NONE) {
-        cmr_gpioWrite(GPIO_BMB_FAULT_L, 0); 
-    } else {
-    	cmr_gpioWrite(GPIO_BMB_FAULT_L, 1);
-    }
     errorRegister = errorFlags;
     
     return errorFlags;

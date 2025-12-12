@@ -215,17 +215,24 @@ int main(void) {
     HAL_Init();
     cmr_rccSystemClockEnable();
     
+<<<<<<< Updated upstream
     HAL_DAC_MspInit(&hdac1);
     MX_DAC1_Init();
     HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, 360);
     HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 490);
+=======
+    // HAL_DAC_MspInit(&hdac1);
+    // MX_DAC1_Init();
+    // HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, 360);
+    // HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 740);
+>>>>>>> Stashed changes
 
     // Peripheral configuration.
     gpioInit();
     canInit();
-    adcInit();
-    sensorsInit();
-    stateInit();
+    // adcInit();
+    // sensorsInit();
+    // stateInit();
 
     cmr_taskInit(
         &statusLED_task,
