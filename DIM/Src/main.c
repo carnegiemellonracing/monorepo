@@ -115,10 +115,10 @@ int main(void) {
     // Peripheral configuration.
     gpioInit();
     canInit();
-    adcInit();
-    tftInit();
-    stateMachineInit();
-    sensorsInit();
+    // adcInit();
+    // tftInit();
+    // stateMachineInit();
+    // sensorsInit();
 
 
     cmr_taskInit(

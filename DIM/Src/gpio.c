@@ -30,101 +30,101 @@ static cmr_task_t gpioReadButtons_task;
  */
 // TODO: change GPIO pin configs based on new schematic
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
-    [GPIO_BUTTON_UP] = {
-		.port = GPIOC,
-		.init = {
-			.Pin = GPIO_PIN_6,
-			.Mode = GPIO_MODE_IT_RISING_FALLING,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_BUTTON_DOWN] = {
-		.port = GPIOC,
-		.init = {
-			.Pin = GPIO_PIN_6,
-			.Mode = GPIO_MODE_IT_RISING_FALLING,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_BUTTON_LEFT] = {
-		.port = GPIOC,
-		.init = {
-			.Pin = GPIO_PIN_6,
-			.Mode = GPIO_MODE_IT_RISING_FALLING,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_BUTTON_RIGHT] = {
-		.port = GPIOC,
-		.init = {
-			.Pin = GPIO_PIN_6,
-			.Mode = GPIO_MODE_IT_RISING_FALLING,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_CTRL_SWITCH] = {
-		.port = GPIOC,
-		.init = {
-			.Pin = GPIO_PIN_6,
-			.Mode = GPIO_MODE_IT_RISING_FALLING,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_BUTTON_SW_LEFT] = {
-		.port = GPIOC,
-		.init = {
-			.Pin = GPIO_PIN_6,
-			.Mode = GPIO_MODE_IT_RISING_FALLING,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_BUTTON_SW_RIGHT] = {
-		.port = GPIOC,
-		.init = {
-			.Pin = GPIO_PIN_6,
-			.Mode = GPIO_MODE_IT_RISING_FALLING,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
+    // [GPIO_BUTTON_UP] = {
+	// 	.port = GPIOC,
+	// 	.init = {
+	// 		.Pin = GPIO_PIN_6,
+	// 		.Mode = GPIO_MODE_IT_RISING_FALLING,
+	// 		.Pull = GPIO_PULLUP,
+	// 		.Speed = GPIO_SPEED_FREQ_LOW
+	// 	}
+	// },
+	// [GPIO_BUTTON_DOWN] = {
+	// 	.port = GPIOC,
+	// 	.init = {
+	// 		.Pin = GPIO_PIN_6,
+	// 		.Mode = GPIO_MODE_IT_RISING_FALLING,
+	// 		.Pull = GPIO_PULLUP,
+	// 		.Speed = GPIO_SPEED_FREQ_LOW
+	// 	}
+	// },
+	// [GPIO_BUTTON_LEFT] = {
+	// 	.port = GPIOC,
+	// 	.init = {
+	// 		.Pin = GPIO_PIN_6,
+	// 		.Mode = GPIO_MODE_IT_RISING_FALLING,
+	// 		.Pull = GPIO_PULLUP,
+	// 		.Speed = GPIO_SPEED_FREQ_LOW
+	// 	}
+	// },
+	// [GPIO_BUTTON_RIGHT] = {
+	// 	.port = GPIOC,
+	// 	.init = {
+	// 		.Pin = GPIO_PIN_6,
+	// 		.Mode = GPIO_MODE_IT_RISING_FALLING,
+	// 		.Pull = GPIO_PULLUP,
+	// 		.Speed = GPIO_SPEED_FREQ_LOW
+	// 	}
+	// },
+	// [GPIO_CTRL_SWITCH] = {
+	// 	.port = GPIOC,
+	// 	.init = {
+	// 		.Pin = GPIO_PIN_6,
+	// 		.Mode = GPIO_MODE_IT_RISING_FALLING,
+	// 		.Pull = GPIO_PULLUP,
+	// 		.Speed = GPIO_SPEED_FREQ_LOW
+	// 	}
+	// },
+	// [GPIO_BUTTON_SW_LEFT] = {
+	// 	.port = GPIOC,
+	// 	.init = {
+	// 		.Pin = GPIO_PIN_6,
+	// 		.Mode = GPIO_MODE_IT_RISING_FALLING,
+	// 		.Pull = GPIO_PULLUP,
+	// 		.Speed = GPIO_SPEED_FREQ_LOW
+	// 	}
+	// },
+	// [GPIO_BUTTON_SW_RIGHT] = {
+	// 	.port = GPIOC,
+	// 	.init = {
+	// 		.Pin = GPIO_PIN_6,
+	// 		.Mode = GPIO_MODE_IT_RISING_FALLING,
+	// 		.Pull = GPIO_PULLUP,
+	// 		.Speed = GPIO_SPEED_FREQ_LOW
+	// 	}
+	// },
 	[GPIO_LED_AMS] = {
-		.port = GPIOC,
+		.port = GPIOB,
 		.init = {
-			.Pin = GPIO_PIN_6,
-			.Mode = GPIO_MODE_IT_RISING_FALLING,
+			.Pin = GPIO_PIN_12,
+			.Mode = GPIO_MODE_OUTPUT_PP,
 			.Pull = GPIO_PULLUP,
 			.Speed = GPIO_SPEED_FREQ_LOW
 		}
 	},
 	[GPIO_LED_IMD] = {
-		.port = GPIOC,
+		.port = GPIOA,
 		.init = {
-			.Pin = GPIO_PIN_6,
-			.Mode = GPIO_MODE_IT_RISING_FALLING,
+			.Pin = GPIO_PIN_8,
+			.Mode = GPIO_MODE_OUTPUT_PP,
 			.Pull = GPIO_PULLUP,
 			.Speed = GPIO_SPEED_FREQ_LOW
 		}
 	},
 	[GPIO_LED_BSPD] = {
-		.port = GPIOC,
+		.port = GPIOA,
 		.init = {
-			.Pin = GPIO_PIN_6,
-			.Mode = GPIO_MODE_IT_RISING_FALLING,
+			.Pin = GPIO_PIN_9,
+			.Mode = GPIO_MODE_OUTPUT_PP,
 			.Pull = GPIO_PULLUP,
 			.Speed = GPIO_SPEED_FREQ_LOW
 		}
 	},
 	[GPIO_ASMS_ON] = {
-		.port = GPIOC,
+		.port = GPIOB,
 		.init = {
-			.Pin = GPIO_PIN_6,
-			.Mode = GPIO_MODE_IT_RISING_FALLING,
+			.Pin = GPIO_PIN_13,
+			.Mode = GPIO_MODE_INPUT,
 			.Pull = GPIO_PULLUP,
 			.Speed = GPIO_SPEED_FREQ_LOW
 		}
@@ -132,16 +132,16 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 	[GPIO_LED_STATUS] = {
 		.port = GPIOC,
 		.init = {
-			.Pin = GPIO_PIN_6,
-			.Mode = GPIO_MODE_IT_RISING_FALLING,
+			.Pin = GPIO_PIN_12,
+			.Mode = GPIO_MODE_OUTPUT_PP,
 			.Pull = GPIO_PULLUP,
 			.Speed = GPIO_SPEED_FREQ_LOW
 		}
 	},
 	[GPIO_PD_N] = {
-		.port = GPIOC,
+		.port = GPIOB,
 		.init = {
-			.Pin = GPIO_PIN_6,
+			.Pin = GPIO_PIN_14,
 			.Mode = GPIO_MODE_IT_RISING_FALLING,
 			.Pull = GPIO_PULLUP,
 			.Speed = GPIO_SPEED_FREQ_LOW

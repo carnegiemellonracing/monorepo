@@ -463,6 +463,14 @@ void canInit(void) {
         GPIOA, GPIO_PIN_12   // CAN1 TX port/pin.
     );
 
+    // cmr_canInit(
+    //     &can, CAN2, CMR_CAN_BITRATE_500K,
+    //     canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
+    //     &canRXCallback,
+    //     GPIOB, GPIO_PIN_12,  // CAN1 RX port/pin.
+    //     GPIOB, GPIO_PIN_13   // CAN1 TX port/pin.
+    // );
+
     // Clear RAM Buf - Set all to Spaces
     for (uint16_t i = 0; i < RAMBUFLEN; i++) {
         if (i == PREV_TIME_INDEX + TIMEDISPLAYLEN - 1 ||
@@ -587,23 +595,23 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
         .state = vsmState
     };
 
-    volatile cmr_canHeartbeat_t *AIM_Heartbeat = canVehicleGetPayload(CANRX_HEARTBEAT_VSM);
-	cmr_canHeartbeat_t toSend;
-	memcpy(&toSend, AIM_Heartbeat,sizeof(cmr_canHeartbeat_t)); //memcpy since it is volatile and could update
+    // volatile cmr_canHeartbeat_t *AIM_Heartbeat = canVehicleGetPayload(CANRX_HEARTBEAT_VSM);
+	// cmr_canHeartbeat_t toSend;
+	// memcpy(&toSend, AIM_Heartbeat,sizeof(cmr_canHeartbeat_t)); //memcpy since it is volatile and could update
 
-	if (toSend.error[0] != 0 || toSend.error[1] != 0) {
-		toSend.state = CMR_CAN_ERROR;
-	}
+	// if (toSend.error[0] != 0 || toSend.error[1] != 0) {
+	// 	toSend.state = CMR_CAN_ERROR;
+	// }
 
-    if(getASMS()){
-        uint8_t mask = 1 << 7;
-        toSend.state = toSend.state | mask;
-    }
+    // if(getASMS()){
+    //     uint8_t mask = 1 << 7;
+    //     toSend.state = toSend.state | mask;
+    // }
 
-    if(getEAB()){
-        uint8_t mask = 1 << 6;
-        toSend.state = toSend.state | mask;
-    }
+    // if(getEAB()){
+    //     uint8_t mask = 1 << 6;
+    //     toSend.state = toSend.state | mask;
+    // }
 
     cmr_canWarn_t warning = CMR_CAN_WARN_NONE;
     cmr_canError_t error = CMR_CAN_ERROR_NONE;
@@ -643,12 +651,6 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
         &heartbeat,
         sizeof(heartbeat),
         canTX100Hz_period_ms);
-	canTX(
-		CMR_CANID_HEARTBEAT_AIM,
-		&toSend,
-		sizeof(*AIM_Heartbeat),
-		canTX100Hz_period_ms
-	);
 }
 
 /**
