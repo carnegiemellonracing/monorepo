@@ -24,9 +24,9 @@ cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .value = 0
     },
     [ADC_VREF] = { 
-		 .channel = ADC_CHANNEL_12, //repeat channel? 
+		 .channel = ADC_CHANNEL_15, //repeat channel? 
 		 .port = GPIOC,
-		 .pin = GPIO_PIN_2,
+		 .pin = GPIO_PIN_5,
 		 .samplingTime = ADC_SAMPLETIME_15CYCLES,
 		 .value = 0
 	}, 
@@ -38,9 +38,9 @@ cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .value = 0
     },
     [ADC_SAFETY] = {
-        .channel = ADC_CHANNEL_13,
+        .channel = ADC_CHANNEL_12,
         .port = GPIOC,
-        .pin = GPIO_PIN_3,
+        .pin = GPIO_PIN_2,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
