@@ -999,23 +999,23 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
 void canInit(void) {
     // Vehicle CAN initialization - CAN1
     cmr_FDcanInit(&can[CMR_CAN_BUS_VEH], FDCAN2, CMR_CAN_BITRATE_500K, NULL,
-                  0, &conditionalCallback, GPIOB,
-                  GPIO_PIN_12,        // CAN1 RX port/pin.
-                  GPIOB, GPIO_PIN_13  // CAN1 TX port/pin.
+                  0, &conditionalCallback, GPIOA,
+                  GPIO_PIN_11,        // CAN1 RX port/pin.
+                  GPIOA, GPIO_PIN_12  // CAN1 TX port/pin.
     );
 
     // Tractive CAN initialization. - CAN3
     cmr_FDcanInit(&(can[CMR_CAN_BUS_DAQ]), FDCAN3, CMR_CAN_BITRATE_500K, NULL,
-                  0, &conditionalCallback, GPIOD,
+                  0, &conditionalCallback, GPIOB,
                   GPIO_PIN_12,        // CAN3 RX port/pin.
-                  GPIOD, GPIO_PIN_13  // CAN3 TX port/pin.
+                  GPIOB, GPIO_PIN_13  // CAN3 TX port/pin.
     );
 
     // DAQ CAN init. - CAN2
     cmr_FDcanInit(&can[CMR_CAN_BUS_TRAC], FDCAN1, CMR_CAN_BITRATE_500K, NULL,
-                  0, &conditionalCallback, GPIOA,
-                  GPIO_PIN_11,        // CAN2 RX port/pin.
-                  GPIOA, GPIO_PIN_12  // CAN2 TX port/pin.
+                  0, &conditionalCallback, GPIOD,
+                  GPIO_PIN_12,        // CAN2 RX port/pin.
+                  GPIOD, GPIO_PIN_13  // CAN2 TX port/pin.
     );
 
     // Vehicle CAN filters.
