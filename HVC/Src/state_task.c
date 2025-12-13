@@ -370,9 +370,10 @@ void vSetStateTask(void *pvParameters) {
         // nextState = getNextState(currentError);
 
         // currentState = nextState;
-        // setRelay(AIR_POS_RELAY, CLOSED);
+        cmr_gpioWrite(GPIO_CLEAR_FAULT_L, 1);
         setRelay(AIR_NEG_RELAY, CLOSED);
-        setRelay(PRECHARGE_RELAY, CLOSED);
+        setRelay(AIR_POS_RELAY, CLOSED);
+        // setRelay(PRECHARGE_RELAY, CLOSED);
         // setRelay(DISCHARGE_RELAY, CLOSED);
 
         // Delay until next period
