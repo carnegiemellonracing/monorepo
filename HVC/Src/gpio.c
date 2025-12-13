@@ -81,7 +81,16 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
-    }
+    },
+    [GPIO_COMP_EN] = { // VERIFIED
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_4,
+            .Mode = GPIO_MODE_INPUT,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
 };
 
 /**

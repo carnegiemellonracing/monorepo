@@ -349,28 +349,31 @@ void vSetStateTask(void *pvParameters) {
 
     cmr_gpioWrite(GPIO_CLEAR_FAULT_L, 0);
     // cmr_gpioWrite(GPIO_BMB_FAULT_L, 1);
-    cmr_gpioWrite(GPIO_AIR_POSITIVE_EN, 1);
-    cmr_gpioWrite(GPIO_AIR_NEGATIVE_EN, 1);
+    cmr_gpioWrite(GPIO_AIR_POSITIVE_EN, 0);
+    cmr_gpioWrite(GPIO_AIR_NEGATIVE_EN, 0);
 
     // See https://drive.google.com/file/d/1xey3It43X-4tRBvnWUMSgUpSeBYo-Vj6/view?usp=sharing
     // Executes infinitely with defined period using vTaskDelayUntil
     for (;;) {
 
         // Ask Deepak ab getting rid of this
-        //Critical block so that the contents of the heartbeat are consistent
-        //taskENTER_CRITICAL();
+        // Critical block so that the contents of the heartbeat are consistent
+        // taskENTER_CRITICAL();
         // setStateOutput();
-        // // HVCHeartbeat->errorStatus = __REVSH(currentError);
-        // // HVCHeartbeat->state = currentState;
-        // // HVCHeartbeat->contactorStatus = getRelayStatus();
-        // //taskEXIT_CRITICAL();
+        // HVCHeartbeat->errorStatus = __REVSH(currentError);
+        // HVCHeartbeat->state = currentState;
+        // HVCHeartbeat->contactorStatus = getRelayStatus();
+        //taskEXIT_CRITICAL();
 
 
         // currentError = checkHVCErrors(currentState);
         // nextState = getNextState(currentError);
 
         // currentState = nextState;
-        setRelay(AIR_POS_RELAY, OPEN);
+        // setRelay(AIR_POS_RELAY, CLOSED);
+        setRelay(AIR_NEG_RELAY, CLOSED);
+        setRelay(PRECHARGE_RELAY, CLOSED);
+        // setRelay(DISCHARGE_RELAY, CLOSED);
 
         // Delay until next period
         vTaskDelayUntil(&xLastWakeTime, xPeriod);
