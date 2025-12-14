@@ -26,8 +26,8 @@ BMB_Data_t BMBData[BOARD_NUM];
 // ith mux setting and the jth GPIO channel. We choose to zero index the cell nums
 uint8_t CHANNEL_GPIO_TO_CELL_MAP [4][NUM_GPIO_CHANNELS]  = {{6, 3, 1, 255},
                                                             {255, 255, 0, 5},
-                                                            {255, 255, 4, 255},
-                                                            {7, 8, 255, 2}};
+                                                            {255, 4, 255, 255},
+                                                            {8, 255, 2, 7}};
 
 static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
 	BMBErrs[BMBIndex] = err;
