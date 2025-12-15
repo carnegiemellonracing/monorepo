@@ -97,11 +97,17 @@ static void canTX10Hz(void *pvParameters) {
         // sendBRUSAChargerControl();
         uint16_t air_power = adcRead(ADC_AIR_POWER);
         uint16_t safety_power = adcRead(ADC_SAFETY);
+        uint16_t voltage = adcRead(ADC_VSENSE);
+        uint16_t current = adcRead(ADC_ISENSE);
         canTX(CMR_CANID_AIR_POWER_ADC, &air_power, sizeof(air_power), canTX10Hz_period_ms);
         canTX(CMR_CANID_SAFETY_POWER_ADC, &safety_power, sizeof(safety_power), canTX10Hz_period_ms);
+        canTX(CMR_CANID_VOLTAGE_SENSE, &voltage, sizeof(voltage), canTX10Hz_period_ms);
+        canTX(CMR_CANID_CURRENT_SENSE, &current, sizeof(current), canTX10Hz_period_ms);
 
         uint8_t comp_en = cmr_gpioRead(GPIO_COMP_EN);
+        uint16_t air_fault = gpioRead(GPIO_AIR_FAULT_N);
         canTX(CMR_CANID_COMP_EN, &comp_en, sizeof(comp_en), canTX10Hz_period_ms);
+        canTX(CMR_CANID_AIR_FAULT, &air_fault, sizeof(air_fault), canTX10Hz_period_ms);
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }

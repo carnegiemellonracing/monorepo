@@ -37,7 +37,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_AIR_FAULT_L] = { // VERIFIED
+    [GPIO_AIR_FAULT_N] = { // VERIFIED
         .port = GPIOB,
         .init = {
             .Pin = GPIO_PIN_7,
