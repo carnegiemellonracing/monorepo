@@ -42,7 +42,7 @@ int main(void) {
     // Peripheral configuration.
     uartInit();
     gpioInit();
-    // canInit();
+    canInit();
     statusLEDInit();
     memoratorInit();
 

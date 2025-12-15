@@ -38,9 +38,13 @@
 
 extern SD_HandleTypeDef hsd;
 <<<<<<< HEAD
+<<<<<<< HEAD
 extern uint8_t cmr_SDIO_pinCount;
 =======
 >>>>>>> 191775f8 (added fatfs files)
+=======
+extern uint8_t cmr_SDIO_pinCount;
+>>>>>>> a698c5ec (Not Cleaned UP Yet)
 
 /* USER CODE BEGIN BeforeInitSection */
 /* can be used to modify / undefine following code or add code */
@@ -79,6 +83,14 @@ __weak uint8_t BSP_SD_Init(void)
   }
 =======
 >>>>>>> 78cfd58a (DMA and FATFS Works)
+
+  // CODE ADDED BY CMR
+  if (cmr_SDIO_pinCount == 4 && sd_state == MSD_OK)
+  {
+    if (HAL_SD_ConfigWideBusOperation(&hsd, SDIO_BUS_WIDE_4B) != HAL_OK){
+      sd_state = MSD_ERROR;
+    }
+  }
 
   return sd_state;
 }
