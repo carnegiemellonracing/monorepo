@@ -25,7 +25,7 @@ static const uint32_t bmbSample_priority = 3;
 static const uint32_t setState_priority = 4;
 
 /** @brief Status LED period (milliseconds). */
-static const TickType_t statusLED_period_ms = 250;
+static const TickType_t statusLED_period_ms = 100;
 
 /** @brief Status LED task. */
 static cmr_task_t statusLED_task;
@@ -47,11 +47,12 @@ static void statusLED(void *pvParameters) {
     (void) pvParameters;
 
     cmr_gpioWrite(GPIO_MCU_LED, 0);
+    cmr_gpioWrite(GPIO_TO_WATCHDOG, 0);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         cmr_gpioToggle(GPIO_MCU_LED);
-
+        cmr_gpioToggle(GPIO_TO_WATCHDOG);
         vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
     }
 }

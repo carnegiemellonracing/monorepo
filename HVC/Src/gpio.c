@@ -81,6 +81,15 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
+    },
+    [GPIO_TO_WATCHDOG] = { // VERIFIED
+        .port = GPIOB,
+        .init = {
+            .Pin = GPIO_PIN_15,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
     }
 };
 

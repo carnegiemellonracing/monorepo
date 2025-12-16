@@ -26,6 +26,10 @@ cmr_canHVCState_t getState() {
  * Helper Functions
  */
 
+ //forward declarations:
+ void stopCellBalancing(void);
+ void enableCellBalancing(void); 
+
 static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
 
     //Default to unknown state if no paths are satisfied.
@@ -348,7 +352,6 @@ void vSetStateTask(void *pvParameters) {
     cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
 
     cmr_gpioWrite(GPIO_CLEAR_FAULT_L, 0);
-    cmr_gpioWrite(GPIO_BMB_FAULT_L, 1);
     cmr_gpioWrite(GPIO_AIR_POSITIVE_EN, 1);
     cmr_gpioWrite(GPIO_AIR_NEGATIVE_EN, 1);
 
