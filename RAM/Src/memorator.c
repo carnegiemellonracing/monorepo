@@ -22,6 +22,7 @@ static const TickType_t memorator_period_ms = 40;
 /** @brief Status LED task. */
 static cmr_task_t memoratorTask;
 
+/** @brief File Obj */
 static FIL filObj;
 
 //forward declarations
@@ -64,8 +65,8 @@ static const cmr_sdioPinConfig_t sdioPinConfig= {
 };
 
 // CAN can at most transmit 62500 bytes/second. Since we have 3 CAN buses this 
-// yields 1875 bytes/second that can be transmitted to us for any given 
-// 10ms interval. Therefore we give a buffer of 4096 bytes for headroom
+// yields 7500 bytes/second that can be transmitted to us for any given 
+// 40ms interval. Therefore we give a buffer of 8192 bytes for headroom
 #define BUFFER_SIZE 8192
 static uint8_t bufferA[BUFFER_SIZE];
 static uint8_t bufferB[BUFFER_SIZE];
@@ -108,19 +109,32 @@ void memoratorWrite(uint16_t ID, uint32_t timeStamp, uint8_t dataLength,  uint8_
 
 }
 
+/**
+ * @brief Serialize and write a record into the memorator buffer.
+ *
+ * This function writes the fields into a global buffer at the current 
+ * write offset. Writes occur inside a FreeRTOS critical section to ensure
+ * atomicity. If there is not enough space remaining in the buffer,
+ * the function exits without writing anything.
+ *
+ * @param ID           16-bit CAN ID
+ * @param timeStamp    32-bit timestamp for the record.
+ * @param dataLength   Length of the data payload in bytes.
+ * @param data         Pointer to the data payload to write.
+ *
+ * @return void        Does not return a value.
+ */
 static void writeToSDCard(void *pvParameters) 
 {
-    static uint16_t oldBufferLocation;
     // If needed we can improve error handling here
-    bool res;
+    static uint16_t oldBufferLocation;
+    uint8_t res;
+
     cmr_sdioInit(&sdioPinConfig);
-
     TickType_t lastWakeTime = xTaskGetTickCount();
-
     while (1){
         oldBufferLocation = bufferLocation;
         switchBuffer();
-        TickType_t preticks = xTaskGetTickCount(); 
         cmr_SDIO_mount();
         res = cmr_SDIO_openFile(&filObj, "data.bin");
         if (!res){
@@ -128,16 +142,18 @@ static void writeToSDCard(void *pvParameters)
             cmr_SDIO_closeFile(&filObj);
         }
         cmr_SDIO_unmount();
-        TickType_t postTicks = xTaskGetTickCount(); 
-        uint32_t a = (postTicks - preticks) * portTICK_PERIOD_MS;
-        if (a==31232)
-            cmr_panic("Death");
         vTaskDelayUntil(&lastWakeTime, memorator_period_ms);
     }
 
 }
 
-
+/**
+ * @brief Switches the RX and TX buffer
+ *
+ * @note This must be a critical section so that way we don't lose CAN messages
+ *
+ * @return void        Does not return a value.
+ */
 static void switchBuffer(){
     // Critical Section to ensure atomicity when switching buffers 
     taskENTER_CRITICAL();
