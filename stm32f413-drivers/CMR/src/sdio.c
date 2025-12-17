@@ -38,7 +38,13 @@ static void cmr_SDIO_pinConfig(cmr_sdioPinConfig_t* pinConfig);
 static void cmr_SDIO_dmaConfig();
 static void MX_SDIO_SD_Init();
 
-
+/**
+ * @brief Sets up the SDIO interface and DMAs. Note that if you give 4 data pins
+ * we will try and run in 4 pin mode
+ *
+ * @param pins The SDIO pin configuration
+ * @retval None
+ */
 void cmr_sdioInit(cmr_sdioPinConfig_t* pins) {
     cmr_rccSDIOClockEnable();
     cmr_SDIO_pinConfig(pins);
@@ -66,6 +72,11 @@ static void MX_SDIO_SD_Init(void)
     hsd.Init.ClockDiv = 0;
 }
 
+/**
+* @brief Configures the SDIO pins
+* @param pinConfig The SDIO pin configuration
+* @retval None
+*/
 static void cmr_SDIO_pinConfig(cmr_sdioPinConfig_t* pinConfig){
 
     //Would reccomend changing the speeds to very high with external pullups
@@ -112,6 +123,11 @@ static void cmr_SDIO_pinConfig(cmr_sdioPinConfig_t* pinConfig){
     cmr_SDIO_pinCount = pinConfig->dataPinLength;
 }   
 
+/**
+* @brief Sets up the SDIO DMA (This is copied from Cube MX code gen)
+*
+* @retval None
+*/
 static void cmr_SDIO_dmaConfig(){
 
     /* SDIO DMA Init */
@@ -160,18 +176,30 @@ static void cmr_SDIO_dmaConfig(){
 }
 
 /**
-* @brief This function handles SDIO global interrupt.
+* @brief This function handles SDIO global interrupt. It just needs to exist
+*
+* @retval None
 */
 void SDIO_IRQHandler(void)
 {
     HAL_SD_IRQHandler(&hsd);
 }
 
-bool cmr_SDIO_mount(void){
+/**
+* @brief Mounts the SD Card
+*
+* @retval Returns 0 for success and 1 for failure
+*/
+uint8_t cmr_SDIO_mount(void){
     FRESULT FR_Status = f_mount(&FatFs, SDPath, 1);
     return FR_Status != FR_OK;
 }
 
+/**
+* @brief Gets The free space on the SD card in bytes
+*
+* @retval Remaining free bytes
+*/
 uint32_t cmr_SDIO_remainingSpace(){
     static FATFS* FS_Ptr;
     static DWORD FreeClusters;
@@ -181,28 +209,49 @@ uint32_t cmr_SDIO_remainingSpace(){
     return freeSpace;
 }
 
-bool cmr_SDIO_openFile(FIL* filObj, char* path){
+/**
+* @brief Opens a file in write mode
+*
+* @note For efficiency this function opens the file in append only mode
+*
+* @retval Returns 0 for success and 1 for failure
+*/
+uint8_t cmr_SDIO_openFile(FIL* filObj, char* path){
     FRESULT FR_Status = f_open(filObj, path, FA_WRITE | FA_OPEN_APPEND);
-
     return FR_Status != FR_OK;
 }
 
-bool cmr_SDIO_write(FIL* filObj, void* data, uint16_t dataLen){
+/**
+* @brief Writes to a file
+*
+* @retval Returns 0 for success and 1 for failure
+*/
+uint8_t cmr_SDIO_write(FIL* filObj, void* data, uint16_t dataLen){
     UINT WWC; 
     FRESULT FR_Status = f_write(filObj, data, dataLen, &WWC);
     if (FR_Status != FR_OK)
-        return true;
+        return 1;
 
     FR_Status = f_sync(filObj);
     return FR_Status != FR_OK;
 }
 
-bool cmr_SDIO_closeFile(FIL* fileObj){
+/**
+* @brief Closes a file
+*
+* @retval Returns 0 for success and 1 for failure
+*/
+uint8_t cmr_SDIO_closeFile(FIL* fileObj){
     FRESULT FR_Status = f_close(fileObj);
-    return FR_Status == FR_OK;
+    return FR_Status != FR_OK;
 }
 
-bool cmr_SDIO_unmount(){
+/**
+* @brief Unmounts SD Card
+*
+* @retval Returns 0 for success and 1 for failure
+*/
+uint8_t cmr_SDIO_unmount(){
     FRESULT FR_Status = f_mount(NULL, "", 0);
     return FR_Status == FR_OK;
 }

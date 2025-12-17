@@ -27,12 +27,12 @@ typedef struct {
 } cmr_sdioPinConfig_t;
 
 void cmr_sdioInit(cmr_sdioPinConfig_t *pins);
-bool cmr_SDIO_mount();
+uint8_t cmr_SDIO_mount();
 uint32_t cmr_SDIO_remainingSpace();
-bool cmr_SDIO_openFile(FIL* filObj, char* path);
-bool cmr_SDIO_write(FIL* filObj, void* data, uint16_t dataLen);
-bool cmr_SDIO_closeFile(FIL* fileObj);
-bool cmr_SDIO_unmount();
+uint8_t cmr_SDIO_openFile(FIL* filObj, char* path);
+uint8_t cmr_SDIO_write(FIL* filObj, void* data, uint16_t dataLen);
+uint8_t cmr_SDIO_closeFile(FIL* fileObj);
+uint8_t cmr_SDIO_unmount();
 
 #endif /* F413 */
 #endif /* HAL_DMA_MODULE_ENABLED */
