@@ -11,9 +11,12 @@
 #include <CMR/rcc.h>    // RCC interface
 #include <CMR/tasks.h>  // Task interface
 
-#include "gpio.h"   // Board-specific GPIO interface
-#include "can.h"    // Board-specific CAN interface
-#include "adc.h"    // Board-specific ADC interface
+#include "adc.h"        // Board-specific ADC interface
+#include "can.h"        // Board-specific CAN interface
+#include "gpio.h"       // Board-specific GPIO interface
+#include "statusLED.h"  // Board-specific statusLED interface
+#include "watchDog.h"   // Board-specific watchDog interface
+
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -24,50 +27,11 @@ static const uint32_t bmbSample_priority = 3;
 /** @brief BMB Sample Task priority. */
 static const uint32_t setState_priority = 4;
 
-/** @brief Status LED period (milliseconds). */
-static const TickType_t statusLED_period_ms = 100;
-
-/** @brief Status LED task. */
-static cmr_task_t statusLED_task;
-
 /** @brief BMB Sample Task */
 static cmr_task_t bmbSample_task;
 
 /** @brief Set State Task */
 static cmr_task_t setState_task;
-
-/**
- * @brief Task for toggling the status LED.
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void statusLED(void *pvParameters) {
-    (void) pvParameters;
-
-    cmr_gpioWrite(GPIO_MCU_LED, 0);
-    cmr_gpioWrite(GPIO_TO_WATCHDOG, 0);
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        cmr_gpioToggle(GPIO_MCU_LED);
-        cmr_gpioToggle(GPIO_TO_WATCHDOG);
-        vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
-    }
-}
-
-
-static void statusLEDInit(){
-    cmr_taskInit(
-        &statusLED_task,
-        "statusLED",
-        statusLED_priority,
-        statusLED,
-        NULL
-    );
-
-}
 
 static void stateInit(){
     cmr_taskInit(
@@ -89,7 +53,6 @@ static void stateInit(){
 int main(void) {
 	HAL_Init();
     cmr_rccSystemClockEnable();
-    // cmr_rccSystemInternalClockEnable();
 
     // Peripheral configuration.
     gpioInit();
@@ -97,13 +60,11 @@ int main(void) {
     sensorsInit();
     canInit();
     
-    //wwdgInit();
-
     statusLEDInit(); 
+    watchDogInit();
 
     // State Task
-    stateInit(); 
-
+    stateInit();
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

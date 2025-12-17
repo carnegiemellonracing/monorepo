@@ -122,8 +122,10 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/main.c
     ${CMAKE_SOURCE_DIR}/Src/sensors.c
     ${CMAKE_SOURCE_DIR}/Src/state_task.c
+    ${CMAKE_SOURCE_DIR}/Src/statusLED.c
     ${CMAKE_SOURCE_DIR}/Src/syscall.c
     ${CMAKE_SOURCE_DIR}/Src/sysmem.c
+    ${CMAKE_SOURCE_DIR}/Src/watchDog.c
 )
 
 # Add sources to executable
