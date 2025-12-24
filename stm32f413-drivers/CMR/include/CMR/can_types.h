@@ -874,7 +874,55 @@ static int16_t parse_int16(volatile big_endian_16_t *big) {
     parser.data.msb = big->msb;
     parser.data.lsb = big->lsb;
     return parser.parsed;
-} 
+}
+
+static big_endian_16_t int16_to_big(uint16_t small) {
+    static int16_parser parser;
+    big_endian_16_t result;
+    
+    parser.parsed = small;
+    result.msb = parser.data.msb;
+    result.lsb = parser.data.lsb;
+    
+    return result;
+}
+
+typedef struct {
+    uint8_t msb;
+    uint8_t byte2;
+    uint8_t byte1;
+    uint8_t lsb;
+} big_endian_32_t;
+
+typedef union {
+    struct {
+        uint8_t lsb;
+        uint8_t byte1;
+        uint8_t byte2;
+        uint8_t msb;
+    } data;
+    int32_t parsed;
+} int32_parser;
+
+static int32_t big_endian_to_int32(volatile big_endian_32_t *big) {
+    int32_parser parser;
+    parser.data.msb = big->msb;
+    parser.data.byte2 = big->byte2;
+    parser.data.byte1 = big->byte1;
+    parser.data.lsb = big->lsb;
+    return parser.parsed;
+}
+
+static big_endian_32_t int32_to_big(int32_t value) {
+    int32_parser parser;
+    big_endian_32_t result;
+    parser.parsed = value;
+    result.msb = parser.data.msb;
+    result.byte2 = parser.data.byte2;
+    result.byte1 = parser.data.byte1;
+    result.lsb = parser.data.lsb;
+    return result;
+}
 
 typedef struct {
     big_endian_16_t q0;
@@ -1145,19 +1193,19 @@ typedef struct {
 } cmr_canCubeMarsDutyCycle_t;
 
 typedef struct {
-    int32_t current_mA; // mA, -60000 ~ 60000
+    big_endian_32_t current_mA; // mA, -60000 ~ 60000
 } cmr_canCubeMarsCurrentLoop_t;
 
 typedef struct {
-    uint32_t current_mA; // mA, 0 ~ 60000
+    big_endian_32_t current_mA; // mA, 0 ~ 60000
 } cmr_canCubeMarsCurrentBrake_t;
 
 typedef struct {
-    int32_t speed_erpm; // erpm, -100000 ~ 100000
+    big_endian_32_t speed_erpm; // erpm, -100000 ~ 100000
 } cmr_canCubeMarsSpeedLoop_t;
 
 typedef struct {
-    int32_t position_deg; // -36000 deg ~ 36000 deg
+    big_endian_32_t position_deg; // -36000 deg ~ 36000 deg
 } cmr_canCubeMarsPositionLoop_t;
 
 typedef struct {
@@ -1165,14 +1213,14 @@ typedef struct {
 } cmr_canCubeMarsSetOrigin_t;
 
 typedef struct {
-    int32_t position_deg; // -36000 deg ~ 36000 deg
-    int16_t speed_erpm; // erpm, -327680 ~ 327680
-    int16_t accel_erpm_s; // 1 unit = 10 erpm / s^2, 0 ~ 32767
+    big_endian_32_t position_deg; // -36000 deg ~ 36000 deg
+    big_endian_16_t speed_erpm; // erpm, -327680 ~ 327680
+    big_endian_16_t accel_erpm_s; // 1 unit = 10 erpm / s^2, 0 ~ 32767
 } cmr_canCubeMarsPositionSpeed_t;
 
 typedef struct {
-    int16_t position_deg; // -36000 ~ 36000
-    int16_t speed_erpm; // erpm/10, -32000 ~ 32000
+    big_endian_16_t position_deg; // -36000 ~ 36000
+    big_endian_16_t speed_erpm; // erpm/10, -32000 ~ 32000
     int8_t motorTemp_C; // deg C, -20 ~ 127
     uint8_t errorCode; // 0 - no fault, 1 - motor overtemp, 2 - overcurrent, 
                        // 3 - overvoltage, 4 - undervoltage, 5 - encoder fault,
