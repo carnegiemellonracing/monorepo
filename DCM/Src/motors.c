@@ -558,10 +558,20 @@ cmr_torque_limit_t getTorqueBudget() {
  *
  * @return Read-only pointer to requested setpoints.
  */
-const cmr_canDTISetpoints_t *getDTISetpoints(motorLocation_t motor) {
+const cmr_canDTI_RX_Message_t *getDTISetpoints(motorLocation_t motor) {
     if (motor >= MOTOR_LEN) {
         return NULL;
     }
 
-    return (const cmr_canDTISetpoints_t *) &(motorSetpoints[motor]);
+    const cmr_canDTISetpoints_t *src = (const cmr_canDTISetpoints_t *) &(motorSetpoints[motor]);
+    cmr_canDTI_RX_Message_t *dst = &DTI_RXMessage[motor];
+
+    dst->velocity_rpm     = (int16_t)src->velocity_rpm;
+    dst->torqueLimPos_mNm = (int16_t)src->torqueLimPos_mNm;
+    dst->torqueLimNeg_mNm = (int16_t)src->torqueLimNeg_mNm;
+    dst->torque_mNm       = (int16_t)src->torque_mNm;
+
+    dst->ACCurrent_deciAmps = torqueToCurrent(src->torque_mNm);
+
+    return (const cmr_canDTI_RX_Message_t *) dst;
 }

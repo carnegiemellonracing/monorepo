@@ -35,9 +35,9 @@ float motorSetpointPercentToTorque10(int16_t sp) {
 }
 
 int16_t getMotorTorqueRequest(motorLocation_t motor) {
-    const cmr_canDTISetpoints_t *sp = getDTISetpoints(motor);
+    const cmr_canDTI_RX_Message_t *sp = getDTISetpoints(motor);
 
-    return (sp->torqueLimPos > 0) ? sp->torqueLimPos : sp->torqueLimNeg;
+    return (sp->torqueLimPos_mNm > 0) ? sp->torqueLimPos_mNm : sp->torqueLimNeg_mNm;
 }
 
 void daqWheelSpeedFeedback(cmr_canCDCWheelVelocity_t *speedFeedback) {
@@ -66,10 +66,10 @@ void daqWheelTorqueFeedback(cmr_canCDCWheelTorque_t *torqueFeedback) {
 }
 
 void daqWheelSpeedSetpoints(cmr_canCDCWheelVelocity_t *speedSetpoint) {
-    const cmr_canDTISetpoints_t *dtiSetpoint1FL = getDTISetpoints(MOTOR_FL);
-    const cmr_canDTISetpoints_t *dtiSetpoint1FR = getDTISetpoints(MOTOR_FR);
-    const cmr_canDTISetpoints_t *dtiSetpoint1RL = getDTISetpoints(MOTOR_RL);
-    const cmr_canDTISetpoints_t *dtiSetpoint1RR = getDTISetpoints(MOTOR_RR);
+    const cmr_canDTI_RX_Message_t *dtiSetpoint1FL = getDTISetpoints(MOTOR_FL);
+    const cmr_canDTI_RX_Message_t *dtiSetpoint1FR = getDTISetpoints(MOTOR_FR);
+    const cmr_canDTI_RX_Message_t *dtiSetpoint1RL = getDTISetpoints(MOTOR_RL);
+    const cmr_canDTI_RX_Message_t *dtiSetpoint1RR = getDTISetpoints(MOTOR_RR);
 
     speedSetpoint->frontLeft_rpm =  dtiSetpoint1FL->velocity_rpm;
     speedSetpoint->frontRight_rpm = dtiSetpoint1FR->velocity_rpm;

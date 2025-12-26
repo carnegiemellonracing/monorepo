@@ -451,6 +451,7 @@ typedef struct {
     uint8_t pwm_left;       /**< @brief PWM of the left  DRS servo (debug info). */
     uint8_t pwm_right;      /**< @brief PWM of the right DRS servo (debug info). */
 } cmr_canCDCDRSStates_t;
+
 typedef enum {
   CMR_CAN_DRS_STATE_CLOSED = 0,
   CMR_CAN_DRS_STATE_OPEN,
