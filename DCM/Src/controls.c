@@ -16,7 +16,6 @@
 #include "constants.h"
 #include "controls.h"
 #include "motors.h"
-#include "lut_3d.h"
 #include "safety_filter.h"
 #include "CMR/can_types.h"
 #include "../optimizer/optimizer.h"

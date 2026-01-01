@@ -756,7 +756,7 @@ static void canTX200Hz(void *pvParameters) {
     cmr_canFrontWheelVelocity_t front_velocity;
     cmr_canRearWheelVelocity_t rear_velocity;
 
-    uint8_t drive_enable = 1;
+    uint8_t drive_enable = 0;
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
@@ -764,40 +764,41 @@ static void canTX200Hz(void *pvParameters) {
             heartbeatVSM->state == CMR_CAN_RTD || 
             heartbeatVSM->state == CMR_CAN_AS_READY ||
             heartbeatVSM->state == CMR_CAN_AS_DRIVING){
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_DRIVE_EN, &drive_enable, sizeof(uint8_t), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_DRIVE_EN, &drive_enable, sizeof(uint8_t), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_DRIVE_EN, &drive_enable, sizeof(uint8_t), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_DRIVE_EN, &drive_enable, sizeof(uint8_t), canTX200Hz_period_ms);
+            // This should be a broadcast
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
         }
 
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_TORLIMPOS, &(dtiSetpointsFL->torqueLimPos_mNm), sizeof(int16_t), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_TORLIMNEG, &(dtiSetpointsFL->torqueLimNeg_mNm), sizeof(int16_t), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_TORLIMPOS, &(dtiSetpointsFL->torqueLimPos_mNm), sizeof(dtiSetpointsFL->torqueLimPos_mNm), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_TORLIMNEG, &(dtiSetpointsFL->torqueLimNeg_mNm), sizeof(dtiSetpointsFL->torqueLimNeg_mNm), canTX200Hz_period_ms);
 
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_TORLIMPOS, &(dtiSetpointsFR->torqueLimPos_mNm), sizeof(int16_t), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_TORLIMNEG, &(dtiSetpointsFR->torqueLimNeg_mNm), sizeof(int16_t), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_TORLIMPOS, &(dtiSetpointsFR->torqueLimPos_mNm), sizeof(dtiSetpointsFR->torqueLimPos_mNm), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_TORLIMNEG, &(dtiSetpointsFR->torqueLimNeg_mNm), sizeof(dtiSetpointsFR->torqueLimNeg_mNm), canTX200Hz_period_ms);
 
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_TORLIMPOS, &(dtiSetpointsRR->torqueLimPos_mNm), sizeof(int16_t), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_TORLIMNEG, &(dtiSetpointsRR->torqueLimNeg_mNm), sizeof(int16_t), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_TORLIMPOS, &(dtiSetpointsRR->torqueLimPos_mNm), sizeof(dtiSetpointsRR->torqueLimPos_mNm), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_TORLIMNEG, &(dtiSetpointsRR->torqueLimNeg_mNm), sizeof(dtiSetpointsRR->torqueLimNeg_mNm), canTX200Hz_period_ms);
 
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_TORLIMPOS, &(dtiSetpointsRL->torqueLimPos_mNm), sizeof(int16_t), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_TORLIMNEG, &(dtiSetpointsRL->torqueLimNeg_mNm), sizeof(int16_t), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_TORLIMPOS, &(dtiSetpointsRL->torqueLimPos_mNm), sizeof(dtiSetpointsRL->torqueLimPos_mNm), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_TORLIMNEG, &(dtiSetpointsRL->torqueLimNeg_mNm), sizeof(dtiSetpointsRL->torqueLimNeg_mNm), canTX200Hz_period_ms);
 
         if (isTorqueMode){
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_CURRENT, &(dtiSetpointsFL->ACCurrent_deciAmps), sizeof(int16_t), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_CURRENT, &(dtiSetpointsFR->ACCurrent_deciAmps), sizeof(int16_t), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_CURRENT, &(dtiSetpointsRL->ACCurrent_deciAmps), sizeof(int16_t), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_CURRENT, &(dtiSetpointsRR->ACCurrent_deciAmps), sizeof(int16_t), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_CURRENT, &(dtiSetpointsFL->ACCurrent_deciAmps), sizeof(dtiSetpointsFL->ACCurrent_deciAmps), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_CURRENT, &(dtiSetpointsFR->ACCurrent_deciAmps), sizeof(dtiSetpointsFR->ACCurrent_deciAmps), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_CURRENT, &(dtiSetpointsRL->ACCurrent_deciAmps), sizeof(dtiSetpointsRL->ACCurrent_deciAmps), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_CURRENT, &(dtiSetpointsRR->ACCurrent_deciAmps), sizeof(dtiSetpointsRR->ACCurrent_deciAmps), canTX200Hz_period_ms);
         } else {
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_VELOCITY, &(dtiSetpointsFL->velocity_rpm), sizeof(int16_t), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_VELOCITY, &(dtiSetpointsFR->velocity_rpm), sizeof(int16_t), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_VELOCITY, &(dtiSetpointsRL->velocity_rpm), sizeof(int16_t), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_VELOCITY, &(dtiSetpointsRR->velocity_rpm), sizeof(int16_t), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_VELOCITY, &(dtiSetpointsFL->velocity_rpm), sizeof(dtiSetpointsFL->velocity_rpm), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_VELOCITY, &(dtiSetpointsFR->velocity_rpm), sizeof(dtiSetpointsFR->velocity_rpm), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_VELOCITY, &(dtiSetpointsRL->velocity_rpm), sizeof(dtiSetpointsRL->velocity_rpm), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_VELOCITY, &(dtiSetpointsRR->velocity_rpm), sizeof(dtiSetpointsRR->velocity_rpm), canTX200Hz_period_ms);
         }
         
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FL_TEMPFAULT, &(dtiTempFaultFL->fault_code), sizeof(uint16_t), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FR_TEMPFAULT, &(dtiTempFaultFR->fault_code), sizeof(uint16_t), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RL_TEMPFAULT, &(dtiTempFaultRL->fault_code), sizeof(uint16_t), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RR_TEMPFAULT, &(dtiTempFaultRR->fault_code), sizeof(uint16_t), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FL_TEMPFAULT, &(dtiTempFaultFL->fault_code), sizeof(dtiTempFaultFL->fault_code), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FR_TEMPFAULT, &(dtiTempFaultFR->fault_code), sizeof(dtiTempFaultFR->fault_code), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RL_TEMPFAULT, &(dtiTempFaultRL->fault_code), sizeof(dtiTempFaultRL->fault_code), canTX200Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RR_TEMPFAULT, &(dtiTempFaultRR->fault_code), sizeof(dtiTempFaultRR->fault_code), canTX200Hz_period_ms);
 
         daqWheelSpeedFeedback(&speedFeedback);
         daqWheelTorqueFeedback(&torqueFeedback);

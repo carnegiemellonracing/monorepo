@@ -23,7 +23,6 @@
 #include "motors.h"     // Board-specific motors interface
 #include "i2c.h"
 #include "servo.h"
-#include "lut_3d.h"
 #include "lut.h"
 #include "brakelight.h"
 

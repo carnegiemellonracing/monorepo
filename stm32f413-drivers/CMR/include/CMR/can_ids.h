@@ -162,7 +162,7 @@ typedef enum {
     CMR_CANID_DTI_FL_SET_TORLIMPOS  = PACKET_NODE_TO_CAN_ID(0x08, FL_NODE_ID),  /**< @brief FL Set Positive torque limit */
     CMR_CANID_DTI_FL_SET_TORLIMNEG  = PACKET_NODE_TO_CAN_ID(0x09, FL_NODE_ID),  /**< @brief FL Set Negative torque limit */
     CMR_CANID_DTI_FL_SET_CURRENT    = PACKET_NODE_TO_CAN_ID(0x01, FL_NODE_ID),  /**< @brief FL Set Torque */
-    CMR_CANID_DTI_SET_FL_DRIVE_EN   = PACKET_NODE_TO_CAN_ID(0x0C, FL_NODE_ID),  /**< @brief FL Set Drive Enable Message */
+    CMR_CANID_DTI_FL_SET_DRIVE_EN   = PACKET_NODE_TO_CAN_ID(0x0C, FL_NODE_ID),  /**< @brief FL Set Drive Enable Message */
 
 
     /** @brief CAN IDs for the Front Right (FR) Motor Controller. */
@@ -178,7 +178,7 @@ typedef enum {
     CMR_CANID_DTI_FR_SET_TORLIMPOS  = PACKET_NODE_TO_CAN_ID(0x08, FR_NODE_ID),  /**< @brief FR Set Positive torque limit */
     CMR_CANID_DTI_FR_SET_TORLIMNEG  = PACKET_NODE_TO_CAN_ID(0x09, FR_NODE_ID),  /**< @brief FR Set Negative torque limit */
     CMR_CANID_DTI_FR_SET_CURRENT    = PACKET_NODE_TO_CAN_ID(0x01, FR_NODE_ID),  /**< @brief FR Set Torque */
-    CMR_CANID_DTI_SET_FR_DRIVE_EN   = PACKET_NODE_TO_CAN_ID(0x0C, FR_NODE_ID),  /**< @brief FR Set Drive Enable Message */
+    CMR_CANID_DTI_FR_SET_DRIVE_EN   = PACKET_NODE_TO_CAN_ID(0x0C, FR_NODE_ID),  /**< @brief FR Set Drive Enable Message */
 
 
     /** @brief CAN IDs for the Rear Left (RL) Motor Controller. */
@@ -194,7 +194,7 @@ typedef enum {
     CMR_CANID_DTI_RL_SET_TORLIMPOS  = PACKET_NODE_TO_CAN_ID(0x08, RL_NODE_ID),  /**< @brief RL Set Positive torque limit */
     CMR_CANID_DTI_RL_SET_TORLIMNEG  = PACKET_NODE_TO_CAN_ID(0x09, RL_NODE_ID),  /**< @brief RL Set Negative torque limit */
     CMR_CANID_DTI_RL_SET_CURRENT    = PACKET_NODE_TO_CAN_ID(0x01, RL_NODE_ID),  /**< @brief RL Set Torque */
-    CMR_CANID_DTI_SET_RL_DRIVE_EN   = PACKET_NODE_TO_CAN_ID(0x0C, RL_NODE_ID),  /**< @brief RL Set Drive Enable Message */
+    CMR_CANID_DTI_RL_SET_DRIVE_EN   = PACKET_NODE_TO_CAN_ID(0x0C, RL_NODE_ID),  /**< @brief RL Set Drive Enable Message */
 
 
     /** @brief CAN IDs for the Rear Right (RR) Motor Controller. */
@@ -210,7 +210,7 @@ typedef enum {
     CMR_CANID_DTI_RR_SET_TORLIMPOS  = PACKET_NODE_TO_CAN_ID(0x08, RR_NODE_ID),  /**< @brief RR Set Positive torque limit */
     CMR_CANID_DTI_RR_SET_TORLIMNEG  = PACKET_NODE_TO_CAN_ID(0x09, RR_NODE_ID),  /**< @brief RR Set Negative torque limit */
     CMR_CANID_DTI_RR_SET_CURRENT    = PACKET_NODE_TO_CAN_ID(0x01, RR_NODE_ID),  /**< @brief RR Set Torque */
-    CMR_CANID_DTI_SET_RR_DRIVE_EN   = PACKET_NODE_TO_CAN_ID(0x0C, RR_NODE_ID),  /**< @brief RR Set Drive Enable Message */
+    CMR_CANID_DTI_RR_SET_DRIVE_EN   = PACKET_NODE_TO_CAN_ID(0x0C, RR_NODE_ID),  /**< @brief RR Set Drive Enable Message */
 
     CMR_CANID_RMS_TEMPA = 0x000 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set A. */
     CMR_CANID_RMS_TEMPB = 0x001 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set B. */

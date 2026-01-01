@@ -117,10 +117,10 @@ void fansOn() {
     fan_1_State = (fan_1_State > 100) ? 100 : fan_1_State;
 
     // Get igbt temperatures for each inverter.
-    int16_t inv1IgbtTemp_dC = inv1_temps->igbtTemp_dC;
-    int16_t inv2IgbtTemp_dC = inv2_temps->igbtTemp_dC;
-    int16_t inv3IgbtTemp_dC = inv3_temps->igbtTemp_dC;
-    int16_t inv4IgbtTemp_dC = inv4_temps->igbtTemp_dC;
+    int16_t inv1IgbtTemp_dC = inv1_temps->ctlr_temp;
+    int16_t inv2IgbtTemp_dC = inv2_temps->ctlr_temp;
+    int16_t inv3IgbtTemp_dC = inv3_temps->ctlr_temp;
+    int16_t inv4IgbtTemp_dC = inv4_temps->ctlr_temp;
 
     // Use average igbt temperature
     int16_t inverter_temp = (inv1IgbtTemp_dC + inv2IgbtTemp_dC + inv3IgbtTemp_dC + inv4IgbtTemp_dC) / 4;

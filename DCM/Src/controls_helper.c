@@ -1,7 +1,6 @@
 #include "constants.h"
 
 #include "controls_helper.h"
-#include "lut_3d.h"
 #include "safety_filter.h"
 #include <stdint.h>
 #include <stdbool.h>
