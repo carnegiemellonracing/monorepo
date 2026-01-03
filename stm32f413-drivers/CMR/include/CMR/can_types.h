@@ -682,7 +682,7 @@ typedef struct {
 } cmr_canDTI_TX_DCLimits_t;
 
 /** @brief DTI motor controller: Control mode, target Iq, motor position, isMotorStill flag. */
-typedef struct {
+typedef struct  __attribute__((__packed__))  {
     uint8_t control_mode;       /**< Control mode (e.g., torque, speed, position). */
     int16_t target_iq;          /**< Target Iq, scaled by 100. */
     int32_t motor_position;     /**< Motor position in encoder counts or degrees. */
@@ -690,7 +690,7 @@ typedef struct {
 } cmr_canDTI_TX_ControlStatus_t;
 
 /** @brief DTI motor controller: Throttle, brake, digital I/Os, drive enable, limit status. */
-typedef struct {
+typedef struct __attribute__((__packed__)){
     int8_t throttle_signal;     /**< Throttle input signal. */
     int8_t brake_signal;        /**< Brake input signal. */
     uint8_t digital_inputs;     /**< Bitmask of digital inputs. */

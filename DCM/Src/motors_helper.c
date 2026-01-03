@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <math.h>
+#include <cstdint>
 #include "can.h"
 #include "controls_helper.h"
 
@@ -27,22 +28,7 @@ const float torqueIncrement_Nm = 0.0098f;
 const float rpm_to_mV_factor = 0.026587214972f;
 
 #define CLAMP(x, min, max) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)));
-
-/**
- * @brief Converts floating point torque into DTI format
- *        (0.1% increments of 9.8 Nm).
- *
- * @param torque_Nm Torque as a floating point value.
- *
- * @return Torque in DTI format.
- */
-int16_t convertNmToDTITorque (float torque_Nm) {
-    // clamp torque to the motor's output range
-    torque_Nm = fminf(maxTorque_Nm, torque_Nm);
-    torque_Nm = fmaxf(-maxTorque_Nm, torque_Nm);
-
-    return (int16_t) (torque_Nm / torqueIncrement_Nm);
-}
+    
 /**
  * @brief Retrieve ERPM, duty cycle, voltage for DTI inverter
  */
@@ -438,32 +424,33 @@ int16_t torqueToCurrent(float torque_mNm){
 
     /* Finding the LUT intervals containing requested torque */
     int i;
-    for (i = 0; i < DTI_LUT_MAX_INDEX + 1; i++) {
+    for (i = 0; i < DTI_TORQUE_CURRENT_LUT_LEN; i++) {
         if (torque_Nm <= DTI_torque_current_LUT[i].torque_Nm) {
             break;
         }
     }
 
-    /* Edge case where torque is at or above the LUT maximum */
-    if (i == DTI_LUT_MAX_INDEX) { 
-        torqueLower = DTI_torque_current_LUT[i - 1].torque_Nm;
-        torqueUpper = DTI_torque_current_LUT[i].torque_Nm;
-        currLower = DTI_torque_current_LUT[i - 1].current_Arms;
-        currUpper = DTI_torque_current_LUT[i].current_Arms;
+    int16_t current;
+    /* Edge case where torque is at torque maximum */
+    if (i == DTI_TORQUE_CURRENT_LUT_LEN - 1) { 
+        current = DTI_torque_current_LUT[i].current_Arms;
     } else {
         /* Else set bounds for interpoldation between LUT indices i and i+1 */
         torqueLower = DTI_torque_current_LUT[i].torque_Nm;
         torqueUpper = DTI_torque_current_LUT[i + 1].torque_Nm;
         currLower = DTI_torque_current_LUT[i].current_Arms;
         currUpper = DTI_torque_current_LUT[i + 1].current_Arms;
+        current =  transferFn(torqueLower, torqueUpper, 
+                                  currLower, currUpper, 
+                                  torque_Nm); 
     }
 
     /* Perform linear interpolation, apply sign, and scale */
-    return sign * 10 * transferFn(torqueLower, torqueUpper, 
-                                  currLower, currUpper, 
-                                  torque_Nm); 
+    return sign * 10 * current;
 }
 
+
+//make similar changes as above
 /**
  * @brief Converts measured  AC current (in deciAmps) to the corresponding torque using the LUT.
  *

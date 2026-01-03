@@ -56,64 +56,15 @@ static cmr_canGear_t gear = CMR_CAN_GEAR_SLOW;
 
 /** @brief Setpoints for each inverter
  *  @note Indexed by motorLocation_t
+ *  @note It will statically be defined to all 0s
  */
-static cmr_canDTISetpoints_t motorSetpoints[MOTOR_LEN] = {
-    [MOTOR_FL] = {
-        .velocity_rpm = 0,
-        .torqueLimPos_mNm = 0,
-        .torqueLimNeg_mNm = 0,
-        .torque_mNm = 0
-    },
-    [MOTOR_FR] = {
-        .velocity_rpm = 0,
-        .torqueLimPos_mNm = 0,
-        .torqueLimNeg_mNm = 0,
-        .torque_mNm = 0
-    },
-    [MOTOR_RL] = {
-        .velocity_rpm = 0,
-        .torqueLimPos_mNm = 0,
-        .torqueLimNeg_mNm = 0,
-        .torque_mNm = 0
-    },
-    [MOTOR_RR] = {
-        .velocity_rpm = 0,
-        .torqueLimPos_mNm = 0,
-        .torqueLimNeg_mNm = 0,
-        .torque_mNm = 0
-    },
-};
+static cmr_canDTISetpoints_t motorSetpoints[MOTOR_LEN];
 
-static cmr_canDTI_RX_Message_t DTI_RXMessage[MOTOR_LEN] = {
-    [MOTOR_FL] = {
-        .velocity_rpm = 0,
-        .torqueLimPos_mNm = 0,
-        .torqueLimNeg_mNm = 0,
-        .torque_mNm = 0, 
-        .ACCurrent_deciAmps = 0
-    },
-    [MOTOR_FR] = {
-        .velocity_rpm = 0,
-        .torqueLimPos_mNm = 0,
-        .torqueLimNeg_mNm = 0,
-        .torque_mNm = 0, 
-        .ACCurrent_deciAmps = 0
-    },
-    [MOTOR_RL] = {
-        .velocity_rpm = 0,
-        .torqueLimPos_mNm = 0,
-        .torqueLimNeg_mNm = 0,
-        .torque_mNm = 0, 
-        .ACCurrent_deciAmps = 0
-    },
-    [MOTOR_RR] = {
-        .velocity_rpm = 0,
-        .torqueLimPos_mNm = 0,
-        .torqueLimNeg_mNm = 0,
-        .torque_mNm = 0, 
-        .ACCurrent_deciAmps = 0
-    },
-};
+/** @brief Set points for each inverter in DTI format
+ *  @note Indexed by motorLocation_t
+ *  @note It will statically be defined to all 0s
+ */
+static cmr_canDTI_RX_Message_t DTI_RXMessage[MOTOR_LEN];
 
 cmr_canDAQTest_t getDAQTest() {
     return daqTest;
@@ -354,7 +305,7 @@ void setTorqueLimPos (
     }
 
     torqueLimPos_Nm = fmaxf(torqueLimPos_Nm, 0.0f);
-    motorSetpoints[motor].torqueLimPos = convertNmToDTITorque(torqueLimPos_Nm);
+    motorSetpoints[motor].torqueLimPos = torqueLimPos_Nm);
 }
 
 /**
@@ -372,7 +323,7 @@ void setTorqueLimNeg (
     }
 
     torqueLimNeg_Nm = fminf(torqueLimNeg_Nm, 0.0f);
-    motorSetpoints[motor].torqueLimNeg = convertNmToDTITorque(torqueLimNeg_Nm);
+    motorSetpoints[motor].torqueLimNeg = torqueLimNeg_Nm;
 }
 
 /**
@@ -436,13 +387,11 @@ void setTorqueLimsUnprotected (
         return;
     }
 
-    /** Check feasibility with field weakening (page 38 manual) */
-
     torqueLimPos_Nm = fmaxf(torqueLimPos_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
     torqueLimNeg_Nm = fminf(torqueLimNeg_Nm, 0.0f); // ensures torqueLimNeg_Nm <= 0
 
-    motorSetpoints[motor].torqueLimPos = convertNmToDTITorque(torqueLimPos_Nm);
-    motorSetpoints[motor].torqueLimNeg = convertNmToDTITorque(torqueLimNeg_Nm);
+    motorSetpoints[motor].torqueLimPos = torqueLimPos_Nm;
+    motorSetpoints[motor].torqueLimNeg = torqueLimNeg_Nm;
 }
 
 /**
@@ -558,7 +507,7 @@ cmr_torque_limit_t getTorqueBudget() {
  *
  * @return Read-only pointer to requested setpoints.
  */
-const cmr_canDTI_RX_Message_t *getDTISetpoints(motorLocation_t motor) {
+const cmr_canDTI_RX_Message_t* getDTISetpoints(motorLocation_t motor) {
     if (motor >= MOTOR_LEN) {
         return NULL;
     }
@@ -566,11 +515,15 @@ const cmr_canDTI_RX_Message_t *getDTISetpoints(motorLocation_t motor) {
     const cmr_canDTISetpoints_t *src = (const cmr_canDTISetpoints_t *) &(motorSetpoints[motor]);
     cmr_canDTI_RX_Message_t *dst = &DTI_RXMessage[motor];
 
+    // ERPM vrs RPM
     dst->velocity_rpm     = (int16_t)src->velocity_rpm;
+
+    // Change to AC current lims
     dst->torqueLimPos_mNm = (int16_t)src->torqueLimPos_mNm;
     dst->torqueLimNeg_mNm = (int16_t)src->torqueLimNeg_mNm;
-    dst->torque_mNm       = (int16_t)src->torque_mNm;
 
+    // Get rid of torque from this struct
+    dst->torque_mNm       = (int16_t)src->torque_mNm;
     dst->ACCurrent_deciAmps = torqueToCurrent(src->torque_mNm);
 
     return (const cmr_canDTI_RX_Message_t *) dst;

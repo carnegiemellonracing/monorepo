@@ -795,6 +795,7 @@ static void canTX200Hz(void *pvParameters) {
             canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_VELOCITY, &(dtiSetpointsRR->velocity_rpm), sizeof(dtiSetpointsRR->velocity_rpm), canTX200Hz_period_ms);
         }
         
+        // Should be one big message with a seperate CAN ID
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FL_TEMPFAULT, &(dtiTempFaultFL->fault_code), sizeof(dtiTempFaultFL->fault_code), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FR_TEMPFAULT, &(dtiTempFaultFR->fault_code), sizeof(dtiTempFaultFR->fault_code), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RL_TEMPFAULT, &(dtiTempFaultRL->fault_code), sizeof(dtiTempFaultRL->fault_code), canTX200Hz_period_ms);
