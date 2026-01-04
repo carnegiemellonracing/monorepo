@@ -15,7 +15,6 @@
 
 #include <CMR/panic.h>  // Panic interface
 #include <CMR/tasks.h>  // Task interface
-#include <math.h>       // powf()
 #include <string.h>     // memcpy()
 #include <CMR/config_screen_helper.h>
 #include <CMR/can_types.h>
@@ -197,7 +196,7 @@ static void canTX100Hz(void *pvParameters) {
     	uint8_t regenPercent = (uint8_t)((adcRead(ADC_PADDLE) / 255.0) * 100.0);
         uint8_t packed = 0;
         uint8_t ctrlOn = cmr_gpioRead(GPIO_CTRL_SWITCH);
-        uint8_t dvCtrlMode = stateGetDVMode;
+        uint8_t dvCtrlMode = stateGetDVMode();
         for(int i=0; i<NUM_BUTTONS; i++){
             packed |= gpioButtonStates[i] << i;
         }
@@ -205,6 +204,7 @@ static void canTX100Hz(void *pvParameters) {
         cmr_canDIMActions_t actions = {
             .buttonStates = packed,
             .regenPercent = regenPercent,
+            .paddle = paddle,
             .controlsStatus = ctrlOn,
 			.dvControlMode = dvCtrlMode
         };

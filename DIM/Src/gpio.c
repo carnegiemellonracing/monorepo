@@ -142,8 +142,8 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 		.port = GPIOB,
 		.init = {
 			.Pin = GPIO_PIN_14,
-			.Mode = GPIO_MODE_IT_RISING_FALLING,
-			.Pull = GPIO_PULLUP,
+			.Mode = GPIO_MODE_OUTPUT_PP,
+			.Pull = GPIO_NOPULL,
 			.Speed = GPIO_SPEED_FREQ_LOW
 		}
 	}

@@ -581,7 +581,6 @@ typedef struct {
 
 typedef struct {
     uint8_t buttonStates;      /**< @brief Button states packed into an uint8_t. {drs,0,1,2,up,down,left,right}*/
-    uint8_t rotaryPos;
     uint8_t regenPercent;            
     uint8_t paddle;            
     uint8_t controlsStatus;

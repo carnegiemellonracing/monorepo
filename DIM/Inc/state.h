@@ -35,7 +35,7 @@ extern volatile uint8_t config_paddle_right_request;
 #define TFT_STARTUP_MS 3000
 
 void reqVSM(void);
-
+void reqDRS(void);
 void reqGear(void);
 
 int getMaxMotorTemp(void);
