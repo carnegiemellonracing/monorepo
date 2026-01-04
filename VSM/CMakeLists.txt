@@ -128,6 +128,7 @@ link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 add_executable(${CMAKE_PROJECT_NAME}
     # Project sources
     ${CMAKE_SOURCE_DIR}/Src/adc.c
+    ${CMAKE_SOURCE_DIR}/Src/assi.c
     ${CMAKE_SOURCE_DIR}/Src/can.c
     ${CMAKE_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_SOURCE_DIR}/Src/main.c

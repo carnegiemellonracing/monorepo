@@ -18,7 +18,6 @@
 #include "can.h"        // Interface to implement
 #include "sensors.h"    // sensorChannel_t
 #include "state.h"      // getCurrentErrors(), getCurrentWarnings()
-#include <Maxon/maxonControl.h> //Maxon controller
 
 /**
  * @brief CAN periodic message receive metadata
@@ -47,13 +46,6 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_VSM_DIM_TIMEOUT
     },
-    [CANRX_HEARTBEAT_AIM] = {
-				.canID = CMR_CANID_HEARTBEAT_AIM,
-				.timeoutError_ms = 100,
-				.errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
-				.timeoutWarn_ms = 25,
-				.warnFlag = CMR_CAN_WARN_VSM_AIM_TIMEOUT
-	},
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
         .timeoutError_ms = 100,
@@ -104,16 +96,11 @@ cmr_canRXMeta_t canRXMeta[] = {
             .timeoutError_ms = 100,
             .timeoutWarn_ms = 25,
     },
-    [CANRX_MAXON_HEARTBEAT] = {
-            .canID = CMR_CANID_MAXON_HEARTBEAT,
+    [CANRX_ASMS_STATE] = {
+            .canID = CMR_CANID_ASMS_STATE,
             .timeoutError_ms = 100,
             .timeoutWarn_ms = 25,
-    },
-    [CANRX_MAXON_STATUS_WORD] = {
-            .canID = CMR_CANID_MAXON_STATUS_WORD,
-            .timeoutError_ms = 100,
-            .timeoutWarn_ms = 25,
-    },
+    }
 };
 
 /**
@@ -128,7 +115,6 @@ const cmr_canVSMErrorSource_t vsmErrorSourceFlags[] = {
     [CANRX_HEARTBEAT_HVC]       = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_HEARTBEAT_CDC]       = CMR_CAN_VSM_ERROR_SOURCE_CDC,
     [CANRX_HEARTBEAT_DIM]       = CMR_CAN_VSM_ERROR_SOURCE_DIM,
-    [CANRX_HEARTBEAT_AIM]       = CMR_CAN_VSM_ERROR_SOURCE_AIM,
     [CANRX_FSM_DATA]            = CMR_CAN_VSM_ERROR_SOURCE_DIM,
     [CANRX_DIM_REQUEST]         = CMR_CAN_VSM_ERROR_SOURCE_NONE, // Don't timeout based on DIM requests
     [CANRX_INVERTER_1]          = CMR_CAN_VSM_ERROR_SOURCE_NONE, // Don't timeout inverter here
@@ -137,8 +123,6 @@ const cmr_canVSMErrorSource_t vsmErrorSourceFlags[] = {
     [CANRX_INVERTER_4]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_RES]                 = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_AS_PRESSURE_READING] = CMR_CAN_VSM_ERROR_SOURCE_AIM,
-    [CANRX_MAXON_HEARTBEAT]     = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_MAXON_STATUS_WORD]   = CMR_CAN_VSM_ERROR_SOURCE_NONE
 };
 
 /** @brief CAN 10 Hz TX priority. */
@@ -173,6 +157,8 @@ static cmr_task_t canTXLatchedStatus_task;
 /** @brief Primary CAN interface. */
 static cmr_can_t can;
 
+static bool detectedFirstError = false;
+
 // Forward declarations
 static void sendHeartbeat(TickType_t lastWakeTime);
 static void sendVSMStatus(void);
@@ -180,6 +166,7 @@ static void sendVSMSensors(void);
 static void sendVSMLatchedStatus(void);
 static void sendHVCCommand(void);
 static void sendPowerDiagnostics(void);
+void resetError();
 
 /**
  * @brief Task for sending CAN messages at 10 Hz.
@@ -194,20 +181,7 @@ static void canTX10Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendPowerDiagnostics();
-        
-        //sets Maxon state based on VSM state
-		if (getCurrentState() == CMR_CAN_VSM_STATE_GLV_ON){
-            switchToMaxonstate(CMR_MAXON_READY_TO_SWITCH_ON);
-        }
-		else if (getCurrentState() == CMR_CAN_VSM_STATE_AS_READY){
-            switchToMaxonstate(CMR_MAXON_SWITCHED_ON);
-        }
-		else if (getCurrentState() == CMR_CAN_VSM_STATE_AS_DRIVING){
-            switchToMaxonstate(CMR_MAXON_OPERATION_ENABLED);
-        }
-		else if (getCurrentState() == CMR_CAN_VSM_STATE_AS_EMERGENCY){
-            switchToMaxonstate(CMR_MAXON_QUICK_STOP_ACTIVE);
-        }
+
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -351,18 +325,13 @@ void canInit(void) {
             .isMask = false,
             .rxFIFO = CAN_RX_FIFO1,
             .ids = {
-                    CMR_CANID_AS_PRESSURE_READINGS,
-                    CMR_CANID_MAXON_STATUS_WORD,
-                    CMR_CANID_MAXON_HEARTBEAT,
-                    CMR_CANID_MAXON_HEARTBEAT
+                    CMR_CANID_AS_PRESSURE_READINGS
             }
 		},
     };
     cmr_canFilter(
         &can, canFilters, sizeof(canFilters) / sizeof(canFilters[0])
     );
-
-    maxonInit(&can, &canRXMeta[CANRX_MAXON_HEARTBEAT], &canRXMeta[CANRX_MAXON_STATUS_WORD]);
 
     // Task initialization.
     cmr_taskInit(
@@ -440,13 +409,6 @@ cmr_canState_t getModuleState(canRX_t module) {
     cmr_canHeartbeat_t *heartbeat = getPayload(module);
     uint8_t state = heartbeat->state;
 
-    //if AIM heartbeat we remove the ASMS bit which is the
-	// most significant bit using bit wise operators
-	if(module == CANRX_HEARTBEAT_AIM){
-		uint8_t mask = (uint8_t)(~(3 << 6));  // Ensures proper wrapping
-		state = (state & mask);
-	}
-
     return (cmr_canState_t)(state);
 }
 
@@ -457,10 +419,10 @@ cmr_canState_t getModuleState(canRX_t module) {
  */
 bool getASMSState() {
 
-	cmr_canHeartbeat_t *heartbeat = getPayload(CANRX_HEARTBEAT_AIM);
+	cmr_canHeartbeat_t *heartbeat = getPayload(CANRX_ASMS_STATE);
 	uint8_t state = heartbeat->state;
 
-	return (bool)(state >> 7);
+	return state;
 }
 
 /**
@@ -566,10 +528,8 @@ static void sendPowerDiagnostics(void) {
 /**
  * @brief Sends the first error state detected
  */
-static void sendFirstError(uint8_t error_code) {
-    static bool detectedFirstError = false;
-
-    cmr_canVSMState_t state = vsmStatus.canVSMStatus.internalState;
+void sendFirstError(uint8_t error_code) {
+    cmr_canVSMState_t state = getCurrentState();
     
     // Read first error
     if (!detectedFirstError) {
@@ -580,4 +540,8 @@ static void sendFirstError(uint8_t error_code) {
     }
 
     return;
+}
+
+void resetError() {
+    detectedFirstError = false;
 }

@@ -16,7 +16,7 @@
 #include "sensors.h"    // sensorChannel_t, sensors[]
 
 /** @brief Check if we are in competition mode and need to check one inverter, otherwise check all inverters */
-#define COMPETITION_MODE true;
+#define COMPETITION_MODE true
 
 
 /** @brief Required brake pressure to transition into RTD. */
@@ -388,12 +388,16 @@ static bool getASEmergency(){
 /**
  * @brief Check all inverters if endurance mode. Else, check RR inverter
 */
-static bool invertersPass(){
+bool invertersPass(TickType_t lastWakeTime_ms){
+    cmr_canAMKActualValues1_t *amk1Actual = getPayload(CANRX_INVERTER_1);
+    cmr_canAMKActualValues1_t *amk2Actual = getPayload(CANRX_INVERTER_2);
+    cmr_canAMKActualValues1_t *amk3Actual = getPayload(CANRX_INVERTER_3);
+    cmr_canAMKActualValues1_t *amk4Actual = getPayload(CANRX_INVERTER_4);
     // TODO: change back before comp so that don't unnecessarily error out
     if (COMPETITION_MODE){
         if (((amk1Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
             !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_1]), lastWakeTime_ms))){
-                return true
+                return true;
         }
         else{
             sendFirstError(INVERTER_COMP);

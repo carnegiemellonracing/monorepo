@@ -57,7 +57,7 @@ static void assiControl(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-    	cmr_canState_t state = canGetCurrentState();
+    	cmr_canState_t state = getCurrentState();
 
         switch (state) {
             case CMR_CAN_AS_READY: 

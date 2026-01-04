@@ -65,7 +65,7 @@ static const TickType_t ASEmergencySwitchingTime_ms = 100;
 
 /** @brief ASState flag. Keeps track of the "true" ASMS State. Set during GLV_ON only. 
  */
-static const bool ASState = true;
+static bool ASState = true;
 
 /** @brief Autonomous brake test state is not started at the beginning*/
 static brakeTestState_t brakeTestState = BRAKE_TEST_NOT_STARTED;
@@ -263,7 +263,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                 (dimRequestedState == CMR_CAN_GLV_ON)
             ) {
                 nextState = CMR_CAN_VSM_STATE_GLV_ON;
-                detectedFirstError = false; // Reset error latch if system returns to GLV_ON
+                resetError(); // Reset error latch if system returns to GLV_ON
             }
             else {
                 nextState = CMR_CAN_VSM_STATE_CLEAR_ERROR;
@@ -301,7 +301,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             else if (brakeTestState == BRAKE_TEST_PASSED  
                     && ASState
                     && dimRequestedState == CMR_CAN_AS_READY){ //Passed brake test, then go into precharge
-                        nextState = CMR_CAN_VSM_STATE_REQ_RECHARGE;
+                        nextState = CMR_CAN_VSM_STATE_REQ_PRECHARGE;
             }
             else if (dimRequestedState == CMR_CAN_GLV_ON){
                 brakeTestState = BRAKE_TEST_NOT_STARTED;
@@ -348,7 +348,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         }
         
         case CMR_CAN_VSM_STATE_INVERTER_EN: {
-            if (invertersPass()){
+            if (invertersPass(lastWakeTime_ms)){
                 //if (!EBSActive() && AutonomousClear() && brakePressureRear_PSI >= brakePressureThreshold_PSI) {
                 // if (true){
                 //     nextState = CMR_CAN_VSM_STATE_AS_READY;
@@ -601,12 +601,14 @@ static void stateUpdate(void *pvParameters) {
  */
 static inline bool getBrakeStatus(){
 
+    uint32_t brakePressureRear_PSI = cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI);
+
     switch (brakeTestState) {
         case BRAKE_TEST_NOT_STARTED:{ //read initial value
             initialBrakePressure = brakePressureRear_PSI;
             brakeTestStartTime = xTaskGetTickCount();
 
-            cmr_gpioWrite() //Uh.. how do i actuate the solenoids
+            // cmr_gpioWrite(GPIO_OUT_BRAKE_SOLENOID, 1);
 
             brakeTestState = BRAKE_TEST_RUNNING;
             return false;
@@ -614,17 +616,16 @@ static inline bool getBrakeStatus(){
         case BRAKE_TEST_RUNNING: {
             if (xTaskGetTickCount() - brakeTestStartTime > brakeTestTimeout) { //timeout
                 brakeTestState = BRAKE_TEST_FAILED;
-                cmr_gpioWrite(GPIO_OUT_BRAKE_SOLENOID, 0);
+                // cmr_gpioWrite(GPIO_OUT_BRAKE_SOLENOID, 0);
                 return false;
             }
-
-            if (brakePressure > initialBrakePressure + brakePressureRiseThreshold) { //passed
+            if (brakePressureRear_PSI > initialBrakePressure + brakePressureRiseThreshold) { //passed
                 brakeTestState = BRAKE_TEST_PASSED;
-                cmr_gpioWrite(GPIO_OUT_BRAKE_SOLENOID, 0);
+                // cmr_gpioWrite(GPIO_OUT_BRAKE_SOLENOID, 0);
                 return true;
             }
 
-            return false
+            return false;
         }
         case BRAKE_TEST_PASSED: {
             return true;

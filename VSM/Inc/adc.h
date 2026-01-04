@@ -20,6 +20,8 @@ typedef enum {
 	ADC_REAR_BRAKE_PRES,    /**< @brief Rear brake pressure sense. */
     ADC_VSENSE,             /**< @brief Board voltage sense. */
     ADC_ISENSE,             /**< @brief Board current sense. */
+	ADC_SSIN,
+	ADC_SSOUT,
 	ADC_LEN     /**< @brief Total ADC channels. */
 } adcChannel_t;
 

@@ -298,6 +298,7 @@ typedef enum {
     CMR_CANID_AUTONOMOUS_ACTION = 0x190,        /**< @brief Autonomous Action*/
     CMR_CANID_AS_PRESSURE_READINGS = 0x191,     /**< @brief Autonomous Pressure Readings for Tank and EBS*/
     CMR_CANID_AS_RACK_DISPLACMENT = 0x192,      /**< @brief Rack Displacement Mesurment*/
+    CMR_CANID_ASMS_STATE = 0x193,
 
 
     //MAXON

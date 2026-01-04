@@ -9,6 +9,7 @@
 #define GPIO_H
 
 #include <CMR/pwm.h>
+#include <CMR/gpio.h>
 
 /**
  * @brief Represents a GPIO pin.
@@ -22,12 +23,13 @@ typedef enum {
     GPIO_OUT_LED_RED,
     GPIO_OUT_LED_BLUE,
     GPIO_OUT_LED_YELLOW,
-    GPIO_OUT_DCDC_EN,           /**< @brief DCDC converter enable signal. */
     GPIO_OUT_SOFTWARE_ERR,      /**< @brief Software error indicator. */
     GPIO_OUT_RTD_SIGNAL,        /**< @brief Ready-to-drive signal. */
     GPIO_IN_SOFTWARE_ERR,       /**< @brief Software error latch input signal. */
     GPIO_IN_BSPD_ERR,           /**< @brief BSPD latch input signal. */
     GPIO_IN_IMD_ERR,            /**< @brief IMD latch input signal. */
+    GPIO_IN_EAB,
+    GPIO_IN_EBS_ACTIVATED,
     GPIO_LEN                    /**< @brief Total GPIO pins. */
 } gpio_t;
 

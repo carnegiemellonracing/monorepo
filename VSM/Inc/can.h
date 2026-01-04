@@ -21,8 +21,7 @@ typedef enum {
     CANRX_HEARTBEAT_HVC = 0,  /**< @brief HVC heartbeat. */
     CANRX_HEARTBEAT_CDC,      /**< @brief CDC heartbeat. */
     CANRX_HEARTBEAT_DIM,      /**< @brief DIM heartbeat. */
-    CANRX_HEARTBEAT_HVI,      /**< @brief HVI heartbeat. */  
-    CANRX_HEARTBEAT_AIM,
+    CANRX_HEARTBEAT_HVI,      /**< @brief HVI heartbeat. */
     CANRX_FSM_DATA,           /**< @brief FSM data. */
     CANRX_FSM_SWANGLE,
     CANRX_DIM_REQUEST,        /**< @brief DIM state request. */
@@ -32,8 +31,7 @@ typedef enum {
     CANRX_INVERTER_4,         /**< @brief Inverter4 status */
     CANRX_RES,                /**< @brief RES */
     CANRX_AS_PRESSURE_READING,/**< @brief Autonomous Pressure Readings */
-	CANRX_MAXON_HEARTBEAT,    /**< @brief Maxon Heartbeat */
-	CANRX_MAXON_STATUS_WORD,   /**< @brief Maxon status word */
+    CANRX_ASMS_STATE,
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 
@@ -47,6 +45,7 @@ void *getPayload(canRX_t rxMsg);
 cmr_canState_t getModuleState(canRX_t module);
 bool getASMSState(void);
 void sendFirstError(uint8_t error_code);
+void resetError();
 
 #endif /* CAN_H */
 
