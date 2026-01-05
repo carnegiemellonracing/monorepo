@@ -79,7 +79,7 @@ uint8_t getVoltages(void) {
         cellVoltages[CELL_NUM-j-1] = calculateVoltage(high_byte_data, low_byte_data);
     }
 
-    sendOvervoltageFlags(getVoltageData);
+    sendOvervoltageFlags(cellVoltages);
 
     return 0;
 }
@@ -118,8 +118,6 @@ uint16_t tempConvert(uint16_t adc_value) {
     float temperature = 30; //placeholder
     return (uint16_t)(temperature * 100.0f);  //1/100 degree C
 }
-
-
 
 
 uint8_t getTemps(int channel) {

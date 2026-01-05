@@ -1,16 +1,19 @@
 /*
  * bq_interface.c
  *
- *  Created on: Apr 30, 2023
- *      Author: sidsr
+ *  Created on: Jan 5, 2026
+ *      Author: Ayush Garg and Yi-An Liao
  */
-#include "bq_interface.h"
-// #include "state_task.h"
-#include "uart.h"
-#include "gpio.h"
+
 #include <CMR/uart.h>
 #include <stm32f4xx_hal.h>
 #include <stdbool.h>
+
+#include "bq_interface.h"
+#include "dwt.h"
+#include "gpio.h"
+#include "uart.h"
+
 
 #define SINGLE_DEVICE true
 #define MULTIPLE_DEVICE false
@@ -25,58 +28,43 @@ BMB_Data_t BMBData[BOARD_NUM];
 // 	BMBErrs[BMBIndex] = err;
 // }
 
-__STATIC_INLINE void DWT_Delay_us(volatile uint32_t au32_microseconds)
-{
-  uint32_t au32_initial_ticks = DWT->CYCCNT;
-  uint32_t au32_ticks = (HAL_RCC_GetHCLKFreq() / 1000000);
-  au32_microseconds *= au32_ticks;
-  while ((DWT->CYCCNT - au32_initial_ticks) < au32_microseconds-au32_ticks);
-}
-
-__STATIC_INLINE void DWT_Delay_ms(volatile uint32_t au32_milliseconds)
-{
-  uint32_t au32_initial_ticks = DWT->CYCCNT;
-  uint32_t au32_ticks = (HAL_RCC_GetHCLKFreq() / 1000);
-  au32_milliseconds *= au32_ticks;
-  while ((DWT->CYCCNT - au32_initial_ticks) < au32_milliseconds);
-}
+//Forward Decelerations
+void txToRxDelay(uint8_t delay);
+void byteDelay(uint8_t delay);
 
 void turnOn() {
 
-
 	//Turn On Ping
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_SET
 	);
-	// HAL_Delay(100);
+
 	DWT_Delay_ms(100);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_RESET
 	);
-	// HAL_Delay(3);
+
 	DWT_Delay_ms(3);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_SET
 	);
-	// HAL_Delay(5);
+
 	DWT_Delay_ms(5);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_RESET
 	);
-	// HAL_Delay(3);
+
 	DWT_Delay_ms(3);
 	HAL_GPIO_WritePin(
 			GPIOB, GPIO_PIN_13,
 		GPIO_PIN_SET
 	);
 
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 	uartInit();
 
@@ -91,11 +79,7 @@ void turnOn() {
 			.crc = {0x00, 0x00}
 	};
 	res = uart_sendCommand(&sendWake);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
 
-	// HAL_Delay(1000);
 	DWT_Delay_ms(1000);
 
 	autoAddr();
@@ -109,12 +93,7 @@ void turnOn() {
 				.data = {0x02},
 				.crc = {0x00, 0x00}
 		};
-		res = uart_sendCommand(&hardReset);
-		if(res != UART_SUCCESS) {
-			return false;
-		}
 
-		// HAL_Delay(200);
 		DWT_Delay_ms(200);
 	}
 
@@ -128,13 +107,8 @@ void turnOn() {
 	};
 
 	res = uart_sendCommand(&sendShutdown);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
 
-	// HAL_Delay(1000);
 	DWT_Delay_ms(1000);
-
 
 }
 
@@ -167,7 +141,6 @@ bool autoAddr() {
 		if(res != UART_SUCCESS) {
 			return false;
 		}
-		// HAL_Delay(10);
 		DWT_Delay_ms(10);
 	}
 
@@ -187,7 +160,6 @@ bool autoAddr() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
-	// HAL_Delay(10);
 	DWT_Delay_ms(10);
 
 	//set all the addresses of the boards in DIR0_ADDR
@@ -222,7 +194,6 @@ bool autoAddr() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
-	// HAL_Delay(10);
 	DWT_Delay_ms(10);
 
 	uart_command_t set_comm_ctrl = {
@@ -415,7 +386,7 @@ void BMBInit() {
 	DWT_Delay_ms(100);
 
 	//No idea lol
-	txToRxDelay();
+	txToRxDelay(10);
 	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 	byteDelay(0x3F);

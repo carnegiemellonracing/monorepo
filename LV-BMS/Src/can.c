@@ -17,6 +17,7 @@
 
 #include "can.h"
 #include "data.h"
+#include "bq_interface.h"
 // INTERFACES
 
 

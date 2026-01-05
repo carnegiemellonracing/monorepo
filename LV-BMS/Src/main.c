@@ -14,11 +14,14 @@
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
 
-#include "gpio.h"
 #include "adc.h"
-#include "i2c.h"
+#include "bq_interface.h"
 #include "can.h"
 #include "data.h"
+#include "dwt.h"
+#include "gpio.h"
+#include "i2c.h"
+
 
 /** @brief Status LED priority. */
 static const uint32_t status_LED_priority = 2;
@@ -81,35 +84,18 @@ static void post_ms_monitor(void *pvParameters) {
  * @return Does not return.
  */
 int main(void) {
-    // System initialization.
-    HAL_Init();
-    cmr_rccSystemInternalClockEnable();
+  // System initialization.
+  HAL_Init();
+  cmr_rccSystemClockEnable();
 
-    // Peripheral configuration.
-    gpio_init();
+  // Peripheral configuration.
+	DWT_Delay_Init();
+  gpio_init();
+	BMBInit();
 	adc_init();
 	i2c_init();
-	canInit();
-	// AFE_SETUP();
+	// canInit();
 
-//	while(1) {
-//
-//		int post_ms = cmr_gpioRead(GPIO_POST_MS);
-//
-//		uint8_t chip_id = read_chip_id();
-//
-//		(void*)chip_id;
-//		uint8_t status = read_status();
-//		uint8_t ref_sel = read_ref_sel();
-//		uint8_t cell_ctl = read_cell_ctl();
-//		write_cell_ctl();
-//		cell_ctl = read_cell_ctl();
-//
-//		uint8_t dummy = 0;
-//	}
-
-
-	// It seems like whichever task first created can turn off the AFE by write_sleep()
 	cmr_taskInit(
 		&post_ms_monitor_task,
 		"post ms monitor",
