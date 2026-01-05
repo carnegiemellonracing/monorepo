@@ -5,9 +5,11 @@
  *      Author: Ayush Garg and Yi-An Liao
  */
 
-#include <CMR/uart.h>
-#include <stm32f4xx_hal.h>
 #include <stdbool.h>
+#include <stm32f4xx_hal.h>
+
+#include <CMR/gpio.h>    // cmr_rccGPIOClockEnable()
+#include <CMR/uart.h>
 
 #include "bq_interface.h"
 #include "dwt.h"
@@ -36,53 +38,24 @@ void turnOn() {
 
 	//Turn On Ping
 	DWT_Delay_ms(100);
-	HAL_GPIO_WritePin(
-		GPIOB, GPIO_PIN_13,
-		GPIO_PIN_SET
-	);
+    cmr_gpioWrite(RX_TURNON, 1);
 
 	DWT_Delay_ms(100);
-	HAL_GPIO_WritePin(
-		GPIOB, GPIO_PIN_13,
-		GPIO_PIN_RESET
-	);
+    cmr_gpioWrite(RX_TURNON, 0);
 
 	DWT_Delay_ms(3);
-	HAL_GPIO_WritePin(
-		GPIOB, GPIO_PIN_13,
-		GPIO_PIN_SET
-	);
+    cmr_gpioWrite(RX_TURNON, 1);
 
 	DWT_Delay_ms(5);
-	HAL_GPIO_WritePin(
-		GPIOB, GPIO_PIN_13,
-		GPIO_PIN_RESET
-	);
+    cmr_gpioWrite(RX_TURNON,0);
 
 	DWT_Delay_ms(3);
-	HAL_GPIO_WritePin(
-			GPIOB, GPIO_PIN_13,
-		GPIO_PIN_SET
-	);
+    cmr_gpioWrite(RX_TURNON, 1);
 
 	DWT_Delay_ms(100);
 	uartInit();
 
 	cmr_uart_result_t res;
-
-	uart_command_t sendWake = {
-			.readWrite = SINGLE_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0x00,
-			.registerAddress = CONTROL1,
-			.data = {0x20},
-			.crc = {0x00, 0x00}
-	};
-	res = uart_sendCommand(&sendWake);
-
-	DWT_Delay_ms(1000);
-
-	autoAddr();
 
 	for (int i = BOARD_NUM - 1; i >= 0; i--) {
 		uart_command_t hardReset = {
@@ -109,161 +82,6 @@ void turnOn() {
 	res = uart_sendCommand(&sendShutdown);
 
 	DWT_Delay_ms(1000);
-
-}
-
-/** Auto Address Function
- * This helper function will autoaddress a certain amount of BQ79616-Q1
- * chips. It runs the procedure exactly described in the datasheet and the TI
- * sample code.
- * @param num_boards Number of boards
- * @return True if all uart commands succeeded, false otherwise
- */
-bool autoAddr() {
-	// Sanity check number of boards
-	if(BOARD_NUM > 64 || BOARD_NUM < 1) {
-		return false;
-	}
-
-	// Dummy write to sync OTP addresses
-	uart_command_t otpSync = {
-		.readWrite = BROADCAST_WRITE,
-		.dataLen = 1,
-		.deviceAddress = 0xFF, //not used!!!
-		.registerAddress = OTP_ECC_DATAIN1,
-		.data = {0x00},
-		.crc = {0x00, 0x00}
-	};
-	cmr_uart_result_t res;
-	for(int i = 0; i < 8; i++) {
-		otpSync.registerAddress = OTP_ECC_DATAIN1 + i;
-		res = uart_sendCommand(&otpSync);
-		if(res != UART_SUCCESS) {
-			return false;
-		}
-		DWT_Delay_ms(10);
-	}
-
-	//broadcast write to enable autoaddressing
-	uart_command_t enableAutoaddress = {
-			.readWrite = BROADCAST_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!!!
-			.registerAddress = CONTROL1,
-			.data = {0x01},
-			.crc = {0x00, 0x00}
-	};
-
-
-
-	res = uart_sendCommand(&enableAutoaddress);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
-	DWT_Delay_ms(10);
-
-	//set all the addresses of the boards in DIR0_ADDR
-	uart_command_t set_addr = {
-			.readWrite = BROADCAST_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!!!
-			.registerAddress = DIR0_ADDR,
-			.data = {0x00},
-			.crc = {0x00, 0x00}
-	};
-	for(int i = 0; i < BOARD_NUM; i++) {
-		res = uart_sendCommand(&set_addr);
-		if(res != UART_SUCCESS) {
-			return false;
-		}
-		set_addr.data[0]++;
-		// HAL_Delay(10);
-		DWT_Delay_ms(10);
-	}
-
-	//Set all devices as stack devices first
-	uart_command_t set_stack_devices = {
-		.readWrite = BROADCAST_WRITE,
-		.dataLen = 1,
-		.deviceAddress = 0xFF, //not used!!!
-		.registerAddress = COMM_CTRL,
-		.data = {0x02},
-		.crc = {0x00, 0x00}
-	};
-	res = uart_sendCommand(&set_stack_devices);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
-	DWT_Delay_ms(10);
-
-	uart_command_t set_comm_ctrl = {
-		.readWrite = SINGLE_WRITE,
-		.dataLen = 1,
-		.deviceAddress = BOARD_NUM-1,
-		.registerAddress = COMM_CTRL,
-		.data = {0x03},
-		.crc = {0x00, 0x00}
-	};
-
-	//set 0x00 as base and num_board-1 as top
-//	set_comm_ctrl.data[0] = 0x00;
-//	res = uart_sendCommand(&set_comm_ctrl);
-//	if(res != UART_SUCCESS) {
-//		return false;
-//	}
-	res = uart_sendCommand(&set_comm_ctrl);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
-	// HAL_Delay(10);
-	DWT_Delay_ms(10);
-
-	// Resync OTP registers with dummy reads
-	otpSync.readWrite = BROADCAST_READ;
-	otpSync.data[0] = 0;
-
-	for(int i = 0; i < 8; i++) {
-		otpSync.registerAddress = OTP_ECC_DATAIN1 + i;
-		res = uart_sendCommand(&otpSync);
-		if(res != UART_SUCCESS) {
-			return false;
-		}
-		// HAL_Delay(10);
-		DWT_Delay_ms(10);
-	}
-
-	// COMMENTED OUT CODE THAT IS USED FOR SANITY CHECKING AUTOADDRESSING
-
-//	uart_response_t response;
-//	uart_command_t readReg = {
-//		.readWrite = SINGLE_READ,
-//		.dataLen = 1,
-//		.deviceAddress = 0x00,
-//		.registerAddress = 0x306,
-//		.data = {0x00},
-//		.crc = {0x00, 0x00}
-//	};
-//	uart_sendCommand(&readReg);
-//
-//	if(uart_receiveResponse(&response) == UART_FAILURE) {
-//		return false;
-//	}
-//
-//	readReg.deviceAddress = 0x01;
-//	uart_sendCommand(&readReg);
-//
-//	if(uart_receiveResponse(&response) == UART_FAILURE) {
-//		return false;
-//	}
-//
-//	readReg.deviceAddress = 0x02;
-//	uart_sendCommand(&readReg);
-//
-//	if(uart_receiveResponse(&response) == UART_FAILURE) {
-//		return false;
-//	}
-
-	return true;
 
 }
 
@@ -368,7 +186,7 @@ void BMBInit() {
 	turnOn();
 	// HAL_Delay(1000);
 	DWT_Delay_ms(1000);
-	autoAddr();
+	// autoAddr();
 	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 	enableNumCells();

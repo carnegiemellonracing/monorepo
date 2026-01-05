@@ -47,8 +47,8 @@ void uartInit(void) {
 
 	cmr_uart_polling_init(
 			&uart, USART1, &uartInit,
-			GPIOA, GPIO_PIN_9,     /* rx */
-			GPIOA, GPIO_PIN_10      /* tx */
+			GPIOA, GPIO_PIN_10,     /* rx */
+			GPIOA, GPIO_PIN_9      /* tx */
 	);
 
 	return;

@@ -20,6 +20,7 @@ typedef enum {
 	GPIO_VTHERM_SEL2,
 	GPIO_VTHERM_IN,
 	GPIO_POST_MS,
+	RX_TURNON,
 	GPIO_LEN
 } gpio_t;
 
