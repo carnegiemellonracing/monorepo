@@ -346,7 +346,7 @@ int32_t getBattMillivolts() {
 	for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
 		for (uint8_t i = 0; i < VSENSE_CHANNELS; i++) {
 			totalPackCellVoltage +=
-					(int32_t) BMBData[bmb_index].cellVoltages[i];
+				(int32_t) BMBData[bmb_index].cellVoltages[i];
 		}
 	}
 

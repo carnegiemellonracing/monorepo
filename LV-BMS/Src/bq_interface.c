@@ -6,6 +6,7 @@
  */
 
 #include <stdbool.h>
+#include <string.h>
 #include <stm32f4xx_hal.h>
 
 #include <CMR/gpio.h>    // cmr_rccGPIOClockEnable()
@@ -33,6 +34,8 @@ BMB_Data_t BMBData[BOARD_NUM];
 //Forward Decelerations
 void txToRxDelay(uint8_t delay);
 void byteDelay(uint8_t delay);
+static bool sendUartBroadcastWrite(
+    uint16_t registerAddress, uint8_t* data, uint8_t dataLen);
 
 void turnOn() {
 
@@ -110,6 +113,7 @@ bool enableMainADC() {
 
 // Enable however many cells are in series in one segment
 bool enableNumCells() {
+
 	uart_command_t active_cell = {
 		.readWrite = BROADCAST_WRITE,
 		.dataLen = 1,
@@ -128,44 +132,24 @@ bool enableNumCells() {
 
 // Enable all GPIO registers and TSREF for thermistor biasing
 bool enableGPIOPins() {
-	uart_command_t enable_tsref = {
-			.readWrite = BROADCAST_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!
-			.registerAddress = CONTROL2,
-			.data = {0x01}, //enable TSREF for NTC Thermistor Biasing
-			.crc = {0x00, 0x00}
-	};
-	cmr_uart_result_t res = uart_sendCommand(&enable_tsref);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
+    bool res;
 
-	//enable GPIO inputs
-	uart_command_t enable_gpio = {
-			.readWrite = BROADCAST_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!
-			.registerAddress = GPIO_CONF1,
-			.data = {0x12},
-			.crc = {0x00, 0x00}
-	};
-	res = uart_sendCommand(&enable_gpio);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
+    //Enables TS-Ref
+    uint8_t data = 0x01;
+    res = sendUartBroadcastWrite(CONTROL2, &data, 1);
+    if (!res) return false;
 
+    // Enables GPIO Inputs (ADC)
+    data = 0x12;
+    res = sendUartBroadcastWrite(GPIO_CONF1, &data, 1);
+    if (!res) return false;
 
-	//enable MUX outputs as low initially
-	enable_gpio.registerAddress = GPIO_CONF2;
-	enable_gpio.data[0] = 0x2D;
-	res = uart_sendCommand(&enable_gpio);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
+    // Enables Mux Starting as 0s
+    data = 0x2D;
+    res = sendUartBroadcastWrite(GPIO_CONF2, &data, 1);
+    if (!res) return false;
 
 	return true;
-
 }
 
 // Enable command timeout so BQ sleeps turns off when car is off
@@ -184,34 +168,26 @@ void enableTimeout() {
 // Init function for all BMBs
 void BMBInit() {
 	turnOn();
-	// HAL_Delay(1000);
 	DWT_Delay_ms(1000);
-	// autoAddr();
-	// HAL_Delay(100);
-	DWT_Delay_ms(100);
+
 	enableNumCells();
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
+
 	enableGPIOPins();
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
+
 	enableMainADC();
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
+
 	enableTimeout();
-	//disableTimeout();
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 
-	//No idea lol
 	txToRxDelay(10);
-	// HAL_Delay(100);
-	DWT_Delay_ms(100);
-	byteDelay(0x3F);
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 
-	// HAL_Delay(100);
+	byteDelay(0x3F);
+	DWT_Delay_ms(100);
+
 	DWT_Delay_ms(100);
 	cellBalancingSetup();
 }
@@ -263,8 +239,6 @@ int16_t calculateTemp(uint8_t msb, uint8_t lsb) {
 //    uint32_t temp = (resistance_centiOhm*resistance_centiOhm) * 46 - (resistance_centiOhm) * 11303 + 905666;
     return (voltage_mv);
 }
-
-
 
 
 void cellBalancingSetup() {
@@ -436,15 +410,8 @@ void cellBalancing(bool set, uint16_t thresh) {
 
 void writeLED(bool set) {
 	uint8_t enableLed = set ? 0 : 1;
-	uart_command_t write_led = {
-			.readWrite = BROADCAST_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!
-			.registerAddress = GPIO_CONF1,
-			.data = {0x04 + enableLed},
-			.crc = {0x00, 0x00}
-	};
-	uart_sendCommand(&write_led);
+    uint8_t data = 0x04 + enableLed;
+    sendUartBroadcastWrite(GPIO_CONF3, &data, 1);
 }
 
 void disableTimeout() {
@@ -507,4 +474,36 @@ void twoStop() {
 	uart_sendCommand(&two_stop_stack);
 }
 
+/**
+ * @brief Send a UART "stack write" command to the device.
+ *
+ * Constructs a BROADCAST_WRITE uart_command_t with the provided register
+ * address and data payload, then transmits it over UART.
+ *
+ * @note I (Ayush Garg) added this function during 2025 to clean up code
+ * that I write although there is much legacy code that does not utilize
+ * this helper function
+ *
+ * @param registerAddress 16-bit register address to write to.
+ * @param data            Pointer to the data buffer to be written.
+ * @param dataLen         Number of bytes in the data buffer.
+ *
+ * @return true if the UART command was sent successfully (UART_SUCCESS),
+ *         false otherwise.
+ */
+static bool sendUartBroadcastWrite(  uint16_t registerAddress, 
+										    uint8_t* data, 
+										    uint8_t dataLen) {
+    uart_command_t broadcastWriteCmd = {
+        .readWrite = BROADCAST_WRITE,
+        .dataLen = dataLen,
+        .deviceAddress = 0xFF, //not used!
+        .registerAddress = registerAddress,
+        .crc = {0x00, 0x00}
+    };
 
+    memcpy(broadcastWriteCmd.data, data, dataLen);
+
+    cmr_uart_result_t res = uart_sendCommand(&broadcastWriteCmd);
+    return (res == UART_SUCCESS);
+}

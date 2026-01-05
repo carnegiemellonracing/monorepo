@@ -20,10 +20,8 @@
 #include "i2c.h"
 #include "uart.h"
 
-// uint16_t sendVolt[CELL_NUM];
 uint16_t cellVoltages[CELL_NUM];
 uint16_t cellTemps[CELL_NUM];
-// uint8_t cellNum[CELL_NUM];
 signed char offset_corr[CELL_NUM];
 signed char gain_corr[CELL_NUM];
 unsigned int vref_corr;
@@ -173,4 +171,50 @@ void sendCurrent(void) {
     uint16_t sensep = adc_read(ADC_AFE_VIOUT);
     float current = float_to_uint16((sensep - adc_sensen)*vref_corr/(ADC_COUNT*GVCOUT*1e3));
     canTX(CMR_CANID_LVBMS_CURRENT, &current, sizeof(current), canTX10Hz_period_ms);
+}
+
+
+// Main sample task entry point for BMS
+void vBMBSampleTask(void *pvParameters) {
+
+	TickType_t xLastWakeTime = xTaskGetTickCount();
+
+	// Main BMS control loop
+	while (1) {
+		// Loop through the 4 different MUX channels and select a different one
+		// We still monitor all voltages each channel switch
+		for(uint8_t j = 0; j < 4; j++) {
+			setMuxOutput(j);
+			xLastWakeTime = xTaskGetTickCount();
+			vTaskDelayUntil(&xLastWakeTime, 10);
+			pollAllTemperatureData(j);
+		}
+
+		uint8_t err = pollAllVoltageData();
+        writeLED(ledToggle);
+		ledToggle = !ledToggle;
+        vTaskDelayUntil(&xLastWakeTime, 100);
+
+	}
+}
+
+
+
+/** @brief Sample Task Priority priority. */
+static const uint32_t sampleTaskPriority = 2;
+
+/** @brief Sample Task period (milliseconds). */
+static const TickType_t sampleTaskPeriod_ms = 100;
+
+/** @brief Sample task. */
+static cmr_task_t sampleTask;
+
+void sampleInit(){
+    cmr_taskInit(
+        &sampleTask,
+        "BMS Sample Init",
+        sampleTaskPriority,
+        vBMBSampleTask,
+        NULL
+    );
 }

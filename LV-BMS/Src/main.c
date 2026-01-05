@@ -55,27 +55,6 @@ static void status_LED(void *pvParameters) {
 }
 
 
-
-static void post_ms_monitor(void *pvParameters) {
-	(void) pvParameters;
-	TickType_t time_prev = xTaskGetTickCount();
-//	while(true) {
-////		int post_ms = cmr_gpioRead(GPIO_POST_MS);
-////		if(!post_ms)
-//			write_sleep();
-////		uint8_t prev = read_power_ctl();
-////		uint8_t after = read_power_ctl();
-//		vTaskDelayUntil(&time_prev, post_ms_read_period_ms);
-//	}
-
-	while(true){
-		int post_ms = cmr_gpioRead(GPIO_POST_MS);
-		if(!post_ms)
-			write_sleep(); // This line will kill itself
-		vTaskDelayUntil(&time_prev, post_ms_monitor_read_period_ms);
-	}
-}
-
 /**
  * @brief Firmware entry point.
  *
@@ -97,20 +76,14 @@ int main(void) {
 	// canInit();
 
 	cmr_taskInit(
-		&post_ms_monitor_task,
-		"post ms monitor",
-		post_ms_monitor_priority,
-		post_ms_monitor,
-		NULL
-	);
-
-	cmr_taskInit(
 		&status_LED_task,
 		"Status LED",
 		status_LED_priority,
 		status_LED,
 		NULL
 	);
+
+	sampleInit();
 
 	vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!"); //what is this?
