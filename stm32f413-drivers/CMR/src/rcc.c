@@ -185,5 +185,14 @@ void cmr_rccTIMClockEnable(TIM_TypeDef *instance) {
 }
 #endif /* HAL_TIM_MODULE_ENABLED */
 
+#ifdef HAL_SD_MODULE_ENABLED
+#ifdef F413 
+void cmr_rccSDIOClockEnable() {
+    __HAL_RCC_SDIO_CLK_ENABLE();        
+}
+#endif F413
+#endif /* HAL_SD_MODULE_ENABLED */
+
+
 #endif /* HAL_RCC_MODULE_ENABLED */
 
