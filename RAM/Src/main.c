@@ -39,18 +39,20 @@ int main(void) {
 
 
     // Peripheral configuration.
-    // uartInit();
+    uartInit();
     gpioInit();
     // canInit();
     statusLEDInit();
     memoratorInit();
 
+    MX_RTC_Init();
+
     // // Load in JSON configuration
-    // parserInit();
+    parserInit();
     // // Set up CBOR encoder
-    // sampleInit();
+    sampleInit();
     // // Pull in previous configuration
-    // configInit();
+    configInit();
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");
