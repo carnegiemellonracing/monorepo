@@ -48,7 +48,7 @@ static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
 
 uint8_t getVoltages(void) {
     TickType_t time_prev = xTaskGetTickCount();
-     uart_command_t read_voltage = {
+    uart_command_t read_voltage = {
 			.readWrite = BROADCAST_READ,
 			.dataLen = 1,
 			.deviceAddress = 0xFF, //not used!
@@ -124,7 +124,7 @@ uint8_t getTemps(int channel) {
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = GPIO1_HI,
-		.data = {0x07},
+		.data = {0x03},
 		.crc = {0xFF, 0xFF}
 	};
 
@@ -176,7 +176,7 @@ void sendCurrent(void) {
 
 // Main sample task entry point for BMS
 void vBMBSampleTask(void *pvParameters) {
-
+    bool ledToggle = false;
 	TickType_t xLastWakeTime = xTaskGetTickCount();
 
 	// Main BMS control loop
@@ -190,7 +190,7 @@ void vBMBSampleTask(void *pvParameters) {
 			pollAllTemperatureData(j);
 		}
 
-		uint8_t err = pollAllVoltageData();
+		// uint8_t err = pollAllVoltageData();
         writeLED(ledToggle);
 		ledToggle = !ledToggle;
         vTaskDelayUntil(&xLastWakeTime, 100);

@@ -329,7 +329,7 @@
 
 typedef struct BMB_Data_t{
     uint16_t cellVoltages[CELL_NUM];
-    int16_t cellTemperatures[CELL_NUM];
+    int16_t cellTemperaturesVoltageReading[CELL_NUM];
 } BMB_Data_t;
 
 #define TOP_CELL VCELL7_HI

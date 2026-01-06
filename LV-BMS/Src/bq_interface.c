@@ -17,10 +17,6 @@
 #include "gpio.h"
 #include "uart.h"
 
-
-#define SINGLE_DEVICE true
-#define MULTIPLE_DEVICE false
-
 extern volatile int BMBTimeoutCount[BOARD_NUM];
 extern volatile int BMBErrs[BOARD_NUM];
 
@@ -30,6 +26,13 @@ BMB_Data_t BMBData[BOARD_NUM];
 // static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
 // 	BMBErrs[BMBIndex] = err;
 // }
+
+// CHANNEL_GPIO_TO_CELL_MAP[i][j] yields the corresponding cell number for 
+// ith mux setting and the jth GPIO channel. We choose to zero index the cell nums
+uint8_t CHANNEL_GPIO_TO_CELL_MAP [4][NUM_GPIO_CHANNELS]  = {{0, 4},
+                                                            {1, 5},
+                                                            {2, 6},
+                                                            {3, 255}};
 
 //Forward Decelerations
 void txToRxDelay(uint8_t delay);
@@ -170,6 +173,30 @@ void BMBInit() {
 	turnOn();
 	DWT_Delay_ms(1000);
 
+    //Set all devices as stack devices first
+	uart_command_t set_stack_devices = {
+		.readWrite = SINGLE_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0x00,
+		.registerAddress = COMM_CTRL,
+		.data = {0x01},
+		.crc = {0x00, 0x00}
+	};
+
+    uart_sendCommand(&set_stack_devices);
+
+    //Set all devices as stack devices first
+	uart_command_t set_stack_devices2 = {
+		.readWrite = SINGLE_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0x00,
+		.registerAddress = DEBUG_COMM_CTRL1,
+		.data = {0x0E},
+		.crc = {0x00, 0x00}
+	};
+
+    uart_sendCommand(&set_stack_devices2);
+
 	enableNumCells();
 	DWT_Delay_ms(100);
 
@@ -218,19 +245,10 @@ bool setMuxOutput(uint8_t channel) {
 	default:
 		return false;
 	}
-	uart_command_t enable_gpio = {
-			.readWrite = BROADCAST_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!
-			.registerAddress = GPIO_CONF2,
-			.data = {data},
-			.crc = {0x00, 0x00}
-	};
-	cmr_uart_result_t res = uart_sendCommand(&enable_gpio);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
-	return true;
+
+    // Switches Mux
+    bool res = sendUartBroadcastWrite(GPIO_CONF2, &data, 1);
+    return res;
 }
 
 int16_t calculateTemp(uint8_t msb, uint8_t lsb) {
@@ -453,21 +471,11 @@ void txToRxDelay(uint8_t delay) {
 }
 
 void twoStop() {
-	uart_command_t two_stop_single = {
-			.readWrite = SINGLE_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0x00,
-			.registerAddress = 0x2001,
-			.data = 0b00111000,
-			.crc = {0x00, 0x00}
-	};
-	uart_sendCommand(&two_stop_single);
-
 	uart_command_t two_stop_stack = {
 			.readWrite = BROADCAST_WRITE,
 			.dataLen = 1,
 			.deviceAddress = 0xFF,
-			.registerAddress = 0x02,
+			.registerAddress = DEV_CONF,
 			.data = 0b00111010,
 			.crc = {0x00, 0x00}
 	};
@@ -506,4 +514,57 @@ static bool sendUartBroadcastWrite(  uint16_t registerAddress,
 
     cmr_uart_result_t res = uart_sendCommand(&broadcastWriteCmd);
     return (res == UART_SUCCESS);
+}
+
+
+// For efficiency we choose to do as little computation as possible here and 
+// just compute voltage. To convert from voltage to temperature we would need
+// to do the Steinhart equation which is very expensive. However, since the
+// Steinhart is strictly decreasing we are able to simply probe the voltage
+// values for the hottest and coldest cells. The transfer function should be 
+// on PCAN to convert to temperature for easy viewing
+static int16_t calculateTempVoltageReading(uint8_t msb, uint8_t lsb) {
+	int16_t voltage_mv = (uint16_t)((0.15259) * (((int16_t) msb << 8) | lsb));
+    return (voltage_mv);
+}
+
+void pollAllTemperatureData(int channel) {
+    uint8_t bytesToRead = 2 * NUM_GPIO_CHANNELS;
+	uart_command_t read_therms = {
+		.readWrite = BROADCAST_READ,
+		.dataLen = 1,
+		.deviceAddress = 0xFF, //not used!
+		.registerAddress = GPIO1_HI,
+		.data = {bytesToRead-1},
+		.crc = {0xFF, 0xFF}
+	};
+
+	taskENTER_CRITICAL();
+	uart_sendCommand(&read_therms);
+
+	uart_response_t response;
+    if(uart_receiveResponse(&response, bytesToRead-1) != UART_FAILURE) {
+        //loop through each GPIO channel
+        // setBMBErr(i-1, BMB_TEMP_READ_ERROR);
+        // BMBTimeoutCount[i-1]+=1;
+        return;
+    }
+	
+	taskEXIT_CRITICAL();
+
+	for(uint8_t i = 0; i < BOARD_NUM; i++) {
+		for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; k++) {
+            uint8_t cellNum = CHANNEL_GPIO_TO_CELL_MAP[channel][k];
+            if (cellNum == 255)
+                continue;
+
+			uint8_t high_byte_data = response.data[2*k];
+			uint8_t low_byte_data = response.data[2*k+1];
+            int16_t cellTempVoltageReading = calculateTempVoltageReading(high_byte_data, low_byte_data);
+            
+			BMBData[i].cellTemperaturesVoltageReading[cellNum] = cellTempVoltageReading;
+
+		}
+	}
+	return;
 }
