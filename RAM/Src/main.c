@@ -23,6 +23,7 @@
 #include "sample.h" // CBOR encoding
 #include "statusLED.h"   // Board-specific statusLED interface
 #include "uart.h"   // Board-specific UART interface
+#include "rtc.h"
 
 
 /**
