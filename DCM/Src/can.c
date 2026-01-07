@@ -184,13 +184,24 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .timeoutWarn_ms = 75,
     }
     // TODO: double check timeout and warning data
+    // use canIDs startnig at 0x560
     [CANRX_VEH_SENSORIC_VEL_ANG_POI] = {
         .canID = CMR_CANID_SENSORIC_VEL_ANG_POI,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
     [CANRX_VEH_SENSORIC_PITCH_ROLL] = {
-        .canID = CMR_CANID_SENSORIC_VEL_ANG_POI,
+        .canID = CMR_CANID_SENSORIC_PITCH_ROLL,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_VEH_SENSORIC_ACC] = {
+        .canID = CMR_CANID_SENSORIC_ACC,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_VEH_SENSORIC_RATE] = {
+        .canID = CMR_CANID_SENSORIC_RATE,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
