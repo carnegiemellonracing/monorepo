@@ -673,14 +673,14 @@ typedef struct {
 typedef enum {
     standstill = (1<<0),
     direction_neg = (1<<1),
-    rate_adjust_active = (1<<2);
-    trigger = (1<<5);
-    brake_acc_status = (1<<6);
-    illu_on = (1<<8);
-    illu_ok = (1<<9);
-    sensor_connected = (1<<10);
-    adjustment_active = (1<<12);
-    can_ang_adj_failed = (1<<13);
+    rate_adjust_active = (1<<2),
+    trigger = (1<<5),
+    brake_acc_status = (1<<6),
+    illu_on = (1<<8),
+    illu_ok = (1<<9),
+    sensor_connected = (1<<10),
+    adjustment_active = (1<<12),
+    can_ang_adj_failed = (1<<13),
     status_ok = (1<<15),
 } cmr_canSensoricStatusFlags_t;
 
