@@ -291,6 +291,7 @@ typedef enum {
     CMR_CANID_LVBMS_CELL_OVERTEMP,
     CMR_CANID_LVBMS_BUS_VOLTAGE,
     CMR_CANID_LVBMS_CURRENT,
+
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */
