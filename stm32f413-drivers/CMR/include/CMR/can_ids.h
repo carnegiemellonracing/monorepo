@@ -327,7 +327,6 @@ typedef enum {
     CMR_CANID_SENSORIC_DIST_VEL_SP = 0x56A, 
     CMR_CANID_SENSORIC_STATUS = 0x56B,
     CMR_CANID_SENSORIC_INFO = 0x56C, 
-    CMR_CANID_SENSORIC_STATIC_INFO = 0x56D,
 
     CMR_CANID_EMD_STATUS = 0x400,               /**< @brief EMD status. */
     CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */
