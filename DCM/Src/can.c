@@ -183,6 +183,17 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
     }
+    // TODO: double check timeout and warning data
+    [CANRX_VEH_SENSORIC_VEL_ANG_POI] = {
+        .canID = CMR_CANID_SENSORIC_VEL_ANG_POI,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_VEH_SENSORIC_PITCH_ROLL] = {
+        .canID = CMR_CANID_SENSORIC_VEL_ANG_POI,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
 };
 
 /** @brief Metadata for tractive CAN message reception. */
