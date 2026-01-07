@@ -95,6 +95,11 @@ enum SBGSolutionStatusMode(0="SBG_SOL_MODE_UNINITIALIZED",
     2="but navigation data drift freely. */",
     3="integrated from velocity estimation. */",
     4="(attitude, velocity, position). Absolute position is provided. */")
+enum SensoricInfoFlags(1="info_error", 2="info_transversal",
+    4="info_inverse_mounting", 8="info_mov_avg_active", 16="info_poi",
+    64="info_illu_incomp", 128="info_service_mode")
+enum SensoricStatusFlags(1="standstill", 2="direction_neg",
+    32768="status_ok")
 enum State(0="UNKNOWN", 1="GLV_ON", 2="HV_EN", 3="RTD", 4="ERROR",
     5="CLEAR_ERROR", 6="AS_READY", 7="AS_DRIVING", 8="AS_FINISHED",
     9="AS_EMERGENCY")
