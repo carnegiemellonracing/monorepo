@@ -38,7 +38,7 @@ void uartInit(void) {
 	const UART_InitTypeDef uartInit = {
 			.BaudRate = BQ_BAUD_RATE,
 			.WordLength = UART_WORDLENGTH_8B,
-			.StopBits = UART_STOPBITS_1,
+			.StopBits = UART_STOPBITS_2,
 			.Parity = UART_PARITY_NONE,
 			.HwFlowCtl = UART_HWCONTROL_NONE,
 			.Mode = UART_MODE_TX_RX,

@@ -25,7 +25,6 @@
 
 /** @brief Status LED priority. */
 static const uint32_t status_LED_priority = 2;
-static const uint32_t post_ms_monitor_priority = 1;
 
 /** @brief Status LED period (milliseconds). */
 static const TickType_t status_LED_period_ms = 250;
@@ -71,8 +70,8 @@ int main(void) {
 	DWT_Delay_Init();
   gpio_init();
 	BMBInit();
-	adc_init();
-	i2c_init();
+	// adc_init();
+	// i2c_init();
 	// canInit();
 
 	cmr_taskInit(
