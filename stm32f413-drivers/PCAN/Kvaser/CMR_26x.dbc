@@ -8,28 +8,28 @@ NS_ :
   VAL_
   BA_DEF_DEF_
   SIG_VALTYPE_
-  NS_DESC_
+	NS_DESC_
   CAT_DEF_
-  CAT_
-  FILTER
+	CAT_
+	FILTER
   EV_DATA_
-  ENVVAR_DATA_
-  SGTYPE_
-  SGTYPE_VAL_
-  BA_DEF_SGTYPE_
-  BA_SGTYPE_
-  SIG_TYPE_REF_
-  VAL_TABLE_
-  SIG_GROUP_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
   SIGTYPE_VALTYPE_
-  BO_TX_BU_
-  BA_DEF_REL_
-  BA_REL_
-  BA_DEF_DEF_REL_
-  BU_SG_REL_
-  BU_EV_REL_
-  BU_BO_REL_
-  SG_MUL_VAL_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
 
 BS_:
 
@@ -1803,6 +1803,9 @@ SIG_VALTYPE_ 1862 SBG_Altitude_IMU : 1;
 <<<<<<< HEAD
 
 
+<<<<<<< HEAD
 
 =======
 >>>>>>> parent of 104e537e (Update CMR_26x.dbc)
+=======
+>>>>>>> parent of 8959bcd7 (Update CMR_26x.dbc)
