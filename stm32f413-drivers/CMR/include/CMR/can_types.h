@@ -1256,4 +1256,43 @@ typedef struct {
     uint16_t cell3;
 } cmr_canLVBMS_Voltage;
 
+typedef struct {
+    uint8_t data[4];
+} cmr_canCubeMarsDutyCycle_t;
+
+typedef struct {
+    big_endian_32_t current_mA; // mA, -60000 ~ 60000
+} cmr_canCubeMarsCurrentLoop_t;
+
+typedef struct {
+    big_endian_32_t current_mA; // mA, 0 ~ 60000
+} cmr_canCubeMarsCurrentBrake_t;
+
+typedef struct {
+    big_endian_32_t speed_erpm; // erpm, -100000 ~ 100000
+} cmr_canCubeMarsSpeedLoop_t;
+
+typedef struct {
+    big_endian_32_t position_deg; // -36000 deg ~ 36000 deg
+} cmr_canCubeMarsPositionLoop_t;
+
+typedef struct {
+    uint8_t origin; // 0 (set temporary origin) or 1 (permanent zero point)
+} cmr_canCubeMarsSetOrigin_t;
+
+typedef struct {
+    big_endian_32_t position_deg; // -36000 deg ~ 36000 deg
+    big_endian_16_t speed_erpm; // erpm, -327680 ~ 327680
+    big_endian_16_t accel_erpm_s; // 1 unit = 10 erpm / s^2, 0 ~ 32767
+} cmr_canCubeMarsPositionSpeed_t;
+
+typedef struct {
+    big_endian_16_t position_deg; // -36000 ~ 36000
+    big_endian_16_t speed_erpm; // erpm/10, -32000 ~ 32000
+    int8_t motorTemp_C; // deg C, -20 ~ 127
+    uint8_t errorCode; // 0 - no fault, 1 - motor overtemp, 2 - overcurrent, 
+                       // 3 - overvoltage, 4 - undervoltage, 5 - encoder fault,
+                       // 6 - mosfet overtemp, 7 - motor stall.
+} cmr_canCubeMarsData_t;
+
 #endif /* CMR_CAN_TYPES_H */

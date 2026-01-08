@@ -135,6 +135,11 @@ int canTX(
     const void *data, size_t len,
     TickType_t timeout
 );
+int canExtendedTX(
+    cmr_canBusID_t bus, cmr_canExtendedID_t id,
+    const void *data, size_t len,
+    TickType_t timeout
+);
 
 volatile void *canVehicleGetPayload(canVehicleRX_t msg);
 volatile void *canTractiveGetPayload(canTractiveRX_t msg);

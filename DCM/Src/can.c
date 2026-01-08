@@ -1143,6 +1143,12 @@ int canTX(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t len, Tick
     return cmr_canTX(&(can[bus]), id, data, len, timeout);
 }
 
+int canExtendedTX(cmr_canBusID_t bus, cmr_canExtendedID_t id, const void *data, size_t len, TickType_t timeout) {
+    configASSERT(bus < CMR_CAN_BUS_NUM);
+
+    return cmr_canExtendedTX(&(can[bus]), id, data, len, timeout);
+}
+
 /**
  * @brief Gets a pointer to a vehicle CAN payload.
  *
