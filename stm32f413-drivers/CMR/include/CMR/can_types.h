@@ -992,6 +992,54 @@ static int16_t parse_int16(volatile big_endian_16_t *big) {
     return parser.parsed;
 } 
 
+static big_endian_16_t int16_to_big(uint16_t small) {
+    static int16_parser parser;
+    big_endian_16_t result;
+    
+    parser.parsed = small;
+    result.msb = parser.data.msb;
+    result.lsb = parser.data.lsb;
+    
+    return result;
+}
+
+typedef struct {
+    uint8_t msb;
+    uint8_t byte2;
+    uint8_t byte1;
+    uint8_t lsb;
+} big_endian_32_t;
+
+typedef union {
+    struct {
+        uint8_t lsb;
+        uint8_t byte1;
+        uint8_t byte2;
+        uint8_t msb;
+    } data;
+    int32_t parsed;
+} int32_parser;
+
+static int32_t big_endian_to_int32(volatile big_endian_32_t *big) {
+    int32_parser parser;
+    parser.data.msb = big->msb;
+    parser.data.byte2 = big->byte2;
+    parser.data.byte1 = big->byte1;
+    parser.data.lsb = big->lsb;
+    return parser.parsed;
+}
+
+static big_endian_32_t int32_to_big(int32_t value) {
+    int32_parser parser;
+    big_endian_32_t result;
+    parser.parsed = value;
+    result.msb = parser.data.msb;
+    result.byte2 = parser.data.byte2;
+    result.byte1 = parser.data.byte1;
+    result.lsb = parser.data.lsb;
+    return result;
+}
+
 typedef struct {
     big_endian_16_t q0; //f:3.05185094759972E-005, max:1, d:0
     big_endian_16_t q1; //f:3.05185094759972E-005
