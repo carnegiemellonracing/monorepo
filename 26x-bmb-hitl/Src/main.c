@@ -10,19 +10,13 @@
 
 #include <CMR/panic.h>  // cmr_panic()
 #include <CMR/rcc.h>    // RCC interface
-#include <CMR/can.h>    // CAN interface
 #include <CMR/adc.h>    // ADC interface
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
-#include "maxonControl.h"
 
 #include "statusLED.h"
 #include "gpio.h"
-#include "can.h"
-#include "assi.h"
 #include "adc.h"
-#include "safety.h"
-#include "sensors.h"
 
 /**
  * @brief Firmware entry point.
