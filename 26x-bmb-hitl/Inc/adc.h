@@ -17,7 +17,7 @@
  * @warning New channels MUST be added before `ADC_LEN`.
  */
 typedef enum {
-	ADC_CELL_1,
+	ADC_CELL_1 = 0,
     ADC_CELL_2,
     ADC_CELL_3,
     ADC_CELL_4,

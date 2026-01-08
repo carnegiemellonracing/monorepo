@@ -16,7 +16,7 @@
  *
  * @see `CMR/adc.h` for various initialization values.
  */
-static cmr_adcChannel_t adcChannels[18] = {
+static cmr_adcChannel_t adcChannels[ADC_LEN] = {
     [ADC_CELL_1] = {
         .channel = ADC_CHANNEL_1,
         .port = GPIOA,

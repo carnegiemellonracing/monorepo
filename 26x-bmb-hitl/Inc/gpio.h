@@ -24,10 +24,5 @@ typedef enum {
 } gpio_t;
 
 void gpioInit(void);
-void openSafetyCircut(void);
-void closeSafetyCircut(void);
-
-bool getASMS(void);
-bool getEAB(void);
 
 #endif /* GPIO_H */
