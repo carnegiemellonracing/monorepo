@@ -78,9 +78,8 @@ void turnOn() {
 
 	uart_command_t sendShutdown = {
 			.readWrite = BROADCAST_WRITE,
-			// .readWrite = SINGLE_WRITE,
 			.dataLen = 1,
-			.deviceAddress = 0x00,
+			.deviceAddress = 0xFF,
 			.registerAddress = CONTROL1,
 			.data = {0x40},
 			.crc = {0x00, 0x00}
@@ -101,9 +100,8 @@ void turnOn() {
 bool enableMainADC() {
 	uart_command_t adcMsg = {
 		.readWrite = BROADCAST_WRITE,
-		// .readWrite = SINGLE_WRITE,
 		.dataLen = 1,
-		.deviceAddress = 0x00, //not used!
+		.deviceAddress = 0xFF, //not used!
 		.registerAddress = ADC_CTRL1,
 		.data = {0x06},
 		.crc = {0x00, 0x00}
@@ -121,9 +119,8 @@ bool enableNumCells() {
 
 	uart_command_t active_cell = {
 		.readWrite = BROADCAST_WRITE,
-		// .readWrite = SINGLE_WRITE,
 		.dataLen = 1,
-		.deviceAddress = 0x00, //not used!
+		.deviceAddress = 0xFF, //not used!
 		.registerAddress = ACTIVE_CELL,
 		.data = {CELL_NUM-0x06},
 		.crc = {0x00, 0x00}
@@ -162,9 +159,8 @@ bool enableGPIOPins() {
 void enableTimeout() {
 	uart_command_t enable_timeout = {
 			.readWrite = BROADCAST_WRITE,
-			// .readWrite = SINGLE_WRITE,
 			.dataLen = 1,
-			.deviceAddress = 0x00, //not used!
+			.deviceAddress = 0xFF, //not used!
 			.registerAddress = COMM_TIMEOUT_CONF,
 			.data = {0x0B},
 			.crc = {0x00, 0x00}
@@ -176,31 +172,30 @@ void enableTimeout() {
 void BMBInit() {
 	turnOn();
 	DWT_Delay_ms(1000);
-	autoAddr();
 
-    // //Set all devices as stack devices first
-	// uart_command_t set_stack_devices = {
-	// 	.readWrite = SINGLE_WRITE,
-	// 	.dataLen = 1,
-	// 	.deviceAddress = 0x00,
-	// 	.registerAddress = COMM_CTRL,
-	// 	.data = {0x01},
-	// 	.crc = {0x00, 0x00}
-	// };
+    //Set all devices as stack devices first
+	uart_command_t set_stack_devices = {
+		.readWrite = SINGLE_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0x00,
+		.registerAddress = COMM_CTRL,
+		.data = {0x01},
+		.crc = {0x00, 0x00}
+	};
 
-    // uart_sendCommand(&set_stack_devices);
+    uart_sendCommand(&set_stack_devices);
 
-    // //Set all devices as stack devices first
-	// uart_command_t set_stack_devices2 = {
-	// 	.readWrite = SINGLE_WRITE,
-	// 	.dataLen = 1,
-	// 	.deviceAddress = 0x00,
-	// 	.registerAddress = DEBUG_COMM_CTRL1,
-	// 	.data = {0x0E},
-	// 	.crc = {0x00, 0x00}
-	// };
+    //Set all devices as stack devices first
+	uart_command_t set_stack_devices2 = {
+		.readWrite = SINGLE_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0x00,
+		.registerAddress = DEBUG_COMM_CTRL1,
+		.data = {0x0E},
+		.crc = {0x00, 0x00}
+	};
 
-    // uart_sendCommand(&set_stack_devices2);
+    uart_sendCommand(&set_stack_devices2);
 
 	enableNumCells();
 	DWT_Delay_ms(100);
@@ -214,7 +209,7 @@ void BMBInit() {
 	enableTimeout();
 	DWT_Delay_ms(100);
 
-	// txToRxDelay(10);
+	txToRxDelay(10);
 	DWT_Delay_ms(100);
 
 	byteDelay(0x3F);
@@ -270,9 +265,8 @@ void cellBalancingSetup() {
 
 	uart_command_t balance_register = {
 		.readWrite = BROADCAST_WRITE,
-		// .readWrite = SINGLE_WRITE,
 		.dataLen = CELL_NUM/2,
-		.deviceAddress = 0x00, //not used!
+		.deviceAddress = 0xFF, //not used!
 		.registerAddress = CB_CELL14_CTRL,
 		.data = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 		.crc = {0x00, 0x00}
@@ -286,9 +280,8 @@ void cellBalancingSetup() {
 	//set duty cycle to switch between even and odd cells
 	uart_command_t duty_cycle = {
 		.readWrite = BROADCAST_WRITE,
-		// .readWrite = SINGLE_WRITE,
 		.dataLen = 1,
-		.deviceAddress = 0x00, //not used!
+		.deviceAddress = 0xFF, //not used!
 		.registerAddress = BAL_CTRL1,
 		.data = {0x01}, //TODO what is this value supposed to be?
 		.crc = {0x00, 0x00}
@@ -298,9 +291,8 @@ void cellBalancingSetup() {
 	//set UV stuff for stopping balancing to default at 4.2 volts
 	uart_command_t UV = {
 		.readWrite = BROADCAST_WRITE,
-		// .readWrite = SINGLE_WRITE,
 		.dataLen = 1,
-		.deviceAddress = 0x00, //not used!
+		.deviceAddress = 0xFF, //not used!
 		.registerAddress = VCB_DONE_THRESH,
 		.data = {0x3F}, //TODO figure out correct low value
 		.crc = {0x00, 0x00}
@@ -316,10 +308,9 @@ void cellBalancingSetup() {
 
 bool getBalDone() {
 	uart_command_t getBalDone = {
-		// .readWrite = BROADCAST_READ,
-		.readWrite = SINGLE_READ,
+		.readWrite = BROADCAST_READ,
 		.dataLen = 1,
-		.deviceAddress = 0x00, //not used!
+		.deviceAddress = 0xFF, //not used!
 		.registerAddress = CB_COMPLETE1,
 		.data = {0x02},
 		.crc = {0x00, 0x00}
@@ -345,9 +336,8 @@ void cellBalancing(bool set, uint16_t thresh) {
 
 	uart_command_t enable = {
 		.readWrite = BROADCAST_WRITE,
-		// .readWrite = SINGLE_WRITE,
 		.dataLen = 1,
-		.deviceAddress = 0x00, //not used!
+		.deviceAddress = 0xFF, //not used!
 		.registerAddress = BAL_CTRL2,
 		.data = {0x03},
 		.crc = {0x00, 0x00}
@@ -400,7 +390,6 @@ void cellBalancing(bool set, uint16_t thresh) {
 		//set UV stuff for stopping balancing based on parameter
 		uart_command_t UV = {
 			.readWrite = BROADCAST_WRITE,
-			// .readWrite = SINGLE_WRITE,
 			.dataLen = 1,
 			.deviceAddress = 0xFF, //not used!
 			.registerAddress = VCB_DONE_THRESH,
@@ -422,7 +411,6 @@ void cellBalancing(bool set, uint16_t thresh) {
 	else {
 		uart_command_t balance_register = {
 			.readWrite = BROADCAST_WRITE,
-			// .readWrite = SINGLE_WRITE,
 			.dataLen = CELL_NUM/2,
 			.deviceAddress = 0xFF, //not used!
 			.registerAddress = CB_CELL14_CTRL,
@@ -461,7 +449,6 @@ void byteDelay(uint8_t delay) {
 
 	uart_command_t byte_delay = {
 			.readWrite = BROADCAST_WRITE,
-			// .readWrite = SINGLE_WRITE,
 			.dataLen = 1,
 			.deviceAddress = 0xFF,
 			.registerAddress = 0x29,
@@ -486,7 +473,6 @@ void txToRxDelay(uint8_t delay) {
 void twoStop() {
 	uart_command_t two_stop_stack = {
 			.readWrite = BROADCAST_WRITE,
-			// .readWrite = SINGLE_WRITE,
 			.dataLen = 1,
 			.deviceAddress = 0xFF,
 			.registerAddress = DEV_CONF,
@@ -518,7 +504,6 @@ static bool sendUartBroadcastWrite(  uint16_t registerAddress,
 										    uint8_t dataLen) {
     uart_command_t broadcastWriteCmd = {
         .readWrite = BROADCAST_WRITE,
-		// .readWrite = SINGLE_WRITE,
         .dataLen = dataLen,
         .deviceAddress = 0xFF, //not used!
         .registerAddress = registerAddress,
@@ -546,10 +531,9 @@ static int16_t calculateTempVoltageReading(uint8_t msb, uint8_t lsb) {
 void pollAllTemperatureData(int channel) {
     uint8_t bytesToRead = 2 * NUM_GPIO_CHANNELS;
 	uart_command_t read_therms = {
-		// .readWrite = BROADCAST_READ,
-		.readWrite = SINGLE_READ,
+		.readWrite = BROADCAST_READ,
 		.dataLen = 1,
-		.deviceAddress = 0x00, //not used!
+		.deviceAddress = 0xFF, //not used!
 		.registerAddress = GPIO1_HI,
 		.data = {bytesToRead-1},
 		.crc = {0xFF, 0xFF}
@@ -583,160 +567,4 @@ void pollAllTemperatureData(int channel) {
 		}
 	}
 	return;
-}
-
-/** Auto Address Function
- * This helper function will autoaddress a certain amount of BQ79616-Q1
- * chips. It runs the procedure exactly described in the datasheet and the TI
- * sample code.
- * @param num_boards Number of boards
- * @return True if all uart commands succeeded, false otherwise
- */
-bool autoAddr() {
-	// Sanity check number of boards
-	if(BOARD_NUM > 64 || BOARD_NUM < 1) {
-		return false;
-	}
-
-	// Dummy write to sync OTP addresses
-	uart_command_t otpSync = {
-		.readWrite = BROADCAST_WRITE,
-		.dataLen = 1,
-		.deviceAddress = 0xFF, //not used!!!
-		.registerAddress = OTP_ECC_DATAIN1,
-		.data = {0x00},
-		.crc = {0x00, 0x00}
-	};
-	cmr_uart_result_t res;
-	for(int i = 0; i < 8; i++) {
-		otpSync.registerAddress = OTP_ECC_DATAIN1 + i;
-		res = uart_sendCommand(&otpSync);
-		if(res != UART_SUCCESS) {
-			return false;
-		}
-		// HAL_Delay(10);
-		DWT_Delay_ms(10);
-	}
-
-	//broadcast write to enable autoaddressing
-	uart_command_t enableAutoaddress = {
-			.readWrite = BROADCAST_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!!!
-			.registerAddress = CONTROL1,
-			.data = {0x01},
-			.crc = {0x00, 0x00}
-	};
-
-	res = uart_sendCommand(&enableAutoaddress);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
-	// HAL_Delay(10);
-	DWT_Delay_ms(10);
-
-	//set all the addresses of the boards in DIR0_ADDR
-	uart_command_t set_addr = {
-			.readWrite = BROADCAST_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!!!
-			.registerAddress = DIR0_ADDR,
-			.data = {0x00},
-			.crc = {0x00, 0x00}
-	};
-	for(int i = 0; i < BOARD_NUM; i++) {
-		res = uart_sendCommand(&set_addr);
-		if(res != UART_SUCCESS) {
-			return false;
-		}
-		set_addr.data[0]++;
-		// HAL_Delay(10);
-		DWT_Delay_ms(10);
-	}
-
-	//Set all devices as stack devices first
-	uart_command_t set_stack_devices = {
-		.readWrite = BROADCAST_WRITE,
-		.dataLen = 1,
-		.deviceAddress = 0xFF, //not used!!!
-		.registerAddress = COMM_CTRL,
-		.data = {0x01},
-		.crc = {0x00, 0x00}
-	};
-	res = uart_sendCommand(&set_stack_devices);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
-	// HAL_Delay(10);
-	DWT_Delay_ms(10);
-
-	// uart_command_t set_comm_ctrl = {
-	// 	.readWrite = SINGLE_WRITE,
-	// 	.dataLen = 1,
-	// 	.deviceAddress = BOARD_NUM-1,
-	// 	.registerAddress = COMM_CTRL,
-	// 	.data = {0x03},
-	// 	.crc = {0x00, 0x00}
-	// };
-
-	//set 0x00 as base and num_board-1 as top
-//	set_comm_ctrl.data[0] = 0x00;
-//	res = uart_sendCommand(&set_comm_ctrl);
-//	if(res != UART_SUCCESS) {
-//		return false;
-//	}
-	// res = uart_sendCommand(&set_comm_ctrl);
-	// if(res != UART_SUCCESS) {
-	// 	return false;
-	// }
-	// // HAL_Delay(10);
-	// DWT_Delay_ms(10);
-
-	// Resync OTP registers with dummy reads
-	otpSync.readWrite = BROADCAST_READ;
-	otpSync.data[0] = 0;
-
-	for(int i = 0; i < 8; i++) {
-		otpSync.registerAddress = OTP_ECC_DATAIN1 + i;
-		res = uart_sendCommand(&otpSync);
-		if(res != UART_SUCCESS) {
-			return false;
-		}
-		// HAL_Delay(10);
-		DWT_Delay_ms(10);
-	}
-
-	// COMMENTED OUT CODE THAT IS USED FOR SANITY CHECKING AUTOADDRESSING
-
-//	uart_response_t response;
-//	uart_command_t readReg = {
-//		.readWrite = SINGLE_READ,
-//		.dataLen = 1,
-//		.deviceAddress = 0x00,
-//		.registerAddress = 0x306,
-//		.data = {0x00},
-//		.crc = {0x00, 0x00}
-//	};
-//	uart_sendCommand(&readReg);
-//
-//	if(uart_receiveResponse(&response) == UART_FAILURE) {
-//		return false;
-//	}
-//
-//	readReg.deviceAddress = 0x01;
-//	uart_sendCommand(&readReg);
-//
-//	if(uart_receiveResponse(&response) == UART_FAILURE) {
-//		return false;
-//	}
-//
-//	readReg.deviceAddress = 0x02;
-//	uart_sendCommand(&readReg);
-//
-//	if(uart_receiveResponse(&response) == UART_FAILURE) {
-//		return false;
-//	}
-
-	return true;
-
 }

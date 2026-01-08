@@ -49,10 +49,9 @@ static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
 uint8_t getVoltages(void) {
     TickType_t time_prev = xTaskGetTickCount();
     uart_command_t read_voltage = {
-			// .readWrite = BROADCAST_READ,
-		    .readWrite = SINGLE_READ,
+			.readWrite = BROADCAST_READ,
 			.dataLen = 1,
-			.deviceAddress = 0x00, //not used!
+			.deviceAddress = 0xFF, //not used!
 			.registerAddress = TOP_CELL,
 			.data = {CELL_NUM*2-1}, //reading high and low for cell 0-CELL_NUM
 			.crc = {0xFF, 0xFF}
@@ -121,10 +120,9 @@ uint16_t tempConvert(uint16_t adc_value) {
 
 uint8_t getTemps(int channel) {
     uart_command_t read_therms = {
-		// .readWrite = BROADCAST_READ,
-		.readWrite = SINGLE_READ,
+		.readWrite = BROADCAST_READ,
 		.dataLen = 1,
-		.deviceAddress = 0x00, //not used!
+		.deviceAddress = 0xFF, //not used!
 		.registerAddress = GPIO1_HI,
 		.data = {0x03},
 		.crc = {0xFF, 0xFF}
@@ -189,10 +187,10 @@ void vBMBSampleTask(void *pvParameters) {
 			setMuxOutput(j);
 			xLastWakeTime = xTaskGetTickCount();
 			vTaskDelayUntil(&xLastWakeTime, 10);
-			// getTemps(j);
+			pollAllTemperatureData(j);
 		}
 
-		uint8_t err = getVoltages();
+		// uint8_t err = pollAllVoltageData();
         writeLED(ledToggle);
 		ledToggle = !ledToggle;
         vTaskDelayUntil(&xLastWakeTime, 100);
