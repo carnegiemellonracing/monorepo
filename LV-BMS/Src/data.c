@@ -21,6 +21,15 @@
 #include "i2c.h"
 #include "uart.h"
 
+/** @brief Sample Task Priority priority. */
+static const uint32_t sampleTaskPriority = 4;
+
+/** @brief Sample Task period (milliseconds). */
+static const TickType_t sampleTaskPeriod_ms = 100;
+
+/** @brief Sample task. */
+static cmr_task_t sampleTask;
+
 uint16_t cellVoltages[CELL_NUM];
 uint16_t cellTemps[CELL_NUM];
 signed char offset_corr[CELL_NUM];
@@ -177,39 +186,29 @@ void sendCurrent(void) {
 
 // Main sample task entry point for BMS
 void vBMBSampleTask(void *pvParameters) {
-    bool ledToggle = false;
+    (void) pvParameters;
+    static TickType_t const ADC_settlingTime_ms = 10;
+    static uint8_t const muxChannels = 4;
+    static bool ledToggle = false;
+    
 	TickType_t xLastWakeTime = xTaskGetTickCount();
-    DWT_Delay_ms(10);
 
 	// Main BMS control loop
 	while (1) {
-		// Loop through the 4 different MUX channels and select a different one
+		// Loop through the different MUX channels and select a different one
 		// We still monitor all voltages each channel switch
-		// for(uint8_t j = 0; j < 1; j++) {
-			// setMuxOutput(j);
-            // DWT_Delay_ms(10);
-			// vTaskDelayUntil(&xLastWakeTime, 10);
-			// pollAllTemperatureData(j);
-		// }
+		for(uint8_t j = 0; j < muxChannels; j++) {
+			setMuxOutput(j);
+			vTaskDelayUntil(&xLastWakeTime, ADC_settlingTime_ms);
+			pollAllTemperatureData(j);
+		}
 
 		// uint8_t err = pollAllVoltageData();
-        pollAllTemperatureData(0);
         writeLED(ledToggle);
 		ledToggle = !ledToggle;
-        vTaskDelayUntil(&xLastWakeTime, 1000);
+        vTaskDelayUntil(&xLastWakeTime, sampleTaskPeriod_ms - ADC_settlingTime_ms * muxChannels);
 	}
 }
-
-
-
-/** @brief Sample Task Priority priority. */
-static const uint32_t sampleTaskPriority = 4;
-
-/** @brief Sample Task period (milliseconds). */
-static const TickType_t sampleTaskPeriod_ms = 100;
-
-/** @brief Sample task. */
-static cmr_task_t sampleTask;
 
 void sampleInit(){
     cmr_taskInit(

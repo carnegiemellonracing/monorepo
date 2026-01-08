@@ -674,19 +674,17 @@ void pollAllTemperatureData(int channel) {
 	
 	taskEXIT_CRITICAL();
 
-	for(uint8_t i = 0; i < 1; i++) {
-		for(uint8_t k = 0; k < 1; k++) {
-            uint8_t cellNum = CHANNEL_GPIO_TO_CELL_MAP[channel][k];
-            if (cellNum == 255)
-                continue;
+    for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; k++) {
+        uint8_t cellNum = CHANNEL_GPIO_TO_CELL_MAP[channel][k];
+        if (cellNum == 255)
+            continue;
 
-			uint8_t high_byte_data = response.data[2*k];
-			uint8_t low_byte_data = response.data[2*k+1];
-            int16_t cellTempVoltageReading = calculateTempVoltageReading(high_byte_data, low_byte_data);
-            
-			BMBData.cellTemperaturesVoltageReading[cellNum] = cellTempVoltageReading;
+        uint8_t high_byte_data = response.data[2*k];
+        uint8_t low_byte_data = response.data[2*k+1];
+        int16_t cellTempVoltageReading = calculateTempVoltageReading(high_byte_data, low_byte_data);
+        
+        BMBData.cellTemperaturesVoltageReading[cellNum] = cellTempVoltageReading;
 
-		}
-	}
+    }
 	return;
 }
