@@ -11,6 +11,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <stm32f4xx_hal_rtc.h>
+#include <stm32f4xx_hal_rcc.h>
+#include <stm32f4xx_hal_pwr_ex.h>
+#include <stm32f4xx_hal_flash_ex.h>
 
 void SystemClock_Config(void);
 void MX_RTC_Init(void);

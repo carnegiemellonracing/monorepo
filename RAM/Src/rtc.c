@@ -45,13 +45,6 @@
 /* Private variables ---------------------------------------------------------*/
 RTC_HandleTypeDef hrtc;
 
-SD_HandleTypeDef hsd;
-DMA_HandleTypeDef hdma_sdio;
-
-UART_HandleTypeDef huart3;
-
-PCD_HandleTypeDef hpcd_USB_OTG_FS;
-
 /* USER CODE BEGIN PV */
 RTC_TimeTypeDef currentTime;
 RTC_DateTypeDef currentDate;
@@ -134,7 +127,7 @@ void SystemClock_Config(void)
   * @param None
   * @retval None
   */
-static void MX_RTC_Init(void)
+void MX_RTC_Init(void)
 {
 
   /* USER CODE BEGIN RTC_Init 0 */
