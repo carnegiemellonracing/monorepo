@@ -38,7 +38,7 @@ void uartInit(void) {
 	const UART_InitTypeDef uartInit = {
 			.BaudRate = BQ_BAUD_RATE,
 			.WordLength = UART_WORDLENGTH_8B,
-			.StopBits = UART_STOPBITS_2,
+			.StopBits = UART_STOPBITS_1,
 			.Parity = UART_PARITY_NONE,
 			.HwFlowCtl = UART_HWCONTROL_NONE,
 			.Mode = UART_MODE_TX_RX,
@@ -137,8 +137,6 @@ uint8_t uart_receiveResponse(uart_response_t *response, uint8_t expected_bytes) 
 	if(retv != UART_SUCCESS) {
 		return 7;
 	}
-
-
 
 	return 0;
 }

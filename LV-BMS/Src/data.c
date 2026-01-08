@@ -16,6 +16,7 @@
 #include "adc.h"
 #include "bq_interface.h"
 #include "can.h"
+#include "dwt.h"
 #include "gpio.h"
 #include "i2c.h"
 #include "uart.h"
@@ -178,30 +179,31 @@ void sendCurrent(void) {
 void vBMBSampleTask(void *pvParameters) {
     bool ledToggle = false;
 	TickType_t xLastWakeTime = xTaskGetTickCount();
+    DWT_Delay_ms(10);
 
 	// Main BMS control loop
 	while (1) {
 		// Loop through the 4 different MUX channels and select a different one
 		// We still monitor all voltages each channel switch
-		for(uint8_t j = 0; j < 4; j++) {
-			setMuxOutput(j);
-			xLastWakeTime = xTaskGetTickCount();
-			vTaskDelayUntil(&xLastWakeTime, 10);
-			pollAllTemperatureData(j);
-		}
+		// for(uint8_t j = 0; j < 1; j++) {
+			// setMuxOutput(j);
+            // DWT_Delay_ms(10);
+			// vTaskDelayUntil(&xLastWakeTime, 10);
+			// pollAllTemperatureData(j);
+		// }
 
 		// uint8_t err = pollAllVoltageData();
+        pollAllTemperatureData(0);
         writeLED(ledToggle);
 		ledToggle = !ledToggle;
-        vTaskDelayUntil(&xLastWakeTime, 100);
-
+        vTaskDelayUntil(&xLastWakeTime, 1000);
 	}
 }
 
 
 
 /** @brief Sample Task Priority priority. */
-static const uint32_t sampleTaskPriority = 2;
+static const uint32_t sampleTaskPriority = 4;
 
 /** @brief Sample Task period (milliseconds). */
 static const TickType_t sampleTaskPeriod_ms = 100;

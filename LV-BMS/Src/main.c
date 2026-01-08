@@ -46,10 +46,10 @@ static void status_LED(void *pvParameters) {
 	(void) pvParameters;
 	cmr_gpioWrite(GPIO_LED, 0);
 
-	TickType_t time_prev = xTaskGetTickCount();
+	TickType_t lastWakeTime = xTaskGetTickCount();
 	while (1) {
 		cmr_gpioToggle(GPIO_LED);
-		vTaskDelayUntil(&time_prev, status_LED_period_ms);
+		vTaskDelayUntil(&lastWakeTime, status_LED_period_ms);
 	}
 }
 

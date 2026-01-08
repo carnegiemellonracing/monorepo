@@ -21,7 +21,7 @@ extern volatile int BMBTimeoutCount[BOARD_NUM];
 extern volatile int BMBErrs[BOARD_NUM];
 
 //Fill in data to this array
-BMB_Data_t BMBData[BOARD_NUM];
+BMB_Data_t BMBData;
 
 // static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
 // 	BMBErrs[BMBIndex] = err;
@@ -473,8 +473,8 @@ void cellBalancing(bool set, uint16_t thresh) {
 		for(int i = 0; i < BOARD_NUM-1; i++) {
 			thresh = 0;
 			for(int j = 0; j < CELL_NUM; j++) {
-				if(BMBData[i].cellVoltages[j] > thresh) {
-					thresh = BMBData[i].cellVoltages[j];
+				if(BMBData.cellVoltages > thresh) {
+					thresh = BMBData.cellVoltages[j];
 				}
 			}
 			thresh = thresh - 10;
@@ -487,7 +487,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 				.crc = {0x00, 0x00}
 			};
 			for(int j = 13; j > 6; j--) {
-				if(BMBData[i].cellVoltages[j] < thresh) {
+				if(BMBData.cellVoltages[j] < thresh) {
 					balance_register.data[13-j] = 0x00;
 				}
 			}
@@ -497,7 +497,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 				balance_register.data[j] = 0x04;
 			}
 			for(int j = 6; j >=0 ; j--) {
-				if(BMBData[i].cellVoltages[j] < thresh) {
+				if(BMBData.cellVoltages[j] < thresh) {
 					balance_register.data[6-j] = 0x00;
 				}
 			}
@@ -664,17 +664,18 @@ void pollAllTemperatureData(int channel) {
 	uart_sendCommand(&read_therms);
 
 	uart_response_t response;
-    if(uart_receiveResponse(&response, bytesToRead-1) != UART_FAILURE) {
+    if( uart_receiveResponse(&response, bytesToRead-1) != 0) {
         //loop through each GPIO channel
         // setBMBErr(i-1, BMB_TEMP_READ_ERROR);
-        // BMBTimeoutCount[i-1]+=1;
+	    // uart_sendCommand(&read_therms);
+        taskEXIT_CRITICAL();
         return;
     }
 	
 	taskEXIT_CRITICAL();
 
-	for(uint8_t i = 0; i < BOARD_NUM; i++) {
-		for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; k++) {
+	for(uint8_t i = 0; i < 1; i++) {
+		for(uint8_t k = 0; k < 1; k++) {
             uint8_t cellNum = CHANNEL_GPIO_TO_CELL_MAP[channel][k];
             if (cellNum == 255)
                 continue;
@@ -683,7 +684,7 @@ void pollAllTemperatureData(int channel) {
 			uint8_t low_byte_data = response.data[2*k+1];
             int16_t cellTempVoltageReading = calculateTempVoltageReading(high_byte_data, low_byte_data);
             
-			BMBData[i].cellTemperaturesVoltageReading[cellNum] = cellTempVoltageReading;
+			BMBData.cellTemperaturesVoltageReading[cellNum] = cellTempVoltageReading;
 
 		}
 	}
