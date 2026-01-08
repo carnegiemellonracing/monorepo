@@ -2,17 +2,10 @@ VERSION ""
 
 
 NS_ :
-  CM_
-  BA_DEF_
-  BA_
-  VAL_
-  BA_DEF_DEF_
-  SIG_VALTYPE_
 
 BS_:
 
-BU_: Vector__XXX
-
+BU_: Vector__XXX SensoricSolutionsOMSRace
 
 BO_ 648 AMK_FL_ACT_1: 8 Vector__XXX
 SG_ FL_AMK_RESERVED : 0|8@1+ (1,0) [0|255] "" Vector__XXX
@@ -1552,6 +1545,95 @@ BO_ 1625 DAQ_Therm2: 8 Vector__XXX
 SG_ Therm_2_1 : 0|32@1+ (1,0) [0|4294967295] "" Vector__XXX
 SG_ Therm_2_2 : 32|32@1+ (1,0) [0|4294967295] "" Vector__XXX
 
+BO_ 1376 VelAndAngPOI: 8 SensoricSolutionsOMSRace
+ SG_ VelXPoi : 0|16@1- (0.02,0) [-450|450] "km/h" SensoricSolutionsOMSRace
+ SG_ VelYPoi : 16|16@1- (0.02,0) [-100|100] "km/h" SensoricSolutionsOMSRace
+ SG_ VelAPoi : 32|16@1- (0.02,0) [0|450] "km/h" SensoricSolutionsOMSRace
+ SG_ AngSPoi : 48|16@1- (0.003,0) [-40|40] "�" SensoricSolutionsOMSRace
+
+BO_ 1377 DistPOI: 8 SensoricSolutionsOMSRace
+ SG_ DistAPoi : 0|32@1- (0.001,0) [-2000000.0|2000000.000] "m" SensoricSolutionsOMSRace
+ SG_ RadiusPoi : 32|16@1- (0.01,0) [-327.68|327.67] "m" SensoricSolutionsOMSRace
+ SG_ AccCPoi : 48|16@1- (0.02,0) [-200|200] "m/s^2" SensoricSolutionsOMSRace
+
+BO_ 1378 PitchAndRoll: 4 SensoricSolutionsOMSRace
+ SG_ Roll : 0|16@1- (0.003,0) [-90|90] "�" SensoricSolutionsOMSRace
+ SG_ Pitch : 16|16@1- (0.003,0) [-90|90] "�" SensoricSolutionsOMSRace
+
+BO_ 1379 AccHor: 6 SensoricSolutionsOMSRace
+ SG_ AccXHor : 0|16@1- (0.02,0) [-200.0|200.0] "m/s^2" SensoricSolutionsOMSRace
+ SG_ AccYHor : 16|16@1- (0.02,0) [-200.0|200.0] "m/s^2" SensoricSolutionsOMSRace
+ SG_ AccZHor : 32|16@1- (0.02,0) [-200.0|200.0] "m/s^2" SensoricSolutionsOMSRace
+
+BO_ 1380 RateHor: 6 SensoricSolutionsOMSRace
+ SG_ RateXHor : 0|16@1- (0.02,0) [-500.0|500.0] "�/s" SensoricSolutionsOMSRace
+ SG_ RateYHor : 16|16@1- (0.02,0) [-500.0|500.0] "�/s" SensoricSolutionsOMSRace
+ SG_ RateZHor : 32|16@1- (0.02,0) [-500.0|500.0] "�/s" SensoricSolutionsOMSRace
+
+BO_ 1381 VelAndAng: 8 SensoricSolutionsOMSRace
+ SG_ VelX : 0|16@1- (0.02,0) [-450|450] "km/h" SensoricSolutionsOMSRace
+ SG_ VelY : 16|16@1- (0.02,0) [-100|100] "km/h" SensoricSolutionsOMSRace
+ SG_ VelA : 32|16@1- (0.02,0) [0|450] "km/h" SensoricSolutionsOMSRace
+ SG_ AngS : 48|16@1- (0.003,0) [-40|40] "�" SensoricSolutionsOMSRace
+
+BO_ 1382 Dist: 8 SensoricSolutionsOMSRace
+ SG_ DistA : 0|32@1- (0.001,0) [-2000000.0|2000000.000] "m" SensoricSolutionsOMSRace
+ SG_ Radius : 32|16@1- (0.01,0) [-327.68|327.67] "m" SensoricSolutionsOMSRace
+ SG_ AccC : 48|16@1- (0.02,0) [-200|200] "m/s^2" SensoricSolutionsOMSRace
+ 
+BO_ 1383 Acc: 6 SensoricSolutionsOMSRace
+ SG_ AccX : 0|16@1- (0.02,0) [-200.0|200.0] "m/s^2" SensoricSolutionsOMSRace
+ SG_ AccY : 16|16@1- (0.02,0) [-200.0|200.0] "m/s^2" SensoricSolutionsOMSRace
+ SG_ AccZ : 32|16@1- (0.02,0) [-200.0|200.0] "m/s^2" SensoricSolutionsOMSRace
+ 
+BO_ 1384 Rate: 6 SensoricSolutionsOMSRace
+ SG_ RateX : 0|16@1- (0.02,0) [-500.0|500.0] "�/s" SensoricSolutionsOMSRace
+ SG_ RateY : 16|16@1- (0.02,0) [-500.0|500.0] "�/s" SensoricSolutionsOMSRace
+ SG_ RateZ : 32|16@1- (0.02,0) [-500.0|500.0] "�/s" SensoricSolutionsOMSRace
+ 
+BO_ 1385 VelAndAngSp: 8 SensoricSolutionsOMSRace
+ SG_ VelASp : 0|16@1- (0.02,0) [0|450] "km/h" SensoricSolutionsOMSRace
+ SG_ AngSSp : 16|16@1- (0.003,0) [-40|40] "�" SensoricSolutionsOMSRace
+ SG_ QualityCh0 : 32|16@1+ (1.0,0) [0|65535] "" SensoricSolutionsOMSRace
+ SG_ QualityCh1 : 48|16@1+ (1.0,0) [0|65535] "" SensoricSolutionsOMSRace
+
+BO_ 1386 DistAndVelSp: 8 SensoricSolutionsOMSRace
+ SG_ DistASp : 0|32@1- (0.001,0) [-2000000.0|2000000.000] "m" SensoricSolutionsOMSRace
+ SG_ VelXSp : 32|16@1- (0.02,0) [-450|450] "km/h" SensoricSolutionsOMSRace
+ SG_ VelYSp : 48|16@1- (0.02,0) [-100|100] "km/h" SensoricSolutionsOMSRace
+
+BO_ 1387 Status: 7 SensoricSolutionsOMSRace
+ SG_ Standstill : 0|1@1+ (1,0) [0|1] "" SensoricSolutionsOMSRace
+ SG_ DirectionNeg : 1|1@1+ (1,0) [0|1] "" SensoricSolutionsOMSRace
+ SG_ RateAdjustActive : 2|1@1+ (1,0) [0|1] "" SensoricSolutionsOMSRace
+ SG_ Trigger : 4|1@1+ (1,0) [0|1] "" SensoricSolutionsOMSRace
+ SG_ BrakeAccStatus : 5|3@1+ (1,0) [0|5] "" SensoricSolutionsOMS7
+ SG_ IlluOn : 8|1@1+ (1,0) [0|1] "" SensoricSolutionsOMSRace
+ SG_ IlluOk : 9|1@1+ (1,0) [0|1] "" SensoricSolutionsOMSRace
+ SG_ SensorConnected : 10|1@1+ (1,0) [0|1] "" SensoricSolutionsOMSRace
+ SG_ AdjustmentActive : 12|1@1+ (1,0) [0|1] "" SensoricSolutionsOMSRace
+ SG_ CanAngAdjFailed : 13|1@1+ (1,0) [0|1] "" SensoricSolutionsOMSRace
+ SG_ StatusOk : 15|1@1+ (1,0) [0|1] "" SensoricSolutionsOMSRace
+ SG_ TempSensor : 16|16@1- (0.1,0) [-20|85] "�C" SensoricSolutionsOMSRace
+ SG_ SampleTime : 32|24@1+ (0.001,0) [0|16777.215] "s" SensoricSolutionsOMSRace
+ 
+ BO_ 1388 Info: 5 SensoricSolutionsOMSRace
+ SG_ InfoError : 0|1@1+ (1,0) [0|1] "" SensoricSolutionsOMSRace
+ SG_ InfoTransversal : 1|1@1+ (1,0) [0|1] "" SensoricSolutionsOMSRace
+ SG_ InfoInverseMounting : 2|1@1+ (1,0) [0|1] "" SensoricSolutionsOMSRace
+ SG_ InfoMovAvgActive : 3|1@1+ (1,0) [0|1] "" SensoricSolutionsOMSRace
+ SG_ InfoPoi : 4|1@1+ (1,0) [0|1] "" SensoricSolutionsOMSRace
+ SG_ InfoIlluIncomp : 6|1@1+ (1,0) [0|1] "" SensoricSolutionsOMSRace
+ SG_ InfoServiceMode : 7|1@1+ (1,0) [0|1] "" SensoricSolutionsOMSRace
+ SG_ LastErrorCode : 16|16@1+ (1,0) [0|65535] "" SensoricSolutionsOMSRace
+ SG_ TempProcessor : 32|8@1- (1,0) [-128|127] "�C" SensoricSolutionsOMSRace
+ 
+BO_ 1389 StaticInfo: 8 SensoricSolutionsOMSRace
+ SG_ SerialEcu : 0|16@1+ (1,0) [0|65535] "" SensoricSolutionsOMSRace
+ SG_ SerialSensor : 16|16@1+ (1,0) [0|65535] "" SensoricSolutionsOMSRace
+ SG_ FwVersion : 32|24@1+ (1,0) [0|16777215] "" SensoricSolutionsOMSRace
+ SG_ ParamSetLoaded : 56|8@1+ (1,0) [0|255] "" SensoricSolutionsOMSRace
+
 CM_ BO_ 2023 "This CAN id is used for communication between the energy meter and the download tool.";
 CM_ BO_ 2031 "This CAN id is used for communication between the energy meter and the download tool.";
 CM_ SG_ 1952 squelch "0 for listen, 1 - 8 for transmit";
@@ -1562,11 +1644,13 @@ CM_ SG_ 1904 Movella_SampleTime "10kHz ticks";
 
 BA_DEF_  "BusType" STRING ;
 BA_DEF_ BO_  "GenMsgCycleTime" INT 0 65535;
+BA_DEF_ BO_  "GenMsgCycleTimeus" INT 100 60000000;
 BA_DEF_ SG_  "GenSigStartValue" FLOAT -3.4E+038 3.4E+038;
 
 BA_DEF_DEF_  "BusType" "CAN";
 BA_DEF_DEF_  "GenMsgCycleTime" 0;
 BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "GenMsgCycleTimeus" 1000;
 
 BA_ "BusType" "CAN";
 
@@ -1741,6 +1825,20 @@ BA_ "GenMsgCycleTime" BO_ 1681 5;
 BA_ "GenMsgCycleTime" BO_ 1682 50;
 BA_ "GenMsgCycleTime" BO_ 1624 100;
 BA_ "GenMsgCycleTime" BO_ 1625 100;
+BA_ "GenMsgCycleTimeus" BO_ 1376 5000;
+BA_ "GenMsgCycleTimeus" BO_ 1377 5000;
+BA_ "GenMsgCycleTimeus" BO_ 1378 5000;
+BA_ "GenMsgCycleTimeus" BO_ 1379 5000;
+BA_ "GenMsgCycleTimeus" BO_ 1380 5000;
+BA_ "GenMsgCycleTimeus" BO_ 1381 5000;
+BA_ "GenMsgCycleTimeus" BO_ 1382 5000;
+BA_ "GenMsgCycleTimeus" BO_ 1383 5000;
+BA_ "GenMsgCycleTimeus" BO_ 1384 5000;
+BA_ "GenMsgCycleTimeus" BO_ 1385 5000;
+BA_ "GenMsgCycleTimeus" BO_ 1386 5000;
+BA_ "GenMsgCycleTimeus" BO_ 1387 5000;
+BA_ "GenMsgCycleTimeus" BO_ 1388 1000000;
+BA_ "GenMsgCycleTimeus" BO_ 1389 1000000;
 
 BA_ "GenSigStartValue" SG_ 1952 frequency 400;
 VAL_ 308 BALANCE_balanceRequest 0 "BALANCE_DIS" 1 "BALANCE_EN";
@@ -1790,3 +1888,4 @@ SIG_VALTYPE_ 1862 SBG_Altitude_IMU : 1;
 >>>>>>> parent of 8959bcd7 (Update CMR_26x.dbc)
 =======
 >>>>>>> parent of eac8dcfe (Update CMR_26x.dbc)
+
