@@ -26,14 +26,9 @@
  * @note Indexed by `canRX_t`.
  */
 cmr_canRXMeta_t canRXMeta[] = {
-    [CANRX_HEARTBEAT_HVC] = {
-        .canID = CMR_CANID_HEARTBEAT_HVC,
-        .timeoutError_ms = 20000,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .timeoutWarn_ms = 750,
-        .warnFlag = CMR_CAN_WARN_VSM_HVC_TIMEOUT
-    },
-    [CANRX_IVT_RESPONSE]
+    [CANRX_IVT_RESPONSE] = {
+        .canID = CMR_CANID_IVT_RESPONSE
+    }
 }
 
 uint_64_t ivt_buildMessage(cmr_IVTCommand_t cmd, cmr_IVTMessageType_t msgt, uint_8_t payload) {
