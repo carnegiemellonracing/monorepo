@@ -16,70 +16,6 @@ static inline float transform_raw(movella_message_t msg, float raw_data) {
     return scaling_constants[msg] * raw_data;
 }
 
-static void quaternion_to_R(volatile quaternion_t *quaternion, volatile float R[3][3]) {
-    float w = quaternion->w, x = quaternion->x, y = quaternion->y, z = quaternion->z;
-
-    R[0][0] = 1 - 2 * y * y - 2 * z * z;
-    R[0][1] = 2 * x * y - 2 * w * z;
-    R[0][2] = 2 * x * z + 2 * w * y;
-
-    R[1][0] = 2 * x * y + 2 * w * z;
-    R[1][1] = 1 - 2 * x * x - 2 * z * z;
-    R[1][2] = 2 * y * z - 2 * w * x;
-
-    R[2][0] = 2 * x * z - 2 * w * y;
-    R[2][1] = 2 * y * z + 2 * w * x;
-    R[2][2] = 1 - 2 * x * x - 2 * y * y;
-}
-
-void mat_mult(const matrix3x3 A, const matrix3x3 B, matrix3x3 result) {
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            result[i][j] = 0.0f;
-            for (int k = 0; k < 3; k++) {
-                result[i][j] += A[i][k] * B[k][j];
-            }
-        }
-    }
-}
-
-void mat_vec_mult(const matrix3x3 A, const vector3 v, vector3 result) {
-    for (int i = 0; i < 3; i++) {
-        result[i] = 0.0f;
-        for (int j = 0; j < 3; j++) {
-            result[i] += A[i][j] * v[j];
-        }
-    }
-}
-
-void vec_add(const vector3 v1, const vector3 v2, vector3 result) {
-    for (int i = 0; i < 3; i++) {
-        result[i] = v1[i] + v2[i];
-    }
-}
-
-void vec_sub(const vector3 v1, const vector3 v2, vector3 result) {
-    for (int i = 0; i < 3; i++) {
-        result[i] = v1[i] - v2[i];
-    }
-}
-
-void mat_transpose(const matrix3x3 A, matrix3x3 result) {
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            result[j][i] = A[i][j];
-        }
-    }
-}
-
-void mat_copy(matrix3x3 A, matrix3x3 result) {
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            result[i][j] = A[i][j];
-        }
-    }
-}
-
 static void transform_velocity_D4B(volatile movella_state_t *movella_state, volatile car_state_t *car_state) {
     vector3 x_D_dot = { movella_state->global_velocity.x, movella_state->global_velocity.y, movella_state->global_velocity.z };
     matrix3x3 R_D;
@@ -219,14 +155,13 @@ static void compute_slip_device(volatile movella_state_t *movella_state, volatil
 
 void sensoric_parse(uint16_t canID, volatile void *payload) {
     
-    // volatile void* payload;
+    volatile void* payload;
 
     canDaqRX_t sensoric_msg;
     bool msg_found = false;
     for(sensoric_msg = CANRX_DAQ_SENSORIC_VEL_ANG_POI; sensoric_msg <= CANRX_DAQ_SENSORIC_INFO; sensoric_msg++) {
         if(canID == canDaqRXMeta[sensoric_msg].canID) {
             msg_found = true;
-            // payload = canDaqRXMeta[sensoric_msg].payload;
             break;
         }
     }
@@ -236,74 +171,85 @@ void sensoric_parse(uint16_t canID, volatile void *payload) {
 
     switch (sensoric_msg)
     {
-    case CANRX_DAQ_MOVELLA_STATUS:
-        volatile cmr_canMovellaStatus_t *status = payload;
-        movella_state.status = *status;
+        // TODO: parse int stuff? what does parse_int do..
+
+    case CANRX_DAQ_SENSORIC_VEL_ANG_POI:
+        volatile cmr_canSensoricVelAngPoi_t *vel_ang_poi = payload;
+        volatile int16_t vel_X_poi = &vel_ang_poi -> vel_X_poi;
+        volatile int16_t vel_Y_poi = &vel_ang_poi -> vel_Y_poi;
+        volatile int16_t vel_Z_poi = &vel_ang_poi -> vel_Z_poi;
+        volatile int16_t ang_S_poi = &vel_ang_poi -> ang_S_poi;
         break;
 
-    case CANRX_DAQ_MOVELLA_QUATERNION:
-        volatile cmr_canMovellaQuaternion_t *quaternion = payload;
-        volatile int16_t w = parse_int16(&quaternion->q0);
-        volatile int16_t x = parse_int16(&quaternion->q1);
-        volatile int16_t y = parse_int16(&quaternion->q2);
-        volatile int16_t z = parse_int16(&quaternion->q3);
-        movella_state.quaternion.w = transform_raw(MOVELLA_QUATERNION, w);
-        movella_state.quaternion.x = transform_raw(MOVELLA_QUATERNION, x);
-        movella_state.quaternion.y = transform_raw(MOVELLA_QUATERNION, y);
-        movella_state.quaternion.z = transform_raw(MOVELLA_QUATERNION, z);
-        quaternion_to_R(&movella_state.quaternion, movella_state.R);
+    case CANRX_DAQ_SENSORIC_DIST_POI:
+        volatile cmr_canSensoricDistPoi_t *dist_poi = payload;
+        volatile int32_t dist_A_poi = &dist_poi -> dist_A_poi;
+        volatile int16_t radius_poi = &dist_poi -> radius_poi;
+        volatile int16_t acc_C_poi = &dist_poi -> acc_C_poi;
         break;
 
-    case CANRX_DAQ_MOVELLA_IMU_EULER_ANGLES:
-        volatile cmr_canMovellaEulerAngles_t *euler = payload;
-        int16_t yaw = parse_int16(&euler->yaw);
-        int16_t pitch = parse_int16(&euler->pitch);
-        int16_t roll = parse_int16(&euler->roll);
-        movella_state.euler_angles.yaw = transform_raw(MOVELLA_EULER_ANGLES, yaw);
-        movella_state.euler_angles.pitch = transform_raw(MOVELLA_EULER_ANGLES, pitch);
-        movella_state.euler_angles.roll = transform_raw(MOVELLA_EULER_ANGLES, roll);
+    case CANRX_DAQ_SENSORIC_PITCH_ROLL:
+        volatile cmr_canSensoricPitchRoll_t *pitch_roll = payload;
+        volatile int16_t pitch = &pitch_roll -> pitch;
+        volatile int16_t roll = &pitch_roll -> roll;
         break;
     
-    case CANRX_DAQ_MOVELLA_IMU_GYRO:
-        volatile cmr_canMovellaIMUGyro_t *gyro = payload;
-        volatile int16_t gyro_x = parse_int16(&gyro->gyro_x);
-        volatile int16_t gyro_y = parse_int16(&gyro->gyro_y);
-        volatile int16_t gyro_z = parse_int16(&gyro->gyro_z);
-        movella_state.gyro.x_prev = movella_state.gyro.x;
-        movella_state.gyro.y_prev = movella_state.gyro.y;
-        movella_state.gyro.z_prev = movella_state.gyro.z;
-        movella_state.gyro.x = transform_raw(MOVELLA_IMU_GYRO, gyro_x);
-        movella_state.gyro.y = transform_raw(MOVELLA_IMU_GYRO, gyro_y);
-        movella_state.gyro.z = transform_raw(MOVELLA_IMU_GYRO, gyro_z);
-        if(movella_state.gyro.inited) {
-            movella_state.alpha.x = (movella_state.gyro.x - movella_state.gyro.x_prev) * GYRO_FREQ_HZ;
-            movella_state.alpha.y = (movella_state.gyro.y - movella_state.gyro.y_prev) * GYRO_FREQ_HZ;
-            movella_state.alpha.z = (movella_state.gyro.z - movella_state.gyro.z_prev) * GYRO_FREQ_HZ;
-        } else {
-            movella_state.gyro.inited = true;
-        }
+    case CANRX_DAQ_SENSORIC_ACC_HOR:
+        volatile cmr_canSensoricAccHor_t *acc_hor = payload;
+        volatile int16_t acc_X_hor = &acc_hor -> acc_X_hor;
+        volatile int16_t acc_Y_hor = &acc_hor -> acc_Y_hor;
+        volatile int16_t acc_Z_hor = &acc_hor -> acc_Z_hor;
         break;
 
-    case CANRX_DAQ_MOVELLA_IMU_ACCEL:
-        volatile cmr_canMovellaIMUAccel_t *accel = payload;
-        int16_t accel_x = parse_int16(&accel->accel_x);
-        int16_t accel_y = parse_int16(&accel->accel_y);
-        int16_t accel_z = parse_int16(&accel->accel_z);
-        movella_state.accel.x = transform_raw(MOVELLA_IMU_ACCEL, accel_x);
-        movella_state.accel.y = transform_raw(MOVELLA_IMU_ACCEL, accel_y);
-        movella_state.accel.z = transform_raw(MOVELLA_IMU_ACCEL, accel_z);
+    case CANRX_DAQ_SENSORIC_RATE_HOR:
+        volatile cmr_canSensoricRateHor_t *rate_hor = payload;
+        volatile int16_t rate_X_hor = &rate_hor -> rate_X_hor;
+        volatile int16_t rate_Y_hor = &rate_hor -> rate_Y_hor;
+        volatile int16_t rate_Z_hor = &rate_hor -> rate_Z_hor;
         break;
     
-    case CANRX_DAQ_MOVELLA_VELOCITY:
-        volatile cmr_canMovellaVelocity_t *velocity = payload;
-        int16_t vel_x = parse_int16(&velocity->vel_x);
-        int16_t vel_y = parse_int16(&velocity->vel_y);
-        int16_t vel_z = parse_int16(&velocity->vel_z);
-        movella_state.global_velocity.x = transform_raw(MOVELLA_VELOCITY, vel_x);
-        movella_state.global_velocity.y = transform_raw(MOVELLA_VELOCITY, vel_y);
-        movella_state.global_velocity.z = transform_raw(MOVELLA_VELOCITY, vel_z);
-        transform_velocity_D4B(&movella_state, &car_state);
-        compute_slip(&movella_state, &car_state);
+    case CANRX_DAQ_SENSORIC_VEL_ANG:
+        volatile cmr_canSensoricVelAng_t *vel_ang = payload;
+        volatile int16_t vel_X = &vel_ang -> vel_X;
+        volatile int16_t vel_Y = &vel_ang -> vel_Y; 
+        volatile int16_t vel_A = &vel_ang -> vel_A;
+        volatile int16_t ang_S = &vel_ang -> ang_S;
+        break;
+    
+    case CANRX_DAQ_SENSORIC_DIST:
+        volatile cmr_canSensoricDist_t *dist = payload;
+        volatile int32_t dist_A = &dist -> dist_A;
+        volatile int16_t radius = &dist -> radius;
+        volatile int16_t acc_C = &dist -> acc_C;
+        break;
+
+    case CANRX_DAQ_SENSORIC_ACC:
+        volatile cmr_canSensoricAcc_t *acc = payload;
+        volatile int16_t acc_X = &acc -> acc_X;
+        volatile int16_t acc_Y = &acc -> acc_Y;
+        volatile int16_t acc_Z = &acc -> acc_Z;
+        break;
+
+    case CANRX_DAQ_SENSORIC_RATE:
+        volatile cmr_canSensoricRate_t *rate = payload;
+        volatile int16_t rate_X = &rate -> rate_X;
+        volatile int16_t rate_Y = &rate -> rate_Y;
+        volatile int16_t rate_Z = &rate -> rate_Z;
+        break;
+
+    case CANRX_DAQ_SENSORIC_VEL_ANG_SP:
+        volatile cmr_canSensoricVelAngSp_t *vel_ang_sp = payload;
+        volatile int16_t vel_A_sp = &vel_ang_sp -> vel_A_sp;
+        volatile int16_t vel_S_sp = &vel_ang_sp -> vel_S_sp;
+        volatile uint16_t quality_ch0 = &vel_ang_sp -> quality_ch0;
+        volatile uint16_t quality_ch1 = &vel_ang_sp -> quality_ch1;
+        break;
+
+    case CANRX_DAQ_SENSORIC_DIST_VEL_SP:
+        volatile cmr_canSensoricDistVelSp_t *dist_vel_sp = payload;
+        volatile int32_t dist_A_sp = &dist_vel_sp -> dist_A_sp;
+        volatile int16_t vel_X_sp = &dist_vel_sp -> vel_X_sp;
+        volatile int16_t vel_Y_sp = &dist_vel_sp -> vel_Y_sp;
         break;
     
     default:
