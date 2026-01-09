@@ -10,7 +10,7 @@ void sensoric_parse(uint16_t canID, volatile void *payload) {
 
     canDaqRX_t sensoric_msg;
     bool msg_found = false;
-    for(sensoric_msg = CANRX_DAQ_SENSORIC_VEL_ANG_POI; sensoric_msg <= CANRX_DAQ_SENSORIC_INFO; sensoric_msg++) {
+    for(sensoric_msg = CANRX_DAQ_SENSORIC_VEL_ANG_POI; sensoric_msg <= CANRX_DAQ_SENSORIC_DIST_VEL_SP; sensoric_msg++) {
         if(canID == canDaqRXMeta[sensoric_msg].canID) {
             msg_found = true;
             break;
