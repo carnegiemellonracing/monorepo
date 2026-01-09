@@ -203,7 +203,7 @@ void vBMBSampleTask(void *pvParameters) {
 			pollAllTemperatureData(j);
 		}
 
-		// uint8_t err = pollAllVoltageData();
+		uint8_t err = pollAllVoltageData();
         writeLED(ledToggle);
 		ledToggle = !ledToggle;
         vTaskDelayUntil(&xLastWakeTime, sampleTaskPeriod_ms - ADC_settlingTime_ms * muxChannels);

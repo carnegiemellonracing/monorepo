@@ -688,3 +688,41 @@ void pollAllTemperatureData(int channel) {
     }
 	return;
 }
+
+//return voltage data
+uint8_t pollAllVoltageData() {
+    static uint8_t bytesToRead = CELL_NUM*2-1;
+    uart_command_t read_voltage = {
+        .readWrite = BROADCAST_READ,
+        .dataLen = 1,
+        .deviceAddress = 0xFF, //not used!
+        .registerAddress = TOP_CELL,
+        .data = {bytesToRead}, //reading high and low for cell 0-VSENSE_CHANNELS
+        .crc = {0xFF, 0xFF}
+    };
+
+    uart_response_t response;
+
+    // Critical section used so UART RX is not preempted
+    taskENTER_CRITICAL();
+    uart_sendCommand(&read_voltage);
+    uint8_t status = uart_receiveResponse(&response, bytesToRead);
+    if(status != 0) {
+        //setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
+        //BMBTimeoutCount[i-1]+=1;
+        // DWT_Delay_ms(10000);
+        // RXTurnOnInit();
+        // BMBInit();
+        taskEXIT_CRITICAL();
+        return 1;
+    }
+    taskEXIT_CRITICAL();
+
+    // Handle writing data separately from receive so you don't miss a byte
+    for(uint8_t j = 0; j < CELL_NUM; j++) {
+        uint8_t high_byte_data = response.data[2*j];
+        uint8_t low_byte_data = response.data[2*j+1];
+        BMBData.cellVoltages[CELL_NUM-j-1] = calculateVoltage(high_byte_data, low_byte_data);
+    }
+    return 0;
+}
