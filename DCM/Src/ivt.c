@@ -22,7 +22,9 @@
 
 #define SERIAL_NUMBER 45 //change serial number of ?? 
 #define CMR_CAN_COMMAND_IVT 0x411
-#define CMR_CAN_STORE_ID = 0x30
+#define CMR_CAN_STORE_ID 0x30
+#define CMR_CAN_RESTART_TO_BITRATE 0x3A 
+#define CMR_CAN_IVT_SET_MODE 0x34
 
 /**
  * @brief CAN periodic message receive metadata
@@ -82,29 +84,34 @@ void change_canid(cmr_IVTMessageType_t msgt){
 }
 
 //store CAN IDs
-void set_storing(){
+void set_storing(cmr_IVTMessageType_t msgt){
     //command set to stop mode
-    uint8_t stopdata[8] = {0};
-    stopdata[0] = SET_OPERATION_MODE;
-    stopdata[1] = SET_STOP;
-    canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, stopdata, sizeof(stopdata), canTX10Hz_period_ms);
+    uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, SET_STOP);
+    canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
 
     //store the data in CAN
-    uint8_t storedata[8] = {0};
-    storedata[0] = STORE_COMMAND; 
-    canTX(CMR_CAN_BUS_TRAC, CMR_CAN_STORE_ID, storedata, sizeof(storedata), canTX10Hz_period_ms);
+    request = ivt_buildMessage(CMR_CAN_IVT_SET_COMMANDS, msgt, STORE_COMMAND);
+    canTX(CMR_CAN_BUS_TRAC, CMR_CAN_STORE_ID, &request, sizeof(request), canTX10Hz_period_ms);
     
     //command set to run mode
-    uint8_t rundata[8] = {0};
-    rundata[0] = SET_OPERATION_MODE; 
-    rundata[1] = SET_RUN;
-    canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, rundata, sizeof(rundata), canTX10Hz_period_ms);
+    request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, SET_RUN);
+    canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
 }
 
 //function to change bitrate 
-void change_bit_rate(cmr_IVTMessageType_t msgt){
-    f
-}
+void change_bit_rate(cmr_IVTMessageType_t msgt, cmr_bitRateValues_t bitrate){
+    //set to stop mode
+    uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, SET_STOP);
+    canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
+
+    //change bit rate
+    request = ivt_buildMessage(CMR_CAN_RESTART_TO_BITRATE, msgt, bitrate);
+    canTX(CMR_CAN_BUS_TRAC, CMR_CAN_RESTART_TO_BITRATE, &request, sizeof(request), canTX10Hz_period_ms);
+
+    //command set to run mode
+    request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, SET_RUN);
+    canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
+}   
 
 //function to change cycle times and to little endian 
 void change_cycle_and_little_endian(cmr_IVTMessageType_t msgt){

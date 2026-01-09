@@ -47,6 +47,16 @@ typedef enum {
     SET_RUN = 0x01,
 } cmr_setModeOperations_t;
 
+typedef enum {
+    STORE_COMMAND = 0x32,
+} cmr_storeModeOperations_t;
+
+typedef enum {
+    CMR_CAN_BITRATE_250K = 0x08,
+    CMR_CAN_BITRATE_500K = 0x04,
+    CMR_CAN_BITRATE_1000K = 0x02,
+}
+
 //interface 
 uint_64_t ivt_buildMessage(cmr_IVTCommand_t cmd, cmr_IVTMessageType_t msgt, uint_8_t payload);
 uint_32_t get_result(cmr_IVTMessageType_t msgt)
