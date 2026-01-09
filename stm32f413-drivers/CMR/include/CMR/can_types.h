@@ -706,42 +706,6 @@ typedef struct {
     int16_t vel_Y_sp;
 } cmr_canSensoricDistVelSp_t;
 
-typedef enum {
-    standstill = (1<<0),
-    direction_neg = (1<<1),
-    rate_adjust_active = (1<<2),
-    trigger = (1<<5),
-    brake_acc_status = (1<<6),
-    illu_on = (1<<8),
-    illu_ok = (1<<9),
-    sensor_connected = (1<<10),
-    adjustment_active = (1<<12),
-    can_ang_adj_failed = (1<<13),
-    status_ok = (1<<15),
-} cmr_canSensoricStatusFlags_t;
-
-typedef struct {
-    uint16_t status_flags; // Flag: cmr_canSensoricStatusFlags_t /**< @brief 1-bit Sensoric status flags. */
-    int16_t temp_sensor;
-    uint32_t sample_time; // DOUBLE CHECK THIS ONE
-} cmr_canSensoricStatus_t;
-
-typedef enum {
-    info_error = (1<<0),
-    info_transversal = (1<<1),
-    info_inverse_mounting = (1<<2),
-    info_mov_avg_active = (1<<3),
-    info_poi = (1<<4),
-    info_illu_incomp = (1<<6),
-    info_service_mode = (1<<7),
-} cmr_canSensoricInfoFlags_t;
-
-typedef struct {
-    uint16_t info_flags; // Flag: cmr_canSensoricInfoFlags_t /**< @brief 1-bit Sensoric info flags. */
-    uint16_t last_error_code;
-    int8_t temp_processor;
-} cmr_canSensoricInfo_t;
-
 // ------------------------------------------------------------------------------------------------
 // Driver Interface Module
 
