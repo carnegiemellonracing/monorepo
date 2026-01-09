@@ -42,124 +42,82 @@ static const vector3 x_D_FR = { x_FR[0] - x_BD[0], x_FR[1] - x_BD[1], x_FR[2] - 
 static const vector3 x_D_RL = { x_RL[0] - x_BD[0], x_RL[1] - x_BD[1], x_RL[2] - x_BD[2] };
 static const vector3 x_D_RR = { x_RR[0] - x_BD[0], x_RR[1] - x_BD[1], x_RR[2] - x_BD[2] };
 
-typedef struct {
-    float w;
-    float x;
-    float y;
-    float z;
-} quaternion_t;
 
 typedef struct {
-    
-    quaternion_t quaternion;
 
     struct {
-        float yaw;
-        float pitch;
+        float x;
+        float y;
+        float a;
+        float ang_s;
+    } vel_ang_poi;
+
+    struct {
+        float dist_a;
+        float radius;
+        float acc_c
+    } dist_poi;
+    
+    struct {
         float roll;
-    } euler_angles;
-
-    matrix3x3 R;
-
-    // Movella-frame angular velocity.
-    struct {
-        bool inited;
-        float x_prev;
-        float y_prev;
-        float z_prev;
-        float x;
-        float y;
-        float z;
-    } gyro;
-    
-    // Movella-frame angular acceleration.
-    struct {
-        float x;
-        float y;
-        float z;
-    } alpha;
-    
-    // Movella-frame acceleration.
-    struct {
-        float x;
-        float y;
-        float z;
-    } accel;
-
-    // Movella-frame velocity.
-    struct {
-        float x;
-        float y;
-        float z;
-    } velocity;
+        float pitch;
+    } pitch_roll;
     
     struct {
         float x;
         float y;
         float z;
-    } global_velocity;
+    } acc_hor;
+
+    struct {
+        float x;
+        float y;
+        float z;
+    } rate_hor;
+    
+    struct {
+        float x;
+        float y;
+        float z;
+        float ang_s;
+    } vel_ang;
+
+    struct {
+        float dist_a;
+        float radius;
+        float acc_c;
+    } dist;
+
+    struct {
+        float x;
+        float y;
+        float z;
+    } acc;
+
+    struct {
+        float x;
+        float y;
+        float z;
+    } rate;
+
+    struct {
+        float vel_a;
+        float vel_s;
+        float quality_ch0;
+        float quality_ch1;
+    } vel_ang_sp;
+
+    struct {
+        float dist_a;
+        float vel_x;
+        float vel_y;
+    } dist_vel_sp;
 
     cmr_canMovellaStatus_t status;
 
 } movella_state_t;
 
-typedef struct {
-
-    matrix3x3 R;
-
-    // Car-frame angular velocity.
-    struct {
-        float x;
-        float y;
-        float z;
-    } gyro;
-    
-    // Car-frame acceleration.
-    struct {
-        float x;
-        float y;
-        float z;
-    } accel;
-
-    // Car-frame velocity.
-    struct {
-        float x;
-        float y;
-        float z;
-    } velocity;
-
-    struct {
-        float x;
-        float y;
-    } fl_velocity;
-
-    struct {
-        float x;
-        float y;
-    } fr_velocity;
-
-    struct {
-        float x;
-        float y;
-    } rl_velocity;
-
-    struct {
-        float x;
-        float y;
-    } rr_velocity;
-
-    struct {
-        float body;
-        float fl;
-        float fr;
-        float rl;
-        float rr;
-    } slip_angle;
-
-} car_state_t;
-
 extern volatile movella_state_t movella_state;
-extern volatile car_state_t car_state;
 
 void movella_parse(uint16_t canID, volatile void *payload);
 void movella_test();
