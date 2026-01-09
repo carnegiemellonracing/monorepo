@@ -228,7 +228,26 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_AMK_RR | CMR_CAN_WARN_CDC_AMK_TIMEOUT
+    },
+
+    [CANRX_TRAC_IVT_CURRENT] = {
+        .canID = 0x521,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+    },
+
+    [CANRX_TRAC_IVT_VOLTAGE] = {
+        .canID = 0x522,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+    },
+
+    [CANRX_TRAC_IVT_POWER] = {
+        .canID = 0x526,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
     }
+
 };
 
 cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
@@ -1117,6 +1136,9 @@ void canInit(void) {
         canTX200Hz,
         NULL
     );
+
+    //change when needed
+    //ivtinit(vo, cu, po, cycleRate);
 }
 
 /**

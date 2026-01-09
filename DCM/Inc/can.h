@@ -55,6 +55,9 @@ typedef enum {
     CANRX_TRAC_INV_RR_ACT1,     /**< @brief Rear right inverter actual values 1. */
     CANRX_TRAC_INV_RR_ACT2,     /**< @brief Rear right inverter actual values 2. */
     CANRX_TRAC_HVI_SENSE,       /**< @brief High voltage, current, and power sense in inverters. */
+    CANRX_TRAC_IVT_CURRENT,     /**< @brief Current from IVT */
+    CANRX_TRAC_IVT_VOLTAGE,     /**< @brief Voltage from IVT */
+    CANRX_TRAC_IVT_POWER,       /**< @brief Power from IVT */
     CANRX_TRAC_LEN              /**< @brief Number of periodic CAN messages. */
 } canTractiveRX_t;
 

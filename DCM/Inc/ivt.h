@@ -13,20 +13,6 @@
 
 // structs and enums of IVT CAN
 
-typedef struct IVTData {
-    uint16_t voltage;
-    uint16_t current;
-} IVTData_t; 
-
-typedef struct IVTConfig {
-    uint8_t mode;
-    uint16_t cyclerate;
-    float voltage;
-    float current;
-    float power;
-} IVTConfig_t;
-
-
 /** @brief enums. */
 typedef enum {
     CMR_CAN_IVT_RESULTS = 0,
@@ -86,7 +72,7 @@ void ivtinit(uint16_t* voltage, uint16_t* current);
 void initIVTConfig (void);
 
 //interface 
-uint64_t ivt_buildMessage(cmr_IVTCommand_t cmd, cmr_IVTMessageType_t msgt, uint_8_t payload);
+uint64_t ivt_buildMessage(cmr_IVTCommand_t cmd, cmr_IVTMessageType_t msgt, void* payload, uint8_t payloadlength);
 uint32_t get_result(cmr_IVTMessageType_t msgt);
 float get_voltage(cmr_IVTMessageType_t msgt);
 float get_current(void);
