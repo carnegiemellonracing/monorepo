@@ -511,16 +511,6 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
-    [CANRX_DAQ_SENSORIC_STATUS] = {
-        .canID = CMR_CANID_SENSORIC_STATUS,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
-    [CANRX_DAQ_SENSORIC_INFO] = {
-        .canID = CMR_CANID_SENSORIC_INFO,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
-    },
     [CANRX_DAQ_SBG_STATUS_3] = {
         .canID = CMR_CANID_SBG_STATUS_3,
         .timeoutError_ms = 2000,

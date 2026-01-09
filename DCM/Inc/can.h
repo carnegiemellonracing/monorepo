@@ -120,8 +120,6 @@ typedef enum {
     CANRX_DAQ_SENSORIC_RATE,
     CANRX_DAQ_SENSORIC_VEL_ANG_SP,
     CANRX_DAQ_SENSORIC_DIST_VEL_SP, 
-    CANRX_DAQ_SENSORIC_STATUS,
-    CANRX_DAQ_SENSORIC_INFO, 
     CANRX_DAQ_SBG_STATUS_3,     /**< @brief SBG Status containing solution info. */
     CANRX_DAQ_SBG_POS,          /**< @brief EKF Position. */
     CANRX_DAQ_SBG_VEL,          /**< @brief EKF Velocity. */
