@@ -1,3 +1,10 @@
+/**
+ * @file sensoric.c
+ * @brief Functions for parsing sensoric CAN messages
+ *
+ * @author Carnegie Mellon Racing
+ */
+
 #include "movella.h"
 #include <CMR/can_types.h> 
 #include <math.h>
@@ -5,7 +12,12 @@
 volatile sensoric_state_t sensoric_state;
 
 void sensoric_parse(uint16_t canID, volatile void *payload) {
-    
+    /**
+ * @brief Parses sensoric CAN data and stores to sensoric_state.
+ *
+ * @note returning false indicates no sensoric message to parse.
+ */
+
     volatile void* payload;
 
     canDaqRX_t sensoric_msg;

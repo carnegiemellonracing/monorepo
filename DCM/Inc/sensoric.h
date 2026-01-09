@@ -1,3 +1,10 @@
+/**
+ * @file sensoric.h
+ * @brief Functions for parsing sensoric CAN messages
+ *
+ * @author Carnegie Mellon Racing
+ */
+
 #ifndef SENSORIC_H
 #define SENSORIC_H
 
