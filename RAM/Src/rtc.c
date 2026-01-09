@@ -129,6 +129,23 @@ void SystemClock_Config(void)
   */
 void MX_RTC_Init(void)
 {
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+
+  HAL_PWR_EnableBkUpAccess();
+
+  /* Reset backup domain if RTC clock source was previously set */
+  // __HAL_RCC_BACKUPRESET_FORCE();
+  // __HAL_RCC_BACKUPRESET_RELEASE();
+
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
+  PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
+
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+  {
+      cmr_panic("RTC clock config failed!");
+  }
+
+  __HAL_RCC_RTC_ENABLE();
 
   /* USER CODE BEGIN RTC_Init 0 */
 
@@ -147,6 +164,7 @@ void MX_RTC_Init(void)
   hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
   hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
   hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+  while (__HAL_RCC_GET_FLAG(RCC_FLAG_LSERDY) == RESET);
   if (HAL_RTC_Init(&hrtc) != HAL_OK)
   {
     Error_Handler();

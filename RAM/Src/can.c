@@ -16,6 +16,7 @@
 #include "can.h"        // Interface to implement
 #include "parser.h"     // parser ingestation
 #include "memorator.h"     // parser ingestation
+#include "rtc.h"
 
 
 /** @brief CAN interfaces */
@@ -44,6 +45,11 @@ static void canTx100Hz(void *pvParameters) {
     while (1) {
         int x = 32;
         canTX(CMR_CAN_BUS_TRAC, 100, &x, sizeof(int), can100Hz_period_ms);
+        RTC_DateTypeDef curdate = getRTCDate();
+        RTC_TimeTypeDef curtime = getRTCTime();
+        canTX(CMR_CAN_BUS_VEH, 101, &curtime.Hours, sizeof(curtime.Hours), can100Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, 102, &curtime.Minutes, sizeof(curtime.Minutes), can100Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, 103, &curtime.Seconds, sizeof(curtime.Seconds), can100Hz_period_ms);
         vTaskDelayUntil(&lastWakeTime, can100Hz_period_ms);
     }
 }
@@ -442,7 +448,9 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
 };
 
 void canRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen) {
-    memoratorWrite(canID, xTaskGetTickCount(), dataLen,  data);
+    RTC_TimeTypeDef currentTime = getRTCTime();
+    uint32_t timestamp = (((currentTime.Hours << 8) | currentTime.Minutes) << 8) | currentTime.Seconds;
+    memoratorWrite(canID, timestamp, dataLen, data);
 }
 
 /**

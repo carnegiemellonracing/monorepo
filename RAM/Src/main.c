@@ -36,8 +36,8 @@
 int main(void) {
     // System initialization.
     HAL_Init();
-    // cmr_rccSystemClockEnable();
-    SystemClock_Config();
+    cmr_rccSystemClockEnable();
+    // SystemClock_Config();
 
     // Peripheral configuration.
     uartInit();
@@ -48,11 +48,11 @@ int main(void) {
 
     MX_RTC_Init();
 
-    // // Load in JSON configuration
+    // Load in JSON configuration
     parserInit();
-    // // Set up CBOR encoder
+    // Set up CBOR encoder
     sampleInit();
-    // // Pull in previous configuration
+    // Pull in previous configuration
     configInit();
 
     vTaskStartScheduler();
