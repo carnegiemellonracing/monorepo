@@ -57,7 +57,7 @@ typedef enum {
 
 typedef enum {
     CMR_CAN_SET_STOP = 0x00,
-    CMRP_CAN_SET_RUN = 0x01,
+    CMR_CAN_SET_RUN = 0x01,
 } cmr_setModeOperations_t;
 
 typedef enum {
@@ -77,10 +77,25 @@ typedef enum {
     CMR_CAN_SLOW_CYCLE = 0x0300,
 } cmr_cycleTimes_t;
 
-//interface 
-uint_64_t ivt_buildMessage(cmr_IVTCommand_t cmd, cmr_IVTMessageType_t msgt, uint_8_t payload);
-uint_32_t get_result(cmr_IVTMessageType_t msgt)
-float get_voltage(cmr_IVTMessageType_t msgt)
+/**
+ * @brief function declarations
+ */
 
-void change_canid(cmr_IVTMessageType_t msgt)
+//init
+void ivtinit(uint16_t* voltage, uint16_t* current); 
+void initIVTConfig (void);
+
+//interface 
+uint64_t ivt_buildMessage(cmr_IVTCommand_t cmd, cmr_IVTMessageType_t msgt, uint_8_t payload);
+uint32_t get_result(cmr_IVTMessageType_t msgt);
+float get_voltage(cmr_IVTMessageType_t msgt);
+float get_current(void);
+float get_pwr(void);
+
+//specialized funcs
+void change_canid(cmr_IVTMessageType_t msgt); 
+void set_storing(cmr_IVTMessageType_t msgt);
+void change_bit_rate(cmr_IVTMessageType_t msgt, cmr_bitRateValues_t bitrate);
+void change_cycle_and_little_endian(cmr_IVTMessageType_t msgt, cmr_cycleTimes_t cycletime);
+
 #endif /* IVT_H */

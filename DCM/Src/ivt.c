@@ -35,7 +35,7 @@
 cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_IVT_RESPONSE] = {
         .canID = CMR_CANID_IVT_RESPONSE
-    }
+    };
 }
 
 //initialize some ivtData variable
@@ -80,9 +80,9 @@ uint32_t get_result(cmr_IVTMessageType_t msgt){
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
 
     //find response ID
-    resp = canTractiveGetPayload(CANRX_IVT_RESPONSE)
+    uint8_t* resp = canTractiveGetPayload(CANRX_IVT_RESPONSE)
     //dereference pointer to get actual msg
-    data = canTractiveGetPayload(*resp)
+    uint8_t data = canTractiveGetPayload(*resp)
     // remove first byte, remaining is desired can id
     uint8_t data = data;
     uint32_t result = (data[1] << 24) | (data[2] << 16) | (data[3] << 8) | data[4];
@@ -151,10 +151,11 @@ void change_cycle_and_little_endian(cmr_IVTMessageType_t msgt, cmr_cycleTimes_t 
     uint8_t data[8] = {0};
     data[0] |= (1<<6);
 
-    data[2-3] = cycletime;
+    data[2] = (uint8_t) cycletime & 0xFF; 
+    data[3] = (uint8_t) (cycletime >> 8) & 0xFF;
 
-    //create CAN message 
-    uint64_t 
+    //send CAN message 
+    canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, data, sizeof(data), canTX10Hz_period_ms);
 
     //set to run mode
     request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_RUN);
