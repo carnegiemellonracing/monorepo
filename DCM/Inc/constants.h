@@ -73,7 +73,7 @@ typedef struct {
 /** 
  * @brief Lookup table mapping Drivetrain Innovation motor AC current to motor torque.
  *
- * Sourced from the F-MOT-A motor specification.
+ * Sourced from the F-MOT-A (2025) motor specification.
  */
 static const MotorData DTI_torque_current_LUT[DTI_TORQUE_CURRENT_LUT_LEN] = {
     {5, 2.6f},

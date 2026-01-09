@@ -522,8 +522,6 @@ const cmr_canDTI_RX_Message_t* getDTISetpoints(motorLocation_t motor) {
     dst->torqueLimPos_mNm = (int16_t)src->torqueLimPos_mNm;
     dst->torqueLimNeg_mNm = (int16_t)src->torqueLimNeg_mNm;
 
-    // Get rid of torque from this struct
-    dst->torque_mNm       = (int16_t)src->torque_mNm;
     dst->ACCurrent_deciAmps = torqueToCurrent(src->torque_mNm);
 
     return (const cmr_canDTI_RX_Message_t *) dst;

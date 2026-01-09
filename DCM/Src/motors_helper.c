@@ -449,8 +449,6 @@ int16_t torqueToCurrent(float torque_mNm){
     return sign * 10 * current;
 }
 
-
-//make similar changes as above
 /**
  * @brief Converts measured  AC current (in deciAmps) to the corresponding torque using the LUT.
  *
@@ -471,16 +469,16 @@ float currentToTorque(int16_t current_dA){
     float current_Arms = current_dA / 10.0f;
 
     current_Arms = CLAMP(current_Arms, DTI_torque_current_LUT[0].current_Arms,
-                                   DTI_torque_current_LUT[DTI_LUT_MAX_INDEX].current_Arms);
+                                   DTI_torque_current_LUT[DTI_TORQUE_CURRENT_LUT_LEN].current_Arms);
 
     int i;
-    for (i = 0; i < DTI_LUT_MAX_INDEX + 1; i++) {
+    for (i = 0; i < DTI_TORQUE_CURRENT_LUT_LEN + 1; i++) {
         if (current_Arms <= DTI_torque_current_LUT[i].current_Arms) {
             break;
         }
     }
 
-    if (i == DTI_LUT_MAX_INDEX) { 
+    if (i == DTI_TORQUE_CURRENT_LUT_LEN) { 
         currLower = DTI_torque_current_LUT[i - 1].current_Arms;
         currUpper = DTI_torque_current_LUT[i].current_Arms;
         torqueLower = DTI_torque_current_LUT[i - 1].torque_Nm;

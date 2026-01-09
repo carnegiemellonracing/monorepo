@@ -37,6 +37,7 @@ typedef enum {
     CANRX_VEH_MOVELLA_IMU_GYRO,
     CANRX_VEH_MOVELLA_IMU_ACCEL,
     CANRX_VEH_MOVELLA_VELOCITY,
+    CANRX_VEH_DTI_ERROR_MESSAGES,
     CANRX_VEH_LEN                   /**< @brief Number of periodic CAN messages. */
 } canVehicleRX_t;
 
@@ -81,7 +82,8 @@ typedef enum {
     CANRX_TRAC_RL_DCLIMS,
     CANRX_TRAC_RL_CONTROL_STATUS,
     CANRX_TRAC_RL_IO_STATUS,
-
+    
+    CANRX_TRAC_DTI_ERROR_MESSAGES,
     CANRX_TRAC_HVI_SENSE,             /**< @brief High voltage, current, and power sense in inverters. */
     CANRX_TRAC_LEN                    /**< @brief Number of periodic CAN messages. */
 } canTractiveRX_t;

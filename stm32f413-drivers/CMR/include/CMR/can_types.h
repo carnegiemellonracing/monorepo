@@ -700,6 +700,13 @@ typedef struct __attribute__((__packed__)){
     uint8_t canVersion;         /** CAN Map Version */
 } cmr_canDTI_TX_IOStatus_t;
 
+typedef struct __attribute__((__packed__)){
+    uint8_t fr_fault_code;
+    uint8_t fl_fault_code;
+    uint8_t rr_fault_code;
+    uint8_t rl_fault_code;
+} cmr_canDTI_ErrorMessages_t;
+
 /** @brief DTI controls-facing motor setpoints struct.*/
 typedef struct {
     float velocity_rpm;           /**< @brief Velocity setpoint (RPM). */
@@ -713,7 +720,6 @@ typedef struct{
     int16_t velocity_rpm; 
     int16_t torqueLimPos_mNm;
     int16_t torqueLimNeg_mNm;
-    int16_t torque_mNm;
     int16_t ACCurrent_deciAmps;        
 } cmr_canDTI_RX_Message_t;
 

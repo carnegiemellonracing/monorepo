@@ -178,11 +178,16 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
+    [CANRX_VEH_DTI_ERROR_MESSAGES] = {
+        .canID = CMR_CANID_DTI_ERROR_MESSAGES,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+    }
 };
 
 /** @brief Metadata for tractive CAN message reception. */
 cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
-    /* Front Left Inverter (Node ID 0x00) */
+    /* Front Left Inverter (Node ID 0x01) */
     [CANRX_TRAC_FL_CONTROL_STATUS] = {
         .canID = CMR_CANID_DTI_FL_CONTROL_STATUS,
         .timeoutError_ms = 100,
@@ -232,7 +237,7 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
 
-    /* Front Right Inverter (Node ID 0x01) */
+    /* Front Right Inverter (Node ID 0x02) */
     [CANRX_TRAC_FR_CONTROL_STATUS] = {
         .canID = CMR_CANID_DTI_FR_CONTROL_STATUS,
         .timeoutError_ms = 100,
@@ -282,7 +287,7 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
 
-    /* Rear Right Inverter (Node ID 0x02) */
+    /* Rear Right Inverter (Node ID 0x03) */
     [CANRX_TRAC_RR_CONTROL_STATUS] = {
         .canID = CMR_CANID_DTI_RR_CONTROL_STATUS,
         .timeoutError_ms = 100,
@@ -332,7 +337,7 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
 
-    /* Rear Left Inverter (Node ID 0x03) */
+    /* Rear Left Inverter (Node ID 0x04) */
     [CANRX_TRAC_RL_CONTROL_STATUS] = {
         .canID = CMR_CANID_DTI_RL_CONTROL_STATUS,
         .timeoutError_ms = 100,
@@ -380,6 +385,11 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_TRAC_DTI_ERROR_MESSAGES] = {
+        .canID = CMR_CANID_DTI_ERROR_MESSAGES,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
     }
 };
 
@@ -657,7 +667,6 @@ static void canTX100Hz(void *pvParameters) {
             .state = heartbeatVSM->state
         };
 
-
         updateErrorsWarnings(&heartbeat, lastWakeTime);
 
         if (heartbeat.error[0] != 0 || heartbeat.error[1] != 0) {
@@ -743,6 +752,13 @@ static void canTX200Hz(void *pvParameters) {
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultRL = getDTITempFault(MOTOR_RL);
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultRR = getDTITempFault(MOTOR_RR);
 
+    cmr_canDTI_ErrorMessages_t dtiErrorMessages;
+
+    dtiErrorMessages.fl_fault_code = dtiTempFaultFL->fault_code;
+    dtiErrorMessages.fr_fault_code = dtiTempFaultFR->fault_code;
+    dtiErrorMessages.rl_fault_code = dtiTempFaultRL->fault_code;
+    dtiErrorMessages.rr_fault_code = dtiTempFaultRR->fault_code;
+
     cmr_canCDCWheelVelocity_t speedFeedback;
     cmr_canCDCWheelTorque_t torqueFeedback;
     cmr_canCDCWheelVelocity_t speedSetpoint;
@@ -764,11 +780,7 @@ static void canTX200Hz(void *pvParameters) {
             heartbeatVSM->state == CMR_CAN_RTD || 
             heartbeatVSM->state == CMR_CAN_AS_READY ||
             heartbeatVSM->state == CMR_CAN_AS_DRIVING){
-            // This should be a broadcast
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
         }
 
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_TORLIMPOS, &(dtiSetpointsFL->torqueLimPos_mNm), sizeof(dtiSetpointsFL->torqueLimPos_mNm), canTX200Hz_period_ms);
@@ -783,7 +795,7 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_TORLIMPOS, &(dtiSetpointsRL->torqueLimPos_mNm), sizeof(dtiSetpointsRL->torqueLimPos_mNm), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_TORLIMNEG, &(dtiSetpointsRL->torqueLimNeg_mNm), sizeof(dtiSetpointsRL->torqueLimNeg_mNm), canTX200Hz_period_ms);
 
-        if (isTorqueMode){
+        if (~isTorqueMode){
             canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_CURRENT, &(dtiSetpointsFL->ACCurrent_deciAmps), sizeof(dtiSetpointsFL->ACCurrent_deciAmps), canTX200Hz_period_ms);
             canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_CURRENT, &(dtiSetpointsFR->ACCurrent_deciAmps), sizeof(dtiSetpointsFR->ACCurrent_deciAmps), canTX200Hz_period_ms);
             canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_CURRENT, &(dtiSetpointsRL->ACCurrent_deciAmps), sizeof(dtiSetpointsRL->ACCurrent_deciAmps), canTX200Hz_period_ms);
@@ -794,12 +806,8 @@ static void canTX200Hz(void *pvParameters) {
             canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_VELOCITY, &(dtiSetpointsRL->velocity_rpm), sizeof(dtiSetpointsRL->velocity_rpm), canTX200Hz_period_ms);
             canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_VELOCITY, &(dtiSetpointsRR->velocity_rpm), sizeof(dtiSetpointsRR->velocity_rpm), canTX200Hz_period_ms);
         }
-        
-        // Should be one big message with a seperate CAN ID
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FL_TEMPFAULT, &(dtiTempFaultFL->fault_code), sizeof(dtiTempFaultFL->fault_code), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_FR_TEMPFAULT, &(dtiTempFaultFR->fault_code), sizeof(dtiTempFaultFR->fault_code), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RL_TEMPFAULT, &(dtiTempFaultRL->fault_code), sizeof(dtiTempFaultRL->fault_code), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_RR_TEMPFAULT, &(dtiTempFaultRR->fault_code), sizeof(dtiTempFaultRR->fault_code), canTX200Hz_period_ms);
+
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_ERROR_MESSAGES, &dtiErrorMessages, sizeof(dtiErrorMessages), canTX200Hz_period_ms);
 
         daqWheelSpeedFeedback(&speedFeedback);
         daqWheelTorqueFeedback(&torqueFeedback);
