@@ -41,6 +41,16 @@ typedef enum {
     ENERGY_COUNTER,
 } cmr_IVTMessageType_t; 
 
-uint_64_t ivt_buildMessage(cmr_IVTCommand_t cmd, cmr_IVTMessageType_t msgt, uint_8_t payload);
+typedef enum {
+    SET_OPERATION_MODE = 0x34,
+    SET_STOP = 0x00,
+    SET_RUN = 0x01,
+} cmr_setModeOperations_t;
 
+//interface 
+uint_64_t ivt_buildMessage(cmr_IVTCommand_t cmd, cmr_IVTMessageType_t msgt, uint_8_t payload);
+uint_32_t get_result(cmr_IVTMessageType_t msgt)
+float get_voltage(cmr_IVTMessageType_t msgt)
+
+void change_canid(cmr_IVTMessageType_t msgt)
 #endif /* IVT_H */
