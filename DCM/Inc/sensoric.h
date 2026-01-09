@@ -113,9 +113,7 @@ typedef struct {
         float vel_y;
     } dist_vel_sp;
 
-    cmr_canMovellaStatus_t status;
-
-} movella_state_t;
+} sensoric_state_t;
 
 extern volatile movella_state_t movella_state;
 
