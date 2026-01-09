@@ -22,7 +22,6 @@ void sensoric_parse(uint16_t canID, volatile void *payload) {
 
     switch (sensoric_msg)
     {
-        // TODO: parse int stuff? what does parse_int do..
 
     case CANRX_DAQ_SENSORIC_VEL_ANG_POI:
         volatile cmr_canSensoricVelAngPoi_t *vel_ang_poi = payload;
