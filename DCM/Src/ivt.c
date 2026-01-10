@@ -14,8 +14,6 @@
 #include <string.h>     // memcpy()
 #include <stdint.h> 
 
-#include <CMR/tasks.h>  // Task interface
-
 #include "ivt.h"        // Interface to implement
 #include "sensors.h"    // sensorChannel_t
 #include "can.h"
@@ -36,9 +34,7 @@ typedef struct IVTData {
 
 //initialize ivtData variable
 static IVTData_t ivtData; 
-static IVTConfig_t ivtConfig; 
 
-//some type 
 void ivtinit(cmr_canRXMeta_t* voltage, cmr_canRXMeta_t* current, cmr_canRXMeta_t* power, uint16_t cyclerate){
     
     //define initial values
@@ -47,16 +43,29 @@ void ivtinit(cmr_canRXMeta_t* voltage, cmr_canRXMeta_t* current, cmr_canRXMeta_t
     ivtData.power = power;
     ivtData.cyclerate = cyclerate;
 
+    //need to pass in where specifically i'm writing (msgt) and cycle time
     initIVTConfig(); 
 
 }
 //initilization helper function
 
-void initIVTConfig (cmr_cycleTimes_t cycletime){
-    uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_CONFIG, 2, (0x26 << 8) | cycletime, 24);
+void initIVTConfig (cmr_IVTMessageType_t msgt, cmr_cycleTimes_t cycletime){
+    //set to stop mode
+    uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_STOP);
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
- 
-    ivtData.cyclerate = cycletime; 
+
+    //set little endian format
+    change_little_endian (msgt);
+
+    //set cycle time 
+    change_cycle(msgt, cycletime);
+
+    // put to non-volatile memory
+    set_storing(msgt);
+    
+    //set to run mode
+    request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_RUN);
+    canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
 
 }
 
@@ -67,27 +76,41 @@ uint64_t ivt_buildMessage(cmr_IVTCommand_t cmd, cmr_IVTMessageType_t msgt, void*
     return ((((cmd << 4) | msgt)) << (payloadlength)) | message; 
 }
 
+// Function header needed (seems pedantic but is a requirement of our code base)
+
 float get_voltage(cmr_IVTMessageType_t msgt){
-    uint64_t *voltage = canTractiveGetPayload(CANRX_TRAC_IVT_VOLTAGE);
-    uint64_t raw = *voltage;
+    ivtRes_t* v = canTractiveGetPayload(CANRX_TRAC_IVT_VOLTAGE);
+    uint32_t raw = v->res;
     return raw * 0.001;
 }
 
 float get_current(void){
-    uint64_t *current = canTractiveGetPayload(CANRX_TRAC_IVT_CURRENT);
-    uint64_t raw = *current;
+    ivtRes_t* c = canTractiveGetPayload(CANRX_TRAC_IVT_CURRENT);
+    uint32_t raw = c->res;
     return raw * 0.001;
 }
 
 float get_pwr(void){
-    uint64_t *power = canTractiveGetPayload(CANRX_TRAC_IVT_POWER);
-    uint64_t raw = *power;
+    ivtRes_t* p = canTractiveGetPayload(CANRX_TRAC_IVT_POWER);
+    uint32_t raw = p->res;
+
     return raw;
 }
 
-void change_canid(cmr_IVTMessageType_t msgt){
+typdef struct ivtRes{
+    uint8_t MUXID; //byte 0
+    uint8_t IVT_MsgCount: 4; //byte 1 lower nibble
+    uint8_t Result_state: 4; //byte 1 upper nibble
+    int32_t res; //bytes 2-5 IVT <result name (power, curr, volt)>
+
+} ivtRes_t;
+
+void change_canid(cmr_IVTMessageType_t msgt, uint8_t new_CAN_ID){
     //set the CAN ID
-    uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_CAN_ID, msgt, 0);
+
+    // Are your types correct here? 
+    // 8 bytes?
+    uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_CAN_ID, msgt, &new_CAN_ID, sizeof(new_CAN_ID));
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
 
 }
@@ -122,7 +145,6 @@ void change_bit_rate(cmr_IVTMessageType_t msgt, cmr_bitRateValues_t bitrate){
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
 }   
 
-//are these conceptually right? 
 void change_little_endian (cmr_IVTMessageType_t msgt){
     //set to stop mode
     uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_STOP);
@@ -159,3 +181,14 @@ void change_cycle(cmr_IVTMessageType_t msgt, cmr_cycleTimes_t cycletime){
     request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_RUN);
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
 } 
+
+//random stuff
+
+    // What does this do???
+    // Explain 0x26
+    /*
+    uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_CONFIG, 2, (0x26 << 8) | cycletime, 24);
+    canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
+ 
+    ivtData.cyclerate = cycletime; 
+    */
