@@ -34,11 +34,6 @@ typedef struct IVTData {
     uint16_t cyclerate; 
 } IVTData_t; 
 
-typedef struct IVTConfig {
-    bool isLittleEndian; 
-    uint16_t cyclerate; 
-} IVTConfig_t; 
-
 //initialize ivtData variable
 static IVTData_t ivtData; 
 static IVTConfig_t ivtConfig; 
@@ -60,10 +55,8 @@ void ivtinit(cmr_canRXMeta_t* voltage, cmr_canRXMeta_t* current, cmr_canRXMeta_t
 void initIVTConfig (cmr_cycleTimes_t cycletime){
     uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_CONFIG, 2, (0x26 << 8) | cycletime, 24);
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
-
-    //set everything needed
-    ivtConfig.isLittleEndian = true;          
-    ivtConfig.cyclerate = cycletime; 
+ 
+    ivtData.cyclerate = cycletime; 
 
 }
 
