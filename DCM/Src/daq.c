@@ -71,10 +71,10 @@ void daqWheelSpeedSetpoints(cmr_canCDCWheelVelocity_t *speedSetpoint) {
     const cmr_canDTI_RX_Message_t *dtiSetpoint1RL = getDTISetpoints(MOTOR_RL);
     const cmr_canDTI_RX_Message_t *dtiSetpoint1RR = getDTISetpoints(MOTOR_RR);
 
-    speedSetpoint->frontLeft_rpm =  dtiSetpoint1FL->velocity_rpm;
-    speedSetpoint->frontRight_rpm = dtiSetpoint1FR->velocity_rpm;
-    speedSetpoint->rearLeft_rpm =   dtiSetpoint1RL->velocity_rpm;
-    speedSetpoint->rearRight_rpm =  dtiSetpoint1RR->velocity_rpm;
+    speedSetpoint->frontLeft_rpm =  dtiSetpoint1FL->velocity_erpm;
+    speedSetpoint->frontRight_rpm = dtiSetpoint1FR->velocity_erpm;
+    speedSetpoint->rearLeft_rpm =   dtiSetpoint1RL->velocity_erpm;
+    speedSetpoint->rearRight_rpm =  dtiSetpoint1RR->velocity_erpm;
 }
 
 void daqWheelTorqueSetpoints(cmr_canCDCWheelTorque_t *torqueSetpoint) {

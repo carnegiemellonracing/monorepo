@@ -209,7 +209,7 @@ float motorSpeedToWheelLinearSpeed_mps(float motor_speed_radps) {
  * @param motor Which motor to retrieve value for.
  */
 int16_t getMotorSpeed_rpm(motorLocation_t motor) {
-    return getDTIErpm(motor)->erpm; // TODO: convert erpm to rpm
+    return getDTIErpm(motor)->erpm / pole_pairs;
 }
 
 /**

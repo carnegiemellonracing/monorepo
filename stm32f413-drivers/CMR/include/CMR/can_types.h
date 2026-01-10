@@ -717,7 +717,7 @@ typedef struct {
 
 /** @brief DTI motor controller message TX over CAN.*/
 typedef struct{
-    int16_t velocity_rpm; 
+    int16_t velocity_erpm; 
     int16_t torqueLimPos_mNm;
     int16_t torqueLimNeg_mNm;
     int16_t ACCurrent_deciAmps;        

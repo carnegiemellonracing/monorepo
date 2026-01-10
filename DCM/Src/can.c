@@ -802,10 +802,10 @@ static void canTX200Hz(void *pvParameters) {
             canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_CURRENT, &(dtiSetpointsRL->ACCurrent_deciAmps), sizeof(dtiSetpointsRL->ACCurrent_deciAmps), canTX200Hz_period_ms);
             canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_CURRENT, &(dtiSetpointsRR->ACCurrent_deciAmps), sizeof(dtiSetpointsRR->ACCurrent_deciAmps), canTX200Hz_period_ms);
         } else {
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_VELOCITY, &(dtiSetpointsFL->velocity_rpm), sizeof(dtiSetpointsFL->velocity_rpm), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_VELOCITY, &(dtiSetpointsFR->velocity_rpm), sizeof(dtiSetpointsFR->velocity_rpm), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_VELOCITY, &(dtiSetpointsRL->velocity_rpm), sizeof(dtiSetpointsRL->velocity_rpm), canTX200Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_VELOCITY, &(dtiSetpointsRR->velocity_rpm), sizeof(dtiSetpointsRR->velocity_rpm), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_VELOCITY, &(dtiSetpointsFL->velocity_erpm), sizeof(dtiSetpointsFL->velocity_erpm), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_VELOCITY, &(dtiSetpointsFR->velocity_erpm), sizeof(dtiSetpointsFR->velocity_erpm), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_VELOCITY, &(dtiSetpointsRL->velocity_erpm), sizeof(dtiSetpointsRL->velocity_erpm), canTX200Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_VELOCITY, &(dtiSetpointsRR->velocity_erpm), sizeof(dtiSetpointsRR->velocity_erpm), canTX200Hz_period_ms);
         }
 
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_ERROR_MESSAGES, &dtiErrorMessages, sizeof(dtiErrorMessages), canTX200Hz_period_ms);

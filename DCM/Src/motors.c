@@ -520,7 +520,7 @@ const cmr_canDTI_RX_Message_t* getDTISetpoints(motorLocation_t motor) {
     cmr_canDTI_RX_Message_t *dst = &DTI_RXMessage[motor];
 
     // ERPM vrs RPM // TODO: convert erpm to rpm
-    dst->velocity_rpm     = (int16_t)src->velocity_rpm;
+    dst->velocity_erpm     = (int16_t)src->velocity_rpm * pole_pairs;
 
     // Change to AC current lims
     dst->torqueLimPos_mNm = (int16_t)src->torqueLimPos_mNm;
