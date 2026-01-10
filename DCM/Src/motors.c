@@ -70,6 +70,9 @@ cmr_canDAQTest_t getDAQTest() {
     return daqTest;
 }
 
+/* Global Variable to Initiate/Disable Torque Mode*/ 
+bool isTorqueMode = false;
+
 // ------------------------------------------------------------------------------------------------
 // Private functions
 
@@ -137,15 +140,15 @@ static void motorsCommand (
                 if (blank_command) {
 					for (size_t i = 0; i < MOTOR_LEN; i++) {
 						motorSetpoints[i].velocity_rpm = 0;
-						motorSetpoints[i].torqueLimPos = 0;
-						motorSetpoints[i].torqueLimNeg = 0;
+						motorSetpoints[i].torqueLimPos_mNm = 0;
+						motorSetpoints[i].torqueLimNeg_mNm = 0;
 					}
 				}
 
 //                for (size_t i = 0; i < MOTOR_LEN; i++) {
 //                    motorSetpoints[i].velocity_rpm = 300;
-//                    motorSetpoints[i].torqueLimPos = 40;
-//                    motorSetpoints[i].torqueLimNeg = -40;
+//                    motorSetpoints[i].torqueLimPos_mNm = 40;
+//                    motorSetpoints[i].torqueLimNeg_mNm = -40;
 //                }
 
                 uint32_t au32_initial_ticks = DWT->CYCCNT;
@@ -191,8 +194,8 @@ static void motorsCommand (
             	pumpsOn();
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].velocity_rpm       = 0;
-                    motorSetpoints[i].torqueLimPos = 0;
-                    motorSetpoints[i].torqueLimNeg = 0;
+                    motorSetpoints[i].torqueLimPos_mNm = 0;
+                    motorSetpoints[i].torqueLimNeg_mNm = 0;
                 }
 
                 // set status so DIM can see
@@ -215,8 +218,8 @@ static void motorsCommand (
 
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].velocity_rpm       = 0;
-                    motorSetpoints[i].torqueLimPos = 0;
-                    motorSetpoints[i].torqueLimNeg = 0;
+                    motorSetpoints[i].torqueLimPos_mNm = 0;
+                    motorSetpoints[i].torqueLimNeg_mNm = 0;
                 }
                 // set status so DIM can see
                 setControlsStatus(reqDIM->requestedGear);
@@ -232,8 +235,8 @@ static void motorsCommand (
 
                 for (size_t i = 0; i < MOTOR_LEN; i++) {
                     motorSetpoints[i].velocity_rpm       = 0;
-                    motorSetpoints[i].torqueLimPos = 0;
-                    motorSetpoints[i].torqueLimNeg = 0;
+                    motorSetpoints[i].torqueLimPos_mNm = 0;
+                    motorSetpoints[i].torqueLimNeg_mNm = 0;
                 }
                 break;
             }
@@ -305,7 +308,7 @@ void setTorqueLimPos (
     }
 
     torqueLimPos_Nm = fmaxf(torqueLimPos_Nm, 0.0f);
-    motorSetpoints[motor].torqueLimPos = torqueLimPos_Nm);
+    motorSetpoints[motor].torqueLimPos_mNm = torqueLimPos_Nm;
 }
 
 /**
@@ -323,7 +326,7 @@ void setTorqueLimNeg (
     }
 
     torqueLimNeg_Nm = fminf(torqueLimNeg_Nm, 0.0f);
-    motorSetpoints[motor].torqueLimNeg = torqueLimNeg_Nm;
+    motorSetpoints[motor].torqueLimNeg_mNm = torqueLimNeg_Nm;
 }
 
 /**
@@ -390,8 +393,8 @@ void setTorqueLimsUnprotected (
     torqueLimPos_Nm = fmaxf(torqueLimPos_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
     torqueLimNeg_Nm = fminf(torqueLimNeg_Nm, 0.0f); // ensures torqueLimNeg_Nm <= 0
 
-    motorSetpoints[motor].torqueLimPos = torqueLimPos_Nm;
-    motorSetpoints[motor].torqueLimNeg = torqueLimNeg_Nm;
+    motorSetpoints[motor].torqueLimPos_mNm = torqueLimPos_Nm;
+    motorSetpoints[motor].torqueLimNeg_mNm = torqueLimNeg_Nm;
 }
 
 /**
@@ -472,7 +475,7 @@ void setTorque(
     motorLocation_t motor,
     float torque
 ){
-    motorSetpoints[motor].torque = torque;
+    motorSetpoints[motor].torque_mNm = torque;
 }
 
 /**

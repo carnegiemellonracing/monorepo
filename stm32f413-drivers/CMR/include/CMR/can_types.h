@@ -648,8 +648,8 @@ typedef struct {
 
 /** @brief DTI motor controller ac and dc current values. */
 typedef struct {
-    int16_t ac_current;         /**< Motor current. Sign represents if the motor is running(positive) current or regenerating (negative) current. Value multiplied by 10.*/
-    int16_t dc_current;         /**< Current on DC side. */
+    int16_t ac_current_dA;         /**< Motor current. Sign represents if the motor is running(positive) current or regenerating (negative) current. Value multiplied by 10.*/
+    int16_t dc_current_dA;         /**< Current on DC side. */
 } cmr_canDTI_TX_Current_t;
 
 /** @brief DTI motor controller temperature, motor temperature, fault code. */

@@ -11,7 +11,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <math.h>
-#include <cstdint>
 #include "can.h"
 #include "controls_helper.h"
 
@@ -210,7 +209,7 @@ float motorSpeedToWheelLinearSpeed_mps(float motor_speed_radps) {
  * @param motor Which motor to retrieve value for.
  */
 int16_t getMotorSpeed_rpm(motorLocation_t motor) {
-    return getMotorActualValues1(motor)->velocity_rpm;
+    return getDTIErpm(motor)->erpm; // TODO: convert erpm to rpm
 }
 
 /**
@@ -259,13 +258,16 @@ float getMinMotorSpeed_radps() {
  * @param pack_voltage_V the pack voltage
  */
 float getMotorPower(motorLocation_t motor, float pack_voltage_V) {
-    static const float RAW_CURRENT_TO_A = 0.00654297f;
 
-    const float torque_current_A = (float)(getMotorActualValues1(motor)->torqueCurrent_raw) * RAW_CURRENT_TO_A;
-    const float magnetization_current_A = (float)(getMotorActualValues1(motor)->magCurrent_raw) * RAW_CURRENT_TO_A;
+    const float dc_current_A = (float)(getDTICurrent(motor)->dc_current_dA) * 0.1;
+    return dc_current_A * pack_voltage_V;
+    // static const float RAW_CURRENT_TO_A = 0.00654297f;
 
-    const float currentMagnitude_A = hypotf(torque_current_A, magnetization_current_A);
-    return currentMagnitude_A * pack_voltage_V;
+    // const float torque_current_A = (float)(getactualvalues(motor)->torqueCurrent_raw) * RAW_CURRENT_TO_A;
+    // const float magnetization_current_A = (float)(getMotorActualValues1(motor)->magCurrent_raw) * RAW_CURRENT_TO_A;
+
+    // const float currentMagnitude_A = hypotf(torque_current_A, magnetization_current_A);
+    // return currentMagnitude_A * pack_voltage_V;
     /** @bug This is incorrect because the output voltage of the inverters, that is the voltage across the motors, is not the AC voltage */
 }
 

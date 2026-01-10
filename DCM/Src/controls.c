@@ -1253,12 +1253,12 @@ void setTractionControl (
                 rearSlipRatios.slipRatio_RR = getMaxKappaCurrentState(MOTOR_RR, assumeNoTurn);
             } break;
 
-            case TC_MODE_FX_GLOBAL_MAX: { // maps max throttle to the global max Fx of the LUT
-                frontSlipRatios.slipRatio_FL = getKappaFxGlobalMax(MOTOR_FL, throttlePos_u8, assumeNoTurn).kappa;
-                frontSlipRatios.slipRatio_FR = getKappaFxGlobalMax(MOTOR_FR, throttlePos_u8, assumeNoTurn).kappa;
-                rearSlipRatios.slipRatio_RL = getKappaFxGlobalMax(MOTOR_RL, throttlePos_u8, assumeNoTurn).kappa;
-                rearSlipRatios.slipRatio_RR = getKappaFxGlobalMax(MOTOR_RR, throttlePos_u8, assumeNoTurn).kappa;
-            } break;
+            // case TC_MODE_FX_GLOBAL_MAX: { // maps max throttle to the global max Fx of the LUT
+            //     frontSlipRatios.slipRatio_FL = getKappaFxGlobalMax(MOTOR_FL, throttlePos_u8, assumeNoTurn).kappa;
+            //     frontSlipRatios.slipRatio_FR = getKappaFxGlobalMax(MOTOR_FR, throttlePos_u8, assumeNoTurn).kappa;
+            //     rearSlipRatios.slipRatio_RL = getKappaFxGlobalMax(MOTOR_RL, throttlePos_u8, assumeNoTurn).kappa;
+            //     rearSlipRatios.slipRatio_RR = getKappaFxGlobalMax(MOTOR_RR, throttlePos_u8, assumeNoTurn).kappa;
+            // } break;
 
             case TC_MODE_FX_LOCAL_MAX: { // maps max throttle to the max Fx available at the current state
                 float traction_fl = getTraction(MOTOR_FL, throttlePos_u8, ASSUME_NO_TURN);
