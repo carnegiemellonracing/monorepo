@@ -159,7 +159,7 @@ typedef enum {
     CMR_CANID_DTI_FL_IO_STATUS      = PACKET_NODE_TO_CAN_ID(0x24, FL_NODE_ID),  /**< @brief FL Throttle signal, Brake signal, Digital I/Os, Drive enable, Limit status bits */
     CMR_CANID_DTI_FL_ACLIMS         = PACKET_NODE_TO_CAN_ID(0x25, FL_NODE_ID),  /**< @brief FL Cfg max AC, avail max AC, cfg min AC, avail min AC */
     CMR_CANID_DTI_FL_DCLIMS         = PACKET_NODE_TO_CAN_ID(0x26, FL_NODE_ID),  /**< @brief FL Cfg max DC, avail max DC, cfg min DC, avail min DC */
-    CMR_CANID_DTI_FL_VELOCITY       = PACKET_NODE_TO_CAN_ID(0x30, FL_NODE_ID),  /**< @brief FL Velocity (rpm). */
+    CMR_CANID_DTI_FL_VELOCITY       = PACKET_NODE_TO_CAN_ID(0x03, FL_NODE_ID),  /**< @brief FL Velocity (rpm). */
     CMR_CANID_DTI_FL_SET_TORLIMPOS  = PACKET_NODE_TO_CAN_ID(0x08, FL_NODE_ID),  /**< @brief FL Set Positive torque limit */
     CMR_CANID_DTI_FL_SET_TORLIMNEG  = PACKET_NODE_TO_CAN_ID(0x09, FL_NODE_ID),  /**< @brief FL Set Negative torque limit */
     CMR_CANID_DTI_FL_SET_CURRENT    = PACKET_NODE_TO_CAN_ID(0x01, FL_NODE_ID),  /**< @brief FL Set Torque */
@@ -173,7 +173,7 @@ typedef enum {
     CMR_CANID_DTI_FR_IO_STATUS      = PACKET_NODE_TO_CAN_ID(0x24, FR_NODE_ID),  /**< @brief FR Throttle signal, Brake signal, Digital I/Os, Drive enable, Limit status bits */
     CMR_CANID_DTI_FR_ACLIMS         = PACKET_NODE_TO_CAN_ID(0x25, FR_NODE_ID),  /**< @brief FR Cfg max AC, avail max AC, cfg min AC, avail min AC */
     CMR_CANID_DTI_FR_DCLIMS         = PACKET_NODE_TO_CAN_ID(0x26, FR_NODE_ID),  /**< @brief FR Cfg max DC, avail max DC, cfg min DC, avail min DC */
-    CMR_CANID_DTI_FR_VELOCITY       = PACKET_NODE_TO_CAN_ID(0x30, FR_NODE_ID),  /**< @brief FR Velocity (rpm). */
+    CMR_CANID_DTI_FR_VELOCITY       = PACKET_NODE_TO_CAN_ID(0x03, FR_NODE_ID),  /**< @brief FR Velocity (rpm). */
     CMR_CANID_DTI_FR_SET_TORLIMPOS  = PACKET_NODE_TO_CAN_ID(0x08, FR_NODE_ID),  /**< @brief FR Set Positive torque limit */
     CMR_CANID_DTI_FR_SET_TORLIMNEG  = PACKET_NODE_TO_CAN_ID(0x09, FR_NODE_ID),  /**< @brief FR Set Negative torque limit */
     CMR_CANID_DTI_FR_SET_CURRENT    = PACKET_NODE_TO_CAN_ID(0x01, FR_NODE_ID),  /**< @brief FR Set Torque */
@@ -187,7 +187,7 @@ typedef enum {
     CMR_CANID_DTI_RL_IO_STATUS      = PACKET_NODE_TO_CAN_ID(0x24, RL_NODE_ID),  /**< @brief RL Throttle signal, Brake signal, Digital I/Os, Drive enable, Limit status bits */
     CMR_CANID_DTI_RL_ACLIMS         = PACKET_NODE_TO_CAN_ID(0x25, RL_NODE_ID),  /**< @brief RL Cfg max AC, avail max AC, cfg min AC, avail min AC */
     CMR_CANID_DTI_RL_DCLIMS         = PACKET_NODE_TO_CAN_ID(0x26, RL_NODE_ID),  /**< @brief RL Cfg max DC, avail max DC, cfg min DC, avail min DC */
-    CMR_CANID_DTI_RL_VELOCITY       = PACKET_NODE_TO_CAN_ID(0x30, RL_NODE_ID),  /**< @brief RL Velocity (rpm). */
+    CMR_CANID_DTI_RL_VELOCITY       = PACKET_NODE_TO_CAN_ID(0x03, RL_NODE_ID),  /**< @brief RL Velocity (rpm). */
     CMR_CANID_DTI_RL_SET_TORLIMPOS  = PACKET_NODE_TO_CAN_ID(0x08, RL_NODE_ID),  /**< @brief RL Set Positive torque limit */
     CMR_CANID_DTI_RL_SET_TORLIMNEG  = PACKET_NODE_TO_CAN_ID(0x09, RL_NODE_ID),  /**< @brief RL Set Negative torque limit */
     CMR_CANID_DTI_RL_SET_CURRENT    = PACKET_NODE_TO_CAN_ID(0x01, RL_NODE_ID),  /**< @brief RL Set Torque */
@@ -201,7 +201,7 @@ typedef enum {
     CMR_CANID_DTI_RR_IO_STATUS      = PACKET_NODE_TO_CAN_ID(0x24, RR_NODE_ID),  /**< @brief RR Throttle signal, Brake signal, Digital I/Os, Drive enable, Limit status bits */
     CMR_CANID_DTI_RR_ACLIMS         = PACKET_NODE_TO_CAN_ID(0x25, RR_NODE_ID),  /**< @brief RR Cfg max AC, avail max AC, cfg min AC, avail min AC */
     CMR_CANID_DTI_RR_DCLIMS         = PACKET_NODE_TO_CAN_ID(0x26, RR_NODE_ID),  /**< @brief RR Cfg max DC, avail max DC, cfg min DC, avail min DC */
-    CMR_CANID_DTI_RR_VELOCITY       = PACKET_NODE_TO_CAN_ID(0x30, RR_NODE_ID),  /**< @brief RR Velocity (rpm). */
+    CMR_CANID_DTI_RR_VELOCITY       = PACKET_NODE_TO_CAN_ID(0x03, RR_NODE_ID),  /**< @brief RR Velocity (rpm). */
     CMR_CANID_DTI_RR_SET_TORLIMPOS  = PACKET_NODE_TO_CAN_ID(0x08, RR_NODE_ID),  /**< @brief RR Set Positive torque limit */
     CMR_CANID_DTI_RR_SET_TORLIMNEG  = PACKET_NODE_TO_CAN_ID(0x09, RR_NODE_ID),  /**< @brief RR Set Negative torque limit */
     CMR_CANID_DTI_RR_SET_CURRENT    = PACKET_NODE_TO_CAN_ID(0x01, RR_NODE_ID),  /**< @brief RR Set Torque */

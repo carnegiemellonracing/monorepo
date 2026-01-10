@@ -60,7 +60,7 @@ float getMotorSpeed_radps(motorLocation_t motor);
 float getTotalMotorSpeed_radps();
 float getTotalMotorSpeed_rpm();
 float getMinMotorSpeed_radps();
-float getMotorPower(motorLocation_t motor, float pack_voltage_V);
+float getMotorPower(motorLocation_t motor);
 float getLoadByIndex(const cmr_loadDistribution_t *loads, size_t motor);
 float getTorqueNmByIndex(const cmr_torqueDistributionNm_t *torques_Nm, size_t motor);
 float getTorqueNmMax(const cmr_torqueDistributionNm_t *torques_Nm);
