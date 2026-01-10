@@ -13,11 +13,6 @@
 #include <stddef.h>
 #include <CMR/can_types.h>
 
-// ------------------------------------------------------------------------------------------------
-// Constants
-
-extern const float torqueIncrement_Nm;
-extern const float rpm_to_mV_factor;
 
 // ------------------------------------------------------------------------------------------------
 // Enums/Structs

@@ -773,7 +773,7 @@ static void canTX200Hz(void *pvParameters) {
     cmr_canFrontWheelVelocity_t front_velocity;
     cmr_canRearWheelVelocity_t rear_velocity;
 
-    uint8_t drive_enable = 0;
+    static const uint8_t drive_enable = 1;
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
