@@ -11,6 +11,10 @@
  * @author Carnegie Mellon Racing
  */
 
+ //TODO: WE NEED TO FIND WHAT PARAMETERS TO PASS IN INITCONFIG 
+ //CHECK THE CHANGE CANID MESSSAGE FUNCTION
+ //FUNCTION HEADERS WHATEVER THOSE ARE?
+
 #include <string.h>     // memcpy()
 #include <stdint.h> 
 
@@ -97,7 +101,7 @@ float get_pwr(void){
     return raw;
 }
 
-typdef struct ivtRes{
+typedef struct ivtRes{
     uint8_t MUXID; //byte 0
     uint8_t IVT_MsgCount: 4; //byte 1 lower nibble
     uint8_t Result_state: 4; //byte 1 upper nibble
@@ -105,11 +109,10 @@ typdef struct ivtRes{
 
 } ivtRes_t;
 
-void change_canid(cmr_IVTMessageType_t msgt, uint8_t new_CAN_ID){
+void change_canid(cmr_IVTMessageType_t msgt, uint16_t new_CAN_ID){
     //set the CAN ID
-
-    // Are your types correct here? 
-    // 8 bytes?
+    //require only 11 bits used 
+    configASSERT(new_CAN_ID < 0x800);
     uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_CAN_ID, msgt, &new_CAN_ID, sizeof(new_CAN_ID));
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
 
