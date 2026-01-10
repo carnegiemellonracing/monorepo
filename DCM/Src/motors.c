@@ -29,6 +29,7 @@
 #include "fans.h"
 #include "constants.h"
 #include "controls.h"
+#include "motors_helper.h"
 
 // ------------------------------------------------------------------------------------------------
 // Constants
@@ -518,7 +519,7 @@ const cmr_canDTI_RX_Message_t* getDTISetpoints(motorLocation_t motor) {
     const cmr_canDTISetpoints_t *src = (const cmr_canDTISetpoints_t *) &(motorSetpoints[motor]);
     cmr_canDTI_RX_Message_t *dst = &DTI_RXMessage[motor];
 
-    // ERPM vrs RPM
+    // ERPM vrs RPM // TODO: convert erpm to rpm
     dst->velocity_rpm     = (int16_t)src->velocity_rpm;
 
     // Change to AC current lims
