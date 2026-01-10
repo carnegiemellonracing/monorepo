@@ -82,6 +82,11 @@ typedef enum {
     CANRX_TRAC_RR_DCLIMS,
     CANRX_TRAC_RR_CONTROL_STATUS,
     CANRX_TRAC_RR_IO_STATUS,
+
+    CANRX_TRAC_FL_TEST,
+    CANRX_TRAC_FR_TEST,
+    CANRX_TRAC_RL_TEST,
+    CANRX_TRAC_RR_TEST,
     
     CANRX_TRAC_DTI_ERROR_MESSAGES,
     CANRX_TRAC_HVI_SENSE,             /**< @brief High voltage, current, and power sense in inverters. */

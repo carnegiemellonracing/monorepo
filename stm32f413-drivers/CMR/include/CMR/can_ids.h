@@ -209,6 +209,11 @@ typedef enum {
     CMR_CANID_DTI_SET_DRIVE_EN   = PACKET_NODE_TO_CAN_ID(0x0C, DRIVE_EN_NODE_ID),  /**< @brief Set Drive Enable Broadcast Message */
     CMR_CANID_DTI_ERROR_MESSAGES    = 0x305,
 
+    CMR_CANID_DTI_FL_TEST = 0x320,
+    CMR_CANID_DTI_FR_TEST = 0x321,
+    CMR_CANID_DTI_RL_TEST = 0x322,
+    CMR_CANID_DTI_RR_TEST = 0x323,
+
     CMR_CANID_RMS_TEMPA = 0x000 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set A. */
     CMR_CANID_RMS_TEMPB = 0x001 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set B. */
     CMR_CANID_RMS_TEMPC = 0x002 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set C. */

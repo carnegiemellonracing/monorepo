@@ -49,6 +49,8 @@ static const TickType_t can10Hz_period_ms = 100;
 /** @brief Motors command 200 Hz task. */
 static cmr_task_t motorsCommand_task;
 
+static cmr_task_t motorsTest_task;
+
 /** @brief DAQ test type and HAL rand init **/
 cmr_canDAQTest_t daqTest;
 
@@ -76,6 +78,30 @@ bool isTorqueMode = false;
 
 // ------------------------------------------------------------------------------------------------
 // Private functions
+
+static void motorsTest (void *pvParameters) {
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+
+    while (1) {
+        volatile uint64_t *velocity_erpm_fl = canTractiveGetPayload(CANRX_TRAC_FL_TEST);
+        volatile uint64_t *velocity_erpm_fr = canTractiveGetPayload(CANRX_TRAC_FR_TEST);
+        volatile uint64_t *velocity_erpm_rl = canTractiveGetPayload(CANRX_TRAC_RL_TEST);
+        volatile uint64_t *velocity_erpm_rr = canTractiveGetPayload(CANRX_TRAC_RR_TEST);
+
+        uint64_t set_velocity_erpm_fl = *velocity_erpm_fl;
+        uint64_t set_velocity_erpm_fr = *velocity_erpm_fr;
+        uint64_t set_velocity_erpm_rl = *velocity_erpm_rl;
+        uint64_t set_velocity_erpm_rr = *velocity_erpm_rr;
+
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_VELOCITY, &set_velocity_erpm_fl, sizeof(set_velocity_erpm_fl), can10Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_VELOCITY, &set_velocity_erpm_fr, sizeof(set_velocity_erpm_fr), can10Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_VELOCITY, &set_velocity_erpm_rl, sizeof(set_velocity_erpm_rl), can10Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_VELOCITY, &set_velocity_erpm_rr, sizeof(set_velocity_erpm_rr), can10Hz_period_ms);
+    
+        vTaskDelayUntil(&lastWakeTime, motorsCommand_period_ms);
+    }
+}
 
 /**
  * @brief Task for setting motors command.
@@ -285,11 +311,18 @@ void motorsInit (
     initControls();
 
     // Task creation.
+    // cmr_taskInit(
+    //     &motorsCommand_task,
+    //     "motorsCommand",
+    //     motorsCommand_priority,
+    //     motorsCommand,
+    //     NULL
+    // );
     cmr_taskInit(
-        &motorsCommand_task,
-        "motorsCommand",
+        &motorsTest_task,
+        "motorsTest",
         motorsCommand_priority,
-        motorsCommand,
+        motorsTest,
         NULL
     );
 }

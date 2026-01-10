@@ -92,13 +92,13 @@ int main(void) {
     // Peripheral configuration.
 
     gpioInit();
-    i2cInit();
+    // i2cInit();
     canInit();
-    adcInit();
-    servoInit();
+    // adcInit();
+    // servoInit();
     motorsInit();
-    sensorsInit();
-    brakelightInit();
+    // sensorsInit();
+    // brakelightInit();
 
 
     // Tests for computing kappa.
