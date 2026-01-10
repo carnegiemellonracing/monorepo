@@ -104,6 +104,17 @@ static void motorsTest (void *pvParameters) {
 }
 
 /**
+ * @brief Send Blank Command To Inverters
+ */
+void sendBlankCommand() {
+    for (size_t i = 0; i < MOTOR_LEN; i++) {
+        motorSetpoints[i].velocity_rpm     = 0;
+        motorSetpoints[i].torqueLimPos_mNm = 0;
+        motorSetpoints[i].torqueLimNeg_mNm = 0;
+    }
+}
+
+/**
  * @brief Task for setting motors command.
  *
  * @param pvParameters Ignored.
@@ -165,18 +176,8 @@ static void motorsCommand (
                 // from HV_EN to RTD to make sure inverters receive clean enable
                 const bool blank_command = (lastHvenTime + 100 > xTaskGetTickCount());
                 if (blank_command) {
-					for (size_t i = 0; i < MOTOR_LEN; i++) {
-						motorSetpoints[i].velocity_rpm = 0;
-						motorSetpoints[i].torqueLimPos_mNm = 0;
-						motorSetpoints[i].torqueLimNeg_mNm = 0;
-					}
+                    sendBlankCommand();
 				}
-
-//                for (size_t i = 0; i < MOTOR_LEN; i++) {
-//                    motorSetpoints[i].velocity_rpm = 300;
-//                    motorSetpoints[i].torqueLimPos_mNm = 40;
-//                    motorSetpoints[i].torqueLimNeg_mNm = -40;
-//                }
 
                 uint32_t au32_initial_ticks = DWT->CYCCNT;
 
@@ -199,11 +200,6 @@ static void motorsCommand (
                 uint32_t total_ticks = DWT->CYCCNT - au32_initial_ticks;
                 uint32_t microsecs = total_ticks*1000000/HAL_RCC_GetHCLKFreq();
 
-
-
-                //canTX(CMR_CAN_BUS_VEH, 0x7F9, &microsecs, 4, 5);
-
-
                 // Throttle pos is used instead of torque requested bc torque
                 // requested is always 0 unless in RTD (this allows drivers to
                 // test DRS implementation without being in RTD)
@@ -219,11 +215,7 @@ static void motorsCommand (
             	mcCtrlOn();
             	// fansOn();
             	pumpsOn();
-                for (size_t i = 0; i < MOTOR_LEN; i++) {
-                    motorSetpoints[i].velocity_rpm       = 0;
-                    motorSetpoints[i].torqueLimPos_mNm = 0;
-                    motorSetpoints[i].torqueLimNeg_mNm = 0;
-                }
+                sendBlankCommand();
 
                 // set status so DIM can see
                 setControlsStatus(reqDIM->requestedGear);
@@ -242,12 +234,8 @@ static void motorsCommand (
 
             	// fansOff();
             	pumpsOff();
+                sendBlankCommand();
 
-                for (size_t i = 0; i < MOTOR_LEN; i++) {
-                    motorSetpoints[i].velocity_rpm       = 0;
-                    motorSetpoints[i].torqueLimPos_mNm = 0;
-                    motorSetpoints[i].torqueLimNeg_mNm = 0;
-                }
                 // set status so DIM can see
                 setControlsStatus(reqDIM->requestedGear);
                 break;
@@ -259,12 +247,7 @@ static void motorsCommand (
                 pumpsOff();
                 mcCtrlOff();
                 set_optimal_control_with_regen(128, 10000, 10000);
-
-                for (size_t i = 0; i < MOTOR_LEN; i++) {
-                    motorSetpoints[i].velocity_rpm       = 0;
-                    motorSetpoints[i].torqueLimPos_mNm = 0;
-                    motorSetpoints[i].torqueLimNeg_mNm = 0;
-                }
+                sendBlankCommand();
                 break;
             }
         }
@@ -274,23 +257,6 @@ static void motorsCommand (
             gear = reqDIM->requestedGear;
             resetRetroactiveLimitFilters();
             initControls();
-
-            // Generate new test ID
-            daqTest = (rand() % 0x7Fu) & 0x7Fu;
-
-            // Send message to start test on DAQ CAN
-            daqTest = daqTest | 0x80; // Set MSB to one
-            // canTX(
-            //   CMR_CAN_BUS_DAQ, CMR_CANID_TEST_ID, &daqTest, sizeof(daqTest), can10Hz_period_ms
-            // );
-        }
-
-        if (prevState == CMR_CAN_RTD && heartbeatVSM->state == CMR_CAN_HV_EN) {
-            // Send message to stop test on DAQ CAN
-            daqTest = daqTest & 0x7F; // Set MSB to zero
-            // canTX(
-            //   CMR_CAN_BUS_DAQ, CMR_CANID_TEST_ID, &daqTest, sizeof(daqTest), can10Hz_period_ms
-            // );
         }
 
         prevState = heartbeatVSM->state;

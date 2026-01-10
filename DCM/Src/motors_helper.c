@@ -14,18 +14,7 @@
 #include "can.h"
 #include "controls_helper.h"
 
-// ------------------------------------------------------------------------------------------------
-// Constants
-
-/** @brief AMK Torque command increment (Newton-meters). */
-const float torqueIncrement_Nm = 0.0098f;
-
-/** @brief Constant factor for transforming motor RPM to induced voltage.
- *
- *  @details See motor manual page 37
- */
-const float rpm_to_mV_factor = 0.026587214972f;
-
+// Macros
 #define CLAMP(x, min, max) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)));
     
 /**
@@ -252,23 +241,14 @@ float getMinMotorSpeed_radps() {
  * @brief Returns the power in watts of a given motor.
  * Uses inverter-reported magnetization current and torque current to calculate total current,
  * which is multiplied with pack voltage to calculate power
- * @bug This is incorrect because the output voltage of the inverters, that is the voltage across the motors, is not the AC voltage
  *
  * @param motor the ID of the motor
- * @param pack_voltage_V the pack voltage
  */
-float getMotorPower(motorLocation_t motor, float pack_voltage_V) {
+float getMotorPower(motorLocation_t motor) {
 
     const float dc_current_A = (float)(getDTICurrent(motor)->dc_current_dA) * 0.1;
-    return dc_current_A * pack_voltage_V;
-    // static const float RAW_CURRENT_TO_A = 0.00654297f;
-
-    // const float torque_current_A = (float)(getactualvalues(motor)->torqueCurrent_raw) * RAW_CURRENT_TO_A;
-    // const float magnetization_current_A = (float)(getMotorActualValues1(motor)->magCurrent_raw) * RAW_CURRENT_TO_A;
-
-    // const float currentMagnitude_A = hypotf(torque_current_A, magnetization_current_A);
-    // return currentMagnitude_A * pack_voltage_V;
-    /** @bug This is incorrect because the output voltage of the inverters, that is the voltage across the motors, is not the AC voltage */
+    const float voltage = (float)(getDTIErpm(motor)->input_voltage_V);
+    return dc_current_A * voltage;
 }
 
 /** @brief Get a motor load from cmr_loadDistribution_t */
