@@ -177,6 +177,11 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
+    [CANRX_VEH_CUBEMARS_DATA] = {
+        .canID = CMR_CANID_EXTENDED_CUBEMARS_DATA,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
 };
 
 /** @brief Metadata for tractive CAN message reception. */

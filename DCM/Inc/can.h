@@ -37,6 +37,7 @@ typedef enum {
     CANRX_VEH_MOVELLA_IMU_GYRO,
     CANRX_VEH_MOVELLA_IMU_ACCEL,
     CANRX_VEH_MOVELLA_VELOCITY,
+    CANRX_VEH_CUBEMARS_DATA,
     CANRX_VEH_LEN                   /**< @brief Number of periodic CAN messages. */
 } canVehicleRX_t;
 

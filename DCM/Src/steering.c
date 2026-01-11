@@ -73,7 +73,7 @@ static void maxonControl(void *pvParameters) {
         // else{
         //     targetPosition = (float) canGetSteeringPosition();
         // }
-        cmr_canCubeMarsData_t *data =d (cmr_canCubeMarsData_t*)getPayload(CANRX_CUBEMARS_DATA);
+        cmr_canCubeMarsData_t *data =d (cmr_canCubeMarsData_t*)getPayload(CANRX_VEH_CUBEMARS_DATA);
         int32_t position = parse_int16(data->position_deg);
         if(!startMission) {
             if(position == centerPosition) {
@@ -110,7 +110,7 @@ static void inspectionMissionControl(void *pvParameters) {
     float t = 0.0f;
 
     while(1) {
-        cmr_canCubeMarsData_t *data = (cmr_canCubeMarsData_t*)getPayload(CANRX_CUBEMARS_DATA);
+        cmr_canCubeMarsData_t *data = (cmr_canCubeMarsData_t*)getPayload(CANRX_VEH_CUBEMARS_DATA);
         int16_t position = parse_int16(data->position_deg);
         if(!startMission) {
             if(position == centerPosition) {
