@@ -139,6 +139,12 @@ int cmr_canTX(
     TickType_t timeout
 );
 
+int cmr_extendedCanTX(
+    cmr_can_t *can,
+    uint16_t id, const void *data, uint8_t len,
+    TickType_t timeout
+);
+
 void cmr_canFieldEnable(uint8_t *field, const void *value, size_t len);
 void cmr_canFieldDisable(uint8_t *field, const void *value, size_t len);
 uint32_t cmr_canGPIOAF(CAN_TypeDef *instance, GPIO_TypeDef *port);
