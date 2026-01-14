@@ -15,6 +15,7 @@
 #include <stm32f4xx_hal_can.h> // HAL interface
 #include <CMR/tasks.h>  // Task interface
 
+#include "adc.h"
 #include "can.h"
 #include "data.h"
 #include "bq_interface.h"
@@ -26,7 +27,7 @@
  *
  * @note Indexed by `canRX_t`.
  */
-cmr_canRXMeta_t canRXMeta[] = {
+cmr_canRXMeta_t canRXMeta[CANRX_LEN] = {
     [CANRX_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
         .timeoutError_ms = 100,
@@ -132,32 +133,29 @@ static void canTX10Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     TickType_t lastWakeTime = xTaskGetTickCount();
-    TickType_t taskStartTime = xTaskGetTickCount();
     while (1) {
+        uint32_t x = adc_read(ADC_HALL_EFFECT);
+
+        if (x == 0){
+            cmr_panic("vTaskStartScheduler returned!");
+        }
+
         // Loop through the 4 different MUX channels and select a different one
 		// We still monitor all voltages each channel switch
 		for(uint8_t j = 0; j < 4; j++) {
 			// Small delays put between all transaction
-
+            
 			setMuxOutput(j);
-			lastWakeTime = xTaskGetTickCount();
 			vTaskDelayUntil(&lastWakeTime, 10);
-
 			uint8_t err = getVoltages();
-
-			lastWakeTime = xTaskGetTickCount();
 			vTaskDelayUntil(&lastWakeTime, 10);
-
 			getTemps(j);
-
-			lastWakeTime = xTaskGetTickCount();
 			vTaskDelayUntil(&lastWakeTime, 10);
 
-			lastWakeTime = xTaskGetTickCount();
 		}
         sendVoltages();
         sendTemps();
-        vTaskDelayUntil(&taskStartTime, 100);
+        vTaskDelayUntil(&lastWakeTime, 100);
     }
 }
 
@@ -187,12 +185,12 @@ static void canTX100Hz(void *pvParameters) {
 void canInit(void) {
     // CAN2 initialization.
     cmr_canInit(
-        &can, CAN1,
+        &can, CAN2,
 		CMR_CAN_BITRATE_500K,
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
         NULL,
-        GPIOB, GPIO_PIN_12,     // CAN1 RX port/pin.
-        GPIOB, GPIO_PIN_13      // CAN1 TX port/pin.
+        GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
+        GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
     );
 
     // CAN2 filters.

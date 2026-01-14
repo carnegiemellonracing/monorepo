@@ -18,7 +18,6 @@
 #include "can.h"
 #include "dwt.h"
 #include "gpio.h"
-#include "i2c.h"
 #include "uart.h"
 
 /** @brief Sample Task Priority priority. */
@@ -178,7 +177,7 @@ void sendOvertempFlags(uint16_t temps[8]) {
 
 // Sends the bus current
 void sendCurrent(void) {
-    uint16_t sensep = adc_read(ADC_AFE_VIOUT);
+    uint16_t sensep = adc_read(ADC_HALL_EFFECT);
     float current = float_to_uint16((sensep - adc_sensen)*vref_corr/(ADC_COUNT*GVCOUT*1e3));
     canTX(CMR_CANID_LVBMS_CURRENT, &current, sizeof(current), canTX10Hz_period_ms);
 }

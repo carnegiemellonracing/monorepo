@@ -20,7 +20,6 @@
 #include "data.h"
 #include "dwt.h"
 #include "gpio.h"
-#include "i2c.h"
 
 
 /** @brief Status LED priority. */
@@ -69,10 +68,9 @@ int main(void) {
   // Peripheral configuration.
 	DWT_Delay_Init();
   gpio_init();
-	BMBInit();
-	// adc_init();
-	// i2c_init();
-	// canInit();
+	// BMBInit();
+	adc_init();
+	canInit();
 
 	cmr_taskInit(
 		&status_LED_task,
@@ -82,8 +80,10 @@ int main(void) {
 		NULL
 	);
 
-	sampleInit();
+	// sampleInit();
+	cmr_gpioWrite(GPIO_BMS_ERROR, 1);
+
 
 	vTaskStartScheduler();
-    cmr_panic("vTaskStartScheduler returned!"); //what is this?
+  cmr_panic("vTaskStartScheduler returned!"); 
 }
