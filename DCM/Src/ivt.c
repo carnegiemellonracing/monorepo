@@ -39,9 +39,12 @@ typedef struct IVTData {
 static IVTData_t ivtData; 
 
 //forward declaration
-void change_canid(cmr_IVTMessageType_t msgt, uint16_t new_CAN_ID)
-void change_bit_rate(cmr_IVTMessageType_t msgt, cmr_canBitRate_t bitrate)
-
+uint64_t ivt_buildMessage(cmr_IVTCommand_t cmd, cmr_IVTMessageType_t msgt, void* payload, uint8_t payloadlength);
+void change_canid(cmr_IVTMessageType_t msgt, uint16_t new_CAN_ID);
+void change_bit_rate(cmr_IVTMessageType_t msgt, cmr_canBitRate_t bitrate);
+void set_storing(cmr_IVTMessageType_t msgt);
+void change_little_endian (cmr_IVTMessageType_t msgt);
+void change_cycle(cmr_IVTMessageType_t msgt, cmr_cycleTimes_t cycletime);
 
 void ivtinit(cmr_canRXMeta_t* voltage, cmr_canRXMeta_t* current, cmr_canRXMeta_t* power, cmr_IVTMessageType_t msgt, cmr_cycleTimes_t cycletime){
 
