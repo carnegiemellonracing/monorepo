@@ -1148,4 +1148,17 @@ typedef struct {
     uint16_t cell4;
 } cmr_canLVBMS_Temperature;
 
+//ivtData storage struct
+typedef struct {
+    uint32_t voltage;
+} IVTVoltage_t; 
+
+typedef struct {
+    uint32_t current;
+} IVTCurrent_t; 
+
+typedef struct {
+    uint16_t power; 
+} IVTPower_t; 
+
 #endif /* CMR_CAN_TYPES_H */

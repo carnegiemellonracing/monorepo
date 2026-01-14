@@ -50,12 +50,6 @@ typedef enum {
     CMR_CAN_STORE_COMMAND = 0x32,
 } cmr_storeModeOperations_t;
 
-typedef enum {
-    CMR_CAN_BITRATE_250K = 0x08,
-    CMR_CAN_BITRATE_500K = 0x04,
-    CMR_CAN_BITRATE_1000K = 0x02,
-} cmr_bitRateValues_t; 
-
 //define whatever cycle time 
 typedef enum {
     CMR_CAN_FAST_CYCLE = 0x0100,
@@ -68,8 +62,8 @@ typedef enum {
  */
 
 //init
-void ivtinit(uint16_t* voltage, uint16_t* current); 
-void initIVTConfig (void);
+void ivtinit(cmr_canRXMeta_t* voltage, cmr_canRXMeta_t* current, cmr_canRXMeta_t* power, uint16_t cyclerate); 
+void initIVTConfig (cmr_IVTMessageType_t msgt, cmr_cycleTimes_t cycletime);
 
 //interface 
 uint64_t ivt_buildMessage(cmr_IVTCommand_t cmd, cmr_IVTMessageType_t msgt, void* payload, uint8_t payloadlength);
