@@ -79,7 +79,7 @@ void initIVTConfig (cmr_IVTMessageType_t msgt, cmr_cycleTimes_t cycletime){
     set_storing(msgt);
     
     //set to run mode
-    request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_RUN);
+    request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_RUN, sizeof(cmr_setModeOperations_t));
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
 
 }
@@ -132,36 +132,36 @@ void change_canid(cmr_IVTMessageType_t msgt, uint16_t new_CAN_ID){
 //store CAN IDs
 void set_storing(cmr_IVTMessageType_t msgt){
     //set to stop mode
-    uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_STOP);
+    uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_STOP, sizeof(cmr_setModeOperations_t));
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
 
     //store the data in CAN
-    request = ivt_buildMessage(CMR_CAN_STORE_ID, msgt, CMR_CAN_STORE_COMMAND);
+    request = ivt_buildMessage(CMR_CAN_STORE_ID, msgt, CMR_CAN_STORE_COMMAND, sizeof(cmr_storeModeOperations_t));
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_STORE_ID, &request, sizeof(request), canTX10Hz_period_ms);
     
     //set to run mode
-    request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_RUN);
+    request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_RUN, sizeof(cmr_setModeOperations_t));
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
 }
 
 //function to change bitrate 
 void change_bit_rate(cmr_IVTMessageType_t msgt, cmr_canBitRate_t bitrate){
     //set to stop mode
-    uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_STOP);
+    uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_STOP, sizeof(CMR_CAN_SET_STOP));
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
 
     //change bit rate
-    request = ivt_buildMessage(CMR_CAN_RESTART_TO_BITRATE, msgt, bitrate);
+    request = ivt_buildMessage(CMR_CAN_RESTART_TO_BITRATE, msgt, bitrate, sizeof(bitrate)); 
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_RESTART_TO_BITRATE, &request, sizeof(request), canTX10Hz_period_ms);
 
     //set to run mode
-    request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_RUN);
+    request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_RUN, sizeof(CMR_CAN_SET_RUN));
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
 }   
 
 void change_little_endian (cmr_IVTMessageType_t msgt){
     //set to stop mode
-    uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_STOP);
+    uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_STOP, sizeof(CMR_CAN_SET_STOP));
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
 
     //modify little endian
@@ -172,7 +172,7 @@ void change_little_endian (cmr_IVTMessageType_t msgt){
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, data, sizeof(data), canTX10Hz_period_ms);
 
     //set to run mode
-    request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_RUN);
+    request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_RUN, sizeof(CMR_CAN_SET_RUN));
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
 
 }
@@ -180,7 +180,7 @@ void change_little_endian (cmr_IVTMessageType_t msgt){
 //function to change cycle times 
 void change_cycle(cmr_IVTMessageType_t msgt, cmr_cycleTimes_t cycletime){
     //set to stop mode
-    uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_STOP);
+    uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_STOP, sizeof(CMR_CAN_SET_STOP));
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
 
     // modify the cycle time 
@@ -192,7 +192,7 @@ void change_cycle(cmr_IVTMessageType_t msgt, cmr_cycleTimes_t cycletime){
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, data, sizeof(data), canTX10Hz_period_ms);
 
     //set to run mode
-    request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_RUN);
+    request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_RUN, sizeof(CMR_CAN_SET_RUN));
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);
 } 
 
