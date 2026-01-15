@@ -720,6 +720,9 @@ static void stateMachine(void *pvParameters){
         if(getASMS()) {
             // TODO: checks for brakes, dv system, etc
             if(stateGetVSM() == CMR_CAN_GLV_ON) {
+                cmr_gpioWrite(GPIO_AS_RELAY, 0);
+            }
+            else {
                 cmr_gpioWrite(GPIO_AS_RELAY, 1);
             }
         }

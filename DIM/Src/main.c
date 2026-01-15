@@ -117,7 +117,7 @@ int main(void) {
     canInit();
     // // adcInit();
     // tftInit();
-    // stateMachineInit();
+    stateMachineInit();
     // sensorsInit();
 
 
