@@ -16,6 +16,7 @@
 typedef enum {
 	GPIO_LED = 0,
 	GPIO_BMS_ERROR, 
+	RX_TURNON,
 	GPIO_LEN
 } gpio_t;
 

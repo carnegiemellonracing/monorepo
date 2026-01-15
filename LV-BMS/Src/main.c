@@ -70,7 +70,7 @@ int main(void) {
   gpio_init();
 	// BMBInit();
 	adc_init();
-	canInit();
+	// canInit();
 
 	cmr_taskInit(
 		&status_LED_task,
@@ -81,7 +81,7 @@ int main(void) {
 	);
 
 	// sampleInit();
-	cmr_gpioWrite(GPIO_BMS_ERROR, 1);
+	cmr_gpioWrite(GPIO_BMS_ERROR, 0);
 
 
 	vTaskStartScheduler();
