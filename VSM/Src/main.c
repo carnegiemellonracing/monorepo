@@ -214,28 +214,28 @@ void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac)
 int main(void) {
     // System initialization.
     HAL_Init();
-    cmr_rccSystemClockEnable();
+    cmr_rccSystemInternalClockEnable();
     
-    HAL_DAC_MspInit(&hdac1);
-    MX_DAC1_Init();
-    HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, 360);
-    HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 490);
+    // HAL_DAC_MspInit(&hdac1);
+    // MX_DAC1_Init();
+    // HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, 360);
+    // HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 490);
 
     // Peripheral configuration.
     gpioInit();
-    canInit();
-    adcInit();
-    sensorsInit();
-    stateInit();
-    assiInit();
+    // canInit();
+    // adcInit();
+    // sensorsInit();
+    // stateInit();
+    // assiInit();
     
-    cmr_taskInit(
-        &statusLED_task,
-        "statusLED",
-        statusLED_priority,
-        statusLED,
-        NULL
-    );
+    // cmr_taskInit(
+    //     &statusLED_task,
+    //     "statusLED",
+    //     statusLED_priority,
+    //     statusLED,
+    //     NULL
+    // );
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");
