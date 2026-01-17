@@ -134,11 +134,11 @@ static void canTX10Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        uint32_t x = adc_read(ADC_HALL_EFFECT);
+        // uint32_t x = adc_read(ADC_HALL_EFFECT);
 
-        if (x == 0){
-            cmr_panic("vTaskStartScheduler returned!");
-        }
+        // if (x == 0){
+        //     cmr_panic("vTaskStartScheduler returned!");
+        // }
 
         // Loop through the 4 different MUX channels and select a different one
 		// We still monitor all voltages each channel switch

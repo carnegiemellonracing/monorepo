@@ -73,8 +73,8 @@ uint8_t getVoltages(void) {
 
     uint8_t status = uart_receiveResponse(&response, 27);
     if(status != 0) {
-        return 1;
         taskEXIT_CRITICAL();
+        return 1;
     }
 
     taskEXIT_CRITICAL();
@@ -143,6 +143,7 @@ uint8_t getTemps(int channel) {
     uart_response_t response;
 
     if(uart_receiveResponse(&response, CELL_NUM) == UART_FAILURE) {
+        taskEXIT_CRITICAL();
         return 1;
     }
 
