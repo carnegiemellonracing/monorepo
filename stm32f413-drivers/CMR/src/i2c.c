@@ -120,41 +120,36 @@ uint32_t i2cGPIOAF(I2C_TypeDef *instance, GPIO_TypeDef *port, uint32_t pin) {
     else {
     	cmr_panic("Invalid I2C instance!");
     }
-
-
+    //TODO: FIX H7 I2C AFs
     #elif defined(H725)
-
-GPIO_TypeDef *port
-uint32_t pin
-
-        if (instance == I2C1) {
-            return GPIO_AF4_I2C1;
+    if (instance == I2C1) {
+        return GPIO_AF4_I2C1;
+    }
+    else if (instance == I2C2) {
+        return GPIO_AF4_I2C2;
+    } 
+    else if (instance == I2C3) {
+        return GPIO_AF4_I2C3;
+    }
+    else if (instance == I2C4){
+        if (port == GPIOB){
+            return GPIO_AF6_I2C4;
         }
-        else if (instance == I2C2) {
-            return GPIO_AF4_I2C2;
-        } 
-        else if (instance == I2C3) {
-            return GPIO_AF4_I2C3;
+        if (port == GPIOD || port == GPIOF){
+            return GPIO_AF4_I2C4;
         }
-        else if (instance == I2C4){
-            if (port == GPIOB){
-                return GPIO_AF6_I2C4;
-            }
-            if (port == GPIOD || port == GPIOF){
-                return GPIO_AF4_I2C4;
-            }
+    }
+    else if (instance = I2C5){
+        if (port == GPIOC){
+            if (pin == GPIO_PIN_9){
+                return GPIO_AF6_I2C5;
+            }   
+            return GPIO_AF4_I2C5;     
         }
-        else if (instance = I2C5){
-            if (port == GPIOC){
-                if (pin == GPIO_PIN_9){
-                    return GPIO_AF6_I2C5
-                }   
-                return GPIO_AF4_I2C5       
-            }
-            if (port == GPIOA || port == GPIOF){
-                return GPIO_AF6_I2C5
-            }
+        if (port == GPIOA || port == GPIOF){
+            return GPIO_AF6_I2C5;
         }
+    }
     #endif
 }
     

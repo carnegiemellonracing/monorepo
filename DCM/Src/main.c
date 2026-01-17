@@ -94,11 +94,11 @@ int main(void) {
     gpioInit();
     i2cInit();
     canInit();
-    adcInit();
-    servoInit();
-    motorsInit();
-    sensorsInit();
-    brakelightInit();
+    // adcInit();
+    // servoInit();
+    // motorsInit();
+    // sensorsInit();
+    // brakelightInit();
 
 
     // // Tests for computing kappa.
