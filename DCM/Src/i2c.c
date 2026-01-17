@@ -42,6 +42,9 @@ static void PollRTC(void *pvParameters);
 
 static cmr_task_t FRAM_task;
 
+/** @brief CAN 5 Hz TX priority. */
+static const uint32_t FRAM_priority = 1;
+
 static const TickType_t i2cTaskUpdatePeriod_ms = 10;
 
 volatile cmr_can_rtc_data_t time;
@@ -62,16 +65,16 @@ static void framUpdate(void *pvParameters);
 /** @brief Initializes I2C stuff for the CDC */
 void i2cInit() {
     cmr_i2cInit(
-        &i2c, I2C4,                // TODO: Increase Clock Speed if can't hit deadlines
-        0, 0, /* Clock Speed and own address */
-        GPIOF, GPIO_PIN_14,         /* Clock Port/Pin */
-        GPIOF, GPIO_PIN_15          /* Data Port/Pin */
+        &i2c, I2C5,                // TODO: Increase Clock Speed if can't hit deadlines
+        I2C_CLOCK_LOW, 0, /* Clock Speed and own address */
+        GPIOA, GPIO_PIN_8,         /* Clock Port/Pin */
+        GPIOC, GPIO_PIN_9          /* Data Port/Pin */
     );
 
     cmr_taskInit(
         &FRAM_task,
         "FRAM Task",
-        1, /* TODO: magic number */
+        FRAM_priority, /* TODO: magic number */
 		framUpdate,
         NULL
     );
@@ -191,10 +194,7 @@ static void framInit()
     framVarsConfig[FRAM_ODOMETER_CONFIG_ADDRESS].startAddress = FRAM_ODOMETER_CONFIG_ADDRESS * SIZE_PER_DRIVER;
     framVarsConfig[FRAM_ODOMETER_CONFIG_ADDRESS].dataLength = sizeof(float);    // storing odometer in km as a float
 
-    // Enable Write Protection
-    //    cmr_gpioWrite(GPIO_FRAM_WP, 1);
-
-// 	  Read the driver's default values into the main_menu array
+// 	 Read the driver's default values into the main_menu array
     int retv = framRead(Default, currentParameters);
 	// flush the currentParams into the main_menu_array
     for (int i = 0; i < MAX_MENU_ITEMS; i++){
