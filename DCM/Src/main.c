@@ -94,7 +94,7 @@ int main(void) {
     gpioInit();
     i2cInit();
     canInit();
-    // adcInit();
+    adcInit();
     // servoInit();
     // motorsInit();
     // sensorsInit();

@@ -535,8 +535,8 @@ static void canTX100Hz(void *pvParameters) {
         }
 
         cmr_canDAQTherm_t linpots;
-        linpots.therm_1 = adcRead(ADC_LINPOT1);
-        linpots.therm_2 = adcRead(ADC_LINPOT2);
+        // linpots.therm_1 = adcRead(ADC_LINPOT1);
+        // linpots.therm_2 = adcRead(ADC_LINPOT2);
 
         canTX(CMR_CAN_BUS_VEH, 0x658, &linpots, sizeof(cmr_canDAQTherm_t), canTX100Hz_period_ms);
 
