@@ -71,44 +71,44 @@ static void statusLED(void *pvParameters) {
     LED_Red_State = 0;
 
     while (1) {
-      if (getCurrentState() == CMR_CAN_VSM_STATE_GLV_ON) {
-        glvReached = true;
-      }
+        if (getCurrentState() == CMR_CAN_VSM_STATE_GLV_ON) {
+            glvReached = true;
+        }
 
-      // vTaskDelayUntil(&lastWakeTime, 500);
+        // vTaskDelayUntil(&lastWakeTime, 500);
 
-      if (glvReached) {
-        if (LEDerror()) {
-        TickType_t currentTick = xTaskGetTickCount();
-        if (!flashed || currentTick - lastFlashTime >= 150) {
-          if(LED_Red_State == 0) {
-            cmr_pwmSetDutyCycle(&LED_Red, 15);
-            LED_Red_State = 1;
-          }
-          else {
+        if (glvReached) {
+            if (LEDerror()) {
+            TickType_t currentTick = xTaskGetTickCount();
+            if (!flashed || currentTick - lastFlashTime >= 150) {
+            if(LED_Red_State == 0) {
+                cmr_pwmSetDutyCycle(&LED_Red, 15);
+                LED_Red_State = 1;
+            }
+            else {
+                cmr_pwmSetDutyCycle(&LED_Red, 0);
+                LED_Red_State = 0;
+            }
+            // cmr_gpioToggle(GPIO_OUT_LED_FLASH_RED);
+            lastFlashTime = currentTick;
+            flashed = true;
+            }
+
+            cmr_pwmSetDutyCycle(&LED_Green, 0);
+            // cmr_gpioWrite(GPIO_OUT_LED_GREEN, 0);
+        }
+        
+            else if (getCurrentState() != CMR_CAN_VSM_STATE_ERROR) {
+            cmr_pwmSetDutyCycle(&LED_Green, 15);
             cmr_pwmSetDutyCycle(&LED_Red, 0);
-            LED_Red_State = 0;
-          }
-          // cmr_gpioToggle(GPIO_OUT_LED_FLASH_RED);
-          lastFlashTime = currentTick;
-          flashed = true;
+            // cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
+            flashed = false;
+            }
         }
 
-        cmr_pwmSetDutyCycle(&LED_Green, 0);
-        // cmr_gpioWrite(GPIO_OUT_LED_GREEN, 0);
-       }
-      
-        else if (getCurrentState() != CMR_CAN_VSM_STATE_ERROR) {
-          cmr_pwmSetDutyCycle(&LED_Green, 15);
-          cmr_pwmSetDutyCycle(&LED_Red, 0);
-          // cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
-          flashed = false;
-        }
-      }
+        cmr_gpioToggle(GPIO_OUT_LED_STATUS);
 
-      cmr_gpioToggle(GPIO_OUT_LED_STATUS);
-
-      vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
+        vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
       // cmr_pwmSetDutyCycle(&LED_Red, 0);
       // cmr_pwmSetDutyCycle(&LED_Green, 0);
       // cmr_gpioWrite(GPIO_OUT_LED_FLASH_RED, 0);
@@ -214,7 +214,7 @@ void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac)
 int main(void) {
     // System initialization.
     HAL_Init();
-    cmr_rccSystemInternalClockEnable();
+    cmr_rccSystemClockEnable();
     
     // HAL_DAC_MspInit(&hdac1);
     // MX_DAC1_Init();
@@ -224,18 +224,18 @@ int main(void) {
     // Peripheral configuration.
     gpioInit();
     // canInit();
-    // adcInit();
+    adcInit();
     // sensorsInit();
     // stateInit();
     // assiInit();
     
-    // cmr_taskInit(
-    //     &statusLED_task,
-    //     "statusLED",
-    //     statusLED_priority,
-    //     statusLED,
-    //     NULL
-    // );
+    cmr_taskInit(
+        &statusLED_task,
+        "statusLED",
+        statusLED_priority,
+        statusLED,
+        NULL
+    );
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

@@ -5,13 +5,15 @@
  * @author Carnegie Mellon Racing
  */
 
+ #include "assi.h"      // Interface to implement
 #include "can.h"        // Board-specific CAN interface
 #include "gpio.h"       // Board-specific GPIO interface
-#include "assi.h"       // Interface to implement
-#include <CMR/pwm.h>    // PWM interface
-#include <CMR/sensors.h>       // Sensors interface
-#include "sensors.h"
+#include "sensors.h"    // Board-specific Sensors interface
+#include "state.h"    // Board Specific State Interface
 
+
+#include <CMR/pwm.h>           // PWM interface
+#include <CMR/sensors.h>       // Sensors interface
 
 /** @brief PWM driver state. */
 static cmr_pwm_t BLUE_ASSI_PWM;

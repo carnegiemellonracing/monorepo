@@ -18,11 +18,10 @@
 typedef enum {
 	ADC_HALL_EFFECT = 0,    /**< @brief Hall effect sense. */
 	ADC_REAR_BRAKE_PRES,    /**< @brief Rear brake pressure sense. */
-    ADC_VSENSE,             /**< @brief Board voltage sense. */
-    ADC_ISENSE,             /**< @brief Board current sense. */
-	ADC_SSIN,
-	ADC_SSOUT,
-	ADC_LEN     /**< @brief Total ADC channels. */
+  ADC_VSENSE,             /**< @brief Board voltage sense. */
+	ADC_SSIN,								/**< @brief SS In Voltage Sense */
+	ADC_SSOUT,							/**< @brief SS Out Voltage Sense */
+	ADC_LEN     						/**< @brief Total ADC channels. */
 } adcChannel_t;
 
 void adcInit(void);

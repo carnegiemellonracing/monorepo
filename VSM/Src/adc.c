@@ -21,35 +21,30 @@ static cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .port = GPIOA,
         .pin = GPIO_PIN_1,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
-        .value = 0
     },
     [ADC_REAR_BRAKE_PRES] = {
         .channel = ADC_CHANNEL_2,
         .port = GPIOA,
         .pin = GPIO_PIN_2,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
-        .value = 0
     },
     [ADC_VSENSE] = {
         .channel = ADC_CHANNEL_15,
         .port = GPIOC,
         .pin = GPIO_PIN_5,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
-        .value = 0
     },
-    [ADC_SSIN] = { /** @todo verify right channel */
+    [ADC_SSIN] = {
         .channel = ADC_CHANNEL_7,
         .port = GPIOA,
         .pin = GPIO_PIN_7,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
-        .value = 0
     },
     [ADC_SSOUT] = { /** @todo verify right channel */
         .channel = ADC_CHANNEL_14,
         .port = GPIOC,
         .pin = GPIO_PIN_4,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
-        .value = 0
     }
 };
 
@@ -61,10 +56,11 @@ static cmr_adc_t adc;
  */
 void adcInit(void) {
     // ADC initialization and channel configuration.
+    static const TickType_t sampleTime_ms = 5;
     cmr_adcInit(
         &adc, ADC1,
         adcChannels, sizeof(adcChannels) / sizeof(adcChannels[0]),
-        20
+        sampleTime_ms
     );
 }
 

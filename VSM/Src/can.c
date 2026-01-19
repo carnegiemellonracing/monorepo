@@ -283,7 +283,6 @@ void canInit(void) {
                 CMR_CANID_FSM_SWANGLE, //commented out?
                 CMR_CANID_DIM_REQUEST,
                 CMR_CANID_AMK_FL_ACT_1,
-                CMR_CANID_AMK_FR_ACT_1
             }
         },
 
@@ -529,13 +528,11 @@ static void sendPowerDiagnostics(void) {
  * @brief Sends the first error state detected
  */
 void sendFirstError(uint8_t error_code) {
-    cmr_canVSMState_t state = getCurrentState();
-    
     // Read first error
     if (!detectedFirstError) {
         detectedFirstError = true;
 
-        canTX(CMR_CANID_VSM_FIRST_ERROR, error_code, sizeof(error_code), canTX100Hz_period_ms);
+        canTX(CMR_CANID_VSM_FIRST_ERROR, &error_code, sizeof(error_code), canTX100Hz_period_ms);
         return;
     }
 
