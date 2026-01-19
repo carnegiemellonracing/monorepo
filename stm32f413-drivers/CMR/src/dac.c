@@ -2,7 +2,7 @@
  * @file dac.c
  * @brief Implements DAC.h
  *
- * @author Carnegie Mellon Racing
+ * @author Ayush Garg
  */
 
 
@@ -16,7 +16,6 @@ static void dacPinConfig(cmr_dacPinConfig_t*);
 
 // Globals
 DAC_HandleTypeDef hdac1;
-
 
 cmr_dacInit(uint16* pins, size_t dacConfigsLen){
     MX_DAC1_Init();

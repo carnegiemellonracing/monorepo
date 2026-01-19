@@ -4,7 +4,7 @@
  * @file dac.h
  * @brief DAC Interface
  *
- * @author Carnegie Mellon Racing
+ * @author Ayush Garg
  */
 
 #ifdef HAL_DAC_MODULE_ENABLED
