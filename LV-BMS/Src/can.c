@@ -40,12 +40,12 @@ cmr_canRXMeta_t canRXMeta[CANRX_LEN] = {
 cmr_canHeartbeat_t heartbeat;
 
 /** @brief CAN 10 Hz TX priority. */
-const uint32_t canTX10Hz_priority = 3;
+const uint32_t canTX10Hz_priority = 4;
 /** @brief CAN 10 Hz TX period (milliseconds). */
 const TickType_t canTX10Hz_period_ms = 100;
 
 /** @brief CAN 100 Hz TX priority. */
-const uint32_t canTX100Hz_priority = 4;
+const uint32_t canTX100Hz_priority = 5;
 /** @brief CAN 100 Hz TX period (milliseconds). */
 const TickType_t canTX100Hz_period_ms = 10;
 
@@ -142,17 +142,17 @@ static void canTX10Hz(void *pvParameters) {
 
         // Loop through the 4 different MUX channels and select a different one
 		// We still monitor all voltages each channel switch
-		for(uint8_t j = 0; j < 4; j++) {
-			// Small delays put between all transaction
+		// for(uint8_t j = 0; j < 4; j++) {
+		// 	// Small delays put between all transaction
             
-			setMuxOutput(j);
-			vTaskDelayUntil(&lastWakeTime, 10);
-			uint8_t err = getVoltages();
-			vTaskDelayUntil(&lastWakeTime, 10);
-			getTemps(j);
-			vTaskDelayUntil(&lastWakeTime, 10);
+		// 	setMuxOutput(j);
+		// 	vTaskDelayUntil(&lastWakeTime, 10);
+		// 	uint8_t err = getVoltages();
+		// 	vTaskDelayUntil(&lastWakeTime, 10);
+		// 	getTemps(j);
+		// 	vTaskDelayUntil(&lastWakeTime, 10);
 
-		}
+		// }
         sendVoltages();
         sendTemps();
         vTaskDelayUntil(&lastWakeTime, 100);

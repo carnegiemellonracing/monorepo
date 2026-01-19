@@ -68,9 +68,10 @@ int main(void) {
   // Peripheral configuration.
 	DWT_Delay_Init();
   	gpio_init();
-	// BMBInit();
+	BMBInit();
 	adc_init();
-	canInit();
+	// canInit();
+	sampleInit();
 
 	cmr_taskInit(
 		&status_LED_task,
@@ -80,10 +81,9 @@ int main(void) {
 		NULL
 	);
 
-	// sampleInit();
 	cmr_gpioWrite(GPIO_BMS_ERROR, 0);
 
 
 	vTaskStartScheduler();
-  cmr_panic("vTaskStartScheduler returned!"); 
+  	cmr_panic("vTaskStartScheduler returned!"); 
 }

@@ -21,7 +21,7 @@
 #include "uart.h"
 
 /** @brief Sample Task Priority priority. */
-static const uint32_t sampleTaskPriority = 4;
+static const uint32_t sampleTaskPriority = 3;
 
 /** @brief Sample Task period (milliseconds). */
 static const TickType_t sampleTaskPeriod_ms = 100;

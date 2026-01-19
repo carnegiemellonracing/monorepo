@@ -333,11 +333,14 @@ void BMBInit() {
 	enableTimeout();
 	DWT_Delay_ms(100);
 
+	txToRxDelay(10);
+	HAL_Delay(100);
+
 	byteDelay(0x3F);
 	DWT_Delay_ms(100);
 
-	DWT_Delay_ms(100);
-	cellBalancingSetup();
+	// DWT_Delay_ms(100);
+	// cellBalancingSetup();
 }
 
 static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
