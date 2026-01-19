@@ -14,16 +14,14 @@
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
 
-#include "gpio.h"       // Board-specific GPIO interface
-#include "can.h"        // Board-specific CAN interface
 #include "adc.h"        // Board-specific ADC interface
+#include "assi.h"
+#include "can.h"        // Board-specific CAN interface
+#include "dac.h"        // Board-specific DAC interface
+#include "error.h"
+#include "gpio.h"       // Board-specific GPIO interface
 #include "sensors.h"    // Board-specific sensors interface
 #include "state.h"      // stateInit()
-#include "error.h"
-#include "assi.h"
-
-DAC_HandleTypeDef hdac1;
-
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -117,94 +115,6 @@ static void statusLED(void *pvParameters) {
 }
 
 /**
-  * @brief DAC1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_DAC1_Init(void)
-{
-
-  /* USER CODE BEGIN DAC1_Init 0 */
-
-  /* USER CODE END DAC1_Init 0 */
-
-  DAC_ChannelConfTypeDef sConfig = {0};
-
-  /* USER CODE BEGIN DAC1_Init 1 */
-
-  /* USER CODE END DAC1_Init 1 */
-  /** DAC Initialization 
-  */
-  hdac1.Instance = DAC1;
-  if (HAL_DAC_Init(&hdac1) != HAL_OK)
-  {
-//    Error_Handler();
-	  cmr_panic("init failed");
-  }
-  /** DAC channel OUT1 config 
-  */
-  sConfig.DAC_Trigger = DAC_TRIGGER_NONE;
-  sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
-  if (HAL_DAC_ConfigChannel(&hdac1, &sConfig, DAC_CHANNEL_2) != HAL_OK)
-  {
-//    Error_Handler();
-	  cmr_panic("failed channel config");
-  }
-
-  sConfig.DAC_Trigger = DAC_TRIGGER_NONE;
-  sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
-  if (HAL_DAC_ConfigChannel(&hdac1, &sConfig, DAC_CHANNEL_1) != HAL_OK)
-  {
-//    Error_Handler();
-	  cmr_panic("failed channel config");
-  }
-  /* USER CODE BEGIN DAC1_Init 2 */
-  HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
-  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
-
-  /* USER CODE END DAC1_Init 2 */
-
-}
-
-/**
-* @brief DAC MSP Initialization
-* This function configures the hardware resources used in this example
-* @param hdac: DAC handle pointer
-* @retval None
-*/
-void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac)
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-  if(hdac->Instance==DAC1)
-  {
-  /* USER CODE BEGIN DAC1_MspInit 0 */
-
-  /* USER CODE END DAC1_MspInit 0 */
-    /* Peripheral clock enable */
-	__HAL_RCC_DAC_CLK_ENABLE();
-  
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    /**DAC1 GPIO Configuration    
-    PA4     ------> DAC1_OUT1 
-    */
-    GPIO_InitStruct.Pin = GPIO_PIN_5;
-    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    GPIO_InitStruct.Pin = GPIO_PIN_4;
-    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /* USER CODE BEGIN DAC1_MspInit 1 */
-
-  /* USER CODE END DAC1_MspInit 1 */
-  }
-
-}
-
-/**
  * @brief Firmware entry point.
  *
  * Device configuration and task initialization should be performed here.
@@ -216,18 +126,14 @@ int main(void) {
     HAL_Init();
     cmr_rccSystemClockEnable();
     
-    // HAL_DAC_MspInit(&hdac1);
-    // MX_DAC1_Init();
-    // HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, 360);
-    // HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 490);
-
     // Peripheral configuration.
     gpioInit();
-    // canInit();
+    canInit();
     adcInit();
-    // sensorsInit();
-    // stateInit();
-    // assiInit();
+    sensorsInit();
+    stateInit();
+    assiInit();
+    dacInit();
     
     cmr_taskInit(
         &statusLED_task,

@@ -385,7 +385,7 @@ int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
  * @return Pointer to payload, or NULL if rxMsg is invalid.
  */
 void *getPayload(canRX_t rxMsg) {
-    configASSERT(rxMsg >= CANRX_LEN);
+    configASSERT((uint16_t) rxMsg >= (uint16_t) CANRX_LEN);
 
     cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
 

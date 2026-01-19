@@ -7,15 +7,16 @@
  * @author Ayush Garg
  */
 
+ #include "platform.h"
+#include <CMR/gpio.h>  // gpio drivers
+#include "stdint.h"
+
 #ifdef HAL_DAC_MODULE_ENABLED
+#ifdef F413
 
-/*
-The DACs of the stms are always on the A port. For this reason it suffices to input
-an array of the pins. For example if you wish to activate the DAC at pins PA4 and PA5
-simply input an array of [4,5]
-*/
-void cmr_dacInit(uint16_t* pins, size_t dacConfigsLen);
-void cmr_dacSetValue(uint16_t pin, uint16_t voltage_mV);
+void cmr_dacInit(cmr_gpioPin_t* pins, size_t dacConfigsLen);
+void cmr_dacSetValue(size_t pin, uint16_t voltage_mV);
 
+#endif /* F413 */ 
 #endif /* HAL_DAC_MODULE_ENABLED */ 
 
