@@ -587,7 +587,7 @@ static void drawRTDScreen(void) {
     bool drsOpen = (drsState->state == CMR_CAN_DRS_STATE_OPEN);
 
     /* Accumulator Temperature */
-    int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC) / 10;
+    int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_C) / 10;
 
     int32_t mcTemp_C, motorTemp_C = 0;
     cornerId_t hottest_motor;

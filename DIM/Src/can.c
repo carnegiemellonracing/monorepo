@@ -732,7 +732,7 @@ static void sendFSMSensorsADC(void) {
 static void sendPowerDiagnostics(void) {
     // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
     uint32_t busVoltage_mV = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
-    uint32_t busCurrent_mA = cmr_sensorListGetValue(&sensorList, SENSOR_CH_AVG_CURRENT_MA);
+    uint32_t busCurrent_mA = cmr_sensorListGetValue(&sensorList, SENSOR_CH_CURRENT_MA);
 
     cmr_canDIMPowerDiagnostics_t powerDiagnosticsDIM = {
         .busVoltage_mV = busVoltage_mV,

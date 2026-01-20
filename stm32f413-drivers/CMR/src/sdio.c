@@ -16,7 +16,6 @@
 #include "CMR/panic.h"  // cmr_panic()
 #include <CMR/rcc.h>  // Clock Enable
 #include <CMR/sdio.h>  // Interface to implement
-#include <stm32f4xx_hal.h>  // HAL interface
 
 
 #ifdef HAL_SD_MODULE_ENABLED

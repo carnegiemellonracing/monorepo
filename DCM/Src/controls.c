@@ -221,7 +221,7 @@ static void set_manual_cruise_control(uint8_t throttlePos_u8) {
     static bool prev_button = false;
     const float max_speed_mps = 20.0f;
     volatile cmr_canDIMActions_t *actions = (volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON);
-    bool button = (actions->buttons & BUTTON_ACT) != 0;
+    bool button = (actions->buttonStates & BUTTON_ACT) != 0;
     if(prev_button == false && button == true) {
         manual_cruise_control_speed += 1.0f;
         manual_cruise_control_speed = fminf(manual_cruise_control_speed, max_speed_mps);
@@ -1059,7 +1059,7 @@ void setLaunchControl(
 	bool action_button_pressed = false;
 	const float nonnegative_odometer_velocity_mps = motorSpeedToWheelLinearSpeed_mps(getTotalMotorSpeed_radps() * 0.25f);
 	if (nonnegative_odometer_velocity_mps < launch_control_speed_threshold_mps) { // odometer velocity is below the launch control threshold
-		action_button_pressed = (((volatile cmr_canDIMActions_t *)(canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON)))->buttons) & BUTTON_ACT;
+		action_button_pressed = (((volatile cmr_canDIMActions_t *)(canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON)))->buttonStates) & BUTTON_ACT;
 
 		if (action_button_pressed) {
 			launchControlButtonPressed = true;
@@ -1545,7 +1545,7 @@ void setCruiseControlTorque (
     static bool cruiseControl = false;
     static uint16_t cruiseVelocity = 0;
 
-    bool action1 = (((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->buttons) & BUTTON_ACT;
+    bool action1 = (((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->buttonStates) & BUTTON_ACT;
 
     if (throttlePos_u8 == 0 || brakePressurePsi_u8 >= 40) {
         cruiseControl = false;
@@ -1592,7 +1592,7 @@ void setEnduranceTorque (
 
     // Determine aggrigate torque request be combining acceleration pedal position
     // with brake pedal position.
-    const bool regen_button_pressed = (((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->buttons) & BUTTON_SCRN ;
+    const bool regen_button_pressed = (((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->buttonStates) & BUTTON_SCRN ;
 
     uint8_t pedal_regen_strength = 0;
     const float regentPcnt_f = ((float)pedal_regen_strength) * 1e-2; // convert a coefficient between 0 and 1
