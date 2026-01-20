@@ -15,7 +15,44 @@
 
 #include "can.h"        // Interface to implement
 #include "parser.h"     // parser ingestation
+#include "memorator.h"     // parser ingestation
+#include "rtc.h"
 
+
+/** @brief CAN interfaces */
+static cmr_can_t can[CMR_CAN_BUS_NUM];
+
+/** @brief CAN task priority priority. */
+static const uint32_t can100Hz_priority = 3;
+
+/** @brief CANperiod (milliseconds). */
+static const TickType_t can100Hz_period_ms = 10;
+
+/** @brief CAN 100hz task. */
+static cmr_task_t can100Hz_task;
+
+/**
+ * @brief Sending CAN Messages at 100Hz
+ *
+ * @param pvParameters Ignored.
+ *
+ * @return Does not return.
+ */
+static void canTx100Hz(void *pvParameters) {
+    (void) pvParameters;
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
+        int x = 32;
+        canTX(CMR_CAN_BUS_TRAC, 100, &x, sizeof(int), can100Hz_period_ms);
+        RTC_DateTypeDef curdate = getRTCDate();
+        RTC_TimeTypeDef curtime = getRTCTime();
+        canTX(CMR_CAN_BUS_VEH, 101, &curtime.Hours, sizeof(curtime.Hours), can100Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, 102, &curtime.Minutes, sizeof(curtime.Minutes), can100Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, 103, &curtime.Seconds, sizeof(curtime.Seconds), can100Hz_period_ms);
+        vTaskDelayUntil(&lastWakeTime, can100Hz_period_ms);
+    }
+}
 
 /**
  * @brief CAN periodic message receive metadata
@@ -265,13 +302,12 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
     }
 };
 
-/** @brief CAN interfaces */
-static cmr_can_t can[CMR_CAN_BUS_NUM];
+void canRXCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t dataLen) {
+    RTC_TimeTypeDef currentTime = getRTCTime();
+    uint32_t timestamp = (((currentTime.Hours << 8) | currentTime.Minutes) << 8) | currentTime.Seconds;
+    memoratorWrite(canID, timestamp, dataLen, data);
 
-static void canRX(
-    cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t dataLen
-) {
-	size_t iface_idx = (canb_rx - can);
+    size_t iface_idx = (canb_rx - can);
 	configASSERT(iface_idx < CMR_CAN_BUS_NUM);
 
 
@@ -310,8 +346,8 @@ void canInit(void) {
     cmr_canInit(
         &can[CMR_CAN_BUS_VEH], CAN3,
         CMR_CAN_BITRATE_500K,
-        NULL, 0,
-        canRX,
+        canVehicleRXMeta, CANRX_VEH_LEN,
+        canRXCallback,
         GPIOA, GPIO_PIN_8,     // CAN3 RX port/pin.
         GPIOB, GPIO_PIN_4      // CAN3 TX port/pin.
     );
@@ -320,8 +356,8 @@ void canInit(void) {
     cmr_canInit(
         &can[CMR_CAN_BUS_DAQ], CAN2,
         CMR_CAN_BITRATE_500K,
-        NULL, 0,
-        canRX,
+        canDaqRXMeta, CANRX_DAQ_LEN,
+        canRXCallback,
         GPIOB, GPIO_PIN_12,    // CAN2 RX port/pin.
         GPIOB, GPIO_PIN_13     // CAN2 TX port/pin.
     );
@@ -329,8 +365,8 @@ void canInit(void) {
 	cmr_canInit(
 		&can[CMR_CAN_BUS_TRAC], CAN1,
 		CMR_CAN_BITRATE_500K,
-		NULL, 0,
-		canRX,
+		canTractiveRXMeta, CANRX_TRAC_LEN,
+		canRXCallback,
 		GPIOB, GPIO_PIN_8,    // CAN1 RX port/pin.
 		GPIOB, GPIO_PIN_9     // CAN1 TX port/pin.
 	);
@@ -368,6 +404,14 @@ void canInit(void) {
     cmr_canFilter(
 		&can[CMR_CAN_BUS_TRAC], canFilters, sizeof(canFilters) / sizeof(canFilters[0])
 	);
+
+    cmr_taskInit(
+        &can100Hz_task,
+        "can100Hz",
+        can100Hz_priority,
+        canTx100Hz,
+        NULL
+    );
 }
 
 /**
@@ -389,4 +433,6 @@ int canTX(
     configASSERT(bus_id < CMR_CAN_BUS_NUM);
     return cmr_canTX(&can[bus_id], id, data, len, timeout_ms);
 }
+
+
 
