@@ -94,6 +94,10 @@ static void motorsTest (void *pvParameters) {
         uint64_t set_velocity_erpm_rl = *velocity_erpm_rl;
         uint64_t set_velocity_erpm_rr = *velocity_erpm_rr;
 
+        //enables motors to drive
+        uint8_t driveEnable = 1;
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
+
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_VELOCITY, &set_velocity_erpm_fl, sizeof(set_velocity_erpm_fl), can10Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_VELOCITY, &set_velocity_erpm_fr, sizeof(set_velocity_erpm_fr), can10Hz_period_ms);
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_VELOCITY, &set_velocity_erpm_rl, sizeof(set_velocity_erpm_rl), can10Hz_period_ms);
