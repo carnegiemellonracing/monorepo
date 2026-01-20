@@ -326,17 +326,10 @@ typedef struct {
 /** @brief Vehicle Safety Module sensor data. */
 /** @brief Vehicle Safety Module sensor data. */
 typedef struct {
-<<<<<<< HEAD
-    uint16_t brakePressureRear_PSI;     //u: PSI /**< @brief Rear brake pressure (pounds-per-square-inch). */
-    int16_t hallEffect_cA;     //u:cA, f:0.01, p:2 /**< @brief Hall effect current (centi-Amps). */
-    uint8_t safetyIn_dV;       //u: dV /**< @brief Safety circuit input voltage (deci-Volts). */
-    uint8_t safetyOut_dV;      //u: dV /**< @brief Safety circuit output voltage (deci-Volts). */
-=======
     uint16_t brakePressureRear_PSI;     /**< @brief Rear brake pressure (pounds-per-square-inch). */
     int16_t hallEffect_cA;     /**< @brief Hall effect current (centi-Amps). */
     uint8_t safetyIn_V;        /**< @brief Safety circuit input voltage (volts). */
     uint8_t safetyOut_V;       /**< @brief Safety circuit output voltage (volts). */
->>>>>>> fix/VSM-cleanup
 } cmr_canVSMSensors_t;
 
 /** @brief Vehicle Safety Module latched error status. */
@@ -1338,12 +1331,6 @@ typedef struct {
 } cmr_canTestID_t;
 
 typedef struct {
-    uint16_t cell1;
-    uint16_t cell2;
-    uint16_t cell3;
-} cmr_canLVBMS_Voltage;
-
-typedef struct {
     uint8_t data[4];
 } cmr_canCubeMarsDutyCycle_t;
 
@@ -1381,5 +1368,19 @@ typedef struct {
                        // 3 - overvoltage, 4 - undervoltage, 5 - encoder fault,
                        // 6 - mosfet overtemp, 7 - motor stall.
 } cmr_canCubeMarsData_t;
+
+typedef struct {
+    uint16_t cell1;
+    uint16_t cell2;
+    uint16_t cell3;
+    uint16_t cell4;
+} cmr_canLVBMS_Voltage;
+
+typedef struct{
+    uint16_t cell1;
+    uint16_t cell2;
+    uint16_t cell3;
+    uint16_t cell4;
+} cmr_canLVBMS_Temperature;
 
 #endif /* CMR_CAN_TYPES_H */
