@@ -23,6 +23,13 @@ cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
+    [ADC_VREF] = { 
+		 .channel = ADC_CHANNEL_15, //repeat channel? 
+		 .port = GPIOC,
+		 .pin = GPIO_PIN_5,
+		 .samplingTime = ADC_SAMPLETIME_15CYCLES,
+		 .value = 0
+	}, 
     [ADC_AIR_POWER] = {
         .channel = ADC_CHANNEL_11,
         .port = GPIOC,
@@ -31,23 +38,23 @@ cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .value = 0
     },
     [ADC_SAFETY] = {
-        .channel = ADC_CHANNEL_13,
+        .channel = ADC_CHANNEL_12,
         .port = GPIOC,
-        .pin = GPIO_PIN_3,
+        .pin = GPIO_PIN_2,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_VSENSE] = {
-        .channel = ADC_CHANNEL_1,
-        .port = GPIOA,
-        .pin = GPIO_PIN_1,
+        .channel = ADC_CHANNEL_9,
+        .port = GPIOB,
+        .pin = GPIO_PIN_1, //repeat GPIO? (alr happens in HVC) 
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     },
     [ADC_ISENSE] = {
-        .channel = ADC_CHANNEL_2,
-        .port = GPIOA,
-        .pin = GPIO_PIN_2,
+        .channel = ADC_CHANNEL_8,
+        .port = GPIOB,
+        .pin = GPIO_PIN_0,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
         .value = 0
     }
@@ -75,4 +82,3 @@ void adcInit(void) {
 uint32_t adcRead(adcChannels_t ch) {
     return adcChannels[ch].value;
 }
-

@@ -6,19 +6,40 @@
  */
 
 #include <stdlib.h>
+#include <CMR/gpio.h>   // GPIO interface
+#include <CMR/tasks.h>  // Task interface
+#include <math.h>       // tanh()
 
 #include "sensors.h"
 #include "adc.h"
+#include "can.h"   // Board-specific CAN interface
+#include "gpio.h"  // Board-specific GPIO interface
+
+
+/** @brief Number of samples for current measurement rolling average. */
+#define BUS_CURRENT_SAMPLES 10
+
+/** @brief Slope for voltage sense transfer function */
+#define V_TRANS_M 19.506
+/** @brief Intercept for voltage sense transfer function */
+#define V_TRANS_B -8313.3
+
+/** @brief 90 degree sw left lock adc value. */
+#define SWANGLE_90DEG_LEFT 1345
+/** @brief -90 degree sw RIGHT lock adc value. */
+#define SWANGLE_90DEG_RIGHT 3155
+
 
 /**
  * @brief Mapping of sensor channels to ADC channels.
  */
 static const adcChannels_t sensorsADCCHANNELS[SENSOR_CH_LEN] = {
-    [SENSOR_CH_V24V]       = ADC_V24V,     
+    [SENSOR_CH_V24V]       = ADC_V24V,
+	[SENSOR_CH_VREF] = ADC_V24V, //keep, from hvi 
 	[SENSOR_CH_AIR_POWER]  = ADC_AIR_POWER,
 	[SENSOR_CH_SAFETY]     = ADC_SAFETY,
-	[SENSOR_CH_VSENSE]     = ADC_VSENSE,
-	[SENSOR_CH_ISENSE]     = ADC_ISENSE
+	[SENSOR_CH_VSENSE] = ADC_VSENSE, 
+	[SENSOR_CH_ISENSE] = ADC_ISENSE
 };
 
 /** @brief forward declaration */
@@ -76,25 +97,59 @@ static int32_t ADCtoMV_HV(const cmr_sensor_t *sensor, uint32_t reading) {
 	return (((int32_t) reading) * 268 - 426400);
 }
 
+
 /**
- * @brief Converts a raw ADC value into HV current
+ * 
+ * HVI conversion functions
+ * 
+ */
+
+
+/**
+ * @brief Converts a raw ADC value to voltage in centivolts.
  *
  * @param sensor The sensor to read.
  *
  * @param reading The ADC value to convert.
  *
- * @return Current in A.
+ * @return Voltage in centivolts.
  */
-// HV current goes through shunt resistor of 1m
-// Max current of 250A, means max Vdiff of 250mV
-static int32_t ADCtoA_HV(const cmr_sensor_t *sensor, uint32_t reading) {
-    (void) sensor;
-	// TODO: Figure out this transfer function
-	return (((int32_t) reading) >> 2);
+static int32_t adcToVoltage(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void)sensor;
+
+    int32_t voltage = reading;
+    // uint32_t voltage = V_TRANS_M * reading + V_TRANS_B;
+
+    return voltage;
 }
 
+/**
+ * @brief Converts a raw ADC value into a current.
+ *
+ * @param sensor The sensor to read.
+ *
+ * @param reading The ADC value to convert.
+ *
+ * @return Current in dA.
+ */
+static int32_t adcToCurrent(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void)sensor;
+
+    int32_t current = (int32_t) (((0.143) * (double)reading - 294.0) * 10.0);
+    return current;
+}
+
+static int32_t adcToVref(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void)sensor;
+
+    int32_t vref = (int32_t) reading;
+
+    return vref;
+}
+
+
 static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
-	[SENSOR_CH_V24V] = {
+	[SENSOR_CH_V24V] = { //hvc 
 		.conv = ADCtoMV_24v,
 		.sample = sampleADCSensor,
 		.readingMin = 0,
@@ -103,20 +158,12 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		// TODO check adc bits
 		.outOfRange_pcnt = 10,
 		//.warnFlag = What errors to use?
-	},
-	[SENSOR_CH_AIR_POWER] = {
+	}, 
+	[SENSOR_CH_AIR_POWER] = { //hvc 
 		.conv = ADCtoMV_24v,
 		.sample = sampleADCSensor,
 		.readingMin = 0,
 		//.readingMax = MaxPackVolatge,
-		.outOfRange_pcnt = 10,
-		//.warnFlag = What errors to use?
-	},
-	[SENSOR_CH_SAFETY] = {
-		.conv = ADCtoMV_24v,
-		.sample = sampleADCSensor,
-		//.readingMin = ?,
-		//.readingMax = ?,
 		.outOfRange_pcnt = 10,
 		//.warnFlag = What errors to use?
 	},
@@ -136,13 +183,29 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		.outOfRange_pcnt = 10,
 		//.warnFlag = What errors to use?
 	},
+	[SENSOR_CH_SAFETY] = { //hvc 
+		.conv = ADCtoMV_24v,
+		.sample = sampleADCSensor,
+		//.readingMin = ?,
+		//.readingMax = ?,
+		.outOfRange_pcnt = 10,
+		//.warnFlag = What errors to use?
+	},
+    [SENSOR_CH_VREF] = {
+        .conv = adcToVref,
+        .sample = sampleADCSensor,
+        .readingMin = 0,
+        .readingMax = 4096,
+        .outOfRange_pcnt = 10,
+        .warnFlag = 0
+    }
 };
 
 /** @brief Sensors update priority. */
 static const uint32_t sensorsUpdate_priority = 1;
 
 /** @brief Sensors update period (milliseconds). */
-static const TickType_t sensorsUpdate_period_ms = 50;
+static const TickType_t sensorsUpdate_period_ms = 5;
 
 /** @brief Sensors update task. */
 static cmr_task_t sensorsUpdate_task;
@@ -159,10 +222,7 @@ static void sensorsUpdate(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        vTaskDelayUntil(&lastWakeTime, sensorsUpdate_period_ms);
-
         cmr_sensorListUpdate(&sensorList);
-
         vTaskDelayUntil(&lastWakeTime, sensorsUpdate_period_ms);
     }
 }
@@ -207,3 +267,8 @@ int32_t getHVmillivolts(){
 int32_t getHVmilliamps(){
     return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_ISENSE));
 }
+
+int32_t getHVIvref(){
+    return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_VREF)); 
+}
+

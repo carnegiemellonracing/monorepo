@@ -12,7 +12,6 @@
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/can_ids.h>    // CMR CAN IDs
 #include "state_task.h"
-#include "BMB_task.h"
 
 /**
  * @brief CAN receive metadata indices.
@@ -23,8 +22,11 @@ typedef enum {
     CANRX_HEARTBEAT_VSM = 0,  /**< @brief VSM heartbeat. */
     CANRX_HVC_COMMAND,
     CANRX_EMD_MEASURE,
-	CANRX_HVI_COMMAND,
-	CANRX_BALANCE_COMMAND,
+    CANRX_HVBMS_MINMAX_VOLTAGE, 
+    CANRX_HVBMS_PACKVOLT, 
+    CANRX_HVBMS_MINMAX_TEMP, 
+    CANRX_HEARTBEAT_HVBMS, 
+	//CANRX_BALANCE_COMMAND,
     CANRX_LEN,     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 

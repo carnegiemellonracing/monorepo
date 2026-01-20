@@ -411,19 +411,19 @@ typedef enum {
     CMR_CAN_HVC_ERROR_NONE = 0x0000,    /**< @brief No errors detected. */
 
     // Pack errors
-    CMR_CAN_HVC_ERROR_PACK_UNDERVOLT   = (1<<0),    /**< @brief Pack voltage too low. */
-    CMR_CAN_HVC_ERROR_PACK_OVERVOLT    = (1<<1),    /**< @brief Pack voltage too high. */
-    CMR_CAN_HVC_ERROR_PACK_OVERCURRENT = (1<<3),    /**< @brief Pack current too high. */
+    CMR_CAN_HVBMS_ERROR_PACK_UNDERVOLT   = 0x0001,    /**< @brief Pack voltage too low. */
+    CMR_CAN_HVBMS_ERROR_PACK_OVERVOLT    = 0x0002,    /**< @brief Pack voltage too high. */
+    CMR_CAN_HVC_ERROR_PACK_OVERCURRENT = 0x0008,    /**< @brief Pack current too high. */
 
     // Cell errors
-    CMR_CAN_HVC_ERROR_CELL_UNDERVOLT = (1<<4),  /**< @brief At least one cell is undervoltage. */
-    CMR_CAN_HVC_ERROR_CELL_OVERVOLT  = (1<<5),  /**< @brief At least one cell is overvoltage. */
-    CMR_CAN_HVC_ERROR_CELL_OVERTEMP  = (1<<6),  /**< @brief At least one cell has overheated. */
-    CMR_CAN_HVC_ERROR_BMB_FAULT      = (1<<7),  /**< @brief At least one BMB has faulted. */
+    CMR_CAN_HVBMS_ERROR_CELL_UNDERVOLT = 0x0010,  /**< @brief At least one cell is undervoltage. */
+    CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT  = 0x0020,  /**< @brief At least one cell is overvoltage. */
+    CMR_CAN_HVBMS_ERROR_CELL_OVERTEMP  = 0x0040,  /**< @brief At least one cell has overheated. */
+    CMR_CAN_HVC_ERROR_BMB_FAULT      = 0x0080,  /**< @brief At least one BMB has faulted. */
 
     // Communication errors
-    CMR_CAN_HVC_ERROR_BMB_TIMEOUT = (1<<8), /**< @brief BMB has timed out. */ 
-    CMR_CAN_HVC_ERROR_CAN_TIMEOUT = (1<<9), /**< @brief HVC command timed out. */
+    CMR_CAN_HVBMS_ERROR_BMB_TIMEOUT = 0x0100, /**< @brief BMB has timed out. */
+    CMR_CAN_HVC_ERROR_CAN_TIMEOUT = 0x0200, /**< @brief HVC command timed out. */
 
     // Other errors
     CMR_CAN_HVC_ERROR_RELAY        = (1<<12),    /**< @brief Fault with AIRs. */
@@ -450,6 +450,7 @@ typedef struct {
     uint8_t uptime_s;       //u: s /**< @brief HVC uptime in seconds. */
 } cmr_canHVCHeartbeat_t;
 
+
 /** @brief High Voltage Controller command. */
 typedef struct {
     uint8_t modeRequest;    //e:HVCMode Flag(taken out for now): cmr_canHVCMode_t. /**< @brief HVC operating mode request. */
@@ -466,26 +467,6 @@ typedef struct {
     int32_t battVoltage_mV;    //u: mV, f:0.001, p:3 /**< @brief Voltage measured across battery. */
     int32_t hvVoltage_mV;      //u: mV, f:0.001, p:3 /**< @brief Voltage outside accumulator. */
 } cmr_canHVCPackVoltage_t;
-
-/** @brief High Voltage Controller pack overall min and max cell temperatures. */
-typedef struct {
-    uint16_t minCellTemp_dC;    //u: dC /**< @brief Pack min cell temp in dC (tenth of degree C). */
-    uint16_t maxCellTemp_dC;    //u: dC /**< @brief Pack max cell temp in dC (tenth of degree C). */
-    uint8_t minTempBMBIndex;    /**< @brief BMB index of coldest cell. */
-    uint8_t minTempCellIndex;   /**< @brief Index of coldest cell. */
-    uint8_t maxTempBMBIndex;    /**< @brief BMB index of hottest cell. */
-    uint8_t maxTempCellIndex;   /**< @brief Index of hottest cell. */
-} cmr_canHVCPackMinMaxCellTemps_t;
-
-/** @brief High Voltage Controller pack overall min and max cell voltages. */
-typedef struct {
-    uint16_t minCellVoltage_mV; //u: mV /**< @brief Min BMB cell voltage (mV). */
-    uint16_t maxCellVoltage_mV; //u: mV /**< @brief Max BMB cell voltage (mV). */
-    uint8_t minCellVoltBMB;     /**< @brief */
-    uint8_t minVoltIndex;       /**< @brief Min BMB cell voltage index. */
-    uint8_t maxCellVoltBMB;     /**< @brief */
-    uint8_t maxVoltIndex;       /**< @brief Max BMB cell voltage index. */
-} cmr_canHVCPackMinMaxCellVolages_t;
 
 /** @brief High Voltage Controller pack currents. */
 typedef struct {
@@ -510,12 +491,26 @@ typedef struct {
     uint8_t BMB15_16_Errs;  //Flag: cmr_canBMBErr_t/**< @brief Errors for BMB15&16 (BMB15 = higher 4 bits). */
 } cmr_canHVCBMBErrors_t; 
 
-//HV_I Sense Board CAN Types
 typedef struct {
-    int16_t packCurrent_dA; //u: dA, f:0.1, p:1
-    uint16_t packVoltage_cV; //u: cV, f:0.01, p:2
-    int32_t packPower_W; //u: W, f:0.001, p:3
-} cmr_canHVIHeartbeat_t;
+    uint16_t cellVoltage0_mV;
+    uint16_t cellVoltage1_mV;
+    uint16_t cellVoltage2_mV;
+    uint16_t cellVoltage3_mV;
+} cmr_can_HVBMS_BMB_CellVoltages_t; 
+
+typedef struct {
+    int16_t cellTemp0_dC; 
+    int16_t cellTemp1_dC; 
+    int16_t cellTemp2_dC;
+    int16_t cellTemp3_dC;  
+} cmr_can_HVBMS_BMB_CellTemps_t; 
+
+//HVC Sensors CAN Types
+typedef struct {
+    int16_t packCurrent_dA;
+    uint16_t packVoltage_cV;
+    int32_t packPower_W;
+} cmr_canHVSense_t;
 
 //Power Sense Board CAN Types
 typedef struct {
@@ -850,12 +845,16 @@ typedef struct {
 	uint8_t minVoltageBMBNum;    /**< @brief Min pack cell voltage BMB number. */
 	uint8_t minVoltageCellNum;   /**< @brief Min pack cell voltage cell number. */
 	uint8_t maxVoltageBMBNum;    /**< @brief Max pack cell voltage BMB number. */
-	uint8_t maxVoltageCellNum;   /**< @brief Max pack cell voltage cell number. */
+	uint8_t maxVoltageCellNum;   /**< @brief Max pack cell voltage cell number. */ 
 } cmr_canBMSMinMaxCellVoltage_t;
 
 typedef struct {
-    uint16_t minCellTemp_C;      //u: C /**< @brief Min pack cell temp (C). */
-    uint16_t maxCellTemp_C;      //u: C /**< @brief Max pack cell temp (C). */
+    uint32_t battVoltage_mV; 
+} cmr_canHVBMSPackVoltage_t; 
+
+typedef struct {
+    uint16_t minCellTemp_C;      /**< @brief Min pack cell temp (C). */
+    uint16_t maxCellTemp_C;      /**< @brief Max pack cell temp (C). */
     uint8_t minTempBMBNum;       /**< @brief Min pack cell temp BMB number. */
     uint8_t minTempCellNum;      /**< @brief Min pack cell temp cell number. */
     uint8_t maxTempBMBNum;       /**< @brief Max pack cell temp BMB number. */

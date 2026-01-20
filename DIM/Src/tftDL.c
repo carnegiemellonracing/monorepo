@@ -547,7 +547,7 @@ void tftDL_RTDUpdate(
     *gps_color = gps_color_cmd;
 
 
-    cmr_canHVCPackMinMaxCellVolages_t* packVoltagesStruct = getPackVoltages();
+    cmr_canBMSMinMaxCellVoltage_t* packVoltagesStruct = getPackVoltages();
 
     /* Pack Voltages */
     tftDL_RTDwriteInt(tftDL_RTDData, ESE_RAM_MIN_CELL, 5, "%4ld", packVoltagesStruct->minCellVoltage_mV);

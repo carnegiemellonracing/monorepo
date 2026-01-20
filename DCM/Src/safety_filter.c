@@ -258,7 +258,7 @@ static float getCellVoltageDropFalloffFactor (
  * @warning This is CRITICAL for rule-compliance, as it imposes the upper limit on cell temperature
  */
 static float getTemperatureFalloffFactor() {
-    // volatile cmr_canHVCPackMinMaxCellTemps_t *cellTemps = canVehicleGetPayload(CANRX_VEH_PACK_CELL_TEMP);
+    // volatile cmr_canBMSMinMaxCellTemperature_t *cellTemps = canVehicleGetPayload(CANRX_VEH_PACK_CELL_TEMP);
     // const float maxCellTemp_C = ((float)(cellTemps->maxCellTemp_dC)) * 1e-1f;
     // return getFalloffFactorByUpperLimit(maxCellTemp_C, temperature_upper_limit_C, temperature_safety_margin_C);
     return 1.0f;
@@ -545,7 +545,7 @@ void setTorqueLimsProtected (
             }
         }
 
-        volatile cmr_canHVCPackMinMaxCellTemps_t *cellTemps = canVehicleGetPayload(CANRX_VEH_PACK_CELL_TEMP);
+        volatile cmr_canBMSMinMaxCellTemperature_t *cellTemps = canVehicleGetPayload(CANRX_VEH_PACK_CELL_TEMP);
 //        const float maxCellTemp_C = ((float)(cellTemps->maxCellTemp_dC)) * 1e-1f;
 //        if (maxCellTemp_C > temperature_upper_limit_C) {
 //            sf_state.over_temp_count++;

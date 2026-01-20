@@ -115,21 +115,17 @@ link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 add_executable(${CMAKE_PROJECT_NAME}
     # Project sources
     ${CMAKE_SOURCE_DIR}/Src/adc.c
-    ${CMAKE_SOURCE_DIR}/Src/BMB_task.c
-    ${CMAKE_SOURCE_DIR}/Src/bms_error.c
     ${CMAKE_SOURCE_DIR}/Src/bms_relay.c
-    ${CMAKE_SOURCE_DIR}/Src/bq_interface.c
     ${CMAKE_SOURCE_DIR}/Src/can.c
-    ${CMAKE_SOURCE_DIR}/Src/crc.c
-    ${CMAKE_SOURCE_DIR}/Src/fans.c
+    ${CMAKE_SOURCE_DIR}/Src/errors.c
     ${CMAKE_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_SOURCE_DIR}/Src/main.c
     ${CMAKE_SOURCE_DIR}/Src/sensors.c
     ${CMAKE_SOURCE_DIR}/Src/state_task.c
+    ${CMAKE_SOURCE_DIR}/Src/statusLED.c
     ${CMAKE_SOURCE_DIR}/Src/syscall.c
     ${CMAKE_SOURCE_DIR}/Src/sysmem.c
-    ${CMAKE_SOURCE_DIR}/Src/uart.c
-    ${CMAKE_SOURCE_DIR}/Src/watchdog.c
+    ${CMAKE_SOURCE_DIR}/Src/watchDog.c
 )
 
 # Add sources to executable

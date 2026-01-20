@@ -276,7 +276,7 @@ int getMaxMotorTemp(void){
  */
 int getACTemp(void)
 {
-	volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps = getPayload(CANRX_HVC_PACK_TEMPS);
+	volatile cmr_canBMSMinMaxCellTemperature_t *canHVCPackTemps = getPayload(CANRX_HVC_PACK_TEMPS);
 	int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC) / 10;
 	return acTemp_C;
 }
