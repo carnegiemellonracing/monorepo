@@ -66,6 +66,11 @@ int main(void) {
     uartInit();
     gpioInit();
     canInit();
+<<<<<<< HEAD
+=======
+    statusLEDInit();
+    memoratorInit();
+>>>>>>> a698c5ec (Not Cleaned UP Yet)
 
     // Load in JSON configuration
     parserInit();

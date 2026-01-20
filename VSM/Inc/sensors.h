@@ -16,6 +16,8 @@ typedef enum {
     SENSOR_CH_BPRES_PSI,            /**< @brief Rear brake pressure sensor. */
     SENSOR_CH_VOLTAGE_MV,           /**< @brief Board voltage sense. */
     SENSOR_CH_CURRENT_MA,           /**< @brief Board current sense. */
+    SENSOR_CH_SS_IN,                /**< @brief Safety Circuit voltage before latches. */
+    SENSOR_CH_SS_OUT,               /**< @brief SS voltage after latches. */
     SENSOR_CH_LEN                   /**< @brief Total number of sensors. */
 } sensorChannel_t;
 

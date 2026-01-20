@@ -22,7 +22,7 @@ typedef enum {
     SENSOR_CH_SWANGLE_DEG_FL,    /**< @brief Steering angle sensor. */
     SENSOR_CH_SWANGLE_DEG_FR,
     SENSOR_CH_VOLTAGE_MV,     /**< @brief Board voltage rail. */
-    SENSOR_CH_AVG_CURRENT_MA, /**< @brief Board average current draw. */
+    SENSOR_CH_CURRENT_MA, /**< @brief Board average current draw. */
     SENSOR_CH_TPOS_IMPLAUS,   /**< @brief Throttle implausibility. */
     SENSOR_CH_BPP_IMPLAUS,    /**< @brief Brake pedal position implausibility. */
 	SENSOR_CH_X,				/**< @brief ADC X */

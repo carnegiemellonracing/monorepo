@@ -35,6 +35,7 @@ typedef enum {
     CMR_CANID_VSM_SENSORS = 0x200,              /**< @brief VSM sensor data. */
     CMR_CANID_VSM_LATCHED_STATUS = 0x510,       /**< @brief VSM latched status. */
     CMR_CANID_VSM_POWER_DIAGNOSTICS = 0x530,    /**< @brief VSM power diagnostics. */
+    CMR_CANID_VSM_FIRST_ERROR = 0x10a,          /**< @brief VSM first error state */
 
     CMR_CANID_HVC_COMMAND = 0x130,              /**< @brief HVC command, sent by VSM. */
     CMR_CANID_HVC_PACK_VOLTAGE = 0x301,         /**< @brief HVC pack voltage. */
