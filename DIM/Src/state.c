@@ -717,15 +717,15 @@ static void stateMachine(void *pvParameters){
     while (1) {
         // taskENTER_CRITICAL();
         currState = getNextState();
-        if(getASMS()) {
-            // TODO: checks for brakes, dv system, etc
-            if(stateGetVSM() == CMR_CAN_GLV_ON) {
-                cmr_gpioWrite(GPIO_AS_RELAY, 0);
-            }
-            else {
-                cmr_gpioWrite(GPIO_AS_RELAY, 1);
-            }
-        }
+        // if(getASMS()) {
+        //     // TODO: checks for brakes, dv system, etc
+        //     if(stateGetVSM() == CMR_CAN_GLV_ON) {
+        //         cmr_gpioWrite(GPIO_AS_RELAY, 0);
+        //     }
+        //     else {
+        //         cmr_gpioWrite(GPIO_AS_RELAY, 1);
+        //     }
+        // }
         // tftRead(&tft, TFT_ADDR_CMD_READ, sizeof(test), &test);
         // test = test & 0x00000FFF;
         // tftRead(&tft, TFT_ADDR_CMDB_SPACE, sizeof(space1), &space1);
