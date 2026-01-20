@@ -27,8 +27,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "ff_gen_drv.h"
 #include "sd_diskio.h"
-#include "bsp_driver_sd.h"
-#include "core_cm4.h"
+
 #include <string.h>
 
 /* Private typedef -----------------------------------------------------------*/
