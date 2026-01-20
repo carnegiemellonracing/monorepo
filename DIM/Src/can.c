@@ -15,7 +15,6 @@
 
 #include <CMR/panic.h>  // Panic interface
 #include <CMR/tasks.h>  // Task interface
-#include <math.h>       // powf()
 #include <string.h>     // memcpy()
 #include <CMR/config_screen_helper.h>
 #include <CMR/can_types.h>
@@ -82,7 +81,8 @@ cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_CDC_ODOMETER] =        { .canID = CMR_CANID_CDC_ODOMETER, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
     [CANRX_CDC_CONTROLS_STATUS] = { .canID = CMR_CANID_CDC_CONTROLS_STATUS, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
     [CANRX_CDC_HEARTBEAT] =       { .canID = CMR_CANID_HEARTBEAT_CDC, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
-    [CANRX_PACK_CELL_VOLTAGES] =  { .canID = CMR_CANID_HVC_MINMAX_CELL_VOLTAGE, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 }
+    [CANRX_PACK_CELL_VOLTAGES] =  { .canID = CMR_CANID_HVC_MINMAX_CELL_VOLTAGE, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
+    [CANRX_EAB_STATUS] =          { .canID = CMR_CANID_EAB_STATUS, .timeoutError_ms = 100, .timeoutWarn_ms = 50 }
 };
 
 /** @brief Primary CAN interface. */
@@ -121,14 +121,16 @@ static void canTX10Hz(void *pvParameters) {
         /* if DIM is requesting a state/gear change
          * send this request to VSM */
 		reqVSM();
+        reqGear();
+        reqDRS();
         cmr_canState_t stateVSM = stateGetVSM();
         cmr_canState_t stateVSMReq = stateGetVSMReq();
         cmr_canGear_t gear = stateGetGear();
         cmr_canGear_t gearReq = stateGetGearReq();
-		//below is the new gear request mechanism can delete if wrong
-		// cmr_canGear_t gearReq = getRequestedGear();
         cmr_canDrsMode_t drsMode = stateGetDrs();
         cmr_canDrsMode_t drsReq = stateGetDrsReq();
+        cmr_canDVMode_t dvMode = stateGetDVMode();
+        cmr_canDVMode_t dvReq = stateGetDVReq();
         cmr_canTestID_t test_id = {
         	.test_id = get_test_message_id()
         };
@@ -143,7 +145,8 @@ static void canTX10Hz(void *pvParameters) {
                 .requestedState = stateVSMReq,
                 .requestedGear = gearReq,
                 .requestedDrsMode = drsReq,
-                .requestedDriver = (uint8_t)config_menu_main_array[DRIVER_PROFILE_INDEX].value.value
+                .requestedDriver = (uint8_t)config_menu_main_array[DRIVER_PROFILE_INDEX].value.value,
+                .requestedDVCtrl = dvReq
             };
             canTX(
                 CMR_CANID_DIM_REQUEST,
@@ -153,6 +156,7 @@ static void canTX10Hz(void *pvParameters) {
             previousDriverReq = config_menu_main_array[DRIVER_PROFILE_INDEX].value.value;
             stateGearUpdate();
             stateDrsUpdate();
+            stateDVCtrlUpdate();
         }
         sendPowerDiagnostics();
 
@@ -191,32 +195,18 @@ static void canTX100Hz(void *pvParameters) {
     	uint8_t paddle = (uint8_t) ((adcRead(ADC_PADDLE) - 16.062) / 3694.43) * 255.0;
     	uint8_t regenPercent = (uint8_t)((adcRead(ADC_PADDLE) / 255.0) * 100.0);
         uint8_t packed = 0;
-        uint8_t LRUDpacked = 0;
-        // if(getCurrState() == CONFIG){
-        //     if(paddle > 50){
-        //         paddle_is_pressed = true;
-        //     }
-        //     else {
-        //         if(paddle_is_pressed){
-        //             config_increment_down_requested = true;
-        //             paddle_is_pressed = false;
-        //         }
-        //     }
-        // }
+        uint8_t ctrlOn = cmr_gpioRead(GPIO_CTRL_SWITCH);
+        uint8_t dvCtrlMode = stateGetDVMode();
         for(int i=0; i<NUM_BUTTONS; i++){
-            packed |= canButtonStates[i] << i;
-        }
-        for(int i=0; i<LRUD_LEN; i++) {
-            LRUDpacked |= canLRUDStates[i] << i;
+            packed |= gpioButtonStates[i] << i;
         }
         /* Transmit action button status */
         cmr_canDIMActions_t actions = {
-            .buttons = packed,
-			.rotaryPos = getRotaryPosition(),
-            .switchValues = 0,
+            .buttonStates = packed,
             .regenPercent = regenPercent,
             .paddle = paddle,
-			.LRUDButtons = LRUDpacked,
+            .controlsStatus = ctrlOn,
+			.dvControlMode = dvCtrlMode
         };
         canTX(
             CMR_CANID_DIM_ACTIONS,
@@ -473,6 +463,14 @@ void canInit(void) {
         GPIOA, GPIO_PIN_12   // CAN1 TX port/pin.
     );
 
+    // cmr_canInit(
+    //     &can, CAN2, CMR_CAN_BITRATE_500K,
+    //     canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
+    //     &canRXCallback,
+    //     GPIOB, GPIO_PIN_12,  // CAN1 RX port/pin.
+    //     GPIOB, GPIO_PIN_13   // CAN1 TX port/pin.
+    // );
+
     // Clear RAM Buf - Set all to Spaces
     for (uint16_t i = 0; i < RAMBUFLEN; i++) {
         if (i == PREV_TIME_INDEX + TIMEDISPLAYLEN - 1 ||
@@ -596,6 +594,24 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     cmr_canHeartbeat_t heartbeat = {
         .state = vsmState
     };
+
+    // volatile cmr_canHeartbeat_t *AIM_Heartbeat = canVehicleGetPayload(CANRX_HEARTBEAT_VSM);
+	// cmr_canHeartbeat_t toSend;
+	// memcpy(&toSend, AIM_Heartbeat,sizeof(cmr_canHeartbeat_t)); //memcpy since it is volatile and could update
+
+	// if (toSend.error[0] != 0 || toSend.error[1] != 0) {
+	// 	toSend.state = CMR_CAN_ERROR;
+	// }
+
+    // if(getASMS()){
+    //     uint8_t mask = 1 << 7;
+    //     toSend.state = toSend.state | mask;
+    // }
+
+    // if(getEAB()){
+    //     uint8_t mask = 1 << 6;
+    //     toSend.state = toSend.state | mask;
+    // }
 
     cmr_canWarn_t warning = CMR_CAN_WARN_NONE;
     cmr_canError_t error = CMR_CAN_ERROR_NONE;
