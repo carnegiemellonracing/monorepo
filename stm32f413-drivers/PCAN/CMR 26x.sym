@@ -23,6 +23,7 @@ enum CDCHeartbeatWrn(1="CDC_WRN_VSM_TIMEOUT",
     32768="CDC_WRN_AMK_SRC_FL")
 enum DIMButtons(4="DIM_ACTIONBUTTON", 8="DIM_LAUNCHBUTTON")
 enum DIMHeartbeatErr(1="DIM_ERR_VSM_TIMEOUT")
+enum DVMode(0="DV_MODE_SLOW", 1="DV_MODE_NORMAL", 2="DV_MODE_FAST")
 enum DrsMode(0="DRSM_QUIET", 1="DRSM_CLOSED", 2="DRSM_OPEN",
     3="DRSM_TOGGLE", 4="DRSM_HOLD", 5="DRSM_AUTO", 6="DRSM_LEN",
     7="DRSM_UNKNOWN")
@@ -44,8 +45,12 @@ enum FSMHeartbeatWrn(1="FSM_WRN_VSM_TIMEOUT", 2="FSM_WRN_VOLTAGE_OOR",
     2048="FSM_WRN_BRAKE_POSITION_OOR", 4096="FSM_WRN_LEFT_TPOS_OOR",
     8192="FSM_WRN_RIGHT_TPOS_OOR", 16384="FSM_WRN_BPP_FAULT",
     32768="FSM_WRN_TPOS_IMPLAUSIBLE")
-enum Gear(0="UNKNOWN", 1="SLOW", 2="FAST", 3="ENDURANCE", 4="AUTOX",
-    5="SKIDPAD", 6="ACCEL", 7="TEST", 8="REVERSE", 9="LEN")
+enum Gear(0="MIN", 1="UNKNOWN", 2="SLOW", 3="FAST", 4="ENDURANCE",
+    5="AUTOX", 6="SKIDPAD", 7="ACCEL", 8="TEST", 9="REVERSE", 10="MAX",
+    11="DV_MISSION_MIN", 12="DV_MISSION_MANUAL", 13="DV_MISSION_ACCEL",
+    14="DV_MISSION_SKIDPAD", 15="DV_MISSION_AUTOX",
+    16="DV_MISSION_TRACKD", 17="DV_MISSION_INSPECTION",
+    18="DV_MISSION_EBS", 19="DV_MISSION_MAX", 20="LEN")
 enum HVCError(0="HVC_ERROR_NONE", 1="HVC_ERROR_PACK_UNDERVOLT",
     2="HVC_ERROR_PACK_OVERVOLT", 8="HVC_ERROR_PACK_OVERCURRENT",
     16="HVC_ERROR_CELL_UNDERVOLT", 32="HVC_ERROR_CELL_OVERVOLT",
@@ -98,7 +103,8 @@ enum SBGSolutionStatusMode(0="SBG_SOL_MODE_UNINITIALIZED",
     3="integrated from velocity estimation. */",
     4="(attitude, velocity, position). Absolute position is provided. */")
 enum State(0="UNKNOWN", 1="GLV_ON", 2="HV_EN", 3="RTD", 4="ERROR",
-    5="CLEAR_ERROR")
+    5="CLEAR_ERROR", 6="AS_READY", 7="AS_DRIVING", 8="AS_FINISHED",
+    9="AS_EMERGENCY")
 enum VSMErrorSource(0="VSM_ERROR_SOURCE_NONE",
     1="VSM_ERROR_SOURCE_HVI", 4="VSM_ERROR_SOURCE_PTC",
     8="VSM_ERROR_SOURCE_DIM", 9="message has timed out. */",
@@ -507,19 +513,14 @@ Var=ACKNOWLEDGE_acknowledge unsigned 0,8
 
 [DIM_ACTIONS]
 ID=515h
-DLC=6
+DLC=5
 CycleTime=10
 TimeOut=50
-Var=ACTIONS_DIM_ACTIONBUTTON bit 2,1
-Var=ACTIONS_DIM_LAUNCHBUTTON bit 3,1
-Var=ACTIONS_rotaryPos unsigned 8,8
-Var=ACTIONS_switchValues unsigned 16,8
-Var=ACTIONS_regenPercent unsigned 24,8
-Var=ACTIONS_paddle unsigned 32,8
-Var=ACTIONS_DIM_LEFT bit 40,1
-Var=ACTIONS_DIM_RIGHT bit 41,1
-Var=ACTIONS_DIM_UP bit 42,1
-Var=ACTIONS_DIM_DOWN bit 43,1
+Var=ACTIONS_buttonStates unsigned 0,8
+Var=ACTIONS_regenPercent unsigned 8,8
+Var=ACTIONS_paddle unsigned 16,8
+Var=ACTIONS_controlsStatus unsigned 24,8
+Var=ACTIONS_dvControlMode unsigned 32,8
 
 [DIM_POWER_DIAGNOSTICS]
 ID=535h
@@ -531,13 +532,14 @@ Var=POWER_busCurrent_mA unsigned 16,16 /u:mA
 
 [DIM_REQUEST]
 ID=235h
-DLC=4
+DLC=5
 CycleTime=100
 TimeOut=500
 Var=REQUEST_requestedState unsigned 0,8 /e:State
 Var=REQUEST_requestedGear unsigned 8,8 /e:Gear
 Var=REQUEST_requestedDrsMode unsigned 16,8 /e:DrsMode
 Var=REQUEST_requestedDriver unsigned 24,8
+Var=REQUEST_requestedDVCtrl unsigned 32,8
 
 [DRS_STATE]
 ID=52Ch
