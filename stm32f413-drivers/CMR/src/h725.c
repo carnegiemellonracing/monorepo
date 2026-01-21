@@ -173,6 +173,17 @@ void _platform_FDCANInit(
         .rxCallback = rxCallback
     };
 
+    switch (bitRate) {
+        case CMR_CAN_BITRATE_125K:
+            can->handle.Init.NominalPrescaler = 4;
+        case CMR_CAN_BITRATE_250K:
+            can->handle.Init.NominalPrescaler = 2;
+            break;
+        case CMR_CAN_BITRATE_500K:
+            can->handle.Init.NominalPrescaler = 1;
+            break;
+    }
+
     if(instance == FDCAN2) {
     	can->handle.Init.MessageRAMOffset = 853; //partitioning RAM size equally based on 2560 RAM Word Size
     }
