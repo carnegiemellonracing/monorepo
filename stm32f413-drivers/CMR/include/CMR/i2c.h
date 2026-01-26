@@ -33,9 +33,9 @@ typedef struct {
     StaticSemaphore_t doneSemBuf; /**< @brief Static buffer for TX semaphore.*/
     uint32_t error; /**< @brief Error code when DMA receives an error.*/
 
-    uint8_t *slaveTxBuf; /**< @brief i2c slave TX message buffer.*/
+    uint8_t *slaveTxBuff; /**< @brief i2c slave TX message buffer.*/
     uint16_t slaveTxLen; /**< @brief i2c slave TX message length.*/
-    uint8_t *slaveRxBuf; /**< @brief i2c slave RX message buffer.*/
+    uint8_t *slaveRxBuff; /**< @brief i2c slave RX message buffer.*/
     uint16_t slaveRxLen; /**< @brief i2c slave RX message length.*/
     
 } cmr_i2c_t;

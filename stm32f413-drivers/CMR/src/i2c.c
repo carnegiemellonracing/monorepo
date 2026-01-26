@@ -11,7 +11,11 @@
 #include <CMR/panic.h>  // cmr_panic()
 #include <CMR/dma.h>    // dma interface
 #include <CMR/rcc.h>    // cmr_rccGPIOClockEnable(), cmr_rccI2CClockEnable()
-                    //
+#include <stddef.h>     // for offsetof (needed for slave i2c)
+
+// macro for getting the struct of a field.
+#define container_of(ptr, type, member) \
+    ((type *)((char *)(ptr) - offsetof(type, member)))
 
 typedef struct {
     /** @brief The associated handle, or `NULL` if not configured. */
@@ -226,8 +230,7 @@ void cmr_i2cInit(
     cmr_i2c_t *i2c, I2C_TypeDef *instance,
     uint32_t clockSpeed, uint32_t ownAddr,
     GPIO_TypeDef *i2cClkPort, uint32_t i2cClkPin,
-    GPIO_TypeDef *i2cDataPort, uint32_t i2cDataPin,
-    bool enableListenMode // TODO: need to add this param to all other boards
+    GPIO_TypeDef *i2cDataPort, uint32_t i2cDataPin
 ) {
     *i2c = (cmr_i2c_t) {
         .handle = {
@@ -322,9 +325,9 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
 
 	if(TransferDirection == I2C_DIRECTION_TRANSMIT) {
         //HAL_StatusTypeDef HAL_I2C_Slave_Seq_Transmit_IT(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint16_t Size, uint32_t XferOptions)
-		HAL_I2C_Slave_Seq_Receive_IT(hi2c, i2c->slaveRxBuff, i2c->slaveRxBuff, I2C_FIRST_AND_LAST_FRAME);
+		HAL_I2C_Slave_Seq_Receive_IT(hi2c, i2c->slaveRxBuff, i2c->slaveRxLen, I2C_FIRST_AND_LAST_FRAME);
 	} else {
-		HAL_I2C_Slave_Seq_Transmit_IT(hi2c, i2c->slaveTxBuf, i2c->slaveTxLen, I2C_FIRST_AND_LAST_FRAME);
+		HAL_I2C_Slave_Seq_Transmit_IT(hi2c, i2c->slaveTxBuff, i2c->slaveTxLen, I2C_FIRST_AND_LAST_FRAME);
 	}
 }
 
