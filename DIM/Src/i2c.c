@@ -39,7 +39,8 @@ uint8_t read_8bytes_test(cmr_i2c_t *i2c) {
     static uint8_t rxData[8];
     i2c_slave_rx(i2c, rxData, sizeof(rxData));
     // add a delay??
-    print_bytes(i2c->slaveRxBuff, i2c->slaveRxLen);
+    // print_bytes(i2c->slaveRxBuff, i2c->slaveRxLen);
+    return 0;
 }
 
 

@@ -125,8 +125,8 @@ int main(void) {
     i2c_slave_init();
 
     // I2C slave testing: 
-    write_66_test();
-    read_8bytes_test();
+    write_66_test(&i2c);
+    read_8bytes_test(&i2c);
 
 
     cmr_taskInit(
