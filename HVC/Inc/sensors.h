@@ -15,11 +15,10 @@
 
 /** @brief Array indexes for sensor value calibration array. */
 typedef enum {
-	SENSOR_CH_V24V           = 0, /** @brief LV Battery voltage */
-	SENSOR_CH_AIR_POWER      = 1, /** @brief Voltage on AIR coil */
-	SENSOR_CH_SAFETY         = 2, /** @brief Safety Circuit Input Voltage */
-	SENSOR_CH_VSENSE         = 3, /** @brief TS Voltage */
-	SENSOR_CH_ISENSE         = 4, /** @brief TS Current */ 
+	SENSOR_CH_AIR_POWER      = 0, /** @brief Voltage on AIR coil */
+	SENSOR_CH_SAFETY         = 1, /** @brief Safety Circuit Input Voltage */
+	SENSOR_CH_VSENSE         = 2, /** @brief TS Voltage */
+	SENSOR_CH_ISENSE         = 3, /** @brief TS Current */ 
     SENSOR_CH_VREF,        /**< @brief Hall Effect Reference Voltage */ 
 	SENSOR_CH_LEN     /**< @brief Total ADC channels. */
 } sensorChannel_t;
@@ -27,8 +26,6 @@ typedef enum {
 extern cmr_sensorList_t sensorList;
 
 void sensorsInit(void);
-
-int32_t getLVmillivolts();
 int32_t getLVmilliamps();
 int32_t getAIRmillivolts();
 int32_t getSafetymillivolts();

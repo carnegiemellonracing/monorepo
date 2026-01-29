@@ -120,16 +120,17 @@ static void canTX100Hz(void *pvParameters) {
     while (1) {
         sendHeartbeat(lastWakeTime);
         sendBMSLowVoltage(); 
+        sendHVCPower(); 
 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
 }
 
 /** @brief CAN 100 Hz TX priority. */
-static const uint32_t canTX200Hz_priority = 5;
+static const uint32_t canTX200Hz_priority = 4;
 
 /** @brief CAN 100 Hz TX period (milliseconds). */
-static const TickType_t canTX200Hz_period_ms = 10;
+static const TickType_t canTX200Hz_period_ms = 5;
 
 /** @brief CAN 100 Hz TX task. */
 static cmr_task_t canTX200Hz_task; 
@@ -203,6 +204,13 @@ void canInit(void) {
         canTX100Hz,
         NULL
     );
+    // cmr_taskInit(
+    //     &canTX200Hz_task,
+    //     "CAN TX 200Hz",
+    //     canTX200Hz_priority,
+    //     canTX200Hz,
+    //     NULL
+    // );
 }
 
 /**
@@ -304,19 +312,21 @@ static void sendHVCPower() {
     int16_t voltage;
     int16_t current;
 
-    voltage = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VSENSE); 
-    current = cmr_sensorListGetValue(&sensorList, SENSOR_CH_ISENSE); 
+    // voltage = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VSENSE); 
+    // current = cmr_sensorListGetValue(&sensorList, SENSOR_CH_ISENSE); 
     power = (voltage * 100) * (current * 10);
 
-    cmr_canHVSense_t *hv_sensors; 
+    cmr_canHVSense_t hv_sensors = {
+        .packCurrent_dA = adcRead(ADC_ISENSE),
+        .packVoltage_cV = getHVmillivolts() / 1000
+        // (getHVmillivolts() / 1000)
+    }; 
 
-    hv_sensors->packVoltage_cV = voltage;
-    hv_sensors->packCurrent_dA = current;
-    hv_sensors->packPower_W = power;   
+    //hv_sensors->packPower_W = power;   
 
     uint16_t voltageRaw, currentRaw;
 	voltageRaw = adcRead(ADC_VSENSE);
-	currentRaw = adcRead(ADC_ISENSE);
+	currentRaw = 0;
 
     canTX(CMR_CANID_HV_SENSORS, &hv_sensors, sizeof(hv_sensors), canTX200Hz_period_ms);
 }
@@ -326,7 +336,6 @@ static void sendBMSLowVoltage(void) {
         .safety_mV = (getSafetymillivolts()*15)/2000, // Convert mA to 2/15th mA //TODO: Gustav change this back?
         .iDCDC_mA = 0,
         .vAIR_mV = (getAIRmillivolts()*15)/2000, // Convert mV to 2/15th V
-        .vbatt_mV= (getLVmillivolts()*15/2000), // Convert mV to 2/15th V
     };
     (void) BMSLowVoltage;
 

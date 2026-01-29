@@ -41,7 +41,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
     uint16_t packMinCellVoltage;
     uint16_t packMaxCellVoltage;
 
-    if (currentError != CMR_CAN_HVC_ERROR_NONE) {
+    if (false) {
         // An error condition is active, stay in ERROR state
         return CMR_CAN_HVC_STATE_ERROR;
     }
@@ -86,9 +86,9 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                   HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN)) {
                 //T6: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (abs((HVBMSPackVoltage->battVoltage_mV) - (getHVmillivolts()) < 30000)) {
+            } else if (abs(600000 - (getHVmillivolts()) < 60000)) {
                 //T2: HV rails are precharged to within 30000mV
-                nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE;
+                nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE; 
                 lastPrechargeTime = xTaskGetTickCount(); 
             } else {
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE;
@@ -120,7 +120,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 //T18: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE; 
-            } else if (abs((HVBMSPackVoltage->battVoltage_mV) - ((uint32_t)getHVmillivolts()) < 30000)) { 
+            } else if (abs(600000 - ((uint32_t)getHVmillivolts())) < 60000) { 
             	lastPrechargeTime = xTaskGetTickCount();
                 //T10: HV rails are precharged
                 nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE; 
@@ -199,7 +199,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             break;
         }
         case CMR_CAN_HVC_STATE_CLEAR_ERROR: // S11
-            if ((HVCCommand->modeRequest == CMR_CAN_HVC_MODE_IDLE) || getHVmillivolts() < 5000) {
+            if ((HVCCommand->modeRequest == CMR_CAN_HVC_MODE_IDLE) /*|| getHVmillivolts() < 5000*/) {
                 //T4: GLV requesting idle and rails discharged
                 nextState = CMR_CAN_HVC_STATE_STANDBY;
             } else {

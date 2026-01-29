@@ -16,13 +16,6 @@
  * @see `CMR/adc.h` for various initialization values.
  */
 cmr_adcChannel_t adcChannels[ADC_LEN] = {
-    [ADC_V24V] = {
-        .channel = ADC_CHANNEL_12,
-        .port = GPIOC,
-        .pin = GPIO_PIN_2,
-        .samplingTime = ADC_SAMPLETIME_15CYCLES,
-        .value = 0
-    },
     [ADC_VREF] = { 
 		 .channel = ADC_CHANNEL_15, //repeat channel? 
 		 .port = GPIOC,

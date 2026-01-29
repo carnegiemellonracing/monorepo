@@ -34,8 +34,7 @@
  * @brief Mapping of sensor channels to ADC channels.
  */
 static const adcChannels_t sensorsADCCHANNELS[SENSOR_CH_LEN] = {
-    [SENSOR_CH_V24V]       = ADC_V24V,
-	[SENSOR_CH_VREF] = ADC_V24V, //keep, from hvi 
+	[SENSOR_CH_VREF] = ADC_VREF, //keep, from hvi 
 	[SENSOR_CH_AIR_POWER]  = ADC_AIR_POWER,
 	[SENSOR_CH_SAFETY]     = ADC_SAFETY,
 	[SENSOR_CH_VSENSE] = ADC_VSENSE, 
@@ -94,7 +93,7 @@ static int32_t ADCtoMV_24v(const cmr_sensor_t *sensor, uint32_t reading) {
 static int32_t ADCtoMV_HV(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 
-	return (((int32_t) reading) * 268 - 426400);
+    return ((reading * 408) - 13400);
 }
 
 
@@ -149,16 +148,6 @@ static int32_t adcToVref(const cmr_sensor_t *sensor, uint32_t reading) {
 
 
 static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
-	[SENSOR_CH_V24V] = { //hvc 
-		.conv = ADCtoMV_24v,
-		.sample = sampleADCSensor,
-		.readingMin = 0,
-		.readingMax = 24000,
-		// TODO change to unoverted values
-		// TODO check adc bits
-		.outOfRange_pcnt = 10,
-		//.warnFlag = What errors to use?
-	}, 
 	[SENSOR_CH_AIR_POWER] = { //hvc 
 		.conv = ADCtoMV_24v,
 		.sample = sampleADCSensor,
@@ -168,7 +157,7 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 		//.warnFlag = What errors to use?
 	},
     [SENSOR_CH_VSENSE] = {
-		.conv = ADCtoMV_HV,
+		.conv = ADCtoMV_HV, 
 		.sample = sampleADCSensor,
 		//.readingMin = ?,
 		//.readingMax = ?,
@@ -248,9 +237,6 @@ void sensorsInit(void) {
 
 // Accessor functions used in the state machine. These casts should be safe because all the feasible values
 // for any of these variables should be less than INT_MAX, so the value will be preserved on the cast.
-int32_t getLVmillivolts(){
-    return (int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_V24V);
-}
 
 int32_t getAIRmillivolts(){
     return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_AIR_POWER));
