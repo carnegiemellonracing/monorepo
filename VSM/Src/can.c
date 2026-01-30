@@ -122,7 +122,7 @@ const cmr_canVSMErrorSource_t vsmErrorSourceFlags[] = {
     [CANRX_INVERTER_3]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_INVERTER_4]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_RES]                 = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_AS_PRESSURE_READING] = CMR_CAN_VSM_ERROR_SOURCE_AIM,
+    [CANRX_AS_PRESSURE_READING] = CMR_CAN_VSM_ERROR_SOURCE_NONE,
 };
 
 /** @brief CAN 10 Hz TX priority. */
@@ -385,7 +385,7 @@ int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
  * @return Pointer to payload, or NULL if rxMsg is invalid.
  */
 void *getPayload(canRX_t rxMsg) {
-    configASSERT((uint16_t) rxMsg >= (uint16_t) CANRX_LEN);
+    configASSERT((uint16_t) rxMsg < (uint16_t) CANRX_LEN);
 
     cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
 
@@ -403,7 +403,7 @@ void *getPayload(canRX_t rxMsg) {
  * @return State of the module when valid, otherwise CMR_CAN_STATE_UNKNOWN.
  */
 cmr_canState_t getModuleState(canRX_t module) {
-    configASSERT((module >= CANRX_LEN) || (module == CANRX_HEARTBEAT_HVC));
+    configASSERT((module < CANRX_LEN) && (module != CANRX_HEARTBEAT_HVC));
 
     cmr_canHeartbeat_t *heartbeat = getPayload(module);
     uint8_t state = heartbeat->state;

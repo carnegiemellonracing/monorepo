@@ -65,7 +65,7 @@ static const TickType_t ASEmergencySwitchingTime_ms = 100;
 
 /** @brief ASState flag. Keeps track of the "true" ASMS State. Set during GLV_ON only. 
  */
-static bool ASState = true;
+static bool ASState = false;
 
 /** @brief Autonomous brake test state is not started at the beginning*/
 static brakeTestState_t brakeTestState = BRAKE_TEST_NOT_STARTED;

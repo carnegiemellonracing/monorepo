@@ -87,36 +87,36 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     // See rule EV 5.1.10.
     cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
     //cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
-    if (/*(cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), lastWakeTime) != 0) not commented out in 24a
-     ||*/ (hvcHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_PACK_OVERVOLT)
-     || (hvcHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERVOLT)
-     || (hvcHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERTEMP)) {
+    // if (/*(cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), lastWakeTime) != 0) not commented out in 24a
+    //  ||*/ (hvcHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_PACK_OVERVOLT)
+    //  || (hvcHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERVOLT)
+    //  || (hvcHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERTEMP)) {
 
-        cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
-    }
-    else if (getASEmergency()){
-        cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
-    }
-    else {
-        cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 0);
-    }
+    //     cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
+    // }
+    // else if (getASEmergency()){
+    //     cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
+    // }
+    // else {
+    //     cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 0);
+    // }
 
     // Check all latches
-    if (cmr_gpioRead(GPIO_IN_SOFTWARE_ERR) == 1) {
-        heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
-        latchMatrix |= CMR_CAN_VSM_LATCH_SOFTWARE;
-        sendFirstError(LATCH_SOFTWARE_ERR);
-    }
-    if (cmr_gpioRead(GPIO_IN_IMD_ERR) == 1) {
-        heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
-        latchMatrix |= CMR_CAN_VSM_LATCH_IMD;
-        sendFirstError(LATCH_IMD_ERR);
-    }
-    if (cmr_gpioRead(GPIO_IN_BSPD_ERR) == 1) {
-        heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
-        latchMatrix |= CMR_CAN_VSM_LATCH_BSPD;
-        sendFirstError(LATCH_BSPD_ERR);
-    }
+    // if (cmr_gpioRead(GPIO_IN_SOFTWARE_ERR) == 1) {
+    //     heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
+    //     latchMatrix |= CMR_CAN_VSM_LATCH_SOFTWARE;
+    //     sendFirstError(LATCH_SOFTWARE_ERR);
+    // }
+    // if (cmr_gpioRead(GPIO_IN_IMD_ERR) == 1) {
+    //     heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
+    //     latchMatrix |= CMR_CAN_VSM_LATCH_IMD;
+    //     sendFirstError(LATCH_IMD_ERR);
+    // }
+    // if (cmr_gpioRead(GPIO_IN_BSPD_ERR) == 1) {
+    //     heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
+    //     latchMatrix |= CMR_CAN_VSM_LATCH_BSPD;
+    //     sendFirstError(LATCH_BSPD_ERR);
+    // }
 
     // Update vsmErrors struct
     vsmStatus->heartbeatErrors = heartbeatErrors;
