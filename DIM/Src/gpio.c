@@ -15,6 +15,9 @@
 
 bool gpioButtonStates[NUM_BUTTONS];
 
+gpio_t gpioButtonPins[NUM_BUTTONS] = {GPIO_BUTTON_UP, GPIO_BUTTON_DOWN, GPIO_BUTTON_LEFT,
+									GPIO_BUTTON_RIGHT, GPIO_BUTTON_SW_LEFT, GPIO_BUTTON_SW_RIGHT};
+
 static const uint32_t gpioReadButtons_priority = 5;
 
 /** @brief Button input task task. */
@@ -30,69 +33,78 @@ static cmr_task_t gpioReadButtons_task;
  */
 // TODO: change GPIO pin configs based on new schematic
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
-    // [GPIO_BUTTON_UP] = {
-	// 	.port = GPIOC,
-	// 	.init = {
-	// 		.Pin = GPIO_PIN_6,
-	// 		.Mode = GPIO_MODE_IT_RISING_FALLING,
-	// 		.Pull = GPIO_PULLUP,
-	// 		.Speed = GPIO_SPEED_FREQ_LOW
-	// 	}
-	// },
-	// [GPIO_BUTTON_DOWN] = {
-	// 	.port = GPIOC,
-	// 	.init = {
-	// 		.Pin = GPIO_PIN_6,
-	// 		.Mode = GPIO_MODE_IT_RISING_FALLING,
-	// 		.Pull = GPIO_PULLUP,
-	// 		.Speed = GPIO_SPEED_FREQ_LOW
-	// 	}
-	// },
-	// [GPIO_BUTTON_LEFT] = {
-	// 	.port = GPIOC,
-	// 	.init = {
-	// 		.Pin = GPIO_PIN_6,
-	// 		.Mode = GPIO_MODE_IT_RISING_FALLING,
-	// 		.Pull = GPIO_PULLUP,
-	// 		.Speed = GPIO_SPEED_FREQ_LOW
-	// 	}
-	// },
-	// [GPIO_BUTTON_RIGHT] = {
-	// 	.port = GPIOC,
-	// 	.init = {
-	// 		.Pin = GPIO_PIN_6,
-	// 		.Mode = GPIO_MODE_IT_RISING_FALLING,
-	// 		.Pull = GPIO_PULLUP,
-	// 		.Speed = GPIO_SPEED_FREQ_LOW
-	// 	}
-	// },
-	// [GPIO_CTRL_SWITCH] = {
-	// 	.port = GPIOC,
-	// 	.init = {
-	// 		.Pin = GPIO_PIN_6,
-	// 		.Mode = GPIO_MODE_IT_RISING_FALLING,
-	// 		.Pull = GPIO_PULLUP,
-	// 		.Speed = GPIO_SPEED_FREQ_LOW
-	// 	}
-	// },
-	// [GPIO_BUTTON_SW_LEFT] = {
-	// 	.port = GPIOC,
-	// 	.init = {
-	// 		.Pin = GPIO_PIN_6,
-	// 		.Mode = GPIO_MODE_IT_RISING_FALLING,
-	// 		.Pull = GPIO_PULLUP,
-	// 		.Speed = GPIO_SPEED_FREQ_LOW
-	// 	}
-	// },
-	// [GPIO_BUTTON_SW_RIGHT] = {
-	// 	.port = GPIOC,
-	// 	.init = {
-	// 		.Pin = GPIO_PIN_6,
-	// 		.Mode = GPIO_MODE_IT_RISING_FALLING,
-	// 		.Pull = GPIO_PULLUP,
-	// 		.Speed = GPIO_SPEED_FREQ_LOW
-	// 	}
-	// },
+
+	// D_BUTTON_2
+    [GPIO_BUTTON_UP] = {
+		.port = GPIOC,
+		.init = {
+			.Pin = GPIO_PIN_10,
+			.Mode = GPIO_MODE_INPUT,
+			.Pull = GPIO_PULLUP,
+			.Speed = GPIO_SPEED_FREQ_LOW
+		}
+	},
+	// D_BUTTON_1
+	[GPIO_BUTTON_DOWN] = {
+		.port = GPIOB,
+		.init = {
+			.Pin = GPIO_PIN_4,
+			.Mode = GPIO_MODE_INPUT,
+			.Pull = GPIO_PULLUP,
+			.Speed = GPIO_SPEED_FREQ_LOW
+		}
+	},
+
+	// D_BUTTON_4
+	[GPIO_BUTTON_LEFT] = {
+		.port = GPIOB,
+		.init = {
+			.Pin = GPIO_PIN_5,
+			.Mode = GPIO_MODE_INPUT,
+			.Pull = GPIO_PULLUP,
+			.Speed = GPIO_SPEED_FREQ_LOW
+		}
+	},
+
+	// D_BUTTON_3
+	[GPIO_BUTTON_RIGHT] = {
+		.port = GPIOB,
+		.init = {
+			.Pin = GPIO_PIN_9,
+			.Mode = GPIO_MODE_INPUT,
+			.Pull = GPIO_PULLUP,
+			.Speed = GPIO_SPEED_FREQ_LOW
+		}
+	},
+	// S_BUTTON_1
+	[GPIO_BUTTON_SW_LEFT] = {
+		.port = GPIOB,
+		.init = {
+			.Pin = GPIO_PIN_8,
+			.Mode = GPIO_MODE_INPUT,
+			.Pull = GPIO_PULLUP,
+			.Speed = GPIO_SPEED_FREQ_LOW
+		}
+	},
+	// S_BUTTON_2
+	[GPIO_BUTTON_SW_RIGHT] = {
+		.port = GPIOD,
+		.init = {
+			.Pin = GPIO_PIN_2,
+			.Mode = GPIO_MODE_INPUT,
+			.Pull = GPIO_PULLUP,
+			.Speed = GPIO_SPEED_FREQ_LOW
+		}
+	},
+	[GPIO_CTRL_SWITCH] = {
+		.port = GPIOC,
+		.init = {
+			.Pin = GPIO_PIN_8,
+			.Mode = GPIO_MODE_INPUT,
+			.Pull = GPIO_PULLUP,
+			.Speed = GPIO_SPEED_FREQ_LOW
+		}
+	},
 	[GPIO_LED_AMS] = {
 		.port = GPIOB,
 		.init = {
@@ -219,7 +231,7 @@ static void gpioReadButtons(void *pvParameters) {
         // Direct assignment for CAN buttons
         for(int i=0; i<NUM_BUTTONS; i++){
 			// Active Low
-			gpioButtonStates[i] = !cmr_gpioRead(i);
+			gpioButtonStates[i] = !cmr_gpioRead(gpioButtonPins[i]);
         }
 		vTaskDelayUntil(&lastWakeTime, 100);
     }
