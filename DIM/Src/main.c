@@ -116,7 +116,7 @@ int main(void) {
     gpioInit();
     canInit();
     // // adcInit();
-    // tftInit();
+    tftInit();
     stateMachineInit();
     // sensorsInit();
 
