@@ -97,7 +97,7 @@ cmr_canRXMeta_t canRXMeta[] = {
             .timeoutWarn_ms = 25,
     },
     [CANRX_ASMS_STATE] = {
-            .canID = 0x10B,
+            .canID = CMR_CANID_ASMS_STATE,
             .timeoutError_ms = 100,
             .timeoutWarn_ms = 25,
     }
