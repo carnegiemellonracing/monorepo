@@ -175,7 +175,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
  * 
  * @return 1 iff ASMS is on
  */
-bool getASMS(){
+uint8_t getASMS(){
 	return cmr_gpioRead(GPIO_ASMS_ON);
 }
 
@@ -184,9 +184,9 @@ bool getASMS(){
  * 
  * @return 1 iff EAB is on
  */
-bool getEAB(){
+uint8_t getEAB(){
 	uint8_t *eabStatus = (uint8_t*)getPayload(CANRX_EAB_STATUS);
-	return (*eabStatus == 1);
+	return (*eabStatus);
 }
 
 /* Debouncing for button presses. */

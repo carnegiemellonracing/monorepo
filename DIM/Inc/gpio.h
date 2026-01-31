@@ -57,7 +57,7 @@ void canLRUDDetect(void);
  */
 void gpioInit(void);
 
-bool getASMS(void);
-bool getEAB(void);
+uint8_t getASMS(void);
+uint8_t getEAB(void);
 
 #endif /* GPIO_H */

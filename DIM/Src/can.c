@@ -595,6 +595,9 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
         .state = vsmState
     };
 
+    uint8_t AS_Status = getASMS();
+    canTX(CMR_CANID_ASMS_STATUS, &AS_Status, sizeof(AS_Status), canTX100Hz_period_ms);
+
     // volatile cmr_canHeartbeat_t *AIM_Heartbeat = canVehicleGetPayload(CANRX_HEARTBEAT_VSM);
 	// cmr_canHeartbeat_t toSend;
 	// memcpy(&toSend, AIM_Heartbeat,sizeof(cmr_canHeartbeat_t)); //memcpy since it is volatile and could update
