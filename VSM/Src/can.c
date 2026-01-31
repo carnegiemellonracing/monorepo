@@ -97,7 +97,7 @@ cmr_canRXMeta_t canRXMeta[] = {
             .timeoutWarn_ms = 25,
     },
     [CANRX_ASMS_STATE] = {
-            .canID = CMR_CANID_ASMS_STATE,
+            .canID = 0x10B,
             .timeoutError_ms = 100,
             .timeoutWarn_ms = 25,
     }
@@ -416,12 +416,11 @@ cmr_canState_t getModuleState(canRX_t module) {
  * 
  * @return true iff ASMS is on and in autonomous mode
  */
-bool getASMSState() {
+uint8_t getASMSState() {
 
-	cmr_canHeartbeat_t *heartbeat = getPayload(CANRX_ASMS_STATE);
-	uint8_t state = heartbeat->state;
+	uint8_t *as_state = (uint8_t*)getPayload(CANRX_ASMS_STATE);
 
-	return state;
+	return (*as_state);
 }
 
 /**
