@@ -32,6 +32,12 @@ typedef struct {
     SemaphoreHandle_t doneSem; /**< @brief Semaphore for TX.*/
     StaticSemaphore_t doneSemBuf; /**< @brief Static buffer for TX semaphore.*/
     uint32_t error; /**< @brief Error code when DMA receives an error.*/
+
+    uint8_t *slaveTxBuff; /**< @brief i2c slave TX message buffer.*/
+    uint16_t slaveTxLen; /**< @brief i2c slave TX message length.*/
+    uint8_t *slaveRxBuff; /**< @brief i2c slave RX message buffer.*/
+    uint16_t slaveRxLen; /**< @brief i2c slave RX message length.*/
+    
 } cmr_i2c_t;
 
 int cmr_i2cTX(cmr_i2c_t *i2c, uint16_t devAddr, uint8_t *data,
@@ -48,6 +54,23 @@ void cmr_i2cInit(
     GPIO_TypeDef *i2cClkPort, uint32_t i2cClkPin,
     GPIO_TypeDef *i2cDataPort, uint32_t i2cDataPin
 );
+
+// BEGINNING of functions for mcu acting as i2c slave.
+void cmr_i2cSlaveInit(
+    cmr_i2c_t *i2c, I2C_TypeDef *instance
+);
+
+void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode);
+
+void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c);
+
+void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c);
+
+int cmr_i2cSlaveTx(cmr_i2c_t *i2c, uint8_t *txData, size_t len);
+
+int cmr_i2cSlaveRx(cmr_i2c_t *i2c, uint8_t *rxData, size_t len);
+
+// END of functions for mcu acting as i2c slave.
 
 extern void _platform_i2cInit(cmr_i2c_t *i2c, I2C_TypeDef *instance, uint32_t clockSpeed, uint32_t ownAddr);
 
