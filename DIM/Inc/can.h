@@ -105,7 +105,7 @@ uint8_t throttleGetPos(void);
 
 float canEmdHvVoltage(cmr_canEMDMeasurements_t emd_vals);
 float canEmdHvCurrent(cmr_canEMDMeasurements_t emd_vals);
-cmr_canHVCPackMinMaxCellVolages_t* getPackVoltages(void);
+cmr_canBMSMinMaxCellVoltage_t* getPackVoltages(void);
 void sendAcknowledgement(void);
 
 #endif /* CAN_H */

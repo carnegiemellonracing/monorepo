@@ -46,7 +46,7 @@ float getPackVoltage() {
     volatile cmr_canHVCPackVoltage_t *voltages = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
     const float batt_voltage_V = ((float)(voltages->battVoltage_mV)) * 1e-3f; // convert to volts
 
-    volatile cmr_canHVIHeartbeat_t *HVISense = canVehicleGetPayload(CANRX_TRAC_HVI_SENSE);
+    volatile cmr_canHVSense_t *HVISense = canVehicleGetPayload(CANRX_TRAC_HVI_SENSE);
     const float hv_voltage_V = ((float)(HVISense->packVoltage_cV)) * 1e-2f; // convert to volts
 
     // If HVI Sense hasn't timed out, use it. Otherwise, use batt voltage
@@ -62,26 +62,26 @@ float getPackVoltage() {
 float getPackCurrent() {
 //    volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
 //    return ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
-	volatile cmr_canHVIHeartbeat_t *HVISense = canVehicleGetPayload(CANRX_HVI_SENSE);
-	return (((float)(HVISense->packCurrent_dA)) * 1e-1f); // convert to amps
+	volatile cmr_canHVSense_t *HVISense = canVehicleGetPayload(CANRX_HVI_SENSE);
+	return (((float)(HVISense->packCurrent_dA)) * 1e-1f) + 1.25; // convert to amps
 }
 
 /** @brief returns the pack power measured by HVISense */
 float getHVISensePackPower() {
-    volatile cmr_canHVIHeartbeat_t *HVISense = canTractiveGetPayload(CANRX_HVI_SENSE);
+    volatile cmr_canHVSense_t *HVISense = canTractiveGetPayload(CANRX_HVI_SENSE);
     const int32_t pack_power_mW = ((int32_t)(HVISense->packCurrent_dA)) * ((int32_t)(HVISense->packVoltage_cV));
     return ((float)pack_power_mW) * 1e-3f; // convert to watts
 }
 
 /** @brief returns the voltage of the cell that has the highest voltage */
 float getMaxCellVoltage() {
-    volatile cmr_canHVCPackMinMaxCellVolages_t *minMaxCellVoltages = canVehicleGetPayload(CANRX_VEH_PACK_CELL_VOLTAGE);
+    volatile cmr_canBMSMinMaxCellVoltage_t *minMaxCellVoltages = canVehicleGetPayload(CANRX_VEH_PACK_CELL_VOLTAGE);
     return minMaxCellVoltages->maxCellVoltage_mV * 1e-3f; // convert to volts
 }
 
 /** @brief returns the voltage of the cell that has the lowest voltage */
 float getMinCellVoltage() {
-    volatile cmr_canHVCPackMinMaxCellVolages_t *minMaxCellVoltages = canVehicleGetPayload(CANRX_VEH_PACK_CELL_VOLTAGE);
+    volatile cmr_canBMSMinMaxCellVoltage_t *minMaxCellVoltages = canVehicleGetPayload(CANRX_VEH_PACK_CELL_VOLTAGE);
     return minMaxCellVoltages->minCellVoltage_mV * 1e-3f; // convert to volts
 }
 

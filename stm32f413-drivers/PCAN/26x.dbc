@@ -464,8 +464,8 @@ SG_ safety_mV : 16|8@1+ (0.1333333,0) [0|33.9999915] "mV" Vector__XXX
 SG_ iDCDC_mA : 24|8@1+ (0.1333333,0) [0|33.9999915] "mA" Vector__XXX
 
 BO_ 785 HVC_MINMAX_CELL_TEMPS: 8 Vector__XXX
-SG_ minCellTemp_dC : 0|16@1+ (1,0) [0|65535] "dC" Vector__XXX
-SG_ maxCellTemp_dC : 16|16@1+ (1,0) [0|65535] "dC" Vector__XXX
+SG_ minCellTemp_C : 0|16@1+ (1,0) [0|65535] "dC" Vector__XXX
+SG_ maxCellTemp_C : 16|16@1+ (1,0) [0|65535] "dC" Vector__XXX
 SG_ minTempBMBIndex : 32|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ minTempCellIndex : 40|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ maxTempBMBIndex : 48|8@1+ (1,0) [0|255] "" Vector__XXX

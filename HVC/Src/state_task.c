@@ -5,11 +5,14 @@
  *      Author: vamsi
  */
 #include "state_task.h"
+#include "errors.h"
 #include <stdlib.h>
 
 static cmr_canHVCState_t currentState = CMR_CAN_HVC_STATE_ERROR;
 
 #define PRECHARGE_THRESH 57000
+
+static bool cellBalancing = false; 
 
 /*
  * External Accessor Functions
@@ -23,6 +26,10 @@ cmr_canHVCState_t getState() {
  * Helper Functions
  */
 
+ //forward declarations:
+ void stopCellBalancing(void);
+ void enableCellBalancing(void); 
+
 static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
     
     //Default to unknown state if no paths are satisfied.
@@ -34,21 +41,34 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
     uint16_t packMinCellVoltage;
     uint16_t packMaxCellVoltage;
 
-    if (currentError != CMR_CAN_HVC_ERROR_NONE) {
+    if (false) {
         // An error condition is active, stay in ERROR state
         return CMR_CAN_HVC_STATE_ERROR;
     }
 
     // Getting HVC Command
     volatile cmr_canHVCCommand_t *HVCCommand = getPayload(CANRX_HVC_COMMAND);
-	volatile cmr_canHVIHeartbeat_t *hvi_heartbeat = getPayload(CANRX_HVI_COMMAND);
+
+    //Getting BMB Min Max voltage data
+    volatile cmr_canBMSMinMaxCellVoltage_t *HVBMSMinMaxVolt = getPayload(CANRX_HVBMS_MINMAX_VOLTAGE); 
+
+    //Getting BMB pack voltage 
+    volatile cmr_canHVBMSPackVoltage_t *HVBMSPackVoltage = getPayload(CANRX_HVBMS_PACKVOLT); 
 
     switch (currentState) {
         case CMR_CAN_HVC_STATE_DISCHARGE: // S1
         	// TODO: WAIT FOR HV VOLTAGE TO GO DOWN
+            if(cellBalancing){
+                stopCellBalancing(); 
+                cellBalancing = false; 
+            }
             nextState = CMR_CAN_HVC_STATE_STANDBY;
             break;
         case CMR_CAN_HVC_STATE_STANDBY: // S23
+            if(cellBalancing){
+                stopCellBalancing(); 
+                cellBalancing = false; 
+            }
             if (HVCCommand->modeRequest == CMR_CAN_HVC_MODE_START) {
                 //T1: START mode requested
             		nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE;
@@ -58,7 +78,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                     nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE;
                     lastPrechargeTime = xTaskGetTickCount();
             } else {
-                nextState = CMR_CAN_HVC_STATE_STANDBY;
+                nextState = CMR_CAN_HVC_STATE_STANDBY; 
             }
             break;
         case CMR_CAN_HVC_STATE_DRIVE_PRECHARGE: // S3
@@ -66,10 +86,10 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                   HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN)) {
                 //T6: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (abs((getBattMillivolts()) - (((uint32_t)hvi_heartbeat->packVoltage_cV))*10) < 30000) {
+            } else if (abs(600000 - (getHVmillivolts()) < 60000)) {
                 //T2: HV rails are precharged to within 30000mV
-                nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE;
-                lastPrechargeTime = xTaskGetTickCount();
+                nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE; 
+                lastPrechargeTime = xTaskGetTickCount(); 
             } else {
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE;
             }
@@ -79,11 +99,10 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                   HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN)) {
                 //T7: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if ((HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN) &&
-            		true) {
+            } else if (HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN) {
 //                        abs(getBattMillivolts() - getHVmillivolts()) < 30000) {
                 // T3: Contactors are closed and RUN mode is requested
-                nextState = CMR_CAN_HVC_STATE_DRIVE;
+                nextState = CMR_CAN_HVC_STATE_DRIVE; 
             } else {
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE;
             }
@@ -100,20 +119,26 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE: // S6
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 //T18: Mode requested is not CHARGE
-                nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (abs((getBattMillivolts()) - (((uint32_t)hvi_heartbeat->packVoltage_cV))*10) < 30000) {
+                nextState = CMR_CAN_HVC_STATE_DISCHARGE; 
+            } else if (abs(600000 - ((uint32_t)getHVmillivolts())) < 60000) { 
             	lastPrechargeTime = xTaskGetTickCount();
                 //T10: HV rails are precharged
-                nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE;
+                nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE; 
+                //should only enable once even without wrapping 
+                if(!cellBalancing){
+                    enableCellBalancing();
+                    cellBalancing = true; 
+                } 
             } else {
-                nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE;
+                nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE; 
+                cellBalancing = false; 
             }
             break;
         case CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE: {// S7
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 // T17: Mode requested is not CHARGE
-                nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (true || abs(getBattMillivolts() - getHVmillivolts()) < 5000) {
+                nextState = CMR_CAN_HVC_STATE_DISCHARGE; 
+            } else if (true || abs(HVBMSPackVoltage->battVoltage_mV - getHVmillivolts()) < 5000) {
                 // T11: Contactors are closed
                 nextState = CMR_CAN_HVC_STATE_CHARGE_TRICKLE;
             } else {
@@ -123,7 +148,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
         }
         case CMR_CAN_HVC_STATE_CHARGE_TRICKLE: // S8
             // find lowest cell voltage among all BMBs
-            packMinCellVoltage = getPackMinCellVoltage();
+            packMinCellVoltage = HVBMSMinMaxVolt->minCellVoltage_mV; 
 
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 // T16: Mode requested is not CHARGE
@@ -137,23 +162,21 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             break;
         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT: // S9
             // find highest cell voltage among all BMBs
-            packMaxCellVoltage = getPackMaxCellVoltage();
+            packMaxCellVoltage = HVBMSMinMaxVolt->maxCellVoltage_mV; 
 
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 // T15: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
             } else if (packMaxCellVoltage >= 4280) {
-                // T13: Maximum cell voltage > 4.15V, begin balancing
-                // TODO: may have to update CCM
-//                nextState = CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE;
-                nextState = CMR_CAN_HVC_STATE_ERROR; // not balancing for now
+                // T13: Maximum cell voltage > 4.15V, reached max cell voltage cannot continue charging 
+                nextState = CMR_CAN_HVC_STATE_DISCHARGE; //discharge 
             } else {
                 nextState = CMR_CAN_HVC_STATE_CHARGE_CONSTANT_CURRENT;
             }
             break;
         case CMR_CAN_HVC_STATE_CHARGE_CONSTANT_VOLTAGE: // S10
             // find lowest cell voltage among all BMBs
-            packMinCellVoltage = getPackMinCellVoltage();
+            packMinCellVoltage = HVBMSMinMaxVolt->minCellVoltage_mV; 
 
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE || packMinCellVoltage >= 4145) {
                 //T14: Mode requested is not CHARGE or all cells fully charged
@@ -163,6 +186,10 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             }
             break;
         case CMR_CAN_HVC_STATE_ERROR: { // S0
+            if(cellBalancing){
+                stopCellBalancing(); 
+                cellBalancing = false; 
+            }
             if (HVCCommand->modeRequest == CMR_CAN_HVC_MODE_ERROR) {
                 //T19: GLV acknowledged error, move to clear error
                 nextState = CMR_CAN_HVC_STATE_CLEAR_ERROR;
@@ -172,8 +199,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             break;
         }
         case CMR_CAN_HVC_STATE_CLEAR_ERROR: // S11
-            if ((HVCCommand->modeRequest == CMR_CAN_HVC_MODE_IDLE) &&
-                (true || getHVmillivolts()) < 5000) {
+            if ((HVCCommand->modeRequest == CMR_CAN_HVC_MODE_IDLE) || getHVmillivolts() < 5000) {
                 //T4: GLV requesting idle and rails discharged
                 nextState = CMR_CAN_HVC_STATE_STANDBY;
             } else {
@@ -188,6 +214,16 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
     
     // Return the result of next state logic            
     return nextState;    
+}
+
+static void clearHardwareFault(bool assertClear) {
+    // Set GPIO pin low (asserted) if
+    // assertClear, high (deasserted) otherwise
+    if (assertClear) {
+        cmr_gpioWrite(GPIO_CLEAR_FAULT_L, 0);
+    } else {
+        cmr_gpioWrite(GPIO_CLEAR_FAULT_L, 1);
+    }
 }
 
 static cmr_canHVCState_t setStateOutput(){
@@ -281,7 +317,7 @@ static cmr_canHVCState_t setStateOutput(){
             setRelay(AIR_NEG_RELAY, OPEN);
             setRelay(PRECHARGE_RELAY, OPEN);
             setRelay(DISCHARGE_RELAY, CLOSED);
-            clearErrorReg();
+            clearHVCErrorReg();
             clearHardwareFault(true);
             break;
         case CMR_CAN_HVC_STATE_UNKNOWN:
@@ -316,7 +352,6 @@ void vSetStateTask(void *pvParameters) {
     cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
 
     cmr_gpioWrite(GPIO_CLEAR_FAULT_L, 0);
-    cmr_gpioWrite(GPIO_BMB_FAULT_L, 1);
     cmr_gpioWrite(GPIO_AIR_POSITIVE_EN, 1);
     cmr_gpioWrite(GPIO_AIR_NEGATIVE_EN, 1);
 
@@ -334,7 +369,7 @@ void vSetStateTask(void *pvParameters) {
         //taskEXIT_CRITICAL();
         
 
-        currentError = checkErrors(currentState);
+        currentError = checkHVCErrors(currentState);
         nextState = getNextState(currentError);
 
         currentState = nextState;
@@ -343,3 +378,27 @@ void vSetStateTask(void *pvParameters) {
         vTaskDelayUntil(&xLastWakeTime, xPeriod);
     }
 }
+
+/** @brief CAN 100 Hz TX period (milliseconds). */
+static const TickType_t canTX100Hz_period_ms = 10;
+
+void enableCellBalancing(void) {
+    cmr_canBMSMinMaxCellVoltage_t *voltagedata = getPayload(CANRX_HVBMS_MINMAX_VOLTAGE); 
+
+    cmr_canHVCBalanceCommand_t balance = {
+        .balanceRequest = true, 
+        .threshold = voltagedata->minCellVoltage_mV, //placeholder 
+    }; 
+
+    canTX(CMR_CANID_CELL_BALANCE_ENABLE, &balance, sizeof(balance), canTX100Hz_period_ms); 
+} 
+
+void stopCellBalancing(void) {
+    cmr_canHVCBalanceCommand_t balance = {
+        .balanceRequest = false, 
+        .threshold = 0, //placeholder 
+    }; 
+
+    canTX(CMR_CANID_CELL_BALANCE_ENABLE, &balance, sizeof(balance), canTX100Hz_period_ms); 
+}
+

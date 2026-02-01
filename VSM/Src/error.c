@@ -87,19 +87,19 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     // See rule EV 5.1.10.
     cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
     //cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
-    // if (/*(cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), lastWakeTime) != 0) not commented out in 24a
-    //  ||*/ (hvcHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_PACK_OVERVOLT)
-    //  || (hvcHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERVOLT)
-    //  || (hvcHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_CELL_OVERTEMP)) {
+    if (/*(cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), lastWakeTime) != 0)
+     ||*/ (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_PACK_OVERVOLT)
+     || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT)
+     || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_CELL_OVERTEMP)) {
 
-    //     cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
-    // }
-    // else if (getASEmergency()){
-    //     cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
-    // }
-    // else {
-    //     cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 0);
-    // }
+        cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
+    }
+    else if (getASEmergency()){
+        cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
+    }
+    else {
+        cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 0);
+    }
 
     // Check all latches
     // if (cmr_gpioRead(GPIO_IN_SOFTWARE_ERR) == 1) {

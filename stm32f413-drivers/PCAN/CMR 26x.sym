@@ -51,11 +51,11 @@ enum Gear(0="MIN", 1="UNKNOWN", 2="SLOW", 3="FAST", 4="ENDURANCE",
     14="DV_MISSION_SKIDPAD", 15="DV_MISSION_AUTOX",
     16="DV_MISSION_TRACKD", 17="DV_MISSION_INSPECTION",
     18="DV_MISSION_EBS", 19="DV_MISSION_MAX", 20="LEN")
-enum HVCError(0="HVC_ERROR_NONE", 1="HVC_ERROR_PACK_UNDERVOLT",
-    2="HVC_ERROR_PACK_OVERVOLT", 8="HVC_ERROR_PACK_OVERCURRENT",
-    16="HVC_ERROR_CELL_UNDERVOLT", 32="HVC_ERROR_CELL_OVERVOLT",
-    64="HVC_ERROR_CELL_OVERTEMP", 128="HVC_ERROR_BMB_FAULT",
-    256="HVC_ERROR_BMB_TIMEOUT", 512="HVC_ERROR_CAN_TIMEOUT",
+enum HVCError(0="HVC_ERROR_NONE", 1="HVBMS_ERROR_PACK_UNDERVOLT",
+    2="HVBMS_ERROR_PACK_OVERVOLT", 8="HVC_ERROR_PACK_OVERCURRENT",
+    16="HVBMS_ERROR_CELL_UNDERVOLT", 32="HVBMS_ERROR_CELL_OVERVOLT",
+    64="HVBMS_ERROR_CELL_OVERTEMP", 128="HVC_ERROR_BMB_FAULT",
+    256="HVBMS_ERROR_BMB_TIMEOUT", 512="HVC_ERROR_CAN_TIMEOUT",
     4096="HVC_ERROR_RELAY", 8192="HVC_ERROR_LV_UNDERVOLT")
 enum HVCMode(0="HVC_MODE_ERROR", 1="HVC_MODE_IDLE", 2="HVC_MODE_START",
     4="HVC_MODE_RUN", 8="HVC_MODE_CHARGE")
@@ -679,15 +679,15 @@ ID=101h
 DLC=6
 CycleTime=10
 TimeOut=50
-Var=HVC_ERROR_PACK_UNDERVOLT bit 0,1
-Var=HVC_ERROR_PACK_OVERVOLT bit 1,1
-Var=HVC_ERROR_PACK_OVERCURRENT bit 3,1
-Var=HVC_ERROR_CELL_UNDERVOLT bit 4,1
-Var=HVC_ERROR_CELL_OVERVOLT bit 5,1
-Var=HVC_ERROR_CELL_OVERTEMP bit 6,1
-Var=HVC_ERROR_BMB_FAULT bit 7,1
-Var=HVC_ERROR_BMB_TIMEOUT bit 8,1
-Var=HVC_ERROR_CAN_TIMEOUT bit 9,1
+Var=HVBMS_ERROR_PACK_UNDERVOLT bit 0,1
+Var=HVBMS_ERROR_PACK_OVERVOLT unsigned 1,2
+Var=HVC_ERROR_PACK_OVERCURRENT unsigned 3,4
+Var=HVBMS_ERROR_CELL_UNDERVOLT unsigned 4,5
+Var=HVBMS_ERROR_CELL_OVERVOLT unsigned 5,6
+Var=HVBMS_ERROR_CELL_OVERTEMP unsigned 6,7
+Var=HVC_ERROR_BMB_FAULT unsigned 7,8
+Var=HVBMS_ERROR_BMB_TIMEOUT unsigned 8,9
+Var=HVC_ERROR_CAN_TIMEOUT unsigned 9,10
 Var=HVC_HEARTBEAT_HVC_ERROR_RELAY bit 12,1
 Var=HVC_ERROR_LV_UNDERVOLT bit 13,1
 Var=HVC_HEARTBEAT_HVC_MODE_IDLE bit 16,1
@@ -705,28 +705,26 @@ Var=HVC_RELAYSTATUS_NEGAIR_ERROR bit 38,1
 Var=HVC_RELAYSTATUS_POSAIR_ERROR bit 39,1
 Var=HVC_HEARTBEAT_uptime_s unsigned 40,8 /u:s
 
-[HVI_HEARTBEAT]
-ID=106h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=HVI_HEARTBEAT_packCurrent_dA1 signed 0,16
-Var=HVI_HEARTBEAT_packVoltage_cV1 unsigned 16,16
-Var=HVI_HEARTBEAT_packPower_W1 signed 32,32
+[HV_BMS_HEARTBEAT]
+ID=108h
+DLC=1
+CycleTime=10
+TimeOut=50
+Var=HV_BMS_HEARTBEAT_state4 unsigned 0,8
 
 [LV_BMS_HEARTBEAT]
 ID=107h
 DLC=1
 CycleTime=10
 TimeOut=50
-Var=LV_BMS_HEARTBEAT_state4 unsigned 0,8
+Var=LV_BMS_HEARTBEAT_state5 unsigned 0,8
 
 [VSM_HEARTBEAT]
 ID=100h
 DLC=5
 CycleTime=10
 TimeOut=50
-Var=VSM_HEARTBEAT_state5 unsigned 0,8
+Var=VSM_HEARTBEAT_state6 unsigned 0,8
 Var=VSM_ERR_BRAKEPRESSOOR bit 18,1
 Var=VSM_ERR_HALLEFFECTOOR bit 19,1
 Var=VSM_ERR_DCDCFAULT bit 20,1
@@ -743,7 +741,87 @@ Var=VSM_WRN_FSM_TIMEOUT bit 36,1
 Var=VSM_WRN_CDC_TIMEOUT bit 37,1
 Var=VSM_WRN_HVC_TIMEOUT bit 38,1
 
-[HVC_BMB_0_STATUS_TEMP]
+[HVBMS_BMB_0_CELL_TEMPS_0_3]
+ID=840h
+DLC=8
+CycleTime=1000
+TimeOut=5000
+Var=BMB_cellTemp0_dC signed 0,16
+Var=BMB_cellTemp1_dC signed 16,16
+Var=BMB_cellTemp2_dC signed 32,16
+Var=BMB_cellTemp3_dC signed 48,16
+
+[HVBMS_BMB_0_CELL_TEMPS_12_14]
+ID=870h
+DLC=8
+CycleTime=1000
+TimeOut=5000
+Var=BMB_cellTemp0_dC1 signed 0,16
+Var=BMB_cellTemp1_dC1 signed 16,16
+Var=BMB_cellTemp2_dC1 signed 32,16
+Var=BMB_cellTemp3_dC1 signed 48,16
+
+[HVBMS_BMB_0_CELL_TEMPS_4_7]
+ID=850h
+DLC=8
+CycleTime=1000
+TimeOut=5000
+Var=BMB_cellTemp0_dC2 signed 0,16
+Var=BMB_cellTemp1_dC2 signed 16,16
+Var=BMB_cellTemp2_dC2 signed 32,16
+Var=BMB_cellTemp3_dC2 signed 48,16
+
+[HVBMS_BMB_0_CELL_TEMPS_8_11]
+ID=860h
+DLC=8
+CycleTime=1000
+TimeOut=5000
+Var=BMB_cellTemp0_dC3 signed 0,16
+Var=BMB_cellTemp1_dC3 signed 16,16
+Var=BMB_cellTemp2_dC3 signed 32,16
+Var=BMB_cellTemp3_dC3 signed 48,16
+
+[HVBMS_BMB_0_CELL_VOLTAGES_0_3]
+ID=800h
+DLC=8
+CycleTime=1000
+TimeOut=5000
+Var=BMB_cellVoltage0_mV unsigned 0,16
+Var=BMB_cellVoltage1_mV unsigned 16,16
+Var=BMB_cellVoltage2_mV unsigned 32,16
+Var=BMB_cellVoltage3_mV unsigned 48,16
+
+[HVBMS_BMB_0_CELL_VOLTAGES_12_14]
+ID=830h
+DLC=8
+CycleTime=1000
+TimeOut=5000
+Var=BMB_cellVoltage0_mV1 unsigned 0,16
+Var=BMB_cellVoltage1_mV1 unsigned 16,16
+Var=BMB_cellVoltage2_mV1 unsigned 32,16
+Var=BMB_cellVoltage3_mV1 unsigned 48,16
+
+[HVBMS_BMB_0_CELL_VOLTAGES_4_7]
+ID=810h
+DLC=8
+CycleTime=1000
+TimeOut=5000
+Var=BMB_cellVoltage0_mV2 unsigned 0,16
+Var=BMB_cellVoltage1_mV2 unsigned 16,16
+Var=BMB_cellVoltage2_mV2 unsigned 32,16
+Var=BMB_cellVoltage3_mV2 unsigned 48,16
+
+[HVBMS_BMB_0_CELL_VOLTAGES_8_11]
+ID=820h
+DLC=8
+CycleTime=1000
+TimeOut=5000
+Var=BMB_cellVoltage0_mV3 unsigned 0,16
+Var=BMB_cellVoltage1_mV3 unsigned 16,16
+Var=BMB_cellVoltage2_mV3 unsigned 32,16
+Var=BMB_cellVoltage3_mV3 unsigned 48,16
+
+[HVBMS_BMB_0_STATUS_TEMP]
 ID=381h
 DLC=6
 CycleTime=1000
@@ -753,7 +831,7 @@ Var=BMB_minTempIndex unsigned 8,8
 Var=BMB_maxCellTemp_C signed 16,16 /u:C
 Var=BMB_minCellTemp_C signed 32,16 /u:C
 
-[HVC_BMB_0_STATUS_VOLTAGE]
+[HVBMS_BMB_0_STATUS_VOLTAGE]
 ID=380h
 DLC=6
 CycleTime=100
@@ -762,6 +840,37 @@ Var=BMB_maxVoltIndex unsigned 0,8
 Var=BMB_minVoltIndex unsigned 8,8
 Var=BMB_maxCellVoltage_mV unsigned 16,16 /u:mV
 Var=BMB_minCellVoltage_mV unsigned 32,16 /u:mV
+
+[HVBMS_MIN_MAX_CELL_TEMPERATURE]
+ID=311h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=MIN_minCellTemp_C1 unsigned 0,16
+Var=MIN_maxCellTemp_C1 unsigned 16,16
+Var=MIN_minTempBMBNum unsigned 32,8
+Var=MIN_minTempCellNum unsigned 40,8
+Var=MIN_maxTempBMBNum unsigned 48,8
+Var=MIN_maxTempCellNum unsigned 56,8
+
+[HVBMS_MIN_MAX_CELL_VOLTAGE]
+ID=310h
+DLC=8
+CycleTime=10
+TimeOut=50
+Var=MIN_minCellVoltage_mV1 unsigned 0,16
+Var=MIN_maxCellVoltage_mV1 unsigned 16,16
+Var=MIN_minVoltageBMBNum unsigned 32,8
+Var=MIN_minVoltageCellNum unsigned 40,8
+Var=MIN_maxVoltageBMBNum unsigned 48,8
+Var=MIN_maxVoltageCellNum unsigned 56,8
+
+[HVBMS_PACK_VOLTAGE]
+ID=301h
+DLC=4
+CycleTime=10
+TimeOut=50
+Var=PACK_battVoltage_mV unsigned 0,32
 
 [HVC_BMB_STATUS_ERRORS]
 ID=304h
@@ -802,45 +911,22 @@ Var=LOW_vAIR_mV unsigned 8,8 /u:mV /f:0.1333333
 Var=LOW_safety_mV unsigned 16,8 /u:mV /f:0.1333333
 Var=LOW_iDCDC_mA unsigned 24,8 /u:mA /f:0.1333333
 
-[HVC_MINMAX_CELL_TEMPS]
-ID=311h
-DLC=8
-CycleTime=20
-TimeOut=100
-Var=MINMAX_minCellTemp_dC unsigned 0,16 /u:dC
-Var=MINMAX_maxCellTemp_dC unsigned 16,16 /u:dC
-Var=MINMAX_minTempBMBIndex unsigned 32,8
-Var=MINMAX_minTempCellIndex unsigned 40,8
-Var=MINMAX_maxTempBMBIndex unsigned 48,8
-Var=MINMAX_maxTempCellIndex unsigned 56,8
-
-[HVC_MINMAX_CELL_VOLTAGE]
-ID=310h
-DLC=8
-CycleTime=20
-TimeOut=100
-Var=MINMAX_minCellVoltage_mV1 unsigned 0,16
-Var=MINMAX_maxCellVoltage_mV1 unsigned 16,16
-Var=MINMAX_minCellVoltBMB unsigned 32,8
-Var=MINMAX_minVoltIndex1 unsigned 40,8
-Var=MINMAX_maxCellVoltBMB unsigned 48,8
-Var=MINMAX_maxVoltIndex1 unsigned 56,8
-
 [HVC_PACK_CURRENT]
 ID=302h
 DLC=8
 CycleTime=10
 TimeOut=50
 Var=PACK_instantCurrent_mA signed 0,32 /u:mA
-Var=PACK_averageCurrent_mA signed 32,32 /u:mA
+Var=PACK_avgCurrent_mA signed 32,32 /u:mA
 
-[HVC_PACK_VOLTAGE]
-ID=301h
+[HV_SENSORS]
+ID=306h
 DLC=8
-CycleTime=10
-TimeOut=50
-Var=PACK_battVoltage_mV signed 0,32 /u:mV /f:0.001 /p:3
-Var=PACK_hvVoltage_mV signed 32,32 /u:mV /f:0.001 /p:3
+CycleTime=100
+TimeOut=500
+Var=SENSORS_packCurrent_dA1 signed 0,16
+Var=SENSORS_packVoltage_cV1 unsigned 16,16
+Var=SENSORS_packPower_W1 signed 32,32
 
 [MOTORPOWER_STATE]
 ID=52Eh
@@ -2167,6 +2253,13 @@ Var=Data3 char 32,8
 ID=109h
 DLC=1
 Var=State unsigned 0,8
+
+[HVI_Heartbeat]
+ID=106h
+DLC=8
+Var=HVI_Current signed 0,16 /u:A /f:0.1 /p:1
+Var=HVI_Voltage unsigned 16,16 /u:V /f:0.01 /p:2
+Var=HVI_Power signed 32,32 /u:kW /f:0.001 /p:3
 
 [DAQ_AUTO_TEST]
 ID=777h

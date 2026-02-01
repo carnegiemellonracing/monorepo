@@ -351,19 +351,19 @@ static void drawErrorScreen(void) {
 
     /* HVC Errors */
     /* Latch errors so we know what the issue is after AMS fault*/
-    err.overVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVC_ERROR_CELL_OVERVOLT)) | prevOverVolt;
+    err.overVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT)) | prevOverVolt;
     if(err.overVolt) {
     	prevOverVolt = true;
     }
-    err.underVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVC_ERROR_CELL_UNDERVOLT)) | prevUnderVolt;
+    err.underVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVBMS_ERROR_CELL_UNDERVOLT)) | prevUnderVolt;
     if(err.underVolt) {
 		prevUnderVolt = true;
 	}
-    err.hvcoverTemp = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVC_ERROR_CELL_OVERTEMP))  | prevOverTemp;
+    err.hvcoverTemp = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVBMS_ERROR_CELL_OVERTEMP))  | prevOverTemp;
     if(err.hvcoverTemp) {
 		prevOverTemp = true;
 	}
-    err.hvcBMBTimeout = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_TIMEOUT);
+    err.hvcBMBTimeout = (canHVCHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_BMB_TIMEOUT);
     err.hvcBMBFault = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_FAULT);
     err.hvcErrorNum = (canHVCHeartbeat->errorStatus);
 
@@ -502,7 +502,7 @@ static void drawRTDScreen(void) {
         (void *)metaHVCPackVoltage->payload;
 
     cmr_canRXMeta_t *metaHVCPackTemps = canRXMeta + CANRX_HVC_PACK_TEMPS;
-    volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps =
+    volatile cmr_canBMSMinMaxCellTemperature_t *canHVCPackTemps =
         (void *)metaHVCPackTemps->payload;
 
     cmr_canRXMeta_t *metaEMDvalues = canRXMeta + CANRX_EMD_VALUES;
@@ -587,7 +587,7 @@ static void drawRTDScreen(void) {
     bool drsOpen = (drsState->state == CMR_CAN_DRS_STATE_OPEN);
 
     /* Accumulator Temperature */
-    int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC) / 10;
+    int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_C) / 10;
 
     int32_t mcTemp_C, motorTemp_C = 0;
     cornerId_t hottest_motor;

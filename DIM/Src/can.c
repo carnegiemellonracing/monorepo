@@ -55,7 +55,7 @@ char RAMBUF[RAMBUFLEN];
  */
 cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_HEARTBEAT_VSM] =       { .canID = CMR_CANID_HEARTBEAT_VSM,.timeoutError_ms = 50,.timeoutWarn_ms = 25 },
-    [CANRX_HVC_PACK_VOLTAGE] =    { .canID = CMR_CANID_HVC_PACK_VOLTAGE, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
+    [CANRX_HVC_PACK_VOLTAGE] =    { .canID = CMR_CANID_HVBMS_PACK_VOLTAGE, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_AMK_FL_ACT_1] =        { .canID = CMR_CANID_AMK_FL_ACT_1, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_AMK_FR_ACT_1] =        { .canID = CMR_CANID_AMK_FR_ACT_1, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_AMK_RL_ACT_1] =        { .canID = CMR_CANID_AMK_RL_ACT_1, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
@@ -488,7 +488,7 @@ void canInit(void) {
           .rxFIFO = CAN_RX_FIFO0,
           .ids = {
               CMR_CANID_HEARTBEAT_VSM,
-              CMR_CANID_HVC_PACK_VOLTAGE,
+              CMR_CANID_HVBMS_PACK_VOLTAGE,
               CMR_CANID_HVC_BMB_STATUS_ERRORS,
               CMR_CANID_HEARTBEAT_HVC } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_MOVELLA_STATUS, CMR_CANID_CDC_ODOMETER, CMR_CANID_DIM_TEXT_WRITE, CMR_CANID_CDC_CONTROLS_STATUS } },
@@ -768,7 +768,7 @@ void sendAcknowledgement(void) {
         canTX10Hz_period_ms);
 }
 
-cmr_canHVCPackMinMaxCellVolages_t* getPackVoltages(void){
-    cmr_canHVCPackMinMaxCellVolages_t* packVoltagesStruct = getPayload(CANRX_PACK_CELL_VOLTAGES);
+cmr_canBMSMinMaxCellVoltage_t* getPackVoltages(void){
+    cmr_canBMSMinMaxCellVoltage_t* packVoltagesStruct = getPayload(CANRX_PACK_CELL_VOLTAGES);
     return packVoltagesStruct;
 }
