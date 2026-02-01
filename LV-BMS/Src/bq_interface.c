@@ -21,7 +21,7 @@ extern volatile int BMBTimeoutCount[BOARD_NUM];
 extern volatile int BMBErrs[BOARD_NUM];
 
 //Fill in data to this array
-BMB_Data_t BMBData[BOARD_NUM];
+BMB_Data_t BMBData;
 
 // static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
 // 	BMBErrs[BMBIndex] = err;
@@ -61,8 +61,10 @@ void turnOn() {
 	DWT_Delay_ms(100);
 	uartInit();
 
-	cmr_uart_result_t res;
+	DWT_Delay_ms(1000);
+	autoAddr();
 
+	cmr_uart_result_t res;
 	for (int i = BOARD_NUM - 1; i >= 0; i--) {
 		uart_command_t hardReset = {
 				.readWrite = SINGLE_WRITE,
@@ -72,22 +74,165 @@ void turnOn() {
 				.data = {0x02},
 				.crc = {0x00, 0x00}
 		};
+		res = uart_sendCommand(&hardReset);
+		if(res != UART_SUCCESS) {
+			return;
+		}
 
 		DWT_Delay_ms(200);
 	}
 
-	uart_command_t sendShutdown = {
+    //Enables Send Shutdown
+    uint8_t data = 0x40;
+    res = sendUartBroadcastWrite(CONTROL1, &data, 1);
+    if (!res) return;
+	DWT_Delay_ms(1000);
+}
+
+
+/** Auto Address Function
+ * This helper function will autoaddress a certain amount of BQ79616-Q1
+ * chips. It runs the procedure exactly described in the datasheet and the TI
+ * sample code.
+ * @return True if all uart commands succeeded, false otherwise
+ */
+bool autoAddr() {
+	// Sanity check number of boards
+	if(BOARD_NUM > 64 || BOARD_NUM < 1) {
+		return false;
+	}
+
+	// Dummy write to sync OTP addresses
+	uart_command_t otpSync = {
+		.readWrite = SINGLE_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0x00,
+		.registerAddress = OTP_ECC_DATAIN1,
+		.data = {0x00},
+		.crc = {0x00, 0x00}
+	};
+	cmr_uart_result_t res;
+    res = uart_sendCommand(&otpSync);
+
+	for(int i = 0; i < 8; i++) {
+		otpSync.registerAddress = OTP_ECC_DATAIN1 + i;
+		res = uart_sendCommand(&otpSync);
+		if(res != UART_SUCCESS) {
+			return false;
+		}
+		DWT_Delay_ms(10);
+	}
+
+	//broadcast write to enable autoaddressing
+	uart_command_t enableAutoaddress = {
 			.readWrite = BROADCAST_WRITE,
 			.dataLen = 1,
-			.deviceAddress = 0xFF,
+			.deviceAddress = 0xFF, //not used!!!
 			.registerAddress = CONTROL1,
-			.data = {0x40},
+			.data = {0x01},
 			.crc = {0x00, 0x00}
 	};
 
-	res = uart_sendCommand(&sendShutdown);
+	res = uart_sendCommand(&enableAutoaddress);
+	if(res != UART_SUCCESS) {
+		return false;
+	}
+	DWT_Delay_ms(10);
 
-	DWT_Delay_ms(1000);
+	//set all the addresses of the boards in DIR0_ADDR
+	uart_command_t set_addr = {
+			.readWrite = BROADCAST_WRITE,
+			.dataLen = 1,
+			.deviceAddress = 0xFF, //not used!!!
+			.registerAddress = DIR0_ADDR,
+			.data = {0x00},
+			.crc = {0x00, 0x00}
+	};
+	for(int i = 0; i < BOARD_NUM; i++) {
+		res = uart_sendCommand(&set_addr);
+		if(res != UART_SUCCESS) {
+			return false;
+		}
+		set_addr.data[0]++;
+		DWT_Delay_ms(10);
+	}
+
+	//Set all devices as stack devices first
+	uart_command_t set_stack_devices = {
+		.readWrite = BROADCAST_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0xFF, //not used!!!
+		.registerAddress = COMM_CTRL,
+		.data = {0x02},
+		.crc = {0x00, 0x00}
+	};
+	res = uart_sendCommand(&set_stack_devices);
+	if(res != UART_SUCCESS) {
+		return false;
+	}
+	DWT_Delay_ms(10);
+
+	uart_command_t set_comm_ctrl = {
+		.readWrite = SINGLE_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0x00,
+		.registerAddress = COMM_CTRL,
+		.data = {0x01},
+		.crc = {0x00, 0x00}
+	};
+
+
+	res = uart_sendCommand(&set_comm_ctrl);
+	if(res != UART_SUCCESS) {
+		return false;
+	}
+	DWT_Delay_ms(10);
+
+	// Resync OTP registers with dummy reads
+	otpSync.readWrite = SINGLE_READ;
+	otpSync.data[0] = 0;
+
+	for(int i = 0; i < 8; i++) {
+		otpSync.registerAddress = OTP_ECC_DATAIN1 + i;
+		res = uart_sendCommand(&otpSync);
+		if(res != UART_SUCCESS) {
+			return false;
+		}
+		DWT_Delay_ms(10);
+	}
+
+	// COMMENTED OUT CODE THAT IS USED FOR SANITY CHECKING AUTOADDRESSING
+
+//	uart_response_t response;
+//	uart_command_t readReg = {
+//		.readWrite = SINGLE_READ,
+//		.dataLen = 1,
+//		.deviceAddress = 0x00,
+//		.registerAddress = 0x306,
+//		.data = {0x00},
+//		.crc = {0x00, 0x00}
+//	};
+//	uart_sendCommand(&readReg);
+//
+//	if(uart_receiveResponse(&response) == UART_FAILURE) {
+//		return false;
+//	}
+//
+//	readReg.deviceAddress = 0x01;
+//	uart_sendCommand(&readReg);
+//
+//	if(uart_receiveResponse(&response) == UART_FAILURE) {
+//		return false;
+//	}
+//
+//	readReg.deviceAddress = 0x02;
+//	uart_sendCommand(&readReg);
+//
+//	if(uart_receiveResponse(&response) == UART_FAILURE) {
+//		return false;
+//	}
+
+	return true;
 
 }
 
@@ -173,29 +318,8 @@ void BMBInit() {
 	turnOn();
 	DWT_Delay_ms(1000);
 
-    //Set all devices as stack devices first
-	uart_command_t set_stack_devices = {
-		.readWrite = SINGLE_WRITE,
-		.dataLen = 1,
-		.deviceAddress = 0x00,
-		.registerAddress = COMM_CTRL,
-		.data = {0x01},
-		.crc = {0x00, 0x00}
-	};
-
-    uart_sendCommand(&set_stack_devices);
-
-    //Set all devices as stack devices first
-	uart_command_t set_stack_devices2 = {
-		.readWrite = SINGLE_WRITE,
-		.dataLen = 1,
-		.deviceAddress = 0x00,
-		.registerAddress = DEBUG_COMM_CTRL1,
-		.data = {0x0E},
-		.crc = {0x00, 0x00}
-	};
-
-    uart_sendCommand(&set_stack_devices2);
+    autoAddr();
+	DWT_Delay_ms(100);
 
 	enableNumCells();
 	DWT_Delay_ms(100);
@@ -210,13 +334,13 @@ void BMBInit() {
 	DWT_Delay_ms(100);
 
 	txToRxDelay(10);
-	DWT_Delay_ms(100);
+	HAL_Delay(100);
 
 	byteDelay(0x3F);
 	DWT_Delay_ms(100);
 
-	DWT_Delay_ms(100);
-	cellBalancingSetup();
+	// DWT_Delay_ms(100);
+	// cellBalancingSetup();
 }
 
 static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
@@ -352,8 +476,8 @@ void cellBalancing(bool set, uint16_t thresh) {
 		for(int i = 0; i < BOARD_NUM-1; i++) {
 			thresh = 0;
 			for(int j = 0; j < CELL_NUM; j++) {
-				if(BMBData[i].cellVoltages[j] > thresh) {
-					thresh = BMBData[i].cellVoltages[j];
+				if(BMBData.cellVoltages > thresh) {
+					thresh = BMBData.cellVoltages[j];
 				}
 			}
 			thresh = thresh - 10;
@@ -366,7 +490,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 				.crc = {0x00, 0x00}
 			};
 			for(int j = 13; j > 6; j--) {
-				if(BMBData[i].cellVoltages[j] < thresh) {
+				if(BMBData.cellVoltages[j] < thresh) {
 					balance_register.data[13-j] = 0x00;
 				}
 			}
@@ -376,7 +500,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 				balance_register.data[j] = 0x04;
 			}
 			for(int j = 6; j >=0 ; j--) {
-				if(BMBData[i].cellVoltages[j] < thresh) {
+				if(BMBData.cellVoltages[j] < thresh) {
 					balance_register.data[6-j] = 0x00;
 				}
 			}
@@ -451,7 +575,7 @@ void byteDelay(uint8_t delay) {
 			.readWrite = BROADCAST_WRITE,
 			.dataLen = 1,
 			.deviceAddress = 0xFF,
-			.registerAddress = 0x29,
+			.registerAddress = TX_HOLD_OFF,
 			.data = delay,
 			.crc = {0x00, 0x00}
 	};
@@ -543,28 +667,65 @@ void pollAllTemperatureData(int channel) {
 	uart_sendCommand(&read_therms);
 
 	uart_response_t response;
-    if(uart_receiveResponse(&response, bytesToRead-1) != UART_FAILURE) {
+    if( uart_receiveResponse(&response, bytesToRead-1) != 0) {
         //loop through each GPIO channel
         // setBMBErr(i-1, BMB_TEMP_READ_ERROR);
-        // BMBTimeoutCount[i-1]+=1;
+	    // uart_sendCommand(&read_therms);
+        taskEXIT_CRITICAL();
         return;
     }
 	
 	taskEXIT_CRITICAL();
 
-	for(uint8_t i = 0; i < BOARD_NUM; i++) {
-		for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; k++) {
-            uint8_t cellNum = CHANNEL_GPIO_TO_CELL_MAP[channel][k];
-            if (cellNum == 255)
-                continue;
+    for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; k++) {
+        uint8_t cellNum = CHANNEL_GPIO_TO_CELL_MAP[channel][k];
+        if (cellNum == 255)
+            continue;
 
-			uint8_t high_byte_data = response.data[2*k];
-			uint8_t low_byte_data = response.data[2*k+1];
-            int16_t cellTempVoltageReading = calculateTempVoltageReading(high_byte_data, low_byte_data);
-            
-			BMBData[i].cellTemperaturesVoltageReading[cellNum] = cellTempVoltageReading;
+        uint8_t high_byte_data = response.data[2*k];
+        uint8_t low_byte_data = response.data[2*k+1];
+        int16_t cellTempVoltageReading = calculateTempVoltageReading(high_byte_data, low_byte_data);
+        
+        BMBData.cellTemperaturesVoltageReading[cellNum] = cellTempVoltageReading;
 
-		}
-	}
+    }
 	return;
+}
+
+//return voltage data
+uint8_t pollAllVoltageData() {
+    static uint8_t bytesToRead = CELL_NUM*2-1;
+    uart_command_t read_voltage = {
+        .readWrite = BROADCAST_READ,
+        .dataLen = 1,
+        .deviceAddress = 0xFF, //not used!
+        .registerAddress = TOP_CELL,
+        .data = {bytesToRead}, //reading high and low for cell 0-VSENSE_CHANNELS
+        .crc = {0xFF, 0xFF}
+    };
+
+    uart_response_t response;
+
+    // Critical section used so UART RX is not preempted
+    taskENTER_CRITICAL();
+    uart_sendCommand(&read_voltage);
+    uint8_t status = uart_receiveResponse(&response, bytesToRead);
+    if(status != 0) {
+        //setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
+        //BMBTimeoutCount[i-1]+=1;
+        // DWT_Delay_ms(10000);
+        // RXTurnOnInit();
+        // BMBInit();
+        taskEXIT_CRITICAL();
+        return 1;
+    }
+    taskEXIT_CRITICAL();
+
+    // Handle writing data separately from receive so you don't miss a byte
+    for(uint8_t j = 0; j < CELL_NUM; j++) {
+        uint8_t high_byte_data = response.data[2*j];
+        uint8_t low_byte_data = response.data[2*j+1];
+        BMBData.cellVoltages[CELL_NUM-j-1] = calculateVoltage(high_byte_data, low_byte_data);
+    }
+    return 0;
 }

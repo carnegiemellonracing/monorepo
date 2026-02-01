@@ -138,8 +138,6 @@ uint8_t uart_receiveResponse(uart_response_t *response, uint8_t expected_bytes) 
 		return 7;
 	}
 
-
-
 	return 0;
 }
 

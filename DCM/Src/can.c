@@ -58,14 +58,14 @@ uint16_t pump_2_State;
 cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
     [CANRX_VEH_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
-        .timeoutError_ms = 50,
+        .timeoutError_ms = 250,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
     },
     [CANRX_VSM_STATUS] = {
         .canID = CMR_CANID_VSM_STATUS,
-        .timeoutError_ms = 50,
+        .timeoutError_ms = 250,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
@@ -92,7 +92,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .warnFlag = CMR_CAN_WARN_NONE
     },
     [CANRX_VEH_VOLTAGE_HVC] = {
-        .canID = CMR_CANID_HVC_PACK_VOLTAGE,
+        .canID = CMR_CANID_HVBMS_PACK_VOLTAGE,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_NONE,
@@ -143,7 +143,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .warnFlag = CMR_CAN_WARN_NONE
     },
 	[CANRX_HVI_SENSE] = {
-	        .canID = CMR_CANID_HEARTBEAT_HVI,
+	        .canID = CMR_CANID_HV_SENSORS,
 	        .timeoutError_ms = 100,
 	        .timeoutWarn_ms = 75
 	},
@@ -375,7 +375,7 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
 cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
-        .timeoutError_ms = 100,
+        .timeoutError_ms = 250,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
@@ -488,11 +488,15 @@ static void canTX10Hz(void *pvParameters) {
         powerSense.packPower_W = getPackVoltage() * getPackCurrent();
 
         
-        cmr_canDAQTherm_t therms;
-        therms.therm_1 = adcRead(ADC_THERM1);
-        therms.therm_2 = adcRead(ADC_THERM2);
+        cmr_canDAQTherm_t therms1;
+        therms1.therm_1 = adcRead(ADC_THERM1);
+        therms1.therm_2 = adcRead(ADC_THERM2);
+        cmr_canDAQTherm_t therms2;
+        therms2.therm_1 = adcRead(ADC_THERM3);
+        therms2.therm_2 = adcRead(ADC_THERM4);
 
-        canTX(CMR_CAN_BUS_VEH, 0x659, &therms, sizeof(cmr_canDAQTherm_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, 0x658, &therms1, sizeof(cmr_canDAQTherm_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, 0x659, &therms2, sizeof(cmr_canDAQTherm_t), canTX10Hz_period_ms);
 
         // Is data valid? Set it in the orientation/velocity messages
 //        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX10Hz_period_ms);
@@ -538,6 +542,7 @@ static void canTX100Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
     volatile cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+    cmr_canMovellaStatus_t *movellaStatus = canDAQGetPayload(CANRX_DAQ_MOVELLA_STATUS);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
@@ -552,18 +557,17 @@ static void canTX100Hz(void *pvParameters) {
             heartbeat.state = CMR_CAN_ERROR;
         }
 
-        cmr_canDAQTherm_t linpots;
-        linpots.therm_1 = adcRead(ADC_LINPOT1);
-        linpots.therm_2 = adcRead(ADC_LINPOT2);
+        // cmr_canDAQTherm_t linpots;
+        // linpots.therm_1 = adcRead(ADC_LINPOT1);
+        // linpots.therm_2 = adcRead(ADC_LINPOT2);
 
-        canTX(CMR_CAN_BUS_VEH, 0x658, &linpots, sizeof(cmr_canDAQTherm_t), canTX100Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, 0x658, &linpots, sizeof(cmr_canDAQTherm_t), canTX100Hz_period_ms);
 
         // Solver
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_INPUTS, &solver_inputs, sizeof(cmr_can_solver_inputs_t), canTX100Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_AUX, &solver_aux, sizeof(cmr_can_solver_aux_t), canTX100Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_OUTPUTS, &solver_torques, sizeof(solver_torques), canTX100Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_SETTINGS, &solver_settings, sizeof(cmr_can_solver_settings_t), canTX100Hz_period_ms);
-
 
 		// SF
 		const cmr_canCDCSafetyFilterStates_t *sfStatesInfo = getSafetyFilterInfo();
@@ -579,6 +583,8 @@ static void canTX100Hz(void *pvParameters) {
 		canTX(CMR_CAN_BUS_DAQ, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX100Hz_period_ms); //motor power
 		//canTX(CMR_CAN_BUS_TRAC, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
 
+        // Forward Movella status to Vehicle CAN at 100Hz.
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOVELLA_STATUS, movellaStatus, sizeof(cmr_canMovellaStatus_t), canTX100Hz_period_ms);
 
         //debug code for sending rxmeta receive to current time difference
 //        uint16_t arr[2];
@@ -638,6 +644,7 @@ static void canTX200Hz(void *pvParameters) {
     cmr_canFrontWheelVelocity_t front_velocity;
     cmr_canRearWheelVelocity_t rear_velocity;
 
+    // cmr_canMovellaStatus_t *movellaStatus = canDAQGetPayload(CANRX_DAQ_MOVELLA_STATUS);
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
@@ -655,8 +662,8 @@ static void canTX200Hz(void *pvParameters) {
         //daqPoseOrientation(&poseOrient);
         daqPoseVelocity(&poseVel);
         
-        cog_velocity.cog_x = car_state.velocity.x * 100.0f;
-        cog_velocity.cog_y = car_state.velocity.y * 100.0f;
+        cog_velocity.cog_x_mps = car_state.velocity.x * 100.0f;
+        cog_velocity.cog_y_mps = car_state.velocity.y * 100.0f;
         cog_velocity.slip_angle = car_state.slip_angle.body;
 
         front_velocity.fl_x = car_state.fl_velocity.x * 100.0f;
@@ -669,6 +676,7 @@ static void canTX200Hz(void *pvParameters) {
         rear_velocity.rr_x = car_state.rr_velocity.x * 100.0f;
         rear_velocity.rr_y = car_state.rr_velocity.y * 100.0f;
 
+
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COG_VELOCITY, &cog_velocity, sizeof(cog_velocity), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_FRONT_VELOCITY, &front_velocity, sizeof(front_velocity), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_REAR_VELOCITY, &rear_velocity, sizeof(rear_velocity), canTX200Hz_period_ms);
@@ -679,7 +687,9 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_SETPOINT, &speedSetpoint, sizeof(speedSetpoint), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX200Hz_period_ms);
 
-
+        // // Forward Movella status to Vehicle CAN at 200Hz.
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOVELLA_STATUS, movellaStatus, sizeof(cmr_canMovellaStatus_t), canTX200Hz_period_ms);
+    
         // Forward AMK messages to vehicle CAN at 200Hz.
         // for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
         //     // Do not transmit if we haven't received that message lately
@@ -714,7 +724,7 @@ static void canTX200Hz(void *pvParameters) {
                 CMR_CAN_BUS_VEH,
                 canTractiveRXMeta[CANRX_TRAC_HVI_SENSE].canID,
                 (void *) &(canTractiveRXMeta[CANRX_TRAC_HVI_SENSE].payload),
-                sizeof(cmr_canHVIHeartbeat_t),
+                sizeof(cmr_canHVSense_t),
                 canTX200Hz_period_ms
             );
         }
@@ -1011,24 +1021,24 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
  */
 void canInit(void) {
     // Vehicle CAN initialization - CAN1
-    cmr_FDcanInit(&can[CMR_CAN_BUS_VEH], FDCAN2, CMR_CAN_BITRATE_500K, NULL,
-                  0, &conditionalCallback, GPIOB,
-                  GPIO_PIN_12,        // CAN1 RX port/pin.
-                  GPIOB, GPIO_PIN_13  // CAN1 TX port/pin.
+    cmr_FDcanInit(&can[CMR_CAN_BUS_VEH], FDCAN1, CMR_CAN_BITRATE_500K, NULL,
+                  0, &conditionalCallback, GPIOA,
+                  GPIO_PIN_11,        // CAN1 RX port/pin.
+                  GPIOA, GPIO_PIN_12  // CAN1 TX port/pin.
     );
 
     // Tractive CAN initialization. - CAN3
-    cmr_FDcanInit(&(can[CMR_CAN_BUS_DAQ]), FDCAN3, CMR_CAN_BITRATE_500K, NULL,
-                  0, &conditionalCallback, GPIOD,
+    cmr_FDcanInit(&(can[CMR_CAN_BUS_DAQ]), FDCAN2, CMR_CAN_BITRATE_500K, NULL,
+                  0, &conditionalCallback, GPIOB,
                   GPIO_PIN_12,        // CAN3 RX port/pin.
-                  GPIOD, GPIO_PIN_13  // CAN3 TX port/pin.
+                  GPIOB, GPIO_PIN_13  // CAN3 TX port/pin.
     );
 
     // DAQ CAN init. - CAN2
-    cmr_FDcanInit(&can[CMR_CAN_BUS_TRAC], FDCAN1, CMR_CAN_BITRATE_500K, NULL,
-                  0, &conditionalCallback, GPIOA,
-                  GPIO_PIN_11,        // CAN2 RX port/pin.
-                  GPIOA, GPIO_PIN_12  // CAN2 TX port/pin.
+    cmr_FDcanInit(&can[CMR_CAN_BUS_TRAC], FDCAN3, CMR_CAN_BITRATE_500K, NULL,
+                  0, &conditionalCallback, GPIOD,
+                  GPIO_PIN_12,        // CAN2 RX port/pin.
+                  GPIOD, GPIO_PIN_13  // CAN2 TX port/pin.
     );
 
     // Vehicle CAN filters.
@@ -1157,6 +1167,12 @@ int canTX(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t len, Tick
     configASSERT(bus < CMR_CAN_BUS_NUM);
 
     return cmr_canTX(&(can[bus]), id, data, len, timeout);
+}
+
+int canExtendedTX(cmr_canBusID_t bus, cmr_canExtendedID_t id, const void *data, size_t len, TickType_t timeout) {
+    configASSERT(bus < CMR_CAN_BUS_NUM);
+
+    return cmr_canExtendedTX(&(can[bus]), id, data, len, timeout);
 }
 
 /**

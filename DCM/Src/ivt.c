@@ -15,17 +15,15 @@
 #include <stdint.h> 
 
 #include "ivt.h"        // Interface to implement
-#include "sensors.h"    // sensorChannel_t
-#include "can.h"
 
 #define CMR_CAN_COMMAND_IVT 0x411
 #define CMR_CAN_STORE_ID 0x30
 #define CMR_CAN_RESTART_TO_BITRATE 0x3A 
 #define CMR_CAN_IVT_SET_MODE 0x34
 #define CMR_CAN_IVT_SET_CONFIG 2
-#define CMR_VOLTAGE_CAN_ID 0x00
-#define CMR_CURRENT_CAN_ID 0x01
-#define CMR_POWER_CAN_ID 0x02
+#define CMR_VOLTAGE_CAN_ID 0x115
+#define CMR_CURRENT_CAN_ID 0x116
+#define CMR_POWER_CAN_ID 0x117
 #define canTX10Hz_period_ms 100
 
 //ivtData storage struct
@@ -35,32 +33,40 @@ typedef struct IVTData {
     cmr_canRXMeta_t* power; 
 } IVTData_t; 
 
+typedef struct {
+    uint8_t MUXID; //byte 0
+    uint8_t IVT_MsgCount: 4; //byte 1 lower nibble
+    uint8_t Result_state: 4; //byte 1 upper nibble
+    int32_t res; //bytes 2-5 IVT <result name (power, curr, volt)>
+} ivtRes_t;
+
 //initialize ivtData variable
 static IVTData_t ivtData; 
 
 //forward declaration
 uint64_t ivt_buildMessage(cmr_IVTCommand_t cmd, cmr_IVTMessageType_t msgt, void* payload, uint8_t payloadlength);
 void change_canid(cmr_IVTMessageType_t msgt, uint16_t new_CAN_ID);
-void change_bit_rate(cmr_IVTMessageType_t msgt, cmr_canBitRate_t bitrate);
+void change_bit_rate(cmr_IVTMessageType_t msgt, uint32_t bitrate);
 void set_storing(cmr_IVTMessageType_t msgt);
 void change_little_endian (cmr_IVTMessageType_t msgt);
 void change_cycle(cmr_IVTMessageType_t msgt, cmr_cycleTimes_t cycletime);
 
-void ivtinit(cmr_canRXMeta_t* voltage, cmr_canRXMeta_t* current, cmr_canRXMeta_t* power, cmr_IVTMessageType_t msgt, cmr_cycleTimes_t cycletime){
+void ivtInit(cmr_canRXMeta_t* voltage, cmr_canRXMeta_t* current, cmr_canRXMeta_t* power, uint32_t cycletime){
 
     //change the CAN ID with custom values 
-    voltage.canID = CMR_VOLTAGE_CAN_ID;
-    current.canID = CMR_CURRENT_CAN_ID;
-    power.canID = CMR_POWER_CAN_ID;
+    voltage->canID = CMR_VOLTAGE_CAN_ID;
+    current->canID = CMR_CURRENT_CAN_ID;
+    power->canID = CMR_POWER_CAN_ID;
 
     //change the CAN ID for IVT 
     change_canid(VOLTAGE_1, CMR_VOLTAGE_CAN_ID);
-    change_canid(CURRENT, CMR_CURRENT_CAN_ID);
-    change_canid(POWER, CMR_POWER_CAN_ID);
+    // change_canid(CURRENT, CMR_CURRENT_CAN_ID);
+    // change_canid(POWER, CMR_POWER_CAN_ID);
 
-    //helper function
-    initIVTConfig(msgt, cycletime); 
-
+    // //helper function
+    // initIVTConfig(VOLTAGE_1, cycletime); 
+    // initIVTConfig(CURRENT, cycletime); 
+    // initIVTConfig(POWER, cycletime); 
 }
 //initilization helper function
 
@@ -87,8 +93,8 @@ void initIVTConfig (cmr_IVTMessageType_t msgt, cmr_cycleTimes_t cycletime){
 uint64_t ivt_buildMessage(cmr_IVTCommand_t cmd, cmr_IVTMessageType_t msgt, void* payload, uint8_t payloadlength) {
     uint64_t message;
     memcpy(&message, payload, payloadlength);
-    message = (message >> (64-payloadlength));
-    return ((((cmd << 4) | msgt)) << (payloadlength)) | message; 
+    message = (message >> (8));
+    return ((((cmd << 4) | msgt))) | message; 
 }
 
 // Function header needed (seems pedantic but is a requirement of our code base)
@@ -111,14 +117,6 @@ float get_pwr(void){
 
     return raw;
 }
-
-typedef struct ivtRes{
-    uint8_t MUXID; //byte 0
-    uint8_t IVT_MsgCount: 4; //byte 1 lower nibble
-    uint8_t Result_state: 4; //byte 1 upper nibble
-    int32_t res; //bytes 2-5 IVT <result name (power, curr, volt)>
-
-} ivtRes_t;
 
 void change_canid(cmr_IVTMessageType_t msgt, uint16_t new_CAN_ID){
     //set the CAN ID
@@ -145,7 +143,7 @@ void set_storing(cmr_IVTMessageType_t msgt){
 }
 
 //function to change bitrate 
-void change_bit_rate(cmr_IVTMessageType_t msgt, cmr_canBitRate_t bitrate){
+void change_bit_rate(cmr_IVTMessageType_t msgt, uint32_t bitrate){
     //set to stop mode
     uint64_t request = ivt_buildMessage(CMR_CAN_IVT_SET_MODE, msgt, CMR_CAN_SET_STOP, sizeof(CMR_CAN_SET_STOP));
     canTX(CMR_CAN_BUS_TRAC, CMR_CAN_COMMAND_IVT, &request, sizeof(request), canTX10Hz_period_ms);

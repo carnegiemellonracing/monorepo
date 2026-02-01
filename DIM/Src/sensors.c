@@ -127,7 +127,7 @@ static int32_t adcToUInt8(const cmr_sensor_t *sensor, uint32_t reading) {
 static int32_t adcToBPres_PSI(const cmr_sensor_t *sensor, uint32_t reading) {
     (void)sensor;  // Placate compiler.
 
-    static const uint32_t offset = 360;     // 0.333 V offset
+    static const uint32_t offset = 409;     // 0.333 V offset
 
     (void) sensor;  // Placate compiler.
 
@@ -136,7 +136,7 @@ static int32_t adcToBPres_PSI(const cmr_sensor_t *sensor, uint32_t reading) {
         reading = offset;
     }
 
-    uint32_t brakePres_PSI = (reading - offset) * 1450 / 3313;
+    uint32_t brakePres_PSI = (reading - offset) * 1450 / 3277;
     return (int32_t) brakePres_PSI;
 }
 
@@ -343,7 +343,7 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_BUS_VOLTAGE,
     },
-    [SENSOR_CH_AVG_CURRENT_MA] = { .conv = adcToAvgBusCurrent_mA, .sample = sampleADCSensor,
+    [SENSOR_CH_CURRENT_MA] = { .conv = adcToAvgBusCurrent_mA, .sample = sampleADCSensor,
                                    .readingMin = 250,   // 10 mA
                                    .readingMax = 2500,  // 100 mA
                                    .outOfRange_pcnt = 10,

@@ -5,8 +5,7 @@
  * @author Carnegie Mellon Racing
  */
 
-#ifndef ADC_H
-#define ADC_H
+#pragma once 
 
 #include <CMR/adc.h>    // ADC interface
 
@@ -16,11 +15,11 @@
  * @warning New channels MUST be added before `ADC_LEN`.
  */
 typedef enum {
-	ADC_V24V            = 0,
-	ADC_AIR_POWER       = 1,
-	ADC_SAFETY          = 2,
+	ADC_AIR_POWER       = 0,
+	ADC_SAFETY,
 	ADC_VSENSE,
 	ADC_ISENSE,
+	ADC_VREF, 
 	ADC_LEN     /**< @brief Total ADC channels. */
 } adcChannels_t;
 
@@ -30,6 +29,3 @@ extern cmr_adcChannel_t adcChannels[ADC_LEN];
 void adcInit(void);
 
 uint32_t adcRead(adcChannels_t ch);
-
-#endif /* ADC_H */
-
