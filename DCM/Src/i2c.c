@@ -34,7 +34,8 @@ static uint32_t rtcAddress = 0x68;
 static const uint32_t FRAM_TIMEOUT = 1;
 
 /** @brief Primary, shared I2C interface */
-static cmr_i2c_t i2c;
+static cmr_i2c_t i2c_fram;
+static cmr_i2c_t i2c_ext;
 
 static void rtcInit(void);
 static void framInit(void);
@@ -65,10 +66,17 @@ static void framUpdate(void *pvParameters);
 /** @brief Initializes I2C stuff for the CDC */
 void i2cInit() {
     cmr_i2cInit(
-        &i2c, I2C5,                // TODO: Increase Clock Speed if can't hit deadlines
+        &i2c_fram, I2C3,                // TODO: Increase Clock Speed if can't hit deadlines
         I2C_CLOCK_LOW, 0, /* Clock Speed and own address */
         GPIOA, GPIO_PIN_8,         /* Clock Port/Pin */
         GPIOC, GPIO_PIN_9          /* Data Port/Pin */
+    );
+
+    cmr_i2cInit(
+        &i2c_ext, I2C5,                // TODO: Increase Clock Speed if can't hit deadlines
+        I2C_CLOCK_LOW, 0, /* Clock Speed and own address */
+        GPIOC, GPIO_PIN_11,         /* Clock Port/Pin */
+        GPIOC, GPIO_PIN_10          /* Data Port/Pin */
     );
 
     cmr_taskInit(
@@ -115,7 +123,7 @@ int framRead(framVariable_t variable, uint8_t *data)
     int ret = 0;
 
     taskENTER_CRITICAL();
-    ret |= cmr_i2cMemRX(&i2c, framAddress, startAddress, 2, data, dataLength, HAL_MAX_DELAY);
+    ret |= cmr_i2cMemRX(&i2c_fram, framAddress, startAddress, 2, data, dataLength, HAL_MAX_DELAY);
     taskEXIT_CRITICAL();
 
     return ret;
@@ -143,7 +151,7 @@ int framWrite(framVariable_t variable, uint8_t *data)
                 data[i]
             };
             taskENTER_CRITICAL();
-            int ret = cmr_i2cTX(&i2c, framAddress, command,
+            int ret = cmr_i2cTX(&i2c_fram, framAddress, command,
                                 3, 1);
             taskEXIT_CRITICAL();
             retv_total |= ret;
@@ -167,7 +175,7 @@ int framWrite(framVariable_t variable, uint8_t *data)
 
         // Send the command
         taskENTER_CRITICAL();
-        int ret = cmr_i2cTX(&i2c, framAddress, command,
+        int ret = cmr_i2cTX(&i2c_fram, framAddress, command,
                             3, 1);
         taskEXIT_CRITICAL();
         retv_total = ret | retv_total;
@@ -196,6 +204,7 @@ static void framInit()
 
 // 	 Read the driver's default values into the main_menu array
     int retv = framRead(Default, currentParameters);
+    if(retv=5)return;
 	// flush the currentParams into the main_menu_array
     for (int i = 0; i < MAX_MENU_ITEMS; i++){
 		config_menu_main_array[i].value.value = currentParameters[i];
