@@ -918,42 +918,42 @@
             "timeOut": 500,
             "type": "cmr_canHVSense_t"
         },
-        "CMR_CANID_LV_BMS_BUS_VOLTAGE": {
+        "CMR_CANID_LVBMS_BUS_VOLTAGE": {
             "cycleTime": 100,
             "timeOut": 500,
             "type": "totalVoltage"
         },
-        "CMR_CANID_LV_BMS_CELL_OVERTEMP": {
+        "CMR_CANID_LVBMS_CELL_OVERTEMP": {
             "cycleTime": 100,
             "timeOut": 500,
             "type": "flag"
         },
-        "CMR_CANID_LV_BMS_CELL_OVERVOLTAGE": {
+        "CMR_CANID_LVBMS_CELL_OVERVOLTAGE": {
             "cycleTime": 100,
             "timeOut": 500,
             "type": "flag"
         },
-        "CMR_CANID_LV_BMS_CELL_TEMP_1_4": {
+        "CMR_CANID_LVBMS_CELL_TEMP_1_4": {
             "cycleTime": 100,
             "timeOut": 500,
-            "type": "data1"
+            "type": "cell1_4"
         },
-        "CMR_CANID_LV_BMS_CELL_TEMP_5_8": {
+        "CMR_CANID_LVBMS_CELL_TEMP_5_7": {
             "cycleTime": 100,
             "timeOut": 500,
-            "type": "data2"
+            "type": "cell5_7"
         },
-        "CMR_CANID_LV_BMS_CELL_VOLTAGE_1_3": {
+        "CMR_CANID_LVBMS_CELL_VOLTAGE_1_4": {
             "cycleTime": 100,
             "timeOut": 500,
-            "type": "cell1_3"
+            "type": "cell1_4"
         },
-        "CMR_CANID_LV_BMS_CELL_VOLTAGE_4_6": {
+        "CMR_CANID_LVBMS_CELL_VOLTAGE_5_7": {
             "cycleTime": 100,
             "timeOut": 500,
-            "type": "cell4_6"
+            "type": "cell5_7"
         },
-        "CMR_CANID_LV_BMS_CURRENT": {
+        "CMR_CANID_LVBMS_CURRENT": {
             "cycleTime": 100,
             "timeOut": 500,
             "type": "current"
@@ -1104,15 +1104,15 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2876,
-        "files_with_matches": 2876,
+        "files_processed": 2882,
+        "files_with_matches": 2882,
         "global_mappings": {
-            "canrx_mappings": 103,
-            "canrx_timeouts": 102,
+            "canrx_mappings": 104,
+            "canrx_timeouts": 103,
             "canrx_types": 59,
-            "constants": 231,
+            "constants": 232,
             "struct_members": 0,
-            "variable_types": 307
+            "variable_types": 308
         },
         "prefixes_used": [
             "CMR_CANID_",

@@ -18,29 +18,8 @@
  * @see `CMR/adc.h` for various initialization values.
  */
 static cmr_adcChannel_t adc_channels[ADC_NUM] = {
-	[ADC_VTHERM_PIN1] = {
-		.channel = ADC_CHANNEL_6,
-		.port = GPIOA,
-		.pin = GPIO_PIN_1,
-		.samplingTime = ADC_SAMPLETIME_15CYCLES,
-		.value = 0
-	},
-    [ADC_VTHERM_PIN2] = {
-        .channel = ADC_CHANNEL_5,
-        .port = GPIOA,
-        .pin = GPIO_PIN_0,
-        .samplingTime = ADC_SAMPLETIME_15CYCLES,
-        .value = 0
-    },
-	[ADC_AFE_VCOUT] = {
-		.channel = ADC_CHANNEL_12,
-		.port = GPIOC,
-		.pin = GPIO_PIN_2,
-		.samplingTime = ADC_SAMPLETIME_15CYCLES,
-		.value = 0
-	},
-	[ADC_AFE_VIOUT] = {
-		.channel = ADC_CHANNEL_4,
+	[ADC_HALL_EFFECT] = {
+		.channel = ADC_CHANNEL_13,
 		.port = GPIOC,
 		.pin = GPIO_PIN_3,
 		.samplingTime = ADC_SAMPLETIME_15CYCLES,
