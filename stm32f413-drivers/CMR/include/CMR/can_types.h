@@ -26,7 +26,11 @@ typedef enum {
     CMR_CAN_HV_EN,          /**< @brief High voltage enabled. */
     CMR_CAN_RTD,            /**< @brief Ready to drive. */
     CMR_CAN_ERROR,          /**< @brief Error has occurred. */
-    CMR_CAN_CLEAR_ERROR     /**< @brief Request to clear error. */
+    CMR_CAN_CLEAR_ERROR,     /**< @brief Request to clear error. */
+    CMR_CAN_AS_READY,       /**< @brief Autonomous ready mode */
+    CMR_CAN_AS_DRIVING,     /**< @brief Autonomous driving mode */
+	CMR_CAN_AS_FINISHED,    /**< @brief Autonomous finished mode */
+	CMR_CAN_AS_EMERGENCY    /**< @brief Autonomous emergency mode */
 } cmr_canState_t;
 
 /** @brief Standard CAN heartbeat. */
@@ -164,7 +168,8 @@ typedef enum {
 
 /** @brief Represents the car's current driving mode (gear). */
 typedef enum {
-    CMR_CAN_GEAR_UNKNOWN = 0,   /**< @brief Unknown Gear State */
+    CMR_CAN_GEAR_MIN = 0,
+    CMR_CAN_GEAR_UNKNOWN,   /**< @brief Unknown Gear State */
     CMR_CAN_GEAR_SLOW,          /**< @brief Slow mode */
     CMR_CAN_GEAR_FAST,          /**< @brief Fast simple mode */
     CMR_CAN_GEAR_ENDURANCE,     /**< @brief Endurance-event mode */
@@ -172,10 +177,20 @@ typedef enum {
     CMR_CAN_GEAR_SKIDPAD,       /**< @brief Skidpad-event mode */
     CMR_CAN_GEAR_ACCEL,         /**< @brief Acceleration-event mode */
     CMR_CAN_GEAR_TEST,          /**< @brief Test mode (for experimentation) */
-    CMR_CAN_GEAR_REVERSE,       /**< @brief Reverse mode */
+    CMR_CAN_GEAR_REVERSE,   /**< @brief Reverse mode */
+    CMR_CAN_GEAR_MAX,
+
+    CMR_CAN_GEAR_DV_MISSION_MIN,
+    CMR_CAN_GEAR_DV_MISSION_MANUAL, /**< @brief Manual-mission mode (DV) */
+    CMR_CAN_GEAR_DV_MISSION_ACCEL,  /**< @brief Acceleration-mission mode (DV) */
+    CMR_CAN_GEAR_DV_MISSION_SKIDPAD,    /**< @brief Skidpad-mission mode (DV) */
+    CMR_CAN_GEAR_DV_MISSION_AUTOX,      /**< @brief Autocross-mission mode (DV) */
+    CMR_CAN_GEAR_DV_MISSION_TRACKD,     /**< @brief Trackdrive-mission mode (DV) */
+    CMR_CAN_GEAR_DV_MISSION_INSPECTION, /**< @brief Inspection-mission mode (DV) */
+    CMR_CAN_GEAR_DV_MISSION_EBS,   /**< @brief EBS-mission mode (DV) */
+    CMR_CAN_GEAR_DV_MISSION_MAX,
     CMR_CAN_GEAR_LEN
 } cmr_canGear_t;
-
 
 typedef enum{
     x1=0,
@@ -191,6 +206,11 @@ typedef enum{
     Coasting_mode_GNSS_has_been_lost_less_than_60_sec_ago =1,
     With_GNSS_default_mode = 3 
 } cmr_canMovellaFilterMode_t; 
+typedef enum {
+    CMR_CAN_DV_MODE_SLOW = 0,
+    CMR_CAN_DV_MODE_NORMAL,
+    CMR_CAN_DV_MODE_FAST
+} cmr_canDVMode_t;
 
 /** @brief Represents the car's current DRS mode (). */
 typedef enum {
@@ -612,6 +632,7 @@ typedef struct {
     uint8_t requestedGear;      //e:Gear /**< @brief Requested gear. */
     uint8_t requestedDrsMode;   //e:DrsMode /**< @brief Requested DRS mode. */
     uint8_t requestedDriver;    /**< @brief Requested Driver for Config Screen. */
+    uint8_t requestedDVCtrl;
 } cmr_canDIMRequest_t;
 
 /** @brief Driver Interface Module power diagnostics. */
@@ -642,12 +663,11 @@ typedef enum {
 } cmr_canLRUDButtons_t; 
 
 typedef struct {
-    uint8_t buttons;         //Flag: cmr_canDIMButtons_t < @brief Button states packed into an uint8_t. {drs,0,1,2,up,down,left,right}
-    uint8_t rotaryPos;
-    uint8_t switchValues; 
-    uint8_t regenPercent;    /**< @brief Integer percentage for regen. */
-    uint8_t paddle;          /**< @brief Between 0 and 255 for paddle pos*/
-    uint8_t LRUDButtons;     // Flag: cmr_canLRUDButtons_t /** < @brief LRUD Button States, packed into an uint8_t*/
+    uint8_t buttonStates;      /**< @brief Button states packed into an uint8_t. {drs,0,1,2,up,down,left,right}*/
+    uint8_t regenPercent;            
+    uint8_t paddle;            
+    uint8_t controlsStatus;
+    uint8_t dvControlMode;
 } cmr_canDIMActions_t;
 
 /** @brief DIM sends message to acknowledge radio message
