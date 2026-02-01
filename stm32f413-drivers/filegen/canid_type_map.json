@@ -1,45 +1,5 @@
 {
     "canid_to_info": {
-        "CAN_ID_LV_BMS_BUS_VOLTAGE": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "totalVoltage"
-        },
-        "CAN_ID_LV_BMS_CELL_OVERTEMP": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "flag"
-        },
-        "CAN_ID_LV_BMS_CELL_OVERVOLTAGE": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "flag"
-        },
-        "CAN_ID_LV_BMS_CELL_TEMP_1_4": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "data1"
-        },
-        "CAN_ID_LV_BMS_CELL_TEMP_5_8": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "data2"
-        },
-        "CAN_ID_LV_BMS_CELL_VOLTAGE_1_3": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "cell1_3"
-        },
-        "CAN_ID_LV_BMS_CELL_VOLTAGE_4_6": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "cell4_6"
-        },
-        "CAN_ID_LV_BMS_CURRENT": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "current"
-        },
         "CMR_CANID_AMK_FL_ACT_1": {
             "cycleTime": 10.0,
             "magCurrent_raw": {
@@ -284,6 +244,11 @@
             "cycleTime": 10,
             "timeOut": 50,
             "type": "AS_Status"
+        },
+        "CMR_CANID_AS_PRESSURE_READINGS": {
+            "cycleTime": 20.0,
+            "timeOut": 100,
+            "type": "cmr_canDVPressureReadings_t"
         },
         "CMR_CANID_CDC_COG_VELOCITY": {
             "cog_x_mps": {
@@ -966,6 +931,46 @@
             "timeOut": 50,
             "type": "cmr_canHVCPackVoltage_t"
         },
+        "CMR_CANID_LV_BMS_BUS_VOLTAGE": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "totalVoltage"
+        },
+        "CMR_CANID_LV_BMS_CELL_OVERTEMP": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "flag"
+        },
+        "CMR_CANID_LV_BMS_CELL_OVERVOLTAGE": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "flag"
+        },
+        "CMR_CANID_LV_BMS_CELL_TEMP_1_4": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "data1"
+        },
+        "CMR_CANID_LV_BMS_CELL_TEMP_5_8": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "data2"
+        },
+        "CMR_CANID_LV_BMS_CELL_VOLTAGE_1_3": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cell1_3"
+        },
+        "CMR_CANID_LV_BMS_CELL_VOLTAGE_4_6": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cell4_6"
+        },
+        "CMR_CANID_LV_BMS_CURRENT": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "current"
+        },
         "CMR_CANID_MOTORPOWER_STATE": {
             "cycleTime": 5,
             "timeOut": 25,
@@ -1049,6 +1054,11 @@
             "timeOut": "5*can10Hz_period_ms\n            //",
             "type": "cmr_canDAQTest_t"
         },
+        "CMR_CANID_VSM_FIRST_ERROR": {
+            "cycleTime": 10,
+            "timeOut": 50,
+            "type": "error_code"
+        },
         "CMR_CANID_VSM_LATCHED_STATUS": {
             "badStateMatrix": {
                 "enumstruct": "cmr_canVSMErrorSource_t"
@@ -1107,20 +1117,20 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2858,
-        "files_with_matches": 2858,
+        "files_processed": 2863,
+        "files_with_matches": 2863,
         "global_mappings": {
-            "canrx_mappings": 97,
-            "canrx_timeouts": 96,
-            "canrx_types": 56,
-            "constants": 227,
+            "canrx_mappings": 99,
+            "canrx_timeouts": 98,
+            "canrx_types": 57,
+            "constants": 232,
             "struct_members": 0,
-            "variable_types": 296
+            "variable_types": 298
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 98
+        "total_canids": 100
     }
 }

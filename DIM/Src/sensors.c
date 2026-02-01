@@ -343,7 +343,7 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_BUS_VOLTAGE,
     },
-    [SENSOR_CH_AVG_CURRENT_MA] = { .conv = adcToAvgBusCurrent_mA, .sample = sampleADCSensor,
+    [SENSOR_CH_CURRENT_MA] = { .conv = adcToAvgBusCurrent_mA, .sample = sampleADCSensor,
                                    .readingMin = 250,   // 10 mA
                                    .readingMax = 2500,  // 100 mA
                                    .outOfRange_pcnt = 10,

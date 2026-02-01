@@ -14,11 +14,13 @@
 cmr_sensor_t sensors[SENSOR_CH_LEN];
 
 /** @brief Mapping of ADC channels to sensors. */
-static const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
+static const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] =
+{
     [SENSOR_CH_HALL_EFFECT_CA] = ADC_HALL_EFFECT,
     [SENSOR_CH_BPRES_PSI]      = ADC_REAR_BRAKE_PRES,
     [SENSOR_CH_VOLTAGE_MV]     = ADC_VSENSE,
-    [SENSOR_CH_CURRENT_MA]     = ADC_ISENSE
+    [SENSOR_CH_SS_IN]          = ADC_SSIN,
+    [SENSOR_CH_SS_OUT]         = ADC_SSOUT
 };
 
 /**
@@ -167,6 +169,22 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .sample = sampleADCSensor,
         .readingMin = 250,  // 10 mA
         .readingMax = 2500, // 100 mA
+        .outOfRange_pcnt = 10,
+        .warnFlag = CMR_CAN_WARN_BUS_CURRENT
+    },
+    [SENSOR_CH_SS_IN] = { /** @todo how wide should this range be? */
+        .conv = adcToBusVoltage_mV,
+        .sample = sampleADCSensor,
+        .readingMin = 250,  // 10 mA
+        .readingMax = 2933, // 26 Volts
+        .outOfRange_pcnt = 10,
+        .warnFlag = CMR_CAN_WARN_BUS_VOLTAGE
+    },
+    [SENSOR_CH_SS_OUT] = {
+        .conv = adcToBusCurrent_mA,
+        .sample = sampleADCSensor,
+        .readingMin = 250,  // 10 mA
+        .readingMax = 2933, // 26 Volts
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_BUS_CURRENT
     },

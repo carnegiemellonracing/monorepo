@@ -124,8 +124,8 @@ void sendVoltages() {
     cell4_6.cell2 = sendVolt[4];
     cell4_6.cell3 = sendVolt[5];
 
-    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_1_3, &cell1_3, sizeof(cell1_3), canTX10Hz_period_ms);
-    canTX(CAN_ID_LV_BMS_CELL_VOLTAGE_4_6, &cell4_6, sizeof(cell4_6), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LV_BMS_CELL_VOLTAGE_1_3, &cell1_3, sizeof(cell1_3), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LV_BMS_CELL_VOLTAGE_4_6, &cell4_6, sizeof(cell4_6), canTX10Hz_period_ms);
 }
 
 // Sends overvoltage flags
@@ -137,7 +137,7 @@ void sendOvervoltageFlags(uint16_t voltages[6]) {
         if (voltages[i] > overVolt) flag |= (1 << i);
     }
 
-    canTX(CAN_ID_LV_BMS_CELL_OVERVOLTAGE, &flag, sizeof(flag), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LV_BMS_CELL_OVERVOLTAGE, &flag, sizeof(flag), canTX10Hz_period_ms);
 }
 
 // Sends bus voltage derived from cell voltages
@@ -148,7 +148,7 @@ void sendBusVoltage(uint16_t voltages[6]) {
         totalVoltage += voltages[i];
     }
 
-    canTX(CAN_ID_LV_BMS_BUS_VOLTAGE, &totalVoltage, sizeof(totalVoltage), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LV_BMS_BUS_VOLTAGE, &totalVoltage, sizeof(totalVoltage), canTX10Hz_period_ms);
 }
 
 static uint32_t vtherm_read_index(uint16_t vtherm_index) {
@@ -205,8 +205,8 @@ void sendTemps(uint16_t temps[8]) {
     memcpy(data1, temps, 4 * sizeof(uint16_t));     // Temps 1-4
     memcpy(data2, &temps[4], 4 * sizeof(uint16_t)); // Temps 5-8
 
-    canTX(CAN_ID_LV_BMS_CELL_TEMP_1_4, data1, sizeof(data1), canTX10Hz_period_ms);
-    canTX(CAN_ID_LV_BMS_CELL_TEMP_5_8, data2, sizeof(data2), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LV_BMS_CELL_TEMP_1_4, data1, sizeof(data1), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LV_BMS_CELL_TEMP_5_8, data2, sizeof(data2), canTX10Hz_period_ms);
 }
 
 // Sends overtemperature flags (derived from temperature data)
@@ -218,12 +218,12 @@ void sendOvertempFlags(uint16_t temps[8]) {
     }
 
     // Send CAN messages
-    canTX(CAN_ID_LV_BMS_CELL_OVERTEMP, &flag, sizeof(flag), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LV_BMS_CELL_OVERTEMP, &flag, sizeof(flag), canTX10Hz_period_ms);
 }
 
 // Sends the bus current
 void sendCurrent(void) {
     uint16_t sensep = adc_read(ADC_AFE_VIOUT);
     float current = float_to_uint16((sensep - adc_sensen)*vref_corr/(ADC_COUNT*GVCOUT*1e3));
-    canTX(CAN_ID_LV_BMS_CURRENT, &current, sizeof(current), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LV_BMS_CURRENT, &current, sizeof(current), canTX10Hz_period_ms);
 }

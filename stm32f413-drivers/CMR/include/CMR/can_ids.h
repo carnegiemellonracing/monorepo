@@ -35,6 +35,7 @@ typedef enum {
     CMR_CANID_VSM_SENSORS = 0x200,              /**< @brief VSM sensor data. */
     CMR_CANID_VSM_LATCHED_STATUS = 0x510,       /**< @brief VSM latched status. */
     CMR_CANID_VSM_POWER_DIAGNOSTICS = 0x530,    /**< @brief VSM power diagnostics. */
+    CMR_CANID_VSM_FIRST_ERROR = 0x10a,          /**< @brief VSM first error state */
 
     CMR_CANID_HVC_COMMAND = 0x130,              /**< @brief HVC command, sent by VSM. */
     CMR_CANID_HVC_PACK_VOLTAGE = 0x301,         /**< @brief HVC pack voltage. */
@@ -286,14 +287,32 @@ typedef enum {
 	CMR_CANID_DIM_GIT = 0x7f5,
 	CMR_CANID_RAM_GIT = 0x7f6,
 
-    CAN_ID_LV_BMS_CELL_VOLTAGE_1_3 = 0x7F7,
-    CAN_ID_LV_BMS_CELL_VOLTAGE_4_6 = 0x7f8,
-    CAN_ID_LV_BMS_CELL_TEMP_1_4 = 0x7f9,
-    CAN_ID_LV_BMS_CELL_TEMP_5_8 = 0x7fa,
-    CAN_ID_LV_BMS_CELL_OVERVOLTAGE = 0x7fb,
-    CAN_ID_LV_BMS_CELL_OVERTEMP = 0x7fc,
-    CAN_ID_LV_BMS_BUS_VOLTAGE = 0x7fd,
-    CAN_ID_LV_BMS_CURRENT = 0x7fe,
+    CMR_CANID_LV_BMS_CELL_VOLTAGE_1_3 = 0x7F7,
+    CMR_CANID_LV_BMS_CELL_VOLTAGE_4_6 = 0x7f8,
+    CMR_CANID_LV_BMS_CELL_TEMP_1_4 = 0x7f9,
+    CMR_CANID_LV_BMS_CELL_TEMP_5_8 = 0x7fa,
+    CMR_CANID_LV_BMS_CELL_OVERVOLTAGE = 0x7fb,
+    CMR_CANID_LV_BMS_CELL_OVERTEMP = 0x7fc,
+    CMR_CANID_LV_BMS_BUS_VOLTAGE = 0x7fd,
+    CMR_CANID_LV_BMS_CURRENT = 0x7fe,
+
+    //AS
+    CMR_CANID_AS_RES = 0x182,                   /**< @brief Autonomous RES (remote E-stop)*/
+    CMR_CANID_AUTONOMOUS_ACTION = 0x190,        /**< @brief Autonomous Action*/
+    CMR_CANID_AS_PRESSURE_READINGS = 0x191,     /**< @brief Autonomous Pressure Readings for Tank and EBS*/
+    CMR_CANID_AS_RACK_DISPLACMENT = 0x192,      /**< @brief Rack Displacement Mesurment*/
+    CMR_CANID_ASMS_STATE = 0x193,
+
+
+    //MAXON
+    CMR_CANID_MAXON_STATUS_WORD = 0x250,
+	CMR_CANID_MAXON_CONTROL_WORD = 0x201,
+	CMR_CANID_MAXON_VELOCITY_CAN_ID = 0x281,
+	CMR_CANID_CAN_MASTER = 0x00,
+	CMR_CANID_MAXON_HEARTBEAT = 0x701,
+	CMR_CANID_AMI_OCV_BUTTON = 0x167,
+	CMR_CANID_AMI_CURR_MISSION = 0x168,
+    
 } cmr_canID_t;
 
 typedef enum {
