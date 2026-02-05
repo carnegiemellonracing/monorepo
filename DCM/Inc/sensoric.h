@@ -10,6 +10,8 @@
 
 #include "can.h"
 
+// conversion from DBC values to scaled values 
+
 typedef struct {
 
     struct {
