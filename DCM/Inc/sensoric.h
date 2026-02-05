@@ -22,7 +22,7 @@ typedef struct {
     struct {
         int32_t dist_a;
         int16_t radius;
-        int16_t acc_c
+        int16_t acc_c;
     } dist_poi;
     
     struct {
