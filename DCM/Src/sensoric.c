@@ -35,47 +35,47 @@ void sensoric_parse(uint16_t canID, volatile void *payload) {
     {
 
     case CANRX_DAQ_SENSORIC_VEL_ANG_POI:
-        memcpy(&(sensoric_state.vel_ang_poi), payload, sizeof(sensoric_state.vel_ang_poi));
+        memcpy((void*)&(sensoric_state.vel_ang_poi), payload, sizeof(sensoric_state.vel_ang_poi));
         break;
 
     case CANRX_DAQ_SENSORIC_DIST_POI:
-        memcpy(&(sensoric_state.dist_poi), payload, sizeof(sensoric_state.dist_poi));
+        memcpy((void*)&(sensoric_state.dist_poi), payload, sizeof(sensoric_state.dist_poi));
         break;
 
     case CANRX_DAQ_SENSORIC_PITCH_ROLL:
-        memcpy(&(sensoric_state.pitch_roll), payload, sizeof(sensoric_state.pitch_roll));
+        memcpy((void*)&(sensoric_state.pitch_roll), payload, sizeof(sensoric_state.pitch_roll));
         break;
     
     case CANRX_DAQ_SENSORIC_ACC_HOR:
-        memcpy(&(sensoric_state.acc_hor), payload, sizeof(sensoric_state.acc_hor));
+        memcpy((void*)&(sensoric_state.acc_hor), payload, sizeof(sensoric_state.acc_hor));
         break;
 
     case CANRX_DAQ_SENSORIC_RATE_HOR:
-        memcpy(&(sensoric_state.rate_hor), payload, sizeof(sensoric_state.rate_hor));
+        memcpy((void*)&(sensoric_state.rate_hor), payload, sizeof(sensoric_state.rate_hor));
         break;
     
     case CANRX_DAQ_SENSORIC_VEL_ANG:
-        memcpy(&(sensoric_state.vel_ang), payload, sizeof(sensoric_state.vel_ang));
+        memcpy((void*)&(sensoric_state.vel_ang), payload, sizeof(sensoric_state.vel_ang));
         break;
     
     case CANRX_DAQ_SENSORIC_DIST:
-        memcpy(&(sensoric_state.dist), payload, sizeof(sensoric_state.dist));
+        memcpy((void*)&(sensoric_state.dist), payload, sizeof(sensoric_state.dist));
         break;
 
     case CANRX_DAQ_SENSORIC_ACC:
-        memcpy(&(sensoric_state.acc), payload, sizeof(sensoric_state.acc));
+        memcpy((void*)&(sensoric_state.acc), payload, sizeof(sensoric_state.acc));
         break;
 
     case CANRX_DAQ_SENSORIC_RATE:
-        memcpy(&(sensoric_state.rate), payload, sizeof(sensoric_state.rate));
+        memcpy((void*)&(sensoric_state.rate), payload, sizeof(sensoric_state.rate));
         break;
 
     case CANRX_DAQ_SENSORIC_VEL_ANG_SP:
-        memcpy(&(sensoric_state.vel_ang_sp), payload, sizeof(sensoric_state.vel_ang_sp));
+        memcpy((void*)&(sensoric_state.vel_ang_sp), payload, sizeof(sensoric_state.vel_ang_sp));
         break;
 
     case CANRX_DAQ_SENSORIC_DIST_VEL_SP:
-        memcpy(&(sensoric_state.dist_vel_sp), payload, sizeof(sensoric_state.dist_vel_sp));
+        memcpy((void*)&(sensoric_state.dist_vel_sp), payload, sizeof(sensoric_state.dist_vel_sp));
         break;
     
     default:
