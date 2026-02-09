@@ -177,13 +177,6 @@ static void canTX1Hz(void *pvParameters) {
     while (1) {
         sendPowerDiagnostics();
 
-        cmr_canGitFlashStatus gitStatus = {
-            .commitHash = GIT_INFO,
-            .dirtyFlash = IS_UNCOMMITTED
-        };
-
-        canTX(CMR_CANID_VSM_GIT, &gitStatus, sizeof(gitStatus), canTX1Hz_period_ms);
-
         vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
     }
 }

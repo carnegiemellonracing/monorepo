@@ -14,6 +14,8 @@
 
 #include "CMR/rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
 #include "CMR/panic.h"  // cmr_panic()
+#include "CMR/can_ids.h"
+#include "CMR/can_types.h"
 
 /**
  * @brief Gets the corresponding CAN interface from the HAL handle.
@@ -248,6 +250,50 @@ CAN_RX_FIFO_PENDING(1)
 #undef CAN_RX_FIFO_PENDING
 
 /**
+ * @brief Queues a CAN message for transmission.
+ *
+ * @param can The CAN interface to send on.
+ * @param id The message's CAN ID.
+ * @param data The data to send.
+ * @param len The data's length, in bytes.
+ * @param timeout The timeout.
+ *
+ * @return 0 on success, or a negative error code on timeout.
+ */
+int cmr_canTX(
+    cmr_can_t *can,
+    uint16_t id, const void *data, uint8_t len,
+    TickType_t timeout
+) {
+    CAN_TxHeaderTypeDef txHeader = {
+        .StdId = id,
+        .ExtId = 0,
+        .IDE = CAN_ID_STD,
+        .RTR = CAN_RTR_DATA,
+        .DLC = len,
+        .TransmitGlobalTime = DISABLE
+    };
+
+    // Attempt to reserve a mailbox.
+    BaseType_t result = xSemaphoreTake(can->txSem, timeout);
+    if (result != pdTRUE) {
+        return -1;
+    }
+
+    // Even though the interface for HAL_CAN_AddTxMessage() does not specify the
+    // data as `const`, it does not touch the data. Oh well.
+    uint32_t txMailbox;
+    HAL_StatusTypeDef status = HAL_CAN_AddTxMessage(
+        &can->handle, &txHeader, (void *) data, &txMailbox
+    );
+    if (status != HAL_OK) {
+        cmr_panic("Semaphore was available, but no mailboxes were found!");
+    }
+
+    return 0;
+}
+
+/**
  * @brief Initializes a CAN interface.
  *
  * @warning It is undefined behavior to initialize the same HAL CAN instance
@@ -264,6 +310,9 @@ CAN_RX_FIFO_PENDING(1)
  * @param rxPin Receiving GPIO pin (`GPIO_PIN_x` from `stm32f4xx_hal_gpio.h`).
  * @param txPort Transmitting GPIO port.
  * @param txPin Transmitting GPIO pin.
+ * @param commit_hash commit that the board is running to be sent after setup
+ * @param is_dirty whether commit is pushed
+ * @param boardID CAN ID for board commit info 
  */
 void cmr_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
@@ -271,7 +320,9 @@ void cmr_canInit(
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
     cmr_canRXCallback_t rxCallback,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
+    GPIO_TypeDef *txPort, uint16_t txPin,
+    uint32_t commit_hash, uint8_t is_dirty,
+    cmr_canID_t boardID 
 ) {
     /* Do any platform-specific initialization */
     _platform_canInit(
@@ -323,50 +374,15 @@ void cmr_canInit(
     )) {
         cmr_panic("HAL_CAN_ActivateNotification() failed!");
     }
-}
 
-/**
- * @brief Queues a CAN message for transmission.
- *
- * @param can The CAN interface to send on.
- * @param id The message's CAN ID.
- * @param data The data to send.
- * @param len The data's length, in bytes.
- * @param timeout The timeout.
- *
- * @return 0 on success, or a negative error code on timeout.
- */
-int cmr_canTX(
-    cmr_can_t *can,
-    uint16_t id, const void *data, uint8_t len,
-    TickType_t timeout
-) {
-    CAN_TxHeaderTypeDef txHeader = {
-        .StdId = id,
-        .ExtId = 0,
-        .IDE = CAN_ID_STD,
-        .RTR = CAN_RTR_DATA,
-        .DLC = len,
-        .TransmitGlobalTime = DISABLE
-    };
+    //send commit info on start up 
+    cmr_canGitFlashStatus gitStatus = {
+            .commitHash = commit_hash,
+            .dirtyFlash = is_dirty
+        };
 
-    // Attempt to reserve a mailbox.
-    BaseType_t result = xSemaphoreTake(can->txSem, timeout);
-    if (result != pdTRUE) {
-        return -1;
-    }
+    canTX(boardID, &gitStatus, sizeof(gitStatus), 1000);
 
-    // Even though the interface for HAL_CAN_AddTxMessage() does not specify the
-    // data as `const`, it does not touch the data. Oh well.
-    uint32_t txMailbox;
-    HAL_StatusTypeDef status = HAL_CAN_AddTxMessage(
-        &can->handle, &txHeader, (void *) data, &txMailbox
-    );
-    if (status != HAL_OK) {
-        cmr_panic("Semaphore was available, but no mailboxes were found!");
-    }
-
-    return 0;
 }
 
 /**
