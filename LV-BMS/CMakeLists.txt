@@ -178,6 +178,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     -fdiagnostics-format=sarif-file
     >
     $<$<CONFIG:Debug>:-Og -g3 -ggdb>
+    $<$<CONFIG:DebugStrict>:-Og -g3 -ggdb -Werror>
     $<$<CONFIG:Release>:-Og -g0>
 )
 
