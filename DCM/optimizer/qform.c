@@ -89,6 +89,25 @@ void compose_diagonal_qform_addto(const box_variable_t *profile, const double *w
     dest->c += 0.5 * sum_of_squares;
 }
 
+void compose_linear_qform_addto(const box_variable_t *profile, const double *weight_arr, const double scalar, qform_t* const dest, const int n) {
+    double new_weight[n];
+    double sum_of_cost = 0;
+    int unconstrained_count = 0;
+    for(int i = 0; i < n; i++) {
+        const box_variable_t *var = &profile[i];
+        if(var->role == UNCONSTRAINED) 
+            new_weight[unconstrained_count++] = weight_arr[i];
+        else {
+            if(var->role == LOWER)
+                sum_of_cost += var->lower * weight_arr[i];
+            else
+                sum_of_cost += var->upper * weight_arr[i];
+        }
+    }
+    arrmul_addto(new_weight, scalar, dest->q, unconstrained_count);
+    dest->c += 0.5 * sum_of_cost * scalar;
+}
+
 void mat_vec_mul(double* A, double* x, double* y, int n) {
     for (int i = 0; i < n; i++) {
         y[i] = 0;

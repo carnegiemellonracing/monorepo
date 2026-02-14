@@ -17,6 +17,7 @@
 static double k_lin = 80.0;
 static double k_yaw = 0.30;
 static double k_tie = 0.008;
+static double k_pow = 0.002;
 
 /**
  * Computes 1/2 x^T Q x + q x + c.
@@ -147,6 +148,7 @@ void solve_one_case(optimizer_state_t *state) {
     compose_error_qform_addto(vp, state->accel_weights, state->areq, k_lin, &state->qform, NUM_VARS);
     compose_error_qform_addto(vp, state->moment_weights, state->mreq, k_yaw, &state->qform, NUM_VARS);
     compose_diagonal_qform_addto(vp, state->diagonal_weights, &state->qform, dim, NUM_VARS);
+    compose_linear_qform_addto(vp, state->omegas, k_pow, &state->qform, NUM_VARS);
 
     find_optimum(&state->qform, dim, state->optimum.content, state->Qinv);
 
@@ -213,6 +215,11 @@ void solver_set_k_tie(double d) {
 	k_tie = d;
 }
 
+void solver_set_k_pow(double d) {
+    d = fmax(d, MINIMUM_K_VALUE);
+    k_pow = d;
+}
+
 double solver_get_k_lin() {
     return k_lin;
 }
@@ -223,4 +230,8 @@ double solver_get_k_yaw() {
 
 double solver_get_k_tie() {
     return k_tie;
+}
+
+double solver_get_k_pow() {
+    return k_pow;
 }
