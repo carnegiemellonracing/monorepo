@@ -19,6 +19,7 @@
 extern volatile int BMBTimeoutCount[BOARD_NUM];
 extern volatile int BMBErrs[BOARD_NUM];
 
+
 //Fill in data to this array
 BMB_Data_t BMBData[BOARD_NUM];
 
@@ -628,6 +629,32 @@ bool getBalDone() {
 
 }
 
+/**
+ * @brief Compute parity of which set of cells to balance (odd or even).
+ * 
+ * @param voltages Cell voltages, from BMBData.
+ * @param thresh Balance threshold
+ * @return Parity to balance (0 for even cells, 1 for odd cells)
+ */
+static uint8_t getBalanceParity(uint16_t *voltages, uint16_t thresh) {
+	// figure out if odd or even cells have the thresh
+	uint32_t even_sum = 0;
+	uint32_t odd_sum = 0;
+	uint8_t cell;
+	
+	// choose parity w.r.t. IRL BMB (1-indexed) as opposed to SW (0-indexed)
+	for (cell = 0; cell < VSENSE_CHANNELS; cell += 2) {
+		if (voltages[cell] > thresh) {
+			odd_sum += voltages[cell] - thresh;
+		}
+		if (voltages[cell+1] > thresh) {
+			even_sum += voltages[cell+1] - thresh;
+		}
+	}
+
+	return (odd_sum > even_sum);
+}
+
 void cellBalancing(bool set, uint16_t thresh) {
 	cmr_uart_result_t res;
 
@@ -636,60 +663,109 @@ void cellBalancing(bool set, uint16_t thresh) {
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = BAL_CTRL2,
-		.data = {0x03},
+		.data = {0x02},	// manual
 		.crc = {0x00, 0x00}
 	};
 
-
-	if(set) {
-		if(thresh >= 4250 || thresh <= 2450) {
+	if (set) {
+		if (thresh >= 4250 || thresh <= 2450) {
 			thresh = 3700;
 		}
-		//board index by 0 but don't send to interface chip
+
+		// board index by 0 but don't send to interface chip
 		for(int i = 0; i < BOARD_NUM-1; i++) {
-			thresh = 0;
-			for(int j = 0; j < VSENSE_CHANNELS; j++) {
-				if(BMBData[i].cellVoltages[j] > thresh) {
-					thresh = BMBData[i].cellVoltages[j];
+			// selections for cells--0x04 to balance for 5 minute intervals
+			// determine if we balance even or odd cells
+			uint8_t parity = 0;
+			uint8_t top_len; 
+
+			//balance cells above 7 
+			if (VSENSE_CHANNELS > 7) { 
+				top_len = VSENSE_CHANNELS - 7; 
+			} else {
+				top_len = 0; 
+			}
+			uint8_t cell_selects_top[top_len+1]; //extra array spot for parity change 
+			//populate evens with 0 and odds with 4 (enable balance)
+			for (int i = 0; i < top_len+1; i++){
+				if (i%2 == 0){
+					cell_selects_top[i] = 0x04; 
+				} else {
+					cell_selects_top[i] = 0x0; 
 				}
 			}
-			thresh = thresh - 10;
-			uart_command_t balance_register = {
+
+			//balance even 
+			uart_command_t balance_register_top = {
 				.readWrite = SINGLE_WRITE,
-				.dataLen = VSENSE_CHANNELS/2,
+				.dataLen = top_len,
 				.deviceAddress = i+1,
-				.registerAddress = CB_CELL14_CTRL,
-				.data = {0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04},
+				.registerAddress = TOP_CELL_CB_ADDR,
+				.data = &cell_selects_top[parity],
 				.crc = {0x00, 0x00}
 			};
-			for(int j = 13; j > 6; j--) {
-				if(BMBData[i].cellVoltages[j] < thresh) {
-					balance_register.data[13-j] = 0x00;
-				}
-			}
-			res = uart_sendCommand(&balance_register);
-			balance_register.registerAddress = CB_CELL7_CTRL;
-			for(int j = 0; j < 7; j++) {
-				balance_register.data[j] = 0x04;
-			}
-			for(int j = 6; j >=0 ; j--) {
-				if(BMBData[i].cellVoltages[j] < thresh) {
-					balance_register.data[6-j] = 0x00;
-				}
-			}
-			res = uart_sendCommand(&balance_register);
-		}
-		//set duty cycle to switch between even and odd cells
-//		uart_command_t duty_cycle = {
-//			.readWrite = STACK_WRITE,
-//			.dataLen = 1,
-//			.deviceAddress = 0xFF, //not used!
-//			.registerAddress = BAL_CTRL1,
-//			.data = {0x01}, //TODO what is this value supposed to be?
-//			.crc = {0x00, 0x00}
-//		};
-//		res = uart_sendCommand(&duty_cycle);
 
+			// disable selected cells below threshold (2 channels, [9:7])
+			for (int j = parity; j < top_len; j += 2) {
+				if (BMBData[i].cellVoltages[VSENSE_CHANNELS-1-j] < thresh) {
+					balance_register_top.data[j] = 0x00;
+				}
+			}
+			res = uart_sendCommand(&balance_register_top);
+
+
+			// change to other cell selection (odd number of cells => parity swap)
+			parity ^= 1;
+
+			for (int j = parity; j < top_len; j += 2) {
+				if (BMBData[i].cellVoltages[VSENSE_CHANNELS-1-j] < thresh) {
+					balance_register_top.data[j] = 0x00;
+				}
+			}
+			// manually copy (data not assignable)
+			for (int j = 0; j < top_len; j++) {
+				balance_register_top.data[j] = cell_selects_top[parity+j];
+			}
+			res = uart_sendCommand(&balance_register_top); 
+		
+			
+			//balance remaining cells (odd first)
+			uint8_t cell_selects_bottom[] = {0x04, 0x00, 0x04, 0x00, 0x04, 0x00, 0x04, 0x00};
+
+			uart_command_t balance_register_bottom = {
+				.readWrite = SINGLE_WRITE,
+				.dataLen = 7,
+				.deviceAddress = i+1,
+				.registerAddress = CB_CELL7_CTRL,
+				.data = &cell_selects_bottom[parity],
+				.crc = {0x00, 0x00}
+			};
+
+			// disable selected cells below threshold (4 channels, [4:1])
+			for (int j = parity; j < 7; j += 2) {
+				if (BMBData[i].cellVoltages[6-j] < thresh) {
+					balance_register_bottom.data[j] = 0x00;
+				}
+			} 
+			res = uart_sendCommand(&balance_register_bottom); 
+
+
+			//parity swap to even 
+			parity ^= 1; 
+
+			for (int j = parity; j < 7; j += 2) {
+				if (BMBData[i].cellVoltages[6-j] < thresh) {
+					balance_register_bottom.data[j] = 0x00;
+				}
+			} 
+			// manually copy (data not assignable)
+			for (int j = 0; j < 7; j++) {
+				balance_register_bottom.data[j] = cell_selects_bottom[parity+j];
+			}
+			res = uart_sendCommand(&balance_register_bottom); 
+
+		}
+		
 		//see bq datasheet in register VCB_DONE_THRESH, maps threshold in 25 mv increments
 		//between 245 mV and 4000 mV
 		uint8_t threshIndex = (uint8_t)((thresh - 2450)/25.0) + 1;
@@ -700,10 +776,9 @@ void cellBalancing(bool set, uint16_t thresh) {
 			.dataLen = 1,
 			.deviceAddress = 0xFF, //not used!
 			.registerAddress = VCB_DONE_THRESH,
-			.data = {0x1},
+			.data = {threshIndex},
 			.crc = {0x00, 0x00}
 		};
-		enable.data[0] = 0x03;
 //		res = uart_sendCommand(&UV);
 //		TickType_t lastTime = xTaskGetTickCount();
 //		vTaskDelayUntil(&lastTime, 1);
@@ -713,9 +788,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 //		res = uart_sendCommand(&UV);
 //		lastTime = xTaskGetTickCount();
 //		vTaskDelayUntil(&lastTime, 1);
-
-	}
-	else {
+	} else {
 		uart_command_t balance_register = {
 			.readWrite = STACK_WRITE,
 			.dataLen = VSENSE_CHANNELS/2,
@@ -724,13 +797,12 @@ void cellBalancing(bool set, uint16_t thresh) {
 			.data = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 			.crc = {0x00, 0x00}
 		};
-		cmr_uart_result_t res;
 		res = uart_sendCommand(&balance_register);
 
-		balance_register.registerAddress = CB_CELL7_CTRL;
+		balance_register.registerAddress = CB_CELL7_CTRL; 
 		res = uart_sendCommand(&balance_register);
 	}
-	res = uart_sendCommand(&enable);
+	res = uart_sendCommand(&enable); 
 }
 
 void writeLED(bool set) {

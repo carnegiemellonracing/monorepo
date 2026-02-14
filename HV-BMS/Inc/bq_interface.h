@@ -330,6 +330,7 @@
 
 
 #define TOP_CELL VCELL9_HI
+#define TOP_CELL_CB_ADDR CB_CELL9_CTRL 
 #define NUM_GPIO_CHANNELS 4
 
 bool autoAddr();
