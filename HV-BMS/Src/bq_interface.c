@@ -776,15 +776,15 @@ void cellBalancing(bool set, uint16_t thresh) {
 			.data = {threshIndex},
 			.crc = {0x00, 0x00}
 		};
-//		res = uart_sendCommand(&UV);
-//		TickType_t lastTime = xTaskGetTickCount();
-//		vTaskDelayUntil(&lastTime, 1);
+		res = uart_sendCommand(&UV); 
+		TickType_t lastTime = xTaskGetTickCount();
+		vTaskDelayUntil(&lastTime, 1);
 
 		UV.registerAddress = OVUV_CTRL;
-		UV.data[0] = 0x05;
-//		res = uart_sendCommand(&UV);
-//		lastTime = xTaskGetTickCount();
-//		vTaskDelayUntil(&lastTime, 1);
+		UV.data[0] = 0x85;
+		res = uart_sendCommand(&UV);
+		lastTime = xTaskGetTickCount();
+		vTaskDelayUntil(&lastTime, 1);
 	} else {
 		uart_command_t balance_register = {
 			.readWrite = STACK_WRITE,
