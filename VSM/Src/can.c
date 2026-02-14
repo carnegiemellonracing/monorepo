@@ -72,25 +72,53 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
     },
-    [CANRX_INVERTER_1] = {
-        .canID = CMR_CANID_AMK_FL_ACT_1,
-        .timeoutError_ms = 500,
-        .timeoutWarn_ms = 250,
+    [CANRX_FL_TEMPFAULT] = {
+        .canID = CMR_CANID_DTI_FL_TEMPFAULT,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_INVERTER_2] = {
-        .canID = CMR_CANID_AMK_FR_ACT_1,
-        .timeoutError_ms = 500,
-        .timeoutWarn_ms = 250,
+    [CANRX_FR_TEMPFAULT] = {
+        .canID = CMR_CANID_DTI_FR_TEMPFAULT,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_INVERTER_3] = {
-        .canID = CMR_CANID_AMK_RL_ACT_1,
-        .timeoutError_ms = 500,
-        .timeoutWarn_ms = 250,
+    [CANRX_RL_TEMPFAULT] = {
+        .canID = CMR_CANID_DTI_RL_TEMPFAULT,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_INVERTER_4] = {
-        .canID = CMR_CANID_AMK_RR_ACT_1,
-        .timeoutError_ms = 500,
-        .timeoutWarn_ms = 250,
+    [CANRX_RR_TEMPFAULT] = {
+        .canID = CMR_CANID_DTI_RR_TEMPFAULT,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_FL_IO_STATUS] = {
+        .canID = CMR_CANID_DTI_FL_IO_STATUS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_FR_IO_STATUS] = {
+        .canID = CMR_CANID_DTI_FR_IO_STATUS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_RL_IO_STATUS] = {
+        .canID = CMR_CANID_DTI_RL_IO_STATUS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+    },
+    [CANRX_RR_IO_STATUS] = {
+        .canID = CMR_CANID_DTI_RR_IO_STATUS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     }
 };
 
@@ -108,10 +136,14 @@ const cmr_canVSMErrorSource_t vsmErrorSourceFlags[] = {
     [CANRX_HEARTBEAT_DIM]       = CMR_CAN_VSM_ERROR_SOURCE_DIM,
     [CANRX_FSM_DATA]            = CMR_CAN_VSM_ERROR_SOURCE_DIM,
     [CANRX_DIM_REQUEST]         = CMR_CAN_VSM_ERROR_SOURCE_NONE, // Don't timeout based on DIM requests
-    [CANRX_INVERTER_1]          = CMR_CAN_VSM_ERROR_SOURCE_NONE, // Don't timeout inverter here
-    [CANRX_INVERTER_2]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_INVERTER_3]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_INVERTER_4]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
+    [CANRX_FL_TEMPFAULT]        = CMR_CAN_VSM_ERROR_SOURCE_NONE, // Don't timeout inverter here
+    [CANRX_FR_TEMPFAULT]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
+    [CANRX_RL_TEMPFAULT]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
+    [CANRX_RR_TEMPFAULT]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
+    [CANRX_RR_IO_STATUS]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
+    [CANRX_RR_IO_STATUS]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
+    [CANRX_RR_IO_STATUS]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
+    [CANRX_RR_IO_STATUS]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
 };
 
 /** @brief CAN 10 Hz TX priority. */
