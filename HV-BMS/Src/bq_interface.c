@@ -713,23 +713,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 			}
 			res = uart_sendCommand(&balance_register_top);
 
-
-			// change to other cell selection (odd number of cells => parity swap)
-			parity ^= 1;
-
-			for (int j = parity; j < top_len; j += 2) {
-				if (BMBData[i].cellVoltages[VSENSE_CHANNELS-1-j] < thresh) {
-					balance_register_top.data[j] = 0x00;
-				}
-			}
-			// manually copy (data not assignable)
-			for (int j = 0; j < top_len; j++) {
-				balance_register_top.data[j] = cell_selects_top[parity+j];
-			}
-			res = uart_sendCommand(&balance_register_top); 
-		
-			
-			//balance remaining cells (odd first)
+			//balance evens in bottom 7 
 			uint8_t cell_selects_bottom[] = {0x04, 0x00, 0x04, 0x00, 0x04, 0x00, 0x04, 0x00};
 
 			uart_command_t balance_register_bottom = {
@@ -749,10 +733,23 @@ void cellBalancing(bool set, uint16_t thresh) {
 			} 
 			res = uart_sendCommand(&balance_register_bottom); 
 
+			// change to other cell selection (odd number of cells => parity swap)
+			parity ^= 1;
 
-			//parity swap to even 
-			parity ^= 1; 
-
+			//balance odds top 
+			for (int j = parity; j < top_len; j += 2) {
+				if (BMBData[i].cellVoltages[VSENSE_CHANNELS-1-j] < thresh) {
+					balance_register_top.data[j] = 0x00;
+				}
+			}
+			// manually copy (data not assignable)
+			for (int j = 0; j < top_len; j++) {
+				balance_register_top.data[j] = cell_selects_top[parity+j];
+			}
+			res = uart_sendCommand(&balance_register_top); 
+		
+			
+			//balance bottom 7 odd 
 			for (int j = parity; j < 7; j += 2) {
 				if (BMBData[i].cellVoltages[6-j] < thresh) {
 					balance_register_bottom.data[j] = 0x00;
