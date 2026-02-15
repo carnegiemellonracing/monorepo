@@ -70,9 +70,11 @@ void vBMBSampleTask(void *pvParameters) {
 		// If we get a balancing command and we weren't previously balancing, enable
 		// cells to balance
 		if (true || getBalance(&threshold) && !prevStateBalance) {
-			cellBalancing(BALANCE_EN, 3300);
-			prevStateBalance = true;
-			startTime = xTaskGetTickCount();
+			if(getBalDone()==1){
+				cellBalancing(BALANCE_EN, 3300);
+				prevStateBalance = true;
+				startTime = xTaskGetTickCount();
+			} 
 		}
 
 		// If the balancing command stops and we were balancing previously, disable

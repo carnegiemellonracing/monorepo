@@ -349,6 +349,6 @@ bool cellBalancingSetup();
 void cellBalancing(bool set, uint16_t thresh);
 void writeLED(bool set);
 
-bool getBalDone();
+int getBalDone();
 
 #endif /* BQ_INTERFACE_H_ */
