@@ -29,6 +29,7 @@ cmr_canHVCState_t getState() {
  //forward declarations:
  void stopCellBalancing(void);
  void enableCellBalancing(void); 
+ int32_t getPackMillivolts();
 
 static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
 
@@ -86,7 +87,8 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                   HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN)) {
                 //T6: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (abs(600000 - (getHVmillivolts()) < 60000)) {
+            } else if (abs(getPackMillivolts() - getHVmillivolts()) < 30000) {
+                /*(abs(30000 - (getHVmillivolts()) < 3000))*/
                 //T2: HV rails are precharged to within 30000mV
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE; 
                 lastPrechargeTime = xTaskGetTickCount(); 
@@ -100,7 +102,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                 //T7: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
             } else if (HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN) {
-//                        abs(getBattMillivolts() - getHVmillivolts()) < 30000) {
+//                        abs(getPackMillivolts() - getHVmillivolts()) < 30000) {
                 // T3: Contactors are closed and RUN mode is requested
                 nextState = CMR_CAN_HVC_STATE_DRIVE; 
             } else {
@@ -400,5 +402,11 @@ void stopCellBalancing(void) {
     }; 
 
     canTX(CMR_CANID_CELL_BALANCE_ENABLE, &balance, sizeof(balance), canTX100Hz_period_ms); 
+}
+
+int32_t getPackMillivolts() {
+    cmr_canHVBMSPackVoltage_t *pack_voltage = getPayload(CANRX_HVBMS_PACKVOLT);
+    int32_t pack_millivolts = pack_voltage->battVoltage_mV;
+    return pack_millivolts;
 }
 

@@ -637,7 +637,109 @@ void cellBalancing(bool set, uint16_t thresh) {
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = BAL_CTRL2,
+<<<<<<< Updated upstream
 		.data = {0x03},	// auto
+=======
+		.data = {0x02},	// manual
+		.crc = {0x00, 0x00}
+	};
+
+	if (set) {
+		if (thresh >= 4250 || thresh <= 2450) {
+			thresh = 3700;
+		}
+
+		// board index by 0 but don't send to interface chip
+		for(int i = 0; i < BOARD_NUM-1; i++) {
+			// selections for cells--0x04 to balance for 5 minute intervals
+			uint8_t cell_selects[] = {0x04, 0x00, 0x04, 0x00, 0x04, 0x00, 0x04, 0x00};
+
+			// determine if we balance even or odd cells
+			uint8_t parity = getBalanceParity(BMBData[i].cellVoltages, thresh);
+
+			// two writes needed (maximum write len is 8 bytes)
+			uart_command_t balance_register = {
+				.readWrite = SINGLE_WRITE,
+				.dataLen = VSENSE_CHANNELS/2,
+				.deviceAddress = i+1,
+				.registerAddress = CB_CELL14_CTRL,
+				.data = &cell_selects[parity],
+				.crc = {0x00, 0x00}
+			};
+
+			// disable selected cells below threshold (7 channels, [14:8])
+			for (int j = parity; j < 7; j += 2) {
+				if (BMBData[i].cellVoltages[13-j] < thresh) {
+					balance_register.data[j] = 0x00;
+				}
+			}
+			res = uart_sendCommand(&balance_register);
+
+			// change to other cell selection (odd number of cells => parity swap)
+			parity ^= 1;
+			// manually copy (data not assignable)
+			for (int j = 0; j < 7; j++) {
+				balance_register.data[j] = cell_selects[parity+j];
+			}
+
+			// disable selected cells below threshold (7 channels, [7:1])
+			for (int j = parity; j < 7; j += 2) {
+				if (BMBData[i].cellVoltages[6-j] < thresh) {
+					balance_register.data[j] = 0x00;
+				}
+			}
+			res = uart_sendCommand(&balance_register);
+		}
+		
+		//see bq datasheet in register VCB_DONE_THRESH, maps threshold in 25 mv increments
+		//between 245 mV and 4000 mV
+		uint8_t threshIndex = (uint8_t)((thresh - 2450)/25.0) + 1;
+
+		//set UV stuff for stopping balancing based on parameter
+		uart_command_t UV = {
+			.readWrite = STACK_WRITE,
+			.dataLen = 1,
+			.deviceAddress = 0xFF, //not used!
+			.registerAddress = VCB_DONE_THRESH,
+			.data = {0x1},
+			.crc = {0x00, 0x00}
+		};
+//		res = uart_sendCommand(&UV);
+//		TickType_t lastTime = xTaskGetTickCount();
+//		vTaskDelayUntil(&lastTime, 1);
+
+		UV.registerAddress = OVUV_CTRL;
+		UV.data[0] = 0x05;
+//		res = uart_sendCommand(&UV);
+//		lastTime = xTaskGetTickCount();
+//		vTaskDelayUntil(&lastTime, 1);
+	} else {
+		uart_command_t balance_register = {
+			.readWrite = STACK_WRITE,
+			.dataLen = VSENSE_CHANNELS/2,
+			.deviceAddress = 0xFF, //not used!
+			.registerAddress = CB_CELL14_CTRL,
+			.data = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+			.crc = {0x00, 0x00}
+		};
+		res = uart_sendCommand(&balance_register);
+
+		balance_register.registerAddress = CB_CELL7_CTRL;
+		res = uart_sendCommand(&balance_register);
+	}
+	res = uart_sendCommand(&enable);
+}
+
+void cellBalancing(bool set, uint16_t thresh) {
+	cmr_uart_result_t res;
+
+	uart_command_t enable = {
+		.readWrite = STACK_WRITE,
+		.dataLen = 1,
+		.deviceAddress = 0xFF, //not used!
+		.registerAddress = BAL_CTRL2,
+		.data = {0x02},
+>>>>>>> Stashed changes
 		.crc = {0x00, 0x00}
 	};
 
