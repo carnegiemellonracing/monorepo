@@ -83,6 +83,12 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
         sendFirstError(BADSTATE_DIM);
     }
 
+    if (getBadModuleState(CANRX_HEARTBEAT_LVBMS, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
+        heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
+        badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_LVBMS;
+        sendFirstError(BADSTATE_LVBMS);
+    }
+
     // Set software latch in the event of BMS voltage or temperature errors.
     // See rule EV 5.1.10.
     cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
@@ -99,6 +105,16 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     }
     else {
         cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 0);
+    }
+
+    cmr_canLVBMSHeartbeat_t *lvbmsHeartbeat = getPayload(CANRX_HEARTBEAT_LVBMS);
+    //cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
+    if (/*(cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), lastWakeTime) != 0)
+     ||*/ (lvbmsHeartbeat->errorStatus & CMR_CAN_LVBMS_ERROR_PACK_OVERVOLT)
+     || (lvbmsHeartbeat->errorStatus & CMR_CAN_LVBMS_ERROR_CELL_OVERVOLT)
+     || (lvbmsHeartbeat->errorStatus & CMR_CAN_LVBMS_ERROR_CELL_OVERTEMP)) {
+
+        cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
     }
 
     // Check all latches

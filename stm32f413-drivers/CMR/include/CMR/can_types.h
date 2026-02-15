@@ -117,7 +117,7 @@ typedef enum {
     /** @brief VSM hasn't received DIM heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_DIM_TIMEOUT = (1 << 11),
     /** @brief VSM hasn't received PTCf heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_PTC_TIMEOUT = (1 << 10),
+    CMR_CAN_WARN_VSM_LVBMS_TIMEOUT = (1 << 10),
     /** @brief VSM hasn't received HVI heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_HVI_TIMEOUT = (1 << 8),
     /** @brief VSM is rejecting DIM state request. */
@@ -259,7 +259,7 @@ typedef enum {
     /** @brief At least one Driver Interface Module message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_DIM = (1 << 3),
     /** @brief At least one message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_PTC = (1 << 2),
+    CMR_CAN_VSM_ERROR_SOURCE_LVBMS = (1 << 2),
     /** @brief At least one Vehicle Safety Module message has timed out */
     CMR_CAN_VSM_ERROR_SOURCE_AIM = (1 << 1),
     /** @brief HVI Timeout. */
@@ -429,6 +429,21 @@ typedef enum {
     CMR_CAN_HVC_ERROR_LV_UNDERVOLT = (1<<13),    /**< @brief Shutdown circuit/AIR voltage too low. */
 } cmr_canHVCError_t;
 
+typedef enum{
+    CMR_CAN_LVBMS_ERROR_NONE = 0x0000,    /**< @brief No errors detected. */
+
+    // Pack errors
+    CMR_CAN_LVBMS_ERROR_PACK_UNDERVOLT   = 0x0001,    /**< @brief Pack voltage too low. */
+    CMR_CAN_LVBMS_ERROR_PACK_OVERVOLT    = 0x0002,    /**< @brief Pack voltage too high. */
+    CMR_CAN_LVBMS_ERROR_PACK_OVERCURRENT = 0x0008,    /**< @brief Pack current too high. */
+
+    // Cell errors
+    CMR_CAN_LVBMS_ERROR_CELL_UNDERVOLT = 0x0010,  /**< @brief At least one cell is undervoltage. */
+    CMR_CAN_LVBMS_ERROR_CELL_OVERVOLT  = 0x0020,  /**< @brief At least one cell is overvoltage. */
+    CMR_CAN_LVBMS_ERROR_CELL_OVERTEMP  = 0x0040,  /**< @brief At least one cell has overheated. */
+
+} cmr_canLVBMSError_t;
+
 typedef enum {
     CMR_CAN_HVC_RELAYSTATUS_DISCHARGE_CLOSED = (1<<0),
     CMR_CAN_HVC_RELAYSTATUS_PRECHARGE_CLOSED = (1<<1),
@@ -449,6 +464,12 @@ typedef struct {
     uint8_t uptime_s;       //u: s /**< @brief HVC uptime in seconds. */
 } cmr_canHVCHeartbeat_t;
 
+typedef struct {
+    uint16_t errorStatus;
+    uint8_t State;
+    uint8_t error[2];     
+    uint8_t warning[2];
+} cmr_canLVBMSHeartbeat_t;
 
 /** @brief High Voltage Controller command. */
 typedef struct {

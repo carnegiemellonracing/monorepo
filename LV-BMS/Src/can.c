@@ -37,7 +37,7 @@ cmr_canRXMeta_t canRXMeta[CANRX_LEN] = {
     }
 };
 
-cmr_canHeartbeat_t heartbeat;
+cmr_canLVBMSHeartbeat_t heartbeat;
 
 /** @brief CAN 10 Hz TX priority. */
 const uint32_t canTX10Hz_priority = 4;
@@ -66,9 +66,9 @@ static cmr_can_t can;
  */
 static void sendHeartbeat(TickType_t lastWakeTime) {
     cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-    volatile cmr_canHeartbeat_t *heartbeatVSM = getPayload(CANRX_HEARTBEAT_VSM);
+    volatile cmr_canLVBMSHeartbeat_t *heartbeatVSM = getPayload(CANRX_HEARTBEAT_VSM);
 
-    heartbeat.state = heartbeatVSM->state;
+    heartbeat->errorStatus = errorStatus;
 
     uint16_t error = CMR_CAN_ERROR_NONE;
 

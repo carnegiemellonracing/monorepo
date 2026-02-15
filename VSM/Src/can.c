@@ -60,6 +60,14 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_VSM_DIM_TIMEOUT
     },
+    [CANRX_HEARTBEAT_LVBMS] = {
+        .canID = CMR_CANID_HEARTBEAT_LV_BMS
+        .timeoutError_ms = 20000,
+        .errorFlag = CMR_CAN_ERROR_NONE,
+        .timeoutWarn_ms = 750,
+        .warnFlag = CMR_CAN_WARN_VSM_LVBMS_TIMEOUT
+
+    }
     // [CANRX_FSM_SWANGLE] = {
     //     .canID = CMR_CANID_FSM_SWANGLE,
     //     .timeoutError_ms = 100,

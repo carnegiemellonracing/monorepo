@@ -95,13 +95,38 @@ uint8_t getVoltages(void) {
 // Sends overvoltage flags
 void sendOvervoltageFlags(uint16_t voltages[CELL_NUM]) {
     uint8_t flag = 0;
-    uint8_t overVolt = 0; // TBD
+    uint8_t overVolt = 4200; // TBD
 
     for (int i = 0; i < CELL_NUM; i++) {
         if (cellVoltages[i] > overVolt) flag |= (1 << i);
     }
 
     canTX(CMR_CANID_LVBMS_CELL_OVERVOLTAGE, &flag, sizeof(flag), canTX10Hz_period_ms);
+}
+
+void sendUndervoltageFlags(uint16_t voltages[CELL_NUM]) {
+    uint8_t flag = 0;
+    uint8_t underVolt = 2500; // TBD
+
+    for (int i = 0; i < CELL_NUM; i++) {
+        if (cellVoltages[i] < underVolt) {
+            flag |= (1 << i);
+            errorStatus |= CMR_CAN_LVBMS_ERROR_CELL_UNDERVOLT;
+        }
+    }
+
+    canTX(CMR_CANID_LVBMS_CELL_UNDERVOLTAGE, &flag, sizeof(flag), canTX10Hz_period_ms);
+}
+
+int32_t getLVBMillivolts() {
+	int32_t totalPackCellVoltage = 0;
+
+	
+    for (uint8_t i = 0; i < CELL_NUM; i++) {
+        totalPackCellVoltage += cellVoltages[i];
+    }
+
+	return totalPackCellVoltage;
 }
 
 // Sends bus voltage derived from cell voltages
