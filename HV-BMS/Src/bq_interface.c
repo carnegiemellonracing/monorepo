@@ -581,7 +581,7 @@ bool cellBalancingSetup() {
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = BAL_CTRL1,
-		.data = {0x01}, //TODO what is this value supposed to be?
+		.data = {0x00}, //TODO what is this value supposed to be?
 		.crc = {0x00, 0x00}
 	};
 	res = uart_sendCommand(&duty_cycle);
@@ -590,7 +590,6 @@ bool cellBalancingSetup() {
 }
 
 int getBalDone() {
-	uint8_t done_count = 0; 
 
 	uart_command_t getBalStatus = {
 		.readWrite = STACK_READ,
@@ -650,8 +649,6 @@ void cellBalancing(bool set, uint16_t thresh) {
 		// board index by 0 but don't send to interface chip
 		for(int i = 0; i < BOARD_NUM-1; i++) {
 			// selections for cells--0x04 to balance for 5 minute intervals
-			// determine if we balance even or odd cells
-			uint8_t parity = 0;
 			uint8_t top_len; 
 
 			//balance cells above 7 
@@ -683,7 +680,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 				.dataLen = top_len,
 				.deviceAddress = i+1,
 				.registerAddress = TOP_CELL_CB_ADDR,
-				.data = &cell_selects_top,
+				.data = cell_selects_top,
 				.crc = {0x00, 0x00}
 			};
 
