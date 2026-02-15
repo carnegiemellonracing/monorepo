@@ -181,7 +181,11 @@ void canInit(void) {
                 CMR_CANID_HEARTBEAT_VSM,
 				CMR_CANID_HV_SENSORS,
                 CMR_CANID_HVC_COMMAND,
-				CMR_CANID_CELL_BALANCE_ENABLE
+				CMR_CANID_CELL_BALANCE_ENABLE,
+                CMR_CANID_HVBMS_MIN_MAX_CELL_VOLTAGE,
+                CMR_CANID_HVBMS_PACK_VOLTAGE,
+                CMR_CANID_HVBMS_MIN_MAX_CELL_TEMPERATURE,
+                CMR_CANID_HEARTBEAT_HV_BMS
             }
         }
     };
