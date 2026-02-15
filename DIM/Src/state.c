@@ -346,7 +346,7 @@ static cmr_state getNextState(void) {
             if(getASMS()) {
                 nextState = AUTON;
             }
-            else if(cmr_gpioRead(GPIO_CTRL_SWITCH) && (stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)) {
+            else if(!cmr_gpioRead(GPIO_CTRL_SWITCH) && true/*(stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)*/) {
                 nextState = CONFIG;
                 flush_config_screen_to_cdc = false;
             }
@@ -358,7 +358,7 @@ static cmr_state getNextState(void) {
             }
             break;
         case CONFIG:
-            if(!cmr_gpioRead(GPIO_CTRL_SWITCH)) {
+            if(cmr_gpioRead(GPIO_CTRL_SWITCH)) {
                 nextState = NORMAL;
                 flush_config_screen_to_cdc = true;
             }
