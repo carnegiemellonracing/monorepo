@@ -426,6 +426,7 @@ static void set_optimal_control(
 	solver_settings.k_lin = X1000_INT16(solver_get_k_lin());
 	solver_settings.k_yaw = X1000_INT16(solver_get_k_yaw());
 	solver_settings.k_tie = X1000_INT16(solver_get_k_tie());
+    solver_settings.k_pow = X1000_INT16(solver_get_k_pow());
 
 	static cmr_torqueDistributionNm_t torquesPos_Nm;
 	static cmr_torqueDistributionNm_t torquesNeg_Nm;

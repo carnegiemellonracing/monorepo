@@ -105,7 +105,7 @@ void compose_linear_qform_addto(const box_variable_t *profile, const double *wei
         }
     }
     arrmul_addto(new_weight, scalar, dest->q, unconstrained_count);
-    dest->c += 0.5 * sum_of_cost * scalar;
+    dest->c += sum_of_cost * scalar; // no 0.5 since this is linear, not quadratic
 }
 
 void mat_vec_mul(double* A, double* x, double* y, int n) {

@@ -49,8 +49,10 @@ void solve(optimizer_state_t *state);
 void solver_set_k_lin(double d);
 void solver_set_k_yaw(double d);
 void solver_set_k_tie(double d);
+void solver_set_k_pow(double d);
 double solver_get_k_lin();
 double solver_get_k_yaw();
 double solver_get_k_tie();
+double solver_get_k_pow();
 
 #endif //OPTIMIZER_H

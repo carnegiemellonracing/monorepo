@@ -43,6 +43,8 @@ void compose_diagonal_qform_addto(const box_variable_t *profile, const double *w
  */
 void compose_error_qform_addto(const box_variable_t *profile, const double *weight_arr, const double target, const double scalar, qform_t* const dest, const int n);
 
+void compose_linear_qform_addto(const box_variable_t *profile, const double *weight_arr, const double scalar, qform_t* const dest, const int n);
+
 void print_vector(double* vec, int n);
 
 double quadratic(const double *Q, const int dim, const double *x);
