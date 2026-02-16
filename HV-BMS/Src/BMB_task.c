@@ -38,14 +38,16 @@ bool check_to_ignore(uint8_t bmb_index, uint8_t channel) {
 
 // Check CANRX struct for balance command and threshold
 
-bool getBalance(uint16_t *thresh) {
-	TickType_t xLastWakeTime = xTaskGetTickCount();
-	if(cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_BALANCE_COMMAND]), xLastWakeTime) < 0) {
-		return false;
-	}
-	volatile cmr_canHVCBalanceCommand_t *balanceCommand = getPayload(CANRX_BALANCE_COMMAND);
-	*thresh = balanceCommand->threshold; 
-	return balanceCommand->balanceRequest;
+bool isBalanceCommanded() {
+	return false;
+	// TickType_t xLastWakeTime = xTaskGetTickCount();
+
+	// if(cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_BALANCE_COMMAND]), xLastWakeTime) < 0) {
+	// 	return false;
+	// }
+	
+	// volatile cmr_canHVCBalanceCommand_t *balanceCommand = getPayload(CANRX_BALANCE_COMMAND);
+	// return balanceCommand->balanceRequest;
 }
 
 
@@ -56,11 +58,11 @@ void vBMBSampleTask(void *pvParameters) {
 	// Previous wake time pointer
 	TickType_t xLastWakeTime = xTaskGetTickCount();
 	vTaskDelayUntil(&xLastWakeTime, 50);
-	bool prevStateBalance = false;
+	bool currentlyBalancing = false;
 	bool ledToggle = false;
 	uint16_t threshold = 0;
-	uint32_t startTime;
-	bool toReenable = false;
+	uint32_t settleTimer_ms;
+	bool settlingTimerStarted = false;
 
 	// Main BMS control loop
 	while (1) {
@@ -69,35 +71,31 @@ void vBMBSampleTask(void *pvParameters) {
 
 		// If we get a balancing command and we weren't previously balancing, enable
 		// cells to balance
-		if (getBalance(&threshold) && !prevStateBalance) {
+		if (isBalanceCommanded() && !currentlyBalancing) {
 			if(getBalDone()==1){
-				cellBalancing(BALANCE_EN, 3450); 
-				prevStateBalance = true;
-				startTime = xTaskGetTickCount();
+				cellBalancing(BALANCE_EN, 3440); 
+				currentlyBalancing = true;
 			} 
 		}
 
 		// If the balancing command stops and we were balancing previously, disable
 		// all balancing cells
-		else if(!getBalance(&threshold) && prevStateBalance){
+		else if(!isBalanceCommanded() && currentlyBalancing){
 			cellBalancing(BALANCE_DIS, threshold);
-			prevStateBalance = false;
+			currentlyBalancing = false;
 		}
 
-		// If 5 minutes has elapsed since balancing started, turn off balancing to
-		// allow for rechecking of voltages
-		else if((prevStateBalance && !toReenable) && (xTaskGetTickCount()-startTime)>300000) {
-			cellBalancing(BALANCE_DIS, threshold);
-			toReenable = true;
+		// Once balancing timers have expired we stop balancing
+		else if(getBalDone()==1 && currentlyBalancing && !settlingTimerStarted) {
+			settlingTimerStarted = true;
+			settleTimer_ms = xTaskGetTickCount(); 
 		}
 
 		// After a 500 ms resting period, recheck the voltages
 		// and enable whichever cells are above threshold
-		else if(toReenable && (xTaskGetTickCount()-startTime)>300500) {
-			cellBalancing(BALANCE_EN, threshold);
-			startTime = xTaskGetTickCount();
-			prevStateBalance = true;
-			toReenable = false;
+		else if (settlingTimerStarted && (xTaskGetTickCount()-settleTimer_ms)>500) {
+			currentlyBalancing = false;
+			settlingTimerStarted = false;
 		}
 
 		// Loop through the 4 different MUX channels and select a different one

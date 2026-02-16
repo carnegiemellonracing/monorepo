@@ -589,7 +589,19 @@ bool cellBalancingSetup() {
 
 }
 
-int getBalDone() {
+/**
+ * @brief Checks the cell balancing status across all BMBs.
+ *
+ * Sends a UART read command to the BAL_STAT register to determine if 
+ * any board is currently performing cell balancing (checking the CB_RUN bit).
+ * This function enters a critical section to ensure UART RX integrity.
+ *
+ * @return int
+ * 1 : Balancing is complete (all boards are idle).
+ * 0 : Balancing is in progress (at least one board is active).
+ * -1 : Error occurred (UART transmission or reception failure).
+ */
+ int getBalDone() {
 
 	uart_command_t getBalStatus = {
 		.readWrite = STACK_READ,
@@ -618,101 +630,68 @@ int getBalDone() {
 	}
 	taskEXIT_CRITICAL();
 	
-	
-	bool startBalance = 1;
+	// determines if we are done balancing
+	bool doneBalancing = 1;
 	for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
 		if ((response[i].data[0] & 8) == 8) //CB_RUN is 1 
-			startBalance = 0;
+			doneBalancing = 0;
 	}
 	
-	return startBalance; 
+	return doneBalancing; 
 
 }
 
 void cellBalancing(bool set, uint16_t thresh) {
 	cmr_uart_result_t res;
 
-	uart_command_t enable = {
-		.readWrite = STACK_WRITE,
-		.dataLen = 1,
-		.deviceAddress = 0xFF, //not used!
-		.registerAddress = BAL_CTRL2,
-		.data = {0x03},	// auto
-		.crc = {0x00, 0x00}
-	};
+	if (thresh >= 4250 || thresh <= 2450) {
+		thresh = 3700;
+	}
 
-	if (set) {
-		if (thresh >= 4250 || thresh <= 2450) {
-			thresh = 3700;
+	// board index by 0 but don't send to interface chip
+	for(int i = 0; i < BOARD_NUM-1; i++) {
+		// selections for cells--0x04 to balance for 5 minute intervals
+		uint8_t top_len; 
+
+		//balance cells above 8 
+		if (VSENSE_CHANNELS > 8) { 
+			top_len = VSENSE_CHANNELS - 8; 
+		} else {
+			top_len = 0; 
 		}
 
-		// board index by 0 but don't send to interface chip
-		for(int i = 0; i < BOARD_NUM-1; i++) {
-			// selections for cells--0x04 to balance for 5 minute intervals
-			uint8_t top_len; 
+		//decide which cells to balance before starting balancing. Inits to 10s 
+		uint8_t cell_selects[] = {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 
+			0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01}; 
 
-			//balance cells above 7 
-			if (VSENSE_CHANNELS > 7) { 
-				top_len = VSENSE_CHANNELS - 7; 
-			} else {
-				top_len = 0; 
-			}
-			//decide which cells to balance before starting balancing 
-			uint8_t cell_selects_top[] = {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01}; 
-			uint8_t cell_selects_bottom[] = {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01}; 
-
-			// disable selected cells below threshold 
-			for (int j = 0; j < top_len; j ++) {
-				if (BMBData[i].cellVoltages[VSENSE_CHANNELS-1-j] < thresh) {
-					cell_selects_top[j] = 0x00;
-				} 
-			}
-
-			for (int j = 0; j < 7; j ++) {
-				if (BMBData[i].cellVoltages[6-j] < thresh) {
-					cell_selects_bottom[j] = 0x00;
-				}
+		// disable selected cells below threshold 
+		for (int j = 0; j < VSENSE_CHANNELS; j ++) {
+			if ((BMBData[i].cellVoltages[VSENSE_CHANNELS-1-j] < thresh) || !set) {
+				cell_selects[j] = 0x00;
 			} 
-
-			//balance top 
-			uart_command_t balance_register = {
-				.readWrite = SINGLE_WRITE,
-				.dataLen = top_len,
-				.deviceAddress = i+1,
-				.registerAddress = TOP_CELL_CB_ADDR,
-				.data = cell_selects_top,
-				.crc = {0x00, 0x00}
-			};
-
-			res = uart_sendCommand(&balance_register);
-
-			//balance bottom 7 
-			balance_register.dataLen = 7; 
-			balance_register.registerAddress = CB_CELL7_CTRL; 
-			// manually copy (data not assignable)
-			for (int j = 0; j < 7; j++) {
-				balance_register.data[j] = cell_selects_bottom[j];
-			}
-			res = uart_sendCommand(&balance_register); 
-
 		}
-		
-		
-	} else {
+
+		//balance top length
 		uart_command_t balance_register = {
-			.readWrite = STACK_WRITE,
-			.dataLen = VSENSE_CHANNELS/2,
-			.deviceAddress = 0xFF, //not used!
-			.registerAddress = CB_CELL14_CTRL,
-			.data = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+			.readWrite = SINGLE_WRITE,
+			.dataLen = top_len,
+			.deviceAddress = i+1,
+			.registerAddress = TOP_CELL_CB_ADDR,
 			.crc = {0x00, 0x00}
 		};
+		memcpy(balance_register.data, cell_selects, top_len);
 		res = uart_sendCommand(&balance_register);
 
-		balance_register.registerAddress = CB_CELL7_CTRL; 
-		res = uart_sendCommand(&balance_register);
+		//balance bottom 8 
+		balance_register.dataLen = 8; 
+		balance_register.registerAddress = CB_CELL8_CTRL; 
+		memcpy(balance_register.data, &(cell_selects[top_len]), 8);
+		res = uart_sendCommand(&balance_register); 
 	}
-	res = uart_sendCommand(&enable); 
+		
+	uint8_t toSend = 3;
+	sendUartStackWrite(BAL_CTRL2, &toSend, 1);
+
 }
 
 void writeLED(bool set) {
