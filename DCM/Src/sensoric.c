@@ -48,6 +48,8 @@ void sensoric_parse(uint16_t canID, volatile void *payload) {
     switch (sensoric_msg)
     {
 
+        // swtiched payload 
+
     case CANRX_DAQ_SENSORIC_VEL_ANG_POI:
         memcpy((void*)&(sensoric_state.vel_ang_poi), payload, sizeof(sensoric_state.vel_ang_poi));
         break;

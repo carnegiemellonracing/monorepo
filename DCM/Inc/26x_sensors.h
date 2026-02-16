@@ -17,6 +17,8 @@
 #include "movella.h"
 #include "sensoric.h"
 
+// TODO: check units
+
 
 typedef enum {
     SENSORS_SRC_NONE = 0,
