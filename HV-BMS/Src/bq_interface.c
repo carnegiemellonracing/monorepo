@@ -48,7 +48,7 @@ static inline bool sendUartStackWrite(  uint16_t registerAddress,
 void txToRxDelay(uint8_t delay);
 void byteDelay(uint8_t delay);
 
-bool turnOn() {
+void turnOn() {
 
 	//Turn On Ping
 	// HAL_Delay(100);
@@ -117,7 +117,7 @@ bool turnOn() {
 		};
 		res = uart_sendCommand(&hardReset);
 		if(res != UART_SUCCESS) {
-			return false;
+			return;
 		}
 
 		// HAL_Delay(200);
@@ -141,7 +141,7 @@ bool turnOn() {
 	// HAL_Delay(1000);
 	DWT_Delay_ms(1000);
 
-	return true;
+	return;
 }
 
 /** Auto Address Function
