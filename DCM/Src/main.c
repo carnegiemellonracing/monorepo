@@ -96,8 +96,8 @@ int main(void) {
     canInit();
     adcInit();
     // servoInit();
-    // motorsInit();
-    // sensorsInit();
+    motorsInit();
+    sensorsInit();
     // brakelightInit();
 
 
