@@ -169,14 +169,6 @@ const cmr_canVSMErrorSource_t vsmErrorSourceFlags[] = {
     [CANRX_HEARTBEAT_DIM]       = CMR_CAN_VSM_ERROR_SOURCE_DIM,
     [CANRX_FSM_DATA]            = CMR_CAN_VSM_ERROR_SOURCE_DIM,
     [CANRX_DIM_REQUEST]         = CMR_CAN_VSM_ERROR_SOURCE_NONE, // Don't timeout based on DIM requests
-<<<<<<< HEAD
-    [CANRX_INVERTER_1]          = CMR_CAN_VSM_ERROR_SOURCE_NONE, // Don't timeout inverter here
-    [CANRX_INVERTER_2]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_INVERTER_3]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_INVERTER_4]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_RES]                 = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_AS_PRESSURE_READING] = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-=======
     [CANRX_FL_TEMPFAULT]        = CMR_CAN_VSM_ERROR_SOURCE_NONE, // Don't timeout inverter here
     [CANRX_FR_TEMPFAULT]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_RL_TEMPFAULT]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
@@ -185,7 +177,6 @@ const cmr_canVSMErrorSource_t vsmErrorSourceFlags[] = {
     [CANRX_RR_IO_STATUS]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_RR_IO_STATUS]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_RR_IO_STATUS]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
->>>>>>> 26x_TS_DTI_dev
 };
 
 /** @brief CAN 10 Hz TX priority. */
