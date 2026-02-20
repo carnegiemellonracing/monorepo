@@ -118,7 +118,7 @@ static cmr_fir_filter_state_t regen_torque_multiplier_filter_state;
 
 // ********* SF CAN Messages *********
 
-static cmr_canCDCSafetyFilterStates_t sf_state = {
+static cmr_canDCMSafetyFilterStates_t sf_state = {
     .power_limit_max_violation_W = 0.0f,
     .longest_power_violation_ms = 0,
     .over_voltage_count = 0,
@@ -126,7 +126,7 @@ static cmr_canCDCSafetyFilterStates_t sf_state = {
     .over_temp_count = 0
 };
 
-static cmr_canCDCMotorPower_t motorPower_state = {
+static cmr_canDCMMotorPower_t motorPower_state = {
     .motor_power_FL = 0,
     .motor_power_FR = 0,
     .motor_power_RL = 0,
@@ -562,12 +562,12 @@ void setTorqueLimsProtected (
     motorPower_state.motor_power_RR = falloff_factor_by_pack_power; getMotorPower(MOTOR_RR, pack_voltage_V);
 }
 
-const cmr_canCDCSafetyFilterStates_t *getSafetyFilterInfo(){
-    return (const cmr_canCDCSafetyFilterStates_t*) &sf_state;
+const cmr_canDCMSafetyFilterStates_t *getSafetyFilterInfo(){
+    return (const cmr_canDCMSafetyFilterStates_t*) &sf_state;
 }
 
-const cmr_canCDCMotorPower_t *getMotorPowerInfo(){
-    return (const cmr_canCDCMotorPower_t*) &motorPower_state;
+const cmr_canDCMMotorPower_t *getMotorPowerInfo(){
+    return (const cmr_canDCMMotorPower_t*) &motorPower_state;
 }
 
 float getPowerLimit_W() {

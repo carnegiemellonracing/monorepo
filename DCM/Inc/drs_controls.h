@@ -15,7 +15,7 @@
 // ------------------------------------------------------------------------------------------------
 // Public functions
 
-const cmr_canCDCDRSStates_t *getDRSInfo();
+const cmr_canDCMDRSStates_t *getDRSInfo();
 
 void runDrsControls(
     cmr_canGear_t gear,

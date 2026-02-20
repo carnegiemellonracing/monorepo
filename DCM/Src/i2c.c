@@ -1,6 +1,6 @@
 /**
  * @file i2c.c
- * @brief All I2C functionality on the CDC (i.e. the RTC and FRAM)
+ * @brief All I2C functionality on the DCM (i.e. the RTC and FRAM)
  *
  * @author Carnegie Mellon Racing
  */
@@ -63,7 +63,7 @@ static void framUpdate(void *pvParameters);
  * COMMON *
  **********/
 
-/** @brief Initializes I2C stuff for the CDC */
+/** @brief Initializes I2C stuff for the DCM */
 void i2cInit() {
     cmr_i2cInit(
         &i2c_fram, I2C3,                // TODO: Increase Clock Speed if can't hit deadlines
@@ -213,7 +213,7 @@ static void framInit()
     // Read odometer
     retv = framRead(FRAM_ODOMETER_CONFIG_ADDRESS, (uint8_t *)&odometer_km);
 
-    //Use the below to flash FRAM default params the first time the CDC is setup
+    //Use the below to flash FRAM default params the first time the DCM is setup
      for (int i = 0; i < MAX_MENU_ITEMS; i++) {
      	currentParameters[i] = config_menu_main_array[i].value.value;
      }

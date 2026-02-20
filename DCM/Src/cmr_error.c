@@ -111,7 +111,7 @@ static void updateErrors(cmr_canError_t *errors, TickType_t lastWakeTime) {
     //     (amkErrors[MOTOR_RL] || amkTimeouts[MOTOR_RL]) &&
     //     (amkErrors[MOTOR_RR] || amkTimeouts[MOTOR_RR])) {
 
-    //     *errors |= CMR_CAN_ERROR_CDC_AMK_ALL;
+    //     *errors |= CMR_CAN_ERROR_DCM_AMK_ALL;
     // }
 
     prevStateVSM = heartbeatVSM->state;
@@ -145,25 +145,25 @@ static void updateWarnings(cmr_canWarn_t *warnings, TickType_t lastWakeTime) {
     }
 
     if (cmr_canRXMetaTimeoutWarn(&(canDaqRXMeta[CANRX_DAQ_MEMORATOR_BROADCAST]), lastWakeTime) < 0) {
-        *warnings |= CMR_CAN_WARN_CDC_MEMORATOR_DAQ_TIMEOUT;
+        *warnings |= CMR_CAN_WARN_DCM_MEMORATOR_DAQ_TIMEOUT;
     }
 
     // Individual inverter errors
     // if (amkErrors[MOTOR_FL]) {
-    //     *warnings |= CMR_CAN_WARN_CDC_AMK_ERROR;
-    //     *warnings |= CMR_CAN_WARN_CDC_AMK_FL;
+    //     *warnings |= CMR_CAN_WARN_DCM_AMK_ERROR;
+    //     *warnings |= CMR_CAN_WARN_DCM_AMK_FL;
     // }
     // if (amkErrors[MOTOR_FR]) {
-    //     *warnings |= CMR_CAN_WARN_CDC_AMK_ERROR;
-    //     *warnings |= CMR_CAN_WARN_CDC_AMK_FR;
+    //     *warnings |= CMR_CAN_WARN_DCM_AMK_ERROR;
+    //     *warnings |= CMR_CAN_WARN_DCM_AMK_FR;
     // }
     // if (amkErrors[MOTOR_RL]) {
-    //     *warnings |= CMR_CAN_WARN_CDC_AMK_ERROR;
-    //     *warnings |= CMR_CAN_WARN_CDC_AMK_RL;
+    //     *warnings |= CMR_CAN_WARN_DCM_AMK_ERROR;
+    //     *warnings |= CMR_CAN_WARN_DCM_AMK_RL;
     // }
     // if (amkErrors[MOTOR_RR]) {
-    //     *warnings |= CMR_CAN_WARN_CDC_AMK_ERROR;
-    //     *warnings |= CMR_CAN_WARN_CDC_AMK_RR;
+    //     *warnings |= CMR_CAN_WARN_DCM_AMK_ERROR;
+    //     *warnings |= CMR_CAN_WARN_DCM_AMK_RR;
     // }
 }
 

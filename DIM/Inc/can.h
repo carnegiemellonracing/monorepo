@@ -19,35 +19,35 @@
 /** @brief Text buffer from RAM - used to display messages to driver */
 extern char RAMBUF[];
 
-/** @note the state transition of the dim-cdc handshake is described as follows
+/** @note the state transition of the dim- handshake is described as follows
  *
- * 1. The CDC is always broadcasting its values. On boot, config_screen_update_confirmed
- *    will be set to true once it's recieved the initial set of params from the CDC.
+ * 1. The DCM is always broadcasting its values. On boot, config_screen_update_confirmed
+ *    will be set to true once it's recieved the initial set of params from the DCM.
  *    Only then will the DIM be able to show the config screen.
- * 2. Once the values are modified, the flush_config_to_cdc variable is set to true.
+ * 2. Once the values are modified, the flush_config_to_dcm variable is set to true.
  * 3. The CAN 5hz function will transmit these config messages and set
- *    waiting_for_cdc_to_confim_config to true. It will continue to transmit till
+ *    waiting_for_dcm_to_confim_config to true. It will continue to transmit till
  *    config_screen_update_confirmed is set to true.
- * 4. The RX filter will listen while waiting_for_cdc_to_confirm_config is set true.
+ * 4. The RX filter will listen while waiting_for_dcm_to_confirm_config is set true.
  *    Once it gets all the data, it'll set this to false and set the config_screen_update_confirmed
  *    to true. The screen will now exit and go back to the RTD screen per normal. and it'll reset
  *    the config_screen_update_confirmed back to false for another iteration.
  */
 
 // Config Screen update requested
-extern volatile bool flush_config_screen_to_cdc;  // = false;
+extern volatile bool flush_config_screen_to_dcm;  // = false;
 
-// bool on if waiting for cdc to confirm config screen update
+// bool on if waiting for dcm to confirm config screen update
 extern volatile bool config_screen_update_confirmed;  // = false;
 
 // recieved initial config screen values
 extern volatile bool config_screen_values_received_on_boot;  // = false;
 
-// letting the rx callback to know to pay attention to the cdc messages
-extern volatile bool waiting_for_cdc_to_confirm_config;  // = false;
+// letting the rx callback to know to pay attention to the dcm messages
+extern volatile bool waiting_for_dcm_to_confirm_config;  // = false;
 
 // letting the DIM know that new driver params are available
-extern volatile bool waiting_for_cdc_new_driver_config;
+extern volatile bool waiting_for_dcm_new_driver_config;
 
 extern volatile bool exit_config_request;
 
@@ -85,9 +85,9 @@ typedef enum {
     CANRX_VSM_SENSORS,
     CANRX_HVC_LOW_VOLTAGE, /**< @brief HVC Low Voltage for Safety Circuit Status*/
     CANRX_DRS_STATE,
-    CANRX_CDC_ODOMETER,
-    CANRX_CDC_CONTROLS_STATUS,
-    CANRX_CDC_HEARTBEAT,
+    CANRX_DCM_ODOMETER,
+    CANRX_DCM_CONTROLS_STATUS,
+    CANRX_DCM_HEARTBEAT,
     CANRX_PACK_CELL_VOLTAGES,  /**< @brief Pack Cell Voltages for min and Max Cell */
     CANRX_EAB_STATUS,
     CANRX_LEN /**< @brief Number of periodic CAN messages. */

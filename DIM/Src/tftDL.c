@@ -418,18 +418,18 @@ void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yell
  *
  * @param memoratorPresent Memorator present (based on heartbeat)
  * @param movellaStatus Movella Status
- * @param speed_mph Speed (from CDC)
+ * @param speed_mph Speed (from DCM)
  * @param hvVoltage_mV Pack Voltage (from HVC)
  * @param power_kW Electrical power dissipation
- * (inferred from CDC)
+ * (inferred from DCM)
  * @param dcdcTemp_C DCDC Thermistor temp.
  * Unused.
  * @param motorTemp_C Motor termperature.
- * Referred from RMS via CDC. Deg. C.
+ * Referred from RMS via DCM. Deg. C.
  * @param acTemp_C AC temp (from HVC).
  * Currently Max cell temp. Deg. C.
  * @param mcTemp_C MC internal temp.
- * Referred from RMS via CDC. Deg. C.
+ * Referred from RMS via DCM. Deg. C.
  * @param glvVoltage Voltage from GLV
  */
 void tftDL_RTDUpdate(
@@ -698,7 +698,7 @@ void tftDL_errorUpdate(
     tftDL_showErrorState(ESE_PTC_COLOR, err->ptcTimeout);
     tftDL_showErrorState(ESE_HVC_COLOR, err->hvcTimeout);
     tftDL_showErrorState(ESE_VSM_COLOR, err->vsmTimeout);
-    tftDL_showErrorState(ESE_CDC_COLOR, err->cdcTimeout);
+    tftDL_showErrorState(ESE_DCM_COLOR, err->dcmTimeout);
 
     /* HVC */
     tftDL_showErrorState(ESE_HVC_OVERVOLT_COLOR, err->overVolt);
@@ -935,16 +935,16 @@ void tftDL_configUpdate() {
             return;  // both are an error
 
         if (current_scroll_index == DRIVER_PROFILE_INDEX) {
-            flush_config_screen_to_cdc = true;
-            waiting_for_cdc_to_confirm_config = true;
-            // Wait for CDC to confirm old driver params first
-            while (waiting_for_cdc_to_confirm_config) {
+            flush_config_screen_to_dcm = true;
+            waiting_for_dcm_to_confirm_config = true;
+            // Wait for DCM to confirm old driver params first
+            while (waiting_for_dcm_to_confirm_config) {
             }
 
             // Change driver
             setConfigIncrementValue(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
-            waiting_for_cdc_new_driver_config = true;
-            while (waiting_for_cdc_new_driver_config) {
+            waiting_for_dcm_new_driver_config = true;
+            while (waiting_for_dcm_new_driver_config) {
                 // wait for the new driver to be selected
             }
         } else {

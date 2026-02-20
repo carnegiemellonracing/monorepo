@@ -32,7 +32,7 @@ static bool prev_throttle_high = false;
 static bool prev_brake_high = false;
 
 /** @brief DRS states and debug info to be sent. */
-cmr_canCDCDRSStates_t drs_state = {
+cmr_canDCMDRSStates_t drs_state = {
     .state  = 0,
     .angle  = 0,
     .pwm_left = 0,
@@ -56,8 +56,8 @@ static void setAutoDrs(uint8_t throttle_pos,
  * 
  * @return Const pointer to the current DRS state and debug values.
  */
-const cmr_canCDCDRSStates_t *getDRSInfo() {
-    return (const cmr_canCDCDRSStates_t*) &drs_state;
+const cmr_canDCMDRSStates_t *getDRSInfo() {
+    return (const cmr_canDCMDRSStates_t*) &drs_state;
 } 
 
 /**

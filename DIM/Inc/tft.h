@@ -92,7 +92,7 @@ void tftInit(void);
 /** @brief All of the errors to be drawn on-screen
  * in error state. */
 typedef struct {
-    bool cdcTimeout;         /**< @brief Has the CDC timed out? */
+    bool dcmTimeout;         /**< @brief Has the DCM timed out? */
     bool ptcTimeout;         /**< @brief Has the PTC timed out? */
     bool vsmTimeout;         /**< @brief Has the VSM timed out? */
     bool hvcTimeout;         /**< @brief Has the HVC timed out? */

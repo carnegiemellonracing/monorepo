@@ -21,7 +21,7 @@
 typedef enum {
     CMR_CANID_HEARTBEAT_VSM = 0x100,    /**< @brief VSM heartbeat. */
     CMR_CANID_HEARTBEAT_HVC = 0x101,    /**< @brief HVC heartbeat. */
-    CMR_CANID_HEARTBEAT_CDC = 0x102,    /**< @brief CDC heartbeat. */
+    CMR_CANID_HEARTBEAT_DCM = 0x102,    /**< @brief DCM heartbeat. */
     CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x104,    /**< @brief DIM heartbeat. */
     CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief PTC heatbeart. */
@@ -43,35 +43,27 @@ typedef enum {
     CMR_CANID_HVC_MINMAX_CELL_TEMPS = 0x311,    /**< @brief HVC pack min and max cell temps. */
     CMR_CANID_HVC_PACK_CURRENT = 0x302,         /**< @brief HVC pack current. */
 
-    CMR_CANID_CDC_WHEEL_SPEEDS = 0x132,         /**< @brief CDC (19e) wheel speeds. */
-    CMR_CANID_CDC_SOLENOID_PTC = 0x142,         /**< @brief CDC (19e) brake solenoid command. */
-    CMR_CANID_CDC_MOTOR_DATA = 0x152,           /**< @brief CDC (19e) motor data. */
-    CMR_CANID_CDC_MOTOR_PHASES = 0x172,         /**< @brief CDC (19e) motor phase currents. */
-    CMR_CANID_CDC_IMU_ACCEL = 0x162,            /**< @brief CDC (19e) IMU accelerations. */
-    CMR_CANID_CDC_MOTOR_FAULTS = 0x502,         /**< @brief CDC (19e) motor faults. */
-    CMR_CANID_CDC_MOTOR_TEMPS = 0x512,          /**< @brief CDC (19e) motor temperatures. */
+    CMR_CANID_DCM_WHEEL_SPEED_FEEDBACK = 0x232,     /**< @brief DCM (20e) actual wheel speeds. */
+    CMR_CANID_DCM_WHEEL_SPEED_SETPOINT = 0x252,     /**< @brief DCM (20e) setpoint wheel speeds. */
+    CMR_CANID_DCM_WHEEL_TORQUE_FEEDBACK = 0x262,    /**< @brief DCM (20e) actual wheel torques. */
+    CMR_CANID_DCM_WHEEL_TORQUE_SETPOINT = 0x272,    /**< @brief DCM (20e) setpoint wheel torques. */
+    CMR_CANID_DCM_POSE_POSITION = 0x282,            /**< @brief DCM (20e) lat/lon real car position. */
+    CMR_CANID_DCM_POSE_ORIENTATION = 0x292,         /**< @brief DCM (20e) roll/pitch/yaw real car position. */
+    CMR_CANID_DCM_POSE_VELOCITY = 0x2A2,            /**< @brief DCM (20e) real car velocity. */
+    CMR_CANID_DCM_POSE_ACCELERATION = 0x2B2,        /**< @brief DCM (20e) real car acceleration. */
 
-    CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK = 0x232,     /**< @brief CDC (20e) actual wheel speeds. */
-    CMR_CANID_CDC_WHEEL_SPEED_SETPOINT = 0x252,     /**< @brief CDC (20e) setpoint wheel speeds. */
-    CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK = 0x262,    /**< @brief CDC (20e) actual wheel torques. */
-    CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT = 0x272,    /**< @brief CDC (20e) setpoint wheel torques. */
-    CMR_CANID_CDC_POSE_POSITION = 0x282,            /**< @brief CDC (20e) lat/lon real car position. */
-    CMR_CANID_CDC_POSE_ORIENTATION = 0x292,         /**< @brief CDC (20e) roll/pitch/yaw real car position. */
-    CMR_CANID_CDC_POSE_VELOCITY = 0x2A2,            /**< @brief CDC (20e) real car velocity. */
-    CMR_CANID_CDC_POSE_ACCELERATION = 0x2B2,        /**< @brief CDC (20e) real car acceleration. */
+    CMR_CANID_DCM_COG_VELOCITY = 0x2C2,        /**< @brief DCM (20e) real car acceleration. */
+    CMR_CANID_DCM_FRONT_VELOCITY = 0x2D2,        /**< @brief DCM (20e) real car acceleration. */
+    CMR_CANID_DCM_REAR_VELOCITY = 0x2E2,        /**< @brief DCM (20e) real car acceleration. */
 
-    CMR_CANID_CDC_COG_VELOCITY = 0x2C2,        /**< @brief CDC (20e) real car acceleration. */
-    CMR_CANID_CDC_FRONT_VELOCITY = 0x2D2,        /**< @brief CDC (20e) real car acceleration. */
-    CMR_CANID_CDC_REAR_VELOCITY = 0x2E2,        /**< @brief CDC (20e) real car acceleration. */
-
-    CMR_CANID_CDC_POWER_SENSE = 0x305,
-    CMR_CANID_CDC_RTC_DATA_OUT = 0x6A2,             /**< @brief CDC RTC data. */
-    CMR_CANID_CDC_RTC_DATA_IN = 0x6B2,              /**< @brief CDC RTC data. */
-    CMR_CANID_CDC_ODOMETER = 0x6C2,                 /**< @brief CDC Odometer data. */
-    CMR_CANID_CDC_CONTROLS_STATUS = 0x6D2,          /**< @brief CDC controls status data. */
-    CMR_CANID_CDC_POWER_UPDATE = 0x6E2,             /**< @brief DAQ Live to CDC - changing power limit. */
-    CMR_CANID_CDC_COULOMB_COUNTING = 0x6E3,
-    CMR_CANID_CDC_POWER_LOG = 0x6E4,             /**< @brief DAQ Live to CDC - changing power limit. */
+    CMR_CANID_DCM_POWER_SENSE = 0x305,
+    CMR_CANID_DCM_RTC_DATA_OUT = 0x6A2,             /**< @brief DCM RTC data. */
+    CMR_CANID_DCM_RTC_DATA_IN = 0x6B2,              /**< @brief DCM RTC data. */
+    CMR_CANID_DCM_ODOMETER = 0x6C2,                 /**< @brief DCM Odometer data. */
+    CMR_CANID_DCM_CONTROLS_STATUS = 0x6D2,          /**< @brief DCM controls status data. */
+    CMR_CANID_DCM_POWER_UPDATE = 0x6E2,             /**< @brief DAQ Live to DCM - changing power limit. */
+    CMR_CANID_DCM_COULOMB_COUNTING = 0x6E3,
+    CMR_CANID_DCM_POWER_LOG = 0x6E4,             /**< @brief DAQ Live to DCM - changing power limit. */
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
     CMR_CANID_CELL_BALANCE_ENABLE = 0x134,
@@ -93,44 +85,44 @@ typedef enum {
     CMR_CANID_DIM_ACTIONS = 0x515,              /**< @brief DIM action buttons pressed status and regen percentage. */
     CMR_CANID_DIM_ACKNOWLEDGE = 0x545,              /**< @brief DIM action buttons pressed status and regen percentage. */
 
-    /** @Note: The following CAN IDs are used for the dim-cdc driver configuration system.
+    /** @Note: The following CAN IDs are used for the dim-DCM driver configuration system.
      * If you wish to modify these, you must maintain the invariant that the number of config
      * packets is correct and the config packets are in the correct order with dim config packets
-     * first and then cdc config packets in ascending order. This is imperative to maintaining
+     * first and then DCM config packets in ascending order. This is imperative to maintaining
      * code modularity :)
     */
     CMR_CANID_DIM_CONFIG0_DRV0 = 0x600,         /**< @brief DIM config request */
     CMR_CANID_DIM_CONFIG1_DRV0 = 0x601,
     CMR_CANID_DIM_CONFIG2_DRV0 = 0x602,
     CMR_CANID_DIM_CONFIG3_DRV0 = 0x603,
-    CMR_CANID_CDC_CONFIG0_DRV0 = 0x604,
-    CMR_CANID_CDC_CONFIG1_DRV0 = 0x605,
-    CMR_CANID_CDC_CONFIG2_DRV0 = 0x606,
-    CMR_CANID_CDC_CONFIG3_DRV0 = 0x607,
+    CMR_CANID_DCM_CONFIG0_DRV0 = 0x604,
+    CMR_CANID_DCM_CONFIG1_DRV0 = 0x605,
+    CMR_CANID_DCM_CONFIG2_DRV0 = 0x606,
+    CMR_CANID_DCM_CONFIG3_DRV0 = 0x607,
     CMR_CANID_DIM_CONFIG0_DRV1 = 0x608,
     CMR_CANID_DIM_CONFIG1_DRV1 = 0x609,
     CMR_CANID_DIM_CONFIG2_DRV1 = 0x60a,
     CMR_CANID_DIM_CONFIG3_DRV1 = 0x60b,
-    CMR_CANID_CDC_CONFIG0_DRV1 = 0x60c,
-    CMR_CANID_CDC_CONFIG1_DRV1 = 0x60d,
-    CMR_CANID_CDC_CONFIG2_DRV1 = 0x60e,
-    CMR_CANID_CDC_CONFIG3_DRV1 = 0x60f,
+    CMR_CANID_DCM_CONFIG0_DRV1 = 0x60c,
+    CMR_CANID_DCM_CONFIG1_DRV1 = 0x60d,
+    CMR_CANID_DCM_CONFIG2_DRV1 = 0x60e,
+    CMR_CANID_DCM_CONFIG3_DRV1 = 0x60f,
     CMR_CANID_DIM_CONFIG0_DRV2 = 0x610,
     CMR_CANID_DIM_CONFIG1_DRV2 = 0x611,
     CMR_CANID_DIM_CONFIG2_DRV2 = 0x612,
     CMR_CANID_DIM_CONFIG3_DRV2 = 0x613,
-    CMR_CANID_CDC_CONFIG0_DRV2 = 0x614,
-    CMR_CANID_CDC_CONFIG1_DRV2 = 0x615,
-    CMR_CANID_CDC_CONFIG2_DRV2 = 0x616,
-    CMR_CANID_CDC_CONFIG3_DRV2 = 0x617,
+    CMR_CANID_DCM_CONFIG0_DRV2 = 0x614,
+    CMR_CANID_DCM_CONFIG1_DRV2 = 0x615,
+    CMR_CANID_DCM_CONFIG2_DRV2 = 0x616,
+    CMR_CANID_DCM_CONFIG3_DRV2 = 0x617,
     CMR_CANID_DIM_CONFIG0_DRV3 = 0x618,
     CMR_CANID_DIM_CONFIG1_DRV3 = 0x619,
     CMR_CANID_DIM_CONFIG2_DRV3 = 0x61a,
     CMR_CANID_DIM_CONFIG3_DRV3 = 0x61b,
-    CMR_CANID_CDC_CONFIG0_DRV3 = 0x61c,
-    CMR_CANID_CDC_CONFIG1_DRV3 = 0x61d,
-    CMR_CANID_CDC_CONFIG2_DRV3 = 0x61e,
-    CMR_CANID_CDC_CONFIG3_DRV3 = 0x61f,
+    CMR_CANID_DCM_CONFIG0_DRV3 = 0x61c,
+    CMR_CANID_DCM_CONFIG1_DRV3 = 0x61d,
+    CMR_CANID_DCM_CONFIG2_DRV3 = 0x61e,
+    CMR_CANID_DCM_CONFIG3_DRV3 = 0x61f,
 
 
     CMR_CANID_AFC0_FAN_STATUS = 0x236,          /**< @brief AFC 0 fan status. */
@@ -284,7 +276,6 @@ typedef enum {
     CMR_CANID_VSM_GIT = 0x7F1,
 	CMR_CANID_HVC_GIT = 0x7f2,
 	CMR_CANID_PTC_GIT = 0x7f3,
-	CMR_CANID_CDC_GIT = 0x7f4,
 	CMR_CANID_DIM_GIT = 0x7f5,
 	CMR_CANID_RAM_GIT = 0x7f6,
 
@@ -295,15 +286,6 @@ typedef enum {
     CMR_CANID_AS_RACK_DISPLACMENT = 0x192,      /**< @brief Rack Displacement Mesurment*/
     CMR_CANID_ASMS_STATE = 0x193,
 
-
-    //MAXON
-    CMR_CANID_MAXON_STATUS_WORD = 0x250,
-	CMR_CANID_MAXON_CONTROL_WORD = 0x201,
-	CMR_CANID_MAXON_VELOCITY_CAN_ID = 0x281,
-	CMR_CANID_CAN_MASTER = 0x00,
-	CMR_CANID_MAXON_HEARTBEAT = 0x701,
-	CMR_CANID_AMI_OCV_BUTTON = 0x167,
-	CMR_CANID_AMI_CURR_MISSION = 0x168,
 
     // TODO: change CAN IDs - need to be 11 bit
     CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_0_3 = 0x800,

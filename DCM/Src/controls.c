@@ -52,7 +52,7 @@ static bool launchControlActive = false;
 volatile cmr_can_solver_inputs_t solver_inputs;
 volatile cmr_can_solver_aux_t solver_aux;
 volatile cmr_can_solver_settings_t solver_settings;
-volatile cmr_canCDCWheelTorque_t solver_torques;
+volatile cmr_canDCMWheelTorque_t solver_torques;
 
 /* @brief For testing only; false = use calculated downforce */
 volatile bool use_true_downforce = false;
@@ -61,12 +61,12 @@ volatile bool use_true_downforce = false;
 extern volatile float odometer_km;
 
 /** @brief whether or not TC and YRC are enabled */
-static volatile cmr_canCDCControlsStatus_t controlsStatus = {
+static volatile cmr_canDCMControlsStatus_t controlsStatus = {
     .tcOn = (uint8_t)false,
     .yrcOn = (uint8_t)false
 };
 
-volatile cmr_canCDCKiloCoulombs_t coulombCounting;
+volatile cmr_canDCMKiloCoulombs_t coulombCounting;
 static float manual_cruise_control_speed;
 
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
@@ -175,8 +175,8 @@ void setControlsStatus(cmr_canGear_t gear) {
 }
 
 /** @brief get the a read-only pointer to controlsStatus */
-const volatile cmr_canCDCControlsStatus_t *getControlsStatus() {
-    return (const cmr_canCDCControlsStatus_t*) &controlsStatus;
+const volatile cmr_canDCMControlsStatus_t *getControlsStatus() {
+    return (const cmr_canDCMControlsStatus_t*) &controlsStatus;
 }
 
 // For sensor validation.

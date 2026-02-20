@@ -71,10 +71,10 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
         //more specific HVC checks within getBadModuleState - sendFirstError called there
     }
 
-    if (getBadModuleState(CANRX_HEARTBEAT_CDC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
+    if (getBadModuleState(CANRX_HEARTBEAT_DCM, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
-        badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_CDC;
-        sendFirstError(BADSTATE_CDC);
+        badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_DCM;
+        sendFirstError(BADSTATE_DCM);
     }
 
     if (getBadModuleState(CANRX_HEARTBEAT_DIM, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
