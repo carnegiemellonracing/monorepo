@@ -88,16 +88,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
-    },
-    [GPIO_MC_EFUSE_AUTO] = {
-        .port = GPIOC,
-        .init = {
-            .Pin = GPIO_PIN_11,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
+    }
 };
 /**
  * @brief Initializes the GPIO interface.

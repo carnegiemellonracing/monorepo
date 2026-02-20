@@ -219,6 +219,7 @@ static void motorsCommand (
         //                 dataFSM    -> throttlePosition,
         //                 dataFSM    -> brakePressureFront_PSI
         //                 );
+        // mcCtrlOn();
 
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
@@ -313,7 +314,7 @@ static void motorsCommand (
 
                 if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
                     mcCtrlOn();
-                } else
+                }
 
             	// fansOff();
             	//pumpsOff();
