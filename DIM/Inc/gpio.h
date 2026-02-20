@@ -46,7 +46,15 @@ typedef enum {
     SW_RIGHT
 } cmr_gpio_button_index;
 
-extern bool gpioButtonStates[NUM_BUTTONS];
+//extern bool gpioButtonStates[NUM_BUTTONS];
+
+typedef struct{
+	bool prevState;
+	bool isPressed; 
+	bool gpioState; 
+} button_t; 
+
+extern button_t buttonStates[NUM_BUTTONS]; 
 
 extern bool gpioLRUDStates[4];
 

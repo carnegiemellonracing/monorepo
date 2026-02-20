@@ -13,7 +13,10 @@
 
 #include "state.h"
 
-bool gpioButtonStates[NUM_BUTTONS];
+//bool gpioButtonStates[NUM_BUTTONS];
+
+button_t buttonStates[NUM_BUTTONS]; 
+
 
 gpio_t gpioButtonPins[NUM_BUTTONS] = {GPIO_BUTTON_UP, GPIO_BUTTON_DOWN, GPIO_BUTTON_LEFT,
 									GPIO_BUTTON_RIGHT, GPIO_BUTTON_SW_LEFT, GPIO_BUTTON_SW_RIGHT};
@@ -229,9 +232,14 @@ static void gpioReadButtons(void *pvParameters) {
 		}
 
         // Direct assignment for CAN buttons
+		
         for(int i=0; i<NUM_BUTTONS; i++){
 			// Active Low
-			gpioButtonStates[i] = !cmr_gpioRead(gpioButtonPins[i]);
+			buttonStates[i].gpioState = !cmr_gpioRead(gpioButtonPins[i]);
+			if (buttonStates[i].prevState != buttonStates[i].gpioState){
+				buttonStates[i].isPressed = buttonStates[i].gpioState;  
+			}
+			buttonStates[i].prevState = buttonStates[i].gpioState; 
         }
 		vTaskDelayUntil(&lastWakeTime, 100);
     }

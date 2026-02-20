@@ -350,8 +350,9 @@ static cmr_state getNextState(void) {
                 nextState = CONFIG;
                 flush_config_screen_to_cdc = false;
             }
-            else if(gpioButtonStates[RIGHT] && stateGetVSM() == CMR_CAN_RTD) {
+            else if(buttonStates[RIGHT].isPressed && stateGetVSM() == CMR_CAN_RTD) {
                 nextState = RACING;
+                buttonStates[RIGHT].isPressed = false; 
             }
             else {
                 nextState = NORMAL;
@@ -362,33 +363,38 @@ static cmr_state getNextState(void) {
                 nextState = NORMAL;
                 flush_config_screen_to_cdc = true;
             }
-            else if(gpioButtonStates[LEFT]) {
+            else if(buttonStates[LEFT].isPressed) {
                 //move left on screen
                 config_move_request = -1;
                 nextState = CONFIG;
+                buttonStates[LEFT].isPressed = false; 
             }
-            else if(gpioButtonStates[RIGHT]) {
+            else if(buttonStates[RIGHT].isPressed) {
                 //move right on screen
                 config_move_request = 1;
                 nextState = CONFIG;
+                buttonStates[RIGHT].isPressed = false; 
             }
-            else if(gpioButtonStates[UP]) {
+            else if(buttonStates[UP].isPressed) {
                 //move up on screen
                 config_move_request = -CONFIG_SCREEN_NUM_COLS;
                 nextState = CONFIG;
+                buttonStates[UP].isPressed = false; 
             }
-            else if(gpioButtonStates[DOWN]) {
+            else if(buttonStates[DOWN].isPressed) {
                 //move down on screen
                 config_move_request = CONFIG_SCREEN_NUM_COLS;
                 nextState = CONFIG;
+                buttonStates[DOWN].isPressed = false; 
             }
             else{
                 nextState = CONFIG;
             }
             break;
         case RACING:
-            if(gpioButtonStates[LEFT] && stateGetVSM() == CMR_CAN_RTD) {
+            if(buttonStates[LEFT].isPressed && stateGetVSM() == CMR_CAN_RTD) {
                 nextState = NORMAL;
+                buttonStates[LEFT].isPressed = false; 
             }
             else if(stateGetVSM() != CMR_CAN_RTD) {
                 nextState = NORMAL;
@@ -527,10 +533,12 @@ void reqVSM(void) {
         return;
     }
     if (getCurrState() != CONFIG) {
-        if (gpioButtonStates[UP]) {
+        if (buttonStates[UP].isPressed) {
             stateVSMUp();
-        } else if (gpioButtonStates[DOWN]) {
+            buttonStates[UP].isPressed = false; 
+        } else if (buttonStates[DOWN].isPressed) {
             stateVSMDown();
+            buttonStates[DOWN].isPressed = false; 
         }
         return;
     } 
@@ -551,38 +559,43 @@ void reqGear(void) {
     bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) 
                        || (stateGetVSM() == CMR_CAN_HV_EN));
     if(getASMS() && cmr_gpioRead(GPIO_CTRL_SWITCH)) {
-        if(canChangeGear && gpioButtonStates[RIGHT]) {
+        if(canChangeGear && buttonStates[RIGHT].isPressed) {
             if(state.gearReq == CMR_CAN_GEAR_DV_MISSION_MAX - 1) {
                 state.gearReq = CMR_CAN_GEAR_DV_MISSION_MIN + 1;
+                buttonStates[RIGHT].isPressed = false; 
             }
             else state.gearReq++;
         }
-        else if(canChangeGear && gpioButtonStates[LEFT]) {
+        else if(canChangeGear && buttonStates[LEFT].isPressed) {
             if(state.gearReq == CMR_CAN_GEAR_DV_MISSION_MIN + 1) {
                 state.gearReq = CMR_CAN_GEAR_DV_MISSION_MAX - 1;
+                buttonStates[LEFT].isPressed = false; 
             }
             else state.gearReq--;
         }
     }
     else if (!getASMS()) {
-        if(canChangeGear && gpioButtonStates[RIGHT]) {
+        if(canChangeGear && buttonStates[RIGHT].isPressed) {
             if(state.gearReq == CMR_CAN_GEAR_MAX - 1) {
                 state.gearReq = CMR_CAN_GEAR_MIN + 1;
             }
             else state.gearReq++;
+            buttonStates[RIGHT].isPressed = false; 
         }
-        else if(canChangeGear && gpioButtonStates[LEFT]) {
+        else if(canChangeGear && buttonStates[LEFT].isPressed) {
             if(state.gearReq == CMR_CAN_GEAR_MIN + 1) {
                 state.gearReq = CMR_CAN_GEAR_MAX - 1;
             }
             else state.gearReq--;
+            buttonStates[LEFT].isPressed = false; 
         }
     }
 }
 
 void reqDRS(void) {
-    if(gpioButtonStates[SW_RIGHT]) {
+    if(buttonStates[SW_RIGHT].isPressed) {
         state.drsReq = CMR_CAN_DRS_STATE_OPEN;
+        buttonStates[SW_RIGHT].isPressed = false; 
     }
     else {
         state.drsReq = CMR_CAN_DRS_STATE_CLOSED;
@@ -591,11 +604,13 @@ void reqDRS(void) {
 
 void reqDVCtrl(void) {
     if(cmr_gpioRead(GPIO_CTRL_SWITCH)) {
-        if(gpioButtonStates[RIGHT]) {
+        if(buttonStates[RIGHT].isPressed) {
             state.dvCtrlReq = (state.dvCtrlMode + 1) % NUM_DV_MODES;
+            buttonStates[RIGHT].isPressed = false; 
         }
-        else if(gpioButtonStates[LEFT]) {
+        else if(buttonStates[LEFT].isPressed) {
             state.dvCtrlReq = (state.dvCtrlMode - 1) % NUM_DV_MODES;
+            buttonStates[LEFT].isPressed = false; 
         }
     }
 }

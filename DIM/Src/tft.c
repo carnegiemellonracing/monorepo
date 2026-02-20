@@ -562,8 +562,8 @@ static void drawRTDScreen(void) {
     /* Pack Voltage */
     int32_t hvVoltage_mV = canHVCPackVoltage->battVoltage_mV;
 
-
-    float glvVoltage = ((float) canBMSLowVoltageStatus->vbatt_mV) * 2 / 15;
+    volatile cmr_canVSMPowerDiagnostics_t *vsmPowerDiagnostics = (volatile cmr_canVSMPowerDiagnostics_t *)getPayload(CANRX_VSM_POWER_DIAGNOSTICS); 
+    float glvVoltage = ((float) vsmPowerDiagnostics->busVoltage_mV)/1000; 
     //unsigned int voltage_mV = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
 //    float glvVoltage = ((float)cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV)) / 1000.0;
 

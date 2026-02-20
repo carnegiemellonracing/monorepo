@@ -90,6 +90,7 @@ typedef enum {
     CANRX_CDC_HEARTBEAT,
     CANRX_PACK_CELL_VOLTAGES,  /**< @brief Pack Cell Voltages for min and Max Cell */
     CANRX_EAB_STATUS,
+    CANRX_VSM_POWER_DIAGNOSTICS, 
     CANRX_LEN /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 

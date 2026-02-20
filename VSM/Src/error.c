@@ -173,8 +173,8 @@ static bool dimRequestIsValid(
     switch (dimRequestedState) {
         case CMR_CAN_RTD:
             if (
-                throttlePosition > 0 ||
-                brakePressureRear_PSI < brakePressureThreshold_PSI
+                false && (throttlePosition > 0 ||
+                brakePressureRear_PSI < brakePressureThreshold_PSI)
             ) {
                 valid = false;
             }
