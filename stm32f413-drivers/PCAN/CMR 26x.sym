@@ -797,8 +797,8 @@ Var=STATE_motor_power_RR unsigned 48,16
 [MOVELLA_STATUS]
 ID=772h
 DLC=26
-CycleTime=5
-TimeOut=25
+CycleTime=10
+TimeOut=50
 Var=STATUS_filter_mode_1 unsigned 0,8
 Var=STATUS_have_gnss_time_pulse unsigned 8,8
 Var=STATUS_rtk_status unsigned 16,8
