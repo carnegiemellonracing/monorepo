@@ -393,14 +393,24 @@ static bool getASEmergency(){
  * @brief Check all inverters if endurance mode. Else, check RR inverter
 */
 bool invertersPass(TickType_t lastWakeTime_ms){
-    cmr_canAMKActualValues1_t *amk1Actual = getPayload(CANRX_INVERTER_1);
-    cmr_canAMKActualValues1_t *amk2Actual = getPayload(CANRX_INVERTER_2);
-    cmr_canAMKActualValues1_t *amk3Actual = getPayload(CANRX_INVERTER_3);
-    cmr_canAMKActualValues1_t *amk4Actual = getPayload(CANRX_INVERTER_4);
+    cmr_canDTI_TX_TempFault_t *dti_fl_tempfault = getPayload(CANRX_FL_TEMPFAULT);
+    cmr_canDTI_TX_TempFault_t *dti_fr_tempfault = getPayload(CANRX_FR_TEMPFAULT);
+    cmr_canDTI_TX_TempFault_t *dti_rl_tempfault = getPayload(CANRX_RL_TEMPFAULT);
+    cmr_canDTI_TX_TempFault_t *dti_rr_tempfault = getPayload(CANRX_RR_TEMPFAULT);
+    cmr_canDTI_TX_IOStatus_t *dti_fl_io_status = getPayload(CANRX_FL_IO_STATUS);
+    cmr_canDTI_TX_IOStatus_t *dti_fr_io_status = getPayload(CANRX_FR_IO_STATUS);
+    cmr_canDTI_TX_IOStatus_t *dti_rl_io_status = getPayload(CANRX_RL_IO_STATUS);
+    cmr_canDTI_TX_IOStatus_t *dti_rr_io_status = getPayload(CANRX_RR_IO_STATUS);
     // TODO: change back before comp so that don't unnecessarily error out
     if (COMPETITION_MODE){
-        if (((amk1Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
-            !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_1]), lastWakeTime_ms))){
+        if (((!dti_fl_tempfault->fault_code) &&
+                !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_FL_TEMPFAULT]), lastWakeTime_ms)) ||
+            ((!dti_fr_tempfault->fault_code) &&
+                !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_FR_TEMPFAULT]), lastWakeTime_ms)) ||
+            ((!dti_rl_tempfault->fault_code) &&
+                !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_RL_TEMPFAULT]), lastWakeTime_ms)) ||
+            ((!dti_rr_tempfault->fault_code) &&
+                !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_RR_TEMPFAULT]), lastWakeTime_ms))){
                 return true;
         }
         else{
@@ -409,16 +419,17 @@ bool invertersPass(TickType_t lastWakeTime_ms){
         }
     }
     else{
-        if (((amk1Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
-            !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_1]), lastWakeTime_ms)) ||
-        ((amk2Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
-            !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_2]), lastWakeTime_ms)) ||
-        ((amk3Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
-            !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_3]), lastWakeTime_ms)) ||
-        ((amk4Actual->status_bv & CMR_CAN_AMK_STATUS_SYSTEM_READY) &&
-            !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_INVERTER_4]), lastWakeTime_ms))){
+        if (// TODO: change back before comp so that don't unnecessarily error out
+            ((!dti_fl_tempfault->fault_code) &&
+                !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_FL_TEMPFAULT]), lastWakeTime_ms)) &&
+            ((!dti_fr_tempfault->fault_code) &&
+                !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_FR_TEMPFAULT]), lastWakeTime_ms)) &&
+            ((!dti_rl_tempfault->fault_code) &&
+                !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_RL_TEMPFAULT]), lastWakeTime_ms)) &&
+            ((!dti_rr_tempfault->fault_code) &&
+                !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_RR_TEMPFAULT]), lastWakeTime_ms))
+            )
             return true;
-        }
         else{
             sendFirstError(INVERTER_ALL);
             return false;

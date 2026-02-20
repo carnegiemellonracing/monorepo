@@ -229,13 +229,21 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         &sensorList, SENSOR_CH_BPRES_PSI
     );
 
-    cmr_canAMKActualValues1_t *amk1Actual = getPayload(CANRX_INVERTER_1);
-    cmr_canAMKActualValues1_t *amk2Actual = getPayload(CANRX_INVERTER_2);
-    cmr_canAMKActualValues1_t *amk3Actual = getPayload(CANRX_INVERTER_3);
-    cmr_canAMKActualValues1_t *amk4Actual = getPayload(CANRX_INVERTER_4);
+    cmr_canDTI_TX_TempFault_t *dti_fl_tempfault = getPayload(CANRX_FL_TEMPFAULT);
+    cmr_canDTI_TX_TempFault_t *dti_fr_tempfault = getPayload(CANRX_FR_TEMPFAULT);
+    cmr_canDTI_TX_TempFault_t *dti_rl_tempfault = getPayload(CANRX_RL_TEMPFAULT);
+    cmr_canDTI_TX_TempFault_t *dti_rr_tempfault = getPayload(CANRX_RR_TEMPFAULT);
+    cmr_canDTI_TX_IOStatus_t *dti_fl_io_status = getPayload(CANRX_FL_IO_STATUS);
+    cmr_canDTI_TX_IOStatus_t *dti_fr_io_status = getPayload(CANRX_FR_IO_STATUS);
+    cmr_canDTI_TX_IOStatus_t *dti_rl_io_status = getPayload(CANRX_RL_IO_STATUS);
+    cmr_canDTI_TX_IOStatus_t *dti_rr_io_status = getPayload(CANRX_RR_IO_STATUS);
+    cmr_canDTI_RX_Message_t *dti_fl_erpm = getPayload(CANRX_FL_ERPM);
+    cmr_canDTI_RX_Message_t *dti_fr_erpm = getPayload(CANRX_FR_ERPM);
+    cmr_canDTI_RX_Message_t *dti_rl_erpm = getPayload(CANRX_RL_ERPM);
+    cmr_canDTI_RX_Message_t *dti_rr_erpm = getPayload(CANRX_RR_ERPM);
 
-    bool vehicleStill = (amk1Actual->velocity_rpm == 0) && (amk2Actual->velocity_rpm == 0) &&
-                        (amk3Actual->velocity_rpm == 0) && (amk4Actual->velocity_rpm == 0);
+    bool vehicleStill = (dti_fl_erpm->velocity_erpm == 0) && (dti_fr_erpm->velocity_erpm == 0) &&
+                        (dti_rl_erpm->velocity_erpm == 0) && (dti_rr_erpm->velocity_erpm == 0);
     
     //If need to go to AS Emergency do so immediatly
     if(EBSActive() && !getVehicleFinished(vehicleStill) && ASState){

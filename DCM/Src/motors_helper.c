@@ -1,6 +1,6 @@
 /**
  * @file motors_helper.c
- * @brief AMK quad-inverter helper.
+ * @brief DTI quad-inverter helper.
  *
  * @author Carnegie Mellon Racing
  */
