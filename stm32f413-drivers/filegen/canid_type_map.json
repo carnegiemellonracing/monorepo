@@ -914,8 +914,8 @@
             "type": "cmr_canHVCPackCurrent_t"
         },
         "CMR_CANID_HV_SENSORS": {
-            "cycleTime": 100,
-            "timeOut": 500,
+            "cycleTime": 5,
+            "timeOut": 25,
             "type": "cmr_canHVSense_t"
         },
         "CMR_CANID_LVBMS_BUS_VOLTAGE": {
@@ -1037,8 +1037,8 @@
             "type": "cmr_canCDCSafetyFilterStates_t"
         },
         "CMR_CANID_TEST_ID": {
-            "cycleTime": "can10Hz_period_ms\n            //",
-            "timeOut": "5*can10Hz_period_ms\n            //",
+            "cycleTime": 1000,
+            "timeOut": 5000,
             "type": "cmr_canDAQTest_t"
         },
         "CMR_CANID_VSM_FIRST_ERROR": {
@@ -1104,15 +1104,15 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2882,
-        "files_with_matches": 2882,
+        "files_processed": 2816,
+        "files_with_matches": 2816,
         "global_mappings": {
             "canrx_mappings": 104,
             "canrx_timeouts": 103,
             "canrx_types": 59,
             "constants": 232,
             "struct_members": 0,
-            "variable_types": 308
+            "variable_types": 310
         },
         "prefixes_used": [
             "CMR_CANID_",

@@ -191,15 +191,15 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
     updateErrorsAndWarnings(lastWakeTime_ms);
 
     //If RES triggered stop everything
-    if(RESTriggered() && ASState){
-        return CMR_CAN_VSM_STATE_AS_EMERGENCY;
-    }
+    // if(RESTriggered() && ASState){
+    //     return CMR_CAN_VSM_STATE_AS_EMERGENCY;
+    // }
 
     // TE (Immediately return error if anything is wrong)
     if ((vsmStatus.heartbeatErrors != CMR_CAN_ERROR_NONE)
      || (vsmStatus.canVSMStatus.moduleTimeoutMatrix != CMR_CAN_VSM_ERROR_SOURCE_NONE)
      || (vsmStatus.canVSMStatus.latchMatrix != CMR_CAN_VSM_LATCH_NONE)
-     || (ASState != getASMSState())) {
+     /*|| (ASState != getASMSState())*/) {
         return CMR_CAN_VSM_STATE_ERROR;
     }
 
@@ -373,9 +373,9 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         case CMR_CAN_VSM_STATE_HV_EN: {
             // T6
             if (dimRequestedState == CMR_CAN_RTD) {
-                if (
-                    throttlePosition <= 5 &&
-                    brakePressureRear_PSI >= brakePressureThreshold_PSI
+                if (true || 
+                    (throttlePosition <= 5 &&
+                    brakePressureRear_PSI >= brakePressureThreshold_PSI)
                 ) {
                     nextState = CMR_CAN_VSM_STATE_RTD;
                 } else {

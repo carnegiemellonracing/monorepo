@@ -9,32 +9,45 @@ used_varnames = []
 used_canids = [] #delete once canids fixed, shouldn't need 
 
 def numbercanids():
-    #for can id file numbering 
-    canidfile = "stm32f413-drivers/CMR/include/CMR/can_ids.h" 
-    atIDs = False 
-    num = 0; 
-    lines = [] 
-    with open(canidfile, "r") as f:
-        for line in f: 
-            if "}" in line: #dumb way to look at only ids.... can't think of another rn
-                atIDs = False 
-            if bool(atIDs) and "CAN_ID" in line or "CANID" in line: #we should standardize can id names ... 
-                findnum = re.search(r"0x[0-9A-Fa-f]+", line) 
-                if findnum: #if a hex number is in line  
-                    num = int(findnum.group(), 16) 
-                else: #not numbered, use prev then store 
-                    line = line.split(",")[0] 
-                    line += " = " + hex(num + 1) + ",\n" 
-                    num += 1 
-                if "+ CMR" in line: #hard coded offset for now
-                    line = line.split("=")[0] 
-                    line += "= " + hex(num + 928) + ",\n" 
-            if "enum" in line: #can also use { to parallel 
-                atIDs = True 
-            lines.append(line) 
+    canidfile = "stm32f413-drivers/CMR/include/CMR/can_ids.h"
+    atIDs = False
+    num = 0
+    lines = []
 
-    with open("stm32f413-drivers/CMR/include/CMR/can_ids.h", "w") as f:
-        f.write("".join(lines)) 
+    with open(canidfile, "r") as f:
+        for line in f:
+            # track enum scope
+            if "enum" in line:
+                atIDs = True
+            if "}" in line:
+                atIDs = False
+
+            # only operate inside enum, and only on relevant lines
+            if atIDs and ("CAN_ID" in line or "CANID" in line):
+                # If line alr has explicit assignment, dont touch it.
+                if "=" in line:
+                    hexm = re.search(r"0x[0-9A-Fa-f]+", line)
+                    if hexm:
+                        num = int(hexm.group(), 16)
+                    lines.append(line)
+                    continue
+
+                # No explicit assignment so auto-number it
+                base = line.split(",")[0]
+                base = base.rstrip()
+
+                num += 1
+                if "+ CMR" in line:
+                    value = num + 928
+                else:
+                    value = num
+
+                line = f"{base} = {hex(value)},\n"
+
+            lines.append(line)
+
+    with open(canidfile, "w") as f:
+        f.write("".join(lines))
 
 def id2hex(id):
     #uses can_ids.h to map id(from canid_type_map) to the hex number
@@ -225,9 +238,7 @@ def main():
         json_obj = json.load(file)
         canids = json_obj['canid_to_info']
         for canid in canids: 
-            #go through each can id dict
-            if canid == "CMR_CANID_MOVELLA_STATUS":
-                continue  #skip this canid for now, will pull from 25e.sym
+            #go through each can id dict 
             canid_data = canids[canid]
             cantype = canid_data['type']
             cycletime = extract_numeric_value(canid_data['cycleTime'])  # Extract and convert to integer
