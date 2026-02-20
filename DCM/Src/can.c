@@ -863,21 +863,11 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_SETPOINT, &speedSetpoint, sizeof(speedSetpoint), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX200Hz_period_ms);
 
-<<<<<<< HEAD
-        // // Forward Movella status to Vehicle CAN at 200Hz.
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOVELLA_STATUS, movellaStatus, sizeof(cmr_canMovellaStatus_t), canTX200Hz_period_ms);
-    
-        // Forward AMK messages to vehicle CAN at 200Hz.
-        // for (size_t i = 0; i <= CANRX_TRAC_INV_RR_ACT2; i++) {
-        //     // Do not transmit if we haven't received that message lately
-        //     if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
-=======
 
         // Forward DTI messages to vehicle CAN at 200Hz.
         for (size_t i = 0; i <= CANRX_TRAC_LEN; i++) {
             // Do not transmit if we haven't received that message lately
             if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
->>>>>>> 26x_TS_DTI_dev
 
             canTX(
                 CMR_CAN_BUS_VEH,
@@ -1212,31 +1202,15 @@ void canInit(void) {
                   0, &conditionalCallback, GPIOA,
                   GPIO_PIN_11,        // CAN1 RX port/pin.
                   GPIOA, GPIO_PIN_12  // CAN1 TX port/pin.
-<<<<<<< HEAD
     );
 
     // Tractive CAN initialization. - CAN3
     cmr_FDcanInit(&(can[CMR_CAN_BUS_DAQ]), FDCAN2, CMR_CAN_BITRATE_500K, NULL,
                   0, &conditionalCallback, GPIOB,
-=======
-    );
-
-    // DAQ CAN initialization. - CAN2
-    cmr_FDcanInit(&(can[CMR_CAN_BUS_DAQ]), FDCAN2, CMR_CAN_BITRATE_500K, NULL,
-                  0, &conditionalCallback, GPIOB,
-                  GPIO_PIN_12,        // CAN2 RX port/pin.
-                  GPIOB, GPIO_PIN_13  // CAN2 TX port/pin.
-    );
-
-    // Tractive CAN initialization. - CAN3
-    cmr_FDcanInit(&can[CMR_CAN_BUS_TRAC], FDCAN3, CMR_CAN_BITRATE_125K, NULL,
-                  0, &conditionalCallback, GPIOD,
->>>>>>> 26x_TS_DTI_dev
                   GPIO_PIN_12,        // CAN3 RX port/pin.
                   GPIOB, GPIO_PIN_13  // CAN3 TX port/pin.
     );
 
-<<<<<<< HEAD
     // DAQ CAN init. - CAN2
     cmr_FDcanInit(&can[CMR_CAN_BUS_TRAC], FDCAN3, CMR_CAN_BITRATE_500K, NULL,
                   0, &conditionalCallback, GPIOD,
@@ -1244,8 +1218,6 @@ void canInit(void) {
                   GPIOD, GPIO_PIN_13  // CAN2 TX port/pin.
     );
 
-=======
->>>>>>> 26x_TS_DTI_dev
     // Vehicle CAN filters.
     const cmr_canFilter_t canVehicleFilters[] = {
         {
