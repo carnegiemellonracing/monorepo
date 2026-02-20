@@ -83,6 +83,10 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
         sendFirstError(BADSTATE_DIM);
     }
 
+    // if (cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_IN) > 18000 && cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_OUT) < 10000){
+    //     heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE; 
+    //     sendFirstError(BADSTATE_VSM); 
+    // }
     // Set software latch in the event of BMS voltage or temperature errors.
     // See rule EV 5.1.10.
     // cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);

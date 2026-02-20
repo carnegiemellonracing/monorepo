@@ -85,12 +85,12 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
     },
-    [CANRX_RES] = {
-            .canID = CMR_CANID_AS_RES,
-            .timeoutError_ms = 100,
-            .timeoutWarn_ms = 25,
-            .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT
-    },
+    // [CANRX_RES] = {
+    //         .canID = CMR_CANID_AS_RES,
+    //         .timeoutError_ms = 100,
+    //         .timeoutWarn_ms = 25,
+    //         .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT
+    // },
     [CANRX_AS_PRESSURE_READING] = {
             .canID = CMR_CANID_AS_PRESSURE_READINGS,
             .timeoutError_ms = 100,

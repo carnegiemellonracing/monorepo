@@ -48,7 +48,7 @@ static inline bool sendUartStackWrite(  uint16_t registerAddress,
 void txToRxDelay(uint8_t delay);
 void byteDelay(uint8_t delay);
 
-void turnOn() {
+bool turnOn() {
 
 	//Turn On Ping
 	// HAL_Delay(100);

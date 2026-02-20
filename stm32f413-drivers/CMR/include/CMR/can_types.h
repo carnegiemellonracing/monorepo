@@ -168,8 +168,8 @@ typedef enum {
 
 /** @brief Represents the car's current driving mode (gear). */
 typedef enum {
-    CMR_CAN_GEAR_MIN = 0,
     CMR_CAN_GEAR_UNKNOWN,   /**< @brief Unknown Gear State */
+    CMR_CAN_GEAR_MIN = 1,
     CMR_CAN_GEAR_SLOW,          /**< @brief Slow mode */
     CMR_CAN_GEAR_FAST,          /**< @brief Fast simple mode */
     CMR_CAN_GEAR_ENDURANCE,     /**< @brief Endurance-event mode */
