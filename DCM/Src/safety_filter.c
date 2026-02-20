@@ -559,7 +559,7 @@ void setTorqueLimsProtected (
     motorPower_state.motor_power_FL = falloff_factor_by_cell_voltage_rise;//getMotorPower(MOTOR_FL, pack_voltage_V);
     motorPower_state.motor_power_FR = falloff_factor_by_cell_voltage_drop;//getMotorPower(MOTOR_FR, pack_voltage_V);
     motorPower_state.motor_power_RL = falloff_factor_by_temperature; //getMotorPower(MOTOR_RL, pack_voltage_V);
-    motorPower_state.motor_power_RR = falloff_factor_by_pack_power; getMotorPower(MOTOR_RR, pack_voltage_V);
+    motorPower_state.motor_power_RR = falloff_factor_by_pack_power; //getMotorPower(MOTOR_RR, pack_voltage_V);
 }
 
 const cmr_canCDCSafetyFilterStates_t *getSafetyFilterInfo(){

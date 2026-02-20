@@ -10,12 +10,22 @@
 #ifndef CMR_CAN_IDS_H
 #define CMR_CAN_IDS_H
 
+#include "stdint.h"
+
 /** @brief The RMS motor controller allows a configurable offset for
  *  all CAN message addresses. Ours is set to this value.
  */
 #define CMR_CANID_RMS_OFFSET    0x3A0
 #define NUM_CONFIG_PACKETS 4 
 #define CONTROLLER_ID 120
+
+/** @brief For DTI Motors converts node and packet ID to a valid CAN ID*/
+#define PACKET_NODE_TO_CAN_ID(packet,node)  (((uint16_t) packet << 5) | ((uint16_t) node))
+#define FL_NODE_ID 1
+#define FR_NODE_ID 2
+#define RR_NODE_ID 3
+#define RL_NODE_ID 4
+#define DRIVE_EN_NODE_ID 0x1F
 
 /** @brief CAN IDs. */
 typedef enum {
@@ -132,7 +142,6 @@ typedef enum {
     CMR_CANID_CDC_CONFIG2_DRV3 = 0x61e,
     CMR_CANID_CDC_CONFIG3_DRV3 = 0x61f,
 
-
     CMR_CANID_AFC0_FAN_STATUS = 0x236,          /**< @brief AFC 0 fan status. */
     CMR_CANID_AFC0_DRIVER_TEMPS = 0x536,        /**< @brief AFC 0 temperatures. */
     CMR_CANID_AFC0_POWER_DIAGNOSTICS = 0x546,   /**< @brief AFC 0 power diagnostics. */
@@ -142,27 +151,72 @@ typedef enum {
     CMR_CANID_AFC1_POWER_DIAGNOSTICS = 0x547,   /**< @brief AFC 1 power diagnostics. */
 
     CMR_CANID_DRS_STATE = 0x52C,                /**< @brief DRS state values.*/
-	CMR_CANID_SF_STATE = 0x52D,				/**< @brief Safety Filter state. */
-    CMR_CANID_MOTORPOWER_STATE = 0x52E,				/**< @brief Motor Power state. */
+	CMR_CANID_SF_STATE = 0x52D,				    /**< @brief Safety Filter state. */
+    CMR_CANID_MOTORPOWER_STATE = 0x52E,		    /**< @brief Motor Power state. */
 
-    // FL
-    CMR_CANID_AMK_FL_ACT_1 = 0x288,              /**< @brief AMK Inverter 4 actual values 1.*/
-    CMR_CANID_AMK_FL_ACT_2 = 0x28A,              /**< @brief AMK Inverter 4 actual values 2.*/
-    CMR_CANID_AMK_FL_SETPOINTS = 0x189,
+    /** @brief CAN IDs for the Front Left (FL) Motor Controller. */
+    CMR_CANID_DTI_FL_CONTROL_STATUS = PACKET_NODE_TO_CAN_ID(0x1F, FL_NODE_ID),  /**< @brief FL Control mode, Target Iq, motor position, isMotorStill */
+    CMR_CANID_DTI_FL_ERPM           = PACKET_NODE_TO_CAN_ID(0x20, FL_NODE_ID),  /**< @brief FL ERPM, Duty, Input Voltage */
+    CMR_CANID_DTI_FL_CURRENT        = PACKET_NODE_TO_CAN_ID(0x21, FL_NODE_ID),  /**< @brief FL AC Current, DC Current */
+    CMR_CANID_DTI_FL_TEMPFAULT      = PACKET_NODE_TO_CAN_ID(0x22, FL_NODE_ID),  /**< @brief FL Controller Temp., Motor Temp., Fault code */
+    CMR_CANID_DTI_FL_IDIQ           = PACKET_NODE_TO_CAN_ID(0x23, FL_NODE_ID),  /**< @brief FL Id, Iq values */
+    CMR_CANID_DTI_FL_IO_STATUS      = PACKET_NODE_TO_CAN_ID(0x24, FL_NODE_ID),  /**< @brief FL Throttle signal, Brake signal, Digital I/Os, Drive enable, Limit status bits */
+    CMR_CANID_DTI_FL_ACLIMS         = PACKET_NODE_TO_CAN_ID(0x25, FL_NODE_ID),  /**< @brief FL Cfg max AC, avail max AC, cfg min AC, avail min AC */
+    CMR_CANID_DTI_FL_DCLIMS         = PACKET_NODE_TO_CAN_ID(0x26, FL_NODE_ID),  /**< @brief FL Cfg max DC, avail max DC, cfg min DC, avail min DC */
+    CMR_CANID_DTI_FL_VELOCITY       = PACKET_NODE_TO_CAN_ID(0x03, FL_NODE_ID),  /**< @brief FL Velocity (rpm). */
+    CMR_CANID_DTI_FL_SET_TORLIMPOS  = PACKET_NODE_TO_CAN_ID(0x08, FL_NODE_ID),  /**< @brief FL Set Positive torque limit */
+    CMR_CANID_DTI_FL_SET_TORLIMNEG  = PACKET_NODE_TO_CAN_ID(0x09, FL_NODE_ID),  /**< @brief FL Set Negative torque limit */
+    CMR_CANID_DTI_FL_SET_CURRENT    = PACKET_NODE_TO_CAN_ID(0x01, FL_NODE_ID),  /**< @brief FL Set Torque */
 
-    CMR_CANID_AMK_FR_ACT_1 = 0x284,              /**< @brief AMK Inverter 2 actual values 1.*/
-    CMR_CANID_AMK_FR_ACT_2 = 0x286,              /**< @brief AMK Inverter 2 actual values 2.*/
-    CMR_CANID_AMK_FR_SETPOINTS = 0x185,          /**< @brief AMK Inverter 2 setpoints.*/
+    /** @brief CAN IDs for the Front Right (FR) Motor Controller. */
+    CMR_CANID_DTI_FR_CONTROL_STATUS = PACKET_NODE_TO_CAN_ID(0x1F, FR_NODE_ID),  /**< @brief FR Control mode, Target Iq, motor position, isMotorStill */
+    CMR_CANID_DTI_FR_ERPM           = PACKET_NODE_TO_CAN_ID(0x20, FR_NODE_ID),  /**< @brief FR ERPM, Duty, Input Voltage */
+    CMR_CANID_DTI_FR_CURRENT        = PACKET_NODE_TO_CAN_ID(0x21, FR_NODE_ID),  /**< @brief FR AC Current, DC Current */
+    CMR_CANID_DTI_FR_TEMPFAULT      = PACKET_NODE_TO_CAN_ID(0x22, FR_NODE_ID),  /**< @brief FR Controller Temp., Motor Temp., Fault code */
+    CMR_CANID_DTI_FR_IDIQ           = PACKET_NODE_TO_CAN_ID(0x23, FR_NODE_ID),  /**< @brief FR Id, Iq values */
+    CMR_CANID_DTI_FR_IO_STATUS      = PACKET_NODE_TO_CAN_ID(0x24, FR_NODE_ID),  /**< @brief FR Throttle signal, Brake signal, Digital I/Os, Drive enable, Limit status bits */
+    CMR_CANID_DTI_FR_ACLIMS         = PACKET_NODE_TO_CAN_ID(0x25, FR_NODE_ID),  /**< @brief FR Cfg max AC, avail max AC, cfg min AC, avail min AC */
+    CMR_CANID_DTI_FR_DCLIMS         = PACKET_NODE_TO_CAN_ID(0x26, FR_NODE_ID),  /**< @brief FR Cfg max DC, avail max DC, cfg min DC, avail min DC */
+    CMR_CANID_DTI_FR_VELOCITY       = PACKET_NODE_TO_CAN_ID(0x03, FR_NODE_ID),  /**< @brief FR Velocity (rpm). */
+    CMR_CANID_DTI_FR_SET_TORLIMPOS  = PACKET_NODE_TO_CAN_ID(0x08, FR_NODE_ID),  /**< @brief FR Set Positive torque limit */
+    CMR_CANID_DTI_FR_SET_TORLIMNEG  = PACKET_NODE_TO_CAN_ID(0x09, FR_NODE_ID),  /**< @brief FR Set Negative torque limit */
+    CMR_CANID_DTI_FR_SET_CURRENT    = PACKET_NODE_TO_CAN_ID(0x01, FR_NODE_ID),  /**< @brief FR Set Torque */
+
+    /** @brief CAN IDs for the Rear Left (RL) Motor Controller. */
+    CMR_CANID_DTI_RL_CONTROL_STATUS = PACKET_NODE_TO_CAN_ID(0x1F, RL_NODE_ID),  /**< @brief RL Control mode, Target Iq, motor position, isMotorStill */
+    CMR_CANID_DTI_RL_ERPM           = PACKET_NODE_TO_CAN_ID(0x20, RL_NODE_ID),  /**< @brief RL ERPM, Duty, Input Voltage */
+    CMR_CANID_DTI_RL_CURRENT        = PACKET_NODE_TO_CAN_ID(0x21, RL_NODE_ID),  /**< @brief RL AC Current, DC Current */
+    CMR_CANID_DTI_RL_TEMPFAULT      = PACKET_NODE_TO_CAN_ID(0x22, RL_NODE_ID),  /**< @brief RL Controller Temp., Motor Temp., Fault code */
+    CMR_CANID_DTI_RL_IDIQ           = PACKET_NODE_TO_CAN_ID(0x23, RL_NODE_ID),  /**< @brief RL Id, Iq values */
+    CMR_CANID_DTI_RL_IO_STATUS      = PACKET_NODE_TO_CAN_ID(0x24, RL_NODE_ID),  /**< @brief RL Throttle signal, Brake signal, Digital I/Os, Drive enable, Limit status bits */
+    CMR_CANID_DTI_RL_ACLIMS         = PACKET_NODE_TO_CAN_ID(0x25, RL_NODE_ID),  /**< @brief RL Cfg max AC, avail max AC, cfg min AC, avail min AC */
+    CMR_CANID_DTI_RL_DCLIMS         = PACKET_NODE_TO_CAN_ID(0x26, RL_NODE_ID),  /**< @brief RL Cfg max DC, avail max DC, cfg min DC, avail min DC */
+    CMR_CANID_DTI_RL_VELOCITY       = PACKET_NODE_TO_CAN_ID(0x03, RL_NODE_ID),  /**< @brief RL Velocity (rpm). */
+    CMR_CANID_DTI_RL_SET_TORLIMPOS  = PACKET_NODE_TO_CAN_ID(0x08, RL_NODE_ID),  /**< @brief RL Set Positive torque limit */
+    CMR_CANID_DTI_RL_SET_TORLIMNEG  = PACKET_NODE_TO_CAN_ID(0x09, RL_NODE_ID),  /**< @brief RL Set Negative torque limit */
+    CMR_CANID_DTI_RL_SET_CURRENT    = PACKET_NODE_TO_CAN_ID(0x01, RL_NODE_ID),  /**< @brief RL Set Torque */
+
+    /** @brief CAN IDs for the Rear Right (RR) Motor Controller. */
+    CMR_CANID_DTI_RR_CONTROL_STATUS = PACKET_NODE_TO_CAN_ID(0x1F, RR_NODE_ID),  /**< @brief RR Control mode, Target Iq, motor position, isMotorStill */
+    CMR_CANID_DTI_RR_ERPM           = PACKET_NODE_TO_CAN_ID(0x20, RR_NODE_ID),  /**< @brief RR ERPM, Duty, Input Voltage */
+    CMR_CANID_DTI_RR_CURRENT        = PACKET_NODE_TO_CAN_ID(0x21, RR_NODE_ID),  /**< @brief RR AC Current, DC Current */
+    CMR_CANID_DTI_RR_TEMPFAULT      = PACKET_NODE_TO_CAN_ID(0x22, RR_NODE_ID),  /**< @brief RR Controller Temp., Motor Temp., Fault code */
+    CMR_CANID_DTI_RR_IDIQ           = PACKET_NODE_TO_CAN_ID(0x23, RR_NODE_ID),  /**< @brief RR Id, Iq values */
+    CMR_CANID_DTI_RR_IO_STATUS      = PACKET_NODE_TO_CAN_ID(0x24, RR_NODE_ID),  /**< @brief RR Throttle signal, Brake signal, Digital I/Os, Drive enable, Limit status bits */
+    CMR_CANID_DTI_RR_ACLIMS         = PACKET_NODE_TO_CAN_ID(0x25, RR_NODE_ID),  /**< @brief RR Cfg max AC, avail max AC, cfg min AC, avail min AC */
+    CMR_CANID_DTI_RR_DCLIMS         = PACKET_NODE_TO_CAN_ID(0x26, RR_NODE_ID),  /**< @brief RR Cfg max DC, avail max DC, cfg min DC, avail min DC */
+    CMR_CANID_DTI_RR_VELOCITY       = PACKET_NODE_TO_CAN_ID(0x03, RR_NODE_ID),  /**< @brief RR Velocity (rpm). */
+    CMR_CANID_DTI_RR_SET_TORLIMPOS  = PACKET_NODE_TO_CAN_ID(0x08, RR_NODE_ID),  /**< @brief RR Set Positive torque limit */
+    CMR_CANID_DTI_RR_SET_TORLIMNEG  = PACKET_NODE_TO_CAN_ID(0x09, RR_NODE_ID),  /**< @brief RR Set Negative torque limit */
+    CMR_CANID_DTI_RR_SET_CURRENT    = PACKET_NODE_TO_CAN_ID(0x01, RR_NODE_ID),  /**< @brief RR Set Torque */
     
-    // RL
-    CMR_CANID_AMK_RL_ACT_1 = 0x287,              /**< @brief AMK Inverter 3 actual values 1.*/
-    CMR_CANID_AMK_RL_ACT_2 = 0x289,              /**< @brief AMK Inverter 3 actual values 2.*/
-    CMR_CANID_AMK_RL_SETPOINTS = 0x188,          /**< @brief AMK Inverter 3 setpoints.*/
-    
-    // RR
-    CMR_CANID_AMK_RR_ACT_1 = 0x283,              /**< @brief AMK Inverter 1 actual values 1.*/
-    CMR_CANID_AMK_RR_ACT_2 = 0x285,              /**< @brief AMK Inverter 1 actual values 2.*/
-    CMR_CANID_AMK_RR_SETPOINTS = 0x184,          /**< @brief AMK Inverter 1 setpoints.*/
+    CMR_CANID_DTI_SET_DRIVE_EN   = PACKET_NODE_TO_CAN_ID(0x0C, DRIVE_EN_NODE_ID),  /**< @brief Set Drive Enable Broadcast Message */
+    CMR_CANID_DTI_ERROR_MESSAGES    = 0x305,
+
+    CMR_CANID_DTI_FL_TEST = 0x320,
+    CMR_CANID_DTI_FR_TEST = 0x321,
+    CMR_CANID_DTI_RL_TEST = 0x322,
+    CMR_CANID_DTI_RR_TEST = 0x323,
 
     CMR_CANID_RMS_TEMPA = 0x3a0,
     CMR_CANID_RMS_TEMPB = 0x3a1,
@@ -175,7 +229,6 @@ typedef enum {
     CMR_CANID_RMS_COMMAND = 0x3c0,
     CMR_CANID_RMS_PARAM_REQ = 0x3c1,
     CMR_CANID_RMS_PARAM_RES = 0x3c2,
-
 
     // BMS CAN Structs
     CMR_CANID_HVBMS_MIN_MAX_CELL_VOLTAGE = 0x310,                  /**< @brief HVC Max/Min Cell Voltage. */

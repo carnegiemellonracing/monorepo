@@ -90,9 +90,8 @@ int main(void) {
     // time_OSQPControls(0, 0, 0, 0, 0, 0, true, true, false, 0);
 
     // Peripheral configuration.
-
     gpioInit();
-    i2cInit();
+    // i2cInit();
     canInit();
     adcInit();
     // servoInit();

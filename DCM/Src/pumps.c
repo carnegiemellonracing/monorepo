@@ -69,14 +69,14 @@ void pumpsOn() {
     // linear in between
 
     // Get igbt temperatures for each inverter.
-    cmr_canAMKActualValues2_t *inv1_temps = (cmr_canAMKActualValues2_t *) canTractiveGetPayload(CANRX_TRAC_INV_FL_ACT2);
-    int16_t inv1MotorTemp_dC = inv1_temps->motorTemp_dC;
-    cmr_canAMKActualValues2_t *inv2_temps = (cmr_canAMKActualValues2_t *) canTractiveGetPayload(CANRX_TRAC_INV_FR_ACT2);
-    int16_t inv2MotorTemp_dC = inv2_temps->motorTemp_dC;
-    cmr_canAMKActualValues2_t *inv3_temps = (cmr_canAMKActualValues2_t *) canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT2);
-    int16_t inv3MotorTemp_dC = inv3_temps->motorTemp_dC;
-    cmr_canAMKActualValues2_t *inv4_temps = (cmr_canAMKActualValues2_t *) canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT2);
-    int16_t inv4MotorTemp_dC = inv4_temps->motorTemp_dC;
+    cmr_canDTI_TX_TempFault_t *inv1_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_FL_TEMPFAULT);
+    int16_t inv1MotorTemp_dC = inv1_temps->motor_temp;
+    cmr_canDTI_TX_TempFault_t *inv2_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_FR_TEMPFAULT);
+    int16_t inv2MotorTemp_dC = inv2_temps->motor_temp;
+    cmr_canDTI_TX_TempFault_t *inv3_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_RL_TEMPFAULT);
+    int16_t inv3MotorTemp_dC = inv3_temps->motor_temp;
+    cmr_canDTI_TX_TempFault_t *inv4_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_RR_TEMPFAULT);
+    int16_t inv4MotorTemp_dC = inv4_temps->motor_temp;
 
     int16_t motor_temp_avg = (inv1MotorTemp_dC + inv2MotorTemp_dC + inv3MotorTemp_dC + inv4MotorTemp_dC) / 4;
 
@@ -90,10 +90,10 @@ void pumpsOn() {
     pump_1_State = (pump_1_State < 100) ? pump_1_State : 100;
 
     // Get igbt temperatures for each inverter.
-    int16_t inv1IgbtTemp_dC = inv1_temps->igbtTemp_dC;
-    int16_t inv2IgbtTemp_dC = inv2_temps->igbtTemp_dC;
-    int16_t inv3IgbtTemp_dC = inv3_temps->igbtTemp_dC;
-    int16_t inv4IgbtTemp_dC = inv4_temps->igbtTemp_dC;
+    int16_t inv1IgbtTemp_dC = inv1_temps->ctlr_temp;
+    int16_t inv2IgbtTemp_dC = inv2_temps->ctlr_temp;
+    int16_t inv3IgbtTemp_dC = inv3_temps->ctlr_temp;
+    int16_t inv4IgbtTemp_dC = inv4_temps->ctlr_temp;
 
     // Use average igbt temperature - derates at 50C
     int16_t inverter_temp = (inv1IgbtTemp_dC + inv2IgbtTemp_dC + inv3IgbtTemp_dC + inv4IgbtTemp_dC) / 4;

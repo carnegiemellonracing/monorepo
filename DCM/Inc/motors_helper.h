@@ -1,6 +1,6 @@
 /**
  * @file motors_helper.h
- * @brief AMK quad-inverter helper.
+ * @brief DTI inverter helper.
  *
  * @author Carnegie Mellon Racing
  */
@@ -13,11 +13,6 @@
 #include <stddef.h>
 #include <CMR/can_types.h>
 
-// ------------------------------------------------------------------------------------------------
-// Constants
-
-extern const float torqueIncrement_Nm;
-extern const float rpm_to_mV_factor;
 
 // ------------------------------------------------------------------------------------------------
 // Enums/Structs
@@ -48,9 +43,15 @@ typedef struct {
 // ------------------------------------------------------------------------------------------------
 // Public Function Declarations
 
-int16_t convertNmToAMKTorque(float torque_Nm);
-volatile cmr_canAMKActualValues1_t *getMotorActualValues1(motorLocation_t motor);
-volatile cmr_canAMKActualValues2_t *getMotorActualValues2(motorLocation_t motor);
+int16_t convertNmToDTITorque(float torque_Nm);
+volatile cmr_canDTI_TX_Erpm_t *getDTIErpm(motorLocation_t motor);
+volatile cmr_canDTI_TX_Current_t *getDTICurrent(motorLocation_t motor);
+volatile cmr_canDTI_TX_TempFault_t *getDTITempFault(motorLocation_t motor);
+volatile cmr_canDTI_TX_IdIq_t *getDTIIdIq(motorLocation_t motor);
+volatile cmr_canDTI_TX_ACLimits_t *getDTIACLimits(motorLocation_t motor);
+volatile cmr_canDTI_TX_DCLimits_t *getDTIDCLimits(motorLocation_t motor);
+volatile cmr_canDTI_TX_ControlStatus_t *getDTIControlStatus(motorLocation_t motor);
+volatile cmr_canDTI_TX_IOStatus_t *getDTIIOStatus(motorLocation_t motor);
 bool isMotorDataValid(motorLocation_t motor);
 float rpmToRadps(float rpm);
 float motorSpeedToWheelLinearSpeed_mps(float motor_speed_radps);
@@ -59,12 +60,13 @@ float getMotorSpeed_radps(motorLocation_t motor);
 float getTotalMotorSpeed_radps();
 float getTotalMotorSpeed_rpm();
 float getMinMotorSpeed_radps();
-float getMotorPower(motorLocation_t motor, float pack_voltage_V);
+float getMotorPower(motorLocation_t motor);
 float getLoadByIndex(const cmr_loadDistribution_t *loads, size_t motor);
 float getTorqueNmByIndex(const cmr_torqueDistributionNm_t *torques_Nm, size_t motor);
 float getTorqueNmMax(const cmr_torqueDistributionNm_t *torques_Nm);
 float getTorqueNmMin(const cmr_torqueDistributionNm_t *torques_Nm);
-float getMotorRegenerativeCapacity(int32_t rpm);
 bool overVoltProtection();
+float getMotorRegenerativeCapacity(int32_t rpm);
+int16_t torqueToCurrent(float torque_mNm);
 
 #endif /* MOTORS_HELPER_H */

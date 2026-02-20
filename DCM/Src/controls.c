@@ -695,16 +695,16 @@ void runControls (
         return;
     }
 
-    volatile cmr_canAMKActualValues1_t *amkAct1FL = canTractiveGetPayload(CANRX_TRAC_INV_FL_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1FR = canTractiveGetPayload(CANRX_TRAC_INV_FR_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1RL = canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1RR = canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT1);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FL = canTractiveGetPayload(CANRX_TRAC_FL_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FR = canTractiveGetPayload(CANRX_TRAC_FR_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RL = canTractiveGetPayload(CANRX_TRAC_RL_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RR = canTractiveGetPayload(CANRX_TRAC_RR_ERPM);
 
     const int32_t avgMotorSpeed_RPM = (
-        + (int32_t)(amkAct1FL->velocity_rpm)
-        + (int32_t)(amkAct1FR->velocity_rpm)
-        + (int32_t)(amkAct1RL->velocity_rpm)
-        + (int32_t)(amkAct1RR->velocity_rpm)
+        + (int32_t)(dtiERPM_FL->erpm / pole_pairs)
+        + (int32_t)(dtiERPM_FR->erpm / pole_pairs)
+        + (int32_t)(dtiERPM_RL->erpm / pole_pairs)
+        + (int32_t)(dtiERPM_RR->erpm / pole_pairs)
     ) / MOTOR_LEN;
 
     // Update odometer
@@ -1272,12 +1272,12 @@ void setLaunchControl(
 //                 rearSlipRatios.slipRatio_RR = getMaxKappaCurrentState(MOTOR_RR, assumeNoTurn);
 //             } break;
 
-//             case TC_MODE_FX_GLOBAL_MAX: { // maps max throttle to the global max Fx of the LUT
-//                 frontSlipRatios.slipRatio_FL = getKappaFxGlobalMax(MOTOR_FL, throttlePos_u8, assumeNoTurn).kappa;
-//                 frontSlipRatios.slipRatio_FR = getKappaFxGlobalMax(MOTOR_FR, throttlePos_u8, assumeNoTurn).kappa;
-//                 rearSlipRatios.slipRatio_RL = getKappaFxGlobalMax(MOTOR_RL, throttlePos_u8, assumeNoTurn).kappa;
-//                 rearSlipRatios.slipRatio_RR = getKappaFxGlobalMax(MOTOR_RR, throttlePos_u8, assumeNoTurn).kappa;
-//             } break;
+            // case TC_MODE_FX_GLOBAL_MAX: { // maps max throttle to the global max Fx of the LUT
+            //     frontSlipRatios.slipRatio_FL = getKappaFxGlobalMax(MOTOR_FL, throttlePos_u8, assumeNoTurn).kappa;
+            //     frontSlipRatios.slipRatio_FR = getKappaFxGlobalMax(MOTOR_FR, throttlePos_u8, assumeNoTurn).kappa;
+            //     rearSlipRatios.slipRatio_RL = getKappaFxGlobalMax(MOTOR_RL, throttlePos_u8, assumeNoTurn).kappa;
+            //     rearSlipRatios.slipRatio_RR = getKappaFxGlobalMax(MOTOR_RR, throttlePos_u8, assumeNoTurn).kappa;
+            // } break;
 
 //             case TC_MODE_FX_LOCAL_MAX: { // maps max throttle to the max Fx available at the current state
 //                 float traction_fl = getTraction(MOTOR_FL, throttlePos_u8, ASSUME_NO_TURN);

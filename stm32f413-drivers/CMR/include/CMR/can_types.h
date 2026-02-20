@@ -93,7 +93,7 @@ typedef enum {
     // fan turn on at 56 starting 58 turn it to max
 
     /** @brief CDC All motor controllers have errored or timed out. */
-    CMR_CAN_ERROR_CDC_AMK_ALL = (1 << 15)
+    CMR_CAN_ERROR_CDC_DTI_ALL = (1 << 15)
 } cmr_canError_t;
 
 /** @brief Heartbeat warning matrix bit fields. */
@@ -152,17 +152,17 @@ typedef enum {
     CMR_CAN_WARN_FSM_SS_BOTS = (1 << 8),
 
     /** @brief CDC Front left motor controller is warning source. */
-    CMR_CAN_WARN_CDC_AMK_FL = (1 << 15),
+    CMR_CAN_WARN_CDC_DTI_FL = (1 << 15),
     /** @brief CDC Front right motor controller is warning source. */
-    CMR_CAN_WARN_CDC_AMK_FR = (1 << 14),
+    CMR_CAN_WARN_CDC_DTI_FR = (1 << 14),
     /** @brief CDC Rear left motor controller is warning source. */
-    CMR_CAN_WARN_CDC_AMK_RL = (1 << 13),
+    CMR_CAN_WARN_CDC_DTI_RL = (1 << 13),
     /** @brief CDC Rear right motor controller is warning source. */
-    CMR_CAN_WARN_CDC_AMK_RR = (1 << 12),
+    CMR_CAN_WARN_CDC_DTI_RR = (1 << 12),
     /** @brief CDC Motor controller has an error. */
-    CMR_CAN_WARN_CDC_AMK_ERROR = (1 << 11),
+    CMR_CAN_WARN_CDC_DTI_ERROR = (1 << 11),
     /** @brief CDC Motor controller has timed out. */
-    CMR_CAN_WARN_CDC_AMK_TIMEOUT = (1 << 10),
+    CMR_CAN_WARN_CDC_DTI_TIMEOUT = (1 << 10),
     CMR_CAN_WARN_CDC_MEMORATOR_DAQ_TIMEOUT = (1 << 9)
 } cmr_canWarn_t;
 
@@ -544,6 +544,7 @@ typedef struct {
     uint8_t pwm_left;       /**< @brief PWM of the left  DRS servo (debug info). */
     uint8_t pwm_right;      /**< @brief PWM of the right DRS servo (debug info). */
 } cmr_canCDCDRSStates_t;
+
 typedef enum {
   CMR_CAN_DRS_STATE_CLOSED = 0,
   CMR_CAN_DRS_STATE_OPEN,
@@ -770,51 +771,90 @@ typedef struct {
 } cmr_canGitFlashStatus;
 
 // ------------------------------------------------------------------------------------------------
-// AMK Motor controller definitions.
 
-/** @brief AMK motor controller status bits. */
-typedef enum {
-    CMR_CAN_AMK_RESERVED = (0xFF<<0), 
-    CMR_CAN_AMK_STATUS_SYSTEM_READY = (1 << 8),     /**< @brief System ready. */
-    CMR_CAN_AMK_STATUS_ERROR        = (1 << 9),     /**< @brief Error is present. */
-    CMR_CAN_AMK_STATUS_WARNING      = (1 << 10),    /**< @brief Warning is present. */
-    CMR_CAN_AMK_STATUS_HV_EN_ACK    = (1 << 11),    /**< @brief HV enabled acknowledgement. */
-    CMR_CAN_AMK_STATUS_HV_EN        = (1 << 12),    /**< @brief HV enabled. */
-    CMR_CAN_AMK_STATUS_INV_EN_ACK   = (1 << 13),    /**< @brief Inverter enabled acknowledgement. */
-    CMR_CAN_AMK_STATUS_INV_EN       = (1 << 14),    /**< @brief Inverter enabled. */
-    CMR_CAN_AMK_STATUS_DERATING_EN  = (1 << 15)     /**< @brief Protective torque derating enabled. */
-} cmr_canAMKStatus_t;
-
-/** @brief AMK motor controller status and velocity. */
+/** @brief DTI motor controller electrical rpm, duty_cycle, input_voltage. */
 typedef struct {
-    uint16_t status_bv;         //flag: cmr_canAMKStatus_t /**<@brief Status bit vector */
-    int16_t velocity_rpm;       //p:4 /** u: rpm < @brief Motor velocity (RPM). */ 
-    int16_t torqueCurrent_raw;  //f:0.001701171875 /**< @brief Raw value for torque producing current. */
-    int16_t magCurrent_raw;     //f:0.001701171875 /**< @brief Raw value for magnetizing current. */
-} cmr_canAMKActualValues1_t;
+    int32_t erpm;               /**< Electrical RPM. Equation: ERPM = Motor RPM * number of the motor pole pairs. */
+    int16_t duty_cycle_pct;     /**< @brief Sign represents if the motor is running(positive) current or regenerating (negative) current. Value multiplied by 10.*/
+    int16_t input_voltage_V;    /**< @brief Input DC voltage. */
+} cmr_canDTI_TX_Erpm_t;
 
-/** @brief AMK motor controller temperatures and error code. */
+/** @brief DTI motor controller ac and dc current values. */
 typedef struct {
-    int16_t motorTemp_dC;       //u: dC, f:0.1, p:2 /**< @brief Motor temperature in dC (0.1 C). */
-    int16_t coldPlateTemp_dC;   //u: dC, f:0.1, p:2 /**< @brief Cold plate temperature in dC (0.1 C). */
-    uint16_t errorCode;         /**< @brief Inverter error code. */
-    int16_t igbtTemp_dC;        //u: dC, f:0.1, p:2 /**< @brief IGBT temperature in dC (0.1 C). */
-} cmr_canAMKActualValues2_t;
+    int16_t ac_current_dA;         /**< Motor current. Sign represents if the motor is running(positive) current or regenerating (negative) current. Value multiplied by 10.*/
+    int16_t dc_current_dA;         /**< Current on DC side. */
+} cmr_canDTI_TX_Current_t;
 
-typedef enum {
-    CMR_CAN_AMK_CTRL_INV_ON     = (1 << 8),     /**< @brief Inverter on command. */
-    CMR_CAN_AMK_CTRL_HV_EN      = (1 << 9),     /**< @brief HV enable command. */
-    CMR_CAN_AMK_CTRL_INV_EN     = (1 << 10),    /**< @brief Inverter enable command. */
-    CMR_CAN_AMK_CTRL_ERR_RESET  = (1 << 11)     /**< @brief Inverter error reset command. */
-} cmr_canAMKControl_t;
-
-/** @brief AMK motor controller command message. */
+/** @brief DTI motor controller temperature, motor temperature, fault code. */
 typedef struct {
-    uint16_t control_bv;        //Flag: cmr_canAMKControl_t /**< @brief Control bit vector.*/
-    int16_t velocity_rpm;       //u: rpm, p:2 /**< @brief Velocity setpoint (RPM) */
-    int16_t torqueLimPos_dpcnt; //u: Nm, f:0.0098, p:4 /**< @brief Positive torque limit in 0.1% of 9.8 Nm (nominal torque) */
-    int16_t torqueLimNeg_dpcnt; //u: Nm, f:0.0098, p:4 /**< @brief Negative torque limit in 0.1% of 9.8 Nm (nominal torque) */
-} cmr_canAMKSetpoints_t;
+    int16_t ctlr_temp;         /**< Controller temperature. The value is multiplied by 10. */
+    int16_t motor_temp;        /**< Motor temperature. The value is multiplied by 10. */
+    uint8_t fault_code;        /**< If fault occurs that prevents motor actuating, this value shows the fault code. */
+} cmr_canDTI_TX_TempFault_t;
+
+/** @brief DTI motor controller Id, Iq values. */
+typedef struct {
+    int32_t id;         /**< FOC algorithm component Id. Value multiplied by 100 */
+    int32_t iq;        /**< FOC algorithm component Iq. Value multiplied by 100. */
+} cmr_canDTI_TX_IdIq_t;
+
+/** @brief DTI motor controller: Configured and available AC current limits. */
+typedef struct {
+    int16_t cfg_ac_current_max;     /**< Configured max AC current. */
+    int16_t avail_ac_current_max;   /**< Available max AC current. */
+    int16_t cfg_ac_current_min;     /**< Configured min AC current. */
+    int16_t avail_ac_current_min;   /**< Available min AC current. */
+} cmr_canDTI_TX_ACLimits_t;
+
+/** @brief DTI motor controller: Configured and available DC current limits. */
+typedef struct {
+    int16_t cfg_dc_current_max;     /**< Configured max DC current. */
+    int16_t avail_dc_current_max;   /**< Available max DC current. */
+    int16_t cfg_dc_current_min;     /**< Configured min DC current. */
+    int16_t avail_dc_current_min;   /**< Available min DC current. */
+} cmr_canDTI_TX_DCLimits_t;
+
+/** @brief DTI motor controller: Control mode, target Iq, motor position, isMotorStill flag. */
+typedef struct  __attribute__((__packed__))  {
+    uint8_t control_mode;       /**< Control mode (e.g., torque, speed, position). */
+    int16_t target_iq;          /**< Target Iq, scaled by 100. */
+    int32_t motor_position;     /**< Motor position in encoder counts or degrees. */
+    uint8_t is_motor_still;     /**< 1 = Motor is still, 0 = Motor is moving. */
+} cmr_canDTI_TX_ControlStatus_t;
+
+/** @brief DTI motor controller: Throttle, brake, digital I/Os, drive enable, limit status. */
+typedef struct __attribute__((__packed__)){
+    int8_t throttle_signal;     /**< Throttle input signal. */
+    int8_t brake_signal;        /**< Brake input signal. */
+    uint8_t digital_inputs;     /**< Bitmask of digital inputs. */
+    uint8_t drive_enable;       /**< 0 = disabled, 1 = enabled. */
+    uint16_t limit_status;      /**< Bitmask for overvoltage, overcurrent, temp, etc. */
+    uint8_t DTI_reserved;       /**< Some bits DTI Reserved */
+    uint8_t canVersion;         /** CAN Map Version */
+} cmr_canDTI_TX_IOStatus_t;
+
+typedef struct __attribute__((__packed__)){
+    uint8_t fr_fault_code;
+    uint8_t fl_fault_code;
+    uint8_t rr_fault_code;
+    uint8_t rl_fault_code;
+} cmr_canDTI_ErrorMessages_t;
+
+/** @brief DTI controls-facing motor setpoints struct.*/
+typedef struct {
+    float velocity_rpm;           /**< @brief Velocity setpoint (RPM). */
+    float torqueLimPos_mNm;       /**< @brief Positive torque limit. */
+    float torqueLimNeg_mNm;       /**< @brief Negative torque limit. */
+    float torque_mNm;             /**< @brief Torque to motor */  
+} cmr_canDTISetpoints_t;
+
+/** @brief DTI motor controller message TX over CAN.*/
+typedef struct{
+    int16_t velocity_erpm; 
+    int16_t torqueLimPos_mNm;
+    int16_t torqueLimNeg_mNm;
+    int16_t ACCurrent_deciAmps;        
+} cmr_canDTI_RX_Message_t;
 
 // ------------------------------------------------------------------------------------------------
 // Battery Management System

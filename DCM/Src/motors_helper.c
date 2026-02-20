@@ -14,69 +14,148 @@
 #include "can.h"
 #include "controls_helper.h"
 
-// ------------------------------------------------------------------------------------------------
-// Constants
-
-/** @brief AMK Torque command increment (Newton-meters). */
-const float torqueIncrement_Nm = 0.0098f;
-
-/** @brief Constant factor for transforming motor RPM to induced voltage.
- *
- *  @details See motor manual page 37
- */
-const float rpm_to_mV_factor = 0.026587214972f;
-
+// Macros
+#define CLAMP(x, min, max) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)));
+    
 /**
- * @brief Converts floating point torque into AMK format
- *        (0.1% increments of 9.8 Nm).
- *
- * @param torque_Nm Torque as a floating point value.
- *
- * @return Torque in AMK format.
+ * @brief Retrieve ERPM, duty cycle, voltage for DTI inverter
  */
-int16_t convertNmToAMKTorque (float torque_Nm) {
-    // clamp torque to the motor's output range
-    torque_Nm = fminf(maxTorque_Nm, torque_Nm);
-    torque_Nm = fmaxf(-maxTorque_Nm, torque_Nm);
-
-    return (int16_t) (torque_Nm / torqueIncrement_Nm);
-}
-
-/**
- * @brief Retrieve actual values 1 for inverter
- *
- * @param motor Which motor to retrieve value for.
- */
-volatile cmr_canAMKActualValues1_t *getMotorActualValues1(motorLocation_t motor) {
+volatile cmr_canDTI_TX_Erpm_t *getDTIErpm(motorLocation_t motor) {
     switch (motor) {
         case MOTOR_FL:
-            return canTractiveGetPayload(CANRX_TRAC_INV_FL_ACT1);
+            return canTractiveGetPayload(CANRX_TRAC_FL_ERPM);
         case MOTOR_FR:
-            return canTractiveGetPayload(CANRX_TRAC_INV_FR_ACT1);
+            return canTractiveGetPayload(CANRX_TRAC_FR_ERPM);
         case MOTOR_RL:
-            return canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT1);
+            return canTractiveGetPayload(CANRX_TRAC_RL_ERPM);
         case MOTOR_RR:
-            return canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT1);
+            return canTractiveGetPayload(CANRX_TRAC_RR_ERPM);
         default:
             return NULL;
     }
 }
 
 /**
- * @brief Retrieve actual values 2 for inverter
- *
- * @param motor Which motor to retrieve value for.
+ * @brief Retrieve AC and DC current for DTI inverter
  */
-volatile cmr_canAMKActualValues2_t *getMotorActualValues2(motorLocation_t motor) {
+volatile cmr_canDTI_TX_Current_t *getDTICurrent(motorLocation_t motor) {
     switch (motor) {
         case MOTOR_FL:
-            return canTractiveGetPayload(CANRX_TRAC_INV_FL_ACT2);
+            return canTractiveGetPayload(CANRX_TRAC_FL_CURRENT);
         case MOTOR_FR:
-            return canTractiveGetPayload(CANRX_TRAC_INV_FR_ACT2);
+            return canTractiveGetPayload(CANRX_TRAC_FR_CURRENT);
         case MOTOR_RL:
-            return canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT2);
+            return canTractiveGetPayload(CANRX_TRAC_RL_CURRENT);
         case MOTOR_RR:
-            return canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT2);
+            return canTractiveGetPayload(CANRX_TRAC_RR_CURRENT);
+        default:
+            return NULL;
+    }
+}
+
+/**
+ * @brief Retrieve controller/motor temperatures and fault code for DTI inverter
+ */
+volatile cmr_canDTI_TX_TempFault_t *getDTITempFault(motorLocation_t motor) {
+    switch (motor) {
+        case MOTOR_FL:
+            return canTractiveGetPayload(CANRX_TRAC_FL_TEMPFAULT);
+        case MOTOR_FR:
+            return canTractiveGetPayload(CANRX_TRAC_FR_TEMPFAULT);
+        case MOTOR_RL:
+            return canTractiveGetPayload(CANRX_TRAC_RL_TEMPFAULT);
+        case MOTOR_RR:
+            return canTractiveGetPayload(CANRX_TRAC_RR_TEMPFAULT);
+        default:
+            return NULL;
+    }
+}
+
+/**
+ * @brief Retrieve Id, Iq values for DTI inverter
+ */
+volatile cmr_canDTI_TX_IdIq_t *getDTIIdIq(motorLocation_t motor) {
+    switch (motor) {
+        case MOTOR_FL:
+            return canTractiveGetPayload(CANRX_TRAC_FL_IDIQ);
+        case MOTOR_FR:
+            return canTractiveGetPayload(CANRX_TRAC_FR_IDIQ);
+        case MOTOR_RL:
+            return canTractiveGetPayload(CANRX_TRAC_RL_IDIQ);
+        case MOTOR_RR:
+            return canTractiveGetPayload(CANRX_TRAC_RR_IDIQ);
+        default:
+            return NULL;
+    }
+}
+
+/**
+ * @brief Retrieve configured and available AC current limits for DTI inverter
+ */
+volatile cmr_canDTI_TX_ACLimits_t *getDTIACLimits(motorLocation_t motor) {
+    switch (motor) {
+        case MOTOR_FL:
+            return canTractiveGetPayload(CANRX_TRAC_FL_ACLIMS);
+        case MOTOR_FR:
+            return canTractiveGetPayload(CANRX_TRAC_FR_ACLIMS);
+        case MOTOR_RL:
+            return canTractiveGetPayload(CANRX_TRAC_RL_ACLIMS);
+        case MOTOR_RR:
+            return canTractiveGetPayload(CANRX_TRAC_RR_ACLIMS);
+        default:
+            return NULL;
+    }
+}
+
+/**
+ * @brief Retrieve configured and available DC current limits for DTI inverter
+ */
+volatile cmr_canDTI_TX_DCLimits_t *getDTIDCLimits(motorLocation_t motor) {
+    switch (motor) {
+        case MOTOR_FL:
+            return canTractiveGetPayload(CANRX_TRAC_FL_DCLIMS);
+        case MOTOR_FR:
+            return canTractiveGetPayload(CANRX_TRAC_FR_DCLIMS);
+        case MOTOR_RL:
+            return canTractiveGetPayload(CANRX_TRAC_RL_DCLIMS);
+        case MOTOR_RR:
+            return canTractiveGetPayload(CANRX_TRAC_RR_DCLIMS);
+        default:
+            return NULL;
+    }
+}
+
+/**
+ * @brief Retrieve control mode, target Iq, motor position, and still flag for DTI inverter
+ */
+volatile cmr_canDTI_TX_ControlStatus_t *getDTIControlStatus(motorLocation_t motor) {
+    switch (motor) {
+        case MOTOR_FL:
+            return canTractiveGetPayload(CANRX_TRAC_FL_CONTROL_STATUS);
+        case MOTOR_FR:
+            return canTractiveGetPayload(CANRX_TRAC_FR_CONTROL_STATUS);
+        case MOTOR_RL:
+            return canTractiveGetPayload(CANRX_TRAC_RL_CONTROL_STATUS);
+        case MOTOR_RR:
+            return canTractiveGetPayload(CANRX_TRAC_RR_CONTROL_STATUS);
+        default:
+            return NULL;
+    }
+}
+
+/**
+ * @brief Retrieve throttle, brake, digital I/Os, drive enable, limit status for DTI inverter
+ */
+volatile cmr_canDTI_TX_IOStatus_t *getDTIIOStatus(motorLocation_t motor) {
+    switch (motor) {
+        case MOTOR_FL:
+            return canTractiveGetPayload(CANRX_TRAC_FL_IO_STATUS);
+        case MOTOR_FR:
+            return canTractiveGetPayload(CANRX_TRAC_FR_IO_STATUS);
+        case MOTOR_RL:
+            return canTractiveGetPayload(CANRX_TRAC_RL_IO_STATUS);
+        case MOTOR_RR:
+            return canTractiveGetPayload(CANRX_TRAC_RR_IO_STATUS);
         default:
             return NULL;
     }
@@ -90,13 +169,13 @@ volatile cmr_canAMKActualValues2_t *getMotorActualValues2(motorLocation_t motor)
 bool isMotorDataValid(motorLocation_t motor) {
     switch (motor) {
         case MOTOR_FL:
-            return cmr_canRXMetaTimeoutWarn(&canTractiveRXMeta[CANRX_TRAC_INV_FL_ACT1], xTaskGetTickCount()) >= 0;
+            return cmr_canRXMetaTimeoutWarn(&canTractiveRXMeta[CANRX_TRAC_FL_ERPM], xTaskGetTickCount()) >= 0;
         case MOTOR_FR:
-            return cmr_canRXMetaTimeoutWarn(&canTractiveRXMeta[CANRX_TRAC_INV_FR_ACT1], xTaskGetTickCount()) >= 0;
+            return cmr_canRXMetaTimeoutWarn(&canTractiveRXMeta[CANRX_TRAC_FR_ERPM], xTaskGetTickCount()) >= 0;
         case MOTOR_RL:
-            return cmr_canRXMetaTimeoutWarn(&canTractiveRXMeta[CANRX_TRAC_INV_RL_ACT1], xTaskGetTickCount()) >= 0;
+            return cmr_canRXMetaTimeoutWarn(&canTractiveRXMeta[CANRX_TRAC_RL_ERPM], xTaskGetTickCount()) >= 0;
         case MOTOR_RR:
-            return cmr_canRXMetaTimeoutWarn(&canTractiveRXMeta[CANRX_TRAC_INV_RR_ACT1], xTaskGetTickCount()) >= 0;
+            return cmr_canRXMetaTimeoutWarn(&canTractiveRXMeta[CANRX_TRAC_RR_ERPM], xTaskGetTickCount()) >= 0;
         default:
             return false;
     }
@@ -119,7 +198,7 @@ float motorSpeedToWheelLinearSpeed_mps(float motor_speed_radps) {
  * @param motor Which motor to retrieve value for.
  */
 int16_t getMotorSpeed_rpm(motorLocation_t motor) {
-    return getMotorActualValues1(motor)->velocity_rpm;
+    return getDTIErpm(motor)->erpm / pole_pairs;
 }
 
 /**
@@ -162,20 +241,14 @@ float getMinMotorSpeed_radps() {
  * @brief Returns the power in watts of a given motor.
  * Uses inverter-reported magnetization current and torque current to calculate total current,
  * which is multiplied with pack voltage to calculate power
- * @bug This is incorrect because the output voltage of the inverters, that is the voltage across the motors, is not the AC voltage
  *
  * @param motor the ID of the motor
- * @param pack_voltage_V the pack voltage
  */
-float getMotorPower(motorLocation_t motor, float pack_voltage_V) {
-    static const float RAW_CURRENT_TO_A = 0.00654297f;
+float getMotorPower(motorLocation_t motor) {
 
-    const float torque_current_A = (float)(getMotorActualValues1(motor)->torqueCurrent_raw) * RAW_CURRENT_TO_A;
-    const float magnetization_current_A = (float)(getMotorActualValues1(motor)->magCurrent_raw) * RAW_CURRENT_TO_A;
-
-    const float currentMagnitude_A = hypotf(torque_current_A, magnetization_current_A);
-    return currentMagnitude_A * pack_voltage_V;
-    /** @bug This is incorrect because the output voltage of the inverters, that is the voltage across the motors, is not the AC voltage */
+    const float dc_current_A = (float)(getDTICurrent(motor)->dc_current_dA) * 0.1;
+    const float voltage = (float)(getDTIErpm(motor)->input_voltage_V);
+    return dc_current_A * voltage;
 }
 
 /** @brief Get a motor load from cmr_loadDistribution_t */
@@ -290,4 +363,114 @@ bool overVoltProtection() {
         return false;
     }
     return true;
+}
+
+/**
+ * @brief Performs linear interpolation between two points.
+ *
+ * @param torqueLower Lower bound torque value from the LUT.
+ * @param torqueUpper Upper bound torque value from the LUT.
+ * @param currLower Current corresponding to torqueLower.
+ * @param currUpper Current corresponding to torqueUpper.
+ * @param torque The torque value for which we want to estimate the current.
+ * @return Interpolated current corresponding to the input torque (in deciAmps).
+ */
+int16_t transferFn(float torqueLower, float torqueUpper, 
+                   int16_t currLower, int16_t currUpper, float torque){
+  return (currUpper - currLower) * (torque - torqueLower) / 
+         (torqueUpper - torqueLower) + currLower;
+}
+
+/**
+ * @brief Converts a desired motor torque to the corresponding AC current using a LUT.
+ *
+ * @param torque_mNm Desired torque in mNm.
+ * @return Corresponding AC current in deciAmps.
+ */
+
+int16_t torqueToCurrent(float torque_mNm){ 
+    int16_t sign = 1;
+
+    float torqueLower, torqueUpper;
+    int16_t currLower, currUpper;
+
+    float torque_Nm = torque_mNm / 1000.0f;
+
+    /* Handle negative torque, convert to positive and preserve the sign */ 
+    if (torque_Nm < 0) {
+        sign = -1;
+        torque_Nm = -torque_Nm; 
+    }
+
+    torque_Nm = CLAMP(torque_Nm, minTorqueLUTVal_Nm, maxTorque_Nm);
+
+    /* Finding the LUT intervals containing requested torque */
+    int i;
+    for (i = 0; i < DTI_TORQUE_CURRENT_LUT_LEN; i++) {
+        if (torque_Nm <= DTI_torque_current_LUT[i].torque_Nm) {
+            break;
+        }
+    }
+
+    int16_t current;
+    /* Edge case where torque is at torque maximum */
+    if (i == DTI_TORQUE_CURRENT_LUT_LEN - 1) { 
+        current = DTI_torque_current_LUT[i].current_Arms;
+    } else {
+        /* Else set bounds for interpoldation between LUT indices i and i+1 */
+        torqueLower = DTI_torque_current_LUT[i].torque_Nm;
+        torqueUpper = DTI_torque_current_LUT[i + 1].torque_Nm;
+        currLower = DTI_torque_current_LUT[i].current_Arms;
+        currUpper = DTI_torque_current_LUT[i + 1].current_Arms;
+        current =  transferFn(torqueLower, torqueUpper, 
+                                  currLower, currUpper, 
+                                  torque_Nm); 
+    }
+
+    /* Perform linear interpolation, apply sign, and scale */
+    return sign * 10 * current;
+}
+
+/**
+ * @brief Converts measured  AC current (in deciAmps) to the corresponding torque using the LUT.
+ *
+ * @param current_dA Measured motor AC current in deciAmps.
+ * @return Corresponding torque in mNm.
+ */
+float currentToTorque(int16_t current_dA){ 
+    int16_t sign = 1;
+    float torqueLower, torqueUpper;
+    int16_t currLower, currUpper;
+
+    if (current_dA < 0) {
+        sign = -1;
+        current_dA = -current_dA; 
+    }
+
+    /* Scale deciAmps back to Arms for LUT */
+    float current_Arms = current_dA / 10.0f;
+
+    current_Arms = CLAMP(current_Arms, DTI_torque_current_LUT[0].current_Arms,
+                                   DTI_torque_current_LUT[DTI_TORQUE_CURRENT_LUT_LEN].current_Arms);
+
+    int i;
+    for (i = 0; i < DTI_TORQUE_CURRENT_LUT_LEN + 1; i++) {
+        if (current_Arms <= DTI_torque_current_LUT[i].current_Arms) {
+            break;
+        }
+    }
+
+    if (i == DTI_TORQUE_CURRENT_LUT_LEN) { 
+        currLower = DTI_torque_current_LUT[i - 1].current_Arms;
+        currUpper = DTI_torque_current_LUT[i].current_Arms;
+        torqueLower = DTI_torque_current_LUT[i - 1].torque_Nm;
+        torqueUpper = DTI_torque_current_LUT[i].torque_Nm;
+    } else {
+        currLower = DTI_torque_current_LUT[i].current_Arms;
+        currUpper = DTI_torque_current_LUT[i + 1].current_Arms;
+        torqueLower = DTI_torque_current_LUT[i].torque_Nm;
+        torqueUpper = DTI_torque_current_LUT[i + 1].torque_Nm;
+    }
+
+    return sign * 1000 * transferFn(currLower, currUpper, torqueLower, torqueUpper, current_Arms); 
 }

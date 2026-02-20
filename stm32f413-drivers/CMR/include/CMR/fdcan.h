@@ -30,7 +30,8 @@
 
 /** @brief CAN bit rate enumeration. */
 typedef enum {
-    CMR_CAN_BITRATE_250K = 0,   /**< @brief 250 kbit/s. */
+    CMR_CAN_BITRATE_125K = 0,  /**< @brief 125 kbit/s. */
+    CMR_CAN_BITRATE_250K,   /**< @brief 250 kbit/s. */
     CMR_CAN_BITRATE_500K,       /**< @brief 500 kbit/s. */
     CMR_CAN_BITRATE_1M          /**< @brief 1 Mbit/s. */
 } cmr_canBitRate_t;

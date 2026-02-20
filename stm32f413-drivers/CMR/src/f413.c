@@ -142,6 +142,8 @@ void _platform_canInit(
     // These numbers assume 48 MHz ABP1 peripheral clock frequency
     // 48 MHz / (6 + 1 + 1 time quanta) / Prescaler = bitRate
     switch (bitRate) {
+        case CMR_CAN_BITRATE_125K:
+            can->handle.Init.Prescaler = 48;
         case CMR_CAN_BITRATE_250K:
             can->handle.Init.Prescaler = 24;
             break;
