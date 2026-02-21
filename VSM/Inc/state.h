@@ -24,13 +24,13 @@ typedef struct {
     cmr_canState_t dimRequestReject;    /**< @brief Rejected DIM state request. */
 } vsmStatus_t;
 
-/** @brief Cooling states. */
+/** @brief Struct to contain the states of the brake test for autonomous */
 typedef enum {
-    COOLING_STATE_ERROR,    /**< Cooling system has an error. */
-    COOLING_STATE_OFF,      /**< Cooling system is off. */
-    COOLING_STATE_LOW,      /**< Cooling system is running at low power. */
-    COOLING_STATE_HIGH      /**< Cooling system is running at full capacity. */
-} coolingState_t;
+    BRAKE_TEST_NOT_STARTED = 0,
+    BRAKE_TEST_RUNNING,
+    BRAKE_TEST_PASSED,
+    BRAKE_TEST_FAILED
+} brakeTestState_t;
 
 extern cmr_canState_t vsmToCANState[];
 extern volatile TickType_t lastStateChangeTime_ms;

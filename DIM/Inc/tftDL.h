@@ -61,7 +61,7 @@ extern volatile bool redraw_new_driver_profiles;
 
 void tftDL_RTDUpdate(
     memorator_status_t memoratorStatus,
-    SBG_status_t sbgStatus,
+    uint8_t movellaStatus,
     int32_t hvVoltage_mV,
     int32_t power_kW,
     uint32_t speed_kph,

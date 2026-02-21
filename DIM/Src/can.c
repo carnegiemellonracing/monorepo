@@ -15,7 +15,6 @@
 
 #include <CMR/panic.h>  // Panic interface
 #include <CMR/tasks.h>  // Task interface
-#include <math.h>       // powf()
 #include <string.h>     // memcpy()
 #include <CMR/config_screen_helper.h>
 #include <CMR/can_types.h>
@@ -56,7 +55,7 @@ char RAMBUF[RAMBUFLEN];
  */
 cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_HEARTBEAT_VSM] =       { .canID = CMR_CANID_HEARTBEAT_VSM,.timeoutError_ms = 50,.timeoutWarn_ms = 25 },
-    [CANRX_HVC_PACK_VOLTAGE] =    { .canID = CMR_CANID_HVC_PACK_VOLTAGE, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
+    [CANRX_HVC_PACK_VOLTAGE] =    { .canID = CMR_CANID_HVBMS_PACK_VOLTAGE, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_AMK_FL_ACT_1] =        { .canID = CMR_CANID_AMK_FL_ACT_1, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_AMK_FR_ACT_1] =        { .canID = CMR_CANID_AMK_FR_ACT_1, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_AMK_RL_ACT_1] =        { .canID = CMR_CANID_AMK_RL_ACT_1, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
@@ -74,14 +73,16 @@ cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_HVC_HEARTBEAT] =       { .canID = CMR_CANID_HEARTBEAT_HVC, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_HVC_BMB_STATUS] =      { .canID = CMR_CANID_HVC_BMB_STATUS_ERRORS, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_MEMORATOR_BROADCAST] = { .canID = CMR_CANID_HEARTBEAT_MEMORATOR, .timeoutError_ms = 2000, .timeoutWarn_ms = 1500 },
-    [CANRX_SBG_STATUS_3] =        { .canID = CMR_CANID_SBG_STATUS_3, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
+    [CANRX_MOVELLA_STATUS] =        { .canID = CMR_CANID_MOVELLA_STATUS, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
     [CANRX_EMD_VALUES] =          { .canID = CMR_CANID_EMD_MEASUREMENT, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
     [CANRX_VSM_SENSORS] =         { .canID = CMR_CANID_VSM_SENSORS, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_HVC_LOW_VOLTAGE] =     { .canID = CMR_CANID_HVC_LOW_VOLTAGE, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
     [CANRX_DRS_STATE] =           { .canID = CMR_CANID_DRS_STATE, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
     [CANRX_CDC_ODOMETER] =        { .canID = CMR_CANID_CDC_ODOMETER, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
     [CANRX_CDC_CONTROLS_STATUS] = { .canID = CMR_CANID_CDC_CONTROLS_STATUS, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
-    [CANRX_CDC_HEARTBEAT] =       { .canID = CMR_CANID_HEARTBEAT_CDC, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 }
+    [CANRX_CDC_HEARTBEAT] =       { .canID = CMR_CANID_HEARTBEAT_CDC, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
+    [CANRX_PACK_CELL_VOLTAGES] =  { .canID = CMR_CANID_HVC_MINMAX_CELL_VOLTAGE, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
+    [CANRX_EAB_STATUS] =          { .canID = CMR_CANID_EAB_STATUS, .timeoutError_ms = 100, .timeoutWarn_ms = 50 }
 };
 
 /** @brief Primary CAN interface. */
@@ -120,14 +121,16 @@ static void canTX10Hz(void *pvParameters) {
         /* if DIM is requesting a state/gear change
          * send this request to VSM */
 		reqVSM();
+        reqGear();
+        reqDRS();
         cmr_canState_t stateVSM = stateGetVSM();
         cmr_canState_t stateVSMReq = stateGetVSMReq();
         cmr_canGear_t gear = stateGetGear();
         cmr_canGear_t gearReq = stateGetGearReq();
-		//below is the new gear request mechanism can delete if wrong
-		// cmr_canGear_t gearReq = getRequestedGear();
         cmr_canDrsMode_t drsMode = stateGetDrs();
         cmr_canDrsMode_t drsReq = stateGetDrsReq();
+        cmr_canDVMode_t dvMode = stateGetDVMode();
+        cmr_canDVMode_t dvReq = stateGetDVReq();
         cmr_canTestID_t test_id = {
         	.test_id = get_test_message_id()
         };
@@ -142,7 +145,8 @@ static void canTX10Hz(void *pvParameters) {
                 .requestedState = stateVSMReq,
                 .requestedGear = gearReq,
                 .requestedDrsMode = drsReq,
-                .requestedDriver = (uint8_t)config_menu_main_array[DRIVER_PROFILE_INDEX].value.value
+                .requestedDriver = (uint8_t)config_menu_main_array[DRIVER_PROFILE_INDEX].value.value,
+                .requestedDVCtrl = dvReq
             };
             canTX(
                 CMR_CANID_DIM_REQUEST,
@@ -152,6 +156,7 @@ static void canTX10Hz(void *pvParameters) {
             previousDriverReq = config_menu_main_array[DRIVER_PROFILE_INDEX].value.value;
             stateGearUpdate();
             stateDrsUpdate();
+            stateDVCtrlUpdate();
         }
         sendPowerDiagnostics();
 
@@ -190,32 +195,18 @@ static void canTX100Hz(void *pvParameters) {
     	uint8_t paddle = (uint8_t) ((adcRead(ADC_PADDLE) - 16.062) / 3694.43) * 255.0;
     	uint8_t regenPercent = (uint8_t)((adcRead(ADC_PADDLE) / 255.0) * 100.0);
         uint8_t packed = 0;
-        uint8_t LRUDpacked = 0;
-        // if(getCurrState() == CONFIG){
-        //     if(paddle > 50){
-        //         paddle_is_pressed = true;
-        //     }
-        //     else {
-        //         if(paddle_is_pressed){
-        //             config_increment_down_requested = true;
-        //             paddle_is_pressed = false;
-        //         }
-        //     }
-        // }
+        uint8_t ctrlOn = cmr_gpioRead(GPIO_CTRL_SWITCH);
+        uint8_t dvCtrlMode = stateGetDVMode();
         for(int i=0; i<NUM_BUTTONS; i++){
-            packed |= canButtonStates[i] << i;
-        }
-        for(int i=0; i<LRUD_LEN; i++) {
-            LRUDpacked |= canLRUDStates[i] << i;
+            packed |= gpioButtonStates[i] << i;
         }
         /* Transmit action button status */
         cmr_canDIMActions_t actions = {
-            .buttons = packed,
-			.rotaryPos = getRotaryPosition(),
-            .switchValues = 0,
+            .buttonStates = packed,
             .regenPercent = regenPercent,
             .paddle = paddle,
-			.LRUDButtons = LRUDpacked,
+            .controlsStatus = ctrlOn,
+			.dvControlMode = dvCtrlMode
         };
         canTX(
             CMR_CANID_DIM_ACTIONS,
@@ -472,6 +463,14 @@ void canInit(void) {
         GPIOA, GPIO_PIN_12   // CAN1 TX port/pin.
     );
 
+    // cmr_canInit(
+    //     &can, CAN2, CMR_CAN_BITRATE_500K,
+    //     canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
+    //     &canRXCallback,
+    //     GPIOB, GPIO_PIN_12,  // CAN1 RX port/pin.
+    //     GPIOB, GPIO_PIN_13   // CAN1 TX port/pin.
+    // );
+
     // Clear RAM Buf - Set all to Spaces
     for (uint16_t i = 0; i < RAMBUFLEN; i++) {
         if (i == PREV_TIME_INDEX + TIMEDISPLAYLEN - 1 ||
@@ -489,10 +488,10 @@ void canInit(void) {
           .rxFIFO = CAN_RX_FIFO0,
           .ids = {
               CMR_CANID_HEARTBEAT_VSM,
-              CMR_CANID_HVC_PACK_VOLTAGE,
+              CMR_CANID_HVBMS_PACK_VOLTAGE,
               CMR_CANID_HVC_BMB_STATUS_ERRORS,
               CMR_CANID_HEARTBEAT_HVC } },
-        { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_SBG_STATUS_3, CMR_CANID_CDC_ODOMETER, CMR_CANID_DIM_TEXT_WRITE, CMR_CANID_CDC_CONTROLS_STATUS } },
+        { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_MOVELLA_STATUS, CMR_CANID_CDC_ODOMETER, CMR_CANID_DIM_TEXT_WRITE, CMR_CANID_CDC_CONTROLS_STATUS } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_AFC1_DRIVER_TEMPS, CMR_CANID_HVC_MINMAX_CELL_TEMPS, CMR_CANID_VSM_STATUS, CMR_CANID_HEARTBEAT_MEMORATOR } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_PTC_LOOP_TEMPS_A, CMR_CANID_PTC_LOOP_TEMPS_B, CMR_CANID_PTC_LOOP_TEMPS_C, CMR_CANID_PTC_LOOP_TEMPS_B } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_AMK_FL_ACT_1, CMR_CANID_AMK_FR_ACT_1, CMR_CANID_AMK_RL_ACT_1, CMR_CANID_AMK_RR_ACT_1 } },
@@ -502,7 +501,7 @@ void canInit(void) {
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV2, CMR_CANID_CDC_CONFIG1_DRV2, CMR_CANID_CDC_CONFIG2_DRV2, CMR_CANID_CDC_CONFIG3_DRV2 } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV3, CMR_CANID_CDC_CONFIG1_DRV3, CMR_CANID_CDC_CONFIG2_DRV3, CMR_CANID_CDC_CONFIG3_DRV3 } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT } },
-        { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_VSM_SENSORS, CMR_CANID_VSM_SENSORS, CMR_CANID_HVC_LOW_VOLTAGE, CMR_CANID_DRS_STATE } }
+        { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_VSM_SENSORS, CMR_CANID_HVC_MINMAX_CELL_VOLTAGE, CMR_CANID_HVC_LOW_VOLTAGE, CMR_CANID_DRS_STATE } }
     };
 
     cmr_canFilter(
@@ -596,6 +595,27 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
         .state = vsmState
     };
 
+    uint8_t AS_Status = getASMS();
+    canTX(CMR_CANID_ASMS_STATUS, &AS_Status, sizeof(AS_Status), canTX100Hz_period_ms);
+
+    // volatile cmr_canHeartbeat_t *AIM_Heartbeat = canVehicleGetPayload(CANRX_HEARTBEAT_VSM);
+	// cmr_canHeartbeat_t toSend;
+	// memcpy(&toSend, AIM_Heartbeat,sizeof(cmr_canHeartbeat_t)); //memcpy since it is volatile and could update
+
+	// if (toSend.error[0] != 0 || toSend.error[1] != 0) {
+	// 	toSend.state = CMR_CAN_ERROR;
+	// }
+
+    // if(getASMS()){
+    //     uint8_t mask = 1 << 7;
+    //     toSend.state = toSend.state | mask;
+    // }
+
+    // if(getEAB()){
+    //     uint8_t mask = 1 << 6;
+    //     toSend.state = toSend.state | mask;
+    // }
+
     cmr_canWarn_t warning = CMR_CAN_WARN_NONE;
     cmr_canError_t error = CMR_CAN_ERROR_NONE;
 
@@ -658,7 +678,7 @@ static void sendFSMData(void) {
         .torqueRequested = torqueRequested,
         .throttlePosition = throttlePosition,
         .brakePressureFront_PSI = brakePressureFront_PSI,
-        .brakePedalPosition = brakePedalPosition
+        .brakePedalPosition_percent = brakePedalPosition
     };
 
     canTX(CMR_CANID_FSM_DATA, &msg, sizeof(msg), canTX100Hz_period_ms);
@@ -715,7 +735,7 @@ static void sendFSMSensorsADC(void) {
 static void sendPowerDiagnostics(void) {
     // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
     uint32_t busVoltage_mV = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
-    uint32_t busCurrent_mA = cmr_sensorListGetValue(&sensorList, SENSOR_CH_AVG_CURRENT_MA);
+    uint32_t busCurrent_mA = cmr_sensorListGetValue(&sensorList, SENSOR_CH_CURRENT_MA);
 
     cmr_canDIMPowerDiagnostics_t powerDiagnosticsDIM = {
         .busVoltage_mV = busVoltage_mV,
@@ -746,4 +766,9 @@ void sendAcknowledgement(void) {
         &ack,
         sizeof(cmr_canDIMAck_t),
         canTX10Hz_period_ms);
+}
+
+cmr_canBMSMinMaxCellVoltage_t* getPackVoltages(void){
+    cmr_canBMSMinMaxCellVoltage_t* packVoltagesStruct = getPayload(CANRX_PACK_CELL_VOLTAGES);
+    return packVoltagesStruct;
 }

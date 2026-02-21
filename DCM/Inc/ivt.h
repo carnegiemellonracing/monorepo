@@ -11,6 +11,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "sensors.h"    // sensorChannel_t
+#include "can.h"
+
 // structs and enums of IVT CAN
 
 /** @brief enums. */
@@ -62,7 +65,7 @@ typedef enum {
  */
 
 //init
-void ivtinit(cmr_canRXMeta_t* voltage, cmr_canRXMeta_t* current, cmr_canRXMeta_t* power, uint16_t cyclerate); 
+void ivtInit(cmr_canRXMeta_t* voltage, cmr_canRXMeta_t* current, cmr_canRXMeta_t* power, uint32_t cyclerate); 
 void initIVTConfig (cmr_IVTMessageType_t msgt, cmr_cycleTimes_t cycletime);
 
 //interface 
@@ -73,9 +76,9 @@ float get_current(void);
 float get_pwr(void);
 
 //specialized funcs
-void change_canid(cmr_IVTMessageType_t msgt); 
+void change_canid(cmr_IVTMessageType_t msgt, uint16_t new_CAN_ID); 
 void set_storing(cmr_IVTMessageType_t msgt);
-void change_bit_rate(cmr_IVTMessageType_t msgt, cmr_bitRateValues_t bitrate);
-void change_cycle_and_little_endian(cmr_IVTMessageType_t msgt, cmr_cycleTimes_t cycletime);
+void change_bit_rate(cmr_IVTMessageType_t msgt, uint32_t bitrate);
+void change_cycle_and_little_endian(cmr_IVTMessageType_t msgt, uint32_t cycletime);
 
 #endif /* IVT_H */

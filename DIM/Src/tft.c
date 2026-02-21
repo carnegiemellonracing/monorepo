@@ -45,15 +45,19 @@
 /** @brief The display. */
 static tft_t tft;
 
-static void drawErrorScreen(void);
-static void drawRTDScreen(void);
-static void drawConfigScreen(void);
-static void drawSafetyScreen(void);
-
 /*Prev HVC errors to latch on display*/
 static bool prevOverVolt = false;
 static bool prevUnderVolt = false;
 static bool prevOverTemp = false;
+
+//forward declarations
+static void drawConfigScreen(void);
+static void drawSafetyScreen(void);
+static void drawErrorScreen(void);
+static void drawRTDScreen(void);
+static void drawRacingScreen(void);
+
+
 
 /**
  * @brief Sends a command to the display.
@@ -177,23 +181,23 @@ static void tftUpdate(void *pvParameters) {
 
     /** @brief Display register initialization values. */
     static const tftInit_t tftInits[] = {
-        { .addr = TFT_ADDR_HCYCLE, .val = 928 },
-        { .addr = TFT_ADDR_HOFFSET, .val = 88 },
+        { .addr = TFT_ADDR_HCYCLE, .val = 548 },
+        { .addr = TFT_ADDR_HOFFSET, .val = 43 },
         { .addr = TFT_ADDR_HSYNC0, .val = 0 },
-        { .addr = TFT_ADDR_HSYNC1, .val = 48 },
-        { .addr = TFT_ADDR_VCYCLE, .val = 525 },
-        { .addr = TFT_ADDR_VOFFSET, .val = 32 },
+        { .addr = TFT_ADDR_HSYNC1, .val = 41 },
+        { .addr = TFT_ADDR_VCYCLE, .val = 292 },
+        { .addr = TFT_ADDR_VOFFSET, .val = 12 },
         { .addr = TFT_ADDR_VSYNC0, .val = 0 },
-        { .addr = TFT_ADDR_VSYNC1, .val = 3 },
+        { .addr = TFT_ADDR_VSYNC1, .val = 10 },
         { .addr = TFT_ADDR_SWIZZLE, .val = 0 },
         { .addr = TFT_ADDR_DITHER, .val = 1 },
         { .addr = TFT_ADDR_PCLK_POL, .val = 0 },
         { .addr = TFT_ADDR_CSPREAD, .val = 1 },
-        { .addr = TFT_ADDR_HSIZE, .val = 800 },
-        { .addr = TFT_ADDR_VSIZE, .val = 480 },
+        { .addr = TFT_ADDR_HSIZE, .val = 480 },
+        { .addr = TFT_ADDR_VSIZE, .val = 272 },
         { .addr = TFT_ADDR_GPIOX_DIR, .val = (1 << 15) },
         { .addr = TFT_ADDR_GPIOX, .val = (1 << 15) },
-        { .addr = TFT_ADDR_PCLK, .val = 2 }
+        { .addr = TFT_ADDR_PCLK, .val = 5 }
     };
 
     tft_t *tft = pvParameters;
@@ -347,19 +351,19 @@ static void drawErrorScreen(void) {
 
     /* HVC Errors */
     /* Latch errors so we know what the issue is after AMS fault*/
-    err.overVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVC_ERROR_CELL_OVERVOLT)) | prevOverVolt;
+    err.overVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT)) | prevOverVolt;
     if(err.overVolt) {
     	prevOverVolt = true;
     }
-    err.underVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVC_ERROR_CELL_UNDERVOLT)) | prevUnderVolt;
+    err.underVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVBMS_ERROR_CELL_UNDERVOLT)) | prevUnderVolt;
     if(err.underVolt) {
 		prevUnderVolt = true;
 	}
-    err.hvcoverTemp = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVC_ERROR_CELL_OVERTEMP))  | prevOverTemp;
+    err.hvcoverTemp = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVBMS_ERROR_CELL_OVERTEMP))  | prevOverTemp;
     if(err.hvcoverTemp) {
 		prevOverTemp = true;
 	}
-    err.hvcBMBTimeout = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_TIMEOUT);
+    err.hvcBMBTimeout = (canHVCHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_BMB_TIMEOUT);
     err.hvcBMBFault = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_FAULT);
     err.hvcErrorNum = (canHVCHeartbeat->errorStatus);
 
@@ -498,7 +502,7 @@ static void drawRTDScreen(void) {
         (void *)metaHVCPackVoltage->payload;
 
     cmr_canRXMeta_t *metaHVCPackTemps = canRXMeta + CANRX_HVC_PACK_TEMPS;
-    volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps =
+    volatile cmr_canBMSMinMaxCellTemperature_t *canHVCPackTemps =
         (void *)metaHVCPackTemps->payload;
 
     cmr_canRXMeta_t *metaEMDvalues = canRXMeta + CANRX_EMD_VALUES;
@@ -543,23 +547,16 @@ static void drawRTDScreen(void) {
 
     /* GPS present? */
     // Checks broadcast from CDC to see status of SBG
-    cmr_canRXMeta_t *metaSBGStatus = canRXMeta + CANRX_SBG_STATUS_3;
+    cmr_canRXMeta_t *metaMovellaStatus = canRXMeta + CANRX_MOVELLA_STATUS;
     // Check timeout
-    bool sbgConnected = cmr_canRXMetaTimeoutWarn(metaSBGStatus, xTaskGetTickCount()) == 0;
-    volatile cmr_canSBGStatus3_t *sbgPayload = (void *)metaSBGStatus->payload;
-    SBG_status_t sbgStatus = SBG_STATUS_NOT_CONNECTED;
-    if (sbgConnected) {
-        sbgStatus = SBG_STATUS_WORKING_NO_POS_FOUND;
-        uint32_t solutionStatus = sbgPayload->solution_status;
-        // solution mode is first 4 bits of solution status
-        uint32_t solutionStatusMode = solutionStatus & 0xF;
-        // Get bits 4 through 7
-        solutionStatus = solutionStatus & 0xF0;
-        uint32_t solutionMask = CMR_CAN_SBG_SOL_ATTITUDE_VALID | CMR_CAN_SBG_SOL_HEADING_VALID | CMR_CAN_SBG_SOL_VELOCITY_VALID | CMR_CAN_SBG_SOL_POSITION_VALID;
-        if (solutionStatusMode == CMR_CAN_SBG_SOL_MODE_NAV_POSITION && solutionStatus == solutionMask) {
-            // Got fix on position
-            sbgStatus = SBG_STATUS_WORKING_POS_FOUND;
-        }
+    bool movellaConnected = cmr_canRXMetaTimeoutWarn(metaMovellaStatus, xTaskGetTickCount()) == 0;
+    volatile cmr_canMovellaStatus_t *movellaPayload = (void *)metaMovellaStatus->payload;
+    uint8_t movellaStatus = 0;
+    if (movellaConnected) {
+        movellaStatus = movellaPayload->gnss_fix;
+    }
+    else {
+        movellaStatus = 0;
     }
 
     /* Pack Voltage */
@@ -590,7 +587,7 @@ static void drawRTDScreen(void) {
     bool drsOpen = (drsState->state == CMR_CAN_DRS_STATE_OPEN);
 
     /* Accumulator Temperature */
-    int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC) / 10;
+    int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_C) / 10;
 
     int32_t mcTemp_C, motorTemp_C = 0;
     cornerId_t hottest_motor;
@@ -628,7 +625,7 @@ static void drawRTDScreen(void) {
     } else {
         /* Update Display List*/
         tftDL_RTDUpdate(memoratorStatus,
-                        sbgStatus,
+                        movellaStatus,
                         hvVoltage_mV,
                         power_kW,
                         speed_kmh,

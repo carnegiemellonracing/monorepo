@@ -16,9 +16,18 @@
 #include "adc.h"
 #include "bq_interface.h"
 #include "can.h"
+#include "dwt.h"
 #include "gpio.h"
-#include "i2c.h"
 #include "uart.h"
+
+/** @brief Sample Task Priority priority. */
+static const uint32_t sampleTaskPriority = 3;
+
+/** @brief Sample Task period (milliseconds). */
+static const TickType_t sampleTaskPeriod_ms = 100;
+
+/** @brief Sample task. */
+static cmr_task_t sampleTask;
 
 uint16_t cellVoltages[CELL_NUM];
 uint16_t cellTemps[CELL_NUM];
@@ -64,8 +73,8 @@ uint8_t getVoltages(void) {
 
     uint8_t status = uart_receiveResponse(&response, 27);
     if(status != 0) {
-        return 1;
         taskEXIT_CRITICAL();
+        return 1;
     }
 
     taskEXIT_CRITICAL();
@@ -134,6 +143,7 @@ uint8_t getTemps(int channel) {
     uart_response_t response;
 
     if(uart_receiveResponse(&response, CELL_NUM) == UART_FAILURE) {
+        taskEXIT_CRITICAL();
         return 1;
     }
 
@@ -168,7 +178,7 @@ void sendOvertempFlags(uint16_t temps[8]) {
 
 // Sends the bus current
 void sendCurrent(void) {
-    uint16_t sensep = adc_read(ADC_AFE_VIOUT);
+    uint16_t sensep = adc_read(ADC_HALL_EFFECT);
     float current = float_to_uint16((sensep - adc_sensen)*vref_corr/(ADC_COUNT*GVCOUT*1e3));
     canTX(CMR_CANID_LVBMS_CURRENT, &current, sizeof(current), canTX10Hz_period_ms);
 }
@@ -176,38 +186,29 @@ void sendCurrent(void) {
 
 // Main sample task entry point for BMS
 void vBMBSampleTask(void *pvParameters) {
-    bool ledToggle = false;
+    (void) pvParameters;
+    static TickType_t const ADC_settlingTime_ms = 10;
+    static uint8_t const muxChannels = 4;
+    static bool ledToggle = false;
+    
 	TickType_t xLastWakeTime = xTaskGetTickCount();
 
 	// Main BMS control loop
 	while (1) {
-		// Loop through the 4 different MUX channels and select a different one
+		// Loop through the different MUX channels and select a different one
 		// We still monitor all voltages each channel switch
-		for(uint8_t j = 0; j < 4; j++) {
+		for(uint8_t j = 0; j < muxChannels; j++) {
 			setMuxOutput(j);
-			xLastWakeTime = xTaskGetTickCount();
-			vTaskDelayUntil(&xLastWakeTime, 10);
+			vTaskDelayUntil(&xLastWakeTime, ADC_settlingTime_ms);
 			pollAllTemperatureData(j);
 		}
 
-		// uint8_t err = pollAllVoltageData();
+		uint8_t err = pollAllVoltageData();
         writeLED(ledToggle);
 		ledToggle = !ledToggle;
-        vTaskDelayUntil(&xLastWakeTime, 100);
-
+        vTaskDelayUntil(&xLastWakeTime, sampleTaskPeriod_ms - ADC_settlingTime_ms * muxChannels);
 	}
 }
-
-
-
-/** @brief Sample Task Priority priority. */
-static const uint32_t sampleTaskPriority = 2;
-
-/** @brief Sample Task period (milliseconds). */
-static const TickType_t sampleTaskPeriod_ms = 100;
-
-/** @brief Sample task. */
-static cmr_task_t sampleTask;
 
 void sampleInit(){
     cmr_taskInit(

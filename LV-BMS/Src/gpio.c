@@ -27,51 +27,15 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 			.Speed = GPIO_SPEED_FREQ_LOW
 		}
 	},
-	[GPIO_VTHERM_SEL0] = {
-		.port = GPIOB,
-		.init = {
-			.Pin = GPIO_PIN_15,
-			.Mode = GPIO_MODE_OUTPUT_PP,
-			.Pull = GPIO_NOPULL,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_VTHERM_SEL1] = {
-		.port = GPIOB,
-		.init = {
-			.Pin = GPIO_PIN_14,
-			.Mode = GPIO_MODE_OUTPUT_PP,
-			.Pull = GPIO_NOPULL,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_VTHERM_SEL2] = {
-		.port = GPIOB,
-		.init = {
-			.Pin = GPIO_PIN_13,
-			.Mode = GPIO_MODE_OUTPUT_PP,
-			.Pull = GPIO_NOPULL,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_VTHERM_IN] = {
-		.port = GPIOB,
-		.init = {
-			.Pin = GPIO_PIN_11,
-			.Mode = GPIO_MODE_OUTPUT_PP,
-			.Pull = GPIO_NOPULL,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_POST_MS] = {
+	[GPIO_BMS_ERROR] = {
 		.port = GPIOC,
 		.init = {
-			.Pin = GPIO_PIN_13,
-			.Mode = GPIO_MODE_INPUT,
+			.Pin = GPIO_PIN_4,
+			.Mode = GPIO_MODE_OUTPUT_PP,
 			.Pull = GPIO_NOPULL,
 			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
+			}
+    },
 	[RX_TURNON] = {
 		.port = GPIOA,
 		.init = {
@@ -79,7 +43,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 			.Mode = GPIO_MODE_OUTPUT_PP,
 			.Pull = GPIO_NOPULL,
 			.Speed = GPIO_SPEED_FREQ_LOW
-		}
+			}
     }
 };
 
@@ -88,8 +52,4 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
  */
 void gpio_init() {
 	cmr_gpioPinInit(gpioPinConfigs, GPIO_LEN);
-	cmr_gpioWrite(GPIO_LED, 0);
-	cmr_gpioWrite(GPIO_VTHERM_SEL0, 0);
-	cmr_gpioWrite(GPIO_VTHERM_SEL1, 0);
-	cmr_gpioWrite(GPIO_VTHERM_SEL2, 0);
 }

@@ -10,18 +10,19 @@ if(NOT EXISTS "/Users/matthewmao/Desktop/monorepo/VSM")
   file(MAKE_DIRECTORY "/Users/matthewmao/Desktop/monorepo/VSM")
 endif()
 file(MAKE_DIRECTORY
-  "/Users/matthewmao/Desktop/monorepo/VSM/src/VSM-build"
-  "/Users/matthewmao/Desktop/monorepo/VSM"
-  "/Users/matthewmao/Desktop/monorepo/VSM/tmp"
-  "/Users/matthewmao/Desktop/monorepo/VSM/src/VSM-stamp"
-  "/Users/matthewmao/Desktop/monorepo/VSM/src"
-  "/Users/matthewmao/Desktop/monorepo/VSM/src/VSM-stamp"
+  "/Users/sophia/Downloads/monorepo/VSM"
+  "/Users/sophia/Downloads/monorepo/VSM/src/VSM-build"
+  "/Users/sophia/Downloads/monorepo/VSM"
+  "/Users/sophia/Downloads/monorepo/VSM/tmp"
+  "/Users/sophia/Downloads/monorepo/VSM/src/VSM-stamp"
+  "/Users/sophia/Downloads/monorepo/VSM/src"
+  "/Users/sophia/Downloads/monorepo/VSM/src/VSM-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "/Users/matthewmao/Desktop/monorepo/VSM/src/VSM-stamp/${subDir}")
+    file(MAKE_DIRECTORY "/Users/sophia/Downloads/monorepo/VSM/src/VSM-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "/Users/matthewmao/Desktop/monorepo/VSM/src/VSM-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "/Users/sophia/Downloads/monorepo/VSM/src/VSM-stamp${cfgdir}") # cfgdir has leading slash
 endif()

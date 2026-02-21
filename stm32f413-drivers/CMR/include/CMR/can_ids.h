@@ -14,7 +14,8 @@
  *  all CAN message addresses. Ours is set to this value.
  */
 #define CMR_CANID_RMS_OFFSET    0x3A0
-#define NUM_CONFIG_PACKETS 4
+#define NUM_CONFIG_PACKETS 4 
+#define CONTROLLER_ID 120
 
 /** @brief CAN IDs. */
 typedef enum {
@@ -24,17 +25,20 @@ typedef enum {
     CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x104,    /**< @brief DIM heartbeat. */
     CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief PTC heatbeart. */
-    CMR_CANID_HEARTBEAT_HVI = 0x106,    /**< @brief HVI heatbeart. */
     CMR_CANID_HEARTBEAT_LV_BMS = 0x107, /**< @brief LV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
+    CMR_CANID_EAB_STATUS = 0x10A,
+    CMR_CANID_ASMS_STATUS = 0x193,
+    CMR_CANID_HEARTBEAT_HV_BMS = 0x108, 
 
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
     CMR_CANID_VSM_SENSORS = 0x200,              /**< @brief VSM sensor data. */
     CMR_CANID_VSM_LATCHED_STATUS = 0x510,       /**< @brief VSM latched status. */
     CMR_CANID_VSM_POWER_DIAGNOSTICS = 0x530,    /**< @brief VSM power diagnostics. */
+    CMR_CANID_VSM_FIRST_ERROR = 0x10a,          /**< @brief VSM first error state */
 
     CMR_CANID_HVC_COMMAND = 0x130,              /**< @brief HVC command, sent by VSM. */
-    CMR_CANID_HVC_PACK_VOLTAGE = 0x301,         /**< @brief HVC pack voltage. */
+    CMR_CANID_HVBMS_PACK_VOLTAGE = 0x301,         /**< @brief HVC pack voltage. */
     CMR_CANID_HVC_MINMAX_CELL_VOLTAGE = 0x310,  /**< @brief HVC pack min and max cell voltages*/
     CMR_CANID_HVC_MINMAX_CELL_TEMPS = 0x311,    /**< @brief HVC pack min and max cell temps. */
     CMR_CANID_HVC_PACK_CURRENT = 0x302,         /**< @brief HVC pack current. */
@@ -96,37 +100,37 @@ typedef enum {
      * code modularity :)
     */
     CMR_CANID_DIM_CONFIG0_DRV0 = 0x600,         /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG1_DRV0,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG2_DRV0,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG3_DRV0,                 /**< @brief DIM config request */
-    CMR_CANID_CDC_CONFIG0_DRV0,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG1_DRV0,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG2_DRV0,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG3_DRV0,                 /**< @brief CDC config request */
-    CMR_CANID_DIM_CONFIG0_DRV1,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG1_DRV1,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG2_DRV1,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG3_DRV1,                 /**< @brief DIM config request */
-    CMR_CANID_CDC_CONFIG0_DRV1,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG1_DRV1,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG2_DRV1,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG3_DRV1,                 /**< @brief CDC config request */
-    CMR_CANID_DIM_CONFIG0_DRV2,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG1_DRV2,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG2_DRV2,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG3_DRV2,                 /**< @brief DIM config request */
-    CMR_CANID_CDC_CONFIG0_DRV2,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG1_DRV2,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG2_DRV2,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG3_DRV2,                 /**< @brief CDC config request */
-    CMR_CANID_DIM_CONFIG0_DRV3,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG1_DRV3,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG2_DRV3,                 /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG3_DRV3,                 /**< @brief DIM config request */
-    CMR_CANID_CDC_CONFIG0_DRV3,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG1_DRV3,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG2_DRV3,                 /**< @brief CDC config request */
-    CMR_CANID_CDC_CONFIG3_DRV3,                 /**< @brief CDC config request */
+    CMR_CANID_DIM_CONFIG1_DRV0 = 0x601,
+    CMR_CANID_DIM_CONFIG2_DRV0 = 0x602,
+    CMR_CANID_DIM_CONFIG3_DRV0 = 0x603,
+    CMR_CANID_CDC_CONFIG0_DRV0 = 0x604,
+    CMR_CANID_CDC_CONFIG1_DRV0 = 0x605,
+    CMR_CANID_CDC_CONFIG2_DRV0 = 0x606,
+    CMR_CANID_CDC_CONFIG3_DRV0 = 0x607,
+    CMR_CANID_DIM_CONFIG0_DRV1 = 0x608,
+    CMR_CANID_DIM_CONFIG1_DRV1 = 0x609,
+    CMR_CANID_DIM_CONFIG2_DRV1 = 0x60a,
+    CMR_CANID_DIM_CONFIG3_DRV1 = 0x60b,
+    CMR_CANID_CDC_CONFIG0_DRV1 = 0x60c,
+    CMR_CANID_CDC_CONFIG1_DRV1 = 0x60d,
+    CMR_CANID_CDC_CONFIG2_DRV1 = 0x60e,
+    CMR_CANID_CDC_CONFIG3_DRV1 = 0x60f,
+    CMR_CANID_DIM_CONFIG0_DRV2 = 0x610,
+    CMR_CANID_DIM_CONFIG1_DRV2 = 0x611,
+    CMR_CANID_DIM_CONFIG2_DRV2 = 0x612,
+    CMR_CANID_DIM_CONFIG3_DRV2 = 0x613,
+    CMR_CANID_CDC_CONFIG0_DRV2 = 0x614,
+    CMR_CANID_CDC_CONFIG1_DRV2 = 0x615,
+    CMR_CANID_CDC_CONFIG2_DRV2 = 0x616,
+    CMR_CANID_CDC_CONFIG3_DRV2 = 0x617,
+    CMR_CANID_DIM_CONFIG0_DRV3 = 0x618,
+    CMR_CANID_DIM_CONFIG1_DRV3 = 0x619,
+    CMR_CANID_DIM_CONFIG2_DRV3 = 0x61a,
+    CMR_CANID_DIM_CONFIG3_DRV3 = 0x61b,
+    CMR_CANID_CDC_CONFIG0_DRV3 = 0x61c,
+    CMR_CANID_CDC_CONFIG1_DRV3 = 0x61d,
+    CMR_CANID_CDC_CONFIG2_DRV3 = 0x61e,
+    CMR_CANID_CDC_CONFIG3_DRV3 = 0x61f,
 
 
     CMR_CANID_AFC0_FAN_STATUS = 0x236,          /**< @brief AFC 0 fan status. */
@@ -160,27 +164,28 @@ typedef enum {
     CMR_CANID_AMK_RR_ACT_2 = 0x285,              /**< @brief AMK Inverter 1 actual values 2.*/
     CMR_CANID_AMK_RR_SETPOINTS = 0x184,          /**< @brief AMK Inverter 1 setpoints.*/
 
-    CMR_CANID_RMS_TEMPA = 0x000 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set A. */
-    CMR_CANID_RMS_TEMPB = 0x001 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set B. */
-    CMR_CANID_RMS_TEMPC = 0x002 + CMR_CANID_RMS_OFFSET,         /**< @brief RMS temp set C. */
-    CMR_CANID_RMS_MOTOR_POS = 0x005 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS motor position. */
-    CMR_CANID_RMS_FAULTS = 0x00B + CMR_CANID_RMS_OFFSET,        /**< @brief RMS faults (pg 23). */
-    CMR_CANID_RMS_TORQUE_DIAG = 0x00C + CMR_CANID_RMS_OFFSET,   /**< @brief RMS torque diagnostic data. */
-    CMR_CANID_RMS_CURRENT_INFO = 0x006 + CMR_CANID_RMS_OFFSET,  /**< @brief RMS current info. */
-    CMR_CANID_RMS_VOLTAGE_INFO = 0x007 + CMR_CANID_RMS_OFFSET,  /**< @brief RMS voltage info. */
-    CMR_CANID_RMS_COMMAND = 0x020 + CMR_CANID_RMS_OFFSET,       /**< @brief RMS command. */
-    CMR_CANID_RMS_PARAM_REQ = 0x021 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS parameter request. */
-    CMR_CANID_RMS_PARAM_RES = 0x022 + CMR_CANID_RMS_OFFSET,     /**< @brief RMS parameter response. */
+    CMR_CANID_RMS_TEMPA = 0x3a0,
+    CMR_CANID_RMS_TEMPB = 0x3a1,
+    CMR_CANID_RMS_TEMPC = 0x3a2,
+    CMR_CANID_RMS_MOTOR_POS = 0x3a5,
+    CMR_CANID_RMS_FAULTS = 0x3ab,
+    CMR_CANID_RMS_TORQUE_DIAG = 0x3ac,
+    CMR_CANID_RMS_CURRENT_INFO = 0x3a6,
+    CMR_CANID_RMS_VOLTAGE_INFO = 0x3a7,
+    CMR_CANID_RMS_COMMAND = 0x3c0,
+    CMR_CANID_RMS_PARAM_REQ = 0x3c1,
+    CMR_CANID_RMS_PARAM_RES = 0x3c2,
 
 
     // BMS CAN Structs
-    CMR_CANID_HVC_MIN_MAX_CELL_VOLTAGE = 0x310,                  /**< @brief HVC Max/Min Cell Voltage. */
-    CMR_CANID_HVC_MIN_MAX_CELL_TEMPERATURE = 0x311,              /**< @brief HVC Max/Min Cell Temperature. */
+    CMR_CANID_HVBMS_MIN_MAX_CELL_VOLTAGE = 0x310,                  /**< @brief HVC Max/Min Cell Voltage. */
+    CMR_CANID_HVBMS_MIN_MAX_CELL_TEMPERATURE = 0x311,              /**< @brief HVC Max/Min Cell Temperature. */
     CMR_CANID_HVC_LOW_VOLTAGE = 0x303,                           /**< @brief HVC Low Voltage. */
     CMR_CANID_HVC_BMB_STATUS_ERRORS = 0x304,
+    CMR_CANID_HV_SENSORS = 0x306, 
     CMR_CANID_HVC_BRUSA_MSG = 0x528,                             /**< @brief HVC Brusa message. */
 
-    CMR_CANID_HVC_BMB_0_STATUS_VOLTAGE = 0x380,                    /**< @brief HVC BMB Voltage: Message ID is BMB number << 1*/
+    CMR_CANID_HVBMS_BMB_0_STATUS_VOLTAGE = 0x380,                    /**< @brief HVC BMB Voltage: Message ID is BMB number << 1*/
     CMR_CANID_HVC_BMB_1_STATUS_VOLTAGE = 0x382,
     CMR_CANID_HVC_BMB_2_STATUS_VOLTAGE = 0x384,
     CMR_CANID_HVC_BMB_3_STATUS_VOLTAGE = 0x386,
@@ -196,7 +201,7 @@ typedef enum {
     CMR_CANID_HVC_BMB_13_STATUS_VOLTAGE = 0x39A,
     CMR_CANID_HVC_BMB_14_STATUS_VOLTAGE = 0x39C,
     CMR_CANID_HVC_BMB_15_STATUS_VOLTAGE = 0x39E,
-    CMR_CANID_HVC_BMB_0_STATUS_TEMP = 0x381,                       /**< @brief HVC BMB Temperature: Message ID is BMB number << 1 + 1*/
+    CMR_CANID_HVBMS_BMB_0_STATUS_TEMP = 0x381,                       /**< @brief HVC BMB Temperature: Message ID is BMB number << 1 + 1*/
     CMR_CANID_HVC_BMB_1_STATUS_TEMP = 0x383,
     CMR_CANID_HVC_BMB_2_STATUS_TEMP = 0x385,
     CMR_CANID_HVC_BMB_3_STATUS_TEMP = 0x387,
@@ -264,33 +269,186 @@ typedef enum {
 	CMR_CANID_DRS_CONTROLS = 0x29C, 				/**< @brief DRS Motor Controls. */
 
     CMR_CANID_DAQ_0_LOADCELL = 0x650,           /**< @brief Load cell data for DAQ Board 0. */
-    CMR_CANID_DAQ_0_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 0. */
-    CMR_CANID_DAQ_0_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 0. */
-    CMR_CANID_DAQ_1_LOADCELL,                   /**< @brief Load cell data for DAQ Board 1. */
-    CMR_CANID_DAQ_1_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 1. */
-    CMR_CANID_DAQ_1_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 1. */
-    CMR_CANID_DAQ_2_LOADCELL,                   /**< @brief Load cell data for DAQ Board 2. */
-    CMR_CANID_DAQ_2_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 2. */
-    CMR_CANID_DAQ_2_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 2. */
-    CMR_CANID_DAQ_3_LOADCELL,                   /**< @brief Load cell data for DAQ Board 3. */
-    CMR_CANID_DAQ_3_THERMISTOR,                 /**< @brief Thermistor data for DAQ Board 3. */
-    CMR_CANID_DAQ_3_DEBUG,                      /**< @brief Load cell amplifier debug data for DAQ Board 3. */
+    CMR_CANID_DAQ_0_THERMISTOR = 0x651,
+    CMR_CANID_DAQ_0_DEBUG = 0x652,
+    CMR_CANID_DAQ_1_LOADCELL = 0x653,
+    CMR_CANID_DAQ_1_THERMISTOR = 0x654,
+    CMR_CANID_DAQ_1_DEBUG = 0x655,
+    CMR_CANID_DAQ_2_LOADCELL = 0x656,
+    CMR_CANID_DAQ_2_THERMISTOR = 0x657,
+    CMR_CANID_DAQ_2_DEBUG = 0x658,
+    CMR_CANID_DAQ_3_LOADCELL = 0x659,
+    CMR_CANID_DAQ_3_THERMISTOR = 0x65a,
+    CMR_CANID_DAQ_3_DEBUG = 0x65b,
 
     CMR_CANID_VSM_GIT = 0x7F1,
-	CMR_CANID_HVC_GIT,
-	CMR_CANID_PTC_GIT,
-	CMR_CANID_CDC_GIT,
-	CMR_CANID_DIM_GIT,
-	CMR_CANID_RAM_GIT,
+	CMR_CANID_HVC_GIT = 0x7f2,
+	CMR_CANID_PTC_GIT = 0x7f3,
+	CMR_CANID_CDC_GIT = 0x7f4,
+	CMR_CANID_DIM_GIT = 0x7f5,
+	CMR_CANID_RAM_GIT = 0x7f6,
 
+    //AS
+    CMR_CANID_AS_RES = 0x182,                   /**< @brief Autonomous RES (remote E-stop)*/
+    CMR_CANID_AUTONOMOUS_ACTION = 0x190,        /**< @brief Autonomous Action*/
+    CMR_CANID_AS_PRESSURE_READINGS = 0x191,     /**< @brief Autonomous Pressure Readings for Tank and EBS*/
+    CMR_CANID_AS_RACK_DISPLACMENT = 0x192,      /**< @brief Rack Displacement Mesurment*/
+    CMR_CANID_ASMS_STATE = 0x193,
+
+
+    //MAXON
+    CMR_CANID_MAXON_STATUS_WORD = 0x250,
+	CMR_CANID_MAXON_CONTROL_WORD = 0x201,
+	CMR_CANID_MAXON_VELOCITY_CAN_ID = 0x281,
+	CMR_CANID_CAN_MASTER = 0x00,
+	CMR_CANID_MAXON_HEARTBEAT = 0x701,
+	CMR_CANID_AMI_OCV_BUTTON = 0x167,
+	CMR_CANID_AMI_CURR_MISSION = 0x168,
+
+    // TODO: change CAN IDs - need to be 11 bit
+    CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_0_3 = 0x800,
+    CMR_CANID_HVBMS_BMB_1_CELL_VOLTAGES_0_3 = 0x801,
+    CMR_CANID_HVBMS_BMB_2_CELL_VOLTAGES_0_3 = 0x802,
+    CMR_CANID_HVBMS_BMB_3_CELL_VOLTAGES_0_3 = 0x803,
+    CMR_CANID_HVBMS_BMB_4_CELL_VOLTAGES_0_3 = 0x804,
+    CMR_CANID_HVBMS_BMB_5_CELL_VOLTAGES_0_3 = 0x805,
+    CMR_CANID_HVBMS_BMB_6_CELL_VOLTAGES_0_3 = 0x806,
+    CMR_CANID_HVBMS_BMB_7_CELL_VOLTAGES_0_3 = 0x807,
+    CMR_CANID_HVBMS_BMB_8_CELL_VOLTAGES_0_3 = 0x808,
+    CMR_CANID_HVBMS_BMB_9_CELL_VOLTAGES_0_3 = 0x809,
+    CMR_CANID_HVBMS_BMB_10_CELL_VOLTAGES_0_3 = 0x80a,
+    CMR_CANID_HVBMS_BMB_11_CELL_VOLTAGES_0_3 = 0x80b,
+    CMR_CANID_HVBMS_BMB_12_CELL_VOLTAGES_0_3 = 0x80c,
+    CMR_CANID_HVBMS_BMB_13_CELL_VOLTAGES_0_3 = 0x80d,
+    CMR_CANID_HVBMS_BMB_14_CELL_VOLTAGES_0_3 = 0x80e,
+    CMR_CANID_HVBMS_BMB_15_CELL_VOLTAGES_0_3 = 0x80f,
+
+    CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_4_7 = 0x810, 
+    CMR_CANID_HVBMS_BMB_1_CELL_VOLTAGES_4_7 = 0x811,
+    CMR_CANID_HVBMS_BMB_2_CELL_VOLTAGES_4_7 = 0x812,
+    CMR_CANID_HVBMS_BMB_3_CELL_VOLTAGES_4_7 = 0x813,
+    CMR_CANID_HVBMS_BMB_4_CELL_VOLTAGES_4_7 = 0x814,
+    CMR_CANID_HVBMS_BMB_5_CELL_VOLTAGES_4_7 = 0x815,
+    CMR_CANID_HVBMS_BMB_6_CELL_VOLTAGES_4_7 = 0x816,
+    CMR_CANID_HVBMS_BMB_7_CELL_VOLTAGES_4_7 = 0x817,
+    CMR_CANID_HVBMS_BMB_8_CELL_VOLTAGES_4_7 = 0x818,
+    CMR_CANID_HVBMS_BMB_9_CELL_VOLTAGES_4_7 = 0x819,
+    CMR_CANID_HVBMS_BMB_10_CELL_VOLTAGES_4_7 = 0x81a,
+    CMR_CANID_HVBMS_BMB_11_CELL_VOLTAGES_4_7 = 0x81b,
+    CMR_CANID_HVBMS_BMB_12_CELL_VOLTAGES_4_7 = 0x81c,
+    CMR_CANID_HVBMS_BMB_13_CELL_VOLTAGES_4_7 = 0x81d,
+    CMR_CANID_HVBMS_BMB_14_CELL_VOLTAGES_4_7 = 0x81e,
+    CMR_CANID_HVBMS_BMB_15_CELL_VOLTAGES_4_7 = 0x81f,
+
+    CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_8_11 = 0x820, 
+    CMR_CANID_HVBMS_BMB_1_CELL_VOLTAGES_8_11 = 0x821,
+    CMR_CANID_HVBMS_BMB_2_CELL_VOLTAGES_8_11 = 0x822,
+    CMR_CANID_HVBMS_BMB_3_CELL_VOLTAGES_8_11 = 0x823,
+    CMR_CANID_HVBMS_BMB_4_CELL_VOLTAGES_8_11 = 0x824,
+    CMR_CANID_HVBMS_BMB_5_CELL_VOLTAGES_8_11 = 0x825,
+    CMR_CANID_HVBMS_BMB_6_CELL_VOLTAGES_8_11 = 0x826,
+    CMR_CANID_HVBMS_BMB_7_CELL_VOLTAGES_8_11 = 0x827,
+    CMR_CANID_HVBMS_BMB_8_CELL_VOLTAGES_8_11 = 0x828,
+    CMR_CANID_HVBMS_BMB_9_CELL_VOLTAGES_8_11 = 0x829,
+    CMR_CANID_HVBMS_BMB_10_CELL_VOLTAGES_8_11 = 0x82a,
+    CMR_CANID_HVBMS_BMB_11_CELL_VOLTAGES_8_11 = 0x82b,
+    CMR_CANID_HVBMS_BMB_12_CELL_VOLTAGES_8_11 = 0x82c,
+    CMR_CANID_HVBMS_BMB_13_CELL_VOLTAGES_8_11 = 0x82d,
+    CMR_CANID_HVBMS_BMB_14_CELL_VOLTAGES_8_11 = 0x82e,
+    CMR_CANID_HVBMS_BMB_15_CELL_VOLTAGES_8_11 = 0x82f,
+
+    CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_12_14 = 0x830, 
+    CMR_CANID_HVBMS_BMB_1_CELL_VOLTAGES_12_14 = 0x831,
+    CMR_CANID_HVBMS_BMB_2_CELL_VOLTAGES_12_14 = 0x832,
+    CMR_CANID_HVBMS_BMB_3_CELL_VOLTAGES_12_14 = 0x833,
+    CMR_CANID_HVBMS_BMB_4_CELL_VOLTAGES_12_14 = 0x834,
+    CMR_CANID_HVBMS_BMB_5_CELL_VOLTAGES_12_14 = 0x835,
+    CMR_CANID_HVBMS_BMB_6_CELL_VOLTAGES_12_14 = 0x836,
+    CMR_CANID_HVBMS_BMB_7_CELL_VOLTAGES_12_14 = 0x837,
+    CMR_CANID_HVBMS_BMB_8_CELL_VOLTAGES_12_14 = 0x838,
+    CMR_CANID_HVBMS_BMB_9_CELL_VOLTAGES_12_14 = 0x839,
+    CMR_CANID_HVBMS_BMB_10_CELL_VOLTAGES_12_14 = 0x83a,
+    CMR_CANID_HVBMS_BMB_11_CELL_VOLTAGES_12_14 = 0x83b,
+    CMR_CANID_HVBMS_BMB_12_CELL_VOLTAGES_12_14 = 0x83c,
+    CMR_CANID_HVBMS_BMB_13_CELL_VOLTAGES_12_14 = 0x83d,
+    CMR_CANID_HVBMS_BMB_14_CELL_VOLTAGES_12_14 = 0x83e,
+    CMR_CANID_HVBMS_BMB_15_CELL_VOLTAGES_12_14 = 0x83f,
+
+    CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_0_3 = 0x840, 
+    CMR_CANID_HVBMS_BMB_1_CELL_TEMPS_0_3 = 0x841,
+    CMR_CANID_HVBMS_BMB_2_CELL_TEMPS_0_3 = 0x842,
+    CMR_CANID_HVBMS_BMB_3_CELL_TEMPS_0_3 = 0x843,
+    CMR_CANID_HVBMS_BMB_4_CELL_TEMPS_0_3 = 0x844,
+    CMR_CANID_HVBMS_BMB_5_CELL_TEMPS_0_3 = 0x845,
+    CMR_CANID_HVBMS_BMB_6_CELL_TEMPS_0_3 = 0x846,
+    CMR_CANID_HVBMS_BMB_7_CELL_TEMPS_0_3 = 0x847,
+    CMR_CANID_HVBMS_BMB_8_CELL_TEMPS_0_3 = 0x848,
+    CMR_CANID_HVBMS_BMB_9_CELL_TEMPS_0_3 = 0x849,
+    CMR_CANID_HVBMS_BMB_10_CELL_TEMPS_0_3 = 0x84a,
+    CMR_CANID_HVBMS_BMB_11_CELL_TEMPS_0_3 = 0x84b,
+    CMR_CANID_HVBMS_BMB_12_CELL_TEMPS_0_3 = 0x84c,
+    CMR_CANID_HVBMS_BMB_13_CELL_TEMPS_0_3 = 0x84d,
+    CMR_CANID_HVBMS_BMB_14_CELL_TEMPS_0_3 = 0x84e,
+    CMR_CANID_HVBMS_BMB_15_CELL_TEMPS_0_3 = 0x84f,
+
+    CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_4_7 = 0x850, 
+    CMR_CANID_HVBMS_BMB_1_CELL_TEMPS_4_7 = 0x851,
+    CMR_CANID_HVBMS_BMB_2_CELL_TEMPS_4_7 = 0x852,
+    CMR_CANID_HVBMS_BMB_3_CELL_TEMPS_4_7 = 0x853,
+    CMR_CANID_HVBMS_BMB_4_CELL_TEMPS_4_7 = 0x854,
+    CMR_CANID_HVBMS_BMB_5_CELL_TEMPS_4_7 = 0x855,
+    CMR_CANID_HVBMS_BMB_6_CELL_TEMPS_4_7 = 0x856,
+    CMR_CANID_HVBMS_BMB_7_CELL_TEMPS_4_7 = 0x857,
+    CMR_CANID_HVBMS_BMB_8_CELL_TEMPS_4_7 = 0x858,
+    CMR_CANID_HVBMS_BMB_9_CELL_TEMPS_4_7 = 0x859,
+    CMR_CANID_HVBMS_BMB_10_CELL_TEMPS_4_7 = 0x85a,
+    CMR_CANID_HVBMS_BMB_11_CELL_TEMPS_4_7 = 0x85b,
+    CMR_CANID_HVBMS_BMB_12_CELL_TEMPS_4_7 = 0x85c,
+    CMR_CANID_HVBMS_BMB_13_CELL_TEMPS_4_7 = 0x85d,
+    CMR_CANID_HVBMS_BMB_14_CELL_TEMPS_4_7 = 0x85e,
+    CMR_CANID_HVBMS_BMB_15_CELL_TEMPS_4_7 = 0x85f,
+
+    CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_8_11 = 0x860, 
+    CMR_CANID_HVBMS_BMB_1_CELL_TEMPS_8_11 = 0x861,
+    CMR_CANID_HVBMS_BMB_2_CELL_TEMPS_8_11 = 0x862,
+    CMR_CANID_HVBMS_BMB_3_CELL_TEMPS_8_11 = 0x863,
+    CMR_CANID_HVBMS_BMB_4_CELL_TEMPS_8_11 = 0x864,
+    CMR_CANID_HVBMS_BMB_5_CELL_TEMPS_8_11 = 0x865,
+    CMR_CANID_HVBMS_BMB_6_CELL_TEMPS_8_11 = 0x866,
+    CMR_CANID_HVBMS_BMB_7_CELL_TEMPS_8_11 = 0x867,
+    CMR_CANID_HVBMS_BMB_8_CELL_TEMPS_8_11 = 0x868,
+    CMR_CANID_HVBMS_BMB_9_CELL_TEMPS_8_11 = 0x869,
+    CMR_CANID_HVBMS_BMB_10_CELL_TEMPS_8_11 = 0x86a,
+    CMR_CANID_HVBMS_BMB_11_CELL_TEMPS_8_11 = 0x86b,
+    CMR_CANID_HVBMS_BMB_12_CELL_TEMPS_8_11 = 0x86c,
+    CMR_CANID_HVBMS_BMB_13_CELL_TEMPS_8_11 = 0x86d,
+    CMR_CANID_HVBMS_BMB_14_CELL_TEMPS_8_11 = 0x86e,
+    CMR_CANID_HVBMS_BMB_15_CELL_TEMPS_8_11 = 0x86f,
+
+    CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_12_14 = 0x870, 
+    CMR_CANID_HVBMS_BMB_1_CELL_TEMPS_12_14 = 0x871,
+    CMR_CANID_HVBMS_BMB_2_CELL_TEMPS_12_14 = 0x872,
+    CMR_CANID_HVBMS_BMB_3_CELL_TEMPS_12_14 = 0x873,
+    CMR_CANID_HVBMS_BMB_4_CELL_TEMPS_12_14 = 0x874,
+    CMR_CANID_HVBMS_BMB_5_CELL_TEMPS_12_14 = 0x875,
+    CMR_CANID_HVBMS_BMB_6_CELL_TEMPS_12_14 = 0x876,
+    CMR_CANID_HVBMS_BMB_7_CELL_TEMPS_12_14 = 0x877,
+    CMR_CANID_HVBMS_BMB_8_CELL_TEMPS_12_14 = 0x878,
+    CMR_CANID_HVBMS_BMB_9_CELL_TEMPS_12_14 = 0x879,
+    CMR_CANID_HVBMS_BMB_10_CELL_TEMPS_12_14 = 0x87a,
+    CMR_CANID_HVBMS_BMB_11_CELL_TEMPS_12_14 = 0x87b,
+    CMR_CANID_HVBMS_BMB_12_CELL_TEMPS_12_14 = 0x87c,
+    CMR_CANID_HVBMS_BMB_13_CELL_TEMPS_12_14 = 0x87d,
+    CMR_CANID_HVBMS_BMB_14_CELL_TEMPS_12_14 = 0x87e,
+    CMR_CANID_HVBMS_BMB_15_CELL_TEMPS_12_14 = 0x87f,
     CMR_CANID_LVBMS_CELL_VOLTAGE_1_4 = 0x7F7,
-    CMR_CANID_LVBMS_CELL_VOLTAGE_5_7,
-    CMR_CANID_LVBMS_CELL_TEMP_1_4,
-    CMR_CANID_LVBMS_CELL_TEMP_5_7,
-    CMR_CANID_LVBMS_CELL_OVERVOLTAGE,
-    CMR_CANID_LVBMS_CELL_OVERTEMP,
-    CMR_CANID_LVBMS_BUS_VOLTAGE,
-    CMR_CANID_LVBMS_CURRENT,
+    CMR_CANID_LVBMS_CELL_VOLTAGE_5_7 = 0x7f8,
+    CMR_CANID_LVBMS_CELL_TEMP_1_4 = 0x7f9,
+    CMR_CANID_LVBMS_CELL_TEMP_5_7 = 0x7fa,
+    CMR_CANID_LVBMS_CELL_OVERVOLTAGE = 0x7fb,
+    CMR_CANID_LVBMS_CELL_OVERTEMP = 0x7fc,
+    CMR_CANID_LVBMS_BUS_VOLTAGE = 0x7fd,
+    CMR_CANID_LVBMS_CURRENT = 0x7fe,
 
     CMR_CAN_IVT_VOLTAGE = 0x522, //change
     CMR_CAN_IVT_CURRENT = 0x521,
@@ -298,5 +456,16 @@ typedef enum {
     CMR_CANID_IVT_RESPONSE = 0x511,
 
 } cmr_canID_t;
+
+typedef enum {
+    CMR_CANID_EXTENDED_CUBEMARS_SET_DUTY = 0 << 8 | CONTROLLER_ID,
+    CMR_CANID_EXTENDED_CUBEMARS_SET_CURRENT = 1 << 8 | CONTROLLER_ID,
+    CMR_CANID_EXTENDED_CUBEMARS_SET_CURRENT_BRAKE = 2 << 8 | CONTROLLER_ID,
+    CMR_CANID_EXTENDED_CUBEMARS_SET_RPM = 3 << 8 | CONTROLLER_ID,
+    CMR_CANID_EXTENDED_CUBEMARS_SET_POS = 4 << 8 | CONTROLLER_ID,
+    CMR_CANID_EXTENDED_CUBEMARS_SET_ORIGIN_HERE = 5 << 8 | CONTROLLER_ID,
+    CMR_CANID_EXTENDED_CUBEMARS_SET_POS_SPD = 6 << 8 | CONTROLLER_ID,
+    CMR_CANID_EXTENDED_CUBEMARS_DATA = 0x000029FF
+} cmr_canExtendedID_t;
 
 #endif /* CMR_CAN_IDS_H */

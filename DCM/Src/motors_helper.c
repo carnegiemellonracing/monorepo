@@ -280,7 +280,7 @@ bool overVoltProtection() {
     // If HVI Sense has timed out, use batt voltage
     if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[CANRX_TRAC_HVI_SENSE], xTaskGetTickCount()) == 0) {
         // Otherwise, use HV Voltage
-        volatile cmr_canHVIHeartbeat_t *HVISense = canTractiveGetPayload(CANRX_TRAC_HVI_SENSE);
+        volatile cmr_canHVSense_t *HVISense = canTractiveGetPayload(CANRX_TRAC_HVI_SENSE);
         float hvVoltage_V = ((float) HVISense->packVoltage_cV) / 100.f;
         voltage_V = (int32_t) fmaxf(battVoltage_V, hvVoltage_V);
     }
