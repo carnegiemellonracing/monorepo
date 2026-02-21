@@ -11,6 +11,7 @@
 static cmr_canHVCState_t currentState = CMR_CAN_HVC_STATE_ERROR;
 
 #define PRECHARGE_THRESH 57000
+#define MIN_PACK_THRESH 360000
 
 static bool cellBalancing = false; 
 
@@ -29,6 +30,17 @@ cmr_canHVCState_t getState() {
  //forward declarations:
  void stopCellBalancing(void);
  void enableCellBalancing(void); 
+
+static bool prechargeDone() {
+    int32_t HVmillivolts = getHVmillivolts();
+    volatile cmr_canHVBMSPackVoltage_t *HVBMSPackVoltage = getPayload(CANRX_HVBMS_PACKVOLT); 
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    return (abs(HVBMSPackVoltage->battVoltage_mV - HVmillivolts) < 30000 &&
+            HVBMSPackVoltage->battVoltage_mV > MIN_PACK_THRESH &&
+            !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HEARTBEAT_HVBMS], lastWakeTime) &&
+            !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HVBMS_PACKVOLT], lastWakeTime));
+
+ }
 
 static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
 
@@ -86,7 +98,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                   HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN)) {
                 //T6: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (abs(HVBMSPackVoltage->battVoltage_mV - (getHVmillivolts()) < 30000)) {
+            } else if (prechargeDone()) {
                 //T2: HV rails are precharged to within 30000mV
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE; 
                 lastPrechargeTime = xTaskGetTickCount(); 
@@ -120,7 +132,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_CHARGE) {
                 //T18: Mode requested is not CHARGE
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE; 
-            } else if (abs(HVBMSPackVoltage->battVoltage_mV - ((uint32_t)getHVmillivolts())) < 30000) { 
+            } else if (prechargeDone()) { 
             	lastPrechargeTime = xTaskGetTickCount();
                 //T10: HV rails are precharged
                 nextState = CMR_CAN_HVC_STATE_CHARGE_PRECHARGE_COMPLETE; 
