@@ -97,7 +97,7 @@ static void canTX1Hz(void *pvParameters) {
         }
         sendBMSMinMaxCellTemp();
         //send all cells temp and voltage 
-        sendAllBMBVoltages();
+        // sendAllBMBVoltages();
 
         vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
     }
@@ -426,20 +426,12 @@ static void sendBMSMinMaxCellTemp(void) {
  * @param lastWakeTime Pass in from canTX100Hz. Used to update lastStateChangeTime and errors/warnings.
  */
 static void sendHeartbeat(TickType_t lastWakeTime) {
-    cmr_canHVCHeartbeat_t *hvcheartbeat = getPayload(CANRX_HEARTBEAT_HVC); 
-    cmr_canHVCState_t currentState = hvcheartbeat->hvcState; 
-    cmr_canHVCError_t currentError = CMR_CAN_HVC_ERROR_NONE;
-    clearHVBMSErrorReg();
-    currentError = checkHVBMSErrors();
-
     cmr_canHeartbeat_t *vsm_heartbeat = getPayload(CANRX_HEARTBEAT_VSM);
+    cmr_canHVCError_t currentError = checkHVBMSErrors();
 
     cmr_canHeartbeat_t HVBMSHeartbeat = {
         .state = vsm_heartbeat->state 
     }; 
-
-    cmr_canWarn_t warning = CMR_CAN_WARN_NONE;
-    cmr_canError_t error = CMR_CAN_ERROR_NONE;
 
     memcpy(&HVBMSHeartbeat.error, &currentError, sizeof(HVBMSHeartbeat.error)); 
     canTX(CMR_CANID_HEARTBEAT_HV_BMS, &HVBMSHeartbeat, sizeof(HVBMSHeartbeat), canTX100Hz_period_ms);
