@@ -323,8 +323,8 @@ void canInit(void) {
             .ids = {
                 0x100, // (msg_id & 0x7FC) == (0x100 & 0x7FC) matches 0x100, 0x101, 0x102, 0x103
                 0x100,
-                0x7FC, // upper 9 bits must match
-                0x7FC
+                0x7F0, // upper 9 bits must match
+                0x7F0
             }
         },
 
