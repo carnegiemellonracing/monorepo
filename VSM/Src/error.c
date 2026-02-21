@@ -53,7 +53,7 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
         cmr_canRXMeta_t *rxMeta = &(canRXMeta[i]);
 
         if (cmr_canRXMetaTimeoutError(rxMeta, lastWakeTime) < 0
-            && i != CANRX_RES) {
+            && i != CANRX_RES && !(rxMeta->errorFlag == 0 && vsmErrorSourceFlags[i] == 0)) {
             heartbeatErrors |= rxMeta->errorFlag;
             moduleTimeoutMatrix |= vsmErrorSourceFlags[i];
             sendFirstError(CANRX_TIMEOUT);
@@ -65,11 +65,11 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     cmr_sensorListGetFlags(&sensorList, NULL, &heartbeatErrors);
 
     // Check for improper states
-    /*if (getBadModuleState(CANRX_HEARTBEAT_HVC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
+    if (getBadModuleState(CANRX_HEARTBEAT_HVC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
         badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_HVC;
         //more specific HVC checks within getBadModuleState - sendFirstError called there
-    }*/
+    }
 
     if (getBadModuleState(CANRX_HEARTBEAT_CDC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
@@ -81,6 +81,12 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
         heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
         badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_DIM;
         sendFirstError(BADSTATE_DIM);
+    }
+
+    if (getBadModuleState(CANRX_HEARTBEAT_HVBMS, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
+        heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
+        badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_HVBMS;
+        sendFirstError(BADSTATE_HVBMS);
     }
 
     if (cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_IN) > 18000 && cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_OUT) < 10000){

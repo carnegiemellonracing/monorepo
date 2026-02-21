@@ -1237,77 +1237,30 @@ void canInit(void) {
 
     // Tractive CAN filters.
     const cmr_canFilter_t canTractiveFilters[] = {
-        // FL CAN IDs
-        {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_DTI_FL_CONTROL_STATUS, CMR_CANID_DTI_FL_ERPM,}
-        },
-        {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_DTI_FL_CURRENT, CMR_CANID_DTI_FL_TEMPFAULT,}
-        },
-        {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_DTI_FL_IDIQ, CMR_CANID_DTI_FL_IO_STATUS,}
-        },
-        {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_DTI_FL_ACLIMS, CMR_CANID_DTI_FL_DCLIMS,}
-        },
-
         // FR CAN IDs
-        {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_DTI_FR_CONTROL_STATUS, CMR_CANID_DTI_FR_ERPM,}
+        {
+            .isMask = true,
+            .rxFIFO = FDCAN_RX_FIFO0,
+            .ids = {0x1F, FR_NODE_ID}
         },
-        {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_DTI_FR_CURRENT, CMR_CANID_DTI_FR_TEMPFAULT,}
+        // FL CAN IDs
+        {
+            .isMask = true,
+            .rxFIFO = FDCAN_RX_FIFO0,
+            .ids = {0x1F, FL_NODE_ID}
         },
-        {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_DTI_FR_IDIQ, CMR_CANID_DTI_FR_IO_STATUS,}
-        },
-        {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_DTI_FR_ACLIMS, CMR_CANID_DTI_FR_DCLIMS,}
-        },
-
         // RL CAN IDs
-        {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_DTI_RL_CONTROL_STATUS, CMR_CANID_DTI_RL_ERPM,}
+        {
+            .isMask = true,
+            .rxFIFO = FDCAN_RX_FIFO0,
+            .ids = {0x1F, RL_NODE_ID}
         },
-        {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_DTI_RL_CURRENT, CMR_CANID_DTI_RL_TEMPFAULT,}
-        },
-        {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_DTI_RL_IDIQ, CMR_CANID_DTI_RL_IO_STATUS,}
-        },
-        {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_DTI_RL_ACLIMS, CMR_CANID_DTI_RL_DCLIMS,}
-        },
-
         // RR CAN IDs
-        {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_DTI_RR_CONTROL_STATUS, CMR_CANID_DTI_RR_ERPM,}
+        {
+            .isMask = true,
+            .rxFIFO = FDCAN_RX_FIFO0,
+            .ids = {0x1F, RR_NODE_ID}
         },
-        {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_DTI_RR_CURRENT, CMR_CANID_DTI_RR_TEMPFAULT,}
-        },
-        {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_DTI_RR_IDIQ, CMR_CANID_DTI_RR_IO_STATUS,}
-        },
-        {.isMask = false,
-         .rxFIFO = FDCAN_RX_FIFO0,
-         .ids = {CMR_CANID_DTI_RR_ACLIMS, CMR_CANID_DTI_RR_DCLIMS,}
-        }
     };
 
     cmr_canFilter(&(can[CMR_CAN_BUS_TRAC]), canTractiveFilters,

@@ -119,7 +119,7 @@ typedef enum {
     /** @brief VSM hasn't received PTCf heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_PTC_TIMEOUT = (1 << 10),
     /** @brief VSM hasn't received HVI heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_HVI_TIMEOUT = (1 << 8),
+    CMR_CAN_WARN_VSM_HVBMS_TIMEOUT = (1 << 8),
     /** @brief VSM is rejecting DIM state request. */
     CMR_CAN_WARN_VSM_DIM_REQ_NAK = (1 << 7),
 
@@ -260,10 +260,8 @@ typedef enum {
     CMR_CAN_VSM_ERROR_SOURCE_DIM = (1 << 3),
     /** @brief At least one message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_PTC = (1 << 2),
-    /** @brief At least one Vehicle Safety Module message has timed out */
-    CMR_CAN_VSM_ERROR_SOURCE_AIM = (1 << 1),
-    /** @brief HVI Timeout. */
-    CMR_CAN_VSM_ERROR_SOURCE_HVI = (1 << 0)
+    /** @brief HVBMS Timeout. */
+    CMR_CAN_VSM_ERROR_SOURCE_HVBMS = (1 << 0)
 } cmr_canVSMErrorSource_t;
 
 /** @brief Bit definitions for latchMatrix in cmr_canVSMErrors_t. */
