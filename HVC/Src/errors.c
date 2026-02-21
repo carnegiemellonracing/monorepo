@@ -3,7 +3,7 @@
 
 static bool checkHVCCommandTimeout();
 
-static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_STATE_ERROR;
+static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_ERROR_NONE;
 
 cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
     cmr_canHVCError_t errorFlags = errorRegister;
@@ -11,10 +11,10 @@ cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
         // TODO E1 check the timeout field of the command mes sage meta data
         errorFlags |= CMR_CAN_HVC_ERROR_CAN_TIMEOUT;
     } 
-    if(getHVmilliamps() > maxPackCurrentInstantMA) {
-        // E8
-        errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
-    }
+    // if(getHVmilliamps() > maxPackCurrentInstantMA) {
+    //     // E8
+    //     errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
+    // }
     if(checkRelayPowerFault() && (getState() != CMR_CAN_HVC_STATE_ERROR && getState() != CMR_CAN_HVC_STATE_CLEAR_ERROR)) {//(getRelayStatus() & 0xAA) != 0xAA) {
         // TODO look into the AIR_Fault_L signal, it might be necessary to confirm this is not active
         // before looking at relay status, otherwise we could be in dead lock trying to clear errors.
