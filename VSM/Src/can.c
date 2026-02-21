@@ -170,21 +170,12 @@ cmr_canRXMeta_t canRXMeta[] = {
  *
  * @note Indexed by `canRX_t`.
  */
-const cmr_canVSMErrorSource_t vsmErrorSourceFlags[] = {
+const cmr_canVSMErrorSource_t vsmErrorSourceFlags[CANRX_LEN] = {
     [CANRX_HEARTBEAT_HVC]       = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_HEARTBEAT_CDC]       = CMR_CAN_VSM_ERROR_SOURCE_CDC,
     [CANRX_HEARTBEAT_DIM]       = CMR_CAN_VSM_ERROR_SOURCE_DIM,
     [CANRX_HEARTBEAT_HVBMS]     = CMR_CAN_VSM_ERROR_SOURCE_HVBMS,
-    [CANRX_FSM_DATA]            = CMR_CAN_VSM_ERROR_SOURCE_DIM,
-    [CANRX_DIM_REQUEST]         = CMR_CAN_VSM_ERROR_SOURCE_NONE, // Don't timeout based on DIM requests
-    [CANRX_FL_TEMPFAULT]        = CMR_CAN_VSM_ERROR_SOURCE_NONE, // Don't timeout inverter here
-    [CANRX_FR_TEMPFAULT]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_RL_TEMPFAULT]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_RR_TEMPFAULT]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_RR_IO_STATUS]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_RR_IO_STATUS]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_RR_IO_STATUS]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_RR_IO_STATUS]        = CMR_CAN_VSM_ERROR_SOURCE_NONE,
+    [CANRX_FSM_DATA]            = CMR_CAN_VSM_ERROR_SOURCE_DIM
 };
 
 /** @brief CAN 10 Hz TX priority. */
