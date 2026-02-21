@@ -3,7 +3,7 @@
 
 static bool checkHVCCommandTimeout();
 
-static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_STATE_ERROR;
+static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_ERROR_NONE;
 
 cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
     cmr_canHVCError_t errorFlags = errorRegister;

@@ -36,10 +36,10 @@ typedef enum {
     CMR_CANID_HEARTBEAT_DIM = 0x104,    /**< @brief DIM heartbeat. */
     CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief PTC heatbeart. */
     CMR_CANID_HEARTBEAT_LV_BMS = 0x107, /**< @brief LV-BMS heatbeart. */
+    CMR_CANID_HEARTBEAT_HV_BMS = 0x108, /**< @brief HV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
     CMR_CANID_EAB_STATUS = 0x10A,
     CMR_CANID_ASMS_STATUS = 0x193,
-    CMR_CANID_HEARTBEAT_HV_BMS = 0x108, 
 
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
     CMR_CANID_VSM_SENSORS = 0x200,              /**< @brief VSM sensor data. */

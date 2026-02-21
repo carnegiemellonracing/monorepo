@@ -76,15 +76,15 @@ typedef enum {
     /** @brief AFC DCDC #2 temperature out-of-range. */
     CMR_CAN_ERROR_AFC_DCDC2_TEMP = (1 << 10),
 
-    /** @brief
- fan current out-of-range. */
-    CMR_CAN_ERROR_PTC_FAN_CURRENT = (1 << 15),
-    /** @brief
- fan/pump driver IC temperature out-of-range. */
-    CMR_CAN_ERROR_PTC_DRIVERS_TEMP = (1 << 14),
-    /** @brief
- water temperature out-of-range. */
-    CMR_CAN_ERROR_PTC_WATER_TEMP = (1 << 13),
+//     /** @brief
+//  fan current out-of-range. */
+//     CMR_CAN_ERROR_PTC_FAN_CURRENT = (1 << 15),
+//     /** @brief
+//  fan/pump driver IC temperature out-of-range. */
+//     CMR_CAN_ERROR_PTC_DRIVERS_TEMP = (1 << 14),
+//     /** @brief
+//  water temperature out-of-range. */
+//     CMR_CAN_ERROR_PTC_WATER_TEMP = (1 << 13),
     //power errors(shunt resistor), water over heating errors, oil overheatin errors
     //no oil overheating errors cuz going into uprights
     // temperature
@@ -116,8 +116,6 @@ typedef enum {
     CMR_CAN_WARN_VSM_FSM_TIMEOUT = (1 << 12),
     /** @brief VSM hasn't received DIM heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_DIM_TIMEOUT = (1 << 11),
-    /** @brief VSM hasn't received PTCf heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_PTC_TIMEOUT = (1 << 10),
     /** @brief VSM hasn't received HVI heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_HVBMS_TIMEOUT = (1 << 8),
     /** @brief VSM is rejecting DIM state request. */
@@ -258,8 +256,6 @@ typedef enum {
     CMR_CAN_VSM_ERROR_SOURCE_FSM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_DIM = (1 << 3),
-    /** @brief At least one message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_PTC = (1 << 2),
     /** @brief HVBMS Timeout. */
     CMR_CAN_VSM_ERROR_SOURCE_HVBMS = (1 << 0)
 } cmr_canVSMErrorSource_t;
@@ -292,7 +288,6 @@ typedef enum {
     CMR_CAN_VSM_WRN_CURRENTOOR = (1<<2), 
     CMR_CAN_VSM_WRN_DIM_REQ_NAK = (1<<7),
     CMR_CAN_VSM_WRN_HVI_TIMEOUT = (1<<8),
-    CMR_CAN_VSM_WRN_PTC_TIMEOUT = (1<<10),
     CMR_CAN_VSM_WRN_DIM_TIMEOUT = (1<<11),
     CMR_CAN_VSM_WRN_FSM_TIMEOUT = (1<<12),
     CMR_CAN_VSM_WRN_CDC_TIMEOUT = (1<<13),

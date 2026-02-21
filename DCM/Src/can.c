@@ -853,9 +853,9 @@ static void canTX200Hz(void *pvParameters) {
         rear_velocity.rr_y = car_state.rr_velocity.y * 100.0f;
 
 
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COG_VELOCITY, &cog_velocity, sizeof(cog_velocity), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_FRONT_VELOCITY, &front_velocity, sizeof(front_velocity), canTX200Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_REAR_VELOCITY, &rear_velocity, sizeof(rear_velocity), canTX200Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COG_VELOCITY, &cog_velocity, sizeof(cog_velocity), canTX200Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_FRONT_VELOCITY, &front_velocity, sizeof(front_velocity), canTX200Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_REAR_VELOCITY, &rear_velocity, sizeof(rear_velocity), canTX200Hz_period_ms);
 
         // Is data valid? Set it in the orientation/velocity messages
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX200Hz_period_ms);
@@ -863,41 +863,8 @@ static void canTX200Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_SETPOINT, &speedSetpoint, sizeof(speedSetpoint), canTX200Hz_period_ms);
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX200Hz_period_ms);
 
-
-        // Forward DTI messages to vehicle CAN at 200Hz.
-        for (size_t i = 0; i <= CANRX_TRAC_LEN; i++) {
-            // Do not transmit if we haven't received that message lately
-            if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[i], xTaskGetTickCountFromISR()) < 0) continue;
-
-            canTX(
-                CMR_CAN_BUS_VEH,
-                canTractiveRXMeta[i].canID,
-                (void *) &(canTractiveRXMeta[i].payload),
-                sizeof(canTractiveRXMeta[i].payload),
-                canTX200Hz_period_ms
-            );
-        }
-
-        // Send setpoints to vehicle CAN at 200Hz as well.
-    
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_POSITION, &posePos, sizeof(posePos), canTX200Hz_period_ms);
-        //TODO: Fix error with padding (manual size 7)
-        //canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_ORIENTATION, &poseOrient, sizeof(poseOrient), canTX200Hz_period_ms);
-        //canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_VELOCITY, &poseVel, sizeof(poseVel), canTX200Hz_period_ms);
-
         // YRC
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_PID_IO, &yrcDebug, sizeof(yrcDebug), canTX200Hz_period_ms);
-
-        //Forward HVI Sense to vehic/le CAN. Do not transmit if we haven't received that message lately
-        if (cmr_canRXMetaTimeoutError(&canTractiveRXMeta[CANRX_TRAC_HVI_SENSE], xTaskGetTickCountFromISR()) == 0) {
-            canTX(
-                CMR_CAN_BUS_VEH,
-                canTractiveRXMeta[CANRX_TRAC_HVI_SENSE].canID,
-                (void *) &(canTractiveRXMeta[CANRX_TRAC_HVI_SENSE].payload),
-                sizeof(cmr_canHVSense_t),
-                canTX200Hz_period_ms
-            );
-        }
 
         vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
     }
