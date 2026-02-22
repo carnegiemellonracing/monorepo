@@ -88,6 +88,12 @@ cmr_canRXMeta_t canRXMeta[] = {
             .timeoutError_ms = 100,
             .timeoutWarn_ms = 25,
     },
+    [CANRX_DTI_ERROR_CODE] = {
+            .canID = CMR_CANID_DTI_ERROR_MESSAGES,
+            .timeoutError_ms = 100,
+            .timeoutWarn_ms = 75,
+            .warnFlag = CMR_CAN_WARN_NONE
+    },
     [CANRX_FL_TEMPFAULT] = {
         .canID = CMR_CANID_DTI_FL_TEMPFAULT,
         .timeoutError_ms = 100,
@@ -396,7 +402,8 @@ void canInit(void) {
             .isMask = false,
             .rxFIFO = CAN_RX_FIFO1,
             .ids = {
-                    CMR_CANID_AS_PRESSURE_READINGS
+                    CMR_CANID_AS_PRESSURE_READINGS,
+                    CMR_CANID_DTI_ERROR_MESSAGES
             }
 		},
     };

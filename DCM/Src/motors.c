@@ -179,38 +179,54 @@ static void motorsCommand (
 
                 // Blip (100ms) control message to zero torque/speed after transitioning
                 // from HV_EN to RTD to make sure inverters receive clean enable
-                const bool blank_command = (lastHvenTime + 100 > xTaskGetTickCount());
+                const bool blank_command = (lastHvenTime + 10000 > xTaskGetTickCount());
                 if (blank_command) {
                     sendBlankCommand();
 				}
+                else {
+                    int16_t set_current_fl = 200 << 8;
+                    int16_t set_current_fr = 75 << 8;
+                    int16_t set_current_rl = 30 << 8;
+                    int16_t set_current_rr = 30 << 8;
 
-                uint32_t au32_initial_ticks = DWT->CYCCNT;
+                    //enables motors to drive
+                    uint8_t driveEnable = 1;
+                    canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
 
-                TickType_t startTime = xTaskGetTickCount();
-                //taskENTER_CRITICAL(); /** @todo verify if this critical region is necessary */
+                    canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_CURRENT, &set_current_fl, sizeof(set_current_fl), can10Hz_period_ms);
+                    canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_CURRENT, &set_current_fr, sizeof(set_current_fr), can10Hz_period_ms);
+                    canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_CURRENT, &set_current_rl, sizeof(set_current_rl), can10Hz_period_ms);
+                    canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_CURRENT, &set_current_rr, sizeof(set_current_rr), can10Hz_period_ms);
+                
+                }
 
-                runControls(gear,
-                		    dataFSM    -> torqueRequested,
-                            dataFSM    -> brakePedalPosition_percent,
-                            dataFSM    -> brakePressureFront_PSI,
-                            swangleFSM->steeringWheelAngle_millideg_FL,
-                            swangleFSM->steeringWheelAngle_millideg_FR,
-                            voltageHVC -> hvVoltage_mV,
-                            currentHVC -> instantCurrent_mA,
-                            blank_command);
-                //taskEXIT_CRITICAL();
+                // uint32_t au32_initial_ticks = DWT->CYCCNT;
 
-                TickType_t endTime = xTaskGetTickCount();
+                // TickType_t startTime = xTaskGetTickCount();
+                // //taskENTER_CRITICAL(); /** @todo verify if this critical region is necessary */
 
-                uint32_t total_ticks = DWT->CYCCNT - au32_initial_ticks;
-                uint32_t microsecs = total_ticks*1000000/HAL_RCC_GetHCLKFreq();
+                // runControls(gear,
+                // 		    dataFSM    -> torqueRequested,
+                //             dataFSM    -> brakePedalPosition_percent,
+                //             dataFSM    -> brakePressureFront_PSI,
+                //             swangleFSM->steeringWheelAngle_millideg_FL,
+                //             swangleFSM->steeringWheelAngle_millideg_FR,
+                //             voltageHVC -> hvVoltage_mV,
+                //             currentHVC -> instantCurrent_mA,
+                //             blank_command);
+                // //taskEXIT_CRITICAL();
 
-                // Throttle pos is used instead of torque requested bc torque
-                // requested is always 0 unless in RTD (this allows drivers to
-                // test DRS implementation without being in RTD)
+                // TickType_t endTime = xTaskGetTickCount();
 
-                // set status so DIM can see
-                setControlsStatus(gear);
+                // uint32_t total_ticks = DWT->CYCCNT - au32_initial_ticks;
+                // uint32_t microsecs = total_ticks*1000000/HAL_RCC_GetHCLKFreq();
+
+                // // Throttle pos is used instead of torque requested bc torque
+                // // requested is always 0 unless in RTD (this allows drivers to
+                // // test DRS implementation without being in RTD)
+
+                // // set status so DIM can see
+                // setControlsStatus(gear);
 
                 break;
             }
@@ -283,20 +299,20 @@ void motorsInit (
     initControls();
 
     // Task creation.
-    // cmr_taskInit(
-    //     &motorsCommand_task,
-    //     "motorsCommand",
-    //     motorsCommand_priority,
-    //     motorsCommand,
-    //     NULL
-    // );
     cmr_taskInit(
-        &motorsTest_task,
-        "motorsTest",
+        &motorsCommand_task,
+        "motorsCommand",
         motorsCommand_priority,
-        motorsTest,
+        motorsCommand,
         NULL
     );
+    // cmr_taskInit(
+    //     &motorsTest_task,
+    //     "motorsTest",
+    //     motorsCommand_priority,
+    //     motorsTest,
+    //     NULL
+    // );
 }
 
 /**

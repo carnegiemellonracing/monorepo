@@ -16,7 +16,7 @@
 #include "sensors.h"    // sensorChannel_t, sensors[]
 
 /** @brief Check if we are in competition mode and need to check one inverter, otherwise check all inverters */
-#define COMPETITION_MODE true
+#define COMPETITION_MODE false
 
 
 /** @brief Required brake pressure to transition into RTD. */
@@ -251,122 +251,122 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
     bool wrongState = false;
 
     // Check HVC mode
-    if (module == CANRX_HEARTBEAT_HVC) {
-        cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
-        cmr_canHVCMode_t hvcMode = hvcHeartbeat->hvcMode;
+    // if (module == CANRX_HEARTBEAT_HVC) {
+    //     cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
+    //     cmr_canHVCMode_t hvcMode = hvcHeartbeat->hvcMode;
 
-        switch (vsmState) {
-            case CMR_CAN_VSM_STATE_ERROR: {
-                if ((hvcMode != CMR_CAN_HVC_MODE_IDLE)
-                 && (hvcMode != CMR_CAN_HVC_MODE_ERROR)) {
-                    sendFirstError(HVC_STATE_ERROR);
-                    wrongState = true;
-                }
+    //     switch (vsmState) {
+    //         case CMR_CAN_VSM_STATE_ERROR: {
+    //             if ((hvcMode != CMR_CAN_HVC_MODE_IDLE)
+    //              && (hvcMode != CMR_CAN_HVC_MODE_ERROR)) {
+    //                 sendFirstError(HVC_STATE_ERROR);
+    //                 wrongState = true;
+    //             }
 
-                break;
-            }
-            case CMR_CAN_VSM_STATE_CLEAR_ERROR: {
-                if ((hvcMode != CMR_CAN_HVC_MODE_IDLE)
-                 && (hvcMode != CMR_CAN_HVC_MODE_ERROR)) {
-                    sendFirstError(HVC_CLEAR_ERROR);
-                    wrongState = true;
-                }
+    //             break;
+    //         }
+    //         case CMR_CAN_VSM_STATE_CLEAR_ERROR: {
+    //             if ((hvcMode != CMR_CAN_HVC_MODE_IDLE)
+    //              && (hvcMode != CMR_CAN_HVC_MODE_ERROR)) {
+    //                 sendFirstError(HVC_CLEAR_ERROR);
+    //                 wrongState = true;
+    //             }
 
-                break;
-            }
+    //             break;
+    //         }
 
-            case CMR_CAN_VSM_STATE_GLV_ON: {
-                if (hvcMode != CMR_CAN_HVC_MODE_IDLE) {
-                    sendFirstError(HVC_GLV_ON);
-                    wrongState = true;
-                }
+    //         case CMR_CAN_VSM_STATE_GLV_ON: {
+    //             if (hvcMode != CMR_CAN_HVC_MODE_IDLE) {
+    //                 sendFirstError(HVC_GLV_ON);
+    //                 wrongState = true;
+    //             }
 
-                break;
-            }
-            case CMR_CAN_VSM_STATE_REQ_PRECHARGE: {
-                if ((hvcMode != CMR_CAN_HVC_MODE_IDLE)
-                 && (hvcMode != CMR_CAN_HVC_MODE_START)) {
-                    sendFirstError(HVC_REQ_PRECHARGE);
-                    wrongState = true;
-                }
+    //             break;
+    //         }
+    //         case CMR_CAN_VSM_STATE_REQ_PRECHARGE: {
+    //             if ((hvcMode != CMR_CAN_HVC_MODE_IDLE)
+    //              && (hvcMode != CMR_CAN_HVC_MODE_START)) {
+    //                 sendFirstError(HVC_REQ_PRECHARGE);
+    //                 wrongState = true;
+    //             }
 
-                break;
-            }
+    //             break;
+    //         }
 
-            case CMR_CAN_VSM_STATE_RUN_BMS: {
-                if ((hvcMode != CMR_CAN_HVC_MODE_START)
-                 && (hvcMode != CMR_CAN_HVC_MODE_RUN)) {
-                    sendFirstError(HVC_RUN_BMS);
-                    wrongState = true;
-                }
+    //         case CMR_CAN_VSM_STATE_RUN_BMS: {
+    //             if ((hvcMode != CMR_CAN_HVC_MODE_START)
+    //              && (hvcMode != CMR_CAN_HVC_MODE_RUN)) {
+    //                 sendFirstError(HVC_RUN_BMS);
+    //                 wrongState = true;
+    //             }
 
-                break;
-            }
+    //             break;
+    //         }
 
-            case CMR_CAN_VSM_STATE_INVERTER_EN: {
-                if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
-                    sendFirstError(HVC_INVERTER_EN);
-                    wrongState = true;
-                }
+    //         case CMR_CAN_VSM_STATE_INVERTER_EN: {
+    //             if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
+    //                 sendFirstError(HVC_INVERTER_EN);
+    //                 wrongState = true;
+    //             }
 
-                break;
-            }
-            case CMR_CAN_VSM_STATE_HV_EN: {
-                if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
-                    sendFirstError(HVC_HV_EN);
-                    wrongState = true;
-                }
+    //             break;
+    //         }
+    //         case CMR_CAN_VSM_STATE_HV_EN: {
+    //             if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
+    //                 sendFirstError(HVC_HV_EN);
+    //                 wrongState = true;
+    //             }
 
-                break;
-            }
-            case CMR_CAN_VSM_STATE_RTD: {
-                if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
-                    sendFirstError(HVC_RTD);
-                    wrongState = true;
-                }
+    //             break;
+    //         }
+    //         case CMR_CAN_VSM_STATE_RTD: {
+    //             if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
+    //                 sendFirstError(HVC_RTD);
+    //                 wrongState = true;
+    //             }
 
-                break;
-            }
-            case CMR_CAN_VSM_STATE_AS_READY: {
-                if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
-                    sendFirstError(HVC_AS_READY);
-                    wrongState = true;
-                }
+    //             break;
+    //         }
+    //         case CMR_CAN_VSM_STATE_AS_READY: {
+    //             if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
+    //                 sendFirstError(HVC_AS_READY);
+    //                 wrongState = true;
+    //             }
 
-                break;
-            }
-            case CMR_CAN_VSM_STATE_AS_DRIVING: {
-                if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
-                    sendFirstError(HVC_AS_DRIVING);
-                    wrongState = true;
-                }
+    //             break;
+    //         }
+    //         case CMR_CAN_VSM_STATE_AS_DRIVING: {
+    //             if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
+    //                 sendFirstError(HVC_AS_DRIVING);
+    //                 wrongState = true;
+    //             }
 
-                break;
-            }
-            case CMR_CAN_VSM_STATE_AS_FINISHED: {
-                if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
-                    sendFirstError(HVC_AS_FINISHED);
-                    wrongState = true;
-                }
+    //             break;
+    //         }
+    //         case CMR_CAN_VSM_STATE_AS_FINISHED: {
+    //             if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
+    //                 sendFirstError(HVC_AS_FINISHED);
+    //                 wrongState = true;
+    //             }
 
-                break;
-            }
-            case CMR_CAN_VSM_STATE_AS_EMERGENCY: {
-                if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
-                    sendFirstError(HVC_AS_EMERGENCY);
-                    wrongState = true;
-                }
+    //             break;
+    //         }
+    //         case CMR_CAN_VSM_STATE_AS_EMERGENCY: {
+    //             if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
+    //                 sendFirstError(HVC_AS_EMERGENCY);
+    //                 wrongState = true;
+    //             }
 
-                break;
-            }
+    //             break;
+    //         }
 
-            default: {
-                sendFirstError(VSM_INVALID);
-                cmr_panic("Invalid VSM state");
-                break;
-            }
-        }
-    }
+    //         default: {
+    //             sendFirstError(VSM_INVALID);
+    //             cmr_panic("Invalid VSM state");
+    //             break;
+    //         }
+    //     }
+    // }
 
     // Directly check state of any other module
     else {
@@ -399,24 +399,14 @@ static bool getASEmergency(){
  * @brief Check all inverters if endurance mode. Else, check RR inverter
 */
 bool invertersPass(TickType_t lastWakeTime_ms){
-    cmr_canDTI_TX_TempFault_t *dti_fl_tempfault = getPayload(CANRX_FL_TEMPFAULT);
-    cmr_canDTI_TX_TempFault_t *dti_fr_tempfault = getPayload(CANRX_FR_TEMPFAULT);
-    cmr_canDTI_TX_TempFault_t *dti_rl_tempfault = getPayload(CANRX_RL_TEMPFAULT);
-    cmr_canDTI_TX_TempFault_t *dti_rr_tempfault = getPayload(CANRX_RR_TEMPFAULT);
-    cmr_canDTI_TX_IOStatus_t *dti_fl_io_status = getPayload(CANRX_FL_IO_STATUS);
-    cmr_canDTI_TX_IOStatus_t *dti_fr_io_status = getPayload(CANRX_FR_IO_STATUS);
-    cmr_canDTI_TX_IOStatus_t *dti_rl_io_status = getPayload(CANRX_RL_IO_STATUS);
-    cmr_canDTI_TX_IOStatus_t *dti_rr_io_status = getPayload(CANRX_RR_IO_STATUS);
-    // TODO: change back before comp so that don't unnecessarily error out
+    cmr_canDTI_ErrorMessages_t *dti_error_codes = getPayload(CANRX_DTI_ERROR_CODE);
+    bool inverter_message_valid = !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_DTI_ERROR_CODE], lastWakeTime_ms);
     if (COMPETITION_MODE){
-        if (((!dti_fl_tempfault->fault_code) &&
-                !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_FL_TEMPFAULT]), lastWakeTime_ms)) ||
-            ((!dti_fr_tempfault->fault_code) &&
-                !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_FR_TEMPFAULT]), lastWakeTime_ms)) ||
-            ((!dti_rl_tempfault->fault_code) &&
-                !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_RL_TEMPFAULT]), lastWakeTime_ms)) ||
-            ((!dti_rr_tempfault->fault_code) &&
-                !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_RR_TEMPFAULT]), lastWakeTime_ms))){
+        if (((!dti_error_codes->fl_fault_code) ||
+            (!dti_error_codes->fr_fault_code) ||
+            (!dti_error_codes->rl_fault_code) ||
+            (!dti_error_codes->rr_fault_code)) &&
+            inverter_message_valid) {
                 return true;
         }
         else{
@@ -424,18 +414,14 @@ bool invertersPass(TickType_t lastWakeTime_ms){
             return false;
         }
     }
-    else{
-        if (// TODO: change back before comp so that don't unnecessarily error out
-            ((!dti_fl_tempfault->fault_code) &&
-                !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_FL_TEMPFAULT]), lastWakeTime_ms)) &&
-            ((!dti_fr_tempfault->fault_code) &&
-                !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_FR_TEMPFAULT]), lastWakeTime_ms)) &&
-            ((!dti_rl_tempfault->fault_code) &&
-                !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_RL_TEMPFAULT]), lastWakeTime_ms)) &&
-            ((!dti_rr_tempfault->fault_code) &&
-                !cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_RR_TEMPFAULT]), lastWakeTime_ms))
-            )
-            return true;
+    else {
+        if (((!dti_error_codes->fl_fault_code) &&
+            (!dti_error_codes->fr_fault_code) &&
+            (!dti_error_codes->rl_fault_code) &&
+            (!dti_error_codes->rr_fault_code)) &&
+            inverter_message_valid) {
+                return true;
+        }
         else{
             sendFirstError(INVERTER_ALL);
             return false;

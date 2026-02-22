@@ -816,7 +816,7 @@ typedef struct  __attribute__((__packed__))  {
 } cmr_canDTI_TX_ControlStatus_t;
 
 /** @brief DTI motor controller: Throttle, brake, digital I/Os, drive enable, limit status. */
-typedef struct __attribute__((__packed__)){
+typedef struct {
     int8_t throttle_signal;     /**< Throttle input signal. */
     int8_t brake_signal;        /**< Brake input signal. */
     uint8_t digital_inputs;     /**< Bitmask of digital inputs. */
@@ -826,7 +826,7 @@ typedef struct __attribute__((__packed__)){
     uint8_t canVersion;         /** CAN Map Version */
 } cmr_canDTI_TX_IOStatus_t;
 
-typedef struct __attribute__((__packed__)){
+typedef struct {
     uint8_t fr_fault_code;
     uint8_t fl_fault_code;
     uint8_t rr_fault_code;
