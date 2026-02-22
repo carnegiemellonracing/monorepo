@@ -396,6 +396,19 @@ Var=FL_erpm signed 0,32
 Var=FL_duty_cycle_pct signed 32,16
 Var=FL_input_voltage_V signed 48,16
 
+[DTI_FL_IO_STATUS]
+ID=24h
+DLC=8
+CycleTime=20
+TimeOut=100
+Var=FL_throttle_signal signed 0,8
+Var=FL_brake_signal signed 8,8
+Var=FL_digital_inputs unsigned 16,8
+Var=FL_drive_enable unsigned 24,8
+Var=FL_limit_status unsigned 32,16
+Var=FL_DTI_reserved unsigned 48,8
+Var=FL_canVersion unsigned 56,8
+
 [DTI_FL_TEMPFAULT]
 ID=22h
 DLC=5
