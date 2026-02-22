@@ -23,8 +23,8 @@
 #define PACKET_NODE_TO_CAN_ID(packet,node)  (((uint16_t) packet << 5) | ((uint16_t) node))
 #define FL_NODE_ID 1
 #define FR_NODE_ID 2
-#define RR_NODE_ID 3
-#define RL_NODE_ID 4
+#define RL_NODE_ID 3
+#define RR_NODE_ID 4
 #define DRIVE_EN_NODE_ID 0x1F
 
 /** @brief CAN IDs. */

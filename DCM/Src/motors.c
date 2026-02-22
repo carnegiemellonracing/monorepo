@@ -184,10 +184,10 @@ static void motorsCommand (
                     sendBlankCommand();
 				}
                 else {
-                    int16_t set_current_fl = 200 << 8;
-                    int16_t set_current_fr = 75 << 8;
-                    int16_t set_current_rl = 30 << 8;
-                    int16_t set_current_rr = 30 << 8;
+                    int16_t set_current_fl = 40 << 8;
+                    int16_t set_current_fr = 40 << 8;
+                    int16_t set_current_rl = 40 << 8;
+                    int16_t set_current_rr = 40 << 8;
 
                     //enables motors to drive
                     uint8_t driveEnable = 1;
