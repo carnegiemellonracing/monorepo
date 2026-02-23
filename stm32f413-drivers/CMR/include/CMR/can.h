@@ -86,6 +86,14 @@ struct cmr_can {
     cmr_canRXCallback_t rxCallback;
 };
 
+
+int cmr_canTX(
+    cmr_can_t *can,
+    uint16_t id, const void *data, uint8_t len,
+    TickType_t timeout
+);
+
+
 void cmr_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
     cmr_canBitRate_t bitRate,
@@ -134,13 +142,6 @@ typedef struct {
 void cmr_canFilter(
     cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen
 );
-
-int cmr_canTX(
-    cmr_can_t *can,
-    uint16_t id, const void *data, uint8_t len,
-    TickType_t timeout
-);
-
 void cmr_canFieldEnable(uint8_t *field, const void *value, size_t len);
 void cmr_canFieldDisable(uint8_t *field, const void *value, size_t len);
 uint32_t cmr_canGPIOAF(CAN_TypeDef *instance, GPIO_TypeDef *port);

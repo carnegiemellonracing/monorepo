@@ -96,7 +96,7 @@ void cmr_FDcanInit(
     GPIO_TypeDef *rxPort, uint16_t rxPin,
     GPIO_TypeDef *txPort, uint16_t txPin,
     uint32_t commit_hash, uint8_t is_dirty,
-    cmr_canid_t boardID
+    cmr_canID_t boardID
 
     
 );

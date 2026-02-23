@@ -1012,7 +1012,7 @@ void canInit(void) {
     cmr_FDcanInit(&(can[CMR_CAN_BUS_DAQ]), FDCAN3, CMR_CAN_BITRATE_500K, NULL,
                   0, &conditionalCallback, GPIOD,
                   GPIO_PIN_12,        // CAN3 RX port/pin.
-                  GPIOD, GPIO_PIN_13  // CAN3 TX port/pin.
+                  GPIOD, GPIO_PIN_13,  // CAN3 TX port/pin.
                   GIT_INFO,
                   IS_UNCOMMITTED,
                   CMR_CANID_DCM_GIT

@@ -21,6 +21,8 @@
 #include "can.h"      // Interface to implement
 #include "adc.h"      // adcVSense, adcISense
 
+#include "gitcommit.h"
+
 /** @brief Slope for voltage sense transfer function */
 #define V_TRANS_M 19.506
 /** @brief Intercept for voltage sense transfer function */
@@ -185,7 +187,9 @@ void canInit(void) {
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
         NULL,
         GPIOA, GPIO_PIN_11,     // CAN2 RX port/pin.
-        GPIOA, GPIO_PIN_12      // CAN2 TX port/pin.
+        GPIOA, GPIO_PIN_12,      // CAN2 TX port/pin.
+        GIT_INFO, IS_UNCOMMITTED,
+        CMR_CANID_HVC_GIT 
     );
 
     // CAN1 filters.
