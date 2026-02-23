@@ -74,7 +74,7 @@ cmr_canDAQTest_t getDAQTest() {
 }
 
 /* Global Variable to Initiate/Disable Torque Mode*/ 
-bool isTorqueMode = false;
+bool isTorqueMode = true;
 
 // ------------------------------------------------------------------------------------------------
 // Private functions
