@@ -369,14 +369,14 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
     // }
 
     // Directly check state of any other module
-    else {
+    // else {
         cmr_canState_t expectedState = vsmToCANState[vsmState];
         cmr_canState_t moduleState = getModuleState(module);
 
         if (moduleState != expectedState) {
             wrongState = true;
         }
-    }
+    // }
 
     // Module in wrong state and it has been more than 'badStateThres_ms'
     // millisec since last state change

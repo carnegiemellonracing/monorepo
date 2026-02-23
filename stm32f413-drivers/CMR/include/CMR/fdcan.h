@@ -157,6 +157,12 @@ int cmr_canTX(
     TickType_t timeout
 );
 
+int cmr_canExtendedTX(
+    cmr_can_t *can,
+    uint32_t id, const void *data, size_t len,
+    TickType_t timeout
+);
+
 void cmr_canFieldEnable(uint8_t *field, const void *value, size_t len);
 void cmr_canFieldDisable(uint8_t *field, const void *value, size_t len);
 void cmr_canFilter(cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen);
