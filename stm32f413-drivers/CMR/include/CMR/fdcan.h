@@ -94,7 +94,11 @@ void cmr_FDcanInit(
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
     cmr_canRXCallback_t rxCallback,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
+    GPIO_TypeDef *txPort, uint16_t txPin,
+    uint32_t commit_hash, uint8_t is_dirty,
+    cmr_canid_t boardID
+
+    
 );
 
 extern void _platform_FDCANInit(

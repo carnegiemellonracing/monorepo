@@ -260,7 +260,10 @@ void canInit(void) {
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
         NULL,
         GPIOB, GPIO_PIN_12,     // CAN2 RX port/pin.
-        GPIOB, GPIO_PIN_13      // CAN2 TX port/pin.
+        GPIOB, GPIO_PIN_13,      // CAN2 TX port/pin.
+        GIT_INFO,
+        IS_UNCOMMITTED,
+        CMR_CANID_VSM_GIT
     );
 
     // CAN2 filters, balanced across each RX FIFO

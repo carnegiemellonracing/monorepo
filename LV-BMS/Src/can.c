@@ -17,6 +17,7 @@
 
 #include "can.h"
 #include "data.h"
+#include "gitcommit.h"
 // INTERFACES
 
 
@@ -165,7 +166,10 @@ void canInit(void) {
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
         NULL,
         GPIOA, GPIO_PIN_11,     // CAN1 RX port/pin.
-        GPIOA, GPIO_PIN_12      // CAN1 TX port/pin.
+        GPIOA, GPIO_PIN_12,      // CAN1 TX port/pin.
+        GIT_INFO,
+        IS_UNCOMMITTED,
+        CMR_CANID_LV_BMS_GIT
     );
 
     // CAN2 filters.

@@ -19,6 +19,7 @@
 #include "adc.h"      // adcVSense, adcISense
 #include "sensors.h"  // HVC Values
 #include "math.h"
+#include "gitcommit.h"
 
 /** @brief Struct to identify stale commands. */
 extern ReceiveMeta_t BMSCommandReceiveMeta;
@@ -215,7 +216,10 @@ void canInit(void) {
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
         NULL,
         GPIOA, GPIO_PIN_11,     // CAN2 RX port/pin.
-        GPIOA, GPIO_PIN_12      // CAN2 TX port/pin.
+        GPIOA, GPIO_PIN_12,      // CAN2 TX port/pin.
+        GIT_INFO,
+        IS_UNCOMMITTED,
+        CMR_CANID_HVC_GIT
     );
 
     // CAN2 filters.

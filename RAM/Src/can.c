@@ -15,6 +15,7 @@
 
 #include "can.h"        // Interface to implement
 #include "parser.h"     // parser ingestation
+#include "gitcommit.h"
 
 
 /**
@@ -313,7 +314,10 @@ void canInit(void) {
         NULL, 0,
         canRX,
         GPIOA, GPIO_PIN_8,     // CAN3 RX port/pin.
-        GPIOB, GPIO_PIN_4      // CAN3 TX port/pin.
+        GPIOB, GPIO_PIN_4,      // CAN3 TX port/pin.
+        GIT_INFO,
+        IS_UNCOMMITTED,
+        CMR_CANID_RAM_GIT
     );
 
     // DAQ-CAN (CAN2) initialization.
@@ -323,7 +327,10 @@ void canInit(void) {
         NULL, 0,
         canRX,
         GPIOB, GPIO_PIN_12,    // CAN2 RX port/pin.
-        GPIOB, GPIO_PIN_13     // CAN2 TX port/pin.
+        GPIOB, GPIO_PIN_13,     // CAN2 TX port/pin.
+        GIT_INFO,
+        IS_UNCOMMITTED,
+        CMR_CANID_RAM_GIT
     );
     // Trac-CAN (CAN1) initialization.
 	cmr_canInit(
@@ -332,7 +339,10 @@ void canInit(void) {
 		NULL, 0,
 		canRX,
 		GPIOB, GPIO_PIN_8,    // CAN1 RX port/pin.
-		GPIOB, GPIO_PIN_9     // CAN1 TX port/pin.
+		GPIOB, GPIO_PIN_9,     // CAN1 TX port/pin.
+        GIT_INFO,
+        IS_UNCOMMITTED,
+        CMR_CANID_RAM_GIT
 	);
 
     // filters.

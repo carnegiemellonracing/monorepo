@@ -30,6 +30,7 @@
 #include "sensors.h"
 #include "movella.h"
 #include "safety_filter.h"
+#include "gitcommit.h"
 
 extern volatile uint8_t currentParameters[MAX_MENU_ITEMS];
 volatile uint8_t parametersFromDIM[MAX_MENU_ITEMS];
@@ -1001,7 +1002,10 @@ void canInit(void) {
     cmr_FDcanInit(&can[CMR_CAN_BUS_VEH], FDCAN2, CMR_CAN_BITRATE_500K, NULL,
                   0, &conditionalCallback, GPIOB,
                   GPIO_PIN_12,        // CAN1 RX port/pin.
-                  GPIOB, GPIO_PIN_13  // CAN1 TX port/pin.
+                  GPIOB, GPIO_PIN_13,  // CAN1 TX port/pin.
+                  GIT_INFO,
+                  IS_UNCOMMITTED,
+                  CMR_CANID_DCM_GIT
     );
 
     // Tractive CAN initialization. - CAN3
@@ -1009,13 +1013,19 @@ void canInit(void) {
                   0, &conditionalCallback, GPIOD,
                   GPIO_PIN_12,        // CAN3 RX port/pin.
                   GPIOD, GPIO_PIN_13  // CAN3 TX port/pin.
+                  GIT_INFO,
+                  IS_UNCOMMITTED,
+                  CMR_CANID_DCM_GIT
     );
 
     // DAQ CAN init. - CAN2
     cmr_FDcanInit(&can[CMR_CAN_BUS_TRAC], FDCAN1, CMR_CAN_BITRATE_500K, NULL,
                   0, &conditionalCallback, GPIOA,
                   GPIO_PIN_11,        // CAN2 RX port/pin.
-                  GPIOA, GPIO_PIN_12  // CAN2 TX port/pin.
+                  GPIOA, GPIO_PIN_12,  // CAN2 TX port/pin.
+                  GIT_INFO,
+                  IS_UNCOMMITTED,
+                  CMR_CANID_DCM_GIT
     );
 
     // Vehicle CAN filters.

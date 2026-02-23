@@ -25,6 +25,7 @@
 
 #include "tftDL.h"      // For RAM buffer indices
 #include "state.h"	// For new state machine
+#include "gitcommit.h"
 
 // Config Screen update requested
 bool volatile flush_config_screen_to_cdc = false;
@@ -470,7 +471,11 @@ void canInit(void) {
         canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
         &canRXCallback,
         GPIOA, GPIO_PIN_11,  // CAN1 RX port/pin.
-        GPIOA, GPIO_PIN_12   // CAN1 TX port/pin.
+        GPIOA, GPIO_PIN_12,   // CAN1 TX port/pin.
+        GIT_INFO,
+        IS_UNCOMMITTED,
+        CMR_CANID_DIM_GIT
+
     );
 
     // Clear RAM Buf - Set all to Spaces
