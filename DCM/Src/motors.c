@@ -179,54 +179,56 @@ static void motorsCommand (
 
                 // Blip (100ms) control message to zero torque/speed after transitioning
                 // from HV_EN to RTD to make sure inverters receive clean enable
-                const bool blank_command = (lastHvenTime + 10000 > xTaskGetTickCount());
+
+                // const bool blank_command = (lastHvenTime + 10000 > xTaskGetTickCount());
+                const bool blank_command = (lastHvenTime + 100 > xTaskGetTickCount());
                 if (blank_command) {
                     sendBlankCommand();
 				}
-                else {
-                    int16_t set_current_fl = 40 << 8;
-                    int16_t set_current_fr = 40 << 8;
-                    int16_t set_current_rl = 40 << 8;
-                    int16_t set_current_rr = 40 << 8;
+                // else {
+                //     int16_t set_current_fl = 40 << 8;
+                //     int16_t set_current_fr = 40 << 8;
+                //     int16_t set_current_rl = 40 << 8;
+                //     int16_t set_current_rr = 40 << 8;
 
-                    //enables motors to drive
-                    uint8_t driveEnable = 1;
-                    canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
+                //     //enables motors to drive
+                //     uint8_t driveEnable = 1;
+                //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
 
-                    canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_CURRENT, &set_current_fl, sizeof(set_current_fl), can10Hz_period_ms);
-                    canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_CURRENT, &set_current_fr, sizeof(set_current_fr), can10Hz_period_ms);
-                    canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_CURRENT, &set_current_rl, sizeof(set_current_rl), can10Hz_period_ms);
-                    canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_CURRENT, &set_current_rr, sizeof(set_current_rr), can10Hz_period_ms);
+                //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_CURRENT, &set_current_fl, sizeof(set_current_fl), can10Hz_period_ms);
+                //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_CURRENT, &set_current_fr, sizeof(set_current_fr), can10Hz_period_ms);
+                //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_CURRENT, &set_current_rl, sizeof(set_current_rl), can10Hz_period_ms);
+                //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_CURRENT, &set_current_rr, sizeof(set_current_rr), can10Hz_period_ms);
                 
-                }
+                // }
+                
+                uint32_t au32_initial_ticks = DWT->CYCCNT;
 
-                // uint32_t au32_initial_ticks = DWT->CYCCNT;
+                TickType_t startTime = xTaskGetTickCount();
+                //taskENTER_CRITICAL(); /** @todo verify if this critical region is necessary */
 
-                // TickType_t startTime = xTaskGetTickCount();
-                // //taskENTER_CRITICAL(); /** @todo verify if this critical region is necessary */
+                runControls(gear,
+                		    dataFSM    -> torqueRequested,
+                            dataFSM    -> brakePedalPosition_percent,
+                            dataFSM    -> brakePressureFront_PSI,
+                            swangleFSM->steeringWheelAngle_millideg_FL,
+                            swangleFSM->steeringWheelAngle_millideg_FR,
+                            voltageHVC -> hvVoltage_mV,
+                            currentHVC -> instantCurrent_mA,
+                            blank_command);
+                //taskEXIT_CRITICAL();
 
-                // runControls(gear,
-                // 		    dataFSM    -> torqueRequested,
-                //             dataFSM    -> brakePedalPosition_percent,
-                //             dataFSM    -> brakePressureFront_PSI,
-                //             swangleFSM->steeringWheelAngle_millideg_FL,
-                //             swangleFSM->steeringWheelAngle_millideg_FR,
-                //             voltageHVC -> hvVoltage_mV,
-                //             currentHVC -> instantCurrent_mA,
-                //             blank_command);
-                // //taskEXIT_CRITICAL();
+                TickType_t endTime = xTaskGetTickCount();
 
-                // TickType_t endTime = xTaskGetTickCount();
+                uint32_t total_ticks = DWT->CYCCNT - au32_initial_ticks;
+                uint32_t microsecs = total_ticks*1000000/HAL_RCC_GetHCLKFreq();
 
-                // uint32_t total_ticks = DWT->CYCCNT - au32_initial_ticks;
-                // uint32_t microsecs = total_ticks*1000000/HAL_RCC_GetHCLKFreq();
+                // Throttle pos is used instead of torque requested bc torque
+                // requested is always 0 unless in RTD (this allows drivers to
+                // test DRS implementation without being in RTD)
 
-                // // Throttle pos is used instead of torque requested bc torque
-                // // requested is always 0 unless in RTD (this allows drivers to
-                // // test DRS implementation without being in RTD)
-
-                // // set status so DIM can see
-                // setControlsStatus(gear);
+                // set status so DIM can see
+                setControlsStatus(gear);
 
                 break;
             }
