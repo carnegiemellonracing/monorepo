@@ -134,10 +134,9 @@ enum Warn(0="NONE", 1="VSM_TIMEOUT", 2="BUS_VOLTAGE", 4="BUS_CURRENT",
 // ========== END AUTO-GENERATED ENUMS ==========
 
 [AMK_FL_ACT_1]
-ID=288h
+CycleTime=10
 DLC=8
-CycleTime=100
-TimeOut=500
+TimeOut=50
 Var=FL_AMK_RESERVED unsigned 0,8
 Var=FL_AMK_STATUS_SYSTEM_READY bit 8,1
 Var=FL_AMK_STATUS_ERROR bit 9,1
@@ -150,152 +149,6 @@ Var=FL_AMK_STATUS_DERATING_EN bit 15,1
 Var=FL_velocity_rpm signed 16,16 /u:rpm /p:4
 Var=FL_torqueCurrent_raw signed 32,16 /f:0.001701171875
 Var=FL_magCurrent_raw signed 48,16 /f:0.001701171875
-
-[AMK_FL_ACT_2]
-ID=28Ah
-DLC=8
-CycleTime=20
-TimeOut=100
-Var=FL_motorTemp_dC signed 0,16 /u:dC /f:0.1 /p:2
-Var=FL_coldPlateTemp_dC signed 16,16 /u:dC /f:0.1 /p:2
-Var=FL_errorCode unsigned 32,16
-Var=FL_igbtTemp_dC signed 48,16 /u:dC /f:0.1 /p:2
-
-[AMK_FL_SETPOINTS]
-ID=189h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=FL_AMK_CTRL_INV_ON bit 8,1
-Var=FL_AMK_CTRL_HV_EN bit 9,1
-Var=FL_AMK_CTRL_INV_EN bit 10,1
-Var=FL_AMK_CTRL_ERR_RESET bit 11,1
-Var=FL_velocity_rpm1 signed 16,16
-Var=FL_torqueLimPos_dpcnt signed 32,16 /u:Nm /f:0.0098 /p:4
-Var=FL_torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
-
-[AMK_FR_ACT_1]
-ID=284h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=FR_AMK_RESERVED1 unsigned 0,8
-Var=FR_AMK_STATUS_SYSTEM_READY1 bit 8,1
-Var=FR_AMK_STATUS_ERROR1 bit 9,1
-Var=FR_AMK_STATUS_WARNING1 bit 10,1
-Var=FR_AMK_STATUS_HV_EN_ACK1 bit 11,1
-Var=FR_AMK_STATUS_HV_EN1 bit 12,1
-Var=FR_AMK_STATUS_INV_EN_ACK1 bit 13,1
-Var=FR_AMK_STATUS_INV_EN1 bit 14,1
-Var=FR_AMK_STATUS_DERATING_EN1 bit 15,1
-Var=FR_velocity_rpm2 signed 16,16
-Var=FR_torqueCurrent_raw1 signed 32,16
-Var=FR_magCurrent_raw1 signed 48,16
-
-[AMK_FR_ACT_2]
-ID=286h
-DLC=8
-CycleTime=20
-TimeOut=100
-Var=FR_motorTemp_dC1 signed 0,16
-Var=FR_coldPlateTemp_dC1 signed 16,16
-Var=FR_errorCode1 unsigned 32,16
-Var=FR_igbtTemp_dC1 signed 48,16
-
-[AMK_FR_SETPOINTS]
-ID=185h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=FR_AMK_CTRL_INV_ON1 bit 8,1
-Var=FR_AMK_CTRL_HV_EN1 bit 9,1
-Var=FR_AMK_CTRL_INV_EN1 bit 10,1
-Var=FR_AMK_CTRL_ERR_RESET1 bit 11,1
-Var=FR_velocity_rpm3 signed 16,16
-Var=FR_torqueLimPos_dpcnt1 signed 32,16
-Var=FR_torqueLimNeg_dpcnt1 signed 48,16
-
-[AMK_RL_ACT_1]
-ID=287h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=RL_AMK_RESERVED2 unsigned 0,8
-Var=RL_AMK_STATUS_SYSTEM_READY2 bit 8,1
-Var=RL_AMK_STATUS_ERROR2 bit 9,1
-Var=RL_AMK_STATUS_WARNING2 bit 10,1
-Var=RL_AMK_STATUS_HV_EN_ACK2 bit 11,1
-Var=RL_AMK_STATUS_HV_EN2 bit 12,1
-Var=RL_AMK_STATUS_INV_EN_ACK2 bit 13,1
-Var=RL_AMK_STATUS_INV_EN2 bit 14,1
-Var=RL_AMK_STATUS_DERATING_EN2 bit 15,1
-Var=RL_velocity_rpm4 signed 16,16
-Var=RL_torqueCurrent_raw2 signed 32,16
-Var=RL_magCurrent_raw2 signed 48,16
-
-[AMK_RL_ACT_2]
-ID=289h
-DLC=8
-CycleTime=20
-TimeOut=100
-Var=RL_motorTemp_dC2 signed 0,16
-Var=RL_coldPlateTemp_dC2 signed 16,16
-Var=RL_errorCode2 unsigned 32,16
-Var=RL_igbtTemp_dC2 signed 48,16
-
-[AMK_RL_SETPOINTS]
-ID=188h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=RL_AMK_CTRL_INV_ON2 bit 8,1
-Var=RL_AMK_CTRL_HV_EN2 bit 9,1
-Var=RL_AMK_CTRL_INV_EN2 bit 10,1
-Var=RL_AMK_CTRL_ERR_RESET2 bit 11,1
-Var=RL_velocity_rpm5 signed 16,16
-Var=RL_torqueLimPos_dpcnt2 signed 32,16
-Var=RL_torqueLimNeg_dpcnt2 signed 48,16
-
-[AMK_RR_ACT_1]
-ID=283h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=RR_AMK_RESERVED3 unsigned 0,8
-Var=RR_AMK_STATUS_SYSTEM_READY3 bit 8,1
-Var=RR_AMK_STATUS_ERROR3 bit 9,1
-Var=RR_AMK_STATUS_WARNING3 bit 10,1
-Var=RR_AMK_STATUS_HV_EN_ACK3 bit 11,1
-Var=RR_AMK_STATUS_HV_EN3 bit 12,1
-Var=RR_AMK_STATUS_INV_EN_ACK3 bit 13,1
-Var=RR_AMK_STATUS_INV_EN3 bit 14,1
-Var=RR_AMK_STATUS_DERATING_EN3 bit 15,1
-Var=RR_velocity_rpm6 signed 16,16
-Var=RR_torqueCurrent_raw3 signed 32,16
-Var=RR_magCurrent_raw3 signed 48,16
-
-[AMK_RR_ACT_2]
-ID=285h
-DLC=8
-CycleTime=20
-TimeOut=100
-Var=RR_motorTemp_dC3 signed 0,16
-Var=RR_coldPlateTemp_dC3 signed 16,16
-Var=RR_errorCode3 unsigned 32,16
-Var=RR_igbtTemp_dC3 signed 48,16
-
-[AMK_RR_SETPOINTS]
-ID=184h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=RR_AMK_CTRL_INV_ON3 bit 8,1
-Var=RR_AMK_CTRL_HV_EN3 bit 9,1
-Var=RR_AMK_CTRL_INV_EN3 bit 10,1
-Var=RR_AMK_CTRL_ERR_RESET3 bit 11,1
-Var=RR_velocity_rpm7 signed 16,16
-Var=RR_torqueLimPos_dpcnt3 signed 32,16
-Var=RR_torqueLimNeg_dpcnt3 signed 48,16
 
 [CDC_COG_VELOCITY]
 ID=2C2h
@@ -701,15 +554,6 @@ Var=HVC_RELAYSTATUS_NEGAIR_ERROR bit 38,1
 Var=HVC_RELAYSTATUS_POSAIR_ERROR bit 39,1
 Var=HVC_HEARTBEAT_uptime_s unsigned 40,8 /u:s
 
-[HVI_HEARTBEAT]
-ID=106h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=HVI_HEARTBEAT_packCurrent_dA1 signed 0,16
-Var=HVI_HEARTBEAT_packVoltage_cV1 unsigned 16,16
-Var=HVI_HEARTBEAT_packPower_W1 signed 32,32
-
 [LV_BMS_HEARTBEAT]
 ID=107h
 DLC=1
@@ -738,26 +582,6 @@ Var=VSM_WRN_DIM_TIMEOUT bit 35,1
 Var=VSM_WRN_FSM_TIMEOUT bit 36,1
 Var=VSM_WRN_CDC_TIMEOUT bit 37,1
 Var=VSM_WRN_HVC_TIMEOUT bit 38,1
-
-[HVC_BMB_0_STATUS_TEMP]
-ID=381h
-DLC=6
-CycleTime=1000
-TimeOut=5000
-Var=BMB_maxTempIndex unsigned 0,8
-Var=BMB_minTempIndex unsigned 8,8
-Var=BMB_maxCellTemp_C signed 16,16 /u:C
-Var=BMB_minCellTemp_C signed 32,16 /u:C
-
-[HVC_BMB_0_STATUS_VOLTAGE]
-ID=380h
-DLC=6
-CycleTime=100
-TimeOut=500
-Var=BMB_maxVoltIndex unsigned 0,8
-Var=BMB_minVoltIndex unsigned 8,8
-Var=BMB_maxCellVoltage_mV unsigned 16,16 /u:mV
-Var=BMB_minCellVoltage_mV unsigned 32,16 /u:mV
 
 [HVC_BMB_STATUS_ERRORS]
 ID=304h
@@ -801,8 +625,8 @@ Var=LOW_iDCDC_mA unsigned 24,8 /u:mA /f:0.1333333
 [HVC_MINMAX_CELL_TEMPS]
 ID=311h
 DLC=8
-CycleTime=20
-TimeOut=100
+CycleTime=10
+TimeOut=50
 Var=MINMAX_minCellTemp_dC unsigned 0,16 /u:dC
 Var=MINMAX_maxCellTemp_dC unsigned 16,16 /u:dC
 Var=MINMAX_minTempBMBIndex unsigned 32,8
@@ -813,14 +637,14 @@ Var=MINMAX_maxTempCellIndex unsigned 56,8
 [HVC_MINMAX_CELL_VOLTAGE]
 ID=310h
 DLC=8
-CycleTime=20
-TimeOut=100
-Var=MINMAX_minCellVoltage_mV1 unsigned 0,16
-Var=MINMAX_maxCellVoltage_mV1 unsigned 16,16
+CycleTime=800
+TimeOut=4000
+Var=MINMAX_minCellVoltage_mV unsigned 0,16 /u:mV
+Var=MINMAX_maxCellVoltage_mV unsigned 16,16 /u:mV
 Var=MINMAX_minCellVoltBMB unsigned 32,8
-Var=MINMAX_minVoltIndex1 unsigned 40,8
+Var=MINMAX_minVoltIndex unsigned 40,8
 Var=MINMAX_maxCellVoltBMB unsigned 48,8
-Var=MINMAX_maxVoltIndex1 unsigned 56,8
+Var=MINMAX_maxVoltIndex unsigned 56,8
 
 [HVC_PACK_CURRENT]
 ID=302h
@@ -829,14 +653,6 @@ CycleTime=10
 TimeOut=50
 Var=PACK_instantCurrent_mA signed 0,32 /u:mA
 Var=PACK_averageCurrent_mA signed 32,32 /u:mA
-
-[HVC_PACK_VOLTAGE]
-ID=301h
-DLC=8
-CycleTime=10
-TimeOut=50
-Var=PACK_battVoltage_mV signed 0,32 /u:mV /f:0.001 /p:3
-Var=PACK_hvVoltage_mV signed 32,32 /u:mV /f:0.001 /p:3
 
 [MOTORPOWER_STATE]
 ID=52Eh
@@ -952,6 +768,13 @@ Var=longest_power_violation_ms unsigned 32,8 /u:ms
 Var=STATE_over_voltage_count unsigned 40,8
 Var=STATE_under_voltage_count unsigned 48,8
 Var=STATE_over_temp_count unsigned 56,8
+
+[TEST_ID]
+ID=777h
+DLC=1
+CycleTime=100
+TimeOut=500
+Var=ID_test_id unsigned 0,8
 
 [VSM_LATCHED_STATUS]
 ID=510h
@@ -1149,6 +972,31 @@ Timeout=1000
 Var=PTC_logicVoltage unsigned 0,16 /u:mV
 Var=PTC_loadVoltage unsigned 16,16 /u:mV
 Var=PTC_loadCurrent unsigned 32,16 /u:mA
+
+[BMS_Pack_Voltages]
+ID=301h
+DLC=8
+CycleTime=10
+Var=BMS_Batt_Voltage signed 0,32 /u:V /f:0.001 /p:3
+Var=BMS_HV_Voltage signed 32,32 /u:V /f:0.001 /p:3
+
+[BMS_BMB_0_Voltages]
+ID=380h
+DLC=6
+CycleTime=100
+Var=BMS_BMB_0_Max_Voltage_Index unsigned 0,8
+Var=BMS_BMB_0_Min_Voltage_Index unsigned 8,8
+Var=BMS_BMB_0_Max_Voltage unsigned 16,16 /u:mV
+Var=BMS_BMB_0_Min_Voltage unsigned 32,16 /u:mV
+
+[BMS_BMB_0_Temps]
+ID=381h
+DLC=6
+CycleTime=1000
+Var=BMS_BMB_0_Max_Temp_Index unsigned 0,8
+Var=BMS_BMB_0_Min_Temp_Index unsigned 8,8
+Var=BMS_BMB_0_Max_Temp signed 16,16
+Var=BMS_BMB_0_Min_Temp signed 32,16
 
 [BMS_BMB_1_Voltages]
 ID=382h
@@ -1768,6 +1616,166 @@ Var=Ctrl_msg_inactive unsigned 35,1
 Var=LED_driver_defect unsigned 33,1
 Var=Save_charging_mode unsigned 32,1
 
+[AMK_FR_Actual_Values_1]
+ID=284h	// Set ID based on wiring
+DLC=8
+CycleTime=5
+Var=AMK_FR_Status_Reserved unsigned 0,8
+Var=AMK_FR_Status_SystemReady bit 8,1
+Var=AMK_FR_Status_Error bit 9,1
+Var=AMK_FR_Status_Warn bit 10,1
+Var=AMK_FR_Status_QuitDcOn bit 11,1
+Var=AMK_FR_Status_DcOn bit 12,1
+Var=AMK_FR_Status_QuitInvOn bit 13,1
+Var=AMK_FR_Status_InverterOn bit 14,1
+Var=AMK_FR_Status_Derating bit 15,1
+Var=AMK_FR_ActualVelocity signed 16,16 /u:rpm /p:4
+Var=AMK_FR_TorqueCurrent signed 32,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
+Var=AMK_FR_MagnetizingCurrent signed 48,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
+
+[AMK_FR_Actual_Values_2]
+ID=286h	// Set ID based on wiring
+DLC=8
+CycleTime=5
+Var=AMK_FR_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
+Var=AMK_FR_TempInverter signed 16,16 /u:'C /f:0.1 /p:2
+Var=AMK_FR_ErrorInfo unsigned 32,16
+Var=AMK_FR_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
+
+[AMK_FR_Setpoints_1]
+ID=185h	// Set ID based on wiring
+DLC=8
+CycleTime=1
+Var=AMK_FR_Control_Reserved1 unsigned 0,8
+Var=AMK_FR_Control_InverterOn bit 8,1
+Var=AMK_FR_Control_DcOn bit 9,1
+Var=AMK_FR_Control_Enable bit 10,1
+Var=AMK_FR_Control_ErrorReset bit 11,1
+Var=AMK_FR_Control_Reserved2 unsigned 12,4
+Var=AMK_FR_TargetVelocity signed 16,16 /u:rpm /p:2
+Var=AMK_FR_TorqueLimitPositiv signed 32,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
+Var=AMK_FR_TorqueLimitNegativ signed 48,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
+
+[AMK_FL_Actual_Values_1]
+ID=288h	// Set ID based on wiring
+DLC=8
+CycleTime=5
+Var=AMK_FL_Status_Reserved unsigned 0,8
+Var=AMK_FL_Status_SystemReady bit 8,1
+Var=AMK_FL_Status_Error bit 9,1
+Var=AMK_FL_Status_Warn bit 10,1
+Var=AMK_FL_Status_QuitDcOn bit 11,1
+Var=AMK_FL_Status_DcOn bit 12,1
+Var=AMK_FL_Status_QuitInvOn bit 13,1
+Var=AMK_FL_Status_InverterOn bit 14,1
+Var=AMK_FL_Status_Derating bit 15,1
+Var=AMK_FL_ActualVelocity signed 16,16 /u:rpm /p:4
+Var=AMK_FL_TorqueCurrent signed 32,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
+Var=AMK_FL_MagnetizingCurrent signed 48,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
+
+[AMK_FL_Actual_Values_2]
+ID=28Ah	// Set ID based on wiring
+DLC=8
+CycleTime=5
+Var=AMK_FL_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
+Var=AMK_FL_TempInverter signed 16,16 /u:'C /f:0.1 /p:2
+Var=AMK_FL_ErrorInfo unsigned 32,16
+Var=AMK_FL_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
+
+[AMK_FL_Setpoints_1]
+ID=189h	// Set ID based on wiring
+DLC=8
+CycleTime=1
+Var=AMK_FL_Control_Reserved1 unsigned 0,8
+Var=AMK_FL_Control_InverterOn bit 8,1
+Var=AMK_FL_Control_DcOn bit 9,1
+Var=AMK_FL_Control_Enable bit 10,1
+Var=AMK_FL_Control_ErrorReset bit 11,1
+Var=AMK_FL_Control_Reserved2 unsigned 12,4
+Var=AMK_FL_TargetVelocity signed 16,16 /u:rpm /p:2
+Var=AMK_FL_TorqueLimitPositiv signed 32,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
+Var=AMK_FL_TorqueLimitNegativ signed 48,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
+
+[AMK_BL_Actual_Values_1]
+ID=287h	// Set ID based on wiring
+DLC=8
+CycleTime=5
+Var=AMK_BL_Status_Reserved unsigned 0,8
+Var=AMK_BL_Status_SystemReady bit 8,1
+Var=AMK_BL_Status_Error bit 9,1
+Var=AMK_BL_Status_Warn bit 10,1
+Var=AMK_BL_Status_QuitDcOn bit 11,1
+Var=AMK_BL_Status_DcOn bit 12,1
+Var=AMK_BL_Status_QuitInvOn bit 13,1
+Var=AMK_BL_Status_InverterOn bit 14,1
+Var=AMK_BL_Status_Derating bit 15,1
+Var=AMK_BL_ActualVelocity signed 16,16 /u:rpm /p:4
+Var=AMK_BL_TorqueCurrent signed 32,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
+Var=AMK_BL_MagnetizingCurrent signed 48,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
+
+[AMK_BL_Actual_Values_2]
+ID=289h	// Set ID based on wiring
+DLC=8
+CycleTime=5
+Var=AMK_BL_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
+Var=AMK_BL_TempInverter signed 16,16 /u:'C /f:0.1 /p:2
+Var=AMK_BL_ErrorInfo unsigned 32,16
+Var=AMK_BL_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
+
+[AMK_BL_Setpoints_1]
+ID=188h	// Set ID based on wiring
+DLC=8
+CycleTime=1
+Var=AMK_BL_Control_Reserved1 unsigned 0,8
+Var=AMK_BL_Control_InverterOn bit 8,1
+Var=AMK_BL_Control_DcOn bit 9,1
+Var=AMK_BL_Control_Enable bit 10,1
+Var=AMK_BL_Control_ErrorReset bit 11,1
+Var=AMK_BL_Control_Reserved2 unsigned 12,4
+Var=AMK_BL_TargetVelocity signed 16,16 /u:rpm /p:2
+Var=AMK_BL_TorqueLimitPositiv signed 32,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
+Var=AMK_BL_TorqueLimitNegativ signed 48,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
+
+[AMK_BR_Actual_Values_1]
+ID=283h	// Set ID based on wiring
+DLC=8
+CycleTime=5
+Var=AMK_BR_Status_Reserved unsigned 0,8
+Var=AMK_BR_Status_SystemReady bit 8,1
+Var=AMK_BR_Status_Error bit 9,1
+Var=AMK_BR_Status_Warn bit 10,1
+Var=AMK_BR_Status_QuitDcOn bit 11,1
+Var=AMK_BR_Status_DcOn bit 12,1
+Var=AMK_BR_Status_QuitInvOn bit 13,1
+Var=AMK_BR_Status_InverterOn bit 14,1
+Var=AMK_BR_Status_Derating bit 15,1
+Var=AMK_BR_ActualVelocity signed 16,16 /u:rpm /p:4
+Var=AMK_BR_TorqueCurrent signed 32,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
+Var=AMK_BR_MagnetizingCurrent signed 48,16 /u:Nm /f:0.001701171875	// Mysterious scaling factor.
+
+[AMK_BR_Actual_Values_2]
+ID=285h	// Set ID based on wiring
+DLC=8
+CycleTime=5
+Var=AMK_BR_TempMotor signed 0,16 /u:'C /f:0.1 /p:2
+Var=AMK_BR_TempInverter signed 16,16 /u:'C /f:0.1 /p:2
+Var=AMK_BR_ErrorInfo unsigned 32,16
+Var=AMK_BR_TempIGBT signed 48,16 /u:'C /f:0.1 /p:2
+
+[AMK_BR_Setpoints_1]
+ID=184h	// Set ID based on wiring
+DLC=8
+CycleTime=1
+Var=AMK_BR_Control_Reserved1 unsigned 0,8
+Var=AMK_BR_Control_InverterOn bit 8,1
+Var=AMK_BR_Control_DcOn bit 9,1
+Var=AMK_BR_Control_Enable bit 10,1
+Var=AMK_BR_Control_ErrorReset bit 11,1
+Var=AMK_BR_Control_Reserved2 unsigned 12,4
+Var=AMK_BR_TargetVelocity signed 16,16 /u:rpm /p:2
+Var=AMK_BR_TorqueLimitPositiv signed 32,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
+Var=AMK_BR_TorqueLimitNegativ signed 48,16 /u:Nm /f:0.0098 /p:4	// Giving in 0.1% of nominal torque Mn, where Mn = 9.8 Nm.
+
 [EMD_Status]
 ID=400h
 DLC=4
@@ -2160,11 +2168,12 @@ ID=109h
 DLC=1
 Var=State unsigned 0,8
 
-[DAQ_AUTO_TEST]
-ID=777h
-DLC=1
-Var=TEST_ID unsigned 0,7	// Randomly generated test id sent everytime the car states up
-Var=TEST_STATUS bit 7,1	// 1- START TEST, 0 - STOP TEST
+[HVI_Heartbeat]
+ID=106h
+DLC=8
+Var=HVI_Current signed 0,16 /u:A /f:0.1 /p:1
+Var=HVI_Voltage unsigned 16,16 /u:V /f:0.01 /p:2
+Var=HVI_Power signed 32,32 /u:kW /f:0.001 /p:3
 
 [VSM_Git]
 ID=7F1h
