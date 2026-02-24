@@ -152,113 +152,6 @@ static cmr_can_t *cmr_canFromHandle(FDCAN_HandleTypeDef *handle) {
     return (void *) (addr - offsetof(cmr_can_t, handle));
 }
 
-int cmr_canTX(
-    cmr_can_t *can,
-    uint16_t id, const void *data, uint8_t len,
-    TickType_t timeout
-) {
-	FDCAN_TxHeaderTypeDef txHeader = {
-        .Identifier = id,
-        .IdType = FDCAN_STANDARD_ID,
-        .TxFrameType = FDCAN_DATA_FRAME,
-        .DataLength = len, // Doesn't get shifted by 16
-        .ErrorStateIndicator = FDCAN_ESI_ACTIVE,
-		.BitRateSwitch = FDCAN_BRS_OFF,
-		.FDFormat = FDCAN_CLASSIC_CAN,
-		.TxEventFifoControl = FDCAN_NO_TX_EVENTS,
-		.MessageMarker = 0
-    };
-
-    BaseType_t result = xSemaphoreTake(can->txSem, timeout);
-    if (result != pdTRUE) {
-        return -1;
-    }
-    if(HAL_FDCAN_GetTxFifoFreeLevel(&can->handle) == 0) {
-    	FDCAN_ProtocolStatusTypeDef ProtocolStatus;
-    	HAL_FDCAN_GetProtocolStatus(&can->handle, &ProtocolStatus);
-
-    	result = xSemaphoreGive(can->txSem);
-    	return -1;
-    }
-
-    HAL_StatusTypeDef status = HAL_FDCAN_AddMessageToTxFifoQ(
-        &can->handle, &txHeader, (void *) data
-    );
-
-	FDCAN_ProtocolStatusTypeDef ProtocolStatus;
-	HAL_FDCAN_GetProtocolStatus(&can->handle, &ProtocolStatus);
-
-    if (status != HAL_OK) {
-    	FDCAN_ProtocolStatusTypeDef ProtocolStatus;
-    	HAL_FDCAN_GetProtocolStatus(&can->handle, &ProtocolStatus);
-        cmr_panic("FDCAN Tx Failed!!");
-    }
-    result = xSemaphoreGive(can->txSem);
-    if (result != pdTRUE) {
-    	return -1;
-    }
-
-    return 0;
-}
-
-void HAL_FDCAN_ErrorCallback(FDCAN_HandleTypeDef *handle) {
-	uint32_t error = handle->ErrorCode;
-
-	if (error & (
-			HAL_FDCAN_ERROR_RAM_ACCESS
-	    )) {
-
-
-	    }
-	//clear error lol
-	//handle->ErrorCode = 0;
-
-}
-
-// /**
-//  * @brief Queues a CAN message for transmission.
-//  *
-//  * @param can The CAN interface to send on.
-//  * @param id The message's CAN ID.
-//  * @param data The data to send.
-//  * @param len The data's length, in bytes.
-//  * @param timeout The timeout.
-//  *
-//  * @return 0 on success, or a negative error code on timeout.
-//  */
-// int cmr_canTX(
-//     cmr_can_t *can,
-//     uint16_t id, const void *data, size_t len,
-//     TickType_t timeout
-// ) {
-//     CAN_TxHeaderTypeDef txHeader = {
-//         .StdId = id,
-//         .ExtId = 0,
-//         .IDE = CAN_ID_STD,
-//         .RTR = CAN_RTR_DATA,
-//         .DLC = len,
-//         .TransmitGlobalTime = DISABLE
-//     };
-
-//     BaseType_t result = xSemaphoreTake(can->txSem, timeout);
-// 	if (result != pdTRUE) {
-// 		return -1;
-// 	}
-
-// 	HAL_StatusTypeDef status = HAL_FDCAN_AddMessageToTxFifoQ(
-// 		&can->handle, &txHeader, (void *) data
-// 	);
-// 	if (status != HAL_OK) {
-// 		cmr_panic("FDCAN Tx Failed!!");
-// 	}
-// 	result = xSemaphoreGive(can->txSem);
-// 	if (result != pdTRUE) {
-// 		return -1;
-// 	}
-
-// 	return 0;
-// }
-
 void cmr_FDcanInit(
     cmr_can_t *can, FDCAN_GlobalTypeDef *instance,
     cmr_canBitRate_t bitRate,
@@ -323,7 +216,7 @@ void cmr_FDcanInit(
             .dirtyFlash = is_dirty
         };
 
-    canTX(boardID, &gitStatus, sizeof(gitStatus), 1000);
+    cmr_canTX(can, boardID, &gitStatus, sizeof(gitStatus), 1000);
 }
 
 
@@ -349,6 +242,71 @@ static void cmr_canRXPendingCallback(FDCAN_HandleTypeDef *handle, uint32_t fifo)
 CAN_RX_FIFO_PENDING(0)
 CAN_RX_FIFO_PENDING(1)
 #undef CAN_RX_FIFO_PENDING
+
+
+int cmr_canTX(
+    cmr_can_t *can,
+    uint16_t id, const void *data, uint8_t len,
+    TickType_t timeout
+) {
+	FDCAN_TxHeaderTypeDef txHeader = {
+        .Identifier = id,
+        .IdType = FDCAN_STANDARD_ID,
+        .TxFrameType = FDCAN_DATA_FRAME,
+        .DataLength = len, // Doesn't get shifted by 16
+        .ErrorStateIndicator = FDCAN_ESI_ACTIVE,
+		.BitRateSwitch = FDCAN_BRS_OFF,
+		.FDFormat = FDCAN_CLASSIC_CAN,
+		.TxEventFifoControl = FDCAN_NO_TX_EVENTS,
+		.MessageMarker = 0
+    };
+
+    BaseType_t result = xSemaphoreTake(can->txSem, timeout);
+    if (result != pdTRUE) {
+        return -1;
+    }
+    if(HAL_FDCAN_GetTxFifoFreeLevel(&can->handle) == 0) {
+    	FDCAN_ProtocolStatusTypeDef ProtocolStatus;
+    	HAL_FDCAN_GetProtocolStatus(&can->handle, &ProtocolStatus);
+
+    	result = xSemaphoreGive(can->txSem);
+    	return -1;
+    }
+
+    HAL_StatusTypeDef status = HAL_FDCAN_AddMessageToTxFifoQ(
+        &can->handle, &txHeader, (void *) data
+    );
+
+	FDCAN_ProtocolStatusTypeDef ProtocolStatus;
+	HAL_FDCAN_GetProtocolStatus(&can->handle, &ProtocolStatus);
+
+    if (status != HAL_OK) {
+    	FDCAN_ProtocolStatusTypeDef ProtocolStatus;
+    	HAL_FDCAN_GetProtocolStatus(&can->handle, &ProtocolStatus);
+        cmr_panic("FDCAN Tx Failed!!");
+    }
+    result = xSemaphoreGive(can->txSem);
+    if (result != pdTRUE) {
+    	return -1;
+    }
+
+    return 0;
+}
+
+
+void HAL_FDCAN_ErrorCallback(FDCAN_HandleTypeDef *handle) {
+	uint32_t error = handle->ErrorCode;
+
+	if (error & (
+			HAL_FDCAN_ERROR_RAM_ACCESS
+	    )) {
+
+
+	    }
+	//clear error lol
+	//handle->ErrorCode = 0;
+
+}
 
 
 /**

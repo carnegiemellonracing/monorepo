@@ -154,15 +154,17 @@ void cmr_canFilter(
     cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen
 );
 
+void cmr_canFieldEnable(uint8_t *field, const void *value, size_t len);
+void cmr_canFieldDisable(uint8_t *field, const void *value, size_t len);
+void cmr_canFilter(cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen);
+
+
 int cmr_canTX(
     cmr_can_t *can,
     uint16_t id, const void *data, uint8_t len,
     TickType_t timeout
 );
 
-void cmr_canFieldEnable(uint8_t *field, const void *value, size_t len);
-void cmr_canFieldDisable(uint8_t *field, const void *value, size_t len);
-void cmr_canFilter(cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen);
 
 /* Platform-specific external dependencies (don't expose to application code) */
 extern void _platform_canFilter(cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen);

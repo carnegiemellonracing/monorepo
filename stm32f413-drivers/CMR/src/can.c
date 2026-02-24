@@ -250,50 +250,6 @@ CAN_RX_FIFO_PENDING(1)
 #undef CAN_RX_FIFO_PENDING
 
 /**
- * @brief Queues a CAN message for transmission.
- *
- * @param can The CAN interface to send on.
- * @param id The message's CAN ID.
- * @param data The data to send.
- * @param len The data's length, in bytes.
- * @param timeout The timeout.
- *
- * @return 0 on success, or a negative error code on timeout.
- */
-int cmr_canTX(
-    cmr_can_t *can,
-    uint16_t id, const void *data, uint8_t len,
-    TickType_t timeout
-) {
-    CAN_TxHeaderTypeDef txHeader = {
-        .StdId = id,
-        .ExtId = 0,
-        .IDE = CAN_ID_STD,
-        .RTR = CAN_RTR_DATA,
-        .DLC = len,
-        .TransmitGlobalTime = DISABLE
-    };
-
-    // Attempt to reserve a mailbox.
-    BaseType_t result = xSemaphoreTake(can->txSem, timeout);
-    if (result != pdTRUE) {
-        return -1;
-    }
-
-    // Even though the interface for HAL_CAN_AddTxMessage() does not specify the
-    // data as `const`, it does not touch the data. Oh well.
-    uint32_t txMailbox;
-    HAL_StatusTypeDef status = HAL_CAN_AddTxMessage(
-        &can->handle, &txHeader, (void *) data, &txMailbox
-    );
-    if (status != HAL_OK) {
-        cmr_panic("Semaphore was available, but no mailboxes were found!");
-    }
-
-    return 0;
-}
-
-/**
  * @brief Initializes a CAN interface.
  *
  * @warning It is undefined behavior to initialize the same HAL CAN instance
@@ -381,8 +337,53 @@ void cmr_canInit(
             .dirtyFlash = is_dirty
         };
 
-    canTX(boardID, &gitStatus, sizeof(gitStatus), 1000);
+    cmr_canTX(can, boardID, &gitStatus, sizeof(gitStatus), 1000);
 
+}
+
+
+/**
+ * @brief Queues a CAN message for transmission.
+ *
+ * @param can The CAN interface to send on.
+ * @param id The message's CAN ID.
+ * @param data The data to send.
+ * @param len The data's length, in bytes.
+ * @param timeout The timeout.
+ *
+ * @return 0 on success, or a negative error code on timeout.
+ */
+int cmr_canTX(
+    cmr_can_t *can,
+    uint16_t id, const void *data, uint8_t len,
+    TickType_t timeout
+) {
+    CAN_TxHeaderTypeDef txHeader = {
+        .StdId = id,
+        .ExtId = 0,
+        .IDE = CAN_ID_STD,
+        .RTR = CAN_RTR_DATA,
+        .DLC = len,
+        .TransmitGlobalTime = DISABLE
+    };
+
+    // Attempt to reserve a mailbox.
+    BaseType_t result = xSemaphoreTake(can->txSem, timeout);
+    if (result != pdTRUE) {
+        return -1;
+    }
+
+    // Even though the interface for HAL_CAN_AddTxMessage() does not specify the
+    // data as `const`, it does not touch the data. Oh well.
+    uint32_t txMailbox;
+    HAL_StatusTypeDef status = HAL_CAN_AddTxMessage(
+        &can->handle, &txHeader, (void *) data, &txMailbox
+    );
+    if (status != HAL_OK) {
+        cmr_panic("Semaphore was available, but no mailboxes were found!");
+    }
+
+    return 0;
 }
 
 /**
