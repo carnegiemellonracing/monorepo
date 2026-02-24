@@ -314,7 +314,7 @@ Var=BALANCE_balanceRequest unsigned 0,8 /e:HVC_Balance_State
 Var=BALANCE_threshold unsigned 8,16
 
 [CONTROLS_PID_IO]
-ID=7E5h
+ID=6E7h
 DLC=8
 CycleTime=5
 TimeOut=25
@@ -324,7 +324,7 @@ Var=PID_controls_bias signed 32,16 /f:0.01 /p:2
 Var=PID_controls_pid signed 48,16 /f:0.01 /p:2
 
 [CONTROLS_SOLVER_AUX]
-ID=7FFh
+ID=6FFh
 DLC=4
 CycleTime=10
 TimeOut=50
@@ -333,7 +333,7 @@ Var=SOLVER_allow_regen unsigned 16,8
 Var=SOLVER_placeholder unsigned 24,8
 
 [CONTROLS_SOLVER_INPUTS]
-ID=7E6h
+ID=6E8h
 DLC=8
 CycleTime=10
 TimeOut=50
@@ -341,7 +341,7 @@ Var=SOLVER_moment_req_Nm float 0,32 /u:Nm
 Var=SOLVER_lin_accel_Nm float 32,32 /u:Nm
 
 [CONTROLS_SOLVER_OUTPUTS]
-ID=7F0h
+ID=6F0h
 DLC=8
 CycleTime=10
 TimeOut=50
@@ -351,7 +351,7 @@ Var=SOLVER_rearLeft_Nm signed 32,16 /u:Nm /f:0.1
 Var=SOLVER_rearRight_Nm signed 48,16 /u:Nm /f:0.1
 
 [CONTROLS_SOLVER_SETTINGS]
-ID=7EEh
+ID=6EFh
 DLC=6
 CycleTime=10
 TimeOut=50
@@ -369,7 +369,7 @@ Var=COG_cog_y_mps signed 16,16 /u:mps /f:0.01
 Var=COG_slip_angle float 32,32
 
 [DCM_CONTROLS_STATUS]
-ID=6D2h
+ID=6c1h
 DLC=2
 CycleTime=1000
 TimeOut=5000
@@ -377,7 +377,7 @@ Var=CONTROLS_tcOn unsigned 0,8
 Var=CONTROLS_yrcOn unsigned 8,8
 
 [DCM_COULOMB_COUNTING]
-ID=6E3h
+ID=6c3h
 DLC=4
 CycleTime=100
 TimeOut=500
@@ -394,7 +394,7 @@ Var=FRONT_fr_x signed 32,16 /f:0.01
 Var=FRONT_fr_y signed 48,16 /f:0.01
 
 [DCM_ODOMETER]
-ID=6C2h
+ID=6C0h
 DLC=4
 CycleTime=1000
 TimeOut=5000
@@ -428,7 +428,7 @@ Var=POSE_lateralVel_mps signed 16,16 /u:mps /f:0.01
 Var=POSE_verticalVel_mps signed 32,16 /u:mps /f:0.01
 
 [DCM_POWER_LOG]
-ID=6E4h
+ID=6c4h
 DLC=4
 CycleTime=1000
 TimeOut=5000
@@ -562,7 +562,7 @@ Var=MEASUREMENT_current signed 0,32 /u:A
 Var=MEASUREMENT_voltage signed 32,32 /u:V
 
 [FRONT_SLIP_RATIOS]
-ID=7E8h
+ID=6E9h
 DLC=8
 CycleTime=100
 TimeOut=500
@@ -570,7 +570,7 @@ Var=SLIP_slipRatio_FL float 0,32
 Var=SLIP_slipRatio_FR float 32,32
 
 [FRONT_WHL_SETPOINTS]
-ID=7EAh
+ID=6Ebh
 DLC=8
 CycleTime=100
 TimeOut=500
@@ -578,7 +578,7 @@ Var=WHL_slipRatio_FL1 float 0,32
 Var=WHL_slipRatio_FR1 float 32,32
 
 [FRONT_WHL_VELS]
-ID=7ECh
+ID=6Edh
 DLC=8
 CycleTime=100
 TimeOut=500
@@ -742,7 +742,7 @@ Var=VSM_WRN_DCM_TIMEOUT bit 37,1
 Var=VSM_WRN_HVC_TIMEOUT bit 38,1
 
 [HVBMS_BMB_0_CELL_TEMPS_0_3]
-ID=840h
+ID=740h
 DLC=8
 CycleTime=1000
 TimeOut=5000
@@ -752,7 +752,7 @@ Var=BMB_cellTemp2_dC signed 32,16
 Var=BMB_cellTemp3_dC signed 48,16
 
 [HVBMS_BMB_0_CELL_TEMPS_12_14]
-ID=870h
+ID=770h
 DLC=8
 CycleTime=1000
 TimeOut=5000
@@ -762,7 +762,7 @@ Var=BMB_cellTemp2_dC1 signed 32,16
 Var=BMB_cellTemp3_dC1 signed 48,16
 
 [HVBMS_BMB_0_CELL_TEMPS_4_7]
-ID=850h
+ID=750h
 DLC=8
 CycleTime=1000
 TimeOut=5000
@@ -772,7 +772,7 @@ Var=BMB_cellTemp2_dC2 signed 32,16
 Var=BMB_cellTemp3_dC2 signed 48,16
 
 [HVBMS_BMB_0_CELL_TEMPS_8_11]
-ID=860h
+ID=760h
 DLC=8
 CycleTime=1000
 TimeOut=5000
@@ -782,7 +782,7 @@ Var=BMB_cellTemp2_dC3 signed 32,16
 Var=BMB_cellTemp3_dC3 signed 48,16
 
 [HVBMS_BMB_0_CELL_VOLTAGES_0_3]
-ID=800h
+ID=700h
 DLC=8
 CycleTime=1000
 TimeOut=5000
@@ -792,7 +792,7 @@ Var=BMB_cellVoltage2_mV unsigned 32,16
 Var=BMB_cellVoltage3_mV unsigned 48,16
 
 [HVBMS_BMB_0_CELL_VOLTAGES_12_14]
-ID=830h
+ID=730h
 DLC=8
 CycleTime=1000
 TimeOut=5000
@@ -802,7 +802,7 @@ Var=BMB_cellVoltage2_mV1 unsigned 32,16
 Var=BMB_cellVoltage3_mV1 unsigned 48,16
 
 [HVBMS_BMB_0_CELL_VOLTAGES_4_7]
-ID=810h
+ID=710h
 DLC=8
 CycleTime=1000
 TimeOut=5000
@@ -812,7 +812,7 @@ Var=BMB_cellVoltage2_mV2 unsigned 32,16
 Var=BMB_cellVoltage3_mV2 unsigned 48,16
 
 [HVBMS_BMB_0_CELL_VOLTAGES_8_11]
-ID=820h
+ID=720h
 DLC=8
 CycleTime=1000
 TimeOut=5000
@@ -842,7 +842,7 @@ Var=BMB_maxCellVoltage_mV unsigned 16,16 /u:mV
 Var=BMB_minCellVoltage_mV unsigned 32,16 /u:mV
 
 [HVBMS_MIN_MAX_CELL_TEMPERATURE]
-ID=311h
+ID=313h
 DLC=8
 CycleTime=100
 TimeOut=500
@@ -854,7 +854,7 @@ Var=MIN_maxTempBMBNum unsigned 48,8
 Var=MIN_maxTempCellNum unsigned 56,8
 
 [HVBMS_MIN_MAX_CELL_VOLTAGE]
-ID=310h
+ID=312h
 DLC=8
 CycleTime=10
 TimeOut=50
@@ -911,6 +911,30 @@ Var=LOW_vAIR_mV unsigned 8,8 /u:mV /f:0.1333333
 Var=LOW_safety_mV unsigned 16,8 /u:mV /f:0.1333333
 Var=LOW_iDCDC_mA unsigned 24,8 /u:mA /f:0.1333333
 
+[HVC_MINMAX_CELL_TEMPS]
+ID=311h
+DLC=8
+CycleTime=10
+TimeOut=50
+Var=MINMAX_minCellTemp_C2 unsigned 0,16
+Var=MINMAX_maxCellTemp_C2 unsigned 16,16
+Var=MINMAX_minTempBMBNum1 unsigned 32,8
+Var=MINMAX_minTempCellNum1 unsigned 40,8
+Var=MINMAX_maxTempBMBNum1 unsigned 48,8
+Var=MINMAX_maxTempCellNum1 unsigned 56,8
+
+[HVC_MINMAX_CELL_VOLTAGE]
+ID=310h
+DLC=8
+CycleTime=800
+TimeOut=4000
+Var=MINMAX_minCellVoltage_mV2 unsigned 0,16
+Var=MINMAX_maxCellVoltage_mV2 unsigned 16,16
+Var=MINMAX_minVoltageBMBNum1 unsigned 32,8
+Var=MINMAX_minVoltageCellNum1 unsigned 40,8
+Var=MINMAX_maxVoltageBMBNum1 unsigned 48,8
+Var=MINMAX_maxVoltageCellNum1 unsigned 56,8
+
 [HVC_PACK_CURRENT]
 ID=302h
 DLC=8
@@ -939,7 +963,7 @@ Var=STATE_motor_power_RL unsigned 32,16
 Var=STATE_motor_power_RR unsigned 48,16
 
 [REAR_SLIP_RATIOS]
-ID=7E9h
+ID=6Eah
 DLC=8
 CycleTime=100
 TimeOut=500
@@ -947,7 +971,7 @@ Var=SLIP_slipRatio_RL float 0,32
 Var=SLIP_slipRatio_RR float 32,32
 
 [REAR_WHL_SETPOINTS]
-ID=7EBh
+ID=6Ech
 DLC=8
 CycleTime=100
 TimeOut=500
@@ -955,7 +979,7 @@ Var=WHL_omega_RL float 0,32
 Var=WHL_omega_RR float 32,32
 
 [REAR_WHL_VELS]
-ID=7EDh
+ID=6Eeh
 DLC=8
 CycleTime=100
 TimeOut=500
@@ -963,7 +987,7 @@ Var=WHL_v_whl_rl float 0,32
 Var=WHL_v_whl_rr float 32,32
 
 [SBG_BODY_VEL]
-ID=729h
+ID=6d6h
 DLC=6
 CycleTime=400
 TimeOut=2000
@@ -972,7 +996,7 @@ Var=BODY_velocity_right signed 16,16
 Var=BODY_velocity_down signed 32,16
 
 [SBG_EKF_ORIENT]
-ID=722h
+ID=6d3h
 DLC=6
 CycleTime=400
 TimeOut=2000
@@ -981,7 +1005,7 @@ Var=EKF_pitch signed 16,16
 Var=EKF_yaw signed 32,16
 
 [SBG_EKF_POS]
-ID=724h
+ID=6d4h
 DLC=8
 CycleTime=400
 TimeOut=2000
@@ -989,7 +1013,7 @@ Var=EKF_latitude signed 0,32
 Var=EKF_longitude signed 32,32
 
 [SBG_EKF_VEL]
-ID=727h
+ID=6d5h
 DLC=6
 CycleTime=400
 TimeOut=2000
@@ -998,7 +1022,7 @@ Var=EKF_velocity_e signed 16,16
 Var=EKF_velocity_d signed 32,16
 
 [SBG_IMU_GYRO]
-ID=712h
+ID=6d2h
 DLC=6
 CycleTime=400
 TimeOut=2000
@@ -1007,7 +1031,7 @@ Var=IMU_gyro_y_rads signed 16,16 /u:rad
 Var=IMU_gyro_z_rads signed 32,16 /u:rad
 
 [SBG_STATUS_3]
-ID=702h
+ID=6d0h
 DLC=6
 CycleTime=400
 TimeOut=2000
@@ -1044,7 +1068,7 @@ Var=STATE_under_voltage_count unsigned 48,8
 Var=STATE_over_temp_count unsigned 56,8
 
 [TEST_ID]
-ID=777h
+ID=6dbh
 DLC=1
 CycleTime=100
 TimeOut=500
@@ -1542,18 +1566,36 @@ Var=Max_Current unsigned 16,16 -m /u:A /f:0.1
 Var=DILONG_Enable_N unsigned 32,8
 Var=DILONG_Battery_Mode_N unsigned 40,8
 
-[ELLIPSE_IMU_General_Status_1]
-ID=700h
-DLC=8
-Var=SBG_Time_Stamp_GS1 unsigned 0,32 /u:s /f:1E-006 /p:3
-Var=SBG_General_Status unsigned 32,16
-Var=SBG_Clock_Status unsigned 48,16
-
 [ELLIPSE_IMU_General_Status_2]
 ID=701h
 DLC=8
 Var=SBG_Com_Status unsigned 0,32
 Var=SBG_Aiding_Status unsigned 32,32
+
+[ELLIPSE_IMU_General_Status_3]
+ID=702h
+DLC=6
+Var=SBG_Solution_Mode unsigned 0,4 /e:SBG_Solution_Status_Mode
+Var=SBG_Sol_Attitude_Valid bit 4,1
+Var=SBG_Sol_Heading_Valid bit 5,1
+Var=SBG_Sol_Velocity_Valid bit 6,1
+Var=SBG_Sol_Position_Valid bit 7,1
+Var=SBG_Sol_Vert_Ref_Used bit 8,1
+Var=SBG_Sol_Mag_Ref_Used bit 9,1
+Var=SBG_Sol_GPS1_Vel_Used bit 10,1
+Var=SBG_Sol_GPS1_Pos_Used bit 11,1
+Var=SBG_Sol_GPS1_Hdt_Used bit 13,1
+Var=SBG_Sol_GPS2_Vel_Used bit 14,1
+Var=SBG_Sol_GPS2_Pos_Used bit 15,1
+Var=SBG_Sol_GPS2_Hdt_Used bit 17,1
+Var=SBG_Sol_Odo_Used bit 18,1
+Var=SBG_Sol_Dvl_Bt_Used bit 19,1
+Var=SBG_Sol_Dvl_Wt_Used bit 20,1
+Var=SBG_Sol_Usbl_Used bit 24,1
+Var=SBG_Sol_Pressure_Used bit 25,1
+Var=SBG_Sol_Zupt_Used bit 26,1
+Var=SBG_Sol_Align_Valid bit 27,1
+Var=SBG_Heave_Status_GENERAL3 unsigned 32,16
 
 [ELLIPSE_IMU_UTC_0]
 ID=703h
@@ -1572,19 +1614,19 @@ Var=SBG_Min unsigned 32,8 /u:min
 Var=SBG_Sec unsigned 40,8 /u:s
 Var=SBG_Tenthms unsigned 48,16 /u:s /f:0.0001 /p:3
 
-[ELLIPSE_IMU_INFO]
-ID=710h
-DLC=8
-Var=SBG_Time_Stamp_IMU unsigned 0,32 /u:s /f:1E-006 /p:3
-Var=SBG_Imu_Status unsigned 32,16
-Var=SBG_Temperature signed 48,16 /u:'C /f:0.01 /p:2
-
 [ELLIPSE_IMU_ACCEL]
 ID=711h
 DLC=6
 Var=SBG_Accel_X signed 0,16 /u:m.s-2 /f:0.01 /p:4
 Var=SBG_Accel_Y signed 16,16 /u:m.s-2 /f:0.01 /p:4
 Var=SBG_Accel_Z signed 32,16 /u:m.s-2 /f:0.01 /p:4
+
+[ELLIPSE_IMU_GYRO]
+ID=712h
+DLC=6
+Var=SBG_Gyro_X signed 0,16 /u:rad.s-1 /f:0.001 /p:4
+Var=SBG_Gyro_Y signed 16,16 /u:rad.s-1 /f:0.001 /p:4
+Var=SBG_Gyro_Z signed 32,16 /u:rad.s-1 /f:0.001 /p:4
 
 [ELLIPSE_IMU_DELTA_VEL]
 ID=713h
@@ -1600,11 +1642,6 @@ Var=SBG_Delta_Angle_X signed 0,16 /u:rad.s-1 /f:0.001 /p:4
 Var=SBG_Delta_Angle_Y signed 16,16 /u:rad.s-1 /f:0.001 /p:4
 Var=SBG_Delta_Angle_Z signed 32,16 /u:rad.s-1 /f:0.001 /p:4
 
-[ELLIPSE_IMU_EKF_INFO]
-ID=720h
-DLC=4
-Var=SBG_Time_Stamp_EKF unsigned 0,32 /u:s /f:1E-006 /p:3
-
 [ELLIPSE_IMU_EKF_QUAT]
 ID=721h
 DLC=8
@@ -1613,12 +1650,25 @@ Var=SBG_Q1 signed 16,16
 Var=SBG_Q2 signed 32,16
 Var=SBG_Q3 signed 48,16
 
+[ELLIPSE_IMU_EKF_EULER]
+ID=722h
+DLC=6
+Var=SBG_Roll signed 0,16 /u:' /f:0.0057295779 /p:4
+Var=SBG_Pitch signed 16,16 /u:' /f:0.0057295779 /p:4
+Var=SBG_Yaw signed 32,16 /u:' /f:0.0057295779 /p:4
+
 [ELLIPSE_IMU_EKF_ORIENT_ACC]
 ID=723h
 DLC=6
 Var=SBG_Roll_Acc unsigned 0,16 /u:' /f:0.0057295779 /p:4
 Var=SBG_Pitch_Acc unsigned 16,16 /u:' /f:0.0057295779 /p:4
 Var=SBG_Yaw_Acc unsigned 32,16 /u:' /f:0.0057295779 /p:4
+
+[ELLIPSE_IMU_EKF_POS]
+ID=724h
+DLC=8
+Var=SBG_Latitude signed 0,32 /u:' /f:1E-007 /p:2
+Var=SBG_Longitude signed 32,32 /u:' /f:1E-007 /p:2
 
 [ELLIPSE_IMU_EKF_ALTITUDE]
 ID=725h
@@ -1633,19 +1683,26 @@ Var=SBG_Latitude_Acc unsigned 0,16 /u:m /f:0.01 /p:2
 Var=SBG_Longitude_Acc unsigned 16,16 /u:m /f:0.01 /p:2
 Var=SBG_Altitude_Acc unsigned 32,16 /u:m /f:0.01 /p:2
 
+[ELLIPSE_IMU_EKF_VEL]
+ID=727h
+DLC=6
+Var=SBG_Velocity_N signed 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Velocity_E signed 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Velocity_D signed 32,16 /u:m.s-1 /f:0.01 /p:2
+
+[ELLIPSE_IMU_BODY_VEL]
+ID=729h
+DLC=6
+Var=SBG_Velocity_Forward signed 0,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Velocity_Right signed 16,16 /u:m.s-1 /f:0.01 /p:2
+Var=SBG_Velocity_Down signed 32,16 /u:m.s-1 /f:0.01 /p:2
+
 [ELLIPSE_IMU_EKF_VEL_ACC]
 ID=728h
 DLC=6
 Var=SBG_Velocity_Acc_N unsigned 0,16 /u:m.s-1 /f:0.01 /p:2
 Var=SBG_Velocity_Acc_E unsigned 16,16 /u:m.s-1 /f:0.01 /p:2
 Var=SBG_Velocity_Acc_D unsigned 32,16 /u:m.s-1 /f:0.01 /p:2
-
-[ELLIPSE_IMU_SHIP_MOTION_INFO]
-ID=730h
-DLC=8
-Var=SBG_Time_Stamp_SHIP_MOTION unsigned 0,32 /u:s /f:1E-006 /p:3
-Var=SBG_Period_SHIP_MOTION unsigned 32,16 /u:s /f:0.01 /p:2
-Var=SBG_Heave_Status_SHIP_MOTION unsigned 48,16
 
 [ELLIPSE_IMU_SHIP_MOTION_0]
 ID=731h
@@ -1667,12 +1724,6 @@ DLC=6
 Var=SBG_Vel_X_SHIP_MOTION_2 signed 0,16 /u:m.s-1 /f:0.01 /p:2
 Var=SBG_Vel_Y_SHIP_MOTION_2 signed 16,16 /u:m.s-1 /f:0.01 /p:2
 Var=SBG_Vel_Z_SHIP_MOTION_2 signed 32,16 /u:m.s-1 /f:0.01 /p:2
-
-[ELLIPSE_IMU_MAG_0]
-ID=740h
-DLC=6
-Var=SBG_Time_Stamp_MAG0 unsigned 0,32 /u:s /f:1E-006 /p:3
-Var=SBG_Mag_Status_MAG0 unsigned 32,16
 
 [ELLIPSE_IMU_MAG_1]
 ID=741h
@@ -1710,12 +1761,6 @@ ID=746h
 DLC=8
 Var=SBG_Pressure_IMU float 0,32 /u:1
 Var=SBG_Altitude_IMU float 32,32 /u:1
-
-[ELLIPSE_IMU_GPS1_VEL_INFO]
-ID=750h
-DLC=8
-Var=SBG_Time_Stamp_GPS1_VEL unsigned 0,32 /u:s /f:1E-006 /p:3
-Var=SBG_Gps_Vel_Status unsigned 32,32
 
 [ELLIPSE_IMU_GPS1_VEL]
 ID=751h
@@ -1778,12 +1823,6 @@ Var=SBG_True_Heading_GPS1 unsigned 0,16 /u:'
 Var=SBG_True_Heading_Acc_GPS1 unsigned 16,16 /u:'
 Var=SBG_Pitch_GPS1 signed 32,16 /u:'
 Var=SBG_Pitch_Acc_GPS1 unsigned 48,16 /u:'
-
-[ELLIPSE_IMU_EVENT_INFO_A]
-ID=760h
-DLC=6
-Var=SBG_Time_Stamp_EVENTA unsigned 0,32 /u:s /f:1E-006 /p:3
-Var=SBG_Event_Status unsigned 32,16
 
 [ELLIPSE_IMU_EVENT_TIME_A]
 ID=761h
@@ -1869,6 +1908,13 @@ Var=Ctrl_msg_inactive unsigned 35,1
 Var=LED_driver_defect unsigned 33,1
 Var=Save_charging_mode unsigned 32,1
 
+[CDC_CONTROLS_PID]
+ID=7E5h
+CycleTime=100
+Var=controls_current_yaw_rate signed 0,16 /u:rad.s-1 /f:0.01 /p:2
+Var=controls_target_yaw_rate signed 16,16 /u:rad.s-1 /f:0.01 /p:2
+Var=controls_pid float 32,32 /f:0.01 /p:2
+
 [EMD_Status]
 ID=400h
 DLC=4
@@ -1938,6 +1984,48 @@ Var=RTC_Date_In unsigned 24,8 /u:day
 Var=RTC_Month_In unsigned 32,8 /u:month
 Var=RTC_Year_In unsigned 40,8 /u:year
 Var=RTC_Error_In unsigned 48,8	// For interpreting this, see comments in code.
+
+[CDC_ODOMETER]
+ID=6C2h
+DLC=4
+CycleTime=1000
+Var=CDC_Odometer float 0,32 /u:km
+
+[CDC_Front_Slip_Ratios]
+ID=7E8h
+DLC=8
+Var=slipRatio_FL float 0,32 /p:8
+Var=slipRatio_FR float 32,32 /p:8
+
+[CDC_Rear_Slip_Ratios]
+ID=7E9h
+DLC=8
+Var=slipRatio_RL float 0,32 /p:8
+Var=slipRatio_RR float 32,32 /p:8
+
+[CDC_Front_Velocity_Setpoints]
+ID=7EAh
+DLC=8
+Var=setPoint_FL float 0,32
+Var=setPoint_FR float 32,32
+
+[CDC_Rear_Velocity_Setpoints]
+ID=7EBh
+DLC=8
+Var=setPoint_RL float 0,32
+Var=setPoint_RR float 32,32
+
+[CDC_Front_Whl_Velocity_Calc]
+ID=7ECh
+DLC=8
+Var=vel_calc_FL float 0,32
+Var=vel_calc_FR float 32,32
+
+[CDC_Rear_Whl_Velocity_Calc]
+ID=7EDh
+DLC=8
+Var=vel_calc_RL float 0,32
+Var=vel_calc_RR float 32,32
 
 [DIM_Config0_Drv0]
 ID=600h
@@ -2268,6 +2356,33 @@ Var=HVI_Current signed 0,16 /u:A /f:0.1 /p:1
 Var=HVI_Voltage unsigned 16,16 /u:V /f:0.01 /p:2
 Var=HVI_Power signed 32,32 /u:kW /f:0.001 /p:3
 
+[DAQ_AUTO_TEST]
+ID=777h
+DLC=1
+Var=TEST_ID unsigned 0,7	// Randomly generated test id sent everytime the car states up
+Var=TEST_STATUS bit 7,1	// 1- START TEST, 0 - STOP TEST
+
+[CDC_Solver_Inputs]
+ID=7E6h
+DLC=8
+Var=Moment_REQ float 0,32
+Var=Lin_Accel_REQ float 32,32
+
+[CDC_Solver_Outputs]
+ID=7F0h
+DLC=8
+Var=Torque_FL signed 0,16
+Var=Torque_FR signed 16,16
+Var=Torque_RL signed 32,16
+Var=Torque_RR signed 48,16
+
+[CDC_Solver_Settings]
+ID=7EEh
+DLC=6
+Var=k_lin unsigned 0,16 /u:Unit
+Var=k_yaw unsigned 16,16 /u:Unit
+Var=k_tie unsigned 32,16 /u:Unit
+
 [VSM_Git]
 ID=7F1h
 DLC=8
@@ -2353,11 +2468,6 @@ ID=77Ah
 DLC=4
 Var=Movella_Pressure unsigned 0,32 -m /u:Pa
 
-[Movella_MTi680G_SampleTime]
-ID=770h
-DLC=4
-Var=Movella_SampleTime unsigned 0,32 -m	// 10kHz ticks
-
 [Movella_MTi680G_RateOfTurn]
 ID=776h
 DLC=6
@@ -2420,6 +2530,11 @@ Var=Movella_gnss_fix unsigned 26,1
 Var=Movella_no_rotation_update unsigned 27,2
 Var=Movella_representative_motion unsigned 29,1
 Var=Movella_clock_bias_estimation unsigned 30,1
+
+[DCM_PowerLimit]
+ID=6E4h
+DLC=4
+Var=PowerLimit float 0,32 /u:kW /f:0.001
 
 [LV_BMS_Voltages1]
 ID=7F7h
