@@ -80,7 +80,7 @@ enum LRUDButtons(1="DIM_LEFT", 2="DIM_RIGHT", 4="DIM_UP", 8="DIM_DOWN")
 enum MovellaFilterMode(0="Without_GNSS_filter_profile_is_in_VRU_mode",
     1="Coasting_mode_GNSS_has_been_lost_less_than_60_sec_ago",
     3="With_GNSS_default_mode")
-enum RES(1="TRIG", 4="GO")
+enum RSS(1="TRIG", 4="GO")
 enum SBGAutomotiveStatus(1="SBG_AUTO_TRACK_VALID",
     2="SBG_AUTO_SLIP_VALID", 4="SBG_AUTO_CURVATURE_VALID")
 enum SBGGeneralStatus(1="SBG_GENERAL_MAIN_POWER_OK",
