@@ -111,7 +111,7 @@ enum State(0="UNKNOWN", 1="GLV_ON", 2="HV_EN", 3="RTD", 4="ERROR",
     5="CLEAR_ERROR", 6="AS_READY", 7="AS_DRIVING", 8="AS_FINISHED",
     9="AS_EMERGENCY")
 enum VSMErrorSource(0="VSM_ERROR_SOURCE_NONE",
-    1="VSM_ERROR_SOURCE_HVI", 2="VSM_ERROR_SOURCE_AIM",
+    1="VSM_ERROR_SOURCE_HVI", 2="VSM_ERROR_SOURCE_COMPUTE",
     4="VSM_ERROR_SOURCE_LVBMS", 8="VSM_ERROR_SOURCE_DIM",
     16="VSM_ERROR_SOURCE_FSM", 32="VSM_ERROR_SOURCE_CDC",
     64="VSM_ERROR_SOURCE_HVC")
@@ -148,8 +148,8 @@ enum Warn(0="NONE", 1="VSM_TIMEOUT", 2="BUS_VOLTAGE", 4="BUS_CURRENT",
 [AMK_FL_ACT_1]
 ID=288h
 DLC=8
-CycleTime=100
-TimeOut=500
+CycleTime=10
+TimeOut=50
 Var=FL_AMK_RESERVED unsigned 0,8
 Var=FL_AMK_STATUS_SYSTEM_READY bit 8,1
 Var=FL_AMK_STATUS_ERROR bit 9,1
@@ -166,8 +166,8 @@ Var=FL_magCurrent_raw signed 48,16 /f:0.001701171875
 [AMK_FL_ACT_2]
 ID=28Ah
 DLC=8
-CycleTime=20
-TimeOut=100
+CycleTime=10
+TimeOut=50
 Var=FL_motorTemp_dC signed 0,16 /u:dC /f:0.1 /p:2
 Var=FL_coldPlateTemp_dC signed 16,16 /u:dC /f:0.1 /p:2
 Var=FL_errorCode unsigned 32,16
@@ -189,8 +189,8 @@ Var=FL_torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
 [AMK_FR_ACT_1]
 ID=284h
 DLC=8
-CycleTime=100
-TimeOut=500
+CycleTime=10
+TimeOut=50
 Var=FR_AMK_RESERVED1 unsigned 0,8
 Var=FR_AMK_STATUS_SYSTEM_READY1 bit 8,1
 Var=FR_AMK_STATUS_ERROR1 bit 9,1
@@ -207,8 +207,8 @@ Var=FR_magCurrent_raw1 signed 48,16
 [AMK_FR_ACT_2]
 ID=286h
 DLC=8
-CycleTime=20
-TimeOut=100
+CycleTime=10
+TimeOut=50
 Var=FR_motorTemp_dC1 signed 0,16
 Var=FR_coldPlateTemp_dC1 signed 16,16
 Var=FR_errorCode1 unsigned 32,16
@@ -230,8 +230,8 @@ Var=FR_torqueLimNeg_dpcnt1 signed 48,16
 [AMK_RL_ACT_1]
 ID=287h
 DLC=8
-CycleTime=100
-TimeOut=500
+CycleTime=10
+TimeOut=50
 Var=RL_AMK_RESERVED2 unsigned 0,8
 Var=RL_AMK_STATUS_SYSTEM_READY2 bit 8,1
 Var=RL_AMK_STATUS_ERROR2 bit 9,1
@@ -248,8 +248,8 @@ Var=RL_magCurrent_raw2 signed 48,16
 [AMK_RL_ACT_2]
 ID=289h
 DLC=8
-CycleTime=20
-TimeOut=100
+CycleTime=10
+TimeOut=50
 Var=RL_motorTemp_dC2 signed 0,16
 Var=RL_coldPlateTemp_dC2 signed 16,16
 Var=RL_errorCode2 unsigned 32,16
@@ -289,8 +289,8 @@ Var=RR_magCurrent_raw3 signed 48,16
 [AMK_RR_ACT_2]
 ID=285h
 DLC=8
-CycleTime=20
-TimeOut=100
+CycleTime=10
+TimeOut=50
 Var=RR_motorTemp_dC3 signed 0,16
 Var=RR_coldPlateTemp_dC3 signed 16,16
 Var=RR_errorCode3 unsigned 32,16
@@ -1050,6 +1050,13 @@ Var=STATE_over_voltage_count unsigned 40,8
 Var=STATE_under_voltage_count unsigned 48,8
 Var=STATE_over_temp_count unsigned 56,8
 
+[TEST_ID]
+ID=777h
+DLC=1
+CycleTime=100
+TimeOut=500
+Var=ID_test_id unsigned 0,8
+
 [VSM_LATCHED_STATUS]
 ID=510h
 DLC=3
@@ -1060,14 +1067,14 @@ Var=LATCHED_VSM_ERROR_SOURCE_CDC bit 5,1
 Var=LATCHED_VSM_ERROR_SOURCE_FSM bit 4,1
 Var=LATCHED_VSM_ERROR_SOURCE_DIM bit 3,1
 Var=VSM_ERROR_SOURCE_LVBMS bit 2,1
-Var=LATCHED_VSM_ERROR_SOURCE_AIM bit 1,1
+Var=VSM_ERROR_SOURCE_COMPUTE bit 1,1
 Var=LATCHED_VSM_ERROR_SOURCE_HVI bit 0,1
 Var=LATCHED_VSM_ERROR_SOURCE_HVC1 bit 14,1
 Var=LATCHED_VSM_ERROR_SOURCE_CDC1 bit 13,1
 Var=LATCHED_VSM_ERROR_SOURCE_FSM1 bit 12,1
 Var=LATCHED_VSM_ERROR_SOURCE_DIM1 bit 11,1
 Var=VSM_ERROR_SOURCE_LVBMS1 bit 10,1
-Var=LATCHED_VSM_ERROR_SOURCE_AIM1 bit 9,1
+Var=VSM_ERROR_SOURCE_COMPUTE1 bit 9,1
 Var=LATCHED_VSM_ERROR_SOURCE_HVI1 bit 8,1
 Var=LATCHED_VSM_LATCH_SOFTWARE bit 19,1
 Var=LATCHED_VSM_LATCH_AMS bit 18,1
@@ -1101,14 +1108,14 @@ Var=STATUS_VSM_ERROR_SOURCE_CDC2 bit 13,1
 Var=STATUS_VSM_ERROR_SOURCE_FSM2 bit 12,1
 Var=STATUS_VSM_ERROR_SOURCE_DIM2 bit 11,1
 Var=VSM_ERROR_SOURCE_LVBMS2 bit 10,1
-Var=STATUS_VSM_ERROR_SOURCE_AIM2 bit 9,1
+Var=VSM_ERROR_SOURCE_COMPUTE2 bit 9,1
 Var=STATUS_VSM_ERROR_SOURCE_HVI2 bit 8,1
 Var=STATUS_VSM_ERROR_SOURCE_HVC3 bit 22,1
 Var=STATUS_VSM_ERROR_SOURCE_CDC3 bit 21,1
 Var=STATUS_VSM_ERROR_SOURCE_FSM3 bit 20,1
 Var=STATUS_VSM_ERROR_SOURCE_DIM3 bit 19,1
 Var=VSM_ERROR_SOURCE_LVBMS3 bit 18,1
-Var=STATUS_VSM_ERROR_SOURCE_AIM3 bit 17,1
+Var=VSM_ERROR_SOURCE_COMPUTE3 bit 17,1
 Var=STATUS_VSM_ERROR_SOURCE_HVI3 bit 16,1
 Var=STATUS_VSM_LATCH_SOFTWARE1 bit 27,1
 Var=STATUS_VSM_LATCH_AMS1 bit 26,1
@@ -2267,12 +2274,6 @@ DLC=8
 Var=HVI_Current signed 0,16 /u:A /f:0.1 /p:1
 Var=HVI_Voltage unsigned 16,16 /u:V /f:0.01 /p:2
 Var=HVI_Power signed 32,32 /u:kW /f:0.001 /p:3
-
-[DAQ_AUTO_TEST]
-ID=777h
-DLC=1
-Var=TEST_ID unsigned 0,7	// Randomly generated test id sent everytime the car states up
-Var=TEST_STATUS bit 7,1	// 1- START TEST, 0 - STOP TEST
 
 [VSM_Git]
 ID=7F1h
