@@ -166,7 +166,7 @@ typedef enum {
     CMR_CANID_RMS_VOLTAGE_INFO = 0x3a7,
     CMR_CANID_RMS_COMMAND = 0x3c0,
     CMR_CANID_RMS_PARAM_REQ = 0x3c1,
-    CMR_CANID_RMS_PARAM_RES = 0x3c2,
+    CMR_CANID_RMS_PARAM_RSS = 0x3c2,
 
 
     // BMS CAN Structs
@@ -280,7 +280,7 @@ typedef enum {
 	CMR_CANID_RAM_GIT = 0x6f6,
 
     //AS
-    CMR_CANID_DS_RES = 0x182,                   /**< @brief Autonomous RES (remote E-stop)*/
+    CMR_CANID_DS_RSS = 0x182,                   /**< @brief Autonomous RSS (remote E-stop)*/
     CMR_CANID_AUTONOMOUS_ACTION = 0x190,        /**< @brief Autonomous Action*/
     CMR_CANID_DS_PRESSURE_READINGS = 0x191,     /**< @brief Autonomous Pressure Readings for Tank and EBS*/
     CMR_CANID_DS_RACK_DISPLACMENT = 0x192,      /**< @brief Rack Displacement Mesurment*/

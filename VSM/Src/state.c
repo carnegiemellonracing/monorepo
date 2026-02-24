@@ -119,8 +119,8 @@ static bool AutonomousClear();
 static bool EBSActive();
 static bool vehicleStill();
 static bool getVehicleFinished(bool vehicleStill);
-static bool getRESGo();
-static bool RESTriggered();
+static bool getRSSGo();
+static bool RSSTriggered();
 
 // ------------------------------------------------------------------------------------------------
 // Interface functions
@@ -190,8 +190,8 @@ void updateErrorsAndWarnings(TickType_t lastWakeTime) {
 static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
     updateErrorsAndWarnings(lastWakeTime_ms);
 
-    //If RES triggered stop everything
-    if(RESTriggered() && DSState){
+    //If RSS triggered stop everything
+    if(RSSTriggered() && DSState){
         return CMR_CAN_VSM_STATE_DS_EMERGENCY;
     }
 
@@ -418,7 +418,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             // }
 
             //T6
-            if (getRESGo() && DSState){
+            if (getRSSGo() && DSState){
                 if (lastWakeTime_ms > lastStateChangeTime_ms + DS_WAKEUP_TIME){
                     nextState = CMR_CAN_VSM_STATE_DS_DRIVING;
                 }
@@ -441,7 +441,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             if (getVehicleFinished(vehicleStill) && DSState){
                 nextState = CMR_CAN_VSM_STATE_DS_FINISHED;
             }
-            else if (!RESTriggered() && DSState){
+            else if (!RSSTriggered() && DSState){
                 nextState = CMR_CAN_VSM_STATE_DS_DRIVING;
             }
             else{
@@ -455,7 +455,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             if (!EBSActive() && !AutonomousClear()){
                 nextState = CMR_CAN_VSM_STATE_ERROR;
             }
-            else if (getVehicleFinished(vehicleStill) && !RESTriggered()
+            else if (getVehicleFinished(vehicleStill) && !RSSTriggered()
                     && (lastWakeTime_ms > lastStateChangeTime_ms + DS_FINISHED_TIME)){
                 nextState = CMR_CAN_VSM_STATE_ERROR;
             }
@@ -688,15 +688,15 @@ static bool getVehicleFinished(bool vehicleStill){
  * 
  * More: https://doc.fs-quiz.eu/FSG2017_DV_Technical_Specifications_v1.0.pdf
  */
-static inline bool getRESGo() {
-	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
-    return (data[0] & CMR_CAN_RES_GO);
+static inline bool getRSSGo() {
+	uint8_t *data = (uint8_t*)(getPayload(CANRX_RSS));
+    return (data[0] & CMR_CAN_RSS_GO);
 }
 
 /**
- * @brief Checks if RES is activated
+ * @brief Checks if RSS is activated
  */
-static inline bool RESTriggered(){
-	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
-	return !(data[0] & CMR_CAN_RES_TRIG);
+static inline bool RSSTriggered(){
+	uint8_t *data = (uint8_t*)(getPayload(CANRX_RSS));
+	return !(data[0] & CMR_CAN_RSS_TRIG);
 }

@@ -92,8 +92,8 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
     },
-    [CANRX_RES] = {
-            .canID = CMR_CANID_DS_RES,
+    [CANRX_RSS] = {
+            .canID = CMR_CANID_DS_RSS,
             .timeoutError_ms = 100,
             .timeoutWarn_ms = 25,
             .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT
@@ -128,7 +128,7 @@ const cmr_canVSMErrorSource_t vsmErrorSourceFlags[] = {
     [CANRX_INVERTER_2]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_INVERTER_3]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_INVERTER_4]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_RES]                 = CMR_CAN_VSM_ERROR_SOURCE_NONE,
+    [CANRX_RSS]                 = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_DS_PRESSURE_READING] = CMR_CAN_VSM_ERROR_SOURCE_NONE,
 };
 
@@ -297,8 +297,8 @@ void canInit(void) {
             .isMask = false,
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
-                    CMR_CANID_DS_RES,
-                    CMR_CANID_DS_RES,
+                    CMR_CANID_DS_RSS,
+                    CMR_CANID_DS_RSS,
                     CMR_CANID_AUTONOMOUS_ACTION,
                     CMR_CANID_AUTONOMOUS_ACTION
             }

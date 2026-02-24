@@ -303,10 +303,10 @@ typedef enum {
 /** @brief Bit definitions for RES*/
 typedef enum {
     /** @brief RES go-ahead*/
-    CMR_CAN_RES_GO = (1 << 2),
+    CMR_CAN_RSS_GO = (1 << 2),
     /** @brief E-Stop is signalized*/
-    CMR_CAN_RES_TRIG = (1 << 0)
-} cmr_canRES_t;
+    CMR_CAN_RSS_TRIG = (1 << 0)
+} cmr_canRSS_t;
 
 /** @brief Vehicle Safety Module state and error status. */
 typedef struct {
