@@ -162,8 +162,8 @@ static bool dimRequestIsValid(
         return false;
     }
 
-    cmr_canFSMData_t *fsmData = getPayload(CANRX_FSM_DATA);
-    uint16_t throttlePosition = fsmData->throttlePosition;
+    cmr_canDIMData_t *dimData = getPayload(CANRX_DIM_DATA);
+    uint16_t throttlePosition = dimData->throttlePosition;
 
     uint32_t brakePressureRear_PSI = cmr_sensorListGetValue(
         &sensorList, SENSOR_CH_BPRES_PSI

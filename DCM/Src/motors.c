@@ -180,8 +180,8 @@ static void motorsCommand (
     while (1) {
         volatile cmr_canHeartbeat_t      *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
         volatile cmr_canDIMRequest_t     *reqDIM       = canVehicleGetPayload(CANRX_VEH_REQUEST_DIM);
-        volatile cmr_canFSMData_t        *dataFSM      = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
-        volatile cmr_canFSMSWAngle_t     *swangleFSM   = canVehicleGetPayload(CANRX_VEH_SWANGLE_FSM);
+        volatile cmr_canDIMData_t        *dataDIM      = canVehicleGetPayload(CANRX_VEH_DATA_DIM);
+        volatile cmr_canDIMSWAngle_t     *swangleDIM   = canVehicleGetPayload(CANRX_VEH_SWANGLE_DIM);
         volatile cmr_canHVCPackVoltage_t *voltageHVC   = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
         volatile cmr_canHVCPackCurrent_t *currentHVC   = canVehicleGetPayload(CANRX_VEH_CURRENT_HVC);
         volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VSM_STATUS);
@@ -213,11 +213,11 @@ static void motorsCommand (
 //         update DRS mode
         drsMode = reqDIM->requestedDrsMode;
 
-        int32_t steeringWheelAngle_millideg = (swangleFSM->steeringWheelAngle_millideg_FL + swangleFSM->steeringWheelAngle_millideg_FR) / 2;
+        int32_t steeringWheelAngle_millideg = (swangleDIM->steeringWheelAngle_millideg_FL + swangleDIM->steeringWheelAngle_millideg_FR) / 2;
         // runDrsControls(reqDIM->requestedGear,
         //                 drsMode,
-        //                 dataFSM    -> throttlePosition,
-        //                 dataFSM    -> brakePressureFront_PSI
+        //                 dataDIM    -> throttlePosition,
+        //                 dataDIM    -> brakePressureFront_PSI
         //                 );
 
         switch (heartbeatVSM->state) {
@@ -256,11 +256,11 @@ static void motorsCommand (
                 //taskENTER_CRITICAL(); /** @todo verify if this critical region is necessary */
 
                 runControls(gear,
-                		    dataFSM    -> torqueRequested,
-                            dataFSM    -> brakePedalPosition_percent,
-                            dataFSM    -> brakePressureFront_PSI,
-                            swangleFSM->steeringWheelAngle_millideg_FL,
-                            swangleFSM->steeringWheelAngle_millideg_FR,
+                		    dataDIM    -> torqueRequested,
+                            dataDIM    -> brakePedalPosition_percent,
+                            dataDIM    -> brakePressureFront_PSI,
+                            swangleDIM->steeringWheelAngle_millideg_FL,
+                            swangleDIM->steeringWheelAngle_millideg_FR,
                             voltageHVC -> hvVoltage_mV,
                             currentHVC -> instantCurrent_mA,
                             blank_command);

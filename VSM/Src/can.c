@@ -53,15 +53,15 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_VSM_HVI_TIMEOUT
     },
-    [CANRX_FSM_DATA] = {
-        .canID = CMR_CANID_FSM_DATA,
+    [CANRX_DIM_DATA] = {
+        .canID = CMR_CANID_DIM_DATA,
         .timeoutError_ms = 100,
         .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_VSM_DIM_TIMEOUT
     },
-    // [CANRX_FSM_SWANGLE] = {
-    //     .canID = CMR_CANID_FSM_SWANGLE,
+    // [CANRX_DIM_SWANGLE] = {
+    //     .canID = CMR_CANID_DIM_SWANGLE,
     //     .timeoutError_ms = 100,
     //     .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
     //     .timeoutWarn_ms = 25,
@@ -122,7 +122,7 @@ const cmr_canVSMErrorSource_t vsmErrorSourceFlags[] = {
     [CANRX_HEARTBEAT_HVC]       = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_HEARTBEAT_DCM]       = CMR_CAN_VSM_ERROR_SOURCE_DCM,
     [CANRX_HEARTBEAT_DIM]       = CMR_CAN_VSM_ERROR_SOURCE_DIM,
-    [CANRX_FSM_DATA]            = CMR_CAN_VSM_ERROR_SOURCE_DIM,
+    [CANRX_DIM_DATA]            = CMR_CAN_VSM_ERROR_SOURCE_DIM,
     [CANRX_DIM_REQUEST]         = CMR_CAN_VSM_ERROR_SOURCE_NONE, // Don't timeout based on DIM requests
     [CANRX_INVERTER_1]          = CMR_CAN_VSM_ERROR_SOURCE_NONE, // Don't timeout inverter here
     [CANRX_INVERTER_2]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
@@ -286,8 +286,8 @@ void canInit(void) {
             .isMask = false,
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
-                CMR_CANID_FSM_DATA,
-                CMR_CANID_FSM_SWANGLE, //commented out?
+                CMR_CANID_DIM_DATA,
+                CMR_CANID_DIM_SWANGLE, //commented out?
                 CMR_CANID_DIM_REQUEST,
                 CMR_CANID_AMK_FL_ACT_1,
             }

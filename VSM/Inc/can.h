@@ -22,8 +22,8 @@ typedef enum {
     CANRX_HEARTBEAT_DCM,      /**< @brief DCM heartbeat. */
     CANRX_HEARTBEAT_DIM,      /**< @brief DIM heartbeat. */
     CANRX_HEARTBEAT_HVI,      /**< @brief HVI heartbeat. */
-    CANRX_FSM_DATA,           /**< @brief FSM data. */
-    CANRX_FSM_SWANGLE,
+    CANRX_DIM_DATA,           /**< @brief DIM data. */
+    CANRX_DIM_SWANGLE,
     CANRX_DIM_REQUEST,        /**< @brief DIM state request. */
     CANRX_INVERTER_1,         /**< @brief Inverter1 status */
     CANRX_INVERTER_2,         /**< @brief Inverter2 status */

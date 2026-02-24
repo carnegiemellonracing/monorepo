@@ -99,10 +99,10 @@ static cmr_task_t canTX10Hz_task;
 
 // Forward declarations
 static void sendHeartbeat(TickType_t lastWakeTime);
-static void sendFSMData(void);
+static void sendDIMData(void);
 static void sendSWAngle(void);
-static void sendFSMPedalsADC(void);
-static void sendFSMSensorsADC(void);
+static void sendDIMPedalsADC(void);
+static void sendDIMSensorsADC(void);
 static void sendPowerDiagnostics(void);
 
 /**
@@ -160,8 +160,8 @@ static void canTX10Hz(void *pvParameters) {
         }
         sendPowerDiagnostics();
 
-        sendFSMPedalsADC();
-        sendFSMSensorsADC();
+        sendDIMPedalsADC();
+        sendDIMSensorsADC();
 
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
@@ -189,7 +189,7 @@ static void canTX100Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendHeartbeat(lastWakeTime);
-        sendFSMData();
+        sendDIMData();
         sendSWAngle();
         // Calculate integer regenPercent from regenStep
     	uint8_t paddle = (uint8_t) ((adcRead(ADC_PADDLE) - 16.062) / 3694.43) * 255.0;
@@ -582,7 +582,7 @@ void *getPayload(canRX_t rxMsg) {
 }
 
 /**
- * @brief Sets up FSM CAN heartbeat by checking errors and sends it.
+ * @brief Sets up DIM CAN heartbeat by checking errors and sends it.
  *
  * @param lastWakeTime Pass in from canTX100Hz. Used to determine pedal implausibility
  * according to FSAE rule T.6.2.3.
@@ -622,10 +622,10 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     cmr_sensorListGetFlags(&sensorList, &warning, &error);
 
     if (cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPP_IMPLAUS) != 0) {
-        warning |= CMR_CAN_WARN_FSM_BPP;
+        warning |= CMR_CAN_WARN_DIM_BPP;
     }
     if (cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_IMPLAUS) != 0) {
-        warning |= CMR_CAN_WARN_FSM_TPOS_IMPLAUSIBLE;
+        warning |= CMR_CAN_WARN_DIM_TPOS_IMPLAUSIBLE;
     }
 
     if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
@@ -645,7 +645,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     memcpy(&heartbeat.warning, &warning, sizeof(heartbeat.warning));
 
     canTX(
-        CMR_CANID_HEARTBEAT_FSM,
+        CMR_CANID_HEARTBEAT_DIM,
         &heartbeat,
         sizeof(heartbeat),
         canTX100Hz_period_ms);
@@ -657,9 +657,9 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 }
 
 /**
- * @brief Sends FSM data message.
+ * @brief Sends DIM data message.
  */
-static void sendFSMData(void) {
+static void sendDIMData(void) {
     volatile cmr_canHeartbeat_t *heartbeatVSM = getPayload(CANRX_HEARTBEAT_VSM);
 
     uint8_t throttlePosition = throttleGetPos();
@@ -674,14 +674,14 @@ static void sendFSMData(void) {
     uint16_t brakePressureFront_PSI = (uint16_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI);
     uint8_t brakePedalPosition = (uint8_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPOS_U8);
 
-    cmr_canFSMData_t msg = {
+    cmr_canDIMData_t msg = {
         .torqueRequested = torqueRequested,
         .throttlePosition = throttlePosition,
         .brakePressureFront_PSI = brakePressureFront_PSI,
         .brakePedalPosition_percent = brakePedalPosition
     };
 
-    canTX(CMR_CANID_FSM_DATA, &msg, sizeof(msg), canTX100Hz_period_ms);
+    canTX(CMR_CANID_DIM_DATA, &msg, sizeof(msg), canTX100Hz_period_ms);
 }
 
 static void sendSWAngle(void) {
@@ -689,12 +689,12 @@ static void sendSWAngle(void) {
     int32_t steeringWheelAngle_deg_FL = (int32_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG_FL);
     int32_t steeringWheelAngle_deg_FR = (int32_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG_FR);
 
-    cmr_canFSMSWAngle_t msg = {
+    cmr_canDIMSWAngle_t msg = {
         .steeringWheelAngle_millideg_FL = steeringWheelAngle_deg_FL,
         .steeringWheelAngle_millideg_FR = steeringWheelAngle_deg_FR
     };
 
-    canTX(CMR_CANID_FSM_SWANGLE, &msg, sizeof(msg), canTX100Hz_period_ms);
+    canTX(CMR_CANID_DIM_SWANGLE, &msg, sizeof(msg), canTX100Hz_period_ms);
 }
 
 /**
@@ -702,14 +702,14 @@ static void sendSWAngle(void) {
  *
  * @note This is only useful for calibration and should not be sent constantly.
  */
-static void sendFSMPedalsADC(void) {
-    cmr_canFSMPedalsADC_t msg = {
+static void sendDIMPedalsADC(void) {
+    cmr_canDIMPedalsADC_t msg = {
         .throttleLeftADC = adcRead(sensorsADCChannels[SENSOR_CH_TPOS_L_U8]),
         .throttleRightADC = adcRead(sensorsADCChannels[SENSOR_CH_TPOS_R_U8]),
         .brakePedalADC = adcRead(sensorsADCChannels[SENSOR_CH_BPOS_U8])
     };
 
-    canTX(CMR_CANID_FSM_PEDALS_ADC, &msg, sizeof(msg), canTX10Hz_period_ms);
+    canTX(CMR_CANID_DIM_PEDALS_ADC, &msg, sizeof(msg), canTX10Hz_period_ms);
 }
 
 /**
@@ -717,8 +717,8 @@ static void sendFSMPedalsADC(void) {
  *
  * @note This is only useful for calibration and should not be sent constantly.
  */
-static void sendFSMSensorsADC(void) {
-    cmr_canFSMSensorsADC_t msg = {
+static void sendDIMSensorsADC(void) {
+    cmr_canDIMSensorsADC_t msg = {
         .brakePressureFrontADC = adcRead(sensorsADCChannels[SENSOR_CH_BPRES_PSI]),
         .steeringWheelAngleADC = adcRead(ADC_SWANGLE)
     };
@@ -726,7 +726,7 @@ static void sendFSMSensorsADC(void) {
         msg.steeringWheelAngleADC = 4096;
     }
 
-    canTX(CMR_CANID_FSM_SENSORS_ADC, &msg, sizeof(msg), canTX10Hz_period_ms);
+    canTX(CMR_CANID_DIM_SENSORS_ADC, &msg, sizeof(msg), canTX10Hz_period_ms);
 }
 
 /**
@@ -741,7 +741,7 @@ static void sendPowerDiagnostics(void) {
         .busVoltage_mV = busVoltage_mV,
         .busCurrent_mA = busCurrent_mA
     };
-    cmr_canFSMPowerDiagnostics_t powerDiagnosticsFSM = {
+    cmr_canDIMPowerDiagnostics_t powerDiagnosticsDIM = {
         .busVoltage_mV = busVoltage_mV,
         .busCurrent_mA = busCurrent_mA
     };
@@ -751,8 +751,8 @@ static void sendPowerDiagnostics(void) {
         &powerDiagnosticsDIM, sizeof(powerDiagnosticsDIM),
         canTX10Hz_period_ms);
     canTX(
-        CMR_CANID_FSM_POWER_DIAGNOSTICS,
-        &powerDiagnosticsFSM, sizeof(powerDiagnosticsFSM),
+        CMR_CANID_DIM_POWER_DIAGNOSTICS,
+        &powerDiagnosticsDIM, sizeof(powerDiagnosticsDIM),
         canTX10Hz_period_ms);
 }
 

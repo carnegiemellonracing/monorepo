@@ -22,7 +22,7 @@ typedef enum {
     CMR_CANID_HEARTBEAT_VSM = 0x100,    /**< @brief VSM heartbeat. */
     CMR_CANID_HEARTBEAT_HVC = 0x101,    /**< @brief HVC heartbeat. */
     CMR_CANID_HEARTBEAT_DCM = 0x102,    /**< @brief DCM heartbeat. */
-    CMR_CANID_HEARTBEAT_FSM = 0x103,    /**< @brief FSM heartbeat. */
+    CMR_CANID_HEARTBEAT_DIM = 0x103,    /**< @brief DIM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x104,    /**< @brief DIM heartbeat. */
     CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief PTC heatbeart. */
     CMR_CANID_HEARTBEAT_LV_BMS = 0x107, /**< @brief LV-BMS heatbeart. */
@@ -65,12 +65,12 @@ typedef enum {
     CMR_CANID_DCM_COULOMB_COUNTING = 0x6c3,
     CMR_CANID_DCM_POWER_LOG = 0x6c4,             /**< @brief DAQ Live to DCM - changing power limit. */
 
-    CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
+    CMR_CANID_DIM_DATA = 0x133,                 /**< @brief DIM data. */
     CMR_CANID_CELL_BALANCE_ENABLE = 0x134,
-    CMR_CANID_FSM_SWANGLE = 0x135,
-    CMR_CANID_FSM_PEDALS_ADC = 0x533,           /**< @brief FSM raw pedal positions. */
-    CMR_CANID_FSM_SENSORS_ADC = 0x543,          /**< @brief FSM raw sensors. */
-    CMR_CANID_FSM_POWER_DIAGNOSTICS = 0x553,    /**< @brief FSM power diagnostics. */
+    CMR_CANID_DIM_SWANGLE = 0x135,
+    CMR_CANID_DIM_PEDALS_ADC = 0x533,           /**< @brief DIM raw pedal positions. */
+    CMR_CANID_DIM_SENSORS_ADC = 0x543,          /**< @brief DIM raw sensors. */
+    CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x553,    /**< @brief DIM power diagnostics. */
     CMR_CANID_SS_STATUS = 0x554,               /**< @brief Safety Circuit status. */
 
     CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief (fan board) cooling loop temps. */

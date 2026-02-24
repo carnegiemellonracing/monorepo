@@ -365,15 +365,15 @@ cmr_torque_limit_t getPreemptiveTorqueLimits
 
 /** @brief Returns whether or not the throttle is considered to be inactive */
 static bool throttleNeutral() {
-    volatile cmr_canFSMData_t *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
-    // Using torqueRequested instead of throttlePosition because FSM performs some checks
-    return dataFSM->torqueRequested == 0;
+    volatile cmr_canDIMData_t *dataDIM = canVehicleGetPayload(CANRX_VEH_DATA_DIM);
+    // Using torqueRequested instead of throttlePosition because DIM performs some checks
+    return dataDIM->torqueRequested == 0;
 }
 
 /** @brief Returns whether or not the brakes is considered to be active */
 static bool mechanicalBrakesEngaged() {
     volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
-    // volatile cmr_canFSMData_t *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
+    // volatile cmr_canDIMData_t *dataDIM = canVehicleGetPayload(CANRX_VEH_DATA_DIM);
 
     const float brakepsi = (float)(vsmSensor->brakePressureRear_PSI);
     return brakepsi >= braking_threshold_psi + braking_threshold_offset_psi;

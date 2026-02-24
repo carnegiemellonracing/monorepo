@@ -70,15 +70,15 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
     },
-    [CANRX_VEH_DATA_FSM] = {
-        .canID = CMR_CANID_FSM_DATA,
+    [CANRX_VEH_DATA_DIM] = {
+        .canID = CMR_CANID_DIM_DATA,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_NONE,
         .warnFlag = CMR_CAN_WARN_NONE
     },
-    [CANRX_VEH_SWANGLE_FSM] = {
-        .canID = CMR_CANID_FSM_SWANGLE,
+    [CANRX_VEH_SWANGLE_DIM] = {
+        .canID = CMR_CANID_DIM_SWANGLE,
         .timeoutError_ms = 50,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_NONE,
@@ -396,15 +396,15 @@ cmr_canRXMeta_t canRXMeta[] = {
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
     },
-    [CANRX_FSM_DATA] = {
-        .canID = CMR_CANID_FSM_DATA,
+    [CANRX_DIM_DATA] = {
+        .canID = CMR_CANID_DIM_DATA,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 50,
         .errorFlag = CMR_CAN_ERROR_NONE,
         .warnFlag = CMR_CAN_WARN_NONE
     },
-    [CANRX_FSM_SWANGLE] = {
-        .canID = CMR_CANID_FSM_SWANGLE,
+    [CANRX_DIM_SWANGLE] = {
+        .canID = CMR_CANID_DIM_SWANGLE,
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 50,
         .errorFlag = CMR_CAN_ERROR_NONE,

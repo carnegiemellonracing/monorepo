@@ -36,8 +36,8 @@ typedef enum {
 /** @brief Standard CAN heartbeat. */
 typedef struct {
     uint8_t state;         //e:State   /**< @brief Board state. */
-    uint8_t error[2];     //Flag:cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canDCMHeartbeatErr_t cmr_canFSMHeartbeatErr_t  /**< @brief Error matrix. */ 
-    uint8_t warning[2];    //Flag:cmr_canVSMHeartbeatWrn_t cmr_canDCMHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t  /**< @brief Warning matrix. */ 
+    uint8_t error[2];     //Flag:cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canDCMHeartbeatErr_t cmr_canDIMHeartbeatErr_t  /**< @brief Error matrix. */ 
+    uint8_t warning[2];    //Flag:cmr_canVSMHeartbeatWrn_t cmr_canDCMHeartbeatWrn_t cmr_canDIMHeartbeatWrn_t  /**< @brief Warning matrix. */ 
 } cmr_canHeartbeat_t;
 
 /** @brief Heartbeat error matrix bit fields. */
@@ -112,8 +112,8 @@ typedef enum {
     CMR_CAN_WARN_VSM_HVC_TIMEOUT = (1 << 14),
     /** @brief VSM hasn't received DCM heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_DCM_TIMEOUT = (1 << 13),
-    /** @brief VSM hasn't received FSM heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_FSM_TIMEOUT = (1 << 12),
+    /** @brief VSM hasn't received DIM heartbeat for 25 ms. */
+    CMR_CAN_WARN_VSM_DIM_TIMEOUT = (1 << 12),
     /** @brief VSM hasn't received DIM heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_DIM_TIMEOUT = (1 << 11),
     /** @brief VSM hasn't received PTCf heartbeat for 25 ms. */
@@ -123,33 +123,33 @@ typedef enum {
     /** @brief VSM is rejecting DIM state request. */
     CMR_CAN_WARN_VSM_DIM_REQ_NAK = (1 << 7),
 
-    /** @brief FSM throttle position implausibility (L/R difference > 10%). */
-    CMR_CAN_WARN_FSM_TPOS_IMPLAUSIBLE = (1 << 15),
-    /** @brief FSM brake pedal plausibility fault. */
-    CMR_CAN_WARN_FSM_BPP = (1 << 14),
-    /** @brief FSM right throttle position out-of-range. */
-    CMR_CAN_WARN_FSM_TPOS_R = (1 << 13),
-    /** @brief FSM left throttle position out-of-range. */
-    CMR_CAN_WARN_FSM_TPOS_L = (1 << 12),
-    /** @brief FSM brake pedal position out-of-range. */
-    CMR_CAN_WARN_FSM_BPOS = (1 << 11),
-    /** @brief FSM brake pressure sensor out-of-range. */
-    CMR_CAN_WARN_FSM_BPRES = (1 << 10),
-    /** @brief FSM steering wheel angle out-of-range. */
-    CMR_CAN_WARN_FSM_SWANGLE = (1 << 9),
+    /** @brief DIM throttle position implausibility (L/R difference > 10%). */
+    CMR_CAN_WARN_DIM_TPOS_IMPLAUSIBLE = (1 << 15),
+    /** @brief DIM brake pedal plausibility fault. */
+    CMR_CAN_WARN_DIM_BPP = (1 << 14),
+    /** @brief DIM right throttle position out-of-range. */
+    CMR_CAN_WARN_DIM_TPOS_R = (1 << 13),
+    /** @brief DIM left throttle position out-of-range. */
+    CMR_CAN_WARN_DIM_TPOS_L = (1 << 12),
+    /** @brief DIM brake pedal position out-of-range. */
+    CMR_CAN_WARN_DIM_BPOS = (1 << 11),
+    /** @brief DIM brake pressure sensor out-of-range. */
+    CMR_CAN_WARN_DIM_BPRES = (1 << 10),
+    /** @brief DIM steering wheel angle out-of-range. */
+    CMR_CAN_WARN_DIM_SWANGLE = (1 << 9),
 
     /** @brief Safety circuit module tripped */
-    CMR_CAN_WARN_FSM_SS_MODULE = (1 << 3),
+    CMR_CAN_WARN_DIM_SS_MODULE = (1 << 3),
     /** @brief Safety circuit cockpit tripped */
-    CMR_CAN_WARN_FSM_SS_COCKPIT = (1 << 4),
+    CMR_CAN_WARN_DIM_SS_COCKPIT = (1 << 4),
     /** @brief Safety circuit FR hub tripped */
-    CMR_CAN_WARN_FSM_SS_FRHUB = (1 << 5),
+    CMR_CAN_WARN_DIM_SS_FRHUB = (1 << 5),
     /** @brief Safety circuit inertia tripped */
-    CMR_CAN_WARN_FSM_SS_INERTIA = (1 << 6),
+    CMR_CAN_WARN_DIM_SS_INERTIA = (1 << 6),
     /** @brief Safety circuit FL hub tripped */
-    CMR_CAN_WARN_FSM_SS_FLHUB = (1 << 7),
+    CMR_CAN_WARN_DIM_SS_FLHUB = (1 << 7),
     /** @brief Safety circuit bots tripped */
-    CMR_CAN_WARN_FSM_SS_BOTS = (1 << 8),
+    CMR_CAN_WARN_DIM_SS_BOTS = (1 << 8),
 
     /** @brief DCM Front left motor controller is warning source. */
     CMR_CAN_WARN_DCM_AMK_FL = (1 << 15),
@@ -255,7 +255,7 @@ typedef enum {
     /** @brief At least one Central Dynamics Controller message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_DCM = (1 << 5),
     /** @brief At least one Front Sensor Module message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_FSM = (1 << 4),
+    CMR_CAN_VSM_ERROR_SOURCE_DIM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_DIM = (1 << 3),
     /** @brief At least one message has timed out. */
@@ -296,7 +296,7 @@ typedef enum {
     CMR_CAN_VSM_WRN_HVI_TIMEOUT = (1<<8),
     CMR_CAN_VSM_WRN_PTC_TIMEOUT = (1<<10),
     CMR_CAN_VSM_WRN_DIM_TIMEOUT = (1<<11),
-    CMR_CAN_VSM_WRN_FSM_TIMEOUT = (1<<12),
+    CMR_CAN_VSM_WRN_DIM_TIMEOUT = (1<<12),
     CMR_CAN_VSM_WRN_DCM_TIMEOUT = (1<<13),
     CMR_CAN_VSM_WRN_HVC_TIMEOUT = (1<<14) 
 } cmr_canVSMHeartbeatWrn_t; 
@@ -701,27 +701,27 @@ typedef struct {
 
 
 typedef enum {
-    CMR_CAN_FSM_ERROR_VSM_TIMEOUT = (1 << 0),
-} cmr_canFSMHeartbeatErr_t;
+    CMR_CAN_DIM_ERROR_VSM_TIMEOUT = (1 << 0),
+} cmr_canDIMHeartbeatErr_t;
 
 typedef enum {
-    CMR_CAN_FSM_WRN_VSM_TIMEOUT = (1<<0),
-    CMR_CAN_FSM_WRN_VOLTAGE_OOR  = (1<<1), 
-    CMR_CAN_FSM_WRN_CURRENT_OOR = (1<<2), 
-    CMR_CAN_FSM_WRN_BRAKE_POSITION_OOR = (1<<11),
-    CMR_CAN_FSM_WRN_LEFT_TPOS_OOR = (1<<12), 
-    CMR_CAN_FSM_WRN_RIGHT_TPOS_OOR = (1<<13), 
-    CMR_CAN_FSM_WRN_BPP_FAULT = (1<<14),
-    CMR_CAN_FSM_WRN_TPOS_IMPLAUSIBLE = (1<<15),
-    CMR_CAN_FSM_WRN_SS_MODULE = (1<<3), 
-    CMR_CAN_FSM_WRN_SS_COCKPIT = (1<<4), 
-    CMR_CAN_FSM_WRN_SS_FR_HUB = (1<<5), 
-    CMR_CAN_FSM_WRN_SS_INERTIA = (1<<6), 
-    CMR_CAN_FSM_WRN_SS_FL_HUB = (1<<7), 
-    CMR_CAN_FSM_WRN_SS_BOTS = (1<<8), 
-    CMR_CAN_FSM_WRN_BRAKE_PRESSURE_OOR = (1<<10),  
-    CMR_CAN_FSM_WRN_SW_ANGLE_OOR = (1<<9)
-} cmr_canFSMHeartbeatWrn_t; 
+    CMR_CAN_DIM_WRN_VSM_TIMEOUT = (1<<0),
+    CMR_CAN_DIM_WRN_VOLTAGE_OOR  = (1<<1), 
+    CMR_CAN_DIM_WRN_CURRENT_OOR = (1<<2), 
+    CMR_CAN_DIM_WRN_BRAKE_POSITION_OOR = (1<<11),
+    CMR_CAN_DIM_WRN_LEFT_TPOS_OOR = (1<<12), 
+    CMR_CAN_DIM_WRN_RIGHT_TPOS_OOR = (1<<13), 
+    CMR_CAN_DIM_WRN_BPP_FAULT = (1<<14),
+    CMR_CAN_DIM_WRN_TPOS_IMPLAUSIBLE = (1<<15),
+    CMR_CAN_DIM_WRN_SS_MODULE = (1<<3), 
+    CMR_CAN_DIM_WRN_SS_COCKPIT = (1<<4), 
+    CMR_CAN_DIM_WRN_SS_FR_HUB = (1<<5), 
+    CMR_CAN_DIM_WRN_SS_INERTIA = (1<<6), 
+    CMR_CAN_DIM_WRN_SS_FL_HUB = (1<<7), 
+    CMR_CAN_DIM_WRN_SS_BOTS = (1<<8), 
+    CMR_CAN_DIM_WRN_BRAKE_PRESSURE_OOR = (1<<10),  
+    CMR_CAN_DIM_WRN_SW_ANGLE_OOR = (1<<9)
+} cmr_canDIMHeartbeatWrn_t; 
 
 /** @brief Front Sensor Module data. */
 typedef struct {
@@ -730,7 +730,7 @@ typedef struct {
     uint16_t brakePressureFront_PSI;    //u: PSI /**< @brief Front brake pressure. */
     uint8_t brakePedalPosition_percent; //u: % /**< @brief Brake pedal position (0-255). */
     
-} cmr_canFSMData_t; 
+} cmr_canDIMData_t; 
 
 typedef struct {
     /** @brief Steering wheel angle (-180 to 180 degrees). 
@@ -739,26 +739,26 @@ typedef struct {
     int32_t steeringWheelAngle_millideg_FR; //u: deg, f:0.001
     int32_t steeringWheelAngle_millideg_FL; //u: deg, f:0.001
 
-} cmr_canFSMSWAngle_t;
+} cmr_canDIMSWAngle_t;
 
 /** @brief Front Sensor Module raw pedal positions. */
 typedef struct {
     uint16_t throttleLeftADC;   /**< @brief Raw left throttle value. */
     uint16_t throttleRightADC;  /**< @brief Raw right throttle value. */
     uint16_t brakePedalADC;     /**< @brief Raw brake pedal value. */
-} cmr_canFSMPedalsADC_t; 
+} cmr_canDIMPedalsADC_t; 
 
 /** @brief Front Sensor Module raw sensors. */
 typedef struct {
     uint16_t brakePressureFrontADC;     /**< @brief Raw brake pressure value. */
     uint16_t steeringWheelAngleADC;     /**< @brief Raw steering wheel value. */
-} cmr_canFSMSensorsADC_t;
+} cmr_canDIMSensorsADC_t;
 
 /** @brief Front Sensor Module power diagnostics. */
 typedef struct {
     uint16_t busVoltage_mV;     //u: mV /**< @brief Low-voltage bus voltage (mV). */
     uint16_t busCurrent_mA;     //u: mA /**< @brief Low-voltage bus current (mA). */
-} cmr_canFSMPowerDiagnostics_t;
+} cmr_canDIMPowerDiagnostics_t;
 
 // ------------------------------------------------------------------------------------------------
 // Powertrain Thermal Controller
