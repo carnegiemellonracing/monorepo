@@ -17,7 +17,7 @@
 /** @brief Motor Controller Power Control task. */
 //static cmr_task_t mcPowerControl_task;
 
-//volatile cmr_canHeartbeat_t *heartbeatPTC = &heartbeat;
+//volatile cmr_canHeartbeat_t *heartbeatDCM = &heartbeat;
 
 //mcCtrl states
 void mcCtrlOff();

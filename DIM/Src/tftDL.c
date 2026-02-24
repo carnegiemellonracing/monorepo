@@ -695,7 +695,7 @@ void tftDL_errorUpdate(
         "%2lu", err->glvVoltage_V);
 
     /* Timeouts */
-    tftDL_showErrorState(ESE_PTC_COLOR, err->ptcTimeout);
+    tftDL_showErrorState(ESE_DCM_COLOR, err->dcmTimeout);
     tftDL_showErrorState(ESE_HVC_COLOR, err->hvcTimeout);
     tftDL_showErrorState(ESE_VSM_COLOR, err->vsmTimeout);
     tftDL_showErrorState(ESE_DCM_COLOR, err->dcmTimeout);

@@ -93,7 +93,7 @@ void tftInit(void);
  * in error state. */
 typedef struct {
     bool dcmTimeout;         /**< @brief Has the DCM timed out? */
-    bool ptcTimeout;         /**< @brief Has the PTC timed out? */
+    bool dcmTimeout;         /**< @brief Has the DCM timed out? */
     bool vsmTimeout;         /**< @brief Has the VSM timed out? */
     bool hvcTimeout;         /**< @brief Has the HVC timed out? */
     bool imdError;           /**< @brief Has the IMD faulted? */

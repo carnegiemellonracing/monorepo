@@ -340,7 +340,7 @@ static void drawErrorScreen(void) {
 
     /* Timeouts */
     err.dcmTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_DCM);
-    err.ptcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_PTC);
+    err.dcmTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_DCM);
     err.hvcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_HVC);
     err.vsmTimeout = 0;
 
@@ -515,18 +515,18 @@ static void drawRTDScreen(void) {
     volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
         (void *)metaBMSLowVoltage->payload;
 
-    // PTC Temps
-    /* cmr_canRXMeta_t *metaPTCfLoopA = canRXMeta + CANRX_PTCf_LOOP_A_TEMPS;
-    volatile cmr_canPTCfLoopTemp_A_t *canPTCfLoopTemp_A = (void *) metaPTCfLoopA->payload;
+    // DCM Temps
+    /* cmr_canRXMeta_t *metaDCMfLoopA = canRXMeta + CANRX_DCMf_LOOP_A_TEMPS;
+    volatile cmr_canDCMfLoopTemp_A_t *canDCMfLoopTemp_A = (void *) metaDCMfLoopA->payload;
 
-    cmr_canRXMeta_t *metaPTCfLoopB = canRXMeta + CANRX_PTCf_LOOP_B_TEMPS;
-    volatile cmr_canPTCfLoopTemp_B_t *canPTCfLoopTemp_B = (void *) metaPTCfLoopB->payload;
+    cmr_canRXMeta_t *metaDCMfLoopB = canRXMeta + CANRX_DCMf_LOOP_B_TEMPS;
+    volatile cmr_canDCMfLoopTemp_B_t *canDCMfLoopTemp_B = (void *) metaDCMfLoopB->payload;
 
-    cmr_canRXMeta_t *metaPTCpLoopA = canRXMeta + CANRX_PTCp_LOOP_A_TEMPS;
-    volatile cmr_canPTCpLoopTemp_A_t *canPTCpLoopTemp_A = (void *) metaPTCpLoopA->payload;
+    cmr_canRXMeta_t *metaDCMpLoopA = canRXMeta + CANRX_DCMp_LOOP_A_TEMPS;
+    volatile cmr_canDCMpLoopTemp_A_t *canDCMpLoopTemp_A = (void *) metaDCMpLoopA->payload;
 
-    cmr_canRXMeta_t *metaPTCpLoopB = canRXMeta + CANRX_PTCp_LOOP_B_TEMPS;
-    volatile cmr_canPTCpLoopTemp_B_t *canPTCpLoopTemp_B = (void *) metaPTCpLoopB->payload;*/
+    cmr_canRXMeta_t *metaDCMpLoopB = canRXMeta + CANRX_DCMp_LOOP_B_TEMPS;
+    volatile cmr_canDCMpLoopTemp_B_t *canDCMpLoopTemp_B = (void *) metaDCMpLoopB->payload;*/
 
     tftDLContentLoad(&tft, &tftDL_RTD);
 

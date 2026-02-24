@@ -24,7 +24,7 @@ typedef enum {
     CMR_CANID_HEARTBEAT_DCM = 0x102,    /**< @brief DCM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x103,    /**< @brief DIM heartbeat. */
     CMR_CANID_HEARTBEAT_DIM = 0x104,    /**< @brief DIM heartbeat. */
-    CMR_CANID_HEARTBEAT_PTC = 0x105,    /**< @brief PTC heatbeart. */
+    CMR_CANID_HEARTBEAT_DCM = 0x105,    /**< @brief DCM heatbeart. */
     CMR_CANID_HEARTBEAT_LV_BMS = 0x107, /**< @brief LV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
     CMR_CANID_EAB_STATUS = 0x10A,
@@ -73,11 +73,11 @@ typedef enum {
     CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x553,    /**< @brief DIM power diagnostics. */
     CMR_CANID_SS_STATUS = 0x554,               /**< @brief Safety Circuit status. */
 
-    CMR_CANID_PTC_LOOP_TEMPS_A = 0x224,        /**< @brief (fan board) cooling loop temps. */
-    CMR_CANID_PTC_LOOP_TEMPS_B = 0x234,        /**< @brief (fan board) cooling loop temps. */
-    CMR_CANID_PTC_LOOP_TEMPS_C = 0x244,        /**< @brief (fan board) cooling loop temps. */
-    CMR_CANID_PTC_FANS_PUMPS_STATUS = 0x314,   /**< @brief (fan board) fans status */
-    CMR_CANID_PTC_POWER_DIAGNOSTICS = 0x534,   /**< @brief (fan board) power diagnostics. */
+    CMR_CANID_DCM_LOOP_TEMPS_A = 0x224,        /**< @brief (fan board) cooling loop temps. */
+    CMR_CANID_DCM_LOOP_TEMPS_B = 0x234,        /**< @brief (fan board) cooling loop temps. */
+    CMR_CANID_DCM_LOOP_TEMPS_C = 0x244,        /**< @brief (fan board) cooling loop temps. */
+    CMR_CANID_DCM_FANS_PUMPS_STATUS = 0x314,   /**< @brief (fan board) fans status */
+    CMR_CANID_DCM_POWER_DIAGNOSTICS = 0x534,   /**< @brief (fan board) power diagnostics. */
 
     CMR_CANID_DIM_REQUEST = 0x235,              /**< @brief DIM state/gear request. */
     CMR_CANID_DIM_POWER_DIAGNOSTICS = 0x535,    /**< @brief DIM power diagnostics. */
@@ -275,7 +275,7 @@ typedef enum {
 
     CMR_CANID_VSM_GIT = 0x6F2,
 	CMR_CANID_HVC_GIT = 0x6f3,
-	CMR_CANID_PTC_GIT = 0x6f4,
+	CMR_CANID_DCM_GIT = 0x6f4,
 	CMR_CANID_DIM_GIT = 0x6f5,
 	CMR_CANID_RAM_GIT = 0x6f6,
 

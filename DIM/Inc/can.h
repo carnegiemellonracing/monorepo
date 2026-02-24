@@ -72,11 +72,11 @@ typedef enum {
     CANRX_AMK_RR_ACT_2,        /**< @brief AMK BR Temps*/
     CANRX_HVC_PACK_TEMPS,      /**< @brief HVC cell temps. */
     CANRX_VSM_STATUS,          /**< @brief VSM status */
-    CANRX_PTCf_LOOP_A_TEMPS,   /**< @brief PTCf Loop A temps */
-    CANRX_PTCf_LOOP_B_TEMPS,   /**< @brief PTCf Loop B temps */
-    CANRX_PTC_LOOP_A_TEMPS,    /**< @brief PTC Loop A temps */
-    CANRX_PTC_LOOP_B_TEMPS,    /**< @brief PTC Loop B temps */
-    CANRX_PTC_LOOP_C_TEMPS,    /**< @brief PTC Loop C temps */
+    CANRX_DCMf_LOOP_A_TEMPS,   /**< @brief DCMf Loop A temps */
+    CANRX_DCMf_LOOP_B_TEMPS,   /**< @brief DCMf Loop B temps */
+    CANRX_DCM_LOOP_A_TEMPS,    /**< @brief DCM Loop A temps */
+    CANRX_DCM_LOOP_B_TEMPS,    /**< @brief DCM Loop B temps */
+    CANRX_DCM_LOOP_C_TEMPS,    /**< @brief DCM Loop C temps */
     CANRX_HVC_HEARTBEAT,       /**< @brief HVC Error. */
     CANRX_HVC_BMB_STATUS,      /**< @brief HVC BMB Status */
     CANRX_MEMORATOR_BROADCAST, /**< @brief Memorator broadcast. */
