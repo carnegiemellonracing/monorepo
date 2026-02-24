@@ -82,7 +82,7 @@ cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_DCM_CONTROLS_STATUS] = { .canID = CMR_CANID_DCM_CONTROLS_STATUS, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
     [CANRX_DCM_HEARTBEAT] =       { .canID = CMR_CANID_HEARTBEAT_DCM, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
     [CANRX_PACK_CELL_VOLTAGES] =  { .canID = CMR_CANID_HVC_MINMAX_CELL_VOLTAGE, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
-    [CANRX_EAB_STATUS] =          { .canID = CMR_CANID_EAB_STATUS, .timeoutError_ms = 100, .timeoutWarn_ms = 50 }
+    [CANRX_TSAB_STATUS] =          { .canID = CMR_CANID_TSAB_STATUS, .timeoutError_ms = 100, .timeoutWarn_ms = 50 }
 };
 
 /** @brief Primary CAN interface. */
@@ -611,7 +611,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     //     toSend.state = toSend.state | mask;
     // }
 
-    // if(getEAB()){
+    // if(getTSAB()){
     //     uint8_t mask = 1 << 6;
     //     toSend.state = toSend.state | mask;
     // }

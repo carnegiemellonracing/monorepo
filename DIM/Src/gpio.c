@@ -180,13 +180,13 @@ uint8_t getASMS(){
 }
 
 /**
- * @brief This function is a wrapper that lets you see if EAB is on
+ * @brief This function is a wrapper that lets you see if TSAB is on
  * 
- * @return 1 iff EAB is on
+ * @return 1 iff TSAB is on
  */
-uint8_t getEAB(){
-	uint8_t *eabStatus = (uint8_t*)getPayload(CANRX_EAB_STATUS);
-	return (*eabStatus);
+uint8_t getTSAB(){
+	uint8_t *tsabStatus = (uint8_t*)getPayload(CANRX_TSAB_STATUS);
+	return (*tsabStatus);
 }
 
 /* Debouncing for button presses. */

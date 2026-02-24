@@ -28,7 +28,7 @@ typedef enum {
     GPIO_IN_SOFTWARE_ERR,       /**< @brief Software error latch input signal. */
     GPIO_IN_BSPD_ERR,           /**< @brief BSPD latch input signal. */
     GPIO_IN_IMD_ERR,            /**< @brief IMD latch input signal. */
-    GPIO_IN_EAB,
+    GPIO_IN_TSAB,
     GPIO_IN_EBS_ACTIVATED,
     GPIO_LEN                    /**< @brief Total GPIO pins. */
 } gpio_t;

@@ -112,7 +112,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_IN_EAB] = {
+    [GPIO_IN_TSAB] = {
         .port = GPIOC,
         .init = {
             .Pin = GPIO_PIN_7,

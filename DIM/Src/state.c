@@ -452,9 +452,9 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
 }
 
 
-void EABStateUp() {
+void TSABStateUp() {
 	cmr_canVSMState_t vsmState = stateGetVSM();
-	if(getEAB() && getASMS() && vsmState == CMR_CAN_GLV_ON) {
+	if(getTSAB() && getASMS() && vsmState == CMR_CAN_GLV_ON) {
 		state.vsmReq = CMR_CAN_AS_READY;
 	}
 }
@@ -518,7 +518,7 @@ void stateVSMDown() {
 void reqVSM(void) {
 
     if(getASMS() && stateGetVSM() == CMR_CAN_GLV_ON) {
-        EABStateUp();
+        TSABStateUp();
         return;
     }
     
