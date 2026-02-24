@@ -343,7 +343,7 @@ static cmr_state getNextState(void) {
             }
             break;
         case NORMAL:
-            if(getASMS()) {
+            if(getDSMS()) {
                 nextState = AUTON;
             }
             else if(!cmr_gpioRead(GPIO_CTRL_SWITCH) && true/*(stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)*/) {
@@ -398,9 +398,9 @@ static cmr_state getNextState(void) {
             }
             break;
         case AUTON:
-            if(!getASMS()) {
-                if(!(stateGetVSM() == CMR_CAN_AS_READY || stateGetVSM() == CMR_CAN_AS_DRIVING || 
-                stateGetVSM() == CMR_CAN_AS_FINISHED || stateGetVSM() == CMR_CAN_AS_EMERGENCY)) {
+            if(!getDSMS()) {
+                if(!(stateGetVSM() == CMR_CAN_DS_READY || stateGetVSM() == CMR_CAN_DS_DRIVING || 
+                stateGetVSM() == CMR_CAN_DS_FINISHED || stateGetVSM() == CMR_CAN_DS_EMERGENCY)) {
                     nextState = NORMAL;
                 }
                 else {
@@ -454,8 +454,8 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
 
 void TSABStateUp() {
 	cmr_canVSMState_t vsmState = stateGetVSM();
-	if(getTSAB() && getASMS() && vsmState == CMR_CAN_GLV_ON) {
-		state.vsmReq = CMR_CAN_AS_READY;
+	if(getTSAB() && getDSMS() && vsmState == CMR_CAN_GLV_ON) {
+		state.vsmReq = CMR_CAN_DS_READY;
 	}
 }
 
@@ -464,7 +464,7 @@ void TSABStateUp() {
  */
 void stateVSMUp() {
 
-    if(getASMS()) {
+    if(getDSMS()) {
         return;
     }
 
@@ -490,7 +490,7 @@ void stateVSMUp() {
  */
 void stateVSMDown() {
 
-    if(getASMS()) {
+    if(getDSMS()) {
         return;
     }
 
@@ -517,7 +517,7 @@ void stateVSMDown() {
 
 void reqVSM(void) {
 
-    if(getASMS() && stateGetVSM() == CMR_CAN_GLV_ON) {
+    if(getDSMS() && stateGetVSM() == CMR_CAN_GLV_ON) {
         TSABStateUp();
         return;
     }
@@ -550,7 +550,7 @@ static volatile int requestedGear;
 void reqGear(void) {
     bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) 
                        || (stateGetVSM() == CMR_CAN_HV_EN));
-    if(getASMS() && cmr_gpioRead(GPIO_CTRL_SWITCH)) {
+    if(getDSMS() && cmr_gpioRead(GPIO_CTRL_SWITCH)) {
         if(canChangeGear && gpioButtonStates[RIGHT]) {
             if(state.gearReq == CMR_CAN_GEAR_DV_MISSION_MAX - 1) {
                 state.gearReq = CMR_CAN_GEAR_DV_MISSION_MIN + 1;
@@ -564,7 +564,7 @@ void reqGear(void) {
             else state.gearReq--;
         }
     }
-    else if (!getASMS()) {
+    else if (!getDSMS()) {
         if(canChangeGear && gpioButtonStates[RIGHT]) {
             if(state.gearReq == CMR_CAN_GEAR_MAX - 1) {
                 state.gearReq = CMR_CAN_GEAR_MIN + 1;
@@ -717,13 +717,13 @@ static void stateMachine(void *pvParameters){
     while (1) {
         // taskENTER_CRITICAL();
         currState = getNextState();
-        // if(getASMS()) {
+        // if(getDSMS()) {
         //     // TODO: checks for brakes, dv system, etc
         //     if(stateGetVSM() == CMR_CAN_GLV_ON) {
-        //         cmr_gpioWrite(GPIO_AS_RELAY, 0);
+        //         cmr_gpioWrite(GPIO_DS_RELAY, 0);
         //     }
         //     else {
-        //         cmr_gpioWrite(GPIO_AS_RELAY, 1);
+        //         cmr_gpioWrite(GPIO_DS_RELAY, 1);
         //     }
         // }
         // tftRead(&tft, TFT_ADDR_CMD_READ, sizeof(test), &test);

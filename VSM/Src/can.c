@@ -93,18 +93,18 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 250,
     },
     [CANRX_RES] = {
-            .canID = CMR_CANID_AS_RES,
+            .canID = CMR_CANID_DS_RES,
             .timeoutError_ms = 100,
             .timeoutWarn_ms = 25,
             .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT
     },
-    [CANRX_AS_PRESSURE_READING] = {
-            .canID = CMR_CANID_AS_PRESSURE_READINGS,
+    [CANRX_DS_PRESSURE_READING] = {
+            .canID = CMR_CANID_DS_PRESSURE_READINGS,
             .timeoutError_ms = 100,
             .timeoutWarn_ms = 25,
     },
-    [CANRX_ASMS_STATE] = {
-            .canID = CMR_CANID_ASMS_STATE,
+    [CANRX_DSMS_STATE] = {
+            .canID = CMR_CANID_DSMS_STATE,
             .timeoutError_ms = 100,
             .timeoutWarn_ms = 25,
     }
@@ -129,7 +129,7 @@ const cmr_canVSMErrorSource_t vsmErrorSourceFlags[] = {
     [CANRX_INVERTER_3]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_INVERTER_4]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
     [CANRX_RES]                 = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_AS_PRESSURE_READING] = CMR_CAN_VSM_ERROR_SOURCE_NONE,
+    [CANRX_DS_PRESSURE_READING] = CMR_CAN_VSM_ERROR_SOURCE_NONE,
 };
 
 /** @brief CAN 10 Hz TX priority. */
@@ -297,8 +297,8 @@ void canInit(void) {
             .isMask = false,
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
-                    CMR_CANID_AS_RES,
-                    CMR_CANID_AS_RES,
+                    CMR_CANID_DS_RES,
+                    CMR_CANID_DS_RES,
                     CMR_CANID_AUTONOMOUS_ACTION,
                     CMR_CANID_AUTONOMOUS_ACTION
             }
@@ -331,7 +331,7 @@ void canInit(void) {
             .isMask = false,
             .rxFIFO = CAN_RX_FIFO1,
             .ids = {
-                    CMR_CANID_AS_PRESSURE_READINGS
+                    CMR_CANID_DS_PRESSURE_READINGS
             }
 		},
     };
@@ -419,15 +419,15 @@ cmr_canState_t getModuleState(canRX_t module) {
 }
 
 /**
- * @brief Gets the ASMS from the AIM heartbeat 
+ * @brief Gets the DSMS from the AIM heartbeat 
  * 
- * @return true iff ASMS is on and in autonomous mode
+ * @return true iff DSMS is on and in autonomous mode
  */
-uint8_t getASMSState() {
+uint8_t getDSMSState() {
 
-	uint8_t *as_state = (uint8_t*)getPayload(CANRX_ASMS_STATE);
+	uint8_t *ds_state = (uint8_t*)getPayload(CANRX_DSMS_STATE);
 
-	return (*as_state);
+	return (*ds_state);
 }
 
 /**

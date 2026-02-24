@@ -132,7 +132,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 			.Speed = GPIO_SPEED_FREQ_LOW
 		}
 	},
-	[GPIO_ASMS_ON] = {
+	[GPIO_DSMS_ON] = {
 		.port = GPIOB,
 		.init = {
 			.Pin = GPIO_PIN_13,
@@ -159,7 +159,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 			.Speed = GPIO_SPEED_FREQ_LOW
 		}
 	},
-	[GPIO_AS_RELAY] = {
+	[GPIO_DS_RELAY] = {
 		.port = GPIOC,
 		.init = {
 			.Pin = GPIO_PIN_9,
@@ -171,12 +171,12 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 };
 
 /**
- * @brief This function is a wrapper that lets you see if ASMS is on
+ * @brief This function is a wrapper that lets you see if DSMS is on
  * 
- * @return 1 iff ASMS is on
+ * @return 1 iff DSMS is on
  */
-uint8_t getASMS(){
-	return cmr_gpioRead(GPIO_ASMS_ON);
+uint8_t getDSMS(){
+	return cmr_gpioRead(GPIO_DSMS_ON);
 }
 
 /**

@@ -67,7 +67,7 @@ static void maxonControl(void *pvParameters) {
     float targetPosition, currPosition;
 
     while(1){
-        // if (canGetAMIMission() == MISSION_INSPECTION && canGetCurrentState() == CMR_CAN_AS_DRIVING){
+        // if (canGetAMIMission() == MISSION_INSPECTION && canGetCurrentState() == CMR_CAN_DS_DRIVING){
         // 	targetPosition = computeInspectionTarget();
         // }
         // else{

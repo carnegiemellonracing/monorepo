@@ -27,10 +27,10 @@ typedef enum {
     CMR_CAN_RTD,            /**< @brief Ready to drive. */
     CMR_CAN_ERROR,          /**< @brief Error has occurred. */
     CMR_CAN_CLEAR_ERROR,     /**< @brief Request to clear error. */
-    CMR_CAN_AS_READY,       /**< @brief Autonomous ready mode */
-    CMR_CAN_AS_DRIVING,     /**< @brief Autonomous driving mode */
-	CMR_CAN_AS_FINISHED,    /**< @brief Autonomous finished mode */
-	CMR_CAN_AS_EMERGENCY     /**< @brief Autonomous emergency mode */
+    CMR_CAN_DS_READY,       /**< @brief Autonomous ready mode */
+    CMR_CAN_DS_DRIVING,     /**< @brief Autonomous driving mode */
+	CMR_CAN_DS_FINISHED,    /**< @brief Autonomous finished mode */
+	CMR_CAN_DS_EMERGENCY     /**< @brief Autonomous emergency mode */
 } cmr_canState_t;
 
 /** @brief Standard CAN heartbeat. */
@@ -240,10 +240,10 @@ typedef enum {
     CMR_CAN_VSM_STATE_HV_EN,            /**< @brief Enable high voltage system. */
     CMR_CAN_VSM_STATE_RTD,              /**< @brief Ready to drive. */
     CMR_CAN_VSM_STATE_LEN,              /**< @brief Number of VSM states. */
-    CMR_CAN_VSM_STATE_AS_READY,               /**< @brief Autonomous ready*/
-    CMR_CAN_VSM_STATE_AS_DRIVING,             /**< @brief Autonomous driving*/
-    CMR_CAN_VSM_STATE_AS_FINISHED,            /**< @brief Autonomous finished*/
-    CMR_CAN_VSM_STATE_AS_EMERGENCY            /**< @brief Autonomous emergency*/
+    CMR_CAN_VSM_STATE_DS_READY,               /**< @brief Autonomous ready*/
+    CMR_CAN_VSM_STATE_DS_DRIVING,             /**< @brief Autonomous driving*/
+    CMR_CAN_VSM_STATE_DS_FINISHED,            /**< @brief Autonomous finished*/
+    CMR_CAN_VSM_STATE_DS_EMERGENCY            /**< @brief Autonomous emergency*/
 } cmr_canVSMState_t;
 
 /** @brief Bit definitions for timeoutMatrix in cmr_canVSMErrors_t. */

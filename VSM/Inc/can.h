@@ -30,8 +30,8 @@ typedef enum {
     CANRX_INVERTER_3,         /**< @brief Inverter3 status */
     CANRX_INVERTER_4,         /**< @brief Inverter4 status */
     CANRX_RES,                /**< @brief RES */
-    CANRX_AS_PRESSURE_READING,/**< @brief Autonomous Pressure Readings */
-    CANRX_ASMS_STATE,
+    CANRX_DS_PRESSURE_READING,/**< @brief Autonomous Pressure Readings */
+    CANRX_DSMS_STATE,
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 
@@ -43,7 +43,7 @@ void canInit(void);
 int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 void *getPayload(canRX_t rxMsg);
 cmr_canState_t getModuleState(canRX_t module);
-uint8_t getASMSState(void);
+uint8_t getDSMSState(void);
 void sendFirstError(uint8_t error_code);
 void resetError();
 

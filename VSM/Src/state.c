@@ -23,8 +23,8 @@
 
 // ------------------------------------------------------------------------------------------------
 // Globals
-#define AS_WAKEUP_TIME 5000
-#define AS_FINISHED_TIME 30000
+#define DS_WAKEUP_TIME 5000
+#define DS_FINISHED_TIME 30000
 
 /** @brief Mapping of VSM internal states to vehicle states. Indexed by cmr_canVSMState_t. */
 cmr_canState_t vsmToCANState[] = {
@@ -37,10 +37,10 @@ cmr_canState_t vsmToCANState[] = {
     [CMR_CAN_VSM_STATE_BRAKE_TEST]      = CMR_CAN_GLV_ON,
     [CMR_CAN_VSM_STATE_HV_EN]           = CMR_CAN_HV_EN,
     [CMR_CAN_VSM_STATE_RTD]             = CMR_CAN_RTD,
-    [CMR_CAN_VSM_STATE_AS_READY]        = CMR_CAN_AS_READY,
-    [CMR_CAN_VSM_STATE_AS_DRIVING]      = CMR_CAN_AS_DRIVING,
-    [CMR_CAN_VSM_STATE_AS_FINISHED]     = CMR_CAN_AS_FINISHED,
-    [CMR_CAN_VSM_STATE_AS_EMERGENCY]    = CMR_CAN_AS_EMERGENCY
+    [CMR_CAN_VSM_STATE_DS_READY]        = CMR_CAN_DS_READY,
+    [CMR_CAN_VSM_STATE_DS_DRIVING]      = CMR_CAN_DS_DRIVING,
+    [CMR_CAN_VSM_STATE_DS_FINISHED]     = CMR_CAN_DS_FINISHED,
+    [CMR_CAN_VSM_STATE_DS_EMERGENCY]    = CMR_CAN_DS_EMERGENCY
 };
 
 /** @brief Last time that vehicle state was changed */
@@ -63,9 +63,9 @@ static const TickType_t ASEmergencyBuzzerTime_ms = 9000;
  */
 static const TickType_t ASEmergencySwitchingTime_ms = 100;
 
-/** @brief ASState flag. Keeps track of the "true" ASMS State. Set during GLV_ON only. 
+/** @brief DSState flag. Keeps track of the "true" DSMS State. Set during GLV_ON only. 
  */
-static bool ASState = false;
+static bool DSState = false;
 
 /** @brief Autonomous brake test state is not started at the beginning*/
 static brakeTestState_t brakeTestState = BRAKE_TEST_NOT_STARTED;
@@ -191,15 +191,15 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
     updateErrorsAndWarnings(lastWakeTime_ms);
 
     //If RES triggered stop everything
-    if(RESTriggered() && ASState){
-        return CMR_CAN_VSM_STATE_AS_EMERGENCY;
+    if(RESTriggered() && DSState){
+        return CMR_CAN_VSM_STATE_DS_EMERGENCY;
     }
 
     // TE (Immediately return error if anything is wrong)
     if ((vsmStatus.heartbeatErrors != CMR_CAN_ERROR_NONE)
      || (vsmStatus.canVSMStatus.moduleTimeoutMatrix != CMR_CAN_VSM_ERROR_SOURCE_NONE)
      || (vsmStatus.canVSMStatus.latchMatrix != CMR_CAN_VSM_LATCH_NONE)
-     || (ASState != getASMSState())) {
+     || (DSState != getDSMSState())) {
         return CMR_CAN_VSM_STATE_ERROR;
     }
 
@@ -238,8 +238,8 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                         (amk3Actual->velocity_rpm == 0) && (amk4Actual->velocity_rpm == 0);
     
     //If need to go to AS Emergency do so immediatly
-    if(EBSActive() && !getVehicleFinished(vehicleStill) && ASState){
-        return CMR_CAN_VSM_STATE_AS_EMERGENCY;
+    if(EBSActive() && !getVehicleFinished(vehicleStill) && DSState){
+        return CMR_CAN_VSM_STATE_DS_EMERGENCY;
     }
 
     taskENTER_CRITICAL();
@@ -273,9 +273,9 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
 
         case CMR_CAN_VSM_STATE_GLV_ON: {
             // T2
-            ASState = getASMSState();
-            if (dimRequestedState == CMR_CAN_AS_READY
-                && ASState && getMissionSelected()){
+            DSState = getDSMSState();
+            if (dimRequestedState == CMR_CAN_DS_READY
+                && DSState && getMissionSelected()){
                 brakeTestState = BRAKE_TEST_NOT_STARTED;
                 nextState = CMR_CAN_VSM_STATE_BRAKE_TEST;
             }
@@ -299,8 +299,8 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                 nextState = CMR_CAN_VSM_STATE_ERROR;
             }
             else if (brakeTestState == BRAKE_TEST_PASSED  
-                    && ASState
-                    && dimRequestedState == CMR_CAN_AS_READY){ //Passed brake test, then go into precharge
+                    && DSState
+                    && dimRequestedState == CMR_CAN_DS_READY){ //Passed brake test, then go into precharge
                         nextState = CMR_CAN_VSM_STATE_REQ_PRECHARGE;
             }
             else if (dimRequestedState == CMR_CAN_GLV_ON){
@@ -316,11 +316,11 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         case CMR_CAN_VSM_STATE_REQ_PRECHARGE: {
             // T3
             if ((hvcHeartbeat->hvcMode == CMR_CAN_HVC_MODE_START) &&
-                (dimRequestedState == CMR_CAN_HV_EN || dimRequestedState == CMR_CAN_AS_READY)
+                (dimRequestedState == CMR_CAN_HV_EN || dimRequestedState == CMR_CAN_DS_READY)
             ) {
                  nextState = CMR_CAN_VSM_STATE_RUN_BMS;
             }
-            else if (dimRequestedState == CMR_CAN_HV_EN || dimRequestedState == CMR_CAN_AS_READY){
+            else if (dimRequestedState == CMR_CAN_HV_EN || dimRequestedState == CMR_CAN_DS_READY){
                 nextState = CMR_CAN_VSM_STATE_REQ_PRECHARGE;
             }
             else if (dimRequestedState == CMR_CAN_GLV_ON) {
@@ -333,11 +333,11 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         case CMR_CAN_VSM_STATE_RUN_BMS: {
             // T4
             if ((hvcHeartbeat->hvcMode == CMR_CAN_HVC_MODE_RUN) &&
-                (dimRequestedState == CMR_CAN_HV_EN || dimRequestedState == CMR_CAN_AS_READY)
+                (dimRequestedState == CMR_CAN_HV_EN || dimRequestedState == CMR_CAN_DS_READY)
             ) {
                 nextState = CMR_CAN_VSM_STATE_INVERTER_EN;
             }
-            else if (dimRequestedState == CMR_CAN_HV_EN || dimRequestedState == CMR_CAN_AS_READY) {
+            else if (dimRequestedState == CMR_CAN_HV_EN || dimRequestedState == CMR_CAN_DS_READY) {
                 nextState = CMR_CAN_VSM_STATE_RUN_BMS;
             }
             else if (dimRequestedState == CMR_CAN_GLV_ON) {
@@ -351,10 +351,10 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             if (invertersPass(lastWakeTime_ms)){
                 //if (!EBSActive() && AutonomousClear() && brakePressureRear_PSI >= brakePressureThreshold_PSI) {
                 // if (true){
-                //     nextState = CMR_CAN_VSM_STATE_AS_READY;
+                //     nextState = CMR_CAN_VSM_STATE_DS_READY;
                 // } else
-                if (ASState){ //Trying to enter DV mode but failed previous conditions
-                    nextState = CMR_CAN_VSM_STATE_AS_READY;
+                if (DSState){ //Trying to enter DV mode but failed previous conditions
+                    nextState = CMR_CAN_VSM_STATE_DS_READY;
                     //nextState = CMR_CAN_VSM_STATE_GLV_ON;
                 }
                 else{
@@ -409,7 +409,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             break;
         }
 
-        case CMR_CAN_VSM_STATE_AS_READY: {
+        case CMR_CAN_VSM_STATE_DS_READY: {
             // if (!EBSActive() && !AutonomousClear()){
             //     nextState = CMR_CAN_VSM_STATE_GLV_ON;
             // }
@@ -418,16 +418,16 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             // }
 
             //T6
-            if (getRESGo() && ASState){
-                if (lastWakeTime_ms > lastStateChangeTime_ms + AS_WAKEUP_TIME){
-                    nextState = CMR_CAN_VSM_STATE_AS_DRIVING;
+            if (getRESGo() && DSState){
+                if (lastWakeTime_ms > lastStateChangeTime_ms + DS_WAKEUP_TIME){
+                    nextState = CMR_CAN_VSM_STATE_DS_DRIVING;
                 }
                 else{
-                    nextState = CMR_CAN_VSM_STATE_AS_READY;
+                    nextState = CMR_CAN_VSM_STATE_DS_READY;
                 }
             }
-            else if (dimRequestedState == CMR_CAN_AS_READY && ASState){
-                nextState = CMR_CAN_VSM_STATE_AS_READY;
+            else if (dimRequestedState == CMR_CAN_DS_READY && DSState){
+                nextState = CMR_CAN_VSM_STATE_DS_READY;
             }
             //T8
             else{
@@ -436,13 +436,13 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             break;
         }
 
-        case CMR_CAN_VSM_STATE_AS_DRIVING: {
+        case CMR_CAN_VSM_STATE_DS_DRIVING: {
             //T13
-            if (getVehicleFinished(vehicleStill) && ASState){
-                nextState = CMR_CAN_VSM_STATE_AS_FINISHED;
+            if (getVehicleFinished(vehicleStill) && DSState){
+                nextState = CMR_CAN_VSM_STATE_DS_FINISHED;
             }
-            else if (!RESTriggered() && ASState){
-                nextState = CMR_CAN_VSM_STATE_AS_DRIVING;
+            else if (!RESTriggered() && DSState){
+                nextState = CMR_CAN_VSM_STATE_DS_DRIVING;
             }
             else{
                 nextState = CMR_CAN_VSM_STATE_ERROR;
@@ -451,24 +451,24 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             break;
         }
 
-        case CMR_CAN_VSM_STATE_AS_FINISHED: {
+        case CMR_CAN_VSM_STATE_DS_FINISHED: {
             if (!EBSActive() && !AutonomousClear()){
                 nextState = CMR_CAN_VSM_STATE_ERROR;
             }
             else if (getVehicleFinished(vehicleStill) && !RESTriggered()
-                    && (lastWakeTime_ms > lastStateChangeTime_ms + AS_FINISHED_TIME)){
+                    && (lastWakeTime_ms > lastStateChangeTime_ms + DS_FINISHED_TIME)){
                 nextState = CMR_CAN_VSM_STATE_ERROR;
             }
             else{
-                nextState = CMR_CAN_VSM_STATE_AS_FINISHED;
+                nextState = CMR_CAN_VSM_STATE_DS_FINISHED;
             }
 
             break;
         }
 
-        case CMR_CAN_VSM_STATE_AS_EMERGENCY: {
-            if (lastStateChangeTime_ms + AS_FINISHED_TIME > lastWakeTime_ms){
-                nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
+        case CMR_CAN_VSM_STATE_DS_EMERGENCY: {
+            if (lastStateChangeTime_ms + DS_FINISHED_TIME > lastWakeTime_ms){
+                nextState = CMR_CAN_VSM_STATE_DS_EMERGENCY;
             }
             else if (dimRequestedState == CMR_CAN_GLV_ON){
                 nextState = CMR_CAN_VSM_STATE_CLEAR_ERROR;
@@ -509,7 +509,7 @@ static void setStateOutputs(TickType_t lastWakeTime_ms) {
             break;
 
         case CMR_CAN_VSM_STATE_BRAKE_TEST: //Fallthrough
-        case CMR_CAN_VSM_STATE_AS_FINISHED:
+        case CMR_CAN_VSM_STATE_DS_FINISHED:
         case CMR_CAN_VSM_STATE_GLV_ON:
             cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
             hvcModeRequest = CMR_CAN_HVC_MODE_IDLE;
@@ -523,13 +523,13 @@ static void setStateOutputs(TickType_t lastWakeTime_ms) {
         case CMR_CAN_VSM_STATE_RUN_BMS: //Fallthrough
         case CMR_CAN_VSM_STATE_INVERTER_EN:
         case CMR_CAN_VSM_STATE_HV_EN:
-        case CMR_CAN_VSM_STATE_AS_READY:
+        case CMR_CAN_VSM_STATE_DS_READY:
             cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
             hvcModeRequest = CMR_CAN_HVC_MODE_RUN;
             break;
 
         case CMR_CAN_VSM_STATE_RTD: //Fallthrough
-        case CMR_CAN_VSM_STATE_AS_DRIVING:
+        case CMR_CAN_VSM_STATE_DS_DRIVING:
             // Enable RTD buzzer for the first rtdBuzzerTime_ms after getting into RTD
             if (lastWakeTime_ms < lastStateChangeTime_ms + rtdBuzzerTime_ms) {
                 cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 1);
@@ -541,7 +541,7 @@ static void setStateOutputs(TickType_t lastWakeTime_ms) {
             hvcModeRequest = CMR_CAN_HVC_MODE_RUN;
             break;
         
-        case CMR_CAN_VSM_STATE_AS_EMERGENCY: {
+        case CMR_CAN_VSM_STATE_DS_EMERGENCY: {
             TickType_t timeinASEmergency_ms = lastWakeTime_ms - lastStateChangeTime_ms;
             if (timeinASEmergency_ms < ASEmergencyBuzzerTime_ms)
             {
@@ -653,7 +653,7 @@ static inline bool TSActive(){
  * that the car can continue being in AS Ready or AS Driving
  */
 static inline bool AutonomousClear(){
-    return ASState && getBrakeStatus() && getMissionSelected() && TSActive();
+    return DSState && getBrakeStatus() && getMissionSelected() && TSActive();
 }
 
 /**
@@ -661,7 +661,7 @@ static inline bool AutonomousClear(){
  */
 static inline bool EBSActive(){ //brake test
 	return false;
-//    cmr_canDVPressureReadings_t* pressureReading = (cmr_canDVPressureReadings_t*) getPayload(CANRX_AS_PRESSURE_READING);
+//    cmr_canDVPressureReadings_t* pressureReading = (cmr_canDVPressureReadings_t*) getPayload(CANRX_DS_PRESSURE_READING);
 //    return pressureReading->ebsPressurePercentofThreshold > 100;
 }
 

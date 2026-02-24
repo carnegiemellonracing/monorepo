@@ -28,9 +28,9 @@ typedef enum {
 	GPIO_LED_AMS, /**< @brief AMS Error LED */
     GPIO_LED_IMD, /**< @brief IMD Error LED */
     GPIO_LED_BSPD, /**< @brief BSPD Error LED */
-    GPIO_ASMS_ON, /**< @brief AS Master Switch On/Off */
+    GPIO_DSMS_ON, /**< @brief AS Master Switch On/Off */
 	GPIO_LED_STATUS, /**< @brief Status LED */
-    GPIO_AS_RELAY, /**< @brief AS Relay */
+    GPIO_DS_RELAY, /**< @brief AS Relay */
     GPIO_PD_N,
     GPIO_LEN /**< @brief Total GPIO pins. */
 } gpio_t;
@@ -57,7 +57,7 @@ void canLRUDDetect(void);
  */
 void gpioInit(void);
 
-uint8_t getASMS(void);
+uint8_t getDSMS(void);
 uint8_t getTSAB(void);
 
 #endif /* GPIO_H */

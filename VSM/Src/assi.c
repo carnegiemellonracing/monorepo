@@ -62,22 +62,22 @@ static void assiControl(void *pvParameters) {
     	cmr_canState_t state = getCurrentState();
 
         switch (state) {
-            case CMR_CAN_AS_READY: 
+            case CMR_CAN_DS_READY: 
               cmr_pwmSetDutyCycle(&BLUE_ASSI_PWM, (uint32_t) 0);
               cmr_pwmSetDutyCycle(&YELLOW_ASSI_PWM, (uint32_t) 100);
               break;
 
-            case CMR_CAN_AS_DRIVING: 
+            case CMR_CAN_DS_DRIVING: 
               cmr_pwmSetDutyCycle(&BLUE_ASSI_PWM, (uint32_t) 0);
               cmr_pwmSetDutyCycle(&YELLOW_ASSI_PWM, (uint32_t) 50);
               break;
 
-            case CMR_CAN_AS_EMERGENCY: 
+            case CMR_CAN_DS_EMERGENCY: 
               cmr_pwmSetDutyCycle(&BLUE_ASSI_PWM, (uint32_t) 100);
               cmr_pwmSetDutyCycle(&YELLOW_ASSI_PWM, (uint32_t) 0);
               break;
 
-            case CMR_CAN_AS_FINISHED: 
+            case CMR_CAN_DS_FINISHED: 
                 cmr_pwmSetDutyCycle(&BLUE_ASSI_PWM, (uint32_t) 50);
                 cmr_pwmSetDutyCycle(&YELLOW_ASSI_PWM, (uint32_t) 0);
                 break;

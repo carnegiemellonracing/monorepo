@@ -595,8 +595,8 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
         .state = vsmState
     };
 
-    uint8_t AS_Status = getASMS();
-    canTX(CMR_CANID_ASMS_STATUS, &AS_Status, sizeof(AS_Status), canTX100Hz_period_ms);
+    uint8_t DS_Status = getDSMS();
+    canTX(CMR_CANID_DSMS_STATUS, &DS_Status, sizeof(DS_Status), canTX100Hz_period_ms);
 
     // volatile cmr_canHeartbeat_t *AIM_Heartbeat = canVehicleGetPayload(CANRX_HEARTBEAT_VSM);
 	// cmr_canHeartbeat_t toSend;
@@ -606,7 +606,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 	// 	toSend.state = CMR_CAN_ERROR;
 	// }
 
-    // if(getASMS()){
+    // if(getDSMS()){
     //     uint8_t mask = 1 << 7;
     //     toSend.state = toSend.state | mask;
     // }

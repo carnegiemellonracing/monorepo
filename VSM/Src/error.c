@@ -317,33 +317,33 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
 
                 break;
             }
-            case CMR_CAN_VSM_STATE_AS_READY: {
+            case CMR_CAN_VSM_STATE_DS_READY: {
                 if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
-                    sendFirstError(HVC_AS_READY);
+                    sendFirstError(HVC_DS_READY);
                     wrongState = true;
                 }
 
                 break;
             }
-            case CMR_CAN_VSM_STATE_AS_DRIVING: {
+            case CMR_CAN_VSM_STATE_DS_DRIVING: {
                 if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
-                    sendFirstError(HVC_AS_DRIVING);
+                    sendFirstError(HVC_DS_DRIVING);
                     wrongState = true;
                 }
 
                 break;
             }
-            case CMR_CAN_VSM_STATE_AS_FINISHED: {
+            case CMR_CAN_VSM_STATE_DS_FINISHED: {
                 if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
-                    sendFirstError(HVC_AS_FINISHED);
+                    sendFirstError(HVC_DS_FINISHED);
                     wrongState = true;
                 }
 
                 break;
             }
-            case CMR_CAN_VSM_STATE_AS_EMERGENCY: {
+            case CMR_CAN_VSM_STATE_DS_EMERGENCY: {
                 if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
-                    sendFirstError(HVC_AS_EMERGENCY);
+                    sendFirstError(HVC_DS_EMERGENCY);
                     wrongState = true;
                 }
 
