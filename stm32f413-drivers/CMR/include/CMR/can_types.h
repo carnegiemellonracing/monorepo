@@ -113,7 +113,7 @@ typedef enum {
     /** @brief VSM hasn't received CDC heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_CDC_TIMEOUT = (1 << 13),
     /** @brief VSM hasn't received FSM heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_FSM_TIMEOUT = (1 << 12),
+    CMR_CAN_WARN_VSM_COMPUTE_TIMEOUT = (1 << 12),
     /** @brief VSM hasn't received DIM heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_DIM_TIMEOUT = (1 << 11),
     /** @brief VSM hasn't received PTCf heartbeat for 25 ms. */
@@ -258,10 +258,10 @@ typedef enum {
     CMR_CAN_VSM_ERROR_SOURCE_FSM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_DIM = (1 << 3),
-    /** @brief At least one message has timed out. */
+    /** @brief At least one LVBMS message has timed out. */
     CMR_CAN_VSM_ERROR_SOURCE_LVBMS = (1 << 2),
-    /** @brief At least one Vehicle Safety Module message has timed out */
-    CMR_CAN_VSM_ERROR_SOURCE_AIM = (1 << 1),
+    /** @brief At least one Compute Message message has timed out */
+    CMR_CAN_VSM_ERROR_SOURCE_COMPUTE = (1 << 1),
     /** @brief HVI Timeout. */
     CMR_CAN_VSM_ERROR_SOURCE_HVI = (1 << 0)
 } cmr_canVSMErrorSource_t;

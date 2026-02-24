@@ -22,6 +22,7 @@ typedef enum {
     CANRX_HEARTBEAT_CDC,      /**< @brief CDC heartbeat. */
     CANRX_HEARTBEAT_DIM,      /**< @brief DIM heartbeat. */
     CANRX_HEARTBEAT_HVI,      /**< @brief HVI heartbeat. */
+    CANRX_HEARTBEAT_LVBMS,
     CANRX_FSM_DATA,           /**< @brief FSM data. */
     CANRX_FSM_SWANGLE,
     CANRX_DIM_REQUEST,        /**< @brief DIM state request. */
