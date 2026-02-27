@@ -81,27 +81,6 @@ enum MovellaFilterMode(0="Without_GNSS_filter_profile_is_in_VRU_mode",
     1="Coasting_mode_GNSS_has_been_lost_less_than_60_sec_ago",
     3="With_GNSS_default_mode")
 enum RSS(1="TRIG", 4="GO")
-enum SBGAutomotiveStatus(1="SBG_AUTO_TRACK_VALID",
-    2="SBG_AUTO_SLIP_VALID", 4="SBG_AUTO_CURVATURE_VALID")
-enum SBGGeneralStatus(1="SBG_GENERAL_MAIN_POWER_OK",
-    2="SBG_GENERAL_IMU_POWER_OK", 4="SBG_GENERAL_GPS_POWER_OK",
-    8="SBG_GENERAL_SETTINGS_OK", 16="SBG_GENERAL_TEMPERATURE_OK",
-    32="SBG_GENERAL_DATALOGGER_OK", 64="SBG_GENERAL_CPU_OK")
-enum SBGSolutionStatus(16="SBG_SOL_ATTITUDE_VALID",
-    32="SBG_SOL_HEADING_VALID", 64="SBG_SOL_VELOCITY_VALID",
-    128="SBG_SOL_POSITION_VALID", 256="SBG_SOL_VERT_REF_USED",
-    512="SBG_SOL_MAG_REF_USED", 1024="SBG_SOL_GPS1_VEL_USED",
-    2048="SBG_SOL_GPS1_POS_USED", 8192="SBG_SOL_GPS1_HDT_USED",
-    16384="SBG_SOL_GPS2_VEL_USED", 32768="SBG_SOL_GPS2_POS_USED",
-    131072="SBG_SOL_GPS2_HDT_USED", 262144="SBG_SOL_ODO_USED",
-    524288="SBG_SOL_DVL_BT_USED", 1048576="SBG_SOL_DVL_WT_USED",
-    16777216="SBG_SOL_USBL_USED", 33554432="SBG_SOL_PRESSURE_USED",
-    67108864="SBG_SOL_ZUPT_USED", 134217728="SBG_SOL_ALIGN_VALID")
-enum SBGSolutionStatusMode(0="SBG_SOL_MODE_UNINITIALIZED",
-    1="pitch angles. Heading and navigation data drift freely. */",
-    2="but navigation data drift freely. */",
-    3="integrated from velocity estimation. */",
-    4="(attitude, velocity, position). Absolute position is provided. */")
 enum State(0="UNKNOWN", 1="GLV_ON", 2="HV_EN", 3="RTD", 4="ERROR",
     5="CLEAR_ERROR", 6="DS_READY", 7="DS_DRIVING", 8="DS_FINISHED",
     9="DS_EMERGENCY")
@@ -143,8 +122,8 @@ enum Warn(0="NONE", 1="VSM_TIMEOUT", 2="BUS_VOLTAGE", 4="BUS_CURRENT",
 [AMK_FL_ACT_1]
 ID=288h
 DLC=8
-CycleTime=10
-TimeOut=50
+CycleTime=100
+TimeOut=500
 Var=FL_AMK_RESERVED unsigned 0,8
 Var=FL_AMK_STATUS_SYSTEM_READY bit 8,1
 Var=FL_AMK_STATUS_ERROR bit 9,1
@@ -161,8 +140,8 @@ Var=FL_magCurrent_raw signed 48,16 /f:0.001701171875
 [AMK_FL_ACT_2]
 ID=28Ah
 DLC=8
-CycleTime=10
-TimeOut=50
+CycleTime=20
+TimeOut=100
 Var=FL_motorTemp_dC signed 0,16 /u:dC /f:0.1 /p:2
 Var=FL_coldPlateTemp_dC signed 16,16 /u:dC /f:0.1 /p:2
 Var=FL_errorCode unsigned 32,16
@@ -184,8 +163,8 @@ Var=FL_torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
 [AMK_FR_ACT_1]
 ID=284h
 DLC=8
-CycleTime=10
-TimeOut=50
+CycleTime=100
+TimeOut=500
 Var=FR_AMK_RESERVED1 unsigned 0,8
 Var=FR_AMK_STATUS_SYSTEM_READY1 bit 8,1
 Var=FR_AMK_STATUS_ERROR1 bit 9,1
@@ -202,8 +181,8 @@ Var=FR_magCurrent_raw1 signed 48,16
 [AMK_FR_ACT_2]
 ID=286h
 DLC=8
-CycleTime=10
-TimeOut=50
+CycleTime=20
+TimeOut=100
 Var=FR_motorTemp_dC1 signed 0,16
 Var=FR_coldPlateTemp_dC1 signed 16,16
 Var=FR_errorCode1 unsigned 32,16
@@ -225,8 +204,8 @@ Var=FR_torqueLimNeg_dpcnt1 signed 48,16
 [AMK_RL_ACT_1]
 ID=287h
 DLC=8
-CycleTime=10
-TimeOut=50
+CycleTime=100
+TimeOut=500
 Var=RL_AMK_RESERVED2 unsigned 0,8
 Var=RL_AMK_STATUS_SYSTEM_READY2 bit 8,1
 Var=RL_AMK_STATUS_ERROR2 bit 9,1
@@ -243,8 +222,8 @@ Var=RL_magCurrent_raw2 signed 48,16
 [AMK_RL_ACT_2]
 ID=289h
 DLC=8
-CycleTime=10
-TimeOut=50
+CycleTime=20
+TimeOut=100
 Var=RL_motorTemp_dC2 signed 0,16
 Var=RL_coldPlateTemp_dC2 signed 16,16
 Var=RL_errorCode2 unsigned 32,16
@@ -284,8 +263,8 @@ Var=RR_magCurrent_raw3 signed 48,16
 [AMK_RR_ACT_2]
 ID=285h
 DLC=8
-CycleTime=10
-TimeOut=50
+CycleTime=20
+TimeOut=100
 Var=RR_motorTemp_dC3 signed 0,16
 Var=RR_coldPlateTemp_dC3 signed 16,16
 Var=RR_errorCode3 unsigned 32,16
@@ -897,8 +876,8 @@ Var=LOW_iDCDC_mA unsigned 24,8 /u:mA /f:0.1333333
 [HVC_MINMAX_CELL_TEMPS]
 ID=311h
 DLC=8
-CycleTime=10
-TimeOut=50
+CycleTime=20
+TimeOut=100
 Var=MINMAX_minCellTemp_C2 unsigned 0,16
 Var=MINMAX_maxCellTemp_C2 unsigned 16,16
 Var=MINMAX_minTempBMBNum1 unsigned 32,8
@@ -909,8 +888,8 @@ Var=MINMAX_maxTempCellNum1 unsigned 56,8
 [HVC_MINMAX_CELL_VOLTAGE]
 ID=310h
 DLC=8
-CycleTime=800
-TimeOut=4000
+CycleTime=20
+TimeOut=100
 Var=MINMAX_minCellVoltage_mV2 unsigned 0,16
 Var=MINMAX_maxCellVoltage_mV2 unsigned 16,16
 Var=MINMAX_minVoltageBMBNum1 unsigned 32,8
@@ -969,76 +948,6 @@ TimeOut=500
 Var=WHL_v_whl_rl float 0,32
 Var=WHL_v_whl_rr float 32,32
 
-[SBG_BODY_VEL]
-ID=6d6h
-DLC=6
-CycleTime=400
-TimeOut=2000
-Var=BODY_velocity_forward signed 0,16
-Var=BODY_velocity_right signed 16,16
-Var=BODY_velocity_down signed 32,16
-
-[SBG_EKF_ORIENT]
-ID=6d3h
-DLC=6
-CycleTime=400
-TimeOut=2000
-Var=EKF_roll signed 0,16
-Var=EKF_pitch signed 16,16
-Var=EKF_yaw signed 32,16
-
-[SBG_EKF_POS]
-ID=6d4h
-DLC=8
-CycleTime=400
-TimeOut=2000
-Var=EKF_latitude signed 0,32
-Var=EKF_longitude signed 32,32
-
-[SBG_EKF_VEL]
-ID=6d5h
-DLC=6
-CycleTime=400
-TimeOut=2000
-Var=EKF_velocity_n signed 0,16
-Var=EKF_velocity_e signed 16,16
-Var=EKF_velocity_d signed 32,16
-
-[SBG_IMU_GYRO]
-ID=6d2h
-DLC=6
-CycleTime=400
-TimeOut=2000
-Var=IMU_gyro_x_rads signed 0,16 /u:rad
-Var=IMU_gyro_y_rads signed 16,16 /u:rad
-Var=IMU_gyro_z_rads signed 32,16 /u:rad
-
-[SBG_STATUS_3]
-ID=6d0h
-DLC=6
-CycleTime=400
-TimeOut=2000
-Var=STATUS_SBG_SOL_ATTITUDE_VALID bit 4,1
-Var=STATUS_SBG_SOL_HEADING_VALID bit 5,1
-Var=STATUS_SBG_SOL_VELOCITY_VALID bit 6,1
-Var=STATUS_SBG_SOL_POSITION_VALID bit 7,1
-Var=STATUS_SBG_SOL_VERT_REF_USED bit 8,1
-Var=STATUS_SBG_SOL_MAG_REF_USED bit 9,1
-Var=STATUS_SBG_SOL_GPS1_VEL_USED bit 10,1
-Var=STATUS_SBG_SOL_GPS1_POS_USED bit 11,1
-Var=STATUS_SBG_SOL_GPS1_HDT_USED bit 13,1
-Var=STATUS_SBG_SOL_GPS2_VEL_USED bit 14,1
-Var=STATUS_SBG_SOL_GPS2_POS_USED bit 15,1
-Var=STATUS_SBG_SOL_GPS2_HDT_USED bit 17,1
-Var=STATUS_SBG_SOL_ODO_USED bit 18,1
-Var=STATUS_SBG_SOL_DVL_BT_USED bit 19,1
-Var=STATUS_SBG_SOL_DVL_WT_USED bit 20,1
-Var=STATUS_SBG_SOL_USBL_USED bit 24,1
-Var=STATUS_SBG_SOL_PRESSURE_USED bit 25,1
-Var=STATUS_SBG_SOL_ZUPT_USED bit 26,1
-Var=STATUS_SBG_SOL_ALIGN_VALID bit 27,1
-Var=STATUS_heave_status unsigned 32,16
-
 [SF_STATE]
 ID=52Dh
 DLC=8
@@ -1049,13 +958,6 @@ Var=longest_power_violation_ms unsigned 32,8 /u:ms
 Var=STATE_over_voltage_count unsigned 40,8
 Var=STATE_under_voltage_count unsigned 48,8
 Var=STATE_over_temp_count unsigned 56,8
-
-[TEST_ID]
-ID=6dbh
-DLC=1
-CycleTime=100
-TimeOut=500
-Var=ID_test_id unsigned 0,8
 
 [VSM_LATCHED_STATUS]
 ID=510h
