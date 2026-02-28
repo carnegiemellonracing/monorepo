@@ -69,6 +69,8 @@ static cmr_canDTISetpoints_t motorSetpoints[MOTOR_LEN];
  */
 static cmr_canDTI_RX_Message_t DTI_RXMessage[MOTOR_LEN];
 
+#define MAX_CURRENT 100
+
 cmr_canDAQTest_t getDAQTest() {
     return daqTest;
 }
@@ -84,24 +86,18 @@ static void motorsTest (void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
 
     while (1) {
-        volatile uint64_t *velocity_erpm_fl = canTractiveGetPayload(CANRX_TRAC_FL_TEST);
-        volatile uint64_t *velocity_erpm_fr = canTractiveGetPayload(CANRX_TRAC_FR_TEST);
-        volatile uint64_t *velocity_erpm_rl = canTractiveGetPayload(CANRX_TRAC_RL_TEST);
-        volatile uint64_t *velocity_erpm_rr = canTractiveGetPayload(CANRX_TRAC_RR_TEST);
-
-        uint64_t set_velocity_erpm_fl = *velocity_erpm_fl;
-        uint64_t set_velocity_erpm_fr = *velocity_erpm_fr;
-        uint64_t set_velocity_erpm_rl = *velocity_erpm_rl;
-        uint64_t set_velocity_erpm_rr = *velocity_erpm_rr;
+        volatile cmr_canFSMData_t *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
+        uint8_t throttlePos = dataFSM->throttlePosition;
+        uint16_t setCurrent = (uint16_t)(((float)throttlePos * (float)MAX_CURRENT / (float)UINT8_MAX));
 
         //enables motors to drive
         uint8_t driveEnable = 1;
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
 
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_VELOCITY, &set_velocity_erpm_fl, sizeof(set_velocity_erpm_fl), can10Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_VELOCITY, &set_velocity_erpm_fr, sizeof(set_velocity_erpm_fr), can10Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_VELOCITY, &set_velocity_erpm_rl, sizeof(set_velocity_erpm_rl), can10Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_VELOCITY, &set_velocity_erpm_rr, sizeof(set_velocity_erpm_rr), can10Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
     
         vTaskDelayUntil(&lastWakeTime, motorsCommand_period_ms);
     }
@@ -301,20 +297,20 @@ void motorsInit (
     initControls();
 
     // Task creation.
-    cmr_taskInit(
-        &motorsCommand_task,
-        "motorsCommand",
-        motorsCommand_priority,
-        motorsCommand,
-        NULL
-    );
     // cmr_taskInit(
-    //     &motorsTest_task,
-    //     "motorsTest",
+    //     &motorsCommand_task,
+    //     "motorsCommand",
     //     motorsCommand_priority,
-    //     motorsTest,
+    //     motorsCommand,
     //     NULL
     // );
+    cmr_taskInit(
+        &motorsTest_task,
+        "motorsTest",
+        motorsCommand_priority,
+        motorsTest,
+        NULL
+    );
 }
 
 /**
