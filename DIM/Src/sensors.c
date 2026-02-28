@@ -435,7 +435,7 @@ uint8_t throttleGetPos(void) {
         return 0;
     }
 
-    return (uint8_t)((tposL + tposR) / 2);
+    return (uint8_t)(((tposL - (UINT8_MAX/2)) + tposR) / 2);
 }
 
 
