@@ -323,7 +323,7 @@
 #define DEBUG_OTP_SEC_BLK		0x7A0
 #define DEBUG_OTP_DED_BLK		0x7A1
 
-#define BOARD_NUM 17
+#define BOARD_NUM 15
 
 //TODO change this
 #define CELL_BALANCING_LOW_VOLTAGE 3.9
