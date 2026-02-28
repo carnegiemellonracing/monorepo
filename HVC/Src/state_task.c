@@ -39,7 +39,6 @@ static bool prechargeDone() {
             HVBMSPackVoltage->battVoltage_mV > MIN_PACK_THRESH &&
             !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HEARTBEAT_HVBMS], lastWakeTime) &&
             !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HVBMS_PACKVOLT], lastWakeTime));
-
  }
 
 static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){

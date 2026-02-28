@@ -25,7 +25,7 @@ static const uint8_t temp_to_ignore[] = {143};
 
 bool check_to_ignore(uint8_t bmb_index, uint8_t channel) {
 	for(int i = 0; i < sizeof(temp_to_ignore); i++) {
-		if(bmb_index*14 + channel == temp_to_ignore[i]) {
+		if(bmb_index*TEMP_CHANNELS + channel == temp_to_ignore[i]) {
 			return true;
 		}
 	}
