@@ -392,9 +392,10 @@ ID=20h
 DLC=8
 CycleTime=20
 TimeOut=100
-Var=FL_erpm signed 0,32
-Var=FL_duty_cycle_pct signed 32,16
-Var=FL_input_voltage_V signed 48,16
+Var=FL_velocity_erpm signed 0,16
+Var=FL_torqueLimPos_mNm signed 16,16
+Var=FL_torqueLimNeg_mNm signed 32,16
+Var=FL_ACCurrent_deciAmps signed 48,16
 
 [DTI_FL_IO_STATUS]
 ID=24h
@@ -938,13 +939,6 @@ Var=longest_power_violation_ms unsigned 32,8 /u:ms
 Var=STATE_over_voltage_count unsigned 40,8
 Var=STATE_under_voltage_count unsigned 48,8
 Var=STATE_over_temp_count unsigned 56,8
-
-[TEST_ID]
-ID=777h
-DLC=1
-CycleTime=100
-TimeOut=500
-Var=ID_test_id unsigned 0,8
 
 [VSM_LATCHED_STATUS]
 ID=510h
@@ -2315,6 +2309,12 @@ DLC=8
 Var=HVI_Current signed 0,16 /u:A /f:0.1 /p:1
 Var=HVI_Voltage unsigned 16,16 /u:V /f:0.01 /p:2
 Var=HVI_Power signed 32,32 /u:kW /f:0.001 /p:3
+
+[DAQ_AUTO_TEST]
+ID=777h
+DLC=1
+Var=TEST_ID unsigned 0,7	// Randomly generated test id sent everytime the car states up
+Var=TEST_STATUS bit 7,1	// 1- START TEST, 0 - STOP TEST
 
 [VSM_Git]
 ID=7F1h

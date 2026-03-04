@@ -523,6 +523,35 @@ cmr_torque_limit_t getTorqueBudget() {
 	return getPreemptiveTorqueLimits();
 }
 
+/* @brief Sets the power limit for all motors or a specific motor
+ */
+void setPowerLimit(bool all, motorLocation_t motor, uint32_t powerLimit_kw) {
+    volatile cmr_canHVSense_t *HVISense = canTractiveGetPayload(CANRX_HVI_SENSE);
+    float hvVoltage_V = ((float) HVISense->packVoltage_cV) / 100.f;
+    uint16_t current = (10*(powerLimit_kw*1000))/hvVoltage_V; // send current in deciamps
+    if(all) {
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+    } else {
+        switch(motor){
+            case MOTOR_FL:
+                canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+                break;
+            case MOTOR_FR:
+                canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+                break;
+            case MOTOR_RL:
+                canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+                break;
+            case MOTOR_RR:
+                canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+                break;
+        }
+    }
+}
+
 /**
  * @brief Gets a read-only pointer to specified DTI inverter setpoints.
  *
