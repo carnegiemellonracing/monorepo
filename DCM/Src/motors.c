@@ -69,7 +69,7 @@ static cmr_canDTISetpoints_t motorSetpoints[MOTOR_LEN];
  */
 static cmr_canDTI_RX_Message_t DTI_RXMessage[MOTOR_LEN];
 
-#define MAX_CURRENT 100
+#define MAX_CURRENT_DECI_AMPS 100
 
 cmr_canDAQTest_t getDAQTest() {
     return daqTest;
@@ -88,17 +88,12 @@ static void motorsTest (void *pvParameters) {
     while (1) {
         volatile cmr_canFSMData_t *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
         uint8_t throttlePos = dataFSM->throttlePosition;
-        uint16_t setCurrent = (uint16_t)(((float)throttlePos * (float)MAX_CURRENT / (float)UINT8_MAX));
+        uint16_t setCurrent = (uint16_t)(((float)throttlePos * (float)MAX_CURRENT_DECI_AMPS / (float)UINT8_MAX));
 
         //enables motors to drive
         uint8_t driveEnable = 1;
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
-
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
-    
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
         vTaskDelayUntil(&lastWakeTime, motorsCommand_period_ms);
     }
 }
@@ -189,7 +184,7 @@ static void motorsCommand (
 
                 //     //enables motors to drive
                 //     uint8_t driveEnable = 1;
-                //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
+                //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
 
                 //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_CURRENT, &set_current_fl, sizeof(set_current_fl), can10Hz_period_ms);
                 //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_CURRENT, &set_current_fr, sizeof(set_current_fr), can10Hz_period_ms);
