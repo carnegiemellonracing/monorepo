@@ -131,6 +131,13 @@ enum Warn(0="NONE", 1="VSM_TIMEOUT", 2="BUS_VOLTAGE", 4="BUS_CURRENT",
 
 // ========== END AUTO-GENERATED ENUMS ==========
 
+[AS_STEER]
+ID=000h
+DLC=4
+CycleTime=20
+TimeOut=100
+Var=STEER_swangle unsigned 0,32
+
 [CDC_COG_VELOCITY]
 ID=2C2h
 DLC=8
@@ -426,6 +433,14 @@ CycleTime=20
 TimeOut=100
 Var=MEASUREMENT_current signed 0,32 /u:A
 Var=MEASUREMENT_voltage signed 32,32 /u:V
+
+[EXTENDED_CUBEMARS_DATA]
+ID=000029FFh
+DLC=2
+CycleTime=100
+TimeOut=500
+Var=CUBEMARS_motorTemp_C signed 0,8
+Var=CUBEMARS_errorCode unsigned 8,8
 
 [FRONT_SLIP_RATIOS]
 ID=7E8h
