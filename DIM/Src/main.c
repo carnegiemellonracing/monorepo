@@ -118,16 +118,11 @@ int main(void) {
     // Peripheral configuration.
     gpioInit();
     canInit();
-    // // adcInit();
-    tftInit();
+    adcInit();
+    // tftInit();
     stateMachineInit();
-    // sensorsInit();
-    i2c_slave_init();
-
-    // I2C slave testing: 
-    write_66_test(&i2c);
-    read_8bytes_test(&i2c);
-
+    sensorsInit();
+    // i2c_slave_init();
 
     cmr_taskInit(
         &statusLED_task,
