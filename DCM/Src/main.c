@@ -21,6 +21,7 @@
 #include "adc.h"        // Board-specific ADC interface
 #include "sensors.h"    // Board-specific sensors interface
 #include "motors.h"     // Board-specific motors interface
+#include "steering.h"   // Steering motor control
 #include "i2c.h"
 #include "servo.h"
 #include "lut.h"
@@ -89,6 +90,7 @@ int main(void) {
     // servoInit();
     motorsInit();
     sensorsInit();
+    steeringInit();
     // brakelightInit();
 
 

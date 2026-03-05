@@ -520,6 +520,20 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .canID = CMR_CANID_HEARTBEAT_MEMORATOR,
         .timeoutError_ms = 5000,
         .timeoutWarn_ms = 3000
+    },
+    [CANRX_AS_SWANGLE] = {
+        .canID = CMR_CANID_AS_STEER,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 50,
+        .errorFlag = CMR_CAN_ERROR_NONE,
+        .warnFlag = CMR_CAN_WARN_NONE
+    },
+    [CANRX_CUBEMARS_DATA] = {
+        .canID = CMR_CANID_EXTENDED_CUBEMARS_DATA,
+        .timeoutError_ms = 500,
+        .timeoutWarn_ms = 250,
+        .errorFlag = CMR_CAN_ERROR_NONE,
+        .warnFlag = CMR_CAN_WARN_NONE
     }
 };
 

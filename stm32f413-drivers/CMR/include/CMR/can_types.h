@@ -1414,4 +1414,9 @@ typedef struct{
     uint16_t cell4;
 } cmr_canLVBMS_Temperature;
 
+// Compute
+typedef struct {
+    uint32_t swangle; // idk units
+} cmr_canComputeSwangle_t;
+
 #endif /* CMR_CAN_TYPES_H */
