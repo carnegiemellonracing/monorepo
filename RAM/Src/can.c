@@ -43,13 +43,13 @@ static void canTx100Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        int x = 32;
-        canTX(CMR_CAN_BUS_TRAC, 100, &x, sizeof(int), can100Hz_period_ms);
-        RTC_DateTypeDef curdate = getRTCDate();
-        RTC_TimeTypeDef curtime = getRTCTime();
-        canTX(CMR_CAN_BUS_VEH, 101, &curtime.Hours, sizeof(curtime.Hours), can100Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, 102, &curtime.Minutes, sizeof(curtime.Minutes), can100Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, 103, &curtime.Seconds, sizeof(curtime.Seconds), can100Hz_period_ms);
+        // int x = 32;
+        // canTX(CMR_CAN_BUS_TRAC, 100, &x, sizeof(int), can100Hz_period_ms);
+        // RTC_DateTypeDef curdate = getRTCDate();
+        // RTC_TimeTypeDef curtime = getRTCTime();
+        // canTX(CMR_CAN_BUS_VEH, 101, &curtime.Hours, sizeof(curtime.Hours), can100Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, 102, &curtime.Minutes, sizeof(curtime.Minutes), can100Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, 103, &curtime.Seconds, sizeof(curtime.Seconds), can100Hz_period_ms);
         vTaskDelayUntil(&lastWakeTime, can100Hz_period_ms);
     }
 }
@@ -303,13 +303,13 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
 };
 
 void canRXCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t dataLen) {
-    RTC_TimeTypeDef currentTime = getRTCTime();
-    uint32_t timestamp = (((currentTime.Hours << 8) | currentTime.Minutes) << 8) | currentTime.Seconds;
-    memoratorWrite(canID, timestamp, dataLen, data);
-
     size_t iface_idx = (canb_rx - can);
 	configASSERT(iface_idx < CMR_CAN_BUS_NUM);
 
+    if (iface_idx == CMR_CAN_BUS_VEH) {
+        uint32_t timestamp = 0;
+        memoratorWrite(canID, timestamp, dataLen, data);
+    }
 
 	int ret = parseData((uint32_t) iface_idx, canID, data, dataLen);
 	configASSERT(ret == 0);
