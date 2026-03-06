@@ -16,7 +16,7 @@
 #include "can.h"        // Interface to implement
 #include "parser.h"     // parser ingestation
 #include "memorator.h"     // parser ingestation
-#include "rtc.h"
+#include <CMR/rtc.h> 
 
 
 /** @brief CAN interfaces */
