@@ -46,8 +46,7 @@ int main(void) {
     statusLEDInit();
     memoratorInit();
 
-    MX_RTC_Init();
-
+    // MX_RTC_Init();
     // Load in JSON configuration
     parserInit();
     // Set up CBOR encoder

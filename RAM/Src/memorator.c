@@ -136,7 +136,7 @@ static void writeToSDCard(void *pvParameters)
         oldBufferLocation = bufferLocation;
         switchBuffer();
         cmr_SDIO_mount();
-        res = cmr_SDIO_openFile(&filObj, "data.bin");
+        res = cmr_SDIO_openFile(&filObj, "data2.bin");
         if (!res){
             cmr_SDIO_write(&filObj, txBuffer, oldBufferLocation);
             cmr_SDIO_closeFile(&filObj);
