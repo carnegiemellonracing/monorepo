@@ -94,7 +94,7 @@ def create_prefix(name, canid):
         board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
         boardname = board.group(1) 
         append_can_name = boardname+"_HEARTBEAT_"+name 
-    if len(append_can_name) >= 30:
+    if len(append_can_name) >= 25:
         #print("too long")
         return name
     return append_can_name 
@@ -120,8 +120,8 @@ def format_bitpacking(canid, structname, structlines, atbit, vartype, enums):
                         if c == '1':
                             position = i 
                             break
-                name = check_repeat_varname(name) 
                 append_can_name = create_prefix(name, canid) 
+                append_can_name = check_repeat_varname(append_can_name)
                 if realsize == 1:
                     structlines.append("Var="+append_can_name+" bit "+str(atbit+int(position))+","+str(realsize)) 
                 else: 
@@ -191,8 +191,8 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
                     continue 
         #add in field if not bitpacked 
         if size: 
-            name = check_repeat_varname(name) 
             append_can_name = create_prefix(name, canid) 
+            append_can_name = check_repeat_varname(append_can_name)
             appendstr = "Var="+append_can_name+" "+vartype+ " " +str(atbit)+","+str(size)
             # Add field-specific parameters if available
             if field_params and name in field_params:

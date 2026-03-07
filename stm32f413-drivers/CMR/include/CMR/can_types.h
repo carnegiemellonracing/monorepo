@@ -247,18 +247,34 @@ typedef enum {
 /** @brief Bit definitions for timeoutMatrix in cmr_canVSMErrors_t. */
 typedef enum {
     /** @brief No modules have timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_NONE = 0,
+    CMR_CAN_VSM_TIMEOUT_SOURCE_NONE = 0,
     /** @brief At least one High Voltage Controller message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_HVC = (1 << 6),
+    CMR_CAN_VSM_TIMEOUT_SOURCE_HVC = (1 << 6),
     /** @brief At least one Central Dynamics Controller message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_CDC = (1 << 5),
+    CMR_CAN_VSM_TIMEOUT_SOURCE_CDC = (1 << 5),
     /** @brief At least one Front Sensor Module message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_FSM = (1 << 4),
+    CMR_CAN_VSM_TIMEOUT_SOURCE_FSM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
-    CMR_CAN_VSM_ERROR_SOURCE_DIM = (1 << 3),
+    CMR_CAN_VSM_TIMEOUT_SOURCE_DIM = (1 << 3),
     /** @brief HVBMS Timeout. */
-    CMR_CAN_VSM_ERROR_SOURCE_HVBMS = (1 << 0)
-} cmr_canVSMErrorSource_t;
+    CMR_CAN_VSM_TIMEOUT_SOURCE_HVBMS = (1 << 0)
+} cmr_canVSMTimeoutErrorSource_t;
+
+/** @brief Bit definitions for timeoutMatrix in cmr_canVSMErrors_t. */
+typedef enum {
+    /** @brief No modules have timed out. */
+    CMR_CAN_VSM_BADSTATE_SOURCE_NONE = 0,
+    /** @brief At least one High Voltage Controller message has timed out. */
+    CMR_CAN_VSM_BADSTATE_SOURCE_HVC = (1 << 6),
+    /** @brief At least one Central Dynamics Controller message has timed out. */
+    CMR_CAN_VSM_BADSTATE_SOURCE_CDC = (1 << 5),
+    /** @brief At least one Front Sensor Module message has timed out. */
+    CMR_CAN_VSM_BADSTATE_SOURCE_FSM = (1 << 4),
+    /** @brief At least one Driver Interface Module message has timed out. */
+    CMR_CAN_VSM_BADSTATE_SOURCE_DIM = (1 << 3),
+    /** @brief HVBMS Timeout. */
+    CMR_CAN_VSM_BADSTATE_SOURCE_HVBMS = (1 << 0)
+} cmr_canVSMBadStateErrorSource_t;
 
 /** @brief Bit definitions for latchMatrix in cmr_canVSMErrors_t. */
 typedef enum {
@@ -307,11 +323,11 @@ typedef struct {
     /**
      * @brief Matrix of modules for which at least one message exceeded its error timeout.
      */
-    uint8_t moduleTimeoutMatrix; //Flag: cmr_canVSMErrorSource_t 
+    uint8_t moduleTimeoutMatrix; //Flag: cmr_canVSMTimeoutErrorSource_t 
     /**
      * @brief Matrix of modules that are in the wrong state.
      */
-    uint8_t badStateMatrix; //Flag: cmr_canVSMErrorSource_t 
+    uint8_t badStateMatrix; //Flag: cmr_canVSMBadStateErrorSource_t 
     uint8_t latchMatrix; //Flag: cmr_canVSMLatch_t  
 } cmr_canVSMStatus_t; 
 
@@ -329,11 +345,11 @@ typedef struct {
     /**
      * @brief Matrix of modules for which at least one message exceeded its error timeout.
      */
-    uint8_t moduleTimeoutMatrix; //Flag: cmr_canVSMErrorSource_t 
+    uint8_t moduleTimeoutMatrix; //Flag: cmr_canVSMTimeoutErrorSource_t 
     /**
      * @brief Matrix of modules that are in the wrong state.
      */
-    uint8_t badStateMatrix; //Flag: cmr_canVSMErrorSource_t. 
+    uint8_t badStateMatrix; //Flag: cmr_canVSMBadStateErrorSource_t. 
     /** @brief Matrix of active error latches. */
     uint8_t latchMatrix; //Flag: cmr_canVSMLatch_t 
 } cmr_canVSMLatchedStatus_t;

@@ -44,8 +44,8 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
 
     // Initialize error bit vectors
     cmr_canError_t heartbeatErrors = CMR_CAN_ERROR_NONE;
-    uint8_t moduleTimeoutMatrix = CMR_CAN_VSM_ERROR_SOURCE_NONE;
-    uint8_t badStateMatrix = CMR_CAN_VSM_ERROR_SOURCE_NONE;
+    uint8_t moduleTimeoutMatrix = CMR_CAN_VSM_TIMEOUT_SOURCE_NONE;
+    uint8_t badStateMatrix = CMR_CAN_VSM_BADSTATE_SOURCE_NONE;
     uint8_t latchMatrix = CMR_CAN_VSM_LATCH_NONE;
 
     // Check for timeout errors
@@ -67,25 +67,25 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     // Check for improper states
     if (getBadModuleState(CANRX_HEARTBEAT_HVC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
-        badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_HVC;
+        badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_HVC;
         //more specific HVC checks within getBadModuleState - sendFirstError called there
     }
 
     if (getBadModuleState(CANRX_HEARTBEAT_CDC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
-        badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_CDC;
+        badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_CDC;
         sendFirstError(BADSTATE_CDC);
     }
 
     if (getBadModuleState(CANRX_HEARTBEAT_DIM, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
-        badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_DIM;
+        badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_DIM;
         sendFirstError(BADSTATE_DIM);
     }
 
     if (getBadModuleState(CANRX_HEARTBEAT_HVBMS, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
-        badStateMatrix |= CMR_CAN_VSM_ERROR_SOURCE_HVBMS;
+        badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_HVBMS;
         sendFirstError(BADSTATE_HVBMS);
     }
 
