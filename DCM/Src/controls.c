@@ -771,6 +771,17 @@ void runControls (
             setVelocityInt16All(0);
             break;
         }
+        case AS_DRIVING: {
+            //for compute commands 
+            //need to put in the read commands
+            canDAQGetPayload()
+            //get the motor set points and update w/ settorque lims
+            setTorqueLimsAllProtected();
+            //need to set them for commands 
+            setVelocityInt16All();
+            break; 
+        }
+
         default: {
             setTorqueLimsAllProtected(0.0f, 0.0f);
             setVelocityInt16All(0);
