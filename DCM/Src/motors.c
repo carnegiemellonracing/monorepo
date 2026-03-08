@@ -89,6 +89,7 @@ static void motorsTest (void *pvParameters) {
         volatile cmr_canFSMData_t *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
         uint8_t throttlePos = dataFSM->throttlePosition;
         uint16_t setCurrent = (uint16_t)(((float)throttlePos * (float)MAX_CURRENT_DECI_AMPS / (float)UINT8_MAX));
+        setCurrent = setCurrent << 8;
 
         //enables motors to drive
         uint8_t driveEnable = 1;
