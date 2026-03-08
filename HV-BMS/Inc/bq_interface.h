@@ -323,13 +323,14 @@
 #define DEBUG_OTP_SEC_BLK		0x7A0
 #define DEBUG_OTP_DED_BLK		0x7A1
 
-#define BOARD_NUM 17
+#define BOARD_NUM 15
 
 //TODO change this
 #define CELL_BALANCING_LOW_VOLTAGE 3.9
 
 
 #define TOP_CELL VCELL9_HI
+#define TOP_CELL_CB_ADDR CB_CELL9_CTRL 
 #define NUM_GPIO_CHANNELS 4
 
 bool autoAddr();
@@ -348,6 +349,6 @@ bool cellBalancingSetup();
 void cellBalancing(bool set, uint16_t thresh);
 void writeLED(bool set);
 
-bool getBalDone();
+int getBalDone();
 
 #endif /* BQ_INTERFACE_H_ */

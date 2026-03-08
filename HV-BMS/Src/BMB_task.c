@@ -19,17 +19,13 @@ extern volatile int BMBErrs[BOARD_NUM-1];
 #define BALANCE_DIS false
 #define TO_IGNORE 6
 
-static const uint8_t temp_to_ignore[] = { 2, 3, 4, 7, 11, 17, 18, 20, 21, 22,
-		23, 25, 27, 30, 31, 35, 36, 37, 40, 43, 44, 45, 46, 47, 49, 50, 53, 59,
-		60, 63, 70, 72, 73, 74, 77, 79, 84, 85, 87, 88, 89, 91, 94, 95, 96, 97,
-		98, 101, 102, 104, 105, 109, 110, 115, 116, 119, 121, 125, 126, 129, 130,
-		133, 134, 138};
+static const uint8_t temp_to_ignore[] = {143};
 
 // Use array to ignore some broken thermistor channels
 
 bool check_to_ignore(uint8_t bmb_index, uint8_t channel) {
 	for(int i = 0; i < sizeof(temp_to_ignore); i++) {
-		if(bmb_index*14 + channel == temp_to_ignore[i]) {
+		if(bmb_index*TEMP_CHANNELS + channel == temp_to_ignore[i]) {
 			return true;
 		}
 	}
@@ -38,14 +34,16 @@ bool check_to_ignore(uint8_t bmb_index, uint8_t channel) {
 
 // Check CANRX struct for balance command and threshold
 
-bool getBalance(uint16_t *thresh) {
-	TickType_t xLastWakeTime = xTaskGetTickCount();
-	if(cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_BALANCE_COMMAND]), xLastWakeTime) < 0) {
-		return false;
-	}
-	volatile cmr_canHVCBalanceCommand_t *balanceCommand = getPayload(CANRX_BALANCE_COMMAND);
-	*thresh = balanceCommand->threshold; 
-	return balanceCommand->balanceRequest;
+bool isBalanceCommanded() {
+	return false;
+	// TickType_t xLastWakeTime = xTaskGetTickCount();
+
+	// if(cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_BALANCE_COMMAND]), xLastWakeTime) < 0) {
+	// 	return false;
+	// }
+	
+	// volatile cmr_canHVCBalanceCommand_t *balanceCommand = getPayload(CANRX_BALANCE_COMMAND);
+	// return balanceCommand->balanceRequest;
 }
 
 
@@ -56,11 +54,11 @@ void vBMBSampleTask(void *pvParameters) {
 	// Previous wake time pointer
 	TickType_t xLastWakeTime = xTaskGetTickCount();
 	vTaskDelayUntil(&xLastWakeTime, 50);
-	bool prevStateBalance = false;
+	bool currentlyBalancing = false;
 	bool ledToggle = false;
 	uint16_t threshold = 0;
-	uint32_t startTime;
-	bool toReenable = false;
+	uint32_t settleTimer_ms;
+	bool settlingTimerStarted = false;
 
 	// Main BMS control loop
 	while (1) {
@@ -69,33 +67,31 @@ void vBMBSampleTask(void *pvParameters) {
 
 		// If we get a balancing command and we weren't previously balancing, enable
 		// cells to balance
-		if (getBalance(&threshold) && !prevStateBalance) {
-			cellBalancing(BALANCE_EN, threshold);
-			prevStateBalance = true;
-			startTime = xTaskGetTickCount();
+		if (isBalanceCommanded() && !currentlyBalancing) {
+			if(getBalDone()==1){
+				cellBalancing(BALANCE_EN, 3440); 
+				currentlyBalancing = true;
+			} 
 		}
 
 		// If the balancing command stops and we were balancing previously, disable
 		// all balancing cells
-		else if(!getBalance(&threshold) && prevStateBalance){
+		else if(!isBalanceCommanded() && currentlyBalancing){
 			cellBalancing(BALANCE_DIS, threshold);
-			prevStateBalance = false;
+			currentlyBalancing = false;
 		}
 
-		// If 5 minutes has elapsed since balancing started, turn off balancing to
-		// allow for rechecking of voltages
-		else if((prevStateBalance && !toReenable) && (xTaskGetTickCount()-startTime)>300000) {
-			cellBalancing(BALANCE_DIS, threshold);
-			toReenable = true;
+		// Once balancing timers have expired we stop balancing
+		else if(getBalDone()==1 && currentlyBalancing && !settlingTimerStarted) {
+			settlingTimerStarted = true;
+			settleTimer_ms = xTaskGetTickCount(); 
 		}
 
 		// After a 500 ms resting period, recheck the voltages
 		// and enable whichever cells are above threshold
-		else if(toReenable && (xTaskGetTickCount()-startTime)>300500) {
-			cellBalancing(BALANCE_EN, threshold);
-			startTime = xTaskGetTickCount();
-			prevStateBalance = true;
-			toReenable = false;
+		else if (settlingTimerStarted && (xTaskGetTickCount()-settleTimer_ms)>500) {
+			currentlyBalancing = false;
+			settlingTimerStarted = false;
 		}
 
 		// Loop through the 4 different MUX channels and select a different one
@@ -160,7 +156,7 @@ uint8_t getBMBMaxVoltIndex(uint8_t bmb_index) {
 	uint8_t cell_index = 0;
 	for (uint8_t i = 0; i < VSENSE_CHANNELS; i++) {
 		uint16_t voltage = BMBData[bmb_index].cellTemperaturesVoltageReading[i];
-		if ((voltage > maxVoltage) && (voltage != 3456)) {
+		if ((voltage > maxVoltage)) {
 			maxVoltage = voltage;
 			cell_index = i;
 		}
@@ -173,7 +169,7 @@ uint8_t getBMBMinVoltIndex(uint8_t bmb_index) {
 	uint8_t cell_index = 0;
 	for (uint8_t i = 0; i < VSENSE_CHANNELS; i++) {
 		uint16_t voltage = BMBData[bmb_index].cellVoltages[i];
-		if ((voltage < minVoltage) && (voltage != 3456)) {
+		if ((voltage < minVoltage)) {
 			minVoltage = voltage;
 			cell_index = i;
 		}

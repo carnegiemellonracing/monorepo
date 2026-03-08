@@ -1,20 +1,21 @@
 #include "errors.h"
-
+#include <string.h> //memcpy
 
 static bool checkHVCCommandTimeout();
 
 static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_ERROR_NONE;
 
 cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
+    clearHVCErrorReg();
     cmr_canHVCError_t errorFlags = errorRegister;
     if(checkHVCCommandTimeout()) { 
         // TODO E1 check the timeout field of the command mes sage meta data
         errorFlags |= CMR_CAN_HVC_ERROR_CAN_TIMEOUT;
     } 
-    if(getHVmilliamps() > maxPackCurrentInstantMA) {
-        // E8
-        errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
-    }
+    // if(getHVmilliamps() > maxPackCurrentInstantMA) {
+    //     // E8
+    //     errorFlags |= CMR_CAN_HVC_ERROR_PACK_OVERCURRENT;
+    // }
     if(checkRelayPowerFault() && (getState() != CMR_CAN_HVC_STATE_ERROR && getState() != CMR_CAN_HVC_STATE_CLEAR_ERROR)) {//(getRelayStatus() & 0xAA) != 0xAA) {
         // TODO look into the AIR_Fault_L signal, it might be necessary to confirm this is not active
         // before looking at relay status, otherwise we could be in dead lock trying to clear errors.
@@ -36,8 +37,10 @@ cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
         errorFlags |= CMR_CAN_HVC_ERROR_LV_UNDERVOLT;
     }
 
-    cmr_canHeartbeat_t *hvbms_heartbeat = getPayload(CANRX_HEARTBEAT_HVBMS); 
-    errorFlags |= (cmr_canHVCError_t)hvbms_heartbeat->error; 
+    cmr_canHeartbeat_t* hvbms_heartbeat = (cmr_canHeartbeat_t*) getPayload(CANRX_HEARTBEAT_HVBMS); 
+    cmr_canHVCError_t hvbms_errors;
+    memcpy(&hvbms_errors, hvbms_heartbeat->error, sizeof(hvbms_heartbeat->error));
+    errorFlags |= hvbms_errors; 
 
     errorRegister = errorFlags;
     
