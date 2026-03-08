@@ -90,7 +90,7 @@ static uint8_t* rxBuffer = bufferB;
  *
  * @return void        Does not return a value.
  */
-void memoratorWrite(uint16_t ID, uint32_t timeStamp, uint8_t dataLength,  uint8_t* data) {
+void memoratorWrite(uint16_t ID, RTC_TimeTypeDef timeStamp, uint8_t dataLength,  uint8_t* data) {
 
     uint8_t toWrite = sizeof(ID) + sizeof(timeStamp) + sizeof(dataLength) + dataLength;
 
@@ -100,8 +100,14 @@ void memoratorWrite(uint16_t ID, uint32_t timeStamp, uint8_t dataLength,  uint8_
     //writes to buffer
     memcpy(&rxBuffer[bufferLocation], &ID, sizeof(ID));
     bufferLocation += sizeof(ID);
-    memcpy(&rxBuffer[bufferLocation], &timeStamp, sizeof(timeStamp));
-    bufferLocation += sizeof(timeStamp);
+    memcpy(&rxBuffer[bufferLocation], &(timeStamp.Hours), sizeof(timeStamp.Hours));
+    bufferLocation += sizeof(timeStamp.Hours);
+    memcpy(&rxBuffer[bufferLocation], &(timeStamp.Minutes), sizeof(timeStamp.Minutes));
+    bufferLocation += sizeof(timeStamp.Minutes);
+    memcpy(&rxBuffer[bufferLocation], &(timeStamp.Seconds), sizeof(timeStamp.Seconds));
+    bufferLocation += sizeof(timeStamp.Seconds);
+    memcpy(&rxBuffer[bufferLocation], &(timeStamp.SubSeconds), sizeof(timeStamp.SubSeconds));
+    bufferLocation += sizeof(timeStamp.SubSeconds);
     memcpy(&rxBuffer[bufferLocation], &dataLength, sizeof(dataLength));
     bufferLocation += sizeof(dataLength);
     memcpy(&rxBuffer[bufferLocation], data, dataLength);

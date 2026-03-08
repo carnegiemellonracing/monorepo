@@ -8,10 +8,11 @@
 
 #include <stdint.h>     /* integer types */
 #include <stm32f4xx_hal.h>  // HAL interface
+#include <CMR/rtc.h>   // Real-Time Clock
 
 
 void memoratorWrite(    uint16_t ID, 
-                        uint32_t timeStamp,
+                        RTC_TimeTypeDef timeStamp,
                         uint8_t dataLength, 
                         uint8_t* data);
 
