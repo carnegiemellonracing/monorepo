@@ -69,7 +69,7 @@ static cmr_canDTISetpoints_t motorSetpoints[MOTOR_LEN];
  */
 static cmr_canDTI_RX_Message_t DTI_RXMessage[MOTOR_LEN];
 
-#define MAX_CURRENT_DECI_AMPS 100
+#define MAX_CURRENT_DECI_AMPS 50
 
 cmr_canDAQTest_t getDAQTest() {
     return daqTest;
@@ -84,17 +84,31 @@ bool isTorqueMode = true;
 static void motorsTest (void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
+    volatile cmr_canHeartbeat_t *heartbeatVSM   = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+    volatile cmr_canVSMStatus_t *vsm            = canVehicleGetPayload(CANRX_VSM_STATUS);
+    volatile cmr_canFSMData_t   *dataFSM        = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
+
 
     while (1) {
         volatile cmr_canFSMData_t *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
         uint8_t throttlePos = dataFSM->throttlePosition;
         uint16_t setCurrent = (uint16_t)(((float)throttlePos * (float)MAX_CURRENT_DECI_AMPS / (float)UINT8_MAX));
         setCurrent = setCurrent << 8;
-
         //enables motors to drive
         uint8_t driveEnable = 1;
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
+
+        if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN || heartbeatVSM->state == CMR_CAN_HV_EN) {
+            setCurrent = 0;
+            mcCtrlOn();
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
+        }
+        else if(heartbeatVSM->state == CMR_CAN_RTD){
+            mcCtrlOn();
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
+        }
+
         vTaskDelayUntil(&lastWakeTime, motorsCommand_period_ms);
     }
 }

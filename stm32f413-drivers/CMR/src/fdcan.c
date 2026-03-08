@@ -213,6 +213,44 @@ void cmr_FDcanInit(
 }
 
 
+/**
+ * @brief  Checks for a CAN Bus-Off state and attempts to recover the node.
+ * @note   A Bus-Off state occurs when the transmit error counter exceeds its limit, 
+ * disconnecting the node from the bus. Clearing the INIT bit restarts the controller.
+ * @param  hfdcan: Pointer to an FDCAN_HandleTypeDef structure containing the 
+ * configuration information for the specified FDCAN hardware.
+ * @retval None
+ */
+void CAN_bus_off_check_reset(FDCAN_HandleTypeDef *hfdcan) {
+    FDCAN_ProtocolStatusTypeDef protocolStatus = {};
+    
+    // Retrieve the current protocol status from the hardware registers
+    HAL_FDCAN_GetProtocolStatus(hfdcan, &protocolStatus);
+    
+    // Check if the node has been forced into the Bus-Off state
+    if (protocolStatus.BusOff) {
+        // Attempt recovery by clearing the Initialization (INIT) bit in the CC Control Register.
+        // This transitions the CAN controller out of initialization mode to resynchronize with the bus.
+        CLEAR_BIT(hfdcan->Instance->CCCR, FDCAN_CCCR_INIT);
+    }
+}
+
+/**
+ * @brief  HAL Callback function for fine-grained FDCAN error handling.
+ * @note   This function is automatically triggered by the main HAL interrupt handler 
+ * when an FDCAN error interrupt occurs.
+ * @param  hfdcan: Pointer to the FDCAN_HandleTypeDef structure.
+ * @param  ErrorStatusITs: A bitmask indicating which specific error interrupts were triggered.
+ * @retval None
+ */
+void HAL_FDCAN_ErrorStatusCallback(FDCAN_HandleTypeDef *hfdcan, uint32_t ErrorStatusITs) {
+    // Check the bitmask to see if the Bus-Off interrupt flag is active
+    if ((ErrorStatusITs & FDCAN_IT_BUS_OFF) != RESET) {
+        // If a Bus-Off event occurred, call the custom recovery routine
+        CAN_bus_off_check_reset(hfdcan);
+    }
+}
+
 static void cmr_canRXPendingCallback(FDCAN_HandleTypeDef *handle, uint32_t fifo) {
 	FDCAN_RxHeaderTypeDef msg;
     uint8_t data[8];
