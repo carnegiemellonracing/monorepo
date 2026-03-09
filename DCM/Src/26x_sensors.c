@@ -4,6 +4,10 @@
  */
 
 #include "../Inc/26x_sensors.h"
+#include <math.h>
+#include "sensoric.h"
+
+#define M_PI       3.14159265358979323846 
 
 static volatile sensors_source_t sensor_src = (sensors_source_t)CMR_SENSORS_SOURCE;
 
@@ -63,9 +67,9 @@ bool sensors_get_gyro_xyz(float *gx, float *gy, float *gz) {
 
     if (sensor_src == SENSORS_SRC_SENSORIC) {
         // umm we need to fix units here
-        *gx = (float)sensoric_state.rate.x;
-        *gy = (float)sensoric_state.rate.y;
-        *gz = (float)sensoric_state.rate.z;
+        *gx = SENSORIC_RATE_TO_RADPS(sensoric_state.rate.x);
+        *gy = SENSORIC_RATE_TO_RADPS(sensoric_state.rate.y);
+        *gz = SENSORIC_RATE_TO_RADPS(sensoric_state.rate.z);
         return true;
     }
 
@@ -83,10 +87,9 @@ bool sensors_get_accel_xyz(float *ax, float *ay, float *az) {
     }
 
     if (sensor_src == SENSORS_SRC_SENSORIC) {
-        // umm we need to fix units here
-        *ax = (float)sensoric_state.acc.x;
-        *ay = (float)sensoric_state.acc.y;
-        *az = (float)sensoric_state.acc.z;
+        *ax = SENSORIC_ACC_TO_MS2(sensoric_state.acc.x);
+        *ay = SENSORIC_ACC_TO_MS2(sensoric_state.acc.y);
+        *az = SENSORIC_ACC_TO_MS2(sensoric_state.acc.z);
         return true;
     }
 
@@ -104,10 +107,8 @@ bool sensors_get_vel_xy(float *vx, float *vy) {
 
 
     if (sensor_src == SENSORS_SRC_SENSORIC) {
-        // umm we need to fix units here
-        // (still raw int16 -> float here)
-        *vx = (float)sensoric_state.vel_ang.x;
-        *vy = (float)sensoric_state.vel_ang.y;
+        *vx = SENSORIC_VEL_TO_MPS(sensoric_state.vel_ang.x);
+        *vy = SENSORIC_VEL_TO_MPS(sensoric_state.vel_ang.y);
         return true;
     }
 
