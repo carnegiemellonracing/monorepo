@@ -5,7 +5,7 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "movella.h"
+#include "sensoric.h"
 #include <CMR/can_types.h> 
 #include <math.h>
 
