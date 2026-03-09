@@ -1419,13 +1419,21 @@ float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
     sensors_get_gyro_xyz(&gx, &gy, &gz);
     const float actual_yaw_rate_radps_sae = gz;
 
+
+
     float velocity_x_mps;
     const volatile car_state_t *cs = sensors_get_car_state();
     float calculated_velocity_x_mps_fallback = getTotalMotorSpeed_radps() * 0.25f / gear_ratio * effective_wheel_rad_m;
 
     // add yrc debug here
-    velocity_x_mps = cs ? cs->velocity.x : calculated_velocity_x_mps_fallback; 
+    if (cs && movella_state.status.gnss_fix) {
+    velocity_x_mps = cs->velocity.x;
+    yrcDebug.controls_bias = 1;
 
+    } else {
+    velocity_x_mps = calculated_velocity_x_mps_fallback;
+    yrcDebug.controls_bias = -1;
+    }
 
     // float velocity_x_mps;
     // if(movella_state.status.gnss_fix) {
