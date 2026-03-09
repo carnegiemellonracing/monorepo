@@ -181,8 +181,8 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
     [CANRX_VEH_DTI_ERROR_MESSAGES] = {
         .canID = CMR_CANID_DTI_ERROR_MESSAGES,
         .timeoutError_ms = 100,
-        .timeoutWarn_ms = 75,
-    }
+        .timeoutWarn_ms = 75
+    },
     // TODO: double check timeout and warning data
     // use canIDs startnig at 0x560
     [CANRX_VEH_SENSORIC_VEL_ANG_POI] = {
