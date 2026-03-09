@@ -96,8 +96,6 @@ bool sensors_get_accel_xyz(float *ax, float *ay, float *az) {
 bool sensors_get_vel_xy(float *vx, float *vy) {
     if (!vx || !vy) return false;
 
-    // check sensoric case
-
     if (sensor_src == SENSORS_SRC_MOVELLA) {
         *vx = car_state.velocity.x;
         *vy = car_state.velocity.y;

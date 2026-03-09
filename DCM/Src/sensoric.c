@@ -7,19 +7,6 @@
 
 #include "sensoric.h"
 #include <CMR/can_types.h> 
-#include <math.h>
-
-
-#define KMH2MPS(x) ((x) / 3.6f)
-#define DEG2RAD(x) ((x) * ((float)M_PI / 180.0f))
-
-#define SCALE_VEL_KMH   0.02f
-#define SCALE_ACC       0.02f
-#define SCALE_RATE_DPS  0.02f
-#define SCALE_ANGS_DEG  0.003f
-#define SCALE_DIST_M    0.001f
-#define SCALE_RADIUS_M  0.01f
-#define SCALE_ACCC      0.02f
 
 volatile sensoric_state_t sensoric_state;
 
