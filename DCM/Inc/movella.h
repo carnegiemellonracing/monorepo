@@ -13,7 +13,7 @@ typedef enum {
 } movella_message_t;
 
 static const float scaling_constants[MOVELLA_MESSAGE_NUM] = {
-    [MOVELLA_QUATERNION] = 1 / (float) (1U << 16 - 1),
+    [MOVELLA_QUATERNION] = 1 / (float) ((1U << 16) - 1),
     [MOVELLA_EULER_ANGLES] = 1 / (float) (1U << 7),
     [MOVELLA_IMU_ACCEL] = 1 / (float) (1U << 8),
     [MOVELLA_IMU_GYRO] = 1 / (float) (1U << 9),
