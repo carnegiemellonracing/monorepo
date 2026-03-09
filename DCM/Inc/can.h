@@ -38,6 +38,10 @@ typedef enum {
     CANRX_VEH_MOVELLA_IMU_ACCEL,
     CANRX_VEH_MOVELLA_VELOCITY,
     CANRX_VEH_DTI_ERROR_MESSAGES,
+    CANRX_VEH_SENSORIC_VEL_ANG_POI,   /**< @brief Sensoric data */
+    CANRX_VEH_SENSORIC_PITCH_ROLL,
+    CANRX_VEH_SENSORIC_ACC,
+    CANRX_VEH_SENSORIC_RATE,
     CANRX_VEH_LEN                   /**< @brief Number of periodic CAN messages. */
 } canVehicleRX_t;
 
@@ -105,6 +109,17 @@ typedef enum {
     CANRX_DAQ_MOVELLA_IMU_GYRO,
     CANRX_DAQ_MOVELLA_IMU_ACCEL,
     CANRX_DAQ_MOVELLA_VELOCITY,
+    CANRX_DAQ_SENSORIC_VEL_ANG_POI,
+    CANRX_DAQ_SENSORIC_DIST_POI,
+    CANRX_DAQ_SENSORIC_PITCH_ROLL,
+    CANRX_DAQ_SENSORIC_ACC_HOR,
+    CANRX_DAQ_SENSORIC_RATE_HOR,
+    CANRX_DAQ_SENSORIC_VEL_ANG,
+    CANRX_DAQ_SENSORIC_DIST,
+    CANRX_DAQ_SENSORIC_ACC,
+    CANRX_DAQ_SENSORIC_RATE,
+    CANRX_DAQ_SENSORIC_VEL_ANG_SP,
+    CANRX_DAQ_SENSORIC_DIST_VEL_SP, 
     CANRX_DAQ_SBG_STATUS_3,     /**< @brief SBG Status containing solution info. */
     CANRX_DAQ_SBG_POS,          /**< @brief EKF Position. */
     CANRX_DAQ_SBG_VEL,          /**< @brief EKF Velocity. */
@@ -138,7 +153,11 @@ typedef enum {
     CANRX_FSM_DATA,             /**< @brief FSM data. */
     CANRX_FSM_SWANGLE,
     CANRX_HVC_MINMAX_TEMPS,     /**< @brief HVC min/max cell temps. */
-    CANRX_LEN     /**< @brief Number of periodic CAN messages. */
+    CANRX_INV1_STATUS,          /**< @brief Inverter 1 temp. */
+    CANRX_INV2_STATUS,          /**< @brief Inverter 2 temp. */
+    CANRX_INV3_STATUS,          /**< @brief Inverter 3 temp. */
+    CANRX_INV4_STATUS,          /**< @brief Inverter 4 temp. */
+    CANRX_LEN,     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 
 /** @brief Number of bits in a CAN ID. */

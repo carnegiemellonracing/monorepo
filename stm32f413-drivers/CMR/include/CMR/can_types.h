@@ -636,6 +636,77 @@ typedef struct {
 } cmr_canCDCPoseVelocity_t;
 
 // ------------------------------------------------------------------------------------------------
+// Sensoric (DCM)
+typedef struct {
+    int16_t vel_X_poi;
+    int16_t vel_Y_poi;
+    int16_t vel_A_poi;
+    int16_t ang_S_poi;
+} cmr_canSensoricVelAngPoi_t;
+
+typedef struct {
+    int32_t dist_A_poi;
+    int16_t radius_poi;
+    int16_t acc_C_poi;
+} cmr_canSensoricDistPoi_t;
+
+typedef struct {
+    int16_t roll;
+    int16_t pitch;
+} cmr_canSensoricPitchRoll_t;
+
+typedef struct {
+    int16_t acc_X_hor;
+    int16_t acc_Y_hor;
+    int16_t acc_Z_hor;
+} cmr_canSensoricAccHor_t;
+
+typedef struct {
+    int16_t rate_X_hor;
+    int16_t rate_Y_hor;
+    int16_t rate_Z_hor;
+} cmr_canSensoricRateHor_t;
+
+typedef struct {
+    int16_t vel_X;
+    int16_t vel_Y;
+    int16_t vel_A;
+    int16_t ang_S;
+} cmr_canSensoricVelAng_t;
+
+typedef struct {
+    int32_t dist_A;
+    int16_t radius;
+    int16_t acc_C;
+} cmr_canSensoricDist_t;
+
+
+typedef struct {
+    int16_t acc_X;
+    int16_t acc_Y;
+    int16_t acc_Z;
+} cmr_canSensoricAcc_t;
+
+typedef struct {
+    int16_t rate_X;
+    int16_t rate_Y;
+    int16_t rate_Z;
+} cmr_canSensoricRate_t;
+
+typedef struct {
+    int16_t vel_A_sp;
+    int16_t vel_S_sp;
+    uint16_t quality_ch0;
+    uint16_t quality_ch1;
+} cmr_canSensoricVelAngSp_t;
+
+typedef struct {
+    int32_t dist_A_sp;
+    int16_t vel_X_sp;
+    int16_t vel_Y_sp;
+} cmr_canSensoricDistVelSp_t;
+
+// ------------------------------------------------------------------------------------------------
 // Driver Interface Module
 
 typedef enum{
