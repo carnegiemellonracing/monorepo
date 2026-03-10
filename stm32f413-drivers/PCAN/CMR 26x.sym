@@ -1,3 +1,140 @@
+FormatVersion=5.0 // Do not edit this line!
+UniqueVariables=True
+Title="CMR 26x Generated"
+
+// ========== AUTO-GENERATED ENUMS ==========
+
+{ENUMS}
+enum BMBErr(15="UPPER_BMB", 240="LOWER_BMB")
+enum CDCDRSStateEnum(0="DRS_STATE_CLOSED", 1="DRS_STATE_OPEN",
+    2="DRS_STATE_OTHER")
+enum CDCHeartbeatErr(1="CDC_ERR_VSM_TIMEOUT",
+    32768="CDC_ERR_AMKALLERROR")
+enum CDCHeartbeatWrn(1="CDC_WRN_VSM_TIMEOUT",
+    512="CDC_WRN_MEMORATOR_TIMEOUT", 1024="CDC_WRN_AMK_TIMEOUT",
+    2048="CDC_WRN_AMK_ERROR", 4096="CDC_WRN_AMK_SRC_RR",
+    8192="CDC_WRN_AMK_SRC_RL", 16384="CDC_WRN_AMK_SRC_FR",
+    32768="CDC_WRN_AMK_SRC_FL")
+enum DIMButtons(4="DIM_ACTIONBUTTON", 8="DIM_LAUNCHBUTTON")
+enum DIMHeartbeatErr(1="DIM_ERR_VSM_TIMEOUT")
+enum DVMode(0="DV_MODE_SLOW", 1="DV_MODE_NORMAL", 2="DV_MODE_FAST")
+enum DrsMode(0="DRSM_QUIET", 1="DRSM_CLOSED", 2="DRSM_OPEN",
+    3="DRSM_TOGGLE", 4="DRSM_HOLD", 5="DRSM_AUTO", 6="DRSM_LEN",
+    7="DRSM_UNKNOWN")
+enum Error(0="NONE", 1="VSM_TIMEOUT",
+    2="* @brief Reception period for at least one message from another module",
+    3="* has surpassed its error threshold.", 4="*/",
+    1024="AFC_DCDC2_TEMP", 2048="AFC_DCDC1_TEMP",
+    4096="AFC_DRIVER3_TEMP", 8192="AFC_DRIVER2_TEMP",
+    16384="AFC_DRIVER1_TEMP", 32768="CDC_DTI_ALL")
+enum FSMHeartbeatErr(1="FSM_ERROR_VSM_TIMEOUT")
+enum FSMHeartbeatWrn(1="FSM_WRN_VSM_TIMEOUT", 2="FSM_WRN_VOLTAGE_OOR",
+    4="FSM_WRN_CURRENT_OOR", 8="FSM_WRN_SS_MODULE",
+    16="FSM_WRN_SS_COCKPIT", 32="FSM_WRN_SS_FR_HUB",
+    64="FSM_WRN_SS_INERTIA", 128="FSM_WRN_SS_FL_HUB",
+    256="FSM_WRN_SS_BOTS", 512="FSM_WRN_SW_ANGLE_OOR",
+    1024="FSM_WRN_BRAKE_PRESSURE_OOR",
+    2048="FSM_WRN_BRAKE_POSITION_OOR", 4096="FSM_WRN_LEFT_TPOS_OOR",
+    8192="FSM_WRN_RIGHT_TPOS_OOR", 16384="FSM_WRN_BPP_FAULT",
+    32768="FSM_WRN_TPOS_IMPLAUSIBLE")
+enum Gear(0="UNKNOWN", 1="MIN", 2="SLOW", 3="FAST", 4="ENDURANCE",
+    5="AUTOX", 6="SKIDPAD", 7="ACCEL", 8="TEST", 9="REVERSE", 10="MAX",
+    11="DV_MISSION_MIN", 12="DV_MISSION_MANUAL", 13="DV_MISSION_ACCEL",
+    14="DV_MISSION_SKIDPAD", 15="DV_MISSION_AUTOX",
+    16="DV_MISSION_TRACKD", 17="DV_MISSION_INSPECTION",
+    18="DV_MISSION_EBS", 19="DV_MISSION_MAX", 20="LEN")
+enum HVCError(0="HVC_ERROR_NONE", 1="HVBMS_ERROR_PACK_UNDERVOLT",
+    2="HVBMS_ERROR_PACK_OVERVOLT", 8="HVC_ERROR_PACK_OVERCURRENT",
+    16="HVBMS_ERROR_CELL_UNDERVOLT", 32="HVBMS_ERROR_CELL_OVERVOLT",
+    64="HVBMS_ERROR_CELL_OVERTEMP", 128="HVC_ERROR_BMB_FAULT",
+    256="HVBMS_ERROR_BMB_TIMEOUT", 512="HVC_ERROR_CAN_TIMEOUT",
+    4096="HVC_ERROR_RELAY", 8192="HVC_ERROR_LV_UNDERVOLT")
+enum HVCMode(0="HVC_MODE_ERROR", 1="HVC_MODE_IDLE", 2="HVC_MODE_START",
+    4="HVC_MODE_RUN", 8="HVC_MODE_CHARGE")
+enum HVCRelayStatus(1="HVC_RELAYSTATUS_DISCHARGE_CLOSED",
+    2="HVC_RELAYSTATUS_PRECHARGE_CLOSED",
+    4="HVC_RELAYSTATUS_NEGAIR_CLOSED",
+    8="HVC_RELAYSTATUS_POSAIR_CLOSED",
+    16="HVC_RELAYSTATUS_DISCHARGE_ERROR",
+    32="HVC_RELAYSTATUS_PRECHARGE_ERROR",
+    64="HVC_RELAYSTATUS_NEGAIR_ERROR",
+    128="HVC_RELAYSTATUS_POSAIR_ERROR")
+enum HVCState(0="HVC_STATE_ERROR", 1="HVC_STATE_DISCHARGE",
+    2="HVC_STATE_STANDBY", 3="HVC_STATE_DRIVE_PRECHARGE",
+    4="HVC_STATE_DRIVE_PRECHARGE_COMPLETE", 5="HVC_STATE_DRIVE",
+    6="HVC_STATE_CHARGE_PRECHARGE",
+    7="HVC_STATE_CHARGE_PRECHARGE_COMPLETE",
+    8="HVC_STATE_CHARGE_TRICKLE",
+    9="HVC_STATE_CHARGE_CONSTANT_CURRENT",
+    10="HVC_STATE_CHARGE_CONSTANT_VOLTAGE", 11="HVC_STATE_CLEAR_ERROR",
+    12="HVC_STATE_UNKNOWN")
+enum HVC_Balance_State(0="BALANCE_DIS", 1="BALANCE_EN")
+enum LRUDButtons(1="DIM_LEFT", 2="DIM_RIGHT", 4="DIM_UP", 8="DIM_DOWN")
+enum MovellaFilterMode(0="Without_GNSS_filter_profile_is_in_VRU_mode",
+    1="Coasting_mode_GNSS_has_been_lost_less_than_60_sec_ago",
+    3="With_GNSS_default_mode")
+enum RES(1="TRIG", 4="GO")
+enum SBGAutomotiveStatus(1="SBG_AUTO_TRACK_VALID",
+    2="SBG_AUTO_SLIP_VALID", 4="SBG_AUTO_CURVATURE_VALID")
+enum SBGGeneralStatus(1="SBG_GENERAL_MAIN_POWER_OK",
+    2="SBG_GENERAL_IMU_POWER_OK", 4="SBG_GENERAL_GPS_POWER_OK",
+    8="SBG_GENERAL_SETTINGS_OK", 16="SBG_GENERAL_TEMPERATURE_OK",
+    32="SBG_GENERAL_DATALOGGER_OK", 64="SBG_GENERAL_CPU_OK")
+enum SBGSolutionStatus(16="SBG_SOL_ATTITUDE_VALID",
+    32="SBG_SOL_HEADING_VALID", 64="SBG_SOL_VELOCITY_VALID",
+    128="SBG_SOL_POSITION_VALID", 256="SBG_SOL_VERT_REF_USED",
+    512="SBG_SOL_MAG_REF_USED", 1024="SBG_SOL_GPS1_VEL_USED",
+    2048="SBG_SOL_GPS1_POS_USED", 8192="SBG_SOL_GPS1_HDT_USED",
+    16384="SBG_SOL_GPS2_VEL_USED", 32768="SBG_SOL_GPS2_POS_USED",
+    131072="SBG_SOL_GPS2_HDT_USED", 262144="SBG_SOL_ODO_USED",
+    524288="SBG_SOL_DVL_BT_USED", 1048576="SBG_SOL_DVL_WT_USED",
+    16777216="SBG_SOL_USBL_USED", 33554432="SBG_SOL_PRESSURE_USED",
+    67108864="SBG_SOL_ZUPT_USED", 134217728="SBG_SOL_ALIGN_VALID")
+enum SBGSolutionStatusMode(0="SBG_SOL_MODE_UNINITIALIZED",
+    1="pitch angles. Heading and navigation data drift freely. */",
+    2="but navigation data drift freely. */",
+    3="integrated from velocity estimation. */",
+    4="(attitude, velocity, position). Absolute position is provided. */")
+enum State(0="UNKNOWN", 1="GLV_ON", 2="HV_EN", 3="RTD", 4="ERROR",
+    5="CLEAR_ERROR", 6="AS_READY", 7="AS_DRIVING", 8="AS_FINISHED",
+    9="AS_EMERGENCY")
+enum VSMBadStateErrorSource(0="VSM_BADSTATE_SOURCE_NONE",
+    1="VSM_BADSTATE_SOURCE_HVBMS", 8="VSM_BADSTATE_SOURCE_DIM",
+    16="VSM_BADSTATE_SOURCE_FSM", 32="VSM_BADSTATE_SOURCE_CDC",
+    64="VSM_BADSTATE_SOURCE_HVC")
+enum VSMHeartbeatErr(1024="VSM_ERR_BRAKEPRESSOOR",
+    2048="VSM_ERR_HALLEFFECTOOR", 4096="VSM_ERR_DCDCFAULT",
+    8192="VSM_ERR_LATCHEDERROR", 16384="VSM_ERR_MODULE_STATE",
+    32768="VSM_ERR_MODULE_TIMEOUT")
+enum VSMHeartbeatWrn(2="VSM_WRN_VOLTAGEOOR", 4="VSM_WRN_CURRENTOOR",
+    128="VSM_WRN_DIM_REQ_NAK", 256="VSM_WRN_HVI_TIMEOUT",
+    2048="VSM_WRN_DIM_TIMEOUT", 4096="VSM_WRN_FSM_TIMEOUT",
+    8192="VSM_WRN_CDC_TIMEOUT", 16384="VSM_WRN_HVC_TIMEOUT")
+enum VSMLatch(0="VSM_LATCH_NONE", 1="VSM_LATCH_BSPD",
+    2="VSM_LATCH_IMD", 4="VSM_LATCH_AMS", 8="VSM_LATCH_SOFTWARE")
+enum VSMState(0="VSM_STATE_ERROR", 1="VSM_STATE_CLEAR_ERROR",
+    2="VSM_STATE_GLV_ON", 3="VSM_STATE_REQ_PRECHARGE",
+    4="VSM_STATE_RUN_BMS", 5="VSM_STATE_DCDC_EN",
+    6="VSM_STATE_INVERTER_EN", 7="VSM_STATE_BRAKE_TEST",
+    8="VSM_STATE_HV_EN", 9="VSM_STATE_RTD", 10="VSM_STATE_LEN",
+    11="VSM_STATE_AS_READY", 12="VSM_STATE_AS_DRIVING",
+    13="VSM_STATE_AS_FINISHED", 14="VSM_STATE_AS_EMERGENCY")
+enum VSMTimeoutErrorSource(0="VSM_TIMEOUT_SOURCE_NONE",
+    1="VSM_TIMEOUT_SOURCE_HVBMS", 8="VSM_TIMEOUT_SOURCE_DIM",
+    16="VSM_TIMEOUT_SOURCE_FSM", 32="VSM_TIMEOUT_SOURCE_CDC",
+    64="VSM_TIMEOUT_SOURCE_HVC")
+enum VTSig_Gain(0="x1", 1="x2", 2="x4", 3="x8", 4="x16", 5="x32")
+enum Warn(0="NONE", 1="VSM_TIMEOUT", 2="BUS_VOLTAGE", 4="BUS_CURRENT",
+    8="FSM_SS_MODULE", 16="FSM_SS_COCKPIT", 32="FSM_SS_FRHUB",
+    64="FSM_SS_INERTIA", 128="FSM_SS_FLHUB", 256="FSM_SS_BOTS",
+    512="CDC_MEMORATOR_DAQ_TIMEOUT", 1024="CDC_DTI_TIMEOUT",
+    2048="CDC_DTI_ERROR", 4096="CDC_DTI_RR", 8192="CDC_DTI_RL",
+    16384="CDC_DTI_FR", 32768="CDC_DTI_FL")
+
+{SENDRECEIVE}
+
+// ========== END AUTO-GENERATED ENUMS ==========
+
 [CDC_COG_VELOCITY]
 ID=2C2h
 DLC=8
@@ -707,37 +844,35 @@ Var=STATE_motor_power_RR unsigned 48,16
 
 [MOVELLA_STATUS]
 ID=772h
-DLC=1
+DLC=4
 CycleTime=10
 TimeOut=50
 Var=STATUS_filter_mode_1 unsigned 0,2
-Var=STATUS_have_gnss_time_pulse unsigned 0,1
-Var=STATUS_rtk_status unsigned 0,2
-Var=STATUS_reserved_4 unsigned 0,3
-Var=STATUS_clipflag_mag_z unsigned 0,1
-Var=STATUS_reserved_2 unsigned 0,2
-Var=STATUS_clipping_indication unsigned 0,1
-Var=STATUS_reserved_3 unsigned 0,1
-Var=STATUS_sync_in_marker unsigned 0,1
-Var=STATUS_sync_out_marker unsigned 0,1
-Var=STATUS_filter_mode_2 unsigned 0,1
-Var=STATUS_clipflag_acc_x unsigned 0,1
-Var=STATUS_clipflag_acc_y unsigned 0,1
-Var=STATUS_clipflag_acc_z unsigned 0,1
-Var=STATUS_clipflag_gyr_x unsigned 0,1
-Var=STATUS_clipflag_gyr_y unsigned 0,1
-Var=STATUS_clipflag_gyr_z unsigned 0,1
-Var=STATUS_clipflag_mag_x unsigned 0,1
-Var=STATUS_clipflag_mag_y unsigned 0,1
-Var=STATUS_self_test unsigned 0,1
-Var=STATUS_filter_valid unsigned 0,1
-Var=STATUS_gnss_fix unsigned 0,1
-Var=STATUS_no_rotation_update unsigned 0,2
-Var=STATUS_representative_motion unsigned 0,1
-Var=STATUS_clock_bias_estimation unsigned 0,1
-Var=STATUS_reserved_1 unsigned 0,1
-Var=STATUS_test1 unsigned 8,7
-Var=STATUS_test2 unsigned 8,7
+Var=STATUS_have_gnss_time_pulse unsigned 2,1
+Var=STATUS_rtk_status unsigned 3,2
+Var=STATUS_reserved_4 unsigned 5,3
+Var=STATUS_clipflag_mag_z unsigned 8,1
+Var=STATUS_reserved_2 unsigned 9,2
+Var=STATUS_clipping_indication unsigned 11,1
+Var=STATUS_reserved_3 unsigned 12,1
+Var=STATUS_sync_in_marker unsigned 13,1
+Var=STATUS_sync_out_marker unsigned 14,1
+Var=STATUS_filter_mode_2 unsigned 15,1
+Var=STATUS_clipflag_acc_x unsigned 16,1
+Var=STATUS_clipflag_acc_y unsigned 17,1
+Var=STATUS_clipflag_acc_z unsigned 18,1
+Var=STATUS_clipflag_gyr_x unsigned 19,1
+Var=STATUS_clipflag_gyr_y unsigned 20,1
+Var=STATUS_clipflag_gyr_z unsigned 21,1
+Var=STATUS_clipflag_mag_x unsigned 22,1
+Var=STATUS_clipflag_mag_y unsigned 23,1
+Var=STATUS_self_test unsigned 24,1
+Var=STATUS_filter_valid unsigned 25,1
+Var=STATUS_gnss_fix unsigned 26,1
+Var=STATUS_no_rotation_update unsigned 27,2
+Var=STATUS_representative_motion unsigned 29,1
+Var=STATUS_clock_bias_estimation unsigned 30,1
+Var=STATUS_reserved_1 unsigned 31,1
 
 
 [REAR_SLIP_RATIOS]
@@ -914,4 +1049,3 @@ Var=STATUS_VSM_LATCH_SOFTWARE bit 27,1
 Var=STATUS_VSM_LATCH_AMS bit 26,1
 Var=STATUS_VSM_LATCH_IMD bit 25,1
 Var=STATUS_VSM_LATCH_BSPD bit 24,1
-

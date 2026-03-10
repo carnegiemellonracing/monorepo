@@ -155,29 +155,33 @@ def format_field_params(params):
 def format_fields(canid, matches, structlines, enums, field_params=None):
     atbit = 0
     size = None
+    bitfield_size = None 
+    prev_size = 0
+    size_change_start = 0 
+    prev_bitfield_size = 0 
 
     for vartype, name in matches: 
         if ':' in name:
-            size = int(name.split(':')[-1]) 
+            bitfield_size = int(name.split(':')[-1]) 
             name = name.split(':')[0]
-            vartype = 'unsigned' 
-            new_atbit = atbit + size 
             bitfields = True 
         else: 
             bitfields = False 
-            findsize = re.search(r'\d+', vartype)
-            if findsize:
-                size = int(findsize.group())
-                if vartype.startswith('u'):
-                    vartype = 'unsigned'
-                else: 
-                    vartype = 'signed' 
-            else:
-                if vartype == 'float': 
-                    size = 32 
-                elif vartype == 'bool':
-                    vartype = 'unsigned'
-                    size = 8 
+        findsize = re.search(r'\d+', vartype)
+        if findsize:
+            size = int(findsize.group())
+            if vartype.startswith('u'):
+                vartype = 'unsigned'
+            else: 
+                vartype = 'signed' 
+        else:
+            if vartype == 'float': 
+                size = 32 
+            elif vartype == 'bool':
+                vartype = 'unsigned'
+                size = 8 
+        if size != prev_size: #for bitfield overflow calculations 
+            size_change_start = atbit 
         #check if field is bitpacked 
         if field_params and name in field_params:
             if 'enumstruct' in field_params[name]:
@@ -185,8 +189,7 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
                 #not a heartbeat struct, normally bitpacked 
                 if len(flags) == 1:
                     format_bitpacking(canid, flags[0], structlines, atbit, vartype, enums); 
-                    if not bitfields: #bit fields at bit updated separately 
-                        atbit+=int(size) 
+                    atbit += int(size) 
                     continue 
                 #heartbeat logic 
                 else:
@@ -202,12 +205,26 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
         if size: 
             append_can_name = create_prefix(name, canid) 
             append_can_name = check_repeat_varname(append_can_name)
-            appendstr = "Var="+append_can_name+" "+vartype+ " " +str(atbit)+","+str(size)
+            if bitfields:
+                new_atbit = atbit + int(bitfield_size) 
+                if math.ceil((atbit-size_change_start)/size) < math.ceil((new_atbit-size_change_start)/size) and (atbit-size_change_start) % size != 0: #if bitfield overflows past var size 
+                    print(f"WARNING: {name} is not aligned to variable size, check bit fields!")
+                    temp_atbit = atbit - prev_bitfield_size + prev_size 
+                    appendstr = "Var="+append_can_name+" "+vartype+ " " +str(temp_atbit)+","+str(bitfield_size) 
+                    atbit = temp_atbit + int(bitfield_size) 
+                else: #bit fields without overflow 
+                    appendstr = "Var="+append_can_name+" "+vartype+ " " +str(atbit)+","+str(bitfield_size)
+                    atbit = new_atbit
+                prev_bitfield_size = bitfield_size 
+                prev_size = size 
+            else: #normal case 
+                new_atbit = atbit + int(size) 
+                appendstr = "Var="+append_can_name+" "+vartype+ " " +str(atbit)+","+str(size)
+                atbit = new_atbit
             # Add field-specific parameters if available
             if field_params and name in field_params:
                 appendstr += format_field_params(field_params[name])
             structlines.append(appendstr) 
-            atbit+=int(size)
         else: 
             structlines.append("Issue with type of field")
     return str(int(atbit/8))
@@ -285,7 +302,7 @@ def main():
     #write into symbol file 
     with open("stm32f413-drivers/PCAN/CMR 26x.sym", "w") as file:
         file.write("\n".join(symlines)) 
-    print("done") 
+    print("done writing symbols") 
 
 if __name__ == "__main__":
     main()

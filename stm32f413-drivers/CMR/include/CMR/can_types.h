@@ -1192,8 +1192,6 @@ typedef struct {
     uint8_t clock_bias_estimation:1;
     uint8_t reserved_1:1;
 
-    uint8_t test1:7;
-    uint8_t test2:7; 
 
 } cmr_canMovellaStatus_t;
 
