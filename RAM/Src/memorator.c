@@ -25,6 +25,9 @@ static cmr_task_t memoratorTask;
 /** @brief File Obj */
 static FIL filObj;
 
+/** @brief file to write */
+static char filename[64];
+
 //forward declarations
 static void switchBuffer(void);
 
@@ -142,7 +145,7 @@ static void writeToSDCard(void *pvParameters)
         oldBufferLocation = bufferLocation;
         switchBuffer();
         cmr_SDIO_mount();
-        res = cmr_SDIO_openFile(&filObj, "data2.bin");
+        res = cmr_SDIO_openFile(&filObj, filename);
         if (!res){
             cmr_SDIO_write(&filObj, txBuffer, oldBufferLocation);
             cmr_SDIO_closeFile(&filObj);
@@ -179,6 +182,9 @@ static void switchBuffer(){
 
 void memoratorInit(){
     bufferLocation = 0;
+    RTC_DateTypeDef curDate = getRTCDate();
+    RTC_TimeTypeDef curTime = getRTCTime();
+    snprintf(filename, sizeof(filename), "%u-%u-%u_%u-%u-%u-%lu.bin", curDate.Month, curDate.Date, curDate.Year, curTime.Hours, curTime.Minutes, curTime.Seconds, curTime.SubSeconds);
     cmr_taskInit(
         &memoratorTask,
         "memorator",
