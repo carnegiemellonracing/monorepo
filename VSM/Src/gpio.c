@@ -158,10 +158,10 @@ void gpioInit(void) {
         gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0])
     );
 
-    // cmr_pwmInit(&LED_Red, &pwmPinConfig2);
-    // cmr_pwmInit(&LED_Green, &pwmPinConfig1);
-    // cmr_pwmSetDutyCycle(&LED_Red, 0);
-    // cmr_pwmSetDutyCycle(&LED_Green, 0);
+    cmr_pwmInit(&LED_Red, &pwmPinConfig2);
+    cmr_pwmInit(&LED_Green, &pwmPinConfig1);
+    cmr_pwmSetDutyCycle(&LED_Red, 0);
+    cmr_pwmSetDutyCycle(&LED_Green, 0);
 
     cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
     cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);

@@ -5,7 +5,7 @@
  * @author Carnegie Mellon Racing
  */
 
- #include "assi.h"      // Interface to implement
+#include "assi.h"      // Interface to implement
 #include "can.h"        // Board-specific CAN interface
 #include "gpio.h"       // Board-specific GPIO interface
 #include "sensors.h"    // Board-specific Sensors interface
@@ -19,11 +19,11 @@
 static cmr_pwm_t BLUE_ASSI_PWM;
 static cmr_pwm_t YELLOW_ASSI_PWM;
 
-/** @brief Pump control task priority. */
+/** @brief ASSI control task priority. */
 static const uint32_t assiControlPriority = 3; //non safety critical
-/** @brief Pump control task period. */
+/** @brief ASSI control task period. */
 static const TickType_t assiControl_period_ms = 50;
-/** @brief Pump control task. */
+/** @brief ASSI control task. */
 static cmr_task_t assiControl_task;
 
 /**
@@ -40,11 +40,11 @@ static void assiControl(void *pvParameters) {
     /* 96 * 10 ** 6 hz / ((1 * 10 ** 4) * (3.2 * 10 ** 3)) = 3.2 hz */
     const cmr_pwmPinConfig_t pwmPinConfig1 = {
         .port = GPIOA,
-        .pin = GPIO_PIN_8,
-        .channel = TIM_CHANNEL_2,
+        .pin = GPIO_PIN_11,
+        .channel = TIM_CHANNEL_4,
         .presc = 10000,
         .period_ticks = 3200,
-        .timer = TIM3
+        .timer = TIM1
     };
     const cmr_pwmPinConfig_t pwmPinConfig2 = {
         .port = GPIOB,
@@ -93,7 +93,7 @@ static void assiControl(void *pvParameters) {
 }
 
 /**
- * @brief Initialization of pump control task.
+ * @brief Initialization of ASSI control task.
  *
  * @param pvParameters Ignored.
  *

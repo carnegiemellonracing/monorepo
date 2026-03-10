@@ -9,6 +9,7 @@
 #define CMR_PWM_H
 
 #include "platform.h"   // HAL_TIM_MODULE_ENABLED, GPIO_TypeDef
+#include <FreeRTOS.h> 
 
 #ifdef HAL_TIM_MODULE_ENABLED
 
@@ -47,6 +48,11 @@ typedef struct {
     TIM_HandleTypeDef handle;   /**< @brief HAL TIM handle. */
     uint32_t channel;           /**< @brief HAL TIM output compare channel. */
 } cmr_pwm_t;
+
+typedef struct {
+    cmr_pwm_t pwmChannel;
+    cmr_pwmPinConfig_t pwmPinConfig;
+} cmr_pwmPin_t;
 
 void cmr_pwmInit(cmr_pwm_t *pwmChannel,
                  const cmr_pwmPinConfig_t *pwmPinConfig);
