@@ -824,8 +824,8 @@ Var=PACK_avgCurrent_mA signed 32,32 /u:mA
 [HV_SENSORS]
 ID=306h
 DLC=8
-CycleTime=100
-TimeOut=500
+CycleTime=5
+TimeOut=25
 Var=SENSORS_packCurrent_dA signed 0,16
 Var=SENSORS_packVoltage_cV unsigned 16,16
 Var=SENSORS_packPower_W signed 32,32
