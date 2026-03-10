@@ -7,6 +7,7 @@ output = "stm32f413-drivers/PCAN/CMR 26x.sym"
 symlines = [] 
 used_varnames = [] 
 used_canids = [] #delete once canids fixed, shouldn't need 
+bitfields = False 
 
 def numbercanids():
     canidfile = "stm32f413-drivers/CMR/include/CMR/can_ids.h"
@@ -75,7 +76,7 @@ def get_cantypes_data(cantype, structs):
     for fields, name in structs:
         if re.search(name, cantype): 
             #find struct declaration with the right can type 
-            return re.findall(r'\b((?:u)?int\d+_t|float|bool)\s+(\w+)\b', fields) 
+            return re.findall(r'\b((?:u)?int\d+_t|float|bool)\s+(\w+[^;]*)', fields) 
 
 def check_repeat_varname(name):
     repeat_num = 0
@@ -94,7 +95,7 @@ def create_prefix(name, canid):
         board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
         boardname = board.group(1) 
         append_can_name = boardname+"_HEARTBEAT_"+name 
-    if len(append_can_name) >= 25:
+    if len(append_can_name) >= 30:
         #print("too long")
         return name
     return append_can_name 
@@ -156,20 +157,27 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
     size = None
 
     for vartype, name in matches: 
-        findsize = re.search(r'\d+', vartype)
-        if findsize:
-            size = int(findsize.group())
-            if vartype.startswith('u'):
-                vartype = 'unsigned'
-            else: 
-                vartype = 'signed' 
-        else:
-            if vartype == 'float':
-                #technically unnecessary check, all others should be float
-                size = 32 
-            elif vartype == 'bool':
-                vartype = 'unsigned'
-                size = 8 
+        if ':' in name:
+            size = int(name.split(':')[-1]) 
+            name = name.split(':')[0]
+            vartype = 'unsigned' 
+            new_atbit = atbit + size 
+            bitfields = True 
+        else: 
+            bitfields = False 
+            findsize = re.search(r'\d+', vartype)
+            if findsize:
+                size = int(findsize.group())
+                if vartype.startswith('u'):
+                    vartype = 'unsigned'
+                else: 
+                    vartype = 'signed' 
+            else:
+                if vartype == 'float': 
+                    size = 32 
+                elif vartype == 'bool':
+                    vartype = 'unsigned'
+                    size = 8 
         #check if field is bitpacked 
         if field_params and name in field_params:
             if 'enumstruct' in field_params[name]:
@@ -177,7 +185,8 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
                 #not a heartbeat struct, normally bitpacked 
                 if len(flags) == 1:
                     format_bitpacking(canid, flags[0], structlines, atbit, vartype, enums); 
-                    atbit+=int(size) 
+                    if not bitfields: #bit fields at bit updated separately 
+                        atbit+=int(size) 
                     continue 
                 #heartbeat logic 
                 else:
@@ -197,7 +206,7 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
             # Add field-specific parameters if available
             if field_params and name in field_params:
                 appendstr += format_field_params(field_params[name])
-            structlines.append(appendstr)
+            structlines.append(appendstr) 
             atbit+=int(size)
         else: 
             structlines.append("Issue with type of field")
