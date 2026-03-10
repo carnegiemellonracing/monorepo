@@ -28,18 +28,13 @@ typedef enum {
     GPIO_IN_SOFTWARE_ERR,       /**< @brief Software error latch input signal. */
     GPIO_IN_BSPD_ERR,           /**< @brief BSPD latch input signal. */
     GPIO_IN_IMD_ERR,            /**< @brief IMD latch input signal. */
+    GPIO_IN_IMD_ERR_COND,
     GPIO_IN_EAB,
     GPIO_IN_EBS_ACTIVATED,
     GPIO_LEN                    /**< @brief Total GPIO pins. */
 } gpio_t;
 
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN];
-
-static cmr_pwm_t LED_Red;   /**< @brief Status LED when BMS or IMD Error. */
-static cmr_pwm_t LED_Green; /**< @brief Status LED when everything works. */
-
-extern cmr_pwmPinConfig_t pwmPinConfig1;
-extern cmr_pwmPinConfig_t pwmPinConfig2;
 void gpioInit(void);
 
 #endif /* GPIO_H */

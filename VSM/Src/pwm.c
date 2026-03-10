@@ -32,8 +32,8 @@ static cmr_pwmPin_t pwmPinConfigs[PWM_LEN] = {
             .port = GPIOA,
             .pin = GPIO_PIN_10,
             .channel = TIM_CHANNEL_3,
-            .presc = 24,
-            .period_ticks = 1000,
+            .presc = 10000,
+            .period_ticks = 3200,
             .timer = TIM1
         }
     },
