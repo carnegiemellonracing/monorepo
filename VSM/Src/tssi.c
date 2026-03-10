@@ -29,7 +29,7 @@ static bool LEDError() {
 }
 
 /**
- * @brief Task for controlling the TSSI.
+ * @brief Task for controlling the TSSI.     
  *
  * @param pvParameters Ignored.
  *
