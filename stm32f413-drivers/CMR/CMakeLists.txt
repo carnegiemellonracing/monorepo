@@ -33,6 +33,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/src/watchdog.c
 add_custom_target(check_ids
     COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/check_can_id.py
     COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/check_if_duplicate.py
+    COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/can_id_lint.py
     USES_TERMINAL 
     
     COMMENT ">>> starting check can id"
