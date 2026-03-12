@@ -1455,6 +1455,60 @@ float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
     return left_right_bias;
 }
 
+/**
+ * @brief Calculate left-right torque bias of the yaw rate controller with persistent bias in long turns
+ * @param swAngle_millideg Steering wheel angle
+ * @param bias_margin Maximum range of (desired - actual yaw rate) values to consider
+ * @param yrc_pers Strength of persistent bias factor
+ * @return Requested moment (mreq)
+ */
+float calculatePersistentYRCmreq(int32_t swAngle_millideg, float bias_margin, float yrc_pers) {
+    // yrc_kp calcs copied from current mreq function getYawRateControlLeftRightBias()
+    float gx, gy, gz;
+    sensors_get_gyro_xyz(&gx, &gy, &gz);
+    const float actual_yaw_rate_radps_sae = gz;
+
+    float velocity_x_mps;
+    const volatile car_state_t *cs = sensors_get_car_state();
+    float calculated_velocity_x_mps_fallback = getTotalMotorSpeed_radps() * 0.25f / gear_ratio * effective_wheel_rad_m;
+
+    // add yrc debug here
+    if (cs && movella_state.status.gnss_fix) {
+    velocity_x_mps = cs->velocity.x;
+    yrcDebug.controls_bias = 1;
+    } else {
+    velocity_x_mps = calculated_velocity_x_mps_fallback;
+    yrcDebug.controls_bias = -1;
+    }
+
+    const float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
+    const float desired_yaw_rate_radps = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
+
+    yrcDebug.controls_current_yaw_rate = (int16_t)(1000.0f * actual_yaw_rate_radps_sae);
+    yrcDebug.controls_target_yaw_rate = (int16_t)(1000.0f * desired_yaw_rate_radps);
+    yrcDebug.controls_pid = yrc_kp;
+    const float mreq_kp = yrc_kp * (desired_yaw_rate_radps - actual_yaw_rate_radps_sae);
+    
+    // pers calculation
+    const float yaw_rate_diff_radps = desired_yaw_rate_radps - actual_yaw_rate_radps_sae;
+
+    float pers_bias;
+    const bool pers_off = fabsf(desired_yaw_rate_radps) < fabsf(actual_yaw_rate_radps_sae) // coming out of a turn
+                            || (desired_yaw_rate_radps * actual_yaw_rate_radps_sae) < 0 // different directions
+                            || fabsf(yaw_rate_diff_radps) >= sqrtf(bias_margin); // strong yrc_kp
+    if (pers_off) {
+        pers_bias = 0;
+    } else { // pers_bias (0% to 100%) scales quadratically as yaw_rate_diff_radps approaches 0
+        const float squared_ratio = (yaw_rate_diff_radps * yaw_rate_diff_radps) / bias_margin;
+        const float direction = copysignf(1.0f, desired_yaw_rate_radps);
+        pers_bias = (-(squared_ratio) + 1) * direction;
+    }
+    // pers_bias is the percentage of desired_yaw_rate based off of diff, yrc_pers scales this further
+    const float mreq_pers = desired_yaw_rate_radps * pers_bias * yrc_pers;
+
+    return mreq_kp + mreq_pers;
+}
+
 
 /**
  * @brief Set wheelspeed setpoints and torque limits based on the yaw rate control algorithm
