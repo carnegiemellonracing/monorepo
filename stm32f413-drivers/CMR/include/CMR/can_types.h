@@ -244,7 +244,7 @@ typedef enum {
 
 /** @brief Bit definitions for badstateMatrix in cmr_canVSMErrors_t. */
 typedef enum {
-    /** @brief No modules have timed out. */
+        /** @brief No modules have timed out. */
     CMR_CAN_VSM_BADSTATE_SOURCE_NONE = 0,
     /** @brief At least one High Voltage Controller message has timed out. */
     CMR_CAN_VSM_BADSTATE_SOURCE_HVC = (1 << 6),
@@ -254,8 +254,11 @@ typedef enum {
     CMR_CAN_VSM_BADSTATE_SOURCE_FSM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
     CMR_CAN_VSM_BADSTATE_SOURCE_DIM = (1 << 3),
-    /** @brief HVBMS Timeout. */
-    CMR_CAN_VSM_BADSTATE_SOURCE_HVBMS = (1 << 0)
+    /** @brief At least one
+ message has timed out. */
+    CMR_CAN_VSM_BADSTATE_SOURCE_PTC = (1 << 2),
+    /** @brief HVI Timeout. */
+    CMR_CAN_VSM_BADSTATE_SOURCE_HVI = (1 << 0)
 } cmr_canVSMBadStateErrorSource_t;
 
 /** @brief Bit definitions for latchMatrix in cmr_canVSMErrors_t. */
