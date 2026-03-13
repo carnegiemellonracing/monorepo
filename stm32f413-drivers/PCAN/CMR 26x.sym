@@ -140,8 +140,8 @@ enum Warn(0="NONE", 1="VSM_TIMEOUT", 2="BUS_VOLTAGE", 4="BUS_CURRENT",
 [AMK_FL_ACT_1]
 ID=288h
 DLC=8
-CycleTime=10
-TimeOut=50
+CycleTime=100
+TimeOut=500
 Var=FL_AMK_RESERVED unsigned 0,8
 Var=FL_AMK_STATUS_SYSTEM_READY bit 8,1
 Var=FL_AMK_STATUS_ERROR bit 9,1
@@ -181,8 +181,8 @@ Var=FL_torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
 [AMK_FR_ACT_1]
 ID=284h
 DLC=8
-CycleTime=20
-TimeOut=100
+CycleTime=100
+TimeOut=500
 Var=FR_AMK_RESERVED unsigned 0,8
 Var=FR_AMK_STATUS_SYSTEM_READY bit 8,1
 Var=FR_AMK_STATUS_ERROR bit 9,1
@@ -222,8 +222,8 @@ Var=FR_torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
 [AMK_RL_ACT_1]
 ID=287h
 DLC=8
-CycleTime=20
-TimeOut=100
+CycleTime=100
+TimeOut=500
 Var=RL_AMK_RESERVED unsigned 0,8
 Var=RL_AMK_STATUS_SYSTEM_READY bit 8,1
 Var=RL_AMK_STATUS_ERROR bit 9,1
@@ -263,8 +263,8 @@ Var=RL_torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
 [AMK_RR_ACT_1]
 ID=283h
 DLC=8
-CycleTime=20
-TimeOut=100
+CycleTime=100
+TimeOut=500
 Var=RR_AMK_RESERVED unsigned 0,8
 Var=RR_AMK_STATUS_SYSTEM_READY bit 8,1
 Var=RR_AMK_STATUS_ERROR bit 9,1
