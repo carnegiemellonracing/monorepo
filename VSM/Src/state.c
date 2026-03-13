@@ -64,13 +64,13 @@ static volatile vsmStatus_t vsmStatus = {
     .heartbeatWarnings = CMR_CAN_WARN_NONE,
     .canVSMStatus = {
         .internalState = CMR_CAN_VSM_STATE_ERROR,
-        .moduleTimeoutMatrix = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-        .badStateMatrix = CMR_CAN_VSM_ERROR_SOURCE_NONE,
+        .moduleTimeoutMatrix = CMR_CAN_VSM_TIMEOUT_SOURCE_NONE,
+        .badStateMatrix = CMR_CAN_VSM_BADSTATE_SOURCE_NONE,
         .latchMatrix = CMR_CAN_VSM_LATCH_NONE
     },
     .canVSMLatchedStatus = {
-        .moduleTimeoutMatrix = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-        .badStateMatrix = CMR_CAN_VSM_ERROR_SOURCE_NONE,
+        .moduleTimeoutMatrix = CMR_CAN_VSM_TIMEOUT_SOURCE_NONE,
+        .badStateMatrix = CMR_CAN_VSM_BADSTATE_SOURCE_NONE,
         .latchMatrix = CMR_CAN_VSM_LATCH_NONE
     }
 };
@@ -161,7 +161,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
 
     // TE (Immediately return error if anything is wrong)
     if ((vsmStatus.heartbeatErrors != CMR_CAN_ERROR_NONE)
-     || (vsmStatus.canVSMStatus.moduleTimeoutMatrix != CMR_CAN_VSM_ERROR_SOURCE_NONE)
+     || (vsmStatus.canVSMStatus.moduleTimeoutMatrix != CMR_CAN_VSM_TIMEOUT_SOURCE_NONE)
      || (vsmStatus.canVSMStatus.latchMatrix != CMR_CAN_VSM_LATCH_NONE)) {
         return CMR_CAN_VSM_STATE_ERROR;
     }
@@ -215,7 +215,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
 
         case CMR_CAN_VSM_STATE_CLEAR_ERROR: {
             // T1
-            if ((vsmStatus.canVSMStatus.badStateMatrix == CMR_CAN_VSM_ERROR_SOURCE_NONE) &&
+            if ((vsmStatus.canVSMStatus.badStateMatrix == CMR_CAN_VSM_BADSTATE_SOURCE_NONE) &&
                 (dimRequestedState == CMR_CAN_GLV_ON)
             ) {
                 nextState = CMR_CAN_VSM_STATE_GLV_ON;

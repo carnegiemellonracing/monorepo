@@ -1046,20 +1046,20 @@
             "type": "cmr_canCDCSafetyFilterStates_t"
         },
         "CMR_CANID_TEST_ID": {
-            "cycleTime": 1000,
-            "timeOut": 5000,
+            "cycleTime": "can10Hz_period_ms\n            //",
+            "timeOut": "5*can10Hz_period_ms\n            //",
             "type": "cmr_canDAQTest_t"
         },
         "CMR_CANID_VSM_LATCHED_STATUS": {
             "badStateMatrix": {
-                "enumstruct": "cmr_canVSMErrorSource_t"
+                "enumstruct": "cmr_canVSMBadStateErrorSource_t"
             },
             "cycleTime": 10000,
             "latchMatrix": {
                 "enumstruct": "cmr_canVSMLatch_t"
             },
             "moduleTimeoutMatrix": {
-                "enumstruct": "cmr_canVSMErrorSource_t"
+                "enumstruct": "cmr_canVSMTimeoutErrorSource_t"
             },
             "timeOut": 50000,
             "type": "cmr_canVSMLatchedStatus_t"
@@ -1088,7 +1088,7 @@
         },
         "CMR_CANID_VSM_STATUS": {
             "badStateMatrix": {
-                "enumstruct": "cmr_canVSMErrorSource_t"
+                "enumstruct": "cmr_canVSMBadStateErrorSource_t"
             },
             "cycleTime": 10,
             "internalState": {
@@ -1098,7 +1098,7 @@
                 "enumstruct": "cmr_canVSMLatch_t"
             },
             "moduleTimeoutMatrix": {
-                "enumstruct": "cmr_canVSMErrorSource_t"
+                "enumstruct": "cmr_canVSMTimeoutErrorSource_t"
             },
             "timeOut": 50,
             "type": "cmr_canVSMStatus_t"
@@ -1108,8 +1108,8 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2788,
-        "files_with_matches": 2788,
+        "files_processed": 2791,
+        "files_with_matches": 2791,
         "global_mappings": {
             "canrx_mappings": 96,
             "canrx_timeouts": 95,

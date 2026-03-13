@@ -34,7 +34,7 @@ typedef enum {
 
 //extern volatile TickType_t lastStateChangeTime;
 extern cmr_canRXMeta_t canRXMeta[];
-extern const cmr_canVSMErrorSource_t vsmErrorSourceFlags[];
+extern const cmr_canVSMTimeoutErrorSource_t vsmErrorSourceFlags[];
 
 void canInit(void);
 int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
