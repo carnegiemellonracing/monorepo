@@ -34,5 +34,7 @@ void sendCurrent(void);
 
 uint16_t getVoltageData(uint8_t index);
 uint16_t getTempData(uint8_t index);
+uint16_t getMinVoltage(void); 
+
 void sampleInit(void);
 
