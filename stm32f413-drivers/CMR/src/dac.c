@@ -18,7 +18,7 @@ static void dacPinConfig(cmr_dacPinConfig_t*);
 DAC_HandleTypeDef hdac1;
 
 
-cmr_dacInit(uint16* pins, size_t dacConfigsLen){
+void cmr_dacInit(uint16* pins, size_t dacConfigsLen){
     MX_DAC1_Init();
     for (uint8_t i=0; i<dacConfigsLen; i++){
         dacPinConfig(pins[i]);

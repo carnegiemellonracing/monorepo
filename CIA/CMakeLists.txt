@@ -116,6 +116,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     # Project sources
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/adc.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/can.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/dac.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/syscall.c
