@@ -339,8 +339,8 @@ void BMBInit() {
 	byteDelay(0x3F);
 	DWT_Delay_ms(100);
 
-	// DWT_Delay_ms(100);
-	// cellBalancingSetup();
+	DWT_Delay_ms(100);
+	cellBalancingSetup();
 }
 
 static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
@@ -382,14 +382,13 @@ int16_t calculateTemp(uint8_t msb, uint8_t lsb) {
     return (voltage_mv);
 }
 
-
-void cellBalancingSetup() {
+bool cellBalancingSetup() {
 	//set up cell balancing timers
 	//done in two sets because max register write is 8 :(
 
 	uart_command_t balance_register = {
 		.readWrite = BROADCAST_WRITE,
-		.dataLen = CELL_NUM/2,
+		.dataLen = CELL_NUM/2, 
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = CB_CELL14_CTRL,
 		.data = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
@@ -407,149 +406,127 @@ void cellBalancingSetup() {
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = BAL_CTRL1,
-		.data = {0x01}, //TODO what is this value supposed to be?
+		.data = {0x00}, //TODO what is this value supposed to be?
 		.crc = {0x00, 0x00}
 	};
 	res = uart_sendCommand(&duty_cycle);
 
-	//set UV stuff for stopping balancing to default at 4.2 volts
-	uart_command_t UV = {
-		.readWrite = BROADCAST_WRITE,
-		.dataLen = 1,
-		.deviceAddress = 0xFF, //not used!
-		.registerAddress = VCB_DONE_THRESH,
-		.data = {0x3F}, //TODO figure out correct low value
-		.crc = {0x00, 0x00}
-	};
-	//res = uart_sendCommand(&UV);
-
-	UV.registerAddress = OVUV_CTRL;
-	UV.data[0] = 0x05;
-
-	//res = uart_sendCommand(&UV);
 
 }
 
-bool getBalDone() {
-	uart_command_t getBalDone = {
+/**
+ * @brief Checks the cell balancing status across all BMBs.
+ *
+ * Sends a UART read command to the BAL_STAT register to determine if 
+ * any board is currently performing cell balancing (checking the CB_RUN bit).
+ * This function enters a critical section to ensure UART RX integrity.
+ *
+ * @return int
+ * 1 : Balancing is complete (all boards are idle).
+ * 0 : Balancing is in progress (at least one board is active).
+ * -1 : Error occurred (UART transmission or reception failure).
+ */
+ int getBalDone() {
+
+	uart_command_t getBalStatus = {
 		.readWrite = BROADCAST_READ,
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
-		.registerAddress = CB_COMPLETE1,
-		.data = {0x02},
-		.crc = {0x00, 0x00}
+		.registerAddress = BAL_STAT,
+		.data = {1}, 
+		.crc = {0xFF, 0xFF}
 	};
-	bool shitter = false;
-	uart_sendCommand(&getBalDone);
-	uart_response_t response[BOARD_NUM-1];
-	for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
-		uint8_t status = uart_receiveResponse(&response[i-1], 2);
-		if(status != 0) {
-			shitter = false;
-		}
-		else if(i != 7 && (response[i-1].data[0] != 0 || response[i-1].data[1] != 0)) {
-			shitter = true;
-		}
+
+	uart_response_t response[BOARD_NUM] = {0};
+
+	// Critical section used so UART RX is not preempted
+	taskENTER_CRITICAL();
+
+	cmr_uart_result_t res = uart_sendCommand(&getBalStatus);
+	if (res != UART_SUCCESS)
+		return -1; 
+
+	//loop through each BMB and channel
+	for(uint8_t i = BOARD_NUM; i >= 1; i--) {
+		uint8_t status = uart_receiveResponse(&response[i-1], 1); 
+		if (status == 1) {
+			return -1; 
+		} 
 	}
-	return shitter;
+	taskEXIT_CRITICAL();
+	
+	// determines if we are done balancing
+	bool doneBalancing = 1;
+	for(uint8_t i = 0; i < BOARD_NUM; i++) {
+		if ((response[i].data[0] & 8) == 8) //CB_RUN is 1 
+			doneBalancing = 0;
+	}
+	
+	return doneBalancing; 
 
 }
-
 void cellBalancing(bool set, uint16_t thresh) {
 	cmr_uart_result_t res;
 
-	uart_command_t enable = {
-		.readWrite = BROADCAST_WRITE,
-		.dataLen = 1,
-		.deviceAddress = 0xFF, //not used!
-		.registerAddress = BAL_CTRL2,
-		.data = {0x03},
-		.crc = {0x00, 0x00}
-	};
-
-
-	if(set) {
-		if(thresh >= 4250 || thresh <= 2450) {
-			thresh = 3700;
-		}
-		//board index by 0 but don't send to interface chip
-		for(int i = 0; i < BOARD_NUM-1; i++) {
-			thresh = 0;
-			for(int j = 0; j < CELL_NUM; j++) {
-				if(BMBData.cellVoltages > thresh) {
-					thresh = BMBData.cellVoltages[j];
-				}
-			}
-			thresh = thresh - 10;
-			uart_command_t balance_register = {
-				.readWrite = SINGLE_WRITE,
-				.dataLen = CELL_NUM/2,
-				.deviceAddress = i+1,
-				.registerAddress = CB_CELL14_CTRL,
-				.data = {0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04},
-				.crc = {0x00, 0x00}
-			};
-			for(int j = 13; j > 6; j--) {
-				if(BMBData.cellVoltages[j] < thresh) {
-					balance_register.data[13-j] = 0x00;
-				}
-			}
-			res = uart_sendCommand(&balance_register);
-			balance_register.registerAddress = CB_CELL7_CTRL;
-			for(int j = 0; j < 7; j++) {
-				balance_register.data[j] = 0x04;
-			}
-			for(int j = 6; j >=0 ; j--) {
-				if(BMBData.cellVoltages[j] < thresh) {
-					balance_register.data[6-j] = 0x00;
-				}
-			}
-			res = uart_sendCommand(&balance_register);
-		}
-
-		//see bq datasheet in register VCB_DONE_THRESH, maps threshold in 25 mv increments
-		//between 245 mV and 4000 mV
-		uint8_t threshIndex = (uint8_t)((thresh - 2450)/25.0) + 1;
-
-		//set UV stuff for stopping balancing based on parameter
-		uart_command_t UV = {
-			.readWrite = BROADCAST_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!
-			.registerAddress = VCB_DONE_THRESH,
-			.data = {0x1},
-			.crc = {0x00, 0x00}
-		};
-		enable.data[0] = 0x03;
-//		res = uart_sendCommand(&UV);
-//		TickType_t lastTime = xTaskGetTickCount();
-//		vTaskDelayUntil(&lastTime, 1);
-
-		UV.registerAddress = OVUV_CTRL;
-		UV.data[0] = 0x05;
-//		res = uart_sendCommand(&UV);
-//		lastTime = xTaskGetTickCount();
-//		vTaskDelayUntil(&lastTime, 1);
-
+	if (thresh >= 4250 || thresh <= 2450) {
+		thresh = 3700;
 	}
-	else {
+
+	// board index by 0 but don't send to interface chip
+	for(int i = 0; i < BOARD_NUM; i++) {
+		// selections for cells--0x04 to balance for 10s minute intervals
+		uint8_t top_len; 
+
+		//balance cells above 8 
+		if (CELL_NUM > 8) { 
+			top_len = CELL_NUM - 8; 
+		} else {
+			top_len = 0; 
+		}
+
+		//decide which cells to balance before starting balancing. Inits to 10s 
+		uint8_t cell_selects[] = {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 
+			0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01}; 
+
+		// disable selected cells below threshold 
+		for (int j = 0; j < CELL_NUM; j ++) {
+			if ((BMBData.cellVoltages[CELL_NUM-1-j] < thresh) || !set) {
+				cell_selects[j] = 0x00;
+			} 
+		}
+
+		//balance top length
 		uart_command_t balance_register = {
-			.readWrite = BROADCAST_WRITE,
-			.dataLen = CELL_NUM/2,
-			.deviceAddress = 0xFF, //not used!
-			.registerAddress = CB_CELL14_CTRL,
-			.data = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+			.readWrite = SINGLE_WRITE,
+			.dataLen = top_len,
+			.deviceAddress = i,
+			.registerAddress = TOP_CELL_CB_ADDR,
 			.crc = {0x00, 0x00}
 		};
-		cmr_uart_result_t res;
-		res = uart_sendCommand(&balance_register);
 
-		balance_register.registerAddress = CB_CELL7_CTRL;
-		res = uart_sendCommand(&balance_register);
+		if(top_len > 0){
+			memcpy(balance_register.data, cell_selects, top_len);
+			res = uart_sendCommand(&balance_register);
+		}
+		
+		//balance bottom 8 
+		uint8_t bottom_len = 8; 
+		balance_register.registerAddress = CB_CELL8_CTRL; 
+
+		if (CELL_NUM < 8){
+			bottom_len = CELL_NUM; 
+			balance_register.registerAddress = TOP_CELL_CB_ADDR; 
+		}
+
+		balance_register.dataLen = bottom_len; 
+		memcpy(balance_register.data, &(cell_selects[top_len]), bottom_len); 
+		res = uart_sendCommand(&balance_register); 
 	}
-	res = uart_sendCommand(&enable);
-}
+		
+	uint8_t toSend = 3;
+	sendUartBroadcastWrite(BAL_CTRL2, &toSend, 1);
 
+}
 void writeLED(bool set) {
 	uint8_t enableLed = set ? 0 : 1;
     uint8_t data = 0x04 + enableLed;
@@ -700,7 +677,7 @@ uint8_t pollAllVoltageData() {
         .dataLen = 1,
         .deviceAddress = 0xFF, //not used!
         .registerAddress = TOP_CELL,
-        .data = {bytesToRead}, //reading high and low for cell 0-VSENSE_CHANNELS
+        .data = {bytesToRead}, //reading high and low for cell 0-CELL_NUM
         .crc = {0xFF, 0xFF}
     };
 
