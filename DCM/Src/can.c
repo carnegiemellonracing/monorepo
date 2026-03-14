@@ -43,8 +43,8 @@ extern bool isTorqueMode;
 /** @brief Fan/Pump channel states. */
 uint16_t fan_1_State;
 uint16_t fan_2_State;
-uint16_t pump_1_State;
-uint16_t pump_2_State;
+uint16_t pump_Left_State;
+uint16_t pump_Right_State;
 
 #define max(a,b) \
    ({ __typeof__ (a) _a = (a); \

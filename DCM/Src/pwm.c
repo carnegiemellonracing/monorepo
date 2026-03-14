@@ -17,46 +17,26 @@
  */
 
 static cmr_pwmPin_t pwmPinConfigs[PWM_LEN] = {
-    [PWM_GREEN] = {
-        .pwmPinConfig = {
-            .port = GPIOA,
-            .pin = GPIO_PIN_10,
-            .channel = TIM_CHANNEL_3,
-            .presc = 24,
-            .period_ticks = 1000,
-            .timer = TIM1
-        }
-    },
-    [PWM_RED] = {
-        .pwmPinConfig = {
-            .port = GPIOA,
-            .pin = GPIO_PIN_9,
-            .channel = TIM_CHANNEL_2,
-            .presc = 10000,
-            .period_ticks = 3200,
-            .timer = TIM1
-        }
-    },
-    [PWM_YELLOW] = {
-        .pwmPinConfig = {
-            .port = GPIOA,
-            .pin = GPIO_PIN_11,
-            .channel = TIM_CHANNEL_4,
-            .presc = 10000,
-            .period_ticks = 3200,
-            .timer = TIM1
-        }
-    },
-    [PWM_BLUE] = {
+    [PWM_PUMP_LEFT] = {
         .pwmPinConfig = {
             .port = GPIOB,
-            .pin = GPIO_PIN_10,
-            .channel = TIM_CHANNEL_3,
-            .presc = 10000,
-            .period_ticks = 3200,
-            .timer = TIM2
+            .pin = GPIO_PIN_6,
+            .channel = TIM_CHANNEL_1,
+            .presc = 24,
+            .period_ticks = 40000,
+            .timer = TIM4
         }
-    }
+    },
+    [PWM_PUMP_RIGHT] = {
+        .pwmPinConfig = {
+            .port = GPIOG,
+            .pin = GPIO_PIN_13,
+            .channel = TIM_CHANNEL_2,
+            .presc = 24,
+            .period_ticks = 40000,
+            .timer = TIM23
+        }
+    },
 };
 
 /**

@@ -157,8 +157,8 @@ extern cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN];
 
 extern uint16_t fan_1_State;
 extern uint16_t fan_2_State;
-extern uint16_t pump_1_State;
-extern uint16_t pump_2_State;
+extern uint16_t pump_Left_State;
+extern uint16_t pump_Right_State;
 
 void canInit(void);
 int canTX(

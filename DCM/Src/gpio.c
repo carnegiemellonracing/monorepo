@@ -44,24 +44,24 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    [GPIO_PUMP_LEFT] = {
-        .port = GPIOD,
-        .init = {
-            .Pin = GPIO_PIN_6,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_PUMP_RIGHT] = {
-        .port = GPIOD,
-        .init = {
-            .Pin = GPIO_PIN_7,
-            .Mode = GPIO_MODE_OUTPUT_PP,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
+    // [GPIO_PUMP_LEFT] = {
+    //     .port = GPIOB,
+    //     .init = {
+    //         .Pin = GPIO_PIN_6,
+    //         .Mode = GPIO_MODE_OUTPUT_PP,
+    //         .Pull = GPIO_NOPULL,
+    //         .Speed = GPIO_SPEED_FREQ_LOW
+    //     }
+    // },
+    // [GPIO_PUMP_RIGHT] = {
+    //     .port = GPIOG,
+    //     .init = {
+    //         .Pin = GPIO_PIN_13,
+    //         .Mode = GPIO_MODE_OUTPUT_PP,
+    //         .Pull = GPIO_NOPULL,
+    //         .Speed = GPIO_SPEED_FREQ_LOW
+    //     }
+    // },
     [GPIO_PUMP_ON] = {
         .port = GPIOA,
         .init = {
