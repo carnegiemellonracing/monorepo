@@ -312,31 +312,31 @@ void canRXCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t 
         memoratorWrite(canID, timestamp, dataLen, data);
     }
 
-	// int ret = parseData((uint32_t) iface_idx, canID, data, dataLen);
-	// configASSERT(ret == 0);
+	int ret = parseData((uint32_t) iface_idx, canID, data, dataLen);
+	configASSERT(ret == 0);
 
-	// // Update the RX Meta array
-	// cmr_canRXMeta_t *rxMetaArray = NULL;
-	// uint32_t rxMetaArrayLen = 0;
-	// if (iface_idx == CMR_CAN_BUS_VEH) {
-	// 	rxMetaArray = canVehicleRXMeta;
-	// 	rxMetaArrayLen = CANRX_VEH_LEN;
-	// } else if (iface_idx == CMR_CAN_BUS_DAQ) {
-	// 	rxMetaArray = canDaqRXMeta;
-	// 	rxMetaArrayLen = CANRX_DAQ_LEN;
-	// } else if (iface_idx == CMR_CAN_BUS_TRAC) {
-	// 	rxMetaArray = canTractiveRXMeta;
-	// 	rxMetaArrayLen = CANRX_TRAC_LEN;
-	// }
-	// if (rxMetaArray != NULL) {
-	// 	for (uint32_t i = 0; i < rxMetaArrayLen; i++) {
-	// 		if (rxMetaArray[i].canID == canID) {
-	// 			memcpy((void *) rxMetaArray[i].payload, data, dataLen);
-	// 			rxMetaArray[i].lastReceived_ms = xTaskGetTickCountFromISR();
-	// 			break;
-	// 		}
-	// 	}
-	// }
+	// Update the RX Meta array
+	cmr_canRXMeta_t *rxMetaArray = NULL;
+	uint32_t rxMetaArrayLen = 0;
+	if (iface_idx == CMR_CAN_BUS_VEH) {
+		rxMetaArray = canVehicleRXMeta;
+		rxMetaArrayLen = CANRX_VEH_LEN;
+	} else if (iface_idx == CMR_CAN_BUS_DAQ) {
+		rxMetaArray = canDaqRXMeta;
+		rxMetaArrayLen = CANRX_DAQ_LEN;
+	} else if (iface_idx == CMR_CAN_BUS_TRAC) {
+		rxMetaArray = canTractiveRXMeta;
+		rxMetaArrayLen = CANRX_TRAC_LEN;
+	}
+	if (rxMetaArray != NULL) {
+		for (uint32_t i = 0; i < rxMetaArrayLen; i++) {
+			if (rxMetaArray[i].canID == canID) {
+				memcpy((void *) rxMetaArray[i].payload, data, dataLen);
+				rxMetaArray[i].lastReceived_ms = xTaskGetTickCountFromISR();
+				break;
+			}
+		}
+	}
 }
 
 /**
