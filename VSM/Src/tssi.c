@@ -40,7 +40,7 @@ static void tssiControl(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
 
-    pwmSetDutyCycle(PWM_GREEN, 100);
+    pwmSetDutyCycle(PWM_GREEN, 50);
     pwmSetDutyCycle(PWM_RED, 0);
 
     while (1) {
