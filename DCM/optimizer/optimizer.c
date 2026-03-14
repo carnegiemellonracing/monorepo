@@ -14,6 +14,8 @@
 
 #define MINIMUM_K_VALUE (0.005f) // Prevent numerical instability.
 
+#define MINIMUM_K_POW_VALUE (0.00001f) // prevent numerical instability for kpow, which is rly small
+
 static double k_lin = 80.0;
 static double k_yaw = 0.30;
 static double k_tie = 0.008;
@@ -216,7 +218,7 @@ void solver_set_k_tie(double d) {
 }
 
 void solver_set_k_pow(double d) {
-    d = fmax(d, MINIMUM_K_VALUE);
+    d = fmax(d, MINIMUM_K_POW_VALUE);
     k_pow = d;
 }
 
