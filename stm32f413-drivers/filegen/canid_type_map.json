@@ -356,6 +356,9 @@
             "cycleTime": 100,
             "timeOut": 500,
             "type": "driveEnable"
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "driveEnable"
         },
         "CMR_CANID_DTI_BROADCAST_SET_MAX_CURRENT": {
             "cycleTime": 5,
@@ -383,9 +386,14 @@
             "type": "cmr_canDTI_TX_IOStatus_t"
         },
         "CMR_CANID_DTI_FL_SET_CURRENT": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "set_current_fl"
+        },
+        "CMR_CANID_DTI_FL_SET_MAX_CURRENT": {
             "cycleTime": 5,
             "timeOut": 25,
-            "type": "ACCurrent_deciAmps"
+            "type": "current"
         },
         "CMR_CANID_DTI_FL_SET_MAX_CURRENT": {
             "cycleTime": 5,
@@ -433,9 +441,14 @@
             "type": "cmr_canDTI_TX_IOStatus_t"
         },
         "CMR_CANID_DTI_FR_SET_CURRENT": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "set_current_fr"
+        },
+        "CMR_CANID_DTI_FR_SET_MAX_CURRENT": {
             "cycleTime": 5,
             "timeOut": 25,
-            "type": "ACCurrent_deciAmps"
+            "type": "current"
         },
         "CMR_CANID_DTI_FR_SET_MAX_CURRENT": {
             "cycleTime": 5,
@@ -483,9 +496,14 @@
             "type": "cmr_canDTI_TX_IOStatus_t"
         },
         "CMR_CANID_DTI_RL_SET_CURRENT": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "set_current_rl"
+        },
+        "CMR_CANID_DTI_RL_SET_MAX_CURRENT": {
             "cycleTime": 5,
             "timeOut": 25,
-            "type": "ACCurrent_deciAmps"
+            "type": "current"
         },
         "CMR_CANID_DTI_RL_SET_MAX_CURRENT": {
             "cycleTime": 5,
@@ -533,9 +551,14 @@
             "type": "cmr_canDTI_TX_IOStatus_t"
         },
         "CMR_CANID_DTI_RR_SET_CURRENT": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "set_current_rr"
+        },
+        "CMR_CANID_DTI_RR_SET_MAX_CURRENT": {
             "cycleTime": 5,
             "timeOut": 25,
-            "type": "ACCurrent_deciAmps"
+            "type": "current"
         },
         "CMR_CANID_DTI_RR_SET_MAX_CURRENT": {
             "cycleTime": 5,
@@ -894,8 +917,8 @@
             "type": "cmr_canHVCPackCurrent_t"
         },
         "CMR_CANID_HV_SENSORS": {
-            "cycleTime": 5,
-            "timeOut": 25,
+            "cycleTime": 100,
+            "timeOut": 500,
             "type": "cmr_canHVSense_t"
         },
         "CMR_CANID_LVBMS_BUS_VOLTAGE": {
@@ -997,14 +1020,6 @@
             "timeOut": 2000,
             "type": "cmr_canSBGIMUGyro_t"
         },
-        "CMR_CANID_SBG_STATUS_3": {
-            "cycleTime": 400.0,
-            "solution_status": {
-                "enumstruct": "cmr_canSBGSolutionStatus_t"
-            },
-            "timeOut": 2000,
-            "type": "cmr_canSBGStatus3_t"
-        },
         "CMR_CANID_SF_STATE": {
             "cycleTime": 10,
             "longest_power_violation_ms": {
@@ -1087,9 +1102,9 @@
         "files_processed": 2831,
         "files_with_matches": 2831,
         "global_mappings": {
-            "canrx_mappings": 162,
-            "canrx_timeouts": 156,
-            "canrx_types": 74,
+            "canrx_mappings": 177,
+            "canrx_timeouts": 171,
+            "canrx_types": 73,
             "constants": 238,
             "struct_members": 0,
             "variable_types": 351
@@ -1098,6 +1113,6 @@
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 131
+        "total_canids": 130
     }
 }
