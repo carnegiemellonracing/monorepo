@@ -45,8 +45,8 @@ typedef struct {
 
 typedef struct {
     double table[170];
-    double bpoints_x[17];
-    double bpoints_y[10];
+    double bpoints_x[10];
+    double bpoints_y[17];
     uint16_t length_x;
     uint16_t length_y;
 } efficiencyLUT_t;

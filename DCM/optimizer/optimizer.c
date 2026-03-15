@@ -108,10 +108,10 @@ double efficiencyLUT_lookup(efficiencyLUT_t *T, double x, double y) {
 }
 
 void compute_power_weights(optimizer_state_t *state, efficiencyLUT_t *efficiencyLUT) {
-    double effiFL = efficiencyLUT_lookup(efficiencyLUT, prevtorque_FL, state->omegas[0]);
-    double effiFR = efficiencyLUT_lookup(efficiencyLUT, prevtorque_FR, state->omegas[1]);
-    double effiRL = efficiencyLUT_lookup(efficiencyLUT, prevtorque_RL, state->omegas[2]);
-    double effiRR = efficiencyLUT_lookup(efficiencyLUT, prevtorque_RR, state->omegas[3]);
+    double effiFL = efficiencyLUT_lookup(&efficiencyLUT, prevtorque_FL, state->omegas[0]);
+    double effiFR = efficiencyLUT_lookup(&efficiencyLUT, prevtorque_FR, state->omegas[1]);
+    double effiRL = efficiencyLUT_lookup(&efficiencyLUT, prevtorque_RL, state->omegas[2]);
+    double effiRR = efficiencyLUT_lookup(&efficiencyLUT, prevtorque_RR, state->omegas[3]);
     state->power_weights[0] = state->omegas[0] / effiFL;
     state->power_weights[1] = state->omegas[1] / effiFR;
     state->power_weights[2] = state->omegas[2] / effiRL;
