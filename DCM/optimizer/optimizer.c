@@ -19,7 +19,7 @@
 static double k_lin = 80.0;
 static double k_yaw = 0.30;
 static double k_tie = 0.008;
-static double k_pow = 0.002;
+static double k_pow = 0.003;
 
 /**
  * Computes 1/2 x^T Q x + q x + c.
@@ -55,6 +55,67 @@ void load_diagonal_weights(optimizer_state_t *state) {
     state->diagonal_weights[1] = k_tie;
     state->diagonal_weights[2] = k_tie;
     state->diagonal_weights[3] = k_tie;
+}
+
+int search(double array[], uint16_t length, double x) {
+    if(array[length - 1] <= x) return length - 1;
+    int i = 0;
+    while(array[i + 1] <= x) i++;
+    return i;
+}
+
+double efficiencyLUT_lookup(efficiencyLUT_t *T, double x, double y) {
+    int lo_x = search(T->bpoints_x, T->length_x, x);
+    int lo_y = search(T->bpoints_y, T->length_y, y);
+    int hi_x = min(lo_x + 1, T->length_x - 1);
+    int hi_y = min(lo_y + 1, T->length_y - 1);
+
+    if (lo_x == hi_x && lo_y == hi_y) {
+        return T->table[lo_y * T->length_x + lo_x];
+    }
+
+    if (lo_x == hi_x) {
+        double Q1 = T->table[lo_y * T->length_x + lo_x];
+        double Q2 = T->table[hi_y * T->length_x + lo_x];
+        return ((T->bpoints_y[hi_y] - y) * Q1 +
+                (y - T->bpoints_y[lo_y]) * Q2)
+             / (T->bpoints_y[hi_y] - T->bpoints_y[lo_y]);
+    }
+
+    if (lo_y == hi_y) {
+        double Q1 = T->table[lo_y * T->length_x + lo_x];
+        double Q2 = T->table[lo_y * T->length_x + hi_x];
+        return ((T->bpoints_x[hi_x] - x) * Q1 +
+                (x - T->bpoints_x[lo_x]) * Q2)
+             / (T->bpoints_x[hi_x] - T->bpoints_x[lo_x]);
+    }
+
+    double Q11 = T->table[lo_y * T->length_x + lo_x];
+    double Q12 = T->table[hi_y * T->length_x + lo_x];
+    double Q21 = T->table[lo_y * T->length_x + hi_x];
+    double Q22 = T->table[hi_y * T->length_x + hi_x];
+
+    double result =
+        (T->bpoints_x[hi_x] - x) * (T->bpoints_y[hi_y] - y) * Q11 +
+        (T->bpoints_x[hi_x] - x) * (y - T->bpoints_y[lo_y]) * Q12 +
+        (x - T->bpoints_x[lo_x]) * (T->bpoints_y[hi_y] - y) * Q21 +
+        (x - T->bpoints_x[lo_x]) * (y - T->bpoints_y[lo_y]) * Q22;
+
+    result /= (T->bpoints_x[hi_x] - T->bpoints_x[lo_x]) *
+              (T->bpoints_y[hi_y] - T->bpoints_y[lo_y]);
+
+    return result;
+}
+
+void compute_power_weights(optimizer_state_t *state, efficiencyLUT_t *efficiencyLUT) {
+    double effiFL = efficiencyLUT_lookup(efficiencyLUT, state->omegas[0], prevtorque_FL);
+    double effiFR = efficiencyLUT_lookup(efficiencyLUT, state->omegas[1], prevtorque_FR);
+    double effiRL = efficiencyLUT_lookup(efficiencyLUT, state->omegas[2], prevtorque_RL);
+    double effiRR = efficiencyLUT_lookup(efficiencyLUT, state->omegas[3], prevtorque_RR);
+    state->power_weights[0] = state->omegas[0] / effiFL;
+    state->power_weights[1] = state->omegas[1] / effiFR;
+    state->power_weights[2] = state->omegas[2] / effiRL;
+    state->power_weights[3] = state->omegas[3] / effiRR;
 }
 
 static inline bool box_variable_is_valid(box_variable_t *v, double value) {
@@ -150,7 +211,7 @@ void solve_one_case(optimizer_state_t *state) {
     compose_error_qform_addto(vp, state->accel_weights, state->areq, k_lin, &state->qform, NUM_VARS);
     compose_error_qform_addto(vp, state->moment_weights, state->mreq, k_yaw, &state->qform, NUM_VARS);
     compose_diagonal_qform_addto(vp, state->diagonal_weights, &state->qform, dim, NUM_VARS);
-    compose_linear_qform_addto(vp, state->omegas, k_pow, &state->qform, NUM_VARS);
+    compose_linear_qform_addto(vp, state->power_weights, k_pow, &state->qform, NUM_VARS);
 
     find_optimum(&state->qform, dim, state->optimum.content, state->Qinv);
 
@@ -180,11 +241,12 @@ void solve_one_case(optimizer_state_t *state) {
     }
 }
 
-void solve(optimizer_state_t *state) {
+void solve(optimizer_state_t *state, efficiencyLUT_t *efficiencyLUT) {
 
     compute_accel_weights(state);
     compute_moment_weights(state);
     load_diagonal_weights(state);
+    compute_power_weights(state, efficiencyLUT);
 
     state->optimal_cost = FLT_MAX;
 

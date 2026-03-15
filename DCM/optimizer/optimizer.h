@@ -30,6 +30,7 @@ typedef struct {
     double accel_weights[NUM_VARS];
     double moment_weights[NUM_VARS];
     double diagonal_weights[NUM_VARS];
+    double power_weights[NUM_VARS];
     double omegas[NUM_VARS];
     double power_limit;
     int dim;
@@ -41,6 +42,14 @@ typedef struct {
     box_variable_t variable_profile[NUM_VARS];
     double Qinv[NUM_VARS * NUM_VARS];
 } optimizer_state_t;
+
+typedef struct {
+    double table[170];
+    double bpoints_x[17];
+    double bpoints_y[10];
+    uint16_t length_x;
+    uint16_t length_y;
+} efficiencyLUT_t;
 
 /**
  * Try all 3^4 = 81 cases and finds the best.
