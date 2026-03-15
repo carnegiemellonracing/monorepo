@@ -23,14 +23,17 @@
 /** @brief Number of samples for current measurement rolling average. */
 #define BUS_CURRENT_SAMPLES 10
 
-/** @brief What 1.8 Volts is in ADC */
-#define ONE_POINT_EIGHT_ADC (uint32_t) ((1.8 * 4096) / 3.3)
+/** @brief  Experimentally determined left TPOS ADC Minimum*/
+#define LEFT_TPOS_MIN_ADC 2750
 
 /** @brief  Experimentally determined left TPOS ADC Maximum*/
-#define LEFT_TPOS_MAX_ADC 3850
+#define LEFT_TPOS_MAX_ADC 3750
+
+/** @brief  Experimentally determined right TPOS ADC Minimum*/
+#define RIGHT_TPOS_MIN_ADC 500
 
 /** @brief  Experimentally determined right TPOS ADC Maximum*/
-#define RIGHT_TPOS_MAX_ADC 1920
+#define RIGHT_TPOS_MAX_ADC 1800
 
 /** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
 static const TickType_t TPOS_IMPLAUS_THRES_MS = 100;
@@ -338,14 +341,14 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     [SENSOR_CH_TPOS_L_U8] = {
         .conv = adcToUInt8,
         .sample = sampleADCSensor,
-        .readingMin = ONE_POINT_EIGHT_ADC,
+        .readingMin = LEFT_TPOS_MIN_ADC,
         .readingMax = LEFT_TPOS_MAX_ADC,
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_FSM_TPOS_L },
     [SENSOR_CH_TPOS_R_U8] = { 
         .conv = adcToUInt8, 
         .sample = sampleADCSensor, 
-        .readingMin = 0, 
+        .readingMin = RIGHT_TPOS_MIN_ADC, 
         .readingMax = RIGHT_TPOS_MAX_ADC, 
         .outOfRange_pcnt = 10, 
         .warnFlag = CMR_CAN_WARN_FSM_TPOS_R },
