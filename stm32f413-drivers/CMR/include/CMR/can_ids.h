@@ -297,7 +297,8 @@ typedef enum {
     CMR_CANID_CIA_LOAD_2 = 0x433,
     CMR_CANID_CIA_LOAD_3 = 0x434,
     CMR_CANID_CIA_LOAD_4 = 0x435,
-    CMR_CANID_CIA_LOAD_5 = 0x435,
+    CMR_CANID_CIA_LOAD_5 = 0x436,
+    CMR_CANID_CIA_LINPOT = 0x437,
 } cmr_canID_t;
 
 #endif /* CMR_CAN_IDS_H */

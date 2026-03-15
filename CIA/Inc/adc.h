@@ -22,6 +22,7 @@ typedef enum {
     ADC_AMP_4,
     ADC_AMP_5,
     ADC_THERM,
+    ADC_LINPOT,
     ADC_LEN         /**< @brief Total ADC channels. */
 } adcChannel_t;
 
