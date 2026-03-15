@@ -7,6 +7,7 @@ output = "stm32f413-drivers/PCAN/CMR 26x.sym"
 symlines = [] 
 used_varnames = [] 
 used_canids = [] #delete once canids fixed, shouldn't need 
+bitfields = False 
 
 def numbercanids():
     canidfile = "stm32f413-drivers/CMR/include/CMR/can_ids.h"
@@ -75,7 +76,7 @@ def get_cantypes_data(cantype, structs):
     for fields, name in structs:
         if re.search(name, cantype): 
             #find struct declaration with the right can type 
-            return re.findall(r'\b((?:u)?int\d+_t|float|bool)\s+(\w+)\b', fields) 
+            return re.findall(r'\b((?:u)?int\d+_t|float|bool|(?:unsigned|signed)?\s*char)\s+([A-Za-z_]\w*[^;]*)', fields) 
 
 def check_repeat_varname(name):
     repeat_num = 0
@@ -120,8 +121,8 @@ def format_bitpacking(canid, structname, structlines, atbit, vartype, enums):
                         if c == '1':
                             position = i 
                             break
-                name = check_repeat_varname(name) 
                 append_can_name = create_prefix(name, canid) 
+                append_can_name = check_repeat_varname(append_can_name)
                 if realsize == 1:
                     structlines.append("Var="+append_can_name+" bit "+str(atbit+int(position))+","+str(realsize)) 
                 else: 
@@ -154,8 +155,18 @@ def format_field_params(params):
 def format_fields(canid, matches, structlines, enums, field_params=None):
     atbit = 0
     size = None
+    bitfield_size = None 
+    prev_size = 0
+    size_change_start = 0 
+    prev_bitfield_size = 0 
 
     for vartype, name in matches: 
+        if ':' in name:
+            bitfield_size = int(name.split(':')[-1]) 
+            name = name.split(':')[0]
+            bitfields = True 
+        else: 
+            bitfields = False 
         findsize = re.search(r'\d+', vartype)
         if findsize:
             size = int(findsize.group())
@@ -164,12 +175,27 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
             else: 
                 vartype = 'signed' 
         else:
-            if vartype == 'float':
-                #technically unnecessary check, all others should be float
-                size = 32 
-            elif vartype == 'bool':
-                vartype = 'unsigned'
-                size = 8 
+            if " " in vartype: #two word variable declaration 
+                vartype, second_word = vartype.split(" ")
+                if second_word == "char":
+                    size = 8
+                elif second_word == "short":
+                    size = 16
+                elif second_word == "int":
+                    size = 32
+                elif second_word == "long":
+                    size = 64 
+                else:
+                    print(f"ERROR: can't find size for {vartype} {name}")
+                    continue
+            else:
+                if vartype == 'float': 
+                    size = 32 
+                elif vartype == 'bool':
+                    vartype = 'unsigned'
+                    size = 8 
+        if size != prev_size: #for bitfield overflow calculations 
+            size_change_start = atbit 
         #check if field is bitpacked 
         if field_params and name in field_params:
             if 'enumstruct' in field_params[name]:
@@ -177,7 +203,7 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
                 #not a heartbeat struct, normally bitpacked 
                 if len(flags) == 1:
                     format_bitpacking(canid, flags[0], structlines, atbit, vartype, enums); 
-                    atbit+=int(size) 
+                    atbit += int(size) 
                     continue 
                 #heartbeat logic 
                 else:
@@ -191,14 +217,28 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
                     continue 
         #add in field if not bitpacked 
         if size: 
-            name = check_repeat_varname(name) 
             append_can_name = create_prefix(name, canid) 
-            appendstr = "Var="+append_can_name+" "+vartype+ " " +str(atbit)+","+str(size)
+            append_can_name = check_repeat_varname(append_can_name)
+            if bitfields:
+                new_atbit = atbit + int(bitfield_size) 
+                if math.ceil((atbit-size_change_start)/size) < math.ceil((new_atbit-size_change_start)/size) and (atbit-size_change_start) % size != 0: #if bitfield overflows past var size 
+                    print(f"WARNING: {name} is not aligned to variable size, check bit fields!")
+                    temp_atbit = atbit - prev_bitfield_size + prev_size 
+                    appendstr = "Var="+append_can_name+" "+vartype+ " " +str(temp_atbit)+","+str(bitfield_size) 
+                    atbit = temp_atbit + int(bitfield_size) 
+                else: #bit fields without overflow 
+                    appendstr = "Var="+append_can_name+" "+vartype+ " " +str(atbit)+","+str(bitfield_size)
+                    atbit = new_atbit
+                prev_bitfield_size = bitfield_size 
+                prev_size = size 
+            else: #normal case 
+                new_atbit = atbit + int(size) 
+                appendstr = "Var="+append_can_name+" "+vartype+ " " +str(atbit)+","+str(size)
+                atbit = new_atbit
             # Add field-specific parameters if available
             if field_params and name in field_params:
                 appendstr += format_field_params(field_params[name])
-            structlines.append(appendstr)
-            atbit+=int(size)
+            structlines.append(appendstr) 
         else: 
             structlines.append("Issue with type of field")
     return str(int(atbit/8))
@@ -276,7 +316,7 @@ def main():
     #write into symbol file 
     with open("stm32f413-drivers/PCAN/CMR 26x.sym", "w") as file:
         file.write("\n".join(symlines)) 
-    print("done") 
+    print("done writing symbols") 
 
 if __name__ == "__main__":
     main()
