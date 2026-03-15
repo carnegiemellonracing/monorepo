@@ -76,7 +76,7 @@ def get_cantypes_data(cantype, structs):
     for fields, name in structs:
         if re.search(name, cantype): 
             #find struct declaration with the right can type 
-            return re.findall(r'\b((?:u)?int\d+_t|float|bool)\s+(\w+[^;]*)', fields) 
+            return re.findall(r'\b((?:u)?int\d+_t|float|bool|(?:unsigned|signed)?\s*char)\s+([A-Za-z_]\w*[^;]*)', fields) 
 
 def check_repeat_varname(name):
     repeat_num = 0
@@ -175,11 +175,25 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
             else: 
                 vartype = 'signed' 
         else:
-            if vartype == 'float': 
-                size = 32 
-            elif vartype == 'bool':
-                vartype = 'unsigned'
-                size = 8 
+            if " " in vartype: #two word variable declaration 
+                vartype, second_word = vartype.split(" ")
+                if second_word == "char":
+                    size = 8
+                elif second_word == "short":
+                    size = 16
+                elif second_word == "int":
+                    size = 32
+                elif second_word == "long":
+                    size = 64 
+                else:
+                    print(f"ERROR: can't find size for {vartype} {name}")
+                    continue
+            else:
+                if vartype == 'float': 
+                    size = 32 
+                elif vartype == 'bool':
+                    vartype = 'unsigned'
+                    size = 8 
         if size != prev_size: #for bitfield overflow calculations 
             size_change_start = atbit 
         #check if field is bitpacked 
