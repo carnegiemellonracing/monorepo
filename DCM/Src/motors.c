@@ -69,7 +69,7 @@ static cmr_canDTISetpoints_t motorSetpoints[MOTOR_LEN];
  */
 static cmr_canDTI_RX_Message_t DTI_RXMessage[MOTOR_LEN];
 
-#define MAX_CURRENT_DECI_AMPS 50
+#define MAX_CURRENT_DECI_AMPS 250
 
 cmr_canDAQTest_t getDAQTest() {
     return daqTest;

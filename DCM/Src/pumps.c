@@ -75,9 +75,10 @@ void pumpsOff();
 
 void pumpsOn() {
 
-    // cmr_gpioWrite(GPIO_PUMP_LEFT, 1);
-    // cmr_gpioWrite(GPIO_PUMP_RIGHT, 1);
-    // return;
+    cmr_gpioWrite(GPIO_PUMP_LEFT, 1);
+    cmr_gpioWrite(GPIO_PUMP_RIGHT, 1);
+    cmr_gpioWrite(GPIO_PUMP_ON, 1);
+    return;
 
     //int accum_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_1) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_2)) / 2;
     // Below: revision - using CAN to get data from HVC
@@ -159,11 +160,11 @@ void pumpsOff() {
     pump_Right_State = 0;
     // duty cycle is inverted because of MOSFETS
     // // we want them to be off when without AC
-    cmr_pwmSetDutyCycle(PWM_PUMP_LEFT, 100);
-    cmr_pwmSetDutyCycle(PWM_PUMP_RIGHT, 100);
-    cmr_gpioWrite(GPIO_PUMP_ON, 1);
-    // cmr_gpioWrite(GPIO_PUMP_LEFT, 1);
-    // cmr_gpioWrite(GPIO_PUMP_RIGHT, 1);
+    // cmr_pwmSetDutyCycle(PWM_PUMP_LEFT, 100);
+    // cmr_pwmSetDutyCycle(PWM_PUMP_RIGHT, 100);
     // cmr_gpioWrite(GPIO_PUMP_ON, 1);
+    cmr_gpioWrite(GPIO_PUMP_LEFT, 0);
+    cmr_gpioWrite(GPIO_PUMP_RIGHT, 0);
+    cmr_gpioWrite(GPIO_PUMP_ON, 0);
 }
 

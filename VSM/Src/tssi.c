@@ -40,8 +40,10 @@ static void tssiControl(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
 
-    pwmSetDutyCycle(PWM_GREEN, 50);
-    pwmSetDutyCycle(PWM_RED, 0);
+    // pwmSetDutyCycle(PWM_GREEN, 50);
+    // pwmSetDutyCycle(PWM_RED, 0);
+    cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
+    cmr_gpioWrite(GPIO_OUT_LED_RED, 0);
 
     while (1) {
       if (getCurrentState() == CMR_CAN_VSM_STATE_GLV_ON) {
@@ -50,17 +52,19 @@ static void tssiControl(void *pvParameters) {
 
       if(glvReached) {
         if(LEDError()) {
-          pwmSetDutyCycle(PWM_RED, 50);
-          pwmSetDutyCycle(PWM_GREEN, 0);
+          cmr_gpioWrite(GPIO_OUT_LED_GREEN, 0);
+          cmr_gpioWrite(GPIO_OUT_LED_RED, 1);
         }
         else if(getCurrentState() != CMR_CAN_VSM_STATE_ERROR) {
-          pwmSetDutyCycle(PWM_GREEN, 100);
-          pwmSetDutyCycle(PWM_RED, 0);
+          cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
+          cmr_gpioWrite(GPIO_OUT_LED_RED, 0);
         }
       }
       else {
-        pwmSetDutyCycle(PWM_GREEN, 100);
-        pwmSetDutyCycle(PWM_RED, 0);
+        // pwmSetDutyCycle(PWM_GREEN, 100);
+        // pwmSetDutyCycle(PWM_RED, 0);
+        cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
+        cmr_gpioWrite(GPIO_OUT_LED_RED, 0);
       }
       // cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
 
