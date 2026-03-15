@@ -34,6 +34,8 @@
 /** @brief Yaw rate control kp */
 volatile cmr_can_controls_pid_debug_t yrcDebug;
 static float yrc_kp;
+float yrc_pers = 0.125f; 
+float bias_margin = 10.0f; 
 
 /** @brief CAN data for traction control */
 volatile cmr_can_front_slip_ratio_data_t frontSlipRatios;
@@ -762,6 +764,7 @@ void runControls (
             // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
             // set_motor_speed(throttlePos_u8, target_speed_mps, false);
             set_manual_cruise_control(throttlePos_u8);
+            float calculatePersistentYRCmreq(swAngle_millideg, bias_margin, yrc_pers);
             break;
         }
 
