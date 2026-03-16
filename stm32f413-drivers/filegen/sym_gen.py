@@ -197,6 +197,8 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
         if size != prev_size: #for bitfield overflow calculations 
             size_change_start = atbit 
         #check if field is bitpacked 
+        if "[" in name:
+            name = name.split("[")[0]
         if field_params and name in field_params:
             if 'enumstruct' in field_params[name]:
                 flags = field_params[name]['enumstruct'].split()
