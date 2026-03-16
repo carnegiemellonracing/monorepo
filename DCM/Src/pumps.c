@@ -75,9 +75,11 @@ void pumpsOff();
 
 void pumpsOn() {
 
-    cmr_gpioWrite(GPIO_PUMP_LEFT, 1);
-    cmr_gpioWrite(GPIO_PUMP_RIGHT, 1);
-    cmr_gpioWrite(GPIO_PUMP_ON, 1);
+    cmr_gpioWrite(GPIO_PUMP_LEFT, 0);
+    cmr_gpioWrite(GPIO_PUMP_RIGHT, 0);
+    cmr_gpioWrite(GPIO_FAN_1, 0);
+    cmr_gpioWrite(GPIO_FAN_2, 0);
+    cmr_gpioWrite(GPIO_FAN_ON, 0);
     return;
 
     //int accum_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_1) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_2)) / 2;
@@ -146,7 +148,7 @@ void pumpsOn() {
     //  else {
     //      cmr_gpioWrite(GPIO_PUMP_RIGHT, 1);
     //  }
-    cmr_gpioWrite(GPIO_PUMP_ON, 0);
+    // cmr_gpioWrite(GPIO_PUMP_ON, 0);
     
     // if (pump_Left_State >= 50 || pump_Right_State >= 50) {
     //     cmr_gpioWrite(GPIO_PUMP_ON, 1);
@@ -163,8 +165,11 @@ void pumpsOff() {
     // cmr_pwmSetDutyCycle(PWM_PUMP_LEFT, 100);
     // cmr_pwmSetDutyCycle(PWM_PUMP_RIGHT, 100);
     // cmr_gpioWrite(GPIO_PUMP_ON, 1);
-    cmr_gpioWrite(GPIO_PUMP_LEFT, 0);
-    cmr_gpioWrite(GPIO_PUMP_RIGHT, 0);
-    cmr_gpioWrite(GPIO_PUMP_ON, 0);
+    cmr_gpioWrite(GPIO_PUMP_LEFT, 1);
+    cmr_gpioWrite(GPIO_PUMP_RIGHT, 1);
+    cmr_gpioWrite(GPIO_FAN_1, 1);
+    cmr_gpioWrite(GPIO_FAN_2, 1);
+    cmr_gpioWrite(GPIO_FAN_ON, 1);
+    // cmr_gpioWrite(GPIO_PUMP_ON, 0);
 }
 

@@ -25,6 +25,7 @@
 #include "servo.h"
 #include "lut.h"
 #include "brakelight.h"
+#include "pumps.h"
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -68,7 +69,8 @@ static void statusLED(void *pvParameters) {
  *
  * @return Does not return.
  */
-int main(void) {
+
+ int main(void) {
 
    	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
     DWT->LAR = 0xC5ACCE55;
@@ -90,6 +92,7 @@ int main(void) {
     motorsInit();
     sensorsInit();
     // brakelightInit();
+    pumpsOn();
 
     cmr_taskInit(&statusLED_task, "statusLED", statusLED_priority, statusLED,
                 NULL);

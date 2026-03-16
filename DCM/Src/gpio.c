@@ -36,32 +36,50 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         }
     },
     [GPIO_FAN_ON] = {
-        .port = GPIOA,
+        .port = GPIOC,
         .init = {
-            .Pin = GPIO_PIN_1,
+            .Pin = GPIO_PIN_12,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
-    // [GPIO_PUMP_LEFT] = {
-    //     .port = GPIOB,
-    //     .init = {
-    //         .Pin = GPIO_PIN_6,
-    //         .Mode = GPIO_MODE_OUTPUT_PP,
-    //         .Pull = GPIO_NOPULL,
-    //         .Speed = GPIO_SPEED_FREQ_LOW
-    //     }
-    // },
-    // [GPIO_PUMP_RIGHT] = {
-    //     .port = GPIOG,
-    //     .init = {
-    //         .Pin = GPIO_PIN_13,
-    //         .Mode = GPIO_MODE_OUTPUT_PP,
-    //         .Pull = GPIO_NOPULL,
-    //         .Speed = GPIO_SPEED_FREQ_LOW
-    //     }
-    // },
+    [GPIO_FAN_1] = {
+        .port = GPIOB,
+        .init = {
+            .Pin = GPIO_PIN_5,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_FAN_2] = {
+        .port = GPIOG,
+        .init = {
+            .Pin = GPIO_PIN_14,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_PUMP_LEFT] = {
+        .port = GPIOB,
+        .init = {
+            .Pin = GPIO_PIN_6,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
+    [GPIO_PUMP_RIGHT] = {
+        .port = GPIOG,
+        .init = {
+            .Pin = GPIO_PIN_13,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
+    },
     [GPIO_PUMP_ON] = {
         .port = GPIOA,
         .init = {

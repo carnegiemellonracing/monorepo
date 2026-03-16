@@ -69,7 +69,7 @@ static cmr_canDTISetpoints_t motorSetpoints[MOTOR_LEN];
  */
 static cmr_canDTI_RX_Message_t DTI_RXMessage[MOTOR_LEN];
 
-#define MAX_CURRENT_DECI_AMPS 250
+#define MAX_CURRENT_DECI_AMPS 850                        
 
 cmr_canDAQTest_t getDAQTest() {
     return daqTest;
@@ -93,9 +93,10 @@ static void motorsTest (void *pvParameters) {
         volatile cmr_canFSMData_t *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
         uint8_t throttlePos = dataFSM->throttlePosition;
         uint16_t setCurrent = (uint16_t)(((float)throttlePos * (float)MAX_CURRENT_DECI_AMPS / (float)UINT8_MAX));
-        setCurrent = setCurrent << 8;
+        setCurrent = setCurrent << 8 | ((setCurrent >> 8) & 0xFF);
         //enables motors to drive
         uint8_t driveEnable = 1;
+        setPowerLimit(true, MOTOR_FL, 20.25f);
 
         if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN || heartbeatVSM->state == CMR_CAN_HV_EN) {
             setCurrent = 0;
@@ -263,7 +264,7 @@ static void motorsCommand (
                 }
 
             	// fansOff();
-            	pumpsOff();
+            	// pumpsOff();
                 sendBlankCommand();
 
                 // set status so DIM can see
@@ -535,10 +536,12 @@ cmr_torque_limit_t getTorqueBudget() {
 
 /* @brief Sets the power limit for all motors or a specific motor
  */
-void setPowerLimit(bool all, motorLocation_t motor, uint32_t powerLimit_kw) {
+void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw) {
     volatile cmr_canHVSense_t *HVISense = canTractiveGetPayload(CANRX_HVI_SENSE);
-    float hvVoltage_V = ((float) HVISense->packVoltage_cV) / 100.f;
-    uint16_t current = (10*(powerLimit_kw*1000))/hvVoltage_V; // send current in deciamps
+    // float hvVoltage_V = ((float) HVISense->packVoltage_cV) / 100.f;
+    float hvVoltage_V = 500.0f;
+    uint16_t current = (int)((10.0f*((float)powerLimit_kw*1000.0f))/hvVoltage_V); // send current in deciamps
+    current = current << 8 | ((current >> 8) & 0xFF); 
     if(all) {
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
     } else {
