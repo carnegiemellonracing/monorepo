@@ -417,7 +417,7 @@ Var=CDC_WRN_AMK_SRC_FL bit 39,1
 
 [DIM_HEARTBEAT]
 ID=104h
-DLC=3
+DLC=5
 CycleTime=10
 TimeOut=50
 Var=DIM_HEARTBEAT_state unsigned 0,8 /e:State
@@ -483,7 +483,7 @@ Var=HVC_HEARTBEAT_uptime_s unsigned 40,8 /u:s
 
 [HV_BMS_HEARTBEAT]
 ID=108h
-DLC=1
+DLC=5
 CycleTime=10
 TimeOut=50
 Var=HV_BMS_HEARTBEAT_state unsigned 0,8 /e:State
@@ -491,7 +491,7 @@ Var=HV_BMS_HEARTBEAT_state unsigned 0,8 /e:State
 
 [LV_BMS_HEARTBEAT]
 ID=107h
-DLC=1
+DLC=5
 CycleTime=10
 TimeOut=50
 Var=LV_BMS_HEARTBEAT_state unsigned 0,8 /e:State

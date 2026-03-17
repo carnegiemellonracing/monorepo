@@ -215,8 +215,8 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
                     for flag in flags:
                         if boardname in flag:
                             format_bitpacking(canid, flag, structlines, atbit, vartype, enums); 
-                            atbit+=int(size)*2 #lowkey hardcoded but I think heartbeat is the only array 
                             break 
+                    atbit+=int(size)*2 #lowkey hardcoded but I think heartbeat is the only array 
                     continue 
         #add in field if not bitpacked 
         if size: 
