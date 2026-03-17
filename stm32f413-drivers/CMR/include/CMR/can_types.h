@@ -500,17 +500,11 @@ typedef struct {
 } cmr_canHVCBMBErrors_t; 
 
 typedef struct {
-    uint16_t cellVoltage0_mV;
-    uint16_t cellVoltage1_mV;
-    uint16_t cellVoltage2_mV;
-    uint16_t cellVoltage3_mV;
-} cmr_can_HVBMS_BMB_CellVoltages_t; 
-
-typedef struct {
-    int16_t cellTemp0_dC; 
-    int16_t cellTemp1_dC; 
-    int16_t cellTemp2_dC;
-    int16_t cellTemp3_dC;  
+    unsigned int cellTemp0_dC : 12; 
+    unsigned int cellTemp1_dC : 12; 
+    unsigned int cellTemp2_dC : 12;
+    unsigned int cellTemp3_dC : 12;  
+    unsigned int cellTemp4_dC : 12;
 } cmr_can_HVBMS_BMB_CellTemps_t; 
 
 //HVC Sensors CAN Types
@@ -578,6 +572,14 @@ typedef struct {
 typedef struct {
     float power_limit_W; //u: W f:0.001
 } cmr_canCDCPowerLimitLog_t;
+
+typedef struct {
+    unsigned int cellVoltage0_mV : 12;
+    unsigned int cellVoltage1_mV : 12;
+    unsigned int cellVoltage2_mV : 12;
+    unsigned int cellVoltage3_mV : 12;
+    unsigned int cellVoltage4_mV : 12;
+} cmr_can_HVBMS_BMB_CellVoltages_t;
 
 /** @brief Central Dynamics Controller Safety Filter states. */
 typedef struct {
