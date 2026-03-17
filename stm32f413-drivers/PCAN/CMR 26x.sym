@@ -726,6 +726,14 @@ Var=SENSORS_packCurrent_dA signed 0,16
 Var=SENSORS_packVoltage_cV unsigned 16,16
 Var=SENSORS_packPower_W signed 32,32
 
+[LV_CELL_BALANCE_ENABLE]
+ID=136h
+DLC=3
+CycleTime=10
+TimeOut=50
+Var=CELL_balanceRequest unsigned 0,8 /e:HVC_Balance_State
+Var=CELL_threshold unsigned 8,16
+
 [MOTORPOWER_STATE]
 ID=52Eh
 DLC=8
