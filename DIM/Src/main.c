@@ -119,7 +119,7 @@ int main(void) {
     gpioInit();
     canInit();
     adcInit();
-    tftInit();
+    // tftInit();
     stateMachineInit();
     sensorsInit();
     i2c_slave_init();
