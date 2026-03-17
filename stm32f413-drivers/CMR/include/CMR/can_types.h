@@ -36,7 +36,7 @@ typedef enum {
 /** @brief Standard CAN heartbeat. */
 typedef struct {
     uint8_t state;         //e:State   /**< @brief Board state. */
-    uint8_t error[2];     //Flag:cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t  /**< @brief Error matrix. */ 
+    uint8_t error[2];     //Flag:cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t  /**< @brief Error matrix. */ 
     uint8_t warning[2];    //Flag:cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t  /**< @brief Warning matrix. */ 
 } cmr_canHeartbeat_t;
 
@@ -437,6 +437,24 @@ typedef enum {
     CMR_CAN_HVC_ERROR_RELAY        = (1<<12),    /**< @brief Fault with AIRs. */
     CMR_CAN_HVC_ERROR_LV_UNDERVOLT = (1<<13),    /**< @brief Shutdown circuit/AIR voltage too low. */
 } cmr_canHVCError_t;
+
+
+/** @brief High Voltage Controller error bit vector definitions. */
+typedef enum {
+    CMR_CAN_HVC_ERROR_NONE = 0x0000,    /**< @brief No errors detected. */
+
+    // Pack errors
+    CMR_CAN_HVBMS_ERROR_PACK_UNDERVOLT   = 0x0001,    /**< @brief Pack voltage too low. */
+    CMR_CAN_HVBMS_ERROR_PACK_OVERVOLT    = 0x0002,    /**< @brief Pack voltage too high. */
+
+    // Cell errors
+    CMR_CAN_HVBMS_ERROR_CELL_UNDERVOLT = 0x0010,  /**< @brief At least one cell is undervoltage. */
+    CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT  = 0x0020,  /**< @brief At least one cell is overvoltage. */
+    CMR_CAN_HVBMS_ERROR_CELL_OVERTEMP  = 0x0040,  /**< @brief At least one cell has overheated. */
+
+    // Communication errors
+    CMR_CAN_HVBMS_ERROR_BMB_TIMEOUT = 0x0100, /**< @brief BMB has timed out. */
+} cmr_canHV_BMSHeartbeatErr_t;
 
 typedef enum {
     CMR_CAN_HVC_RELAYSTATUS_DISCHARGE_CLOSED = (1<<0),

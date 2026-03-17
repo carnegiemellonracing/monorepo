@@ -607,7 +607,7 @@
         "CMR_CANID_HEARTBEAT_CDC": {
             "cycleTime": 10,
             "error": {
-                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t"
+                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
             },
             "state": {
                 "e": "State"
@@ -621,7 +621,7 @@
         "CMR_CANID_HEARTBEAT_DIM": {
             "cycleTime": 10,
             "error": {
-                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t"
+                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
             },
             "state": {
                 "e": "State"
@@ -635,7 +635,7 @@
         "CMR_CANID_HEARTBEAT_FSM": {
             "cycleTime": 10,
             "error": {
-                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t"
+                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
             },
             "state": {
                 "e": "State"
@@ -666,7 +666,7 @@
         "CMR_CANID_HEARTBEAT_HV_BMS": {
             "cycleTime": 10,
             "error": {
-                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t"
+                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
             },
             "state": {
                 "e": "State"
@@ -680,7 +680,7 @@
         "CMR_CANID_HEARTBEAT_LV_BMS": {
             "cycleTime": 10,
             "error": {
-                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t"
+                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
             },
             "state": {
                 "e": "State"
@@ -694,7 +694,7 @@
         "CMR_CANID_HEARTBEAT_VSM": {
             "cycleTime": 10,
             "error": {
-                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t"
+                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
             },
             "state": {
                 "e": "State"
@@ -1064,15 +1064,15 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2919,
-        "files_with_matches": 2919,
+        "files_processed": 2831,
+        "files_with_matches": 2831,
         "global_mappings": {
             "canrx_mappings": 162,
             "canrx_timeouts": 156,
             "canrx_types": 74,
             "constants": 238,
             "struct_members": 0,
-            "variable_types": 349
+            "variable_types": 351
         },
         "prefixes_used": [
             "CMR_CANID_",
