@@ -837,32 +837,6 @@ Var=IMU_gyro_x_rads signed 0,16 /u:rad
 Var=IMU_gyro_y_rads signed 16,16 /u:rad
 Var=IMU_gyro_z_rads signed 32,16 /u:rad
 
-[SBG_STATUS_3]
-ID=702h
-DLC=6
-CycleTime=400
-TimeOut=2000
-Var=STATUS_SBG_SOL_ATTITUDE_VALID bit 4,1
-Var=STATUS_SBG_SOL_HEADING_VALID bit 5,1
-Var=STATUS_SBG_SOL_VELOCITY_VALID bit 6,1
-Var=STATUS_SBG_SOL_POSITION_VALID bit 7,1
-Var=STATUS_SBG_SOL_VERT_REF_USED bit 8,1
-Var=STATUS_SBG_SOL_MAG_REF_USED bit 9,1
-Var=STATUS_SBG_SOL_GPS1_VEL_USED bit 10,1
-Var=STATUS_SBG_SOL_GPS1_POS_USED bit 11,1
-Var=STATUS_SBG_SOL_GPS1_HDT_USED bit 13,1
-Var=STATUS_SBG_SOL_GPS2_VEL_USED bit 14,1
-Var=STATUS_SBG_SOL_GPS2_POS_USED bit 15,1
-Var=STATUS_SBG_SOL_GPS2_HDT_USED bit 17,1
-Var=STATUS_SBG_SOL_ODO_USED bit 18,1
-Var=STATUS_SBG_SOL_DVL_BT_USED bit 19,1
-Var=STATUS_SBG_SOL_DVL_WT_USED bit 20,1
-Var=STATUS_SBG_SOL_USBL_USED bit 24,1
-Var=STATUS_SBG_SOL_PRESSURE_USED bit 25,1
-Var=STATUS_SBG_SOL_ZUPT_USED bit 26,1
-Var=STATUS_SBG_SOL_ALIGN_VALID bit 27,1
-Var=STATUS_heave_status unsigned 32,16
-
 [SF_STATE]
 ID=52Dh
 DLC=8
@@ -1370,6 +1344,31 @@ ID=701h
 DLC=8
 Var=SBG_Com_Status unsigned 0,32
 Var=SBG_Aiding_Status unsigned 32,32
+
+[ELLIPSE_IMU_General_Status_3]
+ID=702h
+DLC=6
+Var=SBG_Solution_Mode unsigned 0,4 /e:SBG_Solution_Status_Mode
+Var=SBG_Sol_Attitude_Valid bit 4,1
+Var=SBG_Sol_Heading_Valid bit 5,1
+Var=SBG_Sol_Velocity_Valid bit 6,1
+Var=SBG_Sol_Position_Valid bit 7,1
+Var=SBG_Sol_Vert_Ref_Used bit 8,1
+Var=SBG_Sol_Mag_Ref_Used bit 9,1
+Var=SBG_Sol_GPS1_Vel_Used bit 10,1
+Var=SBG_Sol_GPS1_Pos_Used bit 11,1
+Var=SBG_Sol_GPS1_Hdt_Used bit 13,1
+Var=SBG_Sol_GPS2_Vel_Used bit 14,1
+Var=SBG_Sol_GPS2_Pos_Used bit 15,1
+Var=SBG_Sol_GPS2_Hdt_Used bit 17,1
+Var=SBG_Sol_Odo_Used bit 18,1
+Var=SBG_Sol_Dvl_Bt_Used bit 19,1
+Var=SBG_Sol_Dvl_Wt_Used bit 20,1
+Var=SBG_Sol_Usbl_Used bit 24,1
+Var=SBG_Sol_Pressure_Used bit 25,1
+Var=SBG_Sol_Zupt_Used bit 26,1
+Var=SBG_Sol_Align_Valid bit 27,1
+Var=SBG_Heave_Status_GENERAL3 unsigned 32,16
 
 [ELLIPSE_IMU_UTC_0]
 ID=703h

@@ -181,8 +181,30 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
     [CANRX_VEH_DTI_ERROR_MESSAGES] = {
         .canID = CMR_CANID_DTI_ERROR_MESSAGES,
         .timeoutError_ms = 100,
-        .timeoutWarn_ms = 75,
-    }
+        .timeoutWarn_ms = 75
+    },
+    // TODO: double check timeout and warning data
+    // use canIDs startnig at 0x560
+    [CANRX_VEH_SENSORIC_VEL_ANG_POI] = {
+        .canID = CMR_CANID_SENSORIC_VEL_ANG_POI,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_VEH_SENSORIC_PITCH_ROLL] = {
+        .canID = CMR_CANID_SENSORIC_PITCH_ROLL,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_VEH_SENSORIC_ACC] = {
+        .canID = CMR_CANID_SENSORIC_ACC,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_VEH_SENSORIC_RATE] = {
+        .canID = CMR_CANID_SENSORIC_RATE,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
 };
 
 /** @brief Metadata for tractive CAN message reception. */
@@ -429,6 +451,63 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
     },
     [CANRX_DAQ_MOVELLA_VELOCITY] = {
         .canID = CMR_CANID_MOVELLA_VELOCITY,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    }, 
+    // TODO: double check timeout and warning data
+    // use canIDs startnig at 0x560
+    [CANRX_DAQ_SENSORIC_VEL_ANG_POI] = {
+        .canID = CMR_CANID_SENSORIC_VEL_ANG_POI,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_SENSORIC_DIST_POI] = {
+        .canID = CMR_CANID_SENSORIC_DIST_POI,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_SENSORIC_PITCH_ROLL] = {
+        .canID = CMR_CANID_SENSORIC_PITCH_ROLL,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_SENSORIC_ACC_HOR] = {
+        .canID = CMR_CANID_SENSORIC_ACC_HOR,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_SENSORIC_RATE_HOR] = {
+        .canID = CMR_CANID_SENSORIC_RATE_HOR,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_SENSORIC_VEL_ANG] = {
+        .canID = CMR_CANID_SENSORIC_VEL_ANG,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_SENSORIC_DIST] = {
+        .canID = CMR_CANID_SENSORIC_DIST,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_SENSORIC_ACC] = {
+        .canID = CMR_CANID_SENSORIC_ACC,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_SENSORIC_RATE] = {
+        .canID = CMR_CANID_SENSORIC_RATE,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_SENSORIC_VEL_ANG_SP] = {
+        .canID = CMR_CANID_SENSORIC_VEL_ANG_SP,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_SENSORIC_DIST_VEL_SP] = {
+        .canID = CMR_CANID_SENSORIC_DIST_VEL_SP,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },

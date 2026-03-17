@@ -19,7 +19,7 @@
 #include "safety_filter.h"
 #include "CMR/can_types.h"
 #include "../optimizer/optimizer.h"
-#include "movella.h"
+#include "26x_sensors.h"
 #include "lut.h"
 #include "constants.h"
 
@@ -1414,17 +1414,38 @@ float get_optimal_yaw_rate(float swangle_rad, float velocity_x_mps) {
  */
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
 
+    // using new abstraction
+    float gx, gy, gz;
+    sensors_get_gyro_xyz(&gx, &gy, &gz);
+    const float actual_yaw_rate_radps_sae = gz;
+
+
+
     float velocity_x_mps;
-    if(movella_state.status.gnss_fix) {
-        velocity_x_mps = movella_state.velocity.x;
-        yrcDebug.controls_bias = 1;
+    const volatile car_state_t *cs = sensors_get_car_state();
+    float calculated_velocity_x_mps_fallback = getTotalMotorSpeed_radps() * 0.25f / gear_ratio * effective_wheel_rad_m;
+
+    // add yrc debug here
+    if (cs && movella_state.status.gnss_fix) {
+    velocity_x_mps = cs->velocity.x;
+    yrcDebug.controls_bias = 1;
+
     } else {
-        velocity_x_mps = getTotalMotorSpeed_radps() * 0.25f / gear_ratio * effective_wheel_rad_m;
-        yrcDebug.controls_bias = -1;
+    velocity_x_mps = calculated_velocity_x_mps_fallback;
+    yrcDebug.controls_bias = -1;
     }
 
+    // float velocity_x_mps;
+    // if(movella_state.status.gnss_fix) {
+    //     velocity_x_mps = movella_state.velocity.x;
+    //     yrcDebug.controls_bias = 1;
+    // } else {
+    //     velocity_x_mps = getTotalMotorSpeed_radps() * 0.25f / gear_ratio * effective_wheel_rad_m;
+    //     yrcDebug.controls_bias = -1;
+    // }
+
     const float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
-    const float actual_yaw_rate_radps_sae = movella_state.gyro.z;
+    // const float actual_yaw_rate_radps_sae = movella_state.gyro.z; using old movella
     const float optimal_yaw_rate_radps = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
 
     yrcDebug.controls_current_yaw_rate = (int16_t)(1000.0f * actual_yaw_rate_radps_sae);
