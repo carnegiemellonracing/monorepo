@@ -544,18 +544,18 @@ typedef struct {
 
 typedef enum{
     CMR_CAN_CDC_ERR_VSM_TIMEOUT = (1<<0),
-    CMR_CAN_CDC_ERR_AMKALLERROR = (1<<15) 
+    CMR_CAN_CDC_ERR_DTIALLERROR = (1<<15) 
 } cmr_canCDCHeartbeatErr_t; 
 
 typedef enum {
     CMR_CAN_CDC_WRN_VSM_TIMEOUT = (1<<0),
     CMR_CAN_CDC_WRN_MEMORATOR_TIMEOUT  = (1<<9), 
-    CMR_CAN_CDC_WRN_AMK_TIMEOUT = (1<<10), 
-    CMR_CAN_CDC_WRN_AMK_ERROR = (1<<11),
-    CMR_CAN_CDC_WRN_AMK_SRC_RR = (1<<12), 
-    CMR_CAN_CDC_WRN_AMK_SRC_RL = (1<<13),
-    CMR_CAN_CDC_WRN_AMK_SRC_FR = (1<<14),
-    CMR_CAN_CDC_WRN_AMK_SRC_FL = (1<<15)
+    CMR_CAN_CDC_WRN_DTI_TIMEOUT = (1<<10), 
+    CMR_CAN_CDC_WRN_DTI_ERROR = (1<<11),
+    CMR_CAN_CDC_WRN_DTI_SRC_RR = (1<<12), 
+    CMR_CAN_CDC_WRN_DTI_SRC_RL = (1<<13),
+    CMR_CAN_CDC_WRN_DTI_SRC_FR = (1<<14),
+    CMR_CAN_CDC_WRN_DTI_SRC_FL = (1<<15)
 } cmr_canCDCHeartbeatWrn_t; 
 
 /** @brief Central Dynamics Controller DRS states. */
