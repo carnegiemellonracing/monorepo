@@ -103,24 +103,25 @@ def create_prefix(name, canid):
 
 def format_bitpacking(canid, structname, structlines, atbit, vartype, enums):
     #found = False
-    for enumfields, name in enums:
-        if name == structname: 
+    for enumfields, cantype_name in enums:
+        if cantype_name == structname: 
             #found = True
             packed_fields = re.findall(r'(?:CMR_CAN_)?(\w+)\s*=\s*\(?\s*(0x[\da-fA-F]+|\d+)\s*[a-zA-Z]*\s*\)?\s*(?:\(?\s*<<\s*(\d+)\s*\)?)?', enumfields) 
             for name, size, position in packed_fields: 
                 if "0x" in size: 
-                    size = int(size.split("0x")[1], 16) 
-                if int(size) == 0: 
+                    size = int(size.split("0x")[1], 16) #convert to decimal value in int 
+                if int(size) == 0: #why would we need this 
                     continue 
-                realsize = int(math.log(int(size), 2)) + 1
-                if not position: 
-                    binary = bin(size)[2:] 
-                    binary = binary[::-1]
-                    position = atbit 
-                    for i, c in enumerate(binary):
-                        if c == '1':
+                #find number of bits (realsize) 
+                realsize = 0 
+                binary = bin(int(size))[2:] 
+                binary = binary[::-1] 
+                #position = atbit 
+                for i, c in enumerate(binary):
+                    if c == '1':
+                        if not position: #also find position of least significant one if not given 
                             position = i 
-                            break
+                        realsize += 1 
                 append_can_name = create_prefix(name, canid) 
                 append_can_name = check_repeat_varname(append_can_name)
                 if realsize == 1:
