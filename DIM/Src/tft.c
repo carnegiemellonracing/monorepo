@@ -368,10 +368,10 @@ static void drawErrorScreen(void) {
     err.hvcErrorNum = (canHVCHeartbeat->errorStatus);
 
     /* CDC Motor Faults */
-    err.dtiFLErrorCode = dtiFLTempFault->errorCode;
-    err.dtiFRErrorCode = dtiFRTempFault->errorCode;
-    err.dtiRLErrorCode = dtiRLTempFault->errorCode;
-    err.dtiRRErrorCode = dtiRRTempFault->errorCode;
+    err.dtiFLErrorCode = dtiFLTempFault->fault_code;
+    err.dtiFRErrorCode = dtiFRTempFault->fault_code;
+    err.dtiRLErrorCode = dtiRLTempFault->fault_code;
+    err.dtiRRErrorCode = dtiRRTempFault->fault_code;
     volatile cmr_canHVCBMBErrors_t *BMBerr = (volatile cmr_canHVCBMBErrors_t *)getPayload(CANRX_HVC_BMB_STATUS);
 
     /* Update Display List*/

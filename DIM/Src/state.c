@@ -203,10 +203,10 @@ float getOdometer() {
 int32_t getAverageWheelRPM(void) {
 	/* Get CAN data */
 
-    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FL = canTractiveGetPayload(CANRX_DTI_FL_ERPM);
-    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FR = canTractiveGetPayload(CANRX_DTI_FR_ERPM);
-    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RL = canTractiveGetPayload(CANRX_DTI_RL_ERPM);
-    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RR = canTractiveGetPayload(CANRX_DTI_RR_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FL = getPayload(CANRX_DTI_FL_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FR = getPayload(CANRX_DTI_FR_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RL = getPayload(CANRX_DTI_RL_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RR = getPayload(CANRX_DTI_RR_ERPM);
 
     const int32_t avgMotorSpeed_RPM = (
         + (int32_t)(dtiERPM_FL->erpm / POLE_PAIRS)

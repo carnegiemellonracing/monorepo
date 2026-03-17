@@ -383,14 +383,9 @@
             "type": "cmr_canDTI_TX_IOStatus_t"
         },
         "CMR_CANID_DTI_FL_SET_CURRENT": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "ACCurrent_deciAmps"
-        },
-        "CMR_CANID_DTI_FL_SET_MAX_CURRENT": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "current"
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "set_current_fl"
         },
         "CMR_CANID_DTI_FL_SET_MAX_CURRENT": {
             "cycleTime": 5,
@@ -433,14 +428,9 @@
             "type": "cmr_canDTI_TX_IOStatus_t"
         },
         "CMR_CANID_DTI_FR_SET_CURRENT": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "ACCurrent_deciAmps"
-        },
-        "CMR_CANID_DTI_FR_SET_MAX_CURRENT": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "current"
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "set_current_fr"
         },
         "CMR_CANID_DTI_FR_SET_MAX_CURRENT": {
             "cycleTime": 5,
@@ -483,14 +473,9 @@
             "type": "cmr_canDTI_TX_IOStatus_t"
         },
         "CMR_CANID_DTI_RL_SET_CURRENT": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "ACCurrent_deciAmps"
-        },
-        "CMR_CANID_DTI_RL_SET_MAX_CURRENT": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "current"
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "set_current_rl"
         },
         "CMR_CANID_DTI_RL_SET_MAX_CURRENT": {
             "cycleTime": 5,
@@ -533,14 +518,9 @@
             "type": "cmr_canDTI_TX_IOStatus_t"
         },
         "CMR_CANID_DTI_RR_SET_CURRENT": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "ACCurrent_deciAmps"
-        },
-        "CMR_CANID_DTI_RR_SET_MAX_CURRENT": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "current"
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "set_current_rr"
         },
         "CMR_CANID_DTI_RR_SET_MAX_CURRENT": {
             "cycleTime": 5,
@@ -725,44 +705,24 @@
                 "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
             }
         },
-        "CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_0_3": {
-            "cycleTime": 1000,
-            "timeOut": 5000,
+        "CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_0_4": {
+            "cycleTime": 10,
+            "timeOut": 50,
             "type": "cmr_can_HVBMS_BMB_CellTemps_t"
         },
-        "CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_12_14": {
-            "cycleTime": 1000,
-            "timeOut": 5000,
+        "CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_5_9": {
+            "cycleTime": 10,
+            "timeOut": 50,
             "type": "cmr_can_HVBMS_BMB_CellTemps_t"
         },
-        "CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_4_7": {
-            "cycleTime": 1000,
-            "timeOut": 5000,
-            "type": "cmr_can_HVBMS_BMB_CellTemps_t"
-        },
-        "CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_8_11": {
-            "cycleTime": 1000,
-            "timeOut": 5000,
-            "type": "cmr_can_HVBMS_BMB_CellTemps_t"
-        },
-        "CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_0_3": {
-            "cycleTime": 1000,
-            "timeOut": 5000,
+        "CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_0_4": {
+            "cycleTime": 10,
+            "timeOut": 50,
             "type": "cmr_can_HVBMS_BMB_CellVoltages_t"
         },
-        "CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_12_14": {
-            "cycleTime": 1000,
-            "timeOut": 5000,
-            "type": "cmr_can_HVBMS_BMB_CellVoltages_t"
-        },
-        "CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_4_7": {
-            "cycleTime": 1000,
-            "timeOut": 5000,
-            "type": "cmr_can_HVBMS_BMB_CellVoltages_t"
-        },
-        "CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_8_11": {
-            "cycleTime": 1000,
-            "timeOut": 5000,
+        "CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_5_9": {
+            "cycleTime": 10,
+            "timeOut": 50,
             "type": "cmr_can_HVBMS_BMB_CellVoltages_t"
         },
         "CMR_CANID_HVBMS_BMB_0_STATUS_TEMP": {
@@ -894,8 +854,8 @@
             "type": "cmr_canHVCPackCurrent_t"
         },
         "CMR_CANID_HV_SENSORS": {
-            "cycleTime": 5,
-            "timeOut": 25,
+            "cycleTime": 100,
+            "timeOut": 500,
             "type": "cmr_canHVSense_t"
         },
         "CMR_CANID_LVBMS_BUS_VOLTAGE": {
@@ -937,6 +897,14 @@
             "cycleTime": 100,
             "timeOut": 500,
             "type": "current"
+        },
+        "CMR_CANID_LV_CELL_BALANCE_ENABLE": {
+            "balanceRequest": {
+                "e": "HVC_Balance_State"
+            },
+            "cycleTime": 10.0,
+            "timeOut": 50,
+            "type": "cmr_canHVCBalanceCommand_t"
         },
         "CMR_CANID_MOTORPOWER_STATE": {
             "cycleTime": 5,
@@ -996,14 +964,6 @@
             },
             "timeOut": 2000,
             "type": "cmr_canSBGIMUGyro_t"
-        },
-        "CMR_CANID_SBG_STATUS_3": {
-            "cycleTime": 400.0,
-            "solution_status": {
-                "enumstruct": "cmr_canSBGSolutionStatus_t"
-            },
-            "timeOut": 2000,
-            "type": "cmr_canSBGStatus3_t"
         },
         "CMR_CANID_SF_STATE": {
             "cycleTime": 10,
@@ -1084,20 +1044,20 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2831,
-        "files_with_matches": 2831,
+        "files_processed": 2931,
+        "files_with_matches": 2931,
         "global_mappings": {
-            "canrx_mappings": 162,
-            "canrx_timeouts": 156,
-            "canrx_types": 74,
-            "constants": 238,
+            "canrx_mappings": 177,
+            "canrx_timeouts": 171,
+            "canrx_types": 73,
+            "constants": 243,
             "struct_members": 0,
-            "variable_types": 351
+            "variable_types": 338
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 131
+        "total_canids": 127
     }
 }
