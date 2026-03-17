@@ -19,7 +19,7 @@
 #include "safety_filter.h"
 #include "CMR/can_types.h"
 #include "../optimizer/optimizer.h"
-#include "movella.h"
+#include "26x_sensors.h"
 #include "lut.h"
 #include "constants.h"
 
@@ -221,7 +221,7 @@ static void set_manual_cruise_control(uint8_t throttlePos_u8) {
     static bool prev_button = false;
     const float max_speed_mps = 20.0f;
     volatile cmr_canDIMActions_t *actions = (volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON);
-    bool button = (actions->buttons & BUTTON_ACT) != 0;
+    bool button = (actions->buttonStates & BUTTON_ACT) != 0;
     if(prev_button == false && button == true) {
         manual_cruise_control_speed += 1.0f;
         manual_cruise_control_speed = fminf(manual_cruise_control_speed, max_speed_mps);
@@ -695,16 +695,16 @@ void runControls (
         return;
     }
 
-    volatile cmr_canAMKActualValues1_t *amkAct1FL = canTractiveGetPayload(CANRX_TRAC_INV_FL_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1FR = canTractiveGetPayload(CANRX_TRAC_INV_FR_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1RL = canTractiveGetPayload(CANRX_TRAC_INV_RL_ACT1);
-    volatile cmr_canAMKActualValues1_t *amkAct1RR = canTractiveGetPayload(CANRX_TRAC_INV_RR_ACT1);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FL = canTractiveGetPayload(CANRX_TRAC_FL_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FR = canTractiveGetPayload(CANRX_TRAC_FR_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RL = canTractiveGetPayload(CANRX_TRAC_RL_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RR = canTractiveGetPayload(CANRX_TRAC_RR_ERPM);
 
     const int32_t avgMotorSpeed_RPM = (
-        + (int32_t)(amkAct1FL->velocity_rpm)
-        + (int32_t)(amkAct1FR->velocity_rpm)
-        + (int32_t)(amkAct1RL->velocity_rpm)
-        + (int32_t)(amkAct1RR->velocity_rpm)
+        + (int32_t)(dtiERPM_FL->erpm / pole_pairs)
+        + (int32_t)(dtiERPM_FR->erpm / pole_pairs)
+        + (int32_t)(dtiERPM_RL->erpm / pole_pairs)
+        + (int32_t)(dtiERPM_RR->erpm / pole_pairs)
     ) / MOTOR_LEN;
 
     // Update odometer
@@ -771,6 +771,17 @@ void runControls (
             setVelocityInt16All(0);
             break;
         }
+        // case AS_DRIVING: {
+        //     //for compute commands 
+        //     //need to put in the read commands
+        //     canDAQGetPayload()
+        //     //get the motor set points and update w/ settorque lims
+        //     setTorqueLimsAllProtected();
+        //     //need to set them for commands 
+        //     setVelocityInt16All();
+        //     break; 
+        // }
+
         default: {
             setTorqueLimsAllProtected(0.0f, 0.0f);
             setVelocityInt16All(0);
@@ -1059,7 +1070,7 @@ void setLaunchControl(
 	bool action_button_pressed = false;
 	const float nonnegative_odometer_velocity_mps = motorSpeedToWheelLinearSpeed_mps(getTotalMotorSpeed_radps() * 0.25f);
 	if (nonnegative_odometer_velocity_mps < launch_control_speed_threshold_mps) { // odometer velocity is below the launch control threshold
-		action_button_pressed = (((volatile cmr_canDIMActions_t *)(canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON)))->buttons) & BUTTON_ACT;
+		action_button_pressed = (((volatile cmr_canDIMActions_t *)(canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON)))->buttonStates) & BUTTON_ACT;
 
 		if (action_button_pressed) {
 			launchControlButtonPressed = true;
@@ -1257,7 +1268,7 @@ void setLaunchControl(
 //     bool inhibit_throttle = false;
 //     const float nonnegative_odometer_velocity_mps = motorSpeedToWheelLinearSpeed_mps(getTotalMotorSpeed_radps() * 0.25f);
 //     if (nonnegative_odometer_velocity_mps < launch_control_speed_threshold_mps) { // odometer velocity is below the launch control threshold
-//         const bool action1_button_pressed = (((volatile cmr_canDIMActions_t *)(canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON)))->buttons) & BUTTON_ACT;
+//         const bool action1_button_pressed = (((volatile cmr_canDIMActions_t *)(canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON)))->buttonStates) & BUTTON_ACT;
 //         inhibit_throttle = action1_button_pressed; // inhibit throttle if action1 is pressed
 //     }
 
@@ -1272,12 +1283,12 @@ void setLaunchControl(
 //                 rearSlipRatios.slipRatio_RR = getMaxKappaCurrentState(MOTOR_RR, assumeNoTurn);
 //             } break;
 
-//             case TC_MODE_FX_GLOBAL_MAX: { // maps max throttle to the global max Fx of the LUT
-//                 frontSlipRatios.slipRatio_FL = getKappaFxGlobalMax(MOTOR_FL, throttlePos_u8, assumeNoTurn).kappa;
-//                 frontSlipRatios.slipRatio_FR = getKappaFxGlobalMax(MOTOR_FR, throttlePos_u8, assumeNoTurn).kappa;
-//                 rearSlipRatios.slipRatio_RL = getKappaFxGlobalMax(MOTOR_RL, throttlePos_u8, assumeNoTurn).kappa;
-//                 rearSlipRatios.slipRatio_RR = getKappaFxGlobalMax(MOTOR_RR, throttlePos_u8, assumeNoTurn).kappa;
-//             } break;
+            // case TC_MODE_FX_GLOBAL_MAX: { // maps max throttle to the global max Fx of the LUT
+            //     frontSlipRatios.slipRatio_FL = getKappaFxGlobalMax(MOTOR_FL, throttlePos_u8, assumeNoTurn).kappa;
+            //     frontSlipRatios.slipRatio_FR = getKappaFxGlobalMax(MOTOR_FR, throttlePos_u8, assumeNoTurn).kappa;
+            //     rearSlipRatios.slipRatio_RL = getKappaFxGlobalMax(MOTOR_RL, throttlePos_u8, assumeNoTurn).kappa;
+            //     rearSlipRatios.slipRatio_RR = getKappaFxGlobalMax(MOTOR_RR, throttlePos_u8, assumeNoTurn).kappa;
+            // } break;
 
 //             case TC_MODE_FX_LOCAL_MAX: { // maps max throttle to the max Fx available at the current state
 //                 float traction_fl = getTraction(MOTOR_FL, throttlePos_u8, ASSUME_NO_TURN);
@@ -1403,17 +1414,38 @@ float get_optimal_yaw_rate(float swangle_rad, float velocity_x_mps) {
  */
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
 
+    // using new abstraction
+    float gx, gy, gz;
+    sensors_get_gyro_xyz(&gx, &gy, &gz);
+    const float actual_yaw_rate_radps_sae = gz;
+
+
+
     float velocity_x_mps;
-    if(movella_state.status.gnss_fix) {
-        velocity_x_mps = movella_state.velocity.x;
-        yrcDebug.controls_bias = 1;
+    const volatile car_state_t *cs = sensors_get_car_state();
+    float calculated_velocity_x_mps_fallback = getTotalMotorSpeed_radps() * 0.25f / gear_ratio * effective_wheel_rad_m;
+
+    // add yrc debug here
+    if (cs && movella_state.status.gnss_fix) {
+    velocity_x_mps = cs->velocity.x;
+    yrcDebug.controls_bias = 1;
+
     } else {
-        velocity_x_mps = getTotalMotorSpeed_radps() * 0.25f / gear_ratio * effective_wheel_rad_m;
-        yrcDebug.controls_bias = -1;
+    velocity_x_mps = calculated_velocity_x_mps_fallback;
+    yrcDebug.controls_bias = -1;
     }
 
+    // float velocity_x_mps;
+    // if(movella_state.status.gnss_fix) {
+    //     velocity_x_mps = movella_state.velocity.x;
+    //     yrcDebug.controls_bias = 1;
+    // } else {
+    //     velocity_x_mps = getTotalMotorSpeed_radps() * 0.25f / gear_ratio * effective_wheel_rad_m;
+    //     yrcDebug.controls_bias = -1;
+    // }
+
     const float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
-    const float actual_yaw_rate_radps_sae = movella_state.gyro.z;
+    // const float actual_yaw_rate_radps_sae = movella_state.gyro.z; using old movella
     const float optimal_yaw_rate_radps = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
 
     yrcDebug.controls_current_yaw_rate = (int16_t)(1000.0f * actual_yaw_rate_radps_sae);
@@ -1545,7 +1577,7 @@ void setCruiseControlTorque (
     static bool cruiseControl = false;
     static uint16_t cruiseVelocity = 0;
 
-    bool action1 = (((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->buttons) & BUTTON_ACT;
+    bool action1 = (((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->buttonStates) & BUTTON_ACT;
 
     if (throttlePos_u8 == 0 || brakePressurePsi_u8 >= 40) {
         cruiseControl = false;
@@ -1592,7 +1624,7 @@ void setEnduranceTorque (
 
     // Determine aggrigate torque request be combining acceleration pedal position
     // with brake pedal position.
-    const bool regen_button_pressed = (((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->buttons) & BUTTON_SCRN ;
+    const bool regen_button_pressed = (((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->buttonStates) & BUTTON_SCRN ;
 
     uint8_t pedal_regen_strength = 0;
     const float regentPcnt_f = ((float)pedal_regen_strength) * 1e-2; // convert a coefficient between 0 and 1
@@ -1622,7 +1654,7 @@ void setEnduranceTorque (
         float power_limit_start_derate_W = power_limit_W - 10000.0f;
         power_limit_start_derate_W = fmaxf(power_limit_start_derate_W, 0.0f); // clamp to zero in case of negative value due to lower than 10kw limit
 
-        volatile cmr_canHVIHeartbeat_t *HVISense = canTractiveGetPayload(CANRX_TRAC_HVI_SENSE);
+        volatile cmr_canHVSense_t *HVISense = canTractiveGetPayload(CANRX_TRAC_HVI_SENSE);
         const float hv_voltage_V = ((float)(HVISense->packVoltage_cV)) * 1e-2f; // convert to volts
 
         volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
@@ -1693,7 +1725,7 @@ void setEnduranceTestTorque(
         float power_limit_start_derate_W = power_limit_W - 5000.0f;
         power_limit_start_derate_W = fmaxf(power_limit_start_derate_W, 0.0f); // clamp to zero in case of negative value due to lower than 10kw limit
 
-        volatile cmr_canHVIHeartbeat_t *HVISense = canTractiveGetPayload(CANRX_TRAC_HVI_SENSE);
+        volatile cmr_canHVSense_t *HVISense = canTractiveGetPayload(CANRX_TRAC_HVI_SENSE);
         const float hv_voltage_V = ((float)(HVISense->packVoltage_cV)) * 1e-2f; // convert to volts
 
         volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);

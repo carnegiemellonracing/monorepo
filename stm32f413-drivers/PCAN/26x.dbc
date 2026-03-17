@@ -388,23 +388,8 @@ SG_ packPower_W1 : 32|32@1- (1,0) [-2147483648|2147483647] "" Vector__XXX
 BO_ 263 LV_BMS_HEARTBEAT: 1 Vector__XXX
 SG_ state4 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 
-BO_ 265 MEMORATOR_HEARTBEAT: 8 Vector__XXX
-SG_ upper_bmb : 0|4@1+ (1,0) [0|15] "" Vector__XXX
-SG_ lower_bmb : 4|4@1+ (1,0) [0|15] "" Vector__XXX
-SG_ upper_bmb1 : 8|4@1+ (1,0) [0|15] "" Vector__XXX
-SG_ lower_bmb1 : 12|4@1+ (1,0) [0|15] "" Vector__XXX
-SG_ upper_bmb2 : 16|4@1+ (1,0) [0|15] "" Vector__XXX
-SG_ lower_bmb2 : 20|4@1+ (1,0) [0|15] "" Vector__XXX
-SG_ upper_bmb3 : 24|4@1+ (1,0) [0|15] "" Vector__XXX
-SG_ lower_bmb3 : 28|4@1+ (1,0) [0|15] "" Vector__XXX
-SG_ upper_bmb4 : 32|4@1+ (1,0) [0|15] "" Vector__XXX
-SG_ lower_bmb4 : 36|4@1+ (1,0) [0|15] "" Vector__XXX
-SG_ upper_bmb5 : 40|4@1+ (1,0) [0|15] "" Vector__XXX
-SG_ lower_bmb5 : 44|4@1+ (1,0) [0|15] "" Vector__XXX
-SG_ upper_bmb6 : 48|4@1+ (1,0) [0|15] "" Vector__XXX
-SG_ lower_bmb6 : 52|4@1+ (1,0) [0|15] "" Vector__XXX
-SG_ upper_bmb7 : 56|4@1+ (1,0) [0|15] "" Vector__XXX
-SG_ lower_bmb7 : 60|4@1+ (1,0) [0|15] "" Vector__XXX
+BO_ 265 Memorator_Heartbeat: 1 Vector__XXX
+SG_ State : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 
 BO_ 256 VSM_HEARTBEAT: 5 Vector__XXX
 SG_ state5 : 0|8@1+ (1,0) [0|255] "" Vector__XXX
@@ -464,8 +449,8 @@ SG_ safety_mV : 16|8@1+ (0.1333333,0) [0|33.9999915] "mV" Vector__XXX
 SG_ iDCDC_mA : 24|8@1+ (0.1333333,0) [0|33.9999915] "mA" Vector__XXX
 
 BO_ 785 HVC_MINMAX_CELL_TEMPS: 8 Vector__XXX
-SG_ minCellTemp_dC : 0|16@1+ (1,0) [0|65535] "dC" Vector__XXX
-SG_ maxCellTemp_dC : 16|16@1+ (1,0) [0|65535] "dC" Vector__XXX
+SG_ minCellTemp_C : 0|16@1+ (1,0) [0|65535] "dC" Vector__XXX
+SG_ maxCellTemp_C : 16|16@1+ (1,0) [0|65535] "dC" Vector__XXX
 SG_ minTempBMBIndex : 32|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ minTempCellIndex : 40|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ maxTempBMBIndex : 48|8@1+ (1,0) [0|255] "" Vector__XXX

@@ -37,6 +37,11 @@ typedef enum {
     CANRX_VEH_MOVELLA_IMU_GYRO,
     CANRX_VEH_MOVELLA_IMU_ACCEL,
     CANRX_VEH_MOVELLA_VELOCITY,
+    CANRX_VEH_DTI_ERROR_MESSAGES,
+    CANRX_VEH_SENSORIC_VEL_ANG_POI,   /**< @brief Sensoric data */
+    CANRX_VEH_SENSORIC_PITCH_ROLL,
+    CANRX_VEH_SENSORIC_ACC,
+    CANRX_VEH_SENSORIC_RATE,
     CANRX_VEH_LEN                   /**< @brief Number of periodic CAN messages. */
 } canVehicleRX_t;
 
@@ -46,16 +51,50 @@ typedef enum {
  * @warning New messages MUST be added before `CANRX_TRAC_LEN`.
  */
 typedef enum {
-    CANRX_TRAC_INV_FL_ACT1 = 0, /**< @brief Front left inverter actual values 1. */
-    CANRX_TRAC_INV_FL_ACT2,     /**< @brief Front left inverter actual values 2. */
-    CANRX_TRAC_INV_FR_ACT1,     /**< @brief Front right inverter actual values 1. */
-    CANRX_TRAC_INV_FR_ACT2,     /**< @brief Front right inverter actual values 2. */
-    CANRX_TRAC_INV_RL_ACT1,     /**< @brief Rear left inverter actual values 1. */
-    CANRX_TRAC_INV_RL_ACT2,     /**< @brief Rear left inverter actual values 2. */
-    CANRX_TRAC_INV_RR_ACT1,     /**< @brief Rear right inverter actual values 1. */
-    CANRX_TRAC_INV_RR_ACT2,     /**< @brief Rear right inverter actual values 2. */
-    CANRX_TRAC_HVI_SENSE,       /**< @brief High voltage, current, and power sense in inverters. */
-    CANRX_TRAC_LEN              /**< @brief Number of periodic CAN messages. */
+    CANRX_TRAC_FL_ERPM = 0,
+    CANRX_TRAC_FL_CURRENT,
+    CANRX_TRAC_FL_TEMPFAULT,
+    CANRX_TRAC_FL_IDIQ,
+    CANRX_TRAC_FL_ACLIMS,
+    CANRX_TRAC_FL_DCLIMS,
+    CANRX_TRAC_FL_CONTROL_STATUS,
+    CANRX_TRAC_FL_IO_STATUS,
+
+    CANRX_TRAC_FR_ERPM,
+    CANRX_TRAC_FR_CURRENT,
+    CANRX_TRAC_FR_TEMPFAULT,
+    CANRX_TRAC_FR_IDIQ,
+    CANRX_TRAC_FR_ACLIMS,
+    CANRX_TRAC_FR_DCLIMS,
+    CANRX_TRAC_FR_CONTROL_STATUS,
+    CANRX_TRAC_FR_IO_STATUS,
+
+    CANRX_TRAC_RL_ERPM,
+    CANRX_TRAC_RL_CURRENT,
+    CANRX_TRAC_RL_TEMPFAULT,
+    CANRX_TRAC_RL_IDIQ,
+    CANRX_TRAC_RL_ACLIMS,
+    CANRX_TRAC_RL_DCLIMS,
+    CANRX_TRAC_RL_CONTROL_STATUS,
+    CANRX_TRAC_RL_IO_STATUS,
+
+    CANRX_TRAC_RR_ERPM,
+    CANRX_TRAC_RR_CURRENT,
+    CANRX_TRAC_RR_TEMPFAULT,
+    CANRX_TRAC_RR_IDIQ,
+    CANRX_TRAC_RR_ACLIMS,
+    CANRX_TRAC_RR_DCLIMS,
+    CANRX_TRAC_RR_CONTROL_STATUS,
+    CANRX_TRAC_RR_IO_STATUS,
+
+    CANRX_TRAC_FL_TEST,
+    CANRX_TRAC_FR_TEST,
+    CANRX_TRAC_RL_TEST,
+    CANRX_TRAC_RR_TEST,
+    
+    CANRX_TRAC_DTI_ERROR_MESSAGES,
+    CANRX_TRAC_HVI_SENSE,             /**< @brief High voltage, current, and power sense in inverters. */
+    CANRX_TRAC_LEN                    /**< @brief Number of periodic CAN messages. */
 } canTractiveRX_t;
 
 /**
@@ -70,6 +109,17 @@ typedef enum {
     CANRX_DAQ_MOVELLA_IMU_GYRO,
     CANRX_DAQ_MOVELLA_IMU_ACCEL,
     CANRX_DAQ_MOVELLA_VELOCITY,
+    CANRX_DAQ_SENSORIC_VEL_ANG_POI,
+    CANRX_DAQ_SENSORIC_DIST_POI,
+    CANRX_DAQ_SENSORIC_PITCH_ROLL,
+    CANRX_DAQ_SENSORIC_ACC_HOR,
+    CANRX_DAQ_SENSORIC_RATE_HOR,
+    CANRX_DAQ_SENSORIC_VEL_ANG,
+    CANRX_DAQ_SENSORIC_DIST,
+    CANRX_DAQ_SENSORIC_ACC,
+    CANRX_DAQ_SENSORIC_RATE,
+    CANRX_DAQ_SENSORIC_VEL_ANG_SP,
+    CANRX_DAQ_SENSORIC_DIST_VEL_SP, 
     CANRX_DAQ_SBG_STATUS_3,     /**< @brief SBG Status containing solution info. */
     CANRX_DAQ_SBG_POS,          /**< @brief EKF Position. */
     CANRX_DAQ_SBG_VEL,          /**< @brief EKF Velocity. */
@@ -107,7 +157,7 @@ typedef enum {
     CANRX_INV2_STATUS,          /**< @brief Inverter 2 temp. */
     CANRX_INV3_STATUS,          /**< @brief Inverter 3 temp. */
     CANRX_INV4_STATUS,          /**< @brief Inverter 4 temp. */
-    CANRX_LEN     /**< @brief Number of periodic CAN messages. */
+    CANRX_LEN,     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 
 /** @brief Number of bits in a CAN ID. */
@@ -126,12 +176,17 @@ extern cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN];
 
 extern uint16_t fan_1_State;
 extern uint16_t fan_2_State;
-extern uint16_t pump_1_State;
-extern uint16_t pump_2_State;
+extern uint16_t pump_Left_State;
+extern uint16_t pump_Right_State;
 
 void canInit(void);
 int canTX(
     cmr_canBusID_t bus, cmr_canID_t id,
+    const void *data, size_t len,
+    TickType_t timeout
+);
+int canExtendedTX(
+    cmr_canBusID_t bus, cmr_canExtendedID_t id,
     const void *data, size_t len,
     TickType_t timeout
 );
@@ -143,6 +198,8 @@ cmr_canRXMeta_t *canVehicleGetMeta(canVehicleRX_t msg);
 cmr_canRXMeta_t *canTractiveGetMeta(canTractiveRX_t msg);
 cmr_canRXMeta_t *canDAQGetMeta(canDaqRX_t msg);
 void *canGetPayload(canRX_t rxMsg);
+int8_t getPacketID(cmr_canID_t id);
+int8_t getNodeID(cmr_canID_t id);
 
 float canEmdHvVoltage();
 float canEmdHvCurrent();

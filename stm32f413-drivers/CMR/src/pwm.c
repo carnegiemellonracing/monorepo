@@ -13,6 +13,9 @@
 #include <FreeRTOS.h>
 #include "CMR/rcc.h"
 
+static const cmr_pwmPin_t *cmr_pwmPinConfigs;
+static size_t cmr_pwmPinConfigsLen;
+
 static uint32_t cmr_timerToAltFunc(TIM_TypeDef *timer) {
     switch ((uintptr_t) timer) {
 #ifdef F413
@@ -159,6 +162,23 @@ void cmr_pwmInit(cmr_pwm_t *pwmChannel,
 
     if (HAL_TIM_PWM_Start(&pwmChannel->handle, pwmChannel->channel) != HAL_OK) {
         cmr_panic("pwmInit HAL_TIM_PWM_Start failed!");
+    }
+}
+
+/**
+ * @brief Configures the specified GPIO pin(s).
+ *
+ * @param pinConfigs The pin configuration(s).
+ * @param pinConfigsLen The number of pin configurations.
+ */
+void cmr_pwmPinInit(const cmr_pwmPin_t *pinConfigs, const size_t pinConfigsLen) {
+    cmr_pwmPinConfigs = pinConfigs;
+    cmr_pwmPinConfigsLen = pinConfigsLen;
+
+    for (size_t i = 0; i < cmr_pwmPinConfigsLen; i++) {
+        const cmr_pwmPinConfig_t *pinConfig = &(cmr_pwmPinConfigs[i].pwmPinConfig);
+        const cmr_pwm_t *pwmChannel = &(cmr_pwmPinConfigs[i].pwmChannel);
+        cmr_pwmInit(pwmChannel, pinConfig);
     }
 }
 

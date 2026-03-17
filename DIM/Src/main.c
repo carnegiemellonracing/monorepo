@@ -10,12 +10,15 @@
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/panic.h>  // cmr_panic()
 #include <CMR/rcc.h>    // RCC interface
+#include <CMR/i2c.h>    // I2C interface
+
 
 //#include "adc.h"        // Board-specific ADC interface
 //#include "can.h"        // Board-specific CAN interface
 #include "gpio.h"       // Board-specific GPIO interface
 #include "state.h"
 #include "tft.h"
+#include "i2c.h"
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -116,10 +119,10 @@ int main(void) {
     gpioInit();
     canInit();
     adcInit();
-    tftInit();
+    // tftInit();
     stateMachineInit();
     sensorsInit();
-
+    i2c_slave_init();
 
     cmr_taskInit(
         &statusLED_task,
