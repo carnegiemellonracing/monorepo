@@ -654,14 +654,6 @@ void canInit(void) {
         GPIOA, GPIO_PIN_12   // CAN1 TX port/pin.
     );
 
-    // cmr_canInit(
-    //     &can, CAN2, CMR_CAN_BITRATE_500K,
-    //     canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
-    //     &canRXCallback,
-    //     GPIOB, GPIO_PIN_12,  // CAN1 RX port/pin.
-    //     GPIOB, GPIO_PIN_13   // CAN1 TX port/pin.
-    // );
-
     // Clear RAM Buf - Set all to Spaces
     for (uint16_t i = 0; i < RAMBUFLEN; i++) {
         if (i == PREV_TIME_INDEX + TIMEDISPLAYLEN - 1 ||

@@ -333,6 +333,7 @@ typedef struct BMB_Data_t{
 } BMB_Data_t;
 
 #define TOP_CELL VCELL7_HI
+#define TOP_CELL_CB_ADDR CB_CELL7_CTRL 
 #define NUM_GPIO_CHANNELS 2
 
 
@@ -349,12 +350,12 @@ void BMBInit();
 uint8_t pollAllVoltageData();
 void pollAllTemperatureData(int channel);
 
-void cellBalancingSetup();
+bool cellBalancingSetup();
 void cellBalancing(bool set, uint16_t thresh);
 void writeLED(bool set);
 
 int16_t calculateTemp(uint8_t msb, uint8_t lsb);
 
-bool getBalDone();
+int getBalDone();
 
 #endif /* BQ_INTERFACE_H_ */

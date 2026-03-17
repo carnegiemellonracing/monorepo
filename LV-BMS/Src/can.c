@@ -34,7 +34,12 @@ cmr_canRXMeta_t canRXMeta[CANRX_LEN] = {
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
-    }
+    }, 
+    [CANRX_BALANCE_COMMAND] = {
+		.canID = CMR_CANID_LV_CELL_BALANCE_ENABLE,
+		.timeoutError_ms = 50,
+		.timeoutWarn_ms = 25
+	}
 };
 
 cmr_canHeartbeat_t heartbeat;
@@ -199,7 +204,8 @@ const cmr_canFilter_t canFilters[] = {
             .isMask = false,
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
-                CMR_CANID_HEARTBEAT_VSM
+                CMR_CANID_HEARTBEAT_VSM,
+                CMR_CANID_LV_CELL_BALANCE_ENABLE 
             }
         }
     };

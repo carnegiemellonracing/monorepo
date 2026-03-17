@@ -311,18 +311,18 @@ static void drawErrorScreen(void) {
     volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat =
         (void *)metaHVCHeartbeat->payload;
 
-    cmr_canRXMeta_t *metaAmkFLActualValues2 = canRXMeta + CANRX_AMK_FL_ACT_2;
-    volatile cmr_canAMKActualValues2_t *amkFLActualValues2 =
-        (void *)metaAmkFLActualValues2->payload;
-    cmr_canRXMeta_t *metaAmkFRActualValues2 = canRXMeta + CANRX_AMK_FR_ACT_2;
-    volatile cmr_canAMKActualValues2_t *amkFRActualValues2 =
-        (void *)metaAmkFRActualValues2->payload;
-    cmr_canRXMeta_t *metaAmkBLActualValues2 = canRXMeta + CANRX_AMK_RL_ACT_2;
-    volatile cmr_canAMKActualValues2_t *amkBLActualValues2 =
-        (void *)metaAmkBLActualValues2->payload;
-    cmr_canRXMeta_t *metaAmkBRActualValues2 = canRXMeta + CANRX_AMK_RR_ACT_2;
-    volatile cmr_canAMKActualValues2_t *amkBRActualValues2 =
-        (void *)metaAmkBRActualValues2->payload;
+    cmr_canRXMeta_t *metaDTIFLTempFault = canRXMeta + CANRX_DTI_FL_TEMPFAULT;
+    volatile cmr_canDTI_TX_TempFault_t *dtiFLTempFault =
+        (void *)metaDTIFLTempFault->payload;
+    cmr_canRXMeta_t *metaDTIFRTempFault = canRXMeta + CANRX_DTI_FR_TEMPFAULT;
+    volatile cmr_canDTI_TX_TempFault_t *dtiFRTempFault =
+        (void *)metaDTIFRTempFault->payload;
+    cmr_canRXMeta_t *metaDTIRLTempFault = canRXMeta + CANRX_DTI_RL_TEMPFAULT;
+    volatile cmr_canDTI_TX_TempFault_t *dtiRLTempFault =
+        (void *)metaDTIRLTempFault->payload;
+    cmr_canRXMeta_t *metaDTIRRTempFault = canRXMeta + CANRX_DTI_RR_TEMPFAULT;
+    volatile cmr_canDTI_TX_TempFault_t *dtiRRTempFault =
+        (void *)metaDTIRRTempFault->payload;
 
     cmr_canRXMeta_t *metaBMSLowVoltage = canRXMeta + CANRX_HVC_LOW_VOLTAGE;
     volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
@@ -340,7 +340,7 @@ static void drawErrorScreen(void) {
 
     /* Timeouts */
     err.cdcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_CDC);
-    err.ptcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_PTC);
+    // err.ptcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_PTC);
     err.hvcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_HVC);
     err.vsmTimeout = 0;
 
@@ -368,10 +368,10 @@ static void drawErrorScreen(void) {
     err.hvcErrorNum = (canHVCHeartbeat->errorStatus);
 
     /* CDC Motor Faults */
-    err.amkFLErrorCode = amkFLActualValues2->errorCode;
-    err.amkFRErrorCode = amkFRActualValues2->errorCode;
-    err.amkBLErrorCode = amkBLActualValues2->errorCode;
-    err.amkBRErrorCode = amkBRActualValues2->errorCode;
+    err.dtiFLErrorCode = dtiFLTempFault->errorCode;
+    err.dtiFRErrorCode = dtiFRTempFault->errorCode;
+    err.dtiRLErrorCode = dtiRLTempFault->errorCode;
+    err.dtiRRErrorCode = dtiRRTempFault->errorCode;
     volatile cmr_canHVCBMBErrors_t *BMBerr = (volatile cmr_canHVCBMBErrors_t *)getPayload(CANRX_HVC_BMB_STATUS);
 
     /* Update Display List*/
@@ -406,9 +406,9 @@ int16_t findMax(int16_t a, int16_t b, int16_t c, int16_t d, uint8_t *index) {
  * @brief Computes the total current of a motor
  * https://drive.google.com/file/d/1dyoIuW85M110q4x2OXapvWxm-WnFBys2/view pg76
  */
-uint32_t computeCurrent_A(volatile cmr_canAMKActualValues1_t *canAMK_Act1) {
-    int32_t Iq_A = (int32_t)canAMK_Act1->torqueCurrent_raw;
-    int32_t Id_A = (int32_t)canAMK_Act1->magCurrent_raw;
+uint32_t computeCurrent_A(volatile cmr_canDTI_TX_IdIq_t *canDTI_IdIq) {
+    int32_t Iq_A = (int32_t)(canDTI_IdIq->iq / 100);
+    int32_t Id_A = (int32_t)(canDTI_IdIq->iq / 100);
     uint32_t Is_A = sqrt(Iq_A * Iq_A + Id_A * Id_A);
     return Is_A;
 }
@@ -420,7 +420,7 @@ uint32_t computeCurrent_A(volatile cmr_canAMKActualValues1_t *canAMK_Act1) {
  * @returns motorTemp
 */
 
-static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hottest) {
+static void getDTITemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hottest) {
 
     // If we're in GLV, we don't want temps to latch on their prev vals
 	cmr_canState_t state = stateGetVSM();
@@ -432,43 +432,31 @@ static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hot
     }
 
     // Front Left
-    // cmr_canRXMeta_t *metaAMK_FL_Act1 = canRXMeta + CANRX_AMK_FL_ACT_1;
-    // volatile cmr_canAMKActualValues1_t *canAMK_FL_Act1 =
-    //     (void *)metaAMK_FL_Act1->payload;
-    cmr_canRXMeta_t *metaAMK_FL_Act2 = canRXMeta + CANRX_AMK_FL_ACT_2;
-    volatile cmr_canAMKActualValues2_t *FL =
-        (void *)metaAMK_FL_Act2->payload;
+    cmr_canRXMeta_t *metaDTI_FL_TempFault = canRXMeta + CANRX_DTI_FL_TEMPFAULT;
+    volatile cmr_canDTI_TX_TempFault_t *FL =
+        (void *)metaDTI_FL_TempFault->payload;
 
     // Front Right
-    // cmr_canRXMeta_t *metaAMK_FR_Act1 = canRXMeta + CANRX_AMK_FR_ACT_1;
-    // volatile cmr_canAMKActualValues1_t *canAMK_FR_Act1 =
-    //     (void *)metaAMK_FR_Act1->payload;
-    cmr_canRXMeta_t *metaAMK_FR_Act2 = canRXMeta + CANRX_AMK_FR_ACT_2;
-    volatile cmr_canAMKActualValues2_t *FR =
-        (void *)metaAMK_FR_Act2->payload;
+    cmr_canRXMeta_t *metaDTI_FR_TempFault = canRXMeta + CANRX_DTI_FR_TEMPFAULT;
+    volatile cmr_canDTI_TX_TempFault_t *FR =
+        (void *)metaDTI_FR_TempFault->payload;
 
     // Rear Left
-    // cmr_canRXMeta_t *metaAMK_RL_Act1 = canRXMeta + CANRX_AMK_RL_ACT_1;
-    // volatile cmr_canAMKActualValues1_t *canAMK_RL_Act1 =
-    //     (void *)metaAMK_RL_Act1->payload;
-    cmr_canRXMeta_t *metaAMK_RL_Act2 = canRXMeta + CANRX_AMK_RL_ACT_2;
-    volatile cmr_canAMKActualValues2_t *RL =
-        (void *)metaAMK_RL_Act2->payload;
+    cmr_canRXMeta_t *metaDTI_RL_TempFault = canRXMeta + CANRX_DTI_RL_TEMPFAULT;
+    volatile cmr_canDTI_TX_TempFault_t *RL =
+        (void *)metaDTI_RL_TempFault->payload;
 
     // Rear Right
-    // cmr_canRXMeta_t *metaAMK_RR_Act1 = canRXMeta + CANRX_AMK_RR_ACT_1;
-    // volatile cmr_canAMKActualValues1_t *canAMK_RR_Act1 =
-    //     (void *)metaAMK_RR_Act1->payload;
-    cmr_canRXMeta_t *metaAMK_RR_Act2 = canRXMeta + CANRX_AMK_RR_ACT_2;
-    volatile cmr_canAMKActualValues2_t *RR =
-        (void *)metaAMK_RR_Act2->payload;
+   cmr_canRXMeta_t *metaDTI_RR_TempFault = canRXMeta + CANRX_DTI_RR_TEMPFAULT;
+    volatile cmr_canDTI_TX_TempFault_t *RR =
+        (void *)metaDTI_RR_TempFault->payload;
 
     /* Motor Temperature */
     uint8_t hottest_motor_index = 0;
-    *motorTemp_C = findMax(FL->motorTemp_dC,
-                                  FR->motorTemp_dC,
-                                  RL->motorTemp_dC,
-                                  RR->motorTemp_dC,
+    *motorTemp_C = findMax(FL->motor_temp,
+                                  FR->motor_temp,
+                                  RL->motor_temp,
+                                  RR->motor_temp,
                                   &hottest_motor_index) /
                           10;
 
@@ -477,10 +465,10 @@ static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hot
 
     uint8_t hottest_mc_index = 0;
     /* Motor Controller Temperature */
-    *mcTemp_C = findMax(FL->coldPlateTemp_dC,
-                               FR->coldPlateTemp_dC,
-                               RL->coldPlateTemp_dC,
-                               RR->coldPlateTemp_dC,
+    *mcTemp_C = findMax(FL->ctlr_temp,
+                               FR->ctlr_temp,
+                               RL->ctlr_temp,
+                               RR->ctlr_temp,
                                &hottest_mc_index) /
                        10;
 
@@ -592,7 +580,7 @@ static void drawRTDScreen(void) {
     int32_t mcTemp_C, motorTemp_C = 0;
     cornerId_t hottest_motor;
 
-    getAMKTemps(&mcTemp_C, &motorTemp_C, &hottest_motor);
+    getDTITemps(&mcTemp_C, &motorTemp_C, &hottest_motor);
 
     /* Temperature warnings */
     bool motorTemp_yellow = motorTemp_C >= MOTOR_YELLOW_THRESHOLD;

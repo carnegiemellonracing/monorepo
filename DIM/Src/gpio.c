@@ -51,7 +51,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 	[GPIO_BUTTON_DOWN] = {
 		.port = GPIOB,
 		.init = {
-			.Pin = GPIO_PIN_4,
+			.Pin = GPIO_PIN_5,
 			.Mode = GPIO_MODE_INPUT,
 			.Pull = GPIO_PULLUP,
 			.Speed = GPIO_SPEED_FREQ_LOW
@@ -60,9 +60,9 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 
 	// D_BUTTON_4
 	[GPIO_BUTTON_LEFT] = {
-		.port = GPIOB,
+		.port = GPIOC,
 		.init = {
-			.Pin = GPIO_PIN_5,
+			.Pin = GPIO_PIN_0,
 			.Mode = GPIO_MODE_INPUT,
 			.Pull = GPIO_PULLUP,
 			.Speed = GPIO_SPEED_FREQ_LOW
@@ -120,7 +120,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 	[GPIO_LED_IMD] = {
 		.port = GPIOA,
 		.init = {
-			.Pin = GPIO_PIN_8,
+			.Pin = GPIO_PIN_10,
 			.Mode = GPIO_MODE_OUTPUT_PP,
 			.Pull = GPIO_PULLUP,
 			.Speed = GPIO_SPEED_FREQ_LOW
@@ -157,15 +157,6 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 		.port = GPIOB,
 		.init = {
 			.Pin = GPIO_PIN_14,
-			.Mode = GPIO_MODE_OUTPUT_PP,
-			.Pull = GPIO_NOPULL,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_AS_RELAY] = {
-		.port = GPIOC,
-		.init = {
-			.Pin = GPIO_PIN_9,
 			.Mode = GPIO_MODE_OUTPUT_PP,
 			.Pull = GPIO_NOPULL,
 			.Speed = GPIO_SPEED_FREQ_LOW
