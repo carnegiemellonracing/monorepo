@@ -642,7 +642,7 @@ static void tftDL_showBMBStatus(volatile cmr_canHVCBMBErrors_t *BMBerr) {
     tftDL_showErrorState(ESE_HVC_BMB_STATUS_COLOR, bmbRed);
 }
 
-static void tftDL_showAMKError(uint32_t strlocation, uint32_t colorLocation, uint16_t errorCode) {
+static void tftDL_showDTIError(uint32_t strlocation, uint32_t colorLocation, uint8_t errorCode) {
     char *print_location = (void *)(tftDL_errorData + strlocation);
     const size_t print_len = 13;
     // Spaces are to align text, so each string has 12 characters followed by a \0
@@ -717,11 +717,11 @@ void tftDL_errorUpdate(
     tftDL_showErrorState(ESE_BSPD_COLOR, err->bspdError);
     tftDL_showErrorState(ESE_GLV_COLOR, err->glvLowVolt);
 
-    /* Display AMK errors */
-    tftDL_showAMKError(ESE_AMK_FL_STR, ESE_AMK_FL_COLOR, err->amkFLErrorCode);
-    tftDL_showAMKError(ESE_AMK_FR_STR, ESE_AMK_FR_COLOR, err->amkFRErrorCode);
-    tftDL_showAMKError(ESE_AMK_BL_STR, ESE_AMK_BL_COLOR, err->amkBLErrorCode);
-    tftDL_showAMKError(ESE_AMK_BR_STR, ESE_AMK_BR_COLOR, err->amkBRErrorCode);
+    /* Display DTI errors */
+    tftDL_showDTIError(ESE_DTI_FL_STR, ESE_DTI_FL_COLOR, err->dtiFLErrorCode);
+    tftDL_showDTIError(ESE_DTI_FR_STR, ESE_DTI_FR_COLOR, err->dtiFRErrorCode);
+    tftDL_showDTIError(ESE_DTI_BL_STR, ESE_DTI_BL_COLOR, err->dtiRLErrorCode);
+    tftDL_showDTIError(ESE_DTI_BR_STR, ESE_DTI_BR_COLOR, err->dtiRRErrorCode);
 }
 
 /**

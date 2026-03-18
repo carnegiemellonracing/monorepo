@@ -216,42 +216,63 @@ bool getAcknowledgeButton(void) {
 	return ackButtonPressed;
 }
 
+/**
+ * @brief Helper function for computing max of 4 numbers
+ */
+static int16_t findMax(int16_t a, int16_t b, int16_t c, int16_t d, uint8_t *index) {
+    int16_t maximum = a;
+    *index = 0;
+    if (b > maximum) {
+        maximum = b;
+        *index = 1;
+    }
+    if (c > maximum) {
+        maximum = c;
+        *index = 2;
+    }
+    if (d > maximum) {
+        maximum = d;
+        *index = 3;
+    }
+    return maximum;
+}
 
 /**
  * @brief Gets the highest motor temperature.
  *
- * @param none
+ * @param temp   The motor temperature
+ * @param corner The corner corresponding to the hottest motor
  *
- * @return highest motor temperature in celsius, rounded to integer
  */
-int getMaxMotorTemp(void){
+void getMaxMotorTemp(int16_t *temp, cornerId_t *corner)
+{
 	/* Get CAN data */
 	// Front Left
 	cmr_canDTI_TX_TempFault_t *canDTI_FL_temp = getPayload(CANRX_DTI_FL_TEMPFAULT);
+    int16_t frontLeftMotorTemp = canDTI_FL_temp->motor_temp;
 
 	// Front Right
 	cmr_canDTI_TX_TempFault_t *canDTI_FR_temp = getPayload(CANRX_DTI_FR_TEMPFAULT);
+    int16_t frontRightMotorTemp = canDTI_FR_temp->motor_temp;
 
 	// Rear Left
 	cmr_canDTI_TX_TempFault_t *canDTI_RL_temp = getPayload(CANRX_DTI_RL_TEMPFAULT);
+    int16_t rearLeftMCotorTemp = canDTI_RL_temp->motor_temp;
 
 	// Rear Right
 	cmr_canDTI_TX_TempFault_t *canDTI_RR_temp = getPayload(CANRX_DTI_RR_TEMPFAULT);
-
-	/* Extract motor temperatures */
-    //TODO: does this need to be int32_t or int16_t?? and what is multiplied by 10?
-	int32_t frontLeftTemp = canDTI_FL_temp->motor_temp;
-	int32_t frontRightTemp = canDTI_FR_temp->motor_temp;
-	int32_t rearLeftTemp = canDTI_RL_temp->motor_temp;
-	int32_t rearRightTemp = canDTI_RR_temp->motor_temp;
+    int16_t rearRightMotorTemp = canDTI_RR_temp->motor_temp;
 
 	/* Return highest motor temperature*/
-	int32_t maxTemp = frontLeftTemp;
+    uint8_t hottest_motor_index = 0;
+    *temp = findMax(frontLeftMotorTemp,
+                    frontRightMotorTemp,
+                    rearLeftMCotorTemp,
+                    rearRightMotorTemp,
+                    &hottest_motor_index) / 10;
+                    // The raw temp values are scaled by 10, so divide out
 
-	maxTemp = max(max(max(maxTemp, frontRightTemp), rearLeftTemp), rearRightTemp);
-/* conversion from dC to C*/
-	return maxTemp / 10;
-
+    *corner = (cornerId_t)hottest_motor_index;
 }
 
 /**
@@ -267,40 +288,43 @@ int getACTemp(void)
 	int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC) / 10;
 	return acTemp_C;
 }
+
 /**
- * @brief Gets the mc temperature.
+ * @brief Gets the highest mc temperature.
  *
- * @param none
+ * @param temp   The mc temperature
+ * @param corner The corner corresponding to the hottest mc
  *
- * @return mc temperature in celsius
  */
-int getMCTemp(void)
+void getMaxMCTemp(int16_t *temp, cornerId_t *corner)
 {
 	/* Get CAN data */
 	// Front Left
 	cmr_canDTI_TX_TempFault_t *canDTI_FL_temp = getPayload(CANRX_DTI_FL_TEMPFAULT);
+    int16_t frontLeftMCTemp = canDTI_FL_temp->ctlr_temp;
 
 	// Front Right
 	cmr_canDTI_TX_TempFault_t *canDTI_FR_temp = getPayload(CANRX_DTI_FR_TEMPFAULT);
+    int16_t frontRightMCTemp = canDTI_FR_temp->ctlr_temp;
 
 	// Rear Left
 	cmr_canDTI_TX_TempFault_t *canDTI_RL_temp = getPayload(CANRX_DTI_RL_TEMPFAULT);
+    int16_t rearLeftMCTemp = canDTI_RL_temp->ctlr_temp;
 
 	// Rear Right
 	cmr_canDTI_TX_TempFault_t *canDTI_RR_temp = getPayload(CANRX_DTI_RR_TEMPFAULT);
+    int16_t rearRightMCTemp = canDTI_RR_temp->ctlr_temp;
 
-    //TODO: does this need to be int32_t or int16_t?? and what is multiplied by 10?
-    // is this controller temp?
-	int32_t frontLeftMCTemp = canDTI_FL_temp->ctlr_temp;
-	int32_t frontRightMCTemp = canDTI_FR_temp->ctlr_temp;
-	int32_t rearLeftMCTemp = canDTI_RL_temp->ctlr_temp;
-	int32_t rearRightMCTemp = canDTI_RR_temp->ctlr_temp;
+	/* Return highest motor controller temperature*/
+    uint8_t hottest_mc_index = 0;
+    *temp = findMax(frontLeftMCTemp,
+                    frontRightMCTemp,
+                    rearLeftMCTemp,
+                    rearRightMCTemp,
+                    &hottest_mc_index) / 10;
+                    // The raw temp values are scaled by 10, so divide out
 
-	/* Return highest motor temperature*/
-	int32_t maxTemp = frontLeftMCTemp;
-
-	maxTemp = max(max(max(maxTemp, frontRightMCTemp), rearLeftMCTemp), rearRightMCTemp);
-	return maxTemp / 10;
+    *corner = (cornerId_t)hottest_mc_index;
 }
 
 /**

@@ -39,9 +39,9 @@ void reqVSM(void);
 void reqGear(void);
 int getRequestedGear(void);
 
-int getMaxMotorTemp(void);
+void getMaxMotorTemp(int16_t *temp, cornerId_t *corner);
 int getACTemp(void);
-int getMCTemp(void);
+void getMaxMCTemp(int16_t *temp, cornerId_t *corner);
 bool DRSOpen(void);
 void exitConfigScreen();
 void stateGearUpdate(void);
