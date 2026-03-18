@@ -93,7 +93,7 @@ static void motorsTest (void *pvParameters) {
         volatile cmr_canFSMData_t *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
         uint8_t throttlePos = dataFSM->throttlePosition;
         uint16_t setCurrent = (uint16_t)(((float)throttlePos * (float)MAX_CURRENT_DECI_AMPS / (float)UINT8_MAX));
-        setCurrent = setCurrent << 8 | ((setCurrent >> 8) & 0xFF);
+        // setCurrent = setCurrent << 8 | ((setCurrent >> 8) & 0xFF);
         //enables motors to drive
         uint8_t driveEnable = 1;
         setPowerLimit(true, MOTOR_FL, 20.25f);
@@ -101,13 +101,13 @@ static void motorsTest (void *pvParameters) {
         if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN || heartbeatVSM->state == CMR_CAN_HV_EN) {
             setCurrent = 0;
             mcCtrlOn();
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
         }
         else if(heartbeatVSM->state == CMR_CAN_RTD){
             mcCtrlOn();
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
         }
 
         vTaskDelayUntil(&lastWakeTime, motorsCommand_period_ms);
@@ -200,12 +200,12 @@ static void motorsCommand (
 
                 //     //enables motors to drive
                 //     uint8_t driveEnable = 1;
-                //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
+                //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
 
-                //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_CURRENT, &set_current_fl, sizeof(set_current_fl), can10Hz_period_ms);
-                //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_CURRENT, &set_current_fr, sizeof(set_current_fr), can10Hz_period_ms);
-                //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_CURRENT, &set_current_rl, sizeof(set_current_rl), can10Hz_period_ms);
-                //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_CURRENT, &set_current_rr, sizeof(set_current_rr), can10Hz_period_ms);
+                //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_CURRENT, &set_current_fl, sizeof(set_current_fl), can10Hz_period_ms);
+                //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_CURRENT, &set_current_fr, sizeof(set_current_fr), can10Hz_period_ms);
+                //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_CURRENT, &set_current_rl, sizeof(set_current_rl), can10Hz_period_ms);
+                //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_CURRENT, &set_current_rr, sizeof(set_current_rr), can10Hz_period_ms);
                 
                 // }
                 
@@ -541,22 +541,22 @@ void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw) {
     // float hvVoltage_V = ((float) HVISense->packVoltage_cV) / 100.f;
     float hvVoltage_V = 500.0f;
     uint16_t current = (int)((10.0f*((float)powerLimit_kw*1000.0f))/hvVoltage_V); // send current in deciamps
-    current = current << 8 | ((current >> 8) & 0xFF); 
+    // current = current << 8 | ((current >> 8) & 0xFF); 
     if(all) {
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+        sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
     } else {
         switch(motor){
             case MOTOR_FL:
-                canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
                 break;
             case MOTOR_FR:
-                canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
                 break;
             case MOTOR_RL:
-                canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
                 break;
             case MOTOR_RR:
-                canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
                 break;
         }
     }

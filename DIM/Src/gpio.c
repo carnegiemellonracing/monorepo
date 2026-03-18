@@ -37,6 +37,47 @@ static cmr_task_t gpioReadButtons_task;
 // TODO: change GPIO pin configs based on new schematic
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 
+	// // D_BUTTON_2
+    // [GPIO_BUTTON_UP] = {
+	// 	.port = GPIOC,
+	// 	.init = {
+	// 		.Pin = GPIO_PIN_10,
+	// 		.Mode = GPIO_MODE_INPUT,
+	// 		.Pull = GPIO_PULLUP,
+	// 		.Speed = GPIO_SPEED_FREQ_LOW
+	// 	}
+	// },
+	// // D_BUTTON_1
+	// [GPIO_BUTTON_DOWN] = {
+	// 	.port = GPIOB,
+	// 	.init = {
+	// 		.Pin = GPIO_PIN_5,
+	// 		.Mode = GPIO_MODE_INPUT,
+	// 		.Pull = GPIO_PULLUP,
+	// 		.Speed = GPIO_SPEED_FREQ_LOW
+	// 	}
+	// },
+	// // D_BUTTON_4
+	// [GPIO_BUTTON_LEFT] = {
+	// 	.port = GPIOC,
+	// 	.init = {
+	// 		.Pin = GPIO_PIN_0,
+	// 		.Mode = GPIO_MODE_INPUT,
+	// 		.Pull = GPIO_PULLUP,
+	// 		.Speed = GPIO_SPEED_FREQ_LOW
+	// 	}
+	// },
+	// // D_BUTTON_3
+	// [GPIO_BUTTON_RIGHT] = {
+	// 	.port = GPIOB,
+	// 	.init = {
+	// 		.Pin = GPIO_PIN_9,
+	// 		.Mode = GPIO_MODE_INPUT,
+	// 		.Pull = GPIO_PULLUP,
+	// 		.Speed = GPIO_SPEED_FREQ_LOW
+	// 	}
+	// },
+	// OLD DIM PINS
 	// D_BUTTON_2
     [GPIO_BUTTON_UP] = {
 		.port = GPIOC,
@@ -51,24 +92,22 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 	[GPIO_BUTTON_DOWN] = {
 		.port = GPIOB,
 		.init = {
+			.Pin = GPIO_PIN_4,
+			.Mode = GPIO_MODE_INPUT,
+			.Pull = GPIO_PULLUP,
+			.Speed = GPIO_SPEED_FREQ_LOW
+		}
+	},
+	// D_BUTTON_4
+	[GPIO_BUTTON_LEFT] = {
+		.port = GPIOB,
+		.init = {
 			.Pin = GPIO_PIN_5,
 			.Mode = GPIO_MODE_INPUT,
 			.Pull = GPIO_PULLUP,
 			.Speed = GPIO_SPEED_FREQ_LOW
 		}
 	},
-
-	// D_BUTTON_4
-	[GPIO_BUTTON_LEFT] = {
-		.port = GPIOC,
-		.init = {
-			.Pin = GPIO_PIN_0,
-			.Mode = GPIO_MODE_INPUT,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-
 	// D_BUTTON_3
 	[GPIO_BUTTON_RIGHT] = {
 		.port = GPIOB,
@@ -117,10 +156,20 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 			.Speed = GPIO_SPEED_FREQ_LOW
 		}
 	},
+	// [GPIO_LED_IMD] = {
+	// 	.port = GPIOA,
+	// 	.init = {
+	// 		.Pin = GPIO_PIN_10,
+	// 		.Mode = GPIO_MODE_OUTPUT_PP,
+	// 		.Pull = GPIO_PULLUP,
+	// 		.Speed = GPIO_SPEED_FREQ_LOW
+	// 	}
+	// },
+	// OLD DIM PINS
 	[GPIO_LED_IMD] = {
 		.port = GPIOA,
 		.init = {
-			.Pin = GPIO_PIN_10,
+			.Pin = GPIO_PIN_8,
 			.Mode = GPIO_MODE_OUTPUT_PP,
 			.Pull = GPIO_PULLUP,
 			.Speed = GPIO_SPEED_FREQ_LOW
