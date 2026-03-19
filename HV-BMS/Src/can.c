@@ -69,6 +69,7 @@ static void sendBMSMinMaxCellTemp(void);
 static void sendAllBMBVoltages(uint8_t bmb_index);
 static void sendHVBMSPackVoltage(void); 
 static void checkClearErr(void); 
+static uint16_t thermVoltage_to_tempC(uint16_t thermVolt); 
 
 /** @brief CAN 1 Hz TX priority. */
 static const uint32_t canTX1Hz_priority = 4;
@@ -402,17 +403,11 @@ static void sendBMSMinMaxCellTemp(void) {
             minCellTempIndex = minIndex;
         }
     }
-    float xMin = (4.7f*((float)minCellTemp)/1000.0f)* 1000.0f / ((5.0f - (((float)minCellTemp)/1000.0f)) );
-    float temp_minTemp = (1/(0.00335348f + (0.00030662f*log((xMin)/10000.0f)) + powf(0.00000837316f*log(xMin/10000.0f), 2))) - 273.15;
-    minCellTemp = (int16_t) (temp_minTemp * 10.0f);
-
-    float xMax = (4.7f*((float)maxCellTemp)/1000.0f) * 1000.0f / ((5.0f - (((float)maxCellTemp)/1000.0f)));
-	float temp_maxTemp = (1/(0.00335348f + (0.00030662f*log((xMax)/10000.0f)) + powf(0.00000837316f*log(xMax/10000.0f), 2))) - 273.15;
-	maxCellTemp = (int16_t) (temp_maxTemp * 10.0f);
+    
     //currently swapped because the min logic reading only voltage
     cmr_canBMSMinMaxCellTemperature_t BMSBMBMinMaxTemperature = {
-        .minCellTemp_C = maxCellTemp,
-        .maxCellTemp_C = minCellTemp,
+        .minCellTemp_C = thermVoltage_to_tempC(maxCellTemp),
+        .maxCellTemp_C = thermVoltage_to_tempC(minCellTemp),
         .minTempBMBNum = maxCellTempBMBNum,
         .maxTempBMBNum = minCellTempBMBNum,
         .minTempCellNum = maxCellTempIndex,
@@ -500,4 +495,14 @@ static void sendAllBMBVoltages(uint8_t bmbIndex) {
     canTX(CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_5_9 + bmbIndex, &volt1, sizeof(volt1), canTX100Hz_period_ms);
     canTX(CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_0_4 + bmbIndex, &temp0, sizeof(temp0), canTX100Hz_period_ms);
     canTX(CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_5_9 + bmbIndex, &temp1, sizeof(temp1), canTX100Hz_period_ms);
+}
+
+static uint16_t thermVoltage_to_tempC(uint16_t thermVolt){
+    uint16_t pullup_ohms = 4700; //from BMB schematics? 
+    uint16_t v_in = 5000; //3.3V? what is tsref :( 
+    float resistance = pullup_ohms * ((thermVolt/v_in)-1); //is this correct
+    //pullup_ohms * (v_in / (vin - thermVolt)) 
+    // 1/T = A + B * ln(R) + C * (ln(R))^3 
+    float temp_K = 1/(0.0008535652191938296f + 0.00025741667173226975f * log(resistance) + 1.663057739292996e-07f * powf(log(resistance), 3));  
+    return (uint16_t)(temp_K - 273.15); //convert to celsius 
 }
