@@ -503,6 +503,6 @@ static uint16_t thermVoltage_to_tempC(uint16_t thermVolt){
     float resistance = pullup_ohms * ((thermVolt/v_in)-1); //is this correct
     //pullup_ohms * (v_in / (vin - thermVolt)) 
     // 1/T = A + B * ln(R) + C * (ln(R))^3 
-    float temp_K = 1/(0.0008535652191938296f + 0.00025741667173226975f * ln(resistance) + 1.663057739292996e-07f * powf(resistance, 3));  
+    float temp_K = 1/(0.0008535652191938296f + 0.00025741667173226975f * log(resistance) + 1.663057739292996e-07f * powf(log(resistance), 3));  
     return (uint16_t)(temp_K - 273.15); //convert to celsius 
 }
