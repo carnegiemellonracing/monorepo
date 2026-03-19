@@ -702,13 +702,11 @@ Var=COMMAND_modeRequest unsigned 0,8 /e:HVCMode
 
 [HVC_LOW_VOLTAGE]
 ID=303h
-DLC=4
+DLC=2
 CycleTime=10
 TimeOut=50
-Var=LOW_vbatt_mV unsigned 0,8 /u:mV /f:0.1333333
-Var=LOW_vAIR_mV unsigned 8,8 /u:mV /f:0.1333333
-Var=LOW_safety_mV unsigned 16,8 /u:mV /f:0.1333333
-Var=LOW_iDCDC_mA unsigned 24,8 /u:mA /f:0.1333333
+Var=LOW_vAIR_qV unsigned 0,8 /u:qV
+Var=LOW_safety_qV unsigned 8,8 /u:qV
 
 [HVC_PACK_CURRENT]
 ID=302h
