@@ -71,7 +71,7 @@ typedef enum {
 	LV_LIPO,
 } lv_battery_type_t;
 
-uint8_t getLVSoC(float voltage, lv_battery_type_t battery_type);
+uint8_t getLVSoC(float voltage);
 
 bool getAcknowledgeButton(void);
 
