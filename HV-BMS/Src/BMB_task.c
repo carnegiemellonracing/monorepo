@@ -14,6 +14,7 @@ extern BMB_Data_t BMBData[BOARD_NUM-1];
 
 extern volatile int BMBTimeoutCount[BOARD_NUM-1];
 extern volatile int BMBErrs[BOARD_NUM-1];
+extern bool firstBalDone[BOARD_NUM-1][VSENSE_CHANNELS]; 
 
 #define BALANCE_EN true
 #define BALANCE_DIS false
@@ -56,9 +57,10 @@ void vBMBSampleTask(void *pvParameters) {
 	vTaskDelayUntil(&xLastWakeTime, 50);
 	bool currentlyBalancing = false;
 	bool ledToggle = false;
-	uint16_t threshold = 0;
+	uint16_t threshold = getPackMinCellVoltage() + 5; 
 	uint32_t settleTimer_ms;
 	bool settlingTimerStarted = false;
+	bool newBalCommand = true; 
 
 	// Main BMS control loop
 	while (1) {
@@ -68,8 +70,17 @@ void vBMBSampleTask(void *pvParameters) {
 		// If we get a balancing command and we weren't previously balancing, enable
 		// cells to balance
 		if (isBalanceCommanded() && !currentlyBalancing) {
+			//clear first balance done when we get a new balance command (everything starts over)
+			if (newBalCommand){
+				for(int i = 0; i < BOARD_NUM - 1; i++){
+					for (int j = 0; j<VSENSE_CHANNELS; j++){
+						firstBalDone[i][j] = false; 
+					}
+				}
+				newBalCommand = false; 
+			} 
 			if(getBalDone()==1){
-				cellBalancing(BALANCE_EN, 3440); 
+				cellBalancing(BALANCE_EN, threshold); 
 				currentlyBalancing = true;
 			} 
 		}
@@ -92,6 +103,11 @@ void vBMBSampleTask(void *pvParameters) {
 		else if (settlingTimerStarted && (xTaskGetTickCount()-settleTimer_ms)>500) {
 			currentlyBalancing = false;
 			settlingTimerStarted = false;
+		}
+
+		//waiting for new balance command 
+		if (!isBalanceCommanded()){
+			newBalCommand = true; 
 		}
 
 		// Loop through the 4 different MUX channels and select a different one
