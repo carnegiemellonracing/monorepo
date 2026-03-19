@@ -645,36 +645,27 @@ typedef struct {
     uint8_t SoC;
 } voltage_SoC_t;
 
-#define LV_LIFEPO_LUT_NUM_ITEMS 11
-#define LV_LIPO_LUT_NUM_ITEMS 6
+#define LV_GRAPOW_LUT_NUM_ITEMS 11
 
 /**
- * @brief Look up table for 24v lifepo4 battery State of Charge
+ * @brief Look up table for 26x 7s Grapow LV Battery (Semi-Solid State)
  *
  * Must be sorted in descending order
  */
-static voltage_SoC_t LV_LiFePo_SoC_lookup[LV_LIFEPO_LUT_NUM_ITEMS] = {
-    { 27.2f, 100 },
-    { 26.8f, 90 },
-    { 26.6f, 80 },
-    { 26.1f, 70 },
-    { 26.4f, 60 },
-    { 26.1f, 50 },
-    { 26.0f, 40 },
-    { 25.8f, 30 },
-    { 25.6f, 20 },
-    { 24.0f, 10 },
-    { 20.0f, 0 }
+static voltage_SoC_t LV_grapow_SoC_lookup[LV_GRAPOW_LUT_NUM_ITEMS] = {
+    { 29.4f, 100 }, 
+    { 28.7f,  90 },
+    { 27.9f,  80 }, 
+    { 27.2f,  70 }, 
+    { 26.5f,  60 }, 
+    { 25.9f,  50 }, 
+    { 25.3f,  40 }, 
+    { 24.7f,  30 }, 
+    { 23.5f,  20 }, 
+    { 21.5f,  10 }, 
+    { 19.6f,   0 }  
 };
 
-static voltage_SoC_t LV_LiPo_SoC_lookup[LV_LIPO_LUT_NUM_ITEMS] = {
-    { 25.2f, 100 },
-    { 24.5f, 90 },
-    { 23.0f, 80 },
-    { 21.0f, 20 },
-    { 20.0f, 10 },
-    { 18.0f, 0 }
-};
 
 /**
  * @brief Function for getting Low Voltage SoC
@@ -683,21 +674,9 @@ static voltage_SoC_t LV_LiPo_SoC_lookup[LV_LIPO_LUT_NUM_ITEMS] = {
  *
  * @return the state of charge % between 0 and 99.
  */
-uint8_t getLVSoC(float voltage, lv_battery_type_t battery_type) {
-    voltage_SoC_t *lut;
-    size_t num_items;
-
-    if (battery_type == LV_LIFEPO) {
-        lut = LV_LiFePo_SoC_lookup;
-        num_items = LV_LIFEPO_LUT_NUM_ITEMS;
-    } else if (battery_type == LV_LIPO) {
-        lut = LV_LiPo_SoC_lookup;
-        num_items = LV_LIPO_LUT_NUM_ITEMS;
-    } else {
-        // unknown battery type - return 0%
-		cmr_panic("Unknown battery type");
-        return 0;
-    }
+uint8_t getLVSoC(float voltage) {
+    voltage_SoC_t *lut = LV_grapow_SoC_lookup;
+    size_t num_items = LV_GRAPOW_LUT_NUM_ITEMS;
 
     for (size_t i = 0; i < num_items; i++) {
         if (lut[i].voltage == voltage) {

@@ -72,11 +72,12 @@ static uint32_t sampleADCSensor(const cmr_sensor_t *sensor) {
  *
  * @return Voltage in mV.
  */
-// 24v voltage divider is factor of 1.13/14.43
+// Experimentally determined conversion function for 24V rail voltage sense
+// Needed to do experimental since the resistor was placed incorrectly on HVC
 static int32_t ADCtoMV_24v(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 	
-    return ((int32_t) reading) * 7.39;
+    return ((int32_t) reading) * 11.27;
 
 }
 

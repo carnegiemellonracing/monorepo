@@ -171,6 +171,8 @@ void gpioInit(void) {
     // cmr_pwmInit(&LED_Green, &pwmPinConfig2);
     // cmr_pwmSetDutyCycle(&LED_Red, 0);
     // cmr_pwmSetDutyCycle(&LED_Green, 0);
+    cmr_gpioWrite(GPIO_OUT_LED_GREEN, 0);
+    cmr_gpioWrite(GPIO_OUT_LED_RED, 0);
 
     cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
     cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);

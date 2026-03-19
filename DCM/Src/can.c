@@ -1532,15 +1532,15 @@ static bool inverterMessagesValid() {
 }
 
 int sendDTIMessage(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
-    configASSERT(len == 8 || len == 16 || len == 32);
-    if(len == 8) {
+    configASSERT(len == 1 || len == 2 || len == 4);
+    if(len == 1) {
         return canTX(bus, id, data, len, timeout);
     }
-    else if(len == 16) {
+    else if(len == 2) {
         big_endian_16_t big_endian_data = int16_to_big(*((int16_t*)(data)));
         return canTX(bus, id, &big_endian_data, len, timeout);
     }
-    else if(len == 32) {
+    else if(len == 4) {
         big_endian_32_t big_endian_data = int32_to_big(*((int32_t*)(data)));
         return canTX(bus, id, &big_endian_data, len, timeout);
     }

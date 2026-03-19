@@ -1000,11 +1000,13 @@ typedef struct {
     uint8_t maxTempCellNum;      /**< @brief Max pack cell temp cell number. */
 } cmr_canBMSMinMaxCellTemperature_t;
 
+// Note we elect to use quarter volts to allow us to fit more detail
+// The voltage goes up to 30000mV so we can get reasonable detail 
+// with quarter volts
+// 1 byte per voltage value.
 typedef struct {
-    uint8_t vbatt_mV;       //u: mV, f:0.1333333 /**< @brief LV battery voltage (mV). */
-    uint8_t vAIR_mV;        //u: mV, f:0.1333333 /**< @brief AIR voltage (mV). */
-    uint8_t safety_mV;      //u: mV, f:0.1333333 /**< @brief Safety circuit voltage (mA). */
-	uint8_t iDCDC_mA;       //u: mA, f:0.1333333 /**< @brief DCDC current (mA). */
+    uint8_t vAIR_qV;        //u: qV, /**< @brief AIR voltage (quarter volt). */
+    uint8_t safety_qV;      //u: qV, /**< @brief Safety circuit voltage (quarter volt). */
 } cmr_canBMSLowVoltage_t;
 
 // BRUSA Charger Structs
