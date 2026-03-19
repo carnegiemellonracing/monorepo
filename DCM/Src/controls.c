@@ -721,7 +721,8 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_FAST: {
-            setFastTorque(throttlePos_u8);
+            // setFastTorque(throttlePos_u8);
+            setFastTorqueWithBias(throttlePos_u8, front_bias);
             // set_fast_torque_with_slew(throttlePos_u8, 29.0f);
             break;
         }
@@ -907,6 +908,19 @@ void setFastTorque (uint8_t throttlePos_u8) {
    setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
    setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
    setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
+   setVelocityInt16All(maxFastSpeed_rpm);
+}
+
+void setFastTorqueWithBias (uint8_t throttlePos_u8, float front_bias) {
+    const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
+   //setTorqueLimsAllProtected(reqTorque, 0.0f);
+   float reqTorque_front = 2.0f * reqTorque * front_bias;
+   float reqTorque_rear = 2.0f * reqTorque * (1 - front_bias);
+   
+   setTorqueLimsUnprotected(MOTOR_FL, reqTorque_front, 0.0f);
+   setTorqueLimsUnprotected(MOTOR_FR, reqTorque_front, 0.0f);
+   setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear, 0.0f);
+   setTorqueLimsUnprotected(MOTOR_RL, reqTorque_rear, 0.0f);
    setVelocityInt16All(maxFastSpeed_rpm);
 }
 
