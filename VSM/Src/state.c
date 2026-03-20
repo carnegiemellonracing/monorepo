@@ -43,6 +43,14 @@ cmr_canState_t vsmToCANState[] = {
     [CMR_CAN_VSM_STATE_AS_EMERGENCY]    = CMR_CAN_AS_EMERGENCY
 };
 
+/** @brief DTI Facing motor setpoints struct*/
+typedef struct{
+    int32_t velocity_erpm;          /**< @brief Velocity setpoint (ERPM). */
+    int16_t torqueLimPos_dA;        /**< @brief Positive torque limit. */
+    int16_t torqueLimNeg_dA;        /**< @brief Negative torque limit. */
+    int16_t ACCurrent_dA;     /**< @brief Negative torque limit. */      
+} cmr_DTI_RX_Message_t;
+
 /** @brief Last time that vehicle state was changed */
 volatile TickType_t lastStateChangeTime_ms = 0;
 
@@ -237,10 +245,10 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
     cmr_canDTI_TX_IOStatus_t *dti_fr_io_status = getPayload(CANRX_FR_IO_STATUS);
     cmr_canDTI_TX_IOStatus_t *dti_rl_io_status = getPayload(CANRX_RL_IO_STATUS);
     cmr_canDTI_TX_IOStatus_t *dti_rr_io_status = getPayload(CANRX_RR_IO_STATUS);
-    cmr_canDTI_RX_Message_t *dti_fl_erpm = getPayload(CANRX_FL_ERPM);
-    cmr_canDTI_RX_Message_t *dti_fr_erpm = getPayload(CANRX_FR_ERPM);
-    cmr_canDTI_RX_Message_t *dti_rl_erpm = getPayload(CANRX_RL_ERPM);
-    cmr_canDTI_RX_Message_t *dti_rr_erpm = getPayload(CANRX_RR_ERPM);
+    cmr_DTI_RX_Message_t *dti_fl_erpm = getPayload(CANRX_FL_ERPM);
+    cmr_DTI_RX_Message_t *dti_fr_erpm = getPayload(CANRX_FR_ERPM);
+    cmr_DTI_RX_Message_t *dti_rl_erpm = getPayload(CANRX_RL_ERPM);
+    cmr_DTI_RX_Message_t *dti_rr_erpm = getPayload(CANRX_RR_ERPM);
 
     bool vehicleStill = (dti_fl_erpm->velocity_erpm == 0) && (dti_fr_erpm->velocity_erpm == 0) &&
                         (dti_rl_erpm->velocity_erpm == 0) && (dti_rr_erpm->velocity_erpm == 0);

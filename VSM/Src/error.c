@@ -98,17 +98,17 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
     //cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
     if ((cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), lastWakeTime) != 0)
+     || (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVBMS]), lastWakeTime) != 0)
      || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_PACK_OVERVOLT)
-     || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT)
-     || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_CELL_OVERTEMP)) {
+     || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT)) {
 
-        cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
+        cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 0);
     }
     // else if (getASEmergency()){
-    //     cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
+    //     cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 0);
     // }
     else {
-        cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 0);
+        cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
     }
 
     // Check all latches

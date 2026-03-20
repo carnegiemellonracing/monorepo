@@ -86,9 +86,9 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
         }
     },
     // [GPIO_IN_SOFTWARE_ERR] = {
-    //     .port = GPIOB,
+    //     .port = GPIOC,
     //     .init = {
-    //         .Pin = GPIO_PIN_5,
+    //         .Pin = GPIO_PIN_12,
     //         .Mode = GPIO_MODE_INPUT,
     //         .Pull = GPIO_NOPULL,
     //         .Speed = GPIO_SPEED_FREQ_LOW
@@ -97,21 +97,21 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_IN_BSPD_ERR] = {
         .port = GPIOB,
         .init = {
-            .Pin = GPIO_PIN_6,
-            .Mode = GPIO_MODE_INPUT,
-            .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW
-        }
-    },
-    [GPIO_IN_IMD_ERR] = {
-        .port = GPIOB,
-        .init = {
             .Pin = GPIO_PIN_7,
             .Mode = GPIO_MODE_INPUT,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
     },
+    // [GPIO_IN_IMD_ERR] = {
+    //     .port = GPIOB,
+    //     .init = {
+    //         .Pin = GPIO_PIN_7,
+    //         .Mode = GPIO_MODE_INPUT,
+    //         .Pull = GPIO_NOPULL,
+    //         .Speed = GPIO_SPEED_FREQ_LOW
+    //     }
+    // },
     [GPIO_IN_IMD_ERR_COND] = {
         .port = GPIOB,
         .init = {

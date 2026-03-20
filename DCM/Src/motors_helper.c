@@ -403,7 +403,7 @@ int16_t torqueToCurrent(float torque_mNm){
     }
 
     // temporary linear torque-current scaling
-    torque_Nm = CLAMP(torque_Nm, minTorqueLUTVal_Nm, maxTorque_Nm);
+    torque_Nm = CLAMP(torque_Nm, 0.0f, maxTorque_Nm);
     int16_t current_dA = (int)(torque_Nm * current_torque_slope * 10.0f);
     return sign * current_dA;
 

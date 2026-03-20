@@ -76,7 +76,7 @@ cmr_canDAQTest_t getDAQTest() {
 }
 
 /* Global Variable to Initiate/Disable Torque Mode*/ 
-bool isTorqueMode = false;
+bool isTorqueMode = true;
 
 // ------------------------------------------------------------------------------------------------
 // Private functions
@@ -108,6 +108,9 @@ static void motorsTest (void *pvParameters) {
             mcCtrlOn();
             sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
             sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
+        }
+        else {
+            mcCtrlOff();
         }
 
         vTaskDelayUntil(&lastWakeTime, motorsCommand_period_ms);
@@ -424,8 +427,8 @@ void setTorqueLimsUnprotected (
     torqueLimPos_Nm = fmaxf(torqueLimPos_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
     torqueLimNeg_Nm = fminf(torqueLimNeg_Nm, 0.0f); // ensures torqueLimNeg_Nm <= 0
 
-    motorSetpoints[motor].torqueLimPos_mNm = torqueLimPos_Nm;
-    motorSetpoints[motor].torqueLimNeg_mNm = torqueLimNeg_Nm;
+    motorSetpoints[motor].torqueLimPos_mNm = torqueLimPos_Nm * 1000.0f;
+    motorSetpoints[motor].torqueLimNeg_mNm = torqueLimNeg_Nm * 1000.0f;
 }
 
 /**

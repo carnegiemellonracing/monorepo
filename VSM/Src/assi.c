@@ -40,7 +40,7 @@ static void assiControl(void *pvParameters) {
     while (1) {
     	cmr_canState_t state = getCurrentState();
         cmr_gpioWrite(GPIO_OUT_LED_BLUE, 1);
-        cmr_gpioWrite(GPIO_OUT_LED_YELLOW, 1);
+        cmr_gpioWrite(GPIO_OUT_LED_YELLOW, 0);
 
         // switch (state) {
         //     case CMR_CAN_AS_READY: 

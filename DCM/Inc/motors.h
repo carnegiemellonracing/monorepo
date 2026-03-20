@@ -34,7 +34,7 @@ typedef struct {
 
 /** @brief DTI Facing motor setpoints struct*/
 typedef struct{
-    int16_t velocity_erpm;          /**< @brief Velocity setpoint (ERPM). */
+    int32_t velocity_erpm;          /**< @brief Velocity setpoint (ERPM). */
     int16_t torqueLimPos_dA;        /**< @brief Positive torque limit. */
     int16_t torqueLimNeg_dA;        /**< @brief Negative torque limit. */
     int16_t ACCurrent_dA;     /**< @brief Negative torque limit. */      
