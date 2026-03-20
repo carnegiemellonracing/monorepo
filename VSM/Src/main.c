@@ -46,7 +46,7 @@ int main(void) {
     sensorsInit();
     stateInit();
     tssiInit();
-    assiInit();
+    // assiInit();
     dacInit();
 
     statusLEDInit();
