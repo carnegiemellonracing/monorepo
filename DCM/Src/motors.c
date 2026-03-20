@@ -61,13 +61,13 @@ static cmr_canGear_t gear = CMR_CAN_GEAR_SLOW;
  *  @note Indexed by motorLocation_t
  *  @note It will statically be defined to all 0s
  */
-static cmr_canDTISetpoints_t motorSetpoints[MOTOR_LEN];
+static cmr_DTISetpoints_t motorSetpoints[MOTOR_LEN];
 
 /** @brief Set points for each inverter in DTI format
  *  @note Indexed by motorLocation_t
  *  @note It will statically be defined to all 0s
  */
-static cmr_canDTI_RX_Message_t DTI_RXMessage[MOTOR_LEN];
+static cmr_DTI_RX_Message_t DTI_RXMessage[MOTOR_LEN];
 
 #define MAX_CURRENT_DECI_AMPS 850                        
 
@@ -76,7 +76,7 @@ cmr_canDAQTest_t getDAQTest() {
 }
 
 /* Global Variable to Initiate/Disable Torque Mode*/ 
-bool isTorqueMode = true;
+bool isTorqueMode = false;
 
 // ------------------------------------------------------------------------------------------------
 // Private functions
@@ -569,22 +569,20 @@ void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw) {
  *
  * @return Read-only pointer to requested setpoints.
  */
-const cmr_canDTI_RX_Message_t* getDTISetpoints(motorLocation_t motor) {
+const cmr_DTI_RX_Message_t* getDTISetpoints(motorLocation_t motor) {
     if (motor >= MOTOR_LEN) {
         return NULL;
     }
 
-    const cmr_canDTISetpoints_t *src = (const cmr_canDTISetpoints_t *) &(motorSetpoints[motor]);
-    cmr_canDTI_RX_Message_t *dst = &DTI_RXMessage[motor];
-
-    // ERPM vrs RPM // TODO: convert erpm to rpm
+    const cmr_DTISetpoints_t *src = (const cmr_DTISetpoints_t *) &(motorSetpoints[motor]);
+    cmr_DTI_RX_Message_t *dst = &DTI_RXMessage[motor];
     dst->velocity_erpm     = (int16_t)src->velocity_rpm * pole_pairs;
 
     // Change to AC current lims
-    dst->torqueLimPos_mNm = (int16_t)src->torqueLimPos_mNm;
-    dst->torqueLimNeg_mNm = (int16_t)src->torqueLimNeg_mNm;
+    dst->torqueLimPos_dA = (int16_t)torqueToCurrent (src->torqueLimPos_mNm);
+    dst->torqueLimNeg_dA = (int16_t)torqueToCurrent (src->torqueLimNeg_mNm);
 
-    dst->ACCurrent_deciAmps = torqueToCurrent(src->torque_mNm);
+    dst->ACCurrent_dA = torqueToCurrent(src->torque_mNm);
 
-    return (const cmr_canDTI_RX_Message_t *) dst;
+    return (const cmr_DTI_RX_Message_t *) dst;
 }

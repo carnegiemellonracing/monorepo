@@ -879,19 +879,12 @@ void setSlowTorque (
     int32_t swAngle_millideg
 ) {
     const float reqTorque = maxSlowTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
-    // setTorqueLimsAllProtected(reqTorque, 0.0f);
 
     setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
     setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
 
-    // Testing motors one by one
-//    motorLocation_t active_motor = MOTOR_FR;
-//    for(int i = 0; i < MOTOR_LEN; i++) {
-//    	setTorqueLimsUnprotected(i, reqTorque, 0.0f);
-//    }
-//
     setVelocityInt16All(maxSlowSpeed_rpm);
 }
 
@@ -1430,13 +1423,12 @@ float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
 
     // using new abstraction
     float gx, gy, gz;
-    sensors_get_gyro_xyz(&gx, &gy, &gz);
+    // sensors_get_gyro_xyz(&gx, &gy, &gz);
     const float actual_yaw_rate_radps_sae = gz;
 
-
-
     float velocity_x_mps;
-    const volatile car_state_t *cs = sensors_get_car_state();
+    const volatile car_state_t *cs;
+    //  = sensors_get_car_state();
     float calculated_velocity_x_mps_fallback = getTotalMotorSpeed_radps() * 0.25f / gear_ratio * effective_wheel_rad_m;
 
     // add yrc debug here

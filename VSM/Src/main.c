@@ -39,6 +39,7 @@ int main(void) {
     
     // Peripheral configuration.
     gpioInit();
+    
     // pwmInit();
     canInit();
     adcInit();

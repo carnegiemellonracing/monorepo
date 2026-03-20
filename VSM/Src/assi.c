@@ -39,33 +39,35 @@ static void assiControl(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
     	cmr_canState_t state = getCurrentState();
+        cmr_gpioWrite(GPIO_OUT_LED_BLUE, 1);
+        cmr_gpioWrite(GPIO_OUT_LED_YELLOW, 1);
 
-        switch (state) {
-            case CMR_CAN_AS_READY: 
-              pwmSetDutyCycle(PWM_BLUE, (uint32_t) 0);
-              pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 100);
-              break;
+        // switch (state) {
+        //     case CMR_CAN_AS_READY: 
+        //       pwmSetDutyCycle(PWM_BLUE, (uint32_t) 0);
+        //       pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 100);
+        //       break;
 
-            case CMR_CAN_AS_DRIVING: 
-              pwmSetDutyCycle(PWM_BLUE, (uint32_t) 0);
-              pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 50);
-              break;
+        //     case CMR_CAN_AS_DRIVING: 
+        //       pwmSetDutyCycle(PWM_BLUE, (uint32_t) 0);
+        //       pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 50);
+        //       break;
 
-            case CMR_CAN_AS_EMERGENCY: 
-              pwmSetDutyCycle(PWM_BLUE, (uint32_t) 100);
-              pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 0);
-              break;
+        //     case CMR_CAN_AS_EMERGENCY: 
+        //       pwmSetDutyCycle(PWM_BLUE, (uint32_t) 100);
+        //       pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 0);
+        //       break;
 
-            case CMR_CAN_AS_FINISHED: 
-                pwmSetDutyCycle(PWM_BLUE, (uint32_t) 50);
-                pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 0);
-                break;
+        //     case CMR_CAN_AS_FINISHED: 
+        //         pwmSetDutyCycle(PWM_BLUE, (uint32_t) 50);
+        //         pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 0);
+        //         break;
             
-            default:
-              pwmSetDutyCycle(PWM_BLUE, (uint32_t) 0);
-              pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 0);
-              break;
-        }
+        //     default:
+        //       pwmSetDutyCycle(PWM_BLUE, (uint32_t) 0);
+        //       pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 0);
+        //       break;
+        // }
 
         vTaskDelayUntil(&lastWakeTime, assiControl_period_ms);
     }

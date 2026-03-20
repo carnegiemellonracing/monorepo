@@ -24,6 +24,22 @@ typedef struct {
     float min_torque;
 } cmr_torque_limit_t;
 
+/** @brief DTI controls-facing motor setpoints struct.*/
+typedef struct {
+    float velocity_rpm;           /**< @brief Velocity setpoint (RPM). */
+    float torqueLimPos_mNm;       /**< @brief Positive torque limit. */
+    float torqueLimNeg_mNm;       /**< @brief Negative torque limit. */
+    float torque_mNm;             /**< @brief Torque to motor */  
+} cmr_DTISetpoints_t;
+
+/** @brief DTI Facing motor setpoints struct*/
+typedef struct{
+    int16_t velocity_erpm;          /**< @brief Velocity setpoint (ERPM). */
+    int16_t torqueLimPos_dA;        /**< @brief Positive torque limit. */
+    int16_t torqueLimNeg_dA;        /**< @brief Negative torque limit. */
+    int16_t ACCurrent_dA;     /**< @brief Negative torque limit. */      
+} cmr_DTI_RX_Message_t;
+
 // ------------------------------------------------------------------------------------------------
 // Public function declarations
 
@@ -41,7 +57,7 @@ void setVelocityFloat(motorLocation_t motor, float velocity_rpm);
 void setVelocityInt16All(int16_t velocity_rpm);
 void setVelocityFloatAll(float velocity_rpm);
 cmr_torque_limit_t getTorqueBudget();
-const cmr_canDTI_RX_Message_t *getDTISetpoints(motorLocation_t motor);
+const cmr_DTI_RX_Message_t *getDTISetpoints(motorLocation_t motor);
 cmr_canDAQTest_t getDAQTest();
 void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw);
 
