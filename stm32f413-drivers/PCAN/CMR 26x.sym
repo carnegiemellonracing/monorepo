@@ -833,6 +833,16 @@ Var=IMU_gyro_x_rads signed 0,16 /u:rad
 Var=IMU_gyro_y_rads signed 16,16 /u:rad
 Var=IMU_gyro_z_rads signed 32,16 /u:rad
 
+[SENSORIC_VEL_ANG]
+ID=560h
+DLC=8
+CycleTime=5
+TimeOut=25
+Var=VEL_vel_X signed 0,16
+Var=VEL_vel_Y signed 16,16
+Var=VEL_vel_A signed 32,16
+Var=VEL_ang_S signed 48,16
+
 [SF_STATE]
 ID=52Dh
 DLC=8
