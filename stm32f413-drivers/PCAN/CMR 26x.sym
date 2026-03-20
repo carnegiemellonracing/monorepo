@@ -395,16 +395,6 @@ TimeOut=100
 Var=FL_ac_current_dA signed 0,16
 Var=FL_dc_current_dA signed 16,16
 
-[DTI_FL_ERPM]
-ID=20h
-DLC=8
-CycleTime=20
-TimeOut=100
-Var=FL_velocity_erpm signed 0,16
-Var=FL_torqueLimPos_mNm signed 16,16
-Var=FL_torqueLimNeg_mNm signed 32,16
-Var=FL_ACCurrent_deciAmps signed 48,16
-
 [DTI_FL_IO_STATUS]
 ID=24h
 DLC=8
