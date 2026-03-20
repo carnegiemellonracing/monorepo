@@ -867,6 +867,8 @@ static void canTX200Hz(void *pvParameters) {
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultRL = getDTITempFault(MOTOR_RL);
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultRR = getDTITempFault(MOTOR_RR);
 
+    volatile cmr_canSensoricVelAng_t *sensoricVelAng = (cmr_canSensoricVelAng_t*)canDAQGetPayload(CANRX_DAQ_SENSORIC_VEL_ANG);
+
     cmr_canDTI_ErrorMessages_t dtiErrorMessages;
 
     dtiErrorMessages.fl_fault_code = dtiTempFaultFL->fault_code;
@@ -948,6 +950,8 @@ static void canTX200Hz(void *pvParameters) {
         rear_velocity.rr_x = car_state.rr_velocity.x * 100.0f;
         rear_velocity.rr_y = car_state.rr_velocity.y * 100.0f;
 
+        
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_SENSORIC_VEL_ANG, sensoricVelAng, sizeof(cmr_canSensoricVelAng_t), canTX200Hz_period_ms);
 
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COG_VELOCITY, &cog_velocity, sizeof(cog_velocity), canTX200Hz_period_ms);
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_FRONT_VELOCITY, &front_velocity, sizeof(front_velocity), canTX200Hz_period_ms);

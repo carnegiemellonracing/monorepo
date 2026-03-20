@@ -174,8 +174,9 @@ uint32_t get_test_message_id() {
  * @brief Returns the current car's speed in km/h
  */
 float getSpeedKmh() {
-	int32_t avgWheelRPM = getAverageWheelRPM();
-
+	// int32_t avgWheelRPM = getAverageWheelRPM();
+    cmr_canSensoricVelAng_t *sensoricVelAng = getPayload(CANRX_SENSORIC_VEL_ANG);
+    
 	/* Wheel Speed to Vehicle Speed Conversion
 	 *      (x rotations / 1min) * (18" * PI) *  (2.54*10^-5km/inch)
 	 *      (60min / 1hr) * (1/15.1 gear ratio)
