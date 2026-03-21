@@ -87,6 +87,9 @@ static const float launch_speed = 1.0;
 static const float blend_speed = 3.0;
 static const float launch_torque_rear = 31.0;
 
+static const float effective_wheel_rad_m = 0.205f; // meters
+static const float effective_wheel_dia_m = 2 * effective_wheel_rad_m; // meters
+
 static const double wheelbase_m = 1.55f;
 static const double trackwidth_m = 1.30f;
 static const double half_wheelbase_m = wheelbase_m * 0.5f;
