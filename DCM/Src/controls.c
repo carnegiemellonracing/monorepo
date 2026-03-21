@@ -1503,6 +1503,7 @@ float calculatePersistentYRCmreq(int32_t swAngle_millideg, float bias_margin, fl
                             || (desired_yaw_rate_radps * actual_yaw_rate_radps_sae) < 0 // different directions
                             || fabsf(yaw_rate_diff_radps) >= sqrtf(bias_margin) // strong yrc_kp
                             || fabsf(swangle_rad) < YRC_PERS_SWANGLE_DEADZONE_RAD; // small steering angle
+                            // checks
     if (pers_off) {
         pers_bias = 0;
     } else { // pers_bias (0% to 100%) scales quadratically as yaw_rate_diff_radps approaches 0
