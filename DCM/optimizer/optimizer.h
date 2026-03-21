@@ -61,6 +61,7 @@ typedef struct {
 /**
  * Try all 3^4 = 81 cases and finds the best.
  */
+void compute_power_weights(optimizer_state_t *state, efficiencyLUT_t *efficiencyLUT, torque_distribution_t *prev_torques);
 void solve(optimizer_state_t *state, efficiencyLUT_t *efficiencyLUT);
 void solver_set_k_lin(double d);
 void solver_set_k_yaw(double d);

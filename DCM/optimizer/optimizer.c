@@ -167,7 +167,7 @@ static int load_free_variable_refs(optimizer_state_t *state) {
         switch (vp[i].role) {
             case UNCONSTRAINED:
                 state->optimum.link[dim] = &vp[i];
-                state->new_constraint.weights[dim] = state->omegas[i];
+                state->new_constraint.weights[dim] = state->power_weights[i];
                 dim += 1;
                 break;
             case LOWER:
@@ -248,9 +248,6 @@ void solve(optimizer_state_t *state, efficiencyLUT_t *efficiencyLUT) {
     compute_accel_weights(state);
     compute_moment_weights(state);
     load_diagonal_weights(state);
-    torque_distribution_t prev_torques;
-    //POPULATE PREV_TORQUES STRUCT!!!
-    compute_power_weights(state, efficiencyLUT, &prev_torques);
 
     state->optimal_cost = FLT_MAX;
 
