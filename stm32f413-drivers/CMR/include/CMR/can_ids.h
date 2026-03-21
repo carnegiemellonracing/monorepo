@@ -38,13 +38,14 @@ typedef enum {
     CMR_CANID_HEARTBEAT_LV_BMS = 0x107, /**< @brief LV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_HV_BMS = 0x108, /**< @brief HV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
-    CMR_CANID_EAB_STATUS = 0x10A,
+    CMR_CANID_EAB_STATUS = 0x10A, // conflicting with VSM_FIRST_ERROR
     CMR_CANID_ASMS_STATUS = 0x193,
 
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
     CMR_CANID_VSM_SENSORS = 0x200,              /**< @brief VSM sensor data. */
     CMR_CANID_VSM_LATCHED_STATUS = 0x510,       /**< @brief VSM latched status. */
     CMR_CANID_VSM_POWER_DIAGNOSTICS = 0x530,    /**< @brief VSM power diagnostics. */
+    // conflicting with EAB_STATUS
     CMR_CANID_VSM_FIRST_ERROR = 0x10a,          /**< @brief VSM first error state */
 
     CMR_CANID_HVC_COMMAND = 0x130,              /**< @brief HVC command, sent by VSM. */
