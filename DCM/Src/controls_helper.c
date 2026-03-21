@@ -264,9 +264,9 @@ static void pacejka_interp_coeffs(float fz, float *b_out,
 }
 
 
-// PACEJKA MAGIC FORMULA TIRE!! PUTTING IT ALL TOGETHER YIPPEE 
+// PACEJKA MAGIC FORMULA FOR TIRE!! PUTTING IT ALL TOGETHER YIPPEE 
 static float pacejka_tire(float fz, float slip_ratio,
-                          float b, float c, float d, float e);
+                          float b, float c, float d, float e)
 {
     float x = b * slip_ratio;
     float atan_x = atanf(x);

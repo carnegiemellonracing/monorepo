@@ -1241,16 +1241,6 @@ void setAccelLaunchControl(
 
 }
 
-static float pacejka_tire(float fz, float slip_ratio, float b, float c, float d, float e)
-{
-    float x      = b * slip_ratio;
-    float atan_x = atanf(x);
-    float inner  = x - atan_x;
-    float e_term = e * inner;
-    float outer  = x - e_term;
-    return d * fz * sinf(c * atanf(outer));
-}
-
 
 /**
  * @brief Computes torque commands for each wheel based on a slip ratio target 
@@ -1262,8 +1252,6 @@ static float pacejka_tire(float fz, float slip_ratio, float b, float c, float d,
 void setAccelTorque(
 	uint8_t throttlePos_u8,
 	uint16_t brakePressurePsi_u8,
-	float speed_thresh_mps,
-    float car_velocity,
     float wheel_fl_speed_radps,
     float wheel_fr_speed_radps,
     float wheel_rl_speed_radps,
@@ -1271,12 +1259,10 @@ void setAccelTorque(
     float fz_fl,
     float fz_fr,
     float fz_rl,
-    float fz_rr
-){
-
-    //Space to do the Pacejka model dictionary stuff (idk how to do in c)
-
-
+    float fz_rr,
+    float *trq_fl, float *trq_fr, 
+    float *trq_rl, float *trq_rr)
+{
 
     /* Persistent state: integrators and previous torque commands */
     static float int_fl = 0.0f, int_fr = 0.0f;
@@ -1294,35 +1280,52 @@ void setAccelTorque(
     /* ============================================================
      *  Convert motor speeds to wheel speeds
      * ============================================================ */
-    float ws_fl = wheel_fl_speed_radps / gear_ratio;
-    float ws_fr = wheel_fr_speed_radps / gear_ratio;
-    float ws_rl = wheel_rl_speed_radps / gear_ratio;
-    float ws_rr = wheel_rr_speed_radps / gear_ratio;
+    float ws_fl = (wheel_fl_speed_radps / gear_ratio) * wheel_radius; // convert motor speeds to wheel surface speeds in m/s
+    float ws_fr = (wheel_fr_speed_radps / gear_ratio) * wheel_radius;
+    float ws_rl = (wheel_rl_speed_radps / gear_ratio) * wheel_radius;
+    float ws_rr = (wheel_rr_speed_radps / gear_ratio) * wheel_radius;
  
-    /* ============================================================
-     *  Compute feedforward for all wheels
-     *  Pacejka at target slip tells us the grip-matched torque
-     * ============================================================ */
-    float ff_fl = pacejka_tire(fz_fl, slip_ratio_front, bf, cf, df, ef) * wheel_radius / gear_ratio;
-    float ff_fr = pacejka_tire(fz_fr, slip_ratio_front, bf, cf, df, ef) * wheel_radius / gear_ratio;
-    float ff_rl = pacejka_tire(fz_rl, slip_ratio_rear,  br, cr, dr, er) * wheel_radius / gear_ratio;
-    float ff_rr = pacejka_tire(fz_rr, slip_ratio_rear,  br, cr, dr, er) * wheel_radius / gear_ratio;
+
+    
+    /* pacejka feedforward 
+    using pacejka_tire() to return a traction force at target slip ratio,
+    then multiplying by wheel radius to get torque, and dividing by gear ratio to get motor torque.
+    coeffs are interpolated per wheel from the 4 load-level fits
+     * */
+    float b, c, d, e;
+    
+    pacejka_interp_coeffs(fz_fl, &b, &c, &d, &e);
+    float ff_fl = pacejka_tire(fz_fl, slip_ratio_front, b, c, d, e) * wheel_radius / gear_ratio;
+
+    pacejka_interp_coeffs(fz_fr, &b, &c, &d, &e);
+    float ff_fr = pacejka_tire(fz_fr, slip_ratio_front, b, c, d, e) * wheel_radius / gear_ratio;
+
+    pacejka_interp_coeffs(fz_rl, &b, &c, &d, &e);
+    float ff_rl = pacejka_tire(fz_rl, slip_ratio_rear, b, c, d, e) * wheel_radius / gear_ratio;
+    
+    pacejka_interp_coeffs(fz_rr, &b, &c, &d, &e);
+    float ff_rr = pacejka_tire(fz_rr, slip_ratio_rear, b, c, d, e) * wheel_radius / gear_ratio;
+
+
+    /* slip ratio computation
+    * where kappa = (v_wheel - v_car) / max(v_car, 0.5)
+    * clamped denom avoids div by zero at standstill */
+    float v_denom = (car_velocity > 0.5f) ? car_velocity : 0.5f;
  
-    /* ============================================================
-     *  Compute PI feedback per wheel (only used above launch_speed)
-     * ============================================================ */
-    float v_denom = car_velocity > 0.5f ? car_velocity : 0.5f;
- 
-    float slip_fl = (ws_fl * wheel_radius - car_velocity) / v_denom;
-    float slip_fr = (ws_fr * wheel_radius - car_velocity) / v_denom;
-    float slip_rl = (ws_rl * wheel_radius - car_velocity) / v_denom;
-    float slip_rr = (ws_rr * wheel_radius - car_velocity) / v_denom;
+    float slip_fl = (ws_fl - car_velocity) / v_denom;
+    float slip_fr = (ws_fr - car_velocity) / v_denom;
+    float slip_rl = (ws_rl - car_velocity) / v_denom;
+    float slip_rr = (ws_rr - car_velocity) / v_denom;
+
+    // slip errors (target - actual)
  
     float err_fl = slip_ratio_front - slip_fl;
     float err_fr = slip_ratio_front - slip_fr;
     float err_rl = slip_ratio_rear  - slip_rl;
     float err_rr = slip_ratio_rear  - slip_rr;
- 
+
+    // PI feedback output per wheel
+
     float pi_fl = kp * err_fl + ki * int_fl;
     float pi_fr = kp * err_fr + ki * int_fr;
     float pi_rl = kp * err_rl + ki * int_rl;
@@ -1334,7 +1337,10 @@ void setAccelTorque(
      *  - launch_speed to blend_speed : linear blend
      *  - Above blend_speed  : full feedforward + PI
      * ============================================================ */
+    const float alpha_f = 1.0f; // full PI at fronts from the start
+
     float alpha;
+
     if (car_velocity < launch_speed) {
         alpha = 0.0f;
     } else if (car_velocity < blend_speed) {
@@ -1345,13 +1351,15 @@ void setAccelTorque(
  
     float fl_torque = ff_fl + alpha * pi_fl;
     float fr_torque = ff_fr + alpha * pi_fr;
-    float rl_torque = ff_rl + alpha * pi_rl;
-    float rr_torque = ff_rr + alpha * pi_rr;
- 
+
+    float rl_torque, rr_torque;
     /* During launch (alpha < 1), blend rears from max launch torque to controller output */
     if (alpha < 1.0f) {
         rl_torque = (1.0f - alpha) * launch_torque_rear + alpha * (ff_rl + pi_rl);
         rr_torque = (1.0f - alpha) * launch_torque_rear + alpha * (ff_rr + pi_rr);
+    } else {
+        rl_torque = ff_rl + alpha * pi_rl;
+        rr_torque = ff_rr + alpha * pi_rr;
     }
  
     /* ============================================================
@@ -1372,18 +1380,20 @@ void setAccelTorque(
      *  Asymmetric torque rate limiting
      *  Slow ramp up (prevent wheelspin), fast ramp down (traction control)
      * ============================================================ */
-    float max_up   = torque_ramp_up   * dt;
+    float max_up = torque_ramp_up * dt;
     float max_down = torque_ramp_down * dt;
  
     float front_cmd_min = prev_front_cmd - max_down;
     float front_cmd_max = prev_front_cmd + max_up;
-    front_cmd = front_cmd < front_cmd_min ? front_cmd_min :
-                front_cmd > front_cmd_max ? front_cmd_max : front_cmd;
+
+    front_cmd = (front_cmd < front_cmd_min) ? front_cmd_min :
+                (front_cmd > front_cmd_max) ? front_cmd_max : front_cmd;
  
     float rear_cmd_min = prev_rear_cmd - max_down;
     float rear_cmd_max = prev_rear_cmd + max_up;
-    rear_cmd = rear_cmd < rear_cmd_min ? rear_cmd_min :
-               rear_cmd > rear_cmd_max ? rear_cmd_max : rear_cmd;
+
+    rear_cmd = (rear_cmd < rear_cmd_min) ? rear_cmd_min :
+               (rear_cmd > rear_cmd_max) ? rear_cmd_max : rear_cmd;
  
     /* ============================================================
      *  80 kW power limiting
@@ -1398,8 +1408,8 @@ void setAccelTorque(
                    (rear_cmd  * w_rl / motor_eff) +
                    (rear_cmd  * w_rr / motor_eff);
  
-    if (p_elec > total_power_limit_w) {
-        float derate = total_power_limit_w / p_elec;
+    if (p_elec > getPowerLimit_W()) {
+        float derate = getPowerLimit_W() / p_elec;
         front_cmd *= derate;
         rear_cmd  *= derate;
     }
@@ -1436,6 +1446,8 @@ void setAccelTorque(
     *trq_rl = rear_cmd;
     *trq_rr = rear_cmd;
 }
+
+
 
 float get_optimal_yaw_rate(float swangle_rad, float velocity_x_mps) {
 
