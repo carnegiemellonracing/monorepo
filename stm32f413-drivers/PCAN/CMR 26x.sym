@@ -834,7 +834,7 @@ Var=IMU_gyro_y_rads signed 16,16 /u:rad
 Var=IMU_gyro_z_rads signed 32,16 /u:rad
 
 [SENSORIC_VEL_ANG]
-ID=560h
+ID=600h
 DLC=8
 CycleTime=5
 TimeOut=25
@@ -1919,16 +1919,6 @@ Var=RTC_Date_In unsigned 24,8 /u:day
 Var=RTC_Month_In unsigned 32,8 /u:month
 Var=RTC_Year_In unsigned 40,8 /u:year
 Var=RTC_Error_In unsigned 48,8	// For interpreting this, see comments in code.
-
-[DIM_Config0_Drv0]
-ID=600h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config0_drv0_config_val_1 unsigned 0,8
-Var=DIM_config0_drv0_config_val_2 unsigned 8,8
-Var=DIM_config0_drv0_config_val_3 unsigned 16,8
-Var=DIM_config0_drv0_config_val_4 unsigned 24,8
 
 [DIM_Config1_Drv0]
 ID=601h
