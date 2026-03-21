@@ -764,7 +764,7 @@ void runControls (
             // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
             // set_motor_speed(throttlePos_u8, target_speed_mps, false);
             set_manual_cruise_control(throttlePos_u8);
-            float calculatePersistentYRCmreq(swAngle_millideg, bias_margin, yrc_pers);
+            calculatePersistentYRCmreq(swAngle_millideg, bias_margin, yrc_pers);
             break;
         }
 
@@ -1475,6 +1475,9 @@ float calculatePersistentYRCmreq(int32_t swAngle_millideg, float bias_margin, fl
     const volatile car_state_t *cs = sensors_get_car_state();
     float calculated_velocity_x_mps_fallback = getTotalMotorSpeed_radps() * 0.25f / gear_ratio * effective_wheel_rad_m;
 
+    // check swangle to make sure that we dont kick in pers if we're driving straight
+
+
     // add yrc debug here
     if (cs && movella_state.status.gnss_fix) {
     velocity_x_mps = cs->velocity.x;
@@ -1498,7 +1501,8 @@ float calculatePersistentYRCmreq(int32_t swAngle_millideg, float bias_margin, fl
     float pers_bias;
     const bool pers_off = fabsf(desired_yaw_rate_radps) < fabsf(actual_yaw_rate_radps_sae) // coming out of a turn
                             || (desired_yaw_rate_radps * actual_yaw_rate_radps_sae) < 0 // different directions
-                            || fabsf(yaw_rate_diff_radps) >= sqrtf(bias_margin); // strong yrc_kp
+                            || fabsf(yaw_rate_diff_radps) >= sqrtf(bias_margin) // strong yrc_kp
+                            || fabsf(swangle_rad) < YRC_PERS_SWANGLE_DEADZONE_RAD; // small steering angle
     if (pers_off) {
         pers_bias = 0;
     } else { // pers_bias (0% to 100%) scales quadratically as yaw_rate_diff_radps approaches 0

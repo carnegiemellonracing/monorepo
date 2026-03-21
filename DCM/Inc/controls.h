@@ -13,6 +13,8 @@
 #define BUTTON_ACT 0b00000100
 #define BUTTON_PTT 0b100000
 #define BUTTON_SCRN 0b10000
+#define YRC_PERS_SWANGLE_DEADZONE_RAD 0.0872665f // 5 degrees in radians, 
+// under which pers will be turned off to prevent unwanted bias when driving straight or with small steering angles
 
 // ------------------------------------------------------------------------------------------------
 // Includes
