@@ -176,6 +176,7 @@ uint32_t get_test_message_id() {
 float getSpeedKmh() {
 	// int32_t avgWheelRPM = getAverageWheelRPM();
     cmr_canSensoricVelAng_t *sensoricVelAng = getPayload(CANRX_SENSORIC_VEL_ANG);
+    int32_t avgWheelRPM = sensoricVelAng->vel_A;
     
 	/* Wheel Speed to Vehicle Speed Conversion
 	 *      (x rotations / 1min) * (18" * PI) *  (2.54*10^-5km/inch)
