@@ -35,6 +35,13 @@
 /** @brief  Experimentally determined right TPOS ADC Maximum*/
 #define RIGHT_TPOS_MAX_ADC 1800
 
+#define LEFT_SWANGLE_MIN_ADC 360.0f
+#define CENTER_SWANGLE_ADC 1590.0f
+#define RIGHT_SWANGLE_MAX_ADC 2880.0f
+
+#define MAX_OUTER_WHEEL_ANGLE_MILLIDEG 26467.0f
+#define MAX_INNER_WHEEL_ANGLE_MILLIDEG 40325.0f
+
 /** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
 static const TickType_t TPOS_IMPLAUS_THRES_MS = 100;
 /** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
@@ -164,14 +171,16 @@ static int32_t adcToYaw_FL(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 
     // millideg
-    if(reading >= 2130){
-        float swangle_millideg = ((-0.0145f * (float)reading)+30.4f) * 1000;
-        int32_t retval = (int32_t)swangle_millideg;
+    if(reading >= 1590){
+        // left is outer wheel
+        float FL_angle_millideg = fabs((float)reading - CENTER_SWANGLE_ADC) * (MAX_OUTER_WHEEL_ANGLE_MILLIDEG) / (RIGHT_SWANGLE_MAX_ADC - CENTER_SWANGLE_ADC);
+        int32_t retval = (int32_t)FL_angle_millideg;
         return retval;
     }
     else {
-        float swangle_millideg = ((-0.0217f * (float)reading)+44.7f) * 1000;
-        int32_t retval = (int32_t)swangle_millideg;
+        // left is inner wheel
+        float FL_angle_millideg = fabs(CENTER_SWANGLE_ADC - (float)reading) * (MAX_INNER_WHEEL_ANGLE_MILLIDEG) / (CENTER_SWANGLE_ADC - LEFT_SWANGLE_MIN_ADC);
+        int32_t retval = -(int32_t)FL_angle_millideg;
         return retval;
     }
 }
@@ -180,14 +189,16 @@ static int32_t adcToYaw_FR(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 
     // millideg
-    if(reading >= 2040){
-        float swangle_millideg = ((-0.0214f * (float)reading)+44.1f) * 1000;
-        int32_t retval = (int32_t)swangle_millideg;
+    if(reading >= 1590){
+        // right is inner wheel
+        float FL_angle_millideg = fabs((float)reading - CENTER_SWANGLE_ADC) * (MAX_INNER_WHEEL_ANGLE_MILLIDEG) / (RIGHT_SWANGLE_MAX_ADC - CENTER_SWANGLE_ADC);
+        int32_t retval = (int32_t)FL_angle_millideg;
         return retval;
     }
-    else{
-        float swangle_millideg = ((-0.0165f * (float)reading)+33.6f) * 1000;
-        int32_t retval = (int32_t)swangle_millideg;
+    else {
+        // right is outer wheel
+        float FL_angle_millideg = fabs(CENTER_SWANGLE_ADC - (float)reading) * (MAX_OUTER_WHEEL_ANGLE_MILLIDEG) / (CENTER_SWANGLE_ADC - LEFT_SWANGLE_MIN_ADC);
+        int32_t retval = -(int32_t)FL_angle_millideg;
         return retval;
     }
 }
