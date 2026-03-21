@@ -14,13 +14,13 @@
 
 #include "steering.h"
 
+#include "adc.h"
 #include "can.h"   // Board-specific CAN interface
 #include "math.h"   // Board-specific CAN interface
 
 #define CLAMP(x, min, max) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)))
 
-static const int16_t ACCEL_ERPM = 4000;
-static const int16_t SPEED_ERPM = 1000;
+static const int32_t MAX_CURRENT_MA = 60000;
 
 /** @brief cubeMarsControl task. */
 static cmr_task_t cubeMarsControlTask;
@@ -34,24 +34,17 @@ static const uint32_t steeringPriority = 1;
 const float minValue = -1530.0f;
 const float maxValue = 1530.0f;
 
-const int32_t centerPosition = 1000;
+static bool inspectionActive = false;
 
 // Forward declarations
 float computeControlAction(float targetPosition, float currPosition);
 float clampSteeringADCVal(float adcVal);
-int rpmToERPM(int rpm);
 
-static const int32_t CENTER_ADC = centerPosition;
-static const float ADC_TO_CM_DEG = 1.0f;
-
-// TODO: actual ADC read
+// TODO: fix
 static int32_t getSteeringADC() {
-    return CENTER_ADC;
-}
-
-static int16_t getCubeMarsPosition() {
-    volatile cmr_canCubeMarsData_t *data = canDAQGetPayload(CANRX_CUBEMARS_DATA);
-    return parse_int16(&data->position_deg);
+    return clampSteeringADCVal(
+        adcRead(ADC_CHANNEL_0)
+    );
 }
 
 // Control Action Computation
@@ -101,50 +94,24 @@ float computeControlAction(float targetPosition, float currPosition)
     return controlAction;
 }
 
-static void runInspection() {
-    static bool homed = false;
+static float computeInspectionTarget() {
     static float t = 0.0f;
+
+    if (!inspectionActive) {
+        t = 0.0f;
+        inspectionActive = true;
+    }
 
     const float dt = (float)steeringPeriod_ms / 1000.0f;
     const float T = 5.0f;
     const float A_deg = 4.25f * 360.0f;  // 1530 deg
 
-    if (!homed) {
-        int32_t adc     = getSteeringADC();
-        int32_t adc_err = CENTER_ADC - adc;
-
-        if (adc_err == 0) {
-            // at center — zero encoder and start sinusoid
-            cmr_canCubeMarsSetOrigin_t origin = { .origin = 1 };
-            canExtendedTX(CMR_CAN_BUS_DAQ, CMR_CANID_EXTENDED_CUBEMARS_SET_ORIGIN_HERE, &origin, sizeof(origin), 2);
-            homed = true;
-        } else {
-            int16_t cm_now = getCubeMarsPosition();
-            int32_t target_deg = cm_now + (int32_t)((float)adc_err * ADC_TO_CM_DEG);
-            cmr_canCubeMarsPositionSpeed_t pos = {
-                .position_deg = int32_to_big(target_deg * 10000),
-                .speed_erpm   = int16_to_big(SPEED_ERPM),
-                .accel_erpm_s = int16_to_big(ACCEL_ERPM),
-            };
-            canExtendedTX(CMR_CAN_BUS_DAQ, CMR_CANID_EXTENDED_CUBEMARS_SET_POS, &pos, sizeof(pos), 2);
-        }
-        return;
-    }
-
-    float pos_deg = A_deg * sinf(2.0f * M_PI * t / T);
-    cmr_canCubeMarsPositionSpeed_t pos = {
-        .position_deg = int32_to_big((int32_t)(pos_deg * 10000.0f)),
-        .speed_erpm   = int16_to_big(SPEED_ERPM),
-        .accel_erpm_s = int16_to_big(ACCEL_ERPM),
-    };
-    canExtendedTX(CMR_CAN_BUS_DAQ, CMR_CANID_EXTENDED_CUBEMARS_SET_POS, &pos, sizeof(pos), 2);
+    float target = A_deg * sinf(2.0f * M_PI * t / T);
 
     t += dt;
     if (t >= T) t -= T;
-}
 
-int rpmToERPM(int rpm) {
-    return rpm * 21;
+    return target;
 }
 
 float clampSteeringADCVal(float adcVal){
@@ -167,25 +134,28 @@ void runSteering() {
     cmr_canGear_t  gear  = reqDIM->requestedGear;
 
     if (state != CMR_CAN_AS_DRIVING) {
+        inspectionActive = false;
+        // turn motor off
         cmr_canCubeMarsDutyCycle_t duty = { .duty_cycle = 0 };
         canExtendedTX(CMR_CAN_BUS_DAQ, CMR_CANID_EXTENDED_CUBEMARS_SET_DUTY, &duty, sizeof(duty), 2);
         return;
     }
 
-    switch (gear) {
-        case CMR_CAN_GEAR_DV_MISSION_INSPECTION:
-            runInspection();
-            return;
-        default:
-            break;
+    static float targetPosition = 0.0f;
+    if (gear == CMR_CAN_GEAR_DV_MISSION_INSPECTION) {
+        targetPosition = computeInspectionTarget();
+    } else {
+        inspectionActive = false;
+        targetPosition = steerPayload->swangle;
     }
 
-    cmr_canCubeMarsPositionSpeed_t pos = {
-        .position_deg = int32_to_big((int32_t)steerPayload->swangle),
-        .speed_erpm   = int16_to_big(SPEED_ERPM),
-        .accel_erpm_s = int16_to_big(ACCEL_ERPM),
+    int32_t current_output = computeControlAction(targetPosition, getSteeringADC());
+    current_output = CLAMP(current_output, -MAX_CURRENT_MA, MAX_CURRENT_MA);
+    cmr_canCubeMarsCurrentLoop_t current = { 
+        .current_mA = int32_to_big(current_output)
     };
-    canExtendedTX(CMR_CAN_BUS_DAQ, CMR_CANID_EXTENDED_CUBEMARS_SET_POS, &pos, sizeof(pos), 2);
+
+    canExtendedTX(CMR_CAN_BUS_DAQ, CMR_CANID_EXTENDED_CUBEMARS_SET_CURRENT, &current, sizeof(current), 2);
 }
 
 static void steeringTask(void *pvParameters) {
