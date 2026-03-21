@@ -388,6 +388,9 @@ static void set_optimal_control(
 	optimizer_state.omegas[2] = wheel_rl_speed_radps;
 	optimizer_state.omegas[3] = wheel_rr_speed_radps;
 
+    static torque_distribution_t prev_torques = NULL; //POPULATE THIS WITH PREV TORQUES PLEASE
+    compute_power_weights(&optimizer_state, &efficiencyLUT, &prev_torques);
+
     if(true == allow_regen) {
         optimizer_state.variable_profile[0].lower = fmaxf(-torque_limit_fl + motor_resistance_Nm[MOTOR_FL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FL)));
         optimizer_state.variable_profile[1].lower = fmaxf(-torque_limit_fr + motor_resistance_Nm[MOTOR_FR], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FR)));
