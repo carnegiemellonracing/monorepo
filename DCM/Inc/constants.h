@@ -55,27 +55,33 @@ static const int32_t gear_ratio_bot = 621;
 //Accel constants
 //General constants
 static const float gear_ratio = 12.097;
-static const float wheel_radius = 0.2032
+static const float wheel_radius = 0.2032;
 static const float slip_ratio_front = 0.12;
 static const float slip_ratio_rear = 0.15;
+
 //Pacejka tire coefficients
 static const float pacejka_coeffs_605[4] = {11.6, 1.59, 1.7, 0.45};
 static const float pacejka_coeffs_718[4] = {11.8, 1.55, 1.59, 0.45};
 static const float pacejka_coeffs_954[4] = {10, 1.76, 1.66, 0.4};
 static const float pacejka_coeffs_1160[4] = {8.4, 2.0, 1.6, 0.4};
+
 //Torque saturations
 static const float torque_min = 0.0;
 static const float torque_max = 31.0;
+
 //Power Limits
 static const int total_power_limit = 80000;
 static const float motor_eff = 0.92;
+
 //PI controller gains
 static const float kp = 80.0;
 static const float ki = 40.0;
 static const float dt = 0.001;
+
 //Ramp function
 static const float torque_ramp_up = 1000.0;
 static const float torque_ramp_down = 1000.0;
+
 //Launch/transition
 static const float launch_speed = 1.0;
 static const float blend_speed = 3.0;
