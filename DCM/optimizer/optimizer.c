@@ -109,11 +109,11 @@ double efficiencyLUT_lookup(efficiencyLUT_t *T, double x, double y) {
     return result;
 }
 
-void compute_power_weights(optimizer_state_t *state, efficiencyLUT_t *efficiencyLUT) {
-    double effiFL = efficiencyLUT_lookup(efficiencyLUT, prevtorque_FL, 30 * state->omegas[0] / M_PI);
-    double effiFR = efficiencyLUT_lookup(efficiencyLUT, prevtorque_FR, 30 * state->omegas[1] / M_PI);
-    double effiRL = efficiencyLUT_lookup(efficiencyLUT, prevtorque_RL, 30 * state->omegas[2] / M_PI);
-    double effiRR = efficiencyLUT_lookup(efficiencyLUT, prevtorque_RR, 30 * state->omegas[3] / M_PI);
+void compute_power_weights(optimizer_state_t *state, efficiencyLUT_t *efficiencyLUT, torque_distribution_t *prev_torques) {
+    double effiFL = efficiencyLUT_lookup(efficiencyLUT, prev_torques->t_FL, 30 * state->omegas[0] / M_PI);
+    double effiFR = efficiencyLUT_lookup(efficiencyLUT, prev_torques->t_FR, 30 * state->omegas[1] / M_PI);
+    double effiRL = efficiencyLUT_lookup(efficiencyLUT, prev_torques->t_RL, 30 * state->omegas[2] / M_PI);
+    double effiRR = efficiencyLUT_lookup(efficiencyLUT, prev_torques->t_RR, 30 * state->omegas[3] / M_PI);
     state->power_weights[0] = state->omegas[0] / effiFL;
     state->power_weights[1] = state->omegas[1] / effiFR;
     state->power_weights[2] = state->omegas[2] / effiRL;
@@ -248,7 +248,9 @@ void solve(optimizer_state_t *state, efficiencyLUT_t *efficiencyLUT) {
     compute_accel_weights(state);
     compute_moment_weights(state);
     load_diagonal_weights(state);
-    compute_power_weights(state, efficiencyLUT);
+    torque_distribution_t prev_torques;
+    //POPULATE PREV_TORQUES STRUCT!!!
+    compute_power_weights(state, efficiencyLUT, &prev_torques);
 
     state->optimal_cost = FLT_MAX;
 

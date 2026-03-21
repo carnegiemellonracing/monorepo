@@ -51,10 +51,17 @@ typedef struct {
     uint16_t length_y;
 } efficiencyLUT_t;
 
+typedef struct {
+    float t_FL;
+    float t_FR;
+    float t_RL;
+    float t_RR;
+} torque_distribution_t;
+
 /**
  * Try all 3^4 = 81 cases and finds the best.
  */
-void solve(optimizer_state_t *state);
+void solve(optimizer_state_t *state, efficiencyLUT_t *efficiencyLUT);
 void solver_set_k_lin(double d);
 void solver_set_k_yaw(double d);
 void solver_set_k_tie(double d);
