@@ -1053,11 +1053,12 @@ static float getFFScheduleVelocity(float t_sec) {
 /**
 * @brief Launch control code. feedforward and uses LUT
 */
+/*
 void setLaunchControl(
 	uint8_t throttlePos_u8,
 	uint16_t brakePressurePsi_u8,
-	int32_t swAngle_millideg, /** IGNORED if assumeNoTurn is true */
-	float leftRightBias_Nm, /** IGNORED UNLESS traction_control_mode (defined in the function) is TC_MODE_TORQUE */
+	int32_t swAngle_millideg, /** IGNORED if assumeNoTurn is true 
+	float leftRightBias_Nm, /** IGNORED UNLESS traction_control_mode (defined in the function) is TC_MODE_TORQUE 
 	bool assumeNoTurn,
 	bool ignoreYawRate,
 	bool allowRegen,
@@ -1156,6 +1157,186 @@ void setLaunchControl(
         setTorqueLimsProtected(&pos_torques_Nm, &neg_torques_Nm);
         return;
     }
+}
+*/
+
+
+void setLaunchControl(
+	uint8_t throttlePos_u8,
+	uint16_t brakePressurePsi_u8,
+	float speed_thresh_mps,
+    float car_velocity,
+    float wheel_fl_speed_radps,
+    float wheel_fr_speed_radps,
+    float wheel_rl_speed_radps,
+    float wheel_rr_speed_radps,
+    float fz_fl,
+    float fz_fr,
+    float fz_rl,
+    float fz_rr
+){
+
+    //Space to do the Pacejka model dictionary stuff (idk how to do in c)
+
+
+
+    /* Persistent state: integrators and previous torque commands */
+    static float int_fl = 0.0f, int_fr = 0.0f;
+    static float int_rl = 0.0f, int_rr = 0.0f;
+    static float prev_front_cmd = 0.0f, prev_rear_cmd = 0.0f;
+ 
+    /* ============================================================
+     *  Ensure Fz is positive
+     * ============================================================ */
+    fz_fl = fabsf(fz_fl);
+    fz_fr = fabsf(fz_fr);
+    fz_rl = fabsf(fz_rl);
+    fz_rr = fabsf(fz_rr);
+ 
+    /* ============================================================
+     *  Convert motor speeds to wheel speeds
+     * ============================================================ */
+    float ws_fl = wheel_fl_speed_radps / gear_ratio;
+    float ws_fr = wheel_fr_speed_radps / gear_ratio;
+    float ws_rl = wheel_rl_speed_radps / gear_ratio;
+    float ws_rr = wheel_rr_speed_radps / gear_ratio;
+ 
+    /* ============================================================
+     *  Compute feedforward for all wheels
+     *  Pacejka at target slip tells us the grip-matched torque
+     * ============================================================ */
+    float ff_fl = pacejka_tire(fz_fl, slip_ratio_front, bf, cf, df, ef) * wheel_radius / gear_ratio;
+    float ff_fr = pacejka_tire(fz_fr, slip_ratio_front, bf, cf, df, ef) * wheel_radius / gear_ratio;
+    float ff_rl = pacejka_tire(fz_rl, slip_ratio_rear,  br, cr, dr, er) * wheel_radius / gear_ratio;
+    float ff_rr = pacejka_tire(fz_rr, slip_ratio_rear,  br, cr, dr, er) * wheel_radius / gear_ratio;
+ 
+    /* ============================================================
+     *  Compute PI feedback per wheel (only used above launch_speed)
+     * ============================================================ */
+    float v_denom = car_velocity > 0.5f ? car_velocity : 0.5f;
+ 
+    float slip_fl = (ws_fl * wheel_radius - car_velocity) / v_denom;
+    float slip_fr = (ws_fr * wheel_radius - car_velocity) / v_denom;
+    float slip_rl = (ws_rl * wheel_radius - car_velocity) / v_denom;
+    float slip_rr = (ws_rr * wheel_radius - car_velocity) / v_denom;
+ 
+    float err_fl = slip_ratio_front - slip_fl;
+    float err_fr = slip_ratio_front - slip_fr;
+    float err_rl = slip_ratio_rear  - slip_rl;
+    float err_rr = slip_ratio_rear  - slip_rr;
+ 
+    float pi_fl = kp * err_fl + ki * int_fl;
+    float pi_fr = kp * err_fr + ki * int_fr;
+    float pi_rl = kp * err_rl + ki * int_rl;
+    float pi_rr = kp * err_rr + ki * int_rr;
+ 
+    /* ============================================================
+     *  Blend feedforward and PI based on speed
+     *  - Below launch_speed : pure feedforward
+     *  - launch_speed to blend_speed : linear blend
+     *  - Above blend_speed  : full feedforward + PI
+     * ============================================================ */
+    float alpha;
+    if (car_velocity < launch_speed) {
+        alpha = 0.0f;
+    } else if (car_velocity < blend_speed) {
+        alpha = (car_velocity - launch_speed) / (blend_speed - launch_speed);
+    } else {
+        alpha = 1.0f;
+    }
+ 
+    float fl_torque = ff_fl + alpha * pi_fl;
+    float fr_torque = ff_fr + alpha * pi_fr;
+    float rl_torque = ff_rl + alpha * pi_rl;
+    float rr_torque = ff_rr + alpha * pi_rr;
+ 
+    /* During launch (alpha < 1), blend rears from max launch torque to controller output */
+    if (alpha < 1.0f) {
+        rl_torque = (1.0f - alpha) * launch_torque_rear + alpha * (ff_rl + pi_rl);
+        rr_torque = (1.0f - alpha) * launch_torque_rear + alpha * (ff_rr + pi_rr);
+    }
+ 
+    /* ============================================================
+     *  Per-axle averaging (equal L/R torque)
+     * ============================================================ */
+    float front_cmd = 0.5f * (fl_torque + fr_torque);
+    float rear_cmd  = 0.5f * (rl_torque + rr_torque);
+ 
+    /* ============================================================
+     *  Torque saturation
+     * ============================================================ */
+    if (front_cmd < torque_min) front_cmd = torque_min;
+    if (front_cmd > torque_max) front_cmd = torque_max;
+    if (rear_cmd  < torque_min) rear_cmd  = torque_min;
+    if (rear_cmd  > torque_max) rear_cmd  = torque_max;
+ 
+    /* ============================================================
+     *  Asymmetric torque rate limiting
+     *  Slow ramp up (prevent wheelspin), fast ramp down (traction control)
+     * ============================================================ */
+    float max_up   = torque_ramp_up   * dt;
+    float max_down = torque_ramp_down * dt;
+ 
+    float front_cmd_min = prev_front_cmd - max_down;
+    float front_cmd_max = prev_front_cmd + max_up;
+    front_cmd = front_cmd < front_cmd_min ? front_cmd_min :
+                front_cmd > front_cmd_max ? front_cmd_max : front_cmd;
+ 
+    float rear_cmd_min = prev_rear_cmd - max_down;
+    float rear_cmd_max = prev_rear_cmd + max_up;
+    rear_cmd = rear_cmd < rear_cmd_min ? rear_cmd_min :
+               rear_cmd > rear_cmd_max ? rear_cmd_max : rear_cmd;
+ 
+    /* ============================================================
+     *  80 kW power limiting
+     * ============================================================ */
+    float w_fl = fabsf(wheel_fl_speed_radps);
+    float w_fr = fabsf(wheel_fr_speed_radps);
+    float w_rl = fabsf(wheel_rl_speed_radps);
+    float w_rr = fabsf(wheel_rr_speed_radps);
+ 
+    float p_elec = (front_cmd * w_fl / motor_eff) +
+                   (front_cmd * w_fr / motor_eff) +
+                   (rear_cmd  * w_rl / motor_eff) +
+                   (rear_cmd  * w_rr / motor_eff);
+ 
+    if (p_elec > total_power_limit_w) {
+        float derate = total_power_limit_w / p_elec;
+        front_cmd *= derate;
+        rear_cmd  *= derate;
+    }
+ 
+    /* ============================================================
+     *  Update integrators with anti-windup
+     *  Only integrate when:
+     *  1. PI is active (alpha > 0)
+     *  2. Output is not saturated (clamping anti-windup)
+     * ============================================================ */
+    int front_saturated = (front_cmd <= torque_min) || (front_cmd >= torque_max);
+    int rear_saturated  = (rear_cmd  <= torque_min) || (rear_cmd  >= torque_max);
+ 
+    if (alpha > 0.0f && !front_saturated) {
+        int_fl += err_fl * dt;
+        int_fr += err_fr * dt;
+    }
+    if (alpha > 0.0f && !rear_saturated) {
+        int_rl += err_rl * dt;
+        int_rr += err_rr * dt;
+    }
+ 
+    /* ============================================================
+     *  Update previous torque for rate limiting
+     * ============================================================ */
+    prev_front_cmd = front_cmd;
+    prev_rear_cmd  = rear_cmd;
+ 
+    /* ============================================================
+     *  Output (equal L/R per axle)
+     * ============================================================ */
+    *trq_fl = front_cmd;
+    *trq_fr = front_cmd;
+    *trq_rl = rear_cmd;
+    *trq_rr = rear_cmd;
 }
 
 /**
