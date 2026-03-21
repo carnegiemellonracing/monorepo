@@ -1203,7 +1203,7 @@ void setAccelLaunchControl(
         launch_armed  = false;
     }
 
-    // kill sitch
+    // kill switch
     if (brakePressurePsi_u8 > braking_threshold_psi || (throttlePos_u8 == 0)) {
         launch_active = false;
         launch_armed = false;
@@ -1251,6 +1251,14 @@ static float pacejka_tire(float fz, float slip_ratio, float b, float c, float d,
     return d * fz * sinf(c * atanf(outer));
 }
 
+
+/**
+ * @brief Computes torque commands for each wheel based on a slip ratio target 
+ * and the current vehicle state. The controller blends feedforward and PI feedback, 
+ * and has a special launch mode that blends from a fixed launch torque 
+ * to the full controller output.
+ * 
+ */
 void setAccelTorque(
 	uint8_t throttlePos_u8,
 	uint16_t brakePressurePsi_u8,

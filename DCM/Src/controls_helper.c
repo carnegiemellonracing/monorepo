@@ -20,6 +20,19 @@ const uint8_t paddle_pressure_start = 30;
 */
 const float swangle_per_steering_angle = (112.0f - (-84.0f)) / 40.0f;
 
+
+/**
+ * PACEJKA FZ TABLES AND LEVELS LOOKUPS
+ */
+static const float PACEJKA_FZ_LEVELS[4] = {605.0f, 718.0f, 954.0f, 1160.0f};
+
+static const float * const PACEJKA_TABLES[4] = {
+    pacejka_coeffs_605,
+    pacejka_coeffs_718,
+    pacejka_coeffs_954,
+    pacejka_coeffs_1160,
+};
+
 // ------------------------------------------------------------------------------------------------
 // Functions
 
@@ -209,6 +222,64 @@ bool setPaddleRegen(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8, int32
 static float test_local() {
 	return 42.42f;
 }
+
+// ACCEL HELPER FUNCTIONS 
+
+static void pacejka_interp_coeffs(float fz, float *b_out, 
+                                  float *c_out, float *d_out, float *e_out)
+{
+    // clamp to table bounds
+    if (fz <= PACEJKA_FZ_LEVELS[0]) {
+        *b_out = PACEJKA_TABLES[0][0];
+        *c_out = PACEJKA_TABLES[0][1];
+        *d_out = PACEJKA_TABLES[0][2];
+        *e_out = PACEJKA_TABLES[0][3];
+        return;
+    }
+    if (fz >= PACEJKA_FZ_LEVELS[3]) {
+        *b_out = PACEJKA_TABLES[3][0];
+        *c_out = PACEJKA_TABLES[3][1];
+        *d_out = PACEJKA_TABLES[3][2];
+        *e_out = PACEJKA_TABLES[3][3];
+        return;
+    }
+
+    // find bracket of [i, i+1] that contains Fz
+    int i = 0;
+    for (int j = 0; i < 3; j++) {
+        if (fz < PACEJKA_FZ_LEVELS[j + 1]) {
+            i = j - 1;
+            break;
+        }
+    }
+
+    // interp that shit
+    float t = (fz - PACEJKA_FZ_LEVELS[i]) /
+              (PACEJKA_FZ_LEVELS[i + 1] - PACEJKA_FZ_LEVELS[i]);
+ 
+    *b_out = PACEJKA_TABLES[i][0] + t * (PACEJKA_TABLES[i + 1][0] - PACEJKA_TABLES[i][0]);
+    *c_out = PACEJKA_TABLES[i][1] + t * (PACEJKA_TABLES[i + 1][1] - PACEJKA_TABLES[i][1]);
+    *d_out = PACEJKA_TABLES[i][2] + t * (PACEJKA_TABLES[i + 1][2] - PACEJKA_TABLES[i][2]);
+    *e_out = PACEJKA_TABLES[i][3] + t * (PACEJKA_TABLES[i + 1][3] - PACEJKA_TABLES[i][3]);
+}
+
+
+// PACEJKA MAGIC FORMULA TIRE!! PUTTING IT ALL TOGETHER YIPPEE 
+static float pacejka_tire(float fz, float slip_ratio,
+                          float b, float c, float d, float e);
+{
+    float x = b * slip_ratio;
+    float atan_x = atanf(x);
+    float inner = x - atan_x;
+    float e_term = e * inner;
+    float outer = x - e_term;
+    
+    // fabs cuz fitted D values are negative (SAE sign convention)
+    // and feedforward should always produce a positive torque command for accel
+    return fabsf(d) * fz * sinf(c * atanf(outer));
+}
+
+
 
 // bool setParallelRegen(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM) {
 
