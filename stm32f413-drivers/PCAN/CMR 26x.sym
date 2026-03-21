@@ -828,15 +828,6 @@ Var=EKF_velocity_n signed 0,16
 Var=EKF_velocity_e signed 16,16
 Var=EKF_velocity_d signed 32,16
 
-[SBG_IMU_GYRO]
-ID=712h
-DLC=6
-CycleTime=400
-TimeOut=2000
-Var=IMU_gyro_x_rads signed 0,16 /u:rad
-Var=IMU_gyro_y_rads signed 16,16 /u:rad
-Var=IMU_gyro_z_rads signed 32,16 /u:rad
-
 [SF_STATE]
 ID=52Dh
 DLC=8
@@ -1400,6 +1391,13 @@ DLC=6
 Var=SBG_Accel_X signed 0,16 /u:m.s-2 /f:0.01 /p:4
 Var=SBG_Accel_Y signed 16,16 /u:m.s-2 /f:0.01 /p:4
 Var=SBG_Accel_Z signed 32,16 /u:m.s-2 /f:0.01 /p:4
+
+[ELLIPSE_IMU_GYRO]
+ID=712h
+DLC=6
+Var=SBG_Gyro_X signed 0,16 /u:rad.s-1 /f:0.001 /p:4
+Var=SBG_Gyro_Y signed 16,16 /u:rad.s-1 /f:0.001 /p:4
+Var=SBG_Gyro_Z signed 32,16 /u:rad.s-1 /f:0.001 /p:4
 
 [ELLIPSE_IMU_DELTA_VEL]
 ID=713h
