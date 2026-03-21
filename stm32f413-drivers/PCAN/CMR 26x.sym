@@ -434,14 +434,6 @@ TimeOut=100
 Var=MEASUREMENT_current signed 0,32 /u:A
 Var=MEASUREMENT_voltage signed 32,32 /u:V
 
-[EXTENDED_CUBEMARS_DATA]
-ID=000029FFh
-DLC=2
-CycleTime=100
-TimeOut=500
-Var=CUBEMARS_motorTemp_C signed 0,8
-Var=CUBEMARS_errorCode unsigned 8,8
-
 [FRONT_SLIP_RATIOS]
 ID=7E8h
 DLC=8
