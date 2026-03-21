@@ -1249,9 +1249,7 @@ void setAccelLaunchControl(
  * to the full controller output.
  * 
  */
-void setAccelTorque(
-	uint8_t throttlePos_u8,
-	uint16_t brakePressurePsi_u8,
+void setAccelTorque(float car_velocity,
     float wheel_fl_speed_radps,
     float wheel_fr_speed_radps,
     float wheel_rl_speed_radps,
