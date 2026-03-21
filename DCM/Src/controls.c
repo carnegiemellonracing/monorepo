@@ -1160,6 +1160,15 @@ void setLaunchControl(
 }
 */
 
+static float pacejka_tire(float fz, float slip_ratio, float b, float c, float d, float e)
+{
+    float x      = b * slip_ratio;
+    float atan_x = atanf(x);
+    float inner  = x - atan_x;
+    float e_term = e * inner;
+    float outer  = x - e_term;
+    return d * fz * sinf(c * atanf(outer));
+}
 
 void setLaunchControl(
 	uint8_t throttlePos_u8,
