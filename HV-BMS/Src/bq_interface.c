@@ -52,7 +52,7 @@ static inline bool sendUartStackWrite(  uint16_t registerAddress,
 void txToRxDelay(uint8_t delay);
 void byteDelay(uint8_t delay);
 
-void turnOn() {
+bool turnOn() {
 
 	//Turn On Ping
 	// HAL_Delay(100);
@@ -102,7 +102,7 @@ void turnOn() {
 	};
 	res = uart_sendCommand(&sendWake);
 	if(res != UART_SUCCESS) {
-		return;
+		return false;
 	}
 
 	// HAL_Delay(1000);
@@ -121,7 +121,7 @@ void turnOn() {
 		};
 		res = uart_sendCommand(&hardReset);
 		if(res != UART_SUCCESS) {
-			return;
+			return false;
 		}
 
 		// HAL_Delay(200);
@@ -139,13 +139,13 @@ void turnOn() {
 
 	res = uart_sendCommand(&sendShutdown);
 	if(res != UART_SUCCESS) {
-		return;
+		return false;
 	}
 
 	// HAL_Delay(1000);
 	DWT_Delay_ms(1000);
 
-	return;
+	return true;
 }
 
 /** Auto Address Function
@@ -450,8 +450,8 @@ uint8_t pollAllVoltageData() {
 
 			uint8_t status = uart_receiveResponse(&response[i-1], toReadLen);
 			if(status != 0) {
-				//setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
-				//BMBTimeoutCount[i-1]+=1;
+				// setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
+				// BMBTimeoutCount[i-1]+=1;
 				DWT_Delay_ms(10000);
 				RXTurnOnInit();
 				BMBInit();
@@ -468,21 +468,21 @@ uint8_t pollAllVoltageData() {
 				uint8_t low_byte_data = response[i].data[2*j+1];
 
 				BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = calculateVoltage(high_byte_data, low_byte_data);
-				if(i == 1 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				} else if(i == 3 && (VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				} else if(i == 4 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				} else if(i == 2 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				}
-				if(i == 2 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-									BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
-								}
-				if(i == 3 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
-				}
+				// if(i == 1 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+				// 	BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
+				// } else if(i == 3 && (VSENSE_CHANNELS-j-1 == 13)) {
+				// 	BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
+				// } else if(i == 4 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+				// 	BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
+				// } else if(i == 2 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+				// 	BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
+				// }
+				// if(i == 2 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+				// 					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
+				// 				}
+				// if(i == 3 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+				// 	BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
+				// }
 			}
 		}
 
@@ -509,8 +509,9 @@ bool setMuxOutput(uint8_t channel) {
 	}
 
     // set the Mux output
-    if (!sendUartStackWrite(GPIO_CONF2, &data, 1))
+    if (!sendUartStackWrite(GPIO_CONF2, &data, 1)) {
     	return false;
+	}
     
 	return true;
 }
@@ -542,10 +543,11 @@ void pollAllTemperatureData(int channel) {
 	uart_response_t response[BOARD_NUM-1];
 
 	for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
-		if(uart_receiveResponse(&response[i-1], 7) == UART_FAILURE) {
+		if(uart_receiveResponse(&response[i-1], 7) != 0) {
 				//loop through each GPIO channel
 			setBMBErr(i-1, BMB_TEMP_READ_ERROR);
 			BMBTimeoutCount[i-1]+=1;
+			taskEXIT_CRITICAL();
 			return;
 		}
 	}

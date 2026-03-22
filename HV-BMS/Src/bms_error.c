@@ -19,11 +19,12 @@ static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_ERROR_NONE;
 cmr_canHVCError_t checkHVBMSErrors(){
     clearHVBMSErrorReg();
     cmr_canHVCError_t errorFlags = errorRegister; 
+    uint16_t maxCellTemp = getPackMaxCellTemp();
     if(checkBMBTimeout()) { //BMSM 
         // TODO E2 devise a UART monitor system
         errorFlags |= CMR_CAN_HVBMS_ERROR_BMB_TIMEOUT; /**< @brief BMB has timed out. */
     }
-    if(getPackMaxCellTemp() > 4000) { // Temp limit of 59C //BMSM 
+    if(maxCellTemp > 4000 && maxCellTemp < 4990) { // Temp limit of 59C //BMSM 
 //        // TODO: #Define with 590
 //        // TODO E3 create structures for cell temp data and stats (min/max)
        errorFlags |= CMR_CAN_HVBMS_ERROR_CELL_OVERTEMP; 

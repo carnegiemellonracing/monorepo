@@ -648,6 +648,8 @@ typedef struct {
 } voltage_SoC_t;
 
 #define LV_GRAPOW_LUT_NUM_ITEMS 11
+#define S_COUNT 7.0f
+
 
 /**
  * @brief Look up table for 26x 7s Grapow LV Battery (Semi-Solid State)
@@ -655,17 +657,17 @@ typedef struct {
  * Must be sorted in descending order
  */
 static voltage_SoC_t LV_grapow_SoC_lookup[LV_GRAPOW_LUT_NUM_ITEMS] = {
-    { 29.4f, 100 }, 
-    { 28.7f,  90 },
-    { 27.9f,  80 }, 
-    { 27.2f,  70 }, 
-    { 26.5f,  60 }, 
-    { 25.9f,  50 }, 
-    { 25.3f,  40 }, 
-    { 24.7f,  30 }, 
-    { 23.5f,  20 }, 
-    { 21.5f,  10 }, 
-    { 19.6f,   0 }  
+    { 4.20f * S_COUNT, 100 }, 
+    { 3.94f * S_COUNT,  90 },
+    { 3.88f * S_COUNT,  80 }, 
+    { 3.78f * S_COUNT,  70 }, 
+    { 3.65f * S_COUNT,  60 }, 
+    { 3.50f * S_COUNT,  50 }, 
+    { 3.38f * S_COUNT,  40 }, 
+    { 3.25f * S_COUNT,  30 }, 
+    { 3.08f * S_COUNT,  20 }, 
+    { 2.91f * S_COUNT,  10 }, 
+    { 2.50f * S_COUNT,   0 }  
 };
 
 
