@@ -727,8 +727,8 @@ void tftDL_errorUpdate(
     /* Display DTI errors */
     tftDL_showDTIError(ESE_DTI_FL_STR, ESE_DTI_FL_COLOR, err->dtiFLErrorCode);
     tftDL_showDTIError(ESE_DTI_FR_STR, ESE_DTI_FR_COLOR, err->dtiFRErrorCode);
-    tftDL_showDTIError(ESE_DTI_BL_STR, ESE_DTI_BL_COLOR, err->dtiBLErrorCode);
-    tftDL_showDTIError(ESE_DTI_BR_STR, ESE_DTI_BR_COLOR, err->dtiBRErrorCode);
+    tftDL_showDTIError(ESE_DTI_BL_STR, ESE_DTI_BL_COLOR, err->dtiRLErrorCode);
+    tftDL_showDTIError(ESE_DTI_BR_STR, ESE_DTI_BR_COLOR, err->dtiRRErrorCode);
 }
 
 /**

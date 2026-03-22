@@ -314,12 +314,15 @@ static void drawErrorScreen(void) {
     cmr_canRXMeta_t *metaDTIFLTempFault = canRXMeta + CANRX_DTI_FL_TEMPFAULT;
     volatile cmr_canDTI_TX_TempFault_t *dtiFLTempFault =
         (void *)metaDTIFLTempFault->payload;
+
     cmr_canRXMeta_t *metaDTIFRTempFault = canRXMeta + CANRX_DTI_FR_TEMPFAULT;
     volatile cmr_canDTI_TX_TempFault_t *dtiFRTempFault =
         (void *)metaDTIFRTempFault->payload;
+
     cmr_canRXMeta_t *metaDTIRLTempFault = canRXMeta + CANRX_DTI_RL_TEMPFAULT;
     volatile cmr_canDTI_TX_TempFault_t *dtiRLTempFault =
         (void *)metaDTIRLTempFault->payload;
+
     cmr_canRXMeta_t *metaDTIRRTempFault = canRXMeta + CANRX_DTI_RR_TEMPFAULT;
     volatile cmr_canDTI_TX_TempFault_t *dtiRRTempFault =
         (void *)metaDTIRRTempFault->payload;
@@ -328,15 +331,18 @@ static void drawErrorScreen(void) {
     volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
         (void *)metaBMSLowVoltage->payload;
 
+    cmr_canVSMPowerDiagnostics_t *vsmPowerDiagnostics = 
+        (cmr_canVSMPowerDiagnostics_t *)getPayload(CANRX_VSM_POWER_DIAGNOSTICS); 
+
     tftDLContentLoad(&tft, &tftDL_error);
 
     tft_errors_t err;
 
 
-    unsigned int voltage_mV = ((unsigned int) canBMSLowVoltageStatus->vbatt_mV) * 133u;
-    //unsigned int voltage_mV = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
+    /* LVB */
+    unsigned int voltage_mV = ((unsigned int) vsmPowerDiagnostics->busVoltage_mV);
     err.glvVoltage_V = voltage_mV / 1000;
-    err.glvLowVolt = voltage_mV < 20 * 1000;
+    err.glvLowVolt = voltage_mV < (20 * 1000);
 
     /* Timeouts */
     err.cdcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_CDC);
@@ -368,10 +374,10 @@ static void drawErrorScreen(void) {
     err.hvcErrorNum = (canHVCHeartbeat->errorStatus);
 
     /* CDC Motor Faults */
-    err.dtiFLErrorCode = dtiFLTempFault->errorCode;
-    err.dtiFRErrorCode = dtiFRTempFault->errorCode;
-    err.dtiRLErrorCode = dtiRLTempFault->errorCode;
-    err.dtiRRErrorCode = dtiRRTempFault->errorCode;
+    err.dtiFLErrorCode = dtiFLTempFault->fault_code;
+    err.dtiFRErrorCode = dtiFRTempFault->fault_code;
+    err.dtiRLErrorCode = dtiRLTempFault->fault_code;
+    err.dtiRRErrorCode = dtiRRTempFault->fault_code;
     volatile cmr_canHVCBMBErrors_t *BMBerr = (volatile cmr_canHVCBMBErrors_t *)getPayload(CANRX_HVC_BMB_STATUS);
 
     /* Update Display List*/
@@ -503,19 +509,6 @@ static void drawRTDScreen(void) {
     volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
         (void *)metaBMSLowVoltage->payload;
 
-    // PTC Temps
-    /* cmr_canRXMeta_t *metaPTCfLoopA = canRXMeta + CANRX_PTCf_LOOP_A_TEMPS;
-    volatile cmr_canPTCfLoopTemp_A_t *canPTCfLoopTemp_A = (void *) metaPTCfLoopA->payload;
-
-    cmr_canRXMeta_t *metaPTCfLoopB = canRXMeta + CANRX_PTCf_LOOP_B_TEMPS;
-    volatile cmr_canPTCfLoopTemp_B_t *canPTCfLoopTemp_B = (void *) metaPTCfLoopB->payload;
-
-    cmr_canRXMeta_t *metaPTCpLoopA = canRXMeta + CANRX_PTCp_LOOP_A_TEMPS;
-    volatile cmr_canPTCpLoopTemp_A_t *canPTCpLoopTemp_A = (void *) metaPTCpLoopA->payload;
-
-    cmr_canRXMeta_t *metaPTCpLoopB = canRXMeta + CANRX_PTCp_LOOP_B_TEMPS;
-    volatile cmr_canPTCpLoopTemp_B_t *canPTCpLoopTemp_B = (void *) metaPTCpLoopB->payload;*/
-
     tftDLContentLoad(&tft, &tftDL_RTD);
 
     /* Memorator present? */
@@ -568,8 +561,8 @@ static void drawRTDScreen(void) {
     volatile cmr_canBMSLowVoltage_t *bmsLV = (volatile cmr_canBMSLowVoltage_t *)getPayload(CANRX_HVC_LOW_VOLTAGE);
 
     // this is actually volts not mV but cant be bothered changing it :(
-    // 18000mV * 15 / 2000 as sent by HVC = 135
-    bool ssOk = (bmsLV->safety_mV > 135);
+    // 18000mV / 250 as sent by HVC = 72
+    bool ssOk = (bmsLV->safety_qV > 72);
 
     volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t *)getPayload(CANRX_DRS_STATE);
     bool drsOpen = (drsState->state == CMR_CAN_DRS_STATE_OPEN);
@@ -590,7 +583,7 @@ static void drawRTDScreen(void) {
     bool mcTemp_yellow = mcTemp_C >= MC_YELLOW_THRESHOLD;
     bool mcTemp_red = mcTemp_C >= MC_RED_THRESHOLD;
 
-    uint8_t glvSoC = getLVSoC(glvVoltage, LV_LIFEPO);
+    uint8_t glvSoC = getLVSoC(glvVoltage);
 
     uint8_t hvSoC = 0;
 

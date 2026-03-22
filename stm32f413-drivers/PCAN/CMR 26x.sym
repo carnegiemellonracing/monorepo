@@ -740,6 +740,14 @@ TimeOut=500
 Var=CURRENT_ac_current_dA signed 0,16
 Var=CURRENT_dc_current_dA signed 16,16
 
+[LV_CELL_BALANCE_ENABLE]
+ID=136h
+DLC=3
+CycleTime=10
+TimeOut=50
+Var=CELL_balanceRequest unsigned 0,8 /e:HVC_Balance_State
+Var=CELL_threshold unsigned 8,16
+
 [MOTORPOWER_STATE]
 ID=52Eh
 DLC=8

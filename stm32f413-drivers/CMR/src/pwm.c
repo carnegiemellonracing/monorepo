@@ -176,7 +176,7 @@ void cmr_pwmPinInit(const cmr_pwmPin_t *pinConfigs, const size_t pinConfigsLen) 
     cmr_pwmPinConfigsLen = pinConfigsLen;
 
     for (size_t i = 0; i < cmr_pwmPinConfigsLen; i++) {
-        const cmr_pwmPin_t *pinConfig = &(cmr_pwmPinConfigs[i].pwmPinConfig);
+        const cmr_pwmPinConfig_t *pinConfig = &(cmr_pwmPinConfigs[i].pwmPinConfig);
         const cmr_pwm_t *pwmChannel = &(cmr_pwmPinConfigs[i].pwmChannel);
         cmr_pwmInit(pwmChannel, pinConfig);
     }

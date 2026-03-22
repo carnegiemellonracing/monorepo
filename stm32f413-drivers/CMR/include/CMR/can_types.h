@@ -940,6 +940,22 @@ typedef struct {
     uint8_t rl_fault_code;
 } cmr_canDTI_ErrorMessages_t;
 
+/** @brief DTI controls-facing motor setpoints struct.*/
+typedef struct {
+    float velocity_rpm;           /**< @brief Velocity setpoint (RPM). */
+    float torqueLimPos_mNm;       /**< @brief Positive torque limit. */
+    float torqueLimNeg_mNm;       /**< @brief Negative torque limit. */
+    float torque_mNm;             /**< @brief Torque to motor */  
+} cmr_canDTISetpoints_t;
+
+/** @brief DTI motor controller message TX over CAN.*/
+typedef struct{
+    int16_t velocity_erpm; 
+    int16_t torqueLimPos_mNm;
+    int16_t torqueLimNeg_mNm;
+    int16_t ACCurrent_deciAmps;        
+} cmr_canDTI_RX_Message_t;
+
 // ------------------------------------------------------------------------------------------------
 // Battery Management System
 
