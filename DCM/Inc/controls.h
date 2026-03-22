@@ -67,7 +67,7 @@ void set_optimal_control_with_regen(
 	int32_t swAngle_millideg_FR
 );
 
-void updateTorques(float torqueFL, float torqueFR, float torqueRL, float torqueRR);
+void updateTorques(motorLocation_t motor, float torque);
 
 // ------------------------------------------------------------------------------------------------
 // Global variables

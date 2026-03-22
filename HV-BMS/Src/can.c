@@ -465,11 +465,7 @@ static void sendBMSBMBStatusErrors(void) {
 //	canTX(CMR_CANID_HVC_BMB_STATUS_ERRORS, &errs, sizeof(cmr_canHVCBMBErrors_t), canTX100Hz_period_ms);
 }
 
-<<<<<<< HEAD
-static void sendAllBMBVoltages(int bmbIndex) {
-=======
 static void sendAllBMBVoltages(uint8_t bmbIndex) {
->>>>>>> main
     uint16_t voltageMask = 0x1FFE;
     BMB_Data_t *data = getBMBData(bmbIndex);
     cmr_can_HVBMS_BMB_CellVoltages_t volt0 = {

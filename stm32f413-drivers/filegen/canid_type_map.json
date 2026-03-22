@@ -360,7 +360,7 @@
         "CMR_CANID_DTI_BROADCAST_SET_MAX_CURRENT": {
             "cycleTime": 5,
             "timeOut": 25,
-            "type": "current"
+            "type": "cmr_canDTI_TX_Current_t"
         },
         "CMR_CANID_DTI_ERROR_MESSAGES": {
             "cycleTime": 100,
@@ -390,7 +390,7 @@
         "CMR_CANID_DTI_FL_SET_MAX_CURRENT": {
             "cycleTime": 5,
             "timeOut": 25,
-            "type": "current"
+            "type": "cmr_canDTI_TX_Current_t"
         },
         "CMR_CANID_DTI_FL_SET_TORLIMNEG": {
             "cycleTime": 5,
@@ -435,7 +435,7 @@
         "CMR_CANID_DTI_FR_SET_MAX_CURRENT": {
             "cycleTime": 5,
             "timeOut": 25,
-            "type": "current"
+            "type": "cmr_canDTI_TX_Current_t"
         },
         "CMR_CANID_DTI_FR_SET_TORLIMNEG": {
             "cycleTime": 5,
@@ -480,7 +480,7 @@
         "CMR_CANID_DTI_RL_SET_MAX_CURRENT": {
             "cycleTime": 5,
             "timeOut": 25,
-            "type": "current"
+            "type": "cmr_canDTI_TX_Current_t"
         },
         "CMR_CANID_DTI_RL_SET_TORLIMNEG": {
             "cycleTime": 5,
@@ -525,7 +525,7 @@
         "CMR_CANID_DTI_RR_SET_MAX_CURRENT": {
             "cycleTime": 5,
             "timeOut": 25,
-            "type": "current"
+            "type": "cmr_canDTI_TX_Current_t"
         },
         "CMR_CANID_DTI_RR_SET_TORLIMNEG": {
             "cycleTime": 5,
@@ -886,7 +886,7 @@
         "CMR_CANID_LVBMS_CURRENT": {
             "cycleTime": 100,
             "timeOut": 500,
-            "type": "current"
+            "type": "cmr_canDTI_TX_Current_t"
         },
         "CMR_CANID_LV_CELL_BALANCE_ENABLE": {
             "balanceRequest": {
@@ -1034,15 +1034,15 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2931,
-        "files_with_matches": 2931,
+        "files_processed": 2929,
+        "files_with_matches": 2929,
         "global_mappings": {
             "canrx_mappings": 177,
             "canrx_timeouts": 171,
             "canrx_types": 73,
-            "constants": 243,
+            "constants": 242,
             "struct_members": 0,
-            "variable_types": 338
+            "variable_types": 331
         },
         "prefixes_used": [
             "CMR_CANID_",
