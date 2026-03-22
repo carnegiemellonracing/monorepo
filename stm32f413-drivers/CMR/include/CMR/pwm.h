@@ -57,6 +57,8 @@ typedef struct {
 void cmr_pwmInit(cmr_pwm_t *pwmChannel,
                  const cmr_pwmPinConfig_t *pwmPinConfig);
 
+void cmr_pwmPinInit(const cmr_pwmPin_t *pinConfigs, const size_t pinConfigsLen);
+
 void cmr_pwmSetDutyCycle(cmr_pwm_t *pwmChannel, uint32_t dutyCycle_pcnt);
 
 #endif /* HAL_TIM_MODULE_ENABLED */

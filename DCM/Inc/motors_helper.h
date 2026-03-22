@@ -68,5 +68,6 @@ float getTorqueNmMin(const cmr_torqueDistributionNm_t *torques_Nm);
 bool overVoltProtection();
 float getMotorRegenerativeCapacity(int32_t rpm);
 int16_t torqueToCurrent(float torque_mNm);
+float currentToTorque(int16_t current_dA);
 
 #endif /* MOTORS_HELPER_H */
