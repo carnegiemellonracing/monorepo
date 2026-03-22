@@ -956,7 +956,7 @@ void setFastTorqueWithParallelRegen(uint16_t brakePressurePsi_u8, uint8_t thrott
     }
 }
 
-void updateTorque(motorLocation_t motor, float torque) {
+void updateTorques(motorLocation_t motor, float torque) {
     switch(motor) {
         case(MOTOR_FL):
            prev_torques.t_FL = torque;
