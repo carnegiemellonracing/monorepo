@@ -520,18 +520,18 @@ static void sendAllBMBVoltages(uint8_t bmbIndex) {
 
 static uint16_t thermVoltage_to_tempC(uint16_t thermVolt_mV){
     float pullup_ohms = 4700.0; 
-    float v_in = 5000.0; 
+    float v_in_mV = 5000.0; 
 
     //outside of upper bound 
-    if (thermVolt_mV >= v_in){
+    if (thermVolt_mV >= v_in_mV){
         return 0; 
     }
 
-    float resistance = (pullup_ohms * thermVolt_mV) /  (v_in - thermVolt_mV); 
+    float resistance = (pullup_ohms * thermVolt_mV) /  (v_in_mV - thermVolt_mV); 
     float temp_C; 
 
     //if thermVolt greater than max (don't allow negative temps)
-    if (thermVolt > thermMV_to_tempC[0]) {
+    if (thermVolt_mV > thermMV_to_tempC[0]) {
         return 0; 
     }
 
@@ -539,17 +539,17 @@ static uint16_t thermVoltage_to_tempC(uint16_t thermVolt_mV){
         float table_resistance = thermMV_to_tempC[i]; 
 
         if (table_resistance == resistance) {
-            return i * 1000;
+            return i * 100;
         }
 
         //temp is between i and i+1 (assume pretty much linear ratio)
         if (resistance < table_resistance && resistance > thermMV_to_tempC[i+1]) {
             temp_C = i + ((float)(table_resistance - resistance)) / ((float)(table_resistance - thermMV_to_tempC[i+1])); 
-            return (uint16_t)(temp_C * 1000); 
+            return (uint16_t)(temp_C * 100); 
         }
 
     }
     // if we get to end of loop, voltage is less than lowest voltage in lut
-    return 101;
+    return 10100;
 
 }
