@@ -26,6 +26,8 @@ static const uint32_t gpioReadButtons_priority = 5;
 /** @brief Button input task task. */
 static cmr_task_t gpioReadButtons_task;
 
+static bool eabReq = false;
+
 /**
  * @brief Board-specific pin configuration.
  *
@@ -37,7 +39,7 @@ static cmr_task_t gpioReadButtons_task;
 // TODO: change GPIO pin configs based on new schematic
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 
-	// // D_BUTTON_2
+// // D_BUTTON_2
     // [GPIO_BUTTON_UP] = {
 	// 	.port = GPIOC,
 	// 	.init = {
@@ -77,7 +79,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 	// 		.Speed = GPIO_SPEED_FREQ_LOW
 	// 	}
 	// },
-	// OLD DIM PINS
+	// OLD DIM PINS	
 	// D_BUTTON_2
     [GPIO_BUTTON_UP] = {
 		.port = GPIOC,
@@ -219,6 +221,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
  * @return 1 iff ASMS is on
  */
 uint8_t getASMS(){
+	return false;
 	return cmr_gpioRead(GPIO_ASMS_ON);
 }
 
@@ -227,9 +230,12 @@ uint8_t getASMS(){
  * 
  * @return 1 iff EAB is on
  */
-uint8_t getEAB(){
+bool getEAB(){
 	uint8_t *eabStatus = (uint8_t*)getPayload(CANRX_EAB_STATUS);
-	return (*eabStatus);
+	if(*eabStatus == 1) {
+		eabReq = true;
+	}
+	return eabReq;
 }
 
 /* Debouncing for button presses. */

@@ -204,6 +204,7 @@ typedef enum{
     Coasting_mode_GNSS_has_been_lost_less_than_60_sec_ago =1,
     With_GNSS_default_mode = 3 
 } cmr_canMovellaFilterMode_t; 
+
 typedef enum {
     CMR_CAN_DV_MODE_SLOW = 0,
     CMR_CAN_DV_MODE_NORMAL,
@@ -339,6 +340,11 @@ typedef struct {
     uint8_t safetyIn_V;        /**< @brief Safety circuit input voltage (volts). */
     uint8_t safetyOut_V;       /**< @brief Safety circuit output voltage (volts). */
 } cmr_canVSMSensors_t;
+
+typedef struct {
+    uint16_t ebsPressure_1;
+    uint16_t ebsPressure_2;
+} cmr_canDVPressureReadings_t;
 
 /** @brief Vehicle Safety Module latched error status. */
 typedef struct {

@@ -403,7 +403,8 @@ void canInit(void) {
             .rxFIFO = CAN_RX_FIFO1,
             .ids = {
                     CMR_CANID_AS_PRESSURE_READINGS,
-                    CMR_CANID_DTI_ERROR_MESSAGES
+                    CMR_CANID_DTI_ERROR_MESSAGES,
+                    CMR_CANID_ASMS_STATE
             }
 		},
     };

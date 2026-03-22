@@ -291,6 +291,7 @@ static cmr_task_t canTX10Hz_task;
 
 // Forward declarations
 static void sendHeartbeat(TickType_t lastWakeTime);
+static void sendDVPressureReadings(void);
 static void sendFSMData(void);
 static void sendSWAngle(void);
 static void sendFSMPedalsADC(void);
@@ -383,6 +384,7 @@ static void canTX100Hz(void *pvParameters) {
         sendHeartbeat(lastWakeTime);
         sendFSMData();
         sendSWAngle();
+        sendDVPressureReadings();
         // Calculate integer regenPercent from regenStep
     	uint8_t paddle = (uint8_t) ((adcRead(ADC_PADDLE) - 16.062) / 3694.43) * 255.0;
     	uint8_t regenPercent = (uint8_t)((adcRead(ADC_PADDLE) / 255.0) * 100.0);
@@ -780,7 +782,8 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
         .state = vsmState
     };
 
-    uint8_t AS_Status = getASMS();
+    // uint8_t AS_Status = getASMS();
+    uint8_t AS_Status = false;
     canTX(CMR_CANID_ASMS_STATUS, &AS_Status, sizeof(AS_Status), canTX100Hz_period_ms);
 
     // volatile cmr_canHeartbeat_t *AIM_Heartbeat = canVehicleGetPayload(CANRX_HEARTBEAT_VSM);
@@ -880,6 +883,15 @@ static void sendSWAngle(void) {
     };
 
     canTX(CMR_CANID_FSM_SWANGLE, &msg, sizeof(msg), canTX100Hz_period_ms);
+}
+
+static void sendDVPressureReadings(void) {
+    cmr_canDVPressureReadings_t ebsPressure = {
+        .ebsPressure_1 = cmr_sensorListGetValue(&sensorList, SENSOR_CH_EBS_1),
+        .ebsPressure_2 = cmr_sensorListGetValue(&sensorList, SENSOR_CH_EBS_2)
+    };
+
+    canTX(CMR_CANID_AS_PRESSURE_READINGS, &ebsPressure, sizeof(ebsPressure), canTX100Hz_period_ms);
 }
 
 /**

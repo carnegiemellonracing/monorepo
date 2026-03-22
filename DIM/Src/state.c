@@ -475,9 +475,9 @@ void EABStateUp() {
  */
 void stateVSMUp() {
 
-    if(getASMS()) {
-        return;
-    }
+    // if(getASMS()) {
+    //     return;
+    // }
 
 	cmr_canState_t vsmState = stateGetVSM();
 	if (state.vsmReq < vsmState) {
@@ -501,9 +501,9 @@ void stateVSMUp() {
  */
 void stateVSMDown() {
 
-    if(getASMS()) {
-        return;
-    }
+    // if(getASMS()) {
+    //     return;
+    // }
 
 	cmr_canState_t vsmState = stateGetVSM();
         if (state.vsmReq > vsmState) {
@@ -528,10 +528,10 @@ void stateVSMDown() {
 
 void reqVSM(void) {
 
-    if(getASMS() && stateGetVSM() == CMR_CAN_GLV_ON) {
-        EABStateUp();
-        return;
-    }
+    // if(/*getASMS() && */stateGetVSM() == CMR_CAN_GLV_ON) {
+    //     EABStateUp();
+    //     return;
+    // }
     
     if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM == CMR_CAN_CLEAR_ERROR) {
         state.vsmReq = CMR_CAN_GLV_ON;

@@ -27,6 +27,8 @@ typedef enum {
     SENSOR_CH_BPP_IMPLAUS,    /**< @brief Brake pedal position implausibility. */
 	SENSOR_CH_X,				/**< @brief ADC X */
 	SENSOR_CH_Y, 				/**< @brief ADC Y */
+    SENSOR_CH_EBS_1,
+    SENSOR_CH_EBS_2,
     SENSOR_CH_LEN             /**< @brief Number of sensors. */
 } sensorChannel_t;
 

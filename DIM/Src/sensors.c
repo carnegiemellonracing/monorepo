@@ -71,6 +71,8 @@ const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
     [SENSOR_CH_SWANGLE_DEG_FR] = ADC_SWANGLE,
 	[SENSOR_CH_X] = ADC_X,
 	[SENSOR_CH_Y] = ADC_Y,
+    [SENSOR_CH_EBS_1] = ADC_EBS_1,
+	[SENSOR_CH_EBS_2] = ADC_EBS_2,
     [SENSOR_CH_TPOS_IMPLAUS] = ADC_LEN  // Not an ADC channel!
 };
 
@@ -295,6 +297,22 @@ static uint32_t sampleTPOSDiff(const cmr_sensor_t *sensor) {
     return 1;  // Implausible!
 }
 
+int32_t adcToEBSBrakePressure_psi(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void)sensor;  // Placate compiler.
+
+    uint32_t reading_mV_3v3 = reading * 3300 / 4096;
+    // Values come from a 9.1K and 4.7k voltage divider
+    uint32_t reading_mV  = reading_mV_3v3 * 138 / 91;
+
+    const uint32_t lower_bound_mV = 500; // voltage at 0 bar
+    const uint32_t upper_bound_mV = 4500; // voltage at 100 bar
+    const uint32_t max_pressure_bar = 100; // voltage at 0 bar
+    uint32_t clamped_reading_mV = CLAMP (lower_bound_mV, reading_mV, upper_bound_mV);
+    uint32_t reading_bar = INVLERP_SCALED(lower_bound_mV,upper_bound_mV, clamped_reading_mV, max_pressure_bar);
+    
+    return (uint16_t)reading_bar;
+}
+
 /**
  * @brief Sample whether the brake pedal position is implausible.
  *
@@ -393,7 +411,14 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 					  .readingMax = 4096,},
 	[SENSOR_CH_Y] = { .conv = NULL, .sample = sampleADCSensor,
 				  .readingMin = 0,
+				  .readingMax = 4096,},
+    [SENSOR_CH_EBS_1] = { .conv = adcToEBSBrakePressure_psi, .sample = sampleADCSensor,
+					  .readingMin = 0,
+					  .readingMax = 4096,},
+	[SENSOR_CH_EBS_2] = { .conv = adcToEBSBrakePressure_psi, .sample = sampleADCSensor,
+				  .readingMin = 0,
 				  .readingMax = 4096,}
+    
 };
 
 /** @brief Sensors update priority. */
