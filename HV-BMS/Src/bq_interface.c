@@ -542,10 +542,11 @@ void pollAllTemperatureData(int channel) {
 	uart_response_t response[BOARD_NUM-1];
 
 	for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
-		if(uart_receiveResponse(&response[i-1], 7) == UART_FAILURE) {
+		if(uart_receiveResponse(&response[i-1], 7) != 0) {
 				//loop through each GPIO channel
 			setBMBErr(i-1, BMB_TEMP_READ_ERROR);
 			BMBTimeoutCount[i-1]+=1;
+			taskEXIT_CRITICAL();
 			return;
 		}
 	}
@@ -561,7 +562,10 @@ void pollAllTemperatureData(int channel) {
 			uint8_t low_byte_data = response[i].data[2*k+1];
             int16_t cellTempVoltageReading = calculateTempVoltageReading(high_byte_data, low_byte_data);
 
-			BMBData[i].cellTemperaturesVoltageReading[cellNum] = cellTempVoltageReading;
+			if (cellTempVoltageReading < 4990){
+				BMBData[i].cellTemperaturesVoltageReading[cellNum] = cellTempVoltageReading;
+			}
+
 		}
 	}
 	return;

@@ -146,7 +146,7 @@ uint8_t getBMBMaxTempIndex(uint8_t bmb_index) {
 	uint8_t cell_index = 0;
 	for (uint8_t i = 0; i < TEMP_CHANNELS; i++) {
 		int16_t temp = BMBData[bmb_index].cellTemperaturesVoltageReading[i];
-		if ((temp > maxTemp) && !check_to_ignore(bmb_index, i)) {
+		if ((temp > maxTemp) && !check_to_ignore(bmb_index, i) && temp!=0) {
 			maxTemp = temp;
 			cell_index = i;
 		}
@@ -159,7 +159,7 @@ uint8_t getBMBMinTempIndex(uint8_t bmb_index) {
 	uint8_t cell_index = 0;
 	for (uint8_t i = 0; i < TEMP_CHANNELS; i++) {
 		int16_t temp = BMBData[bmb_index].cellTemperaturesVoltageReading[i];
-		if (temp < minTemp && !check_to_ignore(bmb_index, i)) {
+		if (temp < minTemp && !check_to_ignore(bmb_index, i) && temp!=0) {
 			minTemp = temp;
 			cell_index = i;
 		}
