@@ -761,7 +761,19 @@ void runControls (
             // float target_speed_mps = 5.0f;
             // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
             // set_motor_speed(throttlePos_u8, target_speed_mps, false);
+
+            float wheel_fl_speed_radps = getMotorSpeed_radps(MOTOR_FL);
+            float wheel_fr_speed_radps = getMotorSpeed_radps(MOTOR_FR);
+            float wheel_rl_speed_radps = getMotorSpeed_radps(MOTOR_RL);
+            float wheel_rr_speed_radps = getMotorSpeed_radps(MOTOR_RR);
+
             set_manual_cruise_control(throttlePos_u8);
+            float vx, vy; 
+            sensors_get_vel_xy(&vx, &vy);
+            
+            setAccelLaunchControl(throttlePos_u8, swAngle_millideg, vx, wheel_fl_speed_radps, 
+                wheel_fr_speed_radps, wheel_rl_speed_radps, wheel_rr_speed_radps, 
+                fz_fl, fz_fr, fz_rl, fz_rr);
             break;
         }
 
