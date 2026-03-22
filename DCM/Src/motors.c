@@ -311,20 +311,20 @@ void motorsInit (
     initControls();
 
     // Task creation.
-    // cmr_taskInit(
-    //     &motorsCommand_task,
-    //     "motorsCommand",
-    //     motorsCommand_priority,
-    //     motorsCommand,
-    //     NULL
-    // );
     cmr_taskInit(
-        &motorsTest_task,
-        "motorsTest",
+        &motorsCommand_task,
+        "motorsCommand",
         motorsCommand_priority,
-        motorsTest,
+        motorsCommand,
         NULL
     );
+    // cmr_taskInit(
+    //     &motorsTest_task,
+    //     "motorsTest",
+    //     motorsCommand_priority,
+    //     motorsTest,
+    //     NULL
+    // );
 }
 
 /**

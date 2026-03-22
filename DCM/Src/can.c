@@ -807,13 +807,13 @@ static void canTX100Hz(void *pvParameters) {
 		motorPowerInfo->motor_power_RL = (HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_VEH].handle)) >> 16) & 0xFFFF;
 		motorPowerInfo->motor_power_RR = HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_VEH].handle));
 
-		canTX(CMR_CAN_BUS_VEH, CMR_CANID_SF_STATE, sfStatesInfo, sizeof(*sfStatesInfo), canTX100Hz_period_ms); //safety filter
-		//canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
-		canTX(CMR_CAN_BUS_DAQ, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX100Hz_period_ms); //motor power
-		//canTX(CMR_CAN_BUS_TRAC, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
+		// canTX(CMR_CAN_BUS_VEH, CMR_CANID_SF_STATE, sfStatesInfo, sizeof(*sfStatesInfo), canTX100Hz_period_ms); //safety filter
+		// //canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
+		// canTX(CMR_CAN_BUS_DAQ, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX100Hz_period_ms); //motor power
+		// //canTX(CMR_CAN_BUS_TRAC, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
 
-        // Forward Movella status to Vehicle CAN at 100Hz.
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOVELLA_STATUS, movellaStatus, sizeof(cmr_canMovellaStatus_t), canTX100Hz_period_ms);
+        // // Forward Movella status to Vehicle CAN at 100Hz.
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOVELLA_STATUS, movellaStatus, sizeof(cmr_canMovellaStatus_t), canTX100Hz_period_ms);
 
         //debug code for sending rxmeta receive to current time difference
 //        uint16_t arr[2];
@@ -893,39 +893,39 @@ static void canTX200Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // if (heartbeatVSM->state == CMR_CAN_RTD || 
-        //     heartbeatVSM->state == CMR_CAN_AS_DRIVING){
-        //     drive_enable = 1;
-        //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
+        if (heartbeatVSM->state == CMR_CAN_RTD || 
+            heartbeatVSM->state == CMR_CAN_AS_DRIVING){
+            drive_enable = 1;
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
             
-        //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_TORLIMPOS, &(dtiSetpointsFL->torqueLimPos_dA), sizeof(dtiSetpointsFL->torqueLimPos_dA), canTX200Hz_period_ms);
-        //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_TORLIMNEG, &(dtiSetpointsFL->torqueLimNeg_dA), sizeof(dtiSetpointsFL->torqueLimNeg_dA), canTX200Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_TORLIMPOS, &(dtiSetpointsFL->torqueLimPos_dA), sizeof(dtiSetpointsFL->torqueLimPos_dA), canTX200Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_TORLIMNEG, &(dtiSetpointsFL->torqueLimNeg_dA), sizeof(dtiSetpointsFL->torqueLimNeg_dA), canTX200Hz_period_ms);
 
-        //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_TORLIMPOS, &(dtiSetpointsFR->torqueLimPos_dA), sizeof(dtiSetpointsFR->torqueLimPos_dA), canTX200Hz_period_ms);
-        //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_TORLIMNEG, &(dtiSetpointsFR->torqueLimNeg_dA), sizeof(dtiSetpointsFR->torqueLimNeg_dA), canTX200Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_TORLIMPOS, &(dtiSetpointsFR->torqueLimPos_dA), sizeof(dtiSetpointsFR->torqueLimPos_dA), canTX200Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_TORLIMNEG, &(dtiSetpointsFR->torqueLimNeg_dA), sizeof(dtiSetpointsFR->torqueLimNeg_dA), canTX200Hz_period_ms);
 
-        //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_TORLIMPOS, &(dtiSetpointsRR->torqueLimPos_dA), sizeof(dtiSetpointsRR->torqueLimPos_dA), canTX200Hz_period_ms);
-        //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_TORLIMNEG, &(dtiSetpointsRR->torqueLimNeg_dA), sizeof(dtiSetpointsRR->torqueLimNeg_dA), canTX200Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_TORLIMPOS, &(dtiSetpointsRR->torqueLimPos_dA), sizeof(dtiSetpointsRR->torqueLimPos_dA), canTX200Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_TORLIMNEG, &(dtiSetpointsRR->torqueLimNeg_dA), sizeof(dtiSetpointsRR->torqueLimNeg_dA), canTX200Hz_period_ms);
 
-        //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_TORLIMPOS, &(dtiSetpointsRL->torqueLimPos_dA), sizeof(dtiSetpointsRL->torqueLimPos_dA), canTX200Hz_period_ms);
-        //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_TORLIMNEG, &(dtiSetpointsRL->torqueLimNeg_dA), sizeof(dtiSetpointsRL->torqueLimNeg_dA), canTX200Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_TORLIMPOS, &(dtiSetpointsRL->torqueLimPos_dA), sizeof(dtiSetpointsRL->torqueLimPos_dA), canTX200Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_TORLIMNEG, &(dtiSetpointsRL->torqueLimNeg_dA), sizeof(dtiSetpointsRL->torqueLimNeg_dA), canTX200Hz_period_ms);
         
-        //     // if (isTorqueMode){
-        //     //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_CURRENT, &(dtiSetpointsFL->ACCurrent_dA), sizeof(dtiSetpointsFL->ACCurrent_dA), canTX200Hz_period_ms);
-        //     //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_CURRENT, &(dtiSetpointsFR->ACCurrent_dA), sizeof(dtiSetpointsFL->ACCurrent_dA), canTX200Hz_period_ms);
-        //     //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_CURRENT, &(dtiSetpointsRL->ACCurrent_dA), sizeof(dtiSetpointsFL->ACCurrent_dA), canTX200Hz_period_ms);
-        //     //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_CURRENT, &(dtiSetpointsRR->ACCurrent_dA), sizeof(dtiSetpointsFL->ACCurrent_dA), canTX200Hz_period_ms);
-        //     // } else {
-        //     //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_VELOCITY, &(dtiSetpointsFL->velocity_erpm), sizeof(dtiSetpointsFL->velocity_erpm), canTX200Hz_period_ms);
-        //     //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_VELOCITY, &(dtiSetpointsFR->velocity_erpm), sizeof(dtiSetpointsFR->velocity_erpm), canTX200Hz_period_ms);
-        //     //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_VELOCITY, &(dtiSetpointsRL->velocity_erpm), sizeof(dtiSetpointsRL->velocity_erpm), canTX200Hz_period_ms);
-        //     //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_VELOCITY, &(dtiSetpointsRR->velocity_erpm), sizeof(dtiSetpointsRR->velocity_erpm), canTX200Hz_period_ms);
-        //     // }
-        // }
-        // else {
-        //     drive_enable = 0;
-        //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
-        // }
+            if (isTorqueMode){
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_CURRENT, &(dtiSetpointsFL->ACCurrent_dA), sizeof(dtiSetpointsFL->ACCurrent_dA), canTX200Hz_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_CURRENT, &(dtiSetpointsFR->ACCurrent_dA), sizeof(dtiSetpointsFL->ACCurrent_dA), canTX200Hz_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_CURRENT, &(dtiSetpointsRL->ACCurrent_dA), sizeof(dtiSetpointsFL->ACCurrent_dA), canTX200Hz_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_CURRENT, &(dtiSetpointsRR->ACCurrent_dA), sizeof(dtiSetpointsFL->ACCurrent_dA), canTX200Hz_period_ms);
+            } else {
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_VELOCITY, &(dtiSetpointsFL->velocity_erpm), sizeof(dtiSetpointsFL->velocity_erpm), canTX200Hz_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_VELOCITY, &(dtiSetpointsFR->velocity_erpm), sizeof(dtiSetpointsFR->velocity_erpm), canTX200Hz_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_VELOCITY, &(dtiSetpointsRL->velocity_erpm), sizeof(dtiSetpointsRL->velocity_erpm), canTX200Hz_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_VELOCITY, &(dtiSetpointsRR->velocity_erpm), sizeof(dtiSetpointsRR->velocity_erpm), canTX200Hz_period_ms);
+            }
+        }
+        else {
+            drive_enable = 0;
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
+        }
 
         daqWheelSpeedFeedback(&speedFeedback);
         daqWheelTorqueFeedback(&torqueFeedback);
@@ -1024,7 +1024,7 @@ static void canTX5Hz(void *pvParameters) {
 
         // Send DRS state and debug data
         const cmr_canCDCDRSStates_t *drsStatesInfo = getDRSInfo();
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DRS_STATE, drsStatesInfo, sizeof(*drsStatesInfo), canTX5Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_DRS_STATE, drsStatesInfo, sizeof(*drsStatesInfo), canTX5Hz_period_ms);
 
         transmitCDC_DIMconfigMessages();
 
@@ -1076,13 +1076,13 @@ static void canTX1Hz(void *pvParameters) {
     while (1) {
 
         cmr_canDAQTest_t daqTest = getDAQTest();
-        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_TEST_ID, &daqTest, sizeof(daqTest), canTX1Hz_period_ms);
+        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_TEST_ID, &daqTest, sizeof(daqTest), canTX1Hz_period_ms);
 
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_RTC_DATA_OUT, &time, sizeof(time), canTX1Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_RTC_DATA_OUT, &time, sizeof(time), canTX1Hz_period_ms);
         cmr_canCDCOdometer_t odometer = (cmr_canCDCOdometer_t) {
             .odometer_km = odometer_km
         };
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_ODOMETER, &odometer, sizeof(odometer), canTX1Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_ODOMETER, &odometer, sizeof(odometer), canTX1Hz_period_ms);
 
         cmr_canCDCControlsStatus_t *controlsStatus = getControlsStatus();
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_CONTROLS_STATUS, controlsStatus, sizeof(cmr_canCDCControlsStatus_t), canTX1Hz_period_ms);
@@ -1092,7 +1092,7 @@ static void canTX1Hz(void *pvParameters) {
             // getPowerLimit_W() is 0!!!!!!!!!!! (╯°□°)╯ノ彡┻━┻
             .power_limit_W = getPowerLimit_W(),
         };
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_POWER_LOG, &power_limit, sizeof(power_limit), canTX1Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_POWER_LOG, &power_limit, sizeof(power_limit), canTX1Hz_period_ms);
 
         // TODO: constantly send current parameters
         vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);

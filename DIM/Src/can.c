@@ -255,7 +255,7 @@ cmr_canRXMeta_t canRXMeta[] = {
         .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
     [CANRX_SENSORIC_VEL_ANG] =    { .canID = CMR_CANID_SENSORIC_VEL_ANG, .timeoutError_ms = 50, .timeoutWarn_ms = 25},
-    [CANRX_HVC_PACK_TEMPS] =      { .canID = CMR_CANID_HVC_MINMAX_CELL_TEMPS, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
+    [CANRX_HVC_PACK_TEMPS] =      { .canID = CMR_CANID_HVBMS_MIN_MAX_CELL_TEMPERATURE, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_VSM_STATUS] =          { .canID = CMR_CANID_VSM_STATUS, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_PTCf_LOOP_A_TEMPS] =   { .canID = CMR_CANID_PTC_LOOP_TEMPS_A, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_PTC_LOOP_A_TEMPS] =    { .canID = CMR_CANID_PTC_LOOP_TEMPS_A, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },

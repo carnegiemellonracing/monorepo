@@ -115,10 +115,9 @@ static void canTX1Hz(void *pvParameters) {
     while (1) {
 
         // BMB Temperature Status 
-        for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM - 1; bmb_index++) {
-            sendBMSBMBStatusTemp(bmb_index);
-        }
-        sendBMSMinMaxCellTemp();
+        // for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM - 1; bmb_index++) {
+        //     sendBMSBMBStatusTemp(bmb_index);
+        // }
         //send all cells temp and voltage 
         // sendAllBMBVoltages();
 
@@ -180,8 +179,9 @@ static void canTX100Hz(void *pvParameters) {
     while (1) {
         sendHeartbeat(lastWakeTime);
         sendBMSBMBStatusErrors();
+        sendBMSMinMaxCellTemp();
         checkClearErr();
-        sendAllBMBVoltages(BMBNum);
+        // sendAllBMBVoltages(BMBNum);
         BMBNum = (BMBNum+1) % 16;
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
