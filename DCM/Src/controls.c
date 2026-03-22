@@ -770,8 +770,8 @@ void runControls (
             set_manual_cruise_control(throttlePos_u8);
             float vx, vy; 
             sensors_get_vel_xy(&vx, &vy);
-            
-            setAccelLaunchControl(throttlePos_u8, swAngle_millideg, vx, wheel_fl_speed_radps, 
+
+            setAccelLaunchControl(throttlePos_u8, brakePressurePsi_u8, vx, wheel_fl_speed_radps, 
                 wheel_fr_speed_radps, wheel_rl_speed_radps, wheel_rr_speed_radps, 
                 fz_fl, fz_fr, fz_rl, fz_rr);
             break;
@@ -1192,7 +1192,7 @@ void setAccelLaunchControl(
     static TickType_t launch_tick = 0;
 
     static const float LAUNCH_SPEED_THRESH_MPS = 0.05f; // below this = "still stationary"
-    static const float LAUNCH_TIMEOUT_S = 6.0f;  // kill switch after N seconds
+    static const float LAUNCH_TIMEOUT_S = 10.0f;  // kill switch after N seconds
 
     // read button
     bool button_held = (
