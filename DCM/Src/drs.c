@@ -21,7 +21,8 @@
 // static cmr_pwm_t servo_right_PWM;
 
 static cmr_pwm_t servo_pwm;
-
+float timeSinceStraightLine;
+float timeSinceBraking;
 // HIII
 
 #define DRS_CLOSED_ANGLE 80
@@ -30,7 +31,13 @@ static cmr_pwm_t servo_pwm;
 #define LAT_G_UPPER_THRESH 1.2
 #define LAT_G_LOWER_THRESH 0.8
 
+#define TIME_THRESHOLD 0.5
+#define TIME_BRAKING_THRESHOLD 0.2
+
 extern cmr_canCDCDRSStates_t drs_state;
+
+// TODO: add steering wheel button for DRS
+
 
 void setServoQuiet() {
 	cmr_pwmSetDutyCycle(&servo_pwm, 0);
@@ -39,7 +46,6 @@ void setServoQuiet() {
     cmr_gpioWrite(GPIO_DRS_ENABLE_1, 0);
     cmr_gpioWrite(GPIO_DRS_ENABLE_2, 0);
 }
-
 
 uint32_t angleToDutyCycle (int angle) {
     // map angle to percentage duty cycle
@@ -72,29 +78,36 @@ bool is_power_limited()
 }
 
 void processDRSControl(int16_t swAngle_millideg, bool braking, 
-                       bool traction_limited, bool skidpad) 
-    {
+                       bool traction_limited, bool skidpad, bool accel){
         float lat_g = calculate_latg(swAngle_millideg);
+        timeSinceStraightLine = timeSinceStraightLine + 0.005;
+        if(braking){
+            timeSinceBraking = timeSinceBraking + 0.005;
+        }
+        if (lat_g > LAT_G_UPPER_THRESH || skidpad){
+            timeSinceStraightLine = 0;
+        }
 
+        bool opened = true;
         
         // DRS IS OPENED WHEN:
         // power limited 
         // G is below threshold
-        bool opened = true;
-
+        if (timeSinceStraightLine >= TIME_THRESHOLD && is_power_limited()){
+            opened = true;
+        }
         // DRS IS CLOSED WHEN:
         // braking, traction limited, skidpad, or G is past threshold
-        if (braking || skidpad) {
+        //BRAKING FOR MORE THAN A CERTAIN AMOUNT OF TIME
+        else if (timeSinceBraking > TIME_BRAKING_THRESHOLD || skidpad) {
             opened = false;
         }
-
-        else if (!(is_power_limited()) && lat_g > LAT_G_UPPER_THRESH) {
+        else if ((!(is_power_limited()) && lat_g > LAT_G_UPPER_THRESH) || timeSinceStraightLine < TIME_THRESHOLD) {
             opened = false;
         }
 
         setDRS(opened);
     }
-
 
 void setDRS(bool open) {
 
@@ -112,7 +125,7 @@ void setDRS(bool open) {
  *
  * @return Does not return.
  */
-void servoInit() {
+void servoInit() { //do we need to change this?
     const cmr_pwmPinConfig_t pwmPinConfigServo = { // GPIO A0
         .port = GPIOA, 
         .pin = GPIO_PIN_1,
