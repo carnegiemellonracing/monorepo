@@ -13,6 +13,7 @@
 
 #include <stdint.h>
 #include <CMR/can_ids.h>    // CMR CAN IDs
+#include <CMR/can_types.h>    // CMR CAN IDs
 #include "motors_helper.h"
 
 // ------------------------------------------------------------------------------------------------

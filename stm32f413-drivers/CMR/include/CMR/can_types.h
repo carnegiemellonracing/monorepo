@@ -419,18 +419,18 @@ typedef enum {
     CMR_CAN_HVC_ERROR_NONE = 0x0000,    /**< @brief No errors detected. */
 
     // Pack errors
-    CMR_CAN_HVBMS_ERROR_PACK_UNDERVOLT   = 0x0001,    /**< @brief Pack voltage too low. */
-    CMR_CAN_HVBMS_ERROR_PACK_OVERVOLT    = 0x0002,    /**< @brief Pack voltage too high. */
+    CMR_CAN_HVC_ERROR_PACK_UNDERVOLT   = 0x0001,    /**< @brief Pack voltage too low. */
+    CMR_CAN_HVC_ERROR_PACK_OVERVOLT    = 0x0002,    /**< @brief Pack voltage too high. */
     CMR_CAN_HVC_ERROR_PACK_OVERCURRENT = 0x0008,    /**< @brief Pack current too high. */
 
     // Cell errors
-    CMR_CAN_HVBMS_ERROR_CELL_UNDERVOLT = 0x0010,  /**< @brief At least one cell is undervoltage. */
-    CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT  = 0x0020,  /**< @brief At least one cell is overvoltage. */
-    CMR_CAN_HVBMS_ERROR_CELL_OVERTEMP  = 0x0040,  /**< @brief At least one cell has overheated. */
+    CMR_CAN_HVC_ERROR_CELL_UNDERVOLT = 0x0010,  /**< @brief At least one cell is undervoltage. */
+    CMR_CAN_HVC_ERROR_CELL_OVERVOLT  = 0x0020,  /**< @brief At least one cell is overvoltage. */
+    CMR_CAN_HVC_ERROR_CELL_OVERTEMP  = 0x0040,  /**< @brief At least one cell has overheated. */
     CMR_CAN_HVC_ERROR_BMB_FAULT      = 0x0080,  /**< @brief At least one BMB has faulted. */
 
     // Communication errors
-    CMR_CAN_HVBMS_ERROR_BMB_TIMEOUT = 0x0100, /**< @brief BMB has timed out. */
+    CMR_CAN_HVC_ERROR_BMB_TIMEOUT = 0x0100, /**< @brief BMB has timed out. */
     CMR_CAN_HVC_ERROR_CAN_TIMEOUT = 0x0200, /**< @brief HVC command timed out. */
 
     // Other errors
@@ -441,7 +441,7 @@ typedef enum {
 
 /** @brief High Voltage Controller error bit vector definitions. */
 typedef enum {
-    CMR_CAN_HVC_ERROR_NONE = 0x0000,    /**< @brief No errors detected. */
+    CMR_CAN_HVBMS_ERROR_NONE = 0x0000,    /**< @brief No errors detected. */
 
     // Pack errors
     CMR_CAN_HVBMS_ERROR_PACK_UNDERVOLT   = 0x0001,    /**< @brief Pack voltage too low. */
@@ -940,22 +940,6 @@ typedef struct {
     uint8_t rl_fault_code;
 } cmr_canDTI_ErrorMessages_t;
 
-/** @brief DTI controls-facing motor setpoints struct.*/
-typedef struct {
-    float velocity_rpm;           /**< @brief Velocity setpoint (RPM). */
-    float torqueLimPos_mNm;       /**< @brief Positive torque limit. */
-    float torqueLimNeg_mNm;       /**< @brief Negative torque limit. */
-    float torque_mNm;             /**< @brief Torque to motor */  
-} cmr_canDTISetpoints_t;
-
-/** @brief DTI motor controller message TX over CAN.*/
-typedef struct{
-    int16_t velocity_erpm; 
-    int16_t torqueLimPos_mNm;
-    int16_t torqueLimNeg_mNm;
-    int16_t ACCurrent_deciAmps;        
-} cmr_canDTI_RX_Message_t;
-
 // ------------------------------------------------------------------------------------------------
 // Battery Management System
 
@@ -1000,11 +984,13 @@ typedef struct {
     uint8_t maxTempCellNum;      /**< @brief Max pack cell temp cell number. */
 } cmr_canBMSMinMaxCellTemperature_t;
 
+// Note we elect to use quarter volts to allow us to fit more detail
+// The voltage goes up to 30000mV so we can get reasonable detail 
+// with quarter volts
+// 1 byte per voltage value.
 typedef struct {
-    uint8_t vbatt_mV;       //u: mV, f:0.1333333 /**< @brief LV battery voltage (mV). */
-    uint8_t vAIR_mV;        //u: mV, f:0.1333333 /**< @brief AIR voltage (mV). */
-    uint8_t safety_mV;      //u: mV, f:0.1333333 /**< @brief Safety circuit voltage (mA). */
-	uint8_t iDCDC_mA;       //u: mA, f:0.1333333 /**< @brief DCDC current (mA). */
+    uint8_t vAIR_qV;        //u: qV, /**< @brief AIR voltage (quarter volt). */
+    uint8_t safety_qV;      //u: qV, /**< @brief Safety circuit voltage (quarter volt). */
 } cmr_canBMSLowVoltage_t;
 
 // BRUSA Charger Structs
