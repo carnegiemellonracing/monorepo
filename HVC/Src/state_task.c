@@ -52,7 +52,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
     uint16_t packMinCellVoltage;
     uint16_t packMaxCellVoltage;
 
-    if (false) {
+    if (currentError != CMR_CAN_HVC_ERROR_NONE) {
         // An error condition is active, stay in ERROR state
         return CMR_CAN_HVC_STATE_ERROR;
     }

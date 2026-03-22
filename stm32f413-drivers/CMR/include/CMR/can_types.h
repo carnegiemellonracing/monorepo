@@ -237,11 +237,11 @@ typedef enum {
     CMR_CAN_VSM_STATE_BRAKE_TEST,       /**< @brief Check if brakes work*/
     CMR_CAN_VSM_STATE_HV_EN,            /**< @brief Enable high voltage system. */
     CMR_CAN_VSM_STATE_RTD,              /**< @brief Ready to drive. */
-    CMR_CAN_VSM_STATE_LEN,              /**< @brief Number of VSM states. */
     CMR_CAN_VSM_STATE_AS_READY,               /**< @brief Autonomous ready*/
     CMR_CAN_VSM_STATE_AS_DRIVING,             /**< @brief Autonomous driving*/
     CMR_CAN_VSM_STATE_AS_FINISHED,            /**< @brief Autonomous finished*/
-    CMR_CAN_VSM_STATE_AS_EMERGENCY            /**< @brief Autonomous emergency*/
+    CMR_CAN_VSM_STATE_AS_EMERGENCY,            /**< @brief Autonomous emergency*/
+    CMR_CAN_VSM_STATE_LEN,              /**< @brief Number of VSM states. */
 } cmr_canVSMState_t;
 
 /** @brief Bit definitions for timeoutMatrix in cmr_canVSMErrors_t. */
