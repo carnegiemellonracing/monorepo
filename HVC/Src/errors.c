@@ -37,10 +37,10 @@ cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
         errorFlags |= CMR_CAN_HVC_ERROR_LV_UNDERVOLT;
     }
 
-    cmr_canHeartbeat_t* hvbms_heartbeat = (cmr_canHeartbeat_t*) getPayload(CANRX_HEARTBEAT_HVBMS); 
-    cmr_canHVCError_t hvbms_errors;
-    memcpy(&hvbms_errors, hvbms_heartbeat->error, sizeof(hvbms_heartbeat->error));
-    errorFlags |= hvbms_errors; 
+    // cmr_canHeartbeat_t* hvbms_heartbeat = (cmr_canHeartbeat_t*) getPayload(CANRX_HEARTBEAT_HVBMS); 
+    // cmr_canHVCError_t hvbms_errors;
+    // memcpy(&hvbms_errors, hvbms_heartbeat->error, sizeof(hvbms_heartbeat->error));
+    // errorFlags |= hvbms_errors; 
 
     errorRegister = errorFlags;
     
