@@ -54,6 +54,8 @@ volatile cmr_can_solver_aux_t solver_aux;
 volatile cmr_can_solver_settings_t solver_settings;
 volatile cmr_canCDCWheelTorque_t solver_torques;
 
+static torque_distribution_t prev_torques;
+
 /* @brief For testing only; false = use calculated downforce */
 volatile bool use_true_downforce = false;
 
@@ -388,7 +390,6 @@ static void set_optimal_control(
 	optimizer_state.omegas[2] = wheel_rl_speed_radps;
 	optimizer_state.omegas[3] = wheel_rr_speed_radps;
 
-    static torque_distribution_t prev_torques = NULL; //POPULATE THIS WITH PREV TORQUES PLEASE
     compute_power_weights(&optimizer_state, &efficiencyLUT, &prev_torques);
 
     if(true == allow_regen) {
@@ -951,6 +952,23 @@ void setFastTorqueWithParallelRegen(uint16_t brakePressurePsi_u8, uint8_t thrott
         const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
         setTorqueLimsAllProtected(reqTorque, 0.0f);
         setVelocityInt16All(maxFastSpeed_rpm);
+    }
+}
+
+void updateTorque(motorLocation_t motor, float torque) {
+    switch(motor) {
+        case(MOTOR_FL):
+           prev_torques.t_FL = torque;
+           break;
+        case(MOTOR_FR):
+           prev_torques.t_FR = torque;
+           break;
+        case(MOTOR_RL):
+           prev_torques.t_RL = torque;
+           break;
+        case(MOTOR_RR):
+           prev_torques.t_RR = torque;
+           break;
     }
 }
 
