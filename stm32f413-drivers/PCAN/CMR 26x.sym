@@ -387,6 +387,14 @@ Var=STATE_angle unsigned 8,8
 Var=STATE_pwm_left unsigned 16,8
 Var=STATE_pwm_right unsigned 24,8
 
+[DTI_BROADCAST_SET_MAX_CURRENT]
+ID=0Ah
+DLC=4
+CycleTime=5
+TimeOut=25
+Var=BROADCAST_ac_current_dA signed 0,16
+Var=BROADCAST_dc_current_dA signed 16,16
+
 [DTI_FL_CURRENT]
 ID=21h
 DLC=4
@@ -726,6 +734,14 @@ TimeOut=25
 Var=SENSORS_packCurrent_dA signed 0,16
 Var=SENSORS_packVoltage_cV unsigned 16,16
 Var=SENSORS_packPower_W signed 32,32
+
+[LVBMS_CURRENT]
+ID=7feh
+DLC=4
+CycleTime=100
+TimeOut=500
+Var=CURRENT_ac_current_dA signed 0,16
+Var=CURRENT_dc_current_dA signed 16,16
 
 [MOTORPOWER_STATE]
 ID=52Eh
