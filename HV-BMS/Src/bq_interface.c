@@ -563,7 +563,10 @@ void pollAllTemperatureData(int channel) {
 			uint8_t low_byte_data = response[i].data[2*k+1];
             int16_t cellTempVoltageReading = calculateTempVoltageReading(high_byte_data, low_byte_data);
 
-			BMBData[i].cellTemperaturesVoltageReading[cellNum] = cellTempVoltageReading;
+			if (cellTempVoltageReading < 4990){
+				BMBData[i].cellTemperaturesVoltageReading[cellNum] = cellTempVoltageReading;
+			}
+
 		}
 	}
 	return;
