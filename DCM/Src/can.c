@@ -1422,7 +1422,6 @@ int canTX(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t len, Tick
 
 int canExtendedTX(cmr_canBusID_t bus, cmr_canExtendedID_t id, const void *data, size_t len, TickType_t timeout) {
     configASSERT(bus < CMR_CAN_BUS_NUM);
-
     return cmr_canExtendedTX(&(can[bus]), id, data, len, timeout);
 }
 
@@ -1560,6 +1559,21 @@ int sendDTIMessage(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t 
     else if(len == 4) {
         big_endian_32_t big_endian_data = int32_to_big(*((int32_t*)(data)));
         return canTX(bus, id, &big_endian_data, len, timeout);
+    }
+}
+
+int sendCubeMarsMessage(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
+    configASSERT(len == 1 || len == 2 || len == 4);
+    if(len == 1) {
+        return canExtendedTX(bus, id, data, len, timeout);
+    }
+    else if(len == 2) {
+        big_endian_16_t big_endian_data = int16_to_big(*((int16_t*)(data)));
+        return canExtendedTX(bus, id, &big_endian_data, len, timeout);
+    }
+    else if(len == 4) {
+        big_endian_32_t big_endian_data = int32_to_big(*((int32_t*)(data)));
+        return canExtendedTX(bus, id, &big_endian_data, len, timeout);
     }
 }
 

@@ -18,7 +18,7 @@
 #include "can.h"   // Board-specific CAN interface
 #include "math.h"   // Board-specific CAN interface
 
-#define MAX_CURRENT_MA = 60000;
+#define MAX_CURRENT_MA = 15000;
 
 /** @todo Cordinate with DV for these values
  *  @note This is average of left and right
@@ -43,6 +43,7 @@ static bool inspectionActive = false;
 // Forward declarations
 float computeControlAction(float targetPosition, float currPosition);
 
+// Computes the swanlge in centidegrees from CAN
 static float getSteeringAngle() {
     cmr_canFSMSWAngle_t *swangleData = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
     // Weird due to overflow possibliliy
@@ -52,7 +53,8 @@ static float getSteeringAngle() {
 }
 
 // Control Action Computation
-float computeControlAction(float targetPosition, float currPosition)
+// Outputs in milli amps
+float computeControlAction(float targetPosition_centi_deg, float currPosition_centi_deg)
 {
     //function Statics used for derivative
     static float prevPosition_centi_deg = 0;
@@ -68,9 +70,9 @@ float computeControlAction(float targetPosition, float currPosition)
     static const bool constantsFromCAN = false;
     float mult;
 
-    TickType_t currTime = xTaskGetTickCount();
-    float currError = targetPosition - currPosition;
-    float posDerivative = currPosition - prevPosition;
+    TickType_t currTime_ms = xTaskGetTickCount();
+    float currError = targetPosition_centi_deg - currPosition_centi_deg;
+    float posDerivative = currPosition_centi_deg - prevPosition_centi_deg;
     //first order IIR filter
     filteredPosDerivative = filterAlpha*posDerivative + (1.0f - filterAlpha) * filteredPosDerivative;
 
@@ -86,12 +88,13 @@ float computeControlAction(float targetPosition, float currPosition)
     else mult = -1.0f;
 
     float controlAction_mA = mult*K_f + K_p*currError + K_d*posDerivative;
-    prevPosition = currPosition;
-    prevTime = currTime;
-    controlAction = CLAMP(-MAX_CURRENT_MA, controlAction_mA, MAX_CURRENT_MA);
-    return controlAction;
+    prevPosition_centi_deg = currPosition_centi_deg;
+    prevTime_ms = currTime_ms;
+    controlAction_mA = CLAMP(-MAX_CURRENT_MA, controlAction_mA, MAX_CURRENT_MA);
+    return controlAction_mA;
 }
 
+// computes the inspection mission target
 static float computeInspectionTarget() {
     static float t = 0.0f;
 
@@ -102,12 +105,10 @@ static float computeInspectionTarget() {
 
     const float dt = (float)steeringPeriod_ms / 1000.0f;
     const float double_amplitude_centi_deg = MIN_STEERING_CENTI_DEG + MAX_STEERING_CENTI_DEG;
+    // Note not perfect sinusoid (center is not neccessairly 0)
     float target = double_amplitude_centi_deg * sinf(2.0f * M_PI * t / INSPECTION_PERIOD_MS) + MIN_STEERING_CENTI_DEG;
 
     t += dt;
-    if (t >= INSPECTION_PERIOD_MS) 
-        t -= INSPECTION_PERIOD_MS;
-
     return target;
 }
 
@@ -127,26 +128,23 @@ void runSteering() {
     if (state != CMR_CAN_AS_DRIVING) {
         inspectionActive = false;
         // turn motor off
-        cmr_canCubeMarsDutyCycle_t duty = { .duty_cycle = 0 };
-        canExtendedTX(CMR_CAN_BUS_DAQ, CMR_CANID_EXTENDED_CUBEMARS_SET_DUTY, &duty, sizeof(duty), 2);
+        int32_t current = 0;
+        sendCubeMarsMessage(CMR_CAN_BUS_DAQ, CMR_CANID_EXTENDED_CUBEMARS_SET_CURRENT, &current, sizeof(current), steeringPeriod_ms);
         return;
     }
 
-    static float targetPosition = 0.0f;
+    float targetPosition_centi_deg = 0.0f;
     if (gear == CMR_CAN_GEAR_DV_MISSION_INSPECTION) {
-        targetPosition = computeInspectionTarget();
+        targetPosition_centi_deg = computeInspectionTarget();
     } else {
         inspectionActive = false;
-        targetPosition = controlAction->steeringAngle;
+        targetPosition_centi_deg = controlAction->steeringAngle_centi_deg;
     }
+    targetPosition_centi_deg = CLAMP(MIN_STEERING_CENTI_DEG, targetPosition_centi_deg, MAX_STEERING_CENTI_DEG )
 
-    int32_t current_output = computeControlAction(targetPosition, getSteeringAngle());
-    current_output = CLAMP(-MAX_CURRENT_MA, current_output, MAX_CURRENT_MA);
-    cmr_canCubeMarsCurrentLoop_t current = { 
-        .current_mA = int32_to_big(current_output)
-    };
-
-    canExtendedTX(CMR_CAN_BUS_DAQ, CMR_CANID_EXTENDED_CUBEMARS_SET_CURRENT, &current, sizeof(current), 2);
+    int32_t current_output_mA = computeControlAction(targetPosition_centi_deg, getSteeringAngle());
+    current_output_mA = CLAMP(-MAX_CURRENT_MA, current_output_mA, MAX_CURRENT_MA);
+    sendCubeMarsMessage(CMR_CAN_BUS_DAQ, CMR_CANID_EXTENDED_CUBEMARS_SET_CURRENT, &current_output_mA, sizeof(current_output_mA), steeringPeriod_ms);
 }
 
 static void steeringTask(void *pvParameters) {
