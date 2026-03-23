@@ -1,6 +1,6 @@
 /**
- * @file motorControl.c
- * @brief basic pdController implementation.
+ * @file steering.c
+ * @brief CubeMars steering motor control.
  *
  * @author Vikram Mani and Ayush Garg
  */
@@ -14,149 +14,54 @@
 
 #include "steering.h"
 
+#include "adc.h"
 #include "can.h"   // Board-specific CAN interface
 #include "math.h"   // Board-specific CAN interface
 
-#define CLAMP(x, min, max) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)))
+#define MAX_CURRENT_MA = 60000;
 
-static const int16_t ACCEL_ERPM = 4000;
-static const in16_t SPEED_ERPM = 1000;
+/** @todo Cordinate with DV for these values
+ *  @note This is average of left and right
+ *  @todo This assumes symetricness which is not true
+*/
+#define MIN_STEERING_CENTI_DEG -2771.0f
+#define MAX_STEERING_CENTI_DEG 2771.0f
 
-/** @brief pdControl task. */
-static cmr_task_t maxonControlTask;
+#define INSPECTION_PERIOD_MS   5000.0f
 
-static cmr_task_t inspectionMission;
+/** @brief cubeMarsControl task. */
+static cmr_task_t cubeMarsControlTask;
 
-/** @brief pdControl period (milliseconds). */
-static const TickType_t maxonControlPeriod_ms = 10;
+/** @brief Steering task period (milliseconds). */
+static const TickType_t steeringPeriod_ms = 10;
 
-/** @brief pdControl priority. */
-static const uint32_t maxonControlPriority = 1;
+/** @brief Steering task priority. */
+static const uint32_t steeringPriority = 3;
 
-//Keep track of last time pdControl task was run
-static TickType_t previousTickCount = 0;
+static bool inspectionActive = false;
 
-const float minValue = -1530.0f;
-const float maxValue = 1530.0f;
-
-static bool inspectionClockStarted = false;
-static TickType_t startTime = 0;
-
-const int32_t centerPosition = 1000;
-bool startMission = false;
-
-//forward Declerations
+// Forward declarations
 float computeControlAction(float targetPosition, float currPosition);
-float computeInspectionTarget();
-float clampSteeringADCVal(float adcVal);
-int rpmToERPM(int rpm);
-int32_t canGetSteeringADC();
 
-/**
- * @brief Task for compute control actions
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-
-static void maxonControl(void *pvParameters) {
-    (void) pvParameters;
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    float targetPosition, currPosition;
-
-    while(1){
-        // if (canGetAMIMission() == MISSION_INSPECTION && canGetCurrentState() == CMR_CAN_AS_DRIVING){
-        // 	targetPosition = computeInspectionTarget();
-        // }
-        // else{
-        //     targetPosition = (float) canGetSteeringPosition();
-        // }
-        cmr_canCubeMarsData_t *data =d (cmr_canCubeMarsData_t*)getPayload(CANRX_CUBEMARS_DATA);
-        int32_t position = parse_int16(data->position_deg);
-        if(!startMission) {
-            if(position == centerPosition) {
-                startMission = true;
-                cmr_canCubeMarsSetOrigin_t origin = {
-                    .origin = 1
-                };
-                canExtendedTX(CMR_CANID_EXTENDED_CUBEMARS_SET_ORIGIN_HERE, &origin, sizeof(origin), 100);
-            } else {
-                targetPosition = centerPosition;
-            }
-        } else {
-            targetPosition = (int32_t)computeInspectionTarget();
-        }
-        currPosition = position;
-        // currPosition = clampSteeringADCVal(currPosition);
-        // targetPosition = clampSteeringADCVal(targetPosition);
-
-        sendCubeMarsVelocity(rpmToERPM((int)computeControlAction(targetPosition, currPosition)));
-        previousTickCount = lastWakeTime;
-        vTaskDelayUntil(&lastWakeTime, maxonControlPeriod_ms);
-    }
-}
-
-static void inspectionMissionControl(void *pvParameters) {
-    (void) pvParameters;
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    float targetPosition, currPosition;
-    const float T = 5.0f;
-    const float dt = 0.002f;
-    const float A_deg = 4.25f * 360.0f;
-
-    float t = 0.0f;
-
-    while(1) {
-        cmr_canCubeMarsData_t *data = (cmr_canCubeMarsData_t*)getPayload(CANRX_CUBEMARS_DATA);
-        int16_t position = parse_int16(data->position_deg);
-        if(!startMission) {
-            if(position == centerPosition) {
-                startMission = true;
-                cmr_canCubeMarsSetOrigin_t origin = {
-                    .origin = 1
-                };
-                canExtendedTX(CMR_CANID_EXTENDED_CUBEMARS_SET_ORIGIN_HERE, &origin, sizeof(origin), 2);
-            } else {
-                cmr_canCubeMarsPositionSpeed_t pos = {
-                    .position_deg = int32_to_big(centerPosition * 10000),
-                    .speed_erpm = int16_to_big(SPEED_ERPM),
-                    .accel_erpm_s = int16_to_big(ACCEL_ERPM) 
-                };
-                canExtendedTX(CMR_CANID_EXTENDED_CUBEMARS_SET_POS, &pos, sizeof(pos), 2);
-            }
-        } else {
-
-            float pos_deg = A_deg * sinf(2.0f * M_PI * t/T);
-            int32_t set_pos = (int32_t)(pos_deg * 10000.0f);
-            cmr_canCubeMarsPositionSpeed_t pos = {
-                .position_deg = int32_to_big(set_pos),
-                .speed_erpm = int16_to_big(SPEED_ERPM),
-                .accel_erpm_s = int16_to_big(ACCEL_ERPM) 
-            };
-            canExtendedTX(CMR_CANID_EXTENDED_CUBEMARS_SET_POS, &pos, sizeof(pos), 2);
-
-            t += dt;
-            if(t >= T) t-= T;
-        }
-
-        vTaskDelayUntil(&lastWakeTime, 2);
-    }
+static float getSteeringAngle() {
+    cmr_canFSMSWAngle_t *swangleData = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
+    // Weird due to overflow possibliliy
+    int16_t swangle_centideg = (swangleData->steeringWheelAngle_millideg_FL / 10 
+                                + swangleData->steeringWheelAngle_millideg_FR / 10) / 2;
+    return CLAMP(MIN_STEERING_CENTI_DEG, (float) swangle_centideg, MAX_STEERING_CENTI_DEG);
 }
 
 // Control Action Computation
 float computeControlAction(float targetPosition, float currPosition)
 {
     //function Statics used for derivative
-    static float prevPosition = 0;
-    static TickType_t prevTime = 0;
+    static float prevPosition_centi_deg = 0;
+    static TickType_t prevTime_ms = xTaskGetTickCount();
     static float filteredPosDerivative = 0.0f;
 
     //Constants for running PD controllers
-    static float K_p = -2.5f;
     static float K_f = 0.0f; //feed forwards
+    static float K_p = -2.5f;
     static float K_d = 0.0f; //derivative term
     const float filterAlpha = 0.1f;  //first order IIR filter alpha. Larger alpha is more filtering. Ranges 0-1
     static const float errorThresholdKF = 15.0f;
@@ -180,81 +85,80 @@ float computeControlAction(float targetPosition, float currPosition)
     else if (currError < 0) mult = 1.0f;
     else mult = -1.0f;
 
-    float controlAction = mult*K_f + K_p*currError + K_d*posDerivative;
+    float controlAction_mA = mult*K_f + K_p*currError + K_d*posDerivative;
     prevPosition = currPosition;
     prevTime = currTime;
-
-    //ADDED FOR DEBUGGING
-    if(fabs(controlAction) > 10000.0f) {
-    	return controlAction;
-    }
-
-    if(fabs(controlAction) < 10.0f) return 0.0f;
+    controlAction = CLAMP(-MAX_CURRENT_MA, controlAction_mA, MAX_CURRENT_MA);
     return controlAction;
 }
 
+static float computeInspectionTarget() {
+    static float t = 0.0f;
 
-float computeInspectionTarget(){
-
-	static const float amplitude = (maxValue - minValue)/2.0f;
-	static const float average = (maxValue + minValue)/2.0f;
-	static const float frequency_Hz = 1.0f / 3.0f;
-	static const TickType_t swivelPeriod_ms = 30000;
-	float targetPosition;
-
-    if(!inspectionClockStarted){
-        startTime = xTaskGetTickCount();
-        inspectionClockStarted = true;
-        return 3460.0f;
+    if (!inspectionActive) {
+        t = 0.0f;
+        inspectionActive = true;
     }
 
-    TickType_t currentTime_ms = (xTaskGetTickCount() - startTime);
-            
-    if (currentTime_ms < swivelPeriod_ms){
-        targetPosition = amplitude*sinf((2.0f*(M_PI)*(frequency_Hz)/1000.0f) * ((float) currentTime_ms)) + average;
-        uint8_t payLoad = 0;
-        canTX(0x5EF, &payLoad, 1, 20);
-        return targetPosition;
-    }
-    else{
-      uint8_t payLoad = 1;
-      canTX(0x5EF, &payLoad, 1, 20);
-      return 3460.0f;
-    }
+    const float dt = (float)steeringPeriod_ms / 1000.0f;
+    const float double_amplitude_centi_deg = MIN_STEERING_CENTI_DEG + MAX_STEERING_CENTI_DEG;
+    float target = double_amplitude_centi_deg * sinf(2.0f * M_PI * t / INSPECTION_PERIOD_MS) + MIN_STEERING_CENTI_DEG;
 
-}
+    t += dt;
+    if (t >= INSPECTION_PERIOD_MS) 
+        t -= INSPECTION_PERIOD_MS;
 
-int32_t canGetSteeringPos() {
-    return 1000;
-}
-
-int rpmToERPM(int rpm) {
-    return rpm * 21;
-}
-
-float clampSteeringADCVal(float adcVal){
-    if(adcVal < .5f * minValue) adcVal = adcVal + 4096.0f;
-    adcVal = CLAMP(adcVal, minValue, maxValue);
-    return adcVal;
+    return target;
 }
 
 /**
- * @brief Initializes the dpControl task
+ *  - AS_DRIVING + DV_MISSION_INSPECTION: inspection sweep.
+ *  - AS_DRIVING + any other DV mission: position-control motor to AS swangle.
+ *  - else: freely spin motor.
  */
-void maxonControlInit(){
+void runSteering() {
+    volatile cmr_canHeartbeat_t                 *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+    volatile cmr_canDIMRequest_t                *reqDIM       = canVehicleGetPayload(CANRX_VEH_REQUEST_DIM);
+    volatile cmr_canAutonomousControlAction_t   *controlAction= canDAQGetPayload(CANRX_DAQ_AUTONOMOUS_ACTION);
 
-    cmr_canCubeMarsData_t *data = (cmr_canCubeMarsData_t*)getPayload(CANRX_CUBEMARS_DATA);
-    int16_t position = parse_int16(data->position_deg); 
-    if(position != centerPosition) {
-        startMission = false;
-    } else {
-        startMission = true;
+    cmr_canState_t state = heartbeatVSM->state;
+    cmr_canGear_t  gear  = reqDIM->requestedGear;
+
+    if (state != CMR_CAN_AS_DRIVING) {
+        inspectionActive = false;
+        // turn motor off
+        cmr_canCubeMarsDutyCycle_t duty = { .duty_cycle = 0 };
+        canExtendedTX(CMR_CAN_BUS_DAQ, CMR_CANID_EXTENDED_CUBEMARS_SET_DUTY, &duty, sizeof(duty), 2);
+        return;
     }
 
-    cmr_taskInit(
-        &inspectionMission,
-        "maxonControl",
-        maxonControlPriority,
-        inspectionMissionControl,
-        NULL);
+    static float targetPosition = 0.0f;
+    if (gear == CMR_CAN_GEAR_DV_MISSION_INSPECTION) {
+        targetPosition = computeInspectionTarget();
+    } else {
+        inspectionActive = false;
+        targetPosition = controlAction->steeringAngle;
+    }
+
+    int32_t current_output = computeControlAction(targetPosition, getSteeringAngle());
+    current_output = CLAMP(-MAX_CURRENT_MA, current_output, MAX_CURRENT_MA);
+    cmr_canCubeMarsCurrentLoop_t current = { 
+        .current_mA = int32_to_big(current_output)
+    };
+
+    canExtendedTX(CMR_CAN_BUS_DAQ, CMR_CANID_EXTENDED_CUBEMARS_SET_CURRENT, &current, sizeof(current), 2);
+}
+
+static void steeringTask(void *pvParameters) {
+    (void) pvParameters;
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
+        runSteering();
+        vTaskDelayUntil(&lastWakeTime, steeringPeriod_ms);
+    }
+}
+
+void steeringInit() {
+    cmr_taskInit(&cubeMarsControlTask, "steeringTask", steeringPriority, steeringTask, NULL);
 }

@@ -1513,4 +1513,11 @@ typedef struct{
     uint16_t cell4;
 } cmr_canLVBMS_Temperature;
 
+typedef struct{
+    uint16_t frontTorque;
+    uint16_t rearTorque;
+    uint16_t steeringAngle;
+}
+cmr_canAutonomousControlAction_t;
+
 #endif /* CMR_CAN_TYPES_H */

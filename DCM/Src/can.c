@@ -204,7 +204,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .canID = CMR_CANID_SENSORIC_RATE,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
-    },
+    }
 };
 
 /** @brief Metadata for tractive CAN message reception. */
@@ -599,6 +599,11 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .canID = CMR_CANID_HEARTBEAT_MEMORATOR,
         .timeoutError_ms = 5000,
         .timeoutWarn_ms = 3000
+    },
+    [CANRX_DAQ_AUTONOMOUS_ACTION] = {
+        .canID = CMR_CANID_AUTONOMOUS_ACTION,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
     }
 };
 

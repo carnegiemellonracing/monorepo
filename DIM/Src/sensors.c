@@ -39,8 +39,8 @@
 #define CENTER_SWANGLE_ADC 1590.0f
 #define RIGHT_SWANGLE_MAX_ADC 2880.0f
 
-#define MAX_OUTER_WHEEL_ANGLE_MILLIDEG 26467.0f
-#define MAX_INNER_WHEEL_ANGLE_MILLIDEG 40325.0f
+#define MAX_OUTER_WHEEL_ANGLE_MILLIDEG 25282.0f
+#define MAX_INNER_WHEEL_ANGLE_MILLIDEG 30139.0f
 
 /** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
 static const TickType_t TPOS_IMPLAUS_THRES_MS = 100;
