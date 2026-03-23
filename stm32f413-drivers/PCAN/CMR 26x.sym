@@ -139,6 +139,23 @@ enum Warn(0="NONE", 1="VSM_TIMEOUT", 2="BUS_VOLTAGE", 4="BUS_CURRENT",
 
 // ========== END AUTO-GENERATED ENUMS ==========
 
+[AS_PRESSURE_READINGS]
+ID=191h
+DLC=4
+CycleTime=10
+TimeOut=50
+Var=PRESSURE_ebsPressure_1 unsigned 0,16
+Var=PRESSURE_ebsPressure_2 unsigned 16,16
+
+[AUTONOMOUS_ACTION]
+ID=190h
+DLC=6
+CycleTime=400
+TimeOut=2000
+Var=ACTION_frontTorque unsigned 0,16
+Var=ACTION_rearTorque unsigned 16,16
+Var=ACTION_steeringAngle unsigned 32,16
+
 [CDC_COG_VELOCITY]
 ID=2C2h
 DLC=8
