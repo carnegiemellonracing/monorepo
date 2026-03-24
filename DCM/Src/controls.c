@@ -767,7 +767,7 @@ void runControls (
             float wheel_rl_speed_radps = getMotorSpeed_radps(MOTOR_RL);
             float wheel_rr_speed_radps = getMotorSpeed_radps(MOTOR_RR);
 
-            set_manual_cruise_control(throttlePos_u8);
+            //set_manual_cruise_control(throttlePos_u8);
             float vx, vy; 
             sensors_get_vel_xy(&vx, &vy);
 
