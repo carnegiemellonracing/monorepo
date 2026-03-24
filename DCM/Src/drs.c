@@ -1,4 +1,4 @@
-    \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/**
+ /**
  * @file drs.c
  * @brief Control DRS Servos
  *
@@ -23,16 +23,17 @@
 static cmr_pwm_t servo_pwm;
 float timeSinceStraightLine;
 float timeSinceBraking;
-// HIII
 
+
+// might need to change these depending on servo config
 #define DRS_CLOSED_ANGLE 80
 #define DRS_OPENED_ANGLE 145
 
-#define LAT_G_UPPER_THRESH 1.2
-#define LAT_G_LOWER_THRESH 0.8
+#define LAT_G_UPPER_THRESH 1.2f
+#define LAT_G_LOWER_THRESH 0.8f
 
-#define TIME_THRESHOLD 0.5
-#define TIME_BRAKING_THRESHOLD 0.2
+#define TIME_THRESHOLD 0.5f
+#define TIME_BRAKING_THRESHOLD 1.0f
 
 extern cmr_canCDCDRSStates_t drs_state;
 
@@ -44,7 +45,7 @@ void setServoQuiet() {
     
     // set DCM DRS GPIO pins low
     cmr_gpioWrite(GPIO_DRS_ENABLE_1, 0);
-    cmr_gpioWrite(GPIO_DRS_ENABLE_2, 0);
+    //cmr_gpioWrite(GPIO_DRS_ENABLE_2, 0);
 }
 
 uint32_t angleToDutyCycle (int angle) {
@@ -54,7 +55,7 @@ uint32_t angleToDutyCycle (int angle) {
     return percentDutyCycle;
 }
 
-// math for relating swangle and velocity
+// math for relating swangle and velocity, slightly redundant but we'll keep it cuz why not - still scales swangle
 float calculate_latg(int16_t swAngle_millideg) {
     if (swAngle_millideg == 0) {
         return 0.0f;
@@ -63,53 +64,41 @@ float calculate_latg(int16_t swAngle_millideg) {
     return lat_g;
 }
 
-bool is_power_limited()
-{
-    const float pack_voltage_V = getPackVoltage();
-    const float pack_current_A = getPackCurrent();
-    const float pack_power_W = pack_voltage_V * pack_current_A;
 
-    // exceeds power limit threshold 
-    if (pack_power_W > (0.8 * getPowerLimit_W())) {
-        return true;
+// main DRS control function
+
+void processDRSControl(int16_t swAngle_millideg, bool braking,
+                       bool skidpad, bool accel) {
+    
+    float lat_g = calculate_latg(swAngle_millideg);
+
+    timeSinceStraightLine += 0.005f;
+    if (lat_g > LAT_G_UPPER_THRESH || skidpad) {
+        timeSinceStraightLine = 0.0f;
     }
-    return false;
+    timeSinceStraightLine = fminf(timeSinceStraightLine, 10.0f);
 
+    if (braking) {
+        timeSinceBraking = 0.0f;
+    } else {
+        timeSinceBraking += 0.005f;
+    }
+
+    bool cornering_hard = (lat_g > LAT_G_UPPER_THRESH) || (timeSinceStraightLine < TIME_THRESHOLD);
+    bool recently_braked = (timeSinceBraking < TIME_BRAKING_THRESHOLD);
+
+    bool opened = false;
+
+    if (accel) {
+        opened = !recently_braked && !skidpad;
+    } else if (!cornering_hard && !recently_braked && !skidpad) {
+        opened = true;
+    }
+
+    setDRS(opened);
 }
 
-void processDRSControl(int16_t swAngle_millideg, bool braking, 
-                       bool traction_limited, bool skidpad, bool accel){
-        float lat_g = calculate_latg(swAngle_millideg);
-        timeSinceStraightLine = timeSinceStraightLine + 0.005;
-        if(braking){
-            timeSinceBraking = timeSinceBraking + 0.005;
-        }
-        if (lat_g > LAT_G_UPPER_THRESH || skidpad){
-            timeSinceStraightLine = 0;
-        }
 
-        bool opened = true;
-        
-        // DRS IS OPENED WHEN:
-        // power limited 
-        // G is below threshold
-        if (timeSinceStraightLine >= TIME_THRESHOLD && is_power_limited()){
-            opened = true;
-        }
-        // DRS IS CLOSED WHEN:
-        // braking, traction limited, skidpad, or G is past threshold
-        //BRAKING FOR MORE THAN A CERTAIN AMOUNT OF TIME
-        else if (timeSinceBraking > TIME_BRAKING_THRESHOLD || skidpad) {
-            opened = false;
-        }
-        else if ((!(is_power_limited()) && lat_g > LAT_G_UPPER_THRESH) || timeSinceStraightLine < TIME_THRESHOLD) {
-            opened = false;
-        }
-        if (accel){
-            opened = true;
-        }
-        setDRS(opened);
-    }
 
 void setDRS(bool open) {
 
@@ -119,7 +108,7 @@ void setDRS(bool open) {
     cmr_pwmSetDutyCycle(&servo_pwm, duty_percent);
 
     cmr_gpioWrite(GPIO_DRS_ENABLE_1, 1);
-    cmr_gpioWrite(GPIO_DRS_ENABLE_2, 1); // only one pin? 
+    // cmr_gpioWrite(GPIO_DRS_ENABLE_2, 1); // only one pin? 
 }
 
 /**
