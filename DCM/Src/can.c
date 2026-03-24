@@ -874,6 +874,9 @@ static void canTX200Hz(void *pvParameters) {
     dtiErrorMessages.rl_fault_code = dtiTempFaultRL->fault_code;
     dtiErrorMessages.rr_fault_code = dtiTempFaultRR->fault_code;
 
+    cmr_canSensoricVelAng_t *sensoricVelAng = canDAQGetPayload(CANRX_DAQ_SENSORIC_VEL_ANG);
+    canTX(CMR_CAN_BUS_VEH, CMR_CANID_SENSORIC_VEL_ANG, sensoricVelAng, sizeof(cmr_canSensoricVelAng_t), canTX200Hz_period_ms);
+
     cmr_canCDCWheelVelocity_t speedFeedback;
     cmr_canCDCWheelTorque_t torqueFeedback;
     cmr_canCDCWheelVelocity_t speedSetpoint;
