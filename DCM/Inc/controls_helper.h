@@ -48,5 +48,9 @@ bool setRegen(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avg
 float getRegenTorqueReq(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8);
 bool setPaddleRegen(uint8_t *throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM, uint8_t paddle_pressure, uint8_t paddle_regen_strength);
 bool setParallelRegen(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM);
+void pacejka_interp_coeffs(float fz, float *b_out, 
+                                  float *c_out, float *d_out, float *e_out);
+float pacejka_tire(float fz, float slip_ratio,
+                          float b, float c, float d, float e);
 
 #endif /* CONTROL_HELPER_H */

@@ -554,28 +554,28 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .warnFlag = CMR_CAN_WARN_NONE
 	},
 	[CANRX_DAQ_LOAD_FL] = {
-        .canID  = CMR_CANID_LOADCELL_FL,
+        .canID  = CMR_CANID_IZZE_FL,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
         .errorFlag = CMR_CAN_ERROR_NONE,
         .warnFlag = CMR_CAN_WARN_NONE
 	},
 	[CANRX_DAQ_LOAD_FR] = {
-        .canID  = CMR_CANID_LOADCELL_FR,
+        .canID  = CMR_CANID_IZZE_FR,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
         .errorFlag = CMR_CAN_ERROR_NONE,
         .warnFlag = CMR_CAN_WARN_NONE
 	},
 	[CANRX_DAQ_LOAD_RL] = {
-        .canID  = CMR_CANID_LOADCELL_RL,
+        .canID  = CMR_CANID_IZZE_RL,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
         .errorFlag = CMR_CAN_ERROR_NONE,
         .warnFlag = CMR_CAN_WARN_NONE
 	},
 	[CANRX_DAQ_LOAD_RR] = {
-        .canID  = CMR_CANID_LOADCELL_RR,
+        .canID  = CMR_CANID_IZZE_RR,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
         .errorFlag = CMR_CAN_ERROR_NONE,
