@@ -17,26 +17,26 @@
  */
 
 static cmr_pwmPin_t pwmPinConfigs[PWM_LEN] = {
-    [PWM_GREEN] = {
-        .pwmPinConfig = {
-            .port = GPIOA,
-            .pin = GPIO_PIN_10,
-            .channel = TIM_CHANNEL_3,
-            .presc = 24,
-            .period_ticks = 1000,
-            .timer = TIM1
-        }
-    },
-    [PWM_RED] = {
-        .pwmPinConfig = {
-            .port = GPIOA,
-            .pin = GPIO_PIN_9,
-            .channel = TIM_CHANNEL_2,
-            .presc = 10000,
-            .period_ticks = 3200,
-            .timer = TIM1
-        }
-    },
+    // [PWM_GREEN] = {
+    //     .pwmPinConfig = {
+    //         .port = GPIOA,
+    //         .pin = GPIO_PIN_10,
+    //         .channel = TIM_CHANNEL_3,
+    //         .presc = 10000,
+    //         .period_ticks = 3200,
+    //         .timer = TIM1
+    //     }
+    // },
+    // [PWM_RED] = {
+    //     .pwmPinConfig = {
+    //         .port = GPIOA,
+    //         .pin = GPIO_PIN_9,
+    //         .channel = TIM_CHANNEL_2,
+    //         .presc = 10000,
+    //         .period_ticks = 3200,
+    //         .timer = TIM1
+    //     }
+    // },
     [PWM_YELLOW] = {
         .pwmPinConfig = {
             .port = GPIOA,
