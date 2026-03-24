@@ -1446,8 +1446,8 @@ typedef struct {
 } cmr_canDAQTherm_t;
 
 typedef struct {
-    big_endian_16_t differential_voltage_uv;
-    big_endian_16_t force_output_N; //f:0.1
+    big_endian_16_t force_output_lb;
+    big_endian_16_t differential_voltage_uv; //f:0.1
     big_endian_16_t internal_temp; //f:0.1
     big_endian_16_t external_temp; //f:0.1
 } cmr_canIZZELoadCell_t;
