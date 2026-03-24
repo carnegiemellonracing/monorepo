@@ -20,6 +20,7 @@
 #include <CMR/fir_filter.h>
 // #include "controls_23e.h"
 #include "drs.h"
+#include "drs.h"
 #include "can.h"
 #include "daq.h"
 #include "safety_filter.h"
