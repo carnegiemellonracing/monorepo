@@ -1563,7 +1563,7 @@ int sendDTIMessage(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t 
     }
 }
 
-int sendCubeMarsMessage(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
+int sendCubeMarsMessage(cmr_canBusID_t bus, cmr_canExtendedID_t id, const void *data, size_t len, TickType_t timeout) {
     configASSERT(len == 1 || len == 2 || len == 4);
     if(len == 1) {
         return canExtendedTX(bus, id, data, len, timeout);

@@ -17,7 +17,7 @@
  */
 #define CMR_CANID_RMS_OFFSET    0x3A0
 #define NUM_CONFIG_PACKETS 4 
-#define CONTROLLER_ID 120
+#define CONTROLLER_ID 0
 
 /** @brief For DTI Motors converts node and packet ID to a valid CAN ID*/
 #define PACKET_NODE_TO_CAN_ID(packet,node)  (((uint16_t) packet << 5) | ((uint16_t) node))
