@@ -554,7 +554,7 @@ static void drawRTDScreen(void) {
     int32_t hvVoltage_V = hvVoltage_mV / 1000;
     int32_t power_kW = (current_A * hvVoltage_V) / 1000;
 
-    uint8_t speed_kmh = (uint8_t)getSpeedKmh();
+    uint8_t speed_kmh = getSpeedKmh();
 
     float odometer_km = getOdometer();
 
