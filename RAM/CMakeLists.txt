@@ -48,6 +48,7 @@ set(PROCESSOR_FAM F4XX)
 set(include_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/cJSON
+    ${CMAKE_CURRENT_SOURCE_DIR}/cn-cbor/include
 )
 
 # Include directories for each compiler
@@ -90,7 +91,6 @@ set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "" FORCE)
 set(link_DIRS)
 set(link_LIBS
     stm-drivers
-    cn-cbor
 )
 
 # Linker script
@@ -130,6 +130,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/statusLED.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/syscall.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/sysmem.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/task_trigger.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/uart.c
     #cJSON
     ${CMAKE_CURRENT_SOURCE_DIR}/cJSON/cJSON.c
@@ -173,7 +174,6 @@ add_dependencies(${CMAKE_PROJECT_NAME} marshall)
 add_compile_options(${cpu_PARAMS})
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../stm32f413-drivers ${CMAKE_BINARY_DIR}/stm32f413-drivers)
 set(coveralls OFF)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cn-cbor)
 
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME} ${link_LIBS})

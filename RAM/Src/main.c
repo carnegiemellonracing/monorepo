@@ -11,6 +11,7 @@
 #include <CMR/panic.h>  // cmr_panic()
 #include <CMR/rcc.h>    // RCC interface
 #include <CMR/rtc.h>    // RTC interface
+#include <CMR/timer.h>  // Microsecond timer
 
 #include <CMR/tasks.h>  // Task interface
 
@@ -24,8 +25,9 @@
 #include "memorator.h"  // Board-specific GPIO interface
 #include "parser.h"     // JSON configuration
 #include "sample.h"     // CBOR encoding
-#include "statusLED.h"  // Board-specific statusLED interface
 #include "uart.h"       // Board-specific UART interface
+#include "statusLED.h"  // Board-specific statusLED interface
+#include "task_trigger.h" //trigger task
 
 
 /**
@@ -49,10 +51,14 @@ int main(void) {
     statusLEDInit();
     memoratorInit();
 
+    //start microsecond timer
+    microsecond_timer_init();
+    //start camera trigger task
+    cameraTriggerInit();
     // Load in JSON configuration
-    parserInit();
+    // parserInit();
     // Set up CBOR encoder
-    sampleInit();
+    // sampleInit();
     // Pull in previous configuration
     configInit();
 

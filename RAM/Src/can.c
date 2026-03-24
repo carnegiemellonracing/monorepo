@@ -16,6 +16,7 @@
 #include "can.h"        // Interface to implement
 #include "parser.h"     // parser ingestation
 #include "memorator.h"     // parser ingestation
+#include "task_trigger.h"
 #include <CMR/rtc.h> 
 
 
@@ -145,7 +146,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
 	    .timeoutWarn_ms = 50,
         .errorFlag = CMR_CAN_ERROR_NONE,
         .warnFlag = CMR_CAN_WARN_NONE
-    }
+    },
 };
 
 /** @brief Metadata for tractive CAN message reception. */
@@ -299,12 +300,28 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .canID = CMR_CANID_HEARTBEAT_MEMORATOR,
         .timeoutError_ms = 5000,
         .timeoutWarn_ms = 3000
+    },
+    [CANRX_DAQ_CS_LATENCY] = {
+        .canID = CMR_CANID_DV_CAM_DELAY,
+        .timeoutError_ms = 200,
+        .timeoutWarn_ms = 150,
+        .errorFlag = CMR_CAN_ERROR_NONE,
+        .warnFlag = CMR_CAN_WARN_NONE
     }
 };
 
 void canRXCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t dataLen) {
     size_t iface_idx = (canb_rx - can);
 	configASSERT(iface_idx < CMR_CAN_BUS_NUM);
+
+    if (iface_idx == CMR_CAN_BUS_DAQ && canID == CMR_CANID_DV_CAM_DELAY) {
+        const uint8_t *bytes = (const uint8_t *)data;
+        int32_t latency = (uint32_t)bytes[0]       |
+                        (uint32_t)bytes[1] << 8  |
+                        (uint32_t)bytes[2] << 16 |
+                        (uint32_t)bytes[3] << 24;
+        setDelay(latency);
+    }
 
     if (iface_idx == CMR_CAN_BUS_VEH) {
         RTC_DateTypeDef date = getRTCDate();
@@ -314,7 +331,7 @@ void canRXCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t 
 
 	int ret = parseData((uint32_t) iface_idx, canID, data, dataLen);
 	configASSERT(ret == 0);
-
+    
 	// Update the RX Meta array
 	cmr_canRXMeta_t *rxMetaArray = NULL;
 	uint32_t rxMetaArrayLen = 0;

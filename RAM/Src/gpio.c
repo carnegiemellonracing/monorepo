@@ -26,6 +26,15 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
         }
+    },
+    [GPIO_CAMERA_TRIGGER] = {
+        .port = GPIOC,
+        .init = {
+            .Pin = GPIO_PIN_13, //change to specific pin
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        }
     }
 };
 

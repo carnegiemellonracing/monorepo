@@ -16,6 +16,7 @@
  */
 typedef enum {
     GPIO_LED_STATUS = 0,    /**< @brief Status LED. */
+    GPIO_CAMERA_TRIGGER,
     GPIO_LEN    /**< @brief Total GPIO pins. */
 } gpio_t;
 

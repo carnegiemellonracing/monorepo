@@ -3,20 +3,17 @@
  */
 
  #include <stdint.h>
+ #include <FreeRTOS.h>
+ #include <CMR/tasks.h>
  #include <CMR/gpio.h>
+ #include <CMR/can_ids.h>
+ #include <CMR/timer.h>
+
  #include "task_trigger.h"
  #include "gpio.h"
  #include "can.h"
-#include <stdatomic.h>
-#include <stdbool.h>
-#include "timer.h"
+ #include <stdbool.h>
 
-#define CAN_ID_FRAME_TIMESTAMP 0x67
-#define CAMERA_TRIGGER_PORT     GPIOC
-#define CAMERA_TRIGGER_PIN      GPIO_PIN_3
-
-extern atomic_bool delay_flag;
- 
 
 /** @brief Camera trigger task. */
 static cmr_task_t cameraTrigger_task;
@@ -32,6 +29,12 @@ static TickType_t camera_exposure_ms = 2; // Default 10ms
 
 /** @brief Camera trigger task handle. */
 TaskHandle_t cameraTrigger_taskHandle = NULL; // Made non-static for extern access
+
+static volatile int32_t trigger_delay = 0;
+
+void setDelay(int32_t delay) {
+    trigger_delay = delay;
+}
 
 /**
  * @brief Task for triggering camera GPIO at fixed intervals.
@@ -50,57 +53,33 @@ static void cameraTrigger(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     uint32_t notificationValue = 0;
     
+    uint8_t delay_count = 0;
+
     while (1) {
     	int32_t signed_period = (int32_t)cameraTrigger_period_ms;
-    	static uint8_t delay_count = 0;
 
-    	if (atomic_load(&delay_flag)) {
-    	    delay_count++;
-    	    if (delay_count >= 5) {
-    	        int32_t delay = getDelay();
-    	        if (delay < signed_period && delay > -signed_period) {
-    	            signed_period -= delay;
-    	        }
-    	        delay_count = 0;
-    	    }
-    	    atomic_store(&delay_flag, false);
-    	}
+        delay_count++;
+        if (delay_count >= 5) {
+            int32_t delay = trigger_delay;
+            if (delay < signed_period && delay > -signed_period) {
+                signed_period -= delay;
+            }
+            delay_count = 0;
+        }
+    
 
 		vTaskDelayUntil(&lastWakeTime, (TickType_t)signed_period);
         uint32_t timestamp = get_time_us();
-        canTX(CAN_ID_FRAME_TIMESTAMP, &timestamp, sizeof(timestamp), cameraTrigger_period_ms);
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DV_FRAME_TIME, 
+            &timestamp, sizeof(timestamp), cameraTrigger_period_ms);
         
-        cmr_gpioWrite(GPIO_FAN_ON, 1);
+        cmr_gpioWrite(GPIO_CAMERA_TRIGGER, 1);
 
         vTaskDelay(camera_exposure_ms);
 
-        cmr_gpioWrite(GPIO_FAN_ON, 0);
+        cmr_gpioWrite(GPIO_CAMERA_TRIGGER, 0);
     }
 }
-
-/**
- * @brief Delays the next camera trigger by a specified amount.
- *
- * Call this function from CAN RX ISR or task to delay the next trigger.
- * Uses xTaskNotifyFromISR to communicate with the trigger task.
- *
- * @param delay_ms Delay amount in milliseconds.
- * @param pxHigherPriorityTaskWoken Pointer to flag for context switch.
- *
- * @return pdPASS if notification sent successfully, pdFAIL otherwise.
- */
-/*BaseType_t delayCameraTrigger(uint32_t delay_ms, BaseType_t *pxHigherPriorityTaskWoken) {
-    if (cameraTrigger_taskHandle == NULL) {
-        return pdFAIL;
-    }
-
-    return xTaskNotifyFromISR(
-        cameraTrigger_taskHandle,
-        delay_ms,
-        eSetValueWithOverwrite,
-        pxHigherPriorityTaskWoken
-    );
-}*/
 
 /**
  * @brief Initializes the camera trigger task.

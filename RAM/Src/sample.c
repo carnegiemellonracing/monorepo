@@ -16,7 +16,7 @@
 #include <stdint.h>                         /* Usual suspects */
 #include <string.h>                         /* memory calls */
 #include <math.h>                           /* round() */
-#include <cn-cbor/cn-cbor.h>                /* CBOR encoding */
+#include <cn-cbor/cn-cbor.h> /* CBOR decoding */
 #include "FreeRTOSConfig.h"                 /* configASSERT */
 
 
