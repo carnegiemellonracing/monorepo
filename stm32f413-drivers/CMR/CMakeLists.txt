@@ -27,6 +27,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/src/sdio.c
 ${CMAKE_CURRENT_SOURCE_DIR}/src/sensors.c
 ${CMAKE_CURRENT_SOURCE_DIR}/src/spi.c
 ${CMAKE_CURRENT_SOURCE_DIR}/src/tasks.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/timer.c
 ${CMAKE_CURRENT_SOURCE_DIR}/src/uart.c
 ${CMAKE_CURRENT_SOURCE_DIR}/src/watchdog.c
 )

@@ -3,6 +3,7 @@
 	<name>monorepo</name>
 	<comment></comment>
 	<projects>
+		<project>RAM</project>
 	</projects>
 	<buildSpec>
 	</buildSpec>
