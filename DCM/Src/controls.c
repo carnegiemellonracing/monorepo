@@ -309,7 +309,8 @@ static float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
     if (use_true_downforce && not_timeout) {
         volatile cmr_canIZZELoadCell_t *downforcePayload = (volatile cmr_canIZZELoadCell_t*) canDAQGetPayload(loadIndex);
         float angle = get_load_cell_angle_rad(loadIndex);
-        volatile int16_t raw = parse_int16(&downforcePayload->force_output_N);
+        // TODO: fix later, temp change force_output units
+        volatile int16_t raw = parse_int16(&downforcePayload->force_output_lb);
         downforce_N = (float) raw * 0.1f * sinf(angle);
     } else {
         downforce_N = (float) car_mass_kg * 9.81f * 0.25f;
