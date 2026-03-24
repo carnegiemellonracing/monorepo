@@ -25,6 +25,7 @@
 #include "servo.h"
 #include "lut.h"
 #include "brakelight.h"
+#include "steering.h"
 #include "pumps.h"
 
 /** @brief Status LED priority. */
@@ -87,12 +88,13 @@ static void statusLED(void *pvParameters) {
     gpioInit();
     // i2cInit();
     canInit();
-    adcInit();
-    // servoInit();
-    motorsInit();
-    sensorsInit();
-    // brakelightInit();
-    pumpsOn();
+    // adcInit();
+    // // servoInit();
+    // motorsInit();
+    // sensorsInit();
+    // // brakelightInit();
+    // pumpsOn();
+    steeringInit();
 
     cmr_taskInit(&statusLED_task, "statusLED", statusLED_priority, statusLED,
                 NULL);

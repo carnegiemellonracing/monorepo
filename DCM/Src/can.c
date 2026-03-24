@@ -16,7 +16,8 @@
 #include <math.h>
 
 #include <CMR/tasks.h>      // Task interface
-#include <CMR/can_types.h>      // Task interface
+#include <CMR/can_types.h>  
+#include <CMR/fdcan.h>      // fdcan interface
 #include <CMR/config_screen_helper.h>
 
 #include "can.h"    // Interface to implement
