@@ -19,13 +19,13 @@
 // ------------------------------------------------------------------------------------------------
 // Definitions 
 
+#define GPIO_DRS_ENABLE_1 8 // define some pin
 #define DRS_DUTY_CYCLE_RANGE 8
 #define DRS_CLOSED_ANGLE 80
 #define DRS_OPENED_ANGLE 145
 
-#define LAT_G_UPPER_THRESH 1.2
-#define LAT_G_LOWER_THRESH 0.8
-
+#define LAT_G_UPPER_THRESH 1.2f
+#define LAT_G_LOWER_THRESH 0.8f
 // ------------------------------------------------------------------------------------------------
 // Public function declarations
 void servoInit(void);
