@@ -296,7 +296,6 @@ static void gpioReadButtons(void *pvParameters) {
 void gpioInit(void) {
     cmr_gpioPinInit(
         gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0]));
-		cmr_gpioWrite(GPIO_AS_ERROR,0);
     cmr_taskInit(
         &gpioReadButtons_task,
         "gpioReadButtons",
