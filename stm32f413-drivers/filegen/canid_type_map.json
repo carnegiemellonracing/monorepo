@@ -771,7 +771,7 @@
         "CMR_CANID_LVBMS_CURRENT": {
             "cycleTime": 100,
             "timeOut": 500,
-            "type": "current"
+            "type": "cmr_canDTI_TX_Current_t"
         },
         "CMR_CANID_LV_CELL_BALANCE_ENABLE": {
             "balanceRequest": {
@@ -937,7 +937,7 @@
             "canrx_types": 76,
             "constants": 252,
             "struct_members": 0,
-            "variable_types": 333
+            "variable_types": 334
         },
         "prefixes_used": [
             "CMR_CANID_",

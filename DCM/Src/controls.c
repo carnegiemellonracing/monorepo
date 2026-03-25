@@ -47,6 +47,7 @@ volatile cmr_can_rear_whl_velocity_t rearWhlVelocities;
 static TickType_t startTickCount;
 static bool launchControlButtonPressed = false;
 static bool launchControlActive = false;
+static torque_distribution_t prev_torques;
 
 /** @brief CAN data for CVXGEN*/
 volatile cmr_can_solver_inputs_t solver_inputs;
@@ -71,6 +72,33 @@ static float manual_cruise_control_speed;
 
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew);
+
+static efficiencyLUT_t efficiencyLUT = {
+        .table = {0.9893, 0.9525, 0.9151, 0.8808, 0.8488, 0.8202, 0.7918, 0.7637, 0.7366, 
+                  0.7099, 0.9893, 0.9525, 0.9151, 0.8808, 0.8488, 0.8202, 0.7918, 0.7637, 
+                  0.7366, 0.7099, 0.9885, 0.9693, 0.9495, 0.9310, 0.9137, 0.8979, 0.8810, 
+                  0.8636, 0.8462, 0.8286, 0.9801, 0.9687, 0.9568, 0.9455, 0.9351, 0.9252, 
+                  0.9138, 0.9015, 0.8891, 0.8763, 0.9758, 0.9684, 0.9606, 0.9529, 0.9463, 
+                  0.9396, 0.9312, 0.9219, 0.9124, 0.9024, 0.9724, 0.9675, 0.9623, 0.9571, 
+                  0.9528, 0.9482, 0.9418, 0.9344, 0.9268, 0.9187, 0.9691, 0.9662, 0.9630, 
+                  0.9595, 0.9570, 0.9538, 0.9488, 0.9428, 0.9365, 0.9298, 0.9660, 0.9647, 
+                  0.9630, 0.9609, 0.9597, 0.9577, 0.9538, 0.9487, 0.9434, 0.9378, 0.9631, 
+                  0.9631, 0.9626, 0.9617, 0.9616, 0.9607, 0.9574, 0.9531, 0.9486, 0.9439, 
+                  0.9602, 0.9613, 0.9620, 0.9621, 0.9629, 0.9629, 0.9601, 0.9564, 0.9526, 
+                  0.9485, 0.9573, 0.9595, 0.9612, 0.9621, 0.9639, 0.9646, 0.9623, 0.9590, 
+                  0.9557, 0.9522, 0.9546, 0.9577, 0.9603, 0.9619, 0.9646, 0.9658, 0.9640, 
+                  0.9610, 0.9582, 0.9552, 0.9518, 0.9558, 0.9592, 0.9616, 0.9650, 0.9668, 
+                  0.9654, 0.9628, 0.9603, 0.9577, 0.9464, 0.9521, 0.9570, 0.9606, 0.9654, 
+                  0.9679, 0.9673, 0.9653, 0.9635, 0.9614, 0.9410, 0.9482, 0.9545, 0.9597, 
+                  0.9652, 0.9685, 0.9685, 0.9671, 0.9657, 0.9640, 0.9357, 0.9444, 0.9519, 
+                  0.9586, 0.9647, 0.9686, 0.9691, 0.9682, 0.9672, 0.9659, 0.9305, 0.9405, 
+                  0.9493, 0.9573, 0.9640, 0.9685, 0.9694, 0.9689, 0.9683, 0.9672},
+        .bpoints_x = {0.29,2.93,5.86,8.78,11.71,14.64,17.57,20.49,23.42,26.35},
+        .bpoints_y = {0,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000,12000,14000,16000,18000,20000},
+        .length_x = 10,
+        .length_y = 17
+    };
+
 
 /** @brief Coulomb counting info **/
 static TickType_t previousTickCount;
@@ -407,7 +435,7 @@ static void set_optimal_control(
 	optimizer_state.theta_left = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
     optimizer_state.theta_right = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
 
-	solve(&optimizer_state);
+	solve(&optimizer_state, &efficiencyLUT);
 
 	// Logging solver outputs, x1000 to make it more intuitive.
 	solver_torques.frontLeft_Nm = X1000_INT16(optimizer_state.optimal_assignment[0].val);
@@ -520,9 +548,10 @@ static void set_optimal_control_launch_hybrid(
 	optimizer_state.omegas[0] = wheel_fl_speed_radps;
 	optimizer_state.omegas[1] = wheel_fr_speed_radps;
 	optimizer_state.omegas[2] = wheel_rl_speed_radps;
-	optimizer_state.omegas[3] = wheel_rr_speed_radps;
 
-    if(true == allow_regen) {
+    compute_power_weights(&optimizer_state, &efficiencyLUT, &prev_torques);
+
+    if(allow_regen) {
         optimizer_state.variable_profile[0].lower = fmaxf(-torque_limit_fl + motor_resistance_Nm[MOTOR_FL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FL)));
         optimizer_state.variable_profile[1].lower = fmaxf(-torque_limit_fr + motor_resistance_Nm[MOTOR_FR], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FR)));
         optimizer_state.variable_profile[2].lower = fmaxf(-torque_limit_rl + motor_resistance_Nm[MOTOR_RL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RL)));
@@ -548,7 +577,7 @@ static void set_optimal_control_launch_hybrid(
 	optimizer_state.theta_left = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
     optimizer_state.theta_right = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
 
-	solve(&optimizer_state);
+	solve(&optimizer_state, &efficiencyLUT);
 
 	// Logging solver outputs, x1000 to make it more intuitive.
 	solver_torques.frontLeft_Nm = X1000_INT16(optimizer_state.optimal_assignment[0].val);
@@ -957,6 +986,23 @@ void setFastTorqueWithParallelRegen(uint16_t brakePressurePsi_u8, uint8_t thrott
         const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
         setTorqueLimsAllProtected(reqTorque, 0.0f);
         setVelocityInt16All(maxFastSpeed_rpm);
+    }
+}
+
+void updateTorques(motorLocation_t motor, float torque) {
+    switch(motor) {
+        case(MOTOR_FL):
+           prev_torques.t_FL = torque;
+           break;
+        case(MOTOR_FR):
+           prev_torques.t_FR = torque;
+           break;
+        case(MOTOR_RL):
+           prev_torques.t_RL = torque;
+           break;
+        case(MOTOR_RR):
+           prev_torques.t_RR = torque;
+           break;
     }
 }
 

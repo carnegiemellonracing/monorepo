@@ -1216,6 +1216,27 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
 	size_t iface_idx = (canb_rx - can);
     configASSERT(iface_idx < CMR_CAN_BUS_NUM);
 
+    if(canID == CMR_CANID_DTI_FL_CURRENT
+    || canID == CMR_CANID_DTI_FR_CURRENT
+    || canID == CMR_CANID_DTI_RL_CURRENT
+    || canID == CMR_CANID_DTI_RR_CURRENT) {
+        cmr_canDTI_TX_Current_t *current = (cmr_canDTI_TX_Current_t*) data;
+        switch(canID) {
+            case(CMR_CANID_DTI_FL_CURRENT):
+                updateTorques(MOTOR_FL, currentToTorque(current->ac_current_dA));
+                break;
+            case(CMR_CANID_DTI_FR_CURRENT):
+                updateTorques(MOTOR_FR, currentToTorque(current->ac_current_dA));
+                break;
+            case(CMR_CANID_DTI_RL_CURRENT):
+                updateTorques(MOTOR_RL, currentToTorque(current->ac_current_dA));
+                break;
+            case(CMR_CANID_DTI_RR_CURRENT):
+                updateTorques(MOTOR_RR, currentToTorque(current->ac_current_dA));
+                break;
+        }
+    }
+
     // If DIM config message, handle it
     if(CMR_CANID_CDC_CONFIG3_DRV3 >= canID && canID >= CMR_CANID_DIM_CONFIG0_DRV0) {
         dim_params_callback(canb_rx, canID, data, dataLen);

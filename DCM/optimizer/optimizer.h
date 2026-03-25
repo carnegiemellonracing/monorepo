@@ -30,6 +30,7 @@ typedef struct {
     double accel_weights[NUM_VARS];
     double moment_weights[NUM_VARS];
     double diagonal_weights[NUM_VARS];
+    double power_weights[NUM_VARS];
     double omegas[NUM_VARS];
     double power_limit;
     int dim;
@@ -42,10 +43,26 @@ typedef struct {
     double Qinv[NUM_VARS * NUM_VARS];
 } optimizer_state_t;
 
+typedef struct {
+    double table[170];
+    double bpoints_x[10];
+    double bpoints_y[17];
+    uint16_t length_x;
+    uint16_t length_y;
+} efficiencyLUT_t;
+
+typedef struct {
+    float t_FL;
+    float t_FR;
+    float t_RL;
+    float t_RR;
+} torque_distribution_t;
+
 /**
  * Try all 3^4 = 81 cases and finds the best.
  */
-void solve(optimizer_state_t *state);
+void compute_power_weights(optimizer_state_t *state, efficiencyLUT_t *efficiencyLUT, torque_distribution_t *prev_torques);
+void solve(optimizer_state_t *state, efficiencyLUT_t *efficiencyLUT);
 void solver_set_k_lin(double d);
 void solver_set_k_yaw(double d);
 void solver_set_k_tie(double d);

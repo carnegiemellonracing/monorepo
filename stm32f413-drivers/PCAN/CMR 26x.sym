@@ -403,6 +403,15 @@ TimeOut=100
 Var=FL_ac_current_dA signed 0,16
 Var=FL_dc_current_dA signed 16,16
 
+[DTI_FL_ERPM]
+ID=20h
+DLC=8
+CycleTime=20
+TimeOut=100
+Var=FL_erpm signed 0,32
+Var=FL_duty_cycle_pct signed 32,16
+Var=FL_input_voltage_V signed 48,16
+
 [DTI_FL_IO_STATUS]
 ID=24h
 DLC=8
@@ -717,11 +726,19 @@ Var=PACK_avgCurrent_mA signed 32,32 /u:mA
 [HV_SENSORS]
 ID=306h
 DLC=8
-CycleTime=5
-TimeOut=25
+CycleTime=100
+TimeOut=500
 Var=SENSORS_packCurrent_dA signed 0,16
 Var=SENSORS_packVoltage_cV unsigned 16,16
 Var=SENSORS_packPower_W signed 32,32
+
+[LVBMS_CURRENT]
+ID=7feh
+DLC=4
+CycleTime=100
+TimeOut=500
+Var=CURRENT_ac_current_dA signed 0,16
+Var=CURRENT_dc_current_dA signed 16,16
 
 [LV_CELL_BALANCE_ENABLE]
 ID=136h
