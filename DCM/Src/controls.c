@@ -1231,7 +1231,7 @@ void setAccelLaunchControl(
     }
 
     // check timeout, handoff to regular fast torque if timed out
-    float elapsed_s = (float)(xTaskGetTickCount() - launch_tick) * 0.001f;
+    float elapsed_s = (float)(xTaskGetTickCount() - launch_tick) * 1000.0f;
     if (elapsed_s >= LAUNCH_TIMEOUT_S) {
         setFastTorque(throttlePos_u8);
         return;
