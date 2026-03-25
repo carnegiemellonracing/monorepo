@@ -15,7 +15,6 @@
 #include <stdint.h>
 #include <stdlib.h>     // abs()
 #include <stdint.h>
-#include <math.h>       // fabs()
 
 #include "adc.h"   // Board-specific ADC interface
 #include "can.h"   // Board-specific CAN interface
@@ -25,23 +24,23 @@
 #define BUS_CURRENT_SAMPLES 10
 
 /** @brief  Experimentally determined left TPOS ADC Minimum*/
-#define LEFT_TPOS_MIN_ADC 2270
+#define LEFT_TPOS_MIN_ADC 2750
 
 /** @brief  Experimentally determined left TPOS ADC Maximum*/
-#define LEFT_TPOS_MAX_ADC 3840
+#define LEFT_TPOS_MAX_ADC 3750
 
 /** @brief  Experimentally determined right TPOS ADC Minimum*/
-#define RIGHT_TPOS_MIN_ADC 20
+#define RIGHT_TPOS_MIN_ADC 500
 
 /** @brief  Experimentally determined right TPOS ADC Maximum*/
-#define RIGHT_TPOS_MAX_ADC 1870
+#define RIGHT_TPOS_MAX_ADC 1800
 
 #define LEFT_SWANGLE_MIN_ADC 360.0f
-#define CENTER_SWANGLE_ADC 1590.0f
+#define CENTER_SWANGLE_ADC 1760.0f
 #define RIGHT_SWANGLE_MAX_ADC 2880.0f
 
-#define MAX_OUTER_WHEEL_ANGLE_MILLIDEG 26467.0f
-#define MAX_INNER_WHEEL_ANGLE_MILLIDEG 40325.0f
+#define MAX_OUTER_WHEEL_ANGLE_MILLIDEG 25282.0f
+#define MAX_INNER_WHEEL_ANGLE_MILLIDEG 30139.0f
 
 /** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
 static const TickType_t TPOS_IMPLAUS_THRES_MS = 100;
@@ -174,15 +173,15 @@ static int32_t adcToYaw_FL(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 
     // millideg
-    if(reading >= 1590){
+    if(reading >= CENTER_SWANGLE_ADC){
         // left is outer wheel
-        float FL_angle_millideg = fabs((float)reading - CENTER_SWANGLE_ADC) * (MAX_OUTER_WHEEL_ANGLE_MILLIDEG) / (RIGHT_SWANGLE_MAX_ADC - CENTER_SWANGLE_ADC);
+        float FL_angle_millideg = INVLERP_SCALED(CENTER_SWANGLE_ADC, RIGHT_SWANGLE_MAX_ADC, reading, MAX_OUTER_WHEEL_ANGLE_MILLIDEG);
         int32_t retval = (int32_t)FL_angle_millideg;
         return retval;
     }
     else {
         // left is inner wheel
-        float FL_angle_millideg = fabs(CENTER_SWANGLE_ADC - (float)reading) * (MAX_INNER_WHEEL_ANGLE_MILLIDEG) / (CENTER_SWANGLE_ADC - LEFT_SWANGLE_MIN_ADC);
+        float FL_angle_millideg = INVLERP_SCALED(CENTER_SWANGLE_ADC, LEFT_SWANGLE_MIN_ADC, reading, MAX_INNER_WHEEL_ANGLE_MILLIDEG);
         int32_t retval = -(int32_t)FL_angle_millideg;
         return retval;
     }
@@ -192,16 +191,16 @@ static int32_t adcToYaw_FR(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 
     // millideg
-    if(reading >= 1590){
+    if(reading >= CENTER_SWANGLE_ADC){
         // right is inner wheel
-        float FL_angle_millideg = fabs((float)reading - CENTER_SWANGLE_ADC) * (MAX_INNER_WHEEL_ANGLE_MILLIDEG) / (RIGHT_SWANGLE_MAX_ADC - CENTER_SWANGLE_ADC);
-        int32_t retval = (int32_t)FL_angle_millideg;
+        float FR_angle_millideg = INVLERP_SCALED(CENTER_SWANGLE_ADC, RIGHT_SWANGLE_MAX_ADC, reading, MAX_INNER_WHEEL_ANGLE_MILLIDEG);
+        int32_t retval = (int32_t)FR_angle_millideg;
         return retval;
     }
     else {
         // right is outer wheel
-        float FL_angle_millideg = fabs(CENTER_SWANGLE_ADC - (float)reading) * (MAX_OUTER_WHEEL_ANGLE_MILLIDEG) / (CENTER_SWANGLE_ADC - LEFT_SWANGLE_MIN_ADC);
-        int32_t retval = -(int32_t)FL_angle_millideg;
+        float FR_angle_millideg = INVLERP_SCALED(CENTER_SWANGLE_ADC, LEFT_SWANGLE_MIN_ADC, reading, MAX_OUTER_WHEEL_ANGLE_MILLIDEG);
+        int32_t retval = -(int32_t)FR_angle_millideg;
         return retval;
     }
 }
