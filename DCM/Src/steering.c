@@ -46,7 +46,7 @@ float computeControlAction(float targetPosition, float currPosition);
 
 // Computes the swanlge in centidegrees from CAN
 static float getSteeringAngle() {
-    cmr_canFSMSWAngle_t *swangleData = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
+    cmr_canFSMSWAngle_t *swangleData = canVehicleGetPayload(CANRX_VEH_SWANGLE_FSM);
     // Weird due to overflow possibliliy
     int16_t swangle_centideg = (swangleData->steeringWheelAngle_millideg_FL / 10 
                                 + swangleData->steeringWheelAngle_millideg_FR / 10) / 2;
@@ -64,10 +64,10 @@ float computeControlAction(float targetPosition_centi_deg, float currPosition_ce
 
     //Constants for running PD controllers
     static float K_f = 0.0f; //feed forwards
-    static float K_p = -2.5f;
+    static float K_p = -100.0f;
     static float K_d = 0.0f; //derivative term
     const float filterAlpha = 0.1f;  //first order IIR filter alpha. Larger alpha is more filtering. Ranges 0-1
-    static const float errorThresholdKF = 15.0f;
+    static const float errorThresholdKF = 0.0f;
     static const bool constantsFromCAN = false;
     float mult;
 
@@ -97,19 +97,18 @@ float computeControlAction(float targetPosition_centi_deg, float currPosition_ce
 
 // computes the inspection mission target
 static float computeInspectionTarget() {
-    static float t = 0.0f;
+    static float t_ms = 0.0f;
 
     if (!inspectionActive) {
-        t = 0.0f;
+        t_ms = 0.0f;
         inspectionActive = true;
     }
 
-    const float dt = (float)steeringPeriod_ms / 1000.0f;
-    const float double_amplitude_centi_deg = MIN_STEERING_CENTI_DEG + MAX_STEERING_CENTI_DEG;
+    const float amplitude_centi_deg = (MAX_STEERING_CENTI_DEG - MIN_STEERING_CENTI_DEG) / 2;
     // Note not perfect sinusoid (center is not neccessairly 0)
-    float target = double_amplitude_centi_deg * sinf(2.0f * M_PI * t / INSPECTION_PERIOD_MS) + MIN_STEERING_CENTI_DEG;
+    float target = amplitude_centi_deg * sinf(2.0f * M_PI * t_ms / INSPECTION_PERIOD_MS);
 
-    t += dt;
+    t_ms += steeringPeriod_ms;
     return target;
 }
 
