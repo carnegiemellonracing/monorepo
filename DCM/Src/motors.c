@@ -182,7 +182,6 @@ static void motorsCommand (
             // Drive the vehicle in RTD
             case CMR_CAN_RTD: {
             	mcCtrlOn();
-            	// fansOn();
             	pumpsOn();
 
                 /** Drive Enable Initialized in can.c.  */
@@ -195,37 +194,24 @@ static void motorsCommand (
                 if (blank_command) {
                     sendBlankCommand();
 				}
-                // else {
-                //     int16_t set_current_fl = 40 << 8;
-                //     int16_t set_current_fr = 40 << 8;
-                //     int16_t set_current_rl = 40 << 8;
-                //     int16_t set_current_rr = 40 << 8;
-
-                //     //enables motors to drive
-                //     uint8_t driveEnable = 1;
-                //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
-
-                //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_CURRENT, &set_current_fl, sizeof(set_current_fl), can10Hz_period_ms);
-                //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_CURRENT, &set_current_fr, sizeof(set_current_fr), can10Hz_period_ms);
-                //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_CURRENT, &set_current_rl, sizeof(set_current_rl), can10Hz_period_ms);
-                //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_CURRENT, &set_current_rr, sizeof(set_current_rr), can10Hz_period_ms);
-                
-                // }
+                else{
+                    setFastTorqueWithBias(dataFSM    -> torqueRequested, front_bias);
+                }
                 
                 uint32_t au32_initial_ticks = DWT->CYCCNT;
 
                 TickType_t startTime = xTaskGetTickCount();
                 //taskENTER_CRITICAL(); /** @todo verify if this critical region is necessary */
 
-                runControls(gear,
-                		    dataFSM    -> torqueRequested,
-                            dataFSM    -> brakePedalPosition_percent,
-                            dataFSM    -> brakePressureFront_PSI,
-                            swangleFSM->steeringWheelAngle_millideg_FL,
-                            swangleFSM->steeringWheelAngle_millideg_FR,
-                            voltageHVC -> hvVoltage_mV,
-                            currentHVC -> instantCurrent_mA,
-                            blank_command);
+                // runControls(gear,
+                // 		    dataFSM    -> torqueRequested,
+                //             dataFSM    -> brakePedalPosition_percent,
+                //             dataFSM    -> brakePressureFront_PSI,
+                //             swangleFSM->steeringWheelAngle_millideg_FL,
+                //             swangleFSM->steeringWheelAngle_millideg_FR,
+                //             voltageHVC -> hvVoltage_mV,
+                //             currentHVC -> instantCurrent_mA,
+                //             blank_command);
                 //taskEXIT_CRITICAL();
 
                 TickType_t endTime = xTaskGetTickCount();
@@ -579,7 +565,7 @@ const cmr_DTI_RX_Message_t* getDTISetpoints(motorLocation_t motor) {
 
     const cmr_DTISetpoints_t *src = (const cmr_DTISetpoints_t *) &(motorSetpoints[motor]);
     cmr_DTI_RX_Message_t *dst = &DTI_RXMessage[motor];
-    dst->velocity_erpm     = (int16_t)src->velocity_rpm * pole_pairs;
+    dst->velocity_erpm     = ((int32_t)src->velocity_rpm) * pole_pairs;
 
     // Change to AC current lims
     dst->torqueLimPos_dA = (int16_t)torqueToCurrent (src->torqueLimPos_mNm);

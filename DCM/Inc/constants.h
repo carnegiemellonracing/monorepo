@@ -16,7 +16,7 @@ static const float front_bias = 0.35f;
  * motor datasheet: "Nominal Speed - 13250 rpm"
  * motor datasheet: "Maximum Speed - 20000 rpm"
 */
-static const int16_t maxSpeed_rpm = 20000;
+static const int16_t maxSpeed_rpm = 5000;
 
 /** @brief Maximum motor torque in slow gear */
 static const float maxSlowTorque_Nm = 5.0f;
@@ -38,6 +38,7 @@ static const int16_t maxMediumSpeed_rpm = 13000;
 
 /** @brief Maximum motor speed in fast gear */
 static const int16_t maxFastSpeed_rpm = maxSpeed_rpm;
+// static const int16_t maxFastSpeed_rpm = 0;
 
 /** @brief horizontal distance between the center of the front wheels and the origin of the SBG frame in meters */
 static const float chassis_a = 0.775f;
@@ -65,7 +66,7 @@ static const double half_wheelbase_m = wheelbase_m * 0.5f;
 static const double half_trackwidth_m= trackwidth_m * 0.5f;
 static const double car_mass_kg = 280.0f;
 
-static const uint16_t pole_pairs = 4;
+static const int32_t pole_pairs = 4;
 
 typedef struct {
     int16_t current_Arms;  
