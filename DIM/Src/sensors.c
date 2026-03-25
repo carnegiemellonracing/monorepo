@@ -15,6 +15,7 @@
 #include <stdint.h>
 #include <stdlib.h>     // abs()
 #include <stdint.h>
+#include <math.h>       // fabs()
 
 #include "adc.h"   // Board-specific ADC interface
 #include "can.h"   // Board-specific CAN interface
