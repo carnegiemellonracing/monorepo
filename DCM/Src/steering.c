@@ -19,7 +19,7 @@
 #include "can.h"   // Board-specific CAN interface
 #include "math.h"   // Board-specific CAN interface
 
-#define MAX_CURRENT_MA 3000
+#define MAX_CURRENT_MA 5000
 
 /** @todo Cordinate with DV for these values
  *  @note This is average of left and right
@@ -64,7 +64,8 @@ float computeControlAction(float targetPosition_centi_deg, float currPosition_ce
 
     //Constants for running PD controllers
     static float K_f = 0.0f; //feed forwards
-    static float K_p = -100.0f;
+    // static float K_p = -100.0f;
+    static float K_p = -4.0f;
     static float K_d = 0.0f; //derivative term
     const float filterAlpha = 0.1f;  //first order IIR filter alpha. Larger alpha is more filtering. Ranges 0-1
     static const float errorThresholdKF = 0.0f;
@@ -76,12 +77,6 @@ float computeControlAction(float targetPosition_centi_deg, float currPosition_ce
     float posDerivative = currPosition_centi_deg - prevPosition_centi_deg;
     //first order IIR filter
     filteredPosDerivative = filterAlpha*posDerivative + (1.0f - filterAlpha) * filteredPosDerivative;
-
-    // if(constantsFromCAN){
-    // 	K_p = -1.0f*canGetK_p();
-    // 	K_d = canGetK_d();
-    // 	K_f = canGetK_f();
-    // }
 
     //ensures that feedforward is in the direction to reduce error
     if (fabs(currError) <= errorThresholdKF) mult = 0.0f;
@@ -125,16 +120,16 @@ void runSteering() {
     cmr_canState_t state = heartbeatVSM->state;
     cmr_canGear_t  gear  = reqDIM->requestedGear;
 
-    // if (state != CMR_CAN_AS_DRIVING) {
-    //     inspectionActive = false;
-    //     // turn motor off
-    //     int32_t current = 0;
-    //     sendCubeMarsMessage(CMR_CAN_BUS_DAQ, CMR_CANID_EXTENDED_CUBEMARS_SET_CURRENT, &current, sizeof(current), steeringPeriod_ms);
-    //     return;
-    // }
+    if (state != CMR_CAN_AS_DRIVING) {
+        inspectionActive = false;
+        // turn motor off
+        int32_t current = 0;
+        sendCubeMarsMessage(CMR_CAN_BUS_DAQ, CMR_CANID_EXTENDED_CUBEMARS_SET_CURRENT, &current, sizeof(current), steeringPeriod_ms);
+        return;
+    }
 
     float targetPosition_centi_deg = 0.0f;
-    if (gear == CMR_CAN_GEAR_DV_MISSION_INSPECTION || true) {
+    if (gear == CMR_CAN_GEAR_DV_MISSION_INSPECTION) {
         targetPosition_centi_deg = computeInspectionTarget();
     } else {
         inspectionActive = false;
