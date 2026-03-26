@@ -1513,4 +1513,11 @@ typedef struct{
     uint16_t cell4;
 } cmr_canLVBMS_Temperature;
 
+typedef struct{
+    uint16_t frontTorque_mNm;           /**< @brief Front wheel torque mNm. */     
+    uint16_t rearTorque_mNm;            /**< @brief Rear wheel torque mNm. */     
+    uint16_t steeringAngle_centi_deg;   /**< @brief Requested average angle of wheels centi deg. */     
+}
+cmr_canAutonomousControlAction_t;
+
 #endif /* CMR_CAN_TYPES_H */

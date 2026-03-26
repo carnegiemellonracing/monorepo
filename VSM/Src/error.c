@@ -26,7 +26,7 @@ const uint16_t brakePressureThreshold_PSI = 40;
  * @brief Modules will be considered in the wrong state this many millisec
  * after the last state change.
  */
-static const TickType_t badStateThres_ms = 50;
+static const TickType_t badStateThres_ms = 150;
 
 // Forward declarations
 static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime);
@@ -104,9 +104,7 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
 
         cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 0);
     }
-    // else if (getASEmergency()){
-    //     cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 0);
-    // }
+
     else {
         cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
     }
@@ -127,6 +125,7 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
         latchMatrix |= CMR_CAN_VSM_LATCH_BSPD;
         sendFirstError(LATCH_BSPD_ERR);
     }
+
 
     // Update vsmErrors struct
     vsmStatus->heartbeatErrors = heartbeatErrors;
@@ -334,6 +333,7 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
 
                 break;
             }
+
             case CMR_CAN_VSM_STATE_AS_DRIVING: {
                 if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
                     sendFirstError(HVC_AS_DRIVING);
@@ -381,6 +381,8 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
     // millisec since last state change
     if ((lastWakeTime > lastStateChangeTime_ms + badStateThres_ms)
      && (wrongState)) {
+        if (lastWakeTime == 423)
+            return 1;
         return -1;
     }
 

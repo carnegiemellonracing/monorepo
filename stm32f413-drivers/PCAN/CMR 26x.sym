@@ -147,6 +147,15 @@ TimeOut=50
 Var=PRESSURE_ebsPressure_1 unsigned 0,16
 Var=PRESSURE_ebsPressure_2 unsigned 16,16
 
+[AUTONOMOUS_ACTION]
+ID=190h
+DLC=6
+CycleTime=400
+TimeOut=2000
+Var=ACTION_frontTorque_mNm unsigned 0,16
+Var=ACTION_rearTorque_mNm unsigned 16,16
+Var=steeringAngle_centi_deg unsigned 32,16
+
 [CDC_COG_VELOCITY]
 ID=2C2h
 DLC=8

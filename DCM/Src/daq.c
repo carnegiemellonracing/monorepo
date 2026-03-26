@@ -35,9 +35,10 @@ float motorSetpointPercentToTorque10(int16_t sp) {
 }
 
 int16_t getMotorTorqueRequest(motorLocation_t motor) {
-    const cmr_DTISetpoints_t *sp = getDTISetpoints(motor);
+    // const cmr_DTISetpoints_t *sp = getDTISetpoints(motor);
 
-    return (sp->torqueLimPos_mNm > 0) ? sp->torqueLimPos_mNm : sp->torqueLimNeg_mNm;
+    // return (sp->torqueLimPos_mNm > 0) ? sp->torqueLimPos_mNm : sp->torqueLimNeg_mNm;
+    return 0;
 }
 
 void daqWheelSpeedFeedback(cmr_canCDCWheelVelocity_t *speedFeedback) {

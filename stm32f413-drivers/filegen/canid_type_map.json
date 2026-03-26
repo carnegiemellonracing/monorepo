@@ -10,6 +10,11 @@
             "timeOut": 50,
             "type": "cmr_canDVPressureReadings_t"
         },
+        "CMR_CANID_AUTONOMOUS_ACTION": {
+            "cycleTime": 400.0,
+            "timeOut": 2000,
+            "type": "cmr_canAutonomousControlAction_t"
+        },
         "CMR_CANID_CDC_COG_VELOCITY": {
             "cog_x_mps": {
                 "f": 0.01,
@@ -934,10 +939,10 @@
         "global_mappings": {
             "canrx_mappings": 179,
             "canrx_timeouts": 173,
-            "canrx_types": 76,
-            "constants": 252,
+            "canrx_types": 75,
+            "constants": 251,
             "struct_members": 0,
-            "variable_types": 333
+            "variable_types": 330
         },
         "prefixes_used": [
             "CMR_CANID_",

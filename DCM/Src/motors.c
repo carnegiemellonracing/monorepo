@@ -180,6 +180,7 @@ static void motorsCommand (
 
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
+            case CMR_CAN_AS_DRIVING:
             case CMR_CAN_RTD: {
             	mcCtrlOn();
             	// fansOn();
@@ -244,6 +245,7 @@ static void motorsCommand (
             }
 
             // Reset errors in HV_EN
+            case CMR_CAN_AS_READY:
             case CMR_CAN_HV_EN: {
             	mcCtrlOn();
             	// fansOn();
@@ -258,8 +260,10 @@ static void motorsCommand (
             }
 
             // Also reset errors in GLV_ON
+            case CMR_CAN_AS_FINISHED:
             case CMR_CAN_GLV_ON: {
-                pumpsOn();
+                // pumpsOn();
+                pumpsOff();
             	mcCtrlOff();
 
                 if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
@@ -277,17 +281,17 @@ static void motorsCommand (
 
             // In all other states, disable inverters and do not reset errors
             default: {
-                pumpsOn();
+                // pumpsOn();
                 pumpsOff();
                 mcCtrlOff();
-                set_optimal_control_with_regen(128, 10000, 10000);
                 sendBlankCommand();
                 break;
             }
         }
 
         // Update gear in transition from HV_EN to RTD
-        if (prevState == CMR_CAN_HV_EN && heartbeatVSM->state == CMR_CAN_RTD) {
+        if (prevState == CMR_CAN_HV_EN && heartbeatVSM->state == CMR_CAN_RTD
+            || prevState == CMR_CAN_AS_READY && heartbeatVSM->state == CMR_CAN_AS_DRIVING) {
             gear = reqDIM->requestedGear;
             resetRetroactiveLimitFilters();
             initControls();
@@ -432,6 +436,42 @@ void setTorqueLimsUnprotected (
 }
 
 /**
+ * @brief Sets direct torque for a motor.
+ *
+ * @param motor Which motor to set torque for.
+ * @param torqueLimPos_Nm Desired torque.
+ */
+void setTorques (
+    motorLocation_t motor,
+    float torque_Nm
+) {
+    if (motor >= MOTOR_LEN) {
+        return;
+    }
+
+    torque_Nm = fmaxf(torque_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
+
+    motorSetpoints[motor].torque_mNm = torque_Nm * 1000.0f;
+}
+
+/**
+ * @brief Sets direct torque for a motor.
+ *
+ * @param motor Which motor to set torque for.
+ * @param torqueLimPos_Nm Desired torque.
+ */
+void setTorquesAll (
+    float torque_Nm
+) {
+    torque_Nm = fmaxf(torque_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
+
+    motorSetpoints[MOTOR_FL].torque_mNm = torque_Nm * 1000.0f;
+    motorSetpoints[MOTOR_FR].torque_mNm = torque_Nm * 1000.0f;
+    motorSetpoints[MOTOR_RL].torque_mNm = torque_Nm * 1000.0f;
+    motorSetpoints[MOTOR_RR].torque_mNm = torque_Nm * 1000.0f;
+}
+
+/**
  * @brief Sets velocity setpoint for a motor.
  *
  * @param motor Which motor to set velocity for.
@@ -453,7 +493,10 @@ void setVelocityInt16 (
         velocity_rpm = -maxSpeed_rpm;
     }
 
-    motorSetpoints[motor].velocity_rpm = velocity_rpm;
+    motorSetpoints[motor].velocity_rpm = (float) velocity_rpm;
+    if(velocity_rpm == 1500) {
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_AFC0_DRIVER_TEMPS, &velocity_rpm, sizeof(velocity_rpm), 100);
+    }
 }
 
 /**

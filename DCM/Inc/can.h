@@ -5,10 +5,9 @@
  * @author Carnegie Mellon Racing
  */
 
-#ifndef CAN_H
-#define CAN_H
+#pragma once
 
-#include <CMR/fdcan.h>        // CMR CAN interface
+#include <CMR/fdcan.h>      // CMR CAN interface
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/can_ids.h>    // CMR CAN IDs
 
@@ -135,6 +134,7 @@ typedef enum {
     CANRX_DAQ_LINPOTS_LEFTS,    /**< @brief front left load cell/newtons. */
     CANRX_DAQ_LINPOTS_RIGHTS,   /**< @brief front right load cell/newtons. */
     CANRX_DAQ_MEMORATOR_BROADCAST,
+    CANRX_DAQ_AUTONOMOUS_ACTION,
     CANRX_DAQ_LEN               /**< @brief Number of periodic CAN messages. */
 } canDaqRX_t;
 
@@ -200,10 +200,7 @@ cmr_canRXMeta_t *canDAQGetMeta(canDaqRX_t msg);
 void *canGetPayload(canRX_t rxMsg);
 int8_t getPacketID(cmr_canID_t id);
 int8_t getNodeID(cmr_canID_t id);
-
+int sendCubeMarsMessage(cmr_canBusID_t bus, cmr_canExtendedID_t id, const void *data, size_t len, TickType_t timeout);
 int sendDTIMessage(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 float canEmdHvVoltage();
 float canEmdHvCurrent();
-
-#endif /* CAN_H */
-
