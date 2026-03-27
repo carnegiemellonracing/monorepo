@@ -774,10 +774,10 @@ void runControls (
             float wheel_rr_speed_radps = getMotorSpeed_radps(MOTOR_RR);
 
             //set_manual_cruise_control(throttlePos_u8);
-            float vx, vy; 
+            float vx, va; 
             volatile cmr_canSensoricVelAng_t *sensoricVelAng = (cmr_canSensoricVelAng_t*)canDAQGetPayload(CANRX_DAQ_SENSORIC_VEL_ANG);
-            vx = (float)(sensoricVelAng->vel_X);
-            vy = (float)(sensoricVelAng->vel_Y);
+            vx = (float)(sensoricVelAng->vel_X); // dont use this one
+            va = (float)(sensoricVelAng->vel_A);
             // sensors_get_vel_xy(&vx, &vy);
 
             volatile cmr_canIZZELoadCell_t *fl_load = (cmr_canIZZELoadCell_t *)canDAQGetPayload(CANRX_DAQ_LOAD_FL);
@@ -790,7 +790,7 @@ void runControls (
             float fz_rl_N = (float)(parse_int16(&(rl_load->force_output_lb))) * 4.448f * sinf(0.524);
             float fz_rr_N = (float)(parse_int16(&(rr_load->force_output_lb))) * 4.448f * sinf(0.524);
 
-            setAccelLaunchControl(throttlePos_u8, brakePressurePsi_u8, vx, wheel_fl_speed_radps, 
+            setAccelLaunchControl(throttlePos_u8, brakePressurePsi_u8, va, wheel_fl_speed_radps, 
                 wheel_fr_speed_radps, wheel_rl_speed_radps, wheel_rr_speed_radps, 
                 fz_fl_N, fz_fr_N, fz_rl_N, fz_rr_N);
             break;
