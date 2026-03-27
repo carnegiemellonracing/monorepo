@@ -16,6 +16,7 @@
 #include "can.h"        // Interface to implement
 #include "parser.h"     // parser ingestation
 #include "memorator.h"     // parser ingestation
+#include "gitcommit.h" 
 #include <CMR/rtc.h> 
 
 
@@ -31,6 +32,8 @@ static const TickType_t can100Hz_period_ms = 10;
 /** @brief CAN 100hz task. */
 static cmr_task_t can100Hz_task;
 
+static void sendHeartBeat(); 
+
 /**
  * @brief Sending CAN Messages at 100Hz
  *
@@ -43,6 +46,7 @@ static void canTx100Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
+        sendHeartBeat(); 
         // int x = 32;
         // canTX(CMR_CAN_BUS_TRAC, 100, &x, sizeof(int), can100Hz_period_ms);
         // RTC_DateTypeDef curdate = getRTCDate();
@@ -313,6 +317,10 @@ void canRXCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t 
     }
 
 	int ret = parseData((uint32_t) iface_idx, canID, data, dataLen);
+    configASSERT(ret != 1);
+    configASSERT(ret != 2);
+    configASSERT(ret != 3);
+    configASSERT(ret != 4);
 	configASSERT(ret == 0);
 
 	// Update the RX Meta array
@@ -339,6 +347,17 @@ void canRXCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t 
 	}
 }
 
+
+static void sendHeartBeat() {
+    cmr_canHeartbeat_t heartbeat = {
+        .state = 1, 
+        .error = {3, 4},
+        .warning = {4, 5} 
+    }; 
+
+    canTX(CMR_CAN_BUS_VEH, CMR_CANID_HEARTBEAT_MEMORATOR, &heartbeat, sizeof(heartbeat), can100Hz_period_ms); 
+}
+
 /**
  * @brief Initializes the CAN interface.
  */
@@ -350,7 +369,9 @@ void canInit(void) {
         canVehicleRXMeta, CANRX_VEH_LEN,
         canRXCallback,
         GPIOA, GPIO_PIN_8,     // CAN3 RX port/pin.
-        GPIOB, GPIO_PIN_4      // CAN3 TX port/pin.
+        GPIOB, GPIO_PIN_4,      // CAN3 TX port/pin.
+        GIT_INFO, IS_UNCOMMITTED,
+        CMR_CANID_RAM_GIT
     );
 
     // DAQ-CAN (CAN2) initialization.
@@ -360,7 +381,9 @@ void canInit(void) {
         canDaqRXMeta, CANRX_DAQ_LEN,
         canRXCallback,
         GPIOB, GPIO_PIN_12,    // CAN2 RX port/pin.
-        GPIOB, GPIO_PIN_13     // CAN2 TX port/pin.
+        GPIOB, GPIO_PIN_13,     // CAN2 TX port/pin.
+        GIT_INFO, IS_UNCOMMITTED,
+        CMR_CANID_RAM_GIT
     );
     // Trac-CAN (CAN1) initialization.
 	cmr_canInit(
@@ -369,7 +392,9 @@ void canInit(void) {
 		canTractiveRXMeta, CANRX_TRAC_LEN,
 		canRXCallback,
 		GPIOB, GPIO_PIN_8,    // CAN1 RX port/pin.
-		GPIOB, GPIO_PIN_9     // CAN1 TX port/pin.
+		GPIOB, GPIO_PIN_9,     // CAN1 TX port/pin.
+        GIT_INFO, IS_UNCOMMITTED,
+        CMR_CANID_RAM_GIT
 	);
 
     // filters.

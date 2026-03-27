@@ -47,7 +47,7 @@ int main(void) {
     gpioInit();
     canInit();
     statusLEDInit();
-    memoratorInit();
+    // memoratorInit();
 
     // Load in JSON configuration
     parserInit();

@@ -153,7 +153,9 @@ int parseData(uint32_t bus, uint16_t id, const uint8_t msg[], size_t len) {
 
        if (sig->offset + sig->in_len > len) {
            /* Uh oh */
-           return -1;
+           // Sometimes when we reach here it is an indication
+           // that the can types have changed
+           return 1;
        }
 
        const void *v_pt = msg + sig->offset;
@@ -183,7 +185,7 @@ int parseData(uint32_t bus, uint16_t id, const uint8_t msg[], size_t len) {
        default:
            /* Not entirely sure what the best course of action is here. */
            /* Note that this will get hit on DT_UNK as well. */
-           return -1;
+           return 2;
        }
 
 #undef REINTERP_IN
@@ -212,7 +214,7 @@ int parseData(uint32_t bus, uint16_t id, const uint8_t msg[], size_t len) {
            REINTERP_IN(DT_FLOAT32, abv_name, f32, type_out)                   \
            REINTERP_IN(DT_FLOAT64, abv_name, f64, type_out)                   \
            default:                                                           \
-               return -1;                                                     \
+               return 3;                                                     \
            }                                                                  \
            break;
 
@@ -220,7 +222,7 @@ int parseData(uint32_t bus, uint16_t id, const uint8_t msg[], size_t len) {
        switch (sig->dt_out) {
        DT_FOREACH(REINTERP_OUT)
        default:
-           return -1;
+           return 4;
        }
 #undef REINTERP_OUT
 #undef REINTERP_IN
