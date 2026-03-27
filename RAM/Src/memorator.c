@@ -28,6 +28,8 @@ static FIL filObj;
 /** @brief file to write */
 static char filename[64];
 
+extern char testID_name[9]; 
+
 //forward declarations
 static void switchBuffer(void);
 
@@ -180,10 +182,20 @@ static void switchBuffer(){
     taskEXIT_CRITICAL();
 }
 
+// static bool check_testID_valid(char testID[8]){
+//     for(int i = 0; i<8; i++){
+//         if (testID[i] != 0) {
+//             return true; 
+//         }
+//     }
+//     return false; 
+// }
+
 void memoratorInit(){
     bufferLocation = 0;
     RTC_DateTypeDef curDate = getRTCDate();
     RTC_TimeTypeDef curTime = getRTCTime();
+    //if (check_testID_valid(testID_name)) {}
     snprintf(filename, sizeof(filename), "%u-%u-%u_%u-%u-%u-%lu.bin", curDate.Month, curDate.Date, curDate.Year, curTime.Hours, curTime.Minutes, curTime.Seconds, curTime.SubSeconds);
     cmr_taskInit(
         &memoratorTask,
