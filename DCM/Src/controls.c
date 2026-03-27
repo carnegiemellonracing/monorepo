@@ -1517,13 +1517,14 @@ float calculatePersistentYRCmreq(int32_t swAngle_millideg, float bias_margin, fl
     float pers_bias;
     const bool pers_off = fabsf(desired_yaw_rate_radps) < fabsf(actual_yaw_rate_radps_sae) // coming out of a turn
                             || (desired_yaw_rate_radps * actual_yaw_rate_radps_sae) < 0 // different directions
-                            || fabsf(yaw_rate_diff_radps) >= sqrtf(bias_margin) // strong yrc_kp
+                            || fabsf(yaw_rate_diff_radps) >= (bias_margin) // strong yrc_kp
                             || fabsf(swangle_rad) < YRC_PERS_SWANGLE_DEADZONE_RAD; // small steering angle
                             // checks
     if (pers_off) {
         pers_bias = 0;
     } else { // pers_bias (0% to 100%) scales quadratically as yaw_rate_diff_radps approaches 0
-        const float squared_ratio = (yaw_rate_diff_radps * yaw_rate_diff_radps) / bias_margin;
+        const float squared_ratio = (yaw_rate_diff_radps * yaw_rate_diff_radps) / (bias_margin * bias_margin);
+        // const float squared_ratio = (yaw_rate_diff_radps * yaw_rate_diff_radps) / bias_margin;
         const float direction = copysignf(1.0f, desired_yaw_rate_radps);
         pers_bias = (-(squared_ratio) + 1) * direction;
     }
