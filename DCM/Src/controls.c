@@ -790,6 +790,19 @@ void runControls (
             float fz_rl_N = (float)(parse_int16(&(rl_load->force_output_lb))) * 4.448f * sinf(0.524);
             float fz_rr_N = (float)(parse_int16(&(rr_load->force_output_lb))) * 4.448f * sinf(0.524);
 
+            // NORMALIZED FZ IN CASE STRAIN GAUGES FUCK
+            // (car mass + driver mass) * fl/(fl + fr + rl + rr)
+
+            // float fz_fl_N_normalized = (car_mass_kg + driver_mass_kg) * fz_fl_N / (fz_fl_N + fz_fr_N + fz_rl_N + fz_rr_N);
+            // float fz_fr_N_normalized = (car_mass_kg + driver_mass_kg) * fz_fr_N / (fz_fl_N + fz_fr_N + fz_rl_N + fz_rr_N);
+            // float fz_rl_N_normalized = (car_mass_kg + driver_mass_kg) * fz_rl_N / (fz_fl_N + fz_fr_N + fz_rl_N + fz_rr_N);
+            // float fz_rr_N_normalized = (car_mass_kg + driver_mass_kg) * fz_rr_N / (fz_fl_N + fz_fr_N + fz_rl_N + fz_rr_N);
+
+            // setAccelLaunchControl(throttlePos_u8, brakePressurePsi_u8, va, wheel_fl_speed_radps, 
+            //     wheel_fr_speed_radps, wheel_rl_speed_radps, wheel_rr_speed_radps, 
+            //     fz_fl_N_normalized, fz_fr_N_normalized, fz_rl_N_normalized, fz_rr_N_normalized);
+
+
             setAccelLaunchControl(throttlePos_u8, brakePressurePsi_u8, va, wheel_fl_speed_radps, 
                 wheel_fr_speed_radps, wheel_rl_speed_radps, wheel_rr_speed_radps, 
                 fz_fl_N, fz_fr_N, fz_rl_N, fz_rr_N);
