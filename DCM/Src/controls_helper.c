@@ -244,11 +244,15 @@ void pacejka_interp_coeffs(float fz, float *b_out,
     }
 
     // find bracket of [i, i+1] that contains Fz
+    // check for alternative if condition
+
     int i = 0;
     for (int j = 0; j < 3; j++) {
         if (fz < PACEJKA_FZ_LEVELS[j + 1]) {
             i = j;
             break;
+        } else {
+            i = j + 1;
         }
     }
 
