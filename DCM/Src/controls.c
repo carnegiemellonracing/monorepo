@@ -793,10 +793,14 @@ void runControls (
             setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
             setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
             setPowerLimit(false, MOTOR_FR, 40.0 * (1 - front_bias));
+
+            set_optimal_control((float)throttlePos_u8 / UINT8_MAX, swAngle_millideg_FL, swAngle_millideg_FR, false);
+            break;
+
             // float target_speed_mps = 5.0f;
             // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
             // set_motor_speed(throttlePos_u8, target_speed_mps, false);
-            set_manual_cruise_control(throttlePos_u8);
+            // set_manual_cruise_control(throttlePos_u8);
             break;
         }
 
