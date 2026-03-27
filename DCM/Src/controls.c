@@ -760,10 +760,10 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_TEST: {
-            // setPowerLimit(false, MOTOR_FL, 40.0 * front_bias);
-            // setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
-            // setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
-            // setPowerLimit(false, MOTOR_FR, 40.0 * (1 - front_bias));
+            setPowerLimit(false, MOTOR_FL, 40.0 * front_bias);
+            setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
+            setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
+            setPowerLimit(false, MOTOR_RR, 40.0 * (1 - front_bias));
 
             // float target_speed_mps = 5.0f;
             // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
@@ -776,8 +776,8 @@ void runControls (
             //set_manual_cruise_control(throttlePos_u8);
             float vx, va; 
             volatile cmr_canSensoricVelAng_t *sensoricVelAng = (cmr_canSensoricVelAng_t*)canDAQGetPayload(CANRX_DAQ_SENSORIC_VEL_ANG);
-            vx = (float)(sensoricVelAng->vel_X); // dont use this one
-            va = (float)(sensoricVelAng->vel_A);
+            vx = SENSORIC_VEL_TO_MPS((float)(sensoricVelAng->vel_X)); // dont use this one
+            va = SENSORIC_VEL_TO_MPS((float)(sensoricVelAng->vel_A));
             // sensors_get_vel_xy(&vx, &vy);
 
             volatile cmr_canIZZELoadCell_t *fl_load = (cmr_canIZZELoadCell_t *)canDAQGetPayload(CANRX_DAQ_LOAD_FL);
@@ -986,17 +986,6 @@ void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew) {
     setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
 }
 
-void setFastTorqueWithParallelRegen(uint16_t brakePressurePsi_u8, uint8_t throttlePos_u8)
-{
-    if (brakePressurePsi_u8 >= braking_threshold_psi) {
-        setParallelRegen(throttlePos_u8, brakePressurePsi_u8, 0);
-    }
-    else {
-        const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
-        setTorqueLimsAllProtected(reqTorque, 0.0f);
-        setVelocityInt16All(maxFastSpeed_rpm);
-    }
-}
 
 /**
  * @brief Calculates the relative speeds between each wheel and the ground
