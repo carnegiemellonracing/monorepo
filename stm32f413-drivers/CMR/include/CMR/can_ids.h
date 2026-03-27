@@ -17,14 +17,14 @@
  */
 #define CMR_CANID_RMS_OFFSET    0x3A0
 #define NUM_CONFIG_PACKETS 4 
-#define CONTROLLER_ID 120
+#define CONTROLLER_ID 0
 
 /** @brief For DTI Motors converts node and packet ID to a valid CAN ID*/
 #define PACKET_NODE_TO_CAN_ID(packet,node)  (((uint16_t) packet << 5) | ((uint16_t) node))
 #define FL_NODE_ID 1
 #define FR_NODE_ID 2
-#define RL_NODE_ID 3
-#define RR_NODE_ID 4
+#define RR_NODE_ID 3
+#define RL_NODE_ID 4
 #define BROADCAST_NODE_ID 0x1F
 
 /** @brief CAN IDs. */
@@ -38,13 +38,14 @@ typedef enum {
     CMR_CANID_HEARTBEAT_LV_BMS = 0x107, /**< @brief LV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_HV_BMS = 0x108, /**< @brief HV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
-    CMR_CANID_EAB_STATUS = 0x10A,
+    CMR_CANID_EAB_STATUS = 0x10B, // conflicting with VSM_FIRST_ERROR
     CMR_CANID_ASMS_STATUS = 0x193,
 
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
     CMR_CANID_VSM_SENSORS = 0x200,              /**< @brief VSM sensor data. */
     CMR_CANID_VSM_LATCHED_STATUS = 0x510,       /**< @brief VSM latched status. */
     CMR_CANID_VSM_POWER_DIAGNOSTICS = 0x530,    /**< @brief VSM power diagnostics. */
+    // conflicting with EAB_STATUS
     CMR_CANID_VSM_FIRST_ERROR = 0x10a,          /**< @brief VSM first error state */
 
     CMR_CANID_HVC_COMMAND = 0x130,              /**< @brief HVC command, sent by VSM. */
@@ -315,17 +316,17 @@ typedef enum {
     CMR_CANID_MOVELLA_IMU_ACCEL = 0x77E,
     CMR_CANID_MOVELLA_VELOCITY = 0x77D,
 
-    CMR_CANID_SENSORIC_VEL_ANG_POI = 0x560,
-    CMR_CANID_SENSORIC_DIST_POI = 0x561,
-    CMR_CANID_SENSORIC_PITCH_ROLL = 0x562,
-    CMR_CANID_SENSORIC_ACC_HOR = 0x563,
-    CMR_CANID_SENSORIC_RATE_HOR = 0x564,
-    CMR_CANID_SENSORIC_VEL_ANG = 0x565,
-    CMR_CANID_SENSORIC_DIST = 0x566,
-    CMR_CANID_SENSORIC_ACC = 0x567,
-    CMR_CANID_SENSORIC_RATE = 0x568,
-    CMR_CANID_SENSORIC_VEL_ANG_SP = 0x569,
-    CMR_CANID_SENSORIC_DIST_VEL_SP = 0x56A, 
+    CMR_CANID_SENSORIC_VEL_ANG_POI = 0x600,
+    CMR_CANID_SENSORIC_DIST_POI = 0x601,
+    CMR_CANID_SENSORIC_PITCH_ROLL = 0x602,
+    CMR_CANID_SENSORIC_ACC_HOR = 0x603,
+    CMR_CANID_SENSORIC_RATE_HOR = 0x604,
+    CMR_CANID_SENSORIC_VEL_ANG = 0x605,
+    CMR_CANID_SENSORIC_DIST = 0x606,
+    CMR_CANID_SENSORIC_ACC = 0x607,
+    CMR_CANID_SENSORIC_RATE = 0x608,
+    CMR_CANID_SENSORIC_VEL_ANG_SP = 0x609,
+    CMR_CANID_SENSORIC_DIST_VEL_SP = 0x60A, 
 
     CMR_CANID_EMD_STATUS = 0x400,               /**< @brief EMD status. */
     CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */
@@ -356,8 +357,6 @@ typedef enum {
     CMR_CANID_FRONT_WHL_VELS = 0x7EC,
     CMR_CANID_REAR_WHL_VELS = 0x7ED,
 
-    CMR_CANID_TEST_ID=0x777,
-
 	CMR_CANID_DRS_CONTROLS = 0x29C, 				/**< @brief DRS Motor Controls. */
 
     CMR_CANID_DAQ_0_LOADCELL = 0x650,           /**< @brief Load cell data for DAQ Board 0. */
@@ -381,12 +380,14 @@ typedef enum {
 	CMR_CANID_RAM_GIT = 0x7f6,
 
     //AS
-    CMR_CANID_AS_RES = 0x182,                   /**< @brief Autonomous RES (remote E-stop)*/
+    CMR_CANID_AS_RES_ENABLE = 0x000,
+    CMR_CANID_AS_RES = 0x18E,                   /**< @brief Autonomous RES (remote E-stop)*/
     CMR_CANID_AUTONOMOUS_ACTION = 0x190,        /**< @brief Autonomous Action*/
     CMR_CANID_AS_PRESSURE_READINGS = 0x191,     /**< @brief Autonomous Pressure Readings for Tank and EBS*/
     CMR_CANID_AS_RACK_DISPLACMENT = 0x192,      /**< @brief Rack Displacement Mesurment*/
     CMR_CANID_ASMS_STATE = 0x193,
-
+    CMR_CANID_AS_MISSION_FINISHED = 0x777,
+    CMR_CANID_AS_HEARTBEAT_COMPUTE = 0x109,
 
     //MAXON
     CMR_CANID_MAXON_STATUS_WORD = 0x250,

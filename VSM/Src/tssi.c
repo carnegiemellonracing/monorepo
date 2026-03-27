@@ -43,30 +43,32 @@ static void tssiControl(void *pvParameters) {
     // pwmSetDutyCycle(PWM_GREEN, 50);
     // pwmSetDutyCycle(PWM_RED, 0);
     cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
-    cmr_gpioWrite(GPIO_OUT_LED_RED, 0);
+    cmr_gpioWrite(GPIO_OUT_LED_RED, 1);
 
     while (1) {
-      if (getCurrentState() == CMR_CAN_VSM_STATE_GLV_ON) {
-        glvReached = true;
-      }
+      // if (getCurrentState() == CMR_CAN_VSM_STATE_GLV_ON) {
+      //   glvReached = true;
+      // }
 
-      if(glvReached) {
-        if(LEDError()) {
-          cmr_gpioWrite(GPIO_OUT_LED_GREEN, 0);
-          cmr_gpioWrite(GPIO_OUT_LED_RED, 1);
-        }
-        else if(getCurrentState() != CMR_CAN_VSM_STATE_ERROR) {
-          cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
-          cmr_gpioWrite(GPIO_OUT_LED_RED, 0);
-        }
-      }
-      else {
-        // pwmSetDutyCycle(PWM_GREEN, 100);
-        // pwmSetDutyCycle(PWM_RED, 0);
-        cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
-        cmr_gpioWrite(GPIO_OUT_LED_RED, 0);
-      }
-      // cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
+      // if(glvReached) {
+      //   if(LEDError()) {
+      //     cmr_gpioWrite(GPIO_OUT_LED_GREEN, 0);
+      //     cmr_gpioWrite(GPIO_OUT_LED_RED, 1);
+      //   }
+      //   else if(getCurrentState() != CMR_CAN_VSM_STATE_ERROR) {
+      //     cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
+      //     cmr_gpioWrite(GPIO_OUT_LED_RED, 0);
+      //   }
+      // }
+      // else {
+      //   // pwmSetDutyCycle(PWM_GREEN, 100);
+      //   // pwmSetDutyCycle(PWM_RED, 0);
+      //   cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
+      //   cmr_gpioWrite(GPIO_OUT_LED_RED, 0);
+      // }
+      // // cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
+      cmr_gpioWrite(GPIO_OUT_LED_GREEN, 1);
+      cmr_gpioWrite(GPIO_OUT_LED_RED, 1);
 
       vTaskDelayUntil(&lastWakeTime, tssiControl_period_ms);
     }

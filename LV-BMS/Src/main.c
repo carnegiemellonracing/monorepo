@@ -70,7 +70,7 @@ int main(void) {
   	gpio_init();
 	BMBInit();
 	adc_init();
-	// canInit();
+	canInit();
 	sampleInit();
 
 	cmr_taskInit(

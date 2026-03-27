@@ -120,9 +120,9 @@ enum VSMState(0="VSM_STATE_ERROR", 1="VSM_STATE_CLEAR_ERROR",
     2="VSM_STATE_GLV_ON", 3="VSM_STATE_REQ_PRECHARGE",
     4="VSM_STATE_RUN_BMS", 5="VSM_STATE_DCDC_EN",
     6="VSM_STATE_INVERTER_EN", 7="VSM_STATE_BRAKE_TEST",
-    8="VSM_STATE_HV_EN", 9="VSM_STATE_RTD", 10="VSM_STATE_LEN",
-    11="VSM_STATE_AS_READY", 12="VSM_STATE_AS_DRIVING",
-    13="VSM_STATE_AS_FINISHED", 14="VSM_STATE_AS_EMERGENCY")
+    8="VSM_STATE_HV_EN", 9="VSM_STATE_RTD", 10="VSM_STATE_AS_READY",
+    11="VSM_STATE_AS_DRIVING", 12="VSM_STATE_AS_FINISHED",
+    13="VSM_STATE_AS_EMERGENCY", 14="VSM_STATE_LEN")
 enum VSMTimeoutErrorSource(0="VSM_TIMEOUT_SOURCE_NONE",
     1="VSM_TIMEOUT_SOURCE_HVBMS", 8="VSM_TIMEOUT_SOURCE_DIM",
     16="VSM_TIMEOUT_SOURCE_FSM", 32="VSM_TIMEOUT_SOURCE_CDC",
@@ -138,6 +138,23 @@ enum Warn(0="NONE", 1="VSM_TIMEOUT", 2="BUS_VOLTAGE", 4="BUS_CURRENT",
 {SENDRECEIVE}
 
 // ========== END AUTO-GENERATED ENUMS ==========
+
+[AS_PRESSURE_READINGS]
+ID=191h
+DLC=4
+CycleTime=10
+TimeOut=50
+Var=PRESSURE_ebsPressure_1 unsigned 0,16
+Var=PRESSURE_ebsPressure_2 unsigned 16,16
+
+[AUTONOMOUS_ACTION]
+ID=190h
+DLC=6
+CycleTime=400
+TimeOut=2000
+Var=ACTION_frontTorque_mNm unsigned 0,16
+Var=ACTION_rearTorque_mNm unsigned 16,16
+Var=steeringAngle_centi_deg unsigned 32,16
 
 [CDC_COG_VELOCITY]
 ID=2C2h
@@ -400,10 +417,9 @@ ID=20h
 DLC=8
 CycleTime=20
 TimeOut=100
-Var=FL_velocity_erpm signed 0,16
-Var=FL_torqueLimPos_mNm signed 16,16
-Var=FL_torqueLimNeg_mNm signed 32,16
-Var=FL_ACCurrent_deciAmps signed 48,16
+Var=FL_erpm signed 0,32
+Var=FL_duty_cycle_pct signed 32,16
+Var=FL_input_voltage_V signed 48,16
 
 [DTI_FL_IO_STATUS]
 ID=24h
@@ -702,13 +718,11 @@ Var=COMMAND_modeRequest unsigned 0,8 /e:HVCMode
 
 [HVC_LOW_VOLTAGE]
 ID=303h
-DLC=4
+DLC=2
 CycleTime=10
 TimeOut=50
-Var=LOW_vbatt_mV unsigned 0,8 /u:mV /f:0.1333333
-Var=LOW_vAIR_mV unsigned 8,8 /u:mV /f:0.1333333
-Var=LOW_safety_mV unsigned 16,8 /u:mV /f:0.1333333
-Var=LOW_iDCDC_mA unsigned 24,8 /u:mA /f:0.1333333
+Var=LOW_vAIR_qV unsigned 0,8 /u:qV
+Var=LOW_safety_qV unsigned 8,8 /u:qV
 
 [HVC_PACK_CURRENT]
 ID=302h
@@ -844,6 +858,25 @@ TimeOut=2000
 Var=IMU_gyro_x_rads signed 0,16 /u:rad
 Var=IMU_gyro_y_rads signed 16,16 /u:rad
 Var=IMU_gyro_z_rads signed 32,16 /u:rad
+
+[SENSORIC_DIST]
+ID=601h
+DLC=8
+CycleTime=10
+TimeOut=50
+Var=DIST_dist_A signed 0,32
+Var=DIST_radius signed 32,16
+Var=DIST_acc_C signed 48,16
+
+[SENSORIC_VEL_ANG]
+ID=600h
+DLC=8
+CycleTime=5
+TimeOut=25
+Var=VEL_vel_X signed 0,16
+Var=VEL_vel_Y signed 16,16
+Var=VEL_vel_A signed 32,16
+Var=VEL_ang_S signed 48,16
 
 [SF_STATE]
 ID=52Dh
@@ -1921,26 +1954,6 @@ Var=RTC_Date_In unsigned 24,8 /u:day
 Var=RTC_Month_In unsigned 32,8 /u:month
 Var=RTC_Year_In unsigned 40,8 /u:year
 Var=RTC_Error_In unsigned 48,8	// For interpreting this, see comments in code.
-
-[DIM_Config0_Drv0]
-ID=600h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config0_drv0_config_val_1 unsigned 0,8
-Var=DIM_config0_drv0_config_val_2 unsigned 8,8
-Var=DIM_config0_drv0_config_val_3 unsigned 16,8
-Var=DIM_config0_drv0_config_val_4 unsigned 24,8
-
-[DIM_Config1_Drv0]
-ID=601h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config1_drv0_config_val_1 unsigned 0,8
-Var=DIM_config1_drv0_config_val_2 unsigned 8,8
-Var=DIM_config1_drv0_config_val_3 unsigned 16,8
-Var=DIM_config1_drv0_config_val_4 unsigned 24,8
 
 [DIM_Config2_Drv0]
 ID=602h

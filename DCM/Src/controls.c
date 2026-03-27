@@ -26,6 +26,7 @@
 #define PI 3.1415926535897932384626f
 
 #define X1000_INT16(x) ((int16_t)((float)x * 1000.0f))
+#define INSPECTION_MISSION_TIME_MS 27000
 
 
 // ------------------------------------------------------------------------------------------------
@@ -309,7 +310,8 @@ static float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
     if (use_true_downforce && not_timeout) {
         volatile cmr_canIZZELoadCell_t *downforcePayload = (volatile cmr_canIZZELoadCell_t*) canDAQGetPayload(loadIndex);
         float angle = get_load_cell_angle_rad(loadIndex);
-        volatile int16_t raw = parse_int16(&downforcePayload->force_output_N);
+        // TODO: fix later, temp change force_output units
+        volatile int16_t raw = parse_int16(&downforcePayload->force_output_lb);
         downforce_N = (float) raw * 0.1f * sinf(angle);
     } else {
         downforce_N = (float) car_mass_kg * 9.81f * 0.25f;
@@ -700,6 +702,8 @@ void runControls (
     volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RL = canTractiveGetPayload(CANRX_TRAC_RL_ERPM);
     volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RR = canTractiveGetPayload(CANRX_TRAC_RR_ERPM);
 
+    volatile cmr_canHeartbeat_t   *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+
     const int32_t avgMotorSpeed_RPM = (
         + (int32_t)(dtiERPM_FL->erpm / pole_pairs)
         + (int32_t)(dtiERPM_FR->erpm / pole_pairs)
@@ -717,21 +721,26 @@ void runControls (
 
     switch (gear) {
         case CMR_CAN_GEAR_SLOW: {
+            disableTorqueMode();
             setSlowTorque(throttlePos_u8, swAngle_millideg);
             break;
         }
         case CMR_CAN_GEAR_FAST: {
-            setFastTorque(throttlePos_u8);
+            disableTorqueMode();
+            // setFastTorque(throttlePos_u8);
+            setFastTorqueWithBias(throttlePos_u8, front_bias);
             // set_fast_torque_with_slew(throttlePos_u8, 29.0f);
             break;
         }
         case CMR_CAN_GEAR_ENDURANCE: {
+            disableTorqueMode();
             // setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
             set_regen(throttlePos_u8);
             // set_regen_with_slew(throttlePos_u8, 29.0f);
             break;
         }
         case CMR_CAN_GEAR_AUTOX: {
+            disableTorqueMode();
             // const bool assumeNoTurn = true; // TC is not allowed to behave left-right asymmetrically due to the lack of testing
             // const bool ignoreYawRate = false; // TC takes yaw rate into account to prevent the vehicle from stopping unintendedly when turning at low speeds
             // const bool allowRegen = true; // regen-braking is allowed to protect the AC by keeping charge level high
@@ -743,10 +752,12 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_SKIDPAD: {
+            disableTorqueMode();
         	set_optimal_control((float)throttlePos_u8 / UINT8_MAX, swAngle_millideg_FL, swAngle_millideg_FR, false);
             break;
         }
         case CMR_CAN_GEAR_ACCEL: {
+            disableTorqueMode();
             const bool assumeNoTurn = true; // TC is not allowed to behave left-right asymmetrically because it's meaningless in accel
             const bool ignoreYawRate = true;  // TC ignores yaw rate because it's meaningless in accel
             const bool allowRegen = false; // regen-braking is not allowed because it's meaningless in accel
@@ -758,6 +769,11 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_TEST: {
+            disableTorqueMode();
+            setPowerLimit(false, MOTOR_FL, 40.0 * front_bias);
+            setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
+            setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
+            setPowerLimit(false, MOTOR_FR, 40.0 * (1 - front_bias));
             // float target_speed_mps = 5.0f;
             // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
             // set_motor_speed(throttlePos_u8, target_speed_mps, false);
@@ -767,8 +783,44 @@ void runControls (
 
         case CMR_CAN_GEAR_REVERSE: {
             // for rule-compliance, the car shouldn't reverse
+            disableTorqueMode();
             setTorqueLimsAllProtected(0.0f, 0.0f);
             setVelocityInt16All(0);
+            break;
+        }
+
+        case CMR_CAN_GEAR_DV_MISSION_INSPECTION: {
+            disableTorqueMode();
+            // initiateTorqueMode();
+            static bool inspectionStarted = false;
+            static TickType_t inspectionStartTime = 0;
+            TickType_t now = xTaskGetTickCount();
+            if(!inspectionStarted && heartbeatVSM->state == CMR_CAN_AS_DRIVING) {
+                inspectionStarted = true;
+                inspectionStartTime = now;
+            }
+            if(inspectionStarted 
+            && heartbeatVSM->state == CMR_CAN_AS_DRIVING
+            && now - inspectionStartTime < INSPECTION_MISSION_TIME_MS){
+                setVelocityInt16All(2000);
+                float torque = 5.0f; // a low value so we don' t scare judges
+                setTorqueLimsUnprotected(MOTOR_FL, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_FR, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_RR, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_RL, torque, 0.0f);
+                // setTorquesAll(torque);
+            }
+            else {
+                setVelocityInt16All(0);
+                float torque = 0.0f; 
+                setTorqueLimsUnprotected(MOTOR_FL, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_FR, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_RR, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_RL, torque, 0.0f);
+                // setTorquesAll(torque);
+                uint8_t missionFinished = 1;
+                canTX(CMR_CAN_BUS_VEH, CMR_CANID_AS_MISSION_FINISHED, &missionFinished, sizeof(missionFinished), 100);
+            }
             break;
         }
         // case AS_DRIVING: {
@@ -878,19 +930,12 @@ void setSlowTorque (
     int32_t swAngle_millideg
 ) {
     const float reqTorque = maxSlowTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
-    // setTorqueLimsAllProtected(reqTorque, 0.0f);
 
     setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
     setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
 
-    // Testing motors one by one
-//    motorLocation_t active_motor = MOTOR_FR;
-//    for(int i = 0; i < MOTOR_LEN; i++) {
-//    	setTorqueLimsUnprotected(i, reqTorque, 0.0f);
-//    }
-//
     setVelocityInt16All(maxSlowSpeed_rpm);
 }
 
@@ -907,6 +952,24 @@ void setFastTorque (uint8_t throttlePos_u8) {
    setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
    setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
    setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
+   setVelocityInt16All(maxFastSpeed_rpm);
+}
+
+void setFastTorqueWithBias (uint8_t throttlePos_u8, float front_bias) {
+    const float reqTorque = maxFastTorque_Nm * (float)(throttlePos_u8) / (float)(UINT8_MAX);
+   //setTorqueLimsAllProtected(reqTorque, 0.0f);
+   float reqTorque_front = reqTorque * front_bias / (1-front_bias);
+   float reqTorque_rear = reqTorque;
+
+   setPowerLimit(false, MOTOR_FL, 40.0f * front_bias);
+   setPowerLimit(false, MOTOR_FR, 40.0f * front_bias);
+   setPowerLimit(false, MOTOR_RL, 40.0f * (1-front_bias));
+   setPowerLimit(false, MOTOR_RR, 40.0f * (1-front_bias));
+   
+   setTorqueLimsUnprotected(MOTOR_FL, reqTorque_front, 0.0f);
+   setTorqueLimsUnprotected(MOTOR_FR, reqTorque_front, 0.0f);
+   setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear, 0.0f);
+   setTorqueLimsUnprotected(MOTOR_RL, reqTorque_rear, 0.0f);
    setVelocityInt16All(maxFastSpeed_rpm);
 }
 
@@ -1416,13 +1479,12 @@ float getYawRateControlLeftRightBias(int32_t swAngle_millideg) {
 
     // using new abstraction
     float gx, gy, gz;
-    sensors_get_gyro_xyz(&gx, &gy, &gz);
+    // sensors_get_gyro_xyz(&gx, &gy, &gz);
     const float actual_yaw_rate_radps_sae = gz;
 
-
-
     float velocity_x_mps;
-    const volatile car_state_t *cs = sensors_get_car_state();
+    const volatile car_state_t *cs;
+    //  = sensors_get_car_state();
     float calculated_velocity_x_mps_fallback = getTotalMotorSpeed_radps() * 0.25f / gear_ratio * effective_wheel_rad_m;
 
     // add yrc debug here

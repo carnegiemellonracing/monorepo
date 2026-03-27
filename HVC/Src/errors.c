@@ -19,7 +19,7 @@ cmr_canHVCError_t checkHVCErrors(cmr_canHVCState_t currentState){
     if(checkRelayPowerFault() && (getState() != CMR_CAN_HVC_STATE_ERROR && getState() != CMR_CAN_HVC_STATE_CLEAR_ERROR)) {//(getRelayStatus() & 0xAA) != 0xAA) {
         // TODO look into the AIR_Fault_L signal, it might be necessary to confirm this is not active
         // before looking at relay status, otherwise we could be in dead lock trying to clear errors.
-        //errorFlags |= BMS_ERROR_CODE_RELAY; 
+        errorFlags |= CMR_CAN_HVC_ERROR_RELAY; 
     }
 
     if( 

@@ -62,7 +62,7 @@ cmr_canDVMode_t stateGetDVReq(void);
 
 uint32_t get_test_message_id();
 
-float getSpeedKmh(void);
+uint8_t getSpeedKmh(void);
 
 float getOdometer(void);
 

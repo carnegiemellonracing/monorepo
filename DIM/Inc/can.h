@@ -94,6 +94,8 @@ typedef enum {
     CANRX_DTI_RR_IO_STATUS,
     CANRX_DTI_RR_ACLIMS,
     CANRX_DTI_RR_DCLIMS,
+    CANRX_SENSORIC_DIST,
+    CANRX_SENSORIC_VEL_ANG,
     CANRX_HVC_PACK_TEMPS,      /**< @brief HVC cell temps. */
     CANRX_VSM_STATUS,          /**< @brief VSM status */
     CANRX_PTCf_LOOP_A_TEMPS,   /**< @brief PTCf Loop A temps */

@@ -6,9 +6,14 @@
             "type": "AS_Status"
         },
         "CMR_CANID_AS_PRESSURE_READINGS": {
-            "cycleTime": 20.0,
-            "timeOut": 100,
+            "cycleTime": 10,
+            "timeOut": 50,
             "type": "cmr_canDVPressureReadings_t"
+        },
+        "CMR_CANID_AUTONOMOUS_ACTION": {
+            "cycleTime": 400.0,
+            "timeOut": 2000,
+            "type": "cmr_canAutonomousControlAction_t"
         },
         "CMR_CANID_CDC_COG_VELOCITY": {
             "cog_x_mps": {
@@ -347,21 +352,6 @@
             "timeOut": 500,
             "type": "cmr_canCDCDRSStates_t"
         },
-        "CMR_CANID_DTI_BROADCAST_SET_CURRENT": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "setCurrent"
-        },
-        "CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "driveEnable"
-        },
-        "CMR_CANID_DTI_BROADCAST_SET_MAX_CURRENT": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "current"
-        },
         "CMR_CANID_DTI_ERROR_MESSAGES": {
             "cycleTime": 100,
             "timeOut": 500,
@@ -382,35 +372,10 @@
             "timeOut": 100,
             "type": "cmr_canDTI_TX_IOStatus_t"
         },
-        "CMR_CANID_DTI_FL_SET_CURRENT": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "set_current_fl"
-        },
-        "CMR_CANID_DTI_FL_SET_MAX_CURRENT": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "current"
-        },
-        "CMR_CANID_DTI_FL_SET_TORLIMNEG": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "torqueLimNeg_mNm"
-        },
-        "CMR_CANID_DTI_FL_SET_TORLIMPOS": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "torqueLimPos_mNm"
-        },
         "CMR_CANID_DTI_FL_TEMPFAULT": {
             "cycleTime": 20.0,
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
-        },
-        "CMR_CANID_DTI_FL_VELOCITY": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "velocity_erpm"
         },
         "CMR_CANID_DTI_FR_CURRENT": {
             "cycleTime": 20.0,
@@ -427,35 +392,10 @@
             "timeOut": 100,
             "type": "cmr_canDTI_TX_IOStatus_t"
         },
-        "CMR_CANID_DTI_FR_SET_CURRENT": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "set_current_fr"
-        },
-        "CMR_CANID_DTI_FR_SET_MAX_CURRENT": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "current"
-        },
-        "CMR_CANID_DTI_FR_SET_TORLIMNEG": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "torqueLimNeg_mNm"
-        },
-        "CMR_CANID_DTI_FR_SET_TORLIMPOS": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "torqueLimPos_mNm"
-        },
         "CMR_CANID_DTI_FR_TEMPFAULT": {
             "cycleTime": 20.0,
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
-        },
-        "CMR_CANID_DTI_FR_VELOCITY": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "velocity_erpm"
         },
         "CMR_CANID_DTI_RL_CURRENT": {
             "cycleTime": 20.0,
@@ -472,35 +412,10 @@
             "timeOut": 100,
             "type": "cmr_canDTI_TX_IOStatus_t"
         },
-        "CMR_CANID_DTI_RL_SET_CURRENT": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "set_current_rl"
-        },
-        "CMR_CANID_DTI_RL_SET_MAX_CURRENT": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "current"
-        },
-        "CMR_CANID_DTI_RL_SET_TORLIMNEG": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "torqueLimNeg_mNm"
-        },
-        "CMR_CANID_DTI_RL_SET_TORLIMPOS": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "torqueLimPos_mNm"
-        },
         "CMR_CANID_DTI_RL_TEMPFAULT": {
             "cycleTime": 20.0,
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
-        },
-        "CMR_CANID_DTI_RL_VELOCITY": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "velocity_erpm"
         },
         "CMR_CANID_DTI_RR_CURRENT": {
             "cycleTime": 20.0,
@@ -517,35 +432,10 @@
             "timeOut": 100,
             "type": "cmr_canDTI_TX_IOStatus_t"
         },
-        "CMR_CANID_DTI_RR_SET_CURRENT": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "set_current_rr"
-        },
-        "CMR_CANID_DTI_RR_SET_MAX_CURRENT": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "current"
-        },
-        "CMR_CANID_DTI_RR_SET_TORLIMNEG": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "torqueLimNeg_mNm"
-        },
-        "CMR_CANID_DTI_RR_SET_TORLIMPOS": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "torqueLimPos_mNm"
-        },
         "CMR_CANID_DTI_RR_TEMPFAULT": {
             "cycleTime": 20.0,
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
-        },
-        "CMR_CANID_DTI_RR_VELOCITY": {
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "velocity_erpm"
         },
         "CMR_CANID_EMD_MEASUREMENT": {
             "current": {
@@ -807,23 +697,13 @@
         },
         "CMR_CANID_HVC_LOW_VOLTAGE": {
             "cycleTime": 10,
-            "iDCDC_mA": {
-                "f": 0.1333333,
-                "u": "mA"
-            },
-            "safety_mV": {
-                "f": 0.1333333,
-                "u": "mV"
+            "safety_qV": {
+                "u": "qV"
             },
             "timeOut": 50,
             "type": "cmr_canBMSLowVoltage_t",
-            "vAIR_mV": {
-                "f": 0.1333333,
-                "u": "mV"
-            },
-            "vbatt_mV": {
-                "f": 0.1333333,
-                "u": "mV"
+            "vAIR_qV": {
+                "u": "qV"
             }
         },
         "CMR_CANID_HVC_MINMAX_CELL_TEMPS": {
@@ -965,6 +845,16 @@
             "timeOut": 2000,
             "type": "cmr_canSBGIMUGyro_t"
         },
+        "CMR_CANID_SENSORIC_DIST": {
+            "cycleTime": 10.0,
+            "timeOut": 50,
+            "type": "cmr_canSensoricDist_t"
+        },
+        "CMR_CANID_SENSORIC_VEL_ANG": {
+            "cycleTime": 5,
+            "timeOut": 25,
+            "type": "cmr_canSensoricVelAng_t"
+        },
         "CMR_CANID_SF_STATE": {
             "cycleTime": 10,
             "longest_power_violation_ms": {
@@ -1044,20 +934,20 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2931,
-        "files_with_matches": 2931,
+        "files_processed": 2927,
+        "files_with_matches": 2927,
         "global_mappings": {
-            "canrx_mappings": 177,
-            "canrx_timeouts": 171,
-            "canrx_types": 73,
-            "constants": 243,
+            "canrx_mappings": 179,
+            "canrx_timeouts": 173,
+            "canrx_types": 75,
+            "constants": 251,
             "struct_members": 0,
-            "variable_types": 338
+            "variable_types": 330
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 127
+        "total_canids": 106
     }
 }

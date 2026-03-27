@@ -22,6 +22,7 @@ typedef enum {
     CANRX_HEARTBEAT_CDC,      /**< @brief CDC heartbeat. */
     CANRX_HEARTBEAT_DIM,      /**< @brief DIM heartbeat. */
     CANRX_HEARTBEAT_HVBMS,    /**< @brief HVBMS heartbeat. */
+    CANRX_HEARTBEAT_COMPUTE,
     CANRX_FSM_DATA,           /**< @brief FSM data. */
     CANRX_FSM_SWANGLE,
     CANRX_DIM_REQUEST,        /**< @brief DIM state request. */
@@ -41,6 +42,7 @@ typedef enum {
     CANRX_FR_ERPM,
     CANRX_RL_ERPM,
     CANRX_RR_ERPM,
+    CANRX_AS_MISSION_FINISHED,
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 
