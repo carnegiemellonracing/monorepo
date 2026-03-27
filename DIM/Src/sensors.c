@@ -35,6 +35,13 @@
 /** @brief  Experimentally determined right TPOS ADC Maximum*/
 #define RIGHT_TPOS_MAX_ADC 1800
 
+#define LEFT_SWANGLE_MIN_ADC 360.0f
+#define CENTER_SWANGLE_ADC 1760.0f
+#define RIGHT_SWANGLE_MAX_ADC 2880.0f
+
+#define MAX_OUTER_WHEEL_ANGLE_MILLIDEG 25282.0f
+#define MAX_INNER_WHEEL_ANGLE_MILLIDEG 30139.0f
+
 /** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
 static const TickType_t TPOS_IMPLAUS_THRES_MS = 100;
 /** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
@@ -64,6 +71,8 @@ const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
     [SENSOR_CH_SWANGLE_DEG_FR] = ADC_SWANGLE,
 	[SENSOR_CH_X] = ADC_X,
 	[SENSOR_CH_Y] = ADC_Y,
+    [SENSOR_CH_EBS_1] = ADC_EBS_1,
+	[SENSOR_CH_EBS_2] = ADC_EBS_2,
     [SENSOR_CH_TPOS_IMPLAUS] = ADC_LEN  // Not an ADC channel!
 };
 
@@ -164,14 +173,16 @@ static int32_t adcToYaw_FL(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 
     // millideg
-    if(reading >= 2130){
-        float swangle_millideg = ((-0.0145f * (float)reading)+30.4f) * 1000;
-        int32_t retval = (int32_t)swangle_millideg;
+    if(reading >= CENTER_SWANGLE_ADC){
+        // left is outer wheel
+        float FL_angle_millideg = INVLERP_SCALED(CENTER_SWANGLE_ADC, RIGHT_SWANGLE_MAX_ADC, reading, MAX_OUTER_WHEEL_ANGLE_MILLIDEG);
+        int32_t retval = (int32_t)FL_angle_millideg;
         return retval;
     }
     else {
-        float swangle_millideg = ((-0.0217f * (float)reading)+44.7f) * 1000;
-        int32_t retval = (int32_t)swangle_millideg;
+        // left is inner wheel
+        float FL_angle_millideg = INVLERP_SCALED(CENTER_SWANGLE_ADC, LEFT_SWANGLE_MIN_ADC, reading, MAX_INNER_WHEEL_ANGLE_MILLIDEG);
+        int32_t retval = -(int32_t)FL_angle_millideg;
         return retval;
     }
 }
@@ -180,14 +191,16 @@ static int32_t adcToYaw_FR(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 
     // millideg
-    if(reading >= 2040){
-        float swangle_millideg = ((-0.0214f * (float)reading)+44.1f) * 1000;
-        int32_t retval = (int32_t)swangle_millideg;
+    if(reading >= CENTER_SWANGLE_ADC){
+        // right is inner wheel
+        float FR_angle_millideg = INVLERP_SCALED(CENTER_SWANGLE_ADC, RIGHT_SWANGLE_MAX_ADC, reading, MAX_INNER_WHEEL_ANGLE_MILLIDEG);
+        int32_t retval = (int32_t)FR_angle_millideg;
         return retval;
     }
-    else{
-        float swangle_millideg = ((-0.0165f * (float)reading)+33.6f) * 1000;
-        int32_t retval = (int32_t)swangle_millideg;
+    else {
+        // right is outer wheel
+        float FR_angle_millideg = INVLERP_SCALED(CENTER_SWANGLE_ADC, LEFT_SWANGLE_MIN_ADC, reading, MAX_OUTER_WHEEL_ANGLE_MILLIDEG);
+        int32_t retval = -(int32_t)FR_angle_millideg;
         return retval;
     }
 }
@@ -282,6 +295,22 @@ static uint32_t sampleTPOSDiff(const cmr_sensor_t *sensor) {
     }
 
     return 1;  // Implausible!
+}
+
+int32_t adcToEBSBrakePressure_psi(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void)sensor;  // Placate compiler.
+
+    uint32_t reading_mV_3v3 = reading * 3300 / 4096;
+    // Values come from a 9.1K and 4.7k voltage divider
+    uint32_t reading_mV  = reading_mV_3v3 * 138 / 91;
+
+    const uint32_t lower_bound_mV = 500; // voltage at 0 bar
+    const uint32_t upper_bound_mV = 4500; // voltage at 100 bar
+    const uint32_t max_pressure_bar = 100; // voltage at 0 bar
+    uint32_t clamped_reading_mV = CLAMP (lower_bound_mV, reading_mV, upper_bound_mV);
+    uint32_t reading_bar = INVLERP_SCALED(lower_bound_mV,upper_bound_mV, clamped_reading_mV, max_pressure_bar);
+    
+    return (uint16_t)reading_bar;
 }
 
 /**
@@ -382,7 +411,14 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 					  .readingMax = 4096,},
 	[SENSOR_CH_Y] = { .conv = NULL, .sample = sampleADCSensor,
 				  .readingMin = 0,
+				  .readingMax = 4096,},
+    [SENSOR_CH_EBS_1] = { .conv = adcToEBSBrakePressure_psi, .sample = sampleADCSensor,
+					  .readingMin = 0,
+					  .readingMax = 4096,},
+	[SENSOR_CH_EBS_2] = { .conv = adcToEBSBrakePressure_psi, .sample = sampleADCSensor,
+				  .readingMin = 0,
 				  .readingMax = 4096,}
+    
 };
 
 /** @brief Sensors update priority. */

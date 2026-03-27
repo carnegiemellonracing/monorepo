@@ -254,7 +254,9 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
     },
-    [CANRX_HVC_PACK_TEMPS] =      { .canID = CMR_CANID_HVC_MINMAX_CELL_TEMPS, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
+    [CANRX_SENSORIC_VEL_ANG] =    { .canID = CMR_CANID_SENSORIC_VEL_ANG, .timeoutError_ms = 50, .timeoutWarn_ms = 25},
+    [CANRX_SENSORIC_DIST] =       { .canID = CMR_CANID_SENSORIC_DIST, .timeoutError_ms = 50, .timeoutWarn_ms = 25},
+    [CANRX_HVC_PACK_TEMPS] =      { .canID = CMR_CANID_HVBMS_MIN_MAX_CELL_TEMPERATURE, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_VSM_STATUS] =          { .canID = CMR_CANID_VSM_STATUS, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_PTCf_LOOP_A_TEMPS] =   { .canID = CMR_CANID_PTC_LOOP_TEMPS_A, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
     [CANRX_PTC_LOOP_A_TEMPS] =    { .canID = CMR_CANID_PTC_LOOP_TEMPS_A, .timeoutError_ms = 50, .timeoutWarn_ms = 25 },
@@ -290,6 +292,7 @@ static cmr_task_t canTX10Hz_task;
 
 // Forward declarations
 static void sendHeartbeat(TickType_t lastWakeTime);
+static void sendDVPressureReadings(void);
 static void sendFSMData(void);
 static void sendSWAngle(void);
 static void sendFSMPedalsADC(void);
@@ -326,7 +329,7 @@ static void canTX10Hz(void *pvParameters) {
         	.test_id = get_test_message_id()
         };
 
-        canTX(CMR_CANID_TEST_ID, &test_id, sizeof(test_id), canTX10Hz_period_ms);
+        // canTX(CMR_CANID_TEST_ID, &test_id, sizeof(test_id), canTX10Hz_period_ms);
         if (
             (stateVSM != stateVSMReq) ||
             (gear != gearReq) ||
@@ -382,6 +385,7 @@ static void canTX100Hz(void *pvParameters) {
         sendHeartbeat(lastWakeTime);
         sendFSMData();
         sendSWAngle();
+        sendDVPressureReadings();
         // Calculate integer regenPercent from regenStep
     	uint8_t paddle = (uint8_t) ((adcRead(ADC_PADDLE) - 16.062) / 3694.43) * 255.0;
     	uint8_t regenPercent = (uint8_t)((adcRead(ADC_PADDLE) / 255.0) * 100.0);
@@ -677,15 +681,15 @@ void canInit(void) {
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_MOVELLA_STATUS, CMR_CANID_CDC_ODOMETER, CMR_CANID_DIM_TEXT_WRITE, CMR_CANID_CDC_CONTROLS_STATUS } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_AFC1_DRIVER_TEMPS, CMR_CANID_HVC_MINMAX_CELL_TEMPS, CMR_CANID_VSM_STATUS, CMR_CANID_HEARTBEAT_MEMORATOR } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_PTC_LOOP_TEMPS_A, CMR_CANID_PTC_LOOP_TEMPS_B, CMR_CANID_PTC_LOOP_TEMPS_C, CMR_CANID_PTC_LOOP_TEMPS_B } },
-        { .isMask = true, .rxFIFO = CAN_RX_FIFO0, .ids =  { 0x01, 0x02, 0x1F, 0x1F} },
-        { .isMask = true, .rxFIFO = CAN_RX_FIFO0, .ids =  { 0x03, 0x04, 0x1F, 0x1F} },
+        { .isMask = true,  .rxFIFO = CAN_RX_FIFO0, .ids =  { 0x01, 0x02, 0x1F, 0x1F} },
+        { .isMask = true,  .rxFIFO = CAN_RX_FIFO0, .ids =  { 0x03, 0x04, 0x1F, 0x1F} },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV0, CMR_CANID_CDC_CONFIG1_DRV0, CMR_CANID_CDC_CONFIG2_DRV0, CMR_CANID_CDC_CONFIG3_DRV0 } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV1, CMR_CANID_CDC_CONFIG1_DRV1, CMR_CANID_CDC_CONFIG2_DRV1, CMR_CANID_CDC_CONFIG3_DRV1 } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV2, CMR_CANID_CDC_CONFIG1_DRV2, CMR_CANID_CDC_CONFIG2_DRV2, CMR_CANID_CDC_CONFIG3_DRV2 } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV3, CMR_CANID_CDC_CONFIG1_DRV3, CMR_CANID_CDC_CONFIG2_DRV3, CMR_CANID_CDC_CONFIG3_DRV3 } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_VSM_SENSORS, CMR_CANID_HVC_MINMAX_CELL_VOLTAGE, CMR_CANID_HVC_LOW_VOLTAGE, CMR_CANID_DRS_STATE } },
-        { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_VSM_POWER_DIAGNOSTICS}} 
+        { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_VSM_POWER_DIAGNOSTICS, CMR_CANID_SENSORIC_VEL_ANG, CMR_CANID_SENSORIC_DIST, CMR_CANID_EAB_STATUS}} 
     };
 
     cmr_canFilter(
@@ -782,24 +786,6 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     uint8_t AS_Status = getASMS();
     canTX(CMR_CANID_ASMS_STATUS, &AS_Status, sizeof(AS_Status), canTX100Hz_period_ms);
 
-    // volatile cmr_canHeartbeat_t *AIM_Heartbeat = canVehicleGetPayload(CANRX_HEARTBEAT_VSM);
-	// cmr_canHeartbeat_t toSend;
-	// memcpy(&toSend, AIM_Heartbeat,sizeof(cmr_canHeartbeat_t)); //memcpy since it is volatile and could update
-
-	// if (toSend.error[0] != 0 || toSend.error[1] != 0) {
-	// 	toSend.state = CMR_CAN_ERROR;
-	// }
-
-    // if(getASMS()){
-    //     uint8_t mask = 1 << 7;
-    //     toSend.state = toSend.state | mask;
-    // }
-
-    // if(getEAB()){
-    //     uint8_t mask = 1 << 6;
-    //     toSend.state = toSend.state | mask;
-    // }
-
     cmr_canWarn_t warning = CMR_CAN_WARN_NONE;
     cmr_canError_t error = CMR_CAN_ERROR_NONE;
 
@@ -874,11 +860,20 @@ static void sendSWAngle(void) {
     int32_t steeringWheelAngle_deg_FR = (int32_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG_FR);
 
     cmr_canFSMSWAngle_t msg = {
-        .steeringWheelAngle_millideg_FL = adcRead(ADC_SWANGLE),
-        .steeringWheelAngle_millideg_FR = adcRead(ADC_SWANGLE)
+        .steeringWheelAngle_millideg_FL = steeringWheelAngle_deg_FL,
+        .steeringWheelAngle_millideg_FR = steeringWheelAngle_deg_FR
     };
 
     canTX(CMR_CANID_FSM_SWANGLE, &msg, sizeof(msg), canTX100Hz_period_ms);
+}
+
+static void sendDVPressureReadings(void) {
+    cmr_canDVPressureReadings_t ebsPressure = {
+        .ebsPressure_1 = cmr_sensorListGetValue(&sensorList, SENSOR_CH_EBS_1),
+        .ebsPressure_2 = cmr_sensorListGetValue(&sensorList, SENSOR_CH_EBS_2)
+    };
+
+    canTX(CMR_CANID_AS_PRESSURE_READINGS, &ebsPressure, sizeof(ebsPressure), canTX100Hz_period_ms);
 }
 
 /**

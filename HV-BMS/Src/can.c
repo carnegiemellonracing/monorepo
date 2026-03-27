@@ -69,6 +69,28 @@ static void sendBMSMinMaxCellTemp(void);
 static void sendAllBMBVoltages(uint8_t bmb_index);
 static void sendHVBMSPackVoltage(void); 
 static void checkClearErr(void); 
+static uint16_t thermVoltage_to_tempC(uint16_t thermVolt); 
+
+#define THERM_MV_TO_TEMP_NUM_ITEMS 101
+
+/**
+ * @brief Look up table thermistor voltage to to temp (C) (indexed by temp)
+ * 
+ * goes from temp 0 to 100 C 
+ */
+static uint16_t thermMV_to_tempC[THERM_MV_TO_TEMP_NUM_ITEMS] = {
+    27280, 26140, 25050, 24010, 23020, 22070, 21170, 20310, 19490, 18710,
+    17960, 17250, 16570, 15910, 15290, 14700, 14130, 13590, 13070, 12570,
+    12090, 11640, 11200, 10780, 10380, 10000, 9633, 9282, 8945, 8622,
+    8312, 8015, 7730, 7456, 7194, 6942, 6700, 6468, 6245, 6031,
+    5826, 5628, 5438, 5255, 5080, 4911, 4749, 4592, 4442, 4297,
+    4158, 4024, 3895, 3771, 3651, 3536, 3425, 3318, 3215, 3115,
+    3019, 2927, 2837, 2751, 2668, 2588, 2511, 2436, 2364, 2295,
+    2227, 2163, 2100, 2039, 1981, 1924, 1869, 1817, 1765, 1716,
+    1668, 1622, 1577, 1534, 1492, 1451, 1412, 1374, 1337, 1302,
+    1267, 1234, 1201, 1170, 1139, 1110, 1081, 1053, 1027, 1001,
+    975
+}; 
 
 /** @brief CAN 1 Hz TX priority. */
 static const uint32_t canTX1Hz_priority = 4;
@@ -93,10 +115,9 @@ static void canTX1Hz(void *pvParameters) {
     while (1) {
 
         // BMB Temperature Status 
-        // for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM - 1; bmb_index++) {
-        //     sendBMSBMBStatusTemp(bmb_index);
-        // }
-        sendBMSMinMaxCellTemp();
+        for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM - 1; bmb_index++) {
+            sendBMSBMBStatusTemp(bmb_index);
+        }
         //send all cells temp and voltage 
         // sendAllBMBVoltages();
 
@@ -158,6 +179,7 @@ static void canTX100Hz(void *pvParameters) {
     while (1) {
         sendHeartbeat(lastWakeTime);
         sendBMSBMBStatusErrors();
+        sendBMSMinMaxCellTemp();
         checkClearErr();
         // sendAllBMBVoltages(BMBNum);
         BMBNum = (BMBNum+1) % 16;
@@ -402,17 +424,11 @@ static void sendBMSMinMaxCellTemp(void) {
             minCellTempIndex = minIndex;
         }
     }
-    float xMin = (4.7f*((float)minCellTemp)/1000.0f)* 1000.0f / ((5.0f - (((float)minCellTemp)/1000.0f)) );
-    float temp_minTemp = (1/(0.00335348f + (0.00030662f*log((xMin)/10000.0f)) + powf(0.00000837316f*log(xMin/10000.0f), 2))) - 273.15;
-    minCellTemp = (int16_t) (temp_minTemp * 10.0f);
-
-    float xMax = (4.7f*((float)maxCellTemp)/1000.0f) * 1000.0f / ((5.0f - (((float)maxCellTemp)/1000.0f)));
-	float temp_maxTemp = (1/(0.00335348f + (0.00030662f*log((xMax)/10000.0f)) + powf(0.00000837316f*log(xMax/10000.0f), 2))) - 273.15;
-	maxCellTemp = (int16_t) (temp_maxTemp * 10.0f);
+    
     //currently swapped because the min logic reading only voltage
     cmr_canBMSMinMaxCellTemperature_t BMSBMBMinMaxTemperature = {
-        .minCellTemp_C = maxCellTemp,
-        .maxCellTemp_C = minCellTemp,
+        .minCellTemp_C = thermVoltage_to_tempC(maxCellTemp),
+        .maxCellTemp_C = thermVoltage_to_tempC(minCellTemp),
         .minTempBMBNum = maxCellTempBMBNum,
         .maxTempBMBNum = minCellTempBMBNum,
         .minTempCellNum = maxCellTempIndex,
@@ -500,4 +516,40 @@ static void sendAllBMBVoltages(uint8_t bmbIndex) {
     canTX(CMR_CANID_HVBMS_BMB_0_CELL_VOLTAGES_5_9 + bmbIndex, &volt1, sizeof(volt1), canTX100Hz_period_ms);
     canTX(CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_0_4 + bmbIndex, &temp0, sizeof(temp0), canTX100Hz_period_ms);
     canTX(CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_5_9 + bmbIndex, &temp1, sizeof(temp1), canTX100Hz_period_ms);
+}
+
+static uint16_t thermVoltage_to_tempC(uint16_t thermVolt_mV){
+    float pullup_ohms = 4700.0; 
+    float v_in_mV = 5000.0; 
+
+    //outside of upper bound 
+    if (thermVolt_mV >= v_in_mV){
+        return 0; 
+    }
+
+    float resistance = (pullup_ohms * thermVolt_mV) /  (v_in_mV - thermVolt_mV); 
+    float temp_C; 
+
+    //if thermVolt greater than max (don't allow negative temps)
+    if (thermVolt_mV > thermMV_to_tempC[0]) {
+        return 0; 
+    }
+
+    for (size_t i = 0; i < THERM_MV_TO_TEMP_NUM_ITEMS - 1; i++) {
+        float table_resistance = thermMV_to_tempC[i]; 
+
+        if (table_resistance == resistance) {
+            return i * 100;
+        }
+
+        //temp is between i and i+1 (assume pretty much linear ratio)
+        if (resistance < table_resistance && resistance > thermMV_to_tempC[i+1]) {
+            temp_C = i + ((float)(table_resistance - resistance)) / ((float)(table_resistance - thermMV_to_tempC[i+1])); 
+            return (uint16_t)(temp_C * 100); 
+        }
+
+    }
+    // if we get to end of loop, voltage is less than lowest voltage in lut
+    return 10100;
+
 }

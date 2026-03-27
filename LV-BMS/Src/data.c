@@ -198,7 +198,7 @@ uint16_t getMinVoltage(void){
 }
 
 bool isBalanceCommanded() {
-	return true; 
+	return false; 
 	// TickType_t xLastWakeTime = xTaskGetTickCount();
 
 	// if(cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_BALANCE_COMMAND]), xLastWakeTime) < 0) {

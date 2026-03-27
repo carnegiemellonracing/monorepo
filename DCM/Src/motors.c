@@ -61,13 +61,13 @@ static cmr_canGear_t gear = CMR_CAN_GEAR_SLOW;
  *  @note Indexed by motorLocation_t
  *  @note It will statically be defined to all 0s
  */
-static cmr_canDTISetpoints_t motorSetpoints[MOTOR_LEN];
+static cmr_DTISetpoints_t motorSetpoints[MOTOR_LEN];
 
 /** @brief Set points for each inverter in DTI format
  *  @note Indexed by motorLocation_t
  *  @note It will statically be defined to all 0s
  */
-static cmr_canDTI_RX_Message_t DTI_RXMessage[MOTOR_LEN];
+static cmr_DTI_RX_Message_t DTI_RXMessage[MOTOR_LEN];
 
 #define MAX_CURRENT_DECI_AMPS 850                        
 
@@ -76,7 +76,7 @@ cmr_canDAQTest_t getDAQTest() {
 }
 
 /* Global Variable to Initiate/Disable Torque Mode*/ 
-bool isTorqueMode = true;
+bool isTorqueMode = false;
 
 // ------------------------------------------------------------------------------------------------
 // Private functions
@@ -93,7 +93,7 @@ static void motorsTest (void *pvParameters) {
         volatile cmr_canFSMData_t *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
         uint8_t throttlePos = dataFSM->throttlePosition;
         uint16_t setCurrent = (uint16_t)(((float)throttlePos * (float)MAX_CURRENT_DECI_AMPS / (float)UINT8_MAX));
-        setCurrent = setCurrent << 8 | ((setCurrent >> 8) & 0xFF);
+        // setCurrent = setCurrent << 8 | ((setCurrent >> 8) & 0xFF);
         //enables motors to drive
         uint8_t driveEnable = 1;
         setPowerLimit(true, MOTOR_FL, 20.25f);
@@ -101,13 +101,16 @@ static void motorsTest (void *pvParameters) {
         if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN || heartbeatVSM->state == CMR_CAN_HV_EN) {
             setCurrent = 0;
             mcCtrlOn();
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
         }
         else if(heartbeatVSM->state == CMR_CAN_RTD){
             mcCtrlOn();
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
-            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
+        }
+        else {
+            mcCtrlOff();
         }
 
         vTaskDelayUntil(&lastWakeTime, motorsCommand_period_ms);
@@ -177,6 +180,7 @@ static void motorsCommand (
 
         switch (heartbeatVSM->state) {
             // Drive the vehicle in RTD
+            case CMR_CAN_AS_DRIVING:
             case CMR_CAN_RTD: {
             	mcCtrlOn();
             	// fansOn();
@@ -192,23 +196,7 @@ static void motorsCommand (
                 if (blank_command) {
                     sendBlankCommand();
 				}
-                // else {
-                //     int16_t set_current_fl = 40 << 8;
-                //     int16_t set_current_fr = 40 << 8;
-                //     int16_t set_current_rl = 40 << 8;
-                //     int16_t set_current_rr = 40 << 8;
-
-                //     //enables motors to drive
-                //     uint8_t driveEnable = 1;
-                //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
-
-                //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_CURRENT, &set_current_fl, sizeof(set_current_fl), can10Hz_period_ms);
-                //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_CURRENT, &set_current_fr, sizeof(set_current_fr), can10Hz_period_ms);
-                //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_CURRENT, &set_current_rl, sizeof(set_current_rl), can10Hz_period_ms);
-                //     canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_CURRENT, &set_current_rr, sizeof(set_current_rr), can10Hz_period_ms);
-                
-                // }
-                
+               
                 uint32_t au32_initial_ticks = DWT->CYCCNT;
 
                 TickType_t startTime = xTaskGetTickCount();
@@ -241,6 +229,7 @@ static void motorsCommand (
             }
 
             // Reset errors in HV_EN
+            case CMR_CAN_AS_READY:
             case CMR_CAN_HV_EN: {
             	mcCtrlOn();
             	// fansOn();
@@ -255,8 +244,10 @@ static void motorsCommand (
             }
 
             // Also reset errors in GLV_ON
+            case CMR_CAN_AS_FINISHED:
             case CMR_CAN_GLV_ON: {
-                pumpsOn();
+                // pumpsOn();
+                pumpsOff();
             	mcCtrlOff();
 
                 if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
@@ -274,17 +265,17 @@ static void motorsCommand (
 
             // In all other states, disable inverters and do not reset errors
             default: {
-                pumpsOn();
+                // pumpsOn();
                 pumpsOff();
                 mcCtrlOff();
-                set_optimal_control_with_regen(128, 10000, 10000);
                 sendBlankCommand();
                 break;
             }
         }
 
         // Update gear in transition from HV_EN to RTD
-        if (prevState == CMR_CAN_HV_EN && heartbeatVSM->state == CMR_CAN_RTD) {
+        if (prevState == CMR_CAN_HV_EN && heartbeatVSM->state == CMR_CAN_RTD
+            || prevState == CMR_CAN_AS_READY && heartbeatVSM->state == CMR_CAN_AS_DRIVING) {
             gear = reqDIM->requestedGear;
             resetRetroactiveLimitFilters();
             initControls();
@@ -308,20 +299,20 @@ void motorsInit (
     initControls();
 
     // Task creation.
-    // cmr_taskInit(
-    //     &motorsCommand_task,
-    //     "motorsCommand",
-    //     motorsCommand_priority,
-    //     motorsCommand,
-    //     NULL
-    // );
     cmr_taskInit(
-        &motorsTest_task,
-        "motorsTest",
+        &motorsCommand_task,
+        "motorsCommand",
         motorsCommand_priority,
-        motorsTest,
+        motorsCommand,
         NULL
     );
+    // cmr_taskInit(
+    //     &motorsTest_task,
+    //     "motorsTest",
+    //     motorsCommand_priority,
+    //     motorsTest,
+    //     NULL
+    // );
 }
 
 /**
@@ -424,8 +415,44 @@ void setTorqueLimsUnprotected (
     torqueLimPos_Nm = fmaxf(torqueLimPos_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
     torqueLimNeg_Nm = fminf(torqueLimNeg_Nm, 0.0f); // ensures torqueLimNeg_Nm <= 0
 
-    motorSetpoints[motor].torqueLimPos_mNm = torqueLimPos_Nm;
-    motorSetpoints[motor].torqueLimNeg_mNm = torqueLimNeg_Nm;
+    motorSetpoints[motor].torqueLimPos_mNm = torqueLimPos_Nm * 1000.0f;
+    motorSetpoints[motor].torqueLimNeg_mNm = torqueLimNeg_Nm * 1000.0f;
+}
+
+/**
+ * @brief Sets direct torque for a motor.
+ *
+ * @param motor Which motor to set torque for.
+ * @param torqueLimPos_Nm Desired torque.
+ */
+void setTorques (
+    motorLocation_t motor,
+    float torque_Nm
+) {
+    if (motor >= MOTOR_LEN) {
+        return;
+    }
+
+    torque_Nm = fmaxf(torque_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
+
+    motorSetpoints[motor].torque_mNm = torque_Nm * 1000.0f;
+}
+
+/**
+ * @brief Sets direct torque for a motor.
+ *
+ * @param motor Which motor to set torque for.
+ * @param torqueLimPos_Nm Desired torque.
+ */
+void setTorquesAll (
+    float torque_Nm
+) {
+    torque_Nm = fmaxf(torque_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
+
+    motorSetpoints[MOTOR_FL].torque_mNm = torque_Nm * 1000.0f;
+    motorSetpoints[MOTOR_FR].torque_mNm = torque_Nm * 1000.0f;
+    motorSetpoints[MOTOR_RL].torque_mNm = torque_Nm * 1000.0f;
+    motorSetpoints[MOTOR_RR].torque_mNm = torque_Nm * 1000.0f;
 }
 
 /**
@@ -450,7 +477,10 @@ void setVelocityInt16 (
         velocity_rpm = -maxSpeed_rpm;
     }
 
-    motorSetpoints[motor].velocity_rpm = velocity_rpm;
+    motorSetpoints[motor].velocity_rpm = (float) velocity_rpm;
+    if(velocity_rpm == 1500) {
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_AFC0_DRIVER_TEMPS, &velocity_rpm, sizeof(velocity_rpm), 100);
+    }
 }
 
 /**
@@ -500,13 +530,13 @@ void setVelocityFloatAll (
  * @brief Sets torque setpoint for a motor.
  *
  * @param motor Which motor to set torque for.
- * @param torque Desired torque.
+ * @param torque Desired torque in Nm
  */
 void setTorque(
     motorLocation_t motor,
-    float torque
+    float torque_Nm
 ){
-    motorSetpoints[motor].torque_mNm = torque;
+    motorSetpoints[motor].torque_mNm = 1000.0f * torque_Nm;
 }
 
 /**
@@ -541,22 +571,22 @@ void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw) {
     // float hvVoltage_V = ((float) HVISense->packVoltage_cV) / 100.f;
     float hvVoltage_V = 500.0f;
     uint16_t current = (int)((10.0f*((float)powerLimit_kw*1000.0f))/hvVoltage_V); // send current in deciamps
-    current = current << 8 | ((current >> 8) & 0xFF); 
+    // current = current << 8 | ((current >> 8) & 0xFF); 
     if(all) {
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+        sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
     } else {
         switch(motor){
             case MOTOR_FL:
-                canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
                 break;
             case MOTOR_FR:
-                canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
                 break;
             case MOTOR_RL:
-                canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
                 break;
             case MOTOR_RR:
-                canTX(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
                 break;
         }
     }
@@ -569,22 +599,20 @@ void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw) {
  *
  * @return Read-only pointer to requested setpoints.
  */
-const cmr_canDTI_RX_Message_t* getDTISetpoints(motorLocation_t motor) {
+const cmr_DTI_RX_Message_t* getDTISetpoints(motorLocation_t motor) {
     if (motor >= MOTOR_LEN) {
         return NULL;
     }
 
-    const cmr_canDTISetpoints_t *src = (const cmr_canDTISetpoints_t *) &(motorSetpoints[motor]);
-    cmr_canDTI_RX_Message_t *dst = &DTI_RXMessage[motor];
-
-    // ERPM vrs RPM // TODO: convert erpm to rpm
+    const cmr_DTISetpoints_t *src = (const cmr_DTISetpoints_t *) &(motorSetpoints[motor]);
+    cmr_DTI_RX_Message_t *dst = &DTI_RXMessage[motor];
     dst->velocity_erpm     = (int16_t)src->velocity_rpm * pole_pairs;
 
     // Change to AC current lims
-    dst->torqueLimPos_mNm = (int16_t)src->torqueLimPos_mNm;
-    dst->torqueLimNeg_mNm = (int16_t)src->torqueLimNeg_mNm;
+    dst->torqueLimPos_dA = (int16_t)torqueToCurrent (src->torqueLimPos_mNm);
+    dst->torqueLimNeg_dA = (int16_t)torqueToCurrent (src->torqueLimNeg_mNm);
 
-    dst->ACCurrent_deciAmps = torqueToCurrent(src->torque_mNm);
+    dst->ACCurrent_dA = torqueToCurrent(src->torque_mNm);
 
-    return (const cmr_canDTI_RX_Message_t *) dst;
+    return (const cmr_DTI_RX_Message_t *) dst;
 }

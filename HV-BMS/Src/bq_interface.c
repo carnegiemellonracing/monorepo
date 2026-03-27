@@ -16,12 +16,15 @@
 #define SINGLE_DEVICE true
 #define MULTIPLE_DEVICE false
 
-extern volatile int BMBTimeoutCount[BOARD_NUM];
-extern volatile int BMBErrs[BOARD_NUM];
+extern volatile int BMBTimeoutCount[BOARD_NUM-1];
+extern volatile int BMBErrs[BOARD_NUM-1];
 
 
 //Fill in data to this array
-BMB_Data_t BMBData[BOARD_NUM];
+BMB_Data_t BMBData[BOARD_NUM-1];
+
+//balanced down to threshold after receiving bal command 
+bool firstBalDone[BOARD_NUM-1][VSENSE_CHANNELS]; 
 
 // CHANNEL_GPIO_TO_CELL_MAP[i][j] yields the corresponding cell number for 
 // ith mux setting and the jth GPIO channel. We choose to zero index the cell nums
@@ -560,7 +563,10 @@ void pollAllTemperatureData(int channel) {
 			uint8_t low_byte_data = response[i].data[2*k+1];
             int16_t cellTempVoltageReading = calculateTempVoltageReading(high_byte_data, low_byte_data);
 
-			BMBData[i].cellTemperaturesVoltageReading[cellNum] = cellTempVoltageReading;
+			if (cellTempVoltageReading < 4990){
+				BMBData[i].cellTemperaturesVoltageReading[cellNum] = cellTempVoltageReading;
+			}
+
 		}
 	}
 	return;
@@ -674,10 +680,18 @@ void cellBalancing(bool set, uint16_t thresh) {
 			0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01}; 
 
 		// disable selected cells below threshold 
+		uint16_t cell_thresh = thresh; 
 		for (int j = 0; j < VSENSE_CHANNELS; j ++) {
-			if ((BMBData[i].cellVoltages[VSENSE_CHANNELS-1-j] < thresh) || !set) {
+			//if we've already finished balancing once, threshold is mincell + 10 instead of mincell + 5
+			if (firstBalDone[i][VSENSE_CHANNELS-1-j]) {
+				cell_thresh += 5; 
+			}
+			//check to see which ones we turn don't need to balance 
+			if ((BMBData[i].cellVoltages[VSENSE_CHANNELS-1-j] < cell_thresh) || !set) {
 				cell_selects[j] = 0x00;
-			} 
+			} else if (!firstBalDone[i][VSENSE_CHANNELS-1-j]){ //first time we've finished balancing this cell 
+				firstBalDone[i][VSENSE_CHANNELS-1-j] = true; 
+			}
 		}
 
 		//balance top length
@@ -688,13 +702,23 @@ void cellBalancing(bool set, uint16_t thresh) {
 			.registerAddress = TOP_CELL_CB_ADDR,
 			.crc = {0x00, 0x00}
 		};
-		memcpy(balance_register.data, cell_selects, top_len);
-		res = uart_sendCommand(&balance_register);
+		if (top_len > 0){
+			memcpy(balance_register.data, cell_selects, top_len);
+			res = uart_sendCommand(&balance_register);
+		}
 
-		//balance bottom 8 
-		balance_register.dataLen = 8; 
+		//balance bottom 
+		uint8_t bottom_len = 8; 
 		balance_register.registerAddress = CB_CELL8_CTRL; 
-		memcpy(balance_register.data, &(cell_selects[top_len]), 8);
+
+		if (VSENSE_CHANNELS < 8){
+			bottom_len = VSENSE_CHANNELS; 
+			balance_register.registerAddress = TOP_CELL_CB_ADDR; 
+		}
+
+		balance_register.dataLen = bottom_len; 
+		balance_register.registerAddress = CB_CELL8_CTRL; 
+		memcpy(balance_register.data, &(cell_selects[top_len]), bottom_len);
 		res = uart_sendCommand(&balance_register); 
 	}
 		

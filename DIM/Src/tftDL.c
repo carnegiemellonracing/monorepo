@@ -282,6 +282,10 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
         [CMR_CAN_RTD] = " RTD",
         [CMR_CAN_ERROR] = " ERR",
         [CMR_CAN_CLEAR_ERROR] = " CLR",
+        [CMR_CAN_AS_READY] = "D-RD",
+        [CMR_CAN_AS_EMERGENCY] = "D-EM",
+        [CMR_CAN_AS_DRIVING] = "D-DR",
+        [CMR_CAN_AS_FINISHED] = "D-FN",
     };
 
     /** @brief Characters for each gear. */
@@ -294,7 +298,14 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
         [CMR_CAN_GEAR_AUTOX] = "AUTOCROSS",
         [CMR_CAN_GEAR_SKIDPAD] = " SKIDPAD ",
         [CMR_CAN_GEAR_ACCEL] = "  ACCEL  ",
-        [CMR_CAN_GEAR_TEST] = "   TEST  "
+        [CMR_CAN_GEAR_TEST] = "   TEST  ",
+        [CMR_CAN_GEAR_DV_MISSION_ACCEL] = " D-ACCEL ",
+        [CMR_CAN_GEAR_DV_MISSION_AUTOX] = " D-AUTOX ",
+        [CMR_CAN_GEAR_DV_MISSION_INSPECTION] = " D-INSP  ",
+        [CMR_CAN_GEAR_DV_MISSION_SKIDPAD] = "  D-SKID ",
+        [CMR_CAN_GEAR_DV_MISSION_TRACKD] = "D-TRACKD ",
+        [CMR_CAN_GEAR_DV_MISSION_MANUAL] = "D-MANUAL",
+        [CMR_CAN_GEAR_DV_MISSION_EBS] = "  D-EBS  "
     };
 
     size_t drsCharsLen = 6;

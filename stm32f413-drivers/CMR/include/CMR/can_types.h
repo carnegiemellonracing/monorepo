@@ -204,6 +204,7 @@ typedef enum{
     Coasting_mode_GNSS_has_been_lost_less_than_60_sec_ago =1,
     With_GNSS_default_mode = 3 
 } cmr_canMovellaFilterMode_t; 
+
 typedef enum {
     CMR_CAN_DV_MODE_SLOW = 0,
     CMR_CAN_DV_MODE_NORMAL,
@@ -339,6 +340,11 @@ typedef struct {
     uint8_t safetyIn_V;        /**< @brief Safety circuit input voltage (volts). */
     uint8_t safetyOut_V;       /**< @brief Safety circuit output voltage (volts). */
 } cmr_canVSMSensors_t;
+
+typedef struct {
+    uint16_t ebsPressure_1;
+    uint16_t ebsPressure_2;
+} cmr_canDVPressureReadings_t;
 
 /** @brief Vehicle Safety Module latched error status. */
 typedef struct {
@@ -940,22 +946,6 @@ typedef struct {
     uint8_t rl_fault_code;
 } cmr_canDTI_ErrorMessages_t;
 
-/** @brief DTI controls-facing motor setpoints struct.*/
-typedef struct {
-    float velocity_rpm;           /**< @brief Velocity setpoint (RPM). */
-    float torqueLimPos_mNm;       /**< @brief Positive torque limit. */
-    float torqueLimNeg_mNm;       /**< @brief Negative torque limit. */
-    float torque_mNm;             /**< @brief Torque to motor */  
-} cmr_canDTISetpoints_t;
-
-/** @brief DTI motor controller message TX over CAN.*/
-typedef struct{
-    int16_t velocity_erpm; 
-    int16_t torqueLimPos_mNm;
-    int16_t torqueLimNeg_mNm;
-    int16_t ACCurrent_deciAmps;        
-} cmr_canDTI_RX_Message_t;
-
 // ------------------------------------------------------------------------------------------------
 // Battery Management System
 
@@ -1456,8 +1446,8 @@ typedef struct {
 } cmr_canDAQTherm_t;
 
 typedef struct {
-    big_endian_16_t differential_voltage_uv;
-    big_endian_16_t force_output_N; //f:0.1
+    big_endian_16_t force_output_lb;
+    big_endian_16_t differential_voltage_uv; //f:0.1
     big_endian_16_t internal_temp; //f:0.1
     big_endian_16_t external_temp; //f:0.1
 } cmr_canIZZELoadCell_t;
@@ -1522,5 +1512,12 @@ typedef struct{
     uint16_t cell3;
     uint16_t cell4;
 } cmr_canLVBMS_Temperature;
+
+typedef struct{
+    int16_t frontTorque_mNm;           /**< @brief Front wheel torque mNm. */     
+    int16_t rearTorque_mNm;            /**< @brief Rear wheel torque mNm. */     
+    int16_t steeringAngle_centi_deg;   /**< @brief Requested average angle of wheels centi deg. */     
+}
+cmr_canAutonomousControlAction_t;
 
 #endif /* CMR_CAN_TYPES_H */

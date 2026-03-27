@@ -8,6 +8,9 @@
 */
 static const float maxTorque_Nm = 31.6f;
 static const float minTorqueLUTVal_Nm = 2.6f;
+static const float current_torque_slope = 85.0f / 31.6f;
+
+static const float front_bias = 0.35f;
 
 /** @brief Maximum motor speed
  * motor datasheet: "Nominal Speed - 13250 rpm"
@@ -17,6 +20,9 @@ static const int16_t maxSpeed_rpm = 20000;
 
 /** @brief Maximum motor torque in slow gear */
 static const float maxSlowTorque_Nm = 5.0f;
+
+/** @brief Maximum motor torque in dv gear */
+static const float maxDVTorque_Nm = 15.0f;
 
 static const float maxTorque_continuous_stall_Nm = 31.6f;
 
@@ -29,6 +35,9 @@ static const float maxFastTorque_Nm = maxTorque_continuous_stall_Nm;
  *                               (60 seconds / 1 minute) * (15 revolutions / rev)
  */
 static const int16_t maxSlowSpeed_rpm = 1500;
+
+/** @brief Maximum motor speed in dv gear. Roughly 7m/s */
+static const int16_t maxDVSpeed_rpm = 5000;
 
 /** @brief Maximum motor speed in medium gear. Roughly 20m/s */
 static const int16_t maxMediumSpeed_rpm = 13000;
