@@ -250,6 +250,7 @@ static void canTX10Hz(void *pvParameters) {
     while (1) {
         sendPowerDiagnostics();
         sendRESEnable();
+        sendEABStatus();
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -271,7 +272,6 @@ static void canTX100Hz(void *pvParameters) {
         sendVSMStatus();
         sendHVCCommand();
         sendVSMSensors();
-        sendEABStatus();
 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }

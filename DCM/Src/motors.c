@@ -196,23 +196,7 @@ static void motorsCommand (
                 if (blank_command) {
                     sendBlankCommand();
 				}
-                // else {
-                //     int16_t set_current_fl = 40 << 8;
-                //     int16_t set_current_fr = 40 << 8;
-                //     int16_t set_current_rl = 40 << 8;
-                //     int16_t set_current_rr = 40 << 8;
-
-                //     //enables motors to drive
-                //     uint8_t driveEnable = 1;
-                //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
-
-                //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_CURRENT, &set_current_fl, sizeof(set_current_fl), can10Hz_period_ms);
-                //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_CURRENT, &set_current_fr, sizeof(set_current_fr), can10Hz_period_ms);
-                //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_CURRENT, &set_current_rl, sizeof(set_current_rl), can10Hz_period_ms);
-                //     sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_CURRENT, &set_current_rr, sizeof(set_current_rr), can10Hz_period_ms);
-                
-                // }
-                
+               
                 uint32_t au32_initial_ticks = DWT->CYCCNT;
 
                 TickType_t startTime = xTaskGetTickCount();
@@ -546,13 +530,13 @@ void setVelocityFloatAll (
  * @brief Sets torque setpoint for a motor.
  *
  * @param motor Which motor to set torque for.
- * @param torque Desired torque.
+ * @param torque Desired torque in Nm
  */
 void setTorque(
     motorLocation_t motor,
-    float torque
+    float torque_Nm
 ){
-    motorSetpoints[motor].torque_mNm = torque;
+    motorSetpoints[motor].torque_mNm = 1000.0f * torque_Nm;
 }
 
 /**

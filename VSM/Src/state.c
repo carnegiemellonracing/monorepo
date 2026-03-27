@@ -301,6 +301,10 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                 && getDVBrakeActive()){
                 nextState = CMR_CAN_VSM_STATE_REQ_PRECHARGE;
             }
+            else if (dimRequestedState == CMR_CAN_AS_READY) {
+                // if we fail to state up go to error
+                nextState = CMR_CAN_VSM_STATE_ERROR;
+            }
             else if (dimRequestedState == CMR_CAN_HV_EN){
                 nextState = CMR_CAN_VSM_STATE_REQ_PRECHARGE;
             }

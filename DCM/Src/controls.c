@@ -7,7 +7,8 @@
 
 // ------------------------------------------------------------------------------------------------
 // Includes
-
+#include "CMR/can_types.h"
+#include "CMR/utils.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -17,7 +18,6 @@
 #include "controls.h"
 #include "motors.h"
 #include "safety_filter.h"
-#include "CMR/can_types.h"
 #include "../optimizer/optimizer.h"
 #include "26x_sensors.h"
 #include "lut.h"
@@ -802,8 +802,8 @@ void runControls (
             if(inspectionStarted 
             && heartbeatVSM->state == CMR_CAN_AS_DRIVING
             && now - inspectionStartTime < INSPECTION_MISSION_TIME_MS){
-                setVelocityInt16All(2000);
-                float torque = 5.0f; // a low value so we don' t scare judges
+                setVelocityInt16All(maxSlowSpeed_rpm);
+                float torque = maxSlowTorque_Nm; 
                 setTorqueLimsUnprotected(MOTOR_FL, torque, 0.0f);
                 setTorqueLimsUnprotected(MOTOR_FR, torque, 0.0f);
                 setTorqueLimsUnprotected(MOTOR_RR, torque, 0.0f);
@@ -823,16 +823,35 @@ void runControls (
             }
             break;
         }
-        // case AS_DRIVING: {
-        //     //for compute commands 
-        //     //need to put in the read commands
-        //     canDAQGetPayload()
-        //     //get the motor set points and update w/ settorque lims
-        //     setTorqueLimsAllProtected();
-        //     //need to set them for commands 
-        //     setVelocityInt16All();
-        //     break; 
-        // }
+
+        case CMR_CAN_GEAR_DV_MISSION_ACCEL: 
+        case CMR_CAN_GEAR_DV_MISSION_SKIDPAD:
+        case CMR_CAN_GEAR_DV_MISSION_AUTOX:     
+        case CMR_CAN_GEAR_DV_MISSION_TRACKD:     
+        case CMR_CAN_GEAR_DV_MISSION_EBS: {
+            disableTorqueMode();
+            setVelocityInt16All(maxDVSpeed_rpm);
+            volatile cmr_canAutonomousControlAction_t*  autonomousAction = canDAQGetPayload(CANRX_DAQ_AUTONOMOUS_ACTION);
+            float front_torque_Nm = CLAMP(-maxDVTorque_Nm, ((float)(autonomousAction->frontTorque_mNm))/1000.0f, maxDVTorque_Nm); 
+            float rear_torque_Nm  = CLAMP(-maxDVTorque_Nm, ((float)(autonomousAction->rearTorque_mNm))/1000.0f, maxDVTorque_Nm); 
+            
+            if (front_torque_Nm > 0.0f) {
+                setTorqueLimsUnprotected(MOTOR_FL, front_torque_Nm, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_FR, front_torque_Nm, 0.0f);
+            } else {
+                setTorqueLimsUnprotected(MOTOR_FL, 0.0f, front_torque_Nm);
+                setTorqueLimsUnprotected(MOTOR_FR, 0.0f, front_torque_Nm);
+            }
+
+            if (rear_torque_Nm > 0.0f) {
+                setTorqueLimsUnprotected(MOTOR_RR, rear_torque_Nm, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_RL, rear_torque_Nm, 0.0f);
+            } else {
+                setTorqueLimsUnprotected(MOTOR_RR, 0.0f, rear_torque_Nm);
+                setTorqueLimsUnprotected(MOTOR_RL, 0.0f, rear_torque_Nm);
+            }
+            break; 
+        }
 
         default: {
             setTorqueLimsAllProtected(0.0f, 0.0f);
