@@ -790,8 +790,8 @@ void runControls (
         }
 
         case CMR_CAN_GEAR_DV_MISSION_INSPECTION: {
-            // disableTorqueMode();
-            initiateTorqueMode();
+            disableTorqueMode();
+            // initiateTorqueMode();
             static bool inspectionStarted = false;
             static TickType_t inspectionStartTime = 0;
             TickType_t now = xTaskGetTickCount();
@@ -802,22 +802,22 @@ void runControls (
             if(inspectionStarted 
             && heartbeatVSM->state == CMR_CAN_AS_DRIVING
             && now - inspectionStartTime < INSPECTION_MISSION_TIME_MS){
-                // setVelocityInt16All(2000);
+                setVelocityInt16All(2000);
                 float torque = 5.0f; // a low value so we don' t scare judges
-                // setTorqueLimsUnprotected(MOTOR_FL, torque, 0.0f);
-                // setTorqueLimsUnprotected(MOTOR_FR, torque, 0.0f);
-                // setTorqueLimsUnprotected(MOTOR_RR, torque, 0.0f);
-                // setTorqueLimsUnprotected(MOTOR_RL, torque, 0.0f);
-                setTorquesAll(torque);
+                setTorqueLimsUnprotected(MOTOR_FL, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_FR, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_RR, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_RL, torque, 0.0f);
+                // setTorquesAll(torque);
             }
             else {
-                // setVelocityInt16All(0);
+                setVelocityInt16All(0);
                 float torque = 0.0f; 
-                // setTorqueLimsUnprotected(MOTOR_FL, torque, 0.0f);
-                // setTorqueLimsUnprotected(MOTOR_FR, torque, 0.0f);
-                // setTorqueLimsUnprotected(MOTOR_RR, torque, 0.0f);
-                // setTorqueLimsUnprotected(MOTOR_RL, torque, 0.0f);
-                setTorquesAll(torque);
+                setTorqueLimsUnprotected(MOTOR_FL, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_FR, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_RR, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_RL, torque, 0.0f);
+                // setTorquesAll(torque);
                 uint8_t missionFinished = 1;
                 canTX(CMR_CAN_BUS_VEH, CMR_CANID_AS_MISSION_FINISHED, &missionFinished, sizeof(missionFinished), 100);
             }
