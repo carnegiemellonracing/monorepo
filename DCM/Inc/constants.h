@@ -58,6 +58,7 @@ static const int32_t gear_ratio_bot = 621;
 //Accel constants
 //General constants
 static const float gear_ratio = 12.097;
+
 static const float slip_ratio_front = 0.12;
 static const float slip_ratio_rear = 0.15;
 
