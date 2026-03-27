@@ -420,8 +420,8 @@ static void canRX(
 	configASSERT(iface_idx < CMR_CAN_BUS_NUM);
 
 
-	int ret = parseData((uint32_t) iface_idx, canID, data, dataLen);
-	configASSERT(ret == 0);
+	// int ret = parseData((uint32_t) iface_idx, canID, data, dataLen);
+	// configASSERT(ret == 0);
 
 	// Update the RX Meta array
 	cmr_canRXMeta_t *rxMetaArray = NULL;
@@ -446,6 +446,40 @@ static void canRX(
 		}
 	}
 }
+
+/** @brief CAN 10 Hz TX priority. */
+const uint32_t canTX10Hz_priority = 1;
+/** @brief CAN 10 Hz TX period (milliseconds). */
+const TickType_t canTX10Hz_period_ms = 100;
+/** @brief CAN 10 Hz TX task. */
+static cmr_task_t canTX10Hz_task;
+
+static void sendHeartbeat() {
+    cmr_canHeartbeat_t heartbeat = {
+        .state = 1,
+        .error = {3, 4}, 
+        .warning = {1, 2}
+    }; 
+
+    canTX(CMR_CAN_BUS_VEH, CMR_CANID_HEARTBEAT_MEMORATOR, &heartbeat, sizeof(heartbeat), canTX10Hz_period_ms);
+}
+
+/**
+ * @brief Task for sending CAN messages at 10 Hz.
+ *
+ * @param pvParameters Ignored.
+ *
+ * @return Does not return.
+ */
+static void canTX10Hz(void *pvParameters) {
+    (void) pvParameters;    // Placate compiler.
+
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    while (1) {
+        sendHeartbeat(); 
+    }
+}
+
 
 /**
  * @brief Initializes the CAN interface.
@@ -513,6 +547,15 @@ void canInit(void) {
     cmr_canFilter(
 		&can[CMR_CAN_BUS_TRAC], canFilters, sizeof(canFilters) / sizeof(canFilters[0])
 	);
+
+     //Task initialization.
+    cmr_taskInit(
+        &canTX10Hz_task,
+        "CAN TX 10Hz",
+        canTX10Hz_priority,
+        canTX10Hz,
+        NULL
+    );
 }
 
 /**

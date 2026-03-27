@@ -66,9 +66,15 @@ int main(void) {
     uartInit();
     gpioInit();
     canInit();
+    uint8_t test = 90; 
+    /** @brief CAN 10 Hz TX period (milliseconds). */
+    const TickType_t canTX10Hz_period_ms = 100;
+    canTX(CMR_CAN_BUS_VEH, CMR_CANID_HEARTBEAT_MEMORATOR, &test, sizeof(test), canTX10Hz_period_ms);
+    canTX(CMR_CAN_BUS_DAQ, CMR_CANID_HEARTBEAT_MEMORATOR, &test, sizeof(test), canTX10Hz_period_ms);
+    canTX(CMR_CAN_BUS_TRAC, CMR_CANID_HEARTBEAT_MEMORATOR, &test, sizeof(test), canTX10Hz_period_ms);
 
     // Load in JSON configuration
-    parserInit();
+    // parserInit();
     // Set up CBOR encoder
     sampleInit();
     // Pull in previous configuration
