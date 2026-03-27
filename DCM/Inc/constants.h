@@ -58,7 +58,6 @@ static const int32_t gear_ratio_bot = 621;
 //Accel constants
 //General constants
 static const float gear_ratio = 12.097;
-static const float wheel_radius = 0.2032;
 static const float slip_ratio_front = 0.12;
 static const float slip_ratio_rear = 0.15;
 
@@ -90,7 +89,7 @@ static const float launch_speed = 1.0;
 static const float blend_speed = 3.0;
 static const float launch_torque_rear = 31.0;
 
-static const float effective_wheel_rad_m = 0.205f; // meters
+static const float effective_wheel_rad_m = 0.2032f; // meters
 static const float effective_wheel_dia_m = 2 * effective_wheel_rad_m; // meters
 
 static const double wheelbase_m = 1.55f;

@@ -205,6 +205,11 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
+    [CANRX_VEH_LAUNCH_CONTROL_BUTTON_SPOOF] = {
+        .canID = 0x123, // placeholder CAN ID
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
 };
 
 /** @brief Metadata for tractive CAN message reception. */
@@ -1300,7 +1305,8 @@ void canInit(void) {
             .isMask = false,
             .rxFIFO = FDCAN_RX_FIFO0,
             .ids = {CMR_CANID_CDC_RTC_DATA_IN,
-                    CMR_CANID_VSM_SENSORS}
+                    CMR_CANID_VSM_SENSORS,
+                    0x123}
         }
     };
 

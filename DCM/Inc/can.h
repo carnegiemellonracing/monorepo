@@ -42,6 +42,7 @@ typedef enum {
     CANRX_VEH_SENSORIC_PITCH_ROLL,
     CANRX_VEH_SENSORIC_ACC,
     CANRX_VEH_SENSORIC_RATE,
+    CANRX_VEH_LAUNCH_CONTROL_BUTTON_SPOOF,  /**< @brief Used for testing launch control without the DIM. */
     CANRX_VEH_LEN                   /**< @brief Number of periodic CAN messages. */
 } canVehicleRX_t;
 

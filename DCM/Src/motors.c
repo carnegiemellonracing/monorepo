@@ -259,7 +259,7 @@ static void motorsCommand (
 
             // Also reset errors in GLV_ON
             case CMR_CAN_GLV_ON: {
-                pumpsOn();
+                pumpsOff();
             	mcCtrlOff();
 
                 if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
@@ -277,10 +277,8 @@ static void motorsCommand (
 
             // In all other states, disable inverters and do not reset errors
             default: {
-                pumpsOn();
                 pumpsOff();
                 mcCtrlOff();
-                set_optimal_control_with_regen(128, 10000, 10000);
                 sendBlankCommand();
                 break;
             }

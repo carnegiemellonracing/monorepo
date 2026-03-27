@@ -1219,12 +1219,10 @@ void setAccelLaunchControl(
     static TickType_t launch_tick = 0;
 
     static const float LAUNCH_SPEED_THRESH_MPS = 0.05f; // below this = "still stationary"
-    static const float LAUNCH_TIMEOUT_S = 10.0f;  // kill switch after N seconds
+    static const float LAUNCH_TIMEOUT_S = 600.0f;  // kill switch after N seconds
 
     // read button
-    bool button_held = (
-        ((volatile cmr_canDIMActions_t *)canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))
-        ->buttonStates) & BUTTON_ACT;
+    bool button_held = *((bool *)canVehicleGetPayload(CANRX_VEH_LAUNCH_CONTROL_BUTTON_SPOOF));
 
     float odometer_vel_mps = motorSpeedToWheelLinearSpeed_mps(
         getTotalMotorSpeed_radps() * 0.25f);
@@ -1243,10 +1241,10 @@ void setAccelLaunchControl(
     }
 
     // kill switch
-    if (brakePressurePsi_u8 > braking_threshold_psi || (throttlePos_u8 == 0)) {
-        launch_active = false;
-        launch_armed = false;
-    }
+    // if (brakePressurePsi_u8 > braking_threshold_psi || (throttlePos_u8 == 0)) {
+    //     launch_active = false;
+    //     launch_armed = false;
+    // }
 
     button_was_held = button_held;
 
@@ -1258,7 +1256,7 @@ void setAccelLaunchControl(
     }
 
     // check timeout, handoff to regular fast torque if timed out
-    float elapsed_s = (float)(xTaskGetTickCount() - launch_tick) * 1000.0f;
+    float elapsed_s = (float)(xTaskGetTickCount() - launch_tick) * .001f;
     if(elapsed_s >= LAUNCH_TIMEOUT_S) {
         setFastTorque(throttlePos_u8);
         return;
@@ -1311,10 +1309,10 @@ void setAccelTorque(float car_velocity,
     /* ============================================================
      *  Convert motor speeds to wheel speeds
      * ============================================================ */
-    float ws_fl = (wheel_fl_speed_radps / gear_ratio) * wheel_radius; // convert motor speeds to wheel surface speeds in m/s
-    float ws_fr = (wheel_fr_speed_radps / gear_ratio) * wheel_radius;
-    float ws_rl = (wheel_rl_speed_radps / gear_ratio) * wheel_radius;
-    float ws_rr = (wheel_rr_speed_radps / gear_ratio) * wheel_radius;
+    float ws_fl = (wheel_fl_speed_radps / gear_ratio) * effective_wheel_rad_m; // convert motor speeds to wheel surface speeds in m/s
+    float ws_fr = (wheel_fr_speed_radps / gear_ratio) * effective_wheel_rad_m;
+    float ws_rl = (wheel_rl_speed_radps / gear_ratio) * effective_wheel_rad_m;
+    float ws_rr = (wheel_rr_speed_radps / gear_ratio) * effective_wheel_rad_m;
 
 
 
@@ -1326,16 +1324,16 @@ void setAccelTorque(float car_velocity,
     float b, c, d, e;
 
     pacejka_interp_coeffs(fz_fl, &b, &c, &d, &e);
-    float ff_fl = pacejka_tire(fz_fl, slip_ratio_front, b, c, d, e) * wheel_radius / gear_ratio;
+    float ff_fl = pacejka_tire(fz_fl, slip_ratio_front, b, c, d, e) * effective_wheel_rad_m / gear_ratio;
 
     pacejka_interp_coeffs(fz_fr, &b, &c, &d, &e);
-    float ff_fr = pacejka_tire(fz_fr, slip_ratio_front, b, c, d, e) * wheel_radius / gear_ratio;
+    float ff_fr = pacejka_tire(fz_fr, slip_ratio_front, b, c, d, e) * effective_wheel_rad_m / gear_ratio;
 
     pacejka_interp_coeffs(fz_rl, &b, &c, &d, &e);
-    float ff_rl = pacejka_tire(fz_rl, slip_ratio_rear, b, c, d, e) * wheel_radius / gear_ratio;
+    float ff_rl = pacejka_tire(fz_rl, slip_ratio_rear, b, c, d, e) * effective_wheel_rad_m / gear_ratio;
 
     pacejka_interp_coeffs(fz_rr, &b, &c, &d, &e);
-    float ff_rr = pacejka_tire(fz_rr, slip_ratio_rear, b, c, d, e) * wheel_radius / gear_ratio;
+    float ff_rr = pacejka_tire(fz_rr, slip_ratio_rear, b, c, d, e) * effective_wheel_rad_m / gear_ratio;
 
 
     /* slip ratio computation
