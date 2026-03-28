@@ -123,25 +123,25 @@ void runDrsControls(
             }
             break;
 
-        case CMR_CAN_DRSM_AUTO:
-            switch (gear) {
-                case CMR_CAN_GEAR_FAST:
-                    setAutoDrs(throttlePos_u8,
-                               brakePressurePsi_u8,
-                               swAngle_deg);
-                    break;
-                case CMR_CAN_GEAR_SLOW:
-                    setAutoDrs(throttlePos_u8,
-                               brakePressurePsi_u8,
-                               swAngle_deg);
-                    break;
-                default:
-                    setAutoDrs(throttlePos_u8,
-                               brakePressurePsi_u8,
-                               swAngle_deg);
-                    break;
-            }
-            break;
+        // case CMR_CAN_DRSM_AUTO:
+        //     switch (gear) {
+        //         case CMR_CAN_GEAR_FAST:
+        //             setAutoDrs(throttlePos_u8,
+        //                        brakePressurePsi_u8,
+        //                        swAngle_deg);
+        //             break;
+        //         case CMR_CAN_GEAR_SLOW:
+        //             setAutoDrs(throttlePos_u8,
+        //                        brakePressurePsi_u8,
+        //                        swAngle_deg);
+        //             break;
+        //         default:
+        //             setAutoDrs(throttlePos_u8,
+        //                        brakePressurePsi_u8,
+        //                        swAngle_deg);
+        //             break;
+        //     }
+        //     break;
         default: 
             drs_state.state = CMR_CAN_DRS_STATE_CLOSED;
             setDrsPosition(DRS_CLOSED_DUTY_CYCLE);
@@ -152,41 +152,41 @@ void runDrsControls(
 
 }
 
-static void setAutoDrs(uint8_t throttle_pos,
-                    uint16_t brake_psi, 
-                    int16_t swAngle_deg) {
+// static void setAutoDrs(uint8_t throttle_pos,
+//                     uint16_t brake_psi, 
+//                     int16_t swAngle_deg) {
 
-    uint8_t swangle_threshold = SWANGLE_THRESHOLD;
-    uint8_t throttle_threshold = THROTTLE_THRESHOLD;
-    uint16_t brake_threshold = BRAKE_THRESHOLD; 
-    getProcessedValue(&swangle_threshold, DRS_SWANGLE_THRESH_INDEX, unsigned_integer);
-    getProcessedValue(&throttle_threshold, DRS_THROTTLE_THRESH_INDEX, unsigned_integer);
-    //getProcessedValue(&brake_threshold, DRS_BRAKE_THRESH_INDEX, unsigned_integer);
-    uint8_t swangle = (uint8_t) abs(swAngle_deg);
+//     uint8_t swangle_threshold = SWANGLE_THRESHOLD;
+//     uint8_t throttle_threshold = THROTTLE_THRESHOLD;
+//     uint16_t brake_threshold = BRAKE_THRESHOLD; 
+//     getProcessedValue(&swangle_threshold, DRS_SWANGLE_THRESH_INDEX, unsigned_integer);
+//     getProcessedValue(&throttle_threshold, DRS_THROTTLE_THRESH_INDEX, unsigned_integer);
+//     //getProcessedValue(&brake_threshold, DRS_BRAKE_THRESH_INDEX, unsigned_integer);
+//     uint8_t swangle = (uint8_t) abs(swAngle_deg);
 
-    bool swangle_high = (swangle > swangle_threshold + SWANGLE_MARGIN) ||
-                        (prev_swangle_high && swangle > swangle_threshold - SWANGLE_MARGIN);
-    bool throttle_high = (throttle_pos > throttle_threshold + THROTTLE_MARGIN) ||
-                         (prev_throttle_high && throttle_pos > throttle_threshold - THROTTLE_MARGIN);
-    bool brake_high = false;
+//     bool swangle_high = (swangle > swangle_threshold + SWANGLE_MARGIN) ||
+//                         (prev_swangle_high && swangle > swangle_threshold - SWANGLE_MARGIN);
+//     bool throttle_high = (throttle_pos > throttle_threshold + THROTTLE_MARGIN) ||
+//                          (prev_throttle_high && throttle_pos > throttle_threshold - THROTTLE_MARGIN);
+//     bool brake_high = false;
     
-    if (swangle_high) {
-        drs_state.state = CMR_CAN_DRS_STATE_CLOSED;
-        setDrsPosition(DRS_CLOSED_DUTY_CYCLE);
-    } else {
-        if (!throttle_high || brake_high) {
-            drs_state.state = CMR_CAN_DRS_STATE_CLOSED;
-            setDrsPosition(DRS_CLOSED_DUTY_CYCLE);
-        } else {
-            drs_state.state = CMR_CAN_DRS_STATE_OPEN;
-            setDrsPosition(DRS_OPEN_DUTY_CYCLE);
-        }
-    }
+//     if (swangle_high) {
+//         drs_state.state = CMR_CAN_DRS_STATE_CLOSED;
+//         setDrsPosition(DRS_CLOSED_DUTY_CYCLE);
+//     } else {
+//         if (!throttle_high || brake_high) {
+//             drs_state.state = CMR_CAN_DRS_STATE_CLOSED;
+//             setDrsPosition(DRS_CLOSED_DUTY_CYCLE);
+//         } else {
+//             drs_state.state = CMR_CAN_DRS_STATE_OPEN;
+//             setDrsPosition(DRS_OPEN_DUTY_CYCLE);
+//         }
+//     }
 
-    prev_swangle_high = swangle_high;
-    prev_throttle_high = throttle_high;
-    prev_brake_high = brake_high;
-}
+//     prev_swangle_high = swangle_high;
+//     prev_throttle_high = throttle_high;
+//     prev_brake_high = brake_high;
+// }
 
 
 

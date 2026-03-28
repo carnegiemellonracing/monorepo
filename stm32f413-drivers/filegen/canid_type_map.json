@@ -1,14 +1,29 @@
 {
     "canid_to_info": {
+        "CMR_CANID_AFC0_DRIVER_TEMPS": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "velocity_rpm"
+        },
         "CMR_CANID_ASMS_STATUS": {
             "cycleTime": 10,
             "timeOut": 50,
             "type": "AS_Status"
         },
+        "CMR_CANID_AS_MISSION_FINISHED": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "missionFinished"
+        },
         "CMR_CANID_AS_PRESSURE_READINGS": {
             "cycleTime": 10,
             "timeOut": 50,
             "type": "cmr_canDVPressureReadings_t"
+        },
+        "CMR_CANID_AS_RES_ENABLE": {
+            "cycleTime": 10,
+            "timeOut": 50,
+            "type": "res_enable"
         },
         "CMR_CANID_AUTONOMOUS_ACTION": {
             "cycleTime": 400.0,
@@ -436,6 +451,11 @@
             "cycleTime": 20.0,
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
+        },
+        "CMR_CANID_EAB_STATUS": {
+            "cycleTime": 10,
+            "timeOut": 50,
+            "type": "eabStatus"
         },
         "CMR_CANID_EMD_MEASUREMENT": {
             "current": {
@@ -937,17 +957,17 @@
         "files_processed": 2927,
         "files_with_matches": 2927,
         "global_mappings": {
-            "canrx_mappings": 179,
-            "canrx_timeouts": 173,
-            "canrx_types": 75,
-            "constants": 251,
+            "canrx_mappings": 183,
+            "canrx_timeouts": 175,
+            "canrx_types": 76,
+            "constants": 254,
             "struct_members": 0,
-            "variable_types": 330
+            "variable_types": 332
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 106
+        "total_canids": 111
     }
 }

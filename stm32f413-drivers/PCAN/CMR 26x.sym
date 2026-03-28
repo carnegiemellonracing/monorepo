@@ -152,9 +152,9 @@ ID=190h
 DLC=6
 CycleTime=400
 TimeOut=2000
-Var=ACTION_frontTorque_mNm unsigned 0,16
-Var=ACTION_rearTorque_mNm unsigned 16,16
-Var=steeringAngle_centi_deg unsigned 32,16
+Var=ACTION_frontTorque_mNm signed 0,16
+Var=ACTION_rearTorque_mNm signed 16,16
+Var=steeringAngle_centi_deg signed 32,16
 
 [CDC_COG_VELOCITY]
 ID=2C2h
@@ -735,8 +735,8 @@ Var=PACK_avgCurrent_mA signed 32,32 /u:mA
 [HV_SENSORS]
 ID=306h
 DLC=8
-CycleTime=5
-TimeOut=25
+CycleTime=100
+TimeOut=500
 Var=SENSORS_packCurrent_dA signed 0,16
 Var=SENSORS_packVoltage_cV unsigned 16,16
 Var=SENSORS_packPower_W signed 32,32
