@@ -269,7 +269,9 @@ void cmr_canInit(
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
     cmr_canRXCallback_t rxCallback,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
+    GPIO_TypeDef *txPort, uint16_t txPin,
+    uint32_t commit_hash, uint8_t is_dirty,
+    cmr_canID_t boardID 
 ) {
     /* Do any platform-specific initialization */
     _platform_canInit(
@@ -321,6 +323,14 @@ void cmr_canInit(
     )) {
         cmr_panic("HAL_CAN_ActivateNotification() failed!");
     }
+
+     //send commit info on start up 
+    cmr_canGitFlashStatus gitStatus = {
+            .commitHash = commit_hash,
+            .dirtyFlash = is_dirty
+        };
+
+    cmr_canTX(can, boardID, &gitStatus, sizeof(gitStatus), 1000);
 }
 
 /**
