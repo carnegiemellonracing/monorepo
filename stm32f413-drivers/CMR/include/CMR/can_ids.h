@@ -543,6 +543,9 @@ typedef enum {
     CMR_CANID_LVBMS_CELL_OVERTEMP = 0x7fc,
     CMR_CANID_LVBMS_BUS_VOLTAGE = 0x7fd,
     CMR_CANID_LVBMS_CURRENT = 0x7fe,
+
+    CMR_CANID_AUTO_PID = 0x31A,       
+
 } cmr_canID_t;
 
 typedef enum {

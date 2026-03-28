@@ -1520,4 +1520,10 @@ typedef struct{
 }
 cmr_canAutonomousControlAction_t;
 
+typedef struct{
+    float  K_p;           /**< @brief K_p for steering PID Loop*/     
+    float  K_d ;          /**< @brief K_d for steering PID Loop*/     
+}
+cmr_canAutonomousPIDConstants_t;
+
 #endif /* CMR_CAN_TYPES_H */

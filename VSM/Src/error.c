@@ -31,6 +31,7 @@ static const TickType_t badStateThres_ms = 150;
 // Forward declarations
 static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime);
 static bool getASEmergency();
+bool getAMSError();
 
 /**
  * @brief Checks for all errors and updates vsmStatus as needed.
@@ -95,13 +96,7 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     }
     // Set software latch in the event of BMS voltage or temperature errors.
     // See rule EV 5.1.10.
-    cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
-    //cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
-    if ((cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), lastWakeTime) != 0)
-     || (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVBMS]), lastWakeTime) != 0)
-     || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_PACK_OVERVOLT)
-     || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT)) {
-
+    if (getAMSError()) {
         cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 0);
     }
 
@@ -428,4 +423,13 @@ bool invertersPass(TickType_t lastWakeTime_ms){
             return false;
         }
     }
+}
+
+bool getAMSError(){
+    TickType_t now = xTaskGetTickCount();
+    cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
+    return (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), now) != 0)
+     || (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVBMS]), now) != 0)
+     || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_PACK_OVERVOLT)
+     || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT);
 }

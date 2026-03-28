@@ -618,7 +618,8 @@ static bool getDVBrakeActive(){
  * @brief Checks if an autonomous mission is selected
  */
 static inline bool getMissionSelected(){
-    return true;
+    cmr_canDIMRequest_t *dimRequest = getPayload(CANRX_DIM_REQUEST);
+    return (dimRequest->requestedGear > CMR_CAN_GEAR_DV_MISSION_MIN && dimRequest->requestedGear < CMR_CAN_GEAR_DV_MISSION_MAX);
 }
 
 /**

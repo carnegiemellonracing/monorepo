@@ -605,6 +605,11 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .canID = CMR_CANID_AUTONOMOUS_ACTION,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
+    },
+    [CANRX_DAQ_AUTONOMOUS_PID_CONSTANTS] = {
+        .canID = CMR_CANID_AUTO_PID,
+        .timeoutError_ms = 1000,
+        .timeoutWarn_ms = 250
     }
 };
 

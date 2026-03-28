@@ -19,7 +19,7 @@
 #include "can.h"   // Board-specific CAN interface
 #include "math.h"   // Board-specific CAN interface
 
-#define MAX_CURRENT_MA 5000
+#define MAX_CURRENT_MA 15000
 
 /** @todo Cordinate with DV for these values
  *  @note This is average of left and right
@@ -63,27 +63,26 @@ float computeControlAction(float targetPosition_centi_deg, float currPosition_ce
     static float filteredPosDerivative = 0.0f;
 
     //Constants for running PD controllers
-    static float K_f = 0.0f; //feed forwards
-    // static float K_p = -100.0f;
     static float K_p = -4.0f;
     static float K_d = 0.0f; //derivative term
     const float filterAlpha = 0.1f;  //first order IIR filter alpha. Larger alpha is more filtering. Ranges 0-1
-    static const float errorThresholdKF = 0.0f;
-    static const bool constantsFromCAN = false;
-    float mult;
-
     TickType_t currTime_ms = xTaskGetTickCount();
+
+
+    cmr_canRXMeta_t* pid_constants_meta = canDAQGetMeta(CANRX_DAQ_AUTONOMOUS_PID_CONSTANTS);
+    if(!cmr_canRXMetaTimeoutError(pid_constants_meta, currTime_ms )){
+        cmr_canAutonomousPIDConstants_t* pid_constants_payload = (cmr_canAutonomousPIDConstants_t*) &pid_constants_meta->payload;
+        K_p = pid_constants_payload->K_p;
+        K_d = pid_constants_payload->K_d;
+    }
+
+
     float currError = targetPosition_centi_deg - currPosition_centi_deg;
     float posDerivative = currPosition_centi_deg - prevPosition_centi_deg;
     //first order IIR filter
     filteredPosDerivative = filterAlpha*posDerivative + (1.0f - filterAlpha) * filteredPosDerivative;
 
-    //ensures that feedforward is in the direction to reduce error
-    if (fabs(currError) <= errorThresholdKF) mult = 0.0f;
-    else if (currError < 0) mult = 1.0f;
-    else mult = -1.0f;
-
-    float controlAction_mA = mult*K_f + K_p*currError + K_d*posDerivative;
+    float controlAction_mA =+ K_p*currError + K_d*posDerivative;
     prevPosition_centi_deg = currPosition_centi_deg;
     prevTime_ms = currTime_ms;
     controlAction_mA = CLAMP(-MAX_CURRENT_MA, controlAction_mA, MAX_CURRENT_MA);

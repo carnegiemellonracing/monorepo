@@ -16,11 +16,11 @@
  * @warning New channels MUST be added before `PWM_LEN`.
  */
 typedef enum {
-	// PWM_GREEN = 0,    /**< @brief Green TSSI. */
-	// PWM_RED,          /**< @brief Red TSSI. */
-    PWM_YELLOW = 0,       /**< @brief Yellow ASSI. */
-	PWM_BLUE,		  /**< @brief Blue ASSI */
-	PWM_LEN     	  /**< @brief Total PWM pins. */
+	PWM_GREEN = 0,    /**< @brief Green TSSI. */
+	PWM_RED,          /**< @brief Red TSSI. */
+  PWM_YELLOW,       /**< @brief Yellow ASSI. */
+	PWM_BLUE,		  		/**< @brief Blue ASSI */
+	PWM_LEN     	 		/**< @brief Total PWM pins. */
 } pwm_t;
 
 void pwmInit(void);
