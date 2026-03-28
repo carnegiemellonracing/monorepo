@@ -10,7 +10,7 @@ static const float maxTorque_Nm = 31.6f;
 static const float minTorqueLUTVal_Nm = 2.6f;
 static const float current_torque_slope = 85.0f / 31.6f;
 
-static const float front_bias = 0.35f;
+static const float front_bias = 0.20f;
 
 /** @brief Maximum motor speed
  * motor datasheet: "Nominal Speed - 13250 rpm"
