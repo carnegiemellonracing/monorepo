@@ -37,7 +37,7 @@ static const float maxFastTorque_Nm = maxTorque_continuous_stall_Nm;
 static const int16_t maxSlowSpeed_rpm = 1500;
 
 /** @brief Maximum motor speed in dv gear. Roughly 7m/s */
-static const int16_t maxDVSpeed_rpm = 5000;
+static const int16_t maxDVSpeed_rpm = 1000;
 
 /** @brief Maximum motor speed in medium gear. Roughly 20m/s */
 static const int16_t maxMediumSpeed_rpm = 13000;
