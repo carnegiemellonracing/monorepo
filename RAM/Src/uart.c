@@ -255,16 +255,19 @@ static void handle_command(cn_cbor *command)
                     	  powerLimit, sizeof(cmr_canCDCPowerLimit_t),
 					      200);
                 }
-            // } else if (((uint16_t)id->v.uint == CMR_CANID_TEST_ID)){
+            }
+            } else if (((uint16_t)id->v.uint == CMR_CANID_TEST_ID)){
   
-            //     memcpy(testID_name, data->v.bytes, 8); 
-            //     testID_name[8] = '\0'; 
+                memcpy(testID_name, data->v.bytes, 8); 
+                testID_name[8] = '\0'; 
 
-            //     //test by sending on CAN 
-            //     canTX((cmr_canBusID_t)bus->v.uint, (uint16_t)id->v.uint,
-            //         	  testID_name, 9*sizeof(char), 
-			// 		      200);
-            // }
+                //test by sending on CAN 
+                cmr_canTestID_t *testID_test = (cmr_canTestID_t*)data->v.bytes; 
+
+                canTX((cmr_canBusID_t)bus->v.uint, (uint16_t)id->v.uint,
+                    	  testID_test, sizeof(cmr_canTestID_t),  
+					      200);
+            }
             else {
                 // Do not allow transmission on tractive CAN.
                 if (bus->v.uint == CMR_CAN_BUS_VEH || bus->v.uint == CMR_CAN_BUS_DAQ)

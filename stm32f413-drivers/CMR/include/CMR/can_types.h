@@ -1457,7 +1457,11 @@ typedef struct {
 } cmr_canMemoratorHeartbeat_t;
 
 typedef struct {
+<<<<<<< HEAD
 	uint8_t test_id;
+=======
+	char test_id[8];
+>>>>>>> 10df84bd (bring back sending testID on can + revert can_fmt.json)
 } cmr_canTestID_t;
 
 typedef struct {
