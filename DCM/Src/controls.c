@@ -1227,7 +1227,7 @@ void setAccelLaunchControl(
 
     static const float LAUNCH_SPEED_THRESH_MPS = 0.05f;   // below this = "still stationary"
     static const float LAUNCH_TIMEOUT_S = 600.0f;  // kill switch after N seconds
-    static const uint8_t THROTTLE_ARM_THRESH = 20u; // throttle pos to arm launch from (0-255)
+    static const uint8_t THROTTLE_ARM_THRESH = 230u; // throttle pos to arm launch from (0-255)
     static const float THROTTLE_HOLD_S = 5.0f;    // seconds to hold throttle before launch
 
     float odometer_vel_mps = motorSpeedToWheelLinearSpeed_mps(
@@ -1254,7 +1254,8 @@ void setAccelLaunchControl(
     }
 
     // reset hold timer if throttle drops below threshold before arming
-    if (!throttle_pressed) {
+    // or if car starts moving before arming
+    if (!throttle_pressed || odometer_vel_mps >= LAUNCH_SPEED_THRESH_MPS) {
         throttle_above_thresh = false;
     }
 
