@@ -1202,6 +1202,108 @@ void setLaunchControl(
     }
 }
 
+
+// LAUNCH CONTROL ACTIVATION
+// ADDING PEDAL THRESHOLD INSTEAD OF BUTTON RELEASE CUZ STEERING IS BROKEN
+    // AND ALEX HAS A DEATH WISH TODAY
+void setAccelLaunchControl(
+    uint8_t throttlePos_u8,
+    uint16_t brakePressurePsi_u8,
+    float car_velocity_mps,
+    float wheel_fl_speed_radps,
+    float wheel_fr_speed_radps,
+    float wheel_rl_speed_radps,
+    float wheel_rr_speed_radps,
+    float fz_fl, float fz_fr,
+    float fz_rl, float fz_rr
+) {
+
+    // persistent state
+    static bool launch_armed = false;
+    static bool launch_active = false;
+    static TickType_t launch_tick = 0;
+    static TickType_t throttle_hold_start_tick = 0;
+    static bool throttle_above_thresh = false;
+
+    static const float LAUNCH_SPEED_THRESH_MPS = 0.05f;   // below this = "still stationary"
+    static const float LAUNCH_TIMEOUT_S = 600.0f;  // kill switch after N seconds
+    static const uint8_t THROTTLE_ARM_THRESH = 20u; // throttle pos to arm launch from (0-255)
+    static const float THROTTLE_HOLD_S = 5.0f;    // seconds to hold throttle before launch
+
+    float odometer_vel_mps = motorSpeedToWheelLinearSpeed_mps(
+        getTotalMotorSpeed_radps() * 0.25f);
+
+    bool throttle_pressed = (throttlePos_u8 >= THROTTLE_ARM_THRESH);
+
+    // --- state transitions ---
+
+    // armed: car is stationary and throttle just crossed threshold
+    if (!launch_armed && !launch_active &&
+        odometer_vel_mps < LAUNCH_SPEED_THRESH_MPS && throttle_pressed) {
+
+        if (!throttle_above_thresh) {
+            // throttle just crossed threshold — start hold timer
+            throttle_hold_start_tick = xTaskGetTickCount();
+            throttle_above_thresh = true;
+        }
+
+        float hold_elapsed_s = (float)(xTaskGetTickCount() - throttle_hold_start_tick) * 0.001f;
+        if (hold_elapsed_s >= THROTTLE_HOLD_S) {
+            launch_armed = true;
+        }
+    }
+
+    // reset hold timer if throttle drops below threshold before arming
+    if (!throttle_pressed) {
+        throttle_above_thresh = false;
+    }
+
+    // active: armed and throttle still held — go immediately on arm
+    if (launch_armed) {
+        launch_active = true;
+        launch_tick   = xTaskGetTickCount();
+        launch_armed  = false;
+    }
+
+    // kill switch: brake or throttle zeroed
+    if (brakePressurePsi_u8 > braking_threshold_psi || (throttlePos_u8 == 0)) {
+        launch_active = false;
+        launch_armed = false;
+        throttle_above_thresh = false;
+    }
+
+    // if not active, zero torque and return
+    if (!launch_active) {
+        setTorqueLimsAllProtected(0.0f, 0.0f);
+        setVelocityInt16All(0);
+        return;
+    }
+
+    // check timeout, hand off to regular fast torque if timed out
+    float elapsed_s = (float)(xTaskGetTickCount() - launch_tick) * 0.001f;
+    if (elapsed_s >= LAUNCH_TIMEOUT_S) {
+        setFastTorque(throttlePos_u8);
+        return;
+    }
+
+    // run accel controller
+    float trq_fl, trq_fr, trq_rl, trq_rr;
+    setAccelTorque(car_velocity_mps,
+        wheel_fl_speed_radps, wheel_fr_speed_radps,
+        wheel_rl_speed_radps, wheel_rr_speed_radps,
+        fz_fl, fz_fr, fz_rl, fz_rr, &trq_fl, &trq_fr, &trq_rl, &trq_rr);
+
+    cmr_torqueDistributionNm_t pos_torques_Nm = {.fl = trq_fl, .fr = trq_fr, .rl = trq_rl, .rr = trq_rr};
+
+    setVelocityInt16All(maxFastSpeed_rpm);
+    setTorqueLimsUnprotected(MOTOR_FL, pos_torques_Nm.fl, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_FR, pos_torques_Nm.fr, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_RL, pos_torques_Nm.rl, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_RR, pos_torques_Nm.rr, 0.0f);
+}
+
+
+/** 
 void setAccelLaunchControl(
     uint8_t throttlePos_u8,
     uint16_t brakePressurePsi_u8,
@@ -1243,10 +1345,10 @@ void setAccelLaunchControl(
     }
 
     // kill switch
-    // if (brakePressurePsi_u8 > braking_threshold_psi || (throttlePos_u8 == 0)) {
-    //     launch_active = false;
-    //     launch_armed = false;
-    // }
+    if (brakePressurePsi_u8 > braking_threshold_psi || (throttlePos_u8 == 0)) {
+        launch_active = false;
+        launch_armed = false;
+    }
 
     button_was_held = button_held;
 
@@ -1280,7 +1382,7 @@ void setAccelLaunchControl(
     setTorqueLimsUnprotected(MOTOR_RL, pos_torques_Nm.rl, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RR, pos_torques_Nm.rr, 0.0f);
 }
-
+*/
 
 void setAccelTorque(float car_velocity,
     float wheel_fl_speed_radps,
