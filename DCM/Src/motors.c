@@ -568,8 +568,8 @@ cmr_torque_limit_t getTorqueBudget() {
  */
 void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw) {
     volatile cmr_canHVSense_t *HVISense = canTractiveGetPayload(CANRX_HVI_SENSE);
-    // float hvVoltage_V = ((float) HVISense->packVoltage_cV) / 100.f;
-    float hvVoltage_V = 500.0f;
+    float hvVoltage_V = ((float) HVISense->packVoltage_cV) / 100.f;
+    // float hvVoltage_V = 500.0f;
     uint16_t current = (int)((10.0f*((float)powerLimit_kw*1000.0f))/hvVoltage_V); // send current in deciamps
     // current = current << 8 | ((current >> 8) & 0xFF); 
     if(all) {

@@ -830,10 +830,25 @@ void runControls (
         case CMR_CAN_GEAR_DV_MISSION_TRACKD:     
         case CMR_CAN_GEAR_DV_MISSION_EBS: {
             disableTorqueMode();
-            setVelocityInt16All(maxDVSpeed_rpm);
             volatile cmr_canAutonomousControlAction_t*  autonomousAction = canDAQGetPayload(CANRX_DAQ_AUTONOMOUS_ACTION);
-            float front_torque_Nm = CLAMP(-maxDVTorque_Nm, ((float)(autonomousAction->frontTorque_mNm))/1000.0f, maxDVTorque_Nm); 
-            float rear_torque_Nm  = CLAMP(-maxDVTorque_Nm, ((float)(autonomousAction->rearTorque_mNm))/1000.0f, maxDVTorque_Nm); 
+            
+            float front_torque_Nm;
+            float rear_torque_Nm; 
+            float maxVelocity_rpm;
+
+            if(cmr_canRXMetaTimeoutError(&canDaqRXMeta[CANRX_DAQ_AUTONOMOUS_ACTION], xTaskGetTickCount())) {
+                front_torque_Nm = 0;
+                rear_torque_Nm = 0;
+                maxVelocity_rpm = 0;
+            }
+            else {
+                front_torque_Nm = CLAMP(-maxDVTorque_Nm, ((float)(autonomousAction->frontTorque_mNm))/1000.0f, maxDVTorque_Nm); 
+                rear_torque_Nm  = CLAMP(-maxDVTorque_Nm, ((float)(autonomousAction->rearTorque_mNm))/1000.0f, maxDVTorque_Nm); 
+                maxVelocity_rpm = (float)(autonomousAction->maxVelocity_decimeters_s) * 60.0f / 10.0f / ( PI * effective_wheel_dia_m) * gear_ratio;
+                maxVelocity_rpm = CLAMP(0, maxVelocity_rpm, maxDVSpeed_rpm); 
+            }
+
+            setVelocityInt16All(maxVelocity_rpm);
             
             if (front_torque_Nm > 0.0f) {
                 setTorqueLimsUnprotected(MOTOR_FL, front_torque_Nm, 0.0f);

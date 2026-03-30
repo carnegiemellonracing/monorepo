@@ -565,7 +565,11 @@ static volatile int requestedGear;
 void reqGear(void) {
     bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) 
                        || (stateGetVSM() == CMR_CAN_HV_EN));
-    if(getASMS() && cmr_gpioRead(GPIO_CTRL_SWITCH)) {
+    if(getASMS()/* && cmr_gpioRead(GPIO_CTRL_SWITCH)*/) {
+        if(CMR_CAN_GEAR_DV_MISSION_MAX <= state.gear || state.gear <= CMR_CAN_GEAR_DV_MISSION_MIN) {
+            state.gear = CMR_CAN_GEAR_DV_MISSION_ACCEL;
+            state.gearReq = CMR_CAN_GEAR_DV_MISSION_ACCEL;
+        }
         if(canChangeGear && buttonStates[RIGHT].isPressed) {
             if(state.gearReq == CMR_CAN_GEAR_DV_MISSION_MAX - 1) {
                 state.gearReq = CMR_CAN_GEAR_DV_MISSION_MIN + 1;
@@ -582,6 +586,10 @@ void reqGear(void) {
         }
     }
     else if (!getASMS()) {
+        if(CMR_CAN_GEAR_MAX <= state.gear || state.gear <= CMR_CAN_GEAR_MIN) {
+            state.gear = CMR_CAN_GEAR_SLOW;
+            state.gearReq = CMR_CAN_GEAR_SLOW;
+        }
         if(canChangeGear && buttonStates[RIGHT].isPressed) {
             if(state.gearReq == CMR_CAN_GEAR_MAX - 1) {
                 state.gearReq = CMR_CAN_GEAR_MIN + 1;
@@ -745,6 +753,14 @@ static void stateMachine(void *pvParameters){
  * @brief Initializes the state machine interface.
  */
 void stateMachineInit(void) {
+    if(getASMS()) {
+        state.gear = CMR_CAN_GEAR_DV_MISSION_ACCEL;
+        state.gearReq = CMR_CAN_GEAR_DV_MISSION_ACCEL;
+    }
+    else {
+        state.gear = CMR_CAN_GEAR_SLOW;
+        state.gearReq = CMR_CAN_GEAR_SLOW;
+    }
     cmr_taskInit(
         &stateMachine_task,
         "stateMachine",

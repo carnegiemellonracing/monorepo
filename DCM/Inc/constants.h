@@ -10,7 +10,7 @@ static const float maxTorque_Nm = 31.6f;
 static const float minTorqueLUTVal_Nm = 2.6f;
 static const float current_torque_slope = 85.0f / 31.6f;
 
-static const float front_bias = 0.20f;
+static const float front_bias = 0.10f;
 
 /** @brief Maximum motor speed
  * motor datasheet: "Nominal Speed - 13250 rpm"
@@ -36,8 +36,8 @@ static const float maxFastTorque_Nm = maxTorque_continuous_stall_Nm;
  */
 static const int16_t maxSlowSpeed_rpm = 1500;
 
-/** @brief Maximum motor speed in dv gear. Roughly 7m/s */
-static const int16_t maxDVSpeed_rpm = 1000;
+/** @brief Maximum motor speed in dv gear. Roughly 10m/s */
+static const int16_t maxDVSpeed_rpm = 6000;
 
 /** @brief Maximum motor speed in medium gear. Roughly 20m/s */
 static const int16_t maxMediumSpeed_rpm = 13000;
@@ -61,7 +61,7 @@ static const float chassis_w_r = 0.625; //Confirm with CAD people
 static const int32_t gear_ratio_top = 8784;
 static const int32_t gear_ratio_bot = 621;
 
-static const float gear_ratio = 13.93; //updated for 24e
+static const float gear_ratio = 12.097; // real for 26x
 static const float effective_wheel_dia_m = 0.41; /** @brief effective wheel diameter */
 static const float effective_wheel_rad_m = effective_wheel_dia_m * 0.5f; /** @brief effective wheel radius */
 

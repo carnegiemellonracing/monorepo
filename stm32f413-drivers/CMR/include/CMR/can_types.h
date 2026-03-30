@@ -1516,7 +1516,8 @@ typedef struct{
 typedef struct{
     int16_t frontTorque_mNm;           /**< @brief Front wheel torque mNm. */     
     int16_t rearTorque_mNm;            /**< @brief Rear wheel torque mNm. */     
-    int16_t steeringAngle_centi_deg;   /**< @brief Requested average angle of wheels centi deg. */     
+    int16_t steeringAngle_centi_deg;   /**< @brief Requested average angle of wheels centi deg. */  
+    uint16_t maxVelocity_decimeters_s; /**< @brief Requested max velocity in decimeters per second. */     
 }
 cmr_canAutonomousControlAction_t;
 

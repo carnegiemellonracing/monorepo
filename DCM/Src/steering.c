@@ -137,7 +137,13 @@ void runSteering() {
     }
     targetPosition_centi_deg = CLAMP(MIN_STEERING_CENTI_DEG, targetPosition_centi_deg, MAX_STEERING_CENTI_DEG );
 
-    int32_t current_output_mA = computeControlAction(targetPosition_centi_deg, getSteeringAngle());
+    int32_t current_output_mA;
+    if(cmr_canRXMetaTimeoutError(&canDaqRXMeta[CANRX_DAQ_AUTONOMOUS_ACTION], xTaskGetTickCount())) {
+        current_output_mA = 0;
+    }
+    else {
+        current_output_mA = computeControlAction(targetPosition_centi_deg, getSteeringAngle());
+    }
     current_output_mA = CLAMP(-MAX_CURRENT_MA, current_output_mA, MAX_CURRENT_MA);
     sendCubeMarsMessage(CMR_CAN_BUS_DAQ, CMR_CANID_EXTENDED_CUBEMARS_SET_CURRENT, &current_output_mA, sizeof(current_output_mA), steeringPeriod_ms);
 }

@@ -27,17 +27,17 @@
 #define LEFT_TPOS_MIN_ADC 2280
 
 /** @brief  Experimentally determined left TPOS ADC Maximum*/
-#define LEFT_TPOS_MAX_ADC 3850
+#define LEFT_TPOS_MAX_ADC 3840
 
 /** @brief  Experimentally determined right TPOS ADC Minimum*/
 #define RIGHT_TPOS_MIN_ADC 40
 
 /** @brief  Experimentally determined right TPOS ADC Maximum*/
-#define RIGHT_TPOS_MAX_ADC 1870
+#define RIGHT_TPOS_MAX_ADC 1850
 
 #define LEFT_SWANGLE_MIN_ADC 360.0f
-#define CENTER_SWANGLE_ADC 1760.0f
-#define RIGHT_SWANGLE_MAX_ADC 2880.0f
+#define CENTER_SWANGLE_ADC 1640.0f
+#define RIGHT_SWANGLE_MAX_ADC 2850.0f
 
 #define MAX_OUTER_WHEEL_ANGLE_MILLIDEG 25282.0f
 #define MAX_INNER_WHEEL_ANGLE_MILLIDEG 30139.0f
