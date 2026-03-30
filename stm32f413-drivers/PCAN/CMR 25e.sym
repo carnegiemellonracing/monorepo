@@ -1911,6 +1911,13 @@ Var=CCM_ChargerVoltage unsigned 8,16 /u:dV
 Var=CCM_ChargerCurrent unsigned 24,16 /u:dA
 Var=CCM_ChargerDisabled unsigned 40,8
 
+[CDC_COULOMB_COUNTING]
+ID=6E3h
+DLC=4
+CycleTime=100
+TimeOut=500
+Var=COULOMB_KCoulombs float 0,32
+
 [DAQ_AUTO_TEST]
 ID=777h
 DLC=1
