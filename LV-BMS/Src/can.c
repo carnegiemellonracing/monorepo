@@ -21,6 +21,8 @@
 #include "bq_interface.h"
 // INTERFACES
 
+#define CELLS_PER_CELL_GROUP 5
+
 
 /**
  * @brief CAN periodic message receive metadata
@@ -44,20 +46,20 @@ cmr_canRXMeta_t canRXMeta[CANRX_LEN] = {
 
 cmr_canHeartbeat_t heartbeat;
 
-/** @brief CAN 10 Hz TX priority. */
-const uint32_t canTX10Hz_priority = 4;
-/** @brief CAN 10 Hz TX period (milliseconds). */
-const TickType_t canTX10Hz_period_ms = 100;
+/** @brief CAN 2 Hz TX priority. */
+const uint32_t canTX2Hz_priority = 4;
+/** @brief CAN 2 Hz TX period (milliseconds). */
+const TickType_t canTX2Hz_period_ms = 500;
 
 /** @brief CAN 100 Hz TX priority. */
 const uint32_t canTX100Hz_priority = 5;
 /** @brief CAN 100 Hz TX period (milliseconds). */
 const TickType_t canTX100Hz_period_ms = 10;
 
-/** @brief CAN 10 Hz TX task. */
-static cmr_task_t canTX10Hz_task;
+/** @brief CAN 2 Hz TX task. */
+static cmr_task_t canTX2Hz_task;
 /** @brief CAN 100 Hz TX task. */
-static cmr_task_t canTX100Hz_task;
+static cmr_task_t canTX2Hz_task;
 
 /** @brief Primary CAN interface. */
 static cmr_can_t can;
@@ -81,8 +83,6 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
         error |= CMR_CAN_ERROR_VSM_TIMEOUT;
     }
 
-    // Add errors Here ^
-
     // If error exists, update heartbeat to error state (i.e. update its fields). See can_types.h for the fields.
     if (error != CMR_CAN_ERROR_NONE) {
         heartbeat.state = CMR_CAN_ERROR;
@@ -98,69 +98,57 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     canTX(CMR_CANID_HEARTBEAT_LV_BMS, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
 }
 
-void sendVoltages() {
-    cmr_canLVBMS_Voltage cell1_4;
-    cmr_canLVBMS_Voltage cell5_7;
-    cell1_4.cell1 = getVoltageData(0);
-    cell1_4.cell2 = getVoltageData(1);
-    cell1_4.cell3 = getVoltageData(2);
-    cell1_4.cell4 = getVoltageData(3);
-    cell5_7.cell1 = getVoltageData(4);
-    cell5_7.cell2 = getVoltageData(5);
-    cell5_7.cell3 = getVoltageData(6);
-    canTX(CMR_CANID_LVBMS_CELL_VOLTAGE_1_4, &cell1_4, sizeof(cell1_4), canTX10Hz_period_ms);
-    canTX(CMR_CANID_LVBMS_CELL_VOLTAGE_5_7, &cell5_7, sizeof(cell5_7), canTX10Hz_period_ms);
+void sendVoltages(uint8_t cell_group) {
+    PackedCellVoltages cell_volts;
+    uint8_t base  = CLAMP(0, cell_group * CELLS_PER_CELL_GROUP;, CELL_NUM); 
+    uint8_t cell2 = CLAMP(0, base + 1, CELL_NUM);
+    uint8_t cell3 = CLAMP(0, base + 2, CELL_NUM);
+    uint8_t cell4 = CLAMP(0, base + 3, CELL_NUM);
+    uint8_t cell5 = CLAMP(0, base + 4, CELL_NUM);
+    cell_volts.cell1_mV_rs1 = getVoltageData(base);
+    cell_volts.cell2_mV_rs1 = getVoltageData(cell2);
+    cell_volts.cell3_mV_rs1 = getVoltageData(cell3);
+    cell_volts.cell4_mV_rs1 = getVoltageData(cell4);
+    cell_volts.cell5_mV_rs1 = getVoltageData(cell5);
+    // note this relies on contiguous CAN_Ids
+    canTX(CMR_CANID_LVBMS_CELL_VOLTAGE_1_4 + cell_group, &cell_volts, sizeof(cell_volts), canTX10Hz_period_ms);
 }
 
-void sendTemps() {
-    cmr_canLVBMS_Temperature cell1_4;
-    cmr_canLVBMS_Temperature cell5_7;
-    cell1_4.cell1 = getTempData(0);
-    cell1_4.cell2 = getTempData(1);
-    cell1_4.cell3 = getTempData(2);
-    cell1_4.cell4 = getTempData(3);
-    cell5_7.cell1 = getTempData(4);
-    cell5_7.cell2 = getTempData(5);
-    cell5_7.cell3 = getTempData(6);
-    canTX(CMR_CANID_LVBMS_CELL_TEMP_1_4, &cell1_4, sizeof(cell1_4), canTX10Hz_period_ms);
-    canTX(CMR_CANID_LVBMS_CELL_TEMP_5_7, &cell5_7, sizeof(cell5_7), canTX10Hz_period_ms);
+void sendTemps(uint8_t cell_group) {
+    PackedCellTemps cell_temps;
+    uint8_t base  = CLAMP(0, cell_group * CELLS_PER_CELL_GROUP;, CELL_NUM); 
+    uint8_t cell2 = CLAMP(0, base + 1, CELL_NUM);
+    uint8_t cell3 = CLAMP(0, base + 2, CELL_NUM);
+    uint8_t cell4 = CLAMP(0, base + 3, CELL_NUM);
+    uint8_t cell5 = CLAMP(0, base + 4, CELL_NUM);
+    cell_temps.cell1_dC = getTempData(base);
+    cell_temps.cell1_dC = getTempData(cell2);
+    cell_temps.cell1_dC = getTempData(cell3);
+    cell_temps.cell1_dC = getTempData(cell4);
+    cell_temps.cell1_dC = getTempData(cell5);
+    // note this relies on contiguous CAN_Ids
+    canTX(CMR_CANID_LVBMS_CELL_TEMP_1_4 + cell_group, &cell_temps, sizeof(cell_temps), canTX10Hz_period_ms);
 }
 
 
 /**
- * @brief Task for sending CAN messages at 10 Hz.
+ * @brief Task for sending CAN messages at 2 Hz.
  *
  * @param pvParameters Ignored.
  *
  * @return Does not return.
  */
-static void canTX10Hz(void *pvParameters) {
+static void canTX2Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
+    static uint8_t send_cell_group = 0; // We alternate between sending cell group 0 and 1
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        // uint32_t x = adc_read(ADC_HALL_EFFECT);
-
-        // if (x == 0){
-        //     cmr_panic("vTaskStartScheduler returned!");
-        // }
-
-        // Loop through the 4 different MUX channels and select a different one
-		// We still monitor all voltages each channel switch
-		// for(uint8_t j = 0; j < 4; j++) {
-		// 	// Small delays put between all transaction
-            
-		// 	setMuxOutput(j);
-		// 	vTaskDelayUntil(&lastWakeTime, 10);
-		// 	uint8_t err = getVoltages();
-		// 	vTaskDelayUntil(&lastWakeTime, 10);
-		// 	getTemps(j);
-		// 	vTaskDelayUntil(&lastWakeTime, 10);
-
-		// }
-        sendVoltages();
-        sendTemps();
-        vTaskDelayUntil(&lastWakeTime, 100);
+        sendVoltages(send_cell_group);
+        sendTemps(send_cell_group);
+        send_cell_group = !send_cell_group;
+        vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
+        
     }
 }
 
@@ -215,10 +203,10 @@ const cmr_canFilter_t canFilters[] = {
 
     // Task initialization.
     cmr_taskInit(
-        &canTX10Hz_task,
-        "CAN TX 10Hz",
-        canTX10Hz_priority,
-        canTX10Hz,
+        &canTX2Hz_task,
+        "CAN TX 2Hz",
+        canTx2Hz_priority,
+        canTX2Hz,
         NULL
     );
     cmr_taskInit(

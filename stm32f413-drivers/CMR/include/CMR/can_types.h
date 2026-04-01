@@ -1460,12 +1460,27 @@ typedef struct {
 	uint8_t test_id;
 } cmr_canTestID_t;
 
+// Defines cell voltage in mV right shifted by one
 typedef struct {
-    uint16_t cell1;
-    uint16_t cell2;
-    uint16_t cell3;
-    uint16_t cell4;
-} cmr_canLVBMS_Voltage;
+    uint64_t cell1_mV_rs1 : 12;
+    uint64_t cell2_mV_rs1 : 12;
+    uint64_t cell3_mV_rs1 : 12;
+    uint64_t cell4_mV_rs1 : 12;
+    uint64_t cell5_mV_rs1 : 12;
+    // explicitly define the remaining 4 bits as padding 
+    uint64_t reserved   : 4; 
+} PackedCellVoltages;
+
+// Defines cell voltage in deci-Celcius 
+typedef struct {
+    uint64_t cell1_dC : 12;
+    uint64_t cell2_dC : 12;
+    uint64_t cell3_dC : 12;
+    uint64_t cell4_dC : 12;
+    uint64_t cell5_dC : 12;
+    // explicitly define the remaining 4 bits as padding 
+    uint64_t reserved   : 4; 
+} PackedCellTemps;
 
 typedef struct {
     uint8_t data[4];

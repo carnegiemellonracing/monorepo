@@ -67,7 +67,7 @@ int main(void) {
 
   // Peripheral configuration.
 	DWT_Delay_Init();
-  	gpio_init();
+  gpio_init();
 	BMBInit();
 	adc_init();
 	canInit();
