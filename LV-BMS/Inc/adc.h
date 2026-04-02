@@ -18,14 +18,14 @@
 typedef enum {
 	ADC_HALL_EFFECT = 0,
 	ADC_NUM     /**< @brief Total ADC channels. */
-} adc_channel_t;
+} adcChannel_t;
 
 //static const uint32_t VTHERM_NUM = 16;
 
 static const TickType_t adc_period_ms = 50;
 
-void adc_init(void);
-uint32_t adc_read(adc_channel_t ch);
+void adcInit(void);
+uint32_t adcRead(adcChannel_t ch);
 
 #endif /* ADC_H */
 

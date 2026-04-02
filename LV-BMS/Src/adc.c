@@ -17,7 +17,7 @@
  *
  * @see `CMR/adc.h` for various initialization values.
  */
-static cmr_adcChannel_t adc_channels[ADC_NUM] = {
+static cmr_adcChannel_t adcChannels[ADC_NUM] = {
 	[ADC_HALL_EFFECT] = {
 		.channel = ADC_CHANNEL_13,
 		.port = GPIOC,
@@ -33,8 +33,8 @@ static cmr_adc_t adc;
 /**
  * @brief Initializes the ADC interface.
  */
-void adc_init(void) {
-    cmr_adcInit(&adc, ADC1, adc_channels, ADC_NUM, adc_period_ms);
+void adcInit(void) {
+    cmr_adcInit(&adc, ADC1, adcChannels, ADC_NUM, adc_period_ms);
 }
 
 /**
@@ -44,6 +44,6 @@ void adc_init(void) {
  *
  * @return The read value.
  */
-uint32_t adc_read(adc_channel_t ch) {
+uint32_t adcRead(adcChannel_t ch) {
 	return cmr_adcRead(&adc, ch);
 }

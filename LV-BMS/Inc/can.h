@@ -32,6 +32,8 @@ void canInit(void);
 extern const uint32_t canTX10Hz_priority;
 extern  const TickType_t canTX10Hz_period_ms;
 
+extern  const TickType_t canTX2Hz_period_ms;
+
 extern  const uint32_t canTX100Hz_priority;
 
 extern  const TickType_t canTX100Hz_period_ms;

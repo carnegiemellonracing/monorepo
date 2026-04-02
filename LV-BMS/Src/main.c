@@ -20,6 +20,7 @@
 #include "data.h"
 #include "dwt.h"
 #include "gpio.h"
+#include "sensors.h"
 
 
 /** @brief Status LED priority. */
@@ -67,9 +68,10 @@ int main(void) {
 
   // Peripheral configuration.
 	DWT_Delay_Init();
-  gpio_init();
+  	gpioInit();
 	BMBInit();
-	adc_init();
+	adcInit();
+	sensorsInit();
 	canInit();
 	sampleInit();
 

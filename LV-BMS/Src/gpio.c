@@ -50,6 +50,6 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 /**
  * @brief Initializes the GPIO interface.
  */
-void gpio_init() {
+void gpioInit() {
 	cmr_gpioPinInit(gpioPinConfigs, GPIO_LEN);
 }

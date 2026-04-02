@@ -19,7 +19,7 @@
 #define RESISTOR 10000 //10k ohm resistor from temps. again idk!!!
 
 uint8_t getVoltages(void);
-void sendVoltages();
+void sendVoltages(uint8_t cell_group);
 void sendOvervoltageFlags(uint16_t voltages[6]);
 void sendBusVoltage(uint16_t voltages[6]);
 
@@ -27,7 +27,7 @@ void AFE_SETUP(void);
 
 uint8_t getTemps(int channel);
 uint16_t tempConvert(uint16_t adc_value);
-void sendTemps();
+void sendTemps(uint8_t cell_group);
 void sendOvertempFlags(uint16_t temps[8]);
 
 void sendCurrent(void);

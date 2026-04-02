@@ -14,6 +14,7 @@
 #include <string.h>     // memcpy()
 #include <stm32f4xx_hal_can.h> // HAL interface
 #include <CMR/tasks.h>  // Task interface
+#include <CMR/utils.h>
 
 #include "adc.h"
 #include "can.h"
@@ -59,7 +60,7 @@ const TickType_t canTX100Hz_period_ms = 10;
 /** @brief CAN 2 Hz TX task. */
 static cmr_task_t canTX2Hz_task;
 /** @brief CAN 100 Hz TX task. */
-static cmr_task_t canTX2Hz_task;
+static cmr_task_t canTX100Hz_task;
 
 /** @brief Primary CAN interface. */
 static cmr_can_t can;
@@ -133,23 +134,23 @@ void sendVoltages(uint8_t cell_group) {
     cell_volts.cell4_mV_rs1 = getVoltageData(cell4);
     cell_volts.cell5_mV_rs1 = getVoltageData(cell5);
     // note this relies on contiguous CAN_Ids
-    canTX(CMR_CANID_LVBMS_CELL_VOLTAGE_1_4 + cell_group, &cell_volts, sizeof(cell_volts), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_CELL_VOLTAGE_1_4 + cell_group, &cell_volts, sizeof(cell_volts), canTX100Hz_period_ms);
 }
 
 void sendTemps(uint8_t cell_group) {
     PackedCellTemps cell_temps;
-    uint8_t base  = CLAMP(0, cell_group * CELLS_PER_CELL_GROUP;, CELL_NUM); 
+    uint8_t base  = CLAMP(0, cell_group * CELLS_PER_CELL_GROUP, CELL_NUM); 
     uint8_t cell2 = CLAMP(0, base + 1, CELL_NUM);
     uint8_t cell3 = CLAMP(0, base + 2, CELL_NUM);
     uint8_t cell4 = CLAMP(0, base + 3, CELL_NUM);
     uint8_t cell5 = CLAMP(0, base + 4, CELL_NUM);
-    cell_temps.cell1_dC = getTempData(base);
-    cell_temps.cell1_dC = getTempData(cell2);
-    cell_temps.cell1_dC = getTempData(cell3);
-    cell_temps.cell1_dC = getTempData(cell4);
-    cell_temps.cell1_dC = getTempData(cell5);
+    cell_temps.cell1_dC = thermVoltage_to_tempC(getTempData(base));
+    cell_temps.cell1_dC = thermVoltage_to_tempC(getTempData(cell2));
+    cell_temps.cell1_dC = thermVoltage_to_tempC(getTempData(cell3));
+    cell_temps.cell1_dC = thermVoltage_to_tempC(getTempData(cell4));
+    cell_temps.cell1_dC = thermVoltage_to_tempC(getTempData(cell5));
     // note this relies on contiguous CAN_Ids
-    canTX(CMR_CANID_LVBMS_CELL_TEMP_1_4 + cell_group, &cell_temps, sizeof(cell_temps), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_CELL_TEMP_1_4 + cell_group, &cell_temps, sizeof(cell_temps), canTX100Hz_period_ms);
 }
 
 
@@ -169,7 +170,7 @@ static void canTX2Hz(void *pvParameters) {
         sendVoltages(send_cell_group);
         sendTemps(send_cell_group);
         send_cell_group = !send_cell_group;
-        vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
+        vTaskDelayUntil(&lastWakeTime, canTX2Hz_period_ms);
         
     }
 }
@@ -200,7 +201,7 @@ static void sendLVBMSMinMaxCellVoltage(void) {
         .maxVoltageCellNum = maxVoltageCellNum
     };
 
-    canTX(CMR_CANID_LVBMS_MINMAX_CELL_VOLTAGE, &LVBMSMinMaxVoltage, sizeof(LVBMSMinMaxVoltage), canTX200Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_MINMAX_CELL_VOLTAGE, &LVBMSMinMaxVoltage, sizeof(LVBMSMinMaxVoltage), canTX100Hz_period_ms);
 }
 
 static void sendLVBMSMinMaxCellTemps(void) {
@@ -229,7 +230,7 @@ static void sendLVBMSMinMaxCellTemps(void) {
         .maxTempCellNum = maxTempCellNum
     };
 
-    canTX(CMR_CANID_LVBMS_MINMAX_CELL_TEMPS, &LVBMSMinMaxTemp, sizeof(LVBMSMinMaxTemp), canTX200Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_MINMAX_CELL_TEMPS, &LVBMSMinMaxTemp, sizeof(LVBMSMinMaxTemp), canTX100Hz_period_ms);
 }
 
 /**
@@ -245,7 +246,8 @@ static void canTX100Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendHeartbeat(lastWakeTime);
-
+        sendLVBMSMinMaxCellTemps();
+        sendLVBMSMinMaxCellVoltage();
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
 }
@@ -285,7 +287,7 @@ const cmr_canFilter_t canFilters[] = {
     cmr_taskInit(
         &canTX2Hz_task,
         "CAN TX 2Hz",
-        canTx2Hz_priority,
+        canTX2Hz_priority,
         canTX2Hz,
         NULL
     );

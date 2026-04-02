@@ -105,7 +105,7 @@ void sendOvervoltageFlags(uint16_t voltages[CELL_NUM]) {
         if (cellVoltages[i] > overVolt) flag |= (1 << i);
     }
 
-    canTX(CMR_CANID_LVBMS_CELL_OVERVOLTAGE, &flag, sizeof(flag), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_CELL_OVERVOLTAGE, &flag, sizeof(flag), canTX2Hz_period_ms);
 }
 
 // Sends bus voltage derived from cell voltages
@@ -116,7 +116,7 @@ void sendBusVoltage(uint16_t voltages[CELL_NUM]) {
         totalVoltage += voltages[i];
     }
 
-    canTX(CMR_CANID_LVBMS_BUS_VOLTAGE, &totalVoltage, sizeof(totalVoltage), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_BUS_VOLTAGE, &totalVoltage, sizeof(totalVoltage), canTX2Hz_period_ms);
 }
 
 //not sure how temp conversion works rn.
@@ -177,14 +177,14 @@ void sendOvertempFlags(uint16_t temps[8]) {
     }
 
     // Send CAN messages
-    canTX(CMR_CANID_LVBMS_CELL_OVERTEMP, &flag, sizeof(flag), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_CELL_OVERTEMP, &flag, sizeof(flag), canTX2Hz_period_ms);
 }
 
 // Sends the bus current
 void sendCurrent(void) {
-    uint16_t sensep = adc_read(ADC_HALL_EFFECT);
+    uint16_t sensep = adcRead(ADC_HALL_EFFECT);
     float current = float_to_uint16((sensep - adc_sensen)*vref_corr/(ADC_COUNT*GVCOUT*1e3));
-    canTX(CMR_CANID_LVBMS_CURRENT, &current, sizeof(current), canTX10Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_CURRENT, &current, sizeof(current), canTX2Hz_period_ms);
 }
 
 uint16_t getMinVoltage(void){

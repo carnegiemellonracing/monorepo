@@ -23,6 +23,6 @@ typedef enum {
 /**
  * @brief initializes gpio pins
  */
-void gpio_init();
+void gpioInit();
 
 #endif /* GPIO_H_ */
