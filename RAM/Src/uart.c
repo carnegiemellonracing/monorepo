@@ -43,10 +43,10 @@ static uart_t uart;
 static uint8_t send_buf[MAX_MESSAGE_LEN];
 
 /** @brief Boron TX period (milliseconds). (Shared with sample.c) */
-const TickType_t boron_tx_period_ms = 1000;
+const TickType_t boron_tx_period_ms = 250;
 
 /** @brief Boron RX period (milliseconds). (Shared with sample.c) */
-const TickType_t boron_rx_period_ms = 1000;
+const TickType_t boron_rx_period_ms = 250;
 
 /** @brief Delay between each can Message with text for dim */
 const TickType_t dim_message_delay_ms = 5;
@@ -255,7 +255,6 @@ static void handle_command(cn_cbor *command)
                     	  powerLimit, sizeof(cmr_canCDCPowerLimit_t),
 					      200);
                 }
-            }
             } else if (((uint16_t)id->v.uint == CMR_CANID_TEST_ID)){
   
                 memcpy(testID_name, data->v.bytes, 8); 

@@ -544,7 +544,8 @@ typedef enum {
     CMR_CANID_LVBMS_BUS_VOLTAGE = 0x7fd,
     CMR_CANID_LVBMS_CURRENT = 0x7fe,
 
-    CMR_CANID_AUTO_PID = 0x31A,       
+    CMR_CANID_AUTO_PID = 0x31A,   
+    CMR_CANID_TEST_ID = 0x778    
 
 } cmr_canID_t;
 

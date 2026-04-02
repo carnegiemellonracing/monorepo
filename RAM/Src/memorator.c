@@ -32,6 +32,7 @@ extern char testID_name[9];
 
 //forward declarations
 static void switchBuffer(void);
+static void check_new_testID(); 
 
 static const cmr_gpioPin_t clockPin = (cmr_gpioPin_t){
     .port = GPIOC,
@@ -147,6 +148,7 @@ static void writeToSDCard(void *pvParameters)
         oldBufferLocation = bufferLocation;
         switchBuffer();
         cmr_SDIO_mount();
+        check_new_testID(); //write new names from DAQ live 
         res = cmr_SDIO_openFile(&filObj, filename);
         if (!res){
             cmr_SDIO_write(&filObj, txBuffer, oldBufferLocation);
@@ -181,15 +183,32 @@ static void switchBuffer(){
 
     taskEXIT_CRITICAL();
 }
-
-// static bool check_testID_valid(char testID[8]){
-//     for(int i = 0; i<8; i++){
-//         if (testID[i] != 0) {
-//             return true; 
-//         }
-//     }
-//     return false; 
-// }
+ 
+/**
+returns 0 for same name 
+1 for new name 
+-1 for all 0's (use date time format)
+ */
+static void check_new_testID(){
+    uint8_t count_zeros = 0;
+    uint8_t new_name = 0; 
+    //check testID from DAQ Live against filename 
+    for(int i = 0; i<8; i++){
+        if (testID_name[i] != filename[i]) {
+            new_name = 1; 
+            if (testID_name[i] == 0) {
+                count_zeros++; 
+            }
+        }
+    }
+    if (count_zeros == 8) {
+        RTC_DateTypeDef curDate = getRTCDate();
+        RTC_TimeTypeDef curTime = getRTCTime();
+        snprintf(filename, sizeof(filename), "%u-%u-%u_%u-%u-%u-%lu.bin", curDate.Month, curDate.Date, curDate.Year, curTime.Hours, curTime.Minutes, curTime.Seconds, curTime.SubSeconds);
+    } else if (new_name) {
+        snprintf(filename, 9, "%s.bin", testID_name); 
+    }
+}
 
 void memoratorInit(){
     bufferLocation = 0;
