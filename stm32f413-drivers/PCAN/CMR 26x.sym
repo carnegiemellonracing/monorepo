@@ -742,6 +742,26 @@ Var=SENSORS_packCurrent_dA signed 0,16
 Var=SENSORS_packVoltage_cV unsigned 16,16
 Var=SENSORS_packPower_W signed 32,32
 
+[LVBMS_MINMAX_CELL_TEMPS]
+ID=7f6h
+DLC=6
+CycleTime=10
+TimeOut=50
+Var=MINMAX_minCellTemp_C unsigned 0,16
+Var=MINMAX_maxCellTemp_C unsigned 16,16
+Var=MINMAX_minTempCellNum unsigned 32,8
+Var=MINMAX_maxTempCellNum unsigned 40,8
+
+[LVBMS_MINMAX_CELL_VOLTAGE]
+ID=7ffh
+DLC=6
+CycleTime=10
+TimeOut=50
+Var=MINMAX_minCellVoltage_mV unsigned 0,16 /u:mV
+Var=MINMAX_maxCellVoltage_mV unsigned 16,16 /u:mV
+Var=MINMAX_minVoltageCellNum unsigned 32,8
+Var=MINMAX_maxVoltageCellNum unsigned 40,8
+
 [LV_CELL_BALANCE_ENABLE]
 ID=136h
 DLC=3
@@ -2310,14 +2330,6 @@ CycleTime=1000
 Timeout=2000
 Var=Commit_Hash_DIM unsigned 0,32 -h
 Var=Dirty_DIM unsigned 32,8
-
-[RAM_Git]
-ID=7F6h
-DLC=8
-CycleTime=1000
-Timeout=2000
-Var=Commit_Hash_RAM unsigned 0,32 -h
-Var=Dirty_RAM unsigned 32,8
 
 [Movella_MTi680G_Quaternion]
 ID=774h
