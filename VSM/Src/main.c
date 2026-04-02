@@ -23,6 +23,7 @@
 #include "sensors.h"    // Board-specific sensors interface
 #include "statusLED.h"  // Status LED
 #include "state.h"      // stateInit()
+#include "pwm.h"
 #include "tssi.h"       // TSSI control 
 
 /**

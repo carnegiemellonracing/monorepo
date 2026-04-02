@@ -1,13 +1,14 @@
-  /**
- * @file maxonControl.h
- * @brief basic pdController implementation.
+/**
+ * @file steering.h
+ * @brief CubeMars steering motor control interface.
  *
  * @author CMR
  */
 
-#ifndef maxonControl_H
-#define maxonControl_H
+#ifndef STEERING_H
+#define STEERING_H
 
-void maxonControlInit();
+void steeringInit();
+void runSteering();
 
 #endif

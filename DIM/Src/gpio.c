@@ -15,11 +15,11 @@
 
 //bool gpioButtonStates[NUM_BUTTONS];
 
-button_t buttonStates[NUM_BUTTONS]; 
+button_t buttonStates[NUM_BUTTONS];
 
 
 gpio_t gpioButtonPins[NUM_BUTTONS] = {GPIO_BUTTON_UP, GPIO_BUTTON_DOWN, GPIO_BUTTON_LEFT,
-									GPIO_BUTTON_RIGHT, GPIO_BUTTON_SW_LEFT, GPIO_BUTTON_SW_RIGHT};
+                                    GPIO_BUTTON_RIGHT, GPIO_BUTTON_SW_LEFT, GPIO_BUTTON_SW_RIGHT};
 
 static const uint32_t gpioReadButtons_priority = 5;
 
@@ -217,25 +217,21 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 
 /**
  * @brief This function is a wrapper that lets you see if ASMS is on
- * 
+ *
  * @return 1 iff ASMS is on
  */
 uint8_t getASMS(){
-	return false;
-	return cmr_gpioRead(GPIO_ASMS_ON);
+    return cmr_gpioRead(GPIO_ASMS_ON);
 }
 
 /**
  * @brief This function is a wrapper that lets you see if EAB is on
- * 
+ *
  * @return 1 iff EAB is on
  */
 bool getEAB(){
 	uint8_t *eabStatus = (uint8_t*)getPayload(CANRX_EAB_STATUS);
-	if(*eabStatus == 1) {
-		eabReq = true;
-	}
-	return eabReq;
+	return *eabStatus;
 }
 
 /* Debouncing for button presses. */
@@ -254,15 +250,15 @@ static bool lastState[NUM_BUTTONS] = {false};
 
 static float adcToVoltage(uint32_t analog){
 
-	//error check
-	if(analog > 4096){
-		return -1;
-	}else{
-		//Scale analog to voltage between 0-5V
-		float finalVolt = ((float)analog/4096.0f) * 5.0f;
+    //error check
+    if(analog > 4096){
+        return -1;
+    }else{
+        //Scale analog to voltage between 0-5V
+        float finalVolt = ((float)analog/4096.0f) * 5.0f;
 
-		return finalVolt;
-	}
+        return finalVolt;
+    }
 }
 
 /**
@@ -270,24 +266,24 @@ static float adcToVoltage(uint32_t analog){
  */
 static void gpioReadButtons(void *pvParameters) {
     (void)pvParameters;
-	TickType_t lastWakeTime = xTaskGetTickCount();
+    TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-		uint8_t paddle = adcRead(ADC_PADDLE);
-		if(getCurrState() == CONFIG) {
-			if (paddle > 100) config_increment_up_requested = true;
-		}
+        uint8_t paddle = adcRead(ADC_PADDLE);
+        if(getCurrState() == CONFIG) {
+            if (paddle > 100) config_increment_up_requested = true;
+        }
 
         // Direct assignment for CAN buttons
-		
+
         for(int i=0; i<NUM_BUTTONS; i++){
-			// Active Low
-			buttonStates[i].gpioState = !cmr_gpioRead(gpioButtonPins[i]);
-			if (buttonStates[i].prevState != buttonStates[i].gpioState){
-				buttonStates[i].isPressed = buttonStates[i].gpioState;  
-			}
-			buttonStates[i].prevState = buttonStates[i].gpioState; 
+            // Active Low
+            buttonStates[i].gpioState = !cmr_gpioRead(gpioButtonPins[i]);
+            if (buttonStates[i].prevState != buttonStates[i].gpioState){
+                buttonStates[i].isPressed = buttonStates[i].gpioState;
+            }
+            buttonStates[i].prevState = buttonStates[i].gpioState;
         }
-		vTaskDelayUntil(&lastWakeTime, 100);
+        vTaskDelayUntil(&lastWakeTime, 100);
     }
 }
 

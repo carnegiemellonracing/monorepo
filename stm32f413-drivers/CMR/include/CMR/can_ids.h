@@ -17,7 +17,7 @@
  */
 #define CMR_CANID_RMS_OFFSET    0x3A0
 #define NUM_CONFIG_PACKETS 4 
-#define CONTROLLER_ID 120
+#define CONTROLLER_ID 0
 
 /** @brief For DTI Motors converts node and packet ID to a valid CAN ID*/
 #define PACKET_NODE_TO_CAN_ID(packet,node)  (((uint16_t) packet << 5) | ((uint16_t) node))
@@ -38,7 +38,7 @@ typedef enum {
     CMR_CANID_HEARTBEAT_LV_BMS = 0x107, /**< @brief LV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_HV_BMS = 0x108, /**< @brief HV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
-    CMR_CANID_EAB_STATUS = 0x10A, // conflicting with VSM_FIRST_ERROR
+    CMR_CANID_EAB_STATUS = 0x10B, // conflicting with VSM_FIRST_ERROR
     CMR_CANID_ASMS_STATUS = 0x193,
 
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
@@ -362,8 +362,6 @@ typedef enum {
     CMR_CANID_FRONT_WHL_VELS = 0x7EC,
     CMR_CANID_REAR_WHL_VELS = 0x7ED,
 
-    CMR_CANID_TEST_ID=0x777,
-
 	CMR_CANID_DRS_CONTROLS = 0x29C, 				/**< @brief DRS Motor Controls. */
 
     CMR_CANID_DAQ_0_LOADCELL = 0x650,           /**< @brief Load cell data for DAQ Board 0. */
@@ -387,12 +385,14 @@ typedef enum {
 	CMR_CANID_RAM_GIT = 0x7f6,
 
     //AS
-    CMR_CANID_AS_RES = 0x182,                   /**< @brief Autonomous RES (remote E-stop)*/
+    CMR_CANID_AS_RES_ENABLE = 0x000,
+    CMR_CANID_AS_RES = 0x18E,                   /**< @brief Autonomous RES (remote E-stop)*/
     CMR_CANID_AUTONOMOUS_ACTION = 0x190,        /**< @brief Autonomous Action*/
     CMR_CANID_AS_PRESSURE_READINGS = 0x191,     /**< @brief Autonomous Pressure Readings for Tank and EBS*/
     CMR_CANID_AS_RACK_DISPLACMENT = 0x192,      /**< @brief Rack Displacement Mesurment*/
     CMR_CANID_ASMS_STATE = 0x193,
-
+    CMR_CANID_AS_MISSION_FINISHED = 0x777,
+    CMR_CANID_AS_HEARTBEAT_COMPUTE = 0x109,
 
     //MAXON
     CMR_CANID_MAXON_STATUS_WORD = 0x250,
@@ -548,6 +548,9 @@ typedef enum {
     CMR_CANID_LVBMS_CELL_OVERTEMP = 0x7fc,
     CMR_CANID_LVBMS_BUS_VOLTAGE = 0x7fd,
     CMR_CANID_LVBMS_CURRENT = 0x7fe,
+
+    CMR_CANID_AUTO_PID = 0x31A,       
+
 } cmr_canID_t;
 
 typedef enum {

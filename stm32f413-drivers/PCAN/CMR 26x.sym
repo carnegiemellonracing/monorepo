@@ -147,6 +147,15 @@ TimeOut=50
 Var=PRESSURE_ebsPressure_1 unsigned 0,16
 Var=PRESSURE_ebsPressure_2 unsigned 16,16
 
+[AUTONOMOUS_ACTION]
+ID=190h
+DLC=6
+CycleTime=400
+TimeOut=2000
+Var=ACTION_frontTorque_mNm unsigned 0,16
+Var=ACTION_rearTorque_mNm unsigned 16,16
+Var=steeringAngle_centi_deg unsigned 32,16
+
 [CDC_COG_VELOCITY]
 ID=2C2h
 DLC=8
@@ -849,6 +858,15 @@ TimeOut=2000
 Var=IMU_gyro_x_rads signed 0,16 /u:rad
 Var=IMU_gyro_y_rads signed 16,16 /u:rad
 Var=IMU_gyro_z_rads signed 32,16 /u:rad
+
+[SENSORIC_DIST]
+ID=601h
+DLC=8
+CycleTime=10
+TimeOut=50
+Var=DIST_dist_A signed 0,32
+Var=DIST_radius signed 32,16
+Var=DIST_acc_C signed 48,16
 
 [SENSORIC_VEL_ANG]
 ID=600h
@@ -1936,16 +1954,6 @@ Var=RTC_Date_In unsigned 24,8 /u:day
 Var=RTC_Month_In unsigned 32,8 /u:month
 Var=RTC_Year_In unsigned 40,8 /u:year
 Var=RTC_Error_In unsigned 48,8	// For interpreting this, see comments in code.
-
-[DIM_Config1_Drv0]
-ID=601h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config1_drv0_config_val_1 unsigned 0,8
-Var=DIM_config1_drv0_config_val_2 unsigned 8,8
-Var=DIM_config1_drv0_config_val_3 unsigned 16,8
-Var=DIM_config1_drv0_config_val_4 unsigned 24,8
 
 [DIM_Config2_Drv0]
 ID=602h

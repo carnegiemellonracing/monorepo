@@ -243,6 +243,7 @@ static void tftUpdate(void *pvParameters) {
         vTaskDelayUntil(&lastWakeTime, TFT_UPDATE_PERIOD_MS);
         cmr_state state = getCurrState();
         switch(state){
+            case AUTON:
             case NORMAL:
                 drawRTDScreen();
                 break;

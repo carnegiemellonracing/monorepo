@@ -6,9 +6,14 @@
             "type": "AS_Status"
         },
         "CMR_CANID_AS_PRESSURE_READINGS": {
-            "cycleTime": 20.0,
-            "timeOut": 100,
+            "cycleTime": 10,
+            "timeOut": 50,
             "type": "cmr_canDVPressureReadings_t"
+        },
+        "CMR_CANID_AUTONOMOUS_ACTION": {
+            "cycleTime": 400.0,
+            "timeOut": 2000,
+            "type": "cmr_canAutonomousControlAction_t"
         },
         "CMR_CANID_CDC_COG_VELOCITY": {
             "cycleTime": 5,
@@ -367,8 +372,14 @@
         },
         "CMR_CANID_HVC_LOW_VOLTAGE": {
             "cycleTime": 10,
+            "safety_qV": {
+                "u": "qV"
+            },
             "timeOut": 50,
-            "type": "cmr_canBMSLowVoltage_t"
+            "type": "cmr_canBMSLowVoltage_t",
+            "vAIR_qV": {
+                "u": "qV"
+            }
         },
         "CMR_CANID_HVC_MINMAX_CELL_TEMPS": {
             "cycleTime": 20.0,
@@ -485,6 +496,11 @@
             "timeOut": 2000,
             "type": "cmr_canSBGIMUGyro_t"
         },
+        "CMR_CANID_SENSORIC_DIST": {
+            "cycleTime": 10.0,
+            "timeOut": 50,
+            "type": "cmr_canSensoricDist_t"
+        },
         "CMR_CANID_SENSORIC_VEL_ANG": {
             "cycleTime": 5,
             "timeOut": 25,
@@ -530,20 +546,20 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2929,
-        "files_with_matches": 2929,
+        "files_processed": 2927,
+        "files_with_matches": 2927,
         "global_mappings": {
-            "canrx_mappings": 178,
-            "canrx_timeouts": 172,
+            "canrx_mappings": 179,
+            "canrx_timeouts": 173,
             "canrx_types": 75,
-            "constants": 249,
+            "constants": 251,
             "struct_members": 0,
-            "variable_types": 331
+            "variable_types": 330
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 105
+        "total_canids": 106
     }
 }

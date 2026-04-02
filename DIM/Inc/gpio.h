@@ -31,6 +31,7 @@ typedef enum {
     GPIO_ASMS_ON, /**< @brief AS Master Switch On/Off */
 	GPIO_LED_STATUS, /**< @brief Status LED */
     GPIO_PD_N,
+    GPIO_AS_ERROR,      /**< @brief AS Error GPIO Output */
     GPIO_LEN /**< @brief Total GPIO pins. */
 } gpio_t;
 
