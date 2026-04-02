@@ -39,12 +39,16 @@
 extern SD_HandleTypeDef hsd;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 extern uint8_t cmr_SDIO_pinCount;
 =======
 >>>>>>> 191775f8 (added fatfs files)
 =======
 extern uint8_t cmr_SDIO_pinCount;
 >>>>>>> a698c5ec (Not Cleaned UP Yet)
+=======
+extern uint8_t cmr_SDIO_pinCount;
+>>>>>>> 10df84bdbd06fbbdd17e9a2678eafcad7091817e
 
 /* USER CODE BEGIN BeforeInitSection */
 /* can be used to modify / undefine following code or add code */
@@ -65,6 +69,7 @@ __weak uint8_t BSP_SD_Init(void)
   sd_state = HAL_SD_Init(&hsd);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
   // CODE ADDED BY CMR
   if (cmr_SDIO_pinCount == 4 && sd_state == MSD_OK)
@@ -83,6 +88,8 @@ __weak uint8_t BSP_SD_Init(void)
   }
 =======
 >>>>>>> 78cfd58a (DMA and FATFS Works)
+=======
+>>>>>>> 10df84bdbd06fbbdd17e9a2678eafcad7091817e
 
   // CODE ADDED BY CMR
   if (cmr_SDIO_pinCount == 4 && sd_state == MSD_OK)
@@ -332,6 +339,7 @@ __weak uint8_t BSP_SD_IsDetected(void)
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   /* USER CODE BEGIN 1 */
   /* user code can be inserted here */
   /* USER CODE END 1 */
@@ -346,6 +354,11 @@ __weak uint8_t BSP_SD_IsDetected(void)
   /* user code can be inserted here */
   /* USER CODE END 1 */
 >>>>>>> 78cfd58a (DMA and FATFS Works)
+=======
+  /* USER CODE BEGIN 1 */
+  /* user code can be inserted here */
+  /* USER CODE END 1 */
+>>>>>>> 10df84bdbd06fbbdd17e9a2678eafcad7091817e
 
   return status;
 }

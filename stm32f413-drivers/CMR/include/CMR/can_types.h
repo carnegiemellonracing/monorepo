@@ -1458,10 +1458,14 @@ typedef struct {
 
 typedef struct {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	uint8_t test_id;
 =======
 	char test_id[8];
 >>>>>>> 10df84bd (bring back sending testID on can + revert can_fmt.json)
+=======
+	char test_id[8];
+>>>>>>> 10df84bdbd06fbbdd17e9a2678eafcad7091817e
 } cmr_canTestID_t;
 
 typedef struct {
