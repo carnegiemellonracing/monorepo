@@ -22,7 +22,7 @@
 // INTERFACES
 
 #define CELLS_PER_CELL_GROUP 5
-
+#define NUM_CELLS 7
 
 /**
  * @brief CAN periodic message receive metadata
@@ -100,7 +100,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 
 void sendVoltages(uint8_t cell_group) {
     PackedCellVoltages cell_volts;
-    uint8_t base  = CLAMP(0, cell_group * CELLS_PER_CELL_GROUP;, CELL_NUM); 
+    uint8_t base  = CLAMP(0, cell_group * CELLS_PER_CELL_GROUP, CELL_NUM); 
     uint8_t cell2 = CLAMP(0, base + 1, CELL_NUM);
     uint8_t cell3 = CLAMP(0, base + 2, CELL_NUM);
     uint8_t cell4 = CLAMP(0, base + 3, CELL_NUM);
@@ -152,6 +152,64 @@ static void canTX2Hz(void *pvParameters) {
     }
 }
 
+static void sendLVBMSMinMaxCellVoltage(void) {
+    uint16_t minCellVoltage = UINT16_MAX;
+    uint16_t maxCellVoltage = 0;
+    uint16_t minVoltageCellNum, maxVoltageCellNum;
+
+    for (uint8_t lvbms_index = 0; lvbms_index < NUM_CELLS-1; lvbms_index++) {
+        uint8_t currCellVoltage = getVoltageData(lvbms_index);
+
+        if (currCellVoltage > maxCellVoltage) {
+            maxCellVoltage = currCellVoltage;
+            maxVoltageCellNum = lvbms_index;
+        }
+
+        if (currCellVoltage < minCellVoltage) {
+            minCellVoltage = currCellVoltage;
+            minVoltageCellNum = lvbms_index;
+        }
+    }
+
+    cmr_canLVBMSMinMaxCellVoltage_t LVBMSMinMaxVoltage = {
+        .minCellVoltage_mV = minCellVoltage,
+        .maxCellVoltage_mV = maxCellVoltage,
+        .minVoltageCellNum = minVoltageCellNum,
+        .maxVoltageCellNum = maxVoltageCellNum
+    };
+
+    canTX(CMR_CANID_LVBMS_MINMAX_CELL_VOLTAGE, &LVBMSMinMaxVoltage, sizeof(LVBMSMinMaxVoltage), canTX200Hz_period_ms);
+}
+
+static void sendLVBMSMinMaxCellTemps(void) {
+    uint16_t minCellTemp = UINT16_MAX;
+    uint16_t maxCellTemp = 0;
+    uint16_t minTempCellNum, maxTempCellNum;
+
+    for (uint8_t lvbms_index = 0; lvbms_index < NUM_CELLS-1; lvbms_index++) {
+        uint8_t currCellTemp = getTempData(lvbms_index);
+
+        if (currCellTemp > maxCellTemp) {
+            maxCellTemp = currCellTemp;
+            maxTempCellNum = lvbms_index;
+        }
+
+        if (currCellTemp < minCellTemp) {
+            minCellTemp = currCellTemp;
+            minTempCellNum = lvbms_index;
+        }
+    }
+
+    cmr_canLVBMSMinMaxCellTemp_t LVBMSMinMaxTemp = {
+        .minCellTemp_C = minCellTemp,
+        .maxCellTemp_C = maxCellTemp,
+        .minTempCellNum = minTempCellNum,
+        .maxTempCellNum = maxTempCellNum
+    };
+
+    canTX(CMR_CANID_LVBMS_MINMAX_CELL_TEMPS, &LVBMSMinMaxTemp, sizeof(LVBMSMinMaxTemp), canTX200Hz_period_ms);
+}
+
 /**
  * @brief Task for sending CAN messages at 100 Hz.
  *
@@ -164,8 +222,7 @@ static void canTX100Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        sendHeartbeat(lastWakeTime);
-
+        sendHeartbeat(lastWakeTime);        
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
 }

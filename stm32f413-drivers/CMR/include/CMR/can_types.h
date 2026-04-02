@@ -1528,6 +1528,20 @@ typedef struct{
     uint16_t cell4;
 } cmr_canLVBMS_Temperature;
 
+typedef struct {
+	uint16_t minCellVoltage_mV;  //u: mV /**< @brief Min pack cell voltage (mV). */
+	uint16_t maxCellVoltage_mV;  //u: mV /**< @brief Max pack cell voltage (mV). */
+	uint8_t minVoltageCellNum;   /**< @brief Min pack cell voltage cell number. */
+	uint8_t maxVoltageCellNum;   /**< @brief Max pack cell voltage cell number. */ 
+} cmr_canLVBMSMinMaxCellVoltage_t;
+
+typedef struct {
+    uint16_t minCellTemp_C;      /**< @brief Min pack cell temp (C). */
+    uint16_t maxCellTemp_C;      /**< @brief Max pack cell temp (C). */
+    uint8_t minTempCellNum;      /**< @brief Max pack cell temp BMB number. */
+    uint8_t maxTempCellNum;      /**< @brief Max pack cell temp cell number. */
+} cmr_canLVBMSMinMaxCellTemp_t;
+
 typedef struct{
     int16_t frontTorque_mNm;           /**< @brief Front wheel torque mNm. */     
     int16_t rearTorque_mNm;            /**< @brief Rear wheel torque mNm. */     
