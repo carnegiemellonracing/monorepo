@@ -94,6 +94,21 @@ typedef enum {
 
     /** @brief CDC All motor controllers have errored or timed out. */
     CMR_CAN_ERROR_CDC_DTI_ALL = (1 << 15)
+
+    /** @brief LV-BMS Pack Over Volt*/
+    CMR_CAN_ERROR_LV_BMS_PACK_OVER_VOLT = (1 << 0)
+
+    /** @brief LV-BMS Pack Under Volt*/
+    CMR_CAN_ERROR_LV_BMS_PACK_UNDER_VOLT = (1 << 1)
+
+    /** @brief LV-BMS Cell Over Volt*/
+    CMR_CAN_ERROR_LV_BMS_CELL_OVER_VOLT = (1 << 2)
+
+    /** @brief LV-BMS Cell Under Volt*/
+    CMR_CAN_ERROR_LV_BMS_CELL_UNDER_VOLT = (1 << 3)
+
+    /** @brief LV-BMS Cell Over temp*/
+    CMR_CAN_ERROR_LV_BMS_CELL_OVER_TEMP = (1 << 4)
 } cmr_canError_t;
 
 /** @brief Heartbeat warning matrix bit fields. */
@@ -1521,25 +1536,20 @@ typedef struct {
                        // 6 - mosfet overtemp, 7 - motor stall.
 } cmr_canCubeMarsData_t;
 
-typedef struct{
-    uint16_t cell1;
-    uint16_t cell2;
-    uint16_t cell3;
-    uint16_t cell4;
-} cmr_canLVBMS_Temperature;
 
 typedef struct {
-	uint16_t minCellVoltage_mV;  //u: mV /**< @brief Min pack cell voltage (mV). */
-	uint16_t maxCellVoltage_mV;  //u: mV /**< @brief Max pack cell voltage (mV). */
-	uint8_t minVoltageCellNum;   /**< @brief Min pack cell voltage cell number. */
-	uint8_t maxVoltageCellNum;   /**< @brief Max pack cell voltage cell number. */ 
-} cmr_canLVBMSMinMaxCellVoltage_t;
+    uint16_t battVoltage_mV;        //u: mV /**< @brief Total pack cell voltage (mV). */
+	uint16_t minCellVoltage_mV;     //u: mV /**< @brief Min pack cell voltage (mV). */
+	uint16_t maxCellVoltage_mV;     //u: mV /**< @brief Max pack cell voltage (mV). */
+	uint8_t  minVoltageCellNum;     /**< @brief Min pack cell voltage cell number. */
+	uint8_t  maxVoltageCellNum;     /**< @brief Max pack cell voltage cell number. */ 
+} cmr_canLVBMSVoltage_t;
 
 typedef struct {
-    uint16_t minCellTemp_C;      /**< @brief Min pack cell temp (C). */
-    uint16_t maxCellTemp_C;      /**< @brief Max pack cell temp (C). */
-    uint8_t minTempCellNum;      /**< @brief Max pack cell temp BMB number. */
-    uint8_t maxTempCellNum;      /**< @brief Max pack cell temp cell number. */
+uint16_t minCellTemp_centi_C;       /**< @brief Min pack cell temp (C). */
+    uint16_t maxCellTemp_centi_C;   /**< @brief Max pack cell temp (C). */
+    uint8_t minTempCellNum;         /**< @brief Max pack cell temp BMB number. */
+    uint8_t maxTempCellNum;         /**< @brief Max pack cell temp cell number. */
 } cmr_canLVBMSMinMaxCellTemp_t;
 
 typedef struct{

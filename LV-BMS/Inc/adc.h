@@ -20,10 +20,6 @@ typedef enum {
 	ADC_NUM     /**< @brief Total ADC channels. */
 } adcChannel_t;
 
-//static const uint32_t VTHERM_NUM = 16;
-
-static const TickType_t adc_period_ms = 50;
-
 void adcInit(void);
 uint32_t adcRead(adcChannel_t ch);
 

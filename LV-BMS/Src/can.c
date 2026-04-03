@@ -17,10 +17,11 @@
 #include <CMR/utils.h>
 
 #include "adc.h"
+#include "analysis.h"
+#include "bq_interface.h"
 #include "can.h"
 #include "data.h"
-#include "bq_interface.h"
-// INTERFACES
+#include "error.h"
 
 #define CELLS_PER_CELL_GROUP 5
 #define NUM_CELLS 7
@@ -45,7 +46,7 @@ cmr_canRXMeta_t canRXMeta[CANRX_LEN] = {
 	}
 };
 
-cmr_canHeartbeat_t heartbeat;
+extern cmr_canHeartbeat_t heartbeat;
 
 /** @brief CAN 2 Hz TX priority. */
 const uint32_t canTX2Hz_priority = 4;
@@ -65,28 +66,6 @@ static cmr_task_t canTX100Hz_task;
 /** @brief Primary CAN interface. */
 static cmr_can_t can;
 
-// Forward declarations 
-#define THERM_MV_TO_TEMP_NUM_ITEMS 101
-
-/**
- * @brief Look up table thermistor voltage to to temp (C) (indexed by temp)
- * 
- * goes from temp 0 to 100 C 
- */
-static uint16_t thermMV_to_tempC[THERM_MV_TO_TEMP_NUM_ITEMS] = {
-    27280, 26140, 25050, 24010, 23020, 22070, 21170, 20310, 19490, 18710,
-    17960, 17250, 16570, 15910, 15290, 14700, 14130, 13590, 13070, 12570,
-    12090, 11640, 11200, 10780, 10380, 10000, 9633, 9282, 8945, 8622,
-    8312, 8015, 7730, 7456, 7194, 6942, 6700, 6468, 6245, 6031,
-    5826, 5628, 5438, 5255, 5080, 4911, 4749, 4592, 4442, 4297,
-    4158, 4024, 3895, 3771, 3651, 3536, 3425, 3318, 3215, 3115,
-    3019, 2927, 2837, 2751, 2668, 2588, 2511, 2436, 2364, 2295,
-    2227, 2163, 2100, 2039, 1981, 1924, 1869, 1817, 1765, 1716,
-    1668, 1622, 1577, 1534, 1492, 1451, 1412, 1374, 1337, 1302,
-    1267, 1234, 1201, 1170, 1139, 1110, 1081, 1053, 1027, 1001,
-    975
-}; 
-
 /**
  * @brief Sets up LV-BMS heartbeat, checks for errors, then sends it
  *
@@ -95,29 +74,12 @@ static uint16_t thermMV_to_tempC[THERM_MV_TO_TEMP_NUM_ITEMS] = {
 static void sendHeartbeat(TickType_t lastWakeTime) {
     cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
     volatile cmr_canHeartbeat_t *heartbeatVSM = getPayload(CANRX_HEARTBEAT_VSM);
-
     heartbeat.state = heartbeatVSM->state;
+    update_errors_and_warning();
 
-    uint16_t error = CMR_CAN_ERROR_NONE;
-
-    if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
-        error |= CMR_CAN_ERROR_VSM_TIMEOUT;
-    }
-
-    // Add errors Here ^
-
-    // If error exists, update heartbeat to error state (i.e. update its fields). See can_types.h for the fields.
     if (error != CMR_CAN_ERROR_NONE) {
         heartbeat.state = CMR_CAN_ERROR;
     }
-    memcpy(&heartbeat.error, &error, sizeof(error));
-
-    uint16_t warning = CMR_CAN_WARN_NONE;
-    if (cmr_canRXMetaTimeoutWarn(heartbeatVSMMeta, lastWakeTime) < 0) {
-        warning |= CMR_CAN_WARN_VSM_TIMEOUT;
-    }
-    memcpy(&heartbeat.warning, &warning, sizeof(warning));
-
     canTX(CMR_CANID_HEARTBEAT_LV_BMS, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
 }
 
@@ -128,11 +90,11 @@ void sendVoltages(uint8_t cell_group) {
     uint8_t cell3 = CLAMP(0, base + 2, CELL_NUM);
     uint8_t cell4 = CLAMP(0, base + 3, CELL_NUM);
     uint8_t cell5 = CLAMP(0, base + 4, CELL_NUM);
-    cell_volts.cell1_mV_rs1 = getVoltageData(base);
-    cell_volts.cell2_mV_rs1 = getVoltageData(cell2);
-    cell_volts.cell3_mV_rs1 = getVoltageData(cell3);
-    cell_volts.cell4_mV_rs1 = getVoltageData(cell4);
-    cell_volts.cell5_mV_rs1 = getVoltageData(cell5);
+    cell_volts.cell1_mV_rs1 = getVoltageData_mV(base)  << 1;
+    cell_volts.cell2_mV_rs1 = getVoltageData_mV(cell2) << 1;
+    cell_volts.cell3_mV_rs1 = getVoltageData_mV(cell3) << 1;
+    cell_volts.cell4_mV_rs1 = getVoltageData_mV(cell4) << 1;;
+    cell_volts.cell5_mV_rs1 = getVoltageData_mV(cell5) << 1;;
     // note this relies on contiguous CAN_Ids
     canTX(CMR_CANID_LVBMS_CELL_VOLTAGE_1_4 + cell_group, &cell_volts, sizeof(cell_volts), canTX100Hz_period_ms);
 }
@@ -144,11 +106,11 @@ void sendTemps(uint8_t cell_group) {
     uint8_t cell3 = CLAMP(0, base + 2, CELL_NUM);
     uint8_t cell4 = CLAMP(0, base + 3, CELL_NUM);
     uint8_t cell5 = CLAMP(0, base + 4, CELL_NUM);
-    cell_temps.cell1_dC = thermVoltage_to_tempC(getTempData(base));
-    cell_temps.cell1_dC = thermVoltage_to_tempC(getTempData(cell2));
-    cell_temps.cell1_dC = thermVoltage_to_tempC(getTempData(cell3));
-    cell_temps.cell1_dC = thermVoltage_to_tempC(getTempData(cell4));
-    cell_temps.cell1_dC = thermVoltage_to_tempC(getTempData(cell5));
+    cell_temps.cell1_dC = getTempData_centi_C(base);
+    cell_temps.cell1_dC = getTempData_centi_C(cell2);
+    cell_temps.cell1_dC = getTempData_centi_C(cell3);
+    cell_temps.cell1_dC = getTempData_centi_C(cell4);
+    cell_temps.cell1_dC = getTempData_centi_C(cell5);
     // note this relies on contiguous CAN_Ids
     canTX(CMR_CANID_LVBMS_CELL_TEMP_1_4 + cell_group, &cell_temps, sizeof(cell_temps), canTX100Hz_period_ms);
 }
@@ -175,63 +137,28 @@ static void canTX2Hz(void *pvParameters) {
     }
 }
 
-static void sendLVBMSMinMaxCellVoltage(void) {
-    uint16_t minCellVoltage = UINT16_MAX;
-    uint16_t maxCellVoltage = 0;
-    uint16_t minVoltageCellNum, maxVoltageCellNum;
-
-    for (uint8_t lvbms_index = 0; lvbms_index < NUM_CELLS-1; lvbms_index++) {
-        uint8_t currCellVoltage = getVoltageData(lvbms_index);
-
-        if (currCellVoltage > maxCellVoltage) {
-            maxCellVoltage = currCellVoltage;
-            maxVoltageCellNum = lvbms_index;
-        }
-
-        if (currCellVoltage < minCellVoltage) {
-            minCellVoltage = currCellVoltage;
-            minVoltageCellNum = lvbms_index;
-        }
-    }
-
-    cmr_canLVBMSMinMaxCellVoltage_t LVBMSMinMaxVoltage = {
-        .minCellVoltage_mV = minCellVoltage,
-        .maxCellVoltage_mV = maxCellVoltage,
-        .minVoltageCellNum = minVoltageCellNum,
-        .maxVoltageCellNum = maxVoltageCellNum
+static void sendLVBMSVoltages(void) {
+    cmr_canLVBMSVoltage_t LVBMSVoltages = {
+        .battVoltage_mV    = BMS_stats.pack_voltage_mV;
+        .minCellVoltage_mV = BMS_stats.min_cell_voltage_mV;,
+        .maxCellVoltage_mV = BMS_stats.max_cell_voltage_mV;,
+        .minVoltageCellNum = BMS_stats.min_cell_voltage_idx;,
+        .maxVoltageCellNum = BMS_stats.max_cell_voltage_idx;
     };
 
-    canTX(CMR_CANID_LVBMS_MINMAX_CELL_VOLTAGE, &LVBMSMinMaxVoltage, sizeof(LVBMSMinMaxVoltage), canTX100Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_MINMAX_CELL_VOLTAGE, &LVBMSVoltages, sizeof(LVBMSVoltages), canTX100Hz_period_ms);
 }
 
-static void sendLVBMSMinMaxCellTemps(void) {
-    uint16_t minCellTemp = UINT16_MAX;
-    uint16_t maxCellTemp = 0;
-    uint16_t minTempCellNum, maxTempCellNum;
-
-    for (uint8_t lvbms_index = 0; lvbms_index < NUM_CELLS-1; lvbms_index++) {
-        uint8_t currCellTemp = getTempData(lvbms_index);
-
-        if (currCellTemp > maxCellTemp) {
-            maxCellTemp = currCellTemp;
-            maxTempCellNum = lvbms_index;
-        }
-
-        if (currCellTemp < minCellTemp) {
-            minCellTemp = currCellTemp;
-            minTempCellNum = lvbms_index;
-        }
-    }
-
-    cmr_canLVBMSMinMaxCellTemp_t LVBMSMinMaxTemp = {
-        .minCellTemp_C = minCellTemp,
-        .maxCellTemp_C = maxCellTemp,
-        .minTempCellNum = minTempCellNum,
-        .maxTempCellNum = maxTempCellNum
+static void sendLVBMSTemps(void) {
+    cmr_canLVBMSMinMaxCellTemp_t LVBMSTemps = {
+        .minCellTemp_centi_C =  BMS_stats.min_cell_temp_centi_deg;,
+        .maxCellTemp_centi_C =  BMS_stats.max_cell_temp_centi_deg;
+        .minTempCellNum      =  BMS_stats.min_cell_temp_idx,
+        .maxTempCellNum      =  BMS_stats.max_cell_temp_idx,
     };
-
-    canTX(CMR_CANID_LVBMS_MINMAX_CELL_TEMPS, &LVBMSMinMaxTemp, sizeof(LVBMSMinMaxTemp), canTX100Hz_period_ms);
+    canTX(CMR_CANID_LVBMS_MINMAX_CELL_TEMPS, &LVBMSTemps, sizeof(LVBMSTemps), canTX100Hz_period_ms);
 }
+
 
 /**
  * @brief Task for sending CAN messages at 100 Hz.
@@ -246,8 +173,8 @@ static void canTX100Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendHeartbeat(lastWakeTime);
-        sendLVBMSMinMaxCellTemps();
-        sendLVBMSMinMaxCellVoltage();
+        sendLVBMSTemps();
+        sendLVBMSVoltages();
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
 }
@@ -327,40 +254,4 @@ volatile void *getPayload(canRX_t rxMsg) {
     cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
 
     return (void *)(&rxMeta->payload);
-}
-
-static uint16_t thermVoltage_to_tempC(uint16_t thermVolt_mV){
-    float pullup_ohms = 4700.0; 
-    float v_in_mV = 5000.0; 
-
-    //outside of upper bound 
-    if (thermVolt_mV >= v_in_mV){
-        return 0; 
-    }
-
-    float resistance = (pullup_ohms * thermVolt_mV) /  (v_in_mV - thermVolt_mV); 
-    float temp_C; 
-
-    //if thermVolt greater than max (don't allow negative temps)
-    if (thermVolt_mV > thermMV_to_tempC[0]) {
-        return 0; 
-    }
-
-    for (size_t i = 0; i < THERM_MV_TO_TEMP_NUM_ITEMS - 1; i++) {
-        float table_resistance = thermMV_to_tempC[i]; 
-
-        if (table_resistance == resistance) {
-            return i * 100;
-        }
-
-        //temp is between i and i+1 (assume pretty much linear ratio)
-        if (resistance < table_resistance && resistance > thermMV_to_tempC[i+1]) {
-            temp_C = i + ((float)(table_resistance - resistance)) / ((float)(table_resistance - thermMV_to_tempC[i+1])); 
-            return (uint16_t)(temp_C * 100); 
-        }
-
-    }
-    // if we get to end of loop, voltage is less than lowest voltage in lut
-    return 10100;
-
 }

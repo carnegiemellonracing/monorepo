@@ -9,6 +9,8 @@
 # include <stm32f4xx_hal_adc.h>
 #include "adc.h"    // Interface to implement
 
+static const TickType_t adc_period_ms = 5;
+
 /**
  * @brief Board-specific ADC channel configuration.
  *

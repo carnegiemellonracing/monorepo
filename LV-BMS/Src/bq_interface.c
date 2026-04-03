@@ -20,8 +20,17 @@
 extern volatile int BMBTimeoutCount[BOARD_NUM];
 extern volatile int BMBErrs[BOARD_NUM];
 
+
 //Fill in data to this array
 BMB_Data_t BMBData;
+
+uint16_t getVoltageData_mV(uint8_t cell_idx){
+	BMDData.cellVoltages_mV[cell_idx];
+}
+
+uint16_t getTempData_centi_C(uint8_t cell_idx){
+	BMDData.cellTemps_Centi_C[cell_idx];
+}
 
 // static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
 // 	BMBErrs[BMBIndex] = err;
@@ -33,12 +42,37 @@ uint8_t CHANNEL_GPIO_TO_CELL_MAP [4][NUM_GPIO_CHANNELS]  = {{0, 4},
                                                             {1, 5},
                                                             {2, 6},
                                                             {3, 255}};
+																														
+
+#define THERM_MV_TO_TEMP_NUM_ITEMS 101
+
+/**
+ * @brief Look up table thermistor voltage to to temp (C) (indexed by temp)
+ * @todo Add link for this
+ * 
+ * goes from temp 0 to 100 C 
+ */
+static uint16_t thermMV_to_tempC[THERM_MV_TO_TEMP_NUM_ITEMS] = {
+    27280, 26140, 25050, 24010, 23020, 22070, 21170, 20310, 19490, 18710,
+    17960, 17250, 16570, 15910, 15290, 14700, 14130, 13590, 13070, 12570,
+    12090, 11640, 11200, 10780, 10380, 10000, 9633, 9282, 8945, 8622,
+    8312, 8015, 7730, 7456, 7194, 6942, 6700, 6468, 6245, 6031,
+    5826, 5628, 5438, 5255, 5080, 4911, 4749, 4592, 4442, 4297,
+    4158, 4024, 3895, 3771, 3651, 3536, 3425, 3318, 3215, 3115,
+    3019, 2927, 2837, 2751, 2668, 2588, 2511, 2436, 2364, 2295,
+    2227, 2163, 2100, 2039, 1981, 1924, 1869, 1817, 1765, 1716,
+    1668, 1622, 1577, 1534, 1492, 1451, 1412, 1374, 1337, 1302,
+    1267, 1234, 1201, 1170, 1139, 1110, 1081, 1053, 1027, 1001,
+    975
+}; 
+
 
 //Forward Decelerations
 void txToRxDelay(uint8_t delay);
 void byteDelay(uint8_t delay);
 static bool sendUartBroadcastWrite(
-    uint16_t registerAddress, uint8_t* data, uint8_t dataLen);
+uint16_t registerAddress, uint8_t* data, uint8_t dataLen);
+static uint16_t thermVoltage_to_temp_Centi_Deg(uint8_t msb, uint8_t lsb);
 
 void turnOn() {
 
@@ -375,13 +409,6 @@ bool setMuxOutput(uint8_t channel) {
     return res;
 }
 
-int16_t calculateTemp(uint8_t msb, uint8_t lsb) {
-	int16_t voltage_mv = (uint16_t)((0.15259) * (((int16_t) msb << 8) | lsb));
-//    uint32_t resistance_centiOhm = (47 * voltage_mv) / (5000 - voltage_mv); // Calculate the resistance of thermistor
-//    uint32_t temp = (resistance_centiOhm*resistance_centiOhm) * 46 - (resistance_centiOhm) * 11303 + 905666;
-    return (voltage_mv);
-}
-
 bool cellBalancingSetup() {
 	//set up cell balancing timers
 	//done in two sets because max register write is 8 :(
@@ -617,18 +644,6 @@ static bool sendUartBroadcastWrite(  uint16_t registerAddress,
     return (res == UART_SUCCESS);
 }
 
-
-// For efficiency we choose to do as little computation as possible here and 
-// just compute voltage. To convert from voltage to temperature we would need
-// to do the Steinhart equation which is very expensive. However, since the
-// Steinhart is strictly decreasing we are able to simply probe the voltage
-// values for the hottest and coldest cells. The transfer function should be 
-// on PCAN to convert to temperature for easy viewing
-static int16_t calculateTempVoltageReading(uint8_t msb, uint8_t lsb) {
-	int16_t voltage_mv = (uint16_t)((0.15259) * (((int16_t) msb << 8) | lsb));
-    return (voltage_mv);
-}
-
 void pollAllTemperatureData(int channel) {
     uint8_t bytesToRead = 2 * NUM_GPIO_CHANNELS;
 	uart_command_t read_therms = {
@@ -661,12 +676,54 @@ void pollAllTemperatureData(int channel) {
 
         uint8_t high_byte_data = response.data[2*k];
         uint8_t low_byte_data = response.data[2*k+1];
-        int16_t cellTempVoltageReading = calculateTempVoltageReading(high_byte_data, low_byte_data);
+        int16_t cellTemp_centi_deg = thermVoltage_to_temp_Centi_Deg(high_byte_data, low_byte_data);
         
-        BMBData.cellTemperaturesVoltageReading[cellNum] = cellTempVoltageReading;
+        BMBData.cellTemps_Centi_C[cellNum] = cellTemp_centi_deg;
 
     }
 	return;
+}
+
+
+/**
+ * @brief Converts thermistor voltage (mV) to temperature in centi-degrees Celsius.
+ *
+ * @param thermVolt_mV Measured voltage across the thermistor in millivolts.
+ *
+ * @return Temperature in centi-degrees Celsius (e.g., 2550 = 25.50°C). Returns 0 on out-of-bounds limits.
+ */
+static uint16_t thermVoltage_to_temp_Centi_Deg(uint8_t msb, uint8_t lsb){
+    float pullup_ohms = 4700.0; 
+    float v_in_mV = 5000.0; 
+		uint16_t thermVolt_mV = (uint16_t)((0.15259) * (((int16_t) msb << 8) | lsb));
+
+    //outside of upper bound 
+    if (thermVolt_mV >= v_in_mV){
+        return 0; 
+    }
+
+    float resistance = (pullup_ohms * thermVolt_mV) /  (v_in_mV - thermVolt_mV); 
+    float temp_C; 
+
+    //if thermVolt greater than max (don't allow negative temps)
+    if (thermVolt_mV > thermMV_to_tempC[0]) {
+        return 0; 
+    }
+
+    for (size_t i = 0; i < THERM_MV_TO_TEMP_NUM_ITEMS - 1; i++) {
+        float table_resistance_lower = thermMV_to_tempC[i]; 
+        float table_resistance_upper = thermMV_to_tempC[i+1]; 
+        
+        //temp is between i and i+1 (assume pretty much linear ratio)
+        if (table_resistance_lower <= resistance && resistance < table_resistance_upper) {
+            float decimal = INVLERP_SCALED(table_resistance_lower, table_resistance_upper, resistance, 1.0f);
+            temp_C = i + decimal;
+            return (uint16_t)(temp_C * 100); 
+        }
+
+    }
+    // if we get to end of loop, voltage is less than lowest voltage in lut
+    return THERM_MV_TO_TEMP_NUM_ITEMS * 100;
 }
 
 //return voltage data

@@ -328,8 +328,8 @@
 #define CELL_BALANCING_LOW_VOLTAGE 3.9
 
 typedef struct BMB_Data_t{
-    uint16_t cellVoltages[CELL_NUM];
-    int16_t cellTemperaturesVoltageReading[CELL_NUM];
+    uint16_t cellVoltages_mV[CELL_NUM];
+    uint16_t cellTemps_Centi_C[CELL_NUM];
 } BMB_Data_t;
 
 #define TOP_CELL VCELL7_HI
@@ -353,6 +353,9 @@ void pollAllTemperatureData(int channel);
 bool cellBalancingSetup();
 void cellBalancing(bool set, uint16_t thresh);
 void writeLED(bool set);
+
+uint16_t getVoltageData_mV(uint8_t cell_idx);
+uint16_t getTempData_centi_C(uint8_t cell_idx);
 
 int16_t calculateTemp(uint8_t msb, uint8_t lsb);
 
