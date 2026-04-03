@@ -33,8 +33,8 @@
  */
 int main(void) {
   // System initialization.
-  HAL_Init();
-  cmr_rccSystemClockEnable();
+	HAL_Init();
+	cmr_rccSystemClockEnable();
 
   // Peripheral configuration.
 	DWT_Delay_Init();
@@ -48,5 +48,5 @@ int main(void) {
 	analysisInit();
 
 	vTaskStartScheduler();
-  cmr_panic("vTaskStartScheduler returned!"); 
+  	cmr_panic("vTaskStartScheduler returned!"); 
 }

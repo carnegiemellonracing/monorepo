@@ -31,11 +31,17 @@ static cmr_task_t sampleTask;
 #define BALANCE_EN true
 #define BALANCE_DIS false
 #define MUX_CHANNELS 4
+#define MANUAL_BALANCE_EN true
+
 
 extern BMB_Data_t BMBData; 
 
 
 bool isBalanceCommanded() {
+	if (MANUAL_BALANCE_EN){
+		return MANUAL_BALANCE_EN;
+	}
+
 	TickType_t xLastWakeTime = xTaskGetTickCount();
 
 	if(cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_BALANCE_COMMAND]), xLastWakeTime) < 0) {
@@ -48,45 +54,41 @@ bool isBalanceCommanded() {
 
 // Determines if we are balancing and performs the necessary actions 
 static void handle_balancing (void){
-    bool currentlyBalancing = false;
+    static bool currentlyBalancing = false;
 	uint16_t threshold = 0;
-	uint32_t settleTimer_ms;
-	bool settlingTimerStarted = false;
+	static uint32_t settleTimer_ms;
+	static bool settlingTimerStarted = false;
+	bool balanceCommanded = isBalanceCommanded();
 
-	// Main BMS control loop
-	while (1) {
-        // Balancing logic
+	// Balancing logic
 
-		// If we get a balancing command and we weren't previously balancing, enable
-		// cells to balance
-		// if (isBalanceCommanded() && !currentlyBalancing) {
-		// 	if(getBalDone() == 1){
-        //         threshold = BMS_stats.min_cell_voltage_mV + 5;
-		// 		cellBalancing(BALANCE_EN, threshold); 
-		// 		currentlyBalancing = true;
-		// 	} 
-		// }
+	// If we get a balancing command and we weren't previously balancing, enable
+	// cells to balance
+	if (balanceCommanded && !currentlyBalancing && (getBalDone() == 1)) {
+		threshold = BMS_stats.min_cell_voltage_mV + 5;
+		cellBalancing(BALANCE_EN, threshold); 
+		currentlyBalancing = true;
+	}
 
-		// If the balancing command stops and we were balancing previously, disable
-		// all balancing cells
-		// else if(!isBalanceCommanded() && currentlyBalancing){
-		// 	cellBalancing(BALANCE_DIS, threshold);
-		// 	currentlyBalancing = false;
-		// }
+	// If the balancing command stops and we were balancing previously, disable
+	// all balancing cells
+	else if(!balanceCommanded && currentlyBalancing){
+		cellBalancing(BALANCE_DIS, threshold);
+		currentlyBalancing = false;
+	}
 
-		// Once balancing timers have expired we stop balancing
-		if(getBalDone()==1 && currentlyBalancing && !settlingTimerStarted) {
-			settlingTimerStarted = true;
-			settleTimer_ms = xTaskGetTickCount(); 
-		}
+	// Once balancing timers have expired we stop balancing
+	else if(getBalDone()==1 && currentlyBalancing && !settlingTimerStarted) {
+		settlingTimerStarted = true;
+		settleTimer_ms = xTaskGetTickCount(); 
+	}
 
-		// After a 500 ms resting period, recheck the voltages
-		// and enable whichever cells are above threshold
-		// else if (settlingTimerStarted && (xTaskGetTickCount()-settleTimer_ms)>500) {
-		// 	currentlyBalancing = false;
-		// 	settlingTimerStarted = false;
-		// }
-    }
+	// After a 500 ms resting period, recheck the voltages
+	// and enable whichever cells are above threshold
+	else if (settlingTimerStarted && (xTaskGetTickCount()-settleTimer_ms)>500) {
+		currentlyBalancing = false;
+		settlingTimerStarted = false;
+	}
 
 }
 
@@ -98,7 +100,6 @@ void vBMBSampleTask(void *pvParameters) {
     
 	TickType_t xLastWakeTime = xTaskGetTickCount();
 	while(1){
-		handle_balancing();
 		vTaskDelayUntil(&xLastWakeTime, ADC_settlingTime_ms);
 
 
@@ -113,6 +114,7 @@ void vBMBSampleTask(void *pvParameters) {
 		pollAllVoltageData();
 		writeLED(ledToggle);
 		ledToggle = !ledToggle;
+		handle_balancing();
 		vTaskDelayUntil(&xLastWakeTime, (sampleTaskPeriod_ms - (ADC_settlingTime_ms * MUX_CHANNELS)));
 	}
 

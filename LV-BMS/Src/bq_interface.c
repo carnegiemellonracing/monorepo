@@ -466,7 +466,7 @@ bool cellBalancingSetup() {
 		.crc = {0xFF, 0xFF}
 	};
 
-	uart_response_t response;
+	uart_response_t response[BOARD_NUM] = {0};
 
 	// Critical section used so UART RX is not preempted
 	taskENTER_CRITICAL();
@@ -476,25 +476,31 @@ bool cellBalancingSetup() {
 		return -1; 
 
 	//loop through each BMB and channel
-	uint8_t status = uart_receiveResponse(&response, 0); 
-	if (status == 1) {
-		taskEXIT_CRITICAL();
-		return -1; 
-	} 
-
+	for(uint8_t i = BOARD_NUM; i >= 1; i--) {
+		uint8_t status = uart_receiveResponse(&response[i-1], 1); 
+		if (status == 1) {
+			return -1; 
+		} 
+	}
 	taskEXIT_CRITICAL();
 	
 	// determines if we are done balancing
-	bool doneBalancing = (response.data[0] & 8) == 8;
+	bool doneBalancing = 1;
+	for(uint8_t i = 0; i < BOARD_NUM; i++) {
+		if ((response[i].data[0] & 8) == 8) //CB_RUN is 1 
+			doneBalancing = 0;
+	}
 	
 	return doneBalancing; 
 
 }
+
+
 void cellBalancing(bool set, uint16_t thresh) {
 	cmr_uart_result_t res;
 
 	if (thresh >= 4250 || thresh <= 2450) {
-		thresh = 3700;
+		return;		
 	}
 
 	// board index by 0 but don't send to interface chip
