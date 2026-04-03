@@ -20,11 +20,11 @@
 #include "analysis.h"
 #include "bq_interface.h"
 #include "can.h"
-#include "data.h"
 #include "error.h"
 
 #define CELLS_PER_CELL_GROUP 5
 #define NUM_CELLS 7
+
 
 /**
  * @brief CAN periodic message receive metadata
@@ -75,7 +75,9 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
     volatile cmr_canHeartbeat_t *heartbeatVSM = getPayload(CANRX_HEARTBEAT_VSM);
     heartbeat.state = heartbeatVSM->state;
-    update_errors_and_warning();
+    update_errors_and_warnings(lastWakeTime);
+
+    cmr_canError_t error;
 
     if (error != CMR_CAN_ERROR_NONE) {
         heartbeat.state = CMR_CAN_ERROR;
@@ -139,11 +141,11 @@ static void canTX2Hz(void *pvParameters) {
 
 static void sendLVBMSVoltages(void) {
     cmr_canLVBMSVoltage_t LVBMSVoltages = {
-        .battVoltage_mV    = BMS_stats.pack_voltage_mV;
-        .minCellVoltage_mV = BMS_stats.min_cell_voltage_mV;,
-        .maxCellVoltage_mV = BMS_stats.max_cell_voltage_mV;,
-        .minVoltageCellNum = BMS_stats.min_cell_voltage_idx;,
-        .maxVoltageCellNum = BMS_stats.max_cell_voltage_idx;
+        .battVoltage_mV    = BMS_stats.pack_voltage_mV,
+        .minCellVoltage_mV = BMS_stats.min_cell_voltage_mV,
+        .maxCellVoltage_mV = BMS_stats.max_cell_voltage_mV,
+        .minVoltageCellNum = BMS_stats.min_cell_voltage_idx,
+        .maxVoltageCellNum = BMS_stats.max_cell_voltage_idx
     };
 
     canTX(CMR_CANID_LVBMS_MINMAX_CELL_VOLTAGE, &LVBMSVoltages, sizeof(LVBMSVoltages), canTX100Hz_period_ms);
@@ -151,8 +153,8 @@ static void sendLVBMSVoltages(void) {
 
 static void sendLVBMSTemps(void) {
     cmr_canLVBMSMinMaxCellTemp_t LVBMSTemps = {
-        .minCellTemp_centi_C =  BMS_stats.min_cell_temp_centi_deg;,
-        .maxCellTemp_centi_C =  BMS_stats.max_cell_temp_centi_deg;
+        .minCellTemp_centi_C =  BMS_stats.min_cell_temp_centi_deg,
+        .maxCellTemp_centi_C =  BMS_stats.max_cell_temp_centi_deg,
         .minTempCellNum      =  BMS_stats.min_cell_temp_idx,
         .maxTempCellNum      =  BMS_stats.max_cell_temp_idx,
     };

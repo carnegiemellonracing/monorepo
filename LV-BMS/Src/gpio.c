@@ -18,7 +18,7 @@
  * @see `stm32f4xx_hal_gpio.h` for various initialization values.
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
-	[GPIO_LED] = {
+	[GPIO_LED_STATUS] = {
 		.port = GPIOB,
 		.init = {
 			.Pin = GPIO_PIN_4,

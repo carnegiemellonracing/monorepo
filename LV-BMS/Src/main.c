@@ -18,7 +18,6 @@
 #include "analysis.h"
 #include "bq_interface.h"
 #include "can.h"
-#include "data.h"
 #include "dwt.h"
 #include "gpio.h"
 #include "sensors.h"

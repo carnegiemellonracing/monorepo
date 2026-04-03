@@ -14,7 +14,7 @@
  * @brief Represents a GPIO pin.
  */
 typedef enum {
-	GPIO_LED = 0,
+	GPIO_LED_STATUS = 0,
 	GPIO_BMS_ERROR, 
 	RX_TURNON,
 	GPIO_LEN

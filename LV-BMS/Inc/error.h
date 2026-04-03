@@ -9,4 +9,4 @@
 #include <CMR/tasks.h>  // Task interface
 
 
-void update_errors_and_warning(TickType_t lastWakeTime);
+void update_errors_and_warnings(TickType_t lastWakeTime);

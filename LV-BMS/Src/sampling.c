@@ -5,8 +5,6 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "data.h"
-
 #include <CMR/tasks.h>
 #include <CMR/uart.h>
 #include <math.h>
@@ -31,9 +29,31 @@ static cmr_task_t sampleTask;
 
 #define BALANCE_EN true
 #define BALANCE_DIS false
-#define MUC_CHANNELS
+#define MUX_CHANNELS 4
 
 extern BMB_Data_t BMBData; 
+
+uint16_t getMinVoltage(void){
+	uint16_t min = BMBData.cellVoltages_mV[0];
+	for(int i = 1; i<CELL_NUM; i++){
+		if(BMBData.cellVoltages_mV[i] < min){
+			min = BMBData.cellVoltages_mV[i];
+		}
+	}
+	return min;
+}
+
+bool isBalanceCommanded() {
+	return false; 
+	TickType_t xLastWakeTime = xTaskGetTickCount();
+
+	if(cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_BALANCE_COMMAND]), xLastWakeTime) < 0) {
+		return false;
+	}
+	
+	volatile cmr_canHVCBalanceCommand_t *balanceCommand = getPayload(CANRX_BALANCE_COMMAND);
+	return balanceCommand->balanceRequest;
+}
 
 // Determines if we are balancing and performs the necessary actions 
 static void handle_balancing (void){
@@ -50,7 +70,7 @@ static void handle_balancing (void){
 		// cells to balance
 		if (isBalanceCommanded() && !currentlyBalancing) {
 			if(getBalDone()==1){
-                threshold = getMinVoltage()+5;  
+                threshold = getMinVoltage()+5; 
 				cellBalancing(BALANCE_EN, threshold); 
 				currentlyBalancing = true;
 			} 
@@ -91,7 +111,7 @@ void vBMBSampleTask(void *pvParameters) {
 
     // Loop through the different MUX channels and select a different one
     // We still monitor all voltages each channel switch
-    for(uint8_t j = 0; j < MUC_CHANNELS; j++) {
+    for (uint8_t j = 0; j < MUX_CHANNELS; j++){
         setMuxOutput(j);
         vTaskDelayUntil(&xLastWakeTime, ADC_settlingTime_ms);
         pollAllTemperatureData(j);
@@ -100,7 +120,7 @@ void vBMBSampleTask(void *pvParameters) {
     uint8_t err = pollAllVoltageData();
     writeLED(ledToggle);
     ledToggle = !ledToggle;
-    vTaskDelayUntil(&xLastWakeTime, sampleTaskPeriod_ms - ADC_settlingTime_ms * MUC_CHANNELS);
+    vTaskDelayUntil(&xLastWakeTime, (sampleTaskPeriod_ms - (ADC_settlingTime_ms * MUX_CHANNELS)));
 }
 
 

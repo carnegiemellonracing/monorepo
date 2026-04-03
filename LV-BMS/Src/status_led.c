@@ -6,6 +6,7 @@
  */
 
  #include <CMR/tasks.h>  // Task interface
+ #include "gpio.h"
 
 /** @brief Status LED priority. */
 static const uint32_t status_LED_priority = 2;
@@ -26,11 +27,11 @@ static cmr_task_t status_LED_task;
 
 static void status_LED(void *pvParameters) {
 	(void) pvParameters;
-	cmr_gpioWrite(GPIO_LED, 0);
+	cmr_gpioWrite(GPIO_LED_STATUS, 0);
 
 	TickType_t lastWakeTime = xTaskGetTickCount();
 	while (1) {
-		cmr_gpioToggle(GPIO_LED);
+		cmr_gpioToggle(GPIO_LED_STATUS);
 		vTaskDelayUntil(&lastWakeTime, status_LED_period_ms);
 	}
 }

@@ -24,10 +24,10 @@
 
 cmr_canHeartbeat_t heartbeat;
 
- void update_error_and_warnings(TickType_t lastWakeTime){
+ void update_errors_and_warnings(TickType_t lastWakeTime){
     uint16_t error = CMR_CAN_ERROR_NONE;
     uint16_t warning = CMR_CAN_ERROR_NONE;
-
+    cmr_canRXMeta_t *heartbeatVSMMeta;
 
     if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
         error |= CMR_CAN_ERROR_VSM_TIMEOUT;
@@ -37,11 +37,11 @@ cmr_canHeartbeat_t heartbeat;
         warning |= CMR_CAN_WARN_VSM_TIMEOUT;
     }
 
-    if(BMS_stats.battVoltage_mV >= MAX_BATT_VOLTAGE_MV){
+    if(BMS_stats.pack_voltage_mV >= MAX_BATT_VOLTAGE_MV){
         error |= CMR_CAN_ERROR_LV_BMS_PACK_OVER_VOLT;
     }
 
-    if(BMS_stats.battVoltage_mV <= MIN_PACK_VOLTAGE_MV){
+    if(BMS_stats.pack_voltage_mV <= MIN_PACK_VOLTAGE_MV){
         error |= CMR_CAN_ERROR_LV_BMS_PACK_UNDER_VOLT;
         if(HYBRID_MODE){
             cmr_gpioWrite(GPIO_BMS_ERROR, 1);
@@ -62,7 +62,7 @@ cmr_canHeartbeat_t heartbeat;
     if(BMS_stats.max_cell_temp_centi_deg >= MAX_CELL_TEMP_CENTI_C){
         error |= CMR_CAN_ERROR_LV_BMS_CELL_OVER_TEMP;
     }
-
-    heartbeat.error = error;
-    heartbeat.warning = warning;
+    
+    memcpy(&(heartbeat.error), &(error), sizeof(error));
+    memcpy(&(heartbeat.warning), &(warning), sizeof(warning));
  }

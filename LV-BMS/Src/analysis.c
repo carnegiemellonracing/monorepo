@@ -4,7 +4,7 @@
  *
  * @author Ayush Garg
  */
-#include "stdint.h.h"  // Task interface
+#include "stdint.h"  // Task interface
 
 #include <CMR/tasks.h>      // Task interface
 
@@ -19,6 +19,8 @@ static const TickType_t analysis_period_ms = 10;
 
 /** @brief analysis task. */
 static cmr_task_t analysis_task;
+
+#define NUM_CELLS 7
 
 /**
  * @brief Task for toggling the analysis

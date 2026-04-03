@@ -25,11 +25,11 @@ extern volatile int BMBErrs[BOARD_NUM];
 BMB_Data_t BMBData;
 
 uint16_t getVoltageData_mV(uint8_t cell_idx){
-	BMDData.cellVoltages_mV[cell_idx];
+	BMBData.cellVoltages_mV[cell_idx];
 }
 
 uint16_t getTempData_centi_C(uint8_t cell_idx){
-	BMDData.cellTemps_Centi_C[cell_idx];
+	BMBData.cellTemps_Centi_C[cell_idx];
 }
 
 // static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
@@ -517,7 +517,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 
 		// disable selected cells below threshold 
 		for (int j = 0; j < CELL_NUM; j ++) {
-			if ((BMBData.cellVoltages[CELL_NUM-1-j] < thresh) || !set) {
+			if ((BMBData.cellVoltages_mV[CELL_NUM-1-j] < thresh) || !set) {
 				cell_selects[j] = 0x00;
 			} 
 		}
@@ -759,7 +759,7 @@ uint8_t pollAllVoltageData() {
     for(uint8_t j = 0; j < CELL_NUM; j++) {
         uint8_t high_byte_data = response.data[2*j];
         uint8_t low_byte_data = response.data[2*j+1];
-        BMBData.cellVoltages[CELL_NUM-j-1] = calculateVoltage(high_byte_data, low_byte_data);
+        BMBData.cellVoltages_mV[CELL_NUM-j-1] = calculateVoltage(high_byte_data, low_byte_data);
     }
     return 0;
 }
