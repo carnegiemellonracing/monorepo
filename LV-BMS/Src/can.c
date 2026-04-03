@@ -72,12 +72,12 @@ static cmr_can_t can;
  * @param lastWakeTime Pass in from canTX100Hz. Used to determine VSM timeout.
  */
 static void sendHeartbeat(TickType_t lastWakeTime) {
-    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
     volatile cmr_canHeartbeat_t *heartbeatVSM = getPayload(CANRX_HEARTBEAT_VSM);
     heartbeat.state = heartbeatVSM->state;
     update_errors_and_warnings(lastWakeTime);
 
-    cmr_canError_t error;
+    uint16_t error = CMR_CAN_ERROR_NONE;
+    memcpy(&(heartbeat.error), &error, sizeof(error));
 
     if (error != CMR_CAN_ERROR_NONE) {
         heartbeat.state = CMR_CAN_ERROR;
@@ -88,15 +88,15 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
 void sendVoltages(uint8_t cell_group) {
     PackedCellVoltages cell_volts;
     uint8_t base  = CLAMP(0, cell_group * CELLS_PER_CELL_GROUP, CELL_NUM); 
-    uint8_t cell2 = CLAMP(0, base + 1, CELL_NUM);
-    uint8_t cell3 = CLAMP(0, base + 2, CELL_NUM);
-    uint8_t cell4 = CLAMP(0, base + 3, CELL_NUM);
-    uint8_t cell5 = CLAMP(0, base + 4, CELL_NUM);
-    cell_volts.cell1_mV_rs1 = getVoltageData_mV(base)  << 1;
-    cell_volts.cell2_mV_rs1 = getVoltageData_mV(cell2) << 1;
-    cell_volts.cell3_mV_rs1 = getVoltageData_mV(cell3) << 1;
-    cell_volts.cell4_mV_rs1 = getVoltageData_mV(cell4) << 1;;
-    cell_volts.cell5_mV_rs1 = getVoltageData_mV(cell5) << 1;;
+    uint8_t cell2 = CLAMP(0, base + 1, CELL_NUM-1);
+    uint8_t cell3 = CLAMP(0, base + 2, CELL_NUM-1);
+    uint8_t cell4 = CLAMP(0, base + 3, CELL_NUM-1);
+    uint8_t cell5 = CLAMP(0, base + 4, CELL_NUM-1);
+    cell_volts.cell1_mV_rs1 = getVoltageData_mV(base)  >> 1;
+    cell_volts.cell2_mV_rs1 = getVoltageData_mV(cell2) >> 1;
+    cell_volts.cell3_mV_rs1 = getVoltageData_mV(cell3) >> 1;
+    cell_volts.cell4_mV_rs1 = getVoltageData_mV(cell4) >> 1;
+    cell_volts.cell5_mV_rs1 = getVoltageData_mV(cell5) >> 1;
     // note this relies on contiguous CAN_Ids
     canTX(CMR_CANID_LVBMS_CELL_VOLTAGE_1_4 + cell_group, &cell_volts, sizeof(cell_volts), canTX100Hz_period_ms);
 }
@@ -104,15 +104,15 @@ void sendVoltages(uint8_t cell_group) {
 void sendTemps(uint8_t cell_group) {
     PackedCellTemps cell_temps;
     uint8_t base  = CLAMP(0, cell_group * CELLS_PER_CELL_GROUP, CELL_NUM); 
-    uint8_t cell2 = CLAMP(0, base + 1, CELL_NUM);
-    uint8_t cell3 = CLAMP(0, base + 2, CELL_NUM);
-    uint8_t cell4 = CLAMP(0, base + 3, CELL_NUM);
-    uint8_t cell5 = CLAMP(0, base + 4, CELL_NUM);
-    cell_temps.cell1_dC = getTempData_centi_C(base);
-    cell_temps.cell1_dC = getTempData_centi_C(cell2);
-    cell_temps.cell1_dC = getTempData_centi_C(cell3);
-    cell_temps.cell1_dC = getTempData_centi_C(cell4);
-    cell_temps.cell1_dC = getTempData_centi_C(cell5);
+    uint8_t cell2 = CLAMP(0, base + 1, CELL_NUM-1);
+    uint8_t cell3 = CLAMP(0, base + 2, CELL_NUM-1);
+    uint8_t cell4 = CLAMP(0, base + 3, CELL_NUM-1);
+    uint8_t cell5 = CLAMP(0, base + 4, CELL_NUM-1);
+    cell_temps.cell1_dC = getTempData_centi_C(base) / 10;
+    cell_temps.cell2_dC = getTempData_centi_C(cell2) / 10;
+    cell_temps.cell3_dC = getTempData_centi_C(cell3) / 10;
+    cell_temps.cell4_dC = getTempData_centi_C(cell4) / 10;
+    cell_temps.cell5_dC = getTempData_centi_C(cell5) / 10;
     // note this relies on contiguous CAN_Ids
     canTX(CMR_CANID_LVBMS_CELL_TEMP_1_4 + cell_group, &cell_temps, sizeof(cell_temps), canTX100Hz_period_ms);
 }
@@ -256,4 +256,20 @@ volatile void *getPayload(canRX_t rxMsg) {
     cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
 
     return (void *)(&rxMeta->payload);
+}
+
+
+/**
+ * @brief Gets a pointer to the meta of a received CAN message.
+ *
+ * @param rxMsg The message to get the payload of.
+ *
+ * @return Pointer to meta, or NULL if rxMsg is invalid.
+ */
+volatile cmr_canRXMeta_t* getRxMeta(canRX_t rxMsg) {
+    configASSERT(rxMsg < CANRX_LEN);
+
+    cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
+
+    return (rxMeta);
 }

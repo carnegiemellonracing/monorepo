@@ -46,7 +46,7 @@ static void analysis(void *pvParameters) {
         uint8_t  max_cell_temp_idx = 0;
         uint8_t  min_cell_temp_idx = 0;
         
-        uint16_t pack_voltage_mV = 0; 
+        uint16_t batt_voltage_mV = 0; 
 
         for (uint8_t cell_index = 0; cell_index < CELL_NUM; cell_index++) {
             uint16_t curr_cell_voltage_mV = getVoltageData_mV(cell_index);
@@ -63,7 +63,7 @@ static void analysis(void *pvParameters) {
                 min_cell_voltage_idx = cell_index;
             }
             
-            pack_voltage_mV += curr_cell_voltage_mV;
+            batt_voltage_mV += curr_cell_voltage_mV;
 
             // Process Temperatures
             if (curr_cell_temp_centi_C > max_cell_temp_centi_deg) {
@@ -76,6 +76,16 @@ static void analysis(void *pvParameters) {
                 min_cell_temp_idx = cell_index;
             }
         }
+
+        BMS_stats.max_cell_voltage_mV = max_cell_voltage_mV;
+        BMS_stats.min_cell_voltage_mV = min_cell_voltage_mV;
+        BMS_stats.max_cell_voltage_idx = max_cell_voltage_idx;
+        BMS_stats.min_cell_voltage_idx = min_cell_voltage_idx;
+        BMS_stats.max_cell_temp_centi_deg = max_cell_temp_centi_deg;
+        BMS_stats.min_cell_temp_centi_deg = min_cell_temp_centi_deg;
+        BMS_stats.max_cell_temp_idx = max_cell_temp_idx;
+        BMS_stats.min_cell_temp_idx = min_cell_temp_idx;
+        BMS_stats.batt_voltage_mV = batt_voltage_mV;
 
         vTaskDelayUntil(&lastWakeTime, analysis_period_ms);
     }

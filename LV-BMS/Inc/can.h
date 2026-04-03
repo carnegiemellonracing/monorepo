@@ -43,6 +43,8 @@ extern const TickType_t canTX1Hz_period_ms;
 
 int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 volatile void *getPayload(canRX_t rxMsg);
+volatile cmr_canRXMeta_t* getRxMeta(canRX_t rxMsg);
+
 
 #endif /* CAN_H */
 

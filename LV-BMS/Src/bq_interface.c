@@ -27,11 +27,11 @@ extern volatile int BMBErrs[BOARD_NUM];
 BMB_Data_t BMBData;
 
 uint16_t getVoltageData_mV(uint8_t cell_idx){
-	BMBData.cellVoltages_mV[cell_idx];
+	return BMBData.cellVoltages_mV[cell_idx];
 }
 
 uint16_t getTempData_centi_C(uint8_t cell_idx){
-	BMBData.cellTemps_Centi_C[cell_idx];
+	return BMBData.cellTemps_Centi_C[cell_idx];
 }
 
 // static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
@@ -466,7 +466,7 @@ bool cellBalancingSetup() {
 		.crc = {0xFF, 0xFF}
 	};
 
-	uart_response_t response[BOARD_NUM] = {0};
+	uart_response_t response;
 
 	// Critical section used so UART RX is not preempted
 	taskENTER_CRITICAL();
@@ -476,21 +476,16 @@ bool cellBalancingSetup() {
 		return -1; 
 
 	//loop through each BMB and channel
-	for(uint8_t i = BOARD_NUM; i >= 1; i--) {
-		uint8_t status = uart_receiveResponse(&response[i-1], 1); 
-		if (status == 1) {
-			taskEXIT_CRITICAL();
-			return -1; 
-		} 
-	}
+	uint8_t status = uart_receiveResponse(&response, 0); 
+	if (status == 1) {
+		taskEXIT_CRITICAL();
+		return -1; 
+	} 
+
 	taskEXIT_CRITICAL();
 	
 	// determines if we are done balancing
-	bool doneBalancing = 1;
-	for(uint8_t i = 0; i < BOARD_NUM; i++) {
-		if ((response[i].data[0] & 8) == 8) //CB_RUN is 1 
-			doneBalancing = 0;
-	}
+	bool doneBalancing = (response.data[0] & 8) == 8;
 	
 	return doneBalancing; 
 
@@ -698,7 +693,7 @@ void pollAllTemperatureData(int channel) {
 static uint16_t thermVoltage_to_temp_Centi_Deg(uint8_t msb, uint8_t lsb){
     float pullup_ohms = 4700.0; 
     float v_in_mV = 5000.0; 
-		uint16_t thermVolt_mV = (uint16_t)((0.15259) * (((int16_t) msb << 8) | lsb));
+	uint16_t thermVolt_mV = (uint16_t)((0.15259) * (((int16_t) msb << 8) | lsb));
 
     //outside of upper bound 
     if (thermVolt_mV >= v_in_mV){
@@ -718,7 +713,7 @@ static uint16_t thermVoltage_to_temp_Centi_Deg(uint8_t msb, uint8_t lsb){
         float table_resistance_upper = thermMV_to_tempC[i+1]; 
         
         //temp is between i and i+1 (assume pretty much linear ratio)
-        if (table_resistance_lower <= resistance && resistance < table_resistance_upper) {
+        if (table_resistance_upper <= resistance && resistance < table_resistance_lower) {
             float decimal = INVLERP_SCALED(table_resistance_lower, table_resistance_upper, resistance, 1.0f);
             temp_C = i + decimal;
             return (uint16_t)(temp_C * 100); 

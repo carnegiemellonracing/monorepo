@@ -29,7 +29,7 @@ cmr_canHeartbeat_t heartbeat;
  void update_errors_and_warnings(TickType_t lastWakeTime){
     uint16_t error = CMR_CAN_ERROR_NONE;
     uint16_t warning = CMR_CAN_ERROR_NONE;
-    cmr_canRXMeta_t *heartbeatVSMMeta;
+    cmr_canRXMeta_t *heartbeatVSMMeta = (cmr_canRXMeta_t *) getRxMeta(CANRX_HEARTBEAT_VSM);
 
     if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
         error |= CMR_CAN_ERROR_VSM_TIMEOUT;
