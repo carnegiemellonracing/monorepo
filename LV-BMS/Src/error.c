@@ -5,6 +5,8 @@
  * @author Ayush Garg
  */
 
+#include <string.h>         // memcpy
+
 #include <CMR/can.h>        // CMR CAN interface
 
 #include "analysis.h"       // Analysis interface
@@ -37,11 +39,11 @@ cmr_canHeartbeat_t heartbeat;
         warning |= CMR_CAN_WARN_VSM_TIMEOUT;
     }
 
-    if(BMS_stats.pack_voltage_mV >= MAX_BATT_VOLTAGE_MV){
+    if(BMS_stats.batt_voltage_mV >= MAX_BATT_VOLTAGE_MV){
         error |= CMR_CAN_ERROR_LV_BMS_PACK_OVER_VOLT;
     }
 
-    if(BMS_stats.pack_voltage_mV <= MIN_PACK_VOLTAGE_MV){
+    if(BMS_stats.batt_voltage_mV <= MIN_PACK_VOLTAGE_MV){
         error |= CMR_CAN_ERROR_LV_BMS_PACK_UNDER_VOLT;
         if(HYBRID_MODE){
             cmr_gpioWrite(GPIO_BMS_ERROR, 1);

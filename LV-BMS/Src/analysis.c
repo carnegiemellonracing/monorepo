@@ -8,7 +8,8 @@
 
 #include <CMR/tasks.h>      // Task interface
 
-#include "bq_interface.h"  // Task interface
+#include "analysis.h"       // Interface to Implement
+#include "bq_interface.h"   // Task interface
 
 
 /** @brief analysis priority. */
@@ -20,7 +21,7 @@ static const TickType_t analysis_period_ms = 10;
 /** @brief analysis task. */
 static cmr_task_t analysis_task;
 
-#define NUM_CELLS 7
+BMS_stats_t BMS_stats;
 
 /**
  * @brief Task for toggling the analysis
@@ -47,7 +48,7 @@ static void analysis(void *pvParameters) {
         
         uint16_t pack_voltage_mV = 0; 
 
-        for (uint8_t cell_index = 0; cell_index < NUM_CELLS; cell_index++) {
+        for (uint8_t cell_index = 0; cell_index < CELL_NUM; cell_index++) {
             uint16_t curr_cell_voltage_mV = getVoltageData_mV(cell_index);
             uint16_t curr_cell_temp_centi_C = getTempData_centi_C(cell_index);
 

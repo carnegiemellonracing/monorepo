@@ -141,14 +141,14 @@ static void canTX2Hz(void *pvParameters) {
 
 static void sendLVBMSVoltages(void) {
     cmr_canLVBMSVoltage_t LVBMSVoltages = {
-        .battVoltage_mV    = BMS_stats.pack_voltage_mV,
+        .battVoltage_mV    = BMS_stats.batt_voltage_mV,
         .minCellVoltage_mV = BMS_stats.min_cell_voltage_mV,
         .maxCellVoltage_mV = BMS_stats.max_cell_voltage_mV,
         .minVoltageCellNum = BMS_stats.min_cell_voltage_idx,
         .maxVoltageCellNum = BMS_stats.max_cell_voltage_idx
     };
 
-    canTX(CMR_CANID_LVBMS_MINMAX_CELL_VOLTAGE, &LVBMSVoltages, sizeof(LVBMSVoltages), canTX100Hz_period_ms);
+    canTX(CMR_CANID_HVBMS_MIN_MAX_CELL_VOLTAGE, &LVBMSVoltages, sizeof(LVBMSVoltages), canTX100Hz_period_ms);
 }
 
 static void sendLVBMSTemps(void) {

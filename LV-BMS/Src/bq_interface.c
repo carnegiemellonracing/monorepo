@@ -11,6 +11,8 @@
 
 #include <CMR/gpio.h>    // cmr_rccGPIOClockEnable()
 #include <CMR/uart.h>
+#include <CMR/utils.h>
+
 
 #include "bq_interface.h"
 #include "dwt.h"

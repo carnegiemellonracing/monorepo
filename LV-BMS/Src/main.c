@@ -20,6 +20,7 @@
 #include "can.h"
 #include "dwt.h"
 #include "gpio.h"
+#include "sampling.h"
 #include "sensors.h"
 #include "status_led.h"
 

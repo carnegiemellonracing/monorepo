@@ -93,22 +93,22 @@ typedef enum {
     // fan turn on at 56 starting 58 turn it to max
 
     /** @brief CDC All motor controllers have errored or timed out. */
-    CMR_CAN_ERROR_CDC_DTI_ALL = (1 << 15)
+    CMR_CAN_ERROR_CDC_DTI_ALL = (1 << 15),
 
     /** @brief LV-BMS Pack Over Volt*/
-    CMR_CAN_ERROR_LV_BMS_PACK_OVER_VOLT = (1 << 0)
+    CMR_CAN_ERROR_LV_BMS_PACK_OVER_VOLT = (1 << 0),
 
     /** @brief LV-BMS Pack Under Volt*/
-    CMR_CAN_ERROR_LV_BMS_PACK_UNDER_VOLT = (1 << 1)
+    CMR_CAN_ERROR_LV_BMS_PACK_UNDER_VOLT = (1 << 1),
 
     /** @brief LV-BMS Cell Over Volt*/
-    CMR_CAN_ERROR_LV_BMS_CELL_OVER_VOLT = (1 << 2)
+    CMR_CAN_ERROR_LV_BMS_CELL_OVER_VOLT = (1 << 2),
 
     /** @brief LV-BMS Cell Under Volt*/
-    CMR_CAN_ERROR_LV_BMS_CELL_UNDER_VOLT = (1 << 3)
+    CMR_CAN_ERROR_LV_BMS_CELL_UNDER_VOLT = (1 << 3),
 
     /** @brief LV-BMS Cell Over temp*/
-    CMR_CAN_ERROR_LV_BMS_CELL_OVER_TEMP = (1 << 4)
+    CMR_CAN_ERROR_LV_BMS_CELL_OVER_TEMP = (1 << 4),
 } cmr_canError_t;
 
 /** @brief Heartbeat warning matrix bit fields. */
