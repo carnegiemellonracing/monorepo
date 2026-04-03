@@ -34,15 +34,6 @@ static cmr_task_t sampleTask;
 #define MUC_CHANNELS
 
 extern BMB_Data_t BMBData; 
-unsigned int vref_corr;
-uint16_t adc_sensen;
-
-// returns the bus current  in mA
-uint16_t get_current(void) {
-    uint16_t sensep_adc = adcRead(ADC_HALL_EFFECT);
-    float current_mA = float_to_uint16((sensep - adc_sensen)*vref_corr/(ADC_COUNT*GVCOUT*1e3));
-    return current;
-}
 
 // Determines if we are balancing and performs the necessary actions 
 static void handle_balancing (void){
