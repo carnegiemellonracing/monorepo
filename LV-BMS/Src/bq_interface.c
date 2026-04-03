@@ -370,7 +370,7 @@ void BMBInit() {
 	DWT_Delay_ms(100);
 
 	txToRxDelay(10);
-	HAL_Delay(100);
+	DWT_Delay_ms(100);
 
 	byteDelay(0x3F);
 	DWT_Delay_ms(100);
@@ -479,6 +479,7 @@ bool cellBalancingSetup() {
 	for(uint8_t i = BOARD_NUM; i >= 1; i--) {
 		uint8_t status = uart_receiveResponse(&response[i-1], 1); 
 		if (status == 1) {
+			taskEXIT_CRITICAL();
 			return -1; 
 		} 
 	}

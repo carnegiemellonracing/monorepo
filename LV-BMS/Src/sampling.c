@@ -106,21 +106,24 @@ void vBMBSampleTask(void *pvParameters) {
     static bool ledToggle = false;
     
 	TickType_t xLastWakeTime = xTaskGetTickCount();
+	while(1){
+		// handle_balancing();
 
-    handle_balancing();
+		// Loop through the different MUX channels and select a different one
+		// We still monitor all voltages each channel switch
+		for (uint8_t j = 0; j < MUX_CHANNELS; j++){
+			setMuxOutput(j);
+			vTaskDelayUntil(&xLastWakeTime, ADC_settlingTime_ms);
+			pollAllTemperatureData(j);
+		}
 
-    // Loop through the different MUX channels and select a different one
-    // We still monitor all voltages each channel switch
-    for (uint8_t j = 0; j < MUX_CHANNELS; j++){
-        setMuxOutput(j);
-        vTaskDelayUntil(&xLastWakeTime, ADC_settlingTime_ms);
-        pollAllTemperatureData(j);
-    }
+		uint8_t err = pollAllVoltageData();
+		writeLED(ledToggle);
+		ledToggle = !ledToggle;
+		vTaskDelayUntil(&xLastWakeTime, (sampleTaskPeriod_ms - (ADC_settlingTime_ms * MUX_CHANNELS)));
+	}
 
-    uint8_t err = pollAllVoltageData();
-    writeLED(ledToggle);
-    ledToggle = !ledToggle;
-    vTaskDelayUntil(&xLastWakeTime, (sampleTaskPeriod_ms - (ADC_settlingTime_ms * MUX_CHANNELS)));
+    
 }
 
 
