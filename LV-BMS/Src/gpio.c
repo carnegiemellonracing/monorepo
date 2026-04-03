@@ -52,5 +52,5 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
  */
 void gpioInit() {
 	cmr_gpioPinInit(gpioPinConfigs, GPIO_LEN);
-	cmr_gpioWrite(GPIO_BMS_ERROR, 0);
+	// cmr_gpioWrite(GPIO_BMS_ERROR, 0);
 }

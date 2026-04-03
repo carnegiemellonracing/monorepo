@@ -31,7 +31,7 @@ static cmr_task_t sampleTask;
 #define BALANCE_EN true
 #define BALANCE_DIS false
 #define MUX_CHANNELS 4
-#define MANUAL_BALANCE_EN true
+#define MANUAL_BALANCE_EN false
 
 
 extern BMB_Data_t BMBData; 

@@ -46,7 +46,7 @@ cmr_canHeartbeat_t heartbeat;
     if(BMS_stats.batt_voltage_mV <= MIN_PACK_VOLTAGE_MV){
         error |= CMR_CAN_ERROR_LV_BMS_PACK_UNDER_VOLT;
         if(HYBRID_MODE){
-            // cmr_gpioWrite(GPIO_BMS_ERROR, 1);
+            cmr_gpioWrite(GPIO_BMS_ERROR, 1);
         }
     }
 
@@ -57,7 +57,7 @@ cmr_canHeartbeat_t heartbeat;
     if(BMS_stats.min_cell_voltage_mV <= MIN_CELL_VOLTAGE_MV){
         error |= CMR_CAN_ERROR_LV_BMS_CELL_UNDER_VOLT;
         if(HYBRID_MODE){
-            // cmr_gpioWrite(GPIO_BMS_ERROR, 1);
+            cmr_gpioWrite(GPIO_BMS_ERROR, 1);
         }
     }
 
