@@ -754,16 +754,6 @@ Var=MINMAX_maxCellTemp_centi_C unsigned 16,16
 Var=MINMAX_minTempCellNum unsigned 32,8
 Var=MINMAX_maxTempCellNum unsigned 40,8
 
-[LVBMS_MINMAX_CELL_VOLTAGE]
-CycleTime=10
-DLC=8
-TimeOut=50
-Var=MINMAX_battVoltage_mV unsigned 0,16 /u:mV
-Var=MINMAX_minCellVoltage_mV unsigned 16,16 /u:mV
-Var=MINMAX_maxCellVoltage_mV unsigned 32,16 /u:mV
-Var=MINMAX_minVoltageCellNum unsigned 48,8
-Var=MINMAX_maxVoltageCellNum unsigned 56,8
-
 [LV_CELL_BALANCE_ENABLE]
 ID=136h
 DLC=3
