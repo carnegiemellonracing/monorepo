@@ -21,12 +21,14 @@ enum DVMode(0="DV_MODE_SLOW", 1="DV_MODE_NORMAL", 2="DV_MODE_FAST")
 enum DrsMode(0="DRSM_QUIET", 1="DRSM_CLOSED", 2="DRSM_OPEN",
     3="DRSM_TOGGLE", 4="DRSM_HOLD", 5="DRSM_AUTO", 6="DRSM_LEN",
     7="DRSM_UNKNOWN")
-enum Error(0="NONE", 1="VSM_TIMEOUT",
-    2="* @brief Reception period for at least one message from another module",
-    3="* has surpassed its error threshold.", 4="*/",
-    1024="AFC_DCDC2_TEMP", 2048="AFC_DCDC1_TEMP",
-    4096="AFC_DRIVER3_TEMP", 8192="AFC_DRIVER2_TEMP",
-    16384="AFC_DRIVER1_TEMP", 32768="CDC_DTI_ALL")
+enum Error(0="NONE", 1="LV_BMS_PACK_OVER_VOLT",
+    2="LV_BMS_PACK_UNDER_VOLT",
+    3="* has surpassed its error threshold.",
+    4="LV_BMS_CELL_OVER_VOLT", 8="LV_BMS_CELL_UNDER_VOLT",
+    16="LV_BMS_CELL_OVER_TEMP", 1024="AFC_DCDC2_TEMP",
+    2048="AFC_DCDC1_TEMP", 4096="AFC_DRIVER3_TEMP",
+    8192="AFC_DRIVER2_TEMP", 16384="AFC_DRIVER1_TEMP",
+    32768="CDC_DTI_ALL")
 enum FSMHeartbeatErr(1="FSM_ERROR_VSM_TIMEOUT")
 enum FSMHeartbeatWrn(1="FSM_WRN_VSM_TIMEOUT", 2="FSM_WRN_VOLTAGE_OOR",
     4="FSM_WRN_CURRENT_OOR", 8="FSM_WRN_SS_MODULE",
@@ -747,20 +749,20 @@ ID=7f6h
 DLC=6
 CycleTime=10
 TimeOut=50
-Var=MINMAX_minCellTemp_C unsigned 0,16
-Var=MINMAX_maxCellTemp_C unsigned 16,16
+Var=MINMAX_minCellTemp_centi_C unsigned 0,16
+Var=MINMAX_maxCellTemp_centi_C unsigned 16,16
 Var=MINMAX_minTempCellNum unsigned 32,8
 Var=MINMAX_maxTempCellNum unsigned 40,8
 
 [LVBMS_MINMAX_CELL_VOLTAGE]
-ID=7ffh
-DLC=6
 CycleTime=10
+DLC=8
 TimeOut=50
-Var=MINMAX_minCellVoltage_mV unsigned 0,16 /u:mV
-Var=MINMAX_maxCellVoltage_mV unsigned 16,16 /u:mV
-Var=MINMAX_minVoltageCellNum unsigned 32,8
-Var=MINMAX_maxVoltageCellNum unsigned 40,8
+Var=MINMAX_battVoltage_mV unsigned 0,16 /u:mV
+Var=MINMAX_minCellVoltage_mV unsigned 16,16 /u:mV
+Var=MINMAX_maxCellVoltage_mV unsigned 32,16 /u:mV
+Var=MINMAX_minVoltageCellNum unsigned 48,8
+Var=MINMAX_maxVoltageCellNum unsigned 56,8
 
 [LV_CELL_BALANCE_ENABLE]
 ID=136h
