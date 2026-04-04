@@ -1265,7 +1265,7 @@ void setLaunchControl(
     }
 }
 
-
+/**
 // LAUNCH CONTROL ACTIVATION
 // ADDING PEDAL THRESHOLD INSTEAD OF BUTTON RELEASE CUZ STEERING IS BROKEN
     // AND ALEX HAS A DEATH WISH TODAY
@@ -1365,9 +1365,9 @@ void setAccelLaunchControl(
     setTorqueLimsUnprotected(MOTOR_RL, pos_torques_Nm.rl, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RR, pos_torques_Nm.rr, 0.0f);
 }
+*/
 
-
-/** 
+ 
 void setAccelLaunchControl(
     uint8_t throttlePos_u8,
     uint16_t brakePressurePsi_u8,
@@ -1390,7 +1390,9 @@ void setAccelLaunchControl(
     static const float LAUNCH_TIMEOUT_S = 600.0f;  // kill switch after N seconds
 
     // read button
-    bool button_held = *((bool *)canVehicleGetPayload(CANRX_VEH_LAUNCH_CONTROL_BUTTON_SPOOF));
+    bool button_held = (((volatile cmr_canDIMActions_t *)canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->buttonStates) & BUTTON_ACT;
+
+    //bool button_held = *((bool *)canVehicleGetPayload(CANRX_VEH_LAUNCH_CONTROL_BUTTON_SPOOF));
 
     float odometer_vel_mps = motorSpeedToWheelLinearSpeed_mps(
         getTotalMotorSpeed_radps() * 0.25f);
@@ -1446,7 +1448,7 @@ void setAccelLaunchControl(
     setTorqueLimsUnprotected(MOTOR_RL, pos_torques_Nm.rl, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RR, pos_torques_Nm.rr, 0.0f);
 }
-*/
+
 
 void setAccelTorque(float car_velocity,
     float wheel_fl_speed_radps,
