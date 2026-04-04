@@ -4,21 +4,27 @@
 #include <stdint.h>
 
 /** @brief Maximum motor torque
- * motor datasheet: "maximum torque 'Mmax': 21 Nm"
+ * motor datasheet: "Peak Torque - 31.6 Nm"
 */
-static const float maxTorque_Nm = 21.0f;
+static const float maxTorque_Nm = 31.6f;
+static const float minTorqueLUTVal_Nm = 2.6f;
+static const float current_torque_slope = 85.0f / 31.6f;
+
+static const float front_bias = 0.10f;
 
 /** @brief Maximum motor speed
- * motor datasheet: "no-load-speed 'No': 18617"
- * motor datasheet: "mech. speed limit 'Nmax': 20000"
- * AMK racing kit summary p.16: "Speed setpoint values are limited to 30000 rpm"
+ * motor datasheet: "Nominal Speed - 13250 rpm"
+ * motor datasheet: "Maximum Speed - 20000 rpm"
 */
 static const int16_t maxSpeed_rpm = 20000;
 
 /** @brief Maximum motor torque in slow gear */
 static const float maxSlowTorque_Nm = 5.0f;
 
-static const float maxTorque_continuous_stall_Nm = 21.0f;
+/** @brief Maximum motor torque in dv gear */
+static const float maxDVTorque_Nm = 15.0f;
+
+static const float maxTorque_continuous_stall_Nm = 31.6f;
 
 /** @brief Maximum motor torque in fast gear */
 static const float maxFastTorque_Nm = maxTorque_continuous_stall_Nm; 
@@ -29,6 +35,9 @@ static const float maxFastTorque_Nm = maxTorque_continuous_stall_Nm;
  *                               (60 seconds / 1 minute) * (15 revolutions / rev)
  */
 static const int16_t maxSlowSpeed_rpm = 1500;
+
+/** @brief Maximum motor speed in dv gear. Roughly 10m/s */
+static const int16_t maxDVSpeed_rpm = 6000;
 
 /** @brief Maximum motor speed in medium gear. Roughly 20m/s */
 static const int16_t maxMediumSpeed_rpm = 13000;
@@ -52,7 +61,7 @@ static const float chassis_w_r = 0.625; //Confirm with CAD people
 static const int32_t gear_ratio_top = 8784;
 static const int32_t gear_ratio_bot = 621;
 
-static const float gear_ratio = 13.93; //updated for 24e
+static const float gear_ratio = 12.097; // real for 26x
 static const float effective_wheel_dia_m = 0.41; /** @brief effective wheel diameter */
 static const float effective_wheel_rad_m = effective_wheel_dia_m * 0.5f; /** @brief effective wheel radius */
 
@@ -61,5 +70,34 @@ static const double trackwidth_m = 1.30f;
 static const double half_wheelbase_m = wheelbase_m * 0.5f;
 static const double half_trackwidth_m= trackwidth_m * 0.5f;
 static const double car_mass_kg = 280.0f;
+
+static const uint16_t pole_pairs = 4;
+
+typedef struct {
+    int16_t current_Arms;  
+    float torque_Nm;    
+} MotorData;
+
+#define DTI_TORQUE_CURRENT_LUT_LEN 13
+/** 
+ * @brief Lookup table mapping Drivetrain Innovation motor AC current to motor torque.
+ *
+ * Sourced from the F-MOT-A (2025) motor specification.
+ */
+static const MotorData DTI_torque_current_LUT[DTI_TORQUE_CURRENT_LUT_LEN] = {
+    {5, 2.6f},
+    {11, 5.6f},
+    {16, 8.2f},
+    {21, 10.6f},
+    {26, 13.1f},
+    {31, 15.5f},
+    {36, 17.9f},
+    {41, 20.4f},
+    {46, 22.7f},
+    {51, 25.0f},
+    {56, 27.3f},
+    {61, 29.5f},
+    {66, 31.6f}
+};
 
 #endif

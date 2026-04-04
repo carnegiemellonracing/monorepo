@@ -32,9 +32,6 @@ cmr_state nextState;
 
 cmr_state currState;
 
-// cmr_canGear_t reqGear;
-// cmr_canGear_t currGear;
-
 volatile int8_t config_move_request;
 
 
@@ -44,6 +41,10 @@ volatile int8_t config_move_request;
 ({ __typeof__ (a) _a = (a); \
 __typeof__ (b) _b = (b); \
 _a < _b ? _a : _b; })
+
+#define NUM_DV_MODES 3
+#define POLE_PAIRS 4
+#define MOTOR_LEN 4
 
 /** @brief declaration of config screen variables */
 extern volatile bool flush_config_screen_to_cdc;
@@ -81,6 +82,8 @@ static volatile struct {
 	cmr_canGear_t gearReq;    /**< @brief Requested gear. */
 	cmr_canDrsMode_t drsMode; /**< @brief Current DRS Mode. */
 	cmr_canDrsMode_t drsReq;  /**< @brief Requested DRS Mode. */
+    cmr_canDVMode_t dvCtrlMode;
+    cmr_canDVMode_t dvCtrlReq;
 } state = {
 	.vsmReq = CMR_CAN_GLV_ON,
 	.gear = CMR_CAN_GEAR_SLOW,
@@ -153,6 +156,14 @@ cmr_canDrsMode_t stateGetDrsReq(void) {
 	return state.drsReq;
 }
 
+cmr_canDVMode_t stateGetDVMode(void) {
+	return state.dvCtrlMode;
+}
+
+cmr_canDVMode_t stateGetDVReq(void) {
+	return state.dvCtrlReq;
+}
+
 static uint32_t test_message_id = 0;
 
 uint32_t get_test_message_id() {
@@ -162,22 +173,26 @@ uint32_t get_test_message_id() {
 /**
  * @brief Returns the current car's speed in km/h
  */
-float getSpeedKmh() {
-	int32_t avgWheelRPM = getAverageWheelRPM();
-
+uint8_t getSpeedKmh() {
+	// int32_t avgWheelRPM = getAverageWheelRPM();
+    cmr_canSensoricVelAng_t *sensoricVelAng = (cmr_canSensoricVelAng_t*)getPayload(CANRX_SENSORIC_VEL_ANG);
+    int16_t avgWheelRPM = (int16_t)((float)(sensoricVelAng->vel_A) * 0.02f);
+    
 	/* Wheel Speed to Vehicle Speed Conversion
 	 *      (x rotations / 1min) * (18" * PI) *  (2.54*10^-5km/inch)
 	 *      (60min / 1hr) * (1/15.1 gear ratio)
 	 *      = x * 0.0057072960048526627892388896218624717297547517194475432371                                 */
-	return (float)avgWheelRPM * 0.0057073f;
+	return (uint8_t)avgWheelRPM;
 }
 
 /**
  * @brief Returns the current car's odometry in km
  */
 float getOdometer() {
-	volatile cmr_canCDCOdometer_t *odometer = (volatile cmr_canCDCOdometer_t *)getPayload(CANRX_CDC_ODOMETER);
-	return odometer->odometer_km;
+	// volatile cmr_canCDCOdometer_t *odometer = (volatile cmr_canCDCOdometer_t *)getPayload(CANRX_CDC_ODOMETER);
+    cmr_canSensoricDist_t *sensoricDist = (cmr_canSensoricDist_t*)getPayload(CANRX_SENSORIC_DIST);
+    float sensoricDist_kmh = (float)(sensoricDist->dist_A) * 0.001f;
+	return sensoricDist->dist_A;
 }
 
 
@@ -191,28 +206,20 @@ float getOdometer() {
  */
 int32_t getAverageWheelRPM(void) {
 	/* Get CAN data */
-	// Front Left
-	cmr_canAMKActualValues1_t *canAMK_FL_Act1 = getPayload(CANRX_AMK_FL_ACT_1);
 
-	// Front Right
-	cmr_canAMKActualValues1_t *canAMK_FR_Act1 = getPayload(CANRX_AMK_FR_ACT_1);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FL = getPayload(CANRX_DTI_FL_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FR = getPayload(CANRX_DTI_FR_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RL = getPayload(CANRX_DTI_RL_ERPM);
+    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RR = getPayload(CANRX_DTI_RR_ERPM);
 
-	// Rear Left
-	cmr_canAMKActualValues1_t *canAMK_RL_Act1 = getPayload(CANRX_AMK_RL_ACT_1);
-
-	// Rear Right
-	cmr_canAMKActualValues1_t *canAMK_RR_Act1 = getPayload(CANRX_AMK_RL_ACT_1);
-
-	/* Extract wheel speeds */
-	int32_t frontLeftRPM = (canAMK_FL_Act1->velocity_rpm);  // Motor direction reversed on left side
-	int32_t frontRightRPM = canAMK_FR_Act1->velocity_rpm;
-	int32_t rearLeftRPM = (canAMK_RL_Act1->velocity_rpm);  // Motor direction reversed on left side
-	int32_t rearRightRPM = canAMK_RR_Act1->velocity_rpm;
-
-	/* Compute average */
-	int32_t average = (frontLeftRPM + frontRightRPM + rearLeftRPM + rearRightRPM) / 4;
-
-	return average;
+    const int32_t avgMotorSpeed_RPM = (
+        + (int32_t)(dtiERPM_FL->erpm / POLE_PAIRS)
+        + (int32_t)(dtiERPM_FR->erpm / POLE_PAIRS)
+        + (int32_t)(dtiERPM_RL->erpm / POLE_PAIRS)
+        + (int32_t)(dtiERPM_RR->erpm / POLE_PAIRS)
+    ) / MOTOR_LEN;
+	
+    return avgMotorSpeed_RPM;
 }
 
 
@@ -232,22 +239,23 @@ bool getAcknowledgeButton(void) {
 int getMaxMotorTemp(void){
 	/* Get CAN data */
 	// Front Left
-	cmr_canAMKActualValues2_t *canAMK_FL_Act2 = getPayload(CANRX_AMK_FL_ACT_2);
+	cmr_canDTI_TX_TempFault_t *canDTI_FL_temp = getPayload(CANRX_DTI_FL_TEMPFAULT);
 
 	// Front Right
-	cmr_canAMKActualValues2_t *canAMK_FR_Act2 = getPayload(CANRX_AMK_FR_ACT_2);
+	cmr_canDTI_TX_TempFault_t *canDTI_FR_temp = getPayload(CANRX_DTI_FR_TEMPFAULT);
 
 	// Rear Left
-	cmr_canAMKActualValues2_t *canAMK_RL_Act2 = getPayload(CANRX_AMK_RL_ACT_2);
+	cmr_canDTI_TX_TempFault_t *canDTI_RL_temp = getPayload(CANRX_DTI_RL_TEMPFAULT);
 
 	// Rear Right
-	cmr_canAMKActualValues2_t *canAMK_RR_Act2 = getPayload(CANRX_AMK_RR_ACT_2);
+	cmr_canDTI_TX_TempFault_t *canDTI_RR_temp = getPayload(CANRX_DTI_RR_TEMPFAULT);
 
 	/* Extract motor temperatures */
-	int32_t frontLeftTemp = canAMK_FL_Act2->motorTemp_dC;
-	int32_t frontRightTemp = canAMK_FR_Act2->motorTemp_dC;
-	int32_t rearLeftTemp = canAMK_RL_Act2->motorTemp_dC;
-	int32_t rearRightTemp = canAMK_RR_Act2->motorTemp_dC;
+    //TODO: does this need to be int32_t or int16_t?? and what is multiplied by 10?
+	int32_t frontLeftTemp = canDTI_FL_temp->motor_temp;
+	int32_t frontRightTemp = canDTI_FR_temp->motor_temp;
+	int32_t rearLeftTemp = canDTI_RL_temp->motor_temp;
+	int32_t rearRightTemp = canDTI_RR_temp->motor_temp;
 
 	/* Return highest motor temperature*/
 	int32_t maxTemp = frontLeftTemp;
@@ -267,8 +275,8 @@ int getMaxMotorTemp(void){
  */
 int getACTemp(void)
 {
-	volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps = getPayload(CANRX_HVC_PACK_TEMPS);
-	int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC) / 10;
+	volatile cmr_canBMSMinMaxCellTemperature_t *canHVCPackTemps = getPayload(CANRX_HVC_PACK_TEMPS);
+	int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_C) / 10;
 	return acTemp_C;
 }
 /**
@@ -280,17 +288,25 @@ int getACTemp(void)
  */
 int getMCTemp(void)
 {
-	cmr_canAMKActualValues2_t *canAMK_FL_Act2 = getPayload(CANRX_AMK_FL_ACT_2);
+	/* Get CAN data */
+	// Front Left
+	cmr_canDTI_TX_TempFault_t *canDTI_FL_temp = getPayload(CANRX_DTI_FL_TEMPFAULT);
+
 	// Front Right
-	cmr_canAMKActualValues2_t *canAMK_FR_Act2 = getPayload(CANRX_AMK_FR_ACT_2);
+	cmr_canDTI_TX_TempFault_t *canDTI_FR_temp = getPayload(CANRX_DTI_FR_TEMPFAULT);
+
 	// Rear Left
-	cmr_canAMKActualValues2_t *canAMK_RL_Act2 = getPayload(CANRX_AMK_RL_ACT_2);
+	cmr_canDTI_TX_TempFault_t *canDTI_RL_temp = getPayload(CANRX_DTI_RL_TEMPFAULT);
+
 	// Rear Right
-	cmr_canAMKActualValues2_t *canAMK_RR_Act2 = getPayload(CANRX_AMK_RR_ACT_2);
-	int32_t frontLeftMCTemp = canAMK_FL_Act2->motorTemp_dC;
-	int32_t frontRightMCTemp = canAMK_FR_Act2->motorTemp_dC;
-	int32_t rearLeftMCTemp = canAMK_RL_Act2->motorTemp_dC;
-	int32_t rearRightMCTemp = canAMK_RR_Act2->motorTemp_dC;
+	cmr_canDTI_TX_TempFault_t *canDTI_RR_temp = getPayload(CANRX_DTI_RR_TEMPFAULT);
+
+    //TODO: does this need to be int32_t or int16_t?? and what is multiplied by 10?
+    // is this controller temp?
+	int32_t frontLeftMCTemp = canDTI_FL_temp->ctlr_temp;
+	int32_t frontRightMCTemp = canDTI_FR_temp->ctlr_temp;
+	int32_t rearLeftMCTemp = canDTI_RL_temp->ctlr_temp;
+	int32_t rearRightMCTemp = canDTI_RR_temp->ctlr_temp;
 
 	/* Return highest motor temperature*/
 	int32_t maxTemp = frontLeftMCTemp;
@@ -315,22 +331,15 @@ bool DRSOpen(void)
 }
 
 
-static cmr_state getReqScreen(void) {
+
+static cmr_state getNextState(void) {
     if(stateGetVSM() == CMR_CAN_ERROR){
     	nextState = dimStateERROR;
     	return nextState;
     }
-    /*case if we use safety screen
-    if(stateGetVSM() == CMR_CAN_ERROR) {
-        if(stateGetVSMReq() == CMR_CAN_HV_EN) return SAFETY;
-        return dimStateERROR;
-    }
-    */
     switch (currState) {
         case INIT:
-        	//initializes tft screen
     		nextState = START;
-
             break;
         case START:
             if(state.vsmReq == CMR_CAN_GLV_ON) {
@@ -341,94 +350,85 @@ static cmr_state getReqScreen(void) {
             }
             break;
         case NORMAL:
-            // if(canLRUDStates[LEFT]) {
-            //     nextState = CONFIG;
-            //     flush_config_screen_to_cdc = false;
-			// 	//gpioLRUDStates[LEFT] = false;
-            // }
-            if(!cmr_gpioRead(GPIO_BUTTON_SW1)) {
-            // else if(canLRUDStates[LEFT]) {
+            if(getASMS()) {
+                nextState = AUTON;
+            }
+            else if(!cmr_gpioRead(GPIO_CTRL_SWITCH) && true/*(stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)*/) {
                 nextState = CONFIG;
                 flush_config_screen_to_cdc = false;
-				//gpioLRUDStates[LEFT] = false;
             }
-            else if(canLRUDStates[RIGHT]) {
+            else if(buttonStates[RIGHT].isPressed && stateGetVSM() == CMR_CAN_RTD) {
                 nextState = RACING;
-                //canLRUDStates[RIGHT] = false;
+                buttonStates[RIGHT].isPressed = false; 
             }
-            // else if(canLRUDStates[RIGHT]) {
-            //     nextState = RACING;
-            //     //canLRUDStates[RIGHT] = false;
-            // }
             else {
                 nextState = NORMAL;
             }
             break;
         case CONFIG:
-            //look into how button move on screen on campus
-            if(canLRUDStates[LEFT]) {
+            if(cmr_gpioRead(GPIO_CTRL_SWITCH)) {
+                nextState = NORMAL;
+                flush_config_screen_to_cdc = true;
+            }
+            else if(buttonStates[LEFT].isPressed) {
                 //move left on screen
                 config_move_request = -1;
                 nextState = CONFIG;
+                buttonStates[LEFT].isPressed = false; 
             }
-            else if(canLRUDStates[RIGHT]) {
+            else if(buttonStates[RIGHT].isPressed) {
                 //move right on screen
                 config_move_request = 1;
                 nextState = CONFIG;
+                buttonStates[RIGHT].isPressed = false; 
             }
-            else if(canLRUDStates[UP]) {
+            else if(buttonStates[UP].isPressed) {
                 //move up on screen
                 config_move_request = -CONFIG_SCREEN_NUM_COLS;
                 nextState = CONFIG;
+                buttonStates[UP].isPressed = false; 
             }
-            else if(canLRUDStates[DOWN]) {
+            else if(buttonStates[DOWN].isPressed) {
                 //move down on screen
                 config_move_request = CONFIG_SCREEN_NUM_COLS;
                 nextState = CONFIG;
-            }
-    	//TODO: WHAT THE HELL IS THIS??
-            else if(!cmr_gpioRead(GPIO_BUTTON_SW1)) {
-            // else if(canLRUDStates[LEFT]) {
-                nextState = NORMAL;
-                flush_config_screen_to_cdc = true;
-                // exitConfigScreen();
-
-                //gpioButtonStates[SW1] = 0;
-                //nextState = CONFIG;
-            }
-            else if(false) {
-                flush_config_screen_to_cdc = true;
-                // exitConfigScreen();
-                nextState = RACING;
-                //gpioButtonStates[SW2] = 0;
+                buttonStates[DOWN].isPressed = false; 
             }
             else{
                 nextState = CONFIG;
             }
             break;
-        case dimStateERROR:
-            nextState = INIT;
-            break;
         case RACING:
-            if(canLRUDStates[LEFT] && state.vsmReq == CMR_CAN_GLV_ON) {
-                nextState = CONFIG;
-                flush_config_screen_to_cdc = false;
-                //canLRUDStates[LEFT] = false;
-            }
-            else if(canLRUDStates[RIGHT]) {
+            if(buttonStates[LEFT].isPressed && stateGetVSM() == CMR_CAN_RTD) {
                 nextState = NORMAL;
-                //canLRUDStates[RIGHT] = false;
+                buttonStates[LEFT].isPressed = false; 
+            }
+            else if(stateGetVSM() != CMR_CAN_RTD) {
+                nextState = NORMAL;
             }
             else {
                 nextState = RACING;
             }
             break;
+        case AUTON:
+            if(!getASMS()) {
+                if(!(stateGetVSM() == CMR_CAN_AS_READY || stateGetVSM() == CMR_CAN_AS_DRIVING || 
+                stateGetVSM() == CMR_CAN_AS_FINISHED || stateGetVSM() == CMR_CAN_AS_EMERGENCY)) {
+                    nextState = NORMAL;
+                }
+                else {
+                    nextState = AUTON;
+                }
+            }
+            else {
+                nextState = AUTON;
+            }
+            break;
+        case dimStateERROR:
+            nextState = INIT;
+            break;
         default:
             nextState = INIT;
-    }
-    //change all can states to false to deregister buttons
-    for(int i = 0; i < LRUD_LEN; i++){
-        canLRUDStates[i] = false;
     }
 	return nextState;
 }
@@ -465,10 +465,22 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
 }
 
 
+void EABStateUp() {
+	cmr_canVSMState_t vsmState = stateGetVSM();
+	if(getEAB() && getASMS() && vsmState == CMR_CAN_GLV_ON) {
+		state.vsmReq = CMR_CAN_AS_READY;
+	}
+}
+
 /**
  * @brief Handles VSM state up.
  */
 void stateVSMUp() {
+
+    if(getASMS()) {
+        return;
+    }
+
 	cmr_canState_t vsmState = stateGetVSM();
 	if (state.vsmReq < vsmState) {
 		// Cancel state-down request.
@@ -476,13 +488,13 @@ void stateVSMUp() {
 		return;
 	}
 
-	cmr_canState_t vsmReq = ((vsmState == CMR_CAN_UNKNOWN) || (vsmState == CMR_CAN_ERROR))
-								? (CMR_CAN_GLV_ON)  // Unknown state; request GLV_ON.
-								: (vsmState + 1);   // Increment state.
+    cmr_canState_t vsmReq = ((vsmState == CMR_CAN_UNKNOWN) || (vsmState == CMR_CAN_ERROR))
+                                ? CMR_CAN_GLV_ON
+                                : vsmState + 1;
+
 	if (!stateVSMReqIsValid(vsmState, vsmReq)) {
 		return;  // Invalid requested state.
 	}
-
 	state.vsmReq = vsmReq;
 }
 
@@ -490,6 +502,11 @@ void stateVSMUp() {
  * @brief Handles VSM state down request.
  */
 void stateVSMDown() {
+
+    if(getASMS()) {
+        return;
+    }
+
 	cmr_canState_t vsmState = stateGetVSM();
         if (state.vsmReq > vsmState) {
             // Cancel state-up request.
@@ -501,7 +518,6 @@ void stateVSMDown() {
             // Only exit RTD when motor is basically stopped.
             return;
         }
-
         cmr_canState_t vsmReq = vsmState - 1;  // Decrement state.
 	// Valid State
 	if (stateVSMReqIsValid(vsmState, vsmReq)) {
@@ -513,18 +529,26 @@ void stateVSMDown() {
 
 
 void reqVSM(void) {
+
+    if(getASMS() && stateGetVSM() == CMR_CAN_GLV_ON) {
+        EABStateUp();
+        return;
+    }
+    
     if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM == CMR_CAN_CLEAR_ERROR) {
         state.vsmReq = CMR_CAN_GLV_ON;
+        return;
     }
-    else {
-        if (getCurrState() != CONFIG) {
-            if (canLRUDStates[UP]) {
-                stateVSMUp();
-            } else if (canLRUDStates[DOWN]) {
-                stateVSMDown();
-            }
-        }  
-    }
+    if (getCurrState() != CONFIG) {
+        if (buttonStates[UP].isPressed) {
+            stateVSMUp();
+            buttonStates[UP].isPressed = false; 
+        } else if (buttonStates[DOWN].isPressed) {
+            stateVSMDown();
+            buttonStates[DOWN].isPressed = false; 
+        }
+        return;
+    } 
 }
 
 //keeps track of requested gear
@@ -539,31 +563,71 @@ static volatile int requestedGear;
 *
 */
 void reqGear(void) {
-	int pastRotary = getPastRotaryPosition();
-	int currentRotary = getRotaryPosition();
-
-	// bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) || (stateGetVSM() == CMR_CAN_HV_EN));
-    // bool canChangeGear = true;
-	// if(canChangeGear && (currentRotary!=state.gear)){
-	// 	if((currentRotary < pastRotary) || (currentRotary == 7 && pastRotary==0)){
-	// 		//turned clockwise so gearup
-	// 		state.gear++;
-	// 		}
-	// 	} else {
-	// 		state.gear--;
-	// }
-    bool canChangeGear = true;
-    if(canChangeGear && (pastRotary != currentRotary)) {
-        if(currState == CONFIG) config_increment_up_requested = true;
-        if(state.gearReq == 8) state.gearReq = 1;
-        else state.gearReq++;
+    bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) 
+                       || (stateGetVSM() == CMR_CAN_HV_EN));
+    if(getASMS()/* && cmr_gpioRead(GPIO_CTRL_SWITCH)*/) {
+        if(CMR_CAN_GEAR_DV_MISSION_MAX <= state.gear || state.gear <= CMR_CAN_GEAR_DV_MISSION_MIN) {
+            state.gear = CMR_CAN_GEAR_DV_MISSION_ACCEL;
+            state.gearReq = CMR_CAN_GEAR_DV_MISSION_ACCEL;
+        }
+        if(canChangeGear && buttonStates[RIGHT].isPressed) {
+            if(state.gearReq == CMR_CAN_GEAR_DV_MISSION_MAX - 1) {
+                state.gearReq = CMR_CAN_GEAR_DV_MISSION_MIN + 1;
+                buttonStates[RIGHT].isPressed = false; 
+            }
+            else state.gearReq++;
+        }
+        else if(canChangeGear && buttonStates[LEFT].isPressed) {
+            if(state.gearReq == CMR_CAN_GEAR_DV_MISSION_MIN + 1) {
+                state.gearReq = CMR_CAN_GEAR_DV_MISSION_MAX - 1;
+                buttonStates[LEFT].isPressed = false; 
+            }
+            else state.gearReq--;
+        }
+    }
+    else if (!getASMS()) {
+        if(CMR_CAN_GEAR_MAX <= state.gear || state.gear <= CMR_CAN_GEAR_MIN) {
+            state.gear = CMR_CAN_GEAR_SLOW;
+            state.gearReq = CMR_CAN_GEAR_SLOW;
+        }
+        if(canChangeGear && buttonStates[RIGHT].isPressed) {
+            if(state.gearReq == CMR_CAN_GEAR_MAX - 1) {
+                state.gearReq = CMR_CAN_GEAR_MIN + 1;
+            }
+            else state.gearReq++;
+            buttonStates[RIGHT].isPressed = false; 
+        }
+        else if(canChangeGear && buttonStates[LEFT].isPressed) {
+            if(state.gearReq == CMR_CAN_GEAR_MIN + 1) {
+                state.gearReq = CMR_CAN_GEAR_MAX - 1;
+            }
+            else state.gearReq--;
+            buttonStates[LEFT].isPressed = false; 
+        }
     }
 }
 
-//returns requested gear
+void reqDRS(void) {
+    if(buttonStates[SW_RIGHT].isPressed) {
+        state.drsReq = CMR_CAN_DRS_STATE_OPEN;
+        buttonStates[SW_RIGHT].isPressed = false; 
+    }
+    else {
+        state.drsReq = CMR_CAN_DRS_STATE_CLOSED;
+    }
+}
 
-int getRequestedGear(void){
-	return requestedGear;
+void reqDVCtrl(void) {
+    if(cmr_gpioRead(GPIO_CTRL_SWITCH)) {
+        if(buttonStates[RIGHT].isPressed) {
+            state.dvCtrlReq = (state.dvCtrlMode + 1) % NUM_DV_MODES;
+            buttonStates[RIGHT].isPressed = false; 
+        }
+        else if(buttonStates[LEFT].isPressed) {
+            state.dvCtrlReq = (state.dvCtrlMode - 1) % NUM_DV_MODES;
+            buttonStates[LEFT].isPressed = false; 
+        }
+    }
 }
 
 /**
@@ -577,57 +641,13 @@ void stateDrsUpdate(void) {
 	state.drsMode = state.drsReq;
 }
 
+void stateDVCtrlUpdate(void) {
+    state.dvCtrlMode = state.dvCtrlReq;
+}
+
 cmr_state getCurrState() {
     return currState;
 }
-
-static void stateOutput() {
-    //output
-    // switch(currState) {
-    //     case INIT:
-    //         //initialize buttons to 0
-	// 		//also initializes all LRUD buttons to 0
-    //         for(int i=0; i<NUM_BUTTONS; i++){
-    //             //is it necessary to initialize the can buttons to 0 if they are just reading pins??
-    //             canButtonStates[i] = 0;
-    //             gpioButtonStates[i] = 0;
-    //         }
-    //          /* Restarting the Display. */
-    //         TickType_t lastWakeTime = xTaskGetTickCount();
-    // 		//change pin of screen
-    //         /* Initialize the display. */
-    //         // tftInitSequence();
-    //         tftUpdate();
-    //         break;
-    //     case START:
-    //         /* Display Startup Screen for fixed time */
-    //         //tftDLWrite(&tft, &tftDL_startup);
-    //         //drawConfigScreen();
-    //         //vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
-    //         break;
-    //     case NORMAL:
-    //         drawRTDScreen(); //from somethingP
-    //         //tftDLWrite(&tft, &tftDL_startup);
-    //         //vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
-    //         break;
-    //     case CONFIG:
-    //         drawConfigScreen();
-    //         vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
-    //         break;
-    //     case dimStateERROR:
-    //         drawErrorScreen();
-    //         vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
-    //         break;
-    //     case RACING:
-    //         drawRacingScreen();
-    //         vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS);
-    //         break;
-    // }
-	//TODO: Why is this called again?
-    currState = getReqScreen();
-}
-
-
 
 /**
  * @brief Struct for voltage SoC lookup table
@@ -637,36 +657,29 @@ typedef struct {
     uint8_t SoC;
 } voltage_SoC_t;
 
-#define LV_LIFEPO_LUT_NUM_ITEMS 11
-#define LV_LIPO_LUT_NUM_ITEMS 6
+#define LV_GRAPOW_LUT_NUM_ITEMS 11
+#define S_COUNT 7.0f
+
 
 /**
- * @brief Look up table for 24v lifepo4 battery State of Charge
+ * @brief Look up table for 26x 7s Grapow LV Battery (Semi-Solid State)
  *
  * Must be sorted in descending order
  */
-static voltage_SoC_t LV_LiFePo_SoC_lookup[LV_LIFEPO_LUT_NUM_ITEMS] = {
-    { 27.2f, 100 },
-    { 26.8f, 90 },
-    { 26.6f, 80 },
-    { 26.1f, 70 },
-    { 26.4f, 60 },
-    { 26.1f, 50 },
-    { 26.0f, 40 },
-    { 25.8f, 30 },
-    { 25.6f, 20 },
-    { 24.0f, 10 },
-    { 20.0f, 0 }
+static voltage_SoC_t LV_grapow_SoC_lookup[LV_GRAPOW_LUT_NUM_ITEMS] = {
+    { 4.20f * S_COUNT, 100 }, 
+    { 3.94f * S_COUNT,  90 },
+    { 3.88f * S_COUNT,  80 }, 
+    { 3.78f * S_COUNT,  70 }, 
+    { 3.65f * S_COUNT,  60 }, 
+    { 3.50f * S_COUNT,  50 }, 
+    { 3.38f * S_COUNT,  40 }, 
+    { 3.25f * S_COUNT,  30 }, 
+    { 3.08f * S_COUNT,  20 }, 
+    { 2.91f * S_COUNT,  10 }, 
+    { 2.50f * S_COUNT,   0 }  
 };
 
-static voltage_SoC_t LV_LiPo_SoC_lookup[LV_LIPO_LUT_NUM_ITEMS] = {
-    { 25.2f, 100 },
-    { 24.5f, 90 },
-    { 23.0f, 80 },
-    { 21.0f, 20 },
-    { 20.0f, 10 },
-    { 18.0f, 0 }
-};
 
 /**
  * @brief Function for getting Low Voltage SoC
@@ -675,21 +688,9 @@ static voltage_SoC_t LV_LiPo_SoC_lookup[LV_LIPO_LUT_NUM_ITEMS] = {
  *
  * @return the state of charge % between 0 and 99.
  */
-uint8_t getLVSoC(float voltage, lv_battery_type_t battery_type) {
-    voltage_SoC_t *lut;
-    size_t num_items;
-
-    if (battery_type == LV_LIFEPO) {
-        lut = LV_LiFePo_SoC_lookup;
-        num_items = LV_LIFEPO_LUT_NUM_ITEMS;
-    } else if (battery_type == LV_LIPO) {
-        lut = LV_LiPo_SoC_lookup;
-        num_items = LV_LIPO_LUT_NUM_ITEMS;
-    } else {
-        // unknown battery type - return 0%
-		cmr_panic("Unknown battery type");
-        return 0;
-    }
+uint8_t getLVSoC(float voltage) {
+    voltage_SoC_t *lut = LV_grapow_SoC_lookup;
+    size_t num_items = LV_GRAPOW_LUT_NUM_ITEMS;
 
     for (size_t i = 0; i < num_items; i++) {
         if (lut[i].voltage == voltage) {
@@ -726,8 +727,16 @@ static void stateMachine(void *pvParameters){
     uint32_t space1 = 0;
     while (1) {
         // taskENTER_CRITICAL();
-        // stateOutput();
-        currState = getReqScreen();
+        currState = getNextState();
+        // if(getASMS()) {
+        //     // TODO: checks for brakes, dv system, etc
+        //     if(stateGetVSM() == CMR_CAN_GLV_ON) {
+        //         cmr_gpioWrite(GPIO_AS_RELAY, 0);
+        //     }
+        //     else {
+        //         cmr_gpioWrite(GPIO_AS_RELAY, 1);
+        //     }
+        // }
         // tftRead(&tft, TFT_ADDR_CMD_READ, sizeof(test), &test);
         // test = test & 0x00000FFF;
         // tftRead(&tft, TFT_ADDR_CMDB_SPACE, sizeof(space1), &space1);
@@ -744,6 +753,14 @@ static void stateMachine(void *pvParameters){
  * @brief Initializes the state machine interface.
  */
 void stateMachineInit(void) {
+    if(getASMS()) {
+        state.gear = CMR_CAN_GEAR_DV_MISSION_ACCEL;
+        state.gearReq = CMR_CAN_GEAR_DV_MISSION_ACCEL;
+    }
+    else {
+        state.gear = CMR_CAN_GEAR_SLOW;
+        state.gearReq = CMR_CAN_GEAR_SLOW;
+    }
     cmr_taskInit(
         &stateMachine_task,
         "stateMachine",

@@ -18,6 +18,7 @@
 #include "can.h"        // Interface to implement
 #include "sensors.h"    // sensorChannel_t
 #include "state.h"      // getCurrentErrors(), getCurrentWarnings()
+#include "gpio.h"
 
 /**
  * @brief CAN periodic message receive metadata
@@ -46,12 +47,15 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_VSM_DIM_TIMEOUT
     },
-    [CANRX_HEARTBEAT_HVI] = {
-        .canID = CMR_CANID_HEARTBEAT_HVI,
+    [CANRX_HEARTBEAT_HVBMS] = {
+        .canID = CMR_CANID_HEARTBEAT_HV_BMS,
         .timeoutError_ms = 100,
-        .errorFlag = CMR_CAN_ERROR_VSM_MODULE_STATE,
+        .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
         .timeoutWarn_ms = 25,
-        .warnFlag = CMR_CAN_WARN_VSM_HVI_TIMEOUT
+        .warnFlag = CMR_CAN_WARN_VSM_HVBMS_TIMEOUT
+    },
+    [CANRX_HEARTBEAT_COMPUTE] = {
+        .canID = CMR_CANID_AS_HEARTBEAT_COMPUTE,
     },
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
@@ -72,26 +76,103 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
     },
-    [CANRX_INVERTER_1] = {
-        .canID = CMR_CANID_AMK_FL_ACT_1,
-        .timeoutError_ms = 500,
-        .timeoutWarn_ms = 250,
+    [CANRX_RES] = {
+            .canID = CMR_CANID_AS_RES,
+            .timeoutError_ms = 100,
+            .timeoutWarn_ms = 25,
+            .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT
     },
-    [CANRX_INVERTER_2] = {
-        .canID = CMR_CANID_AMK_FR_ACT_1,
-        .timeoutError_ms = 500,
-        .timeoutWarn_ms = 250,
+    [CANRX_AS_PRESSURE_READING] = {
+            .canID = CMR_CANID_AS_PRESSURE_READINGS,
+            .timeoutError_ms = 100,
+            .timeoutWarn_ms = 25,
     },
-    [CANRX_INVERTER_3] = {
-        .canID = CMR_CANID_AMK_RL_ACT_1,
-        .timeoutError_ms = 500,
-        .timeoutWarn_ms = 250,
+    [CANRX_ASMS_STATE] = {
+            .canID = CMR_CANID_ASMS_STATE,
+            .timeoutError_ms = 100,
+            .timeoutWarn_ms = 25,
     },
-    [CANRX_INVERTER_4] = {
-        .canID = CMR_CANID_AMK_RR_ACT_1,
-        .timeoutError_ms = 500,
-        .timeoutWarn_ms = 250,
-    }
+    [CANRX_DTI_ERROR_CODE] = {
+            .canID = CMR_CANID_DTI_ERROR_MESSAGES,
+            .timeoutError_ms = 100,
+            .timeoutWarn_ms = 75,
+            .warnFlag = CMR_CAN_WARN_NONE
+    },
+    [CANRX_FL_TEMPFAULT] = {
+        .canID = CMR_CANID_DTI_FL_TEMPFAULT,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_NONE,
+    },
+    [CANRX_FR_TEMPFAULT] = {
+        .canID = CMR_CANID_DTI_FR_TEMPFAULT,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_NONE,
+    },
+    [CANRX_RL_TEMPFAULT] = {
+        .canID = CMR_CANID_DTI_RL_TEMPFAULT,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_NONE,
+    },
+    [CANRX_RR_TEMPFAULT] = {
+        .canID = CMR_CANID_DTI_RR_TEMPFAULT,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_NONE,
+    },
+    [CANRX_FL_IO_STATUS] = {
+        .canID = CMR_CANID_DTI_FL_IO_STATUS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_NONE,
+    },
+    [CANRX_FR_IO_STATUS] = {
+        .canID = CMR_CANID_DTI_FR_IO_STATUS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_NONE,
+    },
+    [CANRX_RL_IO_STATUS] = {
+        .canID = CMR_CANID_DTI_RL_IO_STATUS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_NONE,
+    },
+    [CANRX_RR_IO_STATUS] = {
+        .canID = CMR_CANID_DTI_RR_IO_STATUS,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_NONE,
+    },
+    [CANRX_FL_ERPM] = {
+        .canID = CMR_CANID_DTI_FL_ERPM,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_NONE,
+    },
+    [CANRX_FR_ERPM] = {
+        .canID = CMR_CANID_DTI_FR_ERPM,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_NONE,
+    },
+    [CANRX_RL_ERPM] = {
+        .canID = CMR_CANID_DTI_RL_ERPM,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_NONE,
+    },
+    [CANRX_RR_ERPM] = {
+        .canID = CMR_CANID_DTI_RR_ERPM,
+        .timeoutError_ms = 100,
+        .timeoutWarn_ms = 75,
+        .warnFlag = CMR_CAN_WARN_NONE,
+    },
+    [CANRX_AS_MISSION_FINISHED] = {
+        .canID = CMR_CANID_AS_MISSION_FINISHED,
+    },
 };
 
 /**
@@ -102,16 +183,12 @@ cmr_canRXMeta_t canRXMeta[] = {
  *
  * @note Indexed by `canRX_t`.
  */
-const cmr_canVSMErrorSource_t vsmErrorSourceFlags[] = {
-    [CANRX_HEARTBEAT_HVC]       = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_HEARTBEAT_CDC]       = CMR_CAN_VSM_ERROR_SOURCE_CDC,
-    [CANRX_HEARTBEAT_DIM]       = CMR_CAN_VSM_ERROR_SOURCE_DIM,
-    [CANRX_FSM_DATA]            = CMR_CAN_VSM_ERROR_SOURCE_DIM,
-    [CANRX_DIM_REQUEST]         = CMR_CAN_VSM_ERROR_SOURCE_NONE, // Don't timeout based on DIM requests
-    [CANRX_INVERTER_1]          = CMR_CAN_VSM_ERROR_SOURCE_NONE, // Don't timeout inverter here
-    [CANRX_INVERTER_2]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_INVERTER_3]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
-    [CANRX_INVERTER_4]          = CMR_CAN_VSM_ERROR_SOURCE_NONE,
+const cmr_canVSMTimeoutErrorSource_t vsmErrorSourceFlags[CANRX_LEN] = {
+    [CANRX_HEARTBEAT_HVC]       = CMR_CAN_VSM_TIMEOUT_SOURCE_NONE,
+    [CANRX_HEARTBEAT_CDC]       = CMR_CAN_VSM_TIMEOUT_SOURCE_CDC,
+    [CANRX_HEARTBEAT_DIM]       = CMR_CAN_VSM_TIMEOUT_SOURCE_DIM,
+    [CANRX_HEARTBEAT_HVBMS]     = CMR_CAN_VSM_TIMEOUT_SOURCE_HVBMS,
+    [CANRX_FSM_DATA]            = CMR_CAN_VSM_TIMEOUT_SOURCE_DIM
 };
 
 /** @brief CAN 10 Hz TX priority. */
@@ -146,6 +223,8 @@ static cmr_task_t canTXLatchedStatus_task;
 /** @brief Primary CAN interface. */
 static cmr_can_t can;
 
+static bool detectedFirstError = false;
+
 // Forward declarations
 static void sendHeartbeat(TickType_t lastWakeTime);
 static void sendVSMStatus(void);
@@ -153,6 +232,9 @@ static void sendVSMSensors(void);
 static void sendVSMLatchedStatus(void);
 static void sendHVCCommand(void);
 static void sendPowerDiagnostics(void);
+static void sendRESEnable();
+static void sendEABStatus();
+void resetError();
 
 /**
  * @brief Task for sending CAN messages at 10 Hz.
@@ -167,6 +249,8 @@ static void canTX10Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendPowerDiagnostics();
+        sendRESEnable();
+        sendEABStatus();
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -255,8 +339,8 @@ void canInit(void) {
             .ids = {
                 0x100, // (msg_id & 0x7FC) == (0x100 & 0x7FC) matches 0x100, 0x101, 0x102, 0x103
                 0x100,
-                0x7FC, // upper 9 bits must match
-                0x7FC
+                0x7F0, // upper 9 bits must match
+                0x7F0
             }
         },
 
@@ -265,12 +349,21 @@ void canInit(void) {
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
                 CMR_CANID_FSM_DATA,
-                CMR_CANID_FSM_SWANGLE,
+                CMR_CANID_FSM_SWANGLE, //commented out?
                 CMR_CANID_DIM_REQUEST,
-                CMR_CANID_AMK_FL_ACT_1,
-                CMR_CANID_AMK_FR_ACT_1
             }
         },
+
+        {
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO0,
+            .ids = {
+                    CMR_CANID_AS_RES,
+                    CMR_CANID_AS_HEARTBEAT_COMPUTE,
+                    CMR_CANID_AUTONOMOUS_ACTION,
+                    CMR_CANID_AS_MISSION_FINISHED
+            }
+		},
 
         // ----------------------------------------------------------------------------------------
         // RX FIFO 1
@@ -289,12 +382,41 @@ void canInit(void) {
             .isMask = false,
             .rxFIFO = CAN_RX_FIFO1,
             .ids = {
-                CMR_CANID_AMK_RL_ACT_1,
-                CMR_CANID_AMK_RR_ACT_1,
-                CMR_CANID_AMK_RL_ACT_1,
-                CMR_CANID_AMK_RR_ACT_1
+                CMR_CANID_DTI_FL_IO_STATUS,
+                CMR_CANID_DTI_FR_IO_STATUS,
+                CMR_CANID_DTI_RL_IO_STATUS,
+                CMR_CANID_DTI_RR_IO_STATUS
             }
         },
+        {
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO1,
+            .ids = {
+                CMR_CANID_DTI_FL_TEMPFAULT,
+                CMR_CANID_DTI_FR_TEMPFAULT,
+                CMR_CANID_DTI_RL_TEMPFAULT,
+                CMR_CANID_DTI_RR_TEMPFAULT
+            }
+        },
+        {
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO1,
+            .ids = {
+                CMR_CANID_DTI_FL_ERPM,
+                CMR_CANID_DTI_FR_ERPM,
+                CMR_CANID_DTI_RL_ERPM,
+                CMR_CANID_DTI_RR_ERPM
+            }
+        },
+        {
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO1,
+            .ids = {
+                    CMR_CANID_AS_PRESSURE_READINGS,
+                    CMR_CANID_DTI_ERROR_MESSAGES,
+                    CMR_CANID_ASMS_STATE
+            }
+		},
     };
     cmr_canFilter(
         &can, canFilters, sizeof(canFilters) / sizeof(canFilters[0])
@@ -353,9 +475,7 @@ int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
  * @return Pointer to payload, or NULL if rxMsg is invalid.
  */
 void *getPayload(canRX_t rxMsg) {
-    if (rxMsg >= CANRX_LEN) {
-        return NULL; // TODO switch to configassert
-    }
+    configASSERT((uint16_t) rxMsg < (uint16_t) CANRX_LEN);
 
     cmr_canRXMeta_t *rxMeta = &(canRXMeta[rxMsg]);
 
@@ -373,12 +493,24 @@ void *getPayload(canRX_t rxMsg) {
  * @return State of the module when valid, otherwise CMR_CAN_STATE_UNKNOWN.
  */
 cmr_canState_t getModuleState(canRX_t module) {
-    if ((module >= CANRX_LEN) || (module == CANRX_HEARTBEAT_HVC)) {
-        return CMR_CAN_UNKNOWN; // TODO switch to configassert
-    }
+    configASSERT((module < CANRX_LEN) && (module != CANRX_HEARTBEAT_HVC));
 
     cmr_canHeartbeat_t *heartbeat = getPayload(module);
-    return (cmr_canState_t)(heartbeat->state);
+    uint8_t state = heartbeat->state;
+
+    return (cmr_canState_t)(state);
+}
+
+/**
+ * @brief Gets the ASMS from the AIM heartbeat 
+ * 
+ * @return true iff ASMS is on and in autonomous mode
+ */
+uint8_t getASMSState() {
+
+	uint8_t *as_state = (uint8_t*)getPayload(CANRX_ASMS_STATE);
+
+	return (*as_state);
 }
 
 /**
@@ -407,6 +539,16 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     canTX(CMR_CANID_HEARTBEAT_VSM, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
 }
 
+static void sendRESEnable() {
+    uint16_t res_enable = 1;
+    canTX(CMR_CANID_AS_RES_ENABLE, &res_enable, sizeof(res_enable), canTX100Hz_period_ms);
+}
+
+static void sendEABStatus() {
+    uint8_t eabStatus = cmr_gpioRead(GPIO_IN_EAB);
+    canTX(CMR_CANID_EAB_STATUS, &eabStatus, sizeof(eabStatus), canTX100Hz_period_ms);
+}
+
 /**
  * @brief Reflect current state onto the LV bus.
  *
@@ -430,8 +572,8 @@ static void sendVSMSensors(void) {
     cmr_canVSMSensors_t msg = {
         .brakePressureRear_PSI = cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI),
         .hallEffect_cA = cmr_sensorListGetValue(&sensorList, SENSOR_CH_HALL_EFFECT_CA),
-        .safetyIn_dV = 0,   // TODO
-        .safetyOut_dV = 0   // TODO
+        .safetyIn_V = cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_IN),
+        .safetyOut_V = cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_OUT)
     };
 
     canTX(CMR_CANID_VSM_SENSORS, &msg, sizeof(msg), canTX200Hz_period_ms);
@@ -479,4 +621,23 @@ static void sendPowerDiagnostics(void) {
     };
 
     canTX(CMR_CANID_VSM_POWER_DIAGNOSTICS, &msg, sizeof(msg), canTX10Hz_period_ms);
+}
+
+/**
+ * @brief Sends the first error state detected
+ */
+void sendFirstError(uint8_t error_code) {
+    // Read first error
+    if (!detectedFirstError) {
+        detectedFirstError = true;
+
+        canTX(CMR_CANID_VSM_FIRST_ERROR, &error_code, sizeof(error_code), canTX100Hz_period_ms);
+        return;
+    }
+
+    return;
+}
+
+void resetError() {
+    detectedFirstError = false;
 }

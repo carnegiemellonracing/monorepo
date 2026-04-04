@@ -18,8 +18,8 @@ typedef enum {
     NORMAL = 2,
     CONFIG = 3,
     dimStateERROR = 4,
-    RACING = 5
-    //SAFETY
+    RACING = 5,
+    AUTON = 6
 } cmr_state;
 
 /** @brief declaration of config screen variables */
@@ -35,9 +35,8 @@ extern volatile uint8_t config_paddle_right_request;
 #define TFT_STARTUP_MS 3000
 
 void reqVSM(void);
-
+void reqDRS(void);
 void reqGear(void);
-int getRequestedGear(void);
 
 int getMaxMotorTemp(void);
 int getACTemp(void);
@@ -46,6 +45,7 @@ bool DRSOpen(void);
 void exitConfigScreen();
 void stateGearUpdate(void);
 void stateDrsUpdate(void);
+void stateDVCtrlUpdate(void);
 cmr_canState_t stateGetVSM(void);
 cmr_canState_t stateGetVSMReq(void);
 
@@ -57,9 +57,12 @@ cmr_canGear_t stateGetGearReq(void);
 cmr_canDrsMode_t stateGetDrs(void);
 cmr_canDrsMode_t stateGetDrsReq(void);
 
+cmr_canDVMode_t stateGetDVMode(void);
+cmr_canDVMode_t stateGetDVReq(void);
+
 uint32_t get_test_message_id();
 
-float getSpeedKmh(void);
+uint8_t getSpeedKmh(void);
 
 float getOdometer(void);
 
@@ -68,7 +71,7 @@ typedef enum {
 	LV_LIPO,
 } lv_battery_type_t;
 
-uint8_t getLVSoC(float voltage, lv_battery_type_t battery_type);
+uint8_t getLVSoC(float voltage);
 
 bool getAcknowledgeButton(void);
 
@@ -82,9 +85,6 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq);
 // Declare the global variable
 extern cmr_state currState;
 extern cmr_state nextState;
-//testing
-// extern cmr_canGear_t currGear;
-// extern cmr_canGear_t reqGear;
 
 void stateMachineInit(void);
 

@@ -6,6 +6,9 @@
 #include <math.h>
 #include "motors.h"
 
+#include "sensoric.h"
+#include "26x_sensors.h"
+
 /** @brief  min brake pressure for starting to apply regen */
 const uint16_t brake_pressure_start = 50;
 
@@ -46,7 +49,7 @@ float getPackVoltage() {
     volatile cmr_canHVCPackVoltage_t *voltages = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
     const float batt_voltage_V = ((float)(voltages->battVoltage_mV)) * 1e-3f; // convert to volts
 
-    volatile cmr_canHVIHeartbeat_t *HVISense = canVehicleGetPayload(CANRX_TRAC_HVI_SENSE);
+    volatile cmr_canHVSense_t *HVISense = canVehicleGetPayload(CANRX_TRAC_HVI_SENSE);
     const float hv_voltage_V = ((float)(HVISense->packVoltage_cV)) * 1e-2f; // convert to volts
 
     // If HVI Sense hasn't timed out, use it. Otherwise, use batt voltage
@@ -62,26 +65,26 @@ float getPackVoltage() {
 float getPackCurrent() {
 //    volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
 //    return ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
-	volatile cmr_canHVIHeartbeat_t *HVISense = canVehicleGetPayload(CANRX_HVI_SENSE);
-	return (((float)(HVISense->packCurrent_dA)) * 1e-1f); // convert to amps
+	volatile cmr_canHVSense_t *HVISense = canVehicleGetPayload(CANRX_HVI_SENSE);
+	return (((float)(HVISense->packCurrent_dA)) * 1e-1f) + 1.25; // convert to amps
 }
 
 /** @brief returns the pack power measured by HVISense */
 float getHVISensePackPower() {
-    volatile cmr_canHVIHeartbeat_t *HVISense = canTractiveGetPayload(CANRX_HVI_SENSE);
+    volatile cmr_canHVSense_t *HVISense = canTractiveGetPayload(CANRX_HVI_SENSE);
     const int32_t pack_power_mW = ((int32_t)(HVISense->packCurrent_dA)) * ((int32_t)(HVISense->packVoltage_cV));
     return ((float)pack_power_mW) * 1e-3f; // convert to watts
 }
 
 /** @brief returns the voltage of the cell that has the highest voltage */
 float getMaxCellVoltage() {
-    volatile cmr_canHVCPackMinMaxCellVolages_t *minMaxCellVoltages = canVehicleGetPayload(CANRX_VEH_PACK_CELL_VOLTAGE);
+    volatile cmr_canBMSMinMaxCellVoltage_t *minMaxCellVoltages = canVehicleGetPayload(CANRX_VEH_PACK_CELL_VOLTAGE);
     return minMaxCellVoltages->maxCellVoltage_mV * 1e-3f; // convert to volts
 }
 
 /** @brief returns the voltage of the cell that has the lowest voltage */
 float getMinCellVoltage() {
-    volatile cmr_canHVCPackMinMaxCellVolages_t *minMaxCellVoltages = canVehicleGetPayload(CANRX_VEH_PACK_CELL_VOLTAGE);
+    volatile cmr_canBMSMinMaxCellVoltage_t *minMaxCellVoltages = canVehicleGetPayload(CANRX_VEH_PACK_CELL_VOLTAGE);
     return minMaxCellVoltages->minCellVoltage_mV * 1e-3f; // convert to volts
 }
 
@@ -94,18 +97,18 @@ float swAngleMillidegToSteeringAngleRad(int32_t swAngle_millideg) {
     return  steering_angle_rad; // convert to rads
 }
 
-/**
- * @brief Determine whether or not the SBG sensor's velocity readings could be trusted
- *
- * @param ignore_valid_bit Whether or not to ignore the sensor's reported validity of its velocity readings
- */
-bool canTrustSBGVelocity(bool ignore_valid_bit) {
-    const volatile cmr_canSBGStatus3_t *sbg_status = canDAQGetPayload(CANRX_DAQ_SBG_STATUS_3);
-    const uint32_t sbg_soln_status = sbg_status->solution_status;
-    const uint32_t sbg_vel_valid = sbg_soln_status & CMR_CAN_SBG_SOL_VELOCITY_VALID;
-    const bool sbg_timeout = cmr_canRXMetaTimeoutError(&canDaqRXMeta[CANRX_DAQ_SBG_STATUS_3], xTaskGetTickCount()) != 0;
-
-    return true;//!sbg_timeout && (sbg_vel_valid || ignore_valid_bit);
+// check for velocity
+bool canTrustVelocity(void) {
+    switch (sensors_get_source()) {
+        case SENSORS_SRC_MOVELLA:
+            return sensors_get_movella_state()->status.gnss_fix;
+        case SENSORS_SRC_SENSORIC: {
+            const volatile sensoric_state_t *s = sensors_get_sensoric_state();
+            return s && (s->vel_ang_sp.quality_ch0 > 0);
+        }
+        default:
+            return false;
+    }
 }
 
 // REGEN SEGMENT

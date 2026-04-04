@@ -5,36 +5,36 @@
  *      Author: sidsr
  */
 #include "bq_interface.h"
-#include "state_task.h"
 #include "uart.h"
 #include "gpio.h"
 #include <CMR/uart.h>
 #include <stm32f4xx_hal.h>
 #include <stdbool.h>
+#include <string.h> // memcpy
+
 
 #define SINGLE_DEVICE true
 #define MULTIPLE_DEVICE false
 
-extern volatile int BMBTimeoutCount[BOARD_NUM];
-extern volatile int BMBErrs[BOARD_NUM];
+extern volatile int BMBTimeoutCount[BOARD_NUM-1];
+extern volatile int BMBErrs[BOARD_NUM-1];
+
 
 //Fill in data to this array
-BMB_Data_t BMBData[BOARD_NUM];
+BMB_Data_t BMBData[BOARD_NUM-1];
 
-// forward declaration
-void txToRxDelay(uint8_t delay);
-void byteDelay(uint8_t delay);
+//balanced down to threshold after receiving bal command 
+bool firstBalDone[BOARD_NUM-1][VSENSE_CHANNELS]; 
+
+// CHANNEL_GPIO_TO_CELL_MAP[i][j] yields the corresponding cell number for 
+// ith mux setting and the jth GPIO channel. We choose to zero index the cell nums
+uint8_t CHANNEL_GPIO_TO_CELL_MAP [4][NUM_GPIO_CHANNELS]  = {{6, 3, 1, 255},
+                                                            {255, 255, 0, 5},
+                                                            {255, 4, 255, 255},
+                                                            {8, 255, 2, 7}};
 
 static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
 	BMBErrs[BMBIndex] = err;
-}
-
-__STATIC_INLINE void DWT_Delay_us(volatile uint32_t au32_microseconds)
-{
-  uint32_t au32_initial_ticks = DWT->CYCCNT;
-  uint32_t au32_ticks = (HAL_RCC_GetHCLKFreq() / 1000000);
-  au32_microseconds *= au32_ticks;
-  while ((DWT->CYCCNT - au32_initial_ticks) < au32_microseconds-au32_ticks);
 }
 
 __STATIC_INLINE void DWT_Delay_ms(volatile uint32_t au32_milliseconds)
@@ -45,8 +45,14 @@ __STATIC_INLINE void DWT_Delay_ms(volatile uint32_t au32_milliseconds)
   while ((DWT->CYCCNT - au32_initial_ticks) < au32_milliseconds);
 }
 
-void turnOn() {
+//forward declarations
+static inline bool sendUartStackWrite(  uint16_t registerAddress, 
+										uint8_t* data, 
+										uint8_t dataLen);
+void txToRxDelay(uint8_t delay);
+void byteDelay(uint8_t delay);
 
+bool turnOn() {
 
 	//Turn On Ping
 	// HAL_Delay(100);
@@ -96,7 +102,7 @@ void turnOn() {
 	};
 	res = uart_sendCommand(&sendWake);
 	if(res != UART_SUCCESS) {
-		return;
+		return false;
 	}
 
 	// HAL_Delay(1000);
@@ -115,7 +121,7 @@ void turnOn() {
 		};
 		res = uart_sendCommand(&hardReset);
 		if(res != UART_SUCCESS) {
-			return;
+			return false;
 		}
 
 		// HAL_Delay(200);
@@ -133,13 +139,13 @@ void turnOn() {
 
 	res = uart_sendCommand(&sendShutdown);
 	if(res != UART_SUCCESS) {
-		return;
+		return false;
 	}
 
 	// HAL_Delay(1000);
 	DWT_Delay_ms(1000);
 
-
+	return true;
 }
 
 /** Auto Address Function
@@ -343,49 +349,28 @@ bool enableNumCells() {
 
 // Enable all GPIO registers and TSREF for thermistor biasing
 bool enableGPIOPins() {
-	uart_command_t enable_tsref = {
-			.readWrite = STACK_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!
-			.registerAddress = CONTROL2,
-			.data = {0x01}, //enable TSREF for NTC Thermistor Biasing
-			.crc = {0x00, 0x00}
-	};
-	cmr_uart_result_t res = uart_sendCommand(&enable_tsref);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
 
-	//enable GPIO inputs
-	uart_command_t enable_gpio = {
-			.readWrite = STACK_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!
-			.registerAddress = GPIO_CONF3,
-			.data = {0x12},
-			.crc = {0x00, 0x00}
-	};
-	res = uart_sendCommand(&enable_gpio);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
-	enable_gpio.registerAddress = GPIO_CONF4;
-	res = uart_sendCommand(&enable_gpio);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
+    //enableTSref
+    uint8_t dataToSend = 0x01;
+    if (!sendUartStackWrite(CONTROL2, &dataToSend, 1))
+        return false;
 
+    // configures GPIO 5 and 6 as analog input
+    dataToSend = 0x12;
+    if (!sendUartStackWrite(GPIO_CONF3, &dataToSend, 1))
+        return false;
 
-	//enable MUX outputs as low initially
-	enable_gpio.registerAddress = GPIO_CONF2;
-	enable_gpio.data[0] = 0x2D;
-	res = uart_sendCommand(&enable_gpio);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
+    // configures GPIO 7 and 8 as analog input
+    dataToSend = 0x12;
+    if (!sendUartStackWrite(GPIO_CONF4, &dataToSend, 1))
+        return false;
+
+    //enable MUX outputs as low initially
+    dataToSend = 0x2D;
+    if (!sendUartStackWrite(GPIO_CONF2, &dataToSend, 1))
+      return false;
 
 	return true;
-
 }
 
 // Enable command timeout so BQ sleeps turns off when car is off
@@ -423,8 +408,9 @@ void BMBInit() {
 	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 
-	//No idea lol
-	txToRxDelay(100);
+	//Unsure about this value. I believe it should not matter much
+	txToRxDelay(10);
+
 	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 	byteDelay(0x3F);
@@ -445,31 +431,27 @@ static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
 
 //return voltage data
 uint8_t pollAllVoltageData() {
+  uint8_t toReadLen = VSENSE_CHANNELS*2-1;
 	uart_command_t read_voltage = {
 			.readWrite = STACK_READ,
 			.dataLen = 1,
 			.deviceAddress = 0xFF, //not used!
 			.registerAddress = TOP_CELL,
-			.data = {VSENSE_CHANNELS*2-1}, //reading high and low for cell 0-VSENSE_CHANNELS
+			.data = {toReadLen}, //reading high and low for cell 0-VSENSE_CHANNELS
 			.crc = {0xFF, 0xFF}
 		};
 
 		uart_response_t response[BOARD_NUM-1];
-
-		//TODO add tx error handler
-
-		int x= 0;
-
 		// Critical section used so UART RX is not preempted
 		taskENTER_CRITICAL();
 		uart_sendCommand(&read_voltage);
 		//loop through each BMB and channel
 		for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
 
-			uint8_t status = uart_receiveResponse(&response[i-1], 27);
+			uint8_t status = uart_receiveResponse(&response[i-1], toReadLen);
 			if(status != 0) {
-				//setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
-				//BMBTimeoutCount[i-1]+=1;
+				// setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
+				// BMBTimeoutCount[i-1]+=1;
 				DWT_Delay_ms(10000);
 				RXTurnOnInit();
 				BMBInit();
@@ -486,21 +468,21 @@ uint8_t pollAllVoltageData() {
 				uint8_t low_byte_data = response[i].data[2*j+1];
 
 				BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = calculateVoltage(high_byte_data, low_byte_data);
-				if(i == 1 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				} else if(i == 3 && (VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				} else if(i == 4 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				} else if(i == 2 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-				}
-				if(i == 2 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-									BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
-								}
-				if(i == 3 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
-				}
+				// if(i == 1 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+				// 	BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
+				// } else if(i == 3 && (VSENSE_CHANNELS-j-1 == 13)) {
+				// 	BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
+				// } else if(i == 4 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+				// 	BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
+				// } else if(i == 2 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+				// 	BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
+				// }
+				// if(i == 2 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+				// 					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
+				// 				}
+				// if(i == 3 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
+				// 	BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
+				// }
 			}
 		}
 
@@ -525,25 +507,23 @@ bool setMuxOutput(uint8_t channel) {
 	default:
 		return false;
 	}
-	uart_command_t enable_gpio = {
-			.readWrite = STACK_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!
-			.registerAddress = GPIO_CONF2,
-			.data = {data},
-			.crc = {0x00, 0x00}
-	};
-	cmr_uart_result_t res = uart_sendCommand(&enable_gpio);
-	if(res != UART_SUCCESS) {
-		return false;
+
+    // set the Mux output
+    if (!sendUartStackWrite(GPIO_CONF2, &data, 1)) {
+    	return false;
 	}
+    
 	return true;
 }
 
-static int16_t calculateTemp(uint8_t msb, uint8_t lsb) {
+// For efficiency we choose to do as little computation as possible here and 
+// just compute voltage. To convert from voltage to temperature we would need
+// to do the Steinhart equation which is very expensive. However, since the
+// Steinhart is strictly decreasing we are able to simply probe the voltage
+// values for the hottest and coldest cells. The transfer function should be 
+// on PCAN to convert to temperature for easy viewing
+static int16_t calculateTempVoltageReading(uint8_t msb, uint8_t lsb) {
 	int16_t voltage_mv = (uint16_t)((0.15259) * (((int16_t) msb << 8) | lsb));
-//    uint32_t resistance_centiOhm = (47 * voltage_mv) / (5000 - voltage_mv); // Calculate the resistance of thermistor
-//    uint32_t temp = (resistance_centiOhm*resistance_centiOhm) * 46 - (resistance_centiOhm) * 11303 + 905666;
     return (voltage_mv);
 }
 
@@ -562,45 +542,37 @@ void pollAllTemperatureData(int channel) {
 
 	uart_response_t response[BOARD_NUM-1];
 
-
-
 	for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
-		if(uart_receiveResponse(&response[i-1], 7) == UART_FAILURE) {
+		if(uart_receiveResponse(&response[i-1], 7) != 0) {
 				//loop through each GPIO channel
 			setBMBErr(i-1, BMB_TEMP_READ_ERROR);
 			BMBTimeoutCount[i-1]+=1;
+			taskEXIT_CRITICAL();
 			return;
 		}
 	}
 	taskEXIT_CRITICAL();
 
-
 	for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
 		for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; k++) {
+            uint8_t cellNum = CHANNEL_GPIO_TO_CELL_MAP[channel][k];
+            if (cellNum == 255)
+                continue;
+
 			uint8_t high_byte_data = response[i].data[2*k];
 			uint8_t low_byte_data = response[i].data[2*k+1];
-			size_t index = (4*channel) + k;
-			//TODO: make sure this is matching the thermistor indices properly
+            int16_t cellTempVoltageReading = calculateTempVoltageReading(high_byte_data, low_byte_data);
 
-			if (index == 3 || index == 10) {
-				continue;
+			if (cellTempVoltageReading < 4990){
+				BMBData[i].cellTemperaturesVoltageReading[cellNum] = cellTempVoltageReading;
 			}
 
-			if (index > 10) {
-				index--;
-			}
-
-			if (index > 3) {
-				index--;
-			}
-
-			BMBData[i].cellTemperatures[index] = calculateTemp(high_byte_data, low_byte_data);
 		}
 	}
 	return;
 }
 
-void cellBalancingSetup() {
+bool cellBalancingSetup() {
 	//set up cell balancing timers
 	//done in two sets because max register write is 8 :(
 
@@ -624,157 +596,135 @@ void cellBalancingSetup() {
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = BAL_CTRL1,
-		.data = {0x01}, //TODO what is this value supposed to be?
+		.data = {0x00}, //TODO what is this value supposed to be?
 		.crc = {0x00, 0x00}
 	};
 	res = uart_sendCommand(&duty_cycle);
 
-	//set UV stuff for stopping balancing to default at 4.2 volts
-	uart_command_t UV = {
-		.readWrite = STACK_WRITE,
-		.dataLen = 1,
-		.deviceAddress = 0xFF, //not used!
-		.registerAddress = VCB_DONE_THRESH,
-		.data = {0x3F}, //TODO figure out correct low value
-		.crc = {0x00, 0x00}
-	};
-	//res = uart_sendCommand(&UV);
-
-	UV.registerAddress = OVUV_CTRL;
-	UV.data[0] = 0x05;
-
-	//res = uart_sendCommand(&UV);
 
 }
 
-bool getBalDone() {
-	uart_command_t getBalDone = {
+/**
+ * @brief Checks the cell balancing status across all BMBs.
+ *
+ * Sends a UART read command to the BAL_STAT register to determine if 
+ * any board is currently performing cell balancing (checking the CB_RUN bit).
+ * This function enters a critical section to ensure UART RX integrity.
+ *
+ * @return int
+ * 1 : Balancing is complete (all boards are idle).
+ * 0 : Balancing is in progress (at least one board is active).
+ * -1 : Error occurred (UART transmission or reception failure).
+ */
+ int getBalDone() {
+
+	uart_command_t getBalStatus = {
 		.readWrite = STACK_READ,
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
-		.registerAddress = CB_COMPLETE1,
-		.data = {0x02},
-		.crc = {0x00, 0x00}
+		.registerAddress = BAL_STAT,
+		.data = {1}, 
+		.crc = {0xFF, 0xFF}
 	};
-	bool shitter = false;
-	uart_sendCommand(&getBalDone);
-	uart_response_t response[BOARD_NUM-1];
+
+	uart_response_t response[BOARD_NUM-1] = {0};
+
+	// Critical section used so UART RX is not preempted
+	taskENTER_CRITICAL();
+
+	cmr_uart_result_t res = uart_sendCommand(&getBalStatus);
+	if (res != UART_SUCCESS)
+		return -1; 
+
+	//loop through each BMB and channel
 	for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
-		uint8_t status = uart_receiveResponse(&response[i-1], 2);
-		if(status != 0) {
-			shitter = false;
-		}
-		else if(i != 7 && (response[i-1].data[0] != 0 || response[i-1].data[1] != 0)) {
-			shitter = true;
-		}
+		uint8_t status = uart_receiveResponse(&response[i-1], 1);
+		if (status == 1) {
+			return -1; 
+		} 
 	}
-	return shitter;
+	taskEXIT_CRITICAL();
+	
+	// determines if we are done balancing
+	bool doneBalancing = 1;
+	for(uint8_t i = 0; i < BOARD_NUM-1; i++) {
+		if ((response[i].data[0] & 8) == 8) //CB_RUN is 1 
+			doneBalancing = 0;
+	}
+	
+	return doneBalancing; 
 
 }
 
 void cellBalancing(bool set, uint16_t thresh) {
 	cmr_uart_result_t res;
 
-	uart_command_t enable = {
-		.readWrite = STACK_WRITE,
-		.dataLen = 1,
-		.deviceAddress = 0xFF, //not used!
-		.registerAddress = BAL_CTRL2,
-		.data = {0x03},
-		.crc = {0x00, 0x00}
-	};
-
-
-	if(set) {
-		if(thresh >= 4250 || thresh <= 2450) {
-			thresh = 3700;
-		}
-		//board index by 0 but don't send to interface chip
-		for(int i = 0; i < BOARD_NUM-1; i++) {
-			thresh = 0;
-			for(int j = 0; j < VSENSE_CHANNELS; j++) {
-				if(BMBData[i].cellVoltages[j] > thresh) {
-					thresh = BMBData[i].cellVoltages[j];
-				}
-			}
-			thresh = thresh - 10;
-			uart_command_t balance_register = {
-				.readWrite = SINGLE_WRITE,
-				.dataLen = VSENSE_CHANNELS/2,
-				.deviceAddress = i+1,
-				.registerAddress = CB_CELL14_CTRL,
-				.data = {0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04},
-				.crc = {0x00, 0x00}
-			};
-			for(int j = 13; j > 6; j--) {
-				if(BMBData[i].cellVoltages[j] < thresh) {
-					balance_register.data[13-j] = 0x00;
-				}
-			}
-			res = uart_sendCommand(&balance_register);
-			balance_register.registerAddress = CB_CELL7_CTRL;
-			for(int j = 0; j < 7; j++) {
-				balance_register.data[j] = 0x04;
-			}
-			for(int j = 6; j >=0 ; j--) {
-				if(BMBData[i].cellVoltages[j] < thresh) {
-					balance_register.data[6-j] = 0x00;
-				}
-			}
-			res = uart_sendCommand(&balance_register);
-		}
-		//set duty cycle to switch between even and odd cells
-//		uart_command_t duty_cycle = {
-//			.readWrite = STACK_WRITE,
-//			.dataLen = 1,
-//			.deviceAddress = 0xFF, //not used!
-//			.registerAddress = BAL_CTRL1,
-//			.data = {0x01}, //TODO what is this value supposed to be?
-//			.crc = {0x00, 0x00}
-//		};
-//		res = uart_sendCommand(&duty_cycle);
-
-		//see bq datasheet in register VCB_DONE_THRESH, maps threshold in 25 mv increments
-		//between 245 mV and 4000 mV
-		uint8_t threshIndex = (uint8_t)((thresh - 2450)/25.0) + 1;
-
-		//set UV stuff for stopping balancing based on parameter
-		uart_command_t UV = {
-			.readWrite = STACK_WRITE,
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!
-			.registerAddress = VCB_DONE_THRESH,
-			.data = {0x1},
-			.crc = {0x00, 0x00}
-		};
-		enable.data[0] = 0x03;
-//		res = uart_sendCommand(&UV);
-//		TickType_t lastTime = xTaskGetTickCount();
-//		vTaskDelayUntil(&lastTime, 1);
-
-		UV.registerAddress = OVUV_CTRL;
-		UV.data[0] = 0x05;
-//		res = uart_sendCommand(&UV);
-//		lastTime = xTaskGetTickCount();
-//		vTaskDelayUntil(&lastTime, 1);
-
+	if (thresh >= 4250 || thresh <= 2450) {
+		thresh = 3700;
 	}
-	else {
+
+	// board index by 0 but don't send to interface chip
+	for(int i = 0; i < BOARD_NUM-1; i++) {
+		// selections for cells--0x04 to balance for 5 minute intervals
+		uint8_t top_len; 
+
+		//balance cells above 8 
+		if (VSENSE_CHANNELS > 8) { 
+			top_len = VSENSE_CHANNELS - 8; 
+		} else {
+			top_len = 0; 
+		}
+
+		//decide which cells to balance before starting balancing. Inits to 10s 
+		uint8_t cell_selects[] = {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 
+			0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01}; 
+
+		// disable selected cells below threshold 
+		uint16_t cell_thresh = thresh; 
+		for (int j = 0; j < VSENSE_CHANNELS; j ++) {
+			//if we've already finished balancing once, threshold is mincell + 10 instead of mincell + 5
+			if (firstBalDone[i][VSENSE_CHANNELS-1-j]) {
+				cell_thresh += 5; 
+			}
+			//check to see which ones we turn don't need to balance 
+			if ((BMBData[i].cellVoltages[VSENSE_CHANNELS-1-j] < cell_thresh) || !set) {
+				cell_selects[j] = 0x00;
+			} else if (!firstBalDone[i][VSENSE_CHANNELS-1-j]){ //first time we've finished balancing this cell 
+				firstBalDone[i][VSENSE_CHANNELS-1-j] = true; 
+			}
+		}
+
+		//balance top length
 		uart_command_t balance_register = {
-			.readWrite = STACK_WRITE,
-			.dataLen = VSENSE_CHANNELS/2,
-			.deviceAddress = 0xFF, //not used!
-			.registerAddress = CB_CELL14_CTRL,
-			.data = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+			.readWrite = SINGLE_WRITE,
+			.dataLen = top_len,
+			.deviceAddress = i+1,
+			.registerAddress = TOP_CELL_CB_ADDR,
 			.crc = {0x00, 0x00}
 		};
-		cmr_uart_result_t res;
-		res = uart_sendCommand(&balance_register);
+		if (top_len > 0){
+			memcpy(balance_register.data, cell_selects, top_len);
+			res = uart_sendCommand(&balance_register);
+		}
 
-		balance_register.registerAddress = CB_CELL7_CTRL;
-		res = uart_sendCommand(&balance_register);
+		//balance bottom 
+		uint8_t bottom_len = 8; 
+		balance_register.registerAddress = CB_CELL8_CTRL; 
+
+		if (VSENSE_CHANNELS < 8){
+			bottom_len = VSENSE_CHANNELS; 
+			balance_register.registerAddress = TOP_CELL_CB_ADDR; 
+		}
+
+		balance_register.dataLen = bottom_len; 
+		balance_register.registerAddress = CB_CELL8_CTRL; 
+		memcpy(balance_register.data, &(cell_selects[top_len]), bottom_len);
+		res = uart_sendCommand(&balance_register); 
 	}
-	res = uart_sendCommand(&enable);
+		
+	uint8_t toSend = 3;
+	sendUartStackWrite(BAL_CTRL2, &toSend, 1);
+
 }
 
 void writeLED(bool set) {
@@ -851,4 +801,37 @@ void twoStop() {
 }
 
 
+/**
+ * @brief Send a UART "stack write" command to the device.
+ *
+ * Constructs a STACK_WRITE uart_command_t with the provided register
+ * address and data payload, then transmits it over UART.
+ *
+ * @note I (Ayush Garg) added this function during 2025 to clean up code
+ * that I write although there is much legacy code that does not utilize
+ * this helper function
+ *
+ * @param registerAddress 16-bit register address to write to.
+ * @param data            Pointer to the data buffer to be written.
+ * @param dataLen         Number of bytes in the data buffer.
+ *
+ * @return true if the UART command was sent successfully (UART_SUCCESS),
+ *         false otherwise.
+ */
+static inline bool sendUartStackWrite(  uint16_t registerAddress, 
+										uint8_t* data, 
+										uint8_t dataLen) {
+	uart_command_t stackWriteCmd = {
+        .readWrite = STACK_WRITE,
+        .dataLen = dataLen,
+        .deviceAddress = 0xFF, //not used!
+        .registerAddress = registerAddress,
+        .crc = {0x00, 0x00}
+	};
+
+  memcpy(stackWriteCmd.data, data, dataLen);
+
+	cmr_uart_result_t res = uart_sendCommand(&stackWriteCmd);
+    return (res == UART_SUCCESS);
+}
 

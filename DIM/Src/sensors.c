@@ -11,8 +11,10 @@
 
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
-#include <math.h>       // tanh()
+#include <CMR/utils.h>  // Task interface
+#include <stdint.h>
 #include <stdlib.h>     // abs()
+#include <stdint.h>
 
 #include "adc.h"   // Board-specific ADC interface
 #include "can.h"   // Board-specific CAN interface
@@ -20,6 +22,25 @@
 
 /** @brief Number of samples for current measurement rolling average. */
 #define BUS_CURRENT_SAMPLES 10
+
+/** @brief  Experimentally determined left TPOS ADC Minimum*/
+#define LEFT_TPOS_MIN_ADC 2280
+
+/** @brief  Experimentally determined left TPOS ADC Maximum*/
+#define LEFT_TPOS_MAX_ADC 3840
+
+/** @brief  Experimentally determined right TPOS ADC Minimum*/
+#define RIGHT_TPOS_MIN_ADC 40
+
+/** @brief  Experimentally determined right TPOS ADC Maximum*/
+#define RIGHT_TPOS_MAX_ADC 1850
+
+#define LEFT_SWANGLE_MIN_ADC 360.0f
+#define CENTER_SWANGLE_ADC 1640.0f
+#define RIGHT_SWANGLE_MAX_ADC 2850.0f
+
+#define MAX_OUTER_WHEEL_ANGLE_MILLIDEG 25282.0f
+#define MAX_INNER_WHEEL_ANGLE_MILLIDEG 30139.0f
 
 /** @brief See FSAE rule T.6.2.3 for definition of throttle implausibility. */
 static const TickType_t TPOS_IMPLAUS_THRES_MS = 100;
@@ -50,6 +71,8 @@ const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
     [SENSOR_CH_SWANGLE_DEG_FR] = ADC_SWANGLE,
 	[SENSOR_CH_X] = ADC_X,
 	[SENSOR_CH_Y] = ADC_Y,
+    [SENSOR_CH_EBS_1] = ADC_EBS_1,
+	[SENSOR_CH_EBS_2] = ADC_EBS_2,
     [SENSOR_CH_TPOS_IMPLAUS] = ADC_LEN  // Not an ADC channel!
 };
 
@@ -86,7 +109,6 @@ static uint32_t sampleADCSensorSwangle(const cmr_sensor_t *sensor) {
 }
 
 
-
 /**
  * @brief Rescales ADC value from 12 bit to 8 bit.
  *
@@ -96,23 +118,9 @@ static uint32_t sampleADCSensorSwangle(const cmr_sensor_t *sensor) {
  * @return Value of sensor, rescaled to 0-255.
  */
 static int32_t adcToUInt8(const cmr_sensor_t *sensor, uint32_t reading) {
-    int32_t sensorVal = 0;
-    if (reading >= sensor->readingMax) {
-        sensorVal = UINT8_MAX;
-    } else if (reading <= sensor->readingMin) {
-        sensorVal = 0;
-    } else {
-        uint32_t sensorRange = sensor->readingMax - sensor->readingMin;
-        uint32_t readingFromZero = reading - sensor->readingMin;
-        // If UINT8_MAX * readingFromZero will overflow, do division first
-        if (UINT32_MAX / readingFromZero < UINT8_MAX) {
-            sensorVal = readingFromZero / sensorRange * UINT8_MAX;
-        } else {
-            sensorVal = UINT8_MAX * readingFromZero / sensorRange;
-        }
-    }
-
-    return sensorVal;
+    uint32_t clamped_val = CLAMP(sensor->readingMin, reading, sensor->readingMax);
+    int32_t ret_val = INVLERP_SCALED(sensor->readingMin, sensor->readingMax, clamped_val, UINT8_MAX);
+    return ret_val;
 }
 
 /**
@@ -165,14 +173,16 @@ static int32_t adcToYaw_FL(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 
     // millideg
-    if(reading >= 2130){
-        float swangle_millideg = ((-0.0145f * (float)reading)+30.4f) * 1000;
-        int32_t retval = (int32_t)swangle_millideg;
+    if(reading >= CENTER_SWANGLE_ADC){
+        // left is outer wheel
+        float FL_angle_millideg = INVLERP_SCALED(CENTER_SWANGLE_ADC, RIGHT_SWANGLE_MAX_ADC, reading, MAX_OUTER_WHEEL_ANGLE_MILLIDEG);
+        int32_t retval = (int32_t)FL_angle_millideg;
         return retval;
     }
     else {
-        float swangle_millideg = ((-0.0217f * (float)reading)+44.7f) * 1000;
-        int32_t retval = (int32_t)swangle_millideg;
+        // left is inner wheel
+        float FL_angle_millideg = INVLERP_SCALED(CENTER_SWANGLE_ADC, LEFT_SWANGLE_MIN_ADC, reading, MAX_INNER_WHEEL_ANGLE_MILLIDEG);
+        int32_t retval = -(int32_t)FL_angle_millideg;
         return retval;
     }
 }
@@ -181,14 +191,16 @@ static int32_t adcToYaw_FR(const cmr_sensor_t *sensor, uint32_t reading) {
     (void) sensor;
 
     // millideg
-    if(reading >= 2040){
-        float swangle_millideg = ((-0.0214f * (float)reading)+44.1f) * 1000;
-        int32_t retval = (int32_t)swangle_millideg;
+    if(reading >= CENTER_SWANGLE_ADC){
+        // right is inner wheel
+        float FR_angle_millideg = INVLERP_SCALED(CENTER_SWANGLE_ADC, RIGHT_SWANGLE_MAX_ADC, reading, MAX_INNER_WHEEL_ANGLE_MILLIDEG);
+        int32_t retval = (int32_t)FR_angle_millideg;
         return retval;
     }
-    else{
-        float swangle_millideg = ((-0.0165f * (float)reading)+33.6f) * 1000;
-        int32_t retval = (int32_t)swangle_millideg;
+    else {
+        // right is outer wheel
+        float FR_angle_millideg = INVLERP_SCALED(CENTER_SWANGLE_ADC, LEFT_SWANGLE_MIN_ADC, reading, MAX_OUTER_WHEEL_ANGLE_MILLIDEG);
+        int32_t retval = -(int32_t)FR_angle_millideg;
         return retval;
     }
 }
@@ -252,7 +264,7 @@ static int32_t adcToAvgBusCurrent_mA(const cmr_sensor_t *sensor, uint32_t readin
     return (int32_t)currentSamplesSum_mA / BUS_CURRENT_SAMPLES;
 }
 
-/**
+/** 
  * @brief Samples whether the throttle position is implausible.
  *
  * @param sensor The sensor (ignored).
@@ -266,14 +278,10 @@ static uint32_t sampleTPOSDiff(const cmr_sensor_t *sensor) {
     static TickType_t lastPlausible = 0;
     TickType_t now = xTaskGetTickCount();
 
-    uint32_t diff;
-    uint32_t leftPosition = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_L_U8);
-    uint32_t rightPosition = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_R_U8);
-    if (leftPosition > rightPosition) {
-        diff = leftPosition - rightPosition;
-    } else {
-        diff = rightPosition - leftPosition;
-    }
+    uint8_t diff;
+    uint8_t leftPosition = (uint8_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_L_U8);
+    uint8_t rightPosition = (uint8_t)  cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_R_U8);
+    diff = abs(leftPosition - rightPosition);
 
     if (diff < TPOS_IMPLAUS_THRES) {
         // Still plausible; move on.
@@ -287,6 +295,22 @@ static uint32_t sampleTPOSDiff(const cmr_sensor_t *sensor) {
     }
 
     return 1;  // Implausible!
+}
+
+int32_t adcToEBSBrakePressure_psi(const cmr_sensor_t *sensor, uint32_t reading) {
+    (void)sensor;  // Placate compiler.
+
+    uint32_t reading_mV_3v3 = reading * 3300 / 4096;
+    // Values come from a 9.1K and 4.7k voltage divider
+    uint32_t reading_mV  = reading_mV_3v3 * 138 / 91;
+
+    const uint32_t lower_bound_mV = 500; // voltage at 0 bar
+    const uint32_t upper_bound_mV = 4500; // voltage at 100 bar
+    const uint32_t max_pressure_bar = 100; // voltage at 0 bar
+    uint32_t clamped_reading_mV = CLAMP (lower_bound_mV, reading_mV, upper_bound_mV);
+    uint32_t reading_bar = INVLERP_SCALED(lower_bound_mV,upper_bound_mV, clamped_reading_mV, max_pressure_bar);
+    
+    return (uint16_t)reading_bar;
 }
 
 /**
@@ -320,17 +344,43 @@ static uint32_t sampleBrakeImplaus(const cmr_sensor_t *sensor) {
 }
 
 
+/**
+ * @brief Gets average throttle position.
+ *
+ * @note If either sensor has an error or the throttle position is implausible,
+ * 0 is returned.
+ *
+ * @return Throttle position (0-255, inclusive).
+ */
+uint8_t throttleGetPos(void) {
+    if (/* cmr_sensorListGetError(&sensorList, SENSOR_CH_TPOS_L) != CMR_SENSOR_ERR_NONE ||
+        cmr_sensorListGetError(&sensorList, SENSOR_CH_TPOS_R) != CMR_SENSOR_ERR_NONE || */
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_IMPLAUS) != 0) {
+        return 0;
+    }
+
+    uint8_t tposL = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_L_U8);
+    uint8_t tposR = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_R_U8);
+
+    return (uint8_t) MIN(tposL, tposR);
+}
 
 
 static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     [SENSOR_CH_TPOS_L_U8] = {
         .conv = adcToUInt8,
         .sample = sampleADCSensor,
-        .readingMin = 200,
-        .readingMax = 2320,
+        .readingMin = LEFT_TPOS_MIN_ADC,
+        .readingMax = LEFT_TPOS_MAX_ADC,
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_FSM_TPOS_L },
-    [SENSOR_CH_TPOS_R_U8] = { .conv = adcToUInt8, .sample = sampleADCSensor, .readingMin = 200, .readingMax = 2280, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_TPOS_R },
+    [SENSOR_CH_TPOS_R_U8] = { 
+        .conv = adcToUInt8, 
+        .sample = sampleADCSensor, 
+        .readingMin = RIGHT_TPOS_MIN_ADC, 
+        .readingMax = RIGHT_TPOS_MAX_ADC, 
+        .outOfRange_pcnt = 10, 
+        .warnFlag = CMR_CAN_WARN_FSM_TPOS_R },
     [SENSOR_CH_BPOS_U8] = { .conv = adcToUInt8, .sample = sampleADCSensor, .readingMin = 365, .readingMax = 1651, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_BPOS },
     [SENSOR_CH_BPRES_PSI] = { .conv = adcToBPres_PSI, .sample = sampleADCSensor, .readingMin = 0, .readingMax = CMR_ADC_MAX, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_BPRES },
     [SENSOR_CH_SWANGLE_DEG_FL] = { .conv = adcToYaw_FL, .sample = sampleADCSensorSwangle, .readingMin = SWANGLE_90DEG_LEFT, .readingMax = SWANGLE_90DEG_RIGHT, .outOfRange_pcnt = 10, .warnFlag = CMR_CAN_WARN_FSM_SWANGLE },
@@ -343,7 +393,7 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_BUS_VOLTAGE,
     },
-    [SENSOR_CH_AVG_CURRENT_MA] = { .conv = adcToAvgBusCurrent_mA, .sample = sampleADCSensor,
+    [SENSOR_CH_CURRENT_MA] = { .conv = adcToAvgBusCurrent_mA, .sample = sampleADCSensor,
                                    .readingMin = 250,   // 10 mA
                                    .readingMax = 2500,  // 100 mA
                                    .outOfRange_pcnt = 10,
@@ -361,7 +411,14 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 					  .readingMax = 4096,},
 	[SENSOR_CH_Y] = { .conv = NULL, .sample = sampleADCSensor,
 				  .readingMin = 0,
+				  .readingMax = 4096,},
+    [SENSOR_CH_EBS_1] = { .conv = adcToEBSBrakePressure_psi, .sample = sampleADCSensor,
+					  .readingMin = 0,
+					  .readingMax = 4096,},
+	[SENSOR_CH_EBS_2] = { .conv = adcToEBSBrakePressure_psi, .sample = sampleADCSensor,
+				  .readingMin = 0,
 				  .readingMax = 4096,}
+    
 };
 
 /** @brief Sensors update priority. */
@@ -407,30 +464,3 @@ void sensorsInit(void) {
         sensorsUpdate,
         NULL);
 }
-
-/**
- * @brief Gets average throttle position.
- *
- * @note If either sensor has an error or the throttle position is implausible,
- * 0 is returned.
- *
- * @return Throttle position (0-255, inclusive).
- */
-uint8_t throttleGetPos(void) {
-    if (/* cmr_sensorListGetError(&sensorList, SENSOR_CH_TPOS_L) != CMR_SENSOR_ERR_NONE ||
-        cmr_sensorListGetError(&sensorList, SENSOR_CH_TPOS_R) != CMR_SENSOR_ERR_NONE || */
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_IMPLAUS) != 0) {
-        return 0;
-    }
-
-    uint8_t tposL = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_L_U8);
-    uint8_t tposR = cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_R_U8);
-
-    if ((tposL == 0) || (tposR == 0)) {
-        return 0;
-    }
-
-    return (uint8_t)((tposL + tposR) / 2);
-}
-
-

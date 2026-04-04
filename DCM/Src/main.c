@@ -25,6 +25,8 @@
 #include "servo.h"
 #include "lut.h"
 #include "brakelight.h"
+#include "steering.h"
+#include "pumps.h"
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -57,14 +59,6 @@ static void statusLED(void *pvParameters) {
   while (1) {
     cmr_gpioToggle(GPIO_LED_STATUS);
 
-    // cmr_canVSMSensors_t *vsmSensors = canVehicleGetPayload(CANRX_VSM_SENSORS);
-
-    // if (vsmSensors->brakePressureRear_PSI > brakeLightThreshold_PSI) {
-    //         cmr_gpioWrite(GPIO_BRKLT_ENABLE, 1);
-    //     } else {
-    //         cmr_gpioWrite(GPIO_BRKLT_ENABLE, 0);
-    //     }
-
     vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
   }
 }
@@ -76,7 +70,8 @@ static void statusLED(void *pvParameters) {
  *
  * @return Does not return.
  */
-int main(void) {
+
+    int main(void) {
 
    	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
     DWT->LAR = 0xC5ACCE55;
@@ -90,42 +85,15 @@ int main(void) {
     // time_OSQPControls(0, 0, 0, 0, 0, 0, true, true, false, 0);
 
     // Peripheral configuration.
-
     gpioInit();
-    i2cInit();
+    // i2cInit();
     canInit();
     adcInit();
-    servoInit();
+    // // servoInit();
     motorsInit();
     sensorsInit();
     brakelightInit();
-
-
-    // // Tests for computing kappa.
-    // kappaAndFx results_ref[256];
-    // Fx_kappa_t results[256];
-    // for(int i = 0; i < 256; i++)
-    // {
-    //   results_ref[i] = getKappaFxGlobalMax(MOTOR_FL, i, true);
-    //   float alpha_deg = 0.0;
-
-    //   float Fz_N = get_fake_downforce(MOTOR_FL);
-    //   float target_Fx_N = getLUTMaxFx() * ((float) i) / ((float) UINT8_MAX);
-    //   results[i].Fx = target_Fx_N;
-    //   results[i].kappa = lut_get_kappa(alpha_deg, Fz_N, target_Fx_N);
-    // }
-
-    // // Test for computing maximum traction at given downforce.
-    // float max_Fx_ref[FZ_DIM];
-    // float max_Fx[FZ_DIM];
-    // for(int i = 0; i < FZ_DIM; i++)
-    // {
-    //   float Fz_N = FZ_MIN_N + FZ_SPACING_N * i;
-    //   max_Fx_ref[i] = getKappaFxGlobalMaxAtDownforce(0.4 * Fz_N, UINT8_MAX, true).Fx;
-
-    //   float alpha_deg = 0.0;
-    //   max_Fx[i] = lut_get_max_Fx_kappa(alpha_deg, Fz_N).Fx;
-    // }
+    steeringInit();
 
     cmr_taskInit(&statusLED_task, "statusLED", statusLED_priority, statusLED,
                 NULL);
