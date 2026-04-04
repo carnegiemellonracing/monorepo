@@ -84,7 +84,6 @@ def extract_enums_from_sym_file(filepath):
 
 
 def extract_enums_from_file(filepath):
-    """Extract enum definitions from C header files"""
     try:
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             content = f.read()
@@ -94,7 +93,6 @@ def extract_enums_from_file(filepath):
     
     enums = {}
     
-    #Pattern to match typedef enum blocks
     enum_pattern = re.compile(
         r'typedef\s+enum\s*\{([^}]+)\}\s*(cmr_can\w+_t)\s*;',
         re.MULTILINE | re.DOTALL
@@ -126,13 +124,11 @@ def extract_enums_from_file(filepath):
                 
                 line = line.rstrip(',')
                 
-                #Check for value assignment
                 if '=' in line:
                     parts = line.split('=', 1)
                     enum_member = parts[0].strip()
                     try:
                         value_part = parts[1].strip()
-                        #Handle hex values, bit shifts, etc.
                         if value_part.startswith('(') and value_part.endswith(')'):
                             value_part = value_part[1:-1]
                         
@@ -165,11 +161,9 @@ def extract_enums_from_file(filepath):
                     enum_member = line.strip()
                 
                 if enum_member:
-                    #Convert enum member name to display string
                     if enum_member.startswith('CMR_CAN_'):
                         display_name = enum_member[8:]
                         
-                        #Remove the enum type prefix if it exists
                         upper_middle = middle_part.upper()
                         if display_name.startswith(upper_middle + '_'):
                             display_name = display_name[len(upper_middle) + 1:]
@@ -192,25 +186,21 @@ def format_enum_for_symbol_file(enum_name, enum_values, max_line_len=70):
     for value, name in sorted_items:
         formatted_values.append(f'{value}="{name}"')
     
-    #Start with "enum X("
     prefix = f'enum {enum_name}('
     lines = [prefix]
     
     for i, val in enumerate(formatted_values):
-        #Add comma before item except first
         if i > 0:
             candidate = lines[-1] + ', ' + val
         else:
             candidate = lines[-1] + val
         
-        #If candidate line exceeds max length, start new line
         if len(candidate) > max_line_len and i > 0:
             lines[-1] = lines[-1] + ','
             lines.append('    ' + val)
         else:
             lines[-1] = candidate
     
-    # Close with ")"
     lines[-1] = lines[-1] + ')'
     
     return '\n'.join(lines)
@@ -223,6 +213,20 @@ def find_header_files(root_dir):
             if filename == 'can_types.h':
                 header_files.append(os.path.join(root, filename))
     return header_files
+
+
+def merge_enums_25e_then_headers(enums_25e, header_files):
+    by_key = {}
+    for title, values in enums_25e.items():
+        k = title.casefold()
+        by_key[k] = (title, dict(values))
+    for filepath in header_files:
+        file_enums = extract_enums_from_file(filepath)
+        for title, values in file_enums.items():
+            k = title.casefold()
+            by_key[k] = (title, dict(values))
+    return {t: v for t, v in by_key.values()}
+
 
 def generate_symbol_enums(
     root_dir=".",
@@ -237,7 +241,6 @@ def generate_symbol_enums(
             os.path.join(script_dir, '..', 'PCAN', 'CMR 25e.sym')
         )
 
-    #Find all can_types.h files
     header_files = find_header_files(root_dir)
     
     if not header_files:
@@ -248,20 +251,18 @@ def generate_symbol_enums(
     for f in header_files:
         print(f"  {f}")
     
-    all_enums = extract_enums_from_sym_file(sym_25e_file)
-    if all_enums:
+    enums_25e = extract_enums_from_sym_file(sym_25e_file)
+    if enums_25e:
         print(
-            f"Loaded {len(all_enums)} enum(s) from {sym_25e_file} "
-            "(same title will be overridden by can_types.h)"
+            f"Loaded {len(enums_25e)} enum(s) from {sym_25e_file} "
+            "(same title, any case, overridden by can_types.h)"
         )
     elif os.path.exists(sym_25e_file):
         print(f"Note: no enums parsed from {sym_25e_file}")
     else:
         print(f"Note: 25e symbol file not found: {sym_25e_file}")
 
-    for filepath in header_files:
-        file_enums = extract_enums_from_file(filepath)
-        all_enums.update(file_enums)
+    all_enums = merge_enums_25e_then_headers(enums_25e, header_files)
     
     if not all_enums:
         print("No enums found!")
@@ -293,7 +294,7 @@ def generate_symbol_enums(
         '{ENUMS}'
     ])
     
-    for enum_name in sorted(all_enums.keys()):
+    for enum_name in sorted(all_enums.keys(), key=str.casefold):
         enum_values = all_enums[enum_name]
         enum_line = format_enum_for_symbol_file(enum_name, enum_values)
         final_content_parts.append(enum_line)
@@ -345,7 +346,9 @@ def generate_symbol_enums(
         
         print(f"Successfully wrote {len(all_enums)} enums to {output_file}")
         
-        for enum_name, enum_values in sorted(all_enums.items()):
+        for enum_name, enum_values in sorted(
+            all_enums.items(), key=lambda kv: kv[0].casefold()
+        ):
             print(f"  {enum_name}: {len(enum_values)} values")
             
     except Exception as e:
