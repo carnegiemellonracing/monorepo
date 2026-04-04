@@ -329,7 +329,7 @@ static void canTX10Hz(void *pvParameters) {
         	.test_id = get_test_message_id()
         };
 
-        canTX(CMR_CANID_TEST_ID, &test_id, sizeof(test_id), canTX10Hz_period_ms);
+        // canTX(CMR_CANID_TEST_ID, &test_id, sizeof(test_id), canTX10Hz_period_ms);
         if (
             (stateVSM != stateVSMReq) ||
             (gear != gearReq) ||
@@ -689,7 +689,7 @@ void canInit(void) {
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV3, CMR_CANID_CDC_CONFIG1_DRV3, CMR_CANID_CDC_CONFIG2_DRV3, CMR_CANID_CDC_CONFIG3_DRV3 } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_VSM_SENSORS, CMR_CANID_HVC_MINMAX_CELL_VOLTAGE, CMR_CANID_HVC_LOW_VOLTAGE, CMR_CANID_DRS_STATE } },
-        { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_VSM_POWER_DIAGNOSTICS, CMR_CANID_SENSORIC_VEL_ANG, CMR_CANID_SENSORIC_DIST}} 
+        { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_VSM_POWER_DIAGNOSTICS, CMR_CANID_SENSORIC_VEL_ANG, CMR_CANID_SENSORIC_DIST, CMR_CANID_EAB_STATUS}} 
     };
 
     cmr_canFilter(
@@ -787,24 +787,6 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     uint8_t AS_Status = false;
     canTX(CMR_CANID_ASMS_STATUS, &AS_Status, sizeof(AS_Status), canTX100Hz_period_ms);
 
-    // volatile cmr_canHeartbeat_t *AIM_Heartbeat = canVehicleGetPayload(CANRX_HEARTBEAT_VSM);
-	// cmr_canHeartbeat_t toSend;
-	// memcpy(&toSend, AIM_Heartbeat,sizeof(cmr_canHeartbeat_t)); //memcpy since it is volatile and could update
-
-	// if (toSend.error[0] != 0 || toSend.error[1] != 0) {
-	// 	toSend.state = CMR_CAN_ERROR;
-	// }
-
-    // if(getASMS()){
-    //     uint8_t mask = 1 << 7;
-    //     toSend.state = toSend.state | mask;
-    // }
-
-    // if(getEAB()){
-    //     uint8_t mask = 1 << 6;
-    //     toSend.state = toSend.state | mask;
-    // }
-
     cmr_canWarn_t warning = CMR_CAN_WARN_NONE;
     cmr_canError_t error = CMR_CAN_ERROR_NONE;
 
@@ -879,8 +861,8 @@ static void sendSWAngle(void) {
     int32_t steeringWheelAngle_deg_FR = (int32_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_SWANGLE_DEG_FR);
 
     cmr_canFSMSWAngle_t msg = {
-        .steeringWheelAngle_millideg_FL = adcRead(ADC_SWANGLE),
-        .steeringWheelAngle_millideg_FR = adcRead(ADC_SWANGLE)
+        .steeringWheelAngle_millideg_FL = steeringWheelAngle_deg_FL,
+        .steeringWheelAngle_millideg_FR = steeringWheelAngle_deg_FR
     };
 
     canTX(CMR_CANID_FSM_SWANGLE, &msg, sizeof(msg), canTX100Hz_period_ms);

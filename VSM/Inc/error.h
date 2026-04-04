@@ -46,5 +46,6 @@ extern const uint16_t brakePressureThreshold_PSI;
 void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTime);
 void updateCurrentWarnings(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTime);
 bool invertersPass(TickType_t lastWakeTime_ms);
+bool getAMSError();
 
 #endif /* ERROR_H */

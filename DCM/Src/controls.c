@@ -7,7 +7,8 @@
 
 // ------------------------------------------------------------------------------------------------
 // Includes
-
+#include "CMR/can_types.h"
+#include "CMR/utils.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -17,7 +18,6 @@
 #include "controls.h"
 #include "motors.h"
 #include "safety_filter.h"
-#include "CMR/can_types.h"
 #include "../optimizer/optimizer.h"
 #include "26x_sensors.h"
 #include "lut.h"
@@ -26,6 +26,7 @@
 #define PI 3.1415926535897932384626f
 
 #define X1000_INT16(x) ((int16_t)((float)x * 1000.0f))
+#define INSPECTION_MISSION_TIME_MS 27000
 
 
 // ------------------------------------------------------------------------------------------------
@@ -730,6 +731,8 @@ void runControls (
     volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RL = canTractiveGetPayload(CANRX_TRAC_RL_ERPM);
     volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RR = canTractiveGetPayload(CANRX_TRAC_RR_ERPM);
 
+    volatile cmr_canHeartbeat_t   *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+
     const int32_t avgMotorSpeed_RPM = (
         + (int32_t)(dtiERPM_FL->erpm / pole_pairs)
         + (int32_t)(dtiERPM_FR->erpm / pole_pairs)
@@ -747,22 +750,26 @@ void runControls (
 
     switch (gear) {
         case CMR_CAN_GEAR_SLOW: {
+            disableTorqueMode();
             setSlowTorque(throttlePos_u8, swAngle_millideg);
             break;
         }
         case CMR_CAN_GEAR_FAST: {
+            disableTorqueMode();
             // setFastTorque(throttlePos_u8);
             setFastTorqueWithBias(throttlePos_u8, front_bias);
             // set_fast_torque_with_slew(throttlePos_u8, 29.0f);
             break;
         }
         case CMR_CAN_GEAR_ENDURANCE: {
+            disableTorqueMode();
             // setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
             set_regen(throttlePos_u8);
             // set_regen_with_slew(throttlePos_u8, 29.0f);
             break;
         }
         case CMR_CAN_GEAR_AUTOX: {
+            disableTorqueMode();
             // const bool assumeNoTurn = true; // TC is not allowed to behave left-right asymmetrically due to the lack of testing
             // const bool ignoreYawRate = false; // TC takes yaw rate into account to prevent the vehicle from stopping unintendedly when turning at low speeds
             // const bool allowRegen = true; // regen-braking is allowed to protect the AC by keeping charge level high
@@ -774,10 +781,12 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_SKIDPAD: {
+            disableTorqueMode();
         	set_optimal_control((float)throttlePos_u8 / UINT8_MAX, swAngle_millideg_FL, swAngle_millideg_FR, false);
             break;
         }
         case CMR_CAN_GEAR_ACCEL: {
+            disableTorqueMode();
             const bool assumeNoTurn = true; // TC is not allowed to behave left-right asymmetrically because it's meaningless in accel
             const bool ignoreYawRate = true;  // TC ignores yaw rate because it's meaningless in accel
             const bool allowRegen = false; // regen-braking is not allowed because it's meaningless in accel
@@ -789,6 +798,7 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_TEST: {
+            disableTorqueMode();
             setPowerLimit(false, MOTOR_FL, 40.0 * front_bias);
             setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
             setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
@@ -796,30 +806,94 @@ void runControls (
 
             set_optimal_control((float)throttlePos_u8 / UINT8_MAX, swAngle_millideg_FL, swAngle_millideg_FR, false);
             break;
-
-            // float target_speed_mps = 5.0f;
-            // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
-            // set_motor_speed(throttlePos_u8, target_speed_mps, false);
-            // set_manual_cruise_control(throttlePos_u8);
-            break;
         }
 
         case CMR_CAN_GEAR_REVERSE: {
             // for rule-compliance, the car shouldn't reverse
+            disableTorqueMode();
             setTorqueLimsAllProtected(0.0f, 0.0f);
             setVelocityInt16All(0);
             break;
         }
-        // case AS_DRIVING: {
-        //     //for compute commands 
-        //     //need to put in the read commands
-        //     canDAQGetPayload()
-        //     //get the motor set points and update w/ settorque lims
-        //     setTorqueLimsAllProtected();
-        //     //need to set them for commands 
-        //     setVelocityInt16All();
-        //     break; 
-        // }
+
+        case CMR_CAN_GEAR_DV_MISSION_INSPECTION: {
+            disableTorqueMode();
+            // initiateTorqueMode();
+            static bool inspectionStarted = false;
+            static TickType_t inspectionStartTime = 0;
+            TickType_t now = xTaskGetTickCount();
+            if(!inspectionStarted && heartbeatVSM->state == CMR_CAN_AS_DRIVING) {
+                inspectionStarted = true;
+                inspectionStartTime = now;
+            }
+            if(inspectionStarted 
+            && heartbeatVSM->state == CMR_CAN_AS_DRIVING
+            && now - inspectionStartTime < INSPECTION_MISSION_TIME_MS){
+                setVelocityInt16All(maxSlowSpeed_rpm);
+                float torque = maxSlowTorque_Nm; 
+                setTorqueLimsUnprotected(MOTOR_FL, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_FR, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_RR, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_RL, torque, 0.0f);
+                // setTorquesAll(torque);
+            }
+            else {
+                setVelocityInt16All(0);
+                float torque = 0.0f; 
+                setTorqueLimsUnprotected(MOTOR_FL, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_FR, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_RR, torque, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_RL, torque, 0.0f);
+                // setTorquesAll(torque);
+                uint8_t missionFinished = 1;
+                canTX(CMR_CAN_BUS_VEH, CMR_CANID_AS_MISSION_FINISHED, &missionFinished, sizeof(missionFinished), 100);
+            }
+            break;
+        }
+
+        case CMR_CAN_GEAR_DV_MISSION_ACCEL: 
+        case CMR_CAN_GEAR_DV_MISSION_SKIDPAD:
+        case CMR_CAN_GEAR_DV_MISSION_AUTOX:     
+        case CMR_CAN_GEAR_DV_MISSION_TRACKD:     
+        case CMR_CAN_GEAR_DV_MISSION_EBS: {
+            disableTorqueMode();
+            volatile cmr_canAutonomousControlAction_t*  autonomousAction = canDAQGetPayload(CANRX_DAQ_AUTONOMOUS_ACTION);
+            
+            float front_torque_Nm;
+            float rear_torque_Nm; 
+            float maxVelocity_rpm;
+
+            if(cmr_canRXMetaTimeoutError(&canDaqRXMeta[CANRX_DAQ_AUTONOMOUS_ACTION], xTaskGetTickCount())) {
+                front_torque_Nm = 0;
+                rear_torque_Nm = 0;
+                maxVelocity_rpm = 0;
+            }
+            else {
+                front_torque_Nm = CLAMP(-maxDVTorque_Nm, ((float)(autonomousAction->frontTorque_mNm))/1000.0f, maxDVTorque_Nm); 
+                rear_torque_Nm  = CLAMP(-maxDVTorque_Nm, ((float)(autonomousAction->rearTorque_mNm))/1000.0f, maxDVTorque_Nm); 
+                maxVelocity_rpm = (float)(autonomousAction->maxVelocity_decimeters_s) * 60.0f / 10.0f / ( PI * effective_wheel_dia_m) * gear_ratio;
+                maxVelocity_rpm = CLAMP(0, maxVelocity_rpm, maxDVSpeed_rpm); 
+            }
+
+            setVelocityInt16All(maxVelocity_rpm);
+            
+            if (front_torque_Nm > 0.0f) {
+                setTorqueLimsUnprotected(MOTOR_FL, front_torque_Nm, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_FR, front_torque_Nm, 0.0f);
+            } else {
+                setTorqueLimsUnprotected(MOTOR_FL, 0.0f, front_torque_Nm);
+                setTorqueLimsUnprotected(MOTOR_FR, 0.0f, front_torque_Nm);
+            }
+
+            if (rear_torque_Nm > 0.0f) {
+                setTorqueLimsUnprotected(MOTOR_RR, rear_torque_Nm, 0.0f);
+                setTorqueLimsUnprotected(MOTOR_RL, rear_torque_Nm, 0.0f);
+            } else {
+                setTorqueLimsUnprotected(MOTOR_RR, 0.0f, rear_torque_Nm);
+                setTorqueLimsUnprotected(MOTOR_RL, 0.0f, rear_torque_Nm);
+            }
+            break; 
+        }
 
         default: {
             setTorqueLimsAllProtected(0.0f, 0.0f);

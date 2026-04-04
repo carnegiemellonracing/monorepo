@@ -1513,4 +1513,18 @@ typedef struct{
     uint16_t cell4;
 } cmr_canLVBMS_Temperature;
 
+typedef struct{
+    int16_t frontTorque_mNm;           /**< @brief Front wheel torque mNm. */     
+    int16_t rearTorque_mNm;            /**< @brief Rear wheel torque mNm. */     
+    int16_t steeringAngle_centi_deg;   /**< @brief Requested average angle of wheels centi deg. */  
+    uint16_t maxVelocity_decimeters_s; /**< @brief Requested max velocity in decimeters per second. */     
+}
+cmr_canAutonomousControlAction_t;
+
+typedef struct{
+    float  K_p;           /**< @brief K_p for steering PID Loop*/     
+    float  K_d ;          /**< @brief K_d for steering PID Loop*/     
+}
+cmr_canAutonomousPIDConstants_t;
+
 #endif /* CMR_CAN_TYPES_H */

@@ -38,28 +38,28 @@ static void assiControl(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-    	cmr_canState_t state = getCurrentState();
+    	cmr_canVSMState_t state = getCurrentState();
         // cmr_gpioWrite(GPIO_OUT_LED_BLUE, 1);
         // cmr_gpioWrite(GPIO_OUT_LED_YELLOW, 0);
 
         switch (state) {
-            case CMR_CAN_AS_READY: 
+            case CMR_CAN_VSM_STATE_AS_READY: 
               pwmSetDutyCycle(PWM_BLUE, (uint32_t) 0);
               pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 100);
               break;
 
-            case CMR_CAN_AS_DRIVING: 
+            case CMR_CAN_VSM_STATE_AS_DRIVING: 
               pwmSetDutyCycle(PWM_BLUE, (uint32_t) 0);
               pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 50);
               break;
 
-            case CMR_CAN_AS_EMERGENCY: 
-              pwmSetDutyCycle(PWM_BLUE, (uint32_t) 100);
+            case CMR_CAN_VSM_STATE_AS_EMERGENCY: 
+              pwmSetDutyCycle(PWM_BLUE, (uint32_t) 50);
               pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 0);
               break;
 
-            case CMR_CAN_AS_FINISHED: 
-                pwmSetDutyCycle(PWM_BLUE, (uint32_t) 50);
+            case CMR_CAN_VSM_STATE_AS_FINISHED: 
+                pwmSetDutyCycle(PWM_BLUE, (uint32_t) 100);
                 pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 0);
                 break;
             

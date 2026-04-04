@@ -219,43 +219,43 @@ static void updateDTITimeouts(TickType_t lastWakeTime) {
 
     // Set timeouts as needed
     if (heartbeatVSM->state == CMR_CAN_HV_EN || heartbeatVSM->state == CMR_CAN_RTD) {
-        if (cmr_canRXMetaTimeoutError(dtiErpmFL, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiCurrentFL, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiTempFaultFL, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiIdIqFL, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiACLimsFL, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiDCLimsFL, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiControlStatusFL, lastWakeTime) < 0 ||
+        if (cmr_canRXMetaTimeoutError(dtiErpmFL, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiCurrentFL, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiTempFaultFL, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiIdIqFL, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiACLimsFL, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiDCLimsFL, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiControlStatusFL, lastWakeTime) < 0 &&
             cmr_canRXMetaTimeoutError(dtiIOStatusFL, lastWakeTime) < 0) {
             dtiTimeouts[MOTOR_FL] = true;
         }
-        if (cmr_canRXMetaTimeoutError(dtiErpmFR, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiCurrentFR, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiTempFaultFR, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiIdIqFR, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiACLimsFR, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiDCLimsFR, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiControlStatusFR, lastWakeTime) < 0 ||
+        if (cmr_canRXMetaTimeoutError(dtiErpmFR, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiCurrentFR, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiTempFaultFR, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiIdIqFR, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiACLimsFR, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiDCLimsFR, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiControlStatusFR, lastWakeTime) < 0 &&
             cmr_canRXMetaTimeoutError(dtiIOStatusFR, lastWakeTime) < 0) {
             dtiTimeouts[MOTOR_FR] = true;
         }
-        if (cmr_canRXMetaTimeoutError(dtiErpmRR, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiCurrentRR, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiTempFaultRR, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiIdIqRR, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiACLimsRR, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiDCLimsRR, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiControlStatusRR, lastWakeTime) < 0 ||
+        if (cmr_canRXMetaTimeoutError(dtiErpmRR, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiCurrentRR, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiTempFaultRR, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiIdIqRR, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiACLimsRR, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiDCLimsRR, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiControlStatusRR, lastWakeTime) < 0 &&
             cmr_canRXMetaTimeoutError(dtiIOStatusRR, lastWakeTime) < 0) {
             dtiTimeouts[MOTOR_RR] = true;
         }
-        if (cmr_canRXMetaTimeoutError(dtiErpmRL, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiCurrentRL, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiTempFaultRL, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiIdIqRL, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiACLimsRL, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiDCLimsRL, lastWakeTime) < 0 ||
-            cmr_canRXMetaTimeoutError(dtiControlStatusRL, lastWakeTime) < 0 ||
+        if (cmr_canRXMetaTimeoutError(dtiErpmRL, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiCurrentRL, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiTempFaultRL, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiIdIqRL, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiACLimsRL, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiDCLimsRL, lastWakeTime) < 0 &&
+            cmr_canRXMetaTimeoutError(dtiControlStatusRL, lastWakeTime) < 0 &&
             cmr_canRXMetaTimeoutError(dtiIOStatusRL, lastWakeTime) < 0) {
             dtiTimeouts[MOTOR_RL] = true;
         }

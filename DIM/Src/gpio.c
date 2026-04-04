@@ -231,10 +231,7 @@ uint8_t getASMS(){
  */
 bool getEAB(){
 	uint8_t *eabStatus = (uint8_t*)getPayload(CANRX_EAB_STATUS);
-	if(*eabStatus == 1) {
-		eabReq = true;
-	}
-	return eabReq;
+	return *eabStatus;
 }
 
 /* Debouncing for button presses. */
