@@ -119,7 +119,7 @@ void setLaunchControl(
 /** @brief initialize yaw rate control */
 static void initYawRateControl() {
     // read yrc_kp from DIM
-    yrc_kp = 1.0f;
+    yrc_kp = 2.2f;
     getProcessedValue(&yrc_kp, YRC_KP_INDEX, float_1_decimal);
 
     yrc_kp = yrc_kp*100.0f;
