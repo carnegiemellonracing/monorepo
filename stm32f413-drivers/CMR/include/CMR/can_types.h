@@ -310,6 +310,77 @@ typedef enum {
     CMR_CAN_VSM_WRN_CDC_TIMEOUT = (1<<13),
     CMR_CAN_VSM_WRN_HVC_TIMEOUT = (1<<14) 
 } cmr_canVSMHeartbeatWrn_t; 
+
+// Endianness hell.
+typedef struct {
+    uint8_t msb;
+    uint8_t lsb;
+} big_endian_16_t;
+
+
+typedef union {
+    struct {
+        uint8_t lsb;
+        uint8_t msb;
+    } data;
+    int16_t parsed;
+} int16_parser;
+
+static int16_t parse_int16(volatile big_endian_16_t *big) {
+    static int16_parser parser;
+    parser.data.msb = big->msb;
+    parser.data.lsb = big->lsb;
+    return parser.parsed;
+} 
+
+static big_endian_16_t int16_to_big(uint16_t small) {
+    static int16_parser parser;
+    big_endian_16_t result;
+    
+    parser.parsed = small;
+    result.msb = parser.data.msb;
+    result.lsb = parser.data.lsb;
+    
+    return result;
+}
+
+typedef struct {
+    uint8_t msb;
+    uint8_t byte2;
+    uint8_t byte1;
+    uint8_t lsb;
+} big_endian_32_t;
+
+typedef union {
+    struct {
+        uint8_t lsb;
+        uint8_t byte1;
+        uint8_t byte2;
+        uint8_t msb;
+    } data;
+    int32_t parsed;
+} int32_parser;
+
+static int32_t big_endian_to_int32(volatile big_endian_32_t *big) {
+    int32_parser parser;
+    parser.data.msb = big->msb;
+    parser.data.byte2 = big->byte2;
+    parser.data.byte1 = big->byte1;
+    parser.data.lsb = big->lsb;
+    return parser.parsed;
+}
+
+static big_endian_32_t int32_to_big(int32_t value) {
+    int32_parser parser;
+    big_endian_32_t result;
+    parser.parsed = value;
+    result.msb = parser.data.msb;
+    result.byte2 = parser.data.byte2;
+    result.byte1 = parser.data.byte1;
+    result.lsb = parser.data.lsb;
+    return result;
+}
+
 /** @brief Bit definitions for RES*/
 typedef enum {
     /** @brief RES go-ahead*/
@@ -893,8 +964,8 @@ typedef struct {
 
 /** @brief DTI motor controller temperature, motor temperature, fault code. */
 typedef struct {
-    int16_t ctlr_temp;         /**< Controller temperature. The value is multiplied by 10. */
-    int16_t motor_temp;        /**< Motor temperature. The value is multiplied by 10. */
+    big_endian_16_t ctlr_temp;         /**< Controller temperature. The value is multiplied by 10. */
+    big_endian_16_t motor_temp;        /**< Motor temperature. The value is multiplied by 10. */
     uint8_t fault_code;        /**< If fault occurs that prevents motor actuating, this value shows the fault code. */
 } cmr_canDTI_TX_TempFault_t;
 
@@ -1131,76 +1202,6 @@ typedef struct {
     uint16_t curvature_radius_m;    //u: m /**< @brief Curvature radius based on down rotation rate (meters times 10^2). */
     uint8_t status;                 //Flag: cmr_canSBGAutomotiveStatus_t /**< @brief Status bitmasks as AUTO_STATUS definition. */
 } cmr_canSBGAutomotive_t;
-
-// Endianness hell.
-typedef struct {
-    uint8_t msb;
-    uint8_t lsb;
-} big_endian_16_t;
-
-
-typedef union {
-    struct {
-        uint8_t lsb;
-        uint8_t msb;
-    } data;
-    int16_t parsed;
-} int16_parser;
-
-static int16_t parse_int16(volatile big_endian_16_t *big) {
-    static int16_parser parser;
-    parser.data.msb = big->msb;
-    parser.data.lsb = big->lsb;
-    return parser.parsed;
-} 
-
-static big_endian_16_t int16_to_big(uint16_t small) {
-    static int16_parser parser;
-    big_endian_16_t result;
-    
-    parser.parsed = small;
-    result.msb = parser.data.msb;
-    result.lsb = parser.data.lsb;
-    
-    return result;
-}
-
-typedef struct {
-    uint8_t msb;
-    uint8_t byte2;
-    uint8_t byte1;
-    uint8_t lsb;
-} big_endian_32_t;
-
-typedef union {
-    struct {
-        uint8_t lsb;
-        uint8_t byte1;
-        uint8_t byte2;
-        uint8_t msb;
-    } data;
-    int32_t parsed;
-} int32_parser;
-
-static int32_t big_endian_to_int32(volatile big_endian_32_t *big) {
-    int32_parser parser;
-    parser.data.msb = big->msb;
-    parser.data.byte2 = big->byte2;
-    parser.data.byte1 = big->byte1;
-    parser.data.lsb = big->lsb;
-    return parser.parsed;
-}
-
-static big_endian_32_t int32_to_big(int32_t value) {
-    int32_parser parser;
-    big_endian_32_t result;
-    parser.parsed = value;
-    result.msb = parser.data.msb;
-    result.byte2 = parser.data.byte2;
-    result.byte1 = parser.data.byte1;
-    result.lsb = parser.data.lsb;
-    return result;
-}
 
 typedef struct {
     big_endian_16_t q0; //f:3.05185094759972E-005, max:1, d:0
