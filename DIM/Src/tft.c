@@ -234,9 +234,9 @@ static void tftUpdate(void *pvParameters) {
     cmr_qspiSetPrescaler(&tft->qspi, TFT_QSPI_PRESCALER);
 
     /* Display Startup Screen for fixed time */
-    // tftDLContentLoad(tft, &tftDL_startup);
-    // tftDLWrite(tft, &tftDL_startup);
-    //    vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS); //TODO: Uncomment
+    tftDLContentLoad(tft, &tftDL_startup);
+    tftDLWrite(tft, &tftDL_startup);
+    vTaskDelayUntil(&lastWakeTime, TFT_STARTUP_MS); //TODO: Uncomment
 
     /* Update Screen Info from CAN Indefinitely */
     while (1) {
