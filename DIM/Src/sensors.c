@@ -24,16 +24,16 @@
 #define BUS_CURRENT_SAMPLES 10
 
 /** @brief  Experimentally determined left TPOS ADC Minimum*/
-#define LEFT_TPOS_MIN_ADC 2280
+#define LEFT_TPOS_MIN_ADC 2700
 
 /** @brief  Experimentally determined left TPOS ADC Maximum*/
-#define LEFT_TPOS_MAX_ADC 3840
+#define LEFT_TPOS_MAX_ADC 3280
 
 /** @brief  Experimentally determined right TPOS ADC Minimum*/
-#define RIGHT_TPOS_MIN_ADC 40
+#define RIGHT_TPOS_MIN_ADC 480
 
 /** @brief  Experimentally determined right TPOS ADC Maximum*/
-#define RIGHT_TPOS_MAX_ADC 1850
+#define RIGHT_TPOS_MAX_ADC 1180
 
 #define LEFT_SWANGLE_MIN_ADC 360.0f
 #define CENTER_SWANGLE_ADC 1640.0f
