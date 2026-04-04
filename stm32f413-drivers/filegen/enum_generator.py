@@ -105,12 +105,10 @@ def extract_enums_from_file(filepath):
     for enum_content, enum_name in matches:
         #Extract the middle part (remove cmr_can prefix and _t suffix)
         if enum_name.startswith('cmr_can') and enum_name.endswith('_t'):
-            #Extract middle part: cmr_canState_t -> State
             middle_part = enum_name[7:-2]
             
             enum_values = {}
             
-            #Split by lines and process each line
             lines = enum_content.split('\n')
             current_value = 0
             
@@ -119,7 +117,6 @@ def extract_enums_from_file(filepath):
                 if not line or line.startswith('/*') or line.startswith('//'):
                     continue
                 
-                #Remove comments from end of line
                 line = re.sub(r'//.*$', '', line)
                 line = re.sub(r'/\*.*?\*/', '', line)
                 line = line.strip()
@@ -129,7 +126,7 @@ def extract_enums_from_file(filepath):
                 
                 line = line.rstrip(',')
                 
-                #Check for explicit value assignment
+                #Check for value assignment
                 if '=' in line:
                     parts = line.split('=', 1)
                     enum_member = parts[0].strip()
@@ -147,20 +144,17 @@ def extract_enums_from_file(filepath):
                             if shift_match:
                                 base_value = shift_match.group(1)
                                 shift_amount = int(shift_match.group(2))
-                                # Parse base value (could be hex or decimal)
                                 if base_value.startswith('0x') or base_value.startswith('0X'):
                                     base = int(base_value, 16)
                                 else:
                                     base = int(base_value.rstrip('U'))
                                 current_value = base << shift_amount
                             else:
-                                # Try to evaluate it directly
                                 try:
                                     current_value = eval(value_part.replace('U', ''))
                                 except:
                                     current_value = int(value_part)
                         else:
-                            # Handle plain integers with optional U suffix
                             try:
                                 current_value = int(value_part.rstrip('U'))
                             except ValueError:
@@ -173,7 +167,6 @@ def extract_enums_from_file(filepath):
                 if enum_member:
                     #Convert enum member name to display string
                     if enum_member.startswith('CMR_CAN_'):
-                        #Remove CMR_CAN_ prefix and convert to title case
                         display_name = enum_member[8:]
                         
                         #Remove the enum type prefix if it exists
@@ -184,7 +177,6 @@ def extract_enums_from_file(filepath):
                         enum_values[current_value] = display_name
                         current_value += 1
                     elif '_LEN' not in enum_member and '_UNKNOWN' not in enum_member:
-                        #For other enum members, use as is but clean up
                         enum_values[current_value] = enum_member
                         current_value += 1
             
@@ -194,28 +186,27 @@ def extract_enums_from_file(filepath):
     return enums
 
 def format_enum_for_symbol_file(enum_name, enum_values, max_line_len=70):
-    """Format an enum for the symbol file with line wrapping if too long"""
     sorted_items = sorted(enum_values.items())
     
     formatted_values = []
     for value, name in sorted_items:
         formatted_values.append(f'{value}="{name}"')
     
-    # Start with "enum X("
+    #Start with "enum X("
     prefix = f'enum {enum_name}('
     lines = [prefix]
     
     for i, val in enumerate(formatted_values):
-        # Add comma before item except the first
+        #Add comma before item except first
         if i > 0:
             candidate = lines[-1] + ', ' + val
         else:
             candidate = lines[-1] + val
         
-        # If candidate line exceeds max length, start new line
+        #If candidate line exceeds max length, start new line
         if len(candidate) > max_line_len and i > 0:
-            lines[-1] = lines[-1] + ','  # close previous line with comma
-            lines.append('    ' + val)   # indent wrapped line
+            lines[-1] = lines[-1] + ','
+            lines.append('    ' + val)
         else:
             lines[-1] = candidate
     
@@ -225,7 +216,6 @@ def format_enum_for_symbol_file(enum_name, enum_values, max_line_len=70):
     return '\n'.join(lines)
 
 def find_header_files(root_dir):
-    """Find all header files in the directory tree, filtering for can_types.h only"""
     header_files = []
     for root, dirs, files in os.walk(root_dir):
         for filename in files:
@@ -269,7 +259,6 @@ def generate_symbol_enums(
     else:
         print(f"Note: 25e symbol file not found: {sym_25e_file}")
 
-    # Process each header file (overwrites 25e when enum title matches)
     for filepath in header_files:
         file_enums = extract_enums_from_file(filepath)
         all_enums.update(file_enums)
@@ -278,7 +267,6 @@ def generate_symbol_enums(
         print("No enums found!")
         return
     
-    #Read existing file content if it exists
     existing_content = ""
     if os.path.exists(output_file):
         try:
@@ -289,10 +277,8 @@ def generate_symbol_enums(
             print(f"Error reading existing file {output_file}: {e}")
             return
     
-    #Always start with header content
     final_content_parts = []
     
-    #Add file header first
     header_content = [
         'FormatVersion=5.0 // Do not edit this line!',
         'UniqueVariables=True',
@@ -307,7 +293,6 @@ def generate_symbol_enums(
         '{ENUMS}'
     ])
     
-    #Sort enums by name for consistent output
     for enum_name in sorted(all_enums.keys()):
         enum_values = all_enums[enum_name]
         enum_line = format_enum_for_symbol_file(enum_name, enum_values)
@@ -321,12 +306,11 @@ def generate_symbol_enums(
         ''
     ])
     
-    #Add existing content (with auto-generated section removed)
     if existing_content:
         lines = existing_content.split('\n')
         filtered_lines = []
         in_auto_section = False
-        skip_header = True  #Skip the header from existing content since we're adding our own
+        skip_header = True
         
         for line in lines:
             if skip_header:
@@ -347,17 +331,13 @@ def generate_symbol_enums(
             elif not in_auto_section:
                 filtered_lines.append(line)
         
-        #Add the cleaned existing content
         cleaned_existing_content = '\n'.join(filtered_lines).strip()
         if cleaned_existing_content:
             final_content_parts.append(cleaned_existing_content)
     
-    #Join all parts
     final_content = '\n'.join(final_content_parts)
     
-    #Write the combined content to file
     try:
-        #Create directory if it doesn't exist
         os.makedirs(os.path.dirname(output_file), exist_ok=True)
         
         with open(output_file, 'w', encoding='utf-8') as f:
