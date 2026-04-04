@@ -3,4 +3,4 @@
 	url = git@github.com:DaveGamble/cJSON.git
 [submodule "cn-cbor"]
 	path = RAM/cn-cbor
-	url = git@github.com:carnegiemellonracing/cn-cbor.git
+	url = git@github.com:jimsch/cn-cbor.git
