@@ -625,8 +625,10 @@ static void set_optimal_control_launch_hybrid(
         torquesNeg_Nm.rr = 0.0f;
 
         setVelocityInt16All(maxFastSpeed_rpm);
-	    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
-
+        setTorqueLimsUnprotected(MOTOR_FL, torquesPos_Nm.fl, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_FR, torquesPos_Nm.fr, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RL, torquesPos_Nm.rl, 0.0f);
+        setTorqueLimsUnprotected(MOTOR_RR, torquesPos_Nm.rr, 0.0f);
     }
 }
 
@@ -799,10 +801,14 @@ void runControls (
         }
         case CMR_CAN_GEAR_TEST: {
             disableTorqueMode();
-            setPowerLimit(false, MOTOR_FL, 40.0 * front_bias);
-            setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
-            setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
-            setPowerLimit(false, MOTOR_FR, 40.0 * (1 - front_bias));
+            // setPowerLimit(false, MOTOR_FL, 40.0 * front_bias);
+            // setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
+            // setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
+            // setPowerLimit(false, MOTOR_FR, 40.0 * (1 - front_bias));
+            setPowerLimit(false, MOTOR_FL, 20.0);
+            setPowerLimit(false, MOTOR_FR, 20.0);
+            setPowerLimit(false, MOTOR_RL, 30.0);
+            setPowerLimit(false, MOTOR_FR, 30.0);
 
             set_optimal_control((float)throttlePos_u8 / UINT8_MAX, swAngle_millideg_FL, swAngle_millideg_FR, false);
             break;
