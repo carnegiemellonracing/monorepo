@@ -139,83 +139,23 @@ enum Warn(0="NONE", 1="VSM_TIMEOUT", 2="BUS_VOLTAGE", 4="BUS_CURRENT",
 
 // ========== END AUTO-GENERATED ENUMS ==========
 
-[AMK_FL_ACT_1]
-ID=288h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=FL_AMK_RESERVED unsigned 0,8
-Var=FL_AMK_STATUS_SYSTEM_READY bit 8,1
-Var=FL_AMK_STATUS_ERROR bit 9,1
-Var=FL_AMK_STATUS_WARNING bit 10,1
-Var=FL_AMK_STATUS_HV_EN_ACK bit 11,1
-Var=FL_AMK_STATUS_HV_EN bit 12,1
-Var=FL_AMK_STATUS_INV_EN_ACK bit 13,1
-Var=FL_AMK_STATUS_INV_EN bit 14,1
-Var=FL_AMK_STATUS_DERATING_EN bit 15,1
-Var=FL_velocity_rpm signed 16,16 /u:rpm /p:4
-Var=FL_torqueCurrent_raw signed 32,16 /f:0.001701171875
-Var=FL_magCurrent_raw signed 48,16 /f:0.001701171875
-
-[AMK_FL_ACT_2]
-ID=28Ah
-DLC=8
-CycleTime=20
-TimeOut=100
-Var=FL_motorTemp_dC signed 0,16 /u:dC /f:0.1 /p:2
-Var=FL_coldPlateTemp_dC signed 16,16 /u:dC /f:0.1 /p:2
-Var=FL_errorCode unsigned 32,16
-Var=FL_igbtTemp_dC signed 48,16 /u:dC /f:0.1 /p:2
-
-[AMK_FL_SETPOINTS]
-ID=189h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=FL_AMK_CTRL_INV_ON bit 8,1
-Var=FL_AMK_CTRL_HV_EN bit 9,1
-Var=FL_AMK_CTRL_INV_EN bit 10,1
-Var=FL_AMK_CTRL_ERR_RESET bit 11,1
-Var=FL_velocity_rpm1 signed 16,16
-Var=FL_torqueLimPos_dpcnt signed 32,16 /u:Nm /f:0.0098 /p:4
-Var=FL_torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
-
-[AMK_FR_ACT_1]
-ID=284h
-DLC=8
-CycleTime=20
-TimeOut=100
-Var=FR_AMK_RESERVED1 unsigned 0,8
-Var=FR_AMK_STATUS_SYSTEM_READY1 bit 8,1
-Var=FR_AMK_STATUS_ERROR1 bit 9,1
-Var=FR_AMK_STATUS_WARNING1 bit 10,1
-Var=FR_AMK_STATUS_HV_EN_ACK1 bit 11,1
-Var=FR_AMK_STATUS_HV_EN1 bit 12,1
-Var=FR_AMK_STATUS_INV_EN_ACK1 bit 13,1
-Var=FR_AMK_STATUS_INV_EN1 bit 14,1
-Var=FR_AMK_STATUS_DERATING_EN1 bit 15,1
-Var=FR_velocity_rpm2 signed 16,16
-Var=FR_torqueCurrent_raw1 signed 32,16
-Var=FR_magCurrent_raw1 signed 48,16
-
-[AMK_FR_ACT_2]
-ID=286h
-DLC=8
-CycleTime=20
-TimeOut=100
-Var=FR_motorTemp_dC1 signed 0,16
-Var=FR_coldPlateTemp_dC1 signed 16,16
-Var=FR_errorCode1 unsigned 32,16
-Var=FR_igbtTemp_dC1 signed 48,16
+[AS_PRESSURE_READINGS]
+ID=191h
+DLC=4
+CycleTime=10
+TimeOut=50
+Var=PRESSURE_ebsPressure_1 unsigned 0,16
+Var=PRESSURE_ebsPressure_2 unsigned 16,16
 
 [AUTONOMOUS_ACTION]
 ID=190h
-DLC=6
+DLC=8
 CycleTime=400
 TimeOut=2000
-Var=ACTION_frontTorque_mNm unsigned 0,16
-Var=ACTION_rearTorque_mNm unsigned 16,16
-Var=steeringAngle_centi_deg unsigned 32,16
+Var=ACTION_frontTorque_mNm signed 0,16
+Var=ACTION_rearTorque_mNm signed 16,16
+Var=steeringAngle_centi_deg signed 32,16
+Var=maxVelocity_decimeters_s unsigned 48,16
 
 [CDC_COG_VELOCITY]
 ID=2C2h
@@ -576,8 +516,8 @@ ID=135h
 DLC=8
 CycleTime=10
 TimeOut=50
-Var=SWANGLE_brakePressureFrontADC unsigned 0,16
-Var=SWANGLE_steeringWheelAngleADC unsigned 16,16
+Var=steeringWheelAngle_millideg_FR signed 0,32 /u:deg /f:0.001
+Var=steeringWheelAngle_millideg_FL signed 32,32 /u:deg /f:0.001
 
 [CDC_HEARTBEAT]
 ID=102h
@@ -825,35 +765,35 @@ Var=STATE_motor_power_RR unsigned 48,16
 
 [MOVELLA_STATUS]
 ID=772h
-DLC=26
-CycleTime=5
-TimeOut=25
-Var=STATUS_filter_mode_1 unsigned 0,8
-Var=STATUS_have_gnss_time_pulse unsigned 8,8
-Var=STATUS_rtk_status unsigned 16,8
-Var=STATUS_reserved_4 unsigned 24,8
-Var=STATUS_clipflag_mag_z unsigned 32,8
-Var=STATUS_reserved_2 unsigned 40,8
-Var=STATUS_clipping_indication unsigned 48,8
-Var=STATUS_reserved_3 unsigned 56,8
-Var=STATUS_sync_in_marker unsigned 64,8
-Var=STATUS_sync_out_marker unsigned 72,8
-Var=STATUS_filter_mode_2 unsigned 80,8
-Var=STATUS_clipflag_acc_x unsigned 88,8
-Var=STATUS_clipflag_acc_y unsigned 96,8
-Var=STATUS_clipflag_acc_z unsigned 104,8
-Var=STATUS_clipflag_gyr_x unsigned 112,8
-Var=STATUS_clipflag_gyr_y unsigned 120,8
-Var=STATUS_clipflag_gyr_z unsigned 128,8
-Var=STATUS_clipflag_mag_x unsigned 136,8
-Var=STATUS_clipflag_mag_y unsigned 144,8
-Var=STATUS_self_test unsigned 152,8
-Var=STATUS_filter_valid unsigned 160,8
-Var=STATUS_gnss_fix unsigned 168,8
-Var=STATUS_no_rotation_update unsigned 176,8
-Var=STATUS_representative_motion unsigned 184,8
-Var=STATUS_clock_bias_estimation unsigned 192,8
-Var=STATUS_reserved_1 unsigned 200,8
+DLC=4
+CycleTime=10
+TimeOut=50
+Var=STATUS_filter_mode_1 unsigned 0,2
+Var=STATUS_have_gnss_time_pulse unsigned 2,1
+Var=STATUS_rtk_status unsigned 3,2
+Var=STATUS_reserved_4 unsigned 5,3
+Var=STATUS_clipflag_mag_z unsigned 8,1
+Var=STATUS_reserved_2 unsigned 9,2
+Var=STATUS_clipping_indication unsigned 11,1
+Var=STATUS_reserved_3 unsigned 12,1
+Var=STATUS_sync_in_marker unsigned 13,1
+Var=STATUS_sync_out_marker unsigned 14,1
+Var=STATUS_filter_mode_2 unsigned 15,1
+Var=STATUS_clipflag_acc_x unsigned 16,1
+Var=STATUS_clipflag_acc_y unsigned 17,1
+Var=STATUS_clipflag_acc_z unsigned 18,1
+Var=STATUS_clipflag_gyr_x unsigned 19,1
+Var=STATUS_clipflag_gyr_y unsigned 20,1
+Var=STATUS_clipflag_gyr_z unsigned 21,1
+Var=STATUS_clipflag_mag_x unsigned 22,1
+Var=STATUS_clipflag_mag_y unsigned 23,1
+Var=STATUS_self_test unsigned 24,1
+Var=STATUS_filter_valid unsigned 25,1
+Var=STATUS_gnss_fix unsigned 26,1
+Var=STATUS_no_rotation_update unsigned 27,2
+Var=STATUS_representative_motion unsigned 29,1
+Var=STATUS_clock_bias_estimation unsigned 30,1
+Var=STATUS_reserved_1 unsigned 31,1
 
 [REAR_SLIP_RATIOS]
 ID=7E9h
@@ -986,10 +926,10 @@ ID=200h
 DLC=6
 CycleTime=5
 TimeOut=25
-Var=SENSORS_brakePressureRear_PSI unsigned 0,16 /u:PSI
-Var=SENSORS_hallEffect_cA signed 16,16 /u:cA /f:0.01 /p:2
-Var=SENSORS_safetyIn_dV unsigned 32,8 /u:dV
-Var=SENSORS_safetyOut_dV unsigned 40,8 /u:dV
+Var=SENSORS_brakePressureRear_PSI unsigned 0,16
+Var=SENSORS_hallEffect_cA signed 16,16
+Var=SENSORS_safetyIn_V unsigned 32,8
+Var=SENSORS_safetyOut_V unsigned 40,8
 
 [VSM_STATUS]
 ID=110h
