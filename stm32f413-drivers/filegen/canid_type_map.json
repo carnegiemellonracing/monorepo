@@ -1,14 +1,29 @@
 {
     "canid_to_info": {
+        "CMR_CANID_AFC0_DRIVER_TEMPS": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "velocity_rpm"
+        },
         "CMR_CANID_ASMS_STATUS": {
             "cycleTime": 10,
             "timeOut": 50,
             "type": "AS_Status"
         },
+        "CMR_CANID_AS_MISSION_FINISHED": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "missionFinished"
+        },
         "CMR_CANID_AS_PRESSURE_READINGS": {
             "cycleTime": 10,
             "timeOut": 50,
             "type": "cmr_canDVPressureReadings_t"
+        },
+        "CMR_CANID_AS_RES_ENABLE": {
+            "cycleTime": 10,
+            "timeOut": 50,
+            "type": "res_enable"
         },
         "CMR_CANID_AUTONOMOUS_ACTION": {
             "cycleTime": 400.0,
@@ -437,6 +452,11 @@
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
         },
+        "CMR_CANID_EAB_STATUS": {
+            "cycleTime": 10,
+            "timeOut": 50,
+            "type": "eabStatus"
+        },
         "CMR_CANID_EMD_MEASUREMENT": {
             "current": {
                 "u": "A"
@@ -748,8 +768,8 @@
             "type": "cmr_canHVCPackCurrent_t"
         },
         "CMR_CANID_HV_SENSORS": {
-            "cycleTime": 100,
-            "timeOut": 500,
+            "cycleTime": 5,
+            "timeOut": 25,
             "type": "cmr_canHVSense_t"
         },
         "CMR_CANID_LVBMS_BUS_VOLTAGE": {
@@ -916,21 +936,7 @@
             "type": "cmr_canVSMPowerDiagnostics_t"
         },
         "CMR_CANID_VSM_SENSORS": {
-            "brakePressureRear_PSI": {
-                "u": "PSI"
-            },
             "cycleTime": 5,
-            "hallEffect_cA": {
-                "f": 0.01,
-                "p": 2,
-                "u": "cA"
-            },
-            "safetyIn_dV": {
-                "u": "dV"
-            },
-            "safetyOut_dV": {
-                "u": "dV"
-            },
             "timeOut": 25,
             "type": "cmr_canVSMSensors_t"
         },
@@ -956,20 +962,20 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2927,
-        "files_with_matches": 2927,
+        "files_processed": 2829,
+        "files_with_matches": 2829,
         "global_mappings": {
-            "canrx_mappings": 93,
-            "canrx_timeouts": 92,
-            "canrx_types": 55,
-            "constants": 216,
+            "canrx_mappings": 179,
+            "canrx_timeouts": 170,
+            "canrx_types": 75,
+            "constants": 258,
             "struct_members": 0,
-            "variable_types": 330
+            "variable_types": 331
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 106
+        "total_canids": 111
     }
 }
