@@ -151,6 +151,7 @@ static void writeToSDCard(void *pvParameters)
     while (1){
         oldBufferLocation = bufferLocation;
         switchBuffer();
+        check_new_testID(); 
         cmr_SDIO_mount();
         //check_new_testID(); //write new names from DAQ live 
         res = cmr_SDIO_openFile(&filObj, filename);
