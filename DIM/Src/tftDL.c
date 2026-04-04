@@ -87,7 +87,7 @@ const tftDL_t tftDL_config = {
  *  #include is effectiveley copy and paste. Creates a well formed array of uint32_t
  */
 static uint32_t tftDL_RTDData[] = {
-#include <DIM-ESE/RTD.rawh>
+#include <DIM-ESE/RTD-new.rawh>
 };
 
 /** @brief Complete data required to draw the
@@ -388,7 +388,7 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
  * @brief sets the display message from the RAM
  * Sets at top and 2 notes on right side
  */
-void tftDL_showRAMMsg(uint32_t *file_addr, uint32_t prev_lap_loc, uint32_t targ_lap_loc, uint32_t msg_loc) {
+void tftDL_showRAMMsg(uint32_t *file_addr, uint32_t msg_loc) {
     // struct {
     //     char buf[TIMEDISPLAYLEN];
     // } *prev_time_str = (void *)(file_addr + prev_lap_loc);
@@ -461,11 +461,12 @@ void tftDL_RTDUpdate(
     int32_t glvVoltage_V,
     uint8_t glvSoC,
     uint8_t hvSoC,
-    bool yrcOn,
-    bool tcOn,
-    bool ssOn,
+    bool controlsOn,
+    bool sdcOn,
     float odometer_km,
     bool drsOpen,
+    uint32_t brakePressure_psi,
+    uint8_t throttlePos,
     cornerId_t hottest_motor) {
 
      // temps probs arent 0 - just display nothing
@@ -480,6 +481,9 @@ void tftDL_RTDUpdate(
     tftDL_RTDwriteInt(tftDL_RTDData, ESE_SPEED_VAL, 4, "%3ld", (int32_t)speed_kmh);
     tftDL_RTDwriteInt(tftDL_RTDData, ESE_HV_SOC_VAL, 3, "%2ld", (int32_t)hvSoC);
     tftDL_RTDwriteInt(tftDL_RTDData, ESE_GLV_SOC_VAL, 3, "%2ld", (int32_t)glvSoC);
+
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_BPRES_STR, 5, "%4ld", brakePressure_psi);
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_TPOS_STR, 4, "%3ld%%", throttlePos);
 
 // Doing this jank buffer because snprintf doesnt work for floats on embedded
 // TODO check if we can use "Use float with printf from newlib-nano) ???
@@ -514,20 +518,15 @@ void tftDL_RTDUpdate(
     }
     *memorator_color = memorator_color_cmd;
 
-    /* Traction Control color */
-    uint32_t *tc_color = (void *)(tftDL_RTDData + ESE_TC_COLOR);
-    uint32_t tc_color_cmd = tcOn ? green : red;
-    *tc_color = tc_color_cmd;
-
-    /* Yaw Rate Control color */
-    uint32_t *yrc_color = (void *)(tftDL_RTDData + ESE_YRC_COLOR);
-    uint32_t yrc_color_cmd = yrcOn ? green : red;
-    *yrc_color = yrc_color_cmd;
+    /* Controls Status color */
+    uint32_t *controls_color = (void *)(tftDL_RTDData + ESE_CONTROLS_COLOR);
+    uint32_t controls_color_cmd = controlsOn ? green : red;
+    *controls_color = controls_color_cmd;
 
     /* Safety Circuit color */
-    uint32_t *ss_color = (void *)(tftDL_RTDData + ESE_SAFETY_CIRCUIT_COLOR);
-    uint32_t ss_color_cmd = ssOn ? green : red;
-    *ss_color = ss_color_cmd;
+    uint32_t *sdc_color = (void *)(tftDL_RTDData + ESE_SAFETY_CIRCUIT_COLOR);
+    uint32_t sdc_color_cmd = sdcOn ? green : red;
+    *sdc_color = sdc_color_cmd;
 
     /* DRS color */
     uint32_t *drs_color = (void *)(tftDL_RTDData + ESE_DRS_COLOR);
@@ -539,33 +538,22 @@ void tftDL_RTDUpdate(
     uint32_t radio_color_cmd = getAcknowledgeButton() ? green : black;
     *radio_color = radio_color_cmd;
 
-    /* GPS color */
-    uint32_t *gps_color = (void *)(tftDL_RTDData + ESE_GPS_TEXT_COLOR);
-    uint32_t gps_color_cmd;
-    switch (movellaStatus) {
-        case 1:
-            // GPS working and position found
-            gps_color_cmd = green;
-            break;
-        case 0:
-            // GPS connected, not working
-            gps_color_cmd = red;
-            break;
-        default:
-            // GPS not connected
-            gps_color_cmd = red;
-    }
-    *gps_color = gps_color_cmd;
+    uint32_t *bpres_color = (void *)(tftDL_RTDData + ESE_RTD_BPRES_COLOR);
+    uint32_t bpres_color_cmd = brakePressure_psi > 40 ? green : red;
+    *bpres_color = bpres_color_cmd;
 
+    uint32_t *tpos_color = (void *)(tftDL_RTDData + ESE_RTD_TPOS_COLOR);
+    uint32_t tpos_color_cmd = throttlePos < 5 ? green : red;
+    *tpos_color = tpos_color_cmd;
 
     cmr_canBMSMinMaxCellVoltage_t* packVoltagesStruct = getPackVoltages();
 
     /* Pack Voltages */
-    tftDL_RTDwriteInt(tftDL_RTDData, ESE_RAM_MIN_CELL, 5, "%4ld", packVoltagesStruct->minCellVoltage_mV);
-    tftDL_RTDwriteInt(tftDL_RTDData, ESE_RAM_MAX_CELL, 5, "%4ld", packVoltagesStruct->maxCellVoltage_mV);
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_MIN_CELL_STR, 5, "%4ld", packVoltagesStruct->minCellVoltage_mV);
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_MAX_CELL_STR, 5, "%4ld", packVoltagesStruct->maxCellVoltage_mV);
 
     tftDL_showStates(tftDL_RTDData, ESE_STATE_STR, ESE_VSM_STATE_COLOR, ESE_GEAR_STR, ESE_DRS_MODE_STR, false);
-    tftDL_showRAMMsg(tftDL_RTDData, ESE_RAM_MIN_CELL, ESE_RAM_MAX_CELL, ESE_RAM_MSG_STR);
+    tftDL_showRAMMsg(tftDL_RTDData, ESE_RAM_MSG_STR);
 
 
     uint32_t *fl_color = (void *)(tftDL_RTDData + ESE_RTD_FL_COLOR);
@@ -622,7 +610,7 @@ void tftDL_racingScreenUpdate(
     *radio_color = radio_color_cmd;
 
     tftDL_showStates(tftDL_racingData, ESE_RS_VSM_STATE_STR, ESE_RS_VSM_STATE_COLOR, ESE_RS_GEAR_STR, ESE_RS_DRS_MODE_STR, true);
-    tftDL_showRAMMsg(tftDL_racingData, ESE_RS_RAM_LAST_LAP, ESE_RS_RAM_TARG_LAP, ESE_RS_RAM_MSG_STR);
+    tftDL_showRAMMsg(tftDL_racingData, ESE_RS_RAM_MSG_STR);
 }
 
 /**

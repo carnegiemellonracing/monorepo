@@ -563,7 +563,7 @@ static void drawRTDScreen(void) {
 
     // this is actually volts not mV but cant be bothered changing it :(
     // 18000mV / 250 as sent by HVC = 72
-    bool ssOk = (bmsLV->safety_qV > 72);
+    bool sdcOk = (bmsLV->safety_qV > 72);
 
     volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t *)getPayload(CANRX_DRS_STATE);
     bool drsOpen = (drsState->state == CMR_CAN_DRS_STATE_OPEN);
@@ -575,6 +575,9 @@ static void drawRTDScreen(void) {
     cornerId_t hottest_motor;
 
     getDTITemps(&mcTemp_C, &motorTemp_C, &hottest_motor);
+
+    uint32_t brakePressure_psi = cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI);
+    uint8_t throttlePos = throttleGetPos();
 
     /* Temperature warnings */
     bool motorTemp_yellow = motorTemp_C >= MOTOR_YELLOW_THRESHOLD;
@@ -590,10 +593,7 @@ static void drawRTDScreen(void) {
 
     volatile cmr_canCDCControlsStatus_t *controlsStatus = (volatile cmr_canCDCControlsStatus_t *)getPayload(CANRX_CDC_CONTROLS_STATUS);
 
-    bool yrcOn = true;
-    bool tcOn = true;
-    //bool yrcOn = ((bool)controlsStatus->yrcOn) && (!(switchValues & 0x02));
-    //bool tcOn = ((bool)controlsStatus->tcOn) && (!(switchValues & 0x04));
+    bool controlsOn = true;
 
     if (getCurrState() == RACING) {
         tftDL_racingScreenUpdate(
@@ -623,11 +623,12 @@ static void drawRTDScreen(void) {
                         (int32_t)glvVoltage,
                         glvSoC,
                         hvSoC,
-                        yrcOn,
-                        tcOn,
-                        ssOk,
+                        controlsOn,
+                        sdcOk,
                         odometer_km,
                         drsOpen,
+                        brakePressure_psi,
+                        throttlePos,
                         hottest_motor);
 
         /* Write Display List to Screen */

@@ -768,8 +768,8 @@
             "type": "cmr_canHVCPackCurrent_t"
         },
         "CMR_CANID_HV_SENSORS": {
-            "cycleTime": 5,
-            "timeOut": 25,
+            "cycleTime": 100,
+            "timeOut": 500,
             "type": "cmr_canHVSense_t"
         },
         "CMR_CANID_LVBMS_BUS_VOLTAGE": {
@@ -962,8 +962,8 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2829,
-        "files_with_matches": 2829,
+        "files_processed": 2907,
+        "files_with_matches": 2907,
         "global_mappings": {
             "canrx_mappings": 179,
             "canrx_timeouts": 170,
