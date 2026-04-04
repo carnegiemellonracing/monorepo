@@ -73,6 +73,7 @@ static float manual_cruise_control_speed;
 
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew);
+float calculatePersistentYRCmreq(int32_t swAngle_millideg, float bias_margin, float yrc_pers);
 
 /** @brief Coulomb counting info **/
 static TickType_t previousTickCount;
@@ -311,7 +312,7 @@ static float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
     if (use_true_downforce && not_timeout) {
         volatile cmr_canIZZELoadCell_t *downforcePayload = (volatile cmr_canIZZELoadCell_t*) canDAQGetPayload(loadIndex);
         float angle = get_load_cell_angle_rad(loadIndex);
-        volatile int16_t raw = parse_int16(&downforcePayload->force_output_lb);
+        volatile int16_t raw = parse_int16(&downforcePayload->force_output_N);
         downforce_N = (float) raw * 4.448f * sinf(angle);
     } else {
         downforce_N = (float) car_mass_kg * 9.81f * 0.25f;
