@@ -14,8 +14,8 @@
 
 #define MINIMUM_K_VALUE (0.005f) // Prevent numerical instability.
 
-static double k_lin = 80.0;
-static double k_yaw = 0.30;
+static double k_lin = 10.0;
+static double k_yaw = 80.0;
 static double k_tie = 0.008;
 
 /**
