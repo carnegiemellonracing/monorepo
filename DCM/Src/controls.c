@@ -34,7 +34,7 @@
 /** @brief Yaw rate control kp */
 volatile cmr_can_controls_pid_debug_t yrcDebug;
 static float yrc_kp;
-float yrc_pers = 0.125f; 
+float yrc_pers = 200.0f; 
 float bias_margin = 10.0f; 
 
 /** @brief CAN data for traction control */
@@ -294,7 +294,7 @@ static float get_load_cell_angle_rad(canDaqRX_t loadIndex) {
     {
     case CANRX_DAQ_LOAD_FL:
     case CANRX_DAQ_LOAD_FR:
-        return 35.0f / 180.0f * PI;
+        return 45.0f / 180.0f * PI;
     case CANRX_DAQ_LOAD_RL:
     case CANRX_DAQ_LOAD_RR:
         return 30.0f / 180.0f * PI;
@@ -314,7 +314,7 @@ static float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
         float angle = get_load_cell_angle_rad(loadIndex);
         // TODO: fix later, temp change force_output units
         volatile int16_t raw = parse_int16(&downforcePayload->force_output_lb);
-        downforce_N = (float) raw * 0.1f * sinf(angle);
+        downforce_N = (float) raw * 4.448f * sinf(angle);
     } else {
         downforce_N = (float) car_mass_kg * 9.81f * 0.25f;
     }
