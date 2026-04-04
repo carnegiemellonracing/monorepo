@@ -149,12 +149,13 @@ Var=PRESSURE_ebsPressure_2 unsigned 16,16
 
 [AUTONOMOUS_ACTION]
 ID=190h
-DLC=6
+DLC=8
 CycleTime=400
 TimeOut=2000
-Var=ACTION_frontTorque_mNm unsigned 0,16
-Var=ACTION_rearTorque_mNm unsigned 16,16
-Var=steeringAngle_centi_deg unsigned 32,16
+Var=ACTION_frontTorque_mNm signed 0,16
+Var=ACTION_rearTorque_mNm signed 16,16
+Var=steeringAngle_centi_deg signed 32,16
+Var=maxVelocity_decimeters_s unsigned 48,16
 
 [CDC_COG_VELOCITY]
 ID=2C2h
@@ -477,19 +478,22 @@ Var=WHL_v_whl_fr float 32,32
 
 [FSM_DATA]
 ID=133h
-DLC=4
+DLC=5
 CycleTime=10
 TimeOut=50
-Var=DATA_brakePressureFrontADC unsigned 0,16
-Var=DATA_steeringWheelAngleADC unsigned 16,16
+Var=DATA_torqueRequested unsigned 0,8
+Var=DATA_throttlePosition unsigned 8,8
+Var=DATA_brakePressureFront_PSI unsigned 16,16 /u:PSI
+Var=brakePedalPosition_percent unsigned 32,8 /u:%
 
 [FSM_PEDALS_ADC]
 ID=533h
-DLC=4
+DLC=6
 CycleTime=100
 TimeOut=500
-Var=PEDALS_brakePressureFrontADC unsigned 0,16
-Var=PEDALS_steeringWheelAngleADC unsigned 16,16
+Var=PEDALS_throttleLeftADC unsigned 0,16
+Var=PEDALS_throttleRightADC unsigned 16,16
+Var=PEDALS_brakePedalADC unsigned 32,16
 
 [FSM_POWER_DIAGNOSTICS]
 ID=553h
@@ -509,11 +513,11 @@ Var=SENSORS_steeringWheelAngleADC unsigned 16,16
 
 [FSM_SWANGLE]
 ID=135h
-DLC=4
+DLC=8
 CycleTime=10
 TimeOut=50
-Var=SWANGLE_brakePressureFrontADC unsigned 0,16
-Var=SWANGLE_steeringWheelAngleADC unsigned 16,16
+Var=steeringWheelAngle_millideg_FR signed 0,32 /u:deg /f:0.001
+Var=steeringWheelAngle_millideg_FL signed 32,32 /u:deg /f:0.001
 
 [CDC_HEARTBEAT]
 ID=102h
@@ -919,11 +923,13 @@ Var=POWER_busCurrent_mA2 unsigned 16,16 /u:mA
 
 [VSM_SENSORS]
 ID=200h
-DLC=4
+DLC=6
 CycleTime=5
 TimeOut=25
-Var=SENSORS_busVoltage_mV unsigned 0,16 /u:mV
-Var=SENSORS_busCurrent_mA unsigned 16,16 /u:mA
+Var=SENSORS_brakePressureRear_PSI unsigned 0,16
+Var=SENSORS_hallEffect_cA signed 16,16
+Var=SENSORS_safetyIn_V unsigned 32,8
+Var=SENSORS_safetyOut_V unsigned 40,8
 
 [VSM_STATUS]
 ID=110h

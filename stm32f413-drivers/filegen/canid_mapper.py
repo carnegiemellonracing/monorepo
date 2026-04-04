@@ -84,7 +84,11 @@ GETPAYLOAD_PATTERNS = [
     re.compile(
         r'(?:volatile\s+)?(?:const\s+)?(cmr_\w+_t)\s*\*\s*\w+\s*=\s*\(\s*(?:volatile\s+)?(?:const\s+)?cmr_\w+_t\s*\*\s*\)\s*(?:\w*[gG]et[pP]ayload|getPayload)\s*\(\s*(CANRX_\w+)\s*\)',
         re.IGNORECASE | re.MULTILINE
-    )
+    ),
+    re.compile(
+        r'(?:\(\s*)+(?:volatile\s+)?(?:const\s+)?(cmr_\w+_t)\s*\*\s*\)\s*(?:\w*[gG]et[pP]ayload|getPayload)\s*\(\s*(CANRX_\w+)\s*\)',
+        re.IGNORECASE | re.MULTILINE
+    ),
 ]
 
 #Pattern for indirect payload access (for pattern 5 from original script)
@@ -124,6 +128,20 @@ def extract_variable_types(content):
         var_to_type[var_name] = type_name
     
     return var_to_type
+
+def extract_variable_declarations_ordered(content):
+    decls = []
+    for m in VAR_DECLARATION_PATTERN.finditer(content):
+        type_name, var_name = m.group(1), m.group(2)
+        decls.append((m.start(), type_name, var_name))
+    return decls
+
+def type_for_var_at_position(var_name, position, ordered_declarations):
+    current = None
+    for pos, type_name, vname in ordered_declarations:
+        if vname == var_name and pos < position:
+            current = type_name
+    return current
 
 def extract_struct_member_types(content):
     """Extract struct_name.member_name to type mappings from file content"""
@@ -185,7 +203,9 @@ def extract_canrx_mappings(content):
         # Only process if it's a valid CANRX key
         if not is_canrx(canrx_key):
             continue
-        
+        if canrx_key.endswith("_LEN"):
+            continue
+
         # Extract canID from within THIS specific entry
         canid_match = re.search(r'\.canID\s*=\s*((?:CMR_CANID_|CAN_ID_)\w+)', entry_content, re.IGNORECASE)
         if canid_match:
@@ -208,7 +228,7 @@ def extract_canrx_type_mappings(content):
     """Extract CANRX to type mappings from *getPayload* calls using comprehensive patterns"""
     canrx_to_type = {}
     
-    if 'getPayload' not in content and 'GetPayload' not in content:
+    if not re.search(r"[gG]et[pP]ayload", content):
         return canrx_to_type
     
     #Apply all getPayload patterns
@@ -303,7 +323,7 @@ def resolve_constant_value(constant_name, local_constants, global_constants):
     
     return constant_name
 
-def resolve_sizeof_type(sizeof_arg, local_var_types, global_var_types, local_struct_members, global_struct_members):
+def resolve_sizeof_type(sizeof_arg, local_var_types, global_var_types, local_struct_members, global_struct_members, position=None, ordered_var_declarations=None):
     """Resolve the type from sizeof argument, prioritizing local then global mappings"""
     lookup_key = parse_sizeof_argument(sizeof_arg)
     
@@ -317,6 +337,11 @@ def resolve_sizeof_type(sizeof_arg, local_var_types, global_var_types, local_str
         proper_type = f"cmr_{lookup_key}_t"
         return proper_type, True
     
+    if ordered_var_declarations is not None and position is not None and re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', lookup_key):
+        scoped = type_for_var_at_position(lookup_key, position, ordered_var_declarations)
+        if scoped is not None:
+            return scoped, True
+
     if lookup_key in local_var_types:
         return local_var_types[lookup_key], True
     
@@ -353,6 +378,7 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
             content = f.read()
         
         local_var_types = extract_variable_types(content)
+        ordered_var_declarations = extract_variable_declarations_ordered(content)
         local_struct_members = extract_struct_member_types(content)
         local_constants = extract_constant_definitions(content)
         local_canrx_mappings, local_canrx_timeouts = extract_canrx_mappings(content)
@@ -362,7 +388,7 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
         
         #Find all canTX calls with 5 arguments
         CAN_CALL_5_ARGS_FULL = re.compile(
-            r'canTX\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^,]+)\s*,\s*sizeof\s*\(\s*([^)]+)\s*\)\s*,\s*([^)]+)\s*\)',
+            r'\bcanTX\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^,]+)\s*,\s*sizeof\s*\(\s*([^)]+)\s*\)\s*,\s*([^)]+)\s*\)',
             re.MULTILINE | re.DOTALL
         )
         
@@ -373,6 +399,7 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
             arg3 = arg3.strip()
             sizeof_arg = sizeof_arg.strip()
             period = period.strip()
+            call_pos = match.start()
 
             canid = None
             if is_canid(arg1):
@@ -384,7 +411,8 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
 
             if canid:
                 resolved_type, _ = resolve_sizeof_type(
-                    sizeof_arg, local_var_types, global_var_types, local_struct_members, global_struct_members
+                    sizeof_arg, local_var_types, global_var_types, local_struct_members, global_struct_members,
+                    position=call_pos, ordered_var_declarations=ordered_var_declarations
                 )
                 
                 cycle_time = resolve_constant_value(period, local_constants, global_constants)
@@ -399,7 +427,7 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
 
         #Find all canTX calls with 4 arguments
         CAN_CALL_4_ARGS_FULL = re.compile(
-            r'canTX\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*sizeof\s*\(\s*([^)]+)\s*\)\s*,\s*([^)]+)\s*\)',
+            r'\bcanTX\s*\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*sizeof\s*\(\s*([^)]+)\s*\)\s*,\s*([^)]+)\s*\)',
             re.MULTILINE | re.DOTALL
         )
         
@@ -409,6 +437,7 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
             arg2 = arg2.strip()
             sizeof_arg = sizeof_arg.strip()
             period = period.strip()
+            call_pos = match.start()
 
             canid = None
             if is_canid(arg1):
@@ -418,7 +447,8 @@ def extract_canids_from_file(filepath, global_var_types, global_struct_members, 
             
             if canid and canid not in result:
                 resolved_type, _ = resolve_sizeof_type(
-                    sizeof_arg, local_var_types, global_var_types, local_struct_members, global_struct_members
+                    sizeof_arg, local_var_types, global_var_types, local_struct_members, global_struct_members,
+                    position=call_pos, ordered_var_declarations=ordered_var_declarations
                 )
                 
                 cycle_time = resolve_constant_value(period, local_constants, global_constants)
@@ -512,6 +542,30 @@ def build_global_mappings(c_files):
     
     return global_var_types, global_struct_members, global_constants, global_canrx_mappings, global_canrx_timeouts, global_canrx_types
 
+def merge_canid_extractions(c_files):
+    global_var_types, global_struct_members, global_constants, global_canrx_mappings, global_canrx_timeouts, global_canrx_types = build_global_mappings(c_files)
+    canid_to_info = {}
+    files_with_matches = 0
+    for filepath in c_files:
+        result = extract_canids_from_file(filepath, global_var_types, global_struct_members, global_constants, global_canrx_mappings, global_canrx_timeouts, global_canrx_types)
+        if result:
+            files_with_matches += 1
+        for canid, info in result.items():
+            if canid not in canid_to_info:
+                canid_to_info[canid] = info
+            elif info.get("source") == "canTX" and canid_to_info[canid].get("source") == "canRX":
+                canid_to_info[canid] = info
+    return (
+        canid_to_info,
+        files_with_matches,
+        global_var_types,
+        global_struct_members,
+        global_constants,
+        global_canrx_mappings,
+        global_canrx_timeouts,
+        global_canrx_types,
+    )
+
 def main():
     c_files = find_all_c_files(ROOT_DIR)
     
@@ -519,25 +573,16 @@ def main():
         print("No C/C++ files found!")
         return
     
-    #Build global mappings
-    global_var_types, global_struct_members, global_constants, global_canrx_mappings, global_canrx_timeouts, global_canrx_types = build_global_mappings(c_files)
-    #Extract CAN IDs from all files
-    canid_to_info = {}
-    files_with_matches = 0
-    
-    for filepath in c_files:
-        result = extract_canids_from_file(filepath, global_var_types, global_struct_members, global_constants, global_canrx_mappings, global_canrx_timeouts, global_canrx_types)
-        
-        if result:
-            files_with_matches += 1
-        
-        #Update result, but keep existing canTX info if present
-        for canid, info in result.items():
-            if canid not in canid_to_info:
-                canid_to_info[canid] = info
-            elif info.get("source") == "canTX" and canid_to_info[canid].get("source") == "canRX":
-                #Replace canRX info with canTX info (canTX has priority)
-                canid_to_info[canid] = info
+    (
+        canid_to_info,
+        files_with_matches,
+        global_var_types,
+        global_struct_members,
+        global_constants,
+        global_canrx_mappings,
+        global_canrx_timeouts,
+        global_canrx_types,
+    ) = merge_canid_extractions(c_files)
     
     #Count canTX vs canRX mappings BEFORE cleaning (when source field still exists)
     cantx_count = 0

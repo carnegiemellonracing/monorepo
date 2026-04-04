@@ -464,14 +464,20 @@
             "type": "cmr_can_front_whl_velocity_t"
         },
         "CMR_CANID_FSM_DATA": {
+            "brakePedalPosition_percent": {
+                "u": "%"
+            },
+            "brakePressureFront_PSI": {
+                "u": "PSI"
+            },
             "cycleTime": 10,
             "timeOut": 50,
-            "type": "cmr_canFSMSensorsADC_t"
+            "type": "cmr_canFSMData_t"
         },
         "CMR_CANID_FSM_PEDALS_ADC": {
             "cycleTime": 100,
             "timeOut": 500,
-            "type": "cmr_canFSMSensorsADC_t"
+            "type": "cmr_canFSMPedalsADC_t"
         },
         "CMR_CANID_FSM_POWER_DIAGNOSTICS": {
             "busCurrent_mA": {
@@ -491,8 +497,16 @@
         },
         "CMR_CANID_FSM_SWANGLE": {
             "cycleTime": 10,
+            "steeringWheelAngle_millideg_FL": {
+                "f": 0.001,
+                "u": "deg"
+            },
+            "steeringWheelAngle_millideg_FR": {
+                "f": 0.001,
+                "u": "deg"
+            },
             "timeOut": 50,
-            "type": "cmr_canFSMSensorsADC_t"
+            "type": "cmr_canFSMSWAngle_t"
         },
         "CMR_CANID_HEARTBEAT_CDC": {
             "cycleTime": 10,
@@ -902,15 +916,23 @@
             "type": "cmr_canVSMPowerDiagnostics_t"
         },
         "CMR_CANID_VSM_SENSORS": {
-            "busCurrent_mA": {
-                "u": "mA"
-            },
-            "busVoltage_mV": {
-                "u": "mV"
+            "brakePressureRear_PSI": {
+                "u": "PSI"
             },
             "cycleTime": 5,
+            "hallEffect_cA": {
+                "f": 0.01,
+                "p": 2,
+                "u": "cA"
+            },
+            "safetyIn_dV": {
+                "u": "dV"
+            },
+            "safetyOut_dV": {
+                "u": "dV"
+            },
             "timeOut": 25,
-            "type": "cmr_canVSMPowerDiagnostics_t"
+            "type": "cmr_canVSMSensors_t"
         },
         "CMR_CANID_VSM_STATUS": {
             "badStateMatrix": {
@@ -937,10 +959,10 @@
         "files_processed": 2927,
         "files_with_matches": 2927,
         "global_mappings": {
-            "canrx_mappings": 179,
-            "canrx_timeouts": 173,
-            "canrx_types": 75,
-            "constants": 251,
+            "canrx_mappings": 93,
+            "canrx_timeouts": 92,
+            "canrx_types": 55,
+            "constants": 216,
             "struct_members": 0,
             "variable_types": 330
         },
