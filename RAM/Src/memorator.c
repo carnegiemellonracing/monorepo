@@ -11,6 +11,7 @@
 #include <stdint.h>     /* integer types */
 #include "fatfs.h"
 #include "string.h" // memcpy
+#include <stdbool.h>
 
 
 /** @brief memorator priority. */
@@ -26,9 +27,12 @@ static cmr_task_t memoratorTask;
 static FIL filObj;
 
 /** @brief file to write */
-static char filename[64];
+char filename[64];
 
 extern char testID_name[9]; 
+char prev_testID_name[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; 
+bool prev_testID_blank;
+int blank_num = 0;  
 
 //forward declarations
 static void switchBuffer(void);
@@ -148,7 +152,7 @@ static void writeToSDCard(void *pvParameters)
         oldBufferLocation = bufferLocation;
         switchBuffer();
         cmr_SDIO_mount();
-        check_new_testID(); //write new names from DAQ live 
+        //check_new_testID(); //write new names from DAQ live 
         res = cmr_SDIO_openFile(&filObj, filename);
         if (!res){
             cmr_SDIO_write(&filObj, txBuffer, oldBufferLocation);
@@ -185,36 +189,41 @@ static void switchBuffer(){
 }
  
 /**
-returns 0 for same name 
-1 for new name 
--1 for all 0's (use date time format)
+ * @brief checks testID and creates new file if new name 
+ *
+ * @return void        Does not return a value.
  */
 static void check_new_testID(){
-    uint8_t count_zeros = 0;
-    uint8_t new_name = 0; 
-    //check testID from DAQ Live against filename 
+    uint8_t count_zeros_testID = 0;
+    bool new_name = false; 
+    //check testID from DAQ Live against current filename 
     for(int i = 0; i<8; i++){
-        if (testID_name[i] != filename[i]) {
-            new_name = 1; 
-            if (testID_name[i] == 0) {
-                count_zeros++; 
-            }
+        if (testID_name[i] != prev_testID_name[i]) {
+            new_name = true; 
         }
+        if (testID_name[i] == 0) {
+            count_zeros_testID++; 
+        }
+        prev_testID_name[i] = testID_name[i]; 
     }
-    if (count_zeros == 8) {
+    //testID is newly blank 
+    if (count_zeros_testID == 8 && !prev_testID_blank) {
         RTC_DateTypeDef curDate = getRTCDate();
         RTC_TimeTypeDef curTime = getRTCTime();
         snprintf(filename, sizeof(filename), "%u-%u-%u_%u-%u-%u-%lu.bin", curDate.Month, curDate.Date, curDate.Year, curTime.Hours, curTime.Minutes, curTime.Seconds, curTime.SubSeconds);
-    } else if (new_name) {
-        snprintf(filename, 9, "%s.bin", testID_name); 
+        prev_testID_blank = true; 
+    } else if (count_zeros_testID != 8 && new_name) {
+        snprintf(filename, sizeof(filename), "%s.bin", testID_name); 
+        prev_testID_blank = false; 
     }
+
 }
 
 void memoratorInit(){
     bufferLocation = 0;
     RTC_DateTypeDef curDate = getRTCDate();
     RTC_TimeTypeDef curTime = getRTCTime();
-    //if (check_testID_valid(testID_name)) {}
+    prev_testID_blank = false; //assume we start with no testID from DAQ Live 
     snprintf(filename, sizeof(filename), "%u-%u-%u_%u-%u-%u-%lu.bin", curDate.Month, curDate.Date, curDate.Year, curTime.Hours, curTime.Minutes, curTime.Seconds, curTime.SubSeconds);
     cmr_taskInit(
         &memoratorTask,

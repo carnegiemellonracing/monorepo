@@ -27,6 +27,7 @@ extern sample_data_t raw_sample_data[MAX_SIGNALS];
 extern struct signal signal_map[MAX_SIGNALS];
 
 char testID_name[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; 
+extern filename[64]; 
 
 struct uart
 {
@@ -43,10 +44,10 @@ static uart_t uart;
 static uint8_t send_buf[MAX_MESSAGE_LEN];
 
 /** @brief Boron TX period (milliseconds). (Shared with sample.c) */
-const TickType_t boron_tx_period_ms = 250;
+const TickType_t boron_tx_period_ms = 1000;
 
 /** @brief Boron RX period (milliseconds). (Shared with sample.c) */
-const TickType_t boron_rx_period_ms = 250;
+const TickType_t boron_rx_period_ms = 1000;
 
 /** @brief Delay between each can Message with text for dim */
 const TickType_t dim_message_delay_ms = 5;
