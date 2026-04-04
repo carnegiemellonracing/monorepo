@@ -6,6 +6,9 @@ Title="CMR 26x Generated"
 
 {ENUMS}
 enum BMBErr(15="UPPER_BMB", 240="LOWER_BMB")
+enum CCMState(0="ERROR", 1="CLEAR_ERROR", 2="CLEAR_HVC", 3="IDLE_HVC",
+    4="STANDBY", 5="CHARGE_REQ", 6="CHARGE", 7="SLOW_CHARGE",
+    8="SHUTDOWN")
 enum CDCDRSStateEnum(0="DRS_STATE_CLOSED", 1="DRS_STATE_OPEN",
     2="DRS_STATE_OTHER")
 enum CDCHeartbeatErr(1="CDC_ERR_VSM_TIMEOUT",
@@ -15,8 +18,11 @@ enum CDCHeartbeatWrn(1="CDC_WRN_VSM_TIMEOUT",
     2048="CDC_WRN_DTI_ERROR", 4096="CDC_WRN_DTI_SRC_RR",
     8192="CDC_WRN_DTI_SRC_RL", 16384="CDC_WRN_DTI_SRC_FR",
     32768="CDC_WRN_DTI_SRC_FL")
+enum CoolingState(0="OFF", 1="LOW", 2="HIGH")
 enum DIMButtons(4="DIM_ACTIONBUTTON", 8="DIM_LAUNCHBUTTON")
 enum DIMHeartbeatErr(1="DIM_ERR_VSM_TIMEOUT")
+enum DRS_MODE(0="DRS_CLOSED", 1="DRS_OPEN", 2="DRS_TOGGLE",
+    3="DRS_HOLD", 4="DRS_AUTO", 5="DRS_UNKNOWN")
 enum DVMode(0="DV_MODE_SLOW", 1="DV_MODE_NORMAL", 2="DV_MODE_FAST")
 enum DrsMode(0="DRSM_QUIET", 1="DRSM_CLOSED", 2="DRSM_OPEN",
     3="DRSM_TOGGLE", 4="DRSM_HOLD", 5="DRSM_AUTO", 6="DRSM_LEN",
@@ -37,6 +43,8 @@ enum FSMHeartbeatWrn(1="FSM_WRN_VSM_TIMEOUT", 2="FSM_WRN_VOLTAGE_OOR",
     2048="FSM_WRN_BRAKE_POSITION_OOR", 4096="FSM_WRN_LEFT_TPOS_OOR",
     8192="FSM_WRN_RIGHT_TPOS_OOR", 16384="FSM_WRN_BPP_FAULT",
     32768="FSM_WRN_TPOS_IMPLAUSIBLE")
+enum FanState(0="OFF", 1="LOW", 2="HIGH")
+enum Fan_State(0="FAN_OFF", 1="FAN_LOW", 2="FAN_HIGH")
 enum Gear(0="UNKNOWN", 1="MIN", 2="SLOW", 3="FAST", 4="ENDURANCE",
     5="AUTOX", 6="SKIDPAD", 7="ACCEL", 8="TEST", 9="REVERSE", 10="MAX",
     11="DV_MISSION_MIN", 12="DV_MISSION_MANUAL", 13="DV_MISSION_ACCEL",
@@ -77,6 +85,7 @@ enum LRUDButtons(1="DIM_LEFT", 2="DIM_RIGHT", 4="DIM_UP", 8="DIM_DOWN")
 enum MovellaFilterMode(0="Without_GNSS_filter_profile_is_in_VRU_mode",
     1="Coasting_mode_GNSS_has_been_lost_less_than_60_sec_ago",
     3="With_GNSS_default_mode")
+enum PumpState(0="OFF", 1="ON")
 enum RES(1="TRIG", 4="GO")
 enum SBGAutomotiveStatus(1="SBG_AUTO_TRACK_VALID",
     2="SBG_AUTO_SLIP_VALID", 4="SBG_AUTO_CURVATURE_VALID")
@@ -99,6 +108,9 @@ enum SBGSolutionStatusMode(0="SBG_SOL_MODE_UNINITIALIZED",
     2="but navigation data drift freely. */",
     3="integrated from velocity estimation. */",
     4="(attitude, velocity, position). Absolute position is provided. */")
+enum SBG_Solution_Status_Mode(0="Uninitialized",
+    1="Vertical_Gyro_Only", 2="Orientation_Only", 3="Nav_Velocity",
+    4="Full_Nav")
 enum State(0="UNKNOWN", 1="GLV_ON", 2="HV_EN", 3="RTD", 4="ERROR",
     5="CLEAR_ERROR", 6="AS_READY", 7="AS_DRIVING", 8="AS_FINISHED",
     9="AS_EMERGENCY")
@@ -128,6 +140,7 @@ enum VSMTimeoutErrorSource(0="VSM_TIMEOUT_SOURCE_NONE",
     16="VSM_TIMEOUT_SOURCE_FSM", 32="VSM_TIMEOUT_SOURCE_CDC",
     64="VSM_TIMEOUT_SOURCE_HVC")
 enum VTSig_Gain(0="x1", 1="x2", 2="x4", 3="x8", 4="x16", 5="x32")
+enum VtSig_Gain(0="x1", 1="x2", 2="x4", 3="x8", 4="x16", 5="x32")
 enum Warn(0="NONE", 1="VSM_TIMEOUT", 2="BUS_VOLTAGE", 4="BUS_CURRENT",
     8="FSM_SS_MODULE", 16="FSM_SS_COCKPIT", 32="FSM_SS_FRHUB",
     64="FSM_SS_INERTIA", 128="FSM_SS_FLHUB", 256="FSM_SS_BOTS",

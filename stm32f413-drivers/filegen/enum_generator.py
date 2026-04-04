@@ -1,6 +1,88 @@
 import os
 import re
 
+def _find_matching_paren(sym_section, open_paren_idx):
+    #Find the right paren that closes left paren at open_paren_idx
+    if open_paren_idx >= len(sym_section) or sym_section[open_paren_idx] != '(':
+        return -1
+    depth = 0
+    i = open_paren_idx
+    in_string = False
+    escape = False
+    while i < len(sym_section):
+        ch = sym_section[i]
+        if in_string:
+            if escape:
+                escape = False
+            elif ch == '\\':
+                escape = True
+            elif ch == '"':
+                in_string = False
+        else:
+            if ch == '"':
+                in_string = True
+            elif ch == '(':
+                depth += 1
+            elif ch == ')':
+                depth -= 1
+                if depth == 0:
+                    return i
+        i += 1
+    return -1
+
+
+def extract_enums_from_sym_file(filepath):
+    #Parse sym file enum defs
+    
+    if not filepath or not os.path.exists(filepath):
+        return {}
+    try:
+        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+    except OSError as e:
+        print(f"Error reading {filepath}: {e}")
+        return {}
+
+    start_tag = '{ENUMS}'
+    end_tag = '{SENDRECEIVE}'
+    i0 = content.find(start_tag)
+    i1 = content.find(end_tag)
+    if i0 == -1 or i1 == -1 or i0 >= i1:
+        return {}
+
+    section = content[i0 + len(start_tag):i1]
+    enums = {}
+    enum_start = re.compile(r'enum\s+(\w+)\s*\(')
+    pair_re = re.compile(
+        r'(-?(?:0x[0-9a-fA-F]+|0X[0-9a-fA-F]+|\d+))\s*=\s*"((?:[^"\\]|\\.)*)"'
+    )
+
+    pos = 0
+    while True:
+        m = enum_start.search(section, pos)
+        if not m:
+            break
+        title = m.group(1)
+        open_paren = m.end() - 1
+        close_paren = _find_matching_paren(section, open_paren)
+        if close_paren < 0:
+            break
+        body = section[open_paren + 1:close_paren]
+        values = {}
+        for pm in pair_re.finditer(body):
+            raw_key = pm.group(1)
+            if raw_key.lower().startswith('0x'):
+                val = int(raw_key, 16)
+            else:
+                val = int(raw_key)
+            values[val] = pm.group(2)
+        if values:
+            enums[title] = values
+        pos = close_paren + 1
+
+    return enums
+
+
 def extract_enums_from_file(filepath):
     """Extract enum definitions from C header files"""
     try:
@@ -152,9 +234,19 @@ def find_header_files(root_dir):
                 header_files.append(os.path.join(root, filename))
     return header_files
 
-def generate_symbol_enums(root_dir=".", output_file="stm32f413-drivers/PCAN/CMR 26x.sym"):
-    """Generate enum definitions and prepend to existing symbol file"""
-    
+def generate_symbol_enums(
+    root_dir=".",
+    output_file="stm32f413-drivers/PCAN/CMR 26x.sym",
+    sym_25e_file=None,
+):
+    #merge in enums from 25e, without replacing existing 26x enums
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    if sym_25e_file is None:
+        sym_25e_file = os.path.normpath(
+            os.path.join(script_dir, '..', 'PCAN', 'CMR 25e.sym')
+        )
+
     #Find all can_types.h files
     header_files = find_header_files(root_dir)
     
@@ -166,9 +258,18 @@ def generate_symbol_enums(root_dir=".", output_file="stm32f413-drivers/PCAN/CMR 
     for f in header_files:
         print(f"  {f}")
     
-    all_enums = {}
-    
-    #Process each header file
+    all_enums = extract_enums_from_sym_file(sym_25e_file)
+    if all_enums:
+        print(
+            f"Loaded {len(all_enums)} enum(s) from {sym_25e_file} "
+            "(same title will be overridden by can_types.h)"
+        )
+    elif os.path.exists(sym_25e_file):
+        print(f"Note: no enums parsed from {sym_25e_file}")
+    else:
+        print(f"Note: 25e symbol file not found: {sym_25e_file}")
+
+    # Process each header file (overwrites 25e when enum title matches)
     for filepath in header_files:
         file_enums = extract_enums_from_file(filepath)
         all_enums.update(file_enums)
