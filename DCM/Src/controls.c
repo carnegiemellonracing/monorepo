@@ -487,8 +487,8 @@ static void set_optimal_control(
 	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
 
     // Solver treats Mreq as around -z axis.
-	optimizer_state.mreq = getYawRateControlLeftRightBias(swAngle_millideg);
-    //optimizer_state.mreq = calculatePersistentYRCmreq((swAngle_millideg_FL+swAngle_millideg_FR)/2, bias_margin, yrc_pers);
+	//optimizer_state.mreq = getYawRateControlLeftRightBias(swAngle_millideg);
+    optimizer_state.mreq = calculatePersistentYRCmreq((swAngle_millideg_FL+swAngle_millideg_FR)/2, bias_margin, yrc_pers);
 	optimizer_state.theta_left = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
     optimizer_state.theta_right = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
 
@@ -861,10 +861,10 @@ void runControls (
             // setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
             // setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
             // setPowerLimit(false, MOTOR_FR, 40.0 * (1 - front_bias));
-            setPowerLimit(false, MOTOR_FL, 7.5);
-            setPowerLimit(false, MOTOR_FR, 7.5);
-            setPowerLimit(false, MOTOR_RL, 12.5);
-            setPowerLimit(false, MOTOR_FR, 12.5);
+            setPowerLimit(false, MOTOR_FL, 20.0);
+            setPowerLimit(false, MOTOR_FR, 20.0);
+            setPowerLimit(false, MOTOR_RL, 20.0);
+            setPowerLimit(false, MOTOR_FR, 20.0);
 
             set_optimal_control((float)throttlePos_u8 / UINT8_MAX, swAngle_millideg_FL, swAngle_millideg_FR, false);
             break;
