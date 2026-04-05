@@ -951,9 +951,9 @@ typedef struct {
 
 /** @brief DTI motor controller electrical rpm, duty_cycle, input_voltage. */
 typedef struct {
-    int32_t erpm;               /**< Electrical RPM. Equation: ERPM = Motor RPM * number of the motor pole pairs. */
-    int16_t duty_cycle_pct;     /**< @brief Sign represents if the motor is running(positive) current or regenerating (negative) current. Value multiplied by 10.*/
-    int16_t input_voltage_V;    /**< @brief Input DC voltage. */
+    big_endian_32_t erpm;               /**< Electrical RPM. Equation: ERPM = Motor RPM * number of the motor pole pairs. */
+    big_endian_16_t duty_cycle_pct;     /**< @brief Sign represents if the motor is running(positive) current or regenerating (negative) current. Value multiplied by 10.*/
+    big_endian_16_t input_voltage_V;    /**< @brief Input DC voltage. */
 } cmr_canDTI_TX_Erpm_t;
 
 /** @brief DTI motor controller ac and dc current values. */

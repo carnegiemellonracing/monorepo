@@ -20,16 +20,20 @@
 /**
  * @brief Retrieve ERPM, duty cycle, voltage for DTI inverter
  */
-volatile cmr_canDTI_TX_Erpm_t *getDTIErpm(motorLocation_t motor) {
+int32_t getDTIErpm(motorLocation_t motor) {
     switch (motor) {
         case MOTOR_FL:
-            return canTractiveGetPayload(CANRX_TRAC_FL_ERPM);
+            cmr_canDTI_TX_Erpm_t *dtiERPM = canTractiveGetPayload(CANRX_TRAC_FL_ERPM);
+            return big_endian_to_int32(&(dtiERPM->erpm));
         case MOTOR_FR:
-            return canTractiveGetPayload(CANRX_TRAC_FR_ERPM);
+            cmr_canDTI_TX_Erpm_t *dtiERPM = canTractiveGetPayload(CANRX_TRAC_FR_ERPM);
+            return big_endian_to_int32(&(dtiERPM->erpm));
         case MOTOR_RL:
-            return canTractiveGetPayload(CANRX_TRAC_RL_ERPM);
+            cmr_canDTI_TX_Erpm_t *dtiERPM = canTractiveGetPayload(CANRX_TRAC_RL_ERPM);
+            return big_endian_to_int32(&(dtiERPM->erpm));
         case MOTOR_RR:
-            return canTractiveGetPayload(CANRX_TRAC_RR_ERPM);
+            cmr_canDTI_TX_Erpm_t *dtiERPM = canTractiveGetPayload(CANRX_TRAC_RR_ERPM);
+            return big_endian_to_int32(&(dtiERPM->erpm));
         default:
             return NULL;
     }
@@ -198,7 +202,7 @@ float motorSpeedToWheelLinearSpeed_mps(float motor_speed_radps) {
  * @param motor Which motor to retrieve value for.
  */
 int16_t getMotorSpeed_rpm(motorLocation_t motor) {
-    return getDTIErpm(motor)->erpm / pole_pairs;
+    return getDTIErpm(motor) / pole_pairs;
 }
 
 /**
@@ -244,12 +248,12 @@ float getMinMotorSpeed_radps() {
  *
  * @param motor the ID of the motor
  */
-float getMotorPower(motorLocation_t motor) {
+// float getMotorPower(motorLocation_t motor) {
 
-    const float dc_current_A = (float)(getDTICurrent(motor)->dc_current_dA) * 0.1;
-    const float voltage = (float)(getDTIErpm(motor)->input_voltage_V);
-    return dc_current_A * voltage;
-}
+//     const float dc_current_A = (float)(getDTICurrent(motor)->dc_current_dA) * 0.1;
+//     const float voltage = (float)(getDTIErpm(motor)->input_voltage_V);
+//     return dc_current_A * voltage;
+// }
 
 /** @brief Get a motor load from cmr_loadDistribution_t */
 float getLoadByIndex(const cmr_loadDistribution_t *loads, size_t motor) {
