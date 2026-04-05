@@ -1627,6 +1627,21 @@ int sendDTIMessage(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t 
     }
 }
 
+// int16_t getDTICtlrTemp(canRX_t rxMsg) {
+//     cmr_canDTI_TX_TempFault_t *dtiTempFault = canTractiveGetPayload(rxMsg);
+//     return parse_int16(dtiTempFault->ctlr_temp);
+// }
+
+// int16_t getDTIMotorTemp(canRX_t rxMsg) {
+//     cmr_canDTI_TX_TempFault_t *dtiTempFault = canTractiveGetPayload(rxMsg);
+//     return parse_int16(dtiTempFault->motor_temp);
+// }
+
+int16_t getDTITorque(canRX_t rxMsg) {
+    cmr_canDTI_TX_Current_t *dtiCurrent = canTractiveGetPayload(rxMsg);
+    return parse_int16(&(dtiCurrent->ac_current_dA));
+}
+
 int sendCubeMarsMessage(cmr_canBusID_t bus, cmr_canExtendedID_t id, const void *data, size_t len, TickType_t timeout) {
     configASSERT(len == 1 || len == 2 || len == 4);
     if(len == 1) {

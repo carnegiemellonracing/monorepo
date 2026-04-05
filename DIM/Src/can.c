@@ -681,7 +681,8 @@ void canInit(void) {
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_MOVELLA_STATUS, CMR_CANID_CDC_ODOMETER, CMR_CANID_DIM_TEXT_WRITE, CMR_CANID_CDC_CONTROLS_STATUS } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_AFC1_DRIVER_TEMPS, CMR_CANID_HVC_MINMAX_CELL_TEMPS, CMR_CANID_VSM_STATUS, CMR_CANID_HEARTBEAT_MEMORATOR } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_PTC_LOOP_TEMPS_A, CMR_CANID_PTC_LOOP_TEMPS_B, CMR_CANID_PTC_LOOP_TEMPS_C, CMR_CANID_PTC_LOOP_TEMPS_B } },
-        { .isMask = true,  .rxFIFO = CAN_RX_FIFO0, .ids =  { 0x01, 0x02, 0x1F, 0x1F} },
+        // { .isMask = true,  .rxFIFO = CAN_RX_FIFO0, .ids =  { 0x01, 0x02, 0x1F, 0x1F} },
+        { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_DTI_FL_TEMPFAULT, CMR_CANID_DTI_FR_TEMPFAULT, CMR_CANID_DTI_RL_TEMPFAULT, CMR_CANID_DTI_RR_TEMPFAULT} },
         { .isMask = true,  .rxFIFO = CAN_RX_FIFO0, .ids =  { 0x03, 0x04, 0x1F, 0x1F} },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV0, CMR_CANID_CDC_CONFIG1_DRV0, CMR_CANID_CDC_CONFIG2_DRV0, CMR_CANID_CDC_CONFIG3_DRV0 } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV1, CMR_CANID_CDC_CONFIG1_DRV1, CMR_CANID_CDC_CONFIG2_DRV1, CMR_CANID_CDC_CONFIG3_DRV1 } },
@@ -689,7 +690,7 @@ void canInit(void) {
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV3, CMR_CANID_CDC_CONFIG1_DRV3, CMR_CANID_CDC_CONFIG2_DRV3, CMR_CANID_CDC_CONFIG3_DRV3 } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_VSM_SENSORS, CMR_CANID_HVC_MINMAX_CELL_VOLTAGE, CMR_CANID_HVC_LOW_VOLTAGE, CMR_CANID_DRS_STATE } },
-        { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_VSM_POWER_DIAGNOSTICS, CMR_CANID_SENSORIC_VEL_ANG, CMR_CANID_SENSORIC_DIST, CMR_CANID_EAB_STATUS}} 
+        { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_VSM_POWER_DIAGNOSTICS, CMR_CANID_SENSORIC_VEL_ANG, CMR_CANID_SENSORIC_DIST, CMR_CANID_EAB_STATUS}}
     };
 
     cmr_canFilter(
@@ -934,6 +935,21 @@ static void sendPowerDiagnostics(void) {
         CMR_CANID_FSM_POWER_DIAGNOSTICS,
         &powerDiagnosticsFSM, sizeof(powerDiagnosticsFSM),
         canTX10Hz_period_ms);
+}
+
+int16_t getDTICtlrTemp(canRX_t rxMsg) {
+    cmr_canDTI_TX_TempFault_t *dtiTempFault = getPayload(rxMsg);
+    return parse_int16(&(dtiTempFault->ctlr_temp));
+}
+
+int16_t getDTIMotorTemp(canRX_t rxMsg) {
+    cmr_canDTI_TX_TempFault_t *dtiTempFault = getPayload(rxMsg);
+    return parse_int16(&(dtiTempFault->motor_temp));
+}
+
+int16_t getDTITorque(canRX_t rxMsg) {
+    cmr_canDTI_TX_Current_t *dtiCurrent = getPayload(rxMsg);
+    return parse_int16(&(dtiCurrent->ac_current_dA));
 }
 
 void sendAcknowledgement(void) {
