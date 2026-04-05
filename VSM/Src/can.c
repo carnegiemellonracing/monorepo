@@ -18,6 +18,7 @@
 #include "can.h"        // Interface to implement
 #include "sensors.h"    // sensorChannel_t
 #include "state.h"      // getCurrentErrors(), getCurrentWarnings()
+#include "gpio.h"
 
 /**
  * @brief CAN periodic message receive metadata
@@ -53,6 +54,9 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_VSM_HVBMS_TIMEOUT
     },
+    [CANRX_HEARTBEAT_COMPUTE] = {
+        .canID = CMR_CANID_AS_HEARTBEAT_COMPUTE,
+    },
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
         .timeoutError_ms = 100,
@@ -72,12 +76,12 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
     },
-    // [CANRX_RES] = {
-    //         .canID = CMR_CANID_AS_RES,
-    //         .timeoutError_ms = 100,
-    //         .timeoutWarn_ms = 25,
-    //         .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT
-    // },
+    [CANRX_RES] = {
+            .canID = CMR_CANID_AS_RES,
+            .timeoutError_ms = 100,
+            .timeoutWarn_ms = 25,
+            .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT
+    },
     [CANRX_AS_PRESSURE_READING] = {
             .canID = CMR_CANID_AS_PRESSURE_READINGS,
             .timeoutError_ms = 100,
@@ -166,6 +170,9 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 75,
         .warnFlag = CMR_CAN_WARN_NONE,
     },
+    [CANRX_AS_MISSION_FINISHED] = {
+        .canID = CMR_CANID_AS_MISSION_FINISHED,
+    },
 };
 
 /**
@@ -225,6 +232,8 @@ static void sendVSMSensors(void);
 static void sendVSMLatchedStatus(void);
 static void sendHVCCommand(void);
 static void sendPowerDiagnostics(void);
+static void sendRESEnable();
+static void sendEABStatus();
 void resetError();
 
 /**
@@ -240,7 +249,8 @@ static void canTX10Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendPowerDiagnostics();
-
+        sendRESEnable();
+        sendEABStatus();
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -349,9 +359,9 @@ void canInit(void) {
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
                     CMR_CANID_AS_RES,
-                    CMR_CANID_AS_RES,
+                    CMR_CANID_AS_HEARTBEAT_COMPUTE,
                     CMR_CANID_AUTONOMOUS_ACTION,
-                    CMR_CANID_AUTONOMOUS_ACTION
+                    CMR_CANID_AS_MISSION_FINISHED
             }
 		},
 
@@ -527,6 +537,16 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     memcpy(&heartbeat.warning, &vsmWarnings, sizeof(heartbeat.warning));
 
     canTX(CMR_CANID_HEARTBEAT_VSM, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
+}
+
+static void sendRESEnable() {
+    uint16_t res_enable = 1;
+    canTX(CMR_CANID_AS_RES_ENABLE, &res_enable, sizeof(res_enable), canTX100Hz_period_ms);
+}
+
+static void sendEABStatus() {
+    uint8_t eabStatus = cmr_gpioRead(GPIO_IN_EAB);
+    canTX(CMR_CANID_EAB_STATUS, &eabStatus, sizeof(eabStatus), canTX100Hz_period_ms);
 }
 
 /**

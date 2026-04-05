@@ -1,8 +1,89 @@
 import os
 import re
 
+def _find_matching_paren(sym_section, open_paren_idx):
+    #Find the right paren that closes left paren at open_paren_idx
+    if open_paren_idx >= len(sym_section) or sym_section[open_paren_idx] != '(':
+        return -1
+    depth = 0
+    i = open_paren_idx
+    in_string = False
+    escape = False
+    while i < len(sym_section):
+        ch = sym_section[i]
+        if in_string:
+            if escape:
+                escape = False
+            elif ch == '\\':
+                escape = True
+            elif ch == '"':
+                in_string = False
+        else:
+            if ch == '"':
+                in_string = True
+            elif ch == '(':
+                depth += 1
+            elif ch == ')':
+                depth -= 1
+                if depth == 0:
+                    return i
+        i += 1
+    return -1
+
+
+def extract_enums_from_sym_file(filepath):
+    #Parse sym file enum defs
+    
+    if not filepath or not os.path.exists(filepath):
+        return {}
+    try:
+        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+    except OSError as e:
+        print(f"Error reading {filepath}: {e}")
+        return {}
+
+    start_tag = '{ENUMS}'
+    end_tag = '{SENDRECEIVE}'
+    i0 = content.find(start_tag)
+    i1 = content.find(end_tag)
+    if i0 == -1 or i1 == -1 or i0 >= i1:
+        return {}
+
+    section = content[i0 + len(start_tag):i1]
+    enums = {}
+    enum_start = re.compile(r'enum\s+(\w+)\s*\(')
+    pair_re = re.compile(
+        r'(-?(?:0x[0-9a-fA-F]+|0X[0-9a-fA-F]+|\d+))\s*=\s*"((?:[^"\\]|\\.)*)"'
+    )
+
+    pos = 0
+    while True:
+        m = enum_start.search(section, pos)
+        if not m:
+            break
+        title = m.group(1)
+        open_paren = m.end() - 1
+        close_paren = _find_matching_paren(section, open_paren)
+        if close_paren < 0:
+            break
+        body = section[open_paren + 1:close_paren]
+        values = {}
+        for pm in pair_re.finditer(body):
+            raw_key = pm.group(1)
+            if raw_key.lower().startswith('0x'):
+                val = int(raw_key, 16)
+            else:
+                val = int(raw_key)
+            values[val] = pm.group(2)
+        if values:
+            enums[title] = values
+        pos = close_paren + 1
+
+    return enums
+
+
 def extract_enums_from_file(filepath):
-    """Extract enum definitions from C header files"""
     try:
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             content = f.read()
@@ -12,7 +93,6 @@ def extract_enums_from_file(filepath):
     
     enums = {}
     
-    #Pattern to match typedef enum blocks
     enum_pattern = re.compile(
         r'typedef\s+enum\s*\{([^}]+)\}\s*(cmr_can\w+_t)\s*;',
         re.MULTILINE | re.DOTALL
@@ -23,12 +103,10 @@ def extract_enums_from_file(filepath):
     for enum_content, enum_name in matches:
         #Extract the middle part (remove cmr_can prefix and _t suffix)
         if enum_name.startswith('cmr_can') and enum_name.endswith('_t'):
-            #Extract middle part: cmr_canState_t -> State
             middle_part = enum_name[7:-2]
             
             enum_values = {}
             
-            #Split by lines and process each line
             lines = enum_content.split('\n')
             current_value = 0
             
@@ -37,7 +115,6 @@ def extract_enums_from_file(filepath):
                 if not line or line.startswith('/*') or line.startswith('//'):
                     continue
                 
-                #Remove comments from end of line
                 line = re.sub(r'//.*$', '', line)
                 line = re.sub(r'/\*.*?\*/', '', line)
                 line = line.strip()
@@ -47,13 +124,11 @@ def extract_enums_from_file(filepath):
                 
                 line = line.rstrip(',')
                 
-                #Check for explicit value assignment
                 if '=' in line:
                     parts = line.split('=', 1)
                     enum_member = parts[0].strip()
                     try:
                         value_part = parts[1].strip()
-                        #Handle hex values, bit shifts, etc.
                         if value_part.startswith('(') and value_part.endswith(')'):
                             value_part = value_part[1:-1]
                         
@@ -65,20 +140,17 @@ def extract_enums_from_file(filepath):
                             if shift_match:
                                 base_value = shift_match.group(1)
                                 shift_amount = int(shift_match.group(2))
-                                # Parse base value (could be hex or decimal)
                                 if base_value.startswith('0x') or base_value.startswith('0X'):
                                     base = int(base_value, 16)
                                 else:
                                     base = int(base_value.rstrip('U'))
                                 current_value = base << shift_amount
                             else:
-                                # Try to evaluate it directly
                                 try:
                                     current_value = eval(value_part.replace('U', ''))
                                 except:
                                     current_value = int(value_part)
                         else:
-                            # Handle plain integers with optional U suffix
                             try:
                                 current_value = int(value_part.rstrip('U'))
                             except ValueError:
@@ -89,12 +161,9 @@ def extract_enums_from_file(filepath):
                     enum_member = line.strip()
                 
                 if enum_member:
-                    #Convert enum member name to display string
                     if enum_member.startswith('CMR_CAN_'):
-                        #Remove CMR_CAN_ prefix and convert to title case
                         display_name = enum_member[8:]
                         
-                        #Remove the enum type prefix if it exists
                         upper_middle = middle_part.upper()
                         if display_name.startswith(upper_middle + '_'):
                             display_name = display_name[len(upper_middle) + 1:]
@@ -102,7 +171,6 @@ def extract_enums_from_file(filepath):
                         enum_values[current_value] = display_name
                         current_value += 1
                     elif '_LEN' not in enum_member and '_UNKNOWN' not in enum_member:
-                        #For other enum members, use as is but clean up
                         enum_values[current_value] = enum_member
                         current_value += 1
             
@@ -112,38 +180,32 @@ def extract_enums_from_file(filepath):
     return enums
 
 def format_enum_for_symbol_file(enum_name, enum_values, max_line_len=70):
-    """Format an enum for the symbol file with line wrapping if too long"""
     sorted_items = sorted(enum_values.items())
     
     formatted_values = []
     for value, name in sorted_items:
         formatted_values.append(f'{value}="{name}"')
     
-    # Start with "enum X("
     prefix = f'enum {enum_name}('
     lines = [prefix]
     
     for i, val in enumerate(formatted_values):
-        # Add comma before item except the first
         if i > 0:
             candidate = lines[-1] + ', ' + val
         else:
             candidate = lines[-1] + val
         
-        # If candidate line exceeds max length, start new line
         if len(candidate) > max_line_len and i > 0:
-            lines[-1] = lines[-1] + ','  # close previous line with comma
-            lines.append('    ' + val)   # indent wrapped line
+            lines[-1] = lines[-1] + ','
+            lines.append('    ' + val)
         else:
             lines[-1] = candidate
     
-    # Close with ")"
     lines[-1] = lines[-1] + ')'
     
     return '\n'.join(lines)
 
 def find_header_files(root_dir):
-    """Find all header files in the directory tree, filtering for can_types.h only"""
     header_files = []
     for root, dirs, files in os.walk(root_dir):
         for filename in files:
@@ -152,10 +214,33 @@ def find_header_files(root_dir):
                 header_files.append(os.path.join(root, filename))
     return header_files
 
-def generate_symbol_enums(root_dir=".", output_file="stm32f413-drivers/PCAN/CMR 26x.sym"):
-    """Generate enum definitions and prepend to existing symbol file"""
-    
-    #Find all can_types.h files
+
+def merge_enums_25e_then_headers(enums_25e, header_files):
+    by_key = {}
+    for title, values in enums_25e.items():
+        k = title.casefold()
+        by_key[k] = (title, dict(values))
+    for filepath in header_files:
+        file_enums = extract_enums_from_file(filepath)
+        for title, values in file_enums.items():
+            k = title.casefold()
+            by_key[k] = (title, dict(values))
+    return {t: v for t, v in by_key.values()}
+
+
+def generate_symbol_enums(
+    root_dir=".",
+    output_file="stm32f413-drivers/PCAN/CMR 26x.sym",
+    sym_25e_file=None,
+):
+    #merge in enums from 25e, without replacing existing 26x enums
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    if sym_25e_file is None:
+        sym_25e_file = os.path.normpath(
+            os.path.join(script_dir, '..', 'PCAN', 'CMR 25e.sym')
+        )
+
     header_files = find_header_files(root_dir)
     
     if not header_files:
@@ -166,18 +251,23 @@ def generate_symbol_enums(root_dir=".", output_file="stm32f413-drivers/PCAN/CMR 
     for f in header_files:
         print(f"  {f}")
     
-    all_enums = {}
-    
-    #Process each header file
-    for filepath in header_files:
-        file_enums = extract_enums_from_file(filepath)
-        all_enums.update(file_enums)
+    enums_25e = extract_enums_from_sym_file(sym_25e_file)
+    if enums_25e:
+        print(
+            f"Loaded {len(enums_25e)} enum(s) from {sym_25e_file} "
+            "(same title, any case, overridden by can_types.h)"
+        )
+    elif os.path.exists(sym_25e_file):
+        print(f"Note: no enums parsed from {sym_25e_file}")
+    else:
+        print(f"Note: 25e symbol file not found: {sym_25e_file}")
+
+    all_enums = merge_enums_25e_then_headers(enums_25e, header_files)
     
     if not all_enums:
         print("No enums found!")
         return
     
-    #Read existing file content if it exists
     existing_content = ""
     if os.path.exists(output_file):
         try:
@@ -188,10 +278,8 @@ def generate_symbol_enums(root_dir=".", output_file="stm32f413-drivers/PCAN/CMR 
             print(f"Error reading existing file {output_file}: {e}")
             return
     
-    #Always start with header content
     final_content_parts = []
     
-    #Add file header first
     header_content = [
         'FormatVersion=5.0 // Do not edit this line!',
         'UniqueVariables=True',
@@ -206,8 +294,7 @@ def generate_symbol_enums(root_dir=".", output_file="stm32f413-drivers/PCAN/CMR 
         '{ENUMS}'
     ])
     
-    #Sort enums by name for consistent output
-    for enum_name in sorted(all_enums.keys()):
+    for enum_name in sorted(all_enums.keys(), key=str.casefold):
         enum_values = all_enums[enum_name]
         enum_line = format_enum_for_symbol_file(enum_name, enum_values)
         final_content_parts.append(enum_line)
@@ -220,12 +307,11 @@ def generate_symbol_enums(root_dir=".", output_file="stm32f413-drivers/PCAN/CMR 
         ''
     ])
     
-    #Add existing content (with auto-generated section removed)
     if existing_content:
         lines = existing_content.split('\n')
         filtered_lines = []
         in_auto_section = False
-        skip_header = True  #Skip the header from existing content since we're adding our own
+        skip_header = True
         
         for line in lines:
             if skip_header:
@@ -246,17 +332,13 @@ def generate_symbol_enums(root_dir=".", output_file="stm32f413-drivers/PCAN/CMR 
             elif not in_auto_section:
                 filtered_lines.append(line)
         
-        #Add the cleaned existing content
         cleaned_existing_content = '\n'.join(filtered_lines).strip()
         if cleaned_existing_content:
             final_content_parts.append(cleaned_existing_content)
     
-    #Join all parts
     final_content = '\n'.join(final_content_parts)
     
-    #Write the combined content to file
     try:
-        #Create directory if it doesn't exist
         os.makedirs(os.path.dirname(output_file), exist_ok=True)
         
         with open(output_file, 'w', encoding='utf-8') as f:
@@ -264,7 +346,9 @@ def generate_symbol_enums(root_dir=".", output_file="stm32f413-drivers/PCAN/CMR 
         
         print(f"Successfully wrote {len(all_enums)} enums to {output_file}")
         
-        for enum_name, enum_values in sorted(all_enums.items()):
+        for enum_name, enum_values in sorted(
+            all_enums.items(), key=lambda kv: kv[0].casefold()
+        ):
             print(f"  {enum_name}: {len(enum_values)} values")
             
     except Exception as e:

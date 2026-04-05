@@ -236,35 +236,35 @@ bool getAcknowledgeButton(void) {
  *
  * @return highest motor temperature in celsius, rounded to integer
  */
-int getMaxMotorTemp(void){
-	/* Get CAN data */
-	// Front Left
-	cmr_canDTI_TX_TempFault_t *canDTI_FL_temp = getPayload(CANRX_DTI_FL_TEMPFAULT);
+// int getMaxMotorTemp(void){
+// 	/* Get CAN data */
+// 	// Front Left
+// 	cmr_canDTI_TX_TempFault_t *canDTI_FL_temp = getPayload(CANRX_DTI_FL_TEMPFAULT);
 
-	// Front Right
-	cmr_canDTI_TX_TempFault_t *canDTI_FR_temp = getPayload(CANRX_DTI_FR_TEMPFAULT);
+// 	// Front Right
+// 	cmr_canDTI_TX_TempFault_t *canDTI_FR_temp = getPayload(CANRX_DTI_FR_TEMPFAULT);
 
-	// Rear Left
-	cmr_canDTI_TX_TempFault_t *canDTI_RL_temp = getPayload(CANRX_DTI_RL_TEMPFAULT);
+// 	// Rear Left
+// 	cmr_canDTI_TX_TempFault_t *canDTI_RL_temp = getPayload(CANRX_DTI_RL_TEMPFAULT);
 
-	// Rear Right
-	cmr_canDTI_TX_TempFault_t *canDTI_RR_temp = getPayload(CANRX_DTI_RR_TEMPFAULT);
+// 	// Rear Right
+// 	cmr_canDTI_TX_TempFault_t *canDTI_RR_temp = getPayload(CANRX_DTI_RR_TEMPFAULT);
 
-	/* Extract motor temperatures */
-    //TODO: does this need to be int32_t or int16_t?? and what is multiplied by 10?
-	int32_t frontLeftTemp = canDTI_FL_temp->motor_temp;
-	int32_t frontRightTemp = canDTI_FR_temp->motor_temp;
-	int32_t rearLeftTemp = canDTI_RL_temp->motor_temp;
-	int32_t rearRightTemp = canDTI_RR_temp->motor_temp;
+// 	/* Extract motor temperatures */
+//     //TODO: does this need to be int32_t or int16_t?? and what is multiplied by 10?
+// 	int32_t frontLeftTemp = canDTI_FL_temp->motor_temp;
+// 	int32_t frontRightTemp = canDTI_FR_temp->motor_temp;
+// 	int32_t rearLeftTemp = canDTI_RL_temp->motor_temp;
+// 	int32_t rearRightTemp = canDTI_RR_temp->motor_temp;
 
-	/* Return highest motor temperature*/
-	int32_t maxTemp = frontLeftTemp;
+// 	/* Return highest motor temperature*/
+// 	int32_t maxTemp = frontLeftTemp;
 
-	maxTemp = max(max(max(maxTemp, frontRightTemp), rearLeftTemp), rearRightTemp);
-/* conversion from dC to C*/
-	return maxTemp / 10;
+// 	maxTemp = max(max(max(maxTemp, frontRightTemp), rearLeftTemp), rearRightTemp);
+// /* conversion from dC to C*/
+// 	return maxTemp / 10;
 
-}
+// }
 
 /**
  * @brief Gets the ac temperature.
@@ -286,34 +286,34 @@ int getACTemp(void)
  *
  * @return mc temperature in celsius
  */
-int getMCTemp(void)
-{
-	/* Get CAN data */
-	// Front Left
-	cmr_canDTI_TX_TempFault_t *canDTI_FL_temp = getPayload(CANRX_DTI_FL_TEMPFAULT);
+// int getMCTemp(void)
+// {
+// 	/* Get CAN data */
+// 	// Front Left
+// 	cmr_canDTI_TX_TempFault_t *canDTI_FL_temp = getPayload(CANRX_DTI_FL_TEMPFAULT);
 
-	// Front Right
-	cmr_canDTI_TX_TempFault_t *canDTI_FR_temp = getPayload(CANRX_DTI_FR_TEMPFAULT);
+// 	// Front Right
+// 	cmr_canDTI_TX_TempFault_t *canDTI_FR_temp = getPayload(CANRX_DTI_FR_TEMPFAULT);
 
-	// Rear Left
-	cmr_canDTI_TX_TempFault_t *canDTI_RL_temp = getPayload(CANRX_DTI_RL_TEMPFAULT);
+// 	// Rear Left
+// 	cmr_canDTI_TX_TempFault_t *canDTI_RL_temp = getPayload(CANRX_DTI_RL_TEMPFAULT);
 
-	// Rear Right
-	cmr_canDTI_TX_TempFault_t *canDTI_RR_temp = getPayload(CANRX_DTI_RR_TEMPFAULT);
+// 	// Rear Right
+// 	cmr_canDTI_TX_TempFault_t *canDTI_RR_temp = getPayload(CANRX_DTI_RR_TEMPFAULT);
 
-    //TODO: does this need to be int32_t or int16_t?? and what is multiplied by 10?
-    // is this controller temp?
-	int32_t frontLeftMCTemp = canDTI_FL_temp->ctlr_temp;
-	int32_t frontRightMCTemp = canDTI_FR_temp->ctlr_temp;
-	int32_t rearLeftMCTemp = canDTI_RL_temp->ctlr_temp;
-	int32_t rearRightMCTemp = canDTI_RR_temp->ctlr_temp;
+//     //TODO: does this need to be int32_t or int16_t?? and what is multiplied by 10?
+//     // is this controller temp?
+// 	int32_t frontLeftMCTemp = canDTI_FL_temp->ctlr_temp;
+// 	int32_t frontRightMCTemp = canDTI_FR_temp->ctlr_temp;
+// 	int32_t rearLeftMCTemp = canDTI_RL_temp->ctlr_temp;
+// 	int32_t rearRightMCTemp = canDTI_RR_temp->ctlr_temp;
 
-	/* Return highest motor temperature*/
-	int32_t maxTemp = frontLeftMCTemp;
+// 	/* Return highest motor temperature*/
+// 	int32_t maxTemp = frontLeftMCTemp;
 
-	maxTemp = max(max(max(maxTemp, frontRightMCTemp), rearLeftMCTemp), rearRightMCTemp);
-	return maxTemp / 10;
-}
+// 	maxTemp = max(max(max(maxTemp, frontRightMCTemp), rearLeftMCTemp), rearRightMCTemp);
+// 	return maxTemp / 10;
+// }
 
 /**
  * @brief Gets the door state
@@ -565,7 +565,11 @@ static volatile int requestedGear;
 void reqGear(void) {
     bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) 
                        || (stateGetVSM() == CMR_CAN_HV_EN));
-    if(getASMS() && cmr_gpioRead(GPIO_CTRL_SWITCH)) {
+    if(getASMS()/* && cmr_gpioRead(GPIO_CTRL_SWITCH)*/) {
+        if(CMR_CAN_GEAR_DV_MISSION_MAX <= state.gear || state.gear <= CMR_CAN_GEAR_DV_MISSION_MIN) {
+            state.gear = CMR_CAN_GEAR_DV_MISSION_ACCEL;
+            state.gearReq = CMR_CAN_GEAR_DV_MISSION_ACCEL;
+        }
         if(canChangeGear && buttonStates[RIGHT].isPressed) {
             if(state.gearReq == CMR_CAN_GEAR_DV_MISSION_MAX - 1) {
                 state.gearReq = CMR_CAN_GEAR_DV_MISSION_MIN + 1;
@@ -582,6 +586,10 @@ void reqGear(void) {
         }
     }
     else if (!getASMS()) {
+        if(CMR_CAN_GEAR_MAX <= state.gear || state.gear <= CMR_CAN_GEAR_MIN) {
+            state.gear = CMR_CAN_GEAR_SLOW;
+            state.gearReq = CMR_CAN_GEAR_SLOW;
+        }
         if(canChangeGear && buttonStates[RIGHT].isPressed) {
             if(state.gearReq == CMR_CAN_GEAR_MAX - 1) {
                 state.gearReq = CMR_CAN_GEAR_MIN + 1;
@@ -745,6 +753,14 @@ static void stateMachine(void *pvParameters){
  * @brief Initializes the state machine interface.
  */
 void stateMachineInit(void) {
+    if(getASMS()) {
+        state.gear = CMR_CAN_GEAR_DV_MISSION_ACCEL;
+        state.gearReq = CMR_CAN_GEAR_DV_MISSION_ACCEL;
+    }
+    else {
+        state.gear = CMR_CAN_GEAR_SLOW;
+        state.gearReq = CMR_CAN_GEAR_SLOW;
+    }
     cmr_taskInit(
         &stateMachine_task,
         "stateMachine",

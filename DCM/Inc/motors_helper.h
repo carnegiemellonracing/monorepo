@@ -44,7 +44,7 @@ typedef struct {
 // Public Function Declarations
 
 int16_t convertNmToDTITorque(float torque_Nm);
-volatile cmr_canDTI_TX_Erpm_t *getDTIErpm(motorLocation_t motor);
+int32_t getDTIErpm(motorLocation_t motor);
 volatile cmr_canDTI_TX_Current_t *getDTICurrent(motorLocation_t motor);
 volatile cmr_canDTI_TX_TempFault_t *getDTITempFault(motorLocation_t motor);
 volatile cmr_canDTI_TX_IdIq_t *getDTIIdIq(motorLocation_t motor);

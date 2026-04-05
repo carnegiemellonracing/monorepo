@@ -155,6 +155,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/sensoric.c
     ${CMAKE_SOURCE_DIR}/Src/sensors.c
     ${CMAKE_SOURCE_DIR}/Src/servo.c
+    ${CMAKE_SOURCE_DIR}/Src/steering.c
     ${CMAKE_SOURCE_DIR}/Src/syscalls.c
     ${CMAKE_SOURCE_DIR}/Src/sysmem.c
 )

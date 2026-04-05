@@ -52,6 +52,8 @@ void disableTorqueMode();
 void setTorqueLimsUnprotected (motorLocation_t motor, float torqueLimPos_Nm, float torqueLimNeg_Nm);
 void setTorqueLimsAllProtected(float torqueLimPos_Nm, float torqueLimNeg_Nm);
 void setTorqueLimsAllDistProtected(float torqueLimPos_Nm, float torqueLimNeg_Nm, const cmr_loadDistribution_t *distPos, const cmr_loadDistribution_t *distNeg);
+void setTorques (motorLocation_t motor, float torque_Nm);
+void setTorquesAll (float torque_Nm);
 void setVelocityInt16(motorLocation_t motor, int16_t velocity_rpm);
 void setVelocityFloat(motorLocation_t motor, float velocity_rpm);
 void setVelocityInt16All(int16_t velocity_rpm);

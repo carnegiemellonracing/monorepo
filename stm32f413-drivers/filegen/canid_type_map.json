@@ -1,14 +1,34 @@
 {
     "canid_to_info": {
+        "CMR_CANID_AFC0_DRIVER_TEMPS": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "velocity_rpm"
+        },
         "CMR_CANID_ASMS_STATUS": {
             "cycleTime": 10,
             "timeOut": 50,
             "type": "AS_Status"
         },
+        "CMR_CANID_AS_MISSION_FINISHED": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "missionFinished"
+        },
         "CMR_CANID_AS_PRESSURE_READINGS": {
             "cycleTime": 10,
             "timeOut": 50,
             "type": "cmr_canDVPressureReadings_t"
+        },
+        "CMR_CANID_AS_RES_ENABLE": {
+            "cycleTime": 10,
+            "timeOut": 50,
+            "type": "res_enable"
+        },
+        "CMR_CANID_AUTONOMOUS_ACTION": {
+            "cycleTime": 400.0,
+            "timeOut": 2000,
+            "type": "cmr_canAutonomousControlAction_t"
         },
         "CMR_CANID_CDC_COG_VELOCITY": {
             "cog_x_mps": {
@@ -432,6 +452,11 @@
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
         },
+        "CMR_CANID_EAB_STATUS": {
+            "cycleTime": 10,
+            "timeOut": 50,
+            "type": "eabStatus"
+        },
         "CMR_CANID_EMD_MEASUREMENT": {
             "current": {
                 "u": "A"
@@ -459,14 +484,20 @@
             "type": "cmr_can_front_whl_velocity_t"
         },
         "CMR_CANID_FSM_DATA": {
+            "brakePedalPosition_percent": {
+                "u": "%"
+            },
+            "brakePressureFront_PSI": {
+                "u": "PSI"
+            },
             "cycleTime": 10,
             "timeOut": 50,
-            "type": "cmr_canFSMSensorsADC_t"
+            "type": "cmr_canFSMData_t"
         },
         "CMR_CANID_FSM_PEDALS_ADC": {
             "cycleTime": 100,
             "timeOut": 500,
-            "type": "cmr_canFSMSensorsADC_t"
+            "type": "cmr_canFSMPedalsADC_t"
         },
         "CMR_CANID_FSM_POWER_DIAGNOSTICS": {
             "busCurrent_mA": {
@@ -486,8 +517,16 @@
         },
         "CMR_CANID_FSM_SWANGLE": {
             "cycleTime": 10,
+            "steeringWheelAngle_millideg_FL": {
+                "f": 0.001,
+                "u": "deg"
+            },
+            "steeringWheelAngle_millideg_FR": {
+                "f": 0.001,
+                "u": "deg"
+            },
             "timeOut": 50,
-            "type": "cmr_canFSMSensorsADC_t"
+            "type": "cmr_canFSMSWAngle_t"
         },
         "CMR_CANID_HEARTBEAT_CDC": {
             "cycleTime": 10,
@@ -897,15 +936,9 @@
             "type": "cmr_canVSMPowerDiagnostics_t"
         },
         "CMR_CANID_VSM_SENSORS": {
-            "busCurrent_mA": {
-                "u": "mA"
-            },
-            "busVoltage_mV": {
-                "u": "mV"
-            },
             "cycleTime": 5,
             "timeOut": 25,
-            "type": "cmr_canVSMPowerDiagnostics_t"
+            "type": "cmr_canVSMSensors_t"
         },
         "CMR_CANID_VSM_STATUS": {
             "badStateMatrix": {
@@ -929,20 +962,20 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2927,
-        "files_with_matches": 2927,
+        "files_processed": 2907,
+        "files_with_matches": 2907,
         "global_mappings": {
             "canrx_mappings": 179,
-            "canrx_timeouts": 173,
-            "canrx_types": 76,
-            "constants": 252,
+            "canrx_timeouts": 170,
+            "canrx_types": 75,
+            "constants": 258,
             "struct_members": 0,
-            "variable_types": 333
+            "variable_types": 334
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 106
+        "total_canids": 111
     }
 }
