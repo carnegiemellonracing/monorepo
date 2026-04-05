@@ -86,67 +86,67 @@ void fansOff();
  * @return Does not return.
  */
 
-void fansOn() {
-    //int accum_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_1) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_2)) / 2;
-    // Below: revision - using CAN to get data from HVC
-    //Next line's citation: from what nsaizan wrote in this file above
-    // Use the temperature of the hottest cell as the AC's temperature
-    // if accumtemp < 56 remain at low speed
-    // if accumtemp > 58 remain at high speed
-    // linear in between
+// void fansOn() {
+//     //int accum_temp = (cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_1) + cmr_sensorListGetValue(sensors, SENSOR_CH_THERM_2)) / 2;
+//     // Below: revision - using CAN to get data from HVC
+//     //Next line's citation: from what nsaizan wrote in this file above
+//     // Use the temperature of the hottest cell as the AC's temperature
+//     // if accumtemp < 56 remain at low speed
+//     // if accumtemp > 58 remain at high speed
+//     // linear in between
 
-    // Get motor temperatures for each inverter.
-    cmr_canDTI_TX_TempFault_t *inv1_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_FL_TEMPFAULT);
-    int16_t inv1MotorTemp_dC = inv1_temps->motor_temp;
-    cmr_canDTI_TX_TempFault_t *inv2_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_FR_TEMPFAULT);
-    int16_t inv2MotorTemp_dC = inv2_temps->motor_temp;
-    cmr_canDTI_TX_TempFault_t *inv3_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_RL_TEMPFAULT);
-    int16_t inv3MotorTemp_dC = inv3_temps->motor_temp;
-    cmr_canDTI_TX_TempFault_t *inv4_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_RR_TEMPFAULT);
-    int16_t inv4MotorTemp_dC = inv4_temps->motor_temp;
+//     // Get motor temperatures for each inverter.
+//     cmr_canDTI_TX_TempFault_t *inv1_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_FL_TEMPFAULT);
+//     int16_t inv1MotorTemp_dC = inv1_temps->motor_temp;
+//     cmr_canDTI_TX_TempFault_t *inv2_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_FR_TEMPFAULT);
+//     int16_t inv2MotorTemp_dC = inv2_temps->motor_temp;
+//     cmr_canDTI_TX_TempFault_t *inv3_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_RL_TEMPFAULT);
+//     int16_t inv3MotorTemp_dC = inv3_temps->motor_temp;
+//     cmr_canDTI_TX_TempFault_t *inv4_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_RR_TEMPFAULT);
+//     int16_t inv4MotorTemp_dC = inv4_temps->motor_temp;
 
-    int16_t motor_temp_avg = (inv1MotorTemp_dC + inv2MotorTemp_dC + inv3MotorTemp_dC + inv4MotorTemp_dC) / 4;
+//     int16_t motor_temp_avg = (inv1MotorTemp_dC + inv2MotorTemp_dC + inv3MotorTemp_dC + inv4MotorTemp_dC) / 4;
 
-    if (motor_temp_avg < FAN_MOTOR_TEMP_LOW_dC)
-        fan_1_State = FAN_MOTOR_STATE_LOW;
-    else if (motor_temp_avg > FAN_MOTOR_TEMP_HIGH_dC)
-        fan_1_State = FAN_MOTOR_STATE_HIGH;
-    else {
-        fan_1_State = (FAN_MOTOR_STATE_HIGH - FAN_MOTOR_STATE_LOW) * (motor_temp_avg - FAN_MOTOR_TEMP_LOW_dC) / (FAN_MOTOR_TEMP_HIGH_dC - FAN_MOTOR_TEMP_LOW_dC) + FAN_MOTOR_STATE_LOW;
-    }
-    fan_1_State = (fan_1_State > 100) ? 100 : fan_1_State;
+//     if (motor_temp_avg < FAN_MOTOR_TEMP_LOW_dC)
+//         fan_1_State = FAN_MOTOR_STATE_LOW;
+//     else if (motor_temp_avg > FAN_MOTOR_TEMP_HIGH_dC)
+//         fan_1_State = FAN_MOTOR_STATE_HIGH;
+//     else {
+//         fan_1_State = (FAN_MOTOR_STATE_HIGH - FAN_MOTOR_STATE_LOW) * (motor_temp_avg - FAN_MOTOR_TEMP_LOW_dC) / (FAN_MOTOR_TEMP_HIGH_dC - FAN_MOTOR_TEMP_LOW_dC) + FAN_MOTOR_STATE_LOW;
+//     }
+//     fan_1_State = (fan_1_State > 100) ? 100 : fan_1_State;
 
-    // Get igbt temperatures for each inverter.
-    int16_t inv1IgbtTemp_dC = inv1_temps->ctlr_temp;
-    int16_t inv2IgbtTemp_dC = inv2_temps->ctlr_temp;
-    int16_t inv3IgbtTemp_dC = inv3_temps->ctlr_temp;
-    int16_t inv4IgbtTemp_dC = inv4_temps->ctlr_temp;
+//     // Get igbt temperatures for each inverter.
+//     int16_t inv1IgbtTemp_dC = inv1_temps->ctlr_temp;
+//     int16_t inv2IgbtTemp_dC = inv2_temps->ctlr_temp;
+//     int16_t inv3IgbtTemp_dC = inv3_temps->ctlr_temp;
+//     int16_t inv4IgbtTemp_dC = inv4_temps->ctlr_temp;
 
-    // Use average igbt temperature
-    int16_t inverter_temp = (inv1IgbtTemp_dC + inv2IgbtTemp_dC + inv3IgbtTemp_dC + inv4IgbtTemp_dC) / 4;
-    // if inverter_temp < 56 remain at low speed
-    // if inverter_temp > 58 remain at high speed
-    // linear in between                
+//     // Use average igbt temperature
+//     int16_t inverter_temp = (inv1IgbtTemp_dC + inv2IgbtTemp_dC + inv3IgbtTemp_dC + inv4IgbtTemp_dC) / 4;
+//     // if inverter_temp < 56 remain at low speed
+//     // if inverter_temp > 58 remain at high speed
+//     // linear in between                
 
-    if (inverter_temp < FAN_INVERTER_TEMP_LOW_dC) 
-        fan_2_State = FAN_INVERTER_STATE_LOW;
-    else if (inverter_temp > FAN_INVERTER_TEMP_HIGH_dC)
-        fan_2_State = FAN_INVERTER_STATE_HIGH;
-    else {
-        fan_2_State = (FAN_INVERTER_STATE_HIGH - FAN_INVERTER_STATE_LOW) * (inverter_temp - FAN_INVERTER_TEMP_LOW_dC) / (FAN_INVERTER_TEMP_HIGH_dC - FAN_INVERTER_TEMP_LOW_dC) + FAN_INVERTER_STATE_LOW;
-    }
-    fan_2_State = (fan_2_State > 100) ? 100 : fan_2_State;
+//     if (inverter_temp < FAN_INVERTER_TEMP_LOW_dC) 
+//         fan_2_State = FAN_INVERTER_STATE_LOW;
+//     else if (inverter_temp > FAN_INVERTER_TEMP_HIGH_dC)
+//         fan_2_State = FAN_INVERTER_STATE_HIGH;
+//     else {
+//         fan_2_State = (FAN_INVERTER_STATE_HIGH - FAN_INVERTER_STATE_LOW) * (inverter_temp - FAN_INVERTER_TEMP_LOW_dC) / (FAN_INVERTER_TEMP_HIGH_dC - FAN_INVERTER_TEMP_LOW_dC) + FAN_INVERTER_STATE_LOW;
+//     }
+//     fan_2_State = (fan_2_State > 100) ? 100 : fan_2_State;
 
-    // duty cycle is inverted because of MOSFETS
-    cmr_pwmSetDutyCycle(&fan_1_PWM, (uint32_t) 100-fan_1_State);
-    cmr_pwmSetDutyCycle(&fan_2_PWM, (uint32_t) 100-fan_2_State);
+//     // duty cycle is inverted because of MOSFETS
+//     cmr_pwmSetDutyCycle(&fan_1_PWM, (uint32_t) 100-fan_1_State);
+//     cmr_pwmSetDutyCycle(&fan_2_PWM, (uint32_t) 100-fan_2_State);
     
-    if (fan_1_State >= 50 || fan_2_State >= 50) {
-        cmr_gpioWrite(GPIO_FAN_ON, 1);
-    } else {
-        cmr_gpioWrite(GPIO_FAN_ON, 0);
-    }
-}
+//     if (fan_1_State >= 50 || fan_2_State >= 50) {
+//         cmr_gpioWrite(GPIO_FAN_ON, 1);
+//     } else {
+//         cmr_gpioWrite(GPIO_FAN_ON, 0);
+//     }
+// }
 
 void fansOff() {
     fan_1_State = 0;

@@ -96,70 +96,70 @@ void pumpsOn() {
     // linear in between
 
     // Get igbt temperatures for each inverter.
-    cmr_canDTI_TX_TempFault_t *inv1_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_FL_TEMPFAULT);
-    int16_t inv1MotorTemp_dC = inv1_temps->motor_temp;
-    cmr_canDTI_TX_TempFault_t *inv2_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_FR_TEMPFAULT);
-    int16_t inv2MotorTemp_dC = inv2_temps->motor_temp;
-    cmr_canDTI_TX_TempFault_t *inv3_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_RL_TEMPFAULT);
-    int16_t inv3MotorTemp_dC = inv3_temps->motor_temp;
-    cmr_canDTI_TX_TempFault_t *inv4_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_RR_TEMPFAULT);
-    int16_t inv4MotorTemp_dC = inv4_temps->motor_temp;
+    // cmr_canDTI_TX_TempFault_t *inv1_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_FL_TEMPFAULT);
+    // int16_t inv1MotorTemp_dC = inv1_temps->motor_temp;
+    // cmr_canDTI_TX_TempFault_t *inv2_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_FR_TEMPFAULT);
+    // int16_t inv2MotorTemp_dC = inv2_temps->motor_temp;
+    // cmr_canDTI_TX_TempFault_t *inv3_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_RL_TEMPFAULT);
+    // int16_t inv3MotorTemp_dC = inv3_temps->motor_temp;
+    // cmr_canDTI_TX_TempFault_t *inv4_temps = (cmr_canDTI_TX_TempFault_t *) canTractiveGetPayload(CANRX_TRAC_RR_TEMPFAULT);
+    // int16_t inv4MotorTemp_dC = inv4_temps->motor_temp;
 
-    int16_t motor_temp_avg = (inv1MotorTemp_dC + inv2MotorTemp_dC + inv3MotorTemp_dC + inv4MotorTemp_dC) / 4;
+    // int16_t motor_temp_avg = (inv1MotorTemp_dC + inv2MotorTemp_dC + inv3MotorTemp_dC + inv4MotorTemp_dC) / 4;
 
-    if (motor_temp_avg < PUMP_MOTOR_TEMP_LOW_dC)
-        pump_Left_State = PUMP_MOTOR_STATE_LOW;
-    else if (motor_temp_avg > PUMP_MOTOR_TEMP_HIGH_dC)
-        pump_Left_State = PUMP_MOTOR_STATE_HIGH;
-    else {
-        pump_Left_State = ((PUMP_MOTOR_STATE_HIGH - PUMP_MOTOR_STATE_LOW) * (motor_temp_avg - PUMP_MOTOR_TEMP_LOW_dC)) / (PUMP_MOTOR_TEMP_HIGH_dC - PUMP_MOTOR_TEMP_LOW_dC) + PUMP_MOTOR_STATE_LOW;
-    }
-    pump_Left_State = (pump_Left_State < 100) ? pump_Left_State : 100;
-
-    // Get igbt temperatures for each inverter.
-    int16_t inv1IgbtTemp_dC = inv1_temps->ctlr_temp;
-    int16_t inv2IgbtTemp_dC = inv2_temps->ctlr_temp;
-    int16_t inv3IgbtTemp_dC = inv3_temps->ctlr_temp;
-    int16_t inv4IgbtTemp_dC = inv4_temps->ctlr_temp;
-
-    // Use average igbt temperature - derates at 50C
-    int16_t inverter_temp = (inv1IgbtTemp_dC + inv2IgbtTemp_dC + inv3IgbtTemp_dC + inv4IgbtTemp_dC) / 4;
-    // if inverter_temp < 44 remain at low speed
-    // if inverter_temp > 48 remain at high speed
-    // linear in between                
-
-    if (inverter_temp < PUMP_INVERTER_TEMP_LOW_dC)
-        pump_Right_State = PUMP_INVERTER_STATE_LOW;
-    else if (inverter_temp > PUMP_INVERTER_TEMP_HIGH_dC)
-        pump_Right_State = PUMP_INVERTER_STATE_HIGH;
-    else {
-        pump_Right_State = ((PUMP_INVERTER_STATE_HIGH - PUMP_INVERTER_STATE_LOW) * (inverter_temp - PUMP_INVERTER_TEMP_LOW_dC) / (PUMP_INVERTER_TEMP_HIGH_dC - PUMP_INVERTER_TEMP_LOW_dC)) + PUMP_INVERTER_STATE_LOW;
-    }
-    pump_Right_State = (pump_Right_State < 100) ? pump_Right_State : 100;
-
-    // duty cycle is inverted because of MOSFETS
-    pwmSetDutyCycle(PWM_PUMP_LEFT, (uint32_t) 100-pump_Left_State);
-    pwmSetDutyCycle(PWM_PUMP_RIGHT, (uint32_t) 100-pump_Right_State);
-
-    // if(MAX(inv1IgbtTemp_dC, MAX(inv2IgbtTemp_dC, MAX(inv3IgbtTemp_dC, inv4IgbtTemp_dC))) > 400) {
-    //      cmr_gpioWrite(GPIO_PUMP_LEFT, 0);
-    //  }
-    //  else {
-    //      cmr_gpioWrite(GPIO_PUMP_LEFT, 1);
-    //  }
-    // if(MAX(inv1MotorTemp_dC, MAX(inv2MotorTemp_dC, MAX(inv3MotorTemp_dC, inv4MotorTemp_dC))) > 750) {
-    //      cmr_gpioWrite(GPIO_PUMP_RIGHT, 0);
-    //  }
-    //  else {
-    //      cmr_gpioWrite(GPIO_PUMP_RIGHT, 1);
-    //  }
-    // cmr_gpioWrite(GPIO_PUMP_ON, 0);
-    
-    // if (pump_Left_State >= 50 || pump_Right_State >= 50) {
-    //     cmr_gpioWrite(GPIO_PUMP_ON, 1);
-    // } else {
-    //     cmr_gpioWrite(GPIO_PUMP_ON, 0);
+    // if (motor_temp_avg < PUMP_MOTOR_TEMP_LOW_dC)
+    //     pump_Left_State = PUMP_MOTOR_STATE_LOW;
+    // else if (motor_temp_avg > PUMP_MOTOR_TEMP_HIGH_dC)
+    //     pump_Left_State = PUMP_MOTOR_STATE_HIGH;
+    // else {
+    //     pump_Left_State = ((PUMP_MOTOR_STATE_HIGH - PUMP_MOTOR_STATE_LOW) * (motor_temp_avg - PUMP_MOTOR_TEMP_LOW_dC)) / (PUMP_MOTOR_TEMP_HIGH_dC - PUMP_MOTOR_TEMP_LOW_dC) + PUMP_MOTOR_STATE_LOW;
     // }
+    // pump_Left_State = (pump_Left_State < 100) ? pump_Left_State : 100;
+
+    // // Get igbt temperatures for each inverter.
+    // int16_t inv1IgbtTemp_dC = inv1_temps->ctlr_temp;
+    // int16_t inv2IgbtTemp_dC = inv2_temps->ctlr_temp;
+    // int16_t inv3IgbtTemp_dC = inv3_temps->ctlr_temp;
+    // int16_t inv4IgbtTemp_dC = inv4_temps->ctlr_temp;
+
+    // // Use average igbt temperature - derates at 50C
+    // int16_t inverter_temp = (inv1IgbtTemp_dC + inv2IgbtTemp_dC + inv3IgbtTemp_dC + inv4IgbtTemp_dC) / 4;
+    // // if inverter_temp < 44 remain at low speed
+    // // if inverter_temp > 48 remain at high speed
+    // // linear in between                
+
+    // if (inverter_temp < PUMP_INVERTER_TEMP_LOW_dC)
+    //     pump_Right_State = PUMP_INVERTER_STATE_LOW;
+    // else if (inverter_temp > PUMP_INVERTER_TEMP_HIGH_dC)
+    //     pump_Right_State = PUMP_INVERTER_STATE_HIGH;
+    // else {
+    //     pump_Right_State = ((PUMP_INVERTER_STATE_HIGH - PUMP_INVERTER_STATE_LOW) * (inverter_temp - PUMP_INVERTER_TEMP_LOW_dC) / (PUMP_INVERTER_TEMP_HIGH_dC - PUMP_INVERTER_TEMP_LOW_dC)) + PUMP_INVERTER_STATE_LOW;
+    // }
+    // pump_Right_State = (pump_Right_State < 100) ? pump_Right_State : 100;
+
+    // // duty cycle is inverted because of MOSFETS
+    // pwmSetDutyCycle(PWM_PUMP_LEFT, (uint32_t) 100-pump_Left_State);
+    // pwmSetDutyCycle(PWM_PUMP_RIGHT, (uint32_t) 100-pump_Right_State);
+
+    // // if(MAX(inv1IgbtTemp_dC, MAX(inv2IgbtTemp_dC, MAX(inv3IgbtTemp_dC, inv4IgbtTemp_dC))) > 400) {
+    // //      cmr_gpioWrite(GPIO_PUMP_LEFT, 0);
+    // //  }
+    // //  else {
+    // //      cmr_gpioWrite(GPIO_PUMP_LEFT, 1);
+    // //  }
+    // // if(MAX(inv1MotorTemp_dC, MAX(inv2MotorTemp_dC, MAX(inv3MotorTemp_dC, inv4MotorTemp_dC))) > 750) {
+    // //      cmr_gpioWrite(GPIO_PUMP_RIGHT, 0);
+    // //  }
+    // //  else {
+    // //      cmr_gpioWrite(GPIO_PUMP_RIGHT, 1);
+    // //  }
+    // // cmr_gpioWrite(GPIO_PUMP_ON, 0);
+    
+    // // if (pump_Left_State >= 50 || pump_Right_State >= 50) {
+    // //     cmr_gpioWrite(GPIO_PUMP_ON, 1);
+    // // } else {
+    // //     cmr_gpioWrite(GPIO_PUMP_ON, 0);
+    // // }
 }
 
 void pumpsOff() {

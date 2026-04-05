@@ -1272,16 +1272,16 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
         cmr_canDTI_TX_Current_t *current = (cmr_canDTI_TX_Current_t*) data;
         switch(canID) {
             case(CMR_CANID_DTI_FL_CURRENT):
-                updateTorques(MOTOR_FL, currentToTorque(current->ac_current_dA));
+                updateTorques(MOTOR_FL, currentToTorque(parse_int16(&(current->ac_current_dA))));
                 break;
             case(CMR_CANID_DTI_FR_CURRENT):
-                updateTorques(MOTOR_FR, currentToTorque(current->ac_current_dA));
+                updateTorques(MOTOR_FR, currentToTorque(parse_int16(&(current->ac_current_dA))));
                 break;
             case(CMR_CANID_DTI_RL_CURRENT):
-                updateTorques(MOTOR_RL, currentToTorque(current->ac_current_dA));
+                updateTorques(MOTOR_RL, currentToTorque(parse_int16(&(current->ac_current_dA))));
                 break;
             case(CMR_CANID_DTI_RR_CURRENT):
-                updateTorques(MOTOR_RR, currentToTorque(current->ac_current_dA));
+                updateTorques(MOTOR_RR, currentToTorque(parse_int16(&(current->ac_current_dA))));
                 break;
         }
     }
@@ -1637,8 +1637,18 @@ int sendDTIMessage(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t 
 //     return parse_int16(dtiTempFault->motor_temp);
 // }
 
-int16_t getDTITorque(canRX_t rxMsg) {
-    cmr_canDTI_TX_Current_t *dtiCurrent = canTractiveGetPayload(rxMsg);
+int16_t getDTITorque(motorLocation_t motor) {
+    cmr_canDTI_TX_Current_t *dtiCurrent;
+    switch (motor) {
+        case MOTOR_FL:
+            dtiCurrent = canTractiveGetPayload(CANRX_TRAC_FL_CURRENT);
+        case MOTOR_FR:
+            dtiCurrent = canTractiveGetPayload(CANRX_TRAC_FR_CURRENT);
+        case MOTOR_RL:
+            dtiCurrent = canTractiveGetPayload(CANRX_TRAC_RL_CURRENT);
+        case MOTOR_RR:
+            dtiCurrent = canTractiveGetPayload(CANRX_TRAC_RR_CURRENT);
+    }
     return parse_int16(&(dtiCurrent->ac_current_dA));
 }
 

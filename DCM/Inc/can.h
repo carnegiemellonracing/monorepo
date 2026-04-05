@@ -10,6 +10,7 @@
 #include <CMR/fdcan.h>      // CMR CAN interface
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/can_ids.h>    // CMR CAN IDs
+#include <motors_helper.h>
 
 /**
  * @brief Vehicle CAN receive metadata indices.
@@ -205,6 +206,6 @@ int sendCubeMarsMessage(cmr_canBusID_t bus, cmr_canExtendedID_t id, const void *
 int sendDTIMessage(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t len, TickType_t timeout);
 int16_t getDTICtrlTemp(canRX_t rxMsg);
 int16_t getDTIMotorTemp(canRX_t rxMsg);
-int16_t getDTITorque(canRX_t rxMsg);
+int16_t getDTITorque(motorLocation_t motor);
 float canEmdHvVoltage();
 float canEmdHvCurrent();

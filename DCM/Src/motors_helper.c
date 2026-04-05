@@ -22,17 +22,18 @@
  */
 int32_t getDTIErpm(motorLocation_t motor) {
     switch (motor) {
+        cmr_canDTI_TX_Erpm_t *dtiERPM;
         case MOTOR_FL:
-            cmr_canDTI_TX_Erpm_t *dtiERPM = canTractiveGetPayload(CANRX_TRAC_FL_ERPM);
+            dtiERPM = canTractiveGetPayload(CANRX_TRAC_FL_ERPM);
             return big_endian_to_int32(&(dtiERPM->erpm));
         case MOTOR_FR:
-            cmr_canDTI_TX_Erpm_t *dtiERPM = canTractiveGetPayload(CANRX_TRAC_FR_ERPM);
+            dtiERPM = canTractiveGetPayload(CANRX_TRAC_FR_ERPM);
             return big_endian_to_int32(&(dtiERPM->erpm));
         case MOTOR_RL:
-            cmr_canDTI_TX_Erpm_t *dtiERPM = canTractiveGetPayload(CANRX_TRAC_RL_ERPM);
+            dtiERPM = canTractiveGetPayload(CANRX_TRAC_RL_ERPM);
             return big_endian_to_int32(&(dtiERPM->erpm));
         case MOTOR_RR:
-            cmr_canDTI_TX_Erpm_t *dtiERPM = canTractiveGetPayload(CANRX_TRAC_RR_ERPM);
+            dtiERPM = canTractiveGetPayload(CANRX_TRAC_RR_ERPM);
             return big_endian_to_int32(&(dtiERPM->erpm));
         default:
             return NULL;
