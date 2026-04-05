@@ -322,6 +322,40 @@ static float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
 }
 
 /**
+ * @brief Compute per-wheel Fz from lateral acceleration (ay) load transfer.
+ * @param motor Which wheel
+ * @param ay_mps2 Lateral acceleration in m/s^2
+ * @param pos_left If true, positive ay = leftward (ISO 8855). If false, positive ay = rightward (SAE).
+ * @return Estimated vertical load in Newtons
+ */
+static float get_simple_downforce(motorLocation_t motor, float ay_mps2, bool pos_left) {
+    static const float simple_vehicle_mass_kg = 170.0f + 75.0f;
+    static const float simple_track_width_m   = 1.275f;
+    static const float simple_cg_height_m     = 0.303f;
+
+    const float static_fz = simple_vehicle_mass_kg * 9.81f * 0.25f;
+    // ISO: positive ay = left, so car is turning right, load goes to left side
+    // sign: +delta_fz on left wheels when ay > 0 in ISO
+    float delta_fz = simple_vehicle_mass_kg * fabsf(ay_mps2) * simple_cg_height_m / simple_track_width_m;
+
+    // Determine which side gains load: the side opposite the turn direction
+    // ISO (pos_left=true):  positive ay = leftward accel = turning right = load to LEFT
+    // SAE (pos_left=false): positive ay = rightward accel = turning left = load to RIGHT
+    bool load_on_left = pos_left ? (ay_mps2 > 0.0f) : (ay_mps2 < 0.0f);
+
+    float left_fz  = static_fz + (load_on_left ? delta_fz : -delta_fz);
+    float right_fz = static_fz + (load_on_left ? -delta_fz : delta_fz);
+
+    switch (motor) {
+        case MOTOR_FL: return left_fz;
+        case MOTOR_RL: return left_fz;
+        case MOTOR_FR: return right_fz;
+        case MOTOR_RR: return right_fz;
+        default:       return static_fz;
+    }
+}
+
+/**
  * @param normalized_throttle A value in [-1, 1].
  * In [0, 1] if without regen.
  */
@@ -353,11 +387,29 @@ static void set_optimal_control(
 	// float tractive_cap_rr = getKappaFxGlobalMax(MOTOR_RR, UINT8_MAX, true).Fx;
 
     const float corner_weight_Nm = 80.0f;
-    bool use_true_downforce = false;
-    float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
-    float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
-    float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
-    float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
+    bool use_true_downforce = true;
+    bool use_simple_downforce = false;
+
+    float fz_fl, fz_fr, fz_rl, fz_rr;
+    if (use_simple_downforce) {
+        float ax, ay, az;
+        sensors_get_accel_xyz(&ax, &ay, &az);
+        bool pos_left = true; // ISO 8855: positive ay = leftward
+        fz_fl = get_simple_downforce(MOTOR_FL, ay, pos_left);
+        fz_fr = get_simple_downforce(MOTOR_FR, ay, pos_left);
+        fz_rl = get_simple_downforce(MOTOR_RL, ay, pos_left);
+        fz_rr = get_simple_downforce(MOTOR_RR, ay, pos_left);
+    } else {
+        fz_fl = get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm;
+        fz_fr = get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm;
+        fz_rl = get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm;
+        fz_rr = get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm;
+    }
+
+    float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, fz_fl).Fx;
+    float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, fz_fr).Fx;
+    float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, fz_rl).Fx;
+    float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, fz_rr).Fx;
 
     static const float motor_resistance_Nm[MOTOR_LEN] = {
         [MOTOR_FL] = 0.5f,
@@ -1420,12 +1472,12 @@ void setLaunchControl(
 
 float get_optimal_yaw_rate(float swangle_rad, float velocity_x_mps) {
 
-    static const float natural_understeer_gradient = 0.011465f; //rad/g
+    static const float k_us = -0.005f;
 
     const float distance_between_axles_m = chassis_a + chassis_b;
-    // const float yaw_rate_setpoint_radps = swangle_rad * velocity_x_mps /
-    //     (distance_between_axles_m + velocity_x_mps * velocity_x_mps * natural_understeer_gradient);
-    const float yaw_rate_setpoint_radps = swangle_rad * velocity_x_mps / distance_between_axles_m;
+    float L_eff = distance_between_axles_m + k_us * velocity_x_mps * velocity_x_mps;
+    if (L_eff < 0.1f) L_eff = 0.1f; // prevent division by zero / sign flip
+    const float yaw_rate_setpoint_radps = swangle_rad * velocity_x_mps / L_eff;
     return yaw_rate_setpoint_radps;
 }
 
@@ -1525,8 +1577,7 @@ float calculatePersistentYRCmreq(int32_t swAngle_millideg, float bias_margin, fl
     } else { // pers_bias (0% to 100%) scales quadratically as yaw_rate_diff_radps approaches 0
         const float squared_ratio = (yaw_rate_diff_radps * yaw_rate_diff_radps) / (bias_margin * bias_margin);
         // const float squared_ratio = (yaw_rate_diff_radps * yaw_rate_diff_radps) / bias_margin;
-        const float direction = copysignf(1.0f, desired_yaw_rate_radps);
-        pers_bias = (-(squared_ratio) + 1) * direction;
+        pers_bias = 1.0f - squared_ratio;
     }
     // pers_bias is the percentage of desired_yaw_rate based off of diff, yrc_pers scales this further
     const float mreq_pers = desired_yaw_rate_radps * pers_bias * yrc_pers;
