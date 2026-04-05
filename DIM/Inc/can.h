@@ -137,5 +137,6 @@ void sendAcknowledgement(void);
 
 int16_t getDTICtlrTemp(canRX_t rxMsg);
 int16_t getDTIMotorTemp(canRX_t rxMsg);
+int16_t getDTITorque(canRX_t rxMsg);
 
 #endif /* CAN_H */

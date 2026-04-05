@@ -946,6 +946,11 @@ int16_t getDTIMotorTemp(canRX_t rxMsg) {
     return parse_int16(&(dtiTempFault->motor_temp));
 }
 
+int16_t getDTITorque(canRX_t rxMsg) {
+    cmr_canDTI_TX_Current_t *dtiCurrent = getPayload(rxMsg);
+    return parse_int16(&(dtiCurrent->ac_current_dA));
+}
+
 void sendAcknowledgement(void) {
     cmr_canDIMAck_t ack = {
         .acknowledge = 1
