@@ -40,7 +40,7 @@
 static const uint32_t motorsCommand_priority = 6;
 
 /** @brief Motors command 200 Hz period (milliseconds) */
-static const TickType_t motorsCommand_period_ms = 5;
+static const TickType_t motorsCommand_period_ms = 10;
 
 /** @brief DAQ CAN Test period (milliseconds) */
 static const TickType_t can10Hz_period_ms = 100;

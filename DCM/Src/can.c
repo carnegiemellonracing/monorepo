@@ -853,7 +853,7 @@ static void canTX100Hz(void *pvParameters) {
 /** @brief CAN 200 Hz TX priority. */
 static const uint32_t canTX200Hz_priority = 6;
 /** @brief CAN 200 Hz TX period (milliseconds). */
-static const TickType_t canTX200Hz_period_ms = 5;
+static const TickType_t canTX200Hz_period_ms = 10;
 /** @brief CAN 200 Hz TX task. */
 static cmr_task_t canTX200Hz_task;
 

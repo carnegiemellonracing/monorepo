@@ -488,7 +488,7 @@ static void set_optimal_control(
 
     // Solver treats Mreq as around -z axis.
 	//optimizer_state.mreq = getYawRateControlLeftRightBias(swAngle_millideg);
-    optimizer_state.mreq = calculatePersistentYRCmreq((swAngle_millideg_FL+swAngle_millideg_FR)/2, bias_margin, yrc_pers);
+    optimizer_state.mreq = calculatePersistentYRCmreq(-(swAngle_millideg_FL+swAngle_millideg_FR)/2, bias_margin, yrc_pers);
 	optimizer_state.theta_left = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
     optimizer_state.theta_right = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
 

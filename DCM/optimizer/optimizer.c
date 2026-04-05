@@ -18,10 +18,10 @@
 
 #define MINIMUM_K_POW_VALUE (0.00001f) // prevent numerical instability for kpow, which is rly small
 
-// static double k_lin = 80.0;
-// static double k_yaw = 0.30;
-static double k_lin = 10.0;
-static double k_yaw = 80.0;
+static double k_lin = 80.0;
+static double k_yaw = 0.30;
+// static double k_lin = 10.0;
+// static double k_yaw = 80.0;
 static double k_tie = 0.008;
 // static double k_pow = 0.003;
 static double k_pow = 0.0;
