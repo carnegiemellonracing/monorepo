@@ -91,7 +91,7 @@ static void statusLED(void *pvParameters) {
     // servoInit();
     motorsInit();
     sensorsInit();
-    // brakelightInit();
+    brakelightInit();
     pumpsOn();
 
     cmr_taskInit(&statusLED_task, "statusLED", statusLED_priority, statusLED,
