@@ -404,12 +404,12 @@ typedef struct {
 } cmr_canVSMStatus_t; 
 
 /** @brief Vehicle Safety Module sensor data. */
-/** @brief Vehicle Safety Module sensor data. */
 typedef struct {
-    uint16_t brakePressureRear_PSI;     /**< @brief Rear brake pressure (pounds-per-square-inch). */
-    int16_t hallEffect_cA;     /**< @brief Hall effect current (centi-Amps). */
-    uint8_t safetyIn_V;        /**< @brief Safety circuit input voltage (volts). */
-    uint8_t safetyOut_V;       /**< @brief Safety circuit output voltage (volts). */
+    uint16_t brakePressureRear_PSI;      /**< @brief Rear brake pressure (pounds-per-square-inch). */
+    uint16_t batt_mV;                    /**< @brief Hall effect current (centi-Amps). */
+    uint8_t safetyIn_eight_V;            /**< @brief Safety circuit input voltage (eight volts). */
+    uint8_t safetyOut_eight_V;           /**< @brief Safety circuit output voltage (eight volts). */
+    bool    EAB_pressed;                 /**< @brief EAB Pressed. */
 } cmr_canVSMSensors_t;
 
 typedef struct {
@@ -431,11 +431,6 @@ typedef struct {
     uint8_t latchMatrix; //Flag: cmr_canVSMLatch_t 
 } cmr_canVSMLatchedStatus_t;
 
-/** @brief Vehicle Safety Module power diagnostics. */
-typedef struct {
-    uint16_t busVoltage_mV;     //u: mV /**< @brief Low-voltage bus voltage (mV). */
-    uint16_t busCurrent_mA;     //u: mA /**< @brief Low-voltage bus current (mA). */
-} cmr_canVSMPowerDiagnostics_t;
 
 // ------------------------------------------------------------------------------------------------
 // High Voltage Controller

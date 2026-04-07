@@ -201,11 +201,6 @@ static const uint32_t canTX100Hz_priority = 5;
 /** @brief CAN 100 Hz TX period (milliseconds). */
 static const TickType_t canTX100Hz_period_ms = 10;
 
-/** @brief CAN 200 Hz TX priority. */
-static const uint32_t canTX200Hz_priority = 5;
-/** @brief CAN 200 Hz TX period (milliseconds). */
-static const TickType_t canTX200Hz_period_ms = 5;
-
 /** @brief CAN latched status TX priority. */
 static const uint32_t canTXLatchedStatus_priority = 1;
 /** @brief CAN latched status TX period (milliseconds). */
@@ -215,8 +210,6 @@ static const TickType_t canTXLatchedStatus_period_ms = 10000;
 static cmr_task_t canTX10Hz_task;
 /** @brief CAN 100 Hz TX task. */
 static cmr_task_t canTX100Hz_task;
-/** @brief CAN 200 Hz TX task. */
-static cmr_task_t canTX200Hz_task;
 /** @brief CAN latched status TX task. */
 static cmr_task_t canTXLatchedStatus_task;
 
@@ -231,9 +224,7 @@ static void sendVSMStatus(void);
 static void sendVSMSensors(void);
 static void sendVSMLatchedStatus(void);
 static void sendHVCCommand(void);
-static void sendPowerDiagnostics(void);
 static void sendRESEnable();
-static void sendEABStatus();
 void resetError();
 
 /**
@@ -248,10 +239,8 @@ static void canTX10Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        sendPowerDiagnostics();
         sendRESEnable();
-        sendEABStatus();
-
+        sendVSMSensors();
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
 }
@@ -271,27 +260,8 @@ static void canTX100Hz(void *pvParameters) {
         sendHeartbeat(lastWakeTime);
         sendVSMStatus();
         sendHVCCommand();
-        sendVSMSensors();
 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
-    }
-}
-
-/**
- * @brief Task for sending CAN messages at 200 Hz.
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void canTX200Hz(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        // sendVSMSensors();
-
-        vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
     }
 }
 
@@ -438,13 +408,6 @@ void canInit(void) {
         NULL
     );
     cmr_taskInit(
-        &canTX200Hz_task,
-        "CAN TX 200Hz",
-        canTX200Hz_priority,
-        canTX200Hz,
-        NULL
-    );
-    cmr_taskInit(
         &canTXLatchedStatus_task,
         "CAN TX latched status",
         canTXLatchedStatus_priority,
@@ -544,11 +507,6 @@ static void sendRESEnable() {
     canTX(CMR_CANID_AS_RES_ENABLE, &res_enable, sizeof(res_enable), canTX100Hz_period_ms);
 }
 
-static void sendEABStatus() {
-    uint8_t eabStatus = cmr_gpioRead(GPIO_IN_EAB);
-    canTX(CMR_CANID_EAB_STATUS, &eabStatus, sizeof(eabStatus), canTX100Hz_period_ms);
-}
-
 /**
  * @brief Reflect current state onto the LV bus.
  *
@@ -569,14 +527,16 @@ static void sendVSMStatus(void) {
  *
  */
 static void sendVSMSensors(void) {
+
     cmr_canVSMSensors_t msg = {
         .brakePressureRear_PSI = cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI),
-        .hallEffect_cA = cmr_sensorListGetValue(&sensorList, SENSOR_CH_HALL_EFFECT_CA),
-        .safetyIn_V = cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_IN),
-        .safetyOut_V = cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_OUT)
+        .batt_mV =               cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV),
+        .safetyIn_eight_V =      cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_IN),
+        .safetyOut_eight_V =     cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_OUT),
+        .EAB_pressed =           cmr_gpioRead(GPIO_IN_EAB)
     };
 
-    canTX(CMR_CANID_VSM_SENSORS, &msg, sizeof(msg), canTX200Hz_period_ms);
+    canTX(CMR_CANID_VSM_SENSORS, &msg, sizeof(msg), canTX10Hz_period_ms);
 }
 
 /**
@@ -604,23 +564,6 @@ static void sendHVCCommand(void) {
     };
 
     canTX(CMR_CANID_HVC_COMMAND, &hvcCommand, sizeof(hvcCommand), canTX100Hz_period_ms);
-}
-
-/**
- * @brief Sends latest bus voltage and current draw measurements.
- */
-static void sendPowerDiagnostics(void) {
-    uint32_t busVoltage_mV =
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
-    uint32_t busCurrent_mA =
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_CURRENT_MA);
-
-    cmr_canVSMPowerDiagnostics_t msg = {
-        .busVoltage_mV = busVoltage_mV,
-        .busCurrent_mA = busCurrent_mA
-    };
-
-    canTX(CMR_CANID_VSM_POWER_DIAGNOSTICS, &msg, sizeof(msg), canTX10Hz_period_ms);
 }
 
 /**

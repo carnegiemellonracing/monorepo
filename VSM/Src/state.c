@@ -80,17 +80,6 @@ static const TickType_t ASEmergencySwitchingTime_ms = 100;
  */
 static bool ASState = false;
 
-/** @brief Autonomous brake test state is not started at the beginning*/
-static brakeTestState_t brakeTestState = BRAKE_TEST_NOT_STARTED;
-/** @brief Start time of the brake test  */
-static TickType_t brakeTestStartTime = 0;
-/** @brief Time to detect pressure rise (3 seconds) @todo time*/
-static const TickType_t brakeTestTimeout = 3000;
-/** @brief Expected pressure increase for working brakes @todo threshold*/
-static const uint16_t brakePressureRiseThreshold = 50;
-/** @brief Brake pressure at the start of the brake test*/
-static int32_t initialBrakePressure = 0;
-
 /** @brief Current Vehicle Safety Module state and errors. */
 static volatile vsmStatus_t vsmStatus = {
     .heartbeatErrors = CMR_CAN_ERROR_NONE,
@@ -130,7 +119,6 @@ static bool getMissionFinished();
 static bool getMissionSelected();
 static bool TSActive();
 static bool AutonomousClear();
-static bool vehicleStill();
 static bool getVehicleFinished(bool vehicleStill);
 static bool getRESGo();
 static bool RESTriggered();
@@ -248,14 +236,6 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         &sensorList, SENSOR_CH_BPRES_PSI
     );
 
-    cmr_canDTI_TX_TempFault_t *dti_fl_tempfault = getPayload(CANRX_FL_TEMPFAULT);
-    cmr_canDTI_TX_TempFault_t *dti_fr_tempfault = getPayload(CANRX_FR_TEMPFAULT);
-    cmr_canDTI_TX_TempFault_t *dti_rl_tempfault = getPayload(CANRX_RL_TEMPFAULT);
-    cmr_canDTI_TX_TempFault_t *dti_rr_tempfault = getPayload(CANRX_RR_TEMPFAULT);
-    cmr_canDTI_TX_IOStatus_t *dti_fl_io_status = getPayload(CANRX_FL_IO_STATUS);
-    cmr_canDTI_TX_IOStatus_t *dti_fr_io_status = getPayload(CANRX_FR_IO_STATUS);
-    cmr_canDTI_TX_IOStatus_t *dti_rl_io_status = getPayload(CANRX_RL_IO_STATUS);
-    cmr_canDTI_TX_IOStatus_t *dti_rr_io_status = getPayload(CANRX_RR_IO_STATUS);
     cmr_DTI_RX_Message_t *dti_fl_erpm = getPayload(CANRX_FL_ERPM);
     cmr_DTI_RX_Message_t *dti_fr_erpm = getPayload(CANRX_FR_ERPM);
     cmr_DTI_RX_Message_t *dti_rl_erpm = getPayload(CANRX_RL_ERPM);
@@ -457,7 +437,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                 nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
             }
             else if ((lastWakeTime_ms > lastStateChangeTime_ms + AS_FINISHED_TIME)){
-                nextState = CMR_CAN_GLV_ON;
+                nextState = CMR_CAN_VSM_STATE_GLV_ON;
             }
             else{
                 nextState = CMR_CAN_VSM_STATE_AS_FINISHED;

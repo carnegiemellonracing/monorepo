@@ -40,7 +40,7 @@ static cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .pin = GPIO_PIN_7,
         .samplingTime = ADC_SAMPLETIME_15CYCLES,
     },
-    [ADC_SSOUT] = { /** @todo verify right channel */
+    [ADC_SSOUT] = { 
         .channel = ADC_CHANNEL_14,
         .port = GPIOC,
         .pin = GPIO_PIN_4,
