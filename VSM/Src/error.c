@@ -92,10 +92,10 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     // Set software latch in the event of BMS voltage or temperature errors.
     // See rule EV 5.1.10.
     if (getAMSError()) {
-        cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR_N, 0);
+        cmr_gpioWrite(GPIO_OUT_AMS_ERR_N, 0);
     }
     else {
-        cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR_N, 1);
+        cmr_gpioWrite(GPIO_OUT_AMS_ERR_N, 1);
     }
 
     // Check all latches
