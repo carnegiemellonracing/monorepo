@@ -409,16 +409,16 @@ int16_t findMax(int16_t a, int16_t b, int16_t c, int16_t d, uint8_t *index) {
     return maximum;
 }
 
-/**
- * @brief Computes the total current of a motor
- * https://drive.google.com/file/d/1dyoIuW85M110q4x2OXapvWxm-WnFBys2/view pg76
- */
-uint32_t computeCurrent_A(volatile cmr_canDTI_TX_IdIq_t *canDTI_IdIq) {
-    int32_t Iq_A = (int32_t)(canDTI_IdIq->iq / 100);
-    int32_t Id_A = (int32_t)(canDTI_IdIq->iq / 100);
-    uint32_t Is_A = sqrt(Iq_A * Iq_A + Id_A * Id_A);
-    return Is_A;
-}
+// /**
+//  * @brief Computes the total current of a motor
+//  * https://drive.google.com/file/d/1dyoIuW85M110q4x2OXapvWxm-WnFBys2/view pg76
+//  */
+// uint32_t computeCurrent_A(volatile cmr_canDTI_TX_IdIq_t *canDTI_IdIq) {
+//     int32_t Iq_A = (int32_t)(canDTI_IdIq->iq / 100);
+//     int32_t Id_A = (int32_t)(canDTI_IdIq->iq / 100);
+//     uint32_t Is_A = sqrt(Iq_A * Iq_A + Id_A * Id_A);
+//     return Is_A;
+// }
 
 
 /**
@@ -458,10 +458,10 @@ static void getDTITemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hot
 //     volatile cmr_canDTI_TX_TempFault_t *RR =
 //         (void *)metaDTI_RR_TempFault->payload;
 
-    int16_t FL_motorTemp = getDTIMotorTemp(CANRX_DTI_FL_TEMPFAULT);
-    int16_t FR_motorTemp = getDTIMotorTemp(CANRX_DTI_FR_TEMPFAULT);
-    int16_t RL_motorTemp = getDTIMotorTemp(CANRX_DTI_RL_TEMPFAULT);
-    int16_t RR_motorTemp = getDTIMotorTemp(CANRX_DTI_RR_TEMPFAULT);
+    int16_t FL_motorTemp = getDTIMotorTemp_dC(CANRX_DTI_FL_TEMPFAULT);
+    int16_t FR_motorTemp = getDTIMotorTemp_dC(CANRX_DTI_FR_TEMPFAULT);
+    int16_t RL_motorTemp = getDTIMotorTemp_dC(CANRX_DTI_RL_TEMPFAULT);
+    int16_t RR_motorTemp = getDTIMotorTemp_dC(CANRX_DTI_RR_TEMPFAULT);
 
     /* Motor Temperature */
     uint8_t hottest_motor_index = 0;
@@ -475,10 +475,10 @@ static void getDTITemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hot
     // provide hottest motor as corner type
     *hottest = (cornerId_t)(hottest_motor_index);
 
-    int16_t FL_ctlrTemp = getDTICtlrTemp(CANRX_DTI_FL_TEMPFAULT);
-    int16_t FR_ctlrTemp = getDTICtlrTemp(CANRX_DTI_FR_TEMPFAULT);
-    int16_t RL_ctlrTemp = getDTICtlrTemp(CANRX_DTI_RL_TEMPFAULT);
-    int16_t RR_ctlrTemp = getDTICtlrTemp(CANRX_DTI_RR_TEMPFAULT);
+    int16_t FL_ctlrTemp = getDTICtlrTemp_dC(CANRX_DTI_FL_TEMPFAULT);
+    int16_t FR_ctlrTemp = getDTICtlrTemp_dC(CANRX_DTI_FR_TEMPFAULT);
+    int16_t RL_ctlrTemp = getDTICtlrTemp_dC(CANRX_DTI_RL_TEMPFAULT);
+    int16_t RR_ctlrTemp = getDTICtlrTemp_dC(CANRX_DTI_RR_TEMPFAULT);
 
     uint8_t hottest_mc_index = 0;
     /* Motor Controller Temperature */

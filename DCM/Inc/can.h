@@ -208,3 +208,8 @@ int16_t getDTIMotorTemp(canRX_t rxMsg);
 int16_t getDTITorque(canRX_t rxMsg);
 float canEmdHvVoltage();
 float canEmdHvCurrent();
+int32_t getDTIERPM(canTractiveRX_t rxMsg);
+int16_t getDTIACCurrent_dA(canTractiveRX_t rxMsg);
+int16_t getDTIDCCurrent_dA(canTractiveRX_t rxMsg);
+int16_t getDTICtlrTemp_dC(canTractiveRX_t rxMsg);
+int16_t getDTIMotorTemp_dC(canTractiveRX_t rxMsg);

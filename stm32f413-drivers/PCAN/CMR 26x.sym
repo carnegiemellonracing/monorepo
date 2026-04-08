@@ -417,44 +417,24 @@ Var=STATE_angle unsigned 8,8
 Var=STATE_pwm_left unsigned 16,8
 Var=STATE_pwm_right unsigned 24,8
 
-[DTI_FL_CURRENT]
-ID=21h
-DLC=4
-CycleTime=20
-TimeOut=100
-Var=FL_ac_current_dA signed 0,16
-Var=FL_dc_current_dA signed 16,16
-
-[DTI_FL_ERPM]
-ID=20h
-DLC=8
-CycleTime=20
-TimeOut=100
-Var=FL_erpm signed 0,32
-Var=FL_duty_cycle_pct signed 32,16
-Var=FL_input_voltage_V signed 48,16
-
 [DTI_FL_IO_STATUS]
 ID=24h
-DLC=8
+DLC=6
 CycleTime=20
 TimeOut=100
 Var=FL_throttle_signal signed 0,8
 Var=FL_brake_signal signed 8,8
 Var=FL_digital_inputs unsigned 16,8
 Var=FL_drive_enable unsigned 24,8
-Var=FL_limit_status unsigned 32,16
-Var=FL_DTI_reserved unsigned 48,8
-Var=FL_canVersion unsigned 56,8
+Var=FL_DTI_reserved unsigned 32,8
+Var=FL_canVersion unsigned 40,8
 
 [DTI_FL_TEMPFAULT]
 ID=22h
-DLC=5
+DLC=1
 CycleTime=20
 TimeOut=100
-Var=FL_ctlr_temp signed 0,16
-Var=FL_motor_temp signed 16,16
-Var=FL_fault_code unsigned 32,8
+Var=FL_fault_code unsigned 0,8
 
 [EMD_MEASUREMENT]
 ID=401h
@@ -751,8 +731,8 @@ Var=PACK_avgCurrent_mA signed 32,32 /u:mA
 [HV_SENSORS]
 ID=306h
 DLC=8
-CycleTime=5
-TimeOut=25
+CycleTime=100
+TimeOut=500
 Var=SENSORS_packCurrent_dA signed 0,16
 Var=SENSORS_packVoltage_cV unsigned 16,16
 Var=SENSORS_packPower_W signed 32,32

@@ -372,15 +372,10 @@
             "timeOut": 500,
             "type": "cmr_canDTI_ErrorMessages_t"
         },
-        "CMR_CANID_DTI_FL_CURRENT": {
-            "cycleTime": 20.0,
-            "timeOut": 100,
-            "type": "cmr_canDTI_TX_Current_t"
-        },
         "CMR_CANID_DTI_FL_ERPM": {
             "cycleTime": 20.0,
             "timeOut": 100,
-            "type": "cmr_canDTI_TX_Erpm_t"
+            "type": "cmr_DTI_RX_Message_t"
         },
         "CMR_CANID_DTI_FL_IO_STATUS": {
             "cycleTime": 20.0,
@@ -392,15 +387,10 @@
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
         },
-        "CMR_CANID_DTI_FR_CURRENT": {
-            "cycleTime": 20.0,
-            "timeOut": 100,
-            "type": "cmr_canDTI_TX_Current_t"
-        },
         "CMR_CANID_DTI_FR_ERPM": {
             "cycleTime": 20.0,
             "timeOut": 100,
-            "type": "cmr_canDTI_TX_Erpm_t"
+            "type": "cmr_DTI_RX_Message_t"
         },
         "CMR_CANID_DTI_FR_IO_STATUS": {
             "cycleTime": 20.0,
@@ -412,15 +402,10 @@
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
         },
-        "CMR_CANID_DTI_RL_CURRENT": {
-            "cycleTime": 20.0,
-            "timeOut": 100,
-            "type": "cmr_canDTI_TX_Current_t"
-        },
         "CMR_CANID_DTI_RL_ERPM": {
             "cycleTime": 20.0,
             "timeOut": 100,
-            "type": "cmr_canDTI_TX_Erpm_t"
+            "type": "cmr_DTI_RX_Message_t"
         },
         "CMR_CANID_DTI_RL_IO_STATUS": {
             "cycleTime": 20.0,
@@ -432,15 +417,10 @@
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
         },
-        "CMR_CANID_DTI_RR_CURRENT": {
-            "cycleTime": 20.0,
-            "timeOut": 100,
-            "type": "cmr_canDTI_TX_Current_t"
-        },
         "CMR_CANID_DTI_RR_ERPM": {
             "cycleTime": 20.0,
             "timeOut": 100,
-            "type": "cmr_canDTI_TX_Erpm_t"
+            "type": "cmr_DTI_RX_Message_t"
         },
         "CMR_CANID_DTI_RR_IO_STATUS": {
             "cycleTime": 20.0,
@@ -768,8 +748,8 @@
             "type": "cmr_canHVCPackCurrent_t"
         },
         "CMR_CANID_HV_SENSORS": {
-            "cycleTime": 5,
-            "timeOut": 25,
+            "cycleTime": 100,
+            "timeOut": 500,
             "type": "cmr_canHVSense_t"
         },
         "CMR_CANID_LVBMS_BUS_VOLTAGE": {
@@ -962,20 +942,20 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2829,
-        "files_with_matches": 2829,
+        "files_processed": 2907,
+        "files_with_matches": 2907,
         "global_mappings": {
             "canrx_mappings": 179,
             "canrx_timeouts": 170,
-            "canrx_types": 75,
+            "canrx_types": 63,
             "constants": 258,
             "struct_members": 0,
-            "variable_types": 331
+            "variable_types": 326
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 111
+        "total_canids": 107
     }
 }
