@@ -818,6 +818,12 @@ typedef struct {
     uint16_t busCurrent_mA;     //u: mA /**< @brief Low-voltage bus current (mA). */
 } cmr_canDIMPowerDiagnostics_t;
 
+/** @brief Vehicle Safety Module power diagnostics. */
+typedef struct {
+    uint16_t busVoltage_mV;     //u: mV /**< @brief Low-voltage bus voltage (mV). */
+    uint16_t busCurrent_mA;     //u: mA /**< @brief Low-voltage bus current (mA). */
+} cmr_canVSMPowerDiagnostics_t;
+
 /** @brief Driver Interface Module text write command. This is
  *  used in conjunction with the RAM to facilite remote text
  *  writing to the driver's display.
@@ -943,9 +949,9 @@ typedef struct {
 
 /** @brief DTI motor controller electrical rpm, duty_cycle, input_voltage. */
 typedef struct {
-    int32_t erpm;               /**< Electrical RPM. Equation: ERPM = Motor RPM * number of the motor pole pairs. */
-    int16_t duty_cycle_pct;     /**< @brief Sign represents if the motor is running(positive) current or regenerating (negative) current. Value multiplied by 10.*/
-    int16_t input_voltage_V;    /**< @brief Input DC voltage. */
+    big_endian_32_t erpm;               /**< Electrical RPM. Equation: ERPM = Motor RPM * number of the motor pole pairs. */
+    big_endian_16_t duty_cycle_pct;     /**< @brief Sign represents if the motor is running(positive) current or regenerating (negative) current. Value multiplied by 10.*/
+    big_endian_16_t input_voltage_V;    /**< @brief Input DC voltage. */
 } cmr_canDTI_TX_Erpm_t;
 
 /** @brief DTI motor controller ac and dc current values. */
@@ -963,31 +969,31 @@ typedef struct {
 
 /** @brief DTI motor controller Id, Iq values. */
 typedef struct {
-    int32_t id;         /**< FOC algorithm component Id. Value multiplied by 100 */
-    int32_t iq;        /**< FOC algorithm component Iq. Value multiplied by 100. */
+    big_endian_32_t id;         /**< FOC algorithm component Id. Value multiplied by 100 */
+    big_endian_32_t iq;        /**< FOC algorithm component Iq. Value multiplied by 100. */
 } cmr_canDTI_TX_IdIq_t;
 
 /** @brief DTI motor controller: Configured and available AC current limits. */
 typedef struct {
-    int16_t cfg_ac_current_max;     /**< Configured max AC current. */
-    int16_t avail_ac_current_max;   /**< Available max AC current. */
-    int16_t cfg_ac_current_min;     /**< Configured min AC current. */
-    int16_t avail_ac_current_min;   /**< Available min AC current. */
+    big_endian_16_t cfg_ac_current_max;     /**< Configured max AC current. */
+    big_endian_16_t avail_ac_current_max;   /**< Available max AC current. */
+    big_endian_16_t cfg_ac_current_min;     /**< Configured min AC current. */
+    big_endian_16_t avail_ac_current_min;   /**< Available min AC current. */
 } cmr_canDTI_TX_ACLimits_t;
 
 /** @brief DTI motor controller: Configured and available DC current limits. */
 typedef struct {
-    int16_t cfg_dc_current_max;     /**< Configured max DC current. */
-    int16_t avail_dc_current_max;   /**< Available max DC current. */
-    int16_t cfg_dc_current_min;     /**< Configured min DC current. */
-    int16_t avail_dc_current_min;   /**< Available min DC current. */
+    big_endian_16_t cfg_dc_current_max;     /**< Configured max DC current. */
+    big_endian_16_t avail_dc_current_max;   /**< Available max DC current. */
+    big_endian_16_t cfg_dc_current_min;     /**< Configured min DC current. */
+    big_endian_16_t avail_dc_current_min;   /**< Available min DC current. */
 } cmr_canDTI_TX_DCLimits_t;
 
 /** @brief DTI motor controller: Control mode, target Iq, motor position, isMotorStill flag. */
 typedef struct  __attribute__((__packed__))  {
     uint8_t control_mode;       /**< Control mode (e.g., torque, speed, position). */
-    int16_t target_iq;          /**< Target Iq, scaled by 100. */
-    int32_t motor_position;     /**< Motor position in encoder counts or degrees. */
+    big_endian_16_t target_iq;          /**< Target Iq, scaled by 100. */
+    big_endian_32_t motor_position;     /**< Motor position in encoder counts or degrees. */
     uint8_t is_motor_still;     /**< 1 = Motor is still, 0 = Motor is moving. */
 } cmr_canDTI_TX_ControlStatus_t;
 
@@ -997,7 +1003,7 @@ typedef struct {
     int8_t brake_signal;        /**< Brake input signal. */
     uint8_t digital_inputs;     /**< Bitmask of digital inputs. */
     uint8_t drive_enable;       /**< 0 = disabled, 1 = enabled. */
-    uint16_t limit_status;      /**< Bitmask for overvoltage, overcurrent, temp, etc. */
+    big_endian_16_t limit_status;      /**< Bitmask for overvoltage, overcurrent, temp, etc. */
     uint8_t DTI_reserved;       /**< Some bits DTI Reserved */
     uint8_t canVersion;         /** CAN Map Version */
 } cmr_canDTI_TX_IOStatus_t;

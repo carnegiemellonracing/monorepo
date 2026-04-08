@@ -695,18 +695,18 @@ void runControls (
         return;
     }
 
-    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FL = canTractiveGetPayload(CANRX_TRAC_FL_ERPM);
-    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FR = canTractiveGetPayload(CANRX_TRAC_FR_ERPM);
-    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RL = canTractiveGetPayload(CANRX_TRAC_RL_ERPM);
-    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RR = canTractiveGetPayload(CANRX_TRAC_RR_ERPM);
+    int32_t dtiERPM_FL = getDTIERPM(CANRX_TRAC_FL_ERPM);
+    int32_t dtiERPM_FR = getDTIERPM(CANRX_TRAC_FR_ERPM);
+    int32_t dtiERPM_RL = getDTIERPM(CANRX_TRAC_RL_ERPM);
+    int32_t dtiERPM_RR = getDTIERPM(CANRX_TRAC_RR_ERPM);
 
     volatile cmr_canHeartbeat_t   *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
 
     const int32_t avgMotorSpeed_RPM = (
-        + (int32_t)(dtiERPM_FL->erpm / pole_pairs)
-        + (int32_t)(dtiERPM_FR->erpm / pole_pairs)
-        + (int32_t)(dtiERPM_RL->erpm / pole_pairs)
-        + (int32_t)(dtiERPM_RR->erpm / pole_pairs)
+        + (int32_t)(dtiERPM_FL / pole_pairs)
+        + (int32_t)(dtiERPM_FR / pole_pairs)
+        + (int32_t)(dtiERPM_RL / pole_pairs)
+        + (int32_t)(dtiERPM_RR / pole_pairs)
     ) / MOTOR_LEN;
 
     // Update odometer
@@ -887,7 +887,7 @@ void integrateCurrent() {
         coulombCounting.KCoulombs = 0.001f;
 	}else{
         // const float packCurrent_kA = getPackCurrent()*0.001f;
-        // const TickType_t currentTick = xTaskGetTickCount();
+        const TickType_t currentTick = xTaskGetTickCount();
         // coulombCounting.KCoulombs += ((currentTick-previousTickCount)*0.001f)*packCurrent_kA;
         previousTickCount = currentTick;
     }
@@ -1750,7 +1750,7 @@ void setEnduranceTorque (
         const float hv_voltage_V = ((float)(HVISense->packVoltage_cV)) * 1e-2f; // convert to volts
 
         volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
-        const float currentA = 0
+        const float currentA = 0;
         // ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
         // apply power limit.
         const float power_consumed_W = hv_voltage_V * currentA;
@@ -1821,7 +1821,7 @@ void setEnduranceTestTorque(
         const float hv_voltage_V = ((float)(HVISense->packVoltage_cV)) * 1e-2f; // convert to volts
 
         volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
-        const float currentA = 0
+        const float currentA = 0;
         // ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
         // apply power limit.
         const float power_consumed_W = hv_voltage_V * currentA;

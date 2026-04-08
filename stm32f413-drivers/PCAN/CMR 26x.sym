@@ -417,15 +417,6 @@ Var=STATE_angle unsigned 8,8
 Var=STATE_pwm_left unsigned 16,8
 Var=STATE_pwm_right unsigned 24,8
 
-[DTI_FL_ERPM]
-ID=20h
-DLC=8
-CycleTime=20
-TimeOut=100
-Var=FL_erpm signed 0,32
-Var=FL_duty_cycle_pct signed 32,16
-Var=FL_input_voltage_V signed 48,16
-
 [DTI_FL_TEMPFAULT]
 ID=22h
 DLC=1
@@ -876,6 +867,14 @@ Var=LATCHED_VSM_LATCH_AMS bit 18,1
 Var=LATCHED_VSM_LATCH_IMD bit 17,1
 Var=LATCHED_VSM_LATCH_BSPD bit 16,1
 
+[VSM_POWER_DIAGNOSTICS]
+ID=530h
+DLC=4
+CycleTime=100
+TimeOut=500
+Var=POWER_busVoltage_mV2 unsigned 0,16 /u:mV
+Var=POWER_busCurrent_mA2 unsigned 16,16 /u:mA
+
 [VSM_SENSORS]
 ID=200h
 DLC=7
@@ -907,14 +906,6 @@ Var=STATUS_VSM_LATCH_SOFTWARE bit 27,1
 Var=STATUS_VSM_LATCH_AMS bit 26,1
 Var=STATUS_VSM_LATCH_IMD bit 25,1
 Var=STATUS_VSM_LATCH_BSPD bit 24,1
-
-[VSM_PowerDiagnostic]
-ID=530h
-DLC=4
-CycleTime=100
-Timeout=1000
-Var=VSM_busVoltage unsigned 0,16 /u:mV
-Var=VSM_busCurrent unsigned 16,16 /u:mA
 
 [CDC_MotorTemps]
 ID=512h

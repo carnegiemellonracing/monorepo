@@ -198,7 +198,19 @@ float motorSpeedToWheelLinearSpeed_mps(float motor_speed_radps) {
  * @param motor Which motor to retrieve value for.
  */
 int16_t getMotorSpeed_rpm(motorLocation_t motor) {
-    return getDTIErpm(motor)->erpm / pole_pairs;
+        
+    switch(motor) {
+        case MOTOR_FL:
+            return getDTIERPM(CANRX_TRAC_FL_ERPM) / pole_pairs;
+        case MOTOR_FR:
+            return getDTIERPM(CANRX_TRAC_FR_ERPM) / pole_pairs;
+        case MOTOR_RL:
+            return getDTIERPM(CANRX_TRAC_RL_ERPM) / pole_pairs;
+        case MOTOR_RR:
+            return getDTIERPM(CANRX_TRAC_RR_ERPM) / pole_pairs;
+        default:
+            return NULL;
+    }
 }
 
 /**
@@ -245,10 +257,26 @@ float getMinMotorSpeed_radps() {
  * @param motor the ID of the motor
  */
 float getMotorPower(motorLocation_t motor) {
-
-    const float dc_current_A = (float)(getDTICurrent(motor)->dc_current_dA) * 0.1;
-    const float voltage = (float)(getDTIErpm(motor)->input_voltage_V);
-    return dc_current_A * voltage;
+    switch(motor) {
+        float dc_current_A;
+        float voltage;
+        case MOTOR_FL:
+            dc_current_A = (float)(getDTIDCCurrent_dA(CANRX_TRAC_FL_CURRENT)) * 0.1;
+            voltage = (float)(getDTIInputVoltage(CANRX_TRAC_FL_ERPM));
+            return dc_current_A * voltage;
+        case MOTOR_FR:
+            dc_current_A = (float)(getDTIDCCurrent_dA(CANRX_TRAC_FR_CURRENT)) * 0.1;
+            voltage = (float)(getDTIInputVoltage(CANRX_TRAC_FR_ERPM));
+            return dc_current_A * voltage;
+        case MOTOR_RL:
+            dc_current_A = (float)(getDTIDCCurrent_dA(CANRX_TRAC_RL_CURRENT)) * 0.1;
+            voltage = (float)(getDTIInputVoltage(CANRX_TRAC_RL_ERPM));
+            return dc_current_A * voltage;
+        case MOTOR_RR:
+            dc_current_A = (float)(getDTIDCCurrent_dA(CANRX_TRAC_RR_CURRENT)) * 0.1;
+            voltage = (float)(getDTIInputVoltage(CANRX_TRAC_RR_ERPM));
+            return dc_current_A * voltage;
+    }
 }
 
 /** @brief Get a motor load from cmr_loadDistribution_t */

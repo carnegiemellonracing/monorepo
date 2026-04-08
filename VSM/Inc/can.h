@@ -57,5 +57,11 @@ uint8_t getASMSState(void);
 void sendFirstError(uint8_t error_code);
 void resetError();
 
+int32_t getDTIERPM(canRX_t rxMsg);
+int16_t getDTIACCurrent_dA(canRX_t rxMsg);
+int16_t getDTIDCCurrent_dA(canRX_t rxMsg);
+int16_t getDTICtlrTemp_dC(canRX_t rxMsg);
+int16_t getDTIMotorTemp_dC(canRX_t rxMsg);
+
 #endif /* CAN_H */
 

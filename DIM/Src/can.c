@@ -928,19 +928,29 @@ static void sendPowerDiagnostics(void) {
         canTX10Hz_period_ms);
 }
 
-int16_t getDTICtlrTemp(canRX_t rxMsg) {
+int32_t getDTIERPM(canRX_t rxMsg) {
+    cmr_canDTI_TX_Erpm_t *dtiERPM = getPayload(rxMsg);
+    return big_endian_to_int32(&(dtiERPM->erpm));
+}
+
+int16_t getDTIACCurrent_dA(canRX_t rxMsg) {
+    cmr_canDTI_TX_Current_t *dtiCurrent = getPayload(rxMsg);
+    return parse_int16(&(dtiCurrent->ac_current_dA));
+}
+
+int16_t getDTIDCCurrent_dA(canRX_t rxMsg) {
+    cmr_canDTI_TX_Current_t *dtiCurrent = getPayload(rxMsg);
+    return parse_int16(&(dtiCurrent->dc_current_dA));
+}
+
+int16_t getDTICtlrTemp_dC(canRX_t rxMsg) {
     cmr_canDTI_TX_TempFault_t *dtiTempFault = getPayload(rxMsg);
     return parse_int16(&(dtiTempFault->ctlr_temp));
 }
 
-int16_t getDTIMotorTemp(canRX_t rxMsg) {
+int16_t getDTIMotorTemp_dC(canRX_t rxMsg) {
     cmr_canDTI_TX_TempFault_t *dtiTempFault = getPayload(rxMsg);
     return parse_int16(&(dtiTempFault->motor_temp));
-}
-
-int16_t getDTITorque(canRX_t rxMsg) {
-    cmr_canDTI_TX_Current_t *dtiCurrent = getPayload(rxMsg);
-    return parse_int16(&(dtiCurrent->ac_current_dA));
 }
 
 void sendAcknowledgement(void) {
