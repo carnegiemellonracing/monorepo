@@ -332,7 +332,6 @@ static void sendHVCPower() {
     power = (voltage * 100) * (current * 10);
 
     cmr_canHVSense_t hv_sensors = {
-        .packCurrent_dA = adcRead(ADC_ISENSE),
         .packVoltage_cV = getHVmillivolts() / 1000
         // (getHVmillivolts() / 1000)
     }; 

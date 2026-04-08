@@ -784,9 +784,6 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
         .state = vsmState
     };
 
-    uint8_t AS_Status = getASMS();
-    canTX(CMR_CANID_ASMS_STATUS, &AS_Status, sizeof(AS_Status), canTX100Hz_period_ms);
-
     cmr_canWarn_t warning = CMR_CAN_WARN_NONE;
     cmr_canError_t error = CMR_CAN_ERROR_NONE;
 
@@ -816,11 +813,6 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     memcpy(&heartbeat.warning, &warning, sizeof(heartbeat.warning));
 
     canTX(
-        CMR_CANID_HEARTBEAT_FSM,
-        &heartbeat,
-        sizeof(heartbeat),
-        canTX100Hz_period_ms);
-    canTX(
         CMR_CANID_HEARTBEAT_DIM,
         &heartbeat,
         sizeof(heartbeat),
@@ -843,13 +835,13 @@ static void sendFSMData(void) {
     }
 
     uint16_t brakePressureFront_PSI = (uint16_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI);
-    uint8_t brakePedalPosition = (uint8_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPOS_U8);
+    uint8_t AS_Status = getASMS();
 
     cmr_canFSMData_t msg = {
         .torqueRequested = torqueRequested,
         .throttlePosition = throttlePosition,
         .brakePressureFront_PSI = brakePressureFront_PSI,
-        .brakePedalPosition_percent = brakePedalPosition
+        .AS_Status = AS_Status
     };
 
     canTX(CMR_CANID_FSM_DATA, &msg, sizeof(msg), canTX100Hz_period_ms);

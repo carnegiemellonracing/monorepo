@@ -719,7 +719,6 @@ static void canTX10Hz(void *pvParameters) {
         powerSense.packCurrent_dA = getCurrent();
         powerSense.packVoltage_cV = getVoltage();
         //powersense is dead, voltage * HVI current
-        powerSense.packPower_W = getPackVoltage() * getPackCurrent();
 
         
         cmr_canDAQTherm_t therms1;

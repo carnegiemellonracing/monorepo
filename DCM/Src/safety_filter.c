@@ -414,7 +414,8 @@ void setTorqueLimsProtected (
     // ********* Preemptive Limiting *********
 
     const float pack_voltage_V = getPackVoltage();
-    const float pack_current_A = getPackCurrent();
+    const float pack_current_A = 0;
+    // getPackCurrent();
     const float pack_power_W = pack_voltage_V * pack_current_A;
 
     const float max_cell_voltage_V = getMaxCellVoltage();

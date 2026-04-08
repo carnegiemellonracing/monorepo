@@ -87,11 +87,6 @@ cmr_canRXMeta_t canRXMeta[] = {
             .timeoutError_ms = 100,
             .timeoutWarn_ms = 25,
     },
-    [CANRX_ASMS_STATE] = {
-            .canID = CMR_CANID_ASMS_STATE,
-            .timeoutError_ms = 100,
-            .timeoutWarn_ms = 25,
-    },
     [CANRX_DTI_ERROR_CODE] = {
             .canID = CMR_CANID_DTI_ERROR_MESSAGES,
             .timeoutError_ms = 100,
@@ -384,7 +379,6 @@ void canInit(void) {
             .ids = {
                     CMR_CANID_AS_PRESSURE_READINGS,
                     CMR_CANID_DTI_ERROR_MESSAGES,
-                    CMR_CANID_ASMS_STATE
             }
 		},
     };
@@ -471,9 +465,8 @@ cmr_canState_t getModuleState(canRX_t module) {
  */
 uint8_t getASMSState() {
 
-	uint8_t *as_state = (uint8_t*)getPayload(CANRX_ASMS_STATE);
-
-	return (*as_state);
+	cmr_canFSMData_t *dataFSM = (uint8_t*)getPayload(CANRX_FSM_DATA);
+	return (dataFSM->AS_Status);
 }
 
 /**

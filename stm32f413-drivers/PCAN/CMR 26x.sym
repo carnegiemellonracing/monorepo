@@ -473,7 +473,7 @@ TimeOut=50
 Var=DATA_torqueRequested unsigned 0,8
 Var=DATA_throttlePosition unsigned 8,8
 Var=DATA_brakePressureFront_PSI unsigned 16,16 /u:PSI
-Var=brakePedalPosition_percent unsigned 32,8 /u:%
+Var=DATA_AS_Status unsigned 32,8
 
 [FSM_PEDALS_ADC]
 ID=533h
@@ -532,30 +532,6 @@ CycleTime=10
 TimeOut=50
 Var=DIM_HEARTBEAT_state unsigned 0,8 /e:State
 Var=DIM_ERR_VSM_TIMEOUT bit 8,1
-
-[FSM_HEARTBEAT]
-ID=103h
-DLC=5
-CycleTime=10
-TimeOut=50
-Var=FSM_HEARTBEAT_state unsigned 0,8 /e:State
-Var=FSM_ERROR_VSM_TIMEOUT bit 8,1
-Var=FSM_WRN_VSM_TIMEOUT bit 24,1
-Var=FSM_WRN_VOLTAGE_OOR bit 25,1
-Var=FSM_WRN_CURRENT_OOR bit 26,1
-Var=FSM_WRN_BRAKE_POSITION_OOR bit 35,1
-Var=FSM_WRN_LEFT_TPOS_OOR bit 36,1
-Var=FSM_WRN_RIGHT_TPOS_OOR bit 37,1
-Var=FSM_WRN_BPP_FAULT bit 38,1
-Var=FSM_WRN_TPOS_IMPLAUSIBLE bit 39,1
-Var=FSM_WRN_SS_MODULE bit 27,1
-Var=FSM_WRN_SS_COCKPIT bit 28,1
-Var=FSM_WRN_SS_FR_HUB bit 29,1
-Var=FSM_WRN_SS_INERTIA bit 30,1
-Var=FSM_WRN_SS_FL_HUB bit 31,1
-Var=FSM_HEARTBEAT_FSM_WRN_SS_BOTS bit 32,1
-Var=FSM_WRN_BRAKE_PRESSURE_OOR bit 34,1
-Var=FSM_WRN_SW_ANGLE_OOR bit 33,1
 
 [HVC_HEARTBEAT]
 ID=101h
@@ -727,12 +703,10 @@ Var=PACK_avgCurrent_mA signed 32,32 /u:mA
 
 [HV_SENSORS]
 ID=306h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=SENSORS_packCurrent_dA signed 0,16
-Var=SENSORS_packVoltage_cV unsigned 16,16
-Var=SENSORS_packPower_W signed 32,32
+DLC=2
+CycleTime=100
+TimeOut=500
+Var=SENSORS_packVoltage_cV unsigned 0,16
 
 [LV_CELL_BALANCE_ENABLE]
 ID=136h
@@ -1018,6 +992,30 @@ Timeout=200
 Var=CDC_LongitudinalAcceleration signed 0,16 /u:mps2 /f:0.01
 Var=CDC_LateralAcceleration signed 16,16 /u:mps2 /f:0.01
 Var=CDC_VerticalAcceleration signed 32,16 /u:mps2 /f:0.01
+
+[FSM_Heartbeat]
+ID=103h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=FSM_state unsigned 0,8 /e:State
+Var=FSM_ERR_VSMTimeout bit 8,1
+Var=FSM_WRN_VSMTimeout bit 24,1
+Var=FSM_WRN_VoltageOOR bit 25,1
+Var=FSM_WRN_CurrentOOR bit 26,1
+Var=FSM_WRN_BrakePositionOOR bit 35,1
+Var=FSM_WRN_LeftTPosOOR bit 36,1
+Var=FSM_WRN_RightTPosOOR bit 37,1
+Var=FSM_WRN_BPPFault bit 38,1
+Var=FSM_WRN_TPosImplausible bit 39,1
+Var=FSM_WRN_SSModule bit 27,1
+Var=FSM_WRN_SSCockpit bit 28,1
+Var=FSM_WRN_SSFrHub bit 29,1
+Var=FSM_WRN_SSInertia bit 30,1
+Var=FSM_WRN_SSFlHub bit 31,1
+Var=FSM_WRN_SSBots bit 32,1
+Var=FSM_WRN_BrakePressureOOR bit 34,1
+Var=FSM_WRN_SWAngleOOR bit 33,1
 
 [PTC_Heartbeat]
 ID=105h

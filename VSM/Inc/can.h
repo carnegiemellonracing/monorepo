@@ -28,7 +28,6 @@ typedef enum {
     CANRX_DIM_REQUEST,        /**< @brief DIM state request. */
     CANRX_RES,                /**< @brief RES */
     CANRX_AS_PRESSURE_READING,/**< @brief Autonomous Pressure Readings */
-    CANRX_ASMS_STATE,
     CANRX_DTI_ERROR_CODE,     /**< @brief Inverter Fault Codes*/
     CANRX_FL_TEMPFAULT,       /**< @brief Front Left Inverter Fault */
     CANRX_FR_TEMPFAULT,       /**< @brief Front Right Inverter Fault */

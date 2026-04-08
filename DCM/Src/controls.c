@@ -671,7 +671,6 @@ static void set_regen(uint8_t throttlePos_u8) {
  *
  * @param gear Which gear the vehicle is in.
  * @param throttlePos_u8 Throttle position, 0-255.
- * @param brakePos_u8 Brake position, 0-255.
  * @param swAngle_millideg Steering wheel angle in degrees. Zero-centered, right turn positive.
  * @param battVoltage_mV Accumulator voltage in millivolts.
  * @param battCurrent_mA Accumulator current in milliamps.
@@ -680,7 +679,6 @@ static void set_regen(uint8_t throttlePos_u8) {
 void runControls (
     cmr_canGear_t gear,
     uint8_t throttlePos_u8,
-    uint8_t brakePos_u8,
     uint16_t brakePressurePsi_u8,
     int32_t swAngle_millideg_FL,
     int32_t swAngle_millideg_FR,
@@ -888,9 +886,9 @@ void integrateCurrent() {
 		previousTickCount = xTaskGetTickCount();
         coulombCounting.KCoulombs = 0.001f;
 	}else{
-        const float packCurrent_kA = getPackCurrent()*0.001f;
-        const TickType_t currentTick = xTaskGetTickCount();
-        coulombCounting.KCoulombs += ((currentTick-previousTickCount)*0.001f)*packCurrent_kA;
+        // const float packCurrent_kA = getPackCurrent()*0.001f;
+        // const TickType_t currentTick = xTaskGetTickCount();
+        // coulombCounting.KCoulombs += ((currentTick-previousTickCount)*0.001f)*packCurrent_kA;
         previousTickCount = currentTick;
     }
 }
@@ -1701,13 +1699,11 @@ void setCruiseControlTorque (
  * @brief Calculates and sets motor torques and velocities for endurance.
  *
  * @param throttlePos_u8 Throttle position, 0-255.
- * @param brakePos_u8
  * @param swAngle_millideg Steering wheel angle in degrees. Zero-centered, right turn positive.
  */
 void setEnduranceTorque (
     int32_t avgMotorSpeed_RPM,
     uint8_t throttlePos_u8,
-    uint8_t brakePos_u8,
     int32_t swAngle_millideg,
     int32_t battVoltage_V_hvc,
     int32_t battCurrent_A_hvc,
@@ -1754,7 +1750,8 @@ void setEnduranceTorque (
         const float hv_voltage_V = ((float)(HVISense->packVoltage_cV)) * 1e-2f; // convert to volts
 
         volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
-        const float currentA = ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
+        const float currentA = 0
+        // ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
         // apply power limit.
         const float power_consumed_W = hv_voltage_V * currentA;
 
@@ -1791,7 +1788,6 @@ void setEnduranceTorque (
 void setEnduranceTestTorque(
     int32_t avgMotorSpeed_RPM,
     uint8_t throttlePos_u8,
-    uint8_t brakePos_u8,
     int32_t swAngle_millideg,
     int32_t battVoltage_mV,
     int32_t battCurrent_mA,
@@ -1825,7 +1821,8 @@ void setEnduranceTestTorque(
         const float hv_voltage_V = ((float)(HVISense->packVoltage_cV)) * 1e-2f; // convert to volts
 
         volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
-        const float currentA = ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
+        const float currentA = 0
+        // ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
         // apply power limit.
         const float power_consumed_W = hv_voltage_V * currentA;
 

@@ -68,10 +68,10 @@ static cmr_task_t canTX1Hz_task;
 static void calcPower(cmr_canHVSense_t *heartbeat) {
 	uint16_t voltageRaw, currentRaw, voltage;
 	voltageRaw = adcRead(ADC_VSENSE);
-	currentRaw = adcRead(ADC_ISENSE);
+	// currentRaw = adcRead(ADC_ISENSE);
 	// erm power sensing tonight queen?
-	heartbeat->packCurrent_dA = currentRaw;
-	heartbeat->packPower_W = 0;
+	// heartbeat->packCurrent_dA = currentRaw;
+	// heartbeat->packPower_W = 0;
 
 	// centivolts my beloved
 	voltage = (V_TRANS_M*voltageRaw + (V_TRANS_B));

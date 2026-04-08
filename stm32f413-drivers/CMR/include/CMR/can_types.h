@@ -599,9 +599,7 @@ typedef struct {
 
 //HVC Sensors CAN Types
 typedef struct {
-    int16_t packCurrent_dA;
     uint16_t packVoltage_cV;
-    int32_t packPower_W;
 } cmr_canHVSense_t;
 
 //Power Sense Board CAN Types
@@ -901,8 +899,7 @@ typedef struct {
     uint8_t torqueRequested;            /**< @brief Torque requested (0-255). */
     uint8_t throttlePosition;           /**< @brief Throttle position (0-255). */
     uint16_t brakePressureFront_PSI;    //u: PSI /**< @brief Front brake pressure. */
-    uint8_t brakePedalPosition_percent; //u: % /**< @brief Brake pedal position (0-255). */
-    
+    uint8_t AS_Status;
 } cmr_canFSMData_t; 
 
 typedef struct {
