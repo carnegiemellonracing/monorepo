@@ -128,14 +128,14 @@ static void sendCIAData() {
 
     cmr_canCIAData_t CIA_load1;
     CIA_load1.data = adcRead(ADC_AMP_1);
-    cmr_canCIAData_t CIA_load2;
-    CIA_load2.data = adcRead(ADC_AMP_2);
-    cmr_canCIAData_t CIA_load3;
-    CIA_load3.data = adcRead(ADC_AMP_3);
-    cmr_canCIAData_t CIA_load4;
-    CIA_load4.data = adcRead(ADC_AMP_4);
-    cmr_canCIAData_t CIA_load5;
-    CIA_load5.data = adcRead(ADC_AMP_5);
+    // cmr_canCIAData_t CIA_load2;
+    // CIA_load2.data = adcRead(ADC_AMP_2);
+    // cmr_canCIAData_t CIA_load3;
+    // CIA_load3.data = adcRead(ADC_AMP_3);
+    // cmr_canCIAData_t CIA_load4;
+    // CIA_load4.data = adcRead(ADC_AMP_4);
+    // cmr_canCIAData_t CIA_load5;
+    // CIA_load5.data = adcRead(ADC_AMP_5);
 
 	canTX(
 		CMR_CANID_CIA_THERM,
@@ -155,28 +155,28 @@ static void sendCIAData() {
 		sizeof(cmr_canCIAData_t),
 		canTX200Hz_period_ms
 	);
-    canTX(
-		CMR_CANID_CIA_LOAD_2,
-		&CIA_load2,
-		sizeof(cmr_canCIAData_t),
-		canTX200Hz_period_ms
-	);
-    canTX(
-		CMR_CANID_CIA_LOAD_3,
-		&CIA_load3,
-		sizeof(cmr_canCIAData_t),
-		canTX200Hz_period_ms
-	);
-    canTX(
-		CMR_CANID_CIA_LOAD_4,
-		&CIA_load4,
-		sizeof(cmr_canCIAData_t),
-		canTX200Hz_period_ms
-	);
-    canTX(
-		CMR_CANID_CIA_LOAD_5,
-		&CIA_load5,
-		sizeof(cmr_canCIAData_t),
-		canTX200Hz_period_ms
-	);
+    // canTX(
+	// 	CMR_CANID_CIA_LOAD_2,
+	// 	&CIA_load2,
+	// 	sizeof(cmr_canCIAData_t),
+	// 	canTX200Hz_period_ms
+	// );
+    // canTX(
+	// 	CMR_CANID_CIA_LOAD_3,
+	// 	&CIA_load3,
+	// 	sizeof(cmr_canCIAData_t),
+	// 	canTX200Hz_period_ms
+	// );
+    // canTX(
+	// 	CMR_CANID_CIA_LOAD_4,
+	// 	&CIA_load4,
+	// 	sizeof(cmr_canCIAData_t),
+	// 	canTX200Hz_period_ms
+	// );
+    // canTX(
+	// 	CMR_CANID_CIA_LOAD_5,
+	// 	&CIA_load5,
+	// 	sizeof(cmr_canCIAData_t),
+	// 	canTX200Hz_period_ms
+	// );
 }
