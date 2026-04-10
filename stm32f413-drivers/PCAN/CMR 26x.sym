@@ -177,8 +177,8 @@ Var=FL_torqueLimNeg_dpcnt signed 48,16 /u:Nm /f:0.0098 /p:4
 [AMK_FR_ACT_1]
 ID=284h
 DLC=8
-CycleTime=100
-TimeOut=500
+CycleTime=20
+TimeOut=100
 Var=FR_AMK_RESERVED1 unsigned 0,8
 Var=FR_AMK_STATUS_SYSTEM_READY1 bit 8,1
 Var=FR_AMK_STATUS_ERROR1 bit 9,1
@@ -218,8 +218,8 @@ Var=FR_torqueLimNeg_dpcnt1 signed 48,16
 [AMK_RL_ACT_1]
 ID=287h
 DLC=8
-CycleTime=100
-TimeOut=500
+CycleTime=20
+TimeOut=100
 Var=RL_AMK_RESERVED2 unsigned 0,8
 Var=RL_AMK_STATUS_SYSTEM_READY2 bit 8,1
 Var=RL_AMK_STATUS_ERROR2 bit 9,1
@@ -259,8 +259,8 @@ Var=RL_torqueLimNeg_dpcnt2 signed 48,16
 [AMK_RR_ACT_1]
 ID=283h
 DLC=8
-CycleTime=100
-TimeOut=500
+CycleTime=20
+TimeOut=100
 Var=RR_AMK_RESERVED3 unsigned 0,8
 Var=RR_AMK_STATUS_SYSTEM_READY3 bit 8,1
 Var=RR_AMK_STATUS_ERROR3 bit 9,1
@@ -466,40 +466,12 @@ CycleTime=5
 TimeOut=25
 Var=LOAD_data1 unsigned 0,32
 
-[CIA_LOAD_2]
-ID=433h
-DLC=4
-CycleTime=5
-TimeOut=25
-Var=LOAD_data2 unsigned 0,32
-
-[CIA_LOAD_3]
-ID=434h
-DLC=4
-CycleTime=5
-TimeOut=25
-Var=LOAD_data3 unsigned 0,32
-
-[CIA_LOAD_4]
-ID=435h
-DLC=4
-CycleTime=5
-TimeOut=25
-Var=LOAD_data4 unsigned 0,32
-
-[CIA_LOAD_5]
-ID=436h
-DLC=4
-CycleTime=5
-TimeOut=25
-Var=LOAD_data5 unsigned 0,32
-
 [CIA_THERM]
 ID=431h
 DLC=4
 CycleTime=5
 TimeOut=25
-Var=THERM_data6 unsigned 0,32
+Var=THERM_data2 unsigned 0,32
 
 [CONTROLS_PID_IO]
 ID=7E5h
