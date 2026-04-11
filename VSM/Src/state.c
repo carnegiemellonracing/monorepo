@@ -530,6 +530,7 @@ static void setStateOutputs(TickType_t lastWakeTime_ms) {
             // Enable RTD buzzer for the first rtdBuzzerTime_ms after getting into RTD
             if (lastWakeTime_ms < lastStateChangeTime_ms + rtdBuzzerTime_ms) {
                 cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 1);
+                // cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
             }
             else {
                 cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
@@ -545,6 +546,7 @@ static void setStateOutputs(TickType_t lastWakeTime_ms) {
                 //Modulate buzzer at 2.5 Hz
                 TickType_t cyclesPassed = timeinASEmergency_ms / ASEmergencySwitchingTime_ms;
                 cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, cyclesPassed % 2);
+                // cmr_gpioWrite(GPIO_OUT_RTD_SIGNAL, 0);
             }
             else
             {

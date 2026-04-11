@@ -310,6 +310,77 @@ typedef enum {
     CMR_CAN_VSM_WRN_CDC_TIMEOUT = (1<<13),
     CMR_CAN_VSM_WRN_HVC_TIMEOUT = (1<<14) 
 } cmr_canVSMHeartbeatWrn_t; 
+
+// Endianness hell.
+typedef struct {
+    uint8_t msb;
+    uint8_t lsb;
+} big_endian_16_t;
+
+
+typedef union {
+    struct {
+        uint8_t lsb;
+        uint8_t msb;
+    } data;
+    int16_t parsed;
+} int16_parser;
+
+static int16_t parse_int16(volatile big_endian_16_t *big) {
+    static int16_parser parser;
+    parser.data.msb = big->msb;
+    parser.data.lsb = big->lsb;
+    return parser.parsed;
+} 
+
+static big_endian_16_t int16_to_big(uint16_t small) {
+    static int16_parser parser;
+    big_endian_16_t result;
+    
+    parser.parsed = small;
+    result.msb = parser.data.msb;
+    result.lsb = parser.data.lsb;
+    
+    return result;
+}
+
+typedef struct {
+    uint8_t msb;
+    uint8_t byte2;
+    uint8_t byte1;
+    uint8_t lsb;
+} big_endian_32_t;
+
+typedef union {
+    struct {
+        uint8_t lsb;
+        uint8_t byte1;
+        uint8_t byte2;
+        uint8_t msb;
+    } data;
+    int32_t parsed;
+} int32_parser;
+
+static int32_t big_endian_to_int32(volatile big_endian_32_t *big) {
+    int32_parser parser;
+    parser.data.msb = big->msb;
+    parser.data.byte2 = big->byte2;
+    parser.data.byte1 = big->byte1;
+    parser.data.lsb = big->lsb;
+    return parser.parsed;
+}
+
+static big_endian_32_t int32_to_big(int32_t value) {
+    int32_parser parser;
+    big_endian_32_t result;
+    parser.parsed = value;
+    result.msb = parser.data.msb;
+    result.byte2 = parser.data.byte2;
+    result.byte1 = parser.data.byte1;
+    result.lsb = parser.data.lsb;
+    return result;
+}
+
 /** @brief Bit definitions for RES*/
 typedef enum {
     /** @brief RES go-ahead*/
@@ -880,51 +951,51 @@ typedef struct {
 
 /** @brief DTI motor controller electrical rpm, duty_cycle, input_voltage. */
 typedef struct {
-    int32_t erpm;               /**< Electrical RPM. Equation: ERPM = Motor RPM * number of the motor pole pairs. */
-    int16_t duty_cycle_pct;     /**< @brief Sign represents if the motor is running(positive) current or regenerating (negative) current. Value multiplied by 10.*/
-    int16_t input_voltage_V;    /**< @brief Input DC voltage. */
+    big_endian_32_t erpm;               /**< Electrical RPM. Equation: ERPM = Motor RPM * number of the motor pole pairs. */
+    big_endian_16_t duty_cycle_pct;     /**< @brief Sign represents if the motor is running(positive) current or regenerating (negative) current. Value multiplied by 10.*/
+    big_endian_16_t input_voltage_V;    /**< @brief Input DC voltage. */
 } cmr_canDTI_TX_Erpm_t;
 
 /** @brief DTI motor controller ac and dc current values. */
 typedef struct {
-    int16_t ac_current_dA;         /**< Motor current. Sign represents if the motor is running(positive) current or regenerating (negative) current. Value multiplied by 10.*/
-    int16_t dc_current_dA;         /**< Current on DC side. */
+    big_endian_16_t ac_current_dA;         /**< Motor current. Sign represents if the motor is running(positive) current or regenerating (negative) current. Value multiplied by 10.*/
+    big_endian_16_t dc_current_dA;         /**< Current on DC side. */
 } cmr_canDTI_TX_Current_t;
 
 /** @brief DTI motor controller temperature, motor temperature, fault code. */
 typedef struct {
-    int16_t ctlr_temp;         /**< Controller temperature. The value is multiplied by 10. */
-    int16_t motor_temp;        /**< Motor temperature. The value is multiplied by 10. */
+    big_endian_16_t ctlr_temp;         /**< Controller temperature. The value is multiplied by 10. */
+    big_endian_16_t motor_temp;        /**< Motor temperature. The value is multiplied by 10. */
     uint8_t fault_code;        /**< If fault occurs that prevents motor actuating, this value shows the fault code. */
 } cmr_canDTI_TX_TempFault_t;
 
 /** @brief DTI motor controller Id, Iq values. */
 typedef struct {
-    int32_t id;         /**< FOC algorithm component Id. Value multiplied by 100 */
-    int32_t iq;        /**< FOC algorithm component Iq. Value multiplied by 100. */
+    big_endian_32_t id;         /**< FOC algorithm component Id. Value multiplied by 100 */
+    big_endian_32_t iq;        /**< FOC algorithm component Iq. Value multiplied by 100. */
 } cmr_canDTI_TX_IdIq_t;
 
 /** @brief DTI motor controller: Configured and available AC current limits. */
 typedef struct {
-    int16_t cfg_ac_current_max;     /**< Configured max AC current. */
-    int16_t avail_ac_current_max;   /**< Available max AC current. */
-    int16_t cfg_ac_current_min;     /**< Configured min AC current. */
-    int16_t avail_ac_current_min;   /**< Available min AC current. */
+    big_endian_16_t cfg_ac_current_max;     /**< Configured max AC current. */
+    big_endian_16_t avail_ac_current_max;   /**< Available max AC current. */
+    big_endian_16_t cfg_ac_current_min;     /**< Configured min AC current. */
+    big_endian_16_t avail_ac_current_min;   /**< Available min AC current. */
 } cmr_canDTI_TX_ACLimits_t;
 
 /** @brief DTI motor controller: Configured and available DC current limits. */
 typedef struct {
-    int16_t cfg_dc_current_max;     /**< Configured max DC current. */
-    int16_t avail_dc_current_max;   /**< Available max DC current. */
-    int16_t cfg_dc_current_min;     /**< Configured min DC current. */
-    int16_t avail_dc_current_min;   /**< Available min DC current. */
+    big_endian_16_t cfg_dc_current_max;     /**< Configured max DC current. */
+    big_endian_16_t avail_dc_current_max;   /**< Available max DC current. */
+    big_endian_16_t cfg_dc_current_min;     /**< Configured min DC current. */
+    big_endian_16_t avail_dc_current_min;   /**< Available min DC current. */
 } cmr_canDTI_TX_DCLimits_t;
 
 /** @brief DTI motor controller: Control mode, target Iq, motor position, isMotorStill flag. */
 typedef struct  __attribute__((__packed__))  {
     uint8_t control_mode;       /**< Control mode (e.g., torque, speed, position). */
-    int16_t target_iq;          /**< Target Iq, scaled by 100. */
-    int32_t motor_position;     /**< Motor position in encoder counts or degrees. */
+    big_endian_16_t target_iq;          /**< Target Iq, scaled by 100. */
+    big_endian_32_t motor_position;     /**< Motor position in encoder counts or degrees. */
     uint8_t is_motor_still;     /**< 1 = Motor is still, 0 = Motor is moving. */
 } cmr_canDTI_TX_ControlStatus_t;
 
@@ -934,7 +1005,7 @@ typedef struct {
     int8_t brake_signal;        /**< Brake input signal. */
     uint8_t digital_inputs;     /**< Bitmask of digital inputs. */
     uint8_t drive_enable;       /**< 0 = disabled, 1 = enabled. */
-    uint16_t limit_status;      /**< Bitmask for overvoltage, overcurrent, temp, etc. */
+    big_endian_16_t limit_status;      /**< Bitmask for overvoltage, overcurrent, temp, etc. */
     uint8_t DTI_reserved;       /**< Some bits DTI Reserved */
     uint8_t canVersion;         /** CAN Map Version */
 } cmr_canDTI_TX_IOStatus_t;
@@ -1131,76 +1202,6 @@ typedef struct {
     uint16_t curvature_radius_m;    //u: m /**< @brief Curvature radius based on down rotation rate (meters times 10^2). */
     uint8_t status;                 //Flag: cmr_canSBGAutomotiveStatus_t /**< @brief Status bitmasks as AUTO_STATUS definition. */
 } cmr_canSBGAutomotive_t;
-
-// Endianness hell.
-typedef struct {
-    uint8_t msb;
-    uint8_t lsb;
-} big_endian_16_t;
-
-
-typedef union {
-    struct {
-        uint8_t lsb;
-        uint8_t msb;
-    } data;
-    int16_t parsed;
-} int16_parser;
-
-static int16_t parse_int16(volatile big_endian_16_t *big) {
-    static int16_parser parser;
-    parser.data.msb = big->msb;
-    parser.data.lsb = big->lsb;
-    return parser.parsed;
-} 
-
-static big_endian_16_t int16_to_big(uint16_t small) {
-    static int16_parser parser;
-    big_endian_16_t result;
-    
-    parser.parsed = small;
-    result.msb = parser.data.msb;
-    result.lsb = parser.data.lsb;
-    
-    return result;
-}
-
-typedef struct {
-    uint8_t msb;
-    uint8_t byte2;
-    uint8_t byte1;
-    uint8_t lsb;
-} big_endian_32_t;
-
-typedef union {
-    struct {
-        uint8_t lsb;
-        uint8_t byte1;
-        uint8_t byte2;
-        uint8_t msb;
-    } data;
-    int32_t parsed;
-} int32_parser;
-
-static int32_t big_endian_to_int32(volatile big_endian_32_t *big) {
-    int32_parser parser;
-    parser.data.msb = big->msb;
-    parser.data.byte2 = big->byte2;
-    parser.data.byte1 = big->byte1;
-    parser.data.lsb = big->lsb;
-    return parser.parsed;
-}
-
-static big_endian_32_t int32_to_big(int32_t value) {
-    int32_parser parser;
-    big_endian_32_t result;
-    parser.parsed = value;
-    result.msb = parser.data.msb;
-    result.byte2 = parser.data.byte2;
-    result.byte1 = parser.data.byte1;
-    result.lsb = parser.data.lsb;
-    return result;
-}
 
 typedef struct {
     big_endian_16_t q0; //f:3.05185094759972E-005, max:1, d:0
@@ -1516,7 +1517,8 @@ typedef struct{
 typedef struct{
     int16_t frontTorque_mNm;           /**< @brief Front wheel torque mNm. */     
     int16_t rearTorque_mNm;            /**< @brief Rear wheel torque mNm. */     
-    int16_t steeringAngle_centi_deg;   /**< @brief Requested average angle of wheels centi deg. */     
+    int16_t steeringAngle_centi_deg;   /**< @brief Requested average angle of wheels centi deg. */  
+    uint16_t maxVelocity_decimeters_s; /**< @brief Requested max velocity in decimeters per second. */     
 }
 cmr_canAutonomousControlAction_t;
 

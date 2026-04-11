@@ -24,20 +24,20 @@
 #define BUS_CURRENT_SAMPLES 10
 
 /** @brief  Experimentally determined left TPOS ADC Minimum*/
-#define LEFT_TPOS_MIN_ADC 2280
+#define LEFT_TPOS_MIN_ADC 2700
 
 /** @brief  Experimentally determined left TPOS ADC Maximum*/
-#define LEFT_TPOS_MAX_ADC 3850
+#define LEFT_TPOS_MAX_ADC 3280
 
 /** @brief  Experimentally determined right TPOS ADC Minimum*/
-#define RIGHT_TPOS_MIN_ADC 40
+#define RIGHT_TPOS_MIN_ADC 480
 
 /** @brief  Experimentally determined right TPOS ADC Maximum*/
-#define RIGHT_TPOS_MAX_ADC 1870
+#define RIGHT_TPOS_MAX_ADC 1180
 
 #define LEFT_SWANGLE_MIN_ADC 360.0f
-#define CENTER_SWANGLE_ADC 1760.0f
-#define RIGHT_SWANGLE_MAX_ADC 2880.0f
+#define CENTER_SWANGLE_ADC 1640.0f
+#define RIGHT_SWANGLE_MAX_ADC 2850.0f
 
 #define MAX_OUTER_WHEEL_ANGLE_MILLIDEG 25282.0f
 #define MAX_INNER_WHEEL_ANGLE_MILLIDEG 30139.0f
@@ -52,7 +52,7 @@ static const uint8_t BPP_TPOS_IMPLAUS_THRES = UINT8_MAX / 4;
 /** @brief Throttle threshold for clearing brake implausibility. See FSAE rule EV.2.4. */
 static const uint8_t BPP_TPOS_CLEAR_THRES = UINT8_MAX / 20;
 /** @brief Threshold where brakes are considered to be actuated. */
-static const uint16_t BRAKE_ACTIVE_THRES_PSI = 40;
+static const uint16_t BRAKE_ACTIVE_THRES_PSI = 100;
 
 /** @brief 90 degree sw left lock adc value. */
 #define SWANGLE_90DEG_LEFT 1345

@@ -9,8 +9,8 @@
 #define CONTROLS_H
 
 #define ASSUME_NO_TURN true
-#define BUTTON_ACK 0b10000000
-#define BUTTON_ACT 0b00000100
+#define BUTTON_ACK 0b00100000
+#define BUTTON_ACT 0b00010000
 #define BUTTON_PTT 0b100000
 #define BUTTON_SCRN 0b10000
 
@@ -83,7 +83,8 @@ void setAccelTorque(float car_v,
                     float fz_fl, float fz_fr,
                     float fz_rl, float fz_rr,
                     float *trq_fl, float *trq_fr,
-                    float *trq_rl, float *trq_rr);
+                    float *trq_rl, float *trq_rr,
+                    bool reset);
 
 
 // ------------------------------------------------------------------------------------------------

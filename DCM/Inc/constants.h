@@ -11,6 +11,7 @@ static const float minTorqueLUTVal_Nm = 2.6f;
 static const float current_torque_slope = 85.0f / 31.6f;
 
 static const float front_bias = 0.20f;
+static const uint16_t DTI_MAX_DC_CURRENT_PER_MOTOR_DA = 850;
 
 /** @brief Maximum motor speed
  * motor datasheet: "Nominal Speed - 13250 rpm"
@@ -36,8 +37,8 @@ static const float maxFastTorque_Nm = maxTorque_continuous_stall_Nm;
  */
 static const int16_t maxSlowSpeed_rpm = 1500;
 
-/** @brief Maximum motor speed in dv gear. Roughly 7m/s */
-static const int16_t maxDVSpeed_rpm = 1000;
+/** @brief Maximum motor speed in dv gear. Roughly 10m/s */
+static const int16_t maxDVSpeed_rpm = 6000;
 
 /** @brief Maximum motor speed in medium gear. Roughly 20m/s */
 static const int16_t maxMediumSpeed_rpm = 13000;
@@ -63,7 +64,6 @@ static const int32_t gear_ratio_bot = 621;
 
 //Accel constants
 //General constants
-static const float gear_ratio = 12.097;
 
 static const float slip_ratio_front = 0.12;
 static const float slip_ratio_rear = 0.15;
@@ -96,8 +96,9 @@ static const float launch_speed = 1.0;
 static const float blend_speed = 3.0;
 static const float launch_torque_rear = 31.0;
 
-static const float effective_wheel_rad_m = 0.2032f; // meters
-static const float effective_wheel_dia_m = 2 * effective_wheel_rad_m; // meters
+static const float gear_ratio = 12.097; // real for 26x
+static const float effective_wheel_dia_m = 0.41; /** @brief effective wheel diameter */
+static const float effective_wheel_rad_m = effective_wheel_dia_m * 0.5f; /** @brief effective wheel radius */
 
 static const double wheelbase_m = 1.55f;
 static const double trackwidth_m = 1.30f;

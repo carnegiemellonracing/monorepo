@@ -320,6 +320,43 @@ static float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
 }
 
 /**
+ * @brief Compute per-wheel Fz from longitudinal acceleration (ax) load transfer.
+ *        Use instead of load cells when they are unavailable.
+ *        Assumes straight-line driving (no lateral load transfer).
+ *
+ * @param motor   Which wheel (MOTOR_FL, MOTOR_FR, MOTOR_RL, MOTOR_RR)
+ * @param ax_mps2 Longitudinal acceleration in m/s^2 (positive = forward accel)
+ * @return Estimated vertical load in Newtons (clamped >= 0)
+ */
+static float get_accel_downforce(motorLocation_t motor, float ax_mps2) {
+    static const float total_mass_kg = 185.0f + 75.0f; // car + driver
+    static const float cg_height_m   = 0.2895f;
+
+    // static corner load (assume 50/50 front-rear, equal left-right)
+    const float static_fz = total_mass_kg * 9.81f * 0.25f;
+
+    // longitudinal load transfer: positive ax (forward accel) shifts load rearward
+    //   delta per axle = m * ax * h / wheelbase, split equally left-right
+    float delta_fz_long = total_mass_kg * ax_mps2 * cg_height_m / (float)wheelbase_m * 0.5f;
+
+    float fz;
+    switch (motor) {
+        case MOTOR_FL: // fall through
+        case MOTOR_FR:
+            fz = static_fz - delta_fz_long; // fronts lose load under accel
+            break;
+        case MOTOR_RL: // fall through
+        case MOTOR_RR:
+            fz = static_fz + delta_fz_long; // rears gain load under accel
+            break;
+        default:
+            fz = static_fz;
+            break;
+    }
+    return fmaxf(fz, 0.0f);
+}
+
+/**
  * @param normalized_throttle A value in [-1, 1].
  * In [0, 1] if without regen.
  */
@@ -697,18 +734,18 @@ void runControls (
         return;
     }
 
-    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FL = canTractiveGetPayload(CANRX_TRAC_FL_ERPM);
-    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FR = canTractiveGetPayload(CANRX_TRAC_FR_ERPM);
-    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RL = canTractiveGetPayload(CANRX_TRAC_RL_ERPM);
-    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RR = canTractiveGetPayload(CANRX_TRAC_RR_ERPM);
+    int32_t dtiERPM_FL = getDTIERPM(CANRX_TRAC_FL_ERPM);
+    int32_t dtiERPM_FR = getDTIERPM(CANRX_TRAC_FR_ERPM);
+    int32_t dtiERPM_RL = getDTIERPM(CANRX_TRAC_RL_ERPM);
+    int32_t dtiERPM_RR = getDTIERPM(CANRX_TRAC_RR_ERPM);
 
     volatile cmr_canHeartbeat_t   *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
 
     const int32_t avgMotorSpeed_RPM = (
-        + (int32_t)(dtiERPM_FL->erpm / pole_pairs)
-        + (int32_t)(dtiERPM_FR->erpm / pole_pairs)
-        + (int32_t)(dtiERPM_RL->erpm / pole_pairs)
-        + (int32_t)(dtiERPM_RR->erpm / pole_pairs)
+        + (int32_t)(dtiERPM_FL / pole_pairs)
+        + (int32_t)(dtiERPM_FR / pole_pairs)
+        + (int32_t)(dtiERPM_RL / pole_pairs)
+        + (int32_t)(dtiERPM_RR / pole_pairs)
     ) / MOTOR_LEN;
 
     // Update odometer
@@ -788,31 +825,34 @@ void runControls (
             va = SENSORIC_VEL_TO_MPS((float)(sensoricVelAng->vel_A));
             // sensors_get_vel_xy(&vx, &vy);
 
-            volatile cmr_canIZZELoadCell_t *fl_load = (cmr_canIZZELoadCell_t *)canDAQGetPayload(CANRX_DAQ_LOAD_FL);
-            volatile cmr_canIZZELoadCell_t *fr_load = (cmr_canIZZELoadCell_t *)canDAQGetPayload(CANRX_DAQ_LOAD_FR);
-            volatile cmr_canIZZELoadCell_t *rl_load = (cmr_canIZZELoadCell_t *)canDAQGetPayload(CANRX_DAQ_LOAD_RL);
-            volatile cmr_canIZZELoadCell_t *rr_load = (cmr_canIZZELoadCell_t *)canDAQGetPayload(CANRX_DAQ_LOAD_RR);
+            // Toggle: set to true to estimate Fz from accelerometer, false to use load cells
+            const bool use_accel_downforce = false;
 
-            float fz_fl_N = (float)(parse_int16(&(fl_load->force_output_lb))) * 4.448f * sinf(0.785);
-            float fz_fr_N = (float)(parse_int16(&(fr_load->force_output_lb))) * 4.448f * sinf(0.785);
-            float fz_rl_N = (float)(parse_int16(&(rl_load->force_output_lb))) * 4.448f * sinf(0.524);
-            float fz_rr_N = (float)(parse_int16(&(rr_load->force_output_lb))) * 4.448f * sinf(0.524);
+            float fz_fl_N, fz_fr_N, fz_rl_N, fz_rr_N;
 
-            // NORMALIZED FZ IN CASE STRAIN GAUGES FUCK
-            // (car mass + driver mass) * fl/(fl + fr + rl + rr)
+            if (use_accel_downforce) {
+                // Estimate Fz from Sensoric longitudinal acceleration (no load cells needed)
+                float ax, ay, az;
+                sensors_get_accel_xyz(&ax, &ay, &az);
+                fz_fl_N = get_accel_downforce(MOTOR_FL, ax);
+                fz_fr_N = get_accel_downforce(MOTOR_FR, ax);
+                fz_rl_N = get_accel_downforce(MOTOR_RL, ax);
+                fz_rr_N = get_accel_downforce(MOTOR_RR, ax);
+            } else {
+                // Use load cells
+                volatile cmr_canIZZELoadCell_t *fl_load = (cmr_canIZZELoadCell_t *)canDAQGetPayload(CANRX_DAQ_LOAD_FL);
+                volatile cmr_canIZZELoadCell_t *fr_load = (cmr_canIZZELoadCell_t *)canDAQGetPayload(CANRX_DAQ_LOAD_FR);
+                volatile cmr_canIZZELoadCell_t *rl_load = (cmr_canIZZELoadCell_t *)canDAQGetPayload(CANRX_DAQ_LOAD_RL);
+                volatile cmr_canIZZELoadCell_t *rr_load = (cmr_canIZZELoadCell_t *)canDAQGetPayload(CANRX_DAQ_LOAD_RR);
 
-            // float fz_fl_N_normalized = (car_mass_kg + driver_mass_kg) * fz_fl_N / (fz_fl_N + fz_fr_N + fz_rl_N + fz_rr_N);
-            // float fz_fr_N_normalized = (car_mass_kg + driver_mass_kg) * fz_fr_N / (fz_fl_N + fz_fr_N + fz_rl_N + fz_rr_N);
-            // float fz_rl_N_normalized = (car_mass_kg + driver_mass_kg) * fz_rl_N / (fz_fl_N + fz_fr_N + fz_rl_N + fz_rr_N);
-            // float fz_rr_N_normalized = (car_mass_kg + driver_mass_kg) * fz_rr_N / (fz_fl_N + fz_fr_N + fz_rl_N + fz_rr_N);
+                fz_fl_N = (float)(parse_int16(&(fl_load->force_output_lb))) * 4.448f * sinf(0.785);
+                fz_fr_N = (float)(parse_int16(&(fr_load->force_output_lb))) * 4.448f * sinf(0.785);
+                fz_rl_N = (float)(parse_int16(&(rl_load->force_output_lb))) * 4.448f * sinf(0.524);
+                fz_rr_N = (float)(parse_int16(&(rr_load->force_output_lb))) * 4.448f * sinf(0.524);
+            }
 
-            // setAccelLaunchControl(throttlePos_u8, brakePressurePsi_u8, va, wheel_fl_speed_radps, 
-            //     wheel_fr_speed_radps, wheel_rl_speed_radps, wheel_rr_speed_radps, 
-            //     fz_fl_N_normalized, fz_fr_N_normalized, fz_rl_N_normalized, fz_rr_N_normalized);
-
-
-            setAccelLaunchControl(throttlePos_u8, brakePressurePsi_u8, va, wheel_fl_speed_radps, 
-                wheel_fr_speed_radps, wheel_rl_speed_radps, wheel_rr_speed_radps, 
+            setAccelLaunchControl(throttlePos_u8, brakePressurePsi_u8, va, wheel_fl_speed_radps,
+                wheel_fr_speed_radps, wheel_rl_speed_radps, wheel_rr_speed_radps,
                 fz_fl_N, fz_fr_N, fz_rl_N, fz_rr_N);
             break;
         }
@@ -866,10 +906,25 @@ void runControls (
         case CMR_CAN_GEAR_DV_MISSION_TRACKD:     
         case CMR_CAN_GEAR_DV_MISSION_EBS: {
             disableTorqueMode();
-            setVelocityInt16All(maxDVSpeed_rpm);
             volatile cmr_canAutonomousControlAction_t*  autonomousAction = canDAQGetPayload(CANRX_DAQ_AUTONOMOUS_ACTION);
-            float front_torque_Nm = CLAMP(-maxDVTorque_Nm, ((float)(autonomousAction->frontTorque_mNm))/1000.0f, maxDVTorque_Nm); 
-            float rear_torque_Nm  = CLAMP(-maxDVTorque_Nm, ((float)(autonomousAction->rearTorque_mNm))/1000.0f, maxDVTorque_Nm); 
+            
+            float front_torque_Nm;
+            float rear_torque_Nm; 
+            float maxVelocity_rpm;
+
+            if(cmr_canRXMetaTimeoutError(&canDaqRXMeta[CANRX_DAQ_AUTONOMOUS_ACTION], xTaskGetTickCount())) {
+                front_torque_Nm = 0;
+                rear_torque_Nm = 0;
+                maxVelocity_rpm = 0;
+            }
+            else {
+                front_torque_Nm = CLAMP(-maxDVTorque_Nm, ((float)(autonomousAction->frontTorque_mNm))/1000.0f, maxDVTorque_Nm); 
+                rear_torque_Nm  = CLAMP(-maxDVTorque_Nm, ((float)(autonomousAction->rearTorque_mNm))/1000.0f, maxDVTorque_Nm); 
+                maxVelocity_rpm = (float)(autonomousAction->maxVelocity_decimeters_s) * 60.0f / 10.0f / ( PI * effective_wheel_dia_m) * gear_ratio;
+                maxVelocity_rpm = CLAMP(0, maxVelocity_rpm, maxDVSpeed_rpm); 
+            }
+
+            setVelocityInt16All(maxVelocity_rpm);
             
             if (front_torque_Nm > 0.0f) {
                 setTorqueLimsUnprotected(MOTOR_FL, front_torque_Nm, 0.0f);
@@ -1387,7 +1442,8 @@ void setAccelLaunchControl(
     static TickType_t launch_tick = 0;
 
     static const float LAUNCH_SPEED_THRESH_MPS = 0.05f; // below this = "still stationary"
-    static const float LAUNCH_TIMEOUT_S = 600.0f;  // kill switch after N seconds
+    static const float LAUNCH_TIMEOUT_S = 8.0f;  // kill switch after N seconds
+    static bool was_active = false;
 
     // read button
     bool button_held = (((volatile cmr_canDIMActions_t *)canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->buttonStates) & BUTTON_ACT;
@@ -1418,6 +1474,10 @@ void setAccelLaunchControl(
 
     button_was_held = button_held;
 
+    // track launch transition for controller reset
+    bool just_launched = launch_active && !was_active;
+    was_active = launch_active;
+
     // if not active, zero torque and return
     if (!launch_active) {
         setTorqueLimsAllProtected(0.0f, 0.0f);
@@ -1434,13 +1494,13 @@ void setAccelLaunchControl(
 
     // run accel controller
     float trq_fl, trq_fr, trq_rl, trq_rr;
-    setAccelTorque(car_velocity_mps, 
-        wheel_fl_speed_radps, wheel_fr_speed_radps, 
-        wheel_rl_speed_radps, wheel_rr_speed_radps, 
-        fz_fl, fz_fr, fz_rl, fz_rr, &trq_fl, &trq_fr, &trq_rl, &trq_rr);
+    setAccelTorque(car_velocity_mps,
+        wheel_fl_speed_radps, wheel_fr_speed_radps,
+        wheel_rl_speed_radps, wheel_rr_speed_radps,
+        fz_fl, fz_fr, fz_rl, fz_rr, &trq_fl, &trq_fr, &trq_rl, &trq_rr,
+        just_launched);
 
     cmr_torqueDistributionNm_t pos_torques_Nm = {.fl = trq_fl, .fr = trq_fr, .rl = trq_rl, .rr = trq_rr};
-    cmr_torqueDistributionNm_t neg_torques_Nm = {.fl = 0.0f, .fr = 0.0f, .rl = 0.0f, .rr = 0.0f};
 
     setVelocityInt16All(maxFastSpeed_rpm);
     setTorqueLimsUnprotected(MOTOR_FL, pos_torques_Nm.fl, 0.0f);
@@ -1459,14 +1519,20 @@ void setAccelTorque(float car_velocity,
     float fz_fr,
     float fz_rl,
     float fz_rr,
-    float *trq_fl, float *trq_fr, 
-    float *trq_rl, float *trq_rr)
+    float *trq_fl, float *trq_fr,
+    float *trq_rl, float *trq_rr,
+    bool reset)
 {
 
     /* Persistent state: integrators and previous torque commands */
     static float int_fl = 0.0f, int_fr = 0.0f;
     static float int_rl = 0.0f, int_rr = 0.0f;
     static float prev_front_cmd = 0.0f, prev_rear_cmd = 0.0f;
+
+    if (reset) {
+        int_fl = int_fr = int_rl = int_rr = 0.0f;
+        prev_front_cmd = prev_rear_cmd = 0.0f;
+    }
 
     /* ============================================================
      *  Ensure Fz is positive
@@ -1568,8 +1634,11 @@ void setAccelTorque(float car_velocity,
     float rear_cmd  = 0.5f * (rl_torque + rr_torque);
 
     /* ============================================================
-     *  Torque saturation
+     *  Torque saturation — check before rate limiting for anti-windup
      * ============================================================ */
+    int front_saturated = (front_cmd <= torque_min) || (front_cmd >= torque_max);
+    int rear_saturated  = (rear_cmd  <= torque_min) || (rear_cmd  >= torque_max);
+
     if (front_cmd < torque_min) front_cmd = torque_min;
     if (front_cmd > torque_max) front_cmd = torque_max;
     if (rear_cmd  < torque_min) rear_cmd  = torque_min;
@@ -1598,10 +1667,8 @@ void setAccelTorque(float car_velocity,
      *  Update integrators with anti-windup
      *  Only integrate when:
      *  1. PI is active (alpha > 0)
-     *  2. Output is not saturated (clamping anti-windup)
+     *  2. Controller wanted to exceed saturation limits (checked pre-rate-limit)
      * ============================================================ */
-    int front_saturated = (front_cmd <= torque_min) || (front_cmd >= torque_max);
-    int rear_saturated  = (rear_cmd  <= torque_min) || (rear_cmd  >= torque_max);
 
     if (alpha > 0.0f && !front_saturated) {
         int_fl += err_fl * dt;

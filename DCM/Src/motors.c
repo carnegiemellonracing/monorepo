@@ -18,6 +18,8 @@
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/config_screen_helper.h>
 #include <CMR/fir_filter.h>
+#include <CMR/utils.h>
+
 // #include "controls_23e.h"
 #include "drs_controls.h"
 #include "servo.h"
@@ -567,10 +569,12 @@ cmr_torque_limit_t getTorqueBudget() {
 /* @brief Sets the power limit for all motors or a specific motor
  */
 void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw) {
-    volatile cmr_canHVSense_t *HVISense = canTractiveGetPayload(CANRX_HVI_SENSE);
-    // float hvVoltage_V = ((float) HVISense->packVoltage_cV) / 100.f;
-    float hvVoltage_V = 500.0f;
+    volatile cmr_canHVSense_t *HVISense = canVehicleGetPayload(CANRX_HVI_SENSE);
+    // @todo This is wrong rn. Idk why the struct cooked
+    float hvVoltage_V = ((float) HVISense->packVoltage_cV);
+    // float hvVoltage_V = 500.0f;
     uint16_t current = (int)((10.0f*((float)powerLimit_kw*1000.0f))/hvVoltage_V); // send current in deciamps
+    current = CLAMP(0, current, DTI_MAX_DC_CURRENT_PER_MOTOR_DA);
     // current = current << 8 | ((current >> 8) & 0xFF); 
     if(all) {
         sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);

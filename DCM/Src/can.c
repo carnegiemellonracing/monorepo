@@ -1607,6 +1607,36 @@ int sendDTIMessage(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t 
     }
 }
 
+int32_t getDTIERPM(canTractiveRX_t rxMsg) {
+    cmr_canDTI_TX_Erpm_t *dtiERPM = canTractiveGetPayload(rxMsg);
+    return big_endian_to_int32(&(dtiERPM->erpm));
+}
+
+int16_t getDTIInputVoltage(canTractiveRX_t rxMsg) {
+    cmr_canDTI_TX_Erpm_t *dtiERPM = canTractiveGetPayload(rxMsg);
+    return parse_int16(&(dtiERPM->input_voltage_V));
+}
+
+int16_t getDTIACCurrent_dA(canTractiveRX_t rxMsg) {
+    cmr_canDTI_TX_Current_t *dtiCurrent = canTractiveGetPayload(rxMsg);
+    return parse_int16(&(dtiCurrent->ac_current_dA));
+}
+
+int16_t getDTIDCCurrent_dA(canTractiveRX_t rxMsg) {
+    cmr_canDTI_TX_Current_t *dtiCurrent = canTractiveGetPayload(rxMsg);
+    return parse_int16(&(dtiCurrent->dc_current_dA));
+}
+
+int16_t getDTICtlrTemp_dC(canTractiveRX_t rxMsg) {
+    cmr_canDTI_TX_TempFault_t *dtiTempFault = canTractiveGetPayload(rxMsg);
+    return parse_int16(&(dtiTempFault->ctlr_temp));
+}
+
+int16_t getDTIMotorTemp_dC(canTractiveRX_t rxMsg) {
+    cmr_canDTI_TX_TempFault_t *dtiTempFault = canTractiveGetPayload(rxMsg);
+    return parse_int16(&(dtiTempFault->motor_temp));
+}
+
 int sendCubeMarsMessage(cmr_canBusID_t bus, cmr_canExtendedID_t id, const void *data, size_t len, TickType_t timeout) {
     configASSERT(len == 1 || len == 2 || len == 4);
     if(len == 1) {
