@@ -70,7 +70,7 @@ static void statusLED(void *pvParameters) {
  * @return Does not return.
  */
 
-  int main(void) {
+   int main(void) {
 
    	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
     DWT->LAR = 0xC5ACCE55;

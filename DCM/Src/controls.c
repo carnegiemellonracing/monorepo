@@ -805,10 +805,6 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_TEST: {
-            setPowerLimit(false, MOTOR_FL, 40.0 * front_bias);
-            setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
-            setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
-            setPowerLimit(false, MOTOR_RR, 40.0 * (1 - front_bias));
 
             // float target_speed_mps = 5.0f;
             // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
@@ -826,7 +822,7 @@ void runControls (
             // sensors_get_vel_xy(&vx, &vy);
 
             // Toggle: set to true to estimate Fz from accelerometer, false to use load cells
-            const bool use_accel_downforce = false;
+            const bool use_accel_downforce = true;
 
             float fz_fl_N, fz_fr_N, fz_rl_N, fz_rr_N;
 
@@ -854,6 +850,23 @@ void runControls (
             setAccelLaunchControl(throttlePos_u8, brakePressurePsi_u8, va, wheel_fl_speed_radps,
                 wheel_fr_speed_radps, wheel_rl_speed_radps, wheel_rr_speed_radps,
                 fz_fl_N, fz_fr_N, fz_rl_N, fz_rr_N);
+
+            const cmr_DTI_RX_Message_t *dtiSetpointsFL = getDTISetpoints(MOTOR_FL);
+            const cmr_DTI_RX_Message_t *dtiSetpointsFR = getDTISetpoints(MOTOR_FR);
+            const cmr_DTI_RX_Message_t *dtiSetpointsRL = getDTISetpoints(MOTOR_RL);
+            const cmr_DTI_RX_Message_t *dtiSetpointsRR = getDTISetpoints(MOTOR_RR);
+
+            float torque_lim_fl = dtiSetpointsFL->torqueLimPos_dA;
+            float torque_lim_fr = dtiSetpointsFR->torqueLimPos_dA;
+            float torque_lim_rl = dtiSetpointsRL->torqueLimPos_dA;
+            float torque_lim_rr = dtiSetpointsRR->torqueLimPos_dA;
+            float torque_lim_sum = torque_lim_fl + torque_lim_fr + torque_lim_rl + torque_lim_rr;
+            
+            setPowerLimit(false, MOTOR_FL, (torque_lim_fl / torque_lim_sum) * 80.0f);
+            setPowerLimit(false, MOTOR_FR, (torque_lim_fr / torque_lim_sum) * 80.0f);
+            setPowerLimit(false, MOTOR_RL, (torque_lim_rl / torque_lim_sum) * 80.0f);
+            setPowerLimit(false, MOTOR_RR, (torque_lim_rr / torque_lim_sum) * 80.0f);
+
             break;
         }
 

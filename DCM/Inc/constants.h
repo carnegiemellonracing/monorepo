@@ -10,7 +10,7 @@ static const float maxTorque_Nm = 31.6f;
 static const float minTorqueLUTVal_Nm = 2.6f;
 static const float current_torque_slope = 85.0f / 31.6f;
 
-static const float front_bias = 0.20f;
+static const float front_bias = 0.30f;
 static const uint16_t DTI_MAX_DC_CURRENT_PER_MOTOR_DA = 850;
 
 /** @brief Maximum motor speed
@@ -65,8 +65,8 @@ static const int32_t gear_ratio_bot = 621;
 //Accel constants
 //General constants
 
-static const float slip_ratio_front = 0.12;
-static const float slip_ratio_rear = 0.15;
+static const float slip_ratio_front = 1.14;
+static const float slip_ratio_rear = 1.15;
 
 //Pacejka tire coefficients
 static const float pacejka_coeffs_605[4] = {11.6, 1.59, 1.7, 0.45};
@@ -89,12 +89,12 @@ static const float dt = 0.001;
 
 //Ramp function
 static const float torque_ramp_up = 1000.0;
-static const float torque_ramp_down = 1000.0;
+static const float torque_ramp_down = 200.0;
 
 //Launch/transition
 static const float launch_speed = 1.0;
-static const float blend_speed = 3.0;
-static const float launch_torque_rear = 31.0;
+static const float blend_speed = 2.0;
+static const float launch_torque_rear = 15.0;
 
 static const float gear_ratio = 12.097; // real for 26x
 static const float effective_wheel_dia_m = 0.41; /** @brief effective wheel diameter */

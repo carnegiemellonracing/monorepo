@@ -904,13 +904,26 @@ static void canTX200Hz(void *pvParameters) {
     cmr_canFrontWheelVelocity_t front_velocity;
     cmr_canRearWheelVelocity_t rear_velocity;
 
-    static uint8_t drive_enable = 1;
+    uint8_t drive_enable = 1;
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         if (heartbeatVSM->state == CMR_CAN_RTD || 
             heartbeatVSM->state == CMR_CAN_AS_DRIVING){
-            drive_enable = 1;
+            if((dtiSetpointsFL->torqueLimPos_dA > 5
+            || dtiSetpointsFR->torqueLimPos_dA > 5
+            || dtiSetpointsRL->torqueLimPos_dA > 5
+            || dtiSetpointsRR->torqueLimPos_dA > 5)
+            || (getDTIERPM(CANRX_TRAC_FL_ERPM) > 0
+            || getDTIERPM(CANRX_TRAC_FL_ERPM) > 0
+            || getDTIERPM(CANRX_TRAC_FL_ERPM) > 0
+            || getDTIERPM(CANRX_TRAC_FL_ERPM) > 0)) {
+                drive_enable = 1;
+            }
+            else {
+                drive_enable = 0;
+            }
+            
             sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
 
             bool pos_match = (dtiSetpointsFL->torqueLimPos_dA == dtiSetpointsFR->torqueLimPos_dA) &&
