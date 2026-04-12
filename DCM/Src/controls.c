@@ -805,6 +805,10 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_TEST: {
+            setPowerLimit(false, MOTOR_FL, 40.0 * front_bias);
+            setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
+            setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
+            setPowerLimit(false, MOTOR_RR, 40.0 * (1 - front_bias));
 
             // float target_speed_mps = 5.0f;
             // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
@@ -850,23 +854,6 @@ void runControls (
             setAccelLaunchControl(throttlePos_u8, brakePressurePsi_u8, va, wheel_fl_speed_radps,
                 wheel_fr_speed_radps, wheel_rl_speed_radps, wheel_rr_speed_radps,
                 fz_fl_N, fz_fr_N, fz_rl_N, fz_rr_N);
-
-            const cmr_DTI_RX_Message_t *dtiSetpointsFL = getDTISetpoints(MOTOR_FL);
-            const cmr_DTI_RX_Message_t *dtiSetpointsFR = getDTISetpoints(MOTOR_FR);
-            const cmr_DTI_RX_Message_t *dtiSetpointsRL = getDTISetpoints(MOTOR_RL);
-            const cmr_DTI_RX_Message_t *dtiSetpointsRR = getDTISetpoints(MOTOR_RR);
-
-            float torque_lim_fl = dtiSetpointsFL->torqueLimPos_dA;
-            float torque_lim_fr = dtiSetpointsFR->torqueLimPos_dA;
-            float torque_lim_rl = dtiSetpointsRL->torqueLimPos_dA;
-            float torque_lim_rr = dtiSetpointsRR->torqueLimPos_dA;
-            float torque_lim_sum = torque_lim_fl + torque_lim_fr + torque_lim_rl + torque_lim_rr;
-            
-            setPowerLimit(false, MOTOR_FL, (torque_lim_fl / torque_lim_sum) * 80.0f);
-            setPowerLimit(false, MOTOR_FR, (torque_lim_fr / torque_lim_sum) * 80.0f);
-            setPowerLimit(false, MOTOR_RL, (torque_lim_rl / torque_lim_sum) * 80.0f);
-            setPowerLimit(false, MOTOR_RR, (torque_lim_rr / torque_lim_sum) * 80.0f);
-
             break;
         }
 
@@ -1505,17 +1492,41 @@ void setAccelLaunchControl(
         return;
     }
 
-    // run accel controller
-    float trq_fl, trq_fr, trq_rl, trq_rr;
-    setAccelTorque(car_velocity_mps,
-        wheel_fl_speed_radps, wheel_fr_speed_radps,
-        wheel_rl_speed_radps, wheel_rr_speed_radps,
-        fz_fl, fz_fr, fz_rl, fz_rr, &trq_fl, &trq_fr, &trq_rl, &trq_rr,
-        just_launched);
+    // --- Velocity targets: car velocity * (1 + target slip), converted to motor RPM ---
+    // Minimum velocity so we can actually get moving from standstill
+    static const float min_launch_vel_mps = 1.0f;
+    float effective_vel_mps = fmaxf(car_velocity_mps, min_launch_vel_mps);
 
-    cmr_torqueDistributionNm_t pos_torques_Nm = {.fl = trq_fl, .fr = trq_fr, .rl = trq_rl, .rr = trq_rr};
+    float target_whl_vel_fl_mps = effective_vel_mps * (1.0f + slip_ratio_front);
+    float target_whl_vel_fr_mps = effective_vel_mps * (1.0f + slip_ratio_front);
+    float target_whl_vel_rl_mps = effective_vel_mps * (1.0f + slip_ratio_rear);
+    float target_whl_vel_rr_mps = effective_vel_mps * (1.0f + slip_ratio_rear);
 
-    setVelocityInt16All(maxFastSpeed_rpm);
+    // wheel m/s -> motor RPM: motor_rpm = wheel_mps * gear_ratio * 60 / (2*pi*wheel_rad)
+    float vel_to_rpm = gear_ratio * 60.0f / (2.0f * PI * effective_wheel_rad_m);
+    setVelocityFloat(MOTOR_FL, target_whl_vel_fl_mps * vel_to_rpm);
+    setVelocityFloat(MOTOR_FR, target_whl_vel_fr_mps * vel_to_rpm);
+    setVelocityFloat(MOTOR_RL, target_whl_vel_rl_mps * vel_to_rpm);
+    setVelocityFloat(MOTOR_RR, target_whl_vel_rr_mps * vel_to_rpm);
+
+    // --- Torque distribution: proportional to vertical load (Fz) on each tire ---
+    // Full torque above 80% throttle, scale down below that for safety.
+    float total_fz = fz_fl + fz_fr + fz_rl + fz_rr;
+    if (total_fz < 1.0f) total_fz = 1.0f;
+
+    static const float throttle_threshold = 0.80f * (float)UINT8_MAX; // 80%
+    float torque_scale = (throttlePos_u8 >= (uint8_t)throttle_threshold) ? 1.0f
+                       : (float)throttlePos_u8 / throttle_threshold;
+
+    float reqTorque = maxFastTorque_Nm * torque_scale;
+
+    cmr_torqueDistributionNm_t pos_torques_Nm = {
+        .fl = reqTorque * (fz_fl / total_fz),
+        .fr = reqTorque * (fz_fr / total_fz),
+        .rl = reqTorque * (fz_rl / total_fz),
+        .rr = reqTorque * (fz_rr / total_fz),
+    };
+
     setTorqueLimsUnprotected(MOTOR_FL, pos_torques_Nm.fl, 0.0f);
     setTorqueLimsUnprotected(MOTOR_FR, pos_torques_Nm.fr, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RL, pos_torques_Nm.rl, 0.0f);

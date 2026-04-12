@@ -97,7 +97,7 @@ static const float blend_speed = 2.0;
 static const float launch_torque_rear = 15.0;
 
 static const float gear_ratio = 12.097; // real for 26x
-static const float effective_wheel_dia_m = 0.41; /** @brief effective wheel diameter */
+static const float effective_wheel_dia_m = 0.4064; /** @brief effective wheel diameter */
 static const float effective_wheel_rad_m = effective_wheel_dia_m * 0.5f; /** @brief effective wheel radius */
 
 static const double wheelbase_m = 1.55f;
