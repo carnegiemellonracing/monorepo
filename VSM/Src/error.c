@@ -54,7 +54,9 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
         cmr_canRXMeta_t *rxMeta = &(canRXMeta[i]);
 
         if (cmr_canRXMetaTimeoutError(rxMeta, lastWakeTime) < 0
-            && i != CANRX_RES && !(rxMeta->errorFlag == 0 && vsmErrorSourceFlags[i] == 0)) {
+            && i != CANRX_RES && !(rxMeta->errorFlag == 0 && vsmErrorSourceFlags[i] == 0)
+            && i != CANRX_HEARTBEAT_HVBMS
+            && i != CANRX_HEARTBEAT_HVC) {
             heartbeatErrors |= rxMeta->errorFlag;
             moduleTimeoutMatrix |= vsmErrorSourceFlags[i];
             sendFirstError(CANRX_TIMEOUT);
