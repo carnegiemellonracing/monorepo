@@ -695,8 +695,8 @@ Var=PACK_avgCurrent_mA signed 32,32 /u:mA
 [HV_SENSORS]
 ID=306h
 DLC=2
-CycleTime=5
-TimeOut=25
+CycleTime=100
+TimeOut=500
 Var=SENSORS_packVoltage_cV unsigned 0,16
 
 [LV_CELL_BALANCE_ENABLE]
