@@ -805,10 +805,6 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_TEST: {
-            setPowerLimit(false, MOTOR_FL, 40.0 * front_bias);
-            setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
-            setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
-            setPowerLimit(false, MOTOR_RR, 40.0 * (1 - front_bias));
 
             // float target_speed_mps = 5.0f;
             // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
@@ -854,6 +850,13 @@ void runControls (
             setAccelLaunchControl(throttlePos_u8, brakePressurePsi_u8, va, wheel_fl_speed_radps,
                 wheel_fr_speed_radps, wheel_rl_speed_radps, wheel_rr_speed_radps,
                 fz_fl_N, fz_fr_N, fz_rl_N, fz_rr_N);
+            
+            float fz_total = fz_fl_N + fz_fr_N + fz_rl_N + fz_rr_N;
+
+            setPowerLimit(false, MOTOR_FL, (fz_fl_N / fz_total) * 80.0f);
+            setPowerLimit(false, MOTOR_FR, (fz_fr_N / fz_total) * 80.0f);
+            setPowerLimit(false, MOTOR_RL, (fz_rl_N / fz_total) * 80.0f);
+            setPowerLimit(false, MOTOR_RR, (fz_rr_N / fz_total) * 80.0f);
             break;
         }
 
@@ -1520,17 +1523,10 @@ void setAccelLaunchControl(
 
     float reqTorque = maxFastTorque_Nm * torque_scale;
 
-    cmr_torqueDistributionNm_t pos_torques_Nm = {
-        .fl = reqTorque * (fz_fl / total_fz),
-        .fr = reqTorque * (fz_fr / total_fz),
-        .rl = reqTorque * (fz_rl / total_fz),
-        .rr = reqTorque * (fz_rr / total_fz),
-    };
-
-    setTorqueLimsUnprotected(MOTOR_FL, pos_torques_Nm.fl, 0.0f);
-    setTorqueLimsUnprotected(MOTOR_FR, pos_torques_Nm.fr, 0.0f);
-    setTorqueLimsUnprotected(MOTOR_RL, pos_torques_Nm.rl, 0.0f);
-    setTorqueLimsUnprotected(MOTOR_RR, pos_torques_Nm.rr, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
 }
 
 
