@@ -878,8 +878,8 @@ Var=POWER_busCurrent_mA2 unsigned 16,16 /u:mA
 [VSM_SENSORS]
 ID=200h
 DLC=7
-CycleTime=5
-TimeOut=25
+CycleTime=100
+TimeOut=500
 Var=SENSORS_brakePressureRear_PSI unsigned 0,16
 Var=SENSORS_batt_mV unsigned 16,16
 Var=SENSORS_safetyIn_eight_V unsigned 32,8
