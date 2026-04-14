@@ -424,14 +424,6 @@ CycleTime=20
 TimeOut=100
 Var=FL_fault_code unsigned 0,8
 
-[EMD_MEASUREMENT]
-ID=401h
-DLC=8
-CycleTime=20
-TimeOut=100
-Var=MEASUREMENT_current signed 0,32 /u:A
-Var=MEASUREMENT_voltage signed 32,32 /u:V
-
 [FRONT_SLIP_RATIOS]
 ID=7E8h
 DLC=8
@@ -699,6 +691,14 @@ CycleTime=100
 TimeOut=500
 Var=SENSORS_packVoltage_cV unsigned 0,16
 
+[IVT_CURRENT]
+ID=521h
+DLC=2
+CycleTime=10
+TimeOut=50
+Var=CURRENT_muxID unsigned 0,8
+Var=CURRENT_count_state unsigned 8,8
+
 [LV_CELL_BALANCE_ENABLE]
 ID=136h
 DLC=3
@@ -878,8 +878,8 @@ Var=POWER_busCurrent_mA2 unsigned 16,16 /u:mA
 [VSM_SENSORS]
 ID=200h
 DLC=7
-CycleTime=100
-TimeOut=500
+CycleTime=5
+TimeOut=25
 Var=SENSORS_brakePressureRear_PSI unsigned 0,16
 Var=SENSORS_batt_mV unsigned 16,16
 Var=SENSORS_safetyIn_eight_V unsigned 32,8
@@ -1379,14 +1379,6 @@ Var=Requested_Current unsigned 40,16 -m /u:A /f:0.1
 [BRUSA_Charger_Status]
 ID=520h
 DLC=8
-
-[BRUSA_Charger_Act_I]
-ID=521h
-DLC=8
-Var=Mains_Current unsigned 0,16 -m /u:A /f:0.01
-Var=Mains_Voltage unsigned 16,16 -m /u:V /f:0.1
-Var=Batt_Voltage unsigned 32,16 -m /u:V /f:0.1
-Var=Batt_Current unsigned 48,16 -m /u:A /f:0.01
 
 [BRUSA_Charger_Temp]
 ID=523h
