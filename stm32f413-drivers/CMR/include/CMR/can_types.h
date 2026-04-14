@@ -1430,8 +1430,8 @@ typedef struct {
 // SAE Provided EMD definitions
 
 typedef struct {
-    int32_t current;    //u: A /**< @brief Current (amps * 2^16). */
-    int32_t voltage;    //u: V /**< @brief Voltage (volts * 2^16). */
+    big_endian_32_t current;    //u: A /**< @brief Current (amps * 2^16). */
+    big_endian_32_t voltage;    //u: V /**< @brief Voltage (volts * 2^16). */
 } cmr_canEMDMeasurements_t;
 
 // ------------------------------------------------------------------------------------------------
@@ -1525,5 +1525,12 @@ typedef struct{
     float  K_d ;          /**< @brief K_d for steering PID Loop*/     
 }
 cmr_canAutonomousPIDConstants_t;
+
+typedef struct{
+    uint8_t muxID;
+    uint8_t count_state; 
+    big_endian_32_t message; 
+}
+cmr_canIVTreadings_t; 
 
 #endif /* CMR_CAN_TYPES_H */

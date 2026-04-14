@@ -67,6 +67,16 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 50, 
         .timeoutWarn_ms = 25
     }, 
+    [CANRX_IVT_CURRENT] = { 
+        .canID = CMR_CANID_IVT_CURRENT, 
+        .timeoutError_ms = 50, 
+        .timeoutWarn_ms = 25
+    }, 
+    [CANRX_IVT_VOLTAGE] = { 
+        .canID = CMR_CANID_IVT_VOLTAGE, 
+        .timeoutError_ms = 50, 
+        .timeoutWarn_ms = 25
+    }, 
 };
 
 /** @brief Primary CAN interface. */
@@ -198,7 +208,16 @@ void canInit(void) {
                 CMR_CANID_HVBMS_MIN_MAX_CELL_TEMPERATURE,
                 CMR_CANID_HEARTBEAT_HV_BMS
             }
-        }
+        },
+        {
+            .isMask = false,
+            .rxFIFO = CAN_RX_FIFO0,
+            .ids = {
+                CMR_CANID_IVT_CURRENT,
+                CMR_CANID_IVT_VOLTAGE, 
+                CMR_CANID_EMD_MEASUREMENT
+            }
+        },
     };
     cmr_canFilter(
         &can, canFilters, sizeof(canFilters) / sizeof(canFilters[0])
