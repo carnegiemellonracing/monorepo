@@ -50,11 +50,11 @@ int main(void) {
     memoratorInit();
 
     // Load in JSON configuration
-    // parserInit();
-    // // Set up CBOR encoder
-    // sampleInit();
-    // // Pull in previous configuration
-    // configInit();
+    parserInit();
+    // Set up CBOR encoder
+    sampleInit();
+    // Pull in previous configuration
+    configInit();
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

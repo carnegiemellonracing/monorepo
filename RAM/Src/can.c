@@ -455,11 +455,9 @@ void canRXCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t 
     size_t iface_idx = (canb_rx - can);
 	configASSERT(iface_idx < CMR_CAN_BUS_NUM);
 
-    if (iface_idx == CMR_CAN_BUS_VEH) {
-        RTC_DateTypeDef date = getRTCDate();
-        RTC_TimeTypeDef timestamp = getRTCTime();
-        memoratorWrite(canID, timestamp, dataLen, data);
-    }
+    RTC_DateTypeDef date = getRTCDate();
+    RTC_TimeTypeDef timestamp = getRTCTime();
+    memoratorWrite(canID, timestamp, dataLen, data);
 
 	int ret = parseData((uint32_t) iface_idx, canID, data, dataLen);
     configASSERT(ret != 1);
