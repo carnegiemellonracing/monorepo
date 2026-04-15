@@ -465,7 +465,7 @@ cmr_canState_t getModuleState(canRX_t module) {
  */
 uint8_t getASMSState() {
 
-	cmr_canFSMData_t *dataFSM = (uint8_t*)getPayload(CANRX_FSM_DATA);
+	cmr_canFSMData_t *dataFSM = (cmr_canFSMData_t*)getPayload(CANRX_FSM_DATA);
 	return (dataFSM->AS_Status);
 }
 
