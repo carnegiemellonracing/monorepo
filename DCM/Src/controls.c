@@ -1495,22 +1495,28 @@ void setAccelLaunchControl(
         return;
     }
 
+    // --- Clamp vertical loads ---
+    fz_fl = fmaxf(accel_min_fz_N, fminf(fz_fl, accel_max_fz_N));
+    fz_fr = fmaxf(accel_min_fz_N, fminf(fz_fr, accel_max_fz_N));
+    fz_rl = fmaxf(accel_min_fz_N, fminf(fz_rl, accel_max_fz_N));
+    fz_rr = fmaxf(accel_min_fz_N, fminf(fz_rr, accel_max_fz_N));
+
     // --- Velocity targets: car velocity * (1 + target slip), converted to motor RPM ---
     // Minimum velocity so we can actually get moving from standstill
     static const float min_launch_vel_mps = 1.0f;
     float effective_vel_mps = fmaxf(car_velocity_mps, min_launch_vel_mps);
 
-    float target_whl_vel_fl_mps = effective_vel_mps * (1.0f + slip_ratio_front);
-    float target_whl_vel_fr_mps = effective_vel_mps * (1.0f + slip_ratio_front);
-    float target_whl_vel_rl_mps = effective_vel_mps * (1.0f + slip_ratio_rear);
-    float target_whl_vel_rr_mps = effective_vel_mps * (1.0f + slip_ratio_rear);
+    float target_whl_vel_front_mps = effective_vel_mps * (1.0f + slip_ratio_front);
+    float target_whl_vel_rear_mps  = effective_vel_mps * (1.0f + slip_ratio_rear);
 
     // wheel m/s -> motor RPM: motor_rpm = wheel_mps * gear_ratio * 60 / (2*pi*wheel_rad)
     float vel_to_rpm = gear_ratio * 60.0f / (2.0f * PI * effective_wheel_rad_m);
-    setVelocityFloat(MOTOR_FL, target_whl_vel_fl_mps * vel_to_rpm);
-    setVelocityFloat(MOTOR_FR, target_whl_vel_fr_mps * vel_to_rpm);
-    setVelocityFloat(MOTOR_RL, target_whl_vel_rl_mps * vel_to_rpm);
-    setVelocityFloat(MOTOR_RR, target_whl_vel_rr_mps * vel_to_rpm);
+    float rpm_front = fmaxf(0.0f, fminf(target_whl_vel_front_mps * vel_to_rpm, (float)maxSpeed_rpm));
+    float rpm_rear  = fmaxf(0.0f, fminf(target_whl_vel_rear_mps  * vel_to_rpm, (float)maxSpeed_rpm));
+    setVelocityFloat(MOTOR_FL, rpm_front);
+    setVelocityFloat(MOTOR_FR, rpm_front);
+    setVelocityFloat(MOTOR_RL, rpm_rear);
+    setVelocityFloat(MOTOR_RR, rpm_rear);
 
     // --- Torque distribution: proportional to vertical load (Fz) on each tire ---
     // Full torque above 80% throttle, scale down below that for safety.

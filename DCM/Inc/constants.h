@@ -63,10 +63,14 @@ static const int32_t gear_ratio_top = 8784;
 static const int32_t gear_ratio_bot = 621;
 
 //Accel constants
-//General constants                                     
+//General constants
 
 static const float slip_ratio_front = 1.13;
 static const float slip_ratio_rear = 1.15;
+
+//Safety clamps
+static const float accel_max_fz_N = 2000.0f;
+static const float accel_min_fz_N = 0.0f;
 
 //Pacejka tire coefficients
 static const float pacejka_coeffs_605[4] = {11.6, 1.59, 1.7, 0.45};
