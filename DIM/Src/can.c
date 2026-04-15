@@ -731,29 +731,29 @@ int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
     return cmr_canTX(&can, id, data, len, timeout);
 }
 
-/**
- * @brief Return the HV voltage as measured by the EMD.
- *
- * @return HV voltage.
- */
-float canEmdHvVoltage(cmr_canEMDMeasurements_t emd_vals) {
-    static const float div = 65536.0f;
+// /**
+//  * @brief Return the HV voltage as measured by the EMD.
+//  *
+//  * @return HV voltage.
+//  */
+// float canEmdHvVoltage(cmr_canEMDMeasurements_t emd_vals) {
+//     static const float div = 65536.0f;
 
-    int32_t converted = (int32_t)__builtin_bswap32((uint32_t)emd_vals.voltage);
-    return ((float)converted) / div;
-}
+//     int32_t converted = (int32_t)__builtin_bswap32((uint32_t)emd_vals.voltage);
+//     return ((float)converted) / div;
+// }
 
-/**
- * @brief Return the HV current as measured by the EMD.
- *
- * @return HV current.
- */
-float canEmdHvCurrent(cmr_canEMDMeasurements_t emd_vals) {
-    static const float div = 65536.0f;
+// /**
+//  * @brief Return the HV current as measured by the EMD.
+//  *
+//  * @return HV current.
+//  */
+// float canEmdHvCurrent(cmr_canEMDMeasurements_t emd_vals) {
+//     static const float div = 65536.0f;
 
-    int32_t converted = (int32_t)__builtin_bswap32((uint32_t)emd_vals.current);
-    return ((float)converted) / div;
-}
+//     int32_t converted = (int32_t)__builtin_bswap32((uint32_t)emd_vals.current);
+//     return ((float)converted) / div;
+// }
 
 /**
  * @brief Gets a pointer to the payload of a received CAN message.
