@@ -413,8 +413,8 @@ typedef struct {
 } cmr_canVSMSensors_t;
 
 typedef struct {
-    uint16_t ebsPressure_1;
-    uint16_t ebsPressure_2;
+    uint16_t ebsPressure_1_deci_bar;
+    uint16_t ebsPressure_2_deci_bar;
 } cmr_canDVPressureReadings_t;
 
 /** @brief Vehicle Safety Module latched error status. */

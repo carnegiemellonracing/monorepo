@@ -297,7 +297,6 @@ static void sendFSMData(void);
 static void sendSWAngle(void);
 static void sendFSMPedalsADC(void);
 static void sendFSMSensorsADC(void);
-static void sendPowerDiagnostics(void);
 
 /**
  * @brief Task for sending CAN messages at 10 Hz.
@@ -323,7 +322,6 @@ static void canTX10Hz(void *pvParameters) {
         cmr_canGear_t gearReq = stateGetGearReq();
         cmr_canDrsMode_t drsMode = stateGetDrs();
         cmr_canDrsMode_t drsReq = stateGetDrsReq();
-        cmr_canDVMode_t dvMode = stateGetDVMode();
         cmr_canDVMode_t dvReq = stateGetDVReq();
         cmr_canTestID_t test_id = {
         	.test_id = get_test_message_id()
@@ -352,7 +350,6 @@ static void canTX10Hz(void *pvParameters) {
             stateDrsUpdate();
             stateDVCtrlUpdate();
         }
-        sendPowerDiagnostics();
 
         sendFSMPedalsADC();
         sendFSMSensorsADC();
@@ -862,8 +859,8 @@ static void sendSWAngle(void) {
 
 static void sendDVPressureReadings(void) {
     cmr_canDVPressureReadings_t ebsPressure = {
-        .ebsPressure_1 = cmr_sensorListGetValue(&sensorList, SENSOR_CH_EBS_1),
-        .ebsPressure_2 = cmr_sensorListGetValue(&sensorList, SENSOR_CH_EBS_2)
+        .ebsPressure_1_deci_bar = cmr_sensorListGetValue(&sensorList, SENSOR_CH_EBS_PRESSURE_1_DECI_BAR),
+        .ebsPressure_2_deci_bar = cmr_sensorListGetValue(&sensorList, SENSOR_CH_EBS_PRESSURE_2_DECI_BAR)
     };
 
     canTX(CMR_CANID_AS_PRESSURE_READINGS, &ebsPressure, sizeof(ebsPressure), canTX100Hz_period_ms);
@@ -899,33 +896,6 @@ static void sendFSMSensorsADC(void) {
     }
 
     canTX(CMR_CANID_FSM_SENSORS_ADC, &msg, sizeof(msg), canTX10Hz_period_ms);
-}
-
-/**
- * @brief Sends latest bus voltage and current draw measurements.
- */
-static void sendPowerDiagnostics(void) {
-    // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
-    uint32_t busVoltage_mV = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
-    uint32_t busCurrent_mA = cmr_sensorListGetValue(&sensorList, SENSOR_CH_CURRENT_MA);
-
-    cmr_canDIMPowerDiagnostics_t powerDiagnosticsDIM = {
-        .busVoltage_mV = busVoltage_mV,
-        .busCurrent_mA = busCurrent_mA
-    };
-    cmr_canFSMPowerDiagnostics_t powerDiagnosticsFSM = {
-        .busVoltage_mV = busVoltage_mV,
-        .busCurrent_mA = busCurrent_mA
-    };
-
-    canTX(
-        CMR_CANID_DIM_POWER_DIAGNOSTICS,
-        &powerDiagnosticsDIM, sizeof(powerDiagnosticsDIM),
-        canTX10Hz_period_ms);
-    canTX(
-        CMR_CANID_FSM_POWER_DIAGNOSTICS,
-        &powerDiagnosticsFSM, sizeof(powerDiagnosticsFSM),
-        canTX10Hz_period_ms);
 }
 
 int32_t getDTIERPM(canRX_t rxMsg) {

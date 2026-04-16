@@ -25,7 +25,7 @@
 // Globals
 #define AS_WAKEUP_TIME 5000
 #define AS_FINISHED_TIME 30000
-#define DV_TANK_PRESSURE_MINIMUM_DECIBAR 50
+#define DV_TANK_PRESSURE_MINIMUM_DECIBAR 80
 #define FRONT_MINIMUM_BRAKING_PSI 650
 #define REAR_MINIMUM_BRAKING_PSI  400
 
@@ -578,8 +578,8 @@ static void stateUpdate(void *pvParameters) {
  */
 static bool getDVBrakeDeployable(){
     cmr_canDVPressureReadings_t* pressureReading = (cmr_canDVPressureReadings_t*) getPayload(CANRX_AS_PRESSURE_READING);
-   return   pressureReading->ebsPressure_1 > DV_TANK_PRESSURE_MINIMUM_DECIBAR &&  
-            pressureReading->ebsPressure_2 > DV_TANK_PRESSURE_MINIMUM_DECIBAR;
+   return   pressureReading->ebsPressure_1_deci_bar > DV_TANK_PRESSURE_MINIMUM_DECIBAR &&  
+            pressureReading->ebsPressure_2_deci_bar > DV_TANK_PRESSURE_MINIMUM_DECIBAR;
 }
 
 /**
