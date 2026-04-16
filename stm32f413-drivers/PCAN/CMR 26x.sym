@@ -156,8 +156,8 @@ ID=191h
 DLC=4
 CycleTime=10
 TimeOut=50
-Var=PRESSURE_ebsPressure_1 unsigned 0,16
-Var=PRESSURE_ebsPressure_2 unsigned 16,16
+Var=ebsPressure_1_deci_bar unsigned 0,16
+Var=ebsPressure_2_deci_bar unsigned 16,16
 
 [AUTONOMOUS_ACTION]
 ID=190h
@@ -388,14 +388,6 @@ Var=ACTIONS_paddle unsigned 16,8
 Var=ACTIONS_controlsStatus unsigned 24,8
 Var=ACTIONS_dvControlMode unsigned 32,8
 
-[DIM_POWER_DIAGNOSTICS]
-ID=535h
-DLC=4
-CycleTime=100
-TimeOut=500
-Var=POWER_busVoltage_mV unsigned 0,16 /u:mV
-Var=POWER_busCurrent_mA unsigned 16,16 /u:mA
-
 [DIM_REQUEST]
 ID=235h
 DLC=5
@@ -466,14 +458,6 @@ TimeOut=500
 Var=PEDALS_throttleLeftADC unsigned 0,16
 Var=PEDALS_throttleRightADC unsigned 16,16
 Var=PEDALS_brakePedalADC unsigned 32,16
-
-[FSM_POWER_DIAGNOSTICS]
-ID=553h
-DLC=4
-CycleTime=100
-TimeOut=500
-Var=POWER_busVoltage_mV1 unsigned 0,16 /u:mV
-Var=POWER_busCurrent_mA1 unsigned 16,16 /u:mA
 
 [FSM_SENSORS_ADC]
 ID=543h
@@ -872,8 +856,8 @@ ID=530h
 DLC=4
 CycleTime=100
 TimeOut=500
-Var=POWER_busVoltage_mV2 unsigned 0,16 /u:mV
-Var=POWER_busCurrent_mA2 unsigned 16,16 /u:mA
+Var=POWER_busVoltage_mV unsigned 0,16 /u:mV
+Var=POWER_busCurrent_mA unsigned 16,16 /u:mA
 
 [VSM_SENSORS]
 ID=200h
@@ -1007,6 +991,22 @@ Var=FSM_WRN_SSFlHub bit 31,1
 Var=FSM_WRN_SSBots bit 32,1
 Var=FSM_WRN_BrakePressureOOR bit 34,1
 Var=FSM_WRN_SWAngleOOR bit 33,1
+
+[FSM_PowerDiagnostic]
+ID=553h
+DLC=4
+CycleTime=100
+Timeout=1000
+Var=FSM_busVoltage unsigned 0,16 /u:mV
+Var=FSM_busCurrent unsigned 16,16 /u:mA
+
+[DIM_PowerDiagnostic]
+ID=535h
+DLC=4
+CycleTime=100
+Timeout=1000
+Var=DIM_busVoltage unsigned 0,16 /u:mV
+Var=DIM_busCurrent unsigned 16,16 /u:mA
 
 [PTC_Heartbeat]
 ID=105h
