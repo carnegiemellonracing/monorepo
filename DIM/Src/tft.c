@@ -45,15 +45,19 @@
 /** @brief The display. */
 static tft_t tft;
 
-static void drawErrorScreen(void);
-static void drawRTDScreen(void);
-static void drawConfigScreen(void);
-static void drawSafetyScreen(void);
-
 /*Prev HVC errors to latch on display*/
 static bool prevOverVolt = false;
 static bool prevUnderVolt = false;
 static bool prevOverTemp = false;
+
+//forward declarations
+static void drawConfigScreen(void);
+static void drawSafetyScreen(void);
+static void drawErrorScreen(void);
+static void drawRTDScreen(void);
+static void drawRacingScreen(void);
+
+
 
 /**
  * @brief Sends a command to the display.
@@ -187,7 +191,7 @@ static void tftUpdate(void *pvParameters) {
         { .addr = TFT_ADDR_VSYNC1, .val = 3 },
         { .addr = TFT_ADDR_SWIZZLE, .val = 0 },
         { .addr = TFT_ADDR_DITHER, .val = 1 },
-        { .addr = TFT_ADDR_PCLK_POL, .val = 0 },
+        { .addr = TFT_ADDR_PCLK_POL, .val = 1 },
         { .addr = TFT_ADDR_CSPREAD, .val = 1 },
         { .addr = TFT_ADDR_HSIZE, .val = 800 },
         { .addr = TFT_ADDR_VSIZE, .val = 480 },
@@ -239,6 +243,7 @@ static void tftUpdate(void *pvParameters) {
         vTaskDelayUntil(&lastWakeTime, TFT_UPDATE_PERIOD_MS);
         cmr_state state = getCurrState();
         switch(state){
+            case AUTON:
             case NORMAL:
                 drawRTDScreen();
                 break;
@@ -307,37 +312,43 @@ static void drawErrorScreen(void) {
     volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat =
         (void *)metaHVCHeartbeat->payload;
 
-    cmr_canRXMeta_t *metaAmkFLActualValues2 = canRXMeta + CANRX_AMK_FL_ACT_2;
-    volatile cmr_canAMKActualValues2_t *amkFLActualValues2 =
-        (void *)metaAmkFLActualValues2->payload;
-    cmr_canRXMeta_t *metaAmkFRActualValues2 = canRXMeta + CANRX_AMK_FR_ACT_2;
-    volatile cmr_canAMKActualValues2_t *amkFRActualValues2 =
-        (void *)metaAmkFRActualValues2->payload;
-    cmr_canRXMeta_t *metaAmkBLActualValues2 = canRXMeta + CANRX_AMK_RL_ACT_2;
-    volatile cmr_canAMKActualValues2_t *amkBLActualValues2 =
-        (void *)metaAmkBLActualValues2->payload;
-    cmr_canRXMeta_t *metaAmkBRActualValues2 = canRXMeta + CANRX_AMK_RR_ACT_2;
-    volatile cmr_canAMKActualValues2_t *amkBRActualValues2 =
-        (void *)metaAmkBRActualValues2->payload;
+    cmr_canRXMeta_t *metaDTIFLTempFault = canRXMeta + CANRX_DTI_FL_TEMPFAULT;
+    volatile cmr_canDTI_TX_TempFault_t *dtiFLTempFault =
+        (void *)metaDTIFLTempFault->payload;
+
+    cmr_canRXMeta_t *metaDTIFRTempFault = canRXMeta + CANRX_DTI_FR_TEMPFAULT;
+    volatile cmr_canDTI_TX_TempFault_t *dtiFRTempFault =
+        (void *)metaDTIFRTempFault->payload;
+
+    cmr_canRXMeta_t *metaDTIRLTempFault = canRXMeta + CANRX_DTI_RL_TEMPFAULT;
+    volatile cmr_canDTI_TX_TempFault_t *dtiRLTempFault =
+        (void *)metaDTIRLTempFault->payload;
+
+    cmr_canRXMeta_t *metaDTIRRTempFault = canRXMeta + CANRX_DTI_RR_TEMPFAULT;
+    volatile cmr_canDTI_TX_TempFault_t *dtiRRTempFault =
+        (void *)metaDTIRRTempFault->payload;
 
     cmr_canRXMeta_t *metaBMSLowVoltage = canRXMeta + CANRX_HVC_LOW_VOLTAGE;
     volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
         (void *)metaBMSLowVoltage->payload;
+
+    cmr_canVSMSensors_t *vsmSensors = 
+        (cmr_canVSMSensors_t *)getPayload(CANRX_VSM_SENSORS); 
 
     tftDLContentLoad(&tft, &tftDL_error);
 
     tft_errors_t err;
 
 
-    unsigned int voltage_mV = ((unsigned int) canBMSLowVoltageStatus->vbatt_mV) * 133u;
-    //unsigned int voltage_mV = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
-    err.glvVoltage_V = voltage_mV / 1000;
-    err.glvLowVolt = voltage_mV < 20 * 1000;
+    /* LVB */
+    unsigned int voltage_qV = ((unsigned int) canBMSLowVoltageStatus->safety_qV);
+    err.glvVoltage_V = voltage_qV / 4;
+    err.glvLowVolt = voltage_qV < (20 * 4);
 
     /* Timeouts */
-    err.cdcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_CDC);
-    err.ptcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_PTC);
-    err.hvcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_ERROR_SOURCE_HVC);
+    err.cdcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_CDC);
+    // err.ptcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_PTC);
+    err.hvcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_HVC);
     err.vsmTimeout = 0;
 
     /* Latched Errors */
@@ -347,27 +358,27 @@ static void drawErrorScreen(void) {
 
     /* HVC Errors */
     /* Latch errors so we know what the issue is after AMS fault*/
-    err.overVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVC_ERROR_CELL_OVERVOLT)) | prevOverVolt;
+    err.overVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT)) | prevOverVolt;
     if(err.overVolt) {
     	prevOverVolt = true;
     }
-    err.underVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVC_ERROR_CELL_UNDERVOLT)) | prevUnderVolt;
+    err.underVolt = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVBMS_ERROR_CELL_UNDERVOLT)) | prevUnderVolt;
     if(err.underVolt) {
 		prevUnderVolt = true;
 	}
-    err.hvcoverTemp = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVC_ERROR_CELL_OVERTEMP))  | prevOverTemp;
+    err.hvcoverTemp = (canHVCHeartbeat->errorStatus & (CMR_CAN_HVBMS_ERROR_CELL_OVERTEMP))  | prevOverTemp;
     if(err.hvcoverTemp) {
 		prevOverTemp = true;
 	}
-    err.hvcBMBTimeout = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_TIMEOUT);
+    err.hvcBMBTimeout = (canHVCHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_BMB_TIMEOUT);
     err.hvcBMBFault = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_FAULT);
     err.hvcErrorNum = (canHVCHeartbeat->errorStatus);
 
     /* CDC Motor Faults */
-    err.amkFLErrorCode = amkFLActualValues2->errorCode;
-    err.amkFRErrorCode = amkFRActualValues2->errorCode;
-    err.amkBLErrorCode = amkBLActualValues2->errorCode;
-    err.amkBRErrorCode = amkBRActualValues2->errorCode;
+    err.dtiFLErrorCode = dtiFLTempFault->fault_code;
+    err.dtiFRErrorCode = dtiFRTempFault->fault_code;
+    err.dtiRLErrorCode = dtiRLTempFault->fault_code;
+    err.dtiRRErrorCode = dtiRRTempFault->fault_code;
     volatile cmr_canHVCBMBErrors_t *BMBerr = (volatile cmr_canHVCBMBErrors_t *)getPayload(CANRX_HVC_BMB_STATUS);
 
     /* Update Display List*/
@@ -398,16 +409,16 @@ int16_t findMax(int16_t a, int16_t b, int16_t c, int16_t d, uint8_t *index) {
     return maximum;
 }
 
-/**
- * @brief Computes the total current of a motor
- * https://drive.google.com/file/d/1dyoIuW85M110q4x2OXapvWxm-WnFBys2/view pg76
- */
-uint32_t computeCurrent_A(volatile cmr_canAMKActualValues1_t *canAMK_Act1) {
-    int32_t Iq_A = (int32_t)canAMK_Act1->torqueCurrent_raw;
-    int32_t Id_A = (int32_t)canAMK_Act1->magCurrent_raw;
-    uint32_t Is_A = sqrt(Iq_A * Iq_A + Id_A * Id_A);
-    return Is_A;
-}
+// /**
+//  * @brief Computes the total current of a motor
+//  * https://drive.google.com/file/d/1dyoIuW85M110q4x2OXapvWxm-WnFBys2/view pg76
+//  */
+// uint32_t computeCurrent_A(volatile cmr_canDTI_TX_IdIq_t *canDTI_IdIq) {
+//     int32_t Iq_A = (int32_t)(canDTI_IdIq->iq / 100);
+//     int32_t Id_A = (int32_t)(canDTI_IdIq->iq / 100);
+//     uint32_t Is_A = sqrt(Iq_A * Iq_A + Id_A * Id_A);
+//     return Is_A;
+// }
 
 
 /**
@@ -416,7 +427,7 @@ uint32_t computeCurrent_A(volatile cmr_canAMKActualValues1_t *canAMK_Act1) {
  * @returns motorTemp
 */
 
-static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hottest) {
+static void getDTITemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hottest) {
 
     // If we're in GLV, we don't want temps to latch on their prev vals
 	cmr_canState_t state = stateGetVSM();
@@ -424,59 +435,57 @@ static void getAMKTemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hot
         *mcTemp_C = 0;
         *motorTemp_C = 0;
         *hottest = NONE;
-        return;
+        // return;
     }
 
-    // Front Left
-    // cmr_canRXMeta_t *metaAMK_FL_Act1 = canRXMeta + CANRX_AMK_FL_ACT_1;
-    // volatile cmr_canAMKActualValues1_t *canAMK_FL_Act1 =
-    //     (void *)metaAMK_FL_Act1->payload;
-    cmr_canRXMeta_t *metaAMK_FL_Act2 = canRXMeta + CANRX_AMK_FL_ACT_2;
-    volatile cmr_canAMKActualValues2_t *FL =
-        (void *)metaAMK_FL_Act2->payload;
+//     // Front Left
+//     cmr_canRXMeta_t *metaDTI_FL_TempFault = canRXMeta + CANRX_DTI_FL_TEMPFAULT;
+//     volatile cmr_canDTI_TX_TempFault_t *FL =
+//         (void *)metaDTI_FL_TempFault->payload;
 
-    // Front Right
-    // cmr_canRXMeta_t *metaAMK_FR_Act1 = canRXMeta + CANRX_AMK_FR_ACT_1;
-    // volatile cmr_canAMKActualValues1_t *canAMK_FR_Act1 =
-    //     (void *)metaAMK_FR_Act1->payload;
-    cmr_canRXMeta_t *metaAMK_FR_Act2 = canRXMeta + CANRX_AMK_FR_ACT_2;
-    volatile cmr_canAMKActualValues2_t *FR =
-        (void *)metaAMK_FR_Act2->payload;
+//     // Front Right
+//     cmr_canRXMeta_t *metaDTI_FR_TempFault = canRXMeta + CANRX_DTI_FR_TEMPFAULT;
+//     volatile cmr_canDTI_TX_TempFault_t *FR =
+//         (void *)metaDTI_FR_TempFault->payload;
 
-    // Rear Left
-    // cmr_canRXMeta_t *metaAMK_RL_Act1 = canRXMeta + CANRX_AMK_RL_ACT_1;
-    // volatile cmr_canAMKActualValues1_t *canAMK_RL_Act1 =
-    //     (void *)metaAMK_RL_Act1->payload;
-    cmr_canRXMeta_t *metaAMK_RL_Act2 = canRXMeta + CANRX_AMK_RL_ACT_2;
-    volatile cmr_canAMKActualValues2_t *RL =
-        (void *)metaAMK_RL_Act2->payload;
+//     // Rear Left
+//     cmr_canRXMeta_t *metaDTI_RL_TempFault = canRXMeta + CANRX_DTI_RL_TEMPFAULT;
+//     volatile cmr_canDTI_TX_TempFault_t *RL =
+//         (void *)metaDTI_RL_TempFault->payload;
 
-    // Rear Right
-    // cmr_canRXMeta_t *metaAMK_RR_Act1 = canRXMeta + CANRX_AMK_RR_ACT_1;
-    // volatile cmr_canAMKActualValues1_t *canAMK_RR_Act1 =
-    //     (void *)metaAMK_RR_Act1->payload;
-    cmr_canRXMeta_t *metaAMK_RR_Act2 = canRXMeta + CANRX_AMK_RR_ACT_2;
-    volatile cmr_canAMKActualValues2_t *RR =
-        (void *)metaAMK_RR_Act2->payload;
+//     // Rear Right
+//    cmr_canRXMeta_t *metaDTI_RR_TempFault = canRXMeta + CANRX_DTI_RR_TEMPFAULT;
+//     volatile cmr_canDTI_TX_TempFault_t *RR =
+//         (void *)metaDTI_RR_TempFault->payload;
+
+    int16_t FL_motorTemp = getDTIMotorTemp_dC(CANRX_DTI_FL_TEMPFAULT);
+    int16_t FR_motorTemp = getDTIMotorTemp_dC(CANRX_DTI_FR_TEMPFAULT);
+    int16_t RL_motorTemp = getDTIMotorTemp_dC(CANRX_DTI_RL_TEMPFAULT);
+    int16_t RR_motorTemp = getDTIMotorTemp_dC(CANRX_DTI_RR_TEMPFAULT);
 
     /* Motor Temperature */
     uint8_t hottest_motor_index = 0;
-    *motorTemp_C = findMax(FL->motorTemp_dC,
-                                  FR->motorTemp_dC,
-                                  RL->motorTemp_dC,
-                                  RR->motorTemp_dC,
+    *motorTemp_C = findMax(FL_motorTemp,
+                                  FR_motorTemp,
+                                  RL_motorTemp,
+                                  RR_motorTemp,
                                   &hottest_motor_index) /
                           10;
 
     // provide hottest motor as corner type
     *hottest = (cornerId_t)(hottest_motor_index);
 
+    int16_t FL_ctlrTemp = getDTICtlrTemp_dC(CANRX_DTI_FL_TEMPFAULT);
+    int16_t FR_ctlrTemp = getDTICtlrTemp_dC(CANRX_DTI_FR_TEMPFAULT);
+    int16_t RL_ctlrTemp = getDTICtlrTemp_dC(CANRX_DTI_RL_TEMPFAULT);
+    int16_t RR_ctlrTemp = getDTICtlrTemp_dC(CANRX_DTI_RR_TEMPFAULT);
+
     uint8_t hottest_mc_index = 0;
     /* Motor Controller Temperature */
-    *mcTemp_C = findMax(FL->coldPlateTemp_dC,
-                               FR->coldPlateTemp_dC,
-                               RL->coldPlateTemp_dC,
-                               RR->coldPlateTemp_dC,
+    *mcTemp_C = findMax(FL_ctlrTemp,
+                               FR_ctlrTemp,
+                               RL_ctlrTemp,
+                               RR_ctlrTemp,
                                &hottest_mc_index) /
                        10;
 
@@ -498,7 +507,7 @@ static void drawRTDScreen(void) {
         (void *)metaHVCPackVoltage->payload;
 
     cmr_canRXMeta_t *metaHVCPackTemps = canRXMeta + CANRX_HVC_PACK_TEMPS;
-    volatile cmr_canHVCPackMinMaxCellTemps_t *canHVCPackTemps =
+    volatile cmr_canBMSMinMaxCellTemperature_t *canHVCPackTemps =
         (void *)metaHVCPackTemps->payload;
 
     cmr_canRXMeta_t *metaEMDvalues = canRXMeta + CANRX_EMD_VALUES;
@@ -510,19 +519,6 @@ static void drawRTDScreen(void) {
     cmr_canRXMeta_t *metaBMSLowVoltage = canRXMeta + CANRX_HVC_LOW_VOLTAGE;
     volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
         (void *)metaBMSLowVoltage->payload;
-
-    // PTC Temps
-    /* cmr_canRXMeta_t *metaPTCfLoopA = canRXMeta + CANRX_PTCf_LOOP_A_TEMPS;
-    volatile cmr_canPTCfLoopTemp_A_t *canPTCfLoopTemp_A = (void *) metaPTCfLoopA->payload;
-
-    cmr_canRXMeta_t *metaPTCfLoopB = canRXMeta + CANRX_PTCf_LOOP_B_TEMPS;
-    volatile cmr_canPTCfLoopTemp_B_t *canPTCfLoopTemp_B = (void *) metaPTCfLoopB->payload;
-
-    cmr_canRXMeta_t *metaPTCpLoopA = canRXMeta + CANRX_PTCp_LOOP_A_TEMPS;
-    volatile cmr_canPTCpLoopTemp_A_t *canPTCpLoopTemp_A = (void *) metaPTCpLoopA->payload;
-
-    cmr_canRXMeta_t *metaPTCpLoopB = canRXMeta + CANRX_PTCp_LOOP_B_TEMPS;
-    volatile cmr_canPTCpLoopTemp_B_t *canPTCpLoopTemp_B = (void *) metaPTCpLoopB->payload;*/
 
     tftDLContentLoad(&tft, &tftDL_RTD);
 
@@ -543,30 +539,23 @@ static void drawRTDScreen(void) {
 
     /* GPS present? */
     // Checks broadcast from CDC to see status of SBG
-    cmr_canRXMeta_t *metaSBGStatus = canRXMeta + CANRX_SBG_STATUS_3;
+    cmr_canRXMeta_t *metaMovellaStatus = canRXMeta + CANRX_MOVELLA_STATUS;
     // Check timeout
-    bool sbgConnected = cmr_canRXMetaTimeoutWarn(metaSBGStatus, xTaskGetTickCount()) == 0;
-    volatile cmr_canSBGStatus3_t *sbgPayload = (void *)metaSBGStatus->payload;
-    SBG_status_t sbgStatus = SBG_STATUS_NOT_CONNECTED;
-    if (sbgConnected) {
-        sbgStatus = SBG_STATUS_WORKING_NO_POS_FOUND;
-        uint32_t solutionStatus = sbgPayload->solution_status;
-        // solution mode is first 4 bits of solution status
-        uint32_t solutionStatusMode = solutionStatus & 0xF;
-        // Get bits 4 through 7
-        solutionStatus = solutionStatus & 0xF0;
-        uint32_t solutionMask = CMR_CAN_SBG_SOL_ATTITUDE_VALID | CMR_CAN_SBG_SOL_HEADING_VALID | CMR_CAN_SBG_SOL_VELOCITY_VALID | CMR_CAN_SBG_SOL_POSITION_VALID;
-        if (solutionStatusMode == CMR_CAN_SBG_SOL_MODE_NAV_POSITION && solutionStatus == solutionMask) {
-            // Got fix on position
-            sbgStatus = SBG_STATUS_WORKING_POS_FOUND;
-        }
+    bool movellaConnected = cmr_canRXMetaTimeoutWarn(metaMovellaStatus, xTaskGetTickCount()) == 0;
+    volatile cmr_canMovellaStatus_t *movellaPayload = (void *)metaMovellaStatus->payload;
+    uint8_t movellaStatus = 0;
+    if (movellaConnected) {
+        movellaStatus = movellaPayload->gnss_fix;
+    }
+    else {
+        movellaStatus = 0;
     }
 
     /* Pack Voltage */
     int32_t hvVoltage_mV = canHVCPackVoltage->battVoltage_mV;
 
-
-    float glvVoltage = ((float) canBMSLowVoltageStatus->vbatt_mV) * 2 / 15;
+    unsigned int voltage_qV = ((unsigned int) canBMSLowVoltageStatus->safety_qV);
+    float glvVoltage = voltage_qV / 4;
     //unsigned int voltage_mV = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
 //    float glvVoltage = ((float)cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV)) / 1000.0;
 
@@ -583,19 +572,19 @@ static void drawRTDScreen(void) {
     volatile cmr_canBMSLowVoltage_t *bmsLV = (volatile cmr_canBMSLowVoltage_t *)getPayload(CANRX_HVC_LOW_VOLTAGE);
 
     // this is actually volts not mV but cant be bothered changing it :(
-    // 18000mV * 15 / 2000 as sent by HVC = 135
-    bool ssOk = (bmsLV->safety_mV > 135);
+    // 18000mV / 250 as sent by HVC = 72
+    bool ssOk = (bmsLV->safety_qV > 72);
 
     volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t *)getPayload(CANRX_DRS_STATE);
     bool drsOpen = (drsState->state == CMR_CAN_DRS_STATE_OPEN);
 
     /* Accumulator Temperature */
-    int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_dC) / 10;
+    int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_C) / 10;
 
     int32_t mcTemp_C, motorTemp_C = 0;
     cornerId_t hottest_motor;
 
-    getAMKTemps(&mcTemp_C, &motorTemp_C, &hottest_motor);
+    getDTITemps(&mcTemp_C, &motorTemp_C, &hottest_motor);
 
     /* Temperature warnings */
     bool motorTemp_yellow = motorTemp_C >= MOTOR_YELLOW_THRESHOLD;
@@ -605,7 +594,7 @@ static void drawRTDScreen(void) {
     bool mcTemp_yellow = mcTemp_C >= MC_YELLOW_THRESHOLD;
     bool mcTemp_red = mcTemp_C >= MC_RED_THRESHOLD;
 
-    uint8_t glvSoC = getLVSoC(glvVoltage, LV_LIFEPO);
+    uint8_t glvSoC = getLVSoC(glvVoltage);
 
     uint8_t hvSoC = 0;
 
@@ -628,7 +617,7 @@ static void drawRTDScreen(void) {
     } else {
         /* Update Display List*/
         tftDL_RTDUpdate(memoratorStatus,
-                        sbgStatus,
+                        movellaStatus,
                         hvVoltage_mV,
                         power_kW,
                         speed_kmh,

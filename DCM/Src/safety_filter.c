@@ -29,11 +29,13 @@
 // ------------------------------------------------------------------------------------------------
 // Constants
 
+#define FIX_RETRO_LIMIT (1)
+
 /** @brief Max amount of power the car should draw
  *  @warning Safety margins MUST BE STRICTLY POSITIVE
  */
-float power_upper_limit_W = 80000.0f; //michigan power limit
-float power_safety_margin_W = 14000.0f;
+float power_upper_limit_W = 110000.0f; //michigan power limit
+float power_safety_margin_W = 16000.0f;
 
 /** @brief Max temperature of the hottest cell
  *  @warning Safety margins MUST BE STRICTLY POSITIVE
@@ -208,7 +210,11 @@ static float getFalloffFactorByLowerLimit (
 static float getPackPowerFalloffFactor (
     float measured_pack_power_W
 ) {
+#if (FIX_RETRO_LIMIT == 1)
+    return getFalloffFactorByUpperLimit(measured_pack_power_W, 73000.0f, 16000.0f);
+#else
     return getFalloffFactorByUpperLimit(measured_pack_power_W, power_upper_limit_W, power_safety_margin_W);
+#endif
 }
 
 /**
@@ -252,7 +258,7 @@ static float getCellVoltageDropFalloffFactor (
  * @warning This is CRITICAL for rule-compliance, as it imposes the upper limit on cell temperature
  */
 static float getTemperatureFalloffFactor() {
-    // volatile cmr_canHVCPackMinMaxCellTemps_t *cellTemps = canVehicleGetPayload(CANRX_VEH_PACK_CELL_TEMP);
+    // volatile cmr_canBMSMinMaxCellTemperature_t *cellTemps = canVehicleGetPayload(CANRX_VEH_PACK_CELL_TEMP);
     // const float maxCellTemp_C = ((float)(cellTemps->maxCellTemp_dC)) * 1e-1f;
     // return getFalloffFactorByUpperLimit(maxCellTemp_C, temperature_upper_limit_C, temperature_safety_margin_C);
     return 1.0f;
@@ -539,7 +545,7 @@ void setTorqueLimsProtected (
             }
         }
 
-        volatile cmr_canHVCPackMinMaxCellTemps_t *cellTemps = canVehicleGetPayload(CANRX_VEH_PACK_CELL_TEMP);
+        volatile cmr_canBMSMinMaxCellTemperature_t *cellTemps = canVehicleGetPayload(CANRX_VEH_PACK_CELL_TEMP);
 //        const float maxCellTemp_C = ((float)(cellTemps->maxCellTemp_dC)) * 1e-1f;
 //        if (maxCellTemp_C > temperature_upper_limit_C) {
 //            sf_state.over_temp_count++;
@@ -553,7 +559,7 @@ void setTorqueLimsProtected (
     motorPower_state.motor_power_FL = falloff_factor_by_cell_voltage_rise;//getMotorPower(MOTOR_FL, pack_voltage_V);
     motorPower_state.motor_power_FR = falloff_factor_by_cell_voltage_drop;//getMotorPower(MOTOR_FR, pack_voltage_V);
     motorPower_state.motor_power_RL = falloff_factor_by_temperature; //getMotorPower(MOTOR_RL, pack_voltage_V);
-    motorPower_state.motor_power_RR = falloff_factor_by_pack_power; getMotorPower(MOTOR_RR, pack_voltage_V);
+    motorPower_state.motor_power_RR = falloff_factor_by_pack_power; //getMotorPower(MOTOR_RR, pack_voltage_V);
 }
 
 const cmr_canCDCSafetyFilterStates_t *getSafetyFilterInfo(){
@@ -569,6 +575,9 @@ float getPowerLimit_W() {
 }
 
 void setPowerLimit_kW(uint8_t power_limit_kW) {
+    if(power_limit_kW < 5) {
+        return;
+    }
 	power_upper_limit_W = power_limit_kW * 1000.0f;
-	power_safety_margin_W = power_upper_limit_W * 0.17f;
+    power_safety_margin_W = power_upper_limit_W * 0.17f;
 }

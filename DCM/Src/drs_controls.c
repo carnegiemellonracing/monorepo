@@ -76,7 +76,7 @@ void runDrsControls(
     uint16_t brakePressurePsi_u8, 
     int16_t swAngle_deg) {
 
-    bool drs_button_pressed = (((volatile cmr_canDIMActions_t *)canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->buttons) & BUTTON_ACT;
+    bool drs_button_pressed = (((volatile cmr_canDIMActions_t *)canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->buttonStates) & BUTTON_ACT;
 
     static cmr_canDrsMode_t prevDrsMode = CMR_CAN_DRSM_UNKNOWN;
     if (drsMode != prevDrsMode) {

@@ -16,6 +16,7 @@
 #include "state.h"       // State interface
 #include "tftContent.h"  // Content interface
 #include "tftDL.h"  // Interface to implement
+#include "tft.h"
 
 // used to calculate increment frequency:
 // max paddle val (255) / max increment speed (20Hz)
@@ -281,6 +282,10 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
         [CMR_CAN_RTD] = " RTD",
         [CMR_CAN_ERROR] = " ERR",
         [CMR_CAN_CLEAR_ERROR] = " CLR",
+        [CMR_CAN_AS_READY] = "D-RD",
+        [CMR_CAN_AS_EMERGENCY] = "D-EM",
+        [CMR_CAN_AS_DRIVING] = "D-DR",
+        [CMR_CAN_AS_FINISHED] = "D-FN",
     };
 
     /** @brief Characters for each gear. */
@@ -293,7 +298,14 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
         [CMR_CAN_GEAR_AUTOX] = "AUTOCROSS",
         [CMR_CAN_GEAR_SKIDPAD] = " SKIDPAD ",
         [CMR_CAN_GEAR_ACCEL] = "  ACCEL  ",
-        [CMR_CAN_GEAR_TEST] = "   TEST  "
+        [CMR_CAN_GEAR_TEST] = "   TEST  ",
+        [CMR_CAN_GEAR_DV_MISSION_ACCEL] = " D-ACCEL ",
+        [CMR_CAN_GEAR_DV_MISSION_AUTOX] = " D-AUTOX ",
+        [CMR_CAN_GEAR_DV_MISSION_INSPECTION] = " D-INSP  ",
+        [CMR_CAN_GEAR_DV_MISSION_SKIDPAD] = "  D-SKID ",
+        [CMR_CAN_GEAR_DV_MISSION_TRACKD] = "D-TRACKD ",
+        [CMR_CAN_GEAR_DV_MISSION_MANUAL] = "D-MANUAL",
+        [CMR_CAN_GEAR_DV_MISSION_EBS] = "  D-EBS  "
     };
 
     size_t drsCharsLen = 6;
@@ -377,19 +389,19 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
  * Sets at top and 2 notes on right side
  */
 void tftDL_showRAMMsg(uint32_t *file_addr, uint32_t prev_lap_loc, uint32_t targ_lap_loc, uint32_t msg_loc) {
-    struct {
-        char buf[TIMEDISPLAYLEN];
-    } *prev_time_str = (void *)(file_addr + prev_lap_loc);
-    // Removed get_test_message_id()
-    // sprintf(prev_time_str->buf, "%07x", get_test_message_id());
+    // struct {
+    //     char buf[TIMEDISPLAYLEN];
+    // } *prev_time_str = (void *)(file_addr + prev_lap_loc);
+    // // Removed get_test_message_id()
+    // // sprintf(prev_time_str->buf, "%07x", get_test_message_id());
 
-    sprintf(prev_time_str->buf, (void *)&(RAMBUF[PREV_TIME_INDEX]), TIMEDISPLAYLEN);
-    //memcpy((void *)prev_time_str->buf, (void *)&(RAMBUF[PREV_TIME_INDEX]), TIMEDISPLAYLEN);
-    struct {
-        char buf[TIMEDISPLAYLEN];
-    } *target_time_str = (void *)(file_addr + targ_lap_loc);
+    // sprintf(prev_time_str->buf, (void *)&(RAMBUF[PREV_TIME_INDEX]), TIMEDISPLAYLEN);
+    // //memcpy((void *)prev_time_str->buf, (void *)&(RAMBUF[PREV_TIME_INDEX]), TIMEDISPLAYLEN);
+    // struct {
+    //     char buf[TIMEDISPLAYLEN];
+    // } *target_time_str = (void *)(file_addr + targ_lap_loc);
 
-    memcpy((void *)target_time_str->buf, (void *)&(RAMBUF[TARGET_TIME_INDEX]), TIMEDISPLAYLEN);
+    // memcpy((void *)target_time_str->buf, (void *)&(RAMBUF[TARGET_TIME_INDEX]), TIMEDISPLAYLEN);
     struct {
         char buf[MESSAGEDISPLAYLEN];
     } *ramMsg_str = (void *)(file_addr + msg_loc);
@@ -416,7 +428,7 @@ void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yell
  * @brief Updates the ready-to-drive screen.
  *
  * @param memoratorPresent Memorator present (based on heartbeat)
- * @param sbgStatus SBG INS Status
+ * @param movellaStatus Movella Status
  * @param speed_mph Speed (from CDC)
  * @param hvVoltage_mV Pack Voltage (from HVC)
  * @param power_kW Electrical power dissipation
@@ -433,7 +445,7 @@ void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yell
  */
 void tftDL_RTDUpdate(
     memorator_status_t memoratorStatus,
-    SBG_status_t sbgStatus,
+    uint8_t movellaStatus,
     int32_t hvVoltage_mV,
     int32_t power_kW,
     uint32_t speed_kmh,
@@ -530,24 +542,30 @@ void tftDL_RTDUpdate(
     /* GPS color */
     uint32_t *gps_color = (void *)(tftDL_RTDData + ESE_GPS_TEXT_COLOR);
     uint32_t gps_color_cmd;
-    switch (sbgStatus) {
-        case SBG_STATUS_WORKING_POS_FOUND:
+    switch (movellaStatus) {
+        case 1:
             // GPS working and position found
             gps_color_cmd = green;
             break;
-        case SBG_STATUS_WORKING_NO_POS_FOUND:
+        case 0:
             // GPS connected, not working
-            gps_color_cmd = yellow;
+            gps_color_cmd = red;
             break;
-        case SBG_STATUS_NOT_CONNECTED:
         default:
             // GPS not connected
             gps_color_cmd = red;
     }
     *gps_color = gps_color_cmd;
 
+
+    cmr_canBMSMinMaxCellVoltage_t* packVoltagesStruct = getPackVoltages();
+
+    /* Pack Voltages */
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_RAM_MIN_CELL, 5, "%4ld", packVoltagesStruct->minCellVoltage_mV);
+    tftDL_RTDwriteInt(tftDL_RTDData, ESE_RAM_MAX_CELL, 5, "%4ld", packVoltagesStruct->maxCellVoltage_mV);
+
     tftDL_showStates(tftDL_RTDData, ESE_STATE_STR, ESE_VSM_STATE_COLOR, ESE_GEAR_STR, ESE_DRS_MODE_STR, false);
-    tftDL_showRAMMsg(tftDL_RTDData, ESE_RAM_LAST_LAP_STR, ESE_RAM_TARGET_LAP_STR, ESE_RAM_MSG_STR);
+    tftDL_showRAMMsg(tftDL_RTDData, ESE_RAM_MIN_CELL, ESE_RAM_MAX_CELL, ESE_RAM_MSG_STR);
 
 
     uint32_t *fl_color = (void *)(tftDL_RTDData + ESE_RTD_FL_COLOR);
@@ -642,7 +660,7 @@ static void tftDL_showBMBStatus(volatile cmr_canHVCBMBErrors_t *BMBerr) {
     tftDL_showErrorState(ESE_HVC_BMB_STATUS_COLOR, bmbRed);
 }
 
-static void tftDL_showAMKError(uint32_t strlocation, uint32_t colorLocation, uint16_t errorCode) {
+static void tftDL_showDTIError(uint32_t strlocation, uint32_t colorLocation, uint16_t errorCode) {
     char *print_location = (void *)(tftDL_errorData + strlocation);
     const size_t print_len = 13;
     // Spaces are to align text, so each string has 12 characters followed by a \0
@@ -685,7 +703,7 @@ void tftDL_errorUpdate(
 
     snprintf(
         glvVoltage_V_str->buf, sizeof(glvVoltage_V_str->buf),
-        "%2uV", err->glvVoltage_V);
+        "%2lu", err->glvVoltage_V);
 
     /* Timeouts */
     tftDL_showErrorState(ESE_PTC_COLOR, err->ptcTimeout);
@@ -717,11 +735,11 @@ void tftDL_errorUpdate(
     tftDL_showErrorState(ESE_BSPD_COLOR, err->bspdError);
     tftDL_showErrorState(ESE_GLV_COLOR, err->glvLowVolt);
 
-    /* Display AMK errors */
-    tftDL_showAMKError(ESE_AMK_FL_STR, ESE_AMK_FL_COLOR, err->amkFLErrorCode);
-    tftDL_showAMKError(ESE_AMK_FR_STR, ESE_AMK_FR_COLOR, err->amkFRErrorCode);
-    tftDL_showAMKError(ESE_AMK_BL_STR, ESE_AMK_BL_COLOR, err->amkBLErrorCode);
-    tftDL_showAMKError(ESE_AMK_BR_STR, ESE_AMK_BR_COLOR, err->amkBRErrorCode);
+    /* Display DTI errors */
+    tftDL_showDTIError(ESE_DTI_FL_STR, ESE_DTI_FL_COLOR, err->dtiFLErrorCode);
+    tftDL_showDTIError(ESE_DTI_FR_STR, ESE_DTI_FR_COLOR, err->dtiFRErrorCode);
+    tftDL_showDTIError(ESE_DTI_BL_STR, ESE_DTI_BL_COLOR, err->dtiRLErrorCode);
+    tftDL_showDTIError(ESE_DTI_BR_STR, ESE_DTI_BR_COLOR, err->dtiRRErrorCode);
 }
 
 /**

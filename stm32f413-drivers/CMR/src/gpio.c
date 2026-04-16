@@ -58,15 +58,27 @@ void cmr_gpioPinInit(const cmr_gpioPinConfig_t *pinConfigs, const size_t pinConf
 
     for (size_t i = 0; i < cmr_gpioPinConfigsLen; i++) {
         const cmr_gpioPinConfig_t *pinConfig = &cmr_gpioPinConfigs[i];
-        cmr_rccGPIOClockEnable(pinConfig->port);
-
-        // The HAL GPIO driver doesn't actually declare the initialization
-        // struct as `const`, but it doesn't modify it either.
-        HAL_GPIO_Init(
-            pinConfig->port,
-            (GPIO_InitTypeDef *) &pinConfig->init
-        );
+        cmr_singleGpioPinInit(pinConfig);
     }
+}
+
+/**
+ * @brief Configures the specified GPIO pin in the HAL and turns on the port clock
+ * Note we should not use this in place of cmr_gpioPinInit as this does not 
+ * implement the same safety checks of future function calls as cmr_gpioPinInit
+ *
+ * @param pinConfigs The pin configuration
+ */
+void cmr_singleGpioPinInit(const cmr_gpioPinConfig_t* pinConfig) {
+
+    cmr_rccGPIOClockEnable(pinConfig->port);
+
+    // The HAL GPIO driver doesn't actually declare the initialization
+    // struct as `const`, but it doesn't modify it either.
+    HAL_GPIO_Init(
+        pinConfig->port,
+        (GPIO_InitTypeDef *) &pinConfig->init
+    );
 }
 
 /**

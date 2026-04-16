@@ -1,0 +1,358 @@
+import os
+import re
+
+def _find_matching_paren(sym_section, open_paren_idx):
+    #Find the right paren that closes left paren at open_paren_idx
+    if open_paren_idx >= len(sym_section) or sym_section[open_paren_idx] != '(':
+        return -1
+    depth = 0
+    i = open_paren_idx
+    in_string = False
+    escape = False
+    while i < len(sym_section):
+        ch = sym_section[i]
+        if in_string:
+            if escape:
+                escape = False
+            elif ch == '\\':
+                escape = True
+            elif ch == '"':
+                in_string = False
+        else:
+            if ch == '"':
+                in_string = True
+            elif ch == '(':
+                depth += 1
+            elif ch == ')':
+                depth -= 1
+                if depth == 0:
+                    return i
+        i += 1
+    return -1
+
+
+def extract_enums_from_sym_file(filepath):
+    #Parse sym file enum defs
+    
+    if not filepath or not os.path.exists(filepath):
+        return {}
+    try:
+        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+    except OSError as e:
+        print(f"Error reading {filepath}: {e}")
+        return {}
+
+    start_tag = '{ENUMS}'
+    end_tag = '{SENDRECEIVE}'
+    i0 = content.find(start_tag)
+    i1 = content.find(end_tag)
+    if i0 == -1 or i1 == -1 or i0 >= i1:
+        return {}
+
+    section = content[i0 + len(start_tag):i1]
+    enums = {}
+    enum_start = re.compile(r'enum\s+(\w+)\s*\(')
+    pair_re = re.compile(
+        r'(-?(?:0x[0-9a-fA-F]+|0X[0-9a-fA-F]+|\d+))\s*=\s*"((?:[^"\\]|\\.)*)"'
+    )
+
+    pos = 0
+    while True:
+        m = enum_start.search(section, pos)
+        if not m:
+            break
+        title = m.group(1)
+        open_paren = m.end() - 1
+        close_paren = _find_matching_paren(section, open_paren)
+        if close_paren < 0:
+            break
+        body = section[open_paren + 1:close_paren]
+        values = {}
+        for pm in pair_re.finditer(body):
+            raw_key = pm.group(1)
+            if raw_key.lower().startswith('0x'):
+                val = int(raw_key, 16)
+            else:
+                val = int(raw_key)
+            values[val] = pm.group(2)
+        if values:
+            enums[title] = values
+        pos = close_paren + 1
+
+    return enums
+
+
+def extract_enums_from_file(filepath):
+    try:
+        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+    except Exception as e:
+        print(f"Error reading {filepath}: {e}")
+        return {}
+    
+    enums = {}
+    
+    enum_pattern = re.compile(
+        r'typedef\s+enum\s*\{([^}]+)\}\s*(cmr_can\w+_t)\s*;',
+        re.MULTILINE | re.DOTALL
+    )
+    
+    matches = enum_pattern.findall(content)
+    
+    for enum_content, enum_name in matches:
+        #Extract the middle part (remove cmr_can prefix and _t suffix)
+        if enum_name.startswith('cmr_can') and enum_name.endswith('_t'):
+            middle_part = enum_name[7:-2]
+            
+            enum_values = {}
+            
+            lines = enum_content.split('\n')
+            current_value = 0
+            
+            for line in lines:
+                line = line.strip()
+                if not line or line.startswith('/*') or line.startswith('//'):
+                    continue
+                
+                line = re.sub(r'//.*$', '', line)
+                line = re.sub(r'/\*.*?\*/', '', line)
+                line = line.strip()
+                
+                if not line:
+                    continue
+                
+                line = line.rstrip(',')
+                
+                if '=' in line:
+                    parts = line.split('=', 1)
+                    enum_member = parts[0].strip()
+                    try:
+                        value_part = parts[1].strip()
+                        if value_part.startswith('(') and value_part.endswith(')'):
+                            value_part = value_part[1:-1]
+                        
+                        if value_part.startswith('0x') or value_part.startswith('0X'):
+                            current_value = int(value_part, 16)
+                        elif '<<' in value_part:
+                            #Handle bit shifts like (1 << 0) or (0xF << 12)
+                            shift_match = re.match(r'(0x[0-9a-fA-F]+|0X[0-9a-fA-F]+|\d+)U?\s*<<\s*(\d+)', value_part)
+                            if shift_match:
+                                base_value = shift_match.group(1)
+                                shift_amount = int(shift_match.group(2))
+                                if base_value.startswith('0x') or base_value.startswith('0X'):
+                                    base = int(base_value, 16)
+                                else:
+                                    base = int(base_value.rstrip('U'))
+                                current_value = base << shift_amount
+                            else:
+                                try:
+                                    current_value = eval(value_part.replace('U', ''))
+                                except:
+                                    current_value = int(value_part)
+                        else:
+                            try:
+                                current_value = int(value_part.rstrip('U'))
+                            except ValueError:
+                                current_value = int(value_part)
+                    except ValueError:
+                        continue
+                else:
+                    enum_member = line.strip()
+                
+                if enum_member:
+                    if enum_member.startswith('CMR_CAN_'):
+                        display_name = enum_member[8:]
+                        
+                        upper_middle = middle_part.upper()
+                        if display_name.startswith(upper_middle + '_'):
+                            display_name = display_name[len(upper_middle) + 1:]
+                        
+                        enum_values[current_value] = display_name
+                        current_value += 1
+                    elif '_LEN' not in enum_member and '_UNKNOWN' not in enum_member:
+                        enum_values[current_value] = enum_member
+                        current_value += 1
+            
+            if enum_values:
+                enums[middle_part] = enum_values
+    
+    return enums
+
+def format_enum_for_symbol_file(enum_name, enum_values, max_line_len=70):
+    sorted_items = sorted(enum_values.items())
+    
+    formatted_values = []
+    for value, name in sorted_items:
+        formatted_values.append(f'{value}="{name}"')
+    
+    prefix = f'enum {enum_name}('
+    lines = [prefix]
+    
+    for i, val in enumerate(formatted_values):
+        if i > 0:
+            candidate = lines[-1] + ', ' + val
+        else:
+            candidate = lines[-1] + val
+        
+        if len(candidate) > max_line_len and i > 0:
+            lines[-1] = lines[-1] + ','
+            lines.append('    ' + val)
+        else:
+            lines[-1] = candidate
+    
+    lines[-1] = lines[-1] + ')'
+    
+    return '\n'.join(lines)
+
+def find_header_files(root_dir):
+    header_files = []
+    for root, dirs, files in os.walk(root_dir):
+        for filename in files:
+            # Only process files named can_types.h
+            if filename == 'can_types.h':
+                header_files.append(os.path.join(root, filename))
+    return header_files
+
+
+def merge_enums_25e_then_headers(enums_25e, header_files):
+    by_key = {}
+    for title, values in enums_25e.items():
+        k = title.casefold()
+        by_key[k] = (title, dict(values))
+    for filepath in header_files:
+        file_enums = extract_enums_from_file(filepath)
+        for title, values in file_enums.items():
+            k = title.casefold()
+            by_key[k] = (title, dict(values))
+    return {t: v for t, v in by_key.values()}
+
+
+def generate_symbol_enums(
+    root_dir=".",
+    output_file="stm32f413-drivers/PCAN/CMR 26x.sym",
+    sym_25e_file=None,
+):
+    #merge in enums from 25e, without replacing existing 26x enums
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    if sym_25e_file is None:
+        sym_25e_file = os.path.normpath(
+            os.path.join(script_dir, '..', 'PCAN', 'CMR 25e.sym')
+        )
+
+    header_files = find_header_files(root_dir)
+    
+    if not header_files:
+        print("No can_types.h files found!")
+        return
+    
+    print(f"Found {len(header_files)} can_types.h file(s):")
+    for f in header_files:
+        print(f"  {f}")
+    
+    enums_25e = extract_enums_from_sym_file(sym_25e_file)
+    if enums_25e:
+        print(
+            f"Loaded {len(enums_25e)} enum(s) from {sym_25e_file} "
+            "(same title, any case, overridden by can_types.h)"
+        )
+    elif os.path.exists(sym_25e_file):
+        print(f"Note: no enums parsed from {sym_25e_file}")
+    else:
+        print(f"Note: 25e symbol file not found: {sym_25e_file}")
+
+    all_enums = merge_enums_25e_then_headers(enums_25e, header_files)
+    
+    if not all_enums:
+        print("No enums found!")
+        return
+    
+    existing_content = ""
+    if os.path.exists(output_file):
+        try:
+            with open(output_file, 'r', encoding='utf-8') as f:
+                existing_content = f.read()
+            print(f"Found existing file: {output_file}")
+        except Exception as e:
+            print(f"Error reading existing file {output_file}: {e}")
+            return
+    
+    final_content_parts = []
+    
+    header_content = [
+        'FormatVersion=5.0 // Do not edit this line!',
+        'UniqueVariables=True',
+        'Title="CMR 26x Generated"',
+        ''
+    ]
+    final_content_parts.extend(header_content)
+    
+    final_content_parts.extend([
+        '// ========== AUTO-GENERATED ENUMS ==========',
+        '',
+        '{ENUMS}'
+    ])
+    
+    for enum_name in sorted(all_enums.keys(), key=str.casefold):
+        enum_values = all_enums[enum_name]
+        enum_line = format_enum_for_symbol_file(enum_name, enum_values)
+        final_content_parts.append(enum_line)
+    
+    final_content_parts.extend([
+        '',
+        '{SENDRECEIVE}',
+        '',
+        '// ========== END AUTO-GENERATED ENUMS ==========',
+        ''
+    ])
+    
+    if existing_content:
+        lines = existing_content.split('\n')
+        filtered_lines = []
+        in_auto_section = False
+        skip_header = True
+        
+        for line in lines:
+            if skip_header:
+                if (line.startswith('FormatVersion=') or 
+                    line.startswith('UniqueVariables=') or 
+                    line.startswith('Title=') or
+                    line.strip() == ''):
+                    continue
+                else:
+                    skip_header = False
+            
+            if '// ========== AUTO-GENERATED ENUMS ==========' in line:
+                in_auto_section = True
+                continue
+            elif '// ========== END AUTO-GENERATED ENUMS ==========' in line:
+                in_auto_section = False
+                continue
+            elif not in_auto_section:
+                filtered_lines.append(line)
+        
+        cleaned_existing_content = '\n'.join(filtered_lines).strip()
+        if cleaned_existing_content:
+            final_content_parts.append(cleaned_existing_content)
+    
+    final_content = '\n'.join(final_content_parts)
+    
+    try:
+        os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(final_content)
+        
+        print(f"Successfully wrote {len(all_enums)} enums to {output_file}")
+        
+        for enum_name, enum_values in sorted(
+            all_enums.items(), key=lambda kv: kv[0].casefold()
+        ):
+            print(f"  {enum_name}: {len(enum_values)} values")
+            
+    except Exception as e:
+        print(f"Error writing to {output_file}: {e}")
+
+if __name__ == "__main__":
+    generate_symbol_enums()

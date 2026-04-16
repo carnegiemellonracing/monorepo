@@ -84,5 +84,11 @@ extern void _platform_i2cClockInit(I2C_TypeDef *instance);
 
 #endif /* HAL_RCC_MODULE_ENABLED */
 
+#ifdef HAL_SD_MODULE_ENABLED
+#ifdef F413 
+void cmr_rccSDIOClockEnable(void);
+#endif F413 
+#endif /* HAL_SD_MODULE_ENABLED */
+
 #endif /* CMR_RCC_H */
 

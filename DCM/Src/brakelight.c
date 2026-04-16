@@ -11,7 +11,7 @@
 #include <CMR/gpio.h>       // GPIO interface
 
 /** @brief Brake light threshold (pounds-per-square-inch). */
-static const uint16_t brakeLightThreshold_PSI = 20;
+static const uint16_t brakeLightThreshold_PSI = 100;
 /** @brief Brake light control task priority. */
 static const uint32_t brakelight_priority = 4;
 /** @brief Brake light control task period. */

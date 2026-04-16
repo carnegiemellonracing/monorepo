@@ -18,6 +18,8 @@
 typedef enum {
     ADC_TPOS_L = 0, /**< @brief Sensor channel 1. - TPOS L */
     ADC_TPOS_R,     /**< @brief Sensor channel 2. - TPOS R */
+    ADC_EBS_1,
+    ADC_EBS_2,
     ADC_BPRES,      /**< @brief Sensor channel 3. - BPRES */
     ADC_SWANGLE,    /**< @brief Sensor channel 4. - SWANGLE */
     ADC_X,          /**< @brief Sensor channel 5. - X */

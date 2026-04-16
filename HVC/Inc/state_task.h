@@ -14,7 +14,8 @@
 /* Drivers */
 #include <CMR/can_types.h>
 #include "bms_relay.h"
-#include "bms_error.h"
+#include "errors.h"
+#include "can.h"
 #include "sensors.h"
 
 
@@ -24,5 +25,6 @@ cmr_canHVCState_t getState(void);
 
 // Task functions
 void vSetStateTask(void *pvParameters);
+
 
 #endif /* STATE_TASK_H_ */

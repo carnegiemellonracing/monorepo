@@ -5,9 +5,7 @@
  * @author Carnegie Mellon Racing
  */
 
-#ifndef DATA_H
-#define DATA_H
-
+#pragma once 
 #include <stdint.h>
 
 // Converts float to uint16 (scale by 100)
@@ -20,18 +18,23 @@
 #define VREF_THERM 3.3f //lowkey have no clue
 #define RESISTOR 10000 //10k ohm resistor from temps. again idk!!!
 
-void getVoltages(void);
+uint8_t getVoltages(void);
 void sendVoltages();
 void sendOvervoltageFlags(uint16_t voltages[6]);
 void sendBusVoltage(uint16_t voltages[6]);
 
 void AFE_SETUP(void);
 
-void getTemps(void);
+uint8_t getTemps(int channel);
 uint16_t tempConvert(uint16_t adc_value);
-void sendTemps(uint16_t temps[8]);
+void sendTemps();
 void sendOvertempFlags(uint16_t temps[8]);
 
 void sendCurrent(void);
 
-#endif /* DATA_H */
+uint16_t getVoltageData(uint8_t index);
+uint16_t getTempData(uint8_t index);
+uint16_t getMinVoltage(void); 
+
+void sampleInit(void);
+

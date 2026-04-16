@@ -213,6 +213,44 @@ void cmr_FDcanInit(
 }
 
 
+/**
+ * @brief  Checks for a CAN Bus-Off state and attempts to recover the node.
+ * @note   A Bus-Off state occurs when the transmit error counter exceeds its limit, 
+ * disconnecting the node from the bus. Clearing the INIT bit restarts the controller.
+ * @param  hfdcan: Pointer to an FDCAN_HandleTypeDef structure containing the 
+ * configuration information for the specified FDCAN hardware.
+ * @retval None
+ */
+void CAN_bus_off_check_reset(FDCAN_HandleTypeDef *hfdcan) {
+    FDCAN_ProtocolStatusTypeDef protocolStatus = {};
+    
+    // Retrieve the current protocol status from the hardware registers
+    HAL_FDCAN_GetProtocolStatus(hfdcan, &protocolStatus);
+    
+    // Check if the node has been forced into the Bus-Off state
+    if (protocolStatus.BusOff) {
+        // Attempt recovery by clearing the Initialization (INIT) bit in the CC Control Register.
+        // This transitions the CAN controller out of initialization mode to resynchronize with the bus.
+        CLEAR_BIT(hfdcan->Instance->CCCR, FDCAN_CCCR_INIT);
+    }
+}
+
+/**
+ * @brief  HAL Callback function for fine-grained FDCAN error handling.
+ * @note   This function is automatically triggered by the main HAL interrupt handler 
+ * when an FDCAN error interrupt occurs.
+ * @param  hfdcan: Pointer to the FDCAN_HandleTypeDef structure.
+ * @param  ErrorStatusITs: A bitmask indicating which specific error interrupts were triggered.
+ * @retval None
+ */
+void HAL_FDCAN_ErrorStatusCallback(FDCAN_HandleTypeDef *hfdcan, uint32_t ErrorStatusITs) {
+    // Check the bitmask to see if the Bus-Off interrupt flag is active
+    if ((ErrorStatusITs & FDCAN_IT_BUS_OFF) != RESET) {
+        // If a Bus-Off event occurred, call the custom recovery routine
+        CAN_bus_off_check_reset(hfdcan);
+    }
+}
+
 static void cmr_canRXPendingCallback(FDCAN_HandleTypeDef *handle, uint32_t fifo) {
 	FDCAN_RxHeaderTypeDef msg;
     uint8_t data[8];
@@ -245,6 +283,66 @@ int cmr_canTX(
 	FDCAN_TxHeaderTypeDef txHeader = {
         .Identifier = id,
         .IdType = FDCAN_STANDARD_ID,
+        .TxFrameType = FDCAN_DATA_FRAME,
+        .DataLength = len, // Doesn't get shifted by 16
+        .ErrorStateIndicator = FDCAN_ESI_ACTIVE,
+		.BitRateSwitch = FDCAN_BRS_OFF,
+		.FDFormat = FDCAN_CLASSIC_CAN,
+		.TxEventFifoControl = FDCAN_NO_TX_EVENTS,
+		.MessageMarker = 0
+    };
+
+    BaseType_t result = xSemaphoreTake(can->txSem, timeout);
+    if (result != pdTRUE) {
+        return -1;
+    }
+    if(HAL_FDCAN_GetTxFifoFreeLevel(&can->handle) == 0) {
+    	FDCAN_ProtocolStatusTypeDef ProtocolStatus;
+    	HAL_FDCAN_GetProtocolStatus(&can->handle, &ProtocolStatus);
+
+    	result = xSemaphoreGive(can->txSem);
+    	return -1;
+    }
+
+    HAL_StatusTypeDef status = HAL_FDCAN_AddMessageToTxFifoQ(
+        &can->handle, &txHeader, (void *) data
+    );
+
+	FDCAN_ProtocolStatusTypeDef ProtocolStatus;
+	HAL_FDCAN_GetProtocolStatus(&can->handle, &ProtocolStatus);
+
+    if (status != HAL_OK) {
+    	FDCAN_ProtocolStatusTypeDef ProtocolStatus;
+    	HAL_FDCAN_GetProtocolStatus(&can->handle, &ProtocolStatus);
+        cmr_panic("FDCAN Tx Failed!!");
+    }
+    result = xSemaphoreGive(can->txSem);
+    if (result != pdTRUE) {
+    	return -1;
+    }
+
+    return 0;
+}
+
+/**
+ * @brief Queues an extended CAN message for transmission.
+ *
+ * @param can The CAN interface to send on.
+ * @param id The message's CAN ID.
+ * @param data The data to send.
+ * @param len The data's length, in bytes.
+ * @param timeout The timeout.
+ *
+ * @return 0 on success, or a negative error code on timeout.
+ */
+int cmr_canExtendedTX(
+    cmr_can_t *can,
+    uint32_t id, const void *data, size_t len,
+    TickType_t timeout
+) {
+    FDCAN_TxHeaderTypeDef txHeader = {
+        .Identifier = id,
+        .IdType = FDCAN_EXTENDED_ID,
         .TxFrameType = FDCAN_DATA_FRAME,
         .DataLength = len, // Doesn't get shifted by 16
         .ErrorStateIndicator = FDCAN_ESI_ACTIVE,
@@ -375,33 +473,28 @@ CAN_TX_MAILBOX_CALLBACK(2)
 #undef CAN_TX_MAILBOX_CALLBACK
 
 /**
- * @brief HAL CAN error callback.
+ * @brief Check if the bus is off and if so initiates a bus reset
  *
- * @warning Called from an interrupt handler!
- * @warning The handle must have been configured through this library!
+ * @param hfdcan FDCan Handle
  */
-void HAL_CAN_ErrorCallback(CAN_HandleTypeDef *handle) {
-    cmr_can_t *can = cmr_canFromHandle(handle);
-
-    uint32_t error = handle->ErrorCode;
-    if (error & (
-            HAL_CAN_ERROR_TX_ALST0 |
-            HAL_CAN_ERROR_TX_ALST1 |
-            HAL_CAN_ERROR_TX_ALST2 |
-            HAL_CAN_ERROR_TX_TERR0 |
-            HAL_CAN_ERROR_TX_TERR1 |
-            HAL_CAN_ERROR_TX_TERR2
-    )) {
-        // Transmit error; drop semaphore.
-        BaseType_t higherWoken;
-        if (xSemaphoreGiveFromISR(can->txSem, &higherWoken) != pdTRUE) {
-            cmr_panic("TX semaphore released too many times!");
-        }
-        portYIELD_FROM_ISR(higherWoken);
+void CAN_bus_off_check_reset(FDCAN_HandleTypeDef *hfdcan) {
+    FDCAN_ProtocolStatusTypeDef protocolStatus = {};
+    HAL_FDCAN_GetProtocolStatus(hfdcan, &protocolStatus);
+    if (protocolStatus.BusOff) {
+        CLEAR_BIT(hfdcan->Instance->CCCR, FDCAN_CCCR_INIT);
     }
+}
 
-    // Clear errors.
-    handle->ErrorCode = 0;
+/**
+ * @brief Overrides the weak error callback and calls CAN_bus_off_check_reset
+ *
+ * @param hfdcan FDCan Handle
+ * @param ErrorStatusITs the error status bit vector
+ */
+void HAL_FDCAN_ErrorStatusCallback(FDCAN_HandleTypeDef *hfdcan, uint32_t ErrorStatusITs) {
+    if ((ErrorStatusITs & FDCAN_IT_BUS_OFF) != RESET) {
+        CAN_bus_off_check_reset(hfdcan);
+    }
 }
 
 /**
@@ -483,7 +576,6 @@ int cmr_canTX(
 
 	return 0;
 }
-
 /**
  * @brief Determines the GPIO alternate function for the given CAN interface.
  *

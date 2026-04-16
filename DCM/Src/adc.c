@@ -16,33 +16,30 @@
  * @see `CMR/adc.h` for various initialization values.
  */
 static cmr_adcChannel_t adcChannels[ADC_LEN] = {
-    [ADC_LINPOT1] = {
+
+    [ADC_THERM1] = {
+        .channel = ADC_CHANNEL_2,
+        .port = GPIOF,
+        .pin = GPIO_PIN_9,
+        .samplingTime = ADC3_SAMPLETIME_12CYCLES_5
+    },
+    [ADC_THERM2] = {
         .channel = ADC_CHANNEL_7,
         .port = GPIOF,
         .pin = GPIO_PIN_8,
         .samplingTime = ADC3_SAMPLETIME_12CYCLES_5,
-        .value = 0
     },
-    [ADC_LINPOT2] = {
-        .channel = ADC_CHANNEL_2,
-        .port = GPIOF,
-        .pin = GPIO_PIN_9,
-        .samplingTime = ADC3_SAMPLETIME_12CYCLES_5,
-        .value = 0
-    },
-    [ADC_THERM1] = {
-        .channel = ADC_CHANNEL_8,
-        .port = GPIOF,
-        .pin = GPIO_PIN_6,
-        .samplingTime = ADC3_SAMPLETIME_12CYCLES_5,
-        .value = 0
-    },
-    [ADC_THERM2] = {
+    [ADC_THERM3] = {
         .channel = ADC_CHANNEL_3,
         .port = GPIOF,
         .pin = GPIO_PIN_7,
         .samplingTime = ADC3_SAMPLETIME_12CYCLES_5,
-        .value = 0
+    },
+    [ADC_THERM4] = {
+        .channel = ADC_CHANNEL_8,
+        .port = GPIOF,
+        .pin = GPIO_PIN_6,
+        .samplingTime = ADC3_SAMPLETIME_12CYCLES_5,
     }
 
 };

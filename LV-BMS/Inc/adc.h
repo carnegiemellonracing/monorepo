@@ -16,10 +16,7 @@
  * @warning New channels MUST be added before `ADC_LEN`.
  */
 typedef enum {
-	ADC_VTHERM_PIN1 = 0,
-	ADC_VTHERM_PIN2,
-	ADC_AFE_VCOUT,
-	ADC_AFE_VIOUT,
+	ADC_HALL_EFFECT = 0,
 	ADC_NUM     /**< @brief Total ADC channels. */
 } adc_channel_t;
 

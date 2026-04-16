@@ -11,7 +11,11 @@
 #include <CMR/panic.h>  // cmr_panic()
 #include <CMR/dma.h>    // dma interface
 #include <CMR/rcc.h>    // cmr_rccGPIOClockEnable(), cmr_rccI2CClockEnable()
-                    //
+#include <stddef.h>     // for offsetof (needed for slave i2c)
+
+// macro for getting the struct of a field.
+#define container_of(ptr, type, member) \
+    ((type *)((char *)(ptr) - offsetof(type, member)))
 
 typedef struct {
     /** @brief The associated handle, or `NULL` if not configured. */
@@ -122,7 +126,34 @@ uint32_t i2cGPIOAF(I2C_TypeDef *instance, GPIO_TypeDef *port, uint32_t pin) {
     }
     //TODO: FIX H7 I2C AFs
     #elif defined(H725)
-    return GPIO_AF4_I2C4;
+    if (instance == I2C1) {
+        return GPIO_AF4_I2C1;
+    }
+    else if (instance == I2C2) {
+        return GPIO_AF4_I2C2;
+    } 
+    else if (instance == I2C3) {
+        return GPIO_AF4_I2C3;
+    }
+    else if (instance == I2C4){
+        if (port == GPIOB){
+            return GPIO_AF6_I2C4;
+        }
+        if (port == GPIOD || port == GPIOF){
+            return GPIO_AF4_I2C4;
+        }
+    }
+    else if (instance = I2C5){
+        if (port == GPIOC){
+            if (pin == GPIO_PIN_9){
+                return GPIO_AF6_I2C5;
+            }   
+            return GPIO_AF4_I2C5;     
+        }
+        if (port == GPIOA || port == GPIOF){
+            return GPIO_AF6_I2C5;
+        }
+    }
     #endif
 }
     
@@ -278,6 +309,106 @@ void cmr_i2cInit(
     pinConfig.Alternate = i2cGPIOAF(instance, i2cDataPort, i2cDataPin);
     HAL_GPIO_Init(i2cDataPort, &pinConfig);
 }
+
+/**
+  * @brief I2C Slave Additional Initialization Function
+  *
+  * @param i2c The I2C to initialize
+  * @param instance The HAL I2C instance
+  *
+  * @retval None
+  */
+void cmr_i2cSlaveInit(
+    cmr_i2c_t *i2c, I2C_TypeDef *instance
+) {
+    // enable listen mode
+    if (HAL_I2C_EnableListen_IT(&(i2c->handle)) != HAL_OK) {
+        cmr_panic("Failed to enable I2C listen mode!");
+    }
+    // register the handle so that HAL_I2C_EV_IRQHandler interrupt can function
+    if (instance == I2C1) {
+        cmr_i2cDevices[0].handle = &(i2c->handle);
+    } else if (instance == I2C2) {
+    	cmr_i2cDevices[1].handle = &(i2c->handle);
+    } else {
+        cmr_panic("Unexpected I2C instance!");
+    }
+}
+
+
+/**
+  * @brief Slave Address Match callback. If the device address sent by the master matches with the device address of the STM32 I2C, 
+  * an interrupt will again trigger and the address callback is called.
+  *
+  * @param  hi2c Pointer to a I2C_HandleTypeDef structure that contains
+  *                the configuration information for the specified I2C.
+  * @param  TransferDirection Master request Transfer Direction (Write/Read), value of @ref I2C_XferDirection_definition
+  * @param  AddrMatchCode Address Match Code
+  * @retval None
+  */
+void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode)
+{
+    cmr_i2c_t *i2c = container_of(hi2c, cmr_i2c_t, handle);
+
+	if(TransferDirection == I2C_DIRECTION_TRANSMIT) {
+        //HAL_StatusTypeDef HAL_I2C_Slave_Seq_Transmit_IT(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint16_t Size, uint32_t XferOptions)
+		HAL_I2C_Slave_Seq_Receive_IT(hi2c, i2c->slaveRxBuff, i2c->slaveRxLen, I2C_FIRST_AND_LAST_FRAME);
+	} else {
+		HAL_I2C_Slave_Seq_Transmit_IT(hi2c, i2c->slaveTxBuff, i2c->slaveTxLen, I2C_FIRST_AND_LAST_FRAME);
+	}
+}
+
+/** @brief  Slave Tx Transfer completed callback. (Slave Tx to master finished)
+  * @param  hi2c Pointer to a I2C_HandleTypeDef structure that contains
+  *                the configuration information for the specified I2C.
+  * @retval None
+  */
+void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c) 
+{
+    HAL_I2C_EnableListen_IT(hi2c);
+}
+
+/**
+  * @brief  Slave Rx Transfer completed callback. (Slave Rx from master finished)
+  * @param  hi2c Pointer to a I2C_HandleTypeDef structure that contains
+  *                the configuration information for the specified I2C.
+  * @retval None
+  */
+void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+	HAL_I2C_EnableListen_IT(hi2c);
+}
+
+/**
+  * @brief  Slave Tx Transfer initializing data.
+  * @param  i2c Pointer to cmr_i2c_t struct.
+  * @param  txData Pointer to data buffer to be transmitted.
+  * @param  len Length of data buffer.
+  *
+  * @retval 0 upon success, or otherwise a negative error code
+  */
+int cmr_i2cSlaveTx(cmr_i2c_t *i2c, uint8_t *txData, size_t len)
+{
+    i2c->slaveTxBuff = txData;
+    i2c->slaveTxLen = len;
+    return 0; // bypassing status check for now
+}
+
+/**
+  * @brief  Slave Rx Transfer initializing data.
+  * @param  i2c Pointer to cmr_i2c_t struct
+  * @param  rxData Pointer to buffer for recieving data.
+  * @param  len Length of data buffer.
+  *
+  * @retval 0 upon success, or otherwise a negative error code
+  */
+int cmr_i2cSlaveRx(cmr_i2c_t *i2c, uint8_t *rxData, size_t len)
+{
+    i2c->slaveRxBuff = rxData;
+    i2c->slaveRxLen = len;
+    return 0; // bypassing status check for now
+}
+
 
 #ifdef F413
 /**

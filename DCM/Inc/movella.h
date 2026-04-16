@@ -13,11 +13,11 @@ typedef enum {
 } movella_message_t;
 
 static const float scaling_constants[MOVELLA_MESSAGE_NUM] = {
-    [MOVELLA_QUATERNION] = 1 / (float) (1U << 16 - 1),
-    [MOVELLA_EULER_ANGLES] = 1 / (float) (1U << 7),
-    [MOVELLA_IMU_ACCEL] = 1 / (float) (1U << 8),
-    [MOVELLA_IMU_GYRO] = 1 / (float) (1U << 9),
-    [MOVELLA_VELOCITY] = 1 / (float) (1U << 6),
+    [MOVELLA_QUATERNION] = 1.0f / (float) ((1U << 16) - 1),
+    [MOVELLA_EULER_ANGLES] = 1.0f / (float) ((1U << 7) - 1),
+    [MOVELLA_IMU_ACCEL] = 1.0f / (float) ((1U << 8) - 1),
+    [MOVELLA_IMU_GYRO] = 1.0f / (float) ((1U << 9) - 1),
+    [MOVELLA_VELOCITY] = 1.0f / (float) ((1U << 6) - 1),
 };
 
 typedef float matrix3x3[3][3];

@@ -33,11 +33,9 @@ void mcCtrlOn();
 
 void mcCtrlOff() {
     cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 0);
-    cmr_gpioWrite(GPIO_MC_EFUSE_AUTO, 0);
 }
 
 void mcCtrlOn() {
     cmr_gpioWrite(GPIO_MTR_CTRL_ENABLE, 1);
-    cmr_gpioWrite(GPIO_MC_EFUSE_AUTO, 1);
 }
 

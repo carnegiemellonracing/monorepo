@@ -84,5 +84,6 @@ uint8_t getRelayStatus(){
 }
 
 bool checkRelayPowerFault() {
+    return false;
     return !cmr_gpioRead(GPIO_AIR_FAULT_L);
 }

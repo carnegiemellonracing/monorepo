@@ -30,7 +30,8 @@
 
 /** @brief CAN bit rate enumeration. */
 typedef enum {
-    CMR_CAN_BITRATE_250K = 0,   /**< @brief 250 kbit/s. */
+    CMR_CAN_BITRATE_125K = 0,  /**< @brief 125 kbit/s. */
+    CMR_CAN_BITRATE_250K,   /**< @brief 250 kbit/s. */
     CMR_CAN_BITRATE_500K,       /**< @brief 500 kbit/s. */
     CMR_CAN_BITRATE_1M          /**< @brief 1 Mbit/s. */
 } cmr_canBitRate_t;
@@ -153,6 +154,12 @@ void cmr_canFilter(
 int cmr_canTX(
     cmr_can_t *can,
     uint16_t id, const void *data, uint8_t len,
+    TickType_t timeout
+);
+
+int cmr_canExtendedTX(
+    cmr_can_t *can,
+    uint32_t id, const void *data, size_t len,
     TickType_t timeout
 );
 

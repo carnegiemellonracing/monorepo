@@ -23,6 +23,16 @@ typedef struct {
     GPIO_InitTypeDef init;
 } cmr_gpioPinConfig_t;
 
+/** @brief GPIO pin configuration. */
+typedef struct {
+    /** @brief HAL GPIO port (`GPIOx` from `stm32f413xx.h`). */
+    GPIO_TypeDef *port;
+
+    /** @brief HAL GPIO pin . */
+    uint32_t pin;
+} cmr_gpioPin_t;
+
+void cmr_singleGpioPinInit(const cmr_gpioPinConfig_t* pinConfig);
 void cmr_gpioPinInit(const cmr_gpioPinConfig_t *pinConfigs, size_t pinConfigsLen);
 void cmr_gpioWrite(size_t pin, int value);
 void cmr_gpioToggle(size_t pin);
