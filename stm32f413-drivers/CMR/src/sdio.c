@@ -253,7 +253,7 @@ uint8_t cmr_SDIO_closeFile(FIL* fileObj){
 */
 uint8_t cmr_SDIO_unmount(){
     FRESULT FR_Status = f_mount(NULL, "", 0);
-    return FR_Status == FR_OK;
+    return FR_Status != FR_OK;
 }
 
 
