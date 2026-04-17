@@ -8,10 +8,12 @@
 #include "memorator.h"  // interface to implement
 #include <CMR/tasks.h>  // Task interface
 #include <CMR/sdio.h>  // Task interface
+#include <CMR/can_types.h>
 #include <stdint.h>     /* integer types */
 #include "fatfs.h"
 #include "string.h" // memcpy
 #include <stdbool.h>
+#include <can.h>
 
 
 /** @brief memorator priority. */
@@ -22,6 +24,8 @@ static const TickType_t memorator_period_ms = 40;
 
 /** @brief Status LED task. */
 static cmr_task_t memoratorTask;
+
+static cmr_canRAMError_t errorRegister = CMR_CAN_RAM_ERROR_NONE;
 
 /** @brief File Obj */
 static FIL filObj;
@@ -147,19 +151,32 @@ static void writeToSDCard(void *pvParameters)
     uint8_t res;
 
     cmr_sdioInit(&sdioPinConfig);
+    errorRegister = CMR_CAN_RAM_ERROR_NONE;
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1){
         oldBufferLocation = bufferLocation;
         switchBuffer();
         check_new_testID(); 
-        cmr_SDIO_mount();
+        if(cmr_SDIO_mount() != FR_OK) {
+            errorRegister |= CMR_CAN_RAM_ERROR_SD_MOUNT;
+        }
         //check_new_testID(); //write new names from DAQ live 
         res = cmr_SDIO_openFile(&filObj, filename);
-        if (!res){
-            cmr_SDIO_write(&filObj, txBuffer, oldBufferLocation);
-            cmr_SDIO_closeFile(&filObj);
+        if(res != FR_OK) {
+            errorRegister |= CMR_CAN_RAM_ERROR_FILE_OPEN;
         }
-        cmr_SDIO_unmount();
+        if (!res){
+            if(cmr_SDIO_write(&filObj, txBuffer, oldBufferLocation) != FR_OK) {
+                errorRegister |= CMR_CAN_RAM_ERROR_SD_WRITE;
+            }
+            if(cmr_SDIO_closeFile(&filObj) != FR_OK) {
+                errorRegister |= CMR_CAN_RAM_ERROR_FILE_CLOSE;
+            }
+        }
+        if(cmr_SDIO_unmount() != FR_OK) {
+            errorRegister |= CMR_CAN_RAM_ERROR_SD_UNMOUNT;
+        }
+        sendHeartbeat(errorRegister);
         vTaskDelayUntil(&lastWakeTime, memorator_period_ms);
     }
 

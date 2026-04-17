@@ -32,7 +32,8 @@ static const TickType_t can100Hz_period_ms = 10;
 /** @brief CAN 100hz task. */
 static cmr_task_t can100Hz_task;
 
-static void sendHeartBeat(); 
+void sendHeartbeat(cmr_canRAMError_t errorRegister); 
+volatile void *canVehicleGetPayload(canVehicleRX_t msg);
 
 /**
  * @brief Sending CAN Messages at 100Hz
@@ -46,7 +47,6 @@ static void canTx100Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        sendHeartBeat(); 
         // int x = 32;
         // canTX(CMR_CAN_BUS_TRAC, 100, &x, sizeof(int), can100Hz_period_ms);
         // RTC_DateTypeDef curdate = getRTCDate();
@@ -490,12 +490,12 @@ void canRXCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t 
 	}
 }
 
-
-static void sendHeartBeat() {
+void sendHeartbeat(cmr_canRAMError_t errorRegister) {
+    cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
     cmr_canHeartbeat_t heartbeat = {
-        .state = 1, 
-        .error = {3, 4},
-        .warning = {4, 5} 
+        .state = heartbeatVSM->state, 
+        .error = errorRegister,
+        .warning = {0, 0} 
     }; 
 
     canTX(CMR_CAN_BUS_VEH, CMR_CANID_HEARTBEAT_MEMORATOR, &heartbeat, sizeof(heartbeat), can100Hz_period_ms); 
@@ -513,7 +513,7 @@ void canInit(void) {
         canRXCallback,
         GPIOA, GPIO_PIN_8,     // CAN3 RX port/pin.
         GPIOB, GPIO_PIN_4,      // CAN3 TX port/pin.
-        GIT_INFO, IS_UNCOMMITTED,
+        0xf2a944ab, 1,
         CMR_CANID_RAM_GIT
     );
 
@@ -601,6 +601,17 @@ int canTX(
 ) {
     configASSERT(bus_id < CMR_CAN_BUS_NUM);
     return cmr_canTX(&can[bus_id], id, data, len, timeout_ms);
+}
+
+/**
+ * @brief Gets a pointer to a vehicle CAN payload.
+ *
+ * @param msg The desired vehicle CAN message.
+ *
+ * @return Pointer to desired payload.
+ */
+volatile void *canVehicleGetPayload(canVehicleRX_t msg) {
+    return &(canVehicleRXMeta[msg].payload);
 }
 
 

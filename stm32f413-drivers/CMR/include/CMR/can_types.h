@@ -515,6 +515,18 @@ typedef enum {
     CMR_CAN_HVC_ERROR_LV_UNDERVOLT = (1<<13),    /**< @brief Shutdown circuit/AIR voltage too low. */
 } cmr_canHVCError_t;
 
+/** @brief High Voltage Controller error bit vector definitions. */
+typedef enum {
+    CMR_CAN_RAM_ERROR_NONE          = 0x0000,    /**< @brief No errors detected. */
+
+    // SD errors
+    CMR_CAN_RAM_ERROR_SD_MOUNT      = (1 << 0),    /**< @brief SD mount failed. */
+    CMR_CAN_RAM_ERROR_SD_UNMOUNT    = (1 << 1),    /**< @brief SD unmount failed. */
+    CMR_CAN_RAM_ERROR_SD_WRITE      = (1 << 2),    /**< @brief SD write failed. */
+    CMR_CAN_RAM_ERROR_FILE_OPEN     = (1 << 3),    /**< @brief File open failed. */
+    CMR_CAN_RAM_ERROR_FILE_CLOSE    = (1 << 4),    /**< @brief SD write failed. */
+} cmr_canRAMError_t;
+
 
 /** @brief High Voltage Controller error bit vector definitions. */
 typedef enum {
