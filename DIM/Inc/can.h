@@ -135,4 +135,11 @@ float canEmdHvCurrent(cmr_canEMDMeasurements_t emd_vals);
 cmr_canBMSMinMaxCellVoltage_t* getPackVoltages(void);
 void sendAcknowledgement(void);
 
+int32_t getDTIERPM(canRX_t rxMsg);
+int16_t getDTIACCurrent_dA(canRX_t rxMsg);
+int16_t getDTIDCCurrent_dA(canRX_t rxMsg);
+int16_t getDTICtlrTemp_dC(canRX_t rxMsg);
+int16_t getDTIMotorTemp_dC(canRX_t rxMsg);
+
+
 #endif /* CAN_H */

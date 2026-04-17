@@ -623,6 +623,31 @@ static void sendPowerDiagnostics(void) {
     canTX(CMR_CANID_VSM_POWER_DIAGNOSTICS, &msg, sizeof(msg), canTX10Hz_period_ms);
 }
 
+int32_t getDTIERPM(canRX_t rxMsg) {
+    cmr_canDTI_TX_Erpm_t *dtiERPM = getPayload(rxMsg);
+    return big_endian_to_int32(&(dtiERPM->erpm));
+}
+
+int16_t getDTIACCurrent_dA(canRX_t rxMsg) {
+    cmr_canDTI_TX_Current_t *dtiCurrent = getPayload(rxMsg);
+    return parse_int16(&(dtiCurrent->ac_current_dA));
+}
+
+int16_t getDTIDCCurrent_dA(canRX_t rxMsg) {
+    cmr_canDTI_TX_Current_t *dtiCurrent = getPayload(rxMsg);
+    return parse_int16(&(dtiCurrent->dc_current_dA));
+}
+
+int16_t getDTICtlrTemp_dC(canRX_t rxMsg) {
+    cmr_canDTI_TX_TempFault_t *dtiTempFault = getPayload(rxMsg);
+    return parse_int16(&(dtiTempFault->ctlr_temp));
+}
+
+int16_t getDTIMotorTemp_dC(canRX_t rxMsg) {
+    cmr_canDTI_TX_TempFault_t *dtiTempFault = getPayload(rxMsg);
+    return parse_int16(&(dtiTempFault->motor_temp));
+}
+
 /**
  * @brief Sends the first error state detected
  */

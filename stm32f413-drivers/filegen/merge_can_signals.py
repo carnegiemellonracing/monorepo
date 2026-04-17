@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
-CAN Signal Merger Script
-Merges messages from CMR 25e.sym into CMR 26x.sym based on CAN ID.
-Only adds messages with CAN IDs that don't already exist in 26x sym.
+Merges messages from CMR 25e.sym into CMR 26x.sym based on can id
+Only adds messages with CAN IDs that don't already exist in 26x sym
 """
 
 import re
@@ -10,15 +9,6 @@ import os
 from typing import Dict, Set, List, Tuple
 
 def parse_can_message(message_block: str) -> Tuple[str, Dict]:
-    """
-    Parse a single CAN message block and return message name and details.
-    
-    Args:
-        message_block: String containing a complete message definition
-        
-    Returns:
-        Tuple of (message_name, message_data_dict)
-    """
     lines = message_block.strip().split('\n')
     if not lines:
         return None, None
@@ -58,15 +48,6 @@ def parse_can_message(message_block: str) -> Tuple[str, Dict]:
     return message_name, message_data
 
 def parse_sym_file(file_path: str) -> Dict[str, Dict]:
-    """
-    Parse a .sym file and return a dictionary of messages.
-    
-    Args:
-        file_path: Path to the .sym file
-        
-    Returns:
-        Dictionary mapping message names to their data
-    """
     print(f"Attempting to read: {file_path}")
     print(f"File exists: {os.path.exists(file_path)}")
     
@@ -97,15 +78,6 @@ def parse_sym_file(file_path: str) -> Dict[str, Dict]:
     return messages
 
 def merge_signals(symv1_path: str, cmr25e_path: str, output_path: str = None) -> None:
-    """
-    Merge messages from CMR 25e.sym into CMR 26x.sym based on CAN ID.
-    Only adds messages whose CAN ID doesn't already exist in 26x sym.
-    
-    Args:
-        symv1_path: Path to CMR 26x.sym file
-        cmr25e_path: Path to CMR 25e.sym file  
-        output_path: Output file path
-    """
     
     print("Parsing CMR 26x.sym...")
     symv1_messages = parse_sym_file(symv1_path)
