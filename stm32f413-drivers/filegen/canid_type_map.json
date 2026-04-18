@@ -5,11 +5,6 @@
             "timeOut": 500,
             "type": "velocity_rpm"
         },
-        "CMR_CANID_ASMS_STATUS": {
-            "cycleTime": 10,
-            "timeOut": 50,
-            "type": "AS_Status"
-        },
         "CMR_CANID_AS_MISSION_FINISHED": {
             "cycleTime": 100,
             "timeOut": 500,
@@ -372,90 +367,45 @@
             "timeOut": 500,
             "type": "cmr_canDTI_ErrorMessages_t"
         },
-        "CMR_CANID_DTI_FL_CURRENT": {
-            "cycleTime": 20.0,
-            "timeOut": 100,
-            "type": "cmr_canDTI_TX_Current_t"
-        },
         "CMR_CANID_DTI_FL_ERPM": {
             "cycleTime": 20.0,
             "timeOut": 100,
-            "type": "cmr_canDTI_TX_Erpm_t"
-        },
-        "CMR_CANID_DTI_FL_IO_STATUS": {
-            "cycleTime": 20.0,
-            "timeOut": 100,
-            "type": "cmr_canDTI_TX_IOStatus_t"
+            "type": "cmr_DTI_RX_Message_t"
         },
         "CMR_CANID_DTI_FL_TEMPFAULT": {
             "cycleTime": 20.0,
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
         },
-        "CMR_CANID_DTI_FR_CURRENT": {
-            "cycleTime": 20.0,
-            "timeOut": 100,
-            "type": "cmr_canDTI_TX_Current_t"
-        },
         "CMR_CANID_DTI_FR_ERPM": {
             "cycleTime": 20.0,
             "timeOut": 100,
-            "type": "cmr_canDTI_TX_Erpm_t"
-        },
-        "CMR_CANID_DTI_FR_IO_STATUS": {
-            "cycleTime": 20.0,
-            "timeOut": 100,
-            "type": "cmr_canDTI_TX_IOStatus_t"
+            "type": "cmr_DTI_RX_Message_t"
         },
         "CMR_CANID_DTI_FR_TEMPFAULT": {
             "cycleTime": 20.0,
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
         },
-        "CMR_CANID_DTI_RL_CURRENT": {
-            "cycleTime": 20.0,
-            "timeOut": 100,
-            "type": "cmr_canDTI_TX_Current_t"
-        },
         "CMR_CANID_DTI_RL_ERPM": {
             "cycleTime": 20.0,
             "timeOut": 100,
-            "type": "cmr_canDTI_TX_Erpm_t"
-        },
-        "CMR_CANID_DTI_RL_IO_STATUS": {
-            "cycleTime": 20.0,
-            "timeOut": 100,
-            "type": "cmr_canDTI_TX_IOStatus_t"
+            "type": "cmr_DTI_RX_Message_t"
         },
         "CMR_CANID_DTI_RL_TEMPFAULT": {
             "cycleTime": 20.0,
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
         },
-        "CMR_CANID_DTI_RR_CURRENT": {
-            "cycleTime": 20.0,
-            "timeOut": 100,
-            "type": "cmr_canDTI_TX_Current_t"
-        },
         "CMR_CANID_DTI_RR_ERPM": {
             "cycleTime": 20.0,
             "timeOut": 100,
-            "type": "cmr_canDTI_TX_Erpm_t"
-        },
-        "CMR_CANID_DTI_RR_IO_STATUS": {
-            "cycleTime": 20.0,
-            "timeOut": 100,
-            "type": "cmr_canDTI_TX_IOStatus_t"
+            "type": "cmr_DTI_RX_Message_t"
         },
         "CMR_CANID_DTI_RR_TEMPFAULT": {
             "cycleTime": 20.0,
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
-        },
-        "CMR_CANID_EAB_STATUS": {
-            "cycleTime": 10,
-            "timeOut": 50,
-            "type": "eabStatus"
         },
         "CMR_CANID_EMD_MEASUREMENT": {
             "current": {
@@ -484,9 +434,6 @@
             "type": "cmr_can_front_whl_velocity_t"
         },
         "CMR_CANID_FSM_DATA": {
-            "brakePedalPosition_percent": {
-                "u": "%"
-            },
             "brakePressureFront_PSI": {
                 "u": "PSI"
             },
@@ -543,20 +490,6 @@
             }
         },
         "CMR_CANID_HEARTBEAT_DIM": {
-            "cycleTime": 10,
-            "error": {
-                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
-            },
-            "state": {
-                "e": "State"
-            },
-            "timeOut": 50,
-            "type": "cmr_canHeartbeat_t",
-            "warning": {
-                "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
-            }
-        },
-        "CMR_CANID_HEARTBEAT_FSM": {
             "cycleTime": 10,
             "error": {
                 "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
@@ -936,8 +869,8 @@
             "type": "cmr_canVSMPowerDiagnostics_t"
         },
         "CMR_CANID_VSM_SENSORS": {
-            "cycleTime": 5,
-            "timeOut": 25,
+            "cycleTime": 100,
+            "timeOut": 500,
             "type": "cmr_canVSMSensors_t"
         },
         "CMR_CANID_VSM_STATUS": {
@@ -965,17 +898,17 @@
         "files_processed": 2907,
         "files_with_matches": 2907,
         "global_mappings": {
-            "canrx_mappings": 179,
-            "canrx_timeouts": 170,
-            "canrx_types": 75,
-            "constants": 258,
+            "canrx_mappings": 178,
+            "canrx_timeouts": 169,
+            "canrx_types": 55,
+            "constants": 255,
             "struct_members": 0,
-            "variable_types": 331
+            "variable_types": 318
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 111
+        "total_canids": 100
     }
 }

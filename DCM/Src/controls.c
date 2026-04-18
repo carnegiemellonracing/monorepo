@@ -671,7 +671,6 @@ static void set_regen(uint8_t throttlePos_u8) {
  *
  * @param gear Which gear the vehicle is in.
  * @param throttlePos_u8 Throttle position, 0-255.
- * @param brakePos_u8 Brake position, 0-255.
  * @param swAngle_millideg Steering wheel angle in degrees. Zero-centered, right turn positive.
  * @param battVoltage_mV Accumulator voltage in millivolts.
  * @param battCurrent_mA Accumulator current in milliamps.
@@ -680,7 +679,6 @@ static void set_regen(uint8_t throttlePos_u8) {
 void runControls (
     cmr_canGear_t gear,
     uint8_t throttlePos_u8,
-    uint8_t brakePos_u8,
     uint16_t brakePressurePsi_u8,
     int32_t swAngle_millideg_FL,
     int32_t swAngle_millideg_FR,
@@ -697,18 +695,18 @@ void runControls (
         return;
     }
 
-    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FL = canTractiveGetPayload(CANRX_TRAC_FL_ERPM);
-    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_FR = canTractiveGetPayload(CANRX_TRAC_FR_ERPM);
-    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RL = canTractiveGetPayload(CANRX_TRAC_RL_ERPM);
-    volatile cmr_canDTI_TX_Erpm_t *dtiERPM_RR = canTractiveGetPayload(CANRX_TRAC_RR_ERPM);
+    int32_t dtiERPM_FL = getDTIERPM(CANRX_TRAC_FL_ERPM);
+    int32_t dtiERPM_FR = getDTIERPM(CANRX_TRAC_FR_ERPM);
+    int32_t dtiERPM_RL = getDTIERPM(CANRX_TRAC_RL_ERPM);
+    int32_t dtiERPM_RR = getDTIERPM(CANRX_TRAC_RR_ERPM);
 
     volatile cmr_canHeartbeat_t   *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
 
     const int32_t avgMotorSpeed_RPM = (
-        + (int32_t)(dtiERPM_FL->erpm / pole_pairs)
-        + (int32_t)(dtiERPM_FR->erpm / pole_pairs)
-        + (int32_t)(dtiERPM_RL->erpm / pole_pairs)
-        + (int32_t)(dtiERPM_RR->erpm / pole_pairs)
+        + (int32_t)(dtiERPM_FL / pole_pairs)
+        + (int32_t)(dtiERPM_FR / pole_pairs)
+        + (int32_t)(dtiERPM_RL / pole_pairs)
+        + (int32_t)(dtiERPM_RR / pole_pairs)
     ) / MOTOR_LEN;
 
     // Update odometer
@@ -888,9 +886,9 @@ void integrateCurrent() {
 		previousTickCount = xTaskGetTickCount();
         coulombCounting.KCoulombs = 0.001f;
 	}else{
-        const float packCurrent_kA = getPackCurrent()*0.001f;
+        // const float packCurrent_kA = getPackCurrent()*0.001f;
         const TickType_t currentTick = xTaskGetTickCount();
-        coulombCounting.KCoulombs += ((currentTick-previousTickCount)*0.001f)*packCurrent_kA;
+        // coulombCounting.KCoulombs += ((currentTick-previousTickCount)*0.001f)*packCurrent_kA;
         previousTickCount = currentTick;
     }
 }
@@ -1694,80 +1692,5 @@ void setCruiseControlTorque (
     if (!cruiseControl && action1) {
         cruiseControl = true;
         cruiseVelocity = avgMotorSpeed_RPM;
-    }
-}
-
-void setEnduranceTestTorque(
-    int32_t avgMotorSpeed_RPM,
-    uint8_t throttlePos_u8,
-    uint8_t brakePos_u8,
-    int32_t swAngle_millideg,
-    int32_t battVoltage_mV,
-    int32_t battCurrent_mA,
-    uint16_t brakePressurePsi_u8,
-    bool clampbyside
-) {
-     // if braking
-    if (setRegen(&throttlePos_u8, brakePressurePsi_u8, avgMotorSpeed_RPM)){
-        return;
-    }
-
-    // Requested torque that may be positive or negative
-    float reqTorque = maxFastTorque_Nm * ((float)throttlePos_u8) / ((float)UINT8_MAX);
-    const float recuperative_limit = getMotorRegenerativeCapacity(avgMotorSpeed_RPM);
-
-    // Accelerative torque requested
-    if (reqTorque >= 0) {
-        // apply power limit. Simply scale power down linearly in the last 5kW of power
-        uint8_t power_limit_kW = 150; // uint8, must be between 0 and 255, inclusive
-        const bool ret_val = getProcessedValue(&power_limit_kW, POWER_LIM_INDEX, unsigned_integer);
-        (void)ret_val; // placate compiler
-        if (power_limit_kW == 0) {
-            power_limit_kW = 1; // lower-bound the power limit by 1kW to avoid divide-by-zero
-        }
-
-        const float power_limit_W = ((float)power_limit_kW) * 1e3f;
-        float power_limit_start_derate_W = power_limit_W - 5000.0f;
-        power_limit_start_derate_W = fmaxf(power_limit_start_derate_W, 0.0f); // clamp to zero in case of negative value due to lower than 10kw limit
-
-        volatile cmr_canHVSense_t *HVISense = canTractiveGetPayload(CANRX_TRAC_HVI_SENSE);
-        const float hv_voltage_V = ((float)(HVISense->packVoltage_cV)) * 1e-2f; // convert to volts
-
-        volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
-        const float currentA = ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
-        // apply power limit.
-        const float power_consumed_W = hv_voltage_V * currentA;
-
-        if (power_consumed_W > power_limit_start_derate_W) {
-            float power_derate_multiplier = (power_consumed_W - power_limit_start_derate_W) / (power_limit_W - power_limit_start_derate_W);
-            // backup in case of hysterisis in the AC or latency in the system
-            power_derate_multiplier = fminf(power_derate_multiplier, 1.0f);
-            power_derate_multiplier = fmaxf(power_derate_multiplier, 0.0f);
-            reqTorque *= 1.0f - power_derate_multiplier;
-        }
-
-        reqTorque = fminf(reqTorque, maxFastTorque_Nm);
-        reqTorque = fmaxf(reqTorque, 0.0f);
-
-        // Adjust throttle so that traction control commands reqTorque (after power limit calc) to the motors
-        uint8_t adjustedThrottlePos_u8 = (uint8_t)(fminf(fmaxf((reqTorque * ((float)UINT8_MAX) / maxFastTorque_Nm), 0.0f), (float)UINT8_MAX));
-        const bool assumeNoTurn = true; // TC is not allowed to behave left-right asymmetrically due to the lack of testing
-        const bool ignoreYawRate = false; // TC takes yaw rate into account to prevent the vehicle from stopping unintendedly when turning at low speeds
-        const bool allowRegen = true; // regen-braking is allowed to protect the AC by keeping charge level high
-        const float critical_speed_mps = 5.0f; // using a high value to prevent the vehicle from stopping unintendedly when turning at low speeds
-        if (brakePressurePsi_u8 < braking_threshold_psi)
-        	// setFastTorque(adjustedThrottlePos_u8);
-            setYawRateControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, clampbyside);
-        //setYawRateAndTractionControl(adjustedThrottlePos_u8, brakePressurePsi_u8, swAngle_millideg, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
-    }
-    // Requested recuperation that is less than the maximum-power regen point possible
-    else if (reqTorque > recuperative_limit) {
-        setTorqueLimsAllProtected(0.0f, reqTorque);
-        setVelocityInt16All(0);
-    }
-    // Requested recuperation is even more negative than the limit
-    else {
-        setTorqueLimsAllProtected(0.0f, recuperative_limit);
-        setVelocityInt16All(0);
     }
 }

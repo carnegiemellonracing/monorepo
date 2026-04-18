@@ -297,7 +297,6 @@ static void sendFSMData(void);
 static void sendSWAngle(void);
 static void sendFSMPedalsADC(void);
 static void sendFSMSensorsADC(void);
-static void sendPowerDiagnostics(void);
 
 /**
  * @brief Task for sending CAN messages at 10 Hz.
@@ -323,7 +322,6 @@ static void canTX10Hz(void *pvParameters) {
         cmr_canGear_t gearReq = stateGetGearReq();
         cmr_canDrsMode_t drsMode = stateGetDrs();
         cmr_canDrsMode_t drsReq = stateGetDrsReq();
-        cmr_canDVMode_t dvMode = stateGetDVMode();
         cmr_canDVMode_t dvReq = stateGetDVReq();
         cmr_canTestID_t test_id = {
         	.test_id = get_test_message_id()
@@ -352,7 +350,6 @@ static void canTX10Hz(void *pvParameters) {
             stateDrsUpdate();
             stateDVCtrlUpdate();
         }
-        sendPowerDiagnostics();
 
         sendFSMPedalsADC();
         sendFSMSensorsADC();
@@ -681,7 +678,8 @@ void canInit(void) {
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_MOVELLA_STATUS, CMR_CANID_CDC_ODOMETER, CMR_CANID_DIM_TEXT_WRITE, CMR_CANID_CDC_CONTROLS_STATUS } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_AFC1_DRIVER_TEMPS, CMR_CANID_HVC_MINMAX_CELL_TEMPS, CMR_CANID_VSM_STATUS, CMR_CANID_HEARTBEAT_MEMORATOR } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_PTC_LOOP_TEMPS_A, CMR_CANID_PTC_LOOP_TEMPS_B, CMR_CANID_PTC_LOOP_TEMPS_C, CMR_CANID_PTC_LOOP_TEMPS_B } },
-        { .isMask = true,  .rxFIFO = CAN_RX_FIFO0, .ids =  { 0x01, 0x02, 0x1F, 0x1F} },
+        // { .isMask = true,  .rxFIFO = CAN_RX_FIFO0, .ids =  { 0x01, 0x02, 0x1F, 0x1F} },
+        { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_DTI_FL_TEMPFAULT, CMR_CANID_DTI_FR_TEMPFAULT, CMR_CANID_DTI_RL_TEMPFAULT, CMR_CANID_DTI_RR_TEMPFAULT} },
         { .isMask = true,  .rxFIFO = CAN_RX_FIFO0, .ids =  { 0x03, 0x04, 0x1F, 0x1F} },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV0, CMR_CANID_CDC_CONFIG1_DRV0, CMR_CANID_CDC_CONFIG2_DRV0, CMR_CANID_CDC_CONFIG3_DRV0 } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV1, CMR_CANID_CDC_CONFIG1_DRV1, CMR_CANID_CDC_CONFIG2_DRV1, CMR_CANID_CDC_CONFIG3_DRV1 } },
@@ -689,7 +687,7 @@ void canInit(void) {
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_CDC_CONFIG0_DRV3, CMR_CANID_CDC_CONFIG1_DRV3, CMR_CANID_CDC_CONFIG2_DRV3, CMR_CANID_CDC_CONFIG3_DRV3 } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO0, .ids = { CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_MEASUREMENT } },
         { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_VSM_SENSORS, CMR_CANID_HVC_MINMAX_CELL_VOLTAGE, CMR_CANID_HVC_LOW_VOLTAGE, CMR_CANID_DRS_STATE } },
-        { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_VSM_POWER_DIAGNOSTICS, CMR_CANID_SENSORIC_VEL_ANG, CMR_CANID_SENSORIC_DIST, CMR_CANID_EAB_STATUS}} 
+        { .isMask = false, .rxFIFO = CAN_RX_FIFO1, .ids = { CMR_CANID_VSM_POWER_DIAGNOSTICS, CMR_CANID_SENSORIC_VEL_ANG, CMR_CANID_SENSORIC_DIST, CMR_CANID_EAB_STATUS}}
     };
 
     cmr_canFilter(
@@ -730,29 +728,29 @@ int canTX(cmr_canID_t id, const void *data, size_t len, TickType_t timeout) {
     return cmr_canTX(&can, id, data, len, timeout);
 }
 
-/**
- * @brief Return the HV voltage as measured by the EMD.
- *
- * @return HV voltage.
- */
-float canEmdHvVoltage(cmr_canEMDMeasurements_t emd_vals) {
-    static const float div = 65536.0f;
+// /**
+//  * @brief Return the HV voltage as measured by the EMD.
+//  *
+//  * @return HV voltage.
+//  */
+// float canEmdHvVoltage(cmr_canEMDMeasurements_t emd_vals) {
+//     static const float div = 65536.0f;
 
-    int32_t converted = (int32_t)__builtin_bswap32((uint32_t)emd_vals.voltage);
-    return ((float)converted) / div;
-}
+//     int32_t converted = (int32_t)__builtin_bswap32((uint32_t)emd_vals.voltage);
+//     return ((float)converted) / div;
+// }
 
-/**
- * @brief Return the HV current as measured by the EMD.
- *
- * @return HV current.
- */
-float canEmdHvCurrent(cmr_canEMDMeasurements_t emd_vals) {
-    static const float div = 65536.0f;
+// /**
+//  * @brief Return the HV current as measured by the EMD.
+//  *
+//  * @return HV current.
+//  */
+// float canEmdHvCurrent(cmr_canEMDMeasurements_t emd_vals) {
+//     static const float div = 65536.0f;
 
-    int32_t converted = (int32_t)__builtin_bswap32((uint32_t)emd_vals.current);
-    return ((float)converted) / div;
-}
+//     int32_t converted = (int32_t)__builtin_bswap32((uint32_t)emd_vals.current);
+//     return ((float)converted) / div;
+// }
 
 /**
  * @brief Gets a pointer to the payload of a received CAN message.
@@ -783,9 +781,6 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
         .state = vsmState
     };
 
-    uint8_t AS_Status = getASMS();
-    canTX(CMR_CANID_ASMS_STATUS, &AS_Status, sizeof(AS_Status), canTX100Hz_period_ms);
-
     cmr_canWarn_t warning = CMR_CAN_WARN_NONE;
     cmr_canError_t error = CMR_CAN_ERROR_NONE;
 
@@ -815,11 +810,6 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     memcpy(&heartbeat.warning, &warning, sizeof(heartbeat.warning));
 
     canTX(
-        CMR_CANID_HEARTBEAT_FSM,
-        &heartbeat,
-        sizeof(heartbeat),
-        canTX100Hz_period_ms);
-    canTX(
         CMR_CANID_HEARTBEAT_DIM,
         &heartbeat,
         sizeof(heartbeat),
@@ -842,13 +832,13 @@ static void sendFSMData(void) {
     }
 
     uint16_t brakePressureFront_PSI = (uint16_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI);
-    uint8_t brakePedalPosition = (uint8_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPOS_U8);
+    uint8_t AS_Status = getASMS();
 
     cmr_canFSMData_t msg = {
         .torqueRequested = torqueRequested,
         .throttlePosition = throttlePosition,
         .brakePressureFront_PSI = brakePressureFront_PSI,
-        .brakePedalPosition_percent = brakePedalPosition
+        .AS_Status = AS_Status
     };
 
     canTX(CMR_CANID_FSM_DATA, &msg, sizeof(msg), canTX100Hz_period_ms);
@@ -869,8 +859,8 @@ static void sendSWAngle(void) {
 
 static void sendDVPressureReadings(void) {
     cmr_canDVPressureReadings_t ebsPressure = {
-        .ebsPressure_1 = cmr_sensorListGetValue(&sensorList, SENSOR_CH_EBS_1),
-        .ebsPressure_2 = cmr_sensorListGetValue(&sensorList, SENSOR_CH_EBS_2)
+        .ebsPressure_1_deci_bar = cmr_sensorListGetValue(&sensorList, SENSOR_CH_EBS_PRESSURE_1_DECI_BAR),
+        .ebsPressure_2_deci_bar = cmr_sensorListGetValue(&sensorList, SENSOR_CH_EBS_PRESSURE_2_DECI_BAR)
     };
 
     canTX(CMR_CANID_AS_PRESSURE_READINGS, &ebsPressure, sizeof(ebsPressure), canTX100Hz_period_ms);
@@ -908,31 +898,29 @@ static void sendFSMSensorsADC(void) {
     canTX(CMR_CANID_FSM_SENSORS_ADC, &msg, sizeof(msg), canTX10Hz_period_ms);
 }
 
-/**
- * @brief Sends latest bus voltage and current draw measurements.
- */
-static void sendPowerDiagnostics(void) {
-    // value * 0.8 (mV per bit) * 11 (1:11 voltage divider)
-    uint32_t busVoltage_mV = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
-    uint32_t busCurrent_mA = cmr_sensorListGetValue(&sensorList, SENSOR_CH_CURRENT_MA);
+int32_t getDTIERPM(canRX_t rxMsg) {
+    cmr_canDTI_TX_Erpm_t *dtiERPM = getPayload(rxMsg);
+    return big_endian_to_int32(&(dtiERPM->erpm));
+}
 
-    cmr_canDIMPowerDiagnostics_t powerDiagnosticsDIM = {
-        .busVoltage_mV = busVoltage_mV,
-        .busCurrent_mA = busCurrent_mA
-    };
-    cmr_canFSMPowerDiagnostics_t powerDiagnosticsFSM = {
-        .busVoltage_mV = busVoltage_mV,
-        .busCurrent_mA = busCurrent_mA
-    };
+int16_t getDTIACCurrent_dA(canRX_t rxMsg) {
+    cmr_canDTI_TX_Current_t *dtiCurrent = getPayload(rxMsg);
+    return parse_int16(&(dtiCurrent->ac_current_dA));
+}
 
-    canTX(
-        CMR_CANID_DIM_POWER_DIAGNOSTICS,
-        &powerDiagnosticsDIM, sizeof(powerDiagnosticsDIM),
-        canTX10Hz_period_ms);
-    canTX(
-        CMR_CANID_FSM_POWER_DIAGNOSTICS,
-        &powerDiagnosticsFSM, sizeof(powerDiagnosticsFSM),
-        canTX10Hz_period_ms);
+int16_t getDTIDCCurrent_dA(canRX_t rxMsg) {
+    cmr_canDTI_TX_Current_t *dtiCurrent = getPayload(rxMsg);
+    return parse_int16(&(dtiCurrent->dc_current_dA));
+}
+
+int16_t getDTICtlrTemp_dC(canRX_t rxMsg) {
+    cmr_canDTI_TX_TempFault_t *dtiTempFault = getPayload(rxMsg);
+    return parse_int16(&(dtiTempFault->ctlr_temp));
+}
+
+int16_t getDTIMotorTemp_dC(canRX_t rxMsg) {
+    cmr_canDTI_TX_TempFault_t *dtiTempFault = getPayload(rxMsg);
+    return parse_int16(&(dtiTempFault->motor_temp));
 }
 
 void sendAcknowledgement(void) {

@@ -26,8 +26,6 @@ static const uint32_t gpioReadButtons_priority = 5;
 /** @brief Button input task task. */
 static cmr_task_t gpioReadButtons_task;
 
-static bool eabReq = false;
-
 /**
  * @brief Board-specific pin configuration.
  *
@@ -63,7 +61,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 	[GPIO_BUTTON_LEFT] = {
 		.port = GPIOC,
 		.init = {
-			.Pin = GPIO_PIN_0,
+			.Pin = GPIO_PIN_1,
 			.Mode = GPIO_MODE_INPUT,
 			.Pull = GPIO_PULLUP,
 			.Speed = GPIO_SPEED_FREQ_LOW
@@ -167,7 +165,7 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 			.Speed = GPIO_SPEED_FREQ_LOW
 		}
 	},
-	// OLD DIM PINS
+	// // OLD DIM PINS
 	// [GPIO_LED_IMD] = {
 	// 	.port = GPIOA,
 	// 	.init = {
@@ -212,7 +210,16 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 			.Pull = GPIO_NOPULL,
 			.Speed = GPIO_SPEED_FREQ_LOW
 		}
-	}
+	},
+	[GPIO_AS_ERROR] = {
+		.port = GPIOC,
+		.init = {
+			.Pin = GPIO_PIN_9,
+			.Mode = GPIO_MODE_OUTPUT_PP,
+			.Pull = GPIO_PULLUP,
+			.Speed = GPIO_SPEED_FREQ_LOW
+		}
+	}, 
 };
 
 /**
@@ -236,30 +243,6 @@ bool getEAB(){
 
 /* Debouncing for button presses. */
 # define DEBOUNCE_DELAY 50
-
-static uint32_t lastPress[NUM_BUTTONS] = {0};
-static bool lastState[NUM_BUTTONS] = {false};
-
-/**
- * @brief Converts analog ADC to 0-3.3V, then scales that to 0-5V
- *
- * @param analog ADC value between 0-4096. Helper function for adcToXY
- *
- * @return a float between 0-5V.
- */
-
-static float adcToVoltage(uint32_t analog){
-
-    //error check
-    if(analog > 4096){
-        return -1;
-    }else{
-        //Scale analog to voltage between 0-5V
-        float finalVolt = ((float)analog/4096.0f) * 5.0f;
-
-        return finalVolt;
-    }
-}
 
 /**
  * @brief reads state of all buttons
@@ -293,6 +276,12 @@ static void gpioReadButtons(void *pvParameters) {
 void gpioInit(void) {
     cmr_gpioPinInit(
         gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0]));
+
+		cmr_gpioWrite(GPIO_LED_AMS, 0);
+    cmr_gpioWrite(GPIO_LED_IMD, 0);
+    cmr_gpioWrite(GPIO_LED_BSPD, 0);
+		cmr_gpioWrite(GPIO_AS_ERROR, 0);
+
     cmr_taskInit(
         &gpioReadButtons_task,
         "gpioReadButtons",

@@ -28,7 +28,6 @@ typedef enum {
     CANRX_DIM_REQUEST,        /**< @brief DIM state request. */
     CANRX_RES,                /**< @brief RES */
     CANRX_AS_PRESSURE_READING,/**< @brief Autonomous Pressure Readings */
-    CANRX_ASMS_STATE,
     CANRX_DTI_ERROR_CODE,     /**< @brief Inverter Fault Codes*/
     CANRX_FL_TEMPFAULT,       /**< @brief Front Left Inverter Fault */
     CANRX_FR_TEMPFAULT,       /**< @brief Front Right Inverter Fault */
@@ -57,6 +56,12 @@ cmr_canState_t getModuleState(canRX_t module);
 uint8_t getASMSState(void);
 void sendFirstError(uint8_t error_code);
 void resetError();
+
+int32_t getDTIERPM(canRX_t rxMsg);
+int16_t getDTIACCurrent_dA(canRX_t rxMsg);
+int16_t getDTIDCCurrent_dA(canRX_t rxMsg);
+int16_t getDTICtlrTemp_dC(canRX_t rxMsg);
+int16_t getDTIMotorTemp_dC(canRX_t rxMsg);
 
 #endif /* CAN_H */
 

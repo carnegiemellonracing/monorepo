@@ -719,7 +719,6 @@ static void canTX10Hz(void *pvParameters) {
         powerSense.packCurrent_dA = getCurrent();
         powerSense.packVoltage_cV = getVoltage();
         //powersense is dead, voltage * HVI current
-        powerSense.packPower_W = getPackVoltage() * getPackCurrent();
 
         
         cmr_canDAQTherm_t therms1;
@@ -879,17 +878,12 @@ static void canTX200Hz(void *pvParameters) {
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultRL = getDTITempFault(MOTOR_RL);
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultRR = getDTITempFault(MOTOR_RR);
 
-    volatile cmr_canSensoricVelAng_t *sensoricVelAng = (cmr_canSensoricVelAng_t*)canDAQGetPayload(CANRX_DAQ_SENSORIC_VEL_ANG);
-
     cmr_canDTI_ErrorMessages_t dtiErrorMessages;
 
     dtiErrorMessages.fl_fault_code = dtiTempFaultFL->fault_code;
     dtiErrorMessages.fr_fault_code = dtiTempFaultFR->fault_code;
     dtiErrorMessages.rl_fault_code = dtiTempFaultRL->fault_code;
     dtiErrorMessages.rr_fault_code = dtiTempFaultRR->fault_code;
-
-    // cmr_canSensoricVelAng_t *sensoricVelAng = canDAQGetPayload(CANRX_DAQ_SENSORIC_VEL_ANG);
-    canTX(CMR_CAN_BUS_VEH, CMR_CANID_SENSORIC_VEL_ANG, sensoricVelAng, sizeof(cmr_canSensoricVelAng_t), canTX200Hz_period_ms);
 
     cmr_canCDCWheelVelocity_t speedFeedback;
     cmr_canCDCWheelTorque_t torqueFeedback;
@@ -998,9 +992,6 @@ static void canTX200Hz(void *pvParameters) {
         rear_velocity.rl_y = car_state.rl_velocity.y * 100.0f;
         rear_velocity.rr_x = car_state.rr_velocity.x * 100.0f;
         rear_velocity.rr_y = car_state.rr_velocity.y * 100.0f;
-
-        
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_SENSORIC_VEL_ANG, sensoricVelAng, sizeof(cmr_canSensoricVelAng_t), canTX200Hz_period_ms);
 
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COG_VELOCITY, &cog_velocity, sizeof(cog_velocity), canTX200Hz_period_ms);
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_FRONT_VELOCITY, &front_velocity, sizeof(front_velocity), canTX200Hz_period_ms);
@@ -1142,6 +1133,10 @@ static void canTX1Hz(void *pvParameters) {
             .power_limit_W = getPowerLimit_W(),
         };
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_POWER_LOG, &power_limit, sizeof(power_limit), canTX1Hz_period_ms);
+
+        volatile cmr_canSensoricVelAng_t *sensoricVelAng = (cmr_canSensoricVelAng_t*)canDAQGetPayload(CANRX_DAQ_SENSORIC_VEL_ANG);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_SENSORIC_VEL_ANG, sensoricVelAng, sizeof(cmr_canSensoricVelAng_t), canTX200Hz_period_ms);
+
 
         // TODO: constantly send current parameters
         vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
@@ -1604,6 +1599,36 @@ int sendDTIMessage(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t 
         big_endian_32_t big_endian_data = int32_to_big(*((int32_t*)(data)));
         return canTX(bus, id, &big_endian_data, len, timeout);
     }
+}
+
+int32_t getDTIERPM(canTractiveRX_t rxMsg) {
+    cmr_canDTI_TX_Erpm_t *dtiERPM = canTractiveGetPayload(rxMsg);
+    return big_endian_to_int32(&(dtiERPM->erpm));
+}
+
+int16_t getDTIInputVoltage(canTractiveRX_t rxMsg) {
+    cmr_canDTI_TX_Erpm_t *dtiERPM = canTractiveGetPayload(rxMsg);
+    return parse_int16(&(dtiERPM->input_voltage_V));
+}
+
+int16_t getDTIACCurrent_dA(canTractiveRX_t rxMsg) {
+    cmr_canDTI_TX_Current_t *dtiCurrent = canTractiveGetPayload(rxMsg);
+    return parse_int16(&(dtiCurrent->ac_current_dA));
+}
+
+int16_t getDTIDCCurrent_dA(canTractiveRX_t rxMsg) {
+    cmr_canDTI_TX_Current_t *dtiCurrent = canTractiveGetPayload(rxMsg);
+    return parse_int16(&(dtiCurrent->dc_current_dA));
+}
+
+int16_t getDTICtlrTemp_dC(canTractiveRX_t rxMsg) {
+    cmr_canDTI_TX_TempFault_t *dtiTempFault = canTractiveGetPayload(rxMsg);
+    return parse_int16(&(dtiTempFault->ctlr_temp));
+}
+
+int16_t getDTIMotorTemp_dC(canTractiveRX_t rxMsg) {
+    cmr_canDTI_TX_TempFault_t *dtiTempFault = canTractiveGetPayload(rxMsg);
+    return parse_int16(&(dtiTempFault->motor_temp));
 }
 
 int sendCubeMarsMessage(cmr_canBusID_t bus, cmr_canExtendedID_t id, const void *data, size_t len, TickType_t timeout) {

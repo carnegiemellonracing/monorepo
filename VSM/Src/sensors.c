@@ -56,6 +56,20 @@ static int32_t adcToBusVoltage_mV(const cmr_sensor_t *sensor, uint32_t value) {
 }
 
 /**
+ * @brief Converts a raw sensor value into a low-voltage bus voltage.
+ *
+ * @param sensor The sensor.
+ * @param value The raw value.
+ *
+ * @return Voltage in qV.
+ */
+static int32_t adcToBusVoltage_eight_V(const cmr_sensor_t *sensor, uint32_t value) {
+    (void) sensor;  // Placate compiler.
+    uint32_t busVoltage_mV = adcToBusVoltage_mV(sensor, value);
+    return busVoltage_mV / 125;
+}
+
+/**
  * @brief Converts a raw sensor value into a low-voltage bus current.
  *
  * @param sensor The sensor.
@@ -173,7 +187,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .warnFlag = CMR_CAN_WARN_BUS_CURRENT
     },
     [SENSOR_CH_SS_IN] = { /** @todo how wide should this range be? */
-        .conv = adcToBusVoltage_mV,
+        .conv = adcToBusVoltage_eight_V,
         .sample = sampleADCSensor,
         .readingMin = 250,  // 10 mA
         .readingMax = 2933, // 26 Volts
@@ -181,7 +195,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .warnFlag = CMR_CAN_WARN_BUS_VOLTAGE
     },
     [SENSOR_CH_SS_OUT] = {
-        .conv = adcToBusVoltage_mV,
+        .conv = adcToBusVoltage_eight_V,
         .sample = sampleADCSensor,
         .readingMin = 250,  // 10 mA
         .readingMax = 2933, // 26 Volts

@@ -25,7 +25,6 @@
 #include "servo.h"
 #include "lut.h"
 #include "brakelight.h"
-#include "steering.h"
 #include "pumps.h"
 
 /** @brief Status LED priority. */
@@ -71,7 +70,7 @@ static void statusLED(void *pvParameters) {
  * @return Does not return.
  */
 
-    int main(void) {
+  int main(void) {
 
    	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
     DWT->LAR = 0xC5ACCE55;
@@ -89,11 +88,11 @@ static void statusLED(void *pvParameters) {
     // i2cInit();
     canInit();
     adcInit();
-    // // servoInit();
+    // servoInit();
     motorsInit();
     sensorsInit();
-    brakelightInit();
-    steeringInit();
+    // brakelightInit();
+    pumpsOn();
 
     cmr_taskInit(&statusLED_task, "statusLED", statusLED_priority, statusLED,
                 NULL);

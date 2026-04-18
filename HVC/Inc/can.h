@@ -26,6 +26,8 @@ typedef enum {
     CANRX_HVBMS_PACKVOLT, 
     CANRX_HVBMS_MINMAX_TEMP, 
     CANRX_HEARTBEAT_HVBMS, 
+    CANRX_IVT_CURRENT,
+    CANRX_IVT_VOLTAGE,
 	//CANRX_BALANCE_COMMAND,
     CANRX_LEN,     /**< @brief Number of periodic CAN messages. */
 } canRX_t;

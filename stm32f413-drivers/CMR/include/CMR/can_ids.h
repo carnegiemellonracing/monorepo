@@ -38,8 +38,6 @@ typedef enum {
     CMR_CANID_HEARTBEAT_LV_BMS = 0x107, /**< @brief LV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_HV_BMS = 0x108, /**< @brief HV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
-    CMR_CANID_EAB_STATUS = 0x10B, // conflicting with VSM_FIRST_ERROR
-    CMR_CANID_ASMS_STATUS = 0x193,
 
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
     CMR_CANID_VSM_SENSORS = 0x200,              /**< @brief VSM sensor data. */
@@ -53,6 +51,10 @@ typedef enum {
     CMR_CANID_HVC_MINMAX_CELL_VOLTAGE = 0x310,  /**< @brief HVC pack min and max cell voltages*/
     CMR_CANID_HVC_MINMAX_CELL_TEMPS = 0x311,    /**< @brief HVC pack min and max cell temps. */
     CMR_CANID_HVC_PACK_CURRENT = 0x302,         /**< @brief HVC pack current. */
+
+    CMR_CANID_IVT_CURRENT = 0x521,              /**< @brief IVT current. */
+    CMR_CANID_IVT_VOLTAGE = 0x522,              /**< @brief IVT voltage. */
+
 
     CMR_CANID_CDC_WHEEL_SPEEDS = 0x132,         /**< @brief CDC (19e) wheel speeds. */
     CMR_CANID_CDC_SOLENOID_PTC = 0x142,         /**< @brief CDC (19e) brake solenoid command. */
@@ -330,7 +332,7 @@ typedef enum {
 
     CMR_CANID_EMD_STATUS = 0x400,               /**< @brief EMD status. */
     CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */
-    CMR_CANID_EMD_MEASUREMENT = 0x402,          /**< @brief EMD measurement for HV voltage/current. */
+    CMR_CANID_EMD_MEASUREMENT = 0x10D,            /**< @brief EMD measurement for HV voltage/current. */        
 
     CMR_IZZIE_LOADCELL = 0x7F0,                 /**< @brief IZZIE Amp load data. */
     CMR_CANID_CONTROLS_DEBUG_GLOBAl = 0x7E0,    /**< @brief control algo testing data. */
@@ -385,9 +387,9 @@ typedef enum {
     CMR_CANID_AUTONOMOUS_ACTION = 0x190,        /**< @brief Autonomous Action*/
     CMR_CANID_AS_PRESSURE_READINGS = 0x191,     /**< @brief Autonomous Pressure Readings for Tank and EBS*/
     CMR_CANID_AS_RACK_DISPLACMENT = 0x192,      /**< @brief Rack Displacement Mesurment*/
-    CMR_CANID_ASMS_STATE = 0x193,
     CMR_CANID_AS_MISSION_FINISHED = 0x777,
     CMR_CANID_AS_HEARTBEAT_COMPUTE = 0x109,
+    CMR_CANID_EAB_STATUS = 0x10B,
 
     //MAXON
     CMR_CANID_MAXON_STATUS_WORD = 0x250,
