@@ -200,10 +200,10 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
     if ((vsmStatus.heartbeatErrors != CMR_CAN_ERROR_NONE)
      || (vsmStatus.canVSMStatus.moduleTimeoutMatrix != CMR_CAN_VSM_TIMEOUT_SOURCE_NONE)
      || (vsmStatus.canVSMStatus.latchMatrix != CMR_CAN_VSM_LATCH_NONE)
-     /*|| (ASState != getASMSState())*/) {
-        // if(ASState) {
-        //     return CMR_CAN_VSM_STATE_AS_EMERGENCY;
-        // }
+     || (ASState != getASMSState())) {
+        if(ASState) {
+            return CMR_CAN_VSM_STATE_AS_EMERGENCY;
+        }
         if(lastWakeTime_ms == 10000000) {
             return 10;
         }
@@ -625,8 +625,7 @@ static inline bool AutonomousClear(){
  */
 static inline bool getMissionFinished(){ //can from compute
     uint8_t *missionFinished = getPayload(CANRX_AS_MISSION_FINISHED);
-    if(*missionFinished) return true;
-    else return false;
+    return *missionFinished;
 }
 
 /**
