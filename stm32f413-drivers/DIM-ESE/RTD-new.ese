@@ -1,41 +1,7 @@
 {
-    "content": [
-        {
-            "converter": "Image",
-            "dataCompressed": true,
-            "dataStorage": "Embedded",
-            "destName": "images/startup_new",
-            "imageFormat": 0,
-            "memoryAddress": 0,
-            "memoryLoaded": true,
-            "sourcePath": "C:/Users/CMR/Documents/Firmware/monorepo/stm32f413-drivers/DIM-ESE/resources/startup_new.png"
-        }
-    ],
     "coprocessor": [
         "CLEAR_COLOR_RGB(0, 0, 0)",
         "CLEAR(1, 1, 1)",
-        "",
-        "BITMAP_HANDLE(0)",
-        "CMD_SETBITMAP(0, ARGB1555, 210, 78)",
-        "CLEAR(1, 1, 1)",
-        "BEGIN(BITMAPS)",
-        "SAVE_CONTEXT()",
-        "BLEND_FUNC(ONE, ZERO)",
-        "COLOR_MASK(0, 0, 0, 1)",
-        "PALETTE_SOURCE(3)",
-        "VERTEX2II(511, 390, 0, 0)",
-        "BLEND_FUNC(DST_ALPHA, ONE_MINUS_DST_ALPHA)",
-        "COLOR_MASK(1, 0, 0, 0)",
-        "PALETTE_SOURCE(2)",
-        "VERTEX2II(511, 390, 0, 0)",
-        "COLOR_MASK(0, 1, 0, 0)",
-        "PALETTE_SOURCE(1)",
-        "VERTEX2II(511, 390, 0, 0)",
-        "COLOR_MASK(0, 0, 1, 0)",
-        "PALETTE_SOURCE(0)",
-        "VERTEX2II(511, 390, 0, 0)",
-        "RESTORE_CONTEXT()",
-        "END()",
         "",
         "CMD_ROMFONT(0, 34)",
         "CMD_ROMFONT(1, 33)",
@@ -265,7 +231,6 @@
         "CMD_TEXT(435, 285, 6, OPT_CENTER, \"DAQ:\")",
         "CMD_TEXT(430, 310, 5, OPT_CENTER, \"ACK\") @variable RADIO_STR",
         "",
-        "COLOR_RGB(0, 255, 0) @variable GPS_TEXT_COLORCMD_TEXT(242, 231, 3, OPT_CENTERY, \"GPS\")",
         "COLOR_RGB(255, 0, 0) @variable MEMO_TEXT_COLOR",
         "CMD_TEXT(421, 231, 3, OPT_CENTERY | OPT_RIGHTX, \"MEMO\")",
         "",
@@ -455,8 +420,7 @@
         "END()",
         "",
         "COLOR_RGB(255, 255, 255)",
-        "CMD_TEXT(730, 415, 4, OPT_CENTERY , \"26x\")",
-        "CMD_TEXT(715, 445, 4, OPT_CENTERY , \"CMR\")"
+        "CMD_TEXT(540, 427, 2, OPT_CENTERY, \"CMR 26x\")"
     ],
     "displayList": [
         ""
