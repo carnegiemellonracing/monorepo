@@ -36,7 +36,7 @@ static void tssiControl(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
 
     while (1) {
-        if(getAMSError()){
+        if(getAMSError() || !cmr_gpioRead(GPIO_IN_IMD_ERR_COND_N)){
             pwmSetDutyCycle(PWM_RED, 50);
             pwmSetDutyCycle(PWM_GREEN, 0);
         }

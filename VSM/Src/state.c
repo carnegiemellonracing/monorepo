@@ -25,7 +25,7 @@
 // Globals
 #define AS_WAKEUP_TIME 5000
 #define AS_FINISHED_TIME 30000
-#define DV_TANK_PRESSURE_MINIMUM_DECIBAR 50
+#define DV_TANK_PRESSURE_MINIMUM_DECIBAR 80
 #define FRONT_MINIMUM_BRAKING_PSI 650
 #define REAR_MINIMUM_BRAKING_PSI  400
 
@@ -80,17 +80,6 @@ static const TickType_t ASEmergencySwitchingTime_ms = 100;
  */
 static bool ASState = false;
 
-/** @brief Autonomous brake test state is not started at the beginning*/
-static brakeTestState_t brakeTestState = BRAKE_TEST_NOT_STARTED;
-/** @brief Start time of the brake test  */
-static TickType_t brakeTestStartTime = 0;
-/** @brief Time to detect pressure rise (3 seconds) @todo time*/
-static const TickType_t brakeTestTimeout = 3000;
-/** @brief Expected pressure increase for working brakes @todo threshold*/
-static const uint16_t brakePressureRiseThreshold = 50;
-/** @brief Brake pressure at the start of the brake test*/
-static int32_t initialBrakePressure = 0;
-
 /** @brief Current Vehicle Safety Module state and errors. */
 static volatile vsmStatus_t vsmStatus = {
     .heartbeatErrors = CMR_CAN_ERROR_NONE,
@@ -130,7 +119,6 @@ static bool getMissionFinished();
 static bool getMissionSelected();
 static bool TSActive();
 static bool AutonomousClear();
-static bool vehicleStill();
 static bool getVehicleFinished(bool vehicleStill);
 static bool getRESGo();
 static bool RESTriggered();
@@ -212,10 +200,10 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
     if ((vsmStatus.heartbeatErrors != CMR_CAN_ERROR_NONE)
      || (vsmStatus.canVSMStatus.moduleTimeoutMatrix != CMR_CAN_VSM_TIMEOUT_SOURCE_NONE)
      || (vsmStatus.canVSMStatus.latchMatrix != CMR_CAN_VSM_LATCH_NONE)
-     /*|| (ASState != getASMSState())*/) {
-        // if(ASState) {
-        //     return CMR_CAN_VSM_STATE_AS_EMERGENCY;
-        // }
+     || (ASState != getASMSState())) {
+        if(ASState) {
+            return CMR_CAN_VSM_STATE_AS_EMERGENCY;
+        }
         if(lastWakeTime_ms == 10000000) {
             return 10;
         }
@@ -248,14 +236,6 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         &sensorList, SENSOR_CH_BPRES_PSI
     );
 
-    cmr_canDTI_TX_TempFault_t *dti_fl_tempfault = getPayload(CANRX_FL_TEMPFAULT);
-    cmr_canDTI_TX_TempFault_t *dti_fr_tempfault = getPayload(CANRX_FR_TEMPFAULT);
-    cmr_canDTI_TX_TempFault_t *dti_rl_tempfault = getPayload(CANRX_RL_TEMPFAULT);
-    cmr_canDTI_TX_TempFault_t *dti_rr_tempfault = getPayload(CANRX_RR_TEMPFAULT);
-    cmr_canDTI_TX_IOStatus_t *dti_fl_io_status = getPayload(CANRX_FL_IO_STATUS);
-    cmr_canDTI_TX_IOStatus_t *dti_fr_io_status = getPayload(CANRX_FR_IO_STATUS);
-    cmr_canDTI_TX_IOStatus_t *dti_rl_io_status = getPayload(CANRX_RL_IO_STATUS);
-    cmr_canDTI_TX_IOStatus_t *dti_rr_io_status = getPayload(CANRX_RR_IO_STATUS);
     cmr_DTI_RX_Message_t *dti_fl_erpm = getPayload(CANRX_FL_ERPM);
     cmr_DTI_RX_Message_t *dti_fr_erpm = getPayload(CANRX_FR_ERPM);
     cmr_DTI_RX_Message_t *dti_rl_erpm = getPayload(CANRX_RL_ERPM);
@@ -297,8 +277,11 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             // T2
             ASState = getASMSState();
             if (dimRequestedState == CMR_CAN_AS_READY
-                && ASState && getMissionSelected() && getDVBrakeDeployable() 
-                && getDVBrakeActive()){
+                && ASState 
+                && getMissionSelected() 
+                && getDVBrakeDeployable() 
+                && getDVBrakeActive()
+                && !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HEARTBEAT_COMPUTE], lastWakeTime_ms)){
                 nextState = CMR_CAN_VSM_STATE_REQ_PRECHARGE;
             }
             else if (dimRequestedState == CMR_CAN_AS_READY) {
@@ -359,7 +342,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                     nextState = CMR_CAN_VSM_STATE_AS_READY;
                 } else if (ASState){ 
                     //Trying to enter DV mode but failed previous conditions
-                    nextState = CMR_CAN_VSM_STATE_GLV_ON;
+                    nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
                 }
                 else{
                     nextState = CMR_CAN_VSM_STATE_HV_EN;
@@ -457,7 +440,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                 nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
             }
             else if ((lastWakeTime_ms > lastStateChangeTime_ms + AS_FINISHED_TIME)){
-                nextState = CMR_CAN_GLV_ON;
+                nextState = CMR_CAN_VSM_STATE_GLV_ON;
             }
             else{
                 nextState = CMR_CAN_VSM_STATE_AS_FINISHED;
@@ -598,8 +581,8 @@ static void stateUpdate(void *pvParameters) {
  */
 static bool getDVBrakeDeployable(){
     cmr_canDVPressureReadings_t* pressureReading = (cmr_canDVPressureReadings_t*) getPayload(CANRX_AS_PRESSURE_READING);
-   return   pressureReading->ebsPressure_1 > DV_TANK_PRESSURE_MINIMUM_DECIBAR &&  
-            pressureReading->ebsPressure_2 > DV_TANK_PRESSURE_MINIMUM_DECIBAR;
+   return   pressureReading->ebsPressure_1_deci_bar > DV_TANK_PRESSURE_MINIMUM_DECIBAR &&  
+            pressureReading->ebsPressure_2_deci_bar > DV_TANK_PRESSURE_MINIMUM_DECIBAR;
 }
 
 /**
@@ -645,8 +628,7 @@ static inline bool AutonomousClear(){
  */
 static inline bool getMissionFinished(){ //can from compute
     uint8_t *missionFinished = getPayload(CANRX_AS_MISSION_FINISHED);
-    if(*missionFinished) return true;
-    else return false;
+    return *missionFinished;
 }
 
 /**

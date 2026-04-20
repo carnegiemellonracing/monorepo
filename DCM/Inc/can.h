@@ -134,6 +134,7 @@ typedef enum {
     CANRX_DAQ_LINPOTS_LEFTS,    /**< @brief front left load cell/newtons. */
     CANRX_DAQ_LINPOTS_RIGHTS,   /**< @brief front right load cell/newtons. */
     CANRX_DAQ_MEMORATOR_BROADCAST,
+    CANRX_DAQ_HEARTBEAT_COMPUTE,
     CANRX_DAQ_AUTONOMOUS_ACTION,
     CANRX_DAQ_AUTONOMOUS_PID_CONSTANTS, /**< @brief Autonomous PID Constants used for tuning*/
     CANRX_DAQ_LEN               /**< @brief Number of periodic CAN messages. */
@@ -209,6 +210,7 @@ int16_t getDTITorque(canRX_t rxMsg);
 float canEmdHvVoltage();
 float canEmdHvCurrent();
 int32_t getDTIERPM(canTractiveRX_t rxMsg);
+int16_t getDTIInputVoltage(canTractiveRX_t rxMsg);
 int16_t getDTIACCurrent_dA(canTractiveRX_t rxMsg);
 int16_t getDTIDCCurrent_dA(canTractiveRX_t rxMsg);
 int16_t getDTICtlrTemp_dC(canTractiveRX_t rxMsg);

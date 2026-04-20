@@ -117,6 +117,7 @@ static void canTX1Hz(void *pvParameters) {
         // BMB Temperature Status 
         for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM - 1; bmb_index++) {
             sendBMSBMBStatusTemp(bmb_index);
+            sendBMSBMBStatusVoltage(bmb_index);
         }
         //send all cells temp and voltage 
         // sendAllBMBVoltages();
@@ -150,9 +151,6 @@ static void canTX10Hz(void *pvParameters) {
         // sendBRUSAChargerControl();
 
         // BMB Voltage Status 
-        for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
-            sendBMSBMBStatusVoltage(bmb_index);
-        }
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -259,13 +257,13 @@ void canInit(void) {
         canTX1Hz,
         NULL
     );
-    cmr_taskInit(
-        &canTX10Hz_task,
-        "CAN TX 10Hz",
-        canTX10Hz_priority,
-        canTX10Hz,
-        NULL
-    );
+    // cmr_taskInit(
+    //     &canTX10Hz_task,
+    //     "CAN TX 10Hz",
+    //     canTX10Hz_priority,
+    //     canTX10Hz,
+    //     NULL
+    // );
     cmr_taskInit(
         &canTX200Hz_task,
         "CAN TX 200Hz",

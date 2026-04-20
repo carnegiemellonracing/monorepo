@@ -404,17 +404,17 @@ typedef struct {
 } cmr_canVSMStatus_t; 
 
 /** @brief Vehicle Safety Module sensor data. */
-/** @brief Vehicle Safety Module sensor data. */
 typedef struct {
-    uint16_t brakePressureRear_PSI;     /**< @brief Rear brake pressure (pounds-per-square-inch). */
-    int16_t hallEffect_cA;     /**< @brief Hall effect current (centi-Amps). */
-    uint8_t safetyIn_V;        /**< @brief Safety circuit input voltage (volts). */
-    uint8_t safetyOut_V;       /**< @brief Safety circuit output voltage (volts). */
+    uint16_t brakePressureRear_PSI;      /**< @brief Rear brake pressure (pounds-per-square-inch). */
+    uint16_t batt_mV;                    /**< @brief Hall effect current (centi-Amps). */
+    uint8_t safetyIn_eight_V;            /**< @brief Safety circuit input voltage (eight volts). */
+    uint8_t safetyOut_eight_V;           /**< @brief Safety circuit output voltage (eight volts). */
+    bool    EAB_pressed;                 /**< @brief EAB Pressed. */
 } cmr_canVSMSensors_t;
 
 typedef struct {
-    uint16_t ebsPressure_1;
-    uint16_t ebsPressure_2;
+    uint16_t ebsPressure_1_deci_bar;
+    uint16_t ebsPressure_2_deci_bar;
 } cmr_canDVPressureReadings_t;
 
 /** @brief Vehicle Safety Module latched error status. */
@@ -431,11 +431,6 @@ typedef struct {
     uint8_t latchMatrix; //Flag: cmr_canVSMLatch_t 
 } cmr_canVSMLatchedStatus_t;
 
-/** @brief Vehicle Safety Module power diagnostics. */
-typedef struct {
-    uint16_t busVoltage_mV;     //u: mV /**< @brief Low-voltage bus voltage (mV). */
-    uint16_t busCurrent_mA;     //u: mA /**< @brief Low-voltage bus current (mA). */
-} cmr_canVSMPowerDiagnostics_t;
 
 // ------------------------------------------------------------------------------------------------
 // High Voltage Controller
@@ -616,9 +611,7 @@ typedef struct {
 
 //HVC Sensors CAN Types
 typedef struct {
-    int16_t packCurrent_dA;
     uint16_t packVoltage_cV;
-    int32_t packPower_W;
 } cmr_canHVSense_t;
 
 //Power Sense Board CAN Types
@@ -837,6 +830,12 @@ typedef struct {
     uint16_t busCurrent_mA;     //u: mA /**< @brief Low-voltage bus current (mA). */
 } cmr_canDIMPowerDiagnostics_t;
 
+/** @brief Vehicle Safety Module power diagnostics. */
+typedef struct {
+    uint16_t busVoltage_mV;     //u: mV /**< @brief Low-voltage bus voltage (mV). */
+    uint16_t busCurrent_mA;     //u: mA /**< @brief Low-voltage bus current (mA). */
+} cmr_canVSMPowerDiagnostics_t;
+
 /** @brief Driver Interface Module text write command. This is
  *  used in conjunction with the RAM to facilite remote text
  *  writing to the driver's display.
@@ -918,8 +917,7 @@ typedef struct {
     uint8_t torqueRequested;            /**< @brief Torque requested (0-255). */
     uint8_t throttlePosition;           /**< @brief Throttle position (0-255). */
     uint16_t brakePressureFront_PSI;    //u: PSI /**< @brief Front brake pressure. */
-    uint8_t brakePedalPosition_percent; //u: % /**< @brief Brake pedal position (0-255). */
-    
+    uint8_t AS_Status;
 } cmr_canFSMData_t; 
 
 typedef struct {
@@ -1444,8 +1442,8 @@ typedef struct {
 // SAE Provided EMD definitions
 
 typedef struct {
-    int32_t current;    //u: A /**< @brief Current (amps * 2^16). */
-    int32_t voltage;    //u: V /**< @brief Voltage (volts * 2^16). */
+    big_endian_32_t current;    //u: A /**< @brief Current (amps * 2^16). */
+    big_endian_32_t voltage;    //u: V /**< @brief Voltage (volts * 2^16). */
 } cmr_canEMDMeasurements_t;
 
 // ------------------------------------------------------------------------------------------------
@@ -1539,5 +1537,12 @@ typedef struct{
     float  K_d ;          /**< @brief K_d for steering PID Loop*/     
 }
 cmr_canAutonomousPIDConstants_t;
+
+typedef struct{
+    uint8_t muxID;
+    uint8_t count_state; 
+    big_endian_32_t message; 
+}
+cmr_canIVTreadings_t; 
 
 #endif /* CMR_CAN_TYPES_H */
