@@ -1876,16 +1876,5 @@ SIG_VALTYPE_ 1325 power_limit_max_violation_W : 1;
 SIG_VALTYPE_ 1860 SBG_Velocity_ODO : 1;
 SIG_VALTYPE_ 1862 SBG_Pressure_IMU : 1;
 SIG_VALTYPE_ 1862 SBG_Altitude_IMU : 1;
-<<<<<<< HEAD
 
-<<<<<<< HEAD
-
-<<<<<<< HEAD
-
-=======
->>>>>>> parent of 104e537e (Update CMR_26x.dbc)
-=======
->>>>>>> parent of 8959bcd7 (Update CMR_26x.dbc)
-=======
->>>>>>> parent of eac8dcfe (Update CMR_26x.dbc)
 

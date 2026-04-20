@@ -199,17 +199,15 @@ static void cmr_canRXData(
     cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen
 ) {
     cmr_canRXMeta_t *meta = cmr_canRXMetaFind(can, canID);
-    if (meta == NULL) {
-        // Not a configured message; attempt to use the callback.
-        if (can->rxCallback) {
-            can->rxCallback(can, canID, data, dataLen);
-        }
 
-        return;
+    if (meta != NULL) {
+        memcpy((void *) meta->payload, data, dataLen);
+        meta->lastReceived_ms = xTaskGetTickCountFromISR();
     }
 
-    memcpy((void *) meta->payload, data, dataLen);
-    meta->lastReceived_ms = xTaskGetTickCountFromISR();
+    if (can->rxCallback) {
+        can->rxCallback(can, canID, data, dataLen);
+    }
 }
 
 /**
@@ -259,7 +257,7 @@ CAN_RX_FIFO_PENDING(1)
  * @param bitRate The CAN bit rate to use.
  * @param rxMeta Metadata for periodic messages to receive.
  * @param rxMetaLen Number of periodic receive messages.
- * @param rxCallback Callback for other messages received, or `NULL` to ignore.
+ * @param rxCallback Callback for every message received, or `NULL` to ignore.
  * @param rxPort Receiving GPIO port (`GPIOx` from `stm32f413xx.h`).
  * @param rxPin Receiving GPIO pin (`GPIO_PIN_x` from `stm32f4xx_hal_gpio.h`).
  * @param txPort Transmitting GPIO port.
@@ -271,7 +269,9 @@ void cmr_canInit(
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
     cmr_canRXCallback_t rxCallback,
     GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
+    GPIO_TypeDef *txPort, uint16_t txPin,
+    uint32_t commit_hash, uint8_t is_dirty,
+    cmr_canID_t boardID 
 ) {
     /* Do any platform-specific initialization */
     _platform_canInit(
@@ -323,6 +323,14 @@ void cmr_canInit(
     )) {
         cmr_panic("HAL_CAN_ActivateNotification() failed!");
     }
+
+     //send commit info on start up 
+    cmr_canGitFlashStatus gitStatus = {
+            .commitHash = commit_hash,
+            .dirtyFlash = is_dirty
+        };
+
+    cmr_canTX(can, boardID, &gitStatus, sizeof(gitStatus), 1000);
 }
 
 /**

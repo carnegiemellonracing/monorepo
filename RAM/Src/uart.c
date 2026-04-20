@@ -26,6 +26,9 @@ extern sample_data_t raw_sample_data[MAX_SIGNALS];
 #define SIGNAL_MAP_OFFSET 24
 extern struct signal signal_map[MAX_SIGNALS];
 
+char testID_name[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; 
+extern filename[64]; 
+
 struct uart
 {
     cmr_uart_t port; /**< @brief The underlying UART port. */
@@ -253,7 +256,19 @@ static void handle_command(cn_cbor *command)
                     	  powerLimit, sizeof(cmr_canCDCPowerLimit_t),
 					      200);
                 }
-            } else {
+            } else if (((uint16_t)id->v.uint == CMR_CANID_TEST_ID)){
+  
+                memcpy(testID_name, data->v.bytes, 8); 
+                testID_name[8] = '\0'; 
+
+                //test by sending on CAN 
+                cmr_canTestID_t *testID_test = (cmr_canTestID_t*)data->v.bytes; 
+
+                canTX((cmr_canBusID_t)bus->v.uint, (uint16_t)id->v.uint,
+                    	  testID_test, sizeof(cmr_canTestID_t),  
+					      200);
+            }
+            else {
                 // Do not allow transmission on tractive CAN.
                 if (bus->v.uint == CMR_CAN_BUS_VEH || bus->v.uint == CMR_CAN_BUS_DAQ)
                 {
