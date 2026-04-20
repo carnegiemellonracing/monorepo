@@ -128,8 +128,6 @@ int canTX(
     TickType_t timeout_ms
 );
 
-void sendHeartbeat(cmr_canRAMError_t errorRegister);
-
 //void *getPayload(canRX_t rxMsg);
 uint8_t throttleGetPos(void);
 

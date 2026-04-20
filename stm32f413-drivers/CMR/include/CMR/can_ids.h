@@ -376,11 +376,10 @@ typedef enum {
 
     CMR_CANID_VSM_GIT = 0x7F1,
 	CMR_CANID_HVC_GIT = 0x7f2,
-	CMR_CANID_HVBMS_GIT = 0x7f3,
+	CMR_CANID_PTC_GIT = 0x7f3,
 	CMR_CANID_CDC_GIT = 0x7f4,
 	CMR_CANID_DIM_GIT = 0x7f5,
 	CMR_CANID_RAM_GIT = 0x7f6,
-    CMR_CANID_LVBMS_GIT = 0x7e7,
 
     //AS
     CMR_CANID_AS_RES_ENABLE = 0x000,
@@ -547,8 +546,7 @@ typedef enum {
     CMR_CANID_LVBMS_BUS_VOLTAGE = 0x7fd,
     CMR_CANID_LVBMS_CURRENT = 0x7fe,
 
-    CMR_CANID_AUTO_PID = 0x31A,   
-    CMR_CANID_TEST_ID = 0x778    
+    CMR_CANID_AUTO_PID = 0x31A,       
 
 } cmr_canID_t;
 

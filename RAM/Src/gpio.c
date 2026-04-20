@@ -6,7 +6,9 @@
  */
 
 #include <stm32f4xx_hal.h>  // HAL interface
+
 #include <CMR/gpio.h>   // GPIO interface
+
 #include "gpio.h"   // Interface to implement
 
 /**
