@@ -438,6 +438,7 @@ static void sensorsUpdate(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         cmr_sensorListUpdate(&sensorList);
+        update_sensors_odom = true;
         vTaskDelayUntil(&lastWakeTime, sensorsUpdate_period_ms);
     }
 }

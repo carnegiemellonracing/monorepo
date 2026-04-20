@@ -54,6 +54,15 @@ extern volatile bool exit_config_request;
 /** @brief Checks to see if the screen needs to be redrawn after getting new driver profiles */
 extern volatile bool redraw_new_driver_profiles;
 
+/** @brief Checks to see if screen variables have new values and need to be updated. Avoids
+ * re-rendering entire screen on every cycle.
+ */
+extern volatile bool update_temps;
+extern volatile bool update_voltages;
+extern volatile bool update_status;
+extern volatile bool update_sensors_odom;
+extern volatile bool update_bmb;
+
 /**
  * @brief CAN receive metadata indices.
  *

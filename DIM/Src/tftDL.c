@@ -469,21 +469,23 @@ void tftDL_RTDUpdate(
     uint8_t throttlePos,
     cornerId_t hottest_motor) {
 
-     // temps probs arent 0 - just display nothing
-    tftDL_RTDwriteInt(tftDL_RTDData, ESE_MOTOR_TEMP_STR, 4, "%3ld", motorTemp_C);
+    if(update_voltages) {
+        tftDL_RTDwriteInt(tftDL_RTDData, ESE_HV_VOLTAGE_VAL, 4, "%3ld", hvVoltage_mV / 1000);
+        tftDL_RTDwriteInt(tftDL_RTDData, ESE_GLV_VOLTAGE_VAL, 3, "%2d", glvVoltage_V);
+        tftDL_RTDwriteInt(tftDL_RTDData, ESE_HV_SOC_VAL, 3, "%2ld", (int32_t)hvSoC);
+        tftDL_RTDwriteInt(tftDL_RTDData, ESE_GLV_SOC_VAL, 3, "%2ld", (int32_t)glvSoC);
+        tftDL_barSetY(&hvSoc_bar, hvSoC);
+        tftDL_barSetY(&glvSoc_bar, glvSoC);
 
-    tftDL_RTDwriteInt(tftDL_RTDData, ESE_MC_TEMP_STR, 4, "%3ld", mcTemp_C);
+        cmr_canBMSMinMaxCellVoltage_t* packVoltagesStruct = getPackVoltages();
+        /* Pack Voltages */
+        tftDL_RTDwriteInt(tftDL_RTDData, ESE_MIN_CELL_STR, 5, "%4ld", packVoltagesStruct->minCellVoltage_mV);
+        tftDL_RTDwriteInt(tftDL_RTDData, ESE_MAX_CELL_STR, 5, "%4ld", packVoltagesStruct->maxCellVoltage_mV);
 
-    tftDL_RTDwriteInt(tftDL_RTDData, ESE_HV_VOLTAGE_VAL, 4, "%3ld", hvVoltage_mV / 1000);
-    tftDL_RTDwriteInt(tftDL_RTDData, ESE_AC_TEMP_STR, 4, "%3ld", acTemp_C);
-    tftDL_RTDwriteInt(tftDL_RTDData, ESE_GLV_VOLTAGE_VAL, 3, "%2d", glvVoltage_V);
-    tftDL_RTDwriteInt(tftDL_RTDData, ESE_POWER_VAL, 3, "%2ld", power_kW);
-    tftDL_RTDwriteInt(tftDL_RTDData, ESE_SPEED_VAL, 4, "%3ld", (int32_t)speed_kmh);
-    tftDL_RTDwriteInt(tftDL_RTDData, ESE_HV_SOC_VAL, 3, "%2ld", (int32_t)hvSoC);
-    tftDL_RTDwriteInt(tftDL_RTDData, ESE_GLV_SOC_VAL, 3, "%2ld", (int32_t)glvSoC);
+        tftDL_RTDwriteInt(tftDL_RTDData, ESE_POWER_VAL, 3, "%2ld", power_kW);
 
-    tftDL_RTDwriteInt(tftDL_RTDData, ESE_BPRES_STR, 5, "%4ld", brakePressure_psi);
-    tftDL_RTDwriteInt(tftDL_RTDData, ESE_TPOS_STR, 4, "%3ld%%", throttlePos);
+        update_voltages = false;
+    }
 
 // Doing this jank buffer because snprintf doesnt work for floats on embedded
 // TODO check if we can use "Use float with printf from newlib-nano) ???
@@ -498,10 +500,25 @@ void tftDL_RTDUpdate(
         ((char)((int32_t)(odometer_km * 100.f) % 10)) + '0',
         '\0'
     };
-    memcpy((void *)(tftDL_RTDData + ESE_ODO_VAL), (void *)odometer_str, ODOMETER_STR_SIZE);
 
-    tftDL_barSetY(&hvSoc_bar, hvSoC);
-    tftDL_barSetY(&glvSoc_bar, glvSoC);
+    if(update_sensors_odom) {
+        memcpy((void *)(tftDL_RTDData + ESE_ODO_VAL), (void *)odometer_str, ODOMETER_STR_SIZE);
+        tftDL_RTDwriteInt(tftDL_RTDData, ESE_SPEED_VAL, 4, "%3ld", (int32_t)speed_kmh);
+
+        uint32_t *bpres_color = (void *)(tftDL_RTDData + ESE_RTD_BPRES_COLOR);
+        uint32_t bpres_color_cmd = brakePressure_psi > 40 ? green : red;
+        *bpres_color = bpres_color_cmd;
+
+        uint32_t *tpos_color = (void *)(tftDL_RTDData + ESE_RTD_TPOS_COLOR);
+        uint32_t tpos_color_cmd = throttlePos < 5 ? green : red;
+        *tpos_color = tpos_color_cmd;
+
+        tftDL_RTDwriteInt(tftDL_RTDData, ESE_BPRES_STR, 5, "%4ld", brakePressure_psi);
+        tftDL_RTDwriteInt(tftDL_RTDData, ESE_TPOS_STR, 4, "%3ld%%", throttlePos);
+
+        update_sensors_odom = false;
+    }
+
     /* Memorator color */
     uint32_t *memorator_color = (void *)(tftDL_RTDData + ESE_MEMO_TEXT_COLOR);
     uint32_t memorator_color_cmd;
@@ -538,50 +555,44 @@ void tftDL_RTDUpdate(
     uint32_t radio_color_cmd = getAcknowledgeButton() ? green : black;
     *radio_color = radio_color_cmd;
 
-    uint32_t *bpres_color = (void *)(tftDL_RTDData + ESE_RTD_BPRES_COLOR);
-    uint32_t bpres_color_cmd = brakePressure_psi > 40 ? green : red;
-    *bpres_color = bpres_color_cmd;
-
-    uint32_t *tpos_color = (void *)(tftDL_RTDData + ESE_RTD_TPOS_COLOR);
-    uint32_t tpos_color_cmd = throttlePos < 5 ? green : red;
-    *tpos_color = tpos_color_cmd;
-
-    cmr_canBMSMinMaxCellVoltage_t* packVoltagesStruct = getPackVoltages();
-
-    /* Pack Voltages */
-    tftDL_RTDwriteInt(tftDL_RTDData, ESE_MIN_CELL_STR, 5, "%4ld", packVoltagesStruct->minCellVoltage_mV);
-    tftDL_RTDwriteInt(tftDL_RTDData, ESE_MAX_CELL_STR, 5, "%4ld", packVoltagesStruct->maxCellVoltage_mV);
 
     tftDL_showStates(tftDL_RTDData, ESE_STATE_STR, ESE_VSM_STATE_COLOR, ESE_GEAR_STR, ESE_DRS_MODE_STR, false);
     tftDL_showRAMMsg(tftDL_RTDData, ESE_RAM_MSG_STR);
 
+    
+    if(update_temps) {
+        // temps probs arent 0 - just display nothing
+        tftDL_RTDwriteInt(tftDL_RTDData, ESE_MOTOR_TEMP_STR, 4, "%3ld", motorTemp_C);
+        tftDL_RTDwriteInt(tftDL_RTDData, ESE_MC_TEMP_STR, 4, "%3ld", mcTemp_C);
+        tftDL_RTDwriteInt(tftDL_RTDData, ESE_AC_TEMP_STR, 4, "%3ld", acTemp_C);
 
-    uint32_t *fl_color = (void *)(tftDL_RTDData + ESE_RTD_FL_COLOR);
-    uint32_t *fr_color = (void *)(tftDL_RTDData + ESE_RTD_FR_COLOR);
-    uint32_t *rl_color = (void *)(tftDL_RTDData + ESE_RTD_RL_COLOR);
-    uint32_t *rr_color = (void *)(tftDL_RTDData + ESE_RTD_RR_COLOR);
-    uint32_t fl_color_cmd = black;
-    uint32_t fr_color_cmd = black;
-    uint32_t rl_color_cmd = black;
-    uint32_t rr_color_cmd = black;
-    switch (hottest_motor) {
-        case FL:
-            fl_color_cmd = red;
-            break;
-        case FR:
-            fr_color_cmd = red;
-            break;
-        case RL:
-            rl_color_cmd = red;
-            break;
-        case RR:
-            rr_color_cmd = red;
-            break;
+        uint32_t *fl_color = (void *)(tftDL_RTDData + ESE_RTD_FL_COLOR);
+        uint32_t *fr_color = (void *)(tftDL_RTDData + ESE_RTD_FR_COLOR);
+        uint32_t *rl_color = (void *)(tftDL_RTDData + ESE_RTD_RL_COLOR);
+        uint32_t *rr_color = (void *)(tftDL_RTDData + ESE_RTD_RR_COLOR);
+        uint32_t fl_color_cmd = black;
+        uint32_t fr_color_cmd = black;
+        uint32_t rl_color_cmd = black;
+        uint32_t rr_color_cmd = black;
+        switch (hottest_motor) {
+            case FL:
+                fl_color_cmd = red;
+                break;
+            case FR:
+                fr_color_cmd = red;
+                break;
+            case RL:
+                rl_color_cmd = red;
+                break;
+            case RR:
+                rr_color_cmd = red;
+                break;
+        }
+        *fl_color = fl_color_cmd;
+        *fr_color = fr_color_cmd;
+        *rl_color = rl_color_cmd;
+        *rr_color = rr_color_cmd;
     }
-    *fl_color = fl_color_cmd;
-    *fr_color = fr_color_cmd;
-    *rl_color = rl_color_cmd;
-    *rr_color = rr_color_cmd;
 }
 
 void tftDL_racingScreenUpdate(
