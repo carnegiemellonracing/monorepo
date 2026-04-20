@@ -36,9 +36,9 @@ static bool prechargeDone() {
     volatile cmr_canHVBMSPackVoltage_t *HVBMSPackVoltage = getPayload(CANRX_HVBMS_PACKVOLT); 
     TickType_t lastWakeTime = xTaskGetTickCount();
     return (abs(HVBMSPackVoltage->battVoltage_mV - HVmillivolts) < PRECHARGE_THRESH &&
-            HVBMSPackVoltage->battVoltage_mV > MIN_PACK_THRESH &&
+            HVBMSPackVoltage->battVoltage_mV > MIN_PACK_THRESH/* &&
             !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HEARTBEAT_HVBMS], lastWakeTime) &&
-            !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HVBMS_PACKVOLT], lastWakeTime));
+            !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HVBMS_PACKVOLT], lastWakeTime)*/);
  }
 
 static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
