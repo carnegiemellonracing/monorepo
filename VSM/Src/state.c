@@ -277,8 +277,11 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             // T2
             ASState = getASMSState();
             if (dimRequestedState == CMR_CAN_AS_READY
-                && ASState && getMissionSelected() && getDVBrakeDeployable() 
-                && getDVBrakeActive()){
+                && ASState 
+                && getMissionSelected() 
+                && getDVBrakeDeployable() 
+                && getDVBrakeActive()
+                && !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HEARTBEAT_COMPUTE], lastWakeTime_ms)){
                 nextState = CMR_CAN_VSM_STATE_REQ_PRECHARGE;
             }
             else if (dimRequestedState == CMR_CAN_AS_READY) {
@@ -339,7 +342,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                     nextState = CMR_CAN_VSM_STATE_AS_READY;
                 } else if (ASState){ 
                     //Trying to enter DV mode but failed previous conditions
-                    nextState = CMR_CAN_VSM_STATE_GLV_ON;
+                    nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
                 }
                 else{
                     nextState = CMR_CAN_VSM_STATE_HV_EN;

@@ -56,6 +56,8 @@ cmr_canRXMeta_t canRXMeta[] = {
     },
     [CANRX_HEARTBEAT_COMPUTE] = {
         .canID = CMR_CANID_AS_HEARTBEAT_COMPUTE,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
     },
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,

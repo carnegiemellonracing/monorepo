@@ -602,6 +602,11 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .timeoutError_ms = 5000,
         .timeoutWarn_ms = 3000
     },
+    [CANRX_DAQ_HEARTBEAT_COMPUTE] = {
+        .canID = CMR_CANID_AS_HEARTBEAT_COMPUTE,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
     [CANRX_DAQ_AUTONOMOUS_ACTION] = {
         .canID = CMR_CANID_AUTONOMOUS_ACTION,
         .timeoutError_ms = 2000,
@@ -796,6 +801,9 @@ static void canTX100Hz(void *pvParameters) {
         if (heartbeat.error[0] != 0 || heartbeat.error[1] != 0) {
             heartbeat.state = CMR_CAN_ERROR;
         }
+
+        cmr_canHeartbeat_t *heartbeatCompute = canDAQGetPayload(CANRX_DAQ_HEARTBEAT_COMPUTE);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AS_HEARTBEAT_COMPUTE, heartbeatCompute, sizeof(cmr_canHeartbeat_t), canTX100Hz_period_ms);
 
         // cmr_canDAQTherm_t linpots;
         // linpots.therm_1 = adcRead(ADC_LINPOT1);
@@ -1260,6 +1268,10 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
 	size_t iface_idx = (canb_rx - can);
     configASSERT(iface_idx < CMR_CAN_BUS_NUM);
 
+    if(canID == CMR_CANID_DIM_REQUEST) {
+        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DIM_REQUEST, data, sizeof(cmr_canDIMRequest_t), canTX100Hz_period_ms);
+    }
+
     // If DIM config message, handle it
     if(CMR_CANID_CDC_CONFIG3_DRV3 >= canID && canID >= CMR_CANID_DIM_CONFIG0_DRV0) {
         dim_params_callback(canb_rx, canID, data, dataLen);
@@ -1267,7 +1279,7 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
 
     if(canID == CMR_CANID_CDC_POWER_UPDATE) {
     	cmr_canCDCPowerLimit_t *limit = (cmr_canCDCPowerLimit_t*) data;
-    	setPowerLimit_kW(limit->powerLimit_kW);
+    	setPowerLimit(true, MOTOR_FL, limit->powerLimit_kW);
     }
 
     // Update the RX Meta array
