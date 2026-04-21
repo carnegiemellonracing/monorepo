@@ -48,12 +48,28 @@ static void canTx100Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         // int x = 32;
-        // canTX(CMR_CAN_BUS_TRAC, 100, &x, sizeof(int), can100Hz_period_ms);
-        // RTC_DateTypeDef curdate = getRTCDate();
-        // RTC_TimeTypeDef curtime = getRTCTime();
-        // canTX(CMR_CAN_BUS_VEH, 101, &curtime.Hours, sizeof(curtime.Hours), can100Hz_period_ms);
-        // canTX(CMR_CAN_BUS_VEH, 102, &curtime.Minutes, sizeof(curtime.Minutes), can100Hz_period_ms);
-        // canTX(CMR_CAN_BUS_VEH, 103, &curtime.Seconds, sizeof(curtime.Seconds), can100Hz_period_ms);
+        canTX(CMR_CAN_BUS_TRAC, 100, &x, sizeof(int), can100Hz_period_ms);
+        RTC_DateTypeDef rtc_date = getRTCDate();
+        RTC_TimeTypeDef rtc_time = getRTCTime();
+
+        cmr_canRTCDate curDate = {
+            .date = rtc_date.Date,
+            .month = rtc_date.Month,
+            .day = rtc_date.WeekDay,
+            .year = rtc_date.Year
+        };
+        
+        cmr_canRTCTime curTime = {
+            .hour = rtc_time.Hours,
+            .minute = rtc_time.Minutes,
+            .second = rtc_time.Seconds,
+            .AM_PM = rtc_time.TimeFormat,
+            .subsecond = rtc_time.SubSeconds
+        };
+
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_RTC_DATE, &curDate, sizeof(curDate), can100Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_RTC_TIME, &curTime, sizeof(curTime), can100Hz_period_ms);
+        
         vTaskDelayUntil(&lastWakeTime, can100Hz_period_ms);
     }
 }
