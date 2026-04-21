@@ -275,7 +275,9 @@ cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_CDC_HEARTBEAT] =       { .canID = CMR_CANID_HEARTBEAT_CDC, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
     [CANRX_PACK_CELL_VOLTAGES] =  { .canID = CMR_CANID_HVC_MINMAX_CELL_VOLTAGE, .timeoutError_ms = 4000, .timeoutWarn_ms = 2000 },
     [CANRX_EAB_STATUS] =          { .canID = CMR_CANID_EAB_STATUS, .timeoutError_ms = 100, .timeoutWarn_ms = 50 },
-    [CANRX_VSM_POWER_DIAGNOSTICS] = {.canID = CMR_CANID_VSM_POWER_DIAGNOSTICS} 
+    [CANRX_VSM_POWER_DIAGNOSTICS] = {.canID = CMR_CANID_VSM_POWER_DIAGNOSTICS},
+    [CANRX_RTC_DATE]              = {.canID = CMR_CANID_RTC_DATE},
+    [CANRX_RTC_TIME]              = {.canID = CMR_CANID_RTC_TIME},
 };
 
 /** @brief Primary CAN interface. */
