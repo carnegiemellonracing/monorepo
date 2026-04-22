@@ -85,7 +85,7 @@ typedef enum {
     CMR_CANID_CDC_POWER_UPDATE = 0x6E2,             /**< @brief DAQ Live to CDC - changing power limit. */
     CMR_CANID_CDC_COULOMB_COUNTING = 0x6E3,
     CMR_CANID_CDC_POWER_LOG = 0x6E4,             /**< @brief DAQ Live to CDC - changing power limit. */
-    
+
     CMR_CANID_CUBEMARS_DATA = 0x6E6,
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
@@ -334,7 +334,8 @@ typedef enum {
 
     CMR_CANID_EMD_STATUS = 0x400,               /**< @brief EMD status. */
     CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */
-    CMR_CANID_EMD_MEASUREMENT = 0x10D,            /**< @brief EMD measurement for HV voltage/current. */        
+    CMR_CANID_EMD_MEASUREMENT = 0x10D,            /**< @brief EMD measurement for HV voltage/current. */
+    CMR_CANID_EMD_TEMPERATURE = 0x60D,        
 
     CMR_IZZIE_LOADCELL = 0x7F0,                 /**< @brief IZZIE Amp load data. */
     CMR_CANID_CONTROLS_DEBUG_GLOBAl = 0x7E0,    /**< @brief control algo testing data. */

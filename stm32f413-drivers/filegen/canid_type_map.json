@@ -423,6 +423,11 @@
                 "u": "V"
             }
         },
+        "CMR_CANID_EMD_TEMPERATURE": {
+            "cycleTime": 500.0,
+            "timeOut": 2500,
+            "type": "cmr_canEMDTemperatures_t"
+        },
         "CMR_CANID_FRONT_SLIP_RATIOS": {
             "cycleTime": 100,
             "timeOut": 500,
@@ -911,17 +916,17 @@
         "files_processed": 2913,
         "files_with_matches": 2913,
         "global_mappings": {
-            "canrx_mappings": 185,
-            "canrx_timeouts": 175,
-            "canrx_types": 57,
+            "canrx_mappings": 186,
+            "canrx_timeouts": 176,
+            "canrx_types": 58,
             "constants": 262,
             "struct_members": 0,
-            "variable_types": 321
+            "variable_types": 322
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 102
+        "total_canids": 103
     }
 }
