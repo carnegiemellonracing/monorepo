@@ -42,6 +42,7 @@ typedef enum {
     CANRX_VEH_SENSORIC_ACC,
     CANRX_VEH_SENSORIC_RATE,
     CANRX_VEH_AS_RES,
+    CANRX_VEH_AS_TANK_PRESSURE,
     CANRX_VEH_LEN                   /**< @brief Number of periodic CAN messages. */
 } canVehicleRX_t;
 

@@ -210,6 +210,11 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .canID = CMR_CANID_AS_RES,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
+    },
+    [CANRX_VEH_AS_TANK_PRESSURE] = {
+        .canID = CMR_CANID_AS_PRESSURE_READINGS,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
     }
 };
 
@@ -720,6 +725,10 @@ static void canTX10Hz(void *pvParameters) {
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultRL = getDTITempFault(MOTOR_RL);
     const cmr_canDTI_TX_TempFault_t *dtiTempFaultRR = getDTITempFault(MOTOR_RR);
 
+    cmr_canFSMData_t *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
+    cmr_canVSMSensors_t *vsmSensors = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
+    cmr_canDVPressureReadings_t *dvPressure = canVehicleGetPayload(CANRX_VEH_AS_TANK_PRESSURE);
+
     cmr_canDTI_ErrorMessages_t dtiErrorMessages;
 
     while (1) {
@@ -745,6 +754,15 @@ static void canTX10Hz(void *pvParameters) {
 
         canTX(CMR_CAN_BUS_VEH, 0x658, &therms1, sizeof(cmr_canDAQTherm_t), canTX10Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, 0x659, &therms2, sizeof(cmr_canDAQTherm_t), canTX10Hz_period_ms);
+
+        cmr_canEMDBrakePressure_t emdPressures = {
+            .ebsPressure1_psi = (uint16_t)((float)(dvPressure->ebsPressure_1_deci_bar) * 1.45038),
+            .ebsPressure2_psi = (uint16_t)((float)(dvPressure->ebsPressure_2_deci_bar) * 1.45038),
+            .hydraulicPressure1_psi = dataFSM->brakePressureFront_PSI,
+            .hydraulicPressure2_psi = vsmSensors->brakePressureRear_PSI
+        };
+
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_EMD_EBS_PRESSURE, &emdPressures, sizeof(emdPressures), canTX10Hz_period_ms);
 
         if(inverterMessagesValid()) {
             dtiErrorMessages.fl_fault_code = dtiTempFaultFL->fault_code;
@@ -1376,6 +1394,12 @@ void canInit(void) {
             .rxFIFO = FDCAN_RX_FIFO0,
             .ids = {CMR_CANID_CDC_RTC_DATA_IN,
                     CMR_CANID_VSM_SENSORS}
+        },
+
+        {
+            .isMask = false,
+            .rxFIFO = FDCAN_RX_FIFO0,
+            .ids = {CMR_CANID_AS_PRESSURE_READINGS}
         },
 
         {

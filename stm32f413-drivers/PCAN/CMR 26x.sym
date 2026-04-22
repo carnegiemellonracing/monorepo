@@ -424,6 +424,16 @@ CycleTime=20
 TimeOut=100
 Var=FL_fault_code unsigned 0,8
 
+[EMD_EBS_PRESSURE]
+ID=500h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=EBS_ebsPressure1_psi unsigned 0,16
+Var=EBS_ebsPressure2_psi unsigned 16,16
+Var=EBS_hydraulicPressure1_psi unsigned 32,16
+Var=EBS_hydraulicPressure2_psi unsigned 48,16
+
 [EMD_TEMPERATURE]
 ID=60Dh
 DLC=8

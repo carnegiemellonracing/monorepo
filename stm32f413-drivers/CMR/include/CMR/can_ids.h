@@ -334,8 +334,9 @@ typedef enum {
 
     CMR_CANID_EMD_STATUS = 0x400,               /**< @brief EMD status. */
     CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */
-    CMR_CANID_EMD_MEASUREMENT = 0x10D,            /**< @brief EMD measurement for HV voltage/current. */
-    CMR_CANID_EMD_TEMPERATURE = 0x60D,        
+    CMR_CANID_EMD_MEASUREMENT = 0x10D,          /**< @brief EMD measurement for HV voltage/current. */
+    CMR_CANID_EMD_TEMPERATURE = 0x60D,          /**< @brief EMD measurement for HV voltage/current. */
+    CMR_CANID_EMD_EBS_PRESSURE = 0x500,         /**< @brief Pneumatic & hydraulic brake pressures transmitted to EMD. */       
 
     CMR_IZZIE_LOADCELL = 0x7F0,                 /**< @brief IZZIE Amp load data. */
     CMR_CANID_CONTROLS_DEBUG_GLOBAl = 0x7E0,    /**< @brief control algo testing data. */

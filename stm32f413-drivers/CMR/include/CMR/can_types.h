@@ -419,6 +419,13 @@ typedef struct {
     uint16_t ebsPressure_2_deci_bar;
 } cmr_canDVPressureReadings_t;
 
+typedef struct {
+    uint16_t ebsPressure1_psi;
+    uint16_t ebsPressure2_psi;
+    uint16_t hydraulicPressure1_psi;
+    uint16_t hydraulicPressure2_psi;
+} cmr_canEMDBrakePressure_t;
+
 /** @brief Vehicle Safety Module latched error status. */
 typedef struct {
     /**

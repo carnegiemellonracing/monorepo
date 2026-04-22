@@ -401,6 +401,11 @@
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
         },
+        "CMR_CANID_EMD_EBS_PRESSURE": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canEMDBrakePressure_t"
+        },
         "CMR_CANID_EMD_MEASUREMENT": {
             "current": {
                 "u": "A"
@@ -916,17 +921,17 @@
         "files_processed": 2913,
         "files_with_matches": 2913,
         "global_mappings": {
-            "canrx_mappings": 186,
-            "canrx_timeouts": 176,
-            "canrx_types": 58,
+            "canrx_mappings": 188,
+            "canrx_timeouts": 178,
+            "canrx_types": 59,
             "constants": 262,
             "struct_members": 0,
-            "variable_types": 322
+            "variable_types": 324
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 103
+        "total_canids": 104
     }
 }
