@@ -205,6 +205,11 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .canID = CMR_CANID_SENSORIC_RATE,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
+    },
+    [CANRX_VEH_AS_RES] = {
+        .canID = CMR_CANID_AS_RES,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
     }
 };
 
@@ -1280,6 +1285,10 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
 
     if(canID == CMR_CANID_EXTENDED_CUBEMARS_DATA) {
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CUBEMARS_DATA, data, sizeof(cmr_canCubeMarsData_t), canTX100Hz_period_ms);
+    }
+
+    if(canID == CMR_CANID_AS_RES) {
+        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AS_RES, data, dataLen, canTX100Hz_period_ms);
     }
 
     // If DIM config message, handle it
