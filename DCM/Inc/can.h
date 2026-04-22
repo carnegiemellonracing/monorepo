@@ -95,6 +95,10 @@ typedef enum {
     
     CANRX_TRAC_DTI_ERROR_MESSAGES,
     CANRX_TRAC_HVI_SENSE,             /**< @brief High voltage, current, and power sense in inverters. */
+
+    CANRX_TRAC_EMD_MEASUREMENT,
+    CANRX_TRAC_EMD_TEMPERATURE,
+
     CANRX_TRAC_LEN                    /**< @brief Number of periodic CAN messages. */
 } canTractiveRX_t;
 

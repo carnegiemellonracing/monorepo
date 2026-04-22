@@ -437,6 +437,16 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
     },
     [CANRX_TRAC_RR_TEST] = {
         .canID = CMR_CANID_DTI_RR_TEST
+    },
+    [CANRX_TRAC_EMD_MEASUREMENT] = {
+        .canID = CMR_CANID_EMD_MEASUREMENT,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_TRAC_EMD_TEMPERATURE] = {
+        .canID = CMR_CANID_EMD_TEMPERATURE,
+        .timeoutError_ms = 2500,
+        .timeoutWarn_ms = 2000
     }
 };
 
@@ -731,6 +741,9 @@ static void canTX10Hz(void *pvParameters) {
 
     cmr_canDTI_ErrorMessages_t dtiErrorMessages;
 
+    cmr_canEMDMeasurements_t *emdMeasurements = canTractiveGetPayload(CANRX_TRAC_EMD_MEASUREMENT);
+    cmr_canEMDTemperatures_t *emdTemperature  = canTractiveGetPayload(CANRX_TRAC_EMD_TEMPERATURE);
+
     while (1) {
         daqWheelSpeedFeedback(&speedFeedback);
         daqWheelTorqueFeedback(&torqueFeedback);
@@ -763,6 +776,9 @@ static void canTX10Hz(void *pvParameters) {
         };
 
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_EMD_EBS_PRESSURE, &emdPressures, sizeof(emdPressures), canTX10Hz_period_ms);
+
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_EMD_MEASUREMENT, emdMeasurements, sizeof(cmr_canEMDMeasurements_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_EMD_TEMPERATURE, emdTemperature, sizeof(cmr_canEMDTemperature_t), canTX10Hz_period_ms);
 
         if(inverterMessagesValid()) {
             dtiErrorMessages.fl_fault_code = dtiTempFaultFL->fault_code;
