@@ -603,7 +603,7 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .timeoutWarn_ms = 3000
     },
     [CANRX_DAQ_HEARTBEAT_COMPUTE] = {
-        .canID = CMR_CANID_AS_HEARTBEAT_COMPUTE,
+        .canID = CMR_CANID_HEARTBEAT_COMPUTE,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
@@ -616,7 +616,12 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .canID = CMR_CANID_AUTO_PID,
         .timeoutError_ms = 1000,
         .timeoutWarn_ms = 250
-    }
+    },
+    [CANRX_DAQ_CUBEMARS_DATA] = {
+        .canID = CMR_CANID_EXTENDED_CUBEMARS_DATA,
+        .timeoutError_ms = 1000,
+        .timeoutWarn_ms = 250
+    },
 };
 
 /**
@@ -801,9 +806,6 @@ static void canTX100Hz(void *pvParameters) {
         if (heartbeat.error[0] != 0 || heartbeat.error[1] != 0) {
             heartbeat.state = CMR_CAN_ERROR;
         }
-
-        cmr_canHeartbeat_t *heartbeatCompute = canDAQGetPayload(CANRX_DAQ_HEARTBEAT_COMPUTE);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AS_HEARTBEAT_COMPUTE, heartbeatCompute, sizeof(cmr_canHeartbeat_t), canTX100Hz_period_ms);
 
         // cmr_canDAQTherm_t linpots;
         // linpots.therm_1 = adcRead(ADC_LINPOT1);
@@ -1272,6 +1274,14 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
         canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DIM_REQUEST, data, sizeof(cmr_canDIMRequest_t), canTX100Hz_period_ms);
     }
 
+    if(canID == CMR_CANID_HEARTBEAT_COMPUTE) {
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_HEARTBEAT_COMPUTE, data, sizeof(cmr_canHeartbeat_t), canTX100Hz_period_ms);
+    }
+
+    if(canID == CMR_CANID_EXTENDED_CUBEMARS_DATA) {
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CUBEMARS_DATA, data, sizeof(cmr_canCubeMarsData_t), canTX100Hz_period_ms);
+    }
+
     // If DIM config message, handle it
     if(CMR_CANID_CDC_CONFIG3_DRV3 >= canID && canID >= CMR_CANID_DIM_CONFIG0_DRV0) {
         dim_params_callback(canb_rx, canID, data, dataLen);
@@ -1357,7 +1367,14 @@ void canInit(void) {
             .rxFIFO = FDCAN_RX_FIFO0,
             .ids = {CMR_CANID_CDC_RTC_DATA_IN,
                     CMR_CANID_VSM_SENSORS}
-        }
+        },
+
+        {
+            .isMask = false,
+            .isExtended = true,
+            .rxFIFO = FDCAN_RX_FIFO0,
+            .ids = {CMR_CANID_EXTENDED_CUBEMARS_DATA}
+        },
     };
 
     cmr_canFilter(&(can[CMR_CAN_BUS_VEH]), canVehicleFilters,

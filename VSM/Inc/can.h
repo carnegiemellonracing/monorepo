@@ -24,6 +24,7 @@ typedef enum {
     CANRX_HEARTBEAT_HVBMS,    /**< @brief HVBMS heartbeat. */
     CANRX_HEARTBEAT_COMPUTE,
     CANRX_FSM_DATA,           /**< @brief FSM data. */
+    CANRX_CUBEMARS_DATA,
     CANRX_FSM_SWANGLE,
     CANRX_DIM_REQUEST,        /**< @brief DIM state request. */
     CANRX_RES,                /**< @brief RES */

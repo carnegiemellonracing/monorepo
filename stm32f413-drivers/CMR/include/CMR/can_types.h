@@ -93,7 +93,9 @@ typedef enum {
     // fan turn on at 56 starting 58 turn it to max
 
     /** @brief CDC All motor controllers have errored or timed out. */
-    CMR_CAN_ERROR_CDC_DTI_ALL = (1 << 15)
+    CMR_CAN_ERROR_CDC_DTI_ALL = (1 << 15),
+
+    CMR_CAN_ERROR_CDC_CUBEMARS_TIMEOUT = (1 << 13),
 } cmr_canError_t;
 
 /** @brief Heartbeat warning matrix bit fields. */
@@ -614,7 +616,7 @@ typedef struct {
 
 typedef enum{
     CMR_CAN_CDC_ERR_VSM_TIMEOUT = (1<<0),
-    CMR_CAN_CDC_ERR_DTIALLERROR = (1<<15) 
+    CMR_CAN_CDC_ERR_DTIALLERROR = (1<<15),
 } cmr_canCDCHeartbeatErr_t; 
 
 typedef enum {

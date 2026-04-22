@@ -85,6 +85,8 @@ typedef enum {
     CMR_CANID_CDC_POWER_UPDATE = 0x6E2,             /**< @brief DAQ Live to CDC - changing power limit. */
     CMR_CANID_CDC_COULOMB_COUNTING = 0x6E3,
     CMR_CANID_CDC_POWER_LOG = 0x6E4,             /**< @brief DAQ Live to CDC - changing power limit. */
+    
+    CMR_CANID_CUBEMARS_DATA = 0x6E6,
 
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
     CMR_CANID_CELL_BALANCE_ENABLE = 0x134,
@@ -388,7 +390,7 @@ typedef enum {
     CMR_CANID_AS_PRESSURE_READINGS = 0x191,     /**< @brief Autonomous Pressure Readings for Tank and EBS*/
     CMR_CANID_AS_RACK_DISPLACMENT = 0x192,      /**< @brief Rack Displacement Mesurment*/
     CMR_CANID_AS_MISSION_FINISHED = 0x777,
-    CMR_CANID_AS_HEARTBEAT_COMPUTE = 0x109,
+    CMR_CANID_HEARTBEAT_COMPUTE = 0x109,
     CMR_CANID_EAB_STATUS = 0x10B,
 
     //MAXON

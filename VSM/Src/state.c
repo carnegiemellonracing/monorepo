@@ -281,7 +281,8 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                 && getMissionSelected() 
                 && getDVBrakeDeployable() 
                 && getDVBrakeActive()
-                && !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HEARTBEAT_COMPUTE], lastWakeTime_ms)){
+                && !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HEARTBEAT_COMPUTE], lastWakeTime_ms)
+                && !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_CUBEMARS_DATA], lastWakeTime_ms)){
                 nextState = CMR_CAN_VSM_STATE_REQ_PRECHARGE;
             }
             else if (dimRequestedState == CMR_CAN_AS_READY) {
@@ -620,7 +621,10 @@ static inline bool TSActive(){
  * that the car can continue being in AS Ready or AS Driving
  */
 static inline bool AutonomousClear(){
-    return ASState &&  getDVBrakeDeployable() && getMissionSelected() && TSActive() && !RESTriggered();
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    return ASState && getDVBrakeDeployable() && getMissionSelected() && TSActive() && !RESTriggered()
+        && !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HEARTBEAT_COMPUTE], lastWakeTime)
+        && !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_CUBEMARS_DATA], lastWakeTime);
 }
  
 /**

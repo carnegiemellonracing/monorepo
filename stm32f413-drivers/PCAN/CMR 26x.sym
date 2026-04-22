@@ -31,7 +31,7 @@ enum Error(0="NONE", 1="VSM_TIMEOUT",
     2="* @brief Reception period for at least one message from another module",
     3="* has surpassed its error threshold.", 4="*/",
     1024="AFC_DCDC2_TEMP", 2048="AFC_DCDC1_TEMP",
-    4096="AFC_DRIVER3_TEMP", 8192="AFC_DRIVER2_TEMP",
+    4096="AFC_DRIVER3_TEMP", 8192="CDC_CUBEMARS_TIMEOUT",
     16384="AFC_DRIVER1_TEMP", 32768="CDC_DTI_ALL")
 enum Fan_State(0="FAN_OFF", 1="FAN_LOW", 2="FAN_HIGH")
 enum FanState(0="OFF", 1="LOW", 2="HIGH")
@@ -370,6 +370,14 @@ Var=SOLVER_k_lin unsigned 0,16
 Var=SOLVER_k_yaw unsigned 16,16
 Var=SOLVER_k_tie unsigned 32,16
 
+[CUBEMARS_DATA]
+ID=6E6h
+DLC=2
+CycleTime=10
+TimeOut=50
+Var=DATA_motorTemp_C signed 0,8
+Var=DATA_errorCode unsigned 8,8
+
 [DIM_ACKNOWLEDGE]
 ID=545h
 DLC=1
@@ -391,8 +399,8 @@ Var=ACTIONS_dvControlMode unsigned 32,8
 [DIM_REQUEST]
 ID=235h
 DLC=5
-CycleTime=100
-TimeOut=500
+CycleTime=10
+TimeOut=50
 Var=REQUEST_requestedState unsigned 0,8 /e:State
 Var=REQUEST_requestedGear unsigned 8,8 /e:Gear
 Var=REQUEST_requestedDrsMode unsigned 16,8 /e:DrsMode
@@ -491,6 +499,13 @@ Var=CDC_WRN_DTI_SRC_RR bit 36,1
 Var=CDC_WRN_DTI_SRC_RL bit 37,1
 Var=CDC_WRN_DTI_SRC_FR bit 38,1
 Var=CDC_WRN_DTI_SRC_FL bit 39,1
+
+[COMPUTE_HEARTBEAT]
+ID=109h
+DLC=5
+CycleTime=10
+TimeOut=50
+Var=COMPUTE_HEARTBEAT_state unsigned 0,8 /e:State
 
 [DIM_HEARTBEAT]
 ID=104h
@@ -1952,11 +1967,6 @@ Var=Data0 char 8,8
 Var=Data1 char 16,8
 Var=Data2 char 24,8
 Var=Data3 char 32,8
-
-[Memorator_Heartbeat]
-ID=109h
-DLC=1
-Var=State unsigned 0,8
 
 [HVI_Heartbeat]
 ID=106h

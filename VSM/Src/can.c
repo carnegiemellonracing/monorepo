@@ -55,7 +55,7 @@ cmr_canRXMeta_t canRXMeta[] = {
         .warnFlag = CMR_CAN_WARN_NONE
     },
     [CANRX_HEARTBEAT_COMPUTE] = {
-        .canID = CMR_CANID_AS_HEARTBEAT_COMPUTE,
+        .canID = CMR_CANID_HEARTBEAT_COMPUTE,
         .timeoutError_ms = 2000,
         .timeoutWarn_ms = 1000
     },
@@ -65,6 +65,11 @@ cmr_canRXMeta_t canRXMeta[] = {
         .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_VSM_DIM_TIMEOUT
+    },
+    [CANRX_CUBEMARS_DATA] = {
+        .canID = CMR_CANID_CUBEMARS_DATA,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
     },
     // [CANRX_FSM_SWANGLE] = {
     //     .canID = CMR_CANID_FSM_SWANGLE,
@@ -318,6 +323,7 @@ void canInit(void) {
                 CMR_CANID_FSM_DATA,
                 CMR_CANID_FSM_SWANGLE, //commented out?
                 CMR_CANID_DIM_REQUEST,
+                CMR_CANID_CUBEMARS_DATA
             }
         },
 
@@ -325,10 +331,10 @@ void canInit(void) {
             .isMask = false,
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
-                    CMR_CANID_AS_RES,
-                    CMR_CANID_AS_HEARTBEAT_COMPUTE,
-                    CMR_CANID_AUTONOMOUS_ACTION,
-                    CMR_CANID_AS_MISSION_FINISHED
+                CMR_CANID_AS_RES,
+                CMR_CANID_HEARTBEAT_COMPUTE,
+                CMR_CANID_AUTONOMOUS_ACTION,
+                CMR_CANID_AS_MISSION_FINISHED
             }
 		},
 

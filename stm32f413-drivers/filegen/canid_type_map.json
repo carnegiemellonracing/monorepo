@@ -322,6 +322,11 @@
             "timeOut": 50,
             "type": "cmr_can_solver_settings_t"
         },
+        "CMR_CANID_CUBEMARS_DATA": {
+            "cycleTime": 10,
+            "timeOut": 50,
+            "type": "cmr_canCubeMarsData_t"
+        },
         "CMR_CANID_DIM_ACKNOWLEDGE": {
             "cycleTime": 100,
             "timeOut": 500,
@@ -332,19 +337,8 @@
             "timeOut": 50,
             "type": "cmr_canDIMActions_t"
         },
-        "CMR_CANID_DIM_POWER_DIAGNOSTICS": {
-            "busCurrent_mA": {
-                "u": "mA"
-            },
-            "busVoltage_mV": {
-                "u": "mV"
-            },
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "cmr_canDIMPowerDiagnostics_t"
-        },
         "CMR_CANID_DIM_REQUEST": {
-            "cycleTime": 100,
+            "cycleTime": 10,
             "requestedDrsMode": {
                 "e": "DrsMode"
             },
@@ -354,7 +348,7 @@
             "requestedState": {
                 "e": "State"
             },
-            "timeOut": 500,
+            "timeOut": 50,
             "type": "cmr_canDIMRequest_t"
         },
         "CMR_CANID_DRS_STATE": {
@@ -418,6 +412,17 @@
                 "u": "V"
             }
         },
+        "CMR_CANID_EMD_MEASUREMENT_RETX": {
+            "current": {
+                "u": "A"
+            },
+            "cycleTime": 10.0,
+            "timeOut": 50,
+            "type": "cmr_canEMDMeasurements_t",
+            "voltage": {
+                "u": "V"
+            }
+        },
         "CMR_CANID_FRONT_SLIP_RATIOS": {
             "cycleTime": 100,
             "timeOut": 500,
@@ -446,17 +451,6 @@
             "timeOut": 500,
             "type": "cmr_canFSMPedalsADC_t"
         },
-        "CMR_CANID_FSM_POWER_DIAGNOSTICS": {
-            "busCurrent_mA": {
-                "u": "mA"
-            },
-            "busVoltage_mV": {
-                "u": "mV"
-            },
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "cmr_canFSMPowerDiagnostics_t"
-        },
         "CMR_CANID_FSM_SENSORS_ADC": {
             "cycleTime": 100,
             "timeOut": 500,
@@ -476,6 +470,20 @@
             "type": "cmr_canFSMSWAngle_t"
         },
         "CMR_CANID_HEARTBEAT_CDC": {
+            "cycleTime": 10,
+            "error": {
+                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
+            },
+            "state": {
+                "e": "State"
+            },
+            "timeOut": 50,
+            "type": "cmr_canHeartbeat_t",
+            "warning": {
+                "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
+            }
+        },
+        "CMR_CANID_HEARTBEAT_COMPUTE": {
             "cycleTime": 10,
             "error": {
                 "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
@@ -705,6 +713,11 @@
             "timeOut": 500,
             "type": "cmr_canHVSense_t"
         },
+        "CMR_CANID_IVT_CURRENT": {
+            "cycleTime": 10.0,
+            "timeOut": 50,
+            "type": "cmr_canIVTreadings_t"
+        },
         "CMR_CANID_LVBMS_BUS_VOLTAGE": {
             "cycleTime": 100,
             "timeOut": 500,
@@ -895,20 +908,20 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2907,
-        "files_with_matches": 2907,
+        "files_processed": 2913,
+        "files_with_matches": 2913,
         "global_mappings": {
-            "canrx_mappings": 178,
-            "canrx_timeouts": 169,
-            "canrx_types": 55,
-            "constants": 255,
+            "canrx_mappings": 185,
+            "canrx_timeouts": 175,
+            "canrx_types": 57,
+            "constants": 262,
             "struct_members": 0,
-            "variable_types": 318
+            "variable_types": 321
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 100
+        "total_canids": 102
     }
 }
