@@ -48,7 +48,7 @@ static void canTx100Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         // int x = 32;
-        canTX(CMR_CAN_BUS_TRAC, 100, &x, sizeof(int), can100Hz_period_ms);
+        // canTX(CMR_CAN_BUS_TRAC, 100, &x, sizeof(int), can100Hz_period_ms);
         RTC_DateTypeDef rtc_date = getRTCDate();
         RTC_TimeTypeDef rtc_time = getRTCTime();
 
