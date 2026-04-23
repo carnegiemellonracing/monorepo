@@ -20,6 +20,7 @@
 #include "safety_filter.h"
 #include "../optimizer/optimizer.h"
 #include "26x_sensors.h"
+#include "sensors.h"s
 #include "lut.h"
 #include "constants.h"
 
@@ -886,9 +887,9 @@ void integrateCurrent() {
 		previousTickCount = xTaskGetTickCount();
         coulombCounting.KCoulombs = 0.001f;
 	}else{
-        // const float packCurrent_kA = getPackCurrent()*0.001f;
+        const float packCurrent_mA = getCurrent_mA();
         const TickType_t currentTick = xTaskGetTickCount();
-        // coulombCounting.KCoulombs += ((currentTick-previousTickCount)*0.001f)*packCurrent_kA;
+        coulombCounting.KCoulombs += ((currentTick-previousTickCount)*0.001f)*packCurrent_mA / 1000000.0f;
         previousTickCount = currentTick;
     }
 }

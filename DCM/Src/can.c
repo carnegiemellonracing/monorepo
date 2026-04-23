@@ -768,10 +768,8 @@ static void canTX10Hz(void *pvParameters) {
         daqPoseOrientation(&poseOrient);
         daqPoseVelocity(&poseVel);
 
-        powerSense.packCurrent_dA = getCurrent();
-        powerSense.packVoltage_cV = getVoltage();
-        //powersense is dead, voltage * HVI current
-
+        powerSense.packCurrent_dA = getCurrent_mA() / 100;
+        powerSense.packVoltage_cV = getVoltage_mV() / 10;
         
         cmr_canDAQTherm_t therms1;
         therms1.therm_1 = adcRead(ADC_THERM1);
@@ -823,7 +821,7 @@ static void canTX10Hz(void *pvParameters) {
 
         // //powersense is dead, it's voltage * HVI
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_POWER_SENSE, &powerSense, sizeof(powerSense), canTX10Hz_period_ms);
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canCDCKiloCoulombs_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canCDCKiloCoulombs_t), canTX10Hz_period_ms);
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -1035,7 +1033,7 @@ static void canTX200Hz(void *pvParameters) {
         }
 
         if(new_dim_request) {
-            cmr_canDIMRequest_t *dimRequest = canVehicleGetPayload(CANRX_VEH_DIM_REQUEST);
+            cmr_canDIMRequest_t *dimRequest = canVehicleGetPayload(CANRX_VEH_REQUEST_DIM);
             canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DIM_REQUEST, dimRequest, sizeof(cmr_canDIMRequest_t), canTX200Hz_period_ms);
             new_dim_request = false;
         }

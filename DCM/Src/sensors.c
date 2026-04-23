@@ -97,26 +97,38 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     }
 };
 
-int32_t getVoltage(void) {
+
+/**
+ * @brief Gets the voltage from your preferred source
+ *
+ * @return voltage in mV
+ */
+int32_t getVoltage_mV(void) {
     if(use_emd) {
         cmr_canEMDMeasurements_t *EMD_Measurement = canTractiveGetPayload(CANRX_TRAC_EMD_MEASUREMENT);
-        int32_t EMD_voltage = big_endian_to_int32(&(EMD_Measurement->voltage));  
-        return EMD_voltage * 100; 
+        float EMD_voltage_V = (EMD_Measurement->voltage);  
+        return ((int32_t) EMD_voltage_V * 1000.0f); 
     }
     cmr_canIVTreadings_t *IVT_Measurement = canTractiveGetPayload(CANRX_TRAC_IVT_VOLTAGE); 
     int32_t IVT_voltage_mV = big_endian_to_int32(&(IVT_Measurement->message));
-    return IVT_voltage_mV / 10;
+    return IVT_voltage_mV;
 }
 
-int32_t getCurrent(void) {
+
+/**
+ * @brief Gets the current from your preferred source
+ *
+ * @return current in mA
+ */
+int32_t getCurrent_mA(void) {
     if(use_emd) {
         cmr_canEMDMeasurements_t *EMD_Measurement = canTractiveGetPayload(CANRX_TRAC_EMD_MEASUREMENT);
-        int32_t EMD_current_A = big_endian_to_int32(&(EMD_Measurement->voltage));  
-        return EMD_current_A * 10; 
+        float EMD_current_A = (EMD_Measurement->current);  
+        return ((int32_t) EMD_current_A * 1000.0f); 
     }
 	cmr_canIVTreadings_t *IVT_Measurement = canTractiveGetPayload(CANRX_TRAC_IVT_CURRENT); 
     int32_t IVT_current_mA = big_endian_to_int32(&(IVT_Measurement->message));
-    return IVT_current_mA / 100;
+    return IVT_current_mA ;
 }
 
 /** @brief Sensors update priority. */

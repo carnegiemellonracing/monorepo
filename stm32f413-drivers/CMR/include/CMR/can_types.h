@@ -1440,8 +1440,8 @@ typedef struct {
 // SAE Provided EMD definitions
 
 typedef struct {
-    big_endian_32_t current;    //u: A /**< @brief Current (amps * 2^16). */
-    big_endian_32_t voltage;    //u: V /**< @brief Voltage (volts * 2^16). */
+    float current;    //u: A /**< @brief Current  */
+    float voltage;    //u: V /**< @brief Voltage  */
 } cmr_canEMDMeasurements_t;
 
 typedef struct {
