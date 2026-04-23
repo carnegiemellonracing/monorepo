@@ -38,7 +38,7 @@ static void tssiControl(void *pvParameters) {
     while (1) {
         if(getAMSError() || !cmr_gpioRead(GPIO_IN_IMD_ERR_COND_N)){
             pwmSetDutyCycle(PWM_RED, 50);
-            pwmSetDutyCycle(PWM_GREEN, 0);
+            pwmSetDutyCycle(PWM_GREEN, 0); 
         }
         else{
             pwmSetDutyCycle(PWM_GREEN, 100);
