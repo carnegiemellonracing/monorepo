@@ -778,7 +778,7 @@ static void canTX10Hz(void *pvParameters) {
         canTX(CMR_CAN_BUS_TRAC, CMR_CANID_EMD_EBS_PRESSURE, &emdPressures, sizeof(emdPressures), canTX10Hz_period_ms);
 
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_EMD_MEASUREMENT, emdMeasurements, sizeof(cmr_canEMDMeasurements_t), canTX10Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_EMD_TEMPERATURE, emdTemperature, sizeof(cmr_canEMDTemperature_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_EMD_TEMPERATURE, emdTemperature, sizeof(cmr_canEMDTemperatures_t), canTX10Hz_period_ms);
 
         if(inverterMessagesValid()) {
             dtiErrorMessages.fl_fault_code = dtiTempFaultFL->fault_code;

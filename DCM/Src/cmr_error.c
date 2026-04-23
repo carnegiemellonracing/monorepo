@@ -105,10 +105,6 @@ static void updateErrors(cmr_canError_t *errors, TickType_t lastWakeTime) {
         }
     }
 
-    if(cmr_canRXMetaTimeoutError(CMR_CANID_EXTENDED_CUBEMARS_DATA, lastWakeTime)) {
-        *errors |= CMR_CAN_ERROR_CDC_CUBEMARS_TIMEOUT;
-    }
-
     // ALL inverters either errored or timed out
     if ((dtiErrors[MOTOR_FL] || dtiTimeouts[MOTOR_FL]) &&
         (dtiErrors[MOTOR_FR] || dtiTimeouts[MOTOR_FR]) &&
