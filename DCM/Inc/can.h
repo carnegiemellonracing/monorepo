@@ -99,6 +99,9 @@ typedef enum {
     CANRX_TRAC_EMD_MEASUREMENT,
     CANRX_TRAC_EMD_TEMPERATURE,
 
+    CANRX_TRAC_IVT_CURRENT,
+    CANRX_TRAC_IVT_VOLTAGE,
+
     CANRX_TRAC_LEN                    /**< @brief Number of periodic CAN messages. */
 } canTractiveRX_t;
 

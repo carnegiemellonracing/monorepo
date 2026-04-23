@@ -434,6 +434,21 @@ Var=EBS_ebsPressure2_psi unsigned 16,16
 Var=EBS_hydraulicPressure1_psi unsigned 32,16
 Var=EBS_hydraulicPressure2_psi unsigned 48,16
 
+[EMD_TEMPERATURE]
+ID=60Dh
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=TEMPERATURE_mux  unsigned 0,2
+Var=TEMPERATURE_num_sensors  unsigned 2,6
+Var=TEMPERATURE_min_temp_2C unsigned 8,8
+Var=TEMPERATURE_max_temp_2C unsigned 16,8
+Var=TEMPERATURE_temp1_2C unsigned 24,8
+Var=TEMPERATURE_temp2_2C unsigned 32,8
+Var=TEMPERATURE_temp3_2C unsigned 40,8
+Var=TEMPERATURE_temp4_2C unsigned 48,8
+Var=TEMPERATURE_temp5_2C unsigned 56,8
+
 [FRONT_SLIP_RATIOS]
 ID=7E8h
 DLC=8
@@ -695,18 +710,27 @@ Var=PACK_avgCurrent_mA signed 32,32 /u:mA
 
 [HV_SENSORS]
 ID=306h
-DLC=2
+DLC=4
 CycleTime=100
 TimeOut=500
 Var=SENSORS_packVoltage_cV unsigned 0,16
+Var=SENSORS_packCurrent_dA unsigned 16,16
 
 [IVT_CURRENT]
 ID=521h
 DLC=2
-CycleTime=10
-TimeOut=50
+CycleTime=400
+TimeOut=2000
 Var=CURRENT_muxID unsigned 0,8
 Var=CURRENT_count_state unsigned 8,8
+
+[IVT_VOLTAGE]
+ID=522h
+DLC=2
+CycleTime=400
+TimeOut=2000
+Var=VOLTAGE_muxID unsigned 0,8
+Var=VOLTAGE_count_state unsigned 8,8
 
 [LV_CELL_BALANCE_ENABLE]
 ID=136h
@@ -1790,16 +1814,6 @@ Var=CDC_config0_drv1_config_val_1 unsigned 0,8
 Var=CDC_config0_drv1_config_val_2 unsigned 8,8
 Var=CDC_config0_drv1_config_val_3 unsigned 16,8
 Var=CDC_config0_drv1_config_val_4 unsigned 24,8
-
-[CDC_Config1_Drv1]
-ID=60Dh
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=CDC_config1_drv1_config_val_1 unsigned 0,8
-Var=CDC_config1_drv1_config_val_2 unsigned 8,8
-Var=CDC_config1_drv1_config_val_3 unsigned 16,8
-Var=CDC_config1_drv1_config_val_4 unsigned 24,8
 
 [CDC_Config2_Drv1]
 ID=60Eh

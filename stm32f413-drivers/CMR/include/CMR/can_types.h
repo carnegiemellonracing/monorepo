@@ -609,6 +609,7 @@ typedef struct {
 //HVC Sensors CAN Types
 typedef struct {
     uint16_t packVoltage_cV;
+    uint16_t packCurrent_dA;
 } cmr_canHVSense_t;
 
 //Power Sense Board CAN Types

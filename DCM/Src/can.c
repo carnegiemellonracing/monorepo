@@ -41,6 +41,11 @@ extern volatile cmr_can_rtc_data_t time;
 extern volatile float odometer_km;
 extern bool isTorqueMode;
 
+bool new_dim_request = false;
+bool new_compute_heartbeat = false;
+bool new_cubemars_data = false;
+bool new_res_message = false;
+
 /** @brief Fan/Pump channel states. */
 uint16_t fan_1_State;
 uint16_t fan_2_State;
@@ -447,6 +452,16 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .canID = CMR_CANID_EMD_TEMPERATURE,
         .timeoutError_ms = 2500,
         .timeoutWarn_ms = 2000
+    },
+    [CANRX_TRAC_IVT_CURRENT] = {
+        .canID = CMR_CANID_IVT_CURRENT,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
+    },
+    [CANRX_TRAC_IVT_VOLTAGE] = {
+        .canID = CMR_CANID_IVT_VOLTAGE,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
     }
 };
 
@@ -1019,6 +1034,30 @@ static void canTX200Hz(void *pvParameters) {
             sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
         }
 
+        if(new_dim_request) {
+            cmr_canDIMRequest_t *dimRequest = canVehicleGetPayload(CANRX_VEH_DIM_REQUEST);
+            canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DIM_REQUEST, dimRequest, sizeof(cmr_canDIMRequest_t), canTX200Hz_period_ms);
+            new_dim_request = false;
+        }
+
+        if(new_compute_heartbeat) {
+            cmr_canHeartbeat_t *heartbeatCompute = canDAQGetPayload(CANRX_DAQ_HEARTBEAT_COMPUTE);
+            canTX(CMR_CAN_BUS_VEH, CMR_CANID_HEARTBEAT_COMPUTE, heartbeatCompute, sizeof(cmr_canHeartbeat_t), canTX200Hz_period_ms);
+            new_compute_heartbeat = false;
+        }
+
+        if(new_cubemars_data) {
+            cmr_canCubeMarsData_t *cubeMarsData = canDAQGetPayload(CANRX_DAQ_CUBEMARS_DATA);
+            canTX(CMR_CAN_BUS_VEH, CMR_CANID_CUBEMARS_DATA, cubeMarsData, sizeof(cmr_canCubeMarsData_t), canTX200Hz_period_ms);
+            new_cubemars_data = false;
+        }
+
+        if(new_res_message) {
+            void *resData = canVehicleGetPayload(CANRX_VEH_AS_RES);
+            canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AS_RES, resData, 8, canTX200Hz_period_ms);
+            new_res_message = false;
+        }
+
         daqWheelSpeedFeedback(&speedFeedback);
         daqWheelTorqueFeedback(&torqueFeedback);
         daqWheelSpeedSetpoints(&speedSetpoint);
@@ -1310,19 +1349,19 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
     configASSERT(iface_idx < CMR_CAN_BUS_NUM);
 
     if(canID == CMR_CANID_DIM_REQUEST) {
-        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DIM_REQUEST, data, sizeof(cmr_canDIMRequest_t), canTX100Hz_period_ms);
+        new_dim_request = true;
     }
 
     if(canID == CMR_CANID_HEARTBEAT_COMPUTE) {
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_HEARTBEAT_COMPUTE, data, sizeof(cmr_canHeartbeat_t), canTX100Hz_period_ms);
+        new_compute_heartbeat = true;
     }
 
     if(canID == CMR_CANID_EXTENDED_CUBEMARS_DATA) {
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CUBEMARS_DATA, data, sizeof(cmr_canCubeMarsData_t), canTX100Hz_period_ms);
+        new_cubemars_data = true;
     }
 
     if(canID == CMR_CANID_AS_RES) {
-        canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AS_RES, data, dataLen, canTX100Hz_period_ms);
+        new_res_message = true;
     }
 
     // If DIM config message, handle it
@@ -1454,6 +1493,16 @@ void canInit(void) {
             .isMask = true,
             .rxFIFO = FDCAN_RX_FIFO0,
             .ids = {RR_NODE_ID, 0x1F}
+        },
+        {
+            .isMask = false,
+            .rxFIFO = FDCAN_RX_FIFO0,
+            .ids = {CMR_CANID_IVT_CURRENT, CMR_CANID_IVT_VOLTAGE}
+        },
+        {
+            .isMask = false,
+            .rxFIFO = FDCAN_RX_FIFO0,
+            .ids = {CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_TEMPERATURE}
         },
     };
 

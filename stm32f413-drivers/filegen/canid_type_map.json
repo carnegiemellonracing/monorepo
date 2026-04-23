@@ -410,8 +410,8 @@
             "current": {
                 "u": "A"
             },
-            "cycleTime": 20.0,
-            "timeOut": 100,
+            "cycleTime": 100,
+            "timeOut": 500,
             "type": "cmr_canEMDMeasurements_t",
             "voltage": {
                 "u": "V"
@@ -429,8 +429,8 @@
             }
         },
         "CMR_CANID_EMD_TEMPERATURE": {
-            "cycleTime": 500.0,
-            "timeOut": 2500,
+            "cycleTime": 100,
+            "timeOut": 500,
             "type": "cmr_canEMDTemperatures_t"
         },
         "CMR_CANID_FRONT_SLIP_RATIOS": {
@@ -724,8 +724,13 @@
             "type": "cmr_canHVSense_t"
         },
         "CMR_CANID_IVT_CURRENT": {
-            "cycleTime": 10.0,
-            "timeOut": 50,
+            "cycleTime": 400.0,
+            "timeOut": 2000,
+            "type": "cmr_canIVTreadings_t"
+        },
+        "CMR_CANID_IVT_VOLTAGE": {
+            "cycleTime": 400.0,
+            "timeOut": 2000,
             "type": "cmr_canIVTreadings_t"
         },
         "CMR_CANID_LVBMS_BUS_VOLTAGE": {
@@ -921,17 +926,17 @@
         "files_processed": 2913,
         "files_with_matches": 2913,
         "global_mappings": {
-            "canrx_mappings": 188,
-            "canrx_timeouts": 178,
-            "canrx_types": 59,
+            "canrx_mappings": 192,
+            "canrx_timeouts": 182,
+            "canrx_types": 63,
             "constants": 262,
             "struct_members": 0,
-            "variable_types": 324
+            "variable_types": 326
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 104
+        "total_canids": 105
     }
 }

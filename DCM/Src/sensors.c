@@ -16,6 +16,8 @@
 /** @brief Number of samples for current measurement rolling average. */
 #define BUS_CURRENT_SAMPLES 10
 
+bool use_emd = false;
+
 /**
  * @brief Mapping of sensor channels to ADC channels.
  */
@@ -96,11 +98,25 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
 };
 
 int32_t getVoltage(void) {
-	return cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_CV);
+    if(use_emd) {
+        cmr_canEMDMeasurements_t *EMD_Measurement = canTractiveGetPayload(CANRX_TRAC_EMD_MEASUREMENT);
+        int32_t EMD_voltage = big_endian_to_int32(&(EMD_Measurement->voltage));  
+        return EMD_voltage * 100; 
+    }
+    cmr_canIVTreadings_t *IVT_Measurement = canTractiveGetPayload(CANRX_TRAC_IVT_VOLTAGE); 
+    int32_t IVT_voltage_mV = big_endian_to_int32(&(IVT_Measurement->message));
+    return IVT_voltage_mV / 10;
 }
 
 int32_t getCurrent(void) {
-	return cmr_sensorListGetValue(&sensorList, SENSOR_CH_AVG_CURRENT_DA);
+    if(use_emd) {
+        cmr_canEMDMeasurements_t *EMD_Measurement = canTractiveGetPayload(CANRX_TRAC_EMD_MEASUREMENT);
+        int32_t EMD_current_A = big_endian_to_int32(&(EMD_Measurement->voltage));  
+        return EMD_current_A * 10; 
+    }
+	cmr_canIVTreadings_t *IVT_Measurement = canTractiveGetPayload(CANRX_TRAC_IVT_CURRENT); 
+    int32_t IVT_current_mA = big_endian_to_int32(&(IVT_Measurement->message));
+    return IVT_current_mA / 100;
 }
 
 /** @brief Sensors update priority. */
