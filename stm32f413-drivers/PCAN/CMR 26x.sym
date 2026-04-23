@@ -373,8 +373,8 @@ Var=SOLVER_k_tie unsigned 32,16
 [CUBEMARS_DATA]
 ID=6E6h
 DLC=2
-CycleTime=10
-TimeOut=50
+CycleTime=5
+TimeOut=25
 Var=DATA_motorTemp_C signed 0,8
 Var=DATA_errorCode unsigned 8,8
 
@@ -399,8 +399,8 @@ Var=ACTIONS_dvControlMode unsigned 32,8
 [DIM_REQUEST]
 ID=235h
 DLC=5
-CycleTime=10
-TimeOut=50
+CycleTime=5
+TimeOut=25
 Var=REQUEST_requestedState unsigned 0,8 /e:State
 Var=REQUEST_requestedGear unsigned 8,8 /e:Gear
 Var=REQUEST_requestedDrsMode unsigned 16,8 /e:DrsMode
@@ -448,6 +448,14 @@ Var=TEMPERATURE_temp2_2C unsigned 32,8
 Var=TEMPERATURE_temp3_2C unsigned 40,8
 Var=TEMPERATURE_temp4_2C unsigned 48,8
 Var=TEMPERATURE_temp5_2C unsigned 56,8
+
+[EXTENDED_CUBEMARS_DATA]
+ID=000029FFh
+DLC=2
+CycleTime=200
+TimeOut=1000
+Var=CUBEMARS_motorTemp_C signed 0,8
+Var=CUBEMARS_errorCode unsigned 8,8
 
 [FRONT_SLIP_RATIOS]
 ID=7E8h
@@ -528,8 +536,8 @@ Var=CDC_WRN_DTI_SRC_FL bit 39,1
 [COMPUTE_HEARTBEAT]
 ID=109h
 DLC=5
-CycleTime=10
-TimeOut=50
+CycleTime=5
+TimeOut=25
 Var=COMPUTE_HEARTBEAT_state unsigned 0,8 /e:State
 
 [DIM_HEARTBEAT]
@@ -719,8 +727,8 @@ Var=SENSORS_packCurrent_dA unsigned 16,16
 [IVT_CURRENT]
 ID=521h
 DLC=2
-CycleTime=400
-TimeOut=2000
+CycleTime=10
+TimeOut=50
 Var=CURRENT_muxID unsigned 0,8
 Var=CURRENT_count_state unsigned 8,8
 
