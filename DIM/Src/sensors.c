@@ -63,7 +63,7 @@ static const uint16_t BRAKE_ACTIVE_THRES_PSI = 100;
 #define MAX_EBS_SOLENOID_CURRENT_MA 150
 
 /** @brief Min air pressure for EBS to be actuated */
-#define MIN_EBS_AIR_PRES_DECI_BAR 80
+#define MIN_EBS_AIR_PRES_DECI_BAR 40
 
 /** @brief Max air pressure for EBS to be actuated */
 #define MAX_EBS_AIR_PRES_DECI_BAR 120

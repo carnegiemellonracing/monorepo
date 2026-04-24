@@ -196,8 +196,8 @@ uint8_t getASMS(){
  * @return 1 iff EAB is on
  */
 bool getEAB(){
-	uint8_t *eabStatus = (uint8_t*)getPayload(CANRX_EAB_STATUS);
-	return *eabStatus;
+	cmr_canVSMSensors_t* vsm_sensors = getPayload(CANRX_VSM_SENSORS);
+	return vsm_sensors->EAB_pressed;
 }
 
 /* Debouncing for button presses. */

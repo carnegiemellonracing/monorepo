@@ -199,13 +199,9 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
     // TE (Immediately return error if anything is wrong)
     if ((vsmStatus.heartbeatErrors != CMR_CAN_ERROR_NONE)
      || (vsmStatus.canVSMStatus.moduleTimeoutMatrix != CMR_CAN_VSM_TIMEOUT_SOURCE_NONE)
-     || (vsmStatus.canVSMStatus.latchMatrix != CMR_CAN_VSM_LATCH_NONE)
-     || (ASState != getASMSState())) {
+     || (vsmStatus.canVSMStatus.latchMatrix != CMR_CAN_VSM_LATCH_NONE)) {
         if(ASState) {
             return CMR_CAN_VSM_STATE_AS_EMERGENCY;
-        }
-        if(lastWakeTime_ms == 10000000) {
-            return 10;
         }
         return CMR_CAN_VSM_STATE_ERROR;
     }
