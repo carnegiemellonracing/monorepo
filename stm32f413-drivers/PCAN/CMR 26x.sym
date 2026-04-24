@@ -542,7 +542,7 @@ Var=CDC_WRN_DTI_SRC_FR bit 38,1
 Var=CDC_WRN_DTI_SRC_FL bit 39,1
 
 [COMPUTE_HEARTBEAT]
-ID=109h
+ID=10Bh
 DLC=5
 CycleTime=5
 TimeOut=25
@@ -2007,6 +2007,11 @@ Var=Data0 char 8,8
 Var=Data1 char 16,8
 Var=Data2 char 24,8
 Var=Data3 char 32,8
+
+[Memorator_Heartbeat]
+ID=109h
+DLC=1
+Var=State unsigned 0,8
 
 [HVI_Heartbeat]
 ID=106h
