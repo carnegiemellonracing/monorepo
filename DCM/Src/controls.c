@@ -850,13 +850,6 @@ void runControls (
             setAccelLaunchControl(throttlePos_u8, brakePressurePsi_u8, va, wheel_fl_speed_radps,
                 wheel_fr_speed_radps, wheel_rl_speed_radps, wheel_rr_speed_radps,
                 fz_fl_N, fz_fr_N, fz_rl_N, fz_rr_N);
-            
-            float fz_total = fz_fl_N + fz_fr_N + fz_rl_N + fz_rr_N;
-
-            setPowerLimit(false, MOTOR_FL, (fz_fl_N / fz_total) * 80.0f);
-            setPowerLimit(false, MOTOR_FR, (fz_fr_N / fz_total) * 80.0f);
-            setPowerLimit(false, MOTOR_RL, (fz_rl_N / fz_total) * 80.0f);
-            setPowerLimit(false, MOTOR_RR, (fz_rr_N / fz_total) * 80.0f);
             break;
         }
 
@@ -1533,6 +1526,12 @@ void setAccelLaunchControl(
     setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
     setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
+
+    // --- Per-wheel power split: proportional to (clamped) vertical load ---
+    setPowerLimit(false, MOTOR_FL, (fz_fl / total_fz) * 79.0f);
+    setPowerLimit(false, MOTOR_FR, (fz_fr / total_fz) * 79.0f);
+    setPowerLimit(false, MOTOR_RL, (fz_rl / total_fz) * 79.0f);
+    setPowerLimit(false, MOTOR_RR, (fz_rr / total_fz) * 79.0f);
 }
 
 
