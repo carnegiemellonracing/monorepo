@@ -962,6 +962,9 @@ static void canTX200Hz(void *pvParameters) {
 
     static uint8_t drive_enable = 1;
 
+    // does not send drive enable until the first torque request
+    static bool first_torque_req = false;
+
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         if (heartbeatVSM->state == CMR_CAN_RTD || 
@@ -976,7 +979,8 @@ static void canTX200Hz(void *pvParameters) {
                                   || (dtiSetpointsRL->torqueLimNeg_dA != 0)
                                   || (dtiSetpointsRR->torqueLimNeg_dA != 0);
 
-            if(requesting_torque) {
+            if(requesting_torque || first_torque_req) {
+                first_torque_req = true;
                 drive_enable = 1;
                 sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
 

@@ -393,7 +393,6 @@ typedef enum {
     CMR_CANID_AS_RACK_DISPLACMENT = 0x192,      /**< @brief Rack Displacement Mesurment*/
     CMR_CANID_AS_MISSION_FINISHED = 0x777,
     CMR_CANID_HEARTBEAT_COMPUTE = 0x109,
-    CMR_CANID_EAB_STATUS = 0x10B,
 
     //MAXON
     CMR_CANID_MAXON_STATUS_WORD = 0x250,
