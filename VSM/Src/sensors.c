@@ -160,7 +160,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .readingMin = 0,            // TODO
         .readingMax = CMR_ADC_MAX,  // TODO
         .outOfRange_pcnt = 10,
-        .errorFlag = CMR_CAN_ERROR_VSM_HALL_EFFECT
+        .errorFlag = CMR_CAN_ERROR_NONE
     },
     [SENSOR_CH_BPRES_PSI] = {
         .sample = sampleADCSensor,

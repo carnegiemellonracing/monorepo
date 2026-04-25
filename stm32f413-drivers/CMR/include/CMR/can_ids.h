@@ -387,12 +387,12 @@ typedef enum {
 
     //AS
     CMR_CANID_AS_RES_ENABLE = 0x000,
-    CMR_CANID_AS_RES = 0x18E,                   /**< @brief Autonomous RES (remote E-stop)*/
+    CMR_CANID_AS_RES = 0x18A,                   /**< @brief Autonomous RES (remote E-stop)*/
     CMR_CANID_AUTONOMOUS_ACTION = 0x190,        /**< @brief Autonomous Action*/
     CMR_CANID_AS_PRESSURE_READINGS = 0x191,     /**< @brief Autonomous Pressure Readings for Tank and EBS*/
     CMR_CANID_AS_RACK_DISPLACMENT = 0x192,      /**< @brief Rack Displacement Mesurment*/
     CMR_CANID_AS_MISSION_FINISHED = 0x777,
-    CMR_CANID_HEARTBEAT_COMPUTE = 0x109,
+    CMR_CANID_HEARTBEAT_COMPUTE = 0x10B,
 
     //MAXON
     CMR_CANID_MAXON_STATUS_WORD = 0x250,

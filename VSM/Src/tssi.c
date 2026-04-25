@@ -57,6 +57,7 @@ static void tssiControl(void *pvParameters) {
  * @return Does not return.
  */
 void tssiInit() {
+
     cmr_taskInit(
         &tssiControl_task,
         "TSSIControl",

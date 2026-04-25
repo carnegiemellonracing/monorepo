@@ -7,7 +7,8 @@
 
 #include "can.h"        
 #include "gpio.h" 
-#include "sensors.h"       
+#include "sensors.h"  
+#include "state.h"       
 
 /** @brief DV Error priority. */
 static const uint32_t dv_error_priority = 2;
@@ -32,11 +33,19 @@ static void dv_error_checks(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while(1)
     {
+        cmr_canState_t vsm_state = stateGetVSM();
+        bool is_AS_active_state =  (vsm_state == CMR_CAN_AS_READY || 
+                                    vsm_state == CMR_CAN_AS_DRIVING || 
+                                    vsm_state == CMR_CAN_AS_FINISHED || 
+                                    vsm_state == CMR_CAN_AS_EMERGENCY);
+
         bool error_present = false;
-        if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_CURRENT_1_MA) != CMR_SENSOR_ERR_NONE)
+        if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_CURRENT_1_MA) != CMR_SENSOR_ERR_NONE
+            && is_AS_active_state)
             error_present = true;
     
-        if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_CURRENT_2_MA) != CMR_SENSOR_ERR_NONE)
+        if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_CURRENT_2_MA) != CMR_SENSOR_ERR_NONE
+            && is_AS_active_state)
             error_present = true;
     
         if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_PRESSURE_1_DECI_BAR) != CMR_SENSOR_ERR_NONE)

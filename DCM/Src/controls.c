@@ -728,6 +728,10 @@ void runControls (
             disableTorqueMode();
             // setFastTorque(throttlePos_u8);
             setFastTorqueWithBias(throttlePos_u8, front_bias);
+            setPowerLimit(false, MOTOR_FL, 10.0 * front_bias);
+            setPowerLimit(false, MOTOR_FR, 10.0 * front_bias);
+            setPowerLimit(false, MOTOR_RL, 10.0 * (1 - front_bias));
+            setPowerLimit(false, MOTOR_FR, 10.0 * (1 - front_bias));
             // set_fast_torque_with_slew(throttlePos_u8, 29.0f);
             break;
         }

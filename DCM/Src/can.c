@@ -969,84 +969,66 @@ static void canTX200Hz(void *pvParameters) {
     while (1) {
         if (heartbeatVSM->state == CMR_CAN_RTD || 
             heartbeatVSM->state == CMR_CAN_AS_DRIVING){
+            drive_enable = 1;
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
 
-            bool requesting_torque = (dtiSetpointsFL->torqueLimPos_dA != 0) 
-                                  || (dtiSetpointsFR->torqueLimPos_dA != 0)
-                                  || (dtiSetpointsRL->torqueLimPos_dA != 0)
-                                  || (dtiSetpointsRR->torqueLimPos_dA != 0)
-                                  || (dtiSetpointsFL->torqueLimNeg_dA != 0) 
-                                  || (dtiSetpointsFR->torqueLimNeg_dA != 0)
-                                  || (dtiSetpointsRL->torqueLimNeg_dA != 0)
-                                  || (dtiSetpointsRR->torqueLimNeg_dA != 0);
-
-            if(requesting_torque || first_torque_req) {
-                first_torque_req = true;
-                drive_enable = 1;
-                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
-
-                bool pos_match = (dtiSetpointsFL->torqueLimPos_dA == dtiSetpointsFR->torqueLimPos_dA) &&
-                    (dtiSetpointsFL->torqueLimPos_dA == dtiSetpointsRL->torqueLimPos_dA) &&
-                    (dtiSetpointsFL->torqueLimPos_dA == dtiSetpointsRR->torqueLimPos_dA);
-                
-                if (pos_match){
-                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_TORLIMPOS, &(dtiSetpointsFL->torqueLimPos_dA), sizeof(dtiSetpointsFL->torqueLimPos_dA), canTX200Hz_period_ms);
-                }
-                else{
-                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_TORLIMPOS, &(dtiSetpointsFL->torqueLimPos_dA), sizeof(dtiSetpointsFL->torqueLimPos_dA), canTX200Hz_period_ms);
-                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_TORLIMPOS, &(dtiSetpointsFR->torqueLimPos_dA), sizeof(dtiSetpointsFR->torqueLimPos_dA), canTX200Hz_period_ms);
-                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_TORLIMPOS, &(dtiSetpointsRR->torqueLimPos_dA), sizeof(dtiSetpointsRR->torqueLimPos_dA), canTX200Hz_period_ms);
-                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_TORLIMPOS, &(dtiSetpointsRL->torqueLimPos_dA), sizeof(dtiSetpointsRL->torqueLimPos_dA), canTX200Hz_period_ms);
-                }
-
-                bool neg_match = (dtiSetpointsFL->torqueLimNeg_dA == dtiSetpointsFR->torqueLimNeg_dA) &&
-                    (dtiSetpointsFL->torqueLimNeg_dA == dtiSetpointsRL->torqueLimNeg_dA) &&
-                    (dtiSetpointsFL->torqueLimNeg_dA == dtiSetpointsRR->torqueLimNeg_dA);
-                
-                if (neg_match){
-                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_TORLIMNEG, &(dtiSetpointsFL->torqueLimNeg_dA), sizeof(dtiSetpointsFL->torqueLimNeg_dA), canTX200Hz_period_ms);
-                }
-                else{
-                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_TORLIMNEG, &(dtiSetpointsFL->torqueLimNeg_dA), sizeof(dtiSetpointsFL->torqueLimNeg_dA), canTX200Hz_period_ms);
-                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_TORLIMNEG, &(dtiSetpointsFR->torqueLimNeg_dA), sizeof(dtiSetpointsFR->torqueLimNeg_dA), canTX200Hz_period_ms);
-                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_TORLIMNEG, &(dtiSetpointsRR->torqueLimNeg_dA), sizeof(dtiSetpointsRR->torqueLimNeg_dA), canTX200Hz_period_ms);
-                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_TORLIMNEG, &(dtiSetpointsRL->torqueLimNeg_dA), sizeof(dtiSetpointsRL->torqueLimNeg_dA), canTX200Hz_period_ms);
-                }
+            bool pos_match = (dtiSetpointsFL->torqueLimPos_dA == dtiSetpointsFR->torqueLimPos_dA) &&
+                (dtiSetpointsFL->torqueLimPos_dA == dtiSetpointsRL->torqueLimPos_dA) &&
+                (dtiSetpointsFL->torqueLimPos_dA == dtiSetpointsRR->torqueLimPos_dA);
             
-                if (isTorqueMode){
-                    bool curr_match = (dtiSetpointsFL->ACCurrent_dA == dtiSetpointsFR->ACCurrent_dA) &&
-                        (dtiSetpointsFL->ACCurrent_dA == dtiSetpointsRL->ACCurrent_dA) &&
-                        (dtiSetpointsFL->ACCurrent_dA == dtiSetpointsRR->ACCurrent_dA);
-                    
-                    if(curr_match){
-                        sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_CURRENT, &(dtiSetpointsFL->ACCurrent_dA), sizeof(dtiSetpointsFL->ACCurrent_dA), canTX200Hz_period_ms);
-                    }
-                    else{
-                        sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_CURRENT, &(dtiSetpointsFL->ACCurrent_dA), sizeof(dtiSetpointsFL->ACCurrent_dA), canTX200Hz_period_ms);
-                        sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_CURRENT, &(dtiSetpointsFR->ACCurrent_dA), sizeof(dtiSetpointsFR->ACCurrent_dA), canTX200Hz_period_ms);
-                        sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_CURRENT, &(dtiSetpointsRL->ACCurrent_dA), sizeof(dtiSetpointsRR->ACCurrent_dA), canTX200Hz_period_ms);
-                        sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_CURRENT, &(dtiSetpointsRR->ACCurrent_dA), sizeof(dtiSetpointsRL->ACCurrent_dA), canTX200Hz_period_ms);
-                    }
-                } else {
-                    bool vel_match =    (dtiSetpointsFL->velocity_erpm == dtiSetpointsFR->velocity_erpm) &&
-                                        (dtiSetpointsFL->velocity_erpm == dtiSetpointsRL->velocity_erpm) &&
-                                        (dtiSetpointsFL->velocity_erpm == dtiSetpointsRR->velocity_erpm);
-                    
-                    if(vel_match){
-                        sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_VELOCITY, &(dtiSetpointsFL->velocity_erpm), sizeof(dtiSetpointsFL->velocity_erpm), canTX200Hz_period_ms);
-                    }
-                    else{
-                        sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_VELOCITY, &(dtiSetpointsFL->velocity_erpm), sizeof(dtiSetpointsFL->velocity_erpm), canTX200Hz_period_ms);
-                        sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_VELOCITY, &(dtiSetpointsFR->velocity_erpm), sizeof(dtiSetpointsFR->velocity_erpm), canTX200Hz_period_ms);
-                        sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_VELOCITY, &(dtiSetpointsRL->velocity_erpm), sizeof(dtiSetpointsRL->velocity_erpm), canTX200Hz_period_ms);
-                        sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_VELOCITY, &(dtiSetpointsRR->velocity_erpm), sizeof(dtiSetpointsRR->velocity_erpm), canTX200Hz_period_ms);
-                    }
-                }
+            if (pos_match){
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_TORLIMPOS, &(dtiSetpointsFL->torqueLimPos_dA), sizeof(dtiSetpointsFL->torqueLimPos_dA), canTX200Hz_period_ms);
             }
-            else {
-                drive_enable = 0;
-                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
+            else{
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_TORLIMPOS, &(dtiSetpointsFL->torqueLimPos_dA), sizeof(dtiSetpointsFL->torqueLimPos_dA), canTX200Hz_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_TORLIMPOS, &(dtiSetpointsFR->torqueLimPos_dA), sizeof(dtiSetpointsFR->torqueLimPos_dA), canTX200Hz_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_TORLIMPOS, &(dtiSetpointsRR->torqueLimPos_dA), sizeof(dtiSetpointsRR->torqueLimPos_dA), canTX200Hz_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_TORLIMPOS, &(dtiSetpointsRL->torqueLimPos_dA), sizeof(dtiSetpointsRL->torqueLimPos_dA), canTX200Hz_period_ms);
             }
 
+            bool neg_match = (dtiSetpointsFL->torqueLimNeg_dA == dtiSetpointsFR->torqueLimNeg_dA) &&
+                (dtiSetpointsFL->torqueLimNeg_dA == dtiSetpointsRL->torqueLimNeg_dA) &&
+                (dtiSetpointsFL->torqueLimNeg_dA == dtiSetpointsRR->torqueLimNeg_dA);
+            
+            if (neg_match){
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_TORLIMNEG, &(dtiSetpointsFL->torqueLimNeg_dA), sizeof(dtiSetpointsFL->torqueLimNeg_dA), canTX200Hz_period_ms);
+            }
+            else{
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_TORLIMNEG, &(dtiSetpointsFL->torqueLimNeg_dA), sizeof(dtiSetpointsFL->torqueLimNeg_dA), canTX200Hz_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_TORLIMNEG, &(dtiSetpointsFR->torqueLimNeg_dA), sizeof(dtiSetpointsFR->torqueLimNeg_dA), canTX200Hz_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_TORLIMNEG, &(dtiSetpointsRR->torqueLimNeg_dA), sizeof(dtiSetpointsRR->torqueLimNeg_dA), canTX200Hz_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_TORLIMNEG, &(dtiSetpointsRL->torqueLimNeg_dA), sizeof(dtiSetpointsRL->torqueLimNeg_dA), canTX200Hz_period_ms);
+            }
+        
+            if (isTorqueMode){
+                bool curr_match = (dtiSetpointsFL->ACCurrent_dA == dtiSetpointsFR->ACCurrent_dA) &&
+                    (dtiSetpointsFL->ACCurrent_dA == dtiSetpointsRL->ACCurrent_dA) &&
+                    (dtiSetpointsFL->ACCurrent_dA == dtiSetpointsRR->ACCurrent_dA);
+                
+                if(curr_match){
+                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_CURRENT, &(dtiSetpointsFL->ACCurrent_dA), sizeof(dtiSetpointsFL->ACCurrent_dA), canTX200Hz_period_ms);
+                }
+                else{
+                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_CURRENT, &(dtiSetpointsFL->ACCurrent_dA), sizeof(dtiSetpointsFL->ACCurrent_dA), canTX200Hz_period_ms);
+                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_CURRENT, &(dtiSetpointsFR->ACCurrent_dA), sizeof(dtiSetpointsFR->ACCurrent_dA), canTX200Hz_period_ms);
+                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_CURRENT, &(dtiSetpointsRL->ACCurrent_dA), sizeof(dtiSetpointsRR->ACCurrent_dA), canTX200Hz_period_ms);
+                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_CURRENT, &(dtiSetpointsRR->ACCurrent_dA), sizeof(dtiSetpointsRL->ACCurrent_dA), canTX200Hz_period_ms);
+                }
+            } else {
+                bool vel_match =    (dtiSetpointsFL->velocity_erpm == dtiSetpointsFR->velocity_erpm) &&
+                                    (dtiSetpointsFL->velocity_erpm == dtiSetpointsRL->velocity_erpm) &&
+                                    (dtiSetpointsFL->velocity_erpm == dtiSetpointsRR->velocity_erpm);
+                
+                if(vel_match){
+                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_VELOCITY, &(dtiSetpointsFL->velocity_erpm), sizeof(dtiSetpointsFL->velocity_erpm), canTX200Hz_period_ms);
+                }
+                else{
+                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_VELOCITY, &(dtiSetpointsFL->velocity_erpm), sizeof(dtiSetpointsFL->velocity_erpm), canTX200Hz_period_ms);
+                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_VELOCITY, &(dtiSetpointsFR->velocity_erpm), sizeof(dtiSetpointsFR->velocity_erpm), canTX200Hz_period_ms);
+                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_VELOCITY, &(dtiSetpointsRL->velocity_erpm), sizeof(dtiSetpointsRL->velocity_erpm), canTX200Hz_period_ms);
+                    sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_VELOCITY, &(dtiSetpointsRR->velocity_erpm), sizeof(dtiSetpointsRR->velocity_erpm), canTX200Hz_period_ms);
+                }
+            }
         }
         else {
             drive_enable = 0;
@@ -1388,10 +1370,10 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
         dim_params_callback(canb_rx, canID, data, dataLen);
     }
 
-    if(canID == CMR_CANID_CDC_POWER_UPDATE) {
-    	cmr_canCDCPowerLimit_t *limit = (cmr_canCDCPowerLimit_t*) data;
-    	setPowerLimit(true, MOTOR_FL, limit->powerLimit_kW);
-    }
+    // if(canID == CMR_CANID_CDC_POWER_UPDATE) {
+    // 	cmr_canCDCPowerLimit_t *limit = (cmr_canCDCPowerLimit_t*) data;
+    // 	setPowerLimit(true, MOTOR_FL, limit->powerLimit_kW);
+    // }
 
     // Update the RX Meta array
     cmr_canRXMeta_t *rxMetaArray = NULL;
