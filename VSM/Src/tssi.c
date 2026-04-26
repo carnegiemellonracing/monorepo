@@ -16,6 +16,8 @@
 #include <CMR/pwm.h>           // PWM interface
 #include <CMR/tasks.h>
 
+#define INIT_WAIT_TIME_MS 15000
+
 /** @brief TSSI control task priority. */
 static const uint32_t tssiControlPriority = 2;
 /** @brief TSSI control task period. */
@@ -33,16 +35,28 @@ static cmr_task_t tssiControl_task;
 static void tssiControl(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
+    static bool initStarted = false;
+    static TickType_t initStartTime = 0;
     TickType_t lastWakeTime = xTaskGetTickCount();
 
     while (1) {
-        if(getAMSError() || !cmr_gpioRead(GPIO_IN_IMD_ERR_COND_N)){
-            pwmSetDutyCycle(PWM_RED, 50);
-            pwmSetDutyCycle(PWM_GREEN, 0); 
+        if(!initStarted) {
+            initStarted = true;
+            initStartTime = xTaskGetTickCount();
         }
-        else{
+        else if (initStarted && lastWakeTime - initStartTime < INIT_WAIT_TIME_MS) {
             pwmSetDutyCycle(PWM_GREEN, 100);
             pwmSetDutyCycle(PWM_RED, 0);
+        }
+        else {
+            if(getAMSError() || !cmr_gpioRead(GPIO_IN_IMD_ERR_COND_N)){
+                pwmSetDutyCycle(PWM_RED, 50);
+                pwmSetDutyCycle(PWM_GREEN, 0); 
+            }
+            else{
+                pwmSetDutyCycle(PWM_GREEN, 100);
+                pwmSetDutyCycle(PWM_RED, 0);
+            }
         }
 
         vTaskDelayUntil(&lastWakeTime, tssiControl_period_ms);

@@ -685,6 +685,7 @@ void runControls (
     int32_t swAngle_millideg_FR,
     int32_t battVoltage_mV,
     int32_t battCurrent_mA,
+    bool ctrlOn,
     bool blank_command )
 {
 
@@ -726,7 +727,10 @@ void runControls (
         }
         case CMR_CAN_GEAR_FAST: {
             disableTorqueMode();
-            // setFastTorque(throttlePos_u8);
+            if(!ctrlOn) {
+                setFastTorque(throttlePos_u8);
+                break;
+            }
             setFastTorqueWithBias(throttlePos_u8, front_bias);
             setPowerLimit(false, MOTOR_FL, 10.0 * front_bias);
             setPowerLimit(false, MOTOR_FR, 10.0 * front_bias);
@@ -737,6 +741,10 @@ void runControls (
         }
         case CMR_CAN_GEAR_ENDURANCE: {
             disableTorqueMode();
+            if(!ctrlOn) {
+                setFastTorque(throttlePos_u8);
+                break;
+            }
             // setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
             set_regen(throttlePos_u8);
             // set_regen_with_slew(throttlePos_u8, 29.0f);
@@ -744,6 +752,10 @@ void runControls (
         }
         case CMR_CAN_GEAR_AUTOX: {
             disableTorqueMode();
+            if(!ctrlOn) {
+                setFastTorque(throttlePos_u8);
+                break;
+            }
             // const bool assumeNoTurn = true; // TC is not allowed to behave left-right asymmetrically due to the lack of testing
             // const bool ignoreYawRate = false; // TC takes yaw rate into account to prevent the vehicle from stopping unintendedly when turning at low speeds
             // const bool allowRegen = true; // regen-braking is allowed to protect the AC by keeping charge level high
@@ -756,11 +768,19 @@ void runControls (
         }
         case CMR_CAN_GEAR_SKIDPAD: {
             disableTorqueMode();
+            if(!ctrlOn) {
+                setFastTorque(throttlePos_u8);
+                break;
+            }
         	set_optimal_control((float)throttlePos_u8 / UINT8_MAX, swAngle_millideg_FL, swAngle_millideg_FR, false);
             break;
         }
         case CMR_CAN_GEAR_ACCEL: {
             disableTorqueMode();
+            if(!ctrlOn) {
+                setFastTorque(throttlePos_u8);
+                break;
+            }
             const bool assumeNoTurn = true; // TC is not allowed to behave left-right asymmetrically because it's meaningless in accel
             const bool ignoreYawRate = true;  // TC ignores yaw rate because it's meaningless in accel
             const bool allowRegen = false; // regen-braking is not allowed because it's meaningless in accel
@@ -773,6 +793,10 @@ void runControls (
         }
         case CMR_CAN_GEAR_TEST: {
             disableTorqueMode();
+            if(!ctrlOn) {
+                setFastTorque(throttlePos_u8);
+                break;
+            }
             setPowerLimit(false, MOTOR_FL, 40.0 * front_bias);
             setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
             setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
@@ -787,6 +811,10 @@ void runControls (
         case CMR_CAN_GEAR_REVERSE: {
             // for rule-compliance, the car shouldn't reverse
             disableTorqueMode();
+            if(!ctrlOn) {
+                setFastTorque(throttlePos_u8);
+                break;
+            }
             setTorqueLimsAllProtected(0.0f, 0.0f);
             setVelocityInt16All(0);
             break;
