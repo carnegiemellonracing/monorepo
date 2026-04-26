@@ -41,7 +41,8 @@ typedef enum {
     CANRX_VEH_SENSORIC_PITCH_ROLL,
     CANRX_VEH_SENSORIC_ACC,
     CANRX_VEH_SENSORIC_RATE,
-    CANRX_VEH_LAUNCH_CONTROL_BUTTON_SPOOF,  /**< @brief Used for testing launch control without the DIM. */
+    CANRX_VEH_AS_RES,
+    CANRX_VEH_AS_TANK_PRESSURE,
     CANRX_VEH_LEN                   /**< @brief Number of periodic CAN messages. */
 } canVehicleRX_t;
 
@@ -94,6 +95,12 @@ typedef enum {
     
     CANRX_TRAC_DTI_ERROR_MESSAGES,
     CANRX_TRAC_HVI_SENSE,             /**< @brief High voltage, current, and power sense in inverters. */
+
+    CANRX_TRAC_EMD_MEASUREMENT,
+    CANRX_TRAC_EMD_TEMPERATURE,
+    CANRX_TRAC_IVT_CURRENT, 
+    CANRX_TRAC_IVT_VOLTAGE,
+    
     CANRX_TRAC_LEN                    /**< @brief Number of periodic CAN messages. */
 } canTractiveRX_t;
 
@@ -135,8 +142,10 @@ typedef enum {
     CANRX_DAQ_LINPOTS_LEFTS,    /**< @brief front left load cell/newtons. */
     CANRX_DAQ_LINPOTS_RIGHTS,   /**< @brief front right load cell/newtons. */
     CANRX_DAQ_MEMORATOR_BROADCAST,
+    CANRX_DAQ_HEARTBEAT_COMPUTE,
     CANRX_DAQ_AUTONOMOUS_ACTION,
-    CANRX_DAQ_AUTONOMOUS_PID_CONSTANTS, /**< @brief Autonomous PID Constants used for tuning*/
+    CANRX_DAQ_AUTONOMOUS_PID_CONSTANTS, /**< @brief Autonomous PID Constants used for tuning. */
+    CANRX_DAQ_CUBEMARS_DATA,    /**< @brief Steering motor published data. */
     CANRX_DAQ_LEN               /**< @brief Number of periodic CAN messages. */
 } canDaqRX_t;
 
@@ -210,6 +219,7 @@ int16_t getDTITorque(canRX_t rxMsg);
 float canEmdHvVoltage();
 float canEmdHvCurrent();
 int32_t getDTIERPM(canTractiveRX_t rxMsg);
+int16_t getDTIInputVoltage(canTractiveRX_t rxMsg);
 int16_t getDTIACCurrent_dA(canTractiveRX_t rxMsg);
 int16_t getDTIDCCurrent_dA(canTractiveRX_t rxMsg);
 int16_t getDTICtlrTemp_dC(canTractiveRX_t rxMsg);

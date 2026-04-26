@@ -20,6 +20,7 @@
 #include "safety_filter.h"
 #include "../optimizer/optimizer.h"
 #include "26x_sensors.h"
+#include "sensors.h"s
 #include "lut.h"
 #include "constants.h"
 
@@ -708,7 +709,6 @@ static void set_regen(uint8_t throttlePos_u8) {
  *
  * @param gear Which gear the vehicle is in.
  * @param throttlePos_u8 Throttle position, 0-255.
- * @param brakePos_u8 Brake position, 0-255.
  * @param swAngle_millideg Steering wheel angle in degrees. Zero-centered, right turn positive.
  * @param battVoltage_mV Accumulator voltage in millivolts.
  * @param battCurrent_mA Accumulator current in milliamps.
@@ -717,12 +717,12 @@ static void set_regen(uint8_t throttlePos_u8) {
 void runControls (
     cmr_canGear_t gear,
     uint8_t throttlePos_u8,
-    uint8_t brakePos_u8,
     uint16_t brakePressurePsi_u8,
     int32_t swAngle_millideg_FL,
     int32_t swAngle_millideg_FR,
     int32_t battVoltage_mV,
     int32_t battCurrent_mA,
+    bool ctrlOn,
     bool blank_command )
 {
 
@@ -763,13 +763,25 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_FAST: {
-            // setFastTorque(throttlePos_u8);
+            disableTorqueMode();
+            if(!ctrlOn) {
+                setFastTorque(throttlePos_u8);
+                break;
+            }
             setFastTorqueWithBias(throttlePos_u8, front_bias);
+            setPowerLimit(false, MOTOR_FL, 10.0 * front_bias);
+            setPowerLimit(false, MOTOR_FR, 10.0 * front_bias);
+            setPowerLimit(false, MOTOR_RL, 10.0 * (1 - front_bias));
+            setPowerLimit(false, MOTOR_FR, 10.0 * (1 - front_bias));
             // set_fast_torque_with_slew(throttlePos_u8, 29.0f);
             break;
         }
         case CMR_CAN_GEAR_ENDURANCE: {
             disableTorqueMode();
+            if(!ctrlOn) {
+                setFastTorque(throttlePos_u8);
+                break;
+            }
             // setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
             set_regen(throttlePos_u8);
             // set_regen_with_slew(throttlePos_u8, 29.0f);
@@ -777,6 +789,10 @@ void runControls (
         }
         case CMR_CAN_GEAR_AUTOX: {
             disableTorqueMode();
+            if(!ctrlOn) {
+                setFastTorque(throttlePos_u8);
+                break;
+            }
             // const bool assumeNoTurn = true; // TC is not allowed to behave left-right asymmetrically due to the lack of testing
             // const bool ignoreYawRate = false; // TC takes yaw rate into account to prevent the vehicle from stopping unintendedly when turning at low speeds
             // const bool allowRegen = true; // regen-braking is allowed to protect the AC by keeping charge level high
@@ -789,11 +805,19 @@ void runControls (
         }
         case CMR_CAN_GEAR_SKIDPAD: {
             disableTorqueMode();
+            if(!ctrlOn) {
+                setFastTorque(throttlePos_u8);
+                break;
+            }
         	set_optimal_control((float)throttlePos_u8 / UINT8_MAX, swAngle_millideg_FL, swAngle_millideg_FR, false);
             break;
         }
         case CMR_CAN_GEAR_ACCEL: {
             disableTorqueMode();
+            if(!ctrlOn) {
+                setFastTorque(throttlePos_u8);
+                break;
+            }
             const bool assumeNoTurn = true; // TC is not allowed to behave left-right asymmetrically because it's meaningless in accel
             const bool ignoreYawRate = true;  // TC ignores yaw rate because it's meaningless in accel
             const bool allowRegen = false; // regen-braking is not allowed because it's meaningless in accel
@@ -805,7 +829,15 @@ void runControls (
             break;
         }
         case CMR_CAN_GEAR_TEST: {
-
+            disableTorqueMode();
+            if(!ctrlOn) {
+                setFastTorque(throttlePos_u8);
+                break;
+            }
+            setPowerLimit(false, MOTOR_FL, 40.0 * front_bias);
+            setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
+            setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
+            setPowerLimit(false, MOTOR_FR, 40.0 * (1 - front_bias));
             // float target_speed_mps = 5.0f;
             // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
             // set_motor_speed(throttlePos_u8, target_speed_mps, false);
@@ -856,6 +888,10 @@ void runControls (
         case CMR_CAN_GEAR_REVERSE: {
             // for rule-compliance, the car shouldn't reverse
             disableTorqueMode();
+            if(!ctrlOn) {
+                setFastTorque(throttlePos_u8);
+                break;
+            }
             setTorqueLimsAllProtected(0.0f, 0.0f);
             setVelocityInt16All(0);
             break;
@@ -960,9 +996,9 @@ void integrateCurrent() {
 		previousTickCount = xTaskGetTickCount();
         coulombCounting.KCoulombs = 0.001f;
 	}else{
-        const float packCurrent_kA = getPackCurrent()*0.001f;
+        const float packCurrent_mA = getCurrent_mA();
         const TickType_t currentTick = xTaskGetTickCount();
-        coulombCounting.KCoulombs += ((currentTick-previousTickCount)*0.001f)*packCurrent_kA;
+        coulombCounting.KCoulombs += ((currentTick-previousTickCount)*0.001f)*packCurrent_mA / 1000000.0f;
         previousTickCount = currentTick;
     }
 }
@@ -2168,13 +2204,11 @@ void setCruiseControlTorque (
  * @brief Calculates and sets motor torques and velocities for endurance.
  *
  * @param throttlePos_u8 Throttle position, 0-255.
- * @param brakePos_u8
  * @param swAngle_millideg Steering wheel angle in degrees. Zero-centered, right turn positive.
  */
 void setEnduranceTorque (
     int32_t avgMotorSpeed_RPM,
     uint8_t throttlePos_u8,
-    uint8_t brakePos_u8,
     int32_t swAngle_millideg,
     int32_t battVoltage_V_hvc,
     int32_t battCurrent_A_hvc,
@@ -2221,7 +2255,8 @@ void setEnduranceTorque (
         const float hv_voltage_V = ((float)(HVISense->packVoltage_cV)) * 1e-2f; // convert to volts
 
         volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
-        const float currentA = ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
+        const float currentA = 0;
+        // ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
         // apply power limit.
         const float power_consumed_W = hv_voltage_V * currentA;
 
@@ -2258,7 +2293,6 @@ void setEnduranceTorque (
 void setEnduranceTestTorque(
     int32_t avgMotorSpeed_RPM,
     uint8_t throttlePos_u8,
-    uint8_t brakePos_u8,
     int32_t swAngle_millideg,
     int32_t battVoltage_mV,
     int32_t battCurrent_mA,
@@ -2292,7 +2326,8 @@ void setEnduranceTestTorque(
         const float hv_voltage_V = ((float)(HVISense->packVoltage_cV)) * 1e-2f; // convert to volts
 
         volatile cmr_canVSMSensors_t *vsmSensor = canVehicleGetPayload(CANRX_VEH_VSM_SENSORS);
-        const float currentA = ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
+        const float currentA = 0;
+        // ((float)(vsmSensor->hallEffect_cA)) * 1e-2f; // convert to amps
         // apply power limit.
         const float power_consumed_W = hv_voltage_V * currentA;
 

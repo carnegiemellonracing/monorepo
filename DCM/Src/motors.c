@@ -165,6 +165,7 @@ static void motorsCommand (
         volatile cmr_canHVCPackVoltage_t *voltageHVC   = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
         volatile cmr_canHVCPackCurrent_t *currentHVC   = canVehicleGetPayload(CANRX_VEH_CURRENT_HVC);
         volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VSM_STATUS);
+        volatile cmr_canDIMActions_t     *actions      = canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON);
 
         //transmit Coulombs using HVI sense
         integrateCurrent();
@@ -206,12 +207,12 @@ static void motorsCommand (
 
                 runControls(gear,
                 		    dataFSM    -> torqueRequested,
-                            dataFSM    -> brakePedalPosition_percent,
                             dataFSM    -> brakePressureFront_PSI,
                             swangleFSM->steeringWheelAngle_millideg_FL,
                             swangleFSM->steeringWheelAngle_millideg_FR,
                             voltageHVC -> hvVoltage_mV,
                             currentHVC -> instantCurrent_mA,
+                            actions    -> controlsStatus,
                             blank_command);
                 //taskEXIT_CRITICAL();
 

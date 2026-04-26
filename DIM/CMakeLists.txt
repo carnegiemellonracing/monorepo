@@ -117,16 +117,19 @@ link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 add_executable(${CMAKE_PROJECT_NAME}
     # Project sources
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/adc.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/dv_error.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/can.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/error_leds.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/i2c.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/sensors.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/state.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/status_led.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/syscall.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/sysmem.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/tft.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/tftDL.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/state.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/tftContent.c
 
 )
