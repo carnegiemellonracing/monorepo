@@ -5,6 +5,11 @@
             "timeOut": 500,
             "type": "velocity_rpm"
         },
+        "CMR_CANID_AMS_ERROR": {
+            "cycleTime": 10,
+            "timeOut": 50,
+            "type": "uint8_t"
+        },
         "CMR_CANID_AS_MISSION_FINISHED": {
             "cycleTime": 100,
             "timeOut": 500,
@@ -323,8 +328,8 @@
             "type": "cmr_can_solver_settings_t"
         },
         "CMR_CANID_CUBEMARS_DATA": {
-            "cycleTime": 10,
-            "timeOut": 50,
+            "cycleTime": 5,
+            "timeOut": 25,
             "type": "cmr_canCubeMarsData_t"
         },
         "CMR_CANID_DIM_ACKNOWLEDGE": {
@@ -338,7 +343,7 @@
             "type": "cmr_canDIMActions_t"
         },
         "CMR_CANID_DIM_REQUEST": {
-            "cycleTime": 10,
+            "cycleTime": 5,
             "requestedDrsMode": {
                 "e": "DrsMode"
             },
@@ -348,7 +353,7 @@
             "requestedState": {
                 "e": "State"
             },
-            "timeOut": 50,
+            "timeOut": 25,
             "type": "cmr_canDIMRequest_t"
         },
         "CMR_CANID_DRS_STATE": {
@@ -433,6 +438,11 @@
             "timeOut": 500,
             "type": "cmr_canEMDTemperatures_t"
         },
+        "CMR_CANID_EXTENDED_CUBEMARS_DATA": {
+            "cycleTime": 200.0,
+            "timeOut": 1000,
+            "type": "cmr_canCubeMarsData_t"
+        },
         "CMR_CANID_FRONT_SLIP_RATIOS": {
             "cycleTime": 100,
             "timeOut": 500,
@@ -494,14 +504,14 @@
             }
         },
         "CMR_CANID_HEARTBEAT_COMPUTE": {
-            "cycleTime": 10,
+            "cycleTime": 5,
             "error": {
                 "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
             },
             "state": {
                 "e": "State"
             },
-            "timeOut": 50,
+            "timeOut": 25,
             "type": "cmr_canHeartbeat_t",
             "warning": {
                 "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
@@ -928,15 +938,15 @@
         "global_mappings": {
             "canrx_mappings": 192,
             "canrx_timeouts": 182,
-            "canrx_types": 63,
-            "constants": 262,
+            "canrx_types": 65,
+            "constants": 264,
             "struct_members": 0,
-            "variable_types": 326
+            "variable_types": 330
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 105
+        "total_canids": 107
     }
 }

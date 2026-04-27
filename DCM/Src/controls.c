@@ -728,10 +728,10 @@ void runControls (
         case CMR_CAN_GEAR_FAST: {
             disableTorqueMode();
             setFastTorqueWithBias(throttlePos_u8, front_bias);
-            setPowerLimit(false, MOTOR_FL, 12.0f * front_bias);
-            setPowerLimit(false, MOTOR_FR, 12.0f * front_bias);
-            setPowerLimit(false, MOTOR_RL, 12.0f * (1 - front_bias));
-            setPowerLimit(false, MOTOR_FR, 12.0f * (1 - front_bias));
+            setPowerLimit(false, MOTOR_FL, 40.0f * front_bias);
+            setPowerLimit(false, MOTOR_FR, 40.0f * front_bias);
+            setPowerLimit(false, MOTOR_RL, 40.0f * (1 - front_bias));
+            setPowerLimit(false, MOTOR_FR, 40.0f * (1 - front_bias));
             // set_fast_torque_with_slew(throttlePos_u8, 29.0f);
             break;
         }
@@ -741,8 +741,9 @@ void runControls (
                 setFastTorque(throttlePos_u8);
                 break;
             }
+            setFastTorqueWithBias(throttlePos_u8, front_bias);
             // setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
-            set_regen(throttlePos_u8);
+            // set_regen(throttlePos_u8);
             // set_regen_with_slew(throttlePos_u8, 29.0f);
             break;
         }

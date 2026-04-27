@@ -567,46 +567,6 @@ cmr_torque_limit_t getTorqueBudget() {
 	return getPreemptiveTorqueLimits();
 }
 
-/* @brief Sets the power limit for all motors or a specific motor
- */
-void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw) {
-
-    float hvVoltage_V;
-    // if(use_emd) {
-    //     cmr_canEMDMeasurements_t *emdMeasure = canTractiveGetPayload(CANRX_TRAC_EMD_MEASUREMENT);
-    //     hvVoltage_V = emdMeasure->voltage;
-    // }
-    // else {
-    //     volatile cmr_canHVSense_t *HVISense = canVehicleGetPayload(CANRX_HVI_SENSE);
-    //     // @todo This is wrong rn. Idk why the struct cooked
-    //     hvVoltage_V = ((float) HVISense->packVoltage_cV);
-    // }
-    cmr_canHVBMSPackVoltage_t *packVoltage = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
-    hvVoltage_V = (float)(packVoltage->battVoltage_mV) / 1000.0f;
-    // float hvVoltage_V = 500.0f;
-    uint16_t current_dA = (int)((10.0f*((float)powerLimit_kw*1000.0f))/hvVoltage_V); // send current in deciamps
-    current_dA = CLAMP(0, current_dA, DTI_MAX_DC_CURRENT_PER_MOTOR_DA);
-    // current = current << 8 | ((current >> 8) & 0xFF); 
-    if(all) {
-        sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_MAX_CURRENT, &current_dA, sizeof(current_dA), motorsCommand_period_ms);
-    } else {
-        switch(motor){
-            case MOTOR_FL:
-                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_MAX_CURRENT, &current_dA, sizeof(current_dA), motorsCommand_period_ms);
-                break;
-            case MOTOR_FR:
-                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_MAX_CURRENT, &current_dA, sizeof(current_dA), motorsCommand_period_ms);
-                break;
-            case MOTOR_RL:
-                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_MAX_CURRENT, &current_dA, sizeof(current_dA), motorsCommand_period_ms);
-                break;
-            case MOTOR_RR:
-                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_MAX_CURRENT, &current_dA, sizeof(current_dA), motorsCommand_period_ms);
-                break;
-        }
-    }
-}
-
 /**
  * @brief Gets a read-only pointer to specified DTI inverter setpoints.
  *
@@ -630,4 +590,8 @@ const cmr_DTI_RX_Message_t* getDTISetpoints(motorLocation_t motor) {
     dst->ACCurrent_dA = torqueToCurrent(src->torque_mNm);
 
     return (const cmr_DTI_RX_Message_t *) dst;
+}
+
+cmr_canGear_t getCurrentGear() {
+    return gear;
 }

@@ -11,6 +11,9 @@
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/can_ids.h>    // CMR CAN IDs
 
+
+#include "motors_helper.h"
+
 /**
  * @brief Vehicle CAN receive metadata indices.
  *
@@ -224,3 +227,4 @@ int16_t getDTIACCurrent_dA(canTractiveRX_t rxMsg);
 int16_t getDTIDCCurrent_dA(canTractiveRX_t rxMsg);
 int16_t getDTICtlrTemp_dC(canTractiveRX_t rxMsg);
 int16_t getDTIMotorTemp_dC(canTractiveRX_t rxMsg);
+void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw);

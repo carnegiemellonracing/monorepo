@@ -19,10 +19,12 @@
 #include <CMR/can_types.h>  
 #include <CMR/fdcan.h>      // fdcan interface
 #include <CMR/config_screen_helper.h>
+#include <CMR/utils.h>
 
 #include "can.h"    // Interface to implement
 #include "adc.h"    // adcVSense, adcISense
 #include "motors.h" // cmr_DTISetpoints_t
+#include "constants.h"
 #include "daq.h"
 #include "i2c.h"
 #include "drs_controls.h"
@@ -36,6 +38,11 @@ extern volatile uint8_t currentParameters[MAX_MENU_ITEMS];
 volatile uint8_t parametersFromDIM[MAX_MENU_ITEMS];
 volatile cmr_driver_profile_t currentDriver = Default;
 volatile bool framWrite_flag = false;
+
+volatile float powerLimitFL_kW = 20.0f;
+volatile float powerLimitFR_kW = 20.0f;
+volatile float powerLimitRL_kW = 20.0f;
+volatile float powerLimitRR_kW = 20.0f;
 
 extern volatile cmr_can_rtc_data_t time;
 extern volatile float odometer_km;
@@ -960,6 +967,8 @@ static void canTX200Hz(void *pvParameters) {
     cmr_canFrontWheelVelocity_t front_velocity;
     cmr_canRearWheelVelocity_t rear_velocity;
 
+    cmr_canHVBMSPackVoltage_t *packVoltage = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
+
     static uint8_t drive_enable = 1;
 
     // does not send drive enable until the first torque request
@@ -1057,6 +1066,27 @@ static void canTX200Hz(void *pvParameters) {
             void *resData = canVehicleGetPayload(CANRX_VEH_AS_RES);
             canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AS_RES, resData, 8, canTX200Hz_period_ms);
             new_res_message = false;
+        }
+
+        float hvVoltage_V = (float)(packVoltage->battVoltage_mV) / 1000.0f;
+        uint16_t currentFL_dA = (int)((10.0f*((float)powerLimitFL_kW*1000.0f))/hvVoltage_V);
+        uint16_t currentFR_dA = (int)((10.0f*((float)powerLimitFR_kW*1000.0f))/hvVoltage_V);
+        uint16_t currentRL_dA = (int)((10.0f*((float)powerLimitRL_kW*1000.0f))/hvVoltage_V);
+        uint16_t currentRR_dA = (int)((10.0f*((float)powerLimitRR_kW*1000.0f))/hvVoltage_V);
+        currentFL_dA = CLAMP(0, currentFL_dA, DTI_MAX_DC_CURRENT_PER_MOTOR_DA);
+        currentFR_dA = CLAMP(0, currentFR_dA, DTI_MAX_DC_CURRENT_PER_MOTOR_DA);
+        currentRL_dA = CLAMP(0, currentRL_dA, DTI_MAX_DC_CURRENT_PER_MOTOR_DA);
+        currentRR_dA = CLAMP(0, currentRR_dA, DTI_MAX_DC_CURRENT_PER_MOTOR_DA);
+        if(currentFL_dA == currentFR_dA
+        && currentFR_dA == currentRL_dA
+        && currentRL_dA == currentRR_dA) {
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_MAX_CURRENT, &currentFL_dA, sizeof(uint16_t), canTX10Hz_period_ms);
+        }
+        else {
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_MAX_CURRENT, &currentFL_dA, sizeof(uint16_t), canTX10Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_MAX_CURRENT, &currentFR_dA, sizeof(uint16_t), canTX10Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_MAX_CURRENT, &currentRL_dA, sizeof(uint16_t), canTX10Hz_period_ms);
+            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_MAX_CURRENT, &currentRR_dA, sizeof(uint16_t), canTX10Hz_period_ms);
         }
 
         daqWheelSpeedFeedback(&speedFeedback);
@@ -1370,10 +1400,15 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
         dim_params_callback(canb_rx, canID, data, dataLen);
     }
 
-    // if(canID == CMR_CANID_CDC_POWER_UPDATE) {
-    // 	cmr_canCDCPowerLimit_t *limit = (cmr_canCDCPowerLimit_t*) data;
-    // 	setPowerLimit(true, MOTOR_FL, limit->powerLimit_kW);
-    // }
+    if(canID == CMR_CANID_CDC_POWER_UPDATE && getCurrentGear() == CMR_CAN_GEAR_ENDURANCE) {
+    	cmr_canCDCPowerLimit_t *limit = (cmr_canCDCPowerLimit_t*) data;
+        float front_powerLimit_kW = (limit->powerLimit_kW / 2.0f) * front_bias;
+        float rear_powerLimit_kW = (limit->powerLimit_kW / 2.0f) * (1 - front_bias);
+    	setPowerLimit(false, MOTOR_FL, front_powerLimit_kW);
+        setPowerLimit(false, MOTOR_FR, front_powerLimit_kW);
+        setPowerLimit(false, MOTOR_RL, rear_powerLimit_kW);
+        setPowerLimit(false, MOTOR_RR, rear_powerLimit_kW);
+    }
 
     // Update the RX Meta array
     cmr_canRXMeta_t *rxMetaArray = NULL;
@@ -1828,5 +1863,33 @@ static void transmitCDC_DIMconfigMessages(){
     }
 
 
+}
+
+
+/* @brief Sets the power limit for all motors or a specific motor
+ */
+void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw) { 
+    float clamp_powerLimit_kw = CLAMP(0.0f, powerLimit_kw, 35.0f);
+    if(all) {
+        powerLimitFL_kW = clamp_powerLimit_kw;
+        powerLimitFR_kW = clamp_powerLimit_kw;
+        powerLimitRL_kW = clamp_powerLimit_kw;
+        powerLimitRR_kW = clamp_powerLimit_kw;
+    } else {
+        switch(motor){
+            case MOTOR_FL:
+                powerLimitFL_kW = clamp_powerLimit_kw;
+                break;
+            case MOTOR_FR:
+                powerLimitFR_kW = clamp_powerLimit_kw;
+                break;
+            case MOTOR_RL:
+                powerLimitRL_kW = clamp_powerLimit_kw;
+                break;
+            case MOTOR_RR:
+                powerLimitRR_kW = clamp_powerLimit_kw;
+                break;
+        }
+    }
 }
 
