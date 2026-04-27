@@ -86,11 +86,11 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
         sendFirstError(BADSTATE_DIM);
     }
 
-    if (getBadModuleState(CANRX_HEARTBEAT_HVBMS, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
-        heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
-        badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_HVBMS;
-        sendFirstError(BADSTATE_HVBMS);
-    }
+    // if (getBadModuleState(CANRX_HEARTBEAT_HVBMS, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
+    //     heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
+    //     badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_HVBMS;
+    //     sendFirstError(BADSTATE_HVBMS);
+    // }
     // Set software latch in the event of BMS voltage or temperature errors.
     // See rule EV 5.1.10.
     if (getAMSError()) {
@@ -422,10 +422,11 @@ bool invertersPass(TickType_t lastWakeTime_ms){
 }
 
 bool getAMSError(){
-    TickType_t now = xTaskGetTickCount();
-    cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
-    return (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), now) != 0)
-     || (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVBMS]), now) != 0)
-     || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_PACK_OVERVOLT)
-     || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT);
+    return false;
+    // TickType_t now = xTaskGetTickCount();
+    // uint8_t *amsError = getPayload(CANRX_AMS_ERROR);
+    // return /*(cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), now) != 0)
+    //  || (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVBMS]), now) != 0)
+    //  || */(*amsError & CMR_CAN_HVBMS_ERROR_PACK_OVERVOLT)
+    //  || (*amsError & CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT);
 }

@@ -16,9 +16,9 @@ volatile int BMBErrs[BOARD_NUM] = { 0 };
 // error checking becomes its own task
 static cmr_canHVCError_t errorRegister = CMR_CAN_HVC_ERROR_NONE;
 
-cmr_canHVCError_t checkHVBMSErrors(){
+cmr_canHV_BMSHeartbeatErr_t checkHVBMSErrors(){
     clearHVBMSErrorReg();
-    cmr_canHVCError_t errorFlags = errorRegister; 
+    cmr_canHV_BMSHeartbeatErr_t errorFlags = errorRegister; 
     uint16_t maxCellTemp = getPackMaxCellTemp();
     if(checkBMBTimeout()) { //BMSM 
         // TODO E2 devise a UART monitor system

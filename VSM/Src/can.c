@@ -54,6 +54,13 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_NONE
     },
+    [CANRX_AMS_ERROR] = {
+        .canID = CMR_CANID_AMS_ERROR,
+        .timeoutError_ms = 100,
+        .errorFlag = CMR_CAN_ERROR_NONE,
+        .timeoutWarn_ms = 25,
+        .warnFlag = CMR_CAN_WARN_NONE
+    },
     [CANRX_HEARTBEAT_COMPUTE] = {
         .canID = CMR_CANID_HEARTBEAT_COMPUTE,
         .timeoutError_ms = 2000,
@@ -387,6 +394,7 @@ void canInit(void) {
             .ids = {
                     CMR_CANID_AS_PRESSURE_READINGS,
                     CMR_CANID_DTI_ERROR_MESSAGES,
+                    CMR_CANID_AMS_ERROR
             }
 		},
     };

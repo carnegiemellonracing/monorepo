@@ -55,6 +55,8 @@ typedef enum {
     CMR_CANID_IVT_CURRENT = 0x521,              /**< @brief IVT current. */
     CMR_CANID_IVT_VOLTAGE = 0x522,              /**< @brief IVT voltage. */
 
+    CMR_CANID_AMS_ERROR  = 0x523,
+
 
     CMR_CANID_CDC_WHEEL_SPEEDS = 0x132,         /**< @brief CDC (19e) wheel speeds. */
     CMR_CANID_CDC_SOLENOID_PTC = 0x142,         /**< @brief CDC (19e) brake solenoid command. */

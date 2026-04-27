@@ -26,6 +26,9 @@ int BMBNum = 0;
 
 bool use_emd = false;
 
+bool bms_init_start = false;
+TickType_t bms_start_time;
+
 /**
  * @brief CAN periodic message receive metadata
  *
@@ -177,11 +180,21 @@ static void canTX100Hz(void *pvParameters) {
 //        (void *) heartbeatVSMMeta->payload;
 
     TickType_t lastWakeTime = xTaskGetTickCount();
+    if(!bms_init_start) {
+        bms_init_start = true;
+        bms_start_time = xTaskGetTickCount();
+    }
+    
     while (1) {
         sendHeartbeat(lastWakeTime);
         sendBMSBMBStatusErrors();
         sendBMSMinMaxCellTemp();
         checkClearErr();
+        uint8_t amsError = 0;
+        amsError |= CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT;
+        if(lastWakeTime - bms_start_time > 15000) {
+            canTX(CMR_CANID_AMS_ERROR, &amsError, sizeof(uint8_t), canTX100Hz_period_ms);
+        }
         // sendAllBMBVoltages(BMBNum);
         BMBNum = (BMBNum+1) % 16;
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
