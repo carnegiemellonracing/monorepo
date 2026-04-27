@@ -125,9 +125,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_RUN) {
                 // T8: Mode requested is not RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else if (getHVmillivolts() < MIN_PACK_THRESH) {
-                nextState = CMR_CAN_HVC_STATE_ERROR;
-            }else {
+            } else {
                 nextState = CMR_CAN_HVC_STATE_DRIVE;
             }
             break;
