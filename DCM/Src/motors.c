@@ -165,6 +165,7 @@ static void motorsCommand (
         volatile cmr_canHVCPackVoltage_t *voltageHVC   = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
         volatile cmr_canHVCPackCurrent_t *currentHVC   = canVehicleGetPayload(CANRX_VEH_CURRENT_HVC);
         volatile cmr_canVSMStatus_t      *vsm          = canVehicleGetPayload(CANRX_VSM_STATUS);
+        volatile cmr_canDIMActions_t     *actions      = canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON);
 
         //transmit Coulombs using HVI sense
         integrateCurrent();
@@ -206,12 +207,12 @@ static void motorsCommand (
 
                 runControls(gear,
                 		    dataFSM    -> torqueRequested,
-                            dataFSM    -> brakePedalPosition_percent,
                             dataFSM    -> brakePressureFront_PSI,
                             swangleFSM->steeringWheelAngle_millideg_FL,
                             swangleFSM->steeringWheelAngle_millideg_FR,
                             voltageHVC -> hvVoltage_mV,
                             currentHVC -> instantCurrent_mA,
+                            actions    -> controlsStatus,
                             blank_command);
                 //taskEXIT_CRITICAL();
 
@@ -250,8 +251,7 @@ static void motorsCommand (
             case CMR_CAN_GLV_ON: {
                 // pumpsOn();
                 pumpsOff();
-            	// mcCtrlOff();
-                mcCtrlOn();
+            	mcCtrlOff();
 
                 if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
                     mcCtrlOn();
@@ -270,8 +270,7 @@ static void motorsCommand (
             default: {
                 // pumpsOn();
                 pumpsOff();
-                // mcCtrlOff();
-                mcCtrlOn();
+                mcCtrlOff();
                 sendBlankCommand();
                 break;
             }
@@ -571,28 +570,38 @@ cmr_torque_limit_t getTorqueBudget() {
 /* @brief Sets the power limit for all motors or a specific motor
  */
 void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw) {
-    volatile cmr_canHVSense_t *HVISense = canVehicleGetPayload(CANRX_HVI_SENSE);
-    // @todo This is wrong rn. Idk why the struct cooked
-    float hvVoltage_V = ((float) HVISense->packVoltage_cV);
+
+    float hvVoltage_V;
+    // if(use_emd) {
+    //     cmr_canEMDMeasurements_t *emdMeasure = canTractiveGetPayload(CANRX_TRAC_EMD_MEASUREMENT);
+    //     hvVoltage_V = emdMeasure->voltage;
+    // }
+    // else {
+    //     volatile cmr_canHVSense_t *HVISense = canVehicleGetPayload(CANRX_HVI_SENSE);
+    //     // @todo This is wrong rn. Idk why the struct cooked
+    //     hvVoltage_V = ((float) HVISense->packVoltage_cV);
+    // }
+    cmr_canHVBMSPackVoltage_t *packVoltage = canVehicleGetPayload(CANRX_VEH_VOLTAGE_HVC);
+    hvVoltage_V = (float)(packVoltage->battVoltage_mV) / 1000.0f;
     // float hvVoltage_V = 500.0f;
-    uint16_t current = (int)((10.0f*((float)powerLimit_kw*1000.0f))/hvVoltage_V); // send current in deciamps
-    current = CLAMP(0, current, DTI_MAX_DC_CURRENT_PER_MOTOR_DA);
+    uint16_t current_dA = (int)((10.0f*((float)powerLimit_kw*1000.0f))/hvVoltage_V); // send current in deciamps
+    current_dA = CLAMP(0, current_dA, DTI_MAX_DC_CURRENT_PER_MOTOR_DA);
     // current = current << 8 | ((current >> 8) & 0xFF); 
     if(all) {
-        sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+        sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_MAX_CURRENT, &current_dA, sizeof(current_dA), motorsCommand_period_ms);
     } else {
         switch(motor){
             case MOTOR_FL:
-                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FL_SET_MAX_CURRENT, &current_dA, sizeof(current_dA), motorsCommand_period_ms);
                 break;
             case MOTOR_FR:
-                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_FR_SET_MAX_CURRENT, &current_dA, sizeof(current_dA), motorsCommand_period_ms);
                 break;
             case MOTOR_RL:
-                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RL_SET_MAX_CURRENT, &current_dA, sizeof(current_dA), motorsCommand_period_ms);
                 break;
             case MOTOR_RR:
-                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_MAX_CURRENT, &current, sizeof(current), motorsCommand_period_ms);
+                sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_RR_SET_MAX_CURRENT, &current_dA, sizeof(current_dA), motorsCommand_period_ms);
                 break;
         }
     }

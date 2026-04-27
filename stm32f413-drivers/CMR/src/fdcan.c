@@ -119,12 +119,12 @@ static void cmr_canRXData(
     cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen
 ) {
     cmr_canRXMeta_t *meta = cmr_canRXMetaFind(can, canID);
-    if (meta == NULL) {
-        // Not a configured message; attempt to use the callback.
-        if (can->rxCallback) {
-            can->rxCallback(can, canID, data, dataLen);
-        }
 
+    if (can->rxCallback) {
+        can->rxCallback(can, canID, data, dataLen);
+    }
+
+    if (meta == NULL){
         return;
     }
     // shifted right because of macro definitions

@@ -38,8 +38,6 @@ typedef enum {
     CMR_CANID_HEARTBEAT_LV_BMS = 0x107, /**< @brief LV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_HV_BMS = 0x108, /**< @brief HV-BMS heatbeart. */
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
-    CMR_CANID_EAB_STATUS = 0x10B, // conflicting with VSM_FIRST_ERROR
-    CMR_CANID_ASMS_STATUS = 0x193,
 
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
     CMR_CANID_VSM_SENSORS = 0x200,              /**< @brief VSM sensor data. */
@@ -53,6 +51,10 @@ typedef enum {
     CMR_CANID_HVC_MINMAX_CELL_VOLTAGE = 0x310,  /**< @brief HVC pack min and max cell voltages*/
     CMR_CANID_HVC_MINMAX_CELL_TEMPS = 0x311,    /**< @brief HVC pack min and max cell temps. */
     CMR_CANID_HVC_PACK_CURRENT = 0x302,         /**< @brief HVC pack current. */
+
+    CMR_CANID_IVT_CURRENT = 0x521,              /**< @brief IVT current. */
+    CMR_CANID_IVT_VOLTAGE = 0x522,              /**< @brief IVT voltage. */
+
 
     CMR_CANID_CDC_WHEEL_SPEEDS = 0x132,         /**< @brief CDC (19e) wheel speeds. */
     CMR_CANID_CDC_SOLENOID_PTC = 0x142,         /**< @brief CDC (19e) brake solenoid command. */
@@ -84,6 +86,8 @@ typedef enum {
     CMR_CANID_CDC_COULOMB_COUNTING = 0x6E3,
     CMR_CANID_CDC_POWER_LOG = 0x6E4,             /**< @brief DAQ Live to CDC - changing power limit. */
 
+    CMR_CANID_CUBEMARS_DATA = 0x6E6,
+
     CMR_CANID_FSM_DATA = 0x133,                 /**< @brief FSM data. */
     CMR_CANID_CELL_BALANCE_ENABLE = 0x134,
     CMR_CANID_FSM_SWANGLE = 0x135,
@@ -111,38 +115,38 @@ typedef enum {
      * first and then cdc config packets in ascending order. This is imperative to maintaining
      * code modularity :)
     */
-    CMR_CANID_DIM_CONFIG0_DRV0 = 0x600,         /**< @brief DIM config request */
-    CMR_CANID_DIM_CONFIG1_DRV0 = 0x601,
-    CMR_CANID_DIM_CONFIG2_DRV0 = 0x602,
-    CMR_CANID_DIM_CONFIG3_DRV0 = 0x603,
-    CMR_CANID_CDC_CONFIG0_DRV0 = 0x604,
-    CMR_CANID_CDC_CONFIG1_DRV0 = 0x605,
-    CMR_CANID_CDC_CONFIG2_DRV0 = 0x606,
-    CMR_CANID_CDC_CONFIG3_DRV0 = 0x607,
-    CMR_CANID_DIM_CONFIG0_DRV1 = 0x608,
-    CMR_CANID_DIM_CONFIG1_DRV1 = 0x609,
-    CMR_CANID_DIM_CONFIG2_DRV1 = 0x60a,
-    CMR_CANID_DIM_CONFIG3_DRV1 = 0x60b,
-    CMR_CANID_CDC_CONFIG0_DRV1 = 0x60c,
-    CMR_CANID_CDC_CONFIG1_DRV1 = 0x60d,
-    CMR_CANID_CDC_CONFIG2_DRV1 = 0x60e,
-    CMR_CANID_CDC_CONFIG3_DRV1 = 0x60f,
-    CMR_CANID_DIM_CONFIG0_DRV2 = 0x610,
-    CMR_CANID_DIM_CONFIG1_DRV2 = 0x611,
-    CMR_CANID_DIM_CONFIG2_DRV2 = 0x612,
-    CMR_CANID_DIM_CONFIG3_DRV2 = 0x613,
-    CMR_CANID_CDC_CONFIG0_DRV2 = 0x614,
-    CMR_CANID_CDC_CONFIG1_DRV2 = 0x615,
-    CMR_CANID_CDC_CONFIG2_DRV2 = 0x616,
-    CMR_CANID_CDC_CONFIG3_DRV2 = 0x617,
-    CMR_CANID_DIM_CONFIG0_DRV3 = 0x618,
-    CMR_CANID_DIM_CONFIG1_DRV3 = 0x619,
-    CMR_CANID_DIM_CONFIG2_DRV3 = 0x61a,
-    CMR_CANID_DIM_CONFIG3_DRV3 = 0x61b,
-    CMR_CANID_CDC_CONFIG0_DRV3 = 0x61c,
-    CMR_CANID_CDC_CONFIG1_DRV3 = 0x61d,
-    CMR_CANID_CDC_CONFIG2_DRV3 = 0x61e,
-    CMR_CANID_CDC_CONFIG3_DRV3 = 0x61f,
+    CMR_CANID_DIM_CONFIG0_DRV0 = 0x620,         /**< @brief DIM config request */
+    CMR_CANID_DIM_CONFIG1_DRV0 = 0x621,
+    CMR_CANID_DIM_CONFIG2_DRV0 = 0x622,
+    CMR_CANID_DIM_CONFIG3_DRV0 = 0x623,
+    CMR_CANID_CDC_CONFIG0_DRV0 = 0x624,
+    CMR_CANID_CDC_CONFIG1_DRV0 = 0x625,
+    CMR_CANID_CDC_CONFIG2_DRV0 = 0x626,
+    CMR_CANID_CDC_CONFIG3_DRV0 = 0x627,
+    CMR_CANID_DIM_CONFIG0_DRV1 = 0x628,
+    CMR_CANID_DIM_CONFIG1_DRV1 = 0x629,
+    CMR_CANID_DIM_CONFIG2_DRV1 = 0x62a,
+    CMR_CANID_DIM_CONFIG3_DRV1 = 0x62b,
+    CMR_CANID_CDC_CONFIG0_DRV1 = 0x62c,
+    CMR_CANID_CDC_CONFIG1_DRV1 = 0x62d,
+    CMR_CANID_CDC_CONFIG2_DRV1 = 0x62e,
+    CMR_CANID_CDC_CONFIG3_DRV1 = 0x62f,
+    CMR_CANID_DIM_CONFIG0_DRV2 = 0x630,
+    CMR_CANID_DIM_CONFIG1_DRV2 = 0x631,
+    CMR_CANID_DIM_CONFIG2_DRV2 = 0x632,
+    CMR_CANID_DIM_CONFIG3_DRV2 = 0x633,
+    CMR_CANID_CDC_CONFIG0_DRV2 = 0x634,
+    CMR_CANID_CDC_CONFIG1_DRV2 = 0x635,
+    CMR_CANID_CDC_CONFIG2_DRV2 = 0x636,
+    CMR_CANID_CDC_CONFIG3_DRV2 = 0x637,
+    CMR_CANID_DIM_CONFIG0_DRV3 = 0x638,
+    CMR_CANID_DIM_CONFIG1_DRV3 = 0x639,
+    CMR_CANID_DIM_CONFIG2_DRV3 = 0x63a,
+    CMR_CANID_DIM_CONFIG3_DRV3 = 0x63b,
+    CMR_CANID_CDC_CONFIG0_DRV3 = 0x63c,
+    CMR_CANID_CDC_CONFIG1_DRV3 = 0x63d,
+    CMR_CANID_CDC_CONFIG2_DRV3 = 0x63e,
+    CMR_CANID_CDC_CONFIG3_DRV3 = 0x63f,
 
     CMR_CANID_AFC0_FAN_STATUS = 0x236,          /**< @brief AFC 0 fan status. */
     CMR_CANID_AFC0_DRIVER_TEMPS = 0x536,        /**< @brief AFC 0 temperatures. */
@@ -330,7 +334,9 @@ typedef enum {
 
     CMR_CANID_EMD_STATUS = 0x400,               /**< @brief EMD status. */
     CMR_CANID_EMD_MEASUREMENT_RETX = 0x401,     /**< @brief EMD measurement for HV voltage/current. */
-    CMR_CANID_EMD_MEASUREMENT = 0x402,          /**< @brief EMD measurement for HV voltage/current. */
+    CMR_CANID_EMD_MEASUREMENT = 0x10D,          /**< @brief EMD measurement for HV voltage/current. */
+    CMR_CANID_EMD_TEMPERATURE = 0x60D,          /**< @brief EMD measurement for HV voltage/current. */
+    CMR_CANID_EMD_EBS_PRESSURE = 0x500,         /**< @brief Pneumatic & hydraulic brake pressures transmitted to EMD. */       
 
     CMR_IZZIE_LOADCELL = 0x7F0,                 /**< @brief IZZIE Amp load data. */
     CMR_CANID_CONTROLS_DEBUG_GLOBAl = 0x7E0,    /**< @brief control algo testing data. */
@@ -381,13 +387,12 @@ typedef enum {
 
     //AS
     CMR_CANID_AS_RES_ENABLE = 0x000,
-    CMR_CANID_AS_RES = 0x18E,                   /**< @brief Autonomous RES (remote E-stop)*/
+    CMR_CANID_AS_RES = 0x18A,                   /**< @brief Autonomous RES (remote E-stop)*/
     CMR_CANID_AUTONOMOUS_ACTION = 0x190,        /**< @brief Autonomous Action*/
     CMR_CANID_AS_PRESSURE_READINGS = 0x191,     /**< @brief Autonomous Pressure Readings for Tank and EBS*/
     CMR_CANID_AS_RACK_DISPLACMENT = 0x192,      /**< @brief Rack Displacement Mesurment*/
-    CMR_CANID_ASMS_STATE = 0x193,
     CMR_CANID_AS_MISSION_FINISHED = 0x777,
-    CMR_CANID_AS_HEARTBEAT_COMPUTE = 0x109,
+    CMR_CANID_HEARTBEAT_COMPUTE = 0x10B,
 
     //MAXON
     CMR_CANID_MAXON_STATUS_WORD = 0x250,
@@ -544,7 +549,10 @@ typedef enum {
     CMR_CANID_LVBMS_BUS_VOLTAGE = 0x7fd,
     CMR_CANID_LVBMS_CURRENT = 0x7fe,
 
-    CMR_CANID_AUTO_PID = 0x31A,       
+    CMR_CANID_AUTO_PID = 0x31A,     
+    
+    CMR_CANID_RTC_DATE = 0x513,
+    CMR_CANID_RTC_TIME = 0x514,
 
 } cmr_canID_t;
 

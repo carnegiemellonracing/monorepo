@@ -23,7 +23,8 @@ typedef enum {
     CANRX_HEARTBEAT_VSM = 0,  /**< @brief VSM heartbeat. */
     CANRX_HVC_COMMAND,
 	CANRX_BALANCE_COMMAND,
-    CANRX_HEARTBEAT_HVC, 
+    CANRX_HEARTBEAT_HVC,
+    CANRX_EMD_TEMP,
     CANRX_LEN,     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 

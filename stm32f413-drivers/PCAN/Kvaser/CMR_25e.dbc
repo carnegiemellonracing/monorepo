@@ -40,7 +40,6 @@ SG_ VSM_ERR_FSMState : 20|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_DIMState : 19|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_PTCState : 18|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_APCState : 16|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ VSM_ERR_latchSoftware : 26|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_latchAMS : 26|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_latchIMD : 25|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_latchBSPD : 24|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -67,7 +66,6 @@ SG_ VSM_latched_ERR_PTCState : 12|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_latched_ERR_DIMState : 11|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_latched_ERR_PTCfState : 10|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_latched_ERR_APCState : 8|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ VSM_latched_ERR_latchSoftware : 18|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_latched_ERR_latchAMS : 18|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_latched_ERR_latchIMD : 17|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_latched_ERR_latchBSPD : 16|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -1976,7 +1974,6 @@ BA_ "GenSigStartValue" SG_ 272 VSM_ERR_FSMState 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_DIMState 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_PTCState 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_APCState 0;
-BA_ "GenSigStartValue" SG_ 272 VSM_ERR_latchSoftware 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_latchAMS 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_latchIMD 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_latchBSPD 0;
@@ -1997,7 +1994,6 @@ BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_PTCState 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_DIMState 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_PTCfState 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_APCState 0;
-BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_latchSoftware 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_latchAMS 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_latchIMD 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_latchBSPD 0;

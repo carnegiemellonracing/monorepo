@@ -4,6 +4,7 @@
  *  Created on: Jun 8, 2020
  *      Author: vamsi
  */
+#include <CMR/tasks.h>
 #include "state_task.h"
 #include "errors.h"
 #include <stdlib.h>
@@ -12,8 +13,11 @@ static cmr_canHVCState_t currentState = CMR_CAN_HVC_STATE_ERROR;
 
 #define PRECHARGE_THRESH 40000
 #define MIN_PACK_THRESH 360000
+#define PRECHARGE_TIME_MS 5000
 
 static bool cellBalancing = false; 
+
+static TickType_t lastPrechargeTime = 0;
 
 /*
  * External Accessor Functions
@@ -35,19 +39,18 @@ static bool prechargeDone() {
     int32_t HVmillivolts = getHVmillivolts();
     volatile cmr_canHVBMSPackVoltage_t *HVBMSPackVoltage = getPayload(CANRX_HVBMS_PACKVOLT); 
     TickType_t lastWakeTime = xTaskGetTickCount();
-    return (abs(HVBMSPackVoltage->battVoltage_mV - HVmillivolts) < PRECHARGE_THRESH &&
-            HVBMSPackVoltage->battVoltage_mV > MIN_PACK_THRESH &&
-            !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HEARTBEAT_HVBMS], lastWakeTime) &&
-            !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HVBMS_PACKVOLT], lastWakeTime));
+    return (abs(HVBMSPackVoltage->battVoltage_mV - HVmillivolts) < PRECHARGE_THRESH 
+        &&  HVBMSPackVoltage->battVoltage_mV > MIN_PACK_THRESH
+        &&  (lastWakeTime - lastPrechargeTime) > PRECHARGE_TIME_MS
+        /*&&  !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HEARTBEAT_HVBMS], lastWakeTime)
+        &&  !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HVBMS_PACKVOLT], lastWakeTime)*/);
  }
 
 static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
     
     //Default to unknown state if no paths are satisfied.
     cmr_canHVCState_t nextState = CMR_CAN_HVC_STATE_UNKNOWN;
-    static TickType_t lastPrechargeTime = 0;// = xTaskGetTickCount();
 
-    
     // initialize min/max cell voltage variables for next state logic
     uint16_t packMinCellVoltage;
     uint16_t packMaxCellVoltage;
@@ -100,7 +103,6 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             } else if (prechargeDone()) {
                 //T2: HV rails are precharged to within 30000mV
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE_COMPLETE; 
-                lastPrechargeTime = xTaskGetTickCount(); 
             } else {
                 nextState = CMR_CAN_HVC_STATE_DRIVE_PRECHARGE;
             }
@@ -123,7 +125,7 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
             if (HVCCommand->modeRequest != CMR_CAN_HVC_MODE_RUN) {
                 // T8: Mode requested is not RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
-            } else {                
+            } else {
                 nextState = CMR_CAN_HVC_STATE_DRIVE;
             }
             break;
