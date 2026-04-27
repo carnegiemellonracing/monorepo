@@ -591,28 +591,28 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .warnFlag = CMR_CAN_WARN_NONE
 	},
 	[CANRX_DAQ_LOAD_FL] = {
-        .canID  = CMR_CANID_IZZE_FL,
+        .canID  = CMR_CANID_LOADCELL_FL,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
         .errorFlag = CMR_CAN_ERROR_NONE,
         .warnFlag = CMR_CAN_WARN_NONE
 	},
 	[CANRX_DAQ_LOAD_FR] = {
-        .canID  = CMR_CANID_IZZE_FR,
+        .canID  = CMR_CANID_LOADCELL_FR,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
         .errorFlag = CMR_CAN_ERROR_NONE,
         .warnFlag = CMR_CAN_WARN_NONE
 	},
 	[CANRX_DAQ_LOAD_RL] = {
-        .canID  = CMR_CANID_IZZE_RL,
+        .canID  = CMR_CANID_LOADCELL_RL,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
         .errorFlag = CMR_CAN_ERROR_NONE,
         .warnFlag = CMR_CAN_WARN_NONE
 	},
 	[CANRX_DAQ_LOAD_RR] = {
-        .canID  = CMR_CANID_IZZE_RR,
+        .canID  = CMR_CANID_LOADCELL_RR,
         .timeoutError_ms = 500,
         .timeoutWarn_ms = 250,
         .errorFlag = CMR_CAN_ERROR_NONE,
@@ -960,7 +960,7 @@ static void canTX200Hz(void *pvParameters) {
     cmr_canFrontWheelVelocity_t front_velocity;
     cmr_canRearWheelVelocity_t rear_velocity;
 
-    uint8_t drive_enable = 1;
+    static uint8_t drive_enable = 1;
 
     // does not send drive enable until the first torque request
     static bool first_torque_req = false;
@@ -969,20 +969,7 @@ static void canTX200Hz(void *pvParameters) {
     while (1) {
         if (heartbeatVSM->state == CMR_CAN_RTD || 
             heartbeatVSM->state == CMR_CAN_AS_DRIVING){
-            if((dtiSetpointsFL->torqueLimPos_dA > 5
-            || dtiSetpointsFR->torqueLimPos_dA > 5
-            || dtiSetpointsRL->torqueLimPos_dA > 5
-            || dtiSetpointsRR->torqueLimPos_dA > 5)
-            || (getDTIERPM(CANRX_TRAC_FL_ERPM) > 0
-            || getDTIERPM(CANRX_TRAC_FL_ERPM) > 0
-            || getDTIERPM(CANRX_TRAC_FL_ERPM) > 0
-            || getDTIERPM(CANRX_TRAC_FL_ERPM) > 0)) {
-                drive_enable = 1;
-            }
-            else {
-                drive_enable = 0;
-            }
-            
+            drive_enable = 1;
             sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
 
             bool pos_match = (dtiSetpointsFL->torqueLimPos_dA == dtiSetpointsFR->torqueLimPos_dA) &&

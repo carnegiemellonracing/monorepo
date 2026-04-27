@@ -722,7 +722,7 @@ void runControls (
     int32_t swAngle_millideg_FR,
     int32_t battVoltage_mV,
     int32_t battCurrent_mA,
-    bool ctrlOn,
+    bool ctrlOff,
     bool blank_command )
 {
 
@@ -764,7 +764,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_FAST: {
             disableTorqueMode();
-            if(!ctrlOn) {
+            if(ctrlOff) {
                 setFastTorque(throttlePos_u8);
                 break;
             }
@@ -778,7 +778,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_ENDURANCE: {
             disableTorqueMode();
-            if(!ctrlOn) {
+            if(ctrlOff) {
                 setFastTorque(throttlePos_u8);
                 break;
             }
@@ -789,7 +789,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_AUTOX: {
             disableTorqueMode();
-            if(!ctrlOn) {
+            if(ctrlOff) {
                 setFastTorque(throttlePos_u8);
                 break;
             }
@@ -805,7 +805,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_SKIDPAD: {
             disableTorqueMode();
-            if(!ctrlOn) {
+            if(ctrlOff) {
                 setFastTorque(throttlePos_u8);
                 break;
             }
@@ -814,7 +814,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_ACCEL: {
             disableTorqueMode();
-            if(!ctrlOn) {
+            if(ctrlOff) {
                 setFastTorque(throttlePos_u8);
                 break;
             }
@@ -830,22 +830,10 @@ void runControls (
         }
         case CMR_CAN_GEAR_TEST: {
             disableTorqueMode();
-            if(!ctrlOn) {
+            if(ctrlOff) {
                 setFastTorque(throttlePos_u8);
                 break;
             }
-            setPowerLimit(false, MOTOR_FL, 40.0 * front_bias);
-            setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
-            setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
-            setPowerLimit(false, MOTOR_FR, 40.0 * (1 - front_bias));
-            // float target_speed_mps = 5.0f;
-            // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
-            // set_motor_speed(throttlePos_u8, target_speed_mps, false);
-            float wheel_fl_speed_radps = getMotorSpeed_radps(MOTOR_FL);
-            float wheel_fr_speed_radps = getMotorSpeed_radps(MOTOR_FR);
-            float wheel_rl_speed_radps = getMotorSpeed_radps(MOTOR_RL);
-            float wheel_rr_speed_radps = getMotorSpeed_radps(MOTOR_RR);
-
             //set_manual_cruise_control(throttlePos_u8);
             float vx, va; 
             volatile cmr_canSensoricVelAng_t *sensoricVelAng = (cmr_canSensoricVelAng_t*)canDAQGetPayload(CANRX_DAQ_SENSORIC_VEL_ANG);
@@ -879,8 +867,7 @@ void runControls (
                 fz_rr_N = (float)(parse_int16(&(rr_load->force_output_lb))) * 4.448f * sinf(0.524);
             }
 
-            setAccelLaunchControl(throttlePos_u8, brakePressurePsi_u8, va, wheel_fl_speed_radps,
-                wheel_fr_speed_radps, wheel_rl_speed_radps, wheel_rr_speed_radps,
+            setAccelLaunchControl(throttlePos_u8, brakePressurePsi_u8, va,
                 fz_fl_N, fz_fr_N, fz_rl_N, fz_rr_N);
             break;
         }
@@ -888,7 +875,7 @@ void runControls (
         case CMR_CAN_GEAR_REVERSE: {
             // for rule-compliance, the car shouldn't reverse
             disableTorqueMode();
-            if(!ctrlOn) {
+            if(ctrlOff) {
                 setFastTorque(throttlePos_u8);
                 break;
             }
@@ -1459,10 +1446,6 @@ void setAccelLaunchControl(
     uint8_t throttlePos_u8,
     uint16_t brakePressurePsi_u8,
     float car_velocity_mps,
-    float wheel_fl_speed_radps,
-    float wheel_fr_speed_radps,
-    float wheel_rl_speed_radps,
-    float wheel_rr_speed_radps,
     float fz_fl, float fz_fr,
     float fz_rl, float fz_rr
 ) {
@@ -1564,10 +1547,18 @@ void setAccelLaunchControl(
     setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
 
     // --- Per-wheel power split: proportional to (clamped) vertical load ---
-    setPowerLimit(false, MOTOR_FL, (fz_fl / total_fz) * 79.0f);
-    setPowerLimit(false, MOTOR_FR, (fz_fr / total_fz) * 79.0f);
-    setPowerLimit(false, MOTOR_RL, (fz_rl / total_fz) * 79.0f);
-    setPowerLimit(false, MOTOR_RR, (fz_rr / total_fz) * 79.0f);
+    // sorry written at comp should be in constants
+    float max_power_to_inverter_kw = 35.0f; 
+    float max_total_power_kw = 79.0f;
+    float power_fl_kw = CLAMP (0, (fz_fl / total_fz) * max_total_power_kw, max_power_to_inverter_kw);
+    float power_fr_kw = CLAMP (0, (fz_fr / total_fz) * max_total_power_kw, max_power_to_inverter_kw);
+    float power_rl_kw = CLAMP (0, (fz_rl / total_fz) * max_total_power_kw, max_power_to_inverter_kw);
+    float power_rr_kw = CLAMP (0, (fz_rr / total_fz) * max_total_power_kw, max_power_to_inverter_kw);
+
+    setPowerLimit(false, MOTOR_FL, power_fl_kw);
+    setPowerLimit(false, MOTOR_FR, power_fr_kw);
+    setPowerLimit(false, MOTOR_RL, power_rl_kw);
+    setPowerLimit(false, MOTOR_RR, power_rr_kw);
 }
 
 

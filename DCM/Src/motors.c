@@ -71,6 +71,8 @@ static cmr_DTISetpoints_t motorSetpoints[MOTOR_LEN];
  */
 static cmr_DTI_RX_Message_t DTI_RXMessage[MOTOR_LEN];
 
+static bool ctrlOff = false;
+
 #define MAX_CURRENT_DECI_AMPS 850                        
 
 cmr_canDAQTest_t getDAQTest() {
@@ -172,6 +174,17 @@ static void motorsCommand (
 
 //         update DRS mode
         drsMode = reqDIM->requestedDrsMode;
+        
+        if(ctrlOff 
+        && dataFSM->throttlePosition < 5 
+        && !actions->controlsStatus) {
+            ctrlOff = false;
+        }
+        else if(!ctrlOff 
+        && dataFSM->throttlePosition < 5 
+        && actions->controlsStatus) {
+            ctrlOff = true;
+        }
 
         int32_t steeringWheelAngle_millideg = (swangleFSM->steeringWheelAngle_millideg_FL + swangleFSM->steeringWheelAngle_millideg_FR) / 2;
         // runDrsControls(reqDIM->requestedGear,
@@ -212,7 +225,7 @@ static void motorsCommand (
                             swangleFSM->steeringWheelAngle_millideg_FR,
                             voltageHVC -> hvVoltage_mV,
                             currentHVC -> instantCurrent_mA,
-                            actions    -> controlsStatus,
+                            ctrlOff,
                             blank_command);
                 //taskEXIT_CRITICAL();
 
