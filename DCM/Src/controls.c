@@ -389,11 +389,29 @@ static void set_optimal_control(
 	// float tractive_cap_rr = getKappaFxGlobalMax(MOTOR_RR, UINT8_MAX, true).Fx;
 
     const float corner_weight_Nm = 80.0f;
-    bool use_true_downforce = false;
-    float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
-    float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
-    float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
-    float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
+    bool use_true_downforce = true;
+    bool use_simple_downforce = false;
+
+    float fz_fl, fz_fr, fz_rl, fz_rr;
+    if (use_simple_downforce) {
+        float ax, ay, az;
+        sensors_get_accel_xyz(&ax, &ay, &az);
+        bool pos_left = true; // ISO 8855: positive ay = leftward
+        fz_fl = get_simple_downforce(MOTOR_FL, ay, pos_left);
+        fz_fr = get_simple_downforce(MOTOR_FR, ay, pos_left);
+        fz_rl = get_simple_downforce(MOTOR_RL, ay, pos_left);
+        fz_rr = get_simple_downforce(MOTOR_RR, ay, pos_left);
+    } else {
+        fz_fl = get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm;
+        fz_fr = get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm;
+        fz_rl = get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm;
+        fz_rr = get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm;
+    }
+
+    float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, fz_fl).Fx;
+    float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, fz_fr).Fx;
+    float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, fz_rl).Fx;
+    float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, fz_rr).Fx;
 
     static const float motor_resistance_Nm[MOTOR_LEN] = {
         [MOTOR_FL] = 0.5f,
@@ -442,11 +460,12 @@ static void set_optimal_control(
 	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
 
     // Solver treats Mreq as around -z axis.
-	optimizer_state.mreq = getYawRateControlLeftRightBias(swAngle_millideg);
+	//optimizer_state.mreq = getYawRateControlLeftRightBias(swAngle_millideg);
+    optimizer_state.mreq = calculatePersistentYRCmreq(-(swAngle_millideg_FL+swAngle_millideg_FR)/2, bias_margin, yrc_pers);
 	optimizer_state.theta_left = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
     optimizer_state.theta_right = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
 
-	solve(&optimizer_state);
+	solve(&optimizer_state, &efficiencyLUT);
 
 	// Logging solver outputs, x1000 to make it more intuitive.
 	solver_torques.frontLeft_Nm = X1000_INT16(optimizer_state.optimal_assignment[0].val);
