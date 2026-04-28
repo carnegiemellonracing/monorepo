@@ -129,6 +129,7 @@ link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
     # Project sources
+    ${CMAKE_SOURCE_DIR}/Src/26x_sensors.c
     ${CMAKE_SOURCE_DIR}/Src/adc.c
     ${CMAKE_SOURCE_DIR}/Src/brakelight.c
     ${CMAKE_SOURCE_DIR}/Src/can.c
@@ -152,6 +153,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/Src/pumps.c
     ${CMAKE_SOURCE_DIR}/Src/safety_filter.c
     ${CMAKE_SOURCE_DIR}/Src/sensors.c
+    ${CMAKE_SOURCE_DIR}/Src/sensoric.c
     ${CMAKE_SOURCE_DIR}/Src/servo.c
     ${CMAKE_SOURCE_DIR}/Src/steering.c
     ${CMAKE_SOURCE_DIR}/Src/syscalls.c
