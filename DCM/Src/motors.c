@@ -80,6 +80,8 @@ cmr_canDAQTest_t getDAQTest() {
 /* Global Variable to Initiate/Disable Torque Mode*/ 
 bool isTorqueMode = false;
 
+static bool ctrlOff = false;
+
 // ------------------------------------------------------------------------------------------------
 // Private functions
 
@@ -175,12 +177,12 @@ static void motorsCommand (
 
         if(ctrlOff 
         && dataFSM->throttlePosition < 5 
-        && !actions->controlsStatus) {
+        && actions->buttonStates & BUTTON_CTRL) {
             ctrlOff = false;
         }
         else if(!ctrlOff 
         && dataFSM->throttlePosition < 5 
-        && actions->controlsStatus) {
+        && actions->buttonStates & BUTTON_CTRL) {
             ctrlOff = true;
         }
 
