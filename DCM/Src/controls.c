@@ -782,14 +782,41 @@ void runControls (
                 setFastTorque(throttlePos_u8);
                 break;
             }
-            const bool assumeNoTurn = true; // TC is not allowed to behave left-right asymmetrically because it's meaningless in accel
-            const bool ignoreYawRate = true;  // TC ignores yaw rate because it's meaningless in accel
-            const bool allowRegen = false; // regen-braking is not allowed because it's meaningless in accel
-            const float critical_speed_mps = 0.0f; // using a low value to prevent excessive wheel spin at low speeds
-            const float leftRightBias_Nm = 0.0f; // YRC is not enabled for accel, so there should be no left-right torque bias
-            setLaunchControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, leftRightBias_Nm, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
-            // Dry testing only.
-            // setLaunchControl(255, 0, 0, leftRightBias_Nm, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
+            //set_manual_cruise_control(throttlePos_u8);
+            float vx, va; 
+            volatile cmr_canSensoricVelAng_t *sensoricVelAng = (cmr_canSensoricVelAng_t*)canDAQGetPayload(CANRX_DAQ_SENSORIC_VEL_ANG);
+            vx = SENSORIC_VEL_TO_MPS((float)(sensoricVelAng->vel_X)); // dont use this one
+            va = SENSORIC_VEL_TO_MPS((float)(sensoricVelAng->vel_A));
+            // sensors_get_vel_xy(&vx, &vy);
+
+            // Toggle: set to true to estimate Fz from accelerometer, false to use load cells
+            const bool use_accel_downforce = true;
+
+            float fz_fl_N, fz_fr_N, fz_rl_N, fz_rr_N;
+
+            if (use_accel_downforce) {
+                // Estimate Fz from Sensoric longitudinal acceleration (no load cells needed)
+                float ax, ay, az;
+                sensors_get_accel_xyz(&ax, &ay, &az);
+                fz_fl_N = get_accel_downforce(MOTOR_FL, ax);
+                fz_fr_N = get_accel_downforce(MOTOR_FR, ax);
+                fz_rl_N = get_accel_downforce(MOTOR_RL, ax);
+                fz_rr_N = get_accel_downforce(MOTOR_RR, ax);
+            } else {
+                // Use load cells
+                volatile cmr_canIZZELoadCell_t *fl_load = (cmr_canIZZELoadCell_t *)canDAQGetPayload(CANRX_DAQ_LOAD_FL);
+                volatile cmr_canIZZELoadCell_t *fr_load = (cmr_canIZZELoadCell_t *)canDAQGetPayload(CANRX_DAQ_LOAD_FR);
+                volatile cmr_canIZZELoadCell_t *rl_load = (cmr_canIZZELoadCell_t *)canDAQGetPayload(CANRX_DAQ_LOAD_RL);
+                volatile cmr_canIZZELoadCell_t *rr_load = (cmr_canIZZELoadCell_t *)canDAQGetPayload(CANRX_DAQ_LOAD_RR);
+
+                fz_fl_N = (float)(parse_int16(&(fl_load->force_output_lb))) * 4.448f * sinf(0.785);
+                fz_fr_N = (float)(parse_int16(&(fr_load->force_output_lb))) * 4.448f * sinf(0.785);
+                fz_rl_N = (float)(parse_int16(&(rl_load->force_output_lb))) * 4.448f * sinf(0.524);
+                fz_rr_N = (float)(parse_int16(&(rr_load->force_output_lb))) * 4.448f * sinf(0.524);
+            }
+
+            setAccelLaunchControl(throttlePos_u8, brakePressurePsi_u8, va,
+                fz_fl_N, fz_fr_N, fz_rl_N, fz_rr_N);
             break;
         }
         case CMR_CAN_GEAR_TEST: {
