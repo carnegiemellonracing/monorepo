@@ -1597,6 +1597,125 @@ float get_optimal_yaw_rate(float swangle_rad, float velocity_x_mps) {
     return yaw_rate_setpoint_radps;
 }
 
+void setAccelLaunchControl(
+    uint8_t throttlePos_u8,
+    uint16_t brakePressurePsi_u8,
+    float car_velocity_mps,
+    float fz_fl, float fz_fr,
+    float fz_rl, float fz_rr
+) {
+
+    // persistent state
+    static bool button_was_held = false;
+    static bool launch_armed = false; 
+    static bool launch_active = false;
+    static TickType_t launch_tick = 0;
+
+    static const float LAUNCH_SPEED_THRESH_MPS = 0.05f; // below this = "still stationary"
+    static const float LAUNCH_TIMEOUT_S = 8.0f;  // kill switch after N seconds
+    static bool was_active = false;
+
+    // read button
+    bool button_held = (((volatile cmr_canDIMActions_t *)canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->buttonStates) & BUTTON_ACT;
+
+    //bool button_held = *((bool *)canVehicleGetPayload(CANRX_VEH_LAUNCH_CONTROL_BUTTON_SPOOF));
+
+    float odometer_vel_mps = motorSpeedToWheelLinearSpeed_mps(
+        getTotalMotorSpeed_radps() * 0.25f);
+
+    // state transitions
+    // armed state
+    if (odometer_vel_mps < LAUNCH_SPEED_THRESH_MPS && button_held) {
+        launch_armed = true;
+    }
+
+    // active state
+    if (launch_armed && button_was_held && !button_held) {
+        launch_active = true;
+        launch_tick   = xTaskGetTickCount();
+        launch_armed  = false;
+    }
+
+    // kill switch
+    if (brakePressurePsi_u8 > braking_threshold_psi || (throttlePos_u8 == 0)) {
+        launch_active = false;
+        launch_armed = false;
+    }
+
+    button_was_held = button_held;
+
+    // track launch transition for controller reset
+    bool just_launched = launch_active && !was_active;
+    was_active = launch_active;
+
+    // if not active, zero torque and return
+    if (!launch_active) {
+        setTorqueLimsAllProtected(0.0f, 0.0f);
+        setVelocityInt16All(0);
+        return;
+    }
+
+    // check timeout, handoff to regular fast torque if timed out
+    float elapsed_s = (float)(xTaskGetTickCount() - launch_tick) * 0.001f;
+    if(elapsed_s >= LAUNCH_TIMEOUT_S) {
+        setFastTorque(throttlePos_u8);
+        return;
+    }
+
+    // --- Clamp vertical loads ---
+    fz_fl = fmaxf(accel_min_fz_N, fminf(fz_fl, accel_max_fz_N));
+    fz_fr = fmaxf(accel_min_fz_N, fminf(fz_fr, accel_max_fz_N));
+    fz_rl = fmaxf(accel_min_fz_N, fminf(fz_rl, accel_max_fz_N));
+    fz_rr = fmaxf(accel_min_fz_N, fminf(fz_rr, accel_max_fz_N));
+
+    // --- Velocity targets: car velocity * (1 + target slip), converted to motor RPM ---
+    // Minimum velocity so we can actually get moving from standstill
+    static const float min_launch_vel_mps = 1.0f;
+    float effective_vel_mps = fmaxf(car_velocity_mps, min_launch_vel_mps);
+
+    float target_whl_vel_front_mps = effective_vel_mps * (1.0f + slip_ratio_front);
+    float target_whl_vel_rear_mps  = effective_vel_mps * (1.0f + slip_ratio_rear);
+
+    // wheel m/s -> motor RPM: motor_rpm = wheel_mps * gear_ratio * 60 / (2*pi*wheel_rad)
+    float vel_to_rpm = gear_ratio * 60.0f / (2.0f * PI * effective_wheel_rad_m);
+    float rpm_front = fmaxf(0.0f, fminf(target_whl_vel_front_mps * vel_to_rpm, (float)maxSpeed_rpm));
+    float rpm_rear  = fmaxf(0.0f, fminf(target_whl_vel_rear_mps  * vel_to_rpm, (float)maxSpeed_rpm));
+    setVelocityFloat(MOTOR_FL, rpm_front);
+    setVelocityFloat(MOTOR_FR, rpm_front);
+    setVelocityFloat(MOTOR_RL, rpm_rear);
+    setVelocityFloat(MOTOR_RR, rpm_rear);
+
+    // --- Torque distribution: proportional to vertical load (Fz) on each tire ---
+    // Full torque above 80% throttle, scale down below that for safety.
+    float total_fz = fz_fl + fz_fr + fz_rl + fz_rr;
+    if (total_fz < 1.0f) total_fz = 1.0f;
+
+    static const float throttle_threshold = 0.80f * (float)UINT8_MAX; // 80%
+    float torque_scale = (throttlePos_u8 >= (uint8_t)throttle_threshold) ? 1.0f
+                       : (float)throttlePos_u8 / throttle_threshold;
+
+    float reqTorque = maxFastTorque_Nm * torque_scale;
+
+    setTorqueLimsUnprotected(MOTOR_FL, reqTorque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_FR, reqTorque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_RL, reqTorque, 0.0f);
+    setTorqueLimsUnprotected(MOTOR_RR, reqTorque, 0.0f);
+
+    // --- Per-wheel power split: proportional to (clamped) vertical load ---
+    // sorry written at comp should be in constants
+    float max_power_to_inverter_kw = 35.0f; 
+    float max_total_power_kw = 79.0f;
+    float power_fl_kw = CLAMP (0, (fz_fl / total_fz) * max_total_power_kw, max_power_to_inverter_kw);
+    float power_fr_kw = CLAMP (0, (fz_fr / total_fz) * max_total_power_kw, max_power_to_inverter_kw);
+    float power_rl_kw = CLAMP (0, (fz_rl / total_fz) * max_total_power_kw, max_power_to_inverter_kw);
+    float power_rr_kw = CLAMP (0, (fz_rr / total_fz) * max_total_power_kw, max_power_to_inverter_kw);
+
+    setPowerLimit(false, MOTOR_FL, power_fl_kw);
+    setPowerLimit(false, MOTOR_FR, power_fr_kw);
+    setPowerLimit(false, MOTOR_RL, power_rl_kw);
+    setPowerLimit(false, MOTOR_RR, power_rr_kw);
+}
+
 /**
  * @brief Calculate the control action (left-right torque bias) of the yaw rate controller
  * @param swAngle_millideg Steering wheel angle

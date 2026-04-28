@@ -66,6 +66,13 @@ void set_optimal_control_with_regen(
 	int32_t swAngle_millideg_FL,
 	int32_t swAngle_millideg_FR
 );
+void setAccelLaunchControl(
+    uint8_t throttlePos_u8,
+    uint16_t brakePressurePsi_u8,
+    float car_velocity_mps,
+    float fz_fl, float fz_fr,
+    float fz_rl, float fz_rr
+);
 
 // ------------------------------------------------------------------------------------------------
 // Global variables
