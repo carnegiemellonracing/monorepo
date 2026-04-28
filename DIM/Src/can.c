@@ -390,9 +390,10 @@ static void canTX100Hz(void *pvParameters) {
         uint8_t packed = 0;
         uint8_t ctrlOn = !cmr_gpioRead(GPIO_CTRL_SWITCH);
         uint8_t dvCtrlMode = stateGetDVMode();
-        for(int i=0; i<NUM_BUTTONS; i++){
+        for(int i=0; i<NUM_BUTTONS-1; i++){
             packed |= buttonStates[i].gpioState << i; 
         }
+        packed |= (cntrl_button_long_pressed()) << (NUM_BUTTONS-1);
         /* Transmit action button status */
         cmr_canDIMActions_t actions = {
             .buttonStates = packed,

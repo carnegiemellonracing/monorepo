@@ -229,6 +229,44 @@ static void gpioReadButtons(void *pvParameters) {
     }
 }
 
+
+/**
+ * @brief Checks if the CNTRL Button has been long pressed
+ * 
+ * @return 1 iff control button has been pressed for a significantly long amount of time
+ */
+bool cntrl_button_long_pressed(void){
+	static TickType_t last_pressed_time_ms = 0;
+	static bool button_registered = false;
+
+	bool button_pressed = !cmr_gpioRead(gpioButtonPins[GPIO_BUTTON_SW_RIGHT]);
+
+	if (!button_pressed){
+		return false;
+	}
+	
+	if(button_pressed & !button_registered){
+		button_registered = true;
+		last_pressed_time_ms = xTaskGetTickCount();
+		return false;
+	}
+
+	if(button_registered && !button_pressed){
+		button_registered = false;
+		return false;
+	}
+
+	TickType_t current_time_ms = xTaskGetTickCount();
+	TickType_t button_long_press_thresh_ms = 1000;
+	if(button_registered && button_pressed && current_time_ms - last_pressed_time_ms > button_long_press_thresh_ms){
+		button_registered = false;
+		return true;
+	}
+
+	return false;
+}
+
+
 /**
  * @brief Initializes the GPIO interface.
  */
