@@ -722,7 +722,7 @@ void runControls (
     int32_t swAngle_millideg_FR,
     int32_t battVoltage_mV,
     int32_t battCurrent_mA,
-    bool ctrlOn,
+    bool ctrlOff,
     bool blank_command )
 {
 
@@ -774,7 +774,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_ENDURANCE: {
             disableTorqueMode();
-            if(!ctrlOn) {
+            if(ctrlOff) {
                 setFastTorque(throttlePos_u8);
                 break;
             }
@@ -786,7 +786,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_AUTOX: {
             disableTorqueMode();
-            if(!ctrlOn) {
+            if(ctrlOff) {
                 setFastTorque(throttlePos_u8);
                 break;
             }
@@ -802,7 +802,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_SKIDPAD: {
             disableTorqueMode();
-            if(!ctrlOn) {
+            if(ctrlOff) {
                 setFastTorque(throttlePos_u8);
                 break;
             }
@@ -811,7 +811,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_ACCEL: {
             disableTorqueMode();
-            if(!ctrlOn) {
+            if(ctrlOff) {
                 setFastTorque(throttlePos_u8);
                 break;
             }
@@ -854,7 +854,7 @@ void runControls (
         }
         case CMR_CAN_GEAR_TEST: {
             disableTorqueMode();
-            if(!ctrlOn) {
+            if(ctrlOff) {
                 setFastTorque(throttlePos_u8);
                 break;
             }
@@ -872,7 +872,7 @@ void runControls (
         case CMR_CAN_GEAR_REVERSE: {
             // for rule-compliance, the car shouldn't reverse
             disableTorqueMode();
-            if(!ctrlOn) {
+            if(ctrlOff) {
                 setFastTorque(throttlePos_u8);
                 break;
             }
