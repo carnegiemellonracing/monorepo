@@ -67,5 +67,6 @@ void gpioInit(void);
 
 uint8_t getASMS(void);
 bool getEAB(void);
+bool cntrl_button_long_pressed(void);
 
 #endif /* GPIO_H */
