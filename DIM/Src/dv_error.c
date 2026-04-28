@@ -35,18 +35,16 @@ static void dv_error_checks(void *pvParameters) {
     {
         cmr_canState_t vsm_state = stateGetVSM();
         bool is_AS_active_state =  (vsm_state == CMR_CAN_AS_READY || 
-                                    vsm_state == CMR_CAN_AS_DRIVING || 
-                                    vsm_state == CMR_CAN_AS_FINISHED || 
-                                    vsm_state == CMR_CAN_AS_EMERGENCY);
+                                    vsm_state == CMR_CAN_AS_DRIVING);
 
         bool error_present = false;
-        if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_CURRENT_1_MA) != CMR_SENSOR_ERR_NONE
-            && is_AS_active_state)
-            error_present = true;
+        // if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_CURRENT_1_MA) != CMR_SENSOR_ERR_NONE
+        //     && is_AS_active_state)
+        //     error_present = true;
     
-        if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_CURRENT_2_MA) != CMR_SENSOR_ERR_NONE
-            && is_AS_active_state)
-            error_present = true;
+        // if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_CURRENT_2_MA) != CMR_SENSOR_ERR_NONE
+        //     && is_AS_active_state)
+        //     error_present = true;
     
         if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_PRESSURE_1_DECI_BAR) != CMR_SENSOR_ERR_NONE)
             error_present = true;

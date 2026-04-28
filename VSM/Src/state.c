@@ -25,7 +25,7 @@
 // Globals
 #define AS_WAKEUP_TIME 5000
 #define AS_FINISHED_TIME 30000
-#define DV_TANK_PRESSURE_MINIMUM_DECIBAR 80
+#define DV_TANK_PRESSURE_MINIMUM_DECIBAR 50
 #define FRONT_MINIMUM_BRAKING_PSI 650
 #define REAR_MINIMUM_BRAKING_PSI  400
 
@@ -277,8 +277,8 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                 && getMissionSelected() 
                 && getDVBrakeDeployable() 
                 && getDVBrakeActive()
-                && !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HEARTBEAT_COMPUTE], lastWakeTime_ms)
-                && !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_CUBEMARS_DATA], lastWakeTime_ms)){
+                /*&& !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HEARTBEAT_COMPUTE], lastWakeTime_ms)
+                && !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_CUBEMARS_DATA], lastWakeTime_ms)*/){
                 nextState = CMR_CAN_VSM_STATE_REQ_PRECHARGE;
             }
             else if (dimRequestedState == CMR_CAN_AS_READY) {
@@ -619,8 +619,8 @@ static inline bool TSActive(){
 static inline bool AutonomousClear(){
     TickType_t lastWakeTime = xTaskGetTickCount();
     return ASState && getDVBrakeDeployable() && getMissionSelected() && TSActive() && !RESTriggered()
-        && !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HEARTBEAT_COMPUTE], lastWakeTime)
-        && !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_CUBEMARS_DATA], lastWakeTime);
+        /*&& !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HEARTBEAT_COMPUTE], lastWakeTime)
+        && !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_CUBEMARS_DATA], lastWakeTime)*/;
 }
  
 /**

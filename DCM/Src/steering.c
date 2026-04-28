@@ -138,7 +138,7 @@ void runSteering() {
     targetPosition_centi_deg = CLAMP(MIN_STEERING_CENTI_DEG, targetPosition_centi_deg, MAX_STEERING_CENTI_DEG );
 
     int32_t current_output_mA;
-    if(cmr_canRXMetaTimeoutError(&canDaqRXMeta[CANRX_DAQ_AUTONOMOUS_ACTION], xTaskGetTickCount())) {
+    if(!inspectionActive && cmr_canRXMetaTimeoutError(&canDaqRXMeta[CANRX_DAQ_AUTONOMOUS_ACTION], xTaskGetTickCount())) {
         current_output_mA = 0;
     }
     else {
