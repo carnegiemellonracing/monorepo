@@ -1,4 +1,3 @@
-//
 // Created by 26958 on 7/11/2024.
 //
 
@@ -42,6 +41,8 @@ void compose_diagonal_qform_addto(const box_variable_t *profile, const double *w
  * @note Conforms to the format 1/2 x^T Q x + q x + c, so the raw q and c are halved.
  */
 void compose_error_qform_addto(const box_variable_t *profile, const double *weight_arr, const double target, const double scalar, qform_t* const dest, const int n);
+
+void compose_linear_qform_addto(const box_variable_t *profile, const double *weight_arr, const double scalar, qform_t* const dest, const int n);
 
 void print_vector(double* vec, int n);
 
