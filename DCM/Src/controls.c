@@ -321,6 +321,43 @@ static float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
 }
 
 /**
+ * @brief Compute per-wheel Fz from longitudinal acceleration (ax) load transfer.
+ *        Use instead of load cells when they are unavailable.
+ *        Assumes straight-line driving (no lateral load transfer).
+ *
+ * @param motor   Which wheel (MOTOR_FL, MOTOR_FR, MOTOR_RL, MOTOR_RR)
+ * @param ax_mps2 Longitudinal acceleration in m/s^2 (positive = forward accel)
+ * @return Estimated vertical load in Newtons (clamped >= 0)
+ */
+static float get_accel_downforce(motorLocation_t motor, float ax_mps2) {
+    static const float total_mass_kg = 185.0f + 75.0f; // car + driver
+    static const float cg_height_m   = 0.2895f;
+
+    // static corner load (assume 50/50 front-rear, equal left-right)
+    const float static_fz = total_mass_kg * 9.81f * 0.25f;
+
+    // longitudinal load transfer: positive ax (forward accel) shifts load rearward
+    //   delta per axle = m * ax * h / wheelbase, split equally left-right
+    float delta_fz_long = total_mass_kg * ax_mps2 * cg_height_m / (float)wheelbase_m * 0.5f;
+
+    float fz;
+    switch (motor) {
+        case MOTOR_FL: // fall through
+        case MOTOR_FR:
+            fz = static_fz - delta_fz_long; // fronts lose load under accel
+            break;
+        case MOTOR_RL: // fall through
+        case MOTOR_RR:
+            fz = static_fz + delta_fz_long; // rears gain load under accel
+            break;
+        default:
+            fz = static_fz;
+            break;
+    }
+    return fmaxf(fz, 0.0f);
+}
+
+/**
  * @param normalized_throttle A value in [-1, 1].
  * In [0, 1] if without regen.
  */
