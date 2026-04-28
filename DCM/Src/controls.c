@@ -778,10 +778,7 @@ void runControls (
                 setFastTorque(throttlePos_u8);
                 break;
             }
-            setFastTorqueWithBias(throttlePos_u8, front_bias);
-            // setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
-            // set_regen(throttlePos_u8);
-            // set_regen_with_slew(throttlePos_u8, 29.0f);
+            set_optimal_control((float)throttlePos_u8 / UINT8_MAX, swAngle_millideg_FL, swAngle_millideg_FR, false);
             break;
         }
         case CMR_CAN_GEAR_AUTOX: {
