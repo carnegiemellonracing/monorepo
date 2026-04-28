@@ -173,6 +173,17 @@ static void motorsCommand (
 //         update DRS mode
         drsMode = reqDIM->requestedDrsMode;
 
+        if(ctrlOff 
+        && dataFSM->throttlePosition < 5 
+        && !actions->controlsStatus) {
+            ctrlOff = false;
+        }
+        else if(!ctrlOff 
+        && dataFSM->throttlePosition < 5 
+        && actions->controlsStatus) {
+            ctrlOff = true;
+        }
+
         int32_t steeringWheelAngle_millideg = (swangleFSM->steeringWheelAngle_millideg_FL + swangleFSM->steeringWheelAngle_millideg_FR) / 2;
         // runDrsControls(reqDIM->requestedGear,
         //                 drsMode,
