@@ -74,6 +74,32 @@ static float manual_cruise_control_speed;
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew);
 
+static efficiencyLUT_t efficiencyLUT = {
+        .table = {0.9893, 0.9525, 0.9151, 0.8808, 0.8488, 0.8202, 0.7918, 0.7637, 0.7366,
+                  0.7099, 0.9893, 0.9525, 0.9151, 0.8808, 0.8488, 0.8202, 0.7918, 0.7637,
+                  0.7366, 0.7099, 0.9885, 0.9693, 0.9495, 0.9310, 0.9137, 0.8979, 0.8810,
+                  0.8636, 0.8462, 0.8286, 0.9801, 0.9687, 0.9568, 0.9455, 0.9351, 0.9252,
+                  0.9138, 0.9015, 0.8891, 0.8763, 0.9758, 0.9684, 0.9606, 0.9529, 0.9463,
+                  0.9396, 0.9312, 0.9219, 0.9124, 0.9024, 0.9724, 0.9675, 0.9623, 0.9571,
+                  0.9528, 0.9482, 0.9418, 0.9344, 0.9268, 0.9187, 0.9691, 0.9662, 0.9630,
+                  0.9595, 0.9570, 0.9538, 0.9488, 0.9428, 0.9365, 0.9298, 0.9660, 0.9647,
+                  0.9630, 0.9609, 0.9597, 0.9577, 0.9538, 0.9487, 0.9434, 0.9378, 0.9631,
+                  0.9631, 0.9626, 0.9617, 0.9616, 0.9607, 0.9574, 0.9531, 0.9486, 0.9439,
+                  0.9602, 0.9613, 0.9620, 0.9621, 0.9629, 0.9629, 0.9601, 0.9564, 0.9526,
+                  0.9485, 0.9573, 0.9595, 0.9612, 0.9621, 0.9639, 0.9646, 0.9623, 0.9590,
+                  0.9557, 0.9522, 0.9546, 0.9577, 0.9603, 0.9619, 0.9646, 0.9658, 0.9640,
+                  0.9610, 0.9582, 0.9552, 0.9518, 0.9558, 0.9592, 0.9616, 0.9650, 0.9668,
+                  0.9654, 0.9628, 0.9603, 0.9577, 0.9464, 0.9521, 0.9570, 0.9606, 0.9654,
+                  0.9679, 0.9673, 0.9653, 0.9635, 0.9614, 0.9410, 0.9482, 0.9545, 0.9597,
+                  0.9652, 0.9685, 0.9685, 0.9671, 0.9657, 0.9640, 0.9357, 0.9444, 0.9519,
+                  0.9586, 0.9647, 0.9686, 0.9691, 0.9682, 0.9672, 0.9659, 0.9305, 0.9405,
+                  0.9493, 0.9573, 0.9640, 0.9685, 0.9694, 0.9689, 0.9683, 0.9672},
+        .bpoints_x = {0.29,2.93,5.86,8.78,11.71,14.64,17.57,20.49,23.42,26.35},
+        .bpoints_y = {0,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000,12000,14000,16000,18000,20000},
+        .length_x = 10,
+        .length_y = 17
+    };
+
 /** @brief Coulomb counting info **/
 static TickType_t previousTickCount;
 
@@ -302,8 +328,7 @@ static float get_load_cell_angle_rad(canDaqRX_t loadIndex) {
     }
 }
 
-/**
- * @brief Return downforce given motor location
+/** @brief Return downforce given motor location
  */
 static float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
     float downforce_N;
@@ -313,7 +338,7 @@ static float get_downforce(canDaqRX_t loadIndex, bool use_true_downforce) {
         float angle = get_load_cell_angle_rad(loadIndex);
         // TODO: fix later, temp change force_output units
         volatile int16_t raw = parse_int16(&downforcePayload->force_output_lb);
-        downforce_N = (float) raw * 0.1f * sinf(angle);
+        downforce_N = (float) raw * 4.448f * sinf(angle);
     } else {
         downforce_N = (float) car_mass_kg * 9.81f * 0.25f;
     }
@@ -355,6 +380,40 @@ static float get_accel_downforce(motorLocation_t motor, float ax_mps2) {
             break;
     }
     return fmaxf(fz, 0.0f);
+}
+
+/**
+ * @brief Compute per-wheel Fz from lateral acceleration (ay) load transfer.
+ * @param motor Which wheel
+ * @param ay_mps2 Lateral acceleration in m/s^2
+ * @param pos_left If true, positive ay = leftward (ISO 8855). If false, positive ay = rightward (SAE).
+ * @return Estimated vertical load in Newtons
+ */
+static float get_simple_downforce(motorLocation_t motor, float ay_mps2, bool pos_left) {
+    static const float simple_vehicle_mass_kg = 170.0f + 75.0f;
+    static const float simple_track_width_m   = 1.275f;
+    static const float simple_cg_height_m     = 0.303f;
+
+    const float static_fz = simple_vehicle_mass_kg * 9.81f * 0.25f;
+    // ISO: positive ay = left, so car is turning right, load goes to left side
+    // sign: +delta_fz on left wheels when ay > 0 in ISO
+    float delta_fz = simple_vehicle_mass_kg * fabsf(ay_mps2) * simple_cg_height_m / simple_track_width_m;
+
+    // Determine which side gains load: the side opposite the turn direction
+    // ISO (pos_left=true):  positive ay = leftward accel = turning right = load to LEFT
+    // SAE (pos_left=false): positive ay = rightward accel = turning left = load to RIGHT
+    bool load_on_left = pos_left ? (ay_mps2 > 0.0f) : (ay_mps2 < 0.0f);
+
+    float left_fz  = static_fz + (load_on_left ? delta_fz : -delta_fz);
+    float right_fz = static_fz + (load_on_left ? -delta_fz : delta_fz);
+
+    switch (motor) {
+        case MOTOR_FL: return left_fz;
+        case MOTOR_RL: return left_fz;
+        case MOTOR_FR: return right_fz;
+        case MOTOR_RR: return right_fz;
+        default:       return static_fz;
+    }
 }
 
 /**
@@ -460,8 +519,8 @@ static void set_optimal_control(
 	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
 
     // Solver treats Mreq as around -z axis.
-	//optimizer_state.mreq = getYawRateControlLeftRightBias(swAngle_millideg);
-    optimizer_state.mreq = calculatePersistentYRCmreq(-(swAngle_millideg_FL+swAngle_millideg_FR)/2, bias_margin, yrc_pers);
+	optimizer_state.mreq = getYawRateControlLeftRightBias(swAngle_millideg);
+    // optimizer_state.mreq = calculatePersistentYRCmreq(-(swAngle_millideg_FL+swAngle_millideg_FR)/2, bias_margin, yrc_pers);
 	optimizer_state.theta_left = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
     optimizer_state.theta_right = swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
 
@@ -512,216 +571,218 @@ static void set_optimal_control(
         torquesNeg_Nm.rr = 0.0f;
 
         setVelocityInt16All(maxFastSpeed_rpm);
-	    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
-
+        setTorqueLimsUnprotected(MOTOR_FL, torquesPos_Nm.fl, torquesPos_Nm.fl);
+        setTorqueLimsUnprotected(MOTOR_FR, torquesPos_Nm.fr, torquesPos_Nm.fr);
+        setTorqueLimsUnprotected(MOTOR_RL, torquesPos_Nm.rl, torquesPos_Nm.rl);
+        setTorqueLimsUnprotected(MOTOR_RR, torquesPos_Nm.rr, torquesPos_Nm.rr);
     }
 }
 
-/**
- * @param normalized_throttle A value in [-1, 1].
- * In [0, 1] if without regen.
- */
-static void set_optimal_control_launch_hybrid(
-	float normalized_throttle,
-	int32_t swAngle_millideg_FL,
-    int32_t swAngle_millideg_FR,
-    bool allow_regen
-) {
+// /**
+//  * @param normalized_throttle A value in [-1, 1].
+//  * In [0, 1] if without regen.
+//  */
+// static void set_optimal_control_launch_hybrid(
+// 	float normalized_throttle,
+// 	int32_t swAngle_millideg_FL,
+//     int32_t swAngle_millideg_FR,
+//     bool allow_regen
+// ) {
 
-    int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
+//     int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
 
-    if (true == allow_regen) {
-        assert(-1.0f <= normalized_throttle && normalized_throttle <= 1.0f);
-    } else {
-        assert(0.0f <= normalized_throttle && normalized_throttle <= 1.0f);
-    }
+//     if (true == allow_regen) {
+//         assert(-1.0f <= normalized_throttle && normalized_throttle <= 1.0f);
+//     } else {
+//         assert(0.0f <= normalized_throttle && normalized_throttle <= 1.0f);
+//     }
 
-    // load_solver_settings();
+//     // load_solver_settings();
 
-	float wheel_fl_speed_radps = getMotorSpeed_radps(MOTOR_FL);
-	float wheel_fr_speed_radps = getMotorSpeed_radps(MOTOR_FR);
-	float wheel_rl_speed_radps = getMotorSpeed_radps(MOTOR_RL);
-	float wheel_rr_speed_radps = getMotorSpeed_radps(MOTOR_RR);
+// 	float wheel_fl_speed_radps = getMotorSpeed_radps(MOTOR_FL);
+// 	float wheel_fr_speed_radps = getMotorSpeed_radps(MOTOR_FR);
+// 	float wheel_rl_speed_radps = getMotorSpeed_radps(MOTOR_RL);
+// 	float wheel_rr_speed_radps = getMotorSpeed_radps(MOTOR_RR);
 
-	// float tractive_cap_fl = getKappaFxGlobalMax(MOTOR_FL, UINT8_MAX, true).Fx;
-	// float tractive_cap_fr = getKappaFxGlobalMax(MOTOR_FR, UINT8_MAX, true).Fx;
-	// float tractive_cap_rl = getKappaFxGlobalMax(MOTOR_RL, UINT8_MAX, true).Fx;
-	// float tractive_cap_rr = getKappaFxGlobalMax(MOTOR_RR, UINT8_MAX, true).Fx;
+// 	// float tractive_cap_fl = getKappaFxGlobalMax(MOTOR_FL, UINT8_MAX, true).Fx;
+// 	// float tractive_cap_fr = getKappaFxGlobalMax(MOTOR_FR, UINT8_MAX, true).Fx;
+// 	// float tractive_cap_rl = getKappaFxGlobalMax(MOTOR_RL, UINT8_MAX, true).Fx;
+// 	// float tractive_cap_rr = getKappaFxGlobalMax(MOTOR_RR, UINT8_MAX, true).Fx;
 
-    const float corner_weight_Nm = 80.0f;
-    bool use_true_downforce = true;
-    float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
-    float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
-    float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
-    float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
+//     const float corner_weight_Nm = 80.0f;
+//     bool use_true_downforce = true;
+//     float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm).Fx;
+//     float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm).Fx;
+//     float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm).Fx;
+//     float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm).Fx;
 
-    static const float motor_resistance_Nm[MOTOR_LEN] = {
-        [MOTOR_FL] = 0.75f,
-        [MOTOR_FR] = 0.4f,
-        [MOTOR_RL] = 0.75f,
-        [MOTOR_RR] = 0.4f,
-    };
-	// The most naive approach is to convert force to torque linearly, ignoring rolling resistance and any inefficiency.
-	float torque_limit_fl = tractive_cap_fl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FL];
-	float torque_limit_fr = tractive_cap_fr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FR];
-	float torque_limit_rl = tractive_cap_rl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RL];
-	float torque_limit_rr = tractive_cap_rr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RR];
+//     static const float motor_resistance_Nm[MOTOR_LEN] = {
+//         [MOTOR_FL] = 0.75f,
+//         [MOTOR_FR] = 0.4f,
+//         [MOTOR_RL] = 0.75f,
+//         [MOTOR_RR] = 0.4f,
+//     };
+// 	// The most naive approach is to convert force to torque linearly, ignoring rolling resistance and any inefficiency.
+// 	float torque_limit_fl = tractive_cap_fl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FL];
+// 	float torque_limit_fr = tractive_cap_fr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FR];
+// 	float torque_limit_rl = tractive_cap_rl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RL];
+// 	float torque_limit_rr = tractive_cap_rr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RR];
 
-	torque_limit_fl = fminf(torque_limit_fl, maxTorque_continuous_stall_Nm);
-	torque_limit_fr = fminf(torque_limit_fr, maxTorque_continuous_stall_Nm);
-	torque_limit_rl = fminf(torque_limit_rl, maxTorque_continuous_stall_Nm);
-	torque_limit_rr = fminf(torque_limit_rr, maxTorque_continuous_stall_Nm);
+// 	torque_limit_fl = fminf(torque_limit_fl, maxTorque_continuous_stall_Nm);
+// 	torque_limit_fr = fminf(torque_limit_fr, maxTorque_continuous_stall_Nm);
+// 	torque_limit_rl = fminf(torque_limit_rl, maxTorque_continuous_stall_Nm);
+// 	torque_limit_rr = fminf(torque_limit_rr, maxTorque_continuous_stall_Nm);
 
-	static optimizer_state_t optimizer_state;
+// 	static optimizer_state_t optimizer_state;
 
-	optimizer_state.power_limit = 1e9;
-	optimizer_state.omegas[0] = wheel_fl_speed_radps;
-	optimizer_state.omegas[1] = wheel_fr_speed_radps;
-	optimizer_state.omegas[2] = wheel_rl_speed_radps;
-	optimizer_state.omegas[3] = wheel_rr_speed_radps;
+// 	optimizer_state.power_limit = 1e9;
+// 	optimizer_state.omegas[0] = wheel_fl_speed_radps;
+// 	optimizer_state.omegas[1] = wheel_fr_speed_radps;
+// 	optimizer_state.omegas[2] = wheel_rl_speed_radps;
+// 	optimizer_state.omegas[3] = wheel_rr_speed_radps;
 
-    if(true == allow_regen) {
-        optimizer_state.variable_profile[0].lower = fmaxf(-torque_limit_fl + motor_resistance_Nm[MOTOR_FL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FL)));
-        optimizer_state.variable_profile[1].lower = fmaxf(-torque_limit_fr + motor_resistance_Nm[MOTOR_FR], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FR)));
-        optimizer_state.variable_profile[2].lower = fmaxf(-torque_limit_rl + motor_resistance_Nm[MOTOR_RL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RL)));
-        optimizer_state.variable_profile[3].lower = fmaxf(-torque_limit_rr + motor_resistance_Nm[MOTOR_RR], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RR)));
-    } else {
-        optimizer_state.variable_profile[0].lower = 0.0;
-        optimizer_state.variable_profile[1].lower = 0.0;
-        optimizer_state.variable_profile[2].lower = 0.0;
-        optimizer_state.variable_profile[3].lower = 0.0;
-    }
+//     if(true == allow_regen) {
+//         optimizer_state.variable_profile[0].lower = fmaxf(-torque_limit_fl + motor_resistance_Nm[MOTOR_FL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FL)));
+//         optimizer_state.variable_profile[1].lower = fmaxf(-torque_limit_fr + motor_resistance_Nm[MOTOR_FR], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FR)));
+//         optimizer_state.variable_profile[2].lower = fmaxf(-torque_limit_rl + motor_resistance_Nm[MOTOR_RL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RL)));
+//         optimizer_state.variable_profile[3].lower = fmaxf(-torque_limit_rr + motor_resistance_Nm[MOTOR_RR], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RR)));
+//     } else {
+//         optimizer_state.variable_profile[0].lower = 0.0;
+//         optimizer_state.variable_profile[1].lower = 0.0;
+//         optimizer_state.variable_profile[2].lower = 0.0;
+//         optimizer_state.variable_profile[3].lower = 0.0;
+//     }
 
-	optimizer_state.variable_profile[0].upper = torque_limit_fl;
-	optimizer_state.variable_profile[1].upper = torque_limit_fr;
-	optimizer_state.variable_profile[2].upper = torque_limit_rl;
-	optimizer_state.variable_profile[3].upper = torque_limit_rr;
+// 	optimizer_state.variable_profile[0].upper = torque_limit_fl;
+// 	optimizer_state.variable_profile[1].upper = torque_limit_fr;
+// 	optimizer_state.variable_profile[2].upper = torque_limit_rl;
+// 	optimizer_state.variable_profile[3].upper = torque_limit_rr;
 
-	const float thoeretical_mass_accel = maxTorque_continuous_stall_Nm * MOTOR_LEN * gear_ratio / effective_wheel_rad_m / car_mass_kg;
-	// areq can be either expressed in torque or actual accel. Both ways are equivalent. Here uses actual accel.
-	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
-    // Solver treats Mreq as around -z axis.
-	optimizer_state.mreq = -getYawRateControlLeftRightBias(swAngle_millideg);
+// 	const float thoeretical_mass_accel = maxTorque_continuous_stall_Nm * MOTOR_LEN * gear_ratio / effective_wheel_rad_m / car_mass_kg;
+// 	// areq can be either expressed in torque or actual accel. Both ways are equivalent. Here uses actual accel.
+// 	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
+//     // Solver treats Mreq as around -z axis.
+// 	optimizer_state.mreq = -getYawRateControlLeftRightBias(swAngle_millideg);
 
-	optimizer_state.theta_left = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
-    optimizer_state.theta_right = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
+// 	optimizer_state.theta_left = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FL);
+//     optimizer_state.theta_right = -swAngleMillidegToSteeringAngleRad(swAngle_millideg_FR);
 
-	solve(&optimizer_state);
+// 	solve(&optimizer_state, &effici);
 
-	// Logging solver outputs, x1000 to make it more intuitive.
-	solver_torques.frontLeft_Nm = X1000_INT16(optimizer_state.optimal_assignment[0].val);
-	solver_torques.frontRight_Nm = X1000_INT16(optimizer_state.optimal_assignment[1].val);
-	solver_torques.rearLeft_Nm = X1000_INT16(optimizer_state.optimal_assignment[2].val);
-	solver_torques.rearRight_Nm = X1000_INT16(optimizer_state.optimal_assignment[3].val);
+// 	// Logging solver outputs, x1000 to make it more intuitive.
+// 	solver_torques.frontLeft_Nm = X1000_INT16(optimizer_state.optimal_assignment[0].val);
+// 	solver_torques.frontRight_Nm = X1000_INT16(optimizer_state.optimal_assignment[1].val);
+// 	solver_torques.rearLeft_Nm = X1000_INT16(optimizer_state.optimal_assignment[2].val);
+// 	solver_torques.rearRight_Nm = X1000_INT16(optimizer_state.optimal_assignment[3].val);
 
-    // Logging solver inputs.
-	solver_inputs.lin_accel_Nm = optimizer_state.areq;
-	solver_inputs.moment_req_Nm = optimizer_state.mreq;
+//     // Logging solver inputs.
+// 	solver_inputs.lin_accel_Nm = optimizer_state.areq;
+// 	solver_inputs.moment_req_Nm = optimizer_state.mreq;
 
-    // Logging solver aux.
-	solver_aux.combined_normalized_throttle = X1000_INT16(normalized_throttle);
-	solver_aux.allow_regen = allow_regen;
+//     // Logging solver aux.
+// 	solver_aux.combined_normalized_throttle = X1000_INT16(normalized_throttle);
+// 	solver_aux.allow_regen = allow_regen;
 
-    // Logging solver settings.
-	solver_settings.k_lin = X1000_INT16(solver_get_k_lin());
-	solver_settings.k_yaw = X1000_INT16(solver_get_k_yaw());
-	solver_settings.k_tie = X1000_INT16(solver_get_k_tie());
+//     // Logging solver settings.
+// 	solver_settings.k_lin = X1000_INT16(solver_get_k_lin());
+// 	solver_settings.k_yaw = X1000_INT16(solver_get_k_yaw());
+// 	solver_settings.k_tie = X1000_INT16(solver_get_k_tie());
 
-	static cmr_torqueDistributionNm_t torquesPos_Nm;
-	static cmr_torqueDistributionNm_t torquesNeg_Nm;
+// 	static cmr_torqueDistributionNm_t torquesPos_Nm;
+// 	static cmr_torqueDistributionNm_t torquesNeg_Nm;
 
-    if(true == allow_regen) {
+//     if(true == allow_regen) {
 
-        set_motor_speed_and_torque(MOTOR_FL, optimizer_state.optimal_assignment[0].val, &torquesPos_Nm, &torquesNeg_Nm);
-        set_motor_speed_and_torque(MOTOR_FR, optimizer_state.optimal_assignment[1].val, &torquesPos_Nm, &torquesNeg_Nm);
-        set_motor_speed_and_torque(MOTOR_RL, optimizer_state.optimal_assignment[2].val, &torquesPos_Nm, &torquesNeg_Nm);
-        set_motor_speed_and_torque(MOTOR_RR, optimizer_state.optimal_assignment[3].val, &torquesPos_Nm, &torquesNeg_Nm);
-        setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
-        // The API for setting speeds and torques is not optimal.
-        // It should allow setting velocities the same way as setting torques, by passing a struct.
+//         set_motor_speed_and_torque(MOTOR_FL, optimizer_state.optimal_assignment[0].val, &torquesPos_Nm, &torquesNeg_Nm);
+//         set_motor_speed_and_torque(MOTOR_FR, optimizer_state.optimal_assignment[1].val, &torquesPos_Nm, &torquesNeg_Nm);
+//         set_motor_speed_and_torque(MOTOR_RL, optimizer_state.optimal_assignment[2].val, &torquesPos_Nm, &torquesNeg_Nm);
+//         set_motor_speed_and_torque(MOTOR_RR, optimizer_state.optimal_assignment[3].val, &torquesPos_Nm, &torquesNeg_Nm);
+//         setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
+//         // The API for setting speeds and torques is not optimal.
+//         // It should allow setting velocities the same way as setting torques, by passing a struct.
 
-    } else {
+//     } else {
 
-        torquesPos_Nm.fl = optimizer_state.optimal_assignment[0].val;
-        torquesPos_Nm.fr = optimizer_state.optimal_assignment[1].val;
-        torquesPos_Nm.rl = optimizer_state.optimal_assignment[2].val;
-        torquesPos_Nm.rr = optimizer_state.optimal_assignment[3].val;
+//         torquesPos_Nm.fl = optimizer_state.optimal_assignment[0].val;
+//         torquesPos_Nm.fr = optimizer_state.optimal_assignment[1].val;
+//         torquesPos_Nm.rl = optimizer_state.optimal_assignment[2].val;
+//         torquesPos_Nm.rr = optimizer_state.optimal_assignment[3].val;
 
-        torquesNeg_Nm.fl = 0.0f;
-        torquesNeg_Nm.fr = 0.0f;
-        torquesNeg_Nm.rl = 0.0f;
-        torquesNeg_Nm.rr = 0.0f;
+//         torquesNeg_Nm.fl = 0.0f;
+//         torquesNeg_Nm.fr = 0.0f;
+//         torquesNeg_Nm.rl = 0.0f;
+//         torquesNeg_Nm.rr = 0.0f;
 
-        setVelocityInt16All(maxFastSpeed_rpm);
-	    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
+//         setVelocityInt16All(maxFastSpeed_rpm);
+// 	    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
 
-    }
-}
+//     }
+// }
 
-void set_optimal_control_with_regen(
-	int throttlePos_u8,
-	int32_t swAngle_millideg_FL,
-	int32_t swAngle_millideg_FR
-) {
-    uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
+// void set_optimal_control_with_regen(
+// 	int throttlePos_u8,
+// 	int32_t swAngle_millideg_FL,
+// 	int32_t swAngle_millideg_FR
+// ) {
+//     uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
 
-    uint8_t paddle_regen_strength_raw = 100;
-    // getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
-    float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
+//     uint8_t paddle_regen_strength_raw = 100;
+//     // getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
+//     float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
 
-    float paddle_request = 0.0f;
-    if (paddle_pressure > paddle_pressure_start) {
-        paddle_request = ((float)(paddle_pressure - paddle_pressure_start)) / (UINT8_MAX - paddle_pressure_start);
-        paddle_request *= paddle_regen_strength; // [0, 1].
-    }
+//     float paddle_request = 0.0f;
+//     if (paddle_pressure > paddle_pressure_start) {
+//         paddle_request = ((float)(paddle_pressure - paddle_pressure_start)) / (UINT8_MAX - paddle_pressure_start);
+//         paddle_request *= paddle_regen_strength; // [0, 1].
+//     }
 
-    float throttle = (float)throttlePos_u8 / UINT8_MAX;
-    float combined_request = throttle - paddle_request; // [0, 1].
-    set_optimal_control(combined_request, swAngle_millideg_FL, swAngle_millideg_FR, true);
-}
+//     float throttle = (float)throttlePos_u8 / UINT8_MAX;
+//     float combined_request = throttle - paddle_request; // [0, 1].
+//     set_optimal_control(combined_request, swAngle_millideg_FL, swAngle_millideg_FR, true);
+// }
 
-static void set_regen(uint8_t throttlePos_u8) {
-    uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
+// static void set_regen(uint8_t throttlePos_u8) {
+//     uint8_t paddle_pressure = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
 
-    uint8_t paddle_regen_strength_raw = 50;
-    getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
-    float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
+//     uint8_t paddle_regen_strength_raw = 50;
+//     getProcessedValue(&paddle_regen_strength_raw, PADDLE_MAX_REGEN_INDEX, unsigned_integer);
+//     float paddle_regen_strength = paddle_regen_strength_raw * 0.01;
 
-    float paddle_request = 0.0f;
-    if (paddle_pressure > paddle_pressure_start) {
-        paddle_request = ((float)(paddle_pressure - paddle_pressure_start)) / (UINT8_MAX - paddle_pressure_start);
-        paddle_request *= paddle_regen_strength; // [0, 1].
-    }
+//     float paddle_request = 0.0f;
+//     if (paddle_pressure > paddle_pressure_start) {
+//         paddle_request = ((float)(paddle_pressure - paddle_pressure_start)) / (UINT8_MAX - paddle_pressure_start);
+//         paddle_request *= paddle_regen_strength; // [0, 1].
+//     }
 
-    float throttle = (float)throttlePos_u8 / UINT8_MAX;
-    float combined_request = throttle - paddle_request; // [0, 1].
+//     float throttle = (float)throttlePos_u8 / UINT8_MAX;
+//     float combined_request = throttle - paddle_request; // [0, 1].
 
-    static cmr_torqueDistributionNm_t torquesPos_Nm;
-	static cmr_torqueDistributionNm_t torquesNeg_Nm;
+//     static cmr_torqueDistributionNm_t torquesPos_Nm;
+// 	static cmr_torqueDistributionNm_t torquesNeg_Nm;
 
-    float torque_request_Nm = combined_request * maxFastTorque_Nm;
-    float torque_request_fl_Nm;
-    float torque_request_fr_Nm;
-    float torque_request_rl_Nm;
-    float torque_request_rr_Nm;
-    if(torque_request_Nm < 0) {
-        torque_request_fl_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FL)), torque_request_Nm);
-        torque_request_fr_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FR)), torque_request_Nm);
-        torque_request_rl_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RL)), torque_request_Nm);
-        torque_request_rr_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RR)), torque_request_Nm);
-    } else {
-        torque_request_fl_Nm = torque_request_Nm;
-        torque_request_fr_Nm = torque_request_Nm;
-        torque_request_rl_Nm = torque_request_Nm;
-        torque_request_rr_Nm = torque_request_Nm;
-    }
+//     float torque_request_Nm = combined_request * maxFastTorque_Nm;
+//     float torque_request_fl_Nm;
+//     float torque_request_fr_Nm;
+//     float torque_request_rl_Nm;
+//     float torque_request_rr_Nm;
+//     if(torque_request_Nm < 0) {
+//         torque_request_fl_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FL)), torque_request_Nm);
+//         torque_request_fr_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FR)), torque_request_Nm);
+//         torque_request_rl_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RL)), torque_request_Nm);
+//         torque_request_rr_Nm = fmaxf(getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RR)), torque_request_Nm);
+//     } else {
+//         torque_request_fl_Nm = torque_request_Nm;
+//         torque_request_fr_Nm = torque_request_Nm;
+//         torque_request_rl_Nm = torque_request_Nm;
+//         torque_request_rr_Nm = torque_request_Nm;
+//     }
 
-    set_motor_speed_and_torque(MOTOR_FL, torque_request_fl_Nm, &torquesPos_Nm, &torquesNeg_Nm);
-    set_motor_speed_and_torque(MOTOR_FR, torque_request_fr_Nm, &torquesPos_Nm, &torquesNeg_Nm);
-    set_motor_speed_and_torque(MOTOR_RL, torque_request_rl_Nm, &torquesPos_Nm, &torquesNeg_Nm);
-    set_motor_speed_and_torque(MOTOR_RR, torque_request_rr_Nm, &torquesPos_Nm, &torquesNeg_Nm);
-    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
-}
+//     set_motor_speed_and_torque(MOTOR_FL, torque_request_fl_Nm, &torquesPos_Nm, &torquesNeg_Nm);
+//     set_motor_speed_and_torque(MOTOR_FR, torque_request_fr_Nm, &torquesPos_Nm, &torquesNeg_Nm);
+//     set_motor_speed_and_torque(MOTOR_RL, torque_request_rl_Nm, &torquesPos_Nm, &torquesNeg_Nm);
+//     set_motor_speed_and_torque(MOTOR_RR, torque_request_rr_Nm, &torquesPos_Nm, &torquesNeg_Nm);
+//     setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
+// }
 
 /**
  * @brief Runs control loops and sets motor torque limits and velocity targets accordingly.
@@ -817,7 +878,7 @@ void runControls (
             // const bool clampbyside = true;
             // setYawRateControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, clampbyside);
             //setYawRateAndTractionControl(throttlePos_u8, brakePressurePsi_u8, swAngle_millideg, assumeNoTurn, ignoreYawRate, allowRegen, critical_speed_mps);
-            set_optimal_control_with_regen(throttlePos_u8, swAngle_millideg_FL, swAngle_millideg_FR);
+            set_optimal_control(throttlePos_u8, swAngle_millideg_FL, swAngle_millideg_FR, false);
             break;
         }
         case CMR_CAN_GEAR_SKIDPAD: {

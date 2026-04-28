@@ -58,6 +58,16 @@ static const float chassis_w_f = 0.625; //Confirm with CAD people
 /** @brief horizontal distance between the rear wheels in meters */
 static const float chassis_w_r = 0.625; //Confirm with CAD people
 
+//Accel constants
+//General constants
+
+static const float slip_ratio_front = 1.13;
+static const float slip_ratio_rear = 1.15;
+
+//Safety clamps
+static const float accel_max_fz_N = 2000.0f;
+static const float accel_min_fz_N = 0.0f;
+
 // Gear ratio is defined as (TOP + BOTTOM) / (BOTTOM)
 static const int32_t gear_ratio_top = 8784;
 static const int32_t gear_ratio_bot = 621;
