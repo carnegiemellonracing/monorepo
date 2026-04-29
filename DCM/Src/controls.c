@@ -764,10 +764,10 @@ void runControls (
         }
         case CMR_CAN_GEAR_FAST: {
             disableTorqueMode();
-            if(ctrlOff) {
-                setFastTorque(throttlePos_u8);
-                break;
-            }
+            // if(ctrlOff) {
+            //     setFastTorque(throttlePos_u8);
+            //     break;
+            // }
             setFastTorqueWithBias(throttlePos_u8, front_bias);
             setPowerLimit(false, MOTOR_FL, 10.0 * front_bias);
             setPowerLimit(false, MOTOR_FR, 10.0 * front_bias);
@@ -778,10 +778,10 @@ void runControls (
         }
         case CMR_CAN_GEAR_ENDURANCE: {
             disableTorqueMode();
-            if(ctrlOff) {
-                setFastTorque(throttlePos_u8);
-                break;
-            }
+            // if(ctrlOff) {
+            //     setFastTorque(throttlePos_u8);
+            //     break;
+            // }
             // setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
             set_regen(throttlePos_u8);
             // set_regen_with_slew(throttlePos_u8, 29.0f);
@@ -789,10 +789,10 @@ void runControls (
         }
         case CMR_CAN_GEAR_AUTOX: {
             disableTorqueMode();
-            if(ctrlOff) {
-                setFastTorque(throttlePos_u8);
-                break;
-            }
+            // if(ctrlOff) {
+            //     setFastTorque(throttlePos_u8);
+            //     break;
+            // }
             // const bool assumeNoTurn = true; // TC is not allowed to behave left-right asymmetrically due to the lack of testing
             // const bool ignoreYawRate = false; // TC takes yaw rate into account to prevent the vehicle from stopping unintendedly when turning at low speeds
             // const bool allowRegen = true; // regen-braking is allowed to protect the AC by keeping charge level high
@@ -805,19 +805,19 @@ void runControls (
         }
         case CMR_CAN_GEAR_SKIDPAD: {
             disableTorqueMode();
-            if(ctrlOff) {
-                setFastTorque(throttlePos_u8);
-                break;
-            }
+            // if(ctrlOff) {
+            //     setFastTorque(throttlePos_u8);
+            //     break;
+            // }
         	set_optimal_control((float)throttlePos_u8 / UINT8_MAX, swAngle_millideg_FL, swAngle_millideg_FR, false);
             break;
         }
         case CMR_CAN_GEAR_ACCEL: {
             disableTorqueMode();
-            if(ctrlOff) {
-                setFastTorque(throttlePos_u8);
-                break;
-            }
+            // if(ctrlOff) {
+            //     setFastTorque(throttlePos_u8);
+            //     break;
+            // }
             const bool assumeNoTurn = true; // TC is not allowed to behave left-right asymmetrically because it's meaningless in accel
             const bool ignoreYawRate = true;  // TC ignores yaw rate because it's meaningless in accel
             const bool allowRegen = false; // regen-braking is not allowed because it's meaningless in accel
@@ -830,10 +830,10 @@ void runControls (
         }
         case CMR_CAN_GEAR_TEST: {
             disableTorqueMode();
-            if(ctrlOff) {
-                setFastTorque(throttlePos_u8);
-                break;
-            }
+            // if(ctrlOff) {
+            //     setFastTorque(throttlePos_u8);
+            //     break;
+            // }
             //set_manual_cruise_control(throttlePos_u8);
             float vx, va; 
             volatile cmr_canSensoricVelAng_t *sensoricVelAng = (cmr_canSensoricVelAng_t*)canDAQGetPayload(CANRX_DAQ_SENSORIC_VEL_ANG);
@@ -875,10 +875,10 @@ void runControls (
         case CMR_CAN_GEAR_REVERSE: {
             // for rule-compliance, the car shouldn't reverse
             disableTorqueMode();
-            if(ctrlOff) {
-                setFastTorque(throttlePos_u8);
-                break;
-            }
+            // if(ctrlOff) {
+            //     setFastTorque(throttlePos_u8);
+            //     break;
+            // }
             setTorqueLimsAllProtected(0.0f, 0.0f);
             setVelocityInt16All(0);
             break;
@@ -1549,7 +1549,7 @@ void setAccelLaunchControl(
     // --- Per-wheel power split: proportional to (clamped) vertical load ---
     // sorry written at comp should be in constants
     float max_power_to_inverter_kw = 35.0f; 
-    float max_total_power_kw = 79.0f;
+    float max_total_power_kw = 95.0f;
     float power_fl_kw = CLAMP (0, (fz_fl / total_fz) * max_total_power_kw, max_power_to_inverter_kw);
     float power_fr_kw = CLAMP (0, (fz_fr / total_fz) * max_total_power_kw, max_power_to_inverter_kw);
     float power_rl_kw = CLAMP (0, (fz_rl / total_fz) * max_total_power_kw, max_power_to_inverter_kw);
