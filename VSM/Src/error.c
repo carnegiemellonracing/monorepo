@@ -16,7 +16,7 @@
 #include "sensors.h"    // sensorChannel_t, sensors[]
 
 /** @brief Check if we are in competition mode and need to check one inverter, otherwise check all inverters */
-#define COMPETITION_MODE false
+#define COMPETITION_MODE true
 
 
 /** @brief Required brake pressure to transition into RTD. */
