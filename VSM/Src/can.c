@@ -35,21 +35,21 @@ cmr_canRXMeta_t canRXMeta[] = {
     },
     [CANRX_HEARTBEAT_CDC] = {
         .canID = CMR_CANID_HEARTBEAT_CDC,
-        .timeoutError_ms = 100,
+        .timeoutError_ms = 2500,
         .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_VSM_CDC_TIMEOUT
     },
     [CANRX_HEARTBEAT_DIM] = {
         .canID = CMR_CANID_HEARTBEAT_DIM,
-        .timeoutError_ms = 100,
+        .timeoutError_ms = 2500,
         .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_VSM_DIM_TIMEOUT
     },
     [CANRX_HEARTBEAT_HVBMS] = {
         .canID = CMR_CANID_HEARTBEAT_HV_BMS,
-        .timeoutError_ms = 100,
+        .timeoutError_ms = 2500,
         .errorFlag = CMR_CAN_ERROR_NONE,
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_NONE
@@ -69,9 +69,9 @@ cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
         .timeoutError_ms = 100,
-        .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
+        .errorFlag = CMR_CAN_ERROR_NONE,
         .timeoutWarn_ms = 25,
-        .warnFlag = CMR_CAN_WARN_VSM_DIM_TIMEOUT
+        .warnFlag = CMR_CAN_WARN_NONE
     },
     [CANRX_CUBEMARS_DATA] = {
         .canID = CMR_CANID_CUBEMARS_DATA,
@@ -94,7 +94,7 @@ cmr_canRXMeta_t canRXMeta[] = {
             .canID = CMR_CANID_AS_RES,
             .timeoutError_ms = 100,
             .timeoutWarn_ms = 25,
-            .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT
+            .errorFlag = CMR_CAN_ERROR_NONE
     },
     [CANRX_AS_PRESSURE_READING] = {
             .canID = CMR_CANID_AS_PRESSURE_READINGS,

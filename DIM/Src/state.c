@@ -353,10 +353,10 @@ static cmr_state getNextState(void) {
             if(getASMS()) {
                 nextState = AUTON;
             }
-            else if(!cmr_gpioRead(GPIO_CTRL_SWITCH) && (stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)) {
-                nextState = CONFIG;
-                flush_config_screen_to_cdc = false;
-            }
+            // else if(!cmr_gpioRead(GPIO_CTRL_SWITCH) && (stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)) {
+            //     nextState = CONFIG;
+            //     flush_config_screen_to_cdc = false;
+            // }
             else if(buttonStates[RIGHT].isPressed && stateGetVSM() == CMR_CAN_RTD) {
                 nextState = RACING;
                 buttonStates[RIGHT].isPressed = false; 
