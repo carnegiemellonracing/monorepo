@@ -37,22 +37,22 @@ TickType_t bms_start_time;
 cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_HEARTBEAT_VSM] = { //not needed? 
         .canID = CMR_CANID_HEARTBEAT_VSM,
-        .timeoutError_ms = 50,
+        .timeoutError_ms = 2500,
         .timeoutWarn_ms = 25
     },
     [CANRX_HVC_COMMAND] = {
         .canID = CMR_CANID_HVC_COMMAND,
-        .timeoutError_ms = 200,
+        .timeoutError_ms = 2500,
         .timeoutWarn_ms = 25
     },
     [CANRX_HEARTBEAT_HVC] = {
         .canID = CMR_CANID_HEARTBEAT_HVC,
-        .timeoutError_ms = 50,
+        .timeoutError_ms = 2500,
         .timeoutWarn_ms = 25 
     },
     [CANRX_BALANCE_COMMAND] = {
 		.canID = CMR_CANID_CELL_BALANCE_ENABLE,
-		.timeoutError_ms = 50,
+		.timeoutError_ms = 2500,
 		.timeoutWarn_ms = 25
 	},
     [CANRX_EMD_TEMP] = {

@@ -72,14 +72,14 @@ uint16_t pump_Right_State;
 cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
     [CANRX_VEH_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
-        .timeoutError_ms = 250,
+        .timeoutError_ms = 2500,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
     },
     [CANRX_VSM_STATUS] = {
         .canID = CMR_CANID_VSM_STATUS,
-        .timeoutError_ms = 250,
+        .timeoutError_ms = 2500,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
@@ -674,21 +674,21 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
 cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
-        .timeoutError_ms = 250,
+        .timeoutError_ms = 2500,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
     },
     [CANRX_VSM_STATUS] = {
         .canID = CMR_CANID_VSM_STATUS,
-        .timeoutError_ms = 50,
+        .timeoutError_ms = 2500,
         .timeoutWarn_ms = 25,
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT,
     },
     [CANRX_VSM_SENSORS] = {
         .canID = CMR_CANID_VSM_SENSORS,
-        .timeoutError_ms = 500,
+        .timeoutError_ms = 2500,
         .timeoutWarn_ms = 250,
         .errorFlag = CMR_CAN_ERROR_VSM_TIMEOUT,
         .warnFlag = CMR_CAN_WARN_VSM_TIMEOUT
@@ -1743,7 +1743,7 @@ int8_t getNodeID(cmr_canID_t id){
 
 static bool inverterMessagesValid() {
     TickType_t lastWakeTime = xTaskGetTickCount();
-    return /*(!cmr_canRXMetaTimeoutError(&canTractiveRXMeta[CANRX_TRAC_FL_TEMPFAULT], lastWakeTime)) &&*/
+    return (!cmr_canRXMetaTimeoutError(&canTractiveRXMeta[CANRX_TRAC_FL_TEMPFAULT], lastWakeTime)) &&
            (!cmr_canRXMetaTimeoutError(&canTractiveRXMeta[CANRX_TRAC_FR_TEMPFAULT], lastWakeTime)) &&
            (!cmr_canRXMetaTimeoutError(&canTractiveRXMeta[CANRX_TRAC_RL_TEMPFAULT], lastWakeTime)) &&
            (!cmr_canRXMetaTimeoutError(&canTractiveRXMeta[CANRX_TRAC_RR_TEMPFAULT], lastWakeTime));

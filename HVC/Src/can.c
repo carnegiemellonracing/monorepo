@@ -34,27 +34,27 @@
 cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
-        .timeoutError_ms = 50,
+        .timeoutError_ms = 2500,
         .timeoutWarn_ms = 25
     },
     [CANRX_HVC_COMMAND] = {
         .canID = CMR_CANID_HVC_COMMAND,
-        .timeoutError_ms = 200,
+        .timeoutError_ms = 2500,
         .timeoutWarn_ms = 25
     },
     [CANRX_EMD_MEASURE] = {
         .canID = CMR_CANID_EMD_MEASUREMENT,
-        .timeoutError_ms = 100,
+        .timeoutError_ms = 2500,
         .timeoutWarn_ms = 25
     },
     [CANRX_HVBMS_MINMAX_VOLTAGE] = {
         .canID = CMR_CANID_HVBMS_MIN_MAX_CELL_VOLTAGE,
-        .timeoutError_ms = 50,
+        .timeoutError_ms = 2500,
         .timeoutWarn_ms = 25
     },
     [CANRX_HVBMS_PACKVOLT] = {
         .canID = CMR_CANID_HVBMS_PACK_VOLTAGE,
-        .timeoutError_ms = 50,
+        .timeoutError_ms = 2500,
         .timeoutWarn_ms = 25 
     }, 
     [CANRX_HVBMS_MINMAX_TEMP] = {
@@ -64,7 +64,7 @@ cmr_canRXMeta_t canRXMeta[] = {
     }, 
     [CANRX_HEARTBEAT_HVBMS] = { 
         .canID = CMR_CANID_HEARTBEAT_HV_BMS, 
-        .timeoutError_ms = 50, 
+        .timeoutError_ms = 2500, 
         .timeoutWarn_ms = 25
     }, 
     [CANRX_IVT_CURRENT] = { 

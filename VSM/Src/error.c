@@ -26,7 +26,7 @@ const uint16_t brakePressureThreshold_PSI = 40;
  * @brief Modules will be considered in the wrong state this many millisec
  * after the last state change.
  */
-static const TickType_t badStateThres_ms = 150;
+static const TickType_t badStateThres_ms = 1000;
 
 // Forward declarations
 static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime);
