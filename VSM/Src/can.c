@@ -68,7 +68,7 @@ cmr_canRXMeta_t canRXMeta[] = {
     },
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
-        .timeoutError_ms = 100,
+        .timeoutError_ms = 2500,
         .errorFlag = CMR_CAN_ERROR_NONE,
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_NONE

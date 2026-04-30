@@ -785,7 +785,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     cmr_canWarn_t warning = CMR_CAN_WARN_NONE;
     cmr_canError_t error = CMR_CAN_ERROR_NONE;
 
-    cmr_sensorListGetFlags(&sensorList, &warning, &error);
+    // cmr_sensorListGetFlags(&sensorList, &warning, &error);
 
     if (cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPP_IMPLAUS) != 0) {
         warning |= CMR_CAN_WARN_FSM_BPP;
@@ -794,9 +794,9 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
         warning |= CMR_CAN_WARN_FSM_TPOS_IMPLAUSIBLE;
     }
 
-    if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
-        error |= CMR_CAN_ERROR_VSM_TIMEOUT;
-    }
+    // if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
+    //     error |= CMR_CAN_ERROR_VSM_TIMEOUT;
+    // }
 
     if (error != CMR_CAN_ERROR_NONE) {
         heartbeat.state = CMR_CAN_ERROR;
