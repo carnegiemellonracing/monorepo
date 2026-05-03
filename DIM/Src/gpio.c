@@ -27,208 +27,12 @@ static const uint32_t gpioReadButtons_priority = 5;
 static cmr_task_t gpioReadButtons_task;
 
 /**
- * @brief Board-specific pin configuration.
- *
- * Replace/add more pin configurations here as appropriate. Each enumeration
- * value of `gpio_t` should get a configuration.
- *
- * @see `stm32f4xx_hal_gpio.h` for various initialization values.
- */
-// TODO: change GPIO pin configs based on new schematic
-static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
-
-// D_BUTTON_2
-    [GPIO_BUTTON_UP] = {
-		.port = GPIOC,
-		.init = {
-			.Pin = GPIO_PIN_10,
-			.Mode = GPIO_MODE_INPUT,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	// D_BUTTON_1
-	[GPIO_BUTTON_DOWN] = {
-		.port = GPIOB,
-		.init = {
-			.Pin = GPIO_PIN_5,
-			.Mode = GPIO_MODE_INPUT,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	// D_BUTTON_4
-	[GPIO_BUTTON_LEFT] = {
-		.port = GPIOC,
-		.init = {
-			.Pin = GPIO_PIN_1,
-			.Mode = GPIO_MODE_INPUT,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	// D_BUTTON_3
-	[GPIO_BUTTON_RIGHT] = {
-		.port = GPIOB,
-		.init = {
-			.Pin = GPIO_PIN_9,
-			.Mode = GPIO_MODE_INPUT,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	// // OLD DIM PINS	
-	// // D_BUTTON_2
-    // [GPIO_BUTTON_UP] = {
-	// 	.port = GPIOC,
-	// 	.init = {
-	// 		.Pin = GPIO_PIN_10,
-	// 		.Mode = GPIO_MODE_INPUT,
-	// 		.Pull = GPIO_PULLUP,
-	// 		.Speed = GPIO_SPEED_FREQ_LOW
-	// 	}
-	// },
-	// // D_BUTTON_1
-	// [GPIO_BUTTON_DOWN] = {
-	// 	.port = GPIOB,
-	// 	.init = {
-	// 		.Pin = GPIO_PIN_4,
-	// 		.Mode = GPIO_MODE_INPUT,
-	// 		.Pull = GPIO_PULLUP,
-	// 		.Speed = GPIO_SPEED_FREQ_LOW
-	// 	}
-	// },
-	// // D_BUTTON_4
-	// [GPIO_BUTTON_LEFT] = {
-	// 	.port = GPIOB,
-	// 	.init = {
-	// 		.Pin = GPIO_PIN_5,
-	// 		.Mode = GPIO_MODE_INPUT,
-	// 		.Pull = GPIO_PULLUP,
-	// 		.Speed = GPIO_SPEED_FREQ_LOW
-	// 	}
-	// },
-	// // D_BUTTON_3
-	// [GPIO_BUTTON_RIGHT] = {
-	// 	.port = GPIOB,
-	// 	.init = {
-	// 		.Pin = GPIO_PIN_9,
-	// 		.Mode = GPIO_MODE_INPUT,
-	// 		.Pull = GPIO_PULLUP,
-	// 		.Speed = GPIO_SPEED_FREQ_LOW
-	// 	}
-	// },
-	// S_BUTTON_1
-	[GPIO_BUTTON_SW_LEFT] = {
-		.port = GPIOB,
-		.init = {
-			.Pin = GPIO_PIN_8,
-			.Mode = GPIO_MODE_INPUT,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	// S_BUTTON_2
-	[GPIO_BUTTON_SW_RIGHT] = {
-		.port = GPIOD,
-		.init = {
-			.Pin = GPIO_PIN_2,
-			.Mode = GPIO_MODE_INPUT,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_CTRL_SWITCH] = {
-		.port = GPIOC,
-		.init = {
-			.Pin = GPIO_PIN_8,
-			.Mode = GPIO_MODE_INPUT,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_LED_AMS] = {
-		.port = GPIOB,
-		.init = {
-			.Pin = GPIO_PIN_12,
-			.Mode = GPIO_MODE_OUTPUT_PP,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_LED_IMD] = {
-		.port = GPIOA,
-		.init = {
-			.Pin = GPIO_PIN_10,
-			.Mode = GPIO_MODE_OUTPUT_PP,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	// // OLD DIM PINS
-	// [GPIO_LED_IMD] = {
-	// 	.port = GPIOA,
-	// 	.init = {
-	// 		.Pin = GPIO_PIN_8,
-	// 		.Mode = GPIO_MODE_OUTPUT_PP,
-	// 		.Pull = GPIO_PULLUP,
-	// 		.Speed = GPIO_SPEED_FREQ_LOW
-	// 	}
-	// },
-	[GPIO_LED_BSPD] = {
-		.port = GPIOA,
-		.init = {
-			.Pin = GPIO_PIN_9,
-			.Mode = GPIO_MODE_OUTPUT_PP,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_ASMS_ON] = {
-		.port = GPIOB,
-		.init = {
-			.Pin = GPIO_PIN_13,
-			.Mode = GPIO_MODE_INPUT,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_LED_STATUS] = {
-		.port = GPIOC,
-		.init = {
-			.Pin = GPIO_PIN_12,
-			.Mode = GPIO_MODE_OUTPUT_PP,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_PD_N] = {
-		.port = GPIOB,
-		.init = {
-			.Pin = GPIO_PIN_14,
-			.Mode = GPIO_MODE_OUTPUT_PP,
-			.Pull = GPIO_NOPULL,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	},
-	[GPIO_AS_ERROR] = {
-		.port = GPIOC,
-		.init = {
-			.Pin = GPIO_PIN_9,
-			.Mode = GPIO_MODE_OUTPUT_PP,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_LOW
-		}
-	}, 
-};
-
-/**
  * @brief This function is a wrapper that lets you see if ASMS is on
  *
  * @return 1 iff ASMS is on
  */
 uint8_t getASMS(){
-    return cmr_gpioRead(GPIO_ASMS_ON);
+    return 0;
 }
 
 /**
@@ -251,20 +55,12 @@ static void gpioReadButtons(void *pvParameters) {
     (void)pvParameters;
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        uint8_t paddle = adcRead(ADC_PADDLE);
-        if(getCurrState() == CONFIG) {
-            if (paddle > 100) config_increment_up_requested = true;
-        }
-
         // Direct assignment for CAN buttons
 
         for(int i=0; i<NUM_BUTTONS; i++){
-            // Active Low
-            buttonStates[i].gpioState = !cmr_gpioRead(gpioButtonPins[i]);
-            if (buttonStates[i].prevState != buttonStates[i].gpioState){
-                buttonStates[i].isPressed = buttonStates[i].gpioState;
-            }
-            buttonStates[i].prevState = buttonStates[i].gpioState;
+            buttonStates[i].gpioState = 0;
+            buttonStates[i].isPressed = 0;
+            buttonStates[i].prevState = 0;
         }
         vTaskDelayUntil(&lastWakeTime, 100);
     }
@@ -274,14 +70,6 @@ static void gpioReadButtons(void *pvParameters) {
  * @brief Initializes the GPIO interface.
  */
 void gpioInit(void) {
-    cmr_gpioPinInit(
-        gpioPinConfigs, sizeof(gpioPinConfigs) / sizeof(gpioPinConfigs[0]));
-
-		cmr_gpioWrite(GPIO_LED_AMS, 0);
-    cmr_gpioWrite(GPIO_LED_IMD, 0);
-    cmr_gpioWrite(GPIO_LED_BSPD, 0);
-		cmr_gpioWrite(GPIO_AS_ERROR, 0);
-
     cmr_taskInit(
         &gpioReadButtons_task,
         "gpioReadButtons",

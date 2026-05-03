@@ -204,9 +204,9 @@ static void tftUpdate(void *pvParameters) {
 
     /* Restarting the Display. */
     TickType_t lastWakeTime = xTaskGetTickCount();
-    cmr_gpioWrite(GPIO_PD_N, 0);  // TODO figure out pin
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
     vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
-    cmr_gpioWrite(GPIO_PD_N, 1);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
     vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
 
     /* Initialize the display. */
@@ -675,6 +675,17 @@ void tftInit(void) {
     cmr_qspiInit(
         &tft.qspi, QUADSPI, &qspiInit, &pins,
         DMA2_Stream7, DMA_CHANNEL_3);
+
+    /* Initialize PD_N (GPIOB pin 14) as output and drive high (display active). */
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    GPIO_InitTypeDef pdnInit = {
+        .Pin   = GPIO_PIN_14,
+        .Mode  = GPIO_MODE_OUTPUT_PP,
+        .Pull  = GPIO_NOPULL,
+        .Speed = GPIO_SPEED_FREQ_LOW
+    };
+    HAL_GPIO_Init(GPIOB, &pdnInit);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
 
     tft.inited = false;
     dim_first_time_config_screen = true;

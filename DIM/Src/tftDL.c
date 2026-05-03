@@ -402,10 +402,10 @@ void tftDL_showRAMMsg(uint32_t *file_addr, uint32_t msg_loc) {
     // } *target_time_str = (void *)(file_addr + targ_lap_loc);
 
     // memcpy((void *)target_time_str->buf, (void *)&(RAMBUF[TARGET_TIME_INDEX]), TIMEDISPLAYLEN);
-    struct {
-        char buf[MESSAGEDISPLAYLEN];
-    } *ramMsg_str = (void *)(file_addr + msg_loc);
-    memcpy((void *)ramMsg_str->buf, (void *)&(RAMBUF[MESSAGE_INDEX]), MESSAGEDISPLAYLEN);
+    // struct {
+    //     char buf[MESSAGEDISPLAYLEN];
+    // } *ramMsg_str = (void *)(file_addr + msg_loc);
+    // memcpy((void *)ramMsg_str->buf, (void *)&(RAMBUF[MESSAGE_INDEX]), MESSAGEDISPLAYLEN);
 }
 
 /**

@@ -353,7 +353,7 @@ static cmr_state getNextState(void) {
             if(getASMS()) {
                 nextState = AUTON;
             }
-            else if(!cmr_gpioRead(GPIO_CTRL_SWITCH) && true/*(stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)*/) {
+            else if(!1 && true/*(stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)*/) {
                 nextState = CONFIG;
                 flush_config_screen_to_cdc = false;
             }
@@ -366,7 +366,7 @@ static cmr_state getNextState(void) {
             }
             break;
         case CONFIG:
-            if(cmr_gpioRead(GPIO_CTRL_SWITCH)) {
+            if(1) {
                 nextState = NORMAL;
                 flush_config_screen_to_cdc = true;
             }
@@ -565,7 +565,7 @@ static volatile int requestedGear;
 void reqGear(void) {
     bool canChangeGear = ((stateGetVSM() == CMR_CAN_GLV_ON) 
                        || (stateGetVSM() == CMR_CAN_HV_EN));
-    if(getASMS()/* && cmr_gpioRead(GPIO_CTRL_SWITCH)*/) {
+    if(getASMS()/* && 1*/) {
         if(CMR_CAN_GEAR_DV_MISSION_MAX <= state.gear || state.gear <= CMR_CAN_GEAR_DV_MISSION_MIN) {
             state.gear = CMR_CAN_GEAR_DV_MISSION_ACCEL;
             state.gearReq = CMR_CAN_GEAR_DV_MISSION_ACCEL;
@@ -618,7 +618,7 @@ void reqDRS(void) {
 }
 
 void reqDVCtrl(void) {
-    if(cmr_gpioRead(GPIO_CTRL_SWITCH)) {
+    if(1) {
         if(buttonStates[RIGHT].isPressed) {
             state.dvCtrlReq = (state.dvCtrlMode + 1) % NUM_DV_MODES;
             buttonStates[RIGHT].isPressed = false; 
