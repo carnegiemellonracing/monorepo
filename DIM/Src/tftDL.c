@@ -562,9 +562,9 @@ void tftDL_RTDUpdate(
     
     if(update_temps) {
         // temps probs arent 0 - just display nothing
-        tftDL_RTDwriteInt(tftDL_RTDData, ESE_MOTOR_TEMP_STR, 4, "%3ld", motorTemp_C);
-        tftDL_RTDwriteInt(tftDL_RTDData, ESE_MC_TEMP_STR, 4, "%3ld", mcTemp_C);
-        tftDL_RTDwriteInt(tftDL_RTDData, ESE_AC_TEMP_STR, 4, "%3ld", acTemp_C);
+        tftDL_RTDwriteInt(tftDL_RTDData, ESE_MOTOR_TEMP_STR, 5, "%4ld", motorTemp_C);
+        tftDL_RTDwriteInt(tftDL_RTDData, ESE_MC_TEMP_STR, 5, "%4ld", mcTemp_C);
+        tftDL_RTDwriteInt(tftDL_RTDData, ESE_AC_TEMP_STR, 5, "%4ld", acTemp_C);
 
         uint32_t *fl_color = (void *)(tftDL_RTDData + ESE_RTD_FL_COLOR);
         uint32_t *fr_color = (void *)(tftDL_RTDData + ESE_RTD_FR_COLOR);
