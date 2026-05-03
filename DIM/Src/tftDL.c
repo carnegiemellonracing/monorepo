@@ -514,7 +514,7 @@ void tftDL_RTDUpdate(
         *tpos_color = tpos_color_cmd;
 
         tftDL_RTDwriteInt(tftDL_RTDData, ESE_BPRES_STR, 5, "%4ld", brakePressure_psi);
-        tftDL_RTDwriteInt(tftDL_RTDData, ESE_TPOS_STR, 4, "%3ld%%", throttlePos);
+        tftDL_RTDwriteInt(tftDL_RTDData, ESE_TPOS_STR, 5, "%4ld", throttlePos);
 
         update_sensors_odom = false;
     }
