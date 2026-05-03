@@ -398,7 +398,7 @@ static void canTX100Hz(void *pvParameters) {
             .buttonStates = packed,
             .regenPercent = regenPercent,
             .paddle = paddle,
-            .controlsStatus = ctrlOn,
+            .controlsStatus = true,
 			.dvControlMode = dvCtrlMode
         };
         canTX(

@@ -738,7 +738,11 @@ void runControls (
         case CMR_CAN_GEAR_ENDURANCE: {
             disableTorqueMode();
             if(!ctrlOn) {
-                setFastTorque(throttlePos_u8);
+                setFastTorqueWithBias(throttlePos_u8, front_bias);
+                setPowerLimit(false, MOTOR_FL, 40.0f * front_bias);
+                setPowerLimit(false, MOTOR_FR, 40.0f * front_bias);
+                setPowerLimit(false, MOTOR_RL, 40.0f * (1 - front_bias));
+                setPowerLimit(false, MOTOR_FR, 40.0f * (1 - front_bias));
                 break;
             }
             setFastTorqueWithBias(throttlePos_u8, front_bias);
@@ -1023,10 +1027,10 @@ void setFastTorqueWithBias (uint8_t throttlePos_u8, float front_bias) {
    float reqTorque_front = reqTorque * front_bias / (1-front_bias);
    float reqTorque_rear = reqTorque;
 
-   setPowerLimit(false, MOTOR_FL, 40.0f * front_bias);
-   setPowerLimit(false, MOTOR_FR, 40.0f * front_bias);
-   setPowerLimit(false, MOTOR_RL, 40.0f * (1-front_bias));
-   setPowerLimit(false, MOTOR_RR, 40.0f * (1-front_bias));
+//    setPowerLimit(false, MOTOR_FL, 40.0f * front_bias);
+//    setPowerLimit(false, MOTOR_FR, 40.0f * front_bias);
+//    setPowerLimit(false, MOTOR_RL, 40.0f * (1-front_bias));
+//    setPowerLimit(false, MOTOR_RR, 40.0f * (1-front_bias));
    
    setTorqueLimsUnprotected(MOTOR_FL, reqTorque_front, 0.0f);
    setTorqueLimsUnprotected(MOTOR_FR, reqTorque_front, 0.0f);
