@@ -334,7 +334,7 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
                 break;
             }
             case CMR_CAN_VSM_STATE_AS_FINISHED: {
-                if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
+                if (hvcMode != CMR_CAN_HVC_MODE_IDLE) {
                     sendFirstError(HVC_AS_FINISHED);
                     wrongState = true;
                 }
@@ -342,7 +342,7 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
                 break;
             }
             case CMR_CAN_VSM_STATE_AS_EMERGENCY: {
-                if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
+                if (hvcMode != CMR_CAN_HVC_MODE_IDLE) {
                     sendFirstError(HVC_AS_EMERGENCY);
                     wrongState = true;
                 }

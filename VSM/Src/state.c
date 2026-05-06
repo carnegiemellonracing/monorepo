@@ -25,6 +25,7 @@
 // Globals
 #define AS_WAKEUP_TIME 5000
 #define AS_FINISHED_TIME 30000
+#define AS_EMERGENCY_TIME 10000
 #define DV_TANK_PRESSURE_MINIMUM_DECIBAR 50
 #define FRONT_MINIMUM_BRAKING_PSI 650
 #define REAR_MINIMUM_BRAKING_PSI  400
@@ -196,17 +197,18 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         return CMR_CAN_VSM_STATE_AS_EMERGENCY;
     }
 
+    cmr_canVSMState_t state = vsmStatus.canVSMStatus.internalState;
+
     // TE (Immediately return error if anything is wrong)
     if ((vsmStatus.heartbeatErrors != CMR_CAN_ERROR_NONE)
      || (vsmStatus.canVSMStatus.moduleTimeoutMatrix != CMR_CAN_VSM_TIMEOUT_SOURCE_NONE)
      || (vsmStatus.canVSMStatus.latchMatrix != CMR_CAN_VSM_LATCH_NONE)) {
-        if(ASState) {
+        if(ASState && (state > CMR_CAN_VSM_STATE_REQ_PRECHARGE)) {
+            __asm__("nop");
             return CMR_CAN_VSM_STATE_AS_EMERGENCY;
         }
         return CMR_CAN_VSM_STATE_ERROR;
     }
-
-    cmr_canVSMState_t state = vsmStatus.canVSMStatus.internalState;
 
     // Nothing is wrong, default nextState to error and begin state transition logic
     cmr_canVSMState_t nextState = CMR_CAN_VSM_STATE_ERROR;
@@ -232,13 +234,13 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         &sensorList, SENSOR_CH_BPRES_PSI
     );
 
-    cmr_DTI_RX_Message_t *dti_fl_erpm = getPayload(CANRX_FL_ERPM);
-    cmr_DTI_RX_Message_t *dti_fr_erpm = getPayload(CANRX_FR_ERPM);
-    cmr_DTI_RX_Message_t *dti_rl_erpm = getPayload(CANRX_RL_ERPM);
-    cmr_DTI_RX_Message_t *dti_rr_erpm = getPayload(CANRX_RR_ERPM);
+    int32_t dti_fl_erpm = getDTIERPM(CANRX_FL_ERPM);
+    int32_t dti_fr_erpm = getDTIERPM(CANRX_FR_ERPM);
+    int32_t dti_rl_erpm = getDTIERPM(CANRX_RL_ERPM);
+    int32_t dti_rr_erpm = getDTIERPM(CANRX_RR_ERPM);
 
-    bool vehicleStill = (dti_fl_erpm->velocity_erpm == 0) && (dti_fr_erpm->velocity_erpm == 0) &&
-                        (dti_rl_erpm->velocity_erpm == 0) && (dti_rr_erpm->velocity_erpm == 0);
+    bool vehicleStill = (dti_fl_erpm == 0) && (dti_fr_erpm == 0) &&
+                        (dti_rl_erpm == 0) && (dti_rr_erpm == 0);
 
     taskENTER_CRITICAL();
 
@@ -436,18 +438,19 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             if (!getDVBrakeActive() || RESTriggered()){
                 nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
             }
-            else if ((lastWakeTime_ms > lastStateChangeTime_ms + AS_FINISHED_TIME)){
-                nextState = CMR_CAN_VSM_STATE_GLV_ON;
-            }
-            else{
-                nextState = CMR_CAN_VSM_STATE_AS_FINISHED;
-            }
+            // if ((lastWakeTime_ms > lastStateChangeTime_ms + AS_FINISHED_TIME)){
+            //     nextState = CMR_CAN_VSM_STATE_GLV_ON;
+            // }
+            // else{
+            //     nextState = CMR_CAN_VSM_STATE_AS_FINISHED;
+            // }
+            nextState = CMR_CAN_VSM_STATE_AS_FINISHED;
 
             break;
         }
 
         case CMR_CAN_VSM_STATE_AS_EMERGENCY: {
-            if (lastStateChangeTime_ms + AS_FINISHED_TIME > lastWakeTime_ms){
+            if (lastStateChangeTime_ms + AS_EMERGENCY_TIME > lastWakeTime_ms){
                 nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
             }
             else{
