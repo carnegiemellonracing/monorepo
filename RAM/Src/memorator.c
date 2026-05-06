@@ -154,6 +154,7 @@ static void writeToSDCard(void *pvParameters)
     errorRegister = CMR_CAN_RAM_ERROR_NONE;
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1){
+        taskENTER_CRITICAL();
         oldBufferLocation = bufferLocation;
         switchBuffer();
         check_new_testID(); 
@@ -176,6 +177,7 @@ static void writeToSDCard(void *pvParameters)
         if(cmr_SDIO_unmount() != FR_OK) {
             errorRegister |= CMR_CAN_RAM_ERROR_SD_UNMOUNT;
         }
+        taskEXIT_CRITICAL();
         sendHeartbeat(errorRegister);
         vTaskDelayUntil(&lastWakeTime, memorator_period_ms);
     }
@@ -191,7 +193,6 @@ static void writeToSDCard(void *pvParameters)
  */
 static void switchBuffer(){
     // Critical Section to ensure atomicity when switching buffers 
-    taskENTER_CRITICAL();
 
     if (rxBuffer == bufferA){
         rxBuffer = bufferB;
@@ -203,7 +204,6 @@ static void switchBuffer(){
     }
     bufferLocation = 0;
 
-    taskEXIT_CRITICAL();
 }
  
 /**

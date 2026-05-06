@@ -27,7 +27,7 @@ extern sample_data_t raw_sample_data[MAX_SIGNALS];
 extern struct signal signal_map[MAX_SIGNALS];
 
 char testID_name[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; 
-extern filename[64]; 
+extern char filename[64]; 
 
 struct uart
 {
