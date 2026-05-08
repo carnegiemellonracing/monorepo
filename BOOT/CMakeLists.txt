@@ -24,12 +24,72 @@ project(boot)
 enable_language(C ASM)
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
-# Setup platform specific settings
+# ---------------------------------------------------------------------------
+# Paths — this CMakeLists.txt sits alongside the Makefile, so the OpenBLT
+# Source tree is three levels up.
+# ---------------------------------------------------------------------------
+set(OPENBLT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/openblt/Target/Source")
+set(CMAKE_CURRENT_SOURCE_FLASH_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Flash")
+
+
+
+# ---------------------------------------------------------------------------
+# Common STM configuration
+# ---------------------------------------------------------------------------
+# FreeRTOS config target (required by stm32f413-drivers even if not used)
+add_library(freertos_config INTERFACE)
+target_include_directories(freertos_config SYSTEM
+    INTERFACE
+    ${CMAKE_SOURCE_DIR}/Inc)
+target_compile_definitions(freertos_config
+    INTERFACE
+    projCOVERAGE_TEST=0)
+
+# STM32F413 drivers
+set(link_LIBS
+    stm-drivers
+)
+
+# ---------------------------------------------------------------------------
+# BOARD Specific Configuration 
+# ---------------------------------------------------------------------------
 set(TARGET_MCU "STM32F413" CACHE STRING "Target MCU: STM32F413 or STM32H725")
 message("MCU target: " ${TARGET_MCU})
 
+if(TARGET_MCU STREQUAL "STM32F413")
+    # Processor configuration for stm32f413-drivers
+    set(PROCESSOR F413)
+    set(PROCESSOR_FAM F4XX)
 
-# Setup compiler settings
+    # Core MCU flags, CPU type, instruction set and FPU setup
+    set(cpu_PARAMS
+        -mcpu=cortex-m4
+        -mthumb
+        -mfpu=fpv4-sp-d16
+        -mfloat-abi=hard
+    )
+
+    # STM32F413 linker script
+    set(linker_script_SRC "${CMAKE_CURRENT_SOURCE_FLASH_DIR}/stm32f413rgtx_FLASH.ld")
+
+    # STM32F413 specific symbols
+    set(symbols_SYMB
+        USE_FULL_LL_DRIVER
+        USE_HAL_DRIVER
+        STM32F429xx
+        "__weak=__attribute__((weak))"
+        "__packed=__attribute__((__packed__))"
+    )
+
+    set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "" FORCE)
+else()
+    message(FATAL_ERROR "Unknown TARGET_MCU: ${TARGET_MCU}. Must be STM32F413 or STM32H725.")
+endif()
+
+
+# ---------------------------------------------------------------------------
+# General Setup
+# ---------------------------------------------------------------------------
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
@@ -49,26 +109,6 @@ elseif(CMAKE_HOST_UNIX)
     )
 endif()
 
-# Processor configuration
-set(PROCESSOR F413)
-set(PROCESSOR_FAM F4XX)
-
-# Core MCU flags, CPU type, instruction set and FPU setup
-set(cpu_PARAMS
-    -mcpu=cortex-m4
-    -mthumb
-    -mfpu=fpv4-sp-d16
-    -mfloat-abi=hard
-)
-
-# ---------------------------------------------------------------------------
-# Paths — this CMakeLists.txt sits alongside the Makefile, so the OpenBLT
-# Source tree is three levels up.
-# ---------------------------------------------------------------------------
-set(OPENBLT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/openblt/Target/Source")
-set(UIP_ROOT     "${OPENBLT_ROOT}/third_party/uip")
-set(TUSB_ROOT    "${OPENBLT_ROOT}/third_party/tinyusb/src")
-
 # ---------------------------------------------------------------------------
 # Sources
 # ---------------------------------------------------------------------------
@@ -77,19 +117,28 @@ set(TUSB_ROOT    "${OPENBLT_ROOT}/third_party/tinyusb/src")
 # flash_layout.c is #included directly by another .c file — exclude it.
 file(GLOB_RECURSE local_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Src/*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Src/*.s"
     "${CMAKE_CURRENT_SOURCE_DIR}/Startup/*.s"
 )
-list(FILTER local_SRCS EXCLUDE REGEX "flash_layout\\.c$")
 
 # OpenBLT core
 file(GLOB core_SRCS         "${OPENBLT_ROOT}/*.c")
 
-# Port: ARMCM4_STM32F4
-file(GLOB port_SRCS
-    "${OPENBLT_ROOT}/ARMCM4_STM32F4/*.c"
-    "${OPENBLT_ROOT}/ARMCM4_STM32F4/GCC/*.c"
-)
+# ---------------------------------------------------------------------------
+# BOARD Specific Sources 
+# ---------------------------------------------------------------------------
+if(TARGET_MCU STREQUAL "STM32F413")
+    # ARMCM4 for openblt
+    file(GLOB port_SRCS
+        "${OPENBLT_ROOT}/ARMCM4_STM32F4/*.c"
+        "${OPENBLT_ROOT}/ARMCM4_STM32F4/GCC/*.c"
+    )
+
+    # Now exclude non-F413 sources
+    list(FILTER local_SRCS EXCLUDE REGEX "stm32h7")
+
+else()
+    message(FATAL_ERROR "Unknown TARGET_MCU: ${TARGET_MCU}. Must be STM32F413 or STM32H725.")
+endif()
 
 set(sources_SRCS
     ${local_SRCS}
@@ -105,49 +154,37 @@ set(include_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/Inc
     # OpenBLT core
     ${OPENBLT_ROOT}
-    ${OPENBLT_ROOT}/ARMCM4_STM32F4
-    ${OPENBLT_ROOT}/ARMCM4_STM32F4/GCC
 )
 
 set(include_c_DIRS)
 set(include_asm_DIRS)
 
 # ---------------------------------------------------------------------------
-# Symbols / defines
+# BOARD Specific Includes 
 # ---------------------------------------------------------------------------
-set(symbols_SYMB
-    USE_FULL_LL_DRIVER
-    USE_HAL_DRIVER
-    STM32F429xx
-    "__weak=__attribute__((weak))"
-    "__packed=__attribute__((__packed__))"
-)
+if(TARGET_MCU STREQUAL "STM32F413")
+    list(APPEND include_DIRS
+        # Local board specific
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/stm32f4xx
 
-set(symbols_c_SYMB)
-set(symbols_asm_SYMB)
+        # OpenBLT board specific
+        ${OPENBLT_ROOT}/ARMCM4_STM32F4
+        ${OPENBLT_ROOT}/ARMCM4_STM32F4/GCC
+    )
+else()
+    message(FATAL_ERROR "Unknown TARGET_MCU: ${TARGET_MCU}. Must be STM32F413 or STM32H725.")
+endif()
+
 
 # Link directories and names of libraries
 set(link_DIRS)
-set(link_LIBS
-    stm-drivers
-)
-
-# FreeRTOS config target (required by stm32f413-drivers even if not used)
-add_library(freertos_config INTERFACE)
-target_include_directories(freertos_config SYSTEM
-    INTERFACE
-    ${CMAKE_SOURCE_DIR}/Inc)
-target_compile_definitions(freertos_config
-    INTERFACE
-    projCOVERAGE_TEST=0)
-set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "" FORCE)
 
 # ---------------------------------------------------------------------------
-# Linker script
+# Symbols / defines
 # ---------------------------------------------------------------------------
-set(linker_script_SRC "${CMAKE_CURRENT_SOURCE_DIR}/stm32f413rgtx_FLASH.ld")
+set(symbols_c_SYMB)
+set(symbols_asm_SYMB)
 
-# ---------------------------------------------------------------------------
 # Compiler / linker options
 # ---------------------------------------------------------------------------
 set(compiler_OPTS
@@ -178,7 +215,15 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 add_compile_options(${cpu_PARAMS})
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../stm32f413-drivers ${CMAKE_BINARY_DIR}/stm32f413-drivers)
+
+# ---------------------------------------------------------------------------
+# Board specific drivers
+# ---------------------------------------------------------------------------
+if(TARGET_MCU STREQUAL "STM32F413")
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../stm32f413-drivers ${CMAKE_BINARY_DIR}/stm32f413-drivers)
+else()
+    message(FATAL_ERROR "Unknown TARGET_MCU: ${TARGET_MCU}. Must be STM32F413 or STM32H725.")
+endif()
 
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME} ${link_LIBS})
