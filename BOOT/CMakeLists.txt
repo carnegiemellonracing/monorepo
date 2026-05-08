@@ -38,9 +38,10 @@ set(CMAKE_CURRENT_SOURCE_FLASH_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Flash")
 # ---------------------------------------------------------------------------
 # FreeRTOS config target (required by stm32f413-drivers even if not used)
 add_library(freertos_config INTERFACE)
-target_include_directories(freertos_config SYSTEM
+target_include_directories(freertos_config
     INTERFACE
-    ${CMAKE_SOURCE_DIR}/Inc)
+    ${CMAKE_SOURCE_DIR}/Inc
+    )
 target_compile_definitions(freertos_config
     INTERFACE
     projCOVERAGE_TEST=0)
@@ -74,9 +75,10 @@ if(TARGET_MCU STREQUAL "STM32F413")
 
     # STM32F413 specific symbols
     set(symbols_SYMB
+        F413
         USE_FULL_LL_DRIVER
         USE_HAL_DRIVER
-        STM32F429xx
+        STM32F413xx
         "__weak=__attribute__((weak))"
         "__packed=__attribute__((__packed__))"
     )
@@ -156,7 +158,9 @@ set(include_DIRS
     ${OPENBLT_ROOT}
 )
 
-set(include_c_DIRS)
+set(include_c_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/Inc
+)
 set(include_asm_DIRS)
 
 # ---------------------------------------------------------------------------

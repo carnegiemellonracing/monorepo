@@ -40,6 +40,10 @@ typedef enum {
     CMR_CANID_HEARTBEAT_MEMORATOR = 0x109,      /**< @brief Memorator heartbeat.*/
     CMR_CANID_EAB_STATUS = 0x10B, // conflicting with VSM_FIRST_ERROR
     CMR_CANID_ASMS_STATUS = 0x193,
+    
+    CMR_CANID_BOOTLOADER_FLASH_TX = 0x140, /**< @brief Flashing over CAN tx message */
+    CMR_CANID_BOOTLOADER_FLASH_RX = 0x141, /**< @brief Flashing over CAN rx message */
+    CMR_CANID_BOOTLOADER_FLASH_READY = 0x143, /**< @brief Flashing ready message */
 
     CMR_CANID_VSM_STATUS = 0x110,               /**< @brief VSM status. */
     CMR_CANID_VSM_SENSORS = 0x200,              /**< @brief VSM sensor data. */
