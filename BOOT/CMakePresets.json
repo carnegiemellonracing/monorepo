@@ -1,0 +1,119 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "default",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "toolchainFile": "${sourceDir}/cmake/gcc-arm-none-eabi.cmake",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "TARGET_MCU": "STM32F413"
+            }
+        },
+        {
+            "name": "debug",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "static",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Static"
+            }
+        },
+        {
+            "name": "relWithDebInfo",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "release",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "minSizeRel",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "MinSizeRel"
+            }
+        },
+        {
+            "name": "debug-f413",
+            "inherits": "debug",
+            "cacheVariables": {
+                "TARGET_MCU": "STM32F413"
+            }
+        },
+        {
+            "name": "debug-h725",
+            "inherits": "debug",
+            "cacheVariables": {
+                "TARGET_MCU": "STM32H725"
+            }
+        },
+        {
+            "name": "release-f413",
+            "inherits": "release",
+            "cacheVariables": {
+                "TARGET_MCU": "STM32F413"
+            }
+        },
+        {
+            "name": "release-h725",
+            "inherits": "release",
+            "cacheVariables": {
+                "TARGET_MCU": "STM32H725"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "debug",
+            "configurePreset": "debug"
+        },
+        {
+            "name": "debug-f413",
+            "configurePreset": "debug-f413"
+        },
+        {
+            "name": "debug-h725",
+            "configurePreset": "debug-h725"
+        },
+        {
+            "name": "relWithDebInfo",
+            "configurePreset": "relWithDebInfo"
+        },
+        {
+            "name": "release",
+            "configurePreset": "release"
+        },        
+        {
+            "name": "release-f413",
+            "configurePreset": "release-f413"
+        },        
+        {
+            "name": "release-h725",
+            "configurePreset": "release-h725"
+        },
+        {
+            "name": "minSizeRel",
+            "configurePreset": "minSizeRel"
+        },
+        {
+            "name": "static",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "static"
+        }
+    ]
+}

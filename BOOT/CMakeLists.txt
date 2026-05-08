@@ -24,6 +24,9 @@ project(boot)
 enable_language(C ASM)
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
+# Setup platform specific settings
+set(TARGET_MCU "STM32F413" CACHE STRING "Target MCU: STM32F413 or STM32H725")
+
 # Setup compiler settings
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -134,6 +137,7 @@ target_include_directories(freertos_config SYSTEM
 target_compile_definitions(freertos_config
     INTERFACE
     projCOVERAGE_TEST=0)
+set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "" FORCE)
 
 # ---------------------------------------------------------------------------
 # Linker script
