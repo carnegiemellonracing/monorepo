@@ -26,6 +26,8 @@ message("Build type: " ${CMAKE_BUILD_TYPE})
 
 # Setup platform specific settings
 set(TARGET_MCU "STM32F413" CACHE STRING "Target MCU: STM32F413 or STM32H725")
+message("MCU target: " ${TARGET_MCU})
+
 
 # Setup compiler settings
 set(CMAKE_C_STANDARD 11)
@@ -76,6 +78,7 @@ set(TUSB_ROOT    "${OPENBLT_ROOT}/third_party/tinyusb/src")
 file(GLOB_RECURSE local_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Src/*.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/Src/*.s"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Startup/*.s"
 )
 list(FILTER local_SRCS EXCLUDE REGEX "flash_layout\\.c$")
 
