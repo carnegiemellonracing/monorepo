@@ -45,6 +45,10 @@ int main(void)
   Init();
   /* initialize the bootloader */
   BootInit();
+  /* Write pin high*/
+
+  //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+  //while(1);
 
   /* start the infinite program loop */
   while (1)

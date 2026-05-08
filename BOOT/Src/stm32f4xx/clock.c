@@ -1,5 +1,6 @@
 #include <CMR/rcc.h>                            /* RCC interface                      */
 #include <CMR/panic.h>                          /* panic interface                    */
+#include <stm32f4xx_hal.h>                      /* HAL interface                      */
 #include "clock.h"                                 /* clock interface                     */
 
 /**
@@ -15,7 +16,6 @@ void clockInit(void)
  */
 void clockDeinit(void)
 {
-#ifdef F413
     RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
     RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
 
@@ -42,6 +42,5 @@ void clockDeinit(void)
     }
 
     __HAL_RCC_PWR_CLK_DISABLE();
-#endif
 
 }

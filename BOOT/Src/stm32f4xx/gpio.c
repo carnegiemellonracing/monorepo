@@ -9,8 +9,8 @@
 
 #include "gpio.h"   // Interface to implement
 
-GPIO_TypeDef *port = GPIOD;
-uint16_t pin = GPIO_PIN_2;
+GPIO_TypeDef *port = GPIOB;
+uint16_t pin = GPIO_PIN_0;
 
 const int toggle_time_ms = 500;
 
@@ -18,9 +18,9 @@ const int toggle_time_ms = 500;
  * @brief Initializes the GPIO interface.
  */
 void gpioInit(void) {
-    __HAL_RCC_GPIOD_CLK_ENABLE();
+    // LED toggle
+    __HAL_RCC_GPIOB_CLK_ENABLE();
 
-    // Configure CAN RX pin.
     GPIO_InitTypeDef pinConfig = {
         .Pin = pin,
         .Mode = GPIO_MODE_OUTPUT_PP,
@@ -35,7 +35,7 @@ void gpioInit(void) {
  * @brief Deinitializes the GPIO interface.
  */
 void gpioDeinit(void) {
-    __HAL_RCC_GPIOD_CLK_DISABLE();
+    __HAL_RCC_GPIOB_CLK_DISABLE();
     HAL_GPIO_DeInit(port, pin);
 }
 
@@ -52,7 +52,8 @@ void timedLedToggle(void)
   /* check for blink event */
   if (TimerGet() >= nextBlinkEvent)
   {
-    
+    HAL_GPIO_TogglePin(port, pin);
+
     /* schedule the next blink event */
     nextBlinkEvent = TimerGet() + toggle_time_ms;
   }
