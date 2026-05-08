@@ -121,6 +121,8 @@ file(GLOB_RECURSE local_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/Src/*.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/Startup/*.s"
 )
+# Don't include flash_layout.c since it's #included directly by another .c file
+list(FILTER local_SRCS EXCLUDE REGEX "flash_layout\\.c")
 
 # OpenBLT core
 file(GLOB core_SRCS         "${OPENBLT_ROOT}/*.c")
