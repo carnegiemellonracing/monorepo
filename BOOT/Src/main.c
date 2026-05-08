@@ -31,12 +31,7 @@
 ****************************************************************************************/
 #include "boot.h"                                /* bootloader generic header          */
 #include <CMR/rcc.h>                            /* RCC interface                      */
-
-/****************************************************************************************
-* Function prototypes
-****************************************************************************************/
-static void Init(void);
-
+#include "setup.h"
 
 /************************************************************************************//**
 ** \brief     This is the entry point for the bootloader application and is called
@@ -61,20 +56,5 @@ int main(void)
   /* program should never get here */
   return 0;
 } /*** end of main ***/
-
-
-/************************************************************************************//**
-** \brief     Initializes the microcontroller.
-** \return    none.
-**
-****************************************************************************************/
-static void Init(void)
-{
-  /* HAL library initialization */
-  HAL_Init();
-  /* configure system clock */
-  cmr_rccSystemClockEnable();
-} /*** end of Init ***/
-
 
 /*********************************** end of main.c *************************************/

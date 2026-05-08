@@ -10,18 +10,9 @@
 
 #include <CMR/gpio.h>   // GPIO interface
 
-/**
- * @brief Represents a GPIO pin.
- *
- * @note All boards should at least have a status LED (`GPIO_LED_STATUS`).
- * @warning New pins MUST be added between `GPIO_LED_STATUS` and `GPIO_LEN`.
- */
-typedef enum {
-    GPIO_MCU_LED = 0,    /**< @brief Status LED. */
-    GPIO_LEN    /**< @brief Total GPIO pins. */
-} gpio_t;
-
 void gpioInit(void);
+void gpioDeinit(void);
+void timedLedToggle(void);
 
 #endif /* GPIO_H */
 

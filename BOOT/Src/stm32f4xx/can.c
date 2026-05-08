@@ -7,44 +7,42 @@
 
 #include "can.h"      // Interface to implement
 
-/**
- * @brief CAN periodic message receive metadata
- *
- * @note Indexed by `canRX_t`.
- */
-cmr_canRXMeta_t canRXMeta[] = {
-};
-
-/** @brief Primary CAN interface. */
-static cmr_can_t can;
+ // static config settings
+CAN_TypeDef *instance = CAN1;
+GPIO_TypeDef *rxPort = GPIOA;
+uint16_t rxPin = GPIO_PIN_11;
+GPIO_TypeDef *txPort = GPIOA;
+uint16_t txPin = GPIO_PIN_12;
 
 /**
  * @brief Initializes the CAN interface.
  */
 void canInit(void) {
-    // CAN2 initialization.
-    cmr_canInit(
-        &can, CAN1,
-		CMR_CAN_BITRATE_500K,
-        canRXMeta, sizeof(canRXMeta) / sizeof(canRXMeta[0]),
-        NULL,
-        GPIOA, GPIO_PIN_11,     // CAN2 RX port/pin.
-        GPIOA, GPIO_PIN_12      // CAN2 TX port/pin.
-    );
+    // required clocks
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_CAN1_CLK_ENABLE();
 
-    // CAN2 filters.
-    const cmr_canFilter_t canFilters[] = {
-        {
-            .isMask = false,
-            .rxFIFO = CAN_RX_FIFO0,
-            .ids = {
-                CMR_CANID_BOOTLOADER_FLASH_TX,
-                CMR_CANID_BOOTLOADER_FLASH_RX,
-                CMR_CANID_BOOTLOADER_FLASH_READY,
-            }
-        },
+    // Configure CAN RX pin.
+    GPIO_InitTypeDef pinConfig = {
+        .Pin = rxPin,
+        .Mode = GPIO_MODE_AF_PP,
+        .Pull = GPIO_NOPULL,
+        .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
+        .Alternate = cmr_canGPIOAF(instance, rxPort)
     };
-    cmr_canFilter(
-        &can, canFilters, sizeof(canFilters) / sizeof(canFilters[0])
-    );
+    HAL_GPIO_Init(rxPort, &pinConfig);
+
+    // Configure CAN TX pin.
+    pinConfig.Pin = txPin;
+    pinConfig.Alternate = cmr_canGPIOAF(instance, txPort);
+    HAL_GPIO_Init(txPort, &pinConfig);
+}
+
+void canDeinit(void) {
+    HAL_GPIO_DeInit(rxPort, rxPin);
+    HAL_GPIO_DeInit(txPort, txPin);
+
+    __HAL_RCC_GPIOA_CLK_DISABLE();
+    __HAL_RCC_CAN1_CLK_DISABLE();
+    
 }
