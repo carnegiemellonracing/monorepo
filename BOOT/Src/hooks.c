@@ -124,7 +124,7 @@ void CopServiceHook(void)
    * a blink interval to be skipped. this function is also called during such operations,
    * so no blink intervals will be skipped when calling the LED blink task here.
    */
-  timedLedToggle();
+  //timedLedToggle();
 } /*** end of CopServiceHook ***/
 #endif /* BOOT_COP_HOOKS_ENABLE > 0 */
 

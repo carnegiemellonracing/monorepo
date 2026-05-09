@@ -47,7 +47,7 @@
 /* TODO ##Boot Set the frequency of the crystal oscillator that provides the clock
  * signal that drives the microcontroller. Specify the value in kHz. 
  */
-#define BOOT_CPU_XTAL_SPEED_KHZ          (8000)
+#define BOOT_CPU_XTAL_SPEED_KHZ          (16000)
 /** \brief Desired system speed. */
 /* TODO ##Boot Set the system frequency of the microcontroller system clock. Specify the
  * value in kHz. The system clock is typically created by configuring the PLL or FLL
@@ -56,7 +56,7 @@
  * bootloader does not use this macro to actually do the clock configuration for you.
  * It is up to you to implement the clock configuration in function Init() in main.c.
  */
-#define BOOT_CPU_SYSTEM_SPEED_KHZ        (96000)
+#define BOOT_CPU_SYSTEM_SPEED_KHZ        (48000)
 /** \brief Motorola or Intel style byte ordering. */
 /* TODO ##Boot Configure the CPU's endian mode. This is hardware specific and should be
  * defined in the microcontroller's datasheet.

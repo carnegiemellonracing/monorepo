@@ -32,7 +32,7 @@
 #include "boot.h"                                /* bootloader generic header          */
 #include <CMR/rcc.h>                            /* RCC interface                      */
 #include "setup.h"
-
+#include <CMR/platform.h>
 
 /************************************************************************************//**
 ** \brief     This is the entry point for the bootloader application and is called
@@ -48,6 +48,17 @@ int main(void)
   BootInit();
   /* Write pin high*/
 
+      /* Check CAN peripheral state */
+      if ((CAN1->MSR & CAN_MSR_INAK) == 0)
+{
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+}
+else
+{
+   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+}
+  while(1);
+    
   /* start the infinite program loop */
   while (1)
   {
