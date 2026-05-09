@@ -33,6 +33,7 @@
 #include <CMR/rcc.h>                            /* RCC interface                      */
 #include "setup.h"
 
+
 /************************************************************************************//**
 ** \brief     This is the entry point for the bootloader application and is called
 **            by the reset interrupt vector after the C-startup routines executed.
@@ -47,14 +48,11 @@ int main(void)
   BootInit();
   /* Write pin high*/
 
-  //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-  //while(1);
-
   /* start the infinite program loop */
   while (1)
   {
     /* run the bootloader task */
-    BootTask();
+    BootTask();    
   }
 
   /* program should never get here */

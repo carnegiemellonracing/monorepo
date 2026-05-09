@@ -56,7 +56,7 @@
  * bootloader does not use this macro to actually do the clock configuration for you.
  * It is up to you to implement the clock configuration in function Init() in main.c.
  */
-#define BOOT_CPU_SYSTEM_SPEED_KHZ        (72000)
+#define BOOT_CPU_SYSTEM_SPEED_KHZ        (96000)
 /** \brief Motorola or Intel style byte ordering. */
 /* TODO ##Boot Configure the CPU's endian mode. This is hardware specific and should be
  * defined in the microcontroller's datasheet.
@@ -106,10 +106,14 @@
 #define BOOT_COM_CAN_ENABLE             (1)
 /** \brief Configure the desired CAN baudrate. */
 #define BOOT_COM_CAN_BAUDRATE           (500000)
+// /** \brief Configure CAN message ID target->host. */
+// #define BOOT_COM_CAN_TX_MSG_ID          (0x140)
+// /** \brief Configure CAN message ID host->target. */
+// #define BOOT_COM_CAN_RX_MSG_ID          (0x141)
 /** \brief Configure CAN message ID target->host. */
-#define BOOT_COM_CAN_TX_MSG_ID          (0x140)
+#define BOOT_COM_CAN_TX_MSG_ID          (0x7E1 /*| 0x80000000*/)
 /** \brief Configure CAN message ID host->target. */
-#define BOOT_COM_CAN_RX_MSG_ID          (0x141)
+#define BOOT_COM_CAN_RX_MSG_ID          (0x667 /*| 0x80000000*/)
 /** \brief Configure CAN classic (0) or CAN FD (1). */
 #define BOOT_COM_CAN_FD_ENABLE          (0)
 /** \brief Configure the CAN FD data baudrate for the bitrate switch.  */
