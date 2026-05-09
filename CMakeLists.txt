@@ -50,6 +50,26 @@ endif()
 
 
 ExternalProject_Add(
+    BOOT_F413                                       
+    PREFIX  ${CMAKE_CURRENT_BINARY_DIR}/BOOT
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/BOOT 
+    CONFIGURE_COMMAND "${CMAKE_COMMAND}" --preset=release-f413
+    BUILD_COMMAND "${CMAKE_COMMAND}" --build --preset=release-f413
+    INSTALL_COMMAND ""
+    BUILD_ALWAYS TRUE
+    CMAKE_ARGS -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+)
+ExternalProject_Add(
+    BOOT_H725                                       
+    PREFIX  ${CMAKE_CURRENT_BINARY_DIR}/BOOT
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/BOOT 
+    CONFIGURE_COMMAND "${CMAKE_COMMAND}" --preset=release-h725
+    BUILD_COMMAND "${CMAKE_COMMAND}" --build --preset=release-h725
+    INSTALL_COMMAND ""
+    BUILD_ALWAYS TRUE
+    CMAKE_ARGS -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+)
+ExternalProject_Add(
     HVC
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/HVC
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/HVC
