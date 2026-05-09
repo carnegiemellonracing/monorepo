@@ -29,6 +29,15 @@ void cmr_rccSystemInternalClockEnable(void)  {
     _platform_rccSystemInternalClockEnable();
 }
 
+
+/**
+ * @brief Reset STM32 clock configuration back to default reset state.
+ *
+ */
+void cmr_rccResetSystemClock(void) {
+    _platform_resetSystemClock();
+}
+
 #ifdef HAL_GPIO_MODULE_ENABLED
 /**
  * @brief Enables the specified GPIO port's clock.

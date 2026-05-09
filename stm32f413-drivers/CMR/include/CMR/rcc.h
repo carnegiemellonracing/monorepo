@@ -21,6 +21,7 @@
 
 void cmr_rccSystemClockEnable(void);
 void cmr_rccSystemInternalClockEnable(void);
+void cmr_rccResetSystemClock(void);
 
 #ifdef HAL_GPIO_MODULE_ENABLED
 void cmr_rccGPIOClockEnable(GPIO_TypeDef *port);

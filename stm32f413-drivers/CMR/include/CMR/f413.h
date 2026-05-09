@@ -41,6 +41,7 @@ void _platform_adcPoll(cmr_adc_t *adc, uint32_t adcTimeout);
 
 void _platform_rccSystemClockEnable(void);
 void _platform_rccSystemInternalClockEnable(void);
+void _platform_resetSystemClock(void);
 
 #ifdef HAL_GPIO_MODULE_ENABLED
 void _platform_rccGPIOClockEnable(GPIO_TypeDef *port);
