@@ -42,6 +42,7 @@
 ****************************************************************************************/
 int main(void)
 {
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
   /* initialize the microcontroller */
   Init();
   /* initialize the bootloader */
@@ -49,15 +50,17 @@ int main(void)
   /* Write pin high*/
 
       /* Check CAN peripheral state */
-      if ((CAN1->MSR & CAN_MSR_INAK) == 0)
-{
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
-}
-else
-{
-   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-}
-  while(1);
+// if ((CAN1->MSR & CAN_MSR_INAK) == 0)
+// {
+//     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+// }
+// else
+// {
+//     // Still stuck in init mode
+//     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+// }
+// while(1);
+
     
   /* start the infinite program loop */
   while (1)

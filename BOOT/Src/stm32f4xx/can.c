@@ -28,13 +28,13 @@ void canInit(void) {
         .Mode = GPIO_MODE_AF_PP,
         .Pull = GPIO_NOPULL,
         .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
-        .Alternate = GPIO_AF9_CAN1,
+        .Alternate = GPIO_AF8_CAN1,
     };
     HAL_GPIO_Init(rxPort, &pinConfig);
 
     // Configure CAN TX pin.
     pinConfig.Pin = txPin;
-    pinConfig.Alternate = GPIO_AF9_CAN1;
+    pinConfig.Alternate = GPIO_AF8_CAN1;
     HAL_GPIO_Init(txPort, &pinConfig);
 }
 
