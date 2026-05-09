@@ -1,7 +1,5 @@
-#include <CMR/rcc.h>                            /* RCC interface                      */
-#include <CMR/panic.h>                          /* panic interface                    */
-#include <stm32f4xx_hal.h>                      /* HAL interface                      */
 #include "clock.h"                                 /* clock interface                     */
+#include <CMR/rcc.h>                            /* RCC interface                      */
 
 /**
  * Initialize the system clock

@@ -6,7 +6,6 @@
  */
 
 #include "can.h"      // Interface to implement
-#include <CMR/platform.h>  // Platform-specific interface
 #include <CMR/can.h>  // Can-specific interface
 
 /**
