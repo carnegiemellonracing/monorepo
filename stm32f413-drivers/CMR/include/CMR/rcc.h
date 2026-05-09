@@ -24,6 +24,7 @@ void cmr_rccSystemInternalClockEnable(void);
 
 #ifdef HAL_GPIO_MODULE_ENABLED
 void cmr_rccGPIOClockEnable(GPIO_TypeDef *port);
+void cmr_rccGPIOClockDisable(GPIO_TypeDef *port);
 #endif /* HAL_GPIO_MODULE_ENABLED */
 
 #ifdef HAL_ADC_MODULE_ENABLED
@@ -32,10 +33,12 @@ void cmr_rccADCClockEnable(ADC_TypeDef *instance);
 
 #ifdef HAL_CAN_MODULE_ENABLED
 void cmr_rccCANClockEnable(CAN_TypeDef *instance);
+void cmr_rccCANClockDisable(CAN_TypeDef *instance);
 #endif /* HAL_CAN_MODULE_ENABLED */
 
 #ifdef HAL_FDCAN_MODULE_ENABLED
 void cmr_rccCANClockEnable(FDCAN_GlobalTypeDef *instance);
+void cmr_rccCANClockDisable(FDCAN_GlobalTypeDef *instance);
 #endif /* HAL_CAN_MODULE_ENABLED */
 
 #ifdef HAL_I2C_MODULE_ENABLED

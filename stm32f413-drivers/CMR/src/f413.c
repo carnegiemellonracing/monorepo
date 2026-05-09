@@ -383,6 +383,41 @@ void _platform_rccGPIOClockEnable(GPIO_TypeDef *port)
         break;
     }
 }
+/**
+ * @brief Disables the specified GPIO port's clock.
+ *
+ * @param port The GPIO port.
+ */
+void _platform_rccGPIOClockDisable(GPIO_TypeDef *port)
+{
+    switch ((uintptr_t)port)
+    {
+    case GPIOA_BASE:
+        __HAL_RCC_GPIOA_CLK_DISABLE();
+        break;
+    case GPIOB_BASE:
+        __HAL_RCC_GPIOB_CLK_DISABLE();
+        break;
+    case GPIOC_BASE:
+        __HAL_RCC_GPIOC_CLK_DISABLE();
+        break;
+    case GPIOD_BASE:
+        __HAL_RCC_GPIOD_CLK_DISABLE();
+        break;
+    case GPIOE_BASE:
+        __HAL_RCC_GPIOE_CLK_DISABLE();
+        break;
+    case GPIOF_BASE:
+        __HAL_RCC_GPIOF_CLK_DISABLE();
+        break;
+    case GPIOG_BASE:
+        __HAL_RCC_GPIOG_CLK_DISABLE();
+        break;
+    case GPIOH_BASE:
+        __HAL_RCC_GPIOH_CLK_DISABLE();
+        break;
+    }
+}
 #endif /* HAL_GPIO_MODULE_ENABLED */
 
 #ifdef HAL_ADC_MODULE_ENABLED
@@ -488,6 +523,26 @@ void _platform_rccCANClockEnable(CAN_TypeDef *instance)
             break;
         case CAN3_BASE:
             __HAL_RCC_CAN3_CLK_ENABLE();
+            break;
+    }
+}
+/**
+ * @brief Disables the specified CAN interface's clock.
+ *
+ * @param instance The HAL CAN instance.
+ */
+void _platform_rccCANClockDisable(CAN_TypeDef *instance)
+{
+    switch ((uintptr_t) instance) {
+        case CAN1_BASE:
+            __HAL_RCC_CAN1_CLK_DISABLE();
+            break;
+        case CAN2_BASE:
+            __HAL_RCC_CAN2_CLK_DISABLE();
+            __HAL_RCC_CAN1_CLK_DISABLE();    // CAN2 also needs CAN1 clock.
+            break;
+        case CAN3_BASE:
+            __HAL_RCC_CAN3_CLK_DISABLE();
             break;
     }
 }

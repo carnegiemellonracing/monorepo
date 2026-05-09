@@ -298,6 +298,18 @@ void _platform_rccFDCanClockEnable() {
 		HAL_RCC_FDCAN_CLK_ENABLED++;
 	}
 }
+/**
+ * @brief Disables the specified CAN interface's clock.
+ *
+ * @param instance The HAL CAN instance.
+ */
+
+void _platform_rccFDCanClockDisable() {
+	if(HAL_RCC_FDCAN_CLK_ENABLED > 0) {
+		__HAL_RCC_FDCAN_CLK_DISABLE();
+		HAL_RCC_FDCAN_CLK_ENABLED--;
+	}
+}  
 
 #endif /* HAL_CAN_MODULE_ENABLED */
 

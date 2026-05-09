@@ -38,6 +38,14 @@ void cmr_rccSystemInternalClockEnable(void)  {
 void cmr_rccGPIOClockEnable(GPIO_TypeDef *port) {
     _platform_rccGPIOClockEnable(port);
 }
+/**
+ * @brief Disables the specified GPIO port's clock.
+ *
+ * @param port The GPIO port.
+ */
+void cmr_rccGPIOClockDisable(GPIO_TypeDef *port) {
+    _platform_rccGPIOClockDisable(port);
+}
 #endif /* HAL_GPIO_MODULE_ENABLED */
 
 #ifdef HAL_ADC_MODULE_ENABLED
@@ -60,6 +68,14 @@ void cmr_rccADCClockEnable(ADC_TypeDef *instance) {
 void cmr_rccCANClockEnable(CAN_TypeDef *instance) {
     _platform_rccCANClockEnable(instance);
 }
+/**
+ * @brief Disables the specified CAN interface's clock.
+ *
+ * @param instance The HAL CAN instance.
+ */
+void cmr_rccCANClockDisable(CAN_TypeDef *instance) {
+    _platform_rccCANClockDisable(instance);
+}
 #endif /* HAL_CAN_MODULE_ENABLED */
 
 #ifdef HAL_FDCAN_MODULE_ENABLED
@@ -70,6 +86,14 @@ void cmr_rccCANClockEnable(CAN_TypeDef *instance) {
  */
 void cmr_rccCANClockEnable(FDCAN_GlobalTypeDef *instance) {
 	_platform_rccFDCanClockEnable();
+}
+/**
+ * @brief Disables the specified CAN interface's clock.
+ *
+ * @param instance The HAL CAN instance.
+ */
+void cmr_rccCANClockDisable(FDCAN_GlobalTypeDef *instance) {
+	_platform_rccFDCanClockDisable();
 }
 #endif /* HAL_FDCAN_MODULE_ENABLED */
 
