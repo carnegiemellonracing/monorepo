@@ -5,7 +5,6 @@
 #include "gpio.h"
 #include "can.h"
 #include "clock.h"
-#include "rs232.h"
 
 
 
@@ -23,18 +22,18 @@ void Init(void)
   /* configure other peripherals */
   gpioInit();
   canInit();
-  rs232Init();
 } /*** end of Init ***/
 
 
 void DeInit(void)
 {
+    /* deconfigure other peripherals */
     canDeinit();
     gpioDeinit();
-    rs232Deinit();
 
     /* HAL library deinitialization */
     HAL_DeInit();
+    /* Clock deinitialization */
     clockDeinit();
 } /*** end of DeInit ***/
 
