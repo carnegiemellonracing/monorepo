@@ -2,7 +2,6 @@
  * @file clock.h
  * @brief Board-specific clock interface.
  *
- * @author Carnegie Mellon Racing
  */
 
 #ifndef CLOCK_H

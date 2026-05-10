@@ -5,7 +5,6 @@
  * Provides `Init` and `DeInit` functions to initialize microcontroller
  * peripherals (clocks, GPIO, CAN, etc.) used by the bootloader.
  *
- * @author Carnegie Mellon Racing
  */
 
 #ifndef SETUP_H

@@ -1,7 +1,7 @@
 /************************************************************************************//**
-* \file         Demo/ARMCM4_STM32F4_Nucleo_F429ZI_GCC/Boot/flash_layout.c
-* \brief        Custom flash layout table source file.
-* \ingroup      Boot_ARMCM4_STM32F4_Nucleo_F429ZI_GCC
+* \file         flash_layout.c
+* \brief        Custom flash layout table source file. Compeletely edited but still semi-stolen
+* \ingroup      BOOT
 * \internal
 *----------------------------------------------------------------------------------------
 *                          C O P Y R I G H T
@@ -65,14 +65,14 @@ static const tFlashSector flashLayout[] =
 };
 #elif H725
 {
-/* { 0x08000000, 0x20000,  0},           flash sector  0 - reserved for bootloader   */
-  { 0x08020000, 0x20000,  1},           /* flash sector  1 - 128kb                     */
-  { 0x08040000, 0x20000,  2},           /* flash sector  2 - 128kb                     */
-  { 0x08060000, 0x20000,  3},           /* flash sector  3 - 128kb                     */
-  { 0x08080000, 0x20000,  4},           /* flash sector  4 - 128kb                     */
-  { 0x080A0000, 0x20000,  5},           /* flash sector  5 - 128kb                     */
-  { 0x080C0000, 0x20000,  6},           /* flash sector  6 - 128kb                     */
-  { 0x080E0000, 0x20000,  7},           /* flash sector  7 - 128kb                     */
+/* { 0x08000000, 0x20000,  0, 0},           flash sector  0 - reserved for bootloader   */
+  { 0x08020000, 0x20000,  1, 0},           /* flash sector  1 - 128kb                     */
+  { 0x08040000, 0x20000,  2, 0},           /* flash sector  2 - 128kb                     */
+  { 0x08060000, 0x20000,  3, 0},           /* flash sector  3 - 128kb                     */
+  { 0x08080000, 0x20000,  4, 0},           /* flash sector  4 - 128kb                     */
+  { 0x080A0000, 0x20000,  5, 0},           /* flash sector  5 - 128kb                     */
+  { 0x080C0000, 0x20000,  6, 0},           /* flash sector  6 - 128kb                     */
+  { 0x080E0000, 0x20000,  7, 0},           /* flash sector  7 - 128kb                     */
 };
 #endif
 

@@ -1,7 +1,7 @@
 /************************************************************************************//**
-* \file         Demo/_template/Boot/main.c
-* \brief        Bootloader application source file.
-* \ingroup      Boot__template
+* \file         main.c
+* \brief        Core bootloader logic
+* \ingroup      BOOT
 * \internal
 *----------------------------------------------------------------------------------------
 *                          C O P Y R I G H T
@@ -30,9 +30,7 @@
 * Include files
 ****************************************************************************************/
 #include "boot.h"                                /* bootloader generic header          */
-#include <CMR/rcc.h>                            /* RCC interface                      */
 #include "setup.h"
-#include <CMR/platform.h>
 
 /************************************************************************************//**
 ** \brief     This is the entry point for the bootloader application and is called

@@ -2,7 +2,6 @@
  * @file gpio.h
  * @brief Board-specific GPIO interface.
  *
- * @author Carnegie Mellon Racing
  */
 
 #ifndef GPIO_H

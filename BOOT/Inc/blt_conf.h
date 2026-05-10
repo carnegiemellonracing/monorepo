@@ -1,7 +1,6 @@
 /************************************************************************************//**
-* \file         Demo/_template/Boot/blt_conf.h
-* \brief        Bootloader configuration header file.
-* \ingroup      Boot__template
+* \file         blt_conf.h
+* \brief        Openblt bootloader configuration file. Copied from template
 * \internal
 *----------------------------------------------------------------------------------------
 *                          C O P Y R I G H T
@@ -115,13 +114,19 @@
 /** \brief Configure the desired CAN baudrate. */
 #define BOOT_COM_CAN_BAUDRATE           500000
 /** \brief Configure CAN message ID target->host. */
-#define BOOT_COM_CAN_TX_MSG_ID          (0x0A1)
+#define BOOT_COM_CAN_TX_MSG_ID          (CMR_CANID_BOOTLOADER_FLASH_TX)
 /** \brief Configure CAN message ID host->target. */
-#define BOOT_COM_CAN_RX_MSG_ID          (0x0A2)
+#define BOOT_COM_CAN_RX_MSG_ID          (CMR_CANID_BOOTLOADER_FLASH_RX)
 /** \brief Configure CAN classic (0) or CAN FD (1). */
+#ifdef F413
 #define BOOT_COM_CAN_FD_ENABLE          (0)
 /** \brief Configure the CAN FD data baudrate for the bitrate switch.  */
-#define BOOT_COM_CAN_FD_BRS_BAUDRATE    (2000000)
+#elif H725
+#define BOOT_COM_CAN_FD_ENABLE          (1)
+/** \brief Configure the CAN FD data baudrate for the bitrate switch.  */
+#define BOOT_COM_CAN_FD_BRS_BAUDRATE    (500000)
+#endif
+
 /** \brief Select the desired CAN peripheral as a zero based index. */
 #define BOOT_COM_CAN_CHANNEL_INDEX      (0)
 
