@@ -292,7 +292,11 @@
  *         a different checksum location, because this one is added at the end of the
  *         user program's vector table.
  */
+#ifdef F413
 #define BOOT_FLASH_VECTOR_TABLE_CS_OFFSET (0x19C) 
+#elif H725
+#define BOOT_FLASH_VECTOR_TABLE_CS_OFFSET (0x2C8)
+#endif
 
 #endif /* BLT_CONF_H */
 /*********************************** end of blt_conf.h *********************************/

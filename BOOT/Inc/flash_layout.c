@@ -32,6 +32,7 @@
  *           might need adjustment to make sure the bootloader doesn't get overwritten.
  */
 static const tFlashSector flashLayout[] =
+#ifdef F413
 {
   /* space is reserved for a bootloader configuration with all supported communication
    * interfaces enabled. when for example only UART is needed, then the space required
@@ -62,6 +63,18 @@ static const tFlashSector flashLayout[] =
   { 0x081C0000, 0x20000, 22},           /* flash sector 22 - 128kb                     */
   { 0x081E0000, 0x20000, 23},           /* flash sector 23 - 128kb                     */
 };
+#elif H725
+{
+/* { 0x08000000, 0x20000,  0},           flash sector  0 - reserved for bootloader   */
+  { 0x08020000, 0x20000,  1},           /* flash sector  1 - 128kb                     */
+  { 0x08040000, 0x20000,  2},           /* flash sector  2 - 128kb                     */
+  { 0x08060000, 0x20000,  3},           /* flash sector  3 - 128kb                     */
+  { 0x08080000, 0x20000,  4},           /* flash sector  4 - 128kb                     */
+  { 0x080A0000, 0x20000,  5},           /* flash sector  5 - 128kb                     */
+  { 0x080C0000, 0x20000,  6},           /* flash sector  6 - 128kb                     */
+  { 0x080E0000, 0x20000,  7},           /* flash sector  7 - 128kb                     */
+};
+#endif
 
 
 /*********************************** end of flash_layout.c *****************************/
