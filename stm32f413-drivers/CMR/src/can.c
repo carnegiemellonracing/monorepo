@@ -379,31 +379,6 @@ void cmr_canClockDisable(CAN_TypeDef *instance){
     _platform_rccCANClockDisable(instance);
 }
 
-
-/**
- * @brief Initializes a CAN interface.
- *
- * @warning It is undefined behavior to initialize the same HAL CAN instance
- * more than once!
- * @warning This driver assumes a 48 MHz APB1 peripheral clock frequency!
- *
- * @param can The interface to initialize.
- * @param instance The HAL CAN instance (`CANx` from `stm32f413xx.h`).
- * @param bitRate The CAN bit rate to use.
- * @param rxMeta Metadata for periodic messages to receive.
- * @param rxMetaLen Number of periodic receive messages.
- * @param rxCallback Callback for other messages received, or `NULL` to ignore.
- * @param rxPort Receiving GPIO port (`GPIOx` from `stm32f413xx.h`).
- * @param rxPin Receiving GPIO pin (`GPIO_PIN_x` from `stm32f4xx_hal_gpio.h`).
- * @param txPort Transmitting GPIO port.
- * @param txPin Transmitting GPIO pin.
- */
-void cmr_canGpioDeInit(
-    GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
-);
-
-
 /**
  * @brief Queues a CAN message for transmission.
  *

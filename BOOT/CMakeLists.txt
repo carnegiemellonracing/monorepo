@@ -1,18 +1,10 @@
 cmake_minimum_required(VERSION 3.24)
 
 #
-# Parent config for Generic/Arm
-#
-set(CMAKE_SYSTEM_NAME               Generic)
-set(CMAKE_SYSTEM_PROCESSOR          arm)
-set(CMAKE_TRY_COMPILE_TARGET_TYPE   STATIC_LIBRARY)
-
-#
 # User is free to modify the file as much as necessary
 #
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
-# list(APPEND CMAKE_MODULE_PATH "C:/Users/user1/Downloads/CmakeTestProject/cmake")
 list(APPEND CMAKE_MODULE_PATH "{{sr:cmake_path}}")
 message("Build CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
 #Why does vscode read this when its included here?
@@ -24,9 +16,17 @@ project(boot)
 enable_language(C ASM)
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
+
 # ---------------------------------------------------------------------------
-# Paths — this CMakeLists.txt sits alongside the Makefile, so the OpenBLT
-# Source tree is three levels up.
+# Compiler Setup
+# ---------------------------------------------------------------------------
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS ON)
+set(CMAKE_COLOR_DIAGNOSTICS ON)
+
+# ---------------------------------------------------------------------------
+# Paths — Openblt is a submodule in the current directory with the flash tables
 # ---------------------------------------------------------------------------
 set(OPENBLT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/openblt/Target/Source")
 set(CMAKE_CURRENT_SOURCE_FLASH_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Flash")
@@ -46,7 +46,7 @@ target_compile_definitions(freertos_config
     INTERFACE
     projCOVERAGE_TEST=0)
 
-# STM32F413 drivers
+# STM32 drivers
 set(link_LIBS
     stm-drivers
 )
@@ -120,20 +120,12 @@ else()
 endif()
 
 
-# ---------------------------------------------------------------------------
-# General Setup
-# ---------------------------------------------------------------------------
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS ON)
-set(CMAKE_COLOR_DIAGNOSTICS ON)
-
 if(CMAKE_HOST_WIN32)
-add_custom_target(generate_gitcommit ALL
-    COMMAND powershell -ExecutionPolicy Bypass -File ${CMAKE_CURRENT_SOURCE_DIR}/export_git.ps1
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMENT "Generating gitcommit.h using PowerShell"
-)
+    add_custom_target(generate_gitcommit ALL
+        COMMAND powershell -ExecutionPolicy Bypass -File ${CMAKE_CURRENT_SOURCE_DIR}/export_git.ps1
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating gitcommit.h using PowerShell"
+    )
 elseif(CMAKE_HOST_UNIX)
     add_custom_target(generate_gitcommit ALL
         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/export_git.sh
@@ -171,7 +163,7 @@ if(TARGET_MCU STREQUAL "STM32F413")
     # Now exclude non-F413 sources
     list(FILTER local_SRCS EXCLUDE REGEX "stm32h7")
 elseif(TARGET_MCU STREQUAL "STM32H725")
-    # ARMCM4 for openblt
+    # ARMCM7 for openblt
     file(GLOB port_SRCS
         "${OPENBLT_ROOT}/ARMCM7_STM32H7/*.c"
         "${OPENBLT_ROOT}/ARMCM7_STM32H7/GCC/*.c"
@@ -264,17 +256,8 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 
 add_compile_options(${cpu_PARAMS})
 
-# ---------------------------------------------------------------------------
-# Board specific drivers
-# ---------------------------------------------------------------------------
-if(TARGET_MCU STREQUAL "STM32F413")
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../stm32f413-drivers ${CMAKE_BINARY_DIR}/stm32f413-drivers)
-elseif(TARGET_MCU STREQUAL "STM32H725")
-    # Still use f413 for some reason
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../stm32f413-drivers ${CMAKE_BINARY_DIR}/stm32f413-drivers)
-else()
-    message(FATAL_ERROR "Unknown TARGET_MCU: ${TARGET_MCU}. Must be STM32F413 or STM32H725.")
-endif()
+# Add STM32F413 drivers
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../stm32f413-drivers ${CMAKE_BINARY_DIR}/stm32f413-drivers)
 
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME} ${link_LIBS})
@@ -317,7 +300,7 @@ target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 # ---------------------------------------------------------------------------
-# Post-build: size report + S-record (mirrors the Makefile)
+# Post-build SREC creation
 # ---------------------------------------------------------------------------
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_SIZE}     $<TARGET_FILE:${CMAKE_PROJECT_NAME}>

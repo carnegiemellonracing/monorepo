@@ -36,13 +36,3 @@ void DeInit(void)
     /* Clock deinitialization */
     clockDeinit();
 } /*** end of DeInit ***/
-
-/**
- * @brief Deinitializes board peripherals and HAL.
- *
- * This function performs orderly shutdown of peripherals used by the
- * bootloader (CAN, GPIO, etc.), deinitializes the HAL library and returns
- * the system to a safe state. It complements `Init` which performs the
- * corresponding initialization steps.
- */
-
