@@ -294,7 +294,7 @@
  *         is used as a node address in the range 0..255. Configure the 
  *         address of this specific node with this macro.
  */
-#define BOOT_XCP_CONNECT_MODE_NODE_ADDR (3)
+#define BOOT_XCP_CONNECT_MODE_NODE_ADDR (0)
 
 /****************************************************************************************
 *   F L A S H   M E M O R Y   D R I V E R   C O N F I G U R A T I O N
