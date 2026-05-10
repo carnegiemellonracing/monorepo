@@ -28,6 +28,9 @@
 #ifndef BLT_CONF_H
 #define BLT_CONF_H
 
+// include can configs and types
+#include <cmr/can_ids.h>
+
 /****************************************************************************************
 *   C P U   D R I V E R   C O N F I G U R A T I O N
 ****************************************************************************************/
@@ -47,12 +50,21 @@
 /* TODO ##Boot Set the frequency of the crystal oscillator that provides the clock
  * signal that drives the microcontroller. Specify the value in kHz. 
  */
+#ifdef F413
 #define BOOT_CPU_XTAL_SPEED_KHZ          (16000)
+#elif H725
+#define BOOT_CPU_XTAL_SPEED_KHZ          (25000)
+#endif
+
 /** \brief Desired system speed. 
  * 
- * @warning This is actually half our clock 550000
+ * @warning This is just sysclock speed
  */
-#define BOOT_CPU_SYSTEM_SPEED_KHZ        (48000)
+#ifdef F413
+#define BOOT_CPU_SYSTEM_SPEED_KHZ        (96000)
+#elif H725
+#define BOOT_CPU_SYSTEM_SPEED_KHZ        (550000)
+#endif
 /** \brief Motorola or Intel style byte ordering. */
 /* TODO ##Boot Configure the CPU's endian mode. This is hardware specific and should be
  * defined in the microcontroller's datasheet.
@@ -101,15 +113,11 @@
 /** \brief Enable/disable CAN transport layer. */
 #define BOOT_COM_CAN_ENABLE             (1)
 /** \brief Configure the desired CAN baudrate. */
-#define BOOT_COM_CAN_BAUDRATE           (500000)
-// /** \brief Configure CAN message ID target->host. */
-// #define BOOT_COM_CAN_TX_MSG_ID          (0x140)
-// /** \brief Configure CAN message ID host->target. */
-// #define BOOT_COM_CAN_RX_MSG_ID          (0x141)
+#define BOOT_COM_CAN_BAUDRATE           500000
 /** \brief Configure CAN message ID target->host. */
-#define BOOT_COM_CAN_TX_MSG_ID          (0x7E1 /*| 0x80000000*/)
+#define BOOT_COM_CAN_TX_MSG_ID          (0x0A1)
 /** \brief Configure CAN message ID host->target. */
-#define BOOT_COM_CAN_RX_MSG_ID          (0x667 /*| 0x80000000*/)
+#define BOOT_COM_CAN_RX_MSG_ID          (0x0A2)
 /** \brief Configure CAN classic (0) or CAN FD (1). */
 #define BOOT_COM_CAN_FD_ENABLE          (0)
 /** \brief Configure the CAN FD data baudrate for the bitrate switch.  */
