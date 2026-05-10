@@ -32,6 +32,7 @@
 #include "boot.h"                                /* bootloader generic header          */
 #include "gpio.h"                                 /* GPIO driver header                  */
 #include "setup.h"                                /* bootloader generic header          */
+#include "xcp.h"                                  /* XCP protocol core header            */
 
 /****************************************************************************************
 *   B A C K D O O R   E N T R Y   H O O K   F U N C T I O N S
@@ -498,5 +499,51 @@ blt_int8u XcpVerifyKeyHook(blt_int8u resource, blt_int8u *key, blt_int8u len)
 } /*** end of XcpVerifyKeyHook ***/
 #endif /* BOOT_XCP_SEED_KEY_ENABLE > 0 */
 
+/**********************************************************************
+*   X C P   C O M M U N I C A T I O N   H O O K   F U N C T I O N S
+**********************************************************************/
+#if (BOOT_XCP_PACKET_RECEIVED_HOOK > 0)
+/******************************************************************//**
+** \brief     Callback that gets called when a new XCP packet was 
+**            received from the host, before it got processed by the 
+**            XCP communication module.
+** \param     data Pointer to byte buffer with packet data.
+** \param     len Number of bytes in the packet.
+** \return    BLT_TRUE is the packet was processed by this function, 
+**            BLT_FALSE if the packet should be processed by the XCP 
+**            protocol as usual.
+**
+**********************************************************************/
+blt_bool XcpPacketReceivedHook(blt_int8u *data, blt_int8u len)
+{
+  blt_bool result = BLT_FALSE;
+  /* Intercept the connect command which consists of two bytes with the
+   * first byte always being 0xFF and the second byte being the 
+   * 'connection mode', which is used to pass on a node address in this
+   * example. Only allow the connection to be established, if it is
+   * addressed to us.
+   *
+   * -----------------------
+   * | 0xFF | node address |
+   * -----------------------
+   *
+   */
+  /* Is this the connect command, but not addressed to us? */
+  if ( (data[0] == XCP_CMD_CONNECT) &&
+       (len == 2) && 
+       (data[1] != BOOT_XCP_CONNECT_MODE_NODE_ADDR) )
+  {
+    /* Do not establish a connection simply by ignoring this connect
+     * command. This is achieved by informing the XCP communication
+     * module that this packet was fully processed by this function
+     * and no further processing is needed by the XCP communication
+     * module.
+     */
+    result = BLT_TRUE;
+  }
+  /* Give the result back to the caller. */
+  return result;
+} /*** end of XcpPacketReceivedHook **/
+#endif /* BOOT_XCP_PACKET_RECEIVED_HOOK > 0 */
 
 /*********************************** end of hooks.c ************************************/

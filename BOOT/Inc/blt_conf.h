@@ -283,6 +283,19 @@
  */
 #define BOOT_XCP_SEED_KEY_ENABLE        (0)
 
+/**********************************************************************
+*   X C P   C O M M U N I C A T I O N   C O N F I G U R A T I O N
+**********************************************************************/
+/** \brief Enable or disable the hook function that gets called each 
+ *         time an XCP packet was received from the host.
+ */
+#define BOOT_XCP_PACKET_RECEIVED_HOOK   (1)
+/** \brief The second byte in the XCP connect command (connection mode)
+ *         is used as a node address in the range 0..255. Configure the 
+ *         address of this specific node with this macro.
+ */
+#define BOOT_XCP_CONNECT_MODE_NODE_ADDR (3)
+
 /****************************************************************************************
 *   F L A S H   M E M O R Y   D R I V E R   C O N F I G U R A T I O N
 ****************************************************************************************/
