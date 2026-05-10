@@ -27,5 +27,8 @@ void gpioDeinit(void);
 void timedLedToggle(void);
 bool getPushButton(void);
 
+#define LED_TOGGLE_TIME_MS 500
+
+
 #endif /* GPIO_H */
 

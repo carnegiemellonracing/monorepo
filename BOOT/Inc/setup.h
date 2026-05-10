@@ -1,6 +1,9 @@
 /**
- * @file gpio.h
- * @brief Board-specific GPIO interface.
+ * @file setup.h
+ * @brief Board-level initialization helpers for the bootloader.
+ *
+ * Provides `Init` and `DeInit` functions to initialize microcontroller
+ * peripherals (clocks, GPIO, CAN, etc.) used by the bootloader.
  *
  * @author Carnegie Mellon Racing
  */

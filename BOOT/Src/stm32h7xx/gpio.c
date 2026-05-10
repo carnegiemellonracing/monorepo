@@ -48,8 +48,6 @@ void gpioDeinit(void) {
 
 
 
-const int toggle_time_ms = 500;
-
 /************************************************************************************//**
 ** \brief     Task function for blinking the LED as a fixed timer interval.
 ** \return    none.
@@ -65,7 +63,7 @@ void timedLedToggle(void)
     cmr_gpioToggle(GPIO_LED_STATUS);
 
     /* schedule the next blink event */
-    nextBlinkEvent = TimerGet() + toggle_time_ms;
+    nextBlinkEvent = TimerGet() + LED_TOGGLE_TIME_MS;
   }
 }
 

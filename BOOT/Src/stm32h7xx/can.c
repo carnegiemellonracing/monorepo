@@ -10,11 +10,16 @@
 
 /**
  * @brief Initializes the CAN interface.
+ *
  */
 void canInit(void) {
     /* to be implemented*/
 }
 
+/**
+ * @brief Deinitializes the CAN interface.
+ *
+ */
 void canDeinit(void) {
     /* to be implemented*/
 }

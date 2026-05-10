@@ -1,8 +1,18 @@
+/**
+ * @file clock.c
+ * @brief Board-specific clock implementation for STM32F4 targets.
+ *
+ * Provides minimal system clock initialization and deinitialization used by
+ * the BOOT application. The implementation uses the CMR RCC helper API.
+ *
+ */
+
 #include "clock.h"                                 /* clock interface                     */
-#include <CMR/rcc.h>                            /* RCC interface                      */
+#include <CMR/rcc.h>                                /* RCC interface                       */
 
 /**
- * Initialize the system clock
+ * @brief Initialize the system clock.
+ *
  */
 void clockInit(void)
 {
@@ -10,7 +20,8 @@ void clockInit(void)
 }
 
 /**
- * Deinitialize the system clock
+ * @brief Deinitialize the system clock.
+ *
  */
 void clockDeinit(void)
 {

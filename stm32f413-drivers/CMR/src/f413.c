@@ -144,6 +144,7 @@ void _platform_canInit(
     switch (bitRate) {
         case CMR_CAN_BITRATE_125K:
             can->handle.Init.Prescaler = 48;
+            break;
         case CMR_CAN_BITRATE_250K:
             can->handle.Init.Prescaler = 24;
             break;

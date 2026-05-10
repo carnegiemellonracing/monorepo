@@ -19,11 +19,15 @@ void canInit(void) {
     cmr_canGpioInit(CAN1, GPIOB, GPIO_PIN_8, GPIOB, GPIO_PIN_9);
 }
 
+/**
+ * @brief Deinitializes the CAN interface.
+ *
+ */
 void canDeinit(void) {
 
     cmr_canGpioDeInit(GPIOB, GPIO_PIN_8, GPIOB, GPIO_PIN_9);
 
-    // disable clock jic
+    /* disable clock just in case */
     cmr_canClockDisable(CAN1);
     
 }

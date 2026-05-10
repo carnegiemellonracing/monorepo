@@ -176,6 +176,8 @@ extern void _platform_canInit(
     GPIO_TypeDef *rxPort, uint16_t rxPin,
     GPIO_TypeDef *txPort, uint16_t txPin
 );
+extern void _platform_rccCANClockDisable(CAN_TypeDef *instance);
+extern void _platform_rccCANClockEnable(CAN_TypeDef *instance);
 
 #endif /* HAL_CAN_MODULE_ENABLED */
 

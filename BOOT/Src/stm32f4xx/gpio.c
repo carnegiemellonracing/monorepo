@@ -2,13 +2,12 @@
  * @file gpio.c
  * @brief Board-specific GPIO interface.
  *
- * @author Carnegie Mellon Racing
  */
 
 #include "gpio.h"   // Interface to implement
 
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
-    [GPIO_LED_STATUS] = { //same as IND BLUE on schematic (no change)
+    [GPIO_LED_STATUS] = { 
         .port = GPIOB,
         .init = {
             .Pin = GPIO_PIN_0,
@@ -50,13 +49,9 @@ void gpioDeinit(void) {
 
 
 
-const int toggle_time_ms = 500;
-
-/************************************************************************************//**
-** \brief     Task function for blinking the LED as a fixed timer interval.
-** \return    none.
-**
-****************************************************************************************/
+/**
+ * @brief Toggles the LED at a timed interval.
+ */
 void timedLedToggle(void)
 {
   static int32_t nextBlinkEvent = 0;
@@ -67,11 +62,14 @@ void timedLedToggle(void)
     cmr_gpioToggle(GPIO_LED_STATUS);
 
     /* schedule the next blink event */
-    nextBlinkEvent = TimerGet() + toggle_time_ms;
+    nextBlinkEvent = TimerGet() + LED_TOGGLE_TIME_MS;
   }
 }
 
 
+/**
+ * @brief Reads the state of the push button.
+ */
 bool getPushButton(void) {
     return cmr_gpioRead(GPIO_PUSH_BUTTON) == 1;
 }
