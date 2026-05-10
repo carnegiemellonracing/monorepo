@@ -84,6 +84,37 @@ if(TARGET_MCU STREQUAL "STM32F413")
     )
 
     set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "" FORCE)
+elseif(TARGET_MCU STREQUAL "STM32H725")
+    # Processor configuration for stm32h725-drivers
+    set(PROCESSOR H725)
+    set(PROCESSOR_FAM H7XX)
+
+    # Core MCU flags, CPU type, instruction set and FPU setup
+    set(cpu_PARAMS
+
+        # Other parameters
+        # -mcpu, -mfloat, -mfloat-abi, ...
+        -mcpu=cortex-m4
+        -mthumb
+        -mfpu=fpv4-sp-d16
+        -mfloat-abi=hard
+
+    )
+
+    # STM32H725 linker script
+    set(linker_script_SRC "${CMAKE_CURRENT_SOURCE_FLASH_DIR}/STM32H725ZGTX_FLASH.ld")
+
+    # STM32H725 specific symbols
+    set(symbols_SYMB
+        H725
+        USE_FULL_LL_DRIVER
+        USE_HAL_DRIVER
+        STM32H725xx
+        "__weak=__attribute__((weak))"
+        "__packed=__attribute__((__packed__))"
+    )
+
+    set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "" FORCE)
 else()
     message(FATAL_ERROR "Unknown TARGET_MCU: ${TARGET_MCU}. Must be STM32F413 or STM32H725.")
 endif()
@@ -139,7 +170,15 @@ if(TARGET_MCU STREQUAL "STM32F413")
 
     # Now exclude non-F413 sources
     list(FILTER local_SRCS EXCLUDE REGEX "stm32h7")
+elseif(TARGET_MCU STREQUAL "STM32H725")
+    # ARMCM4 for openblt
+    file(GLOB port_SRCS
+        "${OPENBLT_ROOT}/ARMCM7_STM32H7/*.c"
+        "${OPENBLT_ROOT}/ARMCM7_STM32H7/GCC/*.c"
+    )
 
+    # Now exclude non-H725 sources
+    list(FILTER local_SRCS EXCLUDE REGEX "stm32f4")
 else()
     message(FATAL_ERROR "Unknown TARGET_MCU: ${TARGET_MCU}. Must be STM32F413 or STM32H725.")
 endif()
@@ -170,12 +209,15 @@ set(include_asm_DIRS)
 # ---------------------------------------------------------------------------
 if(TARGET_MCU STREQUAL "STM32F413")
     list(APPEND include_DIRS
-        # Local board specific
-        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/stm32f4xx
-
         # OpenBLT board specific
         ${OPENBLT_ROOT}/ARMCM4_STM32F4
         ${OPENBLT_ROOT}/ARMCM4_STM32F4/GCC
+    )
+elseif(TARGET_MCU STREQUAL "STM32H725")
+    list(APPEND include_DIRS
+        # OpenBLT board specific
+        ${OPENBLT_ROOT}/ARMCM7_STM32H7
+        ${OPENBLT_ROOT}/ARMCM7_STM32H7/GCC
     )
 else()
     message(FATAL_ERROR "Unknown TARGET_MCU: ${TARGET_MCU}. Must be STM32F413 or STM32H725.")
@@ -226,6 +268,9 @@ add_compile_options(${cpu_PARAMS})
 # Board specific drivers
 # ---------------------------------------------------------------------------
 if(TARGET_MCU STREQUAL "STM32F413")
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../stm32f413-drivers ${CMAKE_BINARY_DIR}/stm32f413-drivers)
+elseif(TARGET_MCU STREQUAL "STM32H725")
+    # Still use f413 for some reason
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../stm32f413-drivers ${CMAKE_BINARY_DIR}/stm32f413-drivers)
 else()
     message(FATAL_ERROR "Unknown TARGET_MCU: ${TARGET_MCU}. Must be STM32F413 or STM32H725.")

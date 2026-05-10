@@ -48,13 +48,9 @@
  * signal that drives the microcontroller. Specify the value in kHz. 
  */
 #define BOOT_CPU_XTAL_SPEED_KHZ          (16000)
-/** \brief Desired system speed. */
-/* TODO ##Boot Set the system frequency of the microcontroller system clock. Specify the
- * value in kHz. The system clock is typically created by configuring the PLL or FLL
- * peripheral of the microcontroller. Note that this macro is only used by the bootloader
- * for reference purposes, for example when configuring clock related peripherals. The
- * bootloader does not use this macro to actually do the clock configuration for you.
- * It is up to you to implement the clock configuration in function Init() in main.c.
+/** \brief Desired system speed. 
+ * 
+ * @warning This is actually half our clock 550000
  */
 #define BOOT_CPU_SYSTEM_SPEED_KHZ        (48000)
 /** \brief Motorola or Intel style byte ordering. */

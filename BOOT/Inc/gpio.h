@@ -14,8 +14,7 @@
 /**
  * @brief Represents a GPIO pin.
  *
- * @note All boards should at least have a status LED (`GPIO_LED_STATUS`).
- * @warning New pins MUST be added between `GPIO_LED_STATUS` and `GPIO_LEN`.
+ * @note All boards should at least have a status LED (`GPIO_LED_STATUS`) and a push button (`GPIO_PUSH_BUTTON`).
  */
 typedef enum {
     GPIO_LED_STATUS = 0,    /**< @brief Status LED. */
