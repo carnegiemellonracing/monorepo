@@ -31,3 +31,4 @@ tmp/
 *.dsk~
 
 *.peproj~
+*.pyc

@@ -1,0 +1,2 @@
+canlib>=1.26
+cantools>=39.0
