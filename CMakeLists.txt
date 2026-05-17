@@ -53,8 +53,14 @@ ExternalProject_Add(
     BOOT_F413                                       
     PREFIX  ${CMAKE_CURRENT_BINARY_DIR}/BOOT
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/BOOT 
-    CONFIGURE_COMMAND "${CMAKE_COMMAND}" --preset=release-f413
-    BUILD_COMMAND "${CMAKE_COMMAND}" --build --preset=release-f413
+    CONFIGURE_COMMAND
+        "${CMAKE_COMMAND}"
+        --preset=release-f413
+        -S ${CMAKE_CURRENT_SOURCE_DIR}/BOOT
+        -B ${CMAKE_CURRENT_BINARY_DIR}/BOOT/build/release-f413
+    BUILD_COMMAND
+        "${CMAKE_COMMAND}"
+        --build ${CMAKE_CURRENT_BINARY_DIR}/BOOT/build/release-f413
     INSTALL_COMMAND ""
     BUILD_ALWAYS TRUE
     CMAKE_ARGS -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
@@ -63,8 +69,14 @@ ExternalProject_Add(
     BOOT_H725                                       
     PREFIX  ${CMAKE_CURRENT_BINARY_DIR}/BOOT
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/BOOT 
-    CONFIGURE_COMMAND "${CMAKE_COMMAND}" --preset=release-h725
-    BUILD_COMMAND "${CMAKE_COMMAND}" --build --preset=release-h725
+    CONFIGURE_COMMAND
+        "${CMAKE_COMMAND}"
+        --preset=release-h725
+        -S ${CMAKE_CURRENT_SOURCE_DIR}/BOOT
+        -B ${CMAKE_CURRENT_BINARY_DIR}/BOOT/build/release-h725
+    BUILD_COMMAND
+        "${CMAKE_COMMAND}"
+        --build ${CMAKE_CURRENT_BINARY_DIR}/BOOT/build/release-h725
     INSTALL_COMMAND ""
     BUILD_ALWAYS TRUE
     CMAKE_ARGS -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
