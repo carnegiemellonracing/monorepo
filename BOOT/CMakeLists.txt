@@ -303,11 +303,8 @@ target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
 # Post-build SREC creation
 # ---------------------------------------------------------------------------
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_SIZE}     $<TARGET_FILE:${CMAKE_PROJECT_NAME}>
-    COMMAND ${CMAKE_OBJCOPY} -O srec
-            $<TARGET_FILE:${CMAKE_PROJECT_NAME}>
-            ${CMAKE_PROJECT_NAME}.srec
-    COMMAND ${CMAKE_OBJDUMP} -x
-            $<TARGET_FILE:${CMAKE_PROJECT_NAME}>
-            > ${CMAKE_PROJECT_NAME}.dump
+    COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${CMAKE_PROJECT_NAME}>
+    COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.hex
+    COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.bin
+    COMMAND ${CMAKE_OBJCOPY} -O srec $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.srec
 )
