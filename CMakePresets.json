@@ -24,6 +24,15 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Static"
             }
+        },
+        {
+            "name": "debugStrict",
+            "displayName": "Debug (Warnings as Errors)",
+            "description": "Debug build with all warnings treated as errors",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "DebugStrict"
+            }
         }
     ],
     "buildPresets": [
@@ -35,6 +44,12 @@
             "name": "static",
             "description": "Build for Static Analysis",
             "configurePreset": "static"
+        },
+        {
+            "name": "debugStrict",
+            "displayName": "Debug Strict",
+            "description": "Build Debug with warnings as errors",
+            "configurePreset": "debugStrict"
         }
     ]
 }

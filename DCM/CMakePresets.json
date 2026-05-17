@@ -26,6 +26,13 @@
             }
         },
         {
+            "name": "debugStrict",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "DebugStrict"
+            }
+        },
+        {
             "name": "relWithDebInfo",
             "inherits": "default",
             "cacheVariables": {
@@ -69,6 +76,10 @@
             "description": "",
             "displayName": "",
             "configurePreset": "static"
+        },
+        {
+            "name": "debugStrict",
+            "configurePreset": "debugStrict"
         }
     ]
 }

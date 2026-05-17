@@ -19,6 +19,20 @@
             }
         },
         {
+            "name": "static",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Static"
+            }
+        },
+        {
+            "name": "debugStrict",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "DebugStrict"
+            }
+        },
+        {
             "name": "relWithDebInfo",
             "inherits": "default",
             "cacheVariables": {
@@ -56,6 +70,16 @@
         {
             "name": "minSizeRel",
             "configurePreset": "minSizeRel"
+        },
+        {
+            "name": "static",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "static"
+        },
+        {
+            "name": "debugStrict",
+            "configurePreset": "debugStrict"
         }
     ]
 }
