@@ -1,6 +1,7 @@
-from constants import *
-import speed
 from enum import Enum
+
+import speed
+from constants import *
 
 
 class FaultCodes(Enum):

@@ -4,9 +4,8 @@ from datetime import datetime
 from enum import Enum
 from typing import IO, Optional
 
-from canlib import Frame, canlib
-
 import dti_protocol as dti
+from canlib import Frame, canlib
 from constants import MAX_MOTOR_RPM, MOTOR_KT_NM_PER_APK
 from driver_input import Driver_input
 from motor_req import Motor_req

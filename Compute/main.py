@@ -9,7 +9,6 @@ Run with:
 import time
 
 from canlib import canlib
-
 from car import Car
 from controller import Controller
 
