@@ -17,6 +17,7 @@ from enum import IntEnum
 # -----------------------------------------------------------------------------
 class TxPacketId(IntEnum):
     """Packets transmitted BY the inverter (we receive these)."""
+
     GENERAL_DATA_6 = 0x1F  # control mode, target Iq, position, isMotorStill
     GENERAL_DATA_1 = 0x20  # ERPM, duty, input voltage
     GENERAL_DATA_2 = 0x21  # AC current, DC current
@@ -29,6 +30,7 @@ class TxPacketId(IntEnum):
 
 class CmdPacketId(IntEnum):
     """Packets sent TO the inverter (we transmit these)."""
+
     SET_AC_CURRENT = 0x01
     SET_BRAKE_CURRENT = 0x02
     SET_ERPM = 0x03

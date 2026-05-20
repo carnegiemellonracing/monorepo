@@ -37,11 +37,17 @@ class Car:
         log_path: Optional[str] = None,
     ):
         self.ch = ch
-        self.node_ids: dict[Corner, int] = dict(node_ids) if node_ids else dict(DEFAULT_NODE_IDS)
-        self._node_to_corner: dict[int, Corner] = {n: c for c, n in self.node_ids.items()}
+        self.node_ids: dict[Corner, int] = (
+            dict(node_ids) if node_ids else dict(DEFAULT_NODE_IDS)
+        )
+        self._node_to_corner: dict[int, Corner] = {
+            n: c for c, n in self.node_ids.items()
+        }
 
         self.motor_reqs: dict[Corner, Motor_req] = {c: Motor_req() for c in Corner}
-        self.motor_states: dict[Corner, Motor_state] = {c: Motor_state() for c in Corner}
+        self.motor_states: dict[Corner, Motor_state] = {
+            c: Motor_state() for c in Corner
+        }
         self.driver_input: Driver_input = Driver_input()
 
         # Generic CAN RX cache: {can_id: latest payload bytes}. Populated by
@@ -104,7 +110,9 @@ class Car:
             self._log_start_time = time.time()
             self._write_asc_header()
         self._stop_event.clear()
-        self._rx_thread = threading.Thread(target=self._rx_loop, name="Car-RX", daemon=True)
+        self._rx_thread = threading.Thread(
+            target=self._rx_loop, name="Car-RX", daemon=True
+        )
         self._rx_thread.start()
 
     def stop_rx(self):
@@ -132,26 +140,39 @@ class Car:
         node_id = self.node_ids[corner]
 
         # Drive enable — keep-alive; inverter blocks output if False (manual §4.3)
-        self._send(node_id, dti.CmdPacketId.DRIVE_ENABLE,
-                   dti.encode_drive_enable(req.drive_enabled))
+        self._send(
+            node_id,
+            dti.CmdPacketId.DRIVE_ENABLE,
+            dti.encode_drive_enable(req.drive_enabled),
+        )
 
         # Per-direction current limits, derived from torque limits.
         pos_lim_A = req.torque_lim_pos_Nm / MOTOR_KT_NM_PER_APK
         neg_lim_A = req.torque_lim_neg_Nm / MOTOR_KT_NM_PER_APK
-        self._send(node_id, dti.CmdPacketId.SET_MAX_AC_CURRENT,
-                   dti.encode_set_max_ac_current(pos_lim_A))
-        self._send(node_id, dti.CmdPacketId.SET_MAX_AC_BRAKE_CURRENT,
-                   dti.encode_set_max_ac_brake_current(neg_lim_A))
+        self._send(
+            node_id,
+            dti.CmdPacketId.SET_MAX_AC_CURRENT,
+            dti.encode_set_max_ac_current(pos_lim_A),
+        )
+        self._send(
+            node_id,
+            dti.CmdPacketId.SET_MAX_AC_BRAKE_CURRENT,
+            dti.encode_set_max_ac_brake_current(neg_lim_A),
+        )
 
         # Setpoint — selects the inverter's control mode.
         if req.torque_mode:
             target_A = req.torque_Nm / MOTOR_KT_NM_PER_APK
-            self._send(node_id, dti.CmdPacketId.SET_AC_CURRENT,
-                       dti.encode_set_ac_current(target_A))
+            self._send(
+                node_id,
+                dti.CmdPacketId.SET_AC_CURRENT,
+                dti.encode_set_ac_current(target_A),
+            )
         else:
             target_erpm = int(round(req.speed_req.get_motor_erpm()))
-            self._send(node_id, dti.CmdPacketId.SET_ERPM,
-                       dti.encode_set_erpm(target_erpm))
+            self._send(
+                node_id, dti.CmdPacketId.SET_ERPM, dti.encode_set_erpm(target_erpm)
+            )
 
     def _send(self, node_id: int, packet_id: dti.CmdPacketId, data: bytes):
         can_id = dti.pack_can_id(int(packet_id), node_id)
@@ -198,9 +219,7 @@ class Car:
         else:
             kind = "r" if frame.flags & canlib.MessageFlag.RTR else "d"
             data_hex = " ".join(f"{b:02X}" for b in bytes(frame.data))
-            line = (
-                f"{rel_t:11.6f} 1  {id_str:<15} {direction}   {kind} {frame.dlc} {data_hex}\n"
-            )
+            line = f"{rel_t:11.6f} 1  {id_str:<15} {direction}   {kind} {frame.dlc} {data_hex}\n"
         with self._log_lock:
             self._log_file.write(line)
 

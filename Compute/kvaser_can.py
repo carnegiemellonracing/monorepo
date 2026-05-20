@@ -30,7 +30,7 @@ from canlib import Frame, canlib
 class SignalValue:
     value: Any = None
     last_rx_time: Optional[float] = None  # wall-clock time.time() of last update
-    source_can_id: Optional[int] = None   # CAN ID of the frame that last updated this
+    source_can_id: Optional[int] = None  # CAN ID of the frame that last updated this
 
 
 class KvaserCAN:
@@ -52,9 +52,7 @@ class KvaserCAN:
         # Pre-populate so callers can safely check `bus.signals[name]`
         # even before the first frame arrives.
         self.signals: Dict[str, SignalValue] = {
-            sig.name: SignalValue()
-            for msg in self.db.messages
-            for sig in msg.signals
+            sig.name: SignalValue() for msg in self.db.messages for sig in msg.signals
         }
 
         self._lock = threading.RLock()
@@ -108,7 +106,9 @@ class KvaserCAN:
         """Encode by message name from the SYM database and transmit."""
         msg = self.db.get_message_by_name(name)
         data = msg.encode(signals, strict=True)
-        flags = canlib.MessageFlag.EXT if msg.is_extended_frame else canlib.MessageFlag.STD
+        flags = (
+            canlib.MessageFlag.EXT if msg.is_extended_frame else canlib.MessageFlag.STD
+        )
         self._ch.write(Frame(id_=msg.frame_id, data=data, dlc=msg.length, flags=flags))
 
     def send_raw(self, can_id: int, data: bytes, *, extended: bool = False):
