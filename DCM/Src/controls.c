@@ -373,69 +373,67 @@ static void set_optimal_control(
         assert(0.0f <= normalized_throttle && normalized_throttle <= 1.0f);
     }
 
-    // load_solver_settings();
-
 	float wheel_fl_speed_radps = getMotorSpeed_radps(MOTOR_FL);
 	float wheel_fr_speed_radps = getMotorSpeed_radps(MOTOR_FR);
 	float wheel_rl_speed_radps = getMotorSpeed_radps(MOTOR_RL);
 	float wheel_rr_speed_radps = getMotorSpeed_radps(MOTOR_RR);
 
-	// float tractive_cap_fl = getKappaFxGlobalMax(MOTOR_FL, UINT8_MAX, true).Fx;
-	// float tractive_cap_fr = getKappaFxGlobalMax(MOTOR_FR, UINT8_MAX, true).Fx;
-	// float tractive_cap_rl = getKappaFxGlobalMax(MOTOR_RL, UINT8_MAX, true).Fx;
-	// float tractive_cap_rr = getKappaFxGlobalMax(MOTOR_RR, UINT8_MAX, true).Fx;
-
+    // downforce settings and constants
     const float corner_weight_Nm = 80.0f;
-    bool use_true_downforce = true;
-    bool use_simple_downforce = false;
+    bool use_true_downforce = false;
+    bool use_simple_downforce = true;
+    float fz_fl_N, fz_fr_N, fz_rl_N, fz_rr_N;
 
-    float fz_fl, fz_fr, fz_rl, fz_rr;
+    // compute downforce
     if (use_simple_downforce) {
         float ax, ay, az;
         sensors_get_accel_xyz(&ax, &ay, &az);
         bool pos_left = true; // ISO 8855: positive ay = leftward
-        fz_fl = get_simple_downforce(MOTOR_FL, ay, pos_left);
-        fz_fr = get_simple_downforce(MOTOR_FR, ay, pos_left);
-        fz_rl = get_simple_downforce(MOTOR_RL, ay, pos_left);
-        fz_rr = get_simple_downforce(MOTOR_RR, ay, pos_left);
+        fz_fl_N = get_simple_downforce(MOTOR_FL, ay, pos_left);
+        fz_fr_N = get_simple_downforce(MOTOR_FR, ay, pos_left);
+        fz_rl_N = get_simple_downforce(MOTOR_RL, ay, pos_left);
+        fz_rr_N = get_simple_downforce(MOTOR_RR, ay, pos_left);
     } else {
-        fz_fl = get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm;
-        fz_fr = get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm;
-        fz_rl = get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm;
-        fz_rr = get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm;
+        fz_fl_N = get_downforce(CANRX_DAQ_LOAD_FL, use_true_downforce) + corner_weight_Nm;
+        fz_fr_N = get_downforce(CANRX_DAQ_LOAD_FR, use_true_downforce) + corner_weight_Nm;
+        fz_rl_N = get_downforce(CANRX_DAQ_LOAD_RL, use_true_downforce) + corner_weight_Nm;
+        fz_rr_N = get_downforce(CANRX_DAQ_LOAD_RR, use_true_downforce) + corner_weight_Nm;
     }
 
-    float tractive_cap_fl = lut_get_max_Fx_kappa(0.0, fz_fl).Fx;
-    float tractive_cap_fr = lut_get_max_Fx_kappa(0.0, fz_fr).Fx;
-    float tractive_cap_rl = lut_get_max_Fx_kappa(0.0, fz_rl).Fx;
-    float tractive_cap_rr = lut_get_max_Fx_kappa(0.0, fz_rr).Fx;
+    // Convert downforce to tractive capacity
+    float tractive_cap_fl_N = lut_get_max_Fx_kappa(0.0, fz_fl_N).Fx;
+    float tractive_cap_fr_N = lut_get_max_Fx_kappa(0.0, fz_fr_N).Fx;
+    float tractive_cap_rl_N = lut_get_max_Fx_kappa(0.0, fz_rl_N).Fx;
+    float tractive_cap_rr_N = lut_get_max_Fx_kappa(0.0, fz_rr_N).Fx;
 
+    // where are these numbers from???
     static const float motor_resistance_Nm[MOTOR_LEN] = {
         [MOTOR_FL] = 0.5f,
         [MOTOR_FR] = 0.5f,
         [MOTOR_RL] = 0.5f,
         [MOTOR_RR] = 0.5f,
     };
-	// The most naive approach is to convert force to torque linearly, ignoring rolling resistance and any inefficiency.
-	float torque_limit_fl = tractive_cap_fl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FL];
-	float torque_limit_fr = tractive_cap_fr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FR];
-	float torque_limit_rl = tractive_cap_rl * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RL];
-	float torque_limit_rr = tractive_cap_rr * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RR];
 
-	torque_limit_fl = fminf(torque_limit_fl, maxTorque_continuous_stall_Nm);
-	torque_limit_fr = fminf(torque_limit_fr, maxTorque_continuous_stall_Nm);
-	torque_limit_rl = fminf(torque_limit_rl, maxTorque_continuous_stall_Nm);
-	torque_limit_rr = fminf(torque_limit_rr, maxTorque_continuous_stall_Nm);
+	// The most naive approach is to convert force to torque linearly, ignoring rolling resistance and any inefficiency.
+	float torque_limit_fl_Nm = tractive_cap_fl_N * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FL];
+	float torque_limit_fr_Nm = tractive_cap_fr_N * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_FR];
+	float torque_limit_rl_Nm = tractive_cap_rl_N * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RL];
+	float torque_limit_rr_Nm = tractive_cap_rr_N * effective_wheel_rad_m / gear_ratio + motor_resistance_Nm[MOTOR_RR];
+
+	torque_limit_fl_Nm = fminf(torque_limit_fl_Nm, maxTorque_continuous_stall_Nm);
+	torque_limit_fr_Nm = fminf(torque_limit_fr_Nm, maxTorque_continuous_stall_Nm);
+	torque_limit_rl_Nm = fminf(torque_limit_rl_Nm, maxTorque_continuous_stall_Nm);
+	torque_limit_rr_Nm = fminf(torque_limit_rr_Nm, maxTorque_continuous_stall_Nm);
 
 	static optimizer_state_t optimizer_state;
 
-	optimizer_state.power_limit = getPowerLimit_W();
+	optimizer_state.power_limit = 80000.0f
 	optimizer_state.omegas[0] = wheel_fl_speed_radps;
 	optimizer_state.omegas[1] = wheel_fr_speed_radps;
 	optimizer_state.omegas[2] = wheel_rl_speed_radps;
 	optimizer_state.omegas[3] = wheel_rr_speed_radps;
 
-    if(true == allow_regen) {
+    if(allow_regen) {
         optimizer_state.variable_profile[0].lower = fmaxf(-torque_limit_fl + motor_resistance_Nm[MOTOR_FL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FL)));
         optimizer_state.variable_profile[1].lower = fmaxf(-torque_limit_fr + motor_resistance_Nm[MOTOR_FR], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FR)));
         optimizer_state.variable_profile[2].lower = fmaxf(-torque_limit_rl + motor_resistance_Nm[MOTOR_RL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RL)));
@@ -447,14 +445,16 @@ static void set_optimal_control(
         optimizer_state.variable_profile[3].lower = 0.0;
     }
 
-	optimizer_state.variable_profile[0].upper = torque_limit_fl;
-	optimizer_state.variable_profile[1].upper = torque_limit_fr;
-	optimizer_state.variable_profile[2].upper = torque_limit_rl;
-	optimizer_state.variable_profile[3].upper = torque_limit_rr;
+	optimizer_state.variable_profile[0].upper = torque_limit_fl_Nm;
+	optimizer_state.variable_profile[1].upper = torque_limit_fr_Nm;
+	optimizer_state.variable_profile[2].upper = torque_limit_rl_Nm;
+	optimizer_state.variable_profile[3].upper = torque_limit_rr_Nm;
 
 	const float thoeretical_mass_accel = maxTorque_continuous_stall_Nm * MOTOR_LEN * gear_ratio / effective_wheel_rad_m / car_mass_kg;
 	// areq can be either expressed in torque or actual accel. Both ways are equivalent. Here uses actual accel.
-	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
+    // Adds a bias so we are running full speed more often
+    float lower_max_throttle = CLAMP(allow_regen ? -1.0f : 0.0f, normalized_throttle * 1.25, 1.0f); 
+	optimizer_state.areq = lower_max_throttle * thoeretical_mass_accel;
 
     // Solver treats Mreq as around -z axis.
 	optimizer_state.mreq = calculatePersistentYRCmreq(swAngle_millideg, bias_margin, yrc_pers);
@@ -485,7 +485,7 @@ static void set_optimal_control(
 	static cmr_torqueDistributionNm_t torquesPos_Nm;
 	static cmr_torqueDistributionNm_t torquesNeg_Nm;
 
-    if(true == allow_regen) {
+    if(allow_regen) {
 
         set_motor_speed_and_torque(MOTOR_FL, optimizer_state.optimal_assignment[0].val, &torquesPos_Nm, &torquesNeg_Nm);
         set_motor_speed_and_torque(MOTOR_FR, optimizer_state.optimal_assignment[1].val, &torquesPos_Nm, &torquesNeg_Nm);
@@ -507,8 +507,11 @@ static void set_optimal_control(
         torquesNeg_Nm.rl = 0.0f;
         torquesNeg_Nm.rr = 0.0f;
 
+        setTorqueLimsUnprotected(MOTOR_FL, torquesPos_Nm.fl, torquesNeg_Nm.fl);
+        setTorqueLimsUnprotected(MOTOR_FR, torquesPos_Nm.fr, torquesNeg_Nm.fr);
+        setTorqueLimsUnprotected(MOTOR_RL, torquesPos_Nm.rl, torquesNeg_Nm.rl);
+        setTorqueLimsUnprotected(MOTOR_RR, torquesPos_Nm.rr, torquesNeg_Nm.rr);
         setVelocityInt16All(maxFastSpeed_rpm);
-	    setTorqueLimsProtected(&torquesPos_Nm, &torquesNeg_Nm);
 
     }
 }
@@ -826,16 +829,6 @@ void runControls (
             setVelocityInt16All(0);
             break;
         }
-        // case AS_DRIVING: {
-        //     //for compute commands 
-        //     //need to put in the read commands
-        //     canDAQGetPayload()
-        //     //get the motor set points and update w/ settorque lims
-        //     setTorqueLimsAllProtected();
-        //     //need to set them for commands 
-        //     setVelocityInt16All();
-        //     break; 
-        // }
 
         default: {
             setTorqueLimsAllProtected(0.0f, 0.0f);
