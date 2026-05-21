@@ -735,8 +735,8 @@ Var=SENSORS_packCurrent_dA unsigned 16,16
 [IVT_CURRENT]
 ID=521h
 DLC=2
-CycleTime=10
-TimeOut=50
+CycleTime=400
+TimeOut=2000
 Var=CURRENT_muxID unsigned 0,8
 Var=CURRENT_count_state unsigned 8,8
 
