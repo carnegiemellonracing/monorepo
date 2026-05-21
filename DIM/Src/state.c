@@ -573,16 +573,16 @@ void reqGear(void) {
         if(canChangeGear && buttonStates[RIGHT].isPressed) {
             if(state.gearReq == CMR_CAN_GEAR_DV_MISSION_MAX - 1) {
                 state.gearReq = CMR_CAN_GEAR_DV_MISSION_MIN + 1;
-                buttonStates[RIGHT].isPressed = false; 
             }
             else state.gearReq++;
+            buttonStates[RIGHT].isPressed = false; 
         }
         else if(canChangeGear && buttonStates[LEFT].isPressed) {
             if(state.gearReq == CMR_CAN_GEAR_DV_MISSION_MIN + 1) {
                 state.gearReq = CMR_CAN_GEAR_DV_MISSION_MAX - 1;
-                buttonStates[LEFT].isPressed = false; 
             }
             else state.gearReq--;
+            buttonStates[LEFT].isPressed = false;
         }
     }
     else if (!getASMS()) {
