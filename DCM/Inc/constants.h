@@ -62,8 +62,46 @@ static const float chassis_w_r = 0.625; //Confirm with CAD people
 static const int32_t gear_ratio_top = 8784;
 static const int32_t gear_ratio_bot = 621;
 
+//Accel constants
+//General constants
+
+static const float slip_ratio_front = 1.13;
+static const float slip_ratio_rear = 1.15;
+
+//Safety clamps
+static const float accel_max_fz_N = 2000.0f;
+static const float accel_min_fz_N = 0.0f;
+
+//Pacejka tire coefficients
+static const float pacejka_coeffs_605[4] = {11.6, 1.59, 1.7, 0.45};
+static const float pacejka_coeffs_718[4] = {11.8, 1.55, 1.59, 0.45};
+static const float pacejka_coeffs_954[4] = {10, 1.76, 1.66, 0.4};
+static const float pacejka_coeffs_1160[4] = {8.4, 2.0, 1.6, 0.4};
+
+//Torque saturations
+static const float torque_min = 0.0;
+static const float torque_max = 31.0;
+
+//Power Limits
+static const int total_power_limit = 80000;
+static const float motor_eff = 0.92;
+
+//PI controller gains
+static const float kp = 80.0;
+static const float ki = 40.0;
+static const float dt = 0.001;
+
+//Ramp function
+static const float torque_ramp_up = 1000.0;
+static const float torque_ramp_down = 200.0;
+
+//Launch/transition
+static const float launch_speed = 1.0;
+static const float blend_speed = 2.0;
+static const float launch_torque_rear = 15.0;
+
 static const float gear_ratio = 12.097; // real for 26x
-static const float effective_wheel_dia_m = 0.41; /** @brief effective wheel diameter */
+static const float effective_wheel_dia_m = 0.4064; /** @brief effective wheel diameter */
 static const float effective_wheel_rad_m = effective_wheel_dia_m * 0.5f; /** @brief effective wheel radius */
 
 static const double wheelbase_m = 1.55f;
