@@ -1,3 +1,6 @@
+default_language_version:
+  python: python3.11
+
 repos:
   - repo: https://github.com/psf/black
     rev: 24.10.0
@@ -11,3 +14,12 @@ repos:
       - id: isort
         files: ^Compute/.*\.py$   # only this directory
         args: ["--profile", "black"]   # makes isort agree with black
+
+  - repo: local
+    hooks:
+      - id: pytest-compute
+        name: pytest (Compute)
+        entry: bash -c 'cd Compute && python3.11 -m pytest -q'
+        language: system
+        pass_filenames: false
+        stages: [pre-push]

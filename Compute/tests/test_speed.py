@@ -10,10 +10,8 @@ defined in constants.py.
 import math
 
 import pytest
-
 from constants import GEAR_RATIO, MOTOR_POLE_PAIRS, WHEEL_RADIUS_M
 from speed import Speed
-
 
 MPH_PER_M_S = 2.23694
 
