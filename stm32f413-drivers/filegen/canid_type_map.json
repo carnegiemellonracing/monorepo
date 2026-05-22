@@ -933,8 +933,8 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2913,
-        "files_with_matches": 2913,
+        "files_processed": 2905,
+        "files_with_matches": 2905,
         "global_mappings": {
             "canrx_mappings": 192,
             "canrx_timeouts": 182,
