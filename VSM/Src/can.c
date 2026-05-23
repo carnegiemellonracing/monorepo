@@ -31,38 +31,52 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutError_ms = 20000,
         .errorFlag = CMR_CAN_ERROR_NONE,
         .timeoutWarn_ms = 750,
-        .warnFlag = CMR_CAN_WARN_VSM_HVC_TIMEOUT
+        .warnFlag = CMR_CAN_WARN_NONE
     },
     [CANRX_HEARTBEAT_CDC] = {
         .canID = CMR_CANID_HEARTBEAT_CDC,
-        .timeoutError_ms = 100,
+        .timeoutError_ms = 2500,
         .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_VSM_CDC_TIMEOUT
     },
     [CANRX_HEARTBEAT_DIM] = {
         .canID = CMR_CANID_HEARTBEAT_DIM,
-        .timeoutError_ms = 100,
+        .timeoutError_ms = 2500,
         .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
         .timeoutWarn_ms = 25,
         .warnFlag = CMR_CAN_WARN_VSM_DIM_TIMEOUT
     },
     [CANRX_HEARTBEAT_HVBMS] = {
         .canID = CMR_CANID_HEARTBEAT_HV_BMS,
-        .timeoutError_ms = 100,
-        .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
+        .timeoutError_ms = 2500,
+        .errorFlag = CMR_CAN_ERROR_NONE,
         .timeoutWarn_ms = 25,
-        .warnFlag = CMR_CAN_WARN_VSM_HVBMS_TIMEOUT
+        .warnFlag = CMR_CAN_WARN_NONE
+    },
+    [CANRX_AMS_ERROR] = {
+        .canID = CMR_CANID_AMS_ERROR,
+        .timeoutError_ms = 100,
+        .errorFlag = CMR_CAN_ERROR_NONE,
+        .timeoutWarn_ms = 25,
+        .warnFlag = CMR_CAN_WARN_NONE
     },
     [CANRX_HEARTBEAT_COMPUTE] = {
-        .canID = CMR_CANID_AS_HEARTBEAT_COMPUTE,
+        .canID = CMR_CANID_HEARTBEAT_COMPUTE,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
     },
     [CANRX_FSM_DATA] = {
         .canID = CMR_CANID_FSM_DATA,
-        .timeoutError_ms = 100,
-        .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
+        .timeoutError_ms = 2500,
+        .errorFlag = CMR_CAN_ERROR_NONE,
         .timeoutWarn_ms = 25,
-        .warnFlag = CMR_CAN_WARN_VSM_DIM_TIMEOUT
+        .warnFlag = CMR_CAN_WARN_NONE
+    },
+    [CANRX_CUBEMARS_DATA] = {
+        .canID = CMR_CANID_CUBEMARS_DATA,
+        .timeoutError_ms = 2000,
+        .timeoutWarn_ms = 1000
     },
     // [CANRX_FSM_SWANGLE] = {
     //     .canID = CMR_CANID_FSM_SWANGLE,
@@ -80,15 +94,10 @@ cmr_canRXMeta_t canRXMeta[] = {
             .canID = CMR_CANID_AS_RES,
             .timeoutError_ms = 100,
             .timeoutWarn_ms = 25,
-            .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT
+            .errorFlag = CMR_CAN_ERROR_NONE
     },
     [CANRX_AS_PRESSURE_READING] = {
             .canID = CMR_CANID_AS_PRESSURE_READINGS,
-            .timeoutError_ms = 100,
-            .timeoutWarn_ms = 25,
-    },
-    [CANRX_ASMS_STATE] = {
-            .canID = CMR_CANID_ASMS_STATE,
             .timeoutError_ms = 100,
             .timeoutWarn_ms = 25,
     },
@@ -187,7 +196,7 @@ const cmr_canVSMTimeoutErrorSource_t vsmErrorSourceFlags[CANRX_LEN] = {
     [CANRX_HEARTBEAT_HVC]       = CMR_CAN_VSM_TIMEOUT_SOURCE_NONE,
     [CANRX_HEARTBEAT_CDC]       = CMR_CAN_VSM_TIMEOUT_SOURCE_CDC,
     [CANRX_HEARTBEAT_DIM]       = CMR_CAN_VSM_TIMEOUT_SOURCE_DIM,
-    [CANRX_HEARTBEAT_HVBMS]     = CMR_CAN_VSM_TIMEOUT_SOURCE_HVBMS,
+    [CANRX_HEARTBEAT_HVBMS]     = CMR_CAN_VSM_TIMEOUT_SOURCE_NONE,
     [CANRX_FSM_DATA]            = CMR_CAN_VSM_TIMEOUT_SOURCE_DIM
 };
 
@@ -201,11 +210,6 @@ static const uint32_t canTX100Hz_priority = 5;
 /** @brief CAN 100 Hz TX period (milliseconds). */
 static const TickType_t canTX100Hz_period_ms = 10;
 
-/** @brief CAN 200 Hz TX priority. */
-static const uint32_t canTX200Hz_priority = 5;
-/** @brief CAN 200 Hz TX period (milliseconds). */
-static const TickType_t canTX200Hz_period_ms = 5;
-
 /** @brief CAN latched status TX priority. */
 static const uint32_t canTXLatchedStatus_priority = 1;
 /** @brief CAN latched status TX period (milliseconds). */
@@ -215,8 +219,6 @@ static const TickType_t canTXLatchedStatus_period_ms = 10000;
 static cmr_task_t canTX10Hz_task;
 /** @brief CAN 100 Hz TX task. */
 static cmr_task_t canTX100Hz_task;
-/** @brief CAN 200 Hz TX task. */
-static cmr_task_t canTX200Hz_task;
 /** @brief CAN latched status TX task. */
 static cmr_task_t canTXLatchedStatus_task;
 
@@ -231,9 +233,7 @@ static void sendVSMStatus(void);
 static void sendVSMSensors(void);
 static void sendVSMLatchedStatus(void);
 static void sendHVCCommand(void);
-static void sendPowerDiagnostics(void);
 static void sendRESEnable();
-static void sendEABStatus();
 void resetError();
 
 /**
@@ -248,10 +248,8 @@ static void canTX10Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        sendPowerDiagnostics();
         sendRESEnable();
-        sendEABStatus();
-
+        sendVSMSensors();
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
 }
@@ -271,27 +269,8 @@ static void canTX100Hz(void *pvParameters) {
         sendHeartbeat(lastWakeTime);
         sendVSMStatus();
         sendHVCCommand();
-        sendVSMSensors();
 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
-    }
-}
-
-/**
- * @brief Task for sending CAN messages at 200 Hz.
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void canTX200Hz(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        // sendVSMSensors();
-
-        vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
     }
 }
 
@@ -351,6 +330,7 @@ void canInit(void) {
                 CMR_CANID_FSM_DATA,
                 CMR_CANID_FSM_SWANGLE, //commented out?
                 CMR_CANID_DIM_REQUEST,
+                CMR_CANID_CUBEMARS_DATA
             }
         },
 
@@ -358,10 +338,10 @@ void canInit(void) {
             .isMask = false,
             .rxFIFO = CAN_RX_FIFO0,
             .ids = {
-                    CMR_CANID_AS_RES,
-                    CMR_CANID_AS_HEARTBEAT_COMPUTE,
-                    CMR_CANID_AUTONOMOUS_ACTION,
-                    CMR_CANID_AS_MISSION_FINISHED
+                CMR_CANID_AS_RES,
+                CMR_CANID_HEARTBEAT_COMPUTE,
+                CMR_CANID_AUTONOMOUS_ACTION,
+                CMR_CANID_AS_MISSION_FINISHED
             }
 		},
 
@@ -414,7 +394,7 @@ void canInit(void) {
             .ids = {
                     CMR_CANID_AS_PRESSURE_READINGS,
                     CMR_CANID_DTI_ERROR_MESSAGES,
-                    CMR_CANID_ASMS_STATE
+                    CMR_CANID_AMS_ERROR
             }
 		},
     };
@@ -435,13 +415,6 @@ void canInit(void) {
         "CAN TX 100Hz",
         canTX100Hz_priority,
         canTX100Hz,
-        NULL
-    );
-    cmr_taskInit(
-        &canTX200Hz_task,
-        "CAN TX 200Hz",
-        canTX200Hz_priority,
-        canTX200Hz,
         NULL
     );
     cmr_taskInit(
@@ -508,9 +481,8 @@ cmr_canState_t getModuleState(canRX_t module) {
  */
 uint8_t getASMSState() {
 
-	uint8_t *as_state = (uint8_t*)getPayload(CANRX_ASMS_STATE);
-
-	return (*as_state);
+	cmr_canFSMData_t *dataFSM = (cmr_canFSMData_t*)getPayload(CANRX_FSM_DATA);
+	return (dataFSM->AS_Status);
 }
 
 /**
@@ -544,11 +516,6 @@ static void sendRESEnable() {
     canTX(CMR_CANID_AS_RES_ENABLE, &res_enable, sizeof(res_enable), canTX100Hz_period_ms);
 }
 
-static void sendEABStatus() {
-    uint8_t eabStatus = cmr_gpioRead(GPIO_IN_EAB);
-    canTX(CMR_CANID_EAB_STATUS, &eabStatus, sizeof(eabStatus), canTX100Hz_period_ms);
-}
-
 /**
  * @brief Reflect current state onto the LV bus.
  *
@@ -569,14 +536,16 @@ static void sendVSMStatus(void) {
  *
  */
 static void sendVSMSensors(void) {
+
     cmr_canVSMSensors_t msg = {
         .brakePressureRear_PSI = cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI),
-        .hallEffect_cA = cmr_sensorListGetValue(&sensorList, SENSOR_CH_HALL_EFFECT_CA),
-        .safetyIn_V = cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_IN),
-        .safetyOut_V = cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_OUT)
+        .batt_mV =               cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV),
+        .safetyIn_eight_V =      cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_IN),
+        .safetyOut_eight_V =     cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_OUT),
+        .EAB_pressed =           cmr_gpioRead(GPIO_IN_EAB)
     };
 
-    canTX(CMR_CANID_VSM_SENSORS, &msg, sizeof(msg), canTX200Hz_period_ms);
+    canTX(CMR_CANID_VSM_SENSORS, &msg, sizeof(msg), canTX10Hz_period_ms);
 }
 
 /**

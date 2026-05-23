@@ -16,7 +16,7 @@
 #include "sensors.h"    // sensorChannel_t, sensors[]
 
 /** @brief Check if we are in competition mode and need to check one inverter, otherwise check all inverters */
-#define COMPETITION_MODE false
+#define COMPETITION_MODE true
 
 
 /** @brief Required brake pressure to transition into RTD. */
@@ -26,7 +26,7 @@ const uint16_t brakePressureThreshold_PSI = 40;
  * @brief Modules will be considered in the wrong state this many millisec
  * after the last state change.
  */
-static const TickType_t badStateThres_ms = 150;
+static const TickType_t badStateThres_ms = 1000;
 
 // Forward declarations
 static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickType_t lastWakeTime);
@@ -54,7 +54,9 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
         cmr_canRXMeta_t *rxMeta = &(canRXMeta[i]);
 
         if (cmr_canRXMetaTimeoutError(rxMeta, lastWakeTime) < 0
-            && i != CANRX_RES && !(rxMeta->errorFlag == 0 && vsmErrorSourceFlags[i] == 0)) {
+            && i != CANRX_RES && !(rxMeta->errorFlag == 0 && vsmErrorSourceFlags[i] == 0)
+            && i != CANRX_HEARTBEAT_HVBMS
+            && i != CANRX_HEARTBEAT_HVC) {
             heartbeatErrors |= rxMeta->errorFlag;
             moduleTimeoutMatrix |= vsmErrorSourceFlags[i];
             sendFirstError(CANRX_TIMEOUT);
@@ -84,38 +86,32 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
         sendFirstError(BADSTATE_DIM);
     }
 
-    if (getBadModuleState(CANRX_HEARTBEAT_HVBMS, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
-        heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
-        badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_HVBMS;
-        sendFirstError(BADSTATE_HVBMS);
-    }
-
-    if (cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_IN) > 18000 && cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_OUT) < 10000){
-        heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE; 
-        sendFirstError(BADSTATE_VSM); 
-    }
+    // if (getBadModuleState(CANRX_HEARTBEAT_HVBMS, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
+    //     heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
+    //     badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_HVBMS;
+    //     sendFirstError(BADSTATE_HVBMS);
+    // }
     // Set software latch in the event of BMS voltage or temperature errors.
     // See rule EV 5.1.10.
     if (getAMSError()) {
-        cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 0);
+        cmr_gpioWrite(GPIO_OUT_AMS_ERR_N, 0);
     }
-
     else {
-        cmr_gpioWrite(GPIO_OUT_SOFTWARE_ERR, 1);
+        cmr_gpioWrite(GPIO_OUT_AMS_ERR_N, 1);
     }
 
     // Check all latches
-    if (cmr_gpioRead(GPIO_IN_SOFTWARE_ERR) == 1) {
+    if (!cmr_gpioRead(GPIO_IN_SOFTWARE_ERR_N)) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
         latchMatrix |= CMR_CAN_VSM_LATCH_SOFTWARE;
         sendFirstError(LATCH_SOFTWARE_ERR);
     }
-    if (cmr_gpioRead(GPIO_IN_IMD_ERR) == 1) {
+    if (!cmr_gpioRead(GPIO_IN_IMD_ERR_N)) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
         latchMatrix |= CMR_CAN_VSM_LATCH_IMD;
         sendFirstError(LATCH_IMD_ERR);
     }
-    if (cmr_gpioRead(GPIO_IN_BSPD_ERR) == 1) {
+    if (!cmr_gpioRead(GPIO_IN_BSPD_ERR_N)) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_LATCHED_ERROR;
         latchMatrix |= CMR_CAN_VSM_LATCH_BSPD;
         sendFirstError(LATCH_BSPD_ERR);
@@ -338,7 +334,7 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
                 break;
             }
             case CMR_CAN_VSM_STATE_AS_FINISHED: {
-                if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
+                if (hvcMode != CMR_CAN_HVC_MODE_IDLE) {
                     sendFirstError(HVC_AS_FINISHED);
                     wrongState = true;
                 }
@@ -346,7 +342,7 @@ static int getBadModuleState(canRX_t module, cmr_canVSMState_t vsmState, TickTyp
                 break;
             }
             case CMR_CAN_VSM_STATE_AS_EMERGENCY: {
-                if (hvcMode != CMR_CAN_HVC_MODE_RUN) {
+                if (hvcMode != CMR_CAN_HVC_MODE_IDLE) {
                     sendFirstError(HVC_AS_EMERGENCY);
                     wrongState = true;
                 }
@@ -426,10 +422,11 @@ bool invertersPass(TickType_t lastWakeTime_ms){
 }
 
 bool getAMSError(){
-    TickType_t now = xTaskGetTickCount();
-    cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
-    return (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), now) != 0)
-     || (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVBMS]), now) != 0)
-     || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_PACK_OVERVOLT)
-     || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT);
+    return false;
+    // TickType_t now = xTaskGetTickCount();
+    // cmr_canHVCHeartbeat_t *hvcHeartbeat = getPayload(CANRX_HEARTBEAT_HVC);
+    // return (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVC]), now) != 0)
+    //  || (cmr_canRXMetaTimeoutError(&(canRXMeta[CANRX_HEARTBEAT_HVBMS]), now) != 0)
+    //  || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_PACK_OVERVOLT)
+    //  || (hvcHeartbeat->errorStatus & CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT);
 }

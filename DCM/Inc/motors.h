@@ -61,6 +61,6 @@ void setVelocityFloatAll(float velocity_rpm);
 cmr_torque_limit_t getTorqueBudget();
 const cmr_DTI_RX_Message_t *getDTISetpoints(motorLocation_t motor);
 cmr_canDAQTest_t getDAQTest();
-void setPowerLimit(bool all, motorLocation_t motor, float powerLimit_kw);
+cmr_canGear_t getCurrentGear();
 
 #endif /* MOTORS_H */

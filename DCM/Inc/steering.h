@@ -5,10 +5,9 @@
  * @author CMR
  */
 
-#ifndef STEERING_H
-#define STEERING_H
+
+ #pragma once
 
 void steeringInit();
-void runSteering();
 
-#endif
+

@@ -353,10 +353,10 @@ static cmr_state getNextState(void) {
             if(getASMS()) {
                 nextState = AUTON;
             }
-            else if(!cmr_gpioRead(GPIO_CTRL_SWITCH) && true/*(stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)*/) {
-                nextState = CONFIG;
-                flush_config_screen_to_cdc = false;
-            }
+            // else if(!cmr_gpioRead(GPIO_CTRL_SWITCH) && (stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)) {
+            //     nextState = CONFIG;
+            //     flush_config_screen_to_cdc = false;
+            // }
             else if(buttonStates[RIGHT].isPressed && stateGetVSM() == CMR_CAN_RTD) {
                 nextState = RACING;
                 buttonStates[RIGHT].isPressed = false; 
@@ -573,16 +573,16 @@ void reqGear(void) {
         if(canChangeGear && buttonStates[RIGHT].isPressed) {
             if(state.gearReq == CMR_CAN_GEAR_DV_MISSION_MAX - 1) {
                 state.gearReq = CMR_CAN_GEAR_DV_MISSION_MIN + 1;
-                buttonStates[RIGHT].isPressed = false; 
             }
             else state.gearReq++;
+            buttonStates[RIGHT].isPressed = false; 
         }
         else if(canChangeGear && buttonStates[LEFT].isPressed) {
             if(state.gearReq == CMR_CAN_GEAR_DV_MISSION_MIN + 1) {
                 state.gearReq = CMR_CAN_GEAR_DV_MISSION_MAX - 1;
-                buttonStates[LEFT].isPressed = false; 
             }
             else state.gearReq--;
+            buttonStates[LEFT].isPressed = false;
         }
     }
     else if (!getASMS()) {

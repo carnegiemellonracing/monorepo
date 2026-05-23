@@ -77,9 +77,9 @@ void pumpsOn() {
 
     cmr_gpioWrite(GPIO_PUMP_LEFT, 0);
     cmr_gpioWrite(GPIO_PUMP_RIGHT, 0);
-    cmr_gpioWrite(GPIO_FAN_1, 0);
-    cmr_gpioWrite(GPIO_FAN_2, 0);
-    cmr_gpioWrite(GPIO_FAN_ON, 0);
+    cmr_gpioWrite(GPIO_FAN_1, 1);
+    cmr_gpioWrite(GPIO_FAN_2, 1);
+    cmr_gpioWrite(GPIO_FAN_ON, 1);
     // cmr_gpioWrite(GPIO_PUMP_LEFT, 1);
     // cmr_gpioWrite(GPIO_PUMP_RIGHT, 1);
     // cmr_gpioWrite(GPIO_FAN_1, 1);
@@ -168,9 +168,9 @@ void pumpsOff() {
     // cmr_gpioWrite(GPIO_PUMP_ON, 1);
     cmr_gpioWrite(GPIO_PUMP_LEFT, 1);
     cmr_gpioWrite(GPIO_PUMP_RIGHT, 1);
-    cmr_gpioWrite(GPIO_FAN_1, 1);
-    cmr_gpioWrite(GPIO_FAN_2, 1);
-    cmr_gpioWrite(GPIO_FAN_ON, 1);
+    cmr_gpioWrite(GPIO_FAN_1, 0);
+    cmr_gpioWrite(GPIO_FAN_2, 0);
+    cmr_gpioWrite(GPIO_FAN_ON,0);
     // cmr_gpioWrite(GPIO_PUMP_ON, 0);
 }
 
