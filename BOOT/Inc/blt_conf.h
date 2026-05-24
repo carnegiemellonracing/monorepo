@@ -311,5 +311,12 @@
 #define BOOT_FLASH_VECTOR_TABLE_CS_OFFSET (0x2C8)
 #endif
 
+
+
+
+#define BOOT_BACKDOOR_ENTRY_TIMEOUT_MS (10000)
+
+
+
 #endif /* BLT_CONF_H */
 /*********************************** end of blt_conf.h *********************************/

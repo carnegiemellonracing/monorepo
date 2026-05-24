@@ -145,12 +145,14 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 # Add project symbols (macros)
+string(TOUPPER ${CMAKE_PROJECT_NAME} PROJECT_NAME_UPPER)
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     ${symbols_SYMB}
     $<$<COMPILE_LANGUAGE:C>: ${symbols_c_SYMB}>
     $<$<COMPILE_LANGUAGE:CXX>: ${symbols_cxx_SYMB}>
     $<$<COMPILE_LANGUAGE:ASM>: ${symbols_asm_SYMB}>
-
+    PROJECT_${PROJECT_NAME_UPPER}
+    
     # Configuration specific
     $<$<CONFIG:Debug>:DEBUG>
     $<$<CONFIG:Release>: >
