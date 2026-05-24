@@ -60,7 +60,7 @@
  * @warning This is just sysclock speed
  */
 #ifdef F413
-#define BOOT_CPU_SYSTEM_SPEED_KHZ        (96000)
+#define BOOT_CPU_SYSTEM_SPEED_KHZ        (48000)
 #elif H725
 #define BOOT_CPU_SYSTEM_SPEED_KHZ        (550000)
 #endif
