@@ -28,5 +28,6 @@ ${CMAKE_CURRENT_SOURCE_DIR}/src/spi.c
 ${CMAKE_CURRENT_SOURCE_DIR}/src/tasks.c
 ${CMAKE_CURRENT_SOURCE_DIR}/src/uart.c
 ${CMAKE_CURRENT_SOURCE_DIR}/src/watchdog.c
+${CMAKE_CURRENT_SOURCE_DIR}/src/remote_boot.c
 )
 

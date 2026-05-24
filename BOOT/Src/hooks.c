@@ -77,8 +77,19 @@ blt_bool BackDoorEntryHook(void)
 **            keep the bootloader active.
 **
 ****************************************************************************************/
+
+
 blt_bool CpuUserProgramStartHook(void)
 {
+
+  if(cmr_requestedRemoteFlash()) {
+    if(HAL_GetTick() < BOOT_REQUESTED_ENTRY_DELAY_MS) {
+      /* wait until the delay time has elapsed to allow for the initial CAN message to be sent */
+      return BLT_FALSE;
+    } else {
+      cmr_resetRemoteFlash();
+    }
+  }
 
   /* if the push button is pressed, prevent the user program from starting */
   if (getPushButton()) {

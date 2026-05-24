@@ -5,7 +5,7 @@
 #include "gpio.h"
 #include "can.h"
 #include "clock.h"
-
+#include <cmr/remote_boot.h>
 
 
 /************************************************************************************//**
@@ -22,6 +22,8 @@ void Init(void)
   /* configure other peripherals */
   gpioInit();
   canInit();
+  /* initialize remote boot */
+  cmr_remoteBootInit();
 } /*** end of Init ***/
 
 

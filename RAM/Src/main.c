@@ -63,16 +63,16 @@ int main(void) {
     cmr_rccSystemClockEnable();
 
     // Peripheral configuration.
-    uartInit();
+    //uartInit();
     gpioInit();
     canInit();
 
-    // Load in JSON configuration
-    parserInit();
-    // Set up CBOR encoder
-    sampleInit();
-    // Pull in previous configuration
-    configInit();
+    // // Load in JSON configuration
+    // parserInit();
+    // // Set up CBOR encoder
+    // sampleInit();
+    // // Pull in previous configuration
+    // configInit();
 
     cmr_taskInit(
         &statusLED_task,

@@ -46,6 +46,8 @@ target_sources(HAL PUBLIC
     ${CMSIS_DSP_SOURCES}
     ${CMSIS_NN_SOURCES}
     ${HAL_SOURCES}
+    ${CMAKE_CURRENT_SOURCE_DIR}/SharedParams/Src/shared_params.c
+    
 )
 
 if("${PROCESSOR_FAM}" STREQUAL "F4XX")
@@ -58,6 +60,7 @@ target_include_directories(HAL PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/DSP/Include
     ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/NN/Include
     ${CMAKE_SOURCE_DIR}/Inc #stm32f4xx_hal_conf.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/SharedParams/Inc
     ${PROCESSOR_SPECIFIC_INCLUDES}
 )
 
