@@ -252,6 +252,7 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     $<$<COMPILE_LANGUAGE:ASM>: ${symbols_asm_SYMB}>
     $<$<CONFIG:Debug>:   DEBUG>
     $<$<CONFIG:Release>: >
+    PROJECT_${TARGET_PROJECT}
 )
 
 add_compile_options(${cpu_PARAMS})

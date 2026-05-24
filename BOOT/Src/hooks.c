@@ -33,6 +33,7 @@
 #include "gpio.h"                                 /* GPIO driver header                  */
 #include "setup.h"                                /* bootloader generic header          */
 #include "xcp.h"                                  /* XCP protocol core header            */
+#include <cmr/remote_boot.h>                          /* Remote boot identifier information  */
 
 /****************************************************************************************
 *   B A C K D O O R   E N T R Y   H O O K   F U N C T I O N S
@@ -529,9 +530,9 @@ blt_bool XcpPacketReceivedHook(blt_int8u *data, blt_int8u len)
    *
    */
   /* Is this the connect command, but not addressed to us? */
-  if ( (data[0] == XCP_CMD_CONNECT) &&
-       (len == 2) && 
-       (data[1] != BOOT_XCP_CONNECT_MODE_NODE_ADDR) )
+  if ( (data[0] == XCP_CMD_CONNECT) && len >= 2  && 
+       (data[1] != BLT_REMOTE_ID)
+       )
   {
     /* Do not establish a connection simply by ignoring this connect
      * command. This is achieved by informing the XCP communication

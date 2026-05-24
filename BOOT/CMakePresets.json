@@ -74,6 +74,13 @@
             "cacheVariables": {
                 "TARGET_MCU": "STM32H725"
             }
+        },
+        {
+            "name": "debug-ram",
+            "inherits": "debug-f413",
+            "cacheVariables": {
+                "TARGET_PROJECT": "RAM"
+            }
         }
     ],
     "buildPresets": [
@@ -104,6 +111,10 @@
         {
             "name": "release-h725",
             "configurePreset": "release-h725"
+        },
+        {
+            "name": "debug-ram",
+            "configurePreset": "debug-ram"
         },
         {
             "name": "minSizeRel",
