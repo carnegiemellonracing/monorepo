@@ -284,7 +284,7 @@
             "out_type": "emd_power",
             "min": 0,
             "max": 500000,
-            "enabled": 1
+            "enabled": 0
         },
         {
             "id": 1349,
