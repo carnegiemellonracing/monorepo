@@ -39,6 +39,11 @@ typedef enum {
     DIMREQ_INVALID,
     INVERTER_COMP,
     INVERTER_ALL,
+    DIM_MISSION,
+    BRAKES_DEPLOYABLE,
+    BRAKES_ACTIVE,
+    RES_TRIGGERED,
+    TS_ACTIVE, 
 } vsmErrorCode_t;
 
 extern const uint16_t brakePressureThreshold_PSI;

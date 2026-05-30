@@ -581,8 +581,12 @@ static void stateUpdate(void *pvParameters) {
  */
 static bool getDVBrakeDeployable(){
     cmr_canDVPressureReadings_t* pressureReading = (cmr_canDVPressureReadings_t*) getPayload(CANRX_AS_PRESSURE_READING);
-   return   pressureReading->ebsPressure_1_deci_bar > DV_TANK_PRESSURE_MINIMUM_DECIBAR &&  
+   bool brakes_deployable = pressureReading->ebsPressure_1_deci_bar > DV_TANK_PRESSURE_MINIMUM_DECIBAR &&  
             pressureReading->ebsPressure_2_deci_bar > DV_TANK_PRESSURE_MINIMUM_DECIBAR;
+    if (!brakes_deployable) {
+        sendFirstError(BRAKES_DEPLOYABLE);
+    }
+    return brakes_deployable;
 }
 
 /**
@@ -595,8 +599,12 @@ static bool getDVBrakeActive(){
     uint16_t brakePressureFront_PSI = fsmData->brakePressureFront_PSI;
     // @todo Add check to ensure solonoid current is 0 from DIM
 
-   return   brakePressureFront_PSI > FRONT_MINIMUM_BRAKING_PSI &&  
+    bool brakes_active = brakePressureFront_PSI > FRONT_MINIMUM_BRAKING_PSI &&  
             brakePressureRear_PSI  > REAR_MINIMUM_BRAKING_PSI;
+    if (!brakes_active) {
+        sendFirstError(BRAKES_ACTIVE);
+    }
+    return brakes_active;
 }
 
 /**
@@ -604,7 +612,12 @@ static bool getDVBrakeActive(){
  */
 static inline bool getMissionSelected(){
     cmr_canDIMRequest_t *dimRequest = getPayload(CANRX_DIM_REQUEST);
-    return (dimRequest->requestedGear > CMR_CAN_GEAR_DV_MISSION_MIN && dimRequest->requestedGear < CMR_CAN_GEAR_DV_MISSION_MAX);
+    bool mission_good = (dimRequest->requestedGear > CMR_CAN_GEAR_DV_MISSION_MIN && dimRequest->requestedGear < CMR_CAN_GEAR_DV_MISSION_MAX);
+    if (!mission_good){
+        sendFirstError(DIM_MISSION); 
+        return false;
+    }
+    return true;
 }
 
 /**
@@ -612,7 +625,11 @@ static inline bool getMissionSelected(){
  */
 static inline bool TSActive(){
     cmr_canHVCHeartbeat_t* HVCState = (cmr_canHVCHeartbeat_t*) (getPayload(CANRX_HEARTBEAT_HVC));
-    return CMR_CAN_HVC_STATE_DRIVE == HVCState->hvcState;
+    bool ts_active = CMR_CAN_HVC_STATE_DRIVE == HVCState->hvcState;
+    if (!ts_active) {
+        sendFirstError(TS_ACTIVE);
+    }
+    return ts_active; 
 }
 
 /**
@@ -659,5 +676,9 @@ static inline bool getRESGo() {
  */
 static inline bool RESTriggered(){
 	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
-	return !(data[0] & CMR_CAN_RES_TRIG);
+	bool res_triggered = !(data[0] & CMR_CAN_RES_TRIG);
+	if (res_triggered) {
+		sendFirstError(RES_TRIGGERED);
+	}
+	return res_triggered; 
 }
