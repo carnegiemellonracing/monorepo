@@ -340,7 +340,7 @@ void BMBInit() {
 	DWT_Delay_ms(100);
 
 	DWT_Delay_ms(100);
-	cellBalancingSetup();
+	//cellBalancingSetup();
 }
 
 static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
@@ -382,7 +382,7 @@ int16_t calculateTemp(uint8_t msb, uint8_t lsb) {
     return (voltage_mv);
 }
 
-bool cellBalancingSetup() {
+/*bool cellBalancingSetup() {
 	//set up cell balancing timers
 	//done in two sets because max register write is 8 :(
 
@@ -413,7 +413,7 @@ bool cellBalancingSetup() {
 
 
 }
-
+*/
 /**
  * @brief Checks the cell balancing status across all BMBs.
  *
@@ -466,7 +466,7 @@ bool cellBalancingSetup() {
 
 }
 void cellBalancing(bool set, uint16_t thresh) {
-	cmr_uart_result_t res;
+	//cmr_uart_result_t res;
 
 	if (thresh >= 4250 || thresh <= 2450) {
 		thresh = 3700;
@@ -506,7 +506,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 
 		if(top_len > 0){
 			memcpy(balance_register.data, cell_selects, top_len);
-			res = uart_sendCommand(&balance_register);
+			uart_sendCommand(&balance_register);
 		}
 		
 		//balance bottom 8 
@@ -520,7 +520,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 
 		balance_register.dataLen = bottom_len; 
 		memcpy(balance_register.data, &(cell_selects[top_len]), bottom_len); 
-		res = uart_sendCommand(&balance_register); 
+		uart_sendCommand(&balance_register); 
 	}
 		
 	uint8_t toSend = 3;
@@ -539,7 +539,7 @@ void disableTimeout() {
 			.dataLen = 1,
 			.deviceAddress = 0x00,
 			.registerAddress = 0x2005,
-			.data = 0x00,
+			.data = {0x00},
 			.crc = {0x00, 0x00}
 	};
 	uart_sendCommand(&disable_timeout);
@@ -553,7 +553,7 @@ void byteDelay(uint8_t delay) {
 			.dataLen = 1,
 			.deviceAddress = 0xFF,
 			.registerAddress = TX_HOLD_OFF,
-			.data = delay,
+			.data = {delay},
 			.crc = {0x00, 0x00}
 	};
 	uart_sendCommand(&byte_delay);
@@ -565,7 +565,7 @@ void txToRxDelay(uint8_t delay) {
 			.dataLen = 1,
 			.deviceAddress = 0x00,
 			.registerAddress = 0x2003,
-			.data = delay,
+			.data = {delay},
 			.crc = {0x00, 0x00}
 	};
 	uart_sendCommand(&tx_to_rx_delay);
@@ -577,7 +577,7 @@ void twoStop() {
 			.dataLen = 1,
 			.deviceAddress = 0xFF,
 			.registerAddress = DEV_CONF,
-			.data = 0b00111010,
+			.data = {0b00111010},
 			.crc = {0x00, 0x00}
 	};
 	uart_sendCommand(&two_stop_stack);
