@@ -205,12 +205,12 @@ uint8_t getSpeedKmh() {
 /**
  * @brief Returns the current car's odometry in km
  */
-float getOdometer() {
+/*float getOdometer() {
 	// volatile cmr_canCDCOdometer_t *odometer = (volatile cmr_canCDCOdometer_t *)getPayload(CANRX_CDC_ODOMETER);
     cmr_canSensoricDist_t *sensoricDist = (cmr_canSensoricDist_t*)getPayload(CANRX_SENSORIC_DIST);
     //float sensoricDist_kmh = (float)(sensoricDist->dist_A) * 0.001f;
 	return sensoricDist->dist_A;
-}
+}*/
 
 
 
@@ -740,8 +740,6 @@ static void stateMachine(void *pvParameters){
     (void)pvParameters;
     TickType_t lastWakeTime = xTaskGetTickCount();
     currState = INIT;
-    //uint32_t test;
-    //uint32_t space1 = 0;
     while (1) {
         // taskENTER_CRITICAL();
         currState = getNextState();
