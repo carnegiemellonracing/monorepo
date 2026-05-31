@@ -180,6 +180,8 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     -Wall
     -Wshadow
     -Wextra
+    -Werror
+    -pedantic-errors
     -Wformat-overflow # Detects buffer overflow (sprintf, snprintf, etc.)
     -Wformat-truncation # Detects buffer truncation (sprintf, snprintf, etc.)
     -Wdouble-promotion # Doubles do not natively use the FPU on a Cortex-M4F
