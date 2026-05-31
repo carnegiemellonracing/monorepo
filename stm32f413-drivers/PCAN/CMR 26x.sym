@@ -491,15 +491,13 @@ Var=WHL_v_whl_fr float 32,32
 
 [FSM_DATA]
 ID=133h
-DLC=7
+DLC=5
 CycleTime=10
 TimeOut=50
 Var=DATA_torqueRequested unsigned 0,8
 Var=DATA_throttlePosition unsigned 8,8
 Var=DATA_brakePressureFront_PSI unsigned 16,16 /u:PSI
 Var=DATA_AS_Status unsigned 32,8
-Var=DATA_solonoid_1_current_mA unsigned 40,8
-Var=DATA_solonoid_2_current_mA unsigned 48,8
 
 [FSM_PEDALS_ADC]
 ID=533h
