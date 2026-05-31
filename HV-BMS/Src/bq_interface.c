@@ -424,7 +424,7 @@ uint8_t pollAllVoltageData() {
 	// Critical section used so UART RX is not preempted
 	taskENTER_CRITICAL();
 	uart_sendCommand(&read_voltage);
-		//loop through each BMB and channel
+		// Loop through each BMB and channel
 		for(uint8_t i = BOARD_NUM-1; i >= 1; i--) {
 
 		uint8_t status = uart_receiveResponse(&response[i-1], toReadLen);
@@ -447,21 +447,6 @@ uint8_t pollAllVoltageData() {
 			uint8_t low_byte_data = response[i].data[2*j+1];
 
 			BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = calculateVoltage(high_byte_data, low_byte_data);
-			// if(i == 1 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-			// 	BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-			// } else if(i == 3 && (VSENSE_CHANNELS-j-1 == 13)) {
-			// 	BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-			// } else if(i == 4 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-			// 	BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-			// } else if(i == 2 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-			// 	BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = 3456;
-			// }
-			// if(i == 2 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-			// 					BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
-			// 				}
-			// if(i == 3 && (VSENSE_CHANNELS-j-1 == 12 || VSENSE_CHANNELS-j-1 == 13)) {
-			// 	BMBData[i].cellVoltages[VSENSE_CHANNELS-j-1] = BMBData[i].cellVoltages[11];
-			// }
 		}
 	}
 
