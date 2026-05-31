@@ -399,8 +399,8 @@ Var=ACTIONS_dvControlMode unsigned 32,8
 [DIM_REQUEST]
 ID=235h
 DLC=5
-CycleTime=5
-TimeOut=25
+CycleTime=100
+TimeOut=500
 Var=REQUEST_requestedState unsigned 0,8 /e:State
 Var=REQUEST_requestedGear unsigned 8,8 /e:Gear
 Var=REQUEST_requestedDrsMode unsigned 16,8 /e:DrsMode
@@ -491,13 +491,15 @@ Var=WHL_v_whl_fr float 32,32
 
 [FSM_DATA]
 ID=133h
-DLC=5
+DLC=7
 CycleTime=10
 TimeOut=50
 Var=DATA_torqueRequested unsigned 0,8
 Var=DATA_throttlePosition unsigned 8,8
 Var=DATA_brakePressureFront_PSI unsigned 16,16 /u:PSI
 Var=DATA_AS_Status unsigned 32,8
+Var=DATA_solonoid_1_current_mA unsigned 40,8
+Var=DATA_solonoid_2_current_mA unsigned 48,8
 
 [FSM_PEDALS_ADC]
 ID=533h
@@ -735,8 +737,8 @@ Var=SENSORS_packCurrent_dA unsigned 16,16
 [IVT_CURRENT]
 ID=521h
 DLC=2
-CycleTime=400
-TimeOut=2000
+CycleTime=10
+TimeOut=50
 Var=CURRENT_muxID unsigned 0,8
 Var=CURRENT_count_state unsigned 8,8
 
@@ -896,6 +898,12 @@ Var=STATE_over_voltage_count unsigned 40,8
 Var=STATE_under_voltage_count unsigned 48,8
 Var=STATE_over_temp_count unsigned 56,8
 
+[TEST_ID]
+CycleTime=100
+DLC=1
+TimeOut=500
+Var=ID_test_id unsigned 0,8
+
 [VSM_LATCHED_STATUS]
 ID=510h
 DLC=3
@@ -915,14 +923,6 @@ Var=LATCHED_VSM_LATCH_SOFTWARE bit 19,1
 Var=LATCHED_VSM_LATCH_AMS bit 18,1
 Var=LATCHED_VSM_LATCH_IMD bit 17,1
 Var=LATCHED_VSM_LATCH_BSPD bit 16,1
-
-[VSM_POWER_DIAGNOSTICS]
-ID=530h
-DLC=4
-CycleTime=100
-TimeOut=500
-Var=POWER_busVoltage_mV unsigned 0,16 /u:mV
-Var=POWER_busCurrent_mA unsigned 16,16 /u:mA
 
 [VSM_SENSORS]
 ID=200h
@@ -955,6 +955,14 @@ Var=STATUS_VSM_LATCH_SOFTWARE bit 27,1
 Var=STATUS_VSM_LATCH_AMS bit 26,1
 Var=STATUS_VSM_LATCH_IMD bit 25,1
 Var=STATUS_VSM_LATCH_BSPD bit 24,1
+
+[VSM_PowerDiagnostic]
+ID=530h
+DLC=4
+CycleTime=100
+Timeout=1000
+Var=VSM_busVoltage unsigned 0,16 /u:mV
+Var=VSM_busCurrent unsigned 16,16 /u:mA
 
 [CDC_MotorTemps]
 ID=512h

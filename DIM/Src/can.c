@@ -945,3 +945,8 @@ cmr_canBMSMinMaxCellVoltage_t* getPackVoltages(void){
     cmr_canBMSMinMaxCellVoltage_t* packVoltagesStruct = getPayload(CANRX_PACK_CELL_VOLTAGES);
     return packVoltagesStruct;
 }
+
+uint32_t get_glv_voltage_mv(void) {
+    cmr_canVSMSensors_t *vsm_sensors = getPayload(CANRX_VSM_SENSORS);
+    return vsm_sensors->batt_mV;
+}
