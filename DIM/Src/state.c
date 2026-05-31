@@ -36,18 +36,13 @@ volatile int8_t config_move_request;
 
 
 #define max(a,b) ((a) > (b) ? (a) : (b))
-
-#define min(a, b) __extension__\
-({ __typeof__ (a) _a = (a); \
-__typeof__ (b) _b = (b); \
-_a < _b ? _a : _b; })
-
+#define min(a,b) ((a) < (b) ? (a) : (b))
 #define NUM_DV_MODES 3
 #define POLE_PAIRS 4
 #define MOTOR_LEN 4
 
 /** @brief declaration of config screen variables */
-extern volatile bool flush_config_screen_to_cdc;
+volatile bool flush_config_screen_to_dcm;
 /** @brief declaration of config screen variables */
 volatile bool config_increment_up_requested = false;
 /** @brief declaration of config screen variables */
@@ -61,7 +56,9 @@ volatile bool in_config_screen = false;
 /** @brief declaration of what screen mode one is in */
 volatile bool in_racing_screen = false;
 /** @brief declaration of if the DIM is waiting for a new driver config */
-volatile bool waiting_for_cdc_new_driver_config;
+volatile bool waiting_for_dcm_new_driver_config;
+/** @brief declaration of if the DIM is waiting to confirm config */
+volatile bool waiting_for_dcm_to_confirm_config = false;
 /** @brief declaration of if the DIM is waiting for a new driver config */
 volatile bool exit_config_request = false;
 /** @brief Checks to see if the screen has been setup before and if not will appropriately draw it */
@@ -93,15 +90,15 @@ static volatile struct {
 };
 
 void exitConfigScreen() {
-	// the first time the user presses the exit button, it'll flush the memory to the cdc
+	// the first time the user presses the exit button, it'll flush the memory to the DCM
 	// the second time it'll exit the config screen because it'll be dependent having
-	// recieved the message from CDC
-	if (!flush_config_screen_to_cdc) {
-		flush_config_screen_to_cdc = true;
-		waiting_for_cdc_to_confirm_config = true;
+	// recieved the message from DCM
+	if (!flush_config_screen_to_dcm) {
+		flush_config_screen_to_dcm = true;
+		waiting_for_dcm_to_confirm_config = true;
 		return;
 	}
-	if (!waiting_for_cdc_to_confirm_config) {
+	if (!waiting_for_dcm_to_confirm_config) {
 		in_config_screen = false;
 		exit_config_request = false;
 		return;
@@ -148,18 +145,38 @@ cmr_canGear_t stateGetGearReq(void) {
 	return state.gearReq;
 }
 
+/**
+ * @brief Gets the current DRS state.
+ *
+ * @return The current DRS state.
+ */
 cmr_canDrsMode_t stateGetDrs(void) {
 	return state.drsMode;
 }
 
+/**
+ * @brief Gets the requested DRS state.
+ *
+ * @return The requested DRS state.
+ */
 cmr_canDrsMode_t stateGetDrsReq(void) {
 	return state.drsReq;
 }
 
+/**
+ * @brief Gets the current DV state.
+ *
+ * @return The current DV state.
+ */
 cmr_canDVMode_t stateGetDVMode(void) {
 	return state.dvCtrlMode;
 }
 
+/**
+ * @brief Gets the requrested DV state.
+ *
+ * @return The requested DV state.
+ */
 cmr_canDVMode_t stateGetDVReq(void) {
 	return state.dvCtrlReq;
 }
@@ -191,7 +208,7 @@ uint8_t getSpeedKmh() {
 float getOdometer() {
 	// volatile cmr_canCDCOdometer_t *odometer = (volatile cmr_canCDCOdometer_t *)getPayload(CANRX_CDC_ODOMETER);
     cmr_canSensoricDist_t *sensoricDist = (cmr_canSensoricDist_t*)getPayload(CANRX_SENSORIC_DIST);
-    float sensoricDist_kmh = (float)(sensoricDist->dist_A) * 0.001f;
+    //float sensoricDist_kmh = (float)(sensoricDist->dist_A) * 0.001f;
 	return sensoricDist->dist_A;
 }
 
@@ -316,7 +333,7 @@ int getACTemp(void)
 // }
 
 /**
- * @brief Gets the door state
+ * @brief Gets the DRS state
  * true = closed
  * false = open or other
  *
@@ -355,7 +372,7 @@ static cmr_state getNextState(void) {
             }
             // else if(!cmr_gpioRead(GPIO_CTRL_SWITCH) && (stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)) {
             //     nextState = CONFIG;
-            //     flush_config_screen_to_cdc = false;
+            //     flush_config_screen_to_dcm = false;
             // }
             else if(buttonStates[RIGHT].isPressed && stateGetVSM() == CMR_CAN_RTD) {
                 nextState = RACING;
@@ -368,7 +385,7 @@ static cmr_state getNextState(void) {
         case CONFIG:
             if(cmr_gpioRead(GPIO_CTRL_SWITCH)) {
                 nextState = NORMAL;
-                flush_config_screen_to_cdc = true;
+                flush_config_screen_to_dcm = true;
             }
             else if(buttonStates[LEFT].isPressed) {
                 //move left on screen
@@ -466,7 +483,7 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
 
 
 void EABStateUp() {
-	cmr_canVSMState_t vsmState = stateGetVSM();
+	cmr_canState_t vsmState = stateGetVSM();
 	if(getEAB() && getASMS() && vsmState == CMR_CAN_GLV_ON) {
 		state.vsmReq = CMR_CAN_AS_READY;
 	}
@@ -535,7 +552,7 @@ void reqVSM(void) {
         return;
     }
     
-    if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM == CMR_CAN_CLEAR_ERROR) {
+    if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM() == CMR_CAN_CLEAR_ERROR) {
         state.vsmReq = CMR_CAN_GLV_ON;
         return;
     }
@@ -723,8 +740,8 @@ static void stateMachine(void *pvParameters){
     (void)pvParameters;
     TickType_t lastWakeTime = xTaskGetTickCount();
     currState = INIT;
-    uint32_t test;
-    uint32_t space1 = 0;
+    //uint32_t test;
+    //uint32_t space1 = 0;
     while (1) {
         // taskENTER_CRITICAL();
         currState = getNextState();
