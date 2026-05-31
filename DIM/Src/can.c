@@ -592,7 +592,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
     }
 
     /**** Get New Driver Parameters. Blindly read them since only CDC knows the right values for new driver ****/
-    else if (waiting_for_cdc_new_driver_config) {
+    else if (waiting_for_dcm_new_driver_config) {
         if (correctDriverCanID(canID)){
             // get the data and flush it to local memory
             setConfigValues(dim_config_data_array_starting_idx,
@@ -617,17 +617,17 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
 
         // if statements put here to prevent out of order execution/ context switching
         // in case they are set false here before they are requested to be true elsewhere.
-        if (waiting_for_cdc_to_confirm_config) {
-            waiting_for_cdc_to_confirm_config = false;
+        if (waiting_for_dcm_to_confirm_config) {
+            waiting_for_dcm_to_confirm_config = false;
             if (exit_config_request) {
                 exitConfigScreen();
             }
         }
-        if (flush_config_screen_to_cdc) {
-            flush_config_screen_to_cdc = false;
+        if (flush_config_screen_to_dcm) {
+            flush_config_screen_to_dcm = false;
         }
-        if (waiting_for_cdc_new_driver_config) {
-            waiting_for_cdc_new_driver_config = false;
+        if (waiting_for_dcm_new_driver_config) {
+            waiting_for_dcm_new_driver_config = false;
             // redraw all values
             redraw_new_driver_profiles = true;
         }

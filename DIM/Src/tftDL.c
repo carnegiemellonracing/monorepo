@@ -959,16 +959,16 @@ void tftDL_configUpdate() {
             return;  // both are an error
 
         if (current_scroll_index == DRIVER_PROFILE_INDEX) {
-            flush_config_screen_to_cdc = true;
-            waiting_for_cdc_to_confirm_config = true;
+            flush_config_screen_to_dcm= true;
+            waiting_for_dcm_to_confirm_config = true;
             // Wait for CDC to confirm old driver params first
-            while (waiting_for_cdc_to_confirm_config) {
+            while (waiting_for_dcm_to_confirm_config) {
             }
 
             // Change driver
             setConfigIncrementValue(current_scroll_index, config_increment_up_requested, config_increment_down_requested);
-            waiting_for_cdc_new_driver_config = true;
-            while (waiting_for_cdc_new_driver_config) {
+            waiting_for_dcm_new_driver_config = true;
+            while (waiting_for_dcm_new_driver_config) {
                 // wait for the new driver to be selected
             }
         } else {
