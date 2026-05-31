@@ -341,9 +341,9 @@ static void drawErrorScreen(void) {
 
 
     /* LVB */
-    unsigned int voltage_qV = ((unsigned int) canBMSLowVoltageStatus->safety_qV);
-    err.glvVoltage_V = voltage_qV / 4;
-    err.glvLowVolt = voltage_qV < (20 * 4);
+    uint32_t voltage_mV = get_glv_voltage_mv();
+    err.glvVoltage_V = voltage_mV/1000.;
+    err.glvLowVolt = err.glvVoltage_V < 20;
 
     /* Timeouts */
     err.cdcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_CDC);
@@ -554,10 +554,8 @@ static void drawRTDScreen(void) {
     /* Pack Voltage */
     int32_t hvVoltage_mV = canHVCPackVoltage->battVoltage_mV;
 
-    unsigned int voltage_qV = ((unsigned int) canBMSLowVoltageStatus->safety_qV);
-    float glvVoltage = voltage_qV / 4;
-    //unsigned int voltage_mV = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
-//    float glvVoltage = ((float)cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV)) / 1000.0;
+    uint32_t voltage_mV = get_glv_voltage_mv();
+    float glvVoltage = voltage_mV / 1000.0f;
 
     volatile cmr_canVSMSensors_t *vsmSensors = (volatile cmr_canVSMSensors_t *)getPayload(CANRX_VSM_SENSORS);
 
