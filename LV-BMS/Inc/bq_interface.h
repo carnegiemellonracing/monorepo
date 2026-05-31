@@ -350,7 +350,7 @@ void BMBInit();
 uint8_t pollAllVoltageData();
 void pollAllTemperatureData(int channel);
 
-bool cellBalancingSetup();
+void cellBalancingSetup();
 void cellBalancing(bool set, uint16_t thresh);
 void writeLED(bool set);
 

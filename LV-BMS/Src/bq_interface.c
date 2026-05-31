@@ -340,7 +340,7 @@ void BMBInit() {
 	DWT_Delay_ms(100);
 
 	DWT_Delay_ms(100);
-	//cellBalancingSetup();
+	cellBalancingSetup();
 }
 
 static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
@@ -382,7 +382,7 @@ int16_t calculateTemp(uint8_t msb, uint8_t lsb) {
     return (voltage_mv);
 }
 
-/*bool cellBalancingSetup() {
+void cellBalancingSetup() {
 	//set up cell balancing timers
 	//done in two sets because max register write is 8 :(
 
@@ -394,11 +394,10 @@ int16_t calculateTemp(uint8_t msb, uint8_t lsb) {
 		.data = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 		.crc = {0x00, 0x00}
 	};
-	cmr_uart_result_t res;
-	res = uart_sendCommand(&balance_register);
+	uart_sendCommand(&balance_register);
 
 	balance_register.registerAddress = CB_CELL7_CTRL;
-	res = uart_sendCommand(&balance_register);
+	uart_sendCommand(&balance_register);
 
 	//set duty cycle to switch between even and odd cells
 	uart_command_t duty_cycle = {
@@ -409,11 +408,9 @@ int16_t calculateTemp(uint8_t msb, uint8_t lsb) {
 		.data = {0x00}, //TODO what is this value supposed to be?
 		.crc = {0x00, 0x00}
 	};
-	res = uart_sendCommand(&duty_cycle);
-
-
+	uart_sendCommand(&duty_cycle);
 }
-*/
+
 /**
  * @brief Checks the cell balancing status across all BMBs.
  *
@@ -466,7 +463,6 @@ int16_t calculateTemp(uint8_t msb, uint8_t lsb) {
 
 }
 void cellBalancing(bool set, uint16_t thresh) {
-	//cmr_uart_result_t res;
 
 	if (thresh >= 4250 || thresh <= 2450) {
 		thresh = 3700;
