@@ -20,6 +20,8 @@
 #include <CMR/can_types.h>
 
 #include "adc.h"        // adcVSense, adcISense
+#include "dv_error.h"   // For update_dv_error
+
 #include "gpio.h"       // For actionButtonPressed status
 
 #include "tftDL.h"      // For RAM buffer indices
@@ -793,6 +795,8 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
     if (cmr_sensorListGetValue(&sensorList, SENSOR_CH_TPOS_IMPLAUS) != 0) {
         warning |= CMR_CAN_WARN_FSM_TPOS_IMPLAUSIBLE;
     }
+
+    update_dv_errors(&error);
 
     // if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
     //     error |= CMR_CAN_ERROR_VSM_TIMEOUT;
