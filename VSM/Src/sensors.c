@@ -186,10 +186,10 @@ cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_BUS_CURRENT
     },
-    [SENSOR_CH_SS_IN] = { /** @todo how wide should this range be? */
+    [SENSOR_CH_SS_IN] = {
         .conv = adcToBusVoltage_eight_V,
         .sample = sampleADCSensor,
-        .readingMin = 250,  // 10 mA
+        .readingMin = 250,  
         .readingMax = 2933, // 26 Volts
         .outOfRange_pcnt = 10,
         .warnFlag = CMR_CAN_WARN_BUS_VOLTAGE

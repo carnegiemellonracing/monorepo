@@ -833,13 +833,18 @@ static void sendFSMData(void) {
     }
 
     uint16_t brakePressureFront_PSI = (uint16_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI);
+    uint8_t solonoid_current_1_mA = (uint16_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_EBS_CURRENT_1_MA);
+    uint8_t solonoid_current_2_mA = (uint16_t)cmr_sensorListGetValue(&sensorList, SENSOR_CH_EBS_CURRENT_2_MA);
+
     uint8_t AS_Status = getASMS();
 
     cmr_canFSMData_t msg = {
         .torqueRequested = torqueRequested,
         .throttlePosition = throttlePosition,
         .brakePressureFront_PSI = brakePressureFront_PSI,
-        .AS_Status = AS_Status
+        .AS_Status = AS_Status,
+        .solonoid_1_current_mA = solonoid_current_1_mA,
+        .solonoid_2_current_mA = solonoid_current_2_mA
     };
 
     canTX(CMR_CANID_FSM_DATA, &msg, sizeof(msg), canTX100Hz_period_ms);
@@ -939,4 +944,9 @@ void sendAcknowledgement(void) {
 cmr_canBMSMinMaxCellVoltage_t* getPackVoltages(void){
     cmr_canBMSMinMaxCellVoltage_t* packVoltagesStruct = getPayload(CANRX_PACK_CELL_VOLTAGES);
     return packVoltagesStruct;
+}
+
+uint32_t get_glv_voltage_mv(void) {
+    cmr_canVSMSensors_t *vsm_sensors = getPayload(CANRX_VSM_SENSORS);
+    return vsm_sensors->batt_mV;
 }

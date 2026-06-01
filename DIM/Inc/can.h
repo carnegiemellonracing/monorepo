@@ -142,5 +142,8 @@ int16_t getDTIDCCurrent_dA(canRX_t rxMsg);
 int16_t getDTICtlrTemp_dC(canRX_t rxMsg);
 int16_t getDTIMotorTemp_dC(canRX_t rxMsg);
 
+uint32_t get_glv_voltage_mv(void);
+
+
 
 #endif /* CAN_H */

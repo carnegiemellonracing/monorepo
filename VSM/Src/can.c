@@ -575,22 +575,6 @@ static void sendHVCCommand(void) {
     canTX(CMR_CANID_HVC_COMMAND, &hvcCommand, sizeof(hvcCommand), canTX100Hz_period_ms);
 }
 
-/**
- * @brief Sends latest bus voltage and current draw measurements.
- */
-static void sendPowerDiagnostics(void) {
-    uint32_t busVoltage_mV =
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
-    uint32_t busCurrent_mA =
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_CURRENT_MA);
-
-    cmr_canVSMPowerDiagnostics_t msg = {
-        .busVoltage_mV = busVoltage_mV,
-        .busCurrent_mA = busCurrent_mA
-    };
-
-    canTX(CMR_CANID_VSM_POWER_DIAGNOSTICS, &msg, sizeof(msg), canTX10Hz_period_ms);
-}
 
 int32_t getDTIERPM(canRX_t rxMsg) {
     cmr_canDTI_TX_Erpm_t *dtiERPM = getPayload(rxMsg);

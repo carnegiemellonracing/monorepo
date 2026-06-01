@@ -916,6 +916,8 @@ typedef struct {
     uint8_t throttlePosition;           /**< @brief Throttle position (0-255). */
     uint16_t brakePressureFront_PSI;    //u: PSI /**< @brief Front brake pressure. */
     uint8_t AS_Status;
+    uint8_t solonoid_1_current_mA;          /**< @brief Solenoid 1 current (mA). */
+    uint8_t solonoid_2_current_mA;          /**< @brief Solenoid 2 current (mA). */
 } cmr_canFSMData_t; 
 
 typedef struct {
