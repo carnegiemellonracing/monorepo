@@ -63,6 +63,15 @@ typedef enum {
     /** @brief VSM brake pressure sensor out-of-range. */
     CMR_CAN_ERROR_VSM_BPRES = (1 << 10),
 
+    /** @brief DIM tank pressure sensor 1 out-of-range. */
+    CMR_CAN_ERROR_DIM_TANK_PRESSURE_1_OOR = (1 << 1),
+    /** @brief DIM tank pressure sensor 2 out-of-range. */
+    CMR_CAN_ERROR_DIM_TANK_PRESSURE_2_OOR = (1 << 2),
+    /** @brief DIM solenoid current 1 out-of-range. */
+    CMR_CAN_ERROR_DIM_SOLENOID_CURRENT_1_OOR = (1 << 3),
+        /** @brief DIM solenoid current 2 out-of-range. */
+    CMR_CAN_ERROR_DIM_SOLENOID_CURRENT_2_OOR = (1 << 4),
+
     /** @brief AFC fan current out-of-range. */
     CMR_CAN_ERROR_AFC_FANS_CURRENT = (1 << 15),
     /** @brief AFC driver IC #1 temperature out-of-range. */

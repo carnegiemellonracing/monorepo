@@ -7,4 +7,6 @@
 
  #pragma  once
 
-void dv_error_init(void);
+#include <CMR/can_types.h>
+
+void update_dv_errors(cmr_canError_t* errors);

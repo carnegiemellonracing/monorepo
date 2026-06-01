@@ -43,7 +43,6 @@ int main(void) {
     i2c_slave_init();
     status_led_init();
     error_led_init();
-    dv_error_init();
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");

@@ -1,6 +1,7 @@
 /**
  * @file as_error.c
  * @brief  Checks for any DV errors and if they exist then trigger the DV Relay
+ * also logs the errors onto CAN flags
  *
  * @author Ayush Garg
  */
@@ -10,62 +11,42 @@
 #include "sensors.h"  
 #include "state.h"       
 
-/** @brief DV Error priority. */
-static const uint32_t dv_error_priority = 2;
-
-/** @brief DV Error period (milliseconds). */
-static const TickType_t dv_error_period_ms = 10;
-
-/** @brief DV Error task. */
-static cmr_task_t dv_error_task;
-
 /**
- * @brief Task for checking if any DV Errors are present. T
- * These are continuous error checks
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void dv_error_checks(void *pvParameters) {
-    (void)pvParameters;
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while(1)
-    {
-        cmr_canState_t vsm_state = stateGetVSM();
-        bool is_AS_active_state =  (vsm_state == CMR_CAN_AS_READY || 
-                                    vsm_state == CMR_CAN_AS_DRIVING);
-
-        bool error_present = false;
-        if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_CURRENT_1_MA) != CMR_SENSOR_ERR_NONE
-            && is_AS_active_state)
-            error_present = true;
-    
-        if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_CURRENT_2_MA) != CMR_SENSOR_ERR_NONE
-            && is_AS_active_state)
-            error_present = true;
-    
-        if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_PRESSURE_1_DECI_BAR) != CMR_SENSOR_ERR_NONE)
-            error_present = true;
-
-        if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_PRESSURE_2_DECI_BAR) != CMR_SENSOR_ERR_NONE)
-            error_present = true;
-
-        cmr_gpioWrite(GPIO_AS_ERROR, error_present);
-        vTaskDelayUntil(&lastWakeTime, dv_error_period_ms);
-    }
-}
-
-/**
- * @brief inits the dv_error
+ * @brief 
+ * @param errors pointer to the current error flags which we insert the flags onto
  * 
+ * @sideeffect updates the DV relay and the AS_ERROR GPIO pin
+ * @return nothing
  */
-void dv_error_init(void){
-    cmr_taskInit(
-        &dv_error_task,
-        "dv_error",
-        dv_error_priority,
-        dv_error_checks,
-        NULL);
+void update_dv_errors(cmr_canError_t* errors) {
+
+    cmr_canState_t vsm_state = stateGetVSM();
+    cmr_canError_t error_present = CMR_CAN_ERROR_NONE;
+    bool error_present_bool = false;
+    bool is_AS_active_state =  (vsm_state == CMR_CAN_AS_READY || 
+                                vsm_state == CMR_CAN_AS_DRIVING);
+
+
+    if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_CURRENT_1_MA) != CMR_SENSOR_ERR_NONE && is_AS_active_state){
+        error_present |= CMR_CAN_ERROR_DIM_SOLENOID_CURRENT_1_OOR;
+        error_present_bool = true;
+    }
+
+    if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_CURRENT_2_MA) != CMR_SENSOR_ERR_NONE && is_AS_active_state){
+        error_present |= CMR_CAN_ERROR_DIM_SOLENOID_CURRENT_2_OOR;
+        error_present_bool = true;
+    }
+
+    if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_PRESSURE_1_DECI_BAR) != CMR_SENSOR_ERR_NONE){
+        error_present |= CMR_CAN_ERROR_DIM_TANK_PRESSURE_1_OOR;
+        error_present_bool = true;
+    }
+
+    if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_PRESSURE_2_DECI_BAR) != CMR_SENSOR_ERR_NONE){
+        error_present |= CMR_CAN_ERROR_DIM_TANK_PRESSURE_2_OOR;
+        error_present_bool = true;
+    }
+
+    cmr_gpioWrite(GPIO_AS_ERROR, error_present_bool);
+    *errors |= error_present;
 }

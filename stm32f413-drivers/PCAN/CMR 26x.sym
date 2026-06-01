@@ -27,12 +27,13 @@ enum DrsMode(0="DRSM_QUIET", 1="DRSM_CLOSED", 2="DRSM_OPEN",
     3="DRSM_TOGGLE", 4="DRSM_HOLD", 5="DRSM_AUTO", 6="DRSM_LEN",
     7="DRSM_UNKNOWN")
 enum DVMode(0="DV_MODE_SLOW", 1="DV_MODE_NORMAL", 2="DV_MODE_FAST")
-enum Error(0="NONE", 1="VSM_TIMEOUT",
-    2="* @brief Reception period for at least one message from another module",
-    3="* has surpassed its error threshold.", 4="*/",
-    1024="AFC_DCDC2_TEMP", 2048="AFC_DCDC1_TEMP",
-    4096="AFC_DRIVER3_TEMP", 8192="CDC_CUBEMARS_TIMEOUT",
-    16384="AFC_DRIVER1_TEMP", 32768="CDC_DTI_ALL")
+enum Error(0="NONE", 1="VSM_TIMEOUT", 2="DIM_TANK_PRESSURE_1_OOR",
+    3="* has surpassed its error threshold.",
+    4="DIM_TANK_PRESSURE_2_OOR", 8="DIM_SOLENOID_CURRENT_1_OOR",
+    16="DIM_SOLENOID_CURRENT_2_OOR", 1024="AFC_DCDC2_TEMP",
+    2048="AFC_DCDC1_TEMP", 4096="AFC_DRIVER3_TEMP",
+    8192="CDC_CUBEMARS_TIMEOUT", 16384="AFC_DRIVER1_TEMP",
+    32768="CDC_DTI_ALL")
 enum Fan_State(0="FAN_OFF", 1="FAN_LOW", 2="FAN_HIGH")
 enum FanState(0="OFF", 1="LOW", 2="HIGH")
 enum FSMHeartbeatErr(1="FSM_ERROR_VSM_TIMEOUT")
