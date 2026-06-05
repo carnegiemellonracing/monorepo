@@ -160,7 +160,8 @@ uint8_t getTemps(int channel) {
        
         //TODO: make sure this is matching the thermistor indices properly
         if (index < CELL_NUM) {
-            cellTemps[index] = calculateTemp(high_byte_data, low_byte_data);
+            cellTemps[index] = calculateTempVoltageReading(high_byte_data, low_byte_data);
+            //cellTemps[index] = calculateTemp(high_byte_data, low_byte_data);
         }
         
     }
