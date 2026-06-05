@@ -35,6 +35,8 @@
 
 /** @brief Yaw rate control kp */
 volatile cmr_can_controls_pid_debug_t yrcDebug;
+float yrc_pers = 200.0f;
+float bias_margin = 10.0f; 
 static float yrc_kp;
 
 /** @brief CAN data for traction control */
@@ -73,6 +75,8 @@ static float manual_cruise_control_speed;
 
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew);
+float calculatePersistentYRCmreq(int32_t swAngle_millideg, float bias_margin, float yrc_pers);
+float get_optimal_yaw_rate(float swangle_rad, float velocity_x_mps);
 
 /** @brief Coulomb counting info **/
 static TickType_t previousTickCount;
@@ -358,6 +362,41 @@ static float get_accel_downforce(motorLocation_t motor, float ax_mps2) {
 }
 
 /**
+ * @brief Compute per-wheel Fz from lateral acceleration (ay) load transfer.
+ * @param motor Which wheel
+ * @param ay_mps2 Lateral acceleration in m/s^2
+ * @param pos_left If true, positive ay = leftward (ISO 8855). If false, positive ay = rightward (SAE).
+ * @return Estimated vertical load in Newtons
+ */
+static float get_simple_downforce(motorLocation_t motor, float ay_mps2, bool pos_left) {
+    static const float simple_vehicle_mass_kg = 170.0f + 75.0f;
+    static const float simple_track_width_m   = 1.275f;
+    static const float simple_cg_height_m     = 0.303f;
+
+    const float static_fz = simple_vehicle_mass_kg * 9.81f * 0.25f;
+    // ISO: positive ay = left, so car is turning right, load goes to left side
+    // sign: +delta_fz on left wheels when ay > 0 in ISO
+    float delta_fz = simple_vehicle_mass_kg * fabsf(ay_mps2) * simple_cg_height_m / simple_track_width_m;
+
+    // Determine which side gains load: the side opposite the turn direction
+    // ISO (pos_left=true):  positive ay = leftward accel = turning right = load to LEFT
+    // SAE (pos_left=false): positive ay = rightward accel = turning left = load to RIGHT
+    bool load_on_left = pos_left ? (ay_mps2 > 0.0f) : (ay_mps2 < 0.0f);
+
+    float left_fz  = static_fz + (load_on_left ? delta_fz : -delta_fz);
+    float right_fz = static_fz + (load_on_left ? -delta_fz : delta_fz);
+
+    switch (motor) {
+        case MOTOR_FL: return left_fz;
+        case MOTOR_RL: return left_fz;
+        case MOTOR_FR: return right_fz;
+        case MOTOR_RR: return right_fz;
+        default:       return static_fz;
+    }
+}
+
+
+/**
  * @param normalized_throttle A value in [-1, 1].
  * In [0, 1] if without regen.
  */
@@ -370,12 +409,11 @@ static void set_optimal_control(
 
     int32_t swAngle_millideg = (swAngle_millideg_FL + swAngle_millideg_FR) / 2;
 
-    if (allow_regen) {
+    if (true == allow_regen) {
         assert(-1.0f <= normalized_throttle && normalized_throttle <= 1.0f);
     } else {
         assert(0.0f <= normalized_throttle && normalized_throttle <= 1.0f);
     }
-    
 
 	float wheel_fl_speed_radps = getMotorSpeed_radps(MOTOR_FL);
 	float wheel_fr_speed_radps = getMotorSpeed_radps(MOTOR_FR);
@@ -431,17 +469,17 @@ static void set_optimal_control(
 
 	static optimizer_state_t optimizer_state;
 
-	optimizer_state.power_limit = 80000.0f
+	optimizer_state.power_limit = 80000.0f;
 	optimizer_state.omegas[0] = wheel_fl_speed_radps;
 	optimizer_state.omegas[1] = wheel_fr_speed_radps;
 	optimizer_state.omegas[2] = wheel_rl_speed_radps;
 	optimizer_state.omegas[3] = wheel_rr_speed_radps;
 
     if(allow_regen) {
-        optimizer_state.variable_profile[0].lower = fmaxf(-torque_limit_fl + motor_resistance_Nm[MOTOR_FL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FL)));
-        optimizer_state.variable_profile[1].lower = fmaxf(-torque_limit_fr + motor_resistance_Nm[MOTOR_FR], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FR)));
-        optimizer_state.variable_profile[2].lower = fmaxf(-torque_limit_rl + motor_resistance_Nm[MOTOR_RL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RL)));
-        optimizer_state.variable_profile[3].lower = fmaxf(-torque_limit_rr + motor_resistance_Nm[MOTOR_RR], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RR)));
+        optimizer_state.variable_profile[0].lower = fmaxf(-torque_limit_fl_Nm + motor_resistance_Nm[MOTOR_FL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FL)));
+        optimizer_state.variable_profile[1].lower = fmaxf(-torque_limit_fr_Nm + motor_resistance_Nm[MOTOR_FR], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_FR)));
+        optimizer_state.variable_profile[2].lower = fmaxf(-torque_limit_rl_Nm + motor_resistance_Nm[MOTOR_RL], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RL)));
+        optimizer_state.variable_profile[3].lower = fmaxf(-torque_limit_rr_Nm + motor_resistance_Nm[MOTOR_RR], getMotorRegenerativeCapacity(getMotorSpeed_rpm(MOTOR_RR)));
     } else {
         optimizer_state.variable_profile[0].lower = 0.0;
         optimizer_state.variable_profile[1].lower = 0.0;
@@ -456,7 +494,9 @@ static void set_optimal_control(
 
 	const float thoeretical_mass_accel = maxTorque_continuous_stall_Nm * MOTOR_LEN * gear_ratio / effective_wheel_rad_m / car_mass_kg;
 	// areq can be either expressed in torque or actual accel. Both ways are equivalent. Here uses actual accel.
-	optimizer_state.areq = normalized_throttle * thoeretical_mass_accel;
+    // Adds a bias so we are running full speed more often
+    float lower_max_throttle = CLAMP(allow_regen ? -1.0f : 0.0f, normalized_throttle * 1.25, 1.0f); 
+	optimizer_state.areq = lower_max_throttle * thoeretical_mass_accel;
 
     // Solver treats Mreq as around -z axis.
 	optimizer_state.mreq = calculatePersistentYRCmreq(swAngle_millideg, bias_margin, yrc_pers);
@@ -513,12 +553,6 @@ static void set_optimal_control(
         setTorqueLimsUnprotected(MOTOR_FR, torquesPos_Nm.fr, torquesNeg_Nm.fr);
         setTorqueLimsUnprotected(MOTOR_RL, torquesPos_Nm.rl, torquesNeg_Nm.rl);
         setTorqueLimsUnprotected(MOTOR_RR, torquesPos_Nm.rr, torquesNeg_Nm.rr);
-        float total_torque = torquesPos_Nm.fl + torquesPos_Nm.fr + torquesPos_Nm.rl + torquesPos_Nm.rr;
-        float power_limit_Kw = optimizer_state.power_limit / 1000.0f;
-        setPowerLimit(false, MOTOR_FL, power_limit_Kw * torquesPos_Nm.fl / total_torque);
-        setPowerLimit(false, MOTOR_FR, power_limit_Kw * torquesPos_Nm.fr / total_torque);
-        setPowerLimit(false, MOTOR_RL, power_limit_Kw * torquesPos_Nm.rl / total_torque);
-        setPowerLimit(false, MOTOR_RR, power_limit_Kw * torquesPos_Nm.rr / total_torque);
         setVelocityInt16All(maxFastSpeed_rpm);
 
     }
@@ -1347,6 +1381,65 @@ void setLaunchControl(
         setTorqueLimsProtected(&pos_torques_Nm, &neg_torques_Nm);
         return;
     }
+}
+
+
+/**
+ * @brief Calculate left-right torque bias of the yaw rate controller with persistent bias in long turns
+ * @param swAngle_millideg Steering wheel angle
+ * @param bias_margin Maximum range of (desired - actual yaw rate) values to consider
+ * @param yrc_pers Strength of persistent bias factor
+ * @return Requested moment (mreq)
+ */
+float calculatePersistentYRCmreq(int32_t swAngle_millideg, float bias_margin, float yrc_pers) {
+    // yrc_kp calcs copied from current mreq function getYawRateControlLeftRightBias()
+    float gx, gy, gz;
+    sensors_get_gyro_xyz(&gx, &gy, &gz);
+    const float actual_yaw_rate_radps_sae = gz;
+
+    float velocity_x_mps;
+    const volatile car_state_t *cs = sensors_get_car_state();
+    float calculated_velocity_x_mps_fallback = getTotalMotorSpeed_radps() * 0.25f / gear_ratio * effective_wheel_rad_m;
+
+    // check swangle to make sure that we dont kick in pers if we're driving straight
+
+
+    // add yrc debug here
+    if (cs && movella_state.status.gnss_fix) {
+    velocity_x_mps = cs->velocity.x;
+    yrcDebug.controls_bias = 1;
+    } else {
+    velocity_x_mps = calculated_velocity_x_mps_fallback;
+    yrcDebug.controls_bias = -1;
+    }
+
+    const float swangle_rad = swAngleMillidegToSteeringAngleRad(swAngle_millideg);
+    const float desired_yaw_rate_radps = get_optimal_yaw_rate(swangle_rad, velocity_x_mps);
+
+    yrcDebug.controls_current_yaw_rate = (int16_t)(1000.0f * actual_yaw_rate_radps_sae);
+    yrcDebug.controls_target_yaw_rate = (int16_t)(1000.0f * desired_yaw_rate_radps);
+    yrcDebug.controls_pid = yrc_kp;
+    const float mreq_kp = yrc_kp * (desired_yaw_rate_radps - actual_yaw_rate_radps_sae);
+    
+    // pers calculation
+    const float yaw_rate_diff_radps = desired_yaw_rate_radps - actual_yaw_rate_radps_sae;
+
+    float pers_bias;
+    const bool pers_off = fabsf(desired_yaw_rate_radps) < fabsf(actual_yaw_rate_radps_sae) // coming out of a turn
+                            || (desired_yaw_rate_radps * actual_yaw_rate_radps_sae) < 0 // different directions
+                            || fabsf(yaw_rate_diff_radps) >= sqrtf(bias_margin) // strong yrc_kp
+                            || fabsf(swangle_rad) < YRC_PERS_SWANGLE_DEADZONE_RAD; // small steering angle
+                            // checks
+    if (pers_off) {
+        pers_bias = 0;
+    } else { // pers_bias (0% to 100%) scales quadratically as yaw_rate_diff_radps approaches 0
+        const float squared_ratio = (yaw_rate_diff_radps * yaw_rate_diff_radps) / bias_margin;
+        pers_bias = 1.0f - squared_ratio;
+    }
+    // pers_bias is the percentage of desired_yaw_rate based off of diff, yrc_pers scales this further
+    const float mreq_pers = desired_yaw_rate_radps * pers_bias * yrc_pers;
+
+    return mreq_kp + mreq_pers;
 }
 
 /**

@@ -9,6 +9,8 @@
 static const float maxTorque_Nm = 31.6f;
 static const float minTorqueLUTVal_Nm = 2.6f;
 static const float current_torque_slope = 85.0f / 31.6f;
+#define YRC_PERS_SWANGLE_DEADZONE_RAD 0.0872665f // 5 degrees in radians, 
+
 
 static const float front_bias = 0.25f;
 static const uint16_t DTI_MAX_DC_CURRENT_PER_MOTOR_DA = 850;
