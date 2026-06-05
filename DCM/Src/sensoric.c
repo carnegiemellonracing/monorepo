@@ -6,6 +6,8 @@
  */
 
 #include "sensoric.h"
+#include "string.h"
+
 #include <CMR/can_types.h> 
 
 volatile sensoric_state_t sensoric_state;

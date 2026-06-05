@@ -25,6 +25,7 @@
 #include "servo.h"
 #include "lut.h"
 #include "brakelight.h"
+#include "steering.h"
 #include "pumps.h"
 
 /** @brief Status LED priority. */

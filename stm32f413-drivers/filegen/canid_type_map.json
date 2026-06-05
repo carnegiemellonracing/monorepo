@@ -1033,7 +1033,7 @@
             "canrx_types": 65,
             "constants": 267,
             "struct_members": 0,
-            "variable_types": 330
+            "variable_types": 331
         },
         "prefixes_used": [
             "CMR_CANID_",
