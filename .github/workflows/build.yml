@@ -14,9 +14,9 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4
         with:
           submodules: true
 
       - name: Build Project
-        uses: threeal/cmake-action@v2.1.0
+        uses: threeal/cmake-action@v2
