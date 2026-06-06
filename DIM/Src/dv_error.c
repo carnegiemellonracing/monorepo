@@ -46,8 +46,8 @@ static void dv_error_checks(void *pvParameters) {
         //     && is_AS_active_state)
         //     error_present = true;
     
-        if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_PRESSURE_1_DECI_BAR) != CMR_SENSOR_ERR_NONE)
-            error_present = true;
+        //if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_PRESSURE_1_DECI_BAR) != CMR_SENSOR_ERR_NONE)
+           // error_present = true;
 
         if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_PRESSURE_2_DECI_BAR) != CMR_SENSOR_ERR_NONE)
             error_present = true;
