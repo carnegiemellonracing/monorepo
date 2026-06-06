@@ -19,4 +19,4 @@ jobs:
           submodules: true
 
       - name: Build Project
-        uses: threeal/cmake-action@v2
+        uses: threeal/cmake-action@v2.1.0
