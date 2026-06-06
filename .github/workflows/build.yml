@@ -8,9 +8,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   build:
     runs-on: self-hosted
@@ -21,8 +18,5 @@ jobs:
         with:
           submodules: true
 
-      - name: Configure CMake
-        run: cmake -S . -B build
-
       - name: Build Project
-        run: cmake --build build
+        uses: threeal/cmake-action@main
