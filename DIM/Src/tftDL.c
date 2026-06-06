@@ -462,12 +462,6 @@ void tftDL_RTDUpdate(
     int32_t hvVoltage_mV,
     int32_t power_kW,
     uint32_t speed_kmh,
-    bool motorTemp_yellow,
-    bool motorTemp_red,
-    bool acTemp_yellow,
-    bool acTemp_red,
-    bool mcTemp_yellow,
-    bool mcTemp_red,
     int32_t motorTemp_C,
     int32_t acTemp_C,
     int32_t mcTemp_C,
@@ -477,7 +471,6 @@ void tftDL_RTDUpdate(
     bool yrcOn,
     bool tcOn,
     bool ssOn,
-    float odometer_km,
     bool drsOpen,
     cornerId_t hottest_motor) {
 
@@ -496,7 +489,7 @@ void tftDL_RTDUpdate(
 
 // Doing this jank buffer because snprintf doesnt work for floats on embedded
 // TODO check if we can use "Use float with printf from newlib-nano) ???
-#define ODOMETER_STR_SIZE 8
+/*#define ODOMETER_STR_SIZE 8
     char odometer_str[ODOMETER_STR_SIZE] = {
         ((char)((((int32_t)odometer_km) % 10000) / 1000)) + '0',
         ((char)((((int32_t)odometer_km) % 1000) / 100)) + '0',
@@ -507,7 +500,7 @@ void tftDL_RTDUpdate(
         ((char)((int32_t)(odometer_km * 100.f) % 10)) + '0',
         '\0'
     };
-    memcpy((void *)(tftDL_RTDData + ESE_ODO_VAL), (void *)odometer_str, ODOMETER_STR_SIZE);
+    memcpy((void *)(tftDL_RTDData + ESE_ODO_VAL), (void *)odometer_str, ODOMETER_STR_SIZE);*/
 
     tftDL_barSetY(&hvSoc_bar, hvSoC);
     tftDL_barSetY(&glvSoc_bar, glvSoC);

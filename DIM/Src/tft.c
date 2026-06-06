@@ -551,7 +551,7 @@ static void drawRTDScreen(void) {
 
     uint8_t speed_kmh = (uint8_t)getSpeedKmh();
 
-    float odometer_km = getOdometer();
+    //float odometer_km = getOdometer();
 
     volatile cmr_canBMSLowVoltage_t *bmsLV = (volatile cmr_canBMSLowVoltage_t *)getPayload(CANRX_HVC_LOW_VOLTAGE);
 
@@ -605,12 +605,6 @@ static void drawRTDScreen(void) {
                         hvVoltage_mV,
                         power_kW,
                         speed_kmh,
-                        motorTemp_yellow,
-                        motorTemp_red,
-                        acTemp_yellow,
-                        acTemp_red,
-                        mcTemp_yellow,
-                        mcTemp_red,
                         motorTemp_C,
                         acTemp_C,
                         mcTemp_C,
@@ -620,7 +614,6 @@ static void drawRTDScreen(void) {
                         yrcOn,
                         tcOn,
                         ssOk,
-                        odometer_km,
                         drsOpen,
                         hottest_motor);
 
