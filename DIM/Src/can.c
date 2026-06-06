@@ -30,7 +30,7 @@
 #include "state.h"	// For new state machine
 
 // Config Screen update requested
-bool volatile flush_config_screen_to_cdc = false;
+//bool volatile flush_config_screen_to_cdc = false;
 
 // bool on if waiting for cdc to confirm config screen update
 bool volatile config_screen_update_confirmed = false;
@@ -39,7 +39,7 @@ bool volatile config_screen_update_confirmed = false;
 bool volatile config_screen_values_received_on_boot = false;
 
 // letting the rx callback to know to pay attention to the cdc messages
-bool volatile waiting_for_cdc_to_confirm_config = false;
+//bool volatile waiting_for_cdc_to_confirm_config = false;
 
 // letting the DIM know that it has received all the config screen values for a new driver
 bool volatile config_screen_values_received_for_new_driver = false;
@@ -331,9 +331,9 @@ static void canTX10Hz(void *pvParameters) {
         cmr_canDrsMode_t drsMode = stateGetDrs();
         cmr_canDrsMode_t drsReq = stateGetDrsReq();
         cmr_canDVMode_t dvReq = stateGetDVReq();
-        cmr_canTestID_t test_id = {
+        /*cmr_canTestID_t test_id = {
         	.test_id = get_test_message_id()
-        };
+        };*/
 
         // canTX(CMR_CANID_TEST_ID, &test_id, sizeof(test_id), canTX10Hz_period_ms);
         if (
@@ -439,7 +439,7 @@ static void canTX1Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        if (flush_config_screen_to_cdc) {
+        if (flush_config_screen_to_dcm) {
             /* pack struct message for config */
             cmr_canDIMCDCconfig_t config0 = {
                 .config_val_1 = config_menu_main_array[1].value.value,
@@ -508,7 +508,7 @@ static void canTX1Hz(void *pvParameters) {
  * Character indices 60-72 inclusive are for the second note on the right side of the screen.
  * This corresponds to text->address 0x0F, 0x10, and 0x11.
  */
-void ramRxCallback(cmr_can_t *can1, uint16_t canID, const void *data, size_t dataLen) {
+void ramRxCallback(uint16_t canID, const void *data, size_t dataLen) {
     if (canID == CMR_CANID_DIM_TEXT_WRITE) {
         cmr_canDIMTextWrite_t *text = (cmr_canDIMTextWrite_t *)data;
         if (dataLen == sizeof(cmr_canDIMTextWrite_t)) {
@@ -546,7 +546,7 @@ bool correctDriverCanID(uint32_t canID) {
 
 static bool initialized = false;
 
-void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen) {
+void cdcRXCallback(uint16_t canID, const void *data) {
     // the gotten packet array keeps track of which of the config packets we've gotten
     // since they can be received out of order.
     static bool gotten_packet[NUM_CONFIG_PACKETS] = { 0 };
@@ -584,7 +584,7 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
     /**** Update driver config. Same driver, new data ****/
     // if waiting to save -- make sure all data is same and then reset that
     // calulcate the base canID for the requested driver from the CDC side
-    else if (waiting_for_cdc_to_confirm_config) {
+    else if (waiting_for_dcm_to_confirm_config) {
         if(correctDriverCanID(canID)){
             // set appropriate config message rx flag if data matches
             gotten_packet[packet_number] = verifyData(dim_config_data_array_starting_idx, items_per_struct, cdc_config_data_arr);
@@ -640,14 +640,15 @@ void cdcRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
 }
 
 
-void canRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen) {
+void canRXCallback(cmr_can_t *can_rx, uint16_t canID, const void *data, size_t dataLen) {
+    (void) can_rx;
     if (canID == CMR_CANID_DIM_TEXT_WRITE) {
-        ramRxCallback(can, canID, data, dataLen);
+        ramRxCallback(canID, data, dataLen);
     }
     // make sure its a valid can id for config.
     if (canID >= CMR_CANID_CDC_CONFIG0_DRV0 &&
         canID <= CMR_CANID_CDC_CONFIG3_DRV3) {
-        cdcRXCallback(can, canID, data, dataLen);
+        cdcRXCallback(canID, data);
     }
 }
 
