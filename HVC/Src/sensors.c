@@ -90,7 +90,7 @@ static int32_t ADCtoMV_24v(const cmr_sensor_t *sensor, uint32_t reading) {
  *
  * @param reading The ADC value to convert.
  *
- * @return Voltage in V.
+ * @return Voltage in mV.
  */
 // was determined experimentally
 static int32_t ADCtoMV_HV(const cmr_sensor_t *sensor, uint32_t reading) {
@@ -99,7 +99,15 @@ static int32_t ADCtoMV_HV(const cmr_sensor_t *sensor, uint32_t reading) {
     if (voltage_mV <= 0) return  0;
     return voltage_mV;
 }
+/**
+ * @brief Uses raw adc value as vref
 
+ * @param sensor the sensor to read 
+ 
+ * @param reading the ADC value
+ 
+ * @return reference voltage
+ **/
 static int32_t adcToVref(const cmr_sensor_t *sensor, uint32_t reading) {
     (void)sensor;
 
@@ -210,7 +218,7 @@ int32_t getSafetymillivolts(){
 
 int32_t getHVmillivolts(){
     if (use_emd) {
-        cmr_canEMDMeasurements_t *EMD_Measurement = getPayload(CANRX_EMD_MEASURE);
+        volatile cmr_canEMDMeasurements_t *EMD_Measurement = getPayload(CANRX_EMD_MEASURE);
         int32_t EMD_voltage = big_endian_to_int32((volatile big_endian_32_t*)(&(EMD_Measurement->voltage)));  
         return EMD_voltage; 
     }
@@ -219,12 +227,12 @@ int32_t getHVmillivolts(){
 
 int32_t getHVmilliamps(){
     if (use_emd) {
-        cmr_canEMDMeasurements_t *EMD_Measurement = getPayload(CANRX_EMD_MEASURE);
+        volatile cmr_canEMDMeasurements_t *EMD_Measurement = getPayload(CANRX_EMD_MEASURE);
         int32_t EMD_current = big_endian_to_int32((volatile big_endian_32_t*)(&(EMD_Measurement->current)));  
         return EMD_current; 
     }
     
-    cmr_canIVTreadings_t *IVT_Measurement = getPayload(CANRX_IVT_CURRENT); 
+    volatile cmr_canIVTreadings_t *IVT_Measurement = getPayload(CANRX_IVT_CURRENT); 
     int32_t IVT_current = big_endian_to_int32(&(IVT_Measurement->message));
     return IVT_current;
 }
