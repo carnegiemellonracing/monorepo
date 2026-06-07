@@ -16,16 +16,18 @@
 #include <CMR/uart.h>       // CMR UART interface
 #include <stdlib.h>
 
-#include "gpio.h"       // Board-specific GPIO interface
-#include "can.h"        // Board-specific CAN interface
 #include "adc.h"        // Board-specific ADC interface
-#include "sensors.h"    // Board-specific sensors interface
-#include "motors.h"     // Board-specific motors interface
-#include "i2c.h"
-#include "servo.h"
-#include "lut.h"
 #include "brakelight.h"
+#include "can.h"        // Board-specific CAN interface
+#include "gpio.h"       // Board-specific GPIO interface
+#include "i2c.h"
+#include "lut.h"
+#include "motors.h"     // Board-specific motors interface
 #include "pumps.h"
+#include "sensors.h"    // Board-specific sensors interface
+#include "servo.h"
+#include "steering.h"
+
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;

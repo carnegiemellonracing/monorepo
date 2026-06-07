@@ -664,6 +664,11 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .timeoutError_ms = 1000,
         .timeoutWarn_ms = 250
     },
+    [CANRX_DAQ_AS_FINISHED] = {
+        .canID = CMR_CANID_AS_MISSION_FINISHED,
+        .timeoutError_ms = 1000,
+        .timeoutWarn_ms = 250
+    },
 };
 
 /**
@@ -829,6 +834,9 @@ static void canTX10Hz(void *pvParameters) {
         // //powersense is dead, it's voltage * HVI
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_POWER_SENSE, &powerSense, sizeof(powerSense), canTX10Hz_period_ms);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canCDCKiloCoulombs_t), canTX10Hz_period_ms);
+
+        bool missionFinished = * ((bool*) (canDAQGetPayload(CANRX_DAQ_AS_FINISHED)));
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_AS_MISSION_FINISHED, &missionFinished, sizeof(missionFinished), canTX10Hz_period_ms);
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
