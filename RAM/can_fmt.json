@@ -284,7 +284,7 @@
             "out_type": "u8",
             "min": 0,
             "max": 500000,
-            "enabled": 0
+            "enabled": 1
         },
         {
             "id": 1349,
