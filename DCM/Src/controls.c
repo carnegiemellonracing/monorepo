@@ -1683,12 +1683,12 @@ float calculatePersistentYRCmreq(int32_t swAngle_millideg, float bias_margin, fl
 
 float get_optimal_yaw_rate(float swangle_rad, float velocity_x_mps) {
 
-    static const float natural_understeer_gradient = 0.011465f; //rad/g
+    static const float k_us = -0.005f;
 
     const float distance_between_axles_m = chassis_a + chassis_b;
-    // const float yaw_rate_setpoint_radps = swangle_rad * velocity_x_mps /
-    //     (distance_between_axles_m + velocity_x_mps * velocity_x_mps * natural_understeer_gradient);
-    const float yaw_rate_setpoint_radps = swangle_rad * velocity_x_mps / distance_between_axles_m;
+    float L_eff = distance_between_axles_m + k_us * velocity_x_mps * velocity_x_mps;
+    if (L_eff < 0.1f) L_eff = 0.1f; // prevent division by zero / sign flip
+    const float yaw_rate_setpoint_radps = swangle_rad * velocity_x_mps / L_eff;
     return yaw_rate_setpoint_radps;
 }
 
