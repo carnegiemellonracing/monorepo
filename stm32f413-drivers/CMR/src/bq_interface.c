@@ -31,7 +31,7 @@ bool autoAddr() {
 
 	// Dummy write to sync OTP addresses
 	uart_command_t otpSync = {
-		.readWrite = SINGLE_WRITE,
+		.readWrite = SINGLE_WRITE, // ^^ SINGLE_WRITE VS STACK_WRITE
 		.dataLen = 1,
 		.deviceAddress = 0x00,
 		.registerAddress = OTP_ECC_DATAIN1,
@@ -104,7 +104,7 @@ bool autoAddr() {
 		.dataLen = 1,
 		.deviceAddress = 0x00,
 		.registerAddress = COMM_CTRL,
-		.data = {0x01},
+		.data = {0x01}, // ^^ 0x01 vs 0x03
 		.crc = {0x00, 0x00}
 	};
 
@@ -157,7 +157,6 @@ bool enableMainADC() {
 
 // Enable however many cells are in series in one segment
 bool enableNumCells() {
-
 	uart_command_t active_cell = {
 		.readWrite = BROADCAST_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
 		.dataLen = 1,
@@ -219,7 +218,7 @@ void BMBInit() {
 	turnOn();
 	DWT_Delay_ms(1000);
 
-    autoAddr();
+  autoAddr();
 	DWT_Delay_ms(100);
 
 	enableNumCells();
@@ -235,7 +234,7 @@ void BMBInit() {
 	DWT_Delay_ms(100);
 
 	txToRxDelay(10);
-	HAL_Delay(100);
+	DWT_Delay_ms(100);
 
 	byteDelay(0x3F);
 	DWT_Delay_ms(100);
@@ -270,9 +269,10 @@ bool setMuxOutput(uint8_t channel) {
 		return false;
 	}
 
-    // Switches Mux
-    bool res = sendUartBroadcastWrite(GPIO_CONF2, &data, 1);
-    return res;
+	// ^^ SINGLE VS STACK
+	// Switches Mux
+	bool res = sendUartBroadcastWrite(GPIO_CONF2, &data, 1);
+	return res;
 }
 
 For efficiency we choose to do as little computation as possible here and 
@@ -506,7 +506,7 @@ void twoStop() {
 	uart_sendCommand(&two_stop_stack);
 }
 // ^^ only in lv bms 
-**
+/**
  * @brief Send a UART "broadcast write" command to the device.
  *
  * Constructs a BROADCAST_WRITE uart_command_t with the provided register
