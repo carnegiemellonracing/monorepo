@@ -57,38 +57,31 @@ void byteDelay(uint8_t delay);
  */
 bool turnOn() {
 	// Turn On Ping
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_SET
 	);
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_RESET
 	);
-	// HAL_Delay(3);
 	DWT_Delay_ms(3);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_SET
 	);
-	// HAL_Delay(5);
 	DWT_Delay_ms(5);
 	HAL_GPIO_WritePin(
 		GPIOB, GPIO_PIN_13,
 		GPIO_PIN_RESET
 	);
-	// HAL_Delay(3);
 	DWT_Delay_ms(3);
 	HAL_GPIO_WritePin(
 			GPIOB, GPIO_PIN_13,
 		GPIO_PIN_SET
 	);
-
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 	uartInit();
 
@@ -107,7 +100,6 @@ bool turnOn() {
 		return false;
 	}
 
-	// HAL_Delay(1000);
 	DWT_Delay_ms(1000);
 
 	autoAddr();
@@ -126,7 +118,6 @@ bool turnOn() {
 			return false;
 		}
 
-		// HAL_Delay(200);
 		DWT_Delay_ms(200);
 	}
 
@@ -143,7 +134,6 @@ bool turnOn() {
 		return false;
 	}
 
-	// HAL_Delay(1000);
 	DWT_Delay_ms(1000);
 
 	return true;
@@ -177,7 +167,6 @@ bool autoAddr() {
 		if(res != UART_SUCCESS) {
 			return false;
 		}
-		// HAL_Delay(10);
 		DWT_Delay_ms(10);
 	}
 
@@ -194,7 +183,6 @@ bool autoAddr() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
-	// HAL_Delay(10);
 	DWT_Delay_ms(10);
 
 	// Set all the addresses of the boards in DIR0_ADDR
@@ -212,7 +200,6 @@ bool autoAddr() {
 			return false;
 		}
 		set_addr.data[0]++;
-		// HAL_Delay(10);
 		DWT_Delay_ms(10);
 	}
 
@@ -229,7 +216,6 @@ bool autoAddr() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
-	// HAL_Delay(10);
 	DWT_Delay_ms(10);
 
 	uart_command_t set_comm_ctrl = {
@@ -250,7 +236,6 @@ bool autoAddr() {
 	if(res != UART_SUCCESS) {
 		return false;
 	}
-	// HAL_Delay(10);
 	DWT_Delay_ms(10);
 
 	// Resync OTP registers with dummy reads
@@ -263,7 +248,6 @@ bool autoAddr() {
 		if(res != UART_SUCCESS) {
 			return false;
 		}
-		// HAL_Delay(10);
 		DWT_Delay_ms(10);
 	}
 	
@@ -364,35 +348,25 @@ void enableTimeout() {
 // Init function for all BMBs
 void BMBInit() {
 	turnOn();
-	// HAL_Delay(1000);
 	DWT_Delay_ms(1000);
 	autoAddr();
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 	enableNumCells();
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 	enableGPIOPins();
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 	enableMainADC();
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 	enableTimeout();
 	//disableTimeout();
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 
 	//Unsure about this value. I believe it should not matter much
 	txToRxDelay(10);
 
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 	byteDelay(0x3F);
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
-
-	// HAL_Delay(100);
 	DWT_Delay_ms(100);
 	cellBalancingSetup();
 }
