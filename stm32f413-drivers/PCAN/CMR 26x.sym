@@ -210,33 +210,6 @@ CycleTime=1000
 TimeOut=5000
 Var=ODOMETER_odometer_km float 0,32 /u:km
 
-[CDC_POSE_ORIENTATION]
-ID=292h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=POSE_roll_deg signed 0,16 /u:deg /f:0.1
-Var=POSE_pitch_deg signed 16,16 /u:deg /f:0.1
-Var=POSE_yaw_deg signed 32,16 /u:deg /f:0.1
-Var=POSE_velocity_deg signed 48,16 /u:deg /f:0.1
-
-[CDC_POSE_POSITION]
-ID=282h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=POSE_latitude_deg float 0,32 /u:deg
-Var=POSE_longitude_deg float 32,32 /u:deg
-
-[CDC_POSE_VELOCITY]
-ID=2A2h
-DLC=6
-CycleTime=100
-TimeOut=500
-Var=POSE_longitudinalVel_mps signed 0,16 /u:mps /f:0.01
-Var=POSE_lateralVel_mps signed 16,16 /u:mps /f:0.01
-Var=POSE_verticalVel_mps signed 32,16 /u:mps /f:0.01
-
 [CDC_POWER_LOG]
 ID=6E4h
 DLC=4
@@ -275,46 +248,6 @@ Var=RTC_date unsigned 24,8
 Var=RTC_month unsigned 32,8
 Var=RTC_year unsigned 40,8
 Var=RTC_err unsigned 48,8
-
-[CDC_WHEEL_SPEED_FEEDBACK]
-ID=232h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=WHEEL_frontLeft_rpm signed 0,16 /u:rpm /f:0.1
-Var=WHEEL_frontRight_rpm signed 16,16 /u:rpm /f:0.1
-Var=WHEEL_rearLeft_rpm signed 32,16 /u:rpm /f:0.1
-Var=WHEEL_rearRight_rpm signed 48,16 /u:rpm /f:0.1
-
-[CDC_WHEEL_SPEED_SETPOINT]
-ID=252h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=WHEEL_frontLeft_rpm1 signed 0,16 /u:rpm /f:0.1
-Var=WHEEL_frontRight_rpm1 signed 16,16 /u:rpm /f:0.1
-Var=WHEEL_rearLeft_rpm1 signed 32,16 /u:rpm /f:0.1
-Var=WHEEL_rearRight_rpm1 signed 48,16 /u:rpm /f:0.1
-
-[CDC_WHEEL_TORQUE_FEEDBACK]
-ID=262h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=WHEEL_frontLeft_Nm signed 0,16 /u:Nm /f:0.1
-Var=WHEEL_frontRight_Nm signed 16,16 /u:Nm /f:0.1
-Var=WHEEL_rearLeft_Nm signed 32,16 /u:Nm /f:0.1
-Var=WHEEL_rearRight_Nm signed 48,16 /u:Nm /f:0.1
-
-[CDC_WHEEL_TORQUE_SETPOINT]
-ID=272h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=WHEEL_frontLeft_Nm1 signed 0,16 /u:Nm /f:0.1
-Var=WHEEL_frontRight_Nm1 signed 16,16 /u:Nm /f:0.1
-Var=WHEEL_rearLeft_Nm1 signed 32,16 /u:Nm /f:0.1
-Var=WHEEL_rearRight_Nm1 signed 48,16 /u:Nm /f:0.1
 
 [CELL_BALANCE_ENABLE]
 ID=134h
@@ -1017,6 +950,73 @@ Var=RUN_ERROR_GateDrBoard3_OverTemp bit 56,1
 Var=RUN_ERROR_CurrSensFault bit 57,1
 Var=RUN_ERROR_ResolverDisconnected bit 62,1
 Var=RUN_ERROR_InvtrDischargeActive bit 63,1
+
+[CDC_WheelVelocityFeedback]
+ID=232h
+DLC=8
+CycleTime=100
+Timeout=200
+Var=CDC_FLWheel_Vel_Feedback signed 0,16 /u:rpm /f:0.1
+Var=CDC_FRWheel_Vel_Feedback signed 16,16 /u:rpm /f:0.1
+Var=CDC_RLWheel_Vel_Feedback signed 32,16 /u:rpm /f:0.1
+Var=CDC_RRWheel_Vel_Feedback signed 48,16 /u:rpm /f:0.1
+
+[CDC_WheelVelocitySetpoint]
+ID=252h
+DLC=8
+CycleTime=100
+Timeout=200
+Var=CDC_FLWheel_Vel_Setpoint signed 0,16 /u:rpm /f:0.1
+Var=CDC_FRWheel_Vel_Setpoint signed 16,16 /u:rpm /f:0.1
+Var=CDC_RLWheel_Vel_Setpoint signed 32,16 /u:rpm /f:0.1
+Var=CDC_RRWheel_Vel_Setpoint signed 48,16 /u:rpm /f:0.1
+
+[CDC_WheelTorqueFeedback]
+ID=262h
+DLC=8
+CycleTime=100
+Timeout=200
+Var=CDC_FLWheel_Torque_Feedback signed 0,16 /u:Nm /f:0.1
+Var=CDC_FRWheel_Torque_Feedback signed 16,16 /u:Nm /f:0.1
+Var=CDC_RLWheel_Torque_Feedback signed 32,16 /u:Nm /f:0.1
+Var=CDC_RRWheel_Torque_Feedback signed 48,16 /u:Nm /f:0.1
+
+[CDC_WheelTorqueSetpoint]
+ID=272h
+DLC=8
+CycleTime=100
+Timeout=200
+Var=CDC_FLWheel_Torque_Setpoint signed 0,16 /u:Nm /f:0.1
+Var=CDC_FRWheel_Torque_Setpoint signed 16,16 /u:Nm /f:0.1
+Var=CDC_RLWheel_Torque_Setpoint signed 32,16 /u:Nm /f:0.1
+Var=CDC_RRWheel_Torque_Setpoint signed 48,16 /u:Nm /f:0.1
+
+[CDC_PosePosition]
+ID=282h
+DLC=8
+CycleTime=100
+Timeout=200
+Var=CDC_Latitude float 0,32 /u:deg
+Var=CDC_Longitude float 32,32 /u:deg
+
+[CDC_PoseOrientation]
+ID=292h
+DLC=8
+CycleTime=100
+Timeout=200
+Var=CDC_Roll signed 0,16 /u:deg /f:0.1
+Var=CDC_Pitch signed 16,16 /u:deg /f:0.1
+Var=CDC_Yaw signed 32,16 /u:deg /f:0.1
+Var=CDC_Velocity_Angle signed 48,16 /u:deg /f:0.1
+
+[CDC_PoseVelocity]
+ID=2A2h
+DLC=6
+CycleTime=100
+Timeout=200
+Var=CDC_LongitudinalVelocity signed 0,16 /u:mps /f:0.01
+Var=CDC_LateralVelocity signed 16,16 /u:mps /f:0.01
+Var=CDC_VerticalVelocity signed 32,16 /u:mps /f:0.01
 
 [CDC_PoseAcceleration]
 ID=2B2h
