@@ -567,8 +567,6 @@ static void drawRTDScreen(void) {
 
     uint8_t speed_kmh = (uint8_t)getSpeedKmh();
 
-    float odometer_km = getOdometer();
-
     volatile cmr_canBMSLowVoltage_t *bmsLV = (volatile cmr_canBMSLowVoltage_t *)getPayload(CANRX_HVC_LOW_VOLTAGE);
 
     // this is actually volts not mV but cant be bothered changing it :(

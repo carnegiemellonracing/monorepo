@@ -64,8 +64,6 @@ uint32_t get_test_message_id();
 
 uint8_t getSpeedKmh(void);
 
-float getOdometer(void);
-
 typedef enum {
 	LV_LIFEPO = 0,
 	LV_LIPO,

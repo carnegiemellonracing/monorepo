@@ -111,7 +111,6 @@ typedef enum {
     CANRX_VSM_SENSORS,
     CANRX_HVC_LOW_VOLTAGE, /**< @brief HVC Low Voltage for Safety Circuit Status*/
     CANRX_DRS_STATE,
-    CANRX_CDC_ODOMETER,
     CANRX_CDC_CONTROLS_STATUS,
     CANRX_CDC_HEARTBEAT,
     CANRX_PACK_CELL_VOLTAGES,  /**< @brief Pack Cell Voltages for min and Max Cell */
