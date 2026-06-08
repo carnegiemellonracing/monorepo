@@ -169,85 +169,13 @@ Var=ACTION_rearTorque_mNm signed 16,16
 Var=steeringAngle_centi_deg signed 32,16
 Var=maxVelocity_decimeters_s unsigned 48,16
 
-[CDC_COG_VELOCITY]
-ID=2C2h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=COG_cog_x_mps signed 0,16 /u:mps /f:0.01
-Var=COG_cog_y_mps signed 16,16 /u:mps /f:0.01
-Var=COG_slip_angle float 32,32
-
 [CDC_CONTROLS_STATUS]
 ID=6D2h
 DLC=2
-CycleTime=1000
-TimeOut=5000
+CycleTime=800
+TimeOut=4000
 Var=CONTROLS_tcOn unsigned 0,8
 Var=CONTROLS_yrcOn unsigned 8,8
-
-[CDC_COULOMB_COUNTING]
-ID=6E3h
-DLC=4
-CycleTime=100
-TimeOut=500
-Var=COULOMB_KCoulombs float 0,32
-
-[CDC_FRONT_VELOCITY]
-ID=2D2h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=FRONT_fl_x signed 0,16 /f:0.01
-Var=FRONT_fl_y signed 16,16 /f:0.01
-Var=FRONT_fr_x signed 32,16 /f:0.01
-Var=FRONT_fr_y signed 48,16 /f:0.01
-
-[CDC_ODOMETER]
-ID=6C2h
-DLC=4
-CycleTime=1000
-TimeOut=5000
-Var=ODOMETER_odometer_km float 0,32 /u:km
-
-[CDC_POWER_LOG]
-ID=6E4h
-DLC=4
-CycleTime=1000
-TimeOut=5000
-Var=POWER_power_limit_W float 0,32 /u:W /f:0.001
-
-[CDC_POWER_SENSE]
-ID=305h
-DLC=8
-CycleTime=100
-TimeOut=500
-Var=POWER_packCurrent_dA signed 0,16 /u:dA
-Var=POWER_packVoltage_cV unsigned 16,16 /u:cV
-Var=POWER_packPower_W signed 32,32 /u:W
-
-[CDC_REAR_VELOCITY]
-ID=2E2h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=REAR_rl_x signed 0,16 /f:0.01
-Var=REAR_rl_y signed 16,16 /f:0.01
-Var=REAR_rr_x signed 32,16 /f:0.01
-Var=REAR_rr_y signed 48,16 /f:0.01
-
-[CDC_RTC_DATA_OUT]
-ID=6A2h
-DLC=7
-CycleTime=1000
-TimeOut=5000
-Var=RTC_seconds unsigned 0,8
-Var=RTC_minutes unsigned 8,8
-Var=RTC_hours unsigned 16,8
-Var=RTC_date unsigned 24,8
-Var=RTC_month unsigned 32,8
-Var=RTC_year unsigned 40,8
-Var=RTC_err unsigned 48,8
 
 [CELL_BALANCE_ENABLE]
 ID=134h
@@ -284,16 +212,6 @@ TimeOut=50
 Var=SOLVER_moment_req_Nm float 0,32 /u:Nm
 Var=SOLVER_lin_accel_Nm float 32,32 /u:Nm
 
-[CONTROLS_SOLVER_OUTPUTS]
-ID=7F0h
-DLC=8
-CycleTime=10
-TimeOut=50
-Var=SOLVER_frontLeft_Nm signed 0,16 /u:Nm /f:0.1
-Var=SOLVER_frontRight_Nm signed 16,16 /u:Nm /f:0.1
-Var=SOLVER_rearLeft_Nm signed 32,16 /u:Nm /f:0.1
-Var=SOLVER_rearRight_Nm signed 48,16 /u:Nm /f:0.1
-
 [CONTROLS_SOLVER_SETTINGS]
 ID=7EEh
 DLC=6
@@ -302,6 +220,14 @@ TimeOut=50
 Var=SOLVER_k_lin unsigned 0,16
 Var=SOLVER_k_yaw unsigned 16,16
 Var=SOLVER_k_tie unsigned 32,16
+
+[DCM_COG_VELOCITY]
+CycleTime=5
+DLC=8
+TimeOut=25
+Var=COG_cog_x_mps signed 0,16 /u:mps /f:0.01
+Var=COG_cog_y_mps signed 16,16 /u:mps /f:0.01
+Var=COG_slip_angle float 32,32
 
 [DIM_ACKNOWLEDGE]
 ID=545h
@@ -340,15 +266,15 @@ Var=REQUEST_requestedDrsMode unsigned 16,8 /e:DrsMode
 Var=REQUEST_requestedDriver unsigned 24,8
 Var=REQUEST_requestedDVCtrl unsigned 32,8
 
-[DRS_STATE]
-ID=52Ch
+[DTI_ERROR_MESSAGES]
+ID=305h
 DLC=4
 CycleTime=100
 TimeOut=500
-Var=STATE_state unsigned 0,8
-Var=STATE_angle unsigned 8,8
-Var=STATE_pwm_left unsigned 16,8
-Var=STATE_pwm_right unsigned 24,8
+Var=ERROR_fr_fault_code unsigned 0,8
+Var=ERROR_fl_fault_code unsigned 8,8
+Var=ERROR_rr_fault_code unsigned 16,8
+Var=ERROR_rl_fault_code unsigned 24,8
 
 [DTI_FL_IO_STATUS]
 ID=24h
@@ -443,23 +369,6 @@ CycleTime=10
 TimeOut=50
 Var=steeringWheelAngle_millideg_FR signed 0,32 /u:deg /f:0.001
 Var=steeringWheelAngle_millideg_FL signed 32,32 /u:deg /f:0.001
-
-[CDC_HEARTBEAT]
-ID=102h
-DLC=5
-CycleTime=10
-TimeOut=50
-Var=CDC_HEARTBEAT_state unsigned 0,8 /e:State
-Var=CDC_ERR_VSM_TIMEOUT bit 8,1
-Var=CDC_ERR_DTIALLERROR bit 23,1
-Var=CDC_WRN_VSM_TIMEOUT bit 24,1
-Var=CDC_WRN_MEMORATOR_TIMEOUT bit 33,1
-Var=CDC_WRN_DTI_TIMEOUT bit 34,1
-Var=CDC_WRN_DTI_ERROR bit 35,1
-Var=CDC_WRN_DTI_SRC_RR bit 36,1
-Var=CDC_WRN_DTI_SRC_RL bit 37,1
-Var=CDC_WRN_DTI_SRC_FR bit 38,1
-Var=CDC_WRN_DTI_SRC_FL bit 39,1
 
 [DIM_HEARTBEAT]
 ID=104h
@@ -678,16 +587,6 @@ TimeOut=50
 Var=CELL_balanceRequest unsigned 0,8 /e:HVC_Balance_State
 Var=CELL_threshold unsigned 8,16
 
-[MOTORPOWER_STATE]
-ID=52Eh
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=STATE_motor_power_FL unsigned 0,16
-Var=STATE_motor_power_FR unsigned 16,16
-Var=STATE_motor_power_RL unsigned 32,16
-Var=STATE_motor_power_RR unsigned 48,16
-
 [MOVELLA_STATUS]
 ID=772h
 DLC=4
@@ -807,23 +706,6 @@ Var=VEL_vel_Y signed 16,16
 Var=VEL_vel_A signed 32,16
 Var=VEL_ang_S signed 48,16
 
-[SF_STATE]
-ID=52Dh
-DLC=8
-CycleTime=10
-TimeOut=50
-Var=power_limit_max_violation_W float 0,32 /u:W
-Var=longest_power_violation_ms unsigned 32,8 /u:ms
-Var=STATE_over_voltage_count unsigned 40,8
-Var=STATE_under_voltage_count unsigned 48,8
-Var=STATE_over_temp_count unsigned 56,8
-
-[TEST_ID]
-CycleTime=100
-DLC=1
-TimeOut=500
-Var=ID_test_id unsigned 0,8
-
 [VSM_LATCHED_STATUS]
 ID=510h
 DLC=3
@@ -882,6 +764,23 @@ Var=STATUS_VSM_LATCH_SOFTWARE bit 27,1
 Var=STATUS_VSM_LATCH_AMS bit 26,1
 Var=STATUS_VSM_LATCH_IMD bit 25,1
 Var=STATUS_VSM_LATCH_BSPD bit 24,1
+
+[CDC_Heartbeat]
+ID=102h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=CDC_state unsigned 0,8 /e:State
+Var=CDC_ERR_VSMTimeout unsigned 8,1
+Var=CDC_ERR_amkAllError bit 23,1
+Var=CDC_WRN_VSMTimeout bit 24,1
+Var=CDC_WRN_memoratorTimeout bit 33,1
+Var=CDC_WRN_amkTimeout bit 34,1
+Var=CDC_WRN_amkError bit 35,1
+Var=CDC_WRN_amkSrcRR bit 36,1
+Var=CDC_WRN_amkSrcRL bit 37,1
+Var=CDC_WRN_amkSrcFR bit 38,1
+Var=CDC_WRN_amkSrcFL bit 39,1
 
 [CDC_MotorTemps]
 ID=512h
@@ -1670,6 +1569,19 @@ Var=padding unsigned 32,16 /max:1
 Var=volume unsigned 48,8 /max:7
 Var=squelch unsigned 56,8 /max:8	// 0 for listen, 1 - 8 for transmit
 
+[CDC_RTC_DATA_OUT]
+ID=6A2h
+DLC=7
+CycleTime=1000
+Timeout=8000
+Var=RTC_Seconds unsigned 0,8 /u:seconds
+Var=RTC_Minutes unsigned 8,8 /u:minutes
+Var=RTC_Hours unsigned 16,8 /u:hours
+Var=RTC_Date unsigned 24,8 /u:day
+Var=RTC_Month unsigned 32,8 /u:month
+Var=RTC_Year unsigned 40,8 /u:year
+Var=RTC_Error unsigned 48,8	// For interpreting this, see comments in code.
+
 [CDC_RTC_DATA_IN]
 ID=6B2h
 DLC=7
@@ -1682,6 +1594,41 @@ Var=RTC_Date_In unsigned 24,8 /u:day
 Var=RTC_Month_In unsigned 32,8 /u:month
 Var=RTC_Year_In unsigned 40,8 /u:year
 Var=RTC_Error_In unsigned 48,8	// For interpreting this, see comments in code.
+
+[CDC_ODOMETER]
+ID=6C2h
+DLC=4
+CycleTime=1000
+Var=CDC_Odometer float 0,32 /u:km
+
+[CDC_DrsState]
+ID=52Ch
+DLC=4
+CycleTime=200
+Color=0000FFh
+Var=drsState unsigned 0,8
+Var=drsAngle unsigned 8,8
+Var=drsPwmLeft unsigned 16,8
+Var=drsPwmRight unsigned 24,8
+
+[SF_State]
+ID=52Dh
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=Power_Limit_Max_Violation_W float 0,32 /u:W
+Var=Longest_Power_Violation unsigned 32,8
+Var=Over_Voltage_Count unsigned 40,8
+Var=Under_Voltage_Count unsigned 48,8
+Var=Over_Temp_Count unsigned 56,8
+
+[CDC_Motor_Power]
+ID=52Eh
+DLC=8
+Var=motor_power_FL unsigned 0,16
+Var=motor_power_FR unsigned 16,16
+Var=motor_power_RL unsigned 32,16
+Var=motor_power_RR unsigned 48,16
 
 [DIM_Config2_Drv0]
 ID=602h
@@ -1998,6 +1945,14 @@ DLC=1
 Var=TEST_ID unsigned 0,7	// Randomly generated test id sent everytime the car states up
 Var=TEST_STATUS bit 7,1	// 1- START TEST, 0 - STOP TEST
 
+[CDC_Solver_Outputs]
+ID=7F0h
+DLC=8
+Var=Torque_FL signed 0,16
+Var=Torque_FR signed 16,16
+Var=Torque_RL signed 32,16
+Var=Torque_RR signed 48,16
+
 [VSM_Git]
 ID=7F1h
 DLC=8
@@ -2123,6 +2078,34 @@ ID=77Bh
 DLC=8
 Var=Movella_Latitude signed 0,32 -m /u:deg /f:5.96046447753906E-008 /max:127.999999940395 /d:0
 Var=Movella_Longitude signed 32,32 -m /u:deg /f:1.19209289550781E-007 /min:-255.999999999999 /max:255.99999988079 /d:0
+
+[DCM_COG_Velocity]
+ID=2C2h
+DLC=8
+Var=cog_x signed 0,16 /u:m/s /f:0.01
+Var=cog_y signed 16,16 /u:m/s /f:0.01
+Var=slip_angle float 32,32 /u:rad
+
+[DCM_Front_Velocity]
+ID=2D2h
+DLC=8
+Var=fl_x signed 0,16 /u:m/s /f:0.01
+Var=fl_y signed 16,16 /u:m/s /f:0.01
+Var=fr_x signed 32,16 /u:m/s /f:0.01
+Var=fr_y signed 48,16 /u:m/s /f:0.01
+
+[DCM_Rear_Velocity]
+ID=2E2h
+DLC=8
+Var=rl_x signed 0,16 /u:m/s /f:0.01
+Var=rl_y signed 16,16 /u:m/s /f:0.01
+Var=rr_x signed 32,16 /u:m/s /f:0.01
+Var=rr_y signed 48,16 /u:m/s /f:0.01
+
+[DCM_PowerLimit]
+ID=6E4h
+DLC=4
+Var=PowerLimit float 0,32 /u:kW /f:0.001
 
 [LV_BMS_Voltages1]
 ID=7F7h
