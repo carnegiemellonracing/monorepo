@@ -1,6 +1,6 @@
 /**
  * @file i2c.c
- * @brief All I2C functionality on the CDC (i.e. the RTC and FRAM)
+ * @brief All I2C functionality on the DCM (i.e. the RTC and FRAM)
  *
  * @author Carnegie Mellon Racing
  */
@@ -19,7 +19,6 @@
 #include "can.h"
 
 #define SIZE_PER_DRIVER (sizeof(uint8_t) * MAX_MENU_ITEMS)
-#define FRAM_ODOMETER_CONFIG_ADDRESS num_values_driver_enum
 
 /** @brief MCU I2C address */
 static uint32_t ownAddress = 0x00;
@@ -50,8 +49,6 @@ static const TickType_t i2cTaskUpdatePeriod_ms = 10;
 
 volatile cmr_can_rtc_data_t time;
 
-volatile float odometer_km;
-
 extern volatile uint8_t parametersFromDIM[];
 extern volatile cmr_driver_profile_t currentDriver;
 extern volatile bool framWrite_flag;
@@ -63,7 +60,7 @@ static void framUpdate(void *pvParameters);
  * COMMON *
  **********/
 
-/** @brief Initializes I2C stuff for the CDC */
+/** @brief Initializes I2C stuff for the DCM */
 void i2cInit() {
     cmr_i2cInit(
         &i2c_fram, I2C3,                // TODO: Increase Clock Speed if can't hit deadlines
@@ -101,7 +98,6 @@ static int framRandomRead(cmr_i2c_t *i2c, uint16_t deviceAddress, uint16_t readA
  *  https://www.fujitsu.com/us/Images/MB85RC256V-DS501-00017-3v0-E.pdf
  *
  *  @warning Be sure that none of the variables overlap in FRAM memory
- *  Adding one so that odometer is tacked onto the end of FRAM
  */
 static cmr_framVariable_t framVarsConfig[num_values_driver_enum + 1];
 
@@ -135,28 +131,6 @@ int framWrite(framVariable_t variable, uint8_t *data)
     if (variable >= num_values_driver_enum + 1)
     {
         return -1;
-    }
-
-    int retv_total = 0;
-
-    if (variable == FRAM_ODOMETER_CONFIG_ADDRESS) {
-        for (int i = 0; i < framVarsConfig[variable].dataLength; i++) {
-            uint16_t address = framVarsConfig[variable].startAddress + i;
-            uint8_t command[3] = {
-                // First send upper 8 bits of address
-                (address >> 8) & 0xFF,
-                // Then send lower 8 bits of address
-                address & 0xFF,
-                // Followed by data
-                data[i]
-            };
-            taskENTER_CRITICAL();
-            int ret = cmr_i2cTX(&i2c_fram, framAddress, command,
-                                3, 1);
-            taskEXIT_CRITICAL();
-            retv_total |= ret;
-        }
-        return retv_total;
     }
 
 
@@ -199,9 +173,6 @@ static void framInit()
         framVarsConfig[i].startAddress = startAddress;
         framVarsConfig[i].dataLength = SIZE_PER_DRIVER;
     }
-    framVarsConfig[FRAM_ODOMETER_CONFIG_ADDRESS].startAddress = FRAM_ODOMETER_CONFIG_ADDRESS * SIZE_PER_DRIVER;
-    framVarsConfig[FRAM_ODOMETER_CONFIG_ADDRESS].dataLength = sizeof(float);    // storing odometer in km as a float
-
 // 	 Read the driver's default values into the main_menu array
     int retv = framRead(Default, currentParameters);
     if(retv=5)return;
@@ -210,10 +181,7 @@ static void framInit()
 		config_menu_main_array[i].value.value = currentParameters[i];
 	}
 
-    // Read odometer
-    retv = framRead(FRAM_ODOMETER_CONFIG_ADDRESS, (uint8_t *)&odometer_km);
-
-    //Use the below to flash FRAM default params the first time the CDC is setup
+    //Use the below to flash FRAM default params the first time the DCM is setup
      for (int i = 0; i < MAX_MENU_ITEMS; i++) {
      	currentParameters[i] = config_menu_main_array[i].value.value;
      }
@@ -228,7 +196,6 @@ static void framInit()
              cmr_panic("FRAM init failed");
          }
      }
-     odometer_km = 0.0f;
 }
 
 /*******
@@ -287,8 +254,6 @@ static void framUpdate(void *pvParameters) {
 			currentDriver = fram_requested_driver;
 		}
 
-		// Write odometer
-		framWrite(FRAM_ODOMETER_CONFIG_ADDRESS, (uint8_t *)&odometer_km);
 		vTaskDelayUntil(&lastWakeTime, i2cTaskUpdatePeriod_ms);
     }
 }

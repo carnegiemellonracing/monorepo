@@ -53,21 +53,18 @@ static bool launchControlActive = false;
 volatile cmr_can_solver_inputs_t solver_inputs;
 volatile cmr_can_solver_aux_t solver_aux;
 volatile cmr_can_solver_settings_t solver_settings;
-volatile cmr_canCDCWheelTorque_t solver_torques;
+volatile cmr_canDCMWheelTorque_t solver_torques;
 
 /* @brief For testing only; false = use calculated downforce */
 volatile bool use_true_downforce = false;
 
-/** @brief total distance traveled */
-extern volatile float odometer_km;
-
 /** @brief whether or not TC and YRC are enabled */
-static volatile cmr_canCDCControlsStatus_t controlsStatus = {
+static volatile cmr_canDCMControlsStatus_t controlsStatus = {
     .tcOn = (uint8_t)false,
     .yrcOn = (uint8_t)false
 };
 
-volatile cmr_canCDCKiloCoulombs_t coulombCounting;
+volatile cmr_canDCMKiloCoulombs_t coulombCounting;
 static float manual_cruise_control_speed;
 
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
@@ -176,8 +173,8 @@ void setControlsStatus(cmr_canGear_t gear) {
 }
 
 /** @brief get the a read-only pointer to controlsStatus */
-const volatile cmr_canCDCControlsStatus_t *getControlsStatus() {
-    return (const cmr_canCDCControlsStatus_t*) &controlsStatus;
+const volatile cmr_canDCMControlsStatus_t *getControlsStatus() {
+    return (const cmr_canDCMControlsStatus_t*) &controlsStatus;
 }
 
 // For sensor validation.
@@ -711,14 +708,6 @@ void runControls (
         + (int32_t)(dtiERPM_RR / pole_pairs)
     ) / MOTOR_LEN;
 
-    // Update odometer
-    /* Wheel Speed to Vehicle Speed Conversion
-    *      (x rotations / 1min) * (16" * PI) *  (2.54*10^-5km/inch)
-    *      (1min / 60sec) * (1sec/1000ms) * (5ms period) * (1/13.93 gear ratio)
-    *      = x * 7.6378514861 × 10^-9 */
-    odometer_km += ((float)avgMotorSpeed_RPM) * 7.6378514861e-9;
-    /** @todo check floating point granularity for potential issues with adding small numbers repeatedly to large numbers */
-
     switch (gear) {
         case CMR_CAN_GEAR_SLOW: {
             disableTorqueMode();
@@ -1165,7 +1154,7 @@ void setLaunchControl(
     static const bool use_solver = false;
 
 	bool action_button_pressed = false;
-	const float nonnegative_odometer_velocity_mps = motorSpeedToWheelLinearSpeed_mps(getTotalMotorSpeed_radps() * 0.25f);
+    //replace with..?
 	if (nonnegative_odometer_velocity_mps < launch_control_speed_threshold_mps) { // odometer velocity is below the launch control threshold
 		action_button_pressed = (((volatile cmr_canDIMActions_t *)(canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON)))->buttonStates) & BUTTON_ACT;
 
