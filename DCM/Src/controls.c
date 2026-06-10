@@ -768,7 +768,7 @@ void runControls (
             setPowerLimit(false, MOTOR_FL, 40.0f * front_bias);
             setPowerLimit(false, MOTOR_FR, 40.0f * front_bias);
             setPowerLimit(false, MOTOR_RL, 40.0f * (1 - front_bias));
-            setPowerLimit(false, MOTOR_FR, 40.0f * (1 - front_bias));
+            setPowerLimit(false, MOTOR_RR, 40.0f * (1 - front_bias));
             // set_fast_torque_with_slew(throttlePos_u8, 29.0f);
             break;
         }
@@ -779,7 +779,7 @@ void runControls (
                 setPowerLimit(false, MOTOR_FL, 40.0f * front_bias);
                 setPowerLimit(false, MOTOR_FR, 40.0f * front_bias);
                 setPowerLimit(false, MOTOR_RL, 40.0f * (1 - front_bias));
-                setPowerLimit(false, MOTOR_FR, 40.0f * (1 - front_bias));
+                setPowerLimit(false, MOTOR_RR, 40.0f * (1 - front_bias));
                 break;
             }
             setFastTorqueWithBias(throttlePos_u8, front_bias);
@@ -865,7 +865,7 @@ void runControls (
             setPowerLimit(false, MOTOR_FL, 40.0 * front_bias);
             setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
             setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
-            setPowerLimit(false, MOTOR_FR, 40.0 * (1 - front_bias));
+            setPowerLimit(false, MOTOR_RR, 40.0 * (1 - front_bias));
             // float target_speed_mps = 5.0f;
             // getProcessedValue(&target_speed_mps, SLOW_SPEED_INDEX, float_1_decimal);
             // set_motor_speed(throttlePos_u8, target_speed_mps, false);
