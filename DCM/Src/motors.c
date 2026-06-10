@@ -264,8 +264,7 @@ static void motorsCommand (
             case CMR_CAN_GLV_ON: {
                 // pumpsOn();
                 pumpsOff();
-                mcCtrlOn();
-            	// mcCtrlOff();
+            	mcCtrlOff();
 
                 if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN) {
                     mcCtrlOn();

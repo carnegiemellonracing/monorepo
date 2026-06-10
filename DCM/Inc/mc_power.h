@@ -1,15 +1,13 @@
 /**
- * @file mc_power.h
- * @brief Motor Controller Logic Power interface.
+ * @file mc_power.g
+ * @brief Motor controller power control task.
  *
- * @author Carnegie Mellon Racing
+ * @author Ayush Garg
  */
 
-#ifndef MC_POWER_H
-#define MC_POWER_H
 
-//void mcPowerInit();
+#pragma once
+
 void mcCtrlOff();
 void mcCtrlOn();
 
-#endif /* MC_POWER_H */
