@@ -273,8 +273,7 @@ static void tftDL_RTDwriteInt(uint32_t *file_addr, uint32_t location, uint32_t l
 static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t state_col_addr,
                              uint32_t gear_addr, uint32_t drs_addr, bool centered) {
     /** @brief Characters for each state. */
-
-    size_t stateCharsLen = 6;
+    stateCharsLen =  CMR_CAN_STATE_LEN;
     static const char *stateChars[] = {
         [CMR_CAN_UNKNOWN] = "????",
         [CMR_CAN_GLV_ON] = " GLV",
@@ -329,15 +328,13 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
     // TODO make this name better I dont want it to be stateCharLen since it very similar to other var
     size_t bufLen = sizeof(stateChars);
     if (stateVSM == stateVSMReq) {
-        if (stateVSM < stateCharsLen) {
-            if (centered) {
-                strcpy(stateChar, "    ");
-                strlcat(stateChar, stateChars[stateVSM], bufLen);
-                strlcat(stateChar, "    ", stateCharsLen);
-            } else {
-                strcpy(stateChar, "        ");
-                strlcat(stateChar, stateChars[stateVSM], bufLen);
-            }
+        if (centered) {
+            strcpy(stateChar, "    ");
+            strlcat(stateChar, stateChars[stateVSM], bufLen);
+            strlcat(stateChar, "    ", CMR_CAN_STATE_LEN);
+        } else {
+            strcpy(stateChar, "        ");
+            strlcat(stateChar, stateChars[stateVSM], bufLen);
         }
         *state_color = white;
     } else {
