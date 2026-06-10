@@ -30,7 +30,7 @@ typedef enum {
     CMR_CAN_AS_READY,       /**< @brief Autonomous ready mode */
     CMR_CAN_AS_DRIVING,     /**< @brief Autonomous driving mode */
 	CMR_CAN_AS_FINISHED,    /**< @brief Autonomous finished mode */
-	CMR_CAN_AS_EMERGENCY    /**< @brief Autonomous emergency mode */
+	CMR_CAN_AS_EMERGENCY,   /**< @brief Autonomous emergency mode */
     CMR_CAN_STATE_LEN       /**< @brief Number of CAN states */
 } cmr_canState_t;
 
