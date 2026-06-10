@@ -114,7 +114,7 @@ enum SBGSolutionStatusMode(0="SBG_SOL_MODE_UNINITIALIZED",
     4="(attitude, velocity, position). Absolute position is provided. */")
 enum State(0="UNKNOWN", 1="GLV_ON", 2="HV_EN", 3="RTD", 4="ERROR",
     5="CLEAR_ERROR", 6="AS_READY", 7="AS_DRIVING", 8="AS_FINISHED",
-    9="AS_EMERGENCY")
+    9="AS_EMERGENCY", 10="LEN")
 enum VSMBadStateErrorSource(0="VSM_BADSTATE_SOURCE_NONE",
     1="VSM_BADSTATE_SOURCE_HVBMS", 8="VSM_BADSTATE_SOURCE_DIM",
     16="VSM_BADSTATE_SOURCE_FSM", 32="VSM_BADSTATE_SOURCE_CDC",

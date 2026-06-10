@@ -262,21 +262,6 @@ static void tftUpdate(void *pvParameters) {
              	prevOverTemp = false;
                 drawRTDScreen();
         }
-
-        // if (true) {
-        //     drawRTDScreen();
-        // } else if ((stateGetVSMReq() == CMR_CAN_HV_EN) && (stateGetVSM() == CMR_CAN_ERROR)) {
-        //     drawSafetyScreen();
-        // } else if (stateGetVSM() == CMR_CAN_ERROR) {
-        //     drawErrorScreen();
-        // } else {
-        // 	//reset latching errors for ams as shown on screen
-        // 	prevOverVolt = false;
-        // 	prevUnderVolt = false;
-        // 	prevOverTemp = false;
-        //     // within drawRTDScreen, we decide if to draw testing or racing screen
-        //     drawRTDScreen();
-        // }
     }
 }
 

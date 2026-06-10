@@ -438,12 +438,12 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             if (!getDVBrakeActive() || RESTriggered()){
                 nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
             }
-            // if ((lastWakeTime_ms > lastStateChangeTime_ms + AS_FINISHED_TIME)){
-            //     nextState = CMR_CAN_VSM_STATE_GLV_ON;
-            // }
-            // else{
-            //     nextState = CMR_CAN_VSM_STATE_AS_FINISHED;
-            // }
+            else if ((lastWakeTime_ms > lastStateChangeTime_ms + AS_FINISHED_TIME)){
+                nextState = CMR_CAN_VSM_STATE_GLV_ON;
+            }
+            else{
+                nextState = CMR_CAN_VSM_STATE_AS_FINISHED;
+            }
             nextState = CMR_CAN_VSM_STATE_AS_FINISHED;
 
             break;
@@ -597,7 +597,6 @@ static bool getDVBrakeActive(){
     uint32_t brakePressureRear_PSI = cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPRES_PSI);
     cmr_canFSMData_t *fsmData = getPayload(CANRX_FSM_DATA);
     uint16_t brakePressureFront_PSI = fsmData->brakePressureFront_PSI;
-    // @todo Add check to ensure solonoid current is 0 from DIM
 
     bool brakes_active = brakePressureFront_PSI > FRONT_MINIMUM_BRAKING_PSI &&  
             brakePressureRear_PSI  > REAR_MINIMUM_BRAKING_PSI;
