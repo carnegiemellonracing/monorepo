@@ -395,6 +395,7 @@ typedef enum {
     CMR_CANID_AS_PRESSURE_READINGS = 0x191,     /**< @brief Autonomous Pressure Readings for Tank and EBS*/
     CMR_CANID_AS_RACK_DISPLACMENT = 0x192,      /**< @brief Rack Displacement Mesurment*/
     CMR_CANID_AS_MISSION_FINISHED = 0x777,
+    CMR_CANID_DAQ_VSM_HEARTBEAT = 0x778,      
     CMR_CANID_HEARTBEAT_COMPUTE = 0x10B,
 
     //MAXON
