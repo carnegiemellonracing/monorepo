@@ -1373,7 +1373,7 @@ void dim_params_callback (cmr_can_t *canb_rx, uint16_t canID, const void *data, 
     }
 }
 
-void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t dataLen) {
+void conditionalCallback(cmr_can_t *canb_rx, uint32_t canID, const void *data, size_t dataLen) {
 	uint32_t au32_initial_ticks = DWT->CYCCNT;
 
 	size_t iface_idx = (canb_rx - can);

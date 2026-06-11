@@ -94,7 +94,7 @@ int cmr_canRXMetaTimeoutError(const cmr_canRXMeta_t *meta, TickType_t now_ms) {
  *
  * @return The associated receive metadata, or `NULL` if not found.
  */
-static cmr_canRXMeta_t *cmr_canRXMetaFind(cmr_can_t *can, uint16_t canID) {
+static cmr_canRXMeta_t *cmr_canRXMetaFind(cmr_can_t *can, uint32_t canID) {
     for (size_t i = 0; i < can->rxMetaLen; i++) {
         cmr_canRXMeta_t *meta = can->rxMeta + i;
         if (meta->canID == canID) {
@@ -116,7 +116,7 @@ static cmr_canRXMeta_t *cmr_canRXMetaFind(cmr_can_t *can, uint16_t canID) {
  * @param dataLen The received data's length.
  */
 static void cmr_canRXData(
-    cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen
+    cmr_can_t *can, uint32_t canID, const void *data, size_t dataLen
 ) {
     cmr_canRXMeta_t *meta = cmr_canRXMetaFind(can, canID);
 
