@@ -914,6 +914,9 @@ static void canTX100Hz(void *pvParameters) {
             sizeof(heartbeat),
             canTX100Hz_period_ms
         );
+
+        cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+		canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_VSM_HEARTBEAT, heartbeatVSM, sizeof(cmr_canHeartbeat_t), canTX100Hz_period_ms); 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
 }
