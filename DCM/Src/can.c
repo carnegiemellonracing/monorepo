@@ -1491,14 +1491,8 @@ void canInit(void) {
             .isMask = false,
             .rxFIFO = FDCAN_RX_FIFO0,
             .ids = {CMR_CANID_AS_PRESSURE_READINGS}
-        },
+        }
 
-        {
-            .isMask = false,
-            .isExtended = true,
-            .rxFIFO = FDCAN_RX_FIFO0,
-            .ids = {CMR_CANID_EXTENDED_CUBEMARS_DATA}
-        },
     };
 
     cmr_canFilter(&(can[CMR_CAN_BUS_VEH]), canVehicleFilters,
@@ -1558,6 +1552,12 @@ void canInit(void) {
 
          // Match all odd IDs (bottom bit 1, all others don't care).
          .ids = {0x001, 0x001}
+        },
+        {.isMask = false,
+         .isExtended = true,
+         .rxFIFO = FDCAN_RX_FIFO1,
+
+         .ids = {CMR_CANID_EXTENDED_CUBEMARS_DATA}
         }
     };
 
