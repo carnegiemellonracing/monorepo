@@ -35,8 +35,8 @@
 
 /** @brief Yaw rate control kp */
 volatile cmr_can_controls_pid_debug_t yrcDebug;
-float yrc_pers = 200.0f;
-float bias_margin = 10.0f; 
+float yrc_pers = 120.0f;
+float bias_margin = 12.0f; 
 static float yrc_kp;
 
 /** @brief CAN data for traction control */
@@ -840,14 +840,14 @@ void runControls (
         case CMR_CAN_GEAR_ENDURANCE: {
             disableTorqueMode();
             if(ctrlOff) {
-                setFastTorqueWithBias(throttlePos_u8, front_bias);
-                setPowerLimit(false, MOTOR_FL, 40.0f * front_bias);
-                setPowerLimit(false, MOTOR_FR, 40.0f * front_bias);
-                setPowerLimit(false, MOTOR_RL, 40.0f * (1 - front_bias));
-                setPowerLimit(false, MOTOR_RR, 40.0f * (1 - front_bias));
+                setFastTorqueWithBias(throttlePos_u8, front_bias_endurance);
+                setPowerLimit(false, MOTOR_FL, 40.0f * front_bias_endurance);
+                setPowerLimit(false, MOTOR_FR, 40.0f * front_bias_endurance);
+                setPowerLimit(false, MOTOR_RL, 40.0f * (1 - front_bias_endurance));
+                setPowerLimit(false, MOTOR_RR, 40.0f * (1 - front_bias_endurance));
                 break;
             }
-            setFastTorqueWithBias(throttlePos_u8, front_bias);
+            setFastTorqueWithBias(throttlePos_u8, front_bias_endurance);
             // setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
             // set_regen(throttlePos_u8);
             // set_regen_with_slew(throttlePos_u8, 29.0f);

@@ -70,7 +70,7 @@ static const uint16_t BRAKE_ACTIVE_THRES_PSI = 100;
 
 /** @brief  Maximum amount of pressure that we are confortable being 
             in the tanks when ASMS is off */
-#define MAX_EBS_AIR_PRES_DECI_BAR_NON_DV_SAFE 10
+#define MAX_EBS_AIR_PRES_DECI_BAR_NON_DV_SAFE 40
 
 /**
  * @brief Mapping of sensor channels to ADC channels.
