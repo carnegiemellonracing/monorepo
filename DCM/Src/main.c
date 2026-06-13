@@ -90,7 +90,7 @@ static void statusLED(void *pvParameters) {
     // i2cInit();
     canInit();
     adcInit();
-    // servoInit();
+    brakelightInit();
     motorsInit();
     sensorsInit();
     pumpsOn();
