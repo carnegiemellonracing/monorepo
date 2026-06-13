@@ -25,6 +25,16 @@ static const TickType_t tssiControl_period_ms = 250;
 /** @brief TSSI control task. */
 static cmr_task_t tssiControl_task;
 
+static void errorState() {
+    pwmSetDutyCycle(PWM_GREEN, 0);
+    pwmSetDutyCycle(PWM_RED, 50);
+}
+
+static void normalState() {
+    pwmSetDutyCycle(PWM_GREEN, 100);
+    pwmSetDutyCycle(PWM_RED, 0);
+}
+
 /**
  * @brief Task for controlling the TSSI.     
  *
@@ -45,17 +55,17 @@ static void tssiControl(void *pvParameters) {
             initStartTime = xTaskGetTickCount();
         }
         else if (initStarted && lastWakeTime - initStartTime < INIT_WAIT_TIME_MS) {
-            pwmSetDutyCycle(PWM_GREEN, 100);
-            pwmSetDutyCycle(PWM_RED, 0);
+            normalState();
         }
         else {
-            if(getAMSError() || !cmr_gpioRead(GPIO_IN_IMD_ERR_COND_N)){
-                pwmSetDutyCycle(PWM_RED, 50);
-                pwmSetDutyCycle(PWM_GREEN, 0); 
+            if( getAMSError() || 
+                !cmr_gpioRead(GPIO_IN_IMD_ERR_N) || 
+                !cmr_gpioRead(GPIO_IN_IMD_ERR_COND_N))
+            {
+                errorState();
             }
             else{
-                pwmSetDutyCycle(PWM_GREEN, 100);
-                pwmSetDutyCycle(PWM_RED, 0);
+               normalState();
             }
         }
 
