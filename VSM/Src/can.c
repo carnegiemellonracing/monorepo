@@ -534,8 +534,8 @@ static void sendVSMSensors(void) {
         .batt_mV =               cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV),
         .safetyIn_eight_V =      cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_IN),
         .safetyOut_eight_V =     cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_OUT),
-        .EAB_pressed =           cmr_gpioRead(GPIO_IN_EAB),
-        .HV_current_A =          cmr_sensorListGetValue(&sensorList, SENSOR_CH_HALL_EFFECT_A),
+        .EAB_pressed =           cmr_gpioRead(GPIO_IN_EAB)
+        .bspd_adc_ls4 =
     };
 
     canTX(CMR_CANID_VSM_SENSORS, &msg, sizeof(msg), canTX10Hz_period_ms);

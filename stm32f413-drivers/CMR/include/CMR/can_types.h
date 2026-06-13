@@ -425,12 +425,11 @@ typedef struct {
 
 /** @brief Vehicle Safety Module sensor data. */
 typedef struct {
-    uint16_t brakePressureRear_PSI;     /**< @brief Rear brake pressure (pounds-per-square-inch). */
-    uint16_t batt_mV;                   /**< @brief Hall effect current (centi-Amps). */
-    uint8_t safetyIn_eight_V;           /**< @brief Safety circuit input voltage (eight volts). */
-    uint8_t safetyOut_eight_V;          /**< @brief Safety circuit output voltage (eight volts). */
-    bool    EAB_pressed;                /**< @brief EAB Pressed. */
-    int8_t  HV_current_A;               /**< @brief High voltage current (Amps). */        
+    uint16_t brakePressureRear_PSI;      /**< @brief Rear brake pressure (pounds-per-square-inch). */
+    uint16_t batt_mV;                    /**< @brief Hall effect current (centi-Amps). */
+    uint8_t safetyIn_eight_V;            /**< @brief Safety circuit input voltage (eight volts). */
+    uint8_t safetyOut_eight_V;           /**< @brief Safety circuit output voltage (eight volts). */
+    bool    EAB_pressed;                 /**< @brief EAB Pressed. */
 } cmr_canVSMSensors_t;
 
 typedef struct {

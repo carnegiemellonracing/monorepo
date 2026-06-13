@@ -16,7 +16,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN];
 /** @brief Mapping of ADC channels to sensors. */
 static const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] =
 {
-    [SENSOR_CH_HALL_EFFECT_A]  = ADC_HALL_EFFECT,
+    [SENSOR_CH_HALL_EFFECT_A] = ADC_HALL_EFFECT,
     [SENSOR_CH_BPRES_PSI]      = ADC_REAR_BRAKE_PRES,
     [SENSOR_CH_VOLTAGE_MV]     = ADC_VSENSE,
     [SENSOR_CH_SS_IN]          = ADC_SSIN,
@@ -95,18 +95,18 @@ static int32_t adcToBusCurrent_mA(const cmr_sensor_t *sensor, uint32_t value) {
  *
  * @return Current in centi-amps.
  */
-static int32_t adc_to_HV_current_A(const cmr_sensor_t *sensor, uint32_t value) {
+static int32_t adcToACCurrent_cA(const cmr_sensor_t *sensor, uint32_t value) {
     (void) sensor;  // Placate compiler.
 
     // https://www.lem.com/sites/default/files/products_datasheets/ho_50_250-s-0100_series.pdf
-    float amps_per_normalize_sensor_volt = 125.0f / 2.0f;
+    float amps_per_sensor_volt = 125.0f / 2.0f;
     float mcu_volts_per_adc = 3.3f / 4096.0f; 
     float sensor_volts_per_mcu_volt = 5.51f / 3.3f; // Based on voltage divider
     float mcu_volts = value * mcu_volts_per_adc;
-    float sensor_volts = mcu_volts * sensor_volts_per_mcu_volt;
-    float normalized_sensor_volts = sensor_volts - 2.5f; // Sensor outputs 2.5 V at 0 A
-    float amps = normalized_sensor_volts * amps_per_normalize_sensor_volt;
-    return (int8_t) (amps);
+    float sensor_volts = mcu_volts * sensor_volts_per_mcu_volt
+    float amps = value * amps_per_adc;
+    return (int32_t) (amps);
+
 }
 
 /**
@@ -139,7 +139,7 @@ static int32_t adcToBrakePres_PSI(const cmr_sensor_t *sensor, uint32_t value) {
 cmr_sensor_t sensors[SENSOR_CH_LEN] = {
     [SENSOR_CH_HALL_EFFECT_A] = {
         .sample = sampleADCSensor,
-        .conv = adc_to_HV_current_A,
+        .conv = adcToACCurrent_cA,
         .readingMin = 0,            // TODO
         .readingMax = CMR_ADC_MAX,  // TODO
         .outOfRange_pcnt = 10,
