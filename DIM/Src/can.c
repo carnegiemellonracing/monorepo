@@ -390,7 +390,7 @@ static void canTX100Hz(void *pvParameters) {
     	uint8_t paddle = (uint8_t) ((adcRead(ADC_PADDLE) - 16.062) / 3694.43) * 255.0;
     	uint8_t regenPercent = (uint8_t)((adcRead(ADC_PADDLE) / 255.0) * 100.0);
         uint8_t packed = 0;
-        uint8_t ctrlOn = !cmr_gpioRead(GPIO_CTRL_SWITCH);
+        uint8_t ctrlOff = !cmr_gpioRead(GPIO_CTRL_SWITCH);
         uint8_t dvCtrlMode = stateGetDVMode();
         for(int i=0; i<NUM_BUTTONS; i++){
             packed |= buttonStates[i].gpioState << i; 
@@ -400,7 +400,7 @@ static void canTX100Hz(void *pvParameters) {
             .buttonStates = packed,
             .regenPercent = regenPercent,
             .paddle = paddle,
-            .controlsStatus = ctrlOn,
+            .cntrlOff = false,
 			.dvControlMode = dvCtrlMode
         };
         canTX(
