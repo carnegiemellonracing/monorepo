@@ -831,7 +831,7 @@ static void sendFSMData(void) {
     uint8_t torqueRequested = 0;
 
     if (heartbeatVSM->state == CMR_CAN_RTD &&
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPP_IMPLAUS) == 0  // Temp comment to remove implausability
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPP_IMPLAUS) == 0 
     ) {
         torqueRequested = throttlePosition;
     }

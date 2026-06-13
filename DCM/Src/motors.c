@@ -85,42 +85,6 @@ static bool ctrlOff = false;
 // ------------------------------------------------------------------------------------------------
 // Private functions
 
-static void motorsTest (void *pvParameters) {
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    volatile cmr_canHeartbeat_t *heartbeatVSM   = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
-    volatile cmr_canVSMStatus_t *vsm            = canVehicleGetPayload(CANRX_VSM_STATUS);
-    volatile cmr_canFSMData_t   *dataFSM        = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
-
-
-    while (1) {
-        volatile cmr_canFSMData_t *dataFSM = canVehicleGetPayload(CANRX_VEH_DATA_FSM);
-        uint8_t throttlePos = dataFSM->throttlePosition;
-        uint16_t setCurrent = (uint16_t)(((float)throttlePos * (float)MAX_CURRENT_DECI_AMPS / (float)UINT8_MAX));
-        // setCurrent = setCurrent << 8 | ((setCurrent >> 8) & 0xFF);
-        //enables motors to drive
-        uint8_t driveEnable = 1;
-        setPowerLimit(true, MOTOR_FL, 20.25f);
-
-        if (vsm->internalState == CMR_CAN_VSM_STATE_INVERTER_EN || heartbeatVSM->state == CMR_CAN_HV_EN) {
-            setCurrent = 0;
-            mcCtrlOn();
-            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
-            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
-        }
-        else if(heartbeatVSM->state == CMR_CAN_RTD){
-            mcCtrlOn();
-            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &driveEnable, sizeof(driveEnable), can10Hz_period_ms);
-            sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_CURRENT, &setCurrent, sizeof(setCurrent), can10Hz_period_ms);
-        }
-        else {
-            mcCtrlOff();
-        }
-
-        vTaskDelayUntil(&lastWakeTime, motorsCommand_period_ms);
-    }
-}
-
 /**
  * @brief Send Blank Command To Inverters
  */
@@ -315,7 +279,6 @@ void motorsInit (
 ) {
     initControls();
 
-    // Task creation.
     cmr_taskInit(
         &motorsCommand_task,
         "motorsCommand",
@@ -323,13 +286,6 @@ void motorsInit (
         motorsCommand,
         NULL
     );
-    // cmr_taskInit(
-    //     &motorsTest_task,
-    //     "motorsTest",
-    //     motorsCommand_priority,
-    //     motorsTest,
-    //     NULL
-    // );
 }
 
 /**
