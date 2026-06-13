@@ -417,7 +417,7 @@ TimeOut=50
 Var=ACTIONS_buttonStates unsigned 0,8
 Var=ACTIONS_regenPercent unsigned 8,8
 Var=ACTIONS_paddle unsigned 16,8
-Var=ACTIONS_controlsStatus unsigned 24,8
+Var=ACTIONS_cntrlOff unsigned 24,8
 Var=ACTIONS_dvControlMode unsigned 32,8
 
 [DIM_REQUEST]
