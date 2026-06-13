@@ -1,12 +1,13 @@
 name: Build
-run-name: ${{ github.actor }}-${{ github.repository }} Build 🚀
+run-name: ${{ github.actor }}-${{ github.repository }} Build
 
 on:
   push:
     branches:
       - '**'
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -21,8 +22,42 @@ jobs:
         with:
           submodules: true
 
+      - name: Show Build Environment
+        run: |
+          command -v arm-none-eabi-gcc
+          arm-none-eabi-gcc --version
+          arm-none-eabi-gcc -dumpfullversion
+          arm-none-eabi-gcc -dumpmachine
+          cmake --version
+
+      #wrapper to restore behavior similar to GCC 13
+      - name: Create GCC Compatibility Wrapper
+        run: |
+          mkdir -p "${RUNNER_TEMP}/ci-toolchain"
+
+          cat > "${RUNNER_TEMP}/ci-toolchain/arm-none-eabi-gcc" <<'EOF'
+          #!/usr/bin/env bash
+          exec /usr/bin/arm-none-eabi-gcc -fpermissive "$@"
+          EOF
+
+          chmod +x "${RUNNER_TEMP}/ci-toolchain/arm-none-eabi-gcc"
+          echo "${RUNNER_TEMP}/ci-toolchain" >> "${GITHUB_PATH}"
+
+      - name: Verify GCC Compatibility Wrapper
+        run: |
+          command -v arm-none-eabi-gcc
+          arm-none-eabi-gcc --version
+
+          case "$(command -v arm-none-eabi-gcc)" in
+            "${RUNNER_TEMP}/ci-toolchain/"*) ;;
+            *)
+              echo "GCC compatibility wrapper was not selected"
+              exit 1
+              ;;
+          esac
+
       - name: Configure CMake
-        run: cmake -S . -B build
+        run: cmake --preset debug --fresh
 
       - name: Build Project
-        run: cmake --build build
+        run: cmake --build --preset debug --verbose
