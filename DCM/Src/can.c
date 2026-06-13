@@ -1078,10 +1078,10 @@ static void canTX200Hz(void *pvParameters) {
             new_res_message = false;
         }
 
-        if(new_as_finished_message) {
-            void *asFinishedData = canDAQGetPayload(CANRX_VEH_AS_FINISHED);
+        if(new_AS_finished_message) {
+            void *asFinishedData = canDAQGetPayload(CANRX_DAQ_AS_FINISHED);
             canTX(CMR_CAN_BUS_VEH, CMR_CANID_AS_MISSION_FINISHED, asFinishedData, sizeof(asFinishedData), canTX200Hz_period_ms);
-            new_as_finished_message = false;
+            new_AS_finished_message = false;
         }
 
         float hvVoltage_V = (float)(packVoltage->battVoltage_mV) / 1000.0f;
