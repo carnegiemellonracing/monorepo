@@ -423,8 +423,8 @@ Var=ACTIONS_dvControlMode unsigned 32,8
 [DIM_REQUEST]
 ID=235h
 DLC=5
-CycleTime=5
-TimeOut=25
+CycleTime=100
+TimeOut=500
 Var=REQUEST_requestedState unsigned 0,8 /e:State
 Var=REQUEST_requestedGear unsigned 8,8 /e:Gear
 Var=REQUEST_requestedDrsMode unsigned 16,8 /e:DrsMode
@@ -761,8 +761,8 @@ Var=SENSORS_packCurrent_dA unsigned 16,16
 [IVT_CURRENT]
 ID=521h
 DLC=2
-CycleTime=400
-TimeOut=2000
+CycleTime=10
+TimeOut=50
 Var=CURRENT_muxID unsigned 0,8
 Var=CURRENT_count_state unsigned 8,8
 
@@ -921,6 +921,12 @@ Var=longest_power_violation_ms unsigned 32,8 /u:ms
 Var=STATE_over_voltage_count unsigned 40,8
 Var=STATE_under_voltage_count unsigned 48,8
 Var=STATE_over_temp_count unsigned 56,8
+
+[TEST_ID]
+CycleTime=100
+DLC=1
+TimeOut=500
+Var=ID_test_id unsigned 0,8
 
 [VSM_LATCHED_STATUS]
 ID=510h
