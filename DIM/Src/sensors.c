@@ -68,6 +68,10 @@ static const uint16_t BRAKE_ACTIVE_THRES_PSI = 100;
 /** @brief Max air pressure for EBS to be actuated */
 #define MAX_EBS_AIR_PRES_DECI_BAR 120
 
+/** @brief  Maximum amount of pressure that we are confortable being 
+            in the tanks when ASMS is off */
+#define MAX_EBS_AIR_PRES_DECI_BAR_NON_DV_SAFE 10
+
 /**
  * @brief Mapping of sensor channels to ADC channels.
  */
@@ -82,6 +86,8 @@ const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
 	[SENSOR_CH_EBS_PRESSURE_2_DECI_BAR]  = ADC_EBS_AIR_PRES_2,
     [SENSOR_CH_EBS_CURRENT_1_MA]    = ADC_EBS_CURRENT_1,
 	[SENSOR_CH_EBS_CURRENT_2_MA]    = ADC_EBS_CURRENT_2,
+    [SENSOR_CH_EBS_PRESSURE_1_DECI_BAR_NON_DV_CHECK] = ADC_EBS_AIR_PRES_1,
+    [SENSOR_CH_EBS_PRESSURE_2_DECI_BAR_NON_DV_CHECK] = ADC_EBS_AIR_PRES_2
 };
 
 /** @brief forward declaration */
@@ -398,6 +404,20 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .sample          = sampleADCSensor,
         .readingMin      = MIN_EBS_AIR_PRES_DECI_BAR,
         .readingMax      = MAX_EBS_AIR_PRES_DECI_BAR,
+        .outOfRange_pcnt = 10
+    },
+    [SENSOR_CH_EBS_PRESSURE_1_DECI_BAR_NON_DV_CHECK] = {   
+        .conv            = adcToEBSBrakePressure_deci_bar, 
+        .sample          = sampleADCSensor,
+        .readingMin      = 0,
+        .readingMax      = MAX_EBS_AIR_PRES_DECI_BAR_NON_DV_SAFE,
+        .outOfRange_pcnt = 10
+    },
+    [SENSOR_CH_EBS_PRESSURE_2_DECI_BAR_NON_DV_CHECK] = {   
+        .conv            = adcToEBSBrakePressure_deci_bar, 
+        .sample          = sampleADCSensor,
+        .readingMin      = 0,
+        .readingMax      = MAX_EBS_AIR_PRES_DECI_BAR_NON_DV_SAFE,
         .outOfRange_pcnt = 10
     },
     [SENSOR_CH_EBS_CURRENT_1_MA] = {   

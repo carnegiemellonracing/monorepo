@@ -48,6 +48,14 @@ void update_dv_errors(cmr_canError_t* errors) {
         error_present_bool = true;
     }
 
+    if (!ASMS_on && cmr_sensorListGetValue(&sensorList, SENSOR_CH_EBS_PRESSURE_1_DECI_BAR_NON_DV_CHECK) > CMR_SENSOR_ERR_NONE){
+        error_present |= CMR_CAN_ERROR_DIM_TANK_PRESSURE_NON_DV_1_OOR;
+    }
+
+    if (!ASMS_on && cmr_sensorListGetValue(&sensorList, SENSOR_CH_EBS_PRESSURE_2_DECI_BAR_NON_DV_CHECK) != CMR_SENSOR_ERR_NONE){
+        error_present |= CMR_CAN_ERROR_DIM_TANK_PRESSURE_NON_DV_2_OOR;
+    }
+
     cmr_gpioWrite(GPIO_AS_ERROR, error_present_bool);
     *errors |= error_present;
 }
