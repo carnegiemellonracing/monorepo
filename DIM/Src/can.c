@@ -640,25 +640,6 @@ void canRXCallback(cmr_can_t *can, uint16_t canID, const void *data, size_t data
         canID <= CMR_CANID_CDC_CONFIG3_DRV3) {
         cdcRXCallback(can, canID, data, dataLen);
     }
-    
-    if(canID == CMR_CANID_HVBMS_PACK_VOLTAGE
-    || canID == CMR_CANID_HVC_LOW_VOLTAGE
-    || canID == CMR_CANID_HVC_MINMAX_CELL_VOLTAGE) {
-        update_voltages = true;
-    }
-
-    if(canID == CMR_CANID_SENSORIC_DIST
-    || canID == CMR_CANID_SENSORIC_VEL_ANG) {
-        update_sensors_odom = true;
-    }
-
-    if(canID == CMR_CANID_DTI_FL_TEMPFAULT
-    || canID == CMR_CANID_DTI_FR_TEMPFAULT
-    || canID == CMR_CANID_DTI_RL_TEMPFAULT
-    || canID == CMR_CANID_DTI_RR_TEMPFAULT
-    || canID == CMR_CANID_HVBMS_MIN_MAX_CELL_TEMPERATURE) {
-        update_temps = true;
-    }
 }
 
 /**
