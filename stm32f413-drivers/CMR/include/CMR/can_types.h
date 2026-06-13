@@ -265,10 +265,14 @@ typedef enum {
 typedef enum {
     /** @brief No modules have timed out. */
     CMR_CAN_VSM_TIMEOUT_SOURCE_NONE = 0,
+    /** @brief At least one cubemars has timed out. */
+    CMR_CAN_VSM_TIMEOUT_SOURCE_CUBEMARS= (1 << 7),
+    /** @brief At least one compute message has timed out. */
+    CMR_CAN_VSM_TIMEOUT_SOURCE_COMPUTE = (1 << 6),
     /** @brief At least one High Voltage Controller message has timed out. */
     CMR_CAN_VSM_TIMEOUT_SOURCE_HVC = (1 << 6),
     /** @brief At least one Central Dynamics Controller message has timed out. */
-    CMR_CAN_VSM_TIMEOUT_SOURCE_CDC = (1 << 5),
+    CMR_CAN_VSM_TIMEOUT_SOURCE_DCM = (1 << 5),
     /** @brief At least one Front Sensor Module message has timed out. */
     CMR_CAN_VSM_TIMEOUT_SOURCE_FSM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
@@ -281,13 +285,13 @@ typedef enum {
 typedef enum {
     /** @brief No modules have timed out. */
     CMR_CAN_VSM_BADSTATE_SOURCE_NONE = 0,
-    /** @brief At least one High Voltage Controller message has timed out. */
+    /** @brief Compute is in a bad state (error) */
+    CMR_CAN_VSM_BADSTATE_SOURCE_COMPUTE = (1 << 7),
+    /** @brief HVC is in a bad state (error) */
     CMR_CAN_VSM_BADSTATE_SOURCE_HVC = (1 << 6),
-    /** @brief At least one Central Dynamics Controller message has timed out. */
-    CMR_CAN_VSM_BADSTATE_SOURCE_CDC = (1 << 5),
-    /** @brief At least one Front Sensor Module message has timed out. */
-    CMR_CAN_VSM_BADSTATE_SOURCE_FSM = (1 << 4),
-    /** @brief At least one Driver Interface Module message has timed out. */
+    /** @brief DCM is in a bad state (error) */
+    CMR_CAN_VSM_BADSTATE_SOURCE_DCM = (1 << 5),
+    /** @brief DIM is in a bad state (error) */
     CMR_CAN_VSM_BADSTATE_SOURCE_DIM = (1 << 3),
     /** @brief HVBMS Timeout. */
     CMR_CAN_VSM_BADSTATE_SOURCE_HVBMS = (1 << 0)

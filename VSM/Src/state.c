@@ -204,7 +204,6 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
      || (vsmStatus.canVSMStatus.moduleTimeoutMatrix != CMR_CAN_VSM_TIMEOUT_SOURCE_NONE)
      || (vsmStatus.canVSMStatus.latchMatrix != CMR_CAN_VSM_LATCH_NONE)) {
         if(ASState && (state > CMR_CAN_VSM_STATE_REQ_PRECHARGE)) {
-            __asm__("nop");
             return CMR_CAN_VSM_STATE_AS_EMERGENCY;
         }
         return CMR_CAN_VSM_STATE_ERROR;
@@ -278,9 +277,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                 && ASState 
                 && getMissionSelected() 
                 && getDVBrakeDeployable() 
-                && getDVBrakeActive()
-                && !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HEARTBEAT_COMPUTE], lastWakeTime_ms)){
-                // && !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_CUBEMARS_DATA], lastWakeTime_ms)){
+                && getDVBrakeActive()){
                 nextState = CMR_CAN_VSM_STATE_REQ_PRECHARGE;
             }
             else if (dimRequestedState == CMR_CAN_AS_READY) {
@@ -637,9 +634,7 @@ static inline bool TSActive(){
  */
 static inline bool AutonomousClear(){
     TickType_t lastWakeTime = xTaskGetTickCount();
-    return ASState && getDVBrakeDeployable() && getMissionSelected() && TSActive() && !RESTriggered()
-        && !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HEARTBEAT_COMPUTE], lastWakeTime);
-        // && !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_CUBEMARS_DATA], lastWakeTime);
+    return ASState && getDVBrakeDeployable() && getMissionSelected() && TSActive() && !RESTriggered();
 }
  
 /**
