@@ -472,17 +472,6 @@
                 "u": "V"
             }
         },
-        "CMR_CANID_EMD_MEASUREMENT_RETX": {
-            "current": {
-                "u": "A"
-            },
-            "cycleTime": 10.0,
-            "timeOut": 50,
-            "type": "cmr_canEMDMeasurements_t",
-            "voltage": {
-                "u": "V"
-            }
-        },
         "CMR_CANID_EMD_TEMPERATURE": {
             "cycleTime": 100,
             "timeOut": 500,
@@ -1028,13 +1017,13 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2901,
-        "files_with_matches": 2901,
+        "files_processed": 2913,
+        "files_with_matches": 2913,
         "global_mappings": {
             "canrx_mappings": 192,
             "canrx_timeouts": 182,
-            "canrx_types": 65,
-            "constants": 267,
+            "canrx_types": 64,
+            "constants": 268,
             "struct_members": 0,
             "variable_types": 330
         },
@@ -1042,6 +1031,6 @@
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 111
+        "total_canids": 110
     }
 }

@@ -77,11 +77,12 @@ void tftDL_RTDUpdate(
     int32_t glvVoltage_V,
     uint8_t glvSoC,
     uint8_t hvSoC,
-    bool yrcOn,
-    bool tcOn,
-    bool ssOn,
+    bool controlsOn,
+    bool sdcOn,
     float odometer_km,
     bool drsOpen,
+    uint32_t brakePressure_psi,
+    uint8_t throttlePos,
     cornerId_t hottest_motor);
 
 void tftDL_racingScreenUpdate(
