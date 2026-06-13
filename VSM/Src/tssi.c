@@ -43,10 +43,8 @@ static void flash_normal_state() {
 static void tssiControl(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-    static bool initStarted = false;
-    static TickType_t initStartTime = 0;
+    static bool exitedErrorState = false;
     TickType_t lastWakeTime = xTaskGetTickCount();
-
     while (1) {
         bool tssi_red_error =   getAMSError() || 
                                 !cmr_gpioRead(GPIO_IN_IMD_ERR_N) || 
