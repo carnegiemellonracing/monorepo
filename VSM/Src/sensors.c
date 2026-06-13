@@ -16,7 +16,7 @@ cmr_sensor_t sensors[SENSOR_CH_LEN];
 /** @brief Mapping of ADC channels to sensors. */
 static const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] =
 {
-    [SENSOR_CH_HALL_EFFECT_ADC] = ADC_HALL_EFFECT,
+    [SENSOR_CH_HALL_EFFECT_A] = ADC_HALL_EFFECT,
     [SENSOR_CH_BPRES_PSI]      = ADC_REAR_BRAKE_PRES,
     [SENSOR_CH_VOLTAGE_MV]     = ADC_VSENSE,
     [SENSOR_CH_SS_IN]          = ADC_SSIN,
@@ -98,32 +98,15 @@ static int32_t adcToBusCurrent_mA(const cmr_sensor_t *sensor, uint32_t value) {
 static int32_t adcToACCurrent_cA(const cmr_sensor_t *sensor, uint32_t value) {
     (void) sensor;  // Placate compiler.
 
-//     // https://www.lem.com/sites/default/files/products_datasheets/ho_50_250-s-0100_series.pdf
-//     const uint32_t sensitivity_mVperA = 8; // 8 mV/A at 5V sensor
-//     static uint32_t offset_mV = 0; // 2.5V nominal output of 5V sensor on 23e - level shifted to 3.3V
-//     static uint32_t offsetSum_mV = 0;
-//     static uint32_t counter = 0;
-//     const uint32_t total = 100;
-// /**
-//     3V3 Reading_mV = ADC Value / 2^12 * 3.3 * 1000
-//     5V Reading_mV = 3V3 Reading_mV * 5 / 3          - Since 5V to 3V voltage divider not 3.3V
-//     AC mA = (5V Reading_mV - 2500) / 16mv/A * 100cA/A
-// */
-//     // Convert 3.3V ADC reading into 5V Sensor Voltage output
-//     uint32_t sensor3V3Output_mV = (value * 3300) >> 12;
-//     uint32_t sensor5VOutput_mV = sensor3V3Output_mV * 5 / 3;    
+    // https://www.lem.com/sites/default/files/products_datasheets/ho_50_250-s-0100_series.pdf
+    float amps_per_sensor_volt = 125.0f / 2.0f;
+    float mcu_volts_per_adc = 3.3f / 4096.0f; 
+    float sensor_volts_per_mcu_volt = 5.51f / 3.3f; // Based on voltage divider
+    float mcu_volts = value * mcu_volts_per_adc;
+    float sensor_volts = mcu_volts * sensor_volts_per_mcu_volt
+    float amps = value * amps_per_adc;
+    return (int32_t) (amps);
 
-//     if (counter > 9 && counter < total) {
-//     	offsetSum_mV += sensor5VOutput_mV;
-//     } else if (counter == total) {
-//         // Calibrate 0A at power on - after 100 samples
-//         offset_mV = offsetSum_mV / (total - 10);
-//     }
-//     if (counter <= total) {
-//         counter++;
-//     }
-    // Convert 5V Sensor voltage output to cA
-    return value;
 }
 
 /**
@@ -154,7 +137,7 @@ static int32_t adcToBrakePres_PSI(const cmr_sensor_t *sensor, uint32_t value) {
 
 // TODO calibrate all of these min/max values
 cmr_sensor_t sensors[SENSOR_CH_LEN] = {
-    [SENSOR_CH_HALL_EFFECT_ADC] = {
+    [SENSOR_CH_HALL_EFFECT_A] = {
         .sample = sampleADCSensor,
         .conv = adcToACCurrent_cA,
         .readingMin = 0,            // TODO

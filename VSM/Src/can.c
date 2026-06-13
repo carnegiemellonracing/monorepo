@@ -227,7 +227,6 @@ static void sendVSMSensors(void);
 static void sendVSMLatchedStatus(void);
 static void sendHVCCommand(void);
 static void sendRESEnable();
-static void send_BSPD_adc();
 void resetError();
 
 /**
@@ -263,24 +262,10 @@ static void canTX100Hz(void *pvParameters) {
         sendHeartbeat(lastWakeTime);
         sendVSMStatus();
         sendHVCCommand();
-        send_BSPD_adc();
-
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
 }
 
-/**
- * @brief Sends the BSPD adc
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void send_BSPD_adc() {
-
-    uint16_t BSPD_adc = cmr_sensorListGetValue(&sensorList, SENSOR_CH_HALL_EFFECT_ADC);
-    canTX(0x4AB, &BSPD_adc, sizeof(BSPD_adc), canTX100Hz_period_ms);
-}
 
 /**
  * @brief Task for sending latched status.
@@ -550,6 +535,7 @@ static void sendVSMSensors(void) {
         .safetyIn_eight_V =      cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_IN),
         .safetyOut_eight_V =     cmr_sensorListGetValue(&sensorList, SENSOR_CH_SS_OUT),
         .EAB_pressed =           cmr_gpioRead(GPIO_IN_EAB)
+        .bspd_adc_ls4 =
     };
 
     canTX(CMR_CANID_VSM_SENSORS, &msg, sizeof(msg), canTX10Hz_period_ms);
