@@ -52,6 +52,8 @@ bool new_dim_request = false;
 bool new_compute_heartbeat = false;
 bool new_cubemars_data = false;
 bool new_res_message = false;
+bool new_AS_finished_message = false;
+
 
 /** @brief Fan/Pump channel states. */
 uint16_t fan_1_State;
@@ -664,6 +666,11 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
         .timeoutError_ms = 1000,
         .timeoutWarn_ms = 250
     },
+    [CANRX_DAQ_AS_FINISHED] = {
+        .canID = CMR_CANID_AS_MISSION_FINISHED,
+        .timeoutError_ms = 1000,
+        .timeoutWarn_ms = 250
+    },
 };
 
 /**
@@ -1071,6 +1078,12 @@ static void canTX200Hz(void *pvParameters) {
             new_res_message = false;
         }
 
+        if(new_as_finished_message) {
+            void *asFinishedData = canDAQGetPayload(CANRX_VEH_AS_FINISHED);
+            canTX(CMR_CAN_BUS_VEH, CMR_CANID_AS_MISSION_FINISHED, asFinishedData, sizeof(asFinishedData), canTX200Hz_period_ms);
+            new_as_finished_message = false;
+        }
+
         float hvVoltage_V = (float)(packVoltage->battVoltage_mV) / 1000.0f;
         uint16_t currentFL_dA = (int)((10.0f*((float)powerLimitFL_kW*1000.0f))/hvVoltage_V);
         uint16_t currentFR_dA = (int)((10.0f*((float)powerLimitFR_kW*1000.0f))/hvVoltage_V);
@@ -1396,6 +1409,10 @@ void conditionalCallback(cmr_can_t *canb_rx, uint32_t canID, const void *data, s
 
     if(canID == CMR_CANID_AS_RES) {
         new_res_message = true;
+    }
+
+    if(canID == CMR_CANID_AS_MISSION_FINISHED) {
+        new_AS_finished_message = true;
     }
 
     // If DIM config message, handle it

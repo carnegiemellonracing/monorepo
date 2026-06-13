@@ -149,6 +149,7 @@ typedef enum {
     CANRX_DAQ_AUTONOMOUS_ACTION,
     CANRX_DAQ_AUTONOMOUS_PID_CONSTANTS, /**< @brief Autonomous PID Constants used for tuning. */
     CANRX_DAQ_CUBEMARS_DATA,    /**< @brief Steering motor published data. */
+    CANRX_DAQ_AS_FINISHED,
     CANRX_DAQ_LEN               /**< @brief Number of periodic CAN messages. */
 } canDaqRX_t;
 
