@@ -542,8 +542,8 @@ void reqVSM(void) {
         return;
     }
 
-    if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM == CMR_CAN_CLEAR_ERROR 
-    || stateGetVSM() == CMR_CAN_AS_FINISHED || stateGetVSM == CMR_CAN_AS_EMERGENCY) {
+    if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM() == CMR_CAN_CLEAR_ERROR 
+    || stateGetVSM() == CMR_CAN_AS_FINISHED || stateGetVSM() == CMR_CAN_AS_EMERGENCY) {
         state.vsmReq = CMR_CAN_GLV_ON;
         return;
     }
