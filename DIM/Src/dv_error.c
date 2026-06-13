@@ -23,26 +23,27 @@ void update_dv_errors(cmr_canError_t* errors) {
     cmr_canState_t vsm_state = stateGetVSM();
     cmr_canError_t error_present = CMR_CAN_ERROR_NONE;
     bool error_present_bool = false;
-    bool is_AS_active_state =  (vsm_state == CMR_CAN_AS_READY || 
+    bool ASMS_on = getASMS();
+    bool is_AS_active_state =  ASMS_on && (vsm_state == CMR_CAN_AS_READY || 
                                 vsm_state == CMR_CAN_AS_DRIVING);
 
 
-    if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_CURRENT_1_MA) != CMR_SENSOR_ERR_NONE && is_AS_active_state){
+    if (is_AS_active_state && cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_CURRENT_1_MA) != CMR_SENSOR_ERR_NONE){
         error_present |= CMR_CAN_ERROR_DIM_SOLENOID_CURRENT_1_OOR;
         error_present_bool = true;
     }
 
-    if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_CURRENT_2_MA) != CMR_SENSOR_ERR_NONE && is_AS_active_state){
+    if (is_AS_active_state && cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_CURRENT_2_MA) != CMR_SENSOR_ERR_NONE ){
         error_present |= CMR_CAN_ERROR_DIM_SOLENOID_CURRENT_2_OOR;
         error_present_bool = true;
     }
 
-    if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_PRESSURE_1_DECI_BAR) != CMR_SENSOR_ERR_NONE){
+    if (ASMS_on && cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_PRESSURE_1_DECI_BAR) != CMR_SENSOR_ERR_NONE){
         error_present |= CMR_CAN_ERROR_DIM_TANK_PRESSURE_1_OOR;
         error_present_bool = true;
     }
 
-    if (cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_PRESSURE_2_DECI_BAR) != CMR_SENSOR_ERR_NONE){
+    if (ASMS_on && cmr_sensorListGetError(&sensorList, SENSOR_CH_EBS_PRESSURE_2_DECI_BAR) != CMR_SENSOR_ERR_NONE){
         error_present |= CMR_CAN_ERROR_DIM_TANK_PRESSURE_2_OOR;
         error_present_bool = true;
     }
