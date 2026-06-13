@@ -141,12 +141,12 @@ static void motorsCommand (
 
         if(ctrlOff 
         && dataFSM->throttlePosition < 5 
-        && !actions->controlsStatus) {
+        && !actions->cntrlOff) {
             ctrlOff = false;
         }
         else if(!ctrlOff 
         && dataFSM->throttlePosition < 5 
-        && actions->controlsStatus) {
+        && actions->cntrlOff) {
             ctrlOff = true;
         }
 
@@ -189,7 +189,7 @@ static void motorsCommand (
                             swangleFSM->steeringWheelAngle_millideg_FR,
                             voltageHVC -> hvVoltage_mV,
                             currentHVC -> instantCurrent_mA,
-                            actions    -> controlsStatus,
+                            ctrlOff,
                             blank_command);
                 //taskEXIT_CRITICAL();
 

@@ -19,6 +19,8 @@
 #include "tft.h"   // TFT display interface.
 #include "tftDL.h"
 #include "adc.h"
+#include "dv_error.h"
+
 
 static const uint32_t stateMachine_priority = 4;
 
