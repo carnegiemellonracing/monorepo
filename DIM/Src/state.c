@@ -534,7 +534,14 @@ void reqVSM(void) {
         EABStateUp();
         return;
     }
-    
+
+    cmr_canError_t error = CMR_CAN_ERROR_NONE;
+    update_dv_errors(&error);
+    if(error != CMR_CAN_ERROR_NONE) {
+        state.vsmReq = CMR_CAN_ERROR;
+        return;
+    }
+
     if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM == CMR_CAN_CLEAR_ERROR 
     || stateGetVSM() == CMR_CAN_AS_FINISHED || stateGetVSM == CMR_CAN_AS_EMERGENCY) {
         state.vsmReq = CMR_CAN_GLV_ON;
