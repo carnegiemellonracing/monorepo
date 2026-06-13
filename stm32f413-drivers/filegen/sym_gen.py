@@ -8,6 +8,29 @@ symlines = []
 used_varnames = [] 
 used_canids = [] #delete once canids fixed, shouldn't need 
 bitfields = False 
+#maps heartbeat name to real board name, should become just list after renamings
+boardnames = {
+    "VSM": "VSM",
+    "HVC": "HVC",
+    "CDC": "DCM",
+    "DIM": "DIM",
+    "RAM": "LTM",
+    "LV_BMS": "LV_BMS",
+    "HV_BMS": "HV_BMS",
+}
+
+def get_heartbeat_boardname(canid):
+    key = "" 
+    for kboard, board in boardnames.items():
+        if kboard in canid:
+            key = kboard 
+        if canid in (f"CMR_CANID_HEARTBEAT_{kboard}"):
+            return kboard,board
+    parts = [part for part in canid.split("_") if part not in ("CMR", "CANID", "HEARTBEAT")]
+    if "HEARTBEAT" in canid and parts:
+        board = "_".join(parts)
+        return key, board
+    return None
 
 def numbercanids():
     canidfile = "stm32f413-drivers/CMR/include/CMR/can_ids.h"
@@ -61,12 +84,12 @@ def id2hex(id):
 
 def add_mapper_data(canid, cycletime, timeout, structlines):
         name = re.findall(r'CMR_CANID_(\w+)',canid) 
-        if "HEARTBEAT" not in name[0]: 
+        #parse out board name from canID for heartbeats 
+        boardname = get_heartbeat_boardname(name[0])
+        if "HEARTBEAT" in name[0] and boardname:
+            structlines.append("["+boardname[1]+"_HEARTBEAT]") 
+        else: 
             structlines.append("["+name[0]+"]")
-        else:
-            board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
-            boardname = board.group(1) 
-            structlines.append("["+boardname+"_HEARTBEAT]") 
         if id2hex(name[0]):
             structlines.append("ID="+id2hex(name[0])+"h")  
         structlines.append("CycleTime="+str(cycletime))
@@ -91,10 +114,9 @@ def check_repeat_varname(name):
 def create_prefix(name, canid):
     can_name = re.findall(r'CMR_CANID_(\w+)',canid) 
     append_can_name = can_name[0].split("_")[1]+"_"+name 
-    if "HEARTBEAT" in canid: 
-        board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
-        boardname = board.group(1) 
-        append_can_name = boardname+"_HEARTBEAT_"+name 
+    boardname = get_heartbeat_boardname(can_name[0])
+    if "HEARTBEAT" in can_name[0] and boardname:
+        append_can_name = boardname[1]+"_HEARTBEAT_"+name 
     if len(append_can_name) >= 30:
         #print("too long")
         return name
@@ -132,7 +154,7 @@ def format_bitpacking(canid, structname, structlines, atbit, vartype, enums):
             return 
 
     #if not found:
-    print(f"BUILD ERROR: Referencing a flag enum that doesn't exist for CAN ID {canid}!")
+    print(f"BUILD ERROR: Referencing flag enum {structname} that doesn't exist for CAN ID {canid}!")
     sys.exit(1) 
 
 
@@ -210,10 +232,9 @@ def format_fields(canid, matches, structlines, enums, field_params=None):
                     continue 
                 #heartbeat logic 
                 else:
-                    board = re.search(r'CMR_CANID_HEARTBEAT_(\w+)', canid); 
-                    boardname = board.group(1) 
+                    boardname = get_heartbeat_boardname(canid)
                     for flag in flags:
-                        if boardname in flag:
+                        if boardname and boardname[0]!="" and boardname[0] in flag: #TODO: how to decode compute and maxon heartbeats? 
                             format_bitpacking(canid, flag, structlines, atbit, vartype, enums); 
                             break 
                     atbit+=int(size)*2 #lowkey hardcoded but I think heartbeat is the only array 
