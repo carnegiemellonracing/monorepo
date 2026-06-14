@@ -388,6 +388,7 @@
             "timeOut": 500,
             "type": "cmr_canIZZELoadCell_t"
         },
+<<<<<<< HEAD
         "CMR_CANID_DAQ_VSM_HEARTBEAT": {
             "cycleTime": 10,
             "error": {
@@ -402,6 +403,8 @@
                 "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
             }
         },
+=======
+>>>>>>> 9106a3c1 (updated CMR_CANID_HVC_MINMAX_CELL_TEMPS and CMR_CANID_HVC_MINMAX_CELL_VOLTAGE to HVBMS)
         "CMR_CANID_DIM_ACKNOWLEDGE": {
             "cycleTime": 100,
             "timeOut": 500,
@@ -751,12 +754,12 @@
                 "u": "qV"
             }
         },
-        "CMR_CANID_HVC_MINMAX_CELL_TEMPS": {
+        "CMR_CANID_HVBMS_MINMAX_CELL_TEMPS": {
             "cycleTime": 20.0,
             "timeOut": 100,
             "type": "cmr_canBMSMinMaxCellTemperature_t"
         },
-        "CMR_CANID_HVC_MINMAX_CELL_VOLTAGE": {
+        "CMR_CANID_HVBMS_MINMAX_CELL_VOLTAGE": {
             "cycleTime": 20.0,
             "maxCellVoltage_mV": {
                 "u": "mV"
@@ -779,8 +782,8 @@
             "type": "cmr_canHVCPackCurrent_t"
         },
         "CMR_CANID_HV_SENSORS": {
-            "cycleTime": 100,
-            "timeOut": 500,
+            "cycleTime": 5,
+            "timeOut": 25,
             "type": "cmr_canHVSense_t"
         },
         "CMR_CANID_IVT_CURRENT": {
@@ -1028,8 +1031,13 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
+<<<<<<< HEAD
         "files_processed": 2901,
         "files_with_matches": 2901,
+=======
+        "files_processed": 2831,
+        "files_with_matches": 2831,
+>>>>>>> 9106a3c1 (updated CMR_CANID_HVC_MINMAX_CELL_TEMPS and CMR_CANID_HVC_MINMAX_CELL_VOLTAGE to HVBMS)
         "global_mappings": {
             "canrx_mappings": 192,
             "canrx_timeouts": 182,
