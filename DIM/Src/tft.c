@@ -55,7 +55,7 @@ static void drawConfigScreen(void);
 static void drawSafetyScreen(void);
 static void drawErrorScreen(void);
 static void drawRTDScreen(void);
-static void drawRacingScreen(void);
+//static void drawRacingScreen(void);
 
 
 
@@ -66,7 +66,7 @@ static void drawRacingScreen(void);
  * @param cmd The command.
  * @param param The command's parameter.
  */
-void tftCmd(tft_t *tft, tftCmd_t cmd, uint8_t param) {
+void tftCmd(tft_t *tft_cmd, tftCmd_t cmd, uint8_t param) {
     uint32_t addr = (cmd << 16) | (param << 8);
 
     const QSPI_CommandTypeDef qspiCmd = {
@@ -86,7 +86,7 @@ void tftCmd(tft_t *tft, tftCmd_t cmd, uint8_t param) {
         .SIOOMode = QSPI_SIOO_INST_EVERY_CMD
     };
 
-    cmr_qspiCmd(&tft->qspi, &qspiCmd);
+    cmr_qspiCmd(&tft_cmd->qspi, &qspiCmd);
 }
 
 /**
@@ -97,7 +97,7 @@ void tftCmd(tft_t *tft, tftCmd_t cmd, uint8_t param) {
  * @param len The length of the data.
  * @param data The data to write.
  */
-void tftWrite(tft_t *tft, tftAddr_t addr, size_t len, const void *data) {
+void tftWrite(tft_t *tft_write, tftAddr_t addr, size_t len, const void *data) {
     const QSPI_CommandTypeDef cmd = {
         .Instruction = 0,
         .Address = addr | TFT_WRITE_FLAG,
@@ -115,7 +115,7 @@ void tftWrite(tft_t *tft, tftAddr_t addr, size_t len, const void *data) {
         .SIOOMode = QSPI_SIOO_INST_EVERY_CMD
     };
 
-    cmr_qspiTX(&tft->qspi, &cmd, data);
+    cmr_qspiTX(&tft_write->qspi, &cmd, data);
 }
 
 /**
@@ -126,7 +126,7 @@ void tftWrite(tft_t *tft, tftAddr_t addr, size_t len, const void *data) {
  * @param len The length of the data.
  * @param data The buffer for received data.
  */
-void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data) {
+void tftRead(tft_t *tft_read, tftAddr_t addr, size_t len, void *data) {
     const QSPI_CommandTypeDef cmd = {
         .Instruction = 0,
         .Address = addr,
@@ -144,17 +144,17 @@ void tftRead(tft_t *tft, tftAddr_t addr, size_t len, void *data) {
         .SIOOMode = QSPI_SIOO_INST_EVERY_CMD
     };
 
-    cmr_qspiRX(&tft->qspi, &cmd, data);
+    cmr_qspiRX(&tft_read->qspi, &cmd, data);
 }
 
-void tftCoCmd(tft_t *tft, size_t len, const void *data) {
+void tftCoCmd(tft_t *tft_cocmd, size_t len, const void *data) {
     // Bulk Write
     uint32_t space = -1;
     do {
-        tftRead(tft, TFT_ADDR_CMDB_SPACE, sizeof(space), &space);
+        tftRead(tft_cocmd, TFT_ADDR_CMDB_SPACE, sizeof(space), &space);
     } while (space < len);
 
-    tftWrite(tft, TFT_ADDR_CMDB_WRITE, len, data);
+    tftWrite(tft_cocmd, TFT_ADDR_CMDB_WRITE, len, data);
 
     return;
 }
@@ -200,7 +200,7 @@ static void tftUpdate(void *pvParameters) {
         { .addr = TFT_ADDR_PCLK, .val = 2 }
     };
 
-    tft_t *tft = pvParameters;
+    tft_t *tft_update = (tft_t *) pvParameters;
 
     /* Restarting the Display. */
     TickType_t lastWakeTime = xTaskGetTickCount();
@@ -210,28 +210,28 @@ static void tftUpdate(void *pvParameters) {
     vTaskDelayUntil(&lastWakeTime, TFT_RESET_MS);
 
     /* Initialize the display. */
-    tftCmd(tft, TFT_CMD_CLKEXT, 0x00);
-    tftCmd(tft, TFT_CMD_ACTIVE, 0x00);
-    tftCmd(tft, TFT_CMD_ACTIVE, 0x00);
+    tftCmd(tft_update, TFT_CMD_CLKEXT, 0x00);
+    tftCmd(tft_update, TFT_CMD_ACTIVE, 0x00);
+    tftCmd(tft_update, TFT_CMD_ACTIVE, 0x00);
 
     /* Wait for display to initialize. */
     vTaskDelayUntil(&lastWakeTime, TFT_INIT_MS);
 
     /* Ensure that Chip ID is read correctly */
     uint32_t chipID;
-    tftRead(tft, TFT_ADDR_CHIP_ID, sizeof(chipID), &chipID);
+    tftRead(tft_update, TFT_ADDR_CHIP_ID, sizeof(chipID), &chipID);
     configASSERT(chipID == TFT_CHIP_ID);
 
     /* Initialize Video Registers. */
     for (size_t i = 0; i < sizeof(tftInits) / sizeof(tftInits[0]); i++) {
         const tftInit_t *init = tftInits + i;
-        tftWrite(tft, init->addr, sizeof(init->val), &init->val);
+        tftWrite(tft_update, init->addr, sizeof(init->val), &init->val);
     }
 
-    tft->inited = true;
+    tft_update->inited = true;
 
     /* Enable Faster Clock Rate now that initialization is complete */
-    cmr_qspiSetPrescaler(&tft->qspi, TFT_QSPI_PRESCALER);
+    cmr_qspiSetPrescaler(&tft_update->qspi, TFT_QSPI_PRESCALER);
 
     /* Display Startup Screen for fixed time */
     // tftDLContentLoad(tft, &tftDL_startup);
@@ -289,36 +289,22 @@ static void drawSafetyScreen(void) {
  *
  */
 static void drawErrorScreen(void) {
-    cmr_canRXMeta_t *metaVSMStatus = canRXMeta + CANRX_VSM_STATUS;
-    volatile cmr_canVSMStatus_t *canVSMStatus =
-        (void *)metaVSMStatus->payload;
+    volatile cmr_canVSMStatus_t *canVSMStatus = (volatile cmr_canVSMStatus_t *) getPayload(CANRX_VSM_STATUS);
 
-    cmr_canRXMeta_t *metaHVCHeartbeat = canRXMeta + CANRX_HVC_HEARTBEAT;
-    volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat =
-        (void *)metaHVCHeartbeat->payload;
+    volatile cmr_canHVCHeartbeat_t *canHVCHeartbeat =(volatile cmr_canHVCHeartbeat_t *) getPayload(CANRX_HVC_HEARTBEAT);
 
-    cmr_canRXMeta_t *metaDTIFLTempFault = canRXMeta + CANRX_DTI_FL_TEMPFAULT;
-    volatile cmr_canDTI_TX_TempFault_t *dtiFLTempFault =
-        (void *)metaDTIFLTempFault->payload;
+    volatile cmr_canDTI_TX_TempFault_t *dtiFLTempFault = (volatile cmr_canDTI_TX_TempFault_t *) getPayload(CANRX_DTI_FL_TEMPFAULT);
 
-    cmr_canRXMeta_t *metaDTIFRTempFault = canRXMeta + CANRX_DTI_FR_TEMPFAULT;
-    volatile cmr_canDTI_TX_TempFault_t *dtiFRTempFault =
-        (void *)metaDTIFRTempFault->payload;
+    volatile cmr_canDTI_TX_TempFault_t *dtiFRTempFault = (volatile cmr_canDTI_TX_TempFault_t *) getPayload(CANRX_DTI_FR_TEMPFAULT);
 
-    cmr_canRXMeta_t *metaDTIRLTempFault = canRXMeta + CANRX_DTI_RL_TEMPFAULT;
-    volatile cmr_canDTI_TX_TempFault_t *dtiRLTempFault =
-        (void *)metaDTIRLTempFault->payload;
+    volatile cmr_canDTI_TX_TempFault_t *dtiRLTempFault = (volatile cmr_canDTI_TX_TempFault_t *) getPayload(CANRX_DTI_RL_TEMPFAULT);
 
-    cmr_canRXMeta_t *metaDTIRRTempFault = canRXMeta + CANRX_DTI_RR_TEMPFAULT;
-    volatile cmr_canDTI_TX_TempFault_t *dtiRRTempFault =
-        (void *)metaDTIRRTempFault->payload;
+    volatile cmr_canDTI_TX_TempFault_t *dtiRRTempFault = (volatile cmr_canDTI_TX_TempFault_t *) getPayload(CANRX_DTI_RR_TEMPFAULT);
 
-    cmr_canRXMeta_t *metaBMSLowVoltage = canRXMeta + CANRX_HVC_LOW_VOLTAGE;
-    volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
-        (void *)metaBMSLowVoltage->payload;
+    //cmr_canRXMeta_t *metaBMSLowVoltage = canRXMeta + CANRX_HVC_LOW_VOLTAGE;
+    //volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus = (void *)metaBMSLowVoltage->payload;
 
-    cmr_canVSMSensors_t *vsmSensors = 
-        (cmr_canVSMSensors_t *)getPayload(CANRX_VSM_SENSORS); 
+    //cmr_canVSMSensors_t *vsmSensors =  (cmr_canVSMSensors_t *)getPayload(CANRX_VSM_SENSORS); 
 
     tftDLContentLoad(&tft, &tftDL_error);
 
@@ -487,23 +473,17 @@ static void drawRTDScreen(void) {
 
     cmr_canRXMeta_t *metaCDCHeartbeat = canRXMeta + CANRX_CDC_HEARTBEAT;
 
-    cmr_canRXMeta_t *metaHVCPackVoltage = canRXMeta + CANRX_HVC_PACK_VOLTAGE;
-    volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage =
-        (void *)metaHVCPackVoltage->payload;
+    volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage = (volatile cmr_canHVCPackVoltage_t *) getPayload(CANRX_HVC_PACK_VOLTAGE);
 
-    cmr_canRXMeta_t *metaHVCPackTemps = canRXMeta + CANRX_HVC_PACK_TEMPS;
-    volatile cmr_canBMSMinMaxCellTemperature_t *canHVCPackTemps =
-        (void *)metaHVCPackTemps->payload;
+    volatile cmr_canBMSMinMaxCellTemperature_t *canHVCPackTemps = (volatile cmr_canBMSMinMaxCellTemperature_t *) getPayload(CANRX_HVC_PACK_TEMPS);
 
-    cmr_canRXMeta_t *metaEMDvalues = canRXMeta + CANRX_EMD_VALUES;
-    volatile cmr_canEMDMeasurements_t *canEMDvalues =
-        (void *)metaEMDvalues->payload;
+    //cmr_canRXMeta_t *metaEMDvalues = canRXMeta + CANRX_EMD_VALUES;
+    //volatile cmr_canEMDMeasurements_t *canEMDvalues = (void *)metaEMDvalues->payload;
 
 
 
-    cmr_canRXMeta_t *metaBMSLowVoltage = canRXMeta + CANRX_HVC_LOW_VOLTAGE;
-    volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus =
-        (void *)metaBMSLowVoltage->payload;
+    //cmr_canRXMeta_t *metaBMSLowVoltage = canRXMeta + CANRX_HVC_LOW_VOLTAGE;
+    //volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus = (void *)metaBMSLowVoltage->payload;
 
     tftDLContentLoad(&tft, &tftDL_RTD);
 
@@ -542,7 +522,7 @@ static void drawRTDScreen(void) {
     uint32_t voltage_mV = get_glv_voltage_mv();
     float glvVoltage = voltage_mV / 1000.0f;
 
-    volatile cmr_canVSMSensors_t *vsmSensors = (volatile cmr_canVSMSensors_t *)getPayload(CANRX_VSM_SENSORS);
+    //volatile cmr_canVSMSensors_t *vsmSensors = (volatile cmr_canVSMSensors_t *)getPayload(CANRX_VSM_SENSORS);
 
     int32_t current_A = 0;
     //(int32_t)(vsmSensors->hallEffect_cA) / 100;
@@ -551,7 +531,7 @@ static void drawRTDScreen(void) {
 
     uint8_t speed_kmh = (uint8_t)getSpeedKmh();
 
-    //float odometer_km = getOdometer();
+    float odometer_km = getOdometer();
 
     volatile cmr_canBMSLowVoltage_t *bmsLV = (volatile cmr_canBMSLowVoltage_t *)getPayload(CANRX_HVC_LOW_VOLTAGE);
 
@@ -570,19 +550,11 @@ static void drawRTDScreen(void) {
 
     getDTITemps(&mcTemp_C, &motorTemp_C, &hottest_motor);
 
-    /* Temperature warnings */
-    bool motorTemp_yellow = motorTemp_C >= MOTOR_YELLOW_THRESHOLD;
-    bool motorTemp_red = motorTemp_C >= MOTOR_RED_THRESHOLD;
-    bool acTemp_yellow = acTemp_C >= AC_YELLOW_THRESHOLD;
-    bool acTemp_red = acTemp_C >= AC_RED_THRESHOLD;
-    bool mcTemp_yellow = mcTemp_C >= MC_YELLOW_THRESHOLD;
-    bool mcTemp_red = mcTemp_C >= MC_RED_THRESHOLD;
-
     uint8_t glvSoC = getLVSoC(glvVoltage);
 
     uint8_t hvSoC = 0;
 
-    volatile cmr_canCDCControlsStatus_t *controlsStatus = (volatile cmr_canCDCControlsStatus_t *)getPayload(CANRX_CDC_CONTROLS_STATUS);
+    //volatile cmr_canCDCControlsStatus_t *controlsStatus = (volatile cmr_canCDCControlsStatus_t *)getPayload(CANRX_CDC_CONTROLS_STATUS);
 
     bool yrcOn = true;
     bool tcOn = true;
@@ -614,6 +586,7 @@ static void drawRTDScreen(void) {
                         yrcOn,
                         tcOn,
                         ssOk,
+                        odometer_km,
                         drsOpen,
                         hottest_motor);
 
