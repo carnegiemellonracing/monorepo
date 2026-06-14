@@ -127,7 +127,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .warnFlag = CMR_CAN_WARN_NONE
     },
     [CANRX_VEH_PACK_CELL_VOLTAGE] = {
-        .canID = CMR_CANID_HVC_MINMAX_CELL_VOLTAGE,
+        .canID = CMR_CANID_HVBMS_MINMAX_CELL_VOLTAGE,
         // TODO: Check timeout period
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 50,
@@ -135,7 +135,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .warnFlag = CMR_CAN_WARN_NONE
     },
     [CANRX_VEH_PACK_CELL_TEMP] = {
-        .canID = CMR_CANID_HVC_MINMAX_CELL_TEMPS,
+        .canID = CMR_CANID_HVBMS_MINMAX_CELL_TEMPS,
         // TODO: Check timeout period
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 50,
@@ -708,7 +708,7 @@ cmr_canRXMeta_t canRXMeta[] = {
         .warnFlag = CMR_CAN_WARN_NONE
     },
     [CANRX_HVC_MINMAX_TEMPS] = {
-        .canID = CMR_CANID_HVC_MINMAX_CELL_TEMPS,
+        .canID = CMR_CANID_HVBMS_MINMAX_CELL_TEMPS,
         .timeoutError_ms = 5000,
         .timeoutWarn_ms = 2500,
         .errorFlag = CMR_CAN_ERROR_NONE,
