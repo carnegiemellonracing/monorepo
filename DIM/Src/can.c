@@ -18,6 +18,8 @@
 #include <string.h>     // memcpy()
 #include <CMR/config_screen_helper.h>
 #include <CMR/can_types.h>
+#include <CMR/utils.h>
+
 
 #include "adc.h"        // adcVSense, adcISense
 #include "dv_error.h"   // For update_dv_error
