@@ -320,7 +320,7 @@ void setTorqueLimNeg (
         return;
     }
 
-    torqueLimNeg_Nm = fmaxf(torqueLimNeg_Nm, 0.0f);
+    torqueLimNeg_Nm = fminf(torqueLimNeg_Nm, 0.0f);
     motorSetpoints[motor].torqueLimNeg_mNm = torqueLimNeg_Nm;
 }
 
@@ -386,7 +386,7 @@ void setTorqueLimsUnprotected (
     }
 
     torqueLimPos_Nm = fmaxf(torqueLimPos_Nm, 0.0f); // ensures torqueLimPos_Nm >= 0
-    torqueLimNeg_Nm = fmaxf(torqueLimNeg_Nm, 0.0f); // ensures torqueLimNeg_Nm <= 0
+    torqueLimNeg_Nm = fminf(torqueLimNeg_Nm, 0.0f); // ensures torqueLimNeg_Nm <= 0
 
     motorSetpoints[motor].torqueLimPos_mNm = torqueLimPos_Nm * 1000.0f;
     motorSetpoints[motor].torqueLimNeg_mNm = torqueLimNeg_Nm * 1000.0f;
