@@ -75,6 +75,7 @@ static float manual_cruise_control_speed;
 
 float getYawRateControlLeftRightBias(int32_t swAngle_millideg);
 void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew);
+void setRegenTorques (uint8_t regen_pct);
 
 /** @brief Coulomb counting info **/
 static TickType_t previousTickCount;
@@ -786,8 +787,8 @@ void runControls (
             }
             uint8_t regen_pct = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
             uint8_t regen_on_threshold = 20;
-            if(paddle_pressure > regen_on_threshold){
-                setRegen(regen_pct);
+            if(regen_pct > regen_on_threshold){
+                setRegenTorques(regen_pct);
             }
             else{
                 setFastTorqueWithBias(throttlePos_u8, front_bias_endurance);
@@ -1109,7 +1110,7 @@ void setFastTorqueWithBias (uint8_t throttlePos_u8, float front_bias) {
    setVelocityInt16All(maxFastSpeed_rpm);
 }
 
-void setRegen (uint8_t regen_pct) {
+void setRegenTorques (uint8_t regen_pct) {
     const float reqTorque = max_regen_torque_Nm * (float) regen_pct;
    
    setTorqueLimsUnprotected(MOTOR_FL, 0.0f, reqTorque);

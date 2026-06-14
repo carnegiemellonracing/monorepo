@@ -39,8 +39,8 @@ volatile uint8_t parametersFromDIM[MAX_MENU_ITEMS];
 volatile cmr_driver_profile_t currentDriver = Default;
 volatile bool framWrite_flag = false;
 
-float power_limit = 50.0f;
-float power_limit_per_side = power_limit * .5f;
+const float power_limit = 50.0f;
+const float power_limit_per_side = power_limit * .5f;
 volatile float powerLimitFL_kW = power_limit_per_side * front_bias;
 volatile float powerLimitFR_kW = power_limit_per_side * front_bias;
 volatile float powerLimitRL_kW = power_limit_per_side * (1 - front_bias);
