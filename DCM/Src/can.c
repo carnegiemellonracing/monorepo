@@ -39,10 +39,12 @@ volatile uint8_t parametersFromDIM[MAX_MENU_ITEMS];
 volatile cmr_driver_profile_t currentDriver = Default;
 volatile bool framWrite_flag = false;
 
-volatile float powerLimitFL_kW = 6.0f * front_bias;
-volatile float powerLimitFR_kW = 6.0f * front_bias;
-volatile float powerLimitRL_kW = 6.0f * (1 - front_bias);
-volatile float powerLimitRR_kW = 6.0f * (1 - front_bias);
+float power_limit = 50.0f;
+float power_limit_per_side = power_limit * .5f;
+volatile float powerLimitFL_kW = power_limit_per_side * front_bias;
+volatile float powerLimitFR_kW = power_limit_per_side * front_bias;
+volatile float powerLimitRL_kW = power_limit_per_side * (1 - front_bias);
+volatile float powerLimitRR_kW = power_limit_per_side * (1 - front_bias);
 
 extern volatile cmr_can_rtc_data_t time;
 extern volatile float odometer_km;

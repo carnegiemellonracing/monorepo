@@ -7,6 +7,8 @@
  * motor datasheet: "Peak Torque - 31.6 Nm"
 */
 static const float maxTorque_Nm = 31.6f;
+static const float max_regen_torque_Nm = -20.0f;
+
 static const float minTorqueLUTVal_Nm = 2.6f;
 static const float current_torque_slope = 85.0f / 31.6f;
 

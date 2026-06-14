@@ -784,10 +784,14 @@ void runControls (
                 setPowerLimit(false, MOTOR_RR, 40.0f * (1 - front_bias_endurance));
                 break;
             }
-            setFastTorqueWithBias(throttlePos_u8, front_bias_endurance);
-            // setFastTorqueWithParallelRegen(brakePressurePsi_u8, throttlePos_u8);
-            // set_regen(throttlePos_u8);
-            // set_regen_with_slew(throttlePos_u8, 29.0f);
+            uint8_t regen_pct = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
+            uint8_t regen_on_threshold = 20;
+            if(paddle_pressure > regen_on_threshold){
+                setRegen(regen_pct);
+            }
+            else{
+                setFastTorqueWithBias(throttlePos_u8, front_bias_endurance);
+            }
             break;
         }
         case CMR_CAN_GEAR_AUTOX: {
@@ -1103,6 +1107,16 @@ void setFastTorqueWithBias (uint8_t throttlePos_u8, float front_bias) {
    setTorqueLimsUnprotected(MOTOR_RR, reqTorque_rear, 0.0f);
    setTorqueLimsUnprotected(MOTOR_RL, reqTorque_rear, 0.0f);
    setVelocityInt16All(maxFastSpeed_rpm);
+}
+
+void setRegen (uint8_t regen_pct) {
+    const float reqTorque = max_regen_torque_Nm * (float) regen_pct;
+   
+   setTorqueLimsUnprotected(MOTOR_FL, 0.0f, reqTorque);
+   setTorqueLimsUnprotected(MOTOR_FR, 0.0f, reqTorque);
+   setTorqueLimsUnprotected(MOTOR_RR, 0.0f, reqTorque);
+   setTorqueLimsUnprotected(MOTOR_RL, 0.0f, reqTorque);
+   setVelocityInt16All(0);
 }
 
 void set_fast_torque_with_slew(uint8_t throttlePos_u8, int16_t slew) {
