@@ -952,7 +952,7 @@ Var=LATCHED_VSM_LATCH_BSPD bit 16,1
 
 [VSM_SENSORS]
 ID=200h
-DLC=7
+DLC=8
 CycleTime=100
 TimeOut=500
 Var=SENSORS_brakePressureRear_PSI unsigned 0,16
@@ -960,6 +960,7 @@ Var=SENSORS_batt_mV unsigned 16,16
 Var=SENSORS_safetyIn_eight_V unsigned 32,8
 Var=SENSORS_safetyOut_eight_V unsigned 40,8
 Var=SENSORS_EAB_pressed unsigned 48,8
+Var=SENSORS_hv_current_A signed 56,8
 
 [VSM_STATUS]
 ID=110h
