@@ -648,6 +648,17 @@ Var=BMB_minVoltIndex unsigned 8,8
 Var=BMB_maxCellVoltage_mV unsigned 16,16 /u:mV
 Var=BMB_minCellVoltage_mV unsigned 32,16 /u:mV
 
+[HVBMS_MINMAX_CELL_TEMPS]
+CycleTime=20
+DLC=8
+TimeOut=100
+Var=MINMAX_minCellTemp_C unsigned 0,16
+Var=MINMAX_maxCellTemp_C unsigned 16,16
+Var=MINMAX_minTempBMBNum unsigned 32,8
+Var=MINMAX_minTempCellNum unsigned 40,8
+Var=MINMAX_maxTempBMBNum unsigned 48,8
+Var=MINMAX_maxTempCellNum unsigned 56,8
+
 [HVBMS_MIN_MAX_CELL_TEMPERATURE]
 ID=311h
 DLC=8
@@ -895,12 +906,6 @@ Var=longest_power_violation_ms unsigned 32,8 /u:ms
 Var=STATE_over_voltage_count unsigned 40,8
 Var=STATE_under_voltage_count unsigned 48,8
 Var=STATE_over_temp_count unsigned 56,8
-
-[TEST_ID]
-CycleTime=100
-DLC=1
-TimeOut=500
-Var=ID_test_id unsigned 0,8
 
 [VSM_LATCHED_STATUS]
 ID=510h
