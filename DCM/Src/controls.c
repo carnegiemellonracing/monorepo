@@ -957,16 +957,16 @@ void runControls (
                 setTorqueLimsUnprotected(MOTOR_FL, front_torque_Nm, 0.0f);
                 setTorqueLimsUnprotected(MOTOR_FR, front_torque_Nm, 0.0f);
             } else {
-                setTorqueLimsUnprotected(MOTOR_FL, 0.0f, -front_torque_Nm);
-                setTorqueLimsUnprotected(MOTOR_FR, 0.0f, -front_torque_Nm);
+                setTorqueLimsUnprotected(MOTOR_FL, 0.0f, front_torque_Nm);
+                setTorqueLimsUnprotected(MOTOR_FR, 0.0f, front_torque_Nm);
             }
 
             if (rear_torque_Nm > 0.0f) {
                 setTorqueLimsUnprotected(MOTOR_RR, rear_torque_Nm, 0.0f);
                 setTorqueLimsUnprotected(MOTOR_RL, rear_torque_Nm, 0.0f);
             } else {
-                setTorqueLimsUnprotected(MOTOR_RR, 0.0f, -rear_torque_Nm);
-                setTorqueLimsUnprotected(MOTOR_RL, 0.0f, -rear_torque_Nm);
+                setTorqueLimsUnprotected(MOTOR_RR, 0.0f, rear_torque_Nm);
+                setTorqueLimsUnprotected(MOTOR_RL, 0.0f, rear_torque_Nm);
             }
             break; 
         }
