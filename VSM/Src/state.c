@@ -192,18 +192,22 @@ void updateErrorsAndWarnings(TickType_t lastWakeTime) {
 static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
     updateErrorsAndWarnings(lastWakeTime_ms);
 
+    cmr_canVSMState_t state = vsmStatus.canVSMStatus.internalState;
+    bool is_AS_state = (state == CMR_CAN_VSM_STATE_AS_READY || 
+                        state == CMR_CAN_VSM_STATE_AS_DRIVING || 
+                        state == CMR_CAN_VSM_STATE_AS_FINISHED ||
+                        state == CMR_CAN_VSM_STATE_AS_EMERGENCY);
+
     //If RES triggered stop everything
-    if(RESTriggered() && ASState && (state > CMR_CAN_VSM_STATE_REQ_PRECHARGE)){
+    if(RESTriggered() && ASState && is_AS_state){
         return CMR_CAN_VSM_STATE_AS_EMERGENCY;
     }
-
-    cmr_canVSMState_t state = vsmStatus.canVSMStatus.internalState;
 
     // TE (Immediately return error if anything is wrong)
     if ((vsmStatus.heartbeatErrors != CMR_CAN_ERROR_NONE)
      || (vsmStatus.canVSMStatus.moduleTimeoutMatrix != CMR_CAN_VSM_TIMEOUT_SOURCE_NONE)
      || (vsmStatus.canVSMStatus.latchMatrix != CMR_CAN_VSM_LATCH_NONE)) {
-        if(ASState && (state > CMR_CAN_VSM_STATE_REQ_PRECHARGE)) {
+        if(ASState && is_AS_state) {
             return CMR_CAN_VSM_STATE_AS_EMERGENCY;
         }
         return CMR_CAN_VSM_STATE_ERROR;
