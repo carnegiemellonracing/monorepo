@@ -445,7 +445,6 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             else{
                 nextState = CMR_CAN_VSM_STATE_AS_FINISHED;
             }
-            nextState = CMR_CAN_VSM_STATE_AS_FINISHED;
 
             break;
         }
