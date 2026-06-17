@@ -193,7 +193,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
     updateErrorsAndWarnings(lastWakeTime_ms);
 
     //If RES triggered stop everything
-    if(RESTriggered() && ASState){
+    if(RESTriggered() && ASState && (state > CMR_CAN_VSM_STATE_REQ_PRECHARGE)){
         return CMR_CAN_VSM_STATE_AS_EMERGENCY;
     }
 
