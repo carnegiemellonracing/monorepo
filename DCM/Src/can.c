@@ -1058,12 +1058,6 @@ static void canTX200Hz(void *pvParameters) {
             sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
         }
 
-        if(new_dim_request) {
-            cmr_canDIMRequest_t *dimRequest = canVehicleGetPayload(CANRX_VEH_REQUEST_DIM);
-            canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DIM_REQUEST, dimRequest, sizeof(cmr_canDIMRequest_t), canTX200Hz_period_ms);
-            new_dim_request = false;
-        }
-
         if(new_compute_heartbeat) {
             cmr_canHeartbeat_t *heartbeatCompute = canDAQGetPayload(CANRX_DAQ_HEARTBEAT_COMPUTE);
             canTX(CMR_CAN_BUS_VEH, CMR_CANID_HEARTBEAT_COMPUTE, heartbeatCompute, sizeof(cmr_canHeartbeat_t), canTX200Hz_period_ms);
@@ -1144,6 +1138,13 @@ static void canTX200Hz(void *pvParameters) {
 
         // YRC
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_PID_IO, &yrcDebug, sizeof(yrcDebug), canTX200Hz_period_ms);
+
+        if(new_dim_request) {
+            cmr_canDIMRequest_t *dimRequest = canVehicleGetPayload(CANRX_VEH_REQUEST_DIM);
+            canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DIM_REQUEST, dimRequest, sizeof(cmr_canDIMRequest_t), canTX200Hz_period_ms);
+            new_dim_request = false;
+        }
+
 
         vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
     }
@@ -1275,7 +1276,6 @@ static void canTX1Hz(void *pvParameters) {
 
         volatile cmr_canSensoricVelAng_t *sensoricVelAng = (cmr_canSensoricVelAng_t*)canDAQGetPayload(CANRX_DAQ_SENSORIC_VEL_ANG);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_SENSORIC_VEL_ANG, sensoricVelAng, sizeof(cmr_canSensoricVelAng_t), canTX200Hz_period_ms);
-
 
         // TODO: constantly send current parameters
         vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
