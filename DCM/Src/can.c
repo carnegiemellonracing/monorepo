@@ -506,8 +506,10 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
     // use canIDs startnig at 0x560
     [CANRX_DAQ_SENSORIC_VEL_ANG_POI] = {
         .canID = CMR_CANID_SENSORIC_VEL_ANG_POI,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
+        // This is a bit sad, but for the sake of competition I only changed this
+        // timoout to as it is checked in controls.c
+        .timeoutError_ms = 500,
+        .timeoutWarn_ms = 250
     },
     [CANRX_DAQ_SENSORIC_DIST_POI] = {
         .canID = CMR_CANID_SENSORIC_DIST_POI,

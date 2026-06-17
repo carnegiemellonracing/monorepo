@@ -758,8 +758,22 @@ void runControls (
     *      = x * 7.6378514861 × 10^-9 */
     odometer_km += ((float)avgMotorSpeed_RPM) * 7.6378514861e-9;
     /** @todo check floating point granularity for potential issues with adding small numbers repeatedly to large numbers */
-
-    switch (gear) {
+    
+    bool sensoric_timeout = cmr_canRXMetaTimeoutError(&canDaqRXMeta[CANRX_DAQ_SENSORIC_VEL_ANG], xTaskGetTickCount()) != 0;
+    // We currently don't use sensoric in endurance mode, so its timeout should not cause the vehicle to switch to fast mode. This is to prevent unintended fast mode when sensoric data is lost during endurance.
+    cmr_canGear_t real_gear = (ctrlOff || sensoric_timeout) &&
+                                           (gear == CMR_CAN_GEAR_AUTOX ||
+                                            gear == CMR_CAN_GEAR_SKIDPAD ||
+                                            gear == CMR_CAN_GEAR_ACCEL ||
+                                            gear == CMR_CAN_GEAR_TEST ||
+                                            gear == CMR_CAN_GEAR_REVERSE)
+                                ? CMR_CAN_GEAR_FAST : gear;
+    
+    if (ctrlOff && real_gear == CMR_CAN_GEAR_ENDURANCE){
+        real_gear = CMR_CAN_GEAR_FAST;
+    }
+    
+    switch (real_gear) {
         case CMR_CAN_GEAR_SLOW: {
             disableTorqueMode();
             setSlowTorque(throttlePos_u8, swAngle_millideg);
@@ -772,19 +786,10 @@ void runControls (
             setPowerLimit(false, MOTOR_FR, 40.0f * front_bias);
             setPowerLimit(false, MOTOR_RL, 40.0f * (1 - front_bias));
             setPowerLimit(false, MOTOR_RR, 40.0f * (1 - front_bias));
-            // set_fast_torque_with_slew(throttlePos_u8, 29.0f);
             break;
         }
         case CMR_CAN_GEAR_ENDURANCE: {
             disableTorqueMode();
-            if(ctrlOff) {
-                setFastTorqueWithBias(throttlePos_u8, front_bias_endurance);
-                setPowerLimit(false, MOTOR_FL, 40.0f * front_bias_endurance);
-                setPowerLimit(false, MOTOR_FR, 40.0f * front_bias_endurance);
-                setPowerLimit(false, MOTOR_RL, 40.0f * (1 - front_bias_endurance));
-                setPowerLimit(false, MOTOR_RR, 40.0f * (1 - front_bias_endurance));
-                break;
-            }
             uint8_t regen_pct = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
             uint8_t regen_on_threshold = 20;
             if(regen_pct > regen_on_threshold){
@@ -797,10 +802,6 @@ void runControls (
         }
         case CMR_CAN_GEAR_AUTOX: {
             disableTorqueMode();
-            if(ctrlOff) {
-                setFastTorque(throttlePos_u8);
-                break;
-            }
             // const bool assumeNoTurn = true; // TC is not allowed to behave left-right asymmetrically due to the lack of testing
             // const bool ignoreYawRate = false; // TC takes yaw rate into account to prevent the vehicle from stopping unintendedly when turning at low speeds
             // const bool allowRegen = true; // regen-braking is allowed to protect the AC by keeping charge level high
@@ -813,19 +814,11 @@ void runControls (
         }
         case CMR_CAN_GEAR_SKIDPAD: {
             disableTorqueMode();
-            if(ctrlOff) {
-                setFastTorque(throttlePos_u8);
-                break;
-            }
         	set_optimal_control((float)throttlePos_u8 / UINT8_MAX, swAngle_millideg_FL, swAngle_millideg_FR, false);
             break;
         }
         case CMR_CAN_GEAR_ACCEL: {
             disableTorqueMode();
-            if(ctrlOff) {
-                setFastTorque(throttlePos_u8);
-                break;
-            }
             //set_manual_cruise_control(throttlePos_u8);
             float vx, va; 
             volatile cmr_canSensoricVelAng_t *sensoricVelAng = (cmr_canSensoricVelAng_t*)canDAQGetPayload(CANRX_DAQ_SENSORIC_VEL_ANG);
@@ -865,10 +858,6 @@ void runControls (
         }
         case CMR_CAN_GEAR_TEST: {
             disableTorqueMode();
-            if(ctrlOff) {
-                setFastTorque(throttlePos_u8);
-                break;
-            }
             setPowerLimit(false, MOTOR_FL, 40.0 * front_bias);
             setPowerLimit(false, MOTOR_FR, 40.0 * front_bias);
             setPowerLimit(false, MOTOR_RL, 40.0 * (1 - front_bias));
@@ -883,10 +872,6 @@ void runControls (
         case CMR_CAN_GEAR_REVERSE: {
             // for rule-compliance, the car shouldn't reverse
             disableTorqueMode();
-            if(ctrlOff) {
-                setFastTorque(throttlePos_u8);
-                break;
-            }
             setTorqueLimsAllProtected(0.0f, 0.0f);
             setVelocityInt16All(0);
             break;
