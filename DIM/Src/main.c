@@ -12,7 +12,6 @@
 #include <CMR/rcc.h>    // RCC interface
 #include <CMR/i2c.h>    // I2C interface
 
-#include "dv_error.h"
 #include "error_leds.h"
 #include "gpio.h"       // Board-specific GPIO interface
 #include "i2c.h"

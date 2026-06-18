@@ -19,7 +19,7 @@
 #include "tft.h"   // TFT display interface.
 #include "tftDL.h"
 #include "adc.h"
-#include "dv_error.h"
+#include "error.h"
 
 
 static const uint32_t stateMachine_priority = 4;
@@ -534,7 +534,7 @@ void reqVSM(void) {
     }
 
     cmr_canError_t error = CMR_CAN_ERROR_NONE;
-    update_dv_errors(&error);
+    update_errors(&error);
     if(error != CMR_CAN_ERROR_NONE) {
         state.vsmReq = CMR_CAN_ERROR;
         return;

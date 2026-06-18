@@ -31,7 +31,6 @@
 #define REAR_MINIMUM_BRAKING_PSI  400
 
 
-
 /** @brief Mapping of VSM internal states to vehicle states. Indexed by cmr_canVSMState_t. */
 cmr_canState_t vsmToCANState[] = {
     [CMR_CAN_VSM_STATE_ERROR]           = CMR_CAN_ERROR,
@@ -120,7 +119,7 @@ static bool getMissionFinished();
 static bool getMissionSelected();
 static bool TSActive();
 static bool AutonomousClear();
-static bool getVehicleFinished(bool vehicleStill);
+static bool getVehicleFinished();
 static bool getRESGo();
 static bool RESTriggered();
 
@@ -236,14 +235,6 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
     uint32_t brakePressureRear_PSI = cmr_sensorListGetValue(
         &sensorList, SENSOR_CH_BPRES_PSI
     );
-
-    int32_t dti_fl_erpm = getDTIERPM(CANRX_FL_ERPM);
-    int32_t dti_fr_erpm = getDTIERPM(CANRX_FR_ERPM);
-    int32_t dti_rl_erpm = getDTIERPM(CANRX_RL_ERPM);
-    int32_t dti_rr_erpm = getDTIERPM(CANRX_RR_ERPM);
-
-    bool vehicleStill = (dti_fl_erpm == 0) && (dti_fr_erpm == 0) &&
-                        (dti_rl_erpm == 0) && (dti_rr_erpm == 0);
 
     taskENTER_CRITICAL();
 
@@ -422,7 +413,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             if (!AutonomousClear()){
                 nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
             }
-            else if (getVehicleFinished(vehicleStill)){
+            else if (getVehicleFinished()){
                 nextState = CMR_CAN_VSM_STATE_AS_FINISHED;
             }
             else if (!RESTriggered()){
@@ -436,7 +427,11 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         }
 
         case CMR_CAN_VSM_STATE_AS_FINISHED: {
-            if (!getDVBrakeActive() || RESTriggered()){
+            // Give some time for brakes to settle
+            if (lastStateChangeTime_ms + 400 > lastWakeTime_ms){
+                nextState = CMR_CAN_VSM_STATE_AS_FINISHED;
+            }
+            else if (!getDVBrakeActive() || RESTriggered()){
                 nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
             }
             else if ((lastWakeTime_ms > lastStateChangeTime_ms + AS_FINISHED_TIME)){
@@ -450,13 +445,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         }
 
         case CMR_CAN_VSM_STATE_AS_EMERGENCY: {
-            if (lastStateChangeTime_ms + AS_EMERGENCY_TIME > lastWakeTime_ms){
-                nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
-            }
-            else{
-                nextState = CMR_CAN_VSM_STATE_ERROR;
-            }
-
+            nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
             break;
         }
 
@@ -632,7 +621,6 @@ static inline bool TSActive(){
  * that the car can continue being in AS Ready or AS Driving
  */
 static inline bool AutonomousClear(){
-    TickType_t lastWakeTime = xTaskGetTickCount();
     return ASState && getDVBrakeDeployable() && getMissionSelected() && TSActive() && !RESTriggered();
 }
  
@@ -650,7 +638,15 @@ static inline bool getMissionFinished(){ //can from compute
  * @note Vehicle still passed in as a parameters since it is computed once
  *       per hot loop and is somewhat expensive to compute  
  */
-static bool getVehicleFinished(bool vehicleStill){
+static bool getVehicleFinished(){
+    int32_t dti_fl_erpm = getDTIERPM(CANRX_FL_ERPM);
+    int32_t dti_fr_erpm = getDTIERPM(CANRX_FR_ERPM);
+    int32_t dti_rl_erpm = getDTIERPM(CANRX_RL_ERPM);
+    // int32_t dti_rr_erpm = getDTIERPM(CANRX_RR_ERPM);
+
+    bool vehicleStill = (dti_fl_erpm < 50) && (dti_fr_erpm < 50) &&
+                        (dti_rl_erpm < 50);
+
     return vehicleStill && getMissionFinished();
 }
 

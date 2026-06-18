@@ -76,6 +76,8 @@ typedef enum {
     CMR_CAN_ERROR_DIM_TANK_PRESSURE_NON_DV_1_OOR = (1 << 5),
     /** @brief DIM tank pressure sensor 2 out-of-range non-dv check. */
     CMR_CAN_ERROR_DIM_TANK_PRESSURE_NON_DV_2_OOR = (1 << 6),
+    /** @brief DIM front brake pressure reading implaus. */
+    CMR_CAN_ERROR_DIM_BRAKE_SENSOR_IMPLAUS = (1 << 7),
 
     /** @brief AFC fan current out-of-range. */
     CMR_CAN_ERROR_AFC_FANS_CURRENT = (1 << 15),

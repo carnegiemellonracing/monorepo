@@ -22,7 +22,7 @@
 
 
 #include "adc.h"        // adcVSense, adcISense
-#include "dv_error.h"   // For update_dv_error
+#include "error.h"   // For update_dv_error
 
 #include "gpio.h"       // For actionButtonPressed status
 
@@ -799,7 +799,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
         warning |= CMR_CAN_WARN_FSM_TPOS_IMPLAUSIBLE;
     }
 
-    update_dv_errors(&error);
+    update_errors(&error);
 
     // if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
     //     error |= CMR_CAN_ERROR_VSM_TIMEOUT;

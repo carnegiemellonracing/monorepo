@@ -72,6 +72,12 @@ static const uint16_t BRAKE_ACTIVE_THRES_PSI = 100;
             in the tanks when ASMS is off */
 #define MAX_EBS_AIR_PRES_DECI_BAR_NON_DV_SAFE 40
 
+/** @brief lower adc value at which we assume the brake is implauible */
+#define LOWER_BRAKES_IMPLAUS_THRESHOLD 100
+
+/** @brief upper adc value at which we assume the brake is implauible */
+#define UPPER_BRAKES_IMPLAUS_THRESHOLD 4000
+
 /**
  * @brief Mapping of sensor channels to ADC channels.
  */
@@ -80,6 +86,7 @@ const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN] = {
     [SENSOR_CH_TPOS_R_U8]           = ADC_TPOS_R,
     [SENSOR_CH_BPOS_U8]             = ADC_BPRES,
     [SENSOR_CH_BPRES_PSI]           = ADC_BPRES,
+    [SENSOR_CH_BPRES_IMPLUS]           = ADC_BPRES,
     [SENSOR_CH_SWANGLE_DEG_FL]      = ADC_SWANGLE,
     [SENSOR_CH_SWANGLE_DEG_FR]      = ADC_SWANGLE,
     [SENSOR_CH_EBS_PRESSURE_1_DECI_BAR]  = ADC_EBS_AIR_PRES_1,
@@ -308,6 +315,18 @@ static uint32_t sampleBrakeImplaus(const cmr_sensor_t *sensor) {
     return implaus;
 }
 
+/**
+ * @brief Sample whether the brake sensor reading is plausible
+ *
+ * @param sensor The sensor (ignored).
+ *
+ * @return 1 if the brake pedal position is implausible, 0 otherwise.
+ */
+
+int32_t sampleBrakeSensorImplaus(const cmr_sensor_t *sensor, uint32_t reading) {
+    return reading < LOWER_BRAKES_IMPLAUS_THRESHOLD || reading > UPPER_BRAKES_IMPLAUS_THRESHOLD ;
+}
+
 
 /**
  * @brief Gets average throttle position.
@@ -361,6 +380,13 @@ static cmr_sensor_t sensors[SENSOR_CH_LEN] = {
         .readingMax      = CMR_ADC_MAX, 
         .outOfRange_pcnt = 10, 
         .warnFlag        = CMR_CAN_WARN_FSM_BPRES,
+    },
+    [SENSOR_CH_BPRES_IMPLUS] = { 
+        .conv            = sampleBrakeSensorImplaus, 
+        .sample          = sampleADCSensor, 
+        .readingMin      = 0, 
+        .readingMax      = CMR_ADC_MAX, 
+        .outOfRange_pcnt = 10, 
     },
     [SENSOR_CH_SWANGLE_DEG_FL] = { 
         .conv            = adcToYaw_FL, 

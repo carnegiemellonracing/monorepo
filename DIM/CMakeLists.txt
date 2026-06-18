@@ -117,8 +117,8 @@ link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 add_executable(${CMAKE_PROJECT_NAME}
     # Project sources
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/adc.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/dv_error.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/can.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/error.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/error_leds.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/i2c.c
