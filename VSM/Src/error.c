@@ -53,10 +53,8 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     for (canRX_t i = 0; i < CANRX_LEN; i++) {
         cmr_canRXMeta_t *rxMeta = &(canRXMeta[i]);
 
-        if (cmr_canRXMetaTimeoutError(rxMeta, lastWakeTime) < 0
-            && i != CANRX_RES && !(rxMeta->errorFlag == 0 && vsmErrorSourceFlags[i] == 0)
-            && i != CANRX_HEARTBEAT_HVBMS
-            && i != CANRX_HEARTBEAT_HVC) {
+        if (cmr_canRXMetaTimeoutError(rxMeta, lastWakeTime) < 0 &&
+        !(rxMeta->errorFlag == 0 && vsmErrorSourceFlags[i] == CMR_CAN_VSM_TIMEOUT_SOURCE_NONE)) {
             heartbeatErrors |= rxMeta->errorFlag;
             moduleTimeoutMatrix |= vsmErrorSourceFlags[i];
             sendFirstError(CANRX_TIMEOUT);
@@ -76,7 +74,7 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
 
     if (getBadModuleState(CANRX_HEARTBEAT_CDC, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
         heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
-        badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_CDC;
+        badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_DCM;
         sendFirstError(BADSTATE_CDC);
     }
 
@@ -85,6 +83,18 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
         badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_DIM;
         sendFirstError(BADSTATE_DIM);
     }
+
+    if(getASMSState()){
+        if (getBadModuleState(CANRX_HEARTBEAT_COMPUTE, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
+            heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
+            badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_COMPUTE;
+        }
+
+        if(cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_CUBEMARS_DATA], lastWakeTime) < 0){
+            heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
+        }
+    }
+
 
     // if (getBadModuleState(CANRX_HEARTBEAT_HVBMS, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
     //     heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;

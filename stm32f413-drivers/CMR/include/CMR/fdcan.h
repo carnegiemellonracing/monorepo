@@ -70,7 +70,7 @@ int cmr_canRXMetaTimeoutError(const cmr_canRXMeta_t *meta, TickType_t now_ms);
 typedef struct cmr_can cmr_can_t;
 
 typedef void (*cmr_canRXCallback_t)(
-    cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen
+    cmr_can_t *can, uint32_t canID, const void *data, size_t dataLen
 );
 
 

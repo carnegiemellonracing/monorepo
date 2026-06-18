@@ -26,11 +26,12 @@ typedef enum {
     CMR_CAN_HV_EN,          /**< @brief High voltage enabled. */
     CMR_CAN_RTD,            /**< @brief Ready to drive. */
     CMR_CAN_ERROR,          /**< @brief Error has occurred. */
-    CMR_CAN_CLEAR_ERROR,     /**< @brief Request to clear error. */
+    CMR_CAN_CLEAR_ERROR,    /**< @brief Request to clear error. */
     CMR_CAN_AS_READY,       /**< @brief Autonomous ready mode */
     CMR_CAN_AS_DRIVING,     /**< @brief Autonomous driving mode */
 	CMR_CAN_AS_FINISHED,    /**< @brief Autonomous finished mode */
-	CMR_CAN_AS_EMERGENCY     /**< @brief Autonomous emergency mode */
+	CMR_CAN_AS_EMERGENCY,   /**< @brief Autonomous emergency mode */
+    CMR_CAN_STATE_LEN       /**< @brief Number of CAN states */
 } cmr_canState_t;
 
 /** @brief Standard CAN heartbeat. */
@@ -71,6 +72,12 @@ typedef enum {
     CMR_CAN_ERROR_DIM_SOLENOID_CURRENT_1_OOR = (1 << 3),
         /** @brief DIM solenoid current 2 out-of-range. */
     CMR_CAN_ERROR_DIM_SOLENOID_CURRENT_2_OOR = (1 << 4),
+    /** @brief DIM tank pressure sensor 1 out-of-range non-dv check */
+    CMR_CAN_ERROR_DIM_TANK_PRESSURE_NON_DV_1_OOR = (1 << 5),
+    /** @brief DIM tank pressure sensor 2 out-of-range non-dv check. */
+    CMR_CAN_ERROR_DIM_TANK_PRESSURE_NON_DV_2_OOR = (1 << 6),
+    /** @brief DIM front brake pressure reading implaus. */
+    CMR_CAN_ERROR_DIM_BRAKE_SENSOR_IMPLAUS = (1 << 7),
 
     /** @brief AFC fan current out-of-range. */
     CMR_CAN_ERROR_AFC_FANS_CURRENT = (1 << 15),
@@ -260,10 +267,14 @@ typedef enum {
 typedef enum {
     /** @brief No modules have timed out. */
     CMR_CAN_VSM_TIMEOUT_SOURCE_NONE = 0,
+    /** @brief At least one cubemars has timed out. */
+    CMR_CAN_VSM_TIMEOUT_SOURCE_CUBEMARS= (1 << 7),
+    /** @brief At least one compute message has timed out. */
+    CMR_CAN_VSM_TIMEOUT_SOURCE_COMPUTE = (1 << 6),
     /** @brief At least one High Voltage Controller message has timed out. */
     CMR_CAN_VSM_TIMEOUT_SOURCE_HVC = (1 << 6),
     /** @brief At least one Central Dynamics Controller message has timed out. */
-    CMR_CAN_VSM_TIMEOUT_SOURCE_CDC = (1 << 5),
+    CMR_CAN_VSM_TIMEOUT_SOURCE_DCM = (1 << 5),
     /** @brief At least one Front Sensor Module message has timed out. */
     CMR_CAN_VSM_TIMEOUT_SOURCE_FSM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
@@ -276,13 +287,13 @@ typedef enum {
 typedef enum {
     /** @brief No modules have timed out. */
     CMR_CAN_VSM_BADSTATE_SOURCE_NONE = 0,
-    /** @brief At least one High Voltage Controller message has timed out. */
+    /** @brief Compute is in a bad state (error) */
+    CMR_CAN_VSM_BADSTATE_SOURCE_COMPUTE = (1 << 7),
+    /** @brief HVC is in a bad state (error) */
     CMR_CAN_VSM_BADSTATE_SOURCE_HVC = (1 << 6),
-    /** @brief At least one Central Dynamics Controller message has timed out. */
-    CMR_CAN_VSM_BADSTATE_SOURCE_CDC = (1 << 5),
-    /** @brief At least one Front Sensor Module message has timed out. */
-    CMR_CAN_VSM_BADSTATE_SOURCE_FSM = (1 << 4),
-    /** @brief At least one Driver Interface Module message has timed out. */
+    /** @brief DCM is in a bad state (error) */
+    CMR_CAN_VSM_BADSTATE_SOURCE_DCM = (1 << 5),
+    /** @brief DIM is in a bad state (error) */
     CMR_CAN_VSM_BADSTATE_SOURCE_DIM = (1 << 3),
     /** @brief HVBMS Timeout. */
     CMR_CAN_VSM_BADSTATE_SOURCE_HVBMS = (1 << 0)
@@ -416,11 +427,14 @@ typedef struct {
 
 /** @brief Vehicle Safety Module sensor data. */
 typedef struct {
-    uint16_t brakePressureRear_PSI;      /**< @brief Rear brake pressure (pounds-per-square-inch). */
-    uint16_t batt_mV;                    /**< @brief Hall effect current (centi-Amps). */
-    uint8_t safetyIn_eight_V;            /**< @brief Safety circuit input voltage (eight volts). */
-    uint8_t safetyOut_eight_V;           /**< @brief Safety circuit output voltage (eight volts). */
-    bool    EAB_pressed;                 /**< @brief EAB Pressed. */
+    uint16_t brakePressureRear_PSI; /**< @brief Rear brake pressure (pounds-per-square-inch). */
+    uint16_t batt_mV;               /**< @brief Hall effect current (centi-Amps). */
+    uint8_t safetyIn_eight_V;       /**< @brief Safety circuit input voltage (eight volts). */
+    uint8_t safetyOut_eight_V;      /**< @brief Safety circuit output voltage (eight volts). */
+    bool    EAB_pressed;            /**< @brief EAB Pressed. */
+    int8_t  hv_current_A;           /**< @brief Hall effect sensor reading (Amps). (
+                                                Note this maxes out at 127 A at the high end 
+                                                but the sensor itself maxes at 125A)*/
 } cmr_canVSMSensors_t;
 
 typedef struct {
@@ -868,7 +882,7 @@ typedef struct {
     uint8_t buttonStates;      /**< @brief Button states packed into an uint8_t. {drs,0,1,2,up,down,left,right}*/
     uint8_t regenPercent;            
     uint8_t paddle;            
-    uint8_t controlsStatus;
+    uint8_t cntrlOff;
     uint8_t dvControlMode;
 } cmr_canDIMActions_t;
 

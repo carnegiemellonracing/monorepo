@@ -18,9 +18,11 @@
 #include <string.h>     // memcpy()
 #include <CMR/config_screen_helper.h>
 #include <CMR/can_types.h>
+#include <CMR/utils.h>
+
 
 #include "adc.h"        // adcVSense, adcISense
-#include "dv_error.h"   // For update_dv_error
+#include "error.h"   // For update_dv_error
 
 #include "gpio.h"       // For actionButtonPressed status
 
@@ -388,9 +390,10 @@ static void canTX100Hz(void *pvParameters) {
         sendDVPressureReadings();
         // Calculate integer regenPercent from regenStep
     	uint8_t paddle = (uint8_t) ((adcRead(ADC_PADDLE) - 16.062) / 3694.43) * 255.0;
-    	uint8_t regenPercent = (uint8_t)((adcRead(ADC_PADDLE) / 255.0) * 100.0);
+    	uint8_t regenPercent = (uint8_t)(((float) adcRead(ADC_PADDLE) / 435.0f) * 100.0f); // 435 empirical value
+        regenPercent = CLAMP(0, regenPercent, 100);
         uint8_t packed = 0;
-        uint8_t ctrlOn = !cmr_gpioRead(GPIO_CTRL_SWITCH);
+        uint8_t ctrlOff = !cmr_gpioRead(GPIO_CTRL_SWITCH);
         uint8_t dvCtrlMode = stateGetDVMode();
         for(int i=0; i<NUM_BUTTONS; i++){
             packed |= buttonStates[i].gpioState << i; 
@@ -400,7 +403,7 @@ static void canTX100Hz(void *pvParameters) {
             .buttonStates = packed,
             .regenPercent = regenPercent,
             .paddle = paddle,
-            .controlsStatus = true,
+            .cntrlOff = false,
 			.dvControlMode = dvCtrlMode
         };
         canTX(
@@ -796,7 +799,7 @@ static void sendHeartbeat(TickType_t lastWakeTime) {
         warning |= CMR_CAN_WARN_FSM_TPOS_IMPLAUSIBLE;
     }
 
-    update_dv_errors(&error);
+    update_errors(&error);
 
     // if (cmr_canRXMetaTimeoutError(heartbeatVSMMeta, lastWakeTime) < 0) {
     //     error |= CMR_CAN_ERROR_VSM_TIMEOUT;
@@ -831,7 +834,7 @@ static void sendFSMData(void) {
     uint8_t torqueRequested = 0;
 
     if (heartbeatVSM->state == CMR_CAN_RTD &&
-        cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPP_IMPLAUS) == 0  // Temp comment to remove implausability
+        cmr_sensorListGetValue(&sensorList, SENSOR_CH_BPP_IMPLAUS) == 0 
     ) {
         torqueRequested = throttlePosition;
     }

@@ -39,10 +39,12 @@ volatile uint8_t parametersFromDIM[MAX_MENU_ITEMS];
 volatile cmr_driver_profile_t currentDriver = Default;
 volatile bool framWrite_flag = false;
 
-volatile float powerLimitFL_kW = 6.0f * front_bias;
-volatile float powerLimitFR_kW = 6.0f * front_bias;
-volatile float powerLimitRL_kW = 6.0f * (1 - front_bias);
-volatile float powerLimitRR_kW = 6.0f * (1 - front_bias);
+const float power_limit = 50.0f;
+const float power_limit_per_side = power_limit * .5f;
+volatile float powerLimitFL_kW = power_limit_per_side * front_bias;
+volatile float powerLimitFR_kW = power_limit_per_side * front_bias;
+volatile float powerLimitRL_kW = power_limit_per_side * (1 - front_bias);
+volatile float powerLimitRR_kW = power_limit_per_side * (1 - front_bias);
 
 extern volatile cmr_can_rtc_data_t time;
 extern volatile float odometer_km;
@@ -52,6 +54,8 @@ bool new_dim_request = false;
 bool new_compute_heartbeat = false;
 bool new_cubemars_data = false;
 bool new_res_message = false;
+bool new_AS_finished_message = false;
+
 
 /** @brief Fan/Pump channel states. */
 uint16_t fan_1_State;
@@ -502,8 +506,10 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
     // use canIDs startnig at 0x560
     [CANRX_DAQ_SENSORIC_VEL_ANG_POI] = {
         .canID = CMR_CANID_SENSORIC_VEL_ANG_POI,
-        .timeoutError_ms = 2000,
-        .timeoutWarn_ms = 1000
+        // This is a bit sad, but for the sake of competition I only changed this
+        // timoout to as it is checked in controls.c
+        .timeoutError_ms = 500,
+        .timeoutWarn_ms = 250
     },
     [CANRX_DAQ_SENSORIC_DIST_POI] = {
         .canID = CMR_CANID_SENSORIC_DIST_POI,
@@ -661,6 +667,11 @@ cmr_canRXMeta_t canDaqRXMeta[CANRX_DAQ_LEN] = {
     },
     [CANRX_DAQ_CUBEMARS_DATA] = {
         .canID = CMR_CANID_EXTENDED_CUBEMARS_DATA,
+        .timeoutError_ms = 1000,
+        .timeoutWarn_ms = 250
+    },
+    [CANRX_DAQ_AS_FINISHED] = {
+        .canID = CMR_CANID_AS_MISSION_FINISHED,
         .timeoutError_ms = 1000,
         .timeoutWarn_ms = 250
     },
@@ -914,6 +925,9 @@ static void canTX100Hz(void *pvParameters) {
             sizeof(heartbeat),
             canTX100Hz_period_ms
         );
+
+        cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+		canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_VSM_HEARTBEAT, heartbeatVSM, sizeof(cmr_canHeartbeat_t), canTX100Hz_period_ms); 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
 }
@@ -1044,12 +1058,6 @@ static void canTX200Hz(void *pvParameters) {
             sendDTIMessage(CMR_CAN_BUS_TRAC, CMR_CANID_DTI_BROADCAST_SET_DRIVE_EN, &drive_enable, sizeof(drive_enable), canTX200Hz_period_ms);
         }
 
-        if(new_dim_request) {
-            cmr_canDIMRequest_t *dimRequest = canVehicleGetPayload(CANRX_VEH_REQUEST_DIM);
-            canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DIM_REQUEST, dimRequest, sizeof(cmr_canDIMRequest_t), canTX200Hz_period_ms);
-            new_dim_request = false;
-        }
-
         if(new_compute_heartbeat) {
             cmr_canHeartbeat_t *heartbeatCompute = canDAQGetPayload(CANRX_DAQ_HEARTBEAT_COMPUTE);
             canTX(CMR_CAN_BUS_VEH, CMR_CANID_HEARTBEAT_COMPUTE, heartbeatCompute, sizeof(cmr_canHeartbeat_t), canTX200Hz_period_ms);
@@ -1066,6 +1074,12 @@ static void canTX200Hz(void *pvParameters) {
             void *resData = canVehicleGetPayload(CANRX_VEH_AS_RES);
             canTX(CMR_CAN_BUS_TRAC, CMR_CANID_AS_RES, resData, 8, canTX200Hz_period_ms);
             new_res_message = false;
+        }
+
+        if(new_AS_finished_message) {
+            void *asFinishedData = canDAQGetPayload(CANRX_DAQ_AS_FINISHED);
+            canTX(CMR_CAN_BUS_VEH, CMR_CANID_AS_MISSION_FINISHED, asFinishedData, sizeof(asFinishedData), canTX200Hz_period_ms);
+            new_AS_finished_message = false;
         }
 
         float hvVoltage_V = (float)(packVoltage->battVoltage_mV) / 1000.0f;
@@ -1124,6 +1138,13 @@ static void canTX200Hz(void *pvParameters) {
 
         // YRC
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_PID_IO, &yrcDebug, sizeof(yrcDebug), canTX200Hz_period_ms);
+
+        if(new_dim_request) {
+            cmr_canDIMRequest_t *dimRequest = canVehicleGetPayload(CANRX_VEH_REQUEST_DIM);
+            canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DIM_REQUEST, dimRequest, sizeof(cmr_canDIMRequest_t), canTX200Hz_period_ms);
+            new_dim_request = false;
+        }
+
 
         vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
     }
@@ -1256,7 +1277,6 @@ static void canTX1Hz(void *pvParameters) {
         volatile cmr_canSensoricVelAng_t *sensoricVelAng = (cmr_canSensoricVelAng_t*)canDAQGetPayload(CANRX_DAQ_SENSORIC_VEL_ANG);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_SENSORIC_VEL_ANG, sensoricVelAng, sizeof(cmr_canSensoricVelAng_t), canTX200Hz_period_ms);
 
-
         // TODO: constantly send current parameters
         vTaskDelayUntil(&lastWakeTime, canTX1Hz_period_ms);
     }
@@ -1373,7 +1393,7 @@ void dim_params_callback (cmr_can_t *canb_rx, uint16_t canID, const void *data, 
     }
 }
 
-void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t dataLen) {
+void conditionalCallback(cmr_can_t *canb_rx, uint32_t canID, const void *data, size_t dataLen) {
 	uint32_t au32_initial_ticks = DWT->CYCCNT;
 
 	size_t iface_idx = (canb_rx - can);
@@ -1393,6 +1413,10 @@ void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, s
 
     if(canID == CMR_CANID_AS_RES) {
         new_res_message = true;
+    }
+
+    if(canID == CMR_CANID_AS_MISSION_FINISHED) {
+        new_AS_finished_message = true;
     }
 
     // If DIM config message, handle it
@@ -1491,14 +1515,8 @@ void canInit(void) {
             .isMask = false,
             .rxFIFO = FDCAN_RX_FIFO0,
             .ids = {CMR_CANID_AS_PRESSURE_READINGS}
-        },
+        }
 
-        {
-            .isMask = false,
-            .isExtended = true,
-            .rxFIFO = FDCAN_RX_FIFO0,
-            .ids = {CMR_CANID_EXTENDED_CUBEMARS_DATA}
-        },
     };
 
     cmr_canFilter(&(can[CMR_CAN_BUS_VEH]), canVehicleFilters,
@@ -1558,6 +1576,12 @@ void canInit(void) {
 
          // Match all odd IDs (bottom bit 1, all others don't care).
          .ids = {0x001, 0x001}
+        },
+        {.isMask = false,
+         .isExtended = true,
+         .rxFIFO = FDCAN_RX_FIFO1,
+
+         .ids = {CMR_CANID_EXTENDED_CUBEMARS_DATA}
         }
     };
 

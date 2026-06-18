@@ -19,6 +19,8 @@
 #include "tft.h"   // TFT display interface.
 #include "tftDL.h"
 #include "adc.h"
+#include "error.h"
+
 
 static const uint32_t stateMachine_priority = 4;
 
@@ -353,13 +355,9 @@ static cmr_state getNextState(void) {
             if(getASMS()) {
                 nextState = AUTON;
             }
-            // else if(!cmr_gpioRead(GPIO_CTRL_SWITCH) && (stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)) {
-            //     nextState = CONFIG;
-            //     flush_config_screen_to_cdc = false;
-            // }
-            else if(buttonStates[RIGHT].isPressed && stateGetVSM() == CMR_CAN_RTD) {
-                nextState = RACING;
-                buttonStates[RIGHT].isPressed = false; 
+            else if(!cmr_gpioRead(GPIO_CTRL_SWITCH) && (stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)) {
+                nextState = CONFIG;
+                flush_config_screen_to_cdc = false;
             }
             else {
                 nextState = NORMAL;
@@ -534,8 +532,16 @@ void reqVSM(void) {
         EABStateUp();
         return;
     }
-    
-    if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM == CMR_CAN_CLEAR_ERROR) {
+
+    cmr_canError_t error = CMR_CAN_ERROR_NONE;
+    update_errors(&error);
+    if(error != CMR_CAN_ERROR_NONE) {
+        state.vsmReq = CMR_CAN_ERROR;
+        return;
+    }
+
+    if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM() == CMR_CAN_CLEAR_ERROR 
+    || stateGetVSM() == CMR_CAN_AS_FINISHED || stateGetVSM() == CMR_CAN_AS_EMERGENCY) {
         state.vsmReq = CMR_CAN_GLV_ON;
         return;
     }

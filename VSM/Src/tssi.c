@@ -16,14 +16,22 @@
 #include <CMR/pwm.h>           // PWM interface
 #include <CMR/tasks.h>
 
-#define INIT_WAIT_TIME_MS 15000
-
 /** @brief TSSI control task priority. */
 static const uint32_t tssiControlPriority = 2;
 /** @brief TSSI control task period. */
 static const TickType_t tssiControl_period_ms = 250;
 /** @brief TSSI control task. */
 static cmr_task_t tssiControl_task;
+
+static void flash_error_state() {
+    pwmSetDutyCycle(PWM_GREEN, 0);
+    pwmSetDutyCycle(PWM_RED, 50);
+}
+
+static void flash_normal_state() {
+    pwmSetDutyCycle(PWM_GREEN, 100);
+    pwmSetDutyCycle(PWM_RED, 0);
+}
 
 /**
  * @brief Task for controlling the TSSI.     
@@ -35,30 +43,23 @@ static cmr_task_t tssiControl_task;
 static void tssiControl(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-    static bool initStarted = false;
-    static TickType_t initStartTime = 0;
+    static bool exitedErrorState = false;
     TickType_t lastWakeTime = xTaskGetTickCount();
-
     while (1) {
-        if(!initStarted) {
-            initStarted = true;
-            initStartTime = xTaskGetTickCount();
-        }
-        else if (initStarted && lastWakeTime - initStartTime < INIT_WAIT_TIME_MS) {
-            pwmSetDutyCycle(PWM_GREEN, 100);
-            pwmSetDutyCycle(PWM_RED, 0);
-        }
-        else {
-            if(getAMSError() || !cmr_gpioRead(GPIO_IN_IMD_ERR_COND_N)){
-                pwmSetDutyCycle(PWM_RED, 50);
-                pwmSetDutyCycle(PWM_GREEN, 0); 
-            }
-            else{
-                pwmSetDutyCycle(PWM_GREEN, 100);
-                pwmSetDutyCycle(PWM_RED, 0);
-            }
-        }
+        bool tssi_red_error =   getAMSError() || 
+                                !cmr_gpioRead(GPIO_IN_IMD_ERR_N) || 
+                                !cmr_gpioRead(GPIO_IN_IMD_ERR_COND_N);
 
+        if (tssi_red_error && exitedErrorState) {
+            flash_error_state();
+        }
+        else{
+            if (!tssi_red_error) {
+                exitedErrorState = true;
+            }
+            flash_normal_state(); 
+        }
+       
         vTaskDelayUntil(&lastWakeTime, tssiControl_period_ms);
     }
 }
