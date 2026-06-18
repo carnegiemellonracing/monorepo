@@ -85,10 +85,10 @@ void updateCurrentErrors(volatile vsmStatus_t *vsmStatus, TickType_t lastWakeTim
     }
 
     if(getASMSState()){
-        if (getBadModuleState(CANRX_HEARTBEAT_COMPUTE, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
-            heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
-            badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_COMPUTE;
-        }
+        // if (getBadModuleState(CANRX_HEARTBEAT_COMPUTE, vsmStatus->canVSMStatus.internalState, lastWakeTime) < 0) {
+        //     heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;
+        //     badStateMatrix |= CMR_CAN_VSM_BADSTATE_SOURCE_COMPUTE;
+        // }
 
         if(cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_CUBEMARS_DATA], lastWakeTime) < 0){
             heartbeatErrors |= CMR_CAN_ERROR_VSM_MODULE_STATE;

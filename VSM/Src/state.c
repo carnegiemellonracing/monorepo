@@ -431,7 +431,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             if (lastStateChangeTime_ms + 400 > lastWakeTime_ms){
                 nextState = CMR_CAN_VSM_STATE_AS_FINISHED;
             }
-            else if (!getDVBrakeActive() || RESTriggered()){
+            else if (!getDVBrakeActive()){
                 nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
             }
             else if ((lastWakeTime_ms > lastStateChangeTime_ms + AS_FINISHED_TIME)){
@@ -666,8 +666,14 @@ static inline bool getRESGo() {
 static inline bool RESTriggered(){
 	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
 	bool res_triggered = !(data[0] & CMR_CAN_RES_TRIG);
-	if (res_triggered) {
-		sendFirstError(RES_TRIGGERED);
-	}
+	return res_triggered; 
+}
+
+/**
+ * @brief Checks if RES is activated
+ */
+static inline bool RESCorrect(){
+	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
+	bool res_triggered = !(data[7] & CMR_CAN_RES_TRIG);
 	return res_triggered; 
 }
