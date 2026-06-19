@@ -297,7 +297,7 @@
             "unit_short": "degC",
             "in_type": "u8",
             "out_type": "u8",
-            "post_factor": 2,
+            "factor": 1,
             "endian": "be",
             "min": 0,
             "max": 150,
