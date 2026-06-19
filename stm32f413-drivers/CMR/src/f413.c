@@ -144,6 +144,7 @@ void _platform_canInit(
     switch (bitRate) {
         case CMR_CAN_BITRATE_125K:
             can->handle.Init.Prescaler = 48;
+            break;
         case CMR_CAN_BITRATE_250K:
             can->handle.Init.Prescaler = 24;
             break;
@@ -346,6 +347,45 @@ void _platform_rccSystemInternalClockEnable(void)
     }
 }
 
+/**
+ * @brief Reset STM32F413 clock configuration back to default reset state.
+ *
+ * Default reset state:
+ *   - HSI ON (16 MHz)
+ *   - SYSCLK sourced from HSI
+ *   - HSE OFF
+ *   - PLL OFF
+ *   - Prescalers = DIV1
+ */
+void _platform_resetSystemClock(void)
+{
+    RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
+
+    // Switch SYSCLK away from PLL before disabling it.
+    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
+                                  | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+
+    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK) {
+        cmr_panic("HAL_RCC_ClockConfig() failed!");
+    }
+
+    // Disable PLL and keep HSI as the system clock source.
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+    RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+    RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_OFF;
+
+    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
+        cmr_panic("HAL_RCC_OscConfig() failed!");
+    }
+}
+
+
 #ifdef HAL_GPIO_MODULE_ENABLED
 
 /**
@@ -380,6 +420,41 @@ void _platform_rccGPIOClockEnable(GPIO_TypeDef *port)
         break;
     case GPIOH_BASE:
         __HAL_RCC_GPIOH_CLK_ENABLE();
+        break;
+    }
+}
+/**
+ * @brief Disables the specified GPIO port's clock.
+ *
+ * @param port The GPIO port.
+ */
+void _platform_rccGPIOClockDisable(GPIO_TypeDef *port)
+{
+    switch ((uintptr_t)port)
+    {
+    case GPIOA_BASE:
+        __HAL_RCC_GPIOA_CLK_DISABLE();
+        break;
+    case GPIOB_BASE:
+        __HAL_RCC_GPIOB_CLK_DISABLE();
+        break;
+    case GPIOC_BASE:
+        __HAL_RCC_GPIOC_CLK_DISABLE();
+        break;
+    case GPIOD_BASE:
+        __HAL_RCC_GPIOD_CLK_DISABLE();
+        break;
+    case GPIOE_BASE:
+        __HAL_RCC_GPIOE_CLK_DISABLE();
+        break;
+    case GPIOF_BASE:
+        __HAL_RCC_GPIOF_CLK_DISABLE();
+        break;
+    case GPIOG_BASE:
+        __HAL_RCC_GPIOG_CLK_DISABLE();
+        break;
+    case GPIOH_BASE:
+        __HAL_RCC_GPIOH_CLK_DISABLE();
         break;
     }
 }
@@ -488,6 +563,26 @@ void _platform_rccCANClockEnable(CAN_TypeDef *instance)
             break;
         case CAN3_BASE:
             __HAL_RCC_CAN3_CLK_ENABLE();
+            break;
+    }
+}
+/**
+ * @brief Disables the specified CAN interface's clock.
+ *
+ * @param instance The HAL CAN instance.
+ */
+void _platform_rccCANClockDisable(CAN_TypeDef *instance)
+{
+    switch ((uintptr_t) instance) {
+        case CAN1_BASE:
+            __HAL_RCC_CAN1_CLK_DISABLE();
+            break;
+        case CAN2_BASE:
+            __HAL_RCC_CAN2_CLK_DISABLE();
+            __HAL_RCC_CAN1_CLK_DISABLE();    // CAN2 also needs CAN1 clock.
+            break;
+        case CAN3_BASE:
+            __HAL_RCC_CAN3_CLK_DISABLE();
             break;
     }
 }

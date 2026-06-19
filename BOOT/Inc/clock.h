@@ -1,0 +1,13 @@
+/**
+ * @file clock.h
+ * @brief Board-specific clock interface.
+ *
+ */
+
+#ifndef CLOCK_H
+#define CLOCK_H
+
+void clockInit(void);
+void clockDeinit(void);
+
+#endif /* CLOCK_H */

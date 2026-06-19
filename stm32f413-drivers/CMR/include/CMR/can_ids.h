@@ -29,6 +29,10 @@
 
 /** @brief CAN IDs. */
 typedef enum {
+    CMR_CANID_BOOTLOADER_FLASH_READY = 0x0A0, /**< @brief Flashing ready message */
+    CMR_CANID_BOOTLOADER_FLASH_TX = 0x0A1, /**< @brief Flashing over CAN tx message */
+    CMR_CANID_BOOTLOADER_FLASH_RX = 0x0A2, /**< @brief Flashing over CAN rx message */
+
     CMR_CANID_HEARTBEAT_VSM = 0x100,    /**< @brief VSM heartbeat. */
     CMR_CANID_HEARTBEAT_HVC = 0x101,    /**< @brief HVC heartbeat. */
     CMR_CANID_HEARTBEAT_CDC = 0x102,    /**< @brief CDC heartbeat. */
