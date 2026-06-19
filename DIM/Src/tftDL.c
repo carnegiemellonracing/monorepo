@@ -317,10 +317,19 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
         [CMR_CAN_DRSM_AUTO] = " AUTO ",
     };
 
+    size_t dvCharsLen = 6;
+    static const char *dvChars[] = {
+        [CMR_CAN_DV_MODE_SLOW] = " SLOW ",
+        [CMR_CAN_DV_MODE_NORMAL] = "NORMAL",
+        [CMR_CAN_DV_MODE_FAST] = " FAST ",
+    };
+
     cmr_canState_t stateVSM = stateGetVSM();
     cmr_canState_t stateVSMReq = stateGetVSMReq();
     cmr_canGear_t gear = stateGetGear();
     cmr_canDrsMode_t drsMode = stateGetDrs();
+    cmr_canDVMode_t dvCtrlMode = stateGetDVMode();
+
     uint32_t *state_color = (void *)(file_addr + state_col_addr);
 
     char stateChar[12];
@@ -357,9 +366,17 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
                                ? gearChars[gear]
                                : gearChars[CMR_CAN_GEAR_UNKNOWN];
 
-    const char *drsChar = (drsMode < drsCharsLen)
+    const char *drsChar;
+    if(getASMS()) {
+        drsChar = (drsMode < drsCharsLen)
+                              ? dvChars[dvCtrlMode]
+                              : dvChars[CMR_CAN_DV_MODE_NORMAL];
+    }
+    else {
+        drsChar = (drsMode < drsCharsLen)
                               ? drsChars[drsMode]
                               : drsChars[CMR_CAN_DRSM_UNKNOWN];
+    }
 
     struct {
         char buf[STATEDISPLAYLEN];

@@ -321,6 +321,9 @@ static void canTX10Hz(void *pvParameters) {
 		reqVSM();
         reqGear();
         reqDRS();
+        if(getASMS()) {
+            reqDVCtrl();
+        }
         cmr_canState_t stateVSM = stateGetVSM();
         cmr_canState_t stateVSMReq = stateGetVSMReq();
         cmr_canGear_t gear = stateGetGear();

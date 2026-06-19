@@ -403,7 +403,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             }
             //T8
             else{
-                nextState = CMR_CAN_VSM_STATE_ERROR;
+                nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
             }
             break;
         }

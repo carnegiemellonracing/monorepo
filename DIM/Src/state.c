@@ -91,7 +91,9 @@ static volatile struct {
 	.gear = CMR_CAN_GEAR_SLOW,
 	.gearReq = CMR_CAN_GEAR_SLOW,
 	.drsMode = CMR_CAN_DRSM_CLOSED,
-	.drsReq = CMR_CAN_DRSM_CLOSED
+	.drsReq = CMR_CAN_DRSM_CLOSED,
+    .dvCtrlMode = CMR_CAN_DV_MODE_NORMAL,
+    .dvCtrlReq = CMR_CAN_DV_MODE_NORMAL,
 };
 
 void exitConfigScreen() {
@@ -624,15 +626,13 @@ void reqDRS(void) {
 }
 
 void reqDVCtrl(void) {
-    if(cmr_gpioRead(GPIO_CTRL_SWITCH)) {
-        if(buttonStates[RIGHT].isPressed) {
-            state.dvCtrlReq = (state.dvCtrlMode + 1) % NUM_DV_MODES;
-            buttonStates[RIGHT].isPressed = false; 
-        }
-        else if(buttonStates[LEFT].isPressed) {
-            state.dvCtrlReq = (state.dvCtrlMode - 1) % NUM_DV_MODES;
-            buttonStates[LEFT].isPressed = false; 
-        }
+    if(buttonStates[UP].isPressed) {
+        state.dvCtrlReq = (state.dvCtrlMode + 1) % NUM_DV_MODES;
+        buttonStates[UP].isPressed = false; 
+    }
+    else if(buttonStates[DOWN].isPressed) {
+        state.dvCtrlReq = (state.dvCtrlMode - 1) % NUM_DV_MODES;
+        buttonStates[DOWN].isPressed = false; 
     }
 }
 
