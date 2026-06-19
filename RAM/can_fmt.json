@@ -280,8 +280,8 @@
             "short": "EMD Pwr",
             "unit": "watts",
             "unit_short": "W",
-            "in_type": "u8",
-            "out_type": "u8",
+            "in_type": "u32",
+            "out_type": "u32",
             "min": 0,
             "max": 500000,
             "enabled": 1
