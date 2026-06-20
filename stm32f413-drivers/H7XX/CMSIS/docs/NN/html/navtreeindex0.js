@@ -35,7 +35,7 @@ var NAVTREEINDEX0 =
 "group__NNConv.html#gad3d21b3bc6dbd6f3b97d01104349cb0a":[2,2,1,10],
 "group__NNConv.html#gae00d3c1285907d59657369fc98bcc83f":[2,2,1,6],
 "group__Pooling.html":[2,2,3],
-"group__Pooling.html#ga99afcdcc61eaf429ab3ee823702e44ce":[2,2,3,1],
+"group__Pooling.html#ga99afDCMc61eaf429ab3ee823702e44ce":[2,2,3,1],
 "group__Pooling.html#gae4a7b07f97ec4313524c9fb9fbcb1f6a":[2,2,3,0],
 "group__Softmax.html":[2,2,4],
 "group__Softmax.html#ga1cacd8b84b8363079311987d0016ebe5":[2,2,4,0],

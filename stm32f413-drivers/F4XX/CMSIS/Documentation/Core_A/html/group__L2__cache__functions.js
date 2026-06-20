@@ -13,7 +13,7 @@ var group__L2__cache__functions =
       [ "CLEAN_LINE_INDEX_WAY", "structL2C__310__TypeDef.html#ac79d3397741a3ae8566c878b45d30970", null ],
       [ "CLEAN_LINE_PA", "structL2C__310__TypeDef.html#a400d9ededaf12a5193e01d7235f3d65d", null ],
       [ "CLEAN_WAY", "structL2C__310__TypeDef.html#a0e6d40fb25420d5cac5be15ad2662e2c", null ],
-      [ "CONTROL", "structL2C__310__TypeDef.html#a491a4ed1ecdcdf784b180fa13ef46f2f", null ],
+      [ "CONTROL", "structL2C__310__TypeDef.html#a491a4ed1eDCMdf784b180fa13ef46f2f", null ],
       [ "DATA_LOCK_0_WAY", "structL2C__310__TypeDef.html#a2dbbc5c93d3ddffe2459c053d30ede2d", null ],
       [ "DATA_LOCK_1_WAY", "structL2C__310__TypeDef.html#a6288cc2774812105b52a22daedd0c39f", null ],
       [ "DATA_LOCK_2_WAY", "structL2C__310__TypeDef.html#acdbc2d1db5722edc69752fe78a5c477d", null ],

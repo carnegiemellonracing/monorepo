@@ -346,7 +346,7 @@ static void drawErrorScreen(void) {
     err.glvLowVolt = voltage_qV < (20 * 4);
 
     /* Timeouts */
-    err.cdcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_CDC);
+    err.DCMTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_DCM);
     // err.ptcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_PTC);
     err.hvcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_HVC);
     err.vsmTimeout = 0;
@@ -374,7 +374,7 @@ static void drawErrorScreen(void) {
     err.hvcBMBFault = (canHVCHeartbeat->errorStatus & CMR_CAN_HVC_ERROR_BMB_FAULT);
     err.hvcErrorNum = (canHVCHeartbeat->errorStatus);
 
-    /* CDC Motor Faults */
+    /* DCM Motor Faults */
     err.dtiFLErrorCode = dtiFLTempFault->fault_code;
     err.dtiFRErrorCode = dtiFRTempFault->fault_code;
     err.dtiRLErrorCode = dtiRLTempFault->fault_code;
@@ -500,7 +500,7 @@ static void drawRTDScreen(void) {
     /* Setup the Required CAN info for Display */
     cmr_canRXMeta_t *metaMemoratorBroadcast = canRXMeta + CANRX_MEMORATOR_BROADCAST;
 
-    cmr_canRXMeta_t *metaCDCHeartbeat = canRXMeta + CANRX_CDC_HEARTBEAT;
+    cmr_canRXMeta_t *metaDCMHeartbeat = canRXMeta + CANRX_DCM_HEARTBEAT;
 
     cmr_canRXMeta_t *metaHVCPackVoltage = canRXMeta + CANRX_HVC_PACK_VOLTAGE;
     volatile cmr_canHVCPackVoltage_t *canHVCPackVoltage =
@@ -525,8 +525,8 @@ static void drawRTDScreen(void) {
     /* Memorator present? */
     // Wait to update if hasn't seen in 2 sec (2000 ms)
     memorator_status_t memoratorStatus = MEMORATOR_NOT_CONNECTED;
-    volatile cmr_canHeartbeat_t *cdcHeartbeat = (cmr_canHeartbeat_t *)metaCDCHeartbeat->payload;
-    if ((*(uint16_t *)(cdcHeartbeat->warning) & CMR_CAN_WARN_CDC_MEMORATOR_DAQ_TIMEOUT) != 0) {
+    volatile cmr_canHeartbeat_t *DCMHeartbeat = (cmr_canHeartbeat_t *)metaDCMHeartbeat->payload;
+    if ((*(uint16_t *)(DCMHeartbeat->warning) & CMR_CAN_WARN_DCM_MEMORATOR_DAQ_TIMEOUT) != 0) {
         memoratorStatus = MEMORATOR_NOT_CONNECTED;
     }
     if (cmr_canRXMetaTimeoutWarn(metaMemoratorBroadcast, xTaskGetTickCount()) == 0) {
@@ -538,7 +538,7 @@ static void drawRTDScreen(void) {
     }
 
     /* GPS present? */
-    // Checks broadcast from CDC to see status of SBG
+    // Checks broadcast from DCM to see status of SBG
     cmr_canRXMeta_t *metaMovellaStatus = canRXMeta + CANRX_MOVELLA_STATUS;
     // Check timeout
     bool movellaConnected = cmr_canRXMetaTimeoutWarn(metaMovellaStatus, xTaskGetTickCount()) == 0;
@@ -573,7 +573,7 @@ static void drawRTDScreen(void) {
     // 18000mV / 250 as sent by HVC = 72
     bool ssOk = (bmsLV->safety_qV > 72);
 
-    volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t *)getPayload(CANRX_DRS_STATE);
+    volatile cmr_canDCMDRSStates_t *drsState = (volatile cmr_canDCMDRSStates_t *)getPayload(CANRX_DRS_STATE);
     bool drsOpen = (drsState->state == CMR_CAN_DRS_STATE_OPEN);
 
     /* Accumulator Temperature */
@@ -596,7 +596,7 @@ static void drawRTDScreen(void) {
 
     uint8_t hvSoC = 0;
 
-    volatile cmr_canCDCControlsStatus_t *controlsStatus = (volatile cmr_canCDCControlsStatus_t *)getPayload(CANRX_CDC_CONTROLS_STATUS);
+    volatile cmr_canDCMControlsStatus_t *controlsStatus = (volatile cmr_canDCMControlsStatus_t *)getPayload(CANRX_DCM_CONTROLS_STATUS);
 
     bool yrcOn = true;
     bool tcOn = true;

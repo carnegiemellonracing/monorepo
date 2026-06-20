@@ -9,7 +9,7 @@ var searchData=
   ['conv1_5fout_5fdim',['CONV1_OUT_DIM',['../arm__nnexamples__cifar10__parameter_8h.html#a6262e2cd96ec12681024ab4ac73d607b',1,'arm_nnexamples_cifar10_parameter.h']]],
   ['conv1_5fout_5frshift',['CONV1_OUT_RSHIFT',['../arm__nnexamples__cifar10__weights_8h.html#aa8f89682da16a15a092d06097a5696d3',1,'arm_nnexamples_cifar10_weights.h']]],
   ['conv1_5fpadding',['CONV1_PADDING',['../arm__nnexamples__cifar10__parameter_8h.html#a2bb0fafdfd2c283df4708ec53f3d90f7',1,'arm_nnexamples_cifar10_parameter.h']]],
-  ['conv1_5fstride',['CONV1_STRIDE',['../arm__nnexamples__cifar10__parameter_8h.html#a596cdcf742e142edc29a0a0e44496c7c',1,'arm_nnexamples_cifar10_parameter.h']]],
+  ['conv1_5fstride',['CONV1_STRIDE',['../arm__nnexamples__cifar10__parameter_8h.html#a596DCMf742e142edc29a0a0e44496c7c',1,'arm_nnexamples_cifar10_parameter.h']]],
   ['conv1_5fwt',['CONV1_WT',['../arm__nnexamples__cifar10__weights_8h.html#a257ee65177e8e51191b5204f3fda8dca',1,'arm_nnexamples_cifar10_weights.h']]],
   ['conv2_5fbias',['CONV2_BIAS',['../arm__nnexamples__cifar10__weights_8h.html#adbdb9a359c8e4104203e3783d8c1adb1',1,'arm_nnexamples_cifar10_weights.h']]],
   ['conv2_5fbias_5flshift',['CONV2_BIAS_LSHIFT',['../arm__nnexamples__cifar10__weights_8h.html#afa70cc595390d9205c78a58795f070f4',1,'arm_nnexamples_cifar10_weights.h']]],

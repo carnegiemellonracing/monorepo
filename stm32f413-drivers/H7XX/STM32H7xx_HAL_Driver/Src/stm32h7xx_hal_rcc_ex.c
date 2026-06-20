@@ -265,7 +265,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef  *PeriphClk
 
 #endif /* SAI3 */
 
-#if defined(RCC_CDCCIP1R_SAI2ASEL)
+#if defined(RCC_DCMCIP1R_SAI2ASEL)
   /*---------------------------- SAI2A configuration -------------------------------*/
   if (((PeriphClkInit->PeriphClockSelection) & RCC_PERIPHCLK_SAI2A) == RCC_PERIPHCLK_SAI2A)
   {
@@ -324,7 +324,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef  *PeriphClk
   }
 #endif  /*SAI2A*/
 
-#if defined(RCC_CDCCIP1R_SAI2BSEL)
+#if defined(RCC_DCMCIP1R_SAI2BSEL)
 
   /*---------------------------- SAI2B configuration -------------------------------*/
   if (((PeriphClkInit->PeriphClockSelection) & RCC_PERIPHCLK_SAI2B) == RCC_PERIPHCLK_SAI2B)
@@ -1706,12 +1706,12 @@ void HAL_RCCEx_GetPeriphCLKConfig(RCC_PeriphCLKInitTypeDef  *PeriphClkInit)
 #else
   PeriphClkInit->PeriphClockSelection |= RCC_PERIPHCLK_I2C123;
 #endif /*I2C5*/
-#if defined(RCC_CDCCIP1R_SAI2ASEL)
+#if defined(RCC_DCMCIP1R_SAI2ASEL)
   PeriphClkInit->PeriphClockSelection |= RCC_PERIPHCLK_SAI2A;
-#endif /* RCC_CDCCIP1R_SAI2ASEL */
-#if defined(RCC_CDCCIP1R_SAI2BSEL)
+#endif /* RCC_DCMCIP1R_SAI2ASEL */
+#if defined(RCC_DCMCIP1R_SAI2BSEL)
   PeriphClkInit->PeriphClockSelection |= RCC_PERIPHCLK_SAI2B;
-#endif /* RCC_CDCCIP1R_SAI2BSEL */
+#endif /* RCC_DCMCIP1R_SAI2BSEL */
 #if defined(SAI3)
   PeriphClkInit->PeriphClockSelection |= RCC_PERIPHCLK_SAI23;
 #endif /* SAI3 */
@@ -1781,11 +1781,11 @@ void HAL_RCCEx_GetPeriphCLKConfig(RCC_PeriphCLKInitTypeDef  *PeriphClkInit)
   /* Get the SAI2/3 clock source ---------------------------------------------*/
   PeriphClkInit->Sai23ClockSelection        = __HAL_RCC_GET_SAI23_SOURCE();
 #endif  /*SAI3*/
-#if defined(RCC_CDCCIP1R_SAI2ASEL_0)
+#if defined(RCC_DCMCIP1R_SAI2ASEL_0)
   /* Get the SAI2A clock source ---------------------------------------------*/
   PeriphClkInit->Sai2AClockSelection        = __HAL_RCC_GET_SAI2A_SOURCE();
 #endif  /*SAI2A*/
-#if defined(RCC_CDCCIP1R_SAI2BSEL_0)
+#if defined(RCC_DCMCIP1R_SAI2BSEL_0)
   /* Get the SAI2B clock source ---------------------------------------------*/
   PeriphClkInit->Sai2BClockSelection        = __HAL_RCC_GET_SAI2B_SOURCE();
 #endif  /*SAI2B*/
@@ -2079,7 +2079,7 @@ uint32_t HAL_RCCEx_GetPeriphCLKFreq(uint64_t PeriphClk)
   }
 #endif /* SAI3 */
 
-#if  defined(RCC_CDCCIP1R_SAI2ASEL)
+#if  defined(RCC_DCMCIP1R_SAI2ASEL)
 
   else if (PeriphClk == RCC_PERIPHCLK_SAI2A)
   {
@@ -2176,7 +2176,7 @@ uint32_t HAL_RCCEx_GetPeriphCLKFreq(uint64_t PeriphClk)
   }
 #endif
 
-#if  defined(RCC_CDCCIP1R_SAI2BSEL_0)
+#if  defined(RCC_DCMCIP1R_SAI2BSEL_0)
   else if (PeriphClk == RCC_PERIPHCLK_SAI2B)
   {
 
@@ -2908,7 +2908,7 @@ uint32_t HAL_RCCEx_GetD1PCLK1Freq(void)
   return (HAL_RCC_GetHCLKFreq() >> (D1CorePrescTable[(RCC->D1CFGR & RCC_D1CFGR_D1PPRE) >> RCC_D1CFGR_D1PPRE_Pos] & 0x1FU));
 #else
   /* Get HCLK source and Compute D1PCLK1 frequency ---------------------------*/
-  return (HAL_RCC_GetHCLKFreq() >> (D1CorePrescTable[(RCC->CDCFGR1 & RCC_CDCFGR1_CDPPRE) >> RCC_CDCFGR1_CDPPRE_Pos] & 0x1FU));
+  return (HAL_RCC_GetHCLKFreq() >> (D1CorePrescTable[(RCC->DCMFGR1 & RCC_DCMFGR1_CDPPRE) >> RCC_DCMFGR1_CDPPRE_Pos] & 0x1FU));
 #endif
 }
 
@@ -3147,14 +3147,14 @@ uint32_t HAL_RCCEx_GetD1SysClockFreq(void)
 #if defined(RCC_D1CFGR_D1CPRE)
   common_system_clock = HAL_RCC_GetSysClockFreq() >> (D1CorePrescTable[(RCC->D1CFGR & RCC_D1CFGR_D1CPRE) >> RCC_D1CFGR_D1CPRE_Pos] & 0x1FU);
 #else
-  common_system_clock = HAL_RCC_GetSysClockFreq() >> (D1CorePrescTable[(RCC->CDCFGR1 & RCC_CDCFGR1_CDCPRE) >> RCC_CDCFGR1_CDCPRE_Pos] & 0x1FU);
+  common_system_clock = HAL_RCC_GetSysClockFreq() >> (D1CorePrescTable[(RCC->DCMFGR1 & RCC_DCMFGR1_DCMPRE) >> RCC_DCMFGR1_DCMPRE_Pos] & 0x1FU);
 #endif
 
   /* Update the SystemD2Clock global variable */
 #if defined(RCC_D1CFGR_HPRE)
   SystemD2Clock = (common_system_clock >> ((D1CorePrescTable[(RCC->D1CFGR & RCC_D1CFGR_HPRE) >> RCC_D1CFGR_HPRE_Pos]) & 0x1FU));
 #else
-  SystemD2Clock = (common_system_clock >> ((D1CorePrescTable[(RCC->CDCFGR1 & RCC_CDCFGR1_HPRE) >> RCC_CDCFGR1_HPRE_Pos]) & 0x1FU));
+  SystemD2Clock = (common_system_clock >> ((D1CorePrescTable[(RCC->DCMFGR1 & RCC_DCMFGR1_HPRE) >> RCC_DCMFGR1_HPRE_Pos]) & 0x1FU));
 #endif
 
 #if defined(DUAL_CORE) && defined(CORE_CM4)

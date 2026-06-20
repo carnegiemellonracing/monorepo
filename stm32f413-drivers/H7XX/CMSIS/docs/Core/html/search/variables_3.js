@@ -1,7 +1,7 @@
 var searchData=
 [
   ['c',['C',['../unionAPSR__Type.html#a86e2c5b891ecef1ab55b1edac0da79a6',1,'APSR_Type::C()'],['../unionxPSR__Type.html#a40213a6b5620410cac83b0d89564609d',1,'xPSR_Type::C()']]],
-  ['calib',['CALIB',['../structSysTick__Type.html#afcadb0c6d35b21cdc0018658a13942de',1,'SysTick_Type']]],
+  ['calib',['CALIB',['../structSysTick__Type.html#afcadb0c6d35b21DCM0018658a13942de',1,'SysTick_Type']]],
   ['ccr',['CCR',['../structSCB__Type.html#a2d6653b0b70faac936046a02809b577f',1,'SCB_Type']]],
   ['cfsr',['CFSR',['../structSCB__Type.html#a0cda9e061b42373383418663092ad19a',1,'SCB_Type']]],
   ['cid0',['CID0',['../structITM__Type.html#a30bb2b166b1723867da4a708935677ba',1,'ITM_Type']]],

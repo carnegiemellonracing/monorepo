@@ -1,7 +1,7 @@
 var group__rtx__evr__event__flags =
 [
     [ "EvrRtxEventFlagsError", "group__rtx__evr__event__flags.html#gaa281b7380c0fa725faa722badbeb2e5f", null ],
-    [ "EvrRtxEventFlagsNew", "group__rtx__evr__event__flags.html#gae798cdc4cb10ada732e592318037cba7", null ],
+    [ "EvrRtxEventFlagsNew", "group__rtx__evr__event__flags.html#gae798DCM4cb10ada732e592318037cba7", null ],
     [ "EvrRtxEventFlagsCreated", "group__rtx__evr__event__flags.html#gaa1f48b9787e3a7d4f56449ed1dd12f26", null ],
     [ "EvrRtxEventFlagsGetName", "group__rtx__evr__event__flags.html#gae9ebcbc09a1c15c719d95fe7b8c2ee18", null ],
     [ "EvrRtxEventFlagsSet", "group__rtx__evr__event__flags.html#ga5e5c9bd8a0522fc9301782edd6e5ec1f", null ],

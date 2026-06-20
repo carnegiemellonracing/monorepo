@@ -1,7 +1,7 @@
 var group__RealFFT =
 [
     [ "Real FFT Tables", "group__RealFFT__Table.html", "group__RealFFT__Table" ],
-    [ "arm_rfft_f32", "group__RealFFT.html#ga3df1766d230532bc068fc4ed69d0fcdc", null ],
+    [ "arm_rfft_f32", "group__RealFFT.html#ga3df1766d230532bc068fc4ed69d0fDCM", null ],
     [ "arm_rfft_fast_f16", "group__RealFFT.html#gaf018157c88626e83de3d9143f5273d18", null ],
     [ "arm_rfft_fast_f32", "group__RealFFT.html#ga5d2ec62f3e35575eba467d09ddcd98b5", null ],
     [ "arm_rfft_fast_f64", "group__RealFFT.html#gae3b00f039305039732f7364171da89fb", null ],

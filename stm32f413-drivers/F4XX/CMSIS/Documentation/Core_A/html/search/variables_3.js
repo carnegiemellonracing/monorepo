@@ -13,7 +13,7 @@ var searchData=
   ['clrspi_5fnsr',['CLRSPI_NSR',['../structGICDistributor__Type.html#a2f584d3fbeaa355faf234f2ee57d1168',1,'GICDistributor_Type']]],
   ['clrspi_5fsr',['CLRSPI_SR',['../structGICDistributor__Type.html#ab487e4a8684b8a77357c6c20cf71dead',1,'GICDistributor_Type']]],
   ['cm',['CM',['../unionDFSR__Type.html#a38562a26cc210ea4c39c6b951c4a5b62',1,'DFSR_Type']]],
-  ['control',['CONTROL',['../structL2C__310__TypeDef.html#a491a4ed1ecdcdf784b180fa13ef46f2f',1,'L2C_310_TypeDef::CONTROL()'],['../structTimer__Type.html#a91845c88231f4f337be2810d73bc79e4',1,'Timer_Type::CONTROL()']]],
+  ['control',['CONTROL',['../structL2C__310__TypeDef.html#a491a4ed1eDCMdf784b180fa13ef46f2f',1,'L2C_310_TypeDef::CONTROL()'],['../structTimer__Type.html#a91845c88231f4f337be2810d73bc79e4',1,'Timer_Type::CONTROL()']]],
   ['counter',['COUNTER',['../structTimer__Type.html#ac933977724591e6ca87d91848fc7a6b6',1,'Timer_Type']]],
   ['cp0',['CP0',['../unionCPACR__Type.html#a1a29bc40d708ac1a43153b11f60b8195',1,'CPACR_Type']]],
   ['cp1',['CP1',['../unionCPACR__Type.html#acb2055cdbdf2a6c9b8279dc6f7cbc624',1,'CPACR_Type']]],

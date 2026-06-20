@@ -4,7 +4,7 @@ var searchData=
   ['_5f_5farm_5farch_5f6m_5f_5f',['__ARM_ARCH_6M__',['../group__compiler__conntrol__gr.html#ga8be4ebde5d4dd91b161d206545ce59aa',1,'Ref_CompilerControl.txt']]],
   ['_5f_5farm_5farch_5f7em_5f_5f',['__ARM_ARCH_7EM__',['../group__compiler__conntrol__gr.html#ga43ab3e79ec5ecb615f1f2f6e83e7d48a',1,'Ref_CompilerControl.txt']]],
   ['_5f_5farm_5farch_5f7m_5f_5f',['__ARM_ARCH_7M__',['../group__compiler__conntrol__gr.html#ga43e1af8bedda108dfc4f8584e6b278a2',1,'Ref_CompilerControl.txt']]],
-  ['_5f_5farm_5farch_5f8m_5fbase_5f_5f',['__ARM_ARCH_8M_BASE__',['../group__compiler__conntrol__gr.html#gab3f1284f4cdc6c5e5c9c9d4b8ec29b2a',1,'Ref_CompilerControl.txt']]],
+  ['_5f_5farm_5farch_5f8m_5fbase_5f_5f',['__ARM_ARCH_8M_BASE__',['../group__compiler__conntrol__gr.html#gab3f1284f4DCM6c5e5c9c9d4b8ec29b2a',1,'Ref_CompilerControl.txt']]],
   ['_5f_5farm_5farch_5f8m_5fmain_5f_5f',['__ARM_ARCH_8M_MAIN__',['../group__compiler__conntrol__gr.html#gad424c7143edd08c982dddad0ff65f4cd',1,'Ref_CompilerControl.txt']]],
   ['_5f_5farmv81mml_5frev',['__ARMv81MML_REV',['../group__device__config.html#ga4dd7b69d473733e59cd99fc786174cd3',1,'Template.txt']]],
   ['_5f_5farmv8mbl_5frev',['__ARMv8MBL_REV',['../group__device__config.html#ga645c9be694a2d5b5a5b772a0102c727a',1,'Template.txt']]],

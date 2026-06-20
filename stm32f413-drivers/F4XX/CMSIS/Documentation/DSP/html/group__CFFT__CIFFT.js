@@ -47,7 +47,7 @@ var group__CFFT__CIFFT =
     [ "twiddleCoefF16_rfft_64", "group__CFFT__CIFFT.html#ga33aa532c5c6e33fff9c677a4684a6cff", null ],
     [ "twiddleCoefF64_1024", "group__CFFT__CIFFT.html#ga6626143034266d76fafe4195cd59e9ef", null ],
     [ "twiddleCoefF64_128", "group__CFFT__CIFFT.html#ga252036ff16d9125ae72f547f4565f36f", null ],
-    [ "twiddleCoefF64_16", "group__CFFT__CIFFT.html#gabeb418730eacdce077316477b7f1e960", null ],
+    [ "twiddleCoefF64_16", "group__CFFT__CIFFT.html#gabeb418730eaDCMe077316477b7f1e960", null ],
     [ "twiddleCoefF64_2048", "group__CFFT__CIFFT.html#ga0d6a794c1315cceaa884e3bdc736e576", null ],
     [ "twiddleCoefF64_256", "group__CFFT__CIFFT.html#ga10e83806d2c02cc4f5f07ce46851a673", null ],
     [ "twiddleCoefF64_32", "group__CFFT__CIFFT.html#ga3f7d1eaff3c6910ee7d85ae1c9015fe5", null ],

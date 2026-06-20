@@ -36,8 +36,8 @@ typedef enum {
 /** @brief Standard CAN heartbeat. */
 typedef struct {
     uint8_t state;         //e:State   /**< @brief Board state. */
-    uint8_t error[2];     //Flag:cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t  /**< @brief Error matrix. */ 
-    uint8_t warning[2];    //Flag:cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t  /**< @brief Warning matrix. */ 
+    uint8_t error[2];     //Flag:cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canDCMHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t  /**< @brief Error matrix. */ 
+    uint8_t warning[2];    //Flag:cmr_canVSMHeartbeatWrn_t cmr_canDCMHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t  /**< @brief Warning matrix. */ 
 } cmr_canHeartbeat_t;
 
 /** @brief Heartbeat error matrix bit fields. */
@@ -56,8 +56,8 @@ typedef enum {
     CMR_CAN_ERROR_VSM_MODULE_STATE = (1 << 14),
     /** @brief At least one of the error latches is active. */
     CMR_CAN_ERROR_VSM_LATCHED_ERROR = (1 << 13),
-    /** @brief VSM DCDC fault signal. */
-    CMR_CAN_ERROR_VSM_DCDC_FAULT = (1 << 12),
+    /** @brief VSM DDCM fault signal. */
+    CMR_CAN_ERROR_VSM_DDCM_FAULT = (1 << 12),
     /** @brief VSM hall effect sensor out-of-range. */
     CMR_CAN_ERROR_VSM_HALL_EFFECT = (1 << 11),
     /** @brief VSM brake pressure sensor out-of-range. */
@@ -71,10 +71,10 @@ typedef enum {
     CMR_CAN_ERROR_AFC_DRIVER2_TEMP = (1 << 13),
     /** @brief AFC driver IC #3 temperature out-of-range. */
     CMR_CAN_ERROR_AFC_DRIVER3_TEMP = (1 << 12),
-    /** @brief AFC DCDC #1 temperature out-of-range. */
-    CMR_CAN_ERROR_AFC_DCDC1_TEMP = (1 << 11),
-    /** @brief AFC DCDC #2 temperature out-of-range. */
-    CMR_CAN_ERROR_AFC_DCDC2_TEMP = (1 << 10),
+    /** @brief AFC DDCM #1 temperature out-of-range. */
+    CMR_CAN_ERROR_AFC_DDCM1_TEMP = (1 << 11),
+    /** @brief AFC DDCM #2 temperature out-of-range. */
+    CMR_CAN_ERROR_AFC_DDCM2_TEMP = (1 << 10),
 
 //     /** @brief
 //  fan current out-of-range. */
@@ -92,8 +92,8 @@ typedef enum {
     // pump turn on at 53 start turning on and 56 turning at 100
     // fan turn on at 56 starting 58 turn it to max
 
-    /** @brief CDC All motor controllers have errored or timed out. */
-    CMR_CAN_ERROR_CDC_DTI_ALL = (1 << 15)
+    /** @brief DCM All motor controllers have errored or timed out. */
+    CMR_CAN_ERROR_DCM_DTI_ALL = (1 << 15)
 } cmr_canError_t;
 
 /** @brief Heartbeat warning matrix bit fields. */
@@ -110,8 +110,8 @@ typedef enum {
     // TODO: Consolidate
     /** @brief VSM hasn't received HVC heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_HVC_TIMEOUT = (1 << 14),
-    /** @brief VSM hasn't received CDC heartbeat for 25 ms. */
-    CMR_CAN_WARN_VSM_CDC_TIMEOUT = (1 << 13),
+    /** @brief VSM hasn't received DCM heartbeat for 25 ms. */
+    CMR_CAN_WARN_VSM_DCM_TIMEOUT = (1 << 13),
     /** @brief VSM hasn't received FSM heartbeat for 25 ms. */
     CMR_CAN_WARN_VSM_FSM_TIMEOUT = (1 << 12),
     /** @brief VSM hasn't received DIM heartbeat for 25 ms. */
@@ -149,19 +149,19 @@ typedef enum {
     /** @brief Safety circuit bots tripped */
     CMR_CAN_WARN_FSM_SS_BOTS = (1 << 8),
 
-    /** @brief CDC Front left motor controller is warning source. */
-    CMR_CAN_WARN_CDC_DTI_FL = (1 << 15),
-    /** @brief CDC Front right motor controller is warning source. */
-    CMR_CAN_WARN_CDC_DTI_FR = (1 << 14),
-    /** @brief CDC Rear left motor controller is warning source. */
-    CMR_CAN_WARN_CDC_DTI_RL = (1 << 13),
-    /** @brief CDC Rear right motor controller is warning source. */
-    CMR_CAN_WARN_CDC_DTI_RR = (1 << 12),
-    /** @brief CDC Motor controller has an error. */
-    CMR_CAN_WARN_CDC_DTI_ERROR = (1 << 11),
-    /** @brief CDC Motor controller has timed out. */
-    CMR_CAN_WARN_CDC_DTI_TIMEOUT = (1 << 10),
-    CMR_CAN_WARN_CDC_MEMORATOR_DAQ_TIMEOUT = (1 << 9)
+    /** @brief DCM Front left motor controller is warning source. */
+    CMR_CAN_WARN_DCM_DTI_FL = (1 << 15),
+    /** @brief DCM Front right motor controller is warning source. */
+    CMR_CAN_WARN_DCM_DTI_FR = (1 << 14),
+    /** @brief DCM Rear left motor controller is warning source. */
+    CMR_CAN_WARN_DCM_DTI_RL = (1 << 13),
+    /** @brief DCM Rear right motor controller is warning source. */
+    CMR_CAN_WARN_DCM_DTI_RR = (1 << 12),
+    /** @brief DCM Motor controller has an error. */
+    CMR_CAN_WARN_DCM_DTI_ERROR = (1 << 11),
+    /** @brief DCM Motor controller has timed out. */
+    CMR_CAN_WARN_DCM_DTI_TIMEOUT = (1 << 10),
+    CMR_CAN_WARN_DCM_MEMORATOR_DAQ_TIMEOUT = (1 << 9)
 } cmr_canWarn_t;
 
 /** @brief Represents the car's current driving mode (gear). */
@@ -233,7 +233,7 @@ typedef enum {
     CMR_CAN_VSM_STATE_GLV_ON,           /**< @brief Grounded Low Voltage system on. */
     CMR_CAN_VSM_STATE_REQ_PRECHARGE,    /**< @brief Request accumulator isolation relay precharge. */
     CMR_CAN_VSM_STATE_RUN_BMS,          /**< @brief Run Battery Management System. */
-    CMR_CAN_VSM_STATE_DCDC_EN,          /**< @brief Enable DCDC converters. */
+    CMR_CAN_VSM_STATE_DDCM_EN,          /**< @brief Enable DDCM converters. */
     CMR_CAN_VSM_STATE_INVERTER_EN,      /**< @brief Enable inverter logic power. */
     CMR_CAN_VSM_STATE_BRAKE_TEST,       /**< @brief Check if brakes work*/
     CMR_CAN_VSM_STATE_HV_EN,            /**< @brief Enable high voltage system. */
@@ -252,7 +252,7 @@ typedef enum {
     /** @brief At least one High Voltage Controller message has timed out. */
     CMR_CAN_VSM_TIMEOUT_SOURCE_HVC = (1 << 6),
     /** @brief At least one Central Dynamics Controller message has timed out. */
-    CMR_CAN_VSM_TIMEOUT_SOURCE_CDC = (1 << 5),
+    CMR_CAN_VSM_TIMEOUT_SOURCE_DCM = (1 << 5),
     /** @brief At least one Front Sensor Module message has timed out. */
     CMR_CAN_VSM_TIMEOUT_SOURCE_FSM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
@@ -268,7 +268,7 @@ typedef enum {
     /** @brief At least one High Voltage Controller message has timed out. */
     CMR_CAN_VSM_BADSTATE_SOURCE_HVC = (1 << 6),
     /** @brief At least one Central Dynamics Controller message has timed out. */
-    CMR_CAN_VSM_BADSTATE_SOURCE_CDC = (1 << 5),
+    CMR_CAN_VSM_BADSTATE_SOURCE_DCM = (1 << 5),
     /** @brief At least one Front Sensor Module message has timed out. */
     CMR_CAN_VSM_BADSTATE_SOURCE_FSM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
@@ -294,7 +294,7 @@ typedef enum {
 typedef enum{
     CMR_CAN_VSM_ERR_BRAKEPRESSOOR = (1<<10),
     CMR_CAN_VSM_ERR_HALLEFFECTOOR = (1<<11),
-    CMR_CAN_VSM_ERR_DCDCFAULT = (1<<12),
+    CMR_CAN_VSM_ERR_DDCMFAULT = (1<<12),
     CMR_CAN_VSM_ERR_LATCHEDERROR = (1<<13),
     CMR_CAN_VSM_ERR_MODULE_STATE = (1<<14), 
     CMR_CAN_VSM_ERR_MODULE_TIMEOUT = (1<<15) 
@@ -307,7 +307,7 @@ typedef enum {
     CMR_CAN_VSM_WRN_HVI_TIMEOUT = (1<<8),
     CMR_CAN_VSM_WRN_DIM_TIMEOUT = (1<<11),
     CMR_CAN_VSM_WRN_FSM_TIMEOUT = (1<<12),
-    CMR_CAN_VSM_WRN_CDC_TIMEOUT = (1<<13),
+    CMR_CAN_VSM_WRN_DCM_TIMEOUT = (1<<13),
     CMR_CAN_VSM_WRN_HVC_TIMEOUT = (1<<14) 
 } cmr_canVSMHeartbeatWrn_t; 
 
@@ -620,20 +620,20 @@ typedef struct {
 // Central Dynamics Controller (19e)
 
 typedef enum{
-    CMR_CAN_CDC_ERR_VSM_TIMEOUT = (1<<0),
-    CMR_CAN_CDC_ERR_DTIALLERROR = (1<<15) 
-} cmr_canCDCHeartbeatErr_t; 
+    CMR_CAN_DCM_ERR_VSM_TIMEOUT = (1<<0),
+    CMR_CAN_DCM_ERR_DTIALLERROR = (1<<15) 
+} cmr_canDCMHeartbeatErr_t; 
 
 typedef enum {
-    CMR_CAN_CDC_WRN_VSM_TIMEOUT = (1<<0),
-    CMR_CAN_CDC_WRN_MEMORATOR_TIMEOUT  = (1<<9), 
-    CMR_CAN_CDC_WRN_DTI_TIMEOUT = (1<<10), 
-    CMR_CAN_CDC_WRN_DTI_ERROR = (1<<11),
-    CMR_CAN_CDC_WRN_DTI_SRC_RR = (1<<12), 
-    CMR_CAN_CDC_WRN_DTI_SRC_RL = (1<<13),
-    CMR_CAN_CDC_WRN_DTI_SRC_FR = (1<<14),
-    CMR_CAN_CDC_WRN_DTI_SRC_FL = (1<<15)
-} cmr_canCDCHeartbeatWrn_t; 
+    CMR_CAN_DCM_WRN_VSM_TIMEOUT = (1<<0),
+    CMR_CAN_DCM_WRN_MEMORATOR_TIMEOUT  = (1<<9), 
+    CMR_CAN_DCM_WRN_DTI_TIMEOUT = (1<<10), 
+    CMR_CAN_DCM_WRN_DTI_ERROR = (1<<11),
+    CMR_CAN_DCM_WRN_DTI_SRC_RR = (1<<12), 
+    CMR_CAN_DCM_WRN_DTI_SRC_RL = (1<<13),
+    CMR_CAN_DCM_WRN_DTI_SRC_FR = (1<<14),
+    CMR_CAN_DCM_WRN_DTI_SRC_FL = (1<<15)
+} cmr_canDCMHeartbeatWrn_t; 
 
 /** @brief Central Dynamics Controller DRS states. */
 typedef struct {
@@ -641,27 +641,27 @@ typedef struct {
     uint8_t angle;          /**< @brief DRS setpoint angle for its current state (debug info). */
     uint8_t pwm_left;       /**< @brief PWM of the left  DRS servo (debug info). */
     uint8_t pwm_right;      /**< @brief PWM of the right DRS servo (debug info). */
-} cmr_canCDCDRSStates_t;
+} cmr_canDCMDRSStates_t;
 
 typedef enum {
   CMR_CAN_DRS_STATE_CLOSED = 0,
   CMR_CAN_DRS_STATE_OPEN,
   CMR_CAN_DRS_STATE_OTHER
-} cmr_canCDCDRSStateEnum_t;
+} cmr_canDCMDRSStateEnum_t;
 
 typedef struct {
     uint8_t tcOn;
     uint8_t yrcOn;
-} cmr_canCDCControlsStatus_t;
+} cmr_canDCMControlsStatus_t;
 
 /** @brief New power limit from DAQ live during endurance. */
 typedef struct {
     uint8_t powerLimit_kW; //u: kW, f:0.001
-} cmr_canCDCPowerLimit_t;
+} cmr_canDCMPowerLimit_t;
 
 typedef struct {
     float power_limit_W; //u: W f:0.001
-} cmr_canCDCPowerLimitLog_t;
+} cmr_canDCMPowerLimitLog_t;
 
 typedef struct {
     unsigned int cellVoltage0_mV : 12;
@@ -678,54 +678,54 @@ typedef struct {
     uint8_t over_voltage_count;         /**< @brief incremented when pack voltage exceeds 590 */
     uint8_t under_voltage_count;        /**< @brief incremented when pack voltage under 365 */
     uint8_t over_temp_count;            /**<@brief incremented when pack temperature exceeds the hard limit, expect 0>*/
-} cmr_canCDCSafetyFilterStates_t;
+} cmr_canDCMSafetyFilterStates_t;
 
 typedef struct {
     uint16_t motor_power_FL;
     uint16_t motor_power_FR;
     uint16_t motor_power_RL;
     uint16_t motor_power_RR;
-} cmr_canCDCMotorPower_t;
+} cmr_canDCMMotorPower_t;
 
 typedef struct {
 	float KCoulombs;
-} cmr_canCDCKiloCoulombs_t;
+} cmr_canDCMKiloCoulombs_t;
 
 // ------------------------------------------------------------------------------------------------
 // Central Dynamics Controller (20e)
 
-/** @brief CDC wheel speeds (used for setpoint and actual). */
+/** @brief DCM wheel speeds (used for setpoint and actual). */
 typedef struct {
     int16_t frontLeft_rpm;  //u: rpm, f:0.1 /**< @brief Wheel speed on 20e (rpm * 10). */
     int16_t frontRight_rpm; //u: rpm, f:0.1 /**< @brief Wheel speed on 20e (rpm * 10). */
     int16_t rearLeft_rpm;   //u: rpm, f:0.1 /**< @brief Wheel speed on 20e (rpm * 10). */
     int16_t rearRight_rpm;  //u: rpm, f:0.1 /**< @brief Wheel speed on 20e (rpm * 10). */
-} cmr_canCDCWheelVelocity_t;
+} cmr_canDCMWheelVelocity_t;
 
 typedef struct {
     int16_t frontLeft_Nm;   //u: Nm, f:0.1 /**< @brief Wheel torque on 20e (Nm * 10). */
     int16_t frontRight_Nm;  //u: Nm, f:0.1 /**< @brief Wheel speed on 20e (Nm * 10). */
     int16_t rearLeft_Nm;    //u: Nm, f:0.1 /**< @brief Wheel speed on 20e (Nm * 10). */
     int16_t rearRight_Nm;   //u: Nm, f:0.1 /**< @brief Wheel speed on 20e (Nm * 10). */
-} cmr_canCDCWheelTorque_t;
+} cmr_canDCMWheelTorque_t;
 
 typedef struct {
     float latitude_deg;     //u: deg /**< @brief Position of car on earth. */
     float longitude_deg;    //u: deg /**< @brief Position of car on earth. */
-} cmr_canCDCPosePosition_t;
+} cmr_canDCMPosePosition_t;
 
 typedef struct {
     int16_t roll_deg;       //u: deg, f:0.1 /**< @brief Roll of the car (deg * 10). */
     int16_t pitch_deg;      //u: deg, f:0.1 /**< @brief Pitch of the car (deg * 10). */
     int16_t yaw_deg;        //u: deg, f:0.1 /**< @brief Yaw of the car (deg * 10). */
     int16_t velocity_deg;   //u: deg, f:0.1 /**< @brief Velocity vector of the car (deg * 10). */
-} cmr_canCDCPoseOrientation_t;
+} cmr_canDCMPoseOrientation_t;
 
 typedef struct {
     int16_t longitudinalVel_mps;    //u: mps, f:0.01 /**< @brief Velocity of the car in the forward direction (m/s * 100). */
     int16_t lateralVel_mps;         //u: mps, f:0.01 /**< @brief Velocity of the car in the right direction (m/s * 100). */
     int16_t verticalVel_mps;        //u: mps, f:0.01 /**< @brief Velocity of the car in the down direction (m/s * 100). */
-} cmr_canCDCPoseVelocity_t;
+} cmr_canDCMPoseVelocity_t;
 
 // ------------------------------------------------------------------------------------------------
 // Sensoric (DCM)
@@ -850,7 +850,7 @@ typedef struct {
 } cmr_canDIMActions_t;
 
 /** @brief DIM sends message to acknowledge radio message
- * CDC rebroadcasts to DAQ Live.
+ * DCM rebroadcasts to DAQ Live.
 */
 typedef struct {
     uint8_t acknowledge;
@@ -866,7 +866,7 @@ typedef struct {
     uint8_t config_val_2;
     uint8_t config_val_3;
     uint8_t config_val_4;
-} cmr_canDIMCDCconfig_t;
+} cmr_canDIMDCMconfig_t;
 
 
 // ------------------------------------------------------------------------------------------------

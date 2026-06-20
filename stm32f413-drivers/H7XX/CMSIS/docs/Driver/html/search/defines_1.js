@@ -91,7 +91,7 @@ var searchData=
   ['arm_5fnand_5fpower_5fvpp_5foff',['ARM_NAND_POWER_VPP_OFF',['../Driver__NAND_8h.html#ae2d278901881ffc73d3e0b48717b22f0',1,'Driver_NAND.h']]],
   ['arm_5fnand_5fpower_5fvpp_5fon',['ARM_NAND_POWER_VPP_ON',['../Driver__NAND_8h.html#aeb0d50e30bbcd8ab59c3b78db634aad5',1,'Driver_NAND.h']]],
   ['arm_5fretention_5facross_5fdeep_5fsleep',['ARM_RETENTION_ACROSS_DEEP_SLEEP',['../Driver__Storage_8h.html#acd3c172f37d0c13ac5d5c1477837c638',1,'Driver_Storage.h']]],
-  ['arm_5fretention_5facross_5fsleep',['ARM_RETENTION_ACROSS_SLEEP',['../Driver__Storage_8h.html#a42cdcdcda35d29552ed4558542770dbe',1,'Driver_Storage.h']]],
+  ['arm_5fretention_5facross_5fsleep',['ARM_RETENTION_ACROSS_SLEEP',['../Driver__Storage_8h.html#a42DCMdcda35d29552ed4558542770dbe',1,'Driver_Storage.h']]],
   ['arm_5fretention_5fbattery_5fbacked',['ARM_RETENTION_BATTERY_BACKED',['../Driver__Storage_8h.html#a1b8e7fc9ce024ef2e7d2efb24793c101',1,'Driver_Storage.h']]],
   ['arm_5fretention_5fnvm',['ARM_RETENTION_NVM',['../Driver__Storage_8h.html#aec136119f63303cf9309e1d787e02ca3',1,'Driver_Storage.h']]],
   ['arm_5fretention_5fwhile_5fdevice_5factive',['ARM_RETENTION_WHILE_DEVICE_ACTIVE',['../Driver__Storage_8h.html#afb918a33a4b8655321c45dfb99b86339',1,'Driver_Storage.h']]],

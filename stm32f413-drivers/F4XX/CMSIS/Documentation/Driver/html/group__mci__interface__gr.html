@@ -495,7 +495,7 @@ SD memory connected via 4-bit SD Bus Mode</div></div>
 <div class="line">    <span class="comment">// SD I/O card sent interrupt request</span></div>
 <div class="line">  }</div>
 <div class="line">  </div>
-<div class="line">  <span class="keywordflow">if</span> ((event &amp; <a class="code" href="group__mci__event__gr.html#ga8161f3960ddf2a3cdc3c4c83148c6099">ARM_MCI_EVENT_CCS</a>) != 0U) {</div>
+<div class="line">  <span class="keywordflow">if</span> ((event &amp; <a class="code" href="group__mci__event__gr.html#ga8161f3960ddf2a3DCM3c4c83148c6099">ARM_MCI_EVENT_CCS</a>) != 0U) {</div>
 <div class="line">    <span class="comment">// CE-ATA command completion signal received</span></div>
 <div class="line">  }</div>
 <div class="line">  <span class="keywordflow">if</span> ((event &amp; <a class="code" href="group__mci__event__gr.html#gafa8cbcd597a05c64901eeb777cc0b74f">ARM_MCI_EVENT_CCS_TIMEOUT</a>) != 0U) {</div>
@@ -844,7 +844,7 @@ high_speed: 1</td>
 <td class="fielddoc">
 Supports SD/MMC High Speed Mode. </td></tr>
 <tr><td class="fieldtype">
-<a class="anchor" id="a084188480d589cdc8d3e164b9f41bea9"></a>uint32_t</td>
+<a class="anchor" id="a084188480d589DCM8d3e164b9f41bea9"></a>uint32_t</td>
 <td class="fieldname">
 uhs_signaling: 1</td>
 <td class="fielddoc">
@@ -1555,7 +1555,7 @@ The parameter <em>arg</em> provides, depending on the operation, additional info
 <td align="left"><a class="el" href="group__mci__mode__ctrls.html#gac4907319499072fddf61f2f83b0dd966">ARM_MCI_RESUME_TRANSFER</a> </td><td align="left">Resume Data transfer (SD I/O). </td></tr>
 </table>
 <p><b>Bus Speed Mode</b></p>
-<p>The function <a class="el" href="group__mci__interface__gr.html#ga7e5a78b6e6409189833a0b72a0a3c48a">ARM_MCI_GetCapabilities</a> lists the supported bus speed modes. Initially, all SD cards use a 3.3 volt electrical interface. Some SD cards can switch to 1.8 volt operation. For example, the use of ultra-high-speed (UHS) SD cards requires 1.8 volt operation and a 4-bit bus data width. The bit field <a class="el" href="group__mci__interface__gr.html#a084188480d589cdc8d3e164b9f41bea9" title="Supports SD UHS-I (Ultra High Speed) 1.8V signaling. ">ARM_MCI_CAPABILITIES.uhs_signaling</a> encodes whether the driver supports 1.8 volt UHS signaling.</p>
+<p>The function <a class="el" href="group__mci__interface__gr.html#ga7e5a78b6e6409189833a0b72a0a3c48a">ARM_MCI_GetCapabilities</a> lists the supported bus speed modes. Initially, all SD cards use a 3.3 volt electrical interface. Some SD cards can switch to 1.8 volt operation. For example, the use of ultra-high-speed (UHS) SD cards requires 1.8 volt operation and a 4-bit bus data width. The bit field <a class="el" href="group__mci__interface__gr.html#a084188480d589DCM8d3e164b9f41bea9" title="Supports SD UHS-I (Ultra High Speed) 1.8V signaling. ">ARM_MCI_CAPABILITIES.uhs_signaling</a> encodes whether the driver supports 1.8 volt UHS signaling.</p>
 <p>The <em>control</em> operation <b>ARM_MCI_BUS_SPEED_MODE</b> sets the bus speed mode using the parameter <em>arg</em>.</p>
 <table class="doxtable">
 <tr>
@@ -1749,7 +1749,7 @@ The parameter <em>arg</em> provides, depending on the operation, additional info
 <tr>
 <td align="left"><a class="el" href="group__mci__event__gr.html#ga75a050fdfe04e6816e96c938d6a6c197">ARM_MCI_EVENT_SDIO_INTERRUPT</a> </td><td align="right">8 </td><td align="left">Indicates SD I/O Interrupt </td><td align="left">data field <em>sdio_interrupt</em> = <span class="XML-Token">1</span> </td></tr>
 <tr>
-<td align="left"><a class="el" href="group__mci__event__gr.html#ga8161f3960ddf2a3cdc3c4c83148c6099">ARM_MCI_EVENT_CCS</a> </td><td align="right">9 </td><td align="left">Indicates a Command Completion Signal (CCS) </td><td align="left">data field <em>ccs</em> = <span class="XML-Token">1</span> </td></tr>
+<td align="left"><a class="el" href="group__mci__event__gr.html#ga8161f3960ddf2a3DCM3c4c83148c6099">ARM_MCI_EVENT_CCS</a> </td><td align="right">9 </td><td align="left">Indicates a Command Completion Signal (CCS) </td><td align="left">data field <em>ccs</em> = <span class="XML-Token">1</span> </td></tr>
 <tr>
 <td align="left"><a class="el" href="group__mci__event__gr.html#gafa8cbcd597a05c64901eeb777cc0b74f">ARM_MCI_EVENT_CCS_TIMEOUT</a> </td><td align="right">10 </td><td align="left">Indicates a Command Completion Signal (CCS) Timeout </td><td align="left">data field <em>css_timeout</em> = <span class="XML-Token">1</span> </td></tr>
 </table>

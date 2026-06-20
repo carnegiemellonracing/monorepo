@@ -16,7 +16,7 @@
 typedef enum {
     CANRX_TIMEOUT = 0,
     CANTX_TIMEOUT,
-    BADSTATE_CDC,
+    BADSTATE_DCM,
     BADSTATE_DIM,
     BADSTATE_HVBMS,
     BADSTATE_VSM, 

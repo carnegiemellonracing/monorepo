@@ -30,224 +30,6 @@
             "timeOut": 2000,
             "type": "cmr_canAutonomousControlAction_t"
         },
-        "CMR_CANID_CDC_COG_VELOCITY": {
-            "cog_x_mps": {
-                "f": 0.01,
-                "u": "mps"
-            },
-            "cog_y_mps": {
-                "f": 0.01,
-                "u": "mps"
-            },
-            "cycleTime": 5,
-            "timeOut": 25,
-            "type": "cmr_canCOGVelocity_t"
-        },
-        "CMR_CANID_CDC_CONTROLS_STATUS": {
-            "cycleTime": 1000,
-            "timeOut": 5000,
-            "type": "cmr_canCDCControlsStatus_t"
-        },
-        "CMR_CANID_CDC_COULOMB_COUNTING": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "cmr_canCDCKiloCoulombs_t"
-        },
-        "CMR_CANID_CDC_FRONT_VELOCITY": {
-            "cycleTime": 5,
-            "fl_x": {
-                "f": 0.01
-            },
-            "fl_y": {
-                "f": 0.01
-            },
-            "fr_x": {
-                "f": 0.01
-            },
-            "fr_y": {
-                "f": 0.01
-            },
-            "timeOut": 25,
-            "type": "cmr_canFrontWheelVelocity_t"
-        },
-        "CMR_CANID_CDC_POSE_ORIENTATION": {
-            "cycleTime": 100,
-            "pitch_deg": {
-                "f": 0.1,
-                "u": "deg"
-            },
-            "roll_deg": {
-                "f": 0.1,
-                "u": "deg"
-            },
-            "timeOut": 500,
-            "type": "cmr_canCDCPoseOrientation_t",
-            "velocity_deg": {
-                "f": 0.1,
-                "u": "deg"
-            },
-            "yaw_deg": {
-                "f": 0.1,
-                "u": "deg"
-            }
-        },
-        "CMR_CANID_CDC_POSE_POSITION": {
-            "cycleTime": 100,
-            "latitude_deg": {
-                "u": "deg"
-            },
-            "longitude_deg": {
-                "u": "deg"
-            },
-            "timeOut": 500,
-            "type": "cmr_canCDCPosePosition_t"
-        },
-        "CMR_CANID_CDC_POSE_VELOCITY": {
-            "cycleTime": 100,
-            "lateralVel_mps": {
-                "f": 0.01,
-                "u": "mps"
-            },
-            "longitudinalVel_mps": {
-                "f": 0.01,
-                "u": "mps"
-            },
-            "timeOut": 500,
-            "type": "cmr_canCDCPoseVelocity_t",
-            "verticalVel_mps": {
-                "f": 0.01,
-                "u": "mps"
-            }
-        },
-        "CMR_CANID_CDC_POWER_LOG": {
-            "cycleTime": 1000,
-            "power_limit_W": {
-                "f": 0.001,
-                "u": "W"
-            },
-            "timeOut": 5000,
-            "type": "cmr_canCDCPowerLimitLog_t"
-        },
-        "CMR_CANID_CDC_POWER_SENSE": {
-            "cycleTime": 100,
-            "packCurrent_dA": {
-                "u": "dA"
-            },
-            "packPower_W": {
-                "u": "W"
-            },
-            "packVoltage_cV": {
-                "u": "cV"
-            },
-            "timeOut": 500,
-            "type": "cmr_canPowerSense_t"
-        },
-        "CMR_CANID_CDC_REAR_VELOCITY": {
-            "cycleTime": 5,
-            "rl_x": {
-                "f": 0.01
-            },
-            "rl_y": {
-                "f": 0.01
-            },
-            "rr_x": {
-                "f": 0.01
-            },
-            "rr_y": {
-                "f": 0.01
-            },
-            "timeOut": 25,
-            "type": "cmr_canRearWheelVelocity_t"
-        },
-        "CMR_CANID_CDC_RTC_DATA_OUT": {
-            "cycleTime": 1000,
-            "timeOut": 5000,
-            "type": "cmr_can_rtc_data_t"
-        },
-        "CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK": {
-            "cycleTime": 5,
-            "frontLeft_rpm": {
-                "f": 0.1,
-                "u": "rpm"
-            },
-            "frontRight_rpm": {
-                "f": 0.1,
-                "u": "rpm"
-            },
-            "rearLeft_rpm": {
-                "f": 0.1,
-                "u": "rpm"
-            },
-            "rearRight_rpm": {
-                "f": 0.1,
-                "u": "rpm"
-            },
-            "timeOut": 25,
-            "type": "cmr_canCDCWheelVelocity_t"
-        },
-        "CMR_CANID_CDC_WHEEL_SPEED_SETPOINT": {
-            "cycleTime": 5,
-            "frontLeft_rpm": {
-                "f": 0.1,
-                "u": "rpm"
-            },
-            "frontRight_rpm": {
-                "f": 0.1,
-                "u": "rpm"
-            },
-            "rearLeft_rpm": {
-                "f": 0.1,
-                "u": "rpm"
-            },
-            "rearRight_rpm": {
-                "f": 0.1,
-                "u": "rpm"
-            },
-            "timeOut": 25,
-            "type": "cmr_canCDCWheelVelocity_t"
-        },
-        "CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK": {
-            "cycleTime": 5,
-            "frontLeft_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "frontRight_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "rearLeft_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "rearRight_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "timeOut": 25,
-            "type": "cmr_canCDCWheelTorque_t"
-        },
-        "CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT": {
-            "cycleTime": 5,
-            "frontLeft_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "frontRight_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "rearLeft_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "rearRight_Nm": {
-                "f": 0.1,
-                "u": "Nm"
-            },
-            "timeOut": 25,
-            "type": "cmr_canCDCWheelTorque_t"
-        },
         "CMR_CANID_CELL_BALANCE_ENABLE": {
             "balanceRequest": {
                 "e": "HVC_Balance_State"
@@ -312,12 +94,92 @@
                 "u": "Nm"
             },
             "timeOut": 50,
-            "type": "cmr_canCDCWheelTorque_t"
+            "type": "cmr_canDCMWheelTorque_t"
         },
         "CMR_CANID_CONTROLS_SOLVER_SETTINGS": {
             "cycleTime": 10,
             "timeOut": 50,
             "type": "cmr_can_solver_settings_t"
+        },
+        "CMR_CANID_DCM_COG_VELOCITY": {
+            "cog_x_mps": {
+                "f": 0.01,
+                "u": "mps"
+            },
+            "cog_y_mps": {
+                "f": 0.01,
+                "u": "mps"
+            },
+            "cycleTime": 5,
+            "timeOut": 25,
+            "type": "cmr_canCOGVelocity_t"
+        },
+        "CMR_CANID_DCM_CONTROLS_STATUS": {
+            "cycleTime": 1000,
+            "timeOut": 5000,
+            "type": "cmr_canDCMControlsStatus_t"
+        },
+        "CMR_CANID_DCM_COULOMB_COUNTING": {
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canDCMKiloCoulombs_t"
+        },
+        "CMR_CANID_DCM_FRONT_VELOCITY": {
+            "cycleTime": 5,
+            "fl_x": {
+                "f": 0.01
+            },
+            "fl_y": {
+                "f": 0.01
+            },
+            "fr_x": {
+                "f": 0.01
+            },
+            "fr_y": {
+                "f": 0.01
+            },
+            "timeOut": 25,
+            "type": "cmr_canFrontWheelVelocity_t"
+        },
+        "CMR_CANID_DCM_POWER_LOG": {
+            "cycleTime": 1000,
+            "power_limit_W": {
+                "f": 0.001,
+                "u": "W"
+            },
+            "timeOut": 5000,
+            "type": "cmr_canDCMPowerLimitLog_t"
+        },
+        "CMR_CANID_DCM_POWER_SENSE": {
+            "cycleTime": 100,
+            "packCurrent_dA": {
+                "u": "dA"
+            },
+            "packPower_W": {
+                "u": "W"
+            },
+            "packVoltage_cV": {
+                "u": "cV"
+            },
+            "timeOut": 500,
+            "type": "cmr_canPowerSense_t"
+        },
+        "CMR_CANID_DCM_REAR_VELOCITY": {
+            "cycleTime": 5,
+            "rl_x": {
+                "f": 0.01
+            },
+            "rl_y": {
+                "f": 0.01
+            },
+            "rr_x": {
+                "f": 0.01
+            },
+            "rr_y": {
+                "f": 0.01
+            },
+            "timeOut": 25,
+            "type": "cmr_canRearWheelVelocity_t"
         },
         "CMR_CANID_DIM_ACKNOWLEDGE": {
             "cycleTime": 100,
@@ -357,7 +219,7 @@
         "CMR_CANID_DRS_STATE": {
             "cycleTime": 100,
             "timeOut": 500,
-            "type": "cmr_canCDCDRSStates_t"
+            "type": "cmr_canDCMDRSStates_t"
         },
         "CMR_CANID_DTI_ERROR_MESSAGES": {
             "cycleTime": 100,
@@ -500,10 +362,10 @@
             "timeOut": 50,
             "type": "cmr_canFSMSWAngle_t"
         },
-        "CMR_CANID_HEARTBEAT_CDC": {
+        "CMR_CANID_HEARTBEAT_DCM": {
             "cycleTime": 10,
             "error": {
-                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
+                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canDCMHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
             },
             "state": {
                 "e": "State"
@@ -511,13 +373,13 @@
             "timeOut": 50,
             "type": "cmr_canHeartbeat_t",
             "warning": {
-                "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
+                "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canDCMHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
             }
         },
         "CMR_CANID_HEARTBEAT_DIM": {
             "cycleTime": 10,
             "error": {
-                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
+                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canDCMHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
             },
             "state": {
                 "e": "State"
@@ -525,13 +387,13 @@
             "timeOut": 50,
             "type": "cmr_canHeartbeat_t",
             "warning": {
-                "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
+                "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canDCMHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
             }
         },
         "CMR_CANID_HEARTBEAT_FSM": {
             "cycleTime": 10,
             "error": {
-                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
+                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canDCMHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
             },
             "state": {
                 "e": "State"
@@ -539,7 +401,7 @@
             "timeOut": 50,
             "type": "cmr_canHeartbeat_t",
             "warning": {
-                "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
+                "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canDCMHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
             }
         },
         "CMR_CANID_HEARTBEAT_HVC": {
@@ -562,7 +424,7 @@
         "CMR_CANID_HEARTBEAT_HV_BMS": {
             "cycleTime": 10,
             "error": {
-                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
+                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canDCMHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
             },
             "state": {
                 "e": "State"
@@ -570,13 +432,13 @@
             "timeOut": 50,
             "type": "cmr_canHeartbeat_t",
             "warning": {
-                "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
+                "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canDCMHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
             }
         },
         "CMR_CANID_HEARTBEAT_LV_BMS": {
             "cycleTime": 10,
             "error": {
-                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
+                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canDCMHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
             },
             "state": {
                 "e": "State"
@@ -584,13 +446,13 @@
             "timeOut": 50,
             "type": "cmr_canHeartbeat_t",
             "warning": {
-                "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
+                "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canDCMHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
             }
         },
         "CMR_CANID_HEARTBEAT_VSM": {
             "cycleTime": 10,
             "error": {
-                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canCDCHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
+                "enumstruct": "cmr_canVSMHeartbeatErr_t cmr_canDIMHeartbeatErr_t cmr_canDCMHeartbeatErr_t cmr_canFSMHeartbeatErr_t cmr_canHV_BMSHeartbeatErr_t"
             },
             "state": {
                 "e": "State"
@@ -598,7 +460,7 @@
             "timeOut": 50,
             "type": "cmr_canHeartbeat_t",
             "warning": {
-                "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canCDCHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
+                "enumstruct": "cmr_canVSMHeartbeatWrn_t cmr_canDCMHeartbeatWrn_t cmr_canFSMHeartbeatWrn_t"
             }
         },
         "CMR_CANID_HVBMS_BMB_0_CELL_TEMPS_0_4": {
@@ -795,7 +657,7 @@
         "CMR_CANID_MOTORPOWER_STATE": {
             "cycleTime": 5,
             "timeOut": 25,
-            "type": "cmr_canCDCMotorPower_t"
+            "type": "cmr_canDCMMotorPower_t"
         },
         "CMR_CANID_MOVELLA_STATUS": {
             "cycleTime": 10,
@@ -851,11 +713,6 @@
             "timeOut": 2000,
             "type": "cmr_canSBGIMUGyro_t"
         },
-        "CMR_CANID_SENSORIC_DIST": {
-            "cycleTime": 10.0,
-            "timeOut": 50,
-            "type": "cmr_canSensoricDist_t"
-        },
         "CMR_CANID_SENSORIC_VEL_ANG": {
             "cycleTime": 5,
             "timeOut": 25,
@@ -870,12 +727,12 @@
                 "u": "W"
             },
             "timeOut": 50,
-            "type": "cmr_canCDCSafetyFilterStates_t"
+            "type": "cmr_canDCMSafetyFilterStates_t"
         },
         "CMR_CANID_TEST_ID": {
-            "cycleTime": 1000,
-            "timeOut": 5000,
-            "type": "cmr_canDAQTest_t"
+            "cycleTime": 100,
+            "timeOut": 500,
+            "type": "cmr_canTestID_t"
         },
         "CMR_CANID_VSM_FIRST_ERROR": {
             "cycleTime": 10,
@@ -934,20 +791,20 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2907,
-        "files_with_matches": 2907,
+        "files_processed": 2807,
+        "files_with_matches": 2807,
         "global_mappings": {
-            "canrx_mappings": 179,
-            "canrx_timeouts": 170,
-            "canrx_types": 63,
-            "constants": 258,
+            "canrx_mappings": 177,
+            "canrx_timeouts": 168,
+            "canrx_types": 61,
+            "constants": 257,
             "struct_members": 0,
-            "variable_types": 326
+            "variable_types": 324
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 107
+        "total_canids": 97
     }
 }

@@ -47,7 +47,7 @@ _a < _b ? _a : _b; })
 #define MOTOR_LEN 4
 
 /** @brief declaration of config screen variables */
-extern volatile bool flush_config_screen_to_cdc;
+extern volatile bool flush_config_screen_to_DCM;
 /** @brief declaration of config screen variables */
 volatile bool config_increment_up_requested = false;
 /** @brief declaration of config screen variables */
@@ -61,7 +61,7 @@ volatile bool in_config_screen = false;
 /** @brief declaration of what screen mode one is in */
 volatile bool in_racing_screen = false;
 /** @brief declaration of if the DIM is waiting for a new driver config */
-volatile bool waiting_for_cdc_new_driver_config;
+volatile bool waiting_for_DCM_new_driver_config;
 /** @brief declaration of if the DIM is waiting for a new driver config */
 volatile bool exit_config_request = false;
 /** @brief Checks to see if the screen has been setup before and if not will appropriately draw it */
@@ -93,15 +93,15 @@ static volatile struct {
 };
 
 void exitConfigScreen() {
-	// the first time the user presses the exit button, it'll flush the memory to the cdc
+	// the first time the user presses the exit button, it'll flush the memory to the DCM
 	// the second time it'll exit the config screen because it'll be dependent having
-	// recieved the message from CDC
-	if (!flush_config_screen_to_cdc) {
-		flush_config_screen_to_cdc = true;
-		waiting_for_cdc_to_confirm_config = true;
+	// recieved the message from DCM
+	if (!flush_config_screen_to_DCM) {
+		flush_config_screen_to_DCM = true;
+		waiting_for_DCM_to_confirm_config = true;
 		return;
 	}
-	if (!waiting_for_cdc_to_confirm_config) {
+	if (!waiting_for_DCM_to_confirm_config) {
 		in_config_screen = false;
 		exit_config_request = false;
 		return;
@@ -316,7 +316,7 @@ int getACTemp(void)
  */
 bool DRSOpen(void)
 {
-	volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t *)getPayload(CANRX_DRS_STATE);
+	volatile cmr_canDCMDRSStates_t *drsState = (volatile cmr_canDCMDRSStates_t *)getPayload(CANRX_DRS_STATE);
     return drsState->state == CMR_CAN_DRS_STATE_OPEN;
 }
 
@@ -345,7 +345,7 @@ static cmr_state getNextState(void) {
             }
             else if(!cmr_gpioRead(GPIO_CTRL_SWITCH) && true/*(stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)*/) {
                 nextState = CONFIG;
-                flush_config_screen_to_cdc = false;
+                flush_config_screen_to_DCM = false;
             }
             else if(buttonStates[RIGHT].isPressed && stateGetVSM() == CMR_CAN_RTD) {
                 nextState = RACING;
@@ -358,7 +358,7 @@ static cmr_state getNextState(void) {
         case CONFIG:
             if(cmr_gpioRead(GPIO_CTRL_SWITCH)) {
                 nextState = NORMAL;
-                flush_config_screen_to_cdc = true;
+                flush_config_screen_to_DCM = true;
             }
             else if(buttonStates[LEFT].isPressed) {
                 //move left on screen

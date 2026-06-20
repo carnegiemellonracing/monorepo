@@ -14,7 +14,7 @@ __ALIGNED, group__compiler__conntrol__gr.html#ga0c58caa5a273e2c21924509a45f8b849
 __ARM_ARCH_6M__, group__compiler__conntrol__gr.html#ga8be4ebde5d4dd91b161d206545ce59aa, Ref_CompilerControl.txt
 __ARM_ARCH_7EM__, group__compiler__conntrol__gr.html#ga43ab3e79ec5ecb615f1f2f6e83e7d48a, Ref_CompilerControl.txt
 __ARM_ARCH_7M__, group__compiler__conntrol__gr.html#ga43e1af8bedda108dfc4f8584e6b278a2, Ref_CompilerControl.txt
-__ARM_ARCH_8M_BASE__, group__compiler__conntrol__gr.html#gab3f1284f4cdc6c5e5c9c9d4b8ec29b2a, Ref_CompilerControl.txt
+__ARM_ARCH_8M_BASE__, group__compiler__conntrol__gr.html#gab3f1284f4DCM6c5e5c9c9d4b8ec29b2a, Ref_CompilerControl.txt
 __ARM_ARCH_8M_MAIN__, group__compiler__conntrol__gr.html#gad424c7143edd08c982dddad0ff65f4cd, Ref_CompilerControl.txt
 __ASM, group__compiler__conntrol__gr.html#ga1378040bcf22428955c6e3ce9c2053cd, Ref_CompilerControl.txt
 __BKPT, group__intrinsic__CPU__gr.html#ga92f5621626711931da71eaa8bf301af7, Ref_cmInstr.txt
@@ -177,7 +177,7 @@ __UQSUB16, group__intrinsic__SIMD__gr.html#ga5ec4e2e231d15e5c692233feb3806187, R
 __UQSUB8, group__intrinsic__SIMD__gr.html#ga9736fe816aec74fe886e7fb949734eab, Ref_cm4_simd.txt
 __USAD8, group__intrinsic__SIMD__gr.html#gac8855c07044239ea775c8128013204f0, Ref_cm4_simd.txt
 __USADA8, group__intrinsic__SIMD__gr.html#gad032bd21f013c5d29f5fcb6b0f02bc3f, Ref_cm4_simd.txt
-__USAT, group__intrinsic__CPU__gr.html#ga76bbe4374a5912362866cdc1ded4064a, Ref_cmInstr.txt
+__USAT, group__intrinsic__CPU__gr.html#ga76bbe4374a5912362866DCM1ded4064a, Ref_cmInstr.txt
 __USAT16, group__intrinsic__SIMD__gr.html#ga967f516afff5900cf30f1a81907cdd89, Ref_cm4_simd.txt
 __USAX, group__intrinsic__SIMD__gr.html#ga578a082747436772c482c96d7a58e45e, Ref_cm4_simd.txt
 __USED, group__compiler__conntrol__gr.html#ga3e40e4c553fc11588f7a4c2a19e789e0, Ref_CompilerControl.txt
@@ -243,7 +243,7 @@ BusFault_IRQn, group__NVIC__gr.html#gga7e1129cd8a196f4284d41db3e82ad5c8a8693500e
 Basic CMSIS Example, using_CMSIS.html, using_pg
 C, unionxPSR__Type.html#a40213a6b5620410cac83b0d89564609d, xPSR_Type::C()
 Cache Functions  (only Cortex-M7), group__cache__functions__m7.html, 
-CALIB, structSysTick__Type.html#afcadb0c6d35b21cdc0018658a13942de, SysTick_Type
+CALIB, structSysTick__Type.html#afcadb0c6d35b21DCM0018658a13942de, SysTick_Type
 CCR, structSCB__Type.html#a2d6653b0b70faac936046a02809b577f, SCB_Type
 CFSR, structSCB__Type.html#a0cda9e061b42373383418663092ad19a, SCB_Type
 CID0, structITM__Type.html#a30bb2b166b1723867da4a708935677ba, ITM_Type

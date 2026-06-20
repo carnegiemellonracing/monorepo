@@ -111,7 +111,7 @@ static void updateErrors(cmr_canError_t *errors, TickType_t lastWakeTime) {
         (dtiErrors[MOTOR_RL] || dtiTimeouts[MOTOR_RL]) &&
         (dtiErrors[MOTOR_RR] || dtiTimeouts[MOTOR_RR])) {
 
-        *errors |= CMR_CAN_ERROR_CDC_DTI_ALL;
+        *errors |= CMR_CAN_ERROR_DCM_DTI_ALL;
     }
 
     prevStateVSM = heartbeatVSM->state;
@@ -145,25 +145,25 @@ static void updateWarnings(cmr_canWarn_t *warnings, TickType_t lastWakeTime) {
     }
 
     if (cmr_canRXMetaTimeoutWarn(&(canDaqRXMeta[CANRX_DAQ_MEMORATOR_BROADCAST]), lastWakeTime) < 0) {
-        *warnings |= CMR_CAN_WARN_CDC_MEMORATOR_DAQ_TIMEOUT;
+        *warnings |= CMR_CAN_WARN_DCM_MEMORATOR_DAQ_TIMEOUT;
     }
 
     // Individual inverter errors
     if (dtiErrors[MOTOR_FL]) {
-        *warnings |= CMR_CAN_WARN_CDC_DTI_ERROR;
-        *warnings |= CMR_CAN_WARN_CDC_DTI_FL;
+        *warnings |= CMR_CAN_WARN_DCM_DTI_ERROR;
+        *warnings |= CMR_CAN_WARN_DCM_DTI_FL;
     }
     if (dtiErrors[MOTOR_FR]) {
-        *warnings |= CMR_CAN_WARN_CDC_DTI_ERROR;
-        *warnings |= CMR_CAN_WARN_CDC_DTI_FR;
+        *warnings |= CMR_CAN_WARN_DCM_DTI_ERROR;
+        *warnings |= CMR_CAN_WARN_DCM_DTI_FR;
     }
     if (dtiErrors[MOTOR_RL]) {
-        *warnings |= CMR_CAN_WARN_CDC_DTI_ERROR;
-        *warnings |= CMR_CAN_WARN_CDC_DTI_RL;
+        *warnings |= CMR_CAN_WARN_DCM_DTI_ERROR;
+        *warnings |= CMR_CAN_WARN_DCM_DTI_RL;
     }
     if (dtiErrors[MOTOR_RR]) {
-        *warnings |= CMR_CAN_WARN_CDC_DTI_ERROR;
-        *warnings |= CMR_CAN_WARN_CDC_DTI_RR;
+        *warnings |= CMR_CAN_WARN_DCM_DTI_ERROR;
+        *warnings |= CMR_CAN_WARN_DCM_DTI_RR;
     }
 }
 

@@ -9,7 +9,7 @@ var group__rtx__evr__kernel =
     [ "EvrRtxKernelStart", "group__rtx__evr__kernel.html#ga75937a761dd488600d2525a532808d2b", null ],
     [ "EvrRtxKernelStarted", "group__rtx__evr__kernel.html#ga28043ffc76fec09e6c8763a9a71b7f2a", null ],
     [ "EvrRtxKernelLock", "group__rtx__evr__kernel.html#ga1d0340812c29274c6150fa72288e0612", null ],
-    [ "EvrRtxKernelLocked", "group__rtx__evr__kernel.html#gac18ea91ffcae01e893304609a3c6cdc3", null ],
+    [ "EvrRtxKernelLocked", "group__rtx__evr__kernel.html#gac18ea91ffcae01e893304609a3c6DCM3", null ],
     [ "EvrRtxKernelUnlock", "group__rtx__evr__kernel.html#gabe14acf14ed2611a3ba1f3b280fbfd8c", null ],
     [ "EvrRtxKernelUnlocked", "group__rtx__evr__kernel.html#ga5cc909465e8df09c9231782e0c45e374", null ],
     [ "EvrRtxKernelRestoreLock", "group__rtx__evr__kernel.html#ga812fdd14d6c40072cc40aec742d4869e", null ],

@@ -150,14 +150,14 @@ uint32_t common_system_clock;
 #if defined(RCC_D1CFGR_D1CPRE)
   common_system_clock = HAL_RCC_GetSysClockFreq() >> ((D1CorePrescTable[(RCC->D1CFGR & RCC_D1CFGR_D1CPRE)>> RCC_D1CFGR_D1CPRE_Pos]) & 0x1FU);
 #else
-  common_system_clock = HAL_RCC_GetSysClockFreq() >> ((D1CorePrescTable[(RCC->CDCFGR1 & RCC_CDCFGR1_CDCPRE)>> RCC_CDCFGR1_CDCPRE_Pos]) & 0x1FU);
+  common_system_clock = HAL_RCC_GetSysClockFreq() >> ((D1CorePrescTable[(RCC->DCMFGR1 & RCC_DCMFGR1_DCMPRE)>> RCC_DCMFGR1_DCMPRE_Pos]) & 0x1FU);
 #endif
 
   /* Update the SystemD2Clock global variable */
 #if defined(RCC_D1CFGR_HPRE)
   SystemD2Clock = (common_system_clock >> ((D1CorePrescTable[(RCC->D1CFGR & RCC_D1CFGR_HPRE)>> RCC_D1CFGR_HPRE_Pos]) & 0x1FU));
 #else
-  SystemD2Clock = (common_system_clock >> ((D1CorePrescTable[(RCC->CDCFGR1 & RCC_CDCFGR1_HPRE)>> RCC_CDCFGR1_HPRE_Pos]) & 0x1FU));
+  SystemD2Clock = (common_system_clock >> ((D1CorePrescTable[(RCC->DCMFGR1 & RCC_DCMFGR1_HPRE)>> RCC_DCMFGR1_HPRE_Pos]) & 0x1FU));
 #endif
 
 #if defined(DUAL_CORE) && defined(CORE_CM4)

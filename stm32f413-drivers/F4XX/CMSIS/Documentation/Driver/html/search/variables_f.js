@@ -49,7 +49,7 @@ var searchData=
   ['ssid',['ssid',['../group__wifi__management__gr.html#a587ba0cb07f02913598610049a3bbb79',1,'ARM_WIFI_CONFIG_t::ssid()'],['../group__wifi__management__gr.html#ae7eccb3e4df8625b86b5572fc16c37c3',1,'ARM_WIFI_SCAN_INFO_t::ssid()'],['../group__wifi__management__gr.html#ae7eccb3e4df8625b86b5572fc16c37c3',1,'ARM_WIFI_NET_INFO_t::ssid()']]],
   ['start',['start',['../group__flash__interface__gr.html#a61eb63d26b2fa6c2971603ceccffb14b',1,'ARM_FLASH_SECTOR']]],
   ['station',['station',['../group__wifi__control__gr.html#a3c9e76f6560429efd6dcc41ffd4b67b9',1,'ARM_WIFI_CAPABILITIES']]],
-  ['station_5fap',['station_ap',['../group__wifi__control__gr.html#ad280904e2429375205c09e53fe8cdcb1',1,'ARM_WIFI_CAPABILITIES']]],
+  ['station_5fap',['station_ap',['../group__wifi__control__gr.html#ad280904e2429375205c09e53fe8DCMb1',1,'ARM_WIFI_CAPABILITIES']]],
   ['suspend_5fresume',['suspend_resume',['../group__mci__interface__gr.html#abb03f0187e4658f417b5a24cac33eed9',1,'ARM_MCI_CAPABILITIES']]],
   ['synchronous',['synchronous',['../group__sai__interface__gr.html#a9fa4f850b8ce2be2c7ffa2e3ec70ae20',1,'ARM_SAI_CAPABILITIES']]],
   ['synchronous_5fmaster',['synchronous_master',['../group__usart__interface__gr.html#afb385bfd9fb2d714bb58aa7d8d9d7d51',1,'ARM_USART_CAPABILITIES']]],

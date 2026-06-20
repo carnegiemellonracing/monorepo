@@ -12,7 +12,7 @@ var searchData=
   ['arm_5fcan_5fmode_5floopback_5fexternal',['ARM_CAN_MODE_LOOPBACK_EXTERNAL',['../Driver__CAN_8h.html#gabbca99c46d478bcf822eee71cdf75dcda5ee1ba60abcf39d575e7cb309e641b9b',1,'Driver_CAN.h']]],
   ['arm_5fcan_5fmode_5floopback_5finternal',['ARM_CAN_MODE_LOOPBACK_INTERNAL',['../Driver__CAN_8h.html#gabbca99c46d478bcf822eee71cdf75dcda8579315576baa43860a398a30fd527d8',1,'Driver_CAN.h']]],
   ['arm_5fcan_5fmode_5fmonitor',['ARM_CAN_MODE_MONITOR',['../Driver__CAN_8h.html#gabbca99c46d478bcf822eee71cdf75dcda904f68f08c84c4b85c763f5d98c574ab',1,'Driver_CAN.h']]],
-  ['arm_5fcan_5fmode_5fnormal',['ARM_CAN_MODE_NORMAL',['../Driver__CAN_8h.html#gabbca99c46d478bcf822eee71cdf75dcdaa3190344bdf3452462e5c0518ac3cdc4',1,'Driver_CAN.h']]],
+  ['arm_5fcan_5fmode_5fnormal',['ARM_CAN_MODE_NORMAL',['../Driver__CAN_8h.html#gabbca99c46d478bcf822eee71cdf75dcdaa3190344bdf3452462e5c0518ac3DCM4',1,'Driver_CAN.h']]],
   ['arm_5fcan_5fmode_5frestricted',['ARM_CAN_MODE_RESTRICTED',['../Driver__CAN_8h.html#gabbca99c46d478bcf822eee71cdf75dcda22a9bb26e68c2a04f641d466040d755d',1,'Driver_CAN.h']]],
   ['arm_5fcan_5fobj_5finactive',['ARM_CAN_OBJ_INACTIVE',['../Driver__CAN_8h.html#gaa9488554de0575bc821c9f65213c4cd0aebbd0da59658805af30203be66d80249',1,'Driver_CAN.h']]],
   ['arm_5fcan_5fobj_5frx',['ARM_CAN_OBJ_RX',['../Driver__CAN_8h.html#gaa9488554de0575bc821c9f65213c4cd0a14780ac7274831ee94f427cbbf67c003',1,'Driver_CAN.h']]],

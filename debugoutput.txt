@@ -381,7 +381,7 @@ doing uint8_tvAIR_mV
 in not bitpacked part
 doing uint8_tsafety_mV
 in not bitpacked part
-doing uint8_tiDCDC_mA
+doing uint8_tiDDCM_mA
 in not bitpacked part
 doing uint16_tminCellTemp_C
 in not bitpacked part

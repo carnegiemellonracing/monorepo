@@ -192,7 +192,7 @@ var NAVTREEINDEX1 =
 "group__LD.html#gaf618515678cfaf554d29d78cb770e4d6":[3,7,11,0],
 "group__LMS.html":[3,7,12],
 "group__LMS.html#ga12fd93f61401b365789cdfd5dca07e5b":[3,7,12,4],
-"group__LMS.html#ga69c9c64338c067f1fb4990dcdc8c143f":[3,7,12,5],
+"group__LMS.html#ga69c9c64338c067f1fb4990dDCM8c143f":[3,7,12,5],
 "group__LMS.html#ga8d4bc251169f4b102355097a9f7530d6":[3,7,12,3],
 "group__LMS.html#ga9544cc26f18cd4465cfbed371be822b3":[3,7,12,2],
 "group__LMS.html#ga9fc7adca0966ff2cec1746fca8364cee":[3,7,12,1],

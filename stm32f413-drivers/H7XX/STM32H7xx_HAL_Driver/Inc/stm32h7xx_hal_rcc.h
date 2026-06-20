@@ -357,15 +357,15 @@ typedef struct
 #define RCC_SYSCLK_DIV256              RCC_D1CFGR_D1CPRE_DIV256
 #define RCC_SYSCLK_DIV512              RCC_D1CFGR_D1CPRE_DIV512
 #else
-#define RCC_SYSCLK_DIV1                RCC_CDCFGR1_CDCPRE_DIV1
-#define RCC_SYSCLK_DIV2                RCC_CDCFGR1_CDCPRE_DIV2
-#define RCC_SYSCLK_DIV4                RCC_CDCFGR1_CDCPRE_DIV4
-#define RCC_SYSCLK_DIV8                RCC_CDCFGR1_CDCPRE_DIV8
-#define RCC_SYSCLK_DIV16               RCC_CDCFGR1_CDCPRE_DIV16
-#define RCC_SYSCLK_DIV64               RCC_CDCFGR1_CDCPRE_DIV64
-#define RCC_SYSCLK_DIV128              RCC_CDCFGR1_CDCPRE_DIV128
-#define RCC_SYSCLK_DIV256              RCC_CDCFGR1_CDCPRE_DIV256
-#define RCC_SYSCLK_DIV512              RCC_CDCFGR1_CDCPRE_DIV512
+#define RCC_SYSCLK_DIV1                RCC_DCMFGR1_DCMPRE_DIV1
+#define RCC_SYSCLK_DIV2                RCC_DCMFGR1_DCMPRE_DIV2
+#define RCC_SYSCLK_DIV4                RCC_DCMFGR1_DCMPRE_DIV4
+#define RCC_SYSCLK_DIV8                RCC_DCMFGR1_DCMPRE_DIV8
+#define RCC_SYSCLK_DIV16               RCC_DCMFGR1_DCMPRE_DIV16
+#define RCC_SYSCLK_DIV64               RCC_DCMFGR1_DCMPRE_DIV64
+#define RCC_SYSCLK_DIV128              RCC_DCMFGR1_DCMPRE_DIV128
+#define RCC_SYSCLK_DIV256              RCC_DCMFGR1_DCMPRE_DIV256
+#define RCC_SYSCLK_DIV512              RCC_DCMFGR1_DCMPRE_DIV512
 #endif
 /**
   * @}
@@ -386,15 +386,15 @@ typedef struct
 #define RCC_HCLK_DIV256              RCC_D1CFGR_HPRE_DIV256
 #define RCC_HCLK_DIV512              RCC_D1CFGR_HPRE_DIV512
 #else
-#define RCC_HCLK_DIV1                RCC_CDCFGR1_HPRE_DIV1
-#define RCC_HCLK_DIV2                RCC_CDCFGR1_HPRE_DIV2
-#define RCC_HCLK_DIV4                RCC_CDCFGR1_HPRE_DIV4
-#define RCC_HCLK_DIV8                RCC_CDCFGR1_HPRE_DIV8
-#define RCC_HCLK_DIV16               RCC_CDCFGR1_HPRE_DIV16
-#define RCC_HCLK_DIV64               RCC_CDCFGR1_HPRE_DIV64
-#define RCC_HCLK_DIV128              RCC_CDCFGR1_HPRE_DIV128
-#define RCC_HCLK_DIV256              RCC_CDCFGR1_HPRE_DIV256
-#define RCC_HCLK_DIV512              RCC_CDCFGR1_HPRE_DIV512
+#define RCC_HCLK_DIV1                RCC_DCMFGR1_HPRE_DIV1
+#define RCC_HCLK_DIV2                RCC_DCMFGR1_HPRE_DIV2
+#define RCC_HCLK_DIV4                RCC_DCMFGR1_HPRE_DIV4
+#define RCC_HCLK_DIV8                RCC_DCMFGR1_HPRE_DIV8
+#define RCC_HCLK_DIV16               RCC_DCMFGR1_HPRE_DIV16
+#define RCC_HCLK_DIV64               RCC_DCMFGR1_HPRE_DIV64
+#define RCC_HCLK_DIV128              RCC_DCMFGR1_HPRE_DIV128
+#define RCC_HCLK_DIV256              RCC_DCMFGR1_HPRE_DIV256
+#define RCC_HCLK_DIV512              RCC_DCMFGR1_HPRE_DIV512
 #endif
 /**
   * @}
@@ -410,11 +410,11 @@ typedef struct
 #define RCC_APB3_DIV8                  RCC_D1CFGR_D1PPRE_DIV8
 #define RCC_APB3_DIV16                 RCC_D1CFGR_D1PPRE_DIV16
 #else
-#define RCC_APB3_DIV1                  RCC_CDCFGR1_CDPPRE_DIV1
-#define RCC_APB3_DIV2                  RCC_CDCFGR1_CDPPRE_DIV2
-#define RCC_APB3_DIV4                  RCC_CDCFGR1_CDPPRE_DIV4
-#define RCC_APB3_DIV8                  RCC_CDCFGR1_CDPPRE_DIV8
-#define RCC_APB3_DIV16                 RCC_CDCFGR1_CDPPRE_DIV16
+#define RCC_APB3_DIV1                  RCC_DCMFGR1_CDPPRE_DIV1
+#define RCC_APB3_DIV2                  RCC_DCMFGR1_CDPPRE_DIV2
+#define RCC_APB3_DIV4                  RCC_DCMFGR1_CDPPRE_DIV4
+#define RCC_APB3_DIV8                  RCC_DCMFGR1_CDPPRE_DIV8
+#define RCC_APB3_DIV16                 RCC_DCMFGR1_CDPPRE_DIV16
 #endif
 /**
   * @}
@@ -430,11 +430,11 @@ typedef struct
 #define RCC_APB1_DIV8                  RCC_D2CFGR_D2PPRE1_DIV8
 #define RCC_APB1_DIV16                 RCC_D2CFGR_D2PPRE1_DIV16
 #else
-#define RCC_APB1_DIV1                  RCC_CDCFGR2_CDPPRE1_DIV1
-#define RCC_APB1_DIV2                  RCC_CDCFGR2_CDPPRE1_DIV2
-#define RCC_APB1_DIV4                  RCC_CDCFGR2_CDPPRE1_DIV4
-#define RCC_APB1_DIV8                  RCC_CDCFGR2_CDPPRE1_DIV8
-#define RCC_APB1_DIV16                 RCC_CDCFGR2_CDPPRE1_DIV16
+#define RCC_APB1_DIV1                  RCC_DCMFGR2_CDPPRE1_DIV1
+#define RCC_APB1_DIV2                  RCC_DCMFGR2_CDPPRE1_DIV2
+#define RCC_APB1_DIV4                  RCC_DCMFGR2_CDPPRE1_DIV4
+#define RCC_APB1_DIV8                  RCC_DCMFGR2_CDPPRE1_DIV8
+#define RCC_APB1_DIV16                 RCC_DCMFGR2_CDPPRE1_DIV16
 #endif
 
 /**
@@ -451,11 +451,11 @@ typedef struct
 #define RCC_APB2_DIV8                  RCC_D2CFGR_D2PPRE2_DIV8
 #define RCC_APB2_DIV16                 RCC_D2CFGR_D2PPRE2_DIV16
 #else
-#define RCC_APB2_DIV1                  RCC_CDCFGR2_CDPPRE2_DIV1
-#define RCC_APB2_DIV2                  RCC_CDCFGR2_CDPPRE2_DIV2
-#define RCC_APB2_DIV4                  RCC_CDCFGR2_CDPPRE2_DIV4
-#define RCC_APB2_DIV8                  RCC_CDCFGR2_CDPPRE2_DIV8
-#define RCC_APB2_DIV16                 RCC_CDCFGR2_CDPPRE2_DIV16
+#define RCC_APB2_DIV1                  RCC_DCMFGR2_CDPPRE2_DIV1
+#define RCC_APB2_DIV2                  RCC_DCMFGR2_CDPPRE2_DIV2
+#define RCC_APB2_DIV4                  RCC_DCMFGR2_CDPPRE2_DIV4
+#define RCC_APB2_DIV8                  RCC_DCMFGR2_CDPPRE2_DIV8
+#define RCC_APB2_DIV16                 RCC_DCMFGR2_CDPPRE2_DIV16
 #endif
 /**
   * @}
@@ -659,8 +659,8 @@ typedef struct
 #if defined(RCC_CR_D2CKRDY)
 #define RCC_FLAG_D2CKRDY               ((uint8_t)0x2F)
 #else
-#define RCC_FLAG_CDCKRDY               ((uint8_t)0x2F)
-#define RCC_FLAG_D2CKRDY               RCC_FLAG_CDCKRDY    /* alias */
+#define RCC_FLAG_DCMKRDY               ((uint8_t)0x2F)
+#define RCC_FLAG_D2CKRDY               RCC_FLAG_DCMKRDY    /* alias */
 #endif /* RCC_CR_D2CKRDY */
 #define RCC_FLAG_HSERDY                ((uint8_t)0x31)
 #define RCC_FLAG_PLLRDY                ((uint8_t)0x39)
@@ -7916,7 +7916,7 @@ typedef struct
   *            @arg RCC_FLAG_D1CKRDY:  Domain1 clock ready (*)
   *            @arg RCC_FLAG_D2CKRDY:  Domain2 clock ready (*)
   *            @arg RCC_FLAG_CPUCKRDY: CPU Domain clock ready (CPU, APB3, bus matrix1 and related memories) (*)
-  *            @arg RCC_FLAG_CDCKRDY:  CPU Domain clock ready (*)
+  *            @arg RCC_FLAG_DCMKRDY:  CPU Domain clock ready (*)
   *            @arg RCC_FLAG_PLLRDY:  PLL1 clock ready
   *            @arg RCC_FLAG_PLL2RDY: PLL2 clock ready
   *            @arg RCC_FLAG_PLL3RDY: PLL3 clock ready
@@ -8222,7 +8222,7 @@ void     HAL_RCC_CSSCallback(void);
 #else
 #define IS_RCC_FLAG(FLAG) (((FLAG) == RCC_FLAG_HSIRDY)    || ((FLAG) == RCC_FLAG_CSIRDY)  || \
                            ((FLAG) == RCC_FLAG_HSI48RDY)  || ((FLAG) == RCC_FLAG_HSERDY)  || \
-                           ((FLAG) == RCC_FLAG_CPUCKRDY)  || ((FLAG) == RCC_FLAG_CDCKRDY) || \
+                           ((FLAG) == RCC_FLAG_CPUCKRDY)  || ((FLAG) == RCC_FLAG_DCMKRDY) || \
                            ((FLAG) == RCC_FLAG_PLLRDY)    || ((FLAG) == RCC_FLAG_PLL2RDY) || \
                            ((FLAG) == RCC_FLAG_PLL3RDY)   || ((FLAG) == RCC_FLAG_LSERDY)  || \
                            ((FLAG) == RCC_FLAG_LSIRDY)    || \

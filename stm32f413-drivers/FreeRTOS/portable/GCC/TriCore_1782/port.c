@@ -222,7 +222,7 @@ int32_t xPortStartScheduler( void )
 
     /* ENDINIT has already been applied in the 'cstart.c' code. */
 
-    /* Clear the PSW.CDC to enable the use of an RFE without it generating an
+    /* Clear the PSW.DCM to enable the use of an RFE without it generating an
      * exception because this code is not genuinely in an exception. */
     ulMFCR = __MFCR( $PSW );
     ulMFCR &= portRESTORE_PSW_MASK;

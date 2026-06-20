@@ -2,7 +2,7 @@ var group__wifi__control__gr_structARM__WIFI__CAPABILITIES =
 [
     [ "station", "group__wifi__control__gr.html#a3c9e76f6560429efd6dcc41ffd4b67b9", null ],
     [ "ap", "group__wifi__control__gr.html#ae980bcb85233b9c5904072246ac71dd7", null ],
-    [ "station_ap", "group__wifi__control__gr.html#ad280904e2429375205c09e53fe8cdcb1", null ],
+    [ "station_ap", "group__wifi__control__gr.html#ad280904e2429375205c09e53fe8DCMb1", null ],
     [ "wps_station", "group__wifi__control__gr.html#a87476544767703fc9f45f81b16cd4429", null ],
     [ "wps_ap", "group__wifi__control__gr.html#a7689c7dd824016b1962854a86d23d141", null ],
     [ "event_ap_connect", "group__wifi__control__gr.html#a9fc191093a9bc356c3d85e9cbf185620", null ],

@@ -47,7 +47,7 @@ arm_fully_connected_q7, group__FC.html#ga8b7e0c2e989e8c75f0dc789f3115323d, arm_f
 arm_fully_connected_q7.c, arm__fully__connected__q7_8c.html, 
 arm_fully_connected_q7_opt, group__FC.html#gaf82b71ef472a38f8fc9ac414d9d07e67, arm_fully_connected_q7_opt(const q7_t *pV, const q7_t *pM, const uint16_t dim_vec, const uint16_t num_of_rows, const uint16_t bias_shift, const uint16_t out_shift, const q7_t *bias, q7_t *pOut, q15_t *vec_buffer):&#160;arm_fully_connected_q7_opt.c
 arm_fully_connected_q7_opt.c, arm__fully__connected__q7__opt_8c.html, 
-arm_maxpool_q7_HWC, group__Pooling.html#ga99afcdcc61eaf429ab3ee823702e44ce, arm_maxpool_q7_HWC(q7_t *Im_in, const uint16_t dim_im_in, const uint16_t ch_im_in, const uint16_t dim_kernel, const uint16_t padding, const uint16_t stride, const uint16_t dim_im_out, q7_t *bufferA, q7_t *Im_out):&#160;arm_pool_q7_HWC.c
+arm_maxpool_q7_HWC, group__Pooling.html#ga99afDCMc61eaf429ab3ee823702e44ce, arm_maxpool_q7_HWC(q7_t *Im_in, const uint16_t dim_im_in, const uint16_t ch_im_in, const uint16_t dim_kernel, const uint16_t padding, const uint16_t stride, const uint16_t dim_im_out, q7_t *bufferA, q7_t *Im_out):&#160;arm_pool_q7_HWC.c
 arm_nn_activation_type, arm__nnsupportfunctions_8h.html#a7f41aa78cd9a0552fae9b348ee4831a0, arm_nnsupportfunctions.h
 arm_nn_activations_direct_q15, group__Acti.html#ga8932b57c8d0ee757511af2d40dcc11e7, arm_nn_activations_direct_q15(q15_t *data, uint16_t size, uint16_t int_width, arm_nn_activation_type type):&#160;arm_nn_activations_q15.c
 arm_nn_activations_direct_q7, group__Acti.html#ga79f11131ae6767d60e03b1f6506b1af8, arm_nn_activations_direct_q7(q7_t *data, uint16_t size, uint16_t int_width, arm_nn_activation_type type):&#160;arm_nn_activations_q7.c
@@ -102,7 +102,7 @@ CONV1_OUT_CH, arm__nnexamples__cifar10__parameter_8h.html#a3c1777ba8f883a5490beb
 CONV1_OUT_DIM, arm__nnexamples__cifar10__parameter_8h.html#a6262e2cd96ec12681024ab4ac73d607b, arm_nnexamples_cifar10_parameter.h
 CONV1_OUT_RSHIFT, arm__nnexamples__cifar10__weights_8h.html#aa8f89682da16a15a092d06097a5696d3, arm_nnexamples_cifar10_weights.h
 CONV1_PADDING, arm__nnexamples__cifar10__parameter_8h.html#a2bb0fafdfd2c283df4708ec53f3d90f7, arm_nnexamples_cifar10_parameter.h
-CONV1_STRIDE, arm__nnexamples__cifar10__parameter_8h.html#a596cdcf742e142edc29a0a0e44496c7c, arm_nnexamples_cifar10_parameter.h
+CONV1_STRIDE, arm__nnexamples__cifar10__parameter_8h.html#a596DCMf742e142edc29a0a0e44496c7c, arm_nnexamples_cifar10_parameter.h
 CONV1_WT, arm__nnexamples__cifar10_8cpp.html#a230b7412ffaaa297340ddcb49c828b4b, conv1_wt():&#160;arm_nnexamples_cifar10.cpp
 CONV2_BIAS, arm__nnexamples__cifar10_8cpp.html#a686e558e4de77f778c775c9f0c9866d0, conv2_bias():&#160;arm_nnexamples_cifar10.cpp
 CONV2_BIAS_LSHIFT, arm__nnexamples__cifar10__weights_8h.html#afa70cc595390d9205c78a58795f070f4, arm_nnexamples_cifar10_weights.h

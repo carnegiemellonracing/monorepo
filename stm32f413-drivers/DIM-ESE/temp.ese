@@ -41,7 +41,7 @@
         "CMD_TEXT(20, 204, 26,  OPT_CENTERY, \"AFC1 DRIVERS:\")",
         "CMD_TEXT(200, 204, 26, OPT_CENTERY, \"-100.3 C\")",
         "",
-        "CMD_TEXT(20, 222, 26,  OPT_CENTERY, \"DCDC:\")",
+        "CMD_TEXT(20, 222, 26,  OPT_CENTERY, \"DDCM:\")",
         "CMD_TEXT(200, 222, 26, OPT_CENTERY, \"-100.3 C\")"
     ],
     "displayList": [

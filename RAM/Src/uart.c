@@ -242,15 +242,15 @@ static void handle_command(cn_cbor *command)
                     vTaskDelayUntil(&last_wake, dim_message_delay_ms);
                 }
             }
-            else if ((uint16_t)id->v.uint == CMR_CANID_CDC_POWER_UPDATE)
+            else if ((uint16_t)id->v.uint == CMR_CANID_DCM_POWER_UPDATE)
             {
                 // Set the power limit in config params from DAQ Live
-                if (data->length == sizeof(cmr_canCDCPowerLimit_t))
+                if (data->length == sizeof(cmr_canDCMPowerLimit_t))
                 {
-                    cmr_canCDCPowerLimit_t *powerLimit = (cmr_canCDCPowerLimit_t *)data->v.bytes;
+                    cmr_canDCMPowerLimit_t *powerLimit = (cmr_canDCMPowerLimit_t *)data->v.bytes;
 
                     canTX((cmr_canBusID_t)bus->v.uint, (uint16_t)id->v.uint,
-                    	  powerLimit, sizeof(cmr_canCDCPowerLimit_t),
+                    	  powerLimit, sizeof(cmr_canDCMPowerLimit_t),
 					      200);
                 }
             } else {

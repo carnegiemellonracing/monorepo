@@ -33,12 +33,12 @@ cmr_canRXMeta_t canRXMeta[] = {
         .timeoutWarn_ms = 750,
         .warnFlag = CMR_CAN_WARN_VSM_HVC_TIMEOUT
     },
-    [CANRX_HEARTBEAT_CDC] = {
-        .canID = CMR_CANID_HEARTBEAT_CDC,
+    [CANRX_HEARTBEAT_DCM] = {
+        .canID = CMR_CANID_HEARTBEAT_DCM,
         .timeoutError_ms = 100,
         .errorFlag = CMR_CAN_ERROR_VSM_MODULE_TIMEOUT,
         .timeoutWarn_ms = 25,
-        .warnFlag = CMR_CAN_WARN_VSM_CDC_TIMEOUT
+        .warnFlag = CMR_CAN_WARN_VSM_DCM_TIMEOUT
     },
     [CANRX_HEARTBEAT_DIM] = {
         .canID = CMR_CANID_HEARTBEAT_DIM,
@@ -185,7 +185,7 @@ cmr_canRXMeta_t canRXMeta[] = {
  */
 const cmr_canVSMTimeoutErrorSource_t vsmErrorSourceFlags[CANRX_LEN] = {
     [CANRX_HEARTBEAT_HVC]       = CMR_CAN_VSM_TIMEOUT_SOURCE_NONE,
-    [CANRX_HEARTBEAT_CDC]       = CMR_CAN_VSM_TIMEOUT_SOURCE_CDC,
+    [CANRX_HEARTBEAT_DCM]       = CMR_CAN_VSM_TIMEOUT_SOURCE_DCM,
     [CANRX_HEARTBEAT_DIM]       = CMR_CAN_VSM_TIMEOUT_SOURCE_DIM,
     [CANRX_HEARTBEAT_HVBMS]     = CMR_CAN_VSM_TIMEOUT_SOURCE_HVBMS,
     [CANRX_FSM_DATA]            = CMR_CAN_VSM_TIMEOUT_SOURCE_DIM

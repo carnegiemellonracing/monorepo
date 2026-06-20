@@ -151,7 +151,7 @@ HAL_StatusTypeDef HAL_PCD_Init(PCD_HandleTypeDef *hpcd)
     hpcd->ISOOUTIncompleteCallback = HAL_PCD_ISOOUTIncompleteCallback;
     hpcd->ISOINIncompleteCallback = HAL_PCD_ISOINIncompleteCallback;
     hpcd->LPMCallback = HAL_PCDEx_LPM_Callback;
-    hpcd->BCDCallback = HAL_PCDEx_BCD_Callback;
+    hpcd->BDCMallback = HAL_PCDEx_BCD_Callback;
 
     if (hpcd->MspInitCallback == NULL)
     {
@@ -829,7 +829,7 @@ HAL_StatusTypeDef HAL_PCD_UnRegisterIsoInIncpltCallback(PCD_HandleTypeDef *hpcd)
   * @param  pCallback pointer to the USB PCD BCD Callback function
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_PCD_RegisterBcdCallback(PCD_HandleTypeDef *hpcd, pPCD_BcdCallbackTypeDef pCallback)
+HAL_StatusTypeDef HAL_PCD_RegisterBDCMallback(PCD_HandleTypeDef *hpcd, pPCD_BDCMallbackTypeDef pCallback)
 {
   HAL_StatusTypeDef status = HAL_OK;
 
@@ -846,7 +846,7 @@ HAL_StatusTypeDef HAL_PCD_RegisterBcdCallback(PCD_HandleTypeDef *hpcd, pPCD_BcdC
 
   if (hpcd->State == HAL_PCD_STATE_READY)
   {
-    hpcd->BCDCallback = pCallback;
+    hpcd->BDCMallback = pCallback;
   }
   else
   {
@@ -869,7 +869,7 @@ HAL_StatusTypeDef HAL_PCD_RegisterBcdCallback(PCD_HandleTypeDef *hpcd, pPCD_BcdC
   * @param  hpcd PCD handle
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_PCD_UnRegisterBcdCallback(PCD_HandleTypeDef *hpcd)
+HAL_StatusTypeDef HAL_PCD_UnRegisterBDCMallback(PCD_HandleTypeDef *hpcd)
 {
   HAL_StatusTypeDef status = HAL_OK;
 
@@ -878,7 +878,7 @@ HAL_StatusTypeDef HAL_PCD_UnRegisterBcdCallback(PCD_HandleTypeDef *hpcd)
 
   if (hpcd->State == HAL_PCD_STATE_READY)
   {
-    hpcd->BCDCallback = HAL_PCDEx_BCD_Callback; /* Legacy weak HAL_PCDEx_BCD_Callback  */
+    hpcd->BDCMallback = HAL_PCDEx_BCD_Callback; /* Legacy weak HAL_PCDEx_BCD_Callback  */
   }
   else
   {

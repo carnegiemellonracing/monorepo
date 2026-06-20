@@ -207,11 +207,11 @@ void SystemInit (void)
   /* Reset D3CFGR register */
   RCC->D3CFGR = 0x00000000;
 #else
-  /* Reset CDCFGR1 register */
-  RCC->CDCFGR1 = 0x00000000;
+  /* Reset DCMFGR1 register */
+  RCC->DCMFGR1 = 0x00000000;
 
-  /* Reset CDCFGR2 register */
-  RCC->CDCFGR2 = 0x00000000;
+  /* Reset DCMFGR2 register */
+  RCC->DCMFGR2 = 0x00000000;
 
   /* Reset SRDCFGR register */
   RCC->SRDCFGR = 0x00000000;
@@ -406,11 +406,11 @@ void SystemCoreClockUpdate (void)
   /* SystemD2Clock frequency : AXI and AHBs Clock frequency  */
   SystemD2Clock = (SystemCoreClock >> ((D1CorePrescTable[(RCC->D1CFGR & RCC_D1CFGR_HPRE)>> RCC_D1CFGR_HPRE_Pos]) & 0x1FU));
 #else
-  tmp = D1CorePrescTable[(RCC->CDCFGR1 & RCC_CDCFGR1_CDCPRE)>> RCC_CDCFGR1_CDCPRE_Pos];
+  tmp = D1CorePrescTable[(RCC->DCMFGR1 & RCC_DCMFGR1_DCMPRE)>> RCC_DCMFGR1_DCMPRE_Pos];
 
   SystemCoreClock >>= tmp;
   /* SystemD2Clock frequency : AXI and AHBs Clock frequency  */
-  SystemD2Clock = (SystemCoreClock >> ((D1CorePrescTable[(RCC->CDCFGR1 & RCC_CDCFGR1_HPRE)>> RCC_CDCFGR1_HPRE_Pos]) & 0x1FU));
+  SystemD2Clock = (SystemCoreClock >> ((D1CorePrescTable[(RCC->DCMFGR1 & RCC_DCMFGR1_HPRE)>> RCC_DCMFGR1_HPRE_Pos]) & 0x1FU));
 #endif
 }
 

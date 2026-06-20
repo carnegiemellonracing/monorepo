@@ -230,7 +230,7 @@ CPACR CP field values, group__CMSIS__CPACR__CP.html,
 Current Program Status Register (CPSR), group__CMSIS__CPSR.html, 
 CPSR Bits, group__CMSIS__CPSR__BITS.html, 
 CPSR M field values, group__CMSIS__CPSR__M.html, 
-CMSIS_DEPRECATED, cmsis__armcc_8h.html#acdc36c1b3d3e16c17a73889b7d06d0d2, cmsis_armcc.h
+CMSIS_DEPRECATED, cmsis__armcc_8h.html#aDCM36c1b3d3e16c17a73889b7d06d0d2, cmsis_armcc.h
 CNTP_CTL_Type, unionCNTP__CTL__Type.html, 
 Compiler Control, group__comp__cntrl__gr.html, 
 CONTROL, structTimer__Type.html#a91845c88231f4f337be2810d73bc79e4, Timer_Type::CONTROL()
@@ -347,7 +347,7 @@ DFSR_FS1_Pos, group__CMSIS__DFSR__BITS.html#ga3faee10970931cadf7ff16069ce65a1a, 
 DFSR_LPAE_Msk, group__CMSIS__DFSR__BITS.html#ga104bfa1e333340616fdbdc804948276f, core_ca.h
 DFSR_LPAE_Pos, group__CMSIS__DFSR__BITS.html#ga10f7b48c4f128c9be07c377bb60cfa7a, core_ca.h
 DFSR_STATUS_Msk, group__CMSIS__DFSR__BITS.html#ga7541052737038d737fd9fe00b9815140, core_ca.h
-DFSR_STATUS_Pos, group__CMSIS__DFSR__BITS.html#gacb6fae1908b12c4900e2cdcc320c6c11, core_ca.h
+DFSR_STATUS_Pos, group__CMSIS__DFSR__BITS.html#gacb6fae1908b12c4900e2DCMc320c6c11, core_ca.h
 DFSR_Type, unionDFSR__Type.html, 
 DFSR_WnR_Msk, group__CMSIS__DFSR__BITS.html#gabfbf482895e7620fe6727b54378c0f2a, core_ca.h
 DFSR_WnR_Pos, group__CMSIS__DFSR__BITS.html#ga410420633e9ba47cdd1ae2d3df146866, core_ca.h
@@ -427,7 +427,7 @@ GICInterface_Type, structGICInterface__Type.html,
 GLOBAL, core__ca_8h.html#ga04160605fbe20914c8ef020430684a30afde1bb5ef04b28059e61df449501f1c0, core_ca.h
 GlobalTimer_IRQn, ARMCA9_8h.html#a7e1129cd8a196f4284d41db3e82ad5c8a69c74fffb53f9a8739613443943a94c3, ARMCA9.h
 Generic Physical Timer Functions, group__PL1__timer__functions.html, 
-HA, unionSCTLR__Type.html#aba2a8aac3478cdc34428af7b9726d97f, SCTLR_Type
+HA, unionSCTLR__Type.html#aba2a8aac3478DCM34428af7b9726d97f, SCTLR_Type
 HPPIR, structGICInterface__Type.html#af793cd280a74bf73cca8c4fedfc329d6, GICInterface_Type
 Intrinsic Functions, group__CMSIS__Core__InstructionInterface.html, 
 Instruction Fault Status Register (IFSR), group__CMSIS__IFSR.html, 
@@ -647,7 +647,7 @@ NSACR, structGICDistributor__Type.html#a644abefb7064e434db20cc6dab5fe5f1, GICDis
 NSAPR, structGICInterface__Type.html#ade3473ace2a8bf7c79a0251457be20f4, GICInterface_Type
 Overview, index.html, 
 OFFSET_1M, group__MMU__defs__gr.html#ga8e51cfa91c0b6bbf1df1cff0bde44836, core_ca.h
-OFFSET_4K, group__MMU__defs__gr.html#ga121c645cdc91018720ceaf1d021fcd89, core_ca.h
+OFFSET_4K, group__MMU__defs__gr.html#ga121c645DCM91018720ceaf1d021fcd89, core_ca.h
 OFFSET_64K, group__MMU__defs__gr.html#gaf19b9fb664a06a41562176a51c66fcff, core_ca.h
 outer_norm_t, structmmu__region__attributes__Type.html#a2aebbdf7cfb941d5703d008f02131622, mmu_region_attributes_Type
 Overview.txt, Overview_8txt.html, 
@@ -780,13 +780,13 @@ SCTLR_U_Msk, group__CMSIS__SCTLR__BITS.html#gaa047daa7ab35b5ad5dd238c7377a232f, 
 SCTLR_U_Pos, group__CMSIS__SCTLR__BITS.html#gaa0431730d7ce929db03d8accee558e17, core_ca.h
 SCTLR_UWXN_Msk, group__CMSIS__SCTLR__BITS.html#gab834e64e0da7c2a98d747ce73252c199, core_ca.h
 SCTLR_UWXN_Pos, group__CMSIS__SCTLR__BITS.html#ga7c7d88f3db4de438ddd069cf3fbc88b3, core_ca.h
-SCTLR_V_Msk, group__CMSIS__SCTLR__BITS.html#gaf84f3f15bf6917acdc5b5a4ad661ac11, core_ca.h
+SCTLR_V_Msk, group__CMSIS__SCTLR__BITS.html#gaf84f3f15bf6917aDCM5b5a4ad661ac11, core_ca.h
 SCTLR_V_Pos, group__CMSIS__SCTLR__BITS.html#ga57778fd6afbe5b4fe8d8ea828acf833d, core_ca.h
 SCTLR_VE_Msk, group__CMSIS__SCTLR__BITS.html#gad94a7feadba850299a68c56e39c0b274, core_ca.h
 SCTLR_VE_Pos, group__CMSIS__SCTLR__BITS.html#ga1372b569553a0740d881e24c0be7334f, core_ca.h
 SCTLR_WXN_Msk, group__CMSIS__SCTLR__BITS.html#ga510b03214d135f15ad3c5d41ec20a291, core_ca.h
 SCTLR_WXN_Pos, group__CMSIS__SCTLR__BITS.html#gaf145654986fd6d014136580ad279d256, core_ca.h
-SCTLR_Z_Msk, group__CMSIS__SCTLR__BITS.html#ga12a05acdcb8db6e99970f26206d3067c, core_ca.h
+SCTLR_Z_Msk, group__CMSIS__SCTLR__BITS.html#ga12a05aDCMb8db6e99970f26206d3067c, core_ca.h
 SCTLR_Z_Pos, group__CMSIS__SCTLR__BITS.html#gaa0eade648c9a34de891af0e6f47857dd, core_ca.h
 sec_t, structmmu__region__attributes__Type.html#a195e022fa08ec703937fa8175d8371d7, mmu_region_attributes_Type
 SECTION, core__ca_8h.html#gab184b824a6d7cb728bd46c6abcd0c21aacb7227be6a36b93e485b62e3acddae51, core_ca.h
@@ -820,7 +820,7 @@ SECTION_TEX1_SHIFT, group__MMU__defs__gr.html#ga531cafc5eca8ade67a6fb83b35f8520e
 SECTION_TEX2_SHIFT, group__MMU__defs__gr.html#ga8a6d854746a9c0049f9a91188092a55f, core_ca.h
 SECTION_TEXCB_MASK, core__ca_8h.html#a3052ba3d97ad157189a6c6fce15b1b6a, core_ca.h
 SECTION_XN_MASK, core__ca_8h.html#a83cb551c9fa708e33082c682be614334, core_ca.h
-SECTION_XN_SHIFT, group__MMU__defs__gr.html#ga6cdc2db0ca695fd1191305a13e66c0a7, core_ca.h
+SECTION_XN_SHIFT, group__MMU__defs__gr.html#ga6DCM2db0ca695fd1191305a13e66c0a7, core_ca.h
 SECURE, core__ca_8h.html#gac3d277641df9fb3bb3b555e2e79dd639aa9dea2ba3f45f7d12b274eb6ab7d28d9, core_ca.h
 SETSPI_NSR, structGICDistributor__Type.html#afbdd372578e2cd6f998320282cc8ed25, GICDistributor_Type
 SETSPI_SR, structGICDistributor__Type.html#ad55a8644bc95caf8bf53e1407ec9ed0c, GICDistributor_Type

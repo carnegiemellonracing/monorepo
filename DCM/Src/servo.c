@@ -15,7 +15,7 @@
 static cmr_pwm_t servo_left_PWM;
 static cmr_pwm_t servo_right_PWM;
 
-extern cmr_canCDCDRSStates_t drs_state;
+extern cmr_canDCMDRSStates_t drs_state;
 
 
 static uint32_t dutyCycleToLeftDutyCycle (uint32_t duty_cycle) {
