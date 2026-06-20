@@ -1154,23 +1154,6 @@ void setLaunchControl(
     static const bool use_solver = false;
 
 	bool action_button_pressed = false;
-    //replace with..?
-	if (nonnegative_odometer_velocity_mps < launch_control_speed_threshold_mps) { // odometer velocity is below the launch control threshold
-		action_button_pressed = (((volatile cmr_canDIMActions_t *)(canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON)))->buttonStates) & BUTTON_ACT;
-
-		if (action_button_pressed) {
-			launchControlButtonPressed = true;
-		}
-
-		if(launchControlButtonPressed && !action_button_pressed) {
-
-			if(!launchControlActive)
-			{
-				startTickCount = xTaskGetTickCount();
-				launchControlActive = true;
-			}
-		}
-	}
 
     // Not braking, throttle engaged, no button pressed, launch control is active.
     // bool ready_to_accel = brakePressurePsi_u8 < braking_threshold_psi && throttlePos_u8 > 0 && !action_button_pressed && launchControlActive;
