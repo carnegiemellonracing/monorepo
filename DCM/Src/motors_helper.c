@@ -209,7 +209,7 @@ int16_t getMotorSpeed_rpm(motorLocation_t motor) {
         case MOTOR_RR:
             return getDTIERPM(CANRX_TRAC_RR_ERPM) / pole_pairs;
         default:
-            return NULL;
+            return -1;
     }
 }
 

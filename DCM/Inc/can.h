@@ -213,3 +213,4 @@ int16_t getDTIACCurrent_dA(canTractiveRX_t rxMsg);
 int16_t getDTIDCCurrent_dA(canTractiveRX_t rxMsg);
 int16_t getDTICtlrTemp_dC(canTractiveRX_t rxMsg);
 int16_t getDTIMotorTemp_dC(canTractiveRX_t rxMsg);
+int16_t getDTIInputVoltage(canTractiveRX_t rxMsg)
