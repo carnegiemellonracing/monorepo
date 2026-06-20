@@ -782,10 +782,10 @@ void runControls (
         case CMR_CAN_GEAR_FAST: {
             disableTorqueMode();
             setFastTorqueWithBias(throttlePos_u8, front_bias);
-            setPowerLimit(false, MOTOR_FL, 40.0f * front_bias);
-            setPowerLimit(false, MOTOR_FR, 40.0f * front_bias);
-            setPowerLimit(false, MOTOR_RL, 40.0f * (1 - front_bias));
-            setPowerLimit(false, MOTOR_RR, 40.0f * (1 - front_bias));
+            setPowerLimit(false, MOTOR_FL, 35.0f * front_bias);
+            setPowerLimit(false, MOTOR_FR, 35.0f * front_bias);
+            setPowerLimit(false, MOTOR_RL, 35.0f * (1 - front_bias));
+            setPowerLimit(false, MOTOR_RR, 35.0f * (1 - front_bias));
             break;
         }
         case CMR_CAN_GEAR_ENDURANCE: {
