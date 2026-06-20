@@ -272,6 +272,21 @@
             "enabled": 1
         },
         {
+            "id": 269,
+            "offset": 0,
+            "bus": 0,
+            "Source": "EMD",
+            "name": "EMD Power",
+            "short": "EMD Pwr",
+            "unit": "kilowatts",
+            "unit_short": "kW",
+            "in_type": "u32",
+            "out_type": "u32",
+            "min": 0,
+            "max": 500000,
+            "enabled": 0
+        },
+        {
             "id": 1549,
             "offset": 2,
             "bus": 0,
