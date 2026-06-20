@@ -618,7 +618,6 @@ static void drawRTDScreen(void) {
                         yrcOn,
                         tcOn,
                         ssOk,
-                        odometer_km,
                         drsOpen,
                         hottest_motor);
 
