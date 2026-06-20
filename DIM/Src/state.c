@@ -185,16 +185,6 @@ uint8_t getSpeedKmh() {
 	return (uint8_t)avgWheelRPM;
 }
 
-/**
- * @brief Returns the current car's odometry in km
- */
-float getOdometer() {
-	// volatile cmr_canCDCOdometer_t *odometer = (volatile cmr_canCDCOdometer_t *)getPayload(CANRX_CDC_ODOMETER);
-    cmr_canSensoricDist_t *sensoricDist = (cmr_canSensoricDist_t*)getPayload(CANRX_SENSORIC_DIST);
-    float sensoricDist_kmh = (float)(sensoricDist->dist_A) * 0.001f;
-	return sensoricDist->dist_A;
-}
-
 
 
 /**

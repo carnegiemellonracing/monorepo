@@ -649,11 +649,6 @@ typedef enum {
   CMR_CAN_DRS_STATE_OTHER
 } cmr_canCDCDRSStateEnum_t;
 
-/** @brief Central Dynamics Controller */
-typedef struct {
-    float odometer_km;      //u: km /**< @brief Odometer in km*/
-} cmr_canCDCOdometer_t;
-
 typedef struct {
     uint8_t tcOn;
     uint8_t yrcOn;
