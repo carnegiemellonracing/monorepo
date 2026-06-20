@@ -33,10 +33,6 @@
         "u8": {
             "description": "8-bit unsigned int",
             "bytes": 1
-        },
-        "emd_power": {
-            "description": "EMD I·V (8 B BE u32 current, u32 voltage, scaled /2^16)",
-            "bytes": 8
         }
     },
     "state_actions": [
@@ -270,21 +266,6 @@
             "min": 0,
             "max": 5,
             "enabled": 1
-        },
-        {
-            "id": 269,
-            "offset": 0,
-            "bus": 0,
-            "Source": "EMD",
-            "name": "EMD Power",
-            "short": "EMD Pwr",
-            "unit": "kilowatts",
-            "unit_short": "kW",
-            "in_type": "u32",
-            "out_type": "u32",
-            "min": 0,
-            "max": 500000,
-            "enabled": 0
         },
         {
             "id": 1549,
@@ -641,7 +622,7 @@
             "unit_short": "deg",
             "in_type": "i32",
             "out_type": "i32",
-            "post_factor": 0.0000001,
+            "post_factor": 1e-7,
             "min": -90,
             "max": 90,
             "enabled": 1
@@ -657,7 +638,7 @@
             "unit_short": "deg",
             "in_type": "i32",
             "out_type": "i32",
-            "post_factor": 0.0000001,
+            "post_factor": 1e-7,
             "min": -180,
             "max": 180,
             "enabled": 1
@@ -705,22 +686,34 @@
                 {
                     "name": "EKF Roll/Pitch Status",
                     "short": "Att. Status",
-                    "state": ["Invalid", "Valid"]
+                    "state": [
+                        "Invalid",
+                        "Valid"
+                    ]
                 },
                 {
                     "name": "EKF Yaw Status",
                     "short": "Yaw Status",
-                    "state": ["Invalid", "Valid"]
+                    "state": [
+                        "Invalid",
+                        "Valid"
+                    ]
                 },
                 {
                     "name": "EKF Velocity Status",
                     "short": "Vel. Status",
-                    "state": ["Invalid", "Valid"]
+                    "state": [
+                        "Invalid",
+                        "Valid"
+                    ]
                 },
                 {
                     "name": "EKF Position Status",
                     "short": "Pos. Status",
-                    "state": ["Invalid", "Valid"]
+                    "state": [
+                        "Invalid",
+                        "Valid"
+                    ]
                 }
             ],
             "in_type": "u32",
