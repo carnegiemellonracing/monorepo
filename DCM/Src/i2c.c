@@ -133,7 +133,8 @@ int framWrite(framVariable_t variable, uint8_t *data)
         return -1;
     }
 
-
+    int retv_total = 0;
+    
     for (int i = 0; i < 17; i++){
         // Add 2 to data length for starting address
         const size_t commandLength = framVarsConfig[variable].dataLength + 2;
@@ -152,7 +153,6 @@ int framWrite(framVariable_t variable, uint8_t *data)
         int ret = cmr_i2cTX(&i2c_fram, framAddress, command,
                             3, 1);
         taskEXIT_CRITICAL();
-        int retv_total = 0;
         retv_total = ret | retv_total;
 
     }
