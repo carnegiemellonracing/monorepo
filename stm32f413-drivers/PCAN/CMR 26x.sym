@@ -1683,16 +1683,6 @@ Var=DIM_config1_drv0_config_val_2 unsigned 8,8
 Var=DIM_config1_drv0_config_val_3 unsigned 16,8
 Var=DIM_config1_drv0_config_val_4 unsigned 24,8
 
-[DIM_Config1_Drv0]
-ID=601h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config1_drv0_config_val_1 unsigned 0,8
-Var=DIM_config1_drv0_config_val_2 unsigned 8,8
-Var=DIM_config1_drv0_config_val_3 unsigned 16,8
-Var=DIM_config1_drv0_config_val_4 unsigned 24,8
-
 [DIM_Config2_Drv0]
 ID=602h
 DLC=4
