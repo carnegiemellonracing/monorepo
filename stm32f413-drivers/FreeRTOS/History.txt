@@ -2159,7 +2159,7 @@ Changes between V5.4.1 and V5.4.2 released August 9th 2009
 
 	+ Added a new port and demo app for the Altera Nios2 soft core.
 	+ Added LPC1768 demo for IAR.
-	+ Added a USB CDC demo to all LPC1768 demos (Code Red, CrossWorks and IAR).
+	+ Added a USB DCM demo to all LPC1768 demos (Code Red, CrossWorks and IAR).
 	+ Changed clock frequency of LPC1768 demos to 99MHz.
 
 Changes between V5.4.0 and V5.4.1 released July 25th 2009

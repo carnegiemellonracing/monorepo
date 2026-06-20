@@ -1083,8 +1083,8 @@ typedef struct
  __IO uint32_t CSICFGR;        /*!< CSI Clock Calibration Register,                                          Address offset: 0x0C  */
  __IO uint32_t CFGR;           /*!< RCC clock configuration register,                                        Address offset: 0x10  */
  uint32_t     RESERVED1;       /*!< Reserved,                                                                Address offset: 0x14  */
- __IO uint32_t CDCFGR1;         /*!< RCC Domain 1 configuration register,                                    Address offset: 0x18  */
- __IO uint32_t CDCFGR2;         /*!< RCC Domain 2 configuration register,                                    Address offset: 0x1C  */
+ __IO uint32_t DCMFGR1;         /*!< RCC Domain 1 configuration register,                                    Address offset: 0x18  */
+ __IO uint32_t DCMFGR2;         /*!< RCC Domain 2 configuration register,                                    Address offset: 0x1C  */
  __IO uint32_t SRDCFGR;         /*!< RCC Domain 3 configuration register,                                    Address offset: 0x20  */
  uint32_t     RESERVED2;       /*!< Reserved,                                                                Address offset: 0x24  */
  __IO uint32_t PLLCKSELR;      /*!< RCC PLLs Clock Source Selection Register,                                Address offset: 0x28  */
@@ -1096,9 +1096,9 @@ typedef struct
  __IO uint32_t PLL3DIVR;       /*!< RCC PLL3 Dividers Configuration Register,                                Address offset: 0x40  */
  __IO uint32_t PLL3FRACR;      /*!< RCC PLL3 Fractional Divider Configuration Register,                      Address offset: 0x44  */
  uint32_t      RESERVED3;      /*!< Reserved,                                                                Address offset: 0x48  */
- __IO uint32_t  CDCCIPR;       /*!< RCC Domain 1 Kernel Clock Configuration Register                         Address offset: 0x4C  */
- __IO uint32_t  CDCCIP1R;      /*!< RCC Domain 2 Kernel Clock Configuration Register                         Address offset: 0x50  */
- __IO uint32_t  CDCCIP2R;      /*!< RCC Domain 2 Kernel Clock Configuration Register                         Address offset: 0x54  */
+ __IO uint32_t  DCMCIPR;       /*!< RCC Domain 1 Kernel Clock Configuration Register                         Address offset: 0x4C  */
+ __IO uint32_t  DCMCIP1R;      /*!< RCC Domain 2 Kernel Clock Configuration Register                         Address offset: 0x50  */
+ __IO uint32_t  DCMCIP2R;      /*!< RCC Domain 2 Kernel Clock Configuration Register                         Address offset: 0x54  */
  __IO uint32_t  SRDCCIPR;       /*!< RCC Domain 3 Kernel Clock Configuration Register                         Address offset: 0x58  */
  uint32_t      RESERVED4;      /*!< Reserved,                                                                Address offset: 0x5C  */
  __IO uint32_t  CIER;          /*!< RCC Clock Source Interrupt Enable Register                               Address offset: 0x60  */
@@ -13085,9 +13085,9 @@ typedef struct
 #define RCC_CR_CPUCKRDY_Pos                     (14U)
 #define RCC_CR_CPUCKRDY_Msk                     (0x1UL << RCC_CR_CPUCKRDY_Pos)   /*!< 0x00004000 */
 #define RCC_CR_CPUCKRDY                         RCC_CR_CPUCKRDY_Msk              /*!< CPU domain clocks ready flag  */
-#define RCC_CR_CDCKRDY_Pos                     (15U)
-#define RCC_CR_CDCKRDY_Msk                     (0x1UL << RCC_CR_CDCKRDY_Pos)   /*!< 0x00008000 */
-#define RCC_CR_CDCKRDY                         RCC_CR_CDCKRDY_Msk              /*!< CD domain clocks ready flag */
+#define RCC_CR_DCMKRDY_Pos                     (15U)
+#define RCC_CR_DCMKRDY_Msk                     (0x1UL << RCC_CR_DCMKRDY_Pos)   /*!< 0x00008000 */
+#define RCC_CR_DCMKRDY                         RCC_CR_DCMKRDY_Msk              /*!< CD domain clocks ready flag */
 
 #define RCC_CR_HSEON_Pos                       (16U)
 #define RCC_CR_HSEON_Msk                       (0x1UL << RCC_CR_HSEON_Pos)     /*!< 0x00010000 */
@@ -13292,140 +13292,140 @@ typedef struct
 
 /********************  Bit definition for RCC_D1CFGR register  ******************/
 /*!< D1HPRE configuration */
-#define RCC_CDCFGR1_HPRE_Pos                    (0U)
-#define RCC_CDCFGR1_HPRE_Msk                    (0xFUL << RCC_CDCFGR1_HPRE_Pos)  /*!< 0x0000000F */
-#define RCC_CDCFGR1_HPRE                        RCC_CDCFGR1_HPRE_Msk             /*!< HPRE[3:0] bits (AHB3 prescaler) */
-#define RCC_CDCFGR1_HPRE_0                      (0x1UL << RCC_CDCFGR1_HPRE_Pos)   /*!< 0x00000001 */
-#define RCC_CDCFGR1_HPRE_1                      (0x2UL << RCC_CDCFGR1_HPRE_Pos)   /*!< 0x00000002 */
-#define RCC_CDCFGR1_HPRE_2                      (0x4UL << RCC_CDCFGR1_HPRE_Pos)   /*!< 0x00000004 */
-#define RCC_CDCFGR1_HPRE_3                      (0x8UL << RCC_CDCFGR1_HPRE_Pos)   /*!< 0x00000008 */
+#define RCC_DCMFGR1_HPRE_Pos                    (0U)
+#define RCC_DCMFGR1_HPRE_Msk                    (0xFUL << RCC_DCMFGR1_HPRE_Pos)  /*!< 0x0000000F */
+#define RCC_DCMFGR1_HPRE                        RCC_DCMFGR1_HPRE_Msk             /*!< HPRE[3:0] bits (AHB3 prescaler) */
+#define RCC_DCMFGR1_HPRE_0                      (0x1UL << RCC_DCMFGR1_HPRE_Pos)   /*!< 0x00000001 */
+#define RCC_DCMFGR1_HPRE_1                      (0x2UL << RCC_DCMFGR1_HPRE_Pos)   /*!< 0x00000002 */
+#define RCC_DCMFGR1_HPRE_2                      (0x4UL << RCC_DCMFGR1_HPRE_Pos)   /*!< 0x00000004 */
+#define RCC_DCMFGR1_HPRE_3                      (0x8UL << RCC_DCMFGR1_HPRE_Pos)   /*!< 0x00000008 */
 
-#define RCC_CDCFGR1_HPRE_DIV1                   (0U)                 /*!< AHB3 Clock not divided */
-#define RCC_CDCFGR1_HPRE_DIV2_Pos               (3U)
-#define RCC_CDCFGR1_HPRE_DIV2_Msk               (0x1UL << RCC_CDCFGR1_HPRE_DIV2_Pos)   /*!< 0x00000008 */
-#define RCC_CDCFGR1_HPRE_DIV2                   RCC_CDCFGR1_HPRE_DIV2_Msk              /*!< AHB3 Clock divided by 2 */
-#define RCC_CDCFGR1_HPRE_DIV4_Pos               (0U)
-#define RCC_CDCFGR1_HPRE_DIV4_Msk               (0x9UL << RCC_CDCFGR1_HPRE_DIV4_Pos)   /*!< 0x00000009 */
-#define RCC_CDCFGR1_HPRE_DIV4                   RCC_CDCFGR1_HPRE_DIV4_Msk              /*!< AHB3 Clock divided by 4 */
-#define RCC_CDCFGR1_HPRE_DIV8_Pos               (1U)
-#define RCC_CDCFGR1_HPRE_DIV8_Msk               (0x5UL << RCC_CDCFGR1_HPRE_DIV8_Pos)   /*!< 0x0000000A */
-#define RCC_CDCFGR1_HPRE_DIV8                   RCC_CDCFGR1_HPRE_DIV8_Msk              /*!< AHB3 Clock divided by 8 */
-#define RCC_CDCFGR1_HPRE_DIV16_Pos              (0U)
-#define RCC_CDCFGR1_HPRE_DIV16_Msk              (0xBUL << RCC_CDCFGR1_HPRE_DIV16_Pos)  /*!< 0x0000000B */
-#define RCC_CDCFGR1_HPRE_DIV16                  RCC_CDCFGR1_HPRE_DIV16_Msk             /*!< AHB3 Clock divided by 16 */
-#define RCC_CDCFGR1_HPRE_DIV64_Pos              (2U)
-#define RCC_CDCFGR1_HPRE_DIV64_Msk              (0x3UL << RCC_CDCFGR1_HPRE_DIV64_Pos)  /*!< 0x0000000C */
-#define RCC_CDCFGR1_HPRE_DIV64                  RCC_CDCFGR1_HPRE_DIV64_Msk             /*!< AHB3 Clock divided by 64 */
-#define RCC_CDCFGR1_HPRE_DIV128_Pos             (0U)
-#define RCC_CDCFGR1_HPRE_DIV128_Msk             (0xDUL << RCC_CDCFGR1_HPRE_DIV128_Pos) /*!< 0x0000000D */
-#define RCC_CDCFGR1_HPRE_DIV128                 RCC_CDCFGR1_HPRE_DIV128_Msk            /*!< AHB3 Clock divided by 128 */
-#define RCC_CDCFGR1_HPRE_DIV256_Pos             (1U)
-#define RCC_CDCFGR1_HPRE_DIV256_Msk             (0x7UL << RCC_CDCFGR1_HPRE_DIV256_Pos) /*!< 0x0000000E */
-#define RCC_CDCFGR1_HPRE_DIV256                 RCC_CDCFGR1_HPRE_DIV256_Msk            /*!< AHB3 Clock divided by 256 */
-#define RCC_CDCFGR1_HPRE_DIV512_Pos             (0U)
-#define RCC_CDCFGR1_HPRE_DIV512_Msk             (0xFUL << RCC_CDCFGR1_HPRE_DIV512_Pos) /*!< 0x0000000F */
-#define RCC_CDCFGR1_HPRE_DIV512                 RCC_CDCFGR1_HPRE_DIV512_Msk            /*!< AHB3 Clock divided by 512 */
+#define RCC_DCMFGR1_HPRE_DIV1                   (0U)                 /*!< AHB3 Clock not divided */
+#define RCC_DCMFGR1_HPRE_DIV2_Pos               (3U)
+#define RCC_DCMFGR1_HPRE_DIV2_Msk               (0x1UL << RCC_DCMFGR1_HPRE_DIV2_Pos)   /*!< 0x00000008 */
+#define RCC_DCMFGR1_HPRE_DIV2                   RCC_DCMFGR1_HPRE_DIV2_Msk              /*!< AHB3 Clock divided by 2 */
+#define RCC_DCMFGR1_HPRE_DIV4_Pos               (0U)
+#define RCC_DCMFGR1_HPRE_DIV4_Msk               (0x9UL << RCC_DCMFGR1_HPRE_DIV4_Pos)   /*!< 0x00000009 */
+#define RCC_DCMFGR1_HPRE_DIV4                   RCC_DCMFGR1_HPRE_DIV4_Msk              /*!< AHB3 Clock divided by 4 */
+#define RCC_DCMFGR1_HPRE_DIV8_Pos               (1U)
+#define RCC_DCMFGR1_HPRE_DIV8_Msk               (0x5UL << RCC_DCMFGR1_HPRE_DIV8_Pos)   /*!< 0x0000000A */
+#define RCC_DCMFGR1_HPRE_DIV8                   RCC_DCMFGR1_HPRE_DIV8_Msk              /*!< AHB3 Clock divided by 8 */
+#define RCC_DCMFGR1_HPRE_DIV16_Pos              (0U)
+#define RCC_DCMFGR1_HPRE_DIV16_Msk              (0xBUL << RCC_DCMFGR1_HPRE_DIV16_Pos)  /*!< 0x0000000B */
+#define RCC_DCMFGR1_HPRE_DIV16                  RCC_DCMFGR1_HPRE_DIV16_Msk             /*!< AHB3 Clock divided by 16 */
+#define RCC_DCMFGR1_HPRE_DIV64_Pos              (2U)
+#define RCC_DCMFGR1_HPRE_DIV64_Msk              (0x3UL << RCC_DCMFGR1_HPRE_DIV64_Pos)  /*!< 0x0000000C */
+#define RCC_DCMFGR1_HPRE_DIV64                  RCC_DCMFGR1_HPRE_DIV64_Msk             /*!< AHB3 Clock divided by 64 */
+#define RCC_DCMFGR1_HPRE_DIV128_Pos             (0U)
+#define RCC_DCMFGR1_HPRE_DIV128_Msk             (0xDUL << RCC_DCMFGR1_HPRE_DIV128_Pos) /*!< 0x0000000D */
+#define RCC_DCMFGR1_HPRE_DIV128                 RCC_DCMFGR1_HPRE_DIV128_Msk            /*!< AHB3 Clock divided by 128 */
+#define RCC_DCMFGR1_HPRE_DIV256_Pos             (1U)
+#define RCC_DCMFGR1_HPRE_DIV256_Msk             (0x7UL << RCC_DCMFGR1_HPRE_DIV256_Pos) /*!< 0x0000000E */
+#define RCC_DCMFGR1_HPRE_DIV256                 RCC_DCMFGR1_HPRE_DIV256_Msk            /*!< AHB3 Clock divided by 256 */
+#define RCC_DCMFGR1_HPRE_DIV512_Pos             (0U)
+#define RCC_DCMFGR1_HPRE_DIV512_Msk             (0xFUL << RCC_DCMFGR1_HPRE_DIV512_Pos) /*!< 0x0000000F */
+#define RCC_DCMFGR1_HPRE_DIV512                 RCC_DCMFGR1_HPRE_DIV512_Msk            /*!< AHB3 Clock divided by 512 */
 
 /*!< D1PPRE configuration */
-#define RCC_CDCFGR1_CDPPRE_Pos                  (4U)
-#define RCC_CDCFGR1_CDPPRE_Msk                  (0x7UL << RCC_CDCFGR1_CDPPRE_Pos)      /*!< 0x00000070 */
-#define RCC_CDCFGR1_CDPPRE                      RCC_CDCFGR1_CDPPRE_Msk                 /*!< CDPRE[2:0] bits (APB3 prescaler) */
-#define RCC_CDCFGR1_CDPPRE_0                    (0x1UL << RCC_CDCFGR1_CDPPRE_Pos)      /*!< 0x00000010 */
-#define RCC_CDCFGR1_CDPPRE_1                    (0x2UL << RCC_CDCFGR1_CDPPRE_Pos)      /*!< 0x00000020 */
-#define RCC_CDCFGR1_CDPPRE_2                    (0x4UL << RCC_CDCFGR1_CDPPRE_Pos)      /*!< 0x00000040 */
+#define RCC_DCMFGR1_CDPPRE_Pos                  (4U)
+#define RCC_DCMFGR1_CDPPRE_Msk                  (0x7UL << RCC_DCMFGR1_CDPPRE_Pos)      /*!< 0x00000070 */
+#define RCC_DCMFGR1_CDPPRE                      RCC_DCMFGR1_CDPPRE_Msk                 /*!< CDPRE[2:0] bits (APB3 prescaler) */
+#define RCC_DCMFGR1_CDPPRE_0                    (0x1UL << RCC_DCMFGR1_CDPPRE_Pos)      /*!< 0x00000010 */
+#define RCC_DCMFGR1_CDPPRE_1                    (0x2UL << RCC_DCMFGR1_CDPPRE_Pos)      /*!< 0x00000020 */
+#define RCC_DCMFGR1_CDPPRE_2                    (0x4UL << RCC_DCMFGR1_CDPPRE_Pos)      /*!< 0x00000040 */
 
-#define RCC_CDCFGR1_CDPPRE_DIV1                 (0U)                 /*!< APB3 clock not divided */
-#define RCC_CDCFGR1_CDPPRE_DIV2_Pos             (6U)
-#define RCC_CDCFGR1_CDPPRE_DIV2_Msk             (0x1UL << RCC_CDCFGR1_CDPPRE_DIV2_Pos) /*!< 0x00000040 */
-#define RCC_CDCFGR1_CDPPRE_DIV2                 RCC_CDCFGR1_CDPPRE_DIV2_Msk            /*!< APB3 clock divided by 2 */
-#define RCC_CDCFGR1_CDPPRE_DIV4_Pos             (4U)
-#define RCC_CDCFGR1_CDPPRE_DIV4_Msk             (0x5UL << RCC_CDCFGR1_CDPPRE_DIV4_Pos) /*!< 0x00000050 */
-#define RCC_CDCFGR1_CDPPRE_DIV4                 RCC_CDCFGR1_CDPPRE_DIV4_Msk            /*!< APB3 clock divided by 4 */
-#define RCC_CDCFGR1_CDPPRE_DIV8_Pos             (5U)
-#define RCC_CDCFGR1_CDPPRE_DIV8_Msk             (0x3UL << RCC_CDCFGR1_CDPPRE_DIV8_Pos) /*!< 0x00000060 */
-#define RCC_CDCFGR1_CDPPRE_DIV8                 RCC_CDCFGR1_CDPPRE_DIV8_Msk            /*!< APB3 clock divided by 8 */
-#define RCC_CDCFGR1_CDPPRE_DIV16_Pos            (4U)
-#define RCC_CDCFGR1_CDPPRE_DIV16_Msk            (0x7UL << RCC_CDCFGR1_CDPPRE_DIV16_Pos) /*!< 0x00000070 */
-#define RCC_CDCFGR1_CDPPRE_DIV16                RCC_CDCFGR1_CDPPRE_DIV16_Msk            /*!< APB3 clock divided by 16 */
+#define RCC_DCMFGR1_CDPPRE_DIV1                 (0U)                 /*!< APB3 clock not divided */
+#define RCC_DCMFGR1_CDPPRE_DIV2_Pos             (6U)
+#define RCC_DCMFGR1_CDPPRE_DIV2_Msk             (0x1UL << RCC_DCMFGR1_CDPPRE_DIV2_Pos) /*!< 0x00000040 */
+#define RCC_DCMFGR1_CDPPRE_DIV2                 RCC_DCMFGR1_CDPPRE_DIV2_Msk            /*!< APB3 clock divided by 2 */
+#define RCC_DCMFGR1_CDPPRE_DIV4_Pos             (4U)
+#define RCC_DCMFGR1_CDPPRE_DIV4_Msk             (0x5UL << RCC_DCMFGR1_CDPPRE_DIV4_Pos) /*!< 0x00000050 */
+#define RCC_DCMFGR1_CDPPRE_DIV4                 RCC_DCMFGR1_CDPPRE_DIV4_Msk            /*!< APB3 clock divided by 4 */
+#define RCC_DCMFGR1_CDPPRE_DIV8_Pos             (5U)
+#define RCC_DCMFGR1_CDPPRE_DIV8_Msk             (0x3UL << RCC_DCMFGR1_CDPPRE_DIV8_Pos) /*!< 0x00000060 */
+#define RCC_DCMFGR1_CDPPRE_DIV8                 RCC_DCMFGR1_CDPPRE_DIV8_Msk            /*!< APB3 clock divided by 8 */
+#define RCC_DCMFGR1_CDPPRE_DIV16_Pos            (4U)
+#define RCC_DCMFGR1_CDPPRE_DIV16_Msk            (0x7UL << RCC_DCMFGR1_CDPPRE_DIV16_Pos) /*!< 0x00000070 */
+#define RCC_DCMFGR1_CDPPRE_DIV16                RCC_DCMFGR1_CDPPRE_DIV16_Msk            /*!< APB3 clock divided by 16 */
 
-#define RCC_CDCFGR1_CDCPRE_Pos                  (8U)
-#define RCC_CDCFGR1_CDCPRE_Msk                  (0xFUL << RCC_CDCFGR1_CDCPRE_Pos)       /*!< 0x00000F00 */
-#define RCC_CDCFGR1_CDCPRE                      RCC_CDCFGR1_CDCPRE_Msk                  /*!< CDCPRE[2:0] bits (Domain 1 Core prescaler) */
-#define RCC_CDCFGR1_CDCPRE_0                    (0x1UL << RCC_CDCFGR1_CDCPRE_Pos)       /*!< 0x00000100 */
-#define RCC_CDCFGR1_CDCPRE_1                    (0x2UL << RCC_CDCFGR1_CDCPRE_Pos)       /*!< 0x00000200 */
-#define RCC_CDCFGR1_CDCPRE_2                    (0x4UL << RCC_CDCFGR1_CDCPRE_Pos)       /*!< 0x00000400 */
-#define RCC_CDCFGR1_CDCPRE_3                    (0x8UL << RCC_CDCFGR1_CDCPRE_Pos)       /*!< 0x00000800 */
+#define RCC_DCMFGR1_DCMPRE_Pos                  (8U)
+#define RCC_DCMFGR1_DCMPRE_Msk                  (0xFUL << RCC_DCMFGR1_DCMPRE_Pos)       /*!< 0x00000F00 */
+#define RCC_DCMFGR1_DCMPRE                      RCC_DCMFGR1_DCMPRE_Msk                  /*!< DCMPRE[2:0] bits (Domain 1 Core prescaler) */
+#define RCC_DCMFGR1_DCMPRE_0                    (0x1UL << RCC_DCMFGR1_DCMPRE_Pos)       /*!< 0x00000100 */
+#define RCC_DCMFGR1_DCMPRE_1                    (0x2UL << RCC_DCMFGR1_DCMPRE_Pos)       /*!< 0x00000200 */
+#define RCC_DCMFGR1_DCMPRE_2                    (0x4UL << RCC_DCMFGR1_DCMPRE_Pos)       /*!< 0x00000400 */
+#define RCC_DCMFGR1_DCMPRE_3                    (0x8UL << RCC_DCMFGR1_DCMPRE_Pos)       /*!< 0x00000800 */
 
-#define RCC_CDCFGR1_CDCPRE_DIV1                 (0U)                  /*!< Domain 1 Core clock not divided */
-#define RCC_CDCFGR1_CDCPRE_DIV2_Pos             (11U)
-#define RCC_CDCFGR1_CDCPRE_DIV2_Msk             (0x1UL << RCC_CDCFGR1_CDCPRE_DIV2_Pos)  /*!< 0x00000800 */
-#define RCC_CDCFGR1_CDCPRE_DIV2                 RCC_CDCFGR1_CDCPRE_DIV2_Msk             /*!< Domain 1 Core clock divided by 2 */
-#define RCC_CDCFGR1_CDCPRE_DIV4_Pos             (8U)
-#define RCC_CDCFGR1_CDCPRE_DIV4_Msk             (0x9UL << RCC_CDCFGR1_CDCPRE_DIV4_Pos)  /*!< 0x00000900 */
-#define RCC_CDCFGR1_CDCPRE_DIV4                 RCC_CDCFGR1_CDCPRE_DIV4_Msk             /*!< Domain 1 Core clock divided by 4 */
-#define RCC_CDCFGR1_CDCPRE_DIV8_Pos             (9U)
-#define RCC_CDCFGR1_CDCPRE_DIV8_Msk             (0x5UL << RCC_CDCFGR1_CDCPRE_DIV8_Pos)  /*!< 0x00000A00 */
-#define RCC_CDCFGR1_CDCPRE_DIV8                 RCC_CDCFGR1_CDCPRE_DIV8_Msk             /*!< Domain 1 Core clock divided by 8 */
-#define RCC_CDCFGR1_CDCPRE_DIV16_Pos            (8U)
-#define RCC_CDCFGR1_CDCPRE_DIV16_Msk            (0xBUL << RCC_CDCFGR1_CDCPRE_DIV16_Pos) /*!< 0x00000B00 */
-#define RCC_CDCFGR1_CDCPRE_DIV16                RCC_CDCFGR1_CDCPRE_DIV16_Msk            /*!< Domain 1 Core clock divided by 16 */
-#define RCC_CDCFGR1_CDCPRE_DIV64_Pos            (10U)
-#define RCC_CDCFGR1_CDCPRE_DIV64_Msk            (0x3UL << RCC_CDCFGR1_CDCPRE_DIV64_Pos) /*!< 0x00000C00 */
-#define RCC_CDCFGR1_CDCPRE_DIV64                RCC_CDCFGR1_CDCPRE_DIV64_Msk            /*!< Domain 1 Core clock divided by 64 */
-#define RCC_CDCFGR1_CDCPRE_DIV128_Pos           (8U)
-#define RCC_CDCFGR1_CDCPRE_DIV128_Msk           (0xDUL << RCC_CDCFGR1_CDCPRE_DIV128_Pos)/*!< 0x00000D00 */
-#define RCC_CDCFGR1_CDCPRE_DIV128               RCC_CDCFGR1_CDCPRE_DIV128_Msk           /*!< Domain 1 Core clock divided by 128 */
-#define RCC_CDCFGR1_CDCPRE_DIV256_Pos           (9U)
-#define RCC_CDCFGR1_CDCPRE_DIV256_Msk           (0x7UL << RCC_CDCFGR1_CDCPRE_DIV256_Pos)/*!< 0x00000E00 */
-#define RCC_CDCFGR1_CDCPRE_DIV256               RCC_CDCFGR1_CDCPRE_DIV256_Msk           /*!< Domain 1 Core clock divided by 256 */
-#define RCC_CDCFGR1_CDCPRE_DIV512_Pos           (8U)
-#define RCC_CDCFGR1_CDCPRE_DIV512_Msk           (0xFUL << RCC_CDCFGR1_CDCPRE_DIV512_Pos)/*!< 0x00000F00 */
-#define RCC_CDCFGR1_CDCPRE_DIV512               RCC_CDCFGR1_CDCPRE_DIV512_Msk           /*!< Domain 1 Core clock divided by 512 */
+#define RCC_DCMFGR1_DCMPRE_DIV1                 (0U)                  /*!< Domain 1 Core clock not divided */
+#define RCC_DCMFGR1_DCMPRE_DIV2_Pos             (11U)
+#define RCC_DCMFGR1_DCMPRE_DIV2_Msk             (0x1UL << RCC_DCMFGR1_DCMPRE_DIV2_Pos)  /*!< 0x00000800 */
+#define RCC_DCMFGR1_DCMPRE_DIV2                 RCC_DCMFGR1_DCMPRE_DIV2_Msk             /*!< Domain 1 Core clock divided by 2 */
+#define RCC_DCMFGR1_DCMPRE_DIV4_Pos             (8U)
+#define RCC_DCMFGR1_DCMPRE_DIV4_Msk             (0x9UL << RCC_DCMFGR1_DCMPRE_DIV4_Pos)  /*!< 0x00000900 */
+#define RCC_DCMFGR1_DCMPRE_DIV4                 RCC_DCMFGR1_DCMPRE_DIV4_Msk             /*!< Domain 1 Core clock divided by 4 */
+#define RCC_DCMFGR1_DCMPRE_DIV8_Pos             (9U)
+#define RCC_DCMFGR1_DCMPRE_DIV8_Msk             (0x5UL << RCC_DCMFGR1_DCMPRE_DIV8_Pos)  /*!< 0x00000A00 */
+#define RCC_DCMFGR1_DCMPRE_DIV8                 RCC_DCMFGR1_DCMPRE_DIV8_Msk             /*!< Domain 1 Core clock divided by 8 */
+#define RCC_DCMFGR1_DCMPRE_DIV16_Pos            (8U)
+#define RCC_DCMFGR1_DCMPRE_DIV16_Msk            (0xBUL << RCC_DCMFGR1_DCMPRE_DIV16_Pos) /*!< 0x00000B00 */
+#define RCC_DCMFGR1_DCMPRE_DIV16                RCC_DCMFGR1_DCMPRE_DIV16_Msk            /*!< Domain 1 Core clock divided by 16 */
+#define RCC_DCMFGR1_DCMPRE_DIV64_Pos            (10U)
+#define RCC_DCMFGR1_DCMPRE_DIV64_Msk            (0x3UL << RCC_DCMFGR1_DCMPRE_DIV64_Pos) /*!< 0x00000C00 */
+#define RCC_DCMFGR1_DCMPRE_DIV64                RCC_DCMFGR1_DCMPRE_DIV64_Msk            /*!< Domain 1 Core clock divided by 64 */
+#define RCC_DCMFGR1_DCMPRE_DIV128_Pos           (8U)
+#define RCC_DCMFGR1_DCMPRE_DIV128_Msk           (0xDUL << RCC_DCMFGR1_DCMPRE_DIV128_Pos)/*!< 0x00000D00 */
+#define RCC_DCMFGR1_DCMPRE_DIV128               RCC_DCMFGR1_DCMPRE_DIV128_Msk           /*!< Domain 1 Core clock divided by 128 */
+#define RCC_DCMFGR1_DCMPRE_DIV256_Pos           (9U)
+#define RCC_DCMFGR1_DCMPRE_DIV256_Msk           (0x7UL << RCC_DCMFGR1_DCMPRE_DIV256_Pos)/*!< 0x00000E00 */
+#define RCC_DCMFGR1_DCMPRE_DIV256               RCC_DCMFGR1_DCMPRE_DIV256_Msk           /*!< Domain 1 Core clock divided by 256 */
+#define RCC_DCMFGR1_DCMPRE_DIV512_Pos           (8U)
+#define RCC_DCMFGR1_DCMPRE_DIV512_Msk           (0xFUL << RCC_DCMFGR1_DCMPRE_DIV512_Pos)/*!< 0x00000F00 */
+#define RCC_DCMFGR1_DCMPRE_DIV512               RCC_DCMFGR1_DCMPRE_DIV512_Msk           /*!< Domain 1 Core clock divided by 512 */
 
-/********************  Bit definition for RCC_CDCFGR2 register  ******************/
+/********************  Bit definition for RCC_DCMFGR2 register  ******************/
 /*!< CDPPRE1 configuration */
-#define RCC_CDCFGR2_CDPPRE1_Pos                 (4U)
-#define RCC_CDCFGR2_CDPPRE1_Msk                 (0x7UL << RCC_CDCFGR2_CDPPRE1_Pos) /*!< 0x00000070 */
-#define RCC_CDCFGR2_CDPPRE1                     RCC_CDCFGR2_CDPPRE1_Msk          /*!< D1PPRE1[2:0] bits (APB1 prescaler) */
-#define RCC_CDCFGR2_CDPPRE1_0                   (0x1UL << RCC_CDCFGR2_CDPPRE1_Pos) /*!< 0x00000010 */
-#define RCC_CDCFGR2_CDPPRE1_1                   (0x2UL << RCC_CDCFGR2_CDPPRE1_Pos) /*!< 0x00000020 */
-#define RCC_CDCFGR2_CDPPRE1_2                   (0x4UL << RCC_CDCFGR2_CDPPRE1_Pos) /*!< 0x00000040 */
+#define RCC_DCMFGR2_CDPPRE1_Pos                 (4U)
+#define RCC_DCMFGR2_CDPPRE1_Msk                 (0x7UL << RCC_DCMFGR2_CDPPRE1_Pos) /*!< 0x00000070 */
+#define RCC_DCMFGR2_CDPPRE1                     RCC_DCMFGR2_CDPPRE1_Msk          /*!< D1PPRE1[2:0] bits (APB1 prescaler) */
+#define RCC_DCMFGR2_CDPPRE1_0                   (0x1UL << RCC_DCMFGR2_CDPPRE1_Pos) /*!< 0x00000010 */
+#define RCC_DCMFGR2_CDPPRE1_1                   (0x2UL << RCC_DCMFGR2_CDPPRE1_Pos) /*!< 0x00000020 */
+#define RCC_DCMFGR2_CDPPRE1_2                   (0x4UL << RCC_DCMFGR2_CDPPRE1_Pos) /*!< 0x00000040 */
 
-#define RCC_CDCFGR2_CDPPRE1_DIV1                (0U)          /*!< APB1 clock not divided */
-#define RCC_CDCFGR2_CDPPRE1_DIV2_Pos            (6U)
-#define RCC_CDCFGR2_CDPPRE1_DIV2_Msk            (0x1UL << RCC_CDCFGR2_CDPPRE1_DIV2_Pos) /*!< 0x00000040 */
-#define RCC_CDCFGR2_CDPPRE1_DIV2                RCC_CDCFGR2_CDPPRE1_DIV2_Msk     /*!< APB1 clock divided by 2 */
-#define RCC_CDCFGR2_CDPPRE1_DIV4_Pos            (4U)
-#define RCC_CDCFGR2_CDPPRE1_DIV4_Msk            (0x5UL << RCC_CDCFGR2_CDPPRE1_DIV4_Pos) /*!< 0x00000050 */
-#define RCC_CDCFGR2_CDPPRE1_DIV4                RCC_CDCFGR2_CDPPRE1_DIV4_Msk     /*!< APB1 clock divided by 4 */
-#define RCC_CDCFGR2_CDPPRE1_DIV8_Pos            (5U)
-#define RCC_CDCFGR2_CDPPRE1_DIV8_Msk            (0x3UL << RCC_CDCFGR2_CDPPRE1_DIV8_Pos) /*!< 0x00000060 */
-#define RCC_CDCFGR2_CDPPRE1_DIV8                RCC_CDCFGR2_CDPPRE1_DIV8_Msk     /*!< APB1 clock divided by 8 */
-#define RCC_CDCFGR2_CDPPRE1_DIV16_Pos           (4U)
-#define RCC_CDCFGR2_CDPPRE1_DIV16_Msk           (0x7UL << RCC_CDCFGR2_CDPPRE1_DIV16_Pos) /*!< 0x00000070 */
-#define RCC_CDCFGR2_CDPPRE1_DIV16               RCC_CDCFGR2_CDPPRE1_DIV16_Msk    /*!< APB1 clock divided by 16 */
+#define RCC_DCMFGR2_CDPPRE1_DIV1                (0U)          /*!< APB1 clock not divided */
+#define RCC_DCMFGR2_CDPPRE1_DIV2_Pos            (6U)
+#define RCC_DCMFGR2_CDPPRE1_DIV2_Msk            (0x1UL << RCC_DCMFGR2_CDPPRE1_DIV2_Pos) /*!< 0x00000040 */
+#define RCC_DCMFGR2_CDPPRE1_DIV2                RCC_DCMFGR2_CDPPRE1_DIV2_Msk     /*!< APB1 clock divided by 2 */
+#define RCC_DCMFGR2_CDPPRE1_DIV4_Pos            (4U)
+#define RCC_DCMFGR2_CDPPRE1_DIV4_Msk            (0x5UL << RCC_DCMFGR2_CDPPRE1_DIV4_Pos) /*!< 0x00000050 */
+#define RCC_DCMFGR2_CDPPRE1_DIV4                RCC_DCMFGR2_CDPPRE1_DIV4_Msk     /*!< APB1 clock divided by 4 */
+#define RCC_DCMFGR2_CDPPRE1_DIV8_Pos            (5U)
+#define RCC_DCMFGR2_CDPPRE1_DIV8_Msk            (0x3UL << RCC_DCMFGR2_CDPPRE1_DIV8_Pos) /*!< 0x00000060 */
+#define RCC_DCMFGR2_CDPPRE1_DIV8                RCC_DCMFGR2_CDPPRE1_DIV8_Msk     /*!< APB1 clock divided by 8 */
+#define RCC_DCMFGR2_CDPPRE1_DIV16_Pos           (4U)
+#define RCC_DCMFGR2_CDPPRE1_DIV16_Msk           (0x7UL << RCC_DCMFGR2_CDPPRE1_DIV16_Pos) /*!< 0x00000070 */
+#define RCC_DCMFGR2_CDPPRE1_DIV16               RCC_DCMFGR2_CDPPRE1_DIV16_Msk    /*!< APB1 clock divided by 16 */
 
 /*!< CDPPRE2 configuration */
-#define RCC_CDCFGR2_CDPPRE2_Pos                 (8U)
-#define RCC_CDCFGR2_CDPPRE2_Msk                 (0x7UL << RCC_CDCFGR2_CDPPRE2_Pos) /*!< 0x00000700 */
-#define RCC_CDCFGR2_CDPPRE2                     RCC_CDCFGR2_CDPPRE2_Msk          /*!< CDPPRE2[2:0] bits (APB2 prescaler) */
-#define RCC_CDCFGR2_CDPPRE2_0                   (0x1UL << RCC_CDCFGR2_CDPPRE2_Pos) /*!< 0x00000100 */
-#define RCC_CDCFGR2_CDPPRE2_1                   (0x2UL << RCC_CDCFGR2_CDPPRE2_Pos) /*!< 0x00000200 */
-#define RCC_CDCFGR2_CDPPRE2_2                   (0x4UL << RCC_CDCFGR2_CDPPRE2_Pos) /*!< 0x00000400 */
+#define RCC_DCMFGR2_CDPPRE2_Pos                 (8U)
+#define RCC_DCMFGR2_CDPPRE2_Msk                 (0x7UL << RCC_DCMFGR2_CDPPRE2_Pos) /*!< 0x00000700 */
+#define RCC_DCMFGR2_CDPPRE2                     RCC_DCMFGR2_CDPPRE2_Msk          /*!< CDPPRE2[2:0] bits (APB2 prescaler) */
+#define RCC_DCMFGR2_CDPPRE2_0                   (0x1UL << RCC_DCMFGR2_CDPPRE2_Pos) /*!< 0x00000100 */
+#define RCC_DCMFGR2_CDPPRE2_1                   (0x2UL << RCC_DCMFGR2_CDPPRE2_Pos) /*!< 0x00000200 */
+#define RCC_DCMFGR2_CDPPRE2_2                   (0x4UL << RCC_DCMFGR2_CDPPRE2_Pos) /*!< 0x00000400 */
 
-#define RCC_CDCFGR2_CDPPRE2_DIV1                (0U)          /*!< APB2 clock not divided */
-#define RCC_CDCFGR2_CDPPRE2_DIV2_Pos            (10U)
-#define RCC_CDCFGR2_CDPPRE2_DIV2_Msk            (0x1UL << RCC_CDCFGR2_CDPPRE2_DIV2_Pos) /*!< 0x00000400 */
-#define RCC_CDCFGR2_CDPPRE2_DIV2                RCC_CDCFGR2_CDPPRE2_DIV2_Msk     /*!< APB2 clock divided by 2 */
-#define RCC_CDCFGR2_CDPPRE2_DIV4_Pos            (8U)
-#define RCC_CDCFGR2_CDPPRE2_DIV4_Msk            (0x5UL << RCC_CDCFGR2_CDPPRE2_DIV4_Pos) /*!< 0x00000500 */
-#define RCC_CDCFGR2_CDPPRE2_DIV4                RCC_CDCFGR2_CDPPRE2_DIV4_Msk     /*!< APB2 clock divided by 4 */
-#define RCC_CDCFGR2_CDPPRE2_DIV8_Pos            (9U)
-#define RCC_CDCFGR2_CDPPRE2_DIV8_Msk            (0x3UL << RCC_CDCFGR2_CDPPRE2_DIV8_Pos) /*!< 0x00000600 */
-#define RCC_CDCFGR2_CDPPRE2_DIV8                RCC_CDCFGR2_CDPPRE2_DIV8_Msk     /*!< APB2 clock divided by 8 */
-#define RCC_CDCFGR2_CDPPRE2_DIV16_Pos           (8U)
-#define RCC_CDCFGR2_CDPPRE2_DIV16_Msk           (0x7UL << RCC_CDCFGR2_CDPPRE2_DIV16_Pos) /*!< 0x00000700 */
-#define RCC_CDCFGR2_CDPPRE2_DIV16               RCC_CDCFGR2_CDPPRE2_DIV16_Msk    /*!< APB2 clock divided by 16 */
+#define RCC_DCMFGR2_CDPPRE2_DIV1                (0U)          /*!< APB2 clock not divided */
+#define RCC_DCMFGR2_CDPPRE2_DIV2_Pos            (10U)
+#define RCC_DCMFGR2_CDPPRE2_DIV2_Msk            (0x1UL << RCC_DCMFGR2_CDPPRE2_DIV2_Pos) /*!< 0x00000400 */
+#define RCC_DCMFGR2_CDPPRE2_DIV2                RCC_DCMFGR2_CDPPRE2_DIV2_Msk     /*!< APB2 clock divided by 2 */
+#define RCC_DCMFGR2_CDPPRE2_DIV4_Pos            (8U)
+#define RCC_DCMFGR2_CDPPRE2_DIV4_Msk            (0x5UL << RCC_DCMFGR2_CDPPRE2_DIV4_Pos) /*!< 0x00000500 */
+#define RCC_DCMFGR2_CDPPRE2_DIV4                RCC_DCMFGR2_CDPPRE2_DIV4_Msk     /*!< APB2 clock divided by 4 */
+#define RCC_DCMFGR2_CDPPRE2_DIV8_Pos            (9U)
+#define RCC_DCMFGR2_CDPPRE2_DIV8_Msk            (0x3UL << RCC_DCMFGR2_CDPPRE2_DIV8_Pos) /*!< 0x00000600 */
+#define RCC_DCMFGR2_CDPPRE2_DIV8                RCC_DCMFGR2_CDPPRE2_DIV8_Msk     /*!< APB2 clock divided by 8 */
+#define RCC_DCMFGR2_CDPPRE2_DIV16_Pos           (8U)
+#define RCC_DCMFGR2_CDPPRE2_DIV16_Msk           (0x7UL << RCC_DCMFGR2_CDPPRE2_DIV16_Pos) /*!< 0x00000700 */
+#define RCC_DCMFGR2_CDPPRE2_DIV16               RCC_DCMFGR2_CDPPRE2_DIV16_Msk    /*!< APB2 clock divided by 16 */
 
 /********************  Bit definition for RCC_SRDCFGR register  ******************/
 /*!< SRDPPRE configuration */
@@ -13629,127 +13629,127 @@ typedef struct
 #define RCC_PLL3FRACR_FRACN3_Msk               (0x1FFFUL << RCC_PLL3FRACR_FRACN3_Pos) /*!< 0x0000FFF8 */
 #define RCC_PLL3FRACR_FRACN3                   RCC_PLL3FRACR_FRACN3_Msk
 
-/********************  Bit definition for RCC_CDCCIPR register  ***************/
-#define RCC_CDCCIPR_FMCSEL_Pos                 (0U)
-#define RCC_CDCCIPR_FMCSEL_Msk                 (0x3UL << RCC_CDCCIPR_FMCSEL_Pos)     /*!< 0x00000003 */
-#define RCC_CDCCIPR_FMCSEL                     RCC_CDCCIPR_FMCSEL_Msk
-#define RCC_CDCCIPR_FMCSEL_0                   (0x1UL << RCC_CDCCIPR_FMCSEL_Pos)     /*!< 0x00000001 */
-#define RCC_CDCCIPR_FMCSEL_1                   (0x2UL << RCC_CDCCIPR_FMCSEL_Pos)     /*!< 0x00000002 */
-#define RCC_CDCCIPR_OCTOSPISEL_Pos             (4U)
-#define RCC_CDCCIPR_OCTOSPISEL_Msk             (0x3UL << RCC_CDCCIPR_OCTOSPISEL_Pos) /*!< 0x00000030 */
-#define RCC_CDCCIPR_OCTOSPISEL                 RCC_CDCCIPR_OCTOSPISEL_Msk
-#define RCC_CDCCIPR_OCTOSPISEL_0               (0x1UL << RCC_CDCCIPR_OCTOSPISEL_Pos) /*!< 0x00000010 */
-#define RCC_CDCCIPR_OCTOSPISEL_1               (0x2UL << RCC_CDCCIPR_OCTOSPISEL_Pos) /*!< 0x00000020 */
-#define RCC_CDCCIPR_SDMMCSEL_Pos               (16U)
-#define RCC_CDCCIPR_SDMMCSEL_Msk               (0x1UL << RCC_CDCCIPR_SDMMCSEL_Pos)   /*!< 0x00010000 */
-#define RCC_CDCCIPR_SDMMCSEL                   RCC_CDCCIPR_SDMMCSEL_Msk
-#define RCC_CDCCIPR_CKPERSEL_Pos               (28U)
-#define RCC_CDCCIPR_CKPERSEL_Msk               (0x3UL << RCC_CDCCIPR_CKPERSEL_Pos)   /*!< 0x30000000 */
-#define RCC_CDCCIPR_CKPERSEL                   RCC_CDCCIPR_CKPERSEL_Msk
-#define RCC_CDCCIPR_CKPERSEL_0                 (0x1UL << RCC_CDCCIPR_CKPERSEL_Pos)   /*!< 0x10000000 */
-#define RCC_CDCCIPR_CKPERSEL_1                 (0x2UL << RCC_CDCCIPR_CKPERSEL_Pos)   /*!< 0x20000000 */
+/********************  Bit definition for RCC_DCMCIPR register  ***************/
+#define RCC_DCMCIPR_FMCSEL_Pos                 (0U)
+#define RCC_DCMCIPR_FMCSEL_Msk                 (0x3UL << RCC_DCMCIPR_FMCSEL_Pos)     /*!< 0x00000003 */
+#define RCC_DCMCIPR_FMCSEL                     RCC_DCMCIPR_FMCSEL_Msk
+#define RCC_DCMCIPR_FMCSEL_0                   (0x1UL << RCC_DCMCIPR_FMCSEL_Pos)     /*!< 0x00000001 */
+#define RCC_DCMCIPR_FMCSEL_1                   (0x2UL << RCC_DCMCIPR_FMCSEL_Pos)     /*!< 0x00000002 */
+#define RCC_DCMCIPR_OCTOSPISEL_Pos             (4U)
+#define RCC_DCMCIPR_OCTOSPISEL_Msk             (0x3UL << RCC_DCMCIPR_OCTOSPISEL_Pos) /*!< 0x00000030 */
+#define RCC_DCMCIPR_OCTOSPISEL                 RCC_DCMCIPR_OCTOSPISEL_Msk
+#define RCC_DCMCIPR_OCTOSPISEL_0               (0x1UL << RCC_DCMCIPR_OCTOSPISEL_Pos) /*!< 0x00000010 */
+#define RCC_DCMCIPR_OCTOSPISEL_1               (0x2UL << RCC_DCMCIPR_OCTOSPISEL_Pos) /*!< 0x00000020 */
+#define RCC_DCMCIPR_SDMMCSEL_Pos               (16U)
+#define RCC_DCMCIPR_SDMMCSEL_Msk               (0x1UL << RCC_DCMCIPR_SDMMCSEL_Pos)   /*!< 0x00010000 */
+#define RCC_DCMCIPR_SDMMCSEL                   RCC_DCMCIPR_SDMMCSEL_Msk
+#define RCC_DCMCIPR_CKPERSEL_Pos               (28U)
+#define RCC_DCMCIPR_CKPERSEL_Msk               (0x3UL << RCC_DCMCIPR_CKPERSEL_Pos)   /*!< 0x30000000 */
+#define RCC_DCMCIPR_CKPERSEL                   RCC_DCMCIPR_CKPERSEL_Msk
+#define RCC_DCMCIPR_CKPERSEL_0                 (0x1UL << RCC_DCMCIPR_CKPERSEL_Pos)   /*!< 0x10000000 */
+#define RCC_DCMCIPR_CKPERSEL_1                 (0x2UL << RCC_DCMCIPR_CKPERSEL_Pos)   /*!< 0x20000000 */
 
-/********************  Bit definition for RCC_CDCCIP1R register  ***************/
-#define RCC_CDCCIP1R_SAI1SEL_Pos               (0U)
-#define RCC_CDCCIP1R_SAI1SEL_Msk               (0x7UL << RCC_CDCCIP1R_SAI1SEL_Pos)   /*!< 0x00000007 */
-#define RCC_CDCCIP1R_SAI1SEL                   RCC_CDCCIP1R_SAI1SEL_Msk
-#define RCC_CDCCIP1R_SAI1SEL_0                 (0x1UL << RCC_CDCCIP1R_SAI1SEL_Pos)   /*!< 0x00000001 */
-#define RCC_CDCCIP1R_SAI1SEL_1                 (0x2UL << RCC_CDCCIP1R_SAI1SEL_Pos)   /*!< 0x00000002 */
-#define RCC_CDCCIP1R_SAI1SEL_2                 (0x4UL << RCC_CDCCIP1R_SAI1SEL_Pos)   /*!< 0x00000004 */
+/********************  Bit definition for RCC_DCMCIP1R register  ***************/
+#define RCC_DCMCIP1R_SAI1SEL_Pos               (0U)
+#define RCC_DCMCIP1R_SAI1SEL_Msk               (0x7UL << RCC_DCMCIP1R_SAI1SEL_Pos)   /*!< 0x00000007 */
+#define RCC_DCMCIP1R_SAI1SEL                   RCC_DCMCIP1R_SAI1SEL_Msk
+#define RCC_DCMCIP1R_SAI1SEL_0                 (0x1UL << RCC_DCMCIP1R_SAI1SEL_Pos)   /*!< 0x00000001 */
+#define RCC_DCMCIP1R_SAI1SEL_1                 (0x2UL << RCC_DCMCIP1R_SAI1SEL_Pos)   /*!< 0x00000002 */
+#define RCC_DCMCIP1R_SAI1SEL_2                 (0x4UL << RCC_DCMCIP1R_SAI1SEL_Pos)   /*!< 0x00000004 */
 
-#define RCC_CDCCIP1R_SAI2ASEL_Pos              (6U)
-#define RCC_CDCCIP1R_SAI2ASEL_Msk              (0x7UL << RCC_CDCCIP1R_SAI2ASEL_Pos)  /*!< 0x000001C0 */
-#define RCC_CDCCIP1R_SAI2ASEL                  RCC_CDCCIP1R_SAI2ASEL_Msk
-#define RCC_CDCCIP1R_SAI2ASEL_0                (0x1UL << RCC_CDCCIP1R_SAI2ASEL_Pos)  /*!< 0x00000040 */
-#define RCC_CDCCIP1R_SAI2ASEL_1                (0x2UL << RCC_CDCCIP1R_SAI2ASEL_Pos)  /*!< 0x00000080 */
-#define RCC_CDCCIP1R_SAI2ASEL_2                (0x4UL << RCC_CDCCIP1R_SAI2ASEL_Pos)  /*!< 0x00000100 */
+#define RCC_DCMCIP1R_SAI2ASEL_Pos              (6U)
+#define RCC_DCMCIP1R_SAI2ASEL_Msk              (0x7UL << RCC_DCMCIP1R_SAI2ASEL_Pos)  /*!< 0x000001C0 */
+#define RCC_DCMCIP1R_SAI2ASEL                  RCC_DCMCIP1R_SAI2ASEL_Msk
+#define RCC_DCMCIP1R_SAI2ASEL_0                (0x1UL << RCC_DCMCIP1R_SAI2ASEL_Pos)  /*!< 0x00000040 */
+#define RCC_DCMCIP1R_SAI2ASEL_1                (0x2UL << RCC_DCMCIP1R_SAI2ASEL_Pos)  /*!< 0x00000080 */
+#define RCC_DCMCIP1R_SAI2ASEL_2                (0x4UL << RCC_DCMCIP1R_SAI2ASEL_Pos)  /*!< 0x00000100 */
 
-#define RCC_CDCCIP1R_SAI2BSEL_Pos              (9U)
-#define RCC_CDCCIP1R_SAI2BSEL_Msk              (0x7UL << RCC_CDCCIP1R_SAI2BSEL_Pos)  /*!< 0x00000E00 */
-#define RCC_CDCCIP1R_SAI2BSEL                  RCC_CDCCIP1R_SAI2BSEL_Msk
-#define RCC_CDCCIP1R_SAI2BSEL_0                (0x1UL << RCC_CDCCIP1R_SAI2BSEL_Pos)  /*!< 0x00000200 */
-#define RCC_CDCCIP1R_SAI2BSEL_1                (0x2UL << RCC_CDCCIP1R_SAI2BSEL_Pos)  /*!< 0x00000400 */
-#define RCC_CDCCIP1R_SAI2BSEL_2                (0x4UL << RCC_CDCCIP1R_SAI2BSEL_Pos)  /*!< 0x00000800 */
+#define RCC_DCMCIP1R_SAI2BSEL_Pos              (9U)
+#define RCC_DCMCIP1R_SAI2BSEL_Msk              (0x7UL << RCC_DCMCIP1R_SAI2BSEL_Pos)  /*!< 0x00000E00 */
+#define RCC_DCMCIP1R_SAI2BSEL                  RCC_DCMCIP1R_SAI2BSEL_Msk
+#define RCC_DCMCIP1R_SAI2BSEL_0                (0x1UL << RCC_DCMCIP1R_SAI2BSEL_Pos)  /*!< 0x00000200 */
+#define RCC_DCMCIP1R_SAI2BSEL_1                (0x2UL << RCC_DCMCIP1R_SAI2BSEL_Pos)  /*!< 0x00000400 */
+#define RCC_DCMCIP1R_SAI2BSEL_2                (0x4UL << RCC_DCMCIP1R_SAI2BSEL_Pos)  /*!< 0x00000800 */
 
-#define RCC_CDCCIP1R_SPI123SEL_Pos             (12U)
-#define RCC_CDCCIP1R_SPI123SEL_Msk             (0x7UL << RCC_CDCCIP1R_SPI123SEL_Pos) /*!< 0x00007000 */
-#define RCC_CDCCIP1R_SPI123SEL                 RCC_CDCCIP1R_SPI123SEL_Msk
-#define RCC_CDCCIP1R_SPI123SEL_0               (0x1UL << RCC_CDCCIP1R_SPI123SEL_Pos) /*!< 0x00001000 */
-#define RCC_CDCCIP1R_SPI123SEL_1               (0x2UL << RCC_CDCCIP1R_SPI123SEL_Pos) /*!< 0x00002000 */
-#define RCC_CDCCIP1R_SPI123SEL_2               (0x4UL << RCC_CDCCIP1R_SPI123SEL_Pos) /*!< 0x00004000 */
+#define RCC_DCMCIP1R_SPI123SEL_Pos             (12U)
+#define RCC_DCMCIP1R_SPI123SEL_Msk             (0x7UL << RCC_DCMCIP1R_SPI123SEL_Pos) /*!< 0x00007000 */
+#define RCC_DCMCIP1R_SPI123SEL                 RCC_DCMCIP1R_SPI123SEL_Msk
+#define RCC_DCMCIP1R_SPI123SEL_0               (0x1UL << RCC_DCMCIP1R_SPI123SEL_Pos) /*!< 0x00001000 */
+#define RCC_DCMCIP1R_SPI123SEL_1               (0x2UL << RCC_DCMCIP1R_SPI123SEL_Pos) /*!< 0x00002000 */
+#define RCC_DCMCIP1R_SPI123SEL_2               (0x4UL << RCC_DCMCIP1R_SPI123SEL_Pos) /*!< 0x00004000 */
 
-#define RCC_CDCCIP1R_SPI45SEL_Pos              (16U)
-#define RCC_CDCCIP1R_SPI45SEL_Msk              (0x7UL << RCC_CDCCIP1R_SPI45SEL_Pos)  /*!< 0x00070000 */
-#define RCC_CDCCIP1R_SPI45SEL                  RCC_CDCCIP1R_SPI45SEL_Msk
-#define RCC_CDCCIP1R_SPI45SEL_0                (0x1UL << RCC_CDCCIP1R_SPI45SEL_Pos)  /*!< 0x00010000 */
-#define RCC_CDCCIP1R_SPI45SEL_1                (0x2UL << RCC_CDCCIP1R_SPI45SEL_Pos)  /*!< 0x00020000 */
-#define RCC_CDCCIP1R_SPI45SEL_2                (0x4UL << RCC_CDCCIP1R_SPI45SEL_Pos)  /*!< 0x00040000 */
+#define RCC_DCMCIP1R_SPI45SEL_Pos              (16U)
+#define RCC_DCMCIP1R_SPI45SEL_Msk              (0x7UL << RCC_DCMCIP1R_SPI45SEL_Pos)  /*!< 0x00070000 */
+#define RCC_DCMCIP1R_SPI45SEL                  RCC_DCMCIP1R_SPI45SEL_Msk
+#define RCC_DCMCIP1R_SPI45SEL_0                (0x1UL << RCC_DCMCIP1R_SPI45SEL_Pos)  /*!< 0x00010000 */
+#define RCC_DCMCIP1R_SPI45SEL_1                (0x2UL << RCC_DCMCIP1R_SPI45SEL_Pos)  /*!< 0x00020000 */
+#define RCC_DCMCIP1R_SPI45SEL_2                (0x4UL << RCC_DCMCIP1R_SPI45SEL_Pos)  /*!< 0x00040000 */
 
-#define RCC_CDCCIP1R_SPDIFSEL_Pos              (20U)
-#define RCC_CDCCIP1R_SPDIFSEL_Msk              (0x3UL << RCC_CDCCIP1R_SPDIFSEL_Pos)  /*!< 0x00300000 */
-#define RCC_CDCCIP1R_SPDIFSEL                  RCC_CDCCIP1R_SPDIFSEL_Msk
-#define RCC_CDCCIP1R_SPDIFSEL_0                (0x1UL << RCC_CDCCIP1R_SPDIFSEL_Pos)  /*!< 0x00100000 */
-#define RCC_CDCCIP1R_SPDIFSEL_1                (0x2UL << RCC_CDCCIP1R_SPDIFSEL_Pos)  /*!< 0x00200000 */
+#define RCC_DCMCIP1R_SPDIFSEL_Pos              (20U)
+#define RCC_DCMCIP1R_SPDIFSEL_Msk              (0x3UL << RCC_DCMCIP1R_SPDIFSEL_Pos)  /*!< 0x00300000 */
+#define RCC_DCMCIP1R_SPDIFSEL                  RCC_DCMCIP1R_SPDIFSEL_Msk
+#define RCC_DCMCIP1R_SPDIFSEL_0                (0x1UL << RCC_DCMCIP1R_SPDIFSEL_Pos)  /*!< 0x00100000 */
+#define RCC_DCMCIP1R_SPDIFSEL_1                (0x2UL << RCC_DCMCIP1R_SPDIFSEL_Pos)  /*!< 0x00200000 */
 
-#define RCC_CDCCIP1R_DFSDM1SEL_Pos             (24U)
-#define RCC_CDCCIP1R_DFSDM1SEL_Msk             (0x1UL << RCC_CDCCIP1R_DFSDM1SEL_Pos) /*!< 0x01000000 */
-#define RCC_CDCCIP1R_DFSDM1SEL                 RCC_CDCCIP1R_DFSDM1SEL_Msk
+#define RCC_DCMCIP1R_DFSDM1SEL_Pos             (24U)
+#define RCC_DCMCIP1R_DFSDM1SEL_Msk             (0x1UL << RCC_DCMCIP1R_DFSDM1SEL_Pos) /*!< 0x01000000 */
+#define RCC_DCMCIP1R_DFSDM1SEL                 RCC_DCMCIP1R_DFSDM1SEL_Msk
 
-#define RCC_CDCCIP1R_FDCANSEL_Pos              (28U)
-#define RCC_CDCCIP1R_FDCANSEL_Msk              (0x3UL << RCC_CDCCIP1R_FDCANSEL_Pos)  /*!< 0x30000000 */
-#define RCC_CDCCIP1R_FDCANSEL                  RCC_CDCCIP1R_FDCANSEL_Msk
-#define RCC_CDCCIP1R_FDCANSEL_0                (0x1UL << RCC_CDCCIP1R_FDCANSEL_Pos)  /*!< 0x10000000 */
-#define RCC_CDCCIP1R_FDCANSEL_1                (0x2UL << RCC_CDCCIP1R_FDCANSEL_Pos)  /*!< 0x20000000 */
+#define RCC_DCMCIP1R_FDCANSEL_Pos              (28U)
+#define RCC_DCMCIP1R_FDCANSEL_Msk              (0x3UL << RCC_DCMCIP1R_FDCANSEL_Pos)  /*!< 0x30000000 */
+#define RCC_DCMCIP1R_FDCANSEL                  RCC_DCMCIP1R_FDCANSEL_Msk
+#define RCC_DCMCIP1R_FDCANSEL_0                (0x1UL << RCC_DCMCIP1R_FDCANSEL_Pos)  /*!< 0x10000000 */
+#define RCC_DCMCIP1R_FDCANSEL_1                (0x2UL << RCC_DCMCIP1R_FDCANSEL_Pos)  /*!< 0x20000000 */
 
-#define RCC_CDCCIP1R_SWPSEL_Pos                (31U)
-#define RCC_CDCCIP1R_SWPSEL_Msk                (0x1UL << RCC_CDCCIP1R_SWPSEL_Pos)    /*!< 0x80000000 */
-#define RCC_CDCCIP1R_SWPSEL                    RCC_CDCCIP1R_SWPSEL_Msk
+#define RCC_DCMCIP1R_SWPSEL_Pos                (31U)
+#define RCC_DCMCIP1R_SWPSEL_Msk                (0x1UL << RCC_DCMCIP1R_SWPSEL_Pos)    /*!< 0x80000000 */
+#define RCC_DCMCIP1R_SWPSEL                    RCC_DCMCIP1R_SWPSEL_Msk
 
-/********************  Bit definition for RCC_CDCCIP2R register  ***************/
-#define RCC_CDCCIP2R_USART234578SEL_Pos        (0U)
-#define RCC_CDCCIP2R_USART234578SEL_Msk        (0x7UL << RCC_CDCCIP2R_USART234578SEL_Pos)   /*!< 0x00000007 */
-#define RCC_CDCCIP2R_USART234578SEL            RCC_CDCCIP2R_USART234578SEL_Msk
-#define RCC_CDCCIP2R_USART234578SEL_0          (0x1UL << RCC_CDCCIP2R_USART234578SEL_Pos)   /*!< 0x00000001 */
-#define RCC_CDCCIP2R_USART234578SEL_1          (0x2UL << RCC_CDCCIP2R_USART234578SEL_Pos)   /*!< 0x00000002 */
-#define RCC_CDCCIP2R_USART234578SEL_2          (0x4UL << RCC_CDCCIP2R_USART234578SEL_Pos)   /*!< 0x00000004 */
+/********************  Bit definition for RCC_DCMCIP2R register  ***************/
+#define RCC_DCMCIP2R_USART234578SEL_Pos        (0U)
+#define RCC_DCMCIP2R_USART234578SEL_Msk        (0x7UL << RCC_DCMCIP2R_USART234578SEL_Pos)   /*!< 0x00000007 */
+#define RCC_DCMCIP2R_USART234578SEL            RCC_DCMCIP2R_USART234578SEL_Msk
+#define RCC_DCMCIP2R_USART234578SEL_0          (0x1UL << RCC_DCMCIP2R_USART234578SEL_Pos)   /*!< 0x00000001 */
+#define RCC_DCMCIP2R_USART234578SEL_1          (0x2UL << RCC_DCMCIP2R_USART234578SEL_Pos)   /*!< 0x00000002 */
+#define RCC_DCMCIP2R_USART234578SEL_2          (0x4UL << RCC_DCMCIP2R_USART234578SEL_Pos)   /*!< 0x00000004 */
 
-#define RCC_CDCCIP2R_USART16910SEL_Pos         (3U)
-#define RCC_CDCCIP2R_USART16910SEL_Msk         (0x7UL << RCC_CDCCIP2R_USART16910SEL_Pos)    /*!< 0x00000038 */
-#define RCC_CDCCIP2R_USART16910SEL             RCC_CDCCIP2R_USART16910SEL_Msk
-#define RCC_CDCCIP2R_USART16910SEL_0           (0x1UL << RCC_CDCCIP2R_USART16910SEL_Pos)    /*!< 0x00000008 */
-#define RCC_CDCCIP2R_USART16910SEL_1           (0x2UL << RCC_CDCCIP2R_USART16910SEL_Pos)    /*!< 0x00000010 */
-#define RCC_CDCCIP2R_USART16910SEL_2           (0x4UL << RCC_CDCCIP2R_USART16910SEL_Pos)    /*!< 0x00000020 */
+#define RCC_DCMCIP2R_USART16910SEL_Pos         (3U)
+#define RCC_DCMCIP2R_USART16910SEL_Msk         (0x7UL << RCC_DCMCIP2R_USART16910SEL_Pos)    /*!< 0x00000038 */
+#define RCC_DCMCIP2R_USART16910SEL             RCC_DCMCIP2R_USART16910SEL_Msk
+#define RCC_DCMCIP2R_USART16910SEL_0           (0x1UL << RCC_DCMCIP2R_USART16910SEL_Pos)    /*!< 0x00000008 */
+#define RCC_DCMCIP2R_USART16910SEL_1           (0x2UL << RCC_DCMCIP2R_USART16910SEL_Pos)    /*!< 0x00000010 */
+#define RCC_DCMCIP2R_USART16910SEL_2           (0x4UL << RCC_DCMCIP2R_USART16910SEL_Pos)    /*!< 0x00000020 */
 
-#define RCC_CDCCIP2R_RNGSEL_Pos                (8U)
-#define RCC_CDCCIP2R_RNGSEL_Msk                (0x3UL << RCC_CDCCIP2R_RNGSEL_Pos)           /*!< 0x00000300 */
-#define RCC_CDCCIP2R_RNGSEL                    RCC_CDCCIP2R_RNGSEL_Msk
-#define RCC_CDCCIP2R_RNGSEL_0                  (0x1UL << RCC_CDCCIP2R_RNGSEL_Pos)           /*!< 0x00000100 */
-#define RCC_CDCCIP2R_RNGSEL_1                  (0x2UL << RCC_CDCCIP2R_RNGSEL_Pos)           /*!< 0x00000200 */
+#define RCC_DCMCIP2R_RNGSEL_Pos                (8U)
+#define RCC_DCMCIP2R_RNGSEL_Msk                (0x3UL << RCC_DCMCIP2R_RNGSEL_Pos)           /*!< 0x00000300 */
+#define RCC_DCMCIP2R_RNGSEL                    RCC_DCMCIP2R_RNGSEL_Msk
+#define RCC_DCMCIP2R_RNGSEL_0                  (0x1UL << RCC_DCMCIP2R_RNGSEL_Pos)           /*!< 0x00000100 */
+#define RCC_DCMCIP2R_RNGSEL_1                  (0x2UL << RCC_DCMCIP2R_RNGSEL_Pos)           /*!< 0x00000200 */
 
-#define RCC_CDCCIP2R_I2C123SEL_Pos             (12U)
-#define RCC_CDCCIP2R_I2C123SEL_Msk             (0x3UL << RCC_CDCCIP2R_I2C123SEL_Pos)        /*!< 0x00003000 */
-#define RCC_CDCCIP2R_I2C123SEL                 RCC_CDCCIP2R_I2C123SEL_Msk
-#define RCC_CDCCIP2R_I2C123SEL_0               (0x1UL << RCC_CDCCIP2R_I2C123SEL_Pos)        /*!< 0x00001000 */
-#define RCC_CDCCIP2R_I2C123SEL_1               (0x2UL << RCC_CDCCIP2R_I2C123SEL_Pos)        /*!< 0x00002000 */
+#define RCC_DCMCIP2R_I2C123SEL_Pos             (12U)
+#define RCC_DCMCIP2R_I2C123SEL_Msk             (0x3UL << RCC_DCMCIP2R_I2C123SEL_Pos)        /*!< 0x00003000 */
+#define RCC_DCMCIP2R_I2C123SEL                 RCC_DCMCIP2R_I2C123SEL_Msk
+#define RCC_DCMCIP2R_I2C123SEL_0               (0x1UL << RCC_DCMCIP2R_I2C123SEL_Pos)        /*!< 0x00001000 */
+#define RCC_DCMCIP2R_I2C123SEL_1               (0x2UL << RCC_DCMCIP2R_I2C123SEL_Pos)        /*!< 0x00002000 */
 
-#define RCC_CDCCIP2R_USBSEL_Pos                (20U)
-#define RCC_CDCCIP2R_USBSEL_Msk                (0x3UL << RCC_CDCCIP2R_USBSEL_Pos)           /*!< 0x00300000 */
-#define RCC_CDCCIP2R_USBSEL                    RCC_CDCCIP2R_USBSEL_Msk
-#define RCC_CDCCIP2R_USBSEL_0                  (0x1UL << RCC_CDCCIP2R_USBSEL_Pos)           /*!< 0x00100000 */
-#define RCC_CDCCIP2R_USBSEL_1                  (0x2UL << RCC_CDCCIP2R_USBSEL_Pos)           /*!< 0x00200000 */
+#define RCC_DCMCIP2R_USBSEL_Pos                (20U)
+#define RCC_DCMCIP2R_USBSEL_Msk                (0x3UL << RCC_DCMCIP2R_USBSEL_Pos)           /*!< 0x00300000 */
+#define RCC_DCMCIP2R_USBSEL                    RCC_DCMCIP2R_USBSEL_Msk
+#define RCC_DCMCIP2R_USBSEL_0                  (0x1UL << RCC_DCMCIP2R_USBSEL_Pos)           /*!< 0x00100000 */
+#define RCC_DCMCIP2R_USBSEL_1                  (0x2UL << RCC_DCMCIP2R_USBSEL_Pos)           /*!< 0x00200000 */
 
-#define RCC_CDCCIP2R_CECSEL_Pos                (22U)
-#define RCC_CDCCIP2R_CECSEL_Msk                (0x3UL << RCC_CDCCIP2R_CECSEL_Pos)           /*!< 0x00C00000 */
-#define RCC_CDCCIP2R_CECSEL                    RCC_CDCCIP2R_CECSEL_Msk
-#define RCC_CDCCIP2R_CECSEL_0                  (0x1UL << RCC_CDCCIP2R_CECSEL_Pos)           /*!< 0x00400000 */
-#define RCC_CDCCIP2R_CECSEL_1                  (0x2UL << RCC_CDCCIP2R_CECSEL_Pos)           /*!< 0x00800000 */
+#define RCC_DCMCIP2R_CECSEL_Pos                (22U)
+#define RCC_DCMCIP2R_CECSEL_Msk                (0x3UL << RCC_DCMCIP2R_CECSEL_Pos)           /*!< 0x00C00000 */
+#define RCC_DCMCIP2R_CECSEL                    RCC_DCMCIP2R_CECSEL_Msk
+#define RCC_DCMCIP2R_CECSEL_0                  (0x1UL << RCC_DCMCIP2R_CECSEL_Pos)           /*!< 0x00400000 */
+#define RCC_DCMCIP2R_CECSEL_1                  (0x2UL << RCC_DCMCIP2R_CECSEL_Pos)           /*!< 0x00800000 */
 
-#define RCC_CDCCIP2R_LPTIM1SEL_Pos             (28U)
-#define RCC_CDCCIP2R_LPTIM1SEL_Msk             (0x7UL << RCC_CDCCIP2R_LPTIM1SEL_Pos)        /*!< 0x70000000 */
-#define RCC_CDCCIP2R_LPTIM1SEL                 RCC_CDCCIP2R_LPTIM1SEL_Msk
-#define RCC_CDCCIP2R_LPTIM1SEL_0               (0x1UL << RCC_CDCCIP2R_LPTIM1SEL_Pos)        /*!< 0x10000000 */
-#define RCC_CDCCIP2R_LPTIM1SEL_1               (0x2UL << RCC_CDCCIP2R_LPTIM1SEL_Pos)        /*!< 0x20000000 */
-#define RCC_CDCCIP2R_LPTIM1SEL_2               (0x4UL << RCC_CDCCIP2R_LPTIM1SEL_Pos)        /*!< 0x40000000 */
+#define RCC_DCMCIP2R_LPTIM1SEL_Pos             (28U)
+#define RCC_DCMCIP2R_LPTIM1SEL_Msk             (0x7UL << RCC_DCMCIP2R_LPTIM1SEL_Pos)        /*!< 0x70000000 */
+#define RCC_DCMCIP2R_LPTIM1SEL                 RCC_DCMCIP2R_LPTIM1SEL_Msk
+#define RCC_DCMCIP2R_LPTIM1SEL_0               (0x1UL << RCC_DCMCIP2R_LPTIM1SEL_Pos)        /*!< 0x10000000 */
+#define RCC_DCMCIP2R_LPTIM1SEL_1               (0x2UL << RCC_DCMCIP2R_LPTIM1SEL_Pos)        /*!< 0x20000000 */
+#define RCC_DCMCIP2R_LPTIM1SEL_2               (0x4UL << RCC_DCMCIP2R_LPTIM1SEL_Pos)        /*!< 0x40000000 */
 
 /********************  Bit definition for RCC_SRDCCIPR register  ***************/
 #define RCC_SRDCCIPR_LPUART1SEL_Pos             (0U)
@@ -16284,9 +16284,9 @@ typedef struct
 #define SPDIFRX_IFCR_SBDCF_Pos      (4U)
 #define SPDIFRX_IFCR_SBDCF_Msk      (0x1UL << SPDIFRX_IFCR_SBDCF_Pos)          /*!< 0x00000010 */
 #define SPDIFRX_IFCR_SBDCF          SPDIFRX_IFCR_SBDCF_Msk                     /*!<Clears the Synchronization Block Detected flag       */
-#define SPDIFRX_IFCR_SYNCDCF_Pos    (5U)
-#define SPDIFRX_IFCR_SYNCDCF_Msk    (0x1UL << SPDIFRX_IFCR_SYNCDCF_Pos)        /*!< 0x00000020 */
-#define SPDIFRX_IFCR_SYNCDCF        SPDIFRX_IFCR_SYNCDCF_Msk                   /*!<Clears the Synchronization Done flag                 */
+#define SPDIFRX_IFCR_SYNDCMF_Pos    (5U)
+#define SPDIFRX_IFCR_SYNDCMF_Msk    (0x1UL << SPDIFRX_IFCR_SYNDCMF_Pos)        /*!< 0x00000020 */
+#define SPDIFRX_IFCR_SYNDCMF        SPDIFRX_IFCR_SYNDCMF_Msk                   /*!<Clears the Synchronization Done flag                 */
 
 /*******************  Bit definition for SPDIFRX_DR register  (DRFMT = 0b00 case) *******************/
 #define SPDIFRX_DR0_DR_Pos          (0U)

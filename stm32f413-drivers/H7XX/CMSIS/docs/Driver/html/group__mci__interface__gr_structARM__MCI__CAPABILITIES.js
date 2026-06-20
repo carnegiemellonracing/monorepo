@@ -13,7 +13,7 @@ var group__mci__interface__gr_structARM__MCI__CAPABILITIES =
     [ "data_width_4_ddr", "group__mci__interface__gr.html#abb1a604b0ee4f7e3510409747890e41e", null ],
     [ "data_width_8_ddr", "group__mci__interface__gr.html#acd5f6dce3a548d12c292e8cd17e4e9e2", null ],
     [ "high_speed", "group__mci__interface__gr.html#a83ecf7d4472c55362750ef72d8f8f47d", null ],
-    [ "uhs_signaling", "group__mci__interface__gr.html#a084188480d589cdc8d3e164b9f41bea9", null ],
+    [ "uhs_signaling", "group__mci__interface__gr.html#a084188480d589DCM8d3e164b9f41bea9", null ],
     [ "uhs_tuning", "group__mci__interface__gr.html#a617bf7fb73b49a20398b90098ecc3ec0", null ],
     [ "uhs_sdr50", "group__mci__interface__gr.html#a5c3dcb2f8aa6f65408d9a6741abb7b3e", null ],
     [ "uhs_sdr104", "group__mci__interface__gr.html#ae07ceef1800252495a79f225142740e7", null ],

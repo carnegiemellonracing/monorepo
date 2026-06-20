@@ -7,5 +7,5 @@ var group__Pooling =
     [ "arm_avgpool_s8_get_buffer_size", "group__Pooling.html#ga08263590a94c39b4c1c199501ca166e4", null ],
     [ "arm_max_pool_s16", "group__Pooling.html#ga8bc3b3dd1fcf5ac462aa28bdddc0e3bb", null ],
     [ "arm_max_pool_s8", "group__Pooling.html#ga3628978b2ab0b43d8f8723118c12acc4", null ],
-    [ "arm_maxpool_q7_HWC", "group__Pooling.html#ga99afcdcc61eaf429ab3ee823702e44ce", null ]
+    [ "arm_maxpool_q7_HWC", "group__Pooling.html#ga99afDCMc61eaf429ab3ee823702e44ce", null ]
 ];

@@ -2,7 +2,7 @@ var searchData=
 [
   ['c',['C',['../unionAPSR__Type.html#a86e2c5b891ecef1ab55b1edac0da79a6',1,'APSR_Type::C()'],['../unionxPSR__Type.html#a40213a6b5620410cac83b0d89564609d',1,'xPSR_Type::C()']]],
   ['cache_20functions_20_28level_2d1_29',['Cache Functions (Level-1)',['../group__cache__functions__m7.html',1,'']]],
-  ['calib',['CALIB',['../structSysTick__Type.html#afcadb0c6d35b21cdc0018658a13942de',1,'SysTick_Type']]],
+  ['calib',['CALIB',['../structSysTick__Type.html#afcadb0c6d35b21DCM0018658a13942de',1,'SysTick_Type']]],
   ['ccfiltr',['CCFILTR',['../structPMU__Type.html#a61fea523ea0f4e9242101cb09fc6f6a8',1,'PMU_Type']]],
   ['ccntr',['CCNTR',['../structPMU__Type.html#ada85996bd815d9eff9552794feec6d74',1,'PMU_Type']]],
   ['ccr',['CCR',['../structSCB__Type.html#a2d6653b0b70faac936046a02809b577f',1,'SCB_Type']]],

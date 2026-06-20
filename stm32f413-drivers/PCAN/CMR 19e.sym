@@ -45,11 +45,11 @@ enum VSMState (
     2 = "GLV_ON",
     3 = "REQ_PRECHARGE",
     4 = "RUN_BMS",
-    5 = "DCDC_EN",
+    5 = "DDCM_EN",
     6 = "HV_EN",
     7 = "RTD",
     8 = "COOLING_OFF",
-    9 = "DCDC_OFF"
+    9 = "DDCM_OFF"
 )
 
 enum HVCMode(
@@ -104,11 +104,11 @@ Var=VSM_state unsigned 0,8 /e:State
 Var=VSM_ERR_moduleTimeout bit 23,1
 Var=VSM_ERR_moduleState bit 22,1
 Var=VSM_ERR_latchedError bit 21,1
-Var=VSM_ERR_DCDCFault bit 20,1
+Var=VSM_ERR_DDCMFault bit 20,1
 Var=VSM_ERR_hallEffectOOR bit 19,1
 Var=VSM_ERR_brakePresOOR bit 18,1
 Var=VSM_WRN_HVCTimeout bit 39,1
-Var=VSM_WRN_CDCTimeout bit 38,1
+Var=VSM_WRN_DCMTimeout bit 38,1
 Var=VSM_WRN_FSMTimeout bit 37,1
 Var=VSM_WRN_PTCTimeout bit 36,1
 Var=VSM_WRN_DIMTimeout bit 35,1
@@ -127,7 +127,7 @@ Timeout=100
 Var=VSM_internalState unsigned 0,8 /e:VSMState
 // Timeout matrix
 Var=VSM_ERR_HVCTimeout bit 15,1
-Var=VSM_ERR_CDCTimeout bit 14,1
+Var=VSM_ERR_DCMTimeout bit 14,1
 Var=VSM_ERR_FSMTimeout bit 13,1
 Var=VSM_ERR_PTCTimeout bit 12,1
 Var=VSM_ERR_DIMTimeout bit 11,1
@@ -136,7 +136,7 @@ Var=VSM_ERR_AFC1Timeout bit 9,1
 Var=VSM_ERR_APCTimeout bit 8,1
 // Bad state matrix
 Var=VSM_ERR_HVCState bit 23,1
-Var=VSM_ERR_CDCState bit 22,1
+Var=VSM_ERR_DCMState bit 22,1
 Var=VSM_ERR_FSMState bit 21,1
 Var=VSM_ERR_PTCState bit 20,1
 Var=VSM_ERR_DIMState bit 19,1
@@ -166,7 +166,7 @@ CycleTime=10000
 Timeout=20000
 // Timeout matrix
 Var=VSM_latched_ERR_HVCTimeout bit 7,1
-Var=VSM_latched_ERR_CDCTimeout bit 6,1
+Var=VSM_latched_ERR_DCMTimeout bit 6,1
 Var=VSM_latched_ERR_FSMTimeout bit 5,1
 Var=VSM_latched_ERR_PTCTimeout bit 4,1
 Var=VSM_latched_ERR_DIMTimeout bit 3,1
@@ -175,7 +175,7 @@ Var=VSM_latched_ERR_AFC1Timeout bit 1,1
 Var=VSM_latched_ERR_APCTimeout bit 0,1
 // Bad state matrix
 Var=VSM_latched_ERR_HVCState bit 15,1
-Var=VSM_latched_ERR_CDCState bit 14,1
+Var=VSM_latched_ERR_DCMState bit 14,1
 Var=VSM_latched_ERR_FSMState bit 13,1
 Var=VSM_latched_ERR_PTCState bit 12,1
 Var=VSM_latched_ERR_DIMState bit 11,1
@@ -233,68 +233,68 @@ CycleTime=10
 Var=HVC_modeRequest unsigned 0,8 /e:HVCMode
 
 
-[CDC_Heartbeat]
+[DCM_Heartbeat]
 ID=102h
 DLC=5
 CycleTime=10
 Timeout=100
-Var=CDC_state unsigned 0,8 /e:State
-Var=CDC_ERR_VSMTimeout unsigned 8,1
+Var=DCM_state unsigned 0,8 /e:State
+Var=DCM_ERR_VSMTimeout unsigned 8,1
 
-[CDC_WheelSpeeds]
+[DCM_WheelSpeeds]
 ID=132h
 DLC=8
 CycleTime=10
 Timeout=100
-Var=CDC_wheelFrontLeft unsigned 0,16 /u:RPM /f:0.1
-Var=CDC_wheelFrontRight unsigned 16,16 /u:RPM /f:0.1
-Var=CDC_wheelBackLeft unsigned 32,16 /u:RPM /f:0.1
-Var=CDC_wheelBackRight unsigned 48,16 /u:RPM /f:0.1
+Var=DCM_wheelFrontLeft unsigned 0,16 /u:RPM /f:0.1
+Var=DCM_wheelFrontRight unsigned 16,16 /u:RPM /f:0.1
+Var=DCM_wheelBackLeft unsigned 32,16 /u:RPM /f:0.1
+Var=DCM_wheelBackRight unsigned 48,16 /u:RPM /f:0.1
 
-[CDC_SolenoidPTC]
+[DCM_SolenoidPTC]
 ID=142h
 DLC=1
 CycleTime=1
 Timeout=10
-Var=CDC_solenoidEnable unsigned 0,8
+Var=DCM_solenoidEnable unsigned 0,8
 
-[CDC_MotorData]
+[DCM_MotorData]
 ID=152h
 DLC=8
 CycleTime=10
 Timeout=100
-Var=CDC_motorTorque signed 0,16 /u:Nm /f:0.1
-Var=CDC_motorSpeed signed 16,16 /u:RPM /f:-1
-Var=CDC_motorCurrent signed 32,16 /u:A /f:0.1
-Var=CDC_motorVoltage signed 48,16 /u:V /f:0.1
+Var=DCM_motorTorque signed 0,16 /u:Nm /f:0.1
+Var=DCM_motorSpeed signed 16,16 /u:RPM /f:-1
+Var=DCM_motorCurrent signed 32,16 /u:A /f:0.1
+Var=DCM_motorVoltage signed 48,16 /u:V /f:0.1
 
-[CDC_MotorTemps]
+[DCM_MotorTemps]
 ID=512h
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=CDC_motorTemp signed 0,16 /u:C /f:0.1
-Var=CDC_mcMaxInternalTemp signed 16,16 /u:C /f:0.1
+Var=DCM_motorTemp signed 0,16 /u:C /f:0.1
+Var=DCM_mcMaxInternalTemp signed 16,16 /u:C /f:0.1
 
-[CDC_IMUAccelerations]
+[DCM_IMUAccelerations]
 ID=162h
 DLC=6
 CycleTime=10
 Timeout=100
-Var=CDC_IMULongitudinalAcc signed 0,16 /u:MPSS /f:0.000061
-Var=CDC_IMULateralAcc signed 16,16 /u:MPSS /f:0.000061
-Var=CDC_IMUVerticalAcc signed 32,16 /u:MPSS /f:0.000061
+Var=DCM_IMULongitudinalAcc signed 0,16 /u:MPSS /f:0.000061
+Var=DCM_IMULateralAcc signed 16,16 /u:MPSS /f:0.000061
+Var=DCM_IMUVerticalAcc signed 32,16 /u:MPSS /f:0.000061
 
-[CDC_MotorPhaseCurrents]
+[DCM_MotorPhaseCurrents]
 ID=172h
 DLC=6
 CycleTime=10
 Timeout=100
-Var=CDC_PhaseACurrent signed 0,16 /u:A /f:0.1
-Var=CDC_PhaseBCurrent signed 16,16 /u:A /f:0.1
-Var=CDC_PhaseCCurrent signed 32,16 /u:A /f:0.1
+Var=DCM_PhaseACurrent signed 0,16 /u:A /f:0.1
+Var=DCM_PhaseBCurrent signed 16,16 /u:A /f:0.1
+Var=DCM_PhaseCCurrent signed 32,16 /u:A /f:0.1
 
-[CDC_MCFaults]
+[DCM_MCFaults]
 ID=502h
 DLC=8
 CycleTime=1000
@@ -716,7 +716,7 @@ CycleTime=10
 Var=BMS_VBatt unsigned 0,8 /u:V /f:0.1333333
 Var=BMS_VAIR unsigned 8,8 /u:V /f:0.1333333
 Var=BMS_iBatt unsigned 16,8 /u:mA /f:0.1333333
-Var=BMS_iDCDC unsigned 24,8 /u:mA /f:0.1333333
+Var=BMS_iDDCM unsigned 24,8 /u:mA /f:0.1333333
 
 [BMS_BMB_0_Voltages]
 ID=380h

@@ -122,9 +122,9 @@ Content</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga3df1766d230532bc068fc4ed69d0fcdc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__RealFFT.html#ga3df1766d230532bc068fc4ed69d0fcdc">arm_rfft_f32</a> (const <a class="el" href="structarm__rfft__instance__f32.html">arm_rfft_instance_f32</a> *S, <a class="el" href="arm__math_8h.html#a4611b605e45ab401f02cab15c5e38715">float32_t</a> *pSrc, <a class="el" href="arm__math_8h.html#a4611b605e45ab401f02cab15c5e38715">float32_t</a> *pDst)</td></tr>
-<tr class="memdesc:ga3df1766d230532bc068fc4ed69d0fcdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Processing function for the floating-point RFFT/RIFFT.  <a href="#ga3df1766d230532bc068fc4ed69d0fcdc">More...</a><br/></td></tr>
-<tr class="separator:ga3df1766d230532bc068fc4ed69d0fcdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3df1766d230532bc068fc4ed69d0fDCM"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__RealFFT.html#ga3df1766d230532bc068fc4ed69d0fDCM">arm_rfft_f32</a> (const <a class="el" href="structarm__rfft__instance__f32.html">arm_rfft_instance_f32</a> *S, <a class="el" href="arm__math_8h.html#a4611b605e45ab401f02cab15c5e38715">float32_t</a> *pSrc, <a class="el" href="arm__math_8h.html#a4611b605e45ab401f02cab15c5e38715">float32_t</a> *pDst)</td></tr>
+<tr class="memdesc:ga3df1766d230532bc068fc4ed69d0fDCM"><td class="mdescLeft">&#160;</td><td class="mdescRight">Processing function for the floating-point RFFT/RIFFT.  <a href="#ga3df1766d230532bc068fc4ed69d0fDCM">More...</a><br/></td></tr>
+<tr class="separator:ga3df1766d230532bc068fc4ed69d0fDCM"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga180d8b764d59cbb85d37a2d5f7cd9799"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__RealFFT.html#ga180d8b764d59cbb85d37a2d5f7cd9799">arm_rfft_fast_f32</a> (<a class="el" href="structarm__rfft__fast__instance__f32.html">arm_rfft_fast_instance_f32</a> *S, <a class="el" href="arm__math_8h.html#a4611b605e45ab401f02cab15c5e38715">float32_t</a> *p, <a class="el" href="arm__math_8h.html#a4611b605e45ab401f02cab15c5e38715">float32_t</a> *pOut, uint8_t <a class="el" href="arm__fft__bin__example__f32_8c.html#a379ccb99013d369a41b49619083c16ef">ifftFlag</a>)</td></tr>
 <tr class="memdesc:ga180d8b764d59cbb85d37a2d5f7cd9799"><td class="mdescLeft">&#160;</td><td class="mdescRight">Processing function for the floating-point real FFT.  <a href="#ga180d8b764d59cbb85d37a2d5f7cd9799">More...</a><br/></td></tr>
 <tr class="separator:ga180d8b764d59cbb85d37a2d5f7cd9799"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -188,7 +188,7 @@ Real Fast Fourier Transform</div></div>
 Real Inverse Fast Fourier Transform</div></div>
 </dd></dl>
 <dl class="section user"><dt></dt><dd>The algorithms for floating-point, Q15, and Q31 data are slightly different and we describe each algorithm in turn. </dd></dl>
-<dl class="section user"><dt>Floating-point</dt><dd>The main functions are <a class="el" href="group__RealFFT.html#ga180d8b764d59cbb85d37a2d5f7cd9799">arm_rfft_fast_f32()</a> and <a class="el" href="group__RealFFT.html#gac5fceb172551e7c11eb4d0e17ef15aa3">arm_rfft_fast_init_f32()</a>. The older functions <a class="el" href="group__RealFFT.html#ga3df1766d230532bc068fc4ed69d0fcdc">arm_rfft_f32()</a> and <a class="el" href="group__RealFFT.html#ga10717ee326bf50832ef1c25b85a23068">arm_rfft_init_f32()</a> have been deprecated but are still documented. </dd></dl>
+<dl class="section user"><dt>Floating-point</dt><dd>The main functions are <a class="el" href="group__RealFFT.html#ga180d8b764d59cbb85d37a2d5f7cd9799">arm_rfft_fast_f32()</a> and <a class="el" href="group__RealFFT.html#gac5fceb172551e7c11eb4d0e17ef15aa3">arm_rfft_fast_init_f32()</a>. The older functions <a class="el" href="group__RealFFT.html#ga3df1766d230532bc068fc4ed69d0fDCM">arm_rfft_f32()</a> and <a class="el" href="group__RealFFT.html#ga10717ee326bf50832ef1c25b85a23068">arm_rfft_init_f32()</a> have been deprecated but are still documented. </dd></dl>
 <dl class="section user"><dt></dt><dd>The FFT of a real N-point sequence has even symmetry in the frequency domain. The second half of the data equals the conjugate of the first half flipped in frequency. Looking at the data, we see that we can uniquely represent the FFT using only N/2 complex numbers. These are packed into the output array in alternating real and imaginary components: </dd></dl>
 <dl class="section user"><dt></dt><dd>X = { real[0], imag[0], real[1], imag[1], real[2], imag[2] ... real[(N/2)-1], imag[(N/2)-1 } </dd></dl>
 <dl class="section user"><dt></dt><dd>It happens that the first complex number (real[0], imag[0]) is actually all real. real[0] represents the DC offset, and imag[0] should be 0. (real[1], imag[1]) is the fundamental frequency, (real[2], imag[2]) is the first harmonic and so on. </dd></dl>
@@ -423,7 +423,7 @@ Real Inverse Fast Fourier Transform</div></div>
 
 </div>
 </div>
-<a class="anchor" id="ga3df1766d230532bc068fc4ed69d0fcdc"></a>
+<a class="anchor" id="ga3df1766d230532bc068fc4ed69d0fDCM"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">

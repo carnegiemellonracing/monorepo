@@ -10,7 +10,7 @@ var NAVTREEINDEX0 =
 "group__DAP__ConfigMCU__gr.html":[3,0,0],
 "group__DAP__ConfigUSB__gr.html":[3,0,2],
 "group__DAP__ConfigUSB__gr.html#BulkUSB":[3,0,2,0],
-"group__DAP__ConfigUSB__gr.html#USB_CDC":[3,0,2,1],
+"group__DAP__ConfigUSB__gr.html#USB_DCM":[3,0,2,1],
 "group__DAP__Config__Debug__gr.html":[3,0,1,0],
 "group__DAP__Config__Debug__gr.html#ga03ed6a5aae34f4379ea97435122f83dd":[3,0,1,0,5],
 "group__DAP__Config__Debug__gr.html#ga119c70409a24e3a8bb35df07dffeb8c8":[3,0,1,0,13],

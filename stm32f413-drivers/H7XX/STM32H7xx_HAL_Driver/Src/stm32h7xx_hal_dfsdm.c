@@ -69,7 +69,7 @@
           or HAL_DFSDM_ChannelScdStart_IT().
       (#) In polling mode, use HAL_DFSDM_ChannelPollForScd() to detect short
           circuit.
-      (#) In interrupt mode, HAL_DFSDM_ChannelScdCallback() will be called if
+      (#) In interrupt mode, HAL_DFSDM_ChannelSDCMallback() will be called if
           short circuit is detected.
       (#) Stop short circuit detector using HAL_DFSDM_ChannelScdStop() or
           or HAL_DFSDM_ChannelScdStop_IT().
@@ -179,7 +179,7 @@
     Function HAL_DFSDM_Channel_RegisterCallback() allows to register
     following callbacks:
       (+) CkabCallback      : DFSDM channel clock absence detection callback.
-      (+) ScdCallback       : DFSDM channel short circuit detection callback.
+      (+) SDCMallback       : DFSDM channel short circuit detection callback.
       (+) MspInitCallback   : DFSDM channel MSP init callback.
       (+) MspDeInitCallback : DFSDM channel MSP de-init callback.
     [..]
@@ -215,7 +215,7 @@
     [..]
     This function allows to reset following callbacks:
       (+) CkabCallback      : DFSDM channel clock absence detection callback.
-      (+) ScdCallback       : DFSDM channel short circuit detection callback.
+      (+) SDCMallback       : DFSDM channel short circuit detection callback.
       (+) MspInitCallback   : DFSDM channel MSP init callback.
       (+) MspDeInitCallback : DFSDM channel MSP de-init callback.
 
@@ -239,7 +239,7 @@
     [..]
     By default, after the call of init function and if the state is RESET
     all callbacks are reset to the corresponding legacy weak functions:
-    examples HAL_DFSDM_ChannelScdCallback(), HAL_DFSDM_FilterErrorCallback().
+    examples HAL_DFSDM_ChannelSDCMallback(), HAL_DFSDM_FilterErrorCallback().
     Exception done for MspInit and MspDeInit callbacks that are respectively
     reset to the legacy weak functions in the init and de-init only when these
     callbacks are null (not registered beforehand).
@@ -406,7 +406,7 @@ HAL_StatusTypeDef HAL_DFSDM_ChannelInit(DFSDM_Channel_HandleTypeDef *hdfsdm_chan
 #if (USE_HAL_DFSDM_REGISTER_CALLBACKS == 1)
   /* Reset callback pointers to the weak predefined callbacks */
   hdfsdm_channel->CkabCallback = HAL_DFSDM_ChannelCkabCallback;
-  hdfsdm_channel->ScdCallback  = HAL_DFSDM_ChannelScdCallback;
+  hdfsdm_channel->SDCMallback  = HAL_DFSDM_ChannelSDCMallback;
 
   /* Call MSP init function */
   if(hdfsdm_channel->MspInitCallback == NULL)
@@ -620,7 +620,7 @@ HAL_StatusTypeDef HAL_DFSDM_Channel_RegisterCallback(DFSDM_Channel_HandleTypeDef
           hdfsdm_channel->CkabCallback = pCallback;
           break;
         case HAL_DFSDM_CHANNEL_SCD_CB_ID :
-          hdfsdm_channel->ScdCallback = pCallback;
+          hdfsdm_channel->SDCMallback = pCallback;
           break;
         case HAL_DFSDM_CHANNEL_MSPINIT_CB_ID :
           hdfsdm_channel->MspInitCallback = pCallback;
@@ -684,7 +684,7 @@ HAL_StatusTypeDef HAL_DFSDM_Channel_UnRegisterCallback(DFSDM_Channel_HandleTypeD
         hdfsdm_channel->CkabCallback = HAL_DFSDM_ChannelCkabCallback;
         break;
       case HAL_DFSDM_CHANNEL_SCD_CB_ID :
-        hdfsdm_channel->ScdCallback = HAL_DFSDM_ChannelScdCallback;
+        hdfsdm_channel->SDCMallback = HAL_DFSDM_ChannelSDCMallback;
         break;
       case HAL_DFSDM_CHANNEL_MSPINIT_CB_ID :
         hdfsdm_channel->MspInitCallback = HAL_DFSDM_ChannelMspInit;
@@ -1277,13 +1277,13 @@ HAL_StatusTypeDef HAL_DFSDM_ChannelScdStart_IT(DFSDM_Channel_HandleTypeDef *hdfs
   * @param  hdfsdm_channel DFSDM channel handle.
   * @retval None
   */
-__weak void HAL_DFSDM_ChannelScdCallback(DFSDM_Channel_HandleTypeDef *hdfsdm_channel)
+__weak void HAL_DFSDM_ChannelSDCMallback(DFSDM_Channel_HandleTypeDef *hdfsdm_channel)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hdfsdm_channel);
 
   /* NOTE : This function should not be modified, when the callback is needed,
-            the HAL_DFSDM_ChannelScdCallback could be implemented in the user file
+            the HAL_DFSDM_ChannelSDCMallback could be implemented in the user file
    */
 }
 
@@ -3284,9 +3284,9 @@ void HAL_DFSDM_IRQHandler(DFSDM_Filter_HandleTypeDef *hdfsdm_filter)
 
     /* Call short circuit detection callback */
 #if (USE_HAL_DFSDM_REGISTER_CALLBACKS == 1)
-    channelHandleTable[channel]->ScdCallback(channelHandleTable[channel]);
+    channelHandleTable[channel]->SDCMallback(channelHandleTable[channel]);
 #else
-    HAL_DFSDM_ChannelScdCallback(channelHandleTable[channel]);
+    HAL_DFSDM_ChannelSDCMallback(channelHandleTable[channel]);
 #endif
   }
 }

@@ -1,5 +1,5 @@
 for drv in range(6):
-    for board_idx, board in enumerate(["DIM", "CDC"]):
+    for board_idx, board in enumerate(["DIM", "DCM"]):
         for config in range(5):
             hex_id = hex(0x600 + drv*10 + board_idx*5 + config)[2:]
             val = f"""[{board}_Config{config}_Drv{drv}]

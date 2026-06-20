@@ -9715,9 +9715,9 @@ typedef struct
 #define PWR_CR_MRLVDS_Pos      (11U)
 #define PWR_CR_MRLVDS_Msk      (0x1UL << PWR_CR_MRLVDS_Pos)                     /*!< 0x00000800 */
 #define PWR_CR_MRLVDS          PWR_CR_MRLVDS_Msk                               /*!< Main regulator Low Voltage Scaling in Stop mode            */
-#define PWR_CR_ADCDC1_Pos      (13U)
-#define PWR_CR_ADCDC1_Msk      (0x1UL << PWR_CR_ADCDC1_Pos)                     /*!< 0x00002000 */
-#define PWR_CR_ADCDC1          PWR_CR_ADCDC1_Msk                               /*!< Refer to AN4073 on how to use this bit                     */
+#define PWR_CR_ADDCM1_Pos      (13U)
+#define PWR_CR_ADDCM1_Msk      (0x1UL << PWR_CR_ADDCM1_Pos)                     /*!< 0x00002000 */
+#define PWR_CR_ADDCM1          PWR_CR_ADDCM1_Msk                               /*!< Refer to AN4073 on how to use this bit                     */
 #define PWR_CR_VOS_Pos         (14U)
 #define PWR_CR_VOS_Msk         (0x3UL << PWR_CR_VOS_Pos)                        /*!< 0x0000C000 */
 #define PWR_CR_VOS             PWR_CR_VOS_Msk                                  /*!< VOS[1:0] bits (Regulator voltage scaling output selection) */
@@ -12211,9 +12211,9 @@ typedef struct
 #define SPDIFRX_IFCR_SBDCF_Pos      (4U)
 #define SPDIFRX_IFCR_SBDCF_Msk      (0x1UL << SPDIFRX_IFCR_SBDCF_Pos)           /*!< 0x00000010 */
 #define SPDIFRX_IFCR_SBDCF          SPDIFRX_IFCR_SBDCF_Msk                     /*!<Clears the Synchronization Block Detected flag       */
-#define SPDIFRX_IFCR_SYNCDCF_Pos    (5U)
-#define SPDIFRX_IFCR_SYNCDCF_Msk    (0x1UL << SPDIFRX_IFCR_SYNCDCF_Pos)         /*!< 0x00000020 */
-#define SPDIFRX_IFCR_SYNCDCF        SPDIFRX_IFCR_SYNCDCF_Msk                   /*!<Clears the Synchronization Done flag                 */
+#define SPDIFRX_IFCR_SYNDCMF_Pos    (5U)
+#define SPDIFRX_IFCR_SYNDCMF_Msk    (0x1UL << SPDIFRX_IFCR_SYNDCMF_Pos)         /*!< 0x00000020 */
+#define SPDIFRX_IFCR_SYNDCMF        SPDIFRX_IFCR_SYNDCMF_Msk                   /*!<Clears the Synchronization Done flag                 */
 
 /*******************  Bit definition for SPDIFRX_DR register  (DRFMT = 0b00 case) *******************/
 #define SPDIFRX_DR0_DR_Pos          (0U)

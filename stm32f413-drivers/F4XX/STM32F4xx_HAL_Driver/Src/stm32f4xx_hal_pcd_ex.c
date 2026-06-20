@@ -175,7 +175,7 @@ void HAL_PCDEx_BCD_VBUSDetect(PCD_HandleTypeDef *hpcd)
   if ((USBx->GCCFG & USB_OTG_GCCFG_DCDET) == USB_OTG_GCCFG_DCDET)
   {
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
-    hpcd->BCDCallback(hpcd, PCD_BCD_CONTACT_DETECTION);
+    hpcd->BDCMallback(hpcd, PCD_BCD_CONTACT_DETECTION);
 #else
     HAL_PCDEx_BCD_Callback(hpcd, PCD_BCD_CONTACT_DETECTION);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
@@ -192,7 +192,7 @@ void HAL_PCDEx_BCD_VBUSDetect(PCD_HandleTypeDef *hpcd)
   {
     /* Case of Standard Downstream Port */
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
-    hpcd->BCDCallback(hpcd, PCD_BCD_STD_DOWNSTREAM_PORT);
+    hpcd->BDCMallback(hpcd, PCD_BCD_STD_DOWNSTREAM_PORT);
 #else
     HAL_PCDEx_BCD_Callback(hpcd, PCD_BCD_STD_DOWNSTREAM_PORT);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
@@ -210,7 +210,7 @@ void HAL_PCDEx_BCD_VBUSDetect(PCD_HandleTypeDef *hpcd)
     {
       /* case Dedicated Charging Port  */
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
-      hpcd->BCDCallback(hpcd, PCD_BCD_DEDICATED_CHARGING_PORT);
+      hpcd->BDCMallback(hpcd, PCD_BCD_DEDICATED_CHARGING_PORT);
 #else
       HAL_PCDEx_BCD_Callback(hpcd, PCD_BCD_DEDICATED_CHARGING_PORT);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
@@ -219,7 +219,7 @@ void HAL_PCDEx_BCD_VBUSDetect(PCD_HandleTypeDef *hpcd)
     {
       /* case Charging Downstream Port */
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
-      hpcd->BCDCallback(hpcd, PCD_BCD_CHARGING_DOWNSTREAM_PORT);
+      hpcd->BDCMallback(hpcd, PCD_BCD_CHARGING_DOWNSTREAM_PORT);
 #else
       HAL_PCDEx_BCD_Callback(hpcd, PCD_BCD_CHARGING_DOWNSTREAM_PORT);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
@@ -233,7 +233,7 @@ void HAL_PCDEx_BCD_VBUSDetect(PCD_HandleTypeDef *hpcd)
   if ((HAL_GetTick() - tickstart) > 1000U)
   {
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
-    hpcd->BCDCallback(hpcd, PCD_BCD_ERROR);
+    hpcd->BDCMallback(hpcd, PCD_BCD_ERROR);
 #else
     HAL_PCDEx_BCD_Callback(hpcd, PCD_BCD_ERROR);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
@@ -241,7 +241,7 @@ void HAL_PCDEx_BCD_VBUSDetect(PCD_HandleTypeDef *hpcd)
   else
   {
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
-    hpcd->BCDCallback(hpcd, PCD_BCD_DISCOVERY_COMPLETED);
+    hpcd->BDCMallback(hpcd, PCD_BCD_DISCOVERY_COMPLETED);
 #else
     HAL_PCDEx_BCD_Callback(hpcd, PCD_BCD_DISCOVERY_COMPLETED);
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */

@@ -8,7 +8,7 @@ var unionSCTLR__Type =
     [ "CP15BEN", "unionSCTLR__Type.html#a98b55213f3bf0a8bd4f1db90512238de", null ],
     [ "EE", "unionSCTLR__Type.html#af868e042d01b612649539c151f1aaea5", null ],
     [ "FI", "unionSCTLR__Type.html#afe77b6c5d73e64d4ef3c5dc5ce2692dc", null ],
-    [ "HA", "unionSCTLR__Type.html#aba2a8aac3478cdc34428af7b9726d97f", null ],
+    [ "HA", "unionSCTLR__Type.html#aba2a8aac3478DCM34428af7b9726d97f", null ],
     [ "I", "unionSCTLR__Type.html#a0a4ed1a41f25a191cf4a500401c3c5db", null ],
     [ "M", "unionSCTLR__Type.html#a8cbfde3ba235ebd48e82cb314c9b9cc4", null ],
     [ "NMFI", "unionSCTLR__Type.html#a60d589567422115a14d6d0fde342dfce", null ],

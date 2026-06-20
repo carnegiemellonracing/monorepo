@@ -1,7 +1,7 @@
 var searchData=
 [
   ['fixed_20point_20division',['Fixed point division',['../group__divide.html',1,'']]],
-  ['f',['f',['../unionany32x4__t.html#a5a1b1bbefd65485f30beccc0ed7cc70d',1,'any32x4_t::f()'],['../unionany32x2__t.html#a77adc1820dcdcdc812bacdbe7e389759',1,'any32x2_t::f()']]],
+  ['f',['f',['../unionany32x4__t.html#a5a1b1bbefd65485f30beccc0ed7cc70d',1,'any32x4_t::f()'],['../unionany32x2__t.html#a77adc1820dDCMdc812bacdbe7e389759',1,'any32x2_t::f()']]],
   ['f16_5fabsmax',['F16_ABSMAX',['../arm__math__types__f16_8h.html#a0fc919838f53d7d929c043e80e1d6013',1,'arm_math_types_f16.h']]],
   ['f16_5fabsmin',['F16_ABSMIN',['../arm__math__types__f16_8h.html#a8d7b79926d1894bbbc56edd37de7f7f0',1,'arm_math_types_f16.h']]],
   ['f16_5fmax',['F16_MAX',['../arm__math__types__f16_8h.html#a19258b265fecac5e34497eab8b9cc133',1,'arm_math_types_f16.h']]],

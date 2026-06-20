@@ -88,7 +88,7 @@ var NAVTREEINDEX2 =
 "structarm__cfft__radix4__instance__q31.html#ab413d2a5d3f45fa187d93813bf3bf81b":[4,19,2],
 "structarm__cfft__radix4__instance__q31.html#adc0a62ba669ad2282ecbe43d5d96abab":[4,19,3],
 "structarm__dct4__instance__f32.html":[4,20],
-"structarm__dct4__instance__f32.html#a018f7860b6e070af533fb7d76c7cdc32":[4,20,3],
+"structarm__dct4__instance__f32.html#a018f7860b6e070af533fb7d76c7DCM32":[4,20,3],
 "structarm__dct4__instance__f32.html#a01fe45dbe46c782245832f2169622c29":[4,20,6],
 "structarm__dct4__instance__f32.html#a262b29a51c371b46efc89120e31ccf37":[4,20,0],
 "structarm__dct4__instance__f32.html#a61ce8c967b2e998a9c0041cca73cdef8":[4,20,2],

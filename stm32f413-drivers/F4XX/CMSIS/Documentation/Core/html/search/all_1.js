@@ -114,7 +114,7 @@ var searchData=
   ['arm_5fpmu_5fmve_5ffp_5fretired',['ARM_PMU_MVE_FP_RETIRED',['../group__pmu8__events__armv81.html#ga268b0bcbd30e8a928bd0f331fdf53ccf',1,'Ref_PMU8.txt']]],
   ['arm_5fpmu_5fmve_5ffp_5fsp_5fretired',['ARM_PMU_MVE_FP_SP_RETIRED',['../group__pmu8__events__armv81.html#gab21171c50ebd1f304b11260edd015f52',1,'Ref_PMU8.txt']]],
   ['arm_5fpmu_5fmve_5ffp_5fsp_5fspec',['ARM_PMU_MVE_FP_SP_SPEC',['../group__pmu8__events__armv81.html#gae69e310892661af852ca2d4ec947d18a',1,'Ref_PMU8.txt']]],
-  ['arm_5fpmu_5fmve_5ffp_5fspec',['ARM_PMU_MVE_FP_SPEC',['../group__pmu8__events__armv81.html#gadf9cfd45b59acfc314ebc814a1bcdccd',1,'Ref_PMU8.txt']]],
+  ['arm_5fpmu_5fmve_5ffp_5fspec',['ARM_PMU_MVE_FP_SPEC',['../group__pmu8__events__armv81.html#gadf9cfd45b59acfc314ebc814a1bDCMcd',1,'Ref_PMU8.txt']]],
   ['arm_5fpmu_5fmve_5finst_5fretired',['ARM_PMU_MVE_INST_RETIRED',['../group__pmu8__events__armv81.html#ga3c1006bed2fb82b0749386261b397727',1,'Ref_PMU8.txt']]],
   ['arm_5fpmu_5fmve_5finst_5fspec',['ARM_PMU_MVE_INST_SPEC',['../group__pmu8__events__armv81.html#ga1e276b6872345eb3b043626a11f235c6',1,'Ref_PMU8.txt']]],
   ['arm_5fpmu_5fmve_5fint_5fmac_5fretired',['ARM_PMU_MVE_INT_MAC_RETIRED',['../group__pmu8__events__armv81.html#ga9248c93a3f19fddc93d3804a06f7238a',1,'Ref_PMU8.txt']]],

@@ -17918,9 +17918,9 @@ typedef struct
 #define SPDIFRX_IFCR_SBDCF_Pos      (4U)
 #define SPDIFRX_IFCR_SBDCF_Msk      (0x1UL << SPDIFRX_IFCR_SBDCF_Pos)          /*!< 0x00000010 */
 #define SPDIFRX_IFCR_SBDCF          SPDIFRX_IFCR_SBDCF_Msk                     /*!<Clears the Synchronization Block Detected flag       */
-#define SPDIFRX_IFCR_SYNCDCF_Pos    (5U)
-#define SPDIFRX_IFCR_SYNCDCF_Msk    (0x1UL << SPDIFRX_IFCR_SYNCDCF_Pos)        /*!< 0x00000020 */
-#define SPDIFRX_IFCR_SYNCDCF        SPDIFRX_IFCR_SYNCDCF_Msk                   /*!<Clears the Synchronization Done flag                 */
+#define SPDIFRX_IFCR_SYNDCMF_Pos    (5U)
+#define SPDIFRX_IFCR_SYNDCMF_Msk    (0x1UL << SPDIFRX_IFCR_SYNDCMF_Pos)        /*!< 0x00000020 */
+#define SPDIFRX_IFCR_SYNDCMF        SPDIFRX_IFCR_SYNDCMF_Msk                   /*!<Clears the Synchronization Done flag                 */
 
 /*******************  Bit definition for SPDIFRX_DR register  (DRFMT = 0b00 case) *******************/
 #define SPDIFRX_DR0_DR_Pos          (0U)

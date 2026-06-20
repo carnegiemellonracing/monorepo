@@ -9,6 +9,6 @@ var group__mci__event__gr =
     [ "ARM_MCI_EVENT_TRANSFER_TIMEOUT", "group__mci__event__gr.html#ga614e7c7226adbaa8ec4165bf8b87ef27", null ],
     [ "ARM_MCI_EVENT_TRANSFER_ERROR", "group__mci__event__gr.html#ga5d2cee5ba6d0e40ad505983155706c29", null ],
     [ "ARM_MCI_EVENT_SDIO_INTERRUPT", "group__mci__event__gr.html#ga75a050fdfe04e6816e96c938d6a6c197", null ],
-    [ "ARM_MCI_EVENT_CCS", "group__mci__event__gr.html#ga8161f3960ddf2a3cdc3c4c83148c6099", null ],
+    [ "ARM_MCI_EVENT_CCS", "group__mci__event__gr.html#ga8161f3960ddf2a3DCM3c4c83148c6099", null ],
     [ "ARM_MCI_EVENT_CCS_TIMEOUT", "group__mci__event__gr.html#gafa8cbcd597a05c64901eeb777cc0b74f", null ]
 ];

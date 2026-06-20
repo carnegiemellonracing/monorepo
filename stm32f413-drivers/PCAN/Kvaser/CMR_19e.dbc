@@ -12,11 +12,11 @@ SG_ VSM_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ VSM_ERR_moduleTimeout : 23|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_moduleState : 22|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_latchedError : 21|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ VSM_ERR_DCDCFault : 20|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ VSM_ERR_DDCMFault : 20|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_hallEffectOOR : 19|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_brakePresOOR : 18|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_WRN_HVCTimeout : 39|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ VSM_WRN_CDCTimeout : 38|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ VSM_WRN_DCMTimeout : 38|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_WRN_FSMTimeout : 37|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_WRN_PTCTimeout : 36|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_WRN_DIMTimeout : 35|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -31,7 +31,7 @@ SG_ VSM_WRN_CurrentOOR : 26|1@1+ (1,0) [0|1] "" Vector__XXX
 BO_ 272 VSM_Status: 4 Vector__XXX
 SG_ VSM_internalState : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ VSM_ERR_HVCTimeout : 15|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ VSM_ERR_CDCTimeout : 14|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ VSM_ERR_DCMTimeout : 14|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_FSMTimeout : 13|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_PTCTimeout : 12|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_DIMTimeout : 11|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -39,7 +39,7 @@ SG_ VSM_ERR_AFC0Timeout : 10|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_AFC1Timeout : 9|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_APCTimeout : 8|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_HVCState : 23|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ VSM_ERR_CDCState : 22|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ VSM_ERR_DCMState : 22|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_FSMState : 21|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_PTCState : 20|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_ERR_DIMState : 19|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -61,7 +61,7 @@ SG_ VSM_safetyOut : 40|8@1+ (0.1,0) [0|25.5] "V" Vector__XXX
 
 BO_ 1296 VSM_LatchedStatus: 3 Vector__XXX
 SG_ VSM_latched_ERR_HVCTimeout : 7|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ VSM_latched_ERR_CDCTimeout : 6|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ VSM_latched_ERR_DCMTimeout : 6|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_latched_ERR_FSMTimeout : 5|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_latched_ERR_PTCTimeout : 4|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_latched_ERR_DIMTimeout : 3|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -69,7 +69,7 @@ SG_ VSM_latched_ERR_AFC0Timeout : 2|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_latched_ERR_AFC1Timeout : 1|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_latched_ERR_APCTimeout : 0|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_latched_ERR_HVCState : 15|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ VSM_latched_ERR_CDCState : 14|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ VSM_latched_ERR_DCMState : 14|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_latched_ERR_FSMState : 13|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_latched_ERR_PTCState : 12|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ VSM_latched_ERR_DIMState : 11|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -116,46 +116,46 @@ BO_ 304 HVC_Command: 1 Vector__XXX
 SG_ HVC_modeRequest : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 258 CDC_Heartbeat: 5 Vector__XXX
-SG_ CDC_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+BO_ 258 DCM_Heartbeat: 5 Vector__XXX
+SG_ DCM_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 306 CDC_WheelSpeeds: 8 Vector__XXX
-SG_ CDC_wheelFrontLeft : 0|16@1+ (0.1,0) [0|6553.5] "RPM" Vector__XXX
-SG_ CDC_wheelFrontRight : 16|16@1+ (0.1,0) [0|6553.5] "RPM" Vector__XXX
-SG_ CDC_wheelBackLeft : 32|16@1+ (0.1,0) [0|6553.5] "RPM" Vector__XXX
-SG_ CDC_wheelBackRight : 48|16@1+ (0.1,0) [0|6553.5] "RPM" Vector__XXX
+BO_ 306 DCM_WheelSpeeds: 8 Vector__XXX
+SG_ DCM_wheelFrontLeft : 0|16@1+ (0.1,0) [0|6553.5] "RPM" Vector__XXX
+SG_ DCM_wheelFrontRight : 16|16@1+ (0.1,0) [0|6553.5] "RPM" Vector__XXX
+SG_ DCM_wheelBackLeft : 32|16@1+ (0.1,0) [0|6553.5] "RPM" Vector__XXX
+SG_ DCM_wheelBackRight : 48|16@1+ (0.1,0) [0|6553.5] "RPM" Vector__XXX
 
 
-BO_ 322 CDC_SolenoidPTC: 1 Vector__XXX
-SG_ CDC_solenoidEnable : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+BO_ 322 DCM_SolenoidPTC: 1 Vector__XXX
+SG_ DCM_solenoidEnable : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
-BO_ 338 CDC_MotorData: 8 Vector__XXX
-SG_ CDC_motorTorque : 0|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
-SG_ CDC_motorSpeed : 16|16@1- (-1,0) [-32767|32768] "RPM" Vector__XXX
-SG_ CDC_motorCurrent : 32|16@1- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
-SG_ CDC_motorVoltage : 48|16@1- (0.1,0) [-3276.8|3276.7] "V" Vector__XXX
+BO_ 338 DCM_MotorData: 8 Vector__XXX
+SG_ DCM_motorTorque : 0|16@1- (0.1,0) [-3276.8|3276.7] "Nm" Vector__XXX
+SG_ DCM_motorSpeed : 16|16@1- (-1,0) [-32767|32768] "RPM" Vector__XXX
+SG_ DCM_motorCurrent : 32|16@1- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+SG_ DCM_motorVoltage : 48|16@1- (0.1,0) [-3276.8|3276.7] "V" Vector__XXX
 
 
-BO_ 1298 CDC_MotorTemps: 4 Vector__XXX
-SG_ CDC_motorTemp : 0|16@1- (0.1,0) [-3276.8|3276.7] "C" Vector__XXX
-SG_ CDC_mcMaxInternalTemp : 16|16@1- (0.1,0) [-3276.8|3276.7] "C" Vector__XXX
+BO_ 1298 DCM_MotorTemps: 4 Vector__XXX
+SG_ DCM_motorTemp : 0|16@1- (0.1,0) [-3276.8|3276.7] "C" Vector__XXX
+SG_ DCM_mcMaxInternalTemp : 16|16@1- (0.1,0) [-3276.8|3276.7] "C" Vector__XXX
 
 
-BO_ 354 CDC_IMUAccelerations: 6 Vector__XXX
-SG_ CDC_IMULongitudinalAcc : 0|16@1- (6.1E-005,0) [-1.998848|1.998787] "MPSS" Vector__XXX
-SG_ CDC_IMULateralAcc : 16|16@1- (6.1E-005,0) [-1.998848|1.998787] "MPSS" Vector__XXX
-SG_ CDC_IMUVerticalAcc : 32|16@1- (6.1E-005,0) [-1.998848|1.998787] "MPSS" Vector__XXX
+BO_ 354 DCM_IMUAccelerations: 6 Vector__XXX
+SG_ DCM_IMULongitudinalAcc : 0|16@1- (6.1E-005,0) [-1.998848|1.998787] "MPSS" Vector__XXX
+SG_ DCM_IMULateralAcc : 16|16@1- (6.1E-005,0) [-1.998848|1.998787] "MPSS" Vector__XXX
+SG_ DCM_IMUVerticalAcc : 32|16@1- (6.1E-005,0) [-1.998848|1.998787] "MPSS" Vector__XXX
 
 
-BO_ 370 CDC_MotorPhaseCurrents: 6 Vector__XXX
-SG_ CDC_PhaseACurrent : 0|16@1- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
-SG_ CDC_PhaseBCurrent : 16|16@1- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
-SG_ CDC_PhaseCCurrent : 32|16@1- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+BO_ 370 DCM_MotorPhaseCurrents: 6 Vector__XXX
+SG_ DCM_PhaseACurrent : 0|16@1- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+SG_ DCM_PhaseBCurrent : 16|16@1- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+SG_ DCM_PhaseCCurrent : 32|16@1- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
 
 
-BO_ 1282 CDC_MCFaults: 8 Vector__XXX
+BO_ 1282 DCM_MCFaults: 8 Vector__XXX
 SG_ POST_ERR_HWDesat : 0|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ POST_ERR_HWOverCurr : 1|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ POST_ERR_AccelShort : 2|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -268,8 +268,8 @@ SG_ DIM_requestGear : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 BO_ 262 AFC0_Heartbeat: 5 Vector__XXX
 SG_ AFC0_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AFC0_ERR_VSMTimeout : 8|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ AFC0_ERR_DCDCTemp1OOR : 18|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ AFC0_ERR_DCDCTemp0OOR : 19|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ AFC0_ERR_DDCMTemp1OOR : 18|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ AFC0_ERR_DDCMTemp0OOR : 19|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AFC0_ERR_driver2TempOOR : 20|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AFC0_ERR_driver1TempOOR : 21|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AFC0_ERR_driver0TempOOR : 22|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -282,8 +282,8 @@ SG_ AFC0_WRN_CurrentOOR : 26|1@1+ (1,0) [0|1] "" Vector__XXX
 BO_ 263 AFC1_Heartbeat: 5 Vector__XXX
 SG_ AFC1_state : 0|8@1+ (1,0) [0|255] "" Vector__XXX
 SG_ AFC1_ERR_VSMTimeout : 8|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ AFC1_ERR_DCDCTemp1OOR : 18|1@1+ (1,0) [0|1] "" Vector__XXX
-SG_ AFC1_ERR_DCDCTemp0OOR : 19|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ AFC1_ERR_DDCMTemp1OOR : 18|1@1+ (1,0) [0|1] "" Vector__XXX
+SG_ AFC1_ERR_DDCMTemp0OOR : 19|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AFC1_ERR_driver2TempOOR : 20|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AFC1_ERR_driver1TempOOR : 21|1@1+ (1,0) [0|1] "" Vector__XXX
 SG_ AFC1_ERR_driver0TempOOR : 22|1@1+ (1,0) [0|1] "" Vector__XXX
@@ -295,28 +295,28 @@ SG_ AFC1_WRN_CurrentOOR : 26|1@1+ (1,0) [0|1] "" Vector__XXX
 
 BO_ 566 AFC0_FanStatus: 2 Vector__XXX
 SG_ AFC0_ACFans : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ AFC0_DCDCFan : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ AFC0_DDCMFan : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
 BO_ 567 AFC1_FanStatus: 2 Vector__XXX
 SG_ AFC1_ACFans : 0|8@1+ (1,0) [0|255] "" Vector__XXX
-SG_ AFC1_DCDCFan : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+SG_ AFC1_DDCMFan : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 
 
 BO_ 1334 AFC0_DriverTemps: 5 Vector__XXX
 SG_ AFC0_driverTemp0 : 0|8@1+ (1,0) [0|255] "C" Vector__XXX
 SG_ AFC0_driverTemp1 : 8|8@1+ (1,0) [0|255] "C" Vector__XXX
 SG_ AFC0_driverTemp2 : 16|8@1+ (1,0) [0|255] "C" Vector__XXX
-SG_ AFC0_DCDCTemp0 : 24|8@1+ (1,0) [0|255] "C" Vector__XXX
-SG_ AFC0_DCDCTemp1 : 32|8@1+ (1,0) [0|255] "C" Vector__XXX
+SG_ AFC0_DDCMTemp0 : 24|8@1+ (1,0) [0|255] "C" Vector__XXX
+SG_ AFC0_DDCMTemp1 : 32|8@1+ (1,0) [0|255] "C" Vector__XXX
 
 
 BO_ 1335 AFC1_DriverTemps: 5 Vector__XXX
 SG_ AFC1_driverTemp0 : 0|8@1+ (1,0) [0|255] "C" Vector__XXX
 SG_ AFC1_driverTemp1 : 8|8@1+ (1,0) [0|255] "C" Vector__XXX
 SG_ AFC1_driverTemp2 : 16|8@1+ (1,0) [0|255] "C" Vector__XXX
-SG_ AFC1_DCDCTemp0 : 24|8@1+ (1,0) [0|255] "C" Vector__XXX
-SG_ AFC1_DCDCTemp1 : 32|8@1+ (1,0) [0|255] "C" Vector__XXX
+SG_ AFC1_DDCMTemp0 : 24|8@1+ (1,0) [0|255] "C" Vector__XXX
+SG_ AFC1_DDCMTemp1 : 32|8@1+ (1,0) [0|255] "C" Vector__XXX
 
 
 BO_ 1350 AFC0_PowerDiagnostic: 6 Vector__XXX
@@ -351,7 +351,7 @@ SG_ PTC_postRadiatorTemp : 32|16@1+ (1,0) [0|65535] "C" Vector__XXX
 
 BO_ 596 PTC_AFCControl: 2 Vector__XXX
 SG_ PTC_acFansDuty : 0|8@1+ (1,0) [0|255] "%" Vector__XXX
-SG_ PTC_dcdcFanDuty : 8|8@1+ (1,0) [0|255] "%" Vector__XXX
+SG_ PTC_dDCMFanDuty : 8|8@1+ (1,0) [0|255] "%" Vector__XXX
 
 
 BO_ 1332 PTC_VoltageDiagnostic: 4 Vector__XXX
@@ -485,7 +485,7 @@ BO_ 771 BMS_Low_Voltages: 4 Vector__XXX
 SG_ BMS_VBatt : 0|8@1+ (0.1333333,0) [0|33.9999915] "V" Vector__XXX
 SG_ BMS_VAIR : 8|8@1+ (0.1333333,0) [0|33.9999915] "V" Vector__XXX
 SG_ BMS_iBatt : 16|8@1+ (0.1333333,0) [0|33.9999915] "mA" Vector__XXX
-SG_ BMS_iDCDC : 24|8@1+ (0.1333333,0) [0|33.9999915] "mA" Vector__XXX
+SG_ BMS_iDDCM : 24|8@1+ (0.1333333,0) [0|33.9999915] "mA" Vector__XXX
 
 
 BO_ 896 BMS_BMB_0_Voltages: 6 Vector__XXX
@@ -1026,11 +1026,11 @@ BA_ "GenSigStartValue" SG_ 256 VSM_state 0;
 BA_ "GenSigStartValue" SG_ 256 VSM_ERR_moduleTimeout 0;
 BA_ "GenSigStartValue" SG_ 256 VSM_ERR_moduleState 0;
 BA_ "GenSigStartValue" SG_ 256 VSM_ERR_latchedError 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_ERR_DCDCFault 0;
+BA_ "GenSigStartValue" SG_ 256 VSM_ERR_DDCMFault 0;
 BA_ "GenSigStartValue" SG_ 256 VSM_ERR_hallEffectOOR 0;
 BA_ "GenSigStartValue" SG_ 256 VSM_ERR_brakePresOOR 0;
 BA_ "GenSigStartValue" SG_ 256 VSM_WRN_HVCTimeout 0;
-BA_ "GenSigStartValue" SG_ 256 VSM_WRN_CDCTimeout 0;
+BA_ "GenSigStartValue" SG_ 256 VSM_WRN_DCMTimeout 0;
 BA_ "GenSigStartValue" SG_ 256 VSM_WRN_FSMTimeout 0;
 BA_ "GenSigStartValue" SG_ 256 VSM_WRN_PTCTimeout 0;
 BA_ "GenSigStartValue" SG_ 256 VSM_WRN_DIMTimeout 0;
@@ -1042,7 +1042,7 @@ BA_ "GenSigStartValue" SG_ 256 VSM_WRN_VoltageOOR 0;
 BA_ "GenSigStartValue" SG_ 256 VSM_WRN_CurrentOOR 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_internalState 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_HVCTimeout 0;
-BA_ "GenSigStartValue" SG_ 272 VSM_ERR_CDCTimeout 0;
+BA_ "GenSigStartValue" SG_ 272 VSM_ERR_DCMTimeout 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_FSMTimeout 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_PTCTimeout 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_DIMTimeout 0;
@@ -1050,7 +1050,7 @@ BA_ "GenSigStartValue" SG_ 272 VSM_ERR_AFC0Timeout 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_AFC1Timeout 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_APCTimeout 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_HVCState 0;
-BA_ "GenSigStartValue" SG_ 272 VSM_ERR_CDCState 0;
+BA_ "GenSigStartValue" SG_ 272 VSM_ERR_DCMState 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_FSMState 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_PTCState 0;
 BA_ "GenSigStartValue" SG_ 272 VSM_ERR_DIMState 0;
@@ -1066,7 +1066,7 @@ BA_ "GenSigStartValue" SG_ 512 VSM_hallEffect 0;
 BA_ "GenSigStartValue" SG_ 512 VSM_safetyIn 0;
 BA_ "GenSigStartValue" SG_ 512 VSM_safetyOut 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_HVCTimeout 0;
-BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_CDCTimeout 0;
+BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_DCMTimeout 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_FSMTimeout 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_PTCTimeout 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_DIMTimeout 0;
@@ -1074,7 +1074,7 @@ BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_AFC0Timeout 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_AFC1Timeout 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_APCTimeout 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_HVCState 0;
-BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_CDCState 0;
+BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_DCMState 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_FSMState 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_PTCState 0;
 BA_ "GenSigStartValue" SG_ 1296 VSM_latched_ERR_DIMState 0;
@@ -1110,24 +1110,24 @@ BA_ "GenSigStartValue" SG_ 257 HVC_prechargeError 0;
 BA_ "GenSigStartValue" SG_ 257 HVC_negAIRError 0;
 BA_ "GenSigStartValue" SG_ 257 HVC_posAIRError 0;
 BA_ "GenSigStartValue" SG_ 304 HVC_modeRequest 0;
-BA_ "GenSigStartValue" SG_ 258 CDC_state 0;
-BA_ "GenSigStartValue" SG_ 306 CDC_wheelFrontLeft 0;
-BA_ "GenSigStartValue" SG_ 306 CDC_wheelFrontRight 0;
-BA_ "GenSigStartValue" SG_ 306 CDC_wheelBackLeft 0;
-BA_ "GenSigStartValue" SG_ 306 CDC_wheelBackRight 0;
-BA_ "GenSigStartValue" SG_ 322 CDC_solenoidEnable 0;
-BA_ "GenSigStartValue" SG_ 338 CDC_motorTorque 0;
-BA_ "GenSigStartValue" SG_ 338 CDC_motorSpeed 0;
-BA_ "GenSigStartValue" SG_ 338 CDC_motorCurrent 0;
-BA_ "GenSigStartValue" SG_ 338 CDC_motorVoltage 0;
-BA_ "GenSigStartValue" SG_ 1298 CDC_motorTemp 0;
-BA_ "GenSigStartValue" SG_ 1298 CDC_mcMaxInternalTemp 0;
-BA_ "GenSigStartValue" SG_ 354 CDC_IMULongitudinalAcc 0;
-BA_ "GenSigStartValue" SG_ 354 CDC_IMULateralAcc 0;
-BA_ "GenSigStartValue" SG_ 354 CDC_IMUVerticalAcc 0;
-BA_ "GenSigStartValue" SG_ 370 CDC_PhaseACurrent 0;
-BA_ "GenSigStartValue" SG_ 370 CDC_PhaseBCurrent 0;
-BA_ "GenSigStartValue" SG_ 370 CDC_PhaseCCurrent 0;
+BA_ "GenSigStartValue" SG_ 258 DCM_state 0;
+BA_ "GenSigStartValue" SG_ 306 DCM_wheelFrontLeft 0;
+BA_ "GenSigStartValue" SG_ 306 DCM_wheelFrontRight 0;
+BA_ "GenSigStartValue" SG_ 306 DCM_wheelBackLeft 0;
+BA_ "GenSigStartValue" SG_ 306 DCM_wheelBackRight 0;
+BA_ "GenSigStartValue" SG_ 322 DCM_solenoidEnable 0;
+BA_ "GenSigStartValue" SG_ 338 DCM_motorTorque 0;
+BA_ "GenSigStartValue" SG_ 338 DCM_motorSpeed 0;
+BA_ "GenSigStartValue" SG_ 338 DCM_motorCurrent 0;
+BA_ "GenSigStartValue" SG_ 338 DCM_motorVoltage 0;
+BA_ "GenSigStartValue" SG_ 1298 DCM_motorTemp 0;
+BA_ "GenSigStartValue" SG_ 1298 DCM_mcMaxInternalTemp 0;
+BA_ "GenSigStartValue" SG_ 354 DCM_IMULongitudinalAcc 0;
+BA_ "GenSigStartValue" SG_ 354 DCM_IMULateralAcc 0;
+BA_ "GenSigStartValue" SG_ 354 DCM_IMUVerticalAcc 0;
+BA_ "GenSigStartValue" SG_ 370 DCM_PhaseACurrent 0;
+BA_ "GenSigStartValue" SG_ 370 DCM_PhaseBCurrent 0;
+BA_ "GenSigStartValue" SG_ 370 DCM_PhaseCCurrent 0;
 BA_ "GenSigStartValue" SG_ 1282 POST_ERR_HWDesat 0;
 BA_ "GenSigStartValue" SG_ 1282 POST_ERR_HWOverCurr 0;
 BA_ "GenSigStartValue" SG_ 1282 POST_ERR_AccelShort 0;
@@ -1213,8 +1213,8 @@ BA_ "GenSigStartValue" SG_ 565 DIM_requestState 0;
 BA_ "GenSigStartValue" SG_ 565 DIM_requestGear 0;
 BA_ "GenSigStartValue" SG_ 262 AFC0_state 0;
 BA_ "GenSigStartValue" SG_ 262 AFC0_ERR_VSMTimeout 0;
-BA_ "GenSigStartValue" SG_ 262 AFC0_ERR_DCDCTemp1OOR 0;
-BA_ "GenSigStartValue" SG_ 262 AFC0_ERR_DCDCTemp0OOR 0;
+BA_ "GenSigStartValue" SG_ 262 AFC0_ERR_DDCMTemp1OOR 0;
+BA_ "GenSigStartValue" SG_ 262 AFC0_ERR_DDCMTemp0OOR 0;
 BA_ "GenSigStartValue" SG_ 262 AFC0_ERR_driver2TempOOR 0;
 BA_ "GenSigStartValue" SG_ 262 AFC0_ERR_driver1TempOOR 0;
 BA_ "GenSigStartValue" SG_ 262 AFC0_ERR_driver0TempOOR 0;
@@ -1224,8 +1224,8 @@ BA_ "GenSigStartValue" SG_ 262 AFC0_WRN_VoltageOOR 0;
 BA_ "GenSigStartValue" SG_ 262 AFC0_WRN_CurrentOOR 0;
 BA_ "GenSigStartValue" SG_ 263 AFC1_state 0;
 BA_ "GenSigStartValue" SG_ 263 AFC1_ERR_VSMTimeout 0;
-BA_ "GenSigStartValue" SG_ 263 AFC1_ERR_DCDCTemp1OOR 0;
-BA_ "GenSigStartValue" SG_ 263 AFC1_ERR_DCDCTemp0OOR 0;
+BA_ "GenSigStartValue" SG_ 263 AFC1_ERR_DDCMTemp1OOR 0;
+BA_ "GenSigStartValue" SG_ 263 AFC1_ERR_DDCMTemp0OOR 0;
 BA_ "GenSigStartValue" SG_ 263 AFC1_ERR_driver2TempOOR 0;
 BA_ "GenSigStartValue" SG_ 263 AFC1_ERR_driver1TempOOR 0;
 BA_ "GenSigStartValue" SG_ 263 AFC1_ERR_driver0TempOOR 0;
@@ -1234,19 +1234,19 @@ BA_ "GenSigStartValue" SG_ 263 AFC1_WRN_VSMTimeout 0;
 BA_ "GenSigStartValue" SG_ 263 AFC1_WRN_VoltageOOR 0;
 BA_ "GenSigStartValue" SG_ 263 AFC1_WRN_CurrentOOR 0;
 BA_ "GenSigStartValue" SG_ 566 AFC0_ACFans 0;
-BA_ "GenSigStartValue" SG_ 566 AFC0_DCDCFan 0;
+BA_ "GenSigStartValue" SG_ 566 AFC0_DDCMFan 0;
 BA_ "GenSigStartValue" SG_ 567 AFC1_ACFans 0;
-BA_ "GenSigStartValue" SG_ 567 AFC1_DCDCFan 0;
+BA_ "GenSigStartValue" SG_ 567 AFC1_DDCMFan 0;
 BA_ "GenSigStartValue" SG_ 1334 AFC0_driverTemp0 0;
 BA_ "GenSigStartValue" SG_ 1334 AFC0_driverTemp1 0;
 BA_ "GenSigStartValue" SG_ 1334 AFC0_driverTemp2 0;
-BA_ "GenSigStartValue" SG_ 1334 AFC0_DCDCTemp0 0;
-BA_ "GenSigStartValue" SG_ 1334 AFC0_DCDCTemp1 0;
+BA_ "GenSigStartValue" SG_ 1334 AFC0_DDCMTemp0 0;
+BA_ "GenSigStartValue" SG_ 1334 AFC0_DDCMTemp1 0;
 BA_ "GenSigStartValue" SG_ 1335 AFC1_driverTemp0 0;
 BA_ "GenSigStartValue" SG_ 1335 AFC1_driverTemp1 0;
 BA_ "GenSigStartValue" SG_ 1335 AFC1_driverTemp2 0;
-BA_ "GenSigStartValue" SG_ 1335 AFC1_DCDCTemp0 0;
-BA_ "GenSigStartValue" SG_ 1335 AFC1_DCDCTemp1 0;
+BA_ "GenSigStartValue" SG_ 1335 AFC1_DDCMTemp0 0;
+BA_ "GenSigStartValue" SG_ 1335 AFC1_DDCMTemp1 0;
 BA_ "GenSigStartValue" SG_ 1350 AFC0_busVoltage 0;
 BA_ "GenSigStartValue" SG_ 1350 AFC0_busCurrent 0;
 BA_ "GenSigStartValue" SG_ 1350 AFC0_fansCurrent 0;
@@ -1266,7 +1266,7 @@ BA_ "GenSigStartValue" SG_ 564 PTC_pumpState 0;
 BA_ "GenSigStartValue" SG_ 564 PTC_preRadiatorTemp 0;
 BA_ "GenSigStartValue" SG_ 564 PTC_postRadiatorTemp 0;
 BA_ "GenSigStartValue" SG_ 596 PTC_acFansDuty 0;
-BA_ "GenSigStartValue" SG_ 596 PTC_dcdcFanDuty 0;
+BA_ "GenSigStartValue" SG_ 596 PTC_dDCMFanDuty 0;
 BA_ "GenSigStartValue" SG_ 1332 PTC_logicVoltage 0;
 BA_ "GenSigStartValue" SG_ 1332 PTC_loadVoltage 0;
 BA_ "GenSigStartValue" SG_ 1348 PTC_logicCurrent 0;
@@ -1346,7 +1346,7 @@ BA_ "GenSigStartValue" SG_ 770 BMS_Current_Average 0;
 BA_ "GenSigStartValue" SG_ 771 BMS_VBatt 0;
 BA_ "GenSigStartValue" SG_ 771 BMS_VAIR 0;
 BA_ "GenSigStartValue" SG_ 771 BMS_iBatt 0;
-BA_ "GenSigStartValue" SG_ 771 BMS_iDCDC 0;
+BA_ "GenSigStartValue" SG_ 771 BMS_iDDCM 0;
 BA_ "GenSigStartValue" SG_ 896 BMS_BMB_0_Max_Voltage_Index 0;
 BA_ "GenSigStartValue" SG_ 896 BMS_BMB_0_Min_Voltage_Index 0;
 BA_ "GenSigStartValue" SG_ 896 BMS_BMB_0_Max_Voltage 0;
@@ -1600,11 +1600,11 @@ BA_ "GenSigStartValue" SG_ 1316 Save_charging_mode 0;
 
 
 VAL_ 256 VSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
-VAL_ 272 VSM_internalState 0 "ERROR" 1 "CLEAR_ERROR" 2 "GLV_ON" 3 "REQ_PRECHARGE" 4 "RUN_BMS" 5 "DCDC_EN" 6 "HV_EN" 7 "RTD" 8 "COOLING_OFF" 9 "DCDC_OFF" ;
+VAL_ 272 VSM_internalState 0 "ERROR" 1 "CLEAR_ERROR" 2 "GLV_ON" 3 "REQ_PRECHARGE" 4 "RUN_BMS" 5 "DDCM_EN" 6 "HV_EN" 7 "RTD" 8 "COOLING_OFF" 9 "DDCM_OFF" ;
 VAL_ 257 HVC_Mode 0 "ERROR" 1 "IDLE" 2 "START" 4 "RUN" 8 "CHARGE" ;
 VAL_ 257 HVC_State 0 "ERROR" 1 "DISCHARGE" 2 "STANDBY" 3 "DRIVE_PRECHARGE" 4 "DRIVE_PRECHARGE_COMPLETE" 5 "DRIVE" 6 "CHARGE_PRECHARGE" 7 "CHARGE_PRECHARGE_COMPLETE" 8 "CHARGE_TRICKLE" 9 "CHARGE_CONSTANT_CURRENT" 10 "CHARGE_CONSTANT_VOLTAGE" 11 "CLEAR_ERROR" 12 "UNKNOWN" ;
 VAL_ 304 HVC_modeRequest 0 "ERROR" 1 "IDLE" 2 "START" 4 "RUN" 8 "CHARGE" ;
-VAL_ 258 CDC_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
+VAL_ 258 DCM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
 VAL_ 259 FSM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
 VAL_ 261 DIM_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
 VAL_ 565 DIM_requestState 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
@@ -1612,9 +1612,9 @@ VAL_ 565 DIM_requestGear 0 "UNKNOWN" 1 "REVERSE" 2 "SLOW" 3 "FAST" 4 "ENDURANCE"
 VAL_ 262 AFC0_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
 VAL_ 263 AFC1_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
 VAL_ 566 AFC0_ACFans 0 "OFF" 1 "LOW" 2 "HIGH" ;
-VAL_ 566 AFC0_DCDCFan 0 "OFF" 1 "ON" ;
+VAL_ 566 AFC0_DDCMFan 0 "OFF" 1 "ON" ;
 VAL_ 567 AFC1_ACFans 0 "OFF" 1 "LOW" 2 "HIGH" ;
-VAL_ 567 AFC1_DCDCFan 0 "OFF" 1 "ON" ;
+VAL_ 567 AFC1_DDCMFan 0 "OFF" 1 "ON" ;
 VAL_ 260 PTC_state 0 "UNKNOWN" 1 "GLV_ON" 2 "HV_EN" 3 "RTD" 4 "ERROR" 5 "CLEAR_ERROR" ;
 VAL_ 564 PTC_fanState 0 "OFF" 1 "LOW" 2 "HIGH" ;
 VAL_ 564 PTC_pumpState 0 "OFF" 1 "ON" ;

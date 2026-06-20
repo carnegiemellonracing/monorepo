@@ -167,11 +167,11 @@ void LL_RCC_DeInit(void)
   /* Reset D3CFGR register */
   CLEAR_REG(RCC->D3CFGR);
 #else
-  /* Reset CDCFGR1 register */
-  CLEAR_REG(RCC->CDCFGR1);
+  /* Reset DCMFGR1 register */
+  CLEAR_REG(RCC->DCMFGR1);
 
-  /* Reset CDCFGR2 register */
-  CLEAR_REG(RCC->CDCFGR2);
+  /* Reset DCMFGR2 register */
+  CLEAR_REG(RCC->DCMFGR2);
 
   /* Reset SRDCFGR register */
   CLEAR_REG(RCC->SRDCFGR);
@@ -838,10 +838,10 @@ uint32_t LL_RCC_GetSAIClockFreq(uint32_t SAIxSource)
     case LL_RCC_SAI4A_CLKSOURCE_PLL1Q:
     case LL_RCC_SAI4B_CLKSOURCE_PLL1Q:
 #endif /* SAI4 */
-#if defined (RCC_CDCCIP1R_SAI2ASEL) || defined(RCC_CDCCIP1R_SAI2BSEL)
+#if defined (RCC_DCMCIP1R_SAI2ASEL) || defined(RCC_DCMCIP1R_SAI2BSEL)
     case LL_RCC_SAI2A_CLKSOURCE_PLL1Q:
     case LL_RCC_SAI2B_CLKSOURCE_PLL1Q:
-#endif /* RCC_CDCCIP1R_SAI2ASEL || RCC_CDCCIP1R_SAI2BSEL */
+#endif /* RCC_DCMCIP1R_SAI2ASEL || RCC_DCMCIP1R_SAI2BSEL */
       if (LL_RCC_PLL1_IsReady() != 0U)
       {
         LL_RCC_GetPLL1ClockFreq(&PLL_Clocks);
@@ -857,10 +857,10 @@ uint32_t LL_RCC_GetSAIClockFreq(uint32_t SAIxSource)
     case LL_RCC_SAI4A_CLKSOURCE_PLL2P:
     case LL_RCC_SAI4B_CLKSOURCE_PLL2P:
 #endif /* SAI4 */
-#if defined (RCC_CDCCIP1R_SAI2ASEL) || defined(RCC_CDCCIP1R_SAI2BSEL)
+#if defined (RCC_DCMCIP1R_SAI2ASEL) || defined(RCC_DCMCIP1R_SAI2BSEL)
     case LL_RCC_SAI2A_CLKSOURCE_PLL2P:
     case LL_RCC_SAI2B_CLKSOURCE_PLL2P:
-#endif /* RCC_CDCCIP1R_SAI2ASEL || RCC_CDCCIP1R_SAI2BSEL */
+#endif /* RCC_DCMCIP1R_SAI2ASEL || RCC_DCMCIP1R_SAI2BSEL */
       if (LL_RCC_PLL2_IsReady() != 0U)
       {
         LL_RCC_GetPLL2ClockFreq(&PLL_Clocks);
@@ -876,10 +876,10 @@ uint32_t LL_RCC_GetSAIClockFreq(uint32_t SAIxSource)
     case LL_RCC_SAI4A_CLKSOURCE_PLL3P:
     case LL_RCC_SAI4B_CLKSOURCE_PLL3P:
 #endif /* SAI4 */
-#if defined (RCC_CDCCIP1R_SAI2ASEL) || defined(RCC_CDCCIP1R_SAI2BSEL)
+#if defined (RCC_DCMCIP1R_SAI2ASEL) || defined(RCC_DCMCIP1R_SAI2BSEL)
     case LL_RCC_SAI2A_CLKSOURCE_PLL3P:
     case LL_RCC_SAI2B_CLKSOURCE_PLL3P:
-#endif /* RCC_CDCCIP1R_SAI2ASEL || RCC_CDCCIP1R_SAI2BSEL */
+#endif /* RCC_DCMCIP1R_SAI2ASEL || RCC_DCMCIP1R_SAI2BSEL */
       if (LL_RCC_PLL3_IsReady() != 0U)
       {
         LL_RCC_GetPLL3ClockFreq(&PLL_Clocks);
@@ -895,10 +895,10 @@ uint32_t LL_RCC_GetSAIClockFreq(uint32_t SAIxSource)
     case LL_RCC_SAI4A_CLKSOURCE_I2S_CKIN:
     case LL_RCC_SAI4B_CLKSOURCE_I2S_CKIN:
 #endif /* SAI4 */
-#if defined (RCC_CDCCIP1R_SAI2ASEL) || defined(RCC_CDCCIP1R_SAI2BSEL)
+#if defined (RCC_DCMCIP1R_SAI2ASEL) || defined(RCC_DCMCIP1R_SAI2BSEL)
     case LL_RCC_SAI2A_CLKSOURCE_I2S_CKIN:
     case LL_RCC_SAI2B_CLKSOURCE_I2S_CKIN:
-#endif /* RCC_CDCCIP1R_SAI2ASEL || RCC_CDCCIP1R_SAI2BSEL */
+#endif /* RCC_DCMCIP1R_SAI2ASEL || RCC_DCMCIP1R_SAI2BSEL */
       sai_frequency = EXTERNAL_CLOCK_VALUE;
       break;
 
@@ -910,10 +910,10 @@ uint32_t LL_RCC_GetSAIClockFreq(uint32_t SAIxSource)
     case LL_RCC_SAI4A_CLKSOURCE_CLKP:
     case LL_RCC_SAI4B_CLKSOURCE_CLKP:
 #endif /* SAI4 */
-#if defined (RCC_CDCCIP1R_SAI2ASEL) || defined(RCC_CDCCIP1R_SAI2BSEL)
+#if defined (RCC_DCMCIP1R_SAI2ASEL) || defined(RCC_DCMCIP1R_SAI2BSEL)
     case LL_RCC_SAI2A_CLKSOURCE_CLKP:
     case LL_RCC_SAI2B_CLKSOURCE_CLKP:
-#endif /* RCC_CDCCIP1R_SAI2ASEL || RCC_CDCCIP1R_SAI2BSEL */
+#endif /* RCC_DCMCIP1R_SAI2ASEL || RCC_DCMCIP1R_SAI2BSEL */
       sai_frequency = LL_RCC_GetCLKPClockFreq(LL_RCC_CLKP_CLKSOURCE);
       break;
 

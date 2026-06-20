@@ -9169,9 +9169,9 @@ typedef struct
 #define PWR_CR_MRLVDS_Pos      (11U)
 #define PWR_CR_MRLVDS_Msk      (0x1UL << PWR_CR_MRLVDS_Pos)                     /*!< 0x00000800 */
 #define PWR_CR_MRLVDS          PWR_CR_MRLVDS_Msk                               /*!< Main Regulator Low Voltage in Deep Sleep mode              */
-#define PWR_CR_ADCDC1_Pos      (13U)
-#define PWR_CR_ADCDC1_Msk      (0x1UL << PWR_CR_ADCDC1_Pos)                     /*!< 0x00002000 */
-#define PWR_CR_ADCDC1          PWR_CR_ADCDC1_Msk                               /*!< Refer to AN4073 on how to use this bit                     */
+#define PWR_CR_ADDCM1_Pos      (13U)
+#define PWR_CR_ADDCM1_Msk      (0x1UL << PWR_CR_ADDCM1_Pos)                     /*!< 0x00002000 */
+#define PWR_CR_ADDCM1          PWR_CR_ADDCM1_Msk                               /*!< Refer to AN4073 on how to use this bit                     */
 #define PWR_CR_VOS_Pos         (14U)
 #define PWR_CR_VOS_Msk         (0x3UL << PWR_CR_VOS_Pos)                        /*!< 0x0000C000 */
 #define PWR_CR_VOS             PWR_CR_VOS_Msk                                  /*!< VOS[1:0] bits (Regulator voltage scaling output selection) */

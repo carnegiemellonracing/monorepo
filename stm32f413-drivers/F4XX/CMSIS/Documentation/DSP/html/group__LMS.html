@@ -132,9 +132,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga12fd93f61401b365789cdfd5dca07e5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LMS.html#ga12fd93f61401b365789cdfd5dca07e5b">arm_lms_q15</a> (const <a class="el" href="structarm__lms__instance__q15.html">arm_lms_instance_q15</a> *<a class="el" href="arm__bayes__example__f32_8c.html#ad5af783c9e1eb1514dec0a59dac35eb7">S</a>, const <a class="el" href="arm__math__types_8h.html#ab5a8fb21a5b3b983d5f54f31614052ea">q15_t</a> *pSrc, <a class="el" href="arm__math__types_8h.html#ab5a8fb21a5b3b983d5f54f31614052ea">q15_t</a> *pRef, <a class="el" href="arm__math__types_8h.html#ab5a8fb21a5b3b983d5f54f31614052ea">q15_t</a> *pOut, <a class="el" href="arm__math__types_8h.html#ab5a8fb21a5b3b983d5f54f31614052ea">q15_t</a> *pErr, uint32_t <a class="el" href="arm__variance__example__f32_8c.html#ab6558f40a619c2502fbc24c880fd4fb0">blockSize</a>)</td></tr>
 <tr class="memdesc:ga12fd93f61401b365789cdfd5dca07e5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Processing function for Q15 LMS filter.  <a href="#ga12fd93f61401b365789cdfd5dca07e5b">More...</a><br/></td></tr>
 <tr class="separator:ga12fd93f61401b365789cdfd5dca07e5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga69c9c64338c067f1fb4990dcdc8c143f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LMS.html#ga69c9c64338c067f1fb4990dcdc8c143f">arm_lms_q31</a> (const <a class="el" href="structarm__lms__instance__q31.html">arm_lms_instance_q31</a> *<a class="el" href="arm__bayes__example__f32_8c.html#ad5af783c9e1eb1514dec0a59dac35eb7">S</a>, const <a class="el" href="arm__math__types_8h.html#adc89a3547f5324b7b3b95adec3806bc0">q31_t</a> *pSrc, <a class="el" href="arm__math__types_8h.html#adc89a3547f5324b7b3b95adec3806bc0">q31_t</a> *pRef, <a class="el" href="arm__math__types_8h.html#adc89a3547f5324b7b3b95adec3806bc0">q31_t</a> *pOut, <a class="el" href="arm__math__types_8h.html#adc89a3547f5324b7b3b95adec3806bc0">q31_t</a> *pErr, uint32_t <a class="el" href="arm__variance__example__f32_8c.html#ab6558f40a619c2502fbc24c880fd4fb0">blockSize</a>)</td></tr>
-<tr class="memdesc:ga69c9c64338c067f1fb4990dcdc8c143f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Processing function for Q31 LMS filter.  <a href="#ga69c9c64338c067f1fb4990dcdc8c143f">More...</a><br/></td></tr>
-<tr class="separator:ga69c9c64338c067f1fb4990dcdc8c143f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga69c9c64338c067f1fb4990dDCM8c143f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LMS.html#ga69c9c64338c067f1fb4990dDCM8c143f">arm_lms_q31</a> (const <a class="el" href="structarm__lms__instance__q31.html">arm_lms_instance_q31</a> *<a class="el" href="arm__bayes__example__f32_8c.html#ad5af783c9e1eb1514dec0a59dac35eb7">S</a>, const <a class="el" href="arm__math__types_8h.html#adc89a3547f5324b7b3b95adec3806bc0">q31_t</a> *pSrc, <a class="el" href="arm__math__types_8h.html#adc89a3547f5324b7b3b95adec3806bc0">q31_t</a> *pRef, <a class="el" href="arm__math__types_8h.html#adc89a3547f5324b7b3b95adec3806bc0">q31_t</a> *pOut, <a class="el" href="arm__math__types_8h.html#adc89a3547f5324b7b3b95adec3806bc0">q31_t</a> *pErr, uint32_t <a class="el" href="arm__variance__example__f32_8c.html#ab6558f40a619c2502fbc24c880fd4fb0">blockSize</a>)</td></tr>
+<tr class="memdesc:ga69c9c64338c067f1fb4990dDCM8c143f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Processing function for Q31 LMS filter.  <a href="#ga69c9c64338c067f1fb4990dDCM8c143f">More...</a><br/></td></tr>
+<tr class="separator:ga69c9c64338c067f1fb4990dDCM8c143f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Description</h2>
 <p>LMS filters are a class of adaptive filters that are able to "learn" an unknown transfer functions. LMS filters use a gradient descent method in which the filter coefficients are updated based on the instantaneous error signal. Adaptive filters are often used in communication systems, equalizers, and noise removal. The CMSIS DSP Library contains LMS filter functions that operate on Q15, Q31, and floating-point data types. The library also contains normalized LMS filters in which the filter coefficient adaptation is indepedent of the level of the input signal.</p>
@@ -449,7 +449,7 @@ Internal structure of the Least Mean Square filter</div></div>
 <dl class="section return"><dt>Returns</dt><dd>none</dd></dl>
 <dl class="section user"><dt>Details</dt><dd><code>pCoeffs</code> points to the array of filter coefficients stored in time reversed order: <pre>
    {b[numTaps-1], b[numTaps-2], b[N-2], ..., b[1], b[0]}
-</pre> The initial filter coefficients serve as a starting point for the adaptive filter. <code>pState</code> points to an array of length <code>numTaps+blockSize-1</code> samples, where <code>blockSize</code> is the number of input samples processed by each call to <code><a class="el" href="group__LMS.html#ga69c9c64338c067f1fb4990dcdc8c143f" title="Processing function for Q31 LMS filter. ">arm_lms_q31()</a></code>. </dd></dl>
+</pre> The initial filter coefficients serve as a starting point for the adaptive filter. <code>pState</code> points to an array of length <code>numTaps+blockSize-1</code> samples, where <code>blockSize</code> is the number of input samples processed by each call to <code><a class="el" href="group__LMS.html#ga69c9c64338c067f1fb4990dDCM8c143f" title="Processing function for Q31 LMS filter. ">arm_lms_q31()</a></code>. </dd></dl>
 
 </div>
 </div>
@@ -517,7 +517,7 @@ Internal structure of the Least Mean Square filter</div></div>
 
 </div>
 </div>
-<a class="anchor" id="ga69c9c64338c067f1fb4990dcdc8c143f"></a>
+<a class="anchor" id="ga69c9c64338c067f1fb4990dDCM8c143f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">

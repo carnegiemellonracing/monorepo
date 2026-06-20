@@ -34,12 +34,12 @@ var group__CMSIS__SCTLR__BITS =
     [ "SCTLR_U_Pos", "group__CMSIS__SCTLR__BITS.html#gaa0431730d7ce929db03d8accee558e17", null ],
     [ "SCTLR_UWXN_Msk", "group__CMSIS__SCTLR__BITS.html#gab834e64e0da7c2a98d747ce73252c199", null ],
     [ "SCTLR_UWXN_Pos", "group__CMSIS__SCTLR__BITS.html#ga7c7d88f3db4de438ddd069cf3fbc88b3", null ],
-    [ "SCTLR_V_Msk", "group__CMSIS__SCTLR__BITS.html#gaf84f3f15bf6917acdc5b5a4ad661ac11", null ],
+    [ "SCTLR_V_Msk", "group__CMSIS__SCTLR__BITS.html#gaf84f3f15bf6917aDCM5b5a4ad661ac11", null ],
     [ "SCTLR_V_Pos", "group__CMSIS__SCTLR__BITS.html#ga57778fd6afbe5b4fe8d8ea828acf833d", null ],
     [ "SCTLR_VE_Msk", "group__CMSIS__SCTLR__BITS.html#gad94a7feadba850299a68c56e39c0b274", null ],
     [ "SCTLR_VE_Pos", "group__CMSIS__SCTLR__BITS.html#ga1372b569553a0740d881e24c0be7334f", null ],
     [ "SCTLR_WXN_Msk", "group__CMSIS__SCTLR__BITS.html#ga510b03214d135f15ad3c5d41ec20a291", null ],
     [ "SCTLR_WXN_Pos", "group__CMSIS__SCTLR__BITS.html#gaf145654986fd6d014136580ad279d256", null ],
-    [ "SCTLR_Z_Msk", "group__CMSIS__SCTLR__BITS.html#ga12a05acdcb8db6e99970f26206d3067c", null ],
+    [ "SCTLR_Z_Msk", "group__CMSIS__SCTLR__BITS.html#ga12a05aDCMb8db6e99970f26206d3067c", null ],
     [ "SCTLR_Z_Pos", "group__CMSIS__SCTLR__BITS.html#gaa0eade648c9a34de891af0e6f47857dd", null ]
 ];

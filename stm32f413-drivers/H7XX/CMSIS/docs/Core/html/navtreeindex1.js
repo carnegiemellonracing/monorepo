@@ -230,7 +230,7 @@ var NAVTREEINDEX1 =
 "structSysTick__Type.html#a4780a489256bb9f54d0ba8ed4de191cd":[9,12,2],
 "structSysTick__Type.html#a875e7afa5c4fd43997fb544a4ac6e37e":[9,12,1],
 "structSysTick__Type.html#a9b5420d17e8e43104ddd4ae5a610af93":[9,12,3],
-"structSysTick__Type.html#afcadb0c6d35b21cdc0018658a13942de":[9,12,0],
+"structSysTick__Type.html#afcadb0c6d35b21DCM0018658a13942de":[9,12,0],
 "structTPI__Type.html":[9,13],
 "structTPI__Type.html#a061372fcd72f1eea871e2d9c1be849bc":[9,13,9],
 "structTPI__Type.html#a0e10e292cb019a832b03ddd055b2f6ac":[9,13,1],

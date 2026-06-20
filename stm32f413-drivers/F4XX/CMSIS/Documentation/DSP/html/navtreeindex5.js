@@ -160,7 +160,7 @@ var NAVTREEINDEX5 =
 "structarm__svm__sigmoid__instance__f32.html#ac74855c4f6df20c9b07ee5fe002378fc":[4,95,6],
 "structarm__svm__sigmoid__instance__f32.html#aed464fe96870d4fcee492ab05b5dba21":[4,95,1],
 "unionany32x2__t.html":[4,1],
-"unionany32x2__t.html#a77adc1820dcdcdc812bacdbe7e389759":[4,1,0],
+"unionany32x2__t.html#a77adc1820dDCMdc812bacdbe7e389759":[4,1,0],
 "unionany32x2__t.html#a8ee30a051b7359703a20fa9d1c25b504":[4,1,1],
 "unionany32x4__t.html":[4,2],
 "unionany32x4__t.html#a5a1b1bbefd65485f30beccc0ed7cc70d":[4,2,0],

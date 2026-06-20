@@ -9,7 +9,7 @@ var group__RealFFT =
     [ "arm_rfft_4096_fast_init_f32", "group__RealFFT.html#gaad50a08bb8191e1a138b5f72a268727a", null ],
     [ "arm_rfft_512_fast_init_f32", "group__RealFFT.html#ga9a0e72918318f9d1c03973eab379e580", null ],
     [ "arm_rfft_64_fast_init_f32", "group__RealFFT.html#ga0f67de6a0e5d87011f35426112d2d91b", null ],
-    [ "arm_rfft_f32", "group__RealFFT.html#ga3df1766d230532bc068fc4ed69d0fcdc", null ],
+    [ "arm_rfft_f32", "group__RealFFT.html#ga3df1766d230532bc068fc4ed69d0fDCM", null ],
     [ "arm_rfft_fast_f32", "group__RealFFT.html#ga180d8b764d59cbb85d37a2d5f7cd9799", null ],
     [ "arm_rfft_fast_init_f32", "group__RealFFT.html#gac5fceb172551e7c11eb4d0e17ef15aa3", null ],
     [ "arm_rfft_init_f32", "group__RealFFT.html#ga10717ee326bf50832ef1c25b85a23068", null ],

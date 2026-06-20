@@ -16,7 +16,7 @@ var group__MMU__defs__gr =
     ] ],
     [ "DESCRIPTOR_FAULT", "group__MMU__defs__gr.html#gaba92665a24bc2ba8c49b9a0881c9df8a", null ],
     [ "OFFSET_1M", "group__MMU__defs__gr.html#ga8e51cfa91c0b6bbf1df1cff0bde44836", null ],
-    [ "OFFSET_4K", "group__MMU__defs__gr.html#ga121c645cdc91018720ceaf1d021fcd89", null ],
+    [ "OFFSET_4K", "group__MMU__defs__gr.html#ga121c645DCM91018720ceaf1d021fcd89", null ],
     [ "OFFSET_64K", "group__MMU__defs__gr.html#gaf19b9fb664a06a41562176a51c66fcff", null ],
     [ "page4k_device_rw", "group__MMU__defs__gr.html#gafe66b1515bf7d251a9a3218162637a22", null ],
     [ "page64k_device_rw", "group__MMU__defs__gr.html#ga6c8c84bdeebf350d97eb3a99bd11845f", null ],
@@ -65,7 +65,7 @@ var group__MMU__defs__gr =
     [ "SECTION_TEX0_SHIFT", "group__MMU__defs__gr.html#gad84432cb37ae093f7609f8f29f42c1f4", null ],
     [ "SECTION_TEX1_SHIFT", "group__MMU__defs__gr.html#ga531cafc5eca8ade67a6fb83b35f8520e", null ],
     [ "SECTION_TEX2_SHIFT", "group__MMU__defs__gr.html#ga8a6d854746a9c0049f9a91188092a55f", null ],
-    [ "SECTION_XN_SHIFT", "group__MMU__defs__gr.html#ga6cdc2db0ca695fd1191305a13e66c0a7", null ],
+    [ "SECTION_XN_SHIFT", "group__MMU__defs__gr.html#ga6DCM2db0ca695fd1191305a13e66c0a7", null ],
     [ "mmu_access_Type", "group__MMU__defs__gr.html#ga2ee598252f996e4f96640b096291d280", [
       [ "NO_ACCESS", "core__ca_8h.html#ga2ee598252f996e4f96640b096291d280a4c66cd69a45985317939a53d820fb9da", null ],
       [ "RW", "core__ca_8h.html#ga2ee598252f996e4f96640b096291d280aec2497e0c8af01c04bec31ec0d1d7847", null ],

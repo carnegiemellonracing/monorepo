@@ -72,7 +72,7 @@ var NAVTREEINDEX3 =
 "structarm__rfft__instance__q15.html#afd444d05858c5f419980e94e8240d5c3":[4,59,6],
 "structarm__rfft__instance__q31.html":[4,60],
 "structarm__rfft__instance__q31.html#a04eb56288cddc9a366d3af02c3f86792":[4,60,4],
-"structarm__rfft__instance__q31.html#a3cb90cdc928a88b0203917dcb3dc1b71":[4,60,0],
+"structarm__rfft__instance__q31.html#a3cb90DCM928a88b0203917dcb3dc1b71":[4,60,0],
 "structarm__rfft__instance__q31.html#a6fc90252b579f7c29e01bd279334fc43":[4,60,6],
 "structarm__rfft__instance__q31.html#a7d57376f7be4945011d3a4d5b1f646b8":[4,60,5],
 "structarm__rfft__instance__q31.html#a8fe10d425b59e096c23aa4bb5caa1974":[4,60,3],
