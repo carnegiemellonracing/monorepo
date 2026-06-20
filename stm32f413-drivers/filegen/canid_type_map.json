@@ -70,14 +70,6 @@
             "timeOut": 25,
             "type": "cmr_canFrontWheelVelocity_t"
         },
-        "CMR_CANID_CDC_ODOMETER": {
-            "cycleTime": 1000,
-            "odometer_km": {
-                "u": "km"
-            },
-            "timeOut": 5000,
-            "type": "cmr_canCDCOdometer_t"
-        },
         "CMR_CANID_CDC_POSE_ORIENTATION": {
             "cycleTime": 100,
             "pitch_deg": {
