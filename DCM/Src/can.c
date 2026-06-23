@@ -17,7 +17,7 @@
 
 #include <CMR/tasks.h>      // Task interface
 #include <CMR/can_types.h>  
-#include <CMR/fdcan.h>      // fdcan interface
+#include <CMR/can.h>        // can interface
 #include <CMR/config_screen_helper.h>
 #include <CMR/utils.h>
 
@@ -892,11 +892,11 @@ static void canTX100Hz(void *pvParameters) {
 		// SF
 		const cmr_canCDCSafetyFilterStates_t *sfStatesInfo = getSafetyFilterInfo();
 		cmr_canCDCMotorPower_t *motorPowerInfo = getMotorPowerInfo();
-		motorPowerInfo->motor_power_FL = (HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_TRAC].handle)) >> 16) & 0xFFFF;
-		motorPowerInfo->motor_power_FR = HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_TRAC].handle));
+        motorPowerInfo->motor_power_FL = HAL_CAN_GetTxMailboxesFreeLevel(&(can[CMR_CAN_BUS_TRAC].handle));
+        motorPowerInfo->motor_power_FR = HAL_CAN_GetTxMailboxesFreeLevel(&(can[CMR_CAN_BUS_TRAC].handle));
 
-		motorPowerInfo->motor_power_RL = (HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_VEH].handle)) >> 16) & 0xFFFF;
-		motorPowerInfo->motor_power_RR = HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_VEH].handle));
+        motorPowerInfo->motor_power_RL = HAL_CAN_GetTxMailboxesFreeLevel(&(can[CMR_CAN_BUS_VEH].handle));
+        motorPowerInfo->motor_power_RR = HAL_CAN_GetTxMailboxesFreeLevel(&(can[CMR_CAN_BUS_VEH].handle));
 
 		// canTX(CMR_CAN_BUS_VEH, CMR_CANID_SF_STATE, sfStatesInfo, sizeof(*sfStatesInfo), canTX100Hz_period_ms); //safety filter
 		// //canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
@@ -1393,7 +1393,7 @@ void dim_params_callback (cmr_can_t *canb_rx, uint16_t canID, const void *data, 
     }
 }
 
-void conditionalCallback(cmr_can_t *canb_rx, uint32_t canID, const void *data, size_t dataLen) {
+void conditionalCallback(cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t dataLen) {
 	uint32_t au32_initial_ticks = DWT->CYCCNT;
 
 	size_t iface_idx = (canb_rx - can);
@@ -1474,21 +1474,21 @@ void conditionalCallback(cmr_can_t *canb_rx, uint32_t canID, const void *data, s
  */
 void canInit(void) {
     // Vehicle CAN initialization - CAN1
-    cmr_FDcanInit(&can[CMR_CAN_BUS_VEH], FDCAN1, CMR_CAN_BITRATE_500K, NULL,
+    cmr_canInit(&can[CMR_CAN_BUS_VEH], CAN1, CMR_CAN_BITRATE_500K, NULL,
                   0, &conditionalCallback, GPIOA,
                   GPIO_PIN_11,        // CAN1 RX port/pin.
                   GPIOA, GPIO_PIN_12  // CAN1 TX port/pin.
     );
 
     // Tractive CAN initialization. - CAN3
-    cmr_FDcanInit(&(can[CMR_CAN_BUS_DAQ]), FDCAN2, CMR_CAN_BITRATE_500K, NULL,
+    cmr_canInit(&(can[CMR_CAN_BUS_DAQ]), CAN2, CMR_CAN_BITRATE_500K, NULL,
                   0, &conditionalCallback, GPIOB,
                   GPIO_PIN_12,        // CAN3 RX port/pin.
                   GPIOB, GPIO_PIN_13  // CAN3 TX port/pin.
     );
 
     // DAQ CAN init. - CAN2
-    cmr_FDcanInit(&can[CMR_CAN_BUS_TRAC], FDCAN3, CMR_CAN_BITRATE_500K, NULL,
+    cmr_canInit(&can[CMR_CAN_BUS_TRAC], CAN3, CMR_CAN_BITRATE_500K, NULL,
                   0, &conditionalCallback, GPIOD,
                   GPIO_PIN_12,        // CAN2 RX port/pin.
                   GPIOD, GPIO_PIN_13  // CAN2 TX port/pin.
@@ -1498,7 +1498,7 @@ void canInit(void) {
     const cmr_canFilter_t canVehicleFilters[] = {
         {
             .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO1,
+            .rxFIFO = CAN_RX_FIFO1,
 
             // Match all even IDs (bottom bit 0, all others don't care).
             .ids = {0x000,0x000}
@@ -1506,14 +1506,14 @@ void canInit(void) {
 
         {
             .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {CMR_CANID_CDC_RTC_DATA_IN,
                     CMR_CANID_VSM_SENSORS}
         },
 
         {
             .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {CMR_CANID_AS_PRESSURE_READINGS}
         }
 
@@ -1527,35 +1527,35 @@ void canInit(void) {
         // FR CAN IDs
         {
             .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {FR_NODE_ID, 0x1F}
         },
         // FL CAN IDs
         {
             .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {FL_NODE_ID, 0x1F}
         },
         // RL CAN IDs
         {
             .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {RL_NODE_ID, 0x1F}
         },
         // RR CAN IDs
         {
             .isMask = true,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {RR_NODE_ID, 0x1F}
         },
         {
             .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {CMR_CANID_IVT_CURRENT, CMR_CANID_IVT_VOLTAGE}
         },
         {
             .isMask = false,
-            .rxFIFO = FDCAN_RX_FIFO0,
+            .rxFIFO = CAN_RX_FIFO0,
             .ids = {CMR_CANID_EMD_MEASUREMENT, CMR_CANID_EMD_TEMPERATURE}
         },
     };
@@ -1566,20 +1566,19 @@ void canInit(void) {
     // DAQ CAN filters.
     const cmr_canFilter_t canDaqFilters[] = {
         {.isMask = true,
-         .rxFIFO = FDCAN_RX_FIFO0,
+         .rxFIFO = CAN_RX_FIFO0,
 
          // Match all even IDs (bottom bit 0, all others don't care).
          .ids = {0x000, 0x001}
         },
         {.isMask = true,
-         .rxFIFO = FDCAN_RX_FIFO1,
+         .rxFIFO = CAN_RX_FIFO1,
 
          // Match all odd IDs (bottom bit 1, all others don't care).
          .ids = {0x001, 0x001}
         },
         {.isMask = false,
-         .isExtended = true,
-         .rxFIFO = FDCAN_RX_FIFO1,
+         .rxFIFO = CAN_RX_FIFO1,
 
          .ids = {CMR_CANID_EXTENDED_CUBEMARS_DATA}
         }
@@ -1648,7 +1647,7 @@ int canTX(cmr_canBusID_t bus, cmr_canID_t id, const void *data, size_t len, Tick
 
 int canExtendedTX(cmr_canBusID_t bus, cmr_canExtendedID_t id, const void *data, size_t len, TickType_t timeout) {
     configASSERT(bus < CMR_CAN_BUS_NUM);
-    return cmr_canExtendedTX(&(can[bus]), id, data, len, timeout);
+    return cmr_canTX(&(can[bus]), id, data, len, timeout);
 }
 
 /**

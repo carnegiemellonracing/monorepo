@@ -17,7 +17,7 @@ set(cpu_PARAMS ${cpu_PARAMS}
 
 # Linker script
 set(linker_script_SRC ${linker_script_SRC}
-    ${CMAKE_CURRENT_SOURCE_DIR}/STM32H725ZGTX_FLASH.ld
+	${CMAKE_CURRENT_SOURCE_DIR}/stm32f413rgtx_FLASH.ld
 )
 
 # Sources
@@ -26,7 +26,7 @@ set(sources_SRCS ${sources_SRCS}
 	${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
 	${CMAKE_CURRENT_SOURCE_DIR}/Src/syscalls.c
 	${CMAKE_CURRENT_SOURCE_DIR}/Src/sysmem.c
-	${CMAKE_CURRENT_SOURCE_DIR}/Startup/startup_stm32h725xx.s
+	${CMAKE_CURRENT_SOURCE_DIR}/Startup/startup_stm32f413rgtx.s
 )
 
 # Include directories

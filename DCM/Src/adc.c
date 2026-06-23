@@ -21,25 +21,25 @@ static cmr_adcChannel_t adcChannels[ADC_LEN] = {
         .channel = ADC_CHANNEL_2,
         .port = GPIOF,
         .pin = GPIO_PIN_9,
-        .samplingTime = ADC3_SAMPLETIME_12CYCLES_5
+        .samplingTime = ADC_SAMPLETIME_15CYCLES
     },
     [ADC_THERM2] = {
         .channel = ADC_CHANNEL_7,
         .port = GPIOF,
         .pin = GPIO_PIN_8,
-        .samplingTime = ADC3_SAMPLETIME_12CYCLES_5,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
     },
     [ADC_THERM3] = {
         .channel = ADC_CHANNEL_3,
         .port = GPIOF,
         .pin = GPIO_PIN_7,
-        .samplingTime = ADC3_SAMPLETIME_12CYCLES_5,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
     },
     [ADC_THERM4] = {
         .channel = ADC_CHANNEL_8,
         .port = GPIOF,
         .pin = GPIO_PIN_6,
-        .samplingTime = ADC3_SAMPLETIME_12CYCLES_5,
+        .samplingTime = ADC_SAMPLETIME_15CYCLES,
     }
 
 };
@@ -53,7 +53,7 @@ static cmr_adc_t adc;
 void adcInit(void) {
     // ADC initialization and channel configuration.
     cmr_adcInit(
-        &adc, ADC3,
+        &adc, ADC1,
         adcChannels, sizeof(adcChannels) / sizeof(adcChannels[0]),
         10
     );

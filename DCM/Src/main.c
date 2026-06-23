@@ -5,11 +5,11 @@
  * @author Carnegie Mellon Racing
  */
 
-#include <stm32h7xx_hal.h> // HAL interface
+#include <stm32f4xx_hal.h> // HAL interface
 
 #include <CMR/panic.h>  // cmr_panic()
 #include <CMR/rcc.h>    // RCC interface
-#include <CMR/fdcan.h>    // CAN interface
+#include <CMR/can.h>      // CAN interface
 #include <CMR/adc.h>    // ADC interface
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
@@ -75,7 +75,6 @@ static void statusLED(void *pvParameters) {
 int main(void) {
 
    	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-    DWT->LAR = 0xC5ACCE55;
     DWT->CYCCNT = 0;
     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
     // System initialization.

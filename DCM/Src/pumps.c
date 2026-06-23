@@ -33,7 +33,7 @@ cmr_pwmPinConfig_t pump_right = {
     .channel = TIM_CHANNEL_2,
     .presc = 24,
     .period_ticks = 40000,
-    .timer = TIM23
+    .timer = TIM13
 };
 
 /** @brief Pump control task priority. */

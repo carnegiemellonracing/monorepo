@@ -7,7 +7,7 @@
 
 #include <string.h>
 
-#include <stm32h7xx_hal.h>  // HAL interface
+#include <stm32f4xx_hal.h>  // HAL interface
 #include <CMR/tasks.h>  // Task interface
 #include <CMR/gpio.h>
 #include <CMR/panic.h>
@@ -73,7 +73,7 @@ void i2cInit() {
     );
 
     cmr_i2cInit(
-        &i2c_ext, I2C5,                // TODO: Increase Clock Speed if can't hit deadlines
+        &i2c_ext, I2C2,                // TODO: Increase Clock Speed if can't hit deadlines
         I2C_CLOCK_LOW, 0, /* Clock Speed and own address */
         GPIOC, GPIO_PIN_11,         /* Clock Port/Pin */
         GPIOC, GPIO_PIN_10          /* Data Port/Pin */

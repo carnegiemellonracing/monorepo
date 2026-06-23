@@ -54,8 +54,8 @@ set(cpu_PARAMS
 
 # Sources
 set(sources_SRCS)
-set(PROCESSOR H725)
-set(PROCESSOR_FAM H7XX)
+set(PROCESSOR F413)
+set(PROCESSOR_FAM F4XX)
 
 # Include directories for all compilers
 set(include_DIRS
@@ -71,7 +71,7 @@ set(include_asm_DIRS)
 
 # Symbols definition for all compilers
 set(symbols_SYMB
-    STM32H725xx
+    STM32F413xx
     ${PROCESSOR}
 )
 
