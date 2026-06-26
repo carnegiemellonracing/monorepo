@@ -27,6 +27,7 @@
 #include "brakelight.h"
 #include "pumps.h"
 #include "steering.h"
+#include "optimizer.h"
 
 
 /** @brief Status LED priority. */
@@ -85,19 +86,111 @@ int main(void) {
     // time_OSQPControls(0, 0, 0, 0, 0, 0, true, true, false, 0);
 
     // Peripheral configuration.
-    gpioInit();
-    // i2cInit();
-    canInit();
-    adcInit();
-    brakelightInit();
-    motorsInit();
-    sensorsInit();
-    pumpsOn();
-    steeringInit();
+    // gpioInit();
+    // // i2cInit();
+    // canInit();
+    // adcInit();
+    // brakelightInit();
+    // motorsInit();
+    // sensorsInit();
+    // pumpsOn();
+    // steeringInit();
 
-    cmr_taskInit(&statusLED_task, "statusLED", statusLED_priority, statusLED,
-                NULL);
+    // cmr_taskInit(&statusLED_task, "statusLED", statusLED_priority, statusLED,
+    //             NULL);
 
-    vTaskStartScheduler();
-    cmr_panic("vTaskStartScheduler returned!");
+    // vTaskStartScheduler();
+    // cmr_panic("vTaskStartScheduler returned!");
+
+    optimizer_state_t state = {
+      /* areq, mreq */
+      .areq = 0.0,
+      .mreq = 0.0,
+
+      /* theta bounds */
+      .theta_left  = -0.5,
+      .theta_right =  0.5,
+
+      /* weight arrays [NUM_VARS = 4] */
+      .accel_weights    = { 1.0, 1.0, 1.0, 1.0 },
+      .moment_weights   = { 1.0, 1.0, 1.0, 1.0 },
+      .diagonal_weights = { 0.1, 0.1, 0.1, 0.1 },
+      .omegas           = { 0.0, 0.0, 0.0, 0.0 },
+
+      /* scalar limits */
+      .power_limit = 100.0,
+      .dim         = NUM_VARS,   /* = 4 */
+
+      /* linear constraint: weights[4] and a scalar limit */
+      .new_constraint = {
+          .weights = { 1.0, 1.0, 1.0, 1.0 },
+          .limit   = 50.0,
+      },
+
+      /* quadratic form: Q[4x4], q[4], c */
+      .qform = {
+          .Q = {
+              1.0, 0.0, 0.0, 0.0,   /* row 0 */
+              0.0, 1.0, 0.0, 0.0,   /* row 1 */
+              0.0, 0.0, 1.0, 0.0,   /* row 2 */
+              0.0, 0.0, 0.0, 1.0,   /* row 3 */
+          },
+          .q = { 0.0, 0.0, 0.0, 0.0 },
+          .c = 0.0,
+      },
+
+      /* optimum: content[4] and void* link[4] */
+      .optimum = {
+          .content = { 0.0, 0.0, 0.0, 0.0 },
+          .link    = { NULL, NULL, NULL, NULL },
+      },
+
+      /* optimal variable assignments [4] */
+      .optimal_assignment = {
+          { .role = UNCONSTRAINED, .val = 0.0 },
+          { .role = UNCONSTRAINED, .val = 0.0 },
+          { .role = UNCONSTRAINED, .val = 0.0 },
+          { .role = UNCONSTRAINED, .val = 0.0 },
+      },
+
+      /* scalar cost result */
+      .optimal_cost = 0.0,
+
+      /* box variable profile [4]: lower, upper, role */
+      .variable_profile = {
+          { .lower = -10.0, .upper = 10.0, .role = UNCONSTRAINED },
+          { .lower = -10.0, .upper = 10.0, .role = UNCONSTRAINED },
+          { .lower = -10.0, .upper = 10.0, .role = UNCONSTRAINED },
+          { .lower = -10.0, .upper = 10.0, .role = UNCONSTRAINED },
+      },
+
+      /* inverse of Q: Qinv[4x4], flat row-major */
+      .Qinv = {
+          1.0, 0.0, 0.0, 0.0,
+          0.0, 1.0, 0.0, 0.0,
+          0.0, 0.0, 1.0, 0.0,
+          0.0, 0.0, 0.0, 1.0,
+      },
+  };
+    const long long ITERATIONS = 1LL; // 1 billion
+    volatile double a = 1.00000001;
+    volatile double result = 1.0;
+
+
+    unsigned long t1 = DWT->CYCCNT;
+
+
+    // for (long long i = 0; i < ITERATIONS; i++) {
+    //     result *= a;
+    // }
+
+  solve_one_case(&state);
+  unsigned long t2 = DWT->CYCCNT;
+
+  unsigned long long elapsed = t2 - t1;
+  if (elapsed == 0) {
+    cmr_panic("Elapsed time is zero, which is unexpected.");
+  }
+
+
 }

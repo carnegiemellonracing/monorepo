@@ -15,7 +15,7 @@ option(MATRIXCHECK "Matrix Checks" OFF)
 #
 
 function(configdsp PROJECTNAME DSP)
-  target_compile_options(${PROJECTNAME} PUBLIC "-mfloat-abi=hard;-mlittle-endian")
+  target_compile_options(${PROJECTNAME} PUBLIC "-mfloat-abi=softfp;-mlittle-endian")
 
   if (CONFIGTABLE)
       # Public because initialization for FFT may be defined in client code 

@@ -8,6 +8,7 @@ elseif("${PROCESSOR}" STREQUAL "H725")
 endif()
 
 add_compile_definitions(${PROCESSOR})
+add_compile_options(-mfloat-abi=hard)
 
 
 # HAL integration

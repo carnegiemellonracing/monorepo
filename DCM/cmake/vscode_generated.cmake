@@ -9,8 +9,8 @@ set(cpu_PARAMS ${cpu_PARAMS}
 
     # Other parameters
     # -mcpu, -mfloat, -mfloat-abi, ...
-    -mcpu=cortex-m7
-	-mfpu=fpv5-d16
+    -mcpu=cortex-m4
+	-mfpu=fpv4-sp-d16
 	-mfloat-abi=hard
 
 )

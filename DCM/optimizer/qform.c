@@ -11,7 +11,7 @@
  * Zeros @param matrix.
  * @param n size of matrix.
  */
-void zero_matrix(double *matrix, int n) {
+void zero_matrix(float *matrix, int n) {
     for(int i = 0; i < n * n; i++)
         matrix[i] = 0.0;
 }
@@ -20,7 +20,7 @@ void zero_matrix(double *matrix, int n) {
  * Zeros @param arr.
  * @param n size of arr.
  */
-void zero_array(double *arr, int n) {
+void zero_array(float *arr, int n) {
     for(int i = 0; i < n; i++)
         arr[i] = 0.0;
 }
@@ -29,7 +29,7 @@ void zero_array(double *arr, int n) {
  * Computes outer(arr, arr) * scalar and adds the result to @param dest.
  * @param n size of arr.
  */
-void outer_product_addto(const double *arr, const double scalar, double *dest, const int n) {
+void outer_product_addto(const float *arr, const float scalar, float *dest, const int n) {
     for(int i = 0; i < n; i++)
         for(int j = 0; j < n; j++)
             dest[n * i + j] += arr[i] * arr[j] * scalar;
@@ -39,7 +39,7 @@ void outer_product_addto(const double *arr, const double scalar, double *dest, c
  * Computes arr * scalar and adds the result to @param dest.
  * @param n size of arr.
  */
-void arrmul_addto(const double *arr, const double scalar, double *dest, const int n) {
+void arrmul_addto(const float *arr, const float scalar, float *dest, const int n) {
     for(int i = 0; i < n; i++)
         dest[i] += arr[i] * scalar;
 }
@@ -50,9 +50,9 @@ void zero_qform(qform_t *qf, int dim) {
     qf->c = 0;
 }
 
-void compose_error_qform_addto(const box_variable_t *profile, const double *weight_arr, const double target, const double scalar, qform_t* const dest, const int n) {
-    double new_weight[n];
-    double new_target = -target;
+void compose_error_qform_addto(const box_variable_t *profile, const float *weight_arr, const float target, const float scalar, qform_t* const dest, const int n) {
+    float new_weight[n];
+    float new_target = -target;
     int unconstrained_count = 0;
     for(int i = 0; i < n; i++) {
         const box_variable_t *var = &profile[i];
@@ -70,9 +70,9 @@ void compose_error_qform_addto(const box_variable_t *profile, const double *weig
     dest->c += 0.5 * new_target * new_target * scalar;
 }
 
-void compose_diagonal_qform_addto(const box_variable_t *profile, const double *weight_arr, qform_t* const dest, int dim, const int n) {
+void compose_diagonal_qform_addto(const box_variable_t *profile, const float *weight_arr, qform_t* const dest, int dim, const int n) {
     int index = 0;
-    double sum_of_squares = 0.0;
+    float sum_of_squares = 0.0;
     for(int i = 0; i < n; i++) {
         const box_variable_t *var = &profile[i];
         if(var->role == UNCONSTRAINED) {
@@ -89,7 +89,7 @@ void compose_diagonal_qform_addto(const box_variable_t *profile, const double *w
     dest->c += 0.5 * sum_of_squares;
 }
 
-void mat_vec_mul(double* A, double* x, double* y, int n) {
+void mat_vec_mul(float* A, float* x, float* y, int n) {
     for (int i = 0; i < n; i++) {
         y[i] = 0;
         for (int j = 0; j < n; j++) {
@@ -98,13 +98,13 @@ void mat_vec_mul(double* A, double* x, double* y, int n) {
     }
 }
 
-void invert1x1(double *matrix, double *inverse) {
+void invert1x1(float *matrix, float *inverse) {
     assert(matrix[0] != 0.0);
     inverse[0] = 1.0 / matrix[0];
 }
 
-void invert2x2(double *matrix, double *inverse) {
-    double det = matrix[0] * matrix[3] - matrix[1] * matrix[2];
+void invert2x2(float *matrix, float *inverse) {
+    float det = matrix[0] * matrix[3] - matrix[1] * matrix[2];
     assert(det != 0.0);
     inverse[0] = matrix[3] / det;
     inverse[1] = -matrix[1] / det;
@@ -112,8 +112,8 @@ void invert2x2(double *matrix, double *inverse) {
     inverse[3] = matrix[0] / det;
 }
 
-void invert3x3(double *matrix, double *inverse) {
-    double det = matrix[0] * (matrix[4] * matrix[8] - matrix[5] * matrix[7])
+void invert3x3(float *matrix, float *inverse) {
+    float det = matrix[0] * (matrix[4] * matrix[8] - matrix[5] * matrix[7])
                - matrix[1] * (matrix[3] * matrix[8] - matrix[5] * matrix[6])
                + matrix[2] * (matrix[3] * matrix[7] - matrix[4] * matrix[6]);
     assert(det != 0.0);
@@ -129,9 +129,9 @@ void invert3x3(double *matrix, double *inverse) {
     inverse[8] = (matrix[0] * matrix[4] - matrix[1] * matrix[3]) / det;
 }
 
-void invert4x4(double *matrix, double *inverse) {
-    double temp[16];
-    double det;
+void invert4x4(float *matrix, float *inverse) {
+    float temp[16];
+    float det;
 
     temp[0] = matrix[5]  * matrix[10] * matrix[15] -
              matrix[5]  * matrix[11] * matrix[14] -
@@ -253,7 +253,7 @@ void invert4x4(double *matrix, double *inverse) {
         inverse[i] = temp[i] * det;
 }
 
-void find_optimum(qform_t *qf, int dim, double *optimum, double *inverse_dest) {
+void find_optimum(qform_t *qf, int dim, float *optimum, float *inverse_dest) {
     switch (dim) {
         case 1:
             invert1x1(qf->Q, inverse_dest);
@@ -275,16 +275,16 @@ void find_optimum(qform_t *qf, int dim, double *optimum, double *inverse_dest) {
         optimum[i] *= -1.0;
 }
 
-double dot_product(double *a, double *b, int n) {
-    double acc = 0;
+float dot_product(float *a, float *b, int n) {
+    float acc = 0;
     for(int i = 0; i < n; i++) {
         acc += a[i] * b[i];
     }
     return acc;
 }
 
-double quadratic(const double *Q, const int dim, const double *x) {
-    double diag_acc = 0.0, cross_acc = 0.0;
+float quadratic(const float *Q, const int dim, const float *x) {
+    float diag_acc = 0.0, cross_acc = 0.0;
     for(int i = 0; i < dim; i++) {
         diag_acc += Q[i * dim + i] * x[i] * x[i];
         for(int j = i + 1; j < dim; j++) {
@@ -294,6 +294,6 @@ double quadratic(const double *Q, const int dim, const double *x) {
     return diag_acc + cross_acc * 2;
 }
 
-double evaluate_cost(qform_t *qf, int dim, double *x) {
+float evaluate_cost(qform_t *qf, int dim, float *x) {
     return 0.5 * quadratic(qf->Q, dim, x) + dot_product(qf->q, x, dim) + qf->c;
 }

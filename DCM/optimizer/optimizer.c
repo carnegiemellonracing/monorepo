@@ -14,15 +14,15 @@
 
 #define MINIMUM_K_VALUE (0.005f) // Prevent numerical instability.
 
-static double k_lin = 80.0;
-static double k_yaw = 0.30;
-static double k_tie = 0.008;
+static float k_lin = 80.0;
+static float k_yaw = 0.30;
+static float k_tie = 0.008;
 
 /**
  * Computes 1/2 x^T Q x + q x + c.
  */
 void compute_accel_weights(optimizer_state_t *state) {
-    double temp = gear_ratio / (effective_wheel_rad_m * car_mass_kg);
+    float temp = gear_ratio / (effective_wheel_rad_m * car_mass_kg);
     state->accel_weights[0] = temp;
     state->accel_weights[1] = temp;
     state->accel_weights[2] = temp;
@@ -34,9 +34,9 @@ void compute_accel_weights(optimizer_state_t *state) {
  * @note Only considers longitudinal force.
  */
 void compute_moment_weights(optimizer_state_t *state) {
-    double temp = gear_ratio / effective_wheel_rad_m;
-    double theta_left = state->theta_left;
-    double theta_right = state->theta_right;
+    float temp = gear_ratio / effective_wheel_rad_m;
+    float theta_left = state->theta_left;
+    float theta_right = state->theta_right;
     state->moment_weights[0] = (half_wheelbase_m * sin(theta_left) - half_trackwidth_m * cos(theta_left)) * temp;
     state->moment_weights[1] = (half_wheelbase_m * sin(theta_right) + half_trackwidth_m * cos(theta_right)) * temp;
     state->moment_weights[2] = -half_trackwidth_m * temp;
@@ -54,7 +54,7 @@ void load_diagonal_weights(optimizer_state_t *state) {
     state->diagonal_weights[3] = k_tie;
 }
 
-static inline bool box_variable_is_valid(box_variable_t *v, double value) {
+static inline bool box_variable_is_valid(box_variable_t *v, float value) {
     assert(v->role == UNCONSTRAINED);
     return v->lower <= value && value <= v->upper;
 }
@@ -74,7 +74,7 @@ static bool check_box_constraints(optimizer_state_t *state) {
 static void evaluate_candidate(optimizer_state_t *state) {
     int dim = state->dim;
     box_variable_t *vp = state->variable_profile;
-    const double cost = evaluate_cost(&state->qform, dim, state->optimum.content);
+    const float cost = evaluate_cost(&state->qform, dim, state->optimum.content);
     if(cost < state->optimal_cost) {
         state->optimal_cost = cost;
         int index = 0;
@@ -95,7 +95,7 @@ static void evaluate_candidate(optimizer_state_t *state) {
 
 static int load_free_variable_refs(optimizer_state_t *state) {
     uint32_t dim = 0;
-    double power_leftover = state->power_limit;
+    float power_leftover = state->power_limit;
     box_variable_t *vp = state->variable_profile;
     for(int i = 0; i < NUM_VARS; i++) {
         switch (vp[i].role) {
@@ -117,17 +117,17 @@ static int load_free_variable_refs(optimizer_state_t *state) {
 }
 
 static void solve_with_equality_linear_constraint(optimizer_state_t *state) {
-    static double temp[NUM_VARS];
-    static double bar[NUM_VARS];
+    static float temp[NUM_VARS];
+    static float bar[NUM_VARS];
 
     // Perform linear equality constrained solve
     qform_t *qf = &state->qform;
     int dim = state->dim;
     mat_vec_mul(state->Qinv, state->new_constraint.weights, temp, dim);
-    double denom = dot_product(state->new_constraint.weights, temp, dim);
+    float denom = dot_product(state->new_constraint.weights, temp, dim);
     if(denom == 0.0)
         return;
-    double dual = (-state->new_constraint.limit - dot_product(temp, qf->q, dim)) / denom;
+    float dual = (-state->new_constraint.limit - dot_product(temp, qf->q, dim)) / denom;
     for(int i = 0; i < dim; i++)
         bar[i] = -qf->q[i] - dual * state->new_constraint.weights[i];
     mat_vec_mul(state->Qinv, bar, state->optimum.content, dim);
@@ -151,7 +151,7 @@ void solve_one_case(optimizer_state_t *state) {
     find_optimum(&state->qform, dim, state->optimum.content, state->Qinv);
 
     bool all_variables_legal = check_box_constraints(state);
-    double power_acc = 0.0;
+    float power_acc = 0.0;
     for(int i = 0; i < dim; i++) {
         power_acc += state->optimum.content[i] * state->new_constraint.weights[i];
     }
@@ -198,29 +198,29 @@ void solve(optimizer_state_t *state) {
                 }
 }
 
-void solver_set_k_lin(double d) {
+void solver_set_k_lin(float d) {
 	d = fmax(d, MINIMUM_K_VALUE);
 	k_lin = d;
 }
 
-void solver_set_k_yaw(double d) {
+void solver_set_k_yaw(float d) {
 	d = fmax(d, MINIMUM_K_VALUE);
 	k_yaw = d;
 }
 
-void solver_set_k_tie(double d) {
+void solver_set_k_tie(float d) {
 	d = fmax(d, MINIMUM_K_VALUE);
 	k_tie = d;
 }
 
-double solver_get_k_lin() {
+float solver_get_k_lin() {
     return k_lin;
 }
 
-double solver_get_k_yaw() {
+float solver_get_k_yaw() {
     return k_yaw;
 }
 
-double solver_get_k_tie() {
+float solver_get_k_tie() {
     return k_tie;
 }

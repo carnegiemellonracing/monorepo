@@ -16,8 +16,8 @@ typedef enum {
 } box_variable_role_e;
 
 typedef struct {
-    double lower;
-    double upper;
+    float lower;
+    float upper;
     box_variable_role_e role;
 } box_variable_t;
 

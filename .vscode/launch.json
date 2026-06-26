@@ -12,7 +12,7 @@
             "name": "Build & Debug DCM - ST-Link",
             "cwd": "${workspaceFolder}",
             "type": "cortex-debug",
-            "executable": "${workspaceFolder}/build/DCM/src/DCM-build/DCM.elf",
+            "executable": "${workspaceFolder}/build/debug/DCM/src/DCM-build/DCM.elf",
             // Let CMake extension decide executable: "${command:cmake.launchTargetPath}"
             // Or fixed file path: "${workspaceFolder}/path/to/filename.elf"
             "request": "launch",
