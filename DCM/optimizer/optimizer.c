@@ -7,8 +7,9 @@
 #include <stdint.h>
 #include <float.h>
 #include <math.h>
+#include <assert.h>
 
-#include "constants.h"
+#include "optimizer_const.h"
 #include "optimizer.h"
 #include "qform.h"
 
@@ -93,26 +94,97 @@ static void evaluate_candidate(optimizer_state_t *state) {
     }
 }
 
-static int load_free_variable_refs(optimizer_state_t *state) {
-    uint32_t dim = 0;
-    float power_leftover = state->power_limit;
+/**
+ * Builds the full unconstrained quadratic form once per solve() — Q, q, c over all NUM_VARS.
+ * Each of the 81 cases then derives its reduced problem from this via a Schur-style submatrix
+ * extraction in build_reduced_problem(), avoiding repeated outer products.
+ */
+static void compute_full_qform(optimizer_state_t *state) {
+    qform_t *qf = &state->qform_full;
+    zero_matrix(qf->Q, NUM_VARS);
+    zero_array(qf->q, NUM_VARS);
+    qf->c = 0.0;
+
+    outer_product_addto(state->accel_weights, k_lin, qf->Q, NUM_VARS);
+    arrmul_addto(state->accel_weights, -state->areq * k_lin, qf->q, NUM_VARS);
+    qf->c += 0.5 * state->areq * state->areq * k_lin;
+
+    outer_product_addto(state->moment_weights, k_yaw, qf->Q, NUM_VARS);
+    arrmul_addto(state->moment_weights, -state->mreq * k_yaw, qf->q, NUM_VARS);
+    qf->c += 0.5 * state->mreq * state->mreq * k_yaw;
+
+    for(int i = 0; i < NUM_VARS; i++)
+        qf->Q[i * NUM_VARS + i] += state->diagonal_weights[i];
+}
+
+/**
+ * Walks variable_profile once: counts free vars, fills the power-constraint helper, and
+ * derives the reduced QP for the free indices F from the precomputed full qform.
+ *   Q_new = Q_full[F,F]
+ *   q_new = q_full[F]  +  Q_full[F,X] · x_X
+ *   c_new = c_full     +  q_full[X]·x_X  +  ½ x_X^T Q_full[X,X] x_X
+ */
+static int build_reduced_problem(optimizer_state_t *state) {
+    const qform_t *full = &state->qform_full;
+    qform_t *dest = &state->qform;
     box_variable_t *vp = state->variable_profile;
+
+    int free_idx[NUM_VARS];
+    bool is_fixed[NUM_VARS];
+    float x_fixed[NUM_VARS];
+    int dim = 0;
+    float power_leftover = state->power_limit;
+
     for(int i = 0; i < NUM_VARS; i++) {
         switch (vp[i].role) {
             case UNCONSTRAINED:
+                is_fixed[i] = false;
                 state->optimum.link[dim] = &vp[i];
                 state->new_constraint.weights[dim] = state->omegas[i];
-                dim += 1;
+                free_idx[dim] = i;
+                dim++;
                 break;
             case LOWER:
+                is_fixed[i] = true;
+                x_fixed[i] = vp[i].lower;
                 power_leftover -= vp[i].lower * state->omegas[i];
                 break;
             case UPPER:
+                is_fixed[i] = true;
+                x_fixed[i] = vp[i].upper;
                 power_leftover -= vp[i].upper * state->omegas[i];
                 break;
         }
     }
     state->new_constraint.limit = power_leftover;
+
+    for(int a = 0; a < dim; a++) {
+        int i = free_idx[a];
+        for(int b = 0; b < dim; b++) {
+            int j = free_idx[b];
+            dest->Q[a * dim + b] = full->Q[i * NUM_VARS + j];
+        }
+    }
+
+    for(int a = 0; a < dim; a++) {
+        int i = free_idx[a];
+        float v = full->q[i];
+        for(int j = 0; j < NUM_VARS; j++)
+            if(is_fixed[j])
+                v += full->Q[i * NUM_VARS + j] * x_fixed[j];
+        dest->q[a] = v;
+    }
+
+    float c_new = full->c;
+    for(int i = 0; i < NUM_VARS; i++) {
+        if(!is_fixed[i]) continue;
+        c_new += full->q[i] * x_fixed[i];
+        for(int j = 0; j < NUM_VARS; j++)
+            if(is_fixed[j])
+                c_new += 0.5 * full->Q[i * NUM_VARS + j] * x_fixed[i] * x_fixed[j];
+    }
+    dest->c = c_new;
+
     return dim;
 }
 
@@ -137,16 +209,8 @@ static void solve_with_equality_linear_constraint(optimizer_state_t *state) {
  * Solves for a given configuration of variable roles.
  */
 void solve_one_case(optimizer_state_t *state) {
-    box_variable_t *vp = state->variable_profile;
-
-    uint32_t dim = load_free_variable_refs(state);
+    uint32_t dim = build_reduced_problem(state);
     state->dim = dim;
-
-    zero_qform(&state->qform, dim);
-
-    compose_error_qform_addto(vp, state->accel_weights, state->areq, k_lin, &state->qform, NUM_VARS);
-    compose_error_qform_addto(vp, state->moment_weights, state->mreq, k_yaw, &state->qform, NUM_VARS);
-    compose_diagonal_qform_addto(vp, state->diagonal_weights, &state->qform, dim, NUM_VARS);
 
     find_optimum(&state->qform, dim, state->optimum.content, state->Qinv);
 
@@ -181,6 +245,7 @@ void solve(optimizer_state_t *state) {
     compute_accel_weights(state);
     compute_moment_weights(state);
     load_diagonal_weights(state);
+    compute_full_qform(state);
 
     state->optimal_cost = FLT_MAX;
 

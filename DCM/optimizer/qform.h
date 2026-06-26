@@ -15,6 +15,8 @@ typedef struct {
 
 void zero_matrix(float *matrix, int n);
 
+void zero_array(float *arr, int n);
+
 void mat_vec_mul(float* A, float* x, float* y, int n);
 
 /**

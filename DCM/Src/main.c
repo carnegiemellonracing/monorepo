@@ -184,7 +184,7 @@ int main(void) {
     //     result *= a;
     // }
 
-  solve_one_case(&state);
+  solve(&state);
   unsigned long t2 = DWT->CYCCNT;
 
   unsigned long long elapsed = t2 - t1;

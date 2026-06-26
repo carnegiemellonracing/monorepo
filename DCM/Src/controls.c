@@ -20,9 +20,8 @@
 #include "safety_filter.h"
 #include "../optimizer/optimizer.h"
 #include "26x_sensors.h"
-#include "sensors.h"s
+#include "sensors.h"
 #include "lut.h"
-#include "constants.h"
 
 #define PI 3.1415926535897932384626f
 

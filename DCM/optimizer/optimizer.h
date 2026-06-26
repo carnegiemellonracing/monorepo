@@ -35,6 +35,7 @@ typedef struct {
     int dim;
     lin_constraint_t new_constraint;
     qform_t qform;
+    qform_t qform_full;
     optimum_t optimum;
     box_variable_assignment_t optimal_assignment[NUM_VARS];
     float optimal_cost;
