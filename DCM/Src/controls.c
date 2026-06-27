@@ -782,22 +782,15 @@ void runControls (
         case CMR_CAN_GEAR_FAST: {
             disableTorqueMode();
             setFastTorqueWithBias(throttlePos_u8, front_bias);
-            setPowerLimit(false, MOTOR_FL, 40.0f * front_bias);
-            setPowerLimit(false, MOTOR_FR, 40.0f * front_bias);
-            setPowerLimit(false, MOTOR_RL, 40.0f * (1 - front_bias));
-            setPowerLimit(false, MOTOR_RR, 40.0f * (1 - front_bias));
+            setPowerLimit(false, MOTOR_FL, 35.0f * front_bias);
+            setPowerLimit(false, MOTOR_FR, 35.0f * front_bias);
+            setPowerLimit(false, MOTOR_RL, 35.0f * (1 - front_bias));
+            setPowerLimit(false, MOTOR_RR, 35.0f * (1 - front_bias));
             break;
         }
         case CMR_CAN_GEAR_ENDURANCE: {
             disableTorqueMode();
-            uint8_t regen_pct = ((volatile cmr_canDIMActions_t *) canVehicleGetPayload(CANRX_VEH_DIM_ACTION_BUTTON))->regenPercent;
-            uint8_t regen_on_threshold = 20;
-            if(regen_pct > regen_on_threshold){
-                setRegenTorques(regen_pct);
-            }
-            else{
-                setFastTorqueWithBias(throttlePos_u8, front_bias_endurance);
-            }
+            setFastTorqueWithBias(throttlePos_u8, front_bias_endurance);
             break;
         }
         case CMR_CAN_GEAR_AUTOX: {

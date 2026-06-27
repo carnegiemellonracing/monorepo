@@ -1426,8 +1426,8 @@ void conditionalCallback(cmr_can_t *canb_rx, uint32_t canID, const void *data, s
 
     if(canID == CMR_CANID_CDC_POWER_UPDATE && getCurrentGear() == CMR_CAN_GEAR_ENDURANCE) {
     	cmr_canCDCPowerLimit_t *limit = (cmr_canCDCPowerLimit_t*) data;
-        float front_powerLimit_kW = (limit->powerLimit_kW / 2.0f) * front_bias;
-        float rear_powerLimit_kW = (limit->powerLimit_kW / 2.0f) * (1 - front_bias);
+        float front_powerLimit_kW = (limit->powerLimit_kW / 2.0f) * front_bias_endurance;
+        float rear_powerLimit_kW = (limit->powerLimit_kW / 2.0f) * (1 - front_bias_endurance);
     	setPowerLimit(false, MOTOR_FL, front_powerLimit_kW);
         setPowerLimit(false, MOTOR_FR, front_powerLimit_kW);
         setPowerLimit(false, MOTOR_RL, rear_powerLimit_kW);

@@ -247,16 +247,16 @@ static void motorsCommand (
             default: {
                 // pumpsOn();
                 pumpsOff();
-                mcCtrlOn();
-                // mcCtrlOff();
+                // mcCtrlOn();
+                mcCtrlOff();
                 sendBlankCommand();
                 break;
             }
         }
 
         // Update gear in transition from HV_EN to RTD
-        if (prevState == CMR_CAN_HV_EN && heartbeatVSM->state == CMR_CAN_RTD
-            || prevState == CMR_CAN_AS_READY && heartbeatVSM->state == CMR_CAN_AS_DRIVING) {
+        if ((prevState == CMR_CAN_HV_EN && heartbeatVSM->state == CMR_CAN_RTD)
+            || (prevState == CMR_CAN_AS_READY && heartbeatVSM->state == CMR_CAN_AS_DRIVING)) {
             gear = reqDIM->requestedGear;
             resetRetroactiveLimitFilters();
             initControls();
