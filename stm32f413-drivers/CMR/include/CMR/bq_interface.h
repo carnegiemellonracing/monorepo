@@ -1,8 +1,8 @@
 /*
  * bq_interface.h
  *
- *  Created on: Apr 30, 2023
- *      Author: sidsr
+ *  Created on: June 4, 2026
+ *      Author: anvitaa, ashleyyu
  */
 
 #ifndef BQ_INTERFACE_H_
@@ -12,7 +12,6 @@
 #include <stdint.h>
 #include "bms_error.h"
 #include "BMB_task.h"
-
 
 //register address definitions
 #define DIR0_ADDR_OTP			0x0
@@ -323,7 +322,29 @@
 #define DEBUG_OTP_SEC_BLK		0x7A0
 #define DEBUG_OTP_DED_BLK		0x7A1
 
-#define BOARD_NUM 17
+// Number of chips
+#ifndef BOARD_NUM
+#define BOARD_NUM 10
+#endif
+
+// Number of segment chips (minus top for BMSM)
+#ifndef BMB_NUM
+#define BMB_NUM 10
+#endif
+
+#ifndef CELL_NUM
+#define CELL_NUM 10
+#endif
+
+// SINGLE_READ VS STACK_READ
+#ifndef BMS_READ
+#define BMS_READ 10
+#endif
+
+// SINGLE_WRITE for LVBMS, STACK_WRITE for BMSM
+#ifndef BMS_WRITE
+#define BMS_WRITE 10
+#endif
 
 //TODO change this
 #define CELL_BALANCING_LOW_VOLTAGE 3.9

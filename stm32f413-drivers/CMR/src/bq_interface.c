@@ -1,3 +1,10 @@
+/*
+ * bq_interface.c
+ *
+ *  Created on: June 4, 2026
+ *      Author: anvitaa, ashleyyu
+ */
+
 #include <stdbool.h>
 #include <string.h>
 #include <stm32f4xx_hal.h>
@@ -31,7 +38,7 @@ bool autoAddr() {
 
 	// Dummy write to sync OTP addresses
 	uart_command_t otpSync = {
-		.readWrite = SINGLE_WRITE, // ^^ SINGLE_WRITE VS STACK_WRITE
+		.readWrite = BMS_WRITE, // ^^ SINGLE_WRITE VS STACK_WRITE
 		.dataLen = 1,
 		.deviceAddress = 0x00,
 		.registerAddress = OTP_ECC_DATAIN1,
@@ -116,7 +123,7 @@ bool autoAddr() {
 	DWT_Delay_ms(10);
 
 	// Resync OTP registers with dummy reads
-	otpSync.readWrite = SINGLE_READ; // ^^ SINGLE_READ VS STACK_READ
+	otpSync.readWrite = BMS_READ; // ^^ SINGLE_READ VS STACK_READ
 	otpSync.data[0] = 0;
 
 	for(int i = 0; i < 8; i++) {
@@ -140,7 +147,7 @@ bool autoAddr() {
  */
 bool enableMainADC() {
 	uart_command_t adcMsg = {
-		.readWrite = BROADCAST_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
+		.readWrite = BMS_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = ADC_CTRL1,
@@ -158,7 +165,7 @@ bool enableMainADC() {
 // Enable however many cells are in series in one segment
 bool enableNumCells() {
 	uart_command_t active_cell = {
-		.readWrite = BROADCAST_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
+		.readWrite = BMS_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = ACTIVE_CELL,
@@ -178,23 +185,23 @@ bool enableGPIOPins() {
 
     //enableTSref
     uint8_t dataToSend = 0x01;
-    if (!sendUartStackWrite(CONTROL2, &dataToSend, 1))
+    if (!sendUartWrite(CONTROL2, &dataToSend, 1))
         return false;
 
     // configures GPIO 5 and 6 as analog input
     dataToSend = 0x12;
-    if (!sendUartStackWrite(GPIO_CONF3, &dataToSend, 1)) // ^^ GPIO_CONF3 VS GPIO_CONF1
+    if (!sendUartWrite(GPIO_CONF3, &dataToSend, 1)) // ^^ GPIO_CONF3 VS GPIO_CONF1
         return false;
 
     // configures GPIO 7 and 8 as analog input
     dataToSend = 0x12;
-    if (!sendUartStackWrite(GPIO_CONF4, &dataToSend, 1)) // ^^ GPIO_CONF4 VS Does not exist in LV BMS code
+    if (!sendUartWrite(GPIO_CONF4, &dataToSend, 1)) // ^^ GPIO_CONF4 VS Does not exist in LV BMS code
         // ^^ note the this doesn't exist in LV BMS code because it has less thermistors 
         return false;
 
     //enable MUX outputs as low initially
     dataToSend = 0x2D;
-    if (!sendUartStackWrite(GPIO_CONF2, &dataToSend, 1))
+    if (!sendUartWrite(GPIO_CONF2, &dataToSend, 1))
       return false;
 
 	return true;
@@ -203,7 +210,7 @@ bool enableGPIOPins() {
 // Enable command timeout so BQ sleeps turns off when car is off
 void enableTimeout() {
 	uart_command_t enable_timeout = {
-			.readWrite = BROADCAST_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
+			.readWrite = BMS_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
 			.dataLen = 1,
 			.deviceAddress = 0xFF, //not used!
 			.registerAddress = COMM_TIMEOUT_CONF,
@@ -271,11 +278,11 @@ bool setMuxOutput(uint8_t channel) {
 
 	// ^^ SINGLE VS STACK
 	// Switches Mux
-	bool res = sendUartBroadcastWrite(GPIO_CONF2, &data, 1);
+	bool res = sendUartWrite(GPIO_CONF2, &data, 1);
 	return res;
 }
 
-For efficiency we choose to do as little computation as possible here and 
+// For efficiency we choose to do as little computation as possible here and 
 // just compute voltage. To convert from voltage to temperature we would need
 // to do the Steinhart equation which is very expensive. However, since the
 // Steinhart is strictly decreasing we are able to simply probe the voltage
@@ -291,7 +298,7 @@ void cellBalancingSetup() {
 	//done in two sets because max register write is 8 :(
 
 	uart_command_t balance_register = {
-		.readWrite = BROADCAST_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
+		.readWrite = BMS_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
 		.dataLen = CELL_NUM/2, // ^^ CELL_NUM/2 VS VSENSE_CHANNELS/2
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = CB_CELL14_CTRL,
@@ -305,7 +312,7 @@ void cellBalancingSetup() {
 
 	//set duty cycle to switch between even and odd cells
 	uart_command_t duty_cycle = {
-		.readWrite = BROADCAST_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
+		.readWrite = BMS_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = BAL_CTRL1,
@@ -330,7 +337,7 @@ void cellBalancingSetup() {
  int getBalDone() {
 
 	uart_command_t getBalStatus = {
-		.readWrite = BROADCAST_READ, // ^^ BROADCAST_READ VS STACK_READ
+		.readWrite = BMS_READ, // ^^ BROADCAST_READ VS STACK_READ
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = BAL_STAT,
@@ -338,7 +345,7 @@ void cellBalancingSetup() {
 		.crc = {0xFF, 0xFF}
 	};
 
-	uart_response_t response[BOARD_NUM] = {0}; // ^^ BOARD_NUM-1 VS BOARD_NUM
+	uart_response_t response[BMS_NUM] = {0}; // ^^ BOARD_NUM-1 VS BOARD_NUM
 
 	// Critical section used so UART RX is not preempted
 	taskENTER_CRITICAL();
@@ -348,7 +355,7 @@ void cellBalancingSetup() {
 		return -1; 
 
 	//loop through each BMB and channel
-	for(uint8_t i = BOARD_NUM; i >= 1; i--) { // ^^ BOARD_NUM-1 VS BOARD_NUM and i >= 1 vs i >= 0
+	for(uint8_t i = BMS_NUM; i >= 1; i--) { // ^^ BOARD_NUM-1 VS BOARD_NUM and i >= 1 vs i >= 0
 		uint8_t status = uart_receiveResponse(&response[i-1], 1); 
 		if (status == 1) {
 			return -1; 
@@ -358,7 +365,7 @@ void cellBalancingSetup() {
 	
 	// determines if we are done balancing
 	bool doneBalancing = 1;
-	for(uint8_t i = 0; i < BOARD_NUM; i++) { // ^^ BOARD_NUM-1 VS BOARD_NUM
+	for(uint8_t i = 0; i < BMB_NUM; i++) { // ^^ BOARD_NUM-1 VS BOARD_NUM
 		if ((response[i].data[0] & 8) == 8) //CB_RUN is 1 
 			doneBalancing = 0;
 	}
@@ -374,13 +381,13 @@ void cellBalancing(bool set, uint16_t thresh) {
 	}
 
 	// board index by 0 but don't send to interface chip
-	for(int i = 0; i < BOARD_NUM-1; i++) { // ^^ BOARD_NUM VS BOARD_NUM-1
+	for(int i = 0; i < BMB_NUM; i++) { // ^^ BOARD_NUM VS BOARD_NUM-1
 		// selections for cells--0x04 to balance for 5 minute intervals
 		uint8_t top_len; 
 
 		//balance cells above 8 
-		if (VSENSE_CHANNELS > 8) { // ^^ CELL_NUM VS VSENSE_CHANNELS
-			top_len = VSENSE_CHANNELS - 8; // ^^ CELL_NUM VS VSENSE_CHANNELS
+		if (CELL_NUM > 8) { // ^^ CELL_NUM VS VSENSE_CHANNELS
+			top_len = CELL_NUM - 8; // ^^ CELL_NUM VS VSENSE_CHANNELS
 		} else {
 			top_len = 0; 
 		}
@@ -393,16 +400,16 @@ void cellBalancing(bool set, uint16_t thresh) {
 
         // ^^ this for loop is written a little bit differently in the LV BMS code 
 		uint16_t cell_thresh = thresh; 
-		for (int j = 0; j < VSENSE_CHANNELS; j ++) {
+		for (int j = 0; j < CELL_NUM; j ++) {
 			//if we've already finished balancing once, threshold is mincell + 10 instead of mincell + 5
-			if (firstBalDone[i][VSENSE_CHANNELS-1-j]) {
+			if (firstBalDone[i][CELL_NUM-1-j]) {
 				cell_thresh += 5; 
 			}
 			//check to see which ones we turn don't need to balance 
-			if ((BMBData[i].cellVoltages[VSENSE_CHANNELS-1-j] < cell_thresh) || !set) {
+			if ((BMBData[i].cellVoltages[CELL_NUM-1-j] < cell_thresh) || !set) {
 				cell_selects[j] = 0x00;
-			} else if (!firstBalDone[i][VSENSE_CHANNELS-1-j]){ //first time we've finished balancing this cell 
-				firstBalDone[i][VSENSE_CHANNELS-1-j] = true; 
+			} else if (!firstBalDone[i][CELL_NUM-1-j]){ //first time we've finished balancing this cell 
+				firstBalDone[i][CELL_NUM-1-j] = true; 
 			}
 		}
 
@@ -423,8 +430,8 @@ void cellBalancing(bool set, uint16_t thresh) {
 		uint8_t bottom_len = 8; 
 		balance_register.registerAddress = CB_CELL8_CTRL; 
 
-		if (VSENSE_CHANNELS < 8){ // ^^ CELL_NUM VS VSENSE_CHANNELS
-			bottom_len = VSENSE_CHANNELS; // ^^ CELL_NUM VS VSENSE_CHANNELS
+		if (CELL_NUM < 8){ // ^^ CELL_NUM VS VSENSE_CHANNELS
+			bottom_len = CELL_NUM; // ^^ CELL_NUM VS VSENSE_CHANNELS
 			balance_register.registerAddress = TOP_CELL_CB_ADDR; 
 		}
 
@@ -435,14 +442,14 @@ void cellBalancing(bool set, uint16_t thresh) {
 	}
 		
 	uint8_t toSend = 3;
-	sendUartStackWrite(BAL_CTRL2, &toSend, 1); // ^^ sendUartStackWrite VS sendUartBroadcastWrite
+	sendUartWrite(BAL_CTRL2, &toSend, 1); // ^^ sendUartStackWrite VS sendUartBroadcastWrite
 
 }
 
 void writeLED(bool set) {
 	uint8_t enableLed = set ? 0 : 1;
     uint8_t data = 0x04 + enableLed;
-    sendUartBroadcastWrite(GPIO_CONF3, &data, 1); // ^^ broadcast vs stack write and GPIO_CONF3 vs GPIO_CONF1
+    sendUartWrite(GPIO_CONF3, &data, 1); // ^^ broadcast vs stack write and GPIO_CONF3 vs GPIO_CONF1
 }
 
 void disableTimeout() {
@@ -461,7 +468,7 @@ void byteDelay(uint8_t delay) {
 	if (delay > 0x3F) return;
 
 	uart_command_t byte_delay = {
-			.readWrite = BROADCAST_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
+			.readWrite = BMS_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
 			.dataLen = 1,
 			.deviceAddress = 0xFF,
 			.registerAddress = TX_HOLD_OFF, // ^^ 0x29 in hv bms code
@@ -496,7 +503,7 @@ void twoStop() {
 	uart_sendCommand(&two_stop_single);
 
 	uart_command_t two_stop_stack = {
-			.readWrite = STACK_WRITE, // ^^ STACK_WRITE VS BROADCAST_WRITE
+			.readWrite = BMS_WRITE, // ^^ STACK_WRITE VS BROADCAST_WRITE
 			.dataLen = 1,
 			.deviceAddress = 0xFF,
 			.registerAddress = 0x02, // DEV_CONF for lv bms
@@ -505,12 +512,12 @@ void twoStop() {
 	};
 	uart_sendCommand(&two_stop_stack);
 }
-// ^^ only in lv bms 
+
 /**
- * @brief Send a UART "broadcast write" command to the device.
+ * @brief Send a UART "write" command to the device.
  *
- * Constructs a BROADCAST_WRITE uart_command_t with the provided register
- * address and data payload, then transmits it over UART.
+ * Constructs a STACK_WRITE or SINGLE_WRITE uart_command_t with the provided register
+ * address and data payload, then transmits it over UART (dependent on board).
  *
  * @note I (Ayush Garg) added this function during 2025 to clean up code
  * that I write although there is much legacy code that does not utilize
@@ -523,63 +530,19 @@ void twoStop() {
  * @return true if the UART command was sent successfully (UART_SUCCESS),
  *         false otherwise.
  */
-static bool sendUartBroadcastWrite(  uint16_t registerAddress, 
-										    uint8_t* data, 
-										    uint8_t dataLen) {
-    uart_command_t broadcastWriteCmd = {
-        .readWrite = BROADCAST_WRITE,
-        .dataLen = dataLen,
-        .deviceAddress = 0xFF, //not used!
-        .registerAddress = registerAddress,
-        .crc = {0x00, 0x00}
-    };
-
-    memcpy(broadcastWriteCmd.data, data, dataLen);
-
-    cmr_uart_result_t res = uart_sendCommand(&broadcastWriteCmd);
-    return (res == UART_SUCCESS);
-}
-
-// ^^ only in hv bms
-/**
- * @brief Send a UART "stack write" command to the device.
- *
- * Constructs a STACK_WRITE uart_command_t with the provided register
- * address and data payload, then transmits it over UART.
- *
- * @note I (Ayush Garg) added this function during 2025 to clean up code
- * that I write although there is much legacy code that does not utilize
- * this helper function
- *
- * @param registerAddress 16-bit register address to write to.
- * @param data            Pointer to the data buffer to be written.
- * @param dataLen         Number of bytes in the data buffer.
- *
- * @return true if the UART command was sent successfully (UART_SUCCESS),
- *         false otherwise.
- */
-static inline bool sendUartStackWrite(  uint16_t registerAddress, 
+static inline bool sendUartWrite(uint16_t registerAddress, 
 										uint8_t* data, 
 										uint8_t dataLen) {
-	uart_command_t stackWriteCmd = {
-        .readWrite = STACK_WRITE,
+	uart_command_t writeCmd = {
+        .readWrite = BMS_WRITE,
         .dataLen = dataLen,
         .deviceAddress = 0xFF, //not used!
         .registerAddress = registerAddress,
         .crc = {0x00, 0x00}
 	};
 
-  memcpy(stackWriteCmd.data, data, dataLen);
+  memcpy(writeCmd.data, data, dataLen);
 
 	cmr_uart_result_t res = uart_sendCommand(&stackWriteCmd);
-    return (res == UART_SUCCESS);
+  return (res == UART_SUCCESS);
 }
-
-void pollAllTemperatureData(int channel) {
-    // ^^ very different, while still similar idt its worth copy pasting here 
-}
-
-uint8_t pollAllVoltageData() {
-    // ^^ very different, while still similar idt its worth copy pasting here 
-}
-
