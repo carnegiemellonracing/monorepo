@@ -248,10 +248,12 @@ static void handle_command(cn_cbor *command)
                 if (data->length == sizeof(cmr_canDCMPowerLimit_t))
                 {
                     cmr_canDCMPowerLimit_t *powerLimit = (cmr_canDCMPowerLimit_t *)data->v.bytes;
-
-                    canTX((cmr_canBusID_t)bus->v.uint, (uint16_t)id->v.uint,
+                    if (powerLimit == NULL) return;
+                    uint8_t power = powerLimit -> powerLimit_kW;
+                    if (powerLimit < 15) { canTX((cmr_canBusID_t)bus->v.uint, (uint16_t)id->v.uint,
                     	  powerLimit, sizeof(cmr_canDCMPowerLimit_t),
 					      200);
+                    }
                 }
             } else {
                 // Do not allow transmission on tractive CAN.
