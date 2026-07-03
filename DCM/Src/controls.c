@@ -748,13 +748,6 @@ void runControls (
         + (int32_t)(dtiERPM_RR / pole_pairs)
     ) / MOTOR_LEN;
 
-    // Update odometer
-    /* Wheel Speed to Vehicle Speed Conversion
-    *      (x rotations / 1min) * (16" * PI) *  (2.54*10^-5km/inch)
-    *      (1min / 60sec) * (1sec/1000ms) * (5ms period) * (1/13.93 gear ratio)
-    *      = x * 7.6378514861 × 10^-9 */
-    odometer_km += ((float)avgMotorSpeed_RPM) * 7.6378514861e-9;
-    /** @todo check floating point granularity for potential issues with adding small numbers repeatedly to large numbers */
     
     bool sensoric_timeout = cmr_canRXMetaTimeoutError(&canDaqRXMeta[CANRX_DAQ_SENSORIC_VEL_ANG], xTaskGetTickCount()) != 0;
     // We currently don't use sensoric in endurance mode, so its timeout should not cause the vehicle to switch to fast mode. This is to prevent unintended fast mode when sensoric data is lost during endurance.

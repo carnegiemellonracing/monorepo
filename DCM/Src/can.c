@@ -820,7 +820,7 @@ static void canTX10Hz(void *pvParameters) {
 
         // //powersense is dead, it's voltage * HVI
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_POWER_SENSE, &powerSense, sizeof(powerSense), canTX10Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canCDCKiloCoulombs_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DCM_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canDCMKiloCoulombs_t), canTX10Hz_period_ms);
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
