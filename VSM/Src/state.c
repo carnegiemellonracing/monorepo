@@ -119,7 +119,7 @@ static bool getMissionFinished(void);
 static bool getMissionSelected(void);
 static bool TSActive(void);
 static bool AutonomousClear(void);
-static bool getVehicleFinished(bool vehicleStill);
+static bool getVehicleFinished(void);
 static bool getRESGo(void);
 static bool RESTriggered(void);
 
@@ -434,7 +434,7 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
             else if (!getDVBrakeActive()){
                 nextState = CMR_CAN_VSM_STATE_AS_EMERGENCY;
             }
-            else if ((lastWakeTime_ms > lastStateChangeTime_ms + AS_FINISHED_TIME)){
+            else if ((lastWakeTime_ms > lastStateChangeTime_ms + AS_FINISHED_TIME_MS)){
                 nextState = CMR_CAN_VSM_STATE_GLV_ON;
             }
             else{
