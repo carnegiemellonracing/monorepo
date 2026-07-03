@@ -33,10 +33,10 @@ enum Error(0="NONE", 1="VSM_TIMEOUT", 2="DIM_TANK_PRESSURE_1_OOR",
     16="DIM_SOLENOID_CURRENT_2_OOR",
     32="DIM_TANK_PRESSURE_NON_DV_1_OOR",
     64="DIM_TANK_PRESSURE_NON_DV_2_OOR",
-    128="DIM_BRAKE_SENSOR_IMPLAUS", 1024="AFC_DCDC2_TEMP",
-    2048="AFC_DCDC1_TEMP", 4096="AFC_DRIVER3_TEMP",
+    128="DIM_BRAKE_SENSOR_IMPLAUS", 1024="AFC_DDCM2_TEMP",
+    2048="AFC_DDCM1_TEMP", 4096="AFC_DRIVER3_TEMP",
     8192="CDC_CUBEMARS_TIMEOUT", 16384="AFC_DRIVER1_TEMP",
-    32768="CDC_DTI_ALL")
+    32768="DCM_DTI_ALL")
 enum Fan_State(0="FAN_OFF", 1="FAN_LOW", 2="FAN_HIGH")
 enum FanState(0="OFF", 1="LOW", 2="HIGH")
 enum FSMHeartbeatErr(1="FSM_ERROR_VSM_TIMEOUT")
@@ -173,6 +173,14 @@ Var=ACTION_rearTorque_mNm signed 16,16
 Var=steeringAngle_centi_deg signed 32,16
 Var=maxVelocity_decimeters_s unsigned 48,16
 
+[CDC_POWER_SENSE]
+CycleTime=100
+DLC=8
+TimeOut=500
+Var=POWER_packCurrent_dA signed 0,16 /u:dA
+Var=POWER_packVoltage_cV unsigned 16,16 /u:cV
+Var=POWER_packPower_W signed 32,32 /u:W
+
 [CELL_BALANCE_ENABLE]
 ID=134h
 DLC=3
@@ -243,7 +251,7 @@ TimeOut=50
 Var=DAQ_VSM_HEARTBEAT_state unsigned 0,8 /e:State
 Var=VSM_ERR_BRAKEPRESSOOR bit 18,1
 Var=VSM_ERR_HALLEFFECTOOR bit 19,1
-Var=VSM_ERR_DCDCFAULT bit 20,1
+Var=VSM_ERR_DDCMFAULT bit 20,1
 Var=VSM_ERR_LATCHEDERROR bit 21,1
 Var=VSM_ERR_MODULE_STATE bit 22,1
 Var=VSM_ERR_MODULE_TIMEOUT bit 23,1
@@ -253,8 +261,59 @@ Var=VSM_WRN_DIM_REQ_NAK bit 31,1
 Var=VSM_WRN_HVI_TIMEOUT bit 32,1
 Var=VSM_WRN_DIM_TIMEOUT bit 35,1
 Var=VSM_WRN_FSM_TIMEOUT bit 36,1
-Var=VSM_WRN_CDC_TIMEOUT bit 37,1
+Var=VSM_WRN_DCM_TIMEOUT bit 37,1
 Var=VSM_WRN_HVC_TIMEOUT bit 38,1
+
+[DCM_COG_VELOCITY]
+ID=2C2h
+DLC=8
+CycleTime=5
+TimeOut=25
+Var=COG_cog_x_mps signed 0,16 /u:mps /f:0.01
+Var=COG_cog_y_mps signed 16,16 /u:mps /f:0.01
+Var=COG_slip_angle float 32,32
+
+[DCM_CONTROLS_STATUS]
+ID=6D2h
+DLC=2
+CycleTime=1000
+TimeOut=5000
+Var=CONTROLS_tcOn unsigned 0,8
+Var=CONTROLS_yrcOn unsigned 8,8
+
+[DCM_COULOMB_COUNTING]
+ID=6E3h
+DLC=4
+CycleTime=100
+TimeOut=500
+Var=COULOMB_KCoulombs float 0,32
+
+[DCM_FRONT_VELOCITY]
+ID=2D2h
+DLC=8
+CycleTime=5
+TimeOut=25
+Var=FRONT_fl_x signed 0,16 /f:0.01
+Var=FRONT_fl_y signed 16,16 /f:0.01
+Var=FRONT_fr_x signed 32,16 /f:0.01
+Var=FRONT_fr_y signed 48,16 /f:0.01
+
+[DCM_POWER_LOG]
+ID=6E4h
+DLC=4
+CycleTime=1000
+TimeOut=5000
+Var=POWER_power_limit_W float 0,32 /u:W /f:0.001
+
+[DCM_REAR_VELOCITY]
+ID=2E2h
+DLC=8
+CycleTime=5
+TimeOut=25
+Var=REAR_rl_x signed 0,16 /f:0.01
+Var=REAR_rl_y signed 16,16 /f:0.01
+Var=REAR_rr_x signed 32,16 /f:0.01
+Var=REAR_rr_y signed 48,16 /f:0.01
 
 [DIM_ACKNOWLEDGE]
 ID=545h
@@ -294,6 +353,16 @@ Var=STATE_state unsigned 0,8
 Var=STATE_angle unsigned 8,8
 Var=STATE_pwm_left unsigned 16,8
 Var=STATE_pwm_right unsigned 24,8
+
+[DTI_ERROR_MESSAGES]
+ID=305h
+DLC=4
+CycleTime=100
+TimeOut=500
+Var=ERROR_fr_fault_code unsigned 0,8
+Var=ERROR_fl_fault_code unsigned 8,8
+Var=ERROR_rr_fault_code unsigned 16,8
+Var=ERROR_rl_fault_code unsigned 24,8
 
 [DTI_FL_TEMPFAULT]
 ID=22h
@@ -404,29 +473,19 @@ TimeOut=50
 Var=steeringWheelAngle_millideg_FR signed 0,32 /u:deg /f:0.001
 Var=steeringWheelAngle_millideg_FL signed 32,32 /u:deg /f:0.001
 
-[DCM_HEARTBEAT]
-ID=102h
-DLC=5
-CycleTime=10
-TimeOut=50
-Var=DCM_HEARTBEAT_state unsigned 0,8 /e:State
-Var=CDC_ERR_VSM_TIMEOUT bit 8,1
-Var=CDC_ERR_DTIALLERROR bit 23,1
-Var=CDC_WRN_VSM_TIMEOUT bit 24,1
-Var=CDC_WRN_MEMORATOR_TIMEOUT bit 33,1
-Var=CDC_WRN_DTI_TIMEOUT bit 34,1
-Var=CDC_WRN_DTI_ERROR bit 35,1
-Var=CDC_WRN_DTI_SRC_RR bit 36,1
-Var=CDC_WRN_DTI_SRC_RL bit 37,1
-Var=CDC_WRN_DTI_SRC_FR bit 38,1
-Var=CDC_WRN_DTI_SRC_FL bit 39,1
-
 [COMPUTE_HEARTBEAT]
 ID=10Bh
 DLC=5
 CycleTime=5
 TimeOut=25
 Var=COMPUTE_HEARTBEAT_state unsigned 0,8 /e:State
+
+[DCM_HEARTBEAT]
+ID=102h
+DLC=5
+CycleTime=10
+TimeOut=50
+Var=DCM_HEARTBEAT_state unsigned 0,8 /e:State
 
 [DIM_HEARTBEAT]
 ID=104h
@@ -495,7 +554,7 @@ TimeOut=50
 Var=VSM_HEARTBEAT_state unsigned 0,8 /e:State
 Var=VSM_ERR_BRAKEPRESSOOR1 bit 18,1
 Var=VSM_ERR_HALLEFFECTOOR1 bit 19,1
-Var=VSM_ERR_DCDCFAULT1 bit 20,1
+Var=VSM_ERR_DDCMFAULT1 bit 20,1
 Var=VSM_ERR_LATCHEDERROR1 bit 21,1
 Var=VSM_ERR_MODULE_STATE1 bit 22,1
 Var=VSM_ERR_MODULE_TIMEOUT1 bit 23,1
@@ -505,7 +564,7 @@ Var=VSM_WRN_DIM_REQ_NAK1 bit 31,1
 Var=VSM_WRN_HVI_TIMEOUT1 bit 32,1
 Var=VSM_WRN_DIM_TIMEOUT1 bit 35,1
 Var=VSM_WRN_FSM_TIMEOUT1 bit 36,1
-Var=VSM_WRN_CDC_TIMEOUT1 bit 37,1
+Var=VSM_WRN_DCM_TIMEOUT1 bit 37,1
 Var=VSM_WRN_HVC_TIMEOUT1 bit 38,1
 
 [HVBMS_BMB_0_STATUS_TEMP]
@@ -767,12 +826,6 @@ Var=STATE_over_voltage_count unsigned 40,8
 Var=STATE_under_voltage_count unsigned 48,8
 Var=STATE_over_temp_count unsigned 56,8
 
-[TEST_ID]
-CycleTime=100
-DLC=1
-TimeOut=500
-Var=ID_test_id unsigned 0,8
-
 [VSM_LATCHED_STATUS]
 ID=510h
 DLC=3
@@ -838,7 +891,7 @@ Timeout=1000
 Var=VSM_busVoltage unsigned 0,16 /u:mV
 Var=VSM_busCurrent unsigned 16,16 /u:mA
 
-[CDC_MotorTemps]
+[DCM_MotorTemps]
 ID=512h
 DLC=4
 CycleTime=1000
@@ -978,9 +1031,9 @@ ID=2B2h
 DLC=6
 CycleTime=100
 Timeout=200
-Var=CDC_LongitudinalAcceleration signed 0,16 /u:mps2 /f:0.01
-Var=CDC_LateralAcceleration signed 16,16 /u:mps2 /f:0.01
-Var=CDC_VerticalAcceleration signed 32,16 /u:mps2 /f:0.01
+Var=DCM_LongitudinalAcceleration signed 0,16 /u:mps2 /f:0.01
+Var=DCM_LateralAcceleration signed 16,16 /u:mps2 /f:0.01
+Var=DCM_VerticalAcceleration signed 32,16 /u:mps2 /f:0.01
 
 [FSM_Heartbeat]
 ID=103h
@@ -1804,10 +1857,10 @@ ID=60Ch
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=CDC_config0_drv1_config_val_1 unsigned 0,8
-Var=CDC_config0_drv1_config_val_2 unsigned 8,8
-Var=CDC_config0_drv1_config_val_3 unsigned 16,8
-Var=CDC_config0_drv1_config_val_4 unsigned 24,8
+Var=DCM_config0_drv1_config_val_1 unsigned 0,8
+Var=DCM_config0_drv1_config_val_2 unsigned 8,8
+Var=DCM_config0_drv1_config_val_3 unsigned 16,8
+Var=DCM_config0_drv1_config_val_4 unsigned 24,8
 
 [DCM_Config2_Drv1]
 ID=60Eh
