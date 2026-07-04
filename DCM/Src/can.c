@@ -879,23 +879,11 @@ static void canTX100Hz(void *pvParameters) {
 		motorPowerInfo->motor_power_RL = (HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_VEH].handle)) >> 16) & 0xFFFF;
 		motorPowerInfo->motor_power_RR = HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_VEH].handle));
 
-		// canTX(CMR_CAN_BUS_VEH, CMR_CANID_SF_STATE, sfStatesInfo, sizeof(*sfStatesInfo), canTX100Hz_period_ms); //safety filter
-		// //canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
+        // //canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
 		// //canTX(CMR_CAN_BUS_TRAC, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
 
         // // Forward Movella status to Vehicle CAN at 100Hz.
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOVELLA_STATUS, movellaStatus, sizeof(cmr_canMovellaStatus_t), canTX100Hz_period_ms);
-
-        //debug code for sending rxmeta receive to current time difference
-//        uint16_t arr[2];
-//        arr[0] = lastWakeTime - canVehicleRXMeta[CANRX_VEH_HEARTBEAT_VSM].lastReceived_ms;
-//        canTX(
-//                    CMR_CAN_BUS_VEH,
-//                    0x108,
-//                    &arr,
-//                    2,
-//                    canTX100Hz_period_ms
-//                );
 
         // Send heartbeat
         canTX(
@@ -1106,10 +1094,6 @@ static void canTX200Hz(void *pvParameters) {
         rear_velocity.rr_x = car_state.rr_velocity.x * 100.0f;
         rear_velocity.rr_y = car_state.rr_velocity.y * 100.0f;
 
-
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_DCM_COG_VELOCITY, &cog_velocity, sizeof(cog_velocity), canTX200Hz_period_ms);
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_DCM_FRONT_VELOCITY, &front_velocity, sizeof(front_velocity), canTX200Hz_period_ms);
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_DCM_REAR_VELOCITY, &rear_velocity, sizeof(rear_velocity), canTX200Hz_period_ms);
 
         // YRC
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_PID_IO, &yrcDebug, sizeof(yrcDebug), canTX200Hz_period_ms);

@@ -34,13 +34,6 @@ float motorSetpointPercentToTorque10(int16_t sp) {
     return ((float) sp) * PCT10_TO_NM10 * gear_ratio; 
 }
 
-int16_t getMotorTorqueRequest(motorLocation_t motor) {
-    // const cmr_DTISetpoints_t *sp = getDTISetpoints(motor);
-
-    // return (sp->torqueLimPos_mNm > 0) ? sp->torqueLimPos_mNm : sp->torqueLimNeg_mNm;
-    return 0;
-}
-
 void daqWheelSpeedFeedback(cmr_canDCMWheelVelocity_t *speedFeedback) {
 
     int32_t dtiERPM_FL = getDTIERPM(CANRX_TRAC_FL_ERPM);
@@ -114,6 +107,7 @@ void daqPoseOrientation(cmr_canDCMPoseOrientation_t *poseOrient) {
     poseOrient->yaw_deg = (int16_t) (daqPoseOrientationRadToDeg(sbgOrient->yaw) * 10);
 
     volatile cmr_canSBGEKFVelocity_t *sbgVel = canDAQGetPayload(CANRX_DAQ_SBG_VEL);
+    
     // Perform transformations on car's velocity by using complex numbers as
     // a stand-in for a 2D vector. In the NED (North-East-Down) coordinate
     // frame, real->north, imag->east. Then in the car reference frame,
@@ -164,8 +158,11 @@ float estimateCarVelocityFromMotors() {
 // converts big endian to little endian
 cmr_canIzzie_loadcell_calibrated_t getLoads(cmr_canIzzie_loadcell_raw_t raw_data){
     cmr_canIzzie_loadcell_calibrated_t to_return = { 0 };
+    uint16_t to_return_calibrated = (raw_data.calibrated_output_f); 
+    
+    to_return_calibrated = (to_return_calibrated >> 8) | (8 << to_return_calibrated);
+    to_return.calibrated_output_f = to_return_calibrated.calibrated_output_f; 
 
-    // TODO: FINISH
     return to_return;
 }
 
