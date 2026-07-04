@@ -31,3 +31,8 @@ tmp/
 *.dsk~
 
 *.peproj~
+
+x64/
+*.sln
+*.vcxproj*
+*.dir/

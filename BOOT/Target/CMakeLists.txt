@@ -28,7 +28,7 @@ set(CMAKE_COLOR_DIAGNOSTICS ON)
 # ---------------------------------------------------------------------------
 # Paths — Openblt is a submodule in the current directory with the flash tables
 # ---------------------------------------------------------------------------
-set(OPENBLT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/openblt/Target/Source")
+set(OPENBLT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../openblt/Target/Source")
 set(CMAKE_CURRENT_SOURCE_FLASH_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Flash")
 
 
@@ -258,7 +258,7 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 add_compile_options(${cpu_PARAMS})
 
 # Add STM32F413 drivers
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../stm32f413-drivers ${CMAKE_BINARY_DIR}/stm32f413-drivers)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../stm32f413-drivers ${CMAKE_BINARY_DIR}/stm32f413-drivers)
 
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME} ${link_LIBS})
