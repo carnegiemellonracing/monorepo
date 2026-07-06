@@ -20,8 +20,8 @@
 // only copy pasting similar functions for now: making notes about differences 
 // notes start with ^^ so it is easy to find 
 
-
-// ^^ lots of differences at the start 
+BMB_Data_t BMSData[BMS_NUM];
+bool firstBalDone[BMS_NUM][CELL_NUM]; 
 
 /** Auto Address Function
  * This helper function will autoaddress a certain amount of BQ79616-Q1
@@ -111,7 +111,7 @@ bool autoAddr() {
 		.dataLen = 1,
 		.deviceAddress = 0x00,
 		.registerAddress = COMM_CTRL,
-		.data = {0x01}, // ^^ 0x01 vs 0x03
+		.data = {BMS_COMM_DATA}, // ^^ 0x01 vs 0x03
 		.crc = {0x00, 0x00}
 	};
 
@@ -146,48 +146,24 @@ bool autoAddr() {
  * @return True if all uart commands succeeded, false otherwise
  */
 bool enableMainADC() {
-	uart_command_t adcMsg = {
-		.readWrite = BMS_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
-		.dataLen = 1,
-		.deviceAddress = 0xFF, //not used!
-		.registerAddress = ADC_CTRL1,
-		.data = {0x06},
-		.crc = {0x00, 0x00}
-	};
-	cmr_uart_result_t res;
-	res = uart_sendCommand(&adcMsg);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
-	return true;
+	uint8_t dataToSend = 0x06;
+	return sendUartWrite(ADC_CTRL1, &dataToSend, 1);
 }
 
 // Enable however many cells are in series in one segment
 bool enableNumCells() {
-	uart_command_t active_cell = {
-		.readWrite = BMS_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
-		.dataLen = 1,
-		.deviceAddress = 0xFF, //not used!
-		.registerAddress = ACTIVE_CELL,
-		.data = {CELL_NUM-0x06}, // ^^ CELL_NUM-0x06 VS VSENSE_CHANNELS-0x06
-		.crc = {0x00, 0x00}
-	};
-	cmr_uart_result_t res;
-	res = uart_sendCommand(&active_cell);
-	if(res != UART_SUCCESS) {
-		return false;
-	}
-	return true;
+	uint8_t dataToSend = CELL_NUM - 0x06;
+	return sendUartWrite(ACTIVE_CELL, &dataToSend, 1);
 }
 
 // Enable all GPIO registers and TSREF for thermistor biasing
 bool enableGPIOPins() {
+	//enableTSref
+	uint8_t dataToSend = 0x01;
+	if (!sendUartWrite(CONTROL2, &dataToSend, 1))
+			return false;
 
-    //enableTSref
-    uint8_t dataToSend = 0x01;
-    if (!sendUartWrite(CONTROL2, &dataToSend, 1))
-        return false;
-
+	if (HV_BMS) {
     // configures GPIO 5 and 6 as analog input
     dataToSend = 0x12;
     if (!sendUartWrite(GPIO_CONF3, &dataToSend, 1)) // ^^ GPIO_CONF3 VS GPIO_CONF1
@@ -202,22 +178,30 @@ bool enableGPIOPins() {
     //enable MUX outputs as low initially
     dataToSend = 0x2D;
     if (!sendUartWrite(GPIO_CONF2, &dataToSend, 1))
-      return false;
+		return false;
+	}
+	else if (LV_BMS) {
+		//enableTSref
+    uint8_t dataToSend = 0x01;
+    if (!sendUartWrite(CONTROL2, &dataToSend, 1))
+        return false;
 
-	return true;
+    // configures GPIO 5 and 6 as analog input
+    dataToSend = 0x12;
+    if (!sendUartWrite(GPIO_CONF1, &dataToSend, 1)) // ^^ GPIO_CONF3 VS GPIO_CONF1
+        return false;
+				
+    //enable MUX outputs as low initially
+    dataToSend = 0x2D;
+    if (!sendUartWrite(GPIO_CONF2, &dataToSend, 1))
+		return false;
+	}
 }
 
 // Enable command timeout so BQ sleeps turns off when car is off
 void enableTimeout() {
-	uart_command_t enable_timeout = {
-			.readWrite = BMS_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
-			.dataLen = 1,
-			.deviceAddress = 0xFF, //not used!
-			.registerAddress = COMM_TIMEOUT_CONF,
-			.data = {0x0B},
-			.crc = {0x00, 0x00}
-	};
-	uart_sendCommand(&enable_timeout);
+	uint8_t dataToSend = 0x0B;
+	sendUartWrite(COMM_TIMEOUT_CONF, &dataToSend, 1);
 }
 
 // Init function for all BMBs
@@ -310,16 +294,8 @@ void cellBalancingSetup() {
 	balance_register.registerAddress = CB_CELL7_CTRL;
 	uart_sendCommand(&balance_register);
 
-	//set duty cycle to switch between even and odd cells
-	uart_command_t duty_cycle = {
-		.readWrite = BMS_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
-		.dataLen = 1,
-		.deviceAddress = 0xFF, //not used!
-		.registerAddress = BAL_CTRL1,
-		.data = {0x00}, //TODO what is this value supposed to be?
-		.crc = {0x00, 0x00}
-	};
-	uart_sendCommand(&duty_cycle);
+	uint8_t dataToSend = 0x00; // TODO: what is this value supposed to be?
+	sendUartWrite(BAL_CTRL1, &dataToSend, 1);
 }
 
 /**
@@ -406,7 +382,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 				cell_thresh += 5; 
 			}
 			//check to see which ones we turn don't need to balance 
-			if ((BMBData[i].cellVoltages[CELL_NUM-1-j] < cell_thresh) || !set) {
+			if ((BMSData[i].cellVoltages[CELL_NUM-1-j] < cell_thresh) || !set) {
 				cell_selects[j] = 0x00;
 			} else if (!firstBalDone[i][CELL_NUM-1-j]){ //first time we've finished balancing this cell 
 				firstBalDone[i][CELL_NUM-1-j] = true; 
@@ -545,4 +521,98 @@ static inline bool sendUartWrite(uint16_t registerAddress,
 
 	cmr_uart_result_t res = uart_sendCommand(&stackWriteCmd);
   return (res == UART_SUCCESS);
+}
+
+// ^^ Copied from HV-BMS, confirm LV side
+/**
+ * Reads voltage data of all VSENSE channels into BMSData
+ * @return 0 on success, ASIC number on failure
+ */
+uint8_t pollAllVoltageData() {
+  uint8_t toReadLen = CELL_NUM*2-1;
+	uart_command_t read_voltage = {
+		.readWrite = STACK_READ,
+		.dataLen = 1,
+		.deviceAddress = 0xFF, //not used!
+		.registerAddress = TOP_CELL,
+		.data = {toReadLen}, //reading high and low for cell 0 to CELL_NUM
+		.crc = {0xFF, 0xFF}
+	};
+
+	uart_response_t response[BMS_NUM];
+	// Critical section used so UART RX is not preempted
+	taskENTER_CRITICAL();
+	uart_sendCommand(&read_voltage);
+		// Loop through each BMB and channel
+		for(uint8_t i = BMS_NUM; i >= 1; i--) {
+
+		uint8_t status = uart_receiveResponse(&response[i-1], toReadLen);
+			if(status != 0) {
+			// setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
+			// BMBTimeoutCount[i-1]+=1;
+			DWT_Delay_ms(10000);
+			RXTurnOnInit();
+			BMBInit();
+			taskEXIT_CRITICAL();
+			return i;
+		}
+	}
+	taskEXIT_CRITICAL();
+
+	// Handle writing data separately from receive so you don't miss a byte
+		for(uint8_t i = 0; i < BMS_NUM; i++) {
+			for(uint8_t j = 0; j < CELL_NUM; j++) {
+			uint8_t high_byte_data = response[i].data[2*j];
+			uint8_t low_byte_data = response[i].data[2*j+1];
+
+			BMSData[i].cellVoltages[CELL_NUM-j-1] = CELL_NUM(high_byte_data, low_byte_data);
+		}
+	}
+
+	return 0;
+}
+
+/* Reads voltage data of all thermistor channels into BMSData */
+void pollAllTemperatureData(int channel) {
+	uart_command_t read_therms = {
+		.readWrite = STACK_READ,
+		.dataLen = 1,
+		.deviceAddress = 0xFF, //not used!
+		.registerAddress = GPIO5_HI,
+		.data = {0x07},
+		.crc = {0xFF, 0xFF}
+	};
+
+	taskENTER_CRITICAL();
+	uart_sendCommand(&read_therms);
+
+	uart_response_t response[BMS_NUM];
+
+	for(uint8_t i = BMS_NUM; i >= 1; i--) {
+		if(uart_receiveResponse(&response[i-1], 7) != 0) {
+				// Loop through each GPIO channel
+			setBMBErr(i-1, BMB_TEMP_READ_ERROR);
+			BMBTimeoutCount[i-1]+=1;
+			taskEXIT_CRITICAL();
+			return;
+		}
+	}
+	taskEXIT_CRITICAL();
+
+	for(uint8_t i = 0; i < BMS_NUM; i++) {
+		for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; k++) {
+			uint8_t cellNum = CHANNEL_GPIO_TO_CELL_MAP[channel][k];
+			if (cellNum == 255)
+					continue;
+
+			uint8_t high_byte_data = response[i].data[2*k];
+			uint8_t low_byte_data = response[i].data[2*k+1];
+			int16_t cellTempVoltageReading = calculateTempVoltageReading(high_byte_data, low_byte_data);
+
+			if (cellTempVoltageReading < 4990){
+				BMSData[i].cellTemperaturesVoltageReading[cellNum] = cellTempVoltageReading;
+			}
+		}
+	}
+	return;
 }
