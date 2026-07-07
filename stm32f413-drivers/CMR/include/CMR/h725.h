@@ -17,6 +17,7 @@
 
 uint32_t _platform_FDcanGPIOAF(FDCAN_GlobalTypeDef *instance, GPIO_TypeDef *port);
 void _platform_rccFDCanClockEnable();
+void _platform_rccFDCanClockDisable();
 void _platform_canFilter(cmr_can_t *can, const cmr_canFilter_t *filters, size_t filtersLen);
 void _platform_FDCANInit(
     cmr_can_t *can, FDCAN_GlobalTypeDef *instance,
@@ -42,9 +43,11 @@ GPIO_InitTypeDef _platform_adcPinConfig(const cmr_adcChannel_t *channel);
 
 void _platform_rccSystemClockEnable(void);
 void _platform_rccSystemInternalClockEnable(void);
+void _platform_resetSystemClock(void);
 
 #ifdef HAL_GPIO_MODULE_ENABLED
 void _platform_rccGPIOClockEnable(GPIO_TypeDef *port);
+void _platform_rccGPIOClockDisable(GPIO_TypeDef *port);
 #endif /* HAL_GPIO_MODULE_ENABLED */
 
 #ifdef HAL_ADC_MODULE_ENABLED
@@ -53,6 +56,7 @@ void _platform_rccADCClockEnable(ADC_TypeDef *instance);
 
 #ifdef HAL_CAN_MODULE_ENABLED
 void _platform_rccCANClockEnable(CAN_TypeDef *instance);
+void _platform_rccCANClockDisable(CAN_TypeDef *instance);
 #endif /* HAL_CAN_MODULE_ENABLED */
 
 #endif /* HAL_RCC_MODULE_ENABLED */

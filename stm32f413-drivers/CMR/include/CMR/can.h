@@ -96,6 +96,26 @@ void cmr_canInit(
     GPIO_TypeDef *txPort, uint16_t txPin
 );
 
+
+/**
+ * @brief Represents the GPIO config for a CAN interface.
+ */
+void cmr_canGpioInit(
+    CAN_TypeDef *instance,
+    GPIO_TypeDef *rxPort, uint16_t rxPin,
+    GPIO_TypeDef *txPort, uint16_t txPin
+);
+void cmr_canGpioDeInit(
+    GPIO_TypeDef *rxPort, uint16_t rxPin,
+    GPIO_TypeDef *txPort, uint16_t txPin
+);
+/**
+ * @brief Required clock configuration for a CAN interface.
+ */
+void cmr_canClockEnable(CAN_TypeDef *instance);
+void cmr_canClockDisable(CAN_TypeDef *instance);
+
+
 /**
  * @brief Represents a CAN filter's configuration.
  */
@@ -156,6 +176,8 @@ extern void _platform_canInit(
     GPIO_TypeDef *rxPort, uint16_t rxPin,
     GPIO_TypeDef *txPort, uint16_t txPin
 );
+extern void _platform_rccCANClockDisable(CAN_TypeDef *instance);
+extern void _platform_rccCANClockEnable(CAN_TypeDef *instance);
 
 #endif /* HAL_CAN_MODULE_ENABLED */
 

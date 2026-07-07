@@ -33,7 +33,9 @@ typedef struct {
 } cmr_gpioPin_t;
 
 void cmr_singleGpioPinInit(const cmr_gpioPinConfig_t* pinConfig);
+void cmr_singleGpioPinDeInit(const cmr_gpioPinConfig_t* pinConfig);
 void cmr_gpioPinInit(const cmr_gpioPinConfig_t *pinConfigs, size_t pinConfigsLen);
+void cmr_gpioPinDeInit(const cmr_gpioPinConfig_t *pinConfigs, size_t pinConfigsLen);
 void cmr_gpioWrite(size_t pin, int value);
 void cmr_gpioToggle(size_t pin);
 int  cmr_gpioRead(size_t pin);

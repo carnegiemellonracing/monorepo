@@ -4,3 +4,6 @@
 [submodule "cn-cbor"]
 	path = RAM/cn-cbor
 	url = git@github.com:carnegiemellonracing/cn-cbor.git
+[submodule "BOOT/openblt"]
+	path = BOOT/openblt
+	url = git@github.com:feaser/openblt.git
