@@ -424,8 +424,8 @@ Var=ACTIONS_dvControlMode unsigned 32,8
 [DIM_REQUEST]
 ID=235h
 DLC=5
-CycleTime=100
-TimeOut=500
+CycleTime=5
+TimeOut=25
 Var=REQUEST_requestedState unsigned 0,8 /e:State
 Var=REQUEST_requestedGear unsigned 8,8 /e:Gear
 Var=REQUEST_requestedDrsMode unsigned 16,8 /e:DrsMode
@@ -762,8 +762,8 @@ Var=SENSORS_packCurrent_dA unsigned 16,16
 [IVT_CURRENT]
 ID=521h
 DLC=2
-CycleTime=10
-TimeOut=50
+CycleTime=400
+TimeOut=2000
 Var=CURRENT_muxID unsigned 0,8
 Var=CURRENT_count_state unsigned 8,8
 
@@ -923,12 +923,6 @@ Var=STATE_over_voltage_count unsigned 40,8
 Var=STATE_under_voltage_count unsigned 48,8
 Var=STATE_over_temp_count unsigned 56,8
 
-[TEST_ID]
-CycleTime=100
-DLC=1
-TimeOut=500
-Var=ID_test_id unsigned 0,8
-
 [VSM_LATCHED_STATUS]
 ID=510h
 DLC=3
@@ -953,15 +947,14 @@ Var=LATCHED_VSM_LATCH_BSPD bit 16,1
 
 [VSM_SENSORS]
 ID=200h
-DLC=8
+DLC=7
 CycleTime=100
 TimeOut=500
 Var=SENSORS_brakePressureRear_PSI unsigned 0,16
 Var=SENSORS_batt_mV unsigned 16,16
 Var=SENSORS_safetyIn_eight_V unsigned 32,8
 Var=SENSORS_safetyOut_eight_V unsigned 40,8
-Var=SENSORS_EAB_pressed unsigned 48,8
-Var=SENSORS_hv_current_A signed 56,8
+Var=SENSORS_hv_current_A signed 48,8
 
 [VSM_STATUS]
 ID=110h

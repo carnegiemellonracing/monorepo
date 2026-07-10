@@ -190,16 +190,6 @@ uint8_t getASMS(){
     return cmr_gpioRead(GPIO_ASMS_ON);
 }
 
-/**
- * @brief This function is a wrapper that lets you see if EAB is on
- *
- * @return 1 iff EAB is on
- */
-bool getEAB(){
-	cmr_canVSMSensors_t* vsm_sensors = getPayload(CANRX_VSM_SENSORS);
-	return vsm_sensors->EAB_pressed;
-}
-
 /* Debouncing for button presses. */
 # define DEBOUNCE_DELAY 50
 

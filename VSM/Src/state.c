@@ -122,6 +122,7 @@ static bool AutonomousClear();
 static bool getVehicleFinished();
 static bool getRESGo();
 static bool RESTriggered();
+static bool EABPressed();
 
 // ------------------------------------------------------------------------------------------------
 // Interface functions
@@ -268,14 +269,14 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
         case CMR_CAN_VSM_STATE_GLV_ON: {
             // T2
             ASState = getASMSState();
-            if (dimRequestedState == CMR_CAN_AS_READY
-                && ASState 
+            bool EABon = EABPressed();
+            if (ASState && EABon
                 && getMissionSelected() 
                 && getDVBrakeDeployable() 
                 && getDVBrakeActive()){
                 nextState = CMR_CAN_VSM_STATE_REQ_PRECHARGE;
             }
-            else if (dimRequestedState == CMR_CAN_AS_READY) {
+            else if (EABon) {
                 // if we fail to state up go to error
                 nextState = CMR_CAN_VSM_STATE_ERROR;
             }
@@ -283,10 +284,12 @@ static cmr_canVSMState_t getNextState(TickType_t lastWakeTime_ms) {
                 nextState = CMR_CAN_VSM_STATE_REQ_PRECHARGE;
             }
             // T11
-            else if (dimRequestedState == CMR_CAN_GLV_ON ){
+            else if (dimRequestedState == CMR_CAN_GLV_ON 
+                || (dimRequestedState == AS_READY && !EABon)){ 
+                // should it check dimRequest AS_READY here???
                 nextState = CMR_CAN_VSM_STATE_GLV_ON;
             }
-            else{
+            else {
                 nextState = CMR_CAN_VSM_STATE_ERROR;
             }
 
@@ -676,4 +679,11 @@ static inline bool RESCorrect(){
 	uint8_t *data = (uint8_t*)(getPayload(CANRX_RES));
 	bool res_triggered = !(data[7] & CMR_CAN_RES_TRIG);
 	return res_triggered; 
+}
+
+/**
+ * @brief Reads EAB button
+ */
+static bool EABPressed() {
+    return cmr_gpioRead(GPIO_IN_EAB);
 }

@@ -431,7 +431,6 @@ typedef struct {
     uint16_t batt_mV;               /**< @brief Hall effect current (centi-Amps). */
     uint8_t safetyIn_eight_V;       /**< @brief Safety circuit input voltage (eight volts). */
     uint8_t safetyOut_eight_V;      /**< @brief Safety circuit output voltage (eight volts). */
-    bool    EAB_pressed;            /**< @brief EAB Pressed. */
     int8_t  hv_current_A;           /**< @brief Hall effect sensor reading (Amps). (
                                                 Note this maxes out at 127 A at the high end 
                                                 but the sensor itself maxes at 125A)*/

@@ -465,13 +465,6 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
 }
 
 
-void EABStateUp() {
-	cmr_canVSMState_t vsmState = stateGetVSM();
-	if(getEAB() && getASMS() && vsmState == CMR_CAN_GLV_ON) {
-		state.vsmReq = CMR_CAN_AS_READY;
-	}
-}
-
 /**
  * @brief Handles VSM state up.
  */
@@ -529,24 +522,25 @@ void stateVSMDown() {
 
 
 void reqVSM(void) {
-
-    if(getASMS() && stateGetVSM() == CMR_CAN_GLV_ON) {
-        EABStateUp();
-        return;
-    }
-
     cmr_canError_t error = CMR_CAN_ERROR_NONE;
     update_errors(&error);
     if(error != CMR_CAN_ERROR_NONE) {
         state.vsmReq = CMR_CAN_ERROR;
         return;
     }
-
+    
+    
     if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM() == CMR_CAN_CLEAR_ERROR 
     || stateGetVSM() == CMR_CAN_AS_FINISHED || stateGetVSM() == CMR_CAN_AS_EMERGENCY) {
         state.vsmReq = CMR_CAN_GLV_ON;
         return;
     }
+    
+    // (replaces EABStateUp)
+    if (getASMS() && getCurrState() == NORMAL) {
+        state.vsmReq = CMR_CAN_AS_READY;
+    }
+
     if (getCurrState() != CONFIG) {
         if (buttonStates[UP].isPressed) {
             stateVSMUp();
