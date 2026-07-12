@@ -264,15 +264,6 @@ Var=VSM_WRN_FSM_TIMEOUT bit 36,1
 Var=VSM_WRN_DCM_TIMEOUT bit 37,1
 Var=VSM_WRN_HVC_TIMEOUT bit 38,1
 
-[DCM_COG_VELOCITY]
-ID=2C2h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=COG_cog_x_mps signed 0,16 /u:mps /f:0.01
-Var=COG_cog_y_mps signed 16,16 /u:mps /f:0.01
-Var=COG_slip_angle float 32,32
-
 [DCM_CONTROLS_STATUS]
 ID=6D2h
 DLC=2
@@ -288,32 +279,12 @@ CycleTime=100
 TimeOut=500
 Var=COULOMB_KCoulombs float 0,32
 
-[DCM_FRONT_VELOCITY]
-ID=2D2h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=FRONT_fl_x signed 0,16 /f:0.01
-Var=FRONT_fl_y signed 16,16 /f:0.01
-Var=FRONT_fr_x signed 32,16 /f:0.01
-Var=FRONT_fr_y signed 48,16 /f:0.01
-
 [DCM_POWER_LOG]
 ID=6E4h
 DLC=4
 CycleTime=1000
 TimeOut=5000
 Var=POWER_power_limit_W float 0,32 /u:W /f:0.001
-
-[DCM_REAR_VELOCITY]
-ID=2E2h
-DLC=8
-CycleTime=5
-TimeOut=25
-Var=REAR_rl_x signed 0,16 /f:0.01
-Var=REAR_rl_y signed 16,16 /f:0.01
-Var=REAR_rr_x signed 32,16 /f:0.01
-Var=REAR_rr_y signed 48,16 /f:0.01
 
 [DIM_ACKNOWLEDGE]
 ID=545h
@@ -814,17 +785,6 @@ Var=VEL_vel_X signed 0,16
 Var=VEL_vel_Y signed 16,16
 Var=VEL_vel_A signed 32,16
 Var=VEL_ang_S signed 48,16
-
-[SF_STATE]
-ID=52Dh
-DLC=8
-CycleTime=10
-TimeOut=50
-Var=power_limit_max_violation_W float 0,32 /u:W
-Var=longest_power_violation_ms unsigned 32,8 /u:ms
-Var=STATE_over_voltage_count unsigned 40,8
-Var=STATE_under_voltage_count unsigned 48,8
-Var=STATE_over_temp_count unsigned 56,8
 
 [VSM_LATCHED_STATUS]
 ID=510h
@@ -1742,6 +1702,17 @@ DLC=4
 CycleTime=1000
 Var=DCM_Odometer float 0,32 /u:km
 
+[SF_State]
+ID=52Dh
+DLC=8
+CycleTime=100
+Timeout=1000
+Var=Power_Limit_Max_Violation_W float 0,32 /u:W
+Var=Longest_Power_Violation unsigned 32,8
+Var=Over_Voltage_Count unsigned 40,8
+Var=Under_Voltage_Count unsigned 48,8
+Var=Over_Temp_Count unsigned 56,8
+
 [DIM_Config1_Drv0]
 ID=601h
 DLC=4
@@ -2175,6 +2146,29 @@ ID=77Bh
 DLC=8
 Var=Movella_Latitude signed 0,32 -m /u:deg /f:5.96046447753906E-008 /max:127.999999940395 /d:0
 Var=Movella_Longitude signed 32,32 -m /u:deg /f:1.19209289550781E-007 /min:-255.999999999999 /max:255.99999988079 /d:0
+
+[DCM_COG_Velocity]
+ID=2C2h
+DLC=8
+Var=cog_x signed 0,16 /u:m/s /f:0.01
+Var=cog_y signed 16,16 /u:m/s /f:0.01
+Var=slip_angle float 32,32 /u:rad
+
+[DCM_Front_Velocity]
+ID=2D2h
+DLC=8
+Var=fl_x signed 0,16 /u:m/s /f:0.01
+Var=fl_y signed 16,16 /u:m/s /f:0.01
+Var=fr_x signed 32,16 /u:m/s /f:0.01
+Var=fr_y signed 48,16 /u:m/s /f:0.01
+
+[DCM_Rear_Velocity]
+ID=2E2h
+DLC=8
+Var=rl_x signed 0,16 /u:m/s /f:0.01
+Var=rl_y signed 16,16 /u:m/s /f:0.01
+Var=rr_x signed 32,16 /u:m/s /f:0.01
+Var=rr_y signed 48,16 /u:m/s /f:0.01
 
 [LV_BMS_Voltages1]
 ID=7F7h
