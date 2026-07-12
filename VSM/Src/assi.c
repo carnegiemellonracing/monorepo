@@ -39,33 +39,33 @@ static void assiControl(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
     	cmr_canVSMState_t state = getCurrentState();
+
+        uint32_t blueDutyPct = 0;
+        uint32_t yellowDutyPct = 0;
         
         switch (state) {
             case CMR_CAN_VSM_STATE_AS_READY: 
-                pwmSetDutyCycle(PWM_BLUE, (uint32_t) 0);
-                pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 100);
+                yellowDutyPct = 100;
                 break;
 
             case CMR_CAN_VSM_STATE_AS_DRIVING: 
-                pwmSetDutyCycle(PWM_BLUE, (uint32_t) 0);
-                pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 50);
+                yellowDutyPct = 50;
                 break;
 
             case CMR_CAN_VSM_STATE_AS_EMERGENCY: 
-                pwmSetDutyCycle(PWM_BLUE, (uint32_t) 50);
-                pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 0);
+                blueDutyPct = 50;
                 break;
 
             case CMR_CAN_VSM_STATE_AS_FINISHED: 
-                pwmSetDutyCycle(PWM_BLUE, (uint32_t) 100);
-                pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 0);
+                blueDutyPct = 100;
                 break;
             
             default:
-                pwmSetDutyCycle(PWM_BLUE, (uint32_t) 0);
-                pwmSetDutyCycle(PWM_YELLOW, (uint32_t) 0);
+                //blueDutyPct and yellowDutyPct still 0
                 break;
         }
+        pwmSetDutyCycle(PWM_BLUE, blueDutyPct);
+        pwmSetDutyCycle(PWM_YELLOW, yellowDutyPct);
 
         vTaskDelayUntil(&lastWakeTime, assiControl_period_ms);
     }
