@@ -1,0 +1,10 @@
+^C:\USERS\MCHON\DOCUMENTS\PROJECTS\CMU_RACING\MONOREPO\BOOT\HOST\CMAKEFILES\0B1B70F7E3FFA613344CE8CF0B30802E\GENERATE.STAMP.RULE
+setlocal
+C:\ST\STM32CubeCLT_1.21.0\CMake\bin\cmake.exe -SC:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host -BC:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host/FlashCli.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

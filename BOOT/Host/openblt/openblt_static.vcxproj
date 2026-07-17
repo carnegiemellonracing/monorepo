@@ -1,0 +1,340 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{242BAC8A-2721-38C4-8F1D-065FB2199437}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>openblt_static</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\mchon\Documents\Projects\cmu_racing\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">openblt_static.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">openblt</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\mchon\Documents\Projects\cmu_racing\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">openblt_static.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">openblt</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\mchon\Documents\Projects\cmu_racing\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">openblt_static.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">openblt</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\mchon\Documents\Projects\cmu_racing\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">openblt_static.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">openblt</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;PLATFORM_WINDOWS;PLATFORM_64BIT;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;PLATFORM_WINDOWS;PLATFORM_64BIT;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;PLATFORM_WINDOWS;PLATFORM_64BIT;_CRT_SECURE_NO_WARNINGS;NDEBUG;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;PLATFORM_WINDOWS;PLATFORM_64BIT;_CRT_SECURE_NO_WARNINGS;NDEBUG;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;PLATFORM_WINDOWS;PLATFORM_64BIT;_CRT_SECURE_NO_WARNINGS;NDEBUG;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;PLATFORM_WINDOWS;PLATFORM_64BIT;_CRT_SECURE_NO_WARNINGS;NDEBUG;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;PLATFORM_WINDOWS;PLATFORM_64BIT;_CRT_SECURE_NO_WARNINGS;NDEBUG;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;PLATFORM_WINDOWS;PLATFORM_64BIT;_CRT_SECURE_NO_WARNINGS;NDEBUG;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak;C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/openblt/Host/Source/LibOpenBLT/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+C:\ST\STM32CubeCLT_1.21.0\CMake\bin\cmake.exe -SC:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host -BC:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host --check-stamp-file C:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host/openblt/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\Host\openblt\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/openblt/Host/Source/LibOpenBLT/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+C:\ST\STM32CubeCLT_1.21.0\CMake\bin\cmake.exe -SC:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host -BC:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host --check-stamp-file C:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host/openblt/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\Host\openblt\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/openblt/Host/Source/LibOpenBLT/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+C:\ST\STM32CubeCLT_1.21.0\CMake\bin\cmake.exe -SC:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host -BC:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host --check-stamp-file C:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host/openblt/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\Host\openblt\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/openblt/Host/Source/LibOpenBLT/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+C:\ST\STM32CubeCLT_1.21.0\CMake\bin\cmake.exe -SC:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host -BC:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host --check-stamp-file C:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host/openblt/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\Host\openblt\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\aes256.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\candriver.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\firmware.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\openblt.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\session.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\srecparser.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\util.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcploader.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpcan.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpmbrtu.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpnet.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpuart.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpusb.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\vcidriver.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser\kvcanlib.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel\canusb.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak\pcanusb.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector\xlLoadlib.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector\xldriver.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\critutil.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\netaccess.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\serialport.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\timeutil.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\usbbulk.c" />
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\xcpprotect.c" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\aes256.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\candriver.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\firmware.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\netaccess.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\openblt.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\serialport.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\session.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\srecparser.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\usbbulk.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\util.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcploader.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcpprotect.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpcan.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpmbrtu.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpnet.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpuart.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpusb.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\baltype.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\cantype.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\lintype.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\stdtype.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\vcidriver.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\vcierr.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\vcinpl2.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\vcisdk.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\vcitype.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\vciver.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser\canevt.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser\canlib.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser\canstat.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser\kvcanlib.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser\obsolete.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser\predef.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel\canusb.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel\lawicel_can.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak\PCANBasic.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak\pcanusb.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector\vxlapi.h" />
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector\xldriver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\Host\ZERO_CHECK.vcxproj">
+      <Project>{DA7D85D5-5DFF-3487-811A-62B97D43889C}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,10 @@
+^C:\USERS\MCHON\DOCUMENTS\PROJECTS\CMU_RACING\MONOREPO\BOOT\HOST\CMAKELISTS.TXT
+setlocal
+C:\ST\STM32CubeCLT_1.21.0\CMake\bin\cmake.exe -SC:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host -BC:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host --check-stamp-file C:/Users/mchon/Documents/Projects/cmu_racing/monorepo/BOOT/Host/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

@@ -180,8 +180,8 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     -Wall
     -Wshadow
     -Wextra
-    -finstrument-functions
-    -finstrument-functions-exclude-file-list=startup,main.c,HAL
+    #-finstrument-functions
+    #-finstrument-functions-exclude-file-list=startup,Src/main.c,main.c,CMR,F4XX,STM32F4xx_HAL_Driver,stm32f4xx
     -Wformat-overflow # Detects buffer overflow (sprintf, snprintf, etc.)
     -Wformat-truncation # Detects buffer truncation (sprintf, snprintf, etc.)
     -Wdouble-promotion # Doubles do not natively use the FPU on a Cortex-M4F

@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\aes256.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\candriver.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\firmware.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\openblt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\session.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\srecparser.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\util.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcploader.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpcan.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpmbrtu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpnet.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpuart.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpusb.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\vcidriver.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser\kvcanlib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel\canusb.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak\pcanusb.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector\xlLoadlib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector\xldriver.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\critutil.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\netaccess.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\serialport.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\timeutil.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\usbbulk.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\xcpprotect.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\aes256.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\candriver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\firmware.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\netaccess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\openblt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\serialport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\session.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\srecparser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\usbbulk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcploader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcpprotect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpcan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpmbrtu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpnet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpuart.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\xcptpusb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\baltype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\cantype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\lintype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\stdtype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\vcidriver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\vcierr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\vcinpl2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\vcisdk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\vcitype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\ixxat\vciver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser\canevt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser\canlib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser\canstat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser\kvcanlib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser\obsolete.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\kvaser\predef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel\canusb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\lawicel\lawicel_can.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak\PCANBasic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\peak\pcanusb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector\vxlapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\port\windows\canif\vector\xldriver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\mchon\Documents\Projects\cmu_racing\monorepo\BOOT\openblt\Host\Source\LibOpenBLT\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{1BF190D1-C50D-3E34-B251-7A288F177274}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{7C010A35-7AAA-3B63-BF8B-4AA3A970E3BA}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
