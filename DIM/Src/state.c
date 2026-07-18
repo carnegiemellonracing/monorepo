@@ -634,11 +634,11 @@ void reqGear(void) {
 
 void reqDRS(void) {
     if(buttonStates[SW_RIGHT].isPressed) {
-        state.drsReq = CMR_CAN_DRS_STATE_OPEN;
+        state.drsReq = (cmr_canDrsMode_t) CMR_CAN_DRS_STATE_OPEN;
         buttonStates[SW_RIGHT].isPressed = false; 
     }
     else {
-        state.drsReq = CMR_CAN_DRS_STATE_CLOSED;
+        state.drsReq = (cmr_canDrsMode_t) CMR_CAN_DRS_STATE_CLOSED;
     }
 }
 
