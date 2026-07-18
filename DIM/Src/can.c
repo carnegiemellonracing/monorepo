@@ -246,7 +246,7 @@ static void canTX100Hz(void *pvParameters) {
     	uint8_t regenPercent = (uint8_t)(((float) adcRead(ADC_PADDLE) / 435.0f) * 100.0f); // 435 empirical value
         regenPercent = CLAMP(0, regenPercent, 100);
         uint8_t packed = 0;
-        uint8_t ctrlOff = !cmr_gpioRead(GPIO_CTRL_SWITCH);
+        //uint8_t ctrlOff = !cmr_gpioRead(GPIO_CTRL_SWITCH);
         uint8_t dvCtrlMode = stateGetDVMode();
         for(int i=0; i<NUM_BUTTONS; i++){
             packed |= buttonStates[i].gpioState << i; 
@@ -405,7 +405,7 @@ void cdcRXCallback(uint16_t canID, const void *data) {
     // calculate what config packet this message is
     int packet_number = (canID - CMR_CANID_CDC_CONFIG0_DRV0) % NUM_CONFIG_PACKETS;
     // cast the data to the appropriate format
-    cmr_canDIMCDCconfig_t *cdc_config_data = data;
+    const cmr_canDIMCDCconfig_t *cdc_config_data = data;
     // cast the data to an array for easy indexing. Sly i know :P
     uint8_t *cdc_config_data_arr = (uint8_t *)cdc_config_data;
 

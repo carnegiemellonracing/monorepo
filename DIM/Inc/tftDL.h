@@ -48,7 +48,7 @@ extern volatile bool redraw_new_driver_profiles;
 
 // Sizes for displaying to screen
 #define GEARDISPLAYLEN 10
-#define STATEDISPLAYLEN 13
+#define STATEDISPLAYLEN 12
 #define DRSDISPLAYLEN 7
 
 // Indices for accessing RAM Buffer + their lengths

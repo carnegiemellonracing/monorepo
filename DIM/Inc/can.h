@@ -74,7 +74,6 @@ typedef enum {
     CANRX_SENSORIC_VEL_ANG,
     CANRX_HVC_PACK_TEMPS,      /**< @brief HVC cell temps. */
     CANRX_VSM_STATUS,          /**< @brief VSM status */
-    CANRX_PTCf_LOOP_B_TEMPS,   /**< @brief PTCf Loop B temps */
     CANRX_HVC_HEARTBEAT,       /**< @brief HVC Error. */
     CANRX_HVC_BMB_STATUS,      /**< @brief HVC BMB Status */
     CANRX_MEMORATOR_BROADCAST, /**< @brief Memorator broadcast. */
