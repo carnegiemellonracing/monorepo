@@ -522,7 +522,7 @@ arm_lms_norm_q31, group__LMS__NORM.html#gae12fc16232c8087345e5910fcb840be9, arm_
 arm_lms_norm_q31.c, arm__lms__norm__q31_8c.html, 
 arm_lms_q15, group__LMS.html#ga12fd93f61401b365789cdfd5dca07e5b, arm_lms_q15(const arm_lms_instance_q15 *S, const q15_t *pSrc, q15_t *pRef, q15_t *pOut, q15_t *pErr, uint32_t blockSize):&#160;arm_lms_q15.c
 arm_lms_q15.c, arm__lms__q15_8c.html, 
-arm_lms_q31, group__LMS.html#ga69c9c64338c067f1fb4990dDCM8c143f, arm_lms_q31(const arm_lms_instance_q31 *S, const q31_t *pSrc, q31_t *pRef, q31_t *pOut, q31_t *pErr, uint32_t blockSize):&#160;arm_lms_q31.c
+arm_lms_q31, group__LMS.html#ga69c9c64338c067f1fb4990DCDC8c143f, arm_lms_q31(const arm_lms_instance_q31 *S, const q31_t *pSrc, q31_t *pRef, q31_t *pOut, q31_t *pErr, uint32_t blockSize):&#160;arm_lms_q31.c
 arm_lms_q31.c, arm__lms__q31_8c.html, 
 arm_mat_add_f32, group__MatrixAdd.html#ga04bbf64a5f9c9e57dd1efb26a768aba1, arm_mat_add_f32(const arm_matrix_instance_f32 *pSrcA, const arm_matrix_instance_f32 *pSrcB, arm_matrix_instance_f32 *pDst):&#160;arm_mat_add_f32.c
 arm_mat_add_f32.c, arm__mat__add__f32_8c.html, 
