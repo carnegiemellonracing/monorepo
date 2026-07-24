@@ -57,8 +57,8 @@ typedef enum {
     CMR_CAN_ERROR_VSM_MODULE_STATE = (1 << 14),
     /** @brief At least one of the error latches is active. */
     CMR_CAN_ERROR_VSM_LATCHED_ERROR = (1 << 13),
-    /** @brief VSM DDCM fault signal. */
-    CMR_CAN_ERROR_VSM_DDCM_FAULT = (1 << 12),
+    /** @brief VSM DCDC fault signal. */
+    CMR_CAN_ERROR_VSM_DCDC_FAULT = (1 << 12),
     /** @brief VSM hall effect sensor out-of-range. */
     CMR_CAN_ERROR_VSM_HALL_EFFECT = (1 << 11),
     /** @brief VSM brake pressure sensor out-of-range. */
@@ -87,10 +87,10 @@ typedef enum {
     CMR_CAN_ERROR_AFC_DRIVER2_TEMP = (1 << 13),
     /** @brief AFC driver IC #3 temperature out-of-range. */
     CMR_CAN_ERROR_AFC_DRIVER3_TEMP = (1 << 12),
-    /** @brief AFC DDCM #1 temperature out-of-range. */
-    CMR_CAN_ERROR_AFC_DDCM1_TEMP = (1 << 11),
-    /** @brief AFC DDCM #2 temperature out-of-range. */
-    CMR_CAN_ERROR_AFC_DDCM2_TEMP = (1 << 10),
+    /** @brief AFC DCDC #1 temperature out-of-range. */
+    CMR_CAN_ERROR_AFC_DCDC1_TEMP = (1 << 11),
+    /** @brief AFC DCDC #2 temperature out-of-range. */
+    CMR_CAN_ERROR_AFC_DCDC2_TEMP = (1 << 10),
 
 //     /** @brief
 //  fan current out-of-range. */
@@ -251,7 +251,7 @@ typedef enum {
     CMR_CAN_VSM_STATE_GLV_ON,           /**< @brief Grounded Low Voltage system on. */
     CMR_CAN_VSM_STATE_REQ_PRECHARGE,    /**< @brief Request accumulator isolation relay precharge. */
     CMR_CAN_VSM_STATE_RUN_BMS,          /**< @brief Run Battery Management System. */
-    CMR_CAN_VSM_STATE_DDCM_EN,          /**< @brief Enable DDCM converters. */
+    CMR_CAN_VSM_STATE_DCDC_EN,          /**< @brief Enable DCDC converters. */
     CMR_CAN_VSM_STATE_INVERTER_EN,      /**< @brief Enable inverter logic power. */
     CMR_CAN_VSM_STATE_BRAKE_TEST,       /**< @brief Check if brakes work*/
     CMR_CAN_VSM_STATE_HV_EN,            /**< @brief Enable high voltage system. */
@@ -316,7 +316,7 @@ typedef enum {
 typedef enum{
     CMR_CAN_VSM_ERR_BRAKEPRESSOOR = (1<<10),
     CMR_CAN_VSM_ERR_HALLEFFECTOOR = (1<<11),
-    CMR_CAN_VSM_ERR_DDCMFAULT = (1<<12),
+    CMR_CAN_VSM_ERR_DCDCFAULT = (1<<12),
     CMR_CAN_VSM_ERR_LATCHEDERROR = (1<<13),
     CMR_CAN_VSM_ERR_MODULE_STATE = (1<<14), 
     CMR_CAN_VSM_ERR_MODULE_TIMEOUT = (1<<15) 

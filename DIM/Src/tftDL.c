@@ -446,7 +446,7 @@ void setTempColor(uint32_t background_index, uint32_t text_index, bool temp_yell
  * @param hvVoltage_mV Pack Voltage (from HVC)
  * @param power_kW Electrical power dissipation
  * (inferred from DCM)
- * @param dDCMTemp_C DDCM Thermistor temp.
+ * @param DCDCTemp_C DCDC Thermistor temp.
  * Unused.
  * @param motorTemp_C Motor termperature.
  * Referred from RMS via DCM. Deg. C.

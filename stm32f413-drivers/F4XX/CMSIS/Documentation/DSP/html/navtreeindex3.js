@@ -155,7 +155,7 @@ var NAVTREEINDEX3 =
 "structarm__biquad__casd__df1__inst__q15.html":[4,16],
 "structarm__biquad__casd__df1__inst__q15.html#a3603cbf084938b6931bcb05dfe487f09":[4,16,2],
 "structarm__biquad__casd__df1__inst__q15.html#ae29dfdb736374fcddaeaec4b7770170c":[4,16,3],
-"structarm__biquad__casd__df1__inst__q15.html#ae85d417edDCMe57e9a54f8c841580578":[4,16,1],
+"structarm__biquad__casd__df1__inst__q15.html#ae85d417eDCDCe57e9a54f8c841580578":[4,16,1],
 "structarm__biquad__casd__df1__inst__q15.html#af59c4ceb94f92d6613492b37e7c949de":[4,16,0],
 "structarm__biquad__casd__df1__inst__q31.html":[4,17],
 "structarm__biquad__casd__df1__inst__q31.html#a74050e9f36542bd56f4052381a82ae8f":[4,17,2],
