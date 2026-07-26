@@ -346,11 +346,13 @@
 #define BMS_WRITE 10
 #endif
 
-// New macros, update accordingly
-#define BMS_COMM_DATA 1
+#ifndef HV_BMS
 #define HV_BMS false
-#define LV_BMS false
+#endif
 
+#ifndef LV_BMS
+#define LV_BMS false
+#endif
 
 //TODO change this
 #define CELL_BALANCING_LOW_VOLTAGE 3.9

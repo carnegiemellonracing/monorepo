@@ -17,11 +17,109 @@
 #include "gpio.h"
 #include "uart.h"
 
-// only copy pasting similar functions for now: making notes about differences 
-// notes start with ^^ so it is easy to find 
+extern volatile int BMBTimeoutCount[BMS_NUM];
+extern volatile int BMBErrs[BMS_NUM];
 
-BMB_Data_t BMSData[BMS_NUM];
-bool firstBalDone[BMS_NUM][CELL_NUM]; 
+BMB_Data_t BMSData[BMS_NUM]; // Data stored in this array
+bool firstBalDone[BMS_NUM][CELL_NUM]; // Track balance status
+
+// uint8_t CHANNEL_GPIO_TO_CELL_MAP[4][NUM_GPIO_CHANNELS]
+// TODO: how to do gpio mapping?
+
+// Only relevant for BMSM
+static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
+	BMBErrs[BMBIndex] = err;
+}
+
+/**
+ * @return True if all UART commands succeeded, false otherwise
+ */
+bool turnOn() {
+	// Turn On Ping
+	DWT_Delay_ms(100);
+	HAL_GPIO_WritePin(
+		GPIOB, GPIO_PIN_13,
+		GPIO_PIN_SET
+	);
+
+	DWT_Delay_ms(100);
+	HAL_GPIO_WritePin(
+		GPIOB, GPIO_PIN_13,
+		GPIO_PIN_RESET
+	);
+
+	DWT_Delay_ms(3);
+	HAL_GPIO_WritePin(
+		GPIOB, GPIO_PIN_13,
+		GPIO_PIN_SET
+	);
+
+	DWT_Delay_ms(5);
+	HAL_GPIO_WritePin(
+		GPIOB, GPIO_PIN_13,
+		GPIO_PIN_RESET
+	);
+
+	DWT_Delay_ms(3);
+	HAL_GPIO_WritePin(
+			GPIOB, GPIO_PIN_13,
+		GPIO_PIN_SET
+	);
+
+	DWT_Delay_ms(100);
+	uartInit();
+
+	cmr_uart_result_t res;
+	uart_command_t sendWake = {
+			.readWrite = SINGLE_WRITE,
+			.dataLen = 1,
+			.deviceAddress = 0x00,
+			.registerAddress = CONTROL1,
+			.data = {0x20},
+			.crc = {0x00, 0x00}
+	};
+	res = uart_sendCommand(&sendWake);
+	if(res != UART_SUCCESS) {
+		return false;
+	}
+
+	DWT_Delay_ms(1000);
+	autoAddr();
+
+	for (int i = BOARD_NUM - 1; i >= 0; i--) {
+		uart_command_t hardReset = {
+				.readWrite = SINGLE_WRITE,
+				.dataLen = 1,
+				.deviceAddress = i,
+				.registerAddress = CONTROL2,
+				.data = {0x02},
+				.crc = {0x00, 0x00}
+		};
+		res = uart_sendCommand(&hardReset);
+		if(res != UART_SUCCESS) {
+			return false;
+		}
+
+		DWT_Delay_ms(200);
+	}
+
+	uart_command_t sendShutdown = {
+			.readWrite = BROADCAST_WRITE,
+			.dataLen = 1,
+			.deviceAddress = 0xFF,
+			.registerAddress = CONTROL1,
+			.data = {0x40},
+			.crc = {0x00, 0x00}
+	};
+	res = uart_sendCommand(&sendShutdown);
+	if(res != UART_SUCCESS) {
+		return false;
+	}
+
+	DWT_Delay_ms(1000);
+
+	return true;
+}
 
 /** Auto Address Function
  * This helper function will autoaddress a certain amount of BQ79616-Q1
@@ -38,16 +136,15 @@ bool autoAddr() {
 
 	// Dummy write to sync OTP addresses
 	uart_command_t otpSync = {
-		.readWrite = BMS_WRITE, // ^^ SINGLE_WRITE VS STACK_WRITE
+		.readWrite = BMS_WRITE,
 		.dataLen = 1,
-		.deviceAddress = 0x00,
+		.deviceAddress = 0x00, // not used
 		.registerAddress = OTP_ECC_DATAIN1,
 		.data = {0x00},
 		.crc = {0x00, 0x00}
 	};
 	cmr_uart_result_t res;
-    res = uart_sendCommand(&otpSync);
-
+  res = uart_sendCommand(&otpSync);
 	for(int i = 0; i < 8; i++) {
 		otpSync.registerAddress = OTP_ECC_DATAIN1 + i;
 		res = uart_sendCommand(&otpSync);
@@ -57,7 +154,7 @@ bool autoAddr() {
 		DWT_Delay_ms(10);
 	}
 
-	//broadcast write to enable autoaddressing
+	// Broadcast write to enable autoaddressing
 	uart_command_t enableAutoaddress = {
 			.readWrite = BROADCAST_WRITE,
 			.dataLen = 1,
@@ -91,7 +188,7 @@ bool autoAddr() {
 		DWT_Delay_ms(10);
 	}
 
-	//Set all devices as stack devices first
+	// Set all devices as stack devices first
 	uart_command_t set_stack_devices = {
 		.readWrite = BROADCAST_WRITE,
 		.dataLen = 1,
@@ -115,7 +212,6 @@ bool autoAddr() {
 		.crc = {0x00, 0x00}
 	};
 
-
 	res = uart_sendCommand(&set_comm_ctrl);
 	if(res != UART_SUCCESS) {
 		return false;
@@ -123,7 +219,7 @@ bool autoAddr() {
 	DWT_Delay_ms(10);
 
 	// Resync OTP registers with dummy reads
-	otpSync.readWrite = BMS_READ; // ^^ SINGLE_READ VS STACK_READ
+	otpSync.readWrite = BMS_READ;
 	otpSync.data[0] = 0;
 
 	for(int i = 0; i < 8; i++) {
@@ -136,7 +232,6 @@ bool autoAddr() {
 	}
 
 	return true;
-
 }
 
 /** Enable ADC function
@@ -166,13 +261,12 @@ bool enableGPIOPins() {
 	if (HV_BMS) {
     // configures GPIO 5 and 6 as analog input
     dataToSend = 0x12;
-    if (!sendUartWrite(GPIO_CONF3, &dataToSend, 1)) // ^^ GPIO_CONF3 VS GPIO_CONF1
+    if (!sendUartWrite(GPIO_CONF3, &dataToSend, 1))
         return false;
 
     // configures GPIO 7 and 8 as analog input
     dataToSend = 0x12;
-    if (!sendUartWrite(GPIO_CONF4, &dataToSend, 1)) // ^^ GPIO_CONF4 VS Does not exist in LV BMS code
-        // ^^ note the this doesn't exist in LV BMS code because it has less thermistors 
+    if (!sendUartWrite(GPIO_CONF4, &dataToSend, 1))
         return false;
 
     //enable MUX outputs as low initially
@@ -181,11 +275,6 @@ bool enableGPIOPins() {
 		return false;
 	}
 	else if (LV_BMS) {
-		//enableTSref
-    uint8_t dataToSend = 0x01;
-    if (!sendUartWrite(CONTROL2, &dataToSend, 1))
-        return false;
-
     // configures GPIO 5 and 6 as analog input
     dataToSend = 0x12;
     if (!sendUartWrite(GPIO_CONF1, &dataToSend, 1)) // ^^ GPIO_CONF3 VS GPIO_CONF1
@@ -234,13 +323,17 @@ void BMBInit() {
 	cellBalancingSetup();
 }
 
+/* Calculates voltage following TI's code */
 static uint16_t calculateVoltage(uint8_t msb, uint8_t lsb) {
-	//formula from TI's code
-	//Bitwise OR high byte shifted by 8 and low byte, apply scaling factor
+	// Formula from TI's code
+	// Bitwise OR high byte shifted by 8 and low byte, apply scaling factor
 
 	return (uint16_t) (0.19073*((((uint16_t)msb << 8) | lsb)));
 }
 
+/**
+ * @return True on success, false otherwise
+ */
 bool setMuxOutput(uint8_t channel) {
 	uint8_t data;
 	switch(channel) {
@@ -260,30 +353,35 @@ bool setMuxOutput(uint8_t channel) {
 		return false;
 	}
 
-	// ^^ SINGLE VS STACK
 	// Switches Mux
 	bool res = sendUartWrite(GPIO_CONF2, &data, 1);
 	return res;
 }
 
-// For efficiency we choose to do as little computation as possible here and 
-// just compute voltage. To convert from voltage to temperature we would need
-// to do the Steinhart equation which is very expensive. However, since the
-// Steinhart is strictly decreasing we are able to simply probe the voltage
-// values for the hottest and coldest cells. The transfer function should be 
-// on PCAN to convert to temperature for easy viewing
+/**
+ * For efficiency we choose to do as little computation as possible here and 
+ * just compute voltage. To convert from voltage to temperature we would need
+ * to do the Steinhart equation which is very expensive. However, since the
+ * Steinhart is strictly decreasing we are able to simply probe the voltage
+ * values for the hottest and coldest cells. The transfer function should be 
+ * on PCAN to convert to temperature for easy viewing.
+ */
 static int16_t calculateTempVoltageReading(uint8_t msb, uint8_t lsb) {
 	int16_t voltage_mv = (uint16_t)((0.15259) * (((int16_t) msb << 8) | lsb));
-    return (voltage_mv);
+  return (voltage_mv);
 }
 
+/**
+ * Initializes cell balancing timers
+ * @return True if all UART commands succeeded, false otherwise
+ */
 void cellBalancingSetup() {
-	//set up cell balancing timers
-	//done in two sets because max register write is 8 :(
+	// Set up cell balancing timers
+	// Done in two sets because max register write is 8 :(
 
 	uart_command_t balance_register = {
-		.readWrite = BMS_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
-		.dataLen = CELL_NUM/2, // ^^ CELL_NUM/2 VS VSENSE_CHANNELS/2
+		.readWrite = BMS_WRITE, 
+		.dataLen = CELL_NUM/2,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = CB_CELL14_CTRL,
 		.data = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
@@ -313,7 +411,7 @@ void cellBalancingSetup() {
  int getBalDone() {
 
 	uart_command_t getBalStatus = {
-		.readWrite = BMS_READ, // ^^ BROADCAST_READ VS STACK_READ
+		.readWrite = BMS_READ,
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = BAL_STAT,
@@ -321,7 +419,7 @@ void cellBalancingSetup() {
 		.crc = {0xFF, 0xFF}
 	};
 
-	uart_response_t response[BMS_NUM] = {0}; // ^^ BOARD_NUM-1 VS BOARD_NUM
+	uart_response_t response[BMS_NUM] = {0}; 
 
 	// Critical section used so UART RX is not preempted
 	taskENTER_CRITICAL();
@@ -331,7 +429,7 @@ void cellBalancingSetup() {
 		return -1; 
 
 	//loop through each BMB and channel
-	for(uint8_t i = BMS_NUM; i >= 1; i--) { // ^^ BOARD_NUM-1 VS BOARD_NUM and i >= 1 vs i >= 0
+	for(uint8_t i = BMS_NUM; i >= 1; i--) {
 		uint8_t status = uart_receiveResponse(&response[i-1], 1); 
 		if (status == 1) {
 			return -1; 
@@ -341,29 +439,32 @@ void cellBalancingSetup() {
 	
 	// determines if we are done balancing
 	bool doneBalancing = 1;
-	for(uint8_t i = 0; i < BMB_NUM; i++) { // ^^ BOARD_NUM-1 VS BOARD_NUM
+	for(uint8_t i = 0; i < BMB_NUM; i++) {
 		if ((response[i].data[0] & 8) == 8) //CB_RUN is 1 
 			doneBalancing = 0;
 	}
 	
 	return doneBalancing; 
-
 }
 
+/**
+ * Performs cell balancing to a specific threshold
+ * @param set True if balancing should be performed, false otherwise
+ * @param thresh Voltage value to balance to
+ */
 void cellBalancing(bool set, uint16_t thresh) {
-
 	if (thresh >= 4250 || thresh <= 2450) {
 		thresh = 3700;
 	}
 
 	// board index by 0 but don't send to interface chip
-	for(int i = 0; i < BMB_NUM; i++) { // ^^ BOARD_NUM VS BOARD_NUM-1
+	for(int i = 0; i < BMB_NUM; i++) {
 		// selections for cells--0x04 to balance for 5 minute intervals
 		uint8_t top_len; 
 
 		//balance cells above 8 
-		if (CELL_NUM > 8) { // ^^ CELL_NUM VS VSENSE_CHANNELS
-			top_len = CELL_NUM - 8; // ^^ CELL_NUM VS VSENSE_CHANNELS
+		if (CELL_NUM > 8) {
+			top_len = CELL_NUM - 8;
 		} else {
 			top_len = 0; 
 		}
@@ -372,7 +473,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 		uint8_t cell_selects[] = {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 
 			0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01}; 
 
-		// disable selected cells below threshold 
+		// Disable selected cells below threshold 
 
         // ^^ this for loop is written a little bit differently in the LV BMS code 
 		uint16_t cell_thresh = thresh; 
@@ -406,8 +507,8 @@ void cellBalancing(bool set, uint16_t thresh) {
 		uint8_t bottom_len = 8; 
 		balance_register.registerAddress = CB_CELL8_CTRL; 
 
-		if (CELL_NUM < 8){ // ^^ CELL_NUM VS VSENSE_CHANNELS
-			bottom_len = CELL_NUM; // ^^ CELL_NUM VS VSENSE_CHANNELS
+		if (CELL_NUM < 8){
+			bottom_len = CELL_NUM;
 			balance_register.registerAddress = TOP_CELL_CB_ADDR; 
 		}
 
@@ -418,14 +519,14 @@ void cellBalancing(bool set, uint16_t thresh) {
 	}
 		
 	uint8_t toSend = 3;
-	sendUartWrite(BAL_CTRL2, &toSend, 1); // ^^ sendUartStackWrite VS sendUartBroadcastWrite
-
+	sendUartWrite(BAL_CTRL2, &toSend, 1);
 }
 
 void writeLED(bool set) {
 	uint8_t enableLed = set ? 0 : 1;
-    uint8_t data = 0x04 + enableLed;
-    sendUartWrite(GPIO_CONF3, &data, 1); // ^^ broadcast vs stack write and GPIO_CONF3 vs GPIO_CONF1
+	uint8_t data = 0x04 + enableLed;
+	uint16_t gpio = (HV_BMS) ? GPIO_CONF1 : GPIO_CONF3;
+  sendUartWrite(gpio, &data, 1);
 }
 
 void disableTimeout() {
@@ -443,15 +544,9 @@ void disableTimeout() {
 void byteDelay(uint8_t delay) {
 	if (delay > 0x3F) return;
 
-	uart_command_t byte_delay = {
-			.readWrite = BMS_WRITE, // ^^ BROADCAST_WRITE VS STACK_WRITE
-			.dataLen = 1,
-			.deviceAddress = 0xFF,
-			.registerAddress = TX_HOLD_OFF, // ^^ 0x29 in hv bms code
-			.data = {delay},
-			.crc = {0x00, 0x00}
-	};
-	uart_sendCommand(&byte_delay);
+	uint16_t addr = (HV_BMS) ? 0x29 : TX_HOLD_OFF
+	uint8_t dataToSend = delay;
+	sendUartWrite(addr, &dataToSend, 1);
 }
 
 void txToRxDelay(uint8_t delay) {
@@ -467,26 +562,24 @@ void txToRxDelay(uint8_t delay) {
 }
 
 void twoStop() {
-    // ^^ this message not in LV BMS code because we use 1 stop bit instead of 2
-	uart_command_t two_stop_single = {
+	if (HV_BMS) {
+		uart_command_t two_stop_single = {
 			.readWrite = SINGLE_WRITE,
 			.dataLen = 1,
 			.deviceAddress = 0x00,
 			.registerAddress = 0x2001,
 			.data = 0b00111000,
 			.crc = {0x00, 0x00}
-	};
-	uart_sendCommand(&two_stop_single);
+		};
+		uart_sendCommand(&two_stop_single);
 
-	uart_command_t two_stop_stack = {
-			.readWrite = BMS_WRITE, // ^^ STACK_WRITE VS BROADCAST_WRITE
-			.dataLen = 1,
-			.deviceAddress = 0xFF,
-			.registerAddress = 0x02, // DEV_CONF for lv bms
-			.data = 0b00111010,
-			.crc = {0x00, 0x00}
-	};
-	uart_sendCommand(&two_stop_stack);
+		uint8_t dataToSend = 0b00111010;
+		sendUartWrite(0x02, &dataToSend, 1);
+	}
+	else if (LV_BMS) {
+		uint8_t dataToSend = 0b00111010;
+		sendUartWrite(DEV_CONF, &dataToSend, 1);
+	}
 }
 
 /**
@@ -575,7 +668,7 @@ uint8_t pollAllVoltageData() {
 /* Reads voltage data of all thermistor channels into BMSData */
 void pollAllTemperatureData(int channel) {
 	uart_command_t read_therms = {
-		.readWrite = STACK_READ,
+		.readWrite = BMS_READ,
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = GPIO5_HI,
@@ -590,7 +683,7 @@ void pollAllTemperatureData(int channel) {
 
 	for(uint8_t i = BMS_NUM; i >= 1; i--) {
 		if(uart_receiveResponse(&response[i-1], 7) != 0) {
-				// Loop through each GPIO channel
+			// Loop through each GPIO channel
 			setBMBErr(i-1, BMB_TEMP_READ_ERROR);
 			BMBTimeoutCount[i-1]+=1;
 			taskEXIT_CRITICAL();
