@@ -36,58 +36,138 @@ static void ITM_Init(void);
 static void GPIO_Init(void);
 static void ITM_SendChar_Blocking(uint8_t ch);
 
+#define SWO_BAUD_HZ 2000000U
+/**
+ * @brief  Configure ITM + TPIU for polling/streaming trace over SWO,
+ *         with periodic TPIU synchronization frames enabled.
+ * @param  hclk_hz     Current HCLK frequency in Hz (e.g. from
+ *                      HAL_RCC_GetHCLKFreq()) -- TRACECLKIN is tied
+ *                      internally to HCLK on this device (RM0430 34.17.8).
+ * @param  swo_baud_hz Desired SWO bit rate in Hz (e.g. 2000000 for 2 MHz).
+ */
+void itmInit()
+{
+    uint32_t hclk_hz = HAL_RCC_GetHCLKFreq();
+
+    uint32_t prescaler =  (hclk_hz / SWO_BAUD_HZ) - 1U;
+ 
+    /* 1) Enable tracing at the core level: TRCENA in DEMCR.
+     *    Required before the ITM/TPIU/DWT registers can be programmed
+     *    (otherwise TPIU registers read back as 0, RM0430 34.17.9). */
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+ 
+    /* 2) Assign the TRACE I/O: TRACE_IOEN=1, TRACE_MODE=00 (async SWO
+     *    on PB3/TRACESWO). This releases JTDO and routes it to SWO.
+     *    (RM0430 34.16.3 / 34.17.2 - example value 0x20). A TPIU
+     *    Frame Sync packet (0x7FFFFFFF) is emitted right away when
+     *    this bit is set. */
+    DBGMCU->CR = DBGMCU_CR_TRACE_IOEN;
+ 
+    /* 3) TPIU: select the async NRZ (UART-like) SWO protocol.
+     *    SPPR bits[1:0] = 10 -> NRZ mode (RM0430 34.17.9 / Table 251). */
+    TPI->SPPR = 2U;
+ 
+    /* 4) TPIU: set the SWO baud rate via the async clock prescaler.
+     *    TRACECLKIN = HCLK, SWO bit clock = HCLK / (ACPR + 1). */
+    TPI->ACPR = prescaler;
+ 
+    /* 5) TPIU: current port size = 1 bit (only relevant for sync
+     *    trace, harmless default here). */
+    TPI->CSPSR = 1U;
+ 
+    /* 6) TPIU formatter/flush control. Writing the documented default
+     *    0x102 keeps the formatter enabled in continuous mode
+     *    (EnFCont=1), so the TPIU periodically inserts synchronization
+     *    / source-ID packets into the stream (RM0430 34.17.9 /
+     *    34.17.10). This is what lets a host probe re-sync mid-stream. */
+    TPI->FFCR = 0x102;
+
+    /* 7) Unlock the ITM registers (write the magic unlock key). */
+    ITM->LAR = 0xC5ACCE55U;
+ 
+    /* 8) Configure the ITM Trace Control Register:
+     *      ITMENA    = 1  -> global ITM enable
+     *      TSENA     = 1  -> timestamp packets enabled
+     *      SYNCENA   = 1  -> DWT-triggered ITM sync packets enabled
+     *      SWOENA    = 1  -> timestamp counter clocked by SWO bit clock
+     *      TraceBusID= 1  -> non-zero ATB/trace source ID
+     *    (RM0430 34.14.2, Table 246) */
+    ITM->TCR = (1UL << ITM_TCR_ITMENA_Pos)  |
+               (1UL << ITM_TCR_TSENA_Pos)   |
+               (1UL << ITM_TCR_SYNCENA_Pos) |
+               (1UL << ITM_TCR_SWOENA_Pos)  |
+               (1UL << ITM_TCR_TraceBusID_Pos);
+ 
+    /* 9) Enable Stimulus Port 0 and unmask privileged access to
+     *    ports 7:0 (RM0430 Table 246). */
+    ITM->TER = 1UL;   /* enable stimulus port 0 */
+    ITM->TPR = 1UL;   /* unmask ports 7:0        */
+ 
+    /* 10) Make the DWT actually generate the synchronization triggers
+     *     that the ITM (and TPIU) turn into sync packets:
+     *       CYCCNTENA = 1        -> free-running cycle counter enabled
+     *       SYNCTAP[11:10] = 2   -> sync trigger every 2^23 cycles
+     *     (RM0430 34.14.2 / 34.17.5). Larger SYNCTAP values reduce the
+     *     sync-frame rate; smaller values resync faster but cost more
+     *     bandwidth. */
+    DWT->CTRL &= ~DWT_CTRL_SYNCTAP_Msk;
+    DWT->CTRL |= (1UL << DWT_CTRL_SYNCTAP_Pos);
+    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+}
+
 int main(void)
 {
     HAL_Init();
 
     SystemClock_Config();
 
+    itmInit();
     // Peripheral configuration.
-    ITM->LAR = 0xC5ACCE55;
-    DBGMCU->CR |= DBGMCU_CR_TRACE_IOEN; 
+//     ITM->LAR = 0xC5ACCE55;
+// //     DBGMCU->CR |= DBGMCU_CR_TRACE_IOEN; 
 
-  // Clear the fields we're about to modify
-    DWT->CTRL &= ~(
-        (0xFu << DWT_CTRL_POSTPRESET_Pos) |
-        DWT_CTRL_CYCTAP_Msk |
-        DWT_CTRL_PCSAMPLENA_Msk
-    );
+// //   // Clear the fields we're about to modify
+// //     DWT->CTRL &= ~(
+// //         (0xFu << DWT_CTRL_POSTPRESET_Pos) |
+// //         DWT_CTRL_CYCTAP_Msk |
+// //         DWT_CTRL_PCSAMPLENA_Msk
+//     );
 
-    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+//     CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
     
-    TPI->SPPR = 2;                  // NRZ
-    TPI->ACPR = 47;                 // 96 MHz -> 2 MHz
-    TPI->FFCR = 0;
+//     TPI->SPPR = 2;                  // NRZ
+//     TPI->ACPR = 47;                 // 96 MHz -> 2 MHz
+//     TPI->FFCR = 0;
     
 
-    ITM->TCR = ITM_TCR_ITMENA_Msk | ITM_TCR_SWOENA_Msk | ITM_TCR_DWTENA_Msk | ITM_TCR_SYNCENA_Msk ;
-    ITM->TER = 0;
+//     ITM->TCR = ITM_TCR_ITMENA_Msk | ITM_TCR_SWOENA_Msk | ITM_TCR_DWTENA_Msk | ITM_TCR_SYNCENA_Msk ;
+//     ITM->TER = 0;
 
-    // POSTPRESET = 3
-    DWT->CTRL &= ~(0xFu << DWT_CTRL_POSTPRESET_Pos);
-    DWT->CTRL |= (0xFu << DWT_CTRL_POSTPRESET_Pos);
+//     // POSTPRESET = 3
+//     DWT->CTRL &= ~(0xFu << DWT_CTRL_POSTPRESET_Pos);
+//     DWT->CTRL |= (0xFu << DWT_CTRL_POSTPRESET_Pos);
 
-    // Sample using CYCCNT bit 10
-    DWT->CTRL |= DWT_CTRL_CYCTAP_Msk;
+//     // Sample using CYCCNT bit 10
+//     DWT->CTRL |= DWT_CTRL_CYCTAP_Msk;
 
-    // Enable the cycle counter
-    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+//     // Enable the cycle counter
+//     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 
-    // Sync packet every 2^23 cycles (~87ms @ 96MHz) — use 3 (2^27, ~1.4s) if you want fewer syncs once things work
-    DWT->CTRL |= (0x1u << DWT_CTRL_SYNCTAP_Pos);
+//     // Sync packet every 2^23 cycles (~87ms @ 96MHz) — use 3 (2^27, ~1.4s) if you want fewer syncs once things work
+//     DWT->CTRL |= (0x1u << DWT_CTRL_SYNCTAP_Pos);
 
-    // Enable PC sampling
-    DWT->CTRL |= DWT_CTRL_PCSAMPLENA_Msk;
+//     // Enable PC sampling
+//     DWT->CTRL |= DWT_CTRL_PCSAMPLENA_Msk;
 
     gpioInit();
     
-    pwmInit();
-    canInit();
-    adcInit();
-    sensorsInit();
-    stateInit();
-    tssiInit();
-    assiInit();
+    // pwmInit();
+    // canInit();
+    // adcInit();
+    // sensorsInit();
+    // stateInit();
+    // tssiInit();
+    // assiInit();
 
     statusLEDInit();
 
