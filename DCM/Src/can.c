@@ -848,21 +848,8 @@ static void canTX100Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        cmr_canHeartbeat_t heartbeat = {
-            .state = heartbeatVSM->state
-        };
 
-        updateErrorsWarnings(&heartbeat, lastWakeTime);
-
-        if (heartbeat.error[0] != 0 || heartbeat.error[1] != 0) {
-            heartbeat.state = CMR_CAN_ERROR;
-        }
-
-        // cmr_canDAQTherm_t linpots;
-        // linpots.therm_1 = adcRead(ADC_LINPOT1);
-        // linpots.therm_2 = adcRead(ADC_LINPOT2);
-
-        // canTX(CMR_CAN_BUS_VEH, 0x658, &linpots, sizeof(cmr_canDAQTherm_t), canTX100Hz_period_ms);
+        sendHeartbeat(lastWakeTime);
 
         // Solver
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_INPUTS, &solver_inputs, sizeof(cmr_can_solver_inputs_t), canTX100Hz_period_ms);
@@ -878,26 +865,33 @@ static void canTX100Hz(void *pvParameters) {
 
 		motorPowerInfo->motor_power_RL = (HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_VEH].handle)) >> 16) & 0xFFFF;
 		motorPowerInfo->motor_power_RR = HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_VEH].handle));
-
+        
         // //canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
 		// //canTX(CMR_CAN_BUS_TRAC, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
-
         // // Forward Movella status to Vehicle CAN at 100Hz.
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOVELLA_STATUS, movellaStatus, sizeof(cmr_canMovellaStatus_t), canTX100Hz_period_ms);
-
-        // Send heartbeat
-        canTX(
-            CMR_CAN_BUS_VEH,
-            CMR_CANID_HEARTBEAT_DCM,
-            &heartbeat,
-            sizeof(heartbeat),
-            canTX100Hz_period_ms
-        );
-
+        
         cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
 		canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_VSM_HEARTBEAT, heartbeatVSM, sizeof(cmr_canHeartbeat_t), canTX100Hz_period_ms); 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
+}
+
+
+static void sendHeartbeat(TickType_t lastWakeTime) {
+    cmr_canHeartbeat_t heartbeat = {
+        .state = heartbeatVSM->state
+    };
+
+    updateErrorsWarnings(&heartbeat, lastWakeTime);
+
+    if (heartbeat.error[0] != 0 || heartbeat.error[1] != 0) {
+        heartbeat.state = CMR_CAN_ERROR;
+    }
+     
+    canTX(CMR_CAN_BUS_VEH,CMR_CANID_HEARTBEAT_DCM, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
+
+
 }
 
 /** @brief CAN 200 Hz TX priority. */
