@@ -9,16 +9,16 @@ enum BMBErr(15="UPPER_BMB", 240="LOWER_BMB")
 enum CCMState(0="ERROR", 1="CLEAR_ERROR", 2="CLEAR_HVC", 3="IDLE_HVC",
     4="STANDBY", 5="CHARGE_REQ", 6="CHARGE", 7="SLOW_CHARGE",
     8="SHUTDOWN")
-enum CoolingState(0="OFF", 1="LOW", 2="HIGH")
-enum DCMDRSStateEnum(0="DRS_STATE_CLOSED", 1="DRS_STATE_OPEN",
+enum CDCDRSStateEnum(0="DRS_STATE_CLOSED", 1="DRS_STATE_OPEN",
     2="DRS_STATE_OTHER")
-enum DCMHeartbeatErr(1="DCM_ERR_VSM_TIMEOUT",
-    32768="DCM_ERR_DTIALLERROR")
-enum DCMHeartbeatWrn(1="DCM_WRN_VSM_TIMEOUT",
-    512="DCM_WRN_MEMORATOR_TIMEOUT", 1024="DCM_WRN_DTI_TIMEOUT",
-    2048="DCM_WRN_DTI_ERROR", 4096="DCM_WRN_DTI_SRC_RR",
-    8192="DCM_WRN_DTI_SRC_RL", 16384="DCM_WRN_DTI_SRC_FR",
-    32768="DCM_WRN_DTI_SRC_FL")
+enum CDCHeartbeatErr(1="CDC_ERR_VSM_TIMEOUT",
+    32768="CDC_ERR_DTIALLERROR")
+enum CDCHeartbeatWrn(1="CDC_WRN_VSM_TIMEOUT",
+    512="CDC_WRN_MEMORATOR_TIMEOUT", 1024="CDC_WRN_DTI_TIMEOUT",
+    2048="CDC_WRN_DTI_ERROR", 4096="CDC_WRN_DTI_SRC_RR",
+    8192="CDC_WRN_DTI_SRC_RL", 16384="CDC_WRN_DTI_SRC_FR",
+    32768="CDC_WRN_DTI_SRC_FL")
+enum CoolingState(0="OFF", 1="LOW", 2="HIGH")
 enum DIMButtons(4="DIM_ACTIONBUTTON", 8="DIM_LAUNCHBUTTON")
 enum DIMHeartbeatErr(1="DIM_ERR_VSM_TIMEOUT")
 enum DRS_MODE(0="DRS_CLOSED", 1="DRS_OPEN", 2="DRS_TOGGLE",
@@ -36,7 +36,7 @@ enum Error(0="NONE", 1="VSM_TIMEOUT", 2="DIM_TANK_PRESSURE_1_OOR",
     128="DIM_BRAKE_SENSOR_IMPLAUS", 1024="AFC_DCDC2_TEMP",
     2048="AFC_DCDC1_TEMP", 4096="AFC_DRIVER3_TEMP",
     8192="CDC_CUBEMARS_TIMEOUT", 16384="AFC_DRIVER1_TEMP",
-    32768="DCM_DTI_ALL")
+    32768="CDC_DTI_ALL")
 enum Fan_State(0="FAN_OFF", 1="FAN_LOW", 2="FAN_HIGH")
 enum FanState(0="OFF", 1="LOW", 2="HIGH")
 enum FSMHeartbeatErr(1="FSM_ERROR_VSM_TIMEOUT")
@@ -129,7 +129,7 @@ enum VSMHeartbeatErr(1024="VSM_ERR_BRAKEPRESSOOR",
 enum VSMHeartbeatWrn(2="VSM_WRN_VOLTAGEOOR", 4="VSM_WRN_CURRENTOOR",
     128="VSM_WRN_DIM_REQ_NAK", 256="VSM_WRN_HVI_TIMEOUT",
     2048="VSM_WRN_DIM_TIMEOUT", 4096="VSM_WRN_FSM_TIMEOUT",
-    8192="VSM_WRN_DCM_TIMEOUT", 16384="VSM_WRN_HVC_TIMEOUT")
+    8192="VSM_WRN_CDC_TIMEOUT", 16384="VSM_WRN_HVC_TIMEOUT")
 enum VSMLatch(0="VSM_LATCH_NONE", 1="VSM_LATCH_BSPD",
     2="VSM_LATCH_IMD", 4="VSM_LATCH_AMS", 8="VSM_LATCH_SOFTWARE")
 enum VSMState(0="VSM_STATE_ERROR", 1="VSM_STATE_CLEAR_ERROR",
@@ -147,9 +147,9 @@ enum VTSig_Gain(0="x1", 1="x2", 2="x4", 3="x8", 4="x16", 5="x32")
 enum Warn(0="NONE", 1="VSM_TIMEOUT", 2="BUS_VOLTAGE", 4="BUS_CURRENT",
     8="FSM_SS_MODULE", 16="FSM_SS_COCKPIT", 32="FSM_SS_FRHUB",
     64="FSM_SS_INERTIA", 128="FSM_SS_FLHUB", 256="FSM_SS_BOTS",
-    512="DCM_MEMORATOR_DAQ_TIMEOUT", 1024="DCM_DTI_TIMEOUT",
-    2048="DCM_DTI_ERROR", 4096="DCM_DTI_RR", 8192="DCM_DTI_RL",
-    16384="DCM_DTI_FR", 32768="DCM_DTI_FL")
+    512="CDC_MEMORATOR_DAQ_TIMEOUT", 1024="CDC_DTI_TIMEOUT",
+    2048="CDC_DTI_ERROR", 4096="CDC_DTI_RR", 8192="CDC_DTI_RL",
+    16384="CDC_DTI_FR", 32768="CDC_DTI_FL")
 
 {SENDRECEIVE}
 
@@ -173,13 +173,152 @@ Var=ACTION_rearTorque_mNm signed 16,16
 Var=steeringAngle_centi_deg signed 32,16
 Var=maxVelocity_decimeters_s unsigned 48,16
 
-[CDC_POWER_SENSE]
-CycleTime=100
+[CDC_COG_VELOCITY]
+ID=2C2h
 DLC=8
+CycleTime=5
+TimeOut=25
+Var=COG_cog_x_mps signed 0,16 /u:mps /f:0.01
+Var=COG_cog_y_mps signed 16,16 /u:mps /f:0.01
+Var=COG_slip_angle float 32,32
+
+[CDC_CONTROLS_STATUS]
+ID=6D2h
+DLC=2
+CycleTime=1000
+TimeOut=5000
+Var=CONTROLS_tcOn unsigned 0,8
+Var=CONTROLS_yrcOn unsigned 8,8
+
+[CDC_COULOMB_COUNTING]
+ID=6E3h
+DLC=4
+CycleTime=100
+TimeOut=500
+Var=COULOMB_KCoulombs float 0,32
+
+[CDC_FRONT_VELOCITY]
+ID=2D2h
+DLC=8
+CycleTime=5
+TimeOut=25
+Var=FRONT_fl_x signed 0,16 /f:0.01
+Var=FRONT_fl_y signed 16,16 /f:0.01
+Var=FRONT_fr_x signed 32,16 /f:0.01
+Var=FRONT_fr_y signed 48,16 /f:0.01
+
+[CDC_ODOMETER]
+ID=6C2h
+DLC=4
+CycleTime=1000
+TimeOut=5000
+Var=ODOMETER_odometer_km float 0,32 /u:km
+
+[CDC_POSE_ORIENTATION]
+ID=292h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=POSE_roll_deg signed 0,16 /u:deg /f:0.1
+Var=POSE_pitch_deg signed 16,16 /u:deg /f:0.1
+Var=POSE_yaw_deg signed 32,16 /u:deg /f:0.1
+Var=POSE_velocity_deg signed 48,16 /u:deg /f:0.1
+
+[CDC_POSE_POSITION]
+ID=282h
+DLC=8
+CycleTime=100
+TimeOut=500
+Var=POSE_latitude_deg float 0,32 /u:deg
+Var=POSE_longitude_deg float 32,32 /u:deg
+
+[CDC_POSE_VELOCITY]
+ID=2A2h
+DLC=6
+CycleTime=100
+TimeOut=500
+Var=POSE_longitudinalVel_mps signed 0,16 /u:mps /f:0.01
+Var=POSE_lateralVel_mps signed 16,16 /u:mps /f:0.01
+Var=POSE_verticalVel_mps signed 32,16 /u:mps /f:0.01
+
+[CDC_POWER_LOG]
+ID=6E4h
+DLC=4
+CycleTime=1000
+TimeOut=5000
+Var=POWER_power_limit_W float 0,32 /u:W /f:0.001
+
+[CDC_POWER_SENSE]
+ID=305h
+DLC=8
+CycleTime=100
 TimeOut=500
 Var=POWER_packCurrent_dA signed 0,16 /u:dA
 Var=POWER_packVoltage_cV unsigned 16,16 /u:cV
 Var=POWER_packPower_W signed 32,32 /u:W
+
+[CDC_REAR_VELOCITY]
+ID=2E2h
+DLC=8
+CycleTime=5
+TimeOut=25
+Var=REAR_rl_x signed 0,16 /f:0.01
+Var=REAR_rl_y signed 16,16 /f:0.01
+Var=REAR_rr_x signed 32,16 /f:0.01
+Var=REAR_rr_y signed 48,16 /f:0.01
+
+[CDC_RTC_DATA_OUT]
+ID=6A2h
+DLC=7
+CycleTime=1000
+TimeOut=5000
+Var=RTC_seconds unsigned 0,8
+Var=RTC_minutes unsigned 8,8
+Var=RTC_hours unsigned 16,8
+Var=RTC_date unsigned 24,8
+Var=RTC_month unsigned 32,8
+Var=RTC_year unsigned 40,8
+Var=RTC_err unsigned 48,8
+
+[CDC_WHEEL_SPEED_FEEDBACK]
+ID=232h
+DLC=8
+CycleTime=5
+TimeOut=25
+Var=WHEEL_frontLeft_rpm signed 0,16 /u:rpm /f:0.1
+Var=WHEEL_frontRight_rpm signed 16,16 /u:rpm /f:0.1
+Var=WHEEL_rearLeft_rpm signed 32,16 /u:rpm /f:0.1
+Var=WHEEL_rearRight_rpm signed 48,16 /u:rpm /f:0.1
+
+[CDC_WHEEL_SPEED_SETPOINT]
+ID=252h
+DLC=8
+CycleTime=5
+TimeOut=25
+Var=WHEEL_frontLeft_rpm1 signed 0,16 /u:rpm /f:0.1
+Var=WHEEL_frontRight_rpm1 signed 16,16 /u:rpm /f:0.1
+Var=WHEEL_rearLeft_rpm1 signed 32,16 /u:rpm /f:0.1
+Var=WHEEL_rearRight_rpm1 signed 48,16 /u:rpm /f:0.1
+
+[CDC_WHEEL_TORQUE_FEEDBACK]
+ID=262h
+DLC=8
+CycleTime=5
+TimeOut=25
+Var=WHEEL_frontLeft_Nm signed 0,16 /u:Nm /f:0.1
+Var=WHEEL_frontRight_Nm signed 16,16 /u:Nm /f:0.1
+Var=WHEEL_rearLeft_Nm signed 32,16 /u:Nm /f:0.1
+Var=WHEEL_rearRight_Nm signed 48,16 /u:Nm /f:0.1
+
+[CDC_WHEEL_TORQUE_SETPOINT]
+ID=272h
+DLC=8
+CycleTime=5
+TimeOut=25
+Var=WHEEL_frontLeft_Nm1 signed 0,16 /u:Nm /f:0.1
+Var=WHEEL_frontRight_Nm1 signed 16,16 /u:Nm /f:0.1
+Var=WHEEL_rearLeft_Nm1 signed 32,16 /u:Nm /f:0.1
+Var=WHEEL_rearRight_Nm1 signed 48,16 /u:Nm /f:0.1
 
 [CELL_BALANCE_ENABLE]
 ID=134h
@@ -261,30 +400,8 @@ Var=VSM_WRN_DIM_REQ_NAK bit 31,1
 Var=VSM_WRN_HVI_TIMEOUT bit 32,1
 Var=VSM_WRN_DIM_TIMEOUT bit 35,1
 Var=VSM_WRN_FSM_TIMEOUT bit 36,1
-Var=VSM_WRN_DCM_TIMEOUT bit 37,1
+Var=VSM_WRN_CDC_TIMEOUT bit 37,1
 Var=VSM_WRN_HVC_TIMEOUT bit 38,1
-
-[DCM_CONTROLS_STATUS]
-ID=6D2h
-DLC=2
-CycleTime=1000
-TimeOut=5000
-Var=CONTROLS_tcOn unsigned 0,8
-Var=CONTROLS_yrcOn unsigned 8,8
-
-[DCM_COULOMB_COUNTING]
-ID=6E3h
-DLC=4
-CycleTime=100
-TimeOut=500
-Var=COULOMB_KCoulombs float 0,32
-
-[DCM_POWER_LOG]
-ID=6E4h
-DLC=4
-CycleTime=1000
-TimeOut=5000
-Var=POWER_power_limit_W float 0,32 /u:W /f:0.001
 
 [DIM_ACKNOWLEDGE]
 ID=545h
@@ -307,8 +424,8 @@ Var=ACTIONS_dvControlMode unsigned 32,8
 [DIM_REQUEST]
 ID=235h
 DLC=5
-CycleTime=5
-TimeOut=25
+CycleTime=100
+TimeOut=500
 Var=REQUEST_requestedState unsigned 0,8 /e:State
 Var=REQUEST_requestedGear unsigned 8,8 /e:Gear
 Var=REQUEST_requestedDrsMode unsigned 16,8 /e:DrsMode
@@ -324,16 +441,6 @@ Var=STATE_state unsigned 0,8
 Var=STATE_angle unsigned 8,8
 Var=STATE_pwm_left unsigned 16,8
 Var=STATE_pwm_right unsigned 24,8
-
-[DTI_ERROR_MESSAGES]
-ID=305h
-DLC=4
-CycleTime=100
-TimeOut=500
-Var=ERROR_fr_fault_code unsigned 0,8
-Var=ERROR_fl_fault_code unsigned 8,8
-Var=ERROR_rr_fault_code unsigned 16,8
-Var=ERROR_rl_fault_code unsigned 24,8
 
 [DTI_FL_TEMPFAULT]
 ID=22h
@@ -444,19 +551,29 @@ TimeOut=50
 Var=steeringWheelAngle_millideg_FR signed 0,32 /u:deg /f:0.001
 Var=steeringWheelAngle_millideg_FL signed 32,32 /u:deg /f:0.001
 
-[COMPUTE_HEARTBEAT]
-ID=10Bh
-DLC=5
-CycleTime=5
-TimeOut=25
-Var=COMPUTE_HEARTBEAT_state unsigned 0,8 /e:State
-
 [DCM_HEARTBEAT]
 ID=102h
 DLC=5
 CycleTime=10
 TimeOut=50
 Var=DCM_HEARTBEAT_state unsigned 0,8 /e:State
+Var=CDC_ERR_VSM_TIMEOUT bit 8,1
+Var=CDC_ERR_DTIALLERROR bit 23,1
+Var=CDC_WRN_VSM_TIMEOUT bit 24,1
+Var=CDC_WRN_MEMORATOR_TIMEOUT bit 33,1
+Var=CDC_WRN_DTI_TIMEOUT bit 34,1
+Var=CDC_WRN_DTI_ERROR bit 35,1
+Var=CDC_WRN_DTI_SRC_RR bit 36,1
+Var=CDC_WRN_DTI_SRC_RL bit 37,1
+Var=CDC_WRN_DTI_SRC_FR bit 38,1
+Var=CDC_WRN_DTI_SRC_FL bit 39,1
+
+[COMPUTE_HEARTBEAT]
+ID=10Bh
+DLC=5
+CycleTime=5
+TimeOut=25
+Var=COMPUTE_HEARTBEAT_state unsigned 0,8 /e:State
 
 [DIM_HEARTBEAT]
 ID=104h
@@ -535,7 +652,7 @@ Var=VSM_WRN_DIM_REQ_NAK1 bit 31,1
 Var=VSM_WRN_HVI_TIMEOUT1 bit 32,1
 Var=VSM_WRN_DIM_TIMEOUT1 bit 35,1
 Var=VSM_WRN_FSM_TIMEOUT1 bit 36,1
-Var=VSM_WRN_DCM_TIMEOUT1 bit 37,1
+Var=VSM_WRN_CDC_TIMEOUT1 bit 37,1
 Var=VSM_WRN_HVC_TIMEOUT1 bit 38,1
 
 [HVBMS_BMB_0_STATUS_TEMP]
@@ -637,8 +754,8 @@ Var=PACK_avgCurrent_mA signed 32,32 /u:mA
 [HV_SENSORS]
 ID=306h
 DLC=4
-CycleTime=5
-TimeOut=25
+CycleTime=100
+TimeOut=500
 Var=SENSORS_packVoltage_cV unsigned 0,16
 Var=SENSORS_packCurrent_dA unsigned 16,16
 
@@ -776,6 +893,15 @@ Var=IMU_gyro_x_rads signed 0,16 /u:rad
 Var=IMU_gyro_y_rads signed 16,16 /u:rad
 Var=IMU_gyro_z_rads signed 32,16 /u:rad
 
+[SENSORIC_DIST]
+ID=601h
+DLC=8
+CycleTime=10
+TimeOut=50
+Var=DIST_dist_A signed 0,32
+Var=DIST_radius signed 32,16
+Var=DIST_acc_C signed 48,16
+
 [SENSORIC_VEL_ANG]
 ID=600h
 DLC=8
@@ -785,6 +911,23 @@ Var=VEL_vel_X signed 0,16
 Var=VEL_vel_Y signed 16,16
 Var=VEL_vel_A signed 32,16
 Var=VEL_ang_S signed 48,16
+
+[SF_STATE]
+ID=52Dh
+DLC=8
+CycleTime=10
+TimeOut=50
+Var=power_limit_max_violation_W float 0,32 /u:W
+Var=longest_power_violation_ms unsigned 32,8 /u:ms
+Var=STATE_over_voltage_count unsigned 40,8
+Var=STATE_under_voltage_count unsigned 48,8
+Var=STATE_over_temp_count unsigned 56,8
+
+[TEST_ID]
+CycleTime=100
+DLC=1
+TimeOut=500
+Var=ID_test_id unsigned 0,8
 
 [VSM_LATCHED_STATUS]
 ID=510h
@@ -851,15 +994,15 @@ Timeout=1000
 Var=VSM_busVoltage unsigned 0,16 /u:mV
 Var=VSM_busCurrent unsigned 16,16 /u:mA
 
-[DCM_MotorTemps]
+[CDC_MotorTemps]
 ID=512h
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=DCM_motorTemp signed 0,16 /u:C /f:0.1
-Var=DCM_mcMaxInternalTemp signed 16,16 /u:C /f:0.1
+Var=CDC_motorTemp signed 0,16 /u:C /f:0.1
+Var=CDC_mcMaxInternalTemp signed 16,16 /u:C /f:0.1
 
-[DCM_MCFaults]
+[CDC_MCFaults]
 ID=502h
 DLC=8
 CycleTime=1000
@@ -919,81 +1062,14 @@ Var=RUN_ERROR_CurrSensFault bit 57,1
 Var=RUN_ERROR_ResolverDisconnected bit 62,1
 Var=RUN_ERROR_InvtrDischargeActive bit 63,1
 
-[DCM_WheelVelocityFeedback]
-ID=232h
-DLC=8
-CycleTime=100
-Timeout=200
-Var=DCM_FLWheel_Vel_Feedback signed 0,16 /u:rpm /f:0.1
-Var=DCM_FRWheel_Vel_Feedback signed 16,16 /u:rpm /f:0.1
-Var=DCM_RLWheel_Vel_Feedback signed 32,16 /u:rpm /f:0.1
-Var=DCM_RRWheel_Vel_Feedback signed 48,16 /u:rpm /f:0.1
-
-[DCM_WheelVelocitySetpoint]
-ID=252h
-DLC=8
-CycleTime=100
-Timeout=200
-Var=DCM_FLWheel_Vel_Setpoint signed 0,16 /u:rpm /f:0.1
-Var=DCM_FRWheel_Vel_Setpoint signed 16,16 /u:rpm /f:0.1
-Var=DCM_RLWheel_Vel_Setpoint signed 32,16 /u:rpm /f:0.1
-Var=DCM_RRWheel_Vel_Setpoint signed 48,16 /u:rpm /f:0.1
-
-[DCM_WheelTorqueFeedback]
-ID=262h
-DLC=8
-CycleTime=100
-Timeout=200
-Var=DCM_FLWheel_Torque_Feedback signed 0,16 /u:Nm /f:0.1
-Var=DCM_FRWheel_Torque_Feedback signed 16,16 /u:Nm /f:0.1
-Var=DCM_RLWheel_Torque_Feedback signed 32,16 /u:Nm /f:0.1
-Var=DCM_RRWheel_Torque_Feedback signed 48,16 /u:Nm /f:0.1
-
-[DCM_WheelTorqueSetpoint]
-ID=272h
-DLC=8
-CycleTime=100
-Timeout=200
-Var=DCM_FLWheel_Torque_Setpoint signed 0,16 /u:Nm /f:0.1
-Var=DCM_FRWheel_Torque_Setpoint signed 16,16 /u:Nm /f:0.1
-Var=DCM_RLWheel_Torque_Setpoint signed 32,16 /u:Nm /f:0.1
-Var=DCM_RRWheel_Torque_Setpoint signed 48,16 /u:Nm /f:0.1
-
-[DCM_PosePosition]
-ID=282h
-DLC=8
-CycleTime=100
-Timeout=200
-Var=DCM_Latitude float 0,32 /u:deg
-Var=DCM_Longitude float 32,32 /u:deg
-
-[DCM_PoseOrientation]
-ID=292h
-DLC=8
-CycleTime=100
-Timeout=200
-Var=DCM_Roll signed 0,16 /u:deg /f:0.1
-Var=DCM_Pitch signed 16,16 /u:deg /f:0.1
-Var=DCM_Yaw signed 32,16 /u:deg /f:0.1
-Var=DCM_Velocity_Angle signed 48,16 /u:deg /f:0.1
-
-[DCM_PoseVelocity]
-ID=2A2h
-DLC=6
-CycleTime=100
-Timeout=200
-Var=DCM_LongitudinalVelocity signed 0,16 /u:mps /f:0.01
-Var=DCM_LateralVelocity signed 16,16 /u:mps /f:0.01
-Var=DCM_VerticalVelocity signed 32,16 /u:mps /f:0.01
-
-[DCM_PoseAcceleration]
+[CDC_PoseAcceleration]
 ID=2B2h
 DLC=6
 CycleTime=100
 Timeout=200
-Var=DCM_LongitudinalAcceleration signed 0,16 /u:mps2 /f:0.01
-Var=DCM_LateralAcceleration signed 16,16 /u:mps2 /f:0.01
-Var=DCM_VerticalAcceleration signed 32,16 /u:mps2 /f:0.01
+Var=CDC_LongitudinalAcceleration signed 0,16 /u:mps2 /f:0.01
+Var=CDC_LateralAcceleration signed 16,16 /u:mps2 /f:0.01
+Var=CDC_VerticalAcceleration signed 32,16 /u:mps2 /f:0.01
 
 [FSM_Heartbeat]
 ID=103h
@@ -1670,20 +1746,7 @@ Var=padding unsigned 32,16 /max:1
 Var=volume unsigned 48,8 /max:7
 Var=squelch unsigned 56,8 /max:8	// 0 for listen, 1 - 8 for transmit
 
-[DCM_RTC_DATA_OUT]
-ID=6A2h
-DLC=7
-CycleTime=1000
-Timeout=8000
-Var=RTC_Seconds unsigned 0,8 /u:seconds
-Var=RTC_Minutes unsigned 8,8 /u:minutes
-Var=RTC_Hours unsigned 16,8 /u:hours
-Var=RTC_Date unsigned 24,8 /u:day
-Var=RTC_Month unsigned 32,8 /u:month
-Var=RTC_Year unsigned 40,8 /u:year
-Var=RTC_Error unsigned 48,8	// For interpreting this, see comments in code.
-
-[DCM_RTC_DATA_IN]
+[CDC_RTC_DATA_IN]
 ID=6B2h
 DLC=7
 CycleTime=1000
@@ -1695,33 +1758,6 @@ Var=RTC_Date_In unsigned 24,8 /u:day
 Var=RTC_Month_In unsigned 32,8 /u:month
 Var=RTC_Year_In unsigned 40,8 /u:year
 Var=RTC_Error_In unsigned 48,8	// For interpreting this, see comments in code.
-
-[DCM_ODOMETER]
-ID=6C2h
-DLC=4
-CycleTime=1000
-Var=DCM_Odometer float 0,32 /u:km
-
-[SF_State]
-ID=52Dh
-DLC=8
-CycleTime=100
-Timeout=1000
-Var=Power_Limit_Max_Violation_W float 0,32 /u:W
-Var=Longest_Power_Violation unsigned 32,8
-Var=Over_Voltage_Count unsigned 40,8
-Var=Under_Voltage_Count unsigned 48,8
-Var=Over_Temp_Count unsigned 56,8
-
-[DIM_Config1_Drv0]
-ID=601h
-DLC=4
-CycleTime=1000
-Timeout=10000
-Var=DIM_config1_drv0_config_val_1 unsigned 0,8
-Var=DIM_config1_drv0_config_val_2 unsigned 8,8
-Var=DIM_config1_drv0_config_val_3 unsigned 16,8
-Var=DIM_config1_drv0_config_val_4 unsigned 24,8
 
 [DIM_Config2_Drv0]
 ID=602h
@@ -1743,45 +1779,45 @@ Var=DIM_config3_drv0_config_val_2 unsigned 8,8
 Var=DIM_config3_drv0_config_val_3 unsigned 16,8
 Var=DIM_config3_drv0_config_val_4 unsigned 24,8
 
-[DCM_Config0_Drv0]
+[CDC_Config0_Drv0]
 ID=604h
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=DCM_config0_drv0_config_val_1 unsigned 0,8
-Var=DCM_config0_drv0_config_val_2 unsigned 8,8
-Var=DCM_config0_drv0_config_val_3 unsigned 16,8
-Var=DCM_config0_drv0_config_val_4 unsigned 24,8
+Var=CDC_config0_drv0_config_val_1 unsigned 0,8
+Var=CDC_config0_drv0_config_val_2 unsigned 8,8
+Var=CDC_config0_drv0_config_val_3 unsigned 16,8
+Var=CDC_config0_drv0_config_val_4 unsigned 24,8
 
-[DCM_Config1_Drv0]
+[CDC_Config1_Drv0]
 ID=605h
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=DCM_config1_drv0_config_val_1 unsigned 0,8
-Var=DCM_config1_drv0_config_val_2 unsigned 8,8
-Var=DCM_config1_drv0_config_val_3 unsigned 16,8
-Var=DCM_config1_drv0_config_val_4 unsigned 24,8
+Var=CDC_config1_drv0_config_val_1 unsigned 0,8
+Var=CDC_config1_drv0_config_val_2 unsigned 8,8
+Var=CDC_config1_drv0_config_val_3 unsigned 16,8
+Var=CDC_config1_drv0_config_val_4 unsigned 24,8
 
-[DCM_Config2_Drv0]
+[CDC_Config2_Drv0]
 ID=606h
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=DCM_config2_drv0_config_val_1 unsigned 0,8
-Var=DCM_config2_drv0_config_val_2 unsigned 8,8
-Var=DCM_config2_drv0_config_val_3 unsigned 16,8
-Var=DCM_config2_drv0_config_val_4 unsigned 24,8
+Var=CDC_config2_drv0_config_val_1 unsigned 0,8
+Var=CDC_config2_drv0_config_val_2 unsigned 8,8
+Var=CDC_config2_drv0_config_val_3 unsigned 16,8
+Var=CDC_config2_drv0_config_val_4 unsigned 24,8
 
-[DCM_Config3_Drv0]
+[CDC_Config3_Drv0]
 ID=607h
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=DCM_config3_drv0_config_val_1 unsigned 0,8
-Var=DCM_config3_drv0_config_val_2 unsigned 8,8
-Var=DCM_config3_drv0_config_val_3 unsigned 16,8
-Var=DCM_config3_drv0_config_val_4 unsigned 24,8
+Var=CDC_config3_drv0_config_val_1 unsigned 0,8
+Var=CDC_config3_drv0_config_val_2 unsigned 8,8
+Var=CDC_config3_drv0_config_val_3 unsigned 16,8
+Var=CDC_config3_drv0_config_val_4 unsigned 24,8
 
 [DIM_Config0_Drv1]
 ID=608h
@@ -1823,35 +1859,35 @@ Var=DIM_config3_drv1_config_val_2 unsigned 8,8
 Var=DIM_config3_drv1_config_val_3 unsigned 16,8
 Var=DIM_config3_drv1_config_val_4 unsigned 24,8
 
-[DCM_Config0_Drv1]
+[CDC_Config0_Drv1]
 ID=60Ch
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=DCM_config0_drv1_config_val_1 unsigned 0,8
-Var=DCM_config0_drv1_config_val_2 unsigned 8,8
-Var=DCM_config0_drv1_config_val_3 unsigned 16,8
-Var=DCM_config0_drv1_config_val_4 unsigned 24,8
+Var=CDC_config0_drv1_config_val_1 unsigned 0,8
+Var=CDC_config0_drv1_config_val_2 unsigned 8,8
+Var=CDC_config0_drv1_config_val_3 unsigned 16,8
+Var=CDC_config0_drv1_config_val_4 unsigned 24,8
 
-[DCM_Config2_Drv1]
+[CDC_Config2_Drv1]
 ID=60Eh
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=DCM_config2_drv1_config_val_1 unsigned 0,8
-Var=DCM_config2_drv1_config_val_2 unsigned 8,8
-Var=DCM_config2_drv1_config_val_3 unsigned 16,8
-Var=DCM_config2_drv1_config_val_4 unsigned 24,8
+Var=CDC_config2_drv1_config_val_1 unsigned 0,8
+Var=CDC_config2_drv1_config_val_2 unsigned 8,8
+Var=CDC_config2_drv1_config_val_3 unsigned 16,8
+Var=CDC_config2_drv1_config_val_4 unsigned 24,8
 
-[DCM_Config3_Drv1]
+[CDC_Config3_Drv1]
 ID=60Fh
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=DCM_config3_drv1_config_val_1 unsigned 0,8
-Var=DCM_config3_drv1_config_val_2 unsigned 8,8
-Var=DCM_config3_drv1_config_val_3 unsigned 16,8
-Var=DCM_config3_drv1_config_val_4 unsigned 24,8
+Var=CDC_config3_drv1_config_val_1 unsigned 0,8
+Var=CDC_config3_drv1_config_val_2 unsigned 8,8
+Var=CDC_config3_drv1_config_val_3 unsigned 16,8
+Var=CDC_config3_drv1_config_val_4 unsigned 24,8
 
 [DIM_Config0_Drv2]
 ID=610h
@@ -1881,45 +1917,45 @@ Var=DIM_config3_drv2_config_val_2 unsigned 8,8
 Var=DIM_config3_drv2_config_val_3 unsigned 16,8
 Var=DIM_config3_drv2_config_val_4 unsigned 24,8
 
-[DCM_Config0_Drv2]
+[CDC_Config0_Drv2]
 ID=614h
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=DCM_config0_drv2_config_val_1 unsigned 0,8
-Var=DCM_config0_drv2_config_val_2 unsigned 8,8
-Var=DCM_config0_drv2_config_val_3 unsigned 16,8
-Var=DCM_config0_drv2_config_val_4 unsigned 24,8
+Var=CDC_config0_drv2_config_val_1 unsigned 0,8
+Var=CDC_config0_drv2_config_val_2 unsigned 8,8
+Var=CDC_config0_drv2_config_val_3 unsigned 16,8
+Var=CDC_config0_drv2_config_val_4 unsigned 24,8
 
-[DCM_Config1_Drv2]
+[CDC_Config1_Drv2]
 ID=615h
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=DCM_config1_drv2_config_val_1 unsigned 0,8
-Var=DCM_config1_drv2_config_val_2 unsigned 8,8
-Var=DCM_config1_drv2_config_val_3 unsigned 16,8
-Var=DCM_config1_drv2_config_val_4 unsigned 24,8
+Var=CDC_config1_drv2_config_val_1 unsigned 0,8
+Var=CDC_config1_drv2_config_val_2 unsigned 8,8
+Var=CDC_config1_drv2_config_val_3 unsigned 16,8
+Var=CDC_config1_drv2_config_val_4 unsigned 24,8
 
-[DCM_Config2_Drv2]
+[CDC_Config2_Drv2]
 ID=616h
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=DCM_config2_drv2_config_val_1 unsigned 0,8
-Var=DCM_config2_drv2_config_val_2 unsigned 8,8
-Var=DCM_config2_drv2_config_val_3 unsigned 16,8
-Var=DCM_config2_drv2_config_val_4 unsigned 24,8
+Var=CDC_config2_drv2_config_val_1 unsigned 0,8
+Var=CDC_config2_drv2_config_val_2 unsigned 8,8
+Var=CDC_config2_drv2_config_val_3 unsigned 16,8
+Var=CDC_config2_drv2_config_val_4 unsigned 24,8
 
-[DCM_Config3_Drv2]
+[CDC_Config3_Drv2]
 ID=617h
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=DCM_config3_drv2_config_val_1 unsigned 0,8
-Var=DCM_config3_drv2_config_val_2 unsigned 8,8
-Var=DCM_config3_drv2_config_val_3 unsigned 16,8
-Var=DCM_config3_drv2_config_val_4 unsigned 24,8
+Var=CDC_config3_drv2_config_val_1 unsigned 0,8
+Var=CDC_config3_drv2_config_val_2 unsigned 8,8
+Var=CDC_config3_drv2_config_val_3 unsigned 16,8
+Var=CDC_config3_drv2_config_val_4 unsigned 24,8
 
 [DIM_Config0_Drv3]
 ID=618h
@@ -1961,45 +1997,45 @@ Var=DIM_config3_drv3_config_val_2 unsigned 8,8
 Var=DIM_config3_drv3_config_val_3 unsigned 16,8
 Var=DIM_config3_drv3_config_val_4 unsigned 24,8
 
-[DCM_Config0_Drv3]
+[CDC_Config0_Drv3]
 ID=61Ch
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=DCM_config0_drv3_config_val_1 unsigned 0,8
-Var=DCM_config0_drv3_config_val_2 unsigned 8,8
-Var=DCM_config0_drv3_config_val_3 unsigned 16,8
-Var=DCM_config0_drv3_config_val_4 unsigned 24,8
+Var=CDC_config0_drv3_config_val_1 unsigned 0,8
+Var=CDC_config0_drv3_config_val_2 unsigned 8,8
+Var=CDC_config0_drv3_config_val_3 unsigned 16,8
+Var=CDC_config0_drv3_config_val_4 unsigned 24,8
 
-[DCM_Config1_Drv3]
+[CDC_Config1_Drv3]
 ID=61Dh
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=DCM_config1_drv3_config_val_1 unsigned 0,8
-Var=DCM_config1_drv3_config_val_2 unsigned 8,8
-Var=DCM_config1_drv3_config_val_3 unsigned 16,8
-Var=DCM_config1_drv3_config_val_4 unsigned 24,8
+Var=CDC_config1_drv3_config_val_1 unsigned 0,8
+Var=CDC_config1_drv3_config_val_2 unsigned 8,8
+Var=CDC_config1_drv3_config_val_3 unsigned 16,8
+Var=CDC_config1_drv3_config_val_4 unsigned 24,8
 
-[DCM_Config2_Drv3]
+[CDC_Config2_Drv3]
 ID=61Eh
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=DCM_config2_drv3_config_val_1 unsigned 0,8
-Var=DCM_config2_drv3_config_val_2 unsigned 8,8
-Var=DCM_config2_drv3_config_val_3 unsigned 16,8
-Var=DCM_config2_drv3_config_val_4 unsigned 24,8
+Var=CDC_config2_drv3_config_val_1 unsigned 0,8
+Var=CDC_config2_drv3_config_val_2 unsigned 8,8
+Var=CDC_config2_drv3_config_val_3 unsigned 16,8
+Var=CDC_config2_drv3_config_val_4 unsigned 24,8
 
-[DCM_Config3_Drv3]
+[CDC_Config3_Drv3]
 ID=61Fh
 DLC=4
 CycleTime=1000
 Timeout=10000
-Var=DCM_config3_drv3_config_val_1 unsigned 0,8
-Var=DCM_config3_drv3_config_val_2 unsigned 8,8
-Var=DCM_config3_drv3_config_val_3 unsigned 16,8
-Var=DCM_config3_drv3_config_val_4 unsigned 24,8
+Var=CDC_config3_drv3_config_val_1 unsigned 0,8
+Var=CDC_config3_drv3_config_val_2 unsigned 8,8
+Var=CDC_config3_drv3_config_val_3 unsigned 16,8
+Var=CDC_config3_drv3_config_val_4 unsigned 24,8
 
 [DIM_DAQ_TEXT]
 ID=525h
@@ -2052,13 +2088,13 @@ Timeout=2000
 Var=Commit_Hash_PTC unsigned 0,32 -h
 Var=Dirty_PTC unsigned 32,8
 
-[DCM_Git]
+[CDC_Git]
 ID=7F4h
 DLC=8
 CycleTime=1000
 Timeout=2000
-Var=Commit_Hash_DCM unsigned 0,32 -h
-Var=Dirty_DCM unsigned 32,8 -o
+Var=Commit_Hash_CDC unsigned 0,32 -h
+Var=Dirty_CDC unsigned 32,8 -o
 
 [DIM_Git]
 ID=7F5h
@@ -2146,29 +2182,6 @@ ID=77Bh
 DLC=8
 Var=Movella_Latitude signed 0,32 -m /u:deg /f:5.96046447753906E-008 /max:127.999999940395 /d:0
 Var=Movella_Longitude signed 32,32 -m /u:deg /f:1.19209289550781E-007 /min:-255.999999999999 /max:255.99999988079 /d:0
-
-[DCM_COG_Velocity]
-ID=2C2h
-DLC=8
-Var=cog_x signed 0,16 /u:m/s /f:0.01
-Var=cog_y signed 16,16 /u:m/s /f:0.01
-Var=slip_angle float 32,32 /u:rad
-
-[DCM_Front_Velocity]
-ID=2D2h
-DLC=8
-Var=fl_x signed 0,16 /u:m/s /f:0.01
-Var=fl_y signed 16,16 /u:m/s /f:0.01
-Var=fr_x signed 32,16 /u:m/s /f:0.01
-Var=fr_y signed 48,16 /u:m/s /f:0.01
-
-[DCM_Rear_Velocity]
-ID=2E2h
-DLC=8
-Var=rl_x signed 0,16 /u:m/s /f:0.01
-Var=rl_y signed 16,16 /u:m/s /f:0.01
-Var=rr_x signed 32,16 /u:m/s /f:0.01
-Var=rr_y signed 48,16 /u:m/s /f:0.01
 
 [LV_BMS_Voltages1]
 ID=7F7h
