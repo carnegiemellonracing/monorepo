@@ -23,8 +23,7 @@ extern volatile int BMBErrs[BMS_NUM];
 BMB_Data_t BMSData[BMS_NUM]; // Data stored in this array
 bool firstBalDone[BMS_NUM][CELL_NUM]; // Track balance status
 
-// uint8_t CHANNEL_GPIO_TO_CELL_MAP[4][NUM_GPIO_CHANNELS]
-// TODO: how to do gpio mapping?
+// CHANNEL_GPIO_TO_CELL_MAP on board-side
 
 // Only relevant for BMSM
 static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
@@ -203,12 +202,13 @@ bool autoAddr() {
 	}
 	DWT_Delay_ms(10);
 
+	uint8_t comm_data = (HV_BMS) ? 0x03 : 0x01;
 	uart_command_t set_comm_ctrl = {
 		.readWrite = SINGLE_WRITE,
 		.dataLen = 1,
 		.deviceAddress = 0x00,
 		.registerAddress = COMM_CTRL,
-		.data = {BMS_COMM_DATA}, // ^^ 0x01 vs 0x03
+		.data = {comm_data},
 		.crc = {0x00, 0x00}
 	};
 
@@ -277,7 +277,7 @@ bool enableGPIOPins() {
 	else if (LV_BMS) {
     // configures GPIO 5 and 6 as analog input
     dataToSend = 0x12;
-    if (!sendUartWrite(GPIO_CONF1, &dataToSend, 1)) // ^^ GPIO_CONF3 VS GPIO_CONF1
+    if (!sendUartWrite(GPIO_CONF1, &dataToSend, 1))
         return false;
 				
     //enable MUX outputs as low initially
@@ -457,25 +457,22 @@ void cellBalancing(bool set, uint16_t thresh) {
 		thresh = 3700;
 	}
 
-	// board index by 0 but don't send to interface chip
 	for(int i = 0; i < BMB_NUM; i++) {
-		// selections for cells--0x04 to balance for 5 minute intervals
+		// Selections for cells--0x04 to balance for 5 minute intervals
 		uint8_t top_len; 
 
-		//balance cells above 8 
+		// Balance cells above 8 
 		if (CELL_NUM > 8) {
 			top_len = CELL_NUM - 8;
 		} else {
 			top_len = 0; 
 		}
 
-		//decide which cells to balance before starting balancing. Inits to 10s 
+		// Decide which cells to balance before starting balancing. Inits to 10s 
 		uint8_t cell_selects[] = {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 
 			0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01}; 
 
 		// Disable selected cells below threshold 
-
-        // ^^ this for loop is written a little bit differently in the LV BMS code 
 		uint16_t cell_thresh = thresh; 
 		for (int j = 0; j < CELL_NUM; j ++) {
 			//if we've already finished balancing once, threshold is mincell + 10 instead of mincell + 5
@@ -490,11 +487,14 @@ void cellBalancing(bool set, uint16_t thresh) {
 			}
 		}
 
+		// Board index by 0 but don't send to interface chip on HV_BMS
+		uint8_t addr = (HV_BMS) ? i+1 : i; 
+
 		//balance top length
 		uart_command_t balance_register = {
 			.readWrite = SINGLE_WRITE,
 			.dataLen = top_len,
-			.deviceAddress = i+1, // ^^ device address starts at 1 not 0
+			.deviceAddress = addr,
 			.registerAddress = TOP_CELL_CB_ADDR,
 			.crc = {0x00, 0x00}
 		};
@@ -513,7 +513,7 @@ void cellBalancing(bool set, uint16_t thresh) {
 		}
 
 		balance_register.dataLen = bottom_len; 
-		balance_register.registerAddress = CB_CELL8_CTRL; // ^^ DNE in LV BMS code
+		if (HV_BMS) {balance_register.registerAddress = CB_CELL8_CTRL;}
 		memcpy(balance_register.data, &(cell_selects[top_len]), bottom_len);
 		uart_sendCommand(&balance_register); 
 	}
@@ -616,7 +616,6 @@ static inline bool sendUartWrite(uint16_t registerAddress,
   return (res == UART_SUCCESS);
 }
 
-// ^^ Copied from HV-BMS, confirm LV side
 /**
  * Reads voltage data of all VSENSE channels into BMSData
  * @return 0 on success, ASIC number on failure
@@ -624,7 +623,7 @@ static inline bool sendUartWrite(uint16_t registerAddress,
 uint8_t pollAllVoltageData() {
   uint8_t toReadLen = CELL_NUM*2-1;
 	uart_command_t read_voltage = {
-		.readWrite = STACK_READ,
+		.readWrite = BMS_READ,
 		.dataLen = 1,
 		.deviceAddress = 0xFF, //not used!
 		.registerAddress = TOP_CELL,
