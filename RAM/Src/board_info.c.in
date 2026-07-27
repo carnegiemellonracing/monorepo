@@ -1,0 +1,9 @@
+
+#include <CMR/remote_boot.h>
+#include "gitcommit.h"
+
+__attribute__((section(".board_info")))
+const board_info_t board_info = {
+    .version = GIT_INFO,
+    .board_id = @BOARD_ID@
+};

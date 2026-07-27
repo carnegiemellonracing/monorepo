@@ -63,12 +63,19 @@ MEMORY
 {
   SHARED (xrw)   : ORIGIN = 0x20000000, LENGTH = 1K
   RAM (xrw)      : ORIGIN = 0x20000400, LENGTH = 320K-1K
-  FLASH    (rx)     : ORIGIN = 0x0800C000,   LENGTH = 1488K   /* 1536K - 48KB bootloader */
+  BOARD_INFO (rx) : ORIGIN = 0x8000000, LENGTH = 1K
+  FLASH    (rx)     : ORIGIN = 0x08010000,   LENGTH = 1536K-64K   /* 1536K - 64K bootloader */
 }
 
 /* Define output sections */
 SECTIONS
 {
+  /* Info for writing board info during flash */
+  .board_info :
+  {
+      KEEP(*(.board_info))
+  } >BOARD_INFO
+
   /* The startup code goes first into FLASH */
   .isr_vector :
   {

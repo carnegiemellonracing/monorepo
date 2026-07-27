@@ -5,6 +5,9 @@
  */
 
 #include "gpio.h"   // Interface to implement
+// BLT timer stuff
+#include "types.h"
+#include "timer.h"
 
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
     [GPIO_LED_STATUS] = { 

@@ -5,8 +5,8 @@
  * @author Carnegie Mellon Racing
  */
 
-#include "CMR/remote_boot.h"
 #include "shared_params.h"
+#include "CMR/remote_boot.h"
 
 
 void cmr_remoteBootInit(void){

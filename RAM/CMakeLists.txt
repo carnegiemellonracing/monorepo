@@ -86,6 +86,32 @@ target_compile_definitions(freertos_config
 set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "" FORCE)
 
 
+# Setup the board id based on our project name
+string(MD5 _name_md5 "${PROJECT_NAME}")
+string(SUBSTRING "${_name_md5}" 0 8 _name_hash_hex)
+math(EXPR BOARD_ID "0x${_name_hash_hex}" OUTPUT_FORMAT DECIMAL)
+
+set(BOARD_INFO_IN  "${CMAKE_CURRENT_SOURCE_DIR}/Src/board_info.c.in")
+set(BOARD_INFO_OUT "${CMAKE_CURRENT_BINARY_DIR}/Src/board_info.c")
+
+# --- board_info.c: only BOARD_ID needs substituting, so configure_file is fine here ---
+configure_file(${BOARD_INFO_IN} ${BOARD_INFO_OUT} @ONLY)
+
+# Get the right gitcommit
+if(CMAKE_HOST_WIN32)
+    add_custom_target(generate_gitcommit ALL
+        COMMAND powershell -ExecutionPolicy Bypass -File ${CMAKE_CURRENT_SOURCE_DIR}/export_git.ps1
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating gitcommit.h using PowerShell"
+    )
+elseif(CMAKE_HOST_UNIX)
+    add_custom_target(generate_gitcommit ALL
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/export_git.sh
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating gitcommit.h on Linux/Unix"
+    )
+endif()
+
 # Link directories and names of libraries
 set(link_DIRS)
 set(link_LIBS
@@ -118,6 +144,8 @@ link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
+    # Board Info
+    ${CMAKE_CURRENT_BINARY_DIR}/Src/board_info.c
     # Project sources
     # $<TARGET_OBJECTS:CMR>
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/can.c
