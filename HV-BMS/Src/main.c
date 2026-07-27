@@ -10,12 +10,20 @@
 #include <CMR/panic.h>  // cmr_panic()
 #include <CMR/rcc.h>    // RCC interface
 #include <CMR/tasks.h>  // Task interface
+#include <CMR/bq_interface.h>
+
+// bq_interface constants
+#define BOARD_NUM 17
+#define BMB_NUM 16 // minus HVC
+#define CELL_NUM 9
+#define BMS_READ STACK_READ
+#define BMS_WRITE STACK_WRITE
+#define HV_BMS true
 
 #include "gpio.h"   // Board-specific GPIO interface
 #include "can.h"    // Board-specific CAN interface
 #include "bms_error.h"
 #include "watchdog.h"   // Board-specific Watchdog interface
-#include "bq_interface.h"
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;

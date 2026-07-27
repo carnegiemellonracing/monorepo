@@ -14,7 +14,7 @@ extern BMB_Data_t BMBData[BOARD_NUM-1];
 
 extern volatile int BMBTimeoutCount[BOARD_NUM-1];
 extern volatile int BMBErrs[BOARD_NUM-1];
-extern bool firstBalDone[BOARD_NUM-1][VSENSE_CHANNELS]; 
+extern bool firstBalDone[BOARD_NUM-1][CELL_NUM]; 
 
 #define BALANCE_EN true
 #define BALANCE_DIS false
@@ -73,7 +73,7 @@ void vBMBSampleTask(void *pvParameters) {
 			//clear first balance done when we get a new balance command (everything starts over)
 			if (newBalCommand){
 				for(int i = 0; i < BOARD_NUM - 1; i++){
-					for (int j = 0; j<VSENSE_CHANNELS; j++){
+					for (int j = 0; j<CELL_NUM; j++){
 						firstBalDone[i][j] = false; 
 					}
 				}
@@ -170,7 +170,7 @@ uint8_t getBMBMinTempIndex(uint8_t bmb_index) {
 uint8_t getBMBMaxVoltIndex(uint8_t bmb_index) {
 	uint16_t maxVoltage = 0;
 	uint8_t cell_index = 0;
-	for (uint8_t i = 0; i < VSENSE_CHANNELS; i++) {
+	for (uint8_t i = 0; i < CELL_NUM; i++) {
 		uint16_t voltage = BMBData[bmb_index].cellTemperaturesVoltageReading[i];
 		if ((voltage > maxVoltage)) {
 			maxVoltage = voltage;
@@ -183,7 +183,7 @@ uint8_t getBMBMaxVoltIndex(uint8_t bmb_index) {
 uint8_t getBMBMinVoltIndex(uint8_t bmb_index) {
 	uint16_t minVoltage = 0xFFFF;
 	uint8_t cell_index = 0;
-	for (uint8_t i = 0; i < VSENSE_CHANNELS; i++) {
+	for (uint8_t i = 0; i < CELL_NUM; i++) {
 		uint16_t voltage = BMBData[bmb_index].cellVoltages[i];
 		if ((voltage < minVoltage)) {
 			minVoltage = voltage;
@@ -321,7 +321,7 @@ int32_t getBattMillivolts() {
 	int32_t totalPackCellVoltage = 0;
 
 	for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
-		for (uint8_t i = 0; i < VSENSE_CHANNELS; i++) {
+		for (uint8_t i = 0; i < CELL_NUM; i++) {
 			totalPackCellVoltage +=
 				(int32_t) BMBData[bmb_index].cellVoltages[i];
 		}
