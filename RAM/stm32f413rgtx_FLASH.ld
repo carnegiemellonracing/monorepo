@@ -61,9 +61,11 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
 /* Specify the memory areas */
 MEMORY
 {
-  SHARED (xrw)   : ORIGIN = 0x20000000, LENGTH = 1K
-  RAM (xrw)      : ORIGIN = 0x20000400, LENGTH = 320K-1K
+  SHARED (xrw)   : ORIGIN = 0x20000000, LENGTH = 64
+  BTR_RES_RAM (xrw)   : ORIGIN = 0x20000040, LENGTH = 8K-64
+  RAM (xrw)      : ORIGIN = 0x20002000, LENGTH = 320K-8K
   BOARD_INFO (rx) : ORIGIN = 0x8000000, LENGTH = 1K
+  BTR_RES_FLASH (xrw)   : ORIGIN =0x8000400, LENGTH = 64K-1K
   FLASH    (rx)     : ORIGIN = 0x08010000,   LENGTH = 1536K-64K   /* 1536K - 64K bootloader */
 }
 

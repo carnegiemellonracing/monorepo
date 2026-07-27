@@ -1,5 +1,5 @@
 
-#include <CMR/remote_boot.h>
+#include <CMR/board_info.h>
 #include "gitcommit.h"
 
 __attribute__((section(".board_info")))
