@@ -62,7 +62,7 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
 MEMORY
 {
 SHARED (xrw)   : ORIGIN = 0x20000000, LENGTH = 64
-RAM (xrw)      : ORIGIN = 0x20000040, LENGTH = 320K-64
+RAM (xrw)      : ORIGIN = 0x20000040, LENGTH = 8k-64
 BOARD_INFO (rx)      : ORIGIN = 0x8000000, LENGTH = 1K
 FLASH (rx)      : ORIGIN = 0x8000400, LENGTH = 64K-1K
 }

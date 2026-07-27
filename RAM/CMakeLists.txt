@@ -94,23 +94,8 @@ math(EXPR BOARD_ID "0x${_name_hash_hex}" OUTPUT_FORMAT DECIMAL)
 set(BOARD_INFO_IN  "${CMAKE_CURRENT_SOURCE_DIR}/Src/board_info.c.in")
 set(BOARD_INFO_OUT "${CMAKE_CURRENT_BINARY_DIR}/Src/board_info.c")
 
-# --- board_info.c: only BOARD_ID needs substituting, so configure_file is fine here ---
+# Update template
 configure_file(${BOARD_INFO_IN} ${BOARD_INFO_OUT} @ONLY)
-
-# Get the right gitcommit
-if(CMAKE_HOST_WIN32)
-    add_custom_target(generate_gitcommit ALL
-        COMMAND powershell -ExecutionPolicy Bypass -File ${CMAKE_CURRENT_SOURCE_DIR}/export_git.ps1
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMENT "Generating gitcommit.h using PowerShell"
-    )
-elseif(CMAKE_HOST_UNIX)
-    add_custom_target(generate_gitcommit ALL
-        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/export_git.sh
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMENT "Generating gitcommit.h on Linux/Unix"
-    )
-endif()
 
 # Link directories and names of libraries
 set(link_DIRS)
@@ -136,6 +121,7 @@ set(linker_OPTS)
 # information to the project
 
 include("cmake/vscode_generated.cmake")
+include("cmake/board_info.cmake")
 # We should really add Target groups or something
 
 # Link directories setup
