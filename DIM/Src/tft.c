@@ -409,26 +409,6 @@ static void getDTITemps(int32_t *mcTemp_C, int32_t *motorTemp_C, cornerId_t *hot
         // return;
     }
 
-//     // Front Left
-//     cmr_canRXMeta_t *metaDTI_FL_TempFault = canRXMeta + CANRX_DTI_FL_TEMPFAULT;
-//     volatile cmr_canDTI_TX_TempFault_t *FL =
-//         (void *)metaDTI_FL_TempFault->payload;
-
-//     // Front Right
-//     cmr_canRXMeta_t *metaDTI_FR_TempFault = canRXMeta + CANRX_DTI_FR_TEMPFAULT;
-//     volatile cmr_canDTI_TX_TempFault_t *FR =
-//         (void *)metaDTI_FR_TempFault->payload;
-
-//     // Rear Left
-//     cmr_canRXMeta_t *metaDTI_RL_TempFault = canRXMeta + CANRX_DTI_RL_TEMPFAULT;
-//     volatile cmr_canDTI_TX_TempFault_t *RL =
-//         (void *)metaDTI_RL_TempFault->payload;
-
-//     // Rear Right
-//    cmr_canRXMeta_t *metaDTI_RR_TempFault = canRXMeta + CANRX_DTI_RR_TEMPFAULT;
-//     volatile cmr_canDTI_TX_TempFault_t *RR =
-//         (void *)metaDTI_RR_TempFault->payload;
-
     int16_t FL_motorTemp = getDTIMotorTemp_dC(CANRX_DTI_FL_TEMPFAULT);
     int16_t FR_motorTemp = getDTIMotorTemp_dC(CANRX_DTI_FR_TEMPFAULT);
     int16_t RL_motorTemp = getDTIMotorTemp_dC(CANRX_DTI_RL_TEMPFAULT);
@@ -479,11 +459,6 @@ static void drawRTDScreen(void) {
 
     //cmr_canRXMeta_t *metaEMDvalues = canRXMeta + CANRX_EMD_VALUES;
     //volatile cmr_canEMDMeasurements_t *canEMDvalues = (void *)metaEMDvalues->payload;
-
-
-
-    //cmr_canRXMeta_t *metaBMSLowVoltage = canRXMeta + CANRX_HVC_LOW_VOLTAGE;
-    //volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus = (void *)metaBMSLowVoltage->payload;
 
     tftDLContentLoad(&tft, &tftDL_RTD);
 
@@ -539,8 +514,9 @@ static void drawRTDScreen(void) {
     // 18000mV / 250 as sent by HVC = 72
     bool ssOk = (bmsLV->safety_qV > 72);
 
-    volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t *)getPayload(CANRX_DRS_STATE);
-    bool drsOpen = (drsState->state == CMR_CAN_DRS_STATE_OPEN);
+    //volatile cmr_canCDCDRSStates_t *drsState = (volatile cmr_canCDCDRSStates_t *)getPayload(CANRX_DRS_STATE);
+    //bool drsOpen = (drsState->state == CMR_CAN_DRS_STATE_OPEN);
+    bool drsOpen = DRSOpen();
 
     /* Accumulator Temperature */
     int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_C) / 10;

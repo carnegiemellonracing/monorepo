@@ -327,7 +327,7 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
     cmr_canState_t stateVSM = stateGetVSM();
     cmr_canState_t stateVSMReq = stateGetVSMReq();
     cmr_canGear_t gear = stateGetGear();
-    cmr_canDrsMode_t drsMode = stateGetDrs();
+    cmr_canCDCDRSStateEnum_t drsMode = stateGetDrs();
     cmr_canDVMode_t dvCtrlMode = stateGetDVMode();
 
     uint32_t *state_color = (void *)(file_addr + state_col_addr);

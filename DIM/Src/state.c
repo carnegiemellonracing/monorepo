@@ -79,7 +79,7 @@ static volatile struct {
 	cmr_canState_t vsmReq;    /**< @brief Requested VSM state. */
 	cmr_canGear_t gear;       /**< @brief Current gear. */
 	cmr_canGear_t gearReq;    /**< @brief Requested gear. */
-	cmr_canDrsMode_t drsMode; /**< @brief Current DRS Mode. */
+	cmr_canCDCDRSStateEnum_t drsMode; /**< @brief Current DRS Mode. */
 	cmr_canDrsMode_t drsReq;  /**< @brief Requested DRS Mode. */
     cmr_canDVMode_t dvCtrlMode;
     cmr_canDVMode_t dvCtrlReq;
@@ -87,7 +87,7 @@ static volatile struct {
 	.vsmReq = CMR_CAN_GLV_ON,
 	.gear = CMR_CAN_GEAR_SLOW,
 	.gearReq = CMR_CAN_GEAR_SLOW,
-	.drsMode = CMR_CAN_DRSM_CLOSED,
+	.drsMode = CMR_CAN_DRS_STATE_CLOSED,
 	.drsReq = CMR_CAN_DRSM_CLOSED,
     .dvCtrlMode = CMR_CAN_DV_MODE_NORMAL,
     .dvCtrlReq = CMR_CAN_DV_MODE_NORMAL,
@@ -154,7 +154,7 @@ cmr_canGear_t stateGetGearReq(void) {
  *
  * @return The current DRS state.
  */
-cmr_canDrsMode_t stateGetDrs(void) {
+cmr_canCDCDRSStateEnum_t stateGetDrs(void) {
 	return state.drsMode;
 }
 
@@ -212,8 +212,7 @@ uint8_t getSpeedKmh() {
 float getOdometer() {
 	// volatile cmr_canCDCOdometer_t *odometer = (volatile cmr_canCDCOdometer_t *)getPayload(CANRX_CDC_ODOMETER);
     cmr_canSensoricDist_t *sensoricDist = (cmr_canSensoricDist_t*) getPayload(CANRX_SENSORIC_DIST);
-    float sensoricDist_kmh = (float)(sensoricDist->dist_A) * 0.001f;
-	return sensoricDist_kmh;
+	return sensoricDist->dist_A;
 }
 
 
@@ -300,50 +299,16 @@ int getACTemp(void)
 	int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_C) / 10;
 	return acTemp_C;
 }
-/**
- * @brief Gets the mc temperature.
- *
- * @param none
- *
- * @return mc temperature in celsius
- */
-// int getMCTemp(void)
-// {
-// 	/* Get CAN data */
-// 	// Front Left
-// 	cmr_canDTI_TX_TempFault_t *canDTI_FL_temp = getPayload(CANRX_DTI_FL_TEMPFAULT);
 
-// 	// Front Right
-// 	cmr_canDTI_TX_TempFault_t *canDTI_FR_temp = getPayload(CANRX_DTI_FR_TEMPFAULT);
-
-// 	// Rear Left
-// 	cmr_canDTI_TX_TempFault_t *canDTI_RL_temp = getPayload(CANRX_DTI_RL_TEMPFAULT);
-
-// 	// Rear Right
-// 	cmr_canDTI_TX_TempFault_t *canDTI_RR_temp = getPayload(CANRX_DTI_RR_TEMPFAULT);
-
-//     //TODO: does this need to be int32_t or int16_t?? and what is multiplied by 10?
-//     // is this controller temp?
-// 	int32_t frontLeftMCTemp = canDTI_FL_temp->ctlr_temp;
-// 	int32_t frontRightMCTemp = canDTI_FR_temp->ctlr_temp;
-// 	int32_t rearLeftMCTemp = canDTI_RL_temp->ctlr_temp;
-// 	int32_t rearRightMCTemp = canDTI_RR_temp->ctlr_temp;
-
-// 	/* Return highest motor temperature*/
-// 	int32_t maxTemp = frontLeftMCTemp;
-
-// 	maxTemp = max(max(max(maxTemp, frontRightMCTemp), rearLeftMCTemp), rearRightMCTemp);
-// 	return maxTemp / 10;
-// }
 
 /**
  * @brief Gets the DRS state
- * true = closed
- * false = open or other
+ * true = open
+ * false = closed or other
  *
  * @param none
  *
- * @return door state as integer
+ * @return DRS state as integer
  */
 bool DRSOpen(void)
 {
@@ -634,11 +599,11 @@ void reqGear(void) {
 
 void reqDRS(void) {
     if(buttonStates[SW_RIGHT].isPressed) {
-        state.drsReq = (cmr_canDrsMode_t) CMR_CAN_DRS_STATE_OPEN;
+        state.drsReq = CMR_CAN_DRSM_OPEN;
         buttonStates[SW_RIGHT].isPressed = false; 
     }
     else {
-        state.drsReq = (cmr_canDrsMode_t) CMR_CAN_DRS_STATE_CLOSED;
+        state.drsReq = CMR_CAN_DRSM_CLOSED;
     }
 }
 
@@ -661,7 +626,8 @@ void stateGearUpdate(void) {
 }
 
 void stateDrsUpdate(void) {
-	state.drsMode = state.drsReq;
+	cmr_canCDCDRSStates_t *drsState = (cmr_canCDCDRSStates_t *) getPayload(CANRX_DRS_STATE);
+    state.drsMode = drsState->state;
 }
 
 void stateDVCtrlUpdate(void) {
@@ -751,20 +717,9 @@ static void stateMachine(void *pvParameters){
         currState = getNextState();
         // if(getASMS()) {
         //     // TODO: checks for brakes, dv system, etc
-        //     if(stateGetVSM() == CMR_CAN_GLV_ON) {
-        //         cmr_gpioWrite(GPIO_AS_RELAY, 0);
-        //     }
-        //     else {
-        //         cmr_gpioWrite(GPIO_AS_RELAY, 1);
-        //     }
         // }
-        // tftRead(&tft, TFT_ADDR_CMD_READ, sizeof(test), &test);
-        // test = test & 0x00000FFF;
-        // tftRead(&tft, TFT_ADDR_CMDB_SPACE, sizeof(space1), &space1);
-		/* for testing
-		vsmStateGlobal = stateGetVSM();
-		vsmStateGlobalReq = stateGetVSMReq();
-		*/
+		//vsmStateGlobal = stateGetVSM();
+		//vsmStateGlobalReq = stateGetVSMReq();
         // taskEXIT_CRITICAL();
 		vTaskDelayUntil(&lastWakeTime, stateMachine_period);
     }

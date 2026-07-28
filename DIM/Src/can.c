@@ -165,6 +165,7 @@ static void canTX10Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     cmr_driver_profile_t previousDriverReq = Default;  // Request Default
+    cmr_canDrsMode_t previousDrsReq = CMR_CAN_DRSM_CLOSED;
     while (1) {
         /* if DIM is requesting a state/gear change
          * send this request to VSM */
@@ -178,7 +179,6 @@ static void canTX10Hz(void *pvParameters) {
         cmr_canState_t stateVSMReq = stateGetVSMReq();
         cmr_canGear_t gear = stateGetGear();
         cmr_canGear_t gearReq = stateGetGearReq();
-        cmr_canDrsMode_t drsMode = stateGetDrs();
         cmr_canDrsMode_t drsReq = stateGetDrsReq();
         cmr_canDVMode_t dvReq = stateGetDVReq();
         /*cmr_canTestID_t test_id = {
@@ -189,7 +189,7 @@ static void canTX10Hz(void *pvParameters) {
         if (
             (stateVSM != stateVSMReq) ||
             (gear != gearReq) ||
-            (drsMode != drsReq) ||
+            (previousDrsReq != drsReq) ||
             (config_menu_main_array[DRIVER_PROFILE_INDEX].value.value != previousDriverReq)) {
             cmr_canDIMRequest_t request = {
                 .requestedState = stateVSMReq,
@@ -204,6 +204,7 @@ static void canTX10Hz(void *pvParameters) {
                 canTX10Hz_period_ms);
 
             previousDriverReq = config_menu_main_array[DRIVER_PROFILE_INDEX].value.value;
+            previousDrsReq = drsReq;
             stateGearUpdate();
             stateDrsUpdate();
             stateDVCtrlUpdate();
