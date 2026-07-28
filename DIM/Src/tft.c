@@ -301,9 +301,7 @@ static void drawErrorScreen(void) {
 
     volatile cmr_canDTI_TX_TempFault_t *dtiRRTempFault = (volatile cmr_canDTI_TX_TempFault_t *) getPayload(CANRX_DTI_RR_TEMPFAULT);
 
-    //cmr_canRXMeta_t *metaBMSLowVoltage = canRXMeta + CANRX_HVC_LOW_VOLTAGE;
-    //volatile cmr_canBMSLowVoltage_t *canBMSLowVoltageStatus = (void *)metaBMSLowVoltage->payload;
-
+    //TODO: confirm if using IVT and if so, add IVT HV current code
     //cmr_canVSMSensors_t *vsmSensors =  (cmr_canVSMSensors_t *)getPayload(CANRX_VSM_SENSORS); 
 
     tftDLContentLoad(&tft, &tftDL_error);
@@ -497,6 +495,7 @@ static void drawRTDScreen(void) {
     uint32_t voltage_mV = get_glv_voltage_mv();
     float glvVoltage = voltage_mV / 1000.0f;
 
+    //TODO: confirm if using IVT and if so, add IVT HV current code
     //volatile cmr_canVSMSensors_t *vsmSensors = (volatile cmr_canVSMSensors_t *)getPayload(CANRX_VSM_SENSORS);
 
     int32_t current_A = 0;
