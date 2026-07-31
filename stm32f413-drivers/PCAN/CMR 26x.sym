@@ -451,13 +451,6 @@ CycleTime=5
 TimeOut=25
 Var=COMPUTE_HEARTBEAT_state unsigned 0,8 /e:State
 
-[DCM_HEARTBEAT]
-ID=102h
-DLC=5
-CycleTime=10
-TimeOut=50
-Var=DCM_HEARTBEAT_state unsigned 0,8 /e:State
-
 [DIM_HEARTBEAT]
 ID=104h
 DLC=5
@@ -850,6 +843,23 @@ CycleTime=100
 Timeout=1000
 Var=VSM_busVoltage unsigned 0,16 /u:mV
 Var=VSM_busCurrent unsigned 16,16 /u:mA
+
+[CDC_Heartbeat]
+ID=102h
+DLC=5
+CycleTime=10
+Timeout=100
+Var=CDC_state unsigned 0,8 /e:State
+Var=CDC_ERR_VSMTimeout unsigned 8,1
+Var=CDC_ERR_amkAllError bit 23,1
+Var=CDC_WRN_VSMTimeout bit 24,1
+Var=CDC_WRN_memoratorTimeout bit 33,1
+Var=CDC_WRN_amkTimeout bit 34,1
+Var=CDC_WRN_amkError bit 35,1
+Var=CDC_WRN_amkSrcRR bit 36,1
+Var=CDC_WRN_amkSrcRL bit 37,1
+Var=CDC_WRN_amkSrcFR bit 38,1
+Var=CDC_WRN_amkSrcFL bit 39,1
 
 [CDC_MotorTemps]
 ID=512h

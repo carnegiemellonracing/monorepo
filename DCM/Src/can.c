@@ -826,8 +826,8 @@ static void canTX10Hz(void *pvParameters) {
     }
 }
 
-
-static void sendHeartbeat(TickType_t lastWakeTime)
+//heartbeat forward declaration
+static void sendHeartbeat(TickType_t lastWakeTime);
 
 
 /** @brief CAN 100 Hz TX priority. */
