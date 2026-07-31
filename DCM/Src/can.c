@@ -826,6 +826,10 @@ static void canTX10Hz(void *pvParameters) {
     }
 }
 
+
+static void sendHeartbeat(TickType_t lastWakeTime)
+
+
 /** @brief CAN 100 Hz TX priority. */
 static const uint32_t canTX100Hz_priority = 5;
 /** @brief CAN 100 Hz TX period (milliseconds). */
@@ -879,18 +883,19 @@ static void canTX100Hz(void *pvParameters) {
 
 
 static void sendHeartbeat(TickType_t lastWakeTime) {
-    cmr_canHeartbeat_t heartbeat = {
-        .state = heartbeatVSM->state
-    };
+    cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+
+    cmr_canHeartbeat_t heartbeat = {0};
+
+    if (heartbeatVSM != NULL) {
+        heartbeat.state = heartbeatVSM->state;
+    }
 
     updateErrorsWarnings(&heartbeat, lastWakeTime);
 
     if (heartbeat.error[0] != 0 || heartbeat.error[1] != 0) {
         heartbeat.state = CMR_CAN_ERROR;
     }
-     
-    canTX(CMR_CAN_BUS_VEH,CMR_CANID_HEARTBEAT_DCM, &heartbeat, sizeof(heartbeat), canTX100Hz_period_ms);
-
 
 }
 
