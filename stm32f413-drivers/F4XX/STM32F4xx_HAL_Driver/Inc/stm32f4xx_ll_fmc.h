@@ -898,7 +898,7 @@ typedef struct
 
 /** @defgroup FMC_SDRAM_Command_Target FMC SDRAM Command Target
   * @{
-  */        
+  */
 #define FMC_SDRAM_CMD_TARGET_BANK2              FMC_SDCMR_CTB2
 #define FMC_SDRAM_CMD_TARGET_BANK1              FMC_SDCMR_CTB1
 #define FMC_SDRAM_CMD_TARGET_BANK1_2            (0x00000018U)

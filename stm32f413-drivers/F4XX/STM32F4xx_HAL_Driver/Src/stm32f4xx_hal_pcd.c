@@ -848,7 +848,7 @@ HAL_StatusTypeDef HAL_PCD_UnRegisterIsoInIncpltCallback(PCD_HandleTypeDef *hpcd)
   * @param  pCallback pointer to the USB PCD BCD Callback function
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_PCD_RegisterBCDCallback(PCD_HandleTypeDef *hpcd, pPCD_BCDCallbackTypeDef pCallback)
+HAL_StatusTypeDef HAL_PCD_RegisterBcdCallback(PCD_HandleTypeDef *hpcd, pPCD_BcdCallbackTypeDef pCallback)
 {
   HAL_StatusTypeDef status = HAL_OK;
 
@@ -888,7 +888,7 @@ HAL_StatusTypeDef HAL_PCD_RegisterBCDCallback(PCD_HandleTypeDef *hpcd, pPCD_BCDC
   * @param  hpcd PCD handle
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_PCD_UnRegisterBCDCallback(PCD_HandleTypeDef *hpcd)
+HAL_StatusTypeDef HAL_PCD_UnRegisterBcdCallback(PCD_HandleTypeDef *hpcd)
 {
   HAL_StatusTypeDef status = HAL_OK;
 
