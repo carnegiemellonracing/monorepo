@@ -808,15 +808,15 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2829,
-        "files_with_matches": 2829,
+        "files_processed": 2845,
+        "files_with_matches": 2845,
         "global_mappings": {
             "canrx_mappings": 191,
             "canrx_timeouts": 181,
             "canrx_types": 62,
             "constants": 269,
             "struct_members": 0,
-            "variable_types": 329
+            "variable_types": 328
         },
         "prefixes_used": [
             "CMR_CANID_",

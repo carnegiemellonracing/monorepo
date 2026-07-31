@@ -161,7 +161,7 @@ cmr_canIzzie_loadcell_calibrated_t getLoads(cmr_canIzzie_loadcell_raw_t raw_data
     uint16_t to_return_calibrated = (raw_data.calibrated_output_f); 
     
     to_return_calibrated = (to_return_calibrated >> 8) | (8 << to_return_calibrated);
-    to_return.calibrated_output_f = to_return_calibrated.calibrated_output_f; 
+    to_return.calibrated_output_f = to_return_calibrated; 
 
     return to_return;
 }

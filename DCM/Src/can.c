@@ -1241,7 +1241,7 @@ void *canGetPayload(canRX_t rxMsg) {
  * @return driver returns -1 if not found
  */
 
-cmr_canID_t DIM_Config = {
+cmr_canID_t DIM_Config[4] = {
     CMR_CANID_DIM_CONFIG0_DRV0,
     CMR_CANID_DIM_CONFIG0_DRV1,
     CMR_CANID_DIM_CONFIG0_DRV2,
@@ -1256,7 +1256,7 @@ int getReceivedDriver(uint16_t canID, int *packet_number) {
     }
 
     for (int i = 0; i < 4; i++) {
-        if (canID >= DIM_Config[i] && canID <= DIM_Config[i]) {
+        if (canID == DIM_Config[i]) {
             *packet_number = canID - DIM_Config[i]; 
             return i; 
         }
