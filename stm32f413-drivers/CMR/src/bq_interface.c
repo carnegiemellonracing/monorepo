@@ -17,13 +17,18 @@
 #include "gpio.h"
 #include "uart.h"
 
-extern volatile int BMBTimeoutCount[BMS_NUM];
-extern volatile int BMBErrs[BMS_NUM];
+extern volatile int BMBTimeoutCount[BMB_NUM];
+extern volatile int BMBErrs[BMB_NUM];
 
-BMB_Data_t BMSData[BMS_NUM]; // Data stored in this array
-bool firstBalDone[BMS_NUM][CELL_NUM]; // Track balance status
+BMB_Data_t BMSData[BMB_NUM]; // Data stored in this array
+bool firstBalDone[BMB_NUM][CELL_NUM]; // Track balance status
 
 // CHANNEL_GPIO_TO_CELL_MAP on board-side
+
+// Forward Declarations
+void txToRxDelay(uint8_t delay);
+void byteDelay(uint8_t delay);
+static inline bool sendUartWrite(uint16_t registerAddress, uint8_t* data, uint8_t dataLen);
 
 // Only relevant for BMSM
 static void setBMBErr(uint8_t BMBIndex, BMB_UART_ERRORS err) {
@@ -285,6 +290,7 @@ bool enableGPIOPins() {
     if (!sendUartWrite(GPIO_CONF2, &dataToSend, 1))
 		return false;
 	}
+	return true;
 }
 
 // Enable command timeout so BQ sleeps turns off when car is off
@@ -419,7 +425,7 @@ void cellBalancingSetup() {
 		.crc = {0xFF, 0xFF}
 	};
 
-	uart_response_t response[BMS_NUM] = {0}; 
+	uart_response_t response[BMB_NUM] = {0}; 
 
 	// Critical section used so UART RX is not preempted
 	taskENTER_CRITICAL();
@@ -429,7 +435,7 @@ void cellBalancingSetup() {
 		return -1; 
 
 	//loop through each BMB and channel
-	for(uint8_t i = BMS_NUM; i >= 1; i--) {
+	for(uint8_t i = BMB_NUM; i >= 1; i--) {
 		uint8_t status = uart_receiveResponse(&response[i-1], 1); 
 		if (status == 1) {
 			return -1; 
@@ -544,7 +550,7 @@ void disableTimeout() {
 void byteDelay(uint8_t delay) {
 	if (delay > 0x3F) return;
 
-	uint16_t addr = (HV_BMS) ? 0x29 : TX_HOLD_OFF
+	uint16_t addr = (HV_BMS) ? 0x29 : TX_HOLD_OFF;
 	uint8_t dataToSend = delay;
 	sendUartWrite(addr, &dataToSend, 1);
 }
@@ -568,7 +574,7 @@ void twoStop() {
 			.dataLen = 1,
 			.deviceAddress = 0x00,
 			.registerAddress = 0x2001,
-			.data = 0b00111000,
+			.data = {0b00111000},
 			.crc = {0x00, 0x00}
 		};
 		uart_sendCommand(&two_stop_single);
@@ -612,7 +618,7 @@ static inline bool sendUartWrite(uint16_t registerAddress,
 
   memcpy(writeCmd.data, data, dataLen);
 
-	cmr_uart_result_t res = uart_sendCommand(&stackWriteCmd);
+	cmr_uart_result_t res = uart_sendCommand(&writeCmd);
   return (res == UART_SUCCESS);
 }
 
@@ -631,19 +637,21 @@ uint8_t pollAllVoltageData() {
 		.crc = {0xFF, 0xFF}
 	};
 
-	uart_response_t response[BMS_NUM];
+	uart_response_t response[BMB_NUM];
 	// Critical section used so UART RX is not preempted
 	taskENTER_CRITICAL();
 	uart_sendCommand(&read_voltage);
 		// Loop through each BMB and channel
-		for(uint8_t i = BMS_NUM; i >= 1; i--) {
+		for(uint8_t i = BMB_NUM; i >= 1; i--) {
 
 		uint8_t status = uart_receiveResponse(&response[i-1], toReadLen);
 			if(status != 0) {
 			// setBMBErr(i-1, BMB_VOLTAGE_READ_ERROR);
 			// BMBTimeoutCount[i-1]+=1;
 			DWT_Delay_ms(10000);
-			RXTurnOnInit();
+			#if (HV_BMS)
+				RXTurnOnInit();
+			#endif
 			BMBInit();
 			taskEXIT_CRITICAL();
 			return i;
@@ -652,12 +660,12 @@ uint8_t pollAllVoltageData() {
 	taskEXIT_CRITICAL();
 
 	// Handle writing data separately from receive so you don't miss a byte
-		for(uint8_t i = 0; i < BMS_NUM; i++) {
+		for(uint8_t i = 0; i < BMB_NUM; i++) {
 			for(uint8_t j = 0; j < CELL_NUM; j++) {
 			uint8_t high_byte_data = response[i].data[2*j];
 			uint8_t low_byte_data = response[i].data[2*j+1];
 
-			BMSData[i].cellVoltages[CELL_NUM-j-1] = CELL_NUM(high_byte_data, low_byte_data);
+			BMSData[i].cellVoltages[CELL_NUM-j-1] = calculateVoltage(high_byte_data, low_byte_data);
 		}
 	}
 
@@ -678,9 +686,9 @@ void pollAllTemperatureData(int channel) {
 	taskENTER_CRITICAL();
 	uart_sendCommand(&read_therms);
 
-	uart_response_t response[BMS_NUM];
+	uart_response_t response[BMB_NUM];
 
-	for(uint8_t i = BMS_NUM; i >= 1; i--) {
+	for(uint8_t i = BMB_NUM; i >= 1; i--) {
 		if(uart_receiveResponse(&response[i-1], 7) != 0) {
 			// Loop through each GPIO channel
 			setBMBErr(i-1, BMB_TEMP_READ_ERROR);
@@ -691,7 +699,7 @@ void pollAllTemperatureData(int channel) {
 	}
 	taskEXIT_CRITICAL();
 
-	for(uint8_t i = 0; i < BMS_NUM; i++) {
+	for(uint8_t i = 0; i < BMB_NUM; i++) {
 		for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; k++) {
 			uint8_t cellNum = CHANNEL_GPIO_TO_CELL_MAP[channel][k];
 			if (cellNum == 255)

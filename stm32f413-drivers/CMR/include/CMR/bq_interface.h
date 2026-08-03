@@ -354,13 +354,19 @@
 #define LV_BMS false
 #endif
 
+#ifndef NUM_GPIO_CHANNELS
+#define NUM_GPIO_CHANNELS 4
+#endif
+
 //TODO change this
 #define CELL_BALANCING_LOW_VOLTAGE 3.9
 
 
 #define TOP_CELL VCELL9_HI
 #define TOP_CELL_CB_ADDR CB_CELL9_CTRL 
-#define NUM_GPIO_CHANNELS 4
+
+// Must be defined by each board (maps mux setting + GPIO channel -> cell index)
+extern uint8_t CHANNEL_GPIO_TO_CELL_MAP[4][NUM_GPIO_CHANNELS];
 
 bool autoAddr();
 bool enableMainADC();
@@ -374,7 +380,7 @@ void BMBInit();
 uint8_t pollAllVoltageData();
 void pollAllTemperatureData(int channel);
 
-bool cellBalancingSetup();
+void cellBalancingSetup();
 void cellBalancing(bool set, uint16_t thresh);
 void writeLED(bool set);
 
