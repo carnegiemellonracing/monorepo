@@ -15,7 +15,7 @@
 #include <CMR/tasks.h>  // Task interface
 
 #include "adc.h"
-#include "bq_interface.h"
+#include "BMB_task.h"
 #include "can.h"
 #include "data.h"
 #include "dwt.h"
@@ -27,11 +27,9 @@ static const uint32_t status_LED_priority = 2;
 
 /** @brief Status LED period (milliseconds). */
 static const TickType_t status_LED_period_ms = 250;
-static const TickType_t post_ms_monitor_read_period_ms = 10;
 
 /** @brief Status LED task. */
 static cmr_task_t status_LED_task;
-static cmr_task_t post_ms_monitor_task;
 
 /**
  * @brief Task for toggling the status LED.

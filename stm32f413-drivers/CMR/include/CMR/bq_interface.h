@@ -378,6 +378,8 @@ bool cellBalancingSetup();
 void cellBalancing(bool set, uint16_t thresh);
 void writeLED(bool set);
 
+int16_t calculateTempVoltageReading(uint8_t msb, uint8_t lsb);
+
 int getBalDone();
 
 #endif /* BQ_INTERFACE_H_ */

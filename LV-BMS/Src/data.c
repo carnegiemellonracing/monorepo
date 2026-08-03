@@ -14,7 +14,7 @@
 #include <string.h>
 
 #include "adc.h"
-#include "bq_interface.h"
+#include "BMB_task.h"
 #include "can.h"
 #include "dwt.h"
 #include "gpio.h"
@@ -34,11 +34,20 @@ static cmr_task_t sampleTask;
 
 uint16_t cellVoltages[CELL_NUM];
 uint16_t cellTemps[CELL_NUM];
-extern BMB_Data_t BMBData; 
+extern BMB_Data_t BMSData[BMB_NUM];
+volatile int BMBTimeoutCount[BMB_NUM];
+volatile int BMBErrs[BMB_NUM];
 signed char offset_corr[CELL_NUM];
 signed char gain_corr[CELL_NUM];
 unsigned int vref_corr;
 uint16_t adc_sensen;
+
+// CHANNEL_GPIO_TO_CELL_MAP[i][j] yields the corresponding cell number for
+// ith mux setting and the jth GPIO channel. We choose to zero index the cell nums
+uint8_t CHANNEL_GPIO_TO_CELL_MAP [4][NUM_GPIO_CHANNELS] = {{0, 4},
+                                                            {1, 5},
+                                                            {2, 6},
+                                                            {3, 255}};
 
 bool setup = false;
 
@@ -189,10 +198,10 @@ void sendCurrent(void) {
 }
 
 uint16_t getMinVoltage(void){
-    uint16_t min = BMBData.cellVoltages[0];  
+    uint16_t min = BMSData[0].cellVoltages[0];
     for(int i = 1; i<CELL_NUM; i++){
-        if(BMBData.cellVoltages[i] < min){
-            min = BMBData.cellVoltages[i]; 
+        if(BMSData[0].cellVoltages[i] < min){
+            min = BMSData[0].cellVoltages[i];
         }
     }
     return min; 

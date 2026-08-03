@@ -12,13 +12,13 @@
  */
 
 #include <string.h>     // memcpy()
-#include <stm32f4xx_hal_can.h> // HAL interface
+#include <stm32f4xx_hal.h> // HAL interface
 #include <CMR/tasks.h>  // Task interface
 
 #include "adc.h"
 #include "can.h"
 #include "data.h"
-#include "bq_interface.h"
+#include "BMB_task.h"
 // INTERFACES
 
 

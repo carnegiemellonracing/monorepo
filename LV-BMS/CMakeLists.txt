@@ -115,8 +115,8 @@ link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 add_executable(${CMAKE_PROJECT_NAME}
     # Project sources
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/adc.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/bq_interface.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/can.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../stm32f413-drivers/CMR/src/bq_interface.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/crc.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/dwt.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c

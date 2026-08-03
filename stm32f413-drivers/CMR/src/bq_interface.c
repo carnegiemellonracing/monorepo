@@ -12,7 +12,7 @@
 #include <CMR/gpio.h>    
 #include <CMR/uart.h>
 
-#include "bq_interface.h"
+#include <CMR/bq_interface.h>
 #include "dwt.h"
 #include "gpio.h"
 #include "uart.h"
@@ -366,7 +366,7 @@ bool setMuxOutput(uint8_t channel) {
  * values for the hottest and coldest cells. The transfer function should be 
  * on PCAN to convert to temperature for easy viewing.
  */
-static int16_t calculateTempVoltageReading(uint8_t msb, uint8_t lsb) {
+int16_t calculateTempVoltageReading(uint8_t msb, uint8_t lsb) {
 	int16_t voltage_mv = (uint16_t)((0.15259) * (((int16_t) msb << 8) | lsb));
   return (voltage_mv);
 }
