@@ -35,13 +35,8 @@ TickType_t bms_start_time;
  * @note Indexed by `canRX_t`.
  */
 cmr_canRXMeta_t canRXMeta[] = {
-    [CANRX_HEARTBEAT_VSM] = { //not needed? 
+    [CANRX_HEARTBEAT_VSM] = {
         .canID = CMR_CANID_HEARTBEAT_VSM,
-        .timeoutError_ms = 2500,
-        .timeoutWarn_ms = 25
-    },
-    [CANRX_HVC_COMMAND] = {
-        .canID = CMR_CANID_HVC_COMMAND,
         .timeoutError_ms = 2500,
         .timeoutWarn_ms = 25
     },
