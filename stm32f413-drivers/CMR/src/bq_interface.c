@@ -701,7 +701,14 @@ void pollAllTemperatureData(int channel) {
 
 	for(uint8_t i = 0; i < BMB_NUM; i++) {
 		for(uint8_t k = 0; k < NUM_GPIO_CHANNELS; k++) {
-			uint8_t cellNum = CHANNEL_GPIO_TO_CELL_MAP[channel][k];
+			uint8_t cellNum;
+			if (HV_BMS) {
+				cellNum = HV_CHANNEL_GPIO_TO_CELL_MAP[channel][k];
+			}
+			else if (LV_BMS) {
+				cellNum = LV_CHANNEL_GPIO_TO_CELL_MAP[channel][k];
+			}
+			
 			if (cellNum == 255)
 					continue;
 

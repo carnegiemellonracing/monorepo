@@ -42,13 +42,6 @@ signed char gain_corr[CELL_NUM];
 unsigned int vref_corr;
 uint16_t adc_sensen;
 
-// CHANNEL_GPIO_TO_CELL_MAP[i][j] yields the corresponding cell number for
-// ith mux setting and the jth GPIO channel. We choose to zero index the cell nums
-uint8_t CHANNEL_GPIO_TO_CELL_MAP [4][NUM_GPIO_CHANNELS] = {{0, 4},
-                                                            {1, 5},
-                                                            {2, 6},
-                                                            {3, 255}};
-
 bool setup = false;
 
 uint16_t getTempData(uint8_t index) {

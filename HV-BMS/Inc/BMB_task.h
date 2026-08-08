@@ -35,6 +35,8 @@
 #define BMS_WRITE STACK_WRITE
 #define HV_BMS true
 
+#define NUM_GPIO_CHANNELS 4
+
 typedef struct BMB_Data_t{
     uint16_t cellVoltages[CELL_NUM];
     int16_t cellTemperaturesVoltageReading[TEMP_CHANNELS];
