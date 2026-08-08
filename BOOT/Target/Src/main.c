@@ -40,6 +40,8 @@
 ****************************************************************************************/
 int main(void)
 {
+  /* Validate the bootloader config. This will panic on fail */
+  ValidateConfig();
   /* initialize the microcontroller */
   Init();
   /* initialize the bootloader */

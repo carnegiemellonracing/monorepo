@@ -4,6 +4,20 @@
 
 __attribute__((section(".board_info")))
 const board_info_t board_info = {
+    .magic = BOARD_INFO_MAGIC,
     .version = GIT_INFO,
-    .board_id = @BOARD_ID@
+    .board_id = @BOARD_ID@,
+    .can_bus_num = @CAN_BUS_NUM@,
+    .led_pin = {
+        .port = @LED_PORT@,
+        .pin = @LED_PIN@,
+    },
+    .can_tx_pin = {
+        .port = @CAN_TX_PORT@,
+        .pin = @CAN_TX_PIN@,
+    },
+    .can_rx_pin = {
+        .port = @CAN_RX_PORT@,
+        .pin = @CAN_RX_PIN@,
+    }
 };

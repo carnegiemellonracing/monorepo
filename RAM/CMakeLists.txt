@@ -87,10 +87,15 @@ set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "" FORCE)
 
 
 # Setup the board id based on our project name
-string(MD5 _name_md5 "${PROJECT_NAME}")
-string(SUBSTRING "${_name_md5}" 0 8 _name_hash_hex)
-math(EXPR BOARD_ID "0x${_name_hash_hex}" OUTPUT_FORMAT DECIMAL)
-
+set(BOARD_ID 0x01)
+set(LED_PORT GPIOB)
+set(LED_PIN GPIO_PIN_14)
+# ! This is 0 indexed!!!!!!! So CAN1 = 0, CAN2 = 1, CAN3 = 2
+set(CAN_BUS_NUM CAN2)
+set(CAN_TX_PORT GPIOB)
+set(CAN_TX_PIN GPIO_PIN_4)
+set(CAN_RX_PORT GPIOA)
+set(CAN_RX_PIN GPIO_PIN_8)
 set(BOARD_INFO_IN  "${CMAKE_CURRENT_SOURCE_DIR}/Src/board_info.c.in")
 set(BOARD_INFO_OUT "${CMAKE_CURRENT_BINARY_DIR}/Src/board_info.c")
 

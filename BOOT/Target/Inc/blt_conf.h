@@ -29,6 +29,7 @@
 
 // include can configs and types
 #include <cmr/can_ids.h>
+#include <cmr/board_info.h>
 
 /****************************************************************************************
 *   C P U   D R I V E R   C O N F I G U R A T I O N
@@ -128,7 +129,7 @@
 #endif
 
 /** \brief Select the desired CAN peripheral as a zero based index. */
-#define BOOT_COM_CAN_CHANNEL_INDEX      (0)
+#define BOOT_COM_CAN_CHANNEL_INDEX      ()
 
 /* The USB communication interface is selected by setting the BOOT_COM_USB_ENABLE
  * configurable to 1.

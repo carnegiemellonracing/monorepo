@@ -6,7 +6,12 @@
 #include "can.h"
 #include "clock.h"
 #include <cmr/remote_boot.h>
+#include <cmr/board_info.h>
 
+void ValidateConfig(void)
+{
+    cmr_validateBoardInfo();
+} /*** end of ValidateConfig ***/
 
 /************************************************************************************//**
 ** \brief     Initializes the microcontroller.
