@@ -452,6 +452,7 @@ static void canRX(
  */
 void canInit(void) {
     // VEH-CAN (CAN3) initialization.
+    // ! If you change VEH-CAN then update the Cmakelists file for the auto-generated board_info.c
     cmr_canInit(
         &can[CMR_CAN_BUS_VEH], CAN3,
         CMR_CAN_BITRATE_500K,

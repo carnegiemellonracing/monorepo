@@ -20,6 +20,7 @@ void cmr_remoteBootInit(void);
 void cmr_requestRemoteFlash(void);
 bool cmr_requestedRemoteFlash(void);
 void cmr_resetRemoteFlash(void);
+inline void cmr_checkMsgForRemoteFlash(uint32_t canID, uint8_t data[8]);
 
 #endif /* CMR_REMOTE_BOOT_H */
 

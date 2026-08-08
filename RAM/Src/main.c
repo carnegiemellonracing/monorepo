@@ -12,6 +12,7 @@
 #include <CMR/can.h>    // CAN interface
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
+#include <CMR/remote_boot.h>  // Task interface
 
 #include "parser.h" // JSON configuration
 #include "sample.h" // CBOR encoding
@@ -61,6 +62,7 @@ int main(void) {
     // System initialization.
     HAL_Init();
     cmr_rccSystemClockEnable();
+    cmr_remoteBootInit();
 
     // Peripheral configuration.
     //uartInit();

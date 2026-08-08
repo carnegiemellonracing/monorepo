@@ -91,7 +91,7 @@ set(BOARD_ID 0x01)
 set(LED_PORT GPIOB)
 set(LED_PIN GPIO_PIN_14)
 # ! This is 0 indexed!!!!!!! So CAN1 = 0, CAN2 = 1, CAN3 = 2
-set(CAN_BUS_NUM CAN2)
+set(CAN_BUS_NUM 2)
 set(CAN_TX_PORT GPIOB)
 set(CAN_TX_PIN GPIO_PIN_4)
 set(CAN_RX_PORT GPIOA)

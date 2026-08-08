@@ -57,67 +57,32 @@ set(link_LIBS
 set(TARGET_MCU "STM32F413" CACHE STRING "Target MCU: STM32F413 or STM32H725")
 message("MCU target: " ${TARGET_MCU})
 
-if(TARGET_MCU STREQUAL "STM32F413")
-    # Processor configuration for stm32f413-drivers
-    set(PROCESSOR F413)
-    set(PROCESSOR_FAM F4XX)
+# Processor configuration for stm32f413-drivers
+set(PROCESSOR F413)
+set(PROCESSOR_FAM F4XX)
 
-    # Core MCU flags, CPU type, instruction set and FPU setup
-    set(cpu_PARAMS
-        -mcpu=cortex-m4
-        -mthumb
-        -mfpu=fpv4-sp-d16
-        -mfloat-abi=hard
-    )
+# Core MCU flags, CPU type, instruction set and FPU setup
+set(cpu_PARAMS
+    -mcpu=cortex-m4
+    -mthumb
+    -mfpu=fpv4-sp-d16
+    -mfloat-abi=hard
+)
 
-    # STM32F413 linker script
-    set(linker_script_SRC "${CMAKE_CURRENT_SOURCE_FLASH_DIR}/stm32f413rgtx_FLASH.ld")
+# STM32F413 linker script
+set(linker_script_SRC "${CMAKE_CURRENT_SOURCE_FLASH_DIR}/stm32f413rgtx_FLASH.ld")
 
-    # STM32F413 specific symbols
-    set(symbols_SYMB
-        F413
-        USE_FULL_LL_DRIVER
-        USE_HAL_DRIVER
-        STM32F413xx
-        "__weak=__attribute__((weak))"
-        "__packed=__attribute__((__packed__))"
-    )
+# STM32F413 specific symbols
+set(symbols_SYMB
+    F413
+    USE_FULL_LL_DRIVER
+    USE_HAL_DRIVER
+    STM32F413xx
+    "__weak=__attribute__((weak))"
+    "__packed=__attribute__((__packed__))"
+)
 
-    set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "" FORCE)
-elseif(TARGET_MCU STREQUAL "STM32H725")
-    # Processor configuration for stm32h725-drivers
-    set(PROCESSOR H725)
-    set(PROCESSOR_FAM H7XX)
-
-    # Core MCU flags, CPU type, instruction set and FPU setup
-    set(cpu_PARAMS
-
-        # Other parameters
-        # -mcpu, -mfloat, -mfloat-abi, ...
-        -mcpu=cortex-m4
-        -mthumb
-        -mfpu=fpv4-sp-d16
-        -mfloat-abi=hard
-
-    )
-
-    # STM32H725 linker script
-    set(linker_script_SRC "${CMAKE_CURRENT_SOURCE_FLASH_DIR}/STM32H725ZGTX_FLASH.ld")
-
-    # STM32H725 specific symbols
-    set(symbols_SYMB
-        H725
-        USE_FULL_LL_DRIVER
-        USE_HAL_DRIVER
-        STM32H725xx
-        "__weak=__attribute__((weak))"
-        "__packed=__attribute__((__packed__))"
-    )
-
-    set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "" FORCE)
-else()
-    message(FATAL_ERROR "Unknown TARGET_MCU: ${TARGET_MCU}. Must be STM32F413 or STM32H725.")
-endif()
+set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "" FORCE)
 
 
 # ---------------------------------------------------------------------------
@@ -139,27 +104,12 @@ file(GLOB core_SRCS         "${OPENBLT_ROOT}/*.c")
 # ---------------------------------------------------------------------------
 # BOARD Specific Sources 
 # ---------------------------------------------------------------------------
-if(TARGET_MCU STREQUAL "STM32F413")
-    # ARMCM4 for openblt
-    file(GLOB port_SRCS
-        "${OPENBLT_ROOT}/ARMCM4_STM32F4/*.c"
-        "${OPENBLT_ROOT}/ARMCM4_STM32F4/GCC/*.c"
-    )
+# ARMCM4 for openblt
+file(GLOB port_SRCS
+    "${OPENBLT_ROOT}/ARMCM4_STM32F4/*.c"
+    "${OPENBLT_ROOT}/ARMCM4_STM32F4/GCC/*.c"
+)
 
-    # Now exclude non-F413 sources
-    list(FILTER local_SRCS EXCLUDE REGEX "stm32h7")
-elseif(TARGET_MCU STREQUAL "STM32H725")
-    # ARMCM7 for openblt
-    file(GLOB port_SRCS
-        "${OPENBLT_ROOT}/ARMCM7_STM32H7/*.c"
-        "${OPENBLT_ROOT}/ARMCM7_STM32H7/GCC/*.c"
-    )
-
-    # Now exclude non-H725 sources
-    list(FILTER local_SRCS EXCLUDE REGEX "stm32f4")
-else()
-    message(FATAL_ERROR "Unknown TARGET_MCU: ${TARGET_MCU}. Must be STM32F413 or STM32H725.")
-endif()
 
 set(sources_SRCS
     ${local_SRCS}
@@ -185,21 +135,11 @@ set(include_asm_DIRS)
 # ---------------------------------------------------------------------------
 # BOARD Specific Includes 
 # ---------------------------------------------------------------------------
-if(TARGET_MCU STREQUAL "STM32F413")
-    list(APPEND include_DIRS
-        # OpenBLT board specific
-        ${OPENBLT_ROOT}/ARMCM4_STM32F4
-        ${OPENBLT_ROOT}/ARMCM4_STM32F4/GCC
-    )
-elseif(TARGET_MCU STREQUAL "STM32H725")
-    list(APPEND include_DIRS
-        # OpenBLT board specific
-        ${OPENBLT_ROOT}/ARMCM7_STM32H7
-        ${OPENBLT_ROOT}/ARMCM7_STM32H7/GCC
-    )
-else()
-    message(FATAL_ERROR "Unknown TARGET_MCU: ${TARGET_MCU}. Must be STM32F413 or STM32H725.")
-endif()
+list(APPEND include_DIRS
+    # OpenBLT board specific
+    ${OPENBLT_ROOT}/ARMCM4_STM32F4
+    ${OPENBLT_ROOT}/ARMCM4_STM32F4/GCC
+)
 
 
 # Link directories and names of libraries

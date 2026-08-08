@@ -20,6 +20,7 @@
  * @see `stm32f4xx_hal_gpio.h` for various initialization values.
  */
 static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
+    // ! If you change Status LED then update the Cmakelists file for the auto-generated board_info.c
     [GPIO_LED_STATUS] = {
         .port = GPIOB,
         .init = {

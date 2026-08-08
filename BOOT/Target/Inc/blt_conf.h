@@ -129,7 +129,7 @@
 #endif
 
 /** \brief Select the desired CAN peripheral as a zero based index. */
-#define BOOT_COM_CAN_CHANNEL_INDEX      ()
+#define BOOT_COM_CAN_CHANNEL_INDEX      (cmr_getBootLoaderCanBusNum())
 
 /* The USB communication interface is selected by setting the BOOT_COM_USB_ENABLE
  * configurable to 1.

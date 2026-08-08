@@ -15,6 +15,7 @@
 #include "CMR/rcc.h"    // cmr_rccCANClockEnable(), cmr_rccGPIOClockEnable()
 #include "CMR/panic.h"  // cmr_panic()
 #include "CMR/can_ids.h"
+#include "CMR/remote_boot.h"
 
 /**
  * @brief Gets the corresponding CAN interface from the HAL handle.
@@ -230,10 +231,8 @@ static void cmr_canRXPendingCallback(CAN_HandleTypeDef *handle, uint32_t fifo) {
     }
 
 
-    // handle flash reset for all can messages
-    if(msg.StdId == CMR_CANID_BOOTLOADER_FLASH_READY){
-        NVIC_SystemReset();
-    }
+    // handle flash reset for all can messages. This is inlined for performance
+    cmr_checkMsgForRemoteFlash(msg.StdId, data);
 
     cmr_can_t *can = cmr_canFromHandle(handle);
     cmr_canRXData(can, msg.StdId, data, msg.DLC);
