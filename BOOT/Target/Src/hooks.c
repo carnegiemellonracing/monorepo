@@ -219,7 +219,10 @@ blt_bool NvmDoneHook(void)
 ****************************************************************************************/
 blt_bool NvmVerifyChecksumHook(void)
 {
-  return BLT_TRUE;
+  if(cmr_validBoardInfo()) {
+    return BLT_TRUE;
+  }
+  return BLT_FALSE;
 } /*** end of NvmVerifyChecksum ***/
 
 

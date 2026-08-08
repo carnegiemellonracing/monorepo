@@ -234,7 +234,7 @@
  */
 #define BOOT_NVM_SIZE_KB                (128)
 /** \brief Enable/disable hooks functions to override the user program checksum handling. */
-#define BOOT_NVM_CHECKSUM_HOOKS_ENABLE  (0)
+#define BOOT_NVM_CHECKSUM_HOOKS_ENABLE  (1)
 
 
 /****************************************************************************************
