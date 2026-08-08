@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "openblt.h"
+#include "candriver.h"
 #include "common.h"
 #include "cmd_flash_board.h"
 
@@ -45,8 +46,9 @@ static tBltTransportSettingsXcpV10Can g_transportSettings;
 * Function prototypes
 ****************************************************************************************/
 static int  LoadFirmware(char const * firmwareFile);
-static tBltSessionSettingsXcpV10 BuildSessionSettings(void);
+static tBltSessionSettingsXcpV10 BuildSessionSettings(uint8_t board_id);
 static tBltTransportSettingsXcpV10Can BuildTransportSettings(tFlashBoardSettings settings);
+static int  ResetTarget(void);
 static int  ConnectToTarget(void);
 static int  CheckInfoTable(void);
 static int  EraseSegments(void);
@@ -68,6 +70,7 @@ void CmdFlashBoardPrintUsage(void)
   printf("  -f, --file=[path]      Path to the firmware file to flash (Mandatory).\n");
   printf("  -d, --device=[name]    Name of the CAN device to use, e.g. peak_pcanusb\n");
   printf("                         or can0 (Default = %s).\n", CAN_DEFAULT_DEVICE);
+  printf("  -i, --board_id=[value] ID of the board to flash\n");
   printf("  -c, --channel=[value]  Zero based index of the CAN channel to use, for\n");
   printf("                         adapters with multiple channels (Default = %u).\n",
          (unsigned int)CAN_DEFAULT_CHANNEL);
@@ -95,6 +98,7 @@ int CmdFlashBoardParse(int argc, char * const argv[])
     { "file",    required_argument, NULL, 'f' },
     { "device",  required_argument, NULL, 'd' },
     { "channel", required_argument, NULL, 'c' },
+    { "board_id", required_argument, NULL, 'i' },
     { "help",    no_argument,       NULL, 'h' },
     { NULL,      0,                 NULL,  0  }
   };
@@ -106,7 +110,7 @@ int CmdFlashBoardParse(int argc, char * const argv[])
 
   /* Reset getopt's global state so it can be reused across subcommands. */
   optind = 1;
-  while ((opt = getopt_long(argc, argv, "f:d:c:h", longOptions, &longIndex)) != -1)
+  while ((opt = getopt_long(argc, argv, "f:d:c:h:i", longOptions, &longIndex)) != -1)
   {
     switch (opt)
     {
@@ -118,6 +122,9 @@ int CmdFlashBoardParse(int argc, char * const argv[])
       break;
     case 'c':
       g_flashBoardSettings.canChannel = (uint32_t)strtoul(optarg, NULL, 10);
+      break;   
+    case 'i':
+      g_flashBoardSettings.board_id = (uint8_t)strtoul(optarg, NULL, 10);
       break;
     case 'h':
       CmdFlashBoardPrintUsage();
@@ -148,23 +155,29 @@ int CmdFlashBoardParse(int argc, char * const argv[])
 ** \param     settings Pointer to the previously parsed settings.
 ** \return    RESULT_OK on success, error code otherwise.
 ****************************************************************************************/
-int CmdFlashBoardRun(tFlashBoardSettings settings)
+int CmdFlashBoardRun()
 {
   int result;
 
   CommonDisplayProgramInfo();
-  printf("Firmware file:  %s\n", settings.firmwareFile);
-  printf("CAN device:     %s (channel %u)\n", settings.canDevice,
-         (unsigned int)settings.canChannel);
+  printf("Firmware file:  %s\n", g_flashBoardSettings.firmwareFile);
+  printf("CAN device:     %s (channel %u)\n", g_flashBoardSettings.canDevice,
+         (unsigned int)g_flashBoardSettings.canChannel);
   printf("CAN baudrate:   %u bit/sec\n\n", (unsigned int)CAN_BAUDRATE);
 
-  result = LoadFirmware(settings.firmwareFile);
+  result = LoadFirmware(g_flashBoardSettings.firmwareFile);
 
   if (result == RESULT_OK)
   {
-    g_sessionSettings = BuildSessionSettings();
-    g_transportSettings = BuildTransportSettings(settings);
-    result = ConnectToTarget();
+    g_sessionSettings = BuildSessionSettings(g_flashBoardSettings.board_id);
+    g_transportSettings = BuildTransportSettings(g_flashBoardSettings);
+
+    result = ResetTarget();
+    if( result == RESULT_OK)
+    {
+      BltUtilTimeDelayMs(10);
+      result = ConnectToTarget();
+    }
   }
 
   if (result == RESULT_OK)
@@ -229,9 +242,10 @@ static int LoadFirmware(char const * firmwareFile)
 
 /************************************************************************************//**
 ** \brief     Builds the XCP version 1.0 session settings from fixed defaults.
+** \param     board_id The ID of the board for which to build the settings.
 ** \return    The populated session settings structure.
 ****************************************************************************************/
-static tBltSessionSettingsXcpV10 BuildSessionSettings(void)
+static tBltSessionSettingsXcpV10 BuildSessionSettings(uint8_t board_id)
 {
   tBltSessionSettingsXcpV10 sessionSettings;
 
@@ -242,7 +256,7 @@ static tBltSessionSettingsXcpV10 BuildSessionSettings(void)
   sessionSettings.timeoutT6 = XCP_TIMEOUT_T6_MS;
   sessionSettings.timeoutT7 = XCP_TIMEOUT_T7_MS;
   sessionSettings.seedKeyFile = NULL;
-  sessionSettings.connectMode = XCP_CONNECT_MODE;
+  sessionSettings.connectMode = board_id;
 
   return sessionSettings;
 } /*** end of BuildSessionSettings ***/
@@ -271,6 +285,126 @@ static tBltTransportSettingsXcpV10Can BuildTransportSettings(tFlashBoardSettings
 } /*** end of BuildTransportSettings ***/
 
 
+static int ResetTarget(void)
+{
+  tCanSettings canSettings;
+
+  canSettings.devicename = g_transportSettings.deviceName;
+  canSettings.channel = g_transportSettings.deviceChannel;
+  switch (g_transportSettings.baudrate)
+  {
+    case 1000000:
+      canSettings.baudrate = CAN_BR1M;
+      break;
+    case 800000:
+      canSettings.baudrate = CAN_BR800K;
+      break;
+    case 500000:
+      canSettings.baudrate = CAN_BR500K;
+      break;
+    case 250000:
+      canSettings.baudrate = CAN_BR250K;
+      break;
+    case 125000:
+      canSettings.baudrate = CAN_BR125K;
+      break;
+    case 100000:
+      canSettings.baudrate = CAN_BR100K;
+      break;
+    case 50000:
+      canSettings.baudrate = CAN_BR50K;
+      break;
+    case 20000:
+      canSettings.baudrate = CAN_BR20K;
+      break;
+    case 10000:
+      canSettings.baudrate = CAN_BR10K;
+      break;
+    default:
+      /* Default to 500 kbits/sec in case an unsupported baudrate was specified. */
+      canSettings.baudrate = CAN_BR500K;
+      break;
+  }
+  /* Configure the reception acceptance filter to receive only one CAN identifier. */
+  canSettings.code = g_transportSettings.receiveId;
+  if (g_transportSettings.useExtended)
+  {
+    canSettings.code |= CAN_MSG_EXT_ID_MASK;
+  }
+  canSettings.mask = 0x9fffffff;
+  switch (g_transportSettings.brsBaudrate)
+  {
+  case 8000000:
+    canSettings.brsbaudrate = CANFD_BR8M;
+    break;
+  case 5000000:
+    canSettings.brsbaudrate = CANFD_BR5M;
+    break;
+  case 4000000:
+    canSettings.brsbaudrate = CANFD_BR4M;
+    break;
+  case 2000000:
+    canSettings.brsbaudrate = CANFD_BR2M;
+    break;
+  case 1000000:
+    canSettings.brsbaudrate = CANFD_BR1M;
+    break;
+  case 800000:
+    canSettings.brsbaudrate = CANFD_BR800K;
+    break;
+  case 500000:
+    canSettings.brsbaudrate = CANFD_BR500K;
+    break;
+  case 250000:
+    canSettings.brsbaudrate = CANFD_BR250K;
+    break;
+  case 125000:
+    canSettings.brsbaudrate = CANFD_BR125K;
+    break;
+  case 100000:
+    canSettings.brsbaudrate = CANFD_BR100K;
+    break;
+  case 50000:
+    canSettings.brsbaudrate = CANFD_BR50K;
+    break;
+  case 20000:
+    canSettings.brsbaudrate = CANFD_BR20K;
+    break;
+  case 10000:
+    canSettings.brsbaudrate = CANFD_BR10K;
+    break;
+  default:
+    /* Default to CAN FD unused in case an unsupported baudrate was specified. */
+    canSettings.brsbaudrate = CANFD_DISABLED;
+    break;
+  }
+
+  /* Initialize the CAN driver. */
+  CanInit(&canSettings);
+  bool result = CanConnect();
+  if (!result)
+  {
+    printf("%s\n", CommonGetTrailerByResult(TRAILER_RESULT_ERROR));
+    return RESULT_ERROR_SESSION_START;
+  }
+
+  printf("Resetting target..."); (void)fflush(stdout);
+
+  tCanMsg msg = {
+    .id = CMR_CANID_BOOTLOADER_FLASH_READY,
+    .len = 1,
+    .data = {g_flashBoardSettings.board_id},
+  };
+  result = CanTransmit(&msg);
+
+  printf("%s\n", CommonGetTrailerByResult(
+    (result) ? TRAILER_RESULT_OK : TRAILER_RESULT_ERROR));
+
+
+  CanDisconnect();
+  return RESULT_OK;
+} /*** end of ResetTarget ***/
+
 /************************************************************************************//**
 ** \brief     Initializes and starts an XCP on CAN session with the target, falling
 **            back to backdoor entry retries if the target does not respond right away.
@@ -288,7 +422,6 @@ static int ConnectToTarget(void)
   if (BltSessionStart() != BLT_RESULT_OK)
   {
     printf("[" OUTPUT_YELLOW "TIMEOUT" OUTPUT_RESET "]\n");
-    printf("Attempting backdoor entry (reset system if this takes too long)...");
     (void)fflush(stdout);
     while (BltSessionStart() != BLT_RESULT_OK)
     {

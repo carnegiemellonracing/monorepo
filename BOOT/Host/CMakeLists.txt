@@ -23,6 +23,8 @@ set(OPENBLT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../openblt/")
 set(LIBOPENBLT_INC ${OPENBLT_ROOT}/Host/Source/LibOpenBLT/)
 set(LIBOPENBLT_CMAKE_DIR ${OPENBLT_ROOT}/Host/Source/LibOpenBLT)
 
+set(CMR_DRIVERS "${CMAKE_CURRENT_SOURCE_DIR}/../../stm32f413-drivers/CMR")
+
 # Build OpenBLT as a static library from this project.
 set(BUILD_SHARED OFF CACHE BOOL "Disable shared OpenBLT library" FORCE)
 set(BUILD_STATIC ON CACHE BOOL "Enable static OpenBLT library" FORCE)
@@ -67,7 +69,7 @@ endif(WIN32)
 # Includes
 #****************************************************************************************
 # Set include directories
-include_directories("${PROJECT_SOURCE_DIR}/Inc" "${LIBOPENBLT_INC}")
+include_directories("${PROJECT_SOURCE_DIR}/Inc" "${LIBOPENBLT_INC}" "${CMR_DRIVERS}/include")
 
 
 #***************************************************************************************

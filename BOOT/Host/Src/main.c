@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "common.h"
-#include "cmd_flash_bootloader.h"
 #include "cmd_flash_board.h"
 
 
@@ -44,20 +43,12 @@ int main(int argc, char * argv[])
   int subArgc = argc - 1;
   char * const * subArgv = &argv[1];
 
-  if (strcmp(argv[1], "flash-bootloader") == 0)
-  {
-    result = CmdFlashBootloaderParse(subArgc, subArgv);
-    if (result == RESULT_OK)
-    {
-      result = CmdFlashBootloaderRun(g_flashBootloaderSettings);
-    }
-  }
-  else if (strcmp(argv[1], "flash-board") == 0)
+  if (strcmp(argv[1], "flash-board") == 0)
   {
     result = CmdFlashBoardParse(subArgc, subArgv);
     if (result == RESULT_OK)
     {
-      result = CmdFlashBoardRun(g_flashBoardSettings);
+      result = CmdFlashBoardRun();
     }
   }
   else if ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "--help") == 0))
@@ -84,7 +75,6 @@ static void PrintTopLevelUsage(void)
   printf("Usage:    blt-flash <command> [options]\n");
   printf("\n");
   printf("Commands:\n");
-  printf("  flash-bootloader   Build and flash the OpenBLT bootloader itself.\n");
   printf("  flash-board        Flash application firmware via the bootloader (CAN).\n");
   printf("\n");
   printf("Run 'blt-flash <command> --help' for command specific options.\n");

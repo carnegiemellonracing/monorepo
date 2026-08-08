@@ -5,6 +5,8 @@
 #ifndef CAN_SETTINGS_H
 #define CAN_SETTINGS_H
 
+#include <CMR/can_ids.h>
+
 /****************************************************************************************
 * Macro definitions
 ****************************************************************************************/
@@ -17,9 +19,9 @@
 /** \brief CAN FD data phase baudrate in bits per second. 0 means CAN FD is disabled. */
 #define CAN_FD_DATA_BAUDRATE                     (0u)
 /** \brief CAN identifier used for transmitting XCP command messages, host to target. */
-#define CAN_XCP_TRANSMIT_ID                      (0x667u)
+#define CAN_XCP_TRANSMIT_ID                      (CMR_CANID_BOOTLOADER_FLASH_TX)
 /** \brief CAN identifier used for receiving XCP response messages, target to host. */
-#define CAN_XCP_RECEIVE_ID                       (0x7E1u)
+#define CAN_XCP_RECEIVE_ID                       (CMR_CANID_BOOTLOADER_FLASH_RX)
 /** \brief Whether 29-bit extended CAN identifiers should be used. */
 #define CAN_USE_EXTENDED_ID                      (false)
 
@@ -30,8 +32,6 @@
 #define XCP_TIMEOUT_T5_MS                        (1000u)
 #define XCP_TIMEOUT_T6_MS                        (50u)
 #define XCP_TIMEOUT_T7_MS                        (2000u)
-/** \brief Connection mode value sent in the XCP connect command. */
-#define XCP_CONNECT_MODE                         (0u)
 
 #endif /* CAN_SETTINGS_H */
 /******************************** end of can_settings.h **********************************/
