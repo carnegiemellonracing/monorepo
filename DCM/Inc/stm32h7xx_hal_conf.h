@@ -1,3 +1,5 @@
+//NOTE: Changes have been modeled from the stm32f4xx file in VSM
+
 /**
   ******************************************************************************
   * @file    stm32h7xx_hal_conf_template.h
@@ -464,7 +466,7 @@
 #endif /* HAL_MMC_MODULE_ENABLED */
 
 #ifdef HAL_PWR_MODULE_ENABLED
- #include "stm32h7xx_hal_pwr.h"
+ #include "stm32h4xx_hal_pwr.h"
 #endif
 
 //STM32-F413 Specific
