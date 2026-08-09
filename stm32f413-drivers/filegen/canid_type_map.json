@@ -11,9 +11,9 @@
             "type": "uint8_t"
         },
         "CMR_CANID_AS_MISSION_FINISHED": {
-            "cycleTime": 100,
-            "timeOut": 500,
-            "type": "missionFinished"
+            "cycleTime": 5,
+            "timeOut": 25,
+            "type": "asFinishedData"
         },
         "CMR_CANID_AS_PRESSURE_READINGS": {
             "cycleTime": 10,
@@ -472,17 +472,6 @@
                 "u": "V"
             }
         },
-        "CMR_CANID_EMD_MEASUREMENT_RETX": {
-            "current": {
-                "u": "A"
-            },
-            "cycleTime": 10.0,
-            "timeOut": 50,
-            "type": "cmr_canEMDMeasurements_t",
-            "voltage": {
-                "u": "V"
-            }
-        },
         "CMR_CANID_EMD_TEMPERATURE": {
             "cycleTime": 100,
             "timeOut": 500,
@@ -779,8 +768,8 @@
             "type": "cmr_canHVCPackCurrent_t"
         },
         "CMR_CANID_HV_SENSORS": {
-            "cycleTime": 100,
-            "timeOut": 500,
+            "cycleTime": 5,
+            "timeOut": 25,
             "type": "cmr_canHVSense_t"
         },
         "CMR_CANID_IVT_CURRENT": {
@@ -1028,20 +1017,20 @@
         "canrx_prefixes_used": [
             "CANRX_"
         ],
-        "files_processed": 2901,
-        "files_with_matches": 2901,
+        "files_processed": 2702,
+        "files_with_matches": 2702,
         "global_mappings": {
-            "canrx_mappings": 192,
-            "canrx_timeouts": 182,
-            "canrx_types": 65,
-            "constants": 267,
+            "canrx_mappings": 163,
+            "canrx_timeouts": 154,
+            "canrx_types": 66,
+            "constants": 268,
             "struct_members": 0,
-            "variable_types": 330
+            "variable_types": 323
         },
         "prefixes_used": [
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 111
+        "total_canids": 110
     }
 }

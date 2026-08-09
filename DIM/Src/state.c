@@ -38,18 +38,13 @@ volatile int8_t config_move_request;
 
 
 #define max(a,b) ((a) > (b) ? (a) : (b))
-
-#define min(a, b) __extension__\
-({ __typeof__ (a) _a = (a); \
-__typeof__ (b) _b = (b); \
-_a < _b ? _a : _b; })
-
+#define min(a,b) ((a) < (b) ? (a) : (b))
 #define NUM_DV_MODES 3
 #define POLE_PAIRS 4
 #define MOTOR_LEN 4
 
 /** @brief declaration of config screen variables */
-extern volatile bool flush_config_screen_to_cdc;
+volatile bool flush_config_screen_to_dcm;
 /** @brief declaration of config screen variables */
 volatile bool config_increment_up_requested = false;
 /** @brief declaration of config screen variables */
@@ -63,7 +58,9 @@ volatile bool in_config_screen = false;
 /** @brief declaration of what screen mode one is in */
 volatile bool in_racing_screen = false;
 /** @brief declaration of if the DIM is waiting for a new driver config */
-volatile bool waiting_for_cdc_new_driver_config;
+volatile bool waiting_for_dcm_new_driver_config;
+/** @brief declaration of if the DIM is waiting to confirm config */
+volatile bool waiting_for_dcm_to_confirm_config = false;
 /** @brief declaration of if the DIM is waiting for a new driver config */
 volatile bool exit_config_request = false;
 /** @brief Checks to see if the screen has been setup before and if not will appropriately draw it */
@@ -82,7 +79,7 @@ static volatile struct {
 	cmr_canState_t vsmReq;    /**< @brief Requested VSM state. */
 	cmr_canGear_t gear;       /**< @brief Current gear. */
 	cmr_canGear_t gearReq;    /**< @brief Requested gear. */
-	cmr_canDrsMode_t drsMode; /**< @brief Current DRS Mode. */
+	cmr_canCDCDRSStateEnum_t drsMode; /**< @brief Current DRS Mode. */
 	cmr_canDrsMode_t drsReq;  /**< @brief Requested DRS Mode. */
     cmr_canDVMode_t dvCtrlMode;
     cmr_canDVMode_t dvCtrlReq;
@@ -90,22 +87,22 @@ static volatile struct {
 	.vsmReq = CMR_CAN_GLV_ON,
 	.gear = CMR_CAN_GEAR_SLOW,
 	.gearReq = CMR_CAN_GEAR_SLOW,
-	.drsMode = CMR_CAN_DRSM_CLOSED,
+	.drsMode = CMR_CAN_DRS_STATE_CLOSED,
 	.drsReq = CMR_CAN_DRSM_CLOSED,
     .dvCtrlMode = CMR_CAN_DV_MODE_NORMAL,
     .dvCtrlReq = CMR_CAN_DV_MODE_NORMAL,
 };
 
 void exitConfigScreen() {
-	// the first time the user presses the exit button, it'll flush the memory to the cdc
+	// the first time the user presses the exit button, it'll flush the memory to the DCM
 	// the second time it'll exit the config screen because it'll be dependent having
-	// recieved the message from CDC
-	if (!flush_config_screen_to_cdc) {
-		flush_config_screen_to_cdc = true;
-		waiting_for_cdc_to_confirm_config = true;
+	// recieved the message from DCM
+	if (!flush_config_screen_to_dcm) {
+		flush_config_screen_to_dcm = true;
+		waiting_for_dcm_to_confirm_config = true;
 		return;
 	}
-	if (!waiting_for_cdc_to_confirm_config) {
+	if (!waiting_for_dcm_to_confirm_config) {
 		in_config_screen = false;
 		exit_config_request = false;
 		return;
@@ -152,18 +149,38 @@ cmr_canGear_t stateGetGearReq(void) {
 	return state.gearReq;
 }
 
-cmr_canDrsMode_t stateGetDrs(void) {
+/**
+ * @brief Gets the current DRS state.
+ *
+ * @return The current DRS state.
+ */
+cmr_canCDCDRSStateEnum_t stateGetDrs(void) {
 	return state.drsMode;
 }
 
+/**
+ * @brief Gets the requested DRS state.
+ *
+ * @return The requested DRS state.
+ */
 cmr_canDrsMode_t stateGetDrsReq(void) {
 	return state.drsReq;
 }
 
+/**
+ * @brief Gets the current DV state.
+ *
+ * @return The current DV state.
+ */
 cmr_canDVMode_t stateGetDVMode(void) {
 	return state.dvCtrlMode;
 }
 
+/**
+ * @brief Gets the requrested DV state.
+ *
+ * @return The requested DV state.
+ */
 cmr_canDVMode_t stateGetDVReq(void) {
 	return state.dvCtrlReq;
 }
@@ -194,8 +211,7 @@ uint8_t getSpeedKmh() {
  */
 float getOdometer() {
 	// volatile cmr_canCDCOdometer_t *odometer = (volatile cmr_canCDCOdometer_t *)getPayload(CANRX_CDC_ODOMETER);
-    cmr_canSensoricDist_t *sensoricDist = (cmr_canSensoricDist_t*)getPayload(CANRX_SENSORIC_DIST);
-    float sensoricDist_kmh = (float)(sensoricDist->dist_A) * 0.001f;
+    cmr_canSensoricDist_t *sensoricDist = (cmr_canSensoricDist_t*) getPayload(CANRX_SENSORIC_DIST);
 	return sensoricDist->dist_A;
 }
 
@@ -283,50 +299,16 @@ int getACTemp(void)
 	int32_t acTemp_C = (canHVCPackTemps->maxCellTemp_C) / 10;
 	return acTemp_C;
 }
+
+
 /**
- * @brief Gets the mc temperature.
+ * @brief Gets the DRS state
+ * true = open
+ * false = closed or other
  *
  * @param none
  *
- * @return mc temperature in celsius
- */
-// int getMCTemp(void)
-// {
-// 	/* Get CAN data */
-// 	// Front Left
-// 	cmr_canDTI_TX_TempFault_t *canDTI_FL_temp = getPayload(CANRX_DTI_FL_TEMPFAULT);
-
-// 	// Front Right
-// 	cmr_canDTI_TX_TempFault_t *canDTI_FR_temp = getPayload(CANRX_DTI_FR_TEMPFAULT);
-
-// 	// Rear Left
-// 	cmr_canDTI_TX_TempFault_t *canDTI_RL_temp = getPayload(CANRX_DTI_RL_TEMPFAULT);
-
-// 	// Rear Right
-// 	cmr_canDTI_TX_TempFault_t *canDTI_RR_temp = getPayload(CANRX_DTI_RR_TEMPFAULT);
-
-//     //TODO: does this need to be int32_t or int16_t?? and what is multiplied by 10?
-//     // is this controller temp?
-// 	int32_t frontLeftMCTemp = canDTI_FL_temp->ctlr_temp;
-// 	int32_t frontRightMCTemp = canDTI_FR_temp->ctlr_temp;
-// 	int32_t rearLeftMCTemp = canDTI_RL_temp->ctlr_temp;
-// 	int32_t rearRightMCTemp = canDTI_RR_temp->ctlr_temp;
-
-// 	/* Return highest motor temperature*/
-// 	int32_t maxTemp = frontLeftMCTemp;
-
-// 	maxTemp = max(max(max(maxTemp, frontRightMCTemp), rearLeftMCTemp), rearRightMCTemp);
-// 	return maxTemp / 10;
-// }
-
-/**
- * @brief Gets the door state
- * true = closed
- * false = open or other
- *
- * @param none
- *
- * @return door state as integer
+ * @return DRS state as integer
  */
 bool DRSOpen(void)
 {
@@ -359,7 +341,7 @@ static cmr_state getNextState(void) {
             }
             else if(!cmr_gpioRead(GPIO_CTRL_SWITCH) && (stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)) {
                 nextState = CONFIG;
-                flush_config_screen_to_cdc = false;
+                flush_config_screen_to_dcm = false;
             }
             else {
                 nextState = NORMAL;
@@ -368,7 +350,7 @@ static cmr_state getNextState(void) {
         case CONFIG:
             if(cmr_gpioRead(GPIO_CTRL_SWITCH)) {
                 nextState = NORMAL;
-                flush_config_screen_to_cdc = true;
+                flush_config_screen_to_dcm = true;
             }
             else if(buttonStates[LEFT].isPressed) {
                 //move left on screen
@@ -466,7 +448,7 @@ bool stateVSMReqIsValid(cmr_canState_t vsm, cmr_canState_t vsmReq) {
 
 
 void EABStateUp() {
-	cmr_canVSMState_t vsmState = stateGetVSM();
+	cmr_canState_t vsmState = stateGetVSM();
 	if(getEAB() && getASMS() && vsmState == CMR_CAN_GLV_ON) {
 		state.vsmReq = CMR_CAN_AS_READY;
 	}
@@ -617,11 +599,11 @@ void reqGear(void) {
 
 void reqDRS(void) {
     if(buttonStates[SW_RIGHT].isPressed) {
-        state.drsReq = CMR_CAN_DRS_STATE_OPEN;
+        state.drsReq = CMR_CAN_DRSM_OPEN;
         buttonStates[SW_RIGHT].isPressed = false; 
     }
     else {
-        state.drsReq = CMR_CAN_DRS_STATE_CLOSED;
+        state.drsReq = CMR_CAN_DRSM_CLOSED;
     }
 }
 
@@ -644,7 +626,8 @@ void stateGearUpdate(void) {
 }
 
 void stateDrsUpdate(void) {
-	state.drsMode = state.drsReq;
+	cmr_canCDCDRSStates_t *drsState = (cmr_canCDCDRSStates_t *) getPayload(CANRX_DRS_STATE);
+    state.drsMode = drsState->state;
 }
 
 void stateDVCtrlUpdate(void) {
@@ -729,27 +712,14 @@ static void stateMachine(void *pvParameters){
     (void)pvParameters;
     TickType_t lastWakeTime = xTaskGetTickCount();
     currState = INIT;
-    uint32_t test;
-    uint32_t space1 = 0;
     while (1) {
         // taskENTER_CRITICAL();
         currState = getNextState();
         // if(getASMS()) {
         //     // TODO: checks for brakes, dv system, etc
-        //     if(stateGetVSM() == CMR_CAN_GLV_ON) {
-        //         cmr_gpioWrite(GPIO_AS_RELAY, 0);
-        //     }
-        //     else {
-        //         cmr_gpioWrite(GPIO_AS_RELAY, 1);
-        //     }
         // }
-        // tftRead(&tft, TFT_ADDR_CMD_READ, sizeof(test), &test);
-        // test = test & 0x00000FFF;
-        // tftRead(&tft, TFT_ADDR_CMDB_SPACE, sizeof(space1), &space1);
-		/* for testing
-		vsmStateGlobal = stateGetVSM();
-		vsmStateGlobalReq = stateGetVSMReq();
-		*/
+		//vsmStateGlobal = stateGetVSM();
+		//vsmStateGlobalReq = stateGetVSMReq();
         // taskEXIT_CRITICAL();
 		vTaskDelayUntil(&lastWakeTime, stateMachine_period);
     }
