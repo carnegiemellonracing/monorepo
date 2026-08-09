@@ -204,16 +204,73 @@
 #define  USE_HAL_HRTIM_REGISTER_CALLBACKS       0U /* HRTIM register callback disabled     */
 #define  USE_HAL_MDIOS_REGISTER_CALLBACKS       0U /* MDIOS register callback disabled     */
 
-/* ########################### Ethernet Configuration ######################### */
-#define ETH_TX_DESC_CNT         4U  /* number of Ethernet Tx DMA descriptors */
-#define ETH_RX_DESC_CNT         4U  /* number of Ethernet Rx DMA descriptors */
+/* ################## Ethernet peripheral configuration ##################### */
 
-#define ETH_MAC_ADDR0    (0x02UL)
-#define ETH_MAC_ADDR1    (0x00UL)
-#define ETH_MAC_ADDR2    (0x00UL)
-#define ETH_MAC_ADDR3    (0x00UL)
-#define ETH_MAC_ADDR4    (0x00UL)
-#define ETH_MAC_ADDR5    (0x00UL)
+/* Section 1 : Ethernet peripheral configuration */
+
+/* MAC ADDRESS: MAC_ADDR0:MAC_ADDR1:MAC_ADDR2:MAC_ADDR3:MAC_ADDR4:MAC_ADDR5 */
+#define MAC_ADDR0   2U
+#define MAC_ADDR1   0U
+#define MAC_ADDR2   0U
+#define MAC_ADDR3   0U
+#define MAC_ADDR4   0U
+#define MAC_ADDR5   0U
+
+/* Definition of the Ethernet driver buffers size and count */
+#define ETH_RX_BUF_SIZE                ETH_MAX_PACKET_SIZE
+#define ETH_TX_BUF_SIZE                ETH_MAX_PACKET_SIZE
+#define ETH_RXBUFNB                    4U
+#define ETH_TXBUFNB                    4U
+
+/* Section 2: PHY configuration section */
+
+/* DP83848 PHY Address */
+#define DP83848_PHY_ADDRESS             0x01U
+
+/* PHY Reset delay these values are based on a 1 ms Systick interrupt */
+#define PHY_RESET_DELAY                 0x000000FFU
+
+/* PHY Configuration delay */
+#define PHY_CONFIG_DELAY                0x00000FFFU
+
+#define PHY_READ_TO                     0x0000FFFFU
+#define PHY_WRITE_TO                    0x0000FFFFU
+
+/* Section 3: Common PHY Registers */
+
+#define PHY_BCR                         ((uint16_t)0x0000)
+#define PHY_BSR                         ((uint16_t)0x0001)
+
+#define PHY_RESET                       ((uint16_t)0x8000)
+#define PHY_LOOPBACK                    ((uint16_t)0x4000)
+#define PHY_FULLDUPLEX_100M             ((uint16_t)0x2100)
+#define PHY_HALFDUPLEX_100M             ((uint16_t)0x2000)
+#define PHY_FULLDUPLEX_10M              ((uint16_t)0x0100)
+#define PHY_HALFDUPLEX_10M              ((uint16_t)0x0000)
+#define PHY_AUTONEGOTIATION             ((uint16_t)0x1000)
+#define PHY_RESTART_AUTONEGOTIATION     ((uint16_t)0x0200)
+#define PHY_POWERDOWN                   ((uint16_t)0x0800)
+#define PHY_ISOLATE                     ((uint16_t)0x0400)
+
+#define PHY_AUTONEGO_COMPLETE           ((uint16_t)0x0020)
+#define PHY_LINKED_STATUS               ((uint16_t)0x0004)
+#define PHY_JABBER_DETECTION            ((uint16_t)0x0002)
+
+/* Section 4: Extended PHY Registers */
+
+#define PHY_SR                          ((uint16_t)0x0010)
+#define PHY_MICR                        ((uint16_t)0x0011)
+#define PHY_MISR                        ((uint16_t)0x0012)
+
+#define PHY_LINK_STATUS                 ((uint16_t)0x0001)
+#define PHY_SPEED_STATUS                ((uint16_t)0x0002)
+#define PHY_DUPLEX_STATUS               ((uint16_t)0x0004)
+
+#define PHY_MICR_INT_EN                 ((uint16_t)0x0002)
+#define PHY_MICR_INT_OE                 ((uint16_t)0x0001)
+
+#define PHY_MISR_LINK_INT_EN            ((uint16_t)0x0020)
+#define PHY_LINK_INTERRUPT              ((uint16_t)0x2000)
 
 /* ########################## Assert Selection ############################## */
 /**
