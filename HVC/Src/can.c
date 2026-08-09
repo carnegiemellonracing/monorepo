@@ -127,10 +127,6 @@ static cmr_task_t canTX100Hz_task;
 static void canTX100Hz(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
-//    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-//    volatile cmr_canHeartbeat_t *heartbeatVSM =
-//        (void *) heartbeatVSMMeta->payload;
-
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
         sendHeartbeat(lastWakeTime);
@@ -141,36 +137,8 @@ static void canTX100Hz(void *pvParameters) {
     }
 }
 
-/** @brief CAN 100 Hz TX priority. */
-static const uint32_t canTX200Hz_priority = 4;
-
 /** @brief CAN 100 Hz TX period (milliseconds). */
 static const TickType_t canTX200Hz_period_ms = 5;
-
-/** @brief CAN 100 Hz TX task. */
-static cmr_task_t canTX200Hz_task; 
-
-/**
- * @brief Task for sending CAN messages at 200 Hz.
- *
- * @param pvParameters Ignored.
- *
- * @return Does not return.
- */
-static void canTX200Hz(void *pvParameters) {
-    (void) pvParameters;    // Placate compiler.
-
-//    cmr_canRXMeta_t *heartbeatVSMMeta = canRXMeta + CANRX_HEARTBEAT_VSM;
-//    volatile cmr_canHeartbeat_t *heartbeatVSM =
-//        (void *) heartbeatVSMMeta->payload;
-
-    TickType_t lastWakeTime = xTaskGetTickCount();
-    while (1) {
-        sendHVCPower(); 
-
-        vTaskDelayUntil(&lastWakeTime, canTX200Hz_period_ms);
-    }
-}
 
 
 /**
@@ -346,20 +314,16 @@ static void sendHVCPower() {
     int16_t voltage;
     int16_t current;
 
-    // voltage = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VSENSE); 
-    // current = cmr_sensorListGetValue(&sensorList, SENSOR_CH_ISENSE); 
+    //Not sure if these two lines are meant for debugging?
+    voltage = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VSENSE); 
+    current = cmr_sensorListGetValue(&sensorList, SENSOR_CH_ISENSE); 
+
     power = (voltage * 100) * (current * 10);
 
     cmr_canHVSense_t hv_sensors = {
         .packVoltage_cV = getHVmillivolts() / 1000
-        // (getHVmillivolts() / 1000)
     }; 
 
-    //hv_sensors->packPower_W = power;   
-
-    uint16_t voltageRaw, currentRaw;
-	voltageRaw = adcRead(ADC_VSENSE);
-	currentRaw = 0;
 
     canTX(CMR_CANID_HV_SENSORS, &hv_sensors, sizeof(hv_sensors), canTX200Hz_period_ms);
 }

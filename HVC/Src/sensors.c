@@ -207,7 +207,7 @@ int32_t getSafetymillivolts(){
 
 int32_t getHVmillivolts(){
     if (use_emd) {
-        cmr_canEMDMeasurements_t *EMD_Measurement = getPayload(CANRX_EMD_MEASURE);
+        volatile cmr_canEMDMeasurements_t *EMD_Measurement = getPayload(CANRX_EMD_MEASURE);
         int32_t EMD_voltage = big_endian_to_int32((volatile big_endian_32_t*)(&(EMD_Measurement->voltage)));  
         return EMD_voltage; 
     }
@@ -216,12 +216,12 @@ int32_t getHVmillivolts(){
 
 int32_t getHVmilliamps(){
     if (use_emd) {
-        cmr_canEMDMeasurements_t *EMD_Measurement = getPayload(CANRX_EMD_MEASURE);
+        volatile cmr_canEMDMeasurements_t *EMD_Measurement = getPayload(CANRX_EMD_MEASURE);
         int32_t EMD_current = big_endian_to_int32((volatile big_endian_32_t*)(&(EMD_Measurement->current)));  
         return EMD_current; 
     }
     
-    cmr_canIVTreadings_t *IVT_Measurement = getPayload(CANRX_IVT_CURRENT); 
+    volatile cmr_canIVTreadings_t *IVT_Measurement = getPayload(CANRX_IVT_CURRENT); 
     int32_t IVT_current = big_endian_to_int32(&(IVT_Measurement->message));
     return IVT_current;
 }
