@@ -98,20 +98,12 @@
 #endif /* HSE_STARTUP_TIMEOUT */
 
 /**
-  * @brief Internal  oscillator (CSI) default value.
-  *        This value is the default CSI value after Reset.
-  */
-#if !defined  (CSI_VALUE)
-  #define CSI_VALUE    (4000000UL) /*!< Value of the Internal oscillator in Hz*/
-#endif /* CSI_VALUE */
-
-/**
   * @brief Internal High Speed oscillator (HSI) value.
   *        This value is used by the RCC HAL module to compute the system frequency
   *        (when HSI is used as system clock source, directly or through the PLL).
   */
 #if !defined  (HSI_VALUE)
-  #define HSI_VALUE    (64000000UL) /*!< Value of the Internal oscillator in Hz*/
+  #define HSI_VALUE    (16000000UL) /*!< Value of the Internal oscillator in Hz*/
 #endif /* HSI_VALUE */
 
 /**
