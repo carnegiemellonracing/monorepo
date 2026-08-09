@@ -47,7 +47,6 @@ volatile float powerLimitRL_kW = power_limit_per_side * (1 - front_bias);
 volatile float powerLimitRR_kW = power_limit_per_side * (1 - front_bias);
 
 extern volatile cmr_can_rtc_data_t time;
-extern volatile float odometer_km;
 extern bool isTorqueMode;
 
 bool new_dim_request = false;
@@ -131,7 +130,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .warnFlag = CMR_CAN_WARN_NONE
     },
     [CANRX_VEH_PACK_CELL_VOLTAGE] = {
-        .canID = CMR_CANID_HVC_MINMAX_CELL_VOLTAGE,
+        .canID = CMR_CANID_HVBMS_MIN_MAX_CELL_VOLTAGE,
         // TODO: Check timeout period
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 50,
@@ -139,7 +138,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .warnFlag = CMR_CAN_WARN_NONE
     },
     [CANRX_VEH_PACK_CELL_TEMP] = {
-        .canID = CMR_CANID_HVC_MINMAX_CELL_TEMPS,
+        .canID = CMR_CANID_HVBMS_MIN_MAX_CELL_TEMPERATURE,
         // TODO: Check timeout period
         .timeoutError_ms = 100,
         .timeoutWarn_ms = 50,
@@ -154,7 +153,7 @@ cmr_canRXMeta_t canVehicleRXMeta[CANRX_VEH_LEN] = {
         .warnFlag = CMR_CAN_WARN_NONE
     },
     [CANRX_RTC_SET] = {
-        .canID = CMR_CANID_CDC_RTC_DATA_IN,
+        .canID = CMR_CANID_DCM_RTC_DATA_IN,
 	    .timeoutError_ms = 1500,
 	    .timeoutWarn_ms = 50,
         .errorFlag = CMR_CAN_ERROR_NONE,
@@ -242,49 +241,49 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .canID = CMR_CANID_DTI_FL_CONTROL_STATUS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_FL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FL_ERPM] = {
         .canID = CMR_CANID_DTI_FL_ERPM,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_FL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FL_CURRENT] = {
         .canID = CMR_CANID_DTI_FL_CURRENT,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_FL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FL_TEMPFAULT] = {
         .canID = CMR_CANID_DTI_FL_TEMPFAULT,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_FL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FL_IDIQ] = {
         .canID = CMR_CANID_DTI_FL_IDIQ,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_FL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FL_IO_STATUS] = {
         .canID = CMR_CANID_DTI_FL_IO_STATUS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_FL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FL_ACLIMS] = {
         .canID = CMR_CANID_DTI_FL_ACLIMS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_FL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FL_DCLIMS] = {
         .canID = CMR_CANID_DTI_FL_DCLIMS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_FL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_FL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
 
     /* Front Right Inverter (Node ID 0x02) */
@@ -292,49 +291,49 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .canID = CMR_CANID_DTI_FR_CONTROL_STATUS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_FR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FR_ERPM] = {
         .canID = CMR_CANID_DTI_FR_ERPM,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_FR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FR_CURRENT] = {
         .canID = CMR_CANID_DTI_FR_CURRENT,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_FR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FR_TEMPFAULT] = {
         .canID = CMR_CANID_DTI_FR_TEMPFAULT,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_FR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FR_IDIQ] = {
         .canID = CMR_CANID_DTI_FR_IDIQ,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_FR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FR_IO_STATUS] = {
         .canID = CMR_CANID_DTI_FR_IO_STATUS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_FR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FR_ACLIMS] = {
         .canID = CMR_CANID_DTI_FR_ACLIMS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_FR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FR_DCLIMS] = {
         .canID = CMR_CANID_DTI_FR_DCLIMS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_FR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_FR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
 
 
@@ -343,49 +342,49 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .canID = CMR_CANID_DTI_RL_CONTROL_STATUS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_RL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RL_ERPM] = {
         .canID = CMR_CANID_DTI_RL_ERPM,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_RL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RL_CURRENT] = {
         .canID = CMR_CANID_DTI_RL_CURRENT,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_RL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RL_TEMPFAULT] = {
         .canID = CMR_CANID_DTI_RL_TEMPFAULT,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_RL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RL_IDIQ] = {
         .canID = CMR_CANID_DTI_RL_IDIQ,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_RL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RL_IO_STATUS] = {
         .canID = CMR_CANID_DTI_RL_IO_STATUS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_RL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RL_ACLIMS] = {
         .canID = CMR_CANID_DTI_RL_ACLIMS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_RL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RL_DCLIMS] = {
         .canID = CMR_CANID_DTI_RL_DCLIMS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_RL | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_RL | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_DTI_ERROR_MESSAGES] = {
         .canID = CMR_CANID_DTI_ERROR_MESSAGES,
@@ -398,49 +397,49 @@ cmr_canRXMeta_t canTractiveRXMeta[CANRX_TRAC_LEN] = {
         .canID = CMR_CANID_DTI_RR_CONTROL_STATUS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_RR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RR_ERPM] = {
         .canID = CMR_CANID_DTI_RR_ERPM,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_RR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RR_CURRENT] = {
         .canID = CMR_CANID_DTI_RR_CURRENT,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_RR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RR_TEMPFAULT] = {
         .canID = CMR_CANID_DTI_RR_TEMPFAULT,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_RR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RR_IDIQ] = {
         .canID = CMR_CANID_DTI_RR_IDIQ,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_RR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RR_IO_STATUS] = {
         .canID = CMR_CANID_DTI_RR_IO_STATUS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_RR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RR_ACLIMS] = {
         .canID = CMR_CANID_DTI_RR_ACLIMS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_RR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_RR_DCLIMS] = {
         .canID = CMR_CANID_DTI_RR_DCLIMS,
         .timeoutError_ms = dti_timeout,
         .timeoutWarn_ms = 75,
-        .warnFlag = CMR_CAN_WARN_CDC_DTI_RR | CMR_CAN_WARN_CDC_DTI_TIMEOUT,
+        .warnFlag = CMR_CAN_WARN_DCM_DTI_RR | CMR_CAN_WARN_DCM_DTI_TIMEOUT,
     },
     [CANRX_TRAC_FL_TEST] = {
         .canID = CMR_CANID_DTI_FL_TEST
@@ -718,19 +717,12 @@ cmr_canRXMeta_t canRXMeta[] = {
         .errorFlag = CMR_CAN_ERROR_NONE,
         .warnFlag = CMR_CAN_WARN_NONE
     },
-    [CANRX_HVC_MINMAX_TEMPS] = {
-        .canID = CMR_CANID_HVC_MINMAX_CELL_TEMPS,
-        .timeoutError_ms = 5000,
-        .timeoutWarn_ms = 2500,
-        .errorFlag = CMR_CAN_ERROR_NONE,
-        .warnFlag = CMR_CAN_WARN_NONE
-    }
 };
 
 /** @brief CAN interfaces - Vehicle, DAQ, and Tractive */
 static cmr_can_t can[CMR_CAN_BUS_NUM];
 
-static void transmitCDC_DIMconfigMessages();
+static void transmitDCM_DIMconfigMessages();
 static bool inverterMessagesValid();
 
 /** @brief CAN 10 Hz TX priority. */
@@ -752,14 +744,14 @@ static void canTX10Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
 
-    cmr_canCDCWheelVelocity_t speedFeedback;
-    cmr_canCDCWheelTorque_t torqueFeedback;
-    cmr_canCDCWheelVelocity_t speedSetpoint;
-    cmr_canCDCWheelTorque_t torqueSetpoint;
+    cmr_canDCMWheelVelocity_t speedFeedback;
+    cmr_canDCMWheelTorque_t torqueFeedback;
+    cmr_canDCMWheelVelocity_t speedSetpoint;
+    cmr_canDCMWheelTorque_t torqueSetpoint;
 
-    cmr_canCDCPosePosition_t posePos;
-    cmr_canCDCPoseOrientation_t poseOrient;
-    cmr_canCDCPoseVelocity_t poseVel;
+    cmr_canDCMPosePosition_t posePos;
+    cmr_canDCMPoseOrientation_t poseOrient;
+    cmr_canDCMPoseVelocity_t poseVel;
 
     cmr_canPowerSense_t powerSense;
 
@@ -819,17 +811,6 @@ static void canTX10Hz(void *pvParameters) {
             canTX(CMR_CAN_BUS_VEH, CMR_CANID_DTI_ERROR_MESSAGES, &dtiErrorMessages, sizeof(dtiErrorMessages), canTX10Hz_period_ms);
         }
 
-        // Is data valid? Set it in the orientation/velocity messages
-//        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX10Hz_period_ms);
-//        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK, &torqueFeedback, sizeof(torqueFeedback), canTX10Hz_period_ms);
-//        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_SETPOINT, &speedSetpoint, sizeof(speedSetpoint), canTX10Hz_period_ms);
-//        canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX10Hz_period_ms);
-        //canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_POSITION, &posePos, sizeof(posePos), canTX10Hz_period_ms);
-
-        //TODO: Fix error with padding (manual size 7)
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_ORIENTATION, &poseOrient, sizeof(poseOrient), canTX10Hz_period_ms);
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_POSE_VELOCITY, &poseVel, sizeof(poseVel), canTX10Hz_period_ms);
-
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_FRONT_SLIP_RATIOS, &frontSlipRatios, sizeof(frontSlipRatios), canTX10Hz_period_ms);
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_REAR_SLIP_RATIOS, &rearSlipRatios, sizeof(rearSlipRatios), canTX10Hz_period_ms);
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_FRONT_WHL_SETPOINTS, &frontWhlSetpoints, sizeof(frontSlipRatios), canTX10Hz_period_ms);
@@ -839,11 +820,15 @@ static void canTX10Hz(void *pvParameters) {
 
         // //powersense is dead, it's voltage * HVI
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_POWER_SENSE, &powerSense, sizeof(powerSense), canTX10Hz_period_ms);
-        canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canCDCKiloCoulombs_t), canTX10Hz_period_ms);
+        canTX(CMR_CAN_BUS_VEH, CMR_CANID_DCM_COULOMB_COUNTING, &coulombCounting, sizeof(cmr_canDCMKiloCoulombs_t), canTX10Hz_period_ms);
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
 }
+
+//heartbeat forward declaration
+static void sendHeartbeat(TickType_t lastWakeTime);
+
 
 /** @brief CAN 100 Hz TX priority. */
 static const uint32_t canTX100Hz_priority = 5;
@@ -867,21 +852,8 @@ static void canTX100Hz(void *pvParameters) {
 
     TickType_t lastWakeTime = xTaskGetTickCount();
     while (1) {
-        cmr_canHeartbeat_t heartbeat = {
-            .state = heartbeatVSM->state
-        };
 
-        updateErrorsWarnings(&heartbeat, lastWakeTime);
-
-        if (heartbeat.error[0] != 0 || heartbeat.error[1] != 0) {
-            heartbeat.state = CMR_CAN_ERROR;
-        }
-
-        // cmr_canDAQTherm_t linpots;
-        // linpots.therm_1 = adcRead(ADC_LINPOT1);
-        // linpots.therm_2 = adcRead(ADC_LINPOT2);
-
-        // canTX(CMR_CAN_BUS_VEH, 0x658, &linpots, sizeof(cmr_canDAQTherm_t), canTX100Hz_period_ms);
+        sendHeartbeat(lastWakeTime);
 
         // Solver
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_INPUTS, &solver_inputs, sizeof(cmr_can_solver_inputs_t), canTX100Hz_period_ms);
@@ -890,46 +862,41 @@ static void canTX100Hz(void *pvParameters) {
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_SOLVER_SETTINGS, &solver_settings, sizeof(cmr_can_solver_settings_t), canTX100Hz_period_ms);
 
 		// SF
-		const cmr_canCDCSafetyFilterStates_t *sfStatesInfo = getSafetyFilterInfo();
-		cmr_canCDCMotorPower_t *motorPowerInfo = getMotorPowerInfo();
+		const cmr_canDCMSafetyFilterStates_t *sfStatesInfo = getSafetyFilterInfo();
+		cmr_canDCMMotorPower_t *motorPowerInfo = getMotorPowerInfo();
 		motorPowerInfo->motor_power_FL = (HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_TRAC].handle)) >> 16) & 0xFFFF;
 		motorPowerInfo->motor_power_FR = HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_TRAC].handle));
 
 		motorPowerInfo->motor_power_RL = (HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_VEH].handle)) >> 16) & 0xFFFF;
 		motorPowerInfo->motor_power_RR = HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_VEH].handle));
-
-		// canTX(CMR_CAN_BUS_VEH, CMR_CANID_SF_STATE, sfStatesInfo, sizeof(*sfStatesInfo), canTX100Hz_period_ms); //safety filter
-		// //canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
-		// canTX(CMR_CAN_BUS_DAQ, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX100Hz_period_ms); //motor power
+        
+        // //canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
 		// //canTX(CMR_CAN_BUS_TRAC, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
-
         // // Forward Movella status to Vehicle CAN at 100Hz.
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOVELLA_STATUS, movellaStatus, sizeof(cmr_canMovellaStatus_t), canTX100Hz_period_ms);
-
-        //debug code for sending rxmeta receive to current time difference
-//        uint16_t arr[2];
-//        arr[0] = lastWakeTime - canVehicleRXMeta[CANRX_VEH_HEARTBEAT_VSM].lastReceived_ms;
-//        canTX(
-//                    CMR_CAN_BUS_VEH,
-//                    0x108,
-//                    &arr,
-//                    2,
-//                    canTX100Hz_period_ms
-//                );
-
-        // Send heartbeat
-        canTX(
-            CMR_CAN_BUS_VEH,
-            CMR_CANID_HEARTBEAT_CDC,
-            &heartbeat,
-            sizeof(heartbeat),
-            canTX100Hz_period_ms
-        );
-
+        
         cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
 		canTX(CMR_CAN_BUS_DAQ, CMR_CANID_DAQ_VSM_HEARTBEAT, heartbeatVSM, sizeof(cmr_canHeartbeat_t), canTX100Hz_period_ms); 
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
     }
+}
+
+
+static void sendHeartbeat(TickType_t lastWakeTime) {
+    cmr_canHeartbeat_t *heartbeatVSM = canVehicleGetPayload(CANRX_VEH_HEARTBEAT_VSM);
+
+    cmr_canHeartbeat_t heartbeat = {0};
+
+    if (heartbeatVSM != NULL) {
+        heartbeat.state = heartbeatVSM->state;
+    }
+
+    updateErrorsWarnings(&heartbeat, lastWakeTime);
+
+    if (heartbeat.error[0] != 0 || heartbeat.error[1] != 0) {
+        heartbeat.state = CMR_CAN_ERROR;
+    }
+
 }
 
 /** @brief CAN 200 Hz TX priority. */
@@ -968,14 +935,14 @@ static void canTX200Hz(void *pvParameters) {
     dtiErrorMessages.rl_fault_code = dtiTempFaultRL->fault_code;
     dtiErrorMessages.rr_fault_code = dtiTempFaultRR->fault_code;
 
-    cmr_canCDCWheelVelocity_t speedFeedback;
-    cmr_canCDCWheelTorque_t torqueFeedback;
-    cmr_canCDCWheelVelocity_t speedSetpoint;
-    cmr_canCDCWheelTorque_t torqueSetpoint;
+    cmr_canDCMWheelVelocity_t speedFeedback;
+    cmr_canDCMWheelTorque_t torqueFeedback;
+    cmr_canDCMWheelVelocity_t speedSetpoint;
+    cmr_canDCMWheelTorque_t torqueSetpoint;
 
-    cmr_canCDCPosePosition_t posePos;
-    cmr_canCDCPoseOrientation_t poseOrient;
-    cmr_canCDCPoseVelocity_t poseVel;
+    cmr_canDCMPosePosition_t posePos;
+    cmr_canDCMPoseOrientation_t poseOrient;
+    cmr_canDCMPoseVelocity_t poseVel;
 
     cmr_canCOGVelocity_t cog_velocity;
     cmr_canFrontWheelVelocity_t front_velocity;
@@ -1126,15 +1093,6 @@ static void canTX200Hz(void *pvParameters) {
         rear_velocity.rr_x = car_state.rr_velocity.x * 100.0f;
         rear_velocity.rr_y = car_state.rr_velocity.y * 100.0f;
 
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_COG_VELOCITY, &cog_velocity, sizeof(cog_velocity), canTX200Hz_period_ms);
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_FRONT_VELOCITY, &front_velocity, sizeof(front_velocity), canTX200Hz_period_ms);
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_REAR_VELOCITY, &rear_velocity, sizeof(rear_velocity), canTX200Hz_period_ms);
-
-        // Is data valid? Set it in the orientation/velocity messages
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_FEEDBACK, &speedFeedback, sizeof(speedFeedback), canTX200Hz_period_ms);
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_FEEDBACK, &torqueFeedback, sizeof(torqueFeedback), canTX200Hz_period_ms);
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_SPEED_SETPOINT, &speedSetpoint, sizeof(speedSetpoint), canTX200Hz_period_ms);
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_CDC_WHEEL_TORQUE_SETPOINT, &torqueSetpoint, sizeof(torqueSetpoint), canTX200Hz_period_ms);
 
         // YRC
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CONTROLS_PID_IO, &yrcDebug, sizeof(yrcDebug), canTX200Hz_period_ms);
@@ -1203,10 +1161,10 @@ static void canTX5Hz(void *pvParameters) {
         }
 
         // Send DRS state and debug data
-        const cmr_canCDCDRSStates_t *drsStatesInfo = getDRSInfo();
+        const cmr_canDCMDRSStates_t *drsStatesInfo = getDRSInfo();
         // canTX(CMR_CAN_BUS_VEH, CMR_CANID_DRS_STATE, drsStatesInfo, sizeof(*drsStatesInfo), canTX5Hz_period_ms);
 
-        transmitCDC_DIMconfigMessages();
+        transmitDCM_DIMconfigMessages();
 
         vTaskDelayUntil(&lastWakeTime, canTX5Hz_period_ms);
 
@@ -1254,25 +1212,15 @@ static void canTX1Hz(void *pvParameters) {
     TickType_t lastWakeTime = xTaskGetTickCount();
 
     while (1) {
+        cmr_canDCMControlsStatus_t *controlsStatus = getControlsStatus();
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_DCM_CONTROLS_STATUS, controlsStatus, sizeof(cmr_canDCMControlsStatus_t), canTX1Hz_period_ms);
 
-        cmr_canDAQTest_t daqTest = getDAQTest();
-        // canTX(CMR_CAN_BUS_DAQ, CMR_CANID_TEST_ID, &daqTest, sizeof(daqTest), canTX1Hz_period_ms);
-
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_RTC_DATA_OUT, &time, sizeof(time), canTX1Hz_period_ms);
-        cmr_canCDCOdometer_t odometer = (cmr_canCDCOdometer_t) {
-            .odometer_km = odometer_km
-        };
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_ODOMETER, &odometer, sizeof(odometer), canTX1Hz_period_ms);
-
-        cmr_canCDCControlsStatus_t *controlsStatus = getControlsStatus();
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_CONTROLS_STATUS, controlsStatus, sizeof(cmr_canCDCControlsStatus_t), canTX1Hz_period_ms);
-
-        cmr_canCDCPowerLimitLog_t power_limit = {
+        cmr_canDCMPowerLimitLog_t power_limit = {
             // If you don't #include "safety_filter.h",
             // getPowerLimit_W() is 0!!!!!!!!!!! (╯°□°)╯ノ彡┻━┻
             .power_limit_W = getPowerLimit_W(),
         };
-        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_CDC_POWER_LOG, &power_limit, sizeof(power_limit), canTX1Hz_period_ms);
+        // canTX(CMR_CAN_BUS_VEH, CMR_CANID_DCM_POWER_LOG, &power_limit, sizeof(power_limit), canTX1Hz_period_ms);
 
         volatile cmr_canSensoricVelAng_t *sensoricVelAng = (cmr_canSensoricVelAng_t*)canDAQGetPayload(CANRX_DAQ_SENSORIC_VEL_ANG);
         canTX(CMR_CAN_BUS_VEH, CMR_CANID_SENSORIC_VEL_ANG, sensoricVelAng, sizeof(cmr_canSensoricVelAng_t), canTX200Hz_period_ms);
@@ -1297,28 +1245,28 @@ void *canGetPayload(canRX_t rxMsg) {
  * @param packet_number
  * @return driver returns -1 if not found
  */
+
+cmr_canID_t DIM_Config[4] = {
+    CMR_CANID_DIM_CONFIG0_DRV0,
+    CMR_CANID_DIM_CONFIG0_DRV1,
+    CMR_CANID_DIM_CONFIG0_DRV2,
+    CMR_CANID_DIM_CONFIG0_DRV3
+}; 
+
 int getReceivedDriver(uint16_t canID, int *packet_number) {
+
     // Return quickly so that callback doesn't take a long time
     if (canID < CMR_CANID_DIM_CONFIG0_DRV0 || canID > CMR_CANID_DIM_CONFIG3_DRV3) {
         return -1;
     }
-    // TODO: condense this logic
-    if (canID >= CMR_CANID_DIM_CONFIG0_DRV0 && canID <= CMR_CANID_DIM_CONFIG3_DRV0) {
-        *packet_number = canID - CMR_CANID_DIM_CONFIG0_DRV0;
-        return 0;
+
+    for (int i = 0; i < 4; i++) {
+        if (canID == DIM_Config[i]) {
+            *packet_number = canID - DIM_Config[i]; 
+            return i; 
+        }
     }
-    if (canID >= CMR_CANID_DIM_CONFIG0_DRV1 && canID <= CMR_CANID_DIM_CONFIG3_DRV1) {
-        *packet_number = canID - CMR_CANID_DIM_CONFIG0_DRV1;
-        return 1;
-    }
-    if (canID >= CMR_CANID_DIM_CONFIG0_DRV2 && canID <= CMR_CANID_DIM_CONFIG3_DRV2) {
-        *packet_number = canID - CMR_CANID_DIM_CONFIG0_DRV2;
-        return 2;
-    }
-    if (canID >= CMR_CANID_DIM_CONFIG0_DRV3 && canID <= CMR_CANID_DIM_CONFIG3_DRV3) {
-        *packet_number = canID - CMR_CANID_DIM_CONFIG0_DRV3;
-        return 3;
-    }
+    
     // If nothing matches, return -1
     return -1;
 }
@@ -1327,7 +1275,7 @@ int getReceivedDriver(uint16_t canID, int *packet_number) {
  */
 void dim_params_callback (cmr_can_t *canb_rx, uint16_t canID, const void *data, size_t dataLen) {
     // basic filter for wrong canids
-    if(canID < CMR_CANID_DIM_CONFIG0_DRV0 || canID > CMR_CANID_CDC_CONFIG3_DRV3) return;
+    if(canID < CMR_CANID_DIM_CONFIG0_DRV0 || canID > CMR_CANID_DCM_CONFIG3_DRV3) return;
 
     static bool gotten_packet[NUM_CONFIG_PACKETS] = {0};
     static TickType_t lastDriverChangeTime = 0;
@@ -1353,16 +1301,16 @@ void dim_params_callback (cmr_can_t *canb_rx, uint16_t canID, const void *data, 
     if (currentTime - lastDriverChangeTime < 10000) return;
 
     // cast the data to the appropriate format
-    cmr_canDIMCDCconfig_t *dim_data = (cmr_canDIMCDCconfig_t *) data;
+    cmr_canDIMDCMconfig_t *dim_data = (cmr_canDIMDCMconfig_t *) data;
     // cast the data to an array for easy indexing
     uint8_t *dim_data_arr = (uint8_t*) dim_data;
 
     // Copy received data to parametersFromDIM - add 1 because sending Driver is encoded in CAN ID
-    int current_copy_index = packet_number*sizeof(cmr_canDIMCDCconfig_t) + 1;
+    int current_copy_index = packet_number*sizeof(cmr_canDIMDCMconfig_t) + 1;
     // Deal with Driver (set to index 0)
     parametersFromDIM[0] = recievedDriver;
     // note, the following only works bc each element is a byte
-    int size_to_copy = min( (MAX_MENU_ITEMS - current_copy_index), sizeof(cmr_canDIMCDCconfig_t) );
+    int size_to_copy = min( (MAX_MENU_ITEMS - current_copy_index), sizeof(cmr_canDIMDCMconfig_t) );
     memcpy((void *) &(parametersFromDIM[current_copy_index]), dim_data_arr, size_to_copy);
     gotten_packet[packet_number] = true;
 
@@ -1420,12 +1368,12 @@ void conditionalCallback(cmr_can_t *canb_rx, uint32_t canID, const void *data, s
     }
 
     // If DIM config message, handle it
-    if(CMR_CANID_CDC_CONFIG3_DRV3 >= canID && canID >= CMR_CANID_DIM_CONFIG0_DRV0) {
+    if(CMR_CANID_DCM_CONFIG3_DRV3 >= canID && canID >= CMR_CANID_DIM_CONFIG0_DRV0) {
         dim_params_callback(canb_rx, canID, data, dataLen);
     }
 
-    if(canID == CMR_CANID_CDC_POWER_UPDATE && getCurrentGear() == CMR_CAN_GEAR_ENDURANCE) {
-    	cmr_canCDCPowerLimit_t *limit = (cmr_canCDCPowerLimit_t*) data;
+    if(canID == CMR_CANID_DCM_POWER_UPDATE && getCurrentGear() == CMR_CAN_GEAR_ENDURANCE) {
+    	cmr_canDCMPowerLimit_t *limit = (cmr_canDCMPowerLimit_t*) data;
         float front_powerLimit_kW = (limit->powerLimit_kW / 2.0f) * front_bias_endurance;
         float rear_powerLimit_kW = (limit->powerLimit_kW / 2.0f) * (1 - front_bias_endurance);
     	setPowerLimit(false, MOTOR_FL, front_powerLimit_kW);
@@ -1507,7 +1455,7 @@ void canInit(void) {
         {
             .isMask = false,
             .rxFIFO = FDCAN_RX_FIFO0,
-            .ids = {CMR_CANID_CDC_RTC_DATA_IN,
+            .ids = {CMR_CANID_DCM_RTC_DATA_IN,
                     CMR_CANID_VSM_SENSORS}
         },
 
@@ -1833,34 +1781,34 @@ int sendCubeMarsMessage(cmr_canBusID_t bus, cmr_canExtendedID_t id, const void *
     }
 }
 
-static void transmitCDC_DIMconfigMessages(){
+static void transmitDCM_DIMconfigMessages(){
     /* pack struct message for config */
-    cmr_canDIMCDCconfig_t config0 = {
+    cmr_canDIMDCMconfig_t config0 = {
         .config_val_1 = config_menu_main_array[1].value.value,
         .config_val_2 = config_menu_main_array[2].value.value,
         .config_val_3 = config_menu_main_array[3].value.value,
         .config_val_4 = config_menu_main_array[4].value.value,
     };
-    cmr_canDIMCDCconfig_t config1 = {
+    cmr_canDIMDCMconfig_t config1 = {
         .config_val_1 = config_menu_main_array[5].value.value,
         .config_val_2 = config_menu_main_array[6].value.value,
         .config_val_3 = config_menu_main_array[7].value.value,
         .config_val_4 = config_menu_main_array[8].value.value,
     };
-    cmr_canDIMCDCconfig_t config2 = {
+    cmr_canDIMDCMconfig_t config2 = {
         .config_val_1 = config_menu_main_array[9].value.value,
         .config_val_2 = config_menu_main_array[10].value.value,
         .config_val_3 = config_menu_main_array[11].value.value,
         .config_val_4 = config_menu_main_array[12].value.value,
     };
-    cmr_canDIMCDCconfig_t config3 = {
+    cmr_canDIMDCMconfig_t config3 = {
         .config_val_1 = config_menu_main_array[13].value.value,
         .config_val_2 = config_menu_main_array[14].value.value,
         .config_val_3 = config_menu_main_array[15].value.value,
         .config_val_4 = config_menu_main_array[16].value.value,
     };
 
-    cmr_canDIMCDCconfig_t config_message_array[NUM_CONFIG_PACKETS] = {
+    cmr_canDIMDCMconfig_t config_message_array[NUM_CONFIG_PACKETS] = {
         config0,
         config1,
         config2,
@@ -1870,7 +1818,7 @@ static void transmitCDC_DIMconfigMessages(){
     // calculate the correct CAN ID based on the current driver
     uint32_t can_ids_config_driver[NUM_CONFIG_PACKETS];
     // uint8_t requested_driver = config_menu_main_array[DRIVER_PROFILE_INDEX].value.value;
-    uint32_t base_driver_canid = CMR_CANID_CDC_CONFIG0_DRV0 + (2 * currentDriver * NUM_CONFIG_PACKETS);
+    uint32_t base_driver_canid = CMR_CANID_DCM_CONFIG0_DRV0 + (2 * currentDriver * NUM_CONFIG_PACKETS);
     for(int i = 0; i < NUM_CONFIG_PACKETS; i++){
         can_ids_config_driver[i] = base_driver_canid + i;
     }

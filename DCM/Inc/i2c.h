@@ -1,6 +1,6 @@
 /**
  * @file i2c.h
- * @brief All i2c activity on the CDC (i.e. the RTC and FRAM)
+ * @brief All i2c activity on the DCM (i.e. the RTC and FRAM)
  *
  * @author Carnegie Mellon Racing
  */

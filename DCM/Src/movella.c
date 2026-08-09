@@ -236,12 +236,12 @@ void movella_parse(uint16_t canID, volatile void *payload) {
 
     switch (movella_msg)
     {
-    case CANRX_DAQ_MOVELLA_STATUS:
+    case CANRX_DAQ_MOVELLA_STATUS: {
         volatile cmr_canMovellaStatus_t *status = payload;
         movella_state.status = *status;
         break;
-
-    case CANRX_DAQ_MOVELLA_QUATERNION:
+    } 
+    case CANRX_DAQ_MOVELLA_QUATERNION: {
         volatile cmr_canMovellaQuaternion_t *quaternion = payload;
         volatile int16_t w = parse_int16(&quaternion->q0);
         volatile int16_t x = parse_int16(&quaternion->q1);
@@ -253,8 +253,8 @@ void movella_parse(uint16_t canID, volatile void *payload) {
         movella_state.quaternion.z = transform_raw(MOVELLA_QUATERNION, z);
         quaternion_to_R(&movella_state.quaternion, movella_state.R);
         break;
-
-    case CANRX_DAQ_MOVELLA_IMU_EULER_ANGLES:
+    }
+    case CANRX_DAQ_MOVELLA_IMU_EULER_ANGLES: {
         volatile cmr_canMovellaEulerAngles_t *euler = payload;
         int16_t yaw = parse_int16(&euler->yaw);
         int16_t pitch = parse_int16(&euler->pitch);
@@ -263,8 +263,8 @@ void movella_parse(uint16_t canID, volatile void *payload) {
         movella_state.euler_angles.pitch = transform_raw(MOVELLA_EULER_ANGLES, pitch);
         movella_state.euler_angles.roll = transform_raw(MOVELLA_EULER_ANGLES, roll);
         break;
-    
-    case CANRX_DAQ_MOVELLA_IMU_GYRO:
+    }
+    case CANRX_DAQ_MOVELLA_IMU_GYRO: {
         volatile cmr_canMovellaIMUGyro_t *gyro = payload;
         volatile int16_t gyro_x = parse_int16(&gyro->gyro_x);
         volatile int16_t gyro_y = parse_int16(&gyro->gyro_y);
@@ -283,8 +283,8 @@ void movella_parse(uint16_t canID, volatile void *payload) {
             movella_state.gyro.inited = true;
         }
         break;
-
-    case CANRX_DAQ_MOVELLA_IMU_ACCEL:
+    } 
+    case CANRX_DAQ_MOVELLA_IMU_ACCEL: {
         volatile cmr_canMovellaIMUAccel_t *accel = payload;
         int16_t accel_x = parse_int16(&accel->accel_x);
         int16_t accel_y = parse_int16(&accel->accel_y);
@@ -293,8 +293,8 @@ void movella_parse(uint16_t canID, volatile void *payload) {
         movella_state.accel.y = transform_raw(MOVELLA_IMU_ACCEL, accel_y);
         movella_state.accel.z = transform_raw(MOVELLA_IMU_ACCEL, accel_z);
         break;
-    
-    case CANRX_DAQ_MOVELLA_VELOCITY:
+    }
+    case CANRX_DAQ_MOVELLA_VELOCITY: {
         volatile cmr_canMovellaVelocity_t *velocity = payload;
         int16_t vel_x = parse_int16(&velocity->vel_x);
         int16_t vel_y = parse_int16(&velocity->vel_y);
@@ -305,7 +305,7 @@ void movella_parse(uint16_t canID, volatile void *payload) {
         transform_velocity_D4B(&movella_state, &car_state);
         compute_slip(&movella_state, &car_state);
         break;
-    
+    } 
     default:
         break;
     }
