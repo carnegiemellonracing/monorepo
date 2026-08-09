@@ -97,48 +97,6 @@ static int32_t ADCtoMV_HV(const cmr_sensor_t *sensor, uint32_t reading) {
     return voltage_mV;
 }
 
-
-/**
- * 
- * HVI conversion functions
- * 
- */
-
-
-/**
- * @brief Converts a raw ADC value to voltage in centivolts.
- *
- * @param sensor The sensor to read.
- *
- * @param reading The ADC value to convert.
- *
- * @return Voltage in centivolts.
- */
-static int32_t adcToVoltage(const cmr_sensor_t *sensor, uint32_t reading) {
-    (void)sensor;
-
-    int32_t voltage = reading;
-    // uint32_t voltage = V_TRANS_M * reading + V_TRANS_B;
-
-    return voltage;
-}
-
-/**
- * @brief Converts a raw ADC value into a current.
- *
- * @param sensor The sensor to read.
- *
- * @param reading The ADC value to convert.
- *
- * @return Current in dA.
- */
-static int32_t adcToCurrent(const cmr_sensor_t *sensor, uint32_t reading) {
-    (void)sensor;
-
-    int32_t current = (int32_t) (((0.143) * (double)reading - 294.0) * 10.0);
-    return current;
-}
-
 static int32_t adcToVref(const cmr_sensor_t *sensor, uint32_t reading) {
     (void)sensor;
 
@@ -252,7 +210,7 @@ int32_t getHVmillivolts(){
 }
 
 int32_t getHVmilliamps(){
-    cmr_canIVTreadings_t *IVT_Measurement = getPayload(CANRX_IVT_CURRENT); 
+    volatile cmr_canIVTreadings_t *IVT_Measurement = getPayload(CANRX_IVT_CURRENT); 
     int32_t IVT_current = big_endian_to_int32(&(IVT_Measurement->message));
     return IVT_current;
 }

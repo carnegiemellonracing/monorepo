@@ -39,11 +39,9 @@ static bool prechargeDone() {
     int32_t HVmillivolts = getHVmillivolts();
     volatile cmr_canHVBMSPackVoltage_t *HVBMSPackVoltage = getPayload(CANRX_HVBMS_PACKVOLT); 
     TickType_t lastWakeTime = xTaskGetTickCount();
-    return (abs(HVBMSPackVoltage->battVoltage_mV - HVmillivolts) < PRECHARGE_THRESH 
-        &&  HVBMSPackVoltage->battVoltage_mV > MIN_PACK_THRESH
-        &&  (lastWakeTime - lastPrechargeTime) > PRECHARGE_TIME_MS
-        /*&&  !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HEARTBEAT_HVBMS], lastWakeTime)
-        &&  !cmr_canRXMetaTimeoutError(&canRXMeta[CANRX_HVBMS_PACKVOLT], lastWakeTime)*/);
+    return (HVBMSPackVoltage->battVoltage_mV - HVmillivolts < PRECHARGE_THRESH)
+        &&  (HVBMSPackVoltage->battVoltage_mV > MIN_PACK_THRESH)
+        &&  ((lastWakeTime - lastPrechargeTime) > PRECHARGE_TIME_MS);
  }
 
 static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
@@ -113,7 +111,6 @@ static cmr_canHVCState_t getNextState(cmr_canHVCError_t currentError){
                 //T7: Mode requested is neither START nor RUN
                 nextState = CMR_CAN_HVC_STATE_DISCHARGE;
             } else if (HVCCommand->modeRequest == CMR_CAN_HVC_MODE_RUN) {
-//                        abs(getBattMillivolts() - getHVmillivolts()) < 30000) {
                 // T3: Contactors are closed and RUN mode is requested
                 nextState = CMR_CAN_HVC_STATE_DRIVE; 
             } else {
@@ -396,7 +393,7 @@ void vSetStateTask(void *pvParameters) {
 static const TickType_t canTX100Hz_period_ms = 10;
 
 void enableCellBalancing(void) {
-    cmr_canBMSMinMaxCellVoltage_t *voltagedata = getPayload(CANRX_HVBMS_MINMAX_VOLTAGE); 
+    volatile cmr_canBMSMinMaxCellVoltage_t *voltagedata = getPayload(CANRX_HVBMS_MINMAX_VOLTAGE); 
 
     cmr_canHVCBalanceCommand_t balance = {
         .balanceRequest = true, 
