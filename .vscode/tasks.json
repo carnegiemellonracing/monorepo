@@ -10,6 +10,20 @@
     },
     "tasks": [
         {
+            "label": "Build CAN Flasher",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "--preset debug",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/BOOT/Host"
+            },
+            "problemMatcher": []
+        },
+        
+        {
             "type": "shell",
             "label": "CubeProg: Flash project (SWD)",
             "command": "STM32_Programmer_CLI",

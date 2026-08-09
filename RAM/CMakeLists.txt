@@ -87,6 +87,7 @@ set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "" FORCE)
 
 
 # Setup the board id based on our project name
+# ! IF YOU EDIT THIS THEN UPDATE monorepo/BOOT/Host/flash_boards.py to match the new board id
 set(BOARD_ID 0x01)
 set(LED_PORT GPIOB)
 set(LED_PIN GPIO_PIN_14)

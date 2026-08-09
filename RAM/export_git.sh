@@ -17,20 +17,6 @@ done < <(git ls-files --others --exclude-standard)
 IS_DIRTY=0
 GIT_INFO_HEX="$HASH"
 
-if [ -n "$(echo "$DIFF_CONTENT" | tr -d '[:space:]')" ]; then
-  IS_DIRTY=1
-
-  # Hash the actual diff/untracked content, not just "is it dirty"
-  DIFF_HASH=$(printf '%s' "$DIFF_CONTENT" | sha256sum | cut -c1-8)
-
-  # Fold it together with the base commit hash so GIT_INFO reflects
-  # both "which commit" and "what changed" -- different edits -> different value
-  BASE_VAL=$((16#$HASH))
-  DIFF_VAL=$((16#$DIFF_HASH))
-  COMBINED=$((BASE_VAL ^ DIFF_VAL))
-  GIT_INFO_HEX=$(printf '%08x' "$COMBINED")
-fi
-
 cat > ./Inc/gitcommit.h <<EOF
 #include <stdint.h>
 const uint32_t GIT_INFO = 0x$GIT_INFO_HEX;

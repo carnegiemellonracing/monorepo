@@ -4,6 +4,26 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        {
+            "name": "Build and Flash Boards",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/flash_boards.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/BOOT/Host",
+            "preLaunchTask": "Build CAN Flasher",
+            "args": [
+                "${workspaceFolder}\\build\\debug\\Debug",
+                "--flash-cli",
+                ".\\build\\debug\\Debug\\FlashCli.exe",
+                "--device",
+                "peak_pcanusb",
+                "--channel",
+                "0"
+            ]
+        },
+            
         // ============================================================================
         //                                    DCM
         // ============================================================================
