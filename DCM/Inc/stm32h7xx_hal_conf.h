@@ -505,7 +505,7 @@
 }
 #endif
 
-#endif /* STM32H7xx_HAL_CONF_H */
+#endif /* __STM32F4xx_HAL_CONF_H */
 
 
 
