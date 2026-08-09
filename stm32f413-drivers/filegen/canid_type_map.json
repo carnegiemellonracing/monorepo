@@ -332,6 +332,7 @@
             "timeOut": 25,
             "type": "cmr_canCubeMarsData_t"
         },
+<<<<<<< HEAD
         "CMR_CANID_DAQ_0_LOADCELL": {
             "cycleTime": 100.0,
             "differential_voltage_uv": {
@@ -405,6 +406,8 @@
         },
 =======
 >>>>>>> 9106a3c1 (updated CMR_CANID_HVC_MINMAX_CELL_TEMPS and CMR_CANID_HVC_MINMAX_CELL_VOLTAGE to HVBMS)
+=======
+>>>>>>> f9edbaba (Revert "updated CMR_CANID_HVC_MINMAX_CELL_TEMPS and CMR_CANID_HVC_MINMAX_CELL_VOLTAGE to HVBMS")
         "CMR_CANID_DIM_ACKNOWLEDGE": {
             "cycleTime": 100,
             "timeOut": 500,
@@ -439,20 +442,40 @@
             "timeOut": 500,
             "type": "cmr_canDTI_ErrorMessages_t"
         },
+        "CMR_CANID_DTI_FL_ERPM": {
+            "cycleTime": 20.0,
+            "timeOut": 100,
+            "type": "cmr_DTI_RX_Message_t"
+        },
         "CMR_CANID_DTI_FL_TEMPFAULT": {
             "cycleTime": 20.0,
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
+        },
+        "CMR_CANID_DTI_FR_ERPM": {
+            "cycleTime": 20.0,
+            "timeOut": 100,
+            "type": "cmr_DTI_RX_Message_t"
         },
         "CMR_CANID_DTI_FR_TEMPFAULT": {
             "cycleTime": 20.0,
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
         },
+        "CMR_CANID_DTI_RL_ERPM": {
+            "cycleTime": 20.0,
+            "timeOut": 100,
+            "type": "cmr_DTI_RX_Message_t"
+        },
         "CMR_CANID_DTI_RL_TEMPFAULT": {
             "cycleTime": 20.0,
             "timeOut": 100,
             "type": "cmr_canDTI_TX_TempFault_t"
+        },
+        "CMR_CANID_DTI_RR_ERPM": {
+            "cycleTime": 20.0,
+            "timeOut": 100,
+            "type": "cmr_DTI_RX_Message_t"
         },
         "CMR_CANID_DTI_RR_TEMPFAULT": {
             "cycleTime": 20.0,
@@ -754,12 +777,12 @@
                 "u": "qV"
             }
         },
-        "CMR_CANID_HVBMS_MINMAX_CELL_TEMPS": {
+        "CMR_CANID_HVC_MINMAX_CELL_TEMPS": {
             "cycleTime": 20.0,
             "timeOut": 100,
             "type": "cmr_canBMSMinMaxCellTemperature_t"
         },
-        "CMR_CANID_HVBMS_MINMAX_CELL_VOLTAGE": {
+        "CMR_CANID_HVC_MINMAX_CELL_VOLTAGE": {
             "cycleTime": 20.0,
             "maxCellVoltage_mV": {
                 "u": "mV"
@@ -782,8 +805,8 @@
             "type": "cmr_canHVCPackCurrent_t"
         },
         "CMR_CANID_HV_SENSORS": {
-            "cycleTime": 5,
-            "timeOut": 25,
+            "cycleTime": 100,
+            "timeOut": 500,
             "type": "cmr_canHVSense_t"
         },
         "CMR_CANID_IVT_CURRENT": {
@@ -795,62 +818,6 @@
             "cycleTime": 400.0,
             "timeOut": 2000,
             "type": "cmr_canIVTreadings_t"
-        },
-        "CMR_CANID_LOADCELL_FL": {
-            "cycleTime": 100.0,
-            "differential_voltage_uv": {
-                "f": 0.1
-            },
-            "external_temp": {
-                "f": 0.1
-            },
-            "internal_temp": {
-                "f": 0.1
-            },
-            "timeOut": 500,
-            "type": "cmr_canIZZELoadCell_t"
-        },
-        "CMR_CANID_LOADCELL_FR": {
-            "cycleTime": 100.0,
-            "differential_voltage_uv": {
-                "f": 0.1
-            },
-            "external_temp": {
-                "f": 0.1
-            },
-            "internal_temp": {
-                "f": 0.1
-            },
-            "timeOut": 500,
-            "type": "cmr_canIZZELoadCell_t"
-        },
-        "CMR_CANID_LOADCELL_RL": {
-            "cycleTime": 100.0,
-            "differential_voltage_uv": {
-                "f": 0.1
-            },
-            "external_temp": {
-                "f": 0.1
-            },
-            "internal_temp": {
-                "f": 0.1
-            },
-            "timeOut": 500,
-            "type": "cmr_canIZZELoadCell_t"
-        },
-        "CMR_CANID_LOADCELL_RR": {
-            "cycleTime": 100.0,
-            "differential_voltage_uv": {
-                "f": 0.1
-            },
-            "external_temp": {
-                "f": 0.1
-            },
-            "internal_temp": {
-                "f": 0.1
-            },
-            "timeOut": 500,
-            "type": "cmr_canIZZELoadCell_t"
         },
         "CMR_CANID_LVBMS_BUS_VOLTAGE": {
             "cycleTime": 100,
@@ -1032,17 +999,22 @@
             "CANRX_"
         ],
 <<<<<<< HEAD
+<<<<<<< HEAD
         "files_processed": 2901,
         "files_with_matches": 2901,
 =======
         "files_processed": 2831,
         "files_with_matches": 2831,
 >>>>>>> 9106a3c1 (updated CMR_CANID_HVC_MINMAX_CELL_TEMPS and CMR_CANID_HVC_MINMAX_CELL_VOLTAGE to HVBMS)
+=======
+        "files_processed": 2905,
+        "files_with_matches": 2905,
+>>>>>>> f9edbaba (Revert "updated CMR_CANID_HVC_MINMAX_CELL_TEMPS and CMR_CANID_HVC_MINMAX_CELL_VOLTAGE to HVBMS")
         "global_mappings": {
             "canrx_mappings": 192,
             "canrx_timeouts": 182,
             "canrx_types": 65,
-            "constants": 267,
+            "constants": 265,
             "struct_members": 0,
             "variable_types": 330
         },
@@ -1050,6 +1022,6 @@
             "CMR_CANID_",
             "CAN_ID_"
         ],
-        "total_canids": 111
+        "total_canids": 107
     }
 }
