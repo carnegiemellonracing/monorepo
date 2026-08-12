@@ -122,7 +122,7 @@ ExternalProject_Add(
 
 ExternalProject_Add(
         BOOT_TARGET
-        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/BOOT/Target
+        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/BOOT_TARGET/Target
         SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/BOOT/Target
         INSTALL_COMMAND ""
         BUILD_ALWAYS TRUE
