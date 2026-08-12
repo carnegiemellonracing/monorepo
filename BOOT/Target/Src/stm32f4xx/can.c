@@ -7,16 +7,20 @@
 
 #include "can.h"      // Interface to implement
 #include <CMR/can.h>  // Can-specific interface
+#include <CMR/board_info.h>  // Board info interface
 
 /**
  * @brief Initializes the CAN interface.
  */
 void canInit(void) {
     // required clocks
-    cmr_canClockEnable(CAN1);
+    cmr_canClockEnable(cmr_getBootloaderCanPointer());
 
     // Configure CAN RX pin.
-    cmr_canGpioInit(CAN1, GPIOB, GPIO_PIN_8, GPIOB, GPIO_PIN_9);
+    cmr_gpioPin_t tx =cmr_getBootloaderCanTxPin();
+    cmr_gpioPin_t rx =cmr_getBootloaderCanRxPin();
+
+    cmr_canGpioInit(cmr_getBootloaderCanPointer(), rx.port, rx.pin, tx.port, tx.pin);
 }
 
 /**
@@ -25,9 +29,12 @@ void canInit(void) {
  */
 void canDeinit(void) {
 
-    cmr_canGpioDeInit(GPIOB, GPIO_PIN_8, GPIOB, GPIO_PIN_9);
+    cmr_gpioPin_t tx =cmr_getBootloaderCanTxPin();
+    cmr_gpioPin_t rx =cmr_getBootloaderCanRxPin();
+
+    cmr_canGpioDeInit(rx.port, rx.pin, tx.port, tx.pin);
 
     /* disable clock just in case */
-    cmr_canClockDisable(CAN1);
+    cmr_canClockDisable(cmr_getBootloaderCanPointer());
     
 }

@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <CMR/gpio.h>
+#include "platform.h"
 
 
 typedef struct {
@@ -31,7 +32,13 @@ void cmr_validateBoardInfo(void);
 bool cmr_validBoardInfo(void);
 uint32_t cmr_getVersion(void);
 uint32_t cmr_getBoardId(void);
+
+// functions used by the bootloader to get its specific information
 uint32_t cmr_getBootLoaderCanBusNum(void);
+CAN_TypeDef* cmr_getBootloaderCanPointer(void);
+cmr_gpioPin_t cmr_getBootloaderStatusLedPin(void);
+cmr_gpioPin_t cmr_getBootloaderCanTxPin(void);
+cmr_gpioPin_t cmr_getBootloaderCanRxPin(void);
 
 #endif /* CMR_BOARD_INFO_H */
 

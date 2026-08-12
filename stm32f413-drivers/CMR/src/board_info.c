@@ -29,3 +29,28 @@ uint32_t cmr_getBoardId(void) {
 uint32_t cmr_getBootLoaderCanBusNum(void) {
     return BOARD_INFO->can_bus_num;
 }
+
+CAN_TypeDef* cmr_getBootloaderCanPointer(void) {
+    switch (cmr_getBootLoaderCanBusNum()) {
+        case 0:
+            return CAN1;
+        case 1:
+            return CAN2;
+        case 2:
+            return CAN3;
+        default:
+            cmr_panic("Invalid CAN bus number in board info");
+    }
+}
+
+cmr_gpioPin_t cmr_getBootloaderStatusLedPin(void) {
+    return BOARD_INFO->led_pin;
+}
+
+cmr_gpioPin_t cmr_getBootloaderCanTxPin(void) {
+    return BOARD_INFO->can_tx_pin;
+}
+
+cmr_gpioPin_t cmr_getBootloaderCanRxPin(void) {
+    return BOARD_INFO->can_rx_pin;
+}

@@ -17,16 +17,14 @@
  */
 typedef enum {
     GPIO_LED_STATUS = 0,    /**< @brief Status LED. */
-    GPIO_PUSH_BUTTON,         /**< @brief Push button. */
     GPIO_LEN  				/**< @brief Total GPIO pins. */
 } gpio_t;
 
 void gpioInit(void);
 void gpioDeinit(void);
 void timedLedToggle(void);
-bool getPushButton(void);
 
-#define LED_TOGGLE_TIME_MS 500
+#define LED_TOGGLE_TIME_MS 1000
 
 
 #endif /* GPIO_H */

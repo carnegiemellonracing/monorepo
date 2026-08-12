@@ -92,11 +92,6 @@ blt_bool CpuUserProgramStartHook(void)
     }
   }
 
-  /* if the push button is pressed, prevent the user program from starting */
-  if (getPushButton()) {
-    return BLT_FALSE;
-  }
-
   /* cleanup previous state*/
   DeInit();
 

@@ -8,7 +8,7 @@
             "name": "Build and Flash Boards",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/flash_boards.py",
+            "program": "./flash_boards.py",
             "console": "integratedTerminal",
             "justMyCode": true,
             "cwd": "${workspaceFolder}/BOOT/Host",
