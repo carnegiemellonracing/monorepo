@@ -57,7 +57,7 @@ uint16_t getPackMinCellTemp();
 uint16_t getPackMaxCellTemp();
 uint16_t selfTestMux(uint8_t mux_index);
 void getBMSMinMaxCellVoltage(cmr_canBMSMinMaxCellVoltage_t *BMSMinMaxCellVoltage);
-BMB_Data_t* getBMBData (uint8_t bmb_index);
+BMB_Data_t* getBMSData (uint8_t bmb_index);
 bool check_to_ignore(uint8_t bmb_index, uint8_t channel);
 
 int32_t getBattMillivolts();

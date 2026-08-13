@@ -365,16 +365,6 @@
 #define TOP_CELL VCELL9_HI
 #define TOP_CELL_CB_ADDR CB_CELL9_CTRL 
 
-// Must be defined by each board (maps mux setting + GPIO channel -> cell index)
-uint8_t HV_CHANNEL_GPIO_TO_CELL_MAP[4][4]  = {{6, 3, 1, 255},
-                                              {255, 255, 0, 5},
-                                              {255, 4, 255, 255},
-                                              {8, 255, 2, 7}};
-uint8_t LV_CHANNEL_GPIO_TO_CELL_MAP [4][2] = {{0, 4},
-                                              {1, 5},
-                                              {2, 6},
-                                              {3, 255}};
-
 bool autoAddr();
 bool enableMainADC();
 bool enableNumCells();

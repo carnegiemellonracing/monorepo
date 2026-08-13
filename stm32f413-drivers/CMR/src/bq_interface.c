@@ -13,7 +13,6 @@
 #include <CMR/uart.h>
 
 #include <CMR/bq_interface.h>
-#include "dwt.h"
 #include "gpio.h"
 #include "uart.h"
 
@@ -23,7 +22,23 @@ extern volatile int BMBErrs[BMB_NUM];
 BMB_Data_t BMSData[BMB_NUM]; // Data stored in this array
 bool firstBalDone[BMB_NUM][CELL_NUM]; // Track balance status
 
-// CHANNEL_GPIO_TO_CELL_MAP on board-side
+__STATIC_INLINE void DWT_Delay_ms(volatile uint32_t au32_milliseconds)
+{
+  uint32_t au32_initial_ticks = DWT->CYCCNT;
+  uint32_t au32_ticks = (HAL_RCC_GetHCLKFreq() / 1000);
+  au32_milliseconds *= au32_ticks;
+  while ((DWT->CYCCNT - au32_initial_ticks) < au32_milliseconds);
+}
+
+// CHANNEL_GPIO_TO_CELL_MAP for each board
+uint8_t HV_CHANNEL_GPIO_TO_CELL_MAP[4][4]  = {{6, 3, 1, 255},
+                                              {255, 255, 0, 5},
+                                              {255, 4, 255, 255},
+                                              {8, 255, 2, 7}};
+uint8_t LV_CHANNEL_GPIO_TO_CELL_MAP [4][2] = {{0, 4},
+                                              {1, 5},
+                                              {2, 6},
+                                              {3, 255}};
 
 // Forward Declarations
 void txToRxDelay(uint8_t delay);

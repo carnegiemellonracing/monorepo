@@ -510,7 +510,7 @@ static void sendBMSBMBStatusErrors(void) {
 
 static void sendAllBMBVoltages(uint8_t bmbIndex) {
     uint16_t voltageMask = 0x1FFE;
-    BMB_Data_t *data = getBMBData(bmbIndex);
+    BMB_Data_t *data = getBMSData(bmbIndex);
     cmr_can_HVBMS_BMB_CellVoltages_t volt0 = {
         .cellVoltage0_mV = (data->cellVoltages[0] && voltageMask) >> 1,
         .cellVoltage1_mV = (data->cellVoltages[1] && voltageMask) >> 1,

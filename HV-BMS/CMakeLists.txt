@@ -116,7 +116,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     # Project sources
     ${CMAKE_SOURCE_DIR}/Src/BMB_task.c
     ${CMAKE_SOURCE_DIR}/Src/bms_error.c
-    ${CMAKE_SOURCE_DIR}/Src/bq_interface.c
+    ${CMAKE_SOURCE_DIR}/../stm32f413-drivers/CMR/src/bq_interface.c
     ${CMAKE_SOURCE_DIR}/Src/can.c
     ${CMAKE_SOURCE_DIR}/Src/crc.c
     ${CMAKE_SOURCE_DIR}/Src/gpio.c
