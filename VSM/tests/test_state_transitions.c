@@ -136,7 +136,26 @@ void setUp(void) {
 void tearDown(void) {
 }
 
+void test_glv_on_goes_to_req_precharge_when_autonomous_checks_pass(void) {
+    vsmStatus.canVSMStatus.internalState = CMR_CAN_VSM_STATE_GLV_ON;
+
+    dimRequest.requestedState = CMR_CAN_AS_READY;
+    dimRequest.requestedGear = CMR_CAN_GEAR_DV_MISSION_ACCEL;
+
+    getASMSState_fake.return_val = 1;
+    dvPressure.ebsPressure_1_deci_bar = 100;
+    dvPressure.ebsPressure_2_deci_bar = 100;
+    fsmData.brakePressureFront_PSI = 700;
+    cmr_sensorListGetValue_fake.return_val = 450;
+
+    TEST_ASSERT_EQUAL(
+        CMR_CAN_VSM_STATE_REQ_PRECHARGE,
+        getNextState(100)
+    );
+}
+
 int main(void) {
     UNITY_BEGIN();
+    RUN_TEST(test_glv_on_goes_to_req_precharge_when_autonomous_checks_pass);
     return UNITY_END();
 }
