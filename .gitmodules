@@ -4,3 +4,9 @@
 [submodule "cn-cbor"]
 	path = RAM/cn-cbor
 	url = git@github.com:carnegiemellonracing/cn-cbor.git
+[submodule "VSM/tests/vendor/Unity"]
+	path = VSM/tests/vendor/Unity
+	url = https://github.com/ThrowTheSwitch/Unity.git
+[submodule "VSM/tests/vendor/fff"]
+	path = VSM/tests/vendor/fff
+	url = https://github.com/meekrosoft/fff.git

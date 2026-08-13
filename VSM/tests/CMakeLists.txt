@@ -8,8 +8,15 @@ set(CMAKE_C_EXTENSIONS ON)
 
 enable_testing()
 
-set(UNITY_ROOT "" CACHE PATH "Path to a Unity checkout or vendored Unity directory")
-set(FFF_ROOT "" CACHE PATH "Path to an FFF checkout or vendored FFF directory")
+set(UNITY_ROOT
+    "${CMAKE_CURRENT_SOURCE_DIR}/vendor/Unity"
+    CACHE PATH "Path to a Unity checkout or vendored Unity directory"
+)
+
+set(FFF_ROOT
+    "${CMAKE_CURRENT_SOURCE_DIR}/vendor/fff"
+    CACHE PATH "Path to an FFF checkout or vendored FFF directory"
+)
 
 if(NOT UNITY_ROOT)
     message(FATAL_ERROR "Set UNITY_ROOT to a Unity directory, for example -DUNITY_ROOT=/path/to/Unity")
