@@ -55,6 +55,8 @@ FAKE_VOID_FUNC(updateCurrentWarnings, volatile vsmStatus_t *, TickType_t);
 FAKE_VALUE_FUNC(bool, invertersPass, TickType_t);
 FAKE_VALUE_FUNC(bool, getAMSError);
 
+//TODO: this bypasses a lot of stuff, should populate rxMeta array and get from there instead
+// also ideally check can filters before returning 
 static void *getPayload_custom(canRX_t rxMsg) {
     switch (rxMsg) {
         case CANRX_DIM_REQUEST:
