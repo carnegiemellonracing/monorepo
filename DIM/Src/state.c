@@ -19,6 +19,8 @@
 #include "tft.h"   // TFT display interface.
 #include "tftDL.h"
 #include "adc.h"
+#include "error.h"
+
 
 static const uint32_t stateMachine_priority = 4;
 
@@ -89,7 +91,9 @@ static volatile struct {
 	.gear = CMR_CAN_GEAR_SLOW,
 	.gearReq = CMR_CAN_GEAR_SLOW,
 	.drsMode = CMR_CAN_DRSM_CLOSED,
-	.drsReq = CMR_CAN_DRSM_CLOSED
+	.drsReq = CMR_CAN_DRSM_CLOSED,
+    .dvCtrlMode = CMR_CAN_DV_MODE_NORMAL,
+    .dvCtrlReq = CMR_CAN_DV_MODE_NORMAL,
 };
 
 void exitConfigScreen() {
@@ -353,13 +357,9 @@ static cmr_state getNextState(void) {
             if(getASMS()) {
                 nextState = AUTON;
             }
-            else if(!cmr_gpioRead(GPIO_CTRL_SWITCH) && true/*(stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)*/) {
+            else if(!cmr_gpioRead(GPIO_CTRL_SWITCH) && (stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)) {
                 nextState = CONFIG;
                 flush_config_screen_to_cdc = false;
-            }
-            else if(buttonStates[RIGHT].isPressed && stateGetVSM() == CMR_CAN_RTD) {
-                nextState = RACING;
-                buttonStates[RIGHT].isPressed = false; 
             }
             else {
                 nextState = NORMAL;
@@ -534,8 +534,16 @@ void reqVSM(void) {
         EABStateUp();
         return;
     }
-    
-    if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM == CMR_CAN_CLEAR_ERROR) {
+
+    cmr_canError_t error = CMR_CAN_ERROR_NONE;
+    update_errors(&error);
+    if(error != CMR_CAN_ERROR_NONE) {
+        state.vsmReq = CMR_CAN_ERROR;
+        return;
+    }
+
+    if(stateGetVSM() == CMR_CAN_ERROR || stateGetVSM() == CMR_CAN_CLEAR_ERROR 
+    || stateGetVSM() == CMR_CAN_AS_FINISHED || stateGetVSM() == CMR_CAN_AS_EMERGENCY) {
         state.vsmReq = CMR_CAN_GLV_ON;
         return;
     }
@@ -573,16 +581,16 @@ void reqGear(void) {
         if(canChangeGear && buttonStates[RIGHT].isPressed) {
             if(state.gearReq == CMR_CAN_GEAR_DV_MISSION_MAX - 1) {
                 state.gearReq = CMR_CAN_GEAR_DV_MISSION_MIN + 1;
-                buttonStates[RIGHT].isPressed = false; 
             }
             else state.gearReq++;
+            buttonStates[RIGHT].isPressed = false; 
         }
         else if(canChangeGear && buttonStates[LEFT].isPressed) {
             if(state.gearReq == CMR_CAN_GEAR_DV_MISSION_MIN + 1) {
                 state.gearReq = CMR_CAN_GEAR_DV_MISSION_MAX - 1;
-                buttonStates[LEFT].isPressed = false; 
             }
             else state.gearReq--;
+            buttonStates[LEFT].isPressed = false;
         }
     }
     else if (!getASMS()) {
@@ -618,15 +626,13 @@ void reqDRS(void) {
 }
 
 void reqDVCtrl(void) {
-    if(cmr_gpioRead(GPIO_CTRL_SWITCH)) {
-        if(buttonStates[RIGHT].isPressed) {
-            state.dvCtrlReq = (state.dvCtrlMode + 1) % NUM_DV_MODES;
-            buttonStates[RIGHT].isPressed = false; 
-        }
-        else if(buttonStates[LEFT].isPressed) {
-            state.dvCtrlReq = (state.dvCtrlMode - 1) % NUM_DV_MODES;
-            buttonStates[LEFT].isPressed = false; 
-        }
+    if(buttonStates[UP].isPressed) {
+        state.dvCtrlReq = (state.dvCtrlMode + 1) % NUM_DV_MODES;
+        buttonStates[UP].isPressed = false; 
+    }
+    else if(buttonStates[DOWN].isPressed) {
+        state.dvCtrlReq = (state.dvCtrlMode - 1) % NUM_DV_MODES;
+        buttonStates[DOWN].isPressed = false; 
     }
 }
 

@@ -56,18 +56,18 @@ static void cmr_sensorInit(cmr_sensor_t *sensor) {
 static void cmr_sensorUpdate(cmr_sensor_t *sensor) {
     uint32_t reading = sensor->sample(sensor);
 
-    // Check if sensor has gone out-of-range.
-    if (reading < sensor->_.readingLower || sensor->_.readingUpper < reading) {
-        sensor->_.error = CMR_SENSOR_ERR_OUT_OF_RANGE;
-    } else {
-        sensor->_.error = CMR_SENSOR_ERR_NONE;
-    }
-
     uint32_t value;
     if (sensor->conv != NULL) {
         value = sensor->conv(sensor, reading);
     } else {
         value = reading;
+    }
+
+    // Check if sensor has gone out-of-range.
+    if (value < sensor->_.readingLower || sensor->_.readingUpper < value) {
+        sensor->_.error = CMR_SENSOR_ERR_OUT_OF_RANGE;
+    } else {
+        sensor->_.error = CMR_SENSOR_ERR_NONE;
     }
 
     sensor->_.value = value;

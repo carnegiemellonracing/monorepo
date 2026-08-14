@@ -31,6 +31,7 @@ tmp/
 *.dsk~
 
 *.peproj~
+*.pyc
 
 x64/
 *.sln

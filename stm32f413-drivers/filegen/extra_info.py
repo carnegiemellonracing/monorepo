@@ -264,10 +264,10 @@ def main():
         print("No struct definitions with attributes found!")
         sys.exit(1)
     
-    for struct_name, fields in can_types_data.items():
-        print(f"\nStruct: {struct_name}")
-        for field_name, attrs in fields.items():
-            print(f"  {field_name}: {attrs}")
+    # for struct_name, fields in can_types_data.items():
+    #     print(f"\nStruct: {struct_name}")
+    #     for field_name, attrs in fields.items():
+    #         print(f"  {field_name}: {attrs}")
     
     print(f"\nReading JSON from: {INPUT_JSON}")
     success = update_json_file(INPUT_JSON, can_types_data, OUTPUT_FILE)

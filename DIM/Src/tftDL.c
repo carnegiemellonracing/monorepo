@@ -273,9 +273,7 @@ static void tftDL_RTDwriteInt(uint32_t *file_addr, uint32_t location, uint32_t l
 static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t state_col_addr,
                              uint32_t gear_addr, uint32_t drs_addr, bool centered) {
     /** @brief Characters for each state. */
-
-    size_t stateCharsLen = 6;
-    static const char *stateChars[] = {
+    static const char *stateChars[CMR_CAN_STATE_LEN] = {
         [CMR_CAN_UNKNOWN] = "????",
         [CMR_CAN_GLV_ON] = " GLV",
         [CMR_CAN_HV_EN] = "HVEN",
@@ -319,35 +317,42 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
         [CMR_CAN_DRSM_AUTO] = " AUTO ",
     };
 
+    size_t dvCharsLen = 6;
+    static const char *dvChars[] = {
+        [CMR_CAN_DV_MODE_SLOW] = " SLOW ",
+        [CMR_CAN_DV_MODE_NORMAL] = "NORMAL",
+        [CMR_CAN_DV_MODE_FAST] = " FAST ",
+    };
+
     cmr_canState_t stateVSM = stateGetVSM();
     cmr_canState_t stateVSMReq = stateGetVSMReq();
     cmr_canGear_t gear = stateGetGear();
     cmr_canDrsMode_t drsMode = stateGetDrs();
+    cmr_canDVMode_t dvCtrlMode = stateGetDVMode();
+
     uint32_t *state_color = (void *)(file_addr + state_col_addr);
 
     char stateChar[12];
     // TODO make this name better I dont want it to be stateCharLen since it very similar to other var
     size_t bufLen = sizeof(stateChars);
     if (stateVSM == stateVSMReq) {
-        if (stateVSM < stateCharsLen) {
-            if (centered) {
-                strcpy(stateChar, "    ");
-                strlcat(stateChar, stateChars[stateVSM], bufLen);
-                strlcat(stateChar, "    ", stateCharsLen);
-            } else {
-                strcpy(stateChar, "        ");
-                strlcat(stateChar, stateChars[stateVSM], bufLen);
-            }
+        if (centered) {
+            strcpy(stateChar, "    ");
+            strlcat(stateChar, stateChars[stateVSM], bufLen);
+            strlcat(stateChar, "    ", CMR_CAN_STATE_LEN);
+        } else {
+            strcpy(stateChar, "        ");
+            strlcat(stateChar, stateChars[stateVSM], bufLen);
         }
         *state_color = white;
     } else {
-        if (stateVSM < stateCharsLen && stateVSMReq < stateCharsLen) {
+        if (stateVSM < CMR_CAN_STATE_LEN && stateVSMReq < CMR_CAN_STATE_LEN) {
             strcpy(stateChar, stateChars[stateVSM]);
             strlcat(stateChar, " -> ", bufLen);
             strlcat(stateChar, stateChars[stateVSMReq], bufLen);
-        } else if (stateVSM < stateCharsLen) {
+        } else if (stateVSM < CMR_CAN_STATE_LEN) {
             strcpy(stateChar, stateChars[stateVSM]);
-            strlcat(stateChar, " -> ", stateCharsLen);
+            strlcat(stateChar, " -> ", CMR_CAN_STATE_LEN);
             strlcat(stateChar, stateChars[CMR_CAN_UNKNOWN], bufLen);
         } else {
             strcpy(stateChar, stateChars[CMR_CAN_UNKNOWN]);
@@ -361,9 +366,17 @@ static void tftDL_showStates(uint32_t *file_addr, uint32_t state_addr, uint32_t 
                                ? gearChars[gear]
                                : gearChars[CMR_CAN_GEAR_UNKNOWN];
 
-    const char *drsChar = (drsMode < drsCharsLen)
+    const char *drsChar;
+    if(getASMS()) {
+        drsChar = (drsMode < drsCharsLen)
+                              ? dvChars[dvCtrlMode]
+                              : dvChars[CMR_CAN_DV_MODE_NORMAL];
+    }
+    else {
+        drsChar = (drsMode < drsCharsLen)
                               ? drsChars[drsMode]
                               : drsChars[CMR_CAN_DRSM_UNKNOWN];
+    }
 
     struct {
         char buf[STATEDISPLAYLEN];

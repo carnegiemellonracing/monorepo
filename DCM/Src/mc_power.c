@@ -1,23 +1,14 @@
 /**
- * @file fans.c
- * @brief Fan Control implementation.
+ * @file mc_power.c
+ * @brief Motor controller power control task.
  *
- * @author Carnegie Mellon Racing
+ * @author Ayush Garg
  */
 
-#include "can.h"        // Board-specific CAN interface
 #include "gpio.h"       // Board-specific GPIO interface
 #include "mc_power.h"        // Interface to implement
 #include <CMR/gpio.h>       // GPIO interface
 
-/** @brief Motor Controller Power Control task priority. */
-//static const uint32_t mcPowerControl_priority = 2;
-/** @brief Motor Controller Power Control task period. */
-//static const TickType_t mcPowerControl_period_ms = 50;
-/** @brief Motor Controller Power Control task. */
-//static cmr_task_t mcPowerControl_task;
-
-//volatile cmr_canHeartbeat_t *heartbeatPTC = &heartbeat;
 
 //mcCtrl states
 void mcCtrlOff();

@@ -5,6 +5,7 @@
  * @author Carnegie Mellon Racing
  */
 
+#include "string.h" //memcpy
 #include "sensoric.h"
 #include <CMR/can_types.h> 
 

@@ -29,7 +29,6 @@
 /** @brief -90 degree sw RIGHT lock adc value. */
 #define SWANGLE_90DEG_RIGHT 3155
 
-
 /**
  * @brief Mapping of sensor channels to ADC channels.
  */
@@ -253,7 +252,9 @@ int32_t getHVmillivolts(){
 }
 
 int32_t getHVmilliamps(){
-    return ((int32_t) cmr_sensorListGetValue(&sensorList, SENSOR_CH_ISENSE));
+    cmr_canIVTreadings_t *IVT_Measurement = getPayload(CANRX_IVT_CURRENT); 
+    int32_t IVT_current = big_endian_to_int32(&(IVT_Measurement->message));
+    return IVT_current;
 }
 
 int32_t getHVIvref(){

@@ -146,7 +146,7 @@ uint8_t getBMBMaxTempIndex(uint8_t bmb_index) {
 	uint8_t cell_index = 0;
 	for (uint8_t i = 0; i < TEMP_CHANNELS; i++) {
 		int16_t temp = BMBData[bmb_index].cellTemperaturesVoltageReading[i];
-		if ((temp > maxTemp) && !check_to_ignore(bmb_index, i) && temp!=0) {
+		if ((temp < maxTemp) && !check_to_ignore(bmb_index, i) && temp!=0) {
 			maxTemp = temp;
 			cell_index = i;
 		}
@@ -159,7 +159,7 @@ uint8_t getBMBMinTempIndex(uint8_t bmb_index) {
 	uint8_t cell_index = 0;
 	for (uint8_t i = 0; i < TEMP_CHANNELS; i++) {
 		int16_t temp = BMBData[bmb_index].cellTemperaturesVoltageReading[i];
-		if (temp < minTemp && !check_to_ignore(bmb_index, i) && temp!=0) {
+		if (temp > minTemp && !check_to_ignore(bmb_index, i) && temp!=0) {
 			minTemp = temp;
 			cell_index = i;
 		}
@@ -307,42 +307,6 @@ void getBMSMinMaxCellVoltage(
 			BMSMinMaxCellVoltage->maxCellVoltage_mV = (maxCellVoltage);
 			BMSMinMaxCellVoltage->maxVoltageBMBNum = bmb_index;
 			BMSMinMaxCellVoltage->maxVoltageCellNum = maxCellVoltageIndex;
-		}
-	}
-}
-
-void getBMSMinMaxCellTemperature(
-		cmr_canBMSMinMaxCellTemperature_t *BMSMinMaxCellTemp) {
-	BMSMinMaxCellTemp->minCellTemp_C = UINT16_MAX;
-	BMSMinMaxCellTemp->maxCellTemp_C = 0;
-
-	uint16_t minCellTemp;
-	uint16_t maxCellTemp;
-
-	uint8_t minCellTempIndex;
-	uint8_t maxCellTempIndex;
-
-	for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
-		// find lowest cell temp on current BMB
-		minCellTempIndex = getBMBMinTempIndex(bmb_index);
-		minCellTemp = BMBData[bmb_index].cellTemperaturesVoltageReading[minCellTempIndex];
-
-		// update struct if needed
-		if (minCellTemp < BMSMinMaxCellTemp->minCellTemp_C) {
-			BMSMinMaxCellTemp->minCellTemp_C = (minCellTemp);
-			BMSMinMaxCellTemp->minTempBMBNum = bmb_index;
-			BMSMinMaxCellTemp->minTempCellNum = minCellTempIndex;
-		}
-
-		// find highest cell temp on current BMB
-		maxCellTempIndex = getBMBMaxTempIndex(bmb_index);
-		maxCellTemp = BMBData[bmb_index].cellTemperaturesVoltageReading[maxCellTempIndex];
-
-		// update struct if needed
-		if (maxCellTemp > BMSMinMaxCellTemp->maxCellTemp_C) {
-			BMSMinMaxCellTemp->maxCellTemp_C = (maxCellTemp);
-			BMSMinMaxCellTemp->maxTempBMBNum = bmb_index;
-			BMSMinMaxCellTemp->maxTempCellNum = maxCellTempIndex;
 		}
 	}
 }

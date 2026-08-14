@@ -48,7 +48,6 @@ int main(void) {
     stateInit();
     tssiInit();
     assiInit();
-    dacInit();
 
     statusLEDInit();
 

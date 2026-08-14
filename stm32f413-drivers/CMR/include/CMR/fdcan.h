@@ -38,7 +38,7 @@ typedef enum {
 
 /** @brief Periodic message reception metadata. */
 typedef struct {
-    const uint16_t canID;       /**< @brief Associated CAN ID. */
+    const uint32_t canID;       /**< @brief Associated CAN ID. */
 
     /** @brief Threshold period for timeout warning, in milliseconds. */
     const TickType_t timeoutWarn_ms;
@@ -70,7 +70,7 @@ int cmr_canRXMetaTimeoutError(const cmr_canRXMeta_t *meta, TickType_t now_ms);
 typedef struct cmr_can cmr_can_t;
 
 typedef void (*cmr_canRXCallback_t)(
-    cmr_can_t *can, uint16_t canID, const void *data, size_t dataLen
+    cmr_can_t *can, uint32_t canID, const void *data, size_t dataLen
 );
 
 
@@ -118,6 +118,7 @@ extern uint32_t _platform_FDcanGPIOAF(FDCAN_GlobalTypeDef *instance, GPIO_TypeDe
  */
 typedef struct {
     bool isMask;        /**< @brief `true` to mask; `false` to whitelist. */
+    bool isExtended;    /**< @brief `true` if extended ID; `false` if standard ID. */
 
     /**
      * @brief The CAN receive FIFO to configure (one of `CAN_RX_FIFOx` from
@@ -144,7 +145,7 @@ typedef struct {
      * If the above condition is true, the message is accepted into the
      * specified FIFO; otherwise, it is ignored.
      */
-    uint16_t ids[2];
+    uint32_t ids[2];
 } cmr_canFilter_t;
 
 void cmr_canFilter(

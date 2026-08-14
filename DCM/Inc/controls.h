@@ -9,9 +9,10 @@
 #define CONTROLS_H
 
 #define ASSUME_NO_TURN true
-#define BUTTON_ACK 0b10000000
-#define BUTTON_ACT 0b00000100
-#define BUTTON_PTT 0b100000
+#define BUTTON_ACK  0b10000000
+#define BUTTON_CTRL 0b00100000
+#define BUTTON_ACT  0b00010000
+#define BUTTON_PTT  0b100000
 #define BUTTON_SCRN 0b10000
 
 // ------------------------------------------------------------------------------------------------
@@ -39,12 +40,11 @@ void setYawRateControl (
 void setYawRateAndTractionControl(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t swAngle_millideg,
     bool assumeNoTurn, bool ignoreYawRate, bool allowRegen, float critical_speed_mps);
 void setCruiseControlTorque(uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8, int32_t avgMotorSpeed_RPM);
-void setEnduranceTorque(int32_t avgMotorSpeed_RPM, uint8_t throttlePos_u8, uint8_t brakePos_u8, int32_t swAngle_millideg,
+void setEnduranceTorque(int32_t avgMotorSpeed_RPM, uint8_t throttlePos_u8, int32_t swAngle_millideg,
     int32_t battVoltage_mV, int32_t battCurrent_mA, uint16_t brakePressurePsi_u8);
 void setEnduranceTestTorque(
     int32_t avgMotorSpeed_RPM,
     uint8_t throttlePos_u8,
-    uint8_t brakePos_u8,
     int32_t swAngle_millideg,
     int32_t battVoltage_mV,
     int32_t battCurrent_mA,
@@ -57,8 +57,8 @@ void setEnduranceTestTorque(
 
 void initControls();
 void integrateCurrent();
-void runControls(cmr_canGear_t gear, uint8_t throttlePos_u8, uint8_t brakePos_u8, uint16_t brakePressurePsi_u8,
-    int32_t swAngle_millideg_FL, int32_t swAngle_millideg_FR, int32_t battVoltage_mV, int32_t battCurrent_mA, bool blank_command);
+void runControls(cmr_canGear_t gear, uint8_t throttlePos_u8, uint16_t brakePressurePsi_u8,
+    int32_t swAngle_millideg_FL, int32_t swAngle_millideg_FR, int32_t battVoltage_mV, int32_t battCurrent_mA, bool ctrlOff, bool blank_command);
 void setControlsStatus(cmr_canGear_t gear);
 const volatile cmr_canCDCControlsStatus_t *getControlsStatus();
 void setFastTorqueWithParallelRegen(uint16_t brakePressurePsi_u8, uint8_t throttlePos_u8);
@@ -66,6 +66,13 @@ void set_optimal_control_with_regen(
 	int throttlePos_u8,
 	int32_t swAngle_millideg_FL,
 	int32_t swAngle_millideg_FR
+);
+void setAccelLaunchControl(
+    uint8_t throttlePos_u8,
+    uint16_t brakePressurePsi_u8,
+    float car_velocity_mps,
+    float fz_fl, float fz_fr,
+    float fz_rl, float fz_rr
 );
 
 // ------------------------------------------------------------------------------------------------

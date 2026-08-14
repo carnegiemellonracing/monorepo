@@ -26,11 +26,12 @@ typedef enum {
     CMR_CAN_HV_EN,          /**< @brief High voltage enabled. */
     CMR_CAN_RTD,            /**< @brief Ready to drive. */
     CMR_CAN_ERROR,          /**< @brief Error has occurred. */
-    CMR_CAN_CLEAR_ERROR,     /**< @brief Request to clear error. */
+    CMR_CAN_CLEAR_ERROR,    /**< @brief Request to clear error. */
     CMR_CAN_AS_READY,       /**< @brief Autonomous ready mode */
     CMR_CAN_AS_DRIVING,     /**< @brief Autonomous driving mode */
 	CMR_CAN_AS_FINISHED,    /**< @brief Autonomous finished mode */
-	CMR_CAN_AS_EMERGENCY     /**< @brief Autonomous emergency mode */
+	CMR_CAN_AS_EMERGENCY,   /**< @brief Autonomous emergency mode */
+    CMR_CAN_STATE_LEN       /**< @brief Number of CAN states */
 } cmr_canState_t;
 
 /** @brief Standard CAN heartbeat. */
@@ -63,6 +64,21 @@ typedef enum {
     /** @brief VSM brake pressure sensor out-of-range. */
     CMR_CAN_ERROR_VSM_BPRES = (1 << 10),
 
+    /** @brief DIM tank pressure sensor 1 out-of-range. */
+    CMR_CAN_ERROR_DIM_TANK_PRESSURE_1_OOR = (1 << 1),
+    /** @brief DIM tank pressure sensor 2 out-of-range. */
+    CMR_CAN_ERROR_DIM_TANK_PRESSURE_2_OOR = (1 << 2),
+    /** @brief DIM solenoid current 1 out-of-range. */
+    CMR_CAN_ERROR_DIM_SOLENOID_CURRENT_1_OOR = (1 << 3),
+        /** @brief DIM solenoid current 2 out-of-range. */
+    CMR_CAN_ERROR_DIM_SOLENOID_CURRENT_2_OOR = (1 << 4),
+    /** @brief DIM tank pressure sensor 1 out-of-range non-dv check */
+    CMR_CAN_ERROR_DIM_TANK_PRESSURE_NON_DV_1_OOR = (1 << 5),
+    /** @brief DIM tank pressure sensor 2 out-of-range non-dv check. */
+    CMR_CAN_ERROR_DIM_TANK_PRESSURE_NON_DV_2_OOR = (1 << 6),
+    /** @brief DIM front brake pressure reading implaus. */
+    CMR_CAN_ERROR_DIM_BRAKE_SENSOR_IMPLAUS = (1 << 7),
+
     /** @brief AFC fan current out-of-range. */
     CMR_CAN_ERROR_AFC_FANS_CURRENT = (1 << 15),
     /** @brief AFC driver IC #1 temperature out-of-range. */
@@ -93,7 +109,9 @@ typedef enum {
     // fan turn on at 56 starting 58 turn it to max
 
     /** @brief CDC All motor controllers have errored or timed out. */
-    CMR_CAN_ERROR_CDC_DTI_ALL = (1 << 15)
+    CMR_CAN_ERROR_CDC_DTI_ALL = (1 << 15),
+
+    CMR_CAN_ERROR_CDC_CUBEMARS_TIMEOUT = (1 << 13),
 } cmr_canError_t;
 
 /** @brief Heartbeat warning matrix bit fields. */
@@ -249,10 +267,14 @@ typedef enum {
 typedef enum {
     /** @brief No modules have timed out. */
     CMR_CAN_VSM_TIMEOUT_SOURCE_NONE = 0,
+    /** @brief At least one cubemars has timed out. */
+    CMR_CAN_VSM_TIMEOUT_SOURCE_CUBEMARS= (1 << 7),
+    /** @brief At least one compute message has timed out. */
+    CMR_CAN_VSM_TIMEOUT_SOURCE_COMPUTE = (1 << 6),
     /** @brief At least one High Voltage Controller message has timed out. */
     CMR_CAN_VSM_TIMEOUT_SOURCE_HVC = (1 << 6),
     /** @brief At least one Central Dynamics Controller message has timed out. */
-    CMR_CAN_VSM_TIMEOUT_SOURCE_CDC = (1 << 5),
+    CMR_CAN_VSM_TIMEOUT_SOURCE_DCM = (1 << 5),
     /** @brief At least one Front Sensor Module message has timed out. */
     CMR_CAN_VSM_TIMEOUT_SOURCE_FSM = (1 << 4),
     /** @brief At least one Driver Interface Module message has timed out. */
@@ -265,13 +287,13 @@ typedef enum {
 typedef enum {
     /** @brief No modules have timed out. */
     CMR_CAN_VSM_BADSTATE_SOURCE_NONE = 0,
-    /** @brief At least one High Voltage Controller message has timed out. */
+    /** @brief Compute is in a bad state (error) */
+    CMR_CAN_VSM_BADSTATE_SOURCE_COMPUTE = (1 << 7),
+    /** @brief HVC is in a bad state (error) */
     CMR_CAN_VSM_BADSTATE_SOURCE_HVC = (1 << 6),
-    /** @brief At least one Central Dynamics Controller message has timed out. */
-    CMR_CAN_VSM_BADSTATE_SOURCE_CDC = (1 << 5),
-    /** @brief At least one Front Sensor Module message has timed out. */
-    CMR_CAN_VSM_BADSTATE_SOURCE_FSM = (1 << 4),
-    /** @brief At least one Driver Interface Module message has timed out. */
+    /** @brief DCM is in a bad state (error) */
+    CMR_CAN_VSM_BADSTATE_SOURCE_DCM = (1 << 5),
+    /** @brief DIM is in a bad state (error) */
     CMR_CAN_VSM_BADSTATE_SOURCE_DIM = (1 << 3),
     /** @brief HVBMS Timeout. */
     CMR_CAN_VSM_BADSTATE_SOURCE_HVBMS = (1 << 0)
@@ -404,18 +426,28 @@ typedef struct {
 } cmr_canVSMStatus_t; 
 
 /** @brief Vehicle Safety Module sensor data. */
-/** @brief Vehicle Safety Module sensor data. */
 typedef struct {
-    uint16_t brakePressureRear_PSI;     /**< @brief Rear brake pressure (pounds-per-square-inch). */
-    int16_t hallEffect_cA;     /**< @brief Hall effect current (centi-Amps). */
-    uint8_t safetyIn_V;        /**< @brief Safety circuit input voltage (volts). */
-    uint8_t safetyOut_V;       /**< @brief Safety circuit output voltage (volts). */
+    uint16_t brakePressureRear_PSI; /**< @brief Rear brake pressure (pounds-per-square-inch). */
+    uint16_t batt_mV;               /**< @brief Hall effect current (centi-Amps). */
+    uint8_t safetyIn_eight_V;       /**< @brief Safety circuit input voltage (eight volts). */
+    uint8_t safetyOut_eight_V;      /**< @brief Safety circuit output voltage (eight volts). */
+    bool    EAB_pressed;            /**< @brief EAB Pressed. */
+    int8_t  hv_current_A;           /**< @brief Hall effect sensor reading (Amps). (
+                                                Note this maxes out at 127 A at the high end 
+                                                but the sensor itself maxes at 125A)*/
 } cmr_canVSMSensors_t;
 
 typedef struct {
-    uint16_t ebsPressure_1;
-    uint16_t ebsPressure_2;
+    uint16_t ebsPressure_1_deci_bar;
+    uint16_t ebsPressure_2_deci_bar;
 } cmr_canDVPressureReadings_t;
+
+typedef struct {
+    uint16_t ebsPressure1_psi;
+    uint16_t ebsPressure2_psi;
+    uint16_t hydraulicPressure1_psi;
+    uint16_t hydraulicPressure2_psi;
+} cmr_canEMDBrakePressure_t;
 
 /** @brief Vehicle Safety Module latched error status. */
 typedef struct {
@@ -431,11 +463,6 @@ typedef struct {
     uint8_t latchMatrix; //Flag: cmr_canVSMLatch_t 
 } cmr_canVSMLatchedStatus_t;
 
-/** @brief Vehicle Safety Module power diagnostics. */
-typedef struct {
-    uint16_t busVoltage_mV;     //u: mV /**< @brief Low-voltage bus voltage (mV). */
-    uint16_t busCurrent_mA;     //u: mA /**< @brief Low-voltage bus current (mA). */
-} cmr_canVSMPowerDiagnostics_t;
 
 // ------------------------------------------------------------------------------------------------
 // High Voltage Controller
@@ -604,9 +631,8 @@ typedef struct {
 
 //HVC Sensors CAN Types
 typedef struct {
-    int16_t packCurrent_dA;
     uint16_t packVoltage_cV;
-    int32_t packPower_W;
+    uint16_t packCurrent_dA;
 } cmr_canHVSense_t;
 
 //Power Sense Board CAN Types
@@ -621,7 +647,7 @@ typedef struct {
 
 typedef enum{
     CMR_CAN_CDC_ERR_VSM_TIMEOUT = (1<<0),
-    CMR_CAN_CDC_ERR_DTIALLERROR = (1<<15) 
+    CMR_CAN_CDC_ERR_DTIALLERROR = (1<<15),
 } cmr_canCDCHeartbeatErr_t; 
 
 typedef enum {
@@ -825,6 +851,12 @@ typedef struct {
     uint16_t busCurrent_mA;     //u: mA /**< @brief Low-voltage bus current (mA). */
 } cmr_canDIMPowerDiagnostics_t;
 
+/** @brief Vehicle Safety Module power diagnostics. */
+typedef struct {
+    uint16_t busVoltage_mV;     //u: mV /**< @brief Low-voltage bus voltage (mV). */
+    uint16_t busCurrent_mA;     //u: mA /**< @brief Low-voltage bus current (mA). */
+} cmr_canVSMPowerDiagnostics_t;
+
 /** @brief Driver Interface Module text write command. This is
  *  used in conjunction with the RAM to facilite remote text
  *  writing to the driver's display.
@@ -850,7 +882,7 @@ typedef struct {
     uint8_t buttonStates;      /**< @brief Button states packed into an uint8_t. {drs,0,1,2,up,down,left,right}*/
     uint8_t regenPercent;            
     uint8_t paddle;            
-    uint8_t controlsStatus;
+    uint8_t cntrlOff;
     uint8_t dvControlMode;
 } cmr_canDIMActions_t;
 
@@ -906,8 +938,9 @@ typedef struct {
     uint8_t torqueRequested;            /**< @brief Torque requested (0-255). */
     uint8_t throttlePosition;           /**< @brief Throttle position (0-255). */
     uint16_t brakePressureFront_PSI;    //u: PSI /**< @brief Front brake pressure. */
-    uint8_t brakePedalPosition_percent; //u: % /**< @brief Brake pedal position (0-255). */
-    
+    uint8_t AS_Status;
+    uint8_t solonoid_1_current_mA;          /**< @brief Solenoid 1 current (mA). */
+    uint8_t solonoid_2_current_mA;          /**< @brief Solenoid 2 current (mA). */
 } cmr_canFSMData_t; 
 
 typedef struct {
@@ -1432,9 +1465,21 @@ typedef struct {
 // SAE Provided EMD definitions
 
 typedef struct {
-    int32_t current;    //u: A /**< @brief Current (amps * 2^16). */
-    int32_t voltage;    //u: V /**< @brief Voltage (volts * 2^16). */
+    float current;    //u: A /**< @brief Current  */
+    float voltage;    //u: V /**< @brief Voltage  */
 } cmr_canEMDMeasurements_t;
+
+typedef struct {
+    uint8_t mux : 2;
+    uint8_t num_sensors : 6;
+    uint8_t min_temp_2C; // 2 * Celsius units
+    uint8_t max_temp_2C;
+    uint8_t temp1_2C;
+    uint8_t temp2_2C;
+    uint8_t temp3_2C;
+    uint8_t temp4_2C;
+    uint8_t temp5_2C;
+} cmr_canEMDTemperatures_t;
 
 // ------------------------------------------------------------------------------------------------
 // DAQ Modules
@@ -1527,5 +1572,27 @@ typedef struct{
     float  K_d ;          /**< @brief K_d for steering PID Loop*/     
 }
 cmr_canAutonomousPIDConstants_t;
+
+typedef struct{
+    uint8_t muxID;
+    uint8_t count_state; 
+    big_endian_32_t message; 
+}
+cmr_canIVTreadings_t; 
+
+typedef struct {
+    uint8_t  hour;
+    uint8_t  minute;
+    uint8_t  second;
+    uint8_t  AM_PM;
+    uint32_t subsecond;
+} cmr_canRTCTime;
+
+typedef struct {
+    uint8_t  day;
+    uint8_t  month;
+    uint8_t  date;
+    uint8_t  year;
+} cmr_canRTCDate;
 
 #endif /* CMR_CAN_TYPES_H */

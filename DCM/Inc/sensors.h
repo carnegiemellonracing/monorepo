@@ -5,8 +5,7 @@
  * @author Carnegie Mellon Racing
  */
 
-#ifndef SENSORS_H
-#define SENSORS_H
+#pragma once
 
 #include <stdbool.h>
 
@@ -26,9 +25,8 @@ extern const adcChannel_t sensorsADCChannels[SENSOR_CH_LEN];
 
 void sensorsInit(void);
 
-int32_t getVoltage(void);
+int32_t getVoltage_mV(void);
 
-int32_t getCurrent(void);
+int32_t getCurrent_mA(void);
 
-#endif /* SENSORS_H */
 

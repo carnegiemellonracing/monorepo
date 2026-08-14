@@ -37,6 +37,7 @@ extern volatile uint8_t config_paddle_right_request;
 void reqVSM(void);
 void reqDRS(void);
 void reqGear(void);
+void reqDVCtrl(void);
 
 int getMaxMotorTemp(void);
 int getACTemp(void);

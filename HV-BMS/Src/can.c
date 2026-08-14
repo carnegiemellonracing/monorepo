@@ -24,6 +24,11 @@ extern ReceiveMeta_t BMSCommandReceiveMeta;
 extern volatile int BMBErrs[BOARD_NUM];
 int BMBNum = 0;
 
+bool use_emd = false;
+
+bool bms_init_start = false;
+TickType_t bms_start_time;
+
 /**
  * @brief CAN periodic message receive metadata
  *
@@ -32,28 +37,29 @@ int BMBNum = 0;
 cmr_canRXMeta_t canRXMeta[] = {
     [CANRX_HEARTBEAT_VSM] = { //not needed? 
         .canID = CMR_CANID_HEARTBEAT_VSM,
-        .timeoutError_ms = 50,
+        .timeoutError_ms = 2500,
         .timeoutWarn_ms = 25
     },
     [CANRX_HVC_COMMAND] = {
         .canID = CMR_CANID_HVC_COMMAND,
-        .timeoutError_ms = 200,
+        .timeoutError_ms = 2500,
         .timeoutWarn_ms = 25
     },
     [CANRX_HEARTBEAT_HVC] = {
         .canID = CMR_CANID_HEARTBEAT_HVC,
-        .timeoutError_ms = 50,
+        .timeoutError_ms = 2500,
         .timeoutWarn_ms = 25 
     },
-    [CANRX_HEARTBEAT_VSM] = { 
-        .canID = CMR_CANID_HEARTBEAT_VSM,
-        .timeoutError_ms = 50,
-        .timeoutWarn_ms = 25 },
     [CANRX_BALANCE_COMMAND] = {
 		.canID = CMR_CANID_CELL_BALANCE_ENABLE,
-		.timeoutError_ms = 50,
+		.timeoutError_ms = 2500,
 		.timeoutWarn_ms = 25
-	}
+	},
+    [CANRX_EMD_TEMP] = {
+        .canID = CMR_CANID_EMD_TEMPERATURE,
+        .timeoutError_ms = 2500,
+        .timeoutWarn_ms = 1000
+    }
 };
 
 /** @brief Primary CAN interface. */
@@ -117,6 +123,7 @@ static void canTX1Hz(void *pvParameters) {
         // BMB Temperature Status 
         for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM - 1; bmb_index++) {
             sendBMSBMBStatusTemp(bmb_index);
+            sendBMSBMBStatusVoltage(bmb_index);
         }
         //send all cells temp and voltage 
         // sendAllBMBVoltages();
@@ -150,9 +157,6 @@ static void canTX10Hz(void *pvParameters) {
         // sendBRUSAChargerControl();
 
         // BMB Voltage Status 
-        for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
-            sendBMSBMBStatusVoltage(bmb_index);
-        }
 
         vTaskDelayUntil(&lastWakeTime, canTX10Hz_period_ms);
     }
@@ -176,11 +180,21 @@ static void canTX100Hz(void *pvParameters) {
 //        (void *) heartbeatVSMMeta->payload;
 
     TickType_t lastWakeTime = xTaskGetTickCount();
+    if(!bms_init_start) {
+        bms_init_start = true;
+        bms_start_time = xTaskGetTickCount();
+    }
+    
     while (1) {
         sendHeartbeat(lastWakeTime);
         sendBMSBMBStatusErrors();
         sendBMSMinMaxCellTemp();
         checkClearErr();
+        uint8_t amsError = 0;
+        amsError |= CMR_CAN_HVBMS_ERROR_CELL_OVERVOLT;
+        if(lastWakeTime - bms_start_time > 15000) {
+            canTX(CMR_CANID_AMS_ERROR, &amsError, sizeof(uint8_t), canTX100Hz_period_ms);
+        }
         // sendAllBMBVoltages(BMBNum);
         BMBNum = (BMBNum+1) % 16;
         vTaskDelayUntil(&lastWakeTime, canTX100Hz_period_ms);
@@ -259,13 +273,13 @@ void canInit(void) {
         canTX1Hz,
         NULL
     );
-    cmr_taskInit(
-        &canTX10Hz_task,
-        "CAN TX 10Hz",
-        canTX10Hz_priority,
-        canTX10Hz,
-        NULL
-    );
+    // cmr_taskInit(
+    //     &canTX10Hz_task,
+    //     "CAN TX 10Hz",
+    //     canTX10Hz_priority,
+    //     canTX10Hz,
+    //     NULL
+    // );
     cmr_taskInit(
         &canTX200Hz_task,
         "CAN TX 200Hz",
@@ -406,10 +420,23 @@ static void sendBMSMinMaxCellTemp(void) {
 	uint8_t maxCellTempIndex;
 
     for (uint8_t bmb_index = 0; bmb_index < BOARD_NUM-1; bmb_index++) {
-        uint8_t maxIndex = getBMBMaxTempIndex(bmb_index);
-        uint8_t minIndex = getBMBMinTempIndex(bmb_index);
-        uint16_t maxTemp = getBMBTemp(bmb_index, maxIndex);
-        uint16_t minTemp = getBMBTemp(bmb_index, minIndex);
+
+        uint16_t maxTemp;
+        uint16_t minTemp;
+        uint8_t maxIndex;
+        uint8_t minIndex;
+
+        if(use_emd) {
+            cmr_canEMDTemperatures_t *EMDTemperatures = getPayload(CANRX_EMD_TEMP);
+            maxTemp = EMDTemperatures->max_temp_2C * 2;
+            minTemp = EMDTemperatures->min_temp_2C * 2;
+        }
+        else{
+            maxIndex = getBMBMaxTempIndex(bmb_index);
+            minIndex = getBMBMinTempIndex(bmb_index);
+            maxTemp = thermVoltage_to_tempC(getBMBTemp(bmb_index, maxIndex));
+            minTemp = thermVoltage_to_tempC(getBMBTemp(bmb_index, minIndex));
+        }
 
         //bmb 2 channel 13, bmb 7 channel 0, bmb 8 channel 9/11, bmb 9 channel 6
         if ((maxTemp > maxCellTemp)) {

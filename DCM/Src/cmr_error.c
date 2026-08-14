@@ -72,6 +72,8 @@ void updateErrorsWarnings(cmr_canHeartbeat_t *heartbeat, TickType_t lastWakeTime
  * @return None.
  */
 static void updateErrors(cmr_canError_t *errors, TickType_t lastWakeTime) {
+    static TickType_t last_dti_error_start_ms = 0;
+    static bool dti_in_error = false;
     if (errors == NULL) {
         return;
     }
@@ -106,13 +108,22 @@ static void updateErrors(cmr_canError_t *errors, TickType_t lastWakeTime) {
     }
 
     // ALL inverters either errored or timed out
-    if ((dtiErrors[MOTOR_FL] || dtiTimeouts[MOTOR_FL]) &&
-        (dtiErrors[MOTOR_FR] || dtiTimeouts[MOTOR_FR]) &&
-        (dtiErrors[MOTOR_RL] || dtiTimeouts[MOTOR_RL]) &&
-        (dtiErrors[MOTOR_RR] || dtiTimeouts[MOTOR_RR])) {
-
-        *errors |= CMR_CAN_ERROR_CDC_DTI_ALL;
-    }
+    // if ((dtiErrors[MOTOR_FL] || dtiTimeouts[MOTOR_FL]) &&
+    //     (dtiErrors[MOTOR_FR] || dtiTimeouts[MOTOR_FR]) &&
+    //     (dtiErrors[MOTOR_RL] || dtiTimeouts[MOTOR_RL]) &&
+    //     (dtiErrors[MOTOR_RR] || dtiTimeouts[MOTOR_RR])) {
+        
+    //     if(!dti_in_error){
+    //         dti_in_error = true;
+    //         last_dti_error_start_ms = lastWakeTime;
+    //     }
+    //     else if (lastWakeTime - last_dti_error_start_ms > 1000){
+    //         *errors |= CMR_CAN_ERROR_CDC_DTI_ALL;
+    //     }
+    // }
+    // else{
+    //     dti_in_error = false;
+    // }
 
     prevStateVSM = heartbeatVSM->state;
 }

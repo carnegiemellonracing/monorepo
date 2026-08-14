@@ -248,8 +248,6 @@ def generate_symbol_enums(
         return
     
     print(f"Found {len(header_files)} can_types.h file(s):")
-    for f in header_files:
-        print(f"  {f}")
     
     enums_25e = extract_enums_from_sym_file(sym_25e_file)
     if enums_25e:
@@ -346,10 +344,10 @@ def generate_symbol_enums(
         
         print(f"Successfully wrote {len(all_enums)} enums to {output_file}")
         
-        for enum_name, enum_values in sorted(
-            all_enums.items(), key=lambda kv: kv[0].casefold()
-        ):
-            print(f"  {enum_name}: {len(enum_values)} values")
+        # for enum_name, enum_values in sorted(
+        #     all_enums.items(), key=lambda kv: kv[0].casefold()
+        # ):
+        #     print(f"  {enum_name}: {len(enum_values)} values")
             
     except Exception as e:
         print(f"Error writing to {output_file}: {e}")

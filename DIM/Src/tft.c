@@ -262,21 +262,6 @@ static void tftUpdate(void *pvParameters) {
              	prevOverTemp = false;
                 drawRTDScreen();
         }
-
-        // if (true) {
-        //     drawRTDScreen();
-        // } else if ((stateGetVSMReq() == CMR_CAN_HV_EN) && (stateGetVSM() == CMR_CAN_ERROR)) {
-        //     drawSafetyScreen();
-        // } else if (stateGetVSM() == CMR_CAN_ERROR) {
-        //     drawErrorScreen();
-        // } else {
-        // 	//reset latching errors for ams as shown on screen
-        // 	prevOverVolt = false;
-        // 	prevUnderVolt = false;
-        // 	prevOverTemp = false;
-        //     // within drawRTDScreen, we decide if to draw testing or racing screen
-        //     drawRTDScreen();
-        // }
     }
 }
 
@@ -341,12 +326,12 @@ static void drawErrorScreen(void) {
 
 
     /* LVB */
-    unsigned int voltage_qV = ((unsigned int) canBMSLowVoltageStatus->safety_qV);
-    err.glvVoltage_V = voltage_qV / 4;
-    err.glvLowVolt = voltage_qV < (20 * 4);
+    uint32_t voltage_mV = get_glv_voltage_mv();
+    err.glvVoltage_V = voltage_mV/1000.;
+    err.glvLowVolt = err.glvVoltage_V < 20;
 
     /* Timeouts */
-    err.cdcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_CDC);
+    err.cdcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_DCM);
     // err.ptcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_PTC);
     err.hvcTimeout = (canVSMStatus->moduleTimeoutMatrix & CMR_CAN_VSM_BADSTATE_SOURCE_HVC);
     err.vsmTimeout = 0;
@@ -554,14 +539,13 @@ static void drawRTDScreen(void) {
     /* Pack Voltage */
     int32_t hvVoltage_mV = canHVCPackVoltage->battVoltage_mV;
 
-    unsigned int voltage_qV = ((unsigned int) canBMSLowVoltageStatus->safety_qV);
-    float glvVoltage = voltage_qV / 4;
-    //unsigned int voltage_mV = cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV);
-//    float glvVoltage = ((float)cmr_sensorListGetValue(&sensorList, SENSOR_CH_VOLTAGE_MV)) / 1000.0;
+    uint32_t voltage_mV = get_glv_voltage_mv();
+    float glvVoltage = voltage_mV / 1000.0f;
 
     volatile cmr_canVSMSensors_t *vsmSensors = (volatile cmr_canVSMSensors_t *)getPayload(CANRX_VSM_SENSORS);
 
-    int32_t current_A = (int32_t)(vsmSensors->hallEffect_cA) / 100;
+    int32_t current_A = 0;
+    //(int32_t)(vsmSensors->hallEffect_cA) / 100;
     int32_t hvVoltage_V = hvVoltage_mV / 1000;
     int32_t power_kW = (current_A * hvVoltage_V) / 1000;
 

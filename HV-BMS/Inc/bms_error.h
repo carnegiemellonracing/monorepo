@@ -26,7 +26,7 @@ static const int32_t maxPackVoltageMV = 600000;
 static const int32_t minPackVoltageMV = 360000; 
 static const uint32_t minShutdownCiruitVoltageMV = 14000;
 
-cmr_canHVCError_t checkHVBMSErrors();
+cmr_canHV_BMSHeartbeatErr_t checkHVBMSErrors();
 void clearHVBMSErrorReg(void);
 
 cmr_canHVCError_t getHVBMSErrorReg(void);

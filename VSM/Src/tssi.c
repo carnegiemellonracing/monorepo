@@ -23,6 +23,16 @@ static const TickType_t tssiControl_period_ms = 250;
 /** @brief TSSI control task. */
 static cmr_task_t tssiControl_task;
 
+static void flash_error_state() {
+    pwmSetDutyCycle(PWM_GREEN, 0);
+    pwmSetDutyCycle(PWM_RED, 50);
+}
+
+static void flash_normal_state() {
+    pwmSetDutyCycle(PWM_GREEN, 100);
+    pwmSetDutyCycle(PWM_RED, 0);
+}
+
 /**
  * @brief Task for controlling the TSSI.     
  *
@@ -33,18 +43,23 @@ static cmr_task_t tssiControl_task;
 static void tssiControl(void *pvParameters) {
     (void) pvParameters;    // Placate compiler.
 
+    static bool exitedErrorState = false;
     TickType_t lastWakeTime = xTaskGetTickCount();
-
     while (1) {
-        if(getAMSError()){
-            pwmSetDutyCycle(PWM_RED, 50);
-            pwmSetDutyCycle(PWM_GREEN, 0);
+        bool tssi_red_error =   getAMSError() || 
+                                !cmr_gpioRead(GPIO_IN_IMD_ERR_N) || 
+                                !cmr_gpioRead(GPIO_IN_IMD_ERR_COND_N);
+
+        if (tssi_red_error && exitedErrorState) {
+            flash_error_state();
         }
         else{
-            pwmSetDutyCycle(PWM_GREEN, 100);
-            pwmSetDutyCycle(PWM_RED, 0);
+            if (!tssi_red_error) {
+                exitedErrorState = true;
+            }
+            flash_normal_state(); 
         }
-
+       
         vTaskDelayUntil(&lastWakeTime, tssiControl_period_ms);
     }
 }
@@ -57,6 +72,7 @@ static void tssiControl(void *pvParameters) {
  * @return Does not return.
  */
 void tssiInit() {
+
     cmr_taskInit(
         &tssiControl_task,
         "TSSIControl",

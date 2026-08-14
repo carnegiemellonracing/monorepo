@@ -24,11 +24,11 @@ typedef enum {
     CANRX_HEARTBEAT_HVBMS,    /**< @brief HVBMS heartbeat. */
     CANRX_HEARTBEAT_COMPUTE,
     CANRX_FSM_DATA,           /**< @brief FSM data. */
+    CANRX_CUBEMARS_DATA,
     CANRX_FSM_SWANGLE,
     CANRX_DIM_REQUEST,        /**< @brief DIM state request. */
     CANRX_RES,                /**< @brief RES */
     CANRX_AS_PRESSURE_READING,/**< @brief Autonomous Pressure Readings */
-    CANRX_ASMS_STATE,
     CANRX_DTI_ERROR_CODE,     /**< @brief Inverter Fault Codes*/
     CANRX_FL_TEMPFAULT,       /**< @brief Front Left Inverter Fault */
     CANRX_FR_TEMPFAULT,       /**< @brief Front Right Inverter Fault */
@@ -43,6 +43,7 @@ typedef enum {
     CANRX_RL_ERPM,
     CANRX_RR_ERPM,
     CANRX_AS_MISSION_FINISHED,
+    CANRX_AMS_ERROR,
     CANRX_LEN     /**< @brief Number of periodic CAN messages. */
 } canRX_t;
 

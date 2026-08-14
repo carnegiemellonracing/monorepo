@@ -18,21 +18,21 @@
  * @brief Represents a GPIO pin.
  */
 typedef enum {
-    GPIO_BUTTON_UP = 0, /**< @brief Dashboard Up Button */
-    GPIO_BUTTON_DOWN, /**< @brief Dashboard Down Button */
-    GPIO_BUTTON_LEFT, /**< @brief Dashboard Left Button */
-    GPIO_BUTTON_RIGHT, /**< @brief Dashboard Right Button */
-    GPIO_CTRL_SWITCH, /**< @brief Dashboard Switch */
-    GPIO_BUTTON_SW_LEFT, /**< @brief Steering Wheel Left Button */
-    GPIO_BUTTON_SW_RIGHT, /**< @brief Steering Wheel Right Button */
-	GPIO_LED_AMS, /**< @brief AMS Error LED */
-    GPIO_LED_IMD, /**< @brief IMD Error LED */
-    GPIO_LED_BSPD, /**< @brief BSPD Error LED */
-    GPIO_ASMS_ON, /**< @brief AS Master Switch On/Off */
-	GPIO_LED_STATUS, /**< @brief Status LED */
-    GPIO_PD_N,
-    GPIO_AS_ERROR,      /**< @brief AS Error GPIO Output */
-    GPIO_LEN /**< @brief Total GPIO pins. */
+    GPIO_BUTTON_UP       = 0, /**< @brief Dashboard Up Button */
+    GPIO_BUTTON_DOWN,         /**< @brief Dashboard Down Button */
+    GPIO_BUTTON_LEFT,         /**< @brief Dashboard Left Button */
+    GPIO_BUTTON_RIGHT,        /**< @brief Dashboard Right Button */
+    GPIO_CTRL_SWITCH,         /**< @brief Dashboard Switch */
+    GPIO_BUTTON_SW_LEFT,      /**< @brief Steering Wheel Left Button */
+    GPIO_BUTTON_SW_RIGHT,     /**< @brief Steering Wheel Right Button */
+    GPIO_LED_AMS,             /**< @brief AMS Error LED */
+    GPIO_LED_IMD,             /**< @brief IMD Error LED */
+    GPIO_LED_BSPD,            /**< @brief BSPD Error LED */
+    GPIO_ASMS_ON,             /**< @brief AS Master Switch On/Off */
+    GPIO_LED_STATUS,          /**< @brief Status LED */
+    GPIO_PD_N,                /**< @brief GPIO Output for the screen */
+    GPIO_AS_ERROR,            /**< @brief AS Error GPIO Output */
+    GPIO_LEN                  /**< @brief Total GPIO pins. */
 } gpio_t;
 
 
