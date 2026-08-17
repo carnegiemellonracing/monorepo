@@ -170,9 +170,11 @@ add_custom_target(  marshall
 add_dependencies(${CMAKE_PROJECT_NAME} marshall)
 add_compile_options(${cpu_PARAMS})
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../stm32f413-drivers ${CMAKE_BINARY_DIR}/stm32f413-drivers)
-set(coveralls OFF)
+set(CN_CBOR_COVERALLS OFF)
+set(CN_CBOR_BUILD_TESTS OFF)
+add_definitions(-D__MBED__) # For cn-cbor
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cn-cbor)
-
+remove_definitions(-D__MBED__) # For cn-cbor
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME} ${link_LIBS})
 
