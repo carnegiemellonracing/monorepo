@@ -23,9 +23,6 @@ static const uint32_t statusLED_priority = 2;
 /** @brief BMB Sample Task priority. */
 static const uint32_t bmbSample_priority = 3;
 
-/** @brief BMB Sample Task priority. */
-static const uint32_t setState_priority = 4;
-
 /** @brief Status LED period (milliseconds). */
 static const TickType_t statusLED_period_ms = 250;
 
@@ -34,9 +31,6 @@ static cmr_task_t statusLED_task;
 
 /** @brief BMB Sample Task */
 static cmr_task_t bmbSample_task;
-
-/** @brief Set State Task */
-static cmr_task_t setState_task;
 
 /**
  * @brief Task for toggling the status LED.
