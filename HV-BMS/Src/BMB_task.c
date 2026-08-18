@@ -25,7 +25,7 @@ static const uint8_t temp_to_ignore[] = {143};
 // Use array to ignore some broken thermistor channels
 
 bool check_to_ignore(uint8_t bmb_index, uint8_t channel) {
-	for(int i = 0; i < sizeof(temp_to_ignore); i++) {
+	for(unsigned int i = 0; i < sizeof(temp_to_ignore); i++) {
 		if(bmb_index*TEMP_CHANNELS + channel == temp_to_ignore[i]) {
 			return true;
 		}
@@ -51,6 +51,7 @@ bool isBalanceCommanded() {
 // Main sample task entry point for BMS
 
 void vBMBSampleTask(void *pvParameters) {
+	(void) pvParameters;
 
 	// Previous wake time pointer
 	TickType_t xLastWakeTime = xTaskGetTickCount();
@@ -120,7 +121,7 @@ void vBMBSampleTask(void *pvParameters) {
 			xLastWakeTime = xTaskGetTickCount();
 			vTaskDelayUntil(&xLastWakeTime, 10);
 
-			uint8_t err = pollAllVoltageData();
+			pollAllVoltageData();
 
 			xLastWakeTime = xTaskGetTickCount();
 			vTaskDelayUntil(&xLastWakeTime, 10);
@@ -310,8 +311,6 @@ void getBMSMinMaxCellVoltage(
 		}
 	}
 }
-
-//temp index 2,
 
 BMB_Data_t* getBMBData(uint8_t bmb_index) {
 	return &(BMBData[bmb_index]);
