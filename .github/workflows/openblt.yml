@@ -1,6 +1,9 @@
 name: Build OpenBLT Project
 run-name: ${{ github.actor }}-${{ github.repository }} Build
 
+on:
+  push:
+
 jobs:
   build:
     name: Build on ${{ matrix.os }}
