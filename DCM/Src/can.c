@@ -17,7 +17,7 @@
 
 #include <CMR/tasks.h>      // Task interface
 #include <CMR/can_types.h>  
-#include <CMR/fdcan.h>      // fdcan interface
+#include <CMR/can.h>      // can interface
 #include <CMR/config_screen_helper.h>
 #include <CMR/utils.h>
 
@@ -864,11 +864,11 @@ static void canTX100Hz(void *pvParameters) {
 		// SF
 		const cmr_canDCMSafetyFilterStates_t *sfStatesInfo = getSafetyFilterInfo();
 		cmr_canDCMMotorPower_t *motorPowerInfo = getMotorPowerInfo();
-		motorPowerInfo->motor_power_FL = (HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_TRAC].handle)) >> 16) & 0xFFFF;
-		motorPowerInfo->motor_power_FR = HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_TRAC].handle));
+		motorPowerInfo->motor_power_FL = (HAL_CAN_GetTxMailboxesFreeLevel(&(can[CMR_CAN_BUS_TRAC].handle)) >> 16) & 0xFFFF;
+		motorPowerInfo->motor_power_FR = HAL_CAN_GetTxMailboxesFreeLevel(&(can[CMR_CAN_BUS_TRAC].handle));
 
-		motorPowerInfo->motor_power_RL = (HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_VEH].handle)) >> 16) & 0xFFFF;
-		motorPowerInfo->motor_power_RR = HAL_FDCAN_GetTxFifoFreeLevel(&(can[CMR_CAN_BUS_VEH].handle));
+		motorPowerInfo->motor_power_RL = (HAL_CAN_GetTxMailboxesFreeLevel(&(can[CMR_CAN_BUS_VEH].handle)) >> 16) & 0xFFFF;
+		motorPowerInfo->motor_power_RR = HAL_CAN_GetTxMailboxesFreeLevel(&(can[CMR_CAN_BUS_VEH].handle));
         
         // //canTX(CMR_CAN_BUS_VEH, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
 		// //canTX(CMR_CAN_BUS_TRAC, CMR_CANID_MOTORPOWER_STATE, motorPowerInfo, sizeof(*motorPowerInfo), canTX200Hz_period_ms); //motor power
@@ -1421,22 +1421,25 @@ void conditionalCallback(cmr_can_t *canb_rx, uint32_t canID, const void *data, s
  * @brief Initializes the CAN interface.
  */
 void canInit(void) {
+
+    //Gotta check the schematic when it's finalized
+
     // Vehicle CAN initialization - CAN1
-    cmr_FDcanInit(&can[CMR_CAN_BUS_VEH], FDCAN1, CMR_CAN_BITRATE_500K, NULL,
+    cmr_canInit(&can[CMR_CAN_BUS_VEH], FDCAN1, CMR_CAN_BITRATE_500K, NULL,
                   0, &conditionalCallback, GPIOA,
                   GPIO_PIN_11,        // CAN1 RX port/pin.
                   GPIOA, GPIO_PIN_12  // CAN1 TX port/pin.
     );
 
     // Tractive CAN initialization. - CAN3
-    cmr_FDcanInit(&(can[CMR_CAN_BUS_DAQ]), FDCAN2, CMR_CAN_BITRATE_500K, NULL,
+    cmr_canInit(&(can[CMR_CAN_BUS_DAQ]), FDCAN2, CMR_CAN_BITRATE_500K, NULL,
                   0, &conditionalCallback, GPIOB,
                   GPIO_PIN_12,        // CAN3 RX port/pin.
                   GPIOB, GPIO_PIN_13  // CAN3 TX port/pin.
     );
 
     // DAQ CAN init. - CAN2
-    cmr_FDcanInit(&can[CMR_CAN_BUS_TRAC], FDCAN3, CMR_CAN_BITRATE_500K, NULL,
+    cmr_canInit(&can[CMR_CAN_BUS_TRAC], FDCAN3, CMR_CAN_BITRATE_500K, NULL,
                   0, &conditionalCallback, GPIOD,
                   GPIO_PIN_12,        // CAN2 RX port/pin.
                   GPIOD, GPIO_PIN_13  // CAN2 TX port/pin.

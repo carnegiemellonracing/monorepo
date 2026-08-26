@@ -9,7 +9,7 @@
 
 #include <CMR/panic.h>  // cmr_panic()
 #include <CMR/rcc.h>    // RCC interface
-#include <CMR/fdcan.h>    // CAN interface
+#include <CMR/can.h>    // CAN interface
 #include <CMR/adc.h>    // ADC interface
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
