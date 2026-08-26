@@ -65,16 +65,16 @@ int main(void) {
     cmr_remoteBootInit();
 
     // Peripheral configuration.
-    //uartInit();
+    uartInit();
     gpioInit();
     canInit();
 
     // // Load in JSON configuration
-    // parserInit();
+    parserInit();
     // // Set up CBOR encoder
-    // sampleInit();
+    sampleInit();
     // // Pull in previous configuration
-    // configInit();
+    configInit();
 
     cmr_taskInit(
         &statusLED_task,
