@@ -31,6 +31,8 @@ typedef enum {
     GPIO_ASMS_ON,             /**< @brief AS Master Switch On/Off */
     GPIO_LED_STATUS,          /**< @brief Status LED */
     GPIO_PD_N,                /**< @brief GPIO Output for the screen */
+    GPIO_VALVE_MB1,           /**< @brief Toggle for brake valve MB1 */
+    GPIO_VALVE_MB2,           /**< @brief Toggle for brake valve MB2 */
     GPIO_AS_ERROR,            /**< @brief AS Error GPIO Output */
     GPIO_LEN                  /**< @brief Total GPIO pins. */
 } gpio_t;

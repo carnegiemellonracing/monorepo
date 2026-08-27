@@ -355,7 +355,14 @@ static cmr_state getNextState(void) {
             break;
         case NORMAL:
             if(getASMS()) {
-                nextState = AUTON;
+                char brakeCheckStatus = runBrakeCheck();
+                if (brakeCheckStatus == 0) {
+                    nextState = NORMAL;
+                } else if (brakeCheckStatus == 1) {
+                    nextState = AUTON; // we moved request as_ready to AUTON state
+                } else if (brakeCheckStatus == -1) {
+                    nextState = dimStateERROR; // should request error (?)
+                }
             }
             else if(!cmr_gpioRead(GPIO_CTRL_SWITCH) && (stateGetVSM() == CMR_CAN_GLV_ON || stateGetVSM() == CMR_CAN_HV_EN)) {
                 nextState = CONFIG;
@@ -421,6 +428,7 @@ static cmr_state getNextState(void) {
                 }
             }
             else {
+                state.vsmReq = CMR_CAN_AS_READY;
                 nextState = AUTON;
             }
             break;
@@ -530,10 +538,10 @@ void stateVSMDown() {
 
 void reqVSM(void) {
 
-    if(getASMS() && stateGetVSM() == CMR_CAN_GLV_ON) {
-        EABStateUp();
-        return;
-    }
+    // if(getASMS() && stateGetVSM() == CMR_CAN_GLV_ON) {
+    //     EABStateUp();
+    //     return;
+    // }
 
     cmr_canError_t error = CMR_CAN_ERROR_NONE;
     update_errors(&error);

@@ -170,6 +170,24 @@ static const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN] = {
 			.Speed = GPIO_SPEED_FREQ_LOW
 		}
 	},
+	[GPIO_VALVE_MB1] = { // TODO
+		.port = GPIOA, // FIX
+		.init = {
+			.Pin = GPIO_PIN_IDK, // FIX
+			.Mode = GPIO_MODE_OUTPUT_PP,
+			.Pull = GPIO_NOPULL,
+			.Speed = GPIO_SPEED_FREQ_LOW
+		}
+	},
+	[GPIO_VALVE_MB2] = { // TODO
+		.port = GPIOA, // FIX
+		.init = {
+			.Pin = GPIO_PIN_IDK2, // FIX
+			.Mode = GPIO_MODE_OUTPUT_PP,
+			.Pull = GPIO_NOPULL,
+			.Speed = GPIO_SPEED_FREQ_LOW
+		}
+	},
 	[GPIO_AS_ERROR] = {
 		.port = GPIOC,
 		.init = {
