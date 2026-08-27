@@ -159,7 +159,7 @@ def extract_canrx_mappings(content):
     canrx_to_canid = {}
     canrx_to_timeout = {}
     
-    if 'cmr_canRXMeta_t' not in content:
+    if '' not in content:
         return canrx_to_canid, canrx_to_timeout
     
     COMPLETE_ENTRY_PATTERN = re.compile(
