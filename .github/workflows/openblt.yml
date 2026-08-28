@@ -16,8 +16,8 @@ jobs:
             artifact_name: linux-binary
           - os: windows-latest
             artifact_name: windows-binary
-          - os: macos-latest
-            artifact_name: macos-binary
+          #- os: macos-latest
+          #  artifact_name: macos-binary
 
     defaults:
       run:
@@ -32,7 +32,7 @@ jobs:
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libusb-1.0-0-dev
-        
+
       - name: Configure CMake
         run: cmake --preset release
 
