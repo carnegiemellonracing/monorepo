@@ -26,9 +26,7 @@
  * Public domain / CC0 - do whatever you like with this file.
  */
 
-#include "getopt.h"
-
-#if defined(_WIN32) || defined(_WIN64)
+#include "getopt_local.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -276,6 +274,3 @@ int getopt_long_only(int argc, char *const argv[], const char *optstring,
 {
     return getopt_long_impl(argc, argv, optstring, longopts, longindex, 1);
 }
-
-
-#endif /* _WIN32 || _WIN64 */

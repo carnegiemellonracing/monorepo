@@ -15,8 +15,6 @@
 * extension. On MSVC we provide our own minimal, source-compatible implementation
 * (see common.c). On any other compiler (gcc/clang/MinGW) we just use the real thing.
 ****************************************************************************************/
-#ifdef _MSC_VER
-
 #define no_argument                              (0)
 #define required_argument                        (1)
 #define optional_argument                         (2)
@@ -36,10 +34,6 @@ extern int    optopt;
 
 int getopt_long(int argc, char * const argv[], char const * optstring,
                  struct option const * longopts, int * longindex);
-
-#else
-#include <getopt.h>
-#endif
 
 /****************************************************************************************
 * Program return codes

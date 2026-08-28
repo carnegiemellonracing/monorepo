@@ -24,8 +24,6 @@
 #ifndef GETOPT_H_INCLUDED
 #define GETOPT_H_INCLUDED
 
-#if defined(_WIN32) || defined(_WIN64)
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -83,7 +81,5 @@ int getopt_long_only(int argc, char *const argv[], const char *optstring,
     defined(__OpenBSD__)
 #include <getopt.h>
 #endif
-
-#endif /* _WIN32 || _WIN64 */
 
 #endif /* GETOPT_H_INCLUDED */
