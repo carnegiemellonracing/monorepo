@@ -10,17 +10,16 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <CMR/gpio.h>
+#include <CMR/can.h>
 #include "platform.h"
-
 
 typedef struct {
     uint32_t magic;
     uint32_t version;
     uint32_t board_id;
     uint32_t can_bus_num;
+    cmr_canIo_t can_io;
     cmr_gpioPin_t led_pin;
-    cmr_gpioPin_t can_tx_pin;
-    cmr_gpioPin_t can_rx_pin;
 } board_info_t;
 
 #define BOARD_INFO ((const board_info_t *)0x8000000)
@@ -37,8 +36,7 @@ uint32_t cmr_getBoardId(void);
 uint32_t cmr_getBootLoaderCanBusNum(void);
 CAN_TypeDef* cmr_getBootloaderCanPointer(void);
 cmr_gpioPin_t cmr_getBootloaderStatusLedPin(void);
-cmr_gpioPin_t cmr_getBootloaderCanTxPin(void);
-cmr_gpioPin_t cmr_getBootloaderCanRxPin(void);
+cmr_canIo_t cmr_getBootloaderCanIo(void);
 
 #endif /* CMR_BOARD_INFO_H */
 

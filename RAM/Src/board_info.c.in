@@ -1,6 +1,7 @@
 
 #include <CMR/board_info.h>
 #include "gitcommit.h"
+#include "gpio.h"
 
 __attribute__((section(".board_info")))
 const board_info_t board_info = {
@@ -9,15 +10,7 @@ const board_info_t board_info = {
     .board_id = @BOARD_ID@,
     .can_bus_num = @CAN_BUS_NUM@,
     .led_pin = {
-        .port = @LED_PORT@,
-        .pin = @LED_PIN@,
+        .port = gpioPinConfigs[GPIO_LED_STATUS].port,
+        .pin = gpioPinConfigs[GPIO_LED_STATUS].init.Pin
     },
-    .can_tx_pin = {
-        .port = @CAN_TX_PORT@,
-        .pin = @CAN_TX_PIN@,
-    },
-    .can_rx_pin = {
-        .port = @CAN_RX_PORT@,
-        .pin = @CAN_RX_PIN@,
-    }
 };

@@ -47,10 +47,6 @@ cmr_gpioPin_t cmr_getBootloaderStatusLedPin(void) {
     return BOARD_INFO->led_pin;
 }
 
-cmr_gpioPin_t cmr_getBootloaderCanTxPin(void) {
-    return BOARD_INFO->can_tx_pin;
-}
-
-cmr_gpioPin_t cmr_getBootloaderCanRxPin(void) {
-    return BOARD_INFO->can_rx_pin;
+cmr_canIo_t cmr_getBootloaderCanIo(void) {
+    return BOARD_INFO->can_io;
 }
