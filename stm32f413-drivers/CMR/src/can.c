@@ -276,9 +276,14 @@ void cmr_canInit(
     cmr_canBitRate_t bitRate,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
     cmr_canRXCallback_t rxCallback,
-    GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
+    cmr_canIo_t *io
 ) {
+    
+    GPIO_TypeDef* rxPort = io->rx.port;
+    uint16_t rxPin = io->rx.pin;
+    GPIO_TypeDef* txPort = io->tx.port;
+    uint16_t txPin = io->tx.pin;
+
     /* Do any platform-specific initialization */
     _platform_canInit(
         can, instance,
@@ -290,7 +295,7 @@ void cmr_canInit(
     );
 
     cmr_canClockEnable(instance);
-    cmr_canGpioInit(instance, rxPort, rxPin, txPort, txPin);
+    cmr_canGpioInit(instance, io);
 
     if (HAL_CAN_Init(&can->handle) != HAL_OK) {
         cmr_panic("HAL_CAN_Init() failed!");
@@ -326,9 +331,13 @@ void cmr_canInit(
  */
 void cmr_canGpioInit(
     CAN_TypeDef *instance,
-    GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
+    cmr_canIo_t *io
 ) {
+    GPIO_TypeDef* rxPort = io->rx.port;
+    uint16_t rxPin = io->rx.pin;
+    GPIO_TypeDef* txPort = io->tx.port;
+    uint16_t txPin = io->tx.pin;
+
     cmr_rccGPIOClockEnable(rxPort);
     cmr_rccGPIOClockEnable(txPort);
 
@@ -357,9 +366,13 @@ void cmr_canGpioInit(
  * @param txPin Transmitting GPIO pin.
  */
 void cmr_canGpioDeInit(
-    GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
+    cmr_canIo_t *io
 ) {
+    GPIO_TypeDef* rxPort = io->rx.port;
+    uint16_t rxPin = io->rx.pin;
+    GPIO_TypeDef* txPort = io->tx.port;
+    uint16_t txPin = io->tx.pin;
+    
     HAL_GPIO_DeInit(rxPort, rxPin);
     HAL_GPIO_DeInit(txPort, txPin);
 

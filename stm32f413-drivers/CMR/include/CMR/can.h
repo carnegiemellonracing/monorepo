@@ -23,6 +23,7 @@
 
 #include <CMR/can_types.h>  // cmr_canError_t, cmr_canWarn_t
 #include <CMR/can_ids.h>
+#include <CMR/gpio.h>
 
 /** @brief Number of CAN filter banks allocated for each interface. */
 #define CMR_CAN_FILTERBANKS 14
@@ -87,13 +88,17 @@ struct cmr_can {
     cmr_canRXCallback_t rxCallback;
 };
 
+typedef struct cmr_canIo {
+    cmr_gpioPin_t rx;   /**< @brief CAN RX pin. */
+    cmr_gpioPin_t tx;   /**< @brief CAN TX pin. */
+} cmr_canIo_t;
+
 void cmr_canInit(
     cmr_can_t *can, CAN_TypeDef *instance,
     cmr_canBitRate_t bitRate,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
     cmr_canRXCallback_t rxCallback,
-    GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
+    cmr_canIo_t *io
 );
 
 
@@ -102,12 +107,10 @@ void cmr_canInit(
  */
 void cmr_canGpioInit(
     CAN_TypeDef *instance,
-    GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
+   cmr_canIo_t *io
 );
 void cmr_canGpioDeInit(
-    GPIO_TypeDef *rxPort, uint16_t rxPin,
-    GPIO_TypeDef *txPort, uint16_t txPin
+    cmr_canIo_t *io
 );
 /**
  * @brief Required clock configuration for a CAN interface.

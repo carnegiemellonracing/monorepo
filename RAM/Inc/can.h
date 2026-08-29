@@ -9,6 +9,7 @@
 #define CAN_H
 
 #include <CMR/can.h>        // CMR CAN interface
+#include <CMR/gpio.h>        // CMR CAN interface
 #include <CMR/can_types.h>  // CMR CAN types
 #include <CMR/can_ids.h>    // CMR CAN IDs
 
@@ -119,6 +120,9 @@ typedef struct {
     uint16_t idLen;         /**< @brief ID ([10:0]) and length ([14:11]). */
     uint8_t payload[8];     /**< @brief Payload data. */
 } canMsg_t;
+
+
+extern const cmr_canIo_t canIoPinConfig[CMR_CAN_BUS_NUM];
 
 extern cmr_canRXMeta_t canRXMeta[];
 void canInit(void);

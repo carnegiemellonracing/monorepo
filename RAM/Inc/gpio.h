@@ -8,6 +8,9 @@
 #ifndef GPIO_H
 #define GPIO_H
 
+#include <CMR/gpio.h>   // GPIO interface
+
+
 /**
  * @brief Represents a GPIO pin.
  *
@@ -20,5 +23,7 @@ typedef enum {
 } gpio_t;
 
 void gpioInit(void);
+
+extern const cmr_gpioPinConfig_t gpioPinConfigs[GPIO_LEN];
 
 #endif /* GPIO_H */

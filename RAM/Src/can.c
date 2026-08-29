@@ -17,6 +17,21 @@
 #include "parser.h"     // parser ingestation
 
 
+const cmr_canIo_t canIoPinConfig[CMR_CAN_BUS_NUM] = {
+    [CMR_CAN_BUS_VEH] = {
+        .rx = { .port = GPIOA, .pin = GPIO_PIN_8 },
+        .tx = { .port = GPIOB, .pin = GPIO_PIN_4 }
+    },
+    [CMR_CAN_BUS_DAQ] = {
+        .rx = { .port = GPIOB, .pin = GPIO_PIN_12 },
+        .tx = { .port = GPIOB, .pin = GPIO_PIN_13 }
+    },
+    [CMR_CAN_BUS_TRAC] = {
+        .rx = { .port = GPIOB, .pin = GPIO_PIN_8 },
+        .tx = { .port = GPIOB, .pin = GPIO_PIN_9 }
+    }
+};
+
 /**
  * @brief CAN periodic message receive metadata
  *
@@ -458,8 +473,7 @@ void canInit(void) {
         CMR_CAN_BITRATE_500K,
         NULL, 0,
         canRX,
-        GPIOA, GPIO_PIN_8,     // CAN3 RX port/pin.
-        GPIOB, GPIO_PIN_4      // CAN3 TX port/pin.
+        &canIoPinConfig[CMR_CAN_BUS_VEH]
     );
 
     // DAQ-CAN (CAN2) initialization.
@@ -468,8 +482,7 @@ void canInit(void) {
         CMR_CAN_BITRATE_500K,
         NULL, 0,
         canRX,
-        GPIOB, GPIO_PIN_12,    // CAN2 RX port/pin.
-        GPIOB, GPIO_PIN_13     // CAN2 TX port/pin.
+        &canIoPinConfig[CMR_CAN_BUS_DAQ]
     );
     // Trac-CAN (CAN1) initialization.
 	cmr_canInit(
@@ -477,8 +490,7 @@ void canInit(void) {
 		CMR_CAN_BITRATE_500K,
 		NULL, 0,
 		canRX,
-		GPIOB, GPIO_PIN_8,    // CAN1 RX port/pin.
-		GPIOB, GPIO_PIN_9     // CAN1 TX port/pin.
+		&canIoPinConfig[CMR_CAN_BUS_TRAC]
 	);
 
     // filters.
