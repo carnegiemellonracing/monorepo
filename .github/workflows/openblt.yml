@@ -12,8 +12,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
-            artifact_name: linux-binary
+          #- os: ubuntu-latest
+          #  artifact_name: linux-binary
           - os: windows-latest
             artifact_name: windows-binary
           #- os: macos-latest

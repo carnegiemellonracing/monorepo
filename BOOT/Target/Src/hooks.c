@@ -84,7 +84,7 @@ blt_bool CpuUserProgramStartHook(void)
 {
 
   if(cmr_requestedRemoteFlash()) {
-    if(HAL_GetTick() < BOOT_REQUESTED_ENTRY_DELAY_MS) {
+    if(HAL_GetTick() < BOOT_REQUESTED_ENTRY_TIMEOUT_MS) {
       /* wait until the delay time has elapsed to allow for the initial CAN message to be sent */
       return BLT_FALSE;
     } else {
