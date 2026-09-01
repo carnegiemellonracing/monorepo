@@ -1,4 +1,4 @@
- /**
+/**
  * @file main.c
  * @brief Firmware entry point.
  *
@@ -13,21 +13,28 @@
 #include <CMR/adc.h>    // ADC interface
 #include <CMR/gpio.h>   // GPIO interface
 #include <CMR/tasks.h>  // Task interface
-#include <CMR/uart.h>       // CMR UART interface
+#include <CMR/uart.h>   // CMR UART interface
+
 #include <stdlib.h>
 
-#include "gpio.h"       // Board-specific GPIO interface
-#include "can.h"        // Board-specific CAN interface
-#include "adc.h"        // Board-specific ADC interface
-#include "sensors.h"    // Board-specific sensors interface
-#include "motors.h"     // Board-specific motors interface
+#include "gpio.h"        // Board-specific GPIO interface
+#include "can.h"         // Board-specific CAN interface
+#include "adc.h"         // Board-specific ADC interface
+#include "sensors.h"     // Board-specific sensors interface
+#include "pwm.h"
+#include "state.h"       // stateInit()
+#include "tssi.h"        // TSSI control
+#include "assi.h"
+#include "dac.h"
+#include "error.h"
+#include "motors.h"      // Board-specific motors interface
 #include "i2c.h"
 #include "servo.h"
 #include "lut.h"
 #include "brakelight.h"
 #include "pumps.h"
 #include "steering.h"
-
+#include "statusLED.h"
 
 /** @brief Status LED priority. */
 static const uint32_t statusLED_priority = 2;
@@ -35,6 +42,7 @@ static const uint32_t statusLED_priority = 2;
 /** @brief Status LED period (milliseconds). */
 static const TickType_t statusLED_period_ms = 250;
 
+/** @brief Brake light pressure threshold. */
 uint32_t brakeLightThreshold_PSI = 20;
 
 /** @brief Status LED task. */
@@ -42,26 +50,27 @@ static cmr_task_t statusLED_task;
 
 #define SWEEP_SIZE 24
 const float sweep[SWEEP_SIZE][7] = {
-	#include "sweep.rawh"
+    #include "sweep.rawh"
 };
+
 /**
  * @brief Task for toggling the status LED.
  *
  * @param pvParameters Ignored.
  *
-  * @return Does not return.
+ * @return Does not return.
  */
 static void statusLED(void *pvParameters) {
-  (void)pvParameters;
+    (void)pvParameters;
 
-  cmr_gpioWrite(GPIO_LED_STATUS, 0);
+    cmr_gpioWrite(GPIO_LED_STATUS, 0);
 
-  TickType_t lastWakeTime = xTaskGetTickCount();
-  while (1) {
-    cmr_gpioToggle(GPIO_LED_STATUS);
+    TickType_t lastWakeTime = xTaskGetTickCount();
 
-    vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
-  }
+    while (1) {
+        cmr_gpioToggle(GPIO_LED_STATUS);
+        vTaskDelayUntil(&lastWakeTime, statusLED_period_ms);
+    }
 }
 
 /**
@@ -71,33 +80,45 @@ static void statusLED(void *pvParameters) {
  *
  * @return Does not return.
  */
-
 int main(void) {
-
-   	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+    // Enable cycle counter for timing/debugging.
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
     DWT->LAR = 0xC5ACCE55;
     DWT->CYCCNT = 0;
     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+
     // System initialization.
     HAL_Init();
     srand(HAL_GetTick());
     cmr_rccSystemClockEnable();
 
-    // time_OSQPControls(0, 0, 0, 0, 0, 0, true, true, false, 0);
-
     // Peripheral configuration.
     gpioInit();
-    // i2cInit();
+    pwmInit();
     canInit();
     adcInit();
+    sensorsInit();
+
+    stateInit();
+    tssiInit();
+    assiInit();
+
     brakelightInit();
     motorsInit();
-    sensorsInit();
     pumpsOn();
     steeringInit();
 
-    cmr_taskInit(&statusLED_task, "statusLED", statusLED_priority, statusLED,
-                NULL);
+    // i2cInit();
+
+    statusLEDInit();
+
+    cmr_taskInit(
+        &statusLED_task,
+        "statusLED",
+        statusLED_priority,
+        statusLED,
+        NULL
+    );
 
     vTaskStartScheduler();
     cmr_panic("vTaskStartScheduler returned!");
