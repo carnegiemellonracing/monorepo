@@ -16,6 +16,15 @@
  * @warning New channels MUST be added before `ADC_LEN`.
  */
 typedef enum {
+  //VSM Channels
+  ADC_HALL_EFFECT = 0,    /**< @brief Hall effect sense. */
+	ADC_REAR_BRAKE_PRES,    /**< @brief Rear brake pressure sense. */
+  ADC_VSENSE,             /**< @brief Board voltage sense. */
+	ADC_SSIN,								/**< @brief SS In Voltage Sense */
+	ADC_SSOUT,							/**< @brief SS Out Voltage Sense */
+	ADC_LEN     						/**< @brief Total ADC channels. */
+
+  //DCM Channels
   ADC_THERM1,
   ADC_THERM2,
   ADC_THERM3,
@@ -24,6 +33,7 @@ typedef enum {
 } adcChannel_t;
 
 void adcInit(void);
-uint32_t adcRead(adcChannel_t ch);
+uint32_t adcRead(adcChannel_t channel);
 
 #endif /* ADC_H */
+
