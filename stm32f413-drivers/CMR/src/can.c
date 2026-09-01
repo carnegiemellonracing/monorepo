@@ -272,13 +272,13 @@ CAN_RX_FIFO_PENDING(1)
  * @param txPin Transmitting GPIO pin.
  */
 void cmr_canInit(
-    cmr_can_t *can, CAN_TypeDef *instance,
-    cmr_canBitRate_t bitRate,
+    cmr_can_t *can, cmr_canIo_t *io,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
-    cmr_canRXCallback_t rxCallback,
-    cmr_canIo_t *io
+    cmr_canRXCallback_t rxCallback
 ) {
-    
+    CAN_TypeDef *instance = io->instance;
+    cmr_canBitRate_t bitRate = io->bitRate;
+
     GPIO_TypeDef* rxPort = io->rx.port;
     uint16_t rxPin = io->rx.pin;
     GPIO_TypeDef* txPort = io->tx.port;
@@ -295,7 +295,7 @@ void cmr_canInit(
     );
 
     cmr_canClockEnable(instance);
-    cmr_canGpioInit(instance, io);
+    cmr_canGpioInit(io);
 
     if (HAL_CAN_Init(&can->handle) != HAL_OK) {
         cmr_panic("HAL_CAN_Init() failed!");
@@ -330,9 +330,9 @@ void cmr_canInit(
  * @param txPin Transmitting GPIO pin.
  */
 void cmr_canGpioInit(
-    CAN_TypeDef *instance,
     cmr_canIo_t *io
 ) {
+    CAN_TypeDef *instance = io->instance;
     GPIO_TypeDef* rxPort = io->rx.port;
     uint16_t rxPin = io->rx.pin;
     GPIO_TypeDef* txPort = io->tx.port;

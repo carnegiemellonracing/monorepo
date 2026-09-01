@@ -14,13 +14,10 @@
  */
 void canInit(void) {
     // required clocks
-    cmr_canClockEnable(cmr_getBootloaderCanPointer());
+    cmr_canClockEnable(cmr_getBootloaderCanIo().instance);
 
-    // Configure CAN RX pin.
-    cmr_gpioPin_t tx =cmr_getBootloaderCanTxPin();
-    cmr_gpioPin_t rx =cmr_getBootloaderCanRxPin();
-
-    cmr_canGpioInit(cmr_getBootloaderCanPointer(), rx.port, rx.pin, tx.port, tx.pin);
+    cmr_canIo_t io = cmr_getBootloaderCanIo();
+    cmr_canGpioInit(&io);
 }
 
 /**
@@ -28,13 +25,10 @@ void canInit(void) {
  *
  */
 void canDeinit(void) {
-
-    cmr_gpioPin_t tx =cmr_getBootloaderCanTxPin();
-    cmr_gpioPin_t rx =cmr_getBootloaderCanRxPin();
-
-    cmr_canGpioDeInit(rx.port, rx.pin, tx.port, tx.pin);
+    cmr_canIo_t io = cmr_getBootloaderCanIo();
+    cmr_canGpioDeInit(&io);
 
     /* disable clock just in case */
-    cmr_canClockDisable(cmr_getBootloaderCanPointer());
+    cmr_canClockDisable(cmr_getBootloaderCanIo().instance);
     
 }

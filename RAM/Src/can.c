@@ -19,14 +19,20 @@
 
 const cmr_canIo_t canIoPinConfig[CMR_CAN_BUS_NUM] = {
     [CMR_CAN_BUS_VEH] = {
+        .instance = CAN3,
+        .bitRate = CMR_CAN_BITRATE_500K,
         .rx = { .port = GPIOA, .pin = GPIO_PIN_8 },
         .tx = { .port = GPIOB, .pin = GPIO_PIN_4 }
     },
     [CMR_CAN_BUS_DAQ] = {
+        .instance = CAN2,
+        .bitRate = CMR_CAN_BITRATE_500K,
         .rx = { .port = GPIOB, .pin = GPIO_PIN_12 },
         .tx = { .port = GPIOB, .pin = GPIO_PIN_13 }
     },
     [CMR_CAN_BUS_TRAC] = {
+        .instance = CAN1,
+        .bitRate = CMR_CAN_BITRATE_500K,
         .rx = { .port = GPIOB, .pin = GPIO_PIN_8 },
         .tx = { .port = GPIOB, .pin = GPIO_PIN_9 }
     }
@@ -469,28 +475,25 @@ void canInit(void) {
     // VEH-CAN (CAN3) initialization.
     // ! If you change VEH-CAN then update the Cmakelists file for the auto-generated board_info.c
     cmr_canInit(
-        &can[CMR_CAN_BUS_VEH], CAN3,
-        CMR_CAN_BITRATE_500K,
+        &can[CMR_CAN_BUS_VEH],
+        &canIoPinConfig[CMR_CAN_BUS_VEH],
         NULL, 0,
-        canRX,
-        &canIoPinConfig[CMR_CAN_BUS_VEH]
+        canRX
     );
 
     // DAQ-CAN (CAN2) initialization.
     cmr_canInit(
-        &can[CMR_CAN_BUS_DAQ], CAN2,
-        CMR_CAN_BITRATE_500K,
+        &can[CMR_CAN_BUS_DAQ],
+        &canIoPinConfig[CMR_CAN_BUS_DAQ],
         NULL, 0,
-        canRX,
-        &canIoPinConfig[CMR_CAN_BUS_DAQ]
+        canRX
     );
     // Trac-CAN (CAN1) initialization.
 	cmr_canInit(
-		&can[CMR_CAN_BUS_TRAC], CAN1,
-		CMR_CAN_BITRATE_500K,
+		&can[CMR_CAN_BUS_TRAC],
+		&canIoPinConfig[CMR_CAN_BUS_TRAC],
 		NULL, 0,
-		canRX,
-		&canIoPinConfig[CMR_CAN_BUS_TRAC]
+		canRX
 	);
 
     // filters.

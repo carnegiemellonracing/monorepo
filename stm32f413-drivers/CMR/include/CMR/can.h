@@ -62,6 +62,20 @@ typedef struct {
 int cmr_canRXMetaTimeoutWarn(const cmr_canRXMeta_t *meta, TickType_t now_ms);
 int cmr_canRXMetaTimeoutError(const cmr_canRXMeta_t *meta, TickType_t now_ms);
 
+typedef struct cmr_canIo {
+    CAN_TypeDef *instance;   /**< @brief CAN peripheral instance. */
+    cmr_canBitRate_t bitRate; /**< @brief CAN bit rate. */
+    cmr_gpioPin_t rx;        /**< @brief CAN RX pin. */
+    cmr_gpioPin_t tx;        /**< @brief CAN TX pin. */
+} cmr_canIo_t;
+
+/**
+ * @brief Represents a CAN interface.
+ *
+ * @note The contents of this struct are opaque to the library consumer.
+ */
+typedef struct cmr_can cmr_can_t;
+
 /**
  * @brief Represents a CAN interface.
  *
@@ -86,17 +100,10 @@ struct cmr_can {
     cmr_canRXCallback_t rxCallback;
 };
 
-typedef struct cmr_canIo {
-    cmr_gpioPin_t rx;   /**< @brief CAN RX pin. */
-    cmr_gpioPin_t tx;   /**< @brief CAN TX pin. */
-} cmr_canIo_t;
-
 void cmr_canInit(
-    cmr_can_t *can, CAN_TypeDef *instance,
-    cmr_canBitRate_t bitRate,
+    cmr_can_t *can, cmr_canIo_t *io,
     cmr_canRXMeta_t *rxMeta, size_t rxMetaLen,
-    cmr_canRXCallback_t rxCallback,
-    cmr_canIo_t *io
+    cmr_canRXCallback_t rxCallback
 );
 
 
@@ -104,7 +111,6 @@ void cmr_canInit(
  * @brief Represents the GPIO config for a CAN interface.
  */
 void cmr_canGpioInit(
-    CAN_TypeDef *instance,
    cmr_canIo_t *io
 );
 void cmr_canGpioDeInit(

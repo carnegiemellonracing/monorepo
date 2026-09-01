@@ -85,24 +85,6 @@ target_compile_definitions(freertos_config
 
 set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "" FORCE)
 
-
-# Setup the board id based on our project name
-# ! IF YOU EDIT THIS THEN UPDATE monorepo/BOOT/Host/flash_boards.py to match the new board id
-set(BOARD_ID 0x01)
-set(LED_PORT GPIOB)
-set(LED_PIN GPIO_PIN_14)
-# ! This is 0 indexed!!!!!!! So CAN1 = 0, CAN2 = 1, CAN3 = 2
-set(CAN_BUS_NUM 2)
-set(CAN_TX_PORT GPIOB)
-set(CAN_TX_PIN GPIO_PIN_4)
-set(CAN_RX_PORT GPIOA)
-set(CAN_RX_PIN GPIO_PIN_8)
-set(BOARD_INFO_IN  "${CMAKE_CURRENT_SOURCE_DIR}/Src/board_info.c.in")
-set(BOARD_INFO_OUT "${CMAKE_CURRENT_BINARY_DIR}/Src/board_info.c")
-
-# Update template
-configure_file(${BOARD_INFO_IN} ${BOARD_INFO_OUT} @ONLY)
-
 # Link directories and names of libraries
 set(link_DIRS)
 set(link_LIBS
@@ -122,12 +104,11 @@ set(compiler_OPTS
 # Linker options
 set(linker_OPTS)
 
-# Now call generated cmake
-# This will add script generated
-# information to the project
-
+# Include VSCode required
 include("cmake/vscode_generated.cmake")
-include("cmake/board_info.cmake")
+
+# Inclue CMake
+include("cmake/gitcommit_generate.cmake")
 # We should really add Target groups or something
 
 # Link directories setup
@@ -136,12 +117,11 @@ link_directories(${CMAKE_PROJECT_NAME} ${link_DIRS})
 
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
-    # Board Info
-    ${CMAKE_CURRENT_BINARY_DIR}/Src/board_info.c
     # Project sources
     # $<TARGET_OBJECTS:CMR>
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/can.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/config.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/board_info.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/gpio.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/main.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/parser.c
@@ -179,6 +159,10 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     $<$<CONFIG:Release>: >
 )
 target_compile_options(${PROJECT_NAME} PRIVATE -save-temps)
+
+
+# Add dependencies on gitcommit
+add_dependencies(${CMAKE_PROJECT_NAME} generate_gitcommit)
 
 
 # Custom Command then adding to custom target allows us not to run the python script on every build

@@ -1,4 +1,4 @@
-# Get the right gitcommit
+# Git commit
 if(CMAKE_HOST_WIN32)
     add_custom_target(generate_gitcommit ALL
         COMMAND powershell -ExecutionPolicy Bypass -File ${CMAKE_CURRENT_SOURCE_DIR}/export_git.ps1
