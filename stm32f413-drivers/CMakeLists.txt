@@ -13,6 +13,7 @@ add_compile_definitions(${PROCESSOR})
 # HAL integration
 add_library(stm-drivers STATIC)
 add_library(HAL)
+add_library(FATFS)
 
 # Sources
 #file(GLOB CMSIS_DEVICE_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${PROCESSOR_FAM}/CMSIS/Device/Source/*.c)
@@ -61,11 +62,31 @@ target_include_directories(HAL PUBLIC
     ${PROCESSOR_SPECIFIC_INCLUDES}
 )
 
+#links FATFS from FATFS and MiddleWares
+target_include_directories(FATFS PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/App
+    ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/Target
+    ${CMAKE_CURRENT_SOURCE_DIR}/MiddleWares/Third_Party/FatFs/src
+)
+
+target_sources(FATFS PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/App/fatfs.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/Target/bsp_driver_sd.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/FATFS/Target/sd_diskio.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/MiddleWares/Third_Party/FatFs/src/diskio.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/MiddleWares/Third_Party/FatFs/src/ff_gen_drv.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/MiddleWares/Third_Party/FatFs/src/ff.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/MiddleWares/Third_Party/FatFs/src/option/ccsbcs.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/MiddleWares/Third_Party/FatFs/src/option/syscall.c
+)
+
+
 target_link_libraries(stm-drivers PUBLIC HAL)
+target_link_libraries(FATFS PUBLIC HAL)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/DIM-ESE)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/CMR)
-target_link_libraries(CMR PUBLIC DIM-ESE freertos_kernel HAL)
+target_link_libraries(CMR PUBLIC DIM-ESE freertos_kernel HAL FATFS)
 target_link_libraries(stm-drivers
     PUBLIC
     CMR
